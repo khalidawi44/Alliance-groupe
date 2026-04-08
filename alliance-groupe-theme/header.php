@@ -13,6 +13,14 @@
         <!-- Logo -->
         <a href="<?php echo esc_url(home_url('/')); ?>" class="ag-nav__logo" aria-label="Alliance Groupe — Accueil">
             <?php
+            $logo_file = get_stylesheet_directory() . '/assets/images/logo.png';
+            $logo_url = get_stylesheet_directory_uri() . '/assets/images/logo.png';
+            if (file_exists($logo_file)) :
+            ?>
+            <img src="<?php echo esc_url($logo_url); ?>" alt="Alliance Groupe" class="ag-nav__logo-img">
+            <?php endif; ?>
+            <span class="ag-nav__logo-text">
+            <?php
             $logo_text = 'Alliance Groupe';
             $delay = 0;
             for ($i = 0; $i < mb_strlen($logo_text); $i++) {
@@ -25,6 +33,7 @@
                 }
             }
             ?>
+            </span>
         </a>
 
         <!-- Desktop Mega Menu -->
@@ -177,7 +186,12 @@
 <div class="ag-mobile-menu" id="ag-mobile-menu">
     <div class="ag-mobile-menu__inner">
         <div class="ag-mobile-menu__header">
-            <a href="<?php echo esc_url(home_url('/')); ?>" class="ag-nav__logo">Alliance Groupe</a>
+            <a href="<?php echo esc_url(home_url('/')); ?>" class="ag-nav__logo">
+                <?php if (file_exists(get_stylesheet_directory() . '/assets/images/logo.png')) : ?>
+                <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/logo.png'); ?>" alt="" class="ag-nav__logo-img">
+                <?php endif; ?>
+                Alliance Groupe
+            </a>
             <button class="ag-mobile-menu__close" id="ag-mobile-close" type="button" aria-label="Fermer">✕</button>
         </div>
 

@@ -96,6 +96,17 @@ em,.ag-gold{
     font-weight:700;
     color:#D4B45C;
     display:flex;
+    align-items:center;
+    gap:10px;
+}
+.ag-nav__logo-img{
+    width:38px;
+    height:38px;
+    object-fit:contain;
+    flex-shrink:0;
+}
+.ag-nav__logo-text{
+    display:flex;
     gap:0;
 }
 .ag-nav__list{
@@ -522,15 +533,25 @@ em,.ag-gold{
 }
 .ag-rcard__img{
     width:100%;
-    height:240px;
+    height:280px;
     background:#151519;
     display:flex;
     align-items:center;
     justify-content:center;
     color:#b0b0bc;
     font-size:.9rem;
+    overflow:hidden;
 }
-.ag-rcard__img img{width:100%;height:100%;object-fit:cover}
+.ag-rcard__img img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center top;
+    transition:transform .5s;
+}
+.ag-rcard:hover .ag-rcard__img img{
+    transform:scale(1.05);
+}
 .ag-rcard__body{padding:30px}
 .ag-rcard__tags{
     display:flex;

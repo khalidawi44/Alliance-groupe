@@ -55,7 +55,17 @@ add_action( 'init', function () {
     }
 } );
 
-// ── 5. Register page templates ──────────────────────────────────
+// ── 5. Favicon / Site Icon ───────────────────────────────────────
+add_action( 'wp_head', function () {
+    $logo = get_stylesheet_directory() . '/assets/images/logo.png';
+    if ( file_exists( $logo ) ) {
+        $url = get_stylesheet_directory_uri() . '/assets/images/logo.png';
+        echo '<link rel="icon" href="' . esc_url( $url ) . '" type="image/png">' . "\n";
+        echo '<link rel="apple-touch-icon" href="' . esc_url( $url ) . '">' . "\n";
+    }
+} );
+
+// ── 6. Register page templates ──────────────────────────────────
 add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-accueil.php']         = 'Accueil';
     $templates['templates/page-services.php']        = 'Services';
