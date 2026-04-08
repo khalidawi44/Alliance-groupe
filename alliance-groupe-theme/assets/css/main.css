@@ -1442,10 +1442,10 @@ em,.ag-gold{
     grid-template-columns:repeat(2,1fr);
 }
 .ag-reals__grid--full .ag-rcard:first-child{
-    grid-column:1 / -1;
+    grid-column:auto;
 }
 .ag-reals__grid--full .ag-rcard:first-child .ag-rcard__img{
-    height:260px;
+    height:220px;
 }
 .ag-rcard__placeholder{
     width:100%;
@@ -1469,6 +1469,114 @@ em,.ag-gold{
     color:#b0b0bc;
     letter-spacing:.5px;
 }
+
+/* ── Buttons ──────────────────────────────────────────────────── */
+.ag-btn-gold{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:16px 36px;
+    background:#D4B45C;color:#080808;
+    border:none;border-radius:12px;
+    font-family:'Manrope',sans-serif;font-size:1.05rem;font-weight:700;
+    text-decoration:none;cursor:pointer;
+    box-shadow:0 4px 25px rgba(212,180,92,.25);
+    transition:background .3s,transform .3s,box-shadow .3s;
+}
+.ag-btn-gold:hover{
+    background:#c5a44e;
+    transform:translateY(-2px);
+    box-shadow:0 8px 35px rgba(212,180,92,.35);
+    color:#080808;text-decoration:none;
+}
+.ag-btn-outline{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:16px 36px;
+    background:transparent;color:#D4B45C;
+    border:2px solid #D4B45C;border-radius:12px;
+    font-family:'Manrope',sans-serif;font-size:1.05rem;font-weight:700;
+    text-decoration:none;cursor:pointer;
+    transition:background .3s,color .3s,transform .3s;
+}
+.ag-btn-outline:hover{
+    background:rgba(212,180,92,.1);
+    transform:translateY(-2px);
+    color:#D4B45C;text-decoration:none;
+}
+
+/* ── Nav CTA button ───────────────────────────────────────────── */
+.ag-nav__cta{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 24px;
+    background:#D4B45C;color:#080808;
+    border-radius:8px;font-weight:700;font-size:.95rem;
+    text-decoration:none;
+    transition:background .3s,transform .3s;
+}
+.ag-nav__cta:hover{background:#c5a44e;transform:translateY(-2px);color:#080808;text-decoration:none}
+
+/* ── Back to top ──────────────────────────────────────────────── */
+.ag-totop{
+    position:fixed;bottom:40px;right:40px;
+    width:48px;height:48px;border-radius:50%;
+    background:#D4B45C;color:#080808;
+    font-size:1.4rem;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    border:none;cursor:pointer;z-index:9999;
+    box-shadow:0 4px 20px rgba(212,180,92,.3);
+    opacity:0;pointer-events:none;
+    transition:opacity .4s,transform .3s;
+}
+.ag-totop.visible{opacity:1;pointer-events:auto}
+.ag-totop:hover{transform:translateY(-3px)}
+
+/* ── FAQ button ───────────────────────────────────────────────── */
+button.ag-faq-q{
+    width:100%;text-align:left;
+    padding:22px 28px;
+    background:rgba(255,255,255,.03);color:#fff;
+    font-family:'Manrope',sans-serif;font-size:1.05rem;font-weight:700;
+    border:1px solid rgba(255,255,255,.08);border-radius:12px;
+    cursor:pointer;
+    display:flex;justify-content:space-between;align-items:center;
+    transition:background .3s,border-color .3s;
+}
+button.ag-faq-q:hover{background:rgba(255,255,255,.06);border-color:rgba(212,180,92,.3)}
+button.ag-faq-q .ag-faq-icon{font-size:1.3rem;color:#D4B45C;transition:transform .3s}
+.ag-faq-item.open button.ag-faq-q .ag-faq-icon{transform:rotate(45deg)}
+
+/* ── Form inputs ──────────────────────────────────────────────── */
+.ag-form__group input,
+.ag-form__group select,
+.ag-form__group textarea{
+    width:100%;padding:14px 18px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);border-radius:10px;
+    color:#fff;font-family:'Manrope',sans-serif;font-size:1rem;
+    outline:none;transition:border-color .3s;
+}
+.ag-form__group input:focus,
+.ag-form__group select:focus,
+.ag-form__group textarea:focus{border-color:#D4B45C}
+.ag-form__group textarea{min-height:140px;resize:vertical}
+
+/* ── Link styles ──────────────────────────────────────────────── */
+.ag-scard__arrow{color:#D4B45C;text-decoration:none;font-weight:700;font-size:.9rem;display:inline-block;transition:transform .3s}
+.ag-scard:hover .ag-scard__arrow{transform:translateX(6px)}
+.ag-rcard__link{color:#D4B45C;text-decoration:none;font-weight:700;font-size:.95rem}
+.ag-footer__col a{color:#b0b0bc;text-decoration:none;font-size:.92rem;transition:color .3s}
+.ag-footer__col a:hover{color:#D4B45C}
+.ag-contact-card a{color:#D4B45C;text-decoration:none}
+
+/* ── Mega menu links ──────────────────────────────────────────── */
+.ag-mega__link{text-decoration:none;color:inherit;display:flex;align-items:flex-start;gap:12px;padding:10px 12px;border-radius:10px;transition:background .2s;margin-bottom:2px}
+.ag-mega__link:hover{background:rgba(255,255,255,.05)}
+.ag-mega__link strong{color:#fff;display:block;font-size:.92rem;font-weight:700;margin-bottom:2px}
+.ag-mega__link small{color:#b0b0bc;display:block;font-size:.78rem;font-weight:400}
+
+/* ── Mobile menu links ────────────────────────────────────────── */
+.ag-mobile-menu__link{display:block;padding:16px 0;font-size:1.3rem;font-weight:700;color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.04);transition:color .3s}
+.ag-mobile-menu__link:hover{color:#D4B45C}
+.ag-mobile-menu__sub a{display:block;padding:12px 0;font-size:1.05rem;color:#b0b0bc;text-decoration:none;font-weight:500;border-bottom:1px solid rgba(255,255,255,.03);transition:color .3s}
+.ag-mobile-menu__sub a:hover{color:#D4B45C}
 
 /* ── Responsive ───────────────────────────────────────────────── */
 @media(max-width:1024px){
