@@ -1,8 +1,7 @@
 {
-    "version": "1.3.0",
+    "version": "1.5.0",
     "repo": "khalidawi44/Alliance-groupe",
     "branch": "claude/rebuild-alliance-theme-fl7ca",
-    "base_url": "https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/claude/rebuild-alliance-theme-fl7ca/content",
 
     "settings": {
         "blogname": "Alliance Groupe",
@@ -49,5 +48,51 @@
         "articles/08-erreurs-fatales-visibilite.json",
         "articles/09-automatisation-15h-ia.json",
         "articles/10-site-aucun-lead.json"
+    ],
+
+    "theme_files": [
+        "style.css",
+        "functions.php",
+        "header.php",
+        "footer.php",
+        "index.php",
+        "single.php",
+        "assets/css/main.css",
+        "assets/js/main.js",
+        "template-parts/about.php",
+        "template-parts/cta.php",
+        "template-parts/faq.php",
+        "template-parts/marquee.php",
+        "template-parts/process.php",
+        "template-parts/realisations.php",
+        "template-parts/services.php",
+        "templates/page-accueil.php",
+        "templates/page-apropos.php",
+        "templates/page-contact.php",
+        "templates/page-realisations.php",
+        "templates/page-service-ads.php",
+        "templates/page-service-brand.php",
+        "templates/page-service-conseil.php",
+        "templates/page-service-ia.php",
+        "templates/page-service-seo.php",
+        "templates/page-service-web.php",
+        "templates/page-services.php"
+    ],
+
+    "images": [
+        "assets/images/team/1_bureau_naples.jpg",
+        "assets/images/team/Carlito_1-1024x576.jpg",
+        "assets/images/team/kate.jpg",
+        "assets/images/team/halim.jpg",
+        "assets/images/team/amina.jpg",
+        "assets/images/team/laurent.jpg",
+        "assets/images/team/julie.jpg",
+        "assets/images/realisations/anna-photo.jpg",
+        "assets/images/realisations/la-environnement.jpg",
+        "assets/images/realisations/maison-riviera.jpg",
+        "assets/images/realisations/cabinet-martin.jpg",
+        "assets/images/realisations/fitness-lab.jpg",
+        "assets/images/realisations/saveurs-orient.jpg",
+        "assets/images/realisations/techvision.jpg"
     ]
 }
