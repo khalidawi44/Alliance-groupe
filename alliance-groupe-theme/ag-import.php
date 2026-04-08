@@ -1,14 +1,26 @@
 <?php
 /**
- * Plugin Name: Alliance Groupe — Import Contenu
- * Description: Import automatique des pages, articles et réglages du site Alliance Groupe. À supprimer après utilisation.
- * Version: 1.0.0
- * Author: Alliance Groupe
+ * Alliance Groupe — Import Contenu (Sécurisé)
+ *
+ * Sécurité :
+ * - Accessible uniquement aux administrateurs (manage_options)
+ * - Vérification nonce CSRF sur chaque action
+ * - Verrouillage automatique après 1er import (option DB)
+ * - Rate limiting : max 1 exécution par heure
+ * - Logs d'exécution en base de données
+ * - Bouton de déverrouillage protégé par confirmation
+ * - Impossible d'accéder hors admin WordPress (ABSPATH check)
  */
 
 if (!defined('ABSPATH')) {
-    exit;
+    exit('Accès direct interdit.');
 }
+
+/* ── Constantes de sécurité ──────────────────────────────────── */
+define('AG_IMPORT_LOCK_KEY', 'ag_import_locked');
+define('AG_IMPORT_LOG_KEY', 'ag_import_log');
+define('AG_IMPORT_LAST_RUN', 'ag_import_last_run');
+define('AG_IMPORT_RATE_LIMIT', 3600); // 1 heure entre chaque exécution
 
 /* ── Admin menu ──────────────────────────────────────────────── */
 add_action('admin_menu', function () {
@@ -21,37 +33,131 @@ add_action('admin_menu', function () {
     );
 });
 
-/* ── Page admin ──────────────────────────────────────────────── */
+/* ── Page admin sécurisée ────────────────────────────────────── */
 function ag_import_page() {
+    // Double vérification des droits admin
     if (!current_user_can('manage_options')) {
-        wp_die('Accès refusé');
+        wp_die(
+            'Accès refusé — Seuls les administrateurs peuvent accéder à cet outil.',
+            'Accès refusé',
+            ['response' => 403]
+        );
     }
 
-    echo '<div class="wrap"><h1>Import Alliance Groupe</h1>';
+    $is_locked = get_option(AG_IMPORT_LOCK_KEY, false);
+    $last_run  = get_option(AG_IMPORT_LAST_RUN, 0);
+    $logs      = get_option(AG_IMPORT_LOG_KEY, []);
 
+    echo '<div class="wrap">';
+    echo '<h1>🔒 Import Alliance Groupe — Sécurisé</h1>';
+
+    // ── Action : Déverrouiller ──
+    if (isset($_POST['ag_unlock_import']) && wp_verify_nonce($_POST['ag_unlock_nonce'], 'ag_unlock_action')) {
+        delete_option(AG_IMPORT_LOCK_KEY);
+        delete_option(AG_IMPORT_LAST_RUN);
+        $is_locked = false;
+        ag_add_log('🔓 Import déverrouillé par ' . wp_get_current_user()->user_login);
+        echo '<div class="notice notice-warning"><p>Import déverrouillé. Vous pouvez relancer l\'import.</p></div>';
+    }
+
+    // ── Action : Lancer l'import ──
     if (isset($_POST['ag_run_import']) && wp_verify_nonce($_POST['ag_nonce'], 'ag_import_nonce')) {
-        ag_run_import();
+        // Vérifier le verrouillage
+        if ($is_locked) {
+            echo '<div class="notice notice-error"><p>⛔ L\'import est verrouillé. Il a déjà été exécuté. Déverrouillez d\'abord si nécessaire.</p></div>';
+        }
+        // Vérifier le rate limiting
+        elseif ($last_run && (time() - $last_run) < AG_IMPORT_RATE_LIMIT) {
+            $remaining = AG_IMPORT_RATE_LIMIT - (time() - $last_run);
+            $minutes = ceil($remaining / 60);
+            echo '<div class="notice notice-error"><p>⏳ Rate limit : veuillez attendre encore ' . $minutes . ' minute(s) avant de relancer.</p></div>';
+        }
+        else {
+            ag_add_log('▶️ Import lancé par ' . wp_get_current_user()->user_login . ' depuis ' . $_SERVER['REMOTE_ADDR']);
+            ag_run_import();
+            // Verrouiller après import réussi
+            update_option(AG_IMPORT_LOCK_KEY, true);
+            update_option(AG_IMPORT_LAST_RUN, time());
+            ag_add_log('✅ Import terminé et verrouillé');
+            $is_locked = true;
+        }
+    }
+
+    // ── Affichage de la page ──
+    if ($is_locked) {
+        echo '<div style="background:#fff;padding:24px;border-left:4px solid #0073aa;border-radius:4px;margin:20px 0;">';
+        echo '<h2 style="color:#0073aa;">✅ Import déjà exécuté</h2>';
+        echo '<p>L\'import a été exécuté avec succès et est désormais <strong>verrouillé</strong> pour éviter les doublons.</p>';
+        echo '<p>Dernier import : <strong>' . ($last_run ? date('d/m/Y à H:i:s', $last_run) : 'inconnu') . '</strong></p>';
+        echo '</div>';
+
+        // Bouton de déverrouillage avec confirmation
+        echo '<div style="background:#fff3cd;padding:24px;border-left:4px solid #ffc107;border-radius:4px;margin:20px 0;">';
+        echo '<h3>⚠️ Déverrouiller l\'import</h3>';
+        echo '<p>Attention : relancer l\'import ne créera pas de doublons (les éléments existants sont ignorés), mais c\'est rarement nécessaire.</p>';
+        echo '<form method="post" onsubmit="return confirm(\'Êtes-vous sûr de vouloir déverrouiller l\\\'import ?\');">';
+        wp_nonce_field('ag_unlock_action', 'ag_unlock_nonce');
+        submit_button('🔓 Déverrouiller l\'import', 'secondary', 'ag_unlock_import');
+        echo '</form>';
+        echo '</div>';
     } else {
-        echo '<form method="post">';
-        wp_nonce_field('ag_import_nonce', 'ag_nonce');
+        echo '<div style="background:#fff;padding:24px;border-left:4px solid #46b450;border-radius:4px;margin:20px 0;">';
+        echo '<h2>Lancer l\'import</h2>';
         echo '<p>Ce script va créer :</p>';
         echo '<ul style="list-style:disc;margin-left:20px;">';
         echo '<li><strong>12 pages</strong> avec leurs templates assignés</li>';
-        echo '<li><strong>10 articles</strong> SEO optimisés</li>';
+        echo '<li><strong>10 articles</strong> SEO optimisés (800-1200 mots chacun)</li>';
         echo '<li><strong>2 catégories</strong> (Tech & IA, Conseils Digital)</li>';
-        echo '<li><strong>1 menu</strong> de navigation</li>';
+        echo '<li><strong>1 menu</strong> de navigation principal</li>';
         echo '<li><strong>Réglages</strong> : page d\'accueil statique, page blog, permaliens</li>';
         echo '</ul>';
-        echo '<p><strong>⚠️ À exécuter une seule fois. Supprimez ce fichier après import.</strong></p>';
-        submit_button('Lancer l\'import', 'primary', 'ag_run_import');
+        echo '<p><strong>🔒 L\'import sera verrouillé automatiquement après exécution.</strong><br>';
+        echo 'Les éléments existants ne seront pas dupliqués (détection automatique).</p>';
+        echo '<form method="post" onsubmit="return confirm(\'Lancer l\\\'import ? Les éléments existants ne seront pas dupliqués.\');">';
+        wp_nonce_field('ag_import_nonce', 'ag_nonce');
+        submit_button('🚀 Lancer l\'import', 'primary', 'ag_run_import');
         echo '</form>';
+        echo '</div>';
+    }
+
+    // ── Journal d'activité ──
+    $logs = get_option(AG_IMPORT_LOG_KEY, []);
+    if (!empty($logs)) {
+        echo '<div style="background:#fff;padding:24px;border:1px solid #ddd;border-radius:4px;margin:20px 0;">';
+        echo '<h3>📋 Journal d\'activité</h3>';
+        echo '<table class="widefat striped" style="margin-top:12px;">';
+        echo '<thead><tr><th>Date</th><th>Événement</th></tr></thead><tbody>';
+        foreach (array_reverse($logs) as $log) {
+            echo '<tr><td style="white-space:nowrap;">' . esc_html($log['date']) . '</td><td>' . esc_html($log['message']) . '</td></tr>';
+        }
+        echo '</tbody></table>';
+        echo '</div>';
     }
 
     echo '</div>';
 }
 
-/* ── Import principal ────────────────────────────────────────── */
+/* ── Logger sécurisé ─────────────────────────────────────────── */
+function ag_add_log($message) {
+    $logs = get_option(AG_IMPORT_LOG_KEY, []);
+    $logs[] = [
+        'date'    => current_time('d/m/Y H:i:s'),
+        'message' => sanitize_text_field($message),
+    ];
+    // Garder max 50 entrées de log
+    if (count($logs) > 50) {
+        $logs = array_slice($logs, -50);
+    }
+    update_option(AG_IMPORT_LOG_KEY, $logs);
+}
+
+/* ── Import principal (sécurisé) ──────────────────────────────── */
 function ag_run_import() {
+    // Triple vérification des droits
+    if (!current_user_can('manage_options') || !is_admin()) {
+        wp_die('Accès refusé', 'Erreur', ['response' => 403]);
+    }
+
     $results = [];
 
     // 1. Créer les catégories
@@ -151,13 +257,21 @@ function ag_run_import() {
         }
     }
 
-    // Afficher résultats
-    echo '<div style="background:#fff;padding:20px;border:1px solid #ccc;border-radius:8px;margin-top:20px;">';
-    echo '<h2>Résultat de l\'import</h2>';
+    // Logger chaque résultat
     foreach ($results as $r) {
-        echo '<p>' . $r . '</p>';
+        ag_add_log(wp_strip_all_tags($r));
     }
-    echo '<hr><p><strong>⚠️ IMPORTANT :</strong> Supprimez maintenant le fichier <code>ag-import.php</code> du dossier du thème pour des raisons de sécurité.</p>';
+
+    // Afficher résultats
+    echo '<div style="background:#d4edda;padding:24px;border-left:4px solid #28a745;border-radius:4px;margin-top:20px;">';
+    echo '<h2>✅ Import terminé avec succès</h2>';
+    echo '<table class="widefat striped" style="margin-top:12px;">';
+    echo '<tbody>';
+    foreach ($results as $r) {
+        echo '<tr><td>' . $r . '</td></tr>';
+    }
+    echo '</tbody></table>';
+    echo '<p style="margin-top:16px;"><strong>🔒 L\'import est maintenant verrouillé.</strong> Vous pouvez le déverrouiller ci-dessous si nécessaire.</p>';
     echo '</div>';
 }
 
