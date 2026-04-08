@@ -1,9 +1,10 @@
 <?php
 /**
  * Alliance Groupe Theme — functions.php
+ * Thème autonome (pas besoin d'Elementor)
  */
 
-// ── 1. Charger ag-import.php si présent ─────────────────────────
+// ── 1. Charger ag-import.php ────────────────────────────────────
 $ag_import_file = get_stylesheet_directory() . '/ag-import.php';
 if ( file_exists( $ag_import_file ) ) {
     require_once $ag_import_file;
@@ -11,8 +12,6 @@ if ( file_exists( $ag_import_file ) ) {
 
 // ── 2. Enqueue styles & scripts ─────────────────────────────────
 add_action( 'wp_enqueue_scripts', function () {
-    wp_enqueue_style( 'hello-elementor', get_template_directory_uri() . '/style.css' );
-
     wp_enqueue_style(
         'ag-google-fonts',
         'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap',
@@ -23,43 +22,38 @@ add_action( 'wp_enqueue_scripts', function () {
     wp_enqueue_style(
         'ag-main-css',
         get_stylesheet_directory_uri() . '/assets/css/main.css',
-        array( 'hello-elementor' ),
-        '1.4.0'
+        array(),
+        '2.0.0'
     );
 
     wp_enqueue_script(
         'ag-main-js',
         get_stylesheet_directory_uri() . '/assets/js/main.js',
         array(),
-        '1.4.0',
+        '2.0.0',
         true
     );
-}, 20 );
+} );
 
-// ── 3. Register menus ───────────────────────────────────────────
+// ── 3. Theme support ────────────────────────────────────────────
 add_action( 'after_setup_theme', function () {
-    register_nav_menus( array(
-        'primary' => 'Menu principal',
-    ) );
+    register_nav_menus( array( 'primary' => 'Menu principal' ) );
     add_theme_support( 'post-thumbnails' );
     add_theme_support( 'title-tag' );
+    add_theme_support( 'html5', array( 'search-form', 'comment-form', 'gallery', 'caption' ) );
 }, 5 );
 
 // ── 4. Auto-create categories ───────────────────────────────────
 add_action( 'init', function () {
-    if ( ! term_exists( 'Tech & IA', 'category' ) ) {
-        wp_insert_term( 'Tech & IA', 'category' );
-    }
-    if ( ! term_exists( 'Conseils Digital', 'category' ) ) {
-        wp_insert_term( 'Conseils Digital', 'category' );
-    }
+    if ( ! term_exists( 'Tech & IA', 'category' ) ) wp_insert_term( 'Tech & IA', 'category' );
+    if ( ! term_exists( 'Conseils Digital', 'category' ) ) wp_insert_term( 'Conseils Digital', 'category' );
 } );
 
-// ── 5. Favicon / Site Icon ───────────────────────────────────────
+// ── 5. Favicon ──────────────────────────────────────────────────
 add_action( 'wp_head', function () {
     $dir = get_stylesheet_directory() . '/assets/images/';
     $uri = get_stylesheet_directory_uri() . '/assets/images/';
-    foreach ( array('jpg','jpeg','png','webp') as $ext ) {
+    foreach ( array( 'jpg', 'jpeg', 'png', 'webp' ) as $ext ) {
         if ( file_exists( $dir . 'logo.' . $ext ) ) {
             $url = $uri . 'logo.' . $ext;
             echo '<link rel="icon" href="' . esc_url( $url ) . '">' . "\n";
@@ -85,69 +79,17 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     return $templates;
 } );
 
-// ── 6. Reading time helper ──────────────────────────────────────
+// ── 7. Reading time helper ──────────────────────────────────────
 if ( ! function_exists( 'ag_reading_time' ) ) {
     function ag_reading_time() {
         $content = get_post_field( 'post_content', get_the_ID() );
-        $word_count = str_word_count( strip_tags( $content ) );
-        return max( 1, ceil( $word_count / 250 ) );
+        return max( 1, ceil( str_word_count( strip_tags( $content ) ) / 250 ) );
     }
 }
 
-// ── 7. SEO meta description ─────────────────────────────────────
+// ── 8. SEO meta description ─────────────────────────────────────
 add_action( 'wp_head', function () {
     if ( is_single() && has_excerpt() ) {
-        $desc = esc_attr( wp_strip_all_tags( get_the_excerpt() ) );
-        echo '<meta name="description" content="' . $desc . '">' . "\n";
+        echo '<meta name="description" content="' . esc_attr( wp_strip_all_tags( get_the_excerpt() ) ) . '">' . "\n";
     }
 } );
-
-// ── 8. Override Elementor reset.css ─────────────────────────────
-add_action( 'wp_footer', 'ag_print_elementor_overrides', 999 );
-
-if ( ! function_exists( 'ag_print_elementor_overrides' ) ) {
-    function ag_print_elementor_overrides() {
-        echo <<<AGSTYLE
-<style id="ag-elementor-overrides">
-.ag-nav__logo-img{width:36px!important;height:36px!important;max-width:36px!important;max-height:36px!important;object-fit:contain!important;display:block!important}
-.ag-rcard__img img{width:100%!important;height:100%!important;max-height:220px!important;object-fit:cover!important}
-.ag-rcard__img img[src*="logo"]{object-fit:contain!important;padding:20px!important;background:#f5f0eb!important}
-button,[type=button],[type=submit],[type=reset]{background:transparent!important;border:none!important;cursor:pointer!important;padding:0!important;font-family:inherit!important;font-size:inherit!important;color:inherit!important}
-.ag-nav__logo,.ag-nav__logo:hover,.ag-nav__logo:focus,.ag-nav__logo:visited{text-decoration:none!important;color:#D4B45C!important;background:transparent!important;border:none!important;outline:none!important;box-shadow:none!important}
-.ag-nav__list li a,.ag-nav__list li a:hover,.ag-nav__list li a:focus,.ag-nav__list li a:visited{text-decoration:none!important;color:#e8e6e0!important;background:transparent!important;border:none!important;outline:none!important;box-shadow:none!important;transition:color .3s!important}
-.ag-nav__list li a:hover{color:#D4B45C!important}
-.ag-nav__cta,.ag-nav__cta:hover,.ag-nav__cta:focus,.ag-nav__cta:visited{display:inline-flex!important;align-items:center!important;gap:8px!important;padding:10px 24px!important;background:#D4B45C!important;color:#080808!important;border-radius:8px!important;font-weight:700!important;font-size:.95rem!important;text-decoration:none!important;border:none!important;outline:none!important;box-shadow:none!important;transition:background .3s,transform .3s!important}
-.ag-nav__cta:hover{background:#c5a44e!important;transform:translateY(-2px)!important}
-.ag-nav__burger,.ag-nav__burger:hover,.ag-nav__burger:focus{background:transparent!important;border:none!important;outline:none!important;box-shadow:none!important;cursor:pointer!important;padding:4px!important}
-button.ag-totop,button.ag-totop:hover,button.ag-totop:focus{position:fixed!important;bottom:40px!important;right:40px!important;width:48px!important;height:48px!important;border-radius:50%!important;background:#D4B45C!important;color:#080808!important;font-size:1.4rem!important;font-weight:700!important;display:flex!important;align-items:center!important;justify-content:center!important;border:none!important;outline:none!important;box-shadow:0 4px 20px rgba(212,180,92,.3)!important;cursor:pointer!important;z-index:9999!important;opacity:0!important;pointer-events:none!important;transition:opacity .4s,transform .3s!important}
-button.ag-totop.visible{opacity:1!important;pointer-events:auto!important}
-button.ag-totop:hover{transform:translateY(-3px)!important}
-button.ag-faq-q,button.ag-faq-q:hover,button.ag-faq-q:focus{width:100%!important;text-align:left!important;padding:22px 28px!important;background:rgba(255,255,255,.03)!important;color:#fff!important;font-family:'Manrope',sans-serif!important;font-size:1.05rem!important;font-weight:700!important;border:1px solid rgba(255,255,255,.08)!important;border-radius:12px!important;outline:none!important;box-shadow:none!important;cursor:pointer!important;display:flex!important;justify-content:space-between!important;align-items:center!important;transition:background .3s,border-color .3s!important}
-button.ag-faq-q:hover{background:rgba(255,255,255,.06)!important;border-color:rgba(212,180,92,.3)!important}
-button.ag-faq-q .ag-faq-icon{font-size:1.3rem!important;color:#D4B45C!important;transition:transform .3s!important}
-.ag-faq-item.open button.ag-faq-q .ag-faq-icon{transform:rotate(45deg)!important}
-.ag-btn-gold,.ag-btn-gold:hover,.ag-btn-gold:focus,.ag-btn-gold:visited{display:inline-flex!important;align-items:center!important;gap:10px!important;padding:16px 36px!important;background:#D4B45C!important;color:#080808!important;border:none!important;border-radius:12px!important;font-family:'Manrope',sans-serif!important;font-size:1.05rem!important;font-weight:700!important;text-decoration:none!important;outline:none!important;box-shadow:0 4px 25px rgba(212,180,92,.25)!important;cursor:pointer!important;transition:background .3s,transform .3s,box-shadow .3s!important}
-.ag-btn-gold:hover{background:#c5a44e!important;transform:translateY(-2px)!important;box-shadow:0 8px 35px rgba(212,180,92,.35)!important}
-.ag-btn-outline,.ag-btn-outline:hover,.ag-btn-outline:focus,.ag-btn-outline:visited{display:inline-flex!important;align-items:center!important;gap:10px!important;padding:16px 36px!important;background:transparent!important;color:#D4B45C!important;border:2px solid #D4B45C!important;border-radius:12px!important;font-family:'Manrope',sans-serif!important;font-size:1.05rem!important;font-weight:700!important;text-decoration:none!important;outline:none!important;box-shadow:none!important;cursor:pointer!important;transition:background .3s,color .3s,transform .3s!important}
-.ag-btn-outline:hover{background:rgba(212,180,92,.1)!important;transform:translateY(-2px)!important}
-.ag-form__group input,.ag-form__group select,.ag-form__group textarea{width:100%!important;padding:14px 18px!important;background:rgba(255,255,255,.04)!important;border:1px solid rgba(255,255,255,.1)!important;border-radius:10px!important;color:#fff!important;font-family:'Manrope',sans-serif!important;font-size:1rem!important;outline:none!important;box-shadow:none!important;transition:border-color .3s!important}
-.ag-form__group input:focus,.ag-form__group select:focus,.ag-form__group textarea:focus{border-color:#D4B45C!important}
-.ag-form__group textarea{min-height:140px!important;resize:vertical!important}
-.ag-scard__arrow,.ag-scard__arrow:hover,.ag-scard__arrow:focus,.ag-scard__arrow:visited{text-decoration:none!important;color:#D4B45C!important;background:transparent!important;border:none!important;outline:none!important;box-shadow:none!important}
-.ag-rcard__link,.ag-rcard__link:hover,.ag-rcard__link:focus,.ag-rcard__link:visited{text-decoration:none!important;color:#D4B45C!important;background:transparent!important;border:none!important;outline:none!important;box-shadow:none!important;font-weight:700!important;transition:color .3s!important}
-.ag-footer__col a,.ag-footer__col a:hover,.ag-footer__col a:focus,.ag-footer__col a:visited{text-decoration:none!important;color:#b0b0bc!important;background:transparent!important;border:none!important;outline:none!important;box-shadow:none!important;transition:color .3s!important}
-.ag-footer__col a:hover{color:#D4B45C!important}
-.ag-contact-card a,.ag-contact-card a:hover,.ag-contact-card a:focus,.ag-contact-card a:visited{text-decoration:none!important;color:#D4B45C!important;background:transparent!important;border:none!important;outline:none!important;box-shadow:none!important}
-.ag-mega__link,.ag-mega__link:hover,.ag-mega__link:focus,.ag-mega__link:visited{text-decoration:none!important;color:inherit!important;border:none!important;outline:none!important;box-shadow:none!important}
-.ag-mega__link:hover{background:rgba(255,255,255,.05)!important}
-.ag-mobile-menu__link,.ag-mobile-menu__link:hover,.ag-mobile-menu__link:focus,.ag-mobile-menu__link:visited{text-decoration:none!important;color:#fff!important;background:transparent!important;border:none!important;outline:none!important;box-shadow:none!important}
-.ag-mobile-menu__link:hover{color:#D4B45C!important}
-.ag-mobile-menu__sub a,.ag-mobile-menu__sub a:hover,.ag-mobile-menu__sub a:focus,.ag-mobile-menu__sub a:visited{text-decoration:none!important;color:#b0b0bc!important;background:transparent!important;border:none!important;outline:none!important;box-shadow:none!important}
-.ag-mobile-menu__sub a:hover{color:#D4B45C!important}
-.ag-mobile-menu__toggle,.ag-mobile-menu__toggle:hover,.ag-mobile-menu__toggle:focus{background:transparent!important;border:none!important;outline:none!important;box-shadow:none!important;cursor:pointer!important}
-.ag-mobile-menu__close,.ag-mobile-menu__close:hover,.ag-mobile-menu__close:focus{background:transparent!important;border:none!important;outline:none!important;box-shadow:none!important;cursor:pointer!important;color:#e8e6e0!important}
-.ag-mobile-menu__header .ag-nav__logo,.ag-mobile-menu__header .ag-nav__logo:hover,.ag-mobile-menu__header .ag-nav__logo:visited{text-decoration:none!important;color:#D4B45C!important;font-family:'Playfair Display',serif!important;font-size:1.3rem!important;font-weight:700!important;background:transparent!important;border:none!important;outline:none!important;box-shadow:none!important}
-</style>
-AGSTYLE;
-    }
-}
