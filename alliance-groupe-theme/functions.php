@@ -109,6 +109,9 @@ if ( ! function_exists( 'ag_print_elementor_overrides' ) ) {
     function ag_print_elementor_overrides() {
         echo <<<AGSTYLE
 <style id="ag-elementor-overrides">
+.ag-nav__logo-img{width:36px!important;height:36px!important;max-width:36px!important;max-height:36px!important;object-fit:contain!important;display:block!important}
+.ag-rcard__img img{width:100%!important;height:100%!important;max-height:220px!important;object-fit:cover!important}
+.ag-rcard__img img[src*="logo"]{object-fit:contain!important;padding:20px!important;background:#f5f0eb!important}
 button,[type=button],[type=submit],[type=reset]{background:transparent!important;border:none!important;cursor:pointer!important;padding:0!important;font-family:inherit!important;font-size:inherit!important;color:inherit!important}
 .ag-nav__logo,.ag-nav__logo:hover,.ag-nav__logo:focus,.ag-nav__logo:visited{text-decoration:none!important;color:#D4B45C!important;background:transparent!important;border:none!important;outline:none!important;box-shadow:none!important}
 .ag-nav__list li a,.ag-nav__list li a:hover,.ag-nav__list li a:focus,.ag-nav__list li a:visited{text-decoration:none!important;color:#e8e6e0!important;background:transparent!important;border:none!important;outline:none!important;box-shadow:none!important;transition:color .3s!important}

@@ -100,10 +100,13 @@ em,.ag-gold{
     gap:10px;
 }
 .ag-nav__logo-img{
-    width:30px;
-    height:30px;
+    width:36px;
+    height:36px;
+    max-width:36px;
+    max-height:36px;
     object-fit:contain;
     flex-shrink:0;
+    display:block;
 }
 .ag-nav__logo-text{
     display:flex;
