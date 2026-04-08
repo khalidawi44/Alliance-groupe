@@ -87,12 +87,12 @@
         "assets/images/team/amina.jpg",
         "assets/images/team/laurent.jpg",
         "assets/images/team/julie.jpg",
-        "assets/images/realisations/anna-photo.jpg",
-        "assets/images/realisations/la-environnement.jpg",
-        "assets/images/realisations/maison-riviera.jpg",
-        "assets/images/realisations/cabinet-martin.jpg",
-        "assets/images/realisations/fitness-lab.jpg",
-        "assets/images/realisations/saveurs-orient.jpg",
-        "assets/images/realisations/techvision.jpg"
+        "assets/images/realisations/anna-photo.svg",
+        "assets/images/realisations/la-environnement.svg",
+        "assets/images/realisations/maison-riviera.svg",
+        "assets/images/realisations/cabinet-martin.svg",
+        "assets/images/realisations/fitness-lab.svg",
+        "assets/images/realisations/saveurs-orient.svg",
+        "assets/images/realisations/techvision.svg"
     ]
 }
