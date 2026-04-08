@@ -4,6 +4,12 @@
  * Enqueue assets, register menus, page templates, override Elementor reset.css
  */
 
+/* ── 0. Include import tool (Outils > Import AG) ────────────────── */
+$ag_import_file = get_stylesheet_directory() . '/ag-import.php';
+if (file_exists($ag_import_file)) {
+    require_once $ag_import_file;
+}
+
 /* ── 1. Enqueue styles & scripts ─────────────────────────────────── */
 add_action('wp_enqueue_scripts', function () {
     // Parent theme
