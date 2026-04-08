@@ -17,9 +17,11 @@ function ag_render() {
     if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Non.' );
 
     $last = get_option( 'ag_last_sync', 0 );
+    $last_gh = get_option( 'ag_last_github_sync', 0 );
 
     echo '<div class="wrap"><h1>Alliance Groupe — Import</h1>';
 
+    // Action: Import local
     if ( isset( $_POST['ag_go'] ) && check_admin_referer( 'ag_go_nonce' ) ) {
         if ( $last && ( time() - $last ) < 120 ) {
             echo '<div class="notice notice-error"><p>Patientez 2 min.</p></div>';
@@ -28,20 +30,50 @@ function ag_render() {
         }
     }
 
+    // Action: Sync GitHub
+    if ( isset( $_POST['ag_github'] ) && check_admin_referer( 'ag_github_nonce' ) ) {
+        if ( $last_gh && ( time() - $last_gh ) < 120 ) {
+            echo '<div class="notice notice-error"><p>Patientez 2 min.</p></div>';
+        } else {
+            ag_do_github_sync();
+        }
+    }
+
+    // Action: Clear logs
     if ( isset( $_POST['ag_clear'] ) && check_admin_referer( 'ag_clear_nonce' ) ) {
         delete_option( 'ag_log' );
         echo '<div class="notice notice-success"><p>Logs vidés.</p></div>';
     }
 
-    echo '<div style="background:#f0f6fc;padding:28px;border:2px solid #0073aa;border-radius:8px;margin:20px 0;text-align:center;">';
-    echo '<h2 style="margin-top:0;">Importer le contenu</h2>';
-    echo '<p>Crée les 12 pages, 10 articles, menu et réglages.<br>Les éléments existants sont ignorés (pas de doublons).</p>';
-    if ( $last ) echo '<p>Dernier import : <strong>' . date( 'd/m/Y H:i', $last ) . '</strong></p>';
+    // ── Deux boutons côte à côte ──
+    echo '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;">';
+
+    // Bouton 1: Import embarqué
+    echo '<div style="background:#f0f6fc;padding:28px;border:2px solid #0073aa;border-radius:8px;text-align:center;">';
+    echo '<h2 style="margin-top:0;">Import initial</h2>';
+    echo '<p>Crée les 12 pages, 10 articles, menu et réglages depuis les données embarquées.</p>';
+    if ( $last ) echo '<p>Dernier : <strong>' . date( 'd/m/Y H:i', $last ) . '</strong></p>';
     echo '<form method="post">';
     wp_nonce_field( 'ag_go_nonce' );
     echo '<input type="submit" name="ag_go" class="button button-primary button-hero" value="Lancer l\'import">';
     echo '</form></div>';
 
+    // Bouton 2: Sync GitHub
+    echo '<div style="background:#f0fff4;padding:28px;border:2px solid #28a745;border-radius:8px;text-align:center;">';
+    echo '<h2 style="margin-top:0;">Synchroniser depuis GitHub</h2>';
+    echo '<p>Récupère les nouveaux articles et pages depuis GitHub. Pas de doublons.</p>';
+    if ( $last_gh ) echo '<p>Dernier : <strong>' . date( 'd/m/Y H:i', $last_gh ) . '</strong></p>';
+    echo '<form method="post">';
+    wp_nonce_field( 'ag_github_nonce' );
+    echo '<input type="submit" name="ag_github" class="button button-primary button-hero" style="background:#28a745;border-color:#28a745;" value="Synchroniser GitHub">';
+    echo '</form></div>';
+
+    echo '</div>';
+
+    // Lien GitHub
+    echo '<p style="text-align:center;color:#666;">Repo : <a href="https://github.com/khalidawi44/Alliance-groupe/tree/claude/rebuild-alliance-theme-fl7ca/content" target="_blank">github.com/khalidawi44/Alliance-groupe</a></p>';
+
+    // Logs
     $logs = get_option( 'ag_log', array() );
     if ( ! empty( $logs ) ) {
         echo '<div style="background:#fff;padding:20px;border:1px solid #ddd;border-radius:4px;margin:20px 0;">';
@@ -159,6 +191,135 @@ function ag_do_import() {
     echo '<h2>Import terminé !</h2><ul>';
     foreach ( $r as $msg ) echo '<li>' . esc_html( $msg ) . '</li>';
     echo '</ul></div>';
+}
+
+// ── Sync depuis GitHub ───────────────────────────────────────────
+function ag_do_github_sync() {
+    $base = 'https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/claude/rebuild-alliance-theme-fl7ca/content';
+    $r = array();
+
+    // 1. Manifest
+    $manifest = ag_gh_fetch( $base . '/manifest.json' );
+    if ( ! $manifest ) {
+        echo '<div class="notice notice-error"><p>Impossible de charger manifest.json depuis GitHub. Vérifiez que le repo est public.</p></div>';
+        ag_log_msg( 'ERREUR: manifest.json inaccessible' );
+        return;
+    }
+    $version = isset( $manifest['version'] ) ? $manifest['version'] : '?';
+    $r[] = 'Manifest v' . $version . ' OK';
+
+    // 2. Catégories
+    $cat_ids = array();
+    if ( ! empty( $manifest['categories'] ) ) {
+        foreach ( $manifest['categories'] as $c ) {
+            $cat_ids[ $c['name'] ] = ag_cat( $c['name'], $c['slug'] );
+        }
+        $r[] = 'Catégories OK';
+    }
+
+    // 3. Pages
+    $pids = array();
+    if ( ! empty( $manifest['pages'] ) ) {
+        foreach ( $manifest['pages'] as $path ) {
+            $data = ag_gh_fetch( $base . '/' . $path );
+            if ( ! $data ) { $r[] = 'ERREUR: ' . $path; continue; }
+            $ex = get_page_by_path( $data['slug'] );
+            if ( $ex ) { $pids[ $data['slug'] ] = $ex->ID; continue; }
+            $id = wp_insert_post( array(
+                'post_title' => $data['title'], 'post_name' => $data['slug'],
+                'post_status' => 'publish', 'post_type' => 'page',
+                'post_content' => '', 'page_template' => isset( $data['template'] ) ? $data['template'] : '',
+            ) );
+            if ( $id && ! is_wp_error( $id ) ) {
+                $pids[ $data['slug'] ] = $id;
+                $r[] = 'Page "' . $data['title'] . '" créée';
+            }
+        }
+    }
+
+    // 4. Réglages
+    if ( ! empty( $manifest['settings'] ) ) {
+        $s = $manifest['settings'];
+        if ( ! empty( $s['front_page'] ) && isset( $pids[ $s['front_page'] ] ) ) {
+            update_option( 'show_on_front', 'page' );
+            update_option( 'page_on_front', $pids[ $s['front_page'] ] );
+        }
+        if ( ! empty( $s['blog_page'] ) && isset( $pids[ $s['blog_page'] ] ) ) {
+            update_option( 'page_for_posts', $pids[ $s['blog_page'] ] );
+        }
+        if ( ! empty( $s['permalink_structure'] ) ) {
+            global $wp_rewrite;
+            $wp_rewrite->set_permalink_structure( $s['permalink_structure'] );
+            $wp_rewrite->flush_rules();
+        }
+        if ( ! empty( $s['blogname'] ) ) update_option( 'blogname', $s['blogname'] );
+        if ( ! empty( $s['blogdescription'] ) ) update_option( 'blogdescription', $s['blogdescription'] );
+        $r[] = 'Réglages OK';
+    }
+
+    // 5. Menu
+    if ( ! empty( $manifest['menu'] ) && ! wp_get_nav_menu_object( $manifest['menu']['name'] ) ) {
+        $mid = wp_create_nav_menu( $manifest['menu']['name'] );
+        $labels = array( 'accueil'=>'Accueil','services'=>'Services','realisations'=>'Réalisations','a-propos'=>'À propos','blog'=>'Blog','contact'=>'Contact' );
+        $pos = 0;
+        foreach ( $manifest['menu']['items'] as $slug ) {
+            if ( isset( $pids[ $slug ] ) ) {
+                wp_update_nav_menu_item( $mid, 0, array(
+                    'menu-item-title' => isset( $labels[ $slug ] ) ? $labels[ $slug ] : $slug,
+                    'menu-item-object' => 'page', 'menu-item-object-id' => $pids[ $slug ],
+                    'menu-item-type' => 'post_type', 'menu-item-status' => 'publish',
+                    'menu-item-position' => $pos++,
+                ) );
+            }
+        }
+        $locs = get_theme_mod( 'nav_menu_locations' );
+        if ( ! is_array( $locs ) ) $locs = array();
+        $locs['primary'] = $mid;
+        set_theme_mod( 'nav_menu_locations', $locs );
+        $r[] = 'Menu créé';
+    }
+
+    // 6. Articles
+    $new = 0; $skip = 0;
+    if ( ! empty( $manifest['articles'] ) ) {
+        foreach ( $manifest['articles'] as $path ) {
+            $a = ag_gh_fetch( $base . '/' . $path );
+            if ( ! $a ) { $r[] = 'ERREUR: ' . $path; continue; }
+            $ex = get_page_by_path( $a['slug'], OBJECT, 'post' );
+            if ( $ex ) { $skip++; continue; }
+            $cat_name = isset( $a['category'] ) ? $a['category'] : 'Conseils Digital';
+            $cid = isset( $cat_ids[ $cat_name ] ) ? $cat_ids[ $cat_name ] : 0;
+            $pid = wp_insert_post( array(
+                'post_title' => $a['title'], 'post_name' => $a['slug'],
+                'post_status' => 'publish', 'post_type' => 'post',
+                'post_content' => wp_kses_post( $a['content'] ),
+                'post_excerpt' => isset( $a['excerpt'] ) ? $a['excerpt'] : '',
+                'post_category' => $cid ? array( $cid ) : array(),
+            ) );
+            if ( $pid && ! is_wp_error( $pid ) ) {
+                if ( ! empty( $a['tags'] ) ) wp_set_post_tags( $pid, $a['tags'] );
+                $new++;
+            }
+        }
+        if ( $new ) $r[] = $new . ' articles importés';
+        if ( $skip ) $r[] = $skip . ' articles existants ignorés';
+    }
+
+    update_option( 'ag_last_github_sync', time() );
+    foreach ( $r as $msg ) ag_log_msg( 'GitHub: ' . $msg );
+
+    echo '<div style="background:#d4edda;padding:24px;border-left:4px solid #28a745;border-radius:4px;margin:20px 0;">';
+    echo '<h2>Sync GitHub terminée (v' . esc_html( $version ) . ')</h2><ul>';
+    foreach ( $r as $msg ) echo '<li>' . esc_html( $msg ) . '</li>';
+    echo '</ul></div>';
+}
+
+function ag_gh_fetch( $url ) {
+    $resp = wp_remote_get( $url, array( 'timeout' => 30, 'sslverify' => true ) );
+    if ( is_wp_error( $resp ) ) return false;
+    if ( wp_remote_retrieve_response_code( $resp ) !== 200 ) return false;
+    $data = json_decode( wp_remote_retrieve_body( $resp ), true );
+    return ( json_last_error() === JSON_ERROR_NONE ) ? $data : false;
 }
 
 function ag_cat( $name, $slug ) {
