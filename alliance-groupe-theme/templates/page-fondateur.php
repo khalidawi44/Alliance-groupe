@@ -7,8 +7,8 @@ $img_base = get_stylesheet_directory_uri() . '/assets/images/team/';
 $img_url = '';
 $img_dir = get_stylesheet_directory() . '/assets/images/team/';
 foreach (array('jpg','jpeg','png','webp') as $ext) {
-    if (file_exists($img_dir . '1_bureau_naples.' . $ext)) {
-        $img_url = $img_base . '1_bureau_naples.' . $ext;
+    if (file_exists($img_dir . 'fabrizio.' . $ext)) {
+        $img_url = $img_base . 'fabrizio.' . $ext;
         break;
     }
 }
