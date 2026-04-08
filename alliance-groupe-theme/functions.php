@@ -75,12 +75,14 @@ add_action('init', function () {
 });
 
 /* ── 5. Reading time helper ───────────────────────────────────────── */
+if (!function_exists('ag_reading_time')) :
 function ag_reading_time() {
     $content = get_post_field('post_content', get_the_ID());
     $word_count = str_word_count(strip_tags($content));
     $reading_time = max(1, ceil($word_count / 250));
     return $reading_time;
 }
+endif;
 
 /* ── 6. Add theme support for post thumbnails + excerpts ─────────── */
 add_action('after_setup_theme', function () {

@@ -25,17 +25,23 @@ if (!defined('ABSPATH')) {
     exit('Accès direct interdit.');
 }
 
+// Empêcher le double chargement
+if (defined('AG_IMPORT_LOADED')) {
+    return;
+}
+define('AG_IMPORT_LOADED', true);
+
 /* ── Configuration GitHub ────────────────────────────────────── */
-define('AG_GITHUB_REPO', 'khalidawi44/Alliance-groupe');
-define('AG_GITHUB_BRANCH', 'claude/rebuild-alliance-theme-fl7ca');
-define('AG_GITHUB_RAW_BASE', 'https://raw.githubusercontent.com/' . AG_GITHUB_REPO . '/' . AG_GITHUB_BRANCH . '/content');
-define('AG_MANIFEST_URL', AG_GITHUB_RAW_BASE . '/manifest.json');
+if (!defined('AG_GITHUB_REPO'))     define('AG_GITHUB_REPO', 'khalidawi44/Alliance-groupe');
+if (!defined('AG_GITHUB_BRANCH'))   define('AG_GITHUB_BRANCH', 'claude/rebuild-alliance-theme-fl7ca');
+if (!defined('AG_GITHUB_RAW_BASE')) define('AG_GITHUB_RAW_BASE', 'https://raw.githubusercontent.com/' . AG_GITHUB_REPO . '/' . AG_GITHUB_BRANCH . '/content');
+if (!defined('AG_MANIFEST_URL'))    define('AG_MANIFEST_URL', AG_GITHUB_RAW_BASE . '/manifest.json');
 
 /* ── Constantes ──────────────────────────────────────────────── */
-define('AG_IMPORT_LOG_KEY', 'ag_import_log');
-define('AG_IMPORT_LAST_SYNC', 'ag_import_last_sync');
-define('AG_IMPORT_VERSION', 'ag_import_version');
-define('AG_SYNC_RATE_LIMIT', 300); // 5 minutes entre chaque sync
+if (!defined('AG_IMPORT_LOG_KEY'))  define('AG_IMPORT_LOG_KEY', 'ag_import_log');
+if (!defined('AG_IMPORT_LAST_SYNC')) define('AG_IMPORT_LAST_SYNC', 'ag_import_last_sync');
+if (!defined('AG_IMPORT_VERSION'))  define('AG_IMPORT_VERSION', 'ag_import_version');
+if (!defined('AG_SYNC_RATE_LIMIT')) define('AG_SYNC_RATE_LIMIT', 300);
 
 /* ── Admin menu ──────────────────────────────────────────────── */
 add_action('admin_menu', function () {
@@ -49,6 +55,7 @@ add_action('admin_menu', function () {
 });
 
 /* ── Fetch JSON depuis GitHub ────────────────────────────────── */
+if (!function_exists('ag_fetch_github')) :
 function ag_fetch_github($url) {
     $response = wp_remote_get($url, [
         'timeout'   => 30,
@@ -77,8 +84,10 @@ function ag_fetch_github($url) {
 
     return $data;
 }
+endif;
 
 /* ── Page admin ──────────────────────────────────────────────── */
+if (!function_exists('ag_import_page')) :
 function ag_import_page() {
     if (!current_user_can('manage_options')) {
         wp_die('Accès refusé', 'Accès refusé', ['response' => 403]);
@@ -174,8 +183,10 @@ function ag_import_page() {
 
     echo '</div>';
 }
+endif;
 
 /* ── Synchronisation principale ──────────────────────────────── */
+if (!function_exists('ag_run_github_sync')) :
 function ag_run_github_sync() {
     if (!current_user_can('manage_options') || !is_admin()) {
         wp_die('Accès refusé', 'Erreur', ['response' => 403]);
@@ -363,15 +374,19 @@ function ag_run_github_sync() {
     echo '<p style="margin-top:16px;color:#46b450;font-weight:bold;">Synchronisation v' . esc_html($version) . ' terminée !</p>';
     echo '</div>';
 }
+endif;
 
 /* ── Helpers ──────────────────────────────────────────────────── */
+if (!function_exists('ag_get_or_create_category')) :
 function ag_get_or_create_category($name, $slug) {
     $term = get_term_by('slug', $slug, 'category');
     if ($term) return $term->term_id;
     $result = wp_insert_term($name, 'category', ['slug' => $slug]);
     return is_wp_error($result) ? 0 : $result['term_id'];
 }
+endif;
 
+if (!function_exists('ag_add_log')) :
 function ag_add_log($message) {
     $logs = get_option(AG_IMPORT_LOG_KEY, []);
     $logs[] = [
@@ -383,3 +398,4 @@ function ag_add_log($message) {
     }
     update_option(AG_IMPORT_LOG_KEY, $logs);
 }
+endif;
