@@ -384,6 +384,86 @@ button.ag-faq-q .ag-faq-icon{
     outline:none !important;
     box-shadow:none !important;
 }
+
+/* ── Mega menu links ───────────────────────────────────────── */
+.ag-mega__link,
+.ag-mega__link:hover,
+.ag-mega__link:focus,
+.ag-mega__link:visited{
+    text-decoration:none !important;
+    color:inherit !important;
+    background:transparent !important;
+    border:none !important;
+    outline:none !important;
+    box-shadow:none !important;
+}
+.ag-mega__link:hover{
+    background:rgba(255,255,255,.05) !important;
+}
+
+/* ── Mobile menu links ─────────────────────────────────────── */
+.ag-mobile-menu__link,
+.ag-mobile-menu__link:hover,
+.ag-mobile-menu__link:focus,
+.ag-mobile-menu__link:visited{
+    text-decoration:none !important;
+    color:#fff !important;
+    background:transparent !important;
+    border:none !important;
+    outline:none !important;
+    box-shadow:none !important;
+}
+.ag-mobile-menu__link:hover{
+    color:#D4B45C !important;
+}
+.ag-mobile-menu__sub a,
+.ag-mobile-menu__sub a:hover,
+.ag-mobile-menu__sub a:focus,
+.ag-mobile-menu__sub a:visited{
+    text-decoration:none !important;
+    color:#b0b0bc !important;
+    background:transparent !important;
+    border:none !important;
+    outline:none !important;
+    box-shadow:none !important;
+}
+.ag-mobile-menu__sub a:hover{
+    color:#D4B45C !important;
+}
+.ag-mobile-menu__toggle,
+.ag-mobile-menu__toggle:hover,
+.ag-mobile-menu__toggle:focus{
+    background:transparent !important;
+    border:none !important;
+    outline:none !important;
+    box-shadow:none !important;
+    cursor:pointer !important;
+}
+.ag-mobile-menu__close,
+.ag-mobile-menu__close:hover,
+.ag-mobile-menu__close:focus{
+    background:transparent !important;
+    border:none !important;
+    outline:none !important;
+    box-shadow:none !important;
+    cursor:pointer !important;
+    color:#e8e6e0 !important;
+}
+
+/* ── Mobile menu header logo ───────────────────────────────── */
+.ag-mobile-menu__header .ag-nav__logo,
+.ag-mobile-menu__header .ag-nav__logo:hover,
+.ag-mobile-menu__header .ag-nav__logo:visited{
+    text-decoration:none !important;
+    color:#D4B45C !important;
+    font-family:'Playfair Display',serif !important;
+    font-size:1.3rem !important;
+    font-weight:700 !important;
+    background:transparent !important;
+    border:none !important;
+    outline:none !important;
+    box-shadow:none !important;
+}
 </style>
 AGSTYLE;
 }, 999);

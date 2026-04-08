@@ -13,21 +13,55 @@
         nav.classList.toggle('scrolled', window.scrollY > 60);
     });
 
-    /* ── Burger Menu ──────────────────────────────────────────── */
-    const burger = document.getElementById('ag-burger');
-    const navList = document.getElementById('ag-nav-list');
-    if (burger && navList) {
-        burger.addEventListener('click', function () {
-            burger.classList.toggle('open');
-            navList.classList.toggle('open');
-        });
-        navList.querySelectorAll('a').forEach(function (link) {
-            link.addEventListener('click', function () {
-                burger.classList.remove('open');
-                navList.classList.remove('open');
-            });
+    /* ── Mobile Fullscreen Menu ───────────────────────────────── */
+    var burger = document.getElementById('ag-burger');
+    var mobileMenu = document.getElementById('ag-mobile-menu');
+    var mobileClose = document.getElementById('ag-mobile-close');
+
+    function openMobileMenu() {
+        if (mobileMenu) {
+            mobileMenu.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+    function closeMobileMenu() {
+        if (mobileMenu) {
+            mobileMenu.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+    }
+
+    if (burger) {
+        burger.addEventListener('click', openMobileMenu);
+    }
+    if (mobileClose) {
+        mobileClose.addEventListener('click', closeMobileMenu);
+    }
+
+    // Close menu on link click
+    if (mobileMenu) {
+        mobileMenu.querySelectorAll('a').forEach(function (link) {
+            link.addEventListener('click', closeMobileMenu);
         });
     }
+
+    // Mobile menu accordion toggles
+    document.querySelectorAll('.ag-mobile-menu__toggle').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var group = btn.closest('.ag-mobile-menu__group');
+            var isOpen = group.classList.contains('open');
+
+            // Close all groups
+            document.querySelectorAll('.ag-mobile-menu__group').forEach(function (g) {
+                g.classList.remove('open');
+            });
+
+            // Open clicked if it was closed
+            if (!isOpen) {
+                group.classList.add('open');
+            }
+        });
+    });
 
     /* ── FAQ Accordion ────────────────────────────────────────── */
     document.querySelectorAll('.ag-faq-q').forEach(function (btn) {
