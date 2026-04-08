@@ -1417,6 +1417,28 @@ em,.ag-gold{
 .ag-reals__grid--full .ag-rcard:first-child .ag-rcard__img{
     height:320px;
 }
+.ag-rcard__placeholder{
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    background:linear-gradient(135deg,#151519 0%,#1a1a22 50%,#151519 100%);
+    border-bottom:1px solid rgba(255,255,255,.04);
+}
+.ag-rcard__placeholder-title{
+    font-family:'Playfair Display',serif;
+    font-size:1.6rem;
+    font-weight:700;
+    color:#D4B45C;
+}
+.ag-rcard__placeholder-tags{
+    font-size:.78rem;
+    color:#b0b0bc;
+    letter-spacing:.5px;
+}
 
 /* ── Responsive ───────────────────────────────────────────────── */
 @media(max-width:1024px){
