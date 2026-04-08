@@ -1436,6 +1436,45 @@ em,.ag-gold{
     color:#b0b0bc;
     line-height:1.5;
 }
+.ag-team-card__link{
+    display:inline-block;
+    margin-top:10px;
+    color:#D4B45C;
+    font-size:.85rem;
+    font-weight:700;
+    text-decoration:none;
+    transition:color .3s;
+}
+.ag-team-card__link:hover{color:#c5a44e}
+
+/* ── Fondateur Story ──────────────────────────────────────────── */
+.ag-fondateur-story h2{
+    font-size:1.5rem;
+    margin:40px 0 16px;
+    color:#D4B45C;
+    font-family:'Playfair Display',serif;
+    font-style:italic;
+}
+.ag-fondateur-story p{
+    color:#e8e6e0;
+    font-size:1.05rem;
+    line-height:1.9;
+    margin-bottom:20px;
+}
+.ag-fondateur-story blockquote{
+    border-left:3px solid #D4B45C;
+    padding:20px 28px;
+    margin:32px 0;
+    background:rgba(212,180,92,.06);
+    border-radius:0 14px 14px 0;
+    color:#D4B45C;
+    font-family:'Playfair Display',serif;
+    font-style:italic;
+    font-size:1.1rem;
+    line-height:1.7;
+}
+.ag-fondateur-story strong{color:#fff}
+.ag-fondateur-story em{color:#D4B45C;font-style:italic}
 
 /* ── Réalisations grid full ───────────────────────────────────── */
 .ag-reals__grid--full{

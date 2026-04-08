@@ -47,17 +47,18 @@
             <?php
             $team = [
                 [
-                    'name'  => 'Fabrice',
+                    'name'  => 'Fabrizio',
                     'role'  => 'Fondateur & CEO',
                     'city'  => 'Naples, Italie',
                     'img'   => '1_bureau_naples',
-                    'desc'  => 'Visionnaire et stratège digital, Fabrice a fondé Alliance Groupe avec l\'ambition de rendre le digital premium accessible à toutes les entreprises.',
+                    'desc'  => 'Né à Naples, Fabrizio a commencé par offrir l\'accès au numérique aux plus démunis de sa ville. Aujourd\'hui il dirige Alliance Groupe avec la même passion : rendre le digital accessible à tous.',
+                    'link'  => home_url('/notre-fondateur'),
                 ],
                 [
                     'name'  => 'Carlito',
                     'role'  => 'Directeur Technique',
                     'city'  => 'Naples, Italie',
-                    'img'   => 'Carlito_1-1024x576',
+                    'img'   => 'carlito',
                     'desc'  => 'Expert en développement web et architecte technique, Carlito transforme les visions en produits digitaux performants.',
                 ],
                 [
@@ -96,12 +97,10 @@
                     'desc'  => 'Organisée et rigoureuse, Julie coordonne les équipes et garantit le respect des délais et de la qualité.',
                 ],
             ];
-            foreach ($team as $i => $m) :
-                // Try multiple extensions
+            foreach ($team as $m) :
                 $img_url = '';
-                $extensions = ['jpg', 'jpeg', 'png', 'webp'];
                 $img_dir = get_stylesheet_directory() . '/assets/images/team/';
-                foreach ($extensions as $ext) {
+                foreach (array('jpg','jpeg','png','webp') as $ext) {
                     if (file_exists($img_dir . $m['img'] . '.' . $ext)) {
                         $img_url = $img_base . $m['img'] . '.' . $ext;
                         break;
@@ -111,7 +110,7 @@
             <div class="ag-team-card ag-anim" data-anim="card">
                 <div class="ag-team-card__img">
                     <?php if ($img_url) : ?>
-                        <img src="<?php echo esc_url($img_url); ?>" alt="<?php echo esc_attr($m['name'] . ' — ' . $m['role']); ?>" loading="lazy">
+                        <img src="<?php echo esc_url($img_url); ?>" alt="<?php echo esc_attr($m['name']); ?>" loading="lazy">
                     <?php else : ?>
                         <div class="ag-team-card__placeholder"><?php echo mb_substr($m['name'], 0, 1); ?></div>
                     <?php endif; ?>
@@ -119,8 +118,11 @@
                 <div class="ag-team-card__body">
                     <h3 class="ag-team-card__name"><?php echo esc_html($m['name']); ?></h3>
                     <span class="ag-team-card__role"><?php echo esc_html($m['role']); ?></span>
-                    <span class="ag-team-card__city">📍 <?php echo esc_html($m['city']); ?></span>
+                    <span class="ag-team-card__city"><?php echo esc_html($m['city']); ?></span>
                     <p class="ag-team-card__desc"><?php echo esc_html($m['desc']); ?></p>
+                    <?php if (!empty($m['link'])) : ?>
+                    <a href="<?php echo esc_url($m['link']); ?>" class="ag-team-card__link">Découvrir son histoire →</a>
+                    <?php endif; ?>
                 </div>
             </div>
             <?php endforeach; ?>

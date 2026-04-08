@@ -76,6 +76,7 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-service-ads.php']     = 'Service — Publicité';
     $templates['templates/page-service-brand.php']   = 'Service — Branding';
     $templates['templates/page-service-conseil.php'] = 'Service — Conseil';
+    $templates['templates/page-fondateur.php']       = 'Notre Fondateur';
     return $templates;
 } );
 

@@ -34,7 +34,8 @@
         "pages/service-seo.json",
         "pages/service-publicite.json",
         "pages/service-branding.json",
-        "pages/service-conseil.json"
+        "pages/service-conseil.json",
+        "pages/notre-fondateur.json"
     ],
 
     "articles": [
@@ -83,10 +84,13 @@
         "assets/images/logo.png",
         "assets/images/logo.jpg",
         "assets/images/team/1_bureau_naples.jpg",
-        "assets/images/team/Carlito_1-1024x576.jpg",
+        "assets/images/team/carlito.jpg",
         "assets/images/team/kate.jpg",
+        "assets/images/team/kate.png",
         "assets/images/team/halim.jpg",
+        "assets/images/team/halim.png",
         "assets/images/team/amina.jpg",
+        "assets/images/team/amina.png",
         "assets/images/team/laurent.jpg",
         "assets/images/team/julie.jpg",
         "assets/images/realisations/anna_photo.jpg",
