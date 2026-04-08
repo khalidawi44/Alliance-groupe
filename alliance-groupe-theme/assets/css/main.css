@@ -821,20 +821,44 @@ em,.ag-gold{
 
 /* ── Single Article ───────────────────────────────────────────── */
 .ag-article__header{padding:140px 0 60px}
+.ag-breadcrumb{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:.82rem;
+    color:#b0b0bc;
+    margin-bottom:24px;
+    flex-wrap:wrap;
+}
+.ag-breadcrumb a{color:#b0b0bc;transition:color .3s}
+.ag-breadcrumb a:hover{color:#D4B45C}
+.ag-breadcrumb__current{color:#D4B45C}
 .ag-article__meta{
     display:flex;
     gap:14px;
     font-size:.85rem;
     color:#b0b0bc;
     margin-bottom:14px;
+    flex-wrap:wrap;
 }
 .ag-article__cat{
     color:#D4B45C;
     font-weight:600;
 }
+.ag-article__read{color:#b0b0bc}
 .ag-article__title{
     font-size:clamp(2rem,4vw,2.8rem);
     max-width:700px;
+    line-height:1.2;
+}
+.ag-article__chapeau{
+    margin-top:20px;
+    font-size:1.15rem;
+    color:#e8e6e0;
+    line-height:1.7;
+    max-width:650px;
+    border-left:3px solid #D4B45C;
+    padding-left:20px;
 }
 .ag-article__featured{
     margin-bottom:48px;
@@ -853,11 +877,15 @@ em,.ag-gold{
 }
 .ag-article__content h2{
     font-size:1.6rem;
-    margin:36px 0 14px;
+    margin:40px 0 16px;
+    color:#fff;
+    border-left:3px solid #D4B45C;
+    padding-left:16px;
 }
 .ag-article__content h3{
     font-size:1.3rem;
     margin:28px 0 10px;
+    color:#D4B45C;
 }
 .ag-article__content p{
     margin-bottom:18px;
@@ -870,6 +898,193 @@ em,.ag-gold{
     border-radius:12px;
     margin:24px 0;
 }
+.ag-article__content ul,.ag-article__content ol{
+    margin:18px 0;
+    padding-left:24px;
+    color:#e8e6e0;
+}
+.ag-article__content li{
+    margin-bottom:10px;
+    line-height:1.7;
+}
+.ag-article__content blockquote{
+    border-left:3px solid #D4B45C;
+    padding:16px 24px;
+    margin:28px 0;
+    background:rgba(212,180,92,.06);
+    border-radius:0 12px 12px 0;
+    color:#D4B45C;
+    font-style:italic;
+    font-size:1.1rem;
+}
+.ag-article__content strong{color:#fff}
+
+/* ── Article CTA Box ──────────────────────────────────────────── */
+.ag-article-cta{
+    padding:60px 0;
+    background:#0c0c0f;
+}
+.ag-article-cta__box{
+    text-align:center;
+    padding:50px 40px;
+    background:linear-gradient(135deg,rgba(212,180,92,.08),rgba(212,180,92,.02));
+    border:1px solid rgba(212,180,92,.2);
+    border-radius:20px;
+}
+.ag-article-cta__icon{
+    font-size:2.5rem;
+    margin-bottom:16px;
+}
+.ag-article-cta__title{
+    font-size:clamp(1.4rem,3vw,1.8rem);
+    margin-bottom:12px;
+}
+.ag-article-cta__text{
+    color:#b0b0bc;
+    font-size:1rem;
+    max-width:500px;
+    margin:0 auto 28px;
+    line-height:1.7;
+}
+.ag-article-cta__actions{
+    display:flex;
+    gap:16px;
+    justify-content:center;
+    flex-wrap:wrap;
+}
+
+/* ── Tags ─────────────────────────────────────────────────────── */
+.ag-article__tags{
+    padding:24px 0;
+    border-top:1px solid rgba(255,255,255,.06);
+}
+.ag-article__tags .ag-container{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+.ag-article__tag-link{
+    padding:6px 16px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:100px;
+    font-size:.82rem;
+    color:#b0b0bc;
+    transition:border-color .3s,color .3s;
+}
+.ag-article__tag-link:hover{
+    border-color:rgba(212,180,92,.3);
+    color:#D4B45C;
+}
+
+/* ── Author Box ───────────────────────────────────────────────── */
+.ag-author-box{
+    padding:48px 0;
+    background:#0c0c0f;
+}
+.ag-author-box__inner{
+    display:flex;
+    gap:24px;
+    align-items:flex-start;
+    padding:32px;
+    background:rgba(255,255,255,.025);
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:16px;
+}
+.ag-author-box__avatar{
+    width:64px;height:64px;
+    border-radius:50%;
+    background:rgba(212,180,92,.15);
+    color:#D4B45C;
+    font-weight:800;
+    font-size:1.2rem;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+}
+.ag-author-box__label{
+    font-size:.78rem;
+    color:#b0b0bc;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+}
+.ag-author-box__name{
+    font-size:1.1rem;
+    display:block;
+    margin:4px 0 8px;
+}
+.ag-author-box__bio{
+    color:#b0b0bc;
+    font-size:.92rem;
+    line-height:1.6;
+    margin-bottom:10px;
+}
+.ag-author-box__cta{
+    color:#D4B45C;
+    font-weight:700;
+    font-size:.9rem;
+}
+
+/* ── Related Articles ─────────────────────────────────────────── */
+.ag-related{
+    padding:70px 0;
+    background:#101014;
+}
+.ag-related__title{
+    font-size:1.6rem;
+    margin-bottom:36px;
+    text-align:center;
+}
+.ag-related__grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:28px;
+}
+
+/* ── CTA Final (after article) ────────────────────────────────── */
+.ag-cta-final{
+    padding:80px 0;
+    background:linear-gradient(180deg,#0c0c0f 0%,#080808 100%);
+}
+.ag-cta-final__inner{
+    text-align:center;
+    max-width:700px;
+    margin:0 auto;
+}
+.ag-cta-final__badge{
+    display:inline-block;
+    padding:8px 22px;
+    background:rgba(212,180,92,.1);
+    border:1px solid rgba(212,180,92,.25);
+    border-radius:100px;
+    font-size:.88rem;
+    font-weight:600;
+    color:#D4B45C;
+    margin-bottom:24px;
+}
+.ag-cta-final__title{
+    font-size:clamp(1.8rem,4vw,2.4rem);
+    margin-bottom:16px;
+}
+.ag-cta-final__desc{
+    color:#b0b0bc;
+    font-size:1.05rem;
+    line-height:1.7;
+    margin-bottom:32px;
+}
+.ag-cta-final__actions{
+    display:flex;
+    gap:16px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-bottom:24px;
+}
+.ag-cta-final__trust{
+    font-size:.88rem;
+    color:#b0b0bc;
+}
+
 .ag-article__footer{
     padding:48px 0 80px;
 }
@@ -941,6 +1156,10 @@ em,.ag-gold{
     .ag-footer__inner{grid-template-columns:1fr 1fr}
 }
 
+@media(max-width:1024px){
+    .ag-related__grid{grid-template-columns:repeat(2,1fr)}
+}
+
 @media(max-width:768px){
     .ag-nav__list{
         position:fixed;
@@ -975,4 +1194,7 @@ em,.ag-gold{
     .ag-footer__inner{grid-template-columns:1fr}
     .ag-section{padding:70px 0}
     .ag-form__row{grid-template-columns:1fr}
+    .ag-related__grid{grid-template-columns:1fr}
+    .ag-author-box__inner{flex-direction:column;align-items:center;text-align:center}
+    .ag-article-cta__box{padding:36px 24px}
 }

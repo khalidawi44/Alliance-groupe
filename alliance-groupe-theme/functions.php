@@ -68,7 +68,29 @@ add_action('init', function () {
     }
 });
 
-/* ── 5. Override Elementor reset.css via HEREDOC in wp_footer ─────── */
+/* ── 5. Reading time helper ───────────────────────────────────────── */
+function ag_reading_time() {
+    $content = get_post_field('post_content', get_the_ID());
+    $word_count = str_word_count(strip_tags($content));
+    $reading_time = max(1, ceil($word_count / 250));
+    return $reading_time;
+}
+
+/* ── 6. Add theme support for post thumbnails + excerpts ─────────── */
+add_action('after_setup_theme', function () {
+    add_theme_support('post-thumbnails');
+    add_theme_support('title-tag');
+}, 5);
+
+/* ── 7. SEO: Meta description from excerpt ───────────────────────── */
+add_action('wp_head', function () {
+    if (is_single() && has_excerpt()) {
+        $desc = esc_attr(wp_strip_all_tags(get_the_excerpt()));
+        echo '<meta name="description" content="' . $desc . '">' . "\n";
+    }
+});
+
+/* ── 8. Override Elementor reset.css via HEREDOC in wp_footer ─────── */
 add_action('wp_footer', function () {
     echo <<<AGSTYLE
 <style id="ag-elementor-overrides">
