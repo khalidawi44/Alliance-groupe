@@ -13,9 +13,16 @@
         <!-- Logo -->
         <a href="<?php echo esc_url(home_url('/')); ?>" class="ag-nav__logo" aria-label="Alliance Groupe — Accueil">
             <?php
-            $logo_file = get_stylesheet_directory() . '/assets/images/logo.png';
-            $logo_url = get_stylesheet_directory_uri() . '/assets/images/logo.png';
-            if (file_exists($logo_file)) :
+            $logo_url = '';
+            $img_dir = get_stylesheet_directory() . '/assets/images/';
+            $img_uri = get_stylesheet_directory_uri() . '/assets/images/';
+            foreach ( array('jpg','jpeg','png','webp','svg') as $ext ) {
+                if ( file_exists( $img_dir . 'logo.' . $ext ) ) {
+                    $logo_url = $img_uri . 'logo.' . $ext;
+                    break;
+                }
+            }
+            if ( $logo_url ) :
             ?>
             <img src="<?php echo esc_url($logo_url); ?>" alt="Alliance Groupe" class="ag-nav__logo-img">
             <?php endif; ?>
@@ -187,8 +194,8 @@
     <div class="ag-mobile-menu__inner">
         <div class="ag-mobile-menu__header">
             <a href="<?php echo esc_url(home_url('/')); ?>" class="ag-nav__logo">
-                <?php if (file_exists(get_stylesheet_directory() . '/assets/images/logo.png')) : ?>
-                <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/logo.png'); ?>" alt="" class="ag-nav__logo-img">
+                <?php if ( $logo_url ) : ?>
+                <img src="<?php echo esc_url($logo_url); ?>" alt="" class="ag-nav__logo-img">
                 <?php endif; ?>
                 Alliance Groupe
             </a>

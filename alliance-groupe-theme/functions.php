@@ -57,11 +57,15 @@ add_action( 'init', function () {
 
 // ── 5. Favicon / Site Icon ───────────────────────────────────────
 add_action( 'wp_head', function () {
-    $logo = get_stylesheet_directory() . '/assets/images/logo.png';
-    if ( file_exists( $logo ) ) {
-        $url = get_stylesheet_directory_uri() . '/assets/images/logo.png';
-        echo '<link rel="icon" href="' . esc_url( $url ) . '" type="image/png">' . "\n";
-        echo '<link rel="apple-touch-icon" href="' . esc_url( $url ) . '">' . "\n";
+    $dir = get_stylesheet_directory() . '/assets/images/';
+    $uri = get_stylesheet_directory_uri() . '/assets/images/';
+    foreach ( array('jpg','jpeg','png','webp') as $ext ) {
+        if ( file_exists( $dir . 'logo.' . $ext ) ) {
+            $url = $uri . 'logo.' . $ext;
+            echo '<link rel="icon" href="' . esc_url( $url ) . '">' . "\n";
+            echo '<link rel="apple-touch-icon" href="' . esc_url( $url ) . '">' . "\n";
+            break;
+        }
     }
 } );
 
