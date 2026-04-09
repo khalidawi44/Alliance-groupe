@@ -227,10 +227,15 @@ em,.ag-gold{
     gap:5px;
     width:28px;
     z-index:10002;
+    background:none;
+    border:none;
+    padding:4px;
+    cursor:pointer;
 }
 .ag-nav__burger span{
     display:block;
     height:2px;
+    width:100%;
     background:#e8e6e0;
     border-radius:2px;
     transition:transform .3s,opacity .3s;
@@ -1298,6 +1303,9 @@ em,.ag-gold{
     justify-content:center;
     font-size:1.5rem;
     color:#e8e6e0;
+    background:none;
+    border:none;
+    cursor:pointer;
 }
 .ag-mobile-menu__content{
     flex:1;
@@ -1329,6 +1337,10 @@ em,.ag-gold{
     font-weight:700;
     color:#fff;
     text-align:left;
+    background:none;
+    border:none;
+    cursor:pointer;
+    font-family:'Manrope',sans-serif;
 }
 .ag-mobile-menu__arrow{
     font-size:1.4rem;
