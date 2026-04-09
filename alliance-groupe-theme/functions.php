@@ -12,6 +12,14 @@ if ( file_exists( $ag_import_file ) ) {
 
 // ── 2. Enqueue styles & scripts ─────────────────────────────────
 add_action( 'wp_enqueue_scripts', function () {
+    // Style du thème (style.css obligatoire pour WordPress)
+    wp_enqueue_style(
+        'ag-theme-style',
+        get_stylesheet_uri(),
+        array(),
+        '2.0.0'
+    );
+
     wp_enqueue_style(
         'ag-google-fonts',
         'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap',
@@ -22,15 +30,15 @@ add_action( 'wp_enqueue_scripts', function () {
     wp_enqueue_style(
         'ag-main-css',
         get_stylesheet_directory_uri() . '/assets/css/main.css',
-        array(),
-        '2.0.0'
+        array( 'ag-theme-style' ),
+        '2.0.1'
     );
 
     wp_enqueue_script(
         'ag-main-js',
         get_stylesheet_directory_uri() . '/assets/js/main.js',
         array(),
-        '2.0.0',
+        '2.0.1',
         true
     );
 } );
