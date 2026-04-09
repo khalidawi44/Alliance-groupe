@@ -105,7 +105,7 @@
                         <?php endforeach; ?>
                     </div>
                     <?php if ( $p['url'] !== '#' ) : ?>
-                    <a href="<?php echo esc_url( $p['url'] ); ?>" target="_blank" rel="noopener" class="ag-rcard__link">Voir le projet →</a>
+                    <a href="<?php echo esc_url( $p['url'] ); ?>" target="_blank" rel="noopener noreferrer" class="ag-rcard__link">Voir le projet →</a>
                     <?php else : ?>
                     <span class="ag-rcard__link">Projet client confidentiel</span>
                     <?php endif; ?>

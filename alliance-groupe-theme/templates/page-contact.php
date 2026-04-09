@@ -43,7 +43,7 @@ get_header();
                             <div class="ag-contact-card__icon">📅</div>
                             <div class="ag-contact-card__label">Rendez-vous</div>
                             <div class="ag-contact-card__value">
-                                <a href="https://calendly.com/alliancegroupe" target="_blank" rel="noopener">Réserver un créneau sur Calendly</a>
+                                <a href="https://calendly.com/alliancegroupe" target="_blank" rel="noopener noreferrer">Réserver un créneau sur Calendly</a>
                             </div>
                         </div>
                     </div>

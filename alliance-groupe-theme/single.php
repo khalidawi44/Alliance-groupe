@@ -1,6 +1,6 @@
 <?php get_header(); ?>
 
-<main class="ag-single">
+<main class="ag-single" id="ag-main-content">
     <article class="ag-article" itemscope itemtype="https://schema.org/Article">
 
         <!-- Header article avec breadcrumb SEO -->

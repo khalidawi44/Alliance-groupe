@@ -54,6 +54,7 @@
     "theme_files": [
         "style.css",
         "functions.php",
+        "404.php",
         "header.php",
         "footer.php",
         "index.php",

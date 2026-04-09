@@ -3,10 +3,13 @@
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
+<a href="#ag-main-content" class="ag-skip-link">Aller au contenu principal</a>
 
 <nav class="ag-nav" id="ag-nav">
     <div class="ag-nav__inner">
@@ -195,7 +198,7 @@
         <div class="ag-mobile-menu__header">
             <a href="<?php echo esc_url(home_url('/')); ?>" class="ag-nav__logo">
                 <?php if ( $logo_url ) : ?>
-                <img src="<?php echo esc_url($logo_url); ?>" alt="" class="ag-nav__logo-img">
+                <img src="<?php echo esc_url($logo_url); ?>" alt="Alliance Groupe" class="ag-nav__logo-img">
                 <?php endif; ?>
                 Alliance Groupe
             </a>

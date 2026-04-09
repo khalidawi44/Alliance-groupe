@@ -1,6 +1,6 @@
 <?php get_header(); ?>
 
-<main class="ag-blog">
+<main class="ag-blog" id="ag-main-content">
     <section class="ag-section" style="background:#0c0c0f;">
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">Blog</span>

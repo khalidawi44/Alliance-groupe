@@ -6,7 +6,7 @@ get_header();
 ?>
 
 <!-- Hero -->
-<section class="ag-hero">
+<section class="ag-hero" id="ag-main-content">
     <div class="ag-hero__bg">
         <div class="ag-hero__circles">
             <div class="ag-hero__circle"></div>

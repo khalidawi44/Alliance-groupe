@@ -3,6 +3,24 @@
    Sombre premium, or/champagne #D4B45C
    ================================================================ */
 
+/* ── Skip to content (accessibility) ──────────────────────────── */
+.ag-skip-link{
+    position:absolute;
+    top:-100px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#D4B45C;
+    color:#080808;
+    padding:12px 24px;
+    border-radius:0 0 8px 8px;
+    font-weight:700;
+    font-size:.9rem;
+    z-index:99999;
+    transition:top .3s;
+    text-decoration:none;
+}
+.ag-skip-link:focus{top:0}
+
 /* ── Reset & Base ─────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
@@ -1659,6 +1677,47 @@ button.ag-faq-q .ag-faq-icon{font-size:1.3rem;color:#D4B45C;transition:transform
 .ag-mobile-menu__link:hover{color:#D4B45C}
 .ag-mobile-menu__sub a{display:block;padding:12px 0;font-size:1.05rem;color:#b0b0bc;text-decoration:none;font-weight:500;border-bottom:1px solid rgba(255,255,255,.03);transition:color .3s}
 .ag-mobile-menu__sub a:hover{color:#D4B45C}
+
+/* ── Focus states (accessibility) ─────────────────────────────── */
+.ag-btn-gold:focus-visible,
+.ag-btn-outline:focus-visible,
+.ag-nav__cta:focus-visible,
+.ag-nav__list a:focus-visible,
+.ag-scard__arrow:focus-visible,
+.ag-rcard__link:focus-visible,
+.ag-mega__link:focus-visible,
+.ag-mobile-menu__link:focus-visible,
+.ag-blog-card__link:focus-visible,
+.ag-footer__col a:focus-visible{
+    outline:2px solid #D4B45C;
+    outline-offset:3px;
+    border-radius:4px;
+}
+button:focus-visible{
+    outline:2px solid #D4B45C;
+    outline-offset:2px;
+}
+
+/* ── Image aspect ratios (prevent CLS) ───────────────────────── */
+.ag-rcard__img{aspect-ratio:16/9}
+.ag-blog-card__img img{aspect-ratio:16/9;width:100%;height:auto}
+.ag-team-card__img{aspect-ratio:3/4}
+.ag-article__featured img{aspect-ratio:21/9}
+
+/* ── Prefers reduced motion ──────────────────────────────────── */
+@media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+        animation-duration:.01ms!important;
+        animation-iteration-count:1!important;
+        transition-duration:.01ms!important;
+        scroll-behavior:auto!important;
+    }
+    .ag-logo-letter{opacity:1;animation:none}
+    .ag-line{opacity:1;animation:none}
+    .ag-hero__dot{animation:none}
+    .ag-hero__orb{animation:none}
+    .ag-marquee__track{animation:none}
+}
 
 /* ── Responsive ───────────────────────────────────────────────── */
 @media(max-width:1024px){

@@ -102,3 +102,64 @@ add_action( 'wp_head', function () {
         echo '<meta name="description" content="' . esc_attr( wp_strip_all_tags( get_the_excerpt() ) ) . '">' . "\n";
     }
 } );
+
+// ── 9. JSON-LD Structured Data (SEO) ────────────────────────────
+add_action( 'wp_head', function () {
+    $site_url  = home_url('/');
+    $logo_url  = '';
+    $dir = get_stylesheet_directory() . '/assets/images/';
+    $uri = get_stylesheet_directory_uri() . '/assets/images/';
+    foreach ( array('jpg','jpeg','png','webp') as $ext ) {
+        if ( file_exists( $dir . 'logo.' . $ext ) ) { $logo_url = $uri . 'logo.' . $ext; break; }
+    }
+
+    // Organization schema (all pages)
+    $org = array(
+        '@context' => 'https://schema.org',
+        '@type' => 'Organization',
+        'name' => 'Alliance Groupe',
+        'url' => $site_url,
+        'logo' => $logo_url,
+        'description' => 'Agence Web & IA basée en France — Naples, Nantes, Marrakech',
+        'telephone' => '+33623526074',
+        'email' => 'contact@alliancegroupe-inc.com',
+        'address' => array(
+            array( '@type' => 'PostalAddress', 'addressLocality' => 'Naples', 'addressCountry' => 'IT' ),
+            array( '@type' => 'PostalAddress', 'addressLocality' => 'Nantes', 'addressCountry' => 'FR' ),
+            array( '@type' => 'PostalAddress', 'addressLocality' => 'Marrakech', 'addressCountry' => 'MA' ),
+        ),
+        'sameAs' => array( $site_url ),
+        'founder' => array( '@type' => 'Person', 'name' => 'Fabrizio' ),
+    );
+    echo '<script type="application/ld+json">' . wp_json_encode( $org, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
+
+    // WebSite schema with search (homepage)
+    if ( is_front_page() ) {
+        $website = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'WebSite',
+            'name' => 'Alliance Groupe',
+            'url' => $site_url,
+            'potentialAction' => array(
+                '@type' => 'SearchAction',
+                'target' => $site_url . '?s={search_term_string}',
+                'query-input' => 'required name=search_term_string',
+            ),
+        );
+        echo '<script type="application/ld+json">' . wp_json_encode( $website, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
+    }
+
+    // BreadcrumbList (single posts)
+    if ( is_single() ) {
+        $breadcrumb = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => array(
+                array( '@type' => 'ListItem', 'position' => 1, 'name' => 'Accueil', 'item' => $site_url ),
+                array( '@type' => 'ListItem', 'position' => 2, 'name' => 'Blog', 'item' => $site_url . 'blog/' ),
+                array( '@type' => 'ListItem', 'position' => 3, 'name' => get_the_title() ),
+            ),
+        );
+        echo '<script type="application/ld+json">' . wp_json_encode( $breadcrumb, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
+    }
+}, 5 );
