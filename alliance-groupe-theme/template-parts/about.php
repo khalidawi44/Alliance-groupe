@@ -50,7 +50,7 @@
                     'name'  => 'Fabrizio',
                     'role'  => 'Fondateur & CEO',
                     'city'  => 'Naples, Italie',
-                    'img'   => 'fabrizio',
+                    'img'   => '1_bureau_naples',
                     'desc'  => 'Né à Naples, Fabrizio a commencé par offrir l\'accès au numérique aux plus démunis de sa ville. Aujourd\'hui il dirige Alliance Groupe avec la même passion : rendre le digital accessible à tous.',
                     'link'  => home_url('/notre-fondateur'),
                 ],
