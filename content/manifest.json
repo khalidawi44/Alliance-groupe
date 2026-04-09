@@ -77,7 +77,8 @@
         "templates/page-service-ia.php",
         "templates/page-service-seo.php",
         "templates/page-service-web.php",
-        "templates/page-services.php"
+        "templates/page-services.php",
+        "templates/page-fondateur.php"
     ],
 
     "images": [
