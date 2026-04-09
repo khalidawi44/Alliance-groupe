@@ -67,8 +67,13 @@ get_header();
                         <li>Génération de contenu assistée par IA</li>
                     </ul>
                 </div>
-                <div class="ag-sdetail__visual">
-                    Aperçu du projet
+                <div class="ag-sdetail__visual ag-sdetail__visual--grid">
+                    <div class="ag-sdetail__feat">🤖<strong>Chatbots IA</strong><span>24/7 actifs</span></div>
+                    <div class="ag-sdetail__feat">⚙️<strong>Workflows</strong><span>Automatisés</span></div>
+                    <div class="ag-sdetail__feat">📈<strong>Analytics</strong><span>Prédictifs</span></div>
+                    <div class="ag-sdetail__feat">🔗<strong>Intégrations</strong><span>CRM, API</span></div>
+                    <div class="ag-sdetail__feat">✉️<strong>Emails</strong><span>Auto-réponse</span></div>
+                    <div class="ag-sdetail__feat">🧠<strong>IA générative</strong><span>Contenu auto</span></div>
                 </div>
             </div>
         </div>

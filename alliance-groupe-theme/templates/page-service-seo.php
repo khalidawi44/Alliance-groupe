@@ -68,8 +68,13 @@ get_header();
                         <li>Reporting mensuel détaillé</li>
                     </ul>
                 </div>
-                <div class="ag-sdetail__visual">
-                    Aperçu des résultats
+                <div class="ag-sdetail__visual ag-sdetail__visual--grid">
+                    <div class="ag-sdetail__feat">🔍<strong>Audit technique</strong><span>Complet</span></div>
+                    <div class="ag-sdetail__feat">🎯<strong>Mots-clés</strong><span>Stratégiques</span></div>
+                    <div class="ag-sdetail__feat">📝<strong>Contenu</strong><span>Optimisé</span></div>
+                    <div class="ag-sdetail__feat">🔗<strong>Netlinking</strong><span>Autorité</span></div>
+                    <div class="ag-sdetail__feat">📍<strong>SEO Local</strong><span>Google Maps</span></div>
+                    <div class="ag-sdetail__feat">📊<strong>Reporting</strong><span>Mensuel</span></div>
                 </div>
             </div>
         </div>

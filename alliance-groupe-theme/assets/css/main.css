@@ -778,12 +778,43 @@ em,.ag-gold{
     background:rgba(255,255,255,.03);
     border:1px solid rgba(255,255,255,.06);
     border-radius:18px;
-    height:400px;
+    min-height:320px;
     display:flex;
     align-items:center;
     justify-content:center;
     color:#b0b0bc;
     font-size:.95rem;
+    padding:24px;
+}
+.ag-sdetail__visual--grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+    padding:32px;
+    align-items:start;
+    align-content:center;
+}
+.ag-sdetail__feat{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    gap:6px;
+    padding:20px 12px;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.05);
+    border-radius:12px;
+    transition:border-color .3s;
+}
+.ag-sdetail__feat:hover{border-color:rgba(212,180,92,.2)}
+.ag-sdetail__feat strong{
+    font-size:.9rem;
+    color:#fff;
+    display:block;
+}
+.ag-sdetail__feat span{
+    font-size:.78rem;
+    color:#b0b0bc;
 }
 
 /* ── Client Example ───────────────────────────────────────────── */

@@ -68,8 +68,13 @@ get_header();
                         <li>Reporting et suivi des KPIs</li>
                     </ul>
                 </div>
-                <div class="ag-sdetail__visual">
-                    Aperçu stratégique
+                <div class="ag-sdetail__visual ag-sdetail__visual--grid">
+                    <div class="ag-sdetail__feat">🔍<strong>Audit 360°</strong><span>Complet</span></div>
+                    <div class="ag-sdetail__feat">📋<strong>Roadmap</strong><span>12 mois</span></div>
+                    <div class="ag-sdetail__feat">🎯<strong>KPIs</strong><span>Mesurables</span></div>
+                    <div class="ag-sdetail__feat">👥<strong>Formation</strong><span>Équipes</span></div>
+                    <div class="ag-sdetail__feat">📊<strong>Reporting</strong><span>Mensuel</span></div>
+                    <div class="ag-sdetail__feat">🤝<strong>Coaching</strong><span>Personnalisé</span></div>
                 </div>
             </div>
         </div>

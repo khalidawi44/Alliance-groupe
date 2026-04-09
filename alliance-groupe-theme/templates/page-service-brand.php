@@ -67,8 +67,13 @@ get_header();
                         <li>Guide de marque et tonalité</li>
                     </ul>
                 </div>
-                <div class="ag-sdetail__visual">
-                    Aperçu de l'identité
+                <div class="ag-sdetail__visual ag-sdetail__visual--grid">
+                    <div class="ag-sdetail__feat">✏️<strong>Logo</strong><span>+ déclinaisons</span></div>
+                    <div class="ag-sdetail__feat">🎨<strong>Charte</strong><span>Graphique</span></div>
+                    <div class="ag-sdetail__feat">🔤<strong>Typographies</strong><span>Sur-mesure</span></div>
+                    <div class="ag-sdetail__feat">📱<strong>Réseaux</strong><span>Templates</span></div>
+                    <div class="ag-sdetail__feat">🖨️<strong>Print</strong><span>Cartes, flyers</span></div>
+                    <div class="ag-sdetail__feat">📖<strong>Brand book</strong><span>Guide complet</span></div>
                 </div>
             </div>
         </div>
