@@ -104,6 +104,68 @@ add_action( 'wp_head', function () {
     }
 } );
 
+// ── 8b. Robots.txt amélioration ─────────────────────────────────
+add_filter( 'robots_txt', function ( $output, $public ) {
+    if ( $public ) {
+        $output  = "User-agent: *\n";
+        $output .= "Allow: /\n";
+        $output .= "Disallow: /wp-admin/\n";
+        $output .= "Disallow: /wp-includes/\n";
+        $output .= "Disallow: /?s=\n";
+        $output .= "\n";
+        // Try Rank Math sitemap first, then WP native
+        $output .= "Sitemap: " . home_url( '/sitemap_index.xml' ) . "\n";
+        $output .= "Sitemap: " . home_url( '/wp-sitemap.xml' ) . "\n";
+    }
+    return $output;
+}, 10, 2 );
+
+// ── 8c. Force canonical URL on all pages ────────────────────────
+add_action( 'wp_head', function () {
+    if ( is_singular() ) {
+        echo '<link rel="canonical" href="' . esc_url( get_permalink() ) . '">' . "\n";
+    } elseif ( is_front_page() ) {
+        echo '<link rel="canonical" href="' . esc_url( home_url( '/' ) ) . '">' . "\n";
+    }
+}, 1 );
+
+// ── 8d. Open Graph basic tags ───────────────────────────────────
+add_action( 'wp_head', function () {
+    $title = wp_get_document_title();
+    $desc  = get_bloginfo( 'description' );
+    $url   = home_url( '/' );
+    $img   = '';
+
+    // Find logo for og:image
+    $dir = get_stylesheet_directory() . '/assets/images/';
+    $uri = get_stylesheet_directory_uri() . '/assets/images/';
+    foreach ( array( 'jpg', 'jpeg', 'png', 'webp' ) as $ext ) {
+        if ( file_exists( $dir . 'logo.' . $ext ) ) {
+            $img = $uri . 'logo.' . $ext;
+            break;
+        }
+    }
+
+    if ( is_singular() ) {
+        $title = get_the_title();
+        $url   = get_permalink();
+        if ( has_excerpt() ) $desc = wp_strip_all_tags( get_the_excerpt() );
+        if ( has_post_thumbnail() ) $img = get_the_post_thumbnail_url( null, 'large' );
+    }
+
+    echo '<meta property="og:type" content="website">' . "\n";
+    echo '<meta property="og:title" content="' . esc_attr( $title ) . '">' . "\n";
+    echo '<meta property="og:description" content="' . esc_attr( $desc ) . '">' . "\n";
+    echo '<meta property="og:url" content="' . esc_url( $url ) . '">' . "\n";
+    if ( $img ) echo '<meta property="og:image" content="' . esc_url( $img ) . '">' . "\n";
+    echo '<meta property="og:site_name" content="Alliance Groupe">' . "\n";
+    echo '<meta property="og:locale" content="fr_FR">' . "\n";
+    echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
+    echo '<meta name="twitter:title" content="' . esc_attr( $title ) . '">' . "\n";
+    echo '<meta name="twitter:description" content="' . esc_attr( $desc ) . '">' . "\n";
+    if ( $img ) echo '<meta name="twitter:image" content="' . esc_url( $img ) . '">' . "\n";
+}, 2 );
+
 // ── 9. JSON-LD Structured Data (SEO) ────────────────────────────
 add_action( 'wp_head', function () {
     $site_url  = home_url('/');
