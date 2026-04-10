@@ -96,6 +96,38 @@ get_header();
 <!-- FAQ -->
 <?php get_template_part('template-parts/faq'); ?>
 
+<!-- Promo Templates -->
+<section class="ag-section ag-promo-tpl" style="background:#101014;">
+    <div class="ag-container">
+        <div class="ag-promo-tpl__inner ag-anim" data-anim="card">
+            <div class="ag-promo-tpl__content">
+                <span class="ag-tag" style="background:rgba(40,167,69,.12);color:#28a745;border-color:rgba(40,167,69,.3);">Nouveau — Gratuit</span>
+                <h2 style="font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:12px;">Téléchargez nos templates <em>WordPress gratuits</em></h2>
+                <p style="color:#b0b0bc;font-size:1.05rem;line-height:1.7;margin-bottom:24px;">Des thèmes professionnels prêts à installer pour lancer votre site en quelques minutes. Restaurant, artisan, coach — choisissez votre niche et démarrez maintenant.</p>
+                <div class="ag-promo-tpl__features">
+                    <span>🎨 Design premium</span>
+                    <span>📱 100% responsive</span>
+                    <span>⚡ Installation en 2 min</span>
+                    <span>🆓 Totalement gratuit</span>
+                </div>
+                <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>" class="ag-btn-gold" style="margin-top:20px;">Découvrir les templates gratuits →</a>
+            </div>
+            <div class="ag-promo-tpl__visual">
+                <div class="ag-promo-tpl__mock">
+                    <div class="ag-promo-tpl__mock-bar">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <div class="ag-promo-tpl__mock-content">
+                        <div style="font-size:1.8rem;margin-bottom:8px;">🍽️</div>
+                        <strong style="color:#D4B45C;font-size:1rem;">AG Starter Restaurant</strong>
+                        <small style="color:#b0b0bc;font-size:.75rem;display:block;margin-top:4px;">Thème WordPress gratuit</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- CTA -->
 <?php get_template_part('template-parts/cta'); ?>
 

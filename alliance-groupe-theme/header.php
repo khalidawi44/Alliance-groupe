@@ -180,6 +180,12 @@
             </li>
 
             <li><a href="<?php echo esc_url(home_url('/contact')); ?>">Contact</a></li>
+
+            <li class="ag-nav__highlight">
+                <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">
+                    <span class="ag-nav__new-badge">Gratuit</span> Templates
+                </a>
+            </li>
         </ul>
 
         <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-nav__cta">
@@ -250,6 +256,10 @@
             </div>
 
             <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-mobile-menu__link">Contact</a>
+
+            <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>" class="ag-mobile-menu__link ag-mobile-menu__link--highlight">
+                🎁 Templates Gratuits
+            </a>
         </div>
 
         <div class="ag-mobile-menu__footer">

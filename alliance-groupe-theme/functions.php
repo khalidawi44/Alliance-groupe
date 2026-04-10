@@ -164,3 +164,40 @@ add_action( 'wp_head', function () {
         echo '<script type="application/ld+json">' . wp_json_encode( $breadcrumb, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
     }
 }, 5 );
+
+// ── 10. Save template download leads ────────────────────────────
+add_action( 'wp_ajax_ag_save_lead', 'ag_save_lead' );
+add_action( 'wp_ajax_nopriv_ag_save_lead', 'ag_save_lead' );
+
+if ( ! function_exists( 'ag_save_lead' ) ) {
+    function ag_save_lead() {
+        check_ajax_referer( 'ag_lead_nonce', 'ag_lead_nonce' );
+
+        $name     = sanitize_text_field( isset( $_POST['name'] ) ? $_POST['name'] : '' );
+        $email    = sanitize_email( isset( $_POST['email'] ) ? $_POST['email'] : '' );
+        $phone    = sanitize_text_field( isset( $_POST['phone'] ) ? $_POST['phone'] : '' );
+        $template = sanitize_text_field( isset( $_POST['template'] ) ? $_POST['template'] : '' );
+
+        if ( empty( $name ) || empty( $email ) ) {
+            wp_send_json_error( 'Champs requis manquants.' );
+        }
+
+        $leads = get_option( 'ag_template_leads', array() );
+        $leads[] = array(
+            'name'     => $name,
+            'email'    => $email,
+            'phone'    => $phone,
+            'template' => $template,
+            'date'     => current_time( 'd/m/Y H:i' ),
+        );
+        update_option( 'ag_template_leads', $leads );
+
+        wp_mail(
+            'contact@alliancegroupe-inc.com',
+            'Nouveau lead template : ' . $name,
+            "Nom : $name\nEmail : $email\nTel : $phone\nTemplate : $template\nDate : " . current_time( 'd/m/Y H:i' )
+        );
+
+        wp_send_json_success();
+    }
+}
