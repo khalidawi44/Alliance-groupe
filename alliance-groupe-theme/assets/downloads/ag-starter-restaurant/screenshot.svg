@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+  <rect width="1200" height="900" fill="#0a0a0a"/>
+  <!-- Subtle border frame -->
+  <rect x="40" y="40" width="1120" height="820" rx="4" fill="none" stroke="#222" stroke-width="1"/>
+  <!-- Decorative line -->
+  <line x1="400" y1="340" x2="800" y2="340" stroke="#D4B45C" stroke-width="1" opacity="0.6"/>
+  <!-- Theme name -->
+  <text x="600" y="400" text-anchor="middle" font-family="Georgia, serif" font-size="52" fill="#D4B45C" letter-spacing="4">AG Starter Restaurant</text>
+  <!-- Decorative line -->
+  <line x1="400" y1="430" x2="800" y2="430" stroke="#D4B45C" stroke-width="1" opacity="0.6"/>
+  <!-- Subtitle -->
+  <text x="600" y="480" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="20" fill="#888">Thème WordPress gratuit pour restaurant</text>
+  <!-- Author -->
+  <text x="600" y="520" text-anchor="middle" font-family="Segoe UI, Tahoma, sans-serif" font-size="16" fill="#555">par Alliance Groupe</text>
+  <!-- Decorative diamond -->
+  <polygon points="600,560 608,570 600,580 592,570" fill="#D4B45C" opacity="0.5"/>
+  <!-- Three placeholder card outlines -->
+  <rect x="150" y="620" width="240" height="140" rx="4" fill="#141414" stroke="#222" stroke-width="1"/>
+  <rect x="480" y="620" width="240" height="140" rx="4" fill="#141414" stroke="#222" stroke-width="1"/>
+  <rect x="810" y="620" width="240" height="140" rx="4" fill="#141414" stroke="#222" stroke-width="1"/>
+  <!-- Card titles -->
+  <text x="270" y="665" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="16" fill="#D4B45C">Notre Carte</text>
+  <text x="600" y="665" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="16" fill="#D4B45C">Réservation</text>
+  <text x="930" y="665" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="16" fill="#D4B45C">À propos</text>
+  <!-- Card placeholder lines -->
+  <line x1="190" y1="690" x2="350" y2="690" stroke="#333" stroke-width="2"/>
+  <line x1="190" y1="705" x2="330" y2="705" stroke="#333" stroke-width="2"/>
+  <line x1="190" y1="720" x2="340" y2="720" stroke="#333" stroke-width="2"/>
+  <line x1="520" y1="690" x2="680" y2="690" stroke="#333" stroke-width="2"/>
+  <line x1="520" y1="705" x2="660" y2="705" stroke="#333" stroke-width="2"/>
+  <line x1="520" y1="720" x2="670" y2="720" stroke="#333" stroke-width="2"/>
+  <line x1="850" y1="690" x2="1010" y2="690" stroke="#333" stroke-width="2"/>
+  <line x1="850" y1="705" x2="990" y2="705" stroke="#333" stroke-width="2"/>
+  <line x1="850" y1="720" x2="1000" y2="720" stroke="#333" stroke-width="2"/>
+</svg>

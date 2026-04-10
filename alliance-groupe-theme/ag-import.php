@@ -115,6 +115,7 @@ function ag_do_import() {
         array( 'Branding', 'service-branding', 'templates/page-service-brand.php' ),
         array( 'Conseil Stratégique', 'service-conseil', 'templates/page-service-conseil.php' ),
         array( 'Notre Fondateur', 'notre-fondateur', 'templates/page-fondateur.php' ),
+        array( 'Templates WordPress', 'templates-wordpress', 'templates/page-templates.php' ),
     );
     $pids = array();
     foreach ( $pages as $p ) {

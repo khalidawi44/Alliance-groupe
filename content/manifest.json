@@ -35,7 +35,8 @@
         "pages/service-publicite.json",
         "pages/service-branding.json",
         "pages/service-conseil.json",
-        "pages/notre-fondateur.json"
+        "pages/notre-fondateur.json",
+        "pages/templates.json"
     ],
 
     "articles": [
@@ -79,7 +80,8 @@
         "templates/page-service-seo.php",
         "templates/page-service-web.php",
         "templates/page-services.php",
-        "templates/page-fondateur.php"
+        "templates/page-fondateur.php",
+        "templates/page-templates.php"
     ],
 
     "images": [

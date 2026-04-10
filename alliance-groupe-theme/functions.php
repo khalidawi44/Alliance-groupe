@@ -85,6 +85,7 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-service-brand.php']   = 'Service — Branding';
     $templates['templates/page-service-conseil.php'] = 'Service — Conseil';
     $templates['templates/page-fondateur.php']       = 'Notre Fondateur';
+    $templates['templates/page-templates.php']       = 'Templates WordPress';
     return $templates;
 } );
 
