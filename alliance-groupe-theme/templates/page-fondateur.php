@@ -83,9 +83,17 @@ foreach (array('jpg','jpeg','png','webp') as $ext) {
 
                 <p>Fabrizio a compris que ce qu'il faisait pour les familles napolitaines, il pouvait le faire pour les entreprises du monde entier. Créer des sites web qui génèrent des revenus. Automatiser des process pour gagner du temps. Utiliser l'IA pour donner aux petits les armes des grands.</p>
 
-                <p>Aujourd'hui, Alliance Groupe a des bureaux à <strong>Naples, Nantes et Marrakech</strong>. Une équipe de sept personnes passionnées. Des dizaines de clients satisfaits.</p>
+                <h2>Nantes, 2009 — Un nouveau chapitre</h2>
 
-                <p>Mais Fabrizio n'a jamais arrêté les cours du soir à Naples. <strong>Chaque mardi et jeudi, de 19h à 22h</strong>, il est dans cette même salle — avec de nouveaux ordinateurs, certes, mais la même mission.</p>
+                <p>En 2009, à 27 ans, Fabrizio prend une décision qui changera tout : <strong>il s'installe à Nantes</strong>. La France, un nouveau pays, une nouvelle langue, une nouvelle vie. Mais la même mission.</p>
+
+                <p>Naples restera toujours dans son cœur — les cours du soir continuent là-bas grâce à l'équipe locale. Mais c'est à Nantes que Fabrizio va donner à Alliance Groupe la dimension internationale qu'il a toujours rêvée. La Bretagne et les Pays de la Loire deviennent son nouveau terrain de jeu. Les artisans, les commerçants, les PME de l'Ouest — tous découvrent qu'un Napolitain passionné peut transformer leur business.</p>
+
+                <blockquote>"Quand je suis arrivé à Nantes, je ne parlais presque pas français. Mon premier client m'a fait confiance parce qu'il a vu mes résultats à Naples. Il m'a dit : 'Je me fiche de ton accent, je veux les mêmes chiffres.' Six mois plus tard, ses devis avaient triplé."</blockquote>
+
+                <p>Aujourd'hui, Fabrizio vit et travaille à <strong>Nantes</strong>, où se trouve le siège d'Alliance Groupe. L'agence a aussi des bureaux à <strong>Naples</strong> et <strong>Marrakech</strong>. Une équipe de sept personnes passionnées. Des dizaines de clients satisfaits.</p>
+
+                <p>Mais Fabrizio n'a jamais arrêté les cours du soir à Naples. <strong>Chaque mardi et jeudi, de 19h à 22h</strong>, l'équipe napolitaine est dans cette même salle — avec de nouveaux ordinateurs, certes, mais la même mission.</p>
 
                 <blockquote>"Les gens me demandent pourquoi je continue. La réponse est simple : parce que chaque personne qui apprend à utiliser le numérique, c'est une famille qui mange mieux, un enfant qui rêve plus grand, un quartier qui se relève. <strong>Comment je pourrais arrêter ?</strong>"</blockquote>
 
