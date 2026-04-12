@@ -10,18 +10,26 @@ get_header();
 
 <main id="ag-main" class="ag-main" role="main">
 
+	<?php if ( ag_starter_artisan_get_option( 'ag_hero_show' ) ) : ?>
 	<section class="ag-hero">
 		<div class="ag-container">
 			<h1 class="ag-hero__title">
-				<?php esc_html_e( 'Bienvenue chez', 'ag-starter-artisan' ); ?>
-				<span><?php esc_html_e( '[Votre entreprise]', 'ag-starter-artisan' ); ?></span>
+				<?php echo esc_html( ag_starter_artisan_get_option( 'ag_hero_prefix' ) ); ?>
+				<span><?php echo esc_html( ag_starter_artisan_get_option( 'ag_hero_brand' ) ); ?></span>
 			</h1>
 			<p class="ag-hero__subtitle">
-				<?php esc_html_e( 'Travaux de qualite, devis gratuit, intervention rapide dans toute votre region.', 'ag-starter-artisan' ); ?>
+				<?php echo esc_html( ag_starter_artisan_get_option( 'ag_hero_subtitle' ) ); ?>
 			</p>
-			<a href="#ag-services" class="ag-btn"><?php esc_html_e( 'Demander un devis', 'ag-starter-artisan' ); ?></a>
+			<?php
+			$ag_btn_label = ag_starter_artisan_get_option( 'ag_hero_button' );
+			$ag_btn_url   = ag_starter_artisan_get_option( 'ag_hero_button_url' );
+			if ( $ag_btn_label ) :
+				?>
+				<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn"><?php echo esc_html( $ag_btn_label ); ?></a>
+			<?php endif; ?>
 		</div>
 	</section>
+	<?php endif; ?>
 
 	<section class="ag-container" id="ag-services">
 		<div class="ag-cards">

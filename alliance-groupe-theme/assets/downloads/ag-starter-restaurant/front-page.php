@@ -10,18 +10,26 @@ get_header();
 
 <main id="ag-main" class="ag-main" role="main">
 
+	<?php if ( ag_starter_restaurant_get_option( 'ag_hero_show' ) ) : ?>
 	<section class="ag-hero">
 		<div class="ag-container">
 			<h1 class="ag-hero__title">
-				<?php esc_html_e( 'Bienvenue chez', 'ag-starter-restaurant' ); ?>
-				<span><?php esc_html_e( '[Votre Restaurant]', 'ag-starter-restaurant' ); ?></span>
+				<?php echo esc_html( ag_starter_restaurant_get_option( 'ag_hero_prefix' ) ); ?>
+				<span><?php echo esc_html( ag_starter_restaurant_get_option( 'ag_hero_brand' ) ); ?></span>
 			</h1>
 			<p class="ag-hero__subtitle">
-				<?php esc_html_e( 'Cuisine authentique faite maison, produits frais et de saison, au coeur de votre ville.', 'ag-starter-restaurant' ); ?>
+				<?php echo esc_html( ag_starter_restaurant_get_option( 'ag_hero_subtitle' ) ); ?>
 			</p>
-			<a href="#ag-carte" class="ag-btn"><?php esc_html_e( 'Decouvrir la carte', 'ag-starter-restaurant' ); ?></a>
+			<?php
+			$ag_btn_label = ag_starter_restaurant_get_option( 'ag_hero_button' );
+			$ag_btn_url   = ag_starter_restaurant_get_option( 'ag_hero_button_url' );
+			if ( $ag_btn_label ) :
+				?>
+				<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn"><?php echo esc_html( $ag_btn_label ); ?></a>
+			<?php endif; ?>
 		</div>
 	</section>
+	<?php endif; ?>
 
 	<section class="ag-container" id="ag-carte">
 		<div class="ag-cards">

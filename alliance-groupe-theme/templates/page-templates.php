@@ -40,7 +40,7 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
             <h2 class="ag-section__title ag-anim" data-anim="title">Des templates pensés <em>pour le marché français</em></h2>
             <p class="ag-section__desc ag-anim" data-anim="desc">La plupart des thèmes WordPress gratuits sont en anglais, avec des textes à traduire ligne par ligne. Les nôtres sont différents.</p>
 
-            <div class="ag-services__grid" style="grid-template-columns:repeat(3,1fr);">
+            <div class="ag-services__grid" style="grid-template-columns:repeat(2,1fr);">
                 <div class="ag-scard ag-anim" data-anim="card">
                     <div class="ag-scard__icon">🇫🇷</div>
                     <h3 class="ag-scard__title">100% français natif</h3>
@@ -49,7 +49,12 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
                 <div class="ag-scard ag-anim" data-anim="card">
                     <div class="ag-scard__icon">⚡</div>
                     <h3 class="ag-scard__title">95% déjà prêt</h3>
-                    <p class="ag-scard__text">Contrairement aux thèmes génériques qui vous demandent de tout construire, nos templates arrivent avec une structure complète : hero, sections, footer, réservation/devis. Vous changez juste le nom, les horaires et les photos.</p>
+                    <p class="ag-scard__text">Structure complète : hero, sections, footer, réservation/devis. Vous changez juste le nom, les horaires et les photos. 30 minutes contre 20 heures pour un template étranger.</p>
+                </div>
+                <div class="ag-scard ag-anim" data-anim="card">
+                    <div class="ag-scard__icon">🎨</div>
+                    <h3 class="ag-scard__title">Customizer WordPress intégré</h3>
+                    <p class="ag-scard__text">Modifiez <strong style="color:#D4B45C;">couleurs, typographie, textes du hero et du footer</strong> directement depuis <code style="background:rgba(212,180,92,.1);padding:2px 5px;border-radius:3px;color:#D4B45C;">Apparence &gt; Personnaliser</code> avec prévisualisation en direct. Comme Astra, OceanWP, Kadence — sans coder une ligne.</p>
                 </div>
                 <div class="ag-scard ag-anim" data-anim="card">
                     <div class="ag-scard__icon">📦</div>
@@ -258,12 +263,13 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
                         $matrix = [
                             ['Page d\'accueil pré-remplie en français', '✓', '✓', '✓'],
                             ['Plugin compagnon (import 1 clic)', '✓', '✓', '✓'],
+                            ['Customizer WordPress (couleurs, typo, textes)', '✓', '✓', '✓'],
                             ['Blog, commentaires, recherche', '✓', '✓', '✓'],
                             ['100% responsive', '✓', '✓', '✓'],
                             ['Design travaillé (hover, animations, transitions)', '—', '✓', '✓'],
                             ['Gradients, ombres, effets premium', '—', '✓', '✓'],
                             ['10 blocs Gutenberg personnalisés', '—', '✓', '✓'],
-                            ['Customizer avancé (couleurs, typo, espacements)', '—', '✓', '✓'],
+                            ['Customizer étendu (50+ réglages, espacements, layouts)', '—', '✓', '✓'],
                             ['Sticky header + menu mobile stylisé', '—', '✓', '✓'],
                             ['Polices Google Fonts premium', '—', '✓', '✓'],
                             ['Support email 60 jours', '—', '✓', '✓'],

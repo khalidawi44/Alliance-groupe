@@ -128,6 +128,11 @@ function ag_starter_coach_pingback_header() {
 add_action( 'wp_head', 'ag_starter_coach_pingback_header' );
 
 /**
+ * Load the customizer (panels, sections, settings) and its dynamic CSS output.
+ */
+require get_template_directory() . '/inc/customizer.php';
+
+/**
  * Show an admin notice inviting the user to install the companion plugin
  * which provides the one-click demo importer.
  */

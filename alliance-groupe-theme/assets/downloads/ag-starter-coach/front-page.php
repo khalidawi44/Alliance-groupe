@@ -10,18 +10,26 @@ get_header();
 
 <main id="ag-main" class="ag-main" role="main">
 
+	<?php if ( ag_starter_coach_get_option( 'ag_hero_show' ) ) : ?>
 	<section class="ag-hero">
 		<div class="ag-container">
 			<h1 class="ag-hero__title">
-				<?php esc_html_e( 'Transformez votre potentiel avec', 'ag-starter-coach' ); ?>
-				<span><?php esc_html_e( '[Votre Nom]', 'ag-starter-coach' ); ?></span>
+				<?php echo esc_html( ag_starter_coach_get_option( 'ag_hero_prefix' ) ); ?>
+				<span><?php echo esc_html( ag_starter_coach_get_option( 'ag_hero_brand' ) ); ?></span>
 			</h1>
 			<p class="ag-hero__subtitle">
-				<?php esc_html_e( 'Coaching sur-mesure pour avancer avec clarte, confiance et resultats mesurables.', 'ag-starter-coach' ); ?>
+				<?php echo esc_html( ag_starter_coach_get_option( 'ag_hero_subtitle' ) ); ?>
 			</p>
-			<a href="#ag-services" class="ag-btn"><?php esc_html_e( 'Prendre rendez-vous', 'ag-starter-coach' ); ?></a>
+			<?php
+			$ag_btn_label = ag_starter_coach_get_option( 'ag_hero_button' );
+			$ag_btn_url   = ag_starter_coach_get_option( 'ag_hero_button_url' );
+			if ( $ag_btn_label ) :
+				?>
+				<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn"><?php echo esc_html( $ag_btn_label ); ?></a>
+			<?php endif; ?>
 		</div>
 	</section>
+	<?php endif; ?>
 
 	<section class="ag-container" id="ag-services">
 		<div class="ag-cards">

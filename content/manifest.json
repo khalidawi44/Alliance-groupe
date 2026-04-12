@@ -1,5 +1,5 @@
 {
-    "version": "1.8.0",
+    "version": "1.9.0",
     "repo": "khalidawi44/Alliance-groupe",
     "branch": "claude/rebuild-alliance-theme-fl7ca",
 
@@ -101,6 +101,8 @@
         "assets/downloads/ag-starter-restaurant/comments.php",
         "assets/downloads/ag-starter-restaurant/readme.txt",
         "assets/downloads/ag-starter-restaurant/screenshot.png",
+        "assets/downloads/ag-starter-restaurant/inc/customizer.php",
+        "assets/downloads/ag-starter-restaurant/inc/customizer-output.php",
 
         "assets/downloads/ag-starter-artisan.zip",
         "assets/downloads/ag-starter-artisan/style.css",
@@ -118,6 +120,8 @@
         "assets/downloads/ag-starter-artisan/comments.php",
         "assets/downloads/ag-starter-artisan/readme.txt",
         "assets/downloads/ag-starter-artisan/screenshot.png",
+        "assets/downloads/ag-starter-artisan/inc/customizer.php",
+        "assets/downloads/ag-starter-artisan/inc/customizer-output.php",
 
         "assets/downloads/ag-starter-coach.zip",
         "assets/downloads/ag-starter-coach/style.css",
@@ -135,6 +139,8 @@
         "assets/downloads/ag-starter-coach/comments.php",
         "assets/downloads/ag-starter-coach/readme.txt",
         "assets/downloads/ag-starter-coach/screenshot.png",
+        "assets/downloads/ag-starter-coach/inc/customizer.php",
+        "assets/downloads/ag-starter-coach/inc/customizer-output.php",
 
         "assets/downloads/ag-starter-companion.zip",
         "assets/downloads/ag-starter-companion/ag-starter-companion.php",
