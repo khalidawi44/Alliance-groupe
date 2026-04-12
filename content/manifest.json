@@ -1,5 +1,5 @@
 {
-    "version": "1.9.0",
+    "version": "1.10.0",
     "repo": "khalidawi44/Alliance-groupe",
     "branch": "claude/rebuild-alliance-theme-fl7ca",
 
@@ -60,6 +60,7 @@
         "footer.php",
         "index.php",
         "single.php",
+        "ag-stripe-admin.php",
         "assets/css/main.css",
         "assets/js/main.js",
         "template-parts/about.php",

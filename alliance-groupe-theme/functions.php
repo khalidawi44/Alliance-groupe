@@ -10,6 +10,14 @@ if ( file_exists( $ag_import_file ) ) {
     require_once $ag_import_file;
 }
 
+// ── 1b. Charger ag-stripe-admin.php (page de config Stripe) ─────
+if ( is_admin() ) {
+    $ag_stripe_admin_file = get_stylesheet_directory() . '/ag-stripe-admin.php';
+    if ( file_exists( $ag_stripe_admin_file ) ) {
+        require_once $ag_stripe_admin_file;
+    }
+}
+
 // ── 2. Enqueue styles & scripts ─────────────────────────────────
 add_action( 'wp_enqueue_scripts', function () {
     // Style du thème (style.css obligatoire pour WordPress)
