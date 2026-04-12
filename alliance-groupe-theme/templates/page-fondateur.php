@@ -31,7 +31,7 @@ foreach (array('jpg','jpeg','png','webp') as $ext) {
     </section>
 
     <!-- Histoire -->
-    <section class="ag-section" style="background:#0c0c0f;">
+    <section class="ag-section ag-section--marbre">
         <div class="ag-container ag-container--narrow">
 
             <?php if ($img_url) : ?>

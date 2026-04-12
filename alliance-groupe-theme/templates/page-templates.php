@@ -24,7 +24,7 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
     </section>
 
     <!-- Avertissement honnête -->
-    <section class="ag-section" style="background:#0c0c0f;">
+    <section class="ag-section ag-section--graphite">
         <div class="ag-container ag-container--narrow" style="text-align:center;">
             <div style="background:rgba(212,180,92,.06);border:1px solid rgba(212,180,92,.15);border-radius:16px;padding:36px;">
                 <h2 style="font-size:1.3rem;margin-bottom:12px;">Un template, c'est un <em>point de départ</em></h2>
@@ -34,7 +34,7 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
     </section>
 
     <!-- Templates gratuits -->
-    <section class="ag-section" style="background:#101014;">
+    <section class="ag-section ag-section--marbre">
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">Gratuit</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">Templates <em>gratuits</em></h2>
@@ -103,7 +103,7 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
     </section>
 
     <!-- Packs Premium Stripe -->
-    <section class="ag-section" style="background:#0c0c0f;">
+    <section class="ag-section ag-section--or">
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">Premium</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">Packs <em>Design Premium</em></h2>
@@ -174,7 +174,7 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
     </section>
 
     <!-- Comparatif DIY vs Pro -->
-    <section class="ag-section" style="background:#101014;">
+    <section class="ag-section ag-section--image-luxe">
         <div class="ag-container">
             <h2 class="ag-section__title ag-anim" data-anim="title" style="text-align:center;">Template DIY vs <em>Site professionnel</em></h2>
             <p class="ag-section__desc ag-anim" data-anim="desc" style="text-align:center;margin-left:auto;margin-right:auto;">Vous hésitez ? Voici la différence entre faire soi-même et confier à un professionnel.</p>
@@ -226,7 +226,7 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
     </section>
 
     <!-- FAQ Templates -->
-    <section class="ag-section" style="background:#0c0c0f;">
+    <section class="ag-section ag-section--cendre">
         <div class="ag-container">
             <h2 class="ag-section__title ag-anim" data-anim="title" style="text-align:center;">Questions sur les <em>templates</em></h2>
             <div class="ag-faq__list">

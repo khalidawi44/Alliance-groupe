@@ -1,4 +1,4 @@
-<section class="ag-section" style="background:#101014;">
+<section class="ag-section ag-section--graphite">
     <div class="ag-container">
         <span class="ag-tag ag-anim" data-anim="tag">Nos services</span>
         <h2 class="ag-section__title ag-anim" data-anim="title">Ce que nous faisons <em>de mieux</em></h2>

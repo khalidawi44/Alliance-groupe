@@ -19,7 +19,7 @@ get_header();
         </div>
     </section>
 
-    <section class="ag-section" style="background:#0c0c0f;">
+    <section class="ag-section ag-section--graphite">
         <div class="ag-container">
             <div class="ag-contact__grid">
                 <!-- Left: cards + Calendly -->

@@ -1,4 +1,4 @@
-<section class="ag-section" style="background:#0c0c0f;">
+<section class="ag-section ag-section--image-luxe">
     <div class="ag-container">
         <span class="ag-tag ag-anim" data-anim="tag">Notre méthode</span>
         <h2 class="ag-section__title ag-anim" data-anim="title">Un process <em>éprouvé</em></h2>
