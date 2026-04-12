@@ -169,17 +169,39 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
 
             </div>
 
-            <!-- Plugin compagnon -->
-            <div style="max-width:900px;margin:56px auto 0;padding:40px;background:linear-gradient(135deg,rgba(212,180,92,.08),rgba(212,180,92,.02));border:1px solid rgba(212,180,92,.3);border-radius:16px;">
+            <!-- Plugin compagnon gratuit -->
+            <div style="max-width:900px;margin:56px auto 0;padding:40px;background:linear-gradient(135deg,rgba(40,167,69,.08),rgba(40,167,69,.02));border:1px solid rgba(40,167,69,.3);border-radius:16px;">
                 <div style="text-align:center;">
-                    <span class="ag-tag" style="background:rgba(212,180,92,.15);">Bonus — Plugin compagnon</span>
-                    <h3 style="font-size:1.4rem;margin:12px 0 8px;">Encore plus rapide avec <em>AG Starter Companion</em></h3>
-                    <p style="color:#b0b0bc;max-width:640px;margin:0 auto 24px;font-size:.98rem;line-height:1.7;">Installez aussi notre plugin compagnon gratuit et vous obtenez un bouton <strong style="color:#D4B45C;">"Importer le contenu démo"</strong> dans l'admin WordPress. En un clic, il crée pour vous les 5 pages (Accueil, Carte/Prestations/Accompagnements, À propos, Contact…), le menu principal, la page d'accueil statique et les permaliens. Zéro code, zéro manipulation manuelle.</p>
+                    <span class="ag-tag" style="background:rgba(40,167,69,.15);color:#28a745;border-color:rgba(40,167,69,.3);">Bonus gratuit — Plugin compagnon</span>
+                    <h3 style="font-size:1.4rem;margin:12px 0 8px;">Installation en 1 clic avec <em>AG Starter Companion</em></h3>
+                    <p style="color:#b0b0bc;max-width:680px;margin:0 auto 24px;font-size:.98rem;line-height:1.7;">Installez aussi notre <strong style="color:#28a745;">plugin compagnon gratuit</strong> et vous obtenez un bouton <strong style="color:#D4B45C;">"Importer le contenu démo"</strong> dans l'admin WordPress. En un clic il crée pour vous les 5 pages (Accueil, Carte/Prestations/Accompagnements, À propos, Contact…), le menu principal, la page d'accueil statique et active les permaliens. <strong style="color:#e8e6e0;">Zéro code, zéro manipulation manuelle.</strong></p>
                     <div class="ag-hero__buttons" style="justify-content:center;flex-wrap:wrap;">
-                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="companion" data-file="<?php echo esc_url($dl_base . 'ag-starter-companion.zip'); ?>">⚡ Télécharger le plugin →</button>
+                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="companion" data-file="<?php echo esc_url($dl_base . 'ag-starter-companion.zip'); ?>">⚡ Télécharger le plugin gratuit →</button>
                         <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Besoin d'aide ? On en parle</a>
                     </div>
-                    <p style="color:#888;font-size:.85rem;margin-top:20px;">Le plugin détecte automatiquement quel thème AG Starter est actif et adapte le contenu. Fonctionne avec Restaurant, Artisan et Coach.</p>
+                    <p style="color:#888;font-size:.85rem;margin-top:20px;">Le plugin détecte automatiquement quel thème AG Starter est actif et adapte le contenu. Fonctionne avec Restaurant, Artisan et Coach. <strong style="color:#28a745;">100% gratuit, zéro limite.</strong></p>
+                </div>
+            </div>
+
+            <!-- Résumé des 3 niveaux -->
+            <div style="max-width:900px;margin:32px auto 0;padding:32px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);border-radius:16px;">
+                <h3 style="text-align:center;font-size:1.15rem;margin-bottom:20px;">L'écosystème AG Starter en <em>3 niveaux</em></h3>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center;">
+                    <div style="padding:20px;background:rgba(40,167,69,.05);border:1px solid rgba(40,167,69,.2);border-radius:12px;">
+                        <div style="font-size:1.8rem;margin-bottom:8px;">🆓</div>
+                        <strong style="color:#28a745;display:block;margin-bottom:6px;">Gratuit</strong>
+                        <p style="color:#b0b0bc;font-size:.85rem;line-height:1.6;margin:0;">Thème basique en français + plugin compagnon d'import. Vous avez un site fonctionnel et minimaliste. Parfait pour démarrer.</p>
+                    </div>
+                    <div style="padding:20px;background:rgba(212,180,92,.05);border:1px solid rgba(212,180,92,.25);border-radius:12px;">
+                        <div style="font-size:1.8rem;margin-bottom:8px;">⚡</div>
+                        <strong style="color:#D4B45C;display:block;margin-bottom:6px;">Pro — 49€</strong>
+                        <p style="color:#b0b0bc;font-size:.85rem;line-height:1.6;margin:0;">Plugin qui ajoute un vrai design travaillé : animations, blocs personnalisés, customizer avancé. Votre site passe de "basique" à "pro".</p>
+                    </div>
+                    <div style="padding:20px;background:rgba(212,180,92,.08);border:1px solid rgba(212,180,92,.35);border-radius:12px;">
+                        <div style="font-size:1.8rem;margin-bottom:8px;">🌍</div>
+                        <strong style="color:#D4B45C;display:block;margin-bottom:6px;">Premium — 99€</strong>
+                        <p style="color:#b0b0bc;font-size:.85rem;line-height:1.6;margin:0;">Tout Pro + multi-langue (6 langues), WooCommerce, sections premium, support prioritaire. Pour toucher un public international.</p>
+                    </div>
                 </div>
             </div>
 
@@ -217,69 +239,128 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
     <section class="ag-section ag-section--or">
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">Premium</span>
-            <h2 class="ag-section__title ag-anim" data-anim="title">Packs <em>Design Premium</em></h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc">Allez plus loin avec des outils de personnalisation professionnels. Modifiez tout en drag & drop.</p>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Passez au <em>niveau supérieur</em></h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Les templates gratuits sont volontairement basiques — design minimaliste, contenu pré-rempli, juste ce qu'il faut pour démarrer. Quand vous êtes prêt à aller plus loin, deux plugins payants viennent compléter le thème : <strong style="color:#D4B45C;">Pro</strong> pour un vrai design travaillé, <strong style="color:#D4B45C;">Premium</strong> pour tout ça + le multi-langue.</p>
 
-            <div class="ag-pricing__grid">
+            <!-- Comparaison en 3 colonnes Gratuit / Pro / Premium -->
+            <div style="max-width:1100px;margin:40px auto 56px;overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;background:rgba(255,255,255,.02);border:1px solid rgba(212,180,92,.15);border-radius:12px;overflow:hidden;">
+                    <thead>
+                        <tr style="background:rgba(212,180,92,.08);">
+                            <th style="text-align:left;padding:18px 22px;color:#b0b0bc;font-weight:600;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;width:40%;">Fonctionnalité</th>
+                            <th style="padding:18px 16px;color:#e8e6e0;font-weight:700;text-align:center;">Gratuit<br><small style="color:#888;font-weight:400;">Thème seul</small></th>
+                            <th style="padding:18px 16px;color:#D4B45C;font-weight:700;text-align:center;border-left:1px solid rgba(212,180,92,.15);border-right:1px solid rgba(212,180,92,.15);">Pro<br><small style="color:#888;font-weight:400;">49€</small></th>
+                            <th style="padding:18px 16px;color:#D4B45C;font-weight:700;text-align:center;background:rgba(212,180,92,.06);">Premium<br><small style="color:#888;font-weight:400;">99€</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $matrix = [
+                            ['Page d\'accueil pré-remplie en français', '✓', '✓', '✓'],
+                            ['Plugin compagnon (import 1 clic)', '✓', '✓', '✓'],
+                            ['Blog, commentaires, recherche', '✓', '✓', '✓'],
+                            ['100% responsive', '✓', '✓', '✓'],
+                            ['Design travaillé (hover, animations, transitions)', '—', '✓', '✓'],
+                            ['Gradients, ombres, effets premium', '—', '✓', '✓'],
+                            ['10 blocs Gutenberg personnalisés', '—', '✓', '✓'],
+                            ['Customizer avancé (couleurs, typo, espacements)', '—', '✓', '✓'],
+                            ['Sticky header + menu mobile stylisé', '—', '✓', '✓'],
+                            ['Polices Google Fonts premium', '—', '✓', '✓'],
+                            ['Support email 60 jours', '—', '✓', '✓'],
+                            ['Multi-langue (FR, EN, ES, IT, DE, AR)', '—', '—', '✓'],
+                            ['Sections premium (témoignages, galerie, pricing)', '—', '—', '✓'],
+                            ['Intégration WooCommerce complète', '—', '—', '✓'],
+                            ['Import / export des réglages', '—', '—', '✓'],
+                            ['Support prioritaire 12 mois', '—', '—', '✓'],
+                            ['Mises à jour à vie', '—', '—', '✓'],
+                            ['Appel de 30 min avec un expert', '—', '—', '✓'],
+                        ];
+                        foreach ($matrix as $row) : ?>
+                        <tr style="border-top:1px solid rgba(255,255,255,.04);">
+                            <td style="padding:14px 22px;color:#e8e6e0;font-size:.92rem;"><?php echo esc_html($row[0]); ?></td>
+                            <td style="padding:14px 16px;text-align:center;color:<?php echo $row[1] === '✓' ? '#28a745' : '#555'; ?>;font-weight:700;font-size:1.1rem;"><?php echo esc_html($row[1]); ?></td>
+                            <td style="padding:14px 16px;text-align:center;color:<?php echo $row[2] === '✓' ? '#D4B45C' : '#555'; ?>;font-weight:700;font-size:1.1rem;border-left:1px solid rgba(212,180,92,.1);border-right:1px solid rgba(212,180,92,.1);"><?php echo esc_html($row[2]); ?></td>
+                            <td style="padding:14px 16px;text-align:center;color:<?php echo $row[3] === '✓' ? '#D4B45C' : '#555'; ?>;font-weight:700;font-size:1.1rem;background:rgba(212,180,92,.03);"><?php echo esc_html($row[3]); ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
 
-                <!-- Pack 69€ -->
+            <div class="ag-pricing__grid" style="grid-template-columns:1fr 1fr;max-width:800px;margin:0 auto;">
+
+                <!-- Pack Pro 49€ -->
                 <div class="ag-price-card ag-anim" data-anim="card">
                     <div class="ag-price-card__header">
-                        <span class="ag-price-card__price">69<small>€</small></span>
-                        <h3 class="ag-price-card__title">Pack Starter</h3>
-                        <p class="ag-price-card__sub">Pour ceux qui veulent personnaliser</p>
+                        <span class="ag-price-card__price">49<small>€</small></span>
+                        <h3 class="ag-price-card__title">Pack Pro</h3>
+                        <p class="ag-price-card__sub">Plugin AG Starter Pro — transforme le thème basique en thème professionnel</p>
                     </div>
                     <ul class="ag-price-card__list">
-                        <li>Template WordPress au choix</li>
-                        <li>WordPress Block Editor amélioré</li>
-                        <li>10 blocs design premium</li>
-                        <li>Personnalisation couleurs & polices</li>
-                        <li>Support email 30 jours</li>
-                        <li>Documentation d'installation</li>
+                        <li><strong>Design travaillé</strong> : animations, transitions, hover, gradients</li>
+                        <li><strong>10 blocs Gutenberg</strong> premium (hero, CTA, stats, timeline…)</li>
+                        <li><strong>Customizer avancé</strong> : couleurs, typo, espacements en direct</li>
+                        <li><strong>Polices Google Fonts</strong> premium (Playfair, Manrope…)</li>
+                        <li><strong>Sticky header</strong> + menu mobile stylisé</li>
+                        <li><strong>Effets premium</strong> : ombres, transformations, scroll smooth</li>
+                        <li><strong>Support email 60 jours</strong></li>
+                        <li><strong>Documentation vidéo</strong> complète</li>
                     </ul>
-                    <a href="#" class="ag-btn-outline ag-stripe-btn" data-price="69">Acheter — 69€</a>
+                    <a href="<?php echo esc_url(home_url('/contact?pack=pro')); ?>" class="ag-btn-outline">Acheter — 49€ une fois</a>
+                    <p style="font-size:.8rem;color:#888;text-align:center;margin-top:12px;">Prix unique — pas d'abonnement.<br>Compatible avec les 3 thèmes AG Starter.</p>
                 </div>
 
-                <!-- Pack 99€ -->
+                <!-- Pack Premium 99€ -->
                 <div class="ag-price-card ag-price-card--pop ag-anim" data-anim="card">
-                    <span class="ag-price-card__badge">Populaire</span>
+                    <span class="ag-price-card__badge">⭐ Premium</span>
                     <div class="ag-price-card__header">
                         <span class="ag-price-card__price">99<small>€</small></span>
-                        <h3 class="ag-price-card__title">Pack Pro</h3>
-                        <p class="ag-price-card__sub">Le meilleur rapport qualité-prix</p>
+                        <h3 class="ag-price-card__title">Pack Premium</h3>
+                        <p class="ag-price-card__sub">Plugin AG Starter Premium — tout Pro + multi-langue + features avancées</p>
                     </div>
                     <ul class="ag-price-card__list">
-                        <li>Template WordPress au choix</li>
-                        <li>Elementor Pro inclus (1 site)</li>
-                        <li>Drag & drop — modifiez tout</li>
-                        <li>50+ widgets premium</li>
-                        <li>Formulaires avancés</li>
-                        <li>Support email 60 jours</li>
-                        <li>Tutoriel vidéo personnalisé</li>
+                        <li><strong>Tout ce qui est dans Pro</strong> (design, blocs, customizer…)</li>
+                        <li><strong>🌍 Multi-langue</strong> : thèmes traduits dans <strong>6 langues</strong> (FR, EN, ES, IT, DE, AR)</li>
+                        <li><strong>Switcher de langue</strong> automatique dans le menu</li>
+                        <li><strong>Sections premium</strong> : témoignages, galerie, pricing table</li>
+                        <li><strong>Intégration WooCommerce</strong> complète (e-commerce ready)</li>
+                        <li><strong>Import / export</strong> des réglages</li>
+                        <li><strong>Support prioritaire 12 mois</strong> (réponse sous 24h)</li>
+                        <li><strong>Mises à jour à vie</strong></li>
+                        <li><strong>Appel de 30 min</strong> avec un expert pour la mise en place</li>
                     </ul>
-                    <a href="#" class="ag-btn-gold ag-stripe-btn" data-price="99">Acheter — 99€</a>
+                    <a href="<?php echo esc_url(home_url('/contact?pack=premium')); ?>" class="ag-btn-gold">Acheter — 99€ une fois</a>
+                    <p style="font-size:.8rem;color:#888;text-align:center;margin-top:12px;">Prix unique — pas d'abonnement.<br>Compatible avec les 3 thèmes AG Starter.</p>
                 </div>
 
-                <!-- Pack 149€ -->
-                <div class="ag-price-card ag-anim" data-anim="card">
-                    <div class="ag-price-card__header">
-                        <span class="ag-price-card__price">149<small>€</small></span>
-                        <h3 class="ag-price-card__title">Pack Business</h3>
-                        <p class="ag-price-card__sub">Tout inclus pour les ambitieux</p>
-                    </div>
-                    <ul class="ag-price-card__list">
-                        <li>Template WordPress au choix</li>
-                        <li>Elementor Pro inclus (1 site)</li>
-                        <li>Plugin SEO Premium (Yoast SEO Premium)</li>
-                        <li>Plugin de formulaires (WPForms Pro)</li>
-                        <li>Plugin de cache (WP Rocket)</li>
-                        <li>Support prioritaire 90 jours</li>
-                        <li>Appel de 30 min avec un expert</li>
-                        <li>Installation assistée</li>
-                    </ul>
-                    <a href="#" class="ag-btn-outline ag-stripe-btn" data-price="149">Acheter — 149€</a>
-                </div>
+            </div>
 
+            <!-- Positionnement vs concurrents -->
+            <div style="max-width:900px;margin:56px auto 0;padding:32px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;">
+                <h3 style="text-align:center;font-size:1.1rem;margin-bottom:8px;color:#D4B45C;text-transform:uppercase;letter-spacing:1px;">Positionnement vs concurrents</h3>
+                <p style="text-align:center;color:#b0b0bc;margin-bottom:24px;font-size:.95rem;">Des prix accessibles, pensés pour le marché français.</p>
+                <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;font-size:.92rem;">
+                    <div style="color:#888;padding:10px 14px;">Concurrent / Pack équivalent</div>
+                    <div style="color:#888;padding:10px 14px;text-align:center;">Prix /an</div>
+                    <div style="color:#888;padding:10px 14px;text-align:center;">AG Starter</div>
+
+                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);color:#e8e6e0;">Astra Pro (base)</div>
+                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);text-align:center;color:#b0b0bc;">59€/an</div>
+                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);text-align:center;color:#D4B45C;font-weight:700;">49€ une fois</div>
+
+                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);color:#e8e6e0;">OceanWP Business</div>
+                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);text-align:center;color:#b0b0bc;">79€/an</div>
+                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);text-align:center;color:#D4B45C;font-weight:700;">99€ une fois</div>
+
+                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);color:#e8e6e0;">Kadence Full Bundle</div>
+                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);text-align:center;color:#b0b0bc;">129€/an</div>
+                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);text-align:center;color:#D4B45C;font-weight:700;">99€ une fois</div>
+
+                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);color:#e8e6e0;">GeneratePress Premium</div>
+                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);text-align:center;color:#b0b0bc;">59€/an</div>
+                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);text-align:center;color:#D4B45C;font-weight:700;">49€ une fois</div>
+                </div>
+                <p style="text-align:center;color:#888;font-size:.85rem;margin-top:20px;font-style:italic;">Paiement unique vs abonnement annuel. Nos thèmes ont moins de features que les concurrents matures, d'où un tarif volontairement bas. Vous payez pour ce dont vous avez vraiment besoin, pas pour 200 features que vous n'utiliserez jamais.</p>
             </div>
         </div>
     </section>
@@ -293,7 +374,7 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
             <div class="ag-compare">
                 <div class="ag-compare__col ag-compare__col--diy ag-anim" data-anim="card">
                     <h3 class="ag-compare__title">Template DIY</h3>
-                    <span class="ag-compare__price">Gratuit / 69-149€</span>
+                    <span class="ag-compare__price">Gratuit / 49€ / 99€</span>
                     <ul>
                         <li class="ag-compare__bad">Contenu placeholder à remplacer</li>
                         <li class="ag-compare__bad">Design générique, vu sur d'autres sites</li>

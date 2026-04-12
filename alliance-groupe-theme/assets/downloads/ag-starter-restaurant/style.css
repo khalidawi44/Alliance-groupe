@@ -3,7 +3,7 @@ Theme Name: AG Starter Restaurant
 Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
-Description: Theme WordPress gratuit 100% francais pour restaurant, bistrot, bar ou cafe. Design sombre premium or et noir, responsive et rapide. Contenu pre-redige en francais natif : hero, carte, reservation, horaires, contact. Concu pour que vous n'ayez quasiment rien a changer (95% pret a l'emploi). Par Alliance Group.
+Description: Theme WordPress gratuit basique 100% francais pour restaurant, bistrot, bar ou cafe. Structure minimaliste noir et or, responsive, sans fioritures. Contenu pre-redige en francais natif : hero, carte, reservation, contact. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
 Version: 1.0.0
 Requires at least: 6.0
 Tested up to: 6.5
@@ -15,7 +15,7 @@ Tags: food-and-drink, one-column, custom-menu, featured-images, translation-read
 */
 
 /* ============================================================
-   AG Starter Restaurant - Feuille de style
+   AG Starter Restaurant - Feuille de style (version basique)
    ============================================================ */
 
 /* ----- Reset ----- */
@@ -27,17 +27,12 @@ Tags: food-and-drink, one-column, custom-menu, featured-images, translation-read
     padding: 0;
 }
 
-html {
-    scroll-behavior: smooth;
-}
-
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
     font-size: 16px;
-    line-height: 1.7;
-    color: #f0f0f0;
+    line-height: 1.6;
+    color: #e0e0e0;
     background: #0a0a0a;
-    -webkit-font-smoothing: antialiased;
 }
 
 img {
@@ -48,13 +43,6 @@ img {
 
 a {
     color: #d4b45c;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-a:hover,
-a:focus {
-    color: #e8c776;
     text-decoration: underline;
 }
 
@@ -91,7 +79,6 @@ p {
 
 .screen-reader-text:focus {
     background-color: #d4b45c;
-    border-radius: 3px;
     clip: auto !important;
     color: #0a0a0a;
     display: block;
@@ -99,8 +86,7 @@ p {
     font-weight: 700;
     height: auto;
     left: 5px;
-    line-height: normal;
-    padding: 15px 23px 14px;
+    padding: 12px 20px;
     text-decoration: none;
     top: 5px;
     width: auto;
@@ -112,17 +98,13 @@ p {
     width: 100%;
     max-width: 1100px;
     margin: 0 auto;
-    padding: 0 1.5rem;
+    padding: 0 1rem;
 }
 
-/* ----- Site header ----- */
+/* ----- Header ----- */
 .ag-site-header {
-    padding: 1.25rem 0;
-    border-bottom: 1px solid #1a1a1a;
-    background: #0a0a0a;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    padding: 1rem 0;
+    border-bottom: 1px solid #222;
 }
 
 .ag-site-header__inner {
@@ -133,151 +115,123 @@ p {
 }
 
 .ag-site-brand {
-    font-size: 1.35rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: #d4b45c;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
 }
 
 .ag-site-brand a {
     color: inherit;
-}
-
-.ag-site-brand a:hover {
     text-decoration: none;
 }
 
-/* ----- Primary menu ----- */
+/* ----- Menu ----- */
 .ag-primary-menu {
     display: flex;
-    gap: 1.75rem;
+    gap: 1.25rem;
     flex-wrap: wrap;
 }
 
 .ag-primary-menu a {
-    color: #e8e8e8;
+    color: #cccccc;
     font-size: 0.95rem;
-    font-weight: 500;
-}
-
-.ag-primary-menu a:hover {
-    color: #d4b45c;
     text-decoration: none;
 }
 
 /* ----- Hero ----- */
 .ag-hero {
     text-align: center;
-    padding: 6rem 1.5rem 5rem;
-    background: linear-gradient(180deg, #141414 0%, #0a0a0a 100%);
-    border-bottom: 1px solid #1a1a1a;
+    padding: 3rem 1rem;
+    background: #141414;
+    border-bottom: 1px solid #222;
 }
 
 .ag-hero__title {
-    font-size: clamp(2rem, 5vw, 3rem);
-    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    margin-bottom: 0.75rem;
 }
 
 .ag-hero__title span {
     color: #d4b45c;
-    font-style: italic;
 }
 
 .ag-hero__subtitle {
-    font-size: 1.1rem;
-    color: #b5b5b5;
-    margin-bottom: 2rem;
-    max-width: 640px;
+    font-size: 1rem;
+    color: #aaaaaa;
+    margin-bottom: 1.5rem;
+    max-width: 600px;
     margin-left: auto;
     margin-right: auto;
 }
 
 .ag-btn {
     display: inline-block;
-    padding: 0.9rem 2rem;
+    padding: 0.7rem 1.5rem;
     background: #d4b45c;
     color: #0a0a0a;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    border-radius: 4px;
+    text-decoration: none;
     border: none;
     cursor: pointer;
-    transition: background 0.2s, transform 0.2s;
-}
-
-.ag-btn:hover,
-.ag-btn:focus {
-    background: #e8c776;
-    color: #0a0a0a;
-    text-decoration: none;
-    transform: translateY(-1px);
 }
 
 /* ----- Cards ----- */
 .ag-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    padding: 4rem 0;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    padding: 2.5rem 0;
 }
 
 .ag-card {
     background: #141414;
     border: 1px solid #222;
-    border-radius: 6px;
-    padding: 2.25rem 1.75rem;
+    padding: 1.5rem;
     text-align: center;
-    transition: border-color 0.2s, transform 0.2s;
-}
-
-.ag-card:hover {
-    border-color: #d4b45c;
-    transform: translateY(-2px);
 }
 
 .ag-card h2 {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     color: #d4b45c;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
 }
 
 .ag-card p {
-    color: #bbbbbb;
-    font-size: 0.95rem;
+    color: #aaaaaa;
+    font-size: 0.9rem;
     margin-bottom: 0;
 }
 
 /* ----- Info section ----- */
 .ag-info {
-    padding: 4rem 0;
+    padding: 2.5rem 0;
     text-align: center;
-    border-top: 1px solid #1a1a1a;
-    border-bottom: 1px solid #1a1a1a;
+    border-top: 1px solid #222;
+    border-bottom: 1px solid #222;
 }
 
 .ag-info h2 {
-    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-size: 1.4rem;
     color: #d4b45c;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
 }
 
 .ag-info p {
-    color: #b5b5b5;
-    max-width: 720px;
+    color: #aaaaaa;
+    max-width: 640px;
     margin: 0 auto 1rem;
 }
 
-/* ----- Main content ----- */
+/* ----- Main / posts ----- */
 .ag-main {
-    padding: 3rem 0;
+    padding: 2rem 0;
 }
 
 .ag-main article {
-    margin-bottom: 3rem;
-    padding-bottom: 3rem;
-    border-bottom: 1px solid #1a1a1a;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #222;
 }
 
 .ag-main article:last-child {
@@ -285,27 +239,23 @@ p {
 }
 
 .ag-entry-title {
-    font-size: 1.75rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+    margin-bottom: 0.4rem;
 }
 
 .ag-entry-title a {
     color: #ffffff;
-}
-
-.ag-entry-title a:hover {
-    color: #d4b45c;
     text-decoration: none;
 }
 
 .ag-entry-meta {
-    font-size: 0.85rem;
-    color: #888;
-    margin-bottom: 1rem;
+    font-size: 0.82rem;
+    color: #888888;
+    margin-bottom: 0.8rem;
 }
 
 .ag-entry-content {
-    color: #cccccc;
+    color: #c0c0c0;
 }
 
 .ag-entry-content a {
@@ -314,16 +264,14 @@ p {
 
 .ag-entry-content blockquote {
     border-left: 3px solid #d4b45c;
-    padding: 0.5rem 1.25rem;
-    margin: 1.5rem 0;
-    color: #b5b5b5;
-    font-style: italic;
+    padding: 0.4rem 1rem;
+    margin: 1rem 0;
+    color: #aaaaaa;
 }
 
 .ag-entry-content pre,
 .ag-entry-content code {
     background: #141414;
-    border-radius: 3px;
     padding: 0.15rem 0.35rem;
     font-family: Menlo, Consolas, monospace;
     font-size: 0.9em;
@@ -336,14 +284,14 @@ p {
 
 /* ----- Comments ----- */
 .ag-comments {
-    margin-top: 3rem;
-    padding-top: 2rem;
-    border-top: 1px solid #1a1a1a;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #222;
 }
 
 .ag-comments h2 {
-    font-size: 1.25rem;
-    margin-bottom: 1.5rem;
+    font-size: 1.15rem;
+    margin-bottom: 1rem;
 }
 
 .ag-comments ol {
@@ -351,14 +299,14 @@ p {
 }
 
 .ag-comments .comment {
-    padding: 1rem 0;
-    border-bottom: 1px solid #1a1a1a;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #222;
 }
 
 .ag-comments .children {
-    padding-left: 1.5rem;
+    padding-left: 1.25rem;
     border-left: 1px solid #222;
-    margin-top: 1rem;
+    margin-top: 0.75rem;
 }
 
 .ag-comments .comment-author {
@@ -371,48 +319,39 @@ p {
 .ag-comments input[type="url"],
 .ag-comments textarea {
     width: 100%;
-    padding: 0.75rem;
+    padding: 0.6rem;
     background: #141414;
     border: 1px solid #222;
-    border-radius: 4px;
-    color: #f0f0f0;
-    margin-bottom: 1rem;
+    color: #e0e0e0;
+    margin-bottom: 0.75rem;
     font-family: inherit;
 }
 
 .ag-comments input[type="submit"] {
     display: inline-block;
-    padding: 0.75rem 1.75rem;
+    padding: 0.6rem 1.4rem;
     background: #d4b45c;
     color: #0a0a0a;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    border-radius: 4px;
     border: none;
     cursor: pointer;
 }
 
-.ag-comments input[type="submit"]:hover {
-    background: #e8c776;
-}
-
-/* ----- Sidebar / widgets ----- */
+/* ----- Sidebar ----- */
 .ag-sidebar {
-    padding: 2.5rem 0;
-    border-top: 1px solid #1a1a1a;
+    padding: 2rem 0;
+    border-top: 1px solid #222;
 }
 
 .ag-widget {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .ag-widget-title {
     font-size: 1rem;
     color: #d4b45c;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
 }
 
 .ag-widget ul {
@@ -420,9 +359,9 @@ p {
 }
 
 .ag-widget li {
-    padding: 0.35rem 0;
-    border-bottom: 1px solid #1a1a1a;
-    color: #b5b5b5;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid #222;
+    color: #aaaaaa;
 }
 
 .ag-widget li:last-child {
@@ -432,44 +371,41 @@ p {
 /* ----- Search form ----- */
 .ag-search-form {
     display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
 }
 
 .ag-search-form input[type="search"] {
     flex: 1;
-    padding: 0.65rem 0.85rem;
+    padding: 0.5rem 0.7rem;
     background: #141414;
     border: 1px solid #222;
-    border-radius: 4px;
-    color: #f0f0f0;
+    color: #e0e0e0;
     font-family: inherit;
 }
 
 .ag-search-form input[type="submit"] {
-    padding: 0.65rem 1.1rem;
+    padding: 0.5rem 1rem;
     background: #d4b45c;
     color: #0a0a0a;
     font-weight: 700;
     border: none;
-    border-radius: 4px;
     cursor: pointer;
 }
 
 /* ----- Pagination ----- */
 .ag-pagination {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.35rem;
     justify-content: center;
-    padding: 2rem 0;
+    padding: 1.5rem 0;
 }
 
 .ag-pagination a,
 .ag-pagination span {
-    padding: 0.45rem 0.85rem;
+    padding: 0.35rem 0.75rem;
     border: 1px solid #222;
-    border-radius: 4px;
-    color: #e8e8e8;
+    color: #cccccc;
 }
 
 .ag-pagination .current {
@@ -480,51 +416,49 @@ p {
 
 /* ----- Footer ----- */
 .ag-site-footer {
-    border-top: 1px solid #1a1a1a;
-    padding: 3rem 0 1.5rem;
-    background: #080808;
-    margin-top: 3rem;
+    border-top: 1px solid #222;
+    padding: 2rem 0 1rem;
+    margin-top: 2rem;
 }
 
 .ag-footer-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 2rem;
-    margin-bottom: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .ag-footer-col h3 {
     color: #d4b45c;
-    font-size: 1rem;
+    font-size: 0.95rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
 }
 
 .ag-footer-col p,
 .ag-footer-col li {
-    color: #888;
-    font-size: 0.9rem;
-    line-height: 1.8;
+    color: #888888;
+    font-size: 0.88rem;
+    line-height: 1.7;
 }
 
 .ag-footer-bottom {
     text-align: center;
-    padding-top: 1.5rem;
-    color: #555;
-    font-size: 0.85rem;
-    border-top: 1px solid #1a1a1a;
+    padding-top: 1rem;
+    color: #666666;
+    font-size: 0.82rem;
+    border-top: 1px solid #222;
 }
 
 /* ----- WordPress core required ----- */
 .alignleft {
     float: left;
-    margin: 0 1.5rem 1rem 0;
+    margin: 0 1rem 0.75rem 0;
 }
 
 .alignright {
     float: right;
-    margin: 0 0 1rem 1.5rem;
+    margin: 0 0 0.75rem 1rem;
 }
 
 .aligncenter {
@@ -545,15 +479,15 @@ p {
 
 .wp-caption {
     max-width: 100%;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 .wp-caption-text,
 .gallery-caption {
-    font-size: 0.85rem;
-    color: #888;
+    font-size: 0.82rem;
+    color: #888888;
     text-align: center;
-    padding-top: 0.35rem;
+    padding-top: 0.3rem;
 }
 
 .bypostauthor {
@@ -565,7 +499,7 @@ p {
 }
 
 /* ----- Responsive ----- */
-@media (max-width: 640px) {
+@media (max-width: 600px) {
     .ag-site-header__inner {
         flex-direction: column;
         text-align: center;
@@ -573,14 +507,18 @@ p {
 
     .ag-primary-menu {
         justify-content: center;
-        gap: 1rem;
+        gap: 0.75rem;
     }
 
     .ag-hero {
-        padding: 4rem 1rem;
+        padding: 2rem 1rem;
+    }
+
+    .ag-hero__title {
+        font-size: 1.5rem;
     }
 
     .ag-cards {
-        padding: 2.5rem 0;
+        padding: 1.5rem 0;
     }
 }
