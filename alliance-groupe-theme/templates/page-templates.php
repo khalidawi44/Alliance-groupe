@@ -169,6 +169,20 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
 
             </div>
 
+            <!-- Plugin compagnon -->
+            <div style="max-width:900px;margin:56px auto 0;padding:40px;background:linear-gradient(135deg,rgba(212,180,92,.08),rgba(212,180,92,.02));border:1px solid rgba(212,180,92,.3);border-radius:16px;">
+                <div style="text-align:center;">
+                    <span class="ag-tag" style="background:rgba(212,180,92,.15);">Bonus — Plugin compagnon</span>
+                    <h3 style="font-size:1.4rem;margin:12px 0 8px;">Encore plus rapide avec <em>AG Starter Companion</em></h3>
+                    <p style="color:#b0b0bc;max-width:640px;margin:0 auto 24px;font-size:.98rem;line-height:1.7;">Installez aussi notre plugin compagnon gratuit et vous obtenez un bouton <strong style="color:#D4B45C;">"Importer le contenu démo"</strong> dans l'admin WordPress. En un clic, il crée pour vous les 5 pages (Accueil, Carte/Prestations/Accompagnements, À propos, Contact…), le menu principal, la page d'accueil statique et les permaliens. Zéro code, zéro manipulation manuelle.</p>
+                    <div class="ag-hero__buttons" style="justify-content:center;flex-wrap:wrap;">
+                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="companion" data-file="<?php echo esc_url($dl_base . 'ag-starter-companion.zip'); ?>">⚡ Télécharger le plugin →</button>
+                        <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Besoin d'aide ? On en parle</a>
+                    </div>
+                    <p style="color:#888;font-size:.85rem;margin-top:20px;">Le plugin détecte automatiquement quel thème AG Starter est actif et adapte le contenu. Fonctionne avec Restaurant, Artisan et Coach.</p>
+                </div>
+            </div>
+
             <!-- Instructions d'installation -->
             <div style="max-width:900px;margin:56px auto 0;padding:40px;background:rgba(255,255,255,.025);border:1px solid rgba(212,180,92,.18);border-radius:16px;">
                 <h3 style="text-align:center;font-size:1.25rem;margin-bottom:8px;">Installation en <em>4 étapes</em> — 2 minutes chrono</h3>
@@ -176,23 +190,23 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
                 <ol style="list-style:none;counter-reset:step;padding:0;">
                     <li style="counter-increment:step;position:relative;padding:16px 0 16px 60px;border-bottom:1px solid rgba(255,255,255,.06);">
                         <span style="position:absolute;left:0;top:14px;width:40px;height:40px;border-radius:50%;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.3);color:#D4B45C;display:flex;align-items:center;justify-content:center;font-weight:700;">1</span>
-                        <strong style="color:#fff;display:block;margin-bottom:4px;">Téléchargez le ZIP du template</strong>
-                        <span style="color:#b0b0bc;font-size:.92rem;">Cliquez sur "Télécharger gratuitement" ci-dessus. Un formulaire s'ouvre : entrez votre nom et email, le téléchargement démarre automatiquement.</span>
+                        <strong style="color:#fff;display:block;margin-bottom:4px;">Téléchargez le ZIP du template (et celui du plugin compagnon)</strong>
+                        <span style="color:#b0b0bc;font-size:.92rem;">Cliquez sur "Télécharger gratuitement" ci-dessus. Un formulaire s'ouvre : entrez votre nom et email, le téléchargement démarre automatiquement. Téléchargez aussi <strong>AG Starter Companion</strong> pour l'import automatique.</span>
                     </li>
                     <li style="counter-increment:step;position:relative;padding:16px 0 16px 60px;border-bottom:1px solid rgba(255,255,255,.06);">
                         <span style="position:absolute;left:0;top:14px;width:40px;height:40px;border-radius:50%;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.3);color:#D4B45C;display:flex;align-items:center;justify-content:center;font-weight:700;">2</span>
-                        <strong style="color:#fff;display:block;margin-bottom:4px;">Uploadez-le dans WordPress</strong>
-                        <span style="color:#b0b0bc;font-size:.92rem;">Dans votre admin WordPress : <code style="background:rgba(212,180,92,.1);padding:2px 6px;border-radius:3px;color:#D4B45C;">Apparence &gt; Thèmes &gt; Ajouter &gt; Téléverser un thème</code>, puis sélectionnez le fichier ZIP téléchargé.</span>
+                        <strong style="color:#fff;display:block;margin-bottom:4px;">Installez le thème, puis le plugin</strong>
+                        <span style="color:#b0b0bc;font-size:.92rem;">Dans votre admin WordPress : <code style="background:rgba(212,180,92,.1);padding:2px 6px;border-radius:3px;color:#D4B45C;">Apparence &gt; Thèmes &gt; Ajouter &gt; Téléverser un thème</code>, puis sélectionnez le ZIP du template et activez-le. Ensuite <code style="background:rgba(212,180,92,.1);padding:2px 6px;border-radius:3px;color:#D4B45C;">Extensions &gt; Ajouter &gt; Téléverser une extension</code> pour le plugin compagnon.</span>
                     </li>
                     <li style="counter-increment:step;position:relative;padding:16px 0 16px 60px;border-bottom:1px solid rgba(255,255,255,.06);">
                         <span style="position:absolute;left:0;top:14px;width:40px;height:40px;border-radius:50%;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.3);color:#D4B45C;display:flex;align-items:center;justify-content:center;font-weight:700;">3</span>
-                        <strong style="color:#fff;display:block;margin-bottom:4px;">Cliquez "Installer" puis "Activer"</strong>
-                        <span style="color:#b0b0bc;font-size:.92rem;">WordPress installe automatiquement le thème. Vous voyez immédiatement votre nouvelle page d'accueil avec le contenu français pré-rempli.</span>
+                        <strong style="color:#fff;display:block;margin-bottom:4px;">Cliquez sur "Lancer la configuration"</strong>
+                        <span style="color:#b0b0bc;font-size:.92rem;">Une notice apparaît en haut de l'admin. Cliquez dessus (ou allez dans <code style="background:rgba(212,180,92,.1);padding:2px 6px;border-radius:3px;color:#D4B45C;">Apparence &gt; Configuration AG</code>) et cliquez sur <strong>"Importer le contenu démo"</strong>. Les 5 pages, le menu et la page d'accueil sont créés automatiquement.</span>
                     </li>
                     <li style="counter-increment:step;position:relative;padding:16px 0 16px 60px;">
                         <span style="position:absolute;left:0;top:14px;width:40px;height:40px;border-radius:50%;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.3);color:#D4B45C;display:flex;align-items:center;justify-content:center;font-weight:700;">4</span>
-                        <strong style="color:#fff;display:block;margin-bottom:4px;">Personnalisez les quelques éléments entre crochets</strong>
-                        <span style="color:#b0b0bc;font-size:.92rem;">Ouvrez <code style="background:rgba(212,180,92,.1);padding:2px 6px;border-radius:3px;color:#D4B45C;">front-page.php</code> et <code style="background:rgba(212,180,92,.1);padding:2px 6px;border-radius:3px;color:#D4B45C;">footer.php</code> : remplacez "[Votre Restaurant]", "[Votre entreprise]", etc. par vos vraies informations. Instructions complètes dans le fichier <code style="background:rgba(212,180,92,.1);padding:2px 6px;border-radius:3px;color:#D4B45C;">readme.txt</code> inclus dans le ZIP.</span>
+                        <strong style="color:#fff;display:block;margin-bottom:4px;">Personnalisez les éléments entre crochets</strong>
+                        <span style="color:#b0b0bc;font-size:.92rem;">Remplacez "[Votre Restaurant]", "[Votre entreprise]", etc. par vos vraies informations. Si vous bloquez, <a href="<?php echo esc_url(home_url('/contact')); ?>" style="color:#D4B45C;font-weight:700;">contactez-nous</a> — on vous aide gratuitement.</span>
                     </li>
                 </ol>
             </div>

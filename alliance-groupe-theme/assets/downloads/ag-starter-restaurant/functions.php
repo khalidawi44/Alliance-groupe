@@ -126,3 +126,25 @@ function ag_starter_restaurant_pingback_header() {
 	}
 }
 add_action( 'wp_head', 'ag_starter_restaurant_pingback_header' );
+
+/**
+ * Show an admin notice inviting the user to install the companion plugin
+ * which provides the one-click demo importer.
+ */
+function ag_starter_restaurant_companion_notice() {
+	if ( ! current_user_can( 'install_plugins' ) ) {
+		return;
+	}
+	if ( class_exists( 'AG_Starter_Companion' ) ) {
+		return;
+	}
+	$search_url = admin_url( 'plugin-install.php?s=ag-starter-companion&tab=search&type=term' );
+	echo '<div class="notice notice-info is-dismissible"><p><strong>AG Starter Restaurant</strong> &mdash; ';
+	printf(
+		/* translators: %s: plugin search link. */
+		wp_kses( __( 'Installez le plugin gratuit %s pour importer en un clic les pages, le menu et les reglages de ce theme.', 'ag-starter-restaurant' ), array( 'a' => array( 'href' => array() ), 'strong' => array() ) ),
+		'<a href="' . esc_url( $search_url ) . '"><strong>AG Starter Companion</strong></a>'
+	);
+	echo '</p></div>';
+}
+add_action( 'admin_notices', 'ag_starter_restaurant_companion_notice' );

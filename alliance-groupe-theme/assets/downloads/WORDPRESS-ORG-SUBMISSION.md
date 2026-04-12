@@ -1,6 +1,24 @@
 # Guide de soumission à WordPress.org — AG Starter
 
-Ce guide explique comment soumettre les 3 templates AG Starter au répertoire officiel WordPress.org. **C'est une démarche manuelle que tu dois faire depuis ton ordinateur** (je ne peux pas la faire à ta place — elle nécessite un compte wordpress.org et l'upload via leur interface).
+Ce guide explique comment soumettre **les 3 thèmes AG Starter + le plugin compagnon AG Starter Companion** aux deux répertoires officiels WordPress.org (themes + plugins). **C'est une démarche manuelle que tu dois faire depuis ton ordinateur** (je ne peux pas la faire à ta place — elle nécessite un compte wordpress.org et l'upload via leur interface).
+
+## Résumé : 4 soumissions au total
+
+1. **Thème** `ag-starter-restaurant` → https://wordpress.org/themes/upload/
+2. **Thème** `ag-starter-artisan` → https://wordpress.org/themes/upload/
+3. **Thème** `ag-starter-coach` → https://wordpress.org/themes/upload/
+4. **Plugin** `ag-starter-companion` → https://wordpress.org/plugins/developers/add/
+
+Les thèmes passent par l'équipe Theme Review (délai 2–8 semaines). Le plugin passe par l'équipe Plugin Review (délai 1–4 semaines, plus rapide en général). Ce sont deux équipes distinctes avec des règles différentes.
+
+## Pourquoi un plugin compagnon séparé ?
+
+Les règles WordPress.org **interdisent aux thèmes** de créer des pages, menus ou contenus automatiquement — c'est considéré comme "du domaine des plugins". C'est pour ça qu'Astra, OceanWP, Kadence et les autres thèmes gratuits populaires utilisent un **plugin compagnon** pour leurs importers de contenu démo. `AG Starter Companion` applique la même architecture :
+
+- Il détecte automatiquement quel thème AG Starter est actif (Restaurant, Artisan ou Coach)
+- Il adapte le contenu importé en fonction du thème détecté
+- Si aucun thème AG Starter n'est actif, il reste dormant
+- Chaque thème affiche une admin notice invitant l'utilisateur à installer le plugin
 
 ## Prérequis
 
