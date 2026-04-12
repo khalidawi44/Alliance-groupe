@@ -4,6 +4,43 @@
  */
 get_header();
 $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
+
+/*
+ * Stripe Payment Links for the Pro / Premium / Business packs.
+ *
+ * To activate real payments :
+ *   1. Go to https://dashboard.stripe.com/payment-links/create
+ *   2. Create 3 Payment Links (one per pack) with the matching amount
+ *      (49€, 99€, 149€) and success URL pointing to your /contact
+ *      confirmation page.
+ *   3. Copy each resulting https://buy.stripe.com/xxxxx URL.
+ *   4. Either replace the defaults below, OR set them as WordPress
+ *      options via wp-admin/options.php :
+ *        ag_stripe_pro_url      = https://buy.stripe.com/xxx
+ *        ag_stripe_premium_url  = https://buy.stripe.com/yyy
+ *        ag_stripe_business_url = https://buy.stripe.com/zzz
+ *
+ * If a URL is still the placeholder, the button falls back to the
+ * /contact page with the pack slug in the query string so the lead
+ * is still captured.
+ */
+$ag_stripe_placeholder    = 'STRIPE_PLACEHOLDER';
+$ag_stripe_pro_default    = $ag_stripe_placeholder;
+$ag_stripe_premium_default = $ag_stripe_placeholder;
+$ag_stripe_business_default = $ag_stripe_placeholder;
+
+$ag_stripe_pro      = get_option( 'ag_stripe_pro_url', $ag_stripe_pro_default );
+$ag_stripe_premium  = get_option( 'ag_stripe_premium_url', $ag_stripe_premium_default );
+$ag_stripe_business = get_option( 'ag_stripe_business_url', $ag_stripe_business_default );
+
+$ag_contact_base = home_url( '/contact' );
+$ag_pro_cta_url      = ( $ag_stripe_pro      !== $ag_stripe_placeholder ) ? $ag_stripe_pro      : add_query_arg( 'pack', 'pro', $ag_contact_base );
+$ag_premium_cta_url  = ( $ag_stripe_premium  !== $ag_stripe_placeholder ) ? $ag_stripe_premium  : add_query_arg( 'pack', 'premium', $ag_contact_base );
+$ag_business_cta_url = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? $ag_stripe_business : add_query_arg( 'pack', 'business', $ag_contact_base );
+
+$ag_pro_cta_label      = ( $ag_stripe_pro      !== $ag_stripe_placeholder ) ? 'Payer 49€ via Stripe →'  : 'Acheter — 49€ une fois';
+$ag_premium_cta_label  = ( $ag_stripe_premium  !== $ag_stripe_placeholder ) ? 'Payer 99€ via Stripe →'  : 'Acheter — 99€ une fois';
+$ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'Payer 149€ via Stripe →' : 'Acheter — 149€ une fois';
 ?>
 
 <main id="ag-main-content">
@@ -128,55 +165,65 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
                 <table style="width:100%;border-collapse:collapse;background:rgba(255,255,255,.02);border:1px solid rgba(212,180,92,.15);border-radius:12px;overflow:hidden;">
                     <thead>
                         <tr style="background:rgba(212,180,92,.08);">
-                            <th style="text-align:left;padding:18px 22px;color:#b0b0bc;font-weight:600;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;width:40%;">Fonctionnalité</th>
-                            <th style="padding:18px 16px;color:#e8e6e0;font-weight:700;text-align:center;">Gratuit<br><small style="color:#888;font-weight:400;">Thème seul</small></th>
-                            <th style="padding:18px 16px;color:#D4B45C;font-weight:700;text-align:center;border-left:1px solid rgba(212,180,92,.15);border-right:1px solid rgba(212,180,92,.15);">Pro<br><small style="color:#888;font-weight:400;">49€</small></th>
-                            <th style="padding:18px 16px;color:#D4B45C;font-weight:700;text-align:center;background:rgba(212,180,92,.06);">Premium<br><small style="color:#888;font-weight:400;">99€</small></th>
+                            <th style="text-align:left;padding:18px 18px;color:#b0b0bc;font-weight:600;font-size:.82rem;text-transform:uppercase;letter-spacing:.5px;width:36%;">Fonctionnalité</th>
+                            <th style="padding:18px 12px;color:#28a745;font-weight:700;text-align:center;font-size:.95rem;">Gratuit<br><small style="color:#888;font-weight:400;">0€</small></th>
+                            <th style="padding:18px 12px;color:#D4B45C;font-weight:700;text-align:center;font-size:.95rem;border-left:1px solid rgba(212,180,92,.15);">Pro<br><small style="color:#888;font-weight:400;">49€</small></th>
+                            <th style="padding:18px 12px;color:#D4B45C;font-weight:700;text-align:center;font-size:.95rem;background:rgba(212,180,92,.06);border-left:1px solid rgba(212,180,92,.15);border-right:1px solid rgba(212,180,92,.15);">Premium<br><small style="color:#888;font-weight:400;">99€</small></th>
+                            <th style="padding:18px 12px;color:#D4B45C;font-weight:700;text-align:center;font-size:.95rem;">Business<br><small style="color:#888;font-weight:400;">149€</small></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
                         $matrix = [
-                            ['Page d\'accueil pré-remplie en français', '✓', '✓', '✓'],
-                            ['Plugin compagnon (import 1 clic)', '✓', '✓', '✓'],
-                            ['Customizer WordPress (couleurs, typo, textes)', '✓', '✓', '✓'],
-                            ['Blog, commentaires, recherche', '✓', '✓', '✓'],
-                            ['100% responsive', '✓', '✓', '✓'],
-                            ['Design travaillé (hover, animations, transitions)', '—', '✓', '✓'],
-                            ['Gradients, ombres, effets premium', '—', '✓', '✓'],
-                            ['10 blocs Gutenberg personnalisés', '—', '✓', '✓'],
-                            ['Customizer étendu (50+ réglages, espacements, layouts)', '—', '✓', '✓'],
-                            ['Sticky header + menu mobile stylisé', '—', '✓', '✓'],
-                            ['Polices Google Fonts premium', '—', '✓', '✓'],
-                            ['Support email 60 jours', '—', '✓', '✓'],
-                            ['Multi-langue (FR, EN, ES, IT, DE, AR)', '—', '—', '✓'],
-                            ['Sections premium (témoignages, galerie, pricing)', '—', '—', '✓'],
-                            ['Intégration WooCommerce complète', '—', '—', '✓'],
-                            ['Import / export des réglages', '—', '—', '✓'],
-                            ['Support prioritaire 12 mois', '—', '—', '✓'],
-                            ['Mises à jour à vie', '—', '—', '✓'],
-                            ['Appel de 30 min avec un expert', '—', '—', '✓'],
+                            ['Page d\'accueil pré-remplie en français', '✓', '✓', '✓', '✓'],
+                            ['Plugin compagnon (import 1 clic)', '✓', '✓', '✓', '✓'],
+                            ['Customizer WordPress (couleurs, typo, textes)', '✓', '✓', '✓', '✓'],
+                            ['Blog, commentaires, recherche', '✓', '✓', '✓', '✓'],
+                            ['100% responsive', '✓', '✓', '✓', '✓'],
+                            ['Design travaillé (hover, animations, transitions)', '—', '✓', '✓', '✓'],
+                            ['Gradients, ombres, effets premium', '—', '✓', '✓', '✓'],
+                            ['10 blocs Gutenberg personnalisés', '—', '✓', '✓', '✓'],
+                            ['Customizer étendu (50+ réglages)', '—', '✓', '✓', '✓'],
+                            ['Sticky header + menu mobile stylisé', '—', '✓', '✓', '✓'],
+                            ['Polices Google Fonts premium', '—', '✓', '✓', '✓'],
+                            ['Support email 60 jours', '—', '✓', '✓', '✓'],
+                            ['Multi-langue (FR, EN, ES, IT, DE, AR)', '—', '—', '✓', '✓'],
+                            ['Sections premium (témoignages, galerie, pricing)', '—', '—', '✓', '✓'],
+                            ['Intégration WooCommerce complète', '—', '—', '✓', '✓'],
+                            ['Import / export des réglages', '—', '—', '✓', '✓'],
+                            ['Support prioritaire 12 mois', '—', '—', '✓', '✓'],
+                            ['Mises à jour à vie', '—', '—', '✓', '✓'],
+                            ['Appel de 30 min avec un expert', '—', '—', '✓', '✓'],
+                            ['🛠️ Installation assistée (visio 1h)', '—', '—', '—', '✓'],
+                            ['Maintenance WordPress 1 an incluse', '—', '—', '—', '✓'],
+                            ['Audit SEO mensuel (3 rapports/an)', '—', '—', '—', '✓'],
+                            ['Rapport de performance trimestriel', '—', '—', '—', '✓'],
+                            ['Support prioritaire absolu (2h ouvrées)', '—', '—', '—', '✓'],
+                            ['White-label complet (retirer crédit AG)', '—', '—', '—', '✓'],
+                            ['Intégration CRM (HubSpot, Pipedrive, Brevo)', '—', '—', '—', '✓'],
+                            ['Appel stratégique lancement avec Fabrizio', '—', '—', '—', '✓'],
                         ];
                         foreach ($matrix as $row) : ?>
                         <tr style="border-top:1px solid rgba(255,255,255,.04);">
-                            <td style="padding:14px 22px;color:#e8e6e0;font-size:.92rem;"><?php echo esc_html($row[0]); ?></td>
-                            <td style="padding:14px 16px;text-align:center;color:<?php echo $row[1] === '✓' ? '#28a745' : '#555'; ?>;font-weight:700;font-size:1.1rem;"><?php echo esc_html($row[1]); ?></td>
-                            <td style="padding:14px 16px;text-align:center;color:<?php echo $row[2] === '✓' ? '#D4B45C' : '#555'; ?>;font-weight:700;font-size:1.1rem;border-left:1px solid rgba(212,180,92,.1);border-right:1px solid rgba(212,180,92,.1);"><?php echo esc_html($row[2]); ?></td>
-                            <td style="padding:14px 16px;text-align:center;color:<?php echo $row[3] === '✓' ? '#D4B45C' : '#555'; ?>;font-weight:700;font-size:1.1rem;background:rgba(212,180,92,.03);"><?php echo esc_html($row[3]); ?></td>
+                            <td style="padding:12px 18px;color:#e8e6e0;font-size:.88rem;"><?php echo esc_html($row[0]); ?></td>
+                            <td style="padding:12px 12px;text-align:center;color:<?php echo $row[1] === '✓' ? '#28a745' : '#555'; ?>;font-weight:700;font-size:1.05rem;"><?php echo esc_html($row[1]); ?></td>
+                            <td style="padding:12px 12px;text-align:center;color:<?php echo $row[2] === '✓' ? '#D4B45C' : '#555'; ?>;font-weight:700;font-size:1.05rem;border-left:1px solid rgba(212,180,92,.1);"><?php echo esc_html($row[2]); ?></td>
+                            <td style="padding:12px 12px;text-align:center;color:<?php echo $row[3] === '✓' ? '#D4B45C' : '#555'; ?>;font-weight:700;font-size:1.05rem;background:rgba(212,180,92,.03);border-left:1px solid rgba(212,180,92,.1);border-right:1px solid rgba(212,180,92,.1);"><?php echo esc_html($row[3]); ?></td>
+                            <td style="padding:12px 12px;text-align:center;color:<?php echo $row[4] === '✓' ? '#D4B45C' : '#555'; ?>;font-weight:700;font-size:1.05rem;"><?php echo esc_html($row[4]); ?></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
 
-            <div class="ag-pricing__grid" style="grid-template-columns:1fr 1fr;max-width:800px;margin:0 auto;">
+            <div class="ag-pricing__grid" style="grid-template-columns:repeat(3,1fr);max-width:1100px;margin:0 auto;">
 
                 <!-- Pack Pro 49€ -->
                 <div class="ag-price-card ag-anim" data-anim="card">
                     <div class="ag-price-card__header">
                         <span class="ag-price-card__price">49<small>€</small></span>
                         <h3 class="ag-price-card__title">Pack Pro</h3>
-                        <p class="ag-price-card__sub">Plugin AG Starter Pro — transforme le thème basique en thème professionnel</p>
+                        <p class="ag-price-card__sub">Le thème basique devient un vrai thème professionnel</p>
                     </div>
                     <ul class="ag-price-card__list">
                         <li><strong>Design travaillé</strong> : animations, transitions, hover, gradients</li>
@@ -188,31 +235,54 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
                         <li><strong>Support email 60 jours</strong></li>
                         <li><strong>Documentation vidéo</strong> complète</li>
                     </ul>
-                    <a href="<?php echo esc_url(home_url('/contact?pack=pro')); ?>" class="ag-btn-outline">Acheter — 49€ une fois</a>
-                    <p style="font-size:.8rem;color:#888;text-align:center;margin-top:12px;">Prix unique — pas d'abonnement.<br>Compatible avec les 3 thèmes AG Starter.</p>
+                    <a href="<?php echo esc_url( $ag_pro_cta_url ); ?>" class="ag-btn-outline"<?php echo ( $ag_stripe_pro !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : ''; ?>><?php echo esc_html( $ag_pro_cta_label ); ?></a>
+                    <p style="font-size:.8rem;color:#888;text-align:center;margin-top:12px;">Paiement unique — pas d'abonnement.<br>Compatible avec les 3 thèmes AG Starter.</p>
                 </div>
 
                 <!-- Pack Premium 99€ -->
                 <div class="ag-price-card ag-price-card--pop ag-anim" data-anim="card">
-                    <span class="ag-price-card__badge">⭐ Premium</span>
+                    <span class="ag-price-card__badge">⭐ Populaire</span>
                     <div class="ag-price-card__header">
                         <span class="ag-price-card__price">99<small>€</small></span>
                         <h3 class="ag-price-card__title">Pack Premium</h3>
-                        <p class="ag-price-card__sub">Plugin AG Starter Premium — tout Pro + multi-langue + features avancées</p>
+                        <p class="ag-price-card__sub">Tout Pro + multi-langue + WooCommerce</p>
                     </div>
                     <ul class="ag-price-card__list">
                         <li><strong>Tout ce qui est dans Pro</strong> (design, blocs, customizer…)</li>
-                        <li><strong>🌍 Multi-langue</strong> : thèmes traduits dans <strong>6 langues</strong> (FR, EN, ES, IT, DE, AR)</li>
+                        <li><strong>🌍 Multi-langue</strong> : 6 langues (FR, EN, ES, IT, DE, AR)</li>
                         <li><strong>Switcher de langue</strong> automatique dans le menu</li>
-                        <li><strong>Sections premium</strong> : témoignages, galerie, pricing table</li>
+                        <li><strong>Sections premium</strong> : témoignages, galerie, pricing</li>
                         <li><strong>Intégration WooCommerce</strong> complète (e-commerce ready)</li>
                         <li><strong>Import / export</strong> des réglages</li>
                         <li><strong>Support prioritaire 12 mois</strong> (réponse sous 24h)</li>
                         <li><strong>Mises à jour à vie</strong></li>
-                        <li><strong>Appel de 30 min</strong> avec un expert pour la mise en place</li>
+                        <li><strong>Appel de 30 min</strong> avec un expert</li>
                     </ul>
-                    <a href="<?php echo esc_url(home_url('/contact?pack=premium')); ?>" class="ag-btn-gold">Acheter — 99€ une fois</a>
-                    <p style="font-size:.8rem;color:#888;text-align:center;margin-top:12px;">Prix unique — pas d'abonnement.<br>Compatible avec les 3 thèmes AG Starter.</p>
+                    <a href="<?php echo esc_url( $ag_premium_cta_url ); ?>" class="ag-btn-gold"<?php echo ( $ag_stripe_premium !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : ''; ?>><?php echo esc_html( $ag_premium_cta_label ); ?></a>
+                    <p style="font-size:.8rem;color:#888;text-align:center;margin-top:12px;">Paiement unique — pas d'abonnement.<br>Compatible avec les 3 thèmes AG Starter.</p>
+                </div>
+
+                <!-- Pack Business 149€ -->
+                <div class="ag-price-card ag-anim" data-anim="card" style="border-color:rgba(212,180,92,.35);">
+                    <span class="ag-price-card__badge" style="background:rgba(212,180,92,.15);color:#D4B45C;border:1px solid rgba(212,180,92,.35);">💼 Business</span>
+                    <div class="ag-price-card__header">
+                        <span class="ag-price-card__price">149<small>€</small></span>
+                        <h3 class="ag-price-card__title">Pack Business</h3>
+                        <p class="ag-price-card__sub">Tout Premium + accompagnement pro 1 an</p>
+                    </div>
+                    <ul class="ag-price-card__list">
+                        <li><strong>Tout ce qui est dans Premium</strong> (multi-langue, WooCommerce…)</li>
+                        <li><strong>🛠️ Installation assistée</strong> par notre équipe (visio 1h)</li>
+                        <li><strong>Maintenance 1 an incluse</strong> (mises à jour WP + plugins)</li>
+                        <li><strong>Audit SEO mensuel</strong> (3 rapports/an)</li>
+                        <li><strong>Rapport de performance trimestriel</strong></li>
+                        <li><strong>Support prioritaire absolu</strong> (réponse sous 2h ouvrées)</li>
+                        <li><strong>White-label complet</strong> : retirer le crédit "AG" du footer</li>
+                        <li><strong>Intégration CRM</strong> (HubSpot, Pipedrive, Brevo)</li>
+                        <li><strong>Appel stratégique</strong> de lancement avec Fabrizio</li>
+                    </ul>
+                    <a href="<?php echo esc_url( $ag_business_cta_url ); ?>" class="ag-btn-outline"<?php echo ( $ag_stripe_business !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : ''; ?>><?php echo esc_html( $ag_business_cta_label ); ?></a>
+                    <p style="font-size:.8rem;color:#888;text-align:center;margin-top:12px;">Paiement unique — pas d'abonnement.<br>Idéal pour freelances &amp; petites agences.</p>
                 </div>
 
             </div>
@@ -356,7 +426,7 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
 
             <div style="max-width:900px;margin:56px auto 0;text-align:center;padding:28px;background:rgba(255,255,255,.02);border:1px dashed rgba(212,180,92,.3);border-radius:12px;">
                 <p style="color:#e8e6e0;font-size:1.05rem;margin-bottom:8px;"><strong>En résumé :</strong></p>
-                <p style="color:#b0b0bc;font-size:.98rem;line-height:1.8;margin:0;">Si votre budget est à zéro → <strong style="color:#28a745;">thème gratuit</strong>. Si vous voulez un rendu pro sans agence → <strong style="color:#D4B45C;">Pack Pro 49€</strong>. Si vous voulez toucher plusieurs langues et WooCommerce → <strong style="color:#D4B45C;">Pack Premium 99€</strong>. <strong style="color:#fff;">Si votre business doit vraiment générer des résultats → parlons sur-mesure.</strong></p>
+                <p style="color:#b0b0bc;font-size:.98rem;line-height:1.8;margin:0;">Budget zéro → <strong style="color:#28a745;">thème gratuit</strong>. Rendu pro sans agence → <strong style="color:#D4B45C;">Pack Pro 49€</strong>. Multi-langue et WooCommerce → <strong style="color:#D4B45C;">Pack Premium 99€</strong>. Accompagnement pro 1 an, installation assistée et maintenance incluse → <strong style="color:#D4B45C;">Pack Business 149€</strong>. <strong style="color:#fff;">Et si votre business doit vraiment générer des résultats → parlons sur-mesure.</strong></p>
             </div>
         </div>
     </section>
@@ -510,24 +580,29 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
                 </div>
             </div>
 
-            <!-- Résumé des 3 niveaux -->
-            <div style="max-width:900px;margin:32px auto 0;padding:32px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);border-radius:16px;">
-                <h3 style="text-align:center;font-size:1.15rem;margin-bottom:20px;">L'écosystème AG Starter en <em>3 niveaux</em></h3>
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center;">
-                    <div style="padding:20px;background:rgba(40,167,69,.05);border:1px solid rgba(40,167,69,.2);border-radius:12px;">
-                        <div style="font-size:1.8rem;margin-bottom:8px;">🆓</div>
-                        <strong style="color:#28a745;display:block;margin-bottom:6px;">Gratuit</strong>
-                        <p style="color:#b0b0bc;font-size:.85rem;line-height:1.6;margin:0;">Thème basique en français + plugin compagnon d'import. Vous avez un site fonctionnel et minimaliste. Parfait pour démarrer.</p>
+            <!-- Résumé des 4 niveaux -->
+            <div style="max-width:1100px;margin:32px auto 0;padding:32px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);border-radius:16px;">
+                <h3 style="text-align:center;font-size:1.15rem;margin-bottom:20px;">L'écosystème AG Starter en <em>4 niveaux</em></h3>
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;text-align:center;">
+                    <div style="padding:18px;background:rgba(40,167,69,.05);border:1px solid rgba(40,167,69,.2);border-radius:12px;">
+                        <div style="font-size:1.6rem;margin-bottom:6px;">🆓</div>
+                        <strong style="color:#28a745;display:block;margin-bottom:6px;font-size:.95rem;">Gratuit</strong>
+                        <p style="color:#b0b0bc;font-size:.82rem;line-height:1.55;margin:0;">Thème basique + plugin compagnon d'import. Site fonctionnel minimaliste. Parfait pour démarrer.</p>
                     </div>
-                    <div style="padding:20px;background:rgba(212,180,92,.05);border:1px solid rgba(212,180,92,.25);border-radius:12px;">
-                        <div style="font-size:1.8rem;margin-bottom:8px;">⚡</div>
-                        <strong style="color:#D4B45C;display:block;margin-bottom:6px;">Pro — 49€</strong>
-                        <p style="color:#b0b0bc;font-size:.85rem;line-height:1.6;margin:0;">Plugin qui ajoute un vrai design travaillé : animations, blocs personnalisés, customizer avancé. Votre site passe de "basique" à "pro".</p>
+                    <div style="padding:18px;background:rgba(212,180,92,.05);border:1px solid rgba(212,180,92,.25);border-radius:12px;">
+                        <div style="font-size:1.6rem;margin-bottom:6px;">⚡</div>
+                        <strong style="color:#D4B45C;display:block;margin-bottom:6px;font-size:.95rem;">Pro — 49€</strong>
+                        <p style="color:#b0b0bc;font-size:.82rem;line-height:1.55;margin:0;">Design travaillé : animations, blocs, customizer avancé. De "basique" à "pro".</p>
                     </div>
-                    <div style="padding:20px;background:rgba(212,180,92,.08);border:1px solid rgba(212,180,92,.35);border-radius:12px;">
-                        <div style="font-size:1.8rem;margin-bottom:8px;">🌍</div>
-                        <strong style="color:#D4B45C;display:block;margin-bottom:6px;">Premium — 99€</strong>
-                        <p style="color:#b0b0bc;font-size:.85rem;line-height:1.6;margin:0;">Tout Pro + multi-langue (6 langues), WooCommerce, sections premium, support prioritaire. Pour toucher un public international.</p>
+                    <div style="padding:18px;background:rgba(212,180,92,.08);border:1px solid rgba(212,180,92,.35);border-radius:12px;">
+                        <div style="font-size:1.6rem;margin-bottom:6px;">🌍</div>
+                        <strong style="color:#D4B45C;display:block;margin-bottom:6px;font-size:.95rem;">Premium — 99€</strong>
+                        <p style="color:#b0b0bc;font-size:.82rem;line-height:1.55;margin:0;">Tout Pro + multi-langue 6 langues, WooCommerce, support prioritaire.</p>
+                    </div>
+                    <div style="padding:18px;background:rgba(212,180,92,.12);border:2px solid rgba(212,180,92,.5);border-radius:12px;">
+                        <div style="font-size:1.6rem;margin-bottom:6px;">💼</div>
+                        <strong style="color:#D4B45C;display:block;margin-bottom:6px;font-size:.95rem;">Business — 149€</strong>
+                        <p style="color:#b0b0bc;font-size:.82rem;line-height:1.55;margin:0;">Tout Premium + installation assistée, maintenance 1 an, audit SEO, white-label.</p>
                     </div>
                 </div>
             </div>
