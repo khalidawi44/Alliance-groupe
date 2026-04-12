@@ -371,6 +371,120 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
         </div>
     </section>
 
+    <!-- 🚨 AVERTISSEMENT PRIORITAIRE — Offre création sur-mesure -->
+    <section class="ag-section ag-section--or" style="padding:100px 0;">
+        <div class="ag-container">
+            <div style="max-width:1000px;margin:0 auto;padding:56px 48px;background:linear-gradient(135deg,rgba(212,180,92,.10) 0%,rgba(20,20,22,.6) 100%);border:2px solid rgba(212,180,92,.4);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.5);position:relative;overflow:hidden;">
+                <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,#D4B45C,transparent);"></div>
+
+                <div style="text-align:center;margin-bottom:36px;">
+                    <span style="display:inline-block;padding:8px 24px;background:rgba(212,180,92,.2);border:1px solid rgba(212,180,92,.5);border-radius:100px;color:#D4B45C;font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;">⚠️ Avertissement honnête</span>
+                    <h2 style="font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:16px;line-height:1.2;">Avant d'acheter un template, <em>lisez ceci</em></h2>
+                    <p style="font-size:1.15rem;color:#e8e6e0;max-width:780px;margin:0 auto;line-height:1.7;">Les templates (gratuits ou payants) sont un <strong style="color:#D4B45C;">point de départ</strong>, pas une solution complète. Si votre objectif est de <strong style="color:#fff;">générer de vrais clients et du vrai chiffre d'affaires</strong>, un site sur-mesure est toujours la meilleure solution. Voici pourquoi, et pourquoi on vous le dit alors que ça pourrait nous faire perdre des ventes.</p>
+                </div>
+
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:36px;">
+                    <div style="text-align:center;padding:24px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.2);border-radius:12px;">
+                        <div style="font-size:2.4rem;font-weight:800;color:#D4B45C;margin-bottom:4px;">+340%</div>
+                        <div style="color:#b0b0bc;font-size:.92rem;">Leads générés en moyenne<br>par nos sites sur-mesure</div>
+                    </div>
+                    <div style="text-align:center;padding:24px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.2);border-radius:12px;">
+                        <div style="font-size:2.4rem;font-weight:800;color:#D4B45C;margin-bottom:4px;">3 mois</div>
+                        <div style="color:#b0b0bc;font-size:.92rem;">Délai moyen pour<br>rentabiliser le site</div>
+                    </div>
+                    <div style="text-align:center;padding:24px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.2);border-radius:12px;">
+                        <div style="font-size:2.4rem;font-weight:800;color:#D4B45C;margin-bottom:4px;">0€</div>
+                        <div style="color:#b0b0bc;font-size:.92rem;">Coût du premier rendez-vous<br>stratégique (sans engagement)</div>
+                    </div>
+                </div>
+
+                <div style="background:rgba(255,255,255,.02);border-left:4px solid #D4B45C;padding:24px 28px;margin-bottom:32px;border-radius:0 8px 8px 0;">
+                    <p style="font-size:1.05rem;color:#e8e6e0;line-height:1.8;margin:0;">
+                        <strong style="color:#D4B45C;">La vérité :</strong> même avec notre plugin Premium à 99€, un template AG Starter reste un template. Il aura l'air propre, fonctionnera bien, mais il ne vendra <em>jamais</em> aussi bien qu'un site conçu pour VOTRE marque, VOS mots-clés, VOS clients cibles. Si vous jouez pour gagner — restaurant en ville touristique, artisan qui veut dominer sa zone, coach qui veut remplir son agenda — un site sur-mesure est un investissement, pas une dépense.
+                    </p>
+                </div>
+
+                <div style="text-align:center;">
+                    <h3 style="font-size:1.35rem;margin-bottom:12px;color:#fff;">Votre business mérite plus qu'un template</h3>
+                    <p style="color:#b0b0bc;margin-bottom:28px;max-width:640px;margin-left:auto;margin-right:auto;">Réservez un <strong style="color:#D4B45C;">appel stratégique gratuit de 30 minutes</strong>. Pas de blabla, pas de vente forcée — juste un audit honnête de votre situation et des recommandations concrètes. Si un template suffit, on vous le dira. Si vous avez besoin d'un vrai site, on vous expliquera pourquoi avec des chiffres.</p>
+                    <div class="ag-hero__buttons" style="justify-content:center;flex-wrap:wrap;">
+                        <a href="tel:+33623526074" class="ag-btn-gold">📞 Appeler Fabrizio — 06.23.52.60.74</a>
+                        <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Réserver un appel stratégique →</a>
+                    </div>
+                    <p style="color:#888;font-size:.85rem;margin-top:20px;font-style:italic;">7j/7 · Réponse sous 24h · Aucun engagement</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 📊 Explication approfondie Gratuit / Pro / Premium / Sur-mesure -->
+    <section class="ag-section ag-section--graphite">
+        <div class="ag-container">
+            <span class="ag-tag ag-anim" data-anim="tag">Comprendre les 4 niveaux</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Template gratuit, Pro, Premium ou <em>sur-mesure</em> ?</h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Chaque niveau sert un besoin différent. Voici comment choisir selon votre objectif réel — et ce que les concurrents proposent au même tarif.</p>
+
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;max-width:1100px;margin:48px auto 0;">
+
+                <!-- Gratuit -->
+                <div style="padding:32px;background:rgba(40,167,69,.04);border:1px solid rgba(40,167,69,.25);border-radius:16px;">
+                    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;">
+                        <h3 style="color:#28a745;font-size:1.3rem;margin:0;">🆓 Gratuit — Template seul</h3>
+                        <span style="color:#28a745;font-weight:700;">0€</span>
+                    </div>
+                    <p style="color:#b0b0bc;font-size:.95rem;line-height:1.7;margin-bottom:16px;"><strong style="color:#e8e6e0;">Pour qui ?</strong> Quelqu'un qui veut juste être en ligne rapidement, avec un budget zéro, sans ambition commerciale immédiate.</p>
+                    <p style="color:#b0b0bc;font-size:.92rem;line-height:1.7;margin-bottom:16px;"><strong style="color:#e8e6e0;">Ce que vous obtenez :</strong> un thème WordPress minimaliste en français, 5 pages pré-remplies, un customizer pour changer couleurs/typo/textes, un plugin d'import en 1 clic. C'est fonctionnel, c'est propre, c'est en ligne en 30 minutes.</p>
+                    <p style="color:#b0b0bc;font-size:.92rem;line-height:1.7;margin-bottom:16px;"><strong style="color:#e8e6e0;">Les limites :</strong> design volontairement basique (pas d'animations, pas d'effets, pas de gradients). Pas de multi-langue. Pas de WooCommerce. Aucun support dédié.</p>
+                    <p style="color:#888;font-size:.85rem;line-height:1.6;margin:0;"><strong style="color:#28a745;">Concurrents équivalents :</strong> Astra free, OceanWP free, Kadence free, GeneratePress free — mais tous en anglais avec du Lorem ipsum à remplacer.</p>
+                </div>
+
+                <!-- Pro -->
+                <div style="padding:32px;background:rgba(212,180,92,.04);border:1px solid rgba(212,180,92,.25);border-radius:16px;">
+                    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;">
+                        <h3 style="color:#D4B45C;font-size:1.3rem;margin:0;">⚡ Pro — Plugin payant</h3>
+                        <span style="color:#D4B45C;font-weight:700;">49€ une fois</span>
+                    </div>
+                    <p style="color:#b0b0bc;font-size:.95rem;line-height:1.7;margin-bottom:16px;"><strong style="color:#e8e6e0;">Pour qui ?</strong> Quelqu'un qui veut un rendu visuel professionnel sans payer une agence. Un artisan, un petit commerce, un coach qui débute.</p>
+                    <p style="color:#b0b0bc;font-size:.92rem;line-height:1.7;margin-bottom:16px;"><strong style="color:#e8e6e0;">Ce que le plugin ajoute au thème gratuit :</strong> toutes les finitions visuelles (animations, hover, transitions, gradients, ombres), 10 blocs Gutenberg premium, un customizer étendu (50+ réglages), les polices Google Fonts, un sticky header et un menu mobile stylisé. Votre site passe de "brouillon fonctionnel" à "site professionnel".</p>
+                    <p style="color:#b0b0bc;font-size:.92rem;line-height:1.7;margin-bottom:16px;"><strong style="color:#e8e6e0;">Les limites :</strong> toujours un template. Le contenu et la structure restent ceux qu'on a conçus — vous ne pouvez pas réinventer la page d'accueil.</p>
+                    <p style="color:#888;font-size:.85rem;line-height:1.6;margin:0;"><strong style="color:#D4B45C;">Concurrents équivalents :</strong> Astra Pro à 59€/an (abonnement), GeneratePress Premium à 59€/an. Chez nous c'est <strong>un paiement unique</strong> — sur 3 ans vous économisez 128€.</p>
+                </div>
+
+                <!-- Premium -->
+                <div style="padding:32px;background:rgba(212,180,92,.08);border:2px solid rgba(212,180,92,.4);border-radius:16px;">
+                    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;">
+                        <h3 style="color:#D4B45C;font-size:1.3rem;margin:0;">🌍 Premium — Plugin payant</h3>
+                        <span style="color:#D4B45C;font-weight:700;">99€ une fois</span>
+                    </div>
+                    <p style="color:#b0b0bc;font-size:.95rem;line-height:1.7;margin-bottom:16px;"><strong style="color:#e8e6e0;">Pour qui ?</strong> Quelqu'un qui veut toucher plusieurs pays (touristes, expatriés), vendre en ligne via WooCommerce, ou avoir les meilleures features disponibles. Un restaurant en ville touristique, un coach international, une boutique artisanale qui expédie en Europe.</p>
+                    <p style="color:#b0b0bc;font-size:.92rem;line-height:1.7;margin-bottom:16px;"><strong style="color:#e8e6e0;">Ce que le plugin ajoute en plus de Pro :</strong> thèmes traduits dans <strong>6 langues</strong> (FR, EN, ES, IT, DE, AR) avec switcher automatique, sections premium (témoignages, galerie, pricing), intégration WooCommerce complète, import/export des réglages, support prioritaire 12 mois, mises à jour à vie, et un appel de 30 min avec un expert pour la mise en place.</p>
+                    <p style="color:#b0b0bc;font-size:.92rem;line-height:1.7;margin-bottom:16px;"><strong style="color:#e8e6e0;">Les limites :</strong> toujours un template. Même avec tout ça, vous ne bénéficiez pas d'une stratégie de conversion spécifique à votre business.</p>
+                    <p style="color:#888;font-size:.85rem;line-height:1.6;margin:0;"><strong style="color:#D4B45C;">Concurrents équivalents :</strong> OceanWP Business à 79€/an, Kadence Full Bundle à 129€/an — tous en abonnement. Chez nous 99€ <strong>une fois pour toute</strong>. Sur 3 ans vous économisez entre 138€ et 288€.</p>
+                </div>
+
+                <!-- Sur-mesure -->
+                <div style="padding:32px;background:linear-gradient(135deg,rgba(212,180,92,.15),rgba(212,180,92,.05));border:2px solid #D4B45C;border-radius:16px;position:relative;">
+                    <span style="position:absolute;top:-14px;left:24px;background:#D4B45C;color:#080808;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:4px 12px;border-radius:4px;">Recommandé</span>
+                    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;">
+                        <h3 style="color:#fff;font-size:1.3rem;margin:0;">💎 Sur-mesure — Site Alliance Groupe</h3>
+                        <span style="color:#D4B45C;font-weight:700;">à partir de 1 500€</span>
+                    </div>
+                    <p style="color:#b0b0bc;font-size:.95rem;line-height:1.7;margin-bottom:16px;"><strong style="color:#e8e6e0;">Pour qui ?</strong> Quelqu'un qui traite son site web comme un <strong style="color:#D4B45C;">investissement business</strong>, pas une dépense. Quelqu'un qui veut que son site <strong style="color:#fff;">vende</strong>, pas juste qu'il existe.</p>
+                    <p style="color:#b0b0bc;font-size:.92rem;line-height:1.7;margin-bottom:16px;"><strong style="color:#e8e6e0;">Ce que vous obtenez :</strong> un site conçu par notre équipe (Fabrizio, Kate, Carlito, Halim, Amina) <strong>100% pour votre marque</strong>. Contenu rédigé par un copywriter professionnel, design unique, SEO ciblant vos vrais mots-clés, stratégie de conversion éprouvée, intégration IA et chatbots si pertinent, hébergement premium inclus, maintenance mensuelle.</p>
+                    <p style="color:#b0b0bc;font-size:.92rem;line-height:1.7;margin-bottom:16px;"><strong style="color:#e8e6e0;">Les résultats :</strong> +340% de leads en moyenne, 3 mois pour rentabiliser, un vrai commercial digital qui travaille 24/7 pour vous. Zéro compétence technique requise de votre côté — on gère tout, du devis à la mise en ligne.</p>
+                    <p style="color:#888;font-size:.85rem;line-height:1.6;margin:0 0 16px 0;"><strong style="color:#D4B45C;">Concurrents équivalents :</strong> une agence parisienne facturera entre 3 000€ et 8 000€ pour un résultat identique, et vous attendrez 4 mois au lieu de 4 semaines.</p>
+                    <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-gold" style="display:inline-block;margin-top:8px;">Discuter de mon projet →</a>
+                </div>
+
+            </div>
+
+            <div style="max-width:900px;margin:56px auto 0;text-align:center;padding:28px;background:rgba(255,255,255,.02);border:1px dashed rgba(212,180,92,.3);border-radius:12px;">
+                <p style="color:#e8e6e0;font-size:1.05rem;margin-bottom:8px;"><strong>En résumé :</strong></p>
+                <p style="color:#b0b0bc;font-size:.98rem;line-height:1.8;margin:0;">Si votre budget est à zéro → <strong style="color:#28a745;">thème gratuit</strong>. Si vous voulez un rendu pro sans agence → <strong style="color:#D4B45C;">Pack Pro 49€</strong>. Si vous voulez toucher plusieurs langues et WooCommerce → <strong style="color:#D4B45C;">Pack Premium 99€</strong>. <strong style="color:#fff;">Si votre business doit vraiment générer des résultats → parlons sur-mesure.</strong></p>
+            </div>
+        </div>
+    </section>
+
     <!-- Comparatif DIY vs Pro -->
     <section class="ag-section ag-section--image-luxe">
         <div class="ag-container">
