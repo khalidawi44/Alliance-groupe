@@ -54,5 +54,13 @@
             </div>
             <?php endforeach; ?>
         </div>
+
+        <div class="ag-services__cta ag-anim" data-anim="card" style="text-align:center;margin-top:56px;">
+            <p style="color:#b0b0bc;font-size:1.05rem;margin-bottom:20px;">Vous avez un projet en tête ? Parlons-en directement, sans détour.</p>
+            <div class="ag-hero__buttons" style="justify-content:center;">
+                <a href="tel:+33623526074" class="ag-btn-gold">📞 Un projet ? Discutons-en !</a>
+                <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Nous contacter →</a>
+            </div>
+        </div>
     </div>
 </section>
