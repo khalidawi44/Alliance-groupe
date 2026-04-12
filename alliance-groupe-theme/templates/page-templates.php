@@ -91,155 +91,6 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
         </div>
     </section>
 
-    <!-- Templates gratuits -->
-    <section class="ag-section ag-section--marbre">
-        <div class="ag-container">
-            <span class="ag-tag ag-anim" data-anim="tag">Gratuit</span>
-            <h2 class="ag-section__title ag-anim" data-anim="title">Nos templates <em>gratuits</em></h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc">Téléchargez le ZIP, installez via Apparence &gt; Thèmes &gt; Ajouter, et c'est parti. Bientôt disponibles aussi sur le répertoire officiel WordPress.org.</p>
-
-            <div class="ag-tpl__grid">
-
-                <!-- Template Restaurant -->
-                <div class="ag-tpl-card ag-anim" data-anim="card">
-                    <div class="ag-tpl-card__img">
-                        <div class="ag-tpl-card__preview">
-                            <span style="font-size:2rem;">🍽️</span>
-                            <strong>AG Starter Restaurant</strong>
-                            <small>Or &amp; noir — 100% FR</small>
-                        </div>
-                    </div>
-                    <div class="ag-tpl-card__body">
-                        <span class="ag-tpl-card__badge ag-tpl-card__badge--free">Gratuit · v1.0</span>
-                        <h3 class="ag-tpl-card__title">Starter Restaurant</h3>
-                        <p class="ag-tpl-card__desc">Pour restaurant, bistrot, bar ou café. Hero, carte, réservation, privatisation, histoire, horaires. Textes français, pas de Lorem ipsum.</p>
-                        <ul class="ag-tpl-card__features">
-                            <li>Page d'accueil complète pré-remplie</li>
-                            <li>Design sombre or &amp; noir</li>
-                            <li>100% responsive, sans plugin</li>
-                            <li>Blog, commentaires, recherche</li>
-                            <li>Translation-ready (GPL v2+)</li>
-                        </ul>
-                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="restaurant" data-file="<?php echo esc_url($dl_base . 'ag-starter-restaurant.zip'); ?>">Télécharger gratuitement →</button>
-                    </div>
-                </div>
-
-                <!-- Template Artisan -->
-                <div class="ag-tpl-card ag-anim" data-anim="card">
-                    <div class="ag-tpl-card__img">
-                        <div class="ag-tpl-card__preview">
-                            <span style="font-size:2rem;">🔨</span>
-                            <strong>AG Starter Artisan</strong>
-                            <small>Bronze &amp; noir — 100% FR</small>
-                        </div>
-                    </div>
-                    <div class="ag-tpl-card__body">
-                        <span class="ag-tpl-card__badge ag-tpl-card__badge--free">Gratuit · v1.0</span>
-                        <h3 class="ag-tpl-card__title">Starter Artisan</h3>
-                        <p class="ag-tpl-card__desc">Pour artisans, plombiers, électriciens, menuisiers, BTP. Prestations, zones d'intervention, devis, réalisations. Textes français, ton pro.</p>
-                        <ul class="ag-tpl-card__features">
-                            <li>Page d'accueil complète pré-remplie</li>
-                            <li>Design sombre bronze &amp; noir</li>
-                            <li>100% responsive, sans plugin</li>
-                            <li>Blog, commentaires, recherche</li>
-                            <li>Translation-ready (GPL v2+)</li>
-                        </ul>
-                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="artisan" data-file="<?php echo esc_url($dl_base . 'ag-starter-artisan.zip'); ?>">Télécharger gratuitement →</button>
-                    </div>
-                </div>
-
-                <!-- Template Coach -->
-                <div class="ag-tpl-card ag-anim" data-anim="card">
-                    <div class="ag-tpl-card__img">
-                        <div class="ag-tpl-card__preview">
-                            <span style="font-size:2rem;">💼</span>
-                            <strong>AG Starter Coach</strong>
-                            <small>Bleu teal &amp; marine — 100% FR</small>
-                        </div>
-                    </div>
-                    <div class="ag-tpl-card__body">
-                        <span class="ag-tpl-card__badge ag-tpl-card__badge--free">Gratuit · v1.0</span>
-                        <h3 class="ag-tpl-card__title">Starter Coach</h3>
-                        <p class="ag-tpl-card__desc">Pour coachs, consultants, formateurs, thérapeutes. Services, séances, témoignages, rendez-vous. Textes français, ton bienveillant.</p>
-                        <ul class="ag-tpl-card__features">
-                            <li>Page d'accueil complète pré-remplie</li>
-                            <li>Design sombre teal &amp; marine</li>
-                            <li>100% responsive, sans plugin</li>
-                            <li>Blog, commentaires, recherche</li>
-                            <li>Translation-ready (GPL v2+)</li>
-                        </ul>
-                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="coach" data-file="<?php echo esc_url($dl_base . 'ag-starter-coach.zip'); ?>">Télécharger gratuitement →</button>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Plugin compagnon gratuit -->
-            <div style="max-width:900px;margin:56px auto 0;padding:40px;background:linear-gradient(135deg,rgba(40,167,69,.08),rgba(40,167,69,.02));border:1px solid rgba(40,167,69,.3);border-radius:16px;">
-                <div style="text-align:center;">
-                    <span class="ag-tag" style="background:rgba(40,167,69,.15);color:#28a745;border-color:rgba(40,167,69,.3);">Bonus gratuit — Plugin compagnon</span>
-                    <h3 style="font-size:1.4rem;margin:12px 0 8px;">Installation en 1 clic avec <em>AG Starter Companion</em></h3>
-                    <p style="color:#b0b0bc;max-width:680px;margin:0 auto 24px;font-size:.98rem;line-height:1.7;">Installez aussi notre <strong style="color:#28a745;">plugin compagnon gratuit</strong> et vous obtenez un bouton <strong style="color:#D4B45C;">"Importer le contenu démo"</strong> dans l'admin WordPress. En un clic il crée pour vous les 5 pages (Accueil, Carte/Prestations/Accompagnements, À propos, Contact…), le menu principal, la page d'accueil statique et active les permaliens. <strong style="color:#e8e6e0;">Zéro code, zéro manipulation manuelle.</strong></p>
-                    <div class="ag-hero__buttons" style="justify-content:center;flex-wrap:wrap;">
-                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="companion" data-file="<?php echo esc_url($dl_base . 'ag-starter-companion.zip'); ?>">⚡ Télécharger le plugin gratuit →</button>
-                        <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Besoin d'aide ? On en parle</a>
-                    </div>
-                    <p style="color:#888;font-size:.85rem;margin-top:20px;">Le plugin détecte automatiquement quel thème AG Starter est actif et adapte le contenu. Fonctionne avec Restaurant, Artisan et Coach. <strong style="color:#28a745;">100% gratuit, zéro limite.</strong></p>
-                </div>
-            </div>
-
-            <!-- Résumé des 3 niveaux -->
-            <div style="max-width:900px;margin:32px auto 0;padding:32px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);border-radius:16px;">
-                <h3 style="text-align:center;font-size:1.15rem;margin-bottom:20px;">L'écosystème AG Starter en <em>3 niveaux</em></h3>
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center;">
-                    <div style="padding:20px;background:rgba(40,167,69,.05);border:1px solid rgba(40,167,69,.2);border-radius:12px;">
-                        <div style="font-size:1.8rem;margin-bottom:8px;">🆓</div>
-                        <strong style="color:#28a745;display:block;margin-bottom:6px;">Gratuit</strong>
-                        <p style="color:#b0b0bc;font-size:.85rem;line-height:1.6;margin:0;">Thème basique en français + plugin compagnon d'import. Vous avez un site fonctionnel et minimaliste. Parfait pour démarrer.</p>
-                    </div>
-                    <div style="padding:20px;background:rgba(212,180,92,.05);border:1px solid rgba(212,180,92,.25);border-radius:12px;">
-                        <div style="font-size:1.8rem;margin-bottom:8px;">⚡</div>
-                        <strong style="color:#D4B45C;display:block;margin-bottom:6px;">Pro — 49€</strong>
-                        <p style="color:#b0b0bc;font-size:.85rem;line-height:1.6;margin:0;">Plugin qui ajoute un vrai design travaillé : animations, blocs personnalisés, customizer avancé. Votre site passe de "basique" à "pro".</p>
-                    </div>
-                    <div style="padding:20px;background:rgba(212,180,92,.08);border:1px solid rgba(212,180,92,.35);border-radius:12px;">
-                        <div style="font-size:1.8rem;margin-bottom:8px;">🌍</div>
-                        <strong style="color:#D4B45C;display:block;margin-bottom:6px;">Premium — 99€</strong>
-                        <p style="color:#b0b0bc;font-size:.85rem;line-height:1.6;margin:0;">Tout Pro + multi-langue (6 langues), WooCommerce, sections premium, support prioritaire. Pour toucher un public international.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Instructions d'installation -->
-            <div style="max-width:900px;margin:56px auto 0;padding:40px;background:rgba(255,255,255,.025);border:1px solid rgba(212,180,92,.18);border-radius:16px;">
-                <h3 style="text-align:center;font-size:1.25rem;margin-bottom:8px;">Installation en <em>4 étapes</em> — 2 minutes chrono</h3>
-                <p style="text-align:center;color:#b0b0bc;margin-bottom:28px;font-size:.95rem;">Aucune compétence technique nécessaire, juste un accès admin à votre WordPress.</p>
-                <ol style="list-style:none;counter-reset:step;padding:0;">
-                    <li style="counter-increment:step;position:relative;padding:16px 0 16px 60px;border-bottom:1px solid rgba(255,255,255,.06);">
-                        <span style="position:absolute;left:0;top:14px;width:40px;height:40px;border-radius:50%;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.3);color:#D4B45C;display:flex;align-items:center;justify-content:center;font-weight:700;">1</span>
-                        <strong style="color:#fff;display:block;margin-bottom:4px;">Téléchargez le ZIP du template (et celui du plugin compagnon)</strong>
-                        <span style="color:#b0b0bc;font-size:.92rem;">Cliquez sur "Télécharger gratuitement" ci-dessus. Un formulaire s'ouvre : entrez votre nom et email, le téléchargement démarre automatiquement. Téléchargez aussi <strong>AG Starter Companion</strong> pour l'import automatique.</span>
-                    </li>
-                    <li style="counter-increment:step;position:relative;padding:16px 0 16px 60px;border-bottom:1px solid rgba(255,255,255,.06);">
-                        <span style="position:absolute;left:0;top:14px;width:40px;height:40px;border-radius:50%;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.3);color:#D4B45C;display:flex;align-items:center;justify-content:center;font-weight:700;">2</span>
-                        <strong style="color:#fff;display:block;margin-bottom:4px;">Installez le thème, puis le plugin</strong>
-                        <span style="color:#b0b0bc;font-size:.92rem;">Dans votre admin WordPress : <code style="background:rgba(212,180,92,.1);padding:2px 6px;border-radius:3px;color:#D4B45C;">Apparence &gt; Thèmes &gt; Ajouter &gt; Téléverser un thème</code>, puis sélectionnez le ZIP du template et activez-le. Ensuite <code style="background:rgba(212,180,92,.1);padding:2px 6px;border-radius:3px;color:#D4B45C;">Extensions &gt; Ajouter &gt; Téléverser une extension</code> pour le plugin compagnon.</span>
-                    </li>
-                    <li style="counter-increment:step;position:relative;padding:16px 0 16px 60px;border-bottom:1px solid rgba(255,255,255,.06);">
-                        <span style="position:absolute;left:0;top:14px;width:40px;height:40px;border-radius:50%;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.3);color:#D4B45C;display:flex;align-items:center;justify-content:center;font-weight:700;">3</span>
-                        <strong style="color:#fff;display:block;margin-bottom:4px;">Cliquez sur "Lancer la configuration"</strong>
-                        <span style="color:#b0b0bc;font-size:.92rem;">Une notice apparaît en haut de l'admin. Cliquez dessus (ou allez dans <code style="background:rgba(212,180,92,.1);padding:2px 6px;border-radius:3px;color:#D4B45C;">Apparence &gt; Configuration AG</code>) et cliquez sur <strong>"Importer le contenu démo"</strong>. Les 5 pages, le menu et la page d'accueil sont créés automatiquement.</span>
-                    </li>
-                    <li style="counter-increment:step;position:relative;padding:16px 0 16px 60px;">
-                        <span style="position:absolute;left:0;top:14px;width:40px;height:40px;border-radius:50%;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.3);color:#D4B45C;display:flex;align-items:center;justify-content:center;font-weight:700;">4</span>
-                        <strong style="color:#fff;display:block;margin-bottom:4px;">Personnalisez les éléments entre crochets</strong>
-                        <span style="color:#b0b0bc;font-size:.92rem;">Remplacez "[Votre Restaurant]", "[Votre entreprise]", etc. par vos vraies informations. Si vous bloquez, <a href="<?php echo esc_url(home_url('/contact')); ?>" style="color:#D4B45C;font-weight:700;">contactez-nous</a> — on vous aide gratuitement.</span>
-                    </li>
-                </ol>
-            </div>
-        </div>
-    </section>
-
     <!-- Packs Premium Stripe -->
     <section class="ag-section ag-section--or">
         <div class="ag-container">
@@ -533,6 +384,155 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
                     <a href="tel:+33623526074" class="ag-btn-gold">Appeler Fabrizio — 06.23.52.60.74</a>
                     <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Demander un devis gratuit →</a>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Templates gratuits (download zone — en bout de parcours) -->
+    <section class="ag-section ag-section--marbre">
+        <div class="ag-container">
+            <span class="ag-tag ag-anim" data-anim="tag">Téléchargement gratuit</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Vous êtes encore là ? <em>Téléchargez</em></h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Vous avez tout lu, vous connaissez les limites, vous savez quand passer au Pro ou au sur-mesure. Maintenant vous pouvez télécharger en toute connaissance de cause. Bientôt disponibles aussi sur le répertoire officiel WordPress.org.</p>
+
+            <div class="ag-tpl__grid">
+
+                <!-- Template Restaurant -->
+                <div class="ag-tpl-card ag-anim" data-anim="card">
+                    <div class="ag-tpl-card__img">
+                        <div class="ag-tpl-card__preview">
+                            <span style="font-size:2rem;">🍽️</span>
+                            <strong>AG Starter Restaurant</strong>
+                            <small>Or &amp; noir — 100% FR</small>
+                        </div>
+                    </div>
+                    <div class="ag-tpl-card__body">
+                        <span class="ag-tpl-card__badge ag-tpl-card__badge--free">Gratuit · v1.0</span>
+                        <h3 class="ag-tpl-card__title">Starter Restaurant</h3>
+                        <p class="ag-tpl-card__desc">Pour restaurant, bistrot, bar ou café. Hero, carte, réservation, privatisation, histoire, horaires. Textes français, pas de Lorem ipsum.</p>
+                        <ul class="ag-tpl-card__features">
+                            <li>Page d'accueil complète pré-remplie</li>
+                            <li>Design sombre or &amp; noir</li>
+                            <li>100% responsive, sans plugin</li>
+                            <li>Blog, commentaires, recherche</li>
+                            <li>Translation-ready (GPL v2+)</li>
+                        </ul>
+                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="restaurant" data-file="<?php echo esc_url($dl_base . 'ag-starter-restaurant.zip'); ?>">Télécharger gratuitement →</button>
+                    </div>
+                </div>
+
+                <!-- Template Artisan -->
+                <div class="ag-tpl-card ag-anim" data-anim="card">
+                    <div class="ag-tpl-card__img">
+                        <div class="ag-tpl-card__preview">
+                            <span style="font-size:2rem;">🔨</span>
+                            <strong>AG Starter Artisan</strong>
+                            <small>Bronze &amp; noir — 100% FR</small>
+                        </div>
+                    </div>
+                    <div class="ag-tpl-card__body">
+                        <span class="ag-tpl-card__badge ag-tpl-card__badge--free">Gratuit · v1.0</span>
+                        <h3 class="ag-tpl-card__title">Starter Artisan</h3>
+                        <p class="ag-tpl-card__desc">Pour artisans, plombiers, électriciens, menuisiers, BTP. Prestations, zones d'intervention, devis, réalisations. Textes français, ton pro.</p>
+                        <ul class="ag-tpl-card__features">
+                            <li>Page d'accueil complète pré-remplie</li>
+                            <li>Design sombre bronze &amp; noir</li>
+                            <li>100% responsive, sans plugin</li>
+                            <li>Blog, commentaires, recherche</li>
+                            <li>Translation-ready (GPL v2+)</li>
+                        </ul>
+                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="artisan" data-file="<?php echo esc_url($dl_base . 'ag-starter-artisan.zip'); ?>">Télécharger gratuitement →</button>
+                    </div>
+                </div>
+
+                <!-- Template Coach -->
+                <div class="ag-tpl-card ag-anim" data-anim="card">
+                    <div class="ag-tpl-card__img">
+                        <div class="ag-tpl-card__preview">
+                            <span style="font-size:2rem;">💼</span>
+                            <strong>AG Starter Coach</strong>
+                            <small>Bleu teal &amp; marine — 100% FR</small>
+                        </div>
+                    </div>
+                    <div class="ag-tpl-card__body">
+                        <span class="ag-tpl-card__badge ag-tpl-card__badge--free">Gratuit · v1.0</span>
+                        <h3 class="ag-tpl-card__title">Starter Coach</h3>
+                        <p class="ag-tpl-card__desc">Pour coachs, consultants, formateurs, thérapeutes. Services, séances, témoignages, rendez-vous. Textes français, ton bienveillant.</p>
+                        <ul class="ag-tpl-card__features">
+                            <li>Page d'accueil complète pré-remplie</li>
+                            <li>Design sombre teal &amp; marine</li>
+                            <li>100% responsive, sans plugin</li>
+                            <li>Blog, commentaires, recherche</li>
+                            <li>Translation-ready (GPL v2+)</li>
+                        </ul>
+                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="coach" data-file="<?php echo esc_url($dl_base . 'ag-starter-coach.zip'); ?>">Télécharger gratuitement →</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Plugin compagnon gratuit -->
+            <div style="max-width:900px;margin:56px auto 0;padding:40px;background:linear-gradient(135deg,rgba(40,167,69,.08),rgba(40,167,69,.02));border:1px solid rgba(40,167,69,.3);border-radius:16px;">
+                <div style="text-align:center;">
+                    <span class="ag-tag" style="background:rgba(40,167,69,.15);color:#28a745;border-color:rgba(40,167,69,.3);">Bonus gratuit — Plugin compagnon</span>
+                    <h3 style="font-size:1.4rem;margin:12px 0 8px;">Installation en 1 clic avec <em>AG Starter Companion</em></h3>
+                    <p style="color:#b0b0bc;max-width:680px;margin:0 auto 24px;font-size:.98rem;line-height:1.7;">Installez aussi notre <strong style="color:#28a745;">plugin compagnon gratuit</strong> et vous obtenez un bouton <strong style="color:#D4B45C;">"Importer le contenu démo"</strong> dans l'admin WordPress. En un clic il crée pour vous les 5 pages (Accueil, Carte/Prestations/Accompagnements, À propos, Contact…), le menu principal, la page d'accueil statique et active les permaliens. <strong style="color:#e8e6e0;">Zéro code, zéro manipulation manuelle.</strong></p>
+                    <div class="ag-hero__buttons" style="justify-content:center;flex-wrap:wrap;">
+                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="companion" data-file="<?php echo esc_url($dl_base . 'ag-starter-companion.zip'); ?>">⚡ Télécharger le plugin gratuit →</button>
+                        <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Besoin d'aide ? On en parle</a>
+                    </div>
+                    <p style="color:#888;font-size:.85rem;margin-top:20px;">Le plugin détecte automatiquement quel thème AG Starter est actif et adapte le contenu. Fonctionne avec Restaurant, Artisan et Coach. <strong style="color:#28a745;">100% gratuit, zéro limite.</strong></p>
+                </div>
+            </div>
+
+            <!-- Résumé des 3 niveaux -->
+            <div style="max-width:900px;margin:32px auto 0;padding:32px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);border-radius:16px;">
+                <h3 style="text-align:center;font-size:1.15rem;margin-bottom:20px;">L'écosystème AG Starter en <em>3 niveaux</em></h3>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center;">
+                    <div style="padding:20px;background:rgba(40,167,69,.05);border:1px solid rgba(40,167,69,.2);border-radius:12px;">
+                        <div style="font-size:1.8rem;margin-bottom:8px;">🆓</div>
+                        <strong style="color:#28a745;display:block;margin-bottom:6px;">Gratuit</strong>
+                        <p style="color:#b0b0bc;font-size:.85rem;line-height:1.6;margin:0;">Thème basique en français + plugin compagnon d'import. Vous avez un site fonctionnel et minimaliste. Parfait pour démarrer.</p>
+                    </div>
+                    <div style="padding:20px;background:rgba(212,180,92,.05);border:1px solid rgba(212,180,92,.25);border-radius:12px;">
+                        <div style="font-size:1.8rem;margin-bottom:8px;">⚡</div>
+                        <strong style="color:#D4B45C;display:block;margin-bottom:6px;">Pro — 49€</strong>
+                        <p style="color:#b0b0bc;font-size:.85rem;line-height:1.6;margin:0;">Plugin qui ajoute un vrai design travaillé : animations, blocs personnalisés, customizer avancé. Votre site passe de "basique" à "pro".</p>
+                    </div>
+                    <div style="padding:20px;background:rgba(212,180,92,.08);border:1px solid rgba(212,180,92,.35);border-radius:12px;">
+                        <div style="font-size:1.8rem;margin-bottom:8px;">🌍</div>
+                        <strong style="color:#D4B45C;display:block;margin-bottom:6px;">Premium — 99€</strong>
+                        <p style="color:#b0b0bc;font-size:.85rem;line-height:1.6;margin:0;">Tout Pro + multi-langue (6 langues), WooCommerce, sections premium, support prioritaire. Pour toucher un public international.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instructions d'installation -->
+            <div style="max-width:900px;margin:56px auto 0;padding:40px;background:rgba(255,255,255,.025);border:1px solid rgba(212,180,92,.18);border-radius:16px;">
+                <h3 style="text-align:center;font-size:1.25rem;margin-bottom:8px;">Installation en <em>4 étapes</em> — 2 minutes chrono</h3>
+                <p style="text-align:center;color:#b0b0bc;margin-bottom:28px;font-size:.95rem;">Aucune compétence technique nécessaire, juste un accès admin à votre WordPress.</p>
+                <ol style="list-style:none;counter-reset:step;padding:0;">
+                    <li style="counter-increment:step;position:relative;padding:16px 0 16px 60px;border-bottom:1px solid rgba(255,255,255,.06);">
+                        <span style="position:absolute;left:0;top:14px;width:40px;height:40px;border-radius:50%;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.3);color:#D4B45C;display:flex;align-items:center;justify-content:center;font-weight:700;">1</span>
+                        <strong style="color:#fff;display:block;margin-bottom:4px;">Téléchargez le ZIP du template (et celui du plugin compagnon)</strong>
+                        <span style="color:#b0b0bc;font-size:.92rem;">Cliquez sur "Télécharger gratuitement" ci-dessus. Un formulaire s'ouvre : entrez votre nom et email, le téléchargement démarre automatiquement. Téléchargez aussi <strong>AG Starter Companion</strong> pour l'import automatique.</span>
+                    </li>
+                    <li style="counter-increment:step;position:relative;padding:16px 0 16px 60px;border-bottom:1px solid rgba(255,255,255,.06);">
+                        <span style="position:absolute;left:0;top:14px;width:40px;height:40px;border-radius:50%;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.3);color:#D4B45C;display:flex;align-items:center;justify-content:center;font-weight:700;">2</span>
+                        <strong style="color:#fff;display:block;margin-bottom:4px;">Installez le thème, puis le plugin</strong>
+                        <span style="color:#b0b0bc;font-size:.92rem;">Dans votre admin WordPress : <code style="background:rgba(212,180,92,.1);padding:2px 6px;border-radius:3px;color:#D4B45C;">Apparence &gt; Thèmes &gt; Ajouter &gt; Téléverser un thème</code>, puis sélectionnez le ZIP du template et activez-le. Ensuite <code style="background:rgba(212,180,92,.1);padding:2px 6px;border-radius:3px;color:#D4B45C;">Extensions &gt; Ajouter &gt; Téléverser une extension</code> pour le plugin compagnon.</span>
+                    </li>
+                    <li style="counter-increment:step;position:relative;padding:16px 0 16px 60px;border-bottom:1px solid rgba(255,255,255,.06);">
+                        <span style="position:absolute;left:0;top:14px;width:40px;height:40px;border-radius:50%;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.3);color:#D4B45C;display:flex;align-items:center;justify-content:center;font-weight:700;">3</span>
+                        <strong style="color:#fff;display:block;margin-bottom:4px;">Cliquez sur "Lancer la configuration"</strong>
+                        <span style="color:#b0b0bc;font-size:.92rem;">Une notice apparaît en haut de l'admin. Cliquez dessus (ou allez dans <code style="background:rgba(212,180,92,.1);padding:2px 6px;border-radius:3px;color:#D4B45C;">Apparence &gt; Configuration AG</code>) et cliquez sur <strong>"Importer le contenu démo"</strong>. Les 5 pages, le menu et la page d'accueil sont créés automatiquement.</span>
+                    </li>
+                    <li style="counter-increment:step;position:relative;padding:16px 0 16px 60px;">
+                        <span style="position:absolute;left:0;top:14px;width:40px;height:40px;border-radius:50%;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.3);color:#D4B45C;display:flex;align-items:center;justify-content:center;font-weight:700;">4</span>
+                        <strong style="color:#fff;display:block;margin-bottom:4px;">Personnalisez les éléments entre crochets</strong>
+                        <span style="color:#b0b0bc;font-size:.92rem;">Remplacez "[Votre Restaurant]", "[Votre entreprise]", etc. par vos vraies informations. Si vous bloquez, <a href="<?php echo esc_url(home_url('/contact')); ?>" style="color:#D4B45C;font-weight:700;">contactez-nous</a> — on vous aide gratuitement.</span>
+                    </li>
+                </ol>
             </div>
         </div>
     </section>
