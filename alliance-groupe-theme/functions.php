@@ -31,14 +31,18 @@ add_action( 'wp_enqueue_scripts', function () {
         'ag-main-css',
         get_stylesheet_directory_uri() . '/assets/css/main.css',
         array( 'ag-theme-style' ),
-        '2.0.1'
+        file_exists( get_stylesheet_directory() . '/assets/css/main.css' )
+            ? filemtime( get_stylesheet_directory() . '/assets/css/main.css' )
+            : '2.0.2'
     );
 
     wp_enqueue_script(
         'ag-main-js',
         get_stylesheet_directory_uri() . '/assets/js/main.js',
         array(),
-        '2.0.1',
+        file_exists( get_stylesheet_directory() . '/assets/js/main.js' )
+            ? filemtime( get_stylesheet_directory() . '/assets/js/main.js' )
+            : '2.0.1',
         true
     );
 } );
