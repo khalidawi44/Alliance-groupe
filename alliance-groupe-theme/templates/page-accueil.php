@@ -97,7 +97,7 @@ get_header();
 <?php get_template_part('template-parts/faq'); ?>
 
 <!-- Promo Templates -->
-<section class="ag-section ag-promo-tpl" style="background:#101014;">
+<section class="ag-section ag-promo-tpl ag-section--onyx">
     <div class="ag-container">
         <div class="ag-promo-tpl__inner ag-anim" data-anim="card">
             <div class="ag-promo-tpl__content">

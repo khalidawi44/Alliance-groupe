@@ -1,6 +1,6 @@
 <?php $img_base = get_stylesheet_directory_uri() . '/assets/images/team/'; ?>
 
-<section class="ag-section" style="background:#0c0c0f;">
+<section class="ag-section ag-section--or">
     <div class="ag-container">
         <span class="ag-tag ag-anim" data-anim="tag">À propos</span>
         <h2 class="ag-section__title ag-anim" data-anim="title">Qui sommes-<em>nous</em></h2>
@@ -37,7 +37,7 @@
 </section>
 
 <!-- Équipe -->
-<section class="ag-section" style="background:#101014;">
+<section class="ag-section ag-section--cendre">
     <div class="ag-container">
         <span class="ag-tag ag-anim" data-anim="tag">L'équipe</span>
         <h2 class="ag-section__title ag-anim" data-anim="title">Les visages derrière <em>Alliance Groupe</em></h2>

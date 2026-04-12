@@ -20,7 +20,7 @@ get_header();
         </div>
     </section>
 
-    <section class="ag-section" style="background:#0c0c0f;">
+    <section class="ag-section ag-section--graphite">
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">Gains concrets</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">L'IA en <em>chiffres</em></h2>
@@ -51,7 +51,7 @@ get_header();
         </div>
     </section>
 
-    <section class="ag-section" style="background:#101014;">
+    <section class="ag-section ag-section--marbre">
         <div class="ag-container">
             <div class="ag-sdetail">
                 <div>
@@ -79,7 +79,7 @@ get_header();
         </div>
     </section>
 
-    <section class="ag-section" style="background:#0c0c0f;">
+    <section class="ag-section ag-section--or">
         <div class="ag-container">
             <div class="ag-client ag-anim" data-anim="card">
                 <span class="ag-client__tag">Étude de cas</span>

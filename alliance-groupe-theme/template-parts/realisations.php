@@ -1,4 +1,4 @@
-<section class="ag-section" style="background:#101014;">
+<section class="ag-section ag-section--marbre">
     <div class="ag-container">
         <span class="ag-tag ag-anim" data-anim="tag">Réalisations</span>
         <h2 class="ag-section__title ag-anim" data-anim="title">Nos projets <em>récents</em></h2>
