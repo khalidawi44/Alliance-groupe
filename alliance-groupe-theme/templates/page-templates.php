@@ -23,6 +23,31 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
         </div>
     </section>
 
+    <!-- 📖 Barre de progression de lecture + avertissement -->
+    <div id="ag-reading-bar" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(10,10,14,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(212,180,92,.2);transform:translateY(-100%);transition:transform .3s ease;">
+        <div style="max-width:1100px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:16px;">
+            <span style="color:#D4B45C;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;">📖 Lecture</span>
+            <div style="flex:1;height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;position:relative;">
+                <div id="ag-reading-bar-fill" style="height:100%;width:0;background:linear-gradient(90deg,#D4B45C,#e8c776);transition:width .2s linear;border-radius:4px;"></div>
+            </div>
+            <span id="ag-reading-bar-pct" style="color:#e8e6e0;font-size:.85rem;font-weight:700;min-width:42px;text-align:right;">0%</span>
+        </div>
+    </div>
+
+    <!-- ⏳ Avertissement de lecture au-dessus du fold -->
+    <section style="padding:0;background:#0a0a0e;">
+        <div class="ag-container" style="padding-top:24px;padding-bottom:24px;">
+            <div style="max-width:900px;margin:0 auto;padding:24px 28px;background:linear-gradient(135deg,rgba(212,180,92,.12),rgba(212,180,92,.04));border:1px solid rgba(212,180,92,.35);border-radius:14px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;">
+                <div style="font-size:2.4rem;line-height:1;">📖</div>
+                <div style="flex:1;min-width:260px;">
+                    <strong style="display:block;color:#D4B45C;font-size:1.05rem;margin-bottom:4px;">Les templates gratuits sont tout en bas de page.</strong>
+                    <p style="color:#b0b0bc;font-size:.92rem;line-height:1.6;margin:0;">On vous demande de lire les explications d'abord — c'est important pour choisir la bonne option. Les boutons de téléchargement se <strong style="color:#e8e6e0;">débloquent automatiquement</strong> quand vous avez parcouru le contenu. Suivez la barre de progression en haut de la page.</p>
+                </div>
+                <a href="#ag-download-zone" class="ag-btn-outline" style="font-size:.9rem;padding:12px 22px;">Aller en bas &darr;</a>
+            </div>
+        </div>
+    </section>
+
     <!-- Avertissement honnête -->
     <section class="ag-section ag-section--graphite">
         <div class="ag-container ag-container--narrow" style="text-align:center;">
@@ -389,7 +414,7 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
     </section>
 
     <!-- Templates gratuits (download zone — en bout de parcours) -->
-    <section class="ag-section ag-section--marbre">
+    <section class="ag-section ag-section--marbre" id="ag-download-zone">
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">Téléchargement gratuit</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">Vous êtes encore là ? <em>Téléchargez</em></h2>
@@ -606,9 +631,94 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
     var fileInput = document.getElementById('ag-dl-file');
     var tplInput = document.getElementById('ag-dl-template');
 
-    // Open modal on click
+    // 📖 Reading-progress lock : the download buttons only unlock once the
+    // visitor has scrolled through the argument sections. Progress is computed
+    // from the scroll position relative to the full document height. This is
+    // both fairer (rewards actual reading, not just waiting) and more honest
+    // than an arbitrary countdown timer.
+    var UNLOCK_AT = 0.82; // 82% of the scrollable height = reaches the download zone
+    var triggers = document.querySelectorAll('.ag-dl-trigger');
+    var originalLabels = new WeakMap();
+    var isUnlocked = false;
+
+    triggers.forEach(function(btn){
+        originalLabels.set(btn, btn.innerHTML);
+        btn.setAttribute('data-locked', '1');
+        btn.style.opacity = '0.55';
+        btn.style.cursor = 'not-allowed';
+        btn.setAttribute('aria-disabled', 'true');
+        btn.innerHTML = '🔒 Continuez votre lecture...';
+    });
+
+    var readingBar = document.getElementById('ag-reading-bar');
+    var readingBarFill = document.getElementById('ag-reading-bar-fill');
+    var readingBarPct = document.getElementById('ag-reading-bar-pct');
+    var maxProgress = 0; // sticky progress so it only goes forward
+
+    var updateReadingProgress = function(){
+        var doc = document.documentElement;
+        var scrolled = window.scrollY || window.pageYOffset;
+        var viewport = window.innerHeight;
+        var totalHeight = Math.max(doc.scrollHeight, doc.offsetHeight) - viewport;
+        if (totalHeight <= 0) { return; }
+        var progress = Math.min(1, scrolled / totalHeight);
+        if (progress > maxProgress) { maxProgress = progress; }
+
+        // Show the bar after the hero
+        if (scrolled > 200) {
+            readingBar.style.transform = 'translateY(0)';
+        } else {
+            readingBar.style.transform = 'translateY(-100%)';
+        }
+
+        // Display-side: convert 0..UNLOCK_AT to 0..100%
+        var displayPct = Math.min(100, Math.round((maxProgress / UNLOCK_AT) * 100));
+        readingBarFill.style.width = displayPct + '%';
+        readingBarPct.textContent = displayPct + '%';
+
+        if (!isUnlocked && maxProgress >= UNLOCK_AT) {
+            isUnlocked = true;
+            triggers.forEach(function(btn){
+                btn.removeAttribute('data-locked');
+                btn.setAttribute('aria-disabled', 'false');
+                btn.style.opacity = '';
+                btn.style.cursor = '';
+                btn.innerHTML = originalLabels.get(btn);
+            });
+            readingBarPct.innerHTML = '✓';
+            readingBarPct.style.color = '#28a745';
+            // Subtle celebration pulse on the bar
+            readingBar.style.borderBottomColor = 'rgba(40,167,69,.5)';
+            // Scroll the download zone into view if the user is already near it
+            var dlZone = document.getElementById('ag-download-zone');
+            if (dlZone) {
+                var rect = dlZone.getBoundingClientRect();
+                if (rect.top < viewport && rect.bottom > 0) {
+                    triggers.forEach(function(btn){
+                        btn.style.transition = 'box-shadow .3s';
+                        btn.style.boxShadow = '0 0 0 3px rgba(212,180,92,.5)';
+                        setTimeout(function(){ btn.style.boxShadow = ''; }, 900);
+                    });
+                }
+            }
+        }
+    };
+
+    window.addEventListener('scroll', updateReadingProgress, { passive: true });
+    window.addEventListener('resize', updateReadingProgress);
+    updateReadingProgress();
+
+    // Open modal on click (only if button is unlocked)
     document.querySelectorAll('.ag-dl-trigger').forEach(function(btn){
-        btn.addEventListener('click', function(){
+        btn.addEventListener('click', function(e){
+            if (btn.getAttribute('data-locked') === '1') {
+                e.preventDefault();
+                e.stopPropagation();
+                // Flash a small visual feedback
+                btn.style.boxShadow = '0 0 0 3px rgba(212,180,92,.4)';
+                setTimeout(function(){ btn.style.boxShadow = ''; }, 400);
+                return;
+            }
             fileInput.value = btn.getAttribute('data-file');
             tplInput.value = btn.getAttribute('data-template');
             modal.classList.add('open');
