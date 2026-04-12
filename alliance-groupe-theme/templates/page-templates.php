@@ -159,7 +159,7 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
                     <ul class="ag-price-card__list">
                         <li>Template WordPress au choix</li>
                         <li>Elementor Pro inclus (1 site)</li>
-                        <li>Plugin SEO Premium (Rank Math Pro)</li>
+                        <li>Plugin SEO Premium (Yoast SEO Premium)</li>
                         <li>Plugin de formulaires (WPForms Pro)</li>
                         <li>Plugin de cache (WP Rocket)</li>
                         <li>Support prioritaire 90 jours</li>
@@ -236,7 +236,7 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
                     ['q' => 'Le template est vraiment gratuit ?', 'a' => 'Oui, 100% gratuit. Pas de piège, pas d\'abonnement caché. C\'est un thème WordPress basique avec du contenu placeholder à remplacer.'],
                     ['q' => 'Quelle est la différence avec un site professionnel ?', 'a' => 'Un template est un point de départ générique. Un site professionnel est conçu sur-mesure pour VOTRE marque, avec du contenu rédigé par des experts, un SEO ciblé et une stratégie de conversion. C\'est la différence entre un costume de supermarché et un costume sur-mesure.'],
                     ['q' => 'J\'ai besoin d\'aide pour personnaliser, vous pouvez m\'aider ?', 'a' => 'Bien sûr ! Appelez-nous au 06.23.52.60.74. On peut personnaliser votre template ou créer un site entièrement sur-mesure qui génère des résultats concrets.'],
-                    ['q' => 'Les packs premium incluent quoi exactement ?', 'a' => 'Le template WordPress + les plugins premium (Elementor Pro, Rank Math Pro, etc. selon le pack) + un support par email + une documentation d\'installation détaillée.'],
+                    ['q' => 'Les packs premium incluent quoi exactement ?', 'a' => 'Le template WordPress + les plugins premium (Elementor Pro, Yoast SEO Premium, etc. selon le pack) + un support par email + une documentation d\'installation détaillée.'],
                 ];
                 foreach ($tpl_faqs as $faq) :
                 ?>

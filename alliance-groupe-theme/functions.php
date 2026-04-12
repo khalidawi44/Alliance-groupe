@@ -113,9 +113,7 @@ add_filter( 'robots_txt', function ( $output, $public ) {
         $output .= "Disallow: /wp-includes/\n";
         $output .= "Disallow: /?s=\n";
         $output .= "\n";
-        // Try Rank Math sitemap first, then WP native
         $output .= "Sitemap: " . home_url( '/sitemap_index.xml' ) . "\n";
-        $output .= "Sitemap: " . home_url( '/wp-sitemap.xml' ) . "\n";
     }
     return $output;
 }, 10, 2 );
