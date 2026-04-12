@@ -1,6 +1,6 @@
 === AG Starter Coach ===
 
-Contributors: alliancegroup
+Contributors: adminag
 Tags: one-column, custom-menu, featured-images, translation-ready, theme-options, custom-colors, custom-logo, threaded-comments, right-sidebar, block-styles, wide-blocks
 Requires at least: 6.0
 Tested up to: 6.5

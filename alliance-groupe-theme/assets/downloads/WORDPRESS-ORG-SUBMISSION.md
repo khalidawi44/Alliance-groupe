@@ -7,9 +7,11 @@ Ce guide explique comment soumettre les 3 templates AG Starter au répertoire of
 ### 1. Créer un compte wordpress.org
 
 - Va sur https://login.wordpress.org/register
-- Pseudo à utiliser : **`alliancegroup`** (c'est déjà ce qui est déclaré dans les `readme.txt` et `style.css` sous `Contributors:` et `Author:`)
-- Nom affiché : **Alliance Group**
-- Email : ton email professionnel
+- **Nom d'utilisateur (login)** : `adminag` — c'est ce qui est déclaré dans les `readme.txt` sous `Contributors:` et ce qui te permet de te connecter à wordpress.org
+- **Nom affiché / pseudo forum** : `AGthèmes` — c'est ce qui apparaît publiquement sur la page de tes thèmes (déclaré dans `style.css` sous `Author:`)
+- **Email** : ton email professionnel
+
+**Note importante** : le champ `Contributors:` dans `readme.txt` utilise obligatoirement le nom d'utilisateur (lowercase, sans espaces ni accents) — c'est `adminag`. Le champ `Author:` dans `style.css` est le nom d'affichage libre — c'est `AGthèmes`. Les deux sont déjà correctement configurés dans les 3 thèmes.
 
 ### 2. Installer le plugin Theme Check
 
@@ -111,7 +113,7 @@ Dans ton WordPress local, active le thème et va dans `Apparence > Theme Check`.
 ### Étape 2 — Upload sur wordpress.org
 
 1. Va sur https://wordpress.org/themes/upload/
-2. Connecte-toi avec ton compte `alliancegroup`
+2. Connecte-toi avec ton compte `adminag`
 3. Clique `Select File` et choisis `ag-starter-restaurant.zip`
 4. Clique `Upload`
 5. Si l'upload automatique réussit, tu reçois un numéro de ticket par email
