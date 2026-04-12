@@ -24,11 +24,11 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
     </section>
 
     <!-- 📖 Barre de progression de lecture + avertissement -->
-    <div id="ag-reading-bar" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(10,10,14,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(212,180,92,.2);transform:translateY(-100%);transition:transform .3s ease;">
+    <div id="ag-reading-bar" style="position:fixed;top:72px;left:0;right:0;z-index:9998;background:rgba(10,10,14,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(212,180,92,.25);box-shadow:0 4px 20px rgba(0,0,0,.4);transform:translateY(-200%);transition:transform .35s ease;">
         <div style="max-width:1100px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:16px;">
             <span style="color:#D4B45C;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;">📖 Lecture</span>
             <div style="flex:1;height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;position:relative;">
-                <div id="ag-reading-bar-fill" style="height:100%;width:0;background:linear-gradient(90deg,#D4B45C,#e8c776);transition:width .2s linear;border-radius:4px;"></div>
+                <div id="ag-reading-bar-fill" style="height:100%;width:0;background:linear-gradient(90deg,#D4B45C,#e8c776);transition:width .25s linear;border-radius:4px;"></div>
             </div>
             <span id="ag-reading-bar-pct" style="color:#e8e6e0;font-size:.85rem;font-weight:700;min-width:42px;text-align:right;">0%</span>
         </div>
@@ -631,12 +631,9 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
     var fileInput = document.getElementById('ag-dl-file');
     var tplInput = document.getElementById('ag-dl-template');
 
-    // 📖 Reading-progress lock : the download buttons only unlock once the
-    // visitor has scrolled through the argument sections. Progress is computed
-    // from the scroll position relative to the full document height. This is
-    // both fairer (rewards actual reading, not just waiting) and more honest
-    // than an arbitrary countdown timer.
-    var UNLOCK_AT = 0.82; // 82% of the scrollable height = reaches the download zone
+    // 📖 Download lock : the buttons unlock the moment the download zone
+    // enters the viewport. Progress bar in the top of the viewport fills
+    // proportionally to how far we've scrolled vs the download zone.
     var triggers = document.querySelectorAll('.ag-dl-trigger');
     var originalLabels = new WeakMap();
     var isUnlocked = false;
@@ -653,60 +650,91 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
     var readingBar = document.getElementById('ag-reading-bar');
     var readingBarFill = document.getElementById('ag-reading-bar-fill');
     var readingBarPct = document.getElementById('ag-reading-bar-pct');
-    var maxProgress = 0; // sticky progress so it only goes forward
+    var dlZone = document.getElementById('ag-download-zone');
+    var maxProgress = 0;
 
-    var updateReadingProgress = function(){
-        var doc = document.documentElement;
-        var scrolled = window.scrollY || window.pageYOffset;
-        var viewport = window.innerHeight;
-        var totalHeight = Math.max(doc.scrollHeight, doc.offsetHeight) - viewport;
-        if (totalHeight <= 0) { return; }
-        var progress = Math.min(1, scrolled / totalHeight);
-        if (progress > maxProgress) { maxProgress = progress; }
-
-        // Show the bar after the hero
-        if (scrolled > 200) {
-            readingBar.style.transform = 'translateY(0)';
-        } else {
-            readingBar.style.transform = 'translateY(-100%)';
-        }
-
-        // Display-side: convert 0..UNLOCK_AT to 0..100%
-        var displayPct = Math.min(100, Math.round((maxProgress / UNLOCK_AT) * 100));
-        readingBarFill.style.width = displayPct + '%';
-        readingBarPct.textContent = displayPct + '%';
-
-        if (!isUnlocked && maxProgress >= UNLOCK_AT) {
-            isUnlocked = true;
-            triggers.forEach(function(btn){
-                btn.removeAttribute('data-locked');
-                btn.setAttribute('aria-disabled', 'false');
-                btn.style.opacity = '';
-                btn.style.cursor = '';
-                btn.innerHTML = originalLabels.get(btn);
-            });
+    var unlockButtons = function(){
+        if (isUnlocked) { return; }
+        isUnlocked = true;
+        triggers.forEach(function(btn){
+            btn.removeAttribute('data-locked');
+            btn.setAttribute('aria-disabled', 'false');
+            btn.style.opacity = '';
+            btn.style.cursor = '';
+            btn.innerHTML = originalLabels.get(btn);
+            btn.style.transition = 'box-shadow .3s';
+            btn.style.boxShadow = '0 0 0 3px rgba(212,180,92,.55)';
+            setTimeout(function(){ btn.style.boxShadow = ''; }, 900);
+        });
+        if (readingBarFill && readingBarPct) {
+            readingBarFill.style.width = '100%';
+            readingBarFill.style.background = 'linear-gradient(90deg,#28a745,#43b85c)';
             readingBarPct.innerHTML = '✓';
             readingBarPct.style.color = '#28a745';
-            // Subtle celebration pulse on the bar
-            readingBar.style.borderBottomColor = 'rgba(40,167,69,.5)';
-            // Scroll the download zone into view if the user is already near it
-            var dlZone = document.getElementById('ag-download-zone');
-            if (dlZone) {
-                var rect = dlZone.getBoundingClientRect();
-                if (rect.top < viewport && rect.bottom > 0) {
-                    triggers.forEach(function(btn){
-                        btn.style.transition = 'box-shadow .3s';
-                        btn.style.boxShadow = '0 0 0 3px rgba(212,180,92,.5)';
-                        setTimeout(function(){ btn.style.boxShadow = ''; }, 900);
-                    });
-                }
-            }
+        }
+        if (readingBar) {
+            readingBar.style.borderBottomColor = 'rgba(40,167,69,.6)';
         }
     };
 
-    window.addEventListener('scroll', updateReadingProgress, { passive: true });
-    window.addEventListener('resize', updateReadingProgress);
-    updateReadingProgress();
+    // Show the bar after the hero + update progress fill
+    var updateProgressBar = function(){
+        if (!readingBar || !dlZone) { return; }
+        var scrolled = window.scrollY || window.pageYOffset;
+        var viewport = window.innerHeight;
+
+        // Show/hide the bar
+        if (scrolled > 260 && !isUnlocked) {
+            readingBar.style.transform = 'translateY(0)';
+        } else if (scrolled <= 100) {
+            readingBar.style.transform = 'translateY(-200%)';
+        } else if (isUnlocked && scrolled > 260) {
+            // keep visible briefly after unlock, then hide
+            readingBar.style.transform = 'translateY(0)';
+        }
+
+        if (isUnlocked) { return; }
+
+        // Compute progress : from the top of the page (0) to the top of the
+        // download zone (= 100 percent). Uses getBoundingClientRect for
+        // accurate measurement independent of layout shifts.
+        var dlRect = dlZone.getBoundingClientRect();
+        var dlTop = dlRect.top + scrolled; // absolute Y of download zone
+        var dlTarget = Math.max(1, dlTop - viewport * 0.2); // trigger a bit before the zone
+        var progress = Math.min(1, scrolled / dlTarget);
+        if (progress > maxProgress) { maxProgress = progress; }
+        var displayPct = Math.round(maxProgress * 100);
+        if (readingBarFill && readingBarPct) {
+            readingBarFill.style.width = displayPct + '%';
+            readingBarPct.textContent = displayPct + '%';
+        }
+    };
+
+    // IntersectionObserver : unlocks the buttons the instant the download
+    // zone enters the viewport, regardless of scroll percentage.
+    if ('IntersectionObserver' in window && dlZone) {
+        var observer = new IntersectionObserver(function(entries){
+            entries.forEach(function(entry){
+                if (entry.isIntersecting) {
+                    unlockButtons();
+                    observer.disconnect();
+                }
+            });
+        }, { rootMargin: '0px 0px -10% 0px', threshold: 0.01 });
+        observer.observe(dlZone);
+    } else if (dlZone) {
+        // Fallback for very old browsers : unlock when we scroll past the
+        // section's top offset.
+        window.addEventListener('scroll', function(){
+            if (isUnlocked) { return; }
+            var rect = dlZone.getBoundingClientRect();
+            if (rect.top < window.innerHeight) { unlockButtons(); }
+        }, { passive: true });
+    }
+
+    window.addEventListener('scroll', updateProgressBar, { passive: true });
+    window.addEventListener('resize', updateProgressBar);
+    updateProgressBar();
 
     // Open modal on click (only if button is unlocked)
     document.querySelectorAll('.ag-dl-trigger').forEach(function(btn){
