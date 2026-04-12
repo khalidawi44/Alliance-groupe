@@ -1,8 +1,6 @@
 <?php
 /**
- * The main template file.
- *
- * This is the most generic template file in a WordPress theme.
+ * The template for displaying search results pages.
  *
  * @package AG_Starter_Restaurant
  */
@@ -15,11 +13,14 @@ get_header();
 
 		<?php if ( have_posts() ) : ?>
 
-			<?php if ( is_home() && ! is_front_page() ) : ?>
-				<header>
-					<h1 class="ag-entry-title"><?php single_post_title(); ?></h1>
-				</header>
-			<?php endif; ?>
+			<header>
+				<h1 class="ag-entry-title">
+					<?php
+					/* translators: %s: search query. */
+					printf( esc_html__( 'Resultats de recherche pour : %s', 'ag-starter-restaurant' ), '<span>' . esc_html( get_search_query() ) . '</span>' );
+					?>
+				</h1>
+			</header>
 
 			<?php
 			while ( have_posts() ) :
@@ -29,25 +30,9 @@ get_header();
 					<header>
 						<?php the_title( sprintf( '<h2 class="ag-entry-title"><a href="%s" rel="bookmark">', esc_url( get_permalink() ) ), '</a></h2>' ); ?>
 						<div class="ag-entry-meta">
-							<?php
-							/* translators: 1: date, 2: author. */
-							printf(
-								esc_html__( 'Publie le %1$s par %2$s', 'ag-starter-restaurant' ),
-								'<time datetime="' . esc_attr( get_the_date( 'c' ) ) . '">' . esc_html( get_the_date() ) . '</time>',
-								'<span>' . esc_html( get_the_author() ) . '</span>'
-							);
-							?>
+							<time datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>"><?php echo esc_html( get_the_date() ); ?></time>
 						</div>
 					</header>
-
-					<?php if ( has_post_thumbnail() ) : ?>
-						<div class="ag-entry-thumb">
-							<a href="<?php the_permalink(); ?>">
-								<?php the_post_thumbnail( 'large' ); ?>
-							</a>
-						</div>
-					<?php endif; ?>
-
 					<div class="ag-entry-content">
 						<?php the_excerpt(); ?>
 					</div>
@@ -65,7 +50,8 @@ get_header();
 
 		else :
 			?>
-			<p><?php esc_html_e( 'Aucun contenu a afficher.', 'ag-starter-restaurant' ); ?></p>
+			<p><?php esc_html_e( 'Aucun resultat pour votre recherche. Essayez avec d\'autres mots-cles.', 'ag-starter-restaurant' ); ?></p>
+			<?php get_search_form(); ?>
 			<?php
 		endif;
 		?>

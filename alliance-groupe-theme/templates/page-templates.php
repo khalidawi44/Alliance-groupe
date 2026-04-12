@@ -33,12 +33,65 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
         </div>
     </section>
 
+    <!-- Pourquoi nos templates (arguments vendeurs) -->
+    <section class="ag-section ag-section--onyx">
+        <div class="ag-container">
+            <span class="ag-tag ag-anim" data-anim="tag">Pourquoi nos templates</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Des templates pensés <em>pour le marché français</em></h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc">La plupart des thèmes WordPress gratuits sont en anglais, avec des textes à traduire ligne par ligne. Les nôtres sont différents.</p>
+
+            <div class="ag-services__grid" style="grid-template-columns:repeat(3,1fr);">
+                <div class="ag-scard ag-anim" data-anim="card">
+                    <div class="ag-scard__icon">🇫🇷</div>
+                    <h3 class="ag-scard__title">100% français natif</h3>
+                    <p class="ag-scard__text">Tous les textes, titres, horaires, exemples et messages sont déjà rédigés en français. Aucune traduction à faire, aucun Lorem ipsum anglais.</p>
+                </div>
+                <div class="ag-scard ag-anim" data-anim="card">
+                    <div class="ag-scard__icon">⚡</div>
+                    <h3 class="ag-scard__title">95% déjà prêt</h3>
+                    <p class="ag-scard__text">Contrairement aux thèmes génériques qui vous demandent de tout construire, nos templates arrivent avec une structure complète : hero, sections, footer, réservation/devis. Vous changez juste le nom, les horaires et les photos.</p>
+                </div>
+                <div class="ag-scard ag-anim" data-anim="card">
+                    <div class="ag-scard__icon">📦</div>
+                    <h3 class="ag-scard__title">Zéro plugin requis</h3>
+                    <p class="ag-scard__text">Pas d'Elementor, pas de Divi, pas de dépendances payantes. Installation en 2 minutes, fonctionne immédiatement. Code propre, WordPress 6.0+, PHP 7.4+.</p>
+                </div>
+            </div>
+
+            <div style="max-width:900px;margin:48px auto 0;padding:32px;background:rgba(255,255,255,.02);border:1px solid rgba(212,180,92,.15);border-radius:16px;">
+                <h3 style="text-align:center;font-size:1.1rem;margin-bottom:20px;color:#D4B45C;text-transform:uppercase;letter-spacing:1px;">Comparaison avec les templates étrangers</h3>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                    <div>
+                        <h4 style="color:#b0b0bc;margin-bottom:10px;font-size:.95rem;">❌ Templates classiques (EN)</h4>
+                        <ul style="color:#b0b0bc;font-size:.9rem;line-height:1.9;list-style:none;">
+                            <li>• Textes en anglais ou Lorem ipsum</li>
+                            <li>• Horaires au format américain</li>
+                            <li>• Exemples culturellement décalés</li>
+                            <li>• Plugins payants obligatoires</li>
+                            <li>• 20+ heures de personnalisation</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color:#D4B45C;margin-bottom:10px;font-size:.95rem;">✓ AG Starter (FR)</h4>
+                        <ul style="color:#e8e6e0;font-size:.9rem;line-height:1.9;list-style:none;">
+                            <li>• Textes rédigés en français natif</li>
+                            <li>• Horaires et formats FR/EU</li>
+                            <li>• Contenu adapté au marché français</li>
+                            <li>• Aucun plugin requis</li>
+                            <li>• 30 minutes pour personnaliser</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Templates gratuits -->
     <section class="ag-section ag-section--marbre">
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">Gratuit</span>
-            <h2 class="ag-section__title ag-anim" data-anim="title">Templates <em>gratuits</em></h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc">Téléchargez le ZIP, installez via Apparence > Thèmes > Ajouter, et c'est parti.</p>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Nos templates <em>gratuits</em></h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Téléchargez le ZIP, installez via Apparence &gt; Thèmes &gt; Ajouter, et c'est parti. Bientôt disponibles aussi sur le répertoire officiel WordPress.org.</p>
 
             <div class="ag-tpl__grid">
 
@@ -48,56 +101,100 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
                         <div class="ag-tpl-card__preview">
                             <span style="font-size:2rem;">🍽️</span>
                             <strong>AG Starter Restaurant</strong>
-                            <small>Thème sombre, or & noir</small>
+                            <small>Or &amp; noir — 100% FR</small>
                         </div>
                     </div>
                     <div class="ag-tpl-card__body">
-                        <span class="ag-tpl-card__badge ag-tpl-card__badge--free">Gratuit</span>
+                        <span class="ag-tpl-card__badge ag-tpl-card__badge--free">Gratuit · v1.0</span>
                         <h3 class="ag-tpl-card__title">Starter Restaurant</h3>
-                        <p class="ag-tpl-card__desc">Thème WordPress pour restaurant, bar ou café. Hero, carte, réservation, horaires. Contenu placeholder à remplacer.</p>
+                        <p class="ag-tpl-card__desc">Pour restaurant, bistrot, bar ou café. Hero, carte, réservation, privatisation, histoire, horaires. Textes français, pas de Lorem ipsum.</p>
                         <ul class="ag-tpl-card__features">
-                            <li>Page d'accueil complète</li>
-                            <li>Design sombre premium</li>
-                            <li>100% responsive</li>
-                            <li>Sans Elementor</li>
-                            <li>Contenu placeholder</li>
+                            <li>Page d'accueil complète pré-remplie</li>
+                            <li>Design sombre or &amp; noir</li>
+                            <li>100% responsive, sans plugin</li>
+                            <li>Blog, commentaires, recherche</li>
+                            <li>Translation-ready (GPL v2+)</li>
                         </ul>
                         <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="restaurant" data-file="<?php echo esc_url($dl_base . 'ag-starter-restaurant.zip'); ?>">Télécharger gratuitement →</button>
                     </div>
                 </div>
 
-                <!-- Template Artisan (coming soon) -->
-                <div class="ag-tpl-card ag-tpl-card--soon ag-anim" data-anim="card">
+                <!-- Template Artisan -->
+                <div class="ag-tpl-card ag-anim" data-anim="card">
                     <div class="ag-tpl-card__img">
                         <div class="ag-tpl-card__preview">
                             <span style="font-size:2rem;">🔨</span>
                             <strong>AG Starter Artisan</strong>
-                            <small>Bientôt disponible</small>
+                            <small>Bronze &amp; noir — 100% FR</small>
                         </div>
                     </div>
                     <div class="ag-tpl-card__body">
-                        <span class="ag-tpl-card__badge ag-tpl-card__badge--soon">Bientôt</span>
+                        <span class="ag-tpl-card__badge ag-tpl-card__badge--free">Gratuit · v1.0</span>
                         <h3 class="ag-tpl-card__title">Starter Artisan</h3>
-                        <p class="ag-tpl-card__desc">Pour artisans, plombiers, électriciens, BTP. Portfolio de réalisations, zones d'intervention, formulaire de devis.</p>
+                        <p class="ag-tpl-card__desc">Pour artisans, plombiers, électriciens, menuisiers, BTP. Prestations, zones d'intervention, devis, réalisations. Textes français, ton pro.</p>
+                        <ul class="ag-tpl-card__features">
+                            <li>Page d'accueil complète pré-remplie</li>
+                            <li>Design sombre bronze &amp; noir</li>
+                            <li>100% responsive, sans plugin</li>
+                            <li>Blog, commentaires, recherche</li>
+                            <li>Translation-ready (GPL v2+)</li>
+                        </ul>
+                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="artisan" data-file="<?php echo esc_url($dl_base . 'ag-starter-artisan.zip'); ?>">Télécharger gratuitement →</button>
                     </div>
                 </div>
 
-                <!-- Template Coach (coming soon) -->
-                <div class="ag-tpl-card ag-tpl-card--soon ag-anim" data-anim="card">
+                <!-- Template Coach -->
+                <div class="ag-tpl-card ag-anim" data-anim="card">
                     <div class="ag-tpl-card__img">
                         <div class="ag-tpl-card__preview">
                             <span style="font-size:2rem;">💼</span>
                             <strong>AG Starter Coach</strong>
-                            <small>Bientôt disponible</small>
+                            <small>Bleu teal &amp; marine — 100% FR</small>
                         </div>
                     </div>
                     <div class="ag-tpl-card__body">
-                        <span class="ag-tpl-card__badge ag-tpl-card__badge--soon">Bientôt</span>
+                        <span class="ag-tpl-card__badge ag-tpl-card__badge--free">Gratuit · v1.0</span>
                         <h3 class="ag-tpl-card__title">Starter Coach</h3>
-                        <p class="ag-tpl-card__desc">Pour coachs, consultants, formateurs. Page de services, témoignages, prise de rendez-vous, blog.</p>
+                        <p class="ag-tpl-card__desc">Pour coachs, consultants, formateurs, thérapeutes. Services, séances, témoignages, rendez-vous. Textes français, ton bienveillant.</p>
+                        <ul class="ag-tpl-card__features">
+                            <li>Page d'accueil complète pré-remplie</li>
+                            <li>Design sombre teal &amp; marine</li>
+                            <li>100% responsive, sans plugin</li>
+                            <li>Blog, commentaires, recherche</li>
+                            <li>Translation-ready (GPL v2+)</li>
+                        </ul>
+                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="coach" data-file="<?php echo esc_url($dl_base . 'ag-starter-coach.zip'); ?>">Télécharger gratuitement →</button>
                     </div>
                 </div>
 
+            </div>
+
+            <!-- Instructions d'installation -->
+            <div style="max-width:900px;margin:56px auto 0;padding:40px;background:rgba(255,255,255,.025);border:1px solid rgba(212,180,92,.18);border-radius:16px;">
+                <h3 style="text-align:center;font-size:1.25rem;margin-bottom:8px;">Installation en <em>4 étapes</em> — 2 minutes chrono</h3>
+                <p style="text-align:center;color:#b0b0bc;margin-bottom:28px;font-size:.95rem;">Aucune compétence technique nécessaire, juste un accès admin à votre WordPress.</p>
+                <ol style="list-style:none;counter-reset:step;padding:0;">
+                    <li style="counter-increment:step;position:relative;padding:16px 0 16px 60px;border-bottom:1px solid rgba(255,255,255,.06);">
+                        <span style="position:absolute;left:0;top:14px;width:40px;height:40px;border-radius:50%;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.3);color:#D4B45C;display:flex;align-items:center;justify-content:center;font-weight:700;">1</span>
+                        <strong style="color:#fff;display:block;margin-bottom:4px;">Téléchargez le ZIP du template</strong>
+                        <span style="color:#b0b0bc;font-size:.92rem;">Cliquez sur "Télécharger gratuitement" ci-dessus. Un formulaire s'ouvre : entrez votre nom et email, le téléchargement démarre automatiquement.</span>
+                    </li>
+                    <li style="counter-increment:step;position:relative;padding:16px 0 16px 60px;border-bottom:1px solid rgba(255,255,255,.06);">
+                        <span style="position:absolute;left:0;top:14px;width:40px;height:40px;border-radius:50%;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.3);color:#D4B45C;display:flex;align-items:center;justify-content:center;font-weight:700;">2</span>
+                        <strong style="color:#fff;display:block;margin-bottom:4px;">Uploadez-le dans WordPress</strong>
+                        <span style="color:#b0b0bc;font-size:.92rem;">Dans votre admin WordPress : <code style="background:rgba(212,180,92,.1);padding:2px 6px;border-radius:3px;color:#D4B45C;">Apparence &gt; Thèmes &gt; Ajouter &gt; Téléverser un thème</code>, puis sélectionnez le fichier ZIP téléchargé.</span>
+                    </li>
+                    <li style="counter-increment:step;position:relative;padding:16px 0 16px 60px;border-bottom:1px solid rgba(255,255,255,.06);">
+                        <span style="position:absolute;left:0;top:14px;width:40px;height:40px;border-radius:50%;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.3);color:#D4B45C;display:flex;align-items:center;justify-content:center;font-weight:700;">3</span>
+                        <strong style="color:#fff;display:block;margin-bottom:4px;">Cliquez "Installer" puis "Activer"</strong>
+                        <span style="color:#b0b0bc;font-size:.92rem;">WordPress installe automatiquement le thème. Vous voyez immédiatement votre nouvelle page d'accueil avec le contenu français pré-rempli.</span>
+                    </li>
+                    <li style="counter-increment:step;position:relative;padding:16px 0 16px 60px;">
+                        <span style="position:absolute;left:0;top:14px;width:40px;height:40px;border-radius:50%;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.3);color:#D4B45C;display:flex;align-items:center;justify-content:center;font-weight:700;">4</span>
+                        <strong style="color:#fff;display:block;margin-bottom:4px;">Personnalisez les quelques éléments entre crochets</strong>
+                        <span style="color:#b0b0bc;font-size:.92rem;">Ouvrez <code style="background:rgba(212,180,92,.1);padding:2px 6px;border-radius:3px;color:#D4B45C;">front-page.php</code> et <code style="background:rgba(212,180,92,.1);padding:2px 6px;border-radius:3px;color:#D4B45C;">footer.php</code> : remplacez "[Votre Restaurant]", "[Votre entreprise]", etc. par vos vraies informations. Instructions complètes dans le fichier <code style="background:rgba(212,180,92,.1);padding:2px 6px;border-radius:3px;color:#D4B45C;">readme.txt</code> inclus dans le ZIP.</span>
+                    </li>
+                </ol>
             </div>
         </div>
     </section>
@@ -232,11 +329,14 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
             <div class="ag-faq__list">
                 <?php
                 $tpl_faqs = [
-                    ['q' => 'Comment installer un template gratuit ?', 'a' => 'Téléchargez le fichier ZIP, puis dans WordPress : Apparence > Thèmes > Ajouter > Envoyer un thème. Uploadez le ZIP et activez le thème.'],
-                    ['q' => 'Le template est vraiment gratuit ?', 'a' => 'Oui, 100% gratuit. Pas de piège, pas d\'abonnement caché. C\'est un thème WordPress basique avec du contenu placeholder à remplacer.'],
-                    ['q' => 'Quelle est la différence avec un site professionnel ?', 'a' => 'Un template est un point de départ générique. Un site professionnel est conçu sur-mesure pour VOTRE marque, avec du contenu rédigé par des experts, un SEO ciblé et une stratégie de conversion. C\'est la différence entre un costume de supermarché et un costume sur-mesure.'],
+                    ['q' => 'Comment installer un template gratuit ?', 'a' => 'Téléchargez le fichier ZIP, puis dans WordPress : Apparence > Thèmes > Ajouter > Téléverser un thème. Uploadez le ZIP et activez le thème. Le guide complet en 4 étapes est disponible plus haut sur cette page.'],
+                    ['q' => 'Les templates sont-ils vraiment en français ?', 'a' => '100% français natif. Tous les textes (hero, cartes, horaires, footer, exemples) sont déjà rédigés en français — pas de Lorem ipsum, pas de strings anglaises à traduire. Vous remplacez juste les éléments entre crochets comme "[Votre Restaurant]" ou "[Votre entreprise]".'],
+                    ['q' => 'Combien de temps pour personnaliser un template ?', 'a' => 'Environ 30 minutes contre 20 heures pour un template étranger. Comme tout est déjà en français et en place, vous changez juste le nom, l\'adresse, les horaires et vos photos. C\'est le gros avantage par rapport aux templates génériques anglais.'],
+                    ['q' => 'Les templates sont-ils sur le répertoire officiel WordPress.org ?', 'a' => 'En cours de soumission. Nos trois templates (Restaurant, Artisan, Coach) sont conformes aux standards WordPress.org (GPL v2+, translation-ready, sans plugin requis, escaping strict, Theme Check compatible). Une fois validés par l\'équipe Theme Review, ils seront installables directement depuis Apparence > Thèmes > Ajouter dans votre WordPress.'],
+                    ['q' => 'Le template est vraiment gratuit ?', 'a' => 'Oui, 100% gratuit sous licence GPL v2 ou ultérieure. Pas de piège, pas d\'abonnement caché. Vous pouvez l\'utiliser, le modifier et même le redistribuer librement.'],
+                    ['q' => 'Ai-je besoin de plugins payants ?', 'a' => 'Non. Contrairement à beaucoup de thèmes gratuits qui exigent Elementor Pro ou d\'autres plugins payants pour débloquer les fonctionnalités, nos templates sont 100% autonomes. Installation et fonctionnement immédiat.'],
+                    ['q' => 'Quelle est la différence avec un site professionnel ?', 'a' => 'Un template est un point de départ générique, même s\'il est de qualité. Un site professionnel est conçu sur-mesure pour VOTRE marque, avec du contenu rédigé par des experts, un SEO ciblé et une stratégie de conversion. Nos clients génèrent +340% de leads en moyenne avec un site sur-mesure.'],
                     ['q' => 'J\'ai besoin d\'aide pour personnaliser, vous pouvez m\'aider ?', 'a' => 'Bien sûr ! Appelez-nous au 06.23.52.60.74. On peut personnaliser votre template ou créer un site entièrement sur-mesure qui génère des résultats concrets.'],
-                    ['q' => 'Les packs premium incluent quoi exactement ?', 'a' => 'Le template WordPress + les plugins premium (Elementor Pro, Yoast SEO Premium, etc. selon le pack) + un support par email + une documentation d\'installation détaillée.'],
                 ];
                 foreach ($tpl_faqs as $faq) :
                 ?>

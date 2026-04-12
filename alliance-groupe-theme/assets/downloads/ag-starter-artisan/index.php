@@ -4,7 +4,7 @@
  *
  * This is the most generic template file in a WordPress theme.
  *
- * @package AG_Starter_Restaurant
+ * @package AG_Starter_Artisan
  */
 
 get_header();
@@ -32,7 +32,7 @@ get_header();
 							<?php
 							/* translators: 1: date, 2: author. */
 							printf(
-								esc_html__( 'Publie le %1$s par %2$s', 'ag-starter-restaurant' ),
+								esc_html__( 'Publie le %1$s par %2$s', 'ag-starter-artisan' ),
 								'<time datetime="' . esc_attr( get_the_date( 'c' ) ) . '">' . esc_html( get_the_date() ) . '</time>',
 								'<span>' . esc_html( get_the_author() ) . '</span>'
 							);
@@ -58,14 +58,14 @@ get_header();
 			the_posts_pagination(
 				array(
 					'class'     => 'ag-pagination',
-					'prev_text' => esc_html__( 'Precedent', 'ag-starter-restaurant' ),
-					'next_text' => esc_html__( 'Suivant', 'ag-starter-restaurant' ),
+					'prev_text' => esc_html__( 'Precedent', 'ag-starter-artisan' ),
+					'next_text' => esc_html__( 'Suivant', 'ag-starter-artisan' ),
 				)
 			);
 
 		else :
 			?>
-			<p><?php esc_html_e( 'Aucun contenu a afficher.', 'ag-starter-restaurant' ); ?></p>
+			<p><?php esc_html_e( 'Aucun contenu a afficher.', 'ag-starter-artisan' ); ?></p>
 			<?php
 		endif;
 		?>
