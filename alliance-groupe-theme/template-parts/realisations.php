@@ -2,7 +2,7 @@
     <div class="ag-container">
         <span class="ag-tag ag-anim" data-anim="tag">Réalisations</span>
         <h2 class="ag-section__title ag-anim" data-anim="title">Nos projets <em>récents</em></h2>
-        <p class="ag-section__desc ag-anim" data-anim="desc">Des résultats concrets pour des clients ambitieux. 7 projets, 7 réussites.</p>
+        <p class="ag-section__desc ag-anim" data-anim="desc">Des résultats concrets pour des clients ambitieux.</p>
 
         <div class="ag-reals__grid ag-reals__grid--full">
             <?php
@@ -25,51 +25,6 @@
                     'tags'  => ['Paysagiste', 'Site Vitrine', 'SEO Local'],
                     'desc'  => 'Site vitrine pour un paysagiste en Loire-Atlantique. Génération de leads automatisée avec formulaires optimisés et référencement local dominant.',
                     'stats' => ['+320% devis', 'Top 3 Google', '15 devis/mois'],
-                ],
-                [
-                    'id'    => 'maison-riviera',
-                    'title' => 'Maison Riviera',
-                    'url'   => '#',
-                    'img'   => $img_base . 'maison-riviera.svg',
-                    'tags'  => ['E-commerce', 'Shopify', 'Luxe'],
-                    'desc'  => 'Boutique e-commerce premium pour une maison de décoration intérieure à Nice. Design luxueux, tunnel de vente optimisé et intégration de paiement sécurisé.',
-                    'stats' => ['+280% ventes', 'Panier moyen 185€', 'Taux conv. 4.2%'],
-                ],
-                [
-                    'id'    => 'cabinet-martin',
-                    'title' => 'Cabinet Martin & Associés',
-                    'url'   => '#',
-                    'img'   => $img_base . 'cabinet-martin.svg',
-                    'tags'  => ['Avocat', 'Site Vitrine', 'Lead Gen'],
-                    'desc'  => 'Site vitrine pour un cabinet d\'avocats parisien spécialisé en droit des affaires. Crédibilité renforcée, formulaire de prise de RDV et SEO sectoriel.',
-                    'stats' => ['+210% contacts', 'Page 1 Google', '40+ avis 5★'],
-                ],
-                [
-                    'id'    => 'fitness-lab',
-                    'title' => 'Fitness Lab',
-                    'url'   => '#',
-                    'img'   => $img_base . 'fitness-lab.svg',
-                    'tags'  => ['Fitness', 'App Web', 'Booking'],
-                    'desc'  => 'Plateforme de réservation de cours et site vitrine pour une salle de sport à Lyon. Système de booking en ligne, paiement intégré et espace membre.',
-                    'stats' => ['+450% réservations', '1 200 membres', 'Churn -35%'],
-                ],
-                [
-                    'id'    => 'saveurs-orient',
-                    'title' => 'Saveurs d\'Orient',
-                    'url'   => '#',
-                    'img'   => $img_base . 'saveurs-orient.svg',
-                    'tags'  => ['Restaurant', 'Site Vitrine', 'Google Ads'],
-                    'desc'  => 'Site web et stratégie digitale complète pour un restaurant gastronomique à Marrakech. Réservation en ligne, menu interactif et campagnes Google Ads ciblées.',
-                    'stats' => ['+190% réservations', 'ROAS x6.3', 'TripAdvisor Top 10'],
-                ],
-                [
-                    'id'    => 'techvision',
-                    'title' => 'TechVision Pro',
-                    'url'   => '#',
-                    'img'   => $img_base . 'techvision.svg',
-                    'tags'  => ['SaaS', 'Landing Page', 'Automatisation'],
-                    'desc'  => 'Landing page et tunnel d\'acquisition pour une startup SaaS nantaise. Optimisation du taux de conversion, intégration CRM et séquences email automatisées.',
-                    'stats' => ['Conv. 8.7%', '+520% MRR', '2 300 leads/mois'],
                 ],
             ];
 

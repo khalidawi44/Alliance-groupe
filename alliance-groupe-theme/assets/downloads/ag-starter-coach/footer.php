@@ -42,7 +42,7 @@
 			<p>
 				<?php
 				/* translators: %s: Alliance Group website link. */
-				printf( esc_html__( 'Theme gratuit par %s', 'ag-starter-coach' ), '<a href="https://alliancegroupe-inc.com" rel="nofollow">Alliance Group</a>' );
+				printf( esc_html__( 'Theme gratuit par %s', 'ag-starter-coach' ), '<a href="https://alliancegroupe-inc.com/templates-wordpress" rel="nofollow">Alliance Group</a>' );
 				?>
 			</p>
 		</div>

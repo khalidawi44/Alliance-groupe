@@ -79,23 +79,6 @@ get_header();
 <!-- Process -->
 <?php get_template_part('template-parts/process'); ?>
 
-<!-- Réalisations -->
-<?php get_template_part('template-parts/realisations'); ?>
-
-<!-- Parallax 2 -->
-<section class="ag-parallax" style="background-image:url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1920&q=80');">
-    <div class="ag-parallax__overlay"></div>
-    <div class="ag-parallax__content ag-anim" data-anim="parallax-text">
-        <p class="ag-parallax__quote">"Votre site web est votre meilleur commercial. Il travaille 24h/24, ne prend jamais de vacances et ne demande pas de commission."</p>
-    </div>
-</section>
-
-<!-- About -->
-<?php get_template_part('template-parts/about'); ?>
-
-<!-- FAQ -->
-<?php get_template_part('template-parts/faq'); ?>
-
 <!-- Promo Templates -->
 <section class="ag-section ag-promo-tpl ag-section--onyx">
     <div class="ag-container">
@@ -127,6 +110,23 @@ get_header();
         </div>
     </div>
 </section>
+
+<!-- Réalisations -->
+<?php get_template_part('template-parts/realisations'); ?>
+
+<!-- Parallax 2 -->
+<section class="ag-parallax" style="background-image:url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1920&q=80');">
+    <div class="ag-parallax__overlay"></div>
+    <div class="ag-parallax__content ag-anim" data-anim="parallax-text">
+        <p class="ag-parallax__quote">"Votre site web est votre meilleur commercial. Il travaille 24h/24, ne prend jamais de vacances et ne demande pas de commission."</p>
+    </div>
+</section>
+
+<!-- About -->
+<?php get_template_part('template-parts/about'); ?>
+
+<!-- FAQ -->
+<?php get_template_part('template-parts/faq'); ?>
 
 <!-- CTA -->
 <?php get_template_part('template-parts/cta'); ?>
