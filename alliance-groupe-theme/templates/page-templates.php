@@ -418,7 +418,7 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">Téléchargement gratuit</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">Vous êtes encore là ? <em>Téléchargez</em></h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc">Vous avez tout lu, vous connaissez les limites, vous savez quand passer au Pro ou au sur-mesure. Maintenant vous pouvez télécharger en toute connaissance de cause. Bientôt disponibles aussi sur le répertoire officiel WordPress.org.</p>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Vous avez tout lu, vous connaissez les limites, vous savez quand passer au Pro ou au sur-mesure. Maintenant vous pouvez télécharger en toute connaissance de cause. Également disponibles sur <a href="https://profiles.wordpress.org/adminag/" target="_blank" rel="noopener" style="color:#D4B45C;font-weight:700;">ma page WordPress.org officielle</a>.</p>
 
             <div class="ag-tpl__grid">
 
