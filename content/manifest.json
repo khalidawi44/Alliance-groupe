@@ -1,5 +1,5 @@
 {
-    "version": "1.12.0",
+    "version": "1.13.0",
     "repo": "khalidawi44/Alliance-groupe",
     "branch": "claude/rebuild-alliance-theme-fl7ca",
 
@@ -143,6 +143,25 @@
         "assets/downloads/ag-starter-coach/screenshot.png",
         "assets/downloads/ag-starter-coach/inc/customizer.php",
         "assets/downloads/ag-starter-coach/inc/customizer-output.php",
+
+        "assets/downloads/ag-starter-avocat.zip",
+        "assets/downloads/ag-starter-avocat/style.css",
+        "assets/downloads/ag-starter-avocat/functions.php",
+        "assets/downloads/ag-starter-avocat/index.php",
+        "assets/downloads/ag-starter-avocat/front-page.php",
+        "assets/downloads/ag-starter-avocat/header.php",
+        "assets/downloads/ag-starter-avocat/footer.php",
+        "assets/downloads/ag-starter-avocat/sidebar.php",
+        "assets/downloads/ag-starter-avocat/single.php",
+        "assets/downloads/ag-starter-avocat/page.php",
+        "assets/downloads/ag-starter-avocat/search.php",
+        "assets/downloads/ag-starter-avocat/searchform.php",
+        "assets/downloads/ag-starter-avocat/404.php",
+        "assets/downloads/ag-starter-avocat/comments.php",
+        "assets/downloads/ag-starter-avocat/readme.txt",
+        "assets/downloads/ag-starter-avocat/screenshot.png",
+        "assets/downloads/ag-starter-avocat/inc/customizer.php",
+        "assets/downloads/ag-starter-avocat/inc/customizer-output.php",
 
         "assets/downloads/ag-starter-companion.zip",
         "assets/downloads/ag-starter-companion/ag-starter-companion.php",

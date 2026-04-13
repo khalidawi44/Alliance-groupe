@@ -455,6 +455,30 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
                     </div>
                 </div>
 
+                <!-- Template Avocat -->
+                <div class="ag-tpl-card ag-anim" data-anim="card">
+                    <div class="ag-tpl-card__img">
+                        <div class="ag-tpl-card__preview">
+                            <span style="font-size:2rem;">⚖️</span>
+                            <strong>AG Starter Avocat</strong>
+                            <small>Navy &amp; champagne — 100% FR</small>
+                        </div>
+                    </div>
+                    <div class="ag-tpl-card__body">
+                        <span class="ag-tpl-card__badge ag-tpl-card__badge--free">Gratuit · v1.0</span>
+                        <h3 class="ag-tpl-card__title">Starter Avocat</h3>
+                        <p class="ag-tpl-card__desc">Pour cabinets d'avocats, juristes, notaires, conseil juridique. Domaines d'expertise, honoraires, prise de rendez-vous. Textes français, ton sérieux et professionnel.</p>
+                        <ul class="ag-tpl-card__features">
+                            <li>Page d'accueil complète pré-remplie</li>
+                            <li>Design sombre navy &amp; champagne</li>
+                            <li>100% responsive, sans plugin</li>
+                            <li>Blog, commentaires, recherche</li>
+                            <li>Translation-ready (GPL v2+)</li>
+                        </ul>
+                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="avocat" data-file="<?php echo esc_url($dl_base . 'ag-starter-avocat.zip'); ?>">Télécharger gratuitement →</button>
+                    </div>
+                </div>
+
             </div>
 
             <!-- Plugin compagnon gratuit -->

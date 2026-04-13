@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       AG Starter Companion
  * Plugin URI:        https://alliancegroupe-inc.com/templates-wordpress
- * Description:       Importer un clic pour les themes AG Starter (Restaurant, Artisan, Coach). Cree automatiquement les pages, le menu et les reglages pour un site pret a l'emploi.
- * Version:           1.0.0
+ * Description:       Importer un clic pour les themes AG Starter (Restaurant, Artisan, Coach, Avocat). Cree automatiquement les pages, le menu et les reglages pour un site pret a l'emploi.
+ * Version:           1.1.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            AGthèmes
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_STARTER_COMPANION_VERSION', '1.0.0' );
+define( 'AG_STARTER_COMPANION_VERSION', '1.1.0' );
 define( 'AG_STARTER_COMPANION_FILE', __FILE__ );
 
 /**
@@ -54,7 +54,7 @@ class AG_Starter_Companion {
 		$theme    = wp_get_theme();
 		$template = $theme->get_template();     // parent theme
 		$stylesh  = $theme->get_stylesheet();   // child theme if any
-		$supported = array( 'ag-starter-restaurant', 'ag-starter-artisan', 'ag-starter-coach' );
+		$supported = array( 'ag-starter-restaurant', 'ag-starter-artisan', 'ag-starter-coach', 'ag-starter-avocat' );
 		foreach ( array( $stylesh, $template ) as $candidate ) {
 			if ( in_array( $candidate, $supported, true ) ) {
 				return $candidate;
@@ -142,6 +142,31 @@ class AG_Starter_Companion {
 					'contact'         => array(
 						'title'   => __( 'Contact', 'ag-starter-companion' ),
 						'content' => __( 'Prise de rendez-vous, cabinet, visio, telephone, email.', 'ag-starter-companion' ),
+					),
+				),
+			),
+			'ag-starter-avocat'     => array(
+				'name'  => 'AG Starter Avocat',
+				'pages' => array(
+					'accueil'      => array(
+						'title'   => __( 'Accueil', 'ag-starter-companion' ),
+						'content' => '<!-- Rendu par front-page.php -->',
+					),
+					'expertise'    => array(
+						'title'   => __( 'Domaines d\'expertise', 'ag-starter-companion' ),
+						'content' => __( 'Droit des affaires, droit du travail, droit de la famille, droit immobilier.', 'ag-starter-companion' ),
+					),
+					'honoraires'   => array(
+						'title'   => __( 'Honoraires', 'ag-starter-companion' ),
+						'content' => __( 'Premier rendez-vous, forfaits, honoraires au temps passe ou de resultat.', 'ag-starter-companion' ),
+					),
+					'cabinet'      => array(
+						'title'   => __( 'Le cabinet', 'ag-starter-companion' ),
+						'content' => __( 'Presentez votre cabinet, votre histoire, vos engagements deontologiques.', 'ag-starter-companion' ),
+					),
+					'rendez-vous'  => array(
+						'title'   => __( 'Prendre rendez-vous', 'ag-starter-companion' ),
+						'content' => __( 'Consultation au cabinet ou en visio. Reservation en ligne, telephone, email.', 'ag-starter-companion' ),
 					),
 				),
 			),
