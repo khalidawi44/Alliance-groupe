@@ -85,16 +85,6 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
         </div>
     </section>
 
-    <!-- Avertissement honnête -->
-    <section class="ag-section ag-section--graphite">
-        <div class="ag-container ag-container--narrow" style="text-align:center;">
-            <div style="background:rgba(212,180,92,.06);border:1px solid rgba(212,180,92,.15);border-radius:16px;padding:36px;">
-                <h2 style="font-size:1.3rem;margin-bottom:12px;">Un template, c'est un <em>point de départ</em></h2>
-                <p style="color:#b0b0bc;line-height:1.7;">Nos templates gratuits sont fonctionnels mais basiques. Le contenu est placeholder (textes et images à remplacer). La personnalisation demande du temps et des connaissances techniques en WordPress. Si vous voulez un site professionnel qui génère des résultats — <a href="<?php echo esc_url(home_url('/contact')); ?>" style="color:#D4B45C;font-weight:700;">parlons de votre projet</a>.</p>
-            </div>
-        </div>
-    </section>
-
     <!-- Pourquoi nos templates (arguments vendeurs) -->
     <section class="ag-section ag-section--onyx">
         <div class="ag-container">
@@ -124,32 +114,6 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
                     <p class="ag-scard__text">Pas d'Elementor, pas de Divi, pas de dépendances payantes. Installation en 2 minutes, fonctionne immédiatement. Code propre, WordPress 6.0+, PHP 7.4+.</p>
                 </div>
             </div>
-
-            <div style="max-width:900px;margin:48px auto 0;padding:32px;background:rgba(255,255,255,.02);border:1px solid rgba(212,180,92,.15);border-radius:16px;">
-                <h3 style="text-align:center;font-size:1.1rem;margin-bottom:20px;color:#D4B45C;text-transform:uppercase;letter-spacing:1px;">Comparaison avec les templates étrangers</h3>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-                    <div>
-                        <h4 style="color:#b0b0bc;margin-bottom:10px;font-size:.95rem;">❌ Templates classiques (EN)</h4>
-                        <ul style="color:#b0b0bc;font-size:.9rem;line-height:1.9;list-style:none;">
-                            <li>• Textes en anglais ou Lorem ipsum</li>
-                            <li>• Horaires au format américain</li>
-                            <li>• Exemples culturellement décalés</li>
-                            <li>• Plugins payants obligatoires</li>
-                            <li>• 20+ heures de personnalisation</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 style="color:#D4B45C;margin-bottom:10px;font-size:.95rem;">✓ AG Starter (FR)</h4>
-                        <ul style="color:#e8e6e0;font-size:.9rem;line-height:1.9;list-style:none;">
-                            <li>• Textes rédigés en français natif</li>
-                            <li>• Horaires et formats FR/EU</li>
-                            <li>• Contenu adapté au marché français</li>
-                            <li>• Aucun plugin requis</li>
-                            <li>• 30 minutes pour personnaliser</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
         </div>
     </section>
 
@@ -160,63 +124,7 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
             <h2 class="ag-section__title ag-anim" data-anim="title">Passez au <em>niveau supérieur</em></h2>
             <p class="ag-section__desc ag-anim" data-anim="desc">Les templates gratuits sont volontairement basiques — design minimaliste, contenu pré-rempli, juste ce qu'il faut pour démarrer. Quand vous êtes prêt à aller plus loin, deux plugins payants viennent compléter le thème : <strong style="color:#D4B45C;">Pro</strong> pour un vrai design travaillé, <strong style="color:#D4B45C;">Premium</strong> pour tout ça + le multi-langue.</p>
 
-            <!-- Comparaison en 3 colonnes Gratuit / Pro / Premium -->
-            <div style="max-width:1100px;margin:40px auto 56px;overflow-x:auto;">
-                <table style="width:100%;border-collapse:collapse;background:rgba(255,255,255,.02);border:1px solid rgba(212,180,92,.15);border-radius:12px;overflow:hidden;">
-                    <thead>
-                        <tr style="background:rgba(212,180,92,.08);">
-                            <th style="text-align:left;padding:18px 18px;color:#b0b0bc;font-weight:600;font-size:.82rem;text-transform:uppercase;letter-spacing:.5px;width:36%;">Fonctionnalité</th>
-                            <th style="padding:18px 12px;color:#28a745;font-weight:700;text-align:center;font-size:.95rem;">Gratuit<br><small style="color:#888;font-weight:400;">0€</small></th>
-                            <th style="padding:18px 12px;color:#D4B45C;font-weight:700;text-align:center;font-size:.95rem;border-left:1px solid rgba(212,180,92,.15);">Pro<br><small style="color:#888;font-weight:400;">49€</small></th>
-                            <th style="padding:18px 12px;color:#D4B45C;font-weight:700;text-align:center;font-size:.95rem;background:rgba(212,180,92,.06);border-left:1px solid rgba(212,180,92,.15);border-right:1px solid rgba(212,180,92,.15);">Premium<br><small style="color:#888;font-weight:400;">99€</small></th>
-                            <th style="padding:18px 12px;color:#D4B45C;font-weight:700;text-align:center;font-size:.95rem;">Business<br><small style="color:#888;font-weight:400;">149€</small></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $matrix = [
-                            ['Page d\'accueil pré-remplie en français', '✓', '✓', '✓', '✓'],
-                            ['Plugin compagnon (import 1 clic)', '✓', '✓', '✓', '✓'],
-                            ['Customizer WordPress (couleurs, typo, textes)', '✓', '✓', '✓', '✓'],
-                            ['Blog, commentaires, recherche', '✓', '✓', '✓', '✓'],
-                            ['100% responsive', '✓', '✓', '✓', '✓'],
-                            ['Design travaillé (hover, animations, transitions)', '—', '✓', '✓', '✓'],
-                            ['Gradients, ombres, effets premium', '—', '✓', '✓', '✓'],
-                            ['10 blocs Gutenberg personnalisés', '—', '✓', '✓', '✓'],
-                            ['Customizer étendu (50+ réglages)', '—', '✓', '✓', '✓'],
-                            ['Sticky header + menu mobile stylisé', '—', '✓', '✓', '✓'],
-                            ['Polices Google Fonts premium', '—', '✓', '✓', '✓'],
-                            ['Support email 60 jours', '—', '✓', '✓', '✓'],
-                            ['Multi-langue (FR, EN, ES, IT, DE, AR)', '—', '—', '✓', '✓'],
-                            ['Sections premium (témoignages, galerie, pricing)', '—', '—', '✓', '✓'],
-                            ['Intégration WooCommerce complète', '—', '—', '✓', '✓'],
-                            ['Import / export des réglages', '—', '—', '✓', '✓'],
-                            ['Support prioritaire 12 mois', '—', '—', '✓', '✓'],
-                            ['Mises à jour à vie', '—', '—', '✓', '✓'],
-                            ['Appel de 30 min avec un expert', '—', '—', '✓', '✓'],
-                            ['🛠️ Installation assistée (visio 1h)', '—', '—', '—', '✓'],
-                            ['Maintenance WordPress 1 an incluse', '—', '—', '—', '✓'],
-                            ['Audit SEO mensuel (3 rapports/an)', '—', '—', '—', '✓'],
-                            ['Rapport de performance trimestriel', '—', '—', '—', '✓'],
-                            ['Support prioritaire absolu (2h ouvrées)', '—', '—', '—', '✓'],
-                            ['White-label complet (retirer crédit AG)', '—', '—', '—', '✓'],
-                            ['Intégration CRM (HubSpot, Pipedrive, Brevo)', '—', '—', '—', '✓'],
-                            ['Appel stratégique lancement avec Fabrizio', '—', '—', '—', '✓'],
-                        ];
-                        foreach ($matrix as $row) : ?>
-                        <tr style="border-top:1px solid rgba(255,255,255,.04);">
-                            <td style="padding:12px 18px;color:#e8e6e0;font-size:.88rem;"><?php echo esc_html($row[0]); ?></td>
-                            <td style="padding:12px 12px;text-align:center;color:<?php echo $row[1] === '✓' ? '#28a745' : '#555'; ?>;font-weight:700;font-size:1.05rem;"><?php echo esc_html($row[1]); ?></td>
-                            <td style="padding:12px 12px;text-align:center;color:<?php echo $row[2] === '✓' ? '#D4B45C' : '#555'; ?>;font-weight:700;font-size:1.05rem;border-left:1px solid rgba(212,180,92,.1);"><?php echo esc_html($row[2]); ?></td>
-                            <td style="padding:12px 12px;text-align:center;color:<?php echo $row[3] === '✓' ? '#D4B45C' : '#555'; ?>;font-weight:700;font-size:1.05rem;background:rgba(212,180,92,.03);border-left:1px solid rgba(212,180,92,.1);border-right:1px solid rgba(212,180,92,.1);"><?php echo esc_html($row[3]); ?></td>
-                            <td style="padding:12px 12px;text-align:center;color:<?php echo $row[4] === '✓' ? '#D4B45C' : '#555'; ?>;font-weight:700;font-size:1.05rem;"><?php echo esc_html($row[4]); ?></td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="ag-pricing__grid" style="grid-template-columns:repeat(3,1fr);max-width:1100px;margin:0 auto;">
+            <div class="ag-pricing__grid" style="grid-template-columns:repeat(3,1fr);max-width:1100px;margin:40px auto 0;">
 
                 <!-- Pack Pro 49€ -->
                 <div class="ag-price-card ag-anim" data-anim="card">
@@ -286,34 +194,6 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
                 </div>
 
             </div>
-
-            <!-- Positionnement vs concurrents -->
-            <div style="max-width:900px;margin:56px auto 0;padding:32px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;">
-                <h3 style="text-align:center;font-size:1.1rem;margin-bottom:8px;color:#D4B45C;text-transform:uppercase;letter-spacing:1px;">Positionnement vs concurrents</h3>
-                <p style="text-align:center;color:#b0b0bc;margin-bottom:24px;font-size:.95rem;">Des prix accessibles, pensés pour le marché français.</p>
-                <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;font-size:.92rem;">
-                    <div style="color:#888;padding:10px 14px;">Concurrent / Pack équivalent</div>
-                    <div style="color:#888;padding:10px 14px;text-align:center;">Prix /an</div>
-                    <div style="color:#888;padding:10px 14px;text-align:center;">AG Starter</div>
-
-                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);color:#e8e6e0;">Astra Pro (base)</div>
-                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);text-align:center;color:#b0b0bc;">59€/an</div>
-                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);text-align:center;color:#D4B45C;font-weight:700;">49€ une fois</div>
-
-                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);color:#e8e6e0;">OceanWP Business</div>
-                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);text-align:center;color:#b0b0bc;">79€/an</div>
-                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);text-align:center;color:#D4B45C;font-weight:700;">99€ une fois</div>
-
-                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);color:#e8e6e0;">Kadence Full Bundle</div>
-                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);text-align:center;color:#b0b0bc;">129€/an</div>
-                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);text-align:center;color:#D4B45C;font-weight:700;">99€ une fois</div>
-
-                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);color:#e8e6e0;">GeneratePress Premium</div>
-                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);text-align:center;color:#b0b0bc;">59€/an</div>
-                    <div style="padding:12px 14px;border-top:1px solid rgba(255,255,255,.06);text-align:center;color:#D4B45C;font-weight:700;">49€ une fois</div>
-                </div>
-                <p style="text-align:center;color:#888;font-size:.85rem;margin-top:20px;font-style:italic;">Paiement unique vs abonnement annuel. Nos thèmes ont moins de features que les concurrents matures, d'où un tarif volontairement bas. Vous payez pour ce dont vous avez vraiment besoin, pas pour 200 features que vous n'utiliserez jamais.</p>
-            </div>
         </div>
     </section>
 
@@ -326,18 +206,21 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
             'file'  => 'ag-pro-card.png',
             'alt'   => 'AG Starter Pro — Plugin qui transforme votre thème basique en thème professionnel',
             'label' => '⚡ Pack Pro — 49€',
+            'btn'   => 'Acheter le Pack Pro 49€ →',
             'cta'   => $ag_pro_cta_url,
         ),
         'premium' => array(
             'file'  => 'ag-premium-card.png',
             'alt'   => 'AG Starter Premium — Plugin multilingue 6 langues + WooCommerce',
             'label' => '🌍 Pack Premium — 99€',
+            'btn'   => 'Acheter le Pack Premium 99€ →',
             'cta'   => $ag_premium_cta_url,
         ),
         'business' => array(
             'file'  => 'ag-business-card.png',
             'alt'   => 'AG Starter Business — Pack tout-en-un clé en main avec accompagnement pro',
             'label' => '💼 Pack Business — 149€',
+            'btn'   => 'Acheter le Pack Business 149€ →',
             'cta'   => $ag_business_cta_url,
         ),
     );
@@ -368,6 +251,9 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
                              style="width:100%;height:auto;display:block;border-radius:10px;box-shadow:0 15px 40px rgba(0,0,0,.5);">
                     </a>
                     <div style="margin-top:16px;color:#D4B45C;font-weight:700;font-size:1rem;"><?php echo esc_html( $card['label'] ); ?></div>
+                    <a href="<?php echo esc_url( $card['cta'] ); ?>"<?php echo ( strpos( $card['cta'], 'buy.stripe.com' ) !== false ) ? ' target="_blank" rel="noopener"' : ''; ?> class="ag-btn-gold" style="margin-top:14px;display:inline-flex;font-size:.92rem;padding:12px 22px;">
+                        <?php echo esc_html( $card['btn'] ); ?>
+                    </a>
                 </div>
                 <?php endforeach; ?>
             </div>
@@ -485,63 +371,6 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
                 </div>
 
             </div>
-
-            <div style="max-width:900px;margin:56px auto 0;text-align:center;padding:28px;background:rgba(255,255,255,.02);border:1px dashed rgba(212,180,92,.3);border-radius:12px;">
-                <p style="color:#e8e6e0;font-size:1.05rem;margin-bottom:8px;"><strong>En résumé :</strong></p>
-                <p style="color:#b0b0bc;font-size:.98rem;line-height:1.8;margin:0;">Budget zéro → <strong style="color:#28a745;">thème gratuit</strong>. Rendu pro sans agence → <strong style="color:#D4B45C;">Pack Pro 49€</strong>. Multi-langue et WooCommerce → <strong style="color:#D4B45C;">Pack Premium 99€</strong>. Accompagnement pro 1 an, installation assistée et maintenance incluse → <strong style="color:#D4B45C;">Pack Business 149€</strong>. <strong style="color:#fff;">Et si votre business doit vraiment générer des résultats → parlons sur-mesure.</strong></p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Comparatif DIY vs Pro -->
-    <section class="ag-section ag-section--image-luxe">
-        <div class="ag-container">
-            <h2 class="ag-section__title ag-anim" data-anim="title" style="text-align:center;">Template DIY vs <em>Site professionnel</em></h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc" style="text-align:center;margin-left:auto;margin-right:auto;">Vous hésitez ? Voici la différence entre faire soi-même et confier à un professionnel.</p>
-
-            <div class="ag-compare">
-                <div class="ag-compare__col ag-compare__col--diy ag-anim" data-anim="card">
-                    <h3 class="ag-compare__title">Template DIY</h3>
-                    <span class="ag-compare__price">Gratuit / 49€ / 99€</span>
-                    <ul>
-                        <li class="ag-compare__bad">Contenu placeholder à remplacer</li>
-                        <li class="ag-compare__bad">Design générique, vu sur d'autres sites</li>
-                        <li class="ag-compare__bad">SEO basique, pas optimisé pour votre marché</li>
-                        <li class="ag-compare__bad">Pas de stratégie de conversion</li>
-                        <li class="ag-compare__bad">Temps d'installation : 10-40 heures</li>
-                        <li class="ag-compare__bad">Résultat : un site qui existe</li>
-                        <li class="ag-compare__bad">Support limité</li>
-                        <li class="ag-compare__bad">Nécessite des connaissances techniques</li>
-                    </ul>
-                </div>
-
-                <div class="ag-compare__vs">VS</div>
-
-                <div class="ag-compare__col ag-compare__col--pro ag-anim" data-anim="card">
-                    <h3 class="ag-compare__title">Site par Alliance Groupe</h3>
-                    <span class="ag-compare__price">À partir de 1 500€</span>
-                    <ul>
-                        <li class="ag-compare__good">Contenu rédigé par des pros du copywriting</li>
-                        <li class="ag-compare__good">Design unique, sur-mesure pour votre marque</li>
-                        <li class="ag-compare__good">SEO avancé ciblant VOS mots-clés</li>
-                        <li class="ag-compare__good">Stratégie de conversion éprouvée (+340% leads)</li>
-                        <li class="ag-compare__good">Temps pour vous : 0 heures — on fait tout</li>
-                        <li class="ag-compare__good">Résultat : un site qui VEND</li>
-                        <li class="ag-compare__good">Support illimité + maintenance</li>
-                        <li class="ag-compare__good">Aucune compétence technique requise</li>
-                    </ul>
-                    <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-gold" style="margin-top:20px;">Parlons de votre projet →</a>
-                </div>
-            </div>
-
-            <div style="text-align:center;margin-top:48px;padding:36px;background:rgba(212,180,92,.06);border:1px solid rgba(212,180,92,.15);border-radius:16px;">
-                <p style="font-size:1.2rem;font-weight:700;color:#fff;margin-bottom:8px;">Un template ne remplacera jamais un professionnel.</p>
-                <p style="color:#b0b0bc;margin-bottom:20px;">Nos clients génèrent en moyenne +340% de leads avec un site sur-mesure. Un template génère... des frustrations.</p>
-                <div class="ag-hero__buttons">
-                    <a href="tel:+33623526074" class="ag-btn-gold">Appeler Fabrizio — 06.23.52.60.74</a>
-                    <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Demander un devis gratuit →</a>
-                </div>
-            </div>
         </div>
     </section>
 
@@ -642,32 +471,6 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
                 </div>
             </div>
 
-            <!-- Résumé des 4 niveaux -->
-            <div style="max-width:1100px;margin:32px auto 0;padding:32px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);border-radius:16px;">
-                <h3 style="text-align:center;font-size:1.15rem;margin-bottom:20px;">L'écosystème AG Starter en <em>4 niveaux</em></h3>
-                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;text-align:center;">
-                    <div style="padding:18px;background:rgba(40,167,69,.05);border:1px solid rgba(40,167,69,.2);border-radius:12px;">
-                        <div style="font-size:1.6rem;margin-bottom:6px;">🆓</div>
-                        <strong style="color:#28a745;display:block;margin-bottom:6px;font-size:.95rem;">Gratuit</strong>
-                        <p style="color:#b0b0bc;font-size:.82rem;line-height:1.55;margin:0;">Thème basique + plugin compagnon d'import. Site fonctionnel minimaliste. Parfait pour démarrer.</p>
-                    </div>
-                    <div style="padding:18px;background:rgba(212,180,92,.05);border:1px solid rgba(212,180,92,.25);border-radius:12px;">
-                        <div style="font-size:1.6rem;margin-bottom:6px;">⚡</div>
-                        <strong style="color:#D4B45C;display:block;margin-bottom:6px;font-size:.95rem;">Pro — 49€</strong>
-                        <p style="color:#b0b0bc;font-size:.82rem;line-height:1.55;margin:0;">Design travaillé : animations, blocs, customizer avancé. De "basique" à "pro".</p>
-                    </div>
-                    <div style="padding:18px;background:rgba(212,180,92,.08);border:1px solid rgba(212,180,92,.35);border-radius:12px;">
-                        <div style="font-size:1.6rem;margin-bottom:6px;">🌍</div>
-                        <strong style="color:#D4B45C;display:block;margin-bottom:6px;font-size:.95rem;">Premium — 99€</strong>
-                        <p style="color:#b0b0bc;font-size:.82rem;line-height:1.55;margin:0;">Tout Pro + multi-langue 6 langues, WooCommerce, support prioritaire.</p>
-                    </div>
-                    <div style="padding:18px;background:rgba(212,180,92,.12);border:2px solid rgba(212,180,92,.5);border-radius:12px;">
-                        <div style="font-size:1.6rem;margin-bottom:6px;">💼</div>
-                        <strong style="color:#D4B45C;display:block;margin-bottom:6px;font-size:.95rem;">Business — 149€</strong>
-                        <p style="color:#b0b0bc;font-size:.82rem;line-height:1.55;margin:0;">Tout Premium + installation assistée, maintenance 1 an, audit SEO, white-label.</p>
-                    </div>
-                </div>
-            </div>
 
             <!-- Instructions d'installation -->
             <div style="max-width:900px;margin:56px auto 0;padding:40px;background:rgba(255,255,255,.025);border:1px solid rgba(212,180,92,.18);border-radius:16px;">
