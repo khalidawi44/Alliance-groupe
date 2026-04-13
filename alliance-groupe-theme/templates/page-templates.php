@@ -117,92 +117,6 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
         </div>
     </section>
 
-    <!-- Packs Premium Stripe -->
-    <section class="ag-section ag-section--or">
-        <div class="ag-container">
-            <span class="ag-tag ag-anim" data-anim="tag">Premium</span>
-            <h2 class="ag-section__title ag-anim" data-anim="title">Passez au <em>niveau supérieur</em></h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc">Les 4 templates gratuits (Restaurant, Artisan, Coach, Avocat) sont volontairement basiques. Trois plugins payants viennent compléter <strong style="color:#e8e6e0;">n'importe lequel des 4 thèmes</strong> — vous achetez <strong style="color:#D4B45C;">un seul plugin</strong>, il fonctionne avec le thème que vous utilisez.</p>
-
-            <div style="max-width:900px;margin:24px auto 0;padding:18px 24px;background:rgba(212,180,92,.06);border:1px solid rgba(212,180,92,.25);border-radius:10px;text-align:center;">
-                <p style="color:#e8e6e0;font-size:.95rem;margin:0;line-height:1.6;">
-                    <strong style="color:#D4B45C;">💡 À savoir :</strong> un plugin = compatible avec les <strong>4 thèmes</strong>. Peu importe si vous avez téléchargé Restaurant, Artisan, Coach ou Avocat, le même Pack Pro / Premium / Business fonctionne avec tous. Vous ne choisissez pas un pack <em>par métier</em>, vous choisissez un pack <em>par niveau</em> de features.
-                </p>
-            </div>
-
-            <div class="ag-pricing__grid" style="grid-template-columns:repeat(3,1fr);max-width:1100px;margin:40px auto 0;">
-
-                <!-- Pack Pro 49€ -->
-                <div class="ag-price-card ag-anim" data-anim="card">
-                    <div class="ag-price-card__header">
-                        <span class="ag-price-card__price">49<small>€</small></span>
-                        <h3 class="ag-price-card__title">Pack Pro</h3>
-                        <p class="ag-price-card__sub">Le thème basique devient un vrai thème professionnel</p>
-                    </div>
-                    <ul class="ag-price-card__list">
-                        <li><strong>Design travaillé</strong> : animations, transitions, hover, gradients</li>
-                        <li><strong>10 blocs Gutenberg</strong> premium (hero, CTA, stats, timeline…)</li>
-                        <li><strong>Customizer avancé</strong> : couleurs, typo, espacements en direct</li>
-                        <li><strong>Polices Google Fonts</strong> premium (Playfair, Manrope…)</li>
-                        <li><strong>Sticky header</strong> + menu mobile stylisé</li>
-                        <li><strong>Effets premium</strong> : ombres, transformations, scroll smooth</li>
-                        <li><strong>Support email 60 jours</strong></li>
-                        <li><strong>Documentation vidéo</strong> complète</li>
-                    </ul>
-                    <a href="<?php echo esc_url( $ag_pro_cta_url ); ?>" class="ag-btn-outline"<?php echo ( $ag_stripe_pro !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : ''; ?>><?php echo esc_html( $ag_pro_cta_label ); ?></a>
-                    <p style="font-size:.8rem;color:#888;text-align:center;margin-top:12px;">Paiement unique — pas d'abonnement.<br>Compatible avec les 3 thèmes AG Starter.</p>
-                </div>
-
-                <!-- Pack Premium 99€ -->
-                <div class="ag-price-card ag-price-card--pop ag-anim" data-anim="card">
-                    <span class="ag-price-card__badge">⭐ Populaire</span>
-                    <div class="ag-price-card__header">
-                        <span class="ag-price-card__price">99<small>€</small></span>
-                        <h3 class="ag-price-card__title">Pack Premium</h3>
-                        <p class="ag-price-card__sub">Tout Pro + multi-langue + WooCommerce</p>
-                    </div>
-                    <ul class="ag-price-card__list">
-                        <li><strong>Tout ce qui est dans Pro</strong> (design, blocs, customizer…)</li>
-                        <li><strong>🌍 Multi-langue</strong> : 6 langues (FR, EN, ES, IT, DE, AR)</li>
-                        <li><strong>Switcher de langue</strong> automatique dans le menu</li>
-                        <li><strong>Sections premium</strong> : témoignages, galerie, pricing</li>
-                        <li><strong>Intégration WooCommerce</strong> complète (e-commerce ready)</li>
-                        <li><strong>Import / export</strong> des réglages</li>
-                        <li><strong>Support prioritaire 12 mois</strong> (réponse sous 24h)</li>
-                        <li><strong>Mises à jour à vie</strong></li>
-                        <li><strong>Appel de 30 min</strong> avec un expert</li>
-                    </ul>
-                    <a href="<?php echo esc_url( $ag_premium_cta_url ); ?>" class="ag-btn-gold"<?php echo ( $ag_stripe_premium !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : ''; ?>><?php echo esc_html( $ag_premium_cta_label ); ?></a>
-                    <p style="font-size:.8rem;color:#888;text-align:center;margin-top:12px;">Paiement unique — pas d'abonnement.<br>Compatible avec les 3 thèmes AG Starter.</p>
-                </div>
-
-                <!-- Pack Business 149€ -->
-                <div class="ag-price-card ag-anim" data-anim="card" style="border-color:rgba(212,180,92,.35);">
-                    <span class="ag-price-card__badge" style="background:rgba(212,180,92,.15);color:#D4B45C;border:1px solid rgba(212,180,92,.35);">💼 Business</span>
-                    <div class="ag-price-card__header">
-                        <span class="ag-price-card__price">149<small>€</small></span>
-                        <h3 class="ag-price-card__title">Pack Business</h3>
-                        <p class="ag-price-card__sub">Tout Premium + accompagnement pro 1 an</p>
-                    </div>
-                    <ul class="ag-price-card__list">
-                        <li><strong>Tout ce qui est dans Premium</strong> (multi-langue, WooCommerce…)</li>
-                        <li><strong>🛠️ Installation assistée</strong> par notre équipe (visio 1h)</li>
-                        <li><strong>Maintenance 1 an incluse</strong> (mises à jour WP + plugins)</li>
-                        <li><strong>Audit SEO mensuel</strong> (3 rapports/an)</li>
-                        <li><strong>Rapport de performance trimestriel</strong></li>
-                        <li><strong>Support prioritaire absolu</strong> (réponse sous 2h ouvrées)</li>
-                        <li><strong>White-label complet</strong> : retirer le crédit "AG" du footer</li>
-                        <li><strong>Intégration CRM</strong> (HubSpot, Pipedrive, Brevo)</li>
-                        <li><strong>Appel stratégique</strong> de lancement avec Fabrizio</li>
-                    </ul>
-                    <a href="<?php echo esc_url( $ag_business_cta_url ); ?>" class="ag-btn-outline"<?php echo ( $ag_stripe_business !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : ''; ?>><?php echo esc_html( $ag_business_cta_label ); ?></a>
-                    <p style="font-size:.8rem;color:#888;text-align:center;margin-top:12px;">Paiement unique — pas d'abonnement.<br>Idéal pour freelances &amp; petites agences.</p>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
     <!-- 📇 Galerie des 3 cartes promo (scannables au téléphone) -->
     <?php
     $ag_promo_dir  = get_stylesheet_directory() . '/assets/images/promo-cards/';
@@ -389,108 +303,137 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
     <!-- Templates gratuits (download zone — en bout de parcours) -->
     <section class="ag-section ag-section--marbre" id="ag-download-zone">
         <div class="ag-container">
-            <span class="ag-tag ag-anim" data-anim="tag">Téléchargement gratuit</span>
-            <h2 class="ag-section__title ag-anim" data-anim="title">Vous êtes encore là ? <em>Téléchargez</em></h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc">Vous avez tout lu, vous connaissez les limites, vous savez quand passer au Pro ou au sur-mesure. Maintenant vous pouvez télécharger en toute connaissance de cause. Également disponibles sur <a href="https://profiles.wordpress.org/adminag/" target="_blank" rel="noopener" style="color:#D4B45C;font-weight:700;">ma page WordPress.org officielle</a>.</p>
+            <span class="ag-tag ag-anim" data-anim="tag">Choisissez votre métier</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Votre métier, vos <em>améliorations</em></h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Chaque fiche contient tout : le thème gratuit à télécharger + les 3 packs payants qui viennent l'améliorer. Le plugin que vous achetez fonctionne avec les 4 thèmes, mais on a aligné les fiches par métier pour que vous vous y retrouviez vite. Également disponibles sur <a href="https://profiles.wordpress.org/adminag/" target="_blank" rel="noopener" style="color:#D4B45C;font-weight:700;">ma page WordPress.org officielle</a>.</p>
 
-            <div class="ag-tpl__grid">
+            <?php
+            $ag_metiers = array(
+                'restaurant' => array(
+                    'icon'     => '🍽️',
+                    'name'     => 'Restaurant',
+                    'palette'  => 'Or &amp; noir',
+                    'audience' => 'Bistrot, bar, café, restaurant gastronomique.',
+                    'free_zip' => 'ag-starter-restaurant.zip',
+                    'free_trig' => 'restaurant',
+                    'free_benefit' => 'Hero, carte, réservation, privatisation, histoire, horaires — tout pré-rempli en français.',
+                    'pro'      => 'Animations douces sur les sections carte + hero plein écran avec vidéo de fond',
+                    'premium'  => 'Menu réservation multilingue (touristes) + module de commande en ligne WooCommerce',
+                    'business' => 'Installation assistée, intégration Deliveroo / TheFork, maintenance 1 an',
+                ),
+                'artisan' => array(
+                    'icon'     => '🔨',
+                    'name'     => 'Artisan',
+                    'palette'  => 'Bronze &amp; noir',
+                    'audience' => 'Plombier, électricien, menuisier, maçon, chauffagiste, BTP.',
+                    'free_zip' => 'ag-starter-artisan.zip',
+                    'free_trig' => 'artisan',
+                    'free_benefit' => 'Prestations, zones d\'intervention, devis, réalisations — ton professionnel.',
+                    'pro'      => 'Galerie avant/après des chantiers + formulaire de devis avancé avec calculateur',
+                    'premium'  => 'Réservation d\'interventions en ligne (WooCommerce) + planning Google Calendar',
+                    'business' => 'Installation assistée, maintenance 1 an, audit SEO local pour dominer votre zone',
+                ),
+                'coach' => array(
+                    'icon'     => '💼',
+                    'name'     => 'Coach / Consultant',
+                    'palette'  => 'Bleu teal &amp; marine',
+                    'audience' => 'Coach, consultant, formateur, thérapeute.',
+                    'free_zip' => 'ag-starter-coach.zip',
+                    'free_trig' => 'coach',
+                    'free_benefit' => 'Services, séances, témoignages, rendez-vous — ton bienveillant et structurant.',
+                    'pro'      => 'Témoignages animés + blocs parcours transformation + booking Calendly intégré',
+                    'premium'  => 'Vente de formations en ligne (WooCommerce) + multi-langue pour coaching international',
+                    'business' => 'Installation assistée, intégration CRM (HubSpot, Pipedrive), appel stratégique Fabrizio',
+                ),
+                'avocat' => array(
+                    'icon'     => '⚖️',
+                    'name'     => 'Avocat / Juridique',
+                    'palette'  => 'Navy &amp; champagne',
+                    'audience' => 'Cabinet d\'avocats, juriste, notaire, conseil juridique.',
+                    'free_zip' => 'ag-starter-avocat.zip',
+                    'free_trig' => 'avocat',
+                    'free_benefit' => 'Domaines d\'expertise, honoraires, prise de rendez-vous — ton sérieux et professionnel.',
+                    'pro'      => 'Présentation animée des domaines + bloc parcours Maître + Calendly confidentiel',
+                    'premium'  => 'Cabinet multilingue (clients internationaux) + espace client sécurisé (WooCommerce)',
+                    'business' => 'Installation assistée, audit SEO juridique, white-label complet, support prioritaire',
+                ),
+            );
 
-                <!-- Template Restaurant -->
-                <div class="ag-tpl-card ag-anim" data-anim="card">
-                    <div class="ag-tpl-card__img">
-                        <div class="ag-tpl-card__preview">
-                            <span style="font-size:2rem;">🍽️</span>
-                            <strong>AG Starter Restaurant</strong>
-                            <small>Or &amp; noir — 100% FR</small>
+            $ag_tiers = array(
+                'pro' => array(
+                    'icon'  => '⚡',
+                    'label' => 'Pack Pro',
+                    'price' => '49€',
+                    'cta'   => $ag_pro_cta_url,
+                    'stripe' => $ag_stripe_pro,
+                    'btn_label' => $ag_pro_cta_label,
+                    'btn_class' => 'ag-btn-outline',
+                ),
+                'premium' => array(
+                    'icon'  => '🌍',
+                    'label' => 'Pack Premium',
+                    'price' => '99€',
+                    'cta'   => $ag_premium_cta_url,
+                    'stripe' => $ag_stripe_premium,
+                    'btn_label' => $ag_premium_cta_label,
+                    'btn_class' => 'ag-btn-gold',
+                ),
+                'business' => array(
+                    'icon'  => '💼',
+                    'label' => 'Pack Business',
+                    'price' => '149€',
+                    'cta'   => $ag_business_cta_url,
+                    'stripe' => $ag_stripe_business,
+                    'btn_label' => $ag_business_cta_label,
+                    'btn_class' => 'ag-btn-outline',
+                ),
+            );
+            ?>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:28px;max-width:1200px;margin:40px auto 0;">
+                <?php foreach ( $ag_metiers as $slug => $m ) : ?>
+                <div class="ag-anim" data-anim="card" style="background:rgba(255,255,255,.025);border:1px solid rgba(212,180,92,.2);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;">
+
+                    <!-- Header métier -->
+                    <div style="padding:24px 24px 20px;border-bottom:1px solid rgba(212,180,92,.15);background:rgba(212,180,92,.03);">
+                        <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;">
+                            <span style="font-size:2rem;"><?php echo $m['icon']; // phpcs:ignore ?></span>
+                            <div>
+                                <h3 style="margin:0;font-size:1.3rem;color:#fff;"><?php echo esc_html( $m['name'] ); ?></h3>
+                                <span style="color:#b0b0bc;font-size:.82rem;"><?php echo $m['palette']; // phpcs:ignore ?></span>
+                            </div>
                         </div>
+                        <p style="color:#b0b0bc;font-size:.88rem;line-height:1.55;margin:0;"><?php echo esc_html( $m['audience'] ); ?></p>
                     </div>
-                    <div class="ag-tpl-card__body">
-                        <span class="ag-tpl-card__badge ag-tpl-card__badge--free">Gratuit · v1.0</span>
-                        <h3 class="ag-tpl-card__title">Starter Restaurant</h3>
-                        <p class="ag-tpl-card__desc">Pour restaurant, bistrot, bar ou café. Hero, carte, réservation, privatisation, histoire, horaires. Textes français, pas de Lorem ipsum.</p>
-                        <ul class="ag-tpl-card__features">
-                            <li>Page d'accueil complète pré-remplie</li>
-                            <li>Design sombre or &amp; noir</li>
-                            <li>100% responsive, sans plugin</li>
-                            <li>Blog, commentaires, recherche</li>
-                            <li>Translation-ready (GPL v2+)</li>
-                        </ul>
-                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="restaurant" data-file="<?php echo esc_url($dl_base . 'ag-starter-restaurant.zip'); ?>">Télécharger gratuitement →</button>
+
+                    <!-- Tier Gratuit -->
+                    <div style="padding:20px 24px;border-bottom:1px dashed rgba(255,255,255,.07);">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                            <strong style="color:#28a745;font-size:.95rem;">🆓 Thème gratuit</strong>
+                            <span style="color:#28a745;font-weight:700;font-size:.9rem;">0€</span>
+                        </div>
+                        <p style="color:#b0b0bc;font-size:.85rem;line-height:1.55;margin:0 0 12px;"><?php echo esc_html( $m['free_benefit'] ); ?></p>
+                        <button type="button" class="ag-btn-gold ag-dl-trigger" style="width:100%;justify-content:center;font-size:.9rem;padding:11px 18px;background:#28a745;box-shadow:none;" data-template="<?php echo esc_attr( $m['free_trig'] ); ?>" data-file="<?php echo esc_url( $dl_base . $m['free_zip'] ); ?>">Télécharger gratuitement →</button>
+                    </div>
+
+                    <!-- Tiers payants -->
+                    <?php foreach ( $ag_tiers as $tier_key => $t ) : ?>
+                    <div style="padding:16px 24px;border-bottom:1px dashed rgba(255,255,255,.07);">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                            <strong style="color:#D4B45C;font-size:.92rem;"><?php echo $t['icon']; // phpcs:ignore ?> <?php echo esc_html( $t['label'] ); ?></strong>
+                            <span style="color:#D4B45C;font-weight:700;font-size:.9rem;"><?php echo esc_html( $t['price'] ); ?></span>
+                        </div>
+                        <p style="color:#b0b0bc;font-size:.82rem;line-height:1.5;margin:0 0 10px;">+ <?php echo esc_html( $m[ $tier_key ] ); ?></p>
+                        <a href="<?php echo esc_url( $t['cta'] ); ?>" class="<?php echo esc_attr( $t['btn_class'] ); ?>" style="width:100%;display:flex;justify-content:center;font-size:.85rem;padding:10px 16px;"<?php echo ( $t['stripe'] !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : ''; ?>><?php echo esc_html( $t['btn_label'] ); ?></a>
+                    </div>
+                    <?php endforeach; ?>
+
+                    <!-- Footer note -->
+                    <div style="padding:14px 24px;background:rgba(255,255,255,.02);color:#888;font-size:.78rem;text-align:center;margin-top:auto;">
+                        Le plugin détecte automatiquement votre thème et adapte ses features
                     </div>
                 </div>
-
-                <!-- Template Artisan -->
-                <div class="ag-tpl-card ag-anim" data-anim="card">
-                    <div class="ag-tpl-card__img">
-                        <div class="ag-tpl-card__preview">
-                            <span style="font-size:2rem;">🔨</span>
-                            <strong>AG Starter Artisan</strong>
-                            <small>Bronze &amp; noir — 100% FR</small>
-                        </div>
-                    </div>
-                    <div class="ag-tpl-card__body">
-                        <span class="ag-tpl-card__badge ag-tpl-card__badge--free">Gratuit · v1.0</span>
-                        <h3 class="ag-tpl-card__title">Starter Artisan</h3>
-                        <p class="ag-tpl-card__desc">Pour artisans, plombiers, électriciens, menuisiers, BTP. Prestations, zones d'intervention, devis, réalisations. Textes français, ton pro.</p>
-                        <ul class="ag-tpl-card__features">
-                            <li>Page d'accueil complète pré-remplie</li>
-                            <li>Design sombre bronze &amp; noir</li>
-                            <li>100% responsive, sans plugin</li>
-                            <li>Blog, commentaires, recherche</li>
-                            <li>Translation-ready (GPL v2+)</li>
-                        </ul>
-                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="artisan" data-file="<?php echo esc_url($dl_base . 'ag-starter-artisan.zip'); ?>">Télécharger gratuitement →</button>
-                    </div>
-                </div>
-
-                <!-- Template Coach -->
-                <div class="ag-tpl-card ag-anim" data-anim="card">
-                    <div class="ag-tpl-card__img">
-                        <div class="ag-tpl-card__preview">
-                            <span style="font-size:2rem;">💼</span>
-                            <strong>AG Starter Coach</strong>
-                            <small>Bleu teal &amp; marine — 100% FR</small>
-                        </div>
-                    </div>
-                    <div class="ag-tpl-card__body">
-                        <span class="ag-tpl-card__badge ag-tpl-card__badge--free">Gratuit · v1.0</span>
-                        <h3 class="ag-tpl-card__title">Starter Coach</h3>
-                        <p class="ag-tpl-card__desc">Pour coachs, consultants, formateurs, thérapeutes. Services, séances, témoignages, rendez-vous. Textes français, ton bienveillant.</p>
-                        <ul class="ag-tpl-card__features">
-                            <li>Page d'accueil complète pré-remplie</li>
-                            <li>Design sombre teal &amp; marine</li>
-                            <li>100% responsive, sans plugin</li>
-                            <li>Blog, commentaires, recherche</li>
-                            <li>Translation-ready (GPL v2+)</li>
-                        </ul>
-                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="coach" data-file="<?php echo esc_url($dl_base . 'ag-starter-coach.zip'); ?>">Télécharger gratuitement →</button>
-                    </div>
-                </div>
-
-                <!-- Template Avocat -->
-                <div class="ag-tpl-card ag-anim" data-anim="card">
-                    <div class="ag-tpl-card__img">
-                        <div class="ag-tpl-card__preview">
-                            <span style="font-size:2rem;">⚖️</span>
-                            <strong>AG Starter Avocat</strong>
-                            <small>Navy &amp; champagne — 100% FR</small>
-                        </div>
-                    </div>
-                    <div class="ag-tpl-card__body">
-                        <span class="ag-tpl-card__badge ag-tpl-card__badge--free">Gratuit · v1.0</span>
-                        <h3 class="ag-tpl-card__title">Starter Avocat</h3>
-                        <p class="ag-tpl-card__desc">Pour cabinets d'avocats, juristes, notaires, conseil juridique. Domaines d'expertise, honoraires, prise de rendez-vous. Textes français, ton sérieux et professionnel.</p>
-                        <ul class="ag-tpl-card__features">
-                            <li>Page d'accueil complète pré-remplie</li>
-                            <li>Design sombre navy &amp; champagne</li>
-                            <li>100% responsive, sans plugin</li>
-                            <li>Blog, commentaires, recherche</li>
-                            <li>Translation-ready (GPL v2+)</li>
-                        </ul>
-                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="avocat" data-file="<?php echo esc_url($dl_base . 'ag-starter-avocat.zip'); ?>">Télécharger gratuitement →</button>
-                    </div>
-                </div>
-
+                <?php endforeach; ?>
             </div>
 
             <!-- Plugin compagnon gratuit -->
