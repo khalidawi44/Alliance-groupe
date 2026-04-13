@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour cabinet d'avocats, juriste, notaire, conseil juridique. Structure minimaliste navy et champagne, responsive, sans fioritures. Contenu pre-redige en francais natif : domaines d'expertise, honoraires, prise de rendez-vous, contact. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.0.0
+Version: 1.1.0
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -520,5 +520,406 @@ p {
 
     .ag-cards {
         padding: 1.5rem 0;
+    }
+}
+
+/* ============================================================
+   AG Starter Avocat — composants métier (v1.1.0)
+   ============================================================ */
+
+/* ----- Section générique ----- */
+.ag-section {
+    padding: 3.5rem 0;
+    border-top: 1px solid #1f2740;
+}
+
+.ag-section-title {
+    font-size: 1.8rem;
+    color: #c9a96e;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.ag-section-lead {
+    text-align: center;
+    color: #aaaaaa;
+    max-width: 720px;
+    margin: 0 auto 2rem;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.ag-container--narrow {
+    max-width: 760px;
+}
+
+/* ----- Domaines d'expertise ----- */
+.ag-domaines__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin-top: 2rem;
+}
+
+.ag-domaine-card {
+    display: block;
+    padding: 1.75rem;
+    background: #131826;
+    border: 1px solid #1f2740;
+    border-radius: 6px;
+    color: #e0e0e0;
+    text-decoration: none;
+}
+
+.ag-domaine-card__icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.ag-domaine-card__title {
+    font-size: 1.15rem;
+    color: #c9a96e;
+    margin-bottom: 0.5rem;
+    text-decoration: none;
+}
+
+.ag-domaine-card__excerpt {
+    color: #aaaaaa;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    margin-bottom: 0.75rem;
+}
+
+.ag-domaine-card__examples {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+}
+
+.ag-domaine-card__examples li {
+    color: #cccccc;
+    font-size: 0.82rem;
+    padding: 0.2rem 0 0.2rem 1rem;
+    position: relative;
+}
+
+.ag-domaine-card__examples li::before {
+    content: "·";
+    color: #c9a96e;
+    position: absolute;
+    left: 0.3rem;
+    font-weight: 700;
+}
+
+.ag-domaine-card__more {
+    color: #c9a96e;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.ag-domaines__empty {
+    text-align: center;
+    padding: 2rem;
+    background: #131826;
+    border: 1px dashed #1f2740;
+    border-radius: 6px;
+}
+
+.ag-domaines__hint {
+    color: #888;
+    font-size: 0.85rem;
+    margin-top: 0.75rem;
+}
+
+/* ----- Le Maître ----- */
+.ag-maitre__inner {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 2.5rem;
+    align-items: center;
+    background: #131826;
+    border: 1px solid #1f2740;
+    padding: 2rem;
+    border-radius: 6px;
+}
+
+.ag-maitre__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 1px solid #c9a96e;
+    border-radius: 4px;
+}
+
+.ag-maitre__tag {
+    display: inline-block;
+    color: #c9a96e;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.5rem;
+}
+
+.ag-maitre__name {
+    color: #ffffff;
+    font-size: 1.7rem;
+    margin-bottom: 0.4rem;
+}
+
+.ag-maitre__meta {
+    color: #aaaaaa;
+    font-size: 0.92rem;
+    margin-bottom: 0.85rem;
+}
+
+.ag-maitre__bio {
+    color: #cccccc;
+    line-height: 1.7;
+    margin-bottom: 0.75rem;
+}
+
+.ag-maitre__specialties {
+    color: #aaaaaa;
+    font-size: 0.9rem;
+}
+
+.ag-maitre__specialties strong {
+    color: #c9a96e;
+}
+
+@media (max-width: 720px) {
+    .ag-maitre__inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .ag-maitre__photo {
+        max-width: 200px;
+        margin: 0 auto;
+    }
+}
+
+/* ----- Honoraires ----- */
+.ag-honoraires__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+}
+
+.ag-honoraires__card {
+    background: #131826;
+    border: 1px solid #1f2740;
+    border-top: 3px solid #c9a96e;
+    padding: 2rem 1.5rem;
+    text-align: center;
+}
+
+.ag-honoraires__price {
+    color: #c9a96e;
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+}
+
+.ag-honoraires__label {
+    color: #ffffff;
+    font-size: 1.1rem;
+    margin-bottom: 0.6rem;
+}
+
+.ag-honoraires__desc {
+    color: #aaaaaa;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.ag-honoraires__note {
+    text-align: center;
+    color: #888;
+    font-size: 0.82rem;
+    font-style: italic;
+    margin-top: 1.5rem;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ----- Cabinet (adresse + horaires + plan) ----- */
+.ag-cabinet__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+
+.ag-cabinet__info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.ag-cabinet__block h3 {
+    color: #c9a96e;
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.ag-cabinet__block p {
+    color: #cccccc;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.ag-cabinet__block a {
+    color: #c9a96e;
+    text-decoration: none;
+}
+
+.ag-cabinet__emergency {
+    margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(184, 41, 41, 0.1);
+    border: 1px solid rgba(184, 41, 41, 0.3);
+    border-left: 3px solid #b82929;
+    border-radius: 4px;
+    color: #f0c0c0;
+    font-size: 0.9rem;
+}
+
+.ag-cabinet__emergency a {
+    color: #f0c0c0;
+    font-weight: 700;
+}
+
+.ag-cabinet__map iframe {
+    background: #131826;
+}
+
+@media (max-width: 720px) {
+    .ag-cabinet__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ----- Formulaire RDV ----- */
+.ag-rdv {
+    background: #0c1019;
+}
+
+.ag-rdv__form {
+    background: #131826;
+    border: 1px solid #1f2740;
+    padding: 2rem;
+    border-radius: 6px;
+}
+
+.ag-rdv__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.ag-rdv__field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.ag-rdv__field label {
+    color: #c9a96e;
+    font-size: 0.85rem;
+    margin-bottom: 0.35rem;
+    font-weight: 700;
+}
+
+.ag-rdv__field input,
+.ag-rdv__field textarea,
+.ag-rdv__field select {
+    padding: 0.75rem;
+    background: #0a0e1a;
+    border: 1px solid #1f2740;
+    color: #e0e0e0;
+    font-family: inherit;
+    font-size: 0.95rem;
+    border-radius: 4px;
+}
+
+.ag-rdv__field textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.ag-rdv__honeypot {
+    position: absolute;
+    left: -10000px;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+}
+
+.ag-rdv__rgpd {
+    margin: 1.25rem 0;
+    padding: 1rem;
+    background: #0a0e1a;
+    border: 1px solid #1f2740;
+    border-radius: 4px;
+}
+
+.ag-rdv__rgpd label {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    color: #cccccc;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    cursor: pointer;
+}
+
+.ag-rdv__rgpd input[type="checkbox"] {
+    margin-top: 0.25rem;
+}
+
+.ag-rdv__submit {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.ag-rdv__legal {
+    text-align: center;
+    color: #888;
+    font-size: 0.78rem;
+    margin-top: 0.75rem;
+    font-style: italic;
+}
+
+.ag-rdv__status {
+    padding: 1rem 1.25rem;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+    font-size: 0.92rem;
+}
+
+.ag-rdv__status--success {
+    background: rgba(40, 167, 69, 0.1);
+    border-left: 3px solid #28a745;
+    color: #b3e6c0;
+}
+
+.ag-rdv__status--error {
+    background: rgba(184, 41, 41, 0.1);
+    border-left: 3px solid #b82929;
+    color: #f0c0c0;
+}
+
+@media (max-width: 600px) {
+    .ag-rdv__row {
+        grid-template-columns: 1fr;
     }
 }

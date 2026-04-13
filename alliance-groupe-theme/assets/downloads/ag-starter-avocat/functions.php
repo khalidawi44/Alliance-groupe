@@ -133,6 +133,12 @@ add_action( 'wp_head', 'ag_starter_avocat_pingback_header' );
 require get_template_directory() . '/inc/customizer.php';
 
 /**
+ * Load the Domaine d'expertise CPT and the front-end form handler.
+ */
+require get_template_directory() . '/inc/cpt-domaine.php';
+require get_template_directory() . '/inc/forms.php';
+
+/**
  * Show an admin notice inviting the user to install the companion plugin
  * which provides the one-click demo importer.
  */

@@ -1,5 +1,5 @@
 {
-    "version": "1.13.0",
+    "version": "1.14.0",
     "repo": "khalidawi44/Alliance-groupe",
     "branch": "claude/rebuild-alliance-theme-fl7ca",
 
@@ -162,6 +162,9 @@
         "assets/downloads/ag-starter-avocat/screenshot.png",
         "assets/downloads/ag-starter-avocat/inc/customizer.php",
         "assets/downloads/ag-starter-avocat/inc/customizer-output.php",
+        "assets/downloads/ag-starter-avocat/inc/cpt-domaine.php",
+        "assets/downloads/ag-starter-avocat/inc/forms.php",
+        "assets/downloads/ag-starter-avocat/single-ag_domaine.php",
 
         "assets/downloads/ag-starter-companion.zip",
         "assets/downloads/ag-starter-companion/ag-starter-companion.php",

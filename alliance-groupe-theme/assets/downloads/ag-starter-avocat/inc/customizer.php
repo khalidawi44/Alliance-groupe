@@ -39,10 +39,46 @@ function ag_starter_avocat_customizer_defaults() {
 		'ag_hero_brand'         => '[Maitre Nom]',
 		'ag_hero_subtitle'      => 'Avocat au barreau, conseil juridique et defense de vos interets en toute confidentialite.',
 		'ag_hero_button'        => 'Prendre rendez-vous',
-		'ag_hero_button_url'    => '#ag-services',
+		'ag_hero_button_url'    => '#ag-rdv',
 		// Footer.
 		'ag_footer_copyright'   => '',
 		'ag_footer_credits'     => true,
+		// Cabinet — informations administratives.
+		'ag_cabinet_phone'      => '01 23 45 67 89',
+		'ag_cabinet_emergency'  => '',
+		'ag_cabinet_email'      => 'contact@votre-cabinet.fr',
+		'ag_cabinet_address'    => "15 boulevard du Palais\n75001 Paris",
+		'ag_cabinet_hours'      => "Lundi - Vendredi : 9h - 19h\nSamedi : sur rendez-vous\nVisio disponible",
+		'ag_cabinet_map_embed'  => '',
+		'ag_cabinet_rpva'       => '',
+		// Le Maître.
+		'ag_maitre_show'        => true,
+		'ag_maitre_name'        => '[Maitre Nom]',
+		'ag_maitre_barreau'     => 'Inscrit au Barreau de Paris',
+		'ag_maitre_year'        => '2010',
+		'ag_maitre_bio'         => "Avocat au barreau depuis plus de quinze ans, j'accompagne particuliers et entreprises avec rigueur, ecoute et discretion. Mon approche : analyser chaque dossier en profondeur, vous expliquer clairement vos options, et batir avec vous la strategie la plus efficace.",
+		'ag_maitre_specialties' => 'Droit des affaires · Droit du travail · Droit de la famille',
+		'ag_maitre_photo'       => '',
+		// Honoraires.
+		'ag_honoraires_show'        => true,
+		'ag_honoraires_first_label' => 'Premier rendez-vous',
+		'ag_honoraires_first_price' => '80€ HT',
+		'ag_honoraires_first_desc'  => 'Consultation initiale d\'1 heure pour analyser votre dossier et vous proposer une strategie.',
+		'ag_honoraires_pack_label'  => 'Forfait conseil',
+		'ag_honoraires_pack_price'  => 'Sur devis',
+		'ag_honoraires_pack_desc'   => 'Forfait tout inclus pour les dossiers definis a l\'avance, sans surprise.',
+		'ag_honoraires_hour_label'  => 'Honoraires au temps passe',
+		'ag_honoraires_hour_price'  => '180€ HT/h',
+		'ag_honoraires_hour_desc'   => 'Pour les dossiers complexes, facturation transparente avec releve detaille.',
+		'ag_honoraires_note'        => 'Tous les tarifs sont communiques par ecrit avant tout engagement. Devis et convention d\'honoraires obligatoires.',
+		// RDV form.
+		'ag_rdv_show'             => true,
+		'ag_rdv_title'            => 'Prendre rendez-vous',
+		'ag_rdv_subtitle'         => 'Premier rendez-vous confidentiel sous 48h ouvrees. Votre demande est traitee directement par le cabinet.',
+		'ag_rdv_recipient_email'  => '',
+		'ag_rdv_rgpd_text'        => 'J\'accepte que mes donnees soient utilisees uniquement pour traiter ma demande de rendez-vous, conformement au RGPD. Aucune donnee n\'est partagee avec des tiers.',
+		// RGPD / footer legal.
+		'ag_rgpd_mention'       => 'Cabinet inscrit au RPVA. Donnees personnelles traitees conformement au RGPD. Confidentialite absolue garantie par le secret professionnel.',
 	);
 }
 
@@ -333,6 +369,192 @@ function ag_starter_avocat_customize_register( $wp_customize ) {
 			'type'    => 'checkbox',
 		)
 	);
+
+	// ─── Section: Cabinet (contact + horaires + plan + RPVA) ───
+	$wp_customize->add_section(
+		'ag_section_cabinet',
+		array(
+			'title'    => esc_html__( 'Cabinet (contact &amp; horaires)', 'ag-starter-avocat' ),
+			'panel'    => 'ag_starter_panel',
+			'priority' => 50,
+		)
+	);
+	$cabinet_fields = array(
+		'ag_cabinet_phone'     => array( 'label' => 'Téléphone du cabinet', 'type' => 'text' ),
+		'ag_cabinet_emergency' => array( 'label' => 'Numéro d\'urgence garde à vue (optionnel)', 'type' => 'text' ),
+		'ag_cabinet_email'     => array( 'label' => 'Email du cabinet', 'type' => 'email' ),
+		'ag_cabinet_address'   => array( 'label' => 'Adresse complète (1 ligne par ligne)', 'type' => 'textarea' ),
+		'ag_cabinet_hours'     => array( 'label' => 'Horaires d\'ouverture (1 ligne par ligne)', 'type' => 'textarea' ),
+		'ag_cabinet_map_embed' => array( 'label' => 'URL Google Maps embed (optionnel)', 'type' => 'url' ),
+		'ag_cabinet_rpva'      => array( 'label' => 'Numéro RPVA (optionnel)', 'type' => 'text' ),
+	);
+	$prio = 10;
+	foreach ( $cabinet_fields as $key => $meta ) {
+		$sanitize = ( 'textarea' === $meta['type'] ) ? 'sanitize_textarea_field' : ( 'email' === $meta['type'] ? 'sanitize_email' : ( 'url' === $meta['type'] ? 'esc_url_raw' : 'sanitize_text_field' ) );
+		$wp_customize->add_setting(
+			$key,
+			array(
+				'default'           => $defaults[ $key ],
+				'sanitize_callback' => $sanitize,
+				'transport'         => 'refresh',
+			)
+		);
+		$wp_customize->add_control(
+			$key,
+			array(
+				'label'    => $meta['label'],
+				'section'  => 'ag_section_cabinet',
+				'type'     => $meta['type'],
+				'priority' => $prio,
+			)
+		);
+		$prio += 5;
+	}
+
+	// ─── Section: Le Maître ───
+	$wp_customize->add_section(
+		'ag_section_maitre',
+		array(
+			'title'    => esc_html__( 'Le Maître (présentation)', 'ag-starter-avocat' ),
+			'panel'    => 'ag_starter_panel',
+			'priority' => 60,
+		)
+	);
+	$maitre_fields = array(
+		'ag_maitre_show'        => array( 'label' => 'Afficher la section "Le Maître"', 'type' => 'checkbox' ),
+		'ag_maitre_name'        => array( 'label' => 'Nom du Maître', 'type' => 'text' ),
+		'ag_maitre_barreau'     => array( 'label' => 'Barreau d\'inscription', 'type' => 'text' ),
+		'ag_maitre_year'        => array( 'label' => 'Année d\'inscription au barreau', 'type' => 'text' ),
+		'ag_maitre_specialties' => array( 'label' => 'Spécialités (séparées par ·)', 'type' => 'text' ),
+		'ag_maitre_bio'         => array( 'label' => 'Biographie / parcours', 'type' => 'textarea' ),
+	);
+	$prio = 10;
+	foreach ( $maitre_fields as $key => $meta ) {
+		$sanitize = ( 'checkbox' === $meta['type'] ) ? 'ag_starter_avocat_sanitize_checkbox' : ( 'textarea' === $meta['type'] ? 'sanitize_textarea_field' : 'sanitize_text_field' );
+		$wp_customize->add_setting(
+			$key,
+			array(
+				'default'           => $defaults[ $key ],
+				'sanitize_callback' => $sanitize,
+				'transport'         => 'refresh',
+			)
+		);
+		$wp_customize->add_control(
+			$key,
+			array(
+				'label'    => $meta['label'],
+				'section'  => 'ag_section_maitre',
+				'type'     => $meta['type'],
+				'priority' => $prio,
+			)
+		);
+		$prio += 5;
+	}
+	// Photo upload control.
+	$wp_customize->add_setting(
+		'ag_maitre_photo',
+		array(
+			'default'           => $defaults['ag_maitre_photo'],
+			'sanitize_callback' => 'esc_url_raw',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		new WP_Customize_Image_Control(
+			$wp_customize,
+			'ag_maitre_photo',
+			array(
+				'label'    => esc_html__( 'Photo du Maître (optionnel)', 'ag-starter-avocat' ),
+				'section'  => 'ag_section_maitre',
+				'priority' => 50,
+			)
+		)
+	);
+
+	// ─── Section: Honoraires ───
+	$wp_customize->add_section(
+		'ag_section_honoraires',
+		array(
+			'title'    => esc_html__( 'Honoraires (transparence tarifaire)', 'ag-starter-avocat' ),
+			'panel'    => 'ag_starter_panel',
+			'priority' => 70,
+		)
+	);
+	$honoraires_fields = array(
+		'ag_honoraires_show'        => array( 'label' => 'Afficher la section Honoraires', 'type' => 'checkbox' ),
+		'ag_honoraires_first_label' => array( 'label' => 'Tarif 1 — Libellé', 'type' => 'text' ),
+		'ag_honoraires_first_price' => array( 'label' => 'Tarif 1 — Prix', 'type' => 'text' ),
+		'ag_honoraires_first_desc'  => array( 'label' => 'Tarif 1 — Description', 'type' => 'textarea' ),
+		'ag_honoraires_pack_label'  => array( 'label' => 'Tarif 2 — Libellé', 'type' => 'text' ),
+		'ag_honoraires_pack_price'  => array( 'label' => 'Tarif 2 — Prix', 'type' => 'text' ),
+		'ag_honoraires_pack_desc'   => array( 'label' => 'Tarif 2 — Description', 'type' => 'textarea' ),
+		'ag_honoraires_hour_label'  => array( 'label' => 'Tarif 3 — Libellé', 'type' => 'text' ),
+		'ag_honoraires_hour_price'  => array( 'label' => 'Tarif 3 — Prix', 'type' => 'text' ),
+		'ag_honoraires_hour_desc'   => array( 'label' => 'Tarif 3 — Description', 'type' => 'textarea' ),
+		'ag_honoraires_note'        => array( 'label' => 'Note légale (en bas du bloc)', 'type' => 'textarea' ),
+	);
+	$prio = 10;
+	foreach ( $honoraires_fields as $key => $meta ) {
+		$sanitize = ( 'checkbox' === $meta['type'] ) ? 'ag_starter_avocat_sanitize_checkbox' : ( 'textarea' === $meta['type'] ? 'sanitize_textarea_field' : 'sanitize_text_field' );
+		$wp_customize->add_setting(
+			$key,
+			array(
+				'default'           => $defaults[ $key ],
+				'sanitize_callback' => $sanitize,
+				'transport'         => 'refresh',
+			)
+		);
+		$wp_customize->add_control(
+			$key,
+			array(
+				'label'    => $meta['label'],
+				'section'  => 'ag_section_honoraires',
+				'type'     => $meta['type'],
+				'priority' => $prio,
+			)
+		);
+		$prio += 5;
+	}
+
+	// ─── Section: RDV form + RGPD ───
+	$wp_customize->add_section(
+		'ag_section_rdv',
+		array(
+			'title'    => esc_html__( 'Formulaire de rendez-vous &amp; RGPD', 'ag-starter-avocat' ),
+			'panel'    => 'ag_starter_panel',
+			'priority' => 80,
+		)
+	);
+	$rdv_fields = array(
+		'ag_rdv_show'            => array( 'label' => 'Afficher le formulaire RDV', 'type' => 'checkbox' ),
+		'ag_rdv_title'           => array( 'label' => 'Titre du formulaire', 'type' => 'text' ),
+		'ag_rdv_subtitle'        => array( 'label' => 'Sous-titre / promesse', 'type' => 'textarea' ),
+		'ag_rdv_recipient_email' => array( 'label' => 'Email destinataire (vide = email du cabinet)', 'type' => 'email' ),
+		'ag_rdv_rgpd_text'       => array( 'label' => 'Texte de consentement RGPD (case à cocher)', 'type' => 'textarea' ),
+		'ag_rgpd_mention'        => array( 'label' => 'Mention RGPD affichée dans le footer', 'type' => 'textarea' ),
+	);
+	$prio = 10;
+	foreach ( $rdv_fields as $key => $meta ) {
+		$sanitize = ( 'checkbox' === $meta['type'] ) ? 'ag_starter_avocat_sanitize_checkbox' : ( 'textarea' === $meta['type'] ? 'sanitize_textarea_field' : ( 'email' === $meta['type'] ? 'sanitize_email' : 'sanitize_text_field' ) );
+		$wp_customize->add_setting(
+			$key,
+			array(
+				'default'           => $defaults[ $key ],
+				'sanitize_callback' => $sanitize,
+				'transport'         => 'refresh',
+			)
+		);
+		$wp_customize->add_control(
+			$key,
+			array(
+				'label'    => $meta['label'],
+				'section'  => 'ag_section_rdv',
+				'type'     => $meta['type'],
+				'priority' => $prio,
+			)
+		);
+		$prio += 5;
+	}
 }
 add_action( 'customize_register', 'ag_starter_avocat_customize_register' );
 
