@@ -317,6 +317,68 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
         </div>
     </section>
 
+    <!-- 📇 Galerie des 3 cartes promo (scannables au téléphone) -->
+    <?php
+    $ag_promo_dir  = get_stylesheet_directory() . '/assets/images/promo-cards/';
+    $ag_promo_url  = get_stylesheet_directory_uri() . '/assets/images/promo-cards/';
+    $ag_promo_cards = array(
+        'pro' => array(
+            'file'  => 'ag-pro-card.png',
+            'alt'   => 'AG Starter Pro — Plugin qui transforme votre thème basique en thème professionnel',
+            'label' => '⚡ Pack Pro — 49€',
+            'cta'   => $ag_pro_cta_url,
+        ),
+        'premium' => array(
+            'file'  => 'ag-premium-card.png',
+            'alt'   => 'AG Starter Premium — Plugin multilingue 6 langues + WooCommerce',
+            'label' => '🌍 Pack Premium — 99€',
+            'cta'   => $ag_premium_cta_url,
+        ),
+        'business' => array(
+            'file'  => 'ag-business-card.png',
+            'alt'   => 'AG Starter Business — Pack tout-en-un clé en main avec accompagnement pro',
+            'label' => '💼 Pack Business — 149€',
+            'cta'   => $ag_business_cta_url,
+        ),
+    );
+    $ag_promo_has_any = false;
+    foreach ( $ag_promo_cards as $card ) {
+        if ( file_exists( $ag_promo_dir . $card['file'] ) ) {
+            $ag_promo_has_any = true;
+            break;
+        }
+    }
+    if ( $ag_promo_has_any ) :
+    ?>
+    <section class="ag-section ag-section--marbre" style="padding:80px 0;">
+        <div class="ag-container">
+            <span class="ag-tag ag-anim" data-anim="tag">À scanner au téléphone</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Les 3 packs <em>en un coup d'œil</em></h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Cartes visuelles avec QR code — sortez votre téléphone, scannez celle qui vous intéresse, et vous êtes direct sur la page de contact pour en discuter.</p>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px;max-width:1100px;margin:40px auto 0;">
+                <?php foreach ( $ag_promo_cards as $key => $card ) :
+                    if ( ! file_exists( $ag_promo_dir . $card['file'] ) ) { continue; }
+                ?>
+                <div class="ag-anim" data-anim="card" style="background:rgba(255,255,255,.02);border:1px solid rgba(212,180,92,.2);border-radius:16px;padding:20px;text-align:center;transition:border-color .3s,transform .3s;">
+                    <a href="<?php echo esc_url( $card['cta'] ); ?>"<?php echo ( strpos( $card['cta'], 'buy.stripe.com' ) !== false ) ? ' target="_blank" rel="noopener"' : ''; ?> style="display:block;">
+                        <img src="<?php echo esc_url( $ag_promo_url . $card['file'] ); ?>"
+                             alt="<?php echo esc_attr( $card['alt'] ); ?>"
+                             loading="lazy"
+                             style="width:100%;height:auto;display:block;border-radius:10px;box-shadow:0 15px 40px rgba(0,0,0,.5);">
+                    </a>
+                    <div style="margin-top:16px;color:#D4B45C;font-weight:700;font-size:1rem;"><?php echo esc_html( $card['label'] ); ?></div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+
+            <p style="text-align:center;color:#888;font-size:.88rem;margin-top:32px;font-style:italic;">
+                Vous pouvez aussi <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" style="color:#D4B45C;font-weight:700;">cliquer directement ici</a> si vous n'avez pas votre téléphone sous la main.
+            </p>
+        </div>
+    </section>
+    <?php endif; ?>
+
     <!-- 🚨 AVERTISSEMENT PRIORITAIRE — Offre création sur-mesure -->
     <section class="ag-section ag-section--or" style="padding:100px 0;">
         <div class="ag-container">

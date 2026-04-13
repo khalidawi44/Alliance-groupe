@@ -1,5 +1,5 @@
 {
-    "version": "1.11.0",
+    "version": "1.12.0",
     "repo": "khalidawi44/Alliance-groupe",
     "branch": "claude/rebuild-alliance-theme-fl7ca",
 
@@ -151,6 +151,9 @@
     ],
 
     "images": [
+        "assets/images/promo-cards/ag-pro-card.png",
+        "assets/images/promo-cards/ag-premium-card.png",
+        "assets/images/promo-cards/ag-business-card.png",
         "assets/images/logo.png",
         "assets/images/logo.jpg",
         "assets/images/team/fabrizio.png",
