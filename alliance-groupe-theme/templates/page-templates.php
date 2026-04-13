@@ -307,14 +307,14 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
                 'avocat' => array(
                     'icon'     => '⚖️',
                     'name'     => 'Avocat / Juridique',
-                    'palette'  => 'Navy &amp; champagne',
+                    'palette'  => 'Navy &amp; champagne <strong style="color:#28a745;">· v1.1</strong>',
                     'audience' => 'Cabinet d\'avocats, juriste, notaire, conseil juridique.',
                     'free_zip' => 'ag-starter-avocat.zip',
                     'free_trig' => 'avocat',
-                    'free_benefit' => 'Domaines d\'expertise, honoraires, prise de rendez-vous — ton sérieux et professionnel.',
-                    'pro'      => 'Présentation animée des domaines + bloc parcours Maître + Calendly confidentiel',
-                    'premium'  => 'Cabinet multilingue (clients internationaux) + espace client sécurisé (WooCommerce)',
-                    'business' => 'Installation assistée, audit SEO juridique, white-label complet, support prioritaire',
+                    'free_benefit' => 'CPT Domaines d\'expertise, formulaire RDV RGPD (wp_mail), 4 sections cabinet + Maître + honoraires transparent + Google Maps. 100% configurable depuis le Customizer.',
+                    'pro'      => 'Animations + sticky header téléphone toujours visible + 10 blocs Gutenberg juridiques (FAQ, timeline, témoignages anonymisés)',
+                    'premium'  => 'Multi-langue 6 langues (clients internationaux) + espace client sécurisé pour partage de documents (WooCommerce + RGPD) + calendrier RDV intégré',
+                    'business' => 'Installation visio 1h, audit SEO juridique (mots-clés "avocat divorce Paris" etc.), white-label complet, intégration CRM (HubSpot/Pipedrive), maintenance 1 an, appel stratégique Fabrizio',
                 ),
             );
 

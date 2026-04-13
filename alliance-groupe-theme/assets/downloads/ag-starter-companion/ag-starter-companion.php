@@ -3,7 +3,7 @@
  * Plugin Name:       AG Starter Companion
  * Plugin URI:        https://alliancegroupe-inc.com/templates-wordpress
  * Description:       Importer un clic pour les themes AG Starter (Restaurant, Artisan, Coach, Avocat). Cree automatiquement les pages, le menu et les reglages pour un site pret a l'emploi.
- * Version:           1.1.0
+ * Version:           1.2.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            AGthèmes
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_STARTER_COMPANION_VERSION', '1.1.0' );
+define( 'AG_STARTER_COMPANION_VERSION', '1.2.0' );
 define( 'AG_STARTER_COMPANION_FILE', __FILE__ );
 
 /**
@@ -410,6 +410,15 @@ class AG_Starter_Companion {
 			$log[] = 'Menu principal cree et assigne';
 		}
 
+		// Theme-specific extras : Avocat ships demo Domaines d'expertise
+		// via the ag_domaine CPT registered by the theme itself.
+		if ( 'ag-starter-avocat' === $slug && post_type_exists( 'ag_domaine' ) ) {
+			$created = $this->import_avocat_domaines();
+			if ( $created ) {
+				$log[] = sprintf( '%d domaines d\'expertise crees', $created );
+			}
+		}
+
 		if ( '' === get_option( 'permalink_structure' ) ) {
 			update_option( 'permalink_structure', '/%postname%/' );
 			flush_rewrite_rules();
@@ -417,6 +426,106 @@ class AG_Starter_Companion {
 		}
 
 		return $log;
+	}
+
+	/**
+	 * Import a starter set of Domaines d'expertise (Avocat CPT).
+	 *
+	 * Only runs when the active theme is ag-starter-avocat and the CPT
+	 * is already registered. Skips any domaine whose slug already exists
+	 * so the import is idempotent.
+	 *
+	 * @return int Number of domaines effectively created.
+	 */
+	public function import_avocat_domaines() {
+		$domaines = array(
+			array(
+				'slug'    => 'droit-des-affaires',
+				'title'   => __( 'Droit des affaires', 'ag-starter-companion' ),
+				'icon'    => '💼',
+				'excerpt' => __( 'Conseil et representation des entreprises : creation, contrats commerciaux, contentieux, restructuration.', 'ag-starter-companion' ),
+				'content' => __( 'Notre cabinet accompagne les dirigeants et les entreprises a chaque etape de leur vie : creation et choix de la structure, redaction et negociation de contrats commerciaux, mise en place de partenariats, contentieux commerciaux, restructuration et procedures collectives.', 'ag-starter-companion' ),
+				'examples' => "Creation et statuts de societes\nNegociation de baux commerciaux\nLitiges entre associes\nProcedures de recouvrement\nMise en conformite RGPD",
+				'order'   => 1,
+			),
+			array(
+				'slug'    => 'droit-du-travail',
+				'title'   => __( 'Droit du travail', 'ag-starter-companion' ),
+				'icon'    => '👔',
+				'excerpt' => __( 'Defense des salaries et des employeurs : licenciements, contrats, harcelement, ruptures conventionnelles.', 'ag-starter-companion' ),
+				'content' => __( 'Que vous soyez salarie ou employeur, nous defendons vos droits avec rigueur. Contestation de licenciement, negociation de rupture conventionnelle, dossiers prud\'homaux, harcelement moral ou sexuel : nous batissons avec vous une strategie adaptee.', 'ag-starter-companion' ),
+				'examples' => "Contestation de licenciement\nRupture conventionnelle\nHarcelement moral / sexuel\nNegociation salariale\nProcedure prud\'homale",
+				'order'   => 2,
+			),
+			array(
+				'slug'    => 'droit-de-la-famille',
+				'title'   => __( 'Droit de la famille', 'ag-starter-companion' ),
+				'icon'    => '👨‍👩‍👧',
+				'excerpt' => __( 'Divorce, garde d\'enfants, succession, adoption, regimes matrimoniaux. Discretion et empathie garanties.', 'ag-starter-companion' ),
+				'content' => __( 'Le droit de la famille touche a l\'intime. Notre approche allie expertise juridique et ecoute bienveillante. Nous traitons les divorces (par consentement mutuel ou contentieux), les pensions alimentaires, les questions de garde et de droit de visite, ainsi que les successions complexes.', 'ag-starter-companion' ),
+				'examples' => "Divorce par consentement mutuel\nDivorce contentieux\nGarde d\'enfants et droit de visite\nPensions alimentaires\nSuccession et heritage",
+				'order'   => 3,
+			),
+			array(
+				'slug'    => 'droit-immobilier',
+				'title'   => __( 'Droit immobilier', 'ag-starter-companion' ),
+				'icon'    => '🏠',
+				'excerpt' => __( 'Acquisition, vente, copropriete, baux, troubles de voisinage, vices caches.', 'ag-starter-companion' ),
+				'content' => __( 'L\'immobilier represente un investissement majeur. Nous accompagnons proprietaires et locataires dans toutes les problematiques : redaction et contestation de baux, copropriete, troubles du voisinage, vices caches, expropriation, urbanisme.', 'ag-starter-companion' ),
+				'examples' => "Litiges de copropriete\nContestation de bail\nTroubles de voisinage\nVices caches a l\'achat\nProcedure d\'expulsion",
+				'order'   => 4,
+			),
+			array(
+				'slug'    => 'droit-penal',
+				'title'   => __( 'Droit penal', 'ag-starter-companion' ),
+				'icon'    => '⚖️',
+				'excerpt' => __( 'Defense penale 24/7. Garde a vue, plaintes, comparution immediate, instruction.', 'ag-starter-companion' ),
+				'content' => __( 'En matiere penale, l\'urgence et la confidentialite sont essentielles. Nous intervenons des la garde a vue, depot de plainte, comparution immediate, instruction et audience de jugement. Defense ferme et personnalisee.', 'ag-starter-companion' ),
+				'examples' => "Garde a vue (intervention 24/7)\nDepot de plainte\nComparution immediate\nDefense en cour d\'assises\nVictimes d\'infractions",
+				'order'   => 5,
+			),
+			array(
+				'slug'    => 'droit-fiscal',
+				'title'   => __( 'Droit fiscal', 'ag-starter-companion' ),
+				'icon'    => '📊',
+				'excerpt' => __( 'Optimisation, controle fiscal, contentieux, declarations, ISF, donations et successions.', 'ag-starter-companion' ),
+				'content' => __( 'Le droit fiscal est en constante evolution. Nous vous accompagnons dans vos choix patrimoniaux, vos declarations, et vous defendons en cas de controle ou de contentieux fiscal. Optimisation legale et securisation de votre patrimoine.', 'ag-starter-companion' ),
+				'examples' => "Controle fiscal\nContentieux fiscal\nOptimisation patrimoniale\nDonations / successions\nDeclaration ISF / IFI",
+				'order'   => 6,
+			),
+		);
+
+		$created = 0;
+		foreach ( $domaines as $d ) {
+			$existing = get_posts(
+				array(
+					'name'           => $d['slug'],
+					'post_type'      => 'ag_domaine',
+					'post_status'    => array( 'publish', 'draft', 'future', 'pending', 'private' ),
+					'posts_per_page' => 1,
+				)
+			);
+			if ( $existing ) {
+				continue;
+			}
+			$id = wp_insert_post(
+				array(
+					'post_type'    => 'ag_domaine',
+					'post_status'  => 'publish',
+					'post_title'   => $d['title'],
+					'post_name'    => $d['slug'],
+					'post_excerpt' => $d['excerpt'],
+					'post_content' => $d['content'],
+					'menu_order'   => $d['order'],
+				)
+			);
+			if ( ! is_wp_error( $id ) && $id ) {
+				update_post_meta( $id, '_ag_domaine_icon', $d['icon'] );
+				update_post_meta( $id, '_ag_domaine_examples', $d['examples'] );
+				$created++;
+			}
+		}
+		return $created;
 	}
 
 	/**
@@ -441,6 +550,27 @@ class AG_Starter_Companion {
 		}
 		update_option( 'show_on_front', 'posts' );
 		update_option( 'page_on_front', 0 );
+
+		// Theme-specific cleanup : delete demo avocat domaines.
+		if ( 'ag-starter-avocat' === $slug && post_type_exists( 'ag_domaine' ) ) {
+			$demo_slugs = array(
+				'droit-des-affaires', 'droit-du-travail', 'droit-de-la-famille',
+				'droit-immobilier', 'droit-penal', 'droit-fiscal',
+			);
+			foreach ( $demo_slugs as $demo_slug ) {
+				$found = get_posts(
+					array(
+						'name'           => $demo_slug,
+						'post_type'      => 'ag_domaine',
+						'post_status'    => array( 'publish', 'draft', 'private' ),
+						'posts_per_page' => 1,
+					)
+				);
+				if ( $found ) {
+					wp_delete_post( $found[0]->ID, true );
+				}
+			}
+		}
 	}
 }
 
