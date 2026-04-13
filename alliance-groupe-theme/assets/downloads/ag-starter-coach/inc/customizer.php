@@ -1,6 +1,6 @@
 <?php
 /**
- * AG Starter Coach Customizer.
+ * AG Starter Restaurant Customizer.
  *
  * Registers settings, sections and controls under Appearance >
  * Customize so users can change colors, typography, hero text and
@@ -73,6 +73,34 @@ function ag_starter_coach_customize_register( $wp_customize ) {
 			'title'       => esc_html__( 'AG Starter — Personnalisation', 'ag-starter-coach' ),
 			'description' => esc_html__( 'Modifiez les couleurs, la typographie et les textes cles de votre theme directement ici. Aucun code requis.', 'ag-starter-coach' ),
 			'priority'    => 30,
+		)
+	);
+
+	// ─── Section: Améliorer mon thème (upgrade promo) ───
+	$wp_customize->add_section(
+		'ag_section_upgrade',
+		array(
+			'title'    => esc_html__( '💎 Ameliorer mon theme', 'ag-starter-coach' ),
+			'panel'    => 'ag_starter_panel',
+			'priority' => 5,
+		)
+	);
+	$wp_customize->add_setting(
+		'ag_upgrade_placeholder',
+		array(
+			'default'           => '',
+			'sanitize_callback' => '__return_empty_string',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		new AG_Starter_Coach_Upgrade_Control(
+			$wp_customize,
+			'ag_upgrade_placeholder',
+			array(
+				'section'  => 'ag_section_upgrade',
+				'priority' => 10,
+			)
 		)
 	);
 
@@ -336,5 +364,83 @@ function ag_starter_coach_sanitize_select( $value, $setting = null ) {
 	}
 	return $value;
 }
+
+/**
+ * Custom Customizer control that renders the "Ameliorer mon theme"
+ * upgrade banner with clickable Pro / Premium / Business buttons +
+ * a soft custom-site upsell. Loaded lazily after WP_Customize_Control.
+ */
+function ag_starter_coach_register_upgrade_control() {
+	if ( ! class_exists( 'WP_Customize_Control' ) ) {
+		return;
+	}
+	if ( class_exists( 'AG_Starter_Coach_Upgrade_Control' ) ) {
+		return;
+	}
+
+	class AG_Starter_Coach_Upgrade_Control extends WP_Customize_Control {
+
+		public $type = 'ag_upgrade_banner';
+
+		public function render_content() {
+			$utm  = '?utm_source=wp-customizer&utm_medium=ag-starter-coach&utm_campaign=upgrade';
+			$base = 'https://alliancegroupe-inc.com/templates-wordpress';
+			$contact = 'https://alliancegroupe-inc.com/contact' . $utm;
+			$packs = array(
+				'pro' => array(
+					'icon'  => '⚡',
+					'title' => 'Pack Pro',
+					'price' => '49€',
+					'desc'  => 'Animations, blocs Gutenberg, customizer avance, sticky header, polices premium',
+					'url'   => $base . $utm . '&pack=pro#ag-pricing',
+				),
+				'premium' => array(
+					'icon'  => '🌍',
+					'title' => 'Pack Premium',
+					'price' => '99€',
+					'desc'  => 'Tout Pro + multi-langue 6 langues + WooCommerce + support 12 mois',
+					'url'   => $base . $utm . '&pack=premium#ag-pricing',
+				),
+				'business' => array(
+					'icon'  => '💼',
+					'title' => 'Pack Business',
+					'price' => '149€',
+					'desc'  => 'Tout Premium + installation visio + maintenance 1 an + audit SEO + white-label',
+					'url'   => $base . $utm . '&pack=business#ag-pricing',
+				),
+			);
+			?>
+			<div style="background:#fff;border:1px solid #d4b45c;border-radius:8px;padding:14px;margin-top:8px;">
+				<p style="margin:0 0 12px;color:#50575e;font-size:12px;line-height:1.5;">
+					<?php esc_html_e( 'Vous utilisez la version gratuite. Trois packs payants debloquent plus de features :', 'ag-starter-coach' ); ?>
+				</p>
+
+				<?php foreach ( $packs as $p ) : ?>
+					<a href="<?php echo esc_url( $p['url'] ); ?>" target="_blank" rel="noopener" style="display:block;padding:10px 12px;background:#f6f7f7;border:1px solid #ddd;border-left:3px solid #d4b45c;border-radius:4px;color:#1d2327;text-decoration:none;margin-bottom:8px;transition:background .15s;">
+						<strong style="display:block;color:#1d2327;font-size:13px;">
+							<span style="margin-right:4px;"><?php echo esc_html( $p['icon'] ); ?></span>
+							<?php echo esc_html( $p['title'] ); ?>
+							<span style="float:right;color:#d4b45c;"><?php echo esc_html( $p['price'] ); ?></span>
+						</strong>
+						<span style="display:block;margin-top:3px;font-size:11px;color:#50575e;line-height:1.45;">
+							<?php echo esc_html( $p['desc'] ); ?>
+						</span>
+					</a>
+				<?php endforeach; ?>
+
+				<div style="margin-top:14px;padding-top:12px;border-top:1px dashed #d4b45c;text-align:center;">
+					<a href="<?php echo esc_url( $contact ); ?>" target="_blank" rel="noopener" style="display:inline-block;color:#0a0a0a;background:#d4b45c;padding:8px 14px;border-radius:4px;font-size:12px;font-weight:700;text-decoration:none;">
+						💎 <?php esc_html_e( 'Site sur-mesure (+340% leads) →', 'ag-starter-coach' ); ?>
+					</a>
+					<p style="margin:8px 0 0;color:#888;font-size:11px;">
+						<?php esc_html_e( 'Premier appel gratuit, sans engagement', 'ag-starter-coach' ); ?>
+					</p>
+				</div>
+			</div>
+			<?php
+		}
+	}
+}
+add_action( 'customize_register', 'ag_starter_coach_register_upgrade_control', 1 );
 
 require get_template_directory() . '/inc/customizer-output.php';
