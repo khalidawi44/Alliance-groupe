@@ -122,7 +122,13 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">Premium</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">Passez au <em>niveau supérieur</em></h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc">Les templates gratuits sont volontairement basiques — design minimaliste, contenu pré-rempli, juste ce qu'il faut pour démarrer. Quand vous êtes prêt à aller plus loin, deux plugins payants viennent compléter le thème : <strong style="color:#D4B45C;">Pro</strong> pour un vrai design travaillé, <strong style="color:#D4B45C;">Premium</strong> pour tout ça + le multi-langue.</p>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Les 4 templates gratuits (Restaurant, Artisan, Coach, Avocat) sont volontairement basiques. Trois plugins payants viennent compléter <strong style="color:#e8e6e0;">n'importe lequel des 4 thèmes</strong> — vous achetez <strong style="color:#D4B45C;">un seul plugin</strong>, il fonctionne avec le thème que vous utilisez.</p>
+
+            <div style="max-width:900px;margin:24px auto 0;padding:18px 24px;background:rgba(212,180,92,.06);border:1px solid rgba(212,180,92,.25);border-radius:10px;text-align:center;">
+                <p style="color:#e8e6e0;font-size:.95rem;margin:0;line-height:1.6;">
+                    <strong style="color:#D4B45C;">💡 À savoir :</strong> un plugin = compatible avec les <strong>4 thèmes</strong>. Peu importe si vous avez téléchargé Restaurant, Artisan, Coach ou Avocat, le même Pack Pro / Premium / Business fonctionne avec tous. Vous ne choisissez pas un pack <em>par métier</em>, vous choisissez un pack <em>par niveau</em> de features.
+                </p>
+            </div>
 
             <div class="ag-pricing__grid" style="grid-template-columns:repeat(3,1fr);max-width:1100px;margin:40px auto 0;">
 
@@ -238,6 +244,12 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
             <span class="ag-tag ag-anim" data-anim="tag">À scanner au téléphone</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">Les 3 packs <em>en un coup d'œil</em></h2>
             <p class="ag-section__desc ag-anim" data-anim="desc">Cartes visuelles avec QR code — sortez votre téléphone, scannez celle qui vous intéresse, et vous êtes direct sur la page de contact pour en discuter.</p>
+
+            <div style="max-width:820px;margin:24px auto 0;padding:14px 22px;background:rgba(212,180,92,.06);border:1px solid rgba(212,180,92,.2);border-radius:10px;text-align:center;">
+                <p style="color:#b0b0bc;font-size:.9rem;margin:0;line-height:1.6;">
+                    <strong style="color:#D4B45C;">Rappel :</strong> chaque pack est <strong style="color:#e8e6e0;">compatible avec les 4 thèmes gratuits</strong> (Restaurant, Artisan, Coach, Avocat). Le plugin détecte automatiquement lequel vous utilisez et adapte ses features. Un seul achat suffit.
+                </p>
+            </div>
 
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px;max-width:1100px;margin:40px auto 0;">
                 <?php foreach ( $ag_promo_cards as $key => $card ) :
