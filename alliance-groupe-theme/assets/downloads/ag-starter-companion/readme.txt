@@ -5,11 +5,11 @@ Tags: starter sites, demo content, one click import, theme setup, french
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.2.0
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Plugin compagnon pour les themes AG Starter (Restaurant, Artisan, Coach). Importe en un clic les pages, le menu et les reglages pour un site pret a l'emploi, 100% en francais.
+Plugin compagnon pour les themes AG Starter (Restaurant, Artisan, Coach, Avocat). Importe en un clic les pages, le menu et les reglages pour un site pret a l'emploi, 100% en francais.
 
 == Description ==
 
@@ -29,6 +29,7 @@ Tout est 100% local : aucune connexion internet n'est necessaire, aucun appel AP
 * AG Starter Restaurant (https://wordpress.org/themes/ag-starter-restaurant/)
 * AG Starter Artisan (https://wordpress.org/themes/ag-starter-artisan/)
 * AG Starter Coach (https://wordpress.org/themes/ag-starter-coach/)
+* AG Starter Avocat (https://wordpress.org/themes/ag-starter-avocat/) — cree aussi 6 Domaines d'expertise via le CPT ag_domaine
 
 Le plugin detecte automatiquement quel theme AG Starter est actif et adapte le contenu importe en consequence. Si aucun theme AG Starter n'est actif, le plugin se met en veille et n'affiche rien.
 
@@ -53,7 +54,7 @@ Ce plugin est pense pour les personnes qui ne codent pas et qui veulent un site 
 
 == Installation ==
 
-1. Installez l'un des themes AG Starter (Restaurant, Artisan ou Coach) et activez-le.
+1. Installez l'un des themes AG Starter (Restaurant, Artisan, Coach ou Avocat) et activez-le.
 2. Dans WordPress, allez dans Extensions > Ajouter et cherchez "AG Starter Companion".
 3. Cliquez sur "Installer maintenant", puis "Activer".
 4. Une notice apparait vous invitant a lancer la configuration. Cliquez dessus, ou allez directement dans Apparence > Configuration AG.
@@ -101,6 +102,15 @@ AGthèmes, la division theme d'Alliance Group (agence web et IA basee a Nantes, 
 2. La notice d'accueil qui apparait apres l'activation du plugin.
 
 == Changelog ==
+
+= 1.2.0 =
+* Ajout du support du theme AG Starter Avocat.
+* Quand AG Starter Avocat est actif, l'importer cree automatiquement 6 Domaines d'expertise (Droit des affaires, Droit du travail, Droit de la famille, Droit immobilier, Droit penal, Droit fiscal) via le CPT ag_domaine, avec icones et exemples de cas.
+* La reinitialisation supprime aussi les domaines de demo pour permettre une re-importation propre.
+
+= 1.1.0 =
+* Premier support du theme AG Starter Avocat (sans CPT au depart).
+* Description du plugin mise a jour pour mentionner les 4 themes.
 
 = 1.0.0 =
 * Version initiale.

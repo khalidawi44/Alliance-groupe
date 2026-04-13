@@ -219,13 +219,13 @@ function ag_stripe_admin_render() {
 			'pro' => array(
 				'name'  => 'AG Starter Pro — 49€',
 				'price' => '49,00 €',
-				'desc'  => "Plugin WordPress qui transforme votre theme AG Starter gratuit en theme professionnel : animations, gradients, 10 blocs Gutenberg, customizer avance (50+ reglages), polices Google Fonts, sticky header, support email 60 jours. Compatible Restaurant/Artisan/Coach. Paiement unique. 💎 Besoin d'un vrai site sur-mesure qui genere +340% de leads ? Appel gratuit : alliancegroupe-inc.com/contact",
+				'desc'  => "Plugin WordPress qui transforme votre theme AG Starter gratuit en theme professionnel : animations, gradients, 10 blocs Gutenberg, customizer avance (50+ reglages), polices Google Fonts, sticky header, support email 60 jours. Compatible Restaurant/Artisan/Coach/Avocat. Paiement unique. 💎 Besoin d'un site sur-mesure qui genere +340% de leads ? Appel gratuit : alliancegroupe-inc.com/contact",
 				'success' => "Merci pour votre achat ! Vous recevrez votre fichier ZIP par email d'ici quelques minutes. 💎 Site sur-mesure (+340% leads en 3 mois) : alliancegroupe-inc.com/contact",
 			),
 			'premium' => array(
 				'name'  => 'AG Starter Premium — 99€',
 				'price' => '99,00 €',
-				'desc'  => "Plugin WordPress AG Starter Premium : tout Pro + multi-langue 6 langues (FR, EN, ES, IT, DE, AR), switcher automatique, sections temoignages/galerie/pricing, integration WooCommerce complete, support prioritaire 12 mois, mises a jour a vie, appel expert 30 min. Compatible Restaurant/Artisan/Coach. 💎 Pour un site totalement sur-mesure (+340% leads) : alliancegroupe-inc.com/contact",
+				'desc'  => "Plugin WordPress AG Starter Premium : tout Pro + multi-langue 6 langues (FR, EN, ES, IT, DE, AR), switcher automatique, sections temoignages/galerie/pricing, integration WooCommerce complete, support prioritaire 12 mois, mises a jour a vie, appel expert 30 min. Compatible 4 themes (Restaurant/Artisan/Coach/Avocat). 💎 Pour un site sur-mesure (+340% leads) : alliancegroupe-inc.com/contact",
 				'success' => "Merci pour votre achat ! Votre plugin Premium (multi-langue + WooCommerce) arrive par email sous 5 min. 💎 Site sur-mesure : alliancegroupe-inc.com/contact",
 			),
 			'business' => array(

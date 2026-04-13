@@ -163,14 +163,14 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
         </div>
     </section>
 
-    <!-- 📊 Explication approfondie Gratuit / Pro / Premium / Sur-mesure -->
+    <!-- 📊 Explication approfondie Gratuit / Pro / Premium / Business / Sur-mesure -->
     <section class="ag-section ag-section--graphite">
         <div class="ag-container">
-            <span class="ag-tag ag-anim" data-anim="tag">Comprendre les 4 niveaux</span>
-            <h2 class="ag-section__title ag-anim" data-anim="title">Template gratuit, Pro, Premium ou <em>sur-mesure</em> ?</h2>
+            <span class="ag-tag ag-anim" data-anim="tag">Comprendre les 5 niveaux</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Gratuit, Pro, Premium, Business ou <em>sur-mesure</em> ?</h2>
             <p class="ag-section__desc ag-anim" data-anim="desc">Chaque niveau sert un besoin différent. Voici comment choisir selon votre objectif réel — et ce que les concurrents proposent au même tarif.</p>
 
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;max-width:1100px;margin:48px auto 0;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;max-width:1200px;margin:48px auto 0;">
 
                 <!-- Gratuit -->
                 <div style="padding:32px;background:rgba(40,167,69,.04);border:1px solid rgba(40,167,69,.25);border-radius:16px;">
@@ -208,8 +208,20 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
                     <p style="color:#888;font-size:.85rem;line-height:1.6;margin:0;"><strong style="color:#D4B45C;">Concurrents équivalents :</strong> OceanWP Business à 79€/an, Kadence Full Bundle à 129€/an — tous en abonnement. Chez nous 99€ <strong>une fois pour toute</strong>. Sur 3 ans vous économisez entre 138€ et 288€.</p>
                 </div>
 
+                <!-- Business -->
+                <div style="padding:32px;background:rgba(212,180,92,.10);border:2px solid rgba(212,180,92,.5);border-radius:16px;">
+                    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;">
+                        <h3 style="color:#D4B45C;font-size:1.3rem;margin:0;">💼 Business — Pack tout-en-un</h3>
+                        <span style="color:#D4B45C;font-weight:700;">149€ une fois</span>
+                    </div>
+                    <p style="color:#b0b0bc;font-size:.95rem;line-height:1.7;margin-bottom:16px;"><strong style="color:#e8e6e0;">Pour qui ?</strong> Freelances et petites agences qui veulent un site installé, configuré et maintenu par notre équipe pendant 1 an. Vous voulez vous concentrer sur votre métier, pas sur la gestion technique de WordPress.</p>
+                    <p style="color:#b0b0bc;font-size:.92rem;line-height:1.7;margin-bottom:16px;"><strong style="color:#e8e6e0;">Ce que le pack ajoute en plus de Premium :</strong> installation assistée en visio (1h avec notre équipe), maintenance WordPress 1 an incluse (mises à jour WP + plugins + sauvegardes), audit SEO mensuel (3 rapports/an), rapport de performance trimestriel, support prioritaire absolu (réponse sous 2h ouvrées), white-label complet (retire le crédit "AG" du footer), intégration CRM (HubSpot, Pipedrive, Brevo), et un appel stratégique de lancement avec Fabrizio.</p>
+                    <p style="color:#b0b0bc;font-size:.92rem;line-height:1.7;margin-bottom:16px;"><strong style="color:#e8e6e0;">Les limites :</strong> reste un template améliorée. La structure est celle qu'on a conçue, vous ne pouvez pas tout réinventer comme avec un sur-mesure.</p>
+                    <p style="color:#888;font-size:.85rem;line-height:1.6;margin:0;"><strong style="color:#D4B45C;">Concurrents équivalents :</strong> Astra Pro Bundle à 249€/an + maintenance externalisée à 50€/mois = ~850€ la première année. Chez nous 149€ <strong>une fois pour toute</strong>. Sur 1 an vous économisez ~700€.</p>
+                </div>
+
                 <!-- Sur-mesure -->
-                <div style="padding:32px;background:linear-gradient(135deg,rgba(212,180,92,.15),rgba(212,180,92,.05));border:2px solid #D4B45C;border-radius:16px;position:relative;">
+                <div style="padding:32px;background:linear-gradient(135deg,rgba(212,180,92,.15),rgba(212,180,92,.05));border:2px solid #D4B45C;border-radius:16px;position:relative;grid-column:1 / -1;">
                     <span style="position:absolute;top:-14px;left:24px;background:#D4B45C;color:#080808;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:4px 12px;border-radius:4px;">Recommandé</span>
                     <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;">
                         <h3 style="color:#fff;font-size:1.3rem;margin:0;">💎 Sur-mesure — Site Alliance Groupe</h3>
@@ -405,7 +417,7 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
                         <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="companion" data-file="<?php echo esc_url($dl_base . 'ag-starter-companion.zip'); ?>">⚡ Télécharger le plugin gratuit →</button>
                         <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Besoin d'aide ? On en parle</a>
                     </div>
-                    <p style="color:#888;font-size:.85rem;margin-top:20px;">Le plugin détecte automatiquement quel thème AG Starter est actif et adapte le contenu. Fonctionne avec Restaurant, Artisan et Coach. <strong style="color:#28a745;">100% gratuit, zéro limite.</strong></p>
+                    <p style="color:#888;font-size:.85rem;margin-top:20px;">Le plugin détecte automatiquement quel thème AG Starter est actif et adapte le contenu. Fonctionne avec Restaurant, Artisan, Coach et Avocat. <strong style="color:#28a745;">100% gratuit, zéro limite.</strong></p>
                 </div>
             </div>
 
@@ -450,7 +462,7 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
                     ['q' => 'Comment installer un template gratuit ?', 'a' => 'Téléchargez le fichier ZIP, puis dans WordPress : Apparence > Thèmes > Ajouter > Téléverser un thème. Uploadez le ZIP et activez le thème. Le guide complet en 4 étapes est disponible plus haut sur cette page.'],
                     ['q' => 'Les templates sont-ils vraiment en français ?', 'a' => '100% français natif. Tous les textes (hero, cartes, horaires, footer, exemples) sont déjà rédigés en français — pas de Lorem ipsum, pas de strings anglaises à traduire. Vous remplacez juste les éléments entre crochets comme "[Votre Restaurant]" ou "[Votre entreprise]".'],
                     ['q' => 'Combien de temps pour personnaliser un template ?', 'a' => 'Environ 30 minutes contre 20 heures pour un template étranger. Comme tout est déjà en français et en place, vous changez juste le nom, l\'adresse, les horaires et vos photos. C\'est le gros avantage par rapport aux templates génériques anglais.'],
-                    ['q' => 'Les templates sont-ils sur le répertoire officiel WordPress.org ?', 'a' => 'En cours de soumission. Nos trois templates (Restaurant, Artisan, Coach) sont conformes aux standards WordPress.org (GPL v2+, translation-ready, sans plugin requis, escaping strict, Theme Check compatible). Une fois validés par l\'équipe Theme Review, ils seront installables directement depuis Apparence > Thèmes > Ajouter dans votre WordPress.'],
+                    ['q' => 'Les templates sont-ils sur le répertoire officiel WordPress.org ?', 'a' => 'En cours de soumission. Nos quatre templates (Restaurant, Artisan, Coach, Avocat) sont conformes aux standards WordPress.org (GPL v2+, translation-ready, sans plugin requis, escaping strict, Theme Check compatible). Une fois validés par l\'équipe Theme Review, ils seront installables directement depuis Apparence > Thèmes > Ajouter dans votre WordPress.'],
                     ['q' => 'Le template est vraiment gratuit ?', 'a' => 'Oui, 100% gratuit sous licence GPL v2 ou ultérieure. Pas de piège, pas d\'abonnement caché. Vous pouvez l\'utiliser, le modifier et même le redistribuer librement.'],
                     ['q' => 'Ai-je besoin de plugins payants ?', 'a' => 'Non. Contrairement à beaucoup de thèmes gratuits qui exigent Elementor Pro ou d\'autres plugins payants pour débloquer les fonctionnalités, nos templates sont 100% autonomes. Installation et fonctionnement immédiat.'],
                     ['q' => 'Quelle est la différence avec un site professionnel ?', 'a' => 'Un template est un point de départ générique, même s\'il est de qualité. Un site professionnel est conçu sur-mesure pour VOTRE marque, avec du contenu rédigé par des experts, un SEO ciblé et une stratégie de conversion. Nos clients génèrent +340% de leads en moyenne avec un site sur-mesure.'],

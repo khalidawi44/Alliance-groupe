@@ -82,14 +82,14 @@ URLs type Stripe : `https://buy.stripe.com/xxxxxxx`.
 **Statut** : ⏸️ Préparation faite, soumission manuelle à faire par
 le client.
 
-Les 3 thèmes (restaurant, artisan, coach) + le plugin compagnon
+Les 4 thèmes (restaurant, artisan, coach, avocat) + le plugin compagnon
 sont prêts à être soumis à wordpress.org. Guide complet dans
 `alliance-groupe-theme/assets/downloads/WORDPRESS-ORG-SUBMISSION.md`.
 
 Actions restantes côté client :
 1. Créer compte wordpress.org avec username `adminag` / display
    name `AGthèmes`.
-2. Remplacer les 3 `screenshot.png` placeholder (1200×900)
+2. Remplacer les 4 `screenshot.png` placeholder (1200×900)
    générés automatiquement par de vraies captures d'écran des
    thèmes installés.
 3. Installer + lancer le plugin **Theme Check** sur chaque thème
@@ -107,11 +107,12 @@ Actions restantes côté client :
 - **Version multi-langue** : les traductions `.pot` / `.po` / `.mo`
   pour FR, EN, ES, IT, DE, AR — argument principal du pack Premium.
   Pour l'instant juste promis sur la landing page.
-- **Plugins Pro et Premium** : réellement coder les 2 plugins payants
+- **Plugins Pro, Premium et Business** : réellement coder les 3 plugins payants
   une fois qu'il y a les premiers acheteurs (ne pas construire en
-  l'air).
+  l'air). Aujourd'hui les boutons Stripe vendent une promesse —
+  on devra livrer le code après le premier achat.
 - **Intégration WooCommerce** complète (promise dans Business).
-- **Real screenshots** pour les 3 thèmes, une fois testés en local.
+- **Real screenshots** pour les 4 thèmes, une fois testés en local.
 - **Blog marketing** sur le site principal pour SEO long terme
   (articles : "Comment choisir un thème WordPress en 2026", "5
   erreurs des débutants", "Template gratuit vs site sur-mesure",

@@ -1,13 +1,14 @@
 # Guide de soumission à WordPress.org — AG Starter
 
-Ce guide explique comment soumettre **les 3 thèmes AG Starter + le plugin compagnon AG Starter Companion** aux deux répertoires officiels WordPress.org (themes + plugins). **C'est une démarche manuelle que tu dois faire depuis ton ordinateur** (je ne peux pas la faire à ta place — elle nécessite un compte wordpress.org et l'upload via leur interface).
+Ce guide explique comment soumettre **les 4 thèmes AG Starter + le plugin compagnon AG Starter Companion** aux deux répertoires officiels WordPress.org (themes + plugins). **C'est une démarche manuelle que tu dois faire depuis ton ordinateur** (je ne peux pas la faire à ta place — elle nécessite un compte wordpress.org et l'upload via leur interface).
 
-## Résumé : 4 soumissions au total
+## Résumé : 5 soumissions au total
 
 1. **Thème** `ag-starter-restaurant` → https://wordpress.org/themes/upload/
 2. **Thème** `ag-starter-artisan` → https://wordpress.org/themes/upload/
 3. **Thème** `ag-starter-coach` → https://wordpress.org/themes/upload/
-4. **Plugin** `ag-starter-companion` → https://wordpress.org/plugins/developers/add/
+4. **Thème** `ag-starter-avocat` → https://wordpress.org/themes/upload/ ⚠️ inclut un CPT `ag_domaine` — vérifier la review
+5. **Plugin** `ag-starter-companion` → https://wordpress.org/plugins/developers/add/
 
 Les thèmes passent par l'équipe Theme Review (délai 2–8 semaines). Le plugin passe par l'équipe Plugin Review (délai 1–4 semaines, plus rapide en général). Ce sont deux équipes distinctes avec des règles différentes.
 
@@ -15,7 +16,7 @@ Les thèmes passent par l'équipe Theme Review (délai 2–8 semaines). Le plugi
 
 Les règles WordPress.org **interdisent aux thèmes** de créer des pages, menus ou contenus automatiquement — c'est considéré comme "du domaine des plugins". C'est pour ça qu'Astra, OceanWP, Kadence et les autres thèmes gratuits populaires utilisent un **plugin compagnon** pour leurs importers de contenu démo. `AG Starter Companion` applique la même architecture :
 
-- Il détecte automatiquement quel thème AG Starter est actif (Restaurant, Artisan ou Coach)
+- Il détecte automatiquement quel thème AG Starter est actif (Restaurant, Artisan, Coach ou Avocat)
 - Il adapte le contenu importé en fonction du thème détecté
 - Si aucun thème AG Starter n'est actif, il reste dormant
 - Chaque thème affiche une admin notice invitant l'utilisateur à installer le plugin
@@ -29,7 +30,7 @@ Les règles WordPress.org **interdisent aux thèmes** de créer des pages, menus
 - **Nom affiché / pseudo forum** : `AGthèmes` — c'est ce qui apparaît publiquement sur la page de tes thèmes (déclaré dans `style.css` sous `Author:`)
 - **Email** : ton email professionnel
 
-**Note importante** : le champ `Contributors:` dans `readme.txt` utilise obligatoirement le nom d'utilisateur (lowercase, sans espaces ni accents) — c'est `adminag`. Le champ `Author:` dans `style.css` est le nom d'affichage libre — c'est `AGthèmes`. Les deux sont déjà correctement configurés dans les 3 thèmes.
+**Note importante** : le champ `Contributors:` dans `readme.txt` utilise obligatoirement le nom d'utilisateur (lowercase, sans espaces ni accents) — c'est `adminag`. Le champ `Author:` dans `style.css` est le nom d'affichage libre — c'est `AGthèmes`. Les deux sont déjà correctement configurés dans les 4 thèmes.
 
 ### 2. Installer le plugin Theme Check
 
@@ -49,7 +50,7 @@ Le plugin doit retourner **zéro ERROR / WARNING bloquant**. Si c'est le cas, le
 
 ## Ce qui est déjà prêt dans chaque thème
 
-Les 3 thèmes AG Starter (restaurant, artisan, coach) sont déjà conformes aux exigences WordPress.org :
+Les 4 thèmes AG Starter (restaurant, artisan, coach, avocat) sont déjà conformes aux exigences WordPress.org :
 
 ### ✅ Conformité technique
 
@@ -190,8 +191,8 @@ Dans la description wordpress.org (déjà présente dans les `readme.txt`), insi
 **Q : Combien de temps prend la review ?**
 R : Entre 2 et 8 semaines en moyenne, parfois plus. C'est gratuit mais long.
 
-**Q : Puis-je soumettre les 3 thèmes en même temps ?**
-R : Oui, mais la review de chaque thème est séparée. Préfère soumettre restaurant d'abord, voir si ça passe, puis artisan et coach en appliquant les éventuelles corrections demandées.
+**Q : Puis-je soumettre les 4 thèmes en même temps ?**
+R : Oui, mais la review de chaque thème est séparée. Préfère soumettre restaurant d'abord, voir si ça passe, puis artisan, coach et avocat en appliquant les éventuelles corrections demandées. Note : avocat embarque un Custom Post Type (`ag_domaine`), ce qui peut faire l'objet de remarques de la part de l'équipe Theme Review (les CPT sont normalement réservés aux plugins). Si c'est rejeté, on déplacera le CPT dans le plugin compagnon.
 
 **Q : Est-ce que je peux faire de la pub pour alliancegroupe-inc.com dans le thème ?**
 R : Oui, mais discrètement. Un lien dans le footer avec `rel="nofollow"` est accepté (c'est déjà le cas dans `footer.php` de chaque thème). Évite les pop-ups, bandeaux ou notices admin intrusives — elles sont systématiquement rejetées.
