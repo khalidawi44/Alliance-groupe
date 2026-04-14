@@ -105,6 +105,7 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-fondateur.php']       = 'Notre Fondateur';
     $templates['templates/page-templates.php']       = 'Templates WordPress';
     $templates['templates/page-rdv.php']             = 'Prise de rendez-vous';
+    $templates['templates/page-questions-flash.php'] = 'Questions Flash';
     return $templates;
 } );
 
@@ -278,6 +279,125 @@ if ( ! function_exists( 'ag_save_lead' ) ) {
         );
 
         wp_send_json_success();
+    }
+}
+
+// ── 11. Questions Flash submission (post-Stripe) ────────────────
+add_action( 'admin_post_nopriv_ag_submit_question', 'ag_submit_question' );
+add_action( 'admin_post_ag_submit_question', 'ag_submit_question' );
+
+if ( ! function_exists( 'ag_submit_question' ) ) {
+    function ag_submit_question() {
+        if ( ! isset( $_POST['ag_question_nonce'] ) || ! wp_verify_nonce( $_POST['ag_question_nonce'], 'ag_question_nonce' ) ) {
+            wp_die( 'Nonce invalide.', 'Erreur', array( 'response' => 403 ) );
+        }
+
+        $name     = sanitize_text_field( isset( $_POST['name'] )     ? $_POST['name']     : '' );
+        $email    = sanitize_email(      isset( $_POST['email'] )    ? $_POST['email']    : '' );
+        $activity = sanitize_text_field( isset( $_POST['activity'] ) ? $_POST['activity'] : '' );
+        $question = sanitize_textarea_field( isset( $_POST['question'] ) ? $_POST['question'] : '' );
+        $context  = sanitize_textarea_field( isset( $_POST['context'] )  ? $_POST['context']  : '' );
+        $pack     = sanitize_key(        isset( $_POST['pack'] )     ? $_POST['pack']     : '' );
+
+        if ( empty( $name ) || empty( $email ) || empty( $question ) ) {
+            wp_die( 'Merci de remplir nom, email et question.', 'Champs manquants', array( 'response' => 400, 'back_link' => true ) );
+        }
+        if ( ! is_email( $email ) ) {
+            wp_die( 'Email invalide.', 'Erreur', array( 'response' => 400, 'back_link' => true ) );
+        }
+
+        $pack_labels = array(
+            'single' => '1 Question Flash (45€)',
+            'pack'   => 'Pack 3 Questions (120€)',
+            'sub'    => 'Abonnement Expert (199€/mois)',
+        );
+        $pack_label = isset( $pack_labels[ $pack ] ) ? $pack_labels[ $pack ] : 'Non précisé';
+
+        // Save to DB
+        $questions = get_option( 'ag_questions_submitted', array() );
+        $questions[] = array(
+            'name'     => $name,
+            'email'    => $email,
+            'activity' => $activity,
+            'question' => $question,
+            'context'  => $context,
+            'pack'     => $pack,
+            'date'     => current_time( 'd/m/Y H:i' ),
+        );
+        update_option( 'ag_questions_submitted', $questions );
+
+        // Email to Fabrizio
+        $admin_subject = '💬 Nouvelle Question Flash : ' . $name . ' (' . $pack_label . ')';
+        $admin_body    = "Nouvelle Question Flash reçue\n"
+                       . "================================\n\n"
+                       . "Pack : $pack_label\n"
+                       . "Nom : $name\n"
+                       . "Email : $email\n"
+                       . "Activité : $activity\n\n"
+                       . "-- Question --\n$question\n\n"
+                       . "-- Contexte --\n$context\n\n"
+                       . "Reçue le : " . current_time( 'd/m/Y H:i' ) . "\n"
+                       . "Délai de réponse attendu : 48h ouvrées\n";
+        wp_mail( 'contact@alliancegroupe-inc.com', $admin_subject, $admin_body );
+
+        // Confirmation to the buyer
+        $client_subject = 'Votre Question Flash a bien été reçue — Alliance Groupe';
+        $client_body    = "Bonjour $name,\n\n"
+                       . "Merci ! Votre question a bien été reçue et nous travaillons déjà dessus.\n\n"
+                       . "Pack : $pack_label\n"
+                       . "Question posée :\n$question\n\n"
+                       . "Vous recevrez une analyse écrite détaillée à cette adresse ($email) sous 48h ouvrées.\n\n"
+                       . "Si vous avez besoin d'ajouter du contexte entre-temps, répondez simplement à cet email.\n\n"
+                       . "À très vite,\nFabrizio — Alliance Groupe\n"
+                       . "contact@alliancegroupe-inc.com\n"
+                       . "06.23.52.60.74\n";
+        $headers = array( 'From: Alliance Groupe <contact@alliancegroupe-inc.com>' );
+        wp_mail( $email, $client_subject, $client_body, $headers );
+
+        // Redirect back with success
+        wp_safe_redirect( add_query_arg( array( 'question_sent' => '1' ), home_url( '/questions-flash' ) ) );
+        exit;
+    }
+}
+
+// ── 11b. Admin page to view submitted questions ─────────────────
+add_action( 'admin_menu', function () {
+    add_menu_page(
+        'Questions Flash',
+        'Questions Flash',
+        'manage_options',
+        'ag-questions',
+        'ag_render_questions_page',
+        'dashicons-format-chat',
+        27
+    );
+} );
+
+if ( ! function_exists( 'ag_render_questions_page' ) ) {
+    function ag_render_questions_page() {
+        if ( ! current_user_can( 'manage_options' ) ) return;
+        $questions = get_option( 'ag_questions_submitted', array() );
+        echo '<div class="wrap"><h1>Questions Flash reçues</h1>';
+        if ( empty( $questions ) ) {
+            echo '<p>Aucune question pour le moment.</p></div>';
+            return;
+        }
+        $questions = array_reverse( $questions );
+        echo '<table class="widefat striped"><thead><tr>';
+        echo '<th>Date</th><th>Nom</th><th>Email</th><th>Pack</th><th>Activité</th><th>Question</th><th>Contexte</th>';
+        echo '</tr></thead><tbody>';
+        foreach ( $questions as $q ) {
+            echo '<tr>';
+            echo '<td>' . esc_html( isset($q['date']) ? $q['date'] : '' ) . '</td>';
+            echo '<td>' . esc_html( isset($q['name']) ? $q['name'] : '' ) . '</td>';
+            echo '<td><a href="mailto:' . esc_attr( isset($q['email']) ? $q['email'] : '' ) . '">' . esc_html( isset($q['email']) ? $q['email'] : '' ) . '</a></td>';
+            echo '<td>' . esc_html( isset($q['pack']) ? $q['pack'] : '' ) . '</td>';
+            echo '<td>' . esc_html( isset($q['activity']) ? $q['activity'] : '' ) . '</td>';
+            echo '<td style="max-width:300px;white-space:normal;">' . esc_html( isset($q['question']) ? $q['question'] : '' ) . '</td>';
+            echo '<td style="max-width:200px;white-space:normal;">' . esc_html( isset($q['context']) ? $q['context'] : '' ) . '</td>';
+            echo '</tr>';
+        }
+        echo '</tbody></table></div>';
     }
 }
 

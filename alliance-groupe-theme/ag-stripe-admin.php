@@ -48,6 +48,18 @@ add_action( 'admin_init', function () {
 			'label'       => 'Pack Business — 149€',
 			'description' => 'URL du Payment Link Stripe pour le Pack Business.',
 		),
+		'ag_stripe_question_single_url' => array(
+			'label'       => 'Question Flash — 45€ (1 question)',
+			'description' => 'URL du Payment Link Stripe pour 1 Question Flash (45€, réponse écrite sous 48h).',
+		),
+		'ag_stripe_question_pack_url'   => array(
+			'label'       => 'Pack 3 Questions — 120€',
+			'description' => 'URL du Payment Link Stripe pour le pack de 3 Questions Flash (120€, utilisables sur 90 jours).',
+		),
+		'ag_stripe_question_sub_url'    => array(
+			'label'       => 'Abonnement Expert — 199€/mois',
+			'description' => 'URL du Payment Link Stripe pour l\'abonnement mensuel Questions Expert (199€/mois, jusqu\'à 8 questions/mois).',
+		),
 	);
 	foreach ( $fields as $key => $meta ) {
 		register_setting(
@@ -111,6 +123,9 @@ function ag_stripe_admin_render() {
 	$pro      = get_option( 'ag_stripe_pro_url', 'STRIPE_PLACEHOLDER' );
 	$premium  = get_option( 'ag_stripe_premium_url', 'STRIPE_PLACEHOLDER' );
 	$business = get_option( 'ag_stripe_business_url', 'STRIPE_PLACEHOLDER' );
+	$q_single = get_option( 'ag_stripe_question_single_url', 'STRIPE_PLACEHOLDER' );
+	$q_pack   = get_option( 'ag_stripe_question_pack_url', 'STRIPE_PLACEHOLDER' );
+	$q_sub    = get_option( 'ag_stripe_question_sub_url', 'STRIPE_PLACEHOLDER' );
 
 	$state_badge = function ( $value ) {
 		if ( 'STRIPE_PLACEHOLDER' === $value || '' === $value ) {
@@ -185,6 +200,52 @@ function ag_stripe_admin_render() {
 							placeholder="https://buy.stripe.com/...">
 						<p class="description">
 							<?php echo $state_badge( $business ); // phpcs:ignore ?>
+						</p>
+					</td>
+				</tr>
+
+				<tr><td colspan="2" style="padding:16px 0 4px;"><h2 style="margin:0;font-size:1.15rem;color:#1d2327;">Questions Flash — consultations écrites</h2><p style="color:#50575e;font-size:.9rem;margin:4px 0 0;">Payment Links Stripe pour les offres de réponse écrite sous 48h proposées sur la page <em>/questions-flash</em>.</p></td></tr>
+
+				<tr>
+					<th scope="row">
+						<label for="ag_stripe_question_single_url">1 Question Flash — 45€</label>
+					</th>
+					<td>
+						<input type="url" name="ag_stripe_question_single_url" id="ag_stripe_question_single_url"
+							value="<?php echo esc_attr( $q_single ); ?>"
+							class="regular-text code"
+							placeholder="https://buy.stripe.com/...">
+						<p class="description">
+							<?php echo $state_badge( $q_single ); // phpcs:ignore ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="ag_stripe_question_pack_url">Pack 3 Questions — 120€</label>
+					</th>
+					<td>
+						<input type="url" name="ag_stripe_question_pack_url" id="ag_stripe_question_pack_url"
+							value="<?php echo esc_attr( $q_pack ); ?>"
+							class="regular-text code"
+							placeholder="https://buy.stripe.com/...">
+						<p class="description">
+							<?php echo $state_badge( $q_pack ); // phpcs:ignore ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="ag_stripe_question_sub_url">Abonnement Expert — 199€/mois</label>
+					</th>
+					<td>
+						<input type="url" name="ag_stripe_question_sub_url" id="ag_stripe_question_sub_url"
+							value="<?php echo esc_attr( $q_sub ); ?>"
+							class="regular-text code"
+							placeholder="https://buy.stripe.com/...">
+						<p class="description">
+							<?php echo $state_badge( $q_sub ); // phpcs:ignore ?>
+							<br><em style="color:#666;">Doit être un Payment Link en mode « subscription » (abonnement mensuel).</em>
 						</p>
 					</td>
 				</tr>
