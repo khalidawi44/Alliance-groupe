@@ -153,7 +153,25 @@
                 </div>
             </li>
 
-            <li><a href="<?php echo esc_url(home_url('/a-propos')); ?>">À propos</a></li>
+            <!-- À propos + dropdown -->
+            <li class="ag-nav__has-sub">
+                <a href="<?php echo esc_url(home_url('/a-propos')); ?>">À propos <span class="ag-nav__arrow">&#9662;</span></a>
+                <div class="ag-mega ag-mega--sm">
+                    <div class="ag-mega__inner">
+                        <div class="ag-mega__col">
+                            <span class="ag-mega__label">L'agence</span>
+                            <a href="<?php echo esc_url(home_url('/a-propos')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🏛️</span>
+                                <span><strong>Notre histoire</strong><small>Vision, valeurs & équipe</small></span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/notre-fondateur')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">👤</span>
+                                <span><strong>Notre Fondateur</strong><small>Le parcours de Fabrizio</small></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </li>
 
             <!-- Blog + dropdown -->
             <li class="ag-nav__has-sub">
@@ -239,7 +257,13 @@
                 </div>
             </div>
 
-            <a href="<?php echo esc_url(home_url('/a-propos')); ?>" class="ag-mobile-menu__link">À propos</a>
+            <div class="ag-mobile-menu__group">
+                <button class="ag-mobile-menu__toggle" type="button">À propos <span class="ag-mobile-menu__arrow">+</span></button>
+                <div class="ag-mobile-menu__sub">
+                    <a href="<?php echo esc_url(home_url('/a-propos')); ?>">🏛️ Notre histoire</a>
+                    <a href="<?php echo esc_url(home_url('/notre-fondateur')); ?>">👤 Notre Fondateur</a>
+                </div>
+            </div>
 
             <div class="ag-mobile-menu__group">
                 <button class="ag-mobile-menu__toggle" type="button">Blog <span class="ag-mobile-menu__arrow">+</span></button>
