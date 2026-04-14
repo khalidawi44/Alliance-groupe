@@ -2219,3 +2219,42 @@ button:focus-visible{
     .ag-section--image-luxe-2,
     .ag-section--image-marble{background-attachment:scroll}
 }
+
+/* ── Calendly inline embed (contact page) ─────────────────── */
+.ag-section--darker{background:linear-gradient(180deg,#0a0a0f 0%,#060609 100%)}
+.ag-calendly{
+    max-width:960px;
+    margin:0 auto;
+    padding:48px 44px;
+    background:linear-gradient(180deg,rgba(255,255,255,.035) 0%,rgba(255,255,255,.015) 100%);
+    border:1px solid rgba(212,180,92,.18);
+    border-radius:20px;
+    box-shadow:0 30px 80px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.04);
+}
+.ag-calendly__header{text-align:center;margin-bottom:32px}
+.ag-calendly__title{
+    font-family:"Playfair Display",Georgia,serif;
+    font-size:clamp(1.8rem,3vw,2.6rem);
+    font-weight:700;
+    color:#fff;
+    margin:14px 0 10px;
+    line-height:1.15;
+}
+.ag-calendly__title em{font-style:italic;color:#D4B45C}
+.ag-calendly__sub{
+    color:#b0b0bc;
+    font-size:1rem;
+    max-width:580px;
+    margin:0 auto;
+    line-height:1.6;
+}
+.ag-calendly__widget{
+    border-radius:14px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.06);
+    background:#0a0a0f;
+}
+@media(max-width:768px){
+    .ag-calendly{padding:32px 20px}
+    .ag-calendly__widget{min-height:680px}
+}

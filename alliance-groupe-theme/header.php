@@ -187,7 +187,7 @@
 
             <!-- À propos + dropdown -->
             <li class="ag-nav__has-sub">
-                <a href="<?php echo esc_url(home_url('/a-propos')); ?>">À propos <span class="ag-nav__arrow">&#9662;</span></a>
+                <a href="<?php echo esc_url(home_url('/a-propos')); ?>">À&nbsp;propos <span class="ag-nav__arrow">&#9662;</span></a>
                 <div class="ag-mega ag-mega--sm">
                     <div class="ag-mega__inner">
                         <div class="ag-mega__col">
@@ -230,12 +230,6 @@
             </li>
 
             <li><a href="<?php echo esc_url(home_url('/contact')); ?>">Contact</a></li>
-
-            <li class="ag-nav__highlight">
-                <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">
-                    <span class="ag-nav__new-badge">Gratuit</span> Templates
-                </a>
-            </li>
         </ul>
 
         <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-nav__cta">
