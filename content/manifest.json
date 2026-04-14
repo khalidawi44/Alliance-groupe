@@ -36,7 +36,8 @@
         "pages/service-branding.json",
         "pages/service-conseil.json",
         "pages/notre-fondateur.json",
-        "pages/templates.json"
+        "pages/templates.json",
+        "pages/rdv.json"
     ],
 
     "articles": [
@@ -62,6 +63,7 @@
         "index.php",
         "single.php",
         "ag-stripe-admin.php",
+        "ag-calendly-admin.php",
         "assets/css/main.css",
         "assets/js/main.js",
         "template-parts/about.php",
@@ -84,6 +86,7 @@
         "templates/page-services.php",
         "templates/page-fondateur.php",
         "templates/page-templates.php",
+        "templates/page-rdv.php",
         "templates/page-wordpress-avocat.php",
         "templates/page-wordpress-restaurant.php",
         "templates/page-wordpress-artisan.php",

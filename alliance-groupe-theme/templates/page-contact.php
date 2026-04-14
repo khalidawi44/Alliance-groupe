@@ -93,28 +93,31 @@ get_header();
         </div>
     </section>
 
-    <!-- ── Calendly inline embed ─────────────────────────────────── -->
-    <section class="ag-section ag-section--darker" id="ag-booking">
+    <!-- ── Booking CTA — pointe vers la page dédiée /rendez-vous ── -->
+    <section class="ag-section ag-section--darker">
         <div class="ag-container">
-            <div class="ag-calendly">
-                <div class="ag-calendly__header">
-                    <span class="ag-tag ag-anim" data-anim="tag">Prise de rendez-vous</span>
-                    <h2 class="ag-calendly__title">Réservez votre <em>appel stratégique gratuit</em></h2>
-                    <p class="ag-calendly__sub">30 minutes en visio pour analyser votre projet et identifier les leviers prioritaires. Choisissez directement votre créneau ci-dessous.</p>
-                </div>
-
-                <!-- Calendly inline widget — official embed -->
-                <div class="calendly-inline-widget ag-calendly__widget"
-                     data-url="https://calendly.com/alliancegroupe?hide_gdpr_banner=1&background_color=0a0a0f&text_color=e8e6e0&primary_color=d4b45c"
-                     style="min-width:320px;height:720px;"></div>
-                <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
-
-                <noscript>
-                    <p style="text-align:center;color:#b0b0bc;margin-top:20px;">
-                        JavaScript désactivé ? Réservez directement sur
-                        <a href="https://calendly.com/alliancegroupe" target="_blank" rel="noopener noreferrer" style="color:#D4B45C;">calendly.com/alliancegroupe</a>
+            <div class="ag-rdv-cta">
+                <div class="ag-rdv-cta__content">
+                    <span class="ag-tag ag-anim" data-anim="tag">Plus rapide qu'un email</span>
+                    <h2 class="ag-rdv-cta__title">Réservez votre <em>appel stratégique gratuit</em></h2>
+                    <p class="ag-rdv-cta__sub">
+                        30 minutes en visio avec Fabrizio pour analyser votre projet et identifier
+                        les leviers prioritaires. Sans engagement, sans jargon.
                     </p>
-                </noscript>
+                    <a href="<?php echo esc_url( home_url( '/rendez-vous' ) ); ?>" class="ag-btn-gold">
+                        Choisir mon créneau <span>→</span>
+                    </a>
+                </div>
+                <div class="ag-rdv-cta__visual" aria-hidden="true">
+                    <div class="ag-rdv-cta__calendar">
+                        <div class="ag-rdv-cta__calendar-head">📅</div>
+                        <div class="ag-rdv-cta__calendar-dot"></div>
+                        <div class="ag-rdv-cta__calendar-dot"></div>
+                        <div class="ag-rdv-cta__calendar-dot ag-rdv-cta__calendar-dot--active"></div>
+                        <div class="ag-rdv-cta__calendar-dot"></div>
+                        <div class="ag-rdv-cta__calendar-dot"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

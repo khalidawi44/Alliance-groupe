@@ -2254,7 +2254,152 @@ button:focus-visible{
     border:1px solid rgba(255,255,255,.06);
     background:#0a0a0f;
 }
+.ag-calendly__empty{
+    text-align:center;
+    padding:60px 32px;
+}
+
 @media(max-width:768px){
     .ag-calendly{padding:32px 20px}
     .ag-calendly__widget{min-height:680px}
+    .ag-calendly__empty{padding:40px 20px}
+}
+
+/* ── RDV CTA card (contact page) ─────────────────────────── */
+.ag-rdv-cta{
+    max-width:960px;
+    margin:0 auto;
+    padding:48px 44px;
+    background:linear-gradient(180deg,rgba(255,255,255,.04) 0%,rgba(255,255,255,.01) 100%);
+    border:1px solid rgba(212,180,92,.22);
+    border-radius:20px;
+    display:grid;
+    grid-template-columns:1.6fr 1fr;
+    gap:40px;
+    align-items:center;
+    box-shadow:0 30px 80px rgba(0,0,0,.35);
+}
+.ag-rdv-cta__content .ag-tag{margin-bottom:14px}
+.ag-rdv-cta__title{
+    font-family:"Playfair Display",Georgia,serif;
+    font-size:clamp(1.6rem,2.6vw,2.2rem);
+    font-weight:700;
+    color:#fff;
+    line-height:1.2;
+    margin:0 0 14px;
+}
+.ag-rdv-cta__title em{font-style:italic;color:#D4B45C}
+.ag-rdv-cta__sub{
+    color:#b0b0bc;
+    font-size:1rem;
+    line-height:1.6;
+    margin:0 0 24px;
+}
+.ag-rdv-cta__visual{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+.ag-rdv-cta__calendar{
+    width:180px;
+    aspect-ratio:1;
+    background:linear-gradient(145deg,rgba(212,180,92,.14),rgba(212,180,92,.04));
+    border:1px solid rgba(212,180,92,.35);
+    border-radius:20px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    padding:18px;
+    place-items:center;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 20px 40px rgba(0,0,0,.3);
+}
+.ag-rdv-cta__calendar-head{
+    grid-column:1/-1;
+    font-size:2rem;
+    text-align:center;
+}
+.ag-rdv-cta__calendar-dot{
+    width:14px;height:14px;
+    border-radius:50%;
+    background:rgba(255,255,255,.08);
+}
+.ag-rdv-cta__calendar-dot--active{
+    background:#D4B45C;
+    box-shadow:0 0 0 4px rgba(212,180,92,.2),0 0 16px rgba(212,180,92,.5);
+}
+@media(max-width:768px){
+    .ag-rdv-cta{
+        grid-template-columns:1fr;
+        padding:32px 22px;
+        gap:28px;
+        text-align:center;
+    }
+    .ag-rdv-cta__visual{order:-1}
+    .ag-rdv-cta__calendar{width:140px}
+}
+
+/* ── /rendez-vous : "À quoi s'attendre" section ─────────── */
+.ag-rdv-expect{
+    max-width:960px;
+    margin:60px auto 0;
+    padding:0 20px;
+}
+.ag-rdv-expect__title{
+    font-family:"Playfair Display",Georgia,serif;
+    font-size:clamp(1.5rem,2.4vw,2rem);
+    color:#fff;
+    text-align:center;
+    margin:0 0 40px;
+}
+.ag-rdv-expect__grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:22px;
+    margin-bottom:40px;
+}
+.ag-rdv-expect__item{
+    padding:28px 24px;
+    background:rgba(255,255,255,.025);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    position:relative;
+}
+.ag-rdv-expect__item h3{
+    color:#fff;
+    font-size:1.1rem;
+    margin:16px 0 10px;
+    font-weight:700;
+}
+.ag-rdv-expect__item p{
+    color:#b0b0bc;
+    font-size:.93rem;
+    line-height:1.6;
+    margin:0;
+}
+.ag-rdv-expect__num{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:36px;height:36px;
+    border-radius:50%;
+    background:linear-gradient(145deg,rgba(212,180,92,.2),rgba(212,180,92,.06));
+    border:1px solid rgba(212,180,92,.4);
+    color:#D4B45C;
+    font-family:"Playfair Display",Georgia,serif;
+    font-size:1.15rem;
+    font-weight:700;
+}
+.ag-rdv-expect__trust{
+    padding:24px 28px;
+    background:rgba(212,180,92,.06);
+    border:1px solid rgba(212,180,92,.22);
+    border-radius:14px;
+    color:#e8e6e0;
+    font-size:.95rem;
+}
+.ag-rdv-expect__trust strong{color:#D4B45C;display:block;margin-bottom:8px}
+.ag-rdv-expect__trust ul{margin:0;padding-left:22px}
+.ag-rdv-expect__trust li{margin-bottom:6px;line-height:1.55}
+@media(max-width:768px){
+    .ag-rdv-expect__grid{grid-template-columns:1fr;gap:14px}
 }

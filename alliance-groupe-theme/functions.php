@@ -18,6 +18,12 @@ if ( is_admin() ) {
     }
 }
 
+// ── 1c. Charger ag-calendly-admin.php (page de config Calendly) ─
+$ag_calendly_admin_file = get_stylesheet_directory() . '/ag-calendly-admin.php';
+if ( file_exists( $ag_calendly_admin_file ) ) {
+    require_once $ag_calendly_admin_file;
+}
+
 // ── 2. Enqueue styles & scripts ─────────────────────────────────
 add_action( 'wp_enqueue_scripts', function () {
     // Style du thème (style.css obligatoire pour WordPress)
@@ -98,6 +104,7 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-service-conseil.php'] = 'Service — Conseil';
     $templates['templates/page-fondateur.php']       = 'Notre Fondateur';
     $templates['templates/page-templates.php']       = 'Templates WordPress';
+    $templates['templates/page-rdv.php']             = 'Prise de rendez-vous';
     return $templates;
 } );
 

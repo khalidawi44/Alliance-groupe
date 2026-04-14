@@ -232,8 +232,8 @@
             <li><a href="<?php echo esc_url(home_url('/contact')); ?>">Contact</a></li>
         </ul>
 
-        <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-nav__cta">
-            Parlons-en <span>→</span>
+        <a href="<?php echo esc_url(home_url('/rendez-vous')); ?>" class="ag-nav__cta">
+            Prendre RDV <span>→</span>
         </a>
 
         <button class="ag-nav__burger" id="ag-burger" aria-label="Menu" type="button">
