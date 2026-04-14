@@ -30,6 +30,15 @@ add_action( 'admin_menu', function () {
 } );
 
 /**
+ * Default Calendly URL used as a fallback when the wp_option is
+ * empty or unset. The site owner can override it from Réglages >
+ * Calendly AG without touching code.
+ */
+if ( ! defined( 'AG_CALENDLY_DEFAULT_URL' ) ) {
+	define( 'AG_CALENDLY_DEFAULT_URL', 'https://calendly.com/advise-alliance-group/30min' );
+}
+
+/**
  * Register the option via the Settings API.
  */
 add_action( 'admin_init', function () {
@@ -39,7 +48,7 @@ add_action( 'admin_init', function () {
 		array(
 			'type'              => 'string',
 			'sanitize_callback' => 'ag_calendly_sanitize_url',
-			'default'           => '',
+			'default'           => AG_CALENDLY_DEFAULT_URL,
 			'show_in_rest'      => false,
 		)
 	);
@@ -76,12 +85,15 @@ function ag_calendly_sanitize_url( $value ) {
 
 /**
  * Helper used by templates to get the current Calendly URL.
- * Returns an empty string if not configured.
+ * Falls back to AG_CALENDLY_DEFAULT_URL if the option is empty.
  */
 if ( ! function_exists( 'ag_get_calendly_url' ) ) {
 	function ag_get_calendly_url() {
-		$url = get_option( 'ag_calendly_url', '' );
-		return is_string( $url ) ? trim( $url ) : '';
+		$url = get_option( 'ag_calendly_url', AG_CALENDLY_DEFAULT_URL );
+		if ( ! is_string( $url ) || '' === trim( $url ) ) {
+			return AG_CALENDLY_DEFAULT_URL;
+		}
+		return trim( $url );
 	}
 }
 
@@ -93,7 +105,9 @@ function ag_calendly_admin_render() {
 		return;
 	}
 
-	$calendly_url = ag_get_calendly_url();
+	$stored_url    = get_option( 'ag_calendly_url', AG_CALENDLY_DEFAULT_URL );
+	$calendly_url  = ag_get_calendly_url();
+	$is_default    = ( $calendly_url === AG_CALENDLY_DEFAULT_URL );
 	$is_configured = ( '' !== $calendly_url );
 
 	?>
@@ -130,15 +144,18 @@ function ag_calendly_admin_render() {
 					</th>
 					<td>
 						<input type="url" name="ag_calendly_url" id="ag_calendly_url"
-							value="<?php echo esc_attr( $calendly_url ); ?>"
+							value="<?php echo esc_attr( $stored_url ); ?>"
 							class="regular-text code"
-							placeholder="https://calendly.com/votre-compte/appel-decouverte"
+							placeholder="<?php echo esc_attr( AG_CALENDLY_DEFAULT_URL ); ?>"
 							style="width:100%;max-width:620px;">
 						<p class="description">
-							<?php if ( $is_configured ) : ?>
-								<span style="display:inline-block;padding:3px 10px;background:#e7f5e9;color:#1a7a33;border:1px solid #a7d8b3;border-radius:12px;font-size:.8rem;font-weight:700;">✓ Calendly actif</span>
+							<?php if ( $is_default ) : ?>
+								<span style="display:inline-block;padding:3px 10px;background:#e7f5e9;color:#1a7a33;border:1px solid #a7d8b3;border-radius:12px;font-size:.8rem;font-weight:700;">✓ Par défaut du thème — actif</span>
+								<span style="display:block;margin-top:6px;color:#50575e;">URL par défaut : <code><?php echo esc_html( AG_CALENDLY_DEFAULT_URL ); ?></code></span>
+							<?php elseif ( $is_configured ) : ?>
+								<span style="display:inline-block;padding:3px 10px;background:#e7f5e9;color:#1a7a33;border:1px solid #a7d8b3;border-radius:12px;font-size:.8rem;font-weight:700;">✓ Calendly personnalisé — actif</span>
 							<?php else : ?>
-								<span style="display:inline-block;padding:3px 10px;background:#fff8c2;color:#8a6d00;border:1px solid #e8d676;border-radius:12px;font-size:.8rem;font-weight:700;">⚠ Non configuré — la page /rendez-vous affiche un message de configuration</span>
+								<span style="display:inline-block;padding:3px 10px;background:#fff8c2;color:#8a6d00;border:1px solid #e8d676;border-radius:12px;font-size:.8rem;font-weight:700;">⚠ URL vide — retombe sur la valeur par défaut du thème</span>
 							<?php endif; ?>
 						</p>
 					</td>
