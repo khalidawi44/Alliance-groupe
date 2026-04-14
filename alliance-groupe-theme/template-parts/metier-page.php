@@ -299,3 +299,5 @@ $has_screenshot = file_exists( $screenshot_file );
     });
 })();
 </script>
+
+<?php get_template_part( 'template-parts/download-modal' ); ?>

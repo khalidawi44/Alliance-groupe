@@ -1,5 +1,5 @@
 {
-    "version": "1.16.0",
+    "version": "1.17.0",
     "repo": "khalidawi44/Alliance-groupe",
     "branch": "claude/rebuild-alliance-theme-fl7ca",
 
@@ -88,6 +88,7 @@
         "templates/page-wordpress-artisan.php",
         "templates/page-wordpress-coach.php",
         "template-parts/metier-page.php",
+        "template-parts/download-modal.php",
         "templates/page-merci-achat.php",
 
         "assets/downloads/WORDPRESS-ORG-SUBMISSION.md",
