@@ -1,14 +1,73 @@
 <?php
 /**
  * Template Name: Templates WordPress
+ *
+ * HUB : page courte qui oriente vers les 4 pages métier dédiées.
+ * Les fiches complètes (features, Pro/Premium/Business, config,
+ * installation) vivent sur les pages individuelles :
+ *   /wordpress-avocat
+ *   /wordpress-restaurant
+ *   /wordpress-artisan
+ *   /wordpress-coach
  */
 get_header();
+
 $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
+
+// Stripe URLs (still loaded for the companion plugin CTA + compatibility).
+$ag_stripe_placeholder = 'STRIPE_PLACEHOLDER';
+$ag_stripe_pro      = get_option( 'ag_stripe_pro_url', $ag_stripe_placeholder );
+$ag_stripe_premium  = get_option( 'ag_stripe_premium_url', $ag_stripe_placeholder );
+$ag_stripe_business = get_option( 'ag_stripe_business_url', $ag_stripe_placeholder );
+
+// 4 métiers → chaque entrée mappe vers sa page dédiée.
+$ag_hub_metiers = array(
+    array(
+        'slug'     => 'avocat',
+        'icon'     => '⚖️',
+        'name'     => 'Avocat',
+        'palette'  => 'Navy &amp; champagne',
+        'audience' => 'Cabinet d\'avocats, juriste, notaire, conseil juridique.',
+        'tagline'  => 'CPT Domaines, formulaire RDV RGPD, honoraires transparents.',
+        'url'      => home_url( '/wordpress-avocat' ),
+        'is_new'   => true,
+    ),
+    array(
+        'slug'     => 'restaurant',
+        'icon'     => '🍽️',
+        'name'     => 'Restaurant',
+        'palette'  => 'Or &amp; noir',
+        'audience' => 'Bistrot, bar, café, restaurant gastronomique.',
+        'tagline'  => 'Hero, carte, réservation, privatisation, horaires.',
+        'url'      => home_url( '/wordpress-restaurant' ),
+        'is_new'   => false,
+    ),
+    array(
+        'slug'     => 'artisan',
+        'icon'     => '🔨',
+        'name'     => 'Artisan',
+        'palette'  => 'Bronze &amp; noir',
+        'audience' => 'Plombier, électricien, menuisier, maçon, BTP.',
+        'tagline'  => 'Prestations, zones d\'intervention, devis, réalisations.',
+        'url'      => home_url( '/wordpress-artisan' ),
+        'is_new'   => false,
+    ),
+    array(
+        'slug'     => 'coach',
+        'icon'     => '💼',
+        'name'     => 'Coach',
+        'palette'  => 'Bleu teal &amp; marine',
+        'audience' => 'Coach, consultant, formateur, thérapeute.',
+        'tagline'  => 'Services, séances, témoignages, prise de rendez-vous.',
+        'url'      => home_url( '/wordpress-coach' ),
+        'is_new'   => false,
+    ),
+);
 ?>
 
 <main id="ag-main-content">
 
-    <!-- Hero -->
+    <!-- Hero hub -->
     <section class="ag-hero" style="min-height:60vh;">
         <div class="ag-hero__bg">
             <div class="ag-hero__orb ag-hero__orb--1"></div>
@@ -17,226 +76,127 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
             <span class="ag-tag">Templates WordPress</span>
             <h1 class="ag-hero__title">
                 <span class="ag-line">Templates WordPress <em>gratuits</em></span>
-                <span class="ag-line">prêts à installer</span>
+                <span class="ag-line">100% français, prêts à installer</span>
             </h1>
-            <p class="ag-hero__sub">Téléchargez, installez, personnalisez. Des thèmes professionnels pour lancer votre site rapidement.</p>
+            <p class="ag-hero__sub">Quatre thèmes pensés par métier : avocat, restaurant, artisan, coach. Choisissez celui qui vous correspond pour voir tous les détails, télécharger et passer à l'action.</p>
         </div>
     </section>
 
-    <!-- Avertissement honnête -->
-    <section class="ag-section ag-section--graphite">
-        <div class="ag-container ag-container--narrow" style="text-align:center;">
-            <div style="background:rgba(212,180,92,.06);border:1px solid rgba(212,180,92,.15);border-radius:16px;padding:36px;">
-                <h2 style="font-size:1.3rem;margin-bottom:12px;">Un template, c'est un <em>point de départ</em></h2>
-                <p style="color:#b0b0bc;line-height:1.7;">Nos templates gratuits sont fonctionnels mais basiques. Le contenu est placeholder (textes et images à remplacer). La personnalisation demande du temps et des connaissances techniques en WordPress. Si vous voulez un site professionnel qui génère des résultats — <a href="<?php echo esc_url(home_url('/contact')); ?>" style="color:#D4B45C;font-weight:700;">parlons de votre projet</a>.</p>
+    <!-- 4 fiches métier -->
+    <section class="ag-section ag-section--graphite" id="ag-metiers">
+        <div class="ag-container">
+            <span class="ag-tag ag-anim" data-anim="tag">Choisissez votre métier</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Votre <em>métier</em>, votre thème</h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Chaque fiche vous conduit vers une page dédiée avec le descriptif complet, le configurateur de pack, les CTA d'achat et les instructions d'installation.</p>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;max-width:1200px;margin:48px auto 0;">
+                <?php foreach ( $ag_hub_metiers as $m ) : ?>
+                <a href="<?php echo esc_url( $m['url'] ); ?>" class="ag-anim" data-anim="card" style="display:flex;flex-direction:column;background:rgba(255,255,255,.025);border:1px solid rgba(212,180,92,.25);border-radius:16px;padding:28px;text-decoration:none;transition:border-color .3s,transform .3s,box-shadow .3s;color:inherit;">
+                    <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:18px;">
+                        <span style="font-size:2.4rem;line-height:1;"><?php echo $m['icon']; // phpcs:ignore ?></span>
+                        <div style="flex:1;">
+                            <h3 style="color:#fff;font-size:1.3rem;margin:0 0 4px;">
+                                <?php echo esc_html( $m['name'] ); ?>
+                                <?php if ( $m['is_new'] ) : ?>
+                                    <span style="display:inline-block;margin-left:6px;padding:2px 10px;background:#28a745;color:#fff;font-size:.7rem;font-weight:700;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;vertical-align:middle;">Nouveau</span>
+                                <?php endif; ?>
+                            </h3>
+                            <span style="color:#888;font-size:.82rem;"><?php echo $m['palette']; // phpcs:ignore ?></span>
+                        </div>
+                    </div>
+                    <p style="color:#e8e6e0;font-size:.92rem;line-height:1.55;margin:0 0 8px;"><strong><?php echo esc_html( $m['audience'] ); ?></strong></p>
+                    <p style="color:#b0b0bc;font-size:.88rem;line-height:1.55;margin:0 0 auto;"><?php echo esc_html( $m['tagline'] ); ?></p>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:22px;padding-top:16px;border-top:1px solid rgba(212,180,92,.15);">
+                        <span style="color:#D4B45C;font-weight:700;font-size:.92rem;">Voir la fiche →</span>
+                        <span style="color:#28a745;font-size:.78rem;font-weight:700;">Gratuit</span>
+                    </div>
+                </a>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>
 
-    <!-- Templates gratuits -->
+    <!-- Vue d'ensemble des 3 packs payants (courte, le détail est dans les pages métier) -->
     <section class="ag-section ag-section--marbre">
         <div class="ag-container">
-            <span class="ag-tag ag-anim" data-anim="tag">Gratuit</span>
-            <h2 class="ag-section__title ag-anim" data-anim="title">Templates <em>gratuits</em></h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc">Téléchargez le ZIP, installez via Apparence > Thèmes > Ajouter, et c'est parti.</p>
+            <span class="ag-tag ag-anim" data-anim="tag">3 niveaux d'amélioration</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Passez au <em>niveau supérieur</em></h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Les 4 templates gratuits sont volontairement basiques. Trois packs payants viennent compléter <strong style="color:#e8e6e0;">n'importe lequel des 4 thèmes</strong> — un seul achat, il fonctionne avec le thème actif. Le détail de chaque pack vit sur la page métier correspondante.</p>
 
-            <div class="ag-tpl__grid">
-
-                <!-- Template Restaurant -->
-                <div class="ag-tpl-card ag-anim" data-anim="card">
-                    <div class="ag-tpl-card__img">
-                        <div class="ag-tpl-card__preview">
-                            <span style="font-size:2rem;">🍽️</span>
-                            <strong>AG Starter Restaurant</strong>
-                            <small>Thème sombre, or & noir</small>
-                        </div>
-                    </div>
-                    <div class="ag-tpl-card__body">
-                        <span class="ag-tpl-card__badge ag-tpl-card__badge--free">Gratuit</span>
-                        <h3 class="ag-tpl-card__title">Starter Restaurant</h3>
-                        <p class="ag-tpl-card__desc">Thème WordPress pour restaurant, bar ou café. Hero, carte, réservation, horaires. Contenu placeholder à remplacer.</p>
-                        <ul class="ag-tpl-card__features">
-                            <li>Page d'accueil complète</li>
-                            <li>Design sombre premium</li>
-                            <li>100% responsive</li>
-                            <li>Sans Elementor</li>
-                            <li>Contenu placeholder</li>
-                        </ul>
-                        <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="restaurant" data-file="<?php echo esc_url($dl_base . 'ag-starter-restaurant.zip'); ?>">Télécharger gratuitement →</button>
-                    </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:1000px;margin:40px auto 0;">
+                <div style="padding:24px;background:rgba(212,180,92,.05);border:1px solid rgba(212,180,92,.25);border-radius:12px;text-align:center;">
+                    <div style="font-size:2rem;margin-bottom:6px;">⚡</div>
+                    <strong style="display:block;color:#D4B45C;font-size:1.1rem;margin-bottom:6px;">Pack Pro — 49€</strong>
+                    <p style="color:#b0b0bc;font-size:.88rem;line-height:1.55;margin:0;">Design travaillé, animations, blocs Gutenberg premium, customizer étendu, sticky header, polices Google Fonts, support 60j.</p>
                 </div>
-
-                <!-- Template Artisan (coming soon) -->
-                <div class="ag-tpl-card ag-tpl-card--soon ag-anim" data-anim="card">
-                    <div class="ag-tpl-card__img">
-                        <div class="ag-tpl-card__preview">
-                            <span style="font-size:2rem;">🔨</span>
-                            <strong>AG Starter Artisan</strong>
-                            <small>Bientôt disponible</small>
-                        </div>
-                    </div>
-                    <div class="ag-tpl-card__body">
-                        <span class="ag-tpl-card__badge ag-tpl-card__badge--soon">Bientôt</span>
-                        <h3 class="ag-tpl-card__title">Starter Artisan</h3>
-                        <p class="ag-tpl-card__desc">Pour artisans, plombiers, électriciens, BTP. Portfolio de réalisations, zones d'intervention, formulaire de devis.</p>
-                    </div>
+                <div style="padding:24px;background:rgba(212,180,92,.08);border:2px solid rgba(212,180,92,.4);border-radius:12px;text-align:center;position:relative;">
+                    <span style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#D4B45C;color:#080808;font-size:.68rem;font-weight:700;padding:3px 12px;border-radius:100px;text-transform:uppercase;letter-spacing:1px;">Populaire</span>
+                    <div style="font-size:2rem;margin-bottom:6px;">🌍</div>
+                    <strong style="display:block;color:#D4B45C;font-size:1.1rem;margin-bottom:6px;">Pack Premium — 99€</strong>
+                    <p style="color:#b0b0bc;font-size:.88rem;line-height:1.55;margin:0;">Tout Pro + multi-langue 6 langues + WooCommerce + espace client + support prioritaire 12 mois + mises à jour à vie.</p>
                 </div>
-
-                <!-- Template Coach (coming soon) -->
-                <div class="ag-tpl-card ag-tpl-card--soon ag-anim" data-anim="card">
-                    <div class="ag-tpl-card__img">
-                        <div class="ag-tpl-card__preview">
-                            <span style="font-size:2rem;">💼</span>
-                            <strong>AG Starter Coach</strong>
-                            <small>Bientôt disponible</small>
-                        </div>
-                    </div>
-                    <div class="ag-tpl-card__body">
-                        <span class="ag-tpl-card__badge ag-tpl-card__badge--soon">Bientôt</span>
-                        <h3 class="ag-tpl-card__title">Starter Coach</h3>
-                        <p class="ag-tpl-card__desc">Pour coachs, consultants, formateurs. Page de services, témoignages, prise de rendez-vous, blog.</p>
-                    </div>
+                <div style="padding:24px;background:rgba(212,180,92,.10);border:2px solid rgba(212,180,92,.5);border-radius:12px;text-align:center;">
+                    <div style="font-size:2rem;margin-bottom:6px;">💼</div>
+                    <strong style="display:block;color:#D4B45C;font-size:1.1rem;margin-bottom:6px;">Pack Business — 149€</strong>
+                    <p style="color:#b0b0bc;font-size:.88rem;line-height:1.55;margin:0;">Tout Premium + installation visio 1h + maintenance 1 an + audit SEO + white-label + intégration CRM + appel Fabrizio.</p>
                 </div>
-
             </div>
+
+            <p style="text-align:center;color:#888;font-size:.88rem;margin-top:32px;font-style:italic;">
+                👆 Pour les features détaillées par métier et les boutons d'achat, cliquez sur la fiche métier qui vous correspond.
+            </p>
         </div>
     </section>
 
-    <!-- Packs Premium Stripe -->
-    <section class="ag-section ag-section--or">
+    <!-- 🚨 Avertissement sur-mesure -->
+    <section class="ag-section ag-section--or" style="padding:80px 0;">
         <div class="ag-container">
-            <span class="ag-tag ag-anim" data-anim="tag">Premium</span>
-            <h2 class="ag-section__title ag-anim" data-anim="title">Packs <em>Design Premium</em></h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc">Allez plus loin avec des outils de personnalisation professionnels. Modifiez tout en drag & drop.</p>
-
-            <div class="ag-pricing__grid">
-
-                <!-- Pack 69€ -->
-                <div class="ag-price-card ag-anim" data-anim="card">
-                    <div class="ag-price-card__header">
-                        <span class="ag-price-card__price">69<small>€</small></span>
-                        <h3 class="ag-price-card__title">Pack Starter</h3>
-                        <p class="ag-price-card__sub">Pour ceux qui veulent personnaliser</p>
-                    </div>
-                    <ul class="ag-price-card__list">
-                        <li>Template WordPress au choix</li>
-                        <li>WordPress Block Editor amélioré</li>
-                        <li>10 blocs design premium</li>
-                        <li>Personnalisation couleurs & polices</li>
-                        <li>Support email 30 jours</li>
-                        <li>Documentation d'installation</li>
-                    </ul>
-                    <a href="#" class="ag-btn-outline ag-stripe-btn" data-price="69">Acheter — 69€</a>
+            <div style="max-width:900px;margin:0 auto;padding:40px 36px;background:linear-gradient(135deg,rgba(212,180,92,.12) 0%,rgba(20,20,22,.6) 100%);border:2px solid rgba(212,180,92,.4);border-radius:20px;text-align:center;position:relative;">
+                <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#D4B45C,transparent);"></div>
+                <span style="display:inline-block;padding:6px 18px;background:rgba(212,180,92,.2);border:1px solid rgba(212,180,92,.5);border-radius:100px;color:#D4B45C;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;">💎 Et si vous alliez plus loin ?</span>
+                <h2 style="font-size:clamp(1.5rem,3vw,2rem);margin-bottom:12px;line-height:1.2;">Un template ne remplacera <em>jamais</em> un site sur-mesure</h2>
+                <p style="font-size:1rem;color:#e8e6e0;max-width:720px;margin:0 auto 24px;line-height:1.7;">
+                    Si votre business compte vraiment — restaurant en ville touristique, cabinet qui veut dominer sa zone, coach qui veut remplir son agenda, avocat qui veut gagner ses gros dossiers — un site sur-mesure conçu par notre équipe va beaucoup plus loin.
+                    <strong style="color:#D4B45C;">+340% de leads en moyenne en 3 mois.</strong>
+                </p>
+                <div class="ag-hero__buttons" style="justify-content:center;flex-wrap:wrap;">
+                    <a href="tel:+33623526074" class="ag-btn-gold">📞 Appeler Fabrizio</a>
+                    <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" class="ag-btn-outline">Réserver un appel gratuit →</a>
                 </div>
-
-                <!-- Pack 99€ -->
-                <div class="ag-price-card ag-price-card--pop ag-anim" data-anim="card">
-                    <span class="ag-price-card__badge">Populaire</span>
-                    <div class="ag-price-card__header">
-                        <span class="ag-price-card__price">99<small>€</small></span>
-                        <h3 class="ag-price-card__title">Pack Pro</h3>
-                        <p class="ag-price-card__sub">Le meilleur rapport qualité-prix</p>
-                    </div>
-                    <ul class="ag-price-card__list">
-                        <li>Template WordPress au choix</li>
-                        <li>Elementor Pro inclus (1 site)</li>
-                        <li>Drag & drop — modifiez tout</li>
-                        <li>50+ widgets premium</li>
-                        <li>Formulaires avancés</li>
-                        <li>Support email 60 jours</li>
-                        <li>Tutoriel vidéo personnalisé</li>
-                    </ul>
-                    <a href="#" class="ag-btn-gold ag-stripe-btn" data-price="99">Acheter — 99€</a>
-                </div>
-
-                <!-- Pack 149€ -->
-                <div class="ag-price-card ag-anim" data-anim="card">
-                    <div class="ag-price-card__header">
-                        <span class="ag-price-card__price">149<small>€</small></span>
-                        <h3 class="ag-price-card__title">Pack Business</h3>
-                        <p class="ag-price-card__sub">Tout inclus pour les ambitieux</p>
-                    </div>
-                    <ul class="ag-price-card__list">
-                        <li>Template WordPress au choix</li>
-                        <li>Elementor Pro inclus (1 site)</li>
-                        <li>Plugin SEO Premium (Yoast SEO Premium)</li>
-                        <li>Plugin de formulaires (WPForms Pro)</li>
-                        <li>Plugin de cache (WP Rocket)</li>
-                        <li>Support prioritaire 90 jours</li>
-                        <li>Appel de 30 min avec un expert</li>
-                        <li>Installation assistée</li>
-                    </ul>
-                    <a href="#" class="ag-btn-outline ag-stripe-btn" data-price="149">Acheter — 149€</a>
-                </div>
-
+                <p style="color:#888;font-size:.82rem;margin-top:16px;font-style:italic;">Premier appel 30 min gratuit, sans engagement.</p>
             </div>
         </div>
     </section>
 
-    <!-- Comparatif DIY vs Pro -->
-    <section class="ag-section ag-section--image-luxe">
+    <!-- 🎁 Plugin compagnon bonus -->
+    <section class="ag-section ag-section--graphite">
         <div class="ag-container">
-            <h2 class="ag-section__title ag-anim" data-anim="title" style="text-align:center;">Template DIY vs <em>Site professionnel</em></h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc" style="text-align:center;margin-left:auto;margin-right:auto;">Vous hésitez ? Voici la différence entre faire soi-même et confier à un professionnel.</p>
-
-            <div class="ag-compare">
-                <div class="ag-compare__col ag-compare__col--diy ag-anim" data-anim="card">
-                    <h3 class="ag-compare__title">Template DIY</h3>
-                    <span class="ag-compare__price">Gratuit / 69-149€</span>
-                    <ul>
-                        <li class="ag-compare__bad">Contenu placeholder à remplacer</li>
-                        <li class="ag-compare__bad">Design générique, vu sur d'autres sites</li>
-                        <li class="ag-compare__bad">SEO basique, pas optimisé pour votre marché</li>
-                        <li class="ag-compare__bad">Pas de stratégie de conversion</li>
-                        <li class="ag-compare__bad">Temps d'installation : 10-40 heures</li>
-                        <li class="ag-compare__bad">Résultat : un site qui existe</li>
-                        <li class="ag-compare__bad">Support limité</li>
-                        <li class="ag-compare__bad">Nécessite des connaissances techniques</li>
-                    </ul>
-                </div>
-
-                <div class="ag-compare__vs">VS</div>
-
-                <div class="ag-compare__col ag-compare__col--pro ag-anim" data-anim="card">
-                    <h3 class="ag-compare__title">Site par Alliance Groupe</h3>
-                    <span class="ag-compare__price">À partir de 1 500€</span>
-                    <ul>
-                        <li class="ag-compare__good">Contenu rédigé par des pros du copywriting</li>
-                        <li class="ag-compare__good">Design unique, sur-mesure pour votre marque</li>
-                        <li class="ag-compare__good">SEO avancé ciblant VOS mots-clés</li>
-                        <li class="ag-compare__good">Stratégie de conversion éprouvée (+340% leads)</li>
-                        <li class="ag-compare__good">Temps pour vous : 0 heures — on fait tout</li>
-                        <li class="ag-compare__good">Résultat : un site qui VEND</li>
-                        <li class="ag-compare__good">Support illimité + maintenance</li>
-                        <li class="ag-compare__good">Aucune compétence technique requise</li>
-                    </ul>
-                    <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-gold" style="margin-top:20px;">Parlons de votre projet →</a>
-                </div>
-            </div>
-
-            <div style="text-align:center;margin-top:48px;padding:36px;background:rgba(212,180,92,.06);border:1px solid rgba(212,180,92,.15);border-radius:16px;">
-                <p style="font-size:1.2rem;font-weight:700;color:#fff;margin-bottom:8px;">Un template ne remplacera jamais un professionnel.</p>
-                <p style="color:#b0b0bc;margin-bottom:20px;">Nos clients génèrent en moyenne +340% de leads avec un site sur-mesure. Un template génère... des frustrations.</p>
-                <div class="ag-hero__buttons">
-                    <a href="tel:+33623526074" class="ag-btn-gold">Appeler Fabrizio — 06.23.52.60.74</a>
-                    <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Demander un devis gratuit →</a>
-                </div>
+            <div style="max-width:900px;margin:0 auto;padding:40px;background:linear-gradient(135deg,rgba(40,167,69,.08),rgba(40,167,69,.02));border:1px solid rgba(40,167,69,.3);border-radius:16px;text-align:center;">
+                <span class="ag-tag" style="background:rgba(40,167,69,.15);color:#28a745;border-color:rgba(40,167,69,.3);">Bonus gratuit — Plugin compagnon</span>
+                <h3 style="font-size:1.4rem;margin:12px 0 8px;">Installation en 1 clic avec <em>AG Starter Companion</em></h3>
+                <p style="color:#b0b0bc;max-width:680px;margin:0 auto 20px;font-size:.95rem;line-height:1.7;">
+                    Le plugin gratuit qui crée automatiquement les pages, le menu, la page d'accueil et les permaliens quand vous activez un thème AG Starter. Compatible avec les 4 thèmes.
+                    Pour Avocat, il crée aussi 6 Domaines d'expertise préremplis.
+                </p>
+                <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="companion" data-file="<?php echo esc_url($dl_base . 'ag-starter-companion.zip'); ?>">⚡ Télécharger le plugin gratuit →</button>
+                <p style="color:#888;font-size:.82rem;margin-top:14px;">100% gratuit, zéro limite. Détecte automatiquement le thème actif.</p>
             </div>
         </div>
     </section>
 
-    <!-- FAQ Templates -->
+    <!-- FAQ -->
     <section class="ag-section ag-section--cendre">
         <div class="ag-container">
-            <h2 class="ag-section__title ag-anim" data-anim="title" style="text-align:center;">Questions sur les <em>templates</em></h2>
+            <h2 class="ag-section__title ag-anim" data-anim="title" style="text-align:center;">Questions <em>fréquentes</em></h2>
             <div class="ag-faq__list">
                 <?php
                 $tpl_faqs = [
-                    ['q' => 'Comment installer un template gratuit ?', 'a' => 'Téléchargez le fichier ZIP, puis dans WordPress : Apparence > Thèmes > Ajouter > Envoyer un thème. Uploadez le ZIP et activez le thème.'],
-                    ['q' => 'Le template est vraiment gratuit ?', 'a' => 'Oui, 100% gratuit. Pas de piège, pas d\'abonnement caché. C\'est un thème WordPress basique avec du contenu placeholder à remplacer.'],
-                    ['q' => 'Quelle est la différence avec un site professionnel ?', 'a' => 'Un template est un point de départ générique. Un site professionnel est conçu sur-mesure pour VOTRE marque, avec du contenu rédigé par des experts, un SEO ciblé et une stratégie de conversion. C\'est la différence entre un costume de supermarché et un costume sur-mesure.'],
-                    ['q' => 'J\'ai besoin d\'aide pour personnaliser, vous pouvez m\'aider ?', 'a' => 'Bien sûr ! Appelez-nous au 06.23.52.60.74. On peut personnaliser votre template ou créer un site entièrement sur-mesure qui génère des résultats concrets.'],
-                    ['q' => 'Les packs premium incluent quoi exactement ?', 'a' => 'Le template WordPress + les plugins premium (Elementor Pro, Yoast SEO Premium, etc. selon le pack) + un support par email + une documentation d\'installation détaillée.'],
+                    ['q' => 'Comment ça marche exactement ?', 'a' => 'Choisissez votre métier sur cette page, vous arrivez sur la fiche dédiée. Vous y trouvez la description complète du thème, le configurateur pour choisir votre niveau (Gratuit / Pro / Premium / Business), le bouton de téléchargement ou d\'achat, et les instructions d\'installation.'],
+                    ['q' => 'Les templates sont-ils vraiment en français ?', 'a' => '100% français natif. Tous les textes, titres, horaires, exemples et messages sont déjà rédigés en français — pas de Lorem ipsum, pas de strings anglaises à traduire. Vous remplacez juste les éléments entre crochets.'],
+                    ['q' => 'Le plugin compagnon est-il obligatoire ?', 'a' => 'Non, mais il rend l\'installation 10x plus rapide. Sans le plugin, vous devez créer manuellement les 5 pages et le menu. Avec le plugin, un seul clic suffit. Il est gratuit et compatible avec les 4 thèmes.'],
+                    ['q' => 'Un pack Pro marche-t-il avec les 4 thèmes ?', 'a' => 'Oui. Vous achetez UN seul plugin (Pro, Premium ou Business) et il fonctionne avec n\'importe quel thème AG Starter que vous avez activé. Le plugin détecte automatiquement le thème actif et adapte ses features.'],
+                    ['q' => 'Les templates sont-ils sur WordPress.org ?', 'a' => 'En cours de soumission. Nos 4 thèmes et le plugin compagnon respectent les standards WordPress.org (GPL v2+, translation-ready, escaping strict, Theme Check compatible). Une fois validés, ils seront installables directement depuis votre admin WordPress.'],
+                    ['q' => 'Et si je veux un vrai site sur-mesure ?', 'a' => 'Contactez-nous au 06.23.52.60.74 ou via la page contact. Premier appel de 30 min gratuit avec Fabrizio, sans engagement. Nos clients génèrent +340% de leads en moyenne avec un site sur-mesure vs un template.'],
                 ];
                 foreach ($tpl_faqs as $faq) :
                 ?>
@@ -254,96 +214,8 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
         </div>
     </section>
 
-    <?php get_template_part('template-parts/cta'); ?>
-
 </main>
 
-<!-- Modal capture email -->
-<div class="ag-dl-modal" id="ag-dl-modal">
-    <div class="ag-dl-modal__overlay" id="ag-dl-modal-close"></div>
-    <div class="ag-dl-modal__box">
-        <button type="button" class="ag-dl-modal__close" id="ag-dl-modal-x">✕</button>
-        <div class="ag-dl-modal__icon">🎁</div>
-        <h3 class="ag-dl-modal__title">Votre template <em>gratuit</em> vous attend</h3>
-        <p class="ag-dl-modal__desc">Entrez vos coordonnées pour recevoir le lien de téléchargement. Pas de spam, promis.</p>
-        <form class="ag-dl-modal__form" id="ag-dl-form">
-            <input type="hidden" id="ag-dl-file" value="">
-            <input type="hidden" id="ag-dl-template" value="">
-            <div class="ag-form__group">
-                <input type="text" id="ag-dl-name" placeholder="Votre nom" required>
-            </div>
-            <div class="ag-form__group">
-                <input type="email" id="ag-dl-email" placeholder="Votre email" required>
-            </div>
-            <div class="ag-form__group">
-                <input type="tel" id="ag-dl-phone" placeholder="Votre téléphone (optionnel)">
-            </div>
-            <button type="submit" class="ag-btn-gold" style="width:100%;justify-content:center;">Télécharger maintenant →</button>
-        </form>
-        <p class="ag-dl-modal__trust">🔒 Vos données sont protégées. Pas de spam.</p>
-    </div>
-</div>
-
-<script>
-(function(){
-    var modal = document.getElementById('ag-dl-modal');
-    var form = document.getElementById('ag-dl-form');
-    var fileInput = document.getElementById('ag-dl-file');
-    var tplInput = document.getElementById('ag-dl-template');
-
-    // Open modal on click
-    document.querySelectorAll('.ag-dl-trigger').forEach(function(btn){
-        btn.addEventListener('click', function(){
-            fileInput.value = btn.getAttribute('data-file');
-            tplInput.value = btn.getAttribute('data-template');
-            modal.classList.add('open');
-            document.body.style.overflow = 'hidden';
-        });
-    });
-
-    // Close modal
-    function closeModal(){
-        modal.classList.remove('open');
-        document.body.style.overflow = '';
-    }
-    document.getElementById('ag-dl-modal-close').addEventListener('click', closeModal);
-    document.getElementById('ag-dl-modal-x').addEventListener('click', closeModal);
-
-    // Submit form
-    form.addEventListener('submit', function(e){
-        e.preventDefault();
-        var name = document.getElementById('ag-dl-name').value;
-        var email = document.getElementById('ag-dl-email').value;
-        var phone = document.getElementById('ag-dl-phone').value;
-        var template = tplInput.value;
-        var file = fileInput.value;
-
-        // Save lead via AJAX to WordPress
-        var data = new FormData();
-        data.append('action', 'ag_save_lead');
-        data.append('name', name);
-        data.append('email', email);
-        data.append('phone', phone);
-        data.append('template', template);
-        data.append('ag_lead_nonce', '<?php echo wp_create_nonce("ag_lead_nonce"); ?>');
-
-        fetch('<?php echo admin_url("admin-ajax.php"); ?>', {
-            method: 'POST',
-            body: data
-        }).then(function(){
-            // Trigger download
-            var link = document.createElement('a');
-            link.href = file;
-            link.download = '';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            // Show thank you
-            form.innerHTML = '<div style="text-align:center;padding:20px 0;"><div style="font-size:3rem;margin-bottom:12px;">✅</div><h3 style="margin-bottom:8px;">Merci ' + name + ' !</h3><p style="color:#b0b0bc;">Le téléchargement a démarré. Besoin d\'aide pour l\'installation ?</p><a href="tel:+33623526074" class="ag-btn-gold" style="margin-top:16px;">Appeler Fabrizio — 06.23.52.60.74</a></div>';
-        });
-    });
-})();
-</script>
+<?php get_template_part( 'template-parts/download-modal' ); ?>
 
 <?php get_footer(); ?>

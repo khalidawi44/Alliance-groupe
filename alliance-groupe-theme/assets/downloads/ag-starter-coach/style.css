@@ -1,0 +1,524 @@
+/*
+Theme Name: AG Starter Coach
+Theme URI: https://alliancegroupe-inc.com/templates-wordpress
+Author: AGthèmes
+Author URI: https://alliancegroupe-inc.com
+Description: Theme WordPress gratuit basique 100% francais pour coachs, consultants, formateurs, therapeutes. Structure minimaliste marine et teal, responsive, sans fioritures. Contenu pre-redige en francais natif : accompagnements, temoignages, rendez-vous. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.5
+Requires PHP: 7.4
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: ag-starter-coach
+Tags: one-column, custom-menu, featured-images, translation-ready, theme-options, custom-colors, custom-logo, threaded-comments, right-sidebar, block-styles, wide-blocks
+*/
+
+/* ============================================================
+   AG Starter Coach - Feuille de style (version basique)
+   ============================================================ */
+
+/* ----- Reset ----- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #e0e0e0;
+    background: #0b1220;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+a {
+    color: #5ec4d1;
+    text-decoration: underline;
+}
+
+ul,
+ol {
+    list-style: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 700;
+    line-height: 1.25;
+    color: #ffffff;
+    margin-bottom: 0.6em;
+}
+
+p {
+    margin-bottom: 1em;
+}
+
+/* ----- Accessibility ----- */
+.screen-reader-text {
+    clip: rect(1px, 1px, 1px, 1px);
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    word-wrap: normal !important;
+}
+
+.screen-reader-text:focus {
+    background-color: #5ec4d1;
+    clip: auto !important;
+    color: #0b1220;
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+    height: auto;
+    left: 5px;
+    padding: 12px 20px;
+    text-decoration: none;
+    top: 5px;
+    width: auto;
+    z-index: 100000;
+}
+
+/* ----- Layout ----- */
+.ag-container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* ----- Header ----- */
+.ag-site-header {
+    padding: 1rem 0;
+    border-bottom: 1px solid #1f2a3f;
+}
+
+.ag-site-header__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ag-site-brand {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #5ec4d1;
+    text-transform: uppercase;
+}
+
+.ag-site-brand a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* ----- Menu ----- */
+.ag-primary-menu {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.ag-primary-menu a {
+    color: #cccccc;
+    font-size: 0.95rem;
+    text-decoration: none;
+}
+
+/* ----- Hero ----- */
+.ag-hero {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: #121a2a;
+    border-bottom: 1px solid #1f2a3f;
+}
+
+.ag-hero__title {
+    font-size: 1.8rem;
+    margin-bottom: 0.75rem;
+}
+
+.ag-hero__title span {
+    color: #5ec4d1;
+}
+
+.ag-hero__subtitle {
+    font-size: 1rem;
+    color: #aaaaaa;
+    margin-bottom: 1.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ag-btn {
+    display: inline-block;
+    padding: 0.7rem 1.5rem;
+    background: #5ec4d1;
+    color: #0b1220;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* ----- Cards ----- */
+.ag-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    padding: 2.5rem 0;
+}
+
+.ag-card {
+    background: #121a2a;
+    border: 1px solid #1f2a3f;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.ag-card h2 {
+    font-size: 1.2rem;
+    color: #5ec4d1;
+    margin-bottom: 0.5rem;
+}
+
+.ag-card p {
+    color: #aaaaaa;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+/* ----- Info section ----- */
+.ag-info {
+    padding: 2.5rem 0;
+    text-align: center;
+    border-top: 1px solid #1f2a3f;
+    border-bottom: 1px solid #1f2a3f;
+}
+
+.ag-info h2 {
+    font-size: 1.4rem;
+    color: #5ec4d1;
+    margin-bottom: 1rem;
+}
+
+.ag-info p {
+    color: #aaaaaa;
+    max-width: 640px;
+    margin: 0 auto 1rem;
+}
+
+/* ----- Main / posts ----- */
+.ag-main {
+    padding: 2rem 0;
+}
+
+.ag-main article {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #1f2a3f;
+}
+
+.ag-main article:last-child {
+    border-bottom: none;
+}
+
+.ag-entry-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.4rem;
+}
+
+.ag-entry-title a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.ag-entry-meta {
+    font-size: 0.82rem;
+    color: #888888;
+    margin-bottom: 0.8rem;
+}
+
+.ag-entry-content {
+    color: #c0c0c0;
+}
+
+.ag-entry-content a {
+    color: #5ec4d1;
+}
+
+.ag-entry-content blockquote {
+    border-left: 3px solid #5ec4d1;
+    padding: 0.4rem 1rem;
+    margin: 1rem 0;
+    color: #aaaaaa;
+}
+
+.ag-entry-content pre,
+.ag-entry-content code {
+    background: #121a2a;
+    padding: 0.15rem 0.35rem;
+    font-family: Menlo, Consolas, monospace;
+    font-size: 0.9em;
+}
+
+.ag-entry-content pre {
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+/* ----- Comments ----- */
+.ag-comments {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #1f2a3f;
+}
+
+.ag-comments h2 {
+    font-size: 1.15rem;
+    margin-bottom: 1rem;
+}
+
+.ag-comments ol {
+    padding-left: 0;
+}
+
+.ag-comments .comment {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #1f2a3f;
+}
+
+.ag-comments .children {
+    padding-left: 1.25rem;
+    border-left: 1px solid #1f2a3f;
+    margin-top: 0.75rem;
+}
+
+.ag-comments .comment-author {
+    font-weight: 700;
+    color: #5ec4d1;
+}
+
+.ag-comments input[type="text"],
+.ag-comments input[type="email"],
+.ag-comments input[type="url"],
+.ag-comments textarea {
+    width: 100%;
+    padding: 0.6rem;
+    background: #121a2a;
+    border: 1px solid #1f2a3f;
+    color: #e0e0e0;
+    margin-bottom: 0.75rem;
+    font-family: inherit;
+}
+
+.ag-comments input[type="submit"] {
+    display: inline-block;
+    padding: 0.6rem 1.4rem;
+    background: #5ec4d1;
+    color: #0b1220;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+}
+
+/* ----- Sidebar ----- */
+.ag-sidebar {
+    padding: 2rem 0;
+    border-top: 1px solid #1f2a3f;
+}
+
+.ag-widget {
+    margin-bottom: 1.5rem;
+}
+
+.ag-widget-title {
+    font-size: 1rem;
+    color: #5ec4d1;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.ag-widget ul {
+    padding-left: 0;
+}
+
+.ag-widget li {
+    padding: 0.3rem 0;
+    border-bottom: 1px solid #1f2a3f;
+    color: #aaaaaa;
+}
+
+.ag-widget li:last-child {
+    border-bottom: none;
+}
+
+/* ----- Search form ----- */
+.ag-search-form {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+}
+
+.ag-search-form input[type="search"] {
+    flex: 1;
+    padding: 0.5rem 0.7rem;
+    background: #121a2a;
+    border: 1px solid #1f2a3f;
+    color: #e0e0e0;
+    font-family: inherit;
+}
+
+.ag-search-form input[type="submit"] {
+    padding: 0.5rem 1rem;
+    background: #5ec4d1;
+    color: #0b1220;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+}
+
+/* ----- Pagination ----- */
+.ag-pagination {
+    display: flex;
+    gap: 0.35rem;
+    justify-content: center;
+    padding: 1.5rem 0;
+}
+
+.ag-pagination a,
+.ag-pagination span {
+    padding: 0.35rem 0.75rem;
+    border: 1px solid #1f2a3f;
+    color: #cccccc;
+}
+
+.ag-pagination .current {
+    background: #5ec4d1;
+    color: #0b1220;
+    border-color: #5ec4d1;
+}
+
+/* ----- Footer ----- */
+.ag-site-footer {
+    border-top: 1px solid #1f2a3f;
+    padding: 2rem 0 1rem;
+    margin-top: 2rem;
+}
+
+.ag-footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.ag-footer-col h3 {
+    color: #5ec4d1;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.ag-footer-col p,
+.ag-footer-col li {
+    color: #888888;
+    font-size: 0.88rem;
+    line-height: 1.7;
+}
+
+.ag-footer-bottom {
+    text-align: center;
+    padding-top: 1rem;
+    color: #666666;
+    font-size: 0.82rem;
+    border-top: 1px solid #1f2a3f;
+}
+
+/* ----- WordPress core required ----- */
+.alignleft {
+    float: left;
+    margin: 0 1rem 0.75rem 0;
+}
+
+.alignright {
+    float: right;
+    margin: 0 0 0.75rem 1rem;
+}
+
+.aligncenter {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.alignwide {
+    max-width: 100%;
+}
+
+.alignfull {
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+}
+
+.wp-caption {
+    max-width: 100%;
+    margin-bottom: 0.75rem;
+}
+
+.wp-caption-text,
+.gallery-caption {
+    font-size: 0.82rem;
+    color: #888888;
+    text-align: center;
+    padding-top: 0.3rem;
+}
+
+.bypostauthor {
+    display: block;
+}
+
+.sticky {
+    display: block;
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 600px) {
+    .ag-site-header__inner {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .ag-primary-menu {
+        justify-content: center;
+        gap: 0.75rem;
+    }
+
+    .ag-hero {
+        padding: 2rem 1rem;
+    }
+
+    .ag-hero__title {
+        font-size: 1.5rem;
+    }
+
+    .ag-cards {
+        padding: 1.5rem 0;
+    }
+}
