@@ -109,7 +109,7 @@
 
             <!-- Templates WordPress + dropdown -->
             <li class="ag-nav__has-sub">
-                <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">Templates <span class="ag-nav__arrow">&#9662;</span></a>
+                <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">Templates <span class="ag-nav__pulse-pill">GRATUIT</span> <span class="ag-nav__arrow">&#9662;</span></a>
                 <div class="ag-mega ag-mega--sm">
                     <div class="ag-mega__inner">
                         <div class="ag-mega__col">
@@ -260,7 +260,7 @@
             </div>
 
             <div class="ag-mobile-menu__group">
-                <button class="ag-mobile-menu__toggle" type="button">Templates <span class="ag-mobile-menu__arrow">+</span></button>
+                <button class="ag-mobile-menu__toggle" type="button">Templates <span class="ag-nav__pulse-pill">GRATUIT</span> <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
                     <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">Tous les templates</a>
                     <a href="<?php echo esc_url(home_url('/wordpress-avocat')); ?>">⚖️ Avocat <span style="display:inline-block;margin-left:4px;padding:1px 6px;background:#28a745;color:#fff;font-size:.62rem;font-weight:700;border-radius:100px;text-transform:uppercase;letter-spacing:.3px;">Nouveau</span></a>
