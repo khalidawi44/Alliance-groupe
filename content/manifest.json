@@ -38,7 +38,8 @@
         "pages/notre-fondateur.json",
         "pages/templates.json",
         "pages/rdv.json",
-        "pages/questions-flash.json"
+        "pages/questions-flash.json",
+        "pages/merci-rdv.json"
     ],
 
     "articles": [
@@ -89,6 +90,7 @@
         "templates/page-templates.php",
         "templates/page-rdv.php",
         "templates/page-questions-flash.php",
+        "templates/page-merci-rdv.php",
         "templates/page-wordpress-avocat.php",
         "templates/page-wordpress-restaurant.php",
         "templates/page-wordpress-artisan.php",

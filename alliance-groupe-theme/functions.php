@@ -106,6 +106,7 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-templates.php']       = 'Templates WordPress';
     $templates['templates/page-rdv.php']             = 'Prise de rendez-vous';
     $templates['templates/page-questions-flash.php'] = 'Questions Flash';
+    $templates['templates/page-merci-rdv.php']       = 'Merci — Rendez-vous confirmé';
     return $templates;
 } );
 

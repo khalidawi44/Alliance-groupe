@@ -29,7 +29,8 @@ $pack_labels = array(
 	'pack'   => 'Pack 3 Questions (120 €)',
 	'sub'    => 'Abonnement Expert (199 €/mois)',
 );
-$is_success = isset( $pack_labels[ $paid_pack ] );
+$is_success    = isset( $pack_labels[ $paid_pack ] );
+$question_sent = isset( $_GET['question_sent'] ) && '1' === $_GET['question_sent'];
 ?>
 
 <main id="ag-main-content">
@@ -49,7 +50,28 @@ $is_success = isset( $pack_labels[ $paid_pack ] );
         </div>
     </section>
 
-    <?php if ( $is_success ) : ?>
+    <?php if ( $question_sent ) : ?>
+    <!-- ── QUESTION SUBMITTED CONFIRMATION ─────────────────── -->
+    <section class="ag-section ag-section--darker">
+        <div class="ag-container">
+            <div class="ag-question-success">
+                <span class="ag-question-success__check">✓</span>
+                <h2>Votre question a bien été envoyée !</h2>
+                <p class="ag-question-success__sub">
+                    Fabrizio l'a reçue et commence à y travailler. Vous recevrez une analyse écrite détaillée dans votre boîte mail <strong>sous 48h ouvrées</strong>.
+                </p>
+                <p style="color:#b0b0bc;max-width:560px;margin:16px auto 28px;line-height:1.6;">
+                    Un email de confirmation vient de vous être envoyé (vérifiez vos spams si vous ne le voyez pas).
+                    Si vous avez besoin d'ajouter du contexte ou une précision, répondez simplement à cet email.
+                </p>
+                <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+                    <a href="<?php echo esc_url( home_url( '/blog' ) ); ?>" class="ag-btn-outline">Lire notre blog →</a>
+                    <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="ag-btn-gold">Retour à l'accueil</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <?php elseif ( $is_success ) : ?>
     <!-- ── POST-PURCHASE FORM (shown when redirected from Stripe) ── -->
     <section class="ag-section ag-section--darker" id="ag-question-form">
         <div class="ag-container">

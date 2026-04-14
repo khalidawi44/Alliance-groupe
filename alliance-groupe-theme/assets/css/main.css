@@ -2732,3 +2732,275 @@ button:focus-visible{
     line-height:1.55;
     margin:0;
 }
+
+/* ── /merci-rdv — thank-you page after booking ─────────── */
+.ag-merci-hero{padding-top:120px}
+.ag-merci{
+    max-width:860px;
+    margin:0 auto;
+    padding:60px 48px;
+    background:linear-gradient(180deg,rgba(40,167,69,.06) 0%,rgba(255,255,255,.01) 60%);
+    border:1px solid rgba(40,167,69,.28);
+    border-radius:24px;
+    text-align:center;
+    box-shadow:0 40px 100px rgba(0,0,0,.4);
+}
+.ag-merci__check{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:88px;height:88px;
+    background:radial-gradient(circle at 50% 40%,rgba(40,167,69,.35),rgba(40,167,69,.08));
+    border:3px solid #28a745;
+    border-radius:50%;
+    color:#6ee78a;
+    font-size:3rem;
+    font-weight:700;
+    margin-bottom:26px;
+    box-shadow:0 0 0 0 rgba(40,167,69,.3),0 0 40px rgba(40,167,69,.25);
+    animation:ag-merci-pulse 2.4s ease-in-out infinite;
+}
+@keyframes ag-merci-pulse{
+    0%,100%{box-shadow:0 0 0 0 rgba(40,167,69,.3),0 0 40px rgba(40,167,69,.25)}
+    50%{box-shadow:0 0 0 16px rgba(40,167,69,0),0 0 60px rgba(40,167,69,.35)}
+}
+@media(prefers-reduced-motion:reduce){
+    .ag-merci__check{animation:none}
+}
+.ag-merci .ag-tag{margin-bottom:18px}
+.ag-merci__title{
+    font-family:"Playfair Display",Georgia,serif;
+    font-size:clamp(1.9rem,3.4vw,2.8rem);
+    color:#fff;
+    line-height:1.2;
+    margin:0 0 12px;
+}
+.ag-merci__title em{font-style:italic;color:#D4B45C}
+.ag-merci__tier{
+    display:inline-block;
+    padding:6px 16px;
+    background:rgba(212,180,92,.1);
+    border:1px solid rgba(212,180,92,.3);
+    border-radius:100px;
+    color:#D4B45C;
+    font-size:.9rem;
+    margin:0 0 20px;
+}
+.ag-merci__sub{
+    color:#b0b0bc;
+    font-size:1.05rem;
+    line-height:1.65;
+    max-width:620px;
+    margin:0 auto 48px;
+}
+.ag-merci__checklist{
+    text-align:left;
+    background:rgba(255,255,255,.025);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    padding:32px 36px;
+    margin-bottom:36px;
+}
+.ag-merci__checklist h2{
+    font-family:"Playfair Display",Georgia,serif;
+    font-size:1.35rem;
+    color:#fff;
+    margin:0 0 22px;
+    text-align:center;
+}
+.ag-merci__checklist ul{
+    list-style:none;
+    padding:0;
+    margin:0;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+.ag-merci__checklist li{
+    display:flex;
+    gap:18px;
+    align-items:flex-start;
+    padding-bottom:18px;
+    border-bottom:1px solid rgba(255,255,255,.06);
+}
+.ag-merci__checklist li:last-child{border-bottom:0;padding-bottom:0}
+.ag-merci__checklist li div{flex:1}
+.ag-merci__checklist li strong{
+    display:block;
+    color:#fff;
+    font-size:1rem;
+    margin-bottom:4px;
+}
+.ag-merci__checklist li p,
+.ag-merci__checklist li > div{
+    color:#b0b0bc;
+    font-size:.92rem;
+    line-height:1.55;
+}
+.ag-merci__icon{
+    font-size:1.5rem;
+    width:44px;height:44px;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(212,180,92,.08);
+    border:1px solid rgba(212,180,92,.28);
+    border-radius:10px;
+    flex-shrink:0;
+}
+.ag-merci__prepare{
+    text-align:left;
+    background:linear-gradient(180deg,rgba(212,180,92,.06) 0%,rgba(212,180,92,.02) 100%);
+    border:1px solid rgba(212,180,92,.28);
+    border-radius:16px;
+    padding:32px 36px;
+    margin-bottom:36px;
+}
+.ag-merci__prepare h2{
+    font-family:"Playfair Display",Georgia,serif;
+    font-size:1.35rem;
+    color:#fff;
+    margin:0 0 12px;
+    text-align:center;
+}
+.ag-merci__prepare-intro{
+    color:#b0b0bc;
+    text-align:center;
+    margin:0 0 24px;
+}
+.ag-merci__prepare-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+    margin-bottom:20px;
+}
+.ag-merci__prepare-item{
+    display:flex;
+    gap:12px;
+    padding:18px;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:12px;
+}
+.ag-merci__prepare-item span{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:30px;height:30px;
+    background:rgba(212,180,92,.15);
+    border:1px solid rgba(212,180,92,.4);
+    border-radius:50%;
+    color:#D4B45C;
+    font-family:"Playfair Display",Georgia,serif;
+    font-weight:700;
+    flex-shrink:0;
+}
+.ag-merci__prepare-item p{
+    color:#e8e6e0;
+    font-size:.9rem;
+    line-height:1.5;
+    margin:0;
+}
+.ag-merci__prepare-note{
+    color:#b0b0bc;
+    font-size:.9rem;
+    line-height:1.55;
+    text-align:center;
+    margin:0;
+    padding:14px 20px;
+    background:rgba(255,255,255,.03);
+    border-radius:10px;
+}
+.ag-merci__urgent{
+    padding:28px 32px;
+    background:rgba(255,255,255,.025);
+    border:1px dashed rgba(255,255,255,.18);
+    border-radius:14px;
+    margin-bottom:36px;
+    text-align:center;
+}
+.ag-merci__urgent strong{
+    display:block;
+    color:#fff;
+    font-size:1.05rem;
+    margin-bottom:8px;
+}
+.ag-merci__urgent p{
+    color:#b0b0bc;
+    margin:0 0 18px;
+    font-size:.95rem;
+}
+.ag-merci__urgent-btns{
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    flex-wrap:wrap;
+}
+.ag-merci__reading{
+    text-align:left;
+    padding:32px 36px;
+    background:rgba(255,255,255,.02);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    margin-bottom:36px;
+}
+.ag-merci__reading .ag-tag{margin-bottom:14px}
+.ag-merci__reading h2{
+    font-family:"Playfair Display",Georgia,serif;
+    font-size:1.35rem;
+    color:#fff;
+    margin:0 0 10px;
+}
+.ag-merci__reading > p{
+    color:#b0b0bc;
+    margin:0 0 22px;
+    line-height:1.6;
+}
+.ag-merci__reading ul{
+    list-style:none;
+    padding:0;
+    margin:0;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+.ag-merci__reading li a{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    padding:16px 18px;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:10px;
+    text-decoration:none;
+    color:#e8e6e0;
+    transition:border-color .2s ease,background .2s ease;
+}
+.ag-merci__reading li a:hover{
+    border-color:rgba(212,180,92,.4);
+    background:rgba(212,180,92,.05);
+    color:#D4B45C;
+    text-decoration:none;
+}
+.ag-merci__reading li strong{color:inherit;font-size:.98rem}
+.ag-merci__reading li small{color:#888;font-size:.82rem}
+.ag-merci__home{
+    display:inline-block;
+    margin-top:12px;
+    color:#b0b0bc;
+    font-size:.92rem;
+    text-decoration:none;
+    padding:10px 20px;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:100px;
+    transition:color .2s ease,border-color .2s ease;
+}
+.ag-merci__home:hover{color:#D4B45C;border-color:rgba(212,180,92,.5);text-decoration:none}
+
+@media(max-width:768px){
+    .ag-merci{padding:40px 24px}
+    .ag-merci__checklist,
+    .ag-merci__prepare,
+    .ag-merci__reading{padding:24px 20px}
+    .ag-merci__prepare-grid{grid-template-columns:1fr;gap:12px}
+    .ag-merci__checklist li{flex-direction:column;gap:10px}
+    .ag-merci__icon{width:40px;height:40px}
+}
