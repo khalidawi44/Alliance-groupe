@@ -243,7 +243,7 @@ $ag_business_cta_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'P
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">Choisissez votre métier</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">Votre métier, vos <em>améliorations</em></h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc">Chaque fiche contient tout : le thème gratuit à télécharger + les 3 packs payants qui viennent l'améliorer. Le plugin que vous achetez fonctionne avec les 4 thèmes, mais on a aligné les fiches par métier pour que vous vous y retrouviez vite. Également disponibles sur <a href="https://profiles.wordpress.org/adminag/" target="_blank" rel="noopener" style="color:#D4B45C;font-weight:700;">ma page WordPress.org officielle</a>.</p>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Chaque fiche contient tout : le thème gratuit à télécharger + les 3 packs payants qui viennent l'améliorer. Le plugin que vous achetez fonctionne avec les 4 thèmes, mais on a aligné les fiches par métier pour que vous vous y retrouviez vite. <span style="color:#888;font-size:.9em;">Bientôt aussi sur le répertoire officiel WordPress.org.</span></p>
 
             <?php
             // 3 cartes promo décoratives (QR codes scannables au téléphone).
