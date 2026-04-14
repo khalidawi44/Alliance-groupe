@@ -107,6 +107,38 @@
                 </div>
             </li>
 
+            <!-- Templates WordPress + dropdown -->
+            <li class="ag-nav__has-sub">
+                <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">Templates <span class="ag-nav__arrow">&#9662;</span></a>
+                <div class="ag-mega ag-mega--sm">
+                    <div class="ag-mega__inner">
+                        <div class="ag-mega__col">
+                            <span class="ag-mega__label">Templates WordPress gratuits</span>
+                            <a href="<?php echo esc_url(home_url('/wordpress-avocat')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">⚖️</span>
+                                <span><strong>Avocat <span style="display:inline-block;margin-left:4px;padding:1px 8px;background:#28a745;color:#fff;font-size:.62rem;font-weight:700;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;">Nouveau</span></strong><small>Cabinet, juriste, conseil juridique</small></span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/wordpress-restaurant')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🍽️</span>
+                                <span><strong>Restaurant</strong><small>Bistrot, bar, café, gastronomique</small></span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/wordpress-artisan')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🔨</span>
+                                <span><strong>Artisan</strong><small>Plombier, électricien, menuisier, BTP</small></span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/wordpress-coach')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">💼</span>
+                                <span><strong>Coach</strong><small>Consultant, formateur, thérapeute</small></span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/contact?source=menu&demande=template-metier')); ?>" class="ag-mega__link ag-mega__link--all" style="margin-top:8px;border-top:1px dashed rgba(212,180,92,.25);padding-top:12px;">
+                                <span class="ag-mega__icon">💎</span>
+                                <span><strong>Votre métier ? Demandez-le</strong><small>On vous crée votre template sur mesure</small></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
             <!-- Réalisations + dropdown -->
             <li class="ag-nav__has-sub">
                 <a href="<?php echo esc_url(home_url('/realisations')); ?>">Réalisations <span class="ag-nav__arrow">&#9662;</span></a>
@@ -228,6 +260,18 @@
             </div>
 
             <div class="ag-mobile-menu__group">
+                <button class="ag-mobile-menu__toggle" type="button">Templates <span class="ag-mobile-menu__arrow">+</span></button>
+                <div class="ag-mobile-menu__sub">
+                    <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">Tous les templates</a>
+                    <a href="<?php echo esc_url(home_url('/wordpress-avocat')); ?>">⚖️ Avocat <span style="display:inline-block;margin-left:4px;padding:1px 6px;background:#28a745;color:#fff;font-size:.62rem;font-weight:700;border-radius:100px;text-transform:uppercase;letter-spacing:.3px;">Nouveau</span></a>
+                    <a href="<?php echo esc_url(home_url('/wordpress-restaurant')); ?>">🍽️ Restaurant</a>
+                    <a href="<?php echo esc_url(home_url('/wordpress-artisan')); ?>">🔨 Artisan</a>
+                    <a href="<?php echo esc_url(home_url('/wordpress-coach')); ?>">💼 Coach</a>
+                    <a href="<?php echo esc_url(home_url('/contact?source=menu&demande=template-metier')); ?>" style="color:#D4B45C;font-weight:700;">💎 Votre métier ? Demandez-le</a>
+                </div>
+            </div>
+
+            <div class="ag-mobile-menu__group">
                 <button class="ag-mobile-menu__toggle" type="button">Réalisations <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
                     <a href="<?php echo esc_url(home_url('/realisations')); ?>">Tous les projets</a>
@@ -256,10 +300,6 @@
             </div>
 
             <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-mobile-menu__link">Contact</a>
-
-            <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>" class="ag-mobile-menu__link ag-mobile-menu__link--highlight">
-                🎁 Templates Gratuits
-            </a>
         </div>
 
         <div class="ag-mobile-menu__footer">
