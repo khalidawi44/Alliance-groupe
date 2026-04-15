@@ -109,6 +109,9 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-merci-rdv.php']       = 'Merci — Rendez-vous confirmé';
     $templates['templates/page-cookies.php']         = 'Cookies & Préférences';
     $templates['templates/page-mentions-legales.php']= 'Mentions légales & CGV';
+    $templates['templates/page-bureau-marrakech.php']= 'Bureau — Marrakech';
+    $templates['templates/page-bureau-naples.php']   = 'Bureau — Naples';
+    $templates['templates/page-bureau-nantes.php']   = 'Bureau — Nantes';
     return $templates;
 } );
 

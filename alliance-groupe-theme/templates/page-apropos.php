@@ -31,21 +31,21 @@ get_header();
                 <p class="ag-section__desc" style="margin:0 auto;">Alliance Groupe est né de la rencontre de trois héritages qui façonnent notre regard sur le travail bien fait, la relation client et le goût du détail.</p>
             </div>
             <div class="ag-heritage-grid">
-                <article class="ag-heritage-card ag-heritage-card--fr">
+                <a href="<?php echo esc_url( home_url( '/bureau-nantes' ) ); ?>" class="ag-heritage-card ag-heritage-card--fr" style="text-decoration:none;">
                     <span class="ag-heritage-card__flag" aria-hidden="true">🇫🇷</span>
-                    <h3>France</h3>
-                    <p>Notre base, notre cadre légal, notre terrain de jeu. La rigueur française, le goût du produit fini, le respect du client.</p>
-                </article>
-                <article class="ag-heritage-card ag-heritage-card--it">
+                    <h3>Nantes</h3>
+                    <p>La rigueur française, le goût du produit fini, le respect du client. Notre cœur opérationnel et commercial — 4 profils clés.</p>
+                </a>
+                <a href="<?php echo esc_url( home_url( '/bureau-naples' ) ); ?>" class="ag-heritage-card ag-heritage-card--it" style="text-decoration:none;">
                     <span class="ag-heritage-card__flag" aria-hidden="true">🇮🇹</span>
-                    <h3>Italie</h3>
-                    <p>Naples, d'où tout a commencé. L'élégance du style, le sens du détail, la chaleur humaine dans chaque échange.</p>
-                </article>
-                <article class="ag-heritage-card ag-heritage-card--ma">
+                    <h3>Naples</h3>
+                    <p>D'où tout a commencé. L'élégance du style, le feu du quartier, notre pôle technique mené par Carlito.</p>
+                </a>
+                <a href="<?php echo esc_url( home_url( '/bureau-marrakech' ) ); ?>" class="ag-heritage-card ag-heritage-card--ma" style="text-decoration:none;">
                     <span class="ag-heritage-card__flag" aria-hidden="true">🇲🇦</span>
-                    <h3>Maroc</h3>
-                    <p>L'hospitalité, la patience artisanale, l'art de prendre le temps pour construire quelque chose qui dure.</p>
-                </article>
+                    <h3>Marrakech</h3>
+                    <p>L'hospitalité, la patience artisanale, le long terme. Notre pôle SEO et IA avec Halim et Amina.</p>
+                </a>
             </div>
         </div>
     </section>

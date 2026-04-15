@@ -237,6 +237,157 @@ em,.ag-gold{
 /* Parallax caption (used on /a-propos) */
 .ag-parallax__caption{opacity:.85;}
 
+/* ── Zellige (Moroccan geometric) pattern ─────────────────────── */
+.ag-zellige-pattern{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    opacity:.08;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><g fill='none' stroke='%23D4B45C' stroke-width='1.2'><circle cx='60' cy='60' r='40'/><circle cx='60' cy='60' r='24'/><path d='M60 20 L70 50 L100 60 L70 70 L60 100 L50 70 L20 60 L50 50 Z'/><path d='M60 36 L66 54 L84 60 L66 66 L60 84 L54 66 L36 60 L54 54 Z'/></g></svg>");
+    background-size:140px 140px;
+    mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%);
+    -webkit-mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%);
+}
+
+/* ── Bureau cards (Marrakech / Naples / Nantes pages) ─────────── */
+.ag-mk-team{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:40px;
+    max-width:1100px;
+    margin:0 auto;
+}
+.ag-mk-card{
+    background:var(--color-bg-card);
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:22px;
+    overflow:hidden;
+    transition:transform .45s,border-color .45s,box-shadow .45s;
+}
+.ag-mk-card:hover{
+    transform:translateY(-6px);
+    border-color:var(--color-gold-soft);
+    box-shadow:0 24px 60px rgba(0,0,0,.5);
+}
+.ag-mk-card__photo{
+    position:relative;
+    aspect-ratio:1/1;
+    overflow:hidden;
+    background:linear-gradient(135deg,var(--color-bg-graphite),var(--color-bg-card));
+}
+.ag-mk-card__photo img{
+    width:100%;height:100%;
+    object-fit:cover;
+    transition:transform .6s ease;
+}
+.ag-mk-card:hover .ag-mk-card__photo img{transform:scale(1.06);}
+.ag-mk-card__initial{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-serif);
+    font-size:6rem;
+    font-style:italic;
+    color:var(--color-gold);
+    opacity:.4;
+}
+.ag-mk-card__location{
+    position:absolute;
+    bottom:14px;left:14px;
+    background:rgba(0,0,0,.65);
+    backdrop-filter:blur(10px);
+    padding:6px 14px;
+    border-radius:100px;
+    font-size:.78rem;
+    color:var(--color-text-soft);
+    letter-spacing:.3px;
+}
+.ag-mk-card__body{padding:32px 30px 34px;}
+.ag-mk-card__name{
+    font-family:var(--font-serif);
+    font-size:1.8rem;
+    font-style:italic;
+    color:var(--color-text);
+    margin-bottom:4px;
+}
+.ag-mk-card__role{
+    display:inline-block;
+    color:var(--color-gold);
+    font-size:.85rem;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    margin-bottom:18px;
+}
+.ag-mk-card__bio{
+    color:var(--color-text-secondary);
+    line-height:1.75;
+    font-size:.95rem;
+    margin-bottom:22px;
+}
+.ag-mk-card__specialties strong{
+    display:block;
+    color:var(--color-text);
+    font-size:.82rem;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    margin-bottom:10px;
+}
+.ag-mk-card__specialties ul{padding:0;margin:0;}
+.ag-mk-card__specialties li{
+    position:relative;
+    padding:6px 0 6px 20px;
+    color:var(--color-text-secondary);
+    font-size:.9rem;
+    border-bottom:1px solid rgba(255,255,255,.05);
+}
+.ag-mk-card__specialties li::before{
+    content:"◆";
+    position:absolute;
+    left:0;top:6px;
+    color:var(--color-gold);
+    font-size:.7rem;
+}
+.ag-mk-card__specialties li:last-child{border-bottom:none;}
+@media(max-width:900px){
+    .ag-mk-team{grid-template-columns:1fr;gap:28px;}
+}
+
+/* ── Hero slideshow (used on bureau pages) ─────────────────────── */
+.ag-hero--slideshow{
+    min-height:60vh;
+    overflow:hidden;
+}
+.ag-hero__slideshow{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+}
+.ag-hero__slide{
+    position:absolute;
+    inset:0;
+    background-size:cover;
+    background-position:center;
+    opacity:0;
+    animation:agSlideshow 24s infinite;
+}
+.ag-hero__slide:nth-child(1){animation-delay:0s;}
+.ag-hero__slide:nth-child(2){animation-delay:8s;}
+.ag-hero__slide:nth-child(3){animation-delay:16s;}
+@keyframes agSlideshow{
+    0%,2%{opacity:0;transform:scale(1.08);}
+    8%,33%{opacity:1;transform:scale(1);}
+    42%,100%{opacity:0;transform:scale(1);}
+}
+.ag-hero__slideshow::after{
+    content:"";
+    position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(8,8,8,.55) 0%,rgba(8,8,8,.85) 100%);
+}
+@media(prefers-reduced-motion:reduce){
+    .ag-hero__slide{animation:none;opacity:.5;}
+    .ag-hero__slide:nth-child(n+2){display:none;}
+    .ag-hero__slide:first-child{opacity:1;}
+}
+
 /* ── Navigation ───────────────────────────────────────────────── */
 .ag-nav{
     position:fixed;
