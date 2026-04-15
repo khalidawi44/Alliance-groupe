@@ -194,11 +194,26 @@
                             <span class="ag-mega__label">L'agence</span>
                             <a href="<?php echo esc_url(home_url('/a-propos')); ?>" class="ag-mega__link">
                                 <span class="ag-mega__icon">🏛️</span>
-                                <span><strong>Notre histoire</strong><small>Vision, valeurs & équipe</small></span>
+                                <span><strong>Notre histoire</strong><small>Vision, valeurs &amp; équipe</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/notre-fondateur')); ?>" class="ag-mega__link">
                                 <span class="ag-mega__icon">👤</span>
                                 <span><strong>Notre Fondateur</strong><small>Le parcours de Fabrizio</small></span>
+                            </a>
+                        </div>
+                        <div class="ag-mega__col">
+                            <span class="ag-mega__label">Nos bureaux</span>
+                            <a href="<?php echo esc_url(home_url('/bureau-nantes')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🇫🇷</span>
+                                <span><strong>Nantes</strong><small>Siège — Fabrizio, Kate, Laurent, Julie</small></span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/bureau-naples')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🇮🇹</span>
+                                <span><strong>Naples</strong><small>Pôle technique — Carlito</small></span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/bureau-marrakech')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🇲🇦</span>
+                                <span><strong>Marrakech</strong><small>SEO &amp; IA — Halim, Amina</small></span>
                             </a>
                         </div>
                     </div>
@@ -321,6 +336,9 @@
                 <div class="ag-mobile-menu__sub">
                     <a href="<?php echo esc_url(home_url('/a-propos')); ?>">🏛️ Notre histoire</a>
                     <a href="<?php echo esc_url(home_url('/notre-fondateur')); ?>">👤 Notre Fondateur</a>
+                    <a href="<?php echo esc_url(home_url('/bureau-nantes')); ?>">🇫🇷 Bureau — Nantes</a>
+                    <a href="<?php echo esc_url(home_url('/bureau-naples')); ?>">🇮🇹 Bureau — Naples</a>
+                    <a href="<?php echo esc_url(home_url('/bureau-marrakech')); ?>">🇲🇦 Bureau — Marrakech</a>
                 </div>
             </div>
 
