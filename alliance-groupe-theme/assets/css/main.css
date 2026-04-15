@@ -1047,7 +1047,11 @@ em,.ag-gold{
     background-size:cover;
     background-position:center;
     text-align:center;
+    overflow:hidden;
 }
+.ag-parallax--slideshow{background-attachment:scroll;}
+.ag-parallax--slideshow .ag-hero__slideshow{position:absolute;inset:0;z-index:0;}
+.ag-parallax--slideshow .ag-hero__slideshow::after{display:none;}
 .ag-parallax__overlay{
     position:absolute;
     inset:0;

@@ -119,11 +119,37 @@ get_header();
 <!-- Réalisations -->
 <?php get_template_part('template-parts/realisations'); ?>
 
-<!-- Parallax 2 -->
-<section class="ag-parallax" style="background-image:url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1920&q=80');">
+<!-- Parallax 2 — slideshow des 3 bureaux -->
+<?php
+$parallax_slides = array();
+$cities_path = get_stylesheet_directory() . '/assets/images/cities/';
+$cities_uri  = get_stylesheet_directory_uri() . '/assets/images/cities/';
+foreach ( array( 'nantes-1.jpg', 'naples-1.jpg', 'marrakech-1.jpg' ) as $slide ) {
+    if ( file_exists( $cities_path . $slide ) ) {
+        $parallax_slides[] = $cities_uri . $slide;
+    }
+}
+// Fallback : photo locale de Naples si aucune photo de ville n'est encore uploadée
+if ( empty( $parallax_slides ) ) {
+    $fallback = get_stylesheet_directory() . '/assets/images/team/1_bureau_naples.jpg';
+    if ( file_exists( $fallback ) ) {
+        $parallax_slides[] = get_stylesheet_directory_uri() . '/assets/images/team/1_bureau_naples.jpg';
+    }
+}
+$parallax_first = ! empty( $parallax_slides ) ? $parallax_slides[0] : '';
+?>
+<section class="ag-parallax ag-parallax--slideshow"<?php echo $parallax_first ? ' style="background-image:url(\'' . esc_url( $parallax_first ) . '\');"' : ''; ?>>
+    <?php if ( count( $parallax_slides ) > 1 ) : ?>
+    <div class="ag-hero__slideshow" aria-hidden="true">
+        <?php foreach ( $parallax_slides as $src ) : ?>
+            <div class="ag-hero__slide" style="background-image:url('<?php echo esc_url( $src ); ?>');"></div>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
     <div class="ag-parallax__overlay"></div>
     <div class="ag-parallax__content ag-anim" data-anim="parallax-text">
         <p class="ag-parallax__quote">"Votre site web est votre meilleur commercial. Il travaille 24h/24, ne prend jamais de vacances et ne demande pas de commission."</p>
+        <p class="ag-parallax__caption" style="margin-top:14px;color:var(--color-text-secondary);font-size:.88rem;letter-spacing:.5px;text-transform:uppercase;">— Nantes · Naples · Marrakech</p>
     </div>
 </section>
 
