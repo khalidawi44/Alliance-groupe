@@ -78,8 +78,16 @@ add_action( 'admin_init', function () {
 /**
  * Sanitize the Stripe URL input : empty string or the placeholder
  * both map back to STRIPE_PLACEHOLDER so the front-end fallback
- * kicks in. Real URLs must start with https://buy.stripe.com/ or
- * https://checkout.stripe.com/ — anything else is rejected.
+ * kicks in. Real URLs must use one of the allowed Stripe hosts
+ * (official or AG custom domain) — anything else is rejected.
+ *
+ * Allowed hosts :
+ *   - buy.stripe.com            (default Payment Links)
+ *   - checkout.stripe.com       (Checkout sessions)
+ *   - paiement.alliancegroupe-inc.com  (AG custom domain)
+ *
+ * Additional hosts can be plugged in via the `ag_stripe_allowed_hosts`
+ * filter without editing this file.
  *
  * @param string $value Raw value.
  * @return string
@@ -94,17 +102,20 @@ function ag_stripe_sanitize_url( $value ) {
 		add_settings_error( 'ag_stripe_config', 'bad_url', 'URL invalide ignorée : ' . esc_html( $value ) );
 		return 'STRIPE_PLACEHOLDER';
 	}
-	$host = wp_parse_url( $url, PHP_URL_HOST );
-	$allowed = array( 'buy.stripe.com', 'checkout.stripe.com' );
+	$host    = wp_parse_url( $url, PHP_URL_HOST );
+	$allowed = apply_filters( 'ag_stripe_allowed_hosts', array(
+		'buy.stripe.com',
+		'checkout.stripe.com',
+		'paiement.alliancegroupe-inc.com',
+	) );
 	if ( ! in_array( $host, $allowed, true ) ) {
 		add_settings_error(
 			'ag_stripe_config',
 			'bad_host',
 			sprintf(
-				'Hôte rejeté (%s). Seuls %s et %s sont acceptés.',
+				'Hôte rejeté (%s). Hôtes acceptés : %s',
 				esc_html( $host ),
-				$allowed[0],
-				$allowed[1]
+				esc_html( implode( ', ', $allowed ) )
 			)
 		);
 		return 'STRIPE_PLACEHOLDER';
