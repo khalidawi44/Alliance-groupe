@@ -22,6 +22,7 @@ get_header();
         <div class="ag-hero__badge">
             <span class="ag-hero__dot"></span>
             Agence Web &amp; IA — Alliance Groupe
+            <span class="ag-heritage-dots" aria-hidden="true"><span></span><span></span><span></span></span>
         </div>
 
         <h1 class="ag-hero__title">
@@ -84,7 +85,7 @@ get_header();
     <div class="ag-container">
         <div class="ag-promo-tpl__inner ag-anim" data-anim="card">
             <div class="ag-promo-tpl__content">
-                <span class="ag-tag" style="background:rgba(40,167,69,.12);color:#28a745;border-color:rgba(40,167,69,.3);">Nouveau — Gratuit</span>
+                <span class="ag-tag ag-tag--green">Nouveau — Gratuit</span>
                 <h2 style="font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:12px;">Téléchargez nos templates <em>WordPress gratuits</em></h2>
                 <p style="color:#b0b0bc;font-size:1.05rem;line-height:1.7;margin-bottom:16px;">Pas encore prêt pour un site sur-mesure ? Commencez dès maintenant avec l'un de nos trois <strong style="color:#e8e6e0;">thèmes WordPress 100% français</strong> : restaurant, artisan ou coach. Contenu déjà rédigé, design sombre premium, aucun plugin requis — il ne vous reste qu'à remplacer quelques éléments entre crochets et votre site est en ligne.</p>
                 <p style="color:#b0b0bc;font-size:1.05rem;line-height:1.7;margin-bottom:24px;">Vous hésitez sur le choix du template, ou vous bloquez sur l'installation ? <a href="<?php echo esc_url(home_url('/contact')); ?>" style="color:#D4B45C;font-weight:700;">Contactez-nous</a> — on vous aide gratuitement à démarrer, même si vous avez zéro compétence technique.</p>

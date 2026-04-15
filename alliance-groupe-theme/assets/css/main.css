@@ -167,6 +167,76 @@ em,.ag-gold{
 .ag-heritage-dots span:nth-child(2){background:var(--color-gold);color:var(--color-gold);}
 .ag-heritage-dots span:nth-child(3){background:var(--color-green-heritage);color:var(--color-green-heritage);}
 
+/* Heritage cards grid (page /a-propos) */
+.ag-heritage-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:28px;
+    max-width:1080px;
+    margin:0 auto;
+}
+.ag-heritage-card{
+    position:relative;
+    padding:40px 32px 34px;
+    background:var(--color-bg-card);
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:18px;
+    text-align:center;
+    overflow:hidden;
+    transition:transform .4s,border-color .4s,box-shadow .4s;
+}
+.ag-heritage-card::before{
+    content:"";
+    position:absolute;
+    top:0;left:0;right:0;
+    height:3px;
+    background:currentColor;
+}
+.ag-heritage-card::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:radial-gradient(circle at 50% 0%,currentColor 0%,transparent 55%);
+    opacity:.08;
+    pointer-events:none;
+    transition:opacity .4s;
+}
+.ag-heritage-card:hover{
+    transform:translateY(-6px);
+    border-color:currentColor;
+    box-shadow:0 20px 50px rgba(0,0,0,.4);
+}
+.ag-heritage-card:hover::after{opacity:.14;}
+.ag-heritage-card--fr{color:var(--color-blue-royal);}
+.ag-heritage-card--it{color:var(--color-green-heritage);}
+.ag-heritage-card--ma{color:var(--color-gold);}
+.ag-heritage-card__flag{
+    display:block;
+    font-size:2.4rem;
+    line-height:1;
+    margin-bottom:16px;
+    filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));
+}
+.ag-heritage-card h3{
+    font-family:var(--font-serif);
+    font-size:1.6rem;
+    font-weight:700;
+    font-style:italic;
+    color:var(--color-text);
+    margin-bottom:12px;
+}
+.ag-heritage-card p{
+    color:var(--color-text-secondary);
+    font-size:.92rem;
+    line-height:1.6;
+}
+@media(max-width:900px){
+    .ag-heritage-grid{grid-template-columns:1fr;gap:20px;}
+}
+
+/* Parallax caption (used on /a-propos) */
+.ag-parallax__caption{opacity:.85;}
+
 /* ── Navigation ───────────────────────────────────────────────── */
 .ag-nav{
     position:fixed;

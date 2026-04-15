@@ -27,6 +27,8 @@ foreach (array('jpg','jpeg','png','webp') as $ext) {
                 <span class="ag-line">L'homme qui a tout changé</span>
                 <span class="ag-line">avec un ordinateur</span>
             </h1>
+            <span class="ag-heritage-strip ag-heritage-strip--center" aria-hidden="true"></span>
+            <p class="ag-hero__sub" style="max-width:640px;margin-left:auto;margin-right:auto;">De Naples aux Quartieri Spagnoli, des racines marocaines, une vie en France — un parcours à l'image d'une alliance.</p>
         </div>
     </section>
 
