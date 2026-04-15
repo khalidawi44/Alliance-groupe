@@ -236,8 +236,8 @@
                         <div class="ag-mega__col">
                             <span class="ag-mega__label">Nous joindre</span>
                             <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">✉️</span>
-                                <span><strong>Formulaire de contact</strong><small>Écrivez-nous, réponse sous 24h</small></span>
+                                <span class="ag-mega__icon">🚨</span>
+                                <span><strong>Contact d'urgence</strong><small>Besoin urgent — réponse sous 24h</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/rendez-vous')); ?>" class="ag-mega__link">
                                 <span class="ag-mega__icon">📅</span>
@@ -341,7 +341,7 @@
             <div class="ag-mobile-menu__group">
                 <button class="ag-mobile-menu__toggle" type="button">Contact <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
-                    <a href="<?php echo esc_url(home_url('/contact')); ?>">✉️ Formulaire de contact</a>
+                    <a href="<?php echo esc_url(home_url('/contact')); ?>">🚨 Contact d'urgence</a>
                     <a href="<?php echo esc_url(home_url('/rendez-vous')); ?>">📅 Prendre RDV</a>
                     <a href="<?php echo esc_url(home_url('/questions-flash')); ?>">💬 Questions Flash</a>
                 </div>
