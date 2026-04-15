@@ -108,6 +108,7 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-questions-flash.php'] = 'Questions Flash';
     $templates['templates/page-merci-rdv.php']       = 'Merci — Rendez-vous confirmé';
     $templates['templates/page-cookies.php']         = 'Cookies & Préférences';
+    $templates['templates/page-mentions-legales.php']= 'Mentions légales & CGV';
     return $templates;
 } );
 

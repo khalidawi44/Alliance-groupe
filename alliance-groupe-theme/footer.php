@@ -35,6 +35,8 @@
     <div class="ag-footer__bottom">
         <p>&copy; <?php echo date('Y'); ?> Alliance Groupe. Tous droits réservés.</p>
         <p class="ag-footer__legal">
+            <a href="<?php echo esc_url( home_url( '/mentions-legales' ) ); ?>">Mentions légales & CGV</a>
+            &nbsp;·&nbsp;
             <a href="<?php echo esc_url( home_url( '/cookies' ) ); ?>">Cookies</a>
             &nbsp;·&nbsp;
             <a href="#" onclick="event.preventDefault(); window.AGCookies && window.AGCookies.open();">Gérer mes préférences</a>
