@@ -1,5 +1,5 @@
 {
-    "version": "1.17.0",
+    "version": "1.18.0",
     "repo": "khalidawi44/Alliance-groupe",
     "branch": "claude/rebuild-alliance-theme-fl7ca",
 
@@ -39,7 +39,8 @@
         "pages/templates.json",
         "pages/rdv.json",
         "pages/questions-flash.json",
-        "pages/merci-rdv.json"
+        "pages/merci-rdv.json",
+        "pages/cookies.json"
     ],
 
     "articles": [
@@ -91,6 +92,7 @@
         "templates/page-rdv.php",
         "templates/page-questions-flash.php",
         "templates/page-merci-rdv.php",
+        "templates/page-cookies.php",
         "templates/page-wordpress-avocat.php",
         "templates/page-wordpress-restaurant.php",
         "templates/page-wordpress-artisan.php",
