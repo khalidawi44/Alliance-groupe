@@ -2,7 +2,8 @@
     <div class="ag-footer__inner">
         <div class="ag-footer__col">
             <h4 class="ag-footer__title">Alliance Groupe</h4>
-            <p class="ag-footer__text">Agence Web & IA basée en France. Nous transformons votre présence digitale en machine à générer des leads.</p>
+            <span class="ag-heritage-strip" aria-hidden="true"></span>
+            <p class="ag-footer__text">Agence Web &amp; IA basée en France. Racines franco-italo-marocaines, vision internationale. Nous transformons votre présence digitale en machine à générer des leads.</p>
         </div>
         <div class="ag-footer__col">
             <h4 class="ag-footer__title">Services</h4>

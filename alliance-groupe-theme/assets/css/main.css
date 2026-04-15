@@ -25,6 +25,14 @@
     /* Status */
     --color-success:#28a745;
 
+    /* Heritage accents — clin d'œil aux origines FR · IT · MA */
+    --color-green-heritage:#00843D;  /* vert Italie / étoile Maroc */
+    --color-green-soft:rgba(0,132,61,.18);
+    --color-blue-royal:#002395;      /* bleu royal France */
+    --color-blue-soft:rgba(0,35,149,.2);
+    --gradient-heritage:linear-gradient(90deg,var(--color-blue-royal) 0%,var(--color-blue-royal) 33%,var(--color-text) 33%,var(--color-text) 66%,var(--color-green-heritage) 66%,var(--color-green-heritage) 100%);
+    --gradient-heritage-soft:linear-gradient(90deg,var(--color-blue-royal),var(--color-gold),var(--color-green-heritage));
+
     /* Typography */
     --font-serif:'Playfair Display',serif;
     --font-sans:'Manrope',sans-serif;
@@ -128,6 +136,36 @@ em,.ag-gold{
     text-transform:uppercase;
     margin-bottom:18px;
 }
+/* Heritage accent variants (FR · IT · MA) */
+.ag-tag--green{background:var(--color-green-soft);color:#4bbf77;border-color:rgba(0,132,61,.4);}
+.ag-tag--blue{background:var(--color-blue-soft);color:#7a94ff;border-color:rgba(0,35,149,.4);}
+
+/* Heritage flag accent — thin tri-color strip */
+.ag-heritage-strip{
+    display:block;
+    height:3px;
+    width:60px;
+    background:var(--gradient-heritage);
+    border-radius:100px;
+    margin:14px 0;
+}
+.ag-heritage-strip--center{margin-left:auto;margin-right:auto;}
+
+/* Heritage flags inline (🇫🇷 🇮🇹 🇲🇦) — small decorative dot line */
+.ag-heritage-dots{
+    display:inline-flex;
+    gap:6px;
+    align-items:center;
+    margin-left:10px;
+    vertical-align:middle;
+}
+.ag-heritage-dots span{
+    width:8px;height:8px;border-radius:50%;
+    box-shadow:0 0 8px currentColor;
+}
+.ag-heritage-dots span:nth-child(1){background:var(--color-blue-royal);color:var(--color-blue-royal);}
+.ag-heritage-dots span:nth-child(2){background:var(--color-gold);color:var(--color-gold);}
+.ag-heritage-dots span:nth-child(3){background:var(--color-green-heritage);color:var(--color-green-heritage);}
 
 /* ── Navigation ───────────────────────────────────────────────── */
 .ag-nav{
@@ -1336,8 +1374,10 @@ em,.ag-gold{
 /* ── Footer ───────────────────────────────────────────────────── */
 .ag-footer{
     background:#060606;
-    border-top:1px solid rgba(255,255,255,.06);
+    border-top:3px solid transparent;
+    border-image:var(--gradient-heritage-soft) 1;
     padding:80px 0 0;
+    position:relative;
 }
 .ag-footer__inner{
     max-width:1200px;
