@@ -1335,7 +1335,7 @@ em,.ag-gold{
     color:#b0b0bc;
     font-size:.85rem;
 }
-.ag-footer__legal{margin-top:8px;font-size:.8rem;color:#8a8a95;}
+.ag-footer__legal{margin-top:8px;font-size:.8rem;color:#b0b0bc;}
 .ag-footer__legal a{color:#b0b0bc;text-decoration:none;transition:color .2s;}
 .ag-footer__legal a:hover{color:#d4b45c;}
 
@@ -1366,7 +1366,7 @@ em,.ag-gold{
 .ag-cookie__text{
     font-size:.92rem;
     line-height:1.55;
-    color:#c9c7c0;
+    color:#b0b0bc;
     margin:0 0 18px;
 }
 .ag-cookie__text a{color:#d4b45c;text-decoration:underline;}
@@ -1439,7 +1439,7 @@ body.ag-cookie-open{overflow:auto;}
     margin:24px 0 8px;
 }
 .ag-cookies-page p, .ag-cookies-page li{
-    color:#c9c7c0;
+    color:#b0b0bc;
     line-height:1.7;
     font-size:1rem;
 }
@@ -1454,7 +1454,7 @@ body.ag-cookie-open{overflow:auto;}
     padding:12px 14px;
     text-align:left;
     border-bottom:1px solid rgba(255,255,255,.08);
-    color:#c9c7c0;
+    color:#b0b0bc;
 }
 .ag-cookies-page th{
     color:#d4b45c;
@@ -1815,7 +1815,13 @@ button.ag-faq-q .ag-faq-icon{font-size:1.3rem;color:#D4B45C;transition:transform
 }
 .ag-form__group input:focus,
 .ag-form__group select:focus,
-.ag-form__group textarea:focus{border-color:#D4B45C}
+.ag-form__group textarea:focus{
+    border-color:#D4B45C;
+    outline:2px solid #D4B45C;
+    outline-offset:2px;
+}
+.ag-form__group input::placeholder,
+.ag-form__group textarea::placeholder{color:#8a8a95;opacity:1;}
 .ag-form__group textarea{min-height:140px;resize:vertical}
 
 /* ── Link styles ──────────────────────────────────────────────── */
