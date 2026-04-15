@@ -15,7 +15,7 @@
     border-radius:0 0 8px 8px;
     font-weight:700;
     font-size:.9rem;
-    z-index:99999;
+    z-index:1040;
     transition:top .3s;
     text-decoration:none;
 }
@@ -89,7 +89,7 @@ em,.ag-gold{
 .ag-nav{
     position:fixed;
     top:0;left:0;right:0;
-    z-index:10000;
+    z-index:1000;
     padding:16px 0;
     transition:background .4s,padding .4s,box-shadow .4s;
 }
@@ -276,7 +276,7 @@ em,.ag-gold{
     flex-direction:column;
     gap:5px;
     width:28px;
-    z-index:10002;
+    z-index:1020;
     background:none;
     border:none;
     padding:4px;
@@ -1350,7 +1350,7 @@ em,.ag-gold{
 .ag-mobile-menu{
     position:fixed;
     inset:0;
-    z-index:10001;
+    z-index:1010;
     background:rgba(8,8,8,.98);
     backdrop-filter:blur(24px);
     -webkit-backdrop-filter:blur(24px);
@@ -1922,7 +1922,7 @@ button.ag-faq-q .ag-faq-icon{font-size:1.3rem;color:#D4B45C;transition:transform
 
 /* ── Download Modal ───────────────────────────────────────────── */
 .ag-dl-modal{
-    position:fixed;inset:0;z-index:20000;
+    position:fixed;inset:0;z-index:1030;
     display:none;
     align-items:center;justify-content:center;
 }
