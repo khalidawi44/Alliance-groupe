@@ -229,7 +229,28 @@
                 </div>
             </li>
 
-            <li><a href="<?php echo esc_url(home_url('/contact')); ?>">Contact</a></li>
+            <li class="ag-nav__has-sub">
+                <a href="<?php echo esc_url(home_url('/contact')); ?>">Contact <span class="ag-nav__arrow">&#9662;</span></a>
+                <div class="ag-mega ag-mega--sm">
+                    <div class="ag-mega__inner">
+                        <div class="ag-mega__col">
+                            <span class="ag-mega__label">Nous joindre</span>
+                            <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">✉️</span>
+                                <span><strong>Formulaire de contact</strong><small>Écrivez-nous, réponse sous 24h</small></span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/rendez-vous')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">📅</span>
+                                <span><strong>Prendre RDV</strong><small>Appel découverte gratuit ou audit payant</small></span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/questions-flash')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">💬</span>
+                                <span><strong>Questions Flash</strong><small>Réponse écrite experte sous 48h</small></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </li>
         </ul>
 
         <a href="<?php echo esc_url(home_url('/rendez-vous')); ?>" class="ag-nav__cta">
@@ -317,7 +338,14 @@
                 </div>
             </div>
 
-            <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-mobile-menu__link">Contact</a>
+            <div class="ag-mobile-menu__group">
+                <button class="ag-mobile-menu__toggle" type="button">Contact <span class="ag-mobile-menu__arrow">+</span></button>
+                <div class="ag-mobile-menu__sub">
+                    <a href="<?php echo esc_url(home_url('/contact')); ?>">✉️ Formulaire de contact</a>
+                    <a href="<?php echo esc_url(home_url('/rendez-vous')); ?>">📅 Prendre RDV</a>
+                    <a href="<?php echo esc_url(home_url('/questions-flash')); ?>">💬 Questions Flash</a>
+                </div>
+            </div>
         </div>
 
         <div class="ag-mobile-menu__footer">
