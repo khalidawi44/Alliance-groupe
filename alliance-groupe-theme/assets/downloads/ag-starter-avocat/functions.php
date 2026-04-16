@@ -132,6 +132,14 @@ add_action( 'wp_head', 'ag_starter_avocat_pingback_header' );
  */
 require get_template_directory() . '/inc/customizer.php';
 
+require get_template_directory() . '/inc/class-ag-licence-client.php';
+require get_template_directory() . '/inc/class-ag-updater.php';
+
+add_action( 'after_setup_theme', function () {
+    AG_Licence_Client::register_admin();
+    new AG_Theme_Updater( 'ag-starter-avocat', wp_get_theme()->get( 'Version' ) );
+}, 20 );
+
 /**
  * Load the Domaine d'expertise CPT and the front-end form handler.
  */

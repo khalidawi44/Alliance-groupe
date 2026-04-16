@@ -133,6 +133,17 @@ add_action( 'wp_head', 'ag_starter_restaurant_pingback_header' );
 require get_template_directory() . '/inc/customizer.php';
 
 /**
+ * Load licence client + auto-updater.
+ */
+require get_template_directory() . '/inc/class-ag-licence-client.php';
+require get_template_directory() . '/inc/class-ag-updater.php';
+
+add_action( 'after_setup_theme', function () {
+    AG_Licence_Client::register_admin();
+    new AG_Theme_Updater( 'ag-starter-restaurant', wp_get_theme()->get( 'Version' ) );
+}, 20 );
+
+/**
  * Show an admin notice inviting the user to install the companion plugin
  * which provides the one-click demo importer.
  */
