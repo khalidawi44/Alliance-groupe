@@ -105,6 +105,15 @@ add_filter( 'wp_sitemaps_posts_query_args', function ( $args, $post_type ) {
     return $args;
 }, 10, 2 );
 
+// ── 3d. Redirect old Yoast sitemap URLs to WP native sitemap ───
+add_action( 'template_redirect', function () {
+    $path = trim( parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ), '/' );
+    if ( in_array( $path, array( 'sitemap.xml', 'sitemap_index.xml' ), true ) ) {
+        wp_redirect( home_url( '/wp-sitemap.xml' ), 301 );
+        exit;
+    }
+} );
+
 // ── 4. Auto-create categories ───────────────────────────────────
 add_action( 'init', function () {
     if ( ! term_exists( 'Tech & IA', 'category' ) ) wp_insert_term( 'Tech & IA', 'category' );
