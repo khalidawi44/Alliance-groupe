@@ -69,6 +69,30 @@ add_action( 'after_setup_theme', function () {
     add_theme_support( 'html5', array( 'search-form', 'comment-form', 'gallery', 'caption' ) );
 }, 5 );
 
+// ── 3b. Force search engine indexation ─────────────────────────
+// Si "Décourager les moteurs de recherche" est coché par erreur, on le décoche
+add_action( 'init', function () {
+    if ( get_option( 'blog_public' ) == '0' ) {
+        update_option( 'blog_public', '1' );
+    }
+} );
+
+// ── 3c. Exclude thank-you pages from WordPress native sitemap ──
+add_filter( 'wp_sitemaps_posts_query_args', function ( $args, $post_type ) {
+    if ( 'page' === $post_type ) {
+        $excluded_ids = array();
+        $slugs = array( 'merci-rdv', 'merci-achat' );
+        foreach ( $slugs as $slug ) {
+            $page = get_page_by_path( $slug );
+            if ( $page ) $excluded_ids[] = $page->ID;
+        }
+        if ( ! empty( $excluded_ids ) ) {
+            $args['post__not_in'] = isset( $args['post__not_in'] ) ? array_merge( $args['post__not_in'], $excluded_ids ) : $excluded_ids;
+        }
+    }
+    return $args;
+}, 10, 2 );
+
 // ── 4. Auto-create categories ───────────────────────────────────
 add_action( 'init', function () {
     if ( ! term_exists( 'Tech & IA', 'category' ) ) wp_insert_term( 'Tech & IA', 'category' );
@@ -164,11 +188,25 @@ add_filter( 'robots_txt', function ( $output, $public ) {
         $output .= "Disallow: /wp-admin/\n";
         $output .= "Disallow: /wp-includes/\n";
         $output .= "Disallow: /?s=\n";
+        $output .= "Disallow: /merci-rdv\n";
+        $output .= "Disallow: /merci-achat\n";
         $output .= "\n";
-        $output .= "Sitemap: " . home_url( '/sitemap_index.xml' ) . "\n";
+        $output .= "Sitemap: " . home_url( '/wp-sitemap.xml' ) . "\n";
     }
     return $output;
 }, 10, 2 );
+
+// ── 8b2. Ping Google & Bing on publish ──────────────────────────
+add_action( 'publish_post', function () {
+    $sitemap = home_url( '/wp-sitemap.xml' );
+    wp_remote_get( 'https://www.google.com/ping?sitemap=' . urlencode( $sitemap ), array( 'timeout' => 10, 'blocking' => false ) );
+    wp_remote_get( 'https://www.bing.com/ping?sitemap=' . urlencode( $sitemap ), array( 'timeout' => 10, 'blocking' => false ) );
+} );
+add_action( 'publish_page', function () {
+    $sitemap = home_url( '/wp-sitemap.xml' );
+    wp_remote_get( 'https://www.google.com/ping?sitemap=' . urlencode( $sitemap ), array( 'timeout' => 10, 'blocking' => false ) );
+    wp_remote_get( 'https://www.bing.com/ping?sitemap=' . urlencode( $sitemap ), array( 'timeout' => 10, 'blocking' => false ) );
+} );
 
 // ── 8c. Force canonical URL on all pages ────────────────────────
 add_action( 'wp_head', function () {
