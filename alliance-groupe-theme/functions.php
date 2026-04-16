@@ -89,23 +89,49 @@ add_filter( 'wp_robots', function ( $robots ) {
     return $robots;
 }, 9999 );
 
-// ── 3c. Exclude thank-you pages from WordPress native sitemap ──
-add_filter( 'wp_sitemaps_posts_query_args', function ( $args, $post_type ) {
-    if ( 'page' === $post_type ) {
-        $excluded_ids = array();
-        $slugs = array( 'merci-rdv', 'merci-achat' );
-        foreach ( $slugs as $slug ) {
-            $page = get_page_by_path( $slug );
-            if ( $page ) $excluded_ids[] = $page->ID;
-        }
-        if ( ! empty( $excluded_ids ) ) {
-            $args['post__not_in'] = isset( $args['post__not_in'] ) ? array_merge( $args['post__not_in'], $excluded_ids ) : $excluded_ids;
-        }
+// ── 3c. Custom XML sitemap (indépendant de Yoast / WP natif) ───
+// Intercepte /sitemap.xml ET /sitemap_index.xml ET /wp-sitemap.xml
+add_action( 'template_redirect', function () {
+    $path = trim( parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ), '/' );
+    if ( ! in_array( $path, array( 'sitemap.xml', 'sitemap_index.xml', 'wp-sitemap.xml', 'ag-sitemap.xml' ), true ) ) {
+        return;
     }
-    return $args;
-}, 10, 2 );
 
-// ── 3d. Disable WP native sitemap (Yoast handles it) ───────────
+    // Pages à NE PAS indexer
+    $excluded = array( 'merci-rdv', 'merci-achat' );
+
+    // Collecter toutes les pages publiées
+    $pages = get_pages( array( 'post_status' => 'publish', 'sort_column' => 'post_modified', 'sort_order' => 'DESC' ) );
+
+    // Collecter tous les articles publiés
+    $posts = get_posts( array( 'post_type' => 'post', 'post_status' => 'publish', 'posts_per_page' => -1, 'orderby' => 'modified', 'order' => 'DESC' ) );
+
+    header( 'Content-Type: application/xml; charset=UTF-8' );
+    header( 'X-Robots-Tag: noindex' ); // le sitemap lui-même ne doit pas être indexé
+    echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+    echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+
+    // Homepage
+    echo '<url><loc>' . esc_url( home_url( '/' ) ) . '</loc><changefreq>daily</changefreq><priority>1.0</priority></url>' . "\n";
+
+    // Pages
+    foreach ( $pages as $page ) {
+        if ( in_array( $page->post_name, $excluded, true ) ) continue;
+        $mod = get_the_modified_date( 'Y-m-d', $page );
+        echo '<url><loc>' . esc_url( get_permalink( $page ) ) . '</loc><lastmod>' . $mod . '</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>' . "\n";
+    }
+
+    // Articles
+    foreach ( $posts as $post ) {
+        $mod = get_the_modified_date( 'Y-m-d', $post );
+        echo '<url><loc>' . esc_url( get_permalink( $post ) ) . '</loc><lastmod>' . $mod . '</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>' . "\n";
+    }
+
+    echo '</urlset>';
+    exit;
+} );
+
+// Désactiver le sitemap natif WP (on gère tout nous-mêmes)
 add_filter( 'wp_sitemaps_enabled', '__return_false' );
 
 // ── 4. Auto-create categories ───────────────────────────────────
@@ -206,19 +232,19 @@ add_filter( 'robots_txt', function ( $output, $public ) {
         $output .= "Disallow: /merci-rdv\n";
         $output .= "Disallow: /merci-achat\n";
         $output .= "\n";
-        $output .= "Sitemap: " . home_url( '/sitemap_index.xml' ) . "\n";
+        $output .= "Sitemap: " . home_url( '/sitemap.xml' ) . "\n";
     }
     return $output;
 }, 10, 2 );
 
 // ── 8b2. Ping Google & Bing on publish ──────────────────────────
 add_action( 'publish_post', function () {
-    $sitemap = home_url( '/sitemap_index.xml' );
+    $sitemap = home_url( '/sitemap.xml' );
     wp_remote_get( 'https://www.google.com/ping?sitemap=' . urlencode( $sitemap ), array( 'timeout' => 10, 'blocking' => false ) );
     wp_remote_get( 'https://www.bing.com/ping?sitemap=' . urlencode( $sitemap ), array( 'timeout' => 10, 'blocking' => false ) );
 } );
 add_action( 'publish_page', function () {
-    $sitemap = home_url( '/sitemap_index.xml' );
+    $sitemap = home_url( '/sitemap.xml' );
     wp_remote_get( 'https://www.google.com/ping?sitemap=' . urlencode( $sitemap ), array( 'timeout' => 10, 'blocking' => false ) );
     wp_remote_get( 'https://www.bing.com/ping?sitemap=' . urlencode( $sitemap ), array( 'timeout' => 10, 'blocking' => false ) );
 } );
