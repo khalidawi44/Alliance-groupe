@@ -97,15 +97,46 @@ $selected_tier  = $tiers[ $selected ];
                 </div>
 
                 <?php if ( $selected_embed ) : ?>
-                    <div class="calendly-inline-widget ag-calendly__widget"
-                         data-url="<?php echo esc_url( $selected_embed ); ?>"
-                         style="min-width:320px;height:780px;"></div>
-                    <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+                    <div id="ag-calendly-zone"
+                         class="ag-calendly__widget"
+                         data-calendly-url="<?php echo esc_url( $selected_embed ); ?>"
+                         style="min-width:320px;min-height:780px;display:flex;align-items:center;justify-content:center;">
+                        <p style="color:var(--color-text-muted);font-size:.95rem;">Chargement du calendrier<span class="ag-calendly-dots">...</span></p>
+                    </div>
+                    <script>
+                    (function(){
+                        var zone = document.getElementById('ag-calendly-zone');
+                        if (!zone) return;
+                        var loaded = false;
+                        function loadCalendly() {
+                            if (loaded) return;
+                            loaded = true;
+                            zone.innerHTML = '';
+                            var widget = document.createElement('div');
+                            widget.className = 'calendly-inline-widget';
+                            widget.setAttribute('data-url', zone.getAttribute('data-calendly-url'));
+                            widget.style.cssText = 'min-width:320px;height:780px;';
+                            zone.appendChild(widget);
+                            var script = document.createElement('script');
+                            script.src = 'https://assets.calendly.com/assets/external/widget.js';
+                            script.async = true;
+                            zone.appendChild(script);
+                        }
+                        if ('IntersectionObserver' in window) {
+                            var obs = new IntersectionObserver(function(entries) {
+                                if (entries[0].isIntersecting) { loadCalendly(); obs.disconnect(); }
+                            }, { rootMargin: '400px' });
+                            obs.observe(zone);
+                        } else {
+                            loadCalendly();
+                        }
+                    })();
+                    </script>
 
                     <noscript>
-                        <p style="text-align:center;color:#b0b0bc;margin-top:20px;">
+                        <p style="text-align:center;color:var(--color-text-secondary);margin-top:20px;">
                             JavaScript désactivé&nbsp;? Réservez directement sur
-                            <a href="<?php echo esc_url( $selected_url ); ?>" target="_blank" rel="noopener noreferrer" style="color:#D4B45C;">Calendly</a>.
+                            <a href="<?php echo esc_url( $selected_url ); ?>" target="_blank" rel="noopener noreferrer" style="color:var(--color-gold);">Calendly</a>.
                         </p>
                     </noscript>
                 <?php else : ?>
