@@ -42,6 +42,7 @@
         "pages/merci-rdv.json",
         "pages/cookies.json",
         "pages/mentions-legales.json",
+        "pages/confidentialite.json",
         "pages/bureau-marrakech.json",
         "pages/bureau-naples.json",
         "pages/bureau-nantes.json"
@@ -98,6 +99,7 @@
         "templates/page-merci-rdv.php",
         "templates/page-cookies.php",
         "templates/page-mentions-legales.php",
+        "templates/page-confidentialite.php",
         "templates/page-bureau-marrakech.php",
         "templates/page-bureau-naples.php",
         "templates/page-bureau-nantes.php",
