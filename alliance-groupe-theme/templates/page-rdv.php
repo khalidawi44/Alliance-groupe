@@ -99,9 +99,8 @@ $selected_tier  = $tiers[ $selected ];
                 <?php if ( $selected_embed ) : ?>
                     <div id="ag-calendly-zone"
                          class="ag-calendly__widget"
-                         data-calendly-url="<?php echo esc_url( $selected_embed ); ?>"
-                         style="min-width:320px;min-height:780px;display:flex;align-items:center;justify-content:center;">
-                        <p style="color:var(--color-text-muted);font-size:.95rem;">Chargement du calendrier<span class="ag-calendly-dots">...</span></p>
+                         data-calendly-url="<?php echo esc_url( $selected_embed ); ?>">
+                        <div class="ag-calendly__loader">Chargement du calendrier</div>
                     </div>
                     <script>
                     (function(){
@@ -111,21 +110,24 @@ $selected_tier  = $tiers[ $selected ];
                         function loadCalendly() {
                             if (loaded) return;
                             loaded = true;
-                            zone.innerHTML = '';
+                            var loader = zone.querySelector('.ag-calendly__loader');
                             var widget = document.createElement('div');
                             widget.className = 'calendly-inline-widget';
                             widget.setAttribute('data-url', zone.getAttribute('data-calendly-url'));
-                            widget.style.cssText = 'min-width:320px;height:780px;';
+                            widget.style.cssText = 'min-width:320px;height:900px;';
                             zone.appendChild(widget);
                             var script = document.createElement('script');
                             script.src = 'https://assets.calendly.com/assets/external/widget.js';
                             script.async = true;
+                            script.onload = function() {
+                                if (loader) setTimeout(function(){ loader.remove(); }, 1500);
+                            };
                             zone.appendChild(script);
                         }
                         if ('IntersectionObserver' in window) {
                             var obs = new IntersectionObserver(function(entries) {
                                 if (entries[0].isIntersecting) { loadCalendly(); obs.disconnect(); }
-                            }, { rootMargin: '400px' });
+                            }, { rootMargin: '600px' });
                             obs.observe(zone);
                         } else {
                             loadCalendly();
