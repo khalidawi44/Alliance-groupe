@@ -105,14 +105,8 @@ add_filter( 'wp_sitemaps_posts_query_args', function ( $args, $post_type ) {
     return $args;
 }, 10, 2 );
 
-// ── 3d. Redirect old Yoast sitemap URLs to WP native sitemap ───
-add_action( 'template_redirect', function () {
-    $path = trim( parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ), '/' );
-    if ( in_array( $path, array( 'sitemap.xml', 'sitemap_index.xml' ), true ) ) {
-        wp_redirect( home_url( '/wp-sitemap.xml' ), 301 );
-        exit;
-    }
-} );
+// ── 3d. Disable WP native sitemap (Yoast handles it) ───────────
+add_filter( 'wp_sitemaps_enabled', '__return_false' );
 
 // ── 4. Auto-create categories ───────────────────────────────────
 add_action( 'init', function () {
@@ -212,19 +206,19 @@ add_filter( 'robots_txt', function ( $output, $public ) {
         $output .= "Disallow: /merci-rdv\n";
         $output .= "Disallow: /merci-achat\n";
         $output .= "\n";
-        $output .= "Sitemap: " . home_url( '/wp-sitemap.xml' ) . "\n";
+        $output .= "Sitemap: " . home_url( '/sitemap_index.xml' ) . "\n";
     }
     return $output;
 }, 10, 2 );
 
 // ── 8b2. Ping Google & Bing on publish ──────────────────────────
 add_action( 'publish_post', function () {
-    $sitemap = home_url( '/wp-sitemap.xml' );
+    $sitemap = home_url( '/sitemap_index.xml' );
     wp_remote_get( 'https://www.google.com/ping?sitemap=' . urlencode( $sitemap ), array( 'timeout' => 10, 'blocking' => false ) );
     wp_remote_get( 'https://www.bing.com/ping?sitemap=' . urlencode( $sitemap ), array( 'timeout' => 10, 'blocking' => false ) );
 } );
 add_action( 'publish_page', function () {
-    $sitemap = home_url( '/wp-sitemap.xml' );
+    $sitemap = home_url( '/sitemap_index.xml' );
     wp_remote_get( 'https://www.google.com/ping?sitemap=' . urlencode( $sitemap ), array( 'timeout' => 10, 'blocking' => false ) );
     wp_remote_get( 'https://www.bing.com/ping?sitemap=' . urlencode( $sitemap ), array( 'timeout' => 10, 'blocking' => false ) );
 } );
