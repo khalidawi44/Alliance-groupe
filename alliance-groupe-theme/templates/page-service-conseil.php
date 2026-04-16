@@ -44,7 +44,7 @@ get_header();
         </div>
     </section>
 
-    <section class="ag-parallax" style="background-image:url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1920&q=80');">
+    <section class="ag-parallax" style="background-image:url('<?php echo esc_url( get_stylesheet_directory_uri() . "/assets/images/cities/nantes-2.jpg" ); ?>');">
         <div class="ag-parallax__overlay"></div>
         <div class="ag-parallax__content ag-anim" data-anim="parallax-text">
             <p class="ag-parallax__quote">"La stratégie sans exécution est une hallucination. L'exécution sans stratégie est du chaos."</p>

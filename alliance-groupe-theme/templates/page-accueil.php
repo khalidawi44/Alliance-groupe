@@ -73,7 +73,7 @@ get_header();
 <?php get_template_part('template-parts/process'); ?>
 
 <!-- Parallax 1 (transition) -->
-<section class="ag-parallax" style="background-image:url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80');">
+<section class="ag-parallax" style="background-image:url('<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg' ); ?>');">
     <div class="ag-parallax__overlay"></div>
     <div class="ag-parallax__content ag-anim" data-anim="parallax-text">
         <p class="ag-parallax__quote">"La technologie seule ne suffit pas. C'est la technologie mariée au design qui nous donne le résultat qui fait chanter notre cœur."</p>
