@@ -96,51 +96,18 @@ $selected_tier  = $tiers[ $selected ];
                     </p>
                 </div>
 
-                <?php if ( $selected_embed ) : ?>
-                    <div id="ag-calendly-zone"
-                         class="ag-calendly__widget"
-                         data-calendly-url="<?php echo esc_url( $selected_embed ); ?>">
-                        <div class="ag-calendly__loader">Chargement du calendrier</div>
+                <?php if ( $selected_url ) : ?>
+                    <div class="ag-calendly__action">
+                        <a href="<?php echo esc_url( $selected_url ); ?>" target="_blank" rel="noopener noreferrer" class="ag-btn-gold ag-btn-gold--xl">
+                            📅 Choisir un créneau — <?php echo esc_html( $selected_tier['label'] ); ?> →
+                        </a>
+                        <p class="ag-calendly__action-sub">Vous serez redirigé vers notre agenda Calendly (ouverture dans un nouvel onglet). Choisissez le jour et l'heure qui vous conviennent, c'est instantané.</p>
+                        <div class="ag-calendly__reassurance">
+                            <span>✓ Confirmation immédiate par email</span>
+                            <span>✓ Lien Google Meet automatique</span>
+                            <span>✓ Rappel 24h et 1h avant</span>
+                        </div>
                     </div>
-                    <script>
-                    (function(){
-                        var zone = document.getElementById('ag-calendly-zone');
-                        if (!zone) return;
-                        var loaded = false;
-                        function loadCalendly() {
-                            if (loaded) return;
-                            loaded = true;
-                            var loader = zone.querySelector('.ag-calendly__loader');
-                            var widget = document.createElement('div');
-                            widget.className = 'calendly-inline-widget';
-                            widget.setAttribute('data-url', zone.getAttribute('data-calendly-url'));
-                            widget.style.cssText = 'min-width:320px;height:900px;';
-                            zone.appendChild(widget);
-                            var script = document.createElement('script');
-                            script.src = 'https://assets.calendly.com/assets/external/widget.js';
-                            script.async = true;
-                            script.onload = function() {
-                                if (loader) setTimeout(function(){ loader.remove(); }, 1500);
-                            };
-                            zone.appendChild(script);
-                        }
-                        if ('IntersectionObserver' in window) {
-                            var obs = new IntersectionObserver(function(entries) {
-                                if (entries[0].isIntersecting) { loadCalendly(); obs.disconnect(); }
-                            }, { rootMargin: '600px' });
-                            obs.observe(zone);
-                        } else {
-                            loadCalendly();
-                        }
-                    })();
-                    </script>
-
-                    <noscript>
-                        <p style="text-align:center;color:var(--color-text-secondary);margin-top:20px;">
-                            JavaScript désactivé&nbsp;? Réservez directement sur
-                            <a href="<?php echo esc_url( $selected_url ); ?>" target="_blank" rel="noopener noreferrer" style="color:var(--color-gold);">Calendly</a>.
-                        </p>
-                    </noscript>
                 <?php else : ?>
                     <div class="ag-calendly__empty">
                         <div style="font-size:2.6rem;margin-bottom:14px;">📅</div>
