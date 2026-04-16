@@ -70,12 +70,24 @@ add_action( 'after_setup_theme', function () {
 }, 5 );
 
 // ── 3b. Force search engine indexation ─────────────────────────
-// Si "Décourager les moteurs de recherche" est coché par erreur, on le décoche
+// Force blog_public=1 ET supprime le header X-Robots-Tag noindex
 add_action( 'init', function () {
     if ( get_option( 'blog_public' ) == '0' ) {
         update_option( 'blog_public', '1' );
     }
-} );
+}, 1 );
+
+// Supprimer le hook WordPress qui envoie X-Robots-Tag: noindex
+add_action( 'template_redirect', function () {
+    header_remove( 'X-Robots-Tag' );
+}, 99 );
+
+// Empêcher wp_robots d'ajouter noindex
+add_filter( 'wp_robots', function ( $robots ) {
+    unset( $robots['noindex'] );
+    unset( $robots['nofollow'] );
+    return $robots;
+}, 9999 );
 
 // ── 3c. Exclude thank-you pages from WordPress native sitemap ──
 add_filter( 'wp_sitemaps_posts_query_args', function ( $args, $post_type ) {
