@@ -98,7 +98,9 @@ $selected_tier  = $tiers[ $selected ];
 
                 <?php if ( $selected_url ) : ?>
                     <div class="ag-calendly__action">
-                        <a href="<?php echo esc_url( $selected_url ); ?>" target="_blank" rel="noopener noreferrer" class="ag-btn-gold ag-btn-gold--xl">
+                        <a href="<?php echo esc_url( $selected_url ); ?>"
+                           onclick="event.preventDefault(); window.open(this.href, 'calendly', 'width=480,height=700,left=' + (screen.width/2-240) + ',top=' + (screen.height/2-350) + ',toolbar=no,menubar=no,scrollbars=yes,resizable=yes');"
+                           class="ag-btn-gold ag-btn-gold--xl">
                             📅 Choisir un créneau — <?php echo esc_html( $selected_tier['label'] ); ?> →
                         </a>
                         <p class="ag-calendly__action-sub">Vous serez redirigé vers notre agenda Calendly (ouverture dans un nouvel onglet). Choisissez le jour et l'heure qui vous conviennent, c'est instantané.</p>
