@@ -208,14 +208,7 @@ add_action( 'publish_page', function () {
     wp_remote_get( 'https://www.bing.com/ping?sitemap=' . urlencode( $sitemap ), array( 'timeout' => 10, 'blocking' => false ) );
 } );
 
-// ── 8c. Force canonical URL on all pages ────────────────────────
-add_action( 'wp_head', function () {
-    if ( is_singular() ) {
-        echo '<link rel="canonical" href="' . esc_url( get_permalink() ) . '">' . "\n";
-    } elseif ( is_front_page() ) {
-        echo '<link rel="canonical" href="' . esc_url( home_url( '/' ) ) . '">' . "\n";
-    }
-}, 1 );
+// ── 8c. Canonical URL — WordPress le gère nativement, pas de doublon ──
 
 // ── 8d. Open Graph + Twitter Card (enrichi) ────────────────────
 add_action( 'wp_head', function () {
