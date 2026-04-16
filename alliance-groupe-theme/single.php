@@ -40,7 +40,7 @@
         <?php if (has_post_thumbnail()) : ?>
         <div class="ag-article__featured">
             <div class="ag-container ag-container--narrow">
-                <?php the_post_thumbnail('large', ['itemprop' => 'image']); ?>
+                <?php the_post_thumbnail('large', ['itemprop' => 'image', 'loading' => 'lazy']); ?>
             </div>
         </div>
         <?php endif; ?>

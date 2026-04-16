@@ -123,12 +123,38 @@ if ( ! function_exists( 'ag_reading_time' ) ) {
     }
 }
 
-// ── 8. SEO meta description ─────────────────────────────────────
+// ── 8. SEO meta description (toutes les pages) ────────────────
 add_action( 'wp_head', function () {
-    if ( is_single() && has_excerpt() ) {
-        echo '<meta name="description" content="' . esc_attr( wp_strip_all_tags( get_the_excerpt() ) ) . '">' . "\n";
+    $description = '';
+    if ( is_singular() ) {
+        if ( has_excerpt() ) {
+            $description = wp_strip_all_tags( get_the_excerpt() );
+        } else {
+            $description = wp_trim_words( wp_strip_all_tags( get_the_content() ), 25 );
+        }
+    } elseif ( is_front_page() ) {
+        $description = get_bloginfo( 'description' );
+    } elseif ( is_archive() || is_category() || is_tag() ) {
+        $term = get_queried_object();
+        if ( $term && ! empty( $term->description ) ) {
+            $description = $term->description;
+        } elseif ( $term && ! empty( $term->name ) ) {
+            $description = 'Articles dans la catégorie : ' . $term->name;
+        }
+    }
+    if ( $description ) {
+        echo '<meta name="description" content="' . esc_attr( substr( $description, 0, 160 ) ) . '">' . "\n";
     }
 } );
+
+// ── 8b. Noindex on thank-you & legal pages ─────────────────────
+add_action( 'wp_head', function () {
+    $noindex_slugs = array( 'merci-rdv', 'merci-achat' );
+    $current_slug  = get_post_field( 'post_name' );
+    if ( in_array( $current_slug, $noindex_slugs, true ) ) {
+        echo '<meta name="robots" content="noindex, follow">' . "\n";
+    }
+}, 1 );
 
 // ── 8b. Robots.txt amélioration ─────────────────────────────────
 add_filter( 'robots_txt', function ( $output, $public ) {
@@ -153,41 +179,45 @@ add_action( 'wp_head', function () {
     }
 }, 1 );
 
-// ── 8d. Open Graph basic tags ───────────────────────────────────
+// ── 8d. Open Graph + Twitter Card (enrichi) ────────────────────
 add_action( 'wp_head', function () {
-    $title = wp_get_document_title();
-    $desc  = get_bloginfo( 'description' );
-    $url   = home_url( '/' );
-    $img   = '';
+    $title   = wp_get_document_title();
+    $desc    = get_bloginfo( 'description' );
+    $url     = home_url( '/' );
+    $img     = '';
+    $og_type = 'website';
 
-    // Find logo for og:image
     $dir = get_stylesheet_directory() . '/assets/images/';
     $uri = get_stylesheet_directory_uri() . '/assets/images/';
     foreach ( array( 'jpg', 'jpeg', 'png', 'webp' ) as $ext ) {
-        if ( file_exists( $dir . 'logo.' . $ext ) ) {
-            $img = $uri . 'logo.' . $ext;
-            break;
-        }
+        if ( file_exists( $dir . 'logo.' . $ext ) ) { $img = $uri . 'logo.' . $ext; break; }
     }
 
     if ( is_singular() ) {
         $title = get_the_title();
         $url   = get_permalink();
+        if ( is_single() ) $og_type = 'article';
         if ( has_excerpt() ) $desc = wp_strip_all_tags( get_the_excerpt() );
         if ( has_post_thumbnail() ) $img = get_the_post_thumbnail_url( null, 'large' );
     }
 
-    echo '<meta property="og:type" content="website">' . "\n";
+    echo '<meta property="og:type" content="' . esc_attr( $og_type ) . '">' . "\n";
     echo '<meta property="og:title" content="' . esc_attr( $title ) . '">' . "\n";
     echo '<meta property="og:description" content="' . esc_attr( $desc ) . '">' . "\n";
     echo '<meta property="og:url" content="' . esc_url( $url ) . '">' . "\n";
-    if ( $img ) echo '<meta property="og:image" content="' . esc_url( $img ) . '">' . "\n";
+    if ( $img ) {
+        echo '<meta property="og:image" content="' . esc_url( $img ) . '">' . "\n";
+        echo '<meta property="og:image:width" content="1200">' . "\n";
+        echo '<meta property="og:image:height" content="630">' . "\n";
+    }
     echo '<meta property="og:site_name" content="Alliance Groupe">' . "\n";
     echo '<meta property="og:locale" content="fr_FR">' . "\n";
     echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
     echo '<meta name="twitter:title" content="' . esc_attr( $title ) . '">' . "\n";
     echo '<meta name="twitter:description" content="' . esc_attr( $desc ) . '">' . "\n";
-    if ( $img ) echo '<meta name="twitter:image" content="' . esc_url( $img ) . '">' . "\n";
+    if ( $img ) {
+        echo '<meta name="twitter:image" content="' . esc_url( $img ) . '">' . "\n";
+    }
 }, 2 );
 
 // ── 9. JSON-LD Structured Data (SEO) ────────────────────────────
@@ -236,7 +266,7 @@ add_action( 'wp_head', function () {
         echo '<script type="application/ld+json">' . wp_json_encode( $website, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
     }
 
-    // BreadcrumbList (single posts)
+    // BreadcrumbList (single posts + pages)
     if ( is_single() ) {
         $breadcrumb = array(
             '@context' => 'https://schema.org',
@@ -248,6 +278,98 @@ add_action( 'wp_head', function () {
             ),
         );
         echo '<script type="application/ld+json">' . wp_json_encode( $breadcrumb, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
+    } elseif ( is_page() ) {
+        $breadcrumb = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => array(
+                array( '@type' => 'ListItem', 'position' => 1, 'name' => 'Accueil', 'item' => $site_url ),
+                array( '@type' => 'ListItem', 'position' => 2, 'name' => get_the_title(), 'item' => get_permalink() ),
+            ),
+        );
+        echo '<script type="application/ld+json">' . wp_json_encode( $breadcrumb, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
+    }
+
+    // Article schema enrichi (single posts)
+    if ( is_single() ) {
+        $cats = get_the_category();
+        $article = array(
+            '@context'      => 'https://schema.org',
+            '@type'         => 'Article',
+            'headline'      => get_the_title(),
+            'description'   => has_excerpt() ? wp_strip_all_tags( get_the_excerpt() ) : wp_trim_words( wp_strip_all_tags( get_the_content() ), 25 ),
+            'datePublished' => get_the_date( 'c' ),
+            'dateModified'  => get_the_modified_date( 'c' ),
+            'author'        => array( '@type' => 'Organization', 'name' => 'Alliance Groupe' ),
+            'publisher'     => array(
+                '@type' => 'Organization',
+                'name'  => 'Alliance Groupe',
+                'logo'  => array( '@type' => 'ImageObject', 'url' => $logo_url ),
+            ),
+            'mainEntityOfPage' => get_permalink(),
+            'articleSection'   => $cats ? $cats[0]->name : 'Blog',
+        );
+        if ( has_post_thumbnail() ) {
+            $article['image'] = array(
+                '@type'  => 'ImageObject',
+                'url'    => get_the_post_thumbnail_url( null, 'large' ),
+                'width'  => 1200,
+                'height' => 630,
+            );
+        }
+        echo '<script type="application/ld+json">' . wp_json_encode( $article, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
+    }
+
+    // Service schema (pages de services)
+    if ( is_page() ) {
+        $service_map = array(
+            'service-creation-web' => array( 'Création Web & Sites WordPress', 'Création de sites vitrines et e-commerce performants sur WordPress.' ),
+            'service-seo'          => array( 'SEO & Référencement Naturel', 'Stratégie SEO complète pour dominer Google en local et national.' ),
+            'service-ia'           => array( 'IA & Automatisation', 'Chatbots, workflows et automatisations IA pour gagner du temps.' ),
+            'service-publicite'    => array( 'Publicité Digitale', 'Campagnes Google Ads et Meta Ads optimisées pour le ROI.' ),
+            'service-branding'     => array( 'Branding & Identité Visuelle', 'Logos, chartes graphiques et identités visuelles premium.' ),
+            'service-conseil'      => array( 'Conseil Stratégique Digital', 'Audit et accompagnement stratégique pour votre transformation digitale.' ),
+        );
+        $slug = get_post_field( 'post_name' );
+        if ( isset( $service_map[ $slug ] ) ) {
+            $svc = array(
+                '@context'    => 'https://schema.org',
+                '@type'       => 'Service',
+                'name'        => $service_map[ $slug ][0],
+                'description' => $service_map[ $slug ][1],
+                'url'         => get_permalink(),
+                'provider'    => array( '@type' => 'Organization', 'name' => 'Alliance Groupe', 'url' => $site_url ),
+                'areaServed'  => array( '@type' => 'Country', 'name' => 'France' ),
+            );
+            echo '<script type="application/ld+json">' . wp_json_encode( $svc, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
+        }
+    }
+
+    // LocalBusiness schema (front page — SEO local)
+    if ( is_front_page() ) {
+        $offices = array(
+            array( 'Alliance Groupe — Nantes', 'Nantes', 'Pays de la Loire', 'FR', '+33623526074', 47.2173, -1.5534 ),
+            array( 'Alliance Groupe — Naples', 'Naples', 'Campania', 'IT', '+33623526074', 40.8518, 14.2681 ),
+            array( 'Alliance Groupe — Marrakech', 'Marrakech', 'Marrakech-Safi', 'MA', '+33623526074', 31.6295, -8.0088 ),
+        );
+        foreach ( $offices as $o ) {
+            $lb = array(
+                '@context'  => 'https://schema.org',
+                '@type'     => 'LocalBusiness',
+                'name'      => $o[0],
+                'url'       => $site_url,
+                'telephone' => $o[4],
+                'email'     => 'contact@alliancegroupe-inc.com',
+                'address'   => array(
+                    '@type'            => 'PostalAddress',
+                    'addressLocality'  => $o[1],
+                    'addressRegion'    => $o[2],
+                    'addressCountry'   => $o[3],
+                ),
+                'geo' => array( '@type' => 'GeoCoordinates', 'latitude' => $o[5], 'longitude' => $o[6] ),
+            );
+            echo '<script type="application/ld+json">' . wp_json_encode( $lb, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
+        }
     }
 }, 5 );
 

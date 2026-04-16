@@ -11,7 +11,7 @@
 <?php wp_body_open(); ?>
 <a href="#ag-main-content" class="ag-skip-link">Aller au contenu principal</a>
 
-<nav class="ag-nav" id="ag-nav">
+<nav class="ag-nav" id="ag-nav" aria-label="Navigation principale">
     <div class="ag-nav__inner">
         <!-- Logo -->
         <a href="<?php echo esc_url(home_url('/')); ?>" class="ag-nav__logo" aria-label="Alliance Groupe — Accueil">

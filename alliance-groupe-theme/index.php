@@ -13,7 +13,7 @@
                 <article class="ag-blog-card ag-anim" data-anim="card">
                     <?php if (has_post_thumbnail()) : ?>
                     <a href="<?php the_permalink(); ?>" class="ag-blog-card__img">
-                        <?php the_post_thumbnail('medium_large'); ?>
+                        <?php the_post_thumbnail('medium_large', ['loading' => 'lazy']); ?>
                     </a>
                     <?php endif; ?>
                     <div class="ag-blog-card__body">
