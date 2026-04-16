@@ -134,11 +134,19 @@ require get_template_directory() . '/inc/customizer.php';
 
 require get_template_directory() . '/inc/class-ag-licence-client.php';
 require get_template_directory() . '/inc/class-ag-updater.php';
+require get_template_directory() . '/inc/pro-features.php';
 
 add_action( 'after_setup_theme', function () {
     AG_Licence_Client::register_admin();
     new AG_Theme_Updater( 'ag-starter-avocat', wp_get_theme()->get( 'Version' ) );
+    new AG_Pro_Features( 'ag-starter-avocat' );
 }, 20 );
+
+add_action( 'wp_enqueue_scripts', function () {
+    if ( class_exists( 'AG_Licence_Client' ) && AG_Licence_Client::get_tier() !== 'free' ) {
+        wp_enqueue_script( 'ag-pro-scripts', get_template_directory_uri() . '/inc/pro-scripts.js', array(), '2.0.0', true );
+    }
+} );
 
 /**
  * Load the Domaine d'expertise CPT and the front-end form handler.
