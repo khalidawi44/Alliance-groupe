@@ -656,8 +656,9 @@ class AG_Starter_Companion {
 		return true;
 	}
 
-	private function get_upgrade_url() {
-		return 'https://alliancegroupe-inc.com/templates-wordpress?utm_source=wp-admin&utm_medium=companion&utm_campaign=upgrade';
+	private function get_upgrade_url( $pack = 'pro' ) {
+		$base = 'https://alliancegroupe-inc.com/templates-wordpress';
+		return $base . '?pack=' . $pack . '&utm_source=wp-admin&utm_medium=companion&utm_campaign=upgrade#ag-pricing';
 	}
 
 	/**
@@ -677,7 +678,6 @@ class AG_Starter_Companion {
 			return;
 		}
 
-		$url = $this->get_upgrade_url();
 		$dismiss_url = add_query_arg( 'ag_dismiss_upgrade', '1' );
 		?>
 		<div style="background:linear-gradient(135deg,#1a1a2e 0%,#0f0f18 100%);border:1px solid rgba(212,180,92,.35);border-radius:10px;padding:28px 32px;margin:20px 20px 10px 0;display:flex;align-items:center;gap:28px;flex-wrap:wrap;position:relative;">
@@ -685,11 +685,13 @@ class AG_Starter_Companion {
 			<div style="flex:1;min-width:260px;">
 				<h2 style="color:#D4B45C;font-size:1.3rem;margin:0 0 8px;font-weight:800;">⚡ <?php esc_html_e( 'Passez a la version Pro', 'ag-starter-companion' ); ?></h2>
 				<p style="color:rgba(255,255,255,.75);font-size:.95rem;line-height:1.6;margin:0;">
-					<?php esc_html_e( 'Debloquez le header sticky, les animations au scroll, les couleurs avancees, le footer personnalisable et bien plus. A partir de 49€ — paiement unique, mises a jour incluses.', 'ag-starter-companion' ); ?>
+					<?php esc_html_e( 'Debloquez le header sticky, les animations au scroll, les couleurs avancees, le footer personnalisable et bien plus. Paiement unique, mises a jour incluses.', 'ag-starter-companion' ); ?>
 				</p>
 			</div>
 			<div style="display:flex;gap:10px;flex-wrap:wrap;">
-				<a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-weight:700;padding:14px 28px;border-radius:8px;text-decoration:none;font-size:.95rem;white-space:nowrap;">Voir les packs Pro →</a>
+				<a href="<?php echo esc_url( $this->get_upgrade_url( 'pro' ) ); ?>" target="_blank" rel="noopener" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-weight:700;padding:14px 22px;border-radius:8px;text-decoration:none;font-size:.9rem;white-space:nowrap;">Pro — 49€ →</a>
+				<a href="<?php echo esc_url( $this->get_upgrade_url( 'premium' ) ); ?>" target="_blank" rel="noopener" style="display:inline-block;background:rgba(212,180,92,.15);color:#D4B45C;font-weight:700;padding:14px 22px;border-radius:8px;text-decoration:none;font-size:.9rem;white-space:nowrap;border:1px solid rgba(212,180,92,.4);">Premium — 99€ →</a>
+				<a href="<?php echo esc_url( $this->get_upgrade_url( 'business' ) ); ?>" target="_blank" rel="noopener" style="display:inline-block;background:rgba(212,180,92,.15);color:#D4B45C;font-weight:700;padding:14px 22px;border-radius:8px;text-decoration:none;font-size:.9rem;white-space:nowrap;border:1px solid rgba(212,180,92,.4);">Business — 149€ →</a>
 			</div>
 		</div>
 		<?php
@@ -730,9 +732,11 @@ class AG_Starter_Companion {
 				</div>
 				<p style="font-size:.78rem;color:#888;margin:8px 0 0;">Paiement unique — mises a jour a vie</p>
 			</div>
-			<a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener" class="button button-primary" style="font-size:.95rem;padding:8px 24px;">
-				<?php esc_html_e( 'Comparer les packs →', 'ag-starter-companion' ); ?>
-			</a>
+			<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
+				<a href="<?php echo esc_url( $this->get_upgrade_url( 'pro' ) ); ?>" target="_blank" rel="noopener" class="button button-primary" style="font-size:.85rem;padding:6px 14px;">Pro — 49€</a>
+				<a href="<?php echo esc_url( $this->get_upgrade_url( 'premium' ) ); ?>" target="_blank" rel="noopener" class="button button-primary" style="font-size:.85rem;padding:6px 14px;">Premium — 99€</a>
+				<a href="<?php echo esc_url( $this->get_upgrade_url( 'business' ) ); ?>" target="_blank" rel="noopener" class="button button-primary" style="font-size:.85rem;padding:6px 14px;">Business — 149€</a>
+			</div>
 		</div>
 		<?php
 	}
@@ -753,7 +757,7 @@ class AG_Starter_Companion {
 			'label'       => esc_html__( 'A partir de 49€', 'ag-starter-companion' ),
 			'section'     => 'ag_locked_pro',
 			'type'        => 'hidden',
-			'description' => '<a href="' . esc_url( $this->get_upgrade_url() ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Voir les packs Pro →</a>',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'pro' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Pro — 49€ →</a>',
 		) );
 
 		$wp_customize->add_section( 'ag_locked_animations', array(
@@ -766,7 +770,7 @@ class AG_Starter_Companion {
 			'label'   => esc_html__( 'A partir de 49€', 'ag-starter-companion' ),
 			'section' => 'ag_locked_animations',
 			'type'    => 'hidden',
-			'description' => '<a href="' . esc_url( $this->get_upgrade_url() ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Voir les packs Pro →</a>',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'pro' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Pro — 49€ →</a>',
 		) );
 
 		$wp_customize->add_section( 'ag_locked_testimonials', array(
@@ -779,7 +783,7 @@ class AG_Starter_Companion {
 			'label'   => esc_html__( 'A partir de 99€', 'ag-starter-companion' ),
 			'section' => 'ag_locked_testimonials',
 			'type'    => 'hidden',
-			'description' => '<a href="' . esc_url( $this->get_upgrade_url() ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Voir les packs Premium →</a>',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'premium' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Premium — 99€ →</a>',
 		) );
 
 		$wp_customize->add_section( 'ag_locked_whitelabel', array(
@@ -792,7 +796,7 @@ class AG_Starter_Companion {
 			'label'   => esc_html__( 'A partir de 149€', 'ag-starter-companion' ),
 			'section' => 'ag_locked_whitelabel',
 			'type'    => 'hidden',
-			'description' => '<a href="' . esc_url( $this->get_upgrade_url() ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Voir les packs Business →</a>',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'business' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Business — 149€ →</a>',
 		) );
 	}
 
@@ -802,7 +806,7 @@ class AG_Starter_Companion {
 	public function upgrade_footer_nudge() {
 		if ( ! $this->get_active_theme_slug() || ! $this->is_free_tier() ) return;
 		if ( ! current_user_can( 'manage_options' ) ) return;
-		$url = $this->get_upgrade_url();
+		$url = $this->get_upgrade_url( 'pro' );
 		?>
 		<div style="position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,15,.95);border-top:2px solid #D4B45C;padding:10px 24px;display:flex;align-items:center;justify-content:center;gap:16px;z-index:9999;font-size:.88rem;" id="ag-footer-nudge">
 			<span style="color:rgba(255,255,255,.7);">⚡ <?php esc_html_e( 'Version gratuite — Passez a Pro pour debloquer toutes les fonctionnalites', 'ag-starter-companion' ); ?></span>
