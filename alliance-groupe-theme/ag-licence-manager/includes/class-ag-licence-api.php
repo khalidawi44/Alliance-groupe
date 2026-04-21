@@ -90,10 +90,47 @@ class AG_Licence_API {
             'tested'       => '6.5',
             'requires'     => '6.0',
             'requires_php' => '7.4',
-            'changelog'    => 'v1.4.0 : Promos upgrade Pro dans l\'admin, auto-patch des themes, widget dashboard.',
+            'changelog'    => '<h4>v1.4.0</h4><ul>'
+                . '<li>Nouveau : liens d\'achat directs vers Stripe (Pro/Premium/Business)</li>'
+                . '<li>Nouveau : widget tableau de bord avec comparatif des 3 packs</li>'
+                . '<li>Nouveau : 4 sections verrouillées dans le Customizer (aperçu des fonctionnalités Pro)</li>'
+                . '<li>Nouveau : barre footer fixe "Passez à Pro" sur toutes les pages admin</li>'
+                . '<li>Nouveau : auto-patch du thème (licence client + updater + pro-features)</li>'
+                . '<li>Nouveau : mise à jour automatique du plugin depuis le serveur Alliance Groupe</li>'
+                . '</ul>'
+                . '<h4>v1.3.0</h4><ul>'
+                . '<li>Auto-patch des thèmes avec fichiers licence et pro-features</li>'
+                . '<li>Correction de compatibilité WordPress 6.5</li>'
+                . '</ul>'
+                . '<h4>v1.2.0</h4><ul>'
+                . '<li>Import demo pour le thème Avocat (domaines d\'expertise CPT)</li>'
+                . '<li>Bouton de réinitialisation du contenu demo</li>'
+                . '</ul>'
+                . '<h4>v1.0.0</h4><ul>'
+                . '<li>Import en 1 clic des pages, menu et réglages</li>'
+                . '<li>Support des 4 thèmes : Restaurant, Artisan, Coach, Avocat</li>'
+                . '</ul>',
+            'description'  => '<p><strong>AG Starter Companion</strong> est le plugin compagnon gratuit pour les thèmes AG Starter.</p>'
+                . '<p>Il permet d\'installer en un clic tout le contenu demo : pages, menu principal, page d\'accueil, permaliens.</p>'
+                . '<h4>Fonctionnalités</h4><ul>'
+                . '<li>✅ Import demo en 1 clic (pages, menu, réglages)</li>'
+                . '<li>✅ Compatible avec les 4 thèmes AG Starter (Restaurant, Artisan, Coach, Avocat)</li>'
+                . '<li>✅ Réinitialisation du contenu demo</li>'
+                . '<li>✅ Auto-patch : installe automatiquement le système de licence et les fonctionnalités Pro</li>'
+                . '<li>✅ Mise à jour automatique depuis le serveur Alliance Groupe</li>'
+                . '<li>✅ 100% gratuit, aucune inscription requise</li>'
+                . '</ul>'
+                . '<h4>Packs payants disponibles</h4>'
+                . '<p>Débloquez des fonctionnalités avancées avec un paiement unique :</p><ul>'
+                . '<li><strong>Pro (49€)</strong> — Header sticky, animations, couleurs avancées, footer personnalisable</li>'
+                . '<li><strong>Premium (99€)</strong> — Tout Pro + témoignages, galerie, boutique WooCommerce, 6 langues</li>'
+                . '<li><strong>Business (149€)</strong> — Tout Premium + white-label, templates extra, session stratégique 30 min</li>'
+                . '</ul>',
+            'banners'      => array(
+                'high' => home_url( '/wp-content/themes/alliance-groupe-theme/assets/images/promo-cards/ag-pro-card.png' ),
+            ),
         ) );
 
-        // Expose Stripe payment URLs for the companion's upgrade CTAs
         $info['stripe_urls'] = array(
             'pro'      => get_option( 'ag_stripe_pro_url', '' ),
             'premium'  => get_option( 'ag_stripe_premium_url', '' ),
