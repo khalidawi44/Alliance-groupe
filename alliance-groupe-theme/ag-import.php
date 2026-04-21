@@ -281,6 +281,42 @@ function ag_do_github_sync() {
     }
 
     // ═══════════════════════════════════════════════════════════════
+    // 4b. INSTALL AG-LICENCE-MANAGER PLUGIN (auto-deploy)
+    // ═══════════════════════════════════════════════════════════════
+    $plugin_dir = WP_PLUGIN_DIR . '/ag-licence-manager';
+    $plugin_files = array(
+        'ag-licence-manager.php',
+        'includes/class-ag-licence-db.php',
+        'includes/class-ag-licence-api.php',
+        'includes/class-ag-licence-admin.php',
+        'includes/class-ag-licence-stripe.php',
+        'includes/class-ag-licence-email.php',
+    );
+    $plugin_ok = 0;
+    foreach ( $plugin_files as $pf ) {
+        $url   = $theme_base . '/ag-licence-manager/' . $pf;
+        $local = $plugin_dir . '/' . $pf;
+        $dir   = dirname( $local );
+        if ( ! is_dir( $dir ) ) {
+            wp_mkdir_p( $dir );
+        }
+        $content = ag_gh_raw( $url );
+        if ( $content !== false && strlen( $content ) > 50 ) {
+            file_put_contents( $local, $content );
+            $plugin_ok++;
+        }
+    }
+    if ( $plugin_ok > 0 ) {
+        $r[] = $plugin_ok . ' fichiers plugin ag-licence-manager installés';
+        // Auto-activate the plugin if not already active
+        $plugin_file = 'ag-licence-manager/ag-licence-manager.php';
+        if ( ! is_plugin_active( $plugin_file ) ) {
+            activate_plugin( $plugin_file );
+            $r[] = 'Plugin ag-licence-manager activé automatiquement';
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
     // 5. SYNC CONTENU (catégories, pages, articles, menu, réglages)
     // ═══════════════════════════════════════════════════════════════
 
