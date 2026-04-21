@@ -836,7 +836,153 @@ em,.ag-gold{
     transition:transform .3s;
     display:inline-block;
 }
+.ag-scard__btn{
+    margin-top:auto;
+    padding:10px 22px !important;
+    font-size:.85rem !important;
+    width:100%;
+    justify-content:center;
+}
+.ag-scard{display:flex;flex-direction:column;}
 .ag-scard:hover .ag-scard__arrow{transform:translateX(6px)}
+
+/* ── Services CTA box (luxe encart) ──────────────────────────── */
+.ag-services__cta-box{
+    position:relative;
+    text-align:center;
+    margin-top:64px;
+    padding:56px 48px;
+    background:linear-gradient(135deg,rgba(212,180,92,.06) 0%,rgba(212,180,92,.02) 100%);
+    border:1px solid rgba(212,180,92,.3);
+    border-radius:24px;
+    overflow:hidden;
+}
+.ag-services__cta-glow{
+    position:absolute;
+    top:-80px;left:50%;
+    transform:translateX(-50%);
+    width:300px;height:300px;
+    background:radial-gradient(circle,rgba(212,180,92,.15) 0%,transparent 70%);
+    pointer-events:none;
+}
+.ag-services__cta-title{
+    font-family:var(--font-serif);
+    font-size:clamp(1.6rem,3.5vw,2.4rem);
+    font-weight:700;
+    color:var(--color-text);
+    margin:0 0 16px;
+    position:relative;
+}
+.ag-services__cta-title em{
+    font-style:italic;
+    color:var(--color-gold);
+}
+.ag-services__cta-sub{
+    color:var(--color-text-secondary);
+    font-size:1.1rem;
+    line-height:1.7;
+    max-width:600px;
+    margin:0 auto 32px;
+    position:relative;
+}
+.ag-services__cta-btns{
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    flex-wrap:wrap;
+    position:relative;
+}
+@media(max-width:560px){
+    .ag-services__cta-box{padding:40px 24px;}
+    .ag-services__cta-btns{flex-direction:column;align-items:center;}
+}
+
+/* ── Configurator tabs (metier-page.php) ─────────────────────── */
+.ag-cfg__tiles{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin-bottom:32px;
+}
+.ag-cfg__tile{
+    background:var(--color-bg-card);
+    border:2px solid rgba(255,255,255,.06);
+    border-radius:14px;
+    padding:22px 16px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color .3s,transform .3s,box-shadow .3s;
+    color:var(--color-text);
+    font-family:inherit;
+}
+.ag-cfg__tile:hover{transform:translateY(-3px);border-color:rgba(212,180,92,.3);}
+.ag-cfg__tile.is-active{
+    border-color:var(--color-gold);
+    background:rgba(212,180,92,.06);
+    box-shadow:0 8px 30px rgba(212,180,92,.15);
+}
+.ag-cfg__tile-icon{display:block;font-size:1.8rem;margin-bottom:8px;}
+.ag-cfg__tile-name{display:block;font-size:.9rem;font-weight:700;margin-bottom:4px;}
+.ag-cfg__tile-price{display:block;color:var(--color-gold);font-size:1.1rem;font-weight:800;}
+.ag-cfg__panel{display:none;animation:agFadePanel .4s ease;}
+.ag-cfg__panel.is-active{display:block;}
+@keyframes agFadePanel{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.ag-cfg__panel-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:16px;
+    flex-wrap:wrap;
+    gap:12px;
+}
+.ag-cfg__panel-head h3{
+    font-size:1.3rem;
+    color:var(--color-text);
+    margin:0;
+}
+.ag-cfg__panel-price{
+    font-size:1.6rem;
+    font-weight:800;
+    color:var(--color-gold);
+}
+.ag-cfg__panel-sub{
+    color:var(--color-text-secondary);
+    font-size:1rem;
+    line-height:1.6;
+    margin-bottom:20px;
+}
+.ag-cfg__features{
+    list-style:none;
+    padding:0;
+    margin:0 0 24px;
+    columns:2;
+    column-gap:24px;
+}
+.ag-cfg__features li{
+    padding:8px 0 8px 24px;
+    position:relative;
+    color:var(--color-text-secondary);
+    font-size:.92rem;
+    break-inside:avoid;
+    border-bottom:1px solid rgba(255,255,255,.04);
+}
+.ag-cfg__features li::before{
+    content:"✓";
+    position:absolute;
+    left:0;
+    color:var(--color-gold);
+    font-weight:700;
+}
+.ag-cfg__panel-note{
+    color:var(--color-text-muted);
+    font-size:.82rem;
+    text-align:center;
+    margin-top:12px;
+}
+@media(max-width:768px){
+    .ag-cfg__tiles{grid-template-columns:repeat(2,1fr);}
+    .ag-cfg__features{columns:1;}
+}
 
 /* ── Process Steps ────────────────────────────────────────────── */
 .ag-process__grid{

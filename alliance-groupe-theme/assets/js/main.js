@@ -246,10 +246,43 @@
         });
     }
 
+    /* ── Configurator tabs (metier pages) ────────────────────── */
+    function initConfigurator() {
+        document.querySelectorAll('[data-ag-cfg]').forEach(function (cfg) {
+            var tiles = cfg.querySelectorAll('.ag-cfg__tile');
+            var panels = cfg.querySelectorAll('.ag-cfg__panel');
+
+            tiles.forEach(function (tile) {
+                tile.addEventListener('click', function () {
+                    var tier = this.getAttribute('data-tier');
+
+                    tiles.forEach(function (t) {
+                        t.classList.remove('is-active');
+                        t.setAttribute('aria-selected', 'false');
+                    });
+                    this.classList.add('is-active');
+                    this.setAttribute('aria-selected', 'true');
+
+                    panels.forEach(function (p) {
+                        if (p.getAttribute('data-tier') === tier) {
+                            p.classList.add('is-active');
+                        } else {
+                            p.classList.remove('is-active');
+                        }
+                    });
+                });
+            });
+        });
+    }
+
     /* ── Init on DOM ready ────────────────────────────────────── */
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', animateOnScroll);
-    } else {
+    function initAll() {
         animateOnScroll();
+        initConfigurator();
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAll);
+    } else {
+        initAll();
     }
 })();

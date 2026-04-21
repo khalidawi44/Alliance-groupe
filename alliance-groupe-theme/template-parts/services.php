@@ -50,16 +50,19 @@
                 <div class="ag-scard__icon"><?php echo $s['icon']; ?></div>
                 <h3 class="ag-scard__title"><?php echo esc_html($s['title']); ?></h3>
                 <p class="ag-scard__text"><?php echo esc_html($s['text']); ?></p>
-                <a href="<?php echo esc_url($s['link']); ?>" class="ag-scard__arrow">En savoir plus →</a>
+                <a href="<?php echo esc_url($s['link']); ?>" class="ag-btn-outline ag-scard__btn">Découvrir →</a>
             </div>
             <?php endforeach; ?>
         </div>
 
-        <div class="ag-services__cta ag-anim" data-anim="card" style="text-align:center;margin-top:56px;">
-            <p style="color:#b0b0bc;font-size:1.05rem;margin-bottom:20px;">Vous avez un projet en tête ? Parlons-en directement, sans détour.</p>
-            <div class="ag-hero__buttons" style="justify-content:center;">
-                <a href="tel:+33623526074" class="ag-btn-gold">📞 Un projet ? Discutons-en !</a>
-                <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Nous contacter →</a>
+        <div class="ag-services__cta-box ag-anim" data-anim="card">
+            <div class="ag-services__cta-glow" aria-hidden="true"></div>
+            <h3 class="ag-services__cta-title">Vous avez un <em>projet</em> en tête ?</h3>
+            <p class="ag-services__cta-sub">Parlons-en directement, sans détour. Un appel de 30 minutes suffit pour clarifier votre besoin et identifier les meilleures solutions.</p>
+            <div class="ag-services__cta-btns">
+                <a href="<?php echo esc_url(home_url('/rendez-vous')); ?>" class="ag-btn-gold ag-btn-gold--xl">📅 Réserver un appel gratuit →</a>
+                <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">✉️ Nous écrire</a>
+                <a href="tel:+33623526074" class="ag-btn-outline">📞 06.23.52.60.74</a>
             </div>
         </div>
     </div>
