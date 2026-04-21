@@ -159,7 +159,7 @@ function ag_starter_coach_companion_notice() {
 	if ( class_exists( 'AG_Starter_Companion' ) ) {
 		return;
 	}
-	$search_url = admin_url( 'plugin-install.php?s=ag-starter-companion&tab=search&type=term' );
+	$search_url = 'https://alliancegroupe-inc.com/wp-content/themes/alliance-groupe-theme/assets/downloads/ag-starter-companion.zip';
 	?>
 	<div class="ag-welcome-banner" style="background:linear-gradient(135deg,#1a1a2e 0%,#0a0a0f 100%);border:1px solid rgba(212,180,92,.3);border-left:4px solid #D4B45C;border-radius:8px;padding:40px 36px;margin:20px 20px 20px 0;display:flex;align-items:center;gap:32px;flex-wrap:wrap;">
 		<div style="flex:1;min-width:280px;">
@@ -173,8 +173,8 @@ function ag_starter_coach_companion_notice() {
 			</ul>
 		</div>
 		<div style="text-align:center;">
-			<a href="<?php echo esc_url( $search_url ); ?>" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-size:1.05rem;font-weight:700;padding:16px 32px;border-radius:8px;text-decoration:none;box-shadow:0 4px 16px rgba(212,180,92,.3);"><?php esc_html_e( 'Installer AG Starter Companion →', 'ag-starter-coach' ); ?></a>
-			<p style="color:rgba(255,255,255,.4);font-size:.8rem;margin-top:10px;"><?php esc_html_e( 'Plugin gratuit — installation en 10 secondes', 'ag-starter-coach' ); ?></p>
+			<a href="<?php echo esc_url( $search_url ); ?>" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-size:1.05rem;font-weight:700;padding:16px 32px;border-radius:8px;text-decoration:none;box-shadow:0 4px 16px rgba(212,180,92,.3);"><?php esc_html_e( 'Télécharger AG Starter Companion →', 'ag-starter-coach' ); ?></a>
+			<p style="color:rgba(255,255,255,.4);font-size:.8rem;margin-top:10px;"><?php esc_html_e( 'Téléchargez le ZIP, puis Extensions → Ajouter → Téléverser', 'ag-starter-coach' ); ?></p>
 		</div>
 	</div>
 	<?php
@@ -190,12 +190,12 @@ function ag_starter_coach_dashboard_widget() {
 	$wp_meta_boxes['dashboard']['normal']['high']['ag_starter_welcome'] = $widget;
 }
 function ag_starter_coach_dashboard_widget_render() {
-	$search_url = admin_url( 'plugin-install.php?s=ag-starter-companion&tab=search&type=term' );
+	$search_url = 'https://alliancegroupe-inc.com/wp-content/themes/alliance-groupe-theme/assets/downloads/ag-starter-companion.zip';
 	?>
 	<div style="text-align:center;padding:20px 0;">
 		<p style="font-size:1.15rem;margin:0 0 16px;"><strong><?php esc_html_e( 'Votre theme est pret !', 'ag-starter-coach' ); ?></strong></p>
 		<p style="color:#666;margin:0 0 20px;"><?php esc_html_e( 'Installez le plugin gratuit AG Starter Companion pour creer automatiquement vos pages, votre menu et configurer votre site en 1 clic.', 'ag-starter-coach' ); ?></p>
-		<a href="<?php echo esc_url( $search_url ); ?>" class="button button-primary button-hero"><?php esc_html_e( 'Installer AG Starter Companion →', 'ag-starter-coach' ); ?></a>
+		<a href="<?php echo esc_url( $search_url ); ?>" class="button button-primary button-hero"><?php esc_html_e( 'Télécharger AG Starter Companion →', 'ag-starter-coach' ); ?></a>
 		<p style="color:#999;font-size:.85rem;margin-top:12px;"><?php esc_html_e( 'Gratuit — 10 secondes — aucune inscription', 'ag-starter-coach' ); ?></p>
 	</div>
 	<?php
