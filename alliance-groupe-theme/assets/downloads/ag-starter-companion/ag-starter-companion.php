@@ -3,7 +3,7 @@
  * Plugin Name:       AG Starter Companion
  * Plugin URI:        https://alliancegroupe-inc.com/templates-wordpress
  * Description:       Importer un clic pour les themes AG Starter (Restaurant, Artisan, Coach, Avocat). Cree automatiquement les pages, le menu et les reglages pour un site pret a l'emploi.
- * Version:           1.2.0
+ * Version:           1.3.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            AGthèmes
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_STARTER_COMPANION_VERSION', '1.2.0' );
+define( 'AG_STARTER_COMPANION_VERSION', '1.3.0' );
 define( 'AG_STARTER_COMPANION_FILE', __FILE__ );
 
 /**
@@ -35,6 +35,7 @@ class AG_Starter_Companion {
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 		add_action( 'admin_menu', array( $this, 'register_admin_page' ) );
 		add_action( 'admin_notices', array( $this, 'admin_notice' ) );
+		add_action( 'admin_init', array( $this, 'maybe_patch_theme' ) );
 	}
 
 	/**
@@ -570,6 +571,91 @@ class AG_Starter_Companion {
 					wp_delete_post( $found[0]->ID, true );
 				}
 			}
+		}
+	}
+
+	/**
+	 * Patch the active theme with missing files (licence client, updater, pro-features).
+	 * Runs once per companion version bump. Downloads files from GitHub if missing locally.
+	 */
+	public function maybe_patch_theme() {
+		$slug = $this->get_active_theme_slug();
+		if ( ! $slug || ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$patch_key = 'ag_companion_patched_' . AG_STARTER_COMPANION_VERSION . '_' . $slug;
+		if ( get_option( $patch_key ) ) {
+			return;
+		}
+
+		$theme_dir = get_template_directory();
+		$inc_dir   = $theme_dir . '/inc';
+		if ( ! is_dir( $inc_dir ) ) {
+			wp_mkdir_p( $inc_dir );
+		}
+
+		$gh_base = 'https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/claude/rebuild-alliance-theme-fl7ca/alliance-groupe-theme/assets/downloads/' . $slug . '/inc/';
+
+		$files_to_patch = array(
+			'class-ag-licence-client.php',
+			'class-ag-updater.php',
+			'pro-features.php',
+			'pro-scripts.js',
+		);
+
+		$patched = 0;
+		foreach ( $files_to_patch as $file ) {
+			$local = $inc_dir . '/' . $file;
+			if ( file_exists( $local ) ) {
+				continue;
+			}
+
+			$resp = wp_remote_get( $gh_base . $file, array( 'timeout' => 30 ) );
+			if ( is_wp_error( $resp ) || 200 !== wp_remote_retrieve_response_code( $resp ) ) {
+				continue;
+			}
+
+			$content = wp_remote_retrieve_body( $resp );
+			if ( strlen( $content ) > 50 ) {
+				file_put_contents( $local, $content );
+				$patched++;
+			}
+		}
+
+		// Patch functions.php if licence require is missing
+		$functions_file = $theme_dir . '/functions.php';
+		if ( file_exists( $functions_file ) ) {
+			$functions_content = file_get_contents( $functions_file );
+			if ( false === strpos( $functions_content, 'class-ag-licence-client.php' ) ) {
+				$inject = "\n\n" .
+					"// ── AG Licence & Pro (added by AG Starter Companion " . AG_STARTER_COMPANION_VERSION . ") ──\n" .
+					"if ( file_exists( get_template_directory() . '/inc/class-ag-licence-client.php' ) ) {\n" .
+					"    require get_template_directory() . '/inc/class-ag-licence-client.php';\n" .
+					"    require get_template_directory() . '/inc/class-ag-updater.php';\n" .
+					"    if ( file_exists( get_template_directory() . '/inc/pro-features.php' ) ) {\n" .
+					"        require get_template_directory() . '/inc/pro-features.php';\n" .
+					"    }\n" .
+					"    add_action( 'after_setup_theme', function () {\n" .
+					"        AG_Licence_Client::register_admin();\n" .
+					"        new AG_Theme_Updater( '" . esc_attr( $slug ) . "', wp_get_theme()->get( 'Version' ) );\n" .
+					"        if ( class_exists( 'AG_Pro_Features' ) ) { new AG_Pro_Features( '" . esc_attr( $slug ) . "' ); }\n" .
+					"    }, 20 );\n" .
+					"    add_action( 'wp_enqueue_scripts', function () {\n" .
+					"        if ( class_exists( 'AG_Licence_Client' ) && AG_Licence_Client::get_tier() !== 'free' ) {\n" .
+					"            wp_enqueue_script( 'ag-pro-scripts', get_template_directory_uri() . '/inc/pro-scripts.js', array(), '2.0.0', true );\n" .
+					"        }\n" .
+					"    } );\n" .
+					"}\n";
+				file_put_contents( $functions_file, $functions_content . $inject );
+				$patched++;
+			}
+		}
+
+		if ( $patched > 0 ) {
+			update_option( $patch_key, time() );
+		} else {
+			update_option( $patch_key, time() );
 		}
 	}
 }
