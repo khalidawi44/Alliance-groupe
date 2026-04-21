@@ -28,6 +28,7 @@ class AG_Licence_DB {
         $sql = "CREATE TABLE {$table} (
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
             licence_key_hash VARCHAR(64) NOT NULL,
+            licence_key_enc VARCHAR(255) DEFAULT NULL,
             licence_prefix VARCHAR(10) NOT NULL,
             tier VARCHAR(20) NOT NULL DEFAULT 'pro',
             theme_slug VARCHAR(100) DEFAULT NULL,
@@ -76,6 +77,26 @@ class AG_Licence_DB {
     }
 
     /**
+     * Encrypt a clear-text key for admin retrieval.
+     */
+    public static function encrypt_key( $clear_key ) {
+        $method = 'aes-256-cbc';
+        $key    = substr( hash( 'sha256', AG_LICENCE_HMAC_KEY ), 0, 32 );
+        $iv     = substr( hash( 'sha256', 'ag-iv-salt' ), 0, 16 );
+        return base64_encode( openssl_encrypt( $clear_key, $method, $key, 0, $iv ) );
+    }
+
+    /**
+     * Decrypt an encrypted key for admin display.
+     */
+    public static function decrypt_key( $encrypted ) {
+        $method = 'aes-256-cbc';
+        $key    = substr( hash( 'sha256', AG_LICENCE_HMAC_KEY ), 0, 32 );
+        $iv     = substr( hash( 'sha256', 'ag-iv-salt' ), 0, 16 );
+        return openssl_decrypt( base64_decode( $encrypted ), $method, $key, 0, $iv );
+    }
+
+    /**
      * Insert a new licence.
      *
      * @param string $clear_key   The clear-text licence key.
@@ -98,6 +119,7 @@ class AG_Licence_DB {
             self::table(),
             array(
                 'licence_key_hash' => self::hash_key( $clear_key ),
+                'licence_key_enc'  => self::encrypt_key( $clear_key ),
                 'licence_prefix'   => isset( $prefix_map[ $tier ] ) ? $prefix_map[ $tier ] : 'AGPRO',
                 'tier'             => $tier,
                 'theme_slug'       => $theme_slug ?: null,
@@ -117,6 +139,24 @@ class AG_Licence_DB {
      *
      * @return object|null
      */
+    /**
+     * Find a licence by ID.
+     */
+    public static function find_by_id( $id ) {
+        global $wpdb;
+        return $wpdb->get_row( $wpdb->prepare(
+            "SELECT * FROM " . self::table() . " WHERE id = %d", absint( $id )
+        ) );
+    }
+
+    /**
+     * Delete a licence by ID.
+     */
+    public static function delete( $id ) {
+        global $wpdb;
+        return $wpdb->delete( self::table(), array( 'id' => absint( $id ) ), array( '%d' ) );
+    }
+
     public static function find_by_key( $clear_key ) {
         global $wpdb;
         $hash = self::hash_key( $clear_key );

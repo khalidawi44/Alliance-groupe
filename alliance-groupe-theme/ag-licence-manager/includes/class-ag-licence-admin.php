@@ -10,6 +10,8 @@ class AG_Licence_Admin {
         add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
         add_action( 'admin_post_ag_lm_generate', array( __CLASS__, 'handle_generate' ) );
         add_action( 'admin_post_ag_lm_revoke', array( __CLASS__, 'handle_revoke' ) );
+        add_action( 'admin_post_ag_lm_delete', array( __CLASS__, 'handle_delete' ) );
+        add_action( 'admin_post_ag_lm_resend', array( __CLASS__, 'handle_resend' ) );
         add_action( 'admin_post_ag_lm_save_versions', array( __CLASS__, 'handle_save_versions' ) );
     }
 
@@ -83,25 +85,36 @@ class AG_Licence_Admin {
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Prefix</th>
+                    <th>Clé de licence</th>
                     <th>Tier</th>
                     <th>Email</th>
                     <th>Domaine</th>
                     <th>Statut</th>
                     <th>Créée</th>
-                    <th>Activée</th>
-                    <th>Expire</th>
-                    <th>Action</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if ( empty( $licences ) ) : ?>
-                    <tr><td colspan="10" style="text-align:center;">Aucune licence trouvée.</td></tr>
+                    <tr><td colspan="8" style="text-align:center;">Aucune licence trouvée.</td></tr>
                 <?php else : ?>
-                    <?php foreach ( $licences as $l ) : ?>
+                    <?php foreach ( $licences as $l ) :
+                        $clear_key = '';
+                        if ( ! empty( $l->licence_key_enc ) ) {
+                            $clear_key = AG_Licence_DB::decrypt_key( $l->licence_key_enc );
+                        }
+                    ?>
                     <tr>
                         <td><?php echo esc_html( $l->id ); ?></td>
-                        <td><code><?php echo esc_html( $l->licence_prefix ); ?></code></td>
+                        <td>
+                            <?php if ( $clear_key ) : ?>
+                                <code id="ag-key-<?php echo esc_attr( $l->id ); ?>" style="font-size:.8rem;word-break:break-all;display:none;"><?php echo esc_html( $clear_key ); ?></code>
+                                <button type="button" class="button button-small" onclick="var el=document.getElementById('ag-key-<?php echo esc_attr( $l->id ); ?>');el.style.display=el.style.display==='none'?'inline':'none';this.textContent=el.style.display==='none'?'👁 Voir':'🙈 Masquer';">👁 Voir</button>
+                                <button type="button" class="button button-small" onclick="var el=document.getElementById('ag-key-<?php echo esc_attr( $l->id ); ?>');el.style.display='inline';navigator.clipboard.writeText(el.textContent);this.textContent='✅ Copié';setTimeout(function(){this.textContent='📋 Copier'}.bind(this),2000);">📋 Copier</button>
+                            <?php else : ?>
+                                <em style="color:#999;">Clé hashée (ancienne)</em>
+                            <?php endif; ?>
+                        </td>
                         <td><strong><?php echo esc_html( ucfirst( $l->tier ) ); ?></strong></td>
                         <td><?php echo esc_html( $l->email ); ?></td>
                         <td><?php echo $l->domain ? esc_html( $l->domain ) : '<em>—</em>'; ?></td>
@@ -112,18 +125,32 @@ class AG_Licence_Admin {
                             ?>
                             <span style="color:<?php echo $color; ?>;font-weight:700;"><?php echo esc_html( ucfirst( $l->status ) ); ?></span>
                         </td>
-                        <td><?php echo esc_html( $l->created_at ); ?></td>
-                        <td><?php echo $l->activated_at ? esc_html( $l->activated_at ) : '—'; ?></td>
-                        <td><?php echo $l->expires_at ? esc_html( $l->expires_at ) : 'Lifetime'; ?></td>
-                        <td>
+                        <td><?php echo esc_html( substr( $l->created_at, 0, 10 ) ); ?></td>
+                        <td style="white-space:nowrap;">
+                            <?php if ( $clear_key ) : ?>
+                            <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;">
+                                <?php wp_nonce_field( 'ag_lm_resend_' . $l->id ); ?>
+                                <input type="hidden" name="action" value="ag_lm_resend">
+                                <input type="hidden" name="licence_id" value="<?php echo esc_attr( $l->id ); ?>">
+                                <button type="submit" class="button button-small" title="Renvoyer la clé par email">📧</button>
+                            </form>
+                            <?php endif; ?>
+
                             <?php if ( 'revoked' !== $l->status ) : ?>
                             <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;">
                                 <?php wp_nonce_field( 'ag_lm_revoke_' . $l->id ); ?>
                                 <input type="hidden" name="action" value="ag_lm_revoke">
                                 <input type="hidden" name="licence_id" value="<?php echo esc_attr( $l->id ); ?>">
-                                <button type="submit" class="button button-small" onclick="return confirm('Révoquer cette licence ?');">Révoquer</button>
+                                <button type="submit" class="button button-small" title="Révoquer" onclick="return confirm('Révoquer cette licence ?');">⛔</button>
                             </form>
                             <?php endif; ?>
+
+                            <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;">
+                                <?php wp_nonce_field( 'ag_lm_delete_' . $l->id ); ?>
+                                <input type="hidden" name="action" value="ag_lm_delete">
+                                <input type="hidden" name="licence_id" value="<?php echo esc_attr( $l->id ); ?>">
+                                <button type="submit" class="button button-small" title="Supprimer définitivement" onclick="return confirm('Supprimer définitivement cette licence ? Cette action est irréversible.');" style="color:#dc3545;">🗑</button>
+                            </form>
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -273,7 +300,36 @@ class AG_Licence_Admin {
 
         AG_Licence_DB::update( $id, array( 'status' => 'revoked', 'domain' => null ) );
 
-        wp_safe_redirect( admin_url( 'admin.php?page=ag-licence-manager&tab=licences' ) );
+        wp_safe_redirect( admin_url( 'admin.php?page=ag-licence-manager&tab=licences&msg=' . urlencode( 'Licence révoquée.' ) ) );
+        exit;
+    }
+
+    public static function handle_delete() {
+        if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Non autorisé.' );
+        $id = absint( $_POST['licence_id'] );
+        check_admin_referer( 'ag_lm_delete_' . $id );
+
+        AG_Licence_DB::delete( $id );
+
+        wp_safe_redirect( admin_url( 'admin.php?page=ag-licence-manager&tab=licences&msg=' . urlencode( 'Licence supprimée définitivement.' ) ) );
+        exit;
+    }
+
+    public static function handle_resend() {
+        if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Non autorisé.' );
+        $id = absint( $_POST['licence_id'] );
+        check_admin_referer( 'ag_lm_resend_' . $id );
+
+        $licence = AG_Licence_DB::find_by_id( $id );
+        if ( ! $licence || empty( $licence->licence_key_enc ) ) {
+            wp_safe_redirect( admin_url( 'admin.php?page=ag-licence-manager&tab=licences&msg=' . urlencode( 'Erreur : clé introuvable.' ) ) );
+            exit;
+        }
+
+        $clear_key = AG_Licence_DB::decrypt_key( $licence->licence_key_enc );
+        AG_Licence_Email::send_licence( $licence->email, $clear_key, $licence->tier );
+
+        wp_safe_redirect( admin_url( 'admin.php?page=ag-licence-manager&tab=licences&msg=' . urlencode( 'Email renvoyé à ' . $licence->email ) ) );
         exit;
     }
 

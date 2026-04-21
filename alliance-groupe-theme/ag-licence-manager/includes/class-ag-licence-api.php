@@ -27,6 +27,12 @@ class AG_Licence_API {
             'permission_callback' => '__return_true',
         ) );
 
+        register_rest_route( $ns, '/licence/resend', array(
+            'methods'             => 'POST',
+            'callback'            => array( __CLASS__, 'resend_key' ),
+            'permission_callback' => '__return_true',
+        ) );
+
         register_rest_route( $ns, '/companion-update', array(
             'methods'             => 'GET',
             'callback'            => array( __CLASS__, 'companion_update' ),
@@ -138,6 +144,44 @@ class AG_Licence_API {
         );
 
         return new WP_REST_Response( $info );
+    }
+
+    // ─── RESEND KEY BY EMAIL ─────────────────────────────────
+
+    public static function resend_key( WP_REST_Request $req ) {
+        $rl = self::rate_limit();
+        if ( $rl ) return $rl;
+
+        $email = sanitize_email( $req->get_param( 'email' ) );
+        if ( empty( $email ) ) {
+            return self::signed_response( array( 'success' => false, 'message' => 'Email requis.' ), 400 );
+        }
+
+        global $wpdb;
+        $table = AG_Licence_DB::table();
+        $licences = $wpdb->get_results( $wpdb->prepare(
+            "SELECT * FROM {$table} WHERE email = %s AND licence_key_enc IS NOT NULL ORDER BY created_at DESC",
+            $email
+        ) );
+
+        if ( empty( $licences ) ) {
+            return self::signed_response( array( 'success' => false, 'message' => 'Aucune licence trouvée pour cet email.' ), 404 );
+        }
+
+        $sent = 0;
+        foreach ( $licences as $l ) {
+            $clear_key = AG_Licence_DB::decrypt_key( $l->licence_key_enc );
+            if ( $clear_key ) {
+                AG_Licence_Email::send_licence( $l->email, $clear_key, $l->tier );
+                $sent++;
+            }
+        }
+
+        return self::signed_response( array(
+            'success' => true,
+            'message' => $sent . ' clé(s) renvoyée(s) à ' . $email,
+            'count'   => $sent,
+        ) );
     }
 
     // ─── ACTIVATE ─────────────────────────────────────────────
