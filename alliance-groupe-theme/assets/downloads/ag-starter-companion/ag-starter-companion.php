@@ -40,6 +40,10 @@ class AG_Starter_Companion {
 		add_action( 'wp_dashboard_setup', array( $this, 'upgrade_dashboard_widget' ) );
 		add_action( 'customize_register', array( $this, 'upgrade_customizer_section' ), 99 );
 		add_action( 'admin_footer', array( $this, 'upgrade_footer_nudge' ) );
+
+		// Self-updater: check for new versions of this plugin
+		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_self_update' ) );
+		add_filter( 'plugins_api', array( $this, 'self_update_info' ), 20, 3 );
 	}
 
 	/**
@@ -576,6 +580,69 @@ class AG_Starter_Companion {
 				}
 			}
 		}
+	}
+
+	// ═══════════════════════════════════════════════════════════════
+	// SELF-UPDATER — auto-update this plugin from alliancegroupe-inc.com
+	// ═══════════════════════════════════════════════════════════════
+
+	const UPDATE_URL = 'https://alliancegroupe-inc.com/wp-json/ag/v1/companion-update';
+
+	public function check_self_update( $transient ) {
+		if ( empty( $transient->checked ) ) return $transient;
+
+		$cache_key = 'ag_companion_update_check';
+		$remote    = get_transient( $cache_key );
+
+		if ( false === $remote ) {
+			$resp = wp_remote_get( self::UPDATE_URL, array( 'timeout' => 10 ) );
+			if ( ! is_wp_error( $resp ) && 200 === wp_remote_retrieve_response_code( $resp ) ) {
+				$remote = json_decode( wp_remote_retrieve_body( $resp ), true );
+				set_transient( $cache_key, $remote, 12 * HOUR_IN_SECONDS );
+			}
+		}
+
+		if ( $remote && ! empty( $remote['version'] ) && version_compare( AG_STARTER_COMPANION_VERSION, $remote['version'], '<' ) ) {
+			$plugin_slug = plugin_basename( AG_STARTER_COMPANION_FILE );
+			$transient->response[ $plugin_slug ] = (object) array(
+				'slug'        => 'ag-starter-companion',
+				'plugin'      => $plugin_slug,
+				'new_version' => $remote['version'],
+				'url'         => $remote['url'] ?? 'https://alliancegroupe-inc.com/templates-wordpress',
+				'package'     => $remote['download_url'] ?? '',
+				'tested'      => $remote['tested'] ?? '6.5',
+				'requires'    => $remote['requires'] ?? '6.0',
+				'requires_php'=> $remote['requires_php'] ?? '7.4',
+			);
+		}
+
+		return $transient;
+	}
+
+	public function self_update_info( $result, $action, $args ) {
+		if ( 'plugin_information' !== $action ) return $result;
+		if ( ! isset( $args->slug ) || 'ag-starter-companion' !== $args->slug ) return $result;
+
+		$cache_key = 'ag_companion_update_check';
+		$remote    = get_transient( $cache_key );
+		if ( ! $remote || empty( $remote['version'] ) ) return $result;
+
+		$info = new stdClass();
+		$info->name          = 'AG Starter Companion';
+		$info->slug          = 'ag-starter-companion';
+		$info->version       = $remote['version'];
+		$info->author        = '<a href="https://alliancegroupe-inc.com">Alliance Groupe</a>';
+		$info->homepage      = 'https://alliancegroupe-inc.com/templates-wordpress';
+		$info->requires      = $remote['requires'] ?? '6.0';
+		$info->requires_php  = $remote['requires_php'] ?? '7.4';
+		$info->tested        = $remote['tested'] ?? '6.5';
+		$info->download_link = $remote['download_url'] ?? '';
+		$info->sections      = array(
+			'description' => 'Plugin compagnon pour les themes AG Starter. Import demo en 1 clic, configuration automatique.',
+			'changelog'   => $remote['changelog'] ?? 'Mise a jour avec nouvelles fonctionnalites.',
+		);
+
+		return $info;
 	}
 
 	// ═══════════════════════════════════════════════════════════════

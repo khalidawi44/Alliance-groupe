@@ -27,6 +27,12 @@ class AG_Licence_API {
             'permission_callback' => '__return_true',
         ) );
 
+        register_rest_route( $ns, '/companion-update', array(
+            'methods'             => 'GET',
+            'callback'            => array( __CLASS__, 'companion_update' ),
+            'permission_callback' => '__return_true',
+        ) );
+
         register_rest_route( $ns, '/licence/verify', array(
             'methods'             => 'POST',
             'callback'            => array( __CLASS__, 'verify' ),
@@ -72,6 +78,22 @@ class AG_Licence_API {
         $resp = new WP_REST_Response( $data, $status );
         $resp->header( 'X-AG-Signature', $sig );
         return $resp;
+    }
+
+    // ─── COMPANION UPDATE CHECK ─────────────────────────────────
+
+    public static function companion_update( WP_REST_Request $req ) {
+        $info = get_option( 'ag_lm_companion_version', array(
+            'version'      => '1.4.0',
+            'download_url' => home_url( '/wp-content/themes/alliance-groupe-theme/assets/downloads/ag-starter-companion.zip' ),
+            'url'          => home_url( '/templates-wordpress' ),
+            'tested'       => '6.5',
+            'requires'     => '6.0',
+            'requires_php' => '7.4',
+            'changelog'    => 'v1.4.0 : Promos upgrade Pro dans l\'admin, auto-patch des themes, widget dashboard.',
+        ) );
+
+        return new WP_REST_Response( $info );
     }
 
     // ─── ACTIVATE ─────────────────────────────────────────────
