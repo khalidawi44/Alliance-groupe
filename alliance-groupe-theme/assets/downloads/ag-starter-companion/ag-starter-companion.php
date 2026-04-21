@@ -3,7 +3,7 @@
  * Plugin Name:       AG Starter Companion
  * Plugin URI:        https://alliancegroupe-inc.com/templates-wordpress
  * Description:       Importer un clic pour les themes AG Starter (Restaurant, Artisan, Coach, Avocat). Cree automatiquement les pages, le menu et les reglages pour un site pret a l'emploi.
- * Version:           1.3.0
+ * Version:           1.4.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            AGthèmes
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_STARTER_COMPANION_VERSION', '1.3.0' );
+define( 'AG_STARTER_COMPANION_VERSION', '1.4.0' );
 define( 'AG_STARTER_COMPANION_FILE', __FILE__ );
 
 /**
@@ -36,6 +36,10 @@ class AG_Starter_Companion {
 		add_action( 'admin_menu', array( $this, 'register_admin_page' ) );
 		add_action( 'admin_notices', array( $this, 'admin_notice' ) );
 		add_action( 'admin_init', array( $this, 'maybe_patch_theme' ) );
+		add_action( 'admin_notices', array( $this, 'upgrade_banner' ) );
+		add_action( 'wp_dashboard_setup', array( $this, 'upgrade_dashboard_widget' ) );
+		add_action( 'customize_register', array( $this, 'upgrade_customizer_section' ), 99 );
+		add_action( 'admin_footer', array( $this, 'upgrade_footer_nudge' ) );
 	}
 
 	/**
@@ -572,6 +576,173 @@ class AG_Starter_Companion {
 				}
 			}
 		}
+	}
+
+	// ═══════════════════════════════════════════════════════════════
+	// UPGRADE PROMOS — shown everywhere until user upgrades to Pro
+	// ═══════════════════════════════════════════════════════════════
+
+	private function is_free_tier() {
+		if ( class_exists( 'AG_Licence_Client' ) ) {
+			return AG_Licence_Client::get_tier() === 'free';
+		}
+		return true;
+	}
+
+	private function get_upgrade_url() {
+		return 'https://alliancegroupe-inc.com/templates-wordpress?utm_source=wp-admin&utm_medium=companion&utm_campaign=upgrade';
+	}
+
+	/**
+	 * Big upgrade banner on all admin pages.
+	 */
+	public function upgrade_banner() {
+		if ( ! $this->get_active_theme_slug() || ! $this->is_free_tier() ) return;
+		if ( ! current_user_can( 'manage_options' ) ) return;
+		$done = get_option( 'ag_starter_companion_done_' . $this->get_active_theme_slug() );
+		if ( ! $done ) return; // Show companion install notice first
+
+		$dismissed = get_user_meta( get_current_user_id(), 'ag_upgrade_dismissed', true );
+		if ( $dismissed && ( time() - intval( $dismissed ) ) < 7 * DAY_IN_SECONDS ) return;
+
+		if ( isset( $_GET['ag_dismiss_upgrade'] ) && '1' === $_GET['ag_dismiss_upgrade'] ) {
+			update_user_meta( get_current_user_id(), 'ag_upgrade_dismissed', time() );
+			return;
+		}
+
+		$url = $this->get_upgrade_url();
+		$dismiss_url = add_query_arg( 'ag_dismiss_upgrade', '1' );
+		?>
+		<div style="background:linear-gradient(135deg,#1a1a2e 0%,#0f0f18 100%);border:1px solid rgba(212,180,92,.35);border-radius:10px;padding:28px 32px;margin:20px 20px 10px 0;display:flex;align-items:center;gap:28px;flex-wrap:wrap;position:relative;">
+			<a href="<?php echo esc_url( $dismiss_url ); ?>" style="position:absolute;top:10px;right:14px;color:rgba(255,255,255,.3);font-size:1.2rem;text-decoration:none;" title="Masquer 7 jours">✕</a>
+			<div style="flex:1;min-width:260px;">
+				<h2 style="color:#D4B45C;font-size:1.3rem;margin:0 0 8px;font-weight:800;">⚡ <?php esc_html_e( 'Passez a la version Pro', 'ag-starter-companion' ); ?></h2>
+				<p style="color:rgba(255,255,255,.75);font-size:.95rem;line-height:1.6;margin:0;">
+					<?php esc_html_e( 'Debloquez le header sticky, les animations au scroll, les couleurs avancees, le footer personnalisable et bien plus. A partir de 49€ — paiement unique, mises a jour incluses.', 'ag-starter-companion' ); ?>
+				</p>
+			</div>
+			<div style="display:flex;gap:10px;flex-wrap:wrap;">
+				<a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-weight:700;padding:14px 28px;border-radius:8px;text-decoration:none;font-size:.95rem;white-space:nowrap;">Voir les packs Pro →</a>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Dashboard widget with upgrade CTA.
+	 */
+	public function upgrade_dashboard_widget() {
+		if ( ! $this->get_active_theme_slug() || ! $this->is_free_tier() ) return;
+		wp_add_dashboard_widget(
+			'ag_upgrade_widget',
+			'⭐ ' . esc_html__( 'Passer a la version Pro', 'ag-starter-companion' ),
+			array( $this, 'render_upgrade_dashboard' )
+		);
+		global $wp_meta_boxes;
+		if ( isset( $wp_meta_boxes['dashboard']['normal']['core']['ag_upgrade_widget'] ) ) {
+			$widget = $wp_meta_boxes['dashboard']['normal']['core']['ag_upgrade_widget'];
+			unset( $wp_meta_boxes['dashboard']['normal']['core']['ag_upgrade_widget'] );
+			$wp_meta_boxes['dashboard']['side']['high']['ag_upgrade_widget'] = $widget;
+		}
+	}
+
+	public function render_upgrade_dashboard() {
+		$url = $this->get_upgrade_url();
+		?>
+		<div style="text-align:center;padding:16px 0;">
+			<div style="font-size:2.4rem;margin-bottom:12px;">🚀</div>
+			<h3 style="margin:0 0 10px;font-size:1.1rem;"><?php esc_html_e( 'Vous utilisez la version gratuite', 'ag-starter-companion' ); ?></h3>
+			<p style="color:#666;font-size:.9rem;margin:0 0 16px;line-height:1.5;">
+				<?php esc_html_e( 'Debloquez des fonctionnalites premium : animations, header sticky, couleurs avancees, temoignages, footer personnalisable.', 'ag-starter-companion' ); ?>
+			</p>
+			<div style="background:#f8f5ec;border:1px solid #D4B45C;border-radius:8px;padding:14px;margin:0 0 16px;">
+				<div style="display:flex;justify-content:space-around;gap:8px;flex-wrap:wrap;">
+					<div><strong style="font-size:1.1rem;">49€</strong><br><span style="font-size:.8rem;color:#666;">Pro</span></div>
+					<div><strong style="font-size:1.1rem;">99€</strong><br><span style="font-size:.8rem;color:#666;">Premium</span></div>
+					<div><strong style="font-size:1.1rem;">149€</strong><br><span style="font-size:.8rem;color:#666;">Business</span></div>
+				</div>
+				<p style="font-size:.78rem;color:#888;margin:8px 0 0;">Paiement unique — mises a jour a vie</p>
+			</div>
+			<a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener" class="button button-primary" style="font-size:.95rem;padding:8px 24px;">
+				<?php esc_html_e( 'Comparer les packs →', 'ag-starter-companion' ); ?>
+			</a>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Locked section in the Customizer.
+	 */
+	public function upgrade_customizer_section( $wp_customize ) {
+		if ( ! $this->get_active_theme_slug() || ! $this->is_free_tier() ) return;
+
+		$wp_customize->add_section( 'ag_locked_pro', array(
+			'title'       => esc_html__( '🔒 Header Sticky (Pro)', 'ag-starter-companion' ),
+			'priority'    => 30,
+			'description' => esc_html__( 'Le header sticky au scroll est disponible avec le Pack Pro. Activez votre licence pour debloquer cette fonctionnalite.', 'ag-starter-companion' ),
+		) );
+		$wp_customize->add_setting( 'ag_locked_pro_info', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
+		$wp_customize->add_control( 'ag_locked_pro_info', array(
+			'label'       => esc_html__( 'A partir de 49€', 'ag-starter-companion' ),
+			'section'     => 'ag_locked_pro',
+			'type'        => 'hidden',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url() ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Voir les packs Pro →</a>',
+		) );
+
+		$wp_customize->add_section( 'ag_locked_animations', array(
+			'title'       => esc_html__( '🔒 Animations (Pro)', 'ag-starter-companion' ),
+			'priority'    => 31,
+			'description' => esc_html__( 'Les animations au scroll (fade-in, slide, scale) sont disponibles avec le Pack Pro.', 'ag-starter-companion' ),
+		) );
+		$wp_customize->add_setting( 'ag_locked_anim_info', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
+		$wp_customize->add_control( 'ag_locked_anim_info', array(
+			'label'   => esc_html__( 'A partir de 49€', 'ag-starter-companion' ),
+			'section' => 'ag_locked_animations',
+			'type'    => 'hidden',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url() ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Voir les packs Pro →</a>',
+		) );
+
+		$wp_customize->add_section( 'ag_locked_testimonials', array(
+			'title'       => esc_html__( '🔒 Temoignages (Premium)', 'ag-starter-companion' ),
+			'priority'    => 32,
+			'description' => esc_html__( 'La section temoignages clients est disponible avec le Pack Premium (99€).', 'ag-starter-companion' ),
+		) );
+		$wp_customize->add_setting( 'ag_locked_testi_info', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
+		$wp_customize->add_control( 'ag_locked_testi_info', array(
+			'label'   => esc_html__( 'A partir de 99€', 'ag-starter-companion' ),
+			'section' => 'ag_locked_testimonials',
+			'type'    => 'hidden',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url() ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Voir les packs Premium →</a>',
+		) );
+
+		$wp_customize->add_section( 'ag_locked_whitelabel', array(
+			'title'       => esc_html__( '🔒 White-Label (Business)', 'ag-starter-companion' ),
+			'priority'    => 33,
+			'description' => esc_html__( 'Supprimez les credits Alliance Groupe et personnalisez entierement le footer avec le Pack Business (149€).', 'ag-starter-companion' ),
+		) );
+		$wp_customize->add_setting( 'ag_locked_wl_info', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
+		$wp_customize->add_control( 'ag_locked_wl_info', array(
+			'label'   => esc_html__( 'A partir de 149€', 'ag-starter-companion' ),
+			'section' => 'ag_locked_whitelabel',
+			'type'    => 'hidden',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url() ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Voir les packs Business →</a>',
+		) );
+	}
+
+	/**
+	 * Subtle footer nudge on every admin page.
+	 */
+	public function upgrade_footer_nudge() {
+		if ( ! $this->get_active_theme_slug() || ! $this->is_free_tier() ) return;
+		if ( ! current_user_can( 'manage_options' ) ) return;
+		$url = $this->get_upgrade_url();
+		?>
+		<div style="position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,15,.95);border-top:2px solid #D4B45C;padding:10px 24px;display:flex;align-items:center;justify-content:center;gap:16px;z-index:9999;font-size:.88rem;" id="ag-footer-nudge">
+			<span style="color:rgba(255,255,255,.7);">⚡ <?php esc_html_e( 'Version gratuite — Passez a Pro pour debloquer toutes les fonctionnalites', 'ag-starter-companion' ); ?></span>
+			<a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener" style="background:#D4B45C;color:#0a0a0f;font-weight:700;padding:6px 18px;border-radius:6px;text-decoration:none;font-size:.85rem;">Passer a Pro →</a>
+			<a href="#" onclick="document.getElementById('ag-footer-nudge').style.display='none';return false;" style="color:rgba(255,255,255,.3);font-size:.9rem;text-decoration:none;margin-left:8px;">✕</a>
+		</div>
+		<?php
 	}
 
 	/**
