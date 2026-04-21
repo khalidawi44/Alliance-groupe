@@ -170,12 +170,80 @@ function ag_starter_restaurant_companion_notice() {
 		return;
 	}
 	$search_url = admin_url( 'plugin-install.php?s=ag-starter-companion&tab=search&type=term' );
-	echo '<div class="notice notice-info is-dismissible"><p><strong>AG Starter Restaurant</strong> &mdash; ';
-	printf(
-		/* translators: %s: plugin search link. */
-		wp_kses( __( 'Installez le plugin gratuit %s pour importer en un clic les pages, le menu et les reglages de ce theme.', 'ag-starter-restaurant' ), array( 'a' => array( 'href' => array() ), 'strong' => array() ) ),
-		'<a href="' . esc_url( $search_url ) . '"><strong>AG Starter Companion</strong></a>'
-	);
-	echo '</p></div>';
+	?>
+	<div class="ag-welcome-banner" style="
+		background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0f 100%);
+		border: 1px solid rgba(212,180,92,.3);
+		border-left: 4px solid #D4B45C;
+		border-radius: 8px;
+		padding: 40px 36px;
+		margin: 20px 20px 20px 0;
+		display: flex;
+		align-items: center;
+		gap: 32px;
+		flex-wrap: wrap;
+	">
+		<div style="flex:1;min-width:280px;">
+			<h2 style="color:#fff;font-size:1.6rem;margin:0 0 12px;">
+				🎉 <?php esc_html_e( 'Bienvenue dans AG Starter Restaurant !', 'ag-starter-restaurant' ); ?>
+			</h2>
+			<p style="color:rgba(255,255,255,.7);font-size:1.05rem;line-height:1.6;margin:0 0 8px;">
+				<?php esc_html_e( 'Votre theme est installe. Pour un site pret a l\'emploi en 1 clic (pages, menu, reglages), installez le plugin gratuit AG Starter Companion.', 'ag-starter-restaurant' ); ?>
+			</p>
+			<ul style="color:rgba(255,255,255,.6);font-size:.92rem;margin:12px 0 0;padding-left:18px;">
+				<li><?php esc_html_e( '5 pages creees automatiquement (Accueil, Carte, Reservation, A propos, Contact)', 'ag-starter-restaurant' ); ?></li>
+				<li><?php esc_html_e( 'Menu principal configure et assigne', 'ag-starter-restaurant' ); ?></li>
+				<li><?php esc_html_e( 'Page d\'accueil et permaliens actives', 'ag-starter-restaurant' ); ?></li>
+				<li><?php esc_html_e( '100% gratuit, aucune connexion internet requise', 'ag-starter-restaurant' ); ?></li>
+			</ul>
+		</div>
+		<div style="text-align:center;">
+			<a href="<?php echo esc_url( $search_url ); ?>" style="
+				display: inline-block;
+				background: #D4B45C;
+				color: #0a0a0f;
+				font-size: 1.05rem;
+				font-weight: 700;
+				padding: 16px 32px;
+				border-radius: 8px;
+				text-decoration: none;
+				box-shadow: 0 4px 16px rgba(212,180,92,.3);
+				transition: transform .2s, box-shadow .2s;
+			" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 24px rgba(212,180,92,.4)';"
+			   onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 16px rgba(212,180,92,.3)';">
+				<?php esc_html_e( 'Installer AG Starter Companion →', 'ag-starter-restaurant' ); ?>
+			</a>
+			<p style="color:rgba(255,255,255,.4);font-size:.8rem;margin-top:10px;">
+				<?php esc_html_e( 'Plugin gratuit — installation en 10 secondes', 'ag-starter-restaurant' ); ?>
+			</p>
+		</div>
+	</div>
+	<?php
 }
 add_action( 'admin_notices', 'ag_starter_restaurant_companion_notice' );
+
+// Dashboard widget — visible on the main admin dashboard
+function ag_starter_restaurant_dashboard_widget() {
+	if ( class_exists( 'AG_Starter_Companion' ) ) return;
+	wp_add_dashboard_widget(
+		'ag_starter_welcome',
+		esc_html__( '🚀 AG Starter Restaurant — Configuration', 'ag-starter-restaurant' ),
+		'ag_starter_restaurant_dashboard_widget_render'
+	);
+	global $wp_meta_boxes;
+	$widget = $wp_meta_boxes['dashboard']['normal']['core']['ag_starter_welcome'];
+	unset( $wp_meta_boxes['dashboard']['normal']['core']['ag_starter_welcome'] );
+	$wp_meta_boxes['dashboard']['normal']['high']['ag_starter_welcome'] = $widget;
+}
+function ag_starter_restaurant_dashboard_widget_render() {
+	$search_url = admin_url( 'plugin-install.php?s=ag-starter-companion&tab=search&type=term' );
+	?>
+	<div style="text-align:center;padding:20px 0;">
+		<p style="font-size:1.15rem;margin:0 0 16px;"><strong><?php esc_html_e( 'Votre theme est pret !', 'ag-starter-restaurant' ); ?></strong></p>
+		<p style="color:#666;margin:0 0 20px;"><?php esc_html_e( 'Installez le plugin gratuit AG Starter Companion pour creer automatiquement vos pages, votre menu et configurer votre site en 1 clic.', 'ag-starter-restaurant' ); ?></p>
+		<a href="<?php echo esc_url( $search_url ); ?>" class="button button-primary button-hero"><?php esc_html_e( 'Installer AG Starter Companion →', 'ag-starter-restaurant' ); ?></a>
+		<p style="color:#999;font-size:.85rem;margin-top:12px;"><?php esc_html_e( 'Gratuit — 10 secondes — aucune inscription', 'ag-starter-restaurant' ); ?></p>
+	</div>
+	<?php
+}
+add_action( 'wp_dashboard_setup', 'ag_starter_restaurant_dashboard_widget' );
