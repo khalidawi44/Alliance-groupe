@@ -93,6 +93,13 @@ class AG_Licence_API {
             'changelog'    => 'v1.4.0 : Promos upgrade Pro dans l\'admin, auto-patch des themes, widget dashboard.',
         ) );
 
+        // Expose Stripe payment URLs for the companion's upgrade CTAs
+        $info['stripe_urls'] = array(
+            'pro'      => get_option( 'ag_stripe_pro_url', '' ),
+            'premium'  => get_option( 'ag_stripe_premium_url', '' ),
+            'business' => get_option( 'ag_stripe_business_url', '' ),
+        );
+
         return new WP_REST_Response( $info );
     }
 
