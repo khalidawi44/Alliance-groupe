@@ -50,6 +50,12 @@ class AG_Licence_DB {
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta( $sql );
 
+        // Force add licence_key_enc column if missing (dbDelta can be unreliable for ALTER)
+        $col_exists = $wpdb->get_results( "SHOW COLUMNS FROM {$table} LIKE 'licence_key_enc'" );
+        if ( empty( $col_exists ) ) {
+            $wpdb->query( "ALTER TABLE {$table} ADD COLUMN licence_key_enc VARCHAR(255) DEFAULT NULL AFTER licence_key_hash" );
+        }
+
         update_option( 'ag_lm_db_version', AG_LM_VERSION );
     }
 
@@ -125,14 +131,20 @@ class AG_Licence_DB {
 
         $data = array(
             'licence_key_hash' => self::hash_key( $clear_key ),
-            'licence_key_enc'  => self::encrypt_key( $clear_key ),
             'licence_prefix'   => isset( $prefix_map[ $tier ] ) ? $prefix_map[ $tier ] : 'AGPRO',
             'tier'             => $tier,
             'email'            => sanitize_email( $email ),
             'status'           => 'inactive',
             'created_at'       => current_time( 'mysql' ),
         );
-        $formats = array( '%s', '%s', '%s', '%s', '%s', '%s', '%s' );
+        $formats = array( '%s', '%s', '%s', '%s', '%s', '%s' );
+
+        // Try to add encrypted key (may fail if column doesn't exist yet)
+        $enc = self::encrypt_key( $clear_key );
+        if ( $enc ) {
+            $data['licence_key_enc'] = $enc;
+            $formats[] = '%s';
+        }
 
         if ( $theme_slug ) {
             $data['theme_slug'] = $theme_slug;
@@ -144,6 +156,13 @@ class AG_Licence_DB {
         }
 
         $result = $wpdb->insert( self::table(), $data, $formats );
+
+        // If insert failed (possibly due to missing column), retry without enc
+        if ( false === $result && isset( $data['licence_key_enc'] ) ) {
+            unset( $data['licence_key_enc'] );
+            array_pop( $formats );
+            $result = $wpdb->insert( self::table(), $data, $formats );
+        }
 
         return $result ? $wpdb->insert_id : false;
     }
