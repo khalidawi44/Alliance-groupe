@@ -50,7 +50,6 @@
 
         <!-- Desktop Mega Menu -->
         <ul class="ag-nav__list" id="ag-nav-list">
-            <li><a href="<?php echo esc_url(home_url('/')); ?>">Accueil</a></li>
 
             <!-- Services + dropdown -->
             <li class="ag-nav__has-sub">
@@ -302,7 +301,6 @@
         </div>
 
         <div class="ag-mobile-menu__content">
-            <a href="<?php echo esc_url(home_url('/')); ?>" class="ag-mobile-menu__link">Accueil</a>
 
             <div class="ag-mobile-menu__group">
                 <button class="ag-mobile-menu__toggle" type="button">Services <span class="ag-mobile-menu__arrow">+</span></button>
