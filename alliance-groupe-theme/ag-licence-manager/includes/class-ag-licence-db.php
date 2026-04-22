@@ -128,7 +128,7 @@ class AG_Licence_DB {
                 'stripe_session'   => $stripe_sess ?: null,
                 'created_at'       => current_time( 'mysql' ),
             ),
-            array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
+            array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
         );
 
         return $result ? $wpdb->insert_id : false;

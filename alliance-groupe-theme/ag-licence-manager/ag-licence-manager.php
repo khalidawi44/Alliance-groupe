@@ -40,6 +40,16 @@ require_once AG_LM_DIR . 'includes/class-ag-licence-email.php';
 register_activation_hook( AG_LM_FILE, array( 'AG_Licence_DB', 'install' ) );
 
 /**
+ * Auto-upgrade DB schema if version changed.
+ */
+add_action( 'admin_init', function () {
+    $installed = get_option( 'ag_lm_db_version', '0' );
+    if ( version_compare( $installed, AG_LM_VERSION, '<' ) ) {
+        AG_Licence_DB::install();
+    }
+} );
+
+/**
  * Initialize the plugin.
  */
 add_action( 'plugins_loaded', function () {
