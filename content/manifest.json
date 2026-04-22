@@ -45,7 +45,8 @@
         "pages/confidentialite.json",
         "pages/bureau-marrakech.json",
         "pages/bureau-naples.json",
-        "pages/bureau-nantes.json"
+        "pages/bureau-nantes.json",
+        "pages/wordpress-barber.json"
     ],
 
     "articles": [
@@ -107,6 +108,7 @@
         "templates/page-wordpress-restaurant.php",
         "templates/page-wordpress-artisan.php",
         "templates/page-wordpress-coach.php",
+        "templates/page-wordpress-barber.php",
         "template-parts/metier-page.php",
         "template-parts/download-modal.php",
         "templates/page-merci-achat.php",
