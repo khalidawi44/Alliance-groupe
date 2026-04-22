@@ -271,11 +271,12 @@ class AG_Pro_Features {
         }
 
         if ( 'pro' === $this->tier ) {
-            // Pro: "Fièrement créé par" with logo text
+            // Pro: "Fièrement créé par" with logo
             echo '<div style="text-align:center;padding:24px 0 0;border-top:1px solid rgba(255,255,255,.06);margin-top:24px;">';
             echo '<p style="color:rgba(255,255,255,.5);font-size:.85rem;margin:0 0 6px;">Fièrement créé par</p>';
-            echo '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener nofollow" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:#D4B45C;font-weight:700;font-size:1rem;font-family:\'Playfair Display\',serif;font-style:italic;">';
-            echo '<span style="font-size:1.4rem;">🦁</span> Alliance Groupe';
+            echo '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener nofollow" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:#D4B45C;font-weight:700;font-size:1rem;font-family:\'Playfair Display\',serif;font-style:italic;">';
+            echo '<img src="https://alliancegroupe-inc.com/wp-content/uploads/2026/04/logo_site_alliance.jpg" alt="Alliance Groupe" style="height:28px;width:auto;border-radius:4px;">';
+            echo ' Alliance Groupe';
             echo '</a>';
             echo '</div>';
             return;
@@ -284,8 +285,11 @@ class AG_Pro_Features {
         // Free: big animated promo widget
         echo '<div style="margin-top:32px;padding:28px 24px;background:linear-gradient(135deg,rgba(212,180,92,.08) 0%,rgba(10,10,15,.95) 100%);border:1px solid rgba(212,180,92,.3);border-radius:16px;text-align:center;animation:agPulseGlow 3s ease-in-out infinite;">';
         echo '<style>@keyframes agPulseGlow{0%,100%{box-shadow:0 0 20px rgba(212,180,92,.1)}50%{box-shadow:0 0 30px rgba(212,180,92,.25)}}</style>';
+        echo '<p style="margin:0 0 12px;">';
+        echo '<img src="https://alliancegroupe-inc.com/wp-content/uploads/2026/04/logo_site_alliance.jpg" alt="Alliance Groupe" style="height:48px;width:auto;border-radius:8px;display:inline-block;">';
+        echo '</p>';
         echo '<p style="font-size:1.4rem;font-weight:800;color:#fff;margin:0 0 8px;font-family:\'Playfair Display\',serif;">';
-        echo '<span style="font-size:1.8rem;">🦁</span> Alliance Groupe';
+        echo 'Alliance Groupe';
         echo '</p>';
         echo '<p style="color:rgba(255,255,255,.7);font-size:.92rem;margin:0 0 16px;line-height:1.5;">';
         echo 'Ce thème gratuit est offert par <strong style="color:#D4B45C;">Alliance Groupe</strong><br>';
