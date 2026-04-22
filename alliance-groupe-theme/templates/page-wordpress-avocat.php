@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: WordPress — Avocat
+ * Template Name: Template WordPress — Avocat
  *
  * Dedicated landing page for the AG Starter Avocat theme.
  * The actual rendering lives in template-parts/metier-page.php.

@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: WordPress — Barber Shop
+ * Template Name: Template WordPress — Barber Shop
  *
  * Dedicated landing page for the AG Starter Barber theme.
  */

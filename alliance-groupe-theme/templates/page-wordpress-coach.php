@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: WordPress — Coach
+ * Template Name: Template WordPress — Coach
  *
  * Dedicated landing page for the AG Starter Coach theme.
  */

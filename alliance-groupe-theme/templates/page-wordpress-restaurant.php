@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: WordPress — Restaurant
+ * Template Name: Template WordPress — Restaurant
  *
  * Dedicated landing page for the AG Starter Restaurant theme.
  */

@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: WordPress — Artisan
+ * Template Name: Template WordPress — Artisan
  *
  * Dedicated landing page for the AG Starter Artisan theme.
  */
