@@ -109,51 +109,38 @@
                 </div>
             </li>
 
-            <!-- Templates WordPress + dropdown pleine largeur -->
+            <!-- Templates WordPress + dropdown -->
             <li class="ag-nav__has-sub">
                 <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">Templates <span class="ag-nav__pulse-pill">GRATUIT</span> <span class="ag-nav__arrow">&#9662;</span></a>
-                <div class="ag-mega ag-mega--full">
-                    <div class="ag-mega__inner ag-mega__inner--templates">
+                <div class="ag-mega ag-mega--sm">
+                    <div class="ag-mega__inner">
                         <div class="ag-mega__col">
-                            <span class="ag-mega__label">Professionnels du droit</span>
+                            <span class="ag-mega__label">Templates WordPress gratuits</span>
                             <a href="<?php echo esc_url(home_url('/wordpress-avocat')); ?>" class="ag-mega__link">
                                 <span class="ag-mega__icon">⚖️</span>
-                                <span><strong>Avocat <span style="display:inline-block;margin-left:4px;padding:1px 8px;background:var(--color-success);color:#fff;font-size:.62rem;font-weight:700;border-radius:100px;text-transform:uppercase;">Nouveau</span></strong><small>Cabinet, juriste, conseil juridique</small></span>
+                                <span><strong>Avocat</strong><small>Cabinet, juriste, conseil juridique</small></span>
                             </a>
-                        </div>
-                        <div class="ag-mega__col">
-                            <span class="ag-mega__label">Restauration</span>
                             <a href="<?php echo esc_url(home_url('/wordpress-restaurant')); ?>" class="ag-mega__link">
                                 <span class="ag-mega__icon">🍽️</span>
                                 <span><strong>Restaurant</strong><small>Bistrot, bar, café, gastronomique</small></span>
                             </a>
-                        </div>
-                        <div class="ag-mega__col">
-                            <span class="ag-mega__label">Artisanat & BTP</span>
                             <a href="<?php echo esc_url(home_url('/wordpress-artisan')); ?>" class="ag-mega__link">
                                 <span class="ag-mega__icon">🔨</span>
-                                <span><strong>Artisan</strong><small>Plombier, électricien, menuisier</small></span>
+                                <span><strong>Artisan</strong><small>Plombier, électricien, menuisier, BTP</small></span>
                             </a>
-                        </div>
-                        <div class="ag-mega__col">
-                            <span class="ag-mega__label">Coaching & Conseil</span>
                             <a href="<?php echo esc_url(home_url('/wordpress-coach')); ?>" class="ag-mega__link">
                                 <span class="ag-mega__icon">💼</span>
                                 <span><strong>Coach</strong><small>Consultant, formateur, thérapeute</small></span>
                             </a>
-                        </div>
-                        <div class="ag-mega__col">
-                            <span class="ag-mega__label">Beauté & Bien-être</span>
                             <a href="<?php echo esc_url(home_url('/wordpress-barber')); ?>" class="ag-mega__link">
                                 <span class="ag-mega__icon">💈</span>
                                 <span><strong>Barber Shop <span style="display:inline-block;margin-left:4px;padding:1px 8px;background:var(--color-success);color:#fff;font-size:.62rem;font-weight:700;border-radius:100px;text-transform:uppercase;">Nouveau</span></strong><small>Coiffeur, barbier, file d'attente QR</small></span>
                             </a>
-                        </div>
-                        <div class="ag-mega__col ag-mega__col--cta">
-                            <span class="ag-mega__label">Votre métier ?</span>
-                            <a href="<?php echo esc_url(home_url('/contact?source=menu&demande=template-metier')); ?>" class="ag-mega__link ag-mega__link--all">
+                            <a href="<?php echo esc_url(home_url('/contact?source=menu&demande=template-metier')); ?>" class="ag-mega__link ag-mega__link--all" style="margin-top:8px;border-top:1px dashed rgba(212,180,92,.25);padding-top:12px;">
                                 <span class="ag-mega__icon">💎</span>
-                                <span><strong>Demandez votre template</strong><small>On le crée sur mesure, gratuitement</small></span>
+                                <span><strong>Votre métier ? Demandez-le</strong><small>On vous crée votre template sur mesure</small></span>
+                            </a>
+                        </div>
                             </a>
                         </div>
                     </div>
