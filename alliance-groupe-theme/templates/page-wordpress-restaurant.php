@@ -59,7 +59,7 @@ set_query_var( 'ag_metier', array(
         '<strong>Maintenance WordPress 1 an incluse</strong>',
         'Audit SEO local (positionnement Google Maps, avis)',
         'Support prioritaire absolu (réponse sous 2h)',
-        'White-label complet',
+        '<strong>Publicité réduite</strong> — simple mention copyright Alliance Groupe dans le footer',
         'Intégration CRM (HubSpot, Brevo) pour la fidélisation',
         'Appel stratégique avec Fabrizio (CEO Alliance Group)',
     ),

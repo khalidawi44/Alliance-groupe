@@ -8,7 +8,7 @@
  *   premium  → pro + testimonials section, gallery section, pricing table, WooCommerce ready
  *   business → premium + white-label (remove AG credits), extra page templates
  *
- * @package AG_Starter_Coach
+ * @package AG_Starter_Restaurant
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -240,20 +240,61 @@ class AG_Pro_Features {
         <?php
     }
 
+    /**
+     * Render footer credit/promo based on tier.
+     *
+     * free     → big animated promo widget linking to templates page
+     * pro      → small "Fièrement créé par" with logo + Alliance Groupe
+     * premium  → tiny copyright line with link
+     * business → simple copyright, just © + site name + small AG link
+     */
     public function render_footer_credit() {
+        $url = 'https://alliancegroupe-inc.com/templates-wordpress';
+
         if ( 'business' === $this->tier ) {
-            $custom = get_theme_mod( 'ag_pro_footer_text', '' );
-            if ( $custom ) {
-                echo '<p>' . esc_html( $custom ) . '</p>';
-            }
+            // Business: just a copyright with discreet link
+            echo '<p style="text-align:center;color:rgba(255,255,255,.35);font-size:.78rem;margin-top:16px;">';
+            echo '&copy; ' . esc_html( date( 'Y' ) ) . ' ' . esc_html( get_bloginfo( 'name' ) ) . ' — ';
+            echo '<a href="' . esc_url( $url ) . '" rel="nofollow" style="color:rgba(255,255,255,.35);">Alliance Groupe</a>';
+            echo '</p>';
             return;
         }
-        // Pro/Premium: show credit with link
-        echo '<p>&copy; ' . esc_html( date( 'Y' ) ) . ' ' . esc_html( get_bloginfo( 'name' ) ) . '. ';
-        printf(
-            wp_kses( __( 'Thème par %s.', $this->theme_slug ), array( 'a' => array( 'href' => array(), 'rel' => array() ) ) ),
-            '<a href="https://alliancegroupe-inc.com" rel="nofollow">Alliance Groupe</a>'
-        );
+
+        if ( 'premium' === $this->tier ) {
+            // Premium: small elegant line
+            echo '<div style="text-align:center;padding:20px 0 0;border-top:1px solid rgba(255,255,255,.06);margin-top:24px;">';
+            echo '<p style="color:rgba(255,255,255,.5);font-size:.82rem;">';
+            echo '&copy; ' . esc_html( date( 'Y' ) ) . ' ' . esc_html( get_bloginfo( 'name' ) ) . ' · ';
+            echo 'Propulsé par <a href="' . esc_url( $url ) . '" target="_blank" rel="noopener nofollow" style="color:#D4B45C;text-decoration:none;">Alliance Groupe</a>';
+            echo '</p></div>';
+            return;
+        }
+
+        if ( 'pro' === $this->tier ) {
+            // Pro: "Fièrement créé par" with logo text
+            echo '<div style="text-align:center;padding:24px 0 0;border-top:1px solid rgba(255,255,255,.06);margin-top:24px;">';
+            echo '<p style="color:rgba(255,255,255,.5);font-size:.85rem;margin:0 0 6px;">Fièrement créé par</p>';
+            echo '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener nofollow" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:#D4B45C;font-weight:700;font-size:1rem;font-family:\'Playfair Display\',serif;font-style:italic;">';
+            echo '<span style="font-size:1.4rem;">🦁</span> Alliance Groupe';
+            echo '</a>';
+            echo '</div>';
+            return;
+        }
+
+        // Free: big animated promo widget
+        echo '<div style="margin-top:32px;padding:28px 24px;background:linear-gradient(135deg,rgba(212,180,92,.08) 0%,rgba(10,10,15,.95) 100%);border:1px solid rgba(212,180,92,.3);border-radius:16px;text-align:center;animation:agPulseGlow 3s ease-in-out infinite;">';
+        echo '<style>@keyframes agPulseGlow{0%,100%{box-shadow:0 0 20px rgba(212,180,92,.1)}50%{box-shadow:0 0 30px rgba(212,180,92,.25)}}</style>';
+        echo '<p style="font-size:1.4rem;font-weight:800;color:#fff;margin:0 0 8px;font-family:\'Playfair Display\',serif;">';
+        echo '<span style="font-size:1.8rem;">🦁</span> Alliance Groupe';
         echo '</p>';
+        echo '<p style="color:rgba(255,255,255,.7);font-size:.92rem;margin:0 0 16px;line-height:1.5;">';
+        echo 'Ce thème gratuit est offert par <strong style="color:#D4B45C;">Alliance Groupe</strong><br>';
+        echo 'Agence Web & IA — Créez votre site professionnel en 5 minutes';
+        echo '</p>';
+        echo '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:.95rem;transition:transform .2s;" onmouseover="this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.transform=\'none\'">';
+        echo 'Découvrir nos templates gratuits →';
+        echo '</a>';
+        echo '<p style="color:rgba(255,255,255,.35);font-size:.75rem;margin:12px 0 0;">Passez au Pack Pro pour réduire cette publicité</p>';
+        echo '</div>';
     }
 }

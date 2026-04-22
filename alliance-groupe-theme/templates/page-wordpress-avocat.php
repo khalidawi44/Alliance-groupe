@@ -61,7 +61,7 @@ set_query_var( 'ag_metier', array(
         '<strong>Maintenance WordPress 1 an incluse</strong> (mises à jour, sauvegardes, sécurité)',
         'Rapport de performance trimestriel (trafic, conversion, position Google)',
         '<strong>Support prioritaire absolu</strong> (réponse sous 2h ouvrées)',
-        '<strong>White-label complet</strong> — retire le crédit AG Starter du footer',
+        '<strong>Publicité réduite</strong> — simple mention copyright Alliance Groupe dans le footer',
         'Intégration CRM (HubSpot, Pipedrive, Brevo) pour centraliser vos leads',
         'Appel stratégique de lancement avec Fabrizio (CEO Alliance Group)',
     ),

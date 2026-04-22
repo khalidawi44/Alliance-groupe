@@ -804,7 +804,7 @@ class AG_Starter_Companion {
 			<div style="flex:1;min-width:260px;">
 				<h2 style="color:#D4B45C;font-size:1.3rem;margin:0 0 8px;font-weight:800;">⚡ <?php esc_html_e( 'Passez a la version Pro', 'ag-starter-companion' ); ?></h2>
 				<p style="color:rgba(255,255,255,.75);font-size:.95rem;line-height:1.6;margin:0;">
-					<?php esc_html_e( 'Header sticky, animations scroll, couleurs avancees, temoignages clients, galerie photos, boutique WooCommerce, grille de tarifs, white-label... Paiement unique, mises a jour a vie.', 'ag-starter-companion' ); ?>
+					<?php esc_html_e( 'Header sticky, animations scroll, couleurs avancees, temoignages clients, galerie photos, boutique WooCommerce, grille de tarifs, pub minimale... Paiement unique, mises a jour a vie.', 'ag-starter-companion' ); ?>
 				</p>
 			</div>
 			<div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -852,7 +852,7 @@ class AG_Starter_Companion {
 				</div>
 				<div>
 					<strong style="font-size:1rem;">🏆 Business — 149€</strong>
-					<p style="font-size:.82rem;color:#555;margin:4px 0 0;line-height:1.4;">Tout Premium + white-label (credits AG supprimes), templates de pages supplementaires, session strategique 30 min incluse.</p>
+					<p style="font-size:.82rem;color:#555;margin:4px 0 0;line-height:1.4;">Tout Premium + pub reduite (simple copyright AG), templates de pages supplementaires, session strategique 30 min incluse.</p>
 				</div>
 				<p style="font-size:.78rem;color:#888;margin:12px 0 0;text-align:center;">Paiement unique — mises a jour a vie — support inclus</p>
 			</div>
@@ -911,9 +911,9 @@ class AG_Starter_Companion {
 		) );
 
 		$wp_customize->add_section( 'ag_locked_whitelabel', array(
-			'title'       => esc_html__( '🔒 White-Label + Session strategique (Business)', 'ag-starter-companion' ),
+			'title'       => esc_html__( '🔒 Pub minimale + Session strategique (Business)', 'ag-starter-companion' ),
 			'priority'    => 33,
-			'description' => esc_html__( 'Supprimez tous les credits Alliance Groupe, personnalisez entierement le footer, acces a des templates de pages supplementaires, et session strategique de 30 min offerte avec un expert pour optimiser votre site. Pack Business (149€).', 'ag-starter-companion' ),
+			'description' => esc_html__( 'Reduisez la publicite Alliance Groupe a un simple copyright, personnalisez le footer, acces a des templates de pages supplementaires, et session strategique de 30 min offerte avec un expert pour optimiser votre site. Pack Business (149€).', 'ag-starter-companion' ),
 		) );
 		$wp_customize->add_setting( 'ag_locked_wl_info', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
 		$wp_customize->add_control( 'ag_locked_wl_info', array(

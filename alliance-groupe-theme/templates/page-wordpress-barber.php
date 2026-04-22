@@ -55,7 +55,7 @@ set_query_var( 'ag_metier', array(
 
     'business_features' => array(
         '<strong>Tout Premium inclus</strong>',
-        '<strong>White-label complet</strong> — aucun crédit Alliance Groupe',
+        '<strong>Publicité réduite</strong> — simple mention copyright Alliance Groupe dans le footer',
         '<strong>Multi-salons</strong> — gérez plusieurs adresses depuis un seul WordPress',
         '<strong>Écran TV salon</strong> — page dédiée pour afficher la file sur un écran en salon',
         '<strong>API publique</strong> — intégrez la file d\'attente dans votre propre app mobile',

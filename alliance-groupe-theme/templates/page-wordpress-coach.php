@@ -60,7 +60,7 @@ set_query_var( 'ag_metier', array(
         '<strong>Maintenance WordPress 1 an incluse</strong>',
         'Audit SEO coaching (mots-clés type "coach vie Nantes", "consultant stratégie Paris")',
         'Support prioritaire absolu (réponse sous 2h ouvrées)',
-        'White-label complet',
+        '<strong>Publicité réduite</strong> — simple mention copyright Alliance Groupe dans le footer',
         'Rapport trimestriel de performance (nouveaux clients générés)',
         'Appel stratégique avec Fabrizio (CEO Alliance Group)',
     ),
