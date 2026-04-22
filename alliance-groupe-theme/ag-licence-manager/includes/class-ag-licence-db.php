@@ -80,20 +80,28 @@ class AG_Licence_DB {
      * Encrypt a clear-text key for admin retrieval.
      */
     public static function encrypt_key( $clear_key ) {
+        if ( ! function_exists( 'openssl_encrypt' ) ) {
+            return base64_encode( $clear_key );
+        }
         $method = 'aes-256-cbc';
         $key    = substr( hash( 'sha256', AG_LICENCE_HMAC_KEY ), 0, 32 );
         $iv     = substr( hash( 'sha256', 'ag-iv-salt' ), 0, 16 );
-        return base64_encode( openssl_encrypt( $clear_key, $method, $key, 0, $iv ) );
+        $encrypted = openssl_encrypt( $clear_key, $method, $key, 0, $iv );
+        return $encrypted ? base64_encode( $encrypted ) : base64_encode( $clear_key );
     }
 
     /**
      * Decrypt an encrypted key for admin display.
      */
     public static function decrypt_key( $encrypted ) {
+        if ( ! function_exists( 'openssl_decrypt' ) ) {
+            return base64_decode( $encrypted );
+        }
         $method = 'aes-256-cbc';
         $key    = substr( hash( 'sha256', AG_LICENCE_HMAC_KEY ), 0, 32 );
         $iv     = substr( hash( 'sha256', 'ag-iv-salt' ), 0, 16 );
-        return openssl_decrypt( base64_decode( $encrypted ), $method, $key, 0, $iv );
+        $decrypted = openssl_decrypt( base64_decode( $encrypted ), $method, $key, 0, $iv );
+        return $decrypted ? $decrypted : base64_decode( $encrypted );
     }
 
     /**
@@ -115,21 +123,27 @@ class AG_Licence_DB {
             'business' => 'AGBUS',
         );
 
-        $result = $wpdb->insert(
-            self::table(),
-            array(
-                'licence_key_hash' => self::hash_key( $clear_key ),
-                'licence_key_enc'  => self::encrypt_key( $clear_key ),
-                'licence_prefix'   => isset( $prefix_map[ $tier ] ) ? $prefix_map[ $tier ] : 'AGPRO',
-                'tier'             => $tier,
-                'theme_slug'       => $theme_slug ?: null,
-                'email'            => sanitize_email( $email ),
-                'status'           => 'inactive',
-                'stripe_session'   => $stripe_sess ?: null,
-                'created_at'       => current_time( 'mysql' ),
-            ),
-            array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
+        $data = array(
+            'licence_key_hash' => self::hash_key( $clear_key ),
+            'licence_key_enc'  => self::encrypt_key( $clear_key ),
+            'licence_prefix'   => isset( $prefix_map[ $tier ] ) ? $prefix_map[ $tier ] : 'AGPRO',
+            'tier'             => $tier,
+            'email'            => sanitize_email( $email ),
+            'status'           => 'inactive',
+            'created_at'       => current_time( 'mysql' ),
         );
+        $formats = array( '%s', '%s', '%s', '%s', '%s', '%s', '%s' );
+
+        if ( $theme_slug ) {
+            $data['theme_slug'] = $theme_slug;
+            $formats[] = '%s';
+        }
+        if ( $stripe_sess ) {
+            $data['stripe_session'] = $stripe_sess;
+            $formats[] = '%s';
+        }
+
+        $result = $wpdb->insert( self::table(), $data, $formats );
 
         return $result ? $wpdb->insert_id : false;
     }
