@@ -140,10 +140,6 @@
                                 <span><strong>Votre métier ? Demandez-le</strong><small>On vous crée votre template sur mesure</small></span>
                             </a>
                         </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
                     </div>
                 </div>
             </li>
