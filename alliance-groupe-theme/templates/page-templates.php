@@ -62,6 +62,16 @@ $ag_hub_metiers = array(
         'url'      => home_url( '/wordpress-coach' ),
         'is_new'   => false,
     ),
+    array(
+        'slug'     => 'barber',
+        'icon'     => '💈',
+        'name'     => 'Barber Shop',
+        'palette'  => 'Or &amp; noir',
+        'audience' => 'Barbershop, coiffeur, salon de coiffure urbain.',
+        'tagline'  => 'File d\'attente QR code, tarifs, prestations, ticket en temps réel.',
+        'url'      => home_url( '/wordpress-barber' ),
+        'is_new'   => true,
+    ),
 );
 ?>
 
