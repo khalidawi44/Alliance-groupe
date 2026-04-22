@@ -69,7 +69,7 @@ class AG_Starter_Companion {
 		$theme    = wp_get_theme();
 		$template = $theme->get_template();     // parent theme
 		$stylesh  = $theme->get_stylesheet();   // child theme if any
-		$supported = array( 'ag-starter-restaurant', 'ag-starter-artisan', 'ag-starter-coach', 'ag-starter-avocat' );
+		$supported = array( 'ag-starter-restaurant', 'ag-starter-artisan', 'ag-starter-coach', 'ag-starter-avocat', 'ag-starter-barber' );
 		foreach ( array( $stylesh, $template ) as $candidate ) {
 			if ( in_array( $candidate, $supported, true ) ) {
 				return $candidate;
@@ -182,6 +182,27 @@ class AG_Starter_Companion {
 					'rendez-vous'  => array(
 						'title'   => __( 'Prendre rendez-vous', 'ag-starter-companion' ),
 						'content' => __( 'Consultation au cabinet ou en visio. Reservation en ligne, telephone, email.', 'ag-starter-companion' ),
+					),
+				),
+			),
+			'ag-starter-barber'     => array(
+				'name'  => 'AG Starter Barber',
+				'pages' => array(
+					'accueil'  => array(
+						'title'   => __( 'Accueil', 'ag-starter-companion' ),
+						'content' => '<!-- Rendu par front-page.php -->',
+					),
+					'tarifs'   => array(
+						'title'   => __( 'Nos tarifs', 'ag-starter-companion' ),
+						'content' => __( 'Coupes homme, barbe, degradé, enfant. Tarifs fixes, pas de surprise.', 'ag-starter-companion' ),
+					),
+					'a-propos' => array(
+						'title'   => __( 'Le salon', 'ag-starter-companion' ),
+						'content' => __( 'Notre equipe de barbers, notre histoire, nos valeurs.', 'ag-starter-companion' ),
+					),
+					'contact'  => array(
+						'title'   => __( 'Contact', 'ag-starter-companion' ),
+						'content' => __( 'Adresse, horaires, telephone. Pas de rendez-vous, venez quand vous voulez.', 'ag-starter-companion' ),
 					),
 				),
 			),

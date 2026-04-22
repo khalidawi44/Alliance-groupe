@@ -1,0 +1,253 @@
+/*
+Theme Name: AG Starter Barber
+Theme URI: https://alliancegroupe-inc.com/templates-wordpress
+Author: AGthèmes
+Author URI: https://alliancegroupe-inc.com
+Description: Thème WordPress gratuit pour barbershops et salons de coiffure. Design sombre premium, système de file d'attente QR code intégré, gestion des créneaux en temps réel. Contenu pré-rédigé en français, personnalisable via le Customizer.
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.5
+Requires PHP: 7.4
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: ag-starter-barber
+Tags: one-column, custom-menu, featured-images, translation-ready, theme-options, custom-colors, custom-logo, threaded-comments, block-styles, wide-blocks
+
+AG Starter Barber — un thème WordPress conçu pour les barbershops urbains.
+Système de file d'attente par QR code inclus.
+*/
+
+/* ── Reset ─────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+    font-family:'Manrope',system-ui,sans-serif;
+    font-size:16px;line-height:1.7;
+    color:#fff;background:#0a0a0f;
+    overflow-x:hidden;
+}
+img{max-width:100%;height:auto;display:block}
+ul{list-style:none}
+a{text-decoration:none;color:inherit}
+
+/* ── Variables ─────────────────────────────────────────────── */
+:root{
+    --gold:#D4B45C;
+    --dark:#0a0a0f;
+    --card:#14141c;
+    --text:#fff;
+    --text-soft:#e8e6e0;
+    --text-muted:#b0b0bc;
+    --font-serif:'Playfair Display',serif;
+    --font-sans:'Manrope',system-ui,sans-serif;
+}
+
+/* ── Header ────────────────────────────────────────────────── */
+.ag-header{
+    position:sticky;top:0;z-index:1000;
+    background:rgba(10,10,15,.95);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(255,255,255,.06);
+    padding:16px 24px;
+    display:flex;align-items:center;justify-content:space-between;
+}
+.ag-header__logo{
+    font-family:var(--font-serif);
+    font-size:1.4rem;font-weight:700;
+    color:var(--gold);font-style:italic;
+}
+.ag-header__nav{display:flex;gap:24px;align-items:center;}
+.ag-header__nav a{color:var(--text-muted);font-size:.9rem;font-weight:600;transition:color .3s;}
+.ag-header__nav a:hover{color:var(--gold);}
+.ag-header__cta{
+    background:var(--gold);color:var(--dark);
+    padding:10px 22px;border-radius:8px;
+    font-weight:700;font-size:.9rem;
+    transition:transform .2s;
+}
+.ag-header__cta:hover{transform:translateY(-2px);}
+
+/* ── Hero ──────────────────────────────────────────────────── */
+.ag-hero{
+    min-height:85vh;
+    display:flex;align-items:center;justify-content:center;
+    text-align:center;padding:80px 24px;
+    position:relative;overflow:hidden;
+    background:linear-gradient(180deg,rgba(10,10,15,.3) 0%,var(--dark) 100%);
+}
+.ag-hero__bg{
+    position:absolute;inset:0;
+    background:linear-gradient(135deg,rgba(212,180,92,.08) 0%,transparent 60%);
+}
+.ag-hero__tag{
+    display:inline-block;
+    padding:6px 18px;
+    background:rgba(212,180,92,.1);
+    color:var(--gold);
+    border:1px solid rgba(212,180,92,.25);
+    border-radius:100px;
+    font-size:.82rem;font-weight:600;
+    text-transform:uppercase;letter-spacing:1px;
+    margin-bottom:20px;
+}
+.ag-hero h1{
+    font-family:var(--font-serif);
+    font-size:clamp(2.4rem,6vw,4.2rem);
+    font-weight:700;line-height:1.1;
+    margin-bottom:20px;
+}
+.ag-hero h1 em{font-style:italic;color:var(--gold);}
+.ag-hero__sub{
+    color:var(--text-muted);font-size:1.15rem;
+    max-width:600px;margin:0 auto 36px;line-height:1.7;
+}
+.ag-hero__price{
+    display:inline-flex;align-items:baseline;gap:8px;
+    background:rgba(212,180,92,.1);border:1px solid rgba(212,180,92,.3);
+    border-radius:14px;padding:16px 32px;margin-bottom:32px;
+}
+.ag-hero__price strong{font-size:2.8rem;font-weight:800;color:var(--gold);}
+.ag-hero__price span{color:var(--text-muted);font-size:1rem;}
+.ag-hero__btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+
+/* ── Buttons ───────────────────────────────────────────────── */
+.ag-btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:14px 30px;border-radius:10px;
+    font-weight:700;font-size:.95rem;
+    transition:transform .3s,box-shadow .3s;
+    cursor:pointer;border:none;
+}
+.ag-btn--gold{background:var(--gold);color:var(--dark);}
+.ag-btn--gold:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(212,180,92,.3);}
+.ag-btn--outline{background:transparent;color:var(--text-soft);border:1px solid rgba(255,255,255,.15);}
+.ag-btn--outline:hover{border-color:var(--gold);color:var(--gold);}
+
+/* ── Section ───────────────────────────────────────────────── */
+.ag-section{padding:90px 0;}
+.ag-section--dark{background:var(--dark);}
+.ag-section--card{background:var(--card);}
+.ag-container{max-width:1200px;margin:0 auto;padding:0 24px;}
+.ag-section__title{
+    font-family:var(--font-serif);
+    font-size:clamp(1.6rem,4vw,2.6rem);
+    font-weight:700;margin-bottom:14px;
+    text-align:center;
+}
+.ag-section__title em{font-style:italic;color:var(--gold);}
+.ag-section__sub{
+    color:var(--text-muted);font-size:1.05rem;
+    text-align:center;max-width:600px;margin:0 auto 48px;
+}
+
+/* ── Services Grid ─────────────────────────────────────────── */
+.ag-services{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;}
+.ag-service-card{
+    background:var(--card);border:1px solid rgba(255,255,255,.06);
+    border-radius:16px;padding:32px 24px;text-align:center;
+    transition:transform .3s,border-color .3s;
+}
+.ag-service-card:hover{transform:translateY(-4px);border-color:rgba(212,180,92,.3);}
+.ag-service-card__icon{font-size:2.2rem;margin-bottom:14px;}
+.ag-service-card__name{font-size:1.1rem;font-weight:700;margin-bottom:6px;}
+.ag-service-card__price{color:var(--gold);font-size:1.3rem;font-weight:800;margin-bottom:8px;}
+.ag-service-card__time{color:var(--text-muted);font-size:.85rem;}
+
+/* ── Queue Status ──────────────────────────────────────────── */
+.ag-queue-status{
+    max-width:600px;margin:0 auto;
+    background:linear-gradient(135deg,rgba(212,180,92,.06) 0%,rgba(20,20,28,.8) 100%);
+    border:1px solid rgba(212,180,92,.3);
+    border-radius:20px;padding:40px 36px;text-align:center;
+}
+.ag-queue-status__count{
+    font-size:4rem;font-weight:800;color:var(--gold);
+    line-height:1;margin-bottom:8px;
+}
+.ag-queue-status__label{color:var(--text-muted);font-size:1rem;margin-bottom:6px;}
+.ag-queue-status__wait{
+    font-size:1.4rem;font-weight:700;color:var(--text-soft);
+    margin-bottom:24px;
+}
+.ag-queue-status__btn{margin-top:16px;}
+
+/* ── Queue Form (scanned QR page) ──────────────────────────── */
+.ag-queue-form{
+    max-width:480px;margin:0 auto;
+    background:var(--card);border:1px solid rgba(255,255,255,.08);
+    border-radius:20px;padding:40px 32px;
+}
+.ag-queue-form h2{
+    font-family:var(--font-serif);
+    font-size:1.6rem;text-align:center;margin-bottom:8px;
+}
+.ag-queue-form__sub{
+    color:var(--text-muted);text-align:center;
+    font-size:.95rem;margin-bottom:28px;
+}
+.ag-queue-form label{
+    display:block;color:var(--text-muted);
+    font-size:.85rem;font-weight:600;margin-bottom:6px;
+}
+.ag-queue-form input, .ag-queue-form select{
+    width:100%;padding:12px 16px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:10px;color:#fff;
+    font-size:1rem;margin-bottom:18px;
+    outline:none;transition:border-color .3s;
+}
+.ag-queue-form input:focus, .ag-queue-form select:focus{
+    border-color:var(--gold);
+}
+
+/* ── Queue Ticket (confirmation) ───────────────────────────── */
+.ag-ticket{
+    max-width:420px;margin:0 auto;
+    background:linear-gradient(180deg,#1a1a28 0%,var(--card) 100%);
+    border:2px solid var(--gold);
+    border-radius:20px;padding:40px 32px;text-align:center;
+    position:relative;overflow:hidden;
+}
+.ag-ticket::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:4px;
+    background:var(--gold);
+}
+.ag-ticket__number{
+    font-size:5rem;font-weight:800;color:var(--gold);
+    line-height:1;margin-bottom:8px;
+}
+.ag-ticket__label{color:var(--text-muted);font-size:.9rem;margin-bottom:20px;}
+.ag-ticket__info{
+    background:rgba(212,180,92,.08);
+    border-radius:12px;padding:20px;margin-bottom:20px;
+}
+.ag-ticket__info p{color:var(--text-soft);font-size:1rem;margin:6px 0;}
+.ag-ticket__info strong{color:var(--gold);}
+
+/* ── QR Code display ───────────────────────────────────────── */
+.ag-qr{
+    background:#fff;border-radius:16px;
+    padding:20px;display:inline-block;margin:20px auto;
+}
+
+/* ── Footer ────────────────────────────────────────────────── */
+.ag-footer{
+    background:#060606;
+    border-top:3px solid transparent;
+    border-image:linear-gradient(90deg,var(--gold),transparent) 1;
+    padding:48px 0 24px;text-align:center;
+}
+.ag-footer__name{font-family:var(--font-serif);font-size:1.2rem;color:var(--gold);font-style:italic;margin-bottom:8px;}
+.ag-footer__addr{color:var(--text-muted);font-size:.9rem;line-height:1.6;margin-bottom:16px;}
+.ag-footer__copy{color:rgba(255,255,255,.3);font-size:.8rem;}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media(max-width:768px){
+    .ag-header__nav{display:none;}
+    .ag-hero h1{font-size:clamp(2rem,8vw,3rem);}
+    .ag-hero__price strong{font-size:2rem;}
+    .ag-services{grid-template-columns:1fr;}
+    .ag-queue-form{padding:28px 20px;}
+    .ag-ticket{padding:28px 20px;}
+}
