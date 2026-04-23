@@ -32,7 +32,7 @@ class AG_Pro_Features {
     public function get_tier() { return $this->tier; }
 
     public function is_at_least( $min ) {
-        $order = array( 'free' => 0, 'pro' => 1, 'business' => 2 );
+        $order = array( 'free' => 0, 'premium' => 1, 'business' => 2 );
         return ( $order[ $this->tier ] ?? 0 ) >= ( $order[ $min ] ?? 0 );
     }
 
@@ -42,7 +42,7 @@ class AG_Pro_Features {
         wp_enqueue_style( 'ag-google-fonts',
             'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap',
             array(), null );
-        wp_enqueue_script( 'ag-pro-scripts',
+        wp_enqueue_script( 'ag-premium-scripts',
             get_template_directory_uri() . '/inc/pro-scripts.js',
             array(), '2.0.0', true );
         wp_add_inline_style( wp_get_theme()->get_stylesheet(), $this->get_pro_css() );
@@ -82,7 +82,7 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card h3,.ag-honoraires
     // ─── PRO: Customizer ──────────────────────────────────────
 
     public function register_pro_customizer( $wp_customize ) {
-        $wp_customize->add_section( 'ag_pro_features', array( 'title' => '⭐ Fonctionnalités Pro', 'priority' => 25 ) );
+        $wp_customize->add_section( 'ag_pro_features', array( 'title' => '⭐ Fonctionnalités Premium', 'priority' => 25 ) );
 
         $wp_customize->add_setting( 'ag_pro_sticky_header', array( 'default' => true, 'sanitize_callback' => 'wp_validate_boolean' ) );
         $wp_customize->add_control( 'ag_pro_sticky_header', array( 'label' => 'Header sticky', 'section' => 'ag_pro_features', 'type' => 'checkbox' ) );
@@ -107,7 +107,7 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card h3,.ag-honoraires
     }
 
     public function add_body_classes( $classes ) {
-        $classes[] = 'ag-pro';
+        $classes[] = 'ag-premium';
         $classes[] = 'ag-tier-' . $this->tier;
         if ( get_theme_mod( 'ag_pro_animations', true ) ) $classes[] = 'ag-has-animations';
         return $classes;
@@ -116,7 +116,7 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card h3,.ag-honoraires
     // ─── Render: phone in header ──────────────────────────────
 
     public function render_header_phone() {
-        if ( ! $this->is_at_least( 'pro' ) ) return '';
+        if ( ! $this->is_at_least( 'premium' ) ) return '';
         $phone = get_theme_mod( 'ag_pro_header_phone', '' );
         if ( ! $phone ) return '';
         return '<a href="tel:' . esc_attr( preg_replace( '/[^0-9+]/', '', $phone ) ) . '" class="ag-header__phone">📞 ' . esc_html( $phone ) . '</a>';
@@ -125,7 +125,7 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card h3,.ag-honoraires
     // ─── Render: testimonials ─────────────────────────────────
 
     public function render_testimonials() {
-        if ( ! $this->is_at_least( 'pro' ) ) return;
+        if ( ! $this->is_at_least( 'premium' ) ) return;
         $items = array();
         for ( $i = 1; $i <= 6; $i++ ) {
             $t = get_theme_mod( "ag_testimonial_{$i}_text", '' );
@@ -159,7 +159,7 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card h3,.ag-honoraires
             return;
         }
 
-        if ( 'pro' === $this->tier ) {
+        if ( 'premium' === $this->tier ) {
             echo '<div style="text-align:center;padding:16px 24px;background:#060606;border-top:1px solid rgba(255,255,255,.06);">';
             echo '<a href="' . esc_url( $url_home ) . '" target="_blank" rel="noopener nofollow" style="display:inline-block;text-decoration:none;">';
             echo '<img src="https://alliancegroupe-inc.com/wp-content/uploads/2026/04/logo_site_alliance.jpg" alt="Alliance Groupe" style="height:28px;border-radius:4px;opacity:.6;transition:opacity .3s;" onmouseover="this.style.opacity=\'1\'" onmouseout="this.style.opacity=\'.6\'">';
@@ -174,17 +174,17 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card h3,.ag-honoraires
                 <style>
                 @keyframes agPromoGlow{0%,100%{box-shadow:0 0 30px rgba(212,180,92,.1)}50%{box-shadow:0 0 50px rgba(212,180,92,.25)}}
                 @keyframes agFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-                .ag-promo-emoji{display:inline-block;animation:agFloat 2s ease-in-out infinite;font-size:1.6rem;}
-                .ag-promo-emoji:nth-child(2){animation-delay:.3s}
-                .ag-promo-emoji:nth-child(3){animation-delay:.6s}
+                .ag-premiummo-emoji{display:inline-block;animation:agFloat 2s ease-in-out infinite;font-size:1.6rem;}
+                .ag-premiummo-emoji:nth-child(2){animation-delay:.3s}
+                .ag-premiummo-emoji:nth-child(3){animation-delay:.6s}
                 </style>
-                <div style="margin-bottom:16px;"><span class="ag-promo-emoji">🚀</span> <span class="ag-promo-emoji">⭐</span> <span class="ag-promo-emoji">💎</span></div>
+                <div style="margin-bottom:16px;"><span class="ag-premiummo-emoji">🚀</span> <span class="ag-premiummo-emoji">⭐</span> <span class="ag-premiummo-emoji">💎</span></div>
                 <img src="https://alliancegroupe-inc.com/wp-content/uploads/2026/04/logo_site_alliance.jpg" alt="Alliance Groupe" style="height:56px;border-radius:10px;margin-bottom:16px;">
                 <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#fff;margin:0 0 8px;font-style:italic;">Alliance Groupe</h3>
                 <p style="color:#D4B45C;font-size:.88rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin:0 0 12px;">Agence Web & IA</p>
                 <p style="color:rgba(255,255,255,.7);font-size:.92rem;line-height:1.6;margin:0 0 24px;">Ce thème gratuit est offert par Alliance Groupe.<br>Créez votre site professionnel en 5 minutes.</p>
                 <a href="<?php echo esc_url( $url_templates ); ?>" target="_blank" rel="noopener" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-weight:700;padding:14px 32px;border-radius:10px;text-decoration:none;font-size:1rem;">Découvrir nos templates →</a>
-                <p style="color:rgba(255,255,255,.3);font-size:.72rem;margin:16px 0 0;">Passez au Pack Pro pour réduire cette publicité</p>
+                <p style="color:rgba(255,255,255,.3);font-size:.72rem;margin:16px 0 0;">Passez au Pack Premium pour réduire cette publicité</p>
             </div>
             <p style="color:rgba(255,255,255,.25);font-size:.72rem;margin:20px 0 0;">&copy; <?php echo date('Y'); ?> <?php bloginfo('name'); ?> — <a href="<?php echo esc_url( $url_home ); ?>" target="_blank" rel="noopener nofollow" style="color:rgba(255,255,255,.25);">Alliance Groupe</a></p>
         </div>

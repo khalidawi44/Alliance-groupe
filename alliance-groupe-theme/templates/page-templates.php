@@ -16,7 +16,7 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
 
 // Stripe URLs (still loaded for the companion plugin CTA + compatibility).
 $ag_stripe_placeholder = 'STRIPE_PLACEHOLDER';
-$ag_stripe_pro      = get_option( 'ag_stripe_pro_url', $ag_stripe_placeholder );
+$ag_stripe_premium      = get_option( 'ag_stripe_premium_url', $ag_stripe_placeholder );
 $ag_stripe_premium  = get_option( 'ag_stripe_premium_url', $ag_stripe_placeholder );
 $ag_stripe_business = get_option( 'ag_stripe_business_url', $ag_stripe_placeholder );
 

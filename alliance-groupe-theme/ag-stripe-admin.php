@@ -36,8 +36,8 @@ add_action( 'admin_menu', function () {
  */
 add_action( 'admin_init', function () {
 	$fields = array(
-		'ag_stripe_pro_url'      => array(
-			'label'       => 'Pack Pro — 49€',
+		'ag_stripe_premium_url'      => array(
+			'label'       => 'Pack Premium — 99€',
 			'description' => 'URL du Payment Link Stripe pour le Pack Pro. Ex : https://buy.stripe.com/xxxxxxx',
 		),
 		'ag_stripe_premium_url'  => array(
@@ -131,7 +131,7 @@ function ag_stripe_admin_render() {
 		return;
 	}
 
-	$pro      = get_option( 'ag_stripe_pro_url', 'STRIPE_PLACEHOLDER' );
+	$pro      = get_option( 'ag_stripe_premium_url', 'STRIPE_PLACEHOLDER' );
 	$premium  = get_option( 'ag_stripe_premium_url', 'STRIPE_PLACEHOLDER' );
 	$business = get_option( 'ag_stripe_business_url', 'STRIPE_PLACEHOLDER' );
 	$q_single = get_option( 'ag_stripe_question_single_url', 'STRIPE_PLACEHOLDER' );
@@ -174,10 +174,10 @@ function ag_stripe_admin_render() {
 			<table class="form-table" role="presentation">
 				<tr>
 					<th scope="row">
-						<label for="ag_stripe_pro_url">Pack Pro — 49€</label>
+						<label for="ag_stripe_premium_url">Pack Premium — 99€</label>
 					</th>
 					<td>
-						<input type="url" name="ag_stripe_pro_url" id="ag_stripe_pro_url"
+						<input type="url" name="ag_stripe_premium_url" id="ag_stripe_pro_url"
 							value="<?php echo esc_attr( $pro ); ?>"
 							class="regular-text code"
 							placeholder="https://buy.stripe.com/...">

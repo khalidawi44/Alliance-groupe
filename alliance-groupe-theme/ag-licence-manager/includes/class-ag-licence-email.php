@@ -15,7 +15,7 @@ class AG_Licence_Email {
      */
     public static function send_licence( $email, $clear_key, $tier ) {
         $tier_labels = array(
-            'pro'      => 'Pack Pro (49 €)',
+            'premium'  => 'Pack Premium (99 €)',
             'business' => 'Pack Business (149 €)',
         );
         $label = isset( $tier_labels[ $tier ] ) ? $tier_labels[ $tier ] : ucfirst( $tier );

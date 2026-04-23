@@ -3,7 +3,7 @@
  * Plugin Name:       AG Starter Companion
  * Plugin URI:        https://alliancegroupe-inc.com/templates-wordpress
  * Description:       Importer un clic pour les themes AG Starter (Restaurant, Artisan, Coach, Avocat). Cree automatiquement les pages, le menu et les reglages pour un site pret a l'emploi.
- * Version:           1.7.0
+ * Version:           1.8.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            AGthèmes
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_STARTER_COMPANION_VERSION', '1.7.0' );
+define( 'AG_STARTER_COMPANION_VERSION', '1.8.0' );
 define( 'AG_STARTER_COMPANION_FILE', __FILE__ );
 
 /**
@@ -729,7 +729,7 @@ class AG_Starter_Companion {
 				. '<li>Un encart apparaît dans le tableau de bord pour importer le contenu demo en 1 clic</li>'
 				. '</ol>',
 			'faq'         => '<h4>Le plugin est-il gratuit ?</h4>'
-				. '<p>Oui, 100% gratuit. Les packs Pro/Business sont des options payantes facultatives.</p>'
+				. '<p>Oui, 100% gratuit. Les packs Premium/Business sont des options payantes facultatives.</p>'
 				. '<h4>Fonctionne-t-il avec tous les thèmes AG Starter ?</h4>'
 				. '<p>Oui : Restaurant, Artisan, Coach et Avocat.</p>'
 				. '<h4>Que fait le bouton "Importer le contenu demo" ?</h4>'
@@ -762,9 +762,9 @@ class AG_Starter_Companion {
 		$tier = $this->get_current_tier();
 		$buttons = array();
 		if ( in_array( $tier, array( 'free' ), true ) ) {
-			$buttons['pro'] = 'Pro — 49€';
+			$buttons['premium'] = 'Premium — 99€';
 		}
-		if ( $tier === 'free' || $tier === 'pro' ) {
+		if ( $tier === 'free' ) {
 		}
 		if ( $tier !== 'business' ) {
 			$buttons['business'] = 'Business — 149€';
@@ -799,7 +799,7 @@ class AG_Starter_Companion {
 			}
 		}
 
-		return array( 'pro' => '', 'business' => '' );
+		return array( 'premium' => '', 'business' => '' );
 	}
 
 	/**
@@ -824,7 +824,7 @@ class AG_Starter_Companion {
 		<div style="background:linear-gradient(135deg,#1a1a2e 0%,#0f0f18 100%);border:1px solid rgba(212,180,92,.35);border-radius:10px;padding:28px 32px;margin:20px 20px 10px 0;display:flex;align-items:center;gap:28px;flex-wrap:wrap;position:relative;">
 			<a href="<?php echo esc_url( $dismiss_url ); ?>" style="position:absolute;top:10px;right:14px;color:rgba(255,255,255,.3);font-size:1.2rem;text-decoration:none;" title="Masquer 7 jours">✕</a>
 			<div style="flex:1;min-width:260px;">
-				<h2 style="color:#D4B45C;font-size:1.3rem;margin:0 0 8px;font-weight:800;">⚡ <?php esc_html_e( 'Passez a la version Pro', 'ag-starter-companion' ); ?></h2>
+				<h2 style="color:#D4B45C;font-size:1.3rem;margin:0 0 8px;font-weight:800;">⚡ <?php esc_html_e( 'Passez a la version Premium', 'ag-starter-companion' ); ?></h2>
 				<p style="color:rgba(255,255,255,.75);font-size:.95rem;line-height:1.6;margin:0;">
 					<?php esc_html_e( 'Header sticky, animations scroll, couleurs avancees, temoignages clients, galerie photos, boutique WooCommerce, grille de tarifs, pub minimale... Paiement unique, mises a jour a vie.', 'ag-starter-companion' ); ?>
 				</p>
@@ -847,7 +847,7 @@ class AG_Starter_Companion {
 		if ( ! $this->get_active_theme_slug() || ! $this->has_higher_tier() ) return;
 		wp_add_dashboard_widget(
 			'ag_upgrade_widget',
-			'⭐ ' . esc_html__( 'Passer a la version Pro', 'ag-starter-companion' ),
+			'⭐ ' . esc_html__( 'Passer a la version Premium', 'ag-starter-companion' ),
 			array( $this, 'render_upgrade_dashboard' )
 		);
 		global $wp_meta_boxes;
@@ -860,7 +860,7 @@ class AG_Starter_Companion {
 
 	public function render_upgrade_dashboard() {
 		$tier = $this->get_current_tier();
-		$tier_labels = array( 'free' => 'la version gratuite', 'pro' => 'le Pack Pro' );
+		$tier_labels = array( 'free' => 'la version gratuite', 'pro' => 'le Pack Premium' );
 		$current_label = $tier_labels[ $tier ] ?? 'votre version actuelle';
 		?>
 		<div style="text-align:center;padding:16px 0;">
@@ -868,10 +868,10 @@ class AG_Starter_Companion {
 			<h3 style="margin:0 0 10px;font-size:1.1rem;">Vous utilisez <?php echo esc_html( $current_label ); ?></h3>
 
 			<div style="background:#f8f5ec;border:1px solid #D4B45C;border-radius:8px;padding:18px;margin:0 0 16px;">
-				<?php if ( $tier === 'free' || $tier === 'pro' ) : ?>
+				<?php if ( $tier === 'free' ) : ?>
 				<?php if ( $tier === 'free' ) : ?>
 				<div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(0,0,0,.08);">
-					<strong style="font-size:1rem;">⚡ Pro — 49€</strong>
+					<strong style="font-size:1rem;">⚡ Premium — 99€</strong>
 					<p style="font-size:.82rem;color:#555;margin:4px 0 0;line-height:1.4;">Header sticky, animations scroll, polices Playfair + Manrope, témoignages clients, téléphone cliquable dans le header, couleurs avancées.</p>
 				</div>
 				<?php endif; ?>
@@ -898,42 +898,42 @@ class AG_Starter_Companion {
 		if ( ! $this->get_active_theme_slug() || ! $this->has_higher_tier() ) return;
 
 		$wp_customize->add_section( 'ag_locked_pro', array(
-			'title'       => esc_html__( '🔒 Header Sticky + Couleurs (Pro)', 'ag-starter-companion' ),
+			'title'       => esc_html__( '🔒 Header Sticky + Couleurs (Premium)', 'ag-starter-companion' ),
 			'priority'    => 30,
-			'description' => esc_html__( 'Le header sticky au scroll, la couleur d\'accent secondaire et le fond de footer personnalisable sont disponibles avec le Pack Pro (49€).', 'ag-starter-companion' ),
+			'description' => esc_html__( 'Le header sticky au scroll, la couleur d\'accent secondaire et le fond de footer personnalisable sont disponibles avec le Pack Premium (99€).', 'ag-starter-companion' ),
 		) );
 		$wp_customize->add_setting( 'ag_locked_pro_info', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
 		$wp_customize->add_control( 'ag_locked_pro_info', array(
-			'label'       => esc_html__( 'A partir de 49€', 'ag-starter-companion' ),
+			'label'       => esc_html__( 'A partir de 99€', 'ag-starter-companion' ),
 			'section'     => 'ag_locked_pro',
 			'type'        => 'hidden',
-			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'pro' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Pro — 49€ →</a>',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'premium' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Premium — 99€ →</a>',
 		) );
 
 		$wp_customize->add_section( 'ag_locked_animations', array(
-			'title'       => esc_html__( '🔒 Animations au scroll (Pro)', 'ag-starter-companion' ),
+			'title'       => esc_html__( '🔒 Animations au scroll (Premium)', 'ag-starter-companion' ),
 			'priority'    => 31,
-			'description' => esc_html__( 'Animations fade-in, slide-left, slide-right et scale-in au scroll. Vos sections apparaissent avec elegance quand le visiteur scrolle. Compatible prefers-reduced-motion. Pack Pro (49€).', 'ag-starter-companion' ),
+			'description' => esc_html__( 'Animations fade-in, slide-left, slide-right et scale-in au scroll. Vos sections apparaissent avec elegance quand le visiteur scrolle. Compatible prefers-reduced-motion. Pack Premium (99€).', 'ag-starter-companion' ),
 		) );
 		$wp_customize->add_setting( 'ag_locked_anim_info', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
 		$wp_customize->add_control( 'ag_locked_anim_info', array(
-			'label'   => esc_html__( 'A partir de 49€', 'ag-starter-companion' ),
+			'label'   => esc_html__( 'A partir de 99€', 'ag-starter-companion' ),
 			'section' => 'ag_locked_animations',
 			'type'    => 'hidden',
-			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'pro' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Pro — 49€ →</a>',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'premium' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Premium — 99€ →</a>',
 		) );
 
 		$wp_customize->add_section( 'ag_locked_testimonials', array(
-			'title'       => esc_html__( '🔒 Temoignages + Galerie (Pro)', 'ag-starter-companion' ),
+			'title'       => esc_html__( '🔒 Temoignages + Galerie (Premium)', 'ag-starter-companion' ),
 			'priority'    => 32,
-			'description' => esc_html__( 'Temoignages clients (jusqu\'a 6), galerie photos, grille de tarifs. Inclus dans le Pack Pro (49).', 'ag-starter-companion' ),
+			'description' => esc_html__( 'Temoignages clients (jusqu\'a 6), galerie photos, grille de tarifs. Inclus dans le Pack Premium (99).', 'ag-starter-companion' ),
 		) );
 		$wp_customize->add_setting( 'ag_locked_testi_info', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
 		$wp_customize->add_control( 'ag_locked_testi_info', array(
-			'label'   => esc_html__( 'A partir de 49€', 'ag-starter-companion' ),
+			'label'   => esc_html__( 'A partir de 99€', 'ag-starter-companion' ),
 			'section' => 'ag_locked_testimonials',
 			'type'    => 'hidden',
-			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'pro' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Pro — 49€ →</a>',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'premium' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Premium — 99€ →</a>',
 		) );
 
 		$wp_customize->add_section( 'ag_locked_whitelabel', array(
@@ -959,7 +959,7 @@ class AG_Starter_Companion {
 		$buttons = $this->get_upgrade_buttons();
 		if ( empty( $buttons ) ) return;
 		$tier = $this->get_current_tier();
-		$tier_labels = array( 'free' => 'Version gratuite', 'pro' => 'Pack Pro' );
+		$tier_labels = array( 'free' => 'Version gratuite', 'pro' => 'Pack Premium' );
 		$label = $tier_labels[ $tier ] ?? 'Version actuelle';
 		?>
 		<div style="position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,15,.97);border-top:2px solid #D4B45C;padding:12px 24px;z-index:9999;font-size:.85rem;" id="ag-footer-nudge">

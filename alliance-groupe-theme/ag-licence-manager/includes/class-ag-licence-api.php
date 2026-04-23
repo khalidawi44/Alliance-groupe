@@ -90,7 +90,7 @@ class AG_Licence_API {
 
     public static function companion_update( WP_REST_Request $req ) {
         $info = get_option( 'ag_lm_companion_version', array(
-            'version'      => '1.7.0',
+            'version'      => '1.8.0',
             'download_url' => home_url( '/wp-content/themes/alliance-groupe-theme/assets/downloads/ag-starter-companion.zip' ),
             'url'          => home_url( '/templates-wordpress' ),
             'tested'       => '6.5',
@@ -128,7 +128,7 @@ class AG_Licence_API {
                 . '</ul>'
                 . '<h4>Packs payants disponibles</h4>'
                 . '<p>Débloquez des fonctionnalités avancées avec un paiement unique :</p><ul>'
-                . '<li><strong>Pro (49€)</strong> — Header sticky, animations, couleurs avancées, footer personnalisable</li>'
+                . '<li><strong>Premium (99€)</strong> — Header sticky, animations, couleurs avancées, footer personnalisable</li>'
                 . '<li><strong>Business (149€)</strong> — Tout Pro + WooCommerce, multi-langue, pub reduite, session stratégique 30 min</li>'
                 . '</ul>',
             'banners'      => array(
@@ -137,7 +137,7 @@ class AG_Licence_API {
         ) );
 
         $info['stripe_urls'] = array(
-            'pro'      => get_option( 'ag_stripe_pro_url', '' ),
+            'premium'  => get_option( 'ag_stripe_premium_url', '' ),
             
             'business' => get_option( 'ag_stripe_business_url', '' ),
         );

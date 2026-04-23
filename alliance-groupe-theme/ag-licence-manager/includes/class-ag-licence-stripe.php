@@ -52,7 +52,7 @@ class AG_Licence_Stripe {
         }
 
         // Determine tier from metadata or amount
-        $tier = 'pro'; // default
+        $tier = 'premium'; // default
         $metadata = $session['metadata'] ?? array();
         if ( ! empty( $metadata['ag_tier'] ) ) {
             $tier = sanitize_key( $metadata['ag_tier'] );
@@ -64,7 +64,7 @@ class AG_Licence_Stripe {
             
                 
             } else {
-                $tier = 'pro';
+                $tier = 'premium';
             }
         }
 

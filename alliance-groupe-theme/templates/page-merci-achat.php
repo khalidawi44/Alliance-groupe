@@ -10,9 +10,11 @@
 
 get_header();
 
-$pack = isset( $_GET['pack'] ) ? sanitize_key( $_GET['pack'] ) : 'pro';
+$pack = isset( $_GET['pack'] ) ? sanitize_key( $_GET['pack'] ) : 
+'premium';
 $pack_data = array(
-    'pro' => array(
+    
+'premium' => array(
         'title'  => 'AG Starter Pro',
         'price'  => '49€',
         'icon'   => '⚡',
@@ -32,7 +34,8 @@ $pack_data = array(
     ),
 );
 if ( ! isset( $pack_data[ $pack ] ) ) {
-    $pack = 'pro';
+    $pack = 
+'premium';
 }
 $current = $pack_data[ $pack ];
 ?>

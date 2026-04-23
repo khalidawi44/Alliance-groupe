@@ -17,22 +17,22 @@ $dl_base   = get_stylesheet_directory_uri() . '/assets/downloads/';
 
 // Load the Stripe URLs from options (same as page-templates.php).
 $ag_stripe_placeholder    = 'STRIPE_PLACEHOLDER';
-$ag_stripe_pro      = get_option( 'ag_stripe_pro_url', $ag_stripe_placeholder );
+$ag_stripe_pro      = get_option( 'ag_stripe_premium_url', $ag_stripe_placeholder );
 
 $ag_stripe_business = get_option( 'ag_stripe_business_url', $ag_stripe_placeholder );
 
 $contact_base = home_url( '/contact' );
-$pro_url      = ( $ag_stripe_pro      !== $ag_stripe_placeholder ) ? $ag_stripe_pro      : add_query_arg( array( 'pack' => 'pro', 'metier' => $ag_metier['slug'] ), $contact_base );
+$premium_url      = ( $ag_stripe_pro      !== $ag_stripe_placeholder ) ? $ag_stripe_pro      : add_query_arg( array( 'pack' => 'pro', 'metier' => $ag_metier['slug'] ), $contact_base );
 
 $business_url = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? $ag_stripe_business : add_query_arg( array( 'pack' => 'business', 'metier' => $ag_metier['slug'] ), $contact_base );
 
-$pro_target      = ( $ag_stripe_pro      !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : '';
+$premium_target      = ( $ag_stripe_pro      !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : '';
 
 $business_target = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : '';
 
-$pro_label      = ( $ag_stripe_pro      !== $ag_stripe_placeholder ) ? 'Payer 49€ via Stripe →'  : 'Acheter — 49€ une fois';
+$premium_label      = ( $ag_stripe_pro      !== $ag_stripe_placeholder ) ? 'Payer 99€ via Stripe →'  : 'Acheter — 99€ une fois';
 
-$business_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'Payer 149€ via Stripe →' : 'Acheter — 149€ une fois';
+$business_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'Payer 199€ via Stripe →' : 'Acheter — 199€ une fois';
 
 $screenshot_url = get_stylesheet_directory_uri() . '/assets/downloads/' . $ag_metier['slug_full'] . '/screenshot.png';
 $screenshot_file = get_stylesheet_directory() . '/assets/downloads/' . $ag_metier['slug_full'] . '/screenshot.png';
@@ -111,15 +111,15 @@ $has_screenshot = file_exists( $screenshot_file );
                         <strong class="ag-cfg__tile-name">Je démarre</strong>
                         <span class="ag-cfg__tile-price">Gratuit</span>
                     </button>
-                    <button type="button" class="ag-cfg__tile ag-cfg__tile--pro" data-tier="pro" role="tab" aria-selected="false">
+                    <button type="button" class="ag-cfg__tile ag-cfg__tile--premium" data-tier="premium" role="tab" aria-selected="false">
                         <span class="ag-cfg__tile-icon">⚡</span>
-                        <strong class="ag-cfg__tile-name">Je veux pro</strong>
-                        <span class="ag-cfg__tile-price">49€</span>
+                        <strong class="ag-cfg__tile-name">Je veux premium</strong>
+                        <span class="ag-cfg__tile-price">99€</span>
                     </button>
                     <button type="button" class="ag-cfg__tile ag-cfg__tile--business" data-tier="business" role="tab" aria-selected="false">
                         <span class="ag-cfg__tile-icon">💼</span>
                         <strong class="ag-cfg__tile-name">Je veux la tranquillité</strong>
-                        <span class="ag-cfg__tile-price">149€</span>
+                        <span class="ag-cfg__tile-price">199€</span>
                     </button>
                 </div>
 
@@ -145,10 +145,10 @@ $has_screenshot = file_exists( $screenshot_file );
                     </div>
 
                     <!-- Pro -->
-                    <div class="ag-cfg__panel" data-tier="pro" role="tabpanel">
+                    <div class="ag-cfg__panel" data-tier="premium" role="tabpanel">
                         <div class="ag-cfg__panel-head">
-                            <h3>⚡ Pack Pro pour <?php echo esc_html( $ag_metier['name'] ); ?></h3>
-                            <span class="ag-cfg__panel-price">49€ une fois</span>
+                            <h3>⚡ Pack Premium pour <?php echo esc_html( $ag_metier['name'] ); ?></h3>
+                            <span class="ag-cfg__panel-price">99€ une fois</span>
                         </div>
                         <p class="ag-cfg__panel-sub">Le plugin qui transforme le thème basique en thème professionnel finalisé.</p>
                         <ul class="ag-cfg__features">
@@ -156,8 +156,8 @@ $has_screenshot = file_exists( $screenshot_file );
                             <li><?php echo wp_kses_post( $feat ); ?></li>
                             <?php endforeach; ?>
                         </ul>
-                        <a href="<?php echo esc_url( $pro_url ); ?>"<?php echo $pro_target; // phpcs:ignore ?> class="ag-btn-gold" style="width:100%;max-width:460px;display:block;margin:24px auto 0;text-align:center;justify-content:center;">
-                            <?php echo esc_html( $pro_label ); ?>
+                        <a href="<?php echo esc_url( $premium_url ); ?>"<?php echo $premium_target; // phpcs:ignore ?> class="ag-btn-gold" style="width:100%;max-width:460px;display:block;margin:24px auto 0;text-align:center;justify-content:center;">
+                            <?php echo esc_html( $premium_label ); ?>
                         </a>
                         <p class="ag-cfg__panel-note">Paiement unique, pas d'abonnement. Compatible avec les 4 thèmes AG Starter.</p>
                     </div>
@@ -168,7 +168,7 @@ $has_screenshot = file_exists( $screenshot_file );
                     <div class="ag-cfg__panel" data-tier="business" role="tabpanel">
                         <div class="ag-cfg__panel-head">
                             <h3>💼 Pack Business pour <?php echo esc_html( $ag_metier['name'] ); ?></h3>
-                            <span class="ag-cfg__panel-price">149€ une fois</span>
+                            <span class="ag-cfg__panel-price">199€ une fois</span>
                         </div>
                         <p class="ag-cfg__panel-sub">Tout le Premium + installation assistée, maintenance 1 an, audit SEO, white-label.</p>
                         <ul class="ag-cfg__features">

@@ -30,7 +30,7 @@ class AG_Licence_DB {
             licence_key_hash VARCHAR(64) NOT NULL,
             licence_key_enc VARCHAR(255) DEFAULT NULL,
             licence_prefix VARCHAR(10) NOT NULL,
-            tier VARCHAR(20) NOT NULL DEFAULT 'pro',
+            tier VARCHAR(20) NOT NULL DEFAULT 'premium',
             theme_slug VARCHAR(100) DEFAULT NULL,
             email VARCHAR(191) NOT NULL,
             domain VARCHAR(191) DEFAULT NULL,
@@ -62,12 +62,12 @@ class AG_Licence_DB {
     /**
      * Generate a licence key with tier prefix + UUID.
      *
-     * @param string $tier pro|premium|business
+     * @param string $tier premium|business
      * @return string Clear-text licence key (store hash, send this to client ONCE)
      */
-    public static function generate_key( $tier = 'pro' ) {
+    public static function generate_key( $tier = 'premium' ) {
         $prefixes = array(
-            'pro'      => 'AGPRO',
+            'premium'  => 'AGPRM',
             'premium'  => 'AGPRM',
             'business' => 'AGBUS',
         );
@@ -114,7 +114,7 @@ class AG_Licence_DB {
      * Insert a new licence.
      *
      * @param string $clear_key   The clear-text licence key.
-     * @param string $tier        pro|premium|business
+     * @param string $tier        premium|business
      * @param string $email       Buyer email.
      * @param string $stripe_sess Optional Stripe checkout session ID.
      * @param string $theme_slug  Optional specific theme slug.
@@ -124,7 +124,7 @@ class AG_Licence_DB {
         global $wpdb;
 
         $prefix_map = array(
-            'pro'      => 'AGPRO',
+            'premium'  => 'AGPRM',
             'premium'  => 'AGPRM',
             'business' => 'AGBUS',
         );
