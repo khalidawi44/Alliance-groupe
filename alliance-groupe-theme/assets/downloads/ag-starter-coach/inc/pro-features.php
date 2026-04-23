@@ -45,7 +45,7 @@ class AG_Pro_Features {
         wp_enqueue_script( 'ag-premium-scripts',
             get_template_directory_uri() . '/inc/pro-scripts.js',
             array(), '2.0.0', true );
-        wp_add_inline_style( wp_get_theme()->get_stylesheet(), $this->get_pro_css() );
+        wp_add_inline_style( 'ag-starter-coach-style', $this->get_pro_css() );
     }
 
     private function get_pro_css() {
