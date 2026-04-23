@@ -744,10 +744,33 @@ class AG_Starter_Companion {
 	// ═══════════════════════════════════════════════════════════════
 
 	private function is_free_tier() {
+		return $this->get_current_tier() === 'free';
+	}
+
+	private function get_current_tier() {
 		if ( class_exists( 'AG_Licence_Client' ) ) {
-			return AG_Licence_Client::get_tier() === 'free';
+			return AG_Licence_Client::get_tier();
 		}
-		return true;
+		return 'free';
+	}
+
+	private function has_higher_tier() {
+		return $this->get_current_tier() !== 'business';
+	}
+
+	private function get_upgrade_buttons() {
+		$tier = $this->get_current_tier();
+		$buttons = array();
+		if ( in_array( $tier, array( 'free' ), true ) ) {
+			$buttons['pro'] = 'Pro — 49€';
+		}
+		if ( in_array( $tier, array( 'free', 'pro' ), true ) ) {
+			$buttons['premium'] = 'Premium — 99€';
+		}
+		if ( in_array( $tier, array( 'free', 'pro', 'premium' ), true ) ) {
+			$buttons['business'] = 'Business — 149€';
+		}
+		return $buttons;
 	}
 
 	private function get_upgrade_url( $pack = 'pro' ) {
@@ -784,7 +807,7 @@ class AG_Starter_Companion {
 	 * Big upgrade banner on all admin pages.
 	 */
 	public function upgrade_banner() {
-		if ( ! $this->get_active_theme_slug() || ! $this->is_free_tier() ) return;
+		if ( ! $this->get_active_theme_slug() || ! $this->has_higher_tier() ) return;
 		if ( ! current_user_can( 'manage_options' ) ) return;
 		$done = get_option( 'ag_starter_companion_done_' . $this->get_active_theme_slug() );
 		if ( ! $done ) return; // Show companion install notice first
@@ -808,9 +831,11 @@ class AG_Starter_Companion {
 				</p>
 			</div>
 			<div style="display:flex;gap:10px;flex-wrap:wrap;">
-				<a href="<?php echo esc_url( $this->get_upgrade_url( 'pro' ) ); ?>" target="_blank" rel="noopener" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-weight:700;padding:14px 22px;border-radius:8px;text-decoration:none;font-size:.9rem;white-space:nowrap;">Pro — 49€ →</a>
-				<a href="<?php echo esc_url( $this->get_upgrade_url( 'premium' ) ); ?>" target="_blank" rel="noopener" style="display:inline-block;background:rgba(212,180,92,.15);color:#D4B45C;font-weight:700;padding:14px 22px;border-radius:8px;text-decoration:none;font-size:.9rem;white-space:nowrap;border:1px solid rgba(212,180,92,.4);">Premium — 99€ →</a>
-				<a href="<?php echo esc_url( $this->get_upgrade_url( 'business' ) ); ?>" target="_blank" rel="noopener" style="display:inline-block;background:rgba(212,180,92,.15);color:#D4B45C;font-weight:700;padding:14px 22px;border-radius:8px;text-decoration:none;font-size:.9rem;white-space:nowrap;border:1px solid rgba(212,180,92,.4);">Business — 149€ →</a>
+				<?php foreach ( $this->get_upgrade_buttons() as $pack => $text ) :
+					$is_first = ( $pack === array_key_first( $this->get_upgrade_buttons() ) );
+				?>
+				<a href="<?php echo esc_url( $this->get_upgrade_url( $pack ) ); ?>" target="_blank" rel="noopener" style="display:inline-block;<?php echo $is_first ? 'background:#D4B45C;color:#0a0a0f;' : 'background:rgba(212,180,92,.15);color:#D4B45C;border:1px solid rgba(212,180,92,.4);'; ?>font-weight:700;padding:14px 22px;border-radius:8px;text-decoration:none;font-size:.9rem;white-space:nowrap;"><?php echo esc_html( $text ); ?> →</a>
+				<?php endforeach; ?>
 			</div>
 		</div>
 		<?php
@@ -820,7 +845,7 @@ class AG_Starter_Companion {
 	 * Dashboard widget with upgrade CTA.
 	 */
 	public function upgrade_dashboard_widget() {
-		if ( ! $this->get_active_theme_slug() || ! $this->is_free_tier() ) return;
+		if ( ! $this->get_active_theme_slug() || ! $this->has_higher_tier() ) return;
 		wp_add_dashboard_widget(
 			'ag_upgrade_widget',
 			'⭐ ' . esc_html__( 'Passer a la version Pro', 'ag-starter-companion' ),
@@ -857,9 +882,9 @@ class AG_Starter_Companion {
 				<p style="font-size:.78rem;color:#888;margin:12px 0 0;text-align:center;">Paiement unique — mises a jour a vie — support inclus</p>
 			</div>
 			<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
-				<a href="<?php echo esc_url( $this->get_upgrade_url( 'pro' ) ); ?>" target="_blank" rel="noopener" class="button button-primary" style="font-size:.85rem;padding:6px 14px;">Pro — 49€</a>
-				<a href="<?php echo esc_url( $this->get_upgrade_url( 'premium' ) ); ?>" target="_blank" rel="noopener" class="button button-primary" style="font-size:.85rem;padding:6px 14px;">Premium — 99€</a>
-				<a href="<?php echo esc_url( $this->get_upgrade_url( 'business' ) ); ?>" target="_blank" rel="noopener" class="button button-primary" style="font-size:.85rem;padding:6px 14px;">Business — 149€</a>
+				<?php foreach ( $this->get_upgrade_buttons() as $pack => $text ) : ?>
+				<a href="<?php echo esc_url( $this->get_upgrade_url( $pack ) ); ?>" target="_blank" rel="noopener" class="button button-primary" style="font-size:.85rem;padding:6px 14px;"><?php echo esc_html( $text ); ?></a>
+				<?php endforeach; ?>
 			</div>
 		</div>
 		<?php
@@ -869,7 +894,7 @@ class AG_Starter_Companion {
 	 * Locked section in the Customizer.
 	 */
 	public function upgrade_customizer_section( $wp_customize ) {
-		if ( ! $this->get_active_theme_slug() || ! $this->is_free_tier() ) return;
+		if ( ! $this->get_active_theme_slug() || ! $this->has_higher_tier() ) return;
 
 		$wp_customize->add_section( 'ag_locked_pro', array(
 			'title'       => esc_html__( '🔒 Header Sticky + Couleurs (Pro)', 'ag-starter-companion' ),
@@ -928,15 +953,22 @@ class AG_Starter_Companion {
 	 * Subtle footer nudge on every admin page.
 	 */
 	public function upgrade_footer_nudge() {
-		if ( ! $this->get_active_theme_slug() || ! $this->is_free_tier() ) return;
+		if ( ! $this->get_active_theme_slug() || ! $this->has_higher_tier() ) return;
 		if ( ! current_user_can( 'manage_options' ) ) return;
+		$buttons = $this->get_upgrade_buttons();
+		if ( empty( $buttons ) ) return;
+		$tier = $this->get_current_tier();
+		$tier_labels = array( 'free' => 'Version gratuite', 'pro' => 'Pack Pro', 'premium' => 'Pack Premium' );
+		$label = $tier_labels[ $tier ] ?? 'Version actuelle';
 		?>
 		<div style="position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,15,.97);border-top:2px solid #D4B45C;padding:12px 24px;z-index:9999;font-size:.85rem;" id="ag-footer-nudge">
 			<div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
-				<span style="color:rgba(255,255,255,.7);">⚡ Version gratuite</span>
-				<a href="<?php echo esc_url( $this->get_upgrade_url( 'pro' ) ); ?>" target="_blank" rel="noopener" style="background:#D4B45C;color:#0a0a0f;font-weight:700;padding:6px 16px;border-radius:6px;text-decoration:none;font-size:.82rem;">Pro — 49€</a>
-				<a href="<?php echo esc_url( $this->get_upgrade_url( 'premium' ) ); ?>" target="_blank" rel="noopener" style="background:rgba(212,180,92,.15);color:#D4B45C;font-weight:700;padding:6px 16px;border-radius:6px;text-decoration:none;font-size:.82rem;border:1px solid rgba(212,180,92,.4);">Premium — 99€</a>
-				<a href="<?php echo esc_url( $this->get_upgrade_url( 'business' ) ); ?>" target="_blank" rel="noopener" style="background:rgba(212,180,92,.15);color:#D4B45C;font-weight:700;padding:6px 16px;border-radius:6px;text-decoration:none;font-size:.82rem;border:1px solid rgba(212,180,92,.4);">Business — 149€</a>
+				<span style="color:rgba(255,255,255,.7);">⚡ <?php echo esc_html( $label ); ?> —</span>
+				<?php foreach ( $buttons as $pack => $text ) :
+					$is_first = ( $pack === array_key_first( $buttons ) );
+				?>
+				<a href="<?php echo esc_url( $this->get_upgrade_url( $pack ) ); ?>" target="_blank" rel="noopener" style="<?php echo $is_first ? 'background:#D4B45C;color:#0a0a0f;' : 'background:rgba(212,180,92,.15);color:#D4B45C;border:1px solid rgba(212,180,92,.4);'; ?>font-weight:700;padding:6px 16px;border-radius:6px;text-decoration:none;font-size:.82rem;"><?php echo esc_html( $text ); ?></a>
+				<?php endforeach; ?>
 				<a href="#" onclick="document.getElementById('ag-footer-nudge').style.display='none';return false;" style="color:rgba(255,255,255,.3);font-size:1rem;text-decoration:none;margin-left:6px;">✕</a>
 			</div>
 		</div>
