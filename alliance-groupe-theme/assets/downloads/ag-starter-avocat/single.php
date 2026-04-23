@@ -8,27 +8,28 @@
 get_header();
 ?>
 
-<main id="ag-main" class="ag-main" role="main">
-	<div class="ag-container">
+<main id="ag-main" class="ag-main ag-page-single" role="main">
 
-		<?php
-		while ( have_posts() ) :
-			the_post();
-			?>
-			<article <?php post_class(); ?>>
-				<header>
-					<h1 class="ag-entry-title"><?php the_title(); ?></h1>
-					<div class="ag-entry-meta">
-						<?php
-						/* translators: 1: date, 2: author. */
-						printf(
-							esc_html__( 'Publie le %1$s par %2$s', 'ag-starter-avocat' ),
-							'<time datetime="' . esc_attr( get_the_date( 'c' ) ) . '">' . esc_html( get_the_date() ) . '</time>',
-							'<span>' . esc_html( get_the_author() ) . '</span>'
-						);
-						?>
-					</div>
-				</header>
+	<?php while ( have_posts() ) : the_post(); ?>
+
+	<section class="ag-page-hero">
+		<div class="ag-container">
+			<h1 class="ag-page-hero__title"><?php the_title(); ?></h1>
+			<div class="ag-post-meta">
+				<?php
+				printf(
+					esc_html__( 'Publie le %1$s par %2$s', 'ag-starter-avocat' ),
+					'<time datetime="' . esc_attr( get_the_date( 'c' ) ) . '">' . esc_html( get_the_date() ) . '</time>',
+					'<span>' . esc_html( get_the_author() ) . '</span>'
+				);
+				?>
+			</div>
+		</div>
+	</section>
+
+	<div class="ag-container ag-page-content-wrap">
+
+			<article <?php post_class( 'ag-page-article' ); ?>>
 
 				<?php if ( has_post_thumbnail() ) : ?>
 					<div class="ag-entry-thumb">
@@ -62,14 +63,14 @@ get_header();
 					?>
 				</footer>
 			</article>
-			<?php
 
+			<?php
 			if ( comments_open() || get_comments_number() ) {
 				comments_template();
 			}
 
-		endwhile;
-		?>
+	endwhile;
+	?>
 
 	</div>
 </main>

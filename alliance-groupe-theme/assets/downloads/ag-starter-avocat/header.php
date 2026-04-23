@@ -43,6 +43,9 @@
 				);
 			}
 			?>
+			<button class="ag-menu-toggle" aria-label="<?php esc_attr_e( 'Menu', 'ag-starter-avocat' ); ?>" aria-expanded="false">
+				<span></span><span></span><span></span>
+			</button>
 		</nav>
 		<?php
 		// Pro: phone button in header
