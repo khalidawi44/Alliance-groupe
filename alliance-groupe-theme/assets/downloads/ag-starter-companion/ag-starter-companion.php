@@ -930,12 +930,15 @@ class AG_Starter_Companion {
 	public function upgrade_footer_nudge() {
 		if ( ! $this->get_active_theme_slug() || ! $this->is_free_tier() ) return;
 		if ( ! current_user_can( 'manage_options' ) ) return;
-		$url = $this->get_upgrade_url( 'pro' );
 		?>
-		<div style="position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,15,.95);border-top:2px solid #D4B45C;padding:10px 24px;display:flex;align-items:center;justify-content:center;gap:16px;z-index:9999;font-size:.88rem;" id="ag-footer-nudge">
-			<span style="color:rgba(255,255,255,.7);">⚡ <?php esc_html_e( 'Version gratuite — Passez a Pro pour debloquer toutes les fonctionnalites', 'ag-starter-companion' ); ?></span>
-			<a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener" style="background:#D4B45C;color:#0a0a0f;font-weight:700;padding:6px 18px;border-radius:6px;text-decoration:none;font-size:.85rem;">Passer a Pro →</a>
-			<a href="#" onclick="document.getElementById('ag-footer-nudge').style.display='none';return false;" style="color:rgba(255,255,255,.3);font-size:.9rem;text-decoration:none;margin-left:8px;">✕</a>
+		<div style="position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,15,.97);border-top:2px solid #D4B45C;padding:12px 24px;z-index:9999;font-size:.85rem;" id="ag-footer-nudge">
+			<div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
+				<span style="color:rgba(255,255,255,.7);">⚡ Version gratuite</span>
+				<a href="<?php echo esc_url( $this->get_upgrade_url( 'pro' ) ); ?>" target="_blank" rel="noopener" style="background:#D4B45C;color:#0a0a0f;font-weight:700;padding:6px 16px;border-radius:6px;text-decoration:none;font-size:.82rem;">Pro — 49€</a>
+				<a href="<?php echo esc_url( $this->get_upgrade_url( 'premium' ) ); ?>" target="_blank" rel="noopener" style="background:rgba(212,180,92,.15);color:#D4B45C;font-weight:700;padding:6px 16px;border-radius:6px;text-decoration:none;font-size:.82rem;border:1px solid rgba(212,180,92,.4);">Premium — 99€</a>
+				<a href="<?php echo esc_url( $this->get_upgrade_url( 'business' ) ); ?>" target="_blank" rel="noopener" style="background:rgba(212,180,92,.15);color:#D4B45C;font-weight:700;padding:6px 16px;border-radius:6px;text-decoration:none;font-size:.82rem;border:1px solid rgba(212,180,92,.4);">Business — 149€</a>
+				<a href="#" onclick="document.getElementById('ag-footer-nudge').style.display='none';return false;" style="color:rgba(255,255,255,.3);font-size:1rem;text-decoration:none;margin-left:6px;">✕</a>
+			</div>
 		</div>
 		<?php
 	}
