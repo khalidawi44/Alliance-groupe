@@ -45,6 +45,13 @@ function ag_render() {
         echo '<div class="notice notice-success"><p>Logs vidés.</p></div>';
     }
 
+    // Action: Purge all caches (licences, transients, companion)
+    if ( isset( $_POST['ag_purge'] ) && check_admin_referer( 'ag_purge_nonce' ) ) {
+        global $wpdb;
+        $deleted = $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '%transient%ag_%' OR option_name LIKE '%transient%update_plugins%' OR option_name LIKE '%transient%update_themes%' OR option_name LIKE 'ag_licence_%' OR option_name LIKE 'ag_companion_%'" );
+        echo '<div class="notice notice-success"><p>🧹 Purge complète : ' . intval( $deleted ) . ' entrées supprimées (caches licence, transients companion, MAJ plugins/thèmes).</p></div>';
+    }
+
     // ── Deux boutons côte à côte ──
     echo '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;">';
 
@@ -69,6 +76,15 @@ function ag_render() {
     echo '</form></div>';
 
     echo '</div>';
+
+    // Bouton purge
+    echo '<div style="margin:20px 0;padding:20px;background:#fff3cd;border:2px solid #ffc107;border-radius:8px;text-align:center;">';
+    echo '<h3 style="margin-top:0;color:#856404;">🧹 Purge complète</h3>';
+    echo '<p style="color:#856404;">Supprime tous les caches : licences clients, transients companion, MAJ plugins/thèmes. Utile après une révocation de licence ou un changement de tier.</p>';
+    echo '<form method="post" style="display:inline;">';
+    wp_nonce_field( 'ag_purge_nonce' );
+    echo '<input type="submit" name="ag_purge" class="button" style="background:#ffc107;border-color:#ffc107;color:#856404;font-weight:700;" value="🧹 Purger tous les caches" onclick="return confirm(\'Purger tous les caches licence + companion + MAJ ?\');">';
+    echo '</form></div>';
 
     // Lien GitHub
     echo '<p style="text-align:center;color:#666;">Repo : <a href="https://github.com/khalidawi44/Alliance-groupe/tree/claude/rebuild-alliance-theme-fl7ca/content" target="_blank">github.com/khalidawi44/Alliance-groupe</a></p>';
