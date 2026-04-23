@@ -90,7 +90,7 @@ class AG_Licence_API {
 
     public static function companion_update( WP_REST_Request $req ) {
         $info = get_option( 'ag_lm_companion_version', array(
-            'version'      => '1.5.0',
+            'version'      => '1.6.0',
             'download_url' => home_url( '/wp-content/themes/alliance-groupe-theme/assets/downloads/ag-starter-companion.zip' ),
             'url'          => home_url( '/templates-wordpress' ),
             'tested'       => '6.5',
