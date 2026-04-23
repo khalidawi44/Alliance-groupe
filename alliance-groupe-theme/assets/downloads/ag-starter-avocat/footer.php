@@ -35,28 +35,18 @@
 			</div>
 		</div>
 		<div class="ag-footer-bottom">
-			<?php
-			$ag_custom_copy = ag_starter_avocat_get_option( 'ag_footer_copyright' );
-			if ( $ag_custom_copy ) :
-				?>
-				<p><?php echo esc_html( $ag_custom_copy ); ?></p>
-			<?php else : ?>
-				<p>
-					&copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?>.
-					<?php esc_html_e( 'Tous droits reserves.', 'ag-starter-avocat' ); ?>
-				</p>
-			<?php endif; ?>
-			<?php if ( ag_starter_avocat_get_option( 'ag_footer_credits' ) ) : ?>
-				<p>
-					<?php
-					/* translators: %s: Alliance Group website link. */
-					printf( wp_kses( __( 'Theme gratuit par %s', 'ag-starter-avocat' ), array( 'a' => array( 'href' => array(), 'rel' => array() ) ) ), '<a href="https://alliancegroupe-inc.com/templates-wordpress" rel="nofollow">Alliance Group</a>' );
-					?>
-				</p>
-			<?php endif; ?>
+			<p>
+				&copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?>.
+				<?php esc_html_e( 'Tous droits reserves.', 'ag-starter-avocat' ); ?>
+			</p>
 		</div>
 	</div>
 </footer>
+
+<?php
+// AG branding (rendered by pro-features.php based on tier)
+// This replaces the old static credit — see render_footer_branding()
+?>
 
 <?php wp_footer(); ?>
 </body>

@@ -160,11 +160,9 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card h3,.ag-honoraires
         }
 
         if ( 'pro' === $this->tier ) {
-            echo '<div style="text-align:center;padding:20px 24px;background:#060606;border-top:1px solid rgba(255,255,255,.06);">';
-            echo '<p style="color:rgba(255,255,255,.45);font-size:.82rem;margin:0 0 6px;">Fièrement créé par</p>';
-            echo '<a href="' . esc_url( $url_home ) . '" target="_blank" rel="noopener nofollow" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;">';
-            echo '<img src="https://alliancegroupe-inc.com/wp-content/uploads/2026/04/logo_site_alliance.jpg" alt="Alliance Groupe" style="height:24px;border-radius:4px;">';
-            echo '<span style="color:#D4B45C;font-weight:700;font-size:.95rem;font-family:\'Playfair Display\',serif;font-style:italic;">Alliance Groupe</span>';
+            echo '<div style="text-align:center;padding:16px 24px;background:#060606;border-top:1px solid rgba(255,255,255,.06);">';
+            echo '<a href="' . esc_url( $url_home ) . '" target="_blank" rel="noopener nofollow" style="display:inline-block;text-decoration:none;">';
+            echo '<img src="https://alliancegroupe-inc.com/wp-content/uploads/2026/04/logo_site_alliance.jpg" alt="Alliance Groupe" style="height:28px;border-radius:4px;opacity:.6;transition:opacity .3s;" onmouseover="this.style.opacity=\'1\'" onmouseout="this.style.opacity=\'.6\'">';
             echo '</a></div>';
             return;
         }
