@@ -3,7 +3,7 @@
  * Plugin Name:       AG Starter Companion
  * Plugin URI:        https://alliancegroupe-inc.com/templates-wordpress
  * Description:       Importer un clic pour les themes AG Starter (Restaurant, Artisan, Coach, Avocat). Cree automatiquement les pages, le menu et les reglages pour un site pret a l'emploi.
- * Version:           1.8.0
+ * Version:           1.9.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            AGthèmes
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_STARTER_COMPANION_VERSION', '1.8.0' );
+define( 'AG_STARTER_COMPANION_VERSION', '1.9.0' );
 define( 'AG_STARTER_COMPANION_FILE', __FILE__ );
 
 /**
@@ -824,7 +824,7 @@ class AG_Starter_Companion {
 		<div style="background:linear-gradient(135deg,#1a1a2e 0%,#0f0f18 100%);border:1px solid rgba(212,180,92,.35);border-radius:10px;padding:28px 32px;margin:20px 20px 10px 0;display:flex;align-items:center;gap:28px;flex-wrap:wrap;position:relative;">
 			<a href="<?php echo esc_url( $dismiss_url ); ?>" style="position:absolute;top:10px;right:14px;color:rgba(255,255,255,.3);font-size:1.2rem;text-decoration:none;" title="Masquer 7 jours">✕</a>
 			<div style="flex:1;min-width:260px;">
-				<h2 style="color:#D4B45C;font-size:1.3rem;margin:0 0 8px;font-weight:800;">⚡ <?php esc_html_e( 'Passez a la version Premium', 'ag-starter-companion' ); ?></h2>
+				<h2 style="color:#D4B45C;font-size:1.3rem;margin:0 0 8px;font-weight:800;">⚡ <?php echo 'Passez a la version ' . esc_html( ($this->get_current_tier() === 'free') ? 'Premium' : 'Business' ); ?></h2>
 				<p style="color:rgba(255,255,255,.75);font-size:.95rem;line-height:1.6;margin:0;">
 					<?php esc_html_e( 'Header sticky, animations scroll, couleurs avancees, temoignages clients, galerie photos, boutique WooCommerce, grille de tarifs, pub minimale... Paiement unique, mises a jour a vie.', 'ag-starter-companion' ); ?>
 				</p>
@@ -847,7 +847,7 @@ class AG_Starter_Companion {
 		if ( ! $this->get_active_theme_slug() || ! $this->has_higher_tier() ) return;
 		wp_add_dashboard_widget(
 			'ag_upgrade_widget',
-			'⭐ ' . esc_html__( 'Passer a la version Premium', 'ag-starter-companion' ),
+			'⭐ ' . esc_html__( 'Passer au niveau superieur', 'ag-starter-companion' ),
 			array( $this, 'render_upgrade_dashboard' )
 		);
 		global $wp_meta_boxes;
