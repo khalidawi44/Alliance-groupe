@@ -139,7 +139,7 @@ class AG_Licence_API {
 
         $info['stripe_urls'] = array(
             'pro'      => get_option( 'ag_stripe_pro_url', '' ),
-            'premium'  => get_option( 'ag_stripe_premium_url', '' ),
+            
             'business' => get_option( 'ag_stripe_business_url', '' ),
         );
 

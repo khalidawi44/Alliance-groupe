@@ -1,12 +1,12 @@
 /**
  * AG Starter Avocat Pro — animations + sticky header.
- * Targets .ag-site-header (avocat-specific class).
+ * Targets .ag-header (avocat-specific class).
  */
 (function(){
     'use strict';
 
     // Sticky header
-    var header = document.querySelector('.ag-site-header');
+    var header = document.querySelector('.ag-header');
     if (header) {
         var scrolled = false;
         window.addEventListener('scroll', function(){

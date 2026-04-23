@@ -225,7 +225,7 @@ class AG_Licence_Admin {
                         <tr>
                             <th><label>Pack / Tier</label></th>
                             <td><select name="tier">
-                                <?php foreach ( array( 'pro' => 'Pro', 'premium' => 'Premium', 'business' => 'Business' ) as $k => $v ) : ?>
+                                <?php foreach ( array( 'pro' => 'Pro', 'business' => 'Business' ) as $k => $v ) : ?>
                                     <option value="<?php echo $k; ?>" <?php selected( $l->tier, $k ); ?>><?php echo $v; ?></option>
                                 <?php endforeach; ?>
                             </select>

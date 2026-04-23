@@ -142,7 +142,7 @@ require get_template_directory() . '/inc/pro-features.php';
 add_action( 'after_setup_theme', function () {
     AG_Licence_Client::register_admin();
     new AG_Theme_Updater( 'ag-starter-restaurant', wp_get_theme()->get( 'Version' ) );
-    new AG_Pro_Features( 'ag-starter-restaurant' );
+    $GLOBALS['ag_pro'] = new AG_Pro_Features( 'ag-starter-restaurant' );
 }, 20 );
 
 // Enqueue Pro JS if licence active

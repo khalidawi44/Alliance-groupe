@@ -36,24 +36,6 @@
 		</div>
 		<div class="ag-footer-bottom">
 			<?php
-			$ag_custom_copy = ag_starter_coach_get_option( 'ag_footer_copyright' );
-			if ( $ag_custom_copy ) :
-				?>
-				<p><?php echo esc_html( $ag_custom_copy ); ?></p>
-			<?php else : ?>
-				<p>
-					&copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?>.
-					<?php esc_html_e( 'Tous droits reserves.', 'ag-starter-coach' ); ?>
-				</p>
-			<?php endif; ?>
-			<?php if ( ag_starter_coach_get_option( 'ag_footer_credits' ) ) : ?>
-				<p>
-					<?php
-					/* translators: %s: Alliance Group website link. */
-					printf( wp_kses( __( 'Theme gratuit par %s', 'ag-starter-coach' ), array( 'a' => array( 'href' => array(), 'rel' => array() ) ) ), '<a href="https://alliancegroupe-inc.com/templates-wordpress" rel="nofollow">Alliance Group</a>' );
-					?>
-				</p>
-			<?php endif; ?>
 		</div>
 	</div>
 </footer>

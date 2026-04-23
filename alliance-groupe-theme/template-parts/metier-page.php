@@ -18,20 +18,20 @@ $dl_base   = get_stylesheet_directory_uri() . '/assets/downloads/';
 // Load the Stripe URLs from options (same as page-templates.php).
 $ag_stripe_placeholder    = 'STRIPE_PLACEHOLDER';
 $ag_stripe_pro      = get_option( 'ag_stripe_pro_url', $ag_stripe_placeholder );
-$ag_stripe_premium  = get_option( 'ag_stripe_premium_url', $ag_stripe_placeholder );
+
 $ag_stripe_business = get_option( 'ag_stripe_business_url', $ag_stripe_placeholder );
 
 $contact_base = home_url( '/contact' );
 $pro_url      = ( $ag_stripe_pro      !== $ag_stripe_placeholder ) ? $ag_stripe_pro      : add_query_arg( array( 'pack' => 'pro', 'metier' => $ag_metier['slug'] ), $contact_base );
-$premium_url  = ( $ag_stripe_premium  !== $ag_stripe_placeholder ) ? $ag_stripe_premium  : add_query_arg( array( 'pack' => 'premium', 'metier' => $ag_metier['slug'] ), $contact_base );
+
 $business_url = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? $ag_stripe_business : add_query_arg( array( 'pack' => 'business', 'metier' => $ag_metier['slug'] ), $contact_base );
 
 $pro_target      = ( $ag_stripe_pro      !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : '';
-$premium_target  = ( $ag_stripe_premium  !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : '';
+
 $business_target = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : '';
 
 $pro_label      = ( $ag_stripe_pro      !== $ag_stripe_placeholder ) ? 'Payer 49€ via Stripe →'  : 'Acheter — 49€ une fois';
-$premium_label  = ( $ag_stripe_premium  !== $ag_stripe_placeholder ) ? 'Payer 99€ via Stripe →'  : 'Acheter — 99€ une fois';
+
 $business_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'Payer 149€ via Stripe →' : 'Acheter — 149€ une fois';
 
 $screenshot_url = get_stylesheet_directory_uri() . '/assets/downloads/' . $ag_metier['slug_full'] . '/screenshot.png';
@@ -116,11 +116,6 @@ $has_screenshot = file_exists( $screenshot_file );
                         <strong class="ag-cfg__tile-name">Je veux pro</strong>
                         <span class="ag-cfg__tile-price">49€</span>
                     </button>
-                    <button type="button" class="ag-cfg__tile ag-cfg__tile--premium" data-tier="premium" role="tab" aria-selected="false">
-                        <span class="ag-cfg__tile-icon">🌍</span>
-                        <strong class="ag-cfg__tile-name">Je vise plus haut</strong>
-                        <span class="ag-cfg__tile-price">99€</span>
-                    </button>
                     <button type="button" class="ag-cfg__tile ag-cfg__tile--business" data-tier="business" role="tab" aria-selected="false">
                         <span class="ag-cfg__tile-icon">💼</span>
                         <strong class="ag-cfg__tile-name">Je veux la tranquillité</strong>
@@ -167,23 +162,7 @@ $has_screenshot = file_exists( $screenshot_file );
                         <p class="ag-cfg__panel-note">Paiement unique, pas d'abonnement. Compatible avec les 4 thèmes AG Starter.</p>
                     </div>
 
-                    <!-- Premium -->
-                    <div class="ag-cfg__panel" data-tier="premium" role="tabpanel">
-                        <div class="ag-cfg__panel-head">
-                            <h3>🌍 Pack Premium pour <?php echo esc_html( $ag_metier['name'] ); ?></h3>
-                            <span class="ag-cfg__panel-price">99€ une fois</span>
-                        </div>
-                        <p class="ag-cfg__panel-sub">Tout le Pro + multi-langue 6 langues + WooCommerce + support prioritaire.</p>
-                        <ul class="ag-cfg__features">
-                            <?php foreach ( $ag_metier['premium_features'] as $feat ) : ?>
-                            <li><?php echo wp_kses_post( $feat ); ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                        <a href="<?php echo esc_url( $premium_url ); ?>"<?php echo $premium_target; // phpcs:ignore ?> class="ag-btn-gold" style="width:100%;max-width:460px;display:block;margin:24px auto 0;text-align:center;justify-content:center;">
-                            <?php echo esc_html( $premium_label ); ?>
-                        </a>
-                        <p class="ag-cfg__panel-note">Paiement unique, mises à jour à vie, support 12 mois.</p>
-                    </div>
+                    <!-- Premium tier removed — only Free/Pro/Business -->
 
                     <!-- Business -->
                     <div class="ag-cfg__panel" data-tier="business" role="tabpanel">

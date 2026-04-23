@@ -61,8 +61,8 @@ class AG_Licence_Stripe {
             $amount = intval( $session['amount_total'] ?? 0 );
             if ( $amount >= 14900 ) {
                 $tier = 'business';
-            } elseif ( $amount >= 9900 ) {
-                $tier = 'premium';
+            
+                
             } else {
                 $tier = 'pro';
             }

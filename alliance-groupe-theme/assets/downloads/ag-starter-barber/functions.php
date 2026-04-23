@@ -49,8 +49,16 @@ add_action( 'wp_enqueue_scripts', 'ag_starter_barber_scripts' );
 require get_template_directory() . '/inc/queue-system.php';
 require get_template_directory() . '/inc/customizer.php';
 
+// Load Licence + Pro
+require get_template_directory() . '/inc/class-ag-licence-client.php';
+require get_template_directory() . '/inc/class-ag-updater.php';
+require get_template_directory() . '/inc/pro-features.php';
+
 add_action( 'after_setup_theme', function () {
     AG_Barber_Queue::register_admin();
+    AG_Licence_Client::register_admin();
+    new AG_Theme_Updater( 'ag-starter-barber', wp_get_theme()->get( 'Version' ) );
+    $GLOBALS['ag_pro'] = new AG_Pro_Features( 'ag-starter-barber' );
 }, 20 );
 
 // Handle ?ag_queue=join URL (QR code landing)

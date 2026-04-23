@@ -764,10 +764,10 @@ class AG_Starter_Companion {
 		if ( in_array( $tier, array( 'free' ), true ) ) {
 			$buttons['pro'] = 'Pro — 49€';
 		}
-		if ( in_array( $tier, array( 'free', 'pro' ), true ) ) {
+		if ( $tier === 'free' || $tier === 'pro' ) {
 			$buttons['premium'] = 'Premium — 99€';
 		}
-		if ( in_array( $tier, array( 'free', 'pro', 'premium' ), true ) ) {
+		if ( $tier !== 'business' ) {
 			$buttons['business'] = 'Business — 149€';
 		}
 		return $buttons;
