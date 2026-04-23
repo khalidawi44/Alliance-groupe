@@ -729,7 +729,7 @@ class AG_Starter_Companion {
 				. '<li>Un encart apparaît dans le tableau de bord pour importer le contenu demo en 1 clic</li>'
 				. '</ol>',
 			'faq'         => '<h4>Le plugin est-il gratuit ?</h4>'
-				. '<p>Oui, 100% gratuit. Les packs Pro/Premium/Business sont des options payantes facultatives.</p>'
+				. '<p>Oui, 100% gratuit. Les packs Pro/Business sont des options payantes facultatives.</p>'
 				. '<h4>Fonctionne-t-il avec tous les thèmes AG Starter ?</h4>'
 				. '<p>Oui : Restaurant, Artisan, Coach et Avocat.</p>'
 				. '<h4>Que fait le bouton "Importer le contenu demo" ?</h4>'
@@ -765,7 +765,6 @@ class AG_Starter_Companion {
 			$buttons['pro'] = 'Pro — 49€';
 		}
 		if ( $tier === 'free' || $tier === 'pro' ) {
-			$buttons['premium'] = 'Premium — 99€';
 		}
 		if ( $tier !== 'business' ) {
 			$buttons['business'] = 'Business — 149€';
@@ -800,7 +799,7 @@ class AG_Starter_Companion {
 			}
 		}
 
-		return array( 'pro' => '', 'premium' => '', 'business' => '' );
+		return array( 'pro' => '', 'business' => '' );
 	}
 
 	/**
@@ -860,26 +859,28 @@ class AG_Starter_Companion {
 	}
 
 	public function render_upgrade_dashboard() {
-		$url = $this->get_upgrade_url();
+		$tier = $this->get_current_tier();
+		$tier_labels = array( 'free' => 'la version gratuite', 'pro' => 'le Pack Pro' );
+		$current_label = $tier_labels[ $tier ] ?? 'votre version actuelle';
 		?>
 		<div style="text-align:center;padding:16px 0;">
 			<div style="font-size:2.4rem;margin-bottom:12px;">🚀</div>
-			<h3 style="margin:0 0 10px;font-size:1.1rem;"><?php esc_html_e( 'Vous utilisez la version gratuite', 'ag-starter-companion' ); ?></h3>
+			<h3 style="margin:0 0 10px;font-size:1.1rem;">Vous utilisez <?php echo esc_html( $current_label ); ?></h3>
 
 			<div style="background:#f8f5ec;border:1px solid #D4B45C;border-radius:8px;padding:18px;margin:0 0 16px;">
+				<?php if ( $tier === 'free' || $tier === 'pro' ) : ?>
+				<?php if ( $tier === 'free' ) : ?>
 				<div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(0,0,0,.08);">
 					<strong style="font-size:1rem;">⚡ Pro — 49€</strong>
-					<p style="font-size:.82rem;color:#555;margin:4px 0 0;line-height:1.4;">Header sticky, animations scroll, couleur d'accent secondaire, fond footer personnalisable, 2 polices premium.</p>
+					<p style="font-size:.82rem;color:#555;margin:4px 0 0;line-height:1.4;">Header sticky, animations scroll, polices Playfair + Manrope, témoignages clients, téléphone cliquable dans le header, couleurs avancées.</p>
 				</div>
-				<div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(0,0,0,.08);">
-					<strong style="font-size:1rem;">💎 Premium — 99€</strong>
-					<p style="font-size:.82rem;color:#555;margin:4px 0 0;line-height:1.4;">Tout Pro + section temoignages, galerie photos, grille de tarifs, compatible WooCommerce (boutique en ligne), traductions 6 langues.</p>
-				</div>
+				<?php endif; ?>
 				<div>
 					<strong style="font-size:1rem;">🏆 Business — 149€</strong>
-					<p style="font-size:.82rem;color:#555;margin:4px 0 0;line-height:1.4;">Tout Premium + pub reduite (simple copyright AG), templates de pages supplementaires, session strategique 30 min incluse.</p>
+					<p style="font-size:.82rem;color:#555;margin:4px 0 0;line-height:1.4;">Tout Pro + WooCommerce (boutique en ligne), traductions 6 langues, pub réduite (simple copyright AG), session stratégique 30 min incluse.</p>
 				</div>
-				<p style="font-size:.78rem;color:#888;margin:12px 0 0;text-align:center;">Paiement unique — mises a jour a vie — support inclus</p>
+				<?php endif; ?>
+				<p style="font-size:.78rem;color:#888;margin:12px 0 0;text-align:center;">Paiement unique — mises à jour à vie — support inclus</p>
 			</div>
 			<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
 				<?php foreach ( $this->get_upgrade_buttons() as $pack => $text ) : ?>
@@ -923,16 +924,16 @@ class AG_Starter_Companion {
 		) );
 
 		$wp_customize->add_section( 'ag_locked_testimonials', array(
-			'title'       => esc_html__( '🔒 Temoignages + Boutique + Galerie (Premium)', 'ag-starter-companion' ),
+			'title'       => esc_html__( '🔒 Temoignages + Galerie (Pro)', 'ag-starter-companion' ),
 			'priority'    => 32,
-			'description' => esc_html__( 'Section temoignages clients (jusqu\'a 6 avec etoiles), galerie photos avec hover zoom, grille de tarifs, compatibilite WooCommerce pour une boutique en ligne, traductions automatiques en 6 langues (FR, EN, ES, IT, DE, AR). Pack Premium (99€).', 'ag-starter-companion' ),
+			'description' => esc_html__( 'Temoignages clients (jusqu\'a 6), galerie photos, grille de tarifs. Inclus dans le Pack Pro (49).', 'ag-starter-companion' ),
 		) );
 		$wp_customize->add_setting( 'ag_locked_testi_info', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
 		$wp_customize->add_control( 'ag_locked_testi_info', array(
-			'label'   => esc_html__( 'A partir de 99€', 'ag-starter-companion' ),
+			'label'   => esc_html__( 'A partir de 49€', 'ag-starter-companion' ),
 			'section' => 'ag_locked_testimonials',
 			'type'    => 'hidden',
-			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'premium' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Premium — 99€ →</a>',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'pro' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Pro — 49€ →</a>',
 		) );
 
 		$wp_customize->add_section( 'ag_locked_whitelabel', array(
@@ -958,7 +959,7 @@ class AG_Starter_Companion {
 		$buttons = $this->get_upgrade_buttons();
 		if ( empty( $buttons ) ) return;
 		$tier = $this->get_current_tier();
-		$tier_labels = array( 'free' => 'Version gratuite', 'pro' => 'Pack Pro', 'premium' => 'Pack Premium' );
+		$tier_labels = array( 'free' => 'Version gratuite', 'pro' => 'Pack Pro' );
 		$label = $tier_labels[ $tier ] ?? 'Version actuelle';
 		?>
 		<div style="position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,15,.97);border-top:2px solid #D4B45C;padding:12px 24px;z-index:9999;font-size:.85rem;" id="ag-footer-nudge">

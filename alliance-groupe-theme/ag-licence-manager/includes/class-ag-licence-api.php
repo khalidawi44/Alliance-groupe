@@ -97,7 +97,7 @@ class AG_Licence_API {
             'requires'     => '6.0',
             'requires_php' => '7.4',
             'changelog'    => '<h4>v1.4.0</h4><ul>'
-                . '<li>Nouveau : liens d\'achat directs vers Stripe (Pro/Premium/Business)</li>'
+                . '<li>Nouveau : liens d\'achat directs vers Stripe (Pro/Business)</li>'
                 . '<li>Nouveau : widget tableau de bord avec comparatif des 3 packs</li>'
                 . '<li>Nouveau : 4 sections verrouillées dans le Customizer (aperçu des fonctionnalités Pro)</li>'
                 . '<li>Nouveau : barre footer fixe "Passez à Pro" sur toutes les pages admin</li>'
@@ -129,8 +129,7 @@ class AG_Licence_API {
                 . '<h4>Packs payants disponibles</h4>'
                 . '<p>Débloquez des fonctionnalités avancées avec un paiement unique :</p><ul>'
                 . '<li><strong>Pro (49€)</strong> — Header sticky, animations, couleurs avancées, footer personnalisable</li>'
-                . '<li><strong>Premium (99€)</strong> — Tout Pro + témoignages, galerie, boutique WooCommerce, 6 langues</li>'
-                . '<li><strong>Business (149€)</strong> — Tout Premium + white-label, templates extra, session stratégique 30 min</li>'
+                . '<li><strong>Business (149€)</strong> — Tout Pro + WooCommerce, multi-langue, pub reduite, session stratégique 30 min</li>'
                 . '</ul>',
             'banners'      => array(
                 'high' => home_url( '/wp-content/themes/alliance-groupe-theme/assets/images/promo-cards/ag-pro-card.png' ),

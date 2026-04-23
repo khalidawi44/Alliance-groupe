@@ -163,7 +163,6 @@ class AG_Licence_Admin {
                     <tr><th><label>Pack</label></th><td>
                         <select name="tier">
                             <option value="pro">Pro (49€)</option>
-                            <option value="premium">Premium (99€)</option>
                             <option value="business">Business (149€)</option>
                         </select></td></tr>
                     <tr><th><label>Thème</label></th><td>
@@ -384,7 +383,7 @@ class AG_Licence_Admin {
         $tier  = sanitize_key( $_POST['tier'] );
         $theme = sanitize_key( $_POST['theme_slug'] ?? '' );
         $send  = ! empty( $_POST['send_email'] );
-        if ( ! $email || ! in_array( $tier, array( 'pro', 'premium', 'business' ), true ) ) wp_die( 'Paramètres invalides.' );
+        if ( ! $email || ! in_array( $tier, array( 'pro', 'business' ), true ) ) wp_die( 'Paramètres invalides.' );
         $key = AG_Licence_DB::generate_key( $tier );
         $id  = AG_Licence_DB::insert( $key, $tier, $email, '', $theme );
         if ( $id && $send ) AG_Licence_Email::send_licence( $email, $key, $tier );
