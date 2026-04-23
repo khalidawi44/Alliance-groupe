@@ -1,12 +1,12 @@
 /**
- * AG Starter Pro — animations & sticky header.
- * Only loaded when the licence is Pro+.
+ * AG Starter Avocat Pro — animations + sticky header.
+ * Targets .ag-site-header (avocat-specific class).
  */
 (function(){
     'use strict';
 
     // Sticky header
-    var header = document.querySelector('.ag-header');
+    var header = document.querySelector('.ag-site-header');
     if (header) {
         var scrolled = false;
         window.addEventListener('scroll', function(){
@@ -18,12 +18,30 @@
         }, {passive:true});
     }
 
-    // Scroll animations (IntersectionObserver)
+    // Auto-apply animation classes
     if (!document.body.classList.contains('ag-has-animations')) return;
 
-    var targets = document.querySelectorAll('.ag-fade-in,.ag-slide-left,.ag-slide-right,.ag-scale-in');
-    if (!targets.length || !('IntersectionObserver' in window)) {
-        targets.forEach(function(el){ el.classList.add('visible'); });
+    var selectors = [
+        '.ag-hero__title', '.ag-hero__subtitle', '.ag-hero .ag-btn',
+        '.ag-domaine-card', '.ag-honoraires__card',
+        '.ag-maitre', '.ag-cabinet', '.ag-rdv',
+        '.ag-info', '.ag-testimonial-card',
+        '.ag-section > .ag-container > h2',
+        '.ag-section > .ag-container > p',
+        '.ag-footer-col'
+    ].join(',');
+
+    var elements = document.querySelectorAll(selectors);
+    elements.forEach(function(el, i) {
+        if (!el.classList.contains('ag-fade-in')) {
+            el.classList.add('ag-fade-in');
+            el.style.transitionDelay = Math.min(i * 0.06, 0.6) + 's';
+        }
+    });
+
+    // IntersectionObserver
+    if (!('IntersectionObserver' in window)) {
+        document.querySelectorAll('.ag-fade-in').forEach(function(el){ el.classList.add('visible'); });
         return;
     }
 
@@ -34,7 +52,7 @@
                 obs.unobserve(e.target);
             }
         });
-    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
 
-    targets.forEach(function(el){ obs.observe(el); });
+    document.querySelectorAll('.ag-fade-in').forEach(function(el){ obs.observe(el); });
 })();

@@ -289,6 +289,15 @@ get_header();
 	</section>
 	<?php endif; ?>
 
+	<?php
+	// Pro: Testimonials section
+	if ( class_exists( 'AG_Pro_Features' ) ) {
+		global $ag_pro;
+		if ( ! isset( $ag_pro ) ) $ag_pro = new AG_Pro_Features( 'ag-starter-avocat' );
+		$ag_pro->render_testimonials();
+	}
+	?>
+
 </main>
 
 <?php

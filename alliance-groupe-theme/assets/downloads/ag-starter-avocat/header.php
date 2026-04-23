@@ -44,5 +44,13 @@
 			}
 			?>
 		</nav>
+		<?php
+		// Pro: phone button in header
+		if ( class_exists( 'AG_Pro_Features' ) ) {
+			global $ag_pro;
+			if ( ! isset( $ag_pro ) ) $ag_pro = new AG_Pro_Features( 'ag-starter-avocat' );
+			echo $ag_pro->render_header_phone();
+		}
+		?>
 	</div>
 </header>

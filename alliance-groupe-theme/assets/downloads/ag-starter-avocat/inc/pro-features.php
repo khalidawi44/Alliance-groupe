@@ -1,16 +1,12 @@
 <?php
 /**
- * Pro Features Module — conditionally enables features based on licence tier.
+ * Pro Features — AG Starter Avocat
  *
- * Tiers (cumulative):
- *   free     → base theme (no Pro features)
- *   pro      → sticky header, animations, extra colors, footer custom, 2 extra fonts
- *   premium  → pro + testimonials section, gallery section, pricing table, WooCommerce ready
- *   business → premium + white-label (remove AG credits), extra page templates
- *
- * @package AG_Starter_Restaurant
+ * 3 tiers:
+ *   free     → base theme + grosse pub AG animée dans le footer
+ *   pro      → fonts, animations, sticky header+tel, témoignages, couleurs, pub "Fièrement créé par"
+ *   business → tout Pro + WooCommerce ready + copyright minimal
  */
-
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 class AG_Pro_Features {
@@ -22,283 +18,178 @@ class AG_Pro_Features {
         $this->theme_slug = $theme_slug;
         $this->tier = class_exists( 'AG_Licence_Client' ) ? AG_Licence_Client::get_tier() : 'free';
 
+        // Footer branding — always active (different per tier)
+        add_action( 'wp_footer', array( $this, 'render_footer_branding' ), 5 );
+
         if ( 'free' === $this->tier ) return;
 
         // Pro+ features
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_pro_assets' ) );
         add_action( 'customize_register', array( $this, 'register_pro_customizer' ), 20 );
         add_filter( 'body_class', array( $this, 'add_body_classes' ) );
-
-        // Premium+ features
-        if ( in_array( $this->tier, array( 'premium', 'business' ), true ) ) {
-            add_action( 'customize_register', array( $this, 'register_premium_customizer' ), 21 );
-        }
-
-        // Business features
-        if ( 'business' === $this->tier ) {
-            add_filter( 'ag_show_credits', '__return_false' );
-        }
     }
 
-    public function get_tier() {
-        return $this->tier;
-    }
+    public function get_tier() { return $this->tier; }
 
-    public function is_at_least( $min_tier ) {
-        $order = array( 'free' => 0, 'pro' => 1, 'premium' => 2, 'business' => 3 );
-        $current = isset( $order[ $this->tier ] ) ? $order[ $this->tier ] : 0;
-        $min     = isset( $order[ $min_tier ] ) ? $order[ $min_tier ] : 0;
-        return $current >= $min;
+    public function is_at_least( $min ) {
+        $order = array( 'free' => 0, 'pro' => 1, 'business' => 2 );
+        return ( $order[ $this->tier ] ?? 0 ) >= ( $order[ $min ] ?? 0 );
     }
 
     // ─── PRO: Assets ──────────────────────────────────────────
 
     public function enqueue_pro_assets() {
+        wp_enqueue_style( 'ag-google-fonts',
+            'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap',
+            array(), null );
+        wp_enqueue_script( 'ag-pro-scripts',
+            get_template_directory_uri() . '/inc/pro-scripts.js',
+            array(), '2.0.0', true );
         wp_add_inline_style( wp_get_theme()->get_stylesheet(), $this->get_pro_css() );
     }
 
     private function get_pro_css() {
-        $css = '';
-
-        // Sticky header
+        $css = '
+body{font-family:"Manrope",system-ui,sans-serif !important;}
+h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card h3,.ag-honoraires__card h3{font-family:"Playfair Display",serif !important;}
+';
         if ( get_theme_mod( 'ag_pro_sticky_header', true ) ) {
             $css .= '
-.ag-header{position:sticky;top:0;z-index:1000;transition:background .3s,box-shadow .3s;}
-.ag-header.scrolled{background:rgba(10,10,10,.97);box-shadow:0 2px 20px rgba(0,0,0,.4);}
+.ag-site-header{position:sticky;top:0;z-index:1000;transition:background .3s,box-shadow .3s;}
+.ag-site-header.scrolled{background:rgba(10,10,15,.97) !important;box-shadow:0 2px 20px rgba(0,0,0,.4);}
+.ag-header__phone{display:inline-flex;align-items:center;gap:6px;background:#D4B45C;color:#0a0a0f;padding:8px 16px;border-radius:6px;font-weight:700;font-size:.85rem;text-decoration:none;margin-left:12px;transition:transform .2s;}
+.ag-header__phone:hover{transform:translateY(-2px);}
 ';
         }
-
-        // Scroll animations
         if ( get_theme_mod( 'ag_pro_animations', true ) ) {
             $css .= '
-.ag-fade-in{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease;}
+.ag-fade-in{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease;}
 .ag-fade-in.visible{opacity:1;transform:translateY(0);}
-.ag-slide-left{opacity:0;transform:translateX(-30px);transition:opacity .6s ease,transform .6s ease;}
-.ag-slide-left.visible{opacity:1;transform:translateX(0);}
-.ag-slide-right{opacity:0;transform:translateX(30px);transition:opacity .6s ease,transform .6s ease;}
-.ag-slide-right.visible{opacity:1;transform:translateX(0);}
-.ag-scale-in{opacity:0;transform:scale(.95);transition:opacity .5s ease,transform .5s ease;}
-.ag-scale-in.visible{opacity:1;transform:scale(1);}
-@media(prefers-reduced-motion:reduce){
-    .ag-fade-in,.ag-slide-left,.ag-slide-right,.ag-scale-in{opacity:1;transform:none;transition:none;}
-}
+@media(prefers-reduced-motion:reduce){.ag-fade-in{opacity:1 !important;transform:none !important;transition:none !important;}}
 ';
         }
-
-        // Custom footer background
-        $footer_bg = get_theme_mod( 'ag_pro_footer_bg', '' );
-        if ( $footer_bg ) {
-            $css .= '.ag-footer{background-color:' . esc_attr( $footer_bg ) . ';}';
-        }
-
-        // Extra accent color
-        $accent2 = get_theme_mod( 'ag_pro_accent_secondary', '' );
-        if ( $accent2 ) {
-            $css .= ':root{--ag-accent-secondary:' . esc_attr( $accent2 ) . ';}';
-        }
-
-        // Premium: testimonials & gallery
-        if ( $this->is_at_least( 'premium' ) ) {
-            $css .= '
-.ag-testimonials{padding:80px 0;}
-.ag-testimonials__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;}
-.ag-testimonial-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px;position:relative;}
-.ag-testimonial-card__stars{color:#D4B45C;font-size:1.1rem;margin-bottom:12px;}
+        $css .= '
+.ag-testimonials{padding:80px 24px;background:rgba(255,255,255,.02);}
+.ag-testimonials__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:1200px;margin:0 auto;}
+.ag-testimonial-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px;}
+.ag-testimonial-card__stars{color:#D4B45C;font-size:1.1rem;margin-bottom:12px;letter-spacing:2px;}
 .ag-testimonial-card__text{color:rgba(255,255,255,.8);font-size:.95rem;line-height:1.7;font-style:italic;margin-bottom:16px;}
 .ag-testimonial-card__author{font-weight:700;color:#fff;font-size:.9rem;}
-.ag-testimonial-card__role{color:rgba(255,255,255,.5);font-size:.82rem;}
-.ag-gallery{padding:80px 0;}
-.ag-gallery__grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;}
-.ag-gallery__item{border-radius:12px;overflow:hidden;aspect-ratio:4/3;}
-.ag-gallery__item img{width:100%;height:100%;object-fit:cover;transition:transform .4s;}
-.ag-gallery__item:hover img{transform:scale(1.06);}
-.ag-pricing-table{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;padding:80px 0;}
-.ag-pricing-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:36px 28px;text-align:center;transition:transform .3s,border-color .3s;}
-.ag-pricing-card:hover{transform:translateY(-6px);border-color:rgba(212,180,92,.3);}
-.ag-pricing-card--featured{border-color:#D4B45C;background:rgba(212,180,92,.04);}
-.ag-pricing-card__price{font-size:2.4rem;font-weight:800;color:#fff;margin:16px 0 8px;}
-.ag-pricing-card__price small{font-size:.9rem;color:rgba(255,255,255,.5);font-weight:400;}
 ';
-        }
-
         return $css;
     }
 
     // ─── PRO: Customizer ──────────────────────────────────────
 
     public function register_pro_customizer( $wp_customize ) {
-        $wp_customize->add_section( 'ag_pro_features', array(
-            'title'    => esc_html__( '⭐ Fonctionnalités Pro', $this->theme_slug ),
-            'priority' => 25,
-        ) );
+        $wp_customize->add_section( 'ag_pro_features', array( 'title' => '⭐ Fonctionnalités Pro', 'priority' => 25 ) );
 
-        // Sticky header
         $wp_customize->add_setting( 'ag_pro_sticky_header', array( 'default' => true, 'sanitize_callback' => 'wp_validate_boolean' ) );
-        $wp_customize->add_control( 'ag_pro_sticky_header', array(
-            'label'   => esc_html__( 'Header sticky au scroll', $this->theme_slug ),
-            'section' => 'ag_pro_features',
-            'type'    => 'checkbox',
-        ) );
+        $wp_customize->add_control( 'ag_pro_sticky_header', array( 'label' => 'Header sticky', 'section' => 'ag_pro_features', 'type' => 'checkbox' ) );
 
-        // Animations
         $wp_customize->add_setting( 'ag_pro_animations', array( 'default' => true, 'sanitize_callback' => 'wp_validate_boolean' ) );
-        $wp_customize->add_control( 'ag_pro_animations', array(
-            'label'   => esc_html__( 'Animations au scroll (fade, slide)', $this->theme_slug ),
-            'section' => 'ag_pro_features',
-            'type'    => 'checkbox',
-        ) );
+        $wp_customize->add_control( 'ag_pro_animations', array( 'label' => 'Animations scroll', 'section' => 'ag_pro_features', 'type' => 'checkbox' ) );
 
-        // Secondary accent color
         $wp_customize->add_setting( 'ag_pro_accent_secondary', array( 'default' => '', 'sanitize_callback' => 'sanitize_hex_color' ) );
-        $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'ag_pro_accent_secondary', array(
-            'label'   => esc_html__( 'Couleur d\'accent secondaire', $this->theme_slug ),
-            'section' => 'ag_pro_features',
-        ) ) );
+        $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'ag_pro_accent_secondary', array( 'label' => 'Couleur accent secondaire', 'section' => 'ag_pro_features' ) ) );
 
-        // Footer background
-        $wp_customize->add_setting( 'ag_pro_footer_bg', array( 'default' => '', 'sanitize_callback' => 'sanitize_hex_color' ) );
-        $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'ag_pro_footer_bg', array(
-            'label'   => esc_html__( 'Couleur de fond du footer', $this->theme_slug ),
-            'section' => 'ag_pro_features',
-        ) ) );
-
-        // Footer text
-        $wp_customize->add_setting( 'ag_pro_footer_text', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
-        $wp_customize->add_control( 'ag_pro_footer_text', array(
-            'label'   => esc_html__( 'Texte personnalisé du footer', $this->theme_slug ),
-            'section' => 'ag_pro_features',
-            'type'    => 'text',
-        ) );
-    }
-
-    // ─── PREMIUM: Customizer ──────────────────────────────────
-
-    public function register_premium_customizer( $wp_customize ) {
-        $wp_customize->add_section( 'ag_premium_features', array(
-            'title'    => esc_html__( '💎 Fonctionnalités Premium', $this->theme_slug ),
-            'priority' => 26,
-        ) );
+        $wp_customize->add_setting( 'ag_pro_header_phone', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
+        $wp_customize->add_control( 'ag_pro_header_phone', array( 'label' => 'Téléphone header', 'section' => 'ag_pro_features', 'type' => 'text', 'description' => 'Bouton doré cliquable dans le header.' ) );
 
         // Testimonials
+        $wp_customize->add_section( 'ag_pro_testimonials', array( 'title' => '⭐ Témoignages', 'priority' => 26 ) );
         for ( $i = 1; $i <= 6; $i++ ) {
             $wp_customize->add_setting( "ag_testimonial_{$i}_text", array( 'default' => '', 'sanitize_callback' => 'sanitize_textarea_field' ) );
-            $wp_customize->add_control( "ag_testimonial_{$i}_text", array(
-                'label'   => sprintf( esc_html__( 'Témoignage %d — Texte', $this->theme_slug ), $i ),
-                'section' => 'ag_premium_features',
-                'type'    => 'textarea',
-            ) );
+            $wp_customize->add_control( "ag_testimonial_{$i}_text", array( 'label' => "Témoignage {$i}", 'section' => 'ag_pro_testimonials', 'type' => 'textarea' ) );
             $wp_customize->add_setting( "ag_testimonial_{$i}_author", array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
-            $wp_customize->add_control( "ag_testimonial_{$i}_author", array(
-                'label'   => sprintf( esc_html__( 'Témoignage %d — Auteur', $this->theme_slug ), $i ),
-                'section' => 'ag_premium_features',
-                'type'    => 'text',
-            ) );
+            $wp_customize->add_control( "ag_testimonial_{$i}_author", array( 'label' => "Auteur {$i}", 'section' => 'ag_pro_testimonials', 'type' => 'text' ) );
         }
     }
-
-    // ─── Body classes ─────────────────────────────────────────
 
     public function add_body_classes( $classes ) {
         $classes[] = 'ag-pro';
         $classes[] = 'ag-tier-' . $this->tier;
-        if ( get_theme_mod( 'ag_pro_animations', true ) ) {
-            $classes[] = 'ag-has-animations';
-        }
+        if ( get_theme_mod( 'ag_pro_animations', true ) ) $classes[] = 'ag-has-animations';
         return $classes;
     }
 
-    // ─── Template helpers (called from templates) ─────────────
+    // ─── Render: phone in header ──────────────────────────────
 
-    public function render_testimonials() {
-        if ( ! $this->is_at_least( 'premium' ) ) return;
-        $testimonials = array();
-        for ( $i = 1; $i <= 6; $i++ ) {
-            $text   = get_theme_mod( "ag_testimonial_{$i}_text", '' );
-            $author = get_theme_mod( "ag_testimonial_{$i}_author", '' );
-            if ( $text && $author ) {
-                $testimonials[] = array( 'text' => $text, 'author' => $author );
-            }
-        }
-        if ( empty( $testimonials ) ) return;
-        ?>
-        <section class="ag-testimonials">
-            <div class="ag-container">
-                <h2 style="text-align:center;margin-bottom:48px;font-size:clamp(1.5rem,3vw,2.2rem);color:#fff;">
-                    Ce que disent <em style="color:#D4B45C;font-style:italic;">nos clients</em>
-                </h2>
-                <div class="ag-testimonials__grid">
-                    <?php foreach ( $testimonials as $t ) : ?>
-                    <div class="ag-testimonial-card ag-fade-in">
-                        <div class="ag-testimonial-card__stars">★★★★★</div>
-                        <p class="ag-testimonial-card__text">"<?php echo esc_html( $t['text'] ); ?>"</p>
-                        <div class="ag-testimonial-card__author"><?php echo esc_html( $t['author'] ); ?></div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </section>
-        <?php
+    public function render_header_phone() {
+        if ( ! $this->is_at_least( 'pro' ) ) return '';
+        $phone = get_theme_mod( 'ag_pro_header_phone', '' );
+        if ( ! $phone ) return '';
+        return '<a href="tel:' . esc_attr( preg_replace( '/[^0-9+]/', '', $phone ) ) . '" class="ag-header__phone">📞 ' . esc_html( $phone ) . '</a>';
     }
 
-    /**
-     * Render footer credit/promo based on tier.
-     *
-     * free     → big animated promo widget linking to templates page
-     * pro      → small "Fièrement créé par" with logo + Alliance Groupe
-     * premium  → tiny copyright line with link
-     * business → simple copyright, just © + site name + small AG link
-     */
-    public function render_footer_credit() {
-        $url = 'https://alliancegroupe-inc.com/templates-wordpress';
+    // ─── Render: testimonials ─────────────────────────────────
+
+    public function render_testimonials() {
+        if ( ! $this->is_at_least( 'pro' ) ) return;
+        $items = array();
+        for ( $i = 1; $i <= 6; $i++ ) {
+            $t = get_theme_mod( "ag_testimonial_{$i}_text", '' );
+            $a = get_theme_mod( "ag_testimonial_{$i}_author", '' );
+            if ( $t && $a ) $items[] = array( 'text' => $t, 'author' => $a );
+        }
+        if ( empty( $items ) ) return;
+        echo '<section class="ag-testimonials"><div class="ag-container">';
+        echo '<h2 style="text-align:center;margin-bottom:48px;font-size:1.8rem;color:#fff;font-family:\'Playfair Display\',serif;">Ce que disent <em style="color:#D4B45C;font-style:italic;">nos clients</em></h2>';
+        echo '<div class="ag-testimonials__grid">';
+        foreach ( $items as $t ) {
+            echo '<div class="ag-testimonial-card ag-fade-in"><div class="ag-testimonial-card__stars">★★★★★</div>';
+            echo '<p class="ag-testimonial-card__text">"' . esc_html( $t['text'] ) . '"</p>';
+            echo '<div class="ag-testimonial-card__author">' . esc_html( $t['author'] ) . '</div></div>';
+        }
+        echo '</div></div></section>';
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // FOOTER BRANDING — never configurable by client
+    // ═══════════════════════════════════════════════════════════
+
+    public function render_footer_branding() {
+        $url_templates = 'https://alliancegroupe-inc.com/templates-wordpress';
+        $url_home      = 'https://alliancegroupe-inc.com';
 
         if ( 'business' === $this->tier ) {
-            // Business: just a copyright with discreet link
-            echo '<p style="text-align:center;color:rgba(255,255,255,.35);font-size:.78rem;margin-top:16px;">';
-            echo '&copy; ' . esc_html( date( 'Y' ) ) . ' ' . esc_html( get_bloginfo( 'name' ) ) . ' — ';
-            echo '<a href="' . esc_url( $url ) . '" rel="nofollow" style="color:rgba(255,255,255,.35);">Alliance Groupe</a>';
-            echo '</p>';
-            return;
-        }
-
-        if ( 'premium' === $this->tier ) {
-            // Premium: small elegant line
-            echo '<div style="text-align:center;padding:20px 0 0;border-top:1px solid rgba(255,255,255,.06);margin-top:24px;">';
-            echo '<p style="color:rgba(255,255,255,.5);font-size:.82rem;">';
-            echo '&copy; ' . esc_html( date( 'Y' ) ) . ' ' . esc_html( get_bloginfo( 'name' ) ) . ' · ';
-            echo 'Propulsé par <a href="' . esc_url( $url ) . '" target="_blank" rel="noopener nofollow" style="color:#D4B45C;text-decoration:none;">Alliance Groupe</a>';
-            echo '</p></div>';
-            return;
-        }
-
-        if ( 'pro' === $this->tier ) {
-            // Pro: "Fièrement créé par" with logo
-            echo '<div style="text-align:center;padding:24px 0 0;border-top:1px solid rgba(255,255,255,.06);margin-top:24px;">';
-            echo '<p style="color:rgba(255,255,255,.5);font-size:.85rem;margin:0 0 6px;">Fièrement créé par</p>';
-            echo '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener nofollow" style="display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:#D4B45C;font-weight:700;font-size:1rem;font-family:\'Playfair Display\',serif;font-style:italic;">';
-            echo '<img src="https://alliancegroupe-inc.com/wp-content/uploads/2026/04/logo_site_alliance.jpg" alt="Alliance Groupe" style="height:28px;width:auto;border-radius:4px;">';
-            echo ' Alliance Groupe';
-            echo '</a>';
+            echo '<div style="text-align:center;padding:16px 24px;background:#060606;border-top:1px solid rgba(255,255,255,.04);">';
+            echo '<p style="margin:0;color:rgba(255,255,255,.3);font-size:.75rem;">&copy; ' . esc_html( date( 'Y' ) ) . ' ' . esc_html( get_bloginfo( 'name' ) ) . ' — <a href="' . esc_url( $url_home ) . '" target="_blank" rel="noopener nofollow" style="color:rgba(255,255,255,.3);">Alliance Groupe</a></p>';
             echo '</div>';
             return;
         }
 
-        // Free: big animated promo widget
-        echo '<div style="margin-top:32px;padding:28px 24px;background:linear-gradient(135deg,rgba(212,180,92,.08) 0%,rgba(10,10,15,.95) 100%);border:1px solid rgba(212,180,92,.3);border-radius:16px;text-align:center;animation:agPulseGlow 3s ease-in-out infinite;">';
-        echo '<style>@keyframes agPulseGlow{0%,100%{box-shadow:0 0 20px rgba(212,180,92,.1)}50%{box-shadow:0 0 30px rgba(212,180,92,.25)}}</style>';
-        echo '<p style="margin:0 0 12px;">';
-        echo '<img src="https://alliancegroupe-inc.com/wp-content/uploads/2026/04/logo_site_alliance.jpg" alt="Alliance Groupe" style="height:48px;width:auto;border-radius:8px;display:inline-block;">';
-        echo '</p>';
-        echo '<p style="font-size:1.4rem;font-weight:800;color:#fff;margin:0 0 8px;font-family:\'Playfair Display\',serif;">';
-        echo 'Alliance Groupe';
-        echo '</p>';
-        echo '<p style="color:rgba(255,255,255,.7);font-size:.92rem;margin:0 0 16px;line-height:1.5;">';
-        echo 'Ce thème gratuit est offert par <strong style="color:#D4B45C;">Alliance Groupe</strong><br>';
-        echo 'Agence Web & IA — Créez votre site professionnel en 5 minutes';
-        echo '</p>';
-        echo '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:.95rem;transition:transform .2s;" onmouseover="this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.transform=\'none\'">';
-        echo 'Découvrir nos templates gratuits →';
-        echo '</a>';
-        echo '<p style="color:rgba(255,255,255,.35);font-size:.75rem;margin:12px 0 0;">Passez au Pack Pro pour réduire cette publicité</p>';
-        echo '</div>';
+        if ( 'pro' === $this->tier ) {
+            echo '<div style="text-align:center;padding:20px 24px;background:#060606;border-top:1px solid rgba(255,255,255,.06);">';
+            echo '<p style="color:rgba(255,255,255,.45);font-size:.82rem;margin:0 0 6px;">Fièrement créé par</p>';
+            echo '<a href="' . esc_url( $url_home ) . '" target="_blank" rel="noopener nofollow" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;">';
+            echo '<img src="https://alliancegroupe-inc.com/wp-content/uploads/2026/04/logo_site_alliance.jpg" alt="Alliance Groupe" style="height:24px;border-radius:4px;">';
+            echo '<span style="color:#D4B45C;font-weight:700;font-size:.95rem;font-family:\'Playfair Display\',serif;font-style:italic;">Alliance Groupe</span>';
+            echo '</a></div>';
+            return;
+        }
+
+        // FREE: big animated promo
+        ?>
+        <div style="background:#060606;border-top:2px solid #D4B45C;padding:48px 24px;text-align:center;">
+            <div style="max-width:400px;margin:0 auto;padding:40px 28px;background:linear-gradient(180deg,rgba(212,180,92,.08) 0%,#0a0a0f 100%);border:1px solid rgba(212,180,92,.35);border-radius:20px;overflow:hidden;animation:agPromoGlow 3s ease-in-out infinite;">
+                <style>
+                @keyframes agPromoGlow{0%,100%{box-shadow:0 0 30px rgba(212,180,92,.1)}50%{box-shadow:0 0 50px rgba(212,180,92,.25)}}
+                @keyframes agFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+                .ag-promo-emoji{display:inline-block;animation:agFloat 2s ease-in-out infinite;font-size:1.6rem;}
+                .ag-promo-emoji:nth-child(2){animation-delay:.3s}
+                .ag-promo-emoji:nth-child(3){animation-delay:.6s}
+                </style>
+                <div style="margin-bottom:16px;"><span class="ag-promo-emoji">🚀</span> <span class="ag-promo-emoji">⭐</span> <span class="ag-promo-emoji">💎</span></div>
+                <img src="https://alliancegroupe-inc.com/wp-content/uploads/2026/04/logo_site_alliance.jpg" alt="Alliance Groupe" style="height:56px;border-radius:10px;margin-bottom:16px;">
+                <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#fff;margin:0 0 8px;font-style:italic;">Alliance Groupe</h3>
+                <p style="color:#D4B45C;font-size:.88rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin:0 0 12px;">Agence Web & IA</p>
+                <p style="color:rgba(255,255,255,.7);font-size:.92rem;line-height:1.6;margin:0 0 24px;">Ce thème gratuit est offert par Alliance Groupe.<br>Créez votre site professionnel en 5 minutes.</p>
+                <a href="<?php echo esc_url( $url_templates ); ?>" target="_blank" rel="noopener" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-weight:700;padding:14px 32px;border-radius:10px;text-decoration:none;font-size:1rem;">Découvrir nos templates →</a>
+                <p style="color:rgba(255,255,255,.3);font-size:.72rem;margin:16px 0 0;">Passez au Pack Pro pour réduire cette publicité</p>
+            </div>
+            <p style="color:rgba(255,255,255,.25);font-size:.72rem;margin:20px 0 0;">&copy; <?php echo date('Y'); ?> <?php bloginfo('name'); ?> — <a href="<?php echo esc_url( $url_home ); ?>" target="_blank" rel="noopener nofollow" style="color:rgba(255,255,255,.25);">Alliance Groupe</a></p>
+        </div>
+        <?php
     }
 }
