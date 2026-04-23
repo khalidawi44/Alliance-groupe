@@ -83,24 +83,6 @@ endif;
 add_action( 'after_setup_theme', 'ag_starter_avocat_setup' );
 
 /**
- * Register widget area.
- */
-function ag_starter_avocat_widgets_init() {
-	register_sidebar(
-		array(
-			'name'          => esc_html__( 'Barre laterale', 'ag-starter-avocat' ),
-			'id'            => 'sidebar-1',
-			'description'   => esc_html__( 'Ajoutez vos widgets ici.', 'ag-starter-avocat' ),
-			'before_widget' => '<section id="%1$s" class="ag-widget %2$s">',
-			'after_widget'  => '</section>',
-			'before_title'  => '<h2 class="ag-widget-title">',
-			'after_title'   => '</h2>',
-		)
-	);
-}
-add_action( 'widgets_init', 'ag_starter_avocat_widgets_init' );
-
-/**
  * Enqueue scripts and styles.
  */
 function ag_starter_avocat_scripts() {
@@ -110,12 +92,21 @@ function ag_starter_avocat_scripts() {
 		array(),
 		wp_get_theme()->get( 'Version' )
 	);
-
-	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
-		wp_enqueue_script( 'comment-reply' );
-	}
 }
 add_action( 'wp_enqueue_scripts', 'ag_starter_avocat_scripts' );
+
+/**
+ * Disable comments site-wide.
+ */
+add_filter( 'comments_open', '__return_false', 20, 2 );
+add_filter( 'pings_open', '__return_false', 20, 2 );
+add_filter( 'comments_array', '__return_empty_array', 10, 2 );
+add_action( 'admin_menu', function () {
+	remove_menu_page( 'edit-comments.php' );
+} );
+add_action( 'admin_bar_menu', function ( $wp_admin_bar ) {
+	$wp_admin_bar->remove_node( 'comments' );
+}, 999 );
 
 /**
  * Add a pingback url auto-discovery header for single posts, pages, or attachments.

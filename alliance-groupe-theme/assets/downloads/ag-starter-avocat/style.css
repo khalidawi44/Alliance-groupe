@@ -11,7 +11,7 @@ Requires PHP: 7.4
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: ag-starter-avocat
-Tags: one-column, custom-menu, featured-images, translation-ready, theme-options, custom-colors, custom-logo, threaded-comments, right-sidebar, block-styles, wide-blocks
+Tags: one-column, custom-menu, featured-images, translation-ready, theme-options, custom-colors, custom-logo, block-styles, wide-blocks
 */
 
 /* ============================================================
@@ -280,92 +280,6 @@ p {
 .ag-entry-content pre {
     padding: 1rem;
     overflow-x: auto;
-}
-
-/* ----- Comments ----- */
-.ag-comments {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #1f2740;
-}
-
-.ag-comments h2 {
-    font-size: 1.15rem;
-    margin-bottom: 1rem;
-}
-
-.ag-comments ol {
-    padding-left: 0;
-}
-
-.ag-comments .comment {
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #1f2740;
-}
-
-.ag-comments .children {
-    padding-left: 1.25rem;
-    border-left: 1px solid #1f2740;
-    margin-top: 0.75rem;
-}
-
-.ag-comments .comment-author {
-    font-weight: 700;
-    color: #c9a96e;
-}
-
-.ag-comments input[type="text"],
-.ag-comments input[type="email"],
-.ag-comments input[type="url"],
-.ag-comments textarea {
-    width: 100%;
-    padding: 0.6rem;
-    background: #131826;
-    border: 1px solid #1f2740;
-    color: #e0e0e0;
-    margin-bottom: 0.75rem;
-    font-family: inherit;
-}
-
-.ag-comments input[type="submit"] {
-    display: inline-block;
-    padding: 0.6rem 1.4rem;
-    background: #c9a96e;
-    color: #0a0e1a;
-    font-weight: 700;
-    border: none;
-    cursor: pointer;
-}
-
-/* ----- Sidebar ----- */
-.ag-sidebar {
-    padding: 2rem 0;
-    border-top: 1px solid #1f2740;
-}
-
-.ag-widget {
-    margin-bottom: 1.5rem;
-}
-
-.ag-widget-title {
-    font-size: 1rem;
-    color: #c9a96e;
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
-}
-
-.ag-widget ul {
-    padding-left: 0;
-}
-
-.ag-widget li {
-    padding: 0.3rem 0;
-    border-bottom: 1px solid #1f2740;
-    color: #aaaaaa;
-}
-
-.ag-widget li:last-child {
-    border-bottom: none;
 }
 
 /* ----- Search form ----- */
@@ -920,6 +834,136 @@ p {
 
 @media (max-width: 600px) {
     .ag-rdv__row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ----- Page hero ----- */
+.ag-page-hero {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: #131826;
+    border-bottom: 1px solid #1f2740;
+}
+
+.ag-page-hero__title {
+    font-size: 1.8rem;
+    color: #c9a96e;
+    margin-bottom: 0;
+}
+
+.ag-page-hero__lead {
+    color: #aaaaaa;
+    font-size: 0.95rem;
+    max-width: 640px;
+    margin: 0.75rem auto 0;
+    line-height: 1.6;
+}
+
+/* ----- Page article ----- */
+.ag-page-content-wrap {
+    max-width: 800px;
+    padding: 2rem 1rem;
+}
+
+.ag-page-article {
+    background: #131826;
+    border: 1px solid #1f2740;
+    padding: 2rem;
+    border-radius: 6px;
+}
+
+/* ----- Archive / Blog grid ----- */
+.ag-archive-wrap {
+    padding: 2rem 1rem;
+    max-width: 1100px;
+}
+
+.ag-posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+}
+
+.ag-post-card {
+    background: #131826;
+    border: 1px solid #1f2740;
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.ag-post-card__thumb {
+    display: block;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+}
+
+.ag-post-card__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ag-post-card__body {
+    padding: 1.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.ag-post-card__date {
+    display: block;
+    color: #c9a96e;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.4rem;
+}
+
+.ag-post-card__title {
+    font-size: 1.05rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.ag-post-card__title a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.ag-post-card__excerpt {
+    color: #aaa;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    flex: 1;
+}
+
+.ag-post-card__more {
+    display: inline-block;
+    margin-top: 0.75rem;
+    color: #c9a96e;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+.ag-no-results {
+    color: #888;
+    text-align: center;
+    padding: 3rem 0;
+}
+
+@media (max-width: 900px) {
+    .ag-posts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .ag-posts-grid {
         grid-template-columns: 1fr;
     }
 }

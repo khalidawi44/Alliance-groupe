@@ -9,9 +9,8 @@ get_header();
 
 	<section class="ag-page-hero">
 		<div class="ag-container">
-			<h1 class="ag-page-hero__title">
-				<?php printf( esc_html__( 'Resultats pour : %s', 'ag-starter-avocat' ), '<em>' . esc_html( get_search_query() ) . '</em>' ); ?>
-			</h1>
+			<h1 class="ag-page-hero__title"><?php the_archive_title(); ?></h1>
+			<?php the_archive_description( '<p class="ag-page-hero__lead">', '</p>' ); ?>
 		</div>
 	</section>
 
@@ -44,10 +43,7 @@ get_header();
 			?>
 
 		<?php else : ?>
-			<div class="ag-page-article" style="text-align:center;padding:60px 40px;">
-				<p class="ag-404-text"><?php esc_html_e( 'Aucun resultat. Essayez avec d\'autres mots-cles.', 'ag-starter-avocat' ); ?></p>
-				<div style="margin-top:24px;"><?php get_search_form(); ?></div>
-			</div>
+			<p class="ag-no-results"><?php esc_html_e( 'Aucun article dans cette categorie.', 'ag-starter-avocat' ); ?></p>
 		<?php endif; ?>
 	</div>
 
