@@ -43,7 +43,7 @@ class AG_Licence_Admin {
                 <a href="?page=ag-licence-manager&tab=licences" class="nav-tab <?php echo 'licences' === $tab ? 'nav-tab-active' : ''; ?>">Licences</a>
                 <a href="?page=ag-licence-manager&tab=generate" class="nav-tab <?php echo 'generate' === $tab ? 'nav-tab-active' : ''; ?>">Générer</a>
                 <a href="?page=ag-licence-manager&tab=edit" class="nav-tab <?php echo 'edit' === $tab ? 'nav-tab-active' : ''; ?>">Modifier</a>
-                <a href="?page=ag-licence-manager&tab=versions" class="nav-tab <?php echo 'versions' === $tab ? 'nav-tab-active' : ''; ?>">Versions Pro</a>
+                <a href="?page=ag-licence-manager&tab=versions" class="nav-tab <?php echo 'versions' === $tab ? 'nav-tab-active' : ''; ?>">Versions Premium</a>
                 <a href="?page=ag-licence-manager&tab=stats" class="nav-tab <?php echo 'stats' === $tab ? 'nav-tab-active' : ''; ?>">Stats</a>
             </nav>
             <div style="margin-top:20px;">
@@ -172,6 +172,7 @@ class AG_Licence_Admin {
                             <option value="ag-starter-artisan">Artisan</option>
                             <option value="ag-starter-coach">Coach</option>
                             <option value="ag-starter-avocat">Avocat</option>
+                            <option value="ag-starter-barber">Barber Shop</option>
                         </select></td></tr>
                     <tr><th>Email</th><td><label><input type="checkbox" name="send_email" value="1" checked> Envoyer la clé par email</label></td></tr>
                 </table>
@@ -319,14 +320,14 @@ class AG_Licence_Admin {
         <?php
     }
 
-    // ─── TAB: Versions Pro ────────────────────────────────────
+    // ─── TAB: Versions Premium ────────────────────────────────────
 
     private static function tab_versions() {
         $versions = get_option( 'ag_lm_pro_versions', array() );
-        $themes = array( 'ag-starter-restaurant', 'ag-starter-artisan', 'ag-starter-coach', 'ag-starter-avocat' );
+        $themes = array( 'ag-starter-restaurant', 'ag-starter-artisan', 'ag-starter-coach', 'ag-starter-avocat', 'ag-starter-barber' );
         ?>
         <div style="max-width:700px;background:#fff;padding:24px;border:1px solid #ccd0d4;">
-            <h2 style="margin-top:0;">Versions Pro disponibles</h2>
+            <h2 style="margin-top:0;">Versions Premium disponibles</h2>
             <p>Le fichier ZIP doit être dans <code>wp-content/uploads/ag-pro-packages/</code>.</p>
             <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                 <?php wp_nonce_field( 'ag_lm_save_versions' ); ?>
