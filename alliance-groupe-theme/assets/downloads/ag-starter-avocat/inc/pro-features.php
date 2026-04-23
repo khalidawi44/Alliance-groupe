@@ -419,6 +419,14 @@ html{scroll-behavior:smooth;}
     margin:20px auto 0 !important;
     border-radius:2px !important;
 }
+.ag-page-hero__lead{
+    color:rgba(255,255,255,.6) !important;
+    font-size:1.1rem !important;
+    max-width:650px !important;
+    margin:20px auto 0 !important;
+    line-height:1.7 !important;
+    text-align:center !important;
+}
 .ag-page-content-wrap{
     max-width:800px !important;
     padding:60px 24px 80px !important;
@@ -501,6 +509,18 @@ html{scroll-behavior:smooth;}
 }
 .ag-domaine-back a{color:' . $gold . ' !important;text-decoration:none !important;font-weight:700 !important;}
 .ag-domaine-back a:hover{text-decoration:underline !important;}
+
+/* ── RDV extras ── */
+.ag-rdv__status{padding:16px 20px !important;border-radius:10px !important;margin-bottom:24px !important;font-weight:600 !important;}
+.ag-rdv__status--success{background:rgba(40,167,69,.1) !important;border:1px solid rgba(40,167,69,.3) !important;color:#28a745 !important;}
+.ag-rdv__status--error{background:rgba(220,53,69,.1) !important;border:1px solid rgba(220,53,69,.3) !important;color:#dc3545 !important;}
+.ag-rdv__rgpd{margin:20px 0 !important;}
+.ag-rdv__rgpd label{display:flex !important;gap:10px !important;align-items:flex-start !important;color:rgba(255,255,255,.5) !important;font-size:.85rem !important;line-height:1.5 !important;cursor:pointer !important;}
+.ag-rdv__rgpd input[type="checkbox"]{margin-top:3px !important;accent-color:' . $gold . ' !important;}
+.ag-rdv__submit{width:100% !important;justify-content:center !important;margin-top:8px !important;font-size:1.05rem !important;padding:18px !important;}
+.ag-rdv__legal{text-align:center !important;color:rgba(255,255,255,.3) !important;font-size:.8rem !important;margin-top:16px !important;}
+.ag-rdv__honeypot{position:absolute !important;left:-9999px !important;height:0 !important;overflow:hidden !important;}
+.ag-rdv-cta{padding:60px 0 !important;}
 ';
         return $css;
     }

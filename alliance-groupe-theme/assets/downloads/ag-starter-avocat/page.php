@@ -2,25 +2,12 @@
 /**
  * The template for displaying all pages.
  *
- * For the avocat one-page design, section pages (expertise, honoraires,
- * cabinet, rendez-vous) redirect to their front-page anchor instead
- * of rendering a bland standalone page.
+ * Section pages (expertise, honoraires, cabinet, rendez-vous) use
+ * their own dedicated page-{slug}.php templates with rich content.
+ * This template handles any other standalone page.
  *
  * @package AG_Starter_Avocat
  */
-
-$ag_section_anchors = array(
-	'expertise'    => '#ag-domaines',
-	'honoraires'   => '#ag-honoraires',
-	'cabinet'      => '#ag-cabinet',
-	'rendez-vous'  => '#ag-rdv',
-);
-
-$ag_current_slug = get_post_field( 'post_name', get_queried_object_id() );
-if ( isset( $ag_section_anchors[ $ag_current_slug ] ) ) {
-	wp_safe_redirect( home_url( '/' . $ag_section_anchors[ $ag_current_slug ] ) );
-	exit;
-}
 
 get_header();
 ?>
