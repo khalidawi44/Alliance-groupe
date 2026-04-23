@@ -38,14 +38,14 @@ add_action( 'admin_init', function () {
 	$fields = array(
 		'ag_stripe_premium_url'      => array(
 			'label'       => 'Pack Premium — 99€',
-			'description' => 'URL du Payment Link Stripe pour le Pack Pro. Ex : https://buy.stripe.com/xxxxxxx',
+			'description' => 'URL du Payment Link Stripe pour le Pack Premium. Ex : https://buy.stripe.com/xxxxxxx',
 		),
 		'ag_stripe_premium_url'  => array(
 			'label'       => 'Pack Premium — 99€',
 			'description' => 'URL du Payment Link Stripe pour le Pack Premium.',
 		),
 		'ag_stripe_business_url' => array(
-			'label'       => 'Pack Business — 149€',
+			'label'       => 'Pack Business — 199€',
 			'description' => 'URL du Payment Link Stripe pour le Pack Business.',
 		),
 		'ag_stripe_question_single_url' => array(
@@ -202,7 +202,7 @@ function ag_stripe_admin_render() {
 				</tr>
 				<tr>
 					<th scope="row">
-						<label for="ag_stripe_business_url">Pack Business — 149€</label>
+						<label for="ag_stripe_business_url">Pack Business — 199€</label>
 					</th>
 					<td>
 						<input type="url" name="ag_stripe_business_url" id="ag_stripe_business_url"
@@ -289,7 +289,7 @@ function ag_stripe_admin_render() {
 
 		$products = array(
 			'pro' => array(
-				'name'  => 'AG Starter Pro — 49€',
+				'name'  => 'AG Starter Premium — 99€',
 				'price' => '49,00 €',
 				'desc'  => "Plugin WordPress qui transforme votre theme AG Starter gratuit en theme professionnel : animations, gradients, 10 blocs Gutenberg, customizer avance (50+ reglages), polices Google Fonts, sticky header, support email 60 jours. Compatible Restaurant/Artisan/Coach/Avocat. Paiement unique. 💎 Besoin d'un site sur-mesure qui genere +340% de leads ? Appel gratuit : alliancegroupe-inc.com/contact",
 				'success' => "Merci pour votre achat ! Vous recevrez votre fichier ZIP par email d'ici quelques minutes. 💎 Site sur-mesure (+340% leads en 3 mois) : alliancegroupe-inc.com/contact",
@@ -297,11 +297,11 @@ function ag_stripe_admin_render() {
 			'premium' => array(
 				'name'  => 'AG Starter Premium — 99€',
 				'price' => '99,00 €',
-				'desc'  => "Plugin WordPress AG Starter Premium : tout Pro + multi-langue 6 langues (FR, EN, ES, IT, DE, AR), switcher automatique, sections temoignages/galerie/pricing, integration WooCommerce complete, support prioritaire 12 mois, mises a jour a vie, appel expert 30 min. Compatible 4 themes (Restaurant/Artisan/Coach/Avocat). 💎 Pour un site sur-mesure (+340% leads) : alliancegroupe-inc.com/contact",
+				'desc'  => "Plugin WordPress AG Starter Premium : tout Pro + multi-langue 6 langues (FR, EN, ES, IT, DE, AR), switcher automatique, sections temoignages/galerie/pricing, integration WooCommerce complete, support prioritaire 12 mois, mises a jour a vie, appel expert 30 min. Compatible 5 themes (Restaurant/Artisan/Coach/Avocat). 💎 Pour un site sur-mesure (+340% leads) : alliancegroupe-inc.com/contact",
 				'success' => "Merci pour votre achat ! Votre plugin Premium (multi-langue + WooCommerce) arrive par email sous 5 min. 💎 Site sur-mesure : alliancegroupe-inc.com/contact",
 			),
 			'business' => array(
-				'name'  => 'AG Starter Business — 149€',
+				'name'  => 'AG Starter Business — 199€',
 				'price' => '149,00 €',
 				'desc'  => "Pack tout-en-un AG Starter : tout Premium + installation assistee en visio 1h, maintenance WP 1 an, audit SEO mensuel, rapport perf trimestriel, support 2h, white-label, integration CRM (HubSpot/Pipedrive/Brevo), appel strategique avec Fabrizio. Paiement unique. 💎 Site totalement sur-mesure (+340% leads en 3 mois) : alliancegroupe-inc.com/contact",
 				'success' => "Merci pour votre achat du Pack Business ! Notre equipe vous contacte sous 24h ouvrees pour planifier l'installation et l'appel strategique avec Fabrizio. Tel : 06.23.52.60.74",

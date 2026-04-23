@@ -2,7 +2,7 @@
 /**
  * Template Name: Templates WordPress
  *
- * HUB : page courte qui oriente vers les 4 pages métier dédiées.
+ * HUB : page courte qui oriente vers les 5 pages métier dédiées.
  * Les fiches complètes (features, Pro/Premium/Business, config,
  * installation) vivent sur les pages individuelles :
  *   /wordpress-avocat
@@ -20,7 +20,7 @@ $ag_stripe_premium      = get_option( 'ag_stripe_premium_url', $ag_stripe_placeh
 $ag_stripe_premium  = get_option( 'ag_stripe_premium_url', $ag_stripe_placeholder );
 $ag_stripe_business = get_option( 'ag_stripe_business_url', $ag_stripe_placeholder );
 
-// 4 métiers → chaque entrée mappe vers sa page dédiée.
+// 5 métiers → chaque entrée mappe vers sa page dédiée.
 $ag_hub_metiers = array(
     array(
         'slug'     => 'avocat',
@@ -88,7 +88,7 @@ $ag_hub_metiers = array(
                 <span class="ag-line">Templates WordPress <em>gratuits</em></span>
                 <span class="ag-line">100% français, prêts à installer</span>
             </h1>
-            <p class="ag-hero__sub">Quatre thèmes pensés par métier : avocat, restaurant, artisan, coach. Choisissez celui qui vous correspond pour voir tous les détails, télécharger et passer à l'action.</p>
+            <p class="ag-hero__sub">Cinq thèmes pensés par métier : avocat, restaurant, artisan, coach, barber. Choisissez celui qui vous correspond pour voir tous les détails, télécharger et passer à l'action.</p>
         </div>
     </section>
 
@@ -129,14 +129,14 @@ $ag_hub_metiers = array(
     <!-- Vue d'ensemble des 3 packs payants (courte, le détail est dans les pages métier) -->
     <section class="ag-section ag-section--marbre">
         <div class="ag-container">
-            <span class="ag-tag ag-anim" data-anim="tag">3 niveaux d'amélioration</span>
+            <span class="ag-tag ag-anim" data-anim="tag">2 niveaux d'amélioration</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">Passez au <em>niveau supérieur</em></h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc">Les 4 templates gratuits sont volontairement basiques. Trois packs payants viennent compléter <strong style="color:#e8e6e0;">n'importe lequel des 4 thèmes</strong> — un seul achat, il fonctionne avec le thème actif. Le détail de chaque pack vit sur la page métier correspondante.</p>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Les 5 templates gratuits sont volontairement basiques. Deux packs payants viennent compléter <strong style="color:#e8e6e0;">n'importe lequel des 5 thèmes</strong> — un seul achat, il fonctionne avec le thème actif. Le détail de chaque pack vit sur la page métier correspondante.</p>
 
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:1000px;margin:40px auto 0;">
                 <div style="padding:24px;background:rgba(212,180,92,.05);border:1px solid rgba(212,180,92,.25);border-radius:12px;text-align:center;">
                     <div style="font-size:2rem;margin-bottom:6px;">⚡</div>
-                    <strong style="display:block;color:#D4B45C;font-size:1.1rem;margin-bottom:6px;">Pack Pro — 49€</strong>
+                    <strong style="display:block;color:#D4B45C;font-size:1.1rem;margin-bottom:6px;">Pack Premium — 99€</strong>
                     <p style="color:#b0b0bc;font-size:.88rem;line-height:1.55;margin:0;">Design travaillé, animations, blocs Gutenberg premium, customizer étendu, sticky header, polices Google Fonts, support 60j.</p>
                 </div>
                 <div style="padding:24px;background:rgba(212,180,92,.08);border:2px solid rgba(212,180,92,.4);border-radius:12px;text-align:center;position:relative;">
@@ -185,7 +185,7 @@ $ag_hub_metiers = array(
                 <span class="ag-tag" style="background:rgba(40,167,69,.15);color:#28a745;border-color:rgba(40,167,69,.3);">Bonus gratuit — Plugin compagnon</span>
                 <h3 style="font-size:1.4rem;margin:12px 0 8px;">Installation en 1 clic avec <em>AG Starter Companion</em></h3>
                 <p style="color:#b0b0bc;max-width:680px;margin:0 auto 20px;font-size:.95rem;line-height:1.7;">
-                    Le plugin gratuit qui crée automatiquement les pages, le menu, la page d'accueil et les permaliens quand vous activez un thème AG Starter. Compatible avec les 4 thèmes.
+                    Le plugin gratuit qui crée automatiquement les pages, le menu, la page d'accueil et les permaliens quand vous activez un thème AG Starter. Compatible avec les 5 thèmes.
                     Pour Avocat, il crée aussi 6 Domaines d'expertise préremplis.
                 </p>
                 <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="companion" data-file="<?php echo esc_url($dl_base . 'ag-starter-companion.zip'); ?>">⚡ Télécharger le plugin gratuit →</button>
@@ -203,9 +203,9 @@ $ag_hub_metiers = array(
                 $tpl_faqs = [
                     ['q' => 'Comment ça marche exactement ?', 'a' => 'Choisissez votre métier sur cette page, vous arrivez sur la fiche dédiée. Vous y trouvez la description complète du thème, le configurateur pour choisir votre niveau (Gratuit / Pro / Premium / Business), le bouton de téléchargement ou d\'achat, et les instructions d\'installation.'],
                     ['q' => 'Les templates sont-ils vraiment en français ?', 'a' => '100% français natif. Tous les textes, titres, horaires, exemples et messages sont déjà rédigés en français — pas de Lorem ipsum, pas de strings anglaises à traduire. Vous remplacez juste les éléments entre crochets.'],
-                    ['q' => 'Le plugin compagnon est-il obligatoire ?', 'a' => 'Non, mais il rend l\'installation 10x plus rapide. Sans le plugin, vous devez créer manuellement les 5 pages et le menu. Avec le plugin, un seul clic suffit. Il est gratuit et compatible avec les 4 thèmes.'],
-                    ['q' => 'Un pack Pro marche-t-il avec les 4 thèmes ?', 'a' => 'Oui. Vous achetez UN seul plugin (Pro, Premium ou Business) et il fonctionne avec n\'importe quel thème AG Starter que vous avez activé. Le plugin détecte automatiquement le thème actif et adapte ses features.'],
-                    ['q' => 'Les templates sont-ils sur WordPress.org ?', 'a' => 'En cours de soumission. Nos 4 thèmes et le plugin compagnon respectent les standards WordPress.org (GPL v2+, translation-ready, escaping strict, Theme Check compatible). Une fois validés, ils seront installables directement depuis votre admin WordPress.'],
+                    ['q' => 'Le plugin compagnon est-il obligatoire ?', 'a' => 'Non, mais il rend l\'installation 10x plus rapide. Sans le plugin, vous devez créer manuellement les 5 pages et le menu. Avec le plugin, un seul clic suffit. Il est gratuit et compatible avec les 5 thèmes.'],
+                    ['q' => 'Un pack Premium marche-t-il avec les 5 thèmes ?', 'a' => 'Oui. Vous achetez UN seul plugin (Pro, Premium ou Business) et il fonctionne avec n\'importe quel thème AG Starter que vous avez activé. Le plugin détecte automatiquement le thème actif et adapte ses features.'],
+                    ['q' => 'Les templates sont-ils sur WordPress.org ?', 'a' => 'En cours de soumission. Nos 5 thèmes et le plugin compagnon respectent les standards WordPress.org (GPL v2+, translation-ready, escaping strict, Theme Check compatible). Une fois validés, ils seront installables directement depuis votre admin WordPress.'],
                     ['q' => 'Et si je veux un vrai site sur-mesure ?', 'a' => 'Contactez-nous au 06.23.52.60.74 ou via la page contact. Premier appel de 30 min gratuit avec Fabrizio, sans engagement. Nos clients génèrent +340% de leads en moyenne avec un site sur-mesure vs un template.'],
                 ];
                 foreach ($tpl_faqs as $faq) :

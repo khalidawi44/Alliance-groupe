@@ -1,6 +1,6 @@
 <?php
 /**
- * Template-part shared by the 4 profession pages.
+ * Template-part shared by the 5 profession pages.
  *
  * Expects $ag_metier set via set_query_var('ag_metier', $data) from
  * the parent page template.
@@ -17,20 +17,20 @@ $dl_base   = get_stylesheet_directory_uri() . '/assets/downloads/';
 
 // Load the Stripe URLs from options (same as page-templates.php).
 $ag_stripe_placeholder    = 'STRIPE_PLACEHOLDER';
-$ag_stripe_pro      = get_option( 'ag_stripe_premium_url', $ag_stripe_placeholder );
+$ag_stripe_premium      = get_option( 'ag_stripe_premium_url', $ag_stripe_placeholder );
 
 $ag_stripe_business = get_option( 'ag_stripe_business_url', $ag_stripe_placeholder );
 
 $contact_base = home_url( '/contact' );
-$premium_url      = ( $ag_stripe_pro      !== $ag_stripe_placeholder ) ? $ag_stripe_pro      : add_query_arg( array( 'pack' => 'pro', 'metier' => $ag_metier['slug'] ), $contact_base );
+$premium_url      = ( $ag_stripe_premium      !== $ag_stripe_placeholder ) ? $ag_stripe_pro      : add_query_arg( array( 'pack' => 'pro', 'metier' => $ag_metier['slug'] ), $contact_base );
 
 $business_url = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? $ag_stripe_business : add_query_arg( array( 'pack' => 'business', 'metier' => $ag_metier['slug'] ), $contact_base );
 
-$premium_target      = ( $ag_stripe_pro      !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : '';
+$premium_target      = ( $ag_stripe_premium      !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : '';
 
 $business_target = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : '';
 
-$premium_label      = ( $ag_stripe_pro      !== $ag_stripe_placeholder ) ? 'Payer 99€ via Stripe →'  : 'Acheter — 99€ une fois';
+$premium_label      = ( $ag_stripe_premium      !== $ag_stripe_placeholder ) ? 'Payer 99€ via Stripe →'  : 'Acheter — 99€ une fois';
 
 $business_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'Payer 199€ via Stripe →' : 'Acheter — 199€ une fois';
 
@@ -159,7 +159,7 @@ $has_screenshot = file_exists( $screenshot_file );
                         <a href="<?php echo esc_url( $premium_url ); ?>"<?php echo $premium_target; // phpcs:ignore ?> class="ag-btn-gold" style="width:100%;max-width:460px;display:block;margin:24px auto 0;text-align:center;justify-content:center;">
                             <?php echo esc_html( $premium_label ); ?>
                         </a>
-                        <p class="ag-cfg__panel-note">Paiement unique, pas d'abonnement. Compatible avec les 4 thèmes AG Starter.</p>
+                        <p class="ag-cfg__panel-note">Paiement unique, pas d'abonnement. Compatible avec les 5 thèmes AG Starter.</p>
                     </div>
 
                     <!-- Premium tier removed — only Free/Pro/Business -->

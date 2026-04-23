@@ -16,7 +16,7 @@ $pack_data = array(
     
 'premium' => array(
         'title'  => 'AG Starter Pro',
-        'price'  => '49€',
+        'price'  => '99€',
         'icon'   => '⚡',
         'desc'   => 'Votre plugin AG Starter Pro est en cours de préparation. Vous le recevrez par email à l\'adresse utilisée pour le paiement, dans les prochaines minutes.',
     ),

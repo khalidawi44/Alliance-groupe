@@ -1031,7 +1031,7 @@ class AG_Starter_Companion {
 			$functions_content = file_get_contents( $functions_file );
 			if ( false === strpos( $functions_content, 'class-ag-licence-client.php' ) ) {
 				$inject = "\n\n" .
-					"// ── AG Licence & Pro (added by AG Starter Companion " . AG_STARTER_COMPANION_VERSION . ") ──\n" .
+					"// ── AG Licence & Premium (added by AG Starter Companion " . AG_STARTER_COMPANION_VERSION . ") ──\n" .
 					"if ( file_exists( get_template_directory() . '/inc/class-ag-licence-client.php' ) ) {\n" .
 					"    require get_template_directory() . '/inc/class-ag-licence-client.php';\n" .
 					"    require get_template_directory() . '/inc/class-ag-updater.php';\n" .
