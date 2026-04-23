@@ -40,6 +40,19 @@ class AG_Licence_Client {
      * Is the current installation running a valid Pro+ licence?
      */
     public static function is_pro() {
+        // On admin pages: always verify live (allows instant revocation)
+        if ( is_admin() ) {
+            $key = self::get_key();
+            if ( empty( $key ) ) return false;
+            $result = self::remote_verify( $key );
+            if ( null !== $result ) {
+                set_transient( self::OPT_CACHE, $result, self::CACHE_TTL );
+                update_option( 'ag_licence_grace', array_merge( $result, array( 'ts' => time() ) ) );
+                return ! empty( $result['valid'] );
+            }
+            // API unreachable in admin — fall through to cache
+        }
+
         $cache = get_transient( self::OPT_CACHE );
         if ( false !== $cache ) {
             return ! empty( $cache['valid'] );
