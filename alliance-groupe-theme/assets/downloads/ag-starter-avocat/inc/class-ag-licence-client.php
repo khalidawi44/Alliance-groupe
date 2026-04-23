@@ -10,11 +10,11 @@ class AG_Licence_Client {
     /** API base on Alliance Groupe server. */
     const API_URL = 'https://alliancegroupe-inc.com/wp-json/ag/v1';
 
-    /** Cache duration (12 hours). */
-    const CACHE_TTL = 43200;
+    /** Cache duration (4 hours — allows faster revocation). */
+    const CACHE_TTL = 14400;
 
-    /** Grace period if API unreachable (72 hours). */
-    const GRACE_TTL = 259200;
+    /** Grace period if API unreachable (24 hours). */
+    const GRACE_TTL = 86400;
 
     /** Option keys. */
     const OPT_KEY    = 'ag_licence_key';
@@ -76,7 +76,7 @@ class AG_Licence_Client {
     public static function get_tier() {
         if ( ! self::is_pro() ) return 'free';
         $cache = get_transient( self::OPT_CACHE );
-        return isset( $cache['tier'] ) ? $cache['tier'] : 'pro';
+        return isset( $cache['tier'] ) ? $cache['tier'] : 'premium';
     }
 
     /**
