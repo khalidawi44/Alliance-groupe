@@ -49,95 +49,111 @@ class AG_Pro_Features {
     }
 
     private function get_pro_css() {
-        $gold = '#c9a96e';
+        $gold = '#D4B45C';
+        $gold_hover = '#c5a44e';
+        $bg = '#080808';
+        $bg2 = '#0a0a0f';
+        $card_bg = 'rgba(255,255,255,.025)';
+        $card_border = 'rgba(255,255,255,.06)';
+        $ease = 'cubic-bezier(.23,1,.32,1)';
         $css = '
-/* ═══ PREMIUM DESIGN — Luxe Avocat ═══ */
-body{font-family:"Manrope",system-ui,sans-serif !important;background:#0a0e1a !important;}
-h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card__title,.ag-honoraires__label,.ag-maitre__name{font-family:"Playfair Display",serif !important;}
+/* ═══ PREMIUM DESIGN — Alliance Groupe Style ═══ */
+body{font-family:"Manrope",system-ui,sans-serif !important;background:' . $bg . ' !important;color:#e8e6e0 !important;line-height:1.7 !important;}
+h1,h2,h3,h4{font-family:"Manrope",sans-serif !important;font-weight:800 !important;line-height:1.2 !important;}
+em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !important;color:' . $gold . ' !important;}
 
-/* ── Hero plein écran luxe ── */
+/* ── Hero ── */
 .ag-hero{
     min-height:90vh !important;
-    display:flex !important;
-    align-items:center !important;
-    justify-content:center !important;
-    text-align:center !important;
-    position:relative !important;
-    overflow:hidden !important;
-    background:linear-gradient(180deg,rgba(10,14,26,.3) 0%,rgba(10,14,26,.95) 100%),
-               url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center/cover !important;
+    display:flex !important;align-items:center !important;justify-content:center !important;
+    text-align:center !important;position:relative !important;overflow:hidden !important;
+    background:linear-gradient(180deg,rgba(8,8,8,.2) 0%,rgba(8,8,8,.92) 100%),
+               url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center/cover no-repeat !important;
+    background-attachment:fixed !important;
 }
 .ag-hero::before{
     content:"";position:absolute;inset:0;
-    background:radial-gradient(ellipse at 30% 50%,rgba(201,169,110,.12) 0%,transparent 60%);
+    background:radial-gradient(ellipse 900px 600px at 85% 10%,rgba(212,180,92,.10),transparent 60%),
+               radial-gradient(ellipse 700px 500px at 10% 95%,rgba(212,180,92,.06),transparent 60%);
     pointer-events:none;
 }
 .ag-hero .ag-container{position:relative;z-index:1;max-width:800px;}
 .ag-hero__title{
-    font-size:clamp(2.4rem,6vw,4.2rem) !important;
-    line-height:1.1 !important;
-    font-weight:700 !important;
+    font-size:clamp(2.2rem,5.5vw,3.8rem) !important;
+    line-height:1.2 !important;font-weight:800 !important;
     margin-bottom:16px !important;
 }
-.ag-hero__title span{color:' . $gold . ';font-style:italic;display:block;}
+.ag-hero__title span{color:' . $gold . ';font-family:"Playfair Display",serif !important;font-style:italic;display:block;}
 .ag-hero__subtitle{
-    font-size:1.15rem !important;
-    color:rgba(255,255,255,.7) !important;
-    max-width:600px !important;
-    margin:0 auto 32px !important;
-    line-height:1.7 !important;
+    font-size:1.05rem !important;color:#b0b0bc !important;
+    max-width:600px !important;margin:0 auto 32px !important;line-height:1.7 !important;
 }
-.ag-btn{
-    display:inline-flex !important;align-items:center;gap:8px;
-    background:' . $gold . ' !important;
-    color:#0a0e1a !important;
-    padding:16px 36px !important;
-    border-radius:10px !important;
-    font-weight:700 !important;
-    font-size:1rem !important;
-    text-decoration:none !important;
-    transition:transform .3s,box-shadow .3s !important;
-    border:none !important;
-}
-.ag-btn:hover{transform:translateY(-3px) !important;box-shadow:0 10px 30px rgba(201,169,110,.3) !important;}
+@keyframes ag-line-stack{0%{opacity:0;transform:translateY(-30px)}60%{transform:translateY(4px)}100%{opacity:1;transform:translateY(0)}}
+.ag-hero__title{opacity:0;animation:ag-line-stack .6s ' . $ease . ' .3s forwards;}
+.ag-hero__subtitle{opacity:0;animation:ag-line-stack .6s ' . $ease . ' .6s forwards;}
+.ag-hero .ag-btn{opacity:0;animation:ag-line-stack .6s ' . $ease . ' .9s forwards;}
 
-/* ── Sections spacing + style ── */
-.ag-section{padding:100px 0 !important;position:relative;}
+/* ── Buttons ── */
+.ag-btn{
+    display:inline-flex !important;align-items:center;gap:10px;
+    background:' . $gold . ' !important;color:' . $bg . ' !important;
+    padding:16px 36px !important;border-radius:12px !important;
+    font-weight:700 !important;font-size:1.05rem !important;
+    text-decoration:none !important;border:none !important;cursor:pointer !important;
+    box-shadow:0 4px 25px rgba(212,180,92,.25) !important;
+    transition:background .3s,transform .3s ' . $ease . ',box-shadow .3s !important;
+}
+.ag-btn:hover{background:' . $gold_hover . ' !important;transform:translateY(-2px) !important;box-shadow:0 8px 35px rgba(212,180,92,.35) !important;}
+
+/* ── Sections ── */
+.ag-section{padding:100px 0 !important;position:relative;overflow:hidden !important;}
 .ag-section-title{
-    font-size:clamp(1.6rem,4vw,2.6rem) !important;
-    text-align:center !important;
-    margin-bottom:12px !important;
-    color:#fff !important;
+    font-size:clamp(1.5rem,3vw,2.2rem) !important;
+    text-align:center !important;margin-bottom:12px !important;
+    color:#fff !important;position:relative !important;display:inline-block !important;
+    width:100% !important;
 }
 .ag-section-lead{
-    text-align:center !important;
-    color:rgba(255,255,255,.6) !important;
-    font-size:1.05rem !important;
-    max-width:650px !important;
-    margin:0 auto 48px !important;
-    line-height:1.7 !important;
+    text-align:center !important;color:#b0b0bc !important;
+    font-size:.95rem !important;max-width:650px !important;
+    margin:0 auto 48px !important;line-height:1.7 !important;
+}
+/* Section backgrounds Alliance-style */
+.ag-section:nth-of-type(odd){
+    background:radial-gradient(ellipse 900px 600px at 85% 10%,rgba(212,180,92,.10),transparent 60%),
+               radial-gradient(ellipse 700px 500px at 10% 95%,rgba(212,180,92,.06),transparent 60%),' . $bg . ' !important;
+    border-top:1px solid rgba(212,180,92,.12) !important;
+}
+.ag-section:nth-of-type(even){
+    background:linear-gradient(135deg,#15151c 0%,#1c1c26 45%,#16161e 100%) !important;
+    border-top:1px solid rgba(212,180,92,.14) !important;
+}
+/* Gold divider */
+.ag-section::before{
+    content:"" !important;position:absolute !important;top:0 !important;left:50% !important;
+    transform:translateX(-50%) !important;width:min(280px,40%) !important;height:1px !important;
+    background:linear-gradient(90deg,transparent,rgba(212,180,92,.55),transparent) !important;
 }
 
-/* ── Domaines cards luxe ── */
-.ag-domaines{background:rgba(255,255,255,.02) !important;}
+/* ── Domaines cards ── */
 .ag-domaines__grid{
     display:grid !important;
-    grid-template-columns:repeat(auto-fit,minmax(280px,1fr)) !important;
-    gap:24px !important;
+    grid-template-columns:repeat(3,1fr) !important;
+    gap:28px !important;
 }
 .ag-domaine-card{
-    background:rgba(255,255,255,.03) !important;
-    border:1px solid rgba(201,169,110,.15) !important;
+    background:' . $card_bg . ' !important;
+    border:1px solid ' . $card_border . ' !important;
     border-radius:16px !important;
-    padding:32px 24px !important;
-    text-decoration:none !important;
-    color:inherit !important;
-    transition:transform .4s,border-color .4s,box-shadow .4s !important;
+    padding:36px 30px !important;
+    text-decoration:none !important;color:inherit !important;
+    display:flex !important;flex-direction:column !important;
+    transition:border-color .4s ' . $ease . ',transform .4s ' . $ease . ',box-shadow .4s !important;
 }
 .ag-domaine-card:hover{
-    transform:translateY(-6px) !important;
-    border-color:rgba(201,169,110,.4) !important;
-    box-shadow:0 20px 50px rgba(0,0,0,.3) !important;
+    border-color:rgba(212,180,92,.25) !important;
+    transform:translateY(-4px) !important;
+    box-shadow:0 12px 40px rgba(0,0,0,.3) !important;
 }
 .ag-domaine-card__icon{font-size:2.4rem !important;margin-bottom:14px !important;}
 .ag-domaine-card__title{font-size:1.15rem !important;margin-bottom:8px !important;color:#fff !important;}
@@ -153,9 +169,9 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card__title,.ag-honora
 
 /* ── Maître section ── */
 .ag-maitre{
-    background:linear-gradient(135deg,rgba(201,169,110,.04) 0%,rgba(10,14,26,.8) 100%) !important;
-    border-top:1px solid rgba(201,169,110,.1) !important;
-    border-bottom:1px solid rgba(201,169,110,.1) !important;
+    background:linear-gradient(135deg,rgba(212,180,92,.04) 0%,rgba(10,14,26,.8) 100%) !important;
+    border-top:1px solid rgba(212,180,92,.1) !important;
+    border-bottom:1px solid rgba(212,180,92,.1) !important;
 }
 .ag-maitre__inner{
     display:grid !important;
@@ -165,15 +181,15 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card__title,.ag-honora
 }
 .ag-maitre__photo img{
     border-radius:16px !important;
-    border:2px solid rgba(201,169,110,.2) !important;
+    border:2px solid rgba(212,180,92,.2) !important;
     box-shadow:0 20px 50px rgba(0,0,0,.4) !important;
 }
 .ag-maitre__tag{
     display:inline-block !important;
     padding:4px 14px !important;
-    background:rgba(201,169,110,.1) !important;
+    background:rgba(212,180,92,.1) !important;
     color:' . $gold . ' !important;
-    border:1px solid rgba(201,169,110,.25) !important;
+    border:1px solid rgba(212,180,92,.25) !important;
     border-radius:100px !important;
     font-size:.78rem !important;
     font-weight:600 !important;
@@ -196,7 +212,7 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card__title,.ag-honora
 }
 .ag-honoraires__card{
     background:rgba(255,255,255,.03) !important;
-    border:1px solid rgba(201,169,110,.15) !important;
+    border:1px solid rgba(212,180,92,.15) !important;
     border-radius:18px !important;
     padding:36px 28px !important;
     text-align:center !important;
@@ -204,7 +220,7 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card__title,.ag-honora
 }
 .ag-honoraires__card:hover{
     transform:translateY(-4px) !important;
-    border-color:rgba(201,169,110,.4) !important;
+    border-color:rgba(212,180,92,.4) !important;
 }
 .ag-honoraires__price{
     font-family:"Playfair Display",serif !important;
@@ -255,11 +271,11 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card__title,.ag-honora
 
 /* ── RDV form luxe ── */
 .ag-rdv{
-    background:linear-gradient(135deg,rgba(201,169,110,.04) 0%,rgba(10,14,26,.9) 100%) !important;
+    background:linear-gradient(135deg,rgba(212,180,92,.04) 0%,rgba(10,14,26,.9) 100%) !important;
 }
 .ag-rdv__form{
     background:rgba(255,255,255,.03) !important;
-    border:1px solid rgba(201,169,110,.2) !important;
+    border:1px solid rgba(212,180,92,.2) !important;
     border-radius:20px !important;
     padding:40px 36px !important;
 }
@@ -269,7 +285,7 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card__title,.ag-honora
     width:100% !important;
     padding:14px 18px !important;
     background:rgba(10,14,26,.8) !important;
-    border:1px solid rgba(201,169,110,.2) !important;
+    border:1px solid rgba(212,180,92,.2) !important;
     border-radius:10px !important;
     color:#fff !important;
     font-size:1rem !important;
@@ -289,7 +305,7 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card__title,.ag-honora
 /* ── Footer ── */
 .ag-site-footer{
     background:#060609 !important;
-    border-top:1px solid rgba(201,169,110,.1) !important;
+    border-top:1px solid rgba(212,180,92,.1) !important;
     padding:60px 0 0 !important;
 }
 .ag-footer-grid{
@@ -314,15 +330,15 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card__title,.ag-honora
     content:"" !important;display:block !important;
     width:100vw !important;height:1px !important;
     margin-left:calc(-50vw + 50%) !important;
-    background:linear-gradient(90deg,transparent 0%,rgba(201,169,110,.25) 50%,transparent 100%) !important;
+    background:linear-gradient(90deg,transparent 0%,rgba(212,180,92,.25) 50%,transparent 100%) !important;
     margin-bottom:80px !important;
 }
 .ag-section:first-of-type::before{display:none !important;}
 .ag-domaines{
-    background:linear-gradient(180deg,rgba(201,169,110,.03) 0%,rgba(10,14,26,1) 100%) !important;
+    background:linear-gradient(180deg,rgba(212,180,92,.03) 0%,rgba(10,14,26,1) 100%) !important;
 }
 .ag-honoraires{
-    background:linear-gradient(180deg,rgba(10,14,26,1) 0%,rgba(201,169,110,.05) 50%,rgba(10,14,26,1) 100%) !important;
+    background:linear-gradient(180deg,rgba(10,14,26,1) 0%,rgba(212,180,92,.05) 50%,rgba(10,14,26,1) 100%) !important;
 }
 .ag-rdv{
     background:linear-gradient(180deg,rgba(10,14,26,.95) 0%,rgba(10,14,26,.8) 100%),
@@ -337,7 +353,7 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card__title,.ag-honora
     font-weight:700 !important;font-size:.85rem !important;
     text-decoration:none !important;transition:transform .3s,box-shadow .3s !important;
 }
-.ag-footer-rdv:hover{transform:translateY(-2px) !important;box-shadow:0 6px 20px rgba(201,169,110,.3) !important;}
+.ag-footer-rdv:hover{transform:translateY(-2px) !important;box-shadow:0 6px 20px rgba(212,180,92,.3) !important;}
 
 /* ── Header luxe — transparent top → solid on scroll ── */
 .ag-site-header{
@@ -410,7 +426,7 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card__title,.ag-honora
 .ag-site-header.scrolled{
     background:rgba(10,14,26,.97) !important;
     backdrop-filter:blur(16px) !important;
-    border-bottom-color:rgba(201,169,110,.1) !important;
+    border-bottom-color:rgba(212,180,92,.1) !important;
     box-shadow:0 4px 30px rgba(0,0,0,.4) !important;
     padding:10px 0 !important;
 }
@@ -438,9 +454,9 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card__title,.ag-honora
         }
         // Testimonials
         $css .= '
-.ag-testimonials{padding:80px 24px;background:rgba(201,169,110,.03);}
+.ag-testimonials{padding:80px 24px;background:rgba(212,180,92,.03);}
 .ag-testimonials__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:1200px;margin:0 auto;}
-.ag-testimonial-card{background:rgba(255,255,255,.04);border:1px solid rgba(201,169,110,.15);border-radius:16px;padding:28px;}
+.ag-testimonial-card{background:rgba(255,255,255,.04);border:1px solid rgba(212,180,92,.15);border-radius:16px;padding:28px;}
 .ag-testimonial-card__stars{color:' . $gold . ';font-size:1.1rem;margin-bottom:12px;letter-spacing:2px;}
 .ag-testimonial-card__text{color:rgba(255,255,255,.8);font-size:.95rem;line-height:1.7;font-style:italic;margin-bottom:16px;}
 .ag-testimonial-card__author{font-weight:700;color:#fff;font-size:.9rem;}
@@ -455,7 +471,7 @@ html{scroll-behavior:smooth;}
     text-align:center !important;
     background:linear-gradient(180deg,rgba(10,14,26,.3) 0%,rgba(10,14,26,.95) 100%),
                url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center/cover !important;
-    border-bottom:1px solid rgba(201,169,110,.15) !important;
+    border-bottom:1px solid rgba(212,180,92,.15) !important;
 }
 /* Page hero — images par page */
 .page-expertise .ag-page-hero,body.page-template-page-expertise .ag-page-hero{
@@ -510,7 +526,7 @@ html{scroll-behavior:smooth;}
 }
 .ag-page-article{
     background:rgba(255,255,255,.03) !important;
-    border:1px solid rgba(201,169,110,.12) !important;
+    border:1px solid rgba(212,180,92,.12) !important;
     border-radius:18px !important;
     padding:48px 40px !important;
 }
@@ -531,7 +547,7 @@ html{scroll-behavior:smooth;}
 }
 .ag-page-article .ag-entry-content li{margin-bottom:8px !important;}
 .ag-page-article .ag-entry-thumb{margin-bottom:32px !important;}
-.ag-page-article .ag-entry-thumb img{border-radius:14px !important;border:1px solid rgba(201,169,110,.15) !important;}
+.ag-page-article .ag-entry-thumb img{border-radius:14px !important;border:1px solid rgba(212,180,92,.15) !important;}
 .ag-post-meta{color:rgba(255,255,255,.4) !important;font-size:.88rem !important;margin-top:12px !important;}
 .ag-404-text{color:rgba(255,255,255,.7) !important;font-size:1.15rem !important;line-height:1.7 !important;}
 .ag-entry-footer{margin-top:32px !important;padding-top:24px !important;border-top:1px solid rgba(255,255,255,.06) !important;}
@@ -551,8 +567,8 @@ html{scroll-behavior:smooth;}
 .ag-domaine-examples{
     margin-top:36px !important;
     padding:28px !important;
-    background:rgba(201,169,110,.04) !important;
-    border:1px solid rgba(201,169,110,.15) !important;
+    background:rgba(212,180,92,.04) !important;
+    border:1px solid rgba(212,180,92,.15) !important;
     border-left:3px solid ' . $gold . ' !important;
     border-radius:14px !important;
 }
@@ -599,15 +615,40 @@ html{scroll-behavior:smooth;}
 .ag-rdv__honeypot{position:absolute !important;left:-9999px !important;height:0 !important;overflow:hidden !important;}
 .ag-rdv-cta{padding:60px 0 !important;}
 
+/* ── Back to top ── */
+.ag-totop{
+    position:fixed !important;bottom:40px !important;right:40px !important;
+    width:48px !important;height:48px !important;border-radius:50% !important;
+    background:' . $gold . ' !important;color:' . $bg . ' !important;
+    font-size:1.4rem !important;font-weight:700 !important;
+    display:flex !important;align-items:center !important;justify-content:center !important;
+    text-decoration:none !important;
+    box-shadow:0 4px 20px rgba(212,180,92,.3) !important;
+    opacity:0 !important;pointer-events:none !important;
+    transition:opacity .4s,transform .3s ' . $ease . ' !important;
+    z-index:999 !important;
+}
+.ag-totop.visible{opacity:1 !important;pointer-events:auto !important;}
+.ag-totop:hover{transform:translateY(-3px) !important;}
+
+/* ── Tag pill (like Alliance) ── */
+.ag-tag{
+    display:inline-block !important;padding:6px 18px !important;
+    background:rgba(212,180,92,.1) !important;color:' . $gold . ' !important;
+    border:1px solid rgba(212,180,92,.25) !important;border-radius:100px !important;
+    font-size:.85rem !important;font-weight:600 !important;
+    letter-spacing:.5px !important;text-transform:uppercase !important;
+}
+
 /* ── Page Cabinet full layout ── */
 .ag-cabinet-full{display:grid !important;grid-template-columns:1.2fr 1fr !important;gap:32px !important;align-items:start !important;}
-.ag-cabinet-full__map{border-radius:16px !important;overflow:hidden !important;box-shadow:0 20px 60px rgba(0,0,0,.4) !important;border:1px solid rgba(201,169,110,.15) !important;}
+.ag-cabinet-full__map{border-radius:16px !important;overflow:hidden !important;box-shadow:0 20px 60px rgba(0,0,0,.4) !important;border:1px solid rgba(212,180,92,.15) !important;}
 .ag-cabinet-full__map iframe{display:block !important;}
 .ag-cabinet-full__cards{display:flex !important;flex-direction:column !important;gap:16px !important;}
 .ag-cabinet__block-icon{font-size:1.5rem !important;margin-bottom:8px !important;}
 .ag-cabinet-full__btn{width:100% !important;justify-content:center !important;margin-top:8px !important;}
 @media(max-width:768px){.ag-cabinet-full{grid-template-columns:1fr !important;}}
-.ag-cabinet-map-section{background:linear-gradient(180deg,rgba(10,14,26,1) 0%,rgba(201,169,110,.04) 100%) !important;}
+.ag-cabinet-map-section{background:linear-gradient(180deg,rgba(10,14,26,1) 0%,rgba(212,180,92,.04) 100%) !important;}
 
 /* ── Fixed backgrounds ── */
 .ag-hero,.ag-page-hero,.ag-cabinet,.ag-rdv{background-attachment:fixed !important;}
@@ -622,7 +663,7 @@ html{scroll-behavior:smooth;}
 }
 .ag-post-card{
     background:rgba(255,255,255,.03) !important;
-    border:1px solid rgba(201,169,110,.12) !important;
+    border:1px solid rgba(212,180,92,.12) !important;
     border-radius:16px !important;
     overflow:hidden !important;
     transition:transform .35s,border-color .35s,box-shadow .35s !important;
@@ -631,7 +672,7 @@ html{scroll-behavior:smooth;}
 }
 .ag-post-card:hover{
     transform:translateY(-5px) !important;
-    border-color:rgba(201,169,110,.35) !important;
+    border-color:rgba(212,180,92,.35) !important;
     box-shadow:0 16px 40px rgba(0,0,0,.3) !important;
 }
 .ag-post-card__thumb{display:block !important;overflow:hidden !important;aspect-ratio:16/10 !important;}
