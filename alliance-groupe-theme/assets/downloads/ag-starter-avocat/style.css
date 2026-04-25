@@ -429,6 +429,10 @@ p {
     display: block;
 }
 
+.ag-sidebar, .widget-area, #ag-sidebar, .widget_pages, .widget_meta, .widget_archives, .widget_categories {
+    display: none !important;
+}
+
 /* ----- Responsive ----- */
 @media (max-width: 600px) {
     .ag-site-header__inner {
