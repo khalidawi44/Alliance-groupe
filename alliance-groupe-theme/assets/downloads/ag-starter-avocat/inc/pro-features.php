@@ -59,11 +59,9 @@ class AG_Pro_Features {
                 'tier'   => 'premium',
             ),
             'bordeaux' => array(
-                'name'   => 'Bordeaux — Clair & Elegant',
-                'accent' => '#7B2D3B', 'accent_hover' => '#6A2433', 'accent_rgb' => '123,45,59',
-                'bg'     => '#F5F0EB', 'bg2' => '#EDE6DF', 'bg_card' => '#FFFFFF',
-                'text'   => '#2A1A1E', 'text_soft' => '#5A4549', 'text_muted' => '#8A7478',
-                'light'  => true,
+                'name'   => 'Bordeaux — Sombre & Noble',
+                'accent' => '#C4637A', 'accent_hover' => '#A85568', 'accent_rgb' => '196,99,122',
+                'bg'     => '#0a0608', 'bg2' => '#0e090b', 'bg_card' => '#1a1216',
                 'tier'   => 'premium',
             ),
             'bronze' => array(
@@ -89,7 +87,7 @@ class AG_Pro_Features {
     public static function get_available_skins( $tier ) {
         $all = array(
             'navy-or'  => array( 'name' => 'Classique — Navy & Or', 'tier' => 'premium', 'preview' => '#D4B45C' ),
-            'bordeaux' => array( 'name' => 'Bordeaux — Clair & Elegant', 'tier' => 'premium', 'preview' => '#7B2D3B' ),
+            'bordeaux' => array( 'name' => 'Bordeaux — Sombre & Noble', 'tier' => 'premium', 'preview' => '#C4637A' ),
             'bronze'   => array( 'name' => 'Bronze — Prestige', 'tier' => 'business', 'preview' => '#B08D57' ),
             'ardoise'  => array( 'name' => 'Ardoise — Sobriete', 'tier' => 'business', 'preview' => '#7A9BAE' ),
         );
