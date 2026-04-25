@@ -268,14 +268,18 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card__title,.ag-honora
 .ag-rdv__field input,.ag-rdv__field select,.ag-rdv__field textarea{
     width:100% !important;
     padding:14px 18px !important;
-    background:rgba(255,255,255,.04) !important;
-    border:1px solid rgba(255,255,255,.1) !important;
+    background:rgba(10,14,26,.8) !important;
+    border:1px solid rgba(201,169,110,.2) !important;
     border-radius:10px !important;
     color:#fff !important;
     font-size:1rem !important;
     outline:none !important;
-    transition:border-color .3s !important;
+    transition:border-color .3s,box-shadow .3s !important;
+    font-family:inherit !important;
 }
+.ag-rdv__field select{appearance:none !important;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%23c9a96e\' stroke-width=\'2\' fill=\'none\'/%3E%3C/svg%3E") !important;background-repeat:no-repeat !important;background-position:right 16px center !important;padding-right:40px !important;}
+.ag-rdv__field select option{background:#0a0e1a !important;color:#fff !important;}
+.ag-rdv__field input::placeholder,.ag-rdv__field textarea::placeholder{color:rgba(255,255,255,.3) !important;}
 .ag-rdv__field input:focus,.ag-rdv__field select:focus,.ag-rdv__field textarea:focus{
     border-color:' . $gold . ' !important;
     outline:2px solid ' . $gold . ' !important;
@@ -594,6 +598,20 @@ html{scroll-behavior:smooth;}
 .ag-rdv__legal{text-align:center !important;color:rgba(255,255,255,.3) !important;font-size:.8rem !important;margin-top:16px !important;}
 .ag-rdv__honeypot{position:absolute !important;left:-9999px !important;height:0 !important;overflow:hidden !important;}
 .ag-rdv-cta{padding:60px 0 !important;}
+
+/* ── Page Cabinet full layout ── */
+.ag-cabinet-full{display:grid !important;grid-template-columns:1.2fr 1fr !important;gap:32px !important;align-items:start !important;}
+.ag-cabinet-full__map{border-radius:16px !important;overflow:hidden !important;box-shadow:0 20px 60px rgba(0,0,0,.4) !important;border:1px solid rgba(201,169,110,.15) !important;}
+.ag-cabinet-full__map iframe{display:block !important;}
+.ag-cabinet-full__cards{display:flex !important;flex-direction:column !important;gap:16px !important;}
+.ag-cabinet__block-icon{font-size:1.5rem !important;margin-bottom:8px !important;}
+.ag-cabinet-full__btn{width:100% !important;justify-content:center !important;margin-top:8px !important;}
+@media(max-width:768px){.ag-cabinet-full{grid-template-columns:1fr !important;}}
+.ag-cabinet-map-section{background:linear-gradient(180deg,rgba(10,14,26,1) 0%,rgba(201,169,110,.04) 100%) !important;}
+
+/* ── Fixed backgrounds ── */
+.ag-hero,.ag-page-hero,.ag-cabinet,.ag-rdv{background-attachment:fixed !important;}
+@media(max-width:768px){.ag-hero,.ag-page-hero,.ag-cabinet,.ag-rdv{background-attachment:scroll !important;}}
 
 /* ── Archive / Blog / Category : grille 3 colonnes ── */
 .ag-archive-wrap{padding:60px 24px 80px !important;max-width:1200px !important;}
