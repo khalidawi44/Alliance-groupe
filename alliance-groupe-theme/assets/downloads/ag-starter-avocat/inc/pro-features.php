@@ -303,6 +303,11 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
     background:linear-gradient(180deg,rgba(10,14,26,.95) 0%,rgba(10,14,26,.8) 100%),
                url("https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=80") center/cover !important;
 }
+.ag-cabinet__cards{
+    display:grid !important;
+    grid-template-columns:repeat(3,1fr) !important;
+    gap:28px !important;
+}
 .ag-cabinet__grid{
     display:grid !important;
     grid-template-columns:1fr 1fr !important;
@@ -458,6 +463,7 @@ a.ag-footer-rdv,a.ag-footer-rdv:visited,a.ag-footer-rdv:hover{color:' . $bg . ' 
     .ag-hero{min-height:70vh !important;}
     .ag-hero__title{font-size:clamp(1.8rem,8vw,2.8rem) !important;}
     .ag-maitre__inner{grid-template-columns:1fr !important;text-align:center;}
+    .ag-cabinet__cards{grid-template-columns:1fr !important;}
     .ag-cabinet__grid{grid-template-columns:1fr !important;}
     .ag-rdv__row{grid-template-columns:1fr !important;}
     .ag-footer-grid{grid-template-columns:1fr !important;}

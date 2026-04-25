@@ -109,10 +109,11 @@ add_action( 'admin_bar_menu', function ( $wp_admin_bar ) {
 }, 999 );
 
 /**
- * Remove all default WordPress widgets and unregister all sidebars.
+ * Remove all default WordPress widgets, unregister all sidebars, hide widget admin.
  */
 add_action( 'widgets_init', function () {
-	unregister_sidebar( 'sidebar-1' );
+	global $wp_registered_sidebars;
+	$wp_registered_sidebars = array();
 	unregister_widget( 'WP_Widget_Pages' );
 	unregister_widget( 'WP_Widget_Calendar' );
 	unregister_widget( 'WP_Widget_Archives' );
@@ -123,7 +124,19 @@ add_action( 'widgets_init', function () {
 	unregister_widget( 'WP_Widget_Recent_Comments' );
 	unregister_widget( 'WP_Widget_RSS' );
 	unregister_widget( 'WP_Widget_Tag_Cloud' );
-}, 20 );
+	unregister_widget( 'WP_Widget_Text' );
+	unregister_widget( 'WP_Widget_HTML' );
+	unregister_widget( 'WP_Widget_Custom_HTML' );
+	unregister_widget( 'WP_Widget_Block' );
+	unregister_widget( 'WP_Widget_Media_Audio' );
+	unregister_widget( 'WP_Widget_Media_Video' );
+	unregister_widget( 'WP_Widget_Media_Image' );
+	unregister_widget( 'WP_Widget_Media_Gallery' );
+	unregister_widget( 'WP_Nav_Menu_Widget' );
+}, 99 );
+add_action( 'admin_menu', function () {
+	remove_submenu_page( 'themes.php', 'widgets.php' );
+}, 99 );
 
 /**
  * Add a pingback url auto-discovery header for single posts, pages, or attachments.

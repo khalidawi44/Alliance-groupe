@@ -677,11 +677,28 @@ p {
 }
 
 /* ----- Cabinet (adresse + horaires + plan) ----- */
+.ag-cabinet__cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+}
+
+.ag-cabinet__block-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
 .ag-cabinet__grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
     margin-top: 1.5rem;
+}
+
+@media (max-width: 720px) {
+    .ag-cabinet__cards {
+        grid-template-columns: 1fr;
+    }
 }
 
 .ag-cabinet__info {
