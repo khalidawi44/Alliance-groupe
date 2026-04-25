@@ -59,21 +59,21 @@ class AG_Pro_Features {
                 'tier'   => 'premium',
             ),
             'bordeaux' => array(
-                'name'   => 'Bordeaux — Tradition',
-                'accent' => '#A0344A', 'accent_hover' => '#8c2c40', 'accent_rgb' => '160,52,74',
-                'bg'     => '#0c0808', 'bg2' => '#110a0a', 'bg_card' => '#1c1414',
+                'name'   => 'Bordeaux — Vin & Ivoire',
+                'accent' => '#8B3A3A', 'accent_hover' => '#7A2E2E', 'accent_rgb' => '139,58,58',
+                'bg'     => '#0a0606', 'bg2' => '#0e0909', 'bg_card' => '#1a1212',
                 'tier'   => 'premium',
             ),
-            'emeraude' => array(
-                'name'   => 'Emeraude — Moderne',
-                'accent' => '#2D8E6F', 'accent_hover' => '#257a5f', 'accent_rgb' => '45,142,111',
-                'bg'     => '#060a09', 'bg2' => '#0a0f0d', 'bg_card' => '#121c19',
+            'bronze' => array(
+                'name'   => 'Bronze — Prestige',
+                'accent' => '#B08D57', 'accent_hover' => '#9A7A4A', 'accent_rgb' => '176,141,87',
+                'bg'     => '#09080a', 'bg2' => '#0d0c0e', 'bg_card' => '#191718',
                 'tier'   => 'business',
             ),
-            'royal' => array(
-                'name'   => 'Royal — Bleu & Argent',
-                'accent' => '#6B8FC7', 'accent_hover' => '#5a7db5', 'accent_rgb' => '107,143,199',
-                'bg'     => '#080a0e', 'bg2' => '#0a0d12', 'bg_card' => '#141820',
+            'ardoise' => array(
+                'name'   => 'Ardoise — Sobriete',
+                'accent' => '#7A9BAE', 'accent_hover' => '#688899', 'accent_rgb' => '122,155,174',
+                'bg'     => '#080a0c', 'bg2' => '#0a0d10', 'bg_card' => '#141a1e',
                 'tier'   => 'business',
             ),
         );
@@ -87,9 +87,9 @@ class AG_Pro_Features {
     public static function get_available_skins( $tier ) {
         $all = array(
             'navy-or'  => array( 'name' => 'Classique — Navy & Or', 'tier' => 'premium', 'preview' => '#D4B45C' ),
-            'bordeaux' => array( 'name' => 'Bordeaux — Tradition', 'tier' => 'premium', 'preview' => '#A0344A' ),
-            'emeraude' => array( 'name' => 'Emeraude — Moderne', 'tier' => 'business', 'preview' => '#2D8E6F' ),
-            'royal'    => array( 'name' => 'Royal — Bleu & Argent', 'tier' => 'business', 'preview' => '#6B8FC7' ),
+            'bordeaux' => array( 'name' => 'Bordeaux — Vin & Ivoire', 'tier' => 'premium', 'preview' => '#8B3A3A' ),
+            'bronze'   => array( 'name' => 'Bronze — Prestige', 'tier' => 'business', 'preview' => '#B08D57' ),
+            'ardoise'  => array( 'name' => 'Ardoise — Sobriete', 'tier' => 'business', 'preview' => '#7A9BAE' ),
         );
         $order = array( 'free' => 0, 'premium' => 1, 'business' => 2 );
         $level = $order[ $tier ] ?? 0;
@@ -405,7 +405,7 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
 /* ── Footer RDV link ── */
 .ag-footer-rdv{
     display:inline-block !important;margin-top:14px !important;
-    background:' . $gold . ' !important;color:#0a0e1a !important;
+    background:' . $gold . ' !important;color:#fff !important;text-shadow:0 1px 2px rgba(0,0,0,.3) !important;
     padding:10px 22px !important;border-radius:8px !important;
     font-weight:700 !important;font-size:.85rem !important;
     text-decoration:none !important;transition:transform .3s,box-shadow .3s !important;

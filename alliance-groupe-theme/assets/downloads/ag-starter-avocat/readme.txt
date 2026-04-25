@@ -73,7 +73,7 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 * Page d'accueil statique avec hero, cartes Domaines/Honoraires/Rendez-vous et section "Notre cabinet".
 * Templates : index.php, front-page.php, header.php, footer.php, sidebar.php, page.php, single.php, search.php, 404.php, comments.php.
 * Customizer integre (couleurs, typo, hero, footer).
-* Banniere "Ameliorer mon theme" dans le customizer avec liens vers les packs Pro/Premium/Business.
+* Banniere "Ameliorer mon theme" dans le customizer avec liens vers les packs Premium/Business.
 * Prepare pour la traduction.
 * Compatible WordPress 6.0+.
 
