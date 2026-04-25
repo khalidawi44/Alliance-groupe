@@ -43,6 +43,22 @@
         });
     }
 
+    // Theme toggle (light/dark for visitors)
+    var themeBtn = document.querySelector('.ag-theme-toggle');
+    if (themeBtn) {
+        var icon = themeBtn.querySelector('.ag-theme-toggle__icon');
+        var saved = localStorage.getItem('ag_theme_mode');
+        if (saved === 'light') {
+            document.body.classList.add('ag-visitor-light');
+            if (icon) icon.textContent = '☀️';
+        }
+        themeBtn.addEventListener('click', function() {
+            var isLight = document.body.classList.toggle('ag-visitor-light');
+            if (icon) icon.textContent = isLight ? '☀️' : '🌙';
+            localStorage.setItem('ag_theme_mode', isLight ? 'light' : 'dark');
+        });
+    }
+
     // Back to top
     var totop = document.createElement('a');
     totop.href = '#';

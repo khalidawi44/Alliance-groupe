@@ -47,13 +47,17 @@
 				<span></span><span></span><span></span>
 			</button>
 		</nav>
-		<?php
-		// Pro: phone button in header
-		if ( class_exists( 'AG_Pro_Features' ) ) {
-			global $ag_pro;
-			if ( ! isset( $ag_pro ) ) $ag_pro = new AG_Pro_Features( 'ag-starter-avocat' );
-			echo $ag_pro->render_header_phone();
-		}
-		?>
+		<div class="ag-header-actions">
+			<?php
+			if ( class_exists( 'AG_Pro_Features' ) ) {
+				global $ag_pro;
+				if ( ! isset( $ag_pro ) ) $ag_pro = new AG_Pro_Features( 'ag-starter-avocat' );
+				echo $ag_pro->render_header_phone();
+			}
+			?>
+			<button class="ag-theme-toggle" aria-label="<?php esc_attr_e( 'Changer de theme', 'ag-starter-avocat' ); ?>" title="<?php esc_attr_e( 'Mode clair / sombre', 'ag-starter-avocat' ); ?>">
+				<span class="ag-theme-toggle__icon">🌙</span>
+			</button>
+		</div>
 	</div>
 </header>

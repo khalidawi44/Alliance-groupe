@@ -59,9 +59,11 @@ class AG_Pro_Features {
                 'tier'   => 'premium',
             ),
             'bordeaux' => array(
-                'name'   => 'Bordeaux — Vin & Ivoire',
-                'accent' => '#8B3A3A', 'accent_hover' => '#7A2E2E', 'accent_rgb' => '139,58,58',
-                'bg'     => '#0a0606', 'bg2' => '#0e0909', 'bg_card' => '#1a1212',
+                'name'   => 'Bordeaux — Clair & Elegant',
+                'accent' => '#7B2D3B', 'accent_hover' => '#6A2433', 'accent_rgb' => '123,45,59',
+                'bg'     => '#F5F0EB', 'bg2' => '#EDE6DF', 'bg_card' => '#FFFFFF',
+                'text'   => '#2A1A1E', 'text_soft' => '#5A4549', 'text_muted' => '#8A7478',
+                'light'  => true,
                 'tier'   => 'premium',
             ),
             'bronze' => array(
@@ -87,7 +89,7 @@ class AG_Pro_Features {
     public static function get_available_skins( $tier ) {
         $all = array(
             'navy-or'  => array( 'name' => 'Classique — Navy & Or', 'tier' => 'premium', 'preview' => '#D4B45C' ),
-            'bordeaux' => array( 'name' => 'Bordeaux — Vin & Ivoire', 'tier' => 'premium', 'preview' => '#8B3A3A' ),
+            'bordeaux' => array( 'name' => 'Bordeaux — Clair & Elegant', 'tier' => 'premium', 'preview' => '#7B2D3B' ),
             'bronze'   => array( 'name' => 'Bronze — Prestige', 'tier' => 'business', 'preview' => '#B08D57' ),
             'ardoise'  => array( 'name' => 'Ardoise — Sobriete', 'tier' => 'business', 'preview' => '#7A9BAE' ),
         );
@@ -110,13 +112,19 @@ class AG_Pro_Features {
         $bg = $s['bg'];
         $bg2 = $s['bg2'];
         $bg_card = $s['bg_card'];
-        $card_bg = 'rgba(255,255,255,.025)';
-        $card_border = 'rgba(255,255,255,.06)';
+        $is_light = ! empty( $s['light'] );
+        $text_main = $is_light ? ( $s['text'] ?? '#2A1A1E' ) : '#e8e6e0';
+        $text_soft = $is_light ? ( $s['text_soft'] ?? '#5A4549' ) : '#b0b0bc';
+        $text_muted = $is_light ? ( $s['text_muted'] ?? '#8A7478' ) : '#8a8a95';
+        $card_bg = $is_light ? '#FFFFFF' : 'rgba(255,255,255,.025)';
+        $card_border = $is_light ? 'rgba(0,0,0,.08)' : 'rgba(255,255,255,.06)';
+        $card_shadow = $is_light ? '0 4px 20px rgba(0,0,0,.06)' : 'none';
+        $heading_color = $is_light ? ( $s['text'] ?? '#2A1A1E' ) : '#fff';
         $ease = 'cubic-bezier(.23,1,.32,1)';
         $css = '
 /* ═══ PREMIUM DESIGN — Alliance Groupe Style ═══ */
-body{font-family:"Manrope",system-ui,sans-serif !important;background:' . $bg . ' !important;color:#e8e6e0 !important;line-height:1.7 !important;}
-h1,h2,h3,h4{font-family:"Manrope",sans-serif !important;font-weight:800 !important;line-height:1.2 !important;}
+body{font-family:"Manrope",system-ui,sans-serif !important;background:' . $bg . ' !important;color:' . $text_main . ' !important;line-height:1.7 !important;}
+h1,h2,h3,h4{font-family:"Manrope",sans-serif !important;font-weight:800 !important;line-height:1.2 !important;color:' . $heading_color . ' !important;}
 em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !important;color:' . $gold . ' !important;}
 
 /* ── Hero ── */
@@ -483,12 +491,42 @@ a.ag-footer-rdv,a.ag-footer-rdv:visited,a.ag-footer-rdv:hover{color:' . $bg . ' 
     .ag-header__phone{display:none !important;}
 }
 ';
+        // Light mode overrides
+        if ( $is_light ) {
+            $css .= '
+.ag-hero__subtitle,.ag-section-lead,.ag-domaine-card__excerpt,.ag-honoraires__desc,.ag-maitre__meta,.ag-cabinet__block p,.ag-rdv__field label,.ag-footer-col p,.ag-footer-col li,.ag-post-card__excerpt,.ag-testimonial-card__text,.ag-page-article .ag-entry-content,.ag-maitre__bio,.ag-honoraires__note,.ag-entry-footer p,.ag-post-meta,.ag-404-text{color:' . $text_soft . ' !important;}
+.ag-domaine-card__title,.ag-honoraires__label,.ag-maitre__name,.ag-testimonial-card__author,.ag-post-card__title a,.ag-page-hero__title{color:' . $heading_color . ' !important;}
+.ag-domaine-card,.ag-honoraires__card,.ag-cabinet__block,.ag-rdv__form,.ag-testimonial-card,.ag-post-card,.ag-page-article{background:' . $card_bg . ' !important;border-color:' . $card_border . ' !important;box-shadow:' . $card_shadow . ' !important;}
+.ag-domaine-card:hover,.ag-honoraires__card:hover,.ag-post-card:hover{border-color:rgba(' . $gold_rgb . ',.3) !important;box-shadow:0 12px 40px rgba(0,0,0,.1) !important;}
+.ag-section:nth-of-type(odd){background:' . $bg . ' !important;border-top:1px solid rgba(' . $gold_rgb . ',.1) !important;}
+.ag-section:nth-of-type(even){background:' . $bg2 . ' !important;border-top:1px solid rgba(' . $gold_rgb . ',.1) !important;}
+.ag-section::before{background:linear-gradient(90deg,transparent,rgba(' . $gold_rgb . ',.3),transparent) !important;}
+.ag-site-footer{background:' . $bg2 . ' !important;border-top:1px solid rgba(' . $gold_rgb . ',.15) !important;}
+.ag-footer-col h3{color:' . $gold . ' !important;}
+.ag-footer-bottom{color:' . $text_muted . ' !important;border-top:1px solid rgba(0,0,0,.06) !important;}
+.ag-rdv__field input,.ag-rdv__field select,.ag-rdv__field textarea{background:#fff !important;border:1px solid rgba(0,0,0,.12) !important;color:' . $heading_color . ' !important;}
+.ag-rdv__field select option{background:#fff !important;color:' . $heading_color . ' !important;}
+.ag-rdv__field input::placeholder,.ag-rdv__field textarea::placeholder{color:' . $text_muted . ' !important;}
+.ag-rdv__rgpd label{color:' . $text_soft . ' !important;}
+.ag-rdv__legal{color:' . $text_muted . ' !important;}
+.ag-primary-menu a{color:' . $text_soft . ' !important;}
+.ag-primary-menu a:hover{color:' . $gold . ' !important;}
+.ag-site-brand a{color:' . $gold . ' !important;}
+.ag-hero{background:linear-gradient(180deg,rgba(245,240,235,.1) 0%,rgba(245,240,235,.92) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center/cover no-repeat !important;background-attachment:fixed !important;}
+.ag-page-hero{background:linear-gradient(180deg,rgba(245,240,235,.2) 0%,rgba(245,240,235,.95) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center/cover !important;}
+.ag-hero::before{background:none !important;}
+.ag-maitre{background:' . $bg2 . ' !important;border-color:rgba(' . $gold_rgb . ',.1) !important;}
+.ag-pagination .page-numbers{background:rgba(0,0,0,.03) !important;border-color:rgba(0,0,0,.08) !important;color:' . $text_soft . ' !important;}
+.ag-cabinet-map-section{background:' . $bg . ' !important;}
+';
+        }
+
         // Sticky header
         if ( get_theme_mod( 'ag_pro_sticky_header', true ) ) {
             $css .= '
 .ag-site-header{position:fixed;top:0;left:0;right:0;z-index:1000;}
 .ag-site-header.scrolled{
-    background:rgba(10,14,26,.97) !important;
+    background:' . ( $is_light ? 'rgba(245,240,235,.97)' : 'rgba(8,8,8,.97)' ) . ' !important;
     backdrop-filter:blur(16px) !important;
     border-bottom-color:rgba(' . $gold_rgb . ',.1) !important;
     box-shadow:0 4px 30px rgba(0,0,0,.4) !important;
@@ -696,6 +734,33 @@ html{scroll-behavior:smooth;}
 .ag-totop:hover{transform:translateY(-3px) !important;}
 
 /* ── Tag pill (like Alliance) ── */
+/* ── Theme toggle button ── */
+.ag-header-actions{display:flex !important;align-items:center !important;gap:8px !important;}
+.ag-theme-toggle{
+    background:none !important;border:1px solid rgba(' . $gold_rgb . ',.3) !important;
+    border-radius:50% !important;width:36px !important;height:36px !important;
+    cursor:pointer !important;display:flex !important;align-items:center !important;justify-content:center !important;
+    font-size:1rem !important;transition:border-color .3s,transform .3s !important;padding:0 !important;
+}
+.ag-theme-toggle:hover{border-color:' . $gold . ' !important;transform:scale(1.1) !important;}
+
+/* ── Visitor dark/light toggle ── */
+body.ag-visitor-light{background:#F5F0EB !important;color:#2A1A1E !important;}
+body.ag-visitor-light h1,body.ag-visitor-light h2,body.ag-visitor-light h3,body.ag-visitor-light h4{color:#2A1A1E !important;}
+body.ag-visitor-light .ag-hero__subtitle,body.ag-visitor-light .ag-section-lead,body.ag-visitor-light .ag-domaine-card__excerpt,body.ag-visitor-light .ag-honoraires__desc,body.ag-visitor-light .ag-maitre__bio,body.ag-visitor-light .ag-maitre__meta,body.ag-visitor-light .ag-cabinet__block p,body.ag-visitor-light .ag-rdv__field label,body.ag-visitor-light .ag-footer-col p,body.ag-visitor-light .ag-footer-col li,body.ag-visitor-light .ag-post-card__excerpt,body.ag-visitor-light .ag-testimonial-card__text,body.ag-visitor-light .ag-page-article .ag-entry-content{color:#5A4549 !important;}
+body.ag-visitor-light .ag-domaine-card,body.ag-visitor-light .ag-honoraires__card,body.ag-visitor-light .ag-cabinet__block,body.ag-visitor-light .ag-rdv__form,body.ag-visitor-light .ag-testimonial-card,body.ag-visitor-light .ag-post-card,body.ag-visitor-light .ag-page-article{background:#fff !important;border-color:rgba(0,0,0,.08) !important;box-shadow:0 4px 20px rgba(0,0,0,.06) !important;}
+body.ag-visitor-light .ag-section:nth-of-type(odd){background:#F5F0EB !important;}
+body.ag-visitor-light .ag-section:nth-of-type(even){background:#EDE6DF !important;}
+body.ag-visitor-light .ag-site-footer{background:#EDE6DF !important;}
+body.ag-visitor-light .ag-site-header.scrolled{background:rgba(245,240,235,.97) !important;}
+body.ag-visitor-light .ag-rdv__field input,body.ag-visitor-light .ag-rdv__field select,body.ag-visitor-light .ag-rdv__field textarea{background:#fff !important;border-color:rgba(0,0,0,.12) !important;color:#2A1A1E !important;}
+body.ag-visitor-light .ag-primary-menu a{color:#5A4549 !important;}
+body.ag-visitor-light .ag-hero{background:linear-gradient(180deg,rgba(245,240,235,.1) 0%,rgba(245,240,235,.92) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center/cover no-repeat !important;background-attachment:fixed !important;}
+body.ag-visitor-light .ag-page-hero{background:linear-gradient(180deg,rgba(245,240,235,.2) 0%,rgba(245,240,235,.95) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center/cover !important;}
+body.ag-visitor-light .ag-hero::before{background:none !important;}
+body.ag-visitor-light .ag-footer-bottom{color:#8A7478 !important;}
+body.ag-visitor-light .ag-pagination .page-numbers{background:rgba(0,0,0,.03) !important;border-color:rgba(0,0,0,.08) !important;color:#5A4549 !important;}
+
 .ag-tag{
     display:inline-block !important;padding:6px 18px !important;
     background:rgba(' . $gold_rgb . ',.1) !important;color:' . $gold . ' !important;
