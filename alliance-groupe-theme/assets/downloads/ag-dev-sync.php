@@ -3,39 +3,38 @@
  * AG Dev Sync — One-click GitHub sync for testing.
  * Drop this file in wp-content/mu-plugins/ag-dev-sync.php
  * DELETE THIS FILE when the template is final.
- *
- * @package AG_Dev_Sync
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 add_action( 'admin_menu', function () {
-	add_menu_page(
-		'AG Sync',
-		'AG Sync',
-		'manage_options',
-		'ag-dev-sync',
-		'ag_dev_sync_page',
-		'dashicons-update',
-		2
-	);
+	add_menu_page( 'AG Sync', 'AG Sync', 'manage_options', 'ag-dev-sync', 'ag_dev_sync_page', 'dashicons-update', 2 );
 } );
 
-add_action( 'admin_init', function () {
-	if ( ! isset( $_POST['ag_dev_sync_run'] ) || ! current_user_can( 'manage_options' ) ) return;
-	check_admin_referer( 'ag_dev_sync' );
+function ag_dev_sync_download( $url ) {
+	$args = array( 'timeout' => 60, 'sslverify' => false );
+	$resp = wp_remote_get( $url, $args );
+	if ( is_wp_error( $resp ) ) return $resp;
+	if ( 200 !== wp_remote_retrieve_response_code( $resp ) ) {
+		return new WP_Error( 'http', 'HTTP ' . wp_remote_retrieve_response_code( $resp ) );
+	}
+	$tmp = wp_tempnam( basename( $url ) );
+	file_put_contents( $tmp, wp_remote_retrieve_body( $resp ) );
+	return $tmp;
+}
 
+function ag_dev_sync_run() {
 	$results = array();
-	$base    = 'https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/downloads/';
+	$base = 'https://github.com/khalidawi44/Alliance-groupe/raw/main/alliance-groupe-theme/assets/downloads/';
 
 	$items = array(
 		array(
-			'name' => 'AG Starter Avocat (theme)',
+			'name' => 'Theme AG Starter Avocat',
 			'url'  => $base . 'ag-starter-avocat.zip',
 			'dest' => get_theme_root() . '/ag-starter-avocat',
 		),
 		array(
-			'name' => 'AG Starter Companion (plugin)',
+			'name' => 'Plugin AG Starter Companion',
 			'url'  => $base . 'ag-starter-companion.zip',
 			'dest' => WP_PLUGIN_DIR . '/ag-starter-companion',
 		),
@@ -46,72 +45,75 @@ add_action( 'admin_init', function () {
 	global $wp_filesystem;
 
 	foreach ( $items as $item ) {
-		$tmp = download_url( $item['url'], 30 );
+		$results[] = '--- ' . $item['name'] . ' ---';
+		$results[] = 'Telechargement...';
+
+		$tmp = ag_dev_sync_download( $item['url'] );
 		if ( is_wp_error( $tmp ) ) {
-			$results[] = $item['name'] . ' : ERREUR download — ' . $tmp->get_error_message();
+			$results[] = 'ERREUR: ' . $tmp->get_error_message();
 			continue;
 		}
 
-		$extract_dir = sys_get_temp_dir() . '/ag-sync-' . uniqid();
-		$unzip = unzip_file( $tmp, $extract_dir );
-		unlink( $tmp );
+		$size = filesize( $tmp );
+		$results[] = 'OK — ' . round( $size / 1024 ) . ' Ko';
+
+		$extract = sys_get_temp_dir() . '/ag-sync-' . uniqid();
+		$unzip = unzip_file( $tmp, $extract );
+		@unlink( $tmp );
 
 		if ( is_wp_error( $unzip ) ) {
-			$results[] = $item['name'] . ' : ERREUR unzip — ' . $unzip->get_error_message();
+			$results[] = 'ERREUR unzip: ' . $unzip->get_error_message();
 			continue;
 		}
 
-		$folders = glob( $extract_dir . '/*', GLOB_ONLYDIR );
-		$source  = ! empty( $folders ) ? $folders[0] : $extract_dir;
+		$folders = glob( $extract . '/*', GLOB_ONLYDIR );
+		$source  = ! empty( $folders ) ? $folders[0] : $extract;
 
 		if ( is_dir( $item['dest'] ) ) {
 			$wp_filesystem->delete( $item['dest'], true );
+			$results[] = 'Ancien dossier supprime';
 		}
 
 		$copy = copy_dir( $source, $item['dest'] );
-		$wp_filesystem->delete( $extract_dir, true );
+		$wp_filesystem->delete( $extract, true );
 
 		if ( is_wp_error( $copy ) ) {
-			$results[] = $item['name'] . ' : ERREUR copy — ' . $copy->get_error_message();
+			$results[] = 'ERREUR copy: ' . $copy->get_error_message();
 		} else {
-			$results[] = $item['name'] . ' : OK';
+			$results[] = 'INSTALLE';
 		}
 	}
 
-	set_transient( 'ag_dev_sync_results', $results, 60 );
-	wp_safe_redirect( admin_url( 'admin.php?page=ag-dev-sync&synced=1' ) );
-	exit;
-} );
+	return $results;
+}
 
 function ag_dev_sync_page() {
-	$results = get_transient( 'ag_dev_sync_results' );
-	if ( $results ) delete_transient( 'ag_dev_sync_results' );
+	$results = null;
+
+	if ( isset( $_POST['ag_dev_sync_run'] ) && current_user_can( 'manage_options' ) ) {
+		check_admin_referer( 'ag_dev_sync' );
+		$results = ag_dev_sync_run();
+	}
 	?>
 	<div class="wrap" style="max-width:600px;">
-		<h1 style="font-size:1.8rem;">AG Dev Sync</h1>
-		<p style="color:#666;">Synchronise le theme + companion depuis GitHub en un clic.<br>
-		<strong style="color:#d63638;">Supprimer ce fichier quand le template est final.</strong></p>
+		<h1>AG Dev Sync</h1>
+		<p>Synchronise le theme + companion depuis GitHub en un clic.</p>
+		<p><strong style="color:#d63638;">Supprimer ce fichier (mu-plugins/ag-dev-sync.php) quand le template est final.</strong></p>
 
 		<?php if ( $results ) : ?>
-			<div style="background:#fff;border-left:4px solid #00a32a;padding:12px 16px;margin:16px 0;">
+			<div style="background:#fff;border:1px solid #ccc;border-left:4px solid #00a32a;padding:16px;margin:16px 0;font-family:monospace;font-size:13px;line-height:1.8;">
 				<?php foreach ( $results as $r ) : ?>
-					<p style="margin:4px 0;"><code><?php echo esc_html( $r ); ?></code></p>
+					<div><?php echo esc_html( $r ); ?></div>
 				<?php endforeach; ?>
 			</div>
 		<?php endif; ?>
 
 		<form method="post" style="margin-top:24px;">
 			<?php wp_nonce_field( 'ag_dev_sync' ); ?>
-			<button type="submit" name="ag_dev_sync_run" value="1" class="button button-hero button-primary" style="font-size:1.2rem;padding:12px 40px;background:#D4B45C;border-color:#c5a44e;color:#080808;">
+			<button type="submit" name="ag_dev_sync_run" value="1" class="button button-hero button-primary" style="font-size:1.1rem;padding:10px 36px;">
 				Synchroniser depuis GitHub
 			</button>
 		</form>
-
-		<p style="margin-top:16px;color:#888;font-size:.85rem;">
-			Source : <code>khalidawi44/Alliance-groupe</code> branche <code>main</code><br>
-			Theme → <code>wp-content/themes/ag-starter-avocat/</code><br>
-			Plugin → <code>wp-content/plugins/ag-starter-companion/</code>
-		</p>
 	</div>
 	<?php
 }
