@@ -405,7 +405,7 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
 /* ── Footer RDV link ── */
 .ag-footer-rdv{
     display:inline-block !important;margin-top:14px !important;
-    background:' . $gold . ' !important;color:#fff !important;text-shadow:0 1px 2px rgba(0,0,0,.3) !important;
+    background:' . $gold . ' !important;color:#080808 !important;text-shadow:none !important;
     padding:10px 22px !important;border-radius:8px !important;
     font-weight:700 !important;font-size:.85rem !important;
     text-decoration:none !important;transition:transform .3s,box-shadow .3s !important;

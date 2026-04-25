@@ -39,7 +39,7 @@ function ag_starter_avocat_customizer_defaults() {
 		'ag_hero_brand'         => '[Maitre Nom]',
 		'ag_hero_subtitle'      => 'Avocat au barreau, conseil juridique et defense de vos interets en toute confidentialite.',
 		'ag_hero_button'        => 'Prendre rendez-vous',
-		'ag_hero_button_url'    => '#ag-rdv',
+		'ag_hero_button_url'    => '/rendez-vous/',
 		// Footer.
 		'ag_footer_copyright'   => '',
 		'ag_footer_credits'     => true,

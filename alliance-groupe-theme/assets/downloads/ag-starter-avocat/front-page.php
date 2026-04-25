@@ -33,8 +33,9 @@ get_header();
 			$ag_btn_label = ag_starter_avocat_get_option( 'ag_hero_button' );
 			$ag_btn_url   = ag_starter_avocat_get_option( 'ag_hero_button_url' );
 			if ( $ag_btn_label ) :
+				$ag_btn_href = ( strpos( $ag_btn_url, 'http' ) === 0 ) ? $ag_btn_url : home_url( $ag_btn_url );
 				?>
-				<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn"><?php echo esc_html( $ag_btn_label ); ?></a>
+				<a href="<?php echo esc_url( $ag_btn_href ); ?>" class="ag-btn"><?php echo esc_html( $ag_btn_label ); ?></a>
 			<?php endif; ?>
 		</div>
 	</section>

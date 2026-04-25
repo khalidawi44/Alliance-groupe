@@ -109,6 +109,23 @@ add_action( 'admin_bar_menu', function ( $wp_admin_bar ) {
 }, 999 );
 
 /**
+ * Remove all default WordPress widgets and unregister all sidebars.
+ */
+add_action( 'widgets_init', function () {
+	unregister_sidebar( 'sidebar-1' );
+	unregister_widget( 'WP_Widget_Pages' );
+	unregister_widget( 'WP_Widget_Calendar' );
+	unregister_widget( 'WP_Widget_Archives' );
+	unregister_widget( 'WP_Widget_Meta' );
+	unregister_widget( 'WP_Widget_Search' );
+	unregister_widget( 'WP_Widget_Categories' );
+	unregister_widget( 'WP_Widget_Recent_Posts' );
+	unregister_widget( 'WP_Widget_Recent_Comments' );
+	unregister_widget( 'WP_Widget_RSS' );
+	unregister_widget( 'WP_Widget_Tag_Cloud' );
+}, 20 );
+
+/**
  * Add a pingback url auto-discovery header for single posts, pages, or attachments.
  */
 function ag_starter_avocat_pingback_header() {
