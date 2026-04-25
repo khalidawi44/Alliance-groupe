@@ -713,14 +713,24 @@ html{scroll-behavior:smooth;}
 .ag-theme-toggle:hover{border-color:' . $gold . ' !important;transform:scale(1.1) !important;}
 
 /* ── Visitor dark/light toggle ── */
-/* Mode jour : fond clair, accents bordeaux */
+/* Mode jour : fond clair, accents bordeaux, maître doré */
 body.ag-visitor-light{background:#F5F0EB !important;color:#2A1A1E !important;}
 body.ag-visitor-light h1,body.ag-visitor-light h2,body.ag-visitor-light h3,body.ag-visitor-light h4,body.ag-visitor-light .ag-section-title,body.ag-visitor-light .ag-page-hero__title,body.ag-visitor-light .ag-hero__title,body.ag-visitor-light .ag-honoraires__label,body.ag-visitor-light .ag-domaine-card__title,body.ag-visitor-light .ag-post-card__title a,body.ag-visitor-light .ag-page-article .ag-entry-content h2,body.ag-visitor-light .ag-page-article .ag-entry-content h3{color:#2A1A1E !important;}
-body.ag-visitor-light .ag-hero__subtitle,body.ag-visitor-light .ag-section-lead,body.ag-visitor-light .ag-domaine-card__excerpt,body.ag-visitor-light .ag-honoraires__desc,body.ag-visitor-light .ag-maitre__meta,body.ag-visitor-light .ag-cabinet__block p,body.ag-visitor-light .ag-rdv__field label,body.ag-visitor-light .ag-footer-col p,body.ag-visitor-light .ag-footer-col li,body.ag-visitor-light .ag-post-card__excerpt,body.ag-visitor-light .ag-testimonial-card__text,body.ag-visitor-light .ag-page-article .ag-entry-content,body.ag-visitor-light .ag-page-article .ag-entry-content p,body.ag-visitor-light .ag-honoraires__note,body.ag-visitor-light .ag-rdv__rgpd label,body.ag-visitor-light .ag-rdv__legal{color:#5A4549 !important;}
+/* Body text noir lisible */
+body.ag-visitor-light .ag-hero__subtitle,body.ag-visitor-light .ag-section-lead,body.ag-visitor-light .ag-domaine-card__excerpt,body.ag-visitor-light .ag-honoraires__desc,body.ag-visitor-light .ag-cabinet__block p,body.ag-visitor-light .ag-rdv__field label,body.ag-visitor-light .ag-footer-col p,body.ag-visitor-light .ag-footer-col li,body.ag-visitor-light .ag-post-card__excerpt,body.ag-visitor-light .ag-testimonial-card__text,body.ag-visitor-light .ag-page-article .ag-entry-content,body.ag-visitor-light .ag-page-article .ag-entry-content p,body.ag-visitor-light .ag-honoraires__note,body.ag-visitor-light .ag-rdv__legal{color:#3A2A2E !important;}
 body.ag-visitor-light .ag-maitre__bio{color:#3A2A2E !important;}
+body.ag-visitor-light .ag-maitre__meta{color:#5A4549 !important;}
+/* Maître : nom + tag en doré */
+body.ag-visitor-light .ag-maitre__name{color:#D4B45C !important;}
+body.ag-visitor-light .ag-maitre__tag{background:rgba(212,180,92,.1) !important;border-color:rgba(212,180,92,.25) !important;color:#D4B45C !important;}
 body.ag-visitor-light .ag-maitre__specialties strong{color:#D4B45C !important;}
+/* Domaines cards : texte exemples noir */
+body.ag-visitor-light .ag-domaine-card__examples li{color:#2A1A1E !important;}
+body.ag-visitor-light .ag-domaine-card__excerpt{color:#3A2A2E !important;}
+/* RGPD checkbox noir lisible */
+body.ag-visitor-light .ag-rdv__rgpd label,body.ag-visitor-light .ag-rdv__rgpd span{color:#2A1A1E !important;}
 /* Accents bordeaux en mode jour */
-body.ag-visitor-light .ag-hero__title span,body.ag-visitor-light .ag-domaine-card__more,body.ag-visitor-light .ag-post-card__more,body.ag-visitor-light .ag-post-card__date,body.ag-visitor-light .ag-honoraires__price,body.ag-visitor-light .ag-domaine-examples__title,body.ag-visitor-light .ag-domaine-examples__list li::before,body.ag-visitor-light .ag-domaine-back a,body.ag-visitor-light .ag-entry-content a,body.ag-visitor-light .ag-footer-col a,body.ag-visitor-light .ag-maitre__tag,body.ag-visitor-light .ag-cabinet__block h3,body.ag-visitor-light .ag-footer-col h3{color:#7B2D3B !important;}
+body.ag-visitor-light .ag-hero__title span,body.ag-visitor-light .ag-domaine-card__more,body.ag-visitor-light .ag-post-card__more,body.ag-visitor-light .ag-post-card__date,body.ag-visitor-light .ag-honoraires__price,body.ag-visitor-light .ag-domaine-examples__title,body.ag-visitor-light .ag-domaine-examples__list li::before,body.ag-visitor-light .ag-domaine-back a,body.ag-visitor-light .ag-entry-content a,body.ag-visitor-light .ag-footer-col a,body.ag-visitor-light .ag-cabinet__block h3,body.ag-visitor-light .ag-footer-col h3{color:#7B2D3B !important;}
 body.ag-visitor-light .ag-btn{background:#7B2D3B !important;color:#fff !important;box-shadow:0 4px 25px rgba(123,45,59,.25) !important;}
 body.ag-visitor-light .ag-btn:hover{background:#6A2433 !important;}
 body.ag-visitor-light a.ag-footer-rdv,body.ag-visitor-light a.ag-footer-rdv:visited{background:#7B2D3B !important;color:#fff !important;}
@@ -728,7 +738,6 @@ body.ag-visitor-light .ag-site-brand a{color:#7B2D3B !important;}
 body.ag-visitor-light .ag-primary-menu a{color:#5A4549 !important;}
 body.ag-visitor-light .ag-primary-menu a:hover{color:#7B2D3B !important;}
 body.ag-visitor-light .ag-section::before{background:linear-gradient(90deg,transparent,rgba(123,45,59,.2),transparent) !important;}
-body.ag-visitor-light .ag-maitre__tag{background:rgba(123,45,59,.1) !important;border-color:rgba(123,45,59,.25) !important;}
 /* Cartes et sections clair */
 body.ag-visitor-light .ag-domaine-card,body.ag-visitor-light .ag-honoraires__card,body.ag-visitor-light .ag-cabinet__block,body.ag-visitor-light .ag-rdv__form,body.ag-visitor-light .ag-testimonial-card,body.ag-visitor-light .ag-post-card,body.ag-visitor-light .ag-page-article,body.ag-visitor-light .ag-domaine-examples{background:#fff !important;border-color:rgba(0,0,0,.08) !important;box-shadow:0 4px 20px rgba(0,0,0,.06) !important;}
 body.ag-visitor-light .ag-section,body.ag-visitor-light .ag-section:nth-of-type(odd),body.ag-visitor-light .ag-domaines,body.ag-visitor-light .ag-honoraires{background:#F5F0EB !important;background-image:none !important;}
@@ -982,26 +991,52 @@ a.ag-footer-rdv,a.ag-footer-rdv:visited,a.ag-footer-rdv:hover{background:' . $go
             return;
         }
 
-        // FREE: big animated promo
+        // FREE: massive animated promo — impossible to miss
         ?>
-        <div style="background:#060606;border-top:2px solid #D4B45C;padding:48px 24px;text-align:center;">
-            <div style="max-width:400px;margin:0 auto;padding:40px 28px;background:linear-gradient(180deg,rgba(' . $gold_rgb . ',.08) 0%,#0a0a0f 100%);border:1px solid rgba(' . $gold_rgb . ',.35);border-radius:20px;overflow:hidden;animation:agPromoGlow 3s ease-in-out infinite;">
-                <style>
-                @keyframes agPromoGlow{0%,100%{box-shadow:0 0 30px rgba(' . $gold_rgb . ',.1)}50%{box-shadow:0 0 50px rgba(' . $gold_rgb . ',.25)}}
-                @keyframes agFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-                .ag-premiummo-emoji{display:inline-block;animation:agFloat 2s ease-in-out infinite;font-size:1.6rem;}
-                .ag-premiummo-emoji:nth-child(2){animation-delay:.3s}
-                .ag-premiummo-emoji:nth-child(3){animation-delay:.6s}
-                </style>
-                <div style="margin-bottom:16px;"><span class="ag-premiummo-emoji">🚀</span> <span class="ag-premiummo-emoji">⭐</span> <span class="ag-premiummo-emoji">💎</span></div>
-                <img src="https://alliancegroupe-inc.com/wp-content/uploads/2026/04/logo_site_alliance.jpg" alt="Alliance Groupe" style="height:56px;border-radius:10px;margin-bottom:16px;">
-                <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#fff;margin:0 0 8px;font-style:italic;">Alliance Groupe</h3>
-                <p style="color:#D4B45C;font-size:.88rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin:0 0 12px;">Agence Web & IA</p>
-                <p style="color:rgba(255,255,255,.7);font-size:.92rem;line-height:1.6;margin:0 0 24px;">Ce thème gratuit est offert par Alliance Groupe.<br>Créez votre site professionnel en 5 minutes.</p>
-                <a href="<?php echo esc_url( $url_templates ); ?>" target="_blank" rel="noopener" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-weight:700;padding:14px 32px;border-radius:10px;text-decoration:none;font-size:1rem;">Découvrir nos templates →</a>
-                <p style="color:rgba(255,255,255,.3);font-size:.72rem;margin:16px 0 0;">Passez au Pack Premium pour réduire cette publicité</p>
+        <div class="ag-free-promo" style="background:#060606;border-top:3px solid #D4B45C;padding:80px 24px 60px;text-align:center;position:relative;overflow:hidden;">
+            <style>
+            @keyframes agPromoGlow{0%,100%{box-shadow:0 0 40px rgba(212,180,92,.15),0 0 80px rgba(212,180,92,.05)}50%{box-shadow:0 0 60px rgba(212,180,92,.3),0 0 120px rgba(212,180,92,.1)}}
+            @keyframes agFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+            @keyframes agSparkle{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+            @keyframes agFirework1{0%{transform:translate(0,0) scale(0);opacity:1}50%{opacity:1}100%{transform:translate(-60px,-100px) scale(1);opacity:0}}
+            @keyframes agFirework2{0%{transform:translate(0,0) scale(0);opacity:1}50%{opacity:1}100%{transform:translate(80px,-120px) scale(1);opacity:0}}
+            @keyframes agFirework3{0%{transform:translate(0,0) scale(0);opacity:1}50%{opacity:1}100%{transform:translate(-40px,-80px) scale(1);opacity:0}}
+            @keyframes agFirework4{0%{transform:translate(0,0) scale(0);opacity:1}50%{opacity:1}100%{transform:translate(60px,-60px) scale(1);opacity:0}}
+            @keyframes agFirework5{0%{transform:translate(0,0) scale(0);opacity:1}50%{opacity:1}100%{transform:translate(0,-130px) scale(1);opacity:0}}
+            @keyframes agShine{0%{left:-100%}100%{left:200%}}
+            .ag-promo-particle{position:absolute;width:6px;height:6px;border-radius:50%;background:#D4B45C;}
+            .ag-promo-particle:nth-child(1){animation:agFirework1 2.5s ease-out infinite;top:60%;left:45%;}
+            .ag-promo-particle:nth-child(2){animation:agFirework2 3s ease-out infinite .5s;top:55%;left:50%;}
+            .ag-promo-particle:nth-child(3){animation:agFirework3 2.8s ease-out infinite 1s;top:65%;left:48%;background:#fff;}
+            .ag-promo-particle:nth-child(4){animation:agFirework4 3.2s ease-out infinite .3s;top:58%;left:52%;background:#C4637A;}
+            .ag-promo-particle:nth-child(5){animation:agFirework5 2.6s ease-out infinite .8s;top:62%;left:50%;background:#D4B45C;}
+            .ag-promo-particle:nth-child(6){animation:agFirework1 3.5s ease-out infinite 1.5s;top:70%;left:40%;background:#fff;}
+            .ag-promo-particle:nth-child(7){animation:agFirework2 2.9s ease-out infinite 2s;top:50%;left:55%;background:#D4B45C;}
+            .ag-promo-particle:nth-child(8){animation:agFirework3 3.1s ease-out infinite .7s;top:68%;left:58%;background:#C4637A;}
+            .ag-promo-sparkle{position:absolute;font-size:1.4rem;animation:agSparkle 1.5s ease-in-out infinite;}
+            .ag-promo-sparkle:nth-child(9){top:15%;left:10%;animation-delay:0s}
+            .ag-promo-sparkle:nth-child(10){top:20%;right:12%;animation-delay:.5s}
+            .ag-promo-sparkle:nth-child(11){top:70%;left:8%;animation-delay:1s}
+            .ag-promo-sparkle:nth-child(12){top:75%;right:10%;animation-delay:.3s}
+            .ag-premiummo-emoji{display:inline-block;animation:agFloat 2s ease-in-out infinite;font-size:2.2rem;}
+            .ag-premiummo-emoji:nth-child(2){animation-delay:.3s}
+            .ag-premiummo-emoji:nth-child(3){animation-delay:.6s}
+            .ag-premiummo-emoji:nth-child(4){animation-delay:.9s}
+            .ag-premiummo-emoji:nth-child(5){animation-delay:1.2s}
+            </style>
+            <div class="ag-promo-particle"></div><div class="ag-promo-particle"></div><div class="ag-promo-particle"></div><div class="ag-promo-particle"></div><div class="ag-promo-particle"></div><div class="ag-promo-particle"></div><div class="ag-promo-particle"></div><div class="ag-promo-particle"></div>
+            <span class="ag-promo-sparkle">✨</span><span class="ag-promo-sparkle">⭐</span><span class="ag-promo-sparkle">✨</span><span class="ag-promo-sparkle">⭐</span>
+            <div style="max-width:500px;margin:0 auto;padding:48px 36px;background:linear-gradient(180deg,rgba(212,180,92,.1) 0%,#0a0a0f 100%);border:2px solid rgba(212,180,92,.4);border-radius:24px;overflow:hidden;animation:agPromoGlow 3s ease-in-out infinite;position:relative;z-index:1;">
+                <div style="position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(212,180,92,.08),transparent);animation:agShine 4s ease-in-out infinite;pointer-events:none;"></div>
+                <div style="margin-bottom:20px;"><span class="ag-premiummo-emoji">🚀</span> <span class="ag-premiummo-emoji">⭐</span> <span class="ag-premiummo-emoji">💎</span> <span class="ag-premiummo-emoji">✨</span> <span class="ag-premiummo-emoji">🏆</span></div>
+                <img src="https://alliancegroupe-inc.com/wp-content/uploads/2026/04/logo_site_alliance.jpg" alt="Alliance Groupe" style="height:80px;border-radius:14px;margin-bottom:20px;border:2px solid rgba(212,180,92,.3);">
+                <h3 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#fff;margin:0 0 8px;font-style:italic;">Alliance Groupe</h3>
+                <p style="color:#D4B45C;font-size:1rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin:0 0 16px;">Agence Web & IA</p>
+                <p style="color:rgba(255,255,255,.75);font-size:1rem;line-height:1.7;margin:0 0 28px;">Ce theme est offert par <strong style="color:#D4B45C;">Alliance Groupe</strong>.<br>Sites professionnels sur-mesure.<br><em style="font-family:'Playfair Display',serif;color:#D4B45C;">Nantes · Naples · Marrakech</em></p>
+                <a href="<?php echo esc_url( $url_templates ); ?>" target="_blank" rel="noopener" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-weight:700;padding:18px 40px;border-radius:12px;text-decoration:none;font-size:1.1rem;box-shadow:0 6px 30px rgba(212,180,92,.3);transition:transform .3s,box-shadow .3s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 40px rgba(212,180,92,.4)'" onmouseout="this.style.transform='';this.style.boxShadow='0 6px 30px rgba(212,180,92,.3)'">Decouvrir nos templates →</a>
+                <p style="color:rgba(255,255,255,.35);font-size:.78rem;margin:20px 0 0;line-height:1.5;">Passez au <strong>Pack Premium</strong> pour reduire cette publicite<br>et debloquer le design complet</p>
             </div>
-            <p style="color:rgba(255,255,255,.25);font-size:.72rem;margin:20px 0 0;">&copy; <?php echo date('Y'); ?> <?php bloginfo('name'); ?> — <a href="<?php echo esc_url( $url_home ); ?>" target="_blank" rel="noopener nofollow" style="color:rgba(255,255,255,.25);">Alliance Groupe</a></p>
+            <p style="color:rgba(255,255,255,.2);font-size:.72rem;margin:24px 0 0;">&copy; <?php echo esc_html( date('Y') ); ?> <?php bloginfo('name'); ?> — <a href="<?php echo esc_url( $url_home ); ?>" target="_blank" rel="noopener nofollow" style="color:rgba(255,255,255,.2);">Alliance Groupe</a></p>
         </div>
         <?php
     }
