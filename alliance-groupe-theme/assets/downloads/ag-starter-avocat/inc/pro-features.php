@@ -374,6 +374,7 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
 .ag-footer-col h3{color:' . $gold . ' !important;font-size:1rem !important;margin-bottom:14px !important;}
 .ag-footer-col p,.ag-footer-col li{color:rgba(255,255,255,.5) !important;font-size:.92rem !important;line-height:1.7 !important;}
 .ag-footer-col a{color:' . $gold . ' !important;text-decoration:none !important;}
+a.ag-footer-rdv,a.ag-footer-rdv:visited,a.ag-footer-rdv:hover{color:' . $bg . ' !important;}
 .ag-footer-bottom{
     padding:24px 0 !important;
     border-top:1px solid rgba(255,255,255,.06) !important;
