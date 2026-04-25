@@ -44,15 +44,72 @@ class AG_Pro_Features {
             array(), null );
         wp_enqueue_script( 'ag-premium-scripts',
             get_template_directory_uri() . '/inc/pro-scripts.js',
-            array(), '2.0.0', true );
+            array(), '3.0.0', true );
+        $skin = $this->get_skin();
+        wp_localize_script( 'ag-premium-scripts', 'agSkin', array( 'accent' => $skin['accent'] ) );
         wp_add_inline_style( 'ag-starter-avocat-style', $this->get_pro_css() );
     }
 
+    private function get_skin() {
+        $skins = array(
+            'navy-or' => array(
+                'name'   => 'Classique — Navy & Or',
+                'accent' => '#D4B45C', 'accent_hover' => '#c5a44e', 'accent_rgb' => '212,180,92',
+                'bg'     => '#080808', 'bg2' => '#0a0a0f', 'bg_card' => '#14141c',
+                'tier'   => 'premium',
+            ),
+            'bordeaux' => array(
+                'name'   => 'Bordeaux — Tradition',
+                'accent' => '#A0344A', 'accent_hover' => '#8c2c40', 'accent_rgb' => '160,52,74',
+                'bg'     => '#0c0808', 'bg2' => '#110a0a', 'bg_card' => '#1c1414',
+                'tier'   => 'premium',
+            ),
+            'emeraude' => array(
+                'name'   => 'Emeraude — Moderne',
+                'accent' => '#2D8E6F', 'accent_hover' => '#257a5f', 'accent_rgb' => '45,142,111',
+                'bg'     => '#060a09', 'bg2' => '#0a0f0d', 'bg_card' => '#121c19',
+                'tier'   => 'business',
+            ),
+            'royal' => array(
+                'name'   => 'Royal — Bleu & Argent',
+                'accent' => '#6B8FC7', 'accent_hover' => '#5a7db5', 'accent_rgb' => '107,143,199',
+                'bg'     => '#080a0e', 'bg2' => '#0a0d12', 'bg_card' => '#141820',
+                'tier'   => 'business',
+            ),
+        );
+        $selected = get_theme_mod( 'ag_pro_skin', 'navy-or' );
+        if ( ! isset( $skins[ $selected ] ) ) $selected = 'navy-or';
+        $skin = $skins[ $selected ];
+        if ( ! $this->is_at_least( $skin['tier'] ) ) $skin = $skins['navy-or'];
+        return $skin;
+    }
+
+    public static function get_available_skins( $tier ) {
+        $all = array(
+            'navy-or'  => array( 'name' => 'Classique — Navy & Or', 'tier' => 'premium', 'preview' => '#D4B45C' ),
+            'bordeaux' => array( 'name' => 'Bordeaux — Tradition', 'tier' => 'premium', 'preview' => '#A0344A' ),
+            'emeraude' => array( 'name' => 'Emeraude — Moderne', 'tier' => 'business', 'preview' => '#2D8E6F' ),
+            'royal'    => array( 'name' => 'Royal — Bleu & Argent', 'tier' => 'business', 'preview' => '#6B8FC7' ),
+        );
+        $order = array( 'free' => 0, 'premium' => 1, 'business' => 2 );
+        $level = $order[ $tier ] ?? 0;
+        $available = array();
+        foreach ( $all as $k => $v ) {
+            if ( ( $order[ $v['tier'] ] ?? 0 ) <= $level ) {
+                $available[ $k ] = $v['name'];
+            }
+        }
+        return $available;
+    }
+
     private function get_pro_css() {
-        $gold = '#D4B45C';
-        $gold_hover = '#c5a44e';
-        $bg = '#080808';
-        $bg2 = '#0a0a0f';
+        $s = $this->get_skin();
+        $gold = $s['accent'];
+        $gold_hover = $s['accent_hover'];
+        $gold_rgb = $s['accent_rgb'];
+        $bg = $s['bg'];
+        $bg2 = $s['bg2'];
+        $bg_card = $s['bg_card'];
         $card_bg = 'rgba(255,255,255,.025)';
         $card_border = 'rgba(255,255,255,.06)';
         $ease = 'cubic-bezier(.23,1,.32,1)';
@@ -73,8 +130,8 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
 }
 .ag-hero::before{
     content:"";position:absolute;inset:0;
-    background:radial-gradient(ellipse 900px 600px at 85% 10%,rgba(212,180,92,.10),transparent 60%),
-               radial-gradient(ellipse 700px 500px at 10% 95%,rgba(212,180,92,.06),transparent 60%);
+    background:radial-gradient(ellipse 900px 600px at 85% 10%,rgba(' . $gold_rgb . ',.10),transparent 60%),
+               radial-gradient(ellipse 700px 500px at 10% 95%,rgba(' . $gold_rgb . ',.06),transparent 60%);
     pointer-events:none;
 }
 .ag-hero .ag-container{position:relative;z-index:1;max-width:800px;}
@@ -100,10 +157,10 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
     padding:16px 36px !important;border-radius:12px !important;
     font-weight:700 !important;font-size:1.05rem !important;
     text-decoration:none !important;border:none !important;cursor:pointer !important;
-    box-shadow:0 4px 25px rgba(212,180,92,.25) !important;
+    box-shadow:0 4px 25px rgba(' . $gold_rgb . ',.25) !important;
     transition:background .3s,transform .3s ' . $ease . ',box-shadow .3s !important;
 }
-.ag-btn:hover{background:' . $gold_hover . ' !important;transform:translateY(-2px) !important;box-shadow:0 8px 35px rgba(212,180,92,.35) !important;}
+.ag-btn:hover{background:' . $gold_hover . ' !important;transform:translateY(-2px) !important;box-shadow:0 8px 35px rgba(' . $gold_rgb . ',.35) !important;}
 
 /* ── Sections ── */
 .ag-section{padding:100px 0 !important;position:relative;overflow:hidden !important;}
@@ -120,19 +177,19 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
 }
 /* Section backgrounds Alliance-style */
 .ag-section:nth-of-type(odd){
-    background:radial-gradient(ellipse 900px 600px at 85% 10%,rgba(212,180,92,.10),transparent 60%),
-               radial-gradient(ellipse 700px 500px at 10% 95%,rgba(212,180,92,.06),transparent 60%),' . $bg . ' !important;
-    border-top:1px solid rgba(212,180,92,.12) !important;
+    background:radial-gradient(ellipse 900px 600px at 85% 10%,rgba(' . $gold_rgb . ',.10),transparent 60%),
+               radial-gradient(ellipse 700px 500px at 10% 95%,rgba(' . $gold_rgb . ',.06),transparent 60%),' . $bg . ' !important;
+    border-top:1px solid rgba(' . $gold_rgb . ',.12) !important;
 }
 .ag-section:nth-of-type(even){
     background:linear-gradient(135deg,#15151c 0%,#1c1c26 45%,#16161e 100%) !important;
-    border-top:1px solid rgba(212,180,92,.14) !important;
+    border-top:1px solid rgba(' . $gold_rgb . ',.14) !important;
 }
 /* Gold divider */
 .ag-section::before{
     content:"" !important;position:absolute !important;top:0 !important;left:50% !important;
     transform:translateX(-50%) !important;width:min(280px,40%) !important;height:1px !important;
-    background:linear-gradient(90deg,transparent,rgba(212,180,92,.55),transparent) !important;
+    background:linear-gradient(90deg,transparent,rgba(' . $gold_rgb . ',.55),transparent) !important;
 }
 
 /* ── Domaines cards ── */
@@ -151,7 +208,7 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
     transition:border-color .4s ' . $ease . ',transform .4s ' . $ease . ',box-shadow .4s !important;
 }
 .ag-domaine-card:hover{
-    border-color:rgba(212,180,92,.25) !important;
+    border-color:rgba(' . $gold_rgb . ',.25) !important;
     transform:translateY(-4px) !important;
     box-shadow:0 12px 40px rgba(0,0,0,.3) !important;
 }
@@ -169,9 +226,9 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
 
 /* ── Maître section ── */
 .ag-maitre{
-    background:linear-gradient(135deg,rgba(212,180,92,.04) 0%,rgba(10,14,26,.8) 100%) !important;
-    border-top:1px solid rgba(212,180,92,.1) !important;
-    border-bottom:1px solid rgba(212,180,92,.1) !important;
+    background:linear-gradient(135deg,rgba(' . $gold_rgb . ',.04) 0%,rgba(10,14,26,.8) 100%) !important;
+    border-top:1px solid rgba(' . $gold_rgb . ',.1) !important;
+    border-bottom:1px solid rgba(' . $gold_rgb . ',.1) !important;
 }
 .ag-maitre__inner{
     display:grid !important;
@@ -181,15 +238,15 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
 }
 .ag-maitre__photo img{
     border-radius:16px !important;
-    border:2px solid rgba(212,180,92,.2) !important;
+    border:2px solid rgba(' . $gold_rgb . ',.2) !important;
     box-shadow:0 20px 50px rgba(0,0,0,.4) !important;
 }
 .ag-maitre__tag{
     display:inline-block !important;
     padding:4px 14px !important;
-    background:rgba(212,180,92,.1) !important;
+    background:rgba(' . $gold_rgb . ',.1) !important;
     color:' . $gold . ' !important;
-    border:1px solid rgba(212,180,92,.25) !important;
+    border:1px solid rgba(' . $gold_rgb . ',.25) !important;
     border-radius:100px !important;
     font-size:.78rem !important;
     font-weight:600 !important;
@@ -212,7 +269,7 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
 }
 .ag-honoraires__card{
     background:rgba(255,255,255,.03) !important;
-    border:1px solid rgba(212,180,92,.15) !important;
+    border:1px solid rgba(' . $gold_rgb . ',.15) !important;
     border-radius:18px !important;
     padding:36px 28px !important;
     text-align:center !important;
@@ -220,7 +277,7 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
 }
 .ag-honoraires__card:hover{
     transform:translateY(-4px) !important;
-    border-color:rgba(212,180,92,.4) !important;
+    border-color:rgba(' . $gold_rgb . ',.4) !important;
 }
 .ag-honoraires__price{
     font-family:"Playfair Display",serif !important;
@@ -271,11 +328,11 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
 
 /* ── RDV form luxe ── */
 .ag-rdv{
-    background:linear-gradient(135deg,rgba(212,180,92,.04) 0%,rgba(10,14,26,.9) 100%) !important;
+    background:linear-gradient(135deg,rgba(' . $gold_rgb . ',.04) 0%,rgba(10,14,26,.9) 100%) !important;
 }
 .ag-rdv__form{
     background:rgba(255,255,255,.03) !important;
-    border:1px solid rgba(212,180,92,.2) !important;
+    border:1px solid rgba(' . $gold_rgb . ',.2) !important;
     border-radius:20px !important;
     padding:40px 36px !important;
 }
@@ -285,7 +342,7 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
     width:100% !important;
     padding:14px 18px !important;
     background:rgba(10,14,26,.8) !important;
-    border:1px solid rgba(212,180,92,.2) !important;
+    border:1px solid rgba(' . $gold_rgb . ',.2) !important;
     border-radius:10px !important;
     color:#fff !important;
     font-size:1rem !important;
@@ -305,7 +362,7 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
 /* ── Footer ── */
 .ag-site-footer{
     background:#060609 !important;
-    border-top:1px solid rgba(212,180,92,.1) !important;
+    border-top:1px solid rgba(' . $gold_rgb . ',.1) !important;
     padding:60px 0 0 !important;
 }
 .ag-footer-grid{
@@ -330,15 +387,15 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
     content:"" !important;display:block !important;
     width:100vw !important;height:1px !important;
     margin-left:calc(-50vw + 50%) !important;
-    background:linear-gradient(90deg,transparent 0%,rgba(212,180,92,.25) 50%,transparent 100%) !important;
+    background:linear-gradient(90deg,transparent 0%,rgba(' . $gold_rgb . ',.25) 50%,transparent 100%) !important;
     margin-bottom:80px !important;
 }
 .ag-section:first-of-type::before{display:none !important;}
 .ag-domaines{
-    background:linear-gradient(180deg,rgba(212,180,92,.03) 0%,rgba(10,14,26,1) 100%) !important;
+    background:linear-gradient(180deg,rgba(' . $gold_rgb . ',.03) 0%,rgba(10,14,26,1) 100%) !important;
 }
 .ag-honoraires{
-    background:linear-gradient(180deg,rgba(10,14,26,1) 0%,rgba(212,180,92,.05) 50%,rgba(10,14,26,1) 100%) !important;
+    background:linear-gradient(180deg,rgba(10,14,26,1) 0%,rgba(' . $gold_rgb . ',.05) 50%,rgba(10,14,26,1) 100%) !important;
 }
 .ag-rdv{
     background:linear-gradient(180deg,rgba(10,14,26,.95) 0%,rgba(10,14,26,.8) 100%),
@@ -353,7 +410,7 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
     font-weight:700 !important;font-size:.85rem !important;
     text-decoration:none !important;transition:transform .3s,box-shadow .3s !important;
 }
-.ag-footer-rdv:hover{transform:translateY(-2px) !important;box-shadow:0 6px 20px rgba(212,180,92,.3) !important;}
+.ag-footer-rdv:hover{transform:translateY(-2px) !important;box-shadow:0 6px 20px rgba(' . $gold_rgb . ',.3) !important;}
 
 /* ── Header luxe — transparent top → solid on scroll ── */
 .ag-site-header{
@@ -426,7 +483,7 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
 .ag-site-header.scrolled{
     background:rgba(10,14,26,.97) !important;
     backdrop-filter:blur(16px) !important;
-    border-bottom-color:rgba(212,180,92,.1) !important;
+    border-bottom-color:rgba(' . $gold_rgb . ',.1) !important;
     box-shadow:0 4px 30px rgba(0,0,0,.4) !important;
     padding:10px 0 !important;
 }
@@ -454,9 +511,9 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
         }
         // Testimonials
         $css .= '
-.ag-testimonials{padding:80px 24px;background:rgba(212,180,92,.03);}
+.ag-testimonials{padding:80px 24px;background:rgba(' . $gold_rgb . ',.03);}
 .ag-testimonials__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:1200px;margin:0 auto;}
-.ag-testimonial-card{background:rgba(255,255,255,.04);border:1px solid rgba(212,180,92,.15);border-radius:16px;padding:28px;}
+.ag-testimonial-card{background:rgba(255,255,255,.04);border:1px solid rgba(' . $gold_rgb . ',.15);border-radius:16px;padding:28px;}
 .ag-testimonial-card__stars{color:' . $gold . ';font-size:1.1rem;margin-bottom:12px;letter-spacing:2px;}
 .ag-testimonial-card__text{color:rgba(255,255,255,.8);font-size:.95rem;line-height:1.7;font-style:italic;margin-bottom:16px;}
 .ag-testimonial-card__author{font-weight:700;color:#fff;font-size:.9rem;}
@@ -471,7 +528,7 @@ html{scroll-behavior:smooth;}
     text-align:center !important;
     background:linear-gradient(180deg,rgba(10,14,26,.3) 0%,rgba(10,14,26,.95) 100%),
                url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center/cover !important;
-    border-bottom:1px solid rgba(212,180,92,.15) !important;
+    border-bottom:1px solid rgba(' . $gold_rgb . ',.15) !important;
 }
 /* Page hero — images par page */
 .page-expertise .ag-page-hero,body.page-template-page-expertise .ag-page-hero{
@@ -526,7 +583,7 @@ html{scroll-behavior:smooth;}
 }
 .ag-page-article{
     background:rgba(255,255,255,.03) !important;
-    border:1px solid rgba(212,180,92,.12) !important;
+    border:1px solid rgba(' . $gold_rgb . ',.12) !important;
     border-radius:18px !important;
     padding:48px 40px !important;
 }
@@ -547,7 +604,7 @@ html{scroll-behavior:smooth;}
 }
 .ag-page-article .ag-entry-content li{margin-bottom:8px !important;}
 .ag-page-article .ag-entry-thumb{margin-bottom:32px !important;}
-.ag-page-article .ag-entry-thumb img{border-radius:14px !important;border:1px solid rgba(212,180,92,.15) !important;}
+.ag-page-article .ag-entry-thumb img{border-radius:14px !important;border:1px solid rgba(' . $gold_rgb . ',.15) !important;}
 .ag-post-meta{color:rgba(255,255,255,.4) !important;font-size:.88rem !important;margin-top:12px !important;}
 .ag-404-text{color:rgba(255,255,255,.7) !important;font-size:1.15rem !important;line-height:1.7 !important;}
 .ag-entry-footer{margin-top:32px !important;padding-top:24px !important;border-top:1px solid rgba(255,255,255,.06) !important;}
@@ -567,8 +624,8 @@ html{scroll-behavior:smooth;}
 .ag-domaine-examples{
     margin-top:36px !important;
     padding:28px !important;
-    background:rgba(212,180,92,.04) !important;
-    border:1px solid rgba(212,180,92,.15) !important;
+    background:rgba(' . $gold_rgb . ',.04) !important;
+    border:1px solid rgba(' . $gold_rgb . ',.15) !important;
     border-left:3px solid ' . $gold . ' !important;
     border-radius:14px !important;
 }
@@ -623,7 +680,7 @@ html{scroll-behavior:smooth;}
     font-size:1.4rem !important;font-weight:700 !important;
     display:flex !important;align-items:center !important;justify-content:center !important;
     text-decoration:none !important;
-    box-shadow:0 4px 20px rgba(212,180,92,.3) !important;
+    box-shadow:0 4px 20px rgba(' . $gold_rgb . ',.3) !important;
     opacity:0 !important;pointer-events:none !important;
     transition:opacity .4s,transform .3s ' . $ease . ' !important;
     z-index:999 !important;
@@ -634,21 +691,21 @@ html{scroll-behavior:smooth;}
 /* ── Tag pill (like Alliance) ── */
 .ag-tag{
     display:inline-block !important;padding:6px 18px !important;
-    background:rgba(212,180,92,.1) !important;color:' . $gold . ' !important;
-    border:1px solid rgba(212,180,92,.25) !important;border-radius:100px !important;
+    background:rgba(' . $gold_rgb . ',.1) !important;color:' . $gold . ' !important;
+    border:1px solid rgba(' . $gold_rgb . ',.25) !important;border-radius:100px !important;
     font-size:.85rem !important;font-weight:600 !important;
     letter-spacing:.5px !important;text-transform:uppercase !important;
 }
 
 /* ── Page Cabinet full layout ── */
 .ag-cabinet-full{display:grid !important;grid-template-columns:1.2fr 1fr !important;gap:32px !important;align-items:start !important;}
-.ag-cabinet-full__map{border-radius:16px !important;overflow:hidden !important;box-shadow:0 20px 60px rgba(0,0,0,.4) !important;border:1px solid rgba(212,180,92,.15) !important;}
+.ag-cabinet-full__map{border-radius:16px !important;overflow:hidden !important;box-shadow:0 20px 60px rgba(0,0,0,.4) !important;border:1px solid rgba(' . $gold_rgb . ',.15) !important;}
 .ag-cabinet-full__map iframe{display:block !important;}
 .ag-cabinet-full__cards{display:flex !important;flex-direction:column !important;gap:16px !important;}
 .ag-cabinet__block-icon{font-size:1.5rem !important;margin-bottom:8px !important;}
 .ag-cabinet-full__btn{width:100% !important;justify-content:center !important;margin-top:8px !important;}
 @media(max-width:768px){.ag-cabinet-full{grid-template-columns:1fr !important;}}
-.ag-cabinet-map-section{background:linear-gradient(180deg,rgba(10,14,26,1) 0%,rgba(212,180,92,.04) 100%) !important;}
+.ag-cabinet-map-section{background:linear-gradient(180deg,rgba(10,14,26,1) 0%,rgba(' . $gold_rgb . ',.04) 100%) !important;}
 
 /* ── Fixed backgrounds ── */
 .ag-hero,.ag-page-hero,.ag-cabinet,.ag-rdv{background-attachment:fixed !important;}
@@ -663,7 +720,7 @@ html{scroll-behavior:smooth;}
 }
 .ag-post-card{
     background:rgba(255,255,255,.03) !important;
-    border:1px solid rgba(212,180,92,.12) !important;
+    border:1px solid rgba(' . $gold_rgb . ',.12) !important;
     border-radius:16px !important;
     overflow:hidden !important;
     transition:transform .35s,border-color .35s,box-shadow .35s !important;
@@ -672,7 +729,7 @@ html{scroll-behavior:smooth;}
 }
 .ag-post-card:hover{
     transform:translateY(-5px) !important;
-    border-color:rgba(212,180,92,.35) !important;
+    border-color:rgba(' . $gold_rgb . ',.35) !important;
     box-shadow:0 16px 40px rgba(0,0,0,.3) !important;
 }
 .ag-post-card__thumb{display:block !important;overflow:hidden !important;aspect-ratio:16/10 !important;}
@@ -716,7 +773,17 @@ html{scroll-behavior:smooth;}
     // ─── PRO: Customizer ──────────────────────────────────────
 
     public function register_pro_customizer( $wp_customize ) {
-        $wp_customize->add_section( 'ag_pro_features', array( 'title' => '⭐ Fonctionnalités Premium', 'priority' => 25 ) );
+        $wp_customize->add_section( 'ag_pro_features', array( 'title' => '⭐ Fonctionnalites Premium', 'priority' => 25 ) );
+
+        $wp_customize->add_setting( 'ag_pro_skin', array( 'default' => 'navy-or', 'sanitize_callback' => 'sanitize_key' ) );
+        $wp_customize->add_control( 'ag_pro_skin', array(
+            'label'       => 'Apparence du site',
+            'description' => 'Changez le design en un clic. Premium : 2 styles. Business : 4 styles.',
+            'section'     => 'ag_pro_features',
+            'type'        => 'select',
+            'choices'     => self::get_available_skins( $this->tier ),
+            'priority'    => 1,
+        ) );
 
         $wp_customize->add_setting( 'ag_pro_sticky_header', array( 'default' => true, 'sanitize_callback' => 'wp_validate_boolean' ) );
         $wp_customize->add_control( 'ag_pro_sticky_header', array( 'label' => 'Header sticky', 'section' => 'ag_pro_features', 'type' => 'checkbox' ) );
@@ -724,11 +791,8 @@ html{scroll-behavior:smooth;}
         $wp_customize->add_setting( 'ag_pro_animations', array( 'default' => true, 'sanitize_callback' => 'wp_validate_boolean' ) );
         $wp_customize->add_control( 'ag_pro_animations', array( 'label' => 'Animations scroll', 'section' => 'ag_pro_features', 'type' => 'checkbox' ) );
 
-        $wp_customize->add_setting( 'ag_pro_accent_secondary', array( 'default' => '', 'sanitize_callback' => 'sanitize_hex_color' ) );
-        $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'ag_pro_accent_secondary', array( 'label' => 'Couleur accent secondaire', 'section' => 'ag_pro_features' ) ) );
-
         $wp_customize->add_setting( 'ag_pro_header_phone', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
-        $wp_customize->add_control( 'ag_pro_header_phone', array( 'label' => 'Téléphone header', 'section' => 'ag_pro_features', 'type' => 'text', 'description' => 'Bouton doré cliquable dans le header.' ) );
+        $wp_customize->add_control( 'ag_pro_header_phone', array( 'label' => 'Telephone header', 'section' => 'ag_pro_features', 'type' => 'text', 'description' => 'Bouton cliquable dans le header.' ) );
 
         // Testimonials
         $wp_customize->add_section( 'ag_pro_testimonials', array( 'title' => '⭐ Témoignages', 'priority' => 26 ) );
@@ -743,6 +807,7 @@ html{scroll-behavior:smooth;}
     public function add_body_classes( $classes ) {
         $classes[] = 'ag-premium';
         $classes[] = 'ag-tier-' . $this->tier;
+        $classes[] = 'ag-skin-' . get_theme_mod( 'ag_pro_skin', 'navy-or' );
         if ( get_theme_mod( 'ag_pro_animations', true ) ) $classes[] = 'ag-has-animations';
         return $classes;
     }
@@ -804,9 +869,9 @@ html{scroll-behavior:smooth;}
         // FREE: big animated promo
         ?>
         <div style="background:#060606;border-top:2px solid #D4B45C;padding:48px 24px;text-align:center;">
-            <div style="max-width:400px;margin:0 auto;padding:40px 28px;background:linear-gradient(180deg,rgba(212,180,92,.08) 0%,#0a0a0f 100%);border:1px solid rgba(212,180,92,.35);border-radius:20px;overflow:hidden;animation:agPromoGlow 3s ease-in-out infinite;">
+            <div style="max-width:400px;margin:0 auto;padding:40px 28px;background:linear-gradient(180deg,rgba(' . $gold_rgb . ',.08) 0%,#0a0a0f 100%);border:1px solid rgba(' . $gold_rgb . ',.35);border-radius:20px;overflow:hidden;animation:agPromoGlow 3s ease-in-out infinite;">
                 <style>
-                @keyframes agPromoGlow{0%,100%{box-shadow:0 0 30px rgba(212,180,92,.1)}50%{box-shadow:0 0 50px rgba(212,180,92,.25)}}
+                @keyframes agPromoGlow{0%,100%{box-shadow:0 0 30px rgba(' . $gold_rgb . ',.1)}50%{box-shadow:0 0 50px rgba(' . $gold_rgb . ',.25)}}
                 @keyframes agFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
                 .ag-premiummo-emoji{display:inline-block;animation:agFloat 2s ease-in-out infinite;font-size:1.6rem;}
                 .ag-premiummo-emoji:nth-child(2){animation-delay:.3s}

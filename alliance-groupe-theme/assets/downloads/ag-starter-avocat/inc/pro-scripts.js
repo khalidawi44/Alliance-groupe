@@ -78,7 +78,8 @@
                 el.style.position = 'relative';
                 var line = document.createElement('span');
                 line.className = 'ag-underline';
-                line.style.cssText = 'position:absolute;bottom:-8px;left:0;width:0;height:3px;background:#D4B45C;border-radius:2px;transition:width .8s '+ease+';';
+                var accentColor = (typeof agSkin !== 'undefined') ? agSkin.accent : '#D4B45C';
+                line.style.cssText = 'position:absolute;bottom:-8px;left:0;width:0;height:3px;background:'+accentColor+';border-radius:2px;transition:width .8s '+ease+';';
                 el.appendChild(line);
                 el._underline = line;
                 break;
