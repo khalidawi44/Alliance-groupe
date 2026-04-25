@@ -991,52 +991,29 @@ a.ag-footer-rdv,a.ag-footer-rdv:visited,a.ag-footer-rdv:hover{background:' . $go
             return;
         }
 
-        // FREE: massive animated promo — impossible to miss
+        // FREE: big animated promo
         ?>
-        <div class="ag-free-promo" style="background:#060606;border-top:3px solid #D4B45C;padding:80px 24px 60px;text-align:center;position:relative;overflow:hidden;">
+        <div style="background:#060606;border-top:3px solid #D4B45C;padding:60px 24px 40px;text-align:center;position:relative;overflow:hidden;">
             <style>
-            @keyframes agPromoGlow{0%,100%{box-shadow:0 0 40px rgba(212,180,92,.15),0 0 80px rgba(212,180,92,.05)}50%{box-shadow:0 0 60px rgba(212,180,92,.3),0 0 120px rgba(212,180,92,.1)}}
+            @keyframes agPromoGlow{0%,100%{box-shadow:0 0 30px rgba(212,180,92,.1)}50%{box-shadow:0 0 60px rgba(212,180,92,.25)}}
             @keyframes agFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-            @keyframes agSparkle{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
-            @keyframes agFirework1{0%{transform:translate(0,0) scale(0);opacity:1}50%{opacity:1}100%{transform:translate(-60px,-100px) scale(1);opacity:0}}
-            @keyframes agFirework2{0%{transform:translate(0,0) scale(0);opacity:1}50%{opacity:1}100%{transform:translate(80px,-120px) scale(1);opacity:0}}
-            @keyframes agFirework3{0%{transform:translate(0,0) scale(0);opacity:1}50%{opacity:1}100%{transform:translate(-40px,-80px) scale(1);opacity:0}}
-            @keyframes agFirework4{0%{transform:translate(0,0) scale(0);opacity:1}50%{opacity:1}100%{transform:translate(60px,-60px) scale(1);opacity:0}}
-            @keyframes agFirework5{0%{transform:translate(0,0) scale(0);opacity:1}50%{opacity:1}100%{transform:translate(0,-130px) scale(1);opacity:0}}
-            @keyframes agShine{0%{left:-100%}100%{left:200%}}
-            .ag-promo-particle{position:absolute;width:6px;height:6px;border-radius:50%;background:#D4B45C;}
-            .ag-promo-particle:nth-child(1){animation:agFirework1 2.5s ease-out infinite;top:60%;left:45%;}
-            .ag-promo-particle:nth-child(2){animation:agFirework2 3s ease-out infinite .5s;top:55%;left:50%;}
-            .ag-promo-particle:nth-child(3){animation:agFirework3 2.8s ease-out infinite 1s;top:65%;left:48%;background:#fff;}
-            .ag-promo-particle:nth-child(4){animation:agFirework4 3.2s ease-out infinite .3s;top:58%;left:52%;background:#C4637A;}
-            .ag-promo-particle:nth-child(5){animation:agFirework5 2.6s ease-out infinite .8s;top:62%;left:50%;background:#D4B45C;}
-            .ag-promo-particle:nth-child(6){animation:agFirework1 3.5s ease-out infinite 1.5s;top:70%;left:40%;background:#fff;}
-            .ag-promo-particle:nth-child(7){animation:agFirework2 2.9s ease-out infinite 2s;top:50%;left:55%;background:#D4B45C;}
-            .ag-promo-particle:nth-child(8){animation:agFirework3 3.1s ease-out infinite .7s;top:68%;left:58%;background:#C4637A;}
-            .ag-promo-sparkle{position:absolute;font-size:1.4rem;animation:agSparkle 1.5s ease-in-out infinite;}
-            .ag-promo-sparkle:nth-child(9){top:15%;left:10%;animation-delay:0s}
-            .ag-promo-sparkle:nth-child(10){top:20%;right:12%;animation-delay:.5s}
-            .ag-promo-sparkle:nth-child(11){top:70%;left:8%;animation-delay:1s}
-            .ag-promo-sparkle:nth-child(12){top:75%;right:10%;animation-delay:.3s}
-            .ag-premiummo-emoji{display:inline-block;animation:agFloat 2s ease-in-out infinite;font-size:2.2rem;}
+            .ag-premiummo-emoji{display:inline-block;animation:agFloat 2s ease-in-out infinite;font-size:2rem;}
             .ag-premiummo-emoji:nth-child(2){animation-delay:.3s}
             .ag-premiummo-emoji:nth-child(3){animation-delay:.6s}
             .ag-premiummo-emoji:nth-child(4){animation-delay:.9s}
             .ag-premiummo-emoji:nth-child(5){animation-delay:1.2s}
             </style>
-            <div class="ag-promo-particle"></div><div class="ag-promo-particle"></div><div class="ag-promo-particle"></div><div class="ag-promo-particle"></div><div class="ag-promo-particle"></div><div class="ag-promo-particle"></div><div class="ag-promo-particle"></div><div class="ag-promo-particle"></div>
-            <span class="ag-promo-sparkle">✨</span><span class="ag-promo-sparkle">⭐</span><span class="ag-promo-sparkle">✨</span><span class="ag-promo-sparkle">⭐</span>
-            <div style="max-width:500px;margin:0 auto;padding:48px 36px;background:linear-gradient(180deg,rgba(212,180,92,.1) 0%,#0a0a0f 100%);border:2px solid rgba(212,180,92,.4);border-radius:24px;overflow:hidden;animation:agPromoGlow 3s ease-in-out infinite;position:relative;z-index:1;">
-                <div style="position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(212,180,92,.08),transparent);animation:agShine 4s ease-in-out infinite;pointer-events:none;"></div>
+            <div style="max-width:480px;margin:0 auto;padding:44px 32px;background:linear-gradient(180deg,rgba(212,180,92,.08) 0%,#0a0a0f 100%);border:2px solid rgba(212,180,92,.35);border-radius:24px;animation:agPromoGlow 3s ease-in-out infinite;">
                 <div style="margin-bottom:20px;"><span class="ag-premiummo-emoji">🚀</span> <span class="ag-premiummo-emoji">⭐</span> <span class="ag-premiummo-emoji">💎</span> <span class="ag-premiummo-emoji">✨</span> <span class="ag-premiummo-emoji">🏆</span></div>
                 <img src="https://alliancegroupe-inc.com/wp-content/uploads/2026/04/logo_site_alliance.jpg" alt="Alliance Groupe" style="height:80px;border-radius:14px;margin-bottom:20px;border:2px solid rgba(212,180,92,.3);">
                 <h3 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#fff;margin:0 0 8px;font-style:italic;">Alliance Groupe</h3>
                 <p style="color:#D4B45C;font-size:1rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin:0 0 16px;">Agence Web & IA</p>
-                <p style="color:rgba(255,255,255,.75);font-size:1rem;line-height:1.7;margin:0 0 28px;">Ce theme est offert par <strong style="color:#D4B45C;">Alliance Groupe</strong>.<br>Sites professionnels sur-mesure.<br><em style="font-family:'Playfair Display',serif;color:#D4B45C;">Nantes · Naples · Marrakech</em></p>
-                <a href="<?php echo esc_url( $url_templates ); ?>" target="_blank" rel="noopener" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-weight:700;padding:18px 40px;border-radius:12px;text-decoration:none;font-size:1.1rem;box-shadow:0 6px 30px rgba(212,180,92,.3);transition:transform .3s,box-shadow .3s;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 40px rgba(212,180,92,.4)'" onmouseout="this.style.transform='';this.style.boxShadow='0 6px 30px rgba(212,180,92,.3)'">Decouvrir nos templates →</a>
-                <p style="color:rgba(255,255,255,.35);font-size:.78rem;margin:20px 0 0;line-height:1.5;">Passez au <strong>Pack Premium</strong> pour reduire cette publicite<br>et debloquer le design complet</p>
+                <p style="color:rgba(255,255,255,.7);font-size:1rem;line-height:1.7;margin:0 0 8px;">Ce theme est offert par <strong style="color:#D4B45C;">Alliance Groupe</strong>.</p>
+                <p style="color:rgba(255,255,255,.5);font-size:.9rem;font-style:italic;font-family:'Playfair Display',serif;margin:0 0 28px;">Nantes · Naples · Marrakech</p>
+                <a href="<?php echo esc_url( $url_templates ); ?>" target="_blank" rel="noopener" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-weight:700;padding:16px 36px;border-radius:12px;text-decoration:none;font-size:1.05rem;box-shadow:0 4px 25px rgba(212,180,92,.3);">Decouvrir nos templates →</a>
+                <p style="color:rgba(255,255,255,.3);font-size:.75rem;margin:20px 0 0;">Passez au <strong>Pack Premium</strong> pour reduire cette publicite</p>
             </div>
-            <p style="color:rgba(255,255,255,.2);font-size:.72rem;margin:24px 0 0;">&copy; <?php echo esc_html( date('Y') ); ?> <?php bloginfo('name'); ?> — <a href="<?php echo esc_url( $url_home ); ?>" target="_blank" rel="noopener nofollow" style="color:rgba(255,255,255,.2);">Alliance Groupe</a></p>
+            <p style="color:rgba(255,255,255,.2);font-size:.7rem;margin:20px 0 0;">&copy; <?php echo esc_html( date('Y') ); ?> <?php bloginfo('name'); ?> — <a href="<?php echo esc_url( $url_home ); ?>" target="_blank" rel="noopener nofollow" style="color:rgba(255,255,255,.2);">Alliance Groupe</a></p>
         </div>
         <?php
     }
