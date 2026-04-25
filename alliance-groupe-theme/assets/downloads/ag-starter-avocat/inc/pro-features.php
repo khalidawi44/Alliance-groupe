@@ -491,8 +491,6 @@ a.ag-footer-rdv,a.ag-footer-rdv:visited,a.ag-footer-rdv:hover{color:' . $bg . ' 
     .ag-header__phone{display:none !important;}
 }
 ';
-        // Light mode overrides
-        if ( $is_light ) {
         // Sticky header
         if ( get_theme_mod( 'ag_pro_sticky_header', true ) ) {
             $css .= '
@@ -811,6 +809,7 @@ body.ag-visitor-light .ag-pagination .page-numbers{background:rgba(0,0,0,.03) !i
     .ag-posts-grid{grid-template-columns:1fr !important;}
 }
 ';
+        if ( $is_light ) {
             $css .= '
 /* ═══ LIGHT MODE OVERRIDES ═══ */
 /* Kill sidebar/widgets */
@@ -818,7 +817,8 @@ body.ag-visitor-light .ag-pagination .page-numbers{background:rgba(0,0,0,.03) !i
 /* All body text */
 body,.ag-hero__subtitle,.ag-section-lead,.ag-domaine-card__excerpt,.ag-honoraires__desc,.ag-maitre__meta,.ag-maitre__bio,.ag-maitre__specialties,.ag-cabinet__block p,.ag-rdv__field label,.ag-footer-col p,.ag-footer-col li,.ag-post-card__excerpt,.ag-testimonial-card__text,.ag-page-article .ag-entry-content,.ag-honoraires__note,.ag-entry-footer p,.ag-post-meta,.ag-404-text,.ag-page-hero__lead,.ag-domaine-hero-tag,.ag-domaine-examples__list li,.ag-domaine-cta p,.ag-rdv__rgpd label,.ag-rdv__legal{color:' . $text_soft . ' !important;}
 /* All headings */
-h1,h2,h3,h4,.ag-section-title,.ag-domaine-card__title,.ag-honoraires__label,.ag-maitre__name,.ag-hero__title,.ag-page-hero__title,.ag-testimonial-card__author,.ag-post-card__title a,.ag-entry-title,.ag-entry-title a,.ag-cabinet__block h3,.ag-footer-col h3{color:' . $heading_color . ' !important;}
+h1,h2,h3,h4,.ag-section-title,.ag-domaine-card__title,.ag-honoraires__label,.ag-maitre__name,.ag-hero__title,.ag-page-hero__title,.ag-testimonial-card__author,.ag-post-card__title a,.ag-entry-title,.ag-entry-title a,.ag-cabinet__block h3,.ag-footer-col h3,.ag-page-article .ag-entry-content h2,.ag-page-article .ag-entry-content h3,.ag-testimonials h2{color:' . $heading_color . ' !important;}
+.ag-page-article .ag-entry-content,.ag-page-article .ag-entry-content p,.ag-page-article .ag-entry-content li{color:' . $text_soft . ' !important;}
 /* Accent elements */
 .ag-hero__title span,.ag-maitre__specialties strong,.ag-domaine-card__more,.ag-post-card__more,.ag-post-card__date,.ag-domaine-examples__title,.ag-domaine-examples__list li::before,.ag-domaine-back a,.ag-entry-content a,.ag-page-article .ag-entry-content a,.ag-entry-footer a,.ag-footer-col a,.ag-maitre__tag,.ag-honoraires__price{color:' . $gold . ' !important;}
 /* Cards white */
