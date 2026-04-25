@@ -1,10 +1,7 @@
 <?php
 /**
- * The header for our theme.
- *
  * @package AG_Starter_Avocat
  */
-
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
