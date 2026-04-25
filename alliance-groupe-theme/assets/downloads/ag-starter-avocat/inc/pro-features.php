@@ -59,8 +59,8 @@ class AG_Pro_Features {
                 'tier'   => 'premium',
             ),
             'bordeaux' => array(
-                'name'   => 'Bordeaux — Sombre & Noble',
-                'accent' => '#C4637A', 'accent_hover' => '#A85568', 'accent_rgb' => '196,99,122',
+                'name'   => 'Bordeaux — Mode Nuit',
+                'accent' => '#D4B45C', 'accent_hover' => '#c5a44e', 'accent_rgb' => '212,180,92',
                 'bg'     => '#0a0608', 'bg2' => '#0e090b', 'bg_card' => '#1a1216',
                 'tier'   => 'premium',
             ),
@@ -87,7 +87,7 @@ class AG_Pro_Features {
     public static function get_available_skins( $tier ) {
         $all = array(
             'navy-or'  => array( 'name' => 'Classique — Navy & Or', 'tier' => 'premium', 'preview' => '#D4B45C' ),
-            'bordeaux' => array( 'name' => 'Bordeaux — Sombre & Noble', 'tier' => 'premium', 'preview' => '#C4637A' ),
+            'bordeaux' => array( 'name' => 'Bordeaux — Mode Nuit', 'tier' => 'premium', 'preview' => '#D4B45C' ),
             'bronze'   => array( 'name' => 'Bronze — Prestige', 'tier' => 'business', 'preview' => '#B08D57' ),
             'ardoise'  => array( 'name' => 'Ardoise — Sobriete', 'tier' => 'business', 'preview' => '#7A9BAE' ),
         );
