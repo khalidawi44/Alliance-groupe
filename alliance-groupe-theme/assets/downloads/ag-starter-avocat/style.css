@@ -364,6 +364,23 @@ p {
     border-top: 1px solid #1f2740;
 }
 
+.ag-footer-rdv {
+    display: inline-block;
+    margin-top: 0.75rem;
+    padding: 8px 18px;
+    background: #D4B45C;
+    color: #080808;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-decoration: none;
+    border-radius: 6px;
+}
+
+.ag-footer-col a {
+    color: #D4B45C;
+    text-decoration: none;
+}
+
 /* ----- WordPress core required ----- */
 .alignleft {
     float: left;
