@@ -2175,6 +2175,30 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
                 <span class="ag-boutique-shooting-star s2"><svg viewBox="0 0 24 24"><polygon points="12,2 14.9,8.6 22,9.3 16.7,14.1 18.2,21 12,17.5 5.8,21 7.3,14.1 2,9.3 9.1,8.6"/></svg></span>
                 <span class="ag-boutique-shooting-star s3"><svg viewBox="0 0 24 24"><polygon points="12,2 14.9,8.6 22,9.3 16.7,14.1 18.2,21 12,17.5 5.8,21 7.3,14.1 2,9.3 9.1,8.6"/></svg></span>
             </div>
+            <script>
+            (function(){
+                if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+                if (typeof Element === 'undefined' || !Element.prototype.animate) return;
+                var run = function(){
+                    var stars = document.querySelectorAll('.ag-boutique-shooting-star');
+                    if (!stars.length) return;
+                    var keyframes = [
+                        { transform: 'scale(0.2) rotate(0deg)',   opacity: 0 },
+                        { transform: 'scale(1) rotate(30deg)',    opacity: 1, offset: 0.12 },
+                        { transform: 'scale(6) rotate(120deg)',   opacity: 0.7, offset: 0.45 },
+                        { transform: 'scale(18) rotate(220deg)',  opacity: 0.15, offset: 0.8 },
+                        { transform: 'scale(30) rotate(360deg)',  opacity: 0 }
+                    ];
+                    var opts = { duration: 3500, easing: 'ease-out', iterations: Infinity };
+                    Array.prototype.forEach.call(stars, function(star, i){
+                        var delay = i * 1100;
+                        setTimeout(function(){ star.animate(keyframes, opts); }, delay);
+                    });
+                };
+                if (document.readyState !== 'loading') run();
+                else document.addEventListener('DOMContentLoaded', run);
+            })();
+            </script>
             <div class="ag-container">
                 <span class="ag-tag ag-tag--clean">BOUTIQUE</span>
                 <h2 class="ag-section-title ag-boutique__title-xl"><?php echo esc_html( $title ); ?></h2>
