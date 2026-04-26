@@ -147,16 +147,37 @@ function ag_starter_avocat_get_domaines( $limit = 6 ) {
 }
 
 /**
- * Returns inline SVG markup for a known icon keyword, or the original
- * emoji wrapped in a span if the input is not a keyword. SVG uses
- * currentColor so CSS controls the color (gold dark mode, bordeaux
- * light mode in Business tier).
+ * Returns a background image URL for a domain based on its icon keyword
+ * (or featured image priority, handled in the caller). Each keyword maps
+ * to a free Unsplash URL representing the legal subject.
  *
- * Keywords supported : scales, gavel, shield, briefcase, house,
- * family, document, heart, lock, bank.
+ * @param string $icon Keyword (scales, gavel, shield, etc.).
+ * @return string URL or empty string.
+ */
+function ag_starter_avocat_get_domaine_bg_url( $icon ) {
+	$icon = strtolower( trim( (string) $icon ) );
+	$map = array(
+		'scales'    => 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1200&q=80', // courthouse columns
+		'gavel'     => 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1200&q=80', // gavel scales
+		'shield'    => 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1200&q=80', // law library
+		'briefcase' => 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1200&q=80', // office meeting
+		'house'     => 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&q=80', // real estate
+		'family'    => 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=1200&q=80', // family hands
+		'document'  => 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1200&q=80', // contract signing
+		'heart'     => 'https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?w=1200&q=80', // couple
+		'lock'      => 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1200&q=80', // security
+		'bank'      => 'https://images.unsplash.com/photo-1601597111158-2fceff292cdc?w=1200&q=80', // bank facade
+	);
+	return isset( $map[ $icon ] ) ? $map[ $icon ] : 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1200&q=80';
+}
+
+/**
+ * Returns inline SVG markup for a known icon keyword, or the original
+ * emoji wrapped in a span if the input is not a keyword. Kept for
+ * backward compat (single domaine page may still use it).
  *
  * @param string $icon Either an SVG keyword or an emoji.
- * @return string HTML (safe — escaped where needed, SVG paths are static).
+ * @return string HTML.
  */
 function ag_starter_avocat_get_domaine_icon_html( $icon ) {
 	$icon = trim( (string) $icon );

@@ -1156,7 +1156,11 @@ body.ag-tier-business:not(.ag-light) .ag-maitre__specialties strong{color:#D4B45
 .ag-section.ag-team{padding:100px 0 !important;background:linear-gradient(180deg,#0A0E1A 0%,#0F1320 100%) !important;}
 body.ag-light .ag-section.ag-team{background:#F5F0EB !important;}
 .ag-team__grid{display:grid !important;grid-template-columns:repeat(4,1fr) !important;gap:28px !important;margin-top:48px !important;}
-.ag-team-card{background:#131826 !important;border:1px solid rgba(212,180,92,.15) !important;border-radius:14px !important;overflow:hidden !important;transition:transform .4s ease,box-shadow .4s ease,border-color .4s ease !important;}
+.ag-team-card{background:#131826 !important;border:1px solid rgba(212,180,92,.15) !important;border-radius:14px !important;overflow:hidden !important;transition:transform .4s ease,box-shadow .4s ease,border-color .4s ease !important;display:block !important;text-decoration:none !important;cursor:pointer !important;color:inherit !important;}
+.ag-team-card__more{display:inline-block !important;margin-top:10px !important;color:#D4B45C !important;font-weight:700 !important;font-size:.82rem !important;letter-spacing:.5px !important;}
+body.ag-light .ag-team-card__more{color:#7B2D3B !important;}
+body.ag-tier-business:not(.ag-light) .ag-team-card:hover .ag-team-card__more{color:#E07585 !important;}
+body.ag-tier-business.ag-light .ag-team-card:hover .ag-team-card__more{color:#B8941F !important;}
 .ag-team-card:hover{transform:translateY(-6px) !important;border-color:rgba(212,180,92,.4) !important;box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 30px rgba(212,180,92,.15) !important;}
 .ag-team-card__photo{aspect-ratio:1/1 !important;overflow:hidden !important;}
 .ag-team-card__photo img{width:100% !important;height:100% !important;object-fit:cover !important;display:block !important;transition:transform .6s ease !important;}
@@ -1441,6 +1445,93 @@ body.ag-light .ag-icon-svg{color:#7B2D3B;}
 body.ag-tier-business .ag-domaine-card:hover .ag-icon-svg{transform:scale(1.18) rotate(-5deg);}
 body.ag-tier-business:not(.ag-light) .ag-domaine-card:hover .ag-icon-svg{color:#E07585;filter:drop-shadow(0 0 12px rgba(160,61,77,.55));}
 body.ag-tier-business.ag-light .ag-domaine-card:hover .ag-icon-svg{color:#B8941F;filter:drop-shadow(0 0 12px rgba(212,180,92,.6));}
+
+/* ─── DOMAINES cards : background image full + overlay (tous tiers) ─── */
+.ag-domaines__grid{display:grid !important;grid-template-columns:repeat(auto-fit,minmax(280px,1fr)) !important;gap:24px !important;}
+.ag-domaine-card--bg{
+    position:relative !important;
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:flex-end !important;
+    min-height:340px !important;
+    padding:0 !important;
+    border-radius:14px !important;
+    overflow:hidden !important;
+    text-decoration:none !important;
+    color:#fff !important;
+    background:#0F1320 !important;
+    transition:transform .4s ease,box-shadow .5s ease !important;
+}
+.ag-domaine-card--bg .ag-domaine-card__bg{
+    position:absolute !important;
+    inset:0 !important;
+    background-size:cover !important;
+    background-position:center !important;
+    transition:transform .8s ease,filter .5s ease !important;
+    z-index:1 !important;
+}
+.ag-domaine-card--bg .ag-domaine-card__overlay{
+    position:absolute !important;
+    inset:0 !important;
+    background:linear-gradient(180deg,rgba(8,10,18,.15) 0%,rgba(8,10,18,.55) 50%,rgba(8,10,18,.92) 100%) !important;
+    z-index:2 !important;
+    transition:background .4s ease !important;
+}
+.ag-domaine-card--bg .ag-domaine-card__content{
+    position:relative !important;
+    z-index:3 !important;
+    padding:28px 24px !important;
+    margin-top:auto !important;
+}
+.ag-domaine-card--bg .ag-domaine-card__title{
+    color:#fff !important;
+    font-size:1.35rem !important;
+    margin:0 0 8px !important;
+    text-shadow:0 2px 12px rgba(0,0,0,.6) !important;
+}
+.ag-domaine-card--bg .ag-domaine-card__excerpt{
+    color:rgba(255,255,255,.85) !important;
+    font-size:.92rem !important;
+    line-height:1.55 !important;
+    margin:0 0 12px !important;
+    text-shadow:0 1px 6px rgba(0,0,0,.7) !important;
+}
+.ag-domaine-card--bg .ag-domaine-card__examples{
+    list-style:none !important;
+    padding:0 !important;
+    margin:0 0 14px !important;
+    display:flex !important;
+    flex-wrap:wrap !important;
+    gap:6px !important;
+}
+.ag-domaine-card--bg .ag-domaine-card__examples li{
+    background:rgba(212,180,92,.18) !important;
+    border:1px solid rgba(212,180,92,.4) !important;
+    color:#FFE5A0 !important;
+    padding:3px 10px !important;
+    border-radius:100px !important;
+    font-size:.72rem !important;
+    backdrop-filter:blur(4px) !important;
+}
+.ag-domaine-card--bg .ag-domaine-card__more{
+    color:#D4B45C !important;
+    font-weight:700 !important;
+    font-size:.88rem !important;
+    text-shadow:0 1px 6px rgba(0,0,0,.6) !important;
+}
+
+/* Hover (tous tiers) : zoom image + overlay plus dense */
+.ag-domaine-card--bg:hover{transform:translateY(-6px) !important;box-shadow:0 30px 60px rgba(0,0,0,.5) !important;}
+.ag-domaine-card--bg:hover .ag-domaine-card__bg{transform:scale(1.08) !important;}
+
+/* Mode JOUR : overlay clair + texte sombre + chips bordeaux */
+body.ag-light .ag-domaine-card--bg .ag-domaine-card__overlay{
+    background:linear-gradient(180deg,rgba(245,240,235,.1) 0%,rgba(245,240,235,.55) 50%,rgba(245,240,235,.95) 100%) !important;
+}
+body.ag-light .ag-domaine-card--bg .ag-domaine-card__title{color:#2A1A1E !important;text-shadow:0 1px 4px rgba(255,255,255,.6) !important;}
+body.ag-light .ag-domaine-card--bg .ag-domaine-card__excerpt{color:#3A2A2E !important;text-shadow:none !important;}
+body.ag-light .ag-domaine-card--bg .ag-domaine-card__examples li{background:rgba(123,45,59,.1) !important;border-color:rgba(123,45,59,.3) !important;color:#7B2D3B !important;}
+body.ag-light .ag-domaine-card--bg .ag-domaine-card__more{color:#7B2D3B !important;text-shadow:none !important;}
 
 /* ─── DOMAINES cards Business : même balayage que Boutique ─── */
 body.ag-tier-business .ag-domaine-card{
@@ -1795,6 +1886,13 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
 
     // ─── Section Équipe (collaborateurs) ────────────────────────
 
+    public function get_cabinet_url() {
+        // URL "Le cabinet" : page slug=cabinet, sinon front-page#ag-cabinet
+        $page = get_page_by_path( 'cabinet' );
+        if ( $page ) return get_permalink( $page );
+        return home_url( '/#ag-cabinet' );
+    }
+
     public function render_team_section() {
         if ( ! $this->is_at_least( 'business' ) ) return;
         if ( ! get_theme_mod( 'ag_business_team_show', true ) ) return;
@@ -1825,8 +1923,8 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
                 <h2 class="ag-section-title ag-shimmer-text"><?php echo esc_html( $title ); ?></h2>
                 <p class="ag-section-lead"><?php echo esc_html( $subtitle ); ?></p>
                 <div class="ag-team__grid">
-                    <?php foreach ( $members as $m ) : ?>
-                        <article class="ag-team-card">
+                    <?php $cab_url = $this->get_cabinet_url(); foreach ( $members as $m ) : ?>
+                        <a class="ag-team-card" href="<?php echo esc_url( $cab_url ); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'En savoir plus sur %s — Le cabinet', 'ag-starter-avocat' ), $m['name'] ) ); ?>">
                             <?php if ( ! empty( $m['photo'] ) ) : ?>
                                 <div class="ag-team-card__photo">
                                     <img src="<?php echo esc_url( $m['photo'] ); ?>" alt="<?php echo esc_attr( $m['name'] ); ?>" loading="lazy">
@@ -1838,8 +1936,9 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
                                 <?php if ( ! empty( $m['bio'] ) ) : ?>
                                     <p class="ag-team-card__bio"><?php echo esc_html( $m['bio'] ); ?></p>
                                 <?php endif; ?>
+                                <span class="ag-team-card__more"><?php esc_html_e( 'Voir le cabinet →', 'ag-starter-avocat' ); ?></span>
                             </div>
-                        </article>
+                        </a>
                     <?php endforeach; ?>
                 </div>
             </div>

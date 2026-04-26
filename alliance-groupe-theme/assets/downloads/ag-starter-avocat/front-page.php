@@ -65,23 +65,30 @@ get_header();
 					<?php foreach ( $domaines as $d ) :
 						$icon     = get_post_meta( $d->ID, '_ag_domaine_icon', true );
 						$examples = get_post_meta( $d->ID, '_ag_domaine_examples', true );
+						$bg_url   = '';
+						if ( has_post_thumbnail( $d->ID ) ) {
+							$bg_url = get_the_post_thumbnail_url( $d->ID, 'large' );
+						} elseif ( function_exists( 'ag_starter_avocat_get_domaine_bg_url' ) ) {
+							$bg_url = ag_starter_avocat_get_domaine_bg_url( $icon );
+						}
 						?>
-						<a href="<?php echo esc_url( get_permalink( $d->ID ) ); ?>" class="ag-domaine-card">
-							<div class="ag-domaine-card__icon"><?php
-								echo function_exists( 'ag_starter_avocat_get_domaine_icon_html' )
-									? ag_starter_avocat_get_domaine_icon_html( $icon ) /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — SVG paths static, emoji esc_html'd inside helper. */
-									: esc_html( $icon ? $icon : '⚖️' );
-							?></div>
-							<h3 class="ag-domaine-card__title"><?php echo esc_html( get_the_title( $d ) ); ?></h3>
-							<p class="ag-domaine-card__excerpt"><?php echo esc_html( wp_strip_all_tags( get_the_excerpt( $d ) ) ); ?></p>
-							<?php if ( $examples ) : ?>
-								<ul class="ag-domaine-card__examples">
-									<?php foreach ( array_slice( array_filter( array_map( 'trim', explode( "\n", $examples ) ) ), 0, 3 ) as $ex ) : ?>
-										<li><?php echo esc_html( $ex ); ?></li>
-									<?php endforeach; ?>
-								</ul>
+						<a href="<?php echo esc_url( get_permalink( $d->ID ) ); ?>" class="ag-domaine-card ag-domaine-card--bg">
+							<?php if ( $bg_url ) : ?>
+								<div class="ag-domaine-card__bg" style="background-image:url('<?php echo esc_url( $bg_url ); ?>');"></div>
 							<?php endif; ?>
-							<span class="ag-domaine-card__more"><?php esc_html_e( 'En savoir plus →', 'ag-starter-avocat' ); ?></span>
+							<div class="ag-domaine-card__overlay"></div>
+							<div class="ag-domaine-card__content">
+								<h3 class="ag-domaine-card__title"><?php echo esc_html( get_the_title( $d ) ); ?></h3>
+								<p class="ag-domaine-card__excerpt"><?php echo esc_html( wp_strip_all_tags( get_the_excerpt( $d ) ) ); ?></p>
+								<?php if ( $examples ) : ?>
+									<ul class="ag-domaine-card__examples">
+										<?php foreach ( array_slice( array_filter( array_map( 'trim', explode( "\n", $examples ) ) ), 0, 3 ) as $ex ) : ?>
+											<li><?php echo esc_html( $ex ); ?></li>
+										<?php endforeach; ?>
+									</ul>
+								<?php endif; ?>
+								<span class="ag-domaine-card__more"><?php esc_html_e( 'En savoir plus →', 'ag-starter-avocat' ); ?></span>
+							</div>
 						</a>
 					<?php endforeach; ?>
 				</div>
