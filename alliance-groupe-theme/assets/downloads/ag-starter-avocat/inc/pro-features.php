@@ -943,6 +943,39 @@ body.ag-light .ag-domaine-card__icon+.ag-domaine-card__title{color:#2A1A1E !impo
         $css .= '
 .ag-rdv__rgpd label,.ag-rdv__rgpd span{color:#fff !important;}
 ';
+        // Mode nuit (pas ag-light) : toujours doré, fond noir, texte blanc
+        $css .= '
+body:not(.ag-light) .ag-hero__title span{color:#D4B45C !important;}
+body:not(.ag-light) .ag-maitre__name{color:#D4B45C !important;}
+body:not(.ag-light) .ag-maitre__tag{color:#D4B45C !important;background:rgba(212,180,92,.1) !important;border-color:rgba(212,180,92,.25) !important;}
+body:not(.ag-light) .ag-maitre__specialties strong{color:#D4B45C !important;}
+body:not(.ag-light) .ag-maitre__bio{color:#ddd !important;}
+body:not(.ag-light) .ag-maitre__meta{color:#b0b0bc !important;}
+body:not(.ag-light) .ag-honoraires__price{color:#D4B45C !important;}
+body:not(.ag-light) .ag-domaine-card__more{color:#D4B45C !important;}
+body:not(.ag-light) .ag-domaine-card__title{color:#fff !important;}
+body:not(.ag-light) .ag-post-card__date{color:#D4B45C !important;}
+body:not(.ag-light) .ag-post-card__more{color:#D4B45C !important;}
+body:not(.ag-light) .ag-cabinet__block h3{color:#D4B45C !important;}
+body:not(.ag-light) .ag-footer-col h3{color:#D4B45C !important;}
+body:not(.ag-light) .ag-footer-col a{color:#D4B45C !important;}
+body:not(.ag-light) .ag-domaine-back a{color:#D4B45C !important;}
+body:not(.ag-light) .ag-section-title{color:#fff !important;}
+body:not(.ag-light) .ag-section-lead{color:#ddd !important;}
+body:not(.ag-light) .ag-page-hero__title{color:#fff !important;}
+body:not(.ag-light) .ag-page-hero__lead{color:#b0b0bc !important;}
+body:not(.ag-light) .ag-btn{background:#D4B45C !important;color:#080808 !important;}
+body:not(.ag-light) .ag-site-brand a{color:#D4B45C !important;}
+body:not(.ag-light) a.ag-footer-rdv{background:#D4B45C !important;color:#080808 !important;}
+body:not(.ag-light) .ag-totop{background:#D4B45C !important;color:#080808 !important;}
+body:not(.ag-light){background:#080808 !important;color:#e8e6e0 !important;}
+body:not(.ag-light) .ag-site-header.scrolled{background:rgba(8,8,8,.97) !important;}
+body:not(.ag-light) .ag-hero{background:linear-gradient(180deg,rgba(8,8,8,.2) 0%,rgba(8,8,8,.92) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center 20%/cover no-repeat !important;background-attachment:fixed !important;}
+body:not(.ag-light) .ag-site-footer{background:#060606 !important;}
+body:not(.ag-light) .ag-primary-menu a{color:rgba(255,255,255,.7) !important;}
+body:not(.ag-light) .ag-primary-menu a:hover{color:#D4B45C !important;}
+body:not(.ag-light) .ag-menu-toggle span{background:#fff !important;}
+';
 
         return $css;
     }
