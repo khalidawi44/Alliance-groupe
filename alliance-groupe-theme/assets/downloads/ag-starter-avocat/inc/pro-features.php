@@ -988,10 +988,14 @@ body.ag-visitor-light .ag-theme-toggle{border-color:rgba(123,45,59,.3) !importan
         }
 
         if ( 'premium' === $this->tier ) {
-            echo '<div style="text-align:center;padding:16px 24px;background:#060606;border-top:1px solid rgba(255,255,255,.06);">';
+            echo '<div style="text-align:center;padding:28px 24px;background:#060606;border-top:1px solid rgba(212,180,92,.1);">';
+            echo '<style>.ag-prem-float{display:inline-block;animation:agFloat 2s ease-in-out infinite;font-size:1.2rem;}.ag-prem-float:nth-child(2){animation-delay:.4s}.ag-prem-float:nth-child(3){animation-delay:.8s}@keyframes agFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}</style>';
+            echo '<div style="margin-bottom:12px;"><span class="ag-prem-float">⭐</span> <span class="ag-prem-float">💎</span> <span class="ag-prem-float">⭐</span></div>';
             echo '<a href="' . esc_url( $url_home ) . '" target="_blank" rel="noopener nofollow" style="display:inline-block;text-decoration:none;">';
-            echo '<img src="https://alliancegroupe-inc.com/wp-content/uploads/2026/04/logo_site_alliance.jpg" alt="Alliance Groupe" style="height:28px;border-radius:4px;opacity:.6;transition:opacity .3s;" onmouseover="this.style.opacity=\'1\'" onmouseout="this.style.opacity=\'.6\'">';
-            echo '</a></div>';
+            echo '<img src="https://alliancegroupe-inc.com/wp-content/uploads/2026/04/logo_site_alliance.jpg" alt="Alliance Groupe" style="height:48px;border-radius:8px;opacity:.7;transition:opacity .3s,transform .3s;" onmouseover="this.style.opacity=\'1\';this.style.transform=\'scale(1.05)\'" onmouseout="this.style.opacity=\'.7\';this.style.transform=\'scale(1)\'">';
+            echo '</a>';
+            echo '<p style="margin:10px 0 0;color:rgba(255,255,255,.3);font-size:.72rem;">Theme par <a href="' . esc_url( $url_home ) . '" target="_blank" rel="noopener nofollow" style="color:rgba(212,180,92,.5);text-decoration:none;">Alliance Groupe</a></p>';
+            echo '</div>';
             return;
         }
 
