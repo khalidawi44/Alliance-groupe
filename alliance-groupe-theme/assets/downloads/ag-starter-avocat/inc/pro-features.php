@@ -1225,8 +1225,8 @@ body.ag-light .ag-boutique .ag-tag--clean{
     width:70px !important;
     height:70px !important;
     color:#D4B45C !important;
-    transform:translate(-50%,-50%) scale(0) !important;
-    opacity:0 !important;
+    transform-origin:center center !important;
+    will-change:transform,opacity;
     filter:drop-shadow(0 0 25px rgba(212,180,92,.85)) drop-shadow(0 0 60px rgba(212,180,92,.5)) !important;
     animation:agStarShoot 6s cubic-bezier(.4,0,.2,1) infinite !important;
 }
@@ -1266,6 +1266,18 @@ body.ag-light .ag-boutique__star{
 .ag-boutique-card__price{color:#D4B45C !important;font-size:2.4rem !important;font-weight:800 !important;font-style:italic !important;margin:0 0 16px !important;}
 .ag-boutique-card__desc{color:#bbb !important;font-size:.92rem !important;line-height:1.65 !important;margin:0 0 24px !important;}
 .ag-boutique-card__btn{width:100% !important;text-align:center !important;}
+.ag-boutique-card__image{width:100% !important;aspect-ratio:4/3 !important;overflow:hidden !important;border-radius:10px !important;margin-bottom:18px !important;background:#0F1320 !important;}
+.ag-boutique-card__image img{width:100% !important;height:100% !important;object-fit:cover !important;display:block !important;transition:transform .6s ease !important;}
+.ag-boutique-card--with-image:hover .ag-boutique-card__image img{transform:scale(1.06) !important;}
+.ag-boutique-card--with-image{text-align:left !important;}
+.ag-boutique-card--with-image .ag-boutique-card__title{text-align:left !important;}
+.ag-boutique-card--with-image .ag-boutique-card__price{text-align:left !important;}
+.ag-boutique-card--with-image .ag-boutique-card__desc{text-align:left !important;}
+.ag-boutique__more{text-align:center !important;margin:32px 0 12px !important;}
+.ag-boutique__more-link{display:inline-block !important;color:#D4B45C !important;text-decoration:none !important;font-weight:700 !important;font-size:1rem !important;letter-spacing:1px !important;border-bottom:1px solid rgba(212,180,92,.4) !important;padding-bottom:2px !important;transition:color .3s,border-color .3s !important;}
+.ag-boutique__more-link:hover{color:#FFE5A0 !important;border-color:#FFE5A0 !important;}
+body.ag-light .ag-boutique__more-link{color:#7B2D3B !important;border-color:rgba(123,45,59,.4) !important;}
+body.ag-light .ag-boutique__more-link:hover{color:#A03D4D !important;border-color:#A03D4D !important;}
 .ag-boutique__note{text-align:center !important;color:#888 !important;font-size:.85rem !important;margin-top:24px !important;}
 body.ag-light .ag-boutique-card{background:#fff !important;border-color:rgba(123,45,59,.1) !important;}
 body.ag-light .ag-boutique-card:hover{border-color:rgba(123,45,59,.4) !important;box-shadow:0 30px 60px rgba(0,0,0,.1) !important;}
@@ -2044,29 +2056,68 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
     public function render_boutique() {
         if ( ! $this->is_at_least( 'business' ) ) return;
         if ( ! get_theme_mod( 'ag_business_shop_show', true ) ) return;
-        $products = array(
-            array(
-                'icon'  => '📞',
-                'title' => get_theme_mod( 'ag_business_shop_1_title', '3 consultations téléphoniques' ),
-                'price' => get_theme_mod( 'ag_business_shop_1_price', '450 €' ),
-                'desc'  => get_theme_mod( 'ag_business_shop_1_desc', 'Pack de 3 consultations de 30 min, valables 6 mois. Conseil juridique sur tout domaine.' ),
-                'url'   => get_theme_mod( 'ag_business_shop_1_url', '#' ),
-            ),
-            array(
-                'icon'  => '📚',
-                'title' => get_theme_mod( 'ag_business_shop_2_title', 'Guide juridique PDF' ),
-                'price' => get_theme_mod( 'ag_business_shop_2_price', '29 €' ),
-                'desc'  => get_theme_mod( 'ag_business_shop_2_desc', "Manuel pratique 80 pages : vos droits face au licenciement, à la séparation, aux litiges courants." ),
-                'url'   => get_theme_mod( 'ag_business_shop_2_url', '#' ),
-            ),
-            array(
-                'icon'  => '✍️',
-                'title' => get_theme_mod( 'ag_business_shop_3_title', 'Audit contractuel' ),
-                'price' => get_theme_mod( 'ag_business_shop_3_price', '290 €' ),
-                'desc'  => get_theme_mod( 'ag_business_shop_3_desc', "Analyse complète d'un contrat (CDI, bail, partenariat) avec rapport écrit et recommandations." ),
-                'url'   => get_theme_mod( 'ag_business_shop_3_url', '#' ),
-            ),
-        );
+
+        $products       = array();
+        $is_woocommerce = class_exists( 'WooCommerce' ) && function_exists( 'wc_get_products' );
+        $cta_label      = __( 'Acheter →', 'ag-starter-avocat' );
+        $shop_url       = '';
+
+        // Source 1 : WooCommerce — récupère les 3 derniers produits publiés
+        if ( $is_woocommerce ) {
+            $shop_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : '';
+            $wc_query = wc_get_products( array(
+                'limit'   => 3,
+                'status'  => 'publish',
+                'orderby' => 'date',
+                'order'   => 'DESC',
+            ) );
+            foreach ( (array) $wc_query as $wc ) {
+                if ( ! is_object( $wc ) ) continue;
+                $img_id  = $wc->get_image_id();
+                $img_url = $img_id ? wp_get_attachment_image_url( $img_id, 'medium' ) : '';
+                $excerpt = $wc->get_short_description();
+                if ( '' === $excerpt ) $excerpt = wp_trim_words( wp_strip_all_tags( $wc->get_description() ), 22 );
+                $products[] = array(
+                    'icon'  => '',
+                    'image' => $img_url,
+                    'title' => $wc->get_name(),
+                    'price' => wp_strip_all_tags( $wc->get_price_html() ),
+                    'desc'  => wp_strip_all_tags( $excerpt ),
+                    'url'   => get_permalink( $wc->get_id() ),
+                );
+            }
+        }
+
+        // Source 2 : Customizer fallback (si pas de WC ou aucun produit)
+        if ( empty( $products ) ) {
+            $products = array(
+                array(
+                    'icon'  => '📞',
+                    'image' => '',
+                    'title' => get_theme_mod( 'ag_business_shop_1_title', '3 consultations téléphoniques' ),
+                    'price' => get_theme_mod( 'ag_business_shop_1_price', '450 €' ),
+                    'desc'  => get_theme_mod( 'ag_business_shop_1_desc', 'Pack de 3 consultations de 30 min, valables 6 mois. Conseil juridique sur tout domaine.' ),
+                    'url'   => get_theme_mod( 'ag_business_shop_1_url', '#' ),
+                ),
+                array(
+                    'icon'  => '📚',
+                    'image' => '',
+                    'title' => get_theme_mod( 'ag_business_shop_2_title', 'Guide juridique PDF' ),
+                    'price' => get_theme_mod( 'ag_business_shop_2_price', '29 €' ),
+                    'desc'  => get_theme_mod( 'ag_business_shop_2_desc', "Manuel pratique 80 pages : vos droits face au licenciement, à la séparation, aux litiges courants." ),
+                    'url'   => get_theme_mod( 'ag_business_shop_2_url', '#' ),
+                ),
+                array(
+                    'icon'  => '✍️',
+                    'image' => '',
+                    'title' => get_theme_mod( 'ag_business_shop_3_title', 'Audit contractuel' ),
+                    'price' => get_theme_mod( 'ag_business_shop_3_price', '290 €' ),
+                    'desc'  => get_theme_mod( 'ag_business_shop_3_desc', "Analyse complète d'un contrat (CDI, bail, partenariat) avec rapport écrit et recommandations." ),
+                    'url'   => get_theme_mod( 'ag_business_shop_3_url', '#' ),
+                ),
+            );
+        }
+
         $title    = get_theme_mod( 'ag_business_shop_title', __( 'Nos services à la carte', 'ag-starter-avocat' ) );
         $subtitle = get_theme_mod( 'ag_business_shop_subtitle', __( 'Achetez directement en ligne. Paiement sécurisé, livraison immédiate par email.', 'ag-starter-avocat' ) );
         ?>
@@ -2082,16 +2133,31 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
                 <p class="ag-section-lead"><?php echo esc_html( $subtitle ); ?></p>
                 <div class="ag-boutique__grid">
                     <?php foreach ( $products as $p ) : ?>
-                        <article class="ag-boutique-card">
-                            <div class="ag-boutique-card__icon"><?php echo esc_html( $p['icon'] ); ?></div>
+                        <article class="ag-boutique-card<?php echo ! empty( $p['image'] ) ? ' ag-boutique-card--with-image' : ''; ?>">
+                            <?php if ( ! empty( $p['image'] ) ) : ?>
+                                <div class="ag-boutique-card__image"><img src="<?php echo esc_url( $p['image'] ); ?>" alt="<?php echo esc_attr( $p['title'] ); ?>" loading="lazy"></div>
+                            <?php elseif ( ! empty( $p['icon'] ) ) : ?>
+                                <div class="ag-boutique-card__icon"><?php echo esc_html( $p['icon'] ); ?></div>
+                            <?php endif; ?>
                             <h3 class="ag-boutique-card__title"><?php echo esc_html( $p['title'] ); ?></h3>
                             <div class="ag-boutique-card__price"><?php echo esc_html( $p['price'] ); ?></div>
                             <p class="ag-boutique-card__desc"><?php echo esc_html( $p['desc'] ); ?></p>
-                            <a href="<?php echo esc_url( $p['url'] ); ?>" class="ag-btn ag-boutique-card__btn"><?php esc_html_e( 'Acheter →', 'ag-starter-avocat' ); ?></a>
+                            <a href="<?php echo esc_url( $p['url'] ); ?>" class="ag-btn ag-boutique-card__btn"><?php echo esc_html( $cta_label ); ?></a>
                         </article>
                     <?php endforeach; ?>
                 </div>
-                <p class="ag-boutique__note"><?php esc_html_e( '🔒 Paiement Stripe sécurisé · Compatible WooCommerce', 'ag-starter-avocat' ); ?></p>
+                <?php if ( $is_woocommerce && $shop_url ) : ?>
+                    <p class="ag-boutique__more">
+                        <a href="<?php echo esc_url( $shop_url ); ?>" class="ag-boutique__more-link"><?php esc_html_e( 'Voir tous les produits de la boutique →', 'ag-starter-avocat' ); ?></a>
+                    </p>
+                <?php endif; ?>
+                <p class="ag-boutique__note"><?php
+                    if ( $is_woocommerce ) {
+                        esc_html_e( '🔒 Paiement sécurisé · Boutique WooCommerce', 'ag-starter-avocat' );
+                    } else {
+                        esc_html_e( '🔒 Installez WooCommerce pour activer la boutique automatique', 'ag-starter-avocat' );
+                    }
+                ?></p>
             </div>
         </section>
         <?php
@@ -2141,8 +2207,9 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
 
         // Section Boutique
         $wp_customize->add_section( 'ag_business_shop', array(
-            'title'    => '🛍 Boutique (Business)',
-            'priority' => 28,
+            'title'       => '🛍 Boutique (Business)',
+            'priority'    => 28,
+            'description' => 'Si WooCommerce est installé et activé, les 3 derniers produits publiés s\'affichent automatiquement (image, prix, description courte). Les champs ci-dessous ne servent que de fallback statique si WooCommerce n\'est pas installé.',
         ) );
         $wp_customize->add_setting( 'ag_business_shop_show', array( 'default' => true, 'sanitize_callback' => 'wp_validate_boolean' ) );
         $wp_customize->add_control( 'ag_business_shop_show', array( 'type' => 'checkbox', 'label' => 'Afficher la Boutique', 'section' => 'ag_business_shop' ) );
