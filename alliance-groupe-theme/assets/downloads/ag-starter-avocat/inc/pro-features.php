@@ -931,6 +931,7 @@ body.ag-visitor-light .ag-rdv__field input,body.ag-visitor-light .ag-rdv__field 
 body.ag-visitor-light .ag-footer-bottom{color:#8A7478 !important;}
 body.ag-visitor-light .ag-primary-menu.open{background:rgba(245,240,235,.98) !important;}
 body.ag-visitor-light .ag-theme-toggle{border-color:rgba(123,45,59,.3) !important;}
+body.ag-visitor-light .ag-totop{background:#7B2D3B !important;color:#fff !important;}
 ';
         // Mode nuit: RGPD checkbox en blanc
         $css .= '
