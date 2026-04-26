@@ -2138,12 +2138,42 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
 
         $title    = get_theme_mod( 'ag_business_shop_title', __( 'Nos services à la carte', 'ag-starter-avocat' ) );
         $subtitle = get_theme_mod( 'ag_business_shop_subtitle', __( 'Achetez directement en ligne. Paiement sécurisé, livraison immédiate par email.', 'ag-starter-avocat' ) );
+
+        // Inline <style> + <script> pour garantir que l animation marche
+        // meme si le CSS principal est en cache, surcharge ou bloque.
         ?>
+        <style id="ag-boutique-stars-css">
+        @keyframes agBoutiqueStar {
+            0%   { transform: scale(0.2) rotate(0deg);   opacity: 0; }
+            12%  { transform: scale(1) rotate(30deg);    opacity: 1; }
+            45%  { transform: scale(6) rotate(120deg);   opacity: 0.7; }
+            80%  { transform: scale(18) rotate(220deg);  opacity: 0.15; }
+            100% { transform: scale(30) rotate(360deg);  opacity: 0; }
+        }
+        .ag-boutique-stars-host { position: absolute !important; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
+        .ag-boutique-shooting-star {
+            position: absolute;
+            width: 70px; height: 70px;
+            color: #D4B45C;
+            transform: scale(0);
+            opacity: 0;
+            transform-origin: center;
+            pointer-events: none;
+            filter: drop-shadow(0 0 22px rgba(255,229,160,.95)) drop-shadow(0 0 60px rgba(212,180,92,.7));
+            animation: agBoutiqueStar 3.5s ease-out infinite;
+            will-change: transform, opacity;
+        }
+        .ag-boutique-shooting-star svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+        .ag-boutique-shooting-star.s1 { top: 30%; left: 50%; margin: -35px 0 0 -35px; animation-delay: 0s; }
+        .ag-boutique-shooting-star.s2 { top: 55%; left: 25%; margin: -35px 0 0 -35px; animation-delay: 1.1s; }
+        .ag-boutique-shooting-star.s3 { top: 45%; left: 75%; margin: -35px 0 0 -35px; animation-delay: 2.3s; }
+        @media (prefers-reduced-motion: reduce) { .ag-boutique-shooting-star { display: none !important; } }
+        </style>
         <section class="ag-section ag-boutique" id="ag-boutique">
-            <div class="ag-boutique__stars" aria-hidden="true">
-                <span class="ag-boutique__star ag-boutique__star--1"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 14.9,8.6 22,9.3 16.7,14.1 18.2,21 12,17.5 5.8,21 7.3,14.1 2,9.3 9.1,8.6"/></svg></span>
-                <span class="ag-boutique__star ag-boutique__star--2"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 14.9,8.6 22,9.3 16.7,14.1 18.2,21 12,17.5 5.8,21 7.3,14.1 2,9.3 9.1,8.6"/></svg></span>
-                <span class="ag-boutique__star ag-boutique__star--3"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 14.9,8.6 22,9.3 16.7,14.1 18.2,21 12,17.5 5.8,21 7.3,14.1 2,9.3 9.1,8.6"/></svg></span>
+            <div class="ag-boutique-stars-host" aria-hidden="true">
+                <span class="ag-boutique-shooting-star s1"><svg viewBox="0 0 24 24"><polygon points="12,2 14.9,8.6 22,9.3 16.7,14.1 18.2,21 12,17.5 5.8,21 7.3,14.1 2,9.3 9.1,8.6"/></svg></span>
+                <span class="ag-boutique-shooting-star s2"><svg viewBox="0 0 24 24"><polygon points="12,2 14.9,8.6 22,9.3 16.7,14.1 18.2,21 12,17.5 5.8,21 7.3,14.1 2,9.3 9.1,8.6"/></svg></span>
+                <span class="ag-boutique-shooting-star s3"><svg viewBox="0 0 24 24"><polygon points="12,2 14.9,8.6 22,9.3 16.7,14.1 18.2,21 12,17.5 5.8,21 7.3,14.1 2,9.3 9.1,8.6"/></svg></span>
             </div>
             <div class="ag-container">
                 <span class="ag-tag ag-tag--clean">BOUTIQUE</span>
