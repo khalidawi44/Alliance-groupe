@@ -1249,12 +1249,83 @@ body.ag-tier-business .ag-boutique-card__btn:hover{
     transform:translateY(-2px) !important;
 }
 
-/* Cartes Boutique + Honoraires : balayage au hover
+/* Cartes Boutique + Honoraires + Menu nav : balayage au hover
    Mode NUIT  → BORDEAUX (#7B2D3B)
    Mode JOUR → DORE     (#D4B45C) */
 @keyframes agGoldSweep{
     0%{transform:translateX(-100%) skewX(-15deg);}
     100%{transform:translateX(200%) skewX(-15deg);}
+}
+
+/* ─── MENU PRINCIPAL au hover (style Boutique) ─── */
+body.ag-tier-business .ag-primary-menu{align-items:center !important;}
+body.ag-tier-business .ag-primary-menu a{
+    position:relative !important;
+    display:inline-block !important;
+    padding:10px 16px !important;
+    border-radius:8px !important;
+    overflow:hidden !important;
+    isolation:isolate !important;
+    transition:color .35s ease,background .35s ease,text-shadow .35s ease,transform .3s ease !important;
+}
+/* Balayage diagonal (::before) — derrière le texte */
+body.ag-tier-business .ag-primary-menu a::before{
+    content:"" !important;
+    position:absolute !important;
+    top:0 !important;
+    left:0 !important;
+    width:60% !important;
+    height:100% !important;
+    transform:translateX(-100%) skewX(-15deg) !important;
+    pointer-events:none !important;
+    z-index:-1 !important;
+}
+body.ag-tier-business .ag-primary-menu a:hover::before{animation:agGoldSweep 1.4s ease-in-out infinite !important;}
+
+/* Underline qui pousse depuis le centre (::after) */
+body.ag-tier-business .ag-primary-menu a::after{
+    content:"" !important;
+    position:absolute !important;
+    bottom:4px !important;
+    left:50% !important;
+    width:0 !important;
+    height:2px !important;
+    transform:translateX(-50%) !important;
+    transition:width .4s ease !important;
+    pointer-events:none !important;
+}
+body.ag-tier-business .ag-primary-menu a:hover::after{width:calc(100% - 28px) !important;}
+body.ag-tier-business .ag-primary-menu a:hover{transform:translateY(-2px) !important;}
+
+/* Mode NUIT : balayage bordeaux + texte rosé clair */
+body.ag-tier-business:not(.ag-light) .ag-primary-menu a::before{
+    background:linear-gradient(110deg,transparent 0%,rgba(123,45,59,0) 30%,rgba(160,61,77,.45) 50%,rgba(123,45,59,0) 70%,transparent 100%) !important;
+}
+body.ag-tier-business:not(.ag-light) .ag-primary-menu a::after{
+    background:linear-gradient(90deg,transparent,#A03D4D,transparent) !important;
+    box-shadow:0 0 10px rgba(160,61,77,.7) !important;
+}
+body.ag-tier-business:not(.ag-light) .ag-primary-menu a:hover{
+    color:#E07585 !important;
+    background:rgba(123,45,59,.1) !important;
+    text-shadow:0 0 14px rgba(160,61,77,.5) !important;
+}
+
+/* Mode JOUR : balayage doré + texte doré sombre */
+body.ag-tier-business.ag-light .ag-primary-menu a::before{
+    background:linear-gradient(110deg,transparent 0%,rgba(212,180,92,0) 30%,rgba(212,180,92,.5) 50%,rgba(212,180,92,0) 70%,transparent 100%) !important;
+}
+body.ag-tier-business.ag-light .ag-primary-menu a::after{
+    background:linear-gradient(90deg,transparent,#D4B45C,transparent) !important;
+    box-shadow:0 0 10px rgba(212,180,92,.7) !important;
+}
+body.ag-tier-business.ag-light .ag-primary-menu a:hover{
+    color:#B8941F !important;
+    background:rgba(212,180,92,.12) !important;
+    text-shadow:0 0 12px rgba(212,180,92,.5) !important;
+}
+@media(max-width:768px){
+    body.ag-tier-business .ag-primary-menu a::after{display:none !important;}
 }
 
 /* ─── BOUTIQUE cards ─── */
