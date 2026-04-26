@@ -1197,14 +1197,84 @@ body.ag-light .ag-boutique-card__desc{color:#3A2A2E !important;}
 body.ag-light .ag-boutique__note{color:#5A4549 !important;}
 @media(max-width:980px){.ag-boutique__grid{grid-template-columns:1fr !important;gap:20px !important;}}
 
-/* ── Scintillation Business : shimmer doré sur titres + tags ── */
-@keyframes agShimmer{0%{background-position:-200% center;}100%{background-position:200% center;}}
-@keyframes agPulseGlow{0%,100%{box-shadow:0 0 20px rgba(212,180,92,.2);}50%{box-shadow:0 0 35px rgba(212,180,92,.5),0 0 60px rgba(212,180,92,.2);}}
-@keyframes agSparkle{0%,100%{opacity:.3;}50%{opacity:1;}}
-body.ag-tier-business .ag-shimmer-text{background:linear-gradient(90deg,#D4B45C 0%,#fff5d4 50%,#D4B45C 100%) !important;background-size:200% auto !important;-webkit-background-clip:text !important;background-clip:text !important;-webkit-text-fill-color:transparent !important;animation:agShimmer 3s linear infinite !important;}
-body.ag-tier-business .ag-shimmer{position:relative !important;overflow:hidden !important;}
-body.ag-tier-business .ag-shimmer::after{content:"✨" !important;position:absolute !important;top:-2px !important;right:-4px !important;font-size:.7em !important;animation:agSparkle 2s ease-in-out infinite !important;}
-body.ag-tier-business .ag-btn:hover{animation:agPulseGlow 1.5s ease-in-out infinite !important;}
+/* ── Scintillation Business : effets robustes (cross-browser) ── */
+@keyframes agShimmerGold{
+    0%,100%{color:#D4B45C;text-shadow:0 0 18px rgba(212,180,92,.3);}
+    50%{color:#FFE5A0;text-shadow:0 0 35px rgba(255,229,160,.7),0 0 60px rgba(212,180,92,.45);}
+}
+@keyframes agShimmerBordeaux{
+    0%,100%{color:#7B2D3B;text-shadow:0 0 14px rgba(123,45,59,.2);}
+    50%{color:#A03D4D;text-shadow:0 0 28px rgba(160,61,77,.45),0 0 50px rgba(123,45,59,.25);}
+}
+@keyframes agPulseGlow{
+    0%,100%{box-shadow:0 4px 25px rgba(212,180,92,.25);}
+    50%{box-shadow:0 4px 25px rgba(212,180,92,.6),0 0 40px rgba(212,180,92,.35);}
+}
+@keyframes agSparkleFloat{
+    0%,100%{transform:translateY(0) rotate(0deg);opacity:.6;}
+    50%{transform:translateY(-3px) rotate(15deg);opacity:1;}
+}
+@keyframes agScanLine{
+    0%{transform:translateX(-100%);}
+    100%{transform:translateX(100%);}
+}
+
+/* Titre "Notre équipe" : couleur dorée pulsante avec halo */
+body.ag-tier-business .ag-shimmer-text{
+    color:#D4B45C !important;
+    animation:agShimmerGold 2.8s ease-in-out infinite !important;
+    font-style:italic !important;
+}
+body.ag-tier-business.ag-light .ag-shimmer-text{
+    color:#7B2D3B !important;
+    animation:agShimmerBordeaux 2.8s ease-in-out infinite !important;
+}
+
+/* Tag "🛍 BOUTIQUE" : sparkle ✨ visible (overflow:visible !) */
+body.ag-tier-business .ag-shimmer{position:relative !important;display:inline-block !important;}
+body.ag-tier-business .ag-shimmer::after{
+    content:"✨" !important;
+    position:absolute !important;
+    top:-10px !important;
+    right:-14px !important;
+    font-size:1rem !important;
+    animation:agSparkleFloat 1.8s ease-in-out infinite !important;
+    pointer-events:none !important;
+}
+
+/* Tous les boutons en Business : hover = pulseGlow doré */
+body.ag-tier-business .ag-btn:hover,
+body.ag-tier-business .ag-boutique-card__btn:hover{
+    animation:agPulseGlow 1.5s ease-in-out infinite !important;
+    transform:translateY(-2px) !important;
+}
+
+/* Cartes Boutique : ligne dorée qui balaye en haut au hover */
+.ag-boutique-card{position:relative !important;overflow:hidden !important;}
+.ag-boutique-card::before{
+    content:"" !important;
+    position:absolute !important;
+    top:0 !important;
+    left:0 !important;
+    width:100% !important;
+    height:3px !important;
+    background:linear-gradient(90deg,transparent 0%,#D4B45C 50%,transparent 100%) !important;
+    transform:translateX(-100%) !important;
+    transition:none !important;
+}
+.ag-boutique-card:hover::before{animation:agScanLine 1.2s ease-in-out infinite !important;}
+
+/* Cartes Équipe : halo doré pulsant au hover */
+.ag-team-card{transition:transform .4s ease,box-shadow .5s ease,border-color .4s ease !important;}
+.ag-team-card:hover{
+    transform:translateY(-8px) !important;
+    border-color:rgba(212,180,92,.55) !important;
+    box-shadow:0 25px 60px rgba(0,0,0,.55),0 0 35px rgba(212,180,92,.35) !important;
+}
+body.ag-light .ag-team-card:hover{
+    border-color:rgba(123,45,59,.4) !important;
+    box-shadow:0 25px 60px rgba(0,0,0,.12),0 0 30px rgba(123,45,59,.18) !important;
+}
 
 /* === Mode clair === */
 body.ag-light .ag-section.ag-maitre{background:#EDE6DF !important;background-image:none !important;}
