@@ -41,6 +41,16 @@ get_header();
 	</section>
 	<?php endif; ?>
 
+	<?php
+	// Business: trust badges + counters after hero
+	if ( class_exists( 'AG_Pro_Features' ) ) {
+		global $ag_pro;
+		if ( ! isset( $ag_pro ) ) $ag_pro = new AG_Pro_Features( 'ag-starter-avocat' );
+		$ag_pro->render_trust_badges();
+		$ag_pro->render_counters();
+	}
+	?>
+
 	<?php /* ─────────── 2. Domaines d'expertise (CPT) ─────────── */ ?>
 	<section class="ag-section ag-domaines" id="ag-domaines">
 		<div class="ag-container">

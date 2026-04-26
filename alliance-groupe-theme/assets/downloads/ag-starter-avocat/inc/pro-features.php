@@ -27,6 +27,7 @@ class AG_Pro_Features {
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_pro_assets' ) );
         add_action( 'customize_register', array( $this, 'register_pro_customizer' ), 20 );
         add_filter( 'body_class', array( $this, 'add_body_classes' ) );
+        $this->__construct_business();
     }
 
     public function get_tier() { return $this->tier; }
@@ -733,6 +734,22 @@ body.ag-light .ag-theme-toggle{border-color:rgba(123,45,59,.3) !important;}
     letter-spacing:.5px !important;text-transform:uppercase !important;
 }
 
+
+/* ── Business: Counters ── */
+.ag-counters{padding:60px 0 !important;background:rgba(212,180,92,.03) !important;border-top:1px solid rgba(212,180,92,.1) !important;}
+.ag-counters__grid{display:grid !important;grid-template-columns:repeat(4,1fr) !important;gap:24px !important;text-align:center !important;}
+.ag-counter__number{display:block !important;font-family:"Playfair Display",serif !important;font-size:2.5rem !important;font-weight:700 !important;color:#D4B45C !important;margin-bottom:4px !important;}
+.ag-counter__label{color:rgba(255,255,255,.6) !important;font-size:.88rem !important;}
+body.ag-light .ag-counter__label{color:#5A4549 !important;}
+body.ag-light .ag-counters{background:rgba(123,45,59,.03) !important;border-color:rgba(123,45,59,.1) !important;}
+body.ag-light .ag-counter__number{color:#7B2D3B !important;}
+@media(max-width:600px){.ag-counters__grid{grid-template-columns:repeat(2,1fr) !important;}}
+/* ── Business: Trust bar ── */
+.ag-trust-bar{padding:16px 0 !important;background:rgba(212,180,92,.06) !important;border-bottom:1px solid rgba(212,180,92,.1) !important;}
+.ag-trust-bar__inner{display:flex !important;justify-content:center !important;gap:24px !important;flex-wrap:wrap !important;}
+.ag-trust-badge{color:rgba(255,255,255,.6) !important;font-size:.82rem !important;font-weight:600 !important;}
+body.ag-light .ag-trust-bar{background:rgba(123,45,59,.04) !important;border-color:rgba(123,45,59,.08) !important;}
+body.ag-light .ag-trust-badge{color:#5A4549 !important;}
 /* ── Page Cabinet full layout ── */
 .ag-cabinet-full{display:grid !important;grid-template-columns:1.2fr 1fr !important;gap:32px !important;align-items:start !important;}
 .ag-cabinet-full__map{border-radius:16px !important;overflow:hidden !important;box-shadow:0 20px 60px rgba(0,0,0,.4) !important;border:1px solid rgba(' . $gold_rgb . ',.15) !important;}
@@ -1041,6 +1058,91 @@ body:not(.ag-light) .ag-entry-footer a{color:#D4B45C !important;}
             echo '<div class="ag-testimonial-card__author">' . esc_html( $t['author'] ) . '</div></div>';
         }
         echo '</div></div></section>';
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // BUSINESS-ONLY FEATURES
+    // ═══════════════════════════════════════════════════════════
+
+    public function __construct_business() {
+        if ( ! $this->is_at_least( 'business' ) ) return;
+        add_action( 'wp_footer', array( $this, 'render_mobile_call_button' ), 8 );
+        add_action( 'wp_head', array( $this, 'render_schema_org' ), 99 );
+        add_action( 'ag_after_hero', array( $this, 'render_breadcrumb' ) );
+    }
+
+    public function render_mobile_call_button() {
+        if ( ! $this->is_at_least( 'business' ) ) return;
+        $phone = get_theme_mod( 'ag_pro_header_phone', '' );
+        if ( ! $phone ) $phone = ag_starter_avocat_get_option( 'ag_cabinet_phone' );
+        if ( ! $phone ) return;
+        $clean = preg_replace( '/[^0-9+]/', '', $phone );
+        ?>
+        <a href="tel:<?php echo esc_attr( $clean ); ?>" class="ag-mobile-call" aria-label="<?php esc_attr_e( 'Appeler', 'ag-starter-avocat' ); ?>">
+            <span class="ag-mobile-call__icon">📞</span>
+            <span class="ag-mobile-call__text"><?php esc_html_e( 'Appeler', 'ag-starter-avocat' ); ?></span>
+        </a>
+        <style>
+        .ag-mobile-call{display:none;}
+        @media(max-width:768px){
+            .ag-mobile-call{
+                display:flex !important;position:fixed !important;bottom:0 !important;left:0 !important;right:0 !important;
+                z-index:998 !important;background:#D4B45C !important;color:#080808 !important;
+                text-decoration:none !important;font-weight:700 !important;font-size:1.1rem !important;
+                padding:16px !important;justify-content:center !important;align-items:center !important;gap:8px !important;
+                box-shadow:0 -4px 20px rgba(0,0,0,.3) !important;
+            }
+            .ag-mobile-call__icon{font-size:1.3rem;}
+        }
+        </style>
+        <?php
+    }
+
+    public function render_counters() {
+        if ( ! $this->is_at_least( 'business' ) ) return;
+        $counters = array(
+            array( 'number' => '15+', 'label' => __( "Annees d'experience", 'ag-starter-avocat' ) ),
+            array( 'number' => '500+', 'label' => __( 'Dossiers traites', 'ag-starter-avocat' ) ),
+            array( 'number' => '98%', 'label' => __( 'Clients satisfaits', 'ag-starter-avocat' ) ),
+            array( 'number' => '24/7', 'label' => __( 'Garde a vue', 'ag-starter-avocat' ) ),
+        );
+        echo '<section class="ag-section ag-counters"><div class="ag-container"><div class="ag-counters__grid">';
+        foreach ( $counters as $c ) {
+            echo '<div class="ag-counter"><span class="ag-counter__number">' . esc_html( $c['number'] ) . '</span>';
+            echo '<span class="ag-counter__label">' . esc_html( $c['label'] ) . '</span></div>';
+        }
+        echo '</div></div></section>';
+    }
+
+    public function render_schema_org() {
+        if ( ! $this->is_at_least( 'business' ) ) return;
+        if ( ! is_front_page() ) return;
+        $name = get_bloginfo( 'name' );
+        $phone = ag_starter_avocat_get_option( 'ag_cabinet_phone' );
+        $email = ag_starter_avocat_get_option( 'ag_cabinet_email' );
+        $address = ag_starter_avocat_get_option( 'ag_cabinet_address' );
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type'    => 'Attorney',
+            'name'     => $name,
+            'url'      => home_url( '/' ),
+            'telephone' => $phone,
+            'email'    => $email,
+            'address'  => array( '@type' => 'PostalAddress', 'streetAddress' => $address ),
+            'priceRange' => '€€',
+        );
+        echo '<script type="application/ld+json">' . wp_json_encode( $schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . '</script>' . "\n";
+    }
+
+    public function render_trust_badges() {
+        if ( ! $this->is_at_least( 'business' ) ) return;
+        $rpva = ag_starter_avocat_get_option( 'ag_cabinet_rpva' );
+        echo '<div class="ag-trust-bar"><div class="ag-container ag-trust-bar__inner">';
+        echo '<span class="ag-trust-badge">⚖️ ' . esc_html__( 'Barreau inscrit', 'ag-starter-avocat' ) . '</span>';
+        if ( $rpva ) echo '<span class="ag-trust-badge">🔒 RPVA ' . esc_html( $rpva ) . '</span>';
+        echo '<span class="ag-trust-badge">📋 ' . esc_html__( 'Convention d\'honoraires', 'ag-starter-avocat' ) . '</span>';
+        echo '<span class="ag-trust-badge">🛡️ ' . esc_html__( 'Secret professionnel', 'ag-starter-avocat' ) . '</span>';
+        echo '</div></div>';
     }
 
     // ═══════════════════════════════════════════════════════════
