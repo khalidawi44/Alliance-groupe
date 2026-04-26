@@ -892,6 +892,16 @@ body.ag-visitor-light .ag-maitre__specialties strong{color:#D4B45C !important;}
 body.ag-visitor-light .ag-rdv__rgpd label,body.ag-visitor-light .ag-rdv__rgpd span{color:#2A1A1E !important;}
 body.ag-visitor-light .ag-page-hero__title{color:#7B2D3B !important;}
 body.ag-visitor-light .ag-page-hero__lead{color:#5A4549 !important;}
+body.ag-visitor-light .ag-domaine-examples{background:#F5F0EB !important;}
+body.ag-visitor-light .ag-domaine-examples__title{color:#2A1A1E !important;}
+body.ag-visitor-light .ag-domaine-examples__list li{color:#2A1A1E !important;}
+body.ag-visitor-light .ag-domaine-examples__list li::before{color:#7B2D3B !important;}
+body.ag-visitor-light .ag-domaine-cta p{color:#5A4549 !important;}
+body.ag-visitor-light .ag-domaine-back a{color:#7B2D3B !important;}
+body.ag-visitor-light .ag-page-article .ag-entry-content{color:#2A1A1E !important;}
+body.ag-visitor-light .ag-page-article .ag-entry-content p{color:#3A2A2E !important;}
+body.ag-visitor-light .ag-page-article .ag-entry-thumb img{border-color:rgba(0,0,0,.08) !important;}
+body.ag-visitor-light .ag-maitre__photo img{box-shadow:0 10px 30px rgba(0,0,0,.1) !important;border-color:rgba(123,45,59,.2) !important;}
 body.ag-visitor-light .ag-hero__title span,body.ag-visitor-light .ag-domaine-card__more,body.ag-visitor-light .ag-post-card__more,body.ag-visitor-light .ag-post-card__date,body.ag-visitor-light .ag-honoraires__price,body.ag-visitor-light .ag-domaine-examples__title,body.ag-visitor-light .ag-domaine-examples__list li::before,body.ag-visitor-light .ag-domaine-back a,body.ag-visitor-light .ag-entry-content a,body.ag-visitor-light .ag-footer-col a,body.ag-visitor-light .ag-cabinet__block h3,body.ag-visitor-light .ag-footer-col h3{color:#7B2D3B !important;}
 body.ag-visitor-light .ag-btn{background:#7B2D3B !important;color:#fff !important;box-shadow:0 4px 25px rgba(123,45,59,.25) !important;}
 body.ag-visitor-light .ag-btn:hover{background:#6A2433 !important;}
