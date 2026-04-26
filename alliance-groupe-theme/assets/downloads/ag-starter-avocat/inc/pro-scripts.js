@@ -47,6 +47,41 @@
     var themeBtn = document.querySelector('.ag-theme-toggle');
     if (themeBtn) {
         var icon = themeBtn.querySelector('.ag-theme-toggle__icon');
+
+        // Inject light mode style tag directly — bypasses all CSS specificity issues
+        var lightStyle = document.createElement('style');
+        lightStyle.id = 'ag-light-inject';
+        lightStyle.textContent = [
+            'body.ag-visitor-light .ag-totop{background:#7B2D3B!important;color:#fff!important}',
+            'body.ag-visitor-light .ag-domaine-card__title{color:#2A1A1E!important}',
+            'body.ag-visitor-light .ag-domaine-card__excerpt{color:#3A2A2E!important}',
+            'body.ag-visitor-light .ag-domaine-card__examples li{color:#2A1A1E!important}',
+            'body.ag-visitor-light .ag-section-title{color:#2A1A1E!important}',
+            'body.ag-visitor-light .ag-section-lead{color:#3A2A2E!important}',
+            'body.ag-visitor-light .ag-page-hero__title{color:#7B2D3B!important}',
+            'body.ag-visitor-light .ag-page-hero__lead{color:#5A4549!important}',
+            'body.ag-visitor-light .ag-honoraires__label{color:#2A1A1E!important}',
+            'body.ag-visitor-light .ag-honoraires__desc{color:#3A2A2E!important}',
+            'body.ag-visitor-light .ag-honoraires__note{color:#5A4549!important}',
+            'body.ag-visitor-light .ag-maitre__bio{color:#2A1A1E!important}',
+            'body.ag-visitor-light .ag-maitre__meta{color:#5A4549!important}',
+            'body.ag-visitor-light .ag-cabinet__block p{color:#3A2A2E!important}',
+            'body.ag-visitor-light .ag-rdv__rgpd label{color:#2A1A1E!important}',
+            'body.ag-visitor-light .ag-rdv__rgpd span{color:#2A1A1E!important}',
+            'body.ag-visitor-light .ag-rdv__field label{color:#2A1A1E!important}',
+            'body.ag-visitor-light .ag-rdv__submit{color:#fff!important}',
+            'body.ag-visitor-light .ag-page-article .ag-entry-content{color:#2A1A1E!important}',
+            'body.ag-visitor-light .ag-page-article .ag-entry-content h2{color:#2A1A1E!important}',
+            'body.ag-visitor-light .ag-page-article .ag-entry-content h3{color:#2A1A1E!important}',
+            'body.ag-visitor-light .ag-page-article .ag-entry-content p{color:#3A2A2E!important}',
+            'body.ag-visitor-light .ag-domaine-examples__title{color:#2A1A1E!important}',
+            'body.ag-visitor-light .ag-domaine-examples__list li::before{color:#7B2D3B!important}',
+            'body.ag-visitor-light .ag-footer-col p{color:#5A4549!important}',
+            'body.ag-visitor-light .ag-footer-col li{color:#5A4549!important}',
+            'body.ag-visitor-light .ag-post-card__excerpt{color:#3A2A2E!important}',
+        ].join('\n');
+        document.head.appendChild(lightStyle);
+
         var saved = localStorage.getItem('ag_theme_mode');
         if (saved === 'light') {
             document.body.classList.add('ag-visitor-light');
