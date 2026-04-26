@@ -1249,14 +1249,16 @@ body.ag-tier-business .ag-boutique-card__btn:hover{
     transform:translateY(-2px) !important;
 }
 
-/* Cartes Boutique + Honoraires : balayage doré DANS la carte au hover */
+/* Cartes Boutique + Honoraires : balayage au hover
+   Mode NUIT  → BORDEAUX (#7B2D3B)
+   Mode JOUR → DORE     (#D4B45C) */
 @keyframes agGoldSweep{
     0%{transform:translateX(-100%) skewX(-15deg);}
     100%{transform:translateX(200%) skewX(-15deg);}
 }
 
-/* Boutique cards */
-.ag-boutique-card{position:relative !important;overflow:hidden !important;transition:transform .4s ease,box-shadow .5s ease,border-color .4s ease !important;}
+/* ─── BOUTIQUE cards ─── */
+.ag-boutique-card{position:relative !important;overflow:hidden !important;transition:transform .4s ease,box-shadow .5s ease,border-color .4s ease,background .4s ease !important;}
 .ag-boutique-card::before{
     content:"" !important;
     position:absolute !important;
@@ -1264,24 +1266,41 @@ body.ag-tier-business .ag-boutique-card__btn:hover{
     left:0 !important;
     width:60% !important;
     height:100% !important;
-    background:linear-gradient(110deg,transparent 0%,rgba(212,180,92,.0) 30%,rgba(212,180,92,.35) 50%,rgba(212,180,92,.0) 70%,transparent 100%) !important;
     transform:translateX(-100%) skewX(-15deg) !important;
     pointer-events:none !important;
     z-index:1 !important;
 }
 .ag-boutique-card:hover::before{animation:agGoldSweep 1.6s ease-in-out infinite !important;}
 .ag-boutique-card>*{position:relative !important;z-index:2 !important;}
-.ag-boutique-card:hover{
-    transform:translateY(-8px) !important;
-    border-color:#D4B45C !important;
-    box-shadow:0 30px 60px rgba(0,0,0,.55),0 0 50px rgba(212,180,92,.4) !important;
-}
-.ag-boutique-card:hover .ag-boutique-card__title{color:#D4B45C !important;text-shadow:0 0 18px rgba(212,180,92,.4) !important;}
-.ag-boutique-card:hover .ag-boutique-card__icon{transform:scale(1.15) rotate(-5deg);transition:transform .4s ease;}
-.ag-boutique-card:hover .ag-boutique-card__price{text-shadow:0 0 25px rgba(212,180,92,.7) !important;}
-.ag-boutique-card__icon,.ag-boutique-card__title{transition:color .3s ease,transform .4s ease,text-shadow .3s ease !important;}
+.ag-boutique-card__icon,.ag-boutique-card__title,.ag-boutique-card__price{transition:color .35s ease,transform .4s ease,text-shadow .35s ease !important;}
+.ag-boutique-card:hover{transform:translateY(-8px) !important;}
+.ag-boutique-card:hover .ag-boutique-card__icon{transform:scale(1.15) rotate(-5deg) !important;}
 
-/* Honoraires cards en Business : transformation dorée au hover */
+/* Mode NUIT : balayage + bordure + texte BORDEAUX */
+body:not(.ag-light) .ag-boutique-card::before{
+    background:linear-gradient(110deg,transparent 0%,rgba(123,45,59,0) 30%,rgba(160,61,77,.45) 50%,rgba(123,45,59,0) 70%,transparent 100%) !important;
+}
+body:not(.ag-light) .ag-boutique-card:hover{
+    border-color:#A03D4D !important;
+    box-shadow:0 30px 60px rgba(0,0,0,.55),0 0 50px rgba(123,45,59,.55) !important;
+    background:linear-gradient(135deg,rgba(123,45,59,.08) 0%,#131826 100%) !important;
+}
+body:not(.ag-light) .ag-boutique-card:hover .ag-boutique-card__title{color:#E07585 !important;text-shadow:0 0 18px rgba(160,61,77,.55) !important;}
+body:not(.ag-light) .ag-boutique-card:hover .ag-boutique-card__price{color:#E07585 !important;text-shadow:0 0 25px rgba(160,61,77,.7) !important;}
+
+/* Mode JOUR : balayage + bordure + texte DORE */
+body.ag-light .ag-boutique-card::before{
+    background:linear-gradient(110deg,transparent 0%,rgba(212,180,92,0) 30%,rgba(212,180,92,.45) 50%,rgba(212,180,92,0) 70%,transparent 100%) !important;
+}
+body.ag-light .ag-boutique-card:hover{
+    border-color:#D4B45C !important;
+    box-shadow:0 30px 60px rgba(0,0,0,.15),0 0 50px rgba(212,180,92,.45) !important;
+    background:linear-gradient(135deg,rgba(212,180,92,.1) 0%,#fff 100%) !important;
+}
+body.ag-light .ag-boutique-card:hover .ag-boutique-card__title{color:#B8941F !important;text-shadow:0 0 18px rgba(212,180,92,.5) !important;}
+body.ag-light .ag-boutique-card:hover .ag-boutique-card__price{color:#B8941F !important;text-shadow:0 0 25px rgba(212,180,92,.7) !important;}
+
+/* ─── HONORAIRES cards (Business uniquement) ─── */
 body.ag-tier-business .ag-honoraires__card{
     position:relative !important;
     overflow:hidden !important;
@@ -1294,49 +1313,44 @@ body.ag-tier-business .ag-honoraires__card::before{
     left:0 !important;
     width:60% !important;
     height:100% !important;
-    background:linear-gradient(110deg,transparent 0%,rgba(212,180,92,.0) 30%,rgba(212,180,92,.4) 50%,rgba(212,180,92,.0) 70%,transparent 100%) !important;
     transform:translateX(-100%) skewX(-15deg) !important;
     pointer-events:none !important;
     z-index:1 !important;
 }
 body.ag-tier-business .ag-honoraires__card:hover::before{animation:agGoldSweep 1.6s ease-in-out infinite !important;}
 body.ag-tier-business .ag-honoraires__card>*{position:relative !important;z-index:2 !important;}
-body.ag-tier-business .ag-honoraires__card:hover{
-    transform:translateY(-8px) !important;
-    border-color:#D4B45C !important;
-    box-shadow:0 30px 60px rgba(0,0,0,.55),0 0 50px rgba(212,180,92,.45) !important;
-    background:linear-gradient(135deg,rgba(212,180,92,.06) 0%,#131826 100%) !important;
-}
-body.ag-tier-business .ag-honoraires__card:hover .ag-honoraires__price,
-body.ag-tier-business .ag-honoraires__card:hover .ag-honoraires__label{
-    color:#D4B45C !important;
-    text-shadow:0 0 18px rgba(212,180,92,.45) !important;
-}
 body.ag-tier-business .ag-honoraires__price,
 body.ag-tier-business .ag-honoraires__label{transition:color .35s ease,text-shadow .35s ease !important;}
+body.ag-tier-business .ag-honoraires__card:hover{transform:translateY(-8px) !important;}
 
-/* Mode clair : meme animation mais en bordeaux + or léger */
-body.ag-tier-business.ag-light .ag-boutique-card::before,
+/* Mode NUIT : balayage + bordure + texte BORDEAUX */
+body.ag-tier-business:not(.ag-light) .ag-honoraires__card::before{
+    background:linear-gradient(110deg,transparent 0%,rgba(123,45,59,0) 30%,rgba(160,61,77,.5) 50%,rgba(123,45,59,0) 70%,transparent 100%) !important;
+}
+body.ag-tier-business:not(.ag-light) .ag-honoraires__card:hover{
+    border-color:#A03D4D !important;
+    background:linear-gradient(135deg,rgba(123,45,59,.1) 0%,#131826 100%) !important;
+    box-shadow:0 30px 60px rgba(0,0,0,.55),0 0 50px rgba(123,45,59,.55) !important;
+}
+body.ag-tier-business:not(.ag-light) .ag-honoraires__card:hover .ag-honoraires__price,
+body.ag-tier-business:not(.ag-light) .ag-honoraires__card:hover .ag-honoraires__label{
+    color:#E07585 !important;
+    text-shadow:0 0 18px rgba(160,61,77,.55) !important;
+}
+
+/* Mode JOUR : balayage + bordure + texte DORE */
 body.ag-tier-business.ag-light .ag-honoraires__card::before{
-    background:linear-gradient(110deg,transparent 0%,rgba(212,180,92,.0) 30%,rgba(212,180,92,.35) 50%,rgba(212,180,92,.0) 70%,transparent 100%) !important;
-}
-body.ag-tier-business.ag-light .ag-boutique-card:hover{
-    border-color:#7B2D3B !important;
-    box-shadow:0 30px 60px rgba(0,0,0,.12),0 0 40px rgba(212,180,92,.25) !important;
-}
-body.ag-tier-business.ag-light .ag-boutique-card:hover .ag-boutique-card__title{
-    color:#7B2D3B !important;
-    text-shadow:0 0 18px rgba(123,45,59,.25) !important;
+    background:linear-gradient(110deg,transparent 0%,rgba(212,180,92,0) 30%,rgba(212,180,92,.45) 50%,rgba(212,180,92,0) 70%,transparent 100%) !important;
 }
 body.ag-tier-business.ag-light .ag-honoraires__card:hover{
-    border-color:#7B2D3B !important;
-    background:linear-gradient(135deg,rgba(212,180,92,.08) 0%,#fff 100%) !important;
-    box-shadow:0 30px 60px rgba(0,0,0,.12),0 0 40px rgba(212,180,92,.3) !important;
+    border-color:#D4B45C !important;
+    background:linear-gradient(135deg,rgba(212,180,92,.12) 0%,#fff 100%) !important;
+    box-shadow:0 30px 60px rgba(0,0,0,.15),0 0 50px rgba(212,180,92,.45) !important;
 }
 body.ag-tier-business.ag-light .ag-honoraires__card:hover .ag-honoraires__price,
 body.ag-tier-business.ag-light .ag-honoraires__card:hover .ag-honoraires__label{
-    color:#D4B45C !important;
-    text-shadow:0 0 14px rgba(212,180,92,.4) !important;
+    color:#B8941F !important;
+    text-shadow:0 0 18px rgba(212,180,92,.5) !important;
 }
 
 /* Cartes Équipe : halo doré pulsant au hover */
