@@ -678,7 +678,7 @@ html{scroll-behavior:smooth;}
 .ag-rdv__status--success{background:rgba(40,167,69,.1) !important;border:1px solid rgba(40,167,69,.3) !important;color:#28a745 !important;}
 .ag-rdv__status--error{background:rgba(220,53,69,.1) !important;border:1px solid rgba(220,53,69,.3) !important;color:#dc3545 !important;}
 .ag-rdv__rgpd{margin:20px 0 !important;}
-.ag-rdv__rgpd label{display:flex !important;gap:10px !important;align-items:flex-start !important;color:rgba(255,255,255,.5) !important;font-size:.85rem !important;line-height:1.5 !important;cursor:pointer !important;}
+.ag-rdv__rgpd label{display:flex !important;gap:10px !important;align-items:flex-start !important;color:#fff !important;font-size:.85rem !important;line-height:1.5 !important;cursor:pointer !important;}
 .ag-rdv__rgpd input[type="checkbox"]{margin-top:3px !important;accent-color:' . $gold . ' !important;}
 .ag-rdv__submit{width:100% !important;justify-content:center !important;margin-top:8px !important;font-size:1.05rem !important;padding:18px !important;}
 .ag-rdv__legal{text-align:center !important;color:rgba(255,255,255,.3) !important;font-size:.8rem !important;margin-top:16px !important;}
@@ -890,6 +890,8 @@ body.ag-visitor-light .ag-maitre__name{color:#D4B45C !important;}
 body.ag-visitor-light .ag-maitre__tag{background:rgba(212,180,92,.1) !important;border-color:rgba(212,180,92,.25) !important;color:#D4B45C !important;}
 body.ag-visitor-light .ag-maitre__specialties strong{color:#D4B45C !important;}
 body.ag-visitor-light .ag-rdv__rgpd label,body.ag-visitor-light .ag-rdv__rgpd span{color:#2A1A1E !important;}
+body.ag-visitor-light .ag-page-hero__title{color:#7B2D3B !important;}
+body.ag-visitor-light .ag-page-hero__lead{color:#5A4549 !important;}
 body.ag-visitor-light .ag-hero__title span,body.ag-visitor-light .ag-domaine-card__more,body.ag-visitor-light .ag-post-card__more,body.ag-visitor-light .ag-post-card__date,body.ag-visitor-light .ag-honoraires__price,body.ag-visitor-light .ag-domaine-examples__title,body.ag-visitor-light .ag-domaine-examples__list li::before,body.ag-visitor-light .ag-domaine-back a,body.ag-visitor-light .ag-entry-content a,body.ag-visitor-light .ag-footer-col a,body.ag-visitor-light .ag-cabinet__block h3,body.ag-visitor-light .ag-footer-col h3{color:#7B2D3B !important;}
 body.ag-visitor-light .ag-btn{background:#7B2D3B !important;color:#fff !important;box-shadow:0 4px 25px rgba(123,45,59,.25) !important;}
 body.ag-visitor-light .ag-btn:hover{background:#6A2433 !important;}
