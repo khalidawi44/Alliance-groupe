@@ -667,9 +667,10 @@ html{scroll-behavior:smooth;}
 }
 .ag-domaine-cta p{color:rgba(255,255,255,.6) !important;margin-bottom:16px !important;}
 .ag-domaine-back{
-    margin-top:32px !important;padding-top:20px !important;
+    margin-top:28px !important;padding-top:20px !important;
     border-top:1px solid rgba(255,255,255,.06) !important;text-align:center !important;
 }
+body.ag-visitor-light .ag-domaine-back{border-top-color:rgba(0,0,0,.06) !important;}
 .ag-domaine-back a{color:' . $gold . ' !important;text-decoration:none !important;font-weight:700 !important;}
 .ag-domaine-back a:hover{text-decoration:underline !important;}
 
