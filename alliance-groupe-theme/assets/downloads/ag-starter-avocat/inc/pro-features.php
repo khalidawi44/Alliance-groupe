@@ -883,6 +883,13 @@ body.ag-light .ag-domaine-card,body.ag-light .ag-honoraires__card,body.ag-light 
 body.ag-light .ag-section,body.ag-light .ag-section:nth-of-type(odd),body.ag-light .ag-domaines,body.ag-light .ag-honoraires{background:#F5F0EB !important;background-image:none !important;}
 body.ag-light .ag-section:nth-of-type(even),body.ag-light .ag-maitre,body.ag-light .ag-rdv,body.ag-light .ag-testimonials{background:#EDE6DF !important;background-image:none !important;}
 body.ag-light .ag-section.ag-maitre{background:#EDE6DF !important;background-image:none !important;border-color:rgba(123,45,59,.08) !important;}
+body.ag-light .ag-maitre__inner{background:#fff !important;border-color:rgba(123,45,59,.1) !important;box-shadow:0 4px 20px rgba(0,0,0,.06) !important;}
+body.ag-light .ag-maitre__bio{color:#2A1A1E !important;}
+body.ag-light .ag-maitre__meta{color:#5A4549 !important;}
+body.ag-light .ag-maitre__name{color:#7B2D3B !important;}
+body.ag-light .ag-maitre__tag{background:rgba(212,180,92,.12) !important;border-color:rgba(212,180,92,.3) !important;color:#7B2D3B !important;}
+body.ag-light .ag-maitre__specialties{color:#5A4549 !important;}
+body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
 body.ag-light .ag-section.ag-rdv{background:#EDE6DF !important;background-image:none !important;}
 body.ag-light .ag-section.ag-cabinet{background:#F5F0EB !important;background-image:none !important;}
 body.ag-light .ag-section.ag-domaines{background:#F5F0EB !important;background-image:none !important;}
@@ -1046,6 +1053,7 @@ body.ag-light .ag-rdv__field input,body.ag-light .ag-rdv__field select,body.ag-l
 body.ag-light .ag-section{background:#F5F0EB !important;background-image:none !important;}
 body.ag-light .ag-section:nth-of-type(even){background:#EDE6DF !important;background-image:none !important;}
 body.ag-light .ag-maitre{background:#EDE6DF !important;background-image:none !important;}
+body.ag-light .ag-maitre__inner{background:#fff !important;border-color:rgba(123,45,59,.1) !important;box-shadow:0 4px 20px rgba(0,0,0,.06) !important;}
 body.ag-light .ag-cabinet{background:#F5F0EB !important;background-image:none !important;}
 body.ag-light .ag-cabinet-map-section{background:#F5F0EB !important;background-image:none !important;}
 body.ag-light .ag-rdv{background:#EDE6DF !important;background-image:none !important;}
