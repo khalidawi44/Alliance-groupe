@@ -14,7 +14,11 @@ get_header();
 
 	<section class="ag-page-hero">
 		<div class="ag-container">
-			<div class="ag-domaine-hero-icon"><?php echo esc_html( $icon ? $icon : '⚖️' ); ?></div>
+			<div class="ag-domaine-hero-icon"><?php
+				echo function_exists( 'ag_starter_avocat_get_domaine_icon_html' )
+					? ag_starter_avocat_get_domaine_icon_html( $icon ) /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped */
+					: esc_html( $icon ? $icon : '⚖️' );
+			?></div>
 			<p class="ag-domaine-hero-tag"><?php esc_html_e( 'Domaine d\'expertise', 'ag-starter-avocat' ); ?></p>
 			<h1 class="ag-page-hero__title"><?php the_title(); ?></h1>
 		</div>

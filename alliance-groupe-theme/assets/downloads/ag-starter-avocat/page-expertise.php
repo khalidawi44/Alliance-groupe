@@ -31,7 +31,11 @@ get_header();
 						$examples = get_post_meta( $d->ID, '_ag_domaine_examples', true );
 						?>
 						<a href="<?php echo esc_url( get_permalink( $d->ID ) ); ?>" class="ag-domaine-card">
-							<div class="ag-domaine-card__icon"><?php echo esc_html( $icon ? $icon : '⚖️' ); ?></div>
+							<div class="ag-domaine-card__icon"><?php
+								echo function_exists( 'ag_starter_avocat_get_domaine_icon_html' )
+									? ag_starter_avocat_get_domaine_icon_html( $icon ) /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped */
+									: esc_html( $icon ? $icon : '⚖️' );
+							?></div>
 							<h3 class="ag-domaine-card__title"><?php echo esc_html( get_the_title( $d ) ); ?></h3>
 							<p class="ag-domaine-card__excerpt"><?php echo esc_html( wp_strip_all_tags( get_the_excerpt( $d ) ) ); ?></p>
 							<?php if ( $examples ) : ?>

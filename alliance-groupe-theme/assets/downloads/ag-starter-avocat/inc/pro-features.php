@@ -1408,6 +1408,17 @@ body.ag-tier-business.ag-light .ag-counter:hover{
     box-shadow:0 20px 40px rgba(0,0,0,.1),0 0 35px rgba(212,180,92,.45) !important;
 }
 
+/* ─── ICONES SVG inline (Domaines) — léger & vectoriel ─── */
+.ag-icon-svg{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;color:#D4B45C;transition:color .35s ease,transform .4s ease;}
+.ag-icon-svg svg{width:100%;height:100%;}
+.ag-icon-emoji{font-size:2.4rem;line-height:1;display:inline-block;}
+body.ag-light .ag-icon-svg{color:#7B2D3B;}
+.ag-domaine-card__icon{display:flex;justify-content:center;margin-bottom:14px;}
+.ag-domaine-hero-icon .ag-icon-svg{width:64px;height:64px;}
+body.ag-tier-business .ag-domaine-card:hover .ag-icon-svg{transform:scale(1.18) rotate(-5deg);}
+body.ag-tier-business:not(.ag-light) .ag-domaine-card:hover .ag-icon-svg{color:#E07585;filter:drop-shadow(0 0 12px rgba(160,61,77,.55));}
+body.ag-tier-business.ag-light .ag-domaine-card:hover .ag-icon-svg{color:#B8941F;filter:drop-shadow(0 0 12px rgba(212,180,92,.6));}
+
 /* ─── DOMAINES cards Business : même balayage que Boutique ─── */
 body.ag-tier-business .ag-domaine-card{
     position:relative !important;
