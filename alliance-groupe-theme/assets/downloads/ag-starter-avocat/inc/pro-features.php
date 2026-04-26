@@ -44,7 +44,7 @@ class AG_Pro_Features {
             array(), null );
         wp_enqueue_script( 'ag-premium-scripts',
             get_template_directory_uri() . '/inc/pro-scripts.js',
-            array(), '3.0.0', true );
+            array(), '4.0.' . time(), true );
         $skin = $this->get_skin();
         wp_localize_script( 'ag-premium-scripts', 'agSkin', array(
             'accent' => $skin['accent'],
