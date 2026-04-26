@@ -22,7 +22,10 @@
 			<?php if ( has_custom_logo() ) : ?>
 				<?php the_custom_logo(); ?>
 			<?php else : ?>
-				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a>
+				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
+					<?php do_action( 'ag_brand_fallback' ); ?>
+					<span class="ag-site-brand__text"><?php bloginfo( 'name' ); ?></span>
+				</a>
 			<?php endif; ?>
 		</div>
 

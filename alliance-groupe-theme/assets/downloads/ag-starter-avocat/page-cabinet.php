@@ -39,6 +39,7 @@ get_header();
 					<?php $spec = ag_starter_avocat_get_option( 'ag_maitre_specialties' ); if ( $spec ) : ?>
 						<p class="ag-maitre__specialties"><strong><?php esc_html_e( 'Specialites :', 'ag-starter-avocat' ); ?></strong> <?php echo esc_html( $spec ); ?></p>
 					<?php endif; ?>
+					<?php do_action( 'ag_inside_maitre_body' ); ?>
 				</div>
 			</div>
 		</div>

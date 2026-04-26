@@ -1408,6 +1408,29 @@ body.ag-tier-business.ag-light .ag-counter:hover{
     box-shadow:0 20px 40px rgba(0,0,0,.1),0 0 35px rgba(212,180,92,.45) !important;
 }
 
+/* ─── BUSINESS : Logo SVG par défaut + fonts plume + signature ─── */
+
+/* Fonts business : titres Playfair, body Cormorant, signature Allison */
+body.ag-tier-business{font-family:"Cormorant Garamond","Playfair Display",Georgia,serif !important;font-size:1.05rem !important;}
+body.ag-tier-business h1,body.ag-tier-business h2,body.ag-tier-business h3,body.ag-tier-business h4,body.ag-tier-business .ag-section-title,body.ag-tier-business .ag-page-hero__title,body.ag-tier-business .ag-hero__title{font-family:"Playfair Display","Cormorant Garamond",Georgia,serif !important;font-weight:700 !important;letter-spacing:.2px !important;}
+body.ag-tier-business .ag-maitre__name{font-family:"Allison","Playfair Display",cursive !important;font-size:3.6rem !important;font-style:normal !important;font-weight:400 !important;letter-spacing:0 !important;line-height:1 !important;}
+body.ag-tier-business .ag-domaine-card__title,body.ag-tier-business .ag-honoraires__label,body.ag-tier-business .ag-team-card__name,body.ag-tier-business .ag-boutique-card__title{font-family:"Playfair Display",serif !important;font-style:italic !important;}
+
+/* Logo SVG par défaut quand pas de custom_logo (Business uniquement) */
+body.ag-tier-business.ag-no-custom-logo .ag-site-brand a{display:flex !important;align-items:center !important;gap:10px !important;text-decoration:none !important;}
+body.ag-tier-business.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{display:inline-block;width:46px;height:46px;line-height:0;}
+body.ag-tier-business.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg svg{width:100%;height:100%;}
+body.ag-tier-business.ag-no-custom-logo .ag-site-brand__text{display:none !important;}
+@media(max-width:768px){body.ag-tier-business.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{width:38px;height:38px;}}
+
+/* Signature dans la section Maître */
+.ag-maitre__signature{margin-top:18px;padding-top:14px;border-top:1px solid rgba(212,180,92,.15);}
+.ag-maitre__signature img{max-width:240px;height:auto;display:block;opacity:.9;filter:none;}
+body.ag-tier-business:not(.ag-light) .ag-maitre__signature img{filter:invert(1) brightness(1.3) contrast(1.2);}
+body.ag-tier-business .ag-maitre__signature-text{font-family:"Allison","Mr Dafoe",cursive !important;font-size:3rem !important;line-height:1 !important;color:#D4B45C !important;display:inline-block;text-shadow:0 2px 8px rgba(212,180,92,.25);}
+body.ag-tier-business.ag-light .ag-maitre__signature-text{color:#7B2D3B !important;text-shadow:0 2px 8px rgba(123,45,59,.18);}
+body.ag-tier-business.ag-light .ag-maitre__signature{border-top-color:rgba(123,45,59,.15);}
+
 /* ─── ICONES SVG inline (Domaines) — léger & vectoriel ─── */
 .ag-icon-svg{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;color:#D4B45C;transition:color .35s ease,transform .4s ease;}
 .ag-icon-svg svg{width:100%;height:100%;}
@@ -1626,6 +1649,7 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
         $classes[] = 'ag-skin-' . get_theme_mod( 'ag_pro_skin', 'navy-or' );
         $skin = $this->get_skin();
         if ( ! empty( $skin['light'] ) ) $classes[] = 'ag-light';
+        if ( ! has_custom_logo() ) $classes[] = 'ag-no-custom-logo';
         if ( get_theme_mod( 'ag_pro_animations', true ) ) $classes[] = 'ag-has-animations';
         return $classes;
     }
@@ -1676,8 +1700,59 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
         add_action( 'ag_after_honoraires', array( $this, 'render_parallax_quote_2' ) );
         add_action( 'ag_after_cabinet',    array( $this, 'render_boutique' ) );
         add_action( 'ag_after_cabinet',    array( $this, 'render_parallax_quote_3' ), 20 );
+        // Signature dans la section Maître + logo SVG par défaut
+        add_action( 'ag_inside_maitre_body', array( $this, 'render_maitre_signature' ) );
+        add_action( 'ag_brand_fallback',     array( $this, 'render_default_logo_svg' ) );
+        // Fonts business (Cormorant Garamond + Allison signature)
+        add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_business_fonts' ), 11 );
         // Customizer fields pour équipe (4 collaborateurs)
         add_action( 'customize_register',  array( $this, 'register_business_customizer' ), 30 );
+    }
+
+    public function enqueue_business_fonts() {
+        if ( ! $this->is_at_least( 'business' ) ) return;
+        wp_enqueue_style( 'ag-business-fonts',
+            'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Allison&display=swap',
+            array(), '1.0'
+        );
+    }
+
+    public function render_default_logo_svg() {
+        // Fallback SVG affiché si pas de custom_logo (Business uniquement).
+        if ( ! $this->is_at_least( 'business' ) ) return;
+        if ( has_custom_logo() ) return;
+        ?>
+        <span class="ag-default-logo-svg" aria-hidden="true">
+            <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="agLogoG" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#FFE5A0"/>
+                        <stop offset="100%" stop-color="#B8941F"/>
+                    </linearGradient>
+                </defs>
+                <g fill="none" stroke="url(#agLogoG)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M30 6v48"/>
+                    <path d="M14 54h32"/>
+                    <path d="M18 14h24"/>
+                    <path d="M14 28a4 4 0 0 0 8 0L18 18l-4 10z" fill="url(#agLogoG)" fill-opacity=".25"/>
+                    <path d="M38 28a4 4 0 0 0 8 0L42 18l-4 10z" fill="url(#agLogoG)" fill-opacity=".25"/>
+                </g>
+            </svg>
+        </span>
+        <?php
+    }
+
+    public function render_maitre_signature() {
+        if ( ! $this->is_at_least( 'business' ) ) return;
+        $sig_url = get_theme_mod( 'ag_business_maitre_signature', '' );
+        $name    = ag_starter_avocat_get_option( 'ag_maitre_name' );
+        echo '<div class="ag-maitre__signature">';
+        if ( $sig_url ) {
+            echo '<img src="' . esc_url( $sig_url ) . '" alt="' . esc_attr__( 'Signature', 'ag-starter-avocat' ) . '" loading="lazy">';
+        } elseif ( $name ) {
+            echo '<span class="ag-maitre__signature-text">' . esc_html( str_replace( array( '[', ']' ), '', $name ) ) . '</span>';
+        }
+        echo '</div>';
     }
 
     // ─── Citations parallax (style alliance-groupe) ─────────────
@@ -1851,6 +1926,21 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
             $wp_customize->add_setting( "ag_business_team_{$i}_bio", array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
             $wp_customize->add_control( "ag_business_team_{$i}_bio", array( 'type' => 'textarea', 'label' => "Membre {$i} — Bio courte", 'section' => 'ag_business_team' ) );
         }
+
+        // Section Signature Maître (Business uniquement)
+        $wp_customize->add_section( 'ag_business_maitre', array(
+            'title'    => '✒️ Signature Maître (Business)',
+            'priority' => 26,
+        ) );
+        $wp_customize->add_setting( 'ag_business_maitre_signature', array(
+            'default'           => '',
+            'sanitize_callback' => 'esc_url_raw',
+        ) );
+        $wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, 'ag_business_maitre_signature', array(
+            'label'       => 'Image de signature (PNG transparent recommandé)',
+            'description' => 'Si vide, le nom du Maître est affiché en écriture cursive (police Allison).',
+            'section'     => 'ag_business_maitre',
+        ) ) );
 
         // Section Boutique
         $wp_customize->add_section( 'ag_business_shop', array(
