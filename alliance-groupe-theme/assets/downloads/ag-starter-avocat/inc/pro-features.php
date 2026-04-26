@@ -1210,43 +1210,48 @@ body.ag-light .ag-boutique .ag-tag--clean{
     margin:0 0 18px !important;
 }
 
-/* Effet étoiles qui foncent vers le viewer (warp speed) */
+/* Effet étoiles qui pulsent depuis le centre vers l'écran
+   Approche simple, garantie : pas de !important sur transform/opacity
+   pour que l'animation puisse les piloter sans conflit cascade */
 .ag-section.ag-boutique{position:relative !important;overflow:hidden !important;}
 .ag-boutique__stars{
     position:absolute !important;
-    inset:0 !important;
+    top:0;left:0;right:0;bottom:0;
     pointer-events:none !important;
     z-index:1 !important;
+    overflow:hidden;
 }
 .ag-boutique__star{
-    position:absolute !important;
-    top:50% !important;
-    left:50% !important;
-    width:70px !important;
-    height:70px !important;
-    color:#D4B45C !important;
-    transform-origin:center center !important;
+    position:absolute;
+    display:block;
+    width:60px;
+    height:60px;
+    color:#D4B45C;
+    opacity:0;
+    transform:scale(0);
+    transform-origin:center;
+    pointer-events:none;
+    filter:drop-shadow(0 0 20px rgba(255,229,160,.9)) drop-shadow(0 0 50px rgba(212,180,92,.65));
+    animation:agStarBurst 4s ease-out infinite both;
     will-change:transform,opacity;
-    filter:drop-shadow(0 0 25px rgba(212,180,92,.85)) drop-shadow(0 0 60px rgba(212,180,92,.5)) !important;
-    animation:agStarShoot 6s cubic-bezier(.4,0,.2,1) infinite !important;
 }
-.ag-boutique__star svg{width:100% !important;height:100% !important;display:block !important;}
-.ag-boutique__star--1{animation-delay:0s !important;}
-.ag-boutique__star--2{animation-delay:2s !important;left:30% !important;top:45% !important;}
-.ag-boutique__star--3{animation-delay:4s !important;left:70% !important;top:55% !important;}
+.ag-boutique__star svg{width:100%;height:100%;display:block;color:inherit;}
+.ag-boutique__star--1{top:25%;left:50%;margin-left:-30px;margin-top:-30px;animation-delay:0s;}
+.ag-boutique__star--2{top:55%;left:25%;margin-left:-30px;margin-top:-30px;animation-delay:1.3s;}
+.ag-boutique__star--3{top:45%;left:75%;margin-left:-30px;margin-top:-30px;animation-delay:2.6s;}
 
-@keyframes agStarShoot{
-    0%   {transform:translate(-50%,-50%) scale(0);opacity:0;}
-    8%   {opacity:1;}
-    50%  {transform:translate(-50%,-50%) scale(15);opacity:.9;}
-    80%  {transform:translate(-50%,-50%) scale(40);opacity:.25;}
-    100% {transform:translate(-50%,-50%) scale(80);opacity:0;}
+@keyframes agStarBurst{
+    0%   {transform:scale(0)  rotate(0deg);   opacity:0;}
+    15%  {transform:scale(1)  rotate(20deg);  opacity:1;}
+    50%  {transform:scale(8)  rotate(60deg);  opacity:.7;}
+    80%  {transform:scale(20) rotate(90deg);  opacity:.15;}
+    100% {transform:scale(35) rotate(120deg); opacity:0;}
 }
 
-/* Mode jour : étoiles dorées sur fond crème = parfait pour le doré, on garde */
+/* Mode jour : étoiles plus contenues + halo subtil */
 body.ag-light .ag-boutique__star{
-    color:#D4B45C !important;
-    filter:drop-shadow(0 0 22px rgba(212,180,92,.6)) drop-shadow(0 0 50px rgba(212,180,92,.35)) !important;
+    color:#D4B45C;
+    filter:drop-shadow(0 0 18px rgba(212,180,92,.55)) drop-shadow(0 0 35px rgba(212,180,92,.25));
 }
 
 /* Le contenu doit passer au-dessus des étoiles */
@@ -1401,9 +1406,15 @@ body.ag-tier-business:not(.ag-light) .ag-primary-menu a:hover{
     text-shadow:0 0 14px rgba(160,61,77,.5) !important;
 }
 
-/* Mode JOUR : balayage doré + texte doré sombre */
-body.ag-tier-business.ag-light .ag-primary-menu a::before{
-    background:linear-gradient(110deg,transparent 0%,rgba(212,180,92,0) 30%,rgba(212,180,92,.5) 50%,rgba(212,180,92,0) 70%,transparent 100%) !important;
+/* Mode JOUR : seulement underline doré + couleur du texte (PAS de hover de la case)
+   L'utilisateur ne veut pas le balayage/box bg en mode jour. */
+body.ag-tier-business.ag-light .ag-primary-menu a::before{display:none !important;}
+body.ag-tier-business.ag-light .ag-primary-menu a{
+    overflow:visible !important;
+    isolation:auto !important;
+    background:transparent !important;
+    border-radius:0 !important;
+    padding:10px 14px !important;
 }
 body.ag-tier-business.ag-light .ag-primary-menu a::after{
     background:linear-gradient(90deg,transparent,#D4B45C,transparent) !important;
@@ -1411,8 +1422,9 @@ body.ag-tier-business.ag-light .ag-primary-menu a::after{
 }
 body.ag-tier-business.ag-light .ag-primary-menu a:hover{
     color:#B8941F !important;
-    background:rgba(212,180,92,.12) !important;
-    text-shadow:0 0 12px rgba(212,180,92,.5) !important;
+    background:transparent !important;
+    transform:none !important;
+    text-shadow:0 0 8px rgba(212,180,92,.4) !important;
 }
 @media(max-width:768px){
     body.ag-tier-business .ag-primary-menu a::after{display:none !important;}
@@ -1508,10 +1520,13 @@ body.ag-tier-business .ag-domaine-card__title,body.ag-tier-business .ag-honorair
 
 /* Logo SVG par défaut quand pas de custom_logo (Business uniquement) */
 body.ag-tier-business.ag-no-custom-logo .ag-site-brand a{display:flex !important;align-items:center !important;gap:10px !important;text-decoration:none !important;}
-body.ag-tier-business.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{display:inline-block;width:46px;height:46px;line-height:0;}
-body.ag-tier-business.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg svg{width:100%;height:100%;}
+body.ag-tier-business.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{display:inline-block;width:64px;height:64px;line-height:0;filter:drop-shadow(0 4px 16px rgba(212,180,92,.35));transition:transform .35s ease,filter .35s ease;}
+body.ag-tier-business.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg svg{width:100%;height:100%;display:block;}
+body.ag-tier-business.ag-no-custom-logo .ag-site-brand:hover .ag-default-logo-svg{transform:scale(1.06) rotate(-3deg);filter:drop-shadow(0 6px 24px rgba(212,180,92,.55));}
 body.ag-tier-business.ag-no-custom-logo .ag-site-brand__text{display:none !important;}
-@media(max-width:768px){body.ag-tier-business.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{width:38px;height:38px;}}
+body.ag-tier-business.ag-light.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{filter:drop-shadow(0 3px 10px rgba(123,45,59,.25));}
+body.ag-tier-business.ag-light.ag-no-custom-logo .ag-site-brand:hover .ag-default-logo-svg{filter:drop-shadow(0 5px 18px rgba(123,45,59,.45));}
+@media(max-width:768px){body.ag-tier-business.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{width:50px;height:50px;}}
 
 /* Signature dans la section Maître */
 .ag-maitre__signature{margin-top:18px;padding-top:14px;border-top:1px solid rgba(212,180,92,.15);}
@@ -1895,44 +1910,47 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
     }
 
     public function render_default_logo_svg() {
-        // Fallback SVG affiché si pas de custom_logo (Business uniquement).
-        // Balance de la justice détaillée : pilier + traverse + chaînes
-        // + plateaux galbés + base trapézoïdale, dégradé doré 3 tons.
+        // Logo balance de justice — silhouette pleine + dégradé or + halo
+        // Visibilité maximale même à 30px : remplissages solides, pas de
+        // traits fins, halo de fond pour ressortir sur n'importe quel bg.
         if ( ! $this->is_at_least( 'business' ) ) return;
         if ( has_custom_logo() ) return;
         ?>
         <span class="ag-default-logo-svg" aria-hidden="true">
             <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                    <linearGradient id="agLogoGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient id="agLogoGold" x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" stop-color="#FFE5A0"/>
                         <stop offset="50%" stop-color="#D4B45C"/>
                         <stop offset="100%" stop-color="#9A7A2E"/>
                     </linearGradient>
-                    <linearGradient id="agLogoFill" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#FFE5A0" stop-opacity=".45"/>
-                        <stop offset="100%" stop-color="#B8941F" stop-opacity=".15"/>
-                    </linearGradient>
+                    <radialGradient id="agLogoHalo" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#FFE5A0" stop-opacity=".35"/>
+                        <stop offset="60%" stop-color="#D4B45C" stop-opacity=".12"/>
+                        <stop offset="100%" stop-color="#D4B45C" stop-opacity="0"/>
+                    </radialGradient>
                 </defs>
-                <!-- Finial top -->
-                <circle cx="32" cy="5" r="2.4" fill="url(#agLogoGold)"/>
-                <!-- Pillar -->
-                <line x1="32" y1="8" x2="32" y2="50" stroke="url(#agLogoGold)" stroke-width="2.6" stroke-linecap="round"/>
-                <!-- Horizontal beam with knob ends -->
-                <line x1="12" y1="12" x2="52" y2="12" stroke="url(#agLogoGold)" stroke-width="2.2" stroke-linecap="round"/>
-                <circle cx="12" cy="12" r="2" fill="url(#agLogoGold)"/>
-                <circle cx="52" cy="12" r="2" fill="url(#agLogoGold)"/>
-                <!-- Chains (dashed for texture) -->
-                <line x1="12" y1="14" x2="12" y2="22" stroke="url(#agLogoGold)" stroke-width="1.6" stroke-dasharray="2 1.6" stroke-linecap="round"/>
-                <line x1="52" y1="14" x2="52" y2="22" stroke="url(#agLogoGold)" stroke-width="1.6" stroke-dasharray="2 1.6" stroke-linecap="round"/>
-                <!-- Left pan -->
-                <path d="M4 22 L20 22 L17 28 Q12 30.5 7 28 Z" fill="url(#agLogoFill)" stroke="url(#agLogoGold)" stroke-width="1.6" stroke-linejoin="round"/>
-                <!-- Right pan -->
-                <path d="M44 22 L60 22 L57 28 Q52 30.5 47 28 Z" fill="url(#agLogoFill)" stroke="url(#agLogoGold)" stroke-width="1.6" stroke-linejoin="round"/>
-                <!-- Trapezoidal base -->
-                <path d="M22 50 L42 50 L46 56 L18 56 Z" fill="url(#agLogoFill)" stroke="url(#agLogoGold)" stroke-width="1.6" stroke-linejoin="round"/>
-                <!-- Foot line -->
-                <line x1="14" y1="58" x2="50" y2="58" stroke="url(#agLogoGold)" stroke-width="1.8" stroke-linecap="round"/>
+                <!-- Halo lumineux de fond -->
+                <circle cx="32" cy="32" r="31" fill="url(#agLogoHalo)"/>
+                <!-- Finial sphere top -->
+                <circle cx="32" cy="6" r="3.5" fill="url(#agLogoGold)"/>
+                <!-- Pillar (rectangle plein) -->
+                <rect x="30" y="9" width="4" height="42" fill="url(#agLogoGold)" rx="1"/>
+                <!-- Beam (rectangle plein) -->
+                <rect x="9" y="14" width="46" height="3.5" fill="url(#agLogoGold)" rx="1.5"/>
+                <!-- Beam end knobs -->
+                <circle cx="10" cy="15.7" r="3" fill="url(#agLogoGold)"/>
+                <circle cx="54" cy="15.7" r="3" fill="url(#agLogoGold)"/>
+                <!-- Left chain -->
+                <rect x="9" y="18" width="2" height="6" fill="url(#agLogoGold)"/>
+                <!-- Right chain -->
+                <rect x="53" y="18" width="2" height="6" fill="url(#agLogoGold)"/>
+                <!-- Left pan (filled triangle) -->
+                <path d="M2 24 L18 24 L10 32 Z" fill="url(#agLogoGold)"/>
+                <!-- Right pan (filled triangle) -->
+                <path d="M46 24 L62 24 L54 32 Z" fill="url(#agLogoGold)"/>
+                <!-- Base trapezoid (filled) -->
+                <path d="M22 51 L42 51 L46 58 L18 58 Z" fill="url(#agLogoGold)"/>
             </svg>
         </span>
         <?php
