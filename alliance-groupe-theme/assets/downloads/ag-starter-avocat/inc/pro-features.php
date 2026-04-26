@@ -1119,7 +1119,7 @@ body.ag-light .ag-section::before{background:linear-gradient(90deg,transparent,r
     .ag-maitre__photo{max-width:240px !important;margin:0 auto !important;}
 }
 
-/* === Mode sombre (defaut) === */
+/* === Mode sombre (defaut) — Premium suit le skin choisi (NE PAS TOUCHER) === */
 body:not(.ag-light) .ag-section.ag-maitre{background:linear-gradient(135deg,rgba(' . $gold_rgb . ',.04) 0%,#0F1320 100%) !important;}
 body:not(.ag-light) .ag-maitre__inner{background:#131826 !important;border-color:rgba(' . $gold_rgb . ',.18) !important;box-shadow:0 10px 40px rgba(0,0,0,.35) !important;}
 body:not(.ag-light) .ag-maitre__tag{background:rgba(' . $gold_rgb . ',.12) !important;color:' . $gold . ' !important;border-color:rgba(' . $gold_rgb . ',.3) !important;}
@@ -1128,6 +1128,17 @@ body:not(.ag-light) .ag-maitre__meta{color:rgba(255,255,255,.6) !important;}
 body:not(.ag-light) .ag-maitre__bio{color:#f3f3f3 !important;}
 body:not(.ag-light) .ag-maitre__specialties{color:rgba(255,255,255,.7) !important;}
 body:not(.ag-light) .ag-maitre__specialties strong{color:' . $gold . ' !important;}
+
+/* === BUSINESS uniquement : DORE forcé pour identité Maître ===
+   Le tier Business affiche TOUJOURS du doré sur la section Maître,
+   peu importe le skin (Or, Bordeaux, Bronze, Ardoise). Identité du theme.
+   Premium n\'est PAS affecté — il continue de suivre le skin choisi. */
+body.ag-tier-business:not(.ag-light) .ag-section.ag-maitre{background:linear-gradient(135deg,rgba(212,180,92,.04) 0%,#0F1320 100%) !important;}
+body.ag-tier-business:not(.ag-light) .ag-maitre__inner{border-color:rgba(212,180,92,.18) !important;}
+body.ag-tier-business:not(.ag-light) .ag-maitre__photo img{border-color:rgba(212,180,92,.28) !important;}
+body.ag-tier-business:not(.ag-light) .ag-maitre__tag{background:rgba(212,180,92,.12) !important;color:#D4B45C !important;border-color:rgba(212,180,92,.3) !important;}
+body.ag-tier-business:not(.ag-light) .ag-maitre__name{color:#D4B45C !important;}
+body.ag-tier-business:not(.ag-light) .ag-maitre__specialties strong{color:#D4B45C !important;}
 
 /* === Mode clair === */
 body.ag-light .ag-section.ag-maitre{background:#EDE6DF !important;background-image:none !important;}
