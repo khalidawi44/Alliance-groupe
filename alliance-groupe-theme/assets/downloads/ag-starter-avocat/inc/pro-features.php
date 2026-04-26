@@ -53,7 +53,7 @@ class AG_Pro_Features {
     private function get_skin() {
         $skins = array(
             'navy-or' => array(
-                'name'   => 'Classique — Navy & Or',
+                'name'   => 'Classique — Mode Nuit',
                 'accent' => '#D4B45C', 'accent_hover' => '#c5a44e', 'accent_rgb' => '212,180,92',
                 'bg'     => '#080808', 'bg2' => '#0a0a0f', 'bg_card' => '#14141c',
                 'tier'   => 'premium',
@@ -88,7 +88,7 @@ class AG_Pro_Features {
 
     public static function get_available_skins( $tier ) {
         $all = array(
-            'navy-or'  => array( 'name' => 'Classique — Navy & Or', 'tier' => 'premium', 'preview' => '#D4B45C' ),
+            'navy-or'  => array( 'name' => 'Classique — Mode Nuit', 'tier' => 'premium', 'preview' => '#D4B45C' ),
             'bordeaux' => array( 'name' => 'Bordeaux — Mode Jour', 'tier' => 'premium', 'preview' => '#7B2D3B' ),
             'bronze'   => array( 'name' => 'Bronze — Prestige', 'tier' => 'business', 'preview' => '#B08D57' ),
             'ardoise'  => array( 'name' => 'Ardoise — Sobriete', 'tier' => 'business', 'preview' => '#7A9BAE' ),
