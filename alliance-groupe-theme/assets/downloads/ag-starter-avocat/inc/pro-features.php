@@ -940,6 +940,7 @@ body:not(.ag-light) .ag-primary-menu a{color:rgba(255,255,255,.7) !important;}
 body:not(.ag-light) .ag-primary-menu a:hover{color:#D4B45C !important;}
 body:not(.ag-light) .ag-menu-toggle span{background:#fff !important;}
 body:not(.ag-light) .ag-cabinet__block p{color:#ddd !important;}
+body:not(.ag-light) .ag-cabinet__block a{color:#D4B45C !important;}
 body:not(.ag-light) .ag-rdv__field label{color:#ddd !important;}
 body:not(.ag-light) .ag-rdv__legal{color:#b0b0bc !important;}
 body:not(.ag-light) .ag-domaine-card__excerpt{color:#ddd !important;}
