@@ -78,7 +78,10 @@
             'body.ag-visitor-light .ag-domaine-examples__list li::before{color:#7B2D3B!important}',
             'body.ag-visitor-light .ag-footer-col p{color:#5A4549!important}',
             'body.ag-visitor-light .ag-footer-col li{color:#5A4549!important}',
-            'body.ag-visitor-light .ag-post-card__excerpt{color:#3A2A2E!important}',
+            'body.ag-visitor-light .ag-domaine-back a{color:#7B2D3B!important}',
+            'body.ag-visitor-light .ag-domaine-cta p{color:#3A2A2E!important}',
+            'body.ag-visitor-light .ag-domaine-hero-tag{color:#7B2D3B!important}',
+            'body.ag-visitor-light .ag-page-article .ag-entry-content li{color:#2A1A1E!important}',
         ].join('\n');
         document.head.appendChild(lightStyle);
 
