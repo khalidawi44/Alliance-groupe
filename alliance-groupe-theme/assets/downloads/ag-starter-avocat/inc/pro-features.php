@@ -865,6 +865,12 @@ body.ag-light .ag-section::before{background:linear-gradient(90deg,transparent,r
 body.ag-light .ag-domaine-card,body.ag-light .ag-honoraires__card,body.ag-light .ag-cabinet__block,body.ag-light .ag-rdv__form,body.ag-light .ag-testimonial-card,body.ag-light .ag-post-card,body.ag-light .ag-page-article,body.ag-light .ag-domaine-examples{background:#fff !important;border-color:rgba(0,0,0,.08) !important;box-shadow:0 4px 20px rgba(0,0,0,.06) !important;}
 body.ag-light .ag-section,body.ag-light .ag-section:nth-of-type(odd),body.ag-light .ag-domaines,body.ag-light .ag-honoraires{background:#F5F0EB !important;background-image:none !important;}
 body.ag-light .ag-section:nth-of-type(even),body.ag-light .ag-maitre,body.ag-light .ag-rdv,body.ag-light .ag-testimonials{background:#EDE6DF !important;background-image:none !important;}
+body.ag-light .ag-section.ag-maitre{background:#EDE6DF !important;background-image:none !important;border-color:rgba(123,45,59,.08) !important;}
+body.ag-light .ag-section.ag-rdv{background:#EDE6DF !important;background-image:none !important;}
+body.ag-light .ag-section.ag-cabinet{background:#F5F0EB !important;background-image:none !important;}
+body.ag-light .ag-section.ag-domaines{background:#F5F0EB !important;background-image:none !important;}
+body.ag-light .ag-section.ag-honoraires{background:#F5F0EB !important;background-image:none !important;}
+body.ag-light .ag-section.ag-cabinet-map-section{background:#F5F0EB !important;background-image:none !important;}
 body.ag-light .ag-site-footer{background:#EDE6DF !important;}
 body.ag-light .ag-cabinet,body.ag-light .ag-cabinet-map-section{background:#F5F0EB !important;background-image:none !important;}
 body.ag-light .ag-rdv-contact{background:linear-gradient(180deg,rgba(237,230,223,.9) 0%,rgba(237,230,223,.95) 100%),url("https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=80") center/cover no-repeat !important;background-attachment:fixed !important;}
