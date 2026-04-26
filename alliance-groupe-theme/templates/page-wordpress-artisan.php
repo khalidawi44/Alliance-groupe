@@ -31,7 +31,7 @@ set_query_var( 'ag_metier', array(
         'Aucun plugin requis, installation en 2 minutes',
     ),
 
-    'pro_features' => array(
+    'premium_features' => array(
         '<strong>Formulaire de devis avancé</strong> — type de travaux dropdown, surface m², code postal, urgence, budget estimé',
         '<strong>Galerie avant/après</strong> des chantiers avec slider (utilise les images à la une)',
         'Animations sur la section réalisations',
@@ -40,17 +40,6 @@ set_query_var( 'ag_metier', array(
         'Polices Google Fonts premium',
         'Support email 60 jours',
         'Documentation vidéo complète',
-    ),
-
-    'premium_features' => array(
-        '<strong>Tout Pro inclus</strong>',
-        '<strong>Réservation d\'interventions en ligne</strong> (WooCommerce) — les clients peuvent prendre rdv et payer l\'acompte',
-        '<strong>Planning Google Calendar intégré</strong> — synchro automatique avec votre agenda pro',
-        'Multi-langue 6 langues (utile en zone touristique ou frontalière)',
-        'Section "Garanties & certifications" (RGE, Qualibat, décennale) avec logos',
-        'Calculateur de devis indicatif (par exemple : m² × tarif/m²)',
-        'Support prioritaire 12 mois',
-        'Mises à jour à vie + appel expert 30 min',
     ),
 
     'business_features' => array(

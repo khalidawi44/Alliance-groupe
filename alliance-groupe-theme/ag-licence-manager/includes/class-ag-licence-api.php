@@ -97,15 +97,15 @@ class AG_Licence_API {
             'requires'     => '6.0',
             'requires_php' => '7.4',
             'changelog'    => '<h4>v1.4.0</h4><ul>'
-                . '<li>Nouveau : liens d\'achat directs vers Stripe (Pro/Business)</li>'
-                . '<li>Nouveau : widget tableau de bord avec comparatif des 3 packs</li>'
+                . '<li>Nouveau : liens d\'achat directs vers Stripe (Premium/Business)</li>'
+                . '<li>Nouveau : widget tableau de bord avec comparatif des 2 packs</li>'
                 . '<li>Nouveau : 4 sections verrouillées dans le Customizer (aperçu des fonctionnalités Premium)</li>'
                 . '<li>Nouveau : barre footer fixe "Passez à Premium" sur toutes les pages admin</li>'
-                . '<li>Nouveau : auto-patch du thème (licence client + updater + pro-features)</li>'
+                . '<li>Nouveau : auto-patch du thème (licence client + updater + premium-features)</li>'
                 . '<li>Nouveau : mise à jour automatique du plugin depuis le serveur Alliance Groupe</li>'
                 . '</ul>'
                 . '<h4>v1.3.0</h4><ul>'
-                . '<li>Auto-patch des thèmes avec fichiers licence et pro-features</li>'
+                . '<li>Auto-patch des thèmes avec fichiers licence et premium-features</li>'
                 . '<li>Correction de compatibilité WordPress 6.5</li>'
                 . '</ul>'
                 . '<h4>v1.2.0</h4><ul>'
@@ -129,10 +129,10 @@ class AG_Licence_API {
                 . '<h4>Packs payants disponibles</h4>'
                 . '<p>Débloquez des fonctionnalités avancées avec un paiement unique :</p><ul>'
                 . '<li><strong>Premium (99€)</strong> — Header sticky, animations, couleurs avancées, footer personnalisable</li>'
-                . '<li><strong>Business (149€)</strong> — Tout Premium + WooCommerce, multi-langue, pub reduite, session stratégique 30 min</li>'
+                . '<li><strong>Business (199€)</strong> — Tout Premium + WooCommerce, multi-langue, pub reduite, session stratégique 30 min</li>'
                 . '</ul>',
             'banners'      => array(
-                'high' => home_url( '/wp-content/themes/alliance-groupe-theme/assets/images/promo-cards/ag-pro-card.png' ),
+                'high' => home_url( '/wp-content/themes/alliance-groupe-theme/assets/images/promo-cards/ag-premium-card.png' ),
             ),
         ) );
 

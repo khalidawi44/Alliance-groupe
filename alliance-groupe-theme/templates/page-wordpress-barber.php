@@ -31,7 +31,7 @@ set_query_var( 'ag_metier', array(
         'Compatible AG Starter Companion (import demo 1 clic)',
     ),
 
-    'pro_features' => array(
+    'premium_features' => array(
         '<strong>Notifications SMS</strong> — le client reçoit un SMS quand c\'est bientôt son tour',
         '<strong>Statistiques avancées</strong> — nb coupes/jour, CA quotidien, temps d\'attente moyen, barber le plus rapide',
         '<strong>Multi-barbers</strong> — affectation automatique du client au prochain barber disponible',
@@ -40,17 +40,6 @@ set_query_var( 'ag_metier', array(
         'Couleur d\'accent secondaire personnalisable',
         'Footer personnalisable (couleur + texte)',
         'Support email 60 jours',
-    ),
-
-    'premium_features' => array(
-        '<strong>Tout Pro inclus</strong>',
-        '<strong>Réservation en ligne</strong> — le client peut réserver un créneau fixe (pas que walk-in)',
-        '<strong>Galerie Instagram intégrée</strong> — vos meilleures coupes affichées automatiquement',
-        '<strong>Boutique WooCommerce</strong> — vendez vos produits capillaires (cire, huile barbe, tondeuse)',
-        '<strong>Programme fidélité</strong> — 10ème coupe offerte, points de fidélité',
-        'Multilingue 6 langues (FR, EN, ES, AR, IT, DE)',
-        'Section avis clients Google intégrée',
-        'Support prioritaire 12 mois',
     ),
 
     'business_features' => array(

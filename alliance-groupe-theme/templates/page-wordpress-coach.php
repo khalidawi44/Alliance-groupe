@@ -31,7 +31,7 @@ set_query_var( 'ag_metier', array(
         'Aucun plugin requis, installation en 2 minutes',
     ),
 
-    'pro_features' => array(
+    'premium_features' => array(
         '<strong>Témoignages animés</strong> avec photo client + résultat obtenu (slider)',
         '<strong>Bloc "Parcours de transformation"</strong> (timeline avant/après)',
         '<strong>Booking Calendly intégré</strong> — réservation directe depuis le site',
@@ -40,17 +40,6 @@ set_query_var( 'ag_metier', array(
         'Sticky header avec bouton "Prendre rendez-vous" toujours visible',
         'Polices Google Fonts (Playfair pour le côté premium, Inter pour la lisibilité)',
         'Support email 60 jours',
-    ),
-
-    'premium_features' => array(
-        '<strong>Tout Pro inclus</strong>',
-        '<strong>Vente de formations en ligne</strong> (WooCommerce) — modules vidéo, téléchargements, paiements',
-        '<strong>Multi-langue 6 langues</strong> pour coaching international',
-        'Section "Programmes" avec tarifs dégressifs (5 séances, 10 séances, forfait 3 mois)',
-        'Newsletter intégrée (inscription + envoi automatique d\'articles)',
-        'Espace membre privé pour les clients actifs',
-        'Support prioritaire 12 mois + appel expert 30 min',
-        'Mises à jour à vie',
     ),
 
     'business_features' => array(

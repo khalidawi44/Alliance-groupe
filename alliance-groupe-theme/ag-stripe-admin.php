@@ -3,8 +3,8 @@
  * Alliance Groupe — Stripe Payment Links admin page
  *
  * Provides a minimal "Configuration Stripe AG" screen under the
- * Réglages menu so the user can paste the 3 Stripe Payment Link
- * URLs (Pro / Premium / Business) without editing any code. The
+ * Réglages menu so the user can paste the 2 Stripe Payment Link
+ * URLs (Premium / Business) without editing any code. The
  * values are stored in standard wp_options entries read by
  * templates/page-templates.php.
  */
@@ -32,17 +32,13 @@ add_action( 'admin_menu', function () {
 } );
 
 /**
- * Register the 3 options through the Settings API.
+ * Register the 2 options through the Settings API.
  */
 add_action( 'admin_init', function () {
 	$fields = array(
-		'ag_stripe_premium_url'      => array(
-			'label'       => 'Pack Premium — 99€',
-			'description' => 'URL du Payment Link Stripe pour le Pack Premium. Ex : https://buy.stripe.com/xxxxxxx',
-		),
 		'ag_stripe_premium_url'  => array(
 			'label'       => 'Pack Premium — 99€',
-			'description' => 'URL du Payment Link Stripe pour le Pack Premium.',
+			'description' => 'URL du Payment Link Stripe pour le Pack Premium. Ex : https://buy.stripe.com/xxxxxxx',
 		),
 		'ag_stripe_business_url' => array(
 			'label'       => 'Pack Business — 199€',
@@ -131,7 +127,6 @@ function ag_stripe_admin_render() {
 		return;
 	}
 
-	$pro      = get_option( 'ag_stripe_premium_url', 'STRIPE_PLACEHOLDER' );
 	$premium  = get_option( 'ag_stripe_premium_url', 'STRIPE_PLACEHOLDER' );
 	$business = get_option( 'ag_stripe_business_url', 'STRIPE_PLACEHOLDER' );
 	$q_single = get_option( 'ag_stripe_question_single_url', 'STRIPE_PLACEHOLDER' );
@@ -149,8 +144,8 @@ function ag_stripe_admin_render() {
 	<div class="wrap">
 		<h1>Configuration Stripe AG</h1>
 		<p style="font-size:.95rem;color:#50575e;max-width:760px;">
-			Collez ici les URLs des Payment Links Stripe pour les 3 packs
-			<strong>Pro</strong>, <strong>Premium</strong> et <strong>Business</strong>.
+			Collez ici les URLs des Payment Links Stripe pour les 2 packs
+			<strong>Premium</strong> et <strong>Business</strong>.
 			Tant qu'une URL est à <code>STRIPE_PLACEHOLDER</code> (ou vide), le bouton
 			correspondant sur la page <em>/templates-wordpress</em> retombe sur le
 			formulaire <em>/contact</em> avec le pack en paramètre (le lead est quand
@@ -162,9 +157,9 @@ function ag_stripe_admin_render() {
 			<ol style="margin:8px 0 0 22px;">
 				<li>Connectez-vous à votre <a href="https://dashboard.stripe.com/payment-links" target="_blank" rel="noopener">dashboard Stripe</a>.</li>
 				<li>Cliquez sur <em>Payment links</em> &gt; <em>Nouveau lien de paiement</em>.</li>
-				<li>Créez un produit (ex. « AG Starter Pro »), tarif unique, montant 49,00&nbsp;€ TTC.</li>
+				<li>Créez un produit (ex. « AG Starter Premium »), tarif unique, montant 99,00&nbsp;€ TTC.</li>
 				<li>Copiez le lien <code>https://buy.stripe.com/xxxxxxx</code> puis collez-le ci-dessous.</li>
-				<li>Répétez pour Premium (99&nbsp;€) et Business (149&nbsp;€).</li>
+				<li>Répétez pour Business (199&nbsp;€).</li>
 			</ol>
 		</div>
 
@@ -172,20 +167,6 @@ function ag_stripe_admin_render() {
 			<?php settings_fields( 'ag_stripe_config' ); ?>
 
 			<table class="form-table" role="presentation">
-				<tr>
-					<th scope="row">
-						<label for="ag_stripe_premium_url">Pack Premium — 99€</label>
-					</th>
-					<td>
-						<input type="url" name="ag_stripe_premium_url" id="ag_stripe_pro_url"
-							value="<?php echo esc_attr( $pro ); ?>"
-							class="regular-text code"
-							placeholder="https://buy.stripe.com/...">
-						<p class="description">
-							<?php echo $state_badge( $pro ); // phpcs:ignore ?>
-						</p>
-					</td>
-				</tr>
 				<tr>
 					<th scope="row">
 						<label for="ag_stripe_premium_url">Pack Premium — 99€</label>
@@ -288,21 +269,15 @@ function ag_stripe_admin_render() {
 		$tel              = '+33623526074';
 
 		$products = array(
-			'pro' => array(
-				'name'  => 'AG Starter Premium — 99€',
-				'price' => '49,00 €',
-				'desc'  => "Plugin WordPress qui transforme votre theme AG Starter gratuit en theme professionnel : animations, gradients, 10 blocs Gutenberg, customizer avance (50+ reglages), polices Google Fonts, sticky header, support email 60 jours. Compatible Restaurant/Artisan/Coach/Avocat. Paiement unique. 💎 Besoin d'un site sur-mesure qui genere +340% de leads ? Appel gratuit : alliancegroupe-inc.com/contact",
-				'success' => "Merci pour votre achat ! Vous recevrez votre fichier ZIP par email d'ici quelques minutes. 💎 Site sur-mesure (+340% leads en 3 mois) : alliancegroupe-inc.com/contact",
-			),
 			'premium' => array(
 				'name'  => 'AG Starter Premium — 99€',
 				'price' => '99,00 €',
-				'desc'  => "Plugin WordPress AG Starter Premium : tout Pro + multi-langue 6 langues (FR, EN, ES, IT, DE, AR), switcher automatique, sections temoignages/galerie/pricing, integration WooCommerce complete, support prioritaire 12 mois, mises a jour a vie, appel expert 30 min. Compatible 5 themes (Restaurant/Artisan/Coach/Avocat). 💎 Pour un site sur-mesure (+340% leads) : alliancegroupe-inc.com/contact",
-				'success' => "Merci pour votre achat ! Votre plugin Premium (multi-langue + WooCommerce) arrive par email sous 5 min. 💎 Site sur-mesure : alliancegroupe-inc.com/contact",
+				'desc'  => "Plugin WordPress AG Starter Premium : design travaille, animations, 10 blocs Gutenberg premium, customizer etendu (50+ reglages), sticky header, polices Google Fonts, support email 60 jours. Compatible 5 themes (Restaurant/Artisan/Coach/Avocat/Barber). Paiement unique. 💎 Besoin d'un site sur-mesure qui genere +340% de leads ? Appel gratuit : alliancegroupe-inc.com/contact",
+				'success' => "Merci pour votre achat ! Votre plugin Premium arrive par email sous 5 min. 💎 Site sur-mesure (+340% leads en 3 mois) : alliancegroupe-inc.com/contact",
 			),
 			'business' => array(
 				'name'  => 'AG Starter Business — 199€',
-				'price' => '149,00 €',
+				'price' => '199,00 €',
 				'desc'  => "Pack tout-en-un AG Starter : tout Premium + installation assistee en visio 1h, maintenance WP 1 an, audit SEO mensuel, rapport perf trimestriel, support 2h, white-label, integration CRM (HubSpot/Pipedrive/Brevo), appel strategique avec Fabrizio. Paiement unique. 💎 Site totalement sur-mesure (+340% leads en 3 mois) : alliancegroupe-inc.com/contact",
 				'success' => "Merci pour votre achat du Pack Business ! Notre equipe vous contacte sous 24h ouvrees pour planifier l'installation et l'appel strategique avec Fabrizio. Tel : 06.23.52.60.74",
 			),
@@ -312,9 +287,9 @@ function ag_stripe_admin_render() {
 		<div style="background:#fff8e6;border:1px solid #f5c64d;border-left:4px solid #D4B45C;padding:18px 22px;border-radius:6px;margin-bottom:24px;max-width:780px;">
 			<strong>🎯 Page de remerciement à utiliser comme « URL de réussite » dans Stripe :</strong><br>
 			<code style="background:#fff;padding:4px 8px;border-radius:3px;display:inline-block;margin-top:6px;font-size:.95rem;">
-				<?php echo esc_html( $thank_you_url ); ?>?pack=pro
+				<?php echo esc_html( $thank_you_url ); ?>?pack=premium
 			</code><br>
-			<small style="color:#665;">Remplacez <code>pro</code> par <code>premium</code> ou <code>business</code> selon le pack.</small>
+			<small style="color:#665;">Remplacez <code>premium</code> par <code>business</code> selon le pack.</small>
 			<p style="margin:10px 0 0;color:#665;font-size:.92rem;">
 				Cette page affiche un message de confirmation + un gros call-to-action vers
 				votre offre de site sur-mesure. <strong>Important</strong> : créez d'abord la

@@ -3,7 +3,7 @@
  * Template Name: Templates WordPress
  *
  * HUB : page courte qui oriente vers les 5 pages métier dédiées.
- * Les fiches complètes (features, Pro/Premium/Business, config,
+ * Les fiches complètes (features, Premium/Business, config,
  * installation) vivent sur les pages individuelles :
  *   /wordpress-avocat
  *   /wordpress-restaurant
@@ -133,21 +133,16 @@ $ag_hub_metiers = array(
             <h2 class="ag-section__title ag-anim" data-anim="title">Passez au <em>niveau supérieur</em></h2>
             <p class="ag-section__desc ag-anim" data-anim="desc">Les 5 templates gratuits sont volontairement basiques. Deux packs payants viennent compléter <strong style="color:#e8e6e0;">n'importe lequel des 5 thèmes</strong> — un seul achat, il fonctionne avec le thème actif. Le détail de chaque pack vit sur la page métier correspondante.</p>
 
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:1000px;margin:40px auto 0;">
-                <div style="padding:24px;background:rgba(212,180,92,.05);border:1px solid rgba(212,180,92,.25);border-radius:12px;text-align:center;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:760px;margin:40px auto 0;">
+                <div style="padding:24px;background:rgba(212,180,92,.08);border:2px solid rgba(212,180,92,.4);border-radius:12px;text-align:center;position:relative;">
+                    <span style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#D4B45C;color:#080808;font-size:.68rem;font-weight:700;padding:3px 12px;border-radius:100px;text-transform:uppercase;letter-spacing:1px;">Populaire</span>
                     <div style="font-size:2rem;margin-bottom:6px;">⚡</div>
                     <strong style="display:block;color:#D4B45C;font-size:1.1rem;margin-bottom:6px;">Pack Premium — 99€</strong>
                     <p style="color:#b0b0bc;font-size:.88rem;line-height:1.55;margin:0;">Design travaillé, animations, blocs Gutenberg premium, customizer étendu, sticky header, polices Google Fonts, support 60j.</p>
                 </div>
-                <div style="padding:24px;background:rgba(212,180,92,.08);border:2px solid rgba(212,180,92,.4);border-radius:12px;text-align:center;position:relative;">
-                    <span style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#D4B45C;color:#080808;font-size:.68rem;font-weight:700;padding:3px 12px;border-radius:100px;text-transform:uppercase;letter-spacing:1px;">Populaire</span>
-                    <div style="font-size:2rem;margin-bottom:6px;">🌍</div>
-                    <strong style="display:block;color:#D4B45C;font-size:1.1rem;margin-bottom:6px;">Pack Premium — 99€</strong>
-                    <p style="color:#b0b0bc;font-size:.88rem;line-height:1.55;margin:0;">Tout Pro + multi-langue 6 langues + WooCommerce + espace client + support prioritaire 12 mois + mises à jour à vie.</p>
-                </div>
                 <div style="padding:24px;background:rgba(212,180,92,.10);border:2px solid rgba(212,180,92,.5);border-radius:12px;text-align:center;">
                     <div style="font-size:2rem;margin-bottom:6px;">💼</div>
-                    <strong style="display:block;color:#D4B45C;font-size:1.1rem;margin-bottom:6px;">Pack Business — 149€</strong>
+                    <strong style="display:block;color:#D4B45C;font-size:1.1rem;margin-bottom:6px;">Pack Business — 199€</strong>
                     <p style="color:#b0b0bc;font-size:.88rem;line-height:1.55;margin:0;">Tout Premium + installation visio 1h + maintenance 1 an + audit SEO + white-label + intégration CRM + appel Fabrizio.</p>
                 </div>
             </div>
@@ -201,10 +196,10 @@ $ag_hub_metiers = array(
             <div class="ag-faq__list">
                 <?php
                 $tpl_faqs = [
-                    ['q' => 'Comment ça marche exactement ?', 'a' => 'Choisissez votre métier sur cette page, vous arrivez sur la fiche dédiée. Vous y trouvez la description complète du thème, le configurateur pour choisir votre niveau (Gratuit / Pro / Premium / Business), le bouton de téléchargement ou d\'achat, et les instructions d\'installation.'],
+                    ['q' => 'Comment ça marche exactement ?', 'a' => 'Choisissez votre métier sur cette page, vous arrivez sur la fiche dédiée. Vous y trouvez la description complète du thème, le configurateur pour choisir votre niveau (Gratuit / Premium / Business), le bouton de téléchargement ou d\'achat, et les instructions d\'installation.'],
                     ['q' => 'Les templates sont-ils vraiment en français ?', 'a' => '100% français natif. Tous les textes, titres, horaires, exemples et messages sont déjà rédigés en français — pas de Lorem ipsum, pas de strings anglaises à traduire. Vous remplacez juste les éléments entre crochets.'],
                     ['q' => 'Le plugin compagnon est-il obligatoire ?', 'a' => 'Non, mais il rend l\'installation 10x plus rapide. Sans le plugin, vous devez créer manuellement les 5 pages et le menu. Avec le plugin, un seul clic suffit. Il est gratuit et compatible avec les 5 thèmes.'],
-                    ['q' => 'Un pack Premium marche-t-il avec les 5 thèmes ?', 'a' => 'Oui. Vous achetez UN seul plugin (Pro, Premium ou Business) et il fonctionne avec n\'importe quel thème AG Starter que vous avez activé. Le plugin détecte automatiquement le thème actif et adapte ses features.'],
+                    ['q' => 'Un pack Premium marche-t-il avec les 5 thèmes ?', 'a' => 'Oui. Vous achetez UN seul plugin (Premium ou Business) et il fonctionne avec n\'importe quel thème AG Starter que vous avez activé. Le plugin détecte automatiquement le thème actif et adapte ses features.'],
                     ['q' => 'Les templates sont-ils sur WordPress.org ?', 'a' => 'En cours de soumission. Nos 5 thèmes et le plugin compagnon respectent les standards WordPress.org (GPL v2+, translation-ready, escaping strict, Theme Check compatible). Une fois validés, ils seront installables directement depuis votre admin WordPress.'],
                     ['q' => 'Et si je veux un vrai site sur-mesure ?', 'a' => 'Contactez-nous au 06.23.52.60.74 ou via la page contact. Premier appel de 30 min gratuit avec Fabrizio, sans engagement. Nos clients génèrent +340% de leads en moyenne avec un site sur-mesure vs un template.'],
                 ];

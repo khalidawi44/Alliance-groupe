@@ -3,39 +3,30 @@
  * Template Name: Merci pour votre achat
  *
  * Page de remerciement post-paiement Stripe. Détecte le pack acheté
- * via le paramètre ?pack=pro|premium|business dans l'URL et affiche
+ * via le paramètre ?pack=premium|business dans l'URL et affiche
  * le bon contenu. Met en avant l'offre de site sur-mesure pour
  * remonter les acheteurs vers le ticket le plus élevé.
  */
 
 get_header();
 
-$pack = isset( $_GET['pack'] ) ? sanitize_key( $_GET['pack'] ) : 
-'premium';
+$pack = isset( $_GET['pack'] ) ? sanitize_key( $_GET['pack'] ) : 'premium';
 $pack_data = array(
-    
-'premium' => array(
-        'title'  => 'AG Starter Pro',
-        'price'  => '99€',
-        'icon'   => '⚡',
-        'desc'   => 'Votre plugin AG Starter Pro est en cours de préparation. Vous le recevrez par email à l\'adresse utilisée pour le paiement, dans les prochaines minutes.',
-    ),
     'premium' => array(
         'title'  => 'AG Starter Premium',
         'price'  => '99€',
-        'icon'   => '🌍',
-        'desc'   => 'Votre plugin AG Starter Premium (incluant les 6 langues et l\'intégration WooCommerce) est en cours de préparation. Vous le recevrez par email à l\'adresse utilisée pour le paiement, dans les prochaines minutes.',
+        'icon'   => '⚡',
+        'desc'   => 'Votre plugin AG Starter Premium est en cours de préparation. Vous le recevrez par email à l\'adresse utilisée pour le paiement, dans les prochaines minutes.',
     ),
     'business' => array(
         'title'  => 'AG Starter Business',
-        'price'  => '149€',
+        'price'  => '199€',
         'icon'   => '💼',
         'desc'   => 'Votre Pack Business est confirmé. Notre équipe va vous contacter sous 24h ouvrées pour planifier votre installation assistée et l\'appel stratégique de lancement avec Fabrizio.',
     ),
 );
 if ( ! isset( $pack_data[ $pack ] ) ) {
-    $pack = 
-'premium';
+    $pack = 'premium';
 }
 $current = $pack_data[ $pack ];
 ?>
@@ -74,7 +65,7 @@ $current = $pack_data[ $pack ];
 
                 <div style="text-align:center;margin-bottom:36px;">
                     <span style="display:inline-block;padding:8px 24px;background:rgba(212,180,92,.2);border:1px solid rgba(212,180,92,.5);border-radius:100px;color:#D4B45C;font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;">💎 Et si vous alliez plus loin ?</span>
-                    <h2 style="font-size:clamp(1.7rem,3.5vw,2.5rem);margin-bottom:16px;line-height:1.2;">Votre business mérite plus qu'un template, <em>même Pro</em></h2>
+                    <h2 style="font-size:clamp(1.7rem,3.5vw,2.5rem);margin-bottom:16px;line-height:1.2;">Votre business mérite plus qu'un template, <em>même Premium</em></h2>
                     <p style="font-size:1.1rem;color:#e8e6e0;max-width:780px;margin:0 auto;line-height:1.7;">
                         Votre achat est une excellente première étape. Mais si votre objectif est
                         de <strong style="color:#fff;">vraiment générer des clients et du chiffre d'affaires</strong>,

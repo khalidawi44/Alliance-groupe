@@ -144,7 +144,7 @@ $has_screenshot = file_exists( $screenshot_file );
                         <p class="ag-cfg__panel-note">Aucune carte bancaire demandée. Juste un email pour vous envoyer le ZIP.</p>
                     </div>
 
-                    <!-- Pro -->
+                    <!-- Premium -->
                     <div class="ag-cfg__panel" data-tier="premium" role="tabpanel">
                         <div class="ag-cfg__panel-head">
                             <h3>⚡ Pack Premium pour <?php echo esc_html( $ag_metier['name'] ); ?></h3>
@@ -152,7 +152,7 @@ $has_screenshot = file_exists( $screenshot_file );
                         </div>
                         <p class="ag-cfg__panel-sub">Le plugin qui transforme le thème basique en thème professionnel finalisé.</p>
                         <ul class="ag-cfg__features">
-                            <?php foreach ( $ag_metier['pro_features'] as $feat ) : ?>
+                            <?php foreach ( $ag_metier['premium_features'] as $feat ) : ?>
                             <li><?php echo wp_kses_post( $feat ); ?></li>
                             <?php endforeach; ?>
                         </ul>
@@ -161,8 +161,6 @@ $has_screenshot = file_exists( $screenshot_file );
                         </a>
                         <p class="ag-cfg__panel-note">Paiement unique, pas d'abonnement. Compatible avec les 5 thèmes AG Starter.</p>
                     </div>
-
-                    <!-- Premium tier removed — only Free/Pro/Business -->
 
                     <!-- Business -->
                     <div class="ag-cfg__panel" data-tier="business" role="tabpanel">

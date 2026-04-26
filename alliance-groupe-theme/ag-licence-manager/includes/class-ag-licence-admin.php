@@ -328,12 +328,12 @@ class AG_Licence_Admin {
         ?>
         <div style="max-width:700px;background:#fff;padding:24px;border:1px solid #ccd0d4;">
             <h2 style="margin-top:0;">Versions Premium disponibles</h2>
-            <p>Le fichier ZIP doit être dans <code>wp-content/uploads/ag-pro-packages/</code>.</p>
+            <p>Le fichier ZIP doit être dans <code>wp-content/uploads/ag-premium-packages/</code>.</p>
             <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                 <?php wp_nonce_field( 'ag_lm_save_versions' ); ?>
                 <input type="hidden" name="action" value="ag_lm_save_versions">
                 <table class="widefat">
-                    <thead><tr><th>Thème</th><th>Version Pro</th><th>Fichier ZIP</th></tr></thead>
+                    <thead><tr><th>Thème</th><th>Version Premium</th><th>Fichier ZIP</th></tr></thead>
                     <tbody>
                     <?php foreach ( $themes as $slug ) :
                         $v = $versions[ $slug ] ?? array( 'version' => '', 'file' => '' );
@@ -341,7 +341,7 @@ class AG_Licence_Admin {
                         <tr>
                             <td><strong><?php echo esc_html( $slug ); ?></strong></td>
                             <td><input type="text" name="v[<?php echo esc_attr( $slug ); ?>][version]" value="<?php echo esc_attr( $v['version'] ); ?>" placeholder="2.0.0" style="width:100px;"></td>
-                            <td><input type="text" name="v[<?php echo esc_attr( $slug ); ?>][file]" value="<?php echo esc_attr( $v['file'] ); ?>" placeholder="<?php echo esc_attr( $slug ); ?>-pro-2.0.0.zip" class="regular-text"></td>
+                            <td><input type="text" name="v[<?php echo esc_attr( $slug ); ?>][file]" value="<?php echo esc_attr( $v['file'] ); ?>" placeholder="<?php echo esc_attr( $slug ); ?>-premium-2.0.0.zip" class="regular-text"></td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>
@@ -407,7 +407,7 @@ class AG_Licence_Admin {
         $data['expires_at'] = $exp ? $exp . ' 23:59:59' : null;
 
         // Update prefix to match tier
-        $prefixes = array( 'pro' => 'AGPRO', 'premium' => 'AGPRM', 'business' => 'AGBUS' );
+        $prefixes = array( 'premium' => 'AGPRM', 'business' => 'AGBUS' );
         if ( isset( $prefixes[ $data['tier'] ] ) ) $data['licence_prefix'] = $prefixes[ $data['tier'] ];
 
         AG_Licence_DB::update( $id, $data );

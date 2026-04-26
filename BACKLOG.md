@@ -66,11 +66,11 @@ la soumission wordpress.org.
 **Statut** : ⏸️ Placeholders en place, le client doit créer les
 Payment Links dans son dashboard Stripe.
 
-Les 3 boutons Pack Pro / Premium / Business pointent actuellement
+Les 2 boutons Pack Premium / Business pointent actuellement
 vers des URLs placeholder dans `templates/page-templates.php`.
-Quand le client a créé les 3 Payment Links dans son dashboard
+Quand le client a créé les 2 Payment Links dans son dashboard
 Stripe, il doit remplacer les placeholders ou utiliser les
-options WordPress (`ag_stripe_pro_url`, `ag_stripe_premium_url`,
+options WordPress (`ag_stripe_premium_url`,
 `ag_stripe_business_url`).
 
 URLs type Stripe : `https://buy.stripe.com/xxxxxxx`.
@@ -107,7 +107,7 @@ Actions restantes côté client :
 - **Version multi-langue** : les traductions `.pot` / `.po` / `.mo`
   pour FR, EN, ES, IT, DE, AR — argument principal du pack Premium.
   Pour l'instant juste promis sur la landing page.
-- **Plugins Pro, Premium et Business** : réellement coder les 3 plugins payants
+- **Plugins Premium et Business** : réellement coder les 2 plugins payants
   une fois qu'il y a les premiers acheteurs (ne pas construire en
   l'air). Aujourd'hui les boutons Stripe vendent une promesse —
   on devra livrer le code après le premier achat.
