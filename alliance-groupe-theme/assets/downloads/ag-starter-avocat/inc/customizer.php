@@ -36,7 +36,7 @@ function ag_starter_avocat_customizer_defaults() {
 		// Hero.
 		'ag_hero_show'          => true,
 		'ag_hero_prefix'        => 'Cabinet',
-		'ag_hero_brand'         => '[Maitre Nom]',
+		'ag_hero_brand'         => '[Maître Nom]',
 		'ag_hero_subtitle'      => 'Avocat au barreau, conseil juridique et defense de vos interets en toute confidentialite.',
 		'ag_hero_button'        => 'Prendre rendez-vous',
 		'ag_hero_button_url'    => '/rendez-vous/',
@@ -53,7 +53,7 @@ function ag_starter_avocat_customizer_defaults() {
 		'ag_cabinet_rpva'       => '',
 		// Le Maître.
 		'ag_maitre_show'        => true,
-		'ag_maitre_name'        => '[Maitre Nom]',
+		'ag_maitre_name'        => '[Maître Nom]',
 		'ag_maitre_barreau'     => 'Inscrit au Barreau de Paris',
 		'ag_maitre_year'        => '2010',
 		'ag_maitre_bio'         => "Avocat au barreau depuis plus de quinze ans, j'accompagne particuliers et entreprises avec rigueur, ecoute et discretion. Mon approche : analyser chaque dossier en profondeur, vous expliquer clairement vos options, et batir avec vous la strategie la plus efficace.",

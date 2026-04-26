@@ -27,7 +27,7 @@ get_header();
 					</div>
 				<?php endif; ?>
 				<div class="ag-maitre__body">
-					<span class="ag-maitre__tag"><?php esc_html_e( 'Le Maitre', 'ag-starter-avocat' ); ?></span>
+					<span class="ag-maitre__tag"><?php esc_html_e( 'Le Maître', 'ag-starter-avocat' ); ?></span>
 					<h2 class="ag-maitre__name"><?php echo esc_html( ag_starter_avocat_get_option( 'ag_maitre_name' ) ); ?></h2>
 					<div class="ag-maitre__meta">
 						<span><?php echo esc_html( ag_starter_avocat_get_option( 'ag_maitre_barreau' ) ); ?></span>
