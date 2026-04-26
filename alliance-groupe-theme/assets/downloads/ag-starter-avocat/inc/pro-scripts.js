@@ -59,9 +59,11 @@
             var dark1 = '#080808', dark2 = '#12121a';
             document.querySelectorAll('.ag-section').forEach(function(s, i) {
                 if (light) {
-                    s.style.cssText += 'background:' + (i % 2 === 0 ? cream1 : cream2) + ' !important;background-image:none !important;';
+                    s.style.setProperty('background', (i % 2 === 0 ? cream1 : cream2), 'important');
+                    s.style.setProperty('background-image', 'none', 'important');
                 } else {
-                    s.style.cssText = s.style.cssText.replace(/background:[^;]+!important;background-image:[^;]+!important;/g, '');
+                    s.style.removeProperty('background');
+                    s.style.removeProperty('background-image');
                 }
             });
             // Force hero/page-hero
