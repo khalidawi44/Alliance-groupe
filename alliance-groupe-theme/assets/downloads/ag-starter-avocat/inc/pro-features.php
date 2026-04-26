@@ -1249,20 +1249,95 @@ body.ag-tier-business .ag-boutique-card__btn:hover{
     transform:translateY(-2px) !important;
 }
 
-/* Cartes Boutique : ligne dorée qui balaye en haut au hover */
-.ag-boutique-card{position:relative !important;overflow:hidden !important;}
+/* Cartes Boutique + Honoraires : balayage doré DANS la carte au hover */
+@keyframes agGoldSweep{
+    0%{transform:translateX(-100%) skewX(-15deg);}
+    100%{transform:translateX(200%) skewX(-15deg);}
+}
+
+/* Boutique cards */
+.ag-boutique-card{position:relative !important;overflow:hidden !important;transition:transform .4s ease,box-shadow .5s ease,border-color .4s ease !important;}
 .ag-boutique-card::before{
     content:"" !important;
     position:absolute !important;
     top:0 !important;
     left:0 !important;
-    width:100% !important;
-    height:3px !important;
-    background:linear-gradient(90deg,transparent 0%,#D4B45C 50%,transparent 100%) !important;
-    transform:translateX(-100%) !important;
-    transition:none !important;
+    width:60% !important;
+    height:100% !important;
+    background:linear-gradient(110deg,transparent 0%,rgba(212,180,92,.0) 30%,rgba(212,180,92,.35) 50%,rgba(212,180,92,.0) 70%,transparent 100%) !important;
+    transform:translateX(-100%) skewX(-15deg) !important;
+    pointer-events:none !important;
+    z-index:1 !important;
 }
-.ag-boutique-card:hover::before{animation:agScanLine 1.2s ease-in-out infinite !important;}
+.ag-boutique-card:hover::before{animation:agGoldSweep 1.6s ease-in-out infinite !important;}
+.ag-boutique-card>*{position:relative !important;z-index:2 !important;}
+.ag-boutique-card:hover{
+    transform:translateY(-8px) !important;
+    border-color:#D4B45C !important;
+    box-shadow:0 30px 60px rgba(0,0,0,.55),0 0 50px rgba(212,180,92,.4) !important;
+}
+.ag-boutique-card:hover .ag-boutique-card__title{color:#D4B45C !important;text-shadow:0 0 18px rgba(212,180,92,.4) !important;}
+.ag-boutique-card:hover .ag-boutique-card__icon{transform:scale(1.15) rotate(-5deg);transition:transform .4s ease;}
+.ag-boutique-card:hover .ag-boutique-card__price{text-shadow:0 0 25px rgba(212,180,92,.7) !important;}
+.ag-boutique-card__icon,.ag-boutique-card__title{transition:color .3s ease,transform .4s ease,text-shadow .3s ease !important;}
+
+/* Honoraires cards en Business : transformation dorée au hover */
+body.ag-tier-business .ag-honoraires__card{
+    position:relative !important;
+    overflow:hidden !important;
+    transition:transform .4s ease,box-shadow .5s ease,border-color .4s ease,background .4s ease !important;
+}
+body.ag-tier-business .ag-honoraires__card::before{
+    content:"" !important;
+    position:absolute !important;
+    top:0 !important;
+    left:0 !important;
+    width:60% !important;
+    height:100% !important;
+    background:linear-gradient(110deg,transparent 0%,rgba(212,180,92,.0) 30%,rgba(212,180,92,.4) 50%,rgba(212,180,92,.0) 70%,transparent 100%) !important;
+    transform:translateX(-100%) skewX(-15deg) !important;
+    pointer-events:none !important;
+    z-index:1 !important;
+}
+body.ag-tier-business .ag-honoraires__card:hover::before{animation:agGoldSweep 1.6s ease-in-out infinite !important;}
+body.ag-tier-business .ag-honoraires__card>*{position:relative !important;z-index:2 !important;}
+body.ag-tier-business .ag-honoraires__card:hover{
+    transform:translateY(-8px) !important;
+    border-color:#D4B45C !important;
+    box-shadow:0 30px 60px rgba(0,0,0,.55),0 0 50px rgba(212,180,92,.45) !important;
+    background:linear-gradient(135deg,rgba(212,180,92,.06) 0%,#131826 100%) !important;
+}
+body.ag-tier-business .ag-honoraires__card:hover .ag-honoraires__price,
+body.ag-tier-business .ag-honoraires__card:hover .ag-honoraires__label{
+    color:#D4B45C !important;
+    text-shadow:0 0 18px rgba(212,180,92,.45) !important;
+}
+body.ag-tier-business .ag-honoraires__price,
+body.ag-tier-business .ag-honoraires__label{transition:color .35s ease,text-shadow .35s ease !important;}
+
+/* Mode clair : meme animation mais en bordeaux + or léger */
+body.ag-tier-business.ag-light .ag-boutique-card::before,
+body.ag-tier-business.ag-light .ag-honoraires__card::before{
+    background:linear-gradient(110deg,transparent 0%,rgba(212,180,92,.0) 30%,rgba(212,180,92,.35) 50%,rgba(212,180,92,.0) 70%,transparent 100%) !important;
+}
+body.ag-tier-business.ag-light .ag-boutique-card:hover{
+    border-color:#7B2D3B !important;
+    box-shadow:0 30px 60px rgba(0,0,0,.12),0 0 40px rgba(212,180,92,.25) !important;
+}
+body.ag-tier-business.ag-light .ag-boutique-card:hover .ag-boutique-card__title{
+    color:#7B2D3B !important;
+    text-shadow:0 0 18px rgba(123,45,59,.25) !important;
+}
+body.ag-tier-business.ag-light .ag-honoraires__card:hover{
+    border-color:#7B2D3B !important;
+    background:linear-gradient(135deg,rgba(212,180,92,.08) 0%,#fff 100%) !important;
+    box-shadow:0 30px 60px rgba(0,0,0,.12),0 0 40px rgba(212,180,92,.3) !important;
+}
+body.ag-tier-business.ag-light .ag-honoraires__card:hover .ag-honoraires__price,
+body.ag-tier-business.ag-light .ag-honoraires__card:hover .ag-honoraires__label{
+    color:#D4B45C !important;
+    text-shadow:0 0 14px rgba(212,180,92,.4) !important;
+}
 
 /* Cartes Équipe : halo doré pulsant au hover */
 .ag-team-card{transition:transform .4s ease,box-shadow .5s ease,border-color .4s ease !important;}
