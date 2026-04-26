@@ -672,8 +672,8 @@ html{scroll-behavior:smooth;}
 }
 .ag-domaine-cta p{color:rgba(255,255,255,.6) !important;margin-bottom:16px !important;}
 .ag-domaine-back{
-    margin-top:20px !important;padding:0 !important;
-    border:none !important;text-align:center !important;
+    margin-top:16px !important;padding-top:14px !important;
+    border-top:1px solid rgba(255,255,255,.08) !important;text-align:center !important;
 }
 .ag-domaine-back a{color:' . $gold . ' !important;text-decoration:none !important;font-weight:700 !important;}
 .ag-domaine-back a:hover{text-decoration:underline !important;}

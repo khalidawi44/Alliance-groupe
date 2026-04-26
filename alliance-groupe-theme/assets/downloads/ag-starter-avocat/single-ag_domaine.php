@@ -36,15 +36,15 @@ get_header();
 							<li><?php echo esc_html( $ex ); ?></li>
 						<?php endforeach; ?>
 					</ul>
+					<nav class="ag-domaine-back">
+						<a href="<?php echo esc_url( ag_page_url( 'expertise' ) ); ?>">← <?php esc_html_e( 'Tous les domaines d\'expertise', 'ag-starter-avocat' ); ?></a>
+					</nav>
 				</aside>
 			<?php endif; ?>
 			<div class="ag-domaine-cta">
 				<p><?php esc_html_e( 'Vous avez un dossier dans ce domaine ?', 'ag-starter-avocat' ); ?></p>
 				<a href="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" class="ag-btn"><?php esc_html_e( 'Prendre rendez-vous →', 'ag-starter-avocat' ); ?></a>
 			</div>
-			<nav class="ag-domaine-back">
-				<a href="<?php echo esc_url( ag_page_url( 'expertise' ) ); ?>">← <?php esc_html_e( 'Tous les domaines d\'expertise', 'ag-starter-avocat' ); ?></a>
-			</nav>
 		</article>
 	<?php endwhile; ?>
 	</div>
