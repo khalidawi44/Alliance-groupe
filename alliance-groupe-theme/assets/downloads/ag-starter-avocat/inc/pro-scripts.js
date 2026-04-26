@@ -51,29 +51,15 @@
         if (saved === 'dark') document.body.classList.remove('ag-light');
         else if (saved === 'light') document.body.classList.add('ag-light');
 
+        // Inject light mode style tag
+        var lightCSS = document.createElement('style');
+        lightCSS.id = 'ag-light-force';
+        lightCSS.textContent = 'body.ag-light .ag-maitre,body.ag-light .ag-section.ag-maitre{background:#EDE6DF !important;background-image:none !important;}body.ag-light .ag-section{background:#F5F0EB !important;background-image:none !important;}body.ag-light .ag-section:nth-of-type(even){background:#EDE6DF !important;}body.ag-light .ag-cabinet,body.ag-light .ag-cabinet-map-section{background:#F5F0EB !important;background-image:none !important;}body.ag-light .ag-rdv{background:#EDE6DF !important;background-image:none !important;}body.ag-light .ag-hero{background:linear-gradient(180deg,rgba(245,240,235,.15) 0%,rgba(245,240,235,.93) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center 20%/cover no-repeat !important;}body.ag-light .ag-hero::before{background:none !important;}body.ag-light .ag-page-hero{background:linear-gradient(180deg,rgba(245,240,235,.2) 0%,rgba(245,240,235,.95) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center 20%/cover !important;}body.ag-light .ag-site-header.scrolled{background:rgba(245,240,235,.97) !important;}body.ag-light .ag-rdv__form{background:#fff !important;}body.ag-light .ag-rdv-contact{background:#EDE6DF !important;background-image:none !important;}body.ag-light .ag-site-footer{background:#EDE6DF !important;}';
+        document.head.appendChild(lightCSS);
+
         function applyMode() {
             var light = document.body.classList.contains('ag-light');
             if (icon) icon.textContent = light ? '☀️' : '🌙';
-            // Force backgrounds directly on elements
-            var cream1 = '#F5F0EB', cream2 = '#EDE6DF';
-            var dark1 = '#080808', dark2 = '#12121a';
-            document.querySelectorAll('.ag-section').forEach(function(s, i) {
-                if (light) {
-                    s.style.setProperty('background', (i % 2 === 0 ? cream1 : cream2), 'important');
-                    s.style.setProperty('background-image', 'none', 'important');
-                } else {
-                    s.style.removeProperty('background');
-                    s.style.removeProperty('background-image');
-                }
-            });
-            // Force hero/page-hero
-            document.querySelectorAll('.ag-hero,.ag-page-hero').forEach(function(el) {
-                if (light) {
-                    el.style.setProperty('background', 'linear-gradient(180deg,rgba(245,240,235,.15) 0%,rgba(245,240,235,.93) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center 20%/cover no-repeat', 'important');
-                } else {
-                    el.style.removeProperty('background');
-                }
-            });
         }
         applyMode();
 
