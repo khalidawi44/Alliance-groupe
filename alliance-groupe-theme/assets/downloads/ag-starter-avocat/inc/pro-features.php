@@ -1065,6 +1065,80 @@ body.ag-light .ag-hero::before{background:none !important;}
 body.ag-light .ag-page-hero{background:linear-gradient(180deg,rgba(245,240,235,.2) 0%,rgba(245,240,235,.95) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center 20%/cover !important;background-attachment:fixed !important;}
 body.ag-light .ag-site-header.scrolled{background:rgba(245,240,235,.97) !important;}
 body.ag-light .ag-section::before{background:linear-gradient(90deg,transparent,rgba(123,45,59,.2),transparent) !important;}
+
+/* ═══════════════════════════════════════════════════════════════
+   LE MAÎTRE — bloc final consolidé (override toutes règles précédentes)
+   Layout : photo (280px) + texte cote a cote, mobile : empile
+   Mode sombre : carte fond #131826 + nom dore + bio blanche
+   Mode clair  : carte fond #fff + nom bordeaux + bio noire
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Layout commun (les deux modes) */
+.ag-section.ag-maitre{padding:80px 0 !important;}
+.ag-maitre__inner{
+    display:grid !important;
+    grid-template-columns:280px 1fr !important;
+    gap:48px !important;
+    align-items:center !important;
+    padding:32px !important;
+    border-radius:12px !important;
+    border:1px solid transparent !important;
+}
+.ag-maitre__photo img{
+    width:100% !important;
+    height:auto !important;
+    aspect-ratio:1/1 !important;
+    object-fit:cover !important;
+    border-radius:12px !important;
+    border:2px solid rgba(' . $gold_rgb . ',.28) !important;
+    display:block !important;
+}
+.ag-maitre__tag{
+    display:inline-block !important;
+    padding:4px 14px !important;
+    border-radius:100px !important;
+    font-size:.75rem !important;
+    font-weight:600 !important;
+    text-transform:uppercase !important;
+    letter-spacing:.12em !important;
+    margin-bottom:14px !important;
+    border:1px solid transparent !important;
+}
+.ag-maitre__name{
+    font-size:2rem !important;
+    font-style:italic !important;
+    margin-bottom:6px !important;
+    line-height:1.2 !important;
+}
+.ag-maitre__meta{font-size:.9rem !important;margin-bottom:18px !important;}
+.ag-maitre__bio{line-height:1.75 !important;margin-bottom:14px !important;font-size:1rem !important;}
+.ag-maitre__specialties{font-size:.92rem !important;}
+
+@media(max-width:720px){
+    .ag-maitre__inner{grid-template-columns:1fr !important;text-align:center !important;padding:24px !important;gap:24px !important;}
+    .ag-maitre__photo{max-width:240px !important;margin:0 auto !important;}
+}
+
+/* === Mode sombre (defaut) === */
+body:not(.ag-light) .ag-section.ag-maitre{background:linear-gradient(135deg,rgba(' . $gold_rgb . ',.04) 0%,#0F1320 100%) !important;}
+body:not(.ag-light) .ag-maitre__inner{background:#131826 !important;border-color:rgba(' . $gold_rgb . ',.18) !important;box-shadow:0 10px 40px rgba(0,0,0,.35) !important;}
+body:not(.ag-light) .ag-maitre__tag{background:rgba(' . $gold_rgb . ',.12) !important;color:' . $gold . ' !important;border-color:rgba(' . $gold_rgb . ',.3) !important;}
+body:not(.ag-light) .ag-maitre__name{color:' . $gold . ' !important;}
+body:not(.ag-light) .ag-maitre__meta{color:rgba(255,255,255,.6) !important;}
+body:not(.ag-light) .ag-maitre__bio{color:#f3f3f3 !important;}
+body:not(.ag-light) .ag-maitre__specialties{color:rgba(255,255,255,.7) !important;}
+body:not(.ag-light) .ag-maitre__specialties strong{color:' . $gold . ' !important;}
+
+/* === Mode clair === */
+body.ag-light .ag-section.ag-maitre{background:#EDE6DF !important;background-image:none !important;}
+body.ag-light .ag-maitre__inner{background:#fff !important;border-color:rgba(123,45,59,.12) !important;box-shadow:0 10px 30px rgba(0,0,0,.08) !important;}
+body.ag-light .ag-maitre__photo img{border-color:rgba(123,45,59,.2) !important;}
+body.ag-light .ag-maitre__tag{background:rgba(123,45,59,.08) !important;color:#7B2D3B !important;border-color:rgba(123,45,59,.25) !important;}
+body.ag-light .ag-maitre__name{color:#7B2D3B !important;}
+body.ag-light .ag-maitre__meta{color:#5A4549 !important;}
+body.ag-light .ag-maitre__bio{color:#2A1A1E !important;}
+body.ag-light .ag-maitre__specialties{color:#5A4549 !important;}
+body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
 ';
         return $css;
     }
