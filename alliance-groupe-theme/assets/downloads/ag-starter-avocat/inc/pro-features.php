@@ -1210,9 +1210,9 @@ body.ag-light .ag-boutique .ag-tag--clean{
     margin:0 0 18px !important;
 }
 
-/* Effet étoiles qui pulsent depuis le centre vers l'écran
+/* Effet etoiles qui pulsent depuis le centre vers le viewer
    Approche simple, garantie : pas de !important sur transform/opacity
-   pour que l'animation puisse les piloter sans conflit cascade */
+   pour que l animation puisse les piloter sans conflit cascade */
 .ag-section.ag-boutique{position:relative !important;overflow:hidden !important;}
 .ag-boutique__stars{
     position:absolute !important;
