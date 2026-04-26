@@ -1328,6 +1328,132 @@ body.ag-tier-business.ag-light .ag-primary-menu a:hover{
     body.ag-tier-business .ag-primary-menu a::after{display:none !important;}
 }
 
+/* ─── LOGO (custom_logo ou texte) au hover ─── */
+@keyframes agLogoPulse{
+    0%,100%{filter:drop-shadow(0 0 0 transparent);}
+    50%{filter:drop-shadow(0 0 14px var(--ag-logo-glow));}
+}
+body.ag-tier-business .ag-site-brand{
+    --ag-logo-glow:rgba(212,180,92,.5);
+    transition:transform .35s ease !important;
+}
+body.ag-tier-business:not(.ag-light) .ag-site-brand{--ag-logo-glow:rgba(160,61,77,.55);}
+body.ag-tier-business .ag-site-brand a,
+body.ag-tier-business .ag-site-brand img,
+body.ag-tier-business .ag-site-brand .custom-logo-link{
+    display:inline-block !important;
+    transition:transform .35s ease,filter .4s ease,text-shadow .35s ease,color .35s ease !important;
+}
+body.ag-tier-business .ag-site-brand:hover{transform:translateY(-2px) !important;}
+body.ag-tier-business .ag-site-brand:hover img,
+body.ag-tier-business .ag-site-brand:hover .custom-logo-link img{
+    animation:agLogoPulse 1.6s ease-in-out infinite !important;
+    transform:scale(1.04) !important;
+}
+/* Si fallback texte (pas de logo upload) → halo + couleur */
+body.ag-tier-business:not(.ag-light) .ag-site-brand a:hover{color:#E07585 !important;text-shadow:0 0 16px rgba(160,61,77,.6) !important;}
+body.ag-tier-business.ag-light .ag-site-brand a:hover{color:#B8941F !important;text-shadow:0 0 16px rgba(212,180,92,.6) !important;}
+
+/* ─── COMPTEURS Business : chiffres scintillants ─── */
+@keyframes agCounterShimmer{
+    0%,100%{text-shadow:0 0 12px rgba(212,180,92,.25);}
+    50%{text-shadow:0 0 24px rgba(212,180,92,.6),0 0 40px rgba(212,180,92,.3);}
+}
+@keyframes agCounterShimmerBordeaux{
+    0%,100%{text-shadow:0 0 12px rgba(160,61,77,.25);}
+    50%{text-shadow:0 0 24px rgba(160,61,77,.55),0 0 40px rgba(123,45,59,.3);}
+}
+body.ag-tier-business .ag-counter{
+    position:relative !important;
+    transition:transform .4s ease,background .4s ease,border-color .4s ease,box-shadow .4s ease !important;
+    overflow:hidden !important;
+}
+body.ag-tier-business .ag-counter::before{
+    content:"" !important;
+    position:absolute !important;
+    top:0 !important;left:0 !important;
+    width:60% !important;height:100% !important;
+    transform:translateX(-100%) skewX(-15deg) !important;
+    pointer-events:none !important;z-index:1 !important;
+}
+body.ag-tier-business .ag-counter:hover::before{animation:agGoldSweep 1.6s ease-in-out infinite !important;}
+body.ag-tier-business .ag-counter>*{position:relative !important;z-index:2 !important;}
+body.ag-tier-business .ag-counter:hover{transform:translateY(-6px) !important;}
+body.ag-tier-business .ag-counter__number{transition:transform .4s ease !important;}
+body.ag-tier-business .ag-counter:hover .ag-counter__number{transform:scale(1.08) !important;}
+
+/* Mode NUIT : compteurs bordeaux pulsant */
+body.ag-tier-business:not(.ag-light) .ag-counter__number{
+    color:#E07585 !important;
+    animation:agCounterShimmerBordeaux 2.5s ease-in-out infinite !important;
+}
+body.ag-tier-business:not(.ag-light) .ag-counter::before{
+    background:linear-gradient(110deg,transparent 0%,rgba(123,45,59,0) 30%,rgba(160,61,77,.4) 50%,rgba(123,45,59,0) 70%,transparent 100%) !important;
+}
+body.ag-tier-business:not(.ag-light) .ag-counter:hover{
+    border-color:#A03D4D !important;
+    box-shadow:0 20px 40px rgba(0,0,0,.4),0 0 35px rgba(160,61,77,.45) !important;
+}
+
+/* Mode JOUR : compteurs dorés pulsant */
+body.ag-tier-business.ag-light .ag-counter__number{
+    color:#B8941F !important;
+    animation:agCounterShimmer 2.5s ease-in-out infinite !important;
+}
+body.ag-tier-business.ag-light .ag-counter::before{
+    background:linear-gradient(110deg,transparent 0%,rgba(212,180,92,0) 30%,rgba(212,180,92,.45) 50%,rgba(212,180,92,0) 70%,transparent 100%) !important;
+}
+body.ag-tier-business.ag-light .ag-counter:hover{
+    border-color:#D4B45C !important;
+    box-shadow:0 20px 40px rgba(0,0,0,.1),0 0 35px rgba(212,180,92,.45) !important;
+}
+
+/* ─── DOMAINES cards Business : même balayage que Boutique ─── */
+body.ag-tier-business .ag-domaine-card{
+    position:relative !important;
+    overflow:hidden !important;
+    transition:transform .4s ease,box-shadow .5s ease,border-color .4s ease,background .4s ease !important;
+}
+body.ag-tier-business .ag-domaine-card::before{
+    content:"" !important;
+    position:absolute !important;
+    top:0 !important;left:0 !important;
+    width:60% !important;height:100% !important;
+    transform:translateX(-100%) skewX(-15deg) !important;
+    pointer-events:none !important;z-index:1 !important;
+}
+body.ag-tier-business .ag-domaine-card:hover::before{animation:agGoldSweep 1.6s ease-in-out infinite !important;}
+body.ag-tier-business .ag-domaine-card>*{position:relative !important;z-index:2 !important;}
+body.ag-tier-business .ag-domaine-card:hover{transform:translateY(-8px) !important;}
+body.ag-tier-business .ag-domaine-card .ag-domaine-card__icon{transition:transform .4s ease !important;}
+body.ag-tier-business .ag-domaine-card:hover .ag-domaine-card__icon{transform:scale(1.18) rotate(-5deg) !important;}
+
+/* Mode NUIT : domaines bordeaux */
+body.ag-tier-business:not(.ag-light) .ag-domaine-card::before{
+    background:linear-gradient(110deg,transparent 0%,rgba(123,45,59,0) 30%,rgba(160,61,77,.45) 50%,rgba(123,45,59,0) 70%,transparent 100%) !important;
+}
+body.ag-tier-business:not(.ag-light) .ag-domaine-card:hover{
+    border-color:#A03D4D !important;
+    background:linear-gradient(135deg,rgba(123,45,59,.08) 0%,#131826 100%) !important;
+    box-shadow:0 30px 60px rgba(0,0,0,.55),0 0 50px rgba(123,45,59,.5) !important;
+}
+body.ag-tier-business:not(.ag-light) .ag-domaine-card:hover .ag-domaine-card__title{color:#E07585 !important;text-shadow:0 0 14px rgba(160,61,77,.5) !important;}
+body.ag-tier-business:not(.ag-light) .ag-domaine-card:hover .ag-domaine-card__more{color:#E07585 !important;}
+
+/* Mode JOUR : domaines doré */
+body.ag-tier-business.ag-light .ag-domaine-card::before{
+    background:linear-gradient(110deg,transparent 0%,rgba(212,180,92,0) 30%,rgba(212,180,92,.5) 50%,rgba(212,180,92,0) 70%,transparent 100%) !important;
+}
+body.ag-tier-business.ag-light .ag-domaine-card:hover{
+    border-color:#D4B45C !important;
+    background:linear-gradient(135deg,rgba(212,180,92,.1) 0%,#fff 100%) !important;
+    box-shadow:0 30px 60px rgba(0,0,0,.15),0 0 50px rgba(212,180,92,.45) !important;
+}
+body.ag-tier-business.ag-light .ag-domaine-card:hover .ag-domaine-card__title{color:#B8941F !important;text-shadow:0 0 14px rgba(212,180,92,.5) !important;}
+body.ag-tier-business.ag-light .ag-domaine-card:hover .ag-domaine-card__more{color:#B8941F !important;}
+body.ag-tier-business .ag-domaine-card__title,
+body.ag-tier-business .ag-domaine-card__more{transition:color .35s ease,text-shadow .35s ease !important;}
+
 /* ─── BOUTIQUE cards ─── */
 .ag-boutique-card{position:relative !important;overflow:hidden !important;transition:transform .4s ease,box-shadow .5s ease,border-color .4s ease,background .4s ease !important;}
 .ag-boutique-card::before{
