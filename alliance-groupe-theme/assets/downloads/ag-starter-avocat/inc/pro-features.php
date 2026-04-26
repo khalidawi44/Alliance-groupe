@@ -1884,24 +1884,43 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
 
     public function render_default_logo_svg() {
         // Fallback SVG affiché si pas de custom_logo (Business uniquement).
+        // Balance de la justice détaillée : pilier + traverse + chaînes
+        // + plateaux galbés + base trapézoïdale, dégradé doré 3 tons.
         if ( ! $this->is_at_least( 'business' ) ) return;
         if ( has_custom_logo() ) return;
         ?>
         <span class="ag-default-logo-svg" aria-hidden="true">
-            <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                    <linearGradient id="agLogoG" x1="0" y1="0" x2="1" y2="1">
+                    <linearGradient id="agLogoGold" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stop-color="#FFE5A0"/>
-                        <stop offset="100%" stop-color="#B8941F"/>
+                        <stop offset="50%" stop-color="#D4B45C"/>
+                        <stop offset="100%" stop-color="#9A7A2E"/>
+                    </linearGradient>
+                    <linearGradient id="agLogoFill" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#FFE5A0" stop-opacity=".45"/>
+                        <stop offset="100%" stop-color="#B8941F" stop-opacity=".15"/>
                     </linearGradient>
                 </defs>
-                <g fill="none" stroke="url(#agLogoG)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M30 6v48"/>
-                    <path d="M14 54h32"/>
-                    <path d="M18 14h24"/>
-                    <path d="M14 28a4 4 0 0 0 8 0L18 18l-4 10z" fill="url(#agLogoG)" fill-opacity=".25"/>
-                    <path d="M38 28a4 4 0 0 0 8 0L42 18l-4 10z" fill="url(#agLogoG)" fill-opacity=".25"/>
-                </g>
+                <!-- Finial top -->
+                <circle cx="32" cy="5" r="2.4" fill="url(#agLogoGold)"/>
+                <!-- Pillar -->
+                <line x1="32" y1="8" x2="32" y2="50" stroke="url(#agLogoGold)" stroke-width="2.6" stroke-linecap="round"/>
+                <!-- Horizontal beam with knob ends -->
+                <line x1="12" y1="12" x2="52" y2="12" stroke="url(#agLogoGold)" stroke-width="2.2" stroke-linecap="round"/>
+                <circle cx="12" cy="12" r="2" fill="url(#agLogoGold)"/>
+                <circle cx="52" cy="12" r="2" fill="url(#agLogoGold)"/>
+                <!-- Chains (dashed for texture) -->
+                <line x1="12" y1="14" x2="12" y2="22" stroke="url(#agLogoGold)" stroke-width="1.6" stroke-dasharray="2 1.6" stroke-linecap="round"/>
+                <line x1="52" y1="14" x2="52" y2="22" stroke="url(#agLogoGold)" stroke-width="1.6" stroke-dasharray="2 1.6" stroke-linecap="round"/>
+                <!-- Left pan -->
+                <path d="M4 22 L20 22 L17 28 Q12 30.5 7 28 Z" fill="url(#agLogoFill)" stroke="url(#agLogoGold)" stroke-width="1.6" stroke-linejoin="round"/>
+                <!-- Right pan -->
+                <path d="M44 22 L60 22 L57 28 Q52 30.5 47 28 Z" fill="url(#agLogoFill)" stroke="url(#agLogoGold)" stroke-width="1.6" stroke-linejoin="round"/>
+                <!-- Trapezoidal base -->
+                <path d="M22 50 L42 50 L46 56 L18 56 Z" fill="url(#agLogoFill)" stroke="url(#agLogoGold)" stroke-width="1.6" stroke-linejoin="round"/>
+                <!-- Foot line -->
+                <line x1="14" y1="58" x2="50" y2="58" stroke="url(#agLogoGold)" stroke-width="1.8" stroke-linecap="round"/>
             </svg>
         </span>
         <?php
