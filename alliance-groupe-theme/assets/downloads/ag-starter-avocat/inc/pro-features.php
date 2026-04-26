@@ -1180,8 +1180,82 @@ body.ag-light .ag-team-card__bio{color:#2A1A1E !important;}
 /* ── Section Boutique ── */
 .ag-section.ag-boutique{padding:100px 0 !important;background:linear-gradient(180deg,#0F1320 0%,#0A0E1A 100%) !important;}
 body.ag-light .ag-section.ag-boutique{background:#EDE6DF !important;}
-.ag-boutique .ag-tag{display:inline-block !important;padding:6px 18px !important;background:rgba(212,180,92,.12) !important;color:#D4B45C !important;border:1px solid rgba(212,180,92,.3) !important;border-radius:100px !important;font-size:.78rem !important;font-weight:700 !important;text-transform:uppercase !important;letter-spacing:1.5px !important;margin-bottom:14px !important;}
-body.ag-light .ag-boutique .ag-tag{background:rgba(123,45,59,.08) !important;color:#7B2D3B !important;border-color:rgba(123,45,59,.25) !important;}
+/* Tag "BOUTIQUE" version clean : pas de border, pas de bg */
+.ag-boutique .ag-tag,
+.ag-boutique .ag-tag--clean{
+    display:inline-block !important;
+    padding:0 !important;
+    background:transparent !important;
+    border:none !important;
+    color:#D4B45C !important;
+    font-size:1rem !important;
+    font-weight:700 !important;
+    text-transform:uppercase !important;
+    letter-spacing:6px !important;
+    margin-bottom:8px !important;
+}
+body.ag-light .ag-boutique .ag-tag,
+body.ag-light .ag-boutique .ag-tag--clean{
+    background:transparent !important;
+    border:none !important;
+    color:#7B2D3B !important;
+}
+
+/* Titre "Boutique" XXL — Playfair italic */
+.ag-boutique__title-xl{
+    font-size:clamp(2.8rem,7vw,5.5rem) !important;
+    font-style:italic !important;
+    font-weight:700 !important;
+    line-height:1.05 !important;
+    margin:0 0 18px !important;
+}
+
+/* Effet étoiles qui foncent vers le viewer (warp speed) */
+.ag-section.ag-boutique{position:relative !important;overflow:hidden !important;}
+.ag-boutique__stars{
+    position:absolute !important;
+    inset:0 !important;
+    pointer-events:none !important;
+    z-index:1 !important;
+}
+.ag-boutique__star{
+    position:absolute !important;
+    top:50% !important;
+    left:50% !important;
+    width:70px !important;
+    height:70px !important;
+    color:#D4B45C !important;
+    transform:translate(-50%,-50%) scale(0) !important;
+    opacity:0 !important;
+    filter:drop-shadow(0 0 25px rgba(212,180,92,.85)) drop-shadow(0 0 60px rgba(212,180,92,.5)) !important;
+    animation:agStarShoot 6s cubic-bezier(.4,0,.2,1) infinite !important;
+}
+.ag-boutique__star svg{width:100% !important;height:100% !important;display:block !important;}
+.ag-boutique__star--1{animation-delay:0s !important;}
+.ag-boutique__star--2{animation-delay:2s !important;left:30% !important;top:45% !important;}
+.ag-boutique__star--3{animation-delay:4s !important;left:70% !important;top:55% !important;}
+
+@keyframes agStarShoot{
+    0%   {transform:translate(-50%,-50%) scale(0);opacity:0;}
+    8%   {opacity:1;}
+    50%  {transform:translate(-50%,-50%) scale(15);opacity:.9;}
+    80%  {transform:translate(-50%,-50%) scale(40);opacity:.25;}
+    100% {transform:translate(-50%,-50%) scale(80);opacity:0;}
+}
+
+/* Mode jour : étoiles dorées sur fond crème = parfait pour le doré, on garde */
+body.ag-light .ag-boutique__star{
+    color:#D4B45C !important;
+    filter:drop-shadow(0 0 22px rgba(212,180,92,.6)) drop-shadow(0 0 50px rgba(212,180,92,.35)) !important;
+}
+
+/* Le contenu doit passer au-dessus des étoiles */
+.ag-section.ag-boutique .ag-container{position:relative !important;z-index:2 !important;}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion:reduce){
+    .ag-boutique__star{animation:none !important;display:none !important;}
+}
 .ag-boutique__grid{display:grid !important;grid-template-columns:repeat(3,1fr) !important;gap:28px !important;margin:48px 0 24px !important;}
 .ag-boutique-card{background:#131826 !important;border:1px solid rgba(212,180,92,.18) !important;border-radius:14px !important;padding:32px 28px !important;text-align:center !important;transition:transform .4s ease,box-shadow .4s ease,border-color .4s ease !important;position:relative !important;overflow:hidden !important;}
 .ag-boutique-card::before{content:"" !important;position:absolute !important;top:0 !important;left:-100% !important;width:100% !important;height:2px !important;background:linear-gradient(90deg,transparent,#D4B45C,transparent) !important;transition:left .8s ease !important;}
@@ -1978,9 +2052,14 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
         $subtitle = get_theme_mod( 'ag_business_shop_subtitle', __( 'Achetez directement en ligne. Paiement sécurisé, livraison immédiate par email.', 'ag-starter-avocat' ) );
         ?>
         <section class="ag-section ag-boutique" id="ag-boutique">
+            <div class="ag-boutique__stars" aria-hidden="true">
+                <span class="ag-boutique__star ag-boutique__star--1"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 14.9,8.6 22,9.3 16.7,14.1 18.2,21 12,17.5 5.8,21 7.3,14.1 2,9.3 9.1,8.6"/></svg></span>
+                <span class="ag-boutique__star ag-boutique__star--2"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 14.9,8.6 22,9.3 16.7,14.1 18.2,21 12,17.5 5.8,21 7.3,14.1 2,9.3 9.1,8.6"/></svg></span>
+                <span class="ag-boutique__star ag-boutique__star--3"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 14.9,8.6 22,9.3 16.7,14.1 18.2,21 12,17.5 5.8,21 7.3,14.1 2,9.3 9.1,8.6"/></svg></span>
+            </div>
             <div class="ag-container">
-                <span class="ag-tag ag-shimmer">🛍 BOUTIQUE</span>
-                <h2 class="ag-section-title"><?php echo esc_html( $title ); ?></h2>
+                <span class="ag-tag ag-tag--clean">BOUTIQUE</span>
+                <h2 class="ag-section-title ag-boutique__title-xl"><?php echo esc_html( $title ); ?></h2>
                 <p class="ag-section-lead"><?php echo esc_html( $subtitle ); ?></p>
                 <div class="ag-boutique__grid">
                     <?php foreach ( $products as $p ) : ?>
