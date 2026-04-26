@@ -85,10 +85,20 @@
         ].join('\n');
         document.head.appendChild(lightStyle);
 
+        var skinIsLight = (typeof agSkin !== 'undefined' && agSkin.light);
         var saved = localStorage.getItem('ag_theme_mode');
-        if (saved === 'light') {
-            document.body.classList.add('ag-visitor-light');
-            if (icon) icon.textContent = '☀️';
+        if (skinIsLight) {
+            // Skin admin = jour → par défaut jour, toggle → nuit
+            if (saved !== 'dark') {
+                document.body.classList.add('ag-visitor-light');
+                if (icon) icon.textContent = '☀️';
+            }
+        } else {
+            // Skin admin = nuit → par défaut nuit, toggle → jour
+            if (saved === 'light') {
+                document.body.classList.add('ag-visitor-light');
+                if (icon) icon.textContent = '☀️';
+            }
         }
         themeBtn.addEventListener('click', function() {
             var isLight = document.body.classList.toggle('ag-visitor-light');

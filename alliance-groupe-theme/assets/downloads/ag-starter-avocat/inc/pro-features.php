@@ -46,7 +46,10 @@ class AG_Pro_Features {
             get_template_directory_uri() . '/inc/pro-scripts.js',
             array(), '3.0.0', true );
         $skin = $this->get_skin();
-        wp_localize_script( 'ag-premium-scripts', 'agSkin', array( 'accent' => $skin['accent'] ) );
+        wp_localize_script( 'ag-premium-scripts', 'agSkin', array(
+            'accent' => $skin['accent'],
+            'light'  => ! empty( $skin['light'] ),
+        ) );
         wp_add_inline_style( 'ag-starter-avocat-style', $this->get_pro_css() );
     }
 
