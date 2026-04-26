@@ -932,6 +932,8 @@ body.ag-visitor-light .ag-footer-bottom{color:#8A7478 !important;}
 body.ag-visitor-light .ag-primary-menu.open{background:rgba(245,240,235,.98) !important;}
 body.ag-visitor-light .ag-theme-toggle{border-color:rgba(123,45,59,.3) !important;}
 body.ag-visitor-light .ag-totop{background:#7B2D3B !important;color:#fff !important;}
+body.ag-visitor-light .ag-domaine-card .ag-domaine-card__title{color:#2A1A1E !important;}
+body.ag-visitor-light .ag-domaine-card__icon+.ag-domaine-card__title{color:#2A1A1E !important;}
 ';
         // Mode nuit: RGPD checkbox en blanc
         $css .= '
