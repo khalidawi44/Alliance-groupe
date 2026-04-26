@@ -1140,6 +1140,72 @@ body.ag-tier-business:not(.ag-light) .ag-maitre__tag{background:rgba(212,180,92,
 body.ag-tier-business:not(.ag-light) .ag-maitre__name{color:#D4B45C !important;}
 body.ag-tier-business:not(.ag-light) .ag-maitre__specialties strong{color:#D4B45C !important;}
 
+/* ═══════════════════════════════════════════════════════════════
+   BUSINESS — Parallax citations + Équipe + Boutique + Scintillation
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Parallax citations (style alliance-groupe) ── */
+.ag-parallax-business{position:relative !important;padding:120px 24px !important;background-attachment:fixed !important;background-size:cover !important;background-position:center !important;text-align:center !important;overflow:hidden !important;}
+.ag-parallax-business .ag-parallax__overlay{position:absolute !important;inset:0 !important;background:linear-gradient(135deg,rgba(8,10,18,.88) 0%,rgba(20,15,8,.78) 100%) !important;}
+.ag-parallax-business .ag-parallax__content{position:relative !important;z-index:2 !important;max-width:780px !important;margin:0 auto !important;}
+.ag-parallax-business .ag-parallax__quote{font-style:italic !important;font-size:clamp(1.4rem,3vw,2.2rem) !important;color:#D4B45C !important;line-height:1.5 !important;margin:0 0 16px !important;text-shadow:0 2px 20px rgba(0,0,0,.5) !important;}
+.ag-parallax-business .ag-parallax__caption{color:rgba(255,255,255,.7) !important;font-size:.9rem !important;letter-spacing:1.5px !important;text-transform:uppercase !important;margin:0 !important;}
+@media(max-width:768px){.ag-parallax-business{background-attachment:scroll !important;padding:80px 24px !important;}}
+
+/* ── Section Équipe ── */
+.ag-section.ag-team{padding:100px 0 !important;background:linear-gradient(180deg,#0A0E1A 0%,#0F1320 100%) !important;}
+body.ag-light .ag-section.ag-team{background:#F5F0EB !important;}
+.ag-team__grid{display:grid !important;grid-template-columns:repeat(4,1fr) !important;gap:28px !important;margin-top:48px !important;}
+.ag-team-card{background:#131826 !important;border:1px solid rgba(212,180,92,.15) !important;border-radius:14px !important;overflow:hidden !important;transition:transform .4s ease,box-shadow .4s ease,border-color .4s ease !important;}
+.ag-team-card:hover{transform:translateY(-6px) !important;border-color:rgba(212,180,92,.4) !important;box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 30px rgba(212,180,92,.15) !important;}
+.ag-team-card__photo{aspect-ratio:1/1 !important;overflow:hidden !important;}
+.ag-team-card__photo img{width:100% !important;height:100% !important;object-fit:cover !important;display:block !important;transition:transform .6s ease !important;}
+.ag-team-card:hover .ag-team-card__photo img{transform:scale(1.05) !important;}
+.ag-team-card__body{padding:20px 18px !important;}
+.ag-team-card__name{color:#D4B45C !important;font-size:1.05rem !important;font-style:italic !important;margin:0 0 4px !important;}
+.ag-team-card__role{color:rgba(255,255,255,.6) !important;font-size:.78rem !important;text-transform:uppercase !important;letter-spacing:1.2px !important;margin:0 0 12px !important;}
+.ag-team-card__bio{color:#ddd !important;font-size:.88rem !important;line-height:1.6 !important;margin:0 !important;}
+body.ag-light .ag-team-card{background:#fff !important;border-color:rgba(123,45,59,.1) !important;box-shadow:0 4px 20px rgba(0,0,0,.05) !important;}
+body.ag-light .ag-team-card:hover{border-color:rgba(123,45,59,.3) !important;box-shadow:0 20px 50px rgba(0,0,0,.1) !important;}
+body.ag-light .ag-team-card__name{color:#7B2D3B !important;}
+body.ag-light .ag-team-card__role{color:#5A4549 !important;}
+body.ag-light .ag-team-card__bio{color:#2A1A1E !important;}
+@media(max-width:980px){.ag-team__grid{grid-template-columns:repeat(2,1fr) !important;}}
+@media(max-width:560px){.ag-team__grid{grid-template-columns:1fr !important;}}
+
+/* ── Section Boutique ── */
+.ag-section.ag-boutique{padding:100px 0 !important;background:linear-gradient(180deg,#0F1320 0%,#0A0E1A 100%) !important;}
+body.ag-light .ag-section.ag-boutique{background:#EDE6DF !important;}
+.ag-boutique .ag-tag{display:inline-block !important;padding:6px 18px !important;background:rgba(212,180,92,.12) !important;color:#D4B45C !important;border:1px solid rgba(212,180,92,.3) !important;border-radius:100px !important;font-size:.78rem !important;font-weight:700 !important;text-transform:uppercase !important;letter-spacing:1.5px !important;margin-bottom:14px !important;}
+body.ag-light .ag-boutique .ag-tag{background:rgba(123,45,59,.08) !important;color:#7B2D3B !important;border-color:rgba(123,45,59,.25) !important;}
+.ag-boutique__grid{display:grid !important;grid-template-columns:repeat(3,1fr) !important;gap:28px !important;margin:48px 0 24px !important;}
+.ag-boutique-card{background:#131826 !important;border:1px solid rgba(212,180,92,.18) !important;border-radius:14px !important;padding:32px 28px !important;text-align:center !important;transition:transform .4s ease,box-shadow .4s ease,border-color .4s ease !important;position:relative !important;overflow:hidden !important;}
+.ag-boutique-card::before{content:"" !important;position:absolute !important;top:0 !important;left:-100% !important;width:100% !important;height:2px !important;background:linear-gradient(90deg,transparent,#D4B45C,transparent) !important;transition:left .8s ease !important;}
+.ag-boutique-card:hover::before{left:100% !important;}
+.ag-boutique-card:hover{transform:translateY(-8px) !important;border-color:rgba(212,180,92,.5) !important;box-shadow:0 30px 60px rgba(0,0,0,.5),0 0 40px rgba(212,180,92,.2) !important;}
+.ag-boutique-card__icon{font-size:3rem !important;margin-bottom:14px !important;}
+.ag-boutique-card__title{color:#fff !important;font-size:1.2rem !important;margin:0 0 12px !important;}
+.ag-boutique-card__price{color:#D4B45C !important;font-size:2.4rem !important;font-weight:800 !important;font-style:italic !important;margin:0 0 16px !important;}
+.ag-boutique-card__desc{color:#bbb !important;font-size:.92rem !important;line-height:1.65 !important;margin:0 0 24px !important;}
+.ag-boutique-card__btn{width:100% !important;text-align:center !important;}
+.ag-boutique__note{text-align:center !important;color:#888 !important;font-size:.85rem !important;margin-top:24px !important;}
+body.ag-light .ag-boutique-card{background:#fff !important;border-color:rgba(123,45,59,.1) !important;}
+body.ag-light .ag-boutique-card:hover{border-color:rgba(123,45,59,.4) !important;box-shadow:0 30px 60px rgba(0,0,0,.1) !important;}
+body.ag-light .ag-boutique-card__title{color:#2A1A1E !important;}
+body.ag-light .ag-boutique-card__price{color:#7B2D3B !important;}
+body.ag-light .ag-boutique-card__desc{color:#3A2A2E !important;}
+body.ag-light .ag-boutique__note{color:#5A4549 !important;}
+@media(max-width:980px){.ag-boutique__grid{grid-template-columns:1fr !important;gap:20px !important;}}
+
+/* ── Scintillation Business : shimmer doré sur titres + tags ── */
+@keyframes agShimmer{0%{background-position:-200% center;}100%{background-position:200% center;}}
+@keyframes agPulseGlow{0%,100%{box-shadow:0 0 20px rgba(212,180,92,.2);}50%{box-shadow:0 0 35px rgba(212,180,92,.5),0 0 60px rgba(212,180,92,.2);}}
+@keyframes agSparkle{0%,100%{opacity:.3;}50%{opacity:1;}}
+body.ag-tier-business .ag-shimmer-text{background:linear-gradient(90deg,#D4B45C 0%,#fff5d4 50%,#D4B45C 100%) !important;background-size:200% auto !important;-webkit-background-clip:text !important;background-clip:text !important;-webkit-text-fill-color:transparent !important;animation:agShimmer 3s linear infinite !important;}
+body.ag-tier-business .ag-shimmer{position:relative !important;overflow:hidden !important;}
+body.ag-tier-business .ag-shimmer::after{content:"✨" !important;position:absolute !important;top:-2px !important;right:-4px !important;font-size:.7em !important;animation:agSparkle 2s ease-in-out infinite !important;}
+body.ag-tier-business .ag-btn:hover{animation:agPulseGlow 1.5s ease-in-out infinite !important;}
+
 /* === Mode clair === */
 body.ag-light .ag-section.ag-maitre{background:#EDE6DF !important;background-image:none !important;}
 body.ag-light .ag-maitre__inner{background:#fff !important;border-color:rgba(123,45,59,.12) !important;box-shadow:0 10px 30px rgba(0,0,0,.08) !important;}
@@ -1237,6 +1303,209 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
         add_action( 'wp_footer', array( $this, 'render_mobile_call_button' ), 8 );
         add_action( 'wp_head', array( $this, 'render_schema_org' ), 99 );
         add_action( 'ag_after_hero', array( $this, 'render_breadcrumb' ) );
+        // Business : alternance citations parallax + équipe + boutique
+        add_action( 'ag_after_domaines',   array( $this, 'render_parallax_quote_1' ) );
+        add_action( 'ag_after_maitre',     array( $this, 'render_team_section' ) );
+        add_action( 'ag_after_honoraires', array( $this, 'render_parallax_quote_2' ) );
+        add_action( 'ag_after_cabinet',    array( $this, 'render_boutique' ) );
+        add_action( 'ag_after_cabinet',    array( $this, 'render_parallax_quote_3' ), 20 );
+        // Customizer fields pour équipe (4 collaborateurs)
+        add_action( 'customize_register',  array( $this, 'register_business_customizer' ), 30 );
+    }
+
+    // ─── Citations parallax (style alliance-groupe) ─────────────
+
+    private function render_parallax_quote( $bg_url, $quote, $author ) {
+        if ( ! $this->is_at_least( 'business' ) ) return;
+        echo '<section class="ag-parallax ag-parallax-business" style="background-image:url(\'' . esc_url( $bg_url ) . '\');">';
+        echo '<div class="ag-parallax__overlay"></div>';
+        echo '<div class="ag-parallax__content">';
+        echo '<p class="ag-parallax__quote">' . esc_html( $quote ) . '</p>';
+        if ( $author ) {
+            echo '<p class="ag-parallax__caption">— ' . esc_html( $author ) . '</p>';
+        }
+        echo '</div></section>';
+    }
+
+    public function render_parallax_quote_1() {
+        $this->render_parallax_quote(
+            'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1920&q=80',
+            'La justice sans la force est impuissante. La force sans la justice est tyrannique.',
+            'Blaise Pascal'
+        );
+    }
+
+    public function render_parallax_quote_2() {
+        $this->render_parallax_quote(
+            'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1920&q=80',
+            'Le droit est l\'art du bon et de l\'équitable.',
+            'Celse, jurisconsulte romain'
+        );
+    }
+
+    public function render_parallax_quote_3() {
+        $this->render_parallax_quote(
+            'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1920&q=80',
+            'L\'avocat est la dernière conscience de la liberté.',
+            'Robert Badinter'
+        );
+    }
+
+    // ─── Section Équipe (collaborateurs) ────────────────────────
+
+    public function render_team_section() {
+        if ( ! $this->is_at_least( 'business' ) ) return;
+        if ( ! get_theme_mod( 'ag_business_team_show', true ) ) return;
+        $members = array();
+        for ( $i = 1; $i <= 4; $i++ ) {
+            $name  = get_theme_mod( "ag_business_team_{$i}_name", '' );
+            $role  = get_theme_mod( "ag_business_team_{$i}_role", '' );
+            $photo = get_theme_mod( "ag_business_team_{$i}_photo", '' );
+            $bio   = get_theme_mod( "ag_business_team_{$i}_bio", '' );
+            if ( $name ) {
+                $members[] = compact( 'name', 'role', 'photo', 'bio' );
+            }
+        }
+        // Defaults si rien configuré
+        if ( empty( $members ) ) {
+            $members = array(
+                array( 'name' => '[Maître Dupont]', 'role' => 'Associée fondatrice', 'photo' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80', 'bio' => 'Spécialiste droit des affaires. 15 ans au Barreau de Paris.' ),
+                array( 'name' => '[Maître Martin]', 'role' => 'Associé', 'photo' => 'https://images.unsplash.com/photo-1556157382-97eda2d62296?w=400&q=80', 'bio' => 'Droit du travail et contentieux social. Ancien magistrat.' ),
+                array( 'name' => '[Me Lefebvre]', 'role' => 'Collaboratrice', 'photo' => 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80', 'bio' => 'Droit de la famille et droit pénal. Médiatrice agréée.' ),
+                array( 'name' => '[Me Bernard]', 'role' => 'Collaborateur', 'photo' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80', 'bio' => 'Droit immobilier et fiscalité. Maîtrise patrimoniale.' ),
+            );
+        }
+        $title    = get_theme_mod( 'ag_business_team_title', __( 'Notre équipe', 'ag-starter-avocat' ) );
+        $subtitle = get_theme_mod( 'ag_business_team_subtitle', __( "Une équipe d'avocats expérimentés à votre service. Chaque dossier traité avec rigueur, écoute et discrétion.", 'ag-starter-avocat' ) );
+        ?>
+        <section class="ag-section ag-team" id="ag-team">
+            <div class="ag-container">
+                <h2 class="ag-section-title ag-shimmer-text"><?php echo esc_html( $title ); ?></h2>
+                <p class="ag-section-lead"><?php echo esc_html( $subtitle ); ?></p>
+                <div class="ag-team__grid">
+                    <?php foreach ( $members as $m ) : ?>
+                        <article class="ag-team-card">
+                            <?php if ( ! empty( $m['photo'] ) ) : ?>
+                                <div class="ag-team-card__photo">
+                                    <img src="<?php echo esc_url( $m['photo'] ); ?>" alt="<?php echo esc_attr( $m['name'] ); ?>" loading="lazy">
+                                </div>
+                            <?php endif; ?>
+                            <div class="ag-team-card__body">
+                                <h3 class="ag-team-card__name"><?php echo esc_html( $m['name'] ); ?></h3>
+                                <p class="ag-team-card__role"><?php echo esc_html( $m['role'] ); ?></p>
+                                <?php if ( ! empty( $m['bio'] ) ) : ?>
+                                    <p class="ag-team-card__bio"><?php echo esc_html( $m['bio'] ); ?></p>
+                                <?php endif; ?>
+                            </div>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </section>
+        <?php
+    }
+
+    // ─── Section Boutique (3 produits, ready WooCommerce) ───────
+
+    public function render_boutique() {
+        if ( ! $this->is_at_least( 'business' ) ) return;
+        if ( ! get_theme_mod( 'ag_business_shop_show', true ) ) return;
+        $products = array(
+            array(
+                'icon'  => '📞',
+                'title' => get_theme_mod( 'ag_business_shop_1_title', '3 consultations téléphoniques' ),
+                'price' => get_theme_mod( 'ag_business_shop_1_price', '450 €' ),
+                'desc'  => get_theme_mod( 'ag_business_shop_1_desc', 'Pack de 3 consultations de 30 min, valables 6 mois. Conseil juridique sur tout domaine.' ),
+                'url'   => get_theme_mod( 'ag_business_shop_1_url', '#' ),
+            ),
+            array(
+                'icon'  => '📚',
+                'title' => get_theme_mod( 'ag_business_shop_2_title', 'Guide juridique PDF' ),
+                'price' => get_theme_mod( 'ag_business_shop_2_price', '29 €' ),
+                'desc'  => get_theme_mod( 'ag_business_shop_2_desc', "Manuel pratique 80 pages : vos droits face au licenciement, à la séparation, aux litiges courants." ),
+                'url'   => get_theme_mod( 'ag_business_shop_2_url', '#' ),
+            ),
+            array(
+                'icon'  => '✍️',
+                'title' => get_theme_mod( 'ag_business_shop_3_title', 'Audit contractuel' ),
+                'price' => get_theme_mod( 'ag_business_shop_3_price', '290 €' ),
+                'desc'  => get_theme_mod( 'ag_business_shop_3_desc', "Analyse complète d'un contrat (CDI, bail, partenariat) avec rapport écrit et recommandations." ),
+                'url'   => get_theme_mod( 'ag_business_shop_3_url', '#' ),
+            ),
+        );
+        $title    = get_theme_mod( 'ag_business_shop_title', __( 'Nos services à la carte', 'ag-starter-avocat' ) );
+        $subtitle = get_theme_mod( 'ag_business_shop_subtitle', __( 'Achetez directement en ligne. Paiement sécurisé, livraison immédiate par email.', 'ag-starter-avocat' ) );
+        ?>
+        <section class="ag-section ag-boutique" id="ag-boutique">
+            <div class="ag-container">
+                <span class="ag-tag ag-shimmer">🛍 BOUTIQUE</span>
+                <h2 class="ag-section-title"><?php echo esc_html( $title ); ?></h2>
+                <p class="ag-section-lead"><?php echo esc_html( $subtitle ); ?></p>
+                <div class="ag-boutique__grid">
+                    <?php foreach ( $products as $p ) : ?>
+                        <article class="ag-boutique-card">
+                            <div class="ag-boutique-card__icon"><?php echo esc_html( $p['icon'] ); ?></div>
+                            <h3 class="ag-boutique-card__title"><?php echo esc_html( $p['title'] ); ?></h3>
+                            <div class="ag-boutique-card__price"><?php echo esc_html( $p['price'] ); ?></div>
+                            <p class="ag-boutique-card__desc"><?php echo esc_html( $p['desc'] ); ?></p>
+                            <a href="<?php echo esc_url( $p['url'] ); ?>" class="ag-btn ag-boutique-card__btn"><?php esc_html_e( 'Acheter →', 'ag-starter-avocat' ); ?></a>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+                <p class="ag-boutique__note"><?php esc_html_e( '🔒 Paiement Stripe sécurisé · Compatible WooCommerce', 'ag-starter-avocat' ); ?></p>
+            </div>
+        </section>
+        <?php
+    }
+
+    // ─── Customizer Business (équipe + boutique) ────────────────
+
+    public function register_business_customizer( $wp_customize ) {
+        if ( ! $this->is_at_least( 'business' ) ) return;
+
+        // Section Équipe
+        $wp_customize->add_section( 'ag_business_team', array(
+            'title'    => '👥 Équipe (Business)',
+            'priority' => 27,
+        ) );
+        $wp_customize->add_setting( 'ag_business_team_show', array( 'default' => true, 'sanitize_callback' => 'wp_validate_boolean' ) );
+        $wp_customize->add_control( 'ag_business_team_show', array( 'type' => 'checkbox', 'label' => 'Afficher la section Équipe', 'section' => 'ag_business_team' ) );
+        $wp_customize->add_setting( 'ag_business_team_title', array( 'default' => 'Notre équipe', 'sanitize_callback' => 'sanitize_text_field' ) );
+        $wp_customize->add_control( 'ag_business_team_title', array( 'type' => 'text', 'label' => 'Titre', 'section' => 'ag_business_team' ) );
+        $wp_customize->add_setting( 'ag_business_team_subtitle', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
+        $wp_customize->add_control( 'ag_business_team_subtitle', array( 'type' => 'textarea', 'label' => 'Sous-titre', 'section' => 'ag_business_team' ) );
+        for ( $i = 1; $i <= 4; $i++ ) {
+            $wp_customize->add_setting( "ag_business_team_{$i}_name", array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
+            $wp_customize->add_control( "ag_business_team_{$i}_name", array( 'type' => 'text', 'label' => "Membre {$i} — Nom", 'section' => 'ag_business_team' ) );
+            $wp_customize->add_setting( "ag_business_team_{$i}_role", array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
+            $wp_customize->add_control( "ag_business_team_{$i}_role", array( 'type' => 'text', 'label' => "Membre {$i} — Rôle", 'section' => 'ag_business_team' ) );
+            $wp_customize->add_setting( "ag_business_team_{$i}_photo", array( 'default' => '', 'sanitize_callback' => 'esc_url_raw' ) );
+            $wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, "ag_business_team_{$i}_photo", array( 'label' => "Membre {$i} — Photo", 'section' => 'ag_business_team' ) ) );
+            $wp_customize->add_setting( "ag_business_team_{$i}_bio", array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
+            $wp_customize->add_control( "ag_business_team_{$i}_bio", array( 'type' => 'textarea', 'label' => "Membre {$i} — Bio courte", 'section' => 'ag_business_team' ) );
+        }
+
+        // Section Boutique
+        $wp_customize->add_section( 'ag_business_shop', array(
+            'title'    => '🛍 Boutique (Business)',
+            'priority' => 28,
+        ) );
+        $wp_customize->add_setting( 'ag_business_shop_show', array( 'default' => true, 'sanitize_callback' => 'wp_validate_boolean' ) );
+        $wp_customize->add_control( 'ag_business_shop_show', array( 'type' => 'checkbox', 'label' => 'Afficher la Boutique', 'section' => 'ag_business_shop' ) );
+        $wp_customize->add_setting( 'ag_business_shop_title', array( 'default' => 'Nos services à la carte', 'sanitize_callback' => 'sanitize_text_field' ) );
+        $wp_customize->add_control( 'ag_business_shop_title', array( 'type' => 'text', 'label' => 'Titre', 'section' => 'ag_business_shop' ) );
+        $wp_customize->add_setting( 'ag_business_shop_subtitle', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
+        $wp_customize->add_control( 'ag_business_shop_subtitle', array( 'type' => 'textarea', 'label' => 'Sous-titre', 'section' => 'ag_business_shop' ) );
+        for ( $i = 1; $i <= 3; $i++ ) {
+            $wp_customize->add_setting( "ag_business_shop_{$i}_title", array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
+            $wp_customize->add_control( "ag_business_shop_{$i}_title", array( 'type' => 'text', 'label' => "Produit {$i} — Titre", 'section' => 'ag_business_shop' ) );
+            $wp_customize->add_setting( "ag_business_shop_{$i}_price", array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
+            $wp_customize->add_control( "ag_business_shop_{$i}_price", array( 'type' => 'text', 'label' => "Produit {$i} — Prix (ex : 49 €)", 'section' => 'ag_business_shop' ) );
+            $wp_customize->add_setting( "ag_business_shop_{$i}_desc", array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
+            $wp_customize->add_control( "ag_business_shop_{$i}_desc", array( 'type' => 'textarea', 'label' => "Produit {$i} — Description", 'section' => 'ag_business_shop' ) );
+            $wp_customize->add_setting( "ag_business_shop_{$i}_url", array( 'default' => '#', 'sanitize_callback' => 'esc_url_raw' ) );
+            $wp_customize->add_control( "ag_business_shop_{$i}_url", array( 'type' => 'url', 'label' => "Produit {$i} — Lien Stripe / WooCommerce", 'section' => 'ag_business_shop' ) );
+        }
     }
 
     public function render_mobile_call_button() {

@@ -93,6 +93,8 @@ get_header();
 		</div>
 	</section>
 
+	<?php do_action( 'ag_after_domaines' ); ?>
+
 	<?php /* ─────────── 3. Le Maitre ─────────── */ ?>
 	<?php if ( ag_starter_avocat_get_option( 'ag_maitre_show' ) ) :
 		$maitre_photo = ag_starter_avocat_get_option( 'ag_maitre_photo' );
@@ -125,6 +127,8 @@ get_header();
 		</div>
 	</section>
 	<?php endif; ?>
+
+	<?php do_action( 'ag_after_maitre' ); ?>
 
 	<?php /* ─────────── 4. Honoraires ─────────── */ ?>
 	<?php if ( ag_starter_avocat_get_option( 'ag_honoraires_show' ) ) : ?>
@@ -166,6 +170,8 @@ get_header();
 		</div>
 	</section>
 	<?php endif; ?>
+
+	<?php do_action( 'ag_after_honoraires' ); ?>
 
 	<?php /* ─────────── 5. Cabinet (adresse + horaires + contact — 3 colonnes + map) ─────────── */ ?>
 	<section class="ag-section ag-cabinet" id="ag-cabinet">
@@ -209,6 +215,8 @@ get_header();
 			<?php endif; ?>
 		</div>
 	</section>
+
+	<?php do_action( 'ag_after_cabinet' ); ?>
 
 	<?php /* ─────────── 6. Prendre rendez-vous (form RGPD) ─────────── */ ?>
 	<?php if ( ag_starter_avocat_get_option( 'ag_rdv_show' ) ) :
