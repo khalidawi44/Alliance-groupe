@@ -86,18 +86,30 @@
         document.head.appendChild(lightStyle);
 
         var skinIsLight = (typeof agSkin !== 'undefined' && agSkin.light);
-        var saved = localStorage.getItem('ag_theme_mode');
-        if (skinIsLight) {
-            // Skin admin = jour → par défaut jour, toggle → nuit
-            if (saved !== 'dark') {
+        var inCustomizer = window.location.href.indexOf('customize.php') !== -1 || window.parent !== window;
+
+        if (inCustomizer) {
+            // Dans le Customizer : toujours montrer le skin tel quel, ignorer localStorage
+            if (skinIsLight) {
                 document.body.classList.add('ag-visitor-light');
                 if (icon) icon.textContent = '☀️';
+            } else {
+                document.body.classList.remove('ag-visitor-light');
+                if (icon) icon.textContent = '🌙';
             }
         } else {
-            // Skin admin = nuit → par défaut nuit, toggle → jour
-            if (saved === 'light') {
-                document.body.classList.add('ag-visitor-light');
-                if (icon) icon.textContent = '☀️';
+            // Front-end : respecter localStorage
+            var saved = localStorage.getItem('ag_theme_mode');
+            if (skinIsLight) {
+                if (saved !== 'dark') {
+                    document.body.classList.add('ag-visitor-light');
+                    if (icon) icon.textContent = '☀️';
+                }
+            } else {
+                if (saved === 'light') {
+                    document.body.classList.add('ag-visitor-light');
+                    if (icon) icon.textContent = '☀️';
+                }
             }
         }
         themeBtn.addEventListener('click', function() {
