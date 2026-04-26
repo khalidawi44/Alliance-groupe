@@ -44,23 +44,41 @@
     }
 
     // Theme toggle — visitor can switch light/dark
-    // Default mode is set by Customizer (body class ag-light added by PHP)
     var themeBtn = document.querySelector('.ag-theme-toggle');
     if (themeBtn) {
         var icon = themeBtn.querySelector('.ag-theme-toggle__icon');
         var saved = localStorage.getItem('ag_mode');
-        // Apply saved preference (overrides PHP default)
-        if (saved === 'dark') {
-            document.body.classList.remove('ag-light');
-        } else if (saved === 'light') {
-            document.body.classList.add('ag-light');
+        if (saved === 'dark') document.body.classList.remove('ag-light');
+        else if (saved === 'light') document.body.classList.add('ag-light');
+
+        function applyMode() {
+            var light = document.body.classList.contains('ag-light');
+            if (icon) icon.textContent = light ? '☀️' : '🌙';
+            // Force backgrounds directly on elements
+            var cream1 = '#F5F0EB', cream2 = '#EDE6DF';
+            var dark1 = '#080808', dark2 = '#12121a';
+            document.querySelectorAll('.ag-section').forEach(function(s, i) {
+                if (light) {
+                    s.style.cssText += 'background:' + (i % 2 === 0 ? cream1 : cream2) + ' !important;background-image:none !important;';
+                } else {
+                    s.style.cssText = s.style.cssText.replace(/background:[^;]+!important;background-image:[^;]+!important;/g, '');
+                }
+            });
+            // Force hero/page-hero
+            document.querySelectorAll('.ag-hero,.ag-page-hero').forEach(function(el) {
+                if (light) {
+                    el.style.setProperty('background', 'linear-gradient(180deg,rgba(245,240,235,.15) 0%,rgba(245,240,235,.93) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center 20%/cover no-repeat', 'important');
+                } else {
+                    el.style.removeProperty('background');
+                }
+            });
         }
-        var isLight = document.body.classList.contains('ag-light');
-        if (icon) icon.textContent = isLight ? '☀️' : '🌙';
+        applyMode();
+
         themeBtn.addEventListener('click', function() {
-            isLight = document.body.classList.toggle('ag-light');
-            if (icon) icon.textContent = isLight ? '☀️' : '🌙';
-            localStorage.setItem('ag_mode', isLight ? 'light' : 'dark');
+            document.body.classList.toggle('ag-light');
+            localStorage.setItem('ag_mode', document.body.classList.contains('ag-light') ? 'light' : 'dark');
+            applyMode();
         });
     }
 
