@@ -104,23 +104,23 @@ $status = ag_starter_avocat_get_rdv_status();
 		</div>
 	</section>
 
-	<?php /* Contact info below the form */ ?>
-	<section class="ag-section ag-cabinet" style="padding-top:0;">
+	<?php /* Contact info — 2 colonnes avec background fixe */ ?>
+	<section class="ag-section ag-rdv-contact">
 		<div class="ag-container">
-			<div class="ag-cabinet__grid" style="max-width:700px;margin:0 auto;">
-				<div class="ag-cabinet__info">
-					<div class="ag-cabinet__block">
-						<h3><?php esc_html_e( 'Par telephone', 'ag-starter-avocat' ); ?></h3>
-						<?php $phone = ag_starter_avocat_get_option( 'ag_cabinet_phone' ); if ( $phone ) : ?>
-							<p><a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $phone ) ); ?>"><?php echo esc_html( $phone ); ?></a></p>
-						<?php endif; ?>
-					</div>
-					<div class="ag-cabinet__block">
-						<h3><?php esc_html_e( 'Par email', 'ag-starter-avocat' ); ?></h3>
-						<?php $email = ag_starter_avocat_get_option( 'ag_cabinet_email' ); if ( $email ) : ?>
-							<p><a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a></p>
-						<?php endif; ?>
-					</div>
+			<div class="ag-rdv-contact__grid">
+				<div class="ag-cabinet__block">
+					<div class="ag-cabinet__block-icon">📞</div>
+					<h3><?php esc_html_e( 'Par telephone', 'ag-starter-avocat' ); ?></h3>
+					<?php $phone = ag_starter_avocat_get_option( 'ag_cabinet_phone' ); if ( $phone ) : ?>
+						<p><a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $phone ) ); ?>"><?php echo esc_html( $phone ); ?></a></p>
+					<?php endif; ?>
+				</div>
+				<div class="ag-cabinet__block">
+					<div class="ag-cabinet__block-icon">✉️</div>
+					<h3><?php esc_html_e( 'Par email', 'ag-starter-avocat' ); ?></h3>
+					<?php $email = ag_starter_avocat_get_option( 'ag_cabinet_email' ); if ( $email ) : ?>
+						<p><a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a></p>
+					<?php endif; ?>
 				</div>
 			</div>
 		</div>
