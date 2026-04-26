@@ -1406,8 +1406,8 @@ body.ag-tier-business:not(.ag-light) .ag-primary-menu a:hover{
     text-shadow:0 0 14px rgba(160,61,77,.5) !important;
 }
 
-/* Mode JOUR : seulement underline doré + couleur du texte (PAS de hover de la case)
-   L'utilisateur ne veut pas le balayage/box bg en mode jour. */
+/* Mode JOUR : seulement underline dore + couleur du texte (PAS de hover de la case)
+   Pas de balayage / box bg en mode jour. */
 body.ag-tier-business.ag-light .ag-primary-menu a::before{display:none !important;}
 body.ag-tier-business.ag-light .ag-primary-menu a{
     overflow:visible !important;
