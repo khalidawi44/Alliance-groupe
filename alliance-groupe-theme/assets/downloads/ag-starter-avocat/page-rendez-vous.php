@@ -28,7 +28,7 @@ $status = ag_starter_avocat_get_rdv_status();
 				</div>
 			<?php endif; ?>
 
-			<form class="ag-rdv__form" method="post" action="<?php echo esc_url( home_url( '/rendez-vous/' ) ); ?>" novalidate>
+			<form class="ag-rdv__form" method="post" action="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" novalidate>
 				<?php wp_nonce_field( 'ag_rdv_send', 'ag_rdv_nonce' ); ?>
 
 				<div class="ag-rdv__row">

@@ -83,6 +83,14 @@ endif;
 add_action( 'after_setup_theme', 'ag_starter_avocat_setup' );
 
 /**
+ * Get permalink for a page by slug — works with any permalink structure.
+ */
+function ag_page_url( $slug ) {
+	$page = get_page_by_path( $slug );
+	return $page ? get_permalink( $page ) : home_url( '/' . $slug . '/' );
+}
+
+/**
  * Enqueue scripts and styles.
  */
 function ag_starter_avocat_scripts() {

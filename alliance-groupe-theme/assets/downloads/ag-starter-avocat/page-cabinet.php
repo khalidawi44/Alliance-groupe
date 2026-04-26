@@ -84,7 +84,7 @@ get_header();
 							</p>
 						<?php endif; ?>
 					</div>
-					<a href="<?php echo esc_url( home_url( '/rendez-vous/' ) ); ?>" class="ag-btn ag-cabinet-full__btn"><?php esc_html_e( 'Prendre rendez-vous →', 'ag-starter-avocat' ); ?></a>
+					<a href="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" class="ag-btn ag-cabinet-full__btn"><?php esc_html_e( 'Prendre rendez-vous →', 'ag-starter-avocat' ); ?></a>
 				</div>
 			</div>
 		</div>

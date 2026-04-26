@@ -77,7 +77,7 @@ get_header();
 
 	<section class="ag-section ag-rdv-cta" style="text-align:center;padding-top:0;">
 		<div class="ag-container">
-			<a href="<?php echo esc_url( home_url( '/rendez-vous/' ) ); ?>" class="ag-btn"><?php esc_html_e( 'Demander un devis gratuit →', 'ag-starter-avocat' ); ?></a>
+			<a href="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" class="ag-btn"><?php esc_html_e( 'Demander un devis gratuit →', 'ag-starter-avocat' ); ?></a>
 		</div>
 	</section>
 

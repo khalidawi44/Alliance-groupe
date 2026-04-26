@@ -30,7 +30,7 @@
 						<a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a>
 					<?php endif; ?>
 				</p>
-				<a href="<?php echo esc_url( home_url( '/rendez-vous/' ) ); ?>" class="ag-footer-rdv"><?php esc_html_e( 'Prendre rendez-vous →', 'ag-starter-avocat' ); ?></a>
+				<a href="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" class="ag-footer-rdv"><?php esc_html_e( 'Prendre rendez-vous →', 'ag-starter-avocat' ); ?></a>
 			</div>
 		</div>
 		<div class="ag-footer-bottom">
