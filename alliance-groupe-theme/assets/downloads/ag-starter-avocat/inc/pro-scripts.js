@@ -45,15 +45,22 @@
 
     // Theme toggle — visitor can switch light/dark
     // Default mode is set by Customizer (body class ag-light added by PHP)
-    localStorage.removeItem('ag_theme_mode');
     var themeBtn = document.querySelector('.ag-theme-toggle');
     if (themeBtn) {
         var icon = themeBtn.querySelector('.ag-theme-toggle__icon');
+        var saved = localStorage.getItem('ag_mode');
+        // Apply saved preference (overrides PHP default)
+        if (saved === 'dark') {
+            document.body.classList.remove('ag-light');
+        } else if (saved === 'light') {
+            document.body.classList.add('ag-light');
+        }
         var isLight = document.body.classList.contains('ag-light');
         if (icon) icon.textContent = isLight ? '☀️' : '🌙';
         themeBtn.addEventListener('click', function() {
             isLight = document.body.classList.toggle('ag-light');
             if (icon) icon.textContent = isLight ? '☀️' : '🌙';
+            localStorage.setItem('ag_mode', isLight ? 'light' : 'dark');
         });
     }
 
