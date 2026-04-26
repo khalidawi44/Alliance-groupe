@@ -2145,28 +2145,36 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
         <style id="ag-boutique-stars-css">
         @keyframes agBoutiqueStar {
             0%   { transform: scale(0.2) rotate(0deg);   opacity: 0; }
-            12%  { transform: scale(1) rotate(30deg);    opacity: 1; }
-            45%  { transform: scale(6) rotate(120deg);   opacity: 0.7; }
-            80%  { transform: scale(18) rotate(220deg);  opacity: 0.15; }
-            100% { transform: scale(30) rotate(360deg);  opacity: 0; }
+            10%  { transform: scale(1) rotate(20deg);    opacity: 1; }
+            30%  { transform: scale(2.5) rotate(60deg);  opacity: 1; }
+            55%  { transform: scale(8) rotate(150deg);   opacity: 0.6; }
+            85%  { transform: scale(20) rotate(280deg);  opacity: 0.12; }
+            100% { transform: scale(35) rotate(360deg);  opacity: 0; }
         }
         .ag-boutique-stars-host { position: absolute !important; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
         .ag-boutique-shooting-star {
             position: absolute;
-            width: 70px; height: 70px;
+            width: 90px; height: 90px;
             color: #D4B45C;
             transform: scale(0);
             opacity: 0;
             transform-origin: center;
             pointer-events: none;
-            filter: drop-shadow(0 0 22px rgba(255,229,160,.95)) drop-shadow(0 0 60px rgba(212,180,92,.7));
-            animation: agBoutiqueStar 3.5s ease-out infinite;
+            filter: drop-shadow(0 0 25px rgba(255,229,160,.95)) drop-shadow(0 0 70px rgba(212,180,92,.85));
+            animation: agBoutiqueStar 5s ease-out infinite;
             will-change: transform, opacity;
         }
         .ag-boutique-shooting-star svg { width: 100%; height: 100%; display: block; fill: currentColor; }
-        .ag-boutique-shooting-star.s1 { top: 30%; left: 50%; margin: -35px 0 0 -35px; animation-delay: 0s; }
-        .ag-boutique-shooting-star.s2 { top: 55%; left: 25%; margin: -35px 0 0 -35px; animation-delay: 1.1s; }
-        .ag-boutique-shooting-star.s3 { top: 45%; left: 75%; margin: -35px 0 0 -35px; animation-delay: 2.3s; }
+        .ag-boutique-shooting-star.s1 { top: 25%; left: 50%; margin: -45px 0 0 -45px; animation-delay: 0s; }
+        .ag-boutique-shooting-star.s2 { top: 50%; left: 22%; margin: -45px 0 0 -45px; animation-delay: 1.6s; }
+        .ag-boutique-shooting-star.s3 { top: 45%; left: 78%; margin: -45px 0 0 -45px; animation-delay: 3.2s; }
+
+        /* Mode JOUR : etoiles bordeaux (contraste sur fond creme) */
+        body.ag-light .ag-boutique-shooting-star {
+            color: #7B2D3B;
+            filter: drop-shadow(0 0 22px rgba(160,61,77,.85)) drop-shadow(0 0 55px rgba(123,45,59,.65));
+        }
+
         @media (prefers-reduced-motion: reduce) { .ag-boutique-shooting-star { display: none !important; } }
         </style>
         <section class="ag-section ag-boutique" id="ag-boutique">
@@ -2184,14 +2192,15 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
                     if (!stars.length) return;
                     var keyframes = [
                         { transform: 'scale(0.2) rotate(0deg)',   opacity: 0 },
-                        { transform: 'scale(1) rotate(30deg)',    opacity: 1, offset: 0.12 },
-                        { transform: 'scale(6) rotate(120deg)',   opacity: 0.7, offset: 0.45 },
-                        { transform: 'scale(18) rotate(220deg)',  opacity: 0.15, offset: 0.8 },
-                        { transform: 'scale(30) rotate(360deg)',  opacity: 0 }
+                        { transform: 'scale(1) rotate(20deg)',    opacity: 1, offset: 0.10 },
+                        { transform: 'scale(2.5) rotate(60deg)',  opacity: 1, offset: 0.30 },
+                        { transform: 'scale(8) rotate(150deg)',   opacity: 0.6, offset: 0.55 },
+                        { transform: 'scale(20) rotate(280deg)',  opacity: 0.12, offset: 0.85 },
+                        { transform: 'scale(35) rotate(360deg)',  opacity: 0 }
                     ];
-                    var opts = { duration: 3500, easing: 'ease-out', iterations: Infinity };
+                    var opts = { duration: 5000, easing: 'ease-out', iterations: Infinity };
                     Array.prototype.forEach.call(stars, function(star, i){
-                        var delay = i * 1100;
+                        var delay = i * 1600;
                         setTimeout(function(){ star.animate(keyframes, opts); }, delay);
                     });
                 };
