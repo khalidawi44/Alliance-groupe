@@ -18,6 +18,13 @@ class AG_Pro_Features {
         $this->theme_slug = $theme_slug;
         $this->tier = class_exists( 'AG_Licence_Client' ) ? AG_Licence_Client::get_tier() : 'free';
 
+        // Always register tier body class + inline guard (also runs in Free,
+        // so .ag-tier-free reaches the DOM and the toggle is hidden even if
+        // header.php / style.css are served from a stale cache).
+        add_filter( 'body_class', array( $this, 'add_body_classes' ) );
+        add_action( 'wp_head', array( $this, 'print_tier_guard_style' ), 99 );
+        add_action( 'wp_footer', array( $this, 'print_tier_guard_script' ), 99 );
+
         // Footer branding — always active (different per tier)
         add_action( 'wp_footer', array( $this, 'render_footer_branding' ), 5 );
 
@@ -26,8 +33,17 @@ class AG_Pro_Features {
         // Pro+ features
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_pro_assets' ) );
         add_action( 'customize_register', array( $this, 'register_pro_customizer' ), 20 );
-        add_filter( 'body_class', array( $this, 'add_body_classes' ) );
         $this->__construct_business();
+    }
+
+    public function print_tier_guard_style() {
+        if ( $this->is_at_least( 'premium' ) ) return;
+        echo "<style id=\"ag-tier-guard\">body:not(.ag-tier-premium):not(.ag-tier-business) .ag-theme-toggle{display:none!important;}</style>\n";
+    }
+
+    public function print_tier_guard_script() {
+        if ( $this->is_at_least( 'premium' ) ) return;
+        echo "<script id=\"ag-tier-guard-js\">document.querySelectorAll('.ag-theme-toggle').forEach(function(el){el.parentNode&&el.parentNode.removeChild(el);});</script>\n";
     }
 
     public function get_tier() { return $this->tier; }
@@ -1836,8 +1852,11 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
     }
 
     public function add_body_classes( $classes ) {
-        $classes[] = 'ag-premium';
         $classes[] = 'ag-tier-' . $this->tier;
+        if ( ! $this->is_at_least( 'premium' ) ) {
+            return $classes;
+        }
+        $classes[] = 'ag-premium';
         $classes[] = 'ag-skin-' . get_theme_mod( 'ag_pro_skin', 'navy-or' );
         $skin = $this->get_skin();
         if ( ! empty( $skin['light'] ) ) $classes[] = 'ag-light';
