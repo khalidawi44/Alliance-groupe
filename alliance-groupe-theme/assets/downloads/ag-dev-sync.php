@@ -38,6 +38,16 @@ function ag_dev_sync_run() {
 			'url'  => $base . 'ag-starter-companion.zip',
 			'dest' => WP_PLUGIN_DIR . '/ag-starter-companion',
 		),
+		array(
+			'name' => 'Plugin AG Premium Avocat',
+			'url'  => $base . 'ag-premium-avocat.zip',
+			'dest' => WP_PLUGIN_DIR . '/ag-premium-avocat',
+		),
+		array(
+			'name' => 'Plugin AG Business Avocat',
+			'url'  => $base . 'ag-business-avocat.zip',
+			'dest' => WP_PLUGIN_DIR . '/ag-business-avocat',
+		),
 	);
 
 	require_once ABSPATH . 'wp-admin/includes/file.php';
