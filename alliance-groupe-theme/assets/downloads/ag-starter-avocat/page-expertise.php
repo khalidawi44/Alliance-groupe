@@ -14,7 +14,7 @@ get_header();
 	<section class="ag-page-hero">
 		<div class="ag-container">
 			<h1 class="ag-page-hero__title"><?php esc_html_e( 'Domaines d\'expertise', 'ag-starter-avocat' ); ?></h1>
-			<p class="ag-page-hero__lead"><?php esc_html_e( 'Conseil et representation pour particuliers et entreprises. Cliquez sur un domaine pour decouvrir les cas que nous traitons.', 'ag-starter-avocat' ); ?></p>
+			<p class="ag-page-hero__lead"><?php esc_html_e( 'Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit.', 'ag-starter-avocat' ); ?></p>
 		</div>
 	</section>
 
@@ -30,7 +30,7 @@ get_header();
 						$icon     = get_post_meta( $d->ID, '_ag_domaine_icon', true );
 						$examples = get_post_meta( $d->ID, '_ag_domaine_examples', true );
 						?>
-						<a href="<?php echo esc_url( get_permalink( $d->ID ) ); ?>" class="ag-domaine-card">
+						<div class="ag-domaine-card">
 							<div class="ag-domaine-card__icon"><?php
 								echo function_exists( 'ag_starter_avocat_get_domaine_icon_html' )
 									? ag_starter_avocat_get_domaine_icon_html( $icon ) /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped */
@@ -45,8 +45,7 @@ get_header();
 									<?php endforeach; ?>
 								</ul>
 							<?php endif; ?>
-							<span class="ag-domaine-card__more"><?php esc_html_e( 'En savoir plus →', 'ag-starter-avocat' ); ?></span>
-						</a>
+						</div>
 					<?php endforeach; ?>
 				</div>
 			<?php else : ?>

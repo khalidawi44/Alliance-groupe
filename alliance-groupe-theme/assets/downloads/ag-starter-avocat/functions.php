@@ -84,10 +84,34 @@ add_action( 'after_setup_theme', 'ag_starter_avocat_setup' );
 
 /**
  * Get permalink for a page by slug — works with any permalink structure.
+ *
+ * In Free tier: pages dediees (rendez-vous, expertise, cabinet, honoraires)
+ * n'existent pas conceptuellement. On force l'ancre vers la home, meme si
+ * une page WP avec ce slug a ete creee par erreur. En Premium+, on utilise
+ * la page WP si elle existe, sinon fallback ancre.
  */
 function ag_page_url( $slug ) {
-	$page = get_page_by_path( $slug );
-	return $page ? get_permalink( $page ) : home_url( '/' . $slug . '/' );
+	$anchors = array(
+		'rendez-vous' => '#ag-rdv',
+		'expertise'   => '#ag-domaines',
+		'cabinet'     => '#ag-cabinet',
+		'honoraires'  => '#ag-honoraires',
+	);
+
+	$tier = class_exists( 'AG_Licence_Client' ) ? AG_Licence_Client::get_tier() : 'free';
+
+	if ( 'free' !== $tier ) {
+		$page = get_page_by_path( $slug );
+		if ( $page ) {
+			return get_permalink( $page );
+		}
+	}
+
+	if ( isset( $anchors[ $slug ] ) ) {
+		return home_url( '/' . $anchors[ $slug ] );
+	}
+
+	return home_url( '/' . $slug . '/' );
 }
 
 /**

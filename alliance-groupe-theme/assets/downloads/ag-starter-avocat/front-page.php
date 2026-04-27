@@ -55,7 +55,7 @@ get_header();
 	<section class="ag-section ag-domaines" id="ag-domaines">
 		<div class="ag-container">
 			<h2 class="ag-section-title"><?php esc_html_e( 'Domaines d\'expertise', 'ag-starter-avocat' ); ?></h2>
-			<p class="ag-section-lead"><?php esc_html_e( 'Conseil et representation pour particuliers et entreprises. Cliquez sur un domaine pour decouvrir les cas que nous traitons.', 'ag-starter-avocat' ); ?></p>
+			<p class="ag-section-lead"><?php esc_html_e( 'Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit.', 'ag-starter-avocat' ); ?></p>
 
 			<?php
 			$domaines = ag_starter_avocat_get_domaines( 6 );
@@ -72,7 +72,7 @@ get_header();
 							$bg_url = ag_starter_avocat_get_domaine_bg_url( $icon );
 						}
 						?>
-						<a href="<?php echo esc_url( get_permalink( $d->ID ) ); ?>" class="ag-domaine-card ag-domaine-card--bg">
+						<div class="ag-domaine-card ag-domaine-card--bg">
 							<?php if ( $bg_url ) : ?>
 								<div class="ag-domaine-card__bg" style="background-image:url('<?php echo esc_url( $bg_url ); ?>');"></div>
 							<?php endif; ?>
@@ -87,9 +87,8 @@ get_header();
 										<?php endforeach; ?>
 									</ul>
 								<?php endif; ?>
-								<span class="ag-domaine-card__more"><?php esc_html_e( 'En savoir plus →', 'ag-starter-avocat' ); ?></span>
 							</div>
-						</a>
+						</div>
 					<?php endforeach; ?>
 				</div>
 			<?php else : ?>
