@@ -35,7 +35,6 @@ class AG_Pro_Features {
         add_action( 'customize_register', array( $this, 'register_pro_customizer' ), 20 );
         add_filter( 'ag_domaine_bg_url', array( $this, 'premium_domaine_bg_url' ), 10, 3 );
         add_action( 'ag_after_domaines', array( $this, 'render_voir_tous_btn' ) );
-        add_action( 'ag_brand_fallback', array( $this, 'render_default_logo_svg' ) );
         $this->__construct_business();
     }
 
@@ -1630,15 +1629,15 @@ body.ag-tier-business h1,body.ag-tier-business h2,body.ag-tier-business h3,body.
 body.ag-tier-business .ag-maitre__name{font-family:"Allison","Playfair Display",cursive !important;font-size:3.6rem !important;font-style:normal !important;font-weight:400 !important;letter-spacing:0 !important;line-height:1 !important;}
 body.ag-tier-business .ag-domaine-card__title,body.ag-tier-business .ag-honoraires__label,body.ag-tier-business .ag-team-card__name,body.ag-tier-business .ag-boutique-card__title{font-family:"Playfair Display",serif !important;font-style:italic !important;}
 
-/* Logo SVG par défaut quand pas de custom_logo (Premium et Business) */
-body.ag-premium.ag-no-custom-logo .ag-site-brand a{display:flex !important;align-items:center !important;gap:10px !important;text-decoration:none !important;}
-body.ag-premium.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{display:inline-block;width:64px;height:64px;line-height:0;filter:drop-shadow(0 4px 16px rgba(212,180,92,.35));transition:transform .35s ease,filter .35s ease;}
-body.ag-premium.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg svg{width:100%;height:100%;display:block;}
-body.ag-premium.ag-no-custom-logo .ag-site-brand:hover .ag-default-logo-svg{transform:scale(1.06) rotate(-3deg);filter:drop-shadow(0 6px 24px rgba(212,180,92,.55));}
-body.ag-premium.ag-no-custom-logo .ag-site-brand__text{display:none !important;}
-body.ag-premium.ag-light.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{filter:drop-shadow(0 3px 10px rgba(123,45,59,.25));}
-body.ag-premium.ag-light.ag-no-custom-logo .ag-site-brand:hover .ag-default-logo-svg{filter:drop-shadow(0 5px 18px rgba(123,45,59,.45));}
-@media(max-width:768px){body.ag-premium.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{width:50px;height:50px;}}
+/* Logo SVG par défaut quand pas de custom_logo (Business uniquement) */
+body.ag-tier-business.ag-no-custom-logo .ag-site-brand a{display:flex !important;align-items:center !important;gap:10px !important;text-decoration:none !important;}
+body.ag-tier-business.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{display:inline-block;width:64px;height:64px;line-height:0;filter:drop-shadow(0 4px 16px rgba(212,180,92,.35));transition:transform .35s ease,filter .35s ease;}
+body.ag-tier-business.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg svg{width:100%;height:100%;display:block;}
+body.ag-tier-business.ag-no-custom-logo .ag-site-brand:hover .ag-default-logo-svg{transform:scale(1.06) rotate(-3deg);filter:drop-shadow(0 6px 24px rgba(212,180,92,.55));}
+body.ag-tier-business.ag-no-custom-logo .ag-site-brand__text{display:none !important;}
+body.ag-tier-business.ag-light.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{filter:drop-shadow(0 3px 10px rgba(123,45,59,.25));}
+body.ag-tier-business.ag-light.ag-no-custom-logo .ag-site-brand:hover .ag-default-logo-svg{filter:drop-shadow(0 5px 18px rgba(123,45,59,.45));}
+@media(max-width:768px){body.ag-tier-business.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{width:50px;height:50px;}}
 
 /* Signature dans la section Maître */
 .ag-maitre__signature{margin-top:18px;padding-top:14px;border-top:1px solid rgba(212,180,92,.15);}
@@ -2007,8 +2006,9 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
         add_action( 'ag_after_honoraires', array( $this, 'render_parallax_quote_2' ) );
         add_action( 'ag_after_cabinet',    array( $this, 'render_boutique' ) );
         add_action( 'ag_after_cabinet',    array( $this, 'render_parallax_quote_3' ), 20 );
-        // Signature dans la section Maître (logo SVG est registered en Premium+ dans __construct)
+        // Signature dans la section Maître + logo SVG par défaut
         add_action( 'ag_inside_maitre_body', array( $this, 'render_maitre_signature' ) );
+        add_action( 'ag_brand_fallback',     array( $this, 'render_default_logo_svg' ) );
         // Fonts business (Cormorant Garamond + Allison signature)
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_business_fonts' ), 11 );
         // Customizer fields pour équipe (4 collaborateurs)
@@ -2027,7 +2027,7 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
         // Logo balance de justice — silhouette pleine + dégradé or + halo
         // Visibilité maximale même à 30px : remplissages solides, pas de
         // traits fins, halo de fond pour ressortir sur n'importe quel bg.
-        if ( ! $this->is_at_least( 'premium' ) ) return;
+        if ( ! $this->is_at_least( 'business' ) ) return;
         if ( has_custom_logo() ) return;
         ?>
         <span class="ag-default-logo-svg" aria-hidden="true">
