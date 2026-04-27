@@ -34,22 +34,7 @@ class AG_Pro_Features {
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_pro_assets' ) );
         add_action( 'customize_register', array( $this, 'register_pro_customizer' ), 20 );
         add_filter( 'ag_domaine_bg_url', array( $this, 'premium_domaine_bg_url' ), 10, 3 );
-        add_action( 'ag_after_domaines', array( $this, 'render_voir_tous_btn' ) );
         $this->__construct_business();
-    }
-
-    /**
-     * "Voir tous les domaines" CTA injected below the home Domaines grid
-     * via the ag_after_domaines hook. Premium+ only.
-     */
-    public function render_voir_tous_btn() {
-        if ( ! $this->is_at_least( 'premium' ) ) return;
-        $url = function_exists( 'ag_page_url' ) ? ag_page_url( 'expertise' ) : home_url( '/expertise/' );
-        ?>
-        <div class="ag-premium-domaines-cta" style="text-align:center;margin-top:48px;">
-            <a href="<?php echo esc_url( $url ); ?>" class="ag-btn ag-premium-domaines-cta__btn"><?php esc_html_e( 'Voir tous les domaines →', 'ag-starter-avocat' ); ?></a>
-        </div>
-        <?php
     }
 
     /**
