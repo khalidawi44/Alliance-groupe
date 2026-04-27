@@ -1,0 +1,8 @@
+/**
+ * AG Business Avocat — feuille de styles.
+ *
+ * Convention : toutes les classes commencent par `ag-business-`.
+ * Pas d'override des classes Free ni Premium.
+ * Pour cibler la combinaison Free + Business actif, utiliser
+ *   body.ag-business-active .ag-business-card { ... }
+ */

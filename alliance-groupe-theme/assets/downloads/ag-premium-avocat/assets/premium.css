@@ -1,0 +1,8 @@
+/**
+ * AG Premium Avocat — feuille de styles.
+ *
+ * Convention : toutes les classes commencent par `ag-premium-`.
+ * Pas d'override des classes Free (`ag-domaine-card`, `ag-section`, etc.).
+ * Pour cibler la combinaison Free + Premium actif, utiliser
+ *   body.ag-premium-active .ag-premium-card { ... }
+ */
