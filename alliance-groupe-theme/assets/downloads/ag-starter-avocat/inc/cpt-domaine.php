@@ -154,7 +154,7 @@ function ag_starter_avocat_get_domaines( $limit = 6 ) {
  * @param string $icon Keyword (scales, gavel, shield, etc.).
  * @return string URL or empty string.
  */
-function ag_starter_avocat_get_domaine_bg_url( $icon ) {
+function ag_starter_avocat_get_domaine_bg_url( $icon, $post_id = 0 ) {
 	$icon = strtolower( trim( (string) $icon ) );
 	$map = array(
 		'scales'    => 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1200&q=80', // courthouse columns
@@ -168,7 +168,8 @@ function ag_starter_avocat_get_domaine_bg_url( $icon ) {
 		'lock'      => 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1200&q=80', // security
 		'bank'      => 'https://images.unsplash.com/photo-1601597111158-2fceff292cdc?w=1200&q=80', // bank facade
 	);
-	return isset( $map[ $icon ] ) ? $map[ $icon ] : 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1200&q=80';
+	$url = isset( $map[ $icon ] ) ? $map[ $icon ] : 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1200&q=80';
+	return apply_filters( 'ag_domaine_bg_url', $url, $icon, $post_id );
 }
 
 /**
