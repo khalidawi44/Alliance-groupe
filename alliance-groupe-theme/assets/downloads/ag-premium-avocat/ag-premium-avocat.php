@@ -26,4 +26,6 @@ define( 'AG_PREMIUM_AVOCAT_URL', plugin_dir_url( __FILE__ ) );
 
 require_once AG_PREMIUM_AVOCAT_DIR . 'inc/class-ag-premium-avocat.php';
 
-add_action( 'plugins_loaded', array( 'AG_Premium_Avocat', 'instance' ), 20 );
+// Boot after the theme has loaded, so AG_Licence_Client (defined in the
+// Free theme) is available for tier detection.
+add_action( 'after_setup_theme', array( 'AG_Premium_Avocat', 'instance' ), 20 );

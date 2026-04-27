@@ -12,7 +12,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class AG_Premium_Avocat {
 
 	private static $instance = null;
-	private $is_active       = false;
 
 	public static function instance() {
 		if ( null === self::$instance ) {
@@ -22,25 +21,20 @@ class AG_Premium_Avocat {
 	}
 
 	private function __construct() {
-		$this->is_active = $this->detect_tier();
-		if ( ! $this->is_active ) {
-			return;
-		}
-
+		// Hooks are always registered; tier check is lazy inside each
+		// callback so that AG_Licence_Client (loaded by the Free theme)
+		// is guaranteed to exist by the time the callback fires.
 		add_filter( 'body_class', array( $this, 'add_body_class' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ), 20 );
 		add_action( 'wp_head', array( $this, 'output_domaine_bg_overrides' ), 99 );
-
-		// Premium-only hook handlers go below. Keep each one in its own
-		// method, gated by $this->is_active (already enforced by the early
-		// return above). Use .ag-premium-* CSS classes only.
 	}
 
 	/**
-	 * Active si AG_Licence_Client détecte un tier >= premium. Si la classe
-	 * n'existe pas (Free seul installé), le plugin reste inactif.
+	 * Lazy tier check. Active si AG_Licence_Client::get_tier() retourne
+	 * premium ou business. Si la classe n'existe pas (Free seul installé,
+	 * licence non chargée), le plugin reste inactif.
 	 */
-	private function detect_tier() {
+	private function is_active() {
 		if ( ! class_exists( 'AG_Licence_Client' ) ) {
 			return false;
 		}
@@ -49,11 +43,17 @@ class AG_Premium_Avocat {
 	}
 
 	public function add_body_class( $classes ) {
+		if ( ! $this->is_active() ) {
+			return $classes;
+		}
 		$classes[] = 'ag-premium-active';
 		return $classes;
 	}
 
 	public function enqueue_assets() {
+		if ( ! $this->is_active() ) {
+			return;
+		}
 		if ( file_exists( AG_PREMIUM_AVOCAT_DIR . 'assets/premium.css' ) ) {
 			wp_enqueue_style(
 				'ag-premium-avocat-style',
@@ -86,6 +86,9 @@ class AG_Premium_Avocat {
 	 *   - Slug match wins; otherwise we fall back to a per-position pool.
 	 */
 	public function output_domaine_bg_overrides() {
+		if ( ! $this->is_active() ) {
+			return;
+		}
 		if ( ! function_exists( 'ag_starter_avocat_get_domaines' ) ) {
 			return;
 		}

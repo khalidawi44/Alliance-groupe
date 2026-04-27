@@ -12,7 +12,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class AG_Business_Avocat {
 
 	private static $instance = null;
-	private $is_active       = false;
 
 	public static function instance() {
 		if ( null === self::$instance ) {
@@ -22,22 +21,15 @@ class AG_Business_Avocat {
 	}
 
 	private function __construct() {
-		$this->is_active = $this->detect_tier();
-		if ( ! $this->is_active ) {
-			return;
-		}
-
+		// Hooks always registered; tier check lazy inside each callback.
 		add_filter( 'body_class', array( $this, 'add_body_class' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ), 30 );
-
-		// Business-only hook handlers go below. Use .ag-business-* CSS
-		// classes only.
 	}
 
 	/**
-	 * Active uniquement si tier === business.
+	 * Lazy tier check. Active uniquement si tier === business.
 	 */
-	private function detect_tier() {
+	private function is_active() {
 		if ( ! class_exists( 'AG_Licence_Client' ) ) {
 			return false;
 		}
@@ -45,11 +37,17 @@ class AG_Business_Avocat {
 	}
 
 	public function add_body_class( $classes ) {
+		if ( ! $this->is_active() ) {
+			return $classes;
+		}
 		$classes[] = 'ag-business-active';
 		return $classes;
 	}
 
 	public function enqueue_assets() {
+		if ( ! $this->is_active() ) {
+			return;
+		}
 		if ( file_exists( AG_BUSINESS_AVOCAT_DIR . 'assets/business.css' ) ) {
 			wp_enqueue_style(
 				'ag-business-avocat-style',
