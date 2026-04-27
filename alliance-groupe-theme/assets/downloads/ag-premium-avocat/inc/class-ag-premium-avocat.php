@@ -170,20 +170,22 @@ class AG_Premium_Avocat {
 	/**
 	 * Premium-only setup : ensure the 4 dedicated pages exist (Cabinet,
 	 * Expertise, Honoraires, Rendez-vous) and sync the primary menu so
-	 * its items point to those real pages instead of anchors. Runs once,
-	 * tracked by the option `ag_premium_setup_done`.
+	 * its items point to those real pages instead of anchors.
 	 *
-	 * - Skips creation for any page that already exists.
-	 * - Removes anchor-based custom menu items (`#xxx`).
+	 * Idempotent — runs every admin_init for an admin user. No DB writes
+	 * if everything is already in the correct state. Self-healing : if a
+	 * page gets deleted or a menu item gets edited to a hash anchor, the
+	 * next admin page load fixes it.
+	 *
+	 * - Creates any of the 4 dedicated pages that don't exist yet.
+	 * - Deletes custom menu items whose URL contains `#` or is empty
+	 *   (the typical "anchor" leftovers from manual edits).
 	 * - Adds a page-typed menu item for each page that isn't already in
 	 *   the primary menu.
 	 * - If no menu is assigned to the `primary` location, creates one.
 	 */
 	public function ensure_pages_and_menu() {
 		if ( ! $this->is_active() ) {
-			return;
-		}
-		if ( get_option( 'ag_premium_setup_done' ) ) {
 			return;
 		}
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -217,7 +219,6 @@ class AG_Premium_Avocat {
 		}
 
 		if ( empty( $page_ids ) ) {
-			update_option( 'ag_premium_setup_done', 1 );
 			return;
 		}
 
@@ -227,20 +228,25 @@ class AG_Premium_Avocat {
 		if ( ! $menu_id ) {
 			$menu_id = wp_create_nav_menu( __( 'Menu principal', 'ag-premium-avocat' ) );
 			if ( is_wp_error( $menu_id ) ) {
-				update_option( 'ag_premium_setup_done', 1 );
 				return;
 			}
 			$locations['primary'] = $menu_id;
 			set_theme_mod( 'nav_menu_locations', $locations );
 		}
 
-		$items                = wp_get_nav_menu_items( $menu_id );
-		$existing_page_ids    = array();
+		$items             = wp_get_nav_menu_items( $menu_id );
+		$existing_page_ids = array();
 		if ( $items ) {
 			foreach ( $items as $item ) {
-				if ( 'custom' === $item->type && false !== strpos( (string) $item->url, '#' ) ) {
-					wp_delete_post( $item->ID, true );
-					continue;
+				// Delete any custom menu item that points to an anchor
+				// (`#xxx`) or has no real URL — these are leftovers from
+				// the Free fallback or manual edits.
+				if ( 'custom' === $item->type ) {
+					$url = trim( (string) $item->url );
+					if ( '' === $url || '#' === $url || false !== strpos( $url, '#' ) ) {
+						wp_delete_post( $item->ID, true );
+						continue;
+					}
 				}
 				if ( 'post_type' === $item->type && 'page' === $item->object ) {
 					$existing_page_ids[] = (int) $item->object_id;
@@ -260,7 +266,5 @@ class AG_Premium_Avocat {
 				'menu-item-status'    => 'publish',
 			) );
 		}
-
-		update_option( 'ag_premium_setup_done', 1 );
 	}
 }
