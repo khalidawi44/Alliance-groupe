@@ -55,7 +55,7 @@ get_header();
 	<section class="ag-section ag-domaines" id="ag-domaines">
 		<div class="ag-container">
 			<h2 class="ag-section-title"><?php esc_html_e( 'Domaines d\'expertise', 'ag-starter-avocat' ); ?></h2>
-			<p class="ag-section-lead"><?php esc_html_e( 'Conseil et representation pour particuliers et entreprises. Cliquez sur un domaine pour decouvrir les cas que nous traitons.', 'ag-starter-avocat' ); ?></p>
+			<p class="ag-section-lead"><?php esc_html_e( 'Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit.', 'ag-starter-avocat' ); ?></p>
 
 			<?php
 			$domaines = ag_starter_avocat_get_domaines( 6 );
