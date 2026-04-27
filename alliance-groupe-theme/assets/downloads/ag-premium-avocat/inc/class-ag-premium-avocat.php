@@ -27,6 +27,12 @@ class AG_Premium_Avocat {
 		add_filter( 'body_class', array( $this, 'add_body_class' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ), 20 );
 		add_action( 'wp_head', array( $this, 'output_domaine_bg_overrides' ), 99 );
+
+		// One-shot DB setup: create the dedicated Premium pages and sync
+		// the primary menu to point to them. Runs lazily on admin_init
+		// so the work happens when the admin browses, not on every front
+		// page load. Tracked via the option ag_premium_setup_done.
+		add_action( 'admin_init', array( $this, 'ensure_pages_and_menu' ) );
 	}
 
 	/**
@@ -159,5 +165,102 @@ class AG_Premium_Avocat {
 			'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1600&q=85',
 			'https://images.unsplash.com/photo-1601597111158-2fceff292cdc?w=1600&q=85',
 		);
+	}
+
+	/**
+	 * Premium-only setup : ensure the 4 dedicated pages exist (Cabinet,
+	 * Expertise, Honoraires, Rendez-vous) and sync the primary menu so
+	 * its items point to those real pages instead of anchors. Runs once,
+	 * tracked by the option `ag_premium_setup_done`.
+	 *
+	 * - Skips creation for any page that already exists.
+	 * - Removes anchor-based custom menu items (`#xxx`).
+	 * - Adds a page-typed menu item for each page that isn't already in
+	 *   the primary menu.
+	 * - If no menu is assigned to the `primary` location, creates one.
+	 */
+	public function ensure_pages_and_menu() {
+		if ( ! $this->is_active() ) {
+			return;
+		}
+		if ( get_option( 'ag_premium_setup_done' ) ) {
+			return;
+		}
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return; // only run for an admin so we don't trigger DB writes for visitors
+		}
+
+		$page_specs = array(
+			'cabinet'     => __( 'Cabinet', 'ag-premium-avocat' ),
+			'expertise'   => __( 'Domaines d\'expertise', 'ag-premium-avocat' ),
+			'honoraires'  => __( 'Honoraires', 'ag-premium-avocat' ),
+			'rendez-vous' => __( 'Prendre rendez-vous', 'ag-premium-avocat' ),
+		);
+
+		$page_ids = array();
+		foreach ( $page_specs as $slug => $title ) {
+			$existing = get_page_by_path( $slug );
+			if ( $existing ) {
+				$page_ids[ $slug ] = (int) $existing->ID;
+				continue;
+			}
+			$id = wp_insert_post( array(
+				'post_type'    => 'page',
+				'post_status'  => 'publish',
+				'post_title'   => $title,
+				'post_name'    => $slug,
+				'post_content' => '',
+			) );
+			if ( ! is_wp_error( $id ) && $id ) {
+				$page_ids[ $slug ] = (int) $id;
+			}
+		}
+
+		if ( empty( $page_ids ) ) {
+			update_option( 'ag_premium_setup_done', 1 );
+			return;
+		}
+
+		$locations = (array) get_theme_mod( 'nav_menu_locations' );
+		$menu_id   = isset( $locations['primary'] ) ? (int) $locations['primary'] : 0;
+
+		if ( ! $menu_id ) {
+			$menu_id = wp_create_nav_menu( __( 'Menu principal', 'ag-premium-avocat' ) );
+			if ( is_wp_error( $menu_id ) ) {
+				update_option( 'ag_premium_setup_done', 1 );
+				return;
+			}
+			$locations['primary'] = $menu_id;
+			set_theme_mod( 'nav_menu_locations', $locations );
+		}
+
+		$items                = wp_get_nav_menu_items( $menu_id );
+		$existing_page_ids    = array();
+		if ( $items ) {
+			foreach ( $items as $item ) {
+				if ( 'custom' === $item->type && false !== strpos( (string) $item->url, '#' ) ) {
+					wp_delete_post( $item->ID, true );
+					continue;
+				}
+				if ( 'post_type' === $item->type && 'page' === $item->object ) {
+					$existing_page_ids[] = (int) $item->object_id;
+				}
+			}
+		}
+
+		foreach ( $page_ids as $slug => $id ) {
+			if ( in_array( $id, $existing_page_ids, true ) ) {
+				continue;
+			}
+			wp_update_nav_menu_item( $menu_id, 0, array(
+				'menu-item-title'     => $page_specs[ $slug ],
+				'menu-item-object'    => 'page',
+				'menu-item-object-id' => $id,
+				'menu-item-type'      => 'post_type',
+				'menu-item-status'    => 'publish',
+			) );
+		}
+
+		update_option( 'ag_premium_setup_done', 1 );
 	}
 }
