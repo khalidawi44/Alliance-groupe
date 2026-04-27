@@ -52,12 +52,14 @@
 			if ( class_exists( 'AG_Pro_Features' ) ) {
 				global $ag_pro;
 				if ( ! isset( $ag_pro ) ) $ag_pro = new AG_Pro_Features( 'ag-starter-avocat' );
-				echo $ag_pro->render_header_phone();
-				?>
-				<button class="ag-theme-toggle" aria-label="<?php esc_attr_e( 'Changer de theme', 'ag-starter-avocat' ); ?>" title="<?php esc_attr_e( 'Mode clair / sombre', 'ag-starter-avocat' ); ?>">
-					<span class="ag-theme-toggle__icon">🌙</span>
-				</button>
-				<?php
+				if ( $ag_pro->is_at_least( 'premium' ) ) {
+					echo $ag_pro->render_header_phone();
+					?>
+					<button class="ag-theme-toggle" aria-label="<?php esc_attr_e( 'Changer de theme', 'ag-starter-avocat' ); ?>" title="<?php esc_attr_e( 'Mode clair / sombre', 'ag-starter-avocat' ); ?>">
+						<span class="ag-theme-toggle__icon">🌙</span>
+					</button>
+					<?php
+				}
 			}
 			?>
 		</div>
