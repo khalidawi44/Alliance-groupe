@@ -33,103 +33,7 @@ class AG_Pro_Features {
         // Pro+ features
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_pro_assets' ) );
         add_action( 'customize_register', array( $this, 'register_pro_customizer' ), 20 );
-        add_filter( 'ag_domaine_bg_url', array( $this, 'premium_domaine_bg_url' ), 10, 3 );
-        add_action( 'ag_after_domaines', array( $this, 'render_voir_tous_btn' ) );
-        add_action( 'ag_brand_fallback', array( $this, 'render_default_logo_svg' ) );
         $this->__construct_business();
-    }
-
-    /**
-     * "Voir tous les domaines" CTA injected below the home Domaines grid
-     * via the ag_after_domaines hook. Premium+ only.
-     */
-    public function render_voir_tous_btn() {
-        if ( ! $this->is_at_least( 'premium' ) ) return;
-        $url = function_exists( 'ag_page_url' ) ? ag_page_url( 'expertise' ) : home_url( '/expertise/' );
-        ?>
-        <div class="ag-premium-domaines-cta" style="text-align:center;margin-top:48px;">
-            <a href="<?php echo esc_url( $url ); ?>" class="ag-btn ag-premium-domaines-cta__btn"><?php esc_html_e( 'Voir tous les domaines →', 'ag-starter-avocat' ); ?></a>
-        </div>
-        <?php
-    }
-
-    /**
-     * Premium-curated background images for the "Domaines d'expertise" cards.
-     * Resolution order:
-     *   1. Slug match (most common French legal domains -> dedicated photo)
-     *   2. Pool keyed by icon, picked by post_id modulo for visual variety
-     *   3. Original Free URL (passed via $url) as final fallback
-     */
-    public function premium_domaine_bg_url( $url, $icon, $post_id ) {
-        $slug_map = array(
-            'droit-des-affaires'         => 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1600&q=85',
-            'droit-du-travail'           => 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1600&q=85',
-            'droit-de-la-famille'        => 'https://images.unsplash.com/photo-1609220136736-443140cffec6?w=1600&q=85',
-            'droit-immobilier'           => 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1600&q=85',
-            'droit-penal'                => 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1600&q=85',
-            'droit-fiscal'               => 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1600&q=85',
-            'droit-international'        => 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=1600&q=85',
-            'droit-de-la-securite-sociale' => 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1600&q=85',
-            'droit-des-successions'      => 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1600&q=85',
-            'droit-du-numerique'         => 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1600&q=85',
-            'droit-bancaire'             => 'https://images.unsplash.com/photo-1601597111158-2fceff292cdc?w=1600&q=85',
-            'droit-de-la-consommation'   => 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1600&q=85',
-        );
-        if ( $post_id ) {
-            $slug = get_post_field( 'post_name', $post_id );
-            if ( $slug && isset( $slug_map[ $slug ] ) ) {
-                return $slug_map[ $slug ];
-            }
-        }
-        $pool = array(
-            'scales'    => array(
-                'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1600&q=85',
-                'https://images.unsplash.com/photo-1589216532372-1c2a367900d9?w=1600&q=85',
-                'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1600&q=85',
-            ),
-            'gavel'     => array(
-                'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1600&q=85',
-                'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1600&q=85',
-            ),
-            'shield'    => array(
-                'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1600&q=85',
-                'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=1600&q=85',
-            ),
-            'briefcase' => array(
-                'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1600&q=85',
-                'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1600&q=85',
-            ),
-            'house'     => array(
-                'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1600&q=85',
-                'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1600&q=85',
-            ),
-            'family'    => array(
-                'https://images.unsplash.com/photo-1609220136736-443140cffec6?w=1600&q=85',
-                'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=1600&q=85',
-            ),
-            'document'  => array(
-                'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1600&q=85',
-                'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1600&q=85',
-            ),
-            'heart'     => array(
-                'https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?w=1600&q=85',
-                'https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?w=1600&q=85',
-            ),
-            'lock'      => array(
-                'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1600&q=85',
-                'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1600&q=85',
-            ),
-            'bank'      => array(
-                'https://images.unsplash.com/photo-1601597111158-2fceff292cdc?w=1600&q=85',
-                'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=1600&q=85',
-            ),
-        );
-        if ( isset( $pool[ $icon ] ) ) {
-            $variants = $pool[ $icon ];
-            $idx = $post_id ? ( (int) $post_id % count( $variants ) ) : 0;
-            return $variants[ $idx ];
-        }
-        return $url;
     }
 
     public function print_tier_guard_style() {
@@ -1630,15 +1534,15 @@ body.ag-tier-business h1,body.ag-tier-business h2,body.ag-tier-business h3,body.
 body.ag-tier-business .ag-maitre__name{font-family:"Allison","Playfair Display",cursive !important;font-size:3.6rem !important;font-style:normal !important;font-weight:400 !important;letter-spacing:0 !important;line-height:1 !important;}
 body.ag-tier-business .ag-domaine-card__title,body.ag-tier-business .ag-honoraires__label,body.ag-tier-business .ag-team-card__name,body.ag-tier-business .ag-boutique-card__title{font-family:"Playfair Display",serif !important;font-style:italic !important;}
 
-/* Logo SVG par défaut quand pas de custom_logo (Premium et Business) */
-body.ag-premium.ag-no-custom-logo .ag-site-brand a{display:flex !important;align-items:center !important;gap:10px !important;text-decoration:none !important;}
-body.ag-premium.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{display:inline-block;width:64px;height:64px;line-height:0;filter:drop-shadow(0 4px 16px rgba(212,180,92,.35));transition:transform .35s ease,filter .35s ease;}
-body.ag-premium.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg svg{width:100%;height:100%;display:block;}
-body.ag-premium.ag-no-custom-logo .ag-site-brand:hover .ag-default-logo-svg{transform:scale(1.06) rotate(-3deg);filter:drop-shadow(0 6px 24px rgba(212,180,92,.55));}
-body.ag-premium.ag-no-custom-logo .ag-site-brand__text{display:none !important;}
-body.ag-premium.ag-light.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{filter:drop-shadow(0 3px 10px rgba(123,45,59,.25));}
-body.ag-premium.ag-light.ag-no-custom-logo .ag-site-brand:hover .ag-default-logo-svg{filter:drop-shadow(0 5px 18px rgba(123,45,59,.45));}
-@media(max-width:768px){body.ag-premium.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{width:50px;height:50px;}}
+/* Logo SVG par défaut quand pas de custom_logo (Business uniquement) */
+body.ag-tier-business.ag-no-custom-logo .ag-site-brand a{display:flex !important;align-items:center !important;gap:10px !important;text-decoration:none !important;}
+body.ag-tier-business.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{display:inline-block;width:64px;height:64px;line-height:0;filter:drop-shadow(0 4px 16px rgba(212,180,92,.35));transition:transform .35s ease,filter .35s ease;}
+body.ag-tier-business.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg svg{width:100%;height:100%;display:block;}
+body.ag-tier-business.ag-no-custom-logo .ag-site-brand:hover .ag-default-logo-svg{transform:scale(1.06) rotate(-3deg);filter:drop-shadow(0 6px 24px rgba(212,180,92,.55));}
+body.ag-tier-business.ag-no-custom-logo .ag-site-brand__text{display:none !important;}
+body.ag-tier-business.ag-light.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{filter:drop-shadow(0 3px 10px rgba(123,45,59,.25));}
+body.ag-tier-business.ag-light.ag-no-custom-logo .ag-site-brand:hover .ag-default-logo-svg{filter:drop-shadow(0 5px 18px rgba(123,45,59,.45));}
+@media(max-width:768px){body.ag-tier-business.ag-no-custom-logo .ag-site-brand .ag-default-logo-svg{width:50px;height:50px;}}
 
 /* Signature dans la section Maître */
 .ag-maitre__signature{margin-top:18px;padding-top:14px;border-top:1px solid rgba(212,180,92,.15);}
@@ -2007,8 +1911,9 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
         add_action( 'ag_after_honoraires', array( $this, 'render_parallax_quote_2' ) );
         add_action( 'ag_after_cabinet',    array( $this, 'render_boutique' ) );
         add_action( 'ag_after_cabinet',    array( $this, 'render_parallax_quote_3' ), 20 );
-        // Signature dans la section Maître (logo SVG est registered en Premium+ dans __construct)
+        // Signature dans la section Maître + logo SVG par défaut
         add_action( 'ag_inside_maitre_body', array( $this, 'render_maitre_signature' ) );
+        add_action( 'ag_brand_fallback',     array( $this, 'render_default_logo_svg' ) );
         // Fonts business (Cormorant Garamond + Allison signature)
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_business_fonts' ), 11 );
         // Customizer fields pour équipe (4 collaborateurs)
@@ -2027,7 +1932,7 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
         // Logo balance de justice — silhouette pleine + dégradé or + halo
         // Visibilité maximale même à 30px : remplissages solides, pas de
         // traits fins, halo de fond pour ressortir sur n'importe quel bg.
-        if ( ! $this->is_at_least( 'premium' ) ) return;
+        if ( ! $this->is_at_least( 'business' ) ) return;
         if ( has_custom_logo() ) return;
         ?>
         <span class="ag-default-logo-svg" aria-hidden="true">

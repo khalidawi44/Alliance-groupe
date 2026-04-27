@@ -69,7 +69,7 @@ get_header();
 						if ( has_post_thumbnail( $d->ID ) ) {
 							$bg_url = get_the_post_thumbnail_url( $d->ID, 'large' );
 						} elseif ( function_exists( 'ag_starter_avocat_get_domaine_bg_url' ) ) {
-							$bg_url = ag_starter_avocat_get_domaine_bg_url( $icon, $d->ID );
+							$bg_url = ag_starter_avocat_get_domaine_bg_url( $icon );
 						}
 						?>
 						<div class="ag-domaine-card ag-domaine-card--bg">
