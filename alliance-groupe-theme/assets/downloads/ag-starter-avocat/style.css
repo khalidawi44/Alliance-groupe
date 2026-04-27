@@ -1014,3 +1014,12 @@ p {
         grid-template-columns: 1fr;
     }
 }
+
+/* ----- Hide day/night toggle in Free tier (CSS fallback) -----
+   The Premium plugin adds body.ag-tier-premium or .ag-tier-business
+   when active. In Free, neither class is present. So this rule
+   matches Free and hides the toggle button regardless of header.php
+   PHP conditions or stale caches. */
+body:not(.ag-tier-premium):not(.ag-tier-business) .ag-theme-toggle {
+    display: none !important;
+}
