@@ -84,10 +84,24 @@ add_action( 'after_setup_theme', 'ag_starter_avocat_setup' );
 
 /**
  * Get permalink for a page by slug — works with any permalink structure.
+ * Falls back to a home-page anchor when the page hasn't been created yet,
+ * so the bundled Free theme has no dead links out of the box.
  */
 function ag_page_url( $slug ) {
 	$page = get_page_by_path( $slug );
-	return $page ? get_permalink( $page ) : home_url( '/' . $slug . '/' );
+	if ( $page ) {
+		return get_permalink( $page );
+	}
+	$anchors = array(
+		'rendez-vous' => '#ag-rdv',
+		'expertise'   => '#ag-domaines',
+		'cabinet'     => '#ag-cabinet',
+		'honoraires'  => '#ag-honoraires',
+	);
+	if ( isset( $anchors[ $slug ] ) ) {
+		return home_url( '/' . $anchors[ $slug ] );
+	}
+	return home_url( '/' . $slug . '/' );
 }
 
 /**
