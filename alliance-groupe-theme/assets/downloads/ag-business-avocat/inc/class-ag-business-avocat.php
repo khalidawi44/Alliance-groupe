@@ -32,6 +32,8 @@ class AG_Business_Avocat {
 		add_action( 'admin_init', array( $this, 'ensure_domaines_submenu' ) );
 		add_action( 'admin_init', array( $this, 'ensure_legal_pages' ) );
 		add_action( 'admin_init', array( $this, 'ensure_boutique_offers' ) );
+		add_action( 'admin_init', array( $this, 'ensure_account_pages' ) );
+		add_shortcode( 'ag_business_account', array( $this, 'render_account_shortcode' ) );
 		add_action( 'admin_notices', array( $this, 'woocommerce_admin_notice' ) );
 		add_action( 'admin_notices', array( $this, 'stripe_admin_notice' ) );
 		// Note : pas de filter the_content pour la team Cabinet — le
@@ -1214,5 +1216,147 @@ Telephone : [telephone]</p>
 		// Rendez-vous : pas de citation (page courte form-only).
 
 		return $citations;
+	}
+
+	/**
+	 * Cree les pages compte (Mon compte, Connexion, Inscription) si
+	 * elles n'existent pas. Si WooCommerce est actif, on utilise son
+	 * shortcode [woocommerce_my_account] qui gere connexion + register
+	 * + tableau de bord. Sinon notre shortcode [ag_business_account].
+	 *
+	 * Active aussi les inscriptions WP (users_can_register) si pas
+	 * deja active. Idempotent.
+	 */
+	public function ensure_account_pages() {
+		if ( ! $this->is_active() ) {
+			return;
+		}
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		// Active inscriptions ouvertes si pas deja
+		if ( '0' === get_option( 'users_can_register' ) || ! get_option( 'users_can_register' ) ) {
+			update_option( 'users_can_register', 1 );
+		}
+
+		$wc_active = class_exists( 'WooCommerce' );
+
+		$pages = array(
+			'mon-compte' => array(
+				'title'   => 'Mon compte',
+				'content' => $wc_active
+					? '[woocommerce_my_account]'
+					: '<p>Bienvenue sur votre espace personnel.</p>[ag_business_account]',
+			),
+			'connexion'  => array(
+				'title'   => 'Connexion',
+				'content' => $wc_active
+					? '<p>[woocommerce_my_account]</p>'
+					: '<p>Identifiez-vous pour accéder à votre espace.</p>[ag_business_account view="login"]',
+			),
+			'inscription' => array(
+				'title'   => 'Inscription',
+				'content' => $wc_active
+					? '<p>[woocommerce_my_account]</p>'
+					: '<p>Créez votre compte pour suivre vos commandes et rendez-vous.</p>[ag_business_account view="register"]',
+			),
+		);
+
+		foreach ( $pages as $slug => $data ) {
+			if ( get_page_by_path( $slug ) ) {
+				continue;
+			}
+			wp_insert_post( array(
+				'post_type'    => 'page',
+				'post_status'  => 'publish',
+				'post_title'   => $data['title'],
+				'post_name'    => $slug,
+				'post_content' => $data['content'],
+			) );
+		}
+
+		// Configure les pages WooCommerce si WC est actif et que les
+		// pages 'myaccount' / 'shop' n'ont pas ete configurees.
+		if ( $wc_active ) {
+			$mon_compte = get_page_by_path( 'mon-compte' );
+			if ( $mon_compte && ! get_option( 'woocommerce_myaccount_page_id' ) ) {
+				update_option( 'woocommerce_myaccount_page_id', $mon_compte->ID );
+			}
+		}
+	}
+
+	/**
+	 * Shortcode [ag_business_account] : fallback compte sans WooCommerce.
+	 * Vues : 'login' (formulaire connexion), 'register' (inscription),
+	 * ou auto (dashboard si connecte, login si non).
+	 */
+	public function render_account_shortcode( $atts ) {
+		$atts = shortcode_atts( array( 'view' => 'auto' ), $atts );
+		$view = $atts['view'];
+
+		ob_start();
+
+		if ( is_user_logged_in() && 'login' !== $view && 'register' !== $view ) {
+			$user = wp_get_current_user();
+			?>
+			<div class="ag-business-account ag-business-account--dashboard">
+				<h3 class="ag-business-account__greeting">Bonjour <?php echo esc_html( $user->display_name ); ?></h3>
+				<p>Connecté en tant que <strong><?php echo esc_html( $user->user_email ); ?></strong></p>
+				<ul class="ag-business-account__links">
+					<li><a href="<?php echo esc_url( admin_url( 'profile.php' ) ); ?>">Modifier mon profil</a></li>
+					<?php if ( current_user_can( 'edit_posts' ) ) : ?>
+						<li><a href="<?php echo esc_url( admin_url() ); ?>">Tableau de bord</a></li>
+					<?php endif; ?>
+					<li><a href="<?php echo esc_url( wp_logout_url( home_url() ) ); ?>">Se déconnecter</a></li>
+				</ul>
+			</div>
+			<?php
+		} elseif ( 'register' === $view ) {
+			?>
+			<div class="ag-business-account ag-business-account--register">
+				<h3>Créer un compte</h3>
+				<form method="post" action="<?php echo esc_url( site_url( 'wp-login.php?action=register', 'login_post' ) ); ?>" class="ag-business-account-form">
+					<p>
+						<label for="user_login">Identifiant</label>
+						<input type="text" name="user_login" id="user_login" required autocomplete="username">
+					</p>
+					<p>
+						<label for="user_email">Email</label>
+						<input type="email" name="user_email" id="user_email" required autocomplete="email">
+					</p>
+					<p class="ag-business-account-form__submit">
+						<button type="submit" class="ag-btn">S'inscrire</button>
+					</p>
+					<p class="ag-business-account-form__footnote">
+						Déjà un compte ? <a href="<?php echo esc_url( home_url( '/connexion/' ) ); ?>">Se connecter</a>
+					</p>
+				</form>
+			</div>
+			<?php
+		} else {
+			// Login (par defaut)
+			?>
+			<div class="ag-business-account ag-business-account--login">
+				<h3>Se connecter</h3>
+				<?php
+				wp_login_form( array(
+					'redirect'       => home_url( '/mon-compte/' ),
+					'label_username' => 'Identifiant ou email',
+					'label_password' => 'Mot de passe',
+					'label_remember' => 'Se souvenir de moi',
+					'label_log_in'   => 'Se connecter',
+				) );
+				?>
+				<p class="ag-business-account-form__footnote">
+					Pas encore de compte ? <a href="<?php echo esc_url( home_url( '/inscription/' ) ); ?>">S'inscrire</a>
+					&nbsp;·&nbsp;
+					<a href="<?php echo esc_url( wp_lostpassword_url() ); ?>">Mot de passe oublié ?</a>
+				</p>
+			</div>
+			<?php
+		}
+
+		return ob_get_clean();
 	}
 }
