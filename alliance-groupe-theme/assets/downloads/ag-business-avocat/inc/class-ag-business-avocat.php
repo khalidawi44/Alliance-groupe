@@ -32,9 +32,11 @@ class AG_Business_Avocat {
 		add_action( 'admin_init', array( $this, 'ensure_domaines_submenu' ) );
 		add_action( 'admin_init', array( $this, 'ensure_legal_pages' ) );
 		add_action( 'admin_init', array( $this, 'ensure_boutique_offers' ) );
-		add_filter( 'the_content', array( $this, 'inject_team_on_cabinet_page' ), 20 );
 		add_action( 'admin_notices', array( $this, 'woocommerce_admin_notice' ) );
 		add_action( 'admin_notices', array( $this, 'stripe_admin_notice' ) );
+		// Note : pas de filter the_content pour la team Cabinet — le
+		// template page-cabinet.php du theme n'appelle pas the_content.
+		// L'injection se fait cote JS via cabinetTeamHtml localise.
 		add_filter( 'wp_nav_menu_args', array( $this, 'allow_submenu_depth' ) );
 		add_action( 'customize_register', array( $this, 'register_customizer' ), 30 );
 	}
@@ -101,6 +103,10 @@ class AG_Business_Avocat {
 					(string) get_theme_mod( 'ag_business_honoraires_pack_stripe', '' ),
 					(string) get_theme_mod( 'ag_business_honoraires_hour_stripe', '' ),
 				),
+				// HTML de l'equipe injecte uniquement sur la page Cabinet
+				// (le template Free n'appelle pas the_content donc on
+				// passe par JS).
+				'cabinetTeamHtml' => is_page( 'cabinet' ) ? $this->render_full_team_html() : '',
 			) );
 		}
 	}
@@ -964,20 +970,9 @@ Telephone : [telephone]</p>
 	}
 
 	/**
-	 * Injecte la section "Notre équipe" complete sur la page Cabinet.
-	 * Hook the_content @ priority 20. 5 collaborateurs avec photo, titre,
-	 * specialites, formation, langues, bio courte.
+	 * Construit le HTML de la section "Notre équipe" pour injection JS
+	 * sur la page Cabinet (le template Free n'appelle pas the_content).
 	 */
-	public function inject_team_on_cabinet_page( $content ) {
-		if ( ! $this->is_active() ) {
-			return $content;
-		}
-		if ( ! is_page( 'cabinet' ) || ! in_the_loop() || ! is_main_query() ) {
-			return $content;
-		}
-		return $content . $this->render_full_team_html();
-	}
-
 	private function render_full_team_html() {
 		$team = $this->get_default_team_data();
 		ob_start();
