@@ -10,17 +10,13 @@
 	function isBusinessActive() {
 		return document.body.classList.contains('ag-business-active');
 	}
-	function honorairesUrl() {
-		return (typeof agBusinessData !== 'undefined' && agBusinessData.honorairesUrl)
-			? agBusinessData.honorairesUrl
-			: '/honoraires/';
+	function dataValue(key, fallback) {
+		return (typeof agBusinessData !== 'undefined' && agBusinessData[key] != null)
+			? agBusinessData[key]
+			: fallback;
 	}
 
-	/* ── Compteurs : count-up animation au scroll-in ────────────────
-	   Les compteurs sont rendus en dur par pro-features.php (Business)
-	   avec des valeurs comme "15+", "500+", "98%", "24/7". On les
-	   detecte, parse le nombre + le suffixe, et on anime de 0 -> target
-	   quand l'element entre dans le viewport. */
+	/* ── Compteurs : count-up animation au scroll-in ────────────── */
 	function animateCounters() {
 		if (!isBusinessActive()) return;
 		var nodes = document.querySelectorAll('.ag-counter__number');
@@ -30,7 +26,7 @@
 		var animate = function (el) {
 			var raw = (el.textContent || '').trim();
 			var m = raw.match(/^(\d+)(.*)$/);
-			if (!m) return; // ex: "24/7" — laisse statique
+			if (!m) return;
 			var target = parseInt(m[1], 10);
 			var suffix = m[2] || '';
 			if (!isFinite(target) || target <= 0) return;
@@ -65,14 +61,11 @@
 		nodes.forEach(function (n) { obs.observe(n); });
 	}
 
-	/* ── Cartes Honoraires : cliquables vers la page dediee ─────────
-	   Sur la home, .ag-honoraires__card est un <div> non interactif.
-	   On le rend cliquable (curseur, navigation, accessible clavier). */
+	/* ── Cartes Honoraires : cliquables vers la page dediee ───── */
 	function makeHonorairesClickable() {
 		if (!isBusinessActive()) return;
-		var url = honorairesUrl();
-		var cards = document.querySelectorAll('.ag-honoraires .ag-honoraires__card');
-		cards.forEach(function (card) {
+		var url = dataValue('honorairesUrl', '/honoraires/');
+		document.querySelectorAll('.ag-honoraires .ag-honoraires__card').forEach(function (card) {
 			if (card.dataset.agBusinessClickable === '1') return;
 			card.dataset.agBusinessClickable = '1';
 			card.style.cursor = 'pointer';
@@ -80,7 +73,7 @@
 			card.setAttribute('tabindex', '0');
 			card.setAttribute('aria-label', 'Voir les details des honoraires');
 			card.addEventListener('click', function (e) {
-				if (e.target.closest('a')) return; // si lien interne, laisse-le
+				if (e.target.closest('a')) return;
 				window.location.href = url;
 			});
 			card.addEventListener('keydown', function (e) {
@@ -92,9 +85,66 @@
 		});
 	}
 
+	/* ── Cartes Domaines (.ag-domaine-card) : cliquables vers leur
+	   page dediee. Les URLs sont passees par PHP via wp_localize_script
+	   dans le meme ordre que :nth-child. */
+	function makeDomainesClickable() {
+		if (!isBusinessActive()) return;
+		var urls = dataValue('domaineUrls', []);
+		if (!urls || !urls.length) return;
+		var cards = document.querySelectorAll('.ag-domaines .ag-domaine-card');
+		cards.forEach(function (card, idx) {
+			var href = urls[idx];
+			if (!href) return;
+			if (card.dataset.agBusinessClickable === '1') return;
+			card.dataset.agBusinessClickable = '1';
+			card.style.cursor = 'pointer';
+			card.setAttribute('role', 'link');
+			card.setAttribute('tabindex', '0');
+			var title = card.querySelector('.ag-domaine-card__title');
+			if (title) card.setAttribute('aria-label', title.textContent.trim());
+			card.addEventListener('click', function (e) {
+				if (e.target.closest('a')) return;
+				window.location.href = href;
+			});
+			card.addEventListener('keydown', function (e) {
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault();
+					window.location.href = href;
+				}
+			});
+		});
+	}
+
+	/* ── Boutique : remplace les etoiles par 3 symboles de justice
+	   differents (balance, marteau, colonne). On garde les memes
+	   classes / animations existantes — juste le SVG change. */
+	function replaceBoutiqueStars() {
+		if (!isBusinessActive()) return;
+		var stars = document.querySelectorAll('.ag-boutique-shooting-star');
+		if (!stars.length) return;
+
+		var symbols = [
+			// Balance de la justice (filled, simple)
+			'<svg viewBox="0 0 24 24"><path d="M12 2c.55 0 1 .45 1 1v1.07c2.84.49 5 2.97 5 5.93h2v2H4v-2h2c0-2.96 2.16-5.44 5-5.93V3c0-.55.45-1 1-1zm-7 9 3 6H2l3-6zm14 0 3 6h-6l3-6zm-7 8h-2v3h-3v1h8v-1h-3v-3z"/></svg>',
+			// Marteau de juge (gavel)
+			'<svg viewBox="0 0 24 24"><path d="M14.34 5.66 9.41 10.59 5.17 6.34l4.95-4.95 4.22 4.27zM12 16l-1.41 1.41 2.83 2.83L14.83 19 12 16zm6.66-7.66-1.41-1.41-3.54 3.54 1.41 1.41 3.54-3.54zM3 22h18v-2H3v2zM10.83 12 4.46 18.37l1.41 1.41 6.37-6.37-1.41-1.41z"/></svg>',
+			// Colonne classique (Greek pillar)
+			'<svg viewBox="0 0 24 24"><path d="M3 3h18v3H3V3zm2 4h2v11h2V7h2v11h2V7h2v11h2V7h2v11h2V7h-2V6H7v1H5v11H3v3h18v-3h-2V7z"/></svg>'
+		];
+
+		stars.forEach(function (star, i) {
+			var svg = star.querySelector('svg');
+			if (!svg) return;
+			star.innerHTML = symbols[i % symbols.length];
+		});
+	}
+
 	function run() {
 		animateCounters();
 		makeHonorairesClickable();
+		makeDomainesClickable();
+		replaceBoutiqueStars();
 	}
 
 	if (document.readyState === 'loading') {
