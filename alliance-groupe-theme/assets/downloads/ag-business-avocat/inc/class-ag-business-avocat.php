@@ -185,6 +185,14 @@ class AG_Business_Avocat {
 				$idx,
 				esc_url_raw( $url )
 			);
+			// Belt-and-suspenders : si .ag-domaine-card__bg n'est pas rendu
+			// (cas Free fallback ou structure modifiee), on pose l'image
+			// directement sur la card parente.
+			$css .= sprintf(
+				"body.ag-business-active .ag-domaines__grid > .ag-domaine-card:nth-child(%d){background-image:url('%s')!important;background-size:cover!important;background-position:center!important;}\n",
+				$idx,
+				esc_url_raw( $url )
+			);
 		}
 		if ( $css ) {
 			echo "<style id=\"ag-business-domaine-bg\">\n" . $css . '</style>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

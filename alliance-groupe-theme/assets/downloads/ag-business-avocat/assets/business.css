@@ -59,14 +59,15 @@ body.ag-business-active.ag-light .ag-primary-menu a::after {
 
 /* ── Boutons CTA : aucune phase d'invisibilite au hover ──
    Le texte et le fond restent solides, pas d'animation qui fade.
-   On retire toute animation height-shadow / text-shadow qui peut
-   causer un flicker bref. */
+   IMPORTANT : on NE met pas animation:none au repos sinon agHeroIn
+   (qui anime opacity 0 -> 1 sur le bouton du hero) est tue et le
+   bouton reste invisible. animation:none uniquement au :hover pour
+   neutraliser agPulseGlow. */
 body.ag-business-active .ag-btn,
 body.ag-business-active .ag-footer-rdv,
 body.ag-business-active .ag-cabinet-full__btn,
 body.ag-business-active .ag-boutique-card__btn {
     transition: background .25s ease, transform .25s ease, box-shadow .25s ease !important;
-    animation: none !important;
 }
 body.ag-business-active .ag-btn:hover,
 body.ag-business-active .ag-cabinet-full__btn:hover,
