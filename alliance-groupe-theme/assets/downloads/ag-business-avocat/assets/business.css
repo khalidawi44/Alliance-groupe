@@ -312,7 +312,32 @@ body.ag-business-active.ag-light .ag-primary-menu .sub-menu .ag-business-submenu
     }
 }
 
-/* ── Bouton recherche + overlay plein ecran ── */
+/* ── Citations parallax : overlay plus transparent en mode nuit ──
+   L'overlay par defaut est a 88%/78% — trop dense, l'image n'apparait
+   pas. On l'allège a ~55% en gardant un degrade qui assombrit le coin
+   bas pour la lisibilite du texte. Texte renforce par text-shadow. */
+body.ag-business-active .ag-parallax-business .ag-parallax__overlay {
+    background: linear-gradient(135deg, rgba(8, 10, 18, .55) 0%, rgba(20, 15, 8, .45) 50%, rgba(8, 10, 18, .65) 100%) !important;
+}
+body.ag-business-active .ag-parallax-business .ag-parallax__quote {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, .85), 0 0 30px rgba(0, 0, 0, .6) !important;
+}
+body.ag-business-active .ag-parallax-business .ag-parallax__caption {
+    text-shadow: 0 2px 6px rgba(0, 0, 0, .8) !important;
+}
+
+/* Mode jour : overlay creme leger pour ne pas inverser le contraste */
+body.ag-business-active.ag-light .ag-parallax-business .ag-parallax__overlay {
+    background: linear-gradient(135deg, rgba(245, 240, 235, .5) 0%, rgba(245, 240, 235, .35) 50%, rgba(245, 240, 235, .55) 100%) !important;
+}
+body.ag-business-active.ag-light .ag-parallax-business .ag-parallax__quote {
+    color: #2A1A1E !important;
+    text-shadow: 0 2px 8px rgba(255, 255, 255, .75) !important;
+}
+body.ag-business-active.ag-light .ag-parallax-business .ag-parallax__caption {
+    color: #5A4549 !important;
+    text-shadow: 0 1px 4px rgba(255, 255, 255, .8) !important;
+}
 body.ag-business-active .ag-business-search-btn {
     background: transparent;
     border: 1px solid rgba(212, 180, 92, .35);
