@@ -261,8 +261,8 @@ class AG_Business_Avocat {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
-		$existing = get_page_by_path( 'boutique' );
-		if ( $existing ) {
+		// Slugs alternatifs (WC cree shop + parfois variants FR)
+		if ( $this->page_exists_any_status( array( 'boutique', 'shop', 'magasin' ) ) ) {
 			return;
 		}
 		$content = class_exists( 'WooCommerce' )
@@ -574,8 +574,18 @@ class AG_Business_Avocat {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
+		// Slugs alternatifs auto-crees par WP/WC/themes — si l'un
+		// d'eux existe (meme en brouillon), on ne cree pas de doublon.
+		$alias_map = array(
+			'politique-confidentialite' => array( 'privacy-policy', 'politique-de-confidentialite', 'politique-confidentialite-rgpd' ),
+			'politique-retour'          => array( 'refund_returns', 'remboursement-et-retour', 'politique-de-retour', 'politique-de-remboursement', 'politique-de-retour-et-de-remboursement' ),
+			'cgv'                       => array( 'terms', 'conditions-generales-de-vente', 'conditions-generales', 'terms-and-conditions' ),
+			'mentions-legales'          => array( 'legal-notice', 'mentions-legal' ),
+			'politique-cookies'         => array( 'politique-de-cookies', 'cookies-policy', 'cookie-policy' ),
+		);
 		foreach ( $this->get_legal_pages_data() as $slug => $data ) {
-			if ( get_page_by_path( $slug ) ) {
+			$check = isset( $alias_map[ $slug ] ) ? array_merge( array( $slug ), $alias_map[ $slug ] ) : array( $slug );
+			if ( $this->page_exists_any_status( $check ) ) {
 				continue;
 			}
 			wp_insert_post( array(
@@ -586,6 +596,32 @@ class AG_Business_Avocat {
 				'post_content' => $data['content'],
 			) );
 		}
+	}
+
+	/**
+	 * Verifie si une page avec l'un des slugs donnes existe dans
+	 * n'importe quel statut (publish, draft, pending, private, future).
+	 * Plus permissif que get_page_by_path (qui ne voit que publish).
+	 *
+	 * @param string|array $slugs Un slug ou liste de slugs alternatifs.
+	 * @param string       $post_type post_type (default 'page').
+	 */
+	private function page_exists_any_status( $slugs, $post_type = 'page' ) {
+		$slugs = (array) $slugs;
+		foreach ( $slugs as $slug ) {
+			$found = get_posts( array(
+				'name'           => $slug,
+				'post_type'      => $post_type,
+				'post_status'    => array( 'publish', 'draft', 'pending', 'private', 'future' ),
+				'posts_per_page' => 1,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+			) );
+			if ( ! empty( $found ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -892,7 +928,7 @@ Telephone : [telephone]</p>
 				break;
 			}
 			$page = get_page_by_path( $slug );
-			if ( ! $page ) {
+			if ( ! $page && ! $this->page_exists_any_status( $slug ) ) {
 				$page_id = wp_insert_post( array(
 					'post_type'    => 'page',
 					'post_status'  => 'publish',
@@ -904,6 +940,9 @@ Telephone : [telephone]</p>
 					continue;
 				}
 				$page = get_post( $page_id );
+			}
+			if ( ! $page ) {
+				continue; // page existe en draft mais pas published — on saute
 			}
 			$url = get_permalink( $page );
 			$current = (string) get_theme_mod( $key, '' );
@@ -1263,8 +1302,15 @@ Telephone : [telephone]</p>
 			),
 		);
 
+		// Slugs alternatifs (WC cree my-account, theme parfois variants FR)
+		$account_aliases = array(
+			'mon-compte'  => array( 'my-account', 'compte' ),
+			'connexion'   => array( 'login', 'se-connecter' ),
+			'inscription' => array( 'register', 's-inscrire' ),
+		);
 		foreach ( $pages as $slug => $data ) {
-			if ( get_page_by_path( $slug ) ) {
+			$check = isset( $account_aliases[ $slug ] ) ? array_merge( array( $slug ), $account_aliases[ $slug ] ) : array( $slug );
+			if ( $this->page_exists_any_status( $check ) ) {
 				continue;
 			}
 			wp_insert_post( array(
