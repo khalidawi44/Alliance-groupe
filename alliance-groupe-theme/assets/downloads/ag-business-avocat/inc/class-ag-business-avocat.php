@@ -107,6 +107,9 @@ class AG_Business_Avocat {
 				// (le template Free n'appelle pas the_content donc on
 				// passe par JS).
 				'cabinetTeamHtml' => is_page( 'cabinet' ) ? $this->render_full_team_html() : '',
+				// Citations parallax injectees entre les sections des
+				// pages internes (cabinet, honoraires, expertise, RDV).
+				'pageCitations'   => $this->get_page_citations_data(),
 			) );
 		}
 	}
@@ -982,56 +985,79 @@ Telephone : [telephone]</p>
 				<h2 class="ag-business-team-full__title"><?php esc_html_e( 'Notre équipe', 'ag-business-avocat' ); ?></h2>
 				<p class="ag-business-team-full__lead"><?php esc_html_e( "Une équipe pluridisciplinaire d'avocats expérimentés, formés dans les meilleures universités, au service de vos enjeux juridiques.", 'ag-business-avocat' ); ?></p>
 			</div>
-			<div class="ag-business-team-full__grid">
-				<?php foreach ( $team as $m ) : ?>
-					<article class="ag-business-team-card">
-						<div class="ag-business-team-card__photo" style="background-image:url('<?php echo esc_url( $m['photo'] ); ?>');" aria-hidden="true"></div>
-						<div class="ag-business-team-card__body">
-							<header class="ag-business-team-card__header">
-								<h3 class="ag-business-team-card__name"><?php echo esc_html( $m['name'] ); ?></h3>
-								<p class="ag-business-team-card__role"><?php echo esc_html( $m['role'] ); ?></p>
-								<p class="ag-business-team-card__barreau"><?php echo esc_html( $m['barreau'] ); ?></p>
-							</header>
-							<p class="ag-business-team-card__bio"><?php echo esc_html( $m['bio'] ); ?></p>
-							<div class="ag-business-team-card__details">
-								<div class="ag-business-team-card__block">
-									<h4><?php esc_html_e( 'Spécialités', 'ag-business-avocat' ); ?></h4>
-									<ul>
-										<?php foreach ( $m['specialties'] as $s ) : ?>
-											<li><?php echo esc_html( $s ); ?></li>
-										<?php endforeach; ?>
-									</ul>
-								</div>
-								<div class="ag-business-team-card__block">
-									<h4><?php esc_html_e( 'Formation', 'ag-business-avocat' ); ?></h4>
-									<ul>
-										<?php foreach ( $m['education'] as $e ) : ?>
-											<li><?php echo esc_html( $e ); ?></li>
-										<?php endforeach; ?>
-									</ul>
-								</div>
-								<div class="ag-business-team-card__block">
-									<h4><?php esc_html_e( 'Langues', 'ag-business-avocat' ); ?></h4>
-									<p><?php echo esc_html( implode( ', ', $m['languages'] ) ); ?></p>
-								</div>
-							</div>
-						</div>
-					</article>
-				<?php endforeach; ?>
+
+			<div class="ag-business-team-full__group ag-business-team-full__group--associates">
+				<h3 class="ag-business-team-full__group-title"><?php esc_html_e( 'Avocats associés', 'ag-business-avocat' ); ?></h3>
+				<div class="ag-business-team-full__grid ag-business-team-full__grid--associates">
+					<?php foreach ( $team['associates'] as $m ) {
+						echo $this->render_team_card_html( $m ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					} ?>
+				</div>
+			</div>
+
+			<div class="ag-business-team-full__group ag-business-team-full__group--collaborators">
+				<h3 class="ag-business-team-full__group-title"><?php esc_html_e( 'Collaborateurs', 'ag-business-avocat' ); ?></h3>
+				<div class="ag-business-team-full__grid ag-business-team-full__grid--collaborators">
+					<?php foreach ( $team['collaborators'] as $m ) {
+						echo $this->render_team_card_html( $m ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					} ?>
+				</div>
 			</div>
 		</section>
 		<?php
 		return ob_get_clean();
 	}
 
+	private function render_team_card_html( $m ) {
+		ob_start();
+		?>
+		<article class="ag-business-team-card">
+			<div class="ag-business-team-card__photo" style="background-image:url('<?php echo esc_url( $m['photo'] ); ?>');" aria-hidden="true"></div>
+			<div class="ag-business-team-card__body">
+				<header class="ag-business-team-card__header">
+					<h3 class="ag-business-team-card__name"><?php echo esc_html( $m['name'] ); ?></h3>
+					<p class="ag-business-team-card__role"><?php echo esc_html( $m['role'] ); ?></p>
+					<p class="ag-business-team-card__barreau"><?php echo esc_html( $m['barreau'] ); ?></p>
+				</header>
+				<p class="ag-business-team-card__bio"><?php echo esc_html( $m['bio'] ); ?></p>
+				<div class="ag-business-team-card__details">
+					<div class="ag-business-team-card__block">
+						<h4><?php esc_html_e( 'Spécialités', 'ag-business-avocat' ); ?></h4>
+						<ul>
+							<?php foreach ( $m['specialties'] as $s ) : ?>
+								<li><?php echo esc_html( $s ); ?></li>
+							<?php endforeach; ?>
+						</ul>
+					</div>
+					<div class="ag-business-team-card__block">
+						<h4><?php esc_html_e( 'Formation', 'ag-business-avocat' ); ?></h4>
+						<ul>
+							<?php foreach ( $m['education'] as $e ) : ?>
+								<li><?php echo esc_html( $e ); ?></li>
+							<?php endforeach; ?>
+						</ul>
+					</div>
+					<div class="ag-business-team-card__block">
+						<h4><?php esc_html_e( 'Langues', 'ag-business-avocat' ); ?></h4>
+						<p><?php echo esc_html( implode( ', ', $m['languages'] ) ); ?></p>
+					</div>
+				</div>
+			</div>
+		</article>
+		<?php
+		return ob_get_clean();
+	}
+
 	/**
-	 * 5 profils par defaut. Photos depuis Unsplash (portraits libres),
-	 * remplacables. Donnees fictives mais realistes — l'utilisateur
-	 * doit personnaliser via PHP/Customizer plus tard.
+	 * 5 profils par defaut, separes en 2 groupes :
+	 *   - associates : 2 avocats associes (premier conteneur, en avant)
+	 *   - collaborators : 3 collaborateurs (deuxieme conteneur)
+	 * Photos depuis Unsplash (portraits libres), remplacables.
 	 */
 	private function get_default_team_data() {
 		return array(
-			array(
+			'associates'    => array(
+				array(
 				'name'        => 'Maître Sophie DUPONT',
 				'role'        => 'Avocate associée fondatrice',
 				'barreau'     => 'Barreau de Paris — Inscrite depuis 2008',
@@ -1070,6 +1096,8 @@ Telephone : [telephone]</p>
 				'languages'   => array( 'Français', 'Anglais', 'Espagnol' ),
 				'bio'         => 'Ancien collaborateur de cabinets pénalistes parisiens reconnus. Plaidoiries devant toutes les juridictions, de l\'instruction à la cour d\'assises.',
 			),
+		),
+		'collaborators' => array(
 			array(
 				'name'        => 'Maître Camille LEROUX',
 				'role'        => 'Avocate collaboratrice senior',
@@ -1127,6 +1155,74 @@ Telephone : [telephone]</p>
 				'languages'   => array( 'Français', 'Anglais', 'Allemand' ),
 				'bio'         => 'Approche humaine et discrète des dossiers familiaux. Privilégie la médiation et le consentement mutuel quand c\'est possible.',
 			),
-		);
+		),
+	);
+	}
+
+	/**
+	 * Citations juridiques + image de fond a injecter entre les
+	 * sections de chaque page interne (cabinet, honoraires, expertise,
+	 * rendez-vous). Format : tableau d'objets {quote, author, bg,
+	 * insertAfter (selecteur DOM)}. La home a deja ses propres
+	 * citations parallax via render_parallax_quote_X de pro-features.
+	 */
+	private function get_page_citations_data() {
+		$citations = array();
+
+		if ( is_page( 'cabinet' ) ) {
+			$citations[] = array(
+				'quote'       => 'Le silence est une chose admirable, mais qui demande une grande force pour ne pas être faiblesse.',
+				'author'      => 'Cicéron',
+				'bg'          => 'https://images.unsplash.com/photo-1589216532372-1c2a367900d9?w=1920&q=85',
+				'insertAfter' => '.ag-page-hero',
+			);
+			$citations[] = array(
+				'quote'       => 'La justice sans la force est impuissante; la force sans la justice est tyrannique.',
+				'author'      => 'Blaise Pascal',
+				'bg'          => 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1920&q=85',
+				'insertAfter' => '.ag-maitre',
+			);
+		}
+
+		if ( is_page( 'honoraires' ) ) {
+			$citations[] = array(
+				'quote'       => 'Le contrat est la loi des parties.',
+				'author'      => 'Code civil, article 1103',
+				'bg'          => 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=85',
+				'insertAfter' => '.ag-page-hero',
+			);
+			$citations[] = array(
+				'quote'       => 'Tout travail mérite salaire ; tout salaire mérite équité.',
+				'author'      => 'Adage juridique',
+				'bg'          => 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1920&q=85',
+				'insertAfter' => '.ag-honoraires',
+			);
+		}
+
+		if ( is_page( 'expertise' ) ) {
+			$citations[] = array(
+				'quote'       => 'Le droit ne préserve que ceux qui le connaissent.',
+				'author'      => 'Adage romain',
+				'bg'          => 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1920&q=85',
+				'insertAfter' => '.ag-page-hero',
+			);
+			$citations[] = array(
+				'quote'       => 'Nul n\'est censé ignorer la loi.',
+				'author'      => 'Adage du droit français',
+				'bg'          => 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1920&q=85',
+				'insertAfter' => '.ag-domaines',
+			);
+		}
+
+		if ( is_page( 'rendez-vous' ) ) {
+			$citations[] = array(
+				'quote'       => 'Une bonne défense commence par une écoute attentive.',
+				'author'      => 'Tradition du Barreau',
+				'bg'          => 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1920&q=85',
+				'insertAfter' => '.ag-page-hero',
+			);
+		}
+
+		return $citations;
 	}
 }

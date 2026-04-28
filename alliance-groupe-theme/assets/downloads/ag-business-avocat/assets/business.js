@@ -245,6 +245,35 @@
 		main.insertAdjacentHTML('beforeend', html);
 	}
 
+	/* ── Citations parallax injectees entre sections (pages internes) ── */
+	function injectPageCitations() {
+		if (!isBusinessActive()) return;
+		var citations = dataValue('pageCitations', []);
+		if (!citations || !citations.length) return;
+		citations.forEach(function (c, idx) {
+			if (!c.insertAfter || !c.quote) return;
+			var anchor = document.querySelector(c.insertAfter);
+			if (!anchor) return;
+			// Skip si deja injecte
+			if (anchor.nextElementSibling && anchor.nextElementSibling.classList && anchor.nextElementSibling.classList.contains('ag-business-page-citation')) return;
+			var html = '<section class="ag-parallax ag-parallax-business ag-business-page-citation" style="background-image:url(\'' +
+				c.bg.replace(/'/g, '\\\'') + '\');">' +
+				'<div class="ag-parallax__overlay"></div>' +
+				'<div class="ag-parallax__content">' +
+				'<p class="ag-parallax__quote">' + escapeHtml(c.quote) + '</p>' +
+				'<p class="ag-parallax__caption">— ' + escapeHtml(c.author || '') + '</p>' +
+				'</div>' +
+				'</section>';
+			anchor.insertAdjacentHTML('afterend', html);
+		});
+	}
+
+	function escapeHtml(s) {
+		return String(s).replace(/[&<>"']/g, function (c) {
+			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+		});
+	}
+
 	function run() {
 		animateCounters();
 		makeHonorairesClickable();
@@ -253,6 +282,7 @@
 		injectSearchButton();
 		injectStripeButtons();
 		injectCabinetTeam();
+		injectPageCitations();
 	}
 
 	if (document.readyState === 'loading') {
