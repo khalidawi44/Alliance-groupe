@@ -34,6 +34,7 @@ class AG_Business_Avocat {
 		add_action( 'admin_init', array( $this, 'ensure_boutique_offers' ) );
 		add_action( 'admin_init', array( $this, 'ensure_account_pages' ) );
 		add_shortcode( 'ag_business_account', array( $this, 'render_account_shortcode' ) );
+		add_shortcode( 'ag_business_boutique_grid', array( $this, 'render_boutique_grid_shortcode' ) );
 		add_action( 'admin_notices', array( $this, 'woocommerce_admin_notice' ) );
 		add_action( 'admin_notices', array( $this, 'stripe_admin_notice' ) );
 		// Note : pas de filter the_content pour la team Cabinet — le
@@ -264,20 +265,112 @@ class AG_Business_Avocat {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
-		// Slugs alternatifs (WC cree shop + parfois variants FR)
-		if ( $this->page_exists_any_status( array( 'boutique', 'shop', 'magasin' ) ) ) {
+
+		$desired_content = class_exists( 'WooCommerce' )
+			? '[ag_business_boutique_grid]'
+			: '<!-- WooCommerce non installe — la boutique apparaitra ici une fois le plugin active. -->';
+
+		// Si une page existe deja (boutique/shop/magasin), on met a jour
+		// son contenu si c'etait notre placeholder ou l'ancien shortcode.
+		$existing = get_page_by_path( 'boutique' );
+		if ( ! $existing ) {
+			// Cherche shop/magasin si existes (eg WC l'a cree)
+			foreach ( array( 'shop', 'magasin' ) as $alt ) {
+				$found = get_posts( array(
+					'name'           => $alt,
+					'post_type'      => 'page',
+					'post_status'    => array( 'publish', 'draft' ),
+					'posts_per_page' => 1,
+				) );
+				if ( ! empty( $found ) ) {
+					$existing = $found[0];
+					break;
+				}
+			}
+		}
+
+		if ( $existing ) {
+			// Update si contenu = ancien default ou ancien shortcode WC
+			$current  = trim( (string) $existing->post_content );
+			$old_defs = array(
+				'[products limit="12" columns="3"]',
+				'[products]',
+				'<!-- WooCommerce non installe — la boutique apparaitra ici une fois le plugin active. -->',
+				'',
+			);
+			if ( in_array( $current, $old_defs, true ) && $current !== trim( $desired_content ) ) {
+				wp_update_post( array(
+					'ID'           => $existing->ID,
+					'post_content' => $desired_content,
+				) );
+			}
 			return;
 		}
-		$content = class_exists( 'WooCommerce' )
-			? '[products limit="12" columns="3"]'
-			: '<!-- WooCommerce non installe — la boutique apparaitra ici une fois le plugin active. -->';
+
+		// Pas de page existante, on cree
 		wp_insert_post( array(
 			'post_type'    => 'page',
 			'post_status'  => 'publish',
 			'post_title'   => __( 'Boutique', 'ag-business-avocat' ),
 			'post_name'    => 'boutique',
-			'post_content' => $content,
+			'post_content' => $desired_content,
 		) );
+	}
+
+	/**
+	 * Shortcode [ag_business_boutique_grid] : rend les produits WC
+	 * avec le meme style .ag-boutique-card que la section Boutique
+	 * de la home. Pas de WC -> message d'attente.
+	 */
+	public function render_boutique_grid_shortcode() {
+		if ( ! class_exists( 'WooCommerce' ) || ! function_exists( 'wc_get_products' ) ) {
+			return '<p style="text-align:center;padding:40px;">' . esc_html__( 'WooCommerce n\'est pas activé. La boutique sera disponible dès l\'activation du plugin.', 'ag-business-avocat' ) . '</p>';
+		}
+
+		$products = wc_get_products( array(
+			'limit'   => 12,
+			'status'  => 'publish',
+			'orderby' => 'date',
+			'order'   => 'DESC',
+		) );
+
+		if ( empty( $products ) ) {
+			return '<p style="text-align:center;padding:40px;">' . esc_html__( 'Aucun produit dans la boutique pour le moment.', 'ag-business-avocat' ) . '</p>';
+		}
+
+		ob_start();
+		?>
+		<div class="ag-section ag-boutique ag-business-boutique-page" id="ag-boutique">
+			<div class="ag-container">
+				<div class="ag-boutique__grid">
+					<?php foreach ( $products as $product ) :
+						if ( ! is_object( $product ) ) continue;
+						$img_id  = $product->get_image_id();
+						$img_url = $img_id ? wp_get_attachment_image_url( $img_id, 'large' ) : '';
+						$price   = wp_strip_all_tags( $product->get_price_html() );
+						$excerpt = $product->get_short_description();
+						if ( '' === $excerpt ) {
+							$excerpt = wp_trim_words( wp_strip_all_tags( $product->get_description() ), 24 );
+						}
+						$has_image = ! empty( $img_url );
+						?>
+						<article class="ag-boutique-card<?php echo $has_image ? ' ag-boutique-card--with-image' : ''; ?>">
+							<?php if ( $has_image ) : ?>
+								<div class="ag-boutique-card__image">
+									<img src="<?php echo esc_url( $img_url ); ?>" alt="<?php echo esc_attr( $product->get_name() ); ?>" loading="lazy">
+								</div>
+							<?php endif; ?>
+							<h3 class="ag-boutique-card__title"><?php echo esc_html( $product->get_name() ); ?></h3>
+							<div class="ag-boutique-card__price"><?php echo esc_html( $price ); ?></div>
+							<p class="ag-boutique-card__desc"><?php echo esc_html( $excerpt ); ?></p>
+							<a href="<?php echo esc_url( get_permalink( $product->get_id() ) ); ?>" class="ag-btn ag-boutique-card__btn"><?php esc_html_e( 'Voir la fiche →', 'ag-business-avocat' ); ?></a>
+						</article>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		</div>
+		<?php
+		return ob_get_clean();
 	}
 
 	/**
