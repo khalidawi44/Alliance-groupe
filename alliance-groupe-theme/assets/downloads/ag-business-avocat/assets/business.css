@@ -100,6 +100,118 @@ body.ag-business-active .ag-counter__number[data-counting="1"] {
     will-change: contents;
 }
 
+/* ── Section Boutique : presentation pro ───────────────────────
+   Plus d'espace, image en haut de chaque card, prix gradient,
+   bouton style coherent avec le reste du theme Business. */
+body.ag-business-active .ag-boutique {
+    padding: 80px 24px !important;
+}
+body.ag-business-active .ag-boutique__grid,
+body.ag-business-active .ag-boutique-grid {
+    gap: 32px !important;
+}
+body.ag-business-active .ag-boutique-card {
+    background: linear-gradient(180deg, rgba(20, 20, 30, .85) 0%, rgba(15, 15, 22, .95) 100%) !important;
+    border: 1px solid rgba(212, 180, 92, .22) !important;
+    border-radius: 16px !important;
+    padding: 0 0 30px !important;
+    overflow: hidden !important;
+    text-align: left !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+body.ag-business-active .ag-boutique-card__image,
+body.ag-business-active .ag-boutique-card__image--injected {
+    width: 100% !important;
+    aspect-ratio: 16 / 10 !important;
+    overflow: hidden !important;
+    border-radius: 0 !important;
+    margin: 0 0 24px !important;
+    background: #0F1320 !important;
+    position: relative;
+}
+body.ag-business-active .ag-boutique-card__image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 0%, rgba(8, 10, 18, .35) 80%, rgba(8, 10, 18, .55) 100%);
+    pointer-events: none;
+    transition: opacity .35s ease;
+}
+body.ag-business-active .ag-boutique-card:hover .ag-boutique-card__image::after {
+    opacity: .4;
+}
+body.ag-business-active .ag-boutique-card__image img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    transition: transform .8s cubic-bezier(.23,1,.32,1) !important;
+}
+body.ag-business-active .ag-boutique-card:hover .ag-boutique-card__image img {
+    transform: scale(1.06) !important;
+}
+body.ag-business-active .ag-boutique-card__title,
+body.ag-business-active .ag-boutique-card__price,
+body.ag-business-active .ag-boutique-card__desc {
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+}
+body.ag-business-active .ag-boutique-card__title {
+    font-family: "Playfair Display", Georgia, serif !important;
+    font-size: 1.35rem !important;
+    color: #FFE5A0 !important;
+    margin: 0 0 8px !important;
+    text-align: left !important;
+    font-style: italic !important;
+}
+body.ag-business-active .ag-boutique-card__price {
+    background: linear-gradient(135deg, #FFE5A0 0%, #D4B45C 50%, #9A7A2E 100%) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: transparent !important;
+    font-size: 2.2rem !important;
+    font-weight: 800 !important;
+    font-style: italic !important;
+    margin: 8px 0 16px !important;
+    text-align: left !important;
+    letter-spacing: -.5px;
+}
+body.ag-business-active .ag-boutique-card__desc {
+    color: rgba(255, 255, 255, .78) !important;
+    font-size: .95rem !important;
+    line-height: 1.7 !important;
+    margin: 0 0 24px !important;
+    text-align: left !important;
+}
+body.ag-business-active .ag-boutique-card__btn {
+    margin: 0 30px !important;
+    width: calc(100% - 60px) !important;
+    padding: 14px 24px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.2px !important;
+    font-size: .9rem !important;
+    border-radius: 8px !important;
+}
+/* Mode jour */
+body.ag-business-active.ag-light .ag-boutique-card {
+    background: #ffffff !important;
+    border-color: rgba(123, 45, 59, .22) !important;
+}
+body.ag-business-active.ag-light .ag-boutique-card__title {
+    color: #2A1A1E !important;
+}
+body.ag-business-active.ag-light .ag-boutique-card__price {
+    background: linear-gradient(135deg, #A03D4D 0%, #7B2D3B 50%, #5A1F2A 100%) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+body.ag-business-active.ag-light .ag-boutique-card__desc {
+    color: #2A1A1E !important;
+}
+
 /* ── Bouton Stripe "Payer en ligne" sous chaque card Honoraires ── */
 body.ag-business-active .ag-business-stripe-btn {
     display: inline-flex;
