@@ -1,8 +1,88 @@
 /**
  * AG Business Avocat — feuille de styles.
  *
- * Convention : toutes les classes commencent par `ag-business-`.
- * Pas d'override des classes Free ni Premium.
- * Pour cibler la combinaison Free + Business actif, utiliser
- *   body.ag-business-active .ag-business-card { ... }
+ * Convention : classes prefixees `ag-business-*` quand on en cree.
+ * Pour cibler des elements quand Business est actif, on scope a
+ * `body.ag-business-active`.
  */
+
+/* ── Menu principal : hover professionnel et sobre ──
+   Override de l'effet "sweep + couleur rosee" existant. On garde
+   uniquement l'underline qui grow depuis le centre, en or pur.
+   Pas de changement de background. Couleur du texte : leger glow
+   ambre au lieu du rose, plus discret et aristocratique. */
+body.ag-business-active .ag-primary-menu a::before {
+    display: none !important;
+    animation: none !important;
+}
+body.ag-business-active .ag-primary-menu a:hover {
+    color: #F8EFD2 !important;
+    background: transparent !important;
+    text-shadow: 0 0 10px rgba(212, 180, 92, .35) !important;
+    transform: translateY(-1px) !important;
+}
+body.ag-business-active .ag-primary-menu a::after {
+    background: linear-gradient(90deg, transparent, #D4B45C 20%, #FFE5A0 50%, #D4B45C 80%, transparent) !important;
+    box-shadow: 0 0 8px rgba(212, 180, 92, .55), 0 0 18px rgba(212, 180, 92, .3) !important;
+    height: 2px !important;
+}
+body.ag-business-active.ag-light .ag-primary-menu a:hover {
+    color: #2A1A1E !important;
+    text-shadow: 0 0 10px rgba(123, 45, 59, .25) !important;
+}
+body.ag-business-active.ag-light .ag-primary-menu a::after {
+    background: linear-gradient(90deg, transparent, #7B2D3B 20%, #A03D4D 50%, #7B2D3B 80%, transparent) !important;
+    box-shadow: 0 0 8px rgba(123, 45, 59, .45), 0 0 18px rgba(123, 45, 59, .25) !important;
+}
+
+/* ── Boutons CTA : garantir la visibilite du texte au hover ──
+   Le hover existant peut faire perdre le contraste texte/bg sur
+   certains chemins. On force des couleurs visibles. */
+body.ag-business-active .ag-btn,
+body.ag-business-active .ag-footer-rdv,
+body.ag-business-active .ag-cabinet-full__btn,
+body.ag-business-active .ag-boutique-card__btn {
+    transition: background .35s ease, color .35s ease, transform .3s ease, box-shadow .35s ease !important;
+}
+body.ag-business-active .ag-btn:hover,
+body.ag-business-active .ag-cabinet-full__btn:hover,
+body.ag-business-active .ag-boutique-card__btn:hover,
+body.ag-business-active .ag-footer-rdv:hover {
+    opacity: 1 !important;
+    visibility: visible !important;
+    color: #0a0a0f !important;
+    background: #FFE5A0 !important;
+    box-shadow: 0 8px 35px rgba(212, 180, 92, .55), 0 0 0 1px rgba(255, 229, 160, .4) inset !important;
+}
+body.ag-business-active.ag-light .ag-btn:hover,
+body.ag-business-active.ag-light .ag-cabinet-full__btn:hover,
+body.ag-business-active.ag-light .ag-boutique-card__btn:hover,
+body.ag-business-active.ag-light .ag-footer-rdv:hover {
+    color: #ffffff !important;
+    background: #6A2433 !important;
+    box-shadow: 0 8px 30px rgba(123, 45, 59, .45), 0 0 0 1px rgba(255, 255, 255, .15) inset !important;
+}
+
+/* ── Compteurs (.ag-counter__number) : pendant l'animation count-up,
+   on garde la transition CSS qui rend ca fluide. La logique JS pose
+   data-final pour reset si besoin. */
+body.ag-business-active .ag-counter__number[data-counting="1"] {
+    will-change: contents;
+}
+
+/* ── Cartes Honoraires : indicateur visuel de cliquabilite ─────── */
+body.ag-business-active .ag-honoraires__card {
+    cursor: pointer;
+    transition: transform .35s cubic-bezier(.23,1,.32,1), box-shadow .35s ease, border-color .35s ease;
+}
+body.ag-business-active .ag-honoraires__card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 45px rgba(212, 180, 92, .3), 0 0 0 1px rgba(212, 180, 92, .35);
+}
+body.ag-business-active.ag-light .ag-honoraires__card:hover {
+    box-shadow: 0 18px 45px rgba(123, 45, 59, .25), 0 0 0 1px rgba(123, 45, 59, .35);
+}
+body.ag-business-active .ag-honoraires__card:focus-visible {
+    outline: 2px solid #D4B45C;
+    outline-offset: 4px;
+}
