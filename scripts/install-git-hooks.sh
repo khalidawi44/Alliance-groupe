@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Install a pre-commit hook that runs scripts/check-free-lock.sh
-# before every commit and fails if a locked Free file was modified.
+# Install a pre-commit hook that runs scripts/check-all-locks.sh
+# before every commit and fails if a locked Free or Premium file was
+# modified.
 #
 # Usage: bash scripts/install-git-hooks.sh
 
@@ -17,40 +18,49 @@ fi
 cat > "${HOOK_PATH}" <<'HOOK'
 #!/usr/bin/env bash
 # AG cadena — auto-installed by scripts/install-git-hooks.sh
-# Blocks any commit that modifies a locked Free theme file.
+# Blocks any commit that modifies a locked Free or Premium file.
 
 set -e
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-LOCKED_PREFIX="alliance-groupe-theme/assets/downloads/ag-starter-avocat/"
+LOCKS=(
+    "alliance-groupe-theme/assets/downloads/ag-starter-avocat/:free"
+    "alliance-groupe-theme/assets/downloads/ag-premium-avocat/:premium"
+)
 
-# Files staged for commit, excluding the lock-management files themselves.
-CHANGED=$(git diff --cached --name-only --diff-filter=ACDMR \
-    | grep "^${LOCKED_PREFIX}" \
-    | grep -v "^${LOCKED_PREFIX}LOCKED\.md$" \
-    | grep -v "^${LOCKED_PREFIX}\.LOCK\.sha256$" \
-    || true)
+CHANGED_STAGED=$(git diff --cached --name-only --diff-filter=ACDMR)
 
-if [[ -z "${CHANGED}" ]]; then
-    exit 0
-fi
-
-# Allow if the commit message contains "unlock-free:" (set via -m or .git/COMMIT_EDITMSG)
-if [[ -n "${COMMIT_MSG_FILE:-}" && -f "${COMMIT_MSG_FILE}" ]]; then
-    if grep -q "unlock-free:" "${COMMIT_MSG_FILE}"; then
-        exit 0
+for entry in "${LOCKS[@]}"; do
+    PREFIX="${entry%%:*}"
+    NAME="${entry##*:}"
+    HITS=$(echo "${CHANGED_STAGED}" \
+        | grep "^${PREFIX}" \
+        | grep -v "^${PREFIX}LOCKED\.md$" \
+        | grep -v "^${PREFIX}\.LOCK\.sha256$" \
+        || true)
+    if [[ -z "${HITS}" ]]; then
+        continue
     fi
-fi
 
-echo "" >&2
-echo "🔒 ag-starter-avocat (Free) is LOCKED. The following staged files are forbidden:" >&2
-echo "${CHANGED}" | sed 's/^/    /' >&2
-echo "" >&2
-echo "If this is an intentional unlock, see LOCKED.md and prefix your commit message with 'unlock-free:'" >&2
-exit 1
+    # Allow if commit message contains "unlock-${NAME}:"
+    if [[ -n "${COMMIT_MSG_FILE:-}" && -f "${COMMIT_MSG_FILE}" ]]; then
+        if grep -q "unlock-${NAME}:" "${COMMIT_MSG_FILE}"; then
+            continue
+        fi
+    fi
+
+    echo "" >&2
+    echo "🔒 ${PREFIX} (${NAME}) is LOCKED. Forbidden staged files:" >&2
+    echo "${HITS}" | sed 's/^/    /' >&2
+    echo "" >&2
+    echo "If intentional, see LOCKED.md and prefix your commit message with 'unlock-${NAME}:'" >&2
+    exit 1
+done
+
+exit 0
 HOOK
 
 chmod +x "${HOOK_PATH}"
 
 echo "Installed: ${HOOK_PATH}"
-echo "Pre-commit hook now blocks Free theme modifications."
+echo "Pre-commit hook now blocks Free AND Premium modifications."
