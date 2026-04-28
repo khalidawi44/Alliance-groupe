@@ -1,8 +1,26 @@
 /**
  * AG Premium Avocat — feuille de styles.
  *
- * Convention : toutes les classes commencent par `ag-premium-`.
- * Pas d'override des classes Free (`ag-domaine-card`, `ag-section`, etc.).
- * Pour cibler la combinaison Free + Premium actif, utiliser
- *   body.ag-premium-active .ag-premium-card { ... }
+ * Convention : classes prefixees `ag-premium-*` quand on en cree.
+ * Pour cibler des elements Free (sans modifier Free), on scope a
+ * `body.ag-premium-active` qui n'est present que quand le plugin
+ * Premium est actif. Free reste pixel-perfect identique sans le plugin.
  */
+
+/* ── Hero : background image fixe en mode jour ──
+   pro-scripts.js (theme) injecte au runtime une regle
+   `body.ag-light .ag-hero { background: ... }` qui reset
+   background-attachment a `scroll`. On le force a `fixed`
+   uniquement en Premium, source order + specificite plus
+   elevee garantissent qu'on gagne. */
+body.ag-premium-active.ag-light .ag-hero {
+    background-attachment: fixed !important;
+}
+
+/* ── Menu principal : ecriture plus grande, bold, uppercase ── */
+body.ag-premium-active .ag-primary-menu a {
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+}
