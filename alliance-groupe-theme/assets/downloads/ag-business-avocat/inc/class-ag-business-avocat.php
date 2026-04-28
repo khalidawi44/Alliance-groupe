@@ -27,6 +27,7 @@ class AG_Business_Avocat {
 		add_action( 'wp_head', array( $this, 'output_domaine_bg_overrides' ), 99 );
 		add_action( 'init', array( $this, 'reorder_sections' ), 99 );
 		add_action( 'admin_init', array( $this, 'ensure_boutique_page' ) );
+		add_action( 'admin_init', array( $this, 'ensure_boutique_in_menu' ) );
 		add_action( 'admin_notices', array( $this, 'woocommerce_admin_notice' ) );
 	}
 
@@ -70,8 +71,27 @@ class AG_Business_Avocat {
 			);
 			wp_localize_script( 'ag-business-avocat-script', 'agBusinessData', array(
 				'honorairesUrl' => function_exists( 'ag_page_url' ) ? ag_page_url( 'honoraires' ) : home_url( '/honoraires/' ),
+				'boutiqueUrl'   => function_exists( 'ag_page_url' ) ? ag_page_url( 'boutique' ) : home_url( '/boutique/' ),
+				'domaineUrls'   => $this->get_domaine_urls(),
 			) );
 		}
+	}
+
+	/**
+	 * Liste les permaliens des 12 premiers domaines, dans l'ordre meme
+	 * que ce que rend le template Free, pour que :nth-child et l'index
+	 * JS pointent vers la bonne URL.
+	 */
+	private function get_domaine_urls() {
+		if ( ! function_exists( 'ag_starter_avocat_get_domaines' ) ) {
+			return array();
+		}
+		$domaines = ag_starter_avocat_get_domaines( 12 );
+		$urls     = array();
+		foreach ( (array) $domaines as $d ) {
+			$urls[] = get_permalink( $d->ID );
+		}
+		return $urls;
 	}
 
 	/**
@@ -199,6 +219,43 @@ class AG_Business_Avocat {
 			'post_title'   => __( 'Boutique', 'ag-business-avocat' ),
 			'post_name'    => 'boutique',
 			'post_content' => $content,
+		) );
+	}
+
+	/**
+	 * Ajoute la page Boutique au menu primaire en Business si elle n'y
+	 * est pas deja. Idempotent : ne re-ajoute pas un item qui existe.
+	 */
+	public function ensure_boutique_in_menu() {
+		if ( ! $this->is_active() ) {
+			return;
+		}
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		$page = get_page_by_path( 'boutique' );
+		if ( ! $page ) {
+			return;
+		}
+		$locations = (array) get_theme_mod( 'nav_menu_locations' );
+		$menu_id   = isset( $locations['primary'] ) ? (int) $locations['primary'] : 0;
+		if ( ! $menu_id ) {
+			return;
+		}
+		$items = wp_get_nav_menu_items( $menu_id );
+		if ( $items ) {
+			foreach ( $items as $item ) {
+				if ( 'post_type' === $item->type && (int) $item->object_id === (int) $page->ID ) {
+					return; // deja present
+				}
+			}
+		}
+		wp_update_nav_menu_item( $menu_id, 0, array(
+			'menu-item-title'     => __( 'Boutique', 'ag-business-avocat' ),
+			'menu-item-object'    => 'page',
+			'menu-item-object-id' => $page->ID,
+			'menu-item-type'      => 'post_type',
+			'menu-item-status'    => 'publish',
 		) );
 	}
 
