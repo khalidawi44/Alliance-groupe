@@ -116,27 +116,34 @@
 		});
 	}
 
-	/* ── Boutique : remplace les etoiles par 3 symboles de justice
-	   differents (balance, marteau, colonne). On garde les memes
-	   classes / animations existantes — juste le SVG change. */
-	function replaceBoutiqueStars() {
+	/* ── Boutique : motif anime configurable via Customizer ──
+	   - 'stars'  : laisse les SVG d'origine (etoiles de pro-features.php)
+	   - 'scales' : balance de la justice
+	   - 'gavel'  : marteau de juge
+	   - 'pillar' : colonne classique
+	   - 'none'   : masque la host (zero animation) */
+	var BOUTIQUE_SYMBOLS = {
+		scales: '<svg viewBox="0 0 24 24"><path d="M12 2c.55 0 1 .45 1 1v1.07c2.84.49 5 2.97 5 5.93h2v2H4v-2h2c0-2.96 2.16-5.44 5-5.93V3c0-.55.45-1 1-1zm-7 9 3 6H2l3-6zm14 0 3 6h-6l3-6zm-7 8h-2v3h-3v1h8v-1h-3v-3z"/></svg>',
+		gavel:  '<svg viewBox="0 0 24 24"><path d="M14.34 5.66 9.41 10.59 5.17 6.34l4.95-4.95 4.22 4.27zM12 16l-1.41 1.41 2.83 2.83L14.83 19 12 16zm6.66-7.66-1.41-1.41-3.54 3.54 1.41 1.41 3.54-3.54zM3 22h18v-2H3v2zM10.83 12 4.46 18.37l1.41 1.41 6.37-6.37-1.41-1.41z"/></svg>',
+		pillar: '<svg viewBox="0 0 24 24"><path d="M3 3h18v3H3V3zm2 4h2v11h2V7h2v11h2V7h2v11h2V7h2v11h2V7h-2V6H7v1H5v11H3v3h18v-3h-2V7z"/></svg>'
+	};
+
+	function applyBoutiqueSymbol() {
 		if (!isBusinessActive()) return;
-		var stars = document.querySelectorAll('.ag-boutique-shooting-star');
-		if (!stars.length) return;
+		var choice = String(dataValue('boutiqueSymbol', 'stars')).toLowerCase();
 
-		var symbols = [
-			// Balance de la justice (filled, simple)
-			'<svg viewBox="0 0 24 24"><path d="M12 2c.55 0 1 .45 1 1v1.07c2.84.49 5 2.97 5 5.93h2v2H4v-2h2c0-2.96 2.16-5.44 5-5.93V3c0-.55.45-1 1-1zm-7 9 3 6H2l3-6zm14 0 3 6h-6l3-6zm-7 8h-2v3h-3v1h8v-1h-3v-3z"/></svg>',
-			// Marteau de juge (gavel)
-			'<svg viewBox="0 0 24 24"><path d="M14.34 5.66 9.41 10.59 5.17 6.34l4.95-4.95 4.22 4.27zM12 16l-1.41 1.41 2.83 2.83L14.83 19 12 16zm6.66-7.66-1.41-1.41-3.54 3.54 1.41 1.41 3.54-3.54zM3 22h18v-2H3v2zM10.83 12 4.46 18.37l1.41 1.41 6.37-6.37-1.41-1.41z"/></svg>',
-			// Colonne classique (Greek pillar)
-			'<svg viewBox="0 0 24 24"><path d="M3 3h18v3H3V3zm2 4h2v11h2V7h2v11h2V7h2v11h2V7h2v11h2V7h-2V6H7v1H5v11H3v3h18v-3h-2V7z"/></svg>'
-		];
-
-		stars.forEach(function (star, i) {
-			var svg = star.querySelector('svg');
-			if (!svg) return;
-			star.innerHTML = symbols[i % symbols.length];
+		if (choice === 'none') {
+			var host = document.querySelector('.ag-boutique-stars-host');
+			if (host) host.style.display = 'none';
+			return;
+		}
+		if (choice === 'stars') {
+			return; // garde le SVG d'origine (etoiles)
+		}
+		var svg = BOUTIQUE_SYMBOLS[choice];
+		if (!svg) return;
+		document.querySelectorAll('.ag-boutique-shooting-star').forEach(function (star) {
+			star.innerHTML = svg;
 		});
 	}
 
@@ -144,7 +151,7 @@
 		animateCounters();
 		makeHonorairesClickable();
 		makeDomainesClickable();
-		replaceBoutiqueStars();
+		applyBoutiqueSymbol();
 	}
 
 	if (document.readyState === 'loading') {
