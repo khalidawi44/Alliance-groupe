@@ -227,22 +227,40 @@
 		});
 	}
 
-	/* ── Injection HTML de l'equipe complete sur la page Cabinet ──
-	   Le template page-cabinet.php du theme n'appelle pas the_content,
-	   donc on injecte le HTML cote JS. La presence du HTML est
-	   determinee server-side via wp_localize_script (vide hors page
-	   Cabinet pour ne pas alourdir les autres pages). */
+	/* ── Injection equipe Cabinet en 2 groupes ───────────────────
+	   Ordre cible sur la page Cabinet :
+	     1. Page hero (titre)
+	     2. Avocats associes (groupe 1)
+	     3. Citation Ciceron (par injectPageCitations)
+	     4. Collaborateurs (groupe 2)
+	     5. Citation Pascal (par injectPageCitations)
+	     6. Nous trouver (.ag-cabinet-map-section, deja dans le DOM Free)
+	   Le .ag-maitre du theme Free est masque (le Maitre est deja
+	   integre dans la card associates Sophie DUPONT). */
 	function injectCabinetTeam() {
 		if (!isBusinessActive()) return;
-		var html = dataValue('cabinetTeamHtml', '');
-		if (!html) return;
-		if (document.querySelector('.ag-business-team-full')) return;
-		var main = document.getElementById('ag-main') || document.querySelector('main');
-		if (!main) {
-			document.body.insertAdjacentHTML('beforeend', html);
-			return;
+		var assocHtml = dataValue('cabinetAssociatesHtml', '');
+		var collabHtml = dataValue('cabinetCollaboratorsHtml', '');
+		if (!assocHtml && !collabHtml) return; // pas la page Cabinet
+
+		// Cache la section Maitre du theme — son contenu est repris dans
+		// la card de l'associee fondatrice.
+		var maitre = document.querySelector('.ag-maitre');
+		if (maitre) maitre.style.display = 'none';
+
+		var hero = document.querySelector('.ag-page-hero');
+		var anchor = hero || document.getElementById('ag-main') || document.querySelector('main');
+		if (!anchor) return;
+
+		// Inserer associates apres le hero
+		if (assocHtml && !document.querySelector('.ag-business-team-full--associates')) {
+			anchor.insertAdjacentHTML('afterend', assocHtml);
 		}
-		main.insertAdjacentHTML('beforeend', html);
+		// Inserer collaborators apres associates (ou apres hero si echec)
+		if (collabHtml && !document.querySelector('.ag-business-team-full--collaborators')) {
+			var nextAnchor = document.querySelector('.ag-business-team-full--associates') || anchor;
+			nextAnchor.insertAdjacentHTML('afterend', collabHtml);
+		}
 	}
 
 	/* ── Citations parallax injectees entre sections (pages internes) ── */

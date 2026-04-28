@@ -105,11 +105,14 @@ class AG_Business_Avocat {
 				),
 				// HTML de l'equipe injecte uniquement sur la page Cabinet
 				// (le template Free n'appelle pas the_content donc on
-				// passe par JS).
-				'cabinetTeamHtml' => is_page( 'cabinet' ) ? $this->render_full_team_html() : '',
+				// passe par JS). Split en 2 groupes pour permettre
+				// d'inserer des citations entre.
+				'cabinetAssociatesHtml'    => is_page( 'cabinet' ) ? $this->render_team_group_html( 'associates', __( 'Avocats associés', 'ag-business-avocat' ) ) : '',
+				'cabinetCollaboratorsHtml' => is_page( 'cabinet' ) ? $this->render_team_group_html( 'collaborators', __( 'Collaborateurs', 'ag-business-avocat' ) ) : '',
 				// Citations parallax injectees entre les sections des
-				// pages internes (cabinet, honoraires, expertise, RDV).
-				'pageCitations'   => $this->get_page_citations_data(),
+				// pages internes (cabinet, honoraires, expertise).
+				// JAMAIS apres le titre haut de page (.ag-page-hero).
+				'pageCitations'            => $this->get_page_citations_data(),
 			) );
 		}
 	}
@@ -973,35 +976,27 @@ Telephone : [telephone]</p>
 	}
 
 	/**
-	 * Construit le HTML de la section "Notre équipe" pour injection JS
-	 * sur la page Cabinet (le template Free n'appelle pas the_content).
+	 * Construit le HTML d'un groupe d'equipe (associes OU collaborateurs)
+	 * en tant que section autonome. Permet a JS d'inserer chaque groupe
+	 * a une position differente avec une citation entre.
+	 *
+	 * @param string $type 'associates' ou 'collaborators'
+	 * @param string $title titre H2 du groupe
 	 */
-	private function render_full_team_html() {
+	private function render_team_group_html( $type, $title ) {
 		$team = $this->get_default_team_data();
+		if ( ! isset( $team[ $type ] ) || empty( $team[ $type ] ) ) {
+			return '';
+		}
+		$members = $team[ $type ];
 		ob_start();
 		?>
-		<section class="ag-business-team-full">
-			<div class="ag-business-team-full__intro">
-				<h2 class="ag-business-team-full__title"><?php esc_html_e( 'Notre équipe', 'ag-business-avocat' ); ?></h2>
-				<p class="ag-business-team-full__lead"><?php esc_html_e( "Une équipe pluridisciplinaire d'avocats expérimentés, formés dans les meilleures universités, au service de vos enjeux juridiques.", 'ag-business-avocat' ); ?></p>
-			</div>
-
-			<div class="ag-business-team-full__group ag-business-team-full__group--associates">
-				<h3 class="ag-business-team-full__group-title"><?php esc_html_e( 'Avocats associés', 'ag-business-avocat' ); ?></h3>
-				<div class="ag-business-team-full__grid ag-business-team-full__grid--associates">
-					<?php foreach ( $team['associates'] as $m ) {
-						echo $this->render_team_card_html( $m ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					} ?>
-				</div>
-			</div>
-
-			<div class="ag-business-team-full__group ag-business-team-full__group--collaborators">
-				<h3 class="ag-business-team-full__group-title"><?php esc_html_e( 'Collaborateurs', 'ag-business-avocat' ); ?></h3>
-				<div class="ag-business-team-full__grid ag-business-team-full__grid--collaborators">
-					<?php foreach ( $team['collaborators'] as $m ) {
-						echo $this->render_team_card_html( $m ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					} ?>
-				</div>
+		<section class="ag-business-team-full ag-business-team-full--<?php echo esc_attr( $type ); ?>">
+			<h2 class="ag-business-team-full__group-title"><?php echo esc_html( $title ); ?></h2>
+			<div class="ag-business-team-full__grid ag-business-team-full__grid--<?php echo esc_attr( $type ); ?>">
+				<?php foreach ( $members as $m ) {
+					echo $this->render_team_card_html( $m ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				} ?>
 			</div>
 		</section>
 		<?php
@@ -1169,43 +1164,40 @@ Telephone : [telephone]</p>
 	private function get_page_citations_data() {
 		$citations = array();
 
+		// REGLE : jamais de citation directement apres le titre de page
+		// (.ag-page-hero). Les transitions s'inserent uniquement entre
+		// des sections de contenu.
+
 		if ( is_page( 'cabinet' ) ) {
+			// Cabinet : Cicéron entre associes et collaborateurs,
+			//           Pascal entre collaborateurs et "Nous trouver".
 			$citations[] = array(
 				'quote'       => 'Le silence est une chose admirable, mais qui demande une grande force pour ne pas être faiblesse.',
 				'author'      => 'Cicéron',
 				'bg'          => 'https://images.unsplash.com/photo-1589216532372-1c2a367900d9?w=1920&q=85',
-				'insertAfter' => '.ag-page-hero',
+				'insertAfter' => '.ag-business-team-full--associates',
 			);
 			$citations[] = array(
-				'quote'       => 'La justice sans la force est impuissante; la force sans la justice est tyrannique.',
+				'quote'       => 'La justice sans la force est impuissante ; la force sans la justice est tyrannique.',
 				'author'      => 'Blaise Pascal',
 				'bg'          => 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1920&q=85',
-				'insertAfter' => '.ag-maitre',
+				'insertAfter' => '.ag-business-team-full--collaborators',
 			);
 		}
 
 		if ( is_page( 'honoraires' ) ) {
+			// Honoraires : citation entre la grille de paliers et la
+			// section FAQ (page-article).
 			$citations[] = array(
 				'quote'       => 'Le contrat est la loi des parties.',
 				'author'      => 'Code civil, article 1103',
 				'bg'          => 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=85',
-				'insertAfter' => '.ag-page-hero',
-			);
-			$citations[] = array(
-				'quote'       => 'Tout travail mérite salaire ; tout salaire mérite équité.',
-				'author'      => 'Adage juridique',
-				'bg'          => 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1920&q=85',
 				'insertAfter' => '.ag-honoraires',
 			);
 		}
 
 		if ( is_page( 'expertise' ) ) {
-			$citations[] = array(
-				'quote'       => 'Le droit ne préserve que ceux qui le connaissent.',
-				'author'      => 'Adage romain',
-				'bg'          => 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1920&q=85',
-				'insertAfter' => '.ag-page-hero',
-			);
+			// Expertise : citation apres la grille des domaines.
 			$citations[] = array(
 				'quote'       => 'Nul n\'est censé ignorer la loi.',
 				'author'      => 'Adage du droit français',
@@ -1214,14 +1206,7 @@ Telephone : [telephone]</p>
 			);
 		}
 
-		if ( is_page( 'rendez-vous' ) ) {
-			$citations[] = array(
-				'quote'       => 'Une bonne défense commence par une écoute attentive.',
-				'author'      => 'Tradition du Barreau',
-				'bg'          => 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1920&q=85',
-				'insertAfter' => '.ag-page-hero',
-			);
-		}
+		// Rendez-vous : pas de citation (page courte form-only).
 
 		return $citations;
 	}
