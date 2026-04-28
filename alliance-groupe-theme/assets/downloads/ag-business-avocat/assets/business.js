@@ -147,11 +147,65 @@
 		});
 	}
 
+	/* ── Bouton recherche dans le header + overlay plein-ecran ── */
+	function injectSearchButton() {
+		if (!isBusinessActive()) return;
+		var actions = document.querySelector('.ag-header-actions');
+		if (!actions) return;
+		if (actions.querySelector('.ag-business-search-btn')) return;
+
+		var homeUrl = window.location.origin + (window.location.pathname.split('/').slice(0, -1).join('/') || '/');
+		// fallback simple : on retourne juste a la racine
+		var actionUrl = window.location.origin + '/';
+
+		var btn = document.createElement('button');
+		btn.type = 'button';
+		btn.className = 'ag-business-search-btn';
+		btn.setAttribute('aria-label', 'Rechercher');
+		btn.setAttribute('title', 'Rechercher');
+		btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 21l-4.5-4.5M19 11a8 8 0 1 1-16 0 8 8 0 0 1 16 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+		actions.appendChild(btn);
+
+		var overlay = document.createElement('div');
+		overlay.className = 'ag-business-search-overlay';
+		overlay.setAttribute('role', 'dialog');
+		overlay.setAttribute('aria-modal', 'true');
+		overlay.setAttribute('aria-label', 'Recherche');
+		overlay.innerHTML =
+			'<form role="search" method="get" action="' + actionUrl + '" class="ag-business-search-form">' +
+			'<input type="search" name="s" placeholder="Rechercher un domaine, un article..." aria-label="Rechercher">' +
+			'<button type="submit" aria-label="Lancer la recherche">→</button>' +
+			'</form>' +
+			'<button type="button" class="ag-business-search-close" aria-label="Fermer la recherche">×</button>';
+		document.body.appendChild(overlay);
+
+		var input = overlay.querySelector('input[type="search"]');
+		var closeBtn = overlay.querySelector('.ag-business-search-close');
+
+		var open = function () {
+			overlay.classList.add('is-open');
+			setTimeout(function () { input && input.focus(); }, 50);
+		};
+		var close = function () {
+			overlay.classList.remove('is-open');
+		};
+
+		btn.addEventListener('click', open);
+		closeBtn.addEventListener('click', close);
+		overlay.addEventListener('click', function (e) {
+			if (e.target === overlay) close();
+		});
+		document.addEventListener('keydown', function (e) {
+			if (e.key === 'Escape' && overlay.classList.contains('is-open')) close();
+		});
+	}
+
 	function run() {
 		animateCounters();
 		makeHonorairesClickable();
 		makeDomainesClickable();
 		applyBoutiqueSymbol();
+		injectSearchButton();
 	}
 
 	if (document.readyState === 'loading') {
