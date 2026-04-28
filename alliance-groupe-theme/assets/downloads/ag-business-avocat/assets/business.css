@@ -291,7 +291,7 @@ body.ag-business-active .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-ca
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(8, 10, 18, .1) 0%, rgba(8, 10, 18, .55) 50%, rgba(8, 10, 18, .92) 100%);
+    background: linear-gradient(180deg, rgba(8, 10, 18, .35) 0%, rgba(8, 10, 18, .75) 50%, rgba(8, 10, 18, .96) 100%);
     pointer-events: none;
     z-index: 1;
     transition: background .35s ease;
@@ -312,7 +312,7 @@ body.ag-business-active .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-ca
 }
 /* Mode jour */
 body.ag-business-active.ag-light .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg)::before {
-    background: linear-gradient(180deg, rgba(245, 240, 235, .1) 0%, rgba(245, 240, 235, .55) 50%, rgba(245, 240, 235, .92) 100%);
+    background: linear-gradient(180deg, rgba(245, 240, 235, .35) 0%, rgba(245, 240, 235, .75) 50%, rgba(245, 240, 235, .96) 100%);
 }
 body.ag-business-active.ag-light .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) .ag-domaine-card__title,
 body.ag-business-active.ag-light .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) .ag-domaine-card__excerpt,
