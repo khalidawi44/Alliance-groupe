@@ -351,6 +351,33 @@
 		});
 	}
 
+	/* ── Boutique : injecte une image dans les cards qui n'en ont pas ──
+	   Sur la home, .ag-boutique-card peut etre rendue avec icone seule
+	   (sans .ag-boutique-card__image). On injecte une image au-dessus
+	   du contenu pour un rendu pro. URLs passees en wp_localize_script. */
+	function injectBoutiqueImages() {
+		if (!isBusinessActive()) return;
+		var imgs = dataValue('boutiqueOfferImages', []);
+		if (!imgs || !imgs.length) return;
+		var cards = document.querySelectorAll('.ag-boutique .ag-boutique-card');
+		cards.forEach(function (card, idx) {
+			var url = imgs[idx];
+			if (!url) return;
+			if (card.querySelector('.ag-boutique-card__image')) return; // deja une image
+			if (card.dataset.agBusinessImage === '1') return;
+			card.dataset.agBusinessImage = '1';
+			card.classList.add('ag-boutique-card--with-image');
+			// Hide icon emoji si present (l'image fait l'illustration)
+			var icon = card.querySelector('.ag-boutique-card__icon');
+			if (icon) icon.style.display = 'none';
+			// Insert image element en debut de card
+			var imgWrap = document.createElement('div');
+			imgWrap.className = 'ag-boutique-card__image ag-boutique-card__image--injected';
+			imgWrap.innerHTML = '<img src="' + url.replace(/"/g, '%22') + '" alt="" loading="lazy">';
+			card.insertBefore(imgWrap, card.firstChild);
+		});
+	}
+
 	function run() {
 		animateCounters();
 		makeHonorairesClickable();
@@ -361,6 +388,7 @@
 		injectCabinetTeam();
 		injectPageCitations();
 		makeContactBlocksClickable();
+		injectBoutiqueImages();
 	}
 
 	if (document.readyState === 'loading') {

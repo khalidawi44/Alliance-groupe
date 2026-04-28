@@ -115,6 +115,9 @@ class AG_Business_Avocat {
 				// pages internes (cabinet, honoraires, expertise).
 				// JAMAIS apres le titre haut de page (.ag-page-hero).
 				'pageCitations'            => $this->get_page_citations_data(),
+				// URLs d'images pour les 3 offres Boutique sur la home —
+				// JS les injecte dans les cards si pas deja presentes.
+				'boutiqueOfferImages'      => $this->get_boutique_offer_images(),
 			) );
 		}
 	}
@@ -956,11 +959,26 @@ Telephone : [telephone]</p>
 	 * Donnees des 3 offres par defaut affichees dans la section Boutique
 	 * de la home (alignees avec les defaults de pro-features.php).
 	 */
+	/**
+	 * Liste les URLs d'images des 3 offres dans le meme ordre que
+	 * render_boutique() affiche les cards. Permet a JS d'injecter
+	 * une .ag-boutique-card__image en fallback Customizer (sans WC)
+	 * ou en complement quand le produit WC n'a pas d'image.
+	 */
+	private function get_boutique_offer_images() {
+		$images = array();
+		foreach ( $this->get_default_offers_data() as $slug => $data ) {
+			$images[] = isset( $data['image'] ) ? $data['image'] : '';
+		}
+		return $images;
+	}
+
 	private function get_default_offers_data() {
 		return array(
 			'pack-3-consultations-telephoniques' => array(
 				'title'       => '3 consultations téléphoniques',
 				'desc'        => 'Pack de 3 consultations de 30 min, valables 6 mois. Conseil juridique sur tout domaine.',
+				'image'       => 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&q=85',
 				'price_value' => 450,
 				'long_desc'   => '<h2>Contenu du pack</h2>
 <ul>
@@ -983,6 +1001,7 @@ Telephone : [telephone]</p>
 			'guide-juridique-pdf' => array(
 				'title'       => 'Guide juridique PDF',
 				'desc'        => 'Manuel pratique 80 pages : vos droits face au licenciement, à la séparation, aux litiges courants.',
+				'image'       => 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=85',
 				'price_value' => 29,
 				'long_desc'   => '<h2>Sommaire du guide</h2>
 <ul>
@@ -998,6 +1017,7 @@ Telephone : [telephone]</p>
 			'audit-contractuel' => array(
 				'title'       => 'Audit contractuel',
 				'desc'        => 'Analyse complète d\'un contrat (CDI, bail, partenariat) avec rapport écrit et recommandations.',
+				'image'       => 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=85',
 				'price_value' => 290,
 				'long_desc'   => '<h2>Ce que vous obtenez</h2>
 <ul>
