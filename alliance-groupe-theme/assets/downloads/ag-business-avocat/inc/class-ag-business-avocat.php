@@ -220,27 +220,32 @@ class AG_Business_Avocat {
 	}
 
 	/**
-	 * Place la section "Equipe" juste apres la section "Cabinet" au lieu
-	 * de juste apres "Le Maitre". Detache l'ancien hook et le rebranche.
+	 * Sur la home, ordre demande par l'utilisateur :
+	 *   Maitre -> 2 associes -> Notre equipe (collaborateurs)
 	 *
-	 * AG_Pro_Features (theme Free) registre render_team_section sur
-	 * ag_after_maitre @ 10. On detache et on rebranche sur ag_after_cabinet
-	 * a une priorite basse (5) pour que l'equipe arrive AVANT boutique
-	 * (priorite 10) et parallax_quote_3 (priorite 20).
+	 * On laisse render_team_section a sa position par defaut
+	 * (ag_after_maitre @ 10) et on ajoute la section associes en
+	 * priorite 5 pour qu'elle apparaisse AVANT.
 	 */
 	public function reorder_sections() {
 		if ( ! $this->is_active() ) {
 			return;
 		}
-		if ( ! isset( $GLOBALS['ag_pro'] ) ) {
+		// render_team_section reste a sa position par defaut
+		// (ag_after_maitre priorite 10 — registree par pro-features.php).
+		// On ajoute juste les 2 associes AVANT (priorite 5).
+		add_action( 'ag_after_maitre', array( $this, 'render_home_associates' ), 5 );
+	}
+
+	/**
+	 * Rend les 2 avocats associes sous le Maitre sur la home.
+	 * Le team_section qui suit (priorite 10) affiche les collaborateurs.
+	 */
+	public function render_home_associates() {
+		if ( ! $this->is_active() ) {
 			return;
 		}
-		$pro = $GLOBALS['ag_pro'];
-		if ( ! is_object( $pro ) || ! method_exists( $pro, 'render_team_section' ) ) {
-			return;
-		}
-		remove_action( 'ag_after_maitre', array( $pro, 'render_team_section' ), 10 );
-		add_action( 'ag_after_cabinet', array( $pro, 'render_team_section' ), 5 );
+		echo $this->render_team_group_html( 'associates', __( 'Avocats associés', 'ag-business-avocat' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
