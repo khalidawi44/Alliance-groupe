@@ -7,13 +7,14 @@
  * Premium est actif. Free reste pixel-perfect identique sans le plugin.
  */
 
-/* ── Hero : background image fixe en mode jour ──
-   pro-scripts.js (theme) injecte au runtime une regle
-   `body.ag-light .ag-hero { background: ... }` qui reset
-   background-attachment a `scroll`. On le force a `fixed`
-   uniquement en Premium, source order + specificite plus
-   elevee garantissent qu'on gagne. */
-body.ag-premium-active.ag-light .ag-hero {
+/* ── Background image fixe en mode jour (toutes les pages) ──
+   pro-scripts.js (theme) injecte au runtime des regles
+   `body.ag-light .ag-hero { background: ... }` et idem pour
+   .ag-page-hero, qui resetent background-attachment a `scroll`
+   via le shorthand. On force `fixed` partout ou ca s'applique
+   en Premium, source order + specificite garantissent qu'on gagne. */
+body.ag-premium-active.ag-light .ag-hero,
+body.ag-premium-active.ag-light .ag-page-hero {
     background-attachment: fixed !important;
 }
 
