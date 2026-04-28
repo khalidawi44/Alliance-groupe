@@ -41,6 +41,7 @@ class AG_Business_Avocat {
 		// template page-cabinet.php du theme n'appelle pas the_content.
 		// L'injection se fait cote JS via cabinetTeamHtml localise.
 		add_filter( 'wp_nav_menu_args', array( $this, 'allow_submenu_depth' ) );
+		add_filter( 'wp_nav_menu_items', array( $this, 'inject_account_menu_item' ), 10, 2 );
 		add_action( 'customize_register', array( $this, 'register_customizer' ), 30 );
 	}
 
@@ -56,6 +57,78 @@ class AG_Business_Avocat {
 			$args['depth'] = 0;
 		}
 		return $args;
+	}
+
+	/**
+	 * Injecte un item de menu 'Connexion' (non-connecte) ou 'Mon compte'
+	 * (connecte) avec un sous-menu mega-menu. Hooke wp_nav_menu_items
+	 * (string-based) pour un append simple en fin de menu primaire.
+	 */
+	public function inject_account_menu_item( $items, $args ) {
+		if ( ! $this->is_active() ) {
+			return $items;
+		}
+		if ( ! isset( $args->theme_location ) || 'primary' !== $args->theme_location ) {
+			return $items;
+		}
+		if ( is_user_logged_in() ) {
+			return $items . $this->build_account_menu_logged_in();
+		}
+		return $items . $this->build_account_menu_logged_out();
+	}
+
+	private function build_account_menu_logged_out() {
+		$login_url    = home_url( '/connexion/' );
+		$register_url = home_url( '/inscription/' );
+		ob_start();
+		?>
+		<li class="menu-item menu-item-has-children ag-business-account-item">
+			<a href="<?php echo esc_url( $login_url ); ?>"><?php esc_html_e( 'Connexion', 'ag-business-avocat' ); ?></a>
+			<ul class="sub-menu ag-business-account-submenu">
+				<li class="menu-item"><a href="<?php echo esc_url( $login_url ); ?>"><?php esc_html_e( 'Se connecter', 'ag-business-avocat' ); ?></a></li>
+				<li class="menu-item ag-business-submenu-tous"><a href="<?php echo esc_url( $register_url ); ?>"><?php esc_html_e( 'Créer un compte →', 'ag-business-avocat' ); ?></a></li>
+			</ul>
+		</li>
+		<?php
+		return ob_get_clean();
+	}
+
+	private function build_account_menu_logged_in() {
+		$wc_active   = class_exists( 'WooCommerce' );
+		$account     = home_url( '/mon-compte/' );
+		$logout      = wp_logout_url( home_url() );
+		$user        = wp_get_current_user();
+		$first_name  = $user->first_name ? $user->first_name : $user->display_name;
+
+		// URLs WC endpoints (fonctionnent meme sans WC, vont juste sur /mon-compte/)
+		$orders     = $wc_active ? wc_get_account_endpoint_url( 'orders' )    : $account;
+		$downloads  = $wc_active ? wc_get_account_endpoint_url( 'downloads' ) : $account;
+		$addresses  = $wc_active ? wc_get_account_endpoint_url( 'edit-address' ) : $account;
+		$edit       = $wc_active ? wc_get_account_endpoint_url( 'edit-account' ) : admin_url( 'profile.php' );
+
+		ob_start();
+		?>
+		<li class="menu-item menu-item-has-children ag-business-account-item ag-business-account-item--logged-in">
+			<a href="<?php echo esc_url( $account ); ?>"><?php echo esc_html( __( 'Mon compte', 'ag-business-avocat' ) ); ?></a>
+			<ul class="sub-menu ag-business-account-submenu ag-business-account-submenu--logged-in">
+				<li class="menu-item ag-business-account-submenu__greeting">
+					<span><?php
+						/* translators: %s : prénom de l'utilisateur */
+						printf( esc_html__( 'Bonjour %s', 'ag-business-avocat' ), esc_html( $first_name ) );
+					?></span>
+				</li>
+				<li class="menu-item"><a href="<?php echo esc_url( $account ); ?>">📋 <?php esc_html_e( 'Tableau de bord', 'ag-business-avocat' ); ?></a></li>
+				<li class="menu-item"><a href="<?php echo esc_url( $orders ); ?>">📦 <?php esc_html_e( 'Mes commandes', 'ag-business-avocat' ); ?></a></li>
+				<li class="menu-item"><a href="<?php echo esc_url( $downloads ); ?>">⬇️ <?php esc_html_e( 'Mes téléchargements', 'ag-business-avocat' ); ?></a></li>
+				<li class="menu-item"><a href="<?php echo esc_url( $account ); ?>#mes-rendez-vous">📅 <?php esc_html_e( 'Mes rendez-vous', 'ag-business-avocat' ); ?></a></li>
+				<li class="menu-item"><a href="<?php echo esc_url( $account ); ?>#mes-dossiers">🗂️ <?php esc_html_e( 'Mes dossiers', 'ag-business-avocat' ); ?></a></li>
+				<li class="menu-item"><a href="<?php echo esc_url( $addresses ); ?>">📍 <?php esc_html_e( 'Mes adresses', 'ag-business-avocat' ); ?></a></li>
+				<li class="menu-item"><a href="<?php echo esc_url( $edit ); ?>">⚙️ <?php esc_html_e( 'Profil', 'ag-business-avocat' ); ?></a></li>
+				<li class="menu-item ag-business-submenu-tous"><a href="<?php echo esc_url( $logout ); ?>">🚪 <?php esc_html_e( 'Se déconnecter', 'ag-business-avocat' ); ?></a></li>
+			</ul>
+		</li>
+		<?php
+		return ob_get_clean();
 	}
 
 	/**
