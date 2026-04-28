@@ -292,6 +292,65 @@
 		});
 	}
 
+	/* ── Blocs Contact cliquables (Telephone, Email) ──
+	   Sur la page Cabinet (.ag-cabinet-full__cards) et la home
+	   (.ag-cabinet), les .ag-cabinet__block contiennent telephone
+	   et email mais sont des div non interactifs. On rend cliquable
+	   tel: et mailto: + on tag .ag-business-block--phone pour un
+	   style or en mode nuit. */
+	function makeContactBlocksClickable() {
+		if (!isBusinessActive()) return;
+		var blocks = document.querySelectorAll('.ag-cabinet__block');
+		blocks.forEach(function (block) {
+			if (block.dataset.agBusinessClickable === '1') return;
+
+			var content = block.textContent || '';
+			var paragraph = block.querySelector('p');
+			var url = null;
+			var kind = null;
+
+			// Phone : cherche un numero (avec ou sans +33, espaces, points)
+			var phoneMatch = content.match(/(\+?\d[\d\s.\-]{7,}\d)/);
+			if (phoneMatch) {
+				var phoneClean = phoneMatch[1].replace(/[^\d+]/g, '');
+				if (phoneClean.length >= 8) {
+					url = 'tel:' + phoneClean;
+					kind = 'phone';
+				}
+			}
+
+			// Email : cherche une adresse mail
+			if (!url) {
+				var emailMatch = content.match(/([\w.\-+]+@[\w.\-]+\.[\w]{2,})/);
+				if (emailMatch) {
+					url = 'mailto:' + emailMatch[1];
+					kind = 'email';
+				}
+			}
+
+			if (!url) return;
+
+			block.dataset.agBusinessClickable = '1';
+			block.classList.add('ag-business-block--clickable');
+			if (kind) block.classList.add('ag-business-block--' + kind);
+
+			block.style.cursor = 'pointer';
+			block.setAttribute('role', 'link');
+			block.setAttribute('tabindex', '0');
+			block.setAttribute('aria-label', kind === 'phone' ? 'Appeler' : 'Envoyer un email');
+
+			block.addEventListener('click', function () {
+				window.location.href = url;
+			});
+			block.addEventListener('keydown', function (e) {
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault();
+					window.location.href = url;
+				}
+			});
+		});
+	}
+
 	function run() {
 		animateCounters();
 		makeHonorairesClickable();
@@ -301,6 +360,7 @@
 		injectStripeButtons();
 		injectCabinetTeam();
 		injectPageCitations();
+		makeContactBlocksClickable();
 	}
 
 	if (document.readyState === 'loading') {

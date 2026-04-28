@@ -149,6 +149,104 @@ body.ag-business-active .ag-honoraires__card:focus-visible {
     outline-offset: 4px;
 }
 
+/* ── Footer copyright : retire celui du theme Free pour eviter
+   le doublon avec render_footer_branding (Business). Le client
+   ne peut pas reactiver via Customizer puisque c'est du CSS du
+   plugin Business. */
+body.ag-business-active .ag-footer-bottom {
+    display: none !important;
+}
+
+/* ── Voile sur les cards Domaines de la page Expertise ──
+   Sur la home, les cards .ag-domaine-card--bg ont leur overlay.
+   Sur la page Expertise, les cards .ag-domaine-card (sans suffix
+   --bg) n'ont pas d'overlay. On en ajoute un via ::before avec
+   les memes images de fond que la home (deja appliquees par
+   output_domaine_bg_overrides). */
+body.ag-business-active .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+body.ag-business-active .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(8, 10, 18, .1) 0%, rgba(8, 10, 18, .55) 50%, rgba(8, 10, 18, .92) 100%);
+    pointer-events: none;
+    z-index: 1;
+    transition: background .35s ease;
+}
+body.ag-business-active .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) > * {
+    position: relative;
+    z-index: 2;
+}
+body.ag-business-active .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) .ag-domaine-card__title,
+body.ag-business-active .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) .ag-domaine-card__excerpt,
+body.ag-business-active .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) .ag-domaine-card__examples {
+    color: #fff !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, .85), 0 1px 3px rgba(0, 0, 0, .9) !important;
+}
+body.ag-business-active .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) .ag-domaine-card__icon {
+    color: #FFE5A0 !important;
+    filter: drop-shadow(0 2px 12px rgba(212, 180, 92, .55));
+}
+/* Mode jour */
+body.ag-business-active.ag-light .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg)::before {
+    background: linear-gradient(180deg, rgba(245, 240, 235, .1) 0%, rgba(245, 240, 235, .55) 50%, rgba(245, 240, 235, .92) 100%);
+}
+body.ag-business-active.ag-light .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) .ag-domaine-card__title,
+body.ag-business-active.ag-light .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) .ag-domaine-card__excerpt,
+body.ag-business-active.ag-light .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) .ag-domaine-card__examples {
+    color: #2A1A1E !important;
+    text-shadow: 0 1px 3px rgba(255, 255, 255, .85) !important;
+}
+body.ag-business-active.ag-light .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) .ag-domaine-card__icon {
+    color: #7B2D3B !important;
+}
+
+/* ── Blocs Contact (Cabinet) : cliquables Telephone & Email ── */
+body.ag-business-active .ag-cabinet__block {
+    transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease, background .3s ease;
+}
+body.ag-business-active .ag-business-block--clickable {
+    cursor: pointer;
+}
+body.ag-business-active .ag-business-block--clickable:hover {
+    transform: translateY(-3px);
+    border-color: rgba(212, 180, 92, .55) !important;
+    box-shadow: 0 12px 32px rgba(212, 180, 92, .25), 0 0 0 1px rgba(212, 180, 92, .35) inset !important;
+    background: rgba(212, 180, 92, .06) !important;
+}
+body.ag-business-active .ag-business-block--clickable:focus-visible {
+    outline: 2px solid #D4B45C;
+    outline-offset: 4px;
+}
+/* Telephone en doré en mode nuit (couleur forte sur le numéro) */
+body.ag-business-active:not(.ag-light) .ag-business-block--phone p {
+    color: #FFE5A0 !important;
+    font-weight: 700 !important;
+    font-size: 1.05rem !important;
+    letter-spacing: .8px;
+}
+body.ag-business-active:not(.ag-light) .ag-business-block--phone .ag-cabinet__block-icon {
+    filter: drop-shadow(0 0 10px rgba(212, 180, 92, .55));
+}
+/* Email un peu différencié visuellement */
+body.ag-business-active .ag-business-block--email p {
+    word-break: break-word;
+}
+/* Mode jour : palette bordeaux pour le hover et le téléphone */
+body.ag-business-active.ag-light .ag-business-block--clickable:hover {
+    border-color: rgba(123, 45, 59, .45) !important;
+    box-shadow: 0 12px 32px rgba(123, 45, 59, .2), 0 0 0 1px rgba(123, 45, 59, .3) inset !important;
+    background: rgba(123, 45, 59, .04) !important;
+}
+body.ag-business-active.ag-light .ag-business-block--phone p {
+    color: #7B2D3B !important;
+    font-weight: 700 !important;
+}
+
 /* ── Cartes Domaines : cliquables, focus visible ── */
 body.ag-business-active .ag-domaines .ag-domaine-card {
     cursor: pointer;
