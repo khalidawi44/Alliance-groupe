@@ -27,6 +27,7 @@ class AG_Premium_Avocat {
 		add_filter( 'body_class', array( $this, 'add_body_class' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ), 20 );
 		add_action( 'wp_head', array( $this, 'output_domaine_bg_overrides' ), 99 );
+		add_action( 'ag_brand_fallback', array( $this, 'render_default_logo_svg' ) );
 
 		// One-shot DB setup: create the dedicated Premium pages and sync
 		// the primary menu to point to them. Runs lazily on admin_init
@@ -48,12 +49,69 @@ class AG_Premium_Avocat {
 		return in_array( $tier, array( 'premium', 'business' ), true );
 	}
 
+	/**
+	 * True only when tier is exactly Premium (not Business). Used to gate
+	 * features that Business already provides via pro-features.php so we
+	 * don't double-render.
+	 */
+	private function is_premium_only_tier() {
+		return class_exists( 'AG_Licence_Client' ) && 'premium' === AG_Licence_Client::get_tier();
+	}
+
 	public function add_body_class( $classes ) {
 		if ( ! $this->is_active() ) {
 			return $classes;
 		}
 		$classes[] = 'ag-premium-active';
+		if ( $this->is_premium_only_tier() ) {
+			$classes[] = 'ag-premium-only';
+		}
 		return $classes;
+	}
+
+	/**
+	 * Render the default Premium SVG logo (balance de justice, dégradé or
+	 * + halo) when no custom_logo is uploaded. Premium tier only — Business
+	 * keeps using its own render in pro-features.php so we don't double up.
+	 *
+	 * Fired on the ag_brand_fallback action exposed by header.php.
+	 */
+	public function render_default_logo_svg() {
+		if ( ! $this->is_premium_only_tier() ) {
+			return;
+		}
+		if ( has_custom_logo() ) {
+			return;
+		}
+		?>
+		<span class="ag-premium-logo-svg" aria-hidden="true">
+			<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+				<defs>
+					<linearGradient id="agPremiumLogoGold" x1="0%" y1="0%" x2="0%" y2="100%">
+						<stop offset="0%" stop-color="#FFE5A0"/>
+						<stop offset="50%" stop-color="#D4B45C"/>
+						<stop offset="100%" stop-color="#9A7A2E"/>
+					</linearGradient>
+					<radialGradient id="agPremiumLogoHalo" cx="50%" cy="50%" r="50%">
+						<stop offset="0%" stop-color="#FFE5A0" stop-opacity=".35"/>
+						<stop offset="60%" stop-color="#D4B45C" stop-opacity=".12"/>
+						<stop offset="100%" stop-color="#D4B45C" stop-opacity="0"/>
+					</radialGradient>
+				</defs>
+				<circle cx="32" cy="32" r="31" fill="url(#agPremiumLogoHalo)"/>
+				<circle cx="32" cy="6" r="3.5" fill="url(#agPremiumLogoGold)"/>
+				<rect x="30" y="9" width="4" height="42" fill="url(#agPremiumLogoGold)" rx="1"/>
+				<rect x="9" y="14" width="46" height="3.5" fill="url(#agPremiumLogoGold)" rx="1.5"/>
+				<circle cx="10" cy="15.7" r="3" fill="url(#agPremiumLogoGold)"/>
+				<circle cx="54" cy="15.7" r="3" fill="url(#agPremiumLogoGold)"/>
+				<rect x="9" y="18" width="2" height="6" fill="url(#agPremiumLogoGold)"/>
+				<rect x="53" y="18" width="2" height="6" fill="url(#agPremiumLogoGold)"/>
+				<path d="M2 24 L18 24 L10 32 Z" fill="url(#agPremiumLogoGold)"/>
+				<path d="M46 24 L62 24 L54 32 Z" fill="url(#agPremiumLogoGold)"/>
+				<path d="M22 51 L42 51 L46 58 L18 58 Z" fill="url(#agPremiumLogoGold)"/>
+			</svg>
+		</span>
+		<?php
 	}
 
 	public function enqueue_assets() {
