@@ -398,6 +398,18 @@ body.ag-business-active.ag-light .ag-primary-menu .sub-menu .ag-business-submenu
     }
 }
 
+/* ── Citations parallax injectees entre sections (pages internes) ──
+   Reutilise le style .ag-parallax-business du theme, juste un peu
+   moins de padding pour ne pas dominer la page. */
+body.ag-business-active .ag-business-page-citation {
+    padding: 80px 24px !important;
+}
+@media (max-width: 768px) {
+    body.ag-business-active .ag-business-page-citation {
+        padding: 60px 20px !important;
+    }
+}
+
 /* ── Citations parallax : overlay plus transparent en mode nuit ──
    L'overlay par defaut est a 88%/78% — trop dense, l'image n'apparait
    pas. On l'allège a ~55% en gardant un degrade qui assombrit le coin
@@ -581,10 +593,44 @@ body.ag-light .ag-business-search-close:hover {
     opacity: .85;
     margin: 0;
 }
+/* Groupes : associes (premier conteneur) et collaborateurs (en dessous) */
+.ag-business-team-full__group {
+    margin-bottom: 50px;
+}
+.ag-business-team-full__group:last-child {
+    margin-bottom: 0;
+}
+.ag-business-team-full__group-title {
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif !important;
+    font-size: 1.4rem !important;
+    color: #D4B45C;
+    margin: 0 0 24px !important;
+    padding: 0 0 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(212, 180, 92, .25);
+}
+body.ag-light .ag-business-team-full__group-title {
+    color: #7B2D3B;
+    border-bottom-color: rgba(123, 45, 59, .22);
+}
+
 .ag-business-team-full__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
     gap: 32px;
+}
+/* Associes : 2 colonnes max (cards plus larges, mise en avant) */
+.ag-business-team-full__grid--associates {
+    grid-template-columns: repeat(2, 1fr);
+}
+/* Collaborateurs : 3 colonnes responsives */
+.ag-business-team-full__grid--collaborators {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+@media (max-width: 900px) {
+    .ag-business-team-full__grid--associates {
+        grid-template-columns: 1fr;
+    }
 }
 .ag-business-team-card {
     background: rgba(20, 20, 30, .6);
@@ -600,11 +646,21 @@ body.ag-light .ag-business-search-close:hover {
 }
 .ag-business-team-card__photo {
     width: 100%;
-    aspect-ratio: 4 / 3;
+    /* Ratio carre : meilleur cadrage pour des portraits, on voit bien
+       le visage et le buste sans crop excessif. */
+    aspect-ratio: 1 / 1;
     background-size: cover;
-    background-position: center top;
+    /* center 25% : cadre le visage en haut-milieu, plutot que tout en
+       haut (qui coupe le front sur certaines photos Unsplash). */
+    background-position: center 25%;
     background-color: #0c0c12;
     transition: transform .6s ease;
+}
+/* Sur les associes (cards plus larges en 2 colonnes), un format
+   16:10 plus paysage met mieux en valeur la photo. */
+.ag-business-team-full__grid--associates .ag-business-team-card__photo {
+    aspect-ratio: 16 / 10;
+    background-position: center 30%;
 }
 .ag-business-team-card:hover .ag-business-team-card__photo {
     transform: scale(1.04);
