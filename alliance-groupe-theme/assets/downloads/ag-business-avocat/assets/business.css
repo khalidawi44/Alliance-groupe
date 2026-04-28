@@ -588,59 +588,33 @@ body.ag-business-active.ag-light .ag-primary-menu .sub-menu .ag-business-submenu
     border-color: #A03D4D;
 }
 
-/* Sous-menu compte (Mon compte / Connexion) — plus compact que le
-   mega menu Domaines, aligne a droite. */
-body.ag-business-active .ag-primary-menu .sub-menu.ag-business-account-submenu {
-    grid-template-columns: 1fr !important;
-    width: auto !important;
-    min-width: 280px !important;
-    max-width: 320px !important;
-    left: auto !important;
-    right: 24px !important;
-    padding: 14px 0 !important;
-}
-body.ag-business-active .ag-primary-menu .ag-business-account-submenu li {
+/* Sous-menu compte (Mon compte / Connexion) — meme format mega menu
+   full-width que Domaines d'expertise. Greeting et bouton deconnexion
+   occupent toute la largeur (grid-column 1/-1) ; les autres items
+   sont en grille 4 colonnes auto-fit. */
+body.ag-business-active .ag-primary-menu .ag-business-account-submenu .ag-business-account-submenu__greeting {
+    grid-column: 1 / -1 !important;
     list-style: none;
-}
-body.ag-business-active .ag-primary-menu .ag-business-account-submenu a {
-    padding: 10px 24px !important;
-    border-radius: 0 !important;
-}
-body.ag-business-active .ag-primary-menu .ag-business-account-submenu a::before {
-    display: none !important;
-}
-body.ag-business-active .ag-primary-menu .ag-business-account-submenu a:hover {
-    transform: none !important;
-    background: rgba(212, 180, 92, .12) !important;
-}
-body.ag-business-active .ag-primary-menu .ag-business-account-submenu__greeting {
-    padding: 8px 24px 12px !important;
-    border-bottom: 1px solid rgba(212, 180, 92, .2);
-    margin-bottom: 8px;
-    color: #D4B45C !important;
-    font-style: italic;
-    font-size: .9rem;
     text-align: center;
+    margin: 0 0 16px;
+    padding: 0 0 18px;
+    border-bottom: 1px solid rgba(212, 180, 92, .25);
+    color: #D4B45C !important;
+    font-family: "Playfair Display", Georgia, serif;
+    font-style: italic;
+    font-size: 1.15rem;
     letter-spacing: .3px;
 }
 body.ag-business-active .ag-primary-menu .ag-business-account-submenu .ag-business-submenu-tous {
-    grid-column: auto !important;
-    text-align: left !important;
-    margin-top: 6px !important;
-    padding-top: 8px !important;
+    grid-column: 1 / -1 !important;
+    margin-top: 14px !important;
+    padding-top: 18px !important;
+    text-align: center;
+    border-top: 1px solid rgba(212, 180, 92, .25);
 }
-body.ag-business-active .ag-primary-menu .ag-business-account-submenu .ag-business-submenu-tous a {
-    display: block !important;
-    text-align: left !important;
-    border: 0 !important;
-    padding: 10px 24px !important;
-    text-transform: none !important;
-    letter-spacing: 0 !important;
-    font-size: .92rem !important;
-}
-body.ag-light .ag-primary-menu .ag-business-account-submenu__greeting {
+body.ag-light .ag-primary-menu .ag-business-account-submenu .ag-business-account-submenu__greeting {
     color: #7B2D3B !important;
-    border-bottom-color: rgba(123, 45, 59, .2);
+    border-bottom-color: rgba(123, 45, 59, .22);
 }
 
 /* Tablette : 2 colonnes */
@@ -648,10 +622,6 @@ body.ag-light .ag-primary-menu .ag-business-account-submenu__greeting {
     body.ag-business-active .ag-primary-menu .sub-menu {
         grid-template-columns: repeat(2, 1fr);
         padding: 28px max(24px, 4vw) 24px;
-    }
-    /* Le sous-menu compte garde 1 colonne meme en tablette */
-    body.ag-business-active .ag-primary-menu .sub-menu.ag-business-account-submenu {
-        grid-template-columns: 1fr !important;
     }
 }
 
