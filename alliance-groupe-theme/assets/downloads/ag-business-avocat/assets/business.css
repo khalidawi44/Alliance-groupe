@@ -334,8 +334,16 @@ body.ag-business-active .ag-business-block--clickable:focus-visible {
     outline: 2px solid #D4B45C;
     outline-offset: 4px;
 }
-/* Telephone en doré en mode nuit (couleur forte sur le numéro) */
-body.ag-business-active:not(.ag-light) .ag-business-block--phone p {
+/* Telephone en doré en mode nuit (couleur forte sur le numéro)
+   pro-features.php a `.ag-cabinet__block p { color:#ddd !important }`
+   On boost la specificite avec .ag-cabinet__block dans le selecteur
+   et on cible plusieurs elements possibles (p, a, strong, span). */
+body.ag-business-active:not(.ag-light) .ag-cabinet__block.ag-business-block--phone p,
+body.ag-business-active:not(.ag-light) .ag-cabinet__block.ag-business-block--phone a,
+body.ag-business-active:not(.ag-light) .ag-cabinet__block.ag-business-block--phone strong,
+body.ag-business-active:not(.ag-light) .ag-cabinet__block.ag-business-block--phone span,
+body.ag-business-active:not(.ag-light) .ag-business-block--phone p,
+body.ag-business-active:not(.ag-light) .ag-business-block--phone a {
     color: #FFE5A0 !important;
     font-weight: 700 !important;
     font-size: 1.05rem !important;
@@ -354,6 +362,8 @@ body.ag-business-active.ag-light .ag-business-block--clickable:hover {
     box-shadow: 0 12px 32px rgba(123, 45, 59, .2), 0 0 0 1px rgba(123, 45, 59, .3) inset !important;
     background: rgba(123, 45, 59, .04) !important;
 }
+body.ag-business-active.ag-light .ag-cabinet__block.ag-business-block--phone p,
+body.ag-business-active.ag-light .ag-cabinet__block.ag-business-block--phone a,
 body.ag-business-active.ag-light .ag-business-block--phone p {
     color: #7B2D3B !important;
     font-weight: 700 !important;

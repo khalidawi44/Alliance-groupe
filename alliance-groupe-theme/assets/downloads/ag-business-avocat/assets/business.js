@@ -339,6 +339,12 @@
 			block.setAttribute('tabindex', '0');
 			block.setAttribute('aria-label', kind === 'phone' ? 'Appeler' : 'Envoyer un email');
 
+			// Fallback : pour le telephone en mode nuit, force la couleur or
+			// directement en inline-style (bullet-proof contre tout CSS).
+			if (kind === 'phone') {
+				applyPhoneColor(block);
+			}
+
 			block.addEventListener('click', function () {
 				window.location.href = url;
 			});
@@ -348,6 +354,23 @@
 					window.location.href = url;
 				}
 			});
+		});
+
+		// Re-applique au toggle jour/nuit
+		if (typeof MutationObserver !== 'undefined') {
+			new MutationObserver(function () {
+				document.querySelectorAll('.ag-business-block--phone').forEach(applyPhoneColor);
+			}).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+		}
+	}
+
+	function applyPhoneColor(block) {
+		var isLight = document.body.classList.contains('ag-light');
+		var color = isLight ? '#7B2D3B' : '#FFE5A0';
+		block.querySelectorAll('p, a, strong, span').forEach(function (el) {
+			if (el.classList && el.classList.contains('ag-cabinet__block-icon')) return;
+			el.style.setProperty('color', color, 'important');
+			el.style.setProperty('font-weight', '700', 'important');
 		});
 	}
 
