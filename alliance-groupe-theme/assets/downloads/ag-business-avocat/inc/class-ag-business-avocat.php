@@ -30,8 +30,10 @@ class AG_Business_Avocat {
 		add_action( 'admin_init', array( $this, 'ensure_boutique_in_menu' ) );
 		add_action( 'admin_init', array( $this, 'ensure_default_domaines' ) );
 		add_action( 'admin_init', array( $this, 'ensure_domaines_submenu' ) );
+		add_action( 'admin_init', array( $this, 'ensure_legal_pages' ) );
 		add_action( 'admin_notices', array( $this, 'woocommerce_admin_notice' ) );
 		add_filter( 'wp_nav_menu_args', array( $this, 'allow_submenu_depth' ) );
+		add_action( 'customize_register', array( $this, 'register_customizer' ), 30 );
 	}
 
 	/**
@@ -87,9 +89,10 @@ class AG_Business_Avocat {
 				true
 			);
 			wp_localize_script( 'ag-business-avocat-script', 'agBusinessData', array(
-				'honorairesUrl' => function_exists( 'ag_page_url' ) ? ag_page_url( 'honoraires' ) : home_url( '/honoraires/' ),
-				'boutiqueUrl'   => function_exists( 'ag_page_url' ) ? ag_page_url( 'boutique' ) : home_url( '/boutique/' ),
-				'domaineUrls'   => $this->get_domaine_urls(),
+				'honorairesUrl'   => function_exists( 'ag_page_url' ) ? ag_page_url( 'honoraires' ) : home_url( '/honoraires/' ),
+				'boutiqueUrl'     => function_exists( 'ag_page_url' ) ? ag_page_url( 'boutique' ) : home_url( '/boutique/' ),
+				'domaineUrls'     => $this->get_domaine_urls(),
+				'boutiqueSymbol'  => (string) get_theme_mod( 'ag_business_boutique_symbol', 'stars' ),
 			) );
 		}
 	}
@@ -522,5 +525,223 @@ class AG_Business_Avocat {
 				'examples' => "Vice cache automobile\nDemarchage abusif\nClause abusive bancaire",
 			),
 		);
+	}
+
+	/**
+	 * Cree les pages legales standards d'un site (mentions legales,
+	 * RGPD, cookies, CGV, retour). Skip ce qui existe deja par slug.
+	 * Le contenu est un template avec des [BRACKETS] pour le cabinet.
+	 */
+	public function ensure_legal_pages() {
+		if ( ! $this->is_active() ) {
+			return;
+		}
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		foreach ( $this->get_legal_pages_data() as $slug => $data ) {
+			if ( get_page_by_path( $slug ) ) {
+				continue;
+			}
+			wp_insert_post( array(
+				'post_type'    => 'page',
+				'post_status'  => 'publish',
+				'post_title'   => $data['title'],
+				'post_name'    => $slug,
+				'post_content' => $data['content'],
+			) );
+		}
+	}
+
+	/**
+	 * Customizer panel "AG Business — Options" : motif Boutique +
+	 * autres futurs reglages Business.
+	 */
+	public function register_customizer( $wp_customize ) {
+		$wp_customize->add_panel( 'ag_business_panel', array(
+			'title'    => __( 'AG Business — Options', 'ag-business-avocat' ),
+			'priority' => 220,
+		) );
+
+		// Section Boutique
+		$wp_customize->add_section( 'ag_business_boutique', array(
+			'title' => __( 'Boutique — motif anime', 'ag-business-avocat' ),
+			'panel' => 'ag_business_panel',
+		) );
+		$wp_customize->add_setting( 'ag_business_boutique_symbol', array(
+			'default'           => 'stars',
+			'sanitize_callback' => array( $this, 'sanitize_boutique_symbol' ),
+			'transport'         => 'refresh',
+		) );
+		$wp_customize->add_control( 'ag_business_boutique_symbol', array(
+			'label'       => __( 'Motif anime de la section Boutique', 'ag-business-avocat' ),
+			'description' => __( 'Choisir le symbole qui apparait en warp-speed dans la section Boutique de la home, ou desactiver l\'effet.', 'ag-business-avocat' ),
+			'section'     => 'ag_business_boutique',
+			'type'        => 'select',
+			'choices'     => array(
+				'stars'  => __( 'Etoiles (par defaut)', 'ag-business-avocat' ),
+				'scales' => __( 'Balance de la justice', 'ag-business-avocat' ),
+				'gavel'  => __( 'Marteau de juge', 'ag-business-avocat' ),
+				'pillar' => __( 'Colonne classique', 'ag-business-avocat' ),
+				'none'   => __( 'Desactiver', 'ag-business-avocat' ),
+			),
+		) );
+	}
+
+	public function sanitize_boutique_symbol( $value ) {
+		$valid = array( 'stars', 'scales', 'gavel', 'pillar', 'none' );
+		return in_array( $value, $valid, true ) ? $value : 'stars';
+	}
+
+	/**
+	 * Templates legaux pour un site d'avocat. Marqueurs [crochets] que
+	 * le cabinet doit completer apres creation.
+	 */
+	private function get_legal_pages_data() {
+		return array(
+			'mentions-legales' => array(
+				'title'   => 'Mentions légales',
+				'content' => $this->legal_template_mentions(),
+			),
+			'politique-confidentialite' => array(
+				'title'   => 'Politique de confidentialité (RGPD)',
+				'content' => $this->legal_template_rgpd(),
+			),
+			'politique-cookies' => array(
+				'title'   => 'Politique de cookies',
+				'content' => $this->legal_template_cookies(),
+			),
+			'cgv' => array(
+				'title'   => 'Conditions générales de vente',
+				'content' => $this->legal_template_cgv(),
+			),
+			'politique-retour' => array(
+				'title'   => 'Politique de retour',
+				'content' => $this->legal_template_retour(),
+			),
+		);
+	}
+
+	private function legal_template_mentions() {
+		return '<p><em>Page generee automatiquement par AG Business. Remplacez les [crochets] par vos coordonnees.</em></p>
+<h2>Editeur du site</h2>
+<p><strong>[Nom du cabinet]</strong><br>
+[Adresse complete]<br>
+SIRET : [numero SIRET]<br>
+Numero TVA intracommunautaire : [FR XX XXX XXX XXX]<br>
+Email : [email@cabinet.fr]<br>
+Telephone : [01 23 45 67 89]<br>
+Inscription au Barreau de [Ville] sous le numero [numero]</p>
+<h2>Directeur de la publication</h2>
+<p>[Nom et prenom du Maitre], avocat au Barreau de [Ville].</p>
+<h2>Hebergement</h2>
+<p>[Nom de l\'hebergeur]<br>
+[Adresse]<br>
+Telephone : [telephone]</p>
+<h2>Propriete intellectuelle</h2>
+<p>L\'ensemble du contenu (textes, images, logos, structure) du present site est la propriete exclusive de [Nom du cabinet]. Toute reproduction, meme partielle, sans accord ecrit prealable est interdite.</p>
+<h2>Credits</h2>
+<p>Theme : AG Starter Avocat — <a href="https://alliancegroupe-inc.com" target="_blank" rel="noopener">alliancegroupe-inc.com</a></p>';
+	}
+
+	private function legal_template_rgpd() {
+		return '<p><em>Page generee automatiquement par AG Business. Adaptez aux specificites de votre cabinet.</em></p>
+<p>La presente politique decrit comment [Nom du cabinet] collecte, utilise et protege vos donnees personnelles, conformement au Reglement General sur la Protection des Donnees (RGPD) et a la loi Informatique et Libertes.</p>
+<h2>1. Responsable du traitement</h2>
+<p><strong>[Nom du cabinet]</strong>, [adresse], represente par Maitre [Nom], avocat au Barreau de [Ville]. Contact : [email].</p>
+<h2>2. Donnees collectees</h2>
+<ul>
+<li>Identite : nom, prenom, civilite, date de naissance</li>
+<li>Coordonnees : email, telephone, adresse postale</li>
+<li>Donnees professionnelles : profession, employeur, situation</li>
+<li>Donnees liees au dossier : faits, pieces communiquees, correspondances</li>
+<li>Donnees techniques : adresse IP, logs de connexion, cookies (voir politique cookies)</li>
+</ul>
+<h2>3. Finalites du traitement</h2>
+<ul>
+<li>Gestion des dossiers juridiques et representation</li>
+<li>Communication avec les clients</li>
+<li>Facturation et comptabilite</li>
+<li>Respect des obligations professionnelles et reglementaires</li>
+<li>Statistiques anonymisees du site (audience)</li>
+</ul>
+<h2>4. Base legale</h2>
+<p>Les donnees sont traitees sur la base de l\'execution d\'un contrat (mandat de l\'avocat), du consentement (formulaire de contact) ou d\'une obligation legale (conservation des dossiers).</p>
+<h2>5. Duree de conservation</h2>
+<p>Les dossiers sont conserves <strong>5 ans apres la fin de la mission</strong>, conformement aux obligations de l\'article 2.2 du Reglement Interieur National. Les pieces comptables sont conservees 10 ans.</p>
+<h2>6. Destinataires des donnees</h2>
+<p>Les donnees sont accessibles uniquement aux avocats et collaborateurs du cabinet, soumis au secret professionnel. Aucune donnee n\'est cedee a des tiers a des fins commerciales.</p>
+<h2>7. Vos droits</h2>
+<p>Vous disposez des droits suivants : acces, rectification, effacement, limitation du traitement, portabilite, opposition. Pour exercer ces droits, contactez-nous a [email]. Vous pouvez egalement saisir la CNIL (<a href="https://www.cnil.fr" target="_blank" rel="noopener">www.cnil.fr</a>).</p>
+<h2>8. Securite</h2>
+<p>Le cabinet met en oeuvre des mesures techniques et organisationnelles appropriees pour proteger vos donnees contre la perte, l\'acces non autorise, la divulgation et la modification.</p>';
+	}
+
+	private function legal_template_cookies() {
+		return '<p><em>Page generee automatiquement par AG Business. Adaptez selon les services tiers que vous utilisez.</em></p>
+<h2>Qu\'est-ce qu\'un cookie ?</h2>
+<p>Un cookie est un petit fichier texte depose sur votre terminal lors de la consultation d\'un site web. Il permet au site de reconnaitre votre navigateur et de memoriser certaines informations vous concernant.</p>
+<h2>Cookies utilises sur ce site</h2>
+<table>
+<thead><tr><th>Cookie</th><th>Finalite</th><th>Duree</th></tr></thead>
+<tbody>
+<tr><td>wordpress_*</td><td>Authentification administrateur</td><td>Session</td></tr>
+<tr><td>wp-settings-*</td><td>Preferences interface admin</td><td>1 an</td></tr>
+<tr><td>ag_mode</td><td>Choix du mode jour / nuit</td><td>Persistant (localStorage)</td></tr>
+</tbody>
+</table>
+<h2>Comment refuser ou supprimer les cookies ?</h2>
+<p>Vous pouvez configurer votre navigateur pour refuser les cookies ou supprimer ceux deja deposes :</p>
+<ul>
+<li>Chrome : Reglages → Confidentialite et securite → Cookies</li>
+<li>Firefox : Preferences → Vie privee et securite</li>
+<li>Safari : Preferences → Confidentialite</li>
+<li>Edge : Parametres → Cookies et autorisations</li>
+</ul>
+<p>Le refus de certains cookies peut alterer le fonctionnement du site.</p>';
+	}
+
+	private function legal_template_cgv() {
+		return '<p><em>Page generee automatiquement par AG Business. A faire valider par le batonnier de votre Barreau.</em></p>
+<h2>Article 1 — Objet</h2>
+<p>Les presentes conditions generales regissent les ventes de produits et services proposes par <strong>[Nom du cabinet]</strong> via le site [URL] ou en cabinet.</p>
+<h2>Article 2 — Prix</h2>
+<p>Les prix sont indiques en euros TTC. La TVA applicable est de 20 % pour les prestations juridiques. Le cabinet se reserve le droit de modifier ses tarifs a tout moment, etant entendu que la prestation sera facturee sur la base du tarif en vigueur a la commande.</p>
+<h2>Article 3 — Commande</h2>
+<p>Toute commande implique l\'acceptation sans reserve des presentes CGV. La commande est consideree comme ferme et definitive apres reception du paiement.</p>
+<h2>Article 4 — Paiement</h2>
+<p>Les paiements s\'effectuent par carte bancaire, virement, ou cheque. Pour les prestations juridiques, une convention d\'honoraires ecrite est signee avant toute intervention.</p>
+<h2>Article 5 — Livraison / Execution</h2>
+<p>Les prestations dematerialisees (consultations en ligne, guides PDF) sont accessibles immediatement apres paiement. Les prestations en cabinet sont planifiees selon les disponibilites convenues.</p>
+<h2>Article 6 — Retractation</h2>
+<p>Conformement a l\'article L221-18 du Code de la consommation, le client dispose d\'un delai de <strong>14 jours</strong> pour exercer son droit de retractation, sauf pour les prestations entierement executees a sa demande explicite avant la fin de ce delai.</p>
+<h2>Article 7 — Responsabilite</h2>
+<p>La responsabilite du cabinet ne peut etre engagee qu\'en cas de faute prouvee. Elle est limitee au montant des honoraires effectivement percus.</p>
+<h2>Article 8 — Litiges</h2>
+<p>Tout litige releve de la competence des tribunaux du ressort de la Cour d\'appel de [Ville]. Le client peut egalement recourir a la mediation de la consommation.</p>';
+	}
+
+	private function legal_template_retour() {
+		return '<p><em>Page generee automatiquement par AG Business. Concerne uniquement les ventes de produits/services dematerialises.</em></p>
+<h2>Droit de retractation</h2>
+<p>Conformement aux articles L221-18 et suivants du Code de la consommation, vous disposez de <strong>14 jours calendaires</strong> a compter de la conclusion du contrat pour vous retracter, sans avoir a justifier de motifs ni a payer de penalites.</p>
+<h2>Comment exercer le droit de retractation ?</h2>
+<p>Pour exercer votre droit, vous devez nous notifier votre decision avant l\'expiration du delai par :</p>
+<ul>
+<li>Email a : [email@cabinet.fr]</li>
+<li>Courrier postal a : [Adresse]</li>
+</ul>
+<p>Indiquez vos nom, adresse, le numero de la commande et la date.</p>
+<h2>Effets de la retractation</h2>
+<p>Nous vous remboursons l\'integralite des sommes versees, dans un delai de <strong>14 jours</strong> a compter de la reception de votre demande, par le meme moyen de paiement utilise pour la commande.</p>
+<h2>Exceptions</h2>
+<p>Le droit de retractation ne peut etre exerce pour :</p>
+<ul>
+<li>Les prestations entierement executees avant la fin du delai de 14 jours, avec votre accord prealable et explicite</li>
+<li>Les contenus numeriques telecharges (guides PDF) une fois l\'acces fourni, avec votre accord</li>
+<li>Les services confidentiels de defense penale en cas d\'urgence</li>
+</ul>
+<h2>Contestation</h2>
+<p>En cas de litige, contactez-nous d\'abord pour tenter une resolution amiable. A defaut, vous pouvez saisir le mediateur de la consommation ou le Conseil de l\'Ordre du Barreau de [Ville].</p>';
 	}
 }
