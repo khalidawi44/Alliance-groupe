@@ -893,6 +893,182 @@ body.ag-light .ag-business-search-close:hover {
     color: #7B2D3B;
 }
 
+/* ── Pages single domaine (ag_domaine) — Cas concrets + FAQ ── */
+.ag-business-domaine-cas {
+    margin: 50px 0 30px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(212, 180, 92, .25);
+}
+.ag-business-domaine-cas__title,
+.ag-business-domaine-faq__title {
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif !important;
+    font-size: clamp(1.6rem, 2.5vw, 2.1rem) !important;
+    color: #D4B45C !important;
+    margin: 0 0 12px !important;
+    letter-spacing: .3px;
+}
+.ag-business-domaine-cas__lead {
+    color: rgba(255, 255, 255, .75);
+    margin: 0 0 28px;
+    font-size: 1rem;
+    line-height: 1.6;
+    font-style: italic;
+}
+.ag-business-domaine-cas__list {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 18px;
+}
+.ag-business-cas-item {
+    background: rgba(20, 20, 30, .55);
+    border: 1px solid rgba(212, 180, 92, .2);
+    border-radius: 10px;
+    padding: 18px 22px;
+    transition: border-color .3s, transform .3s, box-shadow .3s;
+    list-style: none !important;
+}
+.ag-business-cas-item:hover {
+    border-color: rgba(212, 180, 92, .5);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .3), 0 0 24px rgba(212, 180, 92, .08);
+}
+.ag-business-cas-item__title {
+    color: #FFE5A0 !important;
+    font-size: 1.05rem !important;
+    font-family: "Playfair Display", Georgia, serif !important;
+    font-style: italic !important;
+    margin: 0 0 8px !important;
+    line-height: 1.4;
+}
+.ag-business-cas-item__desc {
+    color: rgba(255, 255, 255, .82);
+    font-size: .92rem;
+    line-height: 1.65;
+    margin: 0;
+}
+
+.ag-business-domaine-faq {
+    margin: 40px 0;
+    padding-top: 30px;
+    border-top: 1px solid rgba(212, 180, 92, .25);
+}
+.ag-business-faq {
+    margin-top: 18px;
+    border-top: 1px solid rgba(212, 180, 92, .2);
+}
+.ag-business-faq__entry {
+    border-bottom: 1px solid rgba(212, 180, 92, .2);
+}
+.ag-business-faq__question {
+    cursor: pointer;
+    padding: 16px 36px 16px 0;
+    font-weight: 700;
+    font-size: 1rem;
+    list-style: none;
+    position: relative;
+    color: #FFE5A0;
+    transition: color .25s ease;
+}
+.ag-business-faq__question::-webkit-details-marker { display: none; }
+.ag-business-faq__question::after {
+    content: "+";
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.6rem;
+    line-height: 1;
+    color: #D4B45C;
+    transition: transform .3s ease;
+}
+.ag-business-faq__entry[open] .ag-business-faq__question::after {
+    content: "−";
+}
+.ag-business-faq__question:hover {
+    color: #D4B45C;
+}
+.ag-business-faq__answer {
+    padding: 0 8px 18px 0;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, .82);
+}
+
+/* Mode jour */
+body.ag-light .ag-business-domaine-cas,
+body.ag-light .ag-business-domaine-faq {
+    border-top-color: rgba(123, 45, 59, .22);
+}
+body.ag-light .ag-business-domaine-cas__title,
+body.ag-light .ag-business-domaine-faq__title {
+    color: #7B2D3B !important;
+}
+body.ag-light .ag-business-domaine-cas__lead {
+    color: #5A4549;
+}
+body.ag-light .ag-business-cas-item {
+    background: #ffffff;
+    border-color: rgba(123, 45, 59, .18);
+}
+body.ag-light .ag-business-cas-item:hover {
+    border-color: rgba(123, 45, 59, .45);
+}
+body.ag-light .ag-business-cas-item__title {
+    color: #2A1A1E !important;
+}
+body.ag-light .ag-business-cas-item__desc {
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-faq {
+    border-top-color: rgba(123, 45, 59, .2);
+}
+body.ag-light .ag-business-faq__entry {
+    border-bottom-color: rgba(123, 45, 59, .2);
+}
+body.ag-light .ag-business-faq__question {
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-faq__question::after {
+    color: #7B2D3B;
+}
+body.ag-light .ag-business-faq__question:hover {
+    color: #7B2D3B;
+}
+body.ag-light .ag-business-faq__answer {
+    color: #2A1A1E;
+}
+
+/* ── Titres "Avocats associés" / "Collaborateurs" : style business ── */
+.ag-business-team-full__group-title {
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif !important;
+    font-size: 1.6rem !important;
+    color: #D4B45C !important;
+    margin: 0 0 28px !important;
+    padding: 0 0 14px;
+    letter-spacing: 2.5px !important;
+    text-transform: uppercase;
+    font-weight: 700;
+    text-align: center;
+    position: relative;
+    display: block;
+}
+.ag-business-team-full__group-title::after {
+    content: "";
+    display: block;
+    width: 70px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #D4B45C, transparent);
+    margin: 14px auto 0;
+}
+body.ag-light .ag-business-team-full__group-title {
+    color: #7B2D3B !important;
+}
+body.ag-light .ag-business-team-full__group-title::after {
+    background: linear-gradient(90deg, transparent, #7B2D3B, transparent);
+}
+
 /* ── Section "Notre équipe" sur la page Cabinet ── */
 .ag-business-team-full {
     margin: 60px 0 40px;
