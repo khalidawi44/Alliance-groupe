@@ -68,3 +68,56 @@ body.ag-premium-only.ag-light .ag-site-brand:hover .ag-premium-logo-svg {
         height: 50px;
     }
 }
+
+/* ── FAQ accordeon (page Honoraires, section "Comment sont calcules") ── */
+body.ag-premium-active .ag-premium-faq {
+    margin: 32px 0 8px;
+    border-top: 1px solid rgba(212, 180, 92, .25);
+}
+body.ag-premium-active .ag-premium-faq__entry {
+    border-bottom: 1px solid rgba(212, 180, 92, .25);
+}
+body.ag-premium-active .ag-premium-faq__question {
+    cursor: pointer;
+    padding: 18px 36px 18px 0;
+    font-weight: 700;
+    font-size: 1.05rem;
+    list-style: none;
+    position: relative;
+    transition: color .25s ease;
+}
+body.ag-premium-active .ag-premium-faq__question::-webkit-details-marker {
+    display: none;
+}
+body.ag-premium-active .ag-premium-faq__question::after {
+    content: '+';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.6rem;
+    line-height: 1;
+    color: #D4B45C;
+    transition: transform .3s ease, color .25s ease;
+}
+body.ag-premium-active .ag-premium-faq__entry[open] .ag-premium-faq__question::after {
+    content: '−';
+    transform: translateY(-50%) rotate(180deg);
+}
+body.ag-premium-active .ag-premium-faq__question:hover {
+    color: #D4B45C;
+}
+body.ag-premium-active .ag-premium-faq__answer {
+    padding: 0 8px 22px 0;
+    line-height: 1.7;
+    opacity: .92;
+}
+/* Mode jour : couleur bordeaux pour le marqueur et hover */
+body.ag-premium-active.ag-light .ag-premium-faq__question::after,
+body.ag-premium-active.ag-light .ag-premium-faq__question:hover {
+    color: #7B2D3B;
+}
+body.ag-premium-active.ag-light .ag-premium-faq,
+body.ag-premium-active.ag-light .ag-premium-faq__entry {
+    border-color: rgba(123, 45, 59, .25);
+}
