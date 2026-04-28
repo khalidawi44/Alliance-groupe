@@ -100,6 +100,38 @@ body.ag-business-active .ag-counter__number[data-counting="1"] {
     will-change: contents;
 }
 
+/* ── Bouton Stripe "Payer en ligne" sous chaque card Honoraires ── */
+body.ag-business-active .ag-business-stripe-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 16px;
+    padding: 11px 22px;
+    background: linear-gradient(135deg, #635BFF 0%, #7E76FF 100%);
+    color: #ffffff !important;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: .92rem;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    box-shadow: 0 6px 18px rgba(99, 91, 255, .35), 0 0 0 1px rgba(99, 91, 255, .25) inset;
+    transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+    cursor: pointer;
+    position: relative;
+    z-index: 5;
+}
+body.ag-business-active .ag-business-stripe-btn:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #7E76FF 0%, #635BFF 100%);
+    box-shadow: 0 10px 26px rgba(99, 91, 255, .5), 0 0 0 1px rgba(126, 118, 255, .4) inset;
+    color: #ffffff !important;
+}
+body.ag-business-active .ag-business-stripe-btn:focus-visible {
+    outline: 2px solid #FFE5A0;
+    outline-offset: 3px;
+}
+
 /* ── Cartes Honoraires : cliquables, lift au hover ── */
 body.ag-business-active .ag-honoraires__card {
     cursor: pointer;
