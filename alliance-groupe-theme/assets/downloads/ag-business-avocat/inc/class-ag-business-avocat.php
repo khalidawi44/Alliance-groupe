@@ -32,6 +32,7 @@ class AG_Business_Avocat {
 		add_action( 'admin_init', array( $this, 'ensure_domaines_submenu' ) );
 		add_action( 'admin_init', array( $this, 'ensure_legal_pages' ) );
 		add_action( 'admin_init', array( $this, 'ensure_boutique_offers' ) );
+		add_filter( 'the_content', array( $this, 'inject_team_on_cabinet_page' ), 20 );
 		add_action( 'admin_notices', array( $this, 'woocommerce_admin_notice' ) );
 		add_filter( 'wp_nav_menu_args', array( $this, 'allow_submenu_depth' ) );
 		add_action( 'customize_register', array( $this, 'register_customizer' ), 30 );
@@ -888,6 +889,178 @@ Telephone : [telephone]</p>
 <li>Le Maître vous envoie le rapport sous 5 jours ouvrés</li>
 <li>Une visioconférence de 30 min est offerte pour clarifier les points</li>
 </ol>',
+			),
+		);
+	}
+
+	/**
+	 * Injecte la section "Notre équipe" complete sur la page Cabinet.
+	 * Hook the_content @ priority 20. 5 collaborateurs avec photo, titre,
+	 * specialites, formation, langues, bio courte.
+	 */
+	public function inject_team_on_cabinet_page( $content ) {
+		if ( ! $this->is_active() ) {
+			return $content;
+		}
+		if ( ! is_page( 'cabinet' ) || ! in_the_loop() || ! is_main_query() ) {
+			return $content;
+		}
+		return $content . $this->render_full_team_html();
+	}
+
+	private function render_full_team_html() {
+		$team = $this->get_default_team_data();
+		ob_start();
+		?>
+		<section class="ag-business-team-full">
+			<div class="ag-business-team-full__intro">
+				<h2 class="ag-business-team-full__title"><?php esc_html_e( 'Notre équipe', 'ag-business-avocat' ); ?></h2>
+				<p class="ag-business-team-full__lead"><?php esc_html_e( "Une équipe pluridisciplinaire d'avocats expérimentés, formés dans les meilleures universités, au service de vos enjeux juridiques.", 'ag-business-avocat' ); ?></p>
+			</div>
+			<div class="ag-business-team-full__grid">
+				<?php foreach ( $team as $m ) : ?>
+					<article class="ag-business-team-card">
+						<div class="ag-business-team-card__photo" style="background-image:url('<?php echo esc_url( $m['photo'] ); ?>');" aria-hidden="true"></div>
+						<div class="ag-business-team-card__body">
+							<header class="ag-business-team-card__header">
+								<h3 class="ag-business-team-card__name"><?php echo esc_html( $m['name'] ); ?></h3>
+								<p class="ag-business-team-card__role"><?php echo esc_html( $m['role'] ); ?></p>
+								<p class="ag-business-team-card__barreau"><?php echo esc_html( $m['barreau'] ); ?></p>
+							</header>
+							<p class="ag-business-team-card__bio"><?php echo esc_html( $m['bio'] ); ?></p>
+							<div class="ag-business-team-card__details">
+								<div class="ag-business-team-card__block">
+									<h4><?php esc_html_e( 'Spécialités', 'ag-business-avocat' ); ?></h4>
+									<ul>
+										<?php foreach ( $m['specialties'] as $s ) : ?>
+											<li><?php echo esc_html( $s ); ?></li>
+										<?php endforeach; ?>
+									</ul>
+								</div>
+								<div class="ag-business-team-card__block">
+									<h4><?php esc_html_e( 'Formation', 'ag-business-avocat' ); ?></h4>
+									<ul>
+										<?php foreach ( $m['education'] as $e ) : ?>
+											<li><?php echo esc_html( $e ); ?></li>
+										<?php endforeach; ?>
+									</ul>
+								</div>
+								<div class="ag-business-team-card__block">
+									<h4><?php esc_html_e( 'Langues', 'ag-business-avocat' ); ?></h4>
+									<p><?php echo esc_html( implode( ', ', $m['languages'] ) ); ?></p>
+								</div>
+							</div>
+						</div>
+					</article>
+				<?php endforeach; ?>
+			</div>
+		</section>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * 5 profils par defaut. Photos depuis Unsplash (portraits libres),
+	 * remplacables. Donnees fictives mais realistes — l'utilisateur
+	 * doit personnaliser via PHP/Customizer plus tard.
+	 */
+	private function get_default_team_data() {
+		return array(
+			array(
+				'name'        => 'Maître Sophie DUPONT',
+				'role'        => 'Avocate associée fondatrice',
+				'barreau'     => 'Barreau de Paris — Inscrite depuis 2008',
+				'photo'       => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=85',
+				'specialties' => array(
+					'Droit des affaires',
+					'Fusions-acquisitions',
+					'Droit des sociétés',
+					'Contentieux commercial',
+				),
+				'education'   => array(
+					'Master 2 Droit des affaires — Université Paris II Panthéon-Assas',
+					'DJCE (Diplôme de Juriste Conseil d\'Entreprise)',
+					'CAPA — École de Formation du Barreau (EFB)',
+					'LL.M. en droit international — King\'s College London',
+				),
+				'languages'   => array( 'Français', 'Anglais', 'Italien' ),
+				'bio'         => 'Plus de 15 ans d\'expérience en accompagnement de PME et ETI. Reconnue pour son approche pragmatique et sa capacité à dénouer les contentieux complexes.',
+			),
+			array(
+				'name'        => 'Maître Philippe MARTIN',
+				'role'        => 'Avocat associé',
+				'barreau'     => 'Barreau de Paris — Inscrit depuis 2012',
+				'photo'       => 'https://images.unsplash.com/photo-1556157382-97eda2d62296?w=600&q=85',
+				'specialties' => array(
+					'Droit pénal',
+					'Droit pénal des affaires',
+					'Procédure pénale',
+					'Garde à vue 24h/24',
+				),
+				'education'   => array(
+					'Master 2 Droit pénal — Université Paris I Panthéon-Sorbonne',
+					'CAPA — EFB (Major de promotion)',
+					'Stage final auprès du Tribunal Judiciaire de Paris',
+				),
+				'languages'   => array( 'Français', 'Anglais', 'Espagnol' ),
+				'bio'         => 'Ancien collaborateur de cabinets pénalistes parisiens reconnus. Plaidoiries devant toutes les juridictions, de l\'instruction à la cour d\'assises.',
+			),
+			array(
+				'name'        => 'Maître Camille LEROUX',
+				'role'        => 'Avocate collaboratrice senior',
+				'barreau'     => 'Barreau de Paris — Inscrite depuis 2016',
+				'photo'       => 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&q=85',
+				'specialties' => array(
+					'Droit du travail',
+					'Droit social',
+					'Contentieux prud\'homal',
+					'Négociation de ruptures conventionnelles',
+				),
+				'education'   => array(
+					'Master 2 Droit social — Université Paris-Nanterre',
+					'Diplôme universitaire en Droit de la sécurité sociale',
+					'CAPA — EFB',
+				),
+				'languages'   => array( 'Français', 'Anglais' ),
+				'bio'         => 'Spécialiste du droit du travail côté salariés et employeurs. A obtenu plus de 200 décisions favorables devant les Conseils de Prud\'hommes.',
+			),
+			array(
+				'name'        => 'Maître Antoine BERNARD',
+				'role'        => 'Avocat collaborateur',
+				'barreau'     => 'Barreau de Paris — Inscrit depuis 2020',
+				'photo'       => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=85',
+				'specialties' => array(
+					'Droit immobilier',
+					'Droit de la copropriété',
+					'Baux commerciaux et d\'habitation',
+					'Vices cachés et constructions',
+				),
+				'education'   => array(
+					'Master 2 Droit immobilier — Université Aix-Marseille',
+					'Diplôme universitaire en Construction',
+					'CAPA — EFB',
+				),
+				'languages'   => array( 'Français', 'Anglais' ),
+				'bio'         => 'Expertise pointue en contentieux immobilier et copropriété. Conseille promoteurs, syndics et particuliers dans toutes leurs problématiques.',
+			),
+			array(
+				'name'        => 'Maître Léa DUBOIS',
+				'role'        => 'Avocate collaboratrice',
+				'barreau'     => 'Barreau de Paris — Inscrite depuis 2021',
+				'photo'       => 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&q=85',
+				'specialties' => array(
+					'Droit de la famille',
+					'Divorce et séparation',
+					'Droit des successions',
+					'Médiation familiale',
+				),
+				'education'   => array(
+					'Master 2 Droit de la famille — Université Paris II Panthéon-Assas',
+					'Diplôme universitaire en Médiation',
+					'CAPA — EFB',
+				),
+				'languages'   => array( 'Français', 'Anglais', 'Allemand' ),
+				'bio'         => 'Approche humaine et discrète des dossiers familiaux. Privilégie la médiation et le consentement mutuel quand c\'est possible.',
 			),
 		);
 	}

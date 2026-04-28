@@ -524,3 +524,178 @@ body.ag-light .ag-business-search-close {
 body.ag-light .ag-business-search-close:hover {
     color: #7B2D3B;
 }
+
+/* ── Section "Notre équipe" sur la page Cabinet ── */
+.ag-business-team-full {
+    margin: 60px 0 40px;
+    padding: 50px 0 30px;
+    border-top: 1px solid rgba(212, 180, 92, .25);
+}
+.ag-business-team-full__intro {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 50px;
+}
+.ag-business-team-full__title {
+    font-size: clamp(1.8rem, 3vw, 2.6rem) !important;
+    margin: 0 0 14px !important;
+    color: #D4B45C;
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif !important;
+    letter-spacing: .5px;
+}
+.ag-business-team-full__lead {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    opacity: .85;
+    margin: 0;
+}
+.ag-business-team-full__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 32px;
+}
+.ag-business-team-card {
+    background: rgba(20, 20, 30, .6);
+    border: 1px solid rgba(212, 180, 92, .2);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: transform .4s ease, box-shadow .4s ease, border-color .4s ease;
+}
+.ag-business-team-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(212, 180, 92, .5);
+    box-shadow: 0 24px 50px rgba(0, 0, 0, .45), 0 0 32px rgba(212, 180, 92, .12);
+}
+.ag-business-team-card__photo {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background-size: cover;
+    background-position: center top;
+    background-color: #0c0c12;
+    transition: transform .6s ease;
+}
+.ag-business-team-card:hover .ag-business-team-card__photo {
+    transform: scale(1.04);
+}
+.ag-business-team-card__body {
+    padding: 26px 26px 28px;
+}
+.ag-business-team-card__header {
+    border-bottom: 1px solid rgba(212, 180, 92, .18);
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+}
+.ag-business-team-card__name {
+    margin: 0 0 4px !important;
+    font-size: 1.3rem !important;
+    color: #FFE5A0;
+    font-family: "Playfair Display", Georgia, serif !important;
+    letter-spacing: .3px;
+}
+.ag-business-team-card__role {
+    margin: 0 0 4px;
+    color: #D4B45C;
+    font-size: .92rem;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+.ag-business-team-card__barreau {
+    margin: 0;
+    color: rgba(255, 255, 255, .55);
+    font-size: .82rem;
+}
+.ag-business-team-card__bio {
+    color: rgba(255, 255, 255, .82);
+    line-height: 1.65;
+    font-size: .95rem;
+    margin: 0 0 18px;
+    font-style: italic;
+}
+.ag-business-team-card__details {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.ag-business-team-card__block h4 {
+    margin: 0 0 6px !important;
+    font-size: .78rem !important;
+    color: #D4B45C;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+}
+.ag-business-team-card__block ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.ag-business-team-card__block li {
+    color: rgba(255, 255, 255, .85);
+    font-size: .9rem;
+    line-height: 1.55;
+    padding: 4px 0 4px 16px;
+    position: relative;
+}
+.ag-business-team-card__block li::before {
+    content: '⚖';
+    position: absolute;
+    left: 0;
+    color: #D4B45C;
+    opacity: .6;
+    font-size: .75rem;
+}
+.ag-business-team-card__block p {
+    margin: 0;
+    color: rgba(255, 255, 255, .85);
+    font-size: .9rem;
+}
+
+/* Mode jour : palette creme/bordeaux */
+body.ag-light .ag-business-team-full {
+    border-top-color: rgba(123, 45, 59, .22);
+}
+body.ag-light .ag-business-team-full__title {
+    color: #7B2D3B;
+}
+body.ag-light .ag-business-team-card {
+    background: #ffffff;
+    border-color: rgba(123, 45, 59, .18);
+}
+body.ag-light .ag-business-team-card:hover {
+    border-color: rgba(123, 45, 59, .45);
+    box-shadow: 0 24px 50px rgba(0, 0, 0, .12), 0 0 32px rgba(123, 45, 59, .08);
+}
+body.ag-light .ag-business-team-card__name {
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-team-card__role {
+    color: #7B2D3B;
+}
+body.ag-light .ag-business-team-card__barreau {
+    color: #5A4549;
+}
+body.ag-light .ag-business-team-card__header {
+    border-bottom-color: rgba(123, 45, 59, .15);
+}
+body.ag-light .ag-business-team-card__bio,
+body.ag-light .ag-business-team-card__block li,
+body.ag-light .ag-business-team-card__block p {
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-team-card__block h4 {
+    color: #7B2D3B;
+}
+body.ag-light .ag-business-team-card__block li::before {
+    color: #7B2D3B;
+}
+
+@media (max-width: 700px) {
+    .ag-business-team-full__grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    .ag-business-team-card__body {
+        padding: 22px 22px 24px;
+    }
+}
