@@ -787,3 +787,139 @@ body.ag-light .ag-business-team-card__block li::before {
         padding: 22px 22px 24px;
     }
 }
+
+/* ── Pages compte (Connexion / Inscription / Mon compte) ── */
+.ag-business-account {
+    max-width: 480px;
+    margin: 30px auto;
+    padding: 32px 36px;
+    background: rgba(20, 20, 30, .6);
+    border: 1px solid rgba(212, 180, 92, .25);
+    border-radius: 12px;
+}
+.ag-business-account h3 {
+    margin: 0 0 22px !important;
+    font-family: "Playfair Display", Georgia, serif !important;
+    font-size: 1.5rem !important;
+    color: #FFE5A0;
+    text-align: center;
+}
+.ag-business-account__greeting {
+    color: #D4B45C !important;
+}
+.ag-business-account__links {
+    list-style: none;
+    padding: 0;
+    margin: 18px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.ag-business-account__links a {
+    display: block;
+    padding: 12px 16px;
+    background: rgba(212, 180, 92, .08);
+    color: #FFE5A0;
+    text-decoration: none;
+    border-radius: 6px;
+    border: 1px solid rgba(212, 180, 92, .2);
+    transition: background .25s, border-color .25s;
+}
+.ag-business-account__links a:hover {
+    background: rgba(212, 180, 92, .18);
+    border-color: rgba(212, 180, 92, .5);
+}
+.ag-business-account-form input[type="text"],
+.ag-business-account-form input[type="email"],
+.ag-business-account-form input[type="password"],
+.ag-business-account form input[type="text"],
+.ag-business-account form input[type="email"],
+.ag-business-account form input[type="password"] {
+    width: 100%;
+    padding: 12px 14px;
+    background: rgba(0, 0, 0, .4);
+    border: 1px solid rgba(212, 180, 92, .25);
+    border-radius: 6px;
+    color: #fff;
+    font-size: 1rem;
+    margin-top: 4px;
+    box-sizing: border-box;
+}
+.ag-business-account-form input:focus,
+.ag-business-account form input:focus {
+    outline: 2px solid #D4B45C;
+    outline-offset: 2px;
+}
+.ag-business-account-form label,
+.ag-business-account form label {
+    display: block;
+    color: rgba(255, 255, 255, .8);
+    font-size: .9rem;
+    margin-bottom: 4px;
+}
+.ag-business-account-form button[type="submit"],
+.ag-business-account form input[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 13px 24px;
+    background: linear-gradient(135deg, #D4B45C 0%, #FFE5A0 100%);
+    color: #0a0a0f;
+    border: 0;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: transform .25s, box-shadow .25s;
+}
+.ag-business-account-form button[type="submit"]:hover,
+.ag-business-account form input[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(212, 180, 92, .4);
+}
+.ag-business-account-form__footnote {
+    margin-top: 22px !important;
+    font-size: .9rem;
+    color: rgba(255, 255, 255, .65);
+    text-align: center;
+}
+.ag-business-account-form__footnote a {
+    color: #D4B45C;
+    text-decoration: none;
+}
+.ag-business-account-form__footnote a:hover {
+    color: #FFE5A0;
+}
+/* Mode jour */
+body.ag-light .ag-business-account {
+    background: #ffffff;
+    border-color: rgba(123, 45, 59, .22);
+}
+body.ag-light .ag-business-account h3 {
+    color: #2A1A1E !important;
+}
+body.ag-light .ag-business-account__greeting {
+    color: #7B2D3B !important;
+}
+body.ag-light .ag-business-account__links a {
+    background: rgba(123, 45, 59, .06);
+    color: #7B2D3B;
+    border-color: rgba(123, 45, 59, .18);
+}
+body.ag-light .ag-business-account__links a:hover {
+    background: rgba(123, 45, 59, .1);
+}
+body.ag-light .ag-business-account form input[type="text"],
+body.ag-light .ag-business-account form input[type="email"],
+body.ag-light .ag-business-account form input[type="password"],
+body.ag-light .ag-business-account-form input {
+    background: #fafafa;
+    border-color: rgba(0, 0, 0, .12);
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-account-form button[type="submit"],
+body.ag-light .ag-business-account form input[type="submit"] {
+    background: linear-gradient(135deg, #7B2D3B 0%, #A03D4D 100%);
+    color: #ffffff;
+}
