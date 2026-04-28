@@ -124,13 +124,13 @@ body.ag-business-active .ag-domaines .ag-domaine-card:focus-visible {
 /* ── MEGA MENU (sous-menu de "Domaines d'expertise") ──
    Style full-width qui couvre toute la largeur du viewport, ancre
    sous le header. Le menu d'origine reste intact — on transforme
-   uniquement l'apparence du <ul class="sub-menu"> existant. */
+   uniquement l'apparence du <ul class="sub-menu"> existant.
 
-/* Le header devient le contenant positionne pour que .sub-menu
-   absolute s'etende sur sa pleine largeur. */
-body.ag-business-active .ag-site-header {
-    position: relative;
-}
+   Note : .ag-site-header est deja position:fixed (theme), ce qui
+   cree le contexte de positionnement dont le sub-menu absolute a
+   besoin. On NE TOUCHE PAS au position du header pour preserver
+   le sticky scroll.
+*/
 /* Les <li> top-level redeviennent statiques pour que .sub-menu
    ne soit PAS contraint a leur largeur. */
 body.ag-business-active .ag-primary-menu > li.menu-item-has-children {
