@@ -42,6 +42,7 @@ class AG_Business_Avocat {
 		// L'injection se fait cote JS via cabinetTeamHtml localise.
 		add_filter( 'wp_nav_menu_args', array( $this, 'allow_submenu_depth' ) );
 		add_filter( 'wp_nav_menu_items', array( $this, 'inject_account_menu_item' ), 10, 2 );
+		add_filter( 'the_content', array( $this, 'append_domaine_extras' ), 25 );
 		add_action( 'customize_register', array( $this, 'register_customizer' ), 30 );
 	}
 
@@ -1590,5 +1591,147 @@ Telephone : [telephone]</p>
 		}
 
 		return ob_get_clean();
+	}
+
+	/**
+	 * Sur la page single d'un ag_domaine, append au content :
+	 *   - Une section 'Cas concrets traites' (5 exemples detailles)
+	 *   - Une FAQ accordeon avec 5 questions juridiques courantes
+	 * Donnees specifiques par slug. Si le slug n'a pas de donnees,
+	 * append rien (skip).
+	 */
+	public function append_domaine_extras( $content ) {
+		if ( ! $this->is_active() ) {
+			return $content;
+		}
+		if ( ! is_singular( 'ag_domaine' ) || ! in_the_loop() || ! is_main_query() ) {
+			return $content;
+		}
+		$slug = get_post_field( 'post_name', get_the_ID() );
+		$data = $this->get_domaine_extras_data();
+		if ( ! isset( $data[ $slug ] ) ) {
+			return $content;
+		}
+		return $content . $this->render_domaine_extras_html( $data[ $slug ] );
+	}
+
+	private function render_domaine_extras_html( $extras ) {
+		ob_start();
+		?>
+		<section class="ag-business-domaine-cas">
+			<h2 class="ag-business-domaine-cas__title"><?php esc_html_e( 'Cas concrets traités par le cabinet', 'ag-business-avocat' ); ?></h2>
+			<p class="ag-business-domaine-cas__lead"><?php esc_html_e( 'Voici quelques exemples représentatifs de dossiers que nous accompagnons régulièrement dans ce domaine.', 'ag-business-avocat' ); ?></p>
+			<ul class="ag-business-domaine-cas__list">
+				<?php foreach ( $extras['cas_concrets'] as $cas ) : ?>
+					<li class="ag-business-cas-item">
+						<h3 class="ag-business-cas-item__title"><?php echo esc_html( $cas['titre'] ); ?></h3>
+						<p class="ag-business-cas-item__desc"><?php echo esc_html( $cas['desc'] ); ?></p>
+					</li>
+				<?php endforeach; ?>
+			</ul>
+		</section>
+
+		<section class="ag-business-domaine-faq">
+			<h2 class="ag-business-domaine-faq__title"><?php esc_html_e( 'Questions fréquentes', 'ag-business-avocat' ); ?></h2>
+			<div class="ag-business-faq">
+				<?php foreach ( $extras['faq'] as $idx => $qa ) : ?>
+					<details class="ag-business-faq__entry"<?php echo 0 === $idx ? ' open' : ''; ?>>
+						<summary class="ag-business-faq__question"><?php echo esc_html( $qa['q'] ); ?></summary>
+						<div class="ag-business-faq__answer"><?php echo esc_html( $qa['a'] ); ?></div>
+					</details>
+				<?php endforeach; ?>
+			</div>
+		</section>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * Donnees Cas concrets + FAQ par slug de domaine.
+	 * 5 cas + 5 Q/R par domaine — peut etre etendu plus tard.
+	 */
+	private function get_domaine_extras_data() {
+		return array(
+			'droit-des-affaires' => array(
+				'cas_concrets' => array(
+					array( 'titre' => 'Création d\'une SAS familiale', 'desc' => 'Choix de la forme juridique, rédaction des statuts, pacte d\'associés, immatriculation au RCS — accompagnement complet de A à Z.' ),
+					array( 'titre' => 'Cession de fonds de commerce', 'desc' => 'Audit, négociation du prix, rédaction de l\'acte, formalités de publication, séquestre du prix — protection vendeur et acquéreur.' ),
+					array( 'titre' => 'Litige entre associés', 'desc' => 'Médiation préalable, action en exclusion, dissolution-liquidation amiable ou judiciaire — résolution dans le respect du pacte.' ),
+					array( 'titre' => 'Négociation de bail commercial 3-6-9', 'desc' => 'Analyse des clauses, négociation du loyer, dépôt de garantie, état des lieux, déspécialisation — défense des intérêts long terme.' ),
+					array( 'titre' => 'Procédure collective (sauvegarde)', 'desc' => 'Préparation du dossier de sauvegarde, déclaration des créances, plan de continuation, dialogue avec le mandataire judiciaire.' ),
+				),
+				'faq' => array(
+					array( 'q' => 'Quelle forme juridique choisir : SARL ou SAS ?', 'a' => 'La SAS offre plus de souplesse statutaire (pacte, classes d\'actions) et une meilleure image investisseurs. La SARL est plus encadrée mais souvent moins coûteuse à gérer. Le choix dépend du nombre d\'associés, des projets de financement et de la stratégie patrimoniale.' ),
+					array( 'q' => 'Combien coûte la création d\'une société ?', 'a' => 'Comptez 1500 à 3500 € HT pour une création simple incluant statuts, pacte, formalités. Tarif forfaitaire convenu en convention d\'honoraires. Aides Pôle Emploi (ACRE) et JEI peuvent réduire le coût net.' ),
+					array( 'q' => 'Comment se protéger d\'un associé majoritaire ?', 'a' => 'Pacte d\'associés avec clauses de minorité (préemption, sortie conjointe, agrément), nomination d\'un directeur général extérieur, demande de désignation d\'un expert (art. 1843-4 Code civil) en cas de conflit.' ),
+					array( 'q' => 'Quelle est la durée d\'une procédure prud\'homale ?', 'a' => 'En première instance : 12 à 18 mois selon le ressort. Phase de conciliation préalable obligatoire. Appel possible (12-24 mois supplémentaires). Référé pour les urgences (paiement de salaire) en quelques semaines.' ),
+					array( 'q' => 'Le bail commercial peut-il être résilié à tout moment ?', 'a' => 'Non. Le bailleur ne peut résilier qu\'à l\'échéance triennale (3-6-9) avec 6 mois de préavis ou pour motif grave. Le locataire peut donner congé tous les 3 ans. Indemnité d\'éviction due en cas de non-renouvellement.' ),
+				),
+			),
+			'droit-du-travail' => array(
+				'cas_concrets' => array(
+					array( 'titre' => 'Contestation de licenciement économique', 'desc' => 'Analyse de la procédure, contestation devant le CPH, négociation transactionnelle, indemnités majorées si licenciement sans cause réelle.' ),
+					array( 'titre' => 'Rupture conventionnelle négociée', 'desc' => 'Calcul de l\'indemnité (légale + supra-légale), rédaction de la convention, homologation DREETS, droits chômage préservés.' ),
+					array( 'titre' => 'Harcèlement moral au travail', 'desc' => 'Constitution du dossier (témoignages, mails, certificats médicaux), saisine de l\'Inspection du travail, référé prud\'homal en urgence, faute inexcusable.' ),
+					array( 'titre' => 'Heures supplémentaires non payées', 'desc' => 'Reconstitution des temps de travail, mise en demeure, action prud\'homale avec rappel salaires sur 3 ans + congés payés afférents + dommages-intérêts.' ),
+					array( 'titre' => 'Clause de non-concurrence abusive', 'desc' => 'Analyse de validité (durée, périmètre, contrepartie financière), négociation de levée, contestation devant le CPH si trop large.' ),
+				),
+				'faq' => array(
+					array( 'q' => 'Quelle indemnité en cas de licenciement sans cause réelle ?', 'a' => 'Barème Macron : entre 3 et 20 mois de salaire selon ancienneté et taille de l\'entreprise. Le juge peut écarter le barème dans les cas de licenciement nul (discrimination, harcèlement). À cela s\'ajoutent l\'indemnité légale et le préavis.' ),
+					array( 'q' => 'Combien dure une procédure prud\'homale ?', 'a' => 'Phase de conciliation : 1-3 mois. Audience de jugement : 6-12 mois après. Délibéré : 1-2 mois. Total : 12 à 18 mois en moyenne en première instance. Référé en urgence pour paiements échus en quelques semaines.' ),
+					array( 'q' => 'Quels sont les motifs valables de licenciement ?', 'a' => 'Cause réelle et sérieuse : motif personnel (insuffisance professionnelle, faute) ou économique (suppression de poste, mutation technologique, sauvegarde de la compétitivité). Procédure stricte à respecter sous peine de licenciement sans cause.' ),
+					array( 'q' => 'Comment prouver le harcèlement moral ?', 'a' => 'Le salarié doit présenter des éléments faisant présumer le harcèlement (mails, témoignages, certificats médicaux, baisse d\'évaluations soudaine). L\'employeur doit alors prouver que ses agissements sont étrangers au harcèlement (renversement de charge de la preuve).' ),
+					array( 'q' => 'Une rupture conventionnelle ouvre-t-elle droit au chômage ?', 'a' => 'Oui, contrairement à une démission. C\'est l\'avantage majeur. Pôle Emploi indemnise selon les conditions habituelles (durée, salaire de référence). L\'indemnité de rupture est exonérée d\'impôt et de cotisations dans la limite légale.' ),
+				),
+			),
+			'droit-de-la-famille' => array(
+				'cas_concrets' => array(
+					array( 'titre' => 'Divorce par consentement mutuel', 'desc' => 'Rédaction de la convention (partage des biens, prestation compensatoire, garde, pension), signature devant notaire, dépôt au minutier — 2 à 4 mois.' ),
+					array( 'titre' => 'Divorce contentieux pour faute', 'desc' => 'Saisine du JAF, mesures provisoires (résidence enfants, pension), preuves de la faute (témoignages, constats d\'huissier), prononcé du divorce aux torts exclusifs.' ),
+					array( 'titre' => 'Garde alternée vs garde exclusive', 'desc' => 'Évaluation de l\'intérêt de l\'enfant, calcul de la contribution à l\'entretien, saisine du JAF, médiation familiale, audition de l\'enfant si discernement.' ),
+					array( 'titre' => 'Pension alimentaire impayée', 'desc' => 'Recouvrement par voie d\'huissier, paiement direct sur salaire, intervention de la CAF (ARIPA), sanctions pénales (abandon de famille).' ),
+					array( 'titre' => 'PACS rompu et partage des biens', 'desc' => 'Liquidation du régime, partage des indivisions, contestation des libéralités, droits de chacun selon convention de PACS et indivisions.' ),
+				),
+				'faq' => array(
+					array( 'q' => 'Combien de temps pour un divorce par consentement mutuel ?', 'a' => '2 à 4 mois en moyenne. Étapes : 1ère consultation avec chacun, rédaction de la convention, délai de réflexion de 15 jours obligatoire après envoi du projet, signature de la convention, dépôt au notaire (formalités d\'enregistrement).' ),
+					array( 'q' => 'Quelle est la pension alimentaire moyenne pour un enfant ?', 'a' => 'Calcul selon barème indicatif du Ministère de la Justice : varie de 100 à 600 €/mois par enfant selon revenus du débiteur et mode de garde. Réévaluation annuelle indexée sur l\'INSEE. Le juge tient compte des charges de chacun.' ),
+					array( 'q' => 'Garde alternée : conditions ?', 'a' => 'Accord des deux parents OU décision du juge si l\'intérêt de l\'enfant le commande. Conditions : domiciles proches (même secteur scolaire), bonne entente parentale minimale, âge de l\'enfant adapté (souvent 6 ans+), équipement double dans chaque foyer.' ),
+					array( 'q' => 'Comment récupérer une pension impayée ?', 'a' => 'Plusieurs voies cumulables : recouvrement public via ARIPA (CAF), saisie sur salaire (paiement direct), saisie-attribution sur compte bancaire, plainte pour abandon de famille (art. 227-3 CP, 2 ans prison).' ),
+					array( 'q' => 'Le PACS protège-t-il comme un mariage ?', 'a' => 'Non, protection moindre. Pas de prestation compensatoire ni pension alimentaire à la rupture. Pas d\'héritage automatique sauf testament. Mais avantages fiscaux (impôts communs), couverture santé du partenaire, certaines pensions de réversion possibles.' ),
+				),
+			),
+			'droit-immobilier' => array(
+				'cas_concrets' => array(
+					array( 'titre' => 'Vice caché à l\'achat', 'desc' => 'Expertise judiciaire, action rédhibitoire (annulation) ou estimatoire (réduction du prix), recours contre le vendeur et le notaire si manquement au devoir de conseil.' ),
+					array( 'titre' => 'Litige de copropriété', 'desc' => 'Contestation d\'AG (délais, vote), recouvrement de charges impayées, action contre le syndic, travaux votés non réalisés, troubles de jouissance.' ),
+					array( 'titre' => 'Bail commercial — déspécialisation', 'desc' => 'Demande de changement d\'activité (déspécialisation simple ou plénière), procédure devant le bailleur, décision du tribunal en cas de refus abusif.' ),
+					array( 'titre' => 'Expulsion de locataire indélicat', 'desc' => 'Commandement de payer, assignation devant le juge des contentieux de la protection, jugement d\'expulsion, concours de la force publique.' ),
+					array( 'titre' => 'Permis de construire contesté', 'desc' => 'Recours gracieux + recours en annulation devant le TA, suspension des travaux en référé, négociation amiable avec les voisins.' ),
+				),
+				'faq' => array(
+					array( 'q' => 'Délai pour agir en vice caché ?', 'a' => '2 ans à compter de la découverte du vice (art. 1648 Code civil). Le vice doit être caché au moment de la vente, antérieur à celle-ci, et rendre la chose impropre à sa destination ou en diminuer fortement l\'usage.' ),
+					array( 'q' => 'Comment contester une décision d\'AG de copropriété ?', 'a' => '2 mois à compter de la notification du PV pour agir en annulation devant le TGI. Motifs : irrégularités de convocation, abus de majorité, atteinte aux droits du copropriétaire opposant ou défaillant.' ),
+					array( 'q' => 'Le propriétaire peut-il refuser un changement de locataire ?', 'a' => 'En location nue habitation : le bailleur peut refuser pour motifs sérieux (insolvabilité du candidat). En bail commercial : agrément du bailleur souvent requis pour la cession, refus possible mais doit être justifié.' ),
+					array( 'q' => 'Combien de temps pour expulser un locataire ?', 'a' => 'Procédure complète : 6 à 18 mois selon les juridictions et la trêve hivernale (1er nov - 31 mars où l\'expulsion est suspendue). Étapes : commandement de payer, assignation, jugement, signification, concours de la force publique.' ),
+					array( 'q' => 'Mon voisin construit illégalement, que faire ?', 'a' => 'Recours en annulation contre le permis devant le TA dans les 2 mois de l\'affichage (ou 6 mois en l\'absence d\'affichage). Référé suspension en urgence. Action civile pour trouble anormal du voisinage en parallèle.' ),
+				),
+			),
+			'droit-penal' => array(
+				'cas_concrets' => array(
+					array( 'titre' => 'Garde à vue 24h/24', 'desc' => 'Assistance immédiate dans les 24h de l\'arrivée au commissariat, droits du gardé à vue, présence aux interrogatoires, conseils stratégie de défense.' ),
+					array( 'titre' => 'Comparution immédiate', 'desc' => 'Préparation express du dossier, demande de renvoi pour préparer la défense, plaidoirie sur les faits et la personnalité du prévenu, peines alternatives.' ),
+					array( 'titre' => 'Défense d\'assises', 'desc' => 'Suivi de l\'instruction (réquisitoire, ordonnance de renvoi), constitution du dossier de personnalité, plaidoirie devant la cour d\'assises, recours en cassation.' ),
+					array( 'titre' => 'Violences conjugales', 'desc' => 'Dépôt de plainte, ordonnance de protection en urgence (6 jours), poursuites pénales, demande de dommages-intérêts en partie civile.' ),
+					array( 'titre' => 'Stupéfiants — usage simple', 'desc' => 'Amende forfaitaire ou poursuites, plaidoirie de relaxe ou peines alternatives (TIG, sursis), accompagnement thérapeutique pour éviter la prison.' ),
+				),
+				'faq' => array(
+					array( 'q' => 'Quels sont mes droits en garde à vue ?', 'a' => 'Droit à l\'assistance d\'un avocat dès la 1ère minute, à un médecin, à un proche prévenu, au silence (sans pénalisation). Durée : 24h, prolongeable 24h sur autorisation du procureur. 96h maximum en matière de stupéfiants/terrorisme.' ),
+					array( 'q' => 'Que faire si je suis convoqué par la police ?', 'a' => 'Contactez immédiatement un avocat avant l\'audition. Il pourra vous accompagner si c\'est une audition libre, vous préparer aux questions, vous protéger contre l\'auto-incrimination. Vous pouvez refuser de répondre sans avocat.' ),
+					array( 'q' => 'Combien coûte un avocat pénaliste ?', 'a' => 'Tarif horaire : 200 à 450 €/h selon notoriété. Forfaits possibles : garde à vue (300-800 €), comparution immédiate (1500-3000 €), assises (5000-15000 €). Aide juridictionnelle si revenus inférieurs aux plafonds (env. 1100 €/mois célibataire).' ),
+					array( 'q' => 'Combien de temps pour un procès pénal ?', 'a' => 'Comparution immédiate : audience le jour même ou sous 3 mois. Tribunal correctionnel classique : 8-18 mois. Cour d\'assises : 18-36 mois après instruction. Appel possible. Cassation pour vices de procédure ou erreur de droit.' ),
+					array( 'q' => 'Le casier judiciaire s\'efface-t-il ?', 'a' => 'Effacement automatique selon la peine : amendes (3 ans), peines emprisonnement avec sursis (5 ans), peines fermes (10 ans). Effacement anticipé possible sur demande motivée au procureur. Bulletin n°2 (employeur) et n°3 (intéressé) ont des règles différentes.' ),
+				),
+			),
+		);
 	}
 }
