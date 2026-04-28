@@ -76,9 +76,69 @@
         brand.insertAdjacentHTML('afterbegin', svgMarkup);
     }
 
+    /* ── Fix 3 : transforme la liste "Comment sont calcules..." en
+       accordeon FAQ avec questions/reponses (page Honoraires). */
+    function injectHonorairesFaq() {
+        if (!isPremiumActive()) return;
+        var articles = document.querySelectorAll('.ag-page-article');
+        var faqData = [
+            {
+                q: 'Comment se passe la consultation initiale ?',
+                a: 'Le premier rendez-vous (45 minutes a 1 heure) sert a analyser votre situation, identifier les enjeux juridiques et vous proposer une strategie. La consultation est facturee a un tarif fixe communique avant le rendez-vous.'
+            },
+            {
+                q: 'Qu’est-ce qu’un forfait ?',
+                a: 'Un prix fixe convenu a l’avance pour traiter un dossier defini : creation de societe, divorce par consentement mutuel, redaction d’un contrat, etc. Le montant est garanti dans la convention d’honoraires ecrite, aucune surprise.'
+            },
+            {
+                q: 'Comment fonctionne la facturation au temps passe ?',
+                a: 'Le taux horaire est convenu a l’avance et vous recevez un releve detaille mensuel ou en fin de dossier precisant chaque acte effectue et le temps consacre. Convient aux dossiers dont la duree est difficile a estimer.'
+            },
+            {
+                q: 'Qu’est-ce qu’un honoraire de resultat ?',
+                a: 'Un complement calcule en pourcentage du gain obtenu, conditionne par la reussite du dossier. Encadre par la deontologie : il s’ajoute toujours a des honoraires de base et est plafonne.'
+            },
+            {
+                q: 'L’aide juridictionnelle est-elle acceptee ?',
+                a: 'Oui, le cabinet accepte les dossiers eligibles. Selon vos revenus, l’Etat prend en charge tout ou partie des honoraires. Apportez votre avis d’imposition et les justificatifs de revenus du foyer.'
+            }
+        ];
+
+        articles.forEach(function (article) {
+            if (article.querySelector('.ag-premium-faq')) return; // deja injecte
+            var h2 = article.querySelector('h2');
+            if (!h2 || h2.textContent.indexOf('Comment sont calcules') === -1) return;
+            var ul = article.querySelector('ul');
+            if (!ul) return;
+
+            var faq = document.createElement('div');
+            faq.className = 'ag-premium-faq';
+            faqData.forEach(function (item, idx) {
+                var entry = document.createElement('details');
+                entry.className = 'ag-premium-faq__entry';
+                if (idx === 0) entry.open = true;
+
+                var summary = document.createElement('summary');
+                summary.className = 'ag-premium-faq__question';
+                summary.textContent = item.q;
+
+                var answer = document.createElement('div');
+                answer.className = 'ag-premium-faq__answer';
+                answer.textContent = item.a;
+
+                entry.appendChild(summary);
+                entry.appendChild(answer);
+                faq.appendChild(entry);
+            });
+
+            ul.parentNode.replaceChild(faq, ul);
+        });
+    }
+
     function run() {
         applyBgFix();
         injectLogoSvg();
+        injectHonorairesFaq();
     }
 
     if (document.readyState === 'loading') {
