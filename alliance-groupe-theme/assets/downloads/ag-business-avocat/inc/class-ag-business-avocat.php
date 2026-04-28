@@ -31,6 +31,7 @@ class AG_Business_Avocat {
 		add_action( 'admin_init', array( $this, 'ensure_default_domaines' ) );
 		add_action( 'admin_init', array( $this, 'ensure_domaines_submenu' ) );
 		add_action( 'admin_init', array( $this, 'ensure_legal_pages' ) );
+		add_action( 'admin_init', array( $this, 'ensure_boutique_offers' ) );
 		add_action( 'admin_notices', array( $this, 'woocommerce_admin_notice' ) );
 		add_filter( 'wp_nav_menu_args', array( $this, 'allow_submenu_depth' ) );
 		add_action( 'customize_register', array( $this, 'register_customizer' ), 30 );
@@ -751,5 +752,143 @@ Telephone : [telephone]</p>
 </ul>
 <h2>Contestation</h2>
 <p>En cas de litige, contactez-nous d\'abord pour tenter une resolution amiable. A defaut, vous pouvez saisir le mediateur de la consommation ou le Conseil de l\'Ordre du Barreau de [Ville].</p>';
+	}
+
+	/**
+	 * Cree les 3 offres affichees dans la section Boutique de la home,
+	 * pour qu'elles existent en tant que produits WooCommerce (si actif)
+	 * ou pages classiques (fallback). Met a jour les theme_mod URLs
+	 * pour que les cards de la home pointent vers les bonnes pages.
+	 *
+	 * Idempotent : skip si l'offre existe deja (par slug).
+	 */
+	public function ensure_boutique_offers() {
+		if ( ! $this->is_active() ) {
+			return;
+		}
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$offers = $this->get_default_offers_data();
+
+		if ( class_exists( 'WC_Product_Simple' ) ) {
+			// WooCommerce actif : creer un WC_Product_Simple
+			foreach ( $offers as $slug => $data ) {
+				if ( get_page_by_path( $slug, OBJECT, 'product' ) ) {
+					continue;
+				}
+				$product = new WC_Product_Simple();
+				$product->set_name( $data['title'] );
+				$product->set_slug( $slug );
+				$product->set_status( 'publish' );
+				$product->set_catalog_visibility( 'visible' );
+				$product->set_regular_price( (string) $data['price_value'] );
+				$product->set_short_description( $data['desc'] );
+				$product->set_description( $data['long_desc'] );
+				$product->set_virtual( true ); // services dematerialises
+				$product->save();
+			}
+			return;
+		}
+
+		// WooCommerce absent : pages classiques + theme_mod URLs
+		$shop_keys = array( 'ag_business_shop_1_url', 'ag_business_shop_2_url', 'ag_business_shop_3_url' );
+		$i         = 0;
+		foreach ( $offers as $slug => $data ) {
+			$key = isset( $shop_keys[ $i ] ) ? $shop_keys[ $i ] : null;
+			$i++;
+			if ( ! $key ) {
+				break;
+			}
+			$page = get_page_by_path( $slug );
+			if ( ! $page ) {
+				$page_id = wp_insert_post( array(
+					'post_type'    => 'page',
+					'post_status'  => 'publish',
+					'post_title'   => $data['title'],
+					'post_name'    => $slug,
+					'post_content' => '<p class="ag-offer-price"><strong>' . esc_html( $data['price_value'] ) . ' €</strong></p>' . $data['long_desc'],
+				) );
+				if ( is_wp_error( $page_id ) ) {
+					continue;
+				}
+				$page = get_post( $page_id );
+			}
+			$url = get_permalink( $page );
+			$current = (string) get_theme_mod( $key, '' );
+			if ( '' === $current || '#' === $current ) {
+				set_theme_mod( $key, $url );
+			}
+		}
+	}
+
+	/**
+	 * Donnees des 3 offres par defaut affichees dans la section Boutique
+	 * de la home (alignees avec les defaults de pro-features.php).
+	 */
+	private function get_default_offers_data() {
+		return array(
+			'pack-3-consultations-telephoniques' => array(
+				'title'       => '3 consultations téléphoniques',
+				'desc'        => 'Pack de 3 consultations de 30 min, valables 6 mois. Conseil juridique sur tout domaine.',
+				'price_value' => 450,
+				'long_desc'   => '<h2>Contenu du pack</h2>
+<ul>
+<li>3 consultations téléphoniques de 30 minutes chacune</li>
+<li>Validité : 6 mois à compter de la commande</li>
+<li>Tous domaines de droit couverts</li>
+<li>Disponibles du lundi au vendredi 9h-18h</li>
+<li>Compte-rendu écrit après chaque consultation (sur demande)</li>
+</ul>
+<h2>Pour qui ?</h2>
+<p>Particuliers et indépendants ayant besoin d\'un avis juridique rapide, sans déplacement au cabinet.</p>
+<h2>Comment ça marche</h2>
+<ol>
+<li>Vous commandez le pack en ligne</li>
+<li>Vous recevez un email de confirmation avec le numéro à appeler</li>
+<li>Vous prenez rendez-vous au moment qui vous convient</li>
+<li>Le Maître vous rappelle à l\'heure convenue</li>
+</ol>',
+			),
+			'guide-juridique-pdf' => array(
+				'title'       => 'Guide juridique PDF',
+				'desc'        => 'Manuel pratique 80 pages : vos droits face au licenciement, à la séparation, aux litiges courants.',
+				'price_value' => 29,
+				'long_desc'   => '<h2>Sommaire du guide</h2>
+<ul>
+<li>Droit du travail : licenciement, rupture conventionnelle, harcèlement</li>
+<li>Droit de la famille : divorce, garde d\'enfants, pension</li>
+<li>Droit immobilier : bail, vices cachés, copropriété</li>
+<li>Droit de la consommation : démarchage, garanties, litiges</li>
+<li>Modèles de courriers types prêts à utiliser</li>
+</ul>
+<h2>Format</h2>
+<p>Document PDF de 80 pages, téléchargeable immédiatement après commande. Imprimable. Mises à jour gratuites pendant 12 mois.</p>',
+			),
+			'audit-contractuel' => array(
+				'title'       => 'Audit contractuel',
+				'desc'        => 'Analyse complète d\'un contrat (CDI, bail, partenariat) avec rapport écrit et recommandations.',
+				'price_value' => 290,
+				'long_desc'   => '<h2>Ce que vous obtenez</h2>
+<ul>
+<li>Lecture intégrale du contrat (jusqu\'à 30 pages)</li>
+<li>Rapport écrit (8-12 pages) avec analyse clause par clause</li>
+<li>Identification des points à risque et clauses abusives</li>
+<li>Recommandations de modifications</li>
+<li>Suggestions de négociation</li>
+<li>Délai : 5 jours ouvrés</li>
+</ul>
+<h2>Types de contrats</h2>
+<p>CDI / CDD, contrats de bail (commercial, habitation), contrats commerciaux et de partenariat, contrats de prestations de services, conditions générales, etc.</p>
+<h2>Comment commander</h2>
+<ol>
+<li>Vous commandez l\'audit en ligne</li>
+<li>Vous recevez un email avec un lien sécurisé pour téléverser le contrat</li>
+<li>Le Maître vous envoie le rapport sous 5 jours ouvrés</li>
+<li>Une visioconférence de 30 min est offerte pour clarifier les points</li>
+</ol>',
+			),
+		);
 	}
 }
