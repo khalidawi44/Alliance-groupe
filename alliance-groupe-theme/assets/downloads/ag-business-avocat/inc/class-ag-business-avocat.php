@@ -43,6 +43,7 @@ class AG_Business_Avocat {
 		add_filter( 'wp_nav_menu_args', array( $this, 'allow_submenu_depth' ) );
 		add_filter( 'wp_nav_menu_items', array( $this, 'inject_account_menu_item' ), 10, 2 );
 		add_filter( 'the_content', array( $this, 'append_domaine_extras' ), 25 );
+		add_action( 'ag_after_domaines', array( $this, 'render_tous_domaines_btn' ), 5 );
 		add_action( 'customize_register', array( $this, 'register_customizer' ), 30 );
 	}
 
@@ -65,6 +66,23 @@ class AG_Business_Avocat {
 	 * (connecte) avec un sous-menu mega-menu. Hooke wp_nav_menu_items
 	 * (string-based) pour un append simple en fin de menu primaire.
 	 */
+	/**
+	 * Bouton 'Tous nos domaines' apres la grille Domaines sur la home.
+	 * Hooke sur ag_after_domaines @ 5 (avant render_parallax_quote_1
+	 * qui est a priorite 10).
+	 */
+	public function render_tous_domaines_btn() {
+		if ( ! $this->is_active() ) {
+			return;
+		}
+		$url = function_exists( 'ag_page_url' ) ? ag_page_url( 'expertise' ) : home_url( '/expertise/' );
+		?>
+		<div class="ag-business-tous-domaines-cta" style="text-align:center;padding:24px 24px 48px;">
+			<a href="<?php echo esc_url( $url ); ?>" class="ag-btn ag-business-tous-domaines-cta__btn"><?php esc_html_e( 'Tous nos domaines →', 'ag-business-avocat' ); ?></a>
+		</div>
+		<?php
+	}
+
 	public function inject_account_menu_item( $items, $args ) {
 		if ( ! $this->is_active() ) {
 			return $items;
@@ -1617,6 +1635,11 @@ Telephone : [telephone]</p>
 
 	private function render_domaine_extras_html( $extras ) {
 		ob_start();
+
+		// Citation 1 (avant cas concrets), si presente
+		if ( ! empty( $extras['citations'][0] ) ) {
+			echo $this->render_domaine_citation_html( $extras['citations'][0] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
 		?>
 		<section class="ag-business-domaine-cas">
 			<h2 class="ag-business-domaine-cas__title"><?php esc_html_e( 'Cas concrets traités par le cabinet', 'ag-business-avocat' ); ?></h2>
@@ -1630,16 +1653,35 @@ Telephone : [telephone]</p>
 				<?php endforeach; ?>
 			</ul>
 		</section>
-
+		<?php
+		// Citation 2 (avant FAQ), si presente
+		if ( ! empty( $extras['citations'][1] ) ) {
+			echo $this->render_domaine_citation_html( $extras['citations'][1] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+		?>
 		<section class="ag-business-domaine-faq">
 			<h2 class="ag-business-domaine-faq__title"><?php esc_html_e( 'Questions fréquentes', 'ag-business-avocat' ); ?></h2>
 			<div class="ag-business-faq">
 				<?php foreach ( $extras['faq'] as $idx => $qa ) : ?>
-					<details class="ag-business-faq__entry"<?php echo 0 === $idx ? ' open' : ''; ?>>
+					<details class="ag-business-faq__entry" name="ag-business-domaine-faq"<?php echo 0 === $idx ? ' open' : ''; ?>>
 						<summary class="ag-business-faq__question"><?php echo esc_html( $qa['q'] ); ?></summary>
 						<div class="ag-business-faq__answer"><?php echo esc_html( $qa['a'] ); ?></div>
 					</details>
 				<?php endforeach; ?>
+			</div>
+		</section>
+		<?php
+		return ob_get_clean();
+	}
+
+	private function render_domaine_citation_html( $cite ) {
+		ob_start();
+		?>
+		<section class="ag-parallax ag-parallax-business ag-business-domaine-citation" style="background-image:url('<?php echo esc_url( $cite['bg'] ); ?>');">
+			<div class="ag-parallax__overlay"></div>
+			<div class="ag-parallax__content">
+				<p class="ag-parallax__quote"><?php echo esc_html( $cite['quote'] ); ?></p>
+				<p class="ag-parallax__caption">— <?php echo esc_html( $cite['author'] ); ?></p>
 			</div>
 		</section>
 		<?php
@@ -1667,6 +1709,10 @@ Telephone : [telephone]</p>
 					array( 'q' => 'Quelle est la durée d\'une procédure prud\'homale ?', 'a' => 'En première instance : 12 à 18 mois selon le ressort. Phase de conciliation préalable obligatoire. Appel possible (12-24 mois supplémentaires). Référé pour les urgences (paiement de salaire) en quelques semaines.' ),
 					array( 'q' => 'Le bail commercial peut-il être résilié à tout moment ?', 'a' => 'Non. Le bailleur ne peut résilier qu\'à l\'échéance triennale (3-6-9) avec 6 mois de préavis ou pour motif grave. Le locataire peut donner congé tous les 3 ans. Indemnité d\'éviction due en cas de non-renouvellement.' ),
 				),
+				'citations' => array(
+					array( 'quote' => 'Le contrat est la loi des parties.', 'author' => 'Code civil article 1103', 'bg' => 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1920&q=85' ),
+					array( 'quote' => 'Le commerce est dans la balance le poids qui assure l\'équilibre des nations.', 'author' => 'Voltaire', 'bg' => 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1920&q=85' ),
+				),
 			),
 			'droit-du-travail' => array(
 				'cas_concrets' => array(
@@ -1682,6 +1728,10 @@ Telephone : [telephone]</p>
 					array( 'q' => 'Quels sont les motifs valables de licenciement ?', 'a' => 'Cause réelle et sérieuse : motif personnel (insuffisance professionnelle, faute) ou économique (suppression de poste, mutation technologique, sauvegarde de la compétitivité). Procédure stricte à respecter sous peine de licenciement sans cause.' ),
 					array( 'q' => 'Comment prouver le harcèlement moral ?', 'a' => 'Le salarié doit présenter des éléments faisant présumer le harcèlement (mails, témoignages, certificats médicaux, baisse d\'évaluations soudaine). L\'employeur doit alors prouver que ses agissements sont étrangers au harcèlement (renversement de charge de la preuve).' ),
 					array( 'q' => 'Une rupture conventionnelle ouvre-t-elle droit au chômage ?', 'a' => 'Oui, contrairement à une démission. C\'est l\'avantage majeur. Pôle Emploi indemnise selon les conditions habituelles (durée, salaire de référence). L\'indemnité de rupture est exonérée d\'impôt et de cotisations dans la limite légale.' ),
+				),
+				'citations' => array(
+					array( 'quote' => 'Le travail éloigne de nous trois grands maux : l\'ennui, le vice et le besoin.', 'author' => 'Voltaire', 'bg' => 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1920&q=85' ),
+					array( 'quote' => 'Tout travail mérite salaire ; tout salaire mérite équité.', 'author' => 'Adage du droit social', 'bg' => 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1920&q=85' ),
 				),
 			),
 			'droit-de-la-famille' => array(
@@ -1699,6 +1749,10 @@ Telephone : [telephone]</p>
 					array( 'q' => 'Comment récupérer une pension impayée ?', 'a' => 'Plusieurs voies cumulables : recouvrement public via ARIPA (CAF), saisie sur salaire (paiement direct), saisie-attribution sur compte bancaire, plainte pour abandon de famille (art. 227-3 CP, 2 ans prison).' ),
 					array( 'q' => 'Le PACS protège-t-il comme un mariage ?', 'a' => 'Non, protection moindre. Pas de prestation compensatoire ni pension alimentaire à la rupture. Pas d\'héritage automatique sauf testament. Mais avantages fiscaux (impôts communs), couverture santé du partenaire, certaines pensions de réversion possibles.' ),
 				),
+				'citations' => array(
+					array( 'quote' => 'La famille est l\'élément naturel et fondamental de la société.', 'author' => 'Déclaration universelle des droits de l\'homme, art. 16', 'bg' => 'https://images.unsplash.com/photo-1609220136736-443140cffec6?w=1920&q=85' ),
+					array( 'quote' => 'Dans l\'intérêt supérieur de l\'enfant, en toutes circonstances.', 'author' => 'Convention internationale des droits de l\'enfant', 'bg' => 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=1920&q=85' ),
+				),
 			),
 			'droit-immobilier' => array(
 				'cas_concrets' => array(
@@ -1715,6 +1769,10 @@ Telephone : [telephone]</p>
 					array( 'q' => 'Combien de temps pour expulser un locataire ?', 'a' => 'Procédure complète : 6 à 18 mois selon les juridictions et la trêve hivernale (1er nov - 31 mars où l\'expulsion est suspendue). Étapes : commandement de payer, assignation, jugement, signification, concours de la force publique.' ),
 					array( 'q' => 'Mon voisin construit illégalement, que faire ?', 'a' => 'Recours en annulation contre le permis devant le TA dans les 2 mois de l\'affichage (ou 6 mois en l\'absence d\'affichage). Référé suspension en urgence. Action civile pour trouble anormal du voisinage en parallèle.' ),
 				),
+				'citations' => array(
+					array( 'quote' => 'La propriété est un droit inviolable et sacré.', 'author' => 'Déclaration des droits de l\'homme, article 17', 'bg' => 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1920&q=85' ),
+					array( 'quote' => 'Charbonnier est maître chez soi.', 'author' => 'Adage du droit immobilier', 'bg' => 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1920&q=85' ),
+				),
 			),
 			'droit-penal' => array(
 				'cas_concrets' => array(
@@ -1730,6 +1788,10 @@ Telephone : [telephone]</p>
 					array( 'q' => 'Combien coûte un avocat pénaliste ?', 'a' => 'Tarif horaire : 200 à 450 €/h selon notoriété. Forfaits possibles : garde à vue (300-800 €), comparution immédiate (1500-3000 €), assises (5000-15000 €). Aide juridictionnelle si revenus inférieurs aux plafonds (env. 1100 €/mois célibataire).' ),
 					array( 'q' => 'Combien de temps pour un procès pénal ?', 'a' => 'Comparution immédiate : audience le jour même ou sous 3 mois. Tribunal correctionnel classique : 8-18 mois. Cour d\'assises : 18-36 mois après instruction. Appel possible. Cassation pour vices de procédure ou erreur de droit.' ),
 					array( 'q' => 'Le casier judiciaire s\'efface-t-il ?', 'a' => 'Effacement automatique selon la peine : amendes (3 ans), peines emprisonnement avec sursis (5 ans), peines fermes (10 ans). Effacement anticipé possible sur demande motivée au procureur. Bulletin n°2 (employeur) et n°3 (intéressé) ont des règles différentes.' ),
+				),
+				'citations' => array(
+					array( 'quote' => 'Tout homme étant présumé innocent jusqu\'à ce qu\'il ait été déclaré coupable.', 'author' => 'Déclaration des droits de l\'homme, article 9', 'bg' => 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1920&q=85' ),
+					array( 'quote' => 'Mieux vaut un coupable libre qu\'un innocent en prison.', 'author' => 'Maxime du droit pénal', 'bg' => 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1920&q=85' ),
 				),
 			),
 		);
