@@ -100,3 +100,110 @@ body.ag-business-active .ag-domaines .ag-domaine-card:focus-visible {
     outline: 2px solid #D4B45C;
     outline-offset: 4px;
 }
+
+/* ── Sous-menu (.sub-menu sous "Domaines d'expertise") ──
+   Apparait au hover sur le parent. Style sobre dore (bordeaux jour),
+   avec un separateur avant "Tous les domaines" en or vif. */
+body.ag-business-active .ag-primary-menu li {
+    position: relative;
+}
+body.ag-business-active .ag-primary-menu .sub-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 280px;
+    background: rgba(8, 8, 12, .96);
+    border: 1px solid rgba(212, 180, 92, .28);
+    border-radius: 10px;
+    padding: 10px 0;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, .55), 0 0 24px rgba(212, 180, 92, .08);
+    list-style: none;
+    margin: 12px 0 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity .3s ease, transform .3s ease, visibility .3s ease;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+}
+body.ag-business-active .ag-primary-menu li:hover > .sub-menu,
+body.ag-business-active .ag-primary-menu li:focus-within > .sub-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+body.ag-business-active .ag-primary-menu .sub-menu li {
+    width: 100%;
+    margin: 0;
+}
+body.ag-business-active .ag-primary-menu .sub-menu a {
+    display: block !important;
+    padding: 11px 22px !important;
+    color: rgba(255, 255, 255, .85) !important;
+    font-size: .92rem !important;
+    text-transform: none !important;
+    letter-spacing: .2px !important;
+    font-weight: 500 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    text-shadow: none !important;
+    transform: none !important;
+}
+body.ag-business-active .ag-primary-menu .sub-menu a::after {
+    display: none !important;
+}
+body.ag-business-active .ag-primary-menu .sub-menu a:hover {
+    background: rgba(212, 180, 92, .12) !important;
+    color: #FFE5A0 !important;
+}
+/* Dernier item "Tous les domaines" : separateur + or vif */
+body.ag-business-active .ag-primary-menu .sub-menu .ag-business-submenu-tous {
+    margin-top: 6px !important;
+    border-top: 1px solid rgba(212, 180, 92, .22);
+}
+body.ag-business-active .ag-primary-menu .sub-menu .ag-business-submenu-tous a {
+    color: #D4B45C !important;
+    font-weight: 700 !important;
+}
+body.ag-business-active .ag-primary-menu .sub-menu .ag-business-submenu-tous a:hover {
+    color: #FFE5A0 !important;
+}
+
+/* Mode jour : palette bordeaux/creme */
+body.ag-business-active.ag-light .ag-primary-menu .sub-menu {
+    background: rgba(245, 240, 235, .98);
+    border-color: rgba(123, 45, 59, .22);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, .15), 0 0 24px rgba(123, 45, 59, .08);
+}
+body.ag-business-active.ag-light .ag-primary-menu .sub-menu a {
+    color: #2A1A1E !important;
+}
+body.ag-business-active.ag-light .ag-primary-menu .sub-menu a:hover {
+    background: rgba(123, 45, 59, .08) !important;
+    color: #7B2D3B !important;
+}
+body.ag-business-active.ag-light .ag-primary-menu .sub-menu .ag-business-submenu-tous {
+    border-top-color: rgba(123, 45, 59, .22);
+}
+body.ag-business-active.ag-light .ag-primary-menu .sub-menu .ag-business-submenu-tous a {
+    color: #7B2D3B !important;
+}
+body.ag-business-active.ag-light .ag-primary-menu .sub-menu .ag-business-submenu-tous a:hover {
+    color: #A03D4D !important;
+}
+
+/* Mobile : pas de dropdown, on reste plié pour eviter le chaos */
+@media (max-width: 900px) {
+    body.ag-business-active .ag-primary-menu .sub-menu {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        padding: 0 0 0 16px;
+        margin: 0;
+        backdrop-filter: none;
+    }
+}

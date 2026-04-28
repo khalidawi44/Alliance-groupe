@@ -28,7 +28,24 @@ class AG_Business_Avocat {
 		add_action( 'init', array( $this, 'reorder_sections' ), 99 );
 		add_action( 'admin_init', array( $this, 'ensure_boutique_page' ) );
 		add_action( 'admin_init', array( $this, 'ensure_boutique_in_menu' ) );
+		add_action( 'admin_init', array( $this, 'ensure_default_domaines' ) );
+		add_action( 'admin_init', array( $this, 'ensure_domaines_submenu' ) );
 		add_action( 'admin_notices', array( $this, 'woocommerce_admin_notice' ) );
+		add_filter( 'wp_nav_menu_args', array( $this, 'allow_submenu_depth' ) );
+	}
+
+	/**
+	 * Le theme Free demande wp_nav_menu(depth=1) qui n'affiche que les
+	 * items top-level. En Business on autorise les sous-menus.
+	 */
+	public function allow_submenu_depth( $args ) {
+		if ( ! $this->is_active() ) {
+			return $args;
+		}
+		if ( isset( $args['theme_location'] ) && 'primary' === $args['theme_location'] ) {
+			$args['depth'] = 0;
+		}
+		return $args;
 	}
 
 	/**
@@ -290,5 +307,220 @@ class AG_Business_Avocat {
 			</p>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Cree les 12 domaines de droit FR par defaut (CPT ag_domaine) si ils
+	 * n'existent pas. Skip ceux deja crees par l'utilisateur (par slug).
+	 */
+	public function ensure_default_domaines() {
+		if ( ! $this->is_active() ) {
+			return;
+		}
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		if ( ! post_type_exists( 'ag_domaine' ) ) {
+			return;
+		}
+		foreach ( $this->get_default_domaines_data() as $slug => $data ) {
+			$existing = get_page_by_path( $slug, OBJECT, 'ag_domaine' );
+			if ( $existing ) {
+				continue;
+			}
+			$id = wp_insert_post( array(
+				'post_type'    => 'ag_domaine',
+				'post_status'  => 'publish',
+				'post_title'   => $data['title'],
+				'post_name'    => $slug,
+				'post_content' => $data['content'],
+				'post_excerpt' => $data['excerpt'],
+			) );
+			if ( ! is_wp_error( $id ) && $id ) {
+				update_post_meta( $id, '_ag_domaine_icon', $data['icon'] );
+				update_post_meta( $id, '_ag_domaine_examples', $data['examples'] );
+			}
+		}
+	}
+
+	/**
+	 * Ajoute un sous-menu sous l'item "Domaines d'expertise" du menu
+	 * primaire avec un item par domaine + un lien final
+	 * "Tous les domaines →".
+	 */
+	public function ensure_domaines_submenu() {
+		if ( ! $this->is_active() ) {
+			return;
+		}
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		$expertise_page = get_page_by_path( 'expertise' );
+		if ( ! $expertise_page ) {
+			return;
+		}
+		$locations = (array) get_theme_mod( 'nav_menu_locations' );
+		$menu_id   = isset( $locations['primary'] ) ? (int) $locations['primary'] : 0;
+		if ( ! $menu_id ) {
+			return;
+		}
+		$items = wp_get_nav_menu_items( $menu_id );
+		if ( empty( $items ) ) {
+			return;
+		}
+
+		// Trouve l'item parent (le lien vers la page Expertise)
+		$parent_item = null;
+		foreach ( $items as $item ) {
+			if ( 'post_type' === $item->type && 'page' === $item->object && (int) $item->object_id === (int) $expertise_page->ID ) {
+				$parent_item = $item;
+				break;
+			}
+		}
+		if ( ! $parent_item ) {
+			return;
+		}
+		$parent_id = (int) $parent_item->ID;
+
+		// Liste les enfants existants pour idempotence
+		$existing_child_object_ids = array();
+		$has_tous                  = false;
+		foreach ( $items as $item ) {
+			if ( (int) $item->menu_item_parent !== $parent_id ) {
+				continue;
+			}
+			if ( 'post_type' === $item->type && 'ag_domaine' === $item->object ) {
+				$existing_child_object_ids[] = (int) $item->object_id;
+			}
+			if ( 'custom' === $item->type && false !== strpos( $item->title, 'Tous les domaines' ) ) {
+				$has_tous = true;
+			}
+		}
+
+		// Ajoute un item enfant par domaine CPT publie
+		$domaines = function_exists( 'ag_starter_avocat_get_domaines' ) ? ag_starter_avocat_get_domaines( 20 ) : array();
+		$position = 1;
+		foreach ( $domaines as $d ) {
+			if ( in_array( (int) $d->ID, $existing_child_object_ids, true ) ) {
+				$position++;
+				continue;
+			}
+			wp_update_nav_menu_item( $menu_id, 0, array(
+				'menu-item-title'     => get_the_title( $d ),
+				'menu-item-object'    => 'ag_domaine',
+				'menu-item-object-id' => (int) $d->ID,
+				'menu-item-type'      => 'post_type',
+				'menu-item-status'    => 'publish',
+				'menu-item-parent-id' => $parent_id,
+				'menu-item-position'  => $position++,
+			) );
+		}
+
+		// Ajoute le lien final "Tous les domaines →" en bas du sous-menu
+		if ( ! $has_tous ) {
+			wp_update_nav_menu_item( $menu_id, 0, array(
+				'menu-item-title'     => __( 'Tous les domaines', 'ag-business-avocat' ),
+				'menu-item-url'       => get_permalink( $expertise_page ),
+				'menu-item-type'      => 'custom',
+				'menu-item-status'    => 'publish',
+				'menu-item-parent-id' => $parent_id,
+				'menu-item-position'  => 999,
+				'menu-item-classes'   => 'ag-business-submenu-tous',
+			) );
+		}
+	}
+
+	/**
+	 * Donnees par defaut pour les 12 domaines de droit FR les plus
+	 * courants. Chaque entree contient titre, icone, excerpt, contenu,
+	 * et 3 exemples de cas.
+	 */
+	private function get_default_domaines_data() {
+		return array(
+			'droit-des-affaires' => array(
+				'title'    => 'Droit des affaires',
+				'icon'     => 'briefcase',
+				'excerpt'  => "Conseil et representation des entreprises : creation, contrats commerciaux, contentieux, restructuration.",
+				'content'  => "<p>Le droit des affaires regroupe l'ensemble des regles juridiques applicables a la vie des entreprises. Notre cabinet accompagne PME, ETI et grands groupes a chaque etape de leur developpement.</p>",
+				'examples' => "Creation et statuts de societes\nNegociation de baux commerciaux\nLitiges entre associes",
+			),
+			'droit-du-travail' => array(
+				'title'    => 'Droit du travail',
+				'icon'     => 'shield',
+				'excerpt'  => "Defense des salaries et des employeurs : licenciements, contrats, harcelement, ruptures conventionnelles.",
+				'content'  => "<p>Notre cabinet conseille et represente salaries et employeurs dans toutes les problematiques liees a la relation de travail.</p>",
+				'examples' => "Contestation de licenciement\nRupture conventionnelle\nHarcelement moral / sexuel",
+			),
+			'droit-de-la-famille' => array(
+				'title'    => 'Droit de la famille',
+				'icon'     => 'family',
+				'excerpt'  => "Divorce, garde d'enfants, succession, adoption, regimes matrimoniaux. Discretion et empathie garanties.",
+				'content'  => "<p>Le droit de la famille touche aux moments les plus intimes de la vie. Notre approche : ecoute, transparence, accompagnement personnalise.</p>",
+				'examples' => "Divorce par consentement mutuel\nDivorce contentieux\nGarde d'enfants et droit de visite",
+			),
+			'droit-immobilier' => array(
+				'title'    => 'Droit immobilier',
+				'icon'     => 'house',
+				'excerpt'  => "Acquisition, vente, copropriete, baux, troubles de voisinage, constructions et permis de construire.",
+				'content'  => "<p>Conseil et contentieux pour proprietaires, locataires, syndics et professionnels de l'immobilier.</p>",
+				'examples' => "Vices caches a l'achat\nLitige de copropriete\nExpulsion de locataire",
+			),
+			'droit-penal' => array(
+				'title'    => 'Droit penal',
+				'icon'     => 'gavel',
+				'excerpt'  => "Defense penale tous degres de juridiction : garde a vue, comparution immediate, instruction, assises.",
+				'content'  => "<p>Defense des justiciables a tous les stades de la procedure penale, en France comme a l'etranger.</p>",
+				'examples' => "Garde a vue 24/24\nDefense d'assises\nViolences conjugales",
+			),
+			'droit-fiscal' => array(
+				'title'    => 'Droit fiscal',
+				'icon'     => 'document',
+				'excerpt'  => "Optimisation, controle fiscal, contentieux, ISF, transmission de patrimoine, fiscalite internationale.",
+				'content'  => "<p>Strategie fiscale pour particuliers et entreprises, defense en cas de redressement.</p>",
+				'examples' => "Controle fiscal personnel\nContentieux URSSAF\nMontage de holding patrimoniale",
+			),
+			'droit-international' => array(
+				'title'    => 'Droit international',
+				'icon'     => 'scales',
+				'excerpt'  => "Contrats internationaux, arbitrage, expatriation, fusions transfrontalieres, droit europeen.",
+				'content'  => "<p>Accompagnement des entreprises et particuliers dans leurs operations transfrontalieres.</p>",
+				'examples' => "Contrat de distribution international\nArbitrage CCI\nDetachement et expatriation",
+			),
+			'droit-de-la-securite-sociale' => array(
+				'title'    => 'Droit de la securite sociale',
+				'icon'     => 'heart',
+				'excerpt'  => "Accident du travail, maladie professionnelle, invalidite, pensions, contentieux URSSAF.",
+				'content'  => "<p>Defense des assures sociaux face aux organismes : CPAM, URSSAF, MSA, RSI.</p>",
+				'examples' => "Reconnaissance d'accident du travail\nFaute inexcusable de l'employeur\nLitige sur taux d'invalidite",
+			),
+			'droit-des-successions' => array(
+				'title'    => 'Droit des successions',
+				'icon'     => 'document',
+				'excerpt'  => "Succession, donation, testament, liquidation, partage, fiscalite successorale, indivision.",
+				'content'  => "<p>Anticiper la transmission du patrimoine ou regler une succession contestee dans le respect des heritiers.</p>",
+				'examples' => "Liquidation de succession\nContestation de testament\nDonation-partage",
+			),
+			'droit-du-numerique' => array(
+				'title'    => 'Droit du numerique',
+				'icon'     => 'lock',
+				'excerpt'  => "RGPD, propriete intellectuelle, e-commerce, cybersecurite, contrats SaaS, donnees personnelles.",
+				'content'  => "<p>Conformite et contentieux pour les acteurs de l'economie digitale.</p>",
+				'examples' => "Mise en conformite RGPD\nContrat SaaS B2B\nViolation de donnees",
+			),
+			'droit-bancaire' => array(
+				'title'    => 'Droit bancaire',
+				'icon'     => 'bank',
+				'excerpt'  => "Credit immobilier, taux d'usure, cautionnement, contentieux bancaire, surendettement, fraudes.",
+				'content'  => "<p>Defense des particuliers et professionnels face aux etablissements bancaires.</p>",
+				'examples' => "Pret immobilier sureleve\nFraude bancaire en ligne\nMise en jeu de caution",
+			),
+			'droit-de-la-consommation' => array(
+				'title'    => 'Droit de la consommation',
+				'icon'     => 'shield',
+				'excerpt'  => "Garanties, vices caches, demarchage, credit conso, clauses abusives, action de groupe.",
+				'content'  => "<p>Defense des droits des consommateurs face aux professionnels.</p>",
+				'examples' => "Vice cache automobile\nDemarchage abusif\nClause abusive bancaire",
+			),
+		);
 	}
 }
