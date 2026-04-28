@@ -227,6 +227,24 @@
 		});
 	}
 
+	/* ── Injection HTML de l'equipe complete sur la page Cabinet ──
+	   Le template page-cabinet.php du theme n'appelle pas the_content,
+	   donc on injecte le HTML cote JS. La presence du HTML est
+	   determinee server-side via wp_localize_script (vide hors page
+	   Cabinet pour ne pas alourdir les autres pages). */
+	function injectCabinetTeam() {
+		if (!isBusinessActive()) return;
+		var html = dataValue('cabinetTeamHtml', '');
+		if (!html) return;
+		if (document.querySelector('.ag-business-team-full')) return;
+		var main = document.getElementById('ag-main') || document.querySelector('main');
+		if (!main) {
+			document.body.insertAdjacentHTML('beforeend', html);
+			return;
+		}
+		main.insertAdjacentHTML('beforeend', html);
+	}
+
 	function run() {
 		animateCounters();
 		makeHonorairesClickable();
@@ -234,6 +252,7 @@
 		applyBoutiqueSymbol();
 		injectSearchButton();
 		injectStripeButtons();
+		injectCabinetTeam();
 	}
 
 	if (document.readyState === 'loading') {
