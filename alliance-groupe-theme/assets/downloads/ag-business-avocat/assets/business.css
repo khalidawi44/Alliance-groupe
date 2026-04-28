@@ -121,6 +121,29 @@ body.ag-business-active .ag-domaines .ag-domaine-card:focus-visible {
     outline-offset: 4px;
 }
 
+/* ── Cartes Domaines : forcer l'image de fond a etre visible ──
+   Le .ag-domaine-card__bg recoit l'image via inline style + nos
+   overrides CSS. On garantit que l'element est bien visible et
+   pas masque par opacity ou display:none. */
+body.ag-business-active .ag-domaine-card--bg .ag-domaine-card__bg {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}
+
+/* Overlay des cards Domaines : moins dense pour voir l'image ─
+   Default theme : .15/.55/.92 (top -> bottom). On allege a
+   .05/.30/.72 en nuit pour que l'image soit visible 70%+ en haut. */
+body.ag-business-active .ag-domaine-card--bg .ag-domaine-card__overlay {
+    background: linear-gradient(180deg, rgba(8, 10, 18, .05) 0%, rgba(8, 10, 18, .30) 55%, rgba(8, 10, 18, .78) 100%) !important;
+}
+body.ag-business-active.ag-light .ag-domaine-card--bg .ag-domaine-card__overlay {
+    background: linear-gradient(180deg, rgba(245, 240, 235, .05) 0%, rgba(245, 240, 235, .35) 55%, rgba(245, 240, 235, .85) 100%) !important;
+}
+
 /* ── MEGA MENU (sous-menu de "Domaines d'expertise") ──
    Style full-width qui couvre toute la largeur du viewport, ancre
    sous le header. Le menu d'origine reste intact — on transforme
