@@ -401,6 +401,44 @@
 		});
 	}
 
+	/* ── FAQ accordeon : auto-close des autres entrees ──
+	   Fallback pour navigateurs sans support de l'attribut name="" sur
+	   <details>. Sur les navigateurs modernes, name= fait ce job nativement. */
+	function setupFaqAutoClose() {
+		if (!isBusinessActive()) return;
+		document.querySelectorAll('.ag-business-faq__entry').forEach(function (d) {
+			d.addEventListener('toggle', function () {
+				if (!d.open) return;
+				var group = d.parentElement;
+				if (!group) return;
+				group.querySelectorAll('.ag-business-faq__entry').forEach(function (other) {
+					if (other !== d && other.open) other.open = false;
+				});
+			});
+		});
+	}
+
+	/* ── Footer : injecte les liens vers les pages legales ── */
+	function injectLegalFooter() {
+		if (!isBusinessActive()) return;
+		var footer = document.querySelector('.ag-site-footer');
+		if (!footer) return;
+		if (document.querySelector('.ag-business-legal-footer')) return;
+		var links = [
+			{ href: '/mentions-legales/',          label: 'Mentions légales' },
+			{ href: '/politique-confidentialite/', label: 'Politique de confidentialité' },
+			{ href: '/politique-cookies/',         label: 'Politique de cookies' },
+			{ href: '/cgv/',                       label: 'CGV' },
+			{ href: '/politique-retour/',          label: 'Politique de retour' }
+		];
+		var html = '<nav class="ag-business-legal-footer" aria-label="Liens legaux"><ul>';
+		links.forEach(function (l) {
+			html += '<li><a href="' + l.href + '">' + l.label + '</a></li>';
+		});
+		html += '</ul></nav>';
+		footer.insertAdjacentHTML('beforeend', html);
+	}
+
 	function run() {
 		animateCounters();
 		makeHonorairesClickable();
@@ -412,6 +450,8 @@
 		injectPageCitations();
 		makeContactBlocksClickable();
 		injectBoutiqueImages();
+		setupFaqAutoClose();
+		injectLegalFooter();
 	}
 
 	if (document.readyState === 'loading') {
