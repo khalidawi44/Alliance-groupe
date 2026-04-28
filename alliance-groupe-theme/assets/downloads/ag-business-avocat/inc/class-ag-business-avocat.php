@@ -84,9 +84,9 @@ class AG_Business_Avocat {
 		?>
 		<li class="menu-item menu-item-has-children ag-business-account-item">
 			<a href="<?php echo esc_url( $login_url ); ?>"><?php esc_html_e( 'Connexion', 'ag-business-avocat' ); ?></a>
-			<ul class="sub-menu ag-business-account-submenu">
-				<li class="menu-item"><a href="<?php echo esc_url( $login_url ); ?>"><?php esc_html_e( 'Se connecter', 'ag-business-avocat' ); ?></a></li>
-				<li class="menu-item ag-business-submenu-tous"><a href="<?php echo esc_url( $register_url ); ?>"><?php esc_html_e( 'Créer un compte →', 'ag-business-avocat' ); ?></a></li>
+			<ul class="sub-menu ag-business-account-submenu ag-business-account-submenu--logged-out">
+				<li class="menu-item ag-business-account-submenu__col"><a href="<?php echo esc_url( $login_url ); ?>"><?php esc_html_e( 'Se connecter', 'ag-business-avocat' ); ?></a></li>
+				<li class="menu-item ag-business-account-submenu__col"><a href="<?php echo esc_url( $register_url ); ?>"><?php esc_html_e( 'Créer un compte', 'ag-business-avocat' ); ?></a></li>
 			</ul>
 		</li>
 		<?php

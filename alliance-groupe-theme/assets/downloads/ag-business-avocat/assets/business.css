@@ -453,7 +453,13 @@ body.ag-business-active .ag-primary-menu > li:not(.menu-item-has-children) {
     position: relative;
 }
 
-/* Mega menu : full-width, grid 4 colonnes */
+/* Mega menu : full-width, grid 4 colonnes
+   IMPORTANT : pas de gap entre menu primaire et sub-menu — on utilise
+   border-top header + top:100% sans aucune marge. */
+body.ag-business-active .ag-primary-menu > li.menu-item-has-children {
+    padding: 0 !important;
+    margin: 0 !important;
+}
 body.ag-business-active .ag-primary-menu .sub-menu {
     position: absolute;
     top: 100%;
@@ -462,7 +468,7 @@ body.ag-business-active .ag-primary-menu .sub-menu {
     width: 100%;
     max-width: 100vw;
     list-style: none;
-    margin: 0;
+    margin: 0 !important;
     padding: 36px max(40px, 5vw) 32px;
     background: rgba(8, 8, 12, .98);
     border-top: 1px solid rgba(212, 180, 92, .28);
@@ -615,6 +621,68 @@ body.ag-business-active .ag-primary-menu .ag-business-account-submenu .ag-busine
 body.ag-light .ag-primary-menu .ag-business-account-submenu .ag-business-account-submenu__greeting {
     color: #7B2D3B !important;
     border-bottom-color: rgba(123, 45, 59, .22);
+}
+
+/* Sous-menu compte non-connecte : 'Se connecter' et 'Creer un compte'
+   sur la meme ligne avec separateur vertical au milieu. */
+body.ag-business-active .ag-primary-menu .ag-business-account-submenu--logged-out {
+    grid-template-columns: 1fr 1fr !important;
+    max-width: 720px !important;
+    margin: 0 auto !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) translateY(-12px) !important;
+    width: auto !important;
+}
+body.ag-business-active .ag-primary-menu > li:hover > .ag-business-account-submenu--logged-out,
+body.ag-business-active .ag-primary-menu > li:focus-within > .ag-business-account-submenu--logged-out {
+    transform: translateX(-50%) translateY(0) !important;
+}
+body.ag-business-active .ag-primary-menu .ag-business-account-submenu--logged-out .ag-business-account-submenu__col {
+    text-align: center;
+    padding: 18px 24px;
+    position: relative;
+}
+/* Separateur vertical entre les 2 colonnes */
+body.ag-business-active .ag-primary-menu .ag-business-account-submenu--logged-out .ag-business-account-submenu__col:first-child::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 15%;
+    bottom: 15%;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, rgba(212, 180, 92, .55), transparent);
+}
+body.ag-business-active.ag-light .ag-primary-menu .ag-business-account-submenu--logged-out .ag-business-account-submenu__col:first-child::after {
+    background: linear-gradient(180deg, transparent, rgba(123, 45, 59, .45), transparent);
+}
+body.ag-business-active .ag-primary-menu .ag-business-account-submenu--logged-out a {
+    display: inline-flex !important;
+    padding: 14px 26px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    color: #FFE5A0 !important;
+    border: 1px solid rgba(212, 180, 92, .4);
+    border-radius: 8px;
+    transition: background .25s, color .25s, transform .25s;
+}
+body.ag-business-active .ag-primary-menu .ag-business-account-submenu--logged-out a::before {
+    display: none !important;
+}
+body.ag-business-active .ag-primary-menu .ag-business-account-submenu--logged-out a:hover {
+    background: rgba(212, 180, 92, .15) !important;
+    color: #FFFFFF !important;
+    border-color: #FFE5A0 !important;
+    transform: translateY(-1px) !important;
+}
+body.ag-business-active.ag-light .ag-primary-menu .ag-business-account-submenu--logged-out a {
+    color: #7B2D3B !important;
+    border-color: rgba(123, 45, 59, .35);
+}
+body.ag-business-active.ag-light .ag-primary-menu .ag-business-account-submenu--logged-out a:hover {
+    background: rgba(123, 45, 59, .1) !important;
+    color: #A03D4D !important;
 }
 
 /* Tablette : 2 colonnes */
