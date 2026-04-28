@@ -19,6 +19,26 @@ body.ag-business-active .ag-primary-menu a {
     text-shadow: none !important;
     transform: none !important;
     transition: color .25s ease !important;
+    /* Compactage pour que tous les items tiennent sur une ligne */
+    font-size: .92rem !important;
+    letter-spacing: .6px !important;
+    padding: 8px 12px !important;
+}
+body.ag-business-active .ag-primary-menu {
+    gap: .5rem !important;
+    flex-wrap: nowrap !important;
+}
+@media (max-width: 1280px) {
+    body.ag-business-active .ag-primary-menu a {
+        font-size: .85rem !important;
+        padding: 8px 8px !important;
+        letter-spacing: .4px !important;
+    }
+}
+@media (max-width: 900px) {
+    body.ag-business-active .ag-primary-menu {
+        flex-wrap: wrap !important;
+    }
 }
 body.ag-business-active .ag-primary-menu a:hover {
     color: inherit !important;
@@ -290,4 +310,138 @@ body.ag-business-active.ag-light .ag-primary-menu .sub-menu .ag-business-submenu
         display: inline-block !important;
         padding: 8px 14px !important;
     }
+}
+
+/* ── Bouton recherche + overlay plein ecran ── */
+body.ag-business-active .ag-business-search-btn {
+    background: transparent;
+    border: 1px solid rgba(212, 180, 92, .35);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    color: #D4B45C;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: border-color .3s, transform .3s, color .3s;
+    margin-left: 4px;
+}
+body.ag-business-active .ag-business-search-btn:hover {
+    border-color: #D4B45C;
+    transform: scale(1.1);
+    color: #FFE5A0;
+}
+body.ag-business-active.ag-light .ag-business-search-btn {
+    border-color: rgba(123, 45, 59, .35);
+    color: #7B2D3B;
+}
+body.ag-business-active.ag-light .ag-business-search-btn:hover {
+    border-color: #7B2D3B;
+    color: #A03D4D;
+}
+body.ag-business-active .ag-business-search-btn svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+.ag-business-search-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .85);
+    backdrop-filter: blur(10px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .3s ease, visibility .3s ease;
+    padding: 20px;
+}
+.ag-business-search-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+}
+body.ag-light .ag-business-search-overlay {
+    background: rgba(245, 240, 235, .92);
+}
+.ag-business-search-form {
+    display: flex;
+    align-items: stretch;
+    width: min(680px, 92vw);
+    background: rgba(20, 20, 30, .98);
+    border: 1px solid rgba(212, 180, 92, .35);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .6), 0 0 32px rgba(212, 180, 92, .15);
+}
+body.ag-light .ag-business-search-form {
+    background: #ffffff;
+    border-color: rgba(123, 45, 59, .35);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .15);
+}
+.ag-business-search-form input[type="search"] {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    padding: 18px 24px;
+    color: #ffffff;
+    font-size: 1.15rem;
+    outline: none;
+    font-family: inherit;
+}
+body.ag-light .ag-business-search-form input[type="search"] {
+    color: #2A1A1E;
+}
+.ag-business-search-form input[type="search"]::placeholder {
+    color: rgba(255, 255, 255, .4);
+}
+body.ag-light .ag-business-search-form input[type="search"]::placeholder {
+    color: rgba(42, 26, 30, .4);
+}
+.ag-business-search-form button[type="submit"] {
+    background: #D4B45C;
+    border: 0;
+    padding: 0 28px;
+    color: #0a0a0f;
+    font-size: 1.4rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .25s ease;
+}
+.ag-business-search-form button[type="submit"]:hover {
+    background: #FFE5A0;
+}
+body.ag-light .ag-business-search-form button[type="submit"] {
+    background: #7B2D3B;
+    color: #ffffff;
+}
+body.ag-light .ag-business-search-form button[type="submit"]:hover {
+    background: #A03D4D;
+}
+.ag-business-search-close {
+    position: absolute;
+    top: 28px;
+    right: 28px;
+    background: transparent;
+    border: 0;
+    color: #ffffff;
+    font-size: 2.4rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px 12px;
+    transition: color .25s ease, transform .25s ease;
+}
+.ag-business-search-close:hover {
+    color: #D4B45C;
+    transform: rotate(90deg);
+}
+body.ag-light .ag-business-search-close {
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-search-close:hover {
+    color: #7B2D3B;
 }
