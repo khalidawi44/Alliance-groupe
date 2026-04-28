@@ -76,32 +76,27 @@
         brand.insertAdjacentHTML('afterbegin', svgMarkup);
     }
 
+    /* Helper : recupere les overrides Customizer passes via wp_localize_script */
+    function premiumData() {
+        return (typeof agPremiumData !== 'undefined') ? agPremiumData : { texts: {}, faq: [] };
+    }
+    function premiumText(key, fallback) {
+        var t = premiumData().texts || {};
+        return (t[key] && String(t[key]).trim() !== '') ? t[key] : fallback;
+    }
+
     /* ── Fix 3 : transforme la liste "Comment sont calcules..." en
-       accordeon FAQ avec questions/reponses (page Honoraires). */
+       accordeon FAQ avec questions/reponses (page Honoraires).
+       Les Q/R viennent du Customizer (agPremiumData.faq). */
     function injectHonorairesFaq() {
         if (!isPremiumActive()) return;
         var articles = document.querySelectorAll('.ag-page-article');
-        var faqData = [
-            {
-                q: 'Comment se passe la consultation initiale ?',
-                a: 'Le premier rendez-vous (45 minutes a 1 heure) sert a analyser votre situation, identifier les enjeux juridiques et vous proposer une strategie. La consultation est facturee a un tarif fixe communique avant le rendez-vous.'
-            },
-            {
-                q: 'Qu’est-ce qu’un forfait ?',
-                a: 'Un prix fixe convenu a l’avance pour traiter un dossier defini : creation de societe, divorce par consentement mutuel, redaction d’un contrat, etc. Le montant est garanti dans la convention d’honoraires ecrite, aucune surprise.'
-            },
-            {
-                q: 'Comment fonctionne la facturation au temps passe ?',
-                a: 'Le taux horaire est convenu a l’avance et vous recevez un releve detaille mensuel ou en fin de dossier precisant chaque acte effectue et le temps consacre. Convient aux dossiers dont la duree est difficile a estimer.'
-            },
-            {
-                q: 'Qu’est-ce qu’un honoraire de resultat ?',
-                a: 'Un complement calcule en pourcentage du gain obtenu, conditionne par la reussite du dossier. Encadre par la deontologie : il s’ajoute toujours a des honoraires de base et est plafonne.'
-            },
-            {
-                q: 'L’aide juridictionnelle est-elle acceptee ?',
-                a: 'Oui, le cabinet accepte les dossiers eligibles. Selon vos revenus, l’Etat prend en charge tout ou partie des honoraires. Apportez votre avis d’imposition et les justificatifs de revenus du foyer.'
-            }
+        var faqData = (premiumData().faq && premiumData().faq.length) ? premiumData().faq : [
+            { q: 'Comment se passe la consultation initiale ?', a: 'Le premier rendez-vous (45 minutes a 1 heure) sert a analyser votre situation.' },
+            { q: 'Qu’est-ce qu’un forfait ?',                   a: 'Un prix fixe convenu a l’avance pour traiter un dossier defini.' },
+            { q: 'Comment fonctionne la facturation au temps passe ?', a: 'Le taux horaire est convenu a l’avance, releve detaille fourni.' },
+            { q: 'Qu’est-ce qu’un honoraire de resultat ?',     a: 'Complement en pourcentage du gain obtenu, conditionne par la reussite.' },
+            { q: 'L’aide juridictionnelle est-elle acceptee ?', a: 'Oui, le cabinet accepte les dossiers eligibles.' }
         ];
 
         articles.forEach(function (article) {
@@ -135,9 +130,48 @@
         });
     }
 
+    /* ── Fix 4 : override des titres/accroches de sections ──
+       Les textes Free etant en dur dans les templates, on les remplace
+       au runtime quand l'utilisateur a modifie la valeur dans le
+       Customizer Premium. Detection robuste par texte original. */
+    function overrideSectionTexts() {
+        if (!isPremiumActive()) return;
+        var rules = [
+            // Domaines d'expertise
+            { selector: '.ag-domaines .ag-section-title', defaultText: "Domaines d'expertise", key: 'domaines_title' },
+            { selector: '.ag-domaines .ag-section-lead',  matchSubstr: 'principaux domaines', key: 'domaines_lead' },
+            // Honoraires
+            { selector: '.ag-honoraires .ag-section-title', defaultText: 'Honoraires', key: 'honoraires_title' },
+            { selector: '.ag-honoraires .ag-section-lead',  matchSubstr: 'Transparence totale', key: 'honoraires_lead' },
+            // Maitre tag
+            { selector: '.ag-maitre__tag', defaultText: 'Le Maître', key: 'maitre_tag' },
+            // FAQ Honoraires : H2 et intro
+            { selector: '.ag-page-article h2', matchSubstr: 'Comment sont calcules', key: 'faq_h2' },
+            { selector: '.ag-page-article p', matchSubstr: "convention d'honoraires", key: 'faq_intro' }
+        ];
+
+        rules.forEach(function (rule) {
+            var el = null;
+            var nodes = document.querySelectorAll(rule.selector);
+            nodes.forEach(function (n) {
+                if (el) return;
+                var t = (n.textContent || '').trim();
+                if (rule.defaultText && t === rule.defaultText) el = n;
+                else if (rule.matchSubstr && t.indexOf(rule.matchSubstr) !== -1) el = n;
+                else if (!rule.defaultText && !rule.matchSubstr) el = n;
+            });
+            if (!el) return;
+            var newText = premiumText(rule.key, null);
+            if (newText && newText !== el.textContent.trim()) {
+                el.textContent = newText;
+            }
+        });
+    }
+
     function run() {
         applyBgFix();
         injectLogoSvg();
+        overrideSectionTexts();
         injectHonorairesFaq();
     }
 
