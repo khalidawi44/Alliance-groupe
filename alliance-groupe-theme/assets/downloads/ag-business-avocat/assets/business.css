@@ -58,16 +58,20 @@ body.ag-business-active.ag-light .ag-primary-menu a::after {
 }
 
 /* ── Boutons CTA : aucune phase d'invisibilite au hover ──
-   Le texte et le fond restent solides, pas d'animation qui fade.
-   IMPORTANT : on NE met pas animation:none au repos sinon agHeroIn
-   (qui anime opacity 0 -> 1 sur le bouton du hero) est tue et le
-   bouton reste invisible. animation:none uniquement au :hover pour
-   neutraliser agPulseGlow. */
+   Force opacity:1 et transform:translateY(0) au repos pour
+   neutraliser l'animation agHeroIn du theme qui laisse parfois
+   le bouton invisible apres un hover (l'animation se perd).
+   On sacrifie le fade-in d'entree mais on garantit la visibilite. */
+body.ag-business-active .ag-hero .ag-btn,
 body.ag-business-active .ag-btn,
 body.ag-business-active .ag-footer-rdv,
 body.ag-business-active .ag-cabinet-full__btn,
 body.ag-business-active .ag-boutique-card__btn {
-    transition: background .25s ease, transform .25s ease, box-shadow .25s ease !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+    animation: none !important;
+    transition: background .25s ease, transform .25s ease, box-shadow .25s ease, color .25s ease !important;
 }
 body.ag-business-active .ag-btn:hover,
 body.ag-business-active .ag-cabinet-full__btn:hover,
@@ -135,14 +139,40 @@ body.ag-business-active .ag-domaine-card--bg .ag-domaine-card__bg {
     background-repeat: no-repeat !important;
 }
 
-/* Overlay des cards Domaines : moins dense pour voir l'image ─
-   Default theme : .15/.55/.92 (top -> bottom). On allege a
-   .05/.30/.72 en nuit pour que l'image soit visible 70%+ en haut. */
+/* Overlay des cards Domaines : leger en haut pour voir l'image,
+   degrade qui s'intensifie vers le bas pour le contraste. */
 body.ag-business-active .ag-domaine-card--bg .ag-domaine-card__overlay {
-    background: linear-gradient(180deg, rgba(8, 10, 18, .05) 0%, rgba(8, 10, 18, .30) 55%, rgba(8, 10, 18, .78) 100%) !important;
+    background: linear-gradient(180deg, rgba(8, 10, 18, .05) 0%, rgba(8, 10, 18, .25) 50%, rgba(8, 10, 18, .55) 100%) !important;
 }
 body.ag-business-active.ag-light .ag-domaine-card--bg .ag-domaine-card__overlay {
-    background: linear-gradient(180deg, rgba(245, 240, 235, .05) 0%, rgba(245, 240, 235, .35) 55%, rgba(245, 240, 235, .85) 100%) !important;
+    background: linear-gradient(180deg, rgba(245, 240, 235, .05) 0%, rgba(245, 240, 235, .3) 50%, rgba(245, 240, 235, .7) 100%) !important;
+}
+
+/* Filtre derriere le texte uniquement (pas l'image) ──
+   Sur .ag-domaine-card__content (qui contient titre/excerpt/list)
+   on pose un fond degrade plus dense localement. Resultat :
+   - Image entierement visible en haut
+   - Texte parfaitement lisible sur la portion basse de la card */
+body.ag-business-active .ag-domaine-card--bg .ag-domaine-card__content {
+    background: linear-gradient(180deg, rgba(8, 10, 18, 0) 0%, rgba(8, 10, 18, .55) 30%, rgba(8, 10, 18, .92) 100%) !important;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    padding-top: 60px !important;
+}
+body.ag-business-active .ag-domaine-card--bg .ag-domaine-card__title,
+body.ag-business-active .ag-domaine-card--bg .ag-domaine-card__excerpt,
+body.ag-business-active .ag-domaine-card--bg .ag-domaine-card__examples {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, .85), 0 1px 3px rgba(0, 0, 0, .9) !important;
+}
+
+/* Mode jour : filtre creme pour texte sombre lisible */
+body.ag-business-active.ag-light .ag-domaine-card--bg .ag-domaine-card__content {
+    background: linear-gradient(180deg, rgba(245, 240, 235, 0) 0%, rgba(245, 240, 235, .65) 30%, rgba(245, 240, 235, .95) 100%) !important;
+}
+body.ag-business-active.ag-light .ag-domaine-card--bg .ag-domaine-card__title,
+body.ag-business-active.ag-light .ag-domaine-card--bg .ag-domaine-card__excerpt,
+body.ag-business-active.ag-light .ag-domaine-card--bg .ag-domaine-card__examples {
+    text-shadow: 0 1px 3px rgba(255, 255, 255, .85) !important;
 }
 
 /* ── MEGA MENU (sous-menu de "Domaines d'expertise") ──
