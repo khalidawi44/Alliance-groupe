@@ -200,12 +200,40 @@
 		});
 	}
 
+	/* ── Boutons Stripe sous chaque card Honoraires ──
+	   URLs configurees via Customizer (3 fields). Si l'URL est vide,
+	   aucun bouton injecte sur la card correspondante. */
+	function injectStripeButtons() {
+		if (!isBusinessActive()) return;
+		var urls = dataValue('stripeUrls', []);
+		if (!urls || !urls.length) return;
+		var cards = document.querySelectorAll('.ag-honoraires__card');
+		cards.forEach(function (card, idx) {
+			var url = urls[idx];
+			if (!url) return;
+			if (card.querySelector('.ag-business-stripe-btn')) return;
+
+			var btn = document.createElement('a');
+			btn.className = 'ag-business-stripe-btn';
+			btn.href = url;
+			btn.target = '_blank';
+			btn.rel = 'noopener noreferrer';
+			btn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="vertical-align:middle;margin-right:8px;"><path d="M13 9V3.5L18.5 9M6 2c-1.11 0-2 .89-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6H6m4 11h2v3h3v2h-3v3h-2v-3H7v-2h3v-3z"/></svg>Payer en ligne';
+			btn.setAttribute('aria-label', 'Payer cette offre en ligne via Stripe');
+			btn.addEventListener('click', function (e) {
+				e.stopPropagation(); // ne pas declencher le click de la card
+			});
+			card.appendChild(btn);
+		});
+	}
+
 	function run() {
 		animateCounters();
 		makeHonorairesClickable();
 		makeDomainesClickable();
 		applyBoutiqueSymbol();
 		injectSearchButton();
+		injectStripeButtons();
 	}
 
 	if (document.readyState === 'loading') {

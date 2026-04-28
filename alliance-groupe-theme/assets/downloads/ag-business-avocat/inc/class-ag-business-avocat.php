@@ -34,6 +34,7 @@ class AG_Business_Avocat {
 		add_action( 'admin_init', array( $this, 'ensure_boutique_offers' ) );
 		add_filter( 'the_content', array( $this, 'inject_team_on_cabinet_page' ), 20 );
 		add_action( 'admin_notices', array( $this, 'woocommerce_admin_notice' ) );
+		add_action( 'admin_notices', array( $this, 'stripe_admin_notice' ) );
 		add_filter( 'wp_nav_menu_args', array( $this, 'allow_submenu_depth' ) );
 		add_action( 'customize_register', array( $this, 'register_customizer' ), 30 );
 	}
@@ -95,6 +96,11 @@ class AG_Business_Avocat {
 				'boutiqueUrl'     => function_exists( 'ag_page_url' ) ? ag_page_url( 'boutique' ) : home_url( '/boutique/' ),
 				'domaineUrls'     => $this->get_domaine_urls(),
 				'boutiqueSymbol'  => (string) get_theme_mod( 'ag_business_boutique_symbol', 'stars' ),
+				'stripeUrls'      => array(
+					(string) get_theme_mod( 'ag_business_honoraires_first_stripe', '' ),
+					(string) get_theme_mod( 'ag_business_honoraires_pack_stripe', '' ),
+					(string) get_theme_mod( 'ag_business_honoraires_hour_stripe', '' ),
+				),
 			) );
 		}
 	}
@@ -596,11 +602,75 @@ class AG_Business_Avocat {
 				'none'   => __( 'Desactiver', 'ag-business-avocat' ),
 			),
 		) );
+
+		// Section Honoraires — liens Stripe
+		$wp_customize->add_section( 'ag_business_stripe', array(
+			'title'       => __( 'Honoraires — liens Stripe', 'ag-business-avocat' ),
+			'description' => __( "Coller l'URL d'un Stripe Payment Link pour chaque palier. Pour creer un lien : dashboard Stripe > Produits > Ajouter > Creer un lien de paiement. Si le champ est vide, aucun bouton n'apparait sur la card.", 'ag-business-avocat' ),
+			'panel'       => 'ag_business_panel',
+		) );
+		$tiers = array(
+			'first' => __( 'URL Stripe — 1ère consultation', 'ag-business-avocat' ),
+			'pack'  => __( 'URL Stripe — Forfait', 'ag-business-avocat' ),
+			'hour'  => __( 'URL Stripe — Au temps passé', 'ag-business-avocat' ),
+		);
+		foreach ( $tiers as $key => $label ) {
+			$setting_key = "ag_business_honoraires_{$key}_stripe";
+			$wp_customize->add_setting( $setting_key, array(
+				'default'           => '',
+				'sanitize_callback' => 'esc_url_raw',
+				'transport'         => 'refresh',
+			) );
+			$wp_customize->add_control( $setting_key, array(
+				'label'   => $label,
+				'section' => 'ag_business_stripe',
+				'type'    => 'url',
+			) );
+		}
 	}
 
 	public function sanitize_boutique_symbol( $value ) {
 		$valid = array( 'stars', 'scales', 'gavel', 'pillar', 'none' );
 		return in_array( $value, $valid, true ) ? $value : 'stars';
+	}
+
+	/**
+	 * Affiche un admin notice qui propose d'installer un plugin Stripe
+	 * (WP Simple Pay) quand Business est actif et qu'aucun plugin Stripe
+	 * n'est detecte. Lien direct vers update.php install.
+	 */
+	public function stripe_admin_notice() {
+		if ( ! $this->is_active() ) {
+			return;
+		}
+		if ( ! current_user_can( 'install_plugins' ) ) {
+			return;
+		}
+		// Si un plugin Stripe-like est deja la, on n'affiche rien.
+		if ( class_exists( 'SimplePay\\Core\\Plugin' )
+			|| class_exists( 'WC_Stripe_Helper' )
+			|| function_exists( 'simpay_get_setting' ) ) {
+			return;
+		}
+		// slug WP officiel : "stripe" (WP Simple Pay)
+		$install_url = wp_nonce_url(
+			self_admin_url( 'update.php?action=install-plugin&plugin=stripe' ),
+			'install-plugin_stripe'
+		);
+		$browse_url = self_admin_url( 'plugin-install.php?s=stripe&tab=search&type=term' );
+		?>
+		<div class="notice notice-info" style="border-left-color:#635BFF;">
+			<p style="font-size:14px;">
+				<strong><?php esc_html_e( 'AG Business :', 'ag-business-avocat' ); ?></strong>
+				<?php esc_html_e( 'pour accepter les paiements Stripe directement sur le site, installez WP Simple Pay (gratuit).', 'ag-business-avocat' ); ?>
+				&nbsp;
+				<a href="<?php echo esc_url( $install_url ); ?>" class="button button-primary"><?php esc_html_e( 'Installer WP Simple Pay', 'ag-business-avocat' ); ?></a>
+				<a href="<?php echo esc_url( $browse_url ); ?>" class="button"><?php esc_html_e( 'Voir tous les plugins Stripe', 'ag-business-avocat' ); ?></a>
+				&nbsp;
+				<em style="font-size:.85em;color:#666;"><?php esc_html_e( 'Ou utilisez les Stripe Payment Links sans plugin (URLs paramétrables dans le Customizer).', 'ag-business-avocat' ); ?></em>
+			</p>
+		</div>
+		<?php
 	}
 
 	/**
