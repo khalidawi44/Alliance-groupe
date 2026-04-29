@@ -336,6 +336,32 @@ class AG_Business_Avocat {
 		// (ag_after_maitre priorite 10 — registree par pro-features.php).
 		// On ajoute juste les 2 associes AVANT (priorite 5).
 		add_action( 'ag_after_maitre', array( $this, 'render_home_associates' ), 5 );
+		// Bouton 'Decouvrir' apres la section Equipe (apres team_section @10)
+		add_action( 'ag_after_maitre', array( $this, 'render_decouvrir_after_team' ), 99 );
+		// Bouton 'Decouvrir' INSIDE la presentation du Maitre
+		add_action( 'ag_inside_maitre_body', array( $this, 'render_decouvrir_inside_maitre' ), 99 );
+	}
+
+	private function render_decouvrir_btn_html( $aria_label = 'Decouvrir' ) {
+		$url = function_exists( 'ag_page_url' ) ? ag_page_url( 'cabinet' ) : home_url( '/cabinet/' );
+		return '<div class="ag-business-decouvrir-cta" style="text-align:center;padding:14px 24px 24px;">'
+			. '<a href="' . esc_url( $url ) . '" class="ag-btn ag-business-decouvrir-cta__btn" aria-label="' . esc_attr( $aria_label ) . '">'
+			. esc_html__( 'Découvrir →', 'ag-business-avocat' )
+			. '</a></div>';
+	}
+
+	public function render_decouvrir_after_team() {
+		if ( ! $this->is_active() ) {
+			return;
+		}
+		echo $this->render_decouvrir_btn_html( 'Decouvrir le cabinet et l\'equipe' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+	public function render_decouvrir_inside_maitre() {
+		if ( ! $this->is_active() ) {
+			return;
+		}
+		echo $this->render_decouvrir_btn_html( 'Decouvrir le cabinet' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -347,6 +373,7 @@ class AG_Business_Avocat {
 			return;
 		}
 		echo $this->render_team_group_html( 'associates', __( 'Avocats associés', 'ag-business-avocat' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $this->render_decouvrir_btn_html( 'Decouvrir les associes' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
