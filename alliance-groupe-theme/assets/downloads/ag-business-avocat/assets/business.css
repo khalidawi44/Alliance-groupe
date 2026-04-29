@@ -2085,7 +2085,30 @@ body.ag-light .ag-business-team-compact__link:hover {
 body.ag-light .ag-business-cabinet-rdv {
     background: #ffffff;
 }
-.ag-business-cabinet-rdv__container {
+/* Inner container : pile honoraires (top) puis grid (bottom) */
+.ag-business-cabinet-rdv__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+}
+
+/* Top zone : honoraires plein largeur */
+.ag-business-cabinet-rdv__honoraires {
+    width: 100%;
+}
+.ag-business-cabinet-rdv__honoraires .ag-section-title,
+.ag-business-cabinet-rdv__honoraires .ag-section-lead {
+    text-align: center;
+}
+.ag-business-cabinet-rdv__honoraires .ag-section-title {
+    margin-top: 0;
+}
+.ag-business-cabinet-rdv__honoraires .ag-honoraires__grid {
+    margin-top: 32px !important;
+}
+
+/* Bottom : grid 2-col rdv | cabinet */
+.ag-business-cabinet-rdv__grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 48px;
@@ -2096,7 +2119,7 @@ body.ag-light .ag-business-cabinet-rdv {
     min-width: 0;
 }
 @media (max-width: 980px) {
-    .ag-business-cabinet-rdv__container {
+    .ag-business-cabinet-rdv__grid {
         grid-template-columns: 1fr;
         gap: 36px;
     }
