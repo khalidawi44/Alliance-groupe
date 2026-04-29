@@ -206,9 +206,9 @@ class AG_Business_Avocat {
 				),
 				// HTML de l'equipe injecte uniquement sur la page Cabinet
 				// (le template Free n'appelle pas the_content donc on
-				// passe par JS). Split en 3 groupes pour permettre
-				// d'inserer des citations entre.
-				'cabinetFounderHtml'       => is_page( 'cabinet' ) ? $this->render_team_group_html( 'founder', __( 'Le fondateur', 'ag-business-avocat' ) ) : '',
+				// passe par JS). Le fondateur n'est PAS injecte ici :
+				// c'est uniquement la home qui montre la card fondateur.
+				'cabinetFounderHtml'       => '',
 				'cabinetAssociatesHtml'    => is_page( 'cabinet' ) ? $this->render_team_group_html( 'associates', __( 'Avocats associés', 'ag-business-avocat' ) ) : '',
 				'cabinetCollaboratorsHtml' => is_page( 'cabinet' ) ? $this->render_team_group_html( 'collaborators', __( 'Collaborateurs', 'ag-business-avocat' ) ) : '',
 				// Citations parallax injectees entre les sections des
@@ -378,13 +378,18 @@ class AG_Business_Avocat {
 			return;
 		}
 		$cabinet_url = function_exists( 'ag_page_url' ) ? ag_page_url( 'cabinet' ) : home_url( '/cabinet/' );
+		// Override Customizer pour la photo (utile car les photos
+		// stock par defaut peuvent ne pas correspondre a l'image
+		// recherchee — homme age, barbe blanche, tribunal francais).
+		$photo_override = (string) get_theme_mod( 'ag_business_founder_photo', '' );
+		$photo_url      = $photo_override ? $photo_override : $founder['photo'];
 		?>
 		<section class="ag-section ag-business-founder" id="ag-business-founder">
 			<div class="ag-container ag-business-founder__container">
 				<h2 class="ag-business-founder__title"><?php esc_html_e( 'Le fondateur et les associés', 'ag-business-avocat' ); ?></h2>
 				<div class="ag-business-founder__grid">
 					<article class="ag-business-founder-card">
-						<div class="ag-business-founder-card__photo" style="background-image:url('<?php echo esc_url( $founder['photo'] ); ?>');" aria-hidden="true"></div>
+						<div class="ag-business-founder-card__photo" style="background-image:url('<?php echo esc_url( $photo_url ); ?>');" aria-hidden="true"></div>
 						<div class="ag-business-founder-card__body">
 							<p class="ag-business-founder-card__tag"><?php esc_html_e( 'Fondateur', 'ag-business-avocat' ); ?></p>
 							<h3 class="ag-business-founder-card__name"><?php echo esc_html( $founder['name'] ); ?></h3>
@@ -966,6 +971,23 @@ class AG_Business_Avocat {
 				'type'    => 'url',
 			) );
 		}
+
+		// Section Fondateur — photo override
+		$wp_customize->add_section( 'ag_business_founder', array(
+			'title'       => __( 'Fondateur — section home', 'ag-business-avocat' ),
+			'description' => __( "Photo du fondateur affichee dans la section 'Le fondateur et les associes' sur la home. Coller une URL d'image (Unsplash, mediatheque WP, etc.) ou laisser vide pour le portrait par defaut.", 'ag-business-avocat' ),
+			'panel'       => 'ag_business_panel',
+		) );
+		$wp_customize->add_setting( 'ag_business_founder_photo', array(
+			'default'           => '',
+			'sanitize_callback' => 'esc_url_raw',
+			'transport'         => 'refresh',
+		) );
+		$wp_customize->add_control( 'ag_business_founder_photo', array(
+			'label'   => __( 'URL photo fondateur', 'ag-business-avocat' ),
+			'section' => 'ag_business_founder',
+			'type'    => 'url',
+		) );
 	}
 
 	public function sanitize_boutique_symbol( $value ) {
@@ -1404,7 +1426,11 @@ Telephone : [telephone]</p>
 					'name'        => 'Maître Henri DELACROIX',
 					'role'        => 'Avocat fondateur du cabinet',
 					'barreau'     => 'Barreau de Paris — Inscrit depuis 1985',
-					'photo'       => 'https://images.unsplash.com/photo-1545167622-3a6ac756afa4?w=1400&q=85',
+					// Defaut : portrait d'un homme age, barbu. Si l'URL ne
+					// rend pas ce qu'attend le client, utiliser le
+					// Customizer (Apparence > Personnaliser > AG Business
+					// Options > Fondateur) pour overrider.
+					'photo'       => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=1400&q=85',
 					'specialties' => array(
 						'Droit civil et commercial',
 						'Contentieux complexes',
@@ -1594,15 +1620,8 @@ Telephone : [telephone]</p>
 		// des sections de contenu.
 
 		if ( is_page( 'cabinet' ) ) {
-			// Cabinet : Montesquieu entre fondateur et associes,
-			//           Cicéron entre associes et collaborateurs,
+			// Cabinet : Cicéron entre associes et collaborateurs,
 			//           Pascal entre collaborateurs et "Nous trouver".
-			$citations[] = array(
-				'quote'       => 'L\'expérience fait plus de savants que les livres.',
-				'author'      => 'Montesquieu, De l\'esprit des lois',
-				'bg'          => 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1920&q=85',
-				'insertAfter' => '.ag-business-team-full--founder',
-			);
 			$citations[] = array(
 				'quote'       => 'Le silence est une chose admirable, mais qui demande une grande force pour ne pas être faiblesse.',
 				'author'      => 'Cicéron',
