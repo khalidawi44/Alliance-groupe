@@ -471,18 +471,19 @@
 	}
 
 	/* ── Home : regroupe Le cabinet (33% droite) + Prendre rdv (66% gauche) ──
-	   Refactor DOM uniquement sur la home (.ag-business-home). Deplace les
-	   contenus des sections .ag-cabinet et .ag-rdv dans une nouvelle
-	   section .ag-business-cabinet-rdv a 2 colonnes 2fr/1fr. La carte
-	   (.ag-cabinet__map) est extraite et conservee plein largeur en
-	   dessous.  */
+	   Refactor DOM uniquement sur la home (front-page.php). On detecte via
+	   la presence simultanee de #ag-cabinet ET #ag-rdv : ces deux ids ne
+	   coexistent que dans front-page.php (page-cabinet.php n'a ni id
+	   ag-cabinet ni section ag-rdv). Pas de check body class — celui-ci
+	   echouait dans certains setups WP. La carte (.ag-cabinet__map) est
+	   extraite et conservee plein largeur en dessous.  */
 	function combineCabinetRdv() {
 		if (!isBusinessActive()) return;
-		if (!document.body.classList.contains('ag-business-home')) return;
 		if (document.querySelector('.ag-business-cabinet-rdv')) return; // deja fait
 
 		var cabinet = document.getElementById('ag-cabinet');
 		var rdv = document.getElementById('ag-rdv');
+		// Les 2 doivent etre presents — sinon on n'est pas sur la home.
 		if (!cabinet || !rdv) return;
 
 		var cabContainer = cabinet.querySelector('.ag-container');

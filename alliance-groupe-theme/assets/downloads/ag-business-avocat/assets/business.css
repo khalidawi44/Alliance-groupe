@@ -1621,7 +1621,15 @@ body.ag-light .ag-business-account form input[type="submit"] {
 body.ag-business-home .ag-section.ag-maitre,
 body.ag-business-home #ag-maitre,
 body.ag-business-home .ag-section.ag-team,
-body.ag-business-home #ag-team {
+body.ag-business-home #ag-team,
+body.ag-business-active.home .ag-section.ag-maitre,
+body.ag-business-active.home #ag-maitre,
+body.ag-business-active.home .ag-section.ag-team,
+body.ag-business-active.home #ag-team,
+body.ag-business-active.front-page .ag-section.ag-maitre,
+body.ag-business-active.front-page #ag-maitre,
+body.ag-business-active.front-page .ag-section.ag-team,
+body.ag-business-active.front-page #ag-team {
     display: none !important;
 }
 
