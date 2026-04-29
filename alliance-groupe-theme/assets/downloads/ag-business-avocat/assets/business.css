@@ -6,6 +6,28 @@
  * `body.ag-business-active`.
  */
 
+/* ─────────────────────────────────────────────────────────────────
+   Largeur globale Business : chaque .ag-container occupe au minimum
+   80% de la largeur ecran (au lieu du max-width Free ~1200px qui
+   laissait des grandes marges sur les ecrans larges). Les overrides
+   plus specifiques (.ag-business-founder__container 95vw,
+   .ag-business-boutique-page .ag-container 95vw, header 95vw, card
+   fondateur cabinet 80%) gagnent grace a leur specificite superieure.
+   Mobile : on remonte a 95vw pour etre plus utilisable sur petit ecran.
+   ───────────────────────────────────────────────────────────────── */
+body.ag-business-active .ag-container {
+    max-width: 80vw !important;
+    width: 80vw !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+@media (max-width: 900px) {
+    body.ag-business-active .ag-container {
+        max-width: 95vw !important;
+        width: 95vw !important;
+    }
+}
+
 /* ── Menu principal : SOULIGNE UNIQUEMENT au hover ──
    Override total des effets existants (sweep, color shift, text-shadow).
    On garde uniquement l'underline doree qui apparait au hover, pas de
