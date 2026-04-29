@@ -470,6 +470,80 @@
 		});
 	}
 
+	/* ── Home : regroupe Le cabinet (33% droite) + Prendre rdv (66% gauche) ──
+	   Refactor DOM uniquement sur la home (.ag-business-home). Deplace les
+	   contenus des sections .ag-cabinet et .ag-rdv dans une nouvelle
+	   section .ag-business-cabinet-rdv a 2 colonnes 2fr/1fr. La carte
+	   (.ag-cabinet__map) est extraite et conservee plein largeur en
+	   dessous.  */
+	function combineCabinetRdv() {
+		if (!isBusinessActive()) return;
+		if (!document.body.classList.contains('ag-business-home')) return;
+		if (document.querySelector('.ag-business-cabinet-rdv')) return; // deja fait
+
+		var cabinet = document.getElementById('ag-cabinet');
+		var rdv = document.getElementById('ag-rdv');
+		if (!cabinet || !rdv) return;
+
+		var cabContainer = cabinet.querySelector('.ag-container');
+		var rdvContainer = rdv.querySelector('.ag-container');
+		if (!cabContainer || !rdvContainer) return;
+
+		// Section combinee
+		var combined = document.createElement('section');
+		combined.className = 'ag-section ag-business-cabinet-rdv';
+		combined.id = 'ag-business-cabinet-rdv';
+		var grid = document.createElement('div');
+		grid.className = 'ag-container ag-business-cabinet-rdv__container';
+		combined.appendChild(grid);
+
+		var left = document.createElement('div');
+		left.className = 'ag-business-cabinet-rdv__left';
+		grid.appendChild(left);
+
+		var right = document.createElement('div');
+		right.className = 'ag-business-cabinet-rdv__right';
+		grid.appendChild(right);
+
+		// Sortir la map avant de transferer (elle ira plein largeur dessous)
+		var map = cabContainer.querySelector('.ag-cabinet__map');
+		if (map && map.parentNode) map.parentNode.removeChild(map);
+
+		// Inserer la section combinee avant le 1er des 2 (cabinet vient
+		// avant rdv dans front-page.php, donc on l'insere avant cabinet)
+		cabinet.parentNode.insertBefore(combined, cabinet);
+
+		// Gauche : tout le contenu du form rdv (titre + status + form)
+		while (rdvContainer.firstChild) {
+			left.appendChild(rdvContainer.firstChild);
+		}
+
+		// Droite : tout le contenu du cabinet (titre + lead + cards)
+		while (cabContainer.firstChild) {
+			right.appendChild(cabContainer.firstChild);
+		}
+
+		// Map : nouvelle section plein largeur sous la combinee
+		if (map) {
+			var mapSection = document.createElement('section');
+			mapSection.className = 'ag-section ag-business-cabinet-map-section';
+			var mapInner = document.createElement('div');
+			mapInner.className = 'ag-container';
+			mapInner.appendChild(map);
+			mapSection.appendChild(mapInner);
+			combined.parentNode.insertBefore(mapSection, combined.nextSibling);
+		}
+
+		// Vider, masquer + reattribuer les ids (l'ancre #ag-rdv du form
+		// doit pointer vers la colonne visible).
+		cabinet.style.display = 'none';
+		rdv.style.display = 'none';
+		cabinet.removeAttribute('id');
+		rdv.removeAttribute('id');
+		left.id = 'ag-rdv';
+		right.id = 'ag-cabinet';
+	}
+
 	function run() {
 		animateCounters();
 		makeHonorairesClickable();
@@ -478,6 +552,7 @@
 		injectSearchButton();
 		injectStripeButtons();
 		injectCabinetTeam();
+		combineCabinetRdv();
 		injectPageCitations();
 		makeContactBlocksClickable();
 		injectBoutiqueImages();
