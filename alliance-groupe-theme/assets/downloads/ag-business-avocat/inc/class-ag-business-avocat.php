@@ -165,6 +165,9 @@ class AG_Business_Avocat {
 			return $classes;
 		}
 		$classes[] = 'ag-business-active';
+		if ( get_theme_mod( 'ag_business_hide_home_boutique', false ) ) {
+			$classes[] = 'ag-business-hide-home-boutique';
+		}
 		return $classes;
 	}
 
@@ -844,6 +847,19 @@ class AG_Business_Avocat {
 				'pillar' => __( 'Colonne classique', 'ag-business-avocat' ),
 				'none'   => __( 'Desactiver', 'ag-business-avocat' ),
 			),
+		) );
+
+		// Section Boutique — toggle home pour eviter doublon avec page /boutique/
+		$wp_customize->add_setting( 'ag_business_hide_home_boutique', array(
+			'default'           => false,
+			'sanitize_callback' => 'wp_validate_boolean',
+			'transport'         => 'refresh',
+		) );
+		$wp_customize->add_control( 'ag_business_hide_home_boutique', array(
+			'type'        => 'checkbox',
+			'label'       => __( 'Masquer la section Boutique sur la home', 'ag-business-avocat' ),
+			'description' => __( 'Cocher si la page /boutique/ suffit (evite le doublon).', 'ag-business-avocat' ),
+			'section'     => 'ag_business_boutique',
 		) );
 
 		// Section Honoraires — liens Stripe
@@ -1731,7 +1747,7 @@ Telephone : [telephone]</p>
 				),
 				'citations' => array(
 					array( 'quote' => 'Le travail éloigne de nous trois grands maux : l\'ennui, le vice et le besoin.', 'author' => 'Voltaire', 'bg' => 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1920&q=85' ),
-					array( 'quote' => 'Tout travail mérite salaire ; tout salaire mérite équité.', 'author' => 'Adage du droit social', 'bg' => 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1920&q=85' ),
+					array( 'quote' => 'Le travail n\'est pas une marchandise. La liberté d\'expression et d\'association est essentielle pour soutenir le progrès et la dignité du travailleur.', 'author' => 'Déclaration de Philadelphie, OIT 1944', 'bg' => 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1920&q=85' ),
 				),
 			),
 			'droit-de-la-famille' => array(
