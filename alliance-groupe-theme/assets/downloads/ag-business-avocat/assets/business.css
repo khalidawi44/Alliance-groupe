@@ -140,10 +140,50 @@ body.ag-business-active .ag-business-boutique-page .ag-boutique__grid {
         grid-template-columns: 1fr !important;
     }
 }
-/* Section Boutique de la home (rendue par pro-features.php) reste flex */
-body.ag-business-active .ag-boutique__grid:not(.ag-business-boutique-page .ag-boutique__grid),
-body.ag-business-active .ag-boutique-grid {
-    gap: 32px !important;
+/* ── Section Boutique sur la HOME : 3 cols egales, compact 1 ligne ──
+   Differente de la page /boutique/ : ici on veut une presentation
+   teaser compacte, pas trop d'espace vertical. */
+body.ag-business-active .ag-boutique:not(.ag-business-boutique-page) .ag-boutique__grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 24px !important;
+}
+body.ag-business-active .ag-boutique:not(.ag-business-boutique-page) .ag-boutique-card {
+    padding: 0 0 22px !important;
+}
+body.ag-business-active .ag-boutique:not(.ag-business-boutique-page) .ag-boutique-card__image {
+    aspect-ratio: 16 / 11 !important;
+    margin-bottom: 16px !important;
+}
+body.ag-business-active .ag-boutique:not(.ag-business-boutique-page) .ag-boutique-card__title {
+    font-size: 1.05rem !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    margin: 0 0 6px !important;
+}
+body.ag-business-active .ag-boutique:not(.ag-business-boutique-page) .ag-boutique-card__price {
+    font-size: 1.6rem !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    margin: 4px 0 12px !important;
+}
+body.ag-business-active .ag-boutique:not(.ag-business-boutique-page) .ag-boutique-card__desc {
+    font-size: .85rem !important;
+    line-height: 1.55 !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    margin: 0 0 18px !important;
+}
+body.ag-business-active .ag-boutique:not(.ag-business-boutique-page) .ag-boutique-card__btn {
+    margin: 0 18px !important;
+    width: calc(100% - 36px) !important;
+    padding: 11px 16px !important;
+    font-size: .82rem !important;
+    letter-spacing: 1px !important;
+}
+@media (max-width: 900px) {
+    body.ag-business-active .ag-boutique:not(.ag-business-boutique-page) .ag-boutique__grid {
+        grid-template-columns: 1fr !important;
+    }
 }
 body.ag-business-active .ag-boutique-card {
     background: linear-gradient(180deg, rgba(20, 20, 30, .85) 0%, rgba(15, 15, 22, .95) 100%) !important;
