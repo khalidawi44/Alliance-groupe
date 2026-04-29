@@ -587,6 +587,25 @@
 		topZone.id = 'ag-honoraires';
 	}
 
+	/* ── Booking form sidebar boutique : injecte date+creneau dans le
+	   message au submit (le handler Free RDV n'a pas de champs date/slot
+	   dedies, on les passe via le message). */
+	function setupBookingForm() {
+		if (!isBusinessActive()) return;
+		var forms = document.querySelectorAll('.ag-business-booking-form');
+		if (!forms.length) return;
+		forms.forEach(function (form) {
+			form.addEventListener('submit', function () {
+				var date = form.elements['ag_rdv_date'] ? form.elements['ag_rdv_date'].value : '';
+				var slot = form.elements['ag_rdv_slot'] ? form.elements['ag_rdv_slot'].value : '';
+				var msg = form.elements['ag_rdv_message'];
+				if (msg) {
+					msg.value = 'Demande de réservation pour le ' + date + ' à ' + slot + '.';
+				}
+			});
+		});
+	}
+
 	function run() {
 		markHomeBody();
 		animateCounters();
@@ -597,6 +616,7 @@
 		injectStripeButtons();
 		injectCabinetTeam();
 		combineCabinetRdv();
+		setupBookingForm();
 		injectPageCitations();
 		makeContactBlocksClickable();
 		injectBoutiqueImages();

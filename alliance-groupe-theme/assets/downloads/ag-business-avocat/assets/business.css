@@ -23,10 +23,21 @@ body.ag-business-active .ag-primary-menu a {
     font-size: .88rem !important;
     letter-spacing: .4px !important;
     padding: 8px 10px !important;
+    /* Force chaque item sur 1 ligne — sinon "DOMAINES D'EXPERTISE" et
+       "PRENDRE RENDEZ-VOUS" wraparound */
+    white-space: nowrap !important;
 }
 body.ag-business-active .ag-primary-menu {
     gap: .35rem !important;
     flex-wrap: nowrap !important;
+}
+/* Header : elargir le container principal pour donner de la place
+   au menu compact horizontal (au lieu du max-width par defaut Free). */
+body.ag-business-active .ag-header .ag-container,
+body.ag-business-active .ag-site-header .ag-container,
+body.ag-business-active .site-header .ag-container {
+    max-width: 95vw !important;
+    width: 95vw !important;
 }
 @media (max-width: 1380px) {
     body.ag-business-active .ag-primary-menu a {
@@ -38,13 +49,23 @@ body.ag-business-active .ag-primary-menu {
 @media (max-width: 1180px) {
     body.ag-business-active .ag-primary-menu a {
         font-size: .76rem !important;
-        padding: 8px 6px !important;
-        letter-spacing: .2px !important;
+        padding: 8px 5px !important;
+        letter-spacing: .15px !important;
+    }
+}
+@media (max-width: 1024px) {
+    body.ag-business-active .ag-primary-menu a {
+        font-size: .72rem !important;
+        padding: 8px 4px !important;
+        letter-spacing: 0 !important;
     }
 }
 @media (max-width: 900px) {
     body.ag-business-active .ag-primary-menu {
         flex-wrap: wrap !important;
+    }
+    body.ag-business-active .ag-primary-menu a {
+        white-space: normal !important;
     }
 }
 body.ag-business-active .ag-primary-menu a:hover {
@@ -351,6 +372,39 @@ body.ag-light .ag-business-boutique-widget__phone {
     align-self: flex-start;
     padding: 9px 18px;
     font-size: .88rem;
+}
+.ag-business-booking-form__label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: rgba(255, 255, 255, .7);
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+.ag-business-booking-form__label > span {
+    font-weight: 600;
+}
+.ag-business-booking-form__label input[type="date"],
+.ag-business-booking-form__label select {
+    width: 100%;
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(212, 180, 92, .22);
+    color: #fff;
+    padding: 9px 11px;
+    border-radius: 8px;
+    font-size: .9rem;
+    text-transform: none;
+    letter-spacing: 0;
+}
+body.ag-light .ag-business-booking-form__label {
+    color: #5A4549;
+}
+body.ag-light .ag-business-booking-form__label input[type="date"],
+body.ag-light .ag-business-booking-form__label select {
+    background: #fafafa;
+    border-color: rgba(0, 0, 0, .12);
+    color: #2A1A1E;
 }
 .ag-business-boutique-widget__rgpd {
     display: flex;
@@ -1584,10 +1638,13 @@ body.ag-light .ag-business-team-full__group-title {
 .ag-business-team-full__grid--founder .ag-business-team-card {
     display: grid;
     grid-template-columns: 280px 1fr;
+    align-items: start;
 }
 .ag-business-team-full__grid--founder .ag-business-team-card__photo {
-    aspect-ratio: auto !important;
-    min-height: 100%;
+    aspect-ratio: 3 / 4 !important;
+    min-height: 0 !important;
+    align-self: start;
+    background-position: center top;
 }
 @media (max-width: 700px) {
     .ag-business-team-full__grid--founder .ag-business-team-card {
@@ -1595,7 +1652,6 @@ body.ag-light .ag-business-team-full__group-title {
     }
     .ag-business-team-full__grid--founder .ag-business-team-card__photo {
         aspect-ratio: 4 / 3 !important;
-        min-height: 0;
     }
 }
 /* Associes : 2 colonnes max (cards plus larges, mise en avant) */
