@@ -239,12 +239,13 @@
 	   integre dans la card associates Sophie DUPONT). */
 	function injectCabinetTeam() {
 		if (!isBusinessActive()) return;
+		var founderHtml = dataValue('cabinetFounderHtml', '');
 		var assocHtml = dataValue('cabinetAssociatesHtml', '');
 		var collabHtml = dataValue('cabinetCollaboratorsHtml', '');
-		if (!assocHtml && !collabHtml) return; // pas la page Cabinet
+		if (!founderHtml && !assocHtml && !collabHtml) return; // pas la page Cabinet
 
 		// Cache la section Maitre du theme — son contenu est repris dans
-		// la card de l'associee fondatrice.
+		// la card du fondateur.
 		var maitre = document.querySelector('.ag-maitre');
 		if (maitre) maitre.style.display = 'none';
 
@@ -252,14 +253,19 @@
 		var anchor = hero || document.getElementById('ag-main') || document.querySelector('main');
 		if (!anchor) return;
 
-		// Inserer associates apres le hero
-		if (assocHtml && !document.querySelector('.ag-business-team-full--associates')) {
-			anchor.insertAdjacentHTML('afterend', assocHtml);
+		// Ordre : founder -> associates -> collaborators (citations
+		// parallax inserees entre via injectPageCitations).
+		var lastAnchor = anchor;
+		if (founderHtml && !document.querySelector('.ag-business-team-full--founder')) {
+			lastAnchor.insertAdjacentHTML('afterend', founderHtml);
+			lastAnchor = document.querySelector('.ag-business-team-full--founder') || lastAnchor;
 		}
-		// Inserer collaborators apres associates (ou apres hero si echec)
+		if (assocHtml && !document.querySelector('.ag-business-team-full--associates')) {
+			lastAnchor.insertAdjacentHTML('afterend', assocHtml);
+			lastAnchor = document.querySelector('.ag-business-team-full--associates') || lastAnchor;
+		}
 		if (collabHtml && !document.querySelector('.ag-business-team-full--collaborators')) {
-			var nextAnchor = document.querySelector('.ag-business-team-full--associates') || anchor;
-			nextAnchor.insertAdjacentHTML('afterend', collabHtml);
+			lastAnchor.insertAdjacentHTML('afterend', collabHtml);
 		}
 	}
 
