@@ -1794,6 +1794,106 @@ Telephone : [telephone]</p>
 					array( 'quote' => 'Mieux vaut un coupable libre qu\'un innocent en prison.', 'author' => 'Maxime du droit pénal', 'bg' => 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1920&q=85' ),
 				),
 			),
+			'droit-fiscal' => array(
+				'cas_concrets' => array(
+					array( 'titre' => 'Contrôle fiscal personnel', 'desc' => 'Assistance pendant la vérification, négociation des rectifications, recours hiérarchique, saisine du conciliateur fiscal, recours contentieux devant le tribunal administratif.' ),
+					array( 'titre' => 'Contentieux URSSAF', 'desc' => 'Contestation de redressement de cotisations sociales, négociation de plan d\'apurement, saisine de la Commission de recours amiable puis du tribunal judiciaire.' ),
+					array( 'titre' => 'Montage de holding patrimoniale', 'desc' => 'Optimisation du démembrement, pacte Dutreil pour transmission d\'entreprise, intégration fiscale, choix du régime mère-filles.' ),
+					array( 'titre' => 'IFI (impôt sur la fortune immobilière)', 'desc' => 'Optimisation des décotes (résidence principale, démembrement), évaluation des biens, contestation de l\'évaluation administrative.' ),
+					array( 'titre' => 'Régularisation d\'avoirs à l\'étranger', 'desc' => 'Procédure de régularisation spontanée, calcul des pénalités, ETNC, accompagnement vis-à-vis du STDR (devenu STG).' ),
+				),
+				'faq' => array(
+					array( 'q' => 'Combien de temps dure un contrôle fiscal ?', 'a' => 'Vérification de comptabilité : 3 mois maximum sur place pour les PME (art. L52 LPF), prorogeable. La procédure complète (de l\'avis à la mise en recouvrement) peut durer 12 à 24 mois avec les recours.' ),
+					array( 'q' => 'Quelles sont les pénalités fiscales ?', 'a' => 'Intérêts de retard : 0,20%/mois (2,4%/an). Majorations : 10% (insuffisance), 40% (manquement délibéré), 80% (manœuvres frauduleuses, abus de droit), 100% (opposition à contrôle).' ),
+					array( 'q' => 'Comment contester un redressement fiscal ?', 'a' => '30 jours pour répondre à la proposition de rectification. Recours hiérarchique auprès du supérieur du vérificateur, puis interlocuteur départemental. Saisine de la commission départementale, puis tribunal administratif (impôts directs) ou tribunal judiciaire (droits d\'enregistrement).' ),
+					array( 'q' => 'Le pacte Dutreil, c\'est quoi ?', 'a' => 'Engagement collectif de conservation des titres d\'une société pendant 2 ans + engagement individuel de 4 ans, qui permet une exonération de 75% sur la transmission d\'entreprise. Réduit considérablement les droits de succession ou de donation.' ),
+					array( 'q' => 'Faut-il déclarer ses comptes à l\'étranger ?', 'a' => 'Oui, obligation de déclarer tout compte ouvert/utilisé/clos hors de France (formulaire 3916). Sanction en cas de non-déclaration : 1500 € par compte (ou 10000 € pour ETNC), plus prescription étendue à 10 ans pour le contrôle.' ),
+				),
+				'citations' => array(
+					array( 'quote' => 'L\'art de l\'imposition consiste à plumer l\'oie pour obtenir le maximum de plumes avec le minimum de cris.', 'author' => 'Jean-Baptiste Colbert', 'bg' => 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1920&q=85' ),
+					array( 'quote' => 'Nul ne peut être contraint à payer un impôt qui n\'aurait pas été légalement consenti.', 'author' => 'Déclaration des droits de l\'homme, article 14', 'bg' => 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=85' ),
+				),
+			),
+			'droit-international' => array(
+				'cas_concrets' => array(
+					array( 'titre' => 'Contrat de distribution international', 'desc' => 'Choix de la loi applicable, clauses d\'exclusivité territoriale, juridiction compétente, modalités de résiliation, protection contre la rupture brutale.' ),
+					array( 'titre' => 'Arbitrage CCI (Chambre de Commerce Internationale)', 'desc' => 'Constitution du tribunal arbitral, mémoires écrits, audience, sentence arbitrale, exequatur dans les pays de la convention de New York.' ),
+					array( 'titre' => 'Détachement / expatriation', 'desc' => 'Choix du régime social (formulaire A1, certificat de couverture), fiscalité internationale, clauses du contrat (rapatriement, scolarité, logement).' ),
+					array( 'titre' => 'Reconnaissance de jugement étranger', 'desc' => 'Procédure d\'exequatur en France, vérification des règles d\'ordre public, signification, recours en cas de refus.' ),
+					array( 'titre' => 'Litige commercial transfrontalier', 'desc' => 'Stratégie procédurale (arbitrage vs juridiction étatique), négociation amiable, mise en jeu de garanties bancaires internationales (SWIFT, lettre de crédit).' ),
+				),
+				'faq' => array(
+					array( 'q' => 'Quelle loi applicable à un contrat international ?', 'a' => 'Liberté de choix des parties (Règlement Rome I dans l\'UE). À défaut, la loi du pays de la résidence habituelle de la partie qui doit fournir la prestation caractéristique. Pour la vente : loi du vendeur ; pour les services : loi du prestataire.' ),
+					array( 'q' => 'Quel tribunal en cas de litige international ?', 'a' => 'Clause attributive de juridiction respectée si valide (écrite, prévisible). À défaut, dans l\'UE : tribunal du domicile du défendeur (Bruxelles I bis). Hors UE : règles du droit international privé du pays saisi.' ),
+					array( 'q' => 'L\'arbitrage international est-il obligatoire ?', 'a' => 'Non, il faut une clause compromissoire dans le contrat ou un compromis après le litige. La sentence arbitrale est exécutoire dans 170+ pays signataires de la Convention de New York de 1958.' ),
+					array( 'q' => 'Comment se faire payer à l\'international ?', 'a' => 'Garanties usuelles : crédit documentaire (lettre de crédit), Stand-by Letter of Credit, garantie bancaire à première demande. Saisie sur biens à l\'étranger possible mais lourde (exequatur préalable).' ),
+					array( 'q' => 'Quelle protection en cas d\'expatriation ?', 'a' => 'Convention de sécurité sociale ou Règlement européen 883/2004 (formulaire A1) pour rester affilié au régime français. Convention fiscale bilatérale pour éviter la double imposition. Clauses contractuelles : rapatriement, scolarité enfants, logement.' ),
+				),
+				'citations' => array(
+					array( 'quote' => 'Le commerce guérit des préjugés destructeurs : c\'est presque une règle générale, que partout où il y a des mœurs douces, il y a du commerce.', 'author' => 'Montesquieu', 'bg' => 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=1920&q=85' ),
+					array( 'quote' => 'Pacta sunt servanda — les conventions doivent être respectées.', 'author' => 'Adage du droit international', 'bg' => 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=1920&q=85' ),
+				),
+			),
+			'droit-des-successions' => array(
+				'cas_concrets' => array(
+					array( 'titre' => 'Liquidation de succession amiable', 'desc' => 'Inventaire des biens, déclaration de succession, calcul des droits, partage entre héritiers, paiement des droits dans les 6 mois (12 hors France).' ),
+					array( 'titre' => 'Contestation de testament', 'desc' => 'Action en nullité (insanité d\'esprit, vice du consentement), réduction pour atteinte à la réserve, action en pétition d\'hérédité.' ),
+					array( 'titre' => 'Donation-partage', 'desc' => 'Anticipation de la transmission, choix des biens donnés à chaque enfant, abattement fiscal (100k€/parent/enfant tous les 15 ans), pacte Dutreil pour entreprise.' ),
+					array( 'titre' => 'Indivision successorale conflictuelle', 'desc' => 'Demande de partage judiciaire, vente aux enchères des biens, attribution préférentielle (résidence principale, exploitation).' ),
+					array( 'titre' => 'Recel successoral', 'desc' => 'Action en révélation contre un héritier qui dissimule un bien (bijoux, comptes), sanction : privation de la part sur le bien recelé + intérêts.' ),
+				),
+				'faq' => array(
+					array( 'q' => 'Combien de temps pour régler une succession ?', 'a' => '6 mois pour déposer la déclaration de succession (12 mois si décès hors France). Règlement complet souvent 12-24 mois selon complexité (immobilier, biens à l\'étranger, contestations). Indivision peut durer indéfiniment.' ),
+					array( 'q' => 'Quels sont les droits de succession en France ?', 'a' => 'Abattement de 100 000 € par enfant (sur 15 ans), puis barème progressif de 5 à 45%. Conjoint exonéré totalement. Frères/sœurs : abattement 15 932 € puis 35-45%. Tiers : 60% au-delà de 1594 €.' ),
+					array( 'q' => 'Peut-on déshériter ses enfants ?', 'a' => 'Non en France, les enfants sont héritiers réservataires. Réserve : 1/2 de la succession pour 1 enfant, 2/3 pour 2 enfants, 3/4 pour 3+. La quotité disponible peut être attribuée librement (testament, donation).' ),
+					array( 'q' => 'Comment optimiser sa succession ?', 'a' => 'Donations échelonnées (abattement renouvelé tous les 15 ans), démembrement de propriété (donation de la nue-propriété), assurance-vie (152 500 € exonéré par bénéficiaire si versé avant 70 ans), pacte Dutreil pour entreprise.' ),
+					array( 'q' => 'Que faire si un héritier refuse le partage ?', 'a' => 'Demande de partage judiciaire devant le TJ. Le notaire dresse un état liquidatif, le juge tranche les désaccords. Procédure longue (12-36 mois). Possibilité d\'attribution préférentielle au profit de celui qui occupe le logement.' ),
+				),
+				'citations' => array(
+					array( 'quote' => 'La mort n\'est pas la fin du voyage : c\'est seulement le commencement d\'un autre.', 'author' => 'Maxime du droit des successions', 'bg' => 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=85' ),
+					array( 'quote' => 'Le mort saisit le vif.', 'author' => 'Article 724 du Code civil', 'bg' => 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1920&q=85' ),
+				),
+			),
+			'droit-du-numerique' => array(
+				'cas_concrets' => array(
+					array( 'titre' => 'Mise en conformité RGPD', 'desc' => 'Audit du traitement des données, registre des activités, mentions d\'information, charte cookies, contrats sous-traitants (DPA), DPIA si nécessaire.' ),
+					array( 'titre' => 'Contrat SaaS B2B', 'desc' => 'Rédaction des CGU/CGV, SLA (engagement de service), licence d\'utilisation, propriété intellectuelle, clause de réversibilité, conditions de résiliation.' ),
+					array( 'titre' => 'Violation de données personnelles', 'desc' => 'Notification CNIL dans les 72h, communication aux personnes concernées, plan d\'action correctif, gestion de la communication de crise, défense en cas de plainte CNIL.' ),
+					array( 'titre' => 'Cyber-attaque (ransomware, phishing)', 'desc' => 'Plainte au commissariat (préservation des preuves), notification CNIL, coordination avec l\'ANSSI, négociation/non-paiement de rançon, action contre les auteurs.' ),
+					array( 'titre' => 'Litige e-commerce', 'desc' => 'Contestation d\'une plateforme (avis frauduleux, déréférencement), action en concurrence déloyale, obligations de la plateforme (DSA), responsabilité hébergeur vs éditeur.' ),
+				),
+				'faq' => array(
+					array( 'q' => 'Quelles sont les obligations RGPD principales ?', 'a' => 'Registre des traitements, base légale identifiée, mentions d\'information, consentement éclairé pour cookies, sécurité technique appropriée, notification de violation 72h, droits des personnes (accès, rectification, effacement, portabilité, opposition).' ),
+					array( 'q' => 'Quelles sanctions en cas de non-conformité RGPD ?', 'a' => 'Amende administrative jusqu\'à 20 millions € ou 4% du chiffre d\'affaires mondial annuel (le plus élevé). Sanctions pénales jusqu\'à 5 ans de prison + 300 000 € d\'amende (art. 226-16 et suivants Code pénal).' ),
+					array( 'q' => 'Faut-il un DPO (délégué à la protection des données) ?', 'a' => 'Obligatoire pour : autorités/organismes publics, traitement à grande échelle de données sensibles, suivi systématique à grande échelle. Recommandé pour les autres. Peut être interne ou externe (DPO mutualisé).' ),
+					array( 'q' => 'Comment payer un ransomware en sécurité ?', 'a' => 'Recommandation officielle : NE PAS PAYER. Le paiement n\'est plus assurable depuis 2023 sans plainte préalable. Plainte au commissariat obligatoire (Loi LOPMI). Notification ANSSI si OIV/OSE. Privilégier la sauvegarde et la reconstruction.' ),
+					array( 'q' => 'Mes mentions d\'information sur le site sont-elles conformes ?', 'a' => 'Doivent contenir : identité du responsable, finalités, base légale, destinataires, durée de conservation, droits des personnes, DPO le cas échéant, droit de plainte CNIL, transferts hors UE. Audit recommandé tous les 12-24 mois.' ),
+				),
+				'citations' => array(
+					array( 'quote' => 'La protection des données personnelles est un droit fondamental.', 'author' => 'Charte des droits fondamentaux de l\'UE, article 8', 'bg' => 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1920&q=85' ),
+					array( 'quote' => 'La technologie change vite. Le droit doit s\'adapter sans renoncer à ses principes.', 'author' => 'Adage du droit du numérique', 'bg' => 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1920&q=85' ),
+				),
+			),
+			'droit-bancaire' => array(
+				'cas_concrets' => array(
+					array( 'titre' => 'Prêt immobilier : taux d\'usure dépassé', 'desc' => 'Vérification du TAEG, action en déchéance d\'intérêts, restitution des intérêts indûment perçus, négociation de renégociation.' ),
+					array( 'titre' => 'Fraude bancaire en ligne', 'desc' => 'Opposition immédiate, dépôt de plainte, mise en cause de la banque pour défaut d\'authentification forte (DSP2), demande de remboursement intégral, recours médiateur bancaire.' ),
+					array( 'titre' => 'Mise en jeu de caution', 'desc' => 'Vérification de la régularité de la caution (mention manuscrite, proportionnalité), action en nullité, contestation du quantum, étalement des paiements.' ),
+					array( 'titre' => 'Clôture abusive de compte', 'desc' => 'Recours pour rupture brutale, défaut de motivation (clients vulnérables protégés), saisine du médiateur, action en responsabilité bancaire.' ),
+					array( 'titre' => 'Surendettement personnel', 'desc' => 'Dossier de surendettement à la Banque de France, plan conventionnel ou rétablissement personnel, suspension des poursuites, effacement partiel des dettes.' ),
+				),
+				'faq' => array(
+					array( 'q' => 'Comment contester un prélèvement non autorisé ?', 'a' => 'Demande de remboursement à la banque dans les 13 mois (8 semaines pour SEPA autorisé). La banque doit rembourser sans délai sauf fraude/négligence grave du client. Recours médiateur bancaire si refus, puis tribunal.' ),
+					array( 'q' => 'Le taux d\'usure, c\'est quoi ?', 'a' => 'Plafond légal du taux d\'intérêt fixé trimestriellement par la Banque de France selon le type de crédit. Dépasser le taux d\'usure entraîne déchéance des intérêts (art. L341-50 Code consommation) et peut constituer un délit.' ),
+					array( 'q' => 'Une caution est-elle toujours valide ?', 'a' => 'Non. Conditions de validité : mention manuscrite spécifique (art. L341-2 et L341-3 anc.), information annuelle de la caution, proportionnalité aux revenus de la caution. Caution disproportionnée = nullité possible.' ),
+					array( 'q' => 'Que faire en cas de surendettement ?', 'a' => 'Déposer un dossier à la Banque de France (commission de surendettement). Si recevable : suspension des poursuites pendant l\'instruction, élaboration d\'un plan conventionnel. Si insolvabilité totale : procédure de rétablissement personnel (effacement des dettes).' ),
+					array( 'q' => 'La banque peut-elle refuser un crédit sans motif ?', 'a' => 'Oui, liberté contractuelle de la banque. Sauf : refus discriminatoire (art. 225-1 CP), refus du droit au compte (saisine BDF possible). Le refus doit être motivé pour les crédits aux PME (loi Pacte).' ),
+				),
+				'citations' => array(
+					array( 'quote' => 'L\'argent ne fait pas le bonheur, mais il y contribue.', 'author' => 'Voltaire', 'bg' => 'https://images.unsplash.com/photo-1601597111158-2fceff292cdc?w=1920&q=85' ),
+					array( 'quote' => 'Le crédit est l\'âme du commerce.', 'author' => 'Adage du droit bancaire', 'bg' => 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=1920&q=85' ),
+				),
+			),
 		);
 	}
 }
