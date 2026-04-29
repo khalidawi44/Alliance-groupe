@@ -120,17 +120,50 @@ body.ag-business-active .ag-boutique {
     padding: 80px 24px !important;
 }
 body.ag-business-active .ag-business-boutique-page .ag-container {
-    max-width: 1500px !important;
-    width: 100% !important;
+    max-width: 95vw !important;
+    width: 95vw !important;
     padding: 0 24px;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
-/* Boutique page : 3 colonnes fixes pour que les cards remplissent */
+/* Boutique page : layout main + sidebar droite */
+.ag-business-boutique-page__layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 40px;
+    align-items: start;
+}
+@media (max-width: 1024px) {
+    .ag-business-boutique-page__layout {
+        grid-template-columns: 1fr;
+    }
+}
+.ag-business-boutique-page__main {
+    min-width: 0;
+}
+.ag-business-boutique-page__search-info {
+    color: rgba(255, 255, 255, .8);
+    margin: 0 0 20px;
+    font-size: .92rem;
+}
+.ag-business-boutique-page__search-info a {
+    color: #D4B45C;
+    text-decoration: none;
+    margin-left: 6px;
+}
+body.ag-light .ag-business-boutique-page__search-info {
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-boutique-page__search-info a {
+    color: #7B2D3B;
+}
+/* Cards : 3 cols dans le main (pas 4 — la sidebar prend de la place) */
 body.ag-business-active .ag-business-boutique-page .ag-boutique__grid {
-    gap: 36px !important;
+    gap: 32px !important;
     grid-template-columns: repeat(3, 1fr) !important;
     display: grid !important;
 }
-@media (max-width: 1024px) {
+@media (max-width: 1380px) {
     body.ag-business-active .ag-business-boutique-page .ag-boutique__grid {
         grid-template-columns: repeat(2, 1fr) !important;
     }
@@ -139,6 +172,221 @@ body.ag-business-active .ag-business-boutique-page .ag-boutique__grid {
     body.ag-business-active .ag-business-boutique-page .ag-boutique__grid {
         grid-template-columns: 1fr !important;
     }
+}
+
+/* ── Sidebar Boutique : recherche + recos + best sellers + contact ── */
+.ag-business-boutique-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: sticky;
+    top: 96px;
+}
+@media (max-width: 1024px) {
+    .ag-business-boutique-sidebar {
+        position: static;
+    }
+}
+.ag-business-boutique-widget {
+    background: rgba(20, 20, 30, .55);
+    border: 1px solid rgba(212, 180, 92, .2);
+    border-radius: 12px;
+    padding: 22px 22px 24px;
+}
+body.ag-light .ag-business-boutique-widget {
+    background: #fff;
+    border-color: rgba(123, 45, 59, .12);
+    box-shadow: 0 3px 16px rgba(0, 0, 0, .04);
+}
+.ag-business-boutique-widget__title {
+    color: #D4B45C !important;
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif !important;
+    font-style: italic;
+    font-size: 1.05rem !important;
+    margin: 0 0 16px !important;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(212, 180, 92, .25);
+    letter-spacing: .5px;
+}
+body.ag-light .ag-business-boutique-widget__title {
+    color: #7B2D3B !important;
+    border-bottom-color: rgba(123, 45, 59, .2);
+}
+.ag-business-boutique-widget__search-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+}
+.ag-business-boutique-widget__search-row input[type="search"] {
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(212, 180, 92, .25);
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: .92rem;
+    width: 100%;
+}
+.ag-business-boutique-widget__search-row input[type="search"]::placeholder {
+    color: rgba(255, 255, 255, .55);
+}
+.ag-business-boutique-widget__search-row button {
+    background: linear-gradient(135deg, #D4B45C 0%, #B8941F 100%);
+    color: #0A0E1A;
+    border: none;
+    padding: 0 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform .2s ease;
+}
+.ag-business-boutique-widget__search-row button:hover {
+    transform: translateY(-1px);
+}
+body.ag-light .ag-business-boutique-widget__search-row input[type="search"] {
+    background: #fafafa;
+    border-color: rgba(0, 0, 0, .12);
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-boutique-widget__search-row input[type="search"]::placeholder {
+    color: rgba(0, 0, 0, .45);
+}
+body.ag-light .ag-business-boutique-widget__search-row button {
+    background: linear-gradient(135deg, #7B2D3B 0%, #A03D4D 100%);
+    color: #fff;
+}
+.ag-business-boutique-widget__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.ag-business-boutique-widget__list a {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 12px;
+    align-items: center;
+    color: inherit;
+    text-decoration: none;
+    transition: transform .2s ease;
+}
+.ag-business-boutique-widget__list a:hover {
+    transform: translateX(3px);
+}
+.ag-business-boutique-widget__thumb {
+    display: block;
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid rgba(212, 180, 92, .2);
+}
+.ag-business-boutique-widget__txt {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.ag-business-boutique-widget__name {
+    color: #fff;
+    font-size: .88rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.ag-business-boutique-widget__price {
+    color: #D4B45C;
+    font-size: .85rem;
+    font-weight: 600;
+}
+body.ag-light .ag-business-boutique-widget__name {
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-boutique-widget__price {
+    color: #7B2D3B;
+}
+.ag-business-boutique-widget__phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #D4B45C 0%, #B8941F 100%);
+    color: #0A0E1A;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    transition: transform .2s ease;
+}
+.ag-business-boutique-widget__phone:hover {
+    transform: translateY(-1px);
+}
+body.ag-light .ag-business-boutique-widget__phone {
+    background: linear-gradient(135deg, #7B2D3B 0%, #A03D4D 100%);
+    color: #fff;
+}
+.ag-business-boutique-widget__form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.ag-business-boutique-widget__form input,
+.ag-business-boutique-widget__form textarea {
+    width: 100%;
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(212, 180, 92, .22);
+    color: #fff;
+    padding: 9px 11px;
+    border-radius: 8px;
+    font-size: .9rem;
+    resize: vertical;
+}
+.ag-business-boutique-widget__form input::placeholder,
+.ag-business-boutique-widget__form textarea::placeholder {
+    color: rgba(255, 255, 255, .55);
+}
+.ag-business-boutique-widget__form .ag-btn {
+    align-self: flex-start;
+    padding: 9px 18px;
+    font-size: .88rem;
+}
+.ag-business-boutique-widget__rgpd {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    color: rgba(255, 255, 255, .65);
+    font-size: .76rem;
+    line-height: 1.45;
+}
+.ag-business-boutique-widget__rgpd input[type="checkbox"] {
+    margin-top: 3px;
+    flex-shrink: 0;
+}
+body.ag-light .ag-business-boutique-widget__form input,
+body.ag-light .ag-business-boutique-widget__form textarea {
+    background: #fafafa;
+    border-color: rgba(0, 0, 0, .12);
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-boutique-widget__form input::placeholder,
+body.ag-light .ag-business-boutique-widget__form textarea::placeholder {
+    color: rgba(0, 0, 0, .45);
+}
+body.ag-light .ag-business-boutique-widget__rgpd {
+    color: #5A4549;
+}
+.screen-reader-text {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
 }
 /* ── Section Boutique sur la HOME : 3 cols egales, compact 1 ligne ──
    Differente de la page /boutique/ : ici on veut une presentation
@@ -1082,6 +1330,25 @@ body.ag-business-active.ag-light .ag-business-tous-domaines-cta__btn:hover {
 }
 
 /* ── Pages single domaine (ag_domaine) — Cas concrets + FAQ ── */
+.ag-business-domaine-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+    margin: 50px 0 30px;
+    align-items: start;
+}
+@media (max-width: 900px) {
+    .ag-business-domaine-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+}
+.ag-business-domaine-grid > .ag-business-domaine-cas,
+.ag-business-domaine-grid > .ag-business-domaine-faq {
+    margin: 0;
+    padding-top: 0;
+    border-top: none;
+}
 .ag-business-domaine-cas {
     margin: 50px 0 30px;
     padding-top: 30px;
@@ -2188,4 +2455,112 @@ body.ag-light .ag-business-cabinet-map-section {
 }
 .ag-business-cabinet-map-section .ag-cabinet__map {
     margin-top: 0 !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Pages single domaine — Temoignages clients (apres parallax)
+   ───────────────────────────────────────────────────────────────── */
+.ag-business-domaine-testimonials {
+    margin: 60px 0 30px;
+}
+.ag-business-domaine-testimonials__title {
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif !important;
+    font-style: italic;
+    text-align: center;
+    color: #D4B45C;
+    font-size: clamp(1.6rem, 2.5vw, 2.1rem);
+    letter-spacing: 1.5px;
+    margin: 0 0 32px;
+    text-transform: uppercase;
+    position: relative;
+    padding-bottom: 16px;
+}
+.ag-business-domaine-testimonials__title::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #D4B45C, transparent);
+}
+.ag-business-domaine-testimonials__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+@media (max-width: 900px) {
+    .ag-business-domaine-testimonials__grid {
+        grid-template-columns: 1fr;
+    }
+}
+.ag-business-testimonial-card {
+    background: rgba(20, 20, 30, .6);
+    border: 1px solid rgba(212, 180, 92, .22);
+    border-radius: 14px;
+    padding: 28px 26px;
+    position: relative;
+    transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+}
+.ag-business-testimonial-card::before {
+    content: "“";
+    position: absolute;
+    top: 6px;
+    left: 18px;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 4rem;
+    color: rgba(212, 180, 92, .35);
+    line-height: 1;
+}
+.ag-business-testimonial-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(212, 180, 92, .45);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, .45);
+}
+.ag-business-testimonial-card__quote {
+    color: #ddd;
+    font-size: .98rem;
+    line-height: 1.7;
+    font-style: italic;
+    margin: 18px 0 18px;
+}
+.ag-business-testimonial-card__author {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-top: 1px solid rgba(212, 180, 92, .18);
+    padding-top: 14px;
+}
+.ag-business-testimonial-card__name {
+    color: #D4B45C;
+    font-weight: 600;
+    font-size: .95rem;
+    letter-spacing: .3px;
+}
+.ag-business-testimonial-card__role {
+    color: rgba(255, 255, 255, .6);
+    font-size: .82rem;
+    font-style: italic;
+}
+body.ag-light .ag-business-testimonial-card {
+    background: #fff;
+    border-color: rgba(123, 45, 59, .12);
+    box-shadow: 0 3px 18px rgba(0, 0, 0, .05);
+}
+body.ag-light .ag-business-testimonial-card:hover {
+    border-color: rgba(123, 45, 59, .3);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, .12);
+}
+body.ag-light .ag-business-testimonial-card::before {
+    color: rgba(123, 45, 59, .25);
+}
+body.ag-light .ag-business-testimonial-card__quote {
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-testimonial-card__name {
+    color: #7B2D3B;
+}
+body.ag-light .ag-business-testimonial-card__role {
+    color: #5A4549;
 }
