@@ -146,21 +146,11 @@
 
 	function applyBoutiqueSymbol() {
 		if (!isBusinessActive()) return;
-		var choice = String(dataValue('boutiqueSymbol', 'stars')).toLowerCase();
-
-		if (choice === 'none') {
-			var host = document.querySelector('.ag-boutique-stars-host');
-			if (host) host.style.display = 'none';
-			return;
-		}
-		if (choice === 'stars') {
-			return; // garde le SVG d'origine (etoiles)
-		}
-		var svg = BOUTIQUE_SYMBOLS[choice];
-		if (!svg) return;
-		document.querySelectorAll('.ag-boutique-shooting-star').forEach(function (star) {
-			star.innerHTML = svg;
-		});
+		// Default : on cache TOUS les symboles animes (etoiles/balance/etc).
+		// Le user a demande explicitement de retirer les etoiles, et un
+		// fond "bibliotheque classe" prend le relais (cf CSS).
+		var hosts = document.querySelectorAll('.ag-boutique-stars-host, .ag-boutique-shooting-stars, .ag-boutique-shooting-star');
+		hosts.forEach(function (h) { h.style.display = 'none'; });
 	}
 
 	/* ── Bouton recherche dans le header + overlay plein-ecran ── */
