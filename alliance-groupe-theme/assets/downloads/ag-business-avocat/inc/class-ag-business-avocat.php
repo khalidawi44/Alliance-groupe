@@ -2201,6 +2201,11 @@ Telephone : [telephone]</p>
 					array( 'quote' => 'Le contrat est la loi des parties.', 'author' => 'Code civil article 1103', 'bg' => 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1920&q=85' ),
 					array( 'quote' => 'Le commerce est dans la balance le poids qui assure l\'équilibre des nations.', 'author' => 'Voltaire', 'bg' => 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1920&q=85' ),
 				),
+				'testimonials' => array(
+					array( 'quote' => "Reprise d'une PME familiale dans des conditions tendues : le cabinet a structuré le pacte d'associés et anticipé chaque clause sensible. Aucun conflit depuis 4 ans.", 'name' => 'Frédéric L.', 'role' => 'Dirigeant — agroalimentaire' ),
+					array( 'quote' => 'Cession de mon fonds de commerce gérée de bout en bout. Négociation ferme sur le prix, séquestre sécurisé, formalités impeccables.', 'name' => 'Nadia B.', 'role' => 'Cédante — restauration' ),
+					array( 'quote' => "Procédure de sauvegarde déposée à temps grâce à leur réactivité. Plan de continuation accepté par le tribunal. Sans eux, je fermais.", 'name' => 'Jean-Christophe P.', 'role' => 'Gérant — bâtiment' ),
+				),
 			),
 			'droit-du-travail' => array(
 				'cas_concrets' => array(
@@ -2220,6 +2225,11 @@ Telephone : [telephone]</p>
 				'citations' => array(
 					array( 'quote' => 'Le travail éloigne de nous trois grands maux : l\'ennui, le vice et le besoin.', 'author' => 'Voltaire', 'bg' => 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1920&q=85' ),
 					array( 'quote' => 'Le travail n\'est pas une marchandise. La liberté d\'expression et d\'association est essentielle pour soutenir le progrès et la dignité du travailleur.', 'author' => 'Déclaration de Philadelphie, OIT 1944', 'bg' => 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1920&q=85' ),
+				),
+				'testimonials' => array(
+					array( 'quote' => 'Licencié sans cause réelle après 11 ans : indemnités max obtenues, plus 6 mois de salaires en transactionnel. Travail de fond impressionnant.', 'name' => 'Karim S.', 'role' => 'Cadre commercial' ),
+					array( 'quote' => "Harcèlement moral reconnu en 8 mois. Le cabinet a su monter un dossier béton avec témoignages et certificats. Justice rendue.", 'name' => 'Aurélie M.', 'role' => 'Salariée — secteur banque' ),
+					array( 'quote' => 'Rupture conventionnelle négociée à 18 mois de salaire. Le DRH ne s\'attendait pas à cette résistance. Très satisfait.', 'name' => 'Olivier D.', 'role' => 'Ingénieur informatique' ),
 				),
 			),
 			'droit-de-la-famille' => array(
@@ -2241,6 +2251,11 @@ Telephone : [telephone]</p>
 					array( 'quote' => 'La famille est l\'élément naturel et fondamental de la société.', 'author' => 'Déclaration universelle des droits de l\'homme, art. 16', 'bg' => 'https://images.unsplash.com/photo-1609220136736-443140cffec6?w=1920&q=85' ),
 					array( 'quote' => 'Dans l\'intérêt supérieur de l\'enfant, en toutes circonstances.', 'author' => 'Convention internationale des droits de l\'enfant', 'bg' => 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=1920&q=85' ),
 				),
+				'testimonials' => array(
+					array( 'quote' => 'Divorce difficile avec enfants : le cabinet a su préserver les relations parentales tout en obtenant une garde équilibrée. Approche humaine.', 'name' => 'Stéphanie L.', 'role' => 'Cliente — divorce' ),
+					array( 'quote' => "Pension impayée pendant 2 ans, 8000 € recouvrés via saisie-attribution. Procédure rapide et efficace.", 'name' => 'Mounir K.', 'role' => 'Père — recouvrement pension' ),
+					array( 'quote' => 'Médiation familiale réussie après 6 mois de blocage. Plus économique et moins traumatisant qu\'un contentieux. Merci.', 'name' => 'Catherine V.', 'role' => 'Cliente — médiation' ),
+				),
 			),
 			'droit-immobilier' => array(
 				'cas_concrets' => array(
@@ -2260,6 +2275,11 @@ Telephone : [telephone]</p>
 				'citations' => array(
 					array( 'quote' => 'La propriété est un droit inviolable et sacré.', 'author' => 'Déclaration des droits de l\'homme, article 17', 'bg' => 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1920&q=85' ),
 					array( 'quote' => 'Charbonnier est maître chez soi.', 'author' => 'Adage du droit immobilier', 'bg' => 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1920&q=85' ),
+				),
+				'testimonials' => array(
+					array( 'quote' => "Vice caché révélé un an après l'achat : 47 000 € obtenus en réduction de prix. Le notaire et le vendeur ont été condamnés solidairement.", 'name' => 'Patrick H.', 'role' => 'Acquéreur — maison ancienne' ),
+					array( 'quote' => "Locataire impayée depuis 9 mois, expulsion obtenue malgré la trêve hivernale. Procédure carrée, sans faute.", 'name' => 'Hélène D.', 'role' => 'Bailleuse — appartement Paris' ),
+					array( 'quote' => 'Permis de construire du voisin annulé devant le TA. Travaux illégaux stoppés, aucune indemnité due. Soulagés.', 'name' => 'Thierry et Anne G.', 'role' => 'Riverains — recours TA' ),
 				),
 			),
 			'droit-penal' => array(
@@ -2281,6 +2301,11 @@ Telephone : [telephone]</p>
 					array( 'quote' => 'Tout homme étant présumé innocent jusqu\'à ce qu\'il ait été déclaré coupable.', 'author' => 'Déclaration des droits de l\'homme, article 9', 'bg' => 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1920&q=85' ),
 					array( 'quote' => 'Mieux vaut un coupable libre qu\'un innocent en prison.', 'author' => 'Maxime du droit pénal', 'bg' => 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1920&q=85' ),
 				),
+				'testimonials' => array(
+					array( 'quote' => 'Garde à vue à 4h du matin : disponibilité totale, présent en moins d\'une heure. Plainte classée sans suite, je dormais chez moi le lendemain.', 'name' => 'Yann R.', 'role' => 'Mis en cause — GAV' ),
+					array( 'quote' => "Procès aux assises pour mon fils, peine divisée par deux par rapport au réquisitoire. Plaidoirie magistrale, reconnaissance du juge.", 'name' => 'Fatima A.', 'role' => 'Mère — assises' ),
+					array( 'quote' => "Affaire de stupéfiants, requalification obtenue en simple usage. Casier vierge préservé, je peux exercer mon métier.", 'name' => 'Bastien C.', 'role' => 'Mis en cause — correctionnel' ),
+				),
 			),
 			'droit-fiscal' => array(
 				'cas_concrets' => array(
@@ -2300,6 +2325,11 @@ Telephone : [telephone]</p>
 				'citations' => array(
 					array( 'quote' => 'L\'art de l\'imposition consiste à plumer l\'oie pour obtenir le maximum de plumes avec le minimum de cris.', 'author' => 'Jean-Baptiste Colbert', 'bg' => 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1920&q=85' ),
 					array( 'quote' => 'Nul ne peut être contraint à payer un impôt qui n\'aurait pas été légalement consenti.', 'author' => 'Déclaration des droits de l\'homme, article 14', 'bg' => 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=85' ),
+				),
+				'testimonials' => array(
+					array( 'quote' => 'Contrôle fiscal très intrusif sur 3 exercices. Redressement initial 180 K€, ramené à 24 K€ après recours hiérarchique. Différence énorme.', 'name' => 'Vincent T.', 'role' => 'Dirigeant — SAS conseil' ),
+					array( 'quote' => 'Optimisation fiscale de la transmission de mon patrimoine via SCI familiale et démembrement. Économie estimée : 220 K€ sur la succession.', 'name' => 'Marie-Hélène F.', 'role' => 'Cliente — patrimoine immobilier' ),
+					array( 'quote' => 'Régularisation suite à comptes étrangers non déclarés. Pénalités divisées par 4 grâce à leur connaissance des dispositifs.', 'name' => 'Anonyme', 'role' => 'Régularisation fiscale' ),
 				),
 			),
 			'droit-international' => array(
@@ -2321,6 +2351,11 @@ Telephone : [telephone]</p>
 					array( 'quote' => 'Le commerce guérit des préjugés destructeurs : c\'est presque une règle générale, que partout où il y a des mœurs douces, il y a du commerce.', 'author' => 'Montesquieu', 'bg' => 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=1920&q=85' ),
 					array( 'quote' => 'Pacta sunt servanda — les conventions doivent être respectées.', 'author' => 'Adage du droit international', 'bg' => 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=1920&q=85' ),
 				),
+				'testimonials' => array(
+					array( 'quote' => 'Litige avec un fournisseur turc, arbitrage CCI à Paris. Sentence favorable rendue en 14 mois, 320 K€ recouvrés.', 'name' => 'Société Lemoine SA', 'role' => 'Industrie — export' ),
+					array( 'quote' => 'Expatriation au Vietnam pour 4 ans : convention fiscale, contrat local, rapatriement, scolarité enfants — tout négocié dans mes intérêts.', 'name' => 'Nicolas B.', 'role' => 'Expatrié — direction' ),
+					array( 'quote' => 'Procédure de visa long séjour pour ma compagne brésilienne. Refus initial transformé en accord en appel. Réactivité remarquable.', 'name' => 'Mathieu E.', 'role' => 'Conjoint — visa' ),
+				),
 			),
 			'droit-des-successions' => array(
 				'cas_concrets' => array(
@@ -2340,6 +2375,11 @@ Telephone : [telephone]</p>
 				'citations' => array(
 					array( 'quote' => 'La mort n\'est pas la fin du voyage : c\'est seulement le commencement d\'un autre.', 'author' => 'Maxime du droit des successions', 'bg' => 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=85' ),
 					array( 'quote' => 'Le mort saisit le vif.', 'author' => 'Article 724 du Code civil', 'bg' => 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1920&q=85' ),
+				),
+				'testimonials' => array(
+					array( 'quote' => "Conflit successoral entre 4 enfants, un demi-frère contestataire. Médiation puis partage judiciaire : tout le monde a obtenu sa part équitable.", 'name' => 'Annick et famille', 'role' => 'Héritiers — succession 1,2 M€' ),
+					array( 'quote' => "Donation-partage anticipée pour mes 3 enfants. Économie de 60 K€ de droits de succession et zéro conflit prévisible.", 'name' => 'Bernard L.', 'role' => 'Donateur — patrimoine' ),
+					array( 'quote' => 'Renonciation à succession très endettée traitée dans les 4 mois. Aucune dette héritée, dossier propre.', 'name' => 'Élodie M.', 'role' => 'Héritière — renonciation' ),
 				),
 			),
 			'droit-du-numerique' => array(
@@ -2361,6 +2401,11 @@ Telephone : [telephone]</p>
 					array( 'quote' => 'La protection des données personnelles est un droit fondamental.', 'author' => 'Charte des droits fondamentaux de l\'UE, article 8', 'bg' => 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1920&q=85' ),
 					array( 'quote' => 'La technologie change vite. Le droit doit s\'adapter sans renoncer à ses principes.', 'author' => 'Adage du droit du numérique', 'bg' => 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1920&q=85' ),
 				),
+				'testimonials' => array(
+					array( 'quote' => 'Atteinte à la e-réputation : faux avis et propos diffamants supprimés par référé Google + condamnation des auteurs identifiés.', 'name' => 'Restaurant L\'Oasis', 'role' => 'Restaurateur — e-réputation' ),
+					array( 'quote' => 'Audit RGPD complet de notre SaaS, mise en conformité documentaire et registre des traitements. Plus de stress avant un client grand compte.', 'name' => 'Adrien V.', 'role' => 'CTO — startup B2B' ),
+					array( 'quote' => "Vol de propriété intellectuelle par un ex-prestataire. Saisie-contrefaçon obtenue, code récupéré, dommages-intérêts à 5 chiffres.", 'name' => 'Studio NovaCode', 'role' => 'Éditeur logiciel' ),
+				),
 			),
 			'droit-bancaire' => array(
 				'cas_concrets' => array(
@@ -2380,6 +2425,11 @@ Telephone : [telephone]</p>
 				'citations' => array(
 					array( 'quote' => 'L\'argent ne fait pas le bonheur, mais il y contribue.', 'author' => 'Voltaire', 'bg' => 'https://images.unsplash.com/photo-1601597111158-2fceff292cdc?w=1920&q=85' ),
 					array( 'quote' => 'Le crédit est l\'âme du commerce.', 'author' => 'Adage du droit bancaire', 'bg' => 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=1920&q=85' ),
+				),
+				'testimonials' => array(
+					array( 'quote' => 'Caution personnelle de 95 K€ contestée et annulée pour défaut de mise en garde de la banque. Dette éteinte, je respire.', 'name' => 'Pascal B.', 'role' => 'Caution — prêt pro contesté' ),
+					array( 'quote' => 'Frais bancaires excessifs sur 6 ans : 11 200 € remboursés par négociation amiable, sans procès.', 'name' => 'Geneviève R.', 'role' => 'Cliente — recouvrement frais' ),
+					array( 'quote' => "Surendettement : plan de redressement obtenu en commission, gel des poursuites, échéancier supportable. Je reconstruis pas à pas.", 'name' => 'Anonyme', 'role' => 'Procédure de surendettement' ),
 				),
 			),
 		);
