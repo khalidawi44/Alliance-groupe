@@ -1633,6 +1633,15 @@ body.ag-business-home #ag-team {
 body.ag-light .ag-business-founder {
     background: #F5F0EB;
 }
+/* Container elargi a 95% de la largeur d'ecran */
+.ag-business-founder__container {
+    max-width: 95vw !important;
+    width: 95vw !important;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 24px;
+    padding-right: 24px;
+}
 .ag-business-founder__title {
     font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif;
     font-style: italic;
@@ -1663,11 +1672,11 @@ body.ag-light .ag-business-founder__title::after {
     background: linear-gradient(90deg, transparent, #7B2D3B, transparent);
 }
 
-/* Grid 2/3 + 1/3 */
+/* Grid 2/3 + 1/3 sur largeur 95vw */
 .ag-business-founder__grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
-    gap: 36px;
+    gap: 40px;
     align-items: stretch;
 }
 @media (max-width: 980px) {
@@ -1676,14 +1685,14 @@ body.ag-light .ag-business-founder__title::after {
     }
 }
 
-/* Card fondateur (grande, gauche) */
+/* Card fondateur (grande, gauche) — photo XL pour utiliser la largeur */
 .ag-business-founder-card {
     background: rgba(20, 20, 30, .6);
     border: 1px solid rgba(212, 180, 92, .25);
     border-radius: 16px;
     overflow: hidden;
     display: grid;
-    grid-template-columns: 360px 1fr;
+    grid-template-columns: minmax(420px, 48%) 1fr;
     transition: transform .4s ease, box-shadow .4s ease, border-color .4s ease;
 }
 .ag-business-founder-card:hover {
@@ -1693,7 +1702,7 @@ body.ag-light .ag-business-founder__title::after {
 }
 @media (max-width: 1100px) {
     .ag-business-founder-card {
-        grid-template-columns: 280px 1fr;
+        grid-template-columns: minmax(320px, 45%) 1fr;
     }
 }
 @media (max-width: 760px) {
@@ -1703,100 +1712,81 @@ body.ag-light .ag-business-founder__title::after {
 }
 .ag-business-founder-card__photo {
     background-size: cover;
-    background-position: center 25%;
-    min-height: 100%;
+    background-position: center 30%;
+    min-height: 520px;
 }
 @media (max-width: 760px) {
     .ag-business-founder-card__photo {
-        min-height: 380px;
+        min-height: 420px;
     }
 }
 .ag-business-founder-card__body {
-    padding: 36px 36px 32px;
+    padding: 48px 44px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 .ag-business-founder-card__tag {
     color: #D4B45C;
-    font-size: .78rem;
+    font-size: .82rem;
     text-transform: uppercase;
-    letter-spacing: 2.5px;
-    margin: 0 0 10px;
+    letter-spacing: 3px;
+    margin: 0 0 14px;
     font-weight: 600;
 }
 .ag-business-founder-card__name {
     font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif;
     font-style: italic;
     color: #fff;
-    font-size: 1.85rem;
-    margin: 0 0 6px;
+    font-size: 2.2rem;
+    margin: 0 0 8px;
     line-height: 1.15;
 }
 .ag-business-founder-card__role {
-    color: rgba(255, 255, 255, .85);
+    color: rgba(255, 255, 255, .8);
     font-size: 1rem;
-    margin: 0 0 4px;
+    margin: 0 0 24px;
     font-weight: 500;
 }
-.ag-business-founder-card__barreau {
-    color: rgba(255, 255, 255, .55);
-    font-size: .85rem;
-    margin: 0 0 18px;
-    font-style: italic;
-}
-.ag-business-founder-card__bio {
-    color: #ddd;
-    font-size: .98rem;
-    line-height: 1.75;
-    margin: 0 0 24px;
-}
-.ag-business-founder-card__details {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 18px 28px;
-}
-.ag-business-founder-card__block h4 {
-    color: #D4B45C;
-    font-size: .78rem;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin: 0 0 8px;
-}
-.ag-business-founder-card__block ul {
+.ag-business-founder-card__domains {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 0 0 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
-.ag-business-founder-card__block li {
-    color: #ccc;
-    font-size: .88rem;
-    line-height: 1.55;
-    padding-left: 14px;
-    position: relative;
-    margin-bottom: 4px;
+.ag-business-founder-card__domains li {
+    color: #f4e4b8;
+    background: rgba(212, 180, 92, .12);
+    border: 1px solid rgba(212, 180, 92, .35);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: .85rem;
+    letter-spacing: .3px;
 }
-.ag-business-founder-card__block li::before {
-    content: "▸";
-    position: absolute;
-    left: 0;
-    color: #D4B45C;
-    font-size: .7rem;
-    top: 4px;
+.ag-business-founder-card__btn {
+    align-self: flex-start;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, #D4B45C 0%, #B8941F 100%);
+    color: #0A0E1A !important;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 6px;
+    border: none;
+    transition: transform .25s ease, box-shadow .25s ease;
+    letter-spacing: .5px;
 }
-.ag-business-founder-card__block p {
-    color: #ccc;
-    font-size: .88rem;
-    margin: 0;
-}
-@media (max-width: 540px) {
-    .ag-business-founder-card__details {
-        grid-template-columns: 1fr;
-    }
+.ag-business-founder-card__btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(212, 180, 92, .35);
 }
 
 /* Colonne droite : 2 associes empiles */
 .ag-business-founder__associates {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 20px;
 }
 .ag-business-founder__associates-tag {
     color: #D4B45C;
@@ -1811,14 +1801,14 @@ body.ag-light .ag-business-founder__associates-tag {
     color: #7B2D3B;
 }
 
-/* Mini-card associate (compacte) */
+/* Mini-card associate (compacte, simplifiee) */
 .ag-business-associate-mini {
     background: rgba(20, 20, 30, .55);
     border: 1px solid rgba(212, 180, 92, .18);
     border-radius: 12px;
     overflow: hidden;
     display: grid;
-    grid-template-columns: 110px 1fr;
+    grid-template-columns: 130px 1fr;
     transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
     flex: 1;
 }
@@ -1833,40 +1823,43 @@ body.ag-light .ag-business-founder__associates-tag {
     min-height: 100%;
 }
 .ag-business-associate-mini__body {
-    padding: 16px 18px;
+    padding: 18px 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    gap: 4px;
 }
 .ag-business-associate-mini__name {
     font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif;
     font-style: italic;
     color: #D4B45C;
-    font-size: 1.05rem;
-    margin: 0 0 2px;
+    font-size: 1.1rem;
+    margin: 0;
     line-height: 1.2;
 }
-.ag-business-associate-mini__role {
-    color: rgba(255, 255, 255, .8);
-    font-size: .82rem;
-    margin: 0 0 4px;
+.ag-business-associate-mini__domain {
+    color: #ddd;
+    font-size: .85rem;
+    margin: 0;
     font-weight: 500;
 }
-.ag-business-associate-mini__barreau {
-    color: rgba(255, 255, 255, .5);
-    font-size: .72rem;
-    font-style: italic;
-    margin: 0 0 8px;
+.ag-business-associate-mini__link {
+    color: #D4B45C;
+    font-size: .82rem;
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: .5px;
+    margin-top: 4px;
+    transition: color .2s ease, transform .2s ease;
+    align-self: flex-start;
 }
-.ag-business-associate-mini__specialties {
-    color: #ccc;
-    font-size: .78rem;
-    line-height: 1.5;
-    margin: 0;
+.ag-business-associate-mini__link:hover {
+    color: #f4e4b8;
+    transform: translateX(3px);
 }
 @media (max-width: 540px) {
     .ag-business-associate-mini {
-        grid-template-columns: 90px 1fr;
+        grid-template-columns: 100px 1fr;
     }
     .ag-business-associate-mini__photo {
         min-height: 140px;
@@ -1889,22 +1882,17 @@ body.ag-light .ag-business-founder-card__name {
 body.ag-light .ag-business-founder-card__role {
     color: #2A1A1E;
 }
-body.ag-light .ag-business-founder-card__barreau {
-    color: #5A4549;
-}
 body.ag-light .ag-business-founder-card__tag {
     color: #B8941F;
 }
-body.ag-light .ag-business-founder-card__bio,
-body.ag-light .ag-business-founder-card__block li,
-body.ag-light .ag-business-founder-card__block p {
-    color: #2A1A1E;
-}
-body.ag-light .ag-business-founder-card__block h4 {
+body.ag-light .ag-business-founder-card__domains li {
     color: #7B2D3B;
+    background: rgba(123, 45, 59, .08);
+    border-color: rgba(123, 45, 59, .25);
 }
-body.ag-light .ag-business-founder-card__block li::before {
-    color: #B8941F;
+body.ag-light .ag-business-founder-card__btn {
+    background: linear-gradient(135deg, #7B2D3B 0%, #A03D4D 100%);
+    color: #ffffff !important;
 }
 body.ag-light .ag-business-associate-mini {
     background: #fff;
@@ -1918,14 +1906,14 @@ body.ag-light .ag-business-associate-mini:hover {
 body.ag-light .ag-business-associate-mini__name {
     color: #7B2D3B;
 }
-body.ag-light .ag-business-associate-mini__role {
+body.ag-light .ag-business-associate-mini__domain {
     color: #2A1A1E;
 }
-body.ag-light .ag-business-associate-mini__barreau {
-    color: #5A4549;
+body.ag-light .ag-business-associate-mini__link {
+    color: #7B2D3B;
 }
-body.ag-light .ag-business-associate-mini__specialties {
-    color: #2A1A1E;
+body.ag-light .ag-business-associate-mini__link:hover {
+    color: #B8941F;
 }
 
 /* ─────────────────────────────────────────────────────────────────

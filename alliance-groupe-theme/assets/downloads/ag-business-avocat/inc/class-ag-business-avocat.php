@@ -377,9 +377,10 @@ class AG_Business_Avocat {
 		if ( ! $founder ) {
 			return;
 		}
+		$cabinet_url = function_exists( 'ag_page_url' ) ? ag_page_url( 'cabinet' ) : home_url( '/cabinet/' );
 		?>
 		<section class="ag-section ag-business-founder" id="ag-business-founder">
-			<div class="ag-container">
+			<div class="ag-container ag-business-founder__container">
 				<h2 class="ag-business-founder__title"><?php esc_html_e( 'Le fondateur et les associés', 'ag-business-avocat' ); ?></h2>
 				<div class="ag-business-founder__grid">
 					<article class="ag-business-founder-card">
@@ -388,30 +389,12 @@ class AG_Business_Avocat {
 							<p class="ag-business-founder-card__tag"><?php esc_html_e( 'Fondateur', 'ag-business-avocat' ); ?></p>
 							<h3 class="ag-business-founder-card__name"><?php echo esc_html( $founder['name'] ); ?></h3>
 							<p class="ag-business-founder-card__role"><?php echo esc_html( $founder['role'] ); ?></p>
-							<p class="ag-business-founder-card__barreau"><?php echo esc_html( $founder['barreau'] ); ?></p>
-							<p class="ag-business-founder-card__bio"><?php echo esc_html( $founder['bio'] ); ?></p>
-							<div class="ag-business-founder-card__details">
-								<div class="ag-business-founder-card__block">
-									<h4><?php esc_html_e( 'Spécialités', 'ag-business-avocat' ); ?></h4>
-									<ul>
-										<?php foreach ( $founder['specialties'] as $s ) : ?>
-											<li><?php echo esc_html( $s ); ?></li>
-										<?php endforeach; ?>
-									</ul>
-								</div>
-								<div class="ag-business-founder-card__block">
-									<h4><?php esc_html_e( 'Formation', 'ag-business-avocat' ); ?></h4>
-									<ul>
-										<?php foreach ( $founder['education'] as $e ) : ?>
-											<li><?php echo esc_html( $e ); ?></li>
-										<?php endforeach; ?>
-									</ul>
-								</div>
-								<div class="ag-business-founder-card__block">
-									<h4><?php esc_html_e( 'Langues', 'ag-business-avocat' ); ?></h4>
-									<p><?php echo esc_html( implode( ', ', $founder['languages'] ) ); ?></p>
-								</div>
-							</div>
+							<ul class="ag-business-founder-card__domains">
+								<?php foreach ( $founder['specialties'] as $s ) : ?>
+									<li><?php echo esc_html( $s ); ?></li>
+								<?php endforeach; ?>
+							</ul>
+							<a href="<?php echo esc_url( $cabinet_url ); ?>" class="ag-btn ag-business-founder-card__btn"><?php esc_html_e( 'Découvrir →', 'ag-business-avocat' ); ?></a>
 						</div>
 					</article>
 
@@ -422,9 +405,8 @@ class AG_Business_Avocat {
 								<div class="ag-business-associate-mini__photo" style="background-image:url('<?php echo esc_url( $a['photo'] ); ?>');" aria-hidden="true"></div>
 								<div class="ag-business-associate-mini__body">
 									<h4 class="ag-business-associate-mini__name"><?php echo esc_html( $a['name'] ); ?></h4>
-									<p class="ag-business-associate-mini__role"><?php echo esc_html( $a['role'] ); ?></p>
-									<p class="ag-business-associate-mini__barreau"><?php echo esc_html( $a['barreau'] ); ?></p>
-									<p class="ag-business-associate-mini__specialties"><?php echo esc_html( implode( ' · ', $a['specialties'] ) ); ?></p>
+									<p class="ag-business-associate-mini__domain"><?php echo esc_html( $a['specialties'][0] ); ?></p>
+									<a href="<?php echo esc_url( $cabinet_url ); ?>" class="ag-business-associate-mini__link"><?php esc_html_e( 'Découvrir →', 'ag-business-avocat' ); ?></a>
 								</div>
 							</article>
 						<?php endforeach; ?>
@@ -1422,7 +1404,7 @@ Telephone : [telephone]</p>
 					'name'        => 'Maître Henri DELACROIX',
 					'role'        => 'Avocat fondateur du cabinet',
 					'barreau'     => 'Barreau de Paris — Inscrit depuis 1985',
-					'photo'       => 'https://images.unsplash.com/photo-1559963110-71b394e7494d?w=900&q=85',
+					'photo'       => 'https://images.unsplash.com/photo-1545167622-3a6ac756afa4?w=1400&q=85',
 					'specialties' => array(
 						'Droit civil et commercial',
 						'Contentieux complexes',
