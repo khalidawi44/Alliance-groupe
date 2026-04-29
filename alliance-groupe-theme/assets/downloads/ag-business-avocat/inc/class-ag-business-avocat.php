@@ -1491,11 +1491,10 @@ Telephone : [telephone]</p>
 					'name'        => 'Maître Henri DELACROIX',
 					'role'        => 'Avocat fondateur du cabinet',
 					'barreau'     => 'Barreau de Paris — Inscrit depuis 1985',
-					// URL Unsplash verifiee comme accessible. Pour un
-					// portrait plus marque "ancien barbu", l'utilisateur
-					// peut overrider via le Customizer (Apparence >
-					// Personnaliser > AG Business Options > Fondateur).
-					'photo'       => 'https://images.unsplash.com/photo-1559963110-71b394e7494d?w=1400&q=85',
+					// Photo fournie par le client (iStock). Peut etre
+					// remplacee via le Customizer (Apparence > Personnaliser
+					// > AG Business Options > Fondateur > URL photo).
+					'photo'       => 'https://media.istockphoto.com/id/1962297666/fr/photo/avocat-professionnel-assis-dans-une-salle-de-conf%C3%A9rence-et-examinant-des-documents.jpg?s=612x612&w=0&k=20&c=p5W94edsF3Ewl-moMuHLPMDlxJiDTvej_hW0aAdmOD4=',
 					'specialties' => array(
 						'Droit civil et commercial',
 						'Contentieux complexes',
