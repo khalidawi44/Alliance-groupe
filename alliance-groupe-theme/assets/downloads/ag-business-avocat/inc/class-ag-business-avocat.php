@@ -714,17 +714,35 @@ class AG_Business_Avocat {
 						</section>
 
 						<section class="ag-business-boutique-widget ag-business-boutique-widget--contact">
-							<h3 class="ag-business-boutique-widget__title"><?php esc_html_e( 'Nous contacter', 'ag-business-avocat' ); ?></h3>
+							<h3 class="ag-business-boutique-widget__title"><?php esc_html_e( 'Réserver un rendez-vous', 'ag-business-avocat' ); ?></h3>
 							<?php if ( $contact_phone ) : ?>
 								<a class="ag-business-boutique-widget__phone" href="tel:<?php echo esc_attr( $contact_phone_clean ); ?>">
 									<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.2 1l-2.2 2.3z"/></svg>
 									<?php echo esc_html( $contact_phone ); ?>
 								</a>
 							<?php endif; ?>
-							<form class="ag-business-boutique-widget__form" method="post" action="<?php echo esc_url( home_url( '/#ag-rdv' ) ); ?>">
+							<form class="ag-business-boutique-widget__form ag-business-booking-form" method="post" action="<?php echo esc_url( home_url( '/#ag-rdv' ) ); ?>">
 								<?php wp_nonce_field( 'ag_rdv_send', 'ag_rdv_nonce' ); ?>
-								<input type="hidden" name="ag_rdv_domaine" value="<?php esc_attr_e( 'Question boutique', 'ag-business-avocat' ); ?>">
+								<input type="hidden" name="ag_rdv_domaine" value="<?php esc_attr_e( 'Réservation depuis la boutique', 'ag-business-avocat' ); ?>">
 								<input type="hidden" name="ag_rdv_format" value="cabinet">
+								<input type="hidden" name="ag_rdv_message" value="">
+								<label class="ag-business-booking-form__label">
+									<span><?php esc_html_e( 'Date souhaitée', 'ag-business-avocat' ); ?></span>
+									<input type="date" name="ag_rdv_date" min="<?php echo esc_attr( wp_date( 'Y-m-d' ) ); ?>" required>
+								</label>
+								<label class="ag-business-booking-form__label">
+									<span><?php esc_html_e( 'Créneau', 'ag-business-avocat' ); ?></span>
+									<select name="ag_rdv_slot" required>
+										<option value=""><?php esc_html_e( '— Choisir un créneau —', 'ag-business-avocat' ); ?></option>
+										<option value="09:00">09:00 — 10:00</option>
+										<option value="10:00">10:00 — 11:00</option>
+										<option value="11:00">11:00 — 12:00</option>
+										<option value="14:00">14:00 — 15:00</option>
+										<option value="15:00">15:00 — 16:00</option>
+										<option value="16:00">16:00 — 17:00</option>
+										<option value="17:00">17:00 — 18:00</option>
+									</select>
+								</label>
 								<label>
 									<span class="screen-reader-text"><?php esc_html_e( 'Votre nom', 'ag-business-avocat' ); ?></span>
 									<input type="text" name="ag_rdv_nom" placeholder="<?php esc_attr_e( 'Nom *', 'ag-business-avocat' ); ?>" required>
@@ -733,18 +751,14 @@ class AG_Business_Avocat {
 									<span class="screen-reader-text"><?php esc_html_e( 'Votre email', 'ag-business-avocat' ); ?></span>
 									<input type="email" name="ag_rdv_email" placeholder="<?php esc_attr_e( 'Email *', 'ag-business-avocat' ); ?>" required>
 								</label>
-								<label>
-									<span class="screen-reader-text"><?php esc_html_e( 'Votre message', 'ag-business-avocat' ); ?></span>
-									<textarea name="ag_rdv_message" rows="3" placeholder="<?php esc_attr_e( 'Votre question…', 'ag-business-avocat' ); ?>" required></textarea>
-								</label>
 								<label class="ag-business-boutique-widget__rgpd">
 									<input type="checkbox" name="ag_rdv_rgpd" value="1" required>
-									<span><?php esc_html_e( 'J\'accepte que mes données soient traitées dans le cadre de ma demande.', 'ag-business-avocat' ); ?></span>
+									<span><?php esc_html_e( 'J\'accepte le traitement de mes données pour la prise de rendez-vous.', 'ag-business-avocat' ); ?></span>
 								</label>
 								<div class="ag-rdv__honeypot" aria-hidden="true" style="position:absolute;left:-9999px;">
 									<label><input type="text" name="ag_rdv_website" tabindex="-1" autocomplete="off"></label>
 								</div>
-								<button type="submit" name="ag_rdv_submit" class="ag-btn"><?php esc_html_e( 'Envoyer', 'ag-business-avocat' ); ?></button>
+								<button type="submit" name="ag_rdv_submit" class="ag-btn"><?php esc_html_e( 'Réserver', 'ag-business-avocat' ); ?></button>
 							</form>
 						</section>
 					</aside>
