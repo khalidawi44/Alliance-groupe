@@ -2432,6 +2432,56 @@ Telephone : [telephone]</p>
 					array( 'quote' => "Surendettement : plan de redressement obtenu en commission, gel des poursuites, échéancier supportable. Je reconstruis pas à pas.", 'name' => 'Anonyme', 'role' => 'Procédure de surendettement' ),
 				),
 			),
+			'droit-de-la-securite-sociale' => array(
+				'cas_concrets' => array(
+					array( 'titre' => 'Refus de prise en charge AT/MP', 'desc' => 'Contestation devant la commission de recours amiable (CRA) puis le tribunal judiciaire pôle social. Reconnaissance de l\'accident du travail et indemnisation rétroactive.' ),
+					array( 'titre' => 'Reconnaissance de la faute inexcusable', 'desc' => 'Action contre l\'employeur après accident grave. Majoration de la rente et indemnisation des préjudices personnels (souffrance, esthétique, agrément).' ),
+					array( 'titre' => 'Recours contre une décision MDPH', 'desc' => 'Contestation du taux d\'incapacité, de la prestation refusée (PCH, AAH, AEEH), recours devant le tribunal judiciaire pôle social.' ),
+					array( 'titre' => 'Pension d\'invalidité refusée par la CPAM', 'desc' => 'Recours amiable, expertise médicale contradictoire, action judiciaire. Réévaluation du taux et catégorie d\'invalidité.' ),
+					array( 'titre' => 'Indu URSSAF contesté', 'desc' => 'Analyse du redressement, opposition à contrainte, recours devant le tribunal. Annulation totale ou réduction substantielle de la dette.' ),
+				),
+				'faq' => array(
+					array( 'q' => 'Quel délai pour contester une décision de la CPAM ?', 'a' => '2 mois à compter de la notification pour saisir la commission de recours amiable (CRA). Puis 2 mois pour saisir le tribunal judiciaire pôle social après la décision de la CRA (ou rejet implicite après 2 mois de silence).' ),
+					array( 'q' => 'Comment obtenir la reconnaissance de la faute inexcusable de l\'employeur ?', 'a' => 'Prouver que l\'employeur avait conscience du danger et n\'a pas pris les mesures pour préserver le salarié. Action devant le pôle social du TJ. Conséquences : majoration de la rente AT et indemnisation complémentaire des préjudices.' ),
+					array( 'q' => 'Quels recours contre un refus d\'AAH ?', 'a' => 'Recours administratif préalable obligatoire (RAPO) devant la MDPH dans les 2 mois. Si rejet : tribunal judiciaire pôle social. Possibilité de demander une nouvelle expertise médicale contradictoire.' ),
+					array( 'q' => 'Que faire si l\'URSSAF réclame un indu de plusieurs années ?', 'a' => 'Vérifier la prescription (3 ans en principe, 5 ans en cas de fraude présumée). Contester la base de calcul, demander des justificatifs. Opposition à contrainte dans les 15 jours. Procédure devant le pôle social.' ),
+					array( 'q' => 'Mon arrêt maladie est-il indemnisé en totalité ?', 'a' => 'Indemnités journalières CPAM (50% du salaire de base, plafonné) + complément employeur si convention collective le prévoit. Délai de carence de 3 jours en maladie (sauf reprise dans les 48h). Pas de carence en AT/MP.' ),
+				),
+				'citations' => array(
+					array( 'quote' => 'La sécurité sociale est une garantie donnée à chacun qu\'en toutes circonstances il disposera des moyens nécessaires pour assurer sa subsistance.', 'author' => 'Pierre Laroque, fondateur de la Sécurité sociale', 'bg' => 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1920&q=85' ),
+					array( 'quote' => 'La Nation assure à l\'individu et à la famille les conditions nécessaires à leur développement.', 'author' => 'Préambule de la Constitution de 1946', 'bg' => 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=1920&q=85' ),
+				),
+				'testimonials' => array(
+					array( 'quote' => "Accident de trajet refusé par la CPAM, reconnu après 9 mois de procédure. Rente versée rétroactivement, soulagement total.", 'name' => 'Mickaël T.', 'role' => 'Salarié — accident de trajet' ),
+					array( 'quote' => "Faute inexcusable obtenue après accident sur chantier. Indemnités majorées et préjudices personnels reconnus à hauteur de 85 K€.", 'name' => 'Pierre A.', 'role' => 'Ouvrier BTP' ),
+					array( 'quote' => "Taux d'incapacité MDPH passé de 50% à 80% après recours. AAH revalorisée et carte mobilité inclusion obtenue.", 'name' => 'Linda V.', 'role' => 'Bénéficiaire AAH' ),
+				),
+			),
+			'droit-de-la-consommation' => array(
+				'cas_concrets' => array(
+					array( 'titre' => 'Démarchage abusif et clauses abusives', 'desc' => 'Annulation du contrat dans le délai de rétractation (14 jours), action en nullité pour clauses abusives, restitution intégrale des sommes versées.' ),
+					array( 'titre' => 'Vice caché sur véhicule d\'occasion', 'desc' => 'Expertise contradictoire, mise en demeure du vendeur, action rédhibitoire ou estimatoire. Récupération du prix ou réduction.' ),
+					array( 'titre' => 'Crédit à la consommation contesté', 'desc' => 'Vérification de l\'offre préalable (mentions obligatoires, taux), déchéance du droit aux intérêts pour irrégularités, recalcul de la dette.' ),
+					array( 'titre' => 'Garantie commerciale et garantie légale', 'desc' => 'Activation de la garantie légale de conformité (2 ans neuf, 1 an occasion), garantie des vices cachés (2 ans), action contre vendeur ou fabricant.' ),
+					array( 'titre' => 'Litige avec un opérateur télécom/banque', 'desc' => 'Médiation préalable obligatoire, saisine du médiateur sectoriel, action devant le juge des contentieux de la protection. Résolution rapide.' ),
+				),
+				'faq' => array(
+					array( 'q' => 'Quel délai de rétractation après un démarchage à domicile ?', 'a' => '14 jours calendaires à compter de la signature du contrat ou de la livraison du bien. Le vendeur doit fournir un formulaire type. À défaut, le délai est porté à 12 mois.' ),
+					array( 'q' => 'Comment activer la garantie légale de conformité ?', 'a' => 'Mise en demeure écrite au vendeur (lettre recommandée) sous 2 ans à compter de la livraison (1 an pour l\'occasion depuis 2022). Demande de réparation, remplacement ou remboursement. Présomption d\'antériorité du défaut pendant 24 mois (12 pour occasion).' ),
+					array( 'q' => 'Que faire face à un démarchage téléphonique abusif ?', 'a' => 'Inscription gratuite sur Bloctel (liste d\'opposition). Plainte à la DGCCRF en cas de non-respect. Action en cessation et dommages-intérêts si harcèlement caractérisé. Sanction pouvant aller jusqu\'à 75 000 € pour le démarcheur.' ),
+					array( 'q' => 'Mon crédit à la consommation peut-il être annulé ?', 'a' => 'Si l\'offre préalable manque de mentions obligatoires (TAEG, durée, coût total), le prêteur peut être déchu du droit aux intérêts. La dette est ramenée au capital, sans intérêts ni frais. Vérification systématique recommandée.' ),
+					array( 'q' => 'Comment porter plainte contre une marque ?', 'a' => 'Signalement à la DGCCRF (SignalConso), action individuelle devant le juge des contentieux de la protection, action de groupe possible via une association agréée (UFC, CLCV…) si plusieurs consommateurs lésés.' ),
+				),
+				'citations' => array(
+					array( 'quote' => 'Le consommateur n\'est pas un imbécile : c\'est ta femme.', 'author' => 'David Ogilvy', 'bg' => 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1920&q=85' ),
+					array( 'quote' => 'La protection du consommateur est l\'une des plus belles conquêtes du droit moderne.', 'author' => 'Adage du droit de la consommation', 'bg' => 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1920&q=85' ),
+				),
+				'testimonials' => array(
+					array( 'quote' => 'Démarchage à domicile abusif annulé, 4 200 € remboursés intégralement. Le vendeur est passé en liste noire DGCCRF.', 'name' => 'Régine P.', 'role' => 'Consommatrice — démarchage' ),
+					array( 'quote' => "Voiture d'occasion avec moteur HS dissimulé : véhicule remboursé en totalité, vendeur professionnel condamné à 800 € de dommages-intérêts.", 'name' => 'Hakim L.', 'role' => 'Acheteur — auto' ),
+					array( 'quote' => "Crédit conso de 12 K€ déchu de ses intérêts pour défauts de mentions obligatoires. Économie de 3 800 € sur la durée du prêt.", 'name' => 'Carole D.', 'role' => 'Emprunteuse — crédit conso' ),
+				),
+			),
 		);
 	}
 }
