@@ -161,6 +161,28 @@ body.ag-business-hide-home-boutique.home #ag-boutique:not(.ag-business-boutique-
    bouton style coherent avec le reste du theme Business. */
 body.ag-business-active .ag-boutique {
     padding: 80px 24px !important;
+    /* Fond bibliotheque classe : photo de rayonnages de livres
+       juridiques + voile sombre pour garder la lisibilite. */
+    background-image:
+        linear-gradient(180deg, rgba(10, 14, 26, .92) 0%, rgba(10, 14, 26, .85) 50%, rgba(10, 14, 26, .92) 100%),
+        url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=2000&q=85') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-attachment: fixed !important;
+    background-repeat: no-repeat !important;
+}
+body.ag-business-active.ag-light .ag-boutique {
+    background-image:
+        linear-gradient(180deg, rgba(245, 240, 235, .85) 0%, rgba(245, 240, 235, .78) 50%, rgba(245, 240, 235, .85) 100%),
+        url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=2000&q=85') !important;
+}
+/* Etoiles boutique : forcer le hide partout (le user les a explicitement
+   demande retirees, le Customizer "stars/scales/gavel" reste mais tout
+   est masque par defaut). */
+body.ag-business-active .ag-boutique-stars-host,
+body.ag-business-active .ag-boutique-shooting-stars,
+body.ag-business-active .ag-boutique-shooting-star {
+    display: none !important;
 }
 body.ag-business-active .ag-business-boutique-page .ag-container {
     max-width: 95vw !important;
