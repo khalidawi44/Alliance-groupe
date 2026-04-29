@@ -165,6 +165,9 @@ class AG_Business_Avocat {
 			return $classes;
 		}
 		$classes[] = 'ag-business-active';
+		if ( is_front_page() ) {
+			$classes[] = 'ag-business-home';
+		}
 		if ( get_theme_mod( 'ag_business_hide_home_boutique', false ) ) {
 			$classes[] = 'ag-business-hide-home-boutique';
 		}
@@ -203,8 +206,9 @@ class AG_Business_Avocat {
 				),
 				// HTML de l'equipe injecte uniquement sur la page Cabinet
 				// (le template Free n'appelle pas the_content donc on
-				// passe par JS). Split en 2 groupes pour permettre
+				// passe par JS). Split en 3 groupes pour permettre
 				// d'inserer des citations entre.
+				'cabinetFounderHtml'       => is_page( 'cabinet' ) ? $this->render_team_group_html( 'founder', __( 'Le fondateur', 'ag-business-avocat' ) ) : '',
 				'cabinetAssociatesHtml'    => is_page( 'cabinet' ) ? $this->render_team_group_html( 'associates', __( 'Avocats associés', 'ag-business-avocat' ) ) : '',
 				'cabinetCollaboratorsHtml' => is_page( 'cabinet' ) ? $this->render_team_group_html( 'collaborators', __( 'Collaborateurs', 'ag-business-avocat' ) ) : '',
 				// Citations parallax injectees entre les sections des
@@ -322,24 +326,24 @@ class AG_Business_Avocat {
 
 	/**
 	 * Sur la home, ordre demande par l'utilisateur :
-	 *   Maitre -> 2 associes -> Notre equipe (collaborateurs)
+	 *   .ag-maitre Free masque (CSS) -> "Le fondateur et les associes"
+	 *   -> "Notre equipe" -> bouton Decouvrir.
 	 *
-	 * On laisse render_team_section a sa position par defaut
-	 * (ag_after_maitre @ 10) et on ajoute la section associes en
-	 * priorite 5 pour qu'elle apparaisse AVANT.
+	 * Le render_team_section de pro-features (priorite 10) est masque
+	 * par CSS (body.ag-business-active .ag-section.ag-team{display:none})
+	 * et remplace par notre render_home_team_business (priorite 7).
 	 */
 	public function reorder_sections() {
 		if ( ! $this->is_active() ) {
 			return;
 		}
-		// render_team_section reste a sa position par defaut
-		// (ag_after_maitre priorite 10 — registree par pro-features.php).
-		// On ajoute juste les 2 associes AVANT (priorite 5).
-		add_action( 'ag_after_maitre', array( $this, 'render_home_associates' ), 5 );
-		// Bouton 'Decouvrir' apres la section Equipe (apres team_section @10)
+		// Section combinee fondateur + 2 associes (compacts a droite).
+		add_action( 'ag_after_maitre', array( $this, 'render_founder_and_associates' ), 5 );
+		// Notre equipe (collaborateurs + conseiller fiscal).
+		add_action( 'ag_after_maitre', array( $this, 'render_home_team_business' ), 7 );
+		// Bouton 'Decouvrir' a la fin (apres team_section Free @10 mais
+		// celui-ci est masque en CSS).
 		add_action( 'ag_after_maitre', array( $this, 'render_decouvrir_after_team' ), 99 );
-		// Bouton 'Decouvrir' INSIDE la presentation du Maitre
-		add_action( 'ag_inside_maitre_body', array( $this, 'render_decouvrir_inside_maitre' ), 99 );
 	}
 
 	private function render_decouvrir_btn_html( $aria_label = 'Decouvrir' ) {
@@ -357,23 +361,90 @@ class AG_Business_Avocat {
 		echo $this->render_decouvrir_btn_html( 'Decouvrir le cabinet et l\'equipe' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
-	public function render_decouvrir_inside_maitre() {
+	/**
+	 * Section "Le fondateur et les associes" sur la home : fondateur big
+	 * a gauche (2/3) + 2 associes compacts en colonne a droite (1/3).
+	 * Remplace visuellement la section .ag-maitre du theme Free
+	 * (masquee en CSS via body.ag-business-active).
+	 */
+	public function render_founder_and_associates() {
 		if ( ! $this->is_active() ) {
 			return;
 		}
-		echo $this->render_decouvrir_btn_html( 'Decouvrir le cabinet' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		$team    = $this->get_default_team_data();
+		$founder = isset( $team['founder'][0] ) ? $team['founder'][0] : null;
+		$assocs  = isset( $team['associates'] ) ? $team['associates'] : array();
+		if ( ! $founder ) {
+			return;
+		}
+		?>
+		<section class="ag-section ag-business-founder" id="ag-business-founder">
+			<div class="ag-container">
+				<h2 class="ag-business-founder__title"><?php esc_html_e( 'Le fondateur et les associés', 'ag-business-avocat' ); ?></h2>
+				<div class="ag-business-founder__grid">
+					<article class="ag-business-founder-card">
+						<div class="ag-business-founder-card__photo" style="background-image:url('<?php echo esc_url( $founder['photo'] ); ?>');" aria-hidden="true"></div>
+						<div class="ag-business-founder-card__body">
+							<p class="ag-business-founder-card__tag"><?php esc_html_e( 'Fondateur', 'ag-business-avocat' ); ?></p>
+							<h3 class="ag-business-founder-card__name"><?php echo esc_html( $founder['name'] ); ?></h3>
+							<p class="ag-business-founder-card__role"><?php echo esc_html( $founder['role'] ); ?></p>
+							<p class="ag-business-founder-card__barreau"><?php echo esc_html( $founder['barreau'] ); ?></p>
+							<p class="ag-business-founder-card__bio"><?php echo esc_html( $founder['bio'] ); ?></p>
+							<div class="ag-business-founder-card__details">
+								<div class="ag-business-founder-card__block">
+									<h4><?php esc_html_e( 'Spécialités', 'ag-business-avocat' ); ?></h4>
+									<ul>
+										<?php foreach ( $founder['specialties'] as $s ) : ?>
+											<li><?php echo esc_html( $s ); ?></li>
+										<?php endforeach; ?>
+									</ul>
+								</div>
+								<div class="ag-business-founder-card__block">
+									<h4><?php esc_html_e( 'Formation', 'ag-business-avocat' ); ?></h4>
+									<ul>
+										<?php foreach ( $founder['education'] as $e ) : ?>
+											<li><?php echo esc_html( $e ); ?></li>
+										<?php endforeach; ?>
+									</ul>
+								</div>
+								<div class="ag-business-founder-card__block">
+									<h4><?php esc_html_e( 'Langues', 'ag-business-avocat' ); ?></h4>
+									<p><?php echo esc_html( implode( ', ', $founder['languages'] ) ); ?></p>
+								</div>
+							</div>
+						</div>
+					</article>
+
+					<aside class="ag-business-founder__associates">
+						<p class="ag-business-founder__associates-tag"><?php esc_html_e( 'Avocats associés', 'ag-business-avocat' ); ?></p>
+						<?php foreach ( $assocs as $a ) : ?>
+							<article class="ag-business-associate-mini">
+								<div class="ag-business-associate-mini__photo" style="background-image:url('<?php echo esc_url( $a['photo'] ); ?>');" aria-hidden="true"></div>
+								<div class="ag-business-associate-mini__body">
+									<h4 class="ag-business-associate-mini__name"><?php echo esc_html( $a['name'] ); ?></h4>
+									<p class="ag-business-associate-mini__role"><?php echo esc_html( $a['role'] ); ?></p>
+									<p class="ag-business-associate-mini__barreau"><?php echo esc_html( $a['barreau'] ); ?></p>
+									<p class="ag-business-associate-mini__specialties"><?php echo esc_html( implode( ' · ', $a['specialties'] ) ); ?></p>
+								</div>
+							</article>
+						<?php endforeach; ?>
+					</aside>
+				</div>
+			</div>
+		</section>
+		<?php
 	}
 
 	/**
-	 * Rend les 2 avocats associes sous le Maitre sur la home.
-	 * Le team_section qui suit (priorite 10) affiche les collaborateurs.
+	 * Section "Notre equipe" sur la home (collaborateurs + conseiller
+	 * fiscal). Remplace visuellement la team_section de pro-features
+	 * qui est masquee en CSS sur la home.
 	 */
-	public function render_home_associates() {
+	public function render_home_team_business() {
 		if ( ! $this->is_active() ) {
 			return;
 		}
-		echo $this->render_team_group_html( 'associates', __( 'Avocats associés', 'ag-business-avocat' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $this->render_decouvrir_btn_html( 'Decouvrir les associes' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $this->render_team_group_html( 'collaborators', __( 'Notre équipe', 'ag-business-avocat' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**
@@ -1338,114 +1409,192 @@ Telephone : [telephone]</p>
 	}
 
 	/**
-	 * 5 profils par defaut, separes en 2 groupes :
-	 *   - associates : 2 avocats associes (premier conteneur, en avant)
-	 *   - collaborators : 3 collaborateurs (deuxieme conteneur)
+	 * Profils par defaut, separes en 3 groupes :
+	 *   - founder      : 1 fondateur (65 ans, mis en avant)
+	 *   - associates   : 2 avocats associes (compacts, en colonne a droite)
+	 *   - collaborators: 6 membres (5 collaborateurs + 1 conseiller fiscal)
 	 * Photos depuis Unsplash (portraits libres), remplacables.
 	 */
 	private function get_default_team_data() {
 		return array(
-			'associates'    => array(
+			'founder'    => array(
 				array(
-				'name'        => 'Maître Sophie DUPONT',
-				'role'        => 'Avocate associée fondatrice',
-				'barreau'     => 'Barreau de Paris — Inscrite depuis 2008',
-				'photo'       => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=85',
-				'specialties' => array(
-					'Droit des affaires',
-					'Fusions-acquisitions',
-					'Droit des sociétés',
-					'Contentieux commercial',
+					'name'        => 'Maître Henri DELACROIX',
+					'role'        => 'Avocat fondateur du cabinet',
+					'barreau'     => 'Barreau de Paris — Inscrit depuis 1985',
+					'photo'       => 'https://images.unsplash.com/photo-1559963110-71b394e7494d?w=900&q=85',
+					'specialties' => array(
+						'Droit civil et commercial',
+						'Contentieux complexes',
+						'Arbitrage et médiation',
+						'Conseil stratégique aux dirigeants',
+					),
+					'education'   => array(
+						'Doctorat en Droit privé — Université Paris II Panthéon-Assas',
+						'DEA Droit des affaires — Université Paris I Panthéon-Sorbonne',
+						'CAPA — École de Formation du Barreau (EFB)',
+						'Auditeur libre — Institut des Hautes Études sur la Justice (IHEJ)',
+					),
+					'languages'   => array( 'Français', 'Anglais', 'Italien', 'Latin juridique' ),
+					'bio'         => "Plus de quarante années passées dans les prétoires français. Fondateur du cabinet en 1992, il en a forgé la réputation d'exigence et de discrétion. Ancien membre du Conseil de l'Ordre, il continue d'assurer les dossiers les plus sensibles et de transmettre son expérience aux jeunes générations.",
 				),
-				'education'   => array(
-					'Master 2 Droit des affaires — Université Paris II Panthéon-Assas',
-					'DJCE (Diplôme de Juriste Conseil d\'Entreprise)',
-					'CAPA — École de Formation du Barreau (EFB)',
-					'LL.M. en droit international — King\'s College London',
-				),
-				'languages'   => array( 'Français', 'Anglais', 'Italien' ),
-				'bio'         => 'Plus de 15 ans d\'expérience en accompagnement de PME et ETI. Reconnue pour son approche pragmatique et sa capacité à dénouer les contentieux complexes.',
 			),
-			array(
-				'name'        => 'Maître Philippe MARTIN',
-				'role'        => 'Avocat associé',
-				'barreau'     => 'Barreau de Paris — Inscrit depuis 2012',
-				'photo'       => 'https://images.unsplash.com/photo-1556157382-97eda2d62296?w=600&q=85',
-				'specialties' => array(
-					'Droit pénal',
-					'Droit pénal des affaires',
-					'Procédure pénale',
-					'Garde à vue 24h/24',
+			'associates' => array(
+				array(
+					'name'        => 'Maître Sophie DUPONT',
+					'role'        => 'Avocate associée',
+					'barreau'     => 'Barreau de Paris — Inscrite depuis 2008',
+					'photo'       => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=85',
+					'specialties' => array(
+						'Droit des affaires',
+						'Fusions-acquisitions',
+						'Droit des sociétés',
+						'Contentieux commercial',
+					),
+					'education'   => array(
+						'Master 2 Droit des affaires — Université Paris II Panthéon-Assas',
+						'DJCE (Diplôme de Juriste Conseil d\'Entreprise)',
+						'CAPA — École de Formation du Barreau (EFB)',
+					),
+					'languages'   => array( 'Français', 'Anglais', 'Italien' ),
+					'bio'         => "15 ans d'expérience en accompagnement de PME et ETI. Approche pragmatique des contentieux complexes.",
 				),
-				'education'   => array(
-					'Master 2 Droit pénal — Université Paris I Panthéon-Sorbonne',
-					'CAPA — EFB (Major de promotion)',
-					'Stage final auprès du Tribunal Judiciaire de Paris',
+				array(
+					'name'        => 'Maître Philippe MARTIN',
+					'role'        => 'Avocat associé',
+					'barreau'     => 'Barreau de Paris — Inscrit depuis 2012',
+					'photo'       => 'https://images.unsplash.com/photo-1556157382-97eda2d62296?w=600&q=85',
+					'specialties' => array(
+						'Droit pénal',
+						'Droit pénal des affaires',
+						'Procédure pénale',
+						'Garde à vue 24h/24',
+					),
+					'education'   => array(
+						'Master 2 Droit pénal — Université Paris I Panthéon-Sorbonne',
+						'CAPA — EFB (Major de promotion)',
+					),
+					'languages'   => array( 'Français', 'Anglais', 'Espagnol' ),
+					'bio'         => 'Plaidoiries devant toutes les juridictions, de l\'instruction à la cour d\'assises.',
 				),
-				'languages'   => array( 'Français', 'Anglais', 'Espagnol' ),
-				'bio'         => 'Ancien collaborateur de cabinets pénalistes parisiens reconnus. Plaidoiries devant toutes les juridictions, de l\'instruction à la cour d\'assises.',
 			),
-		),
-		'collaborators' => array(
-			array(
-				'name'        => 'Maître Camille LEROUX',
-				'role'        => 'Avocate collaboratrice senior',
-				'barreau'     => 'Barreau de Paris — Inscrite depuis 2016',
-				'photo'       => 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&q=85',
-				'specialties' => array(
-					'Droit du travail',
-					'Droit social',
-					'Contentieux prud\'homal',
-					'Négociation de ruptures conventionnelles',
+			'collaborators' => array(
+				array(
+					'name'        => 'Maître Camille LEROUX',
+					'role'        => 'Avocate collaboratrice senior',
+					'barreau'     => 'Barreau de Paris — Inscrite depuis 2016',
+					'photo'       => 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&q=85',
+					'specialties' => array(
+						'Droit du travail',
+						'Droit social',
+						'Contentieux prud\'homal',
+						'Négociation de ruptures conventionnelles',
+					),
+					'education'   => array(
+						'Master 2 Droit social — Université Paris-Nanterre',
+						'Diplôme universitaire en Droit de la sécurité sociale',
+						'CAPA — EFB',
+					),
+					'languages'   => array( 'Français', 'Anglais' ),
+					'bio'         => 'Spécialiste du droit du travail côté salariés et employeurs. A obtenu plus de 200 décisions favorables devant les Conseils de Prud\'hommes.',
 				),
-				'education'   => array(
-					'Master 2 Droit social — Université Paris-Nanterre',
-					'Diplôme universitaire en Droit de la sécurité sociale',
-					'CAPA — EFB',
+				array(
+					'name'        => 'Maître Antoine BERNARD',
+					'role'        => 'Avocat collaborateur',
+					'barreau'     => 'Barreau de Paris — Inscrit depuis 2020',
+					'photo'       => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=85',
+					'specialties' => array(
+						'Droit immobilier',
+						'Droit de la copropriété',
+						'Baux commerciaux et d\'habitation',
+						'Vices cachés et constructions',
+					),
+					'education'   => array(
+						'Master 2 Droit immobilier — Université Aix-Marseille',
+						'Diplôme universitaire en Construction',
+						'CAPA — EFB',
+					),
+					'languages'   => array( 'Français', 'Anglais' ),
+					'bio'         => 'Expertise pointue en contentieux immobilier et copropriété. Conseille promoteurs, syndics et particuliers dans toutes leurs problématiques.',
 				),
-				'languages'   => array( 'Français', 'Anglais' ),
-				'bio'         => 'Spécialiste du droit du travail côté salariés et employeurs. A obtenu plus de 200 décisions favorables devant les Conseils de Prud\'hommes.',
+				array(
+					'name'        => 'Maître Léa DUBOIS',
+					'role'        => 'Avocate collaboratrice',
+					'barreau'     => 'Barreau de Paris — Inscrite depuis 2021',
+					'photo'       => 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&q=85',
+					'specialties' => array(
+						'Droit de la famille',
+						'Divorce et séparation',
+						'Droit des successions',
+						'Médiation familiale',
+					),
+					'education'   => array(
+						'Master 2 Droit de la famille — Université Paris II Panthéon-Assas',
+						'Diplôme universitaire en Médiation',
+						'CAPA — EFB',
+					),
+					'languages'   => array( 'Français', 'Anglais', 'Allemand' ),
+					'bio'         => 'Approche humaine et discrète des dossiers familiaux. Privilégie la médiation et le consentement mutuel quand c\'est possible.',
+				),
+				array(
+					'name'        => 'Maître Julien MOREAU',
+					'role'        => 'Avocat collaborateur',
+					'barreau'     => 'Barreau de Paris — Inscrit depuis 2019',
+					'photo'       => 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&q=85',
+					'specialties' => array(
+						'Droit pénal des affaires',
+						'Compliance et conformité',
+						'Enquêtes internes',
+						'Procédure pénale',
+					),
+					'education'   => array(
+						'Master 2 Droit pénal financier — Université Paris II Panthéon-Assas',
+						'Certificat de Compliance Officer — ESSEC',
+						'CAPA — EFB',
+					),
+					'languages'   => array( 'Français', 'Anglais', 'Allemand' ),
+					'bio'         => "Accompagne les dirigeants et entreprises dans leurs problématiques de conformité et de défense pénale. Ancien stagiaire du parquet financier.",
+				),
+				array(
+					'name'        => 'Maître Inès CHEVALIER',
+					'role'        => 'Avocate collaboratrice',
+					'barreau'     => 'Barreau de Paris — Inscrite depuis 2022',
+					'photo'       => 'https://images.unsplash.com/photo-1592621385612-4d7129426394?w=600&q=85',
+					'specialties' => array(
+						'Droit du numérique et données personnelles',
+						'Propriété intellectuelle',
+						'Contentieux contractuel',
+						'RGPD et conformité',
+					),
+					'education'   => array(
+						'Master 2 Droit du numérique — Université Paris II Panthéon-Assas',
+						'DPO certifié (CNIL)',
+						'CAPA — EFB',
+					),
+					'languages'   => array( 'Français', 'Anglais', 'Italien' ),
+					'bio'         => "Conseille startups, éditeurs et grands comptes sur leurs enjeux numériques, contractuels et data. Pilote les audits RGPD du cabinet.",
+				),
+				array(
+					'name'        => 'Monsieur Bertrand FOURNIER',
+					'role'        => 'Conseiller juridique fiscal',
+					'barreau'     => "Diplôme d'Avocat fiscaliste — non inscrit au barreau",
+					'photo'       => 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&q=85',
+					'specialties' => array(
+						'Conseil fiscal aux particuliers',
+						'Fiscalité du patrimoine et des successions',
+						'Optimisation fiscale des entreprises',
+						'Contrôles et contentieux fiscaux',
+					),
+					'education'   => array(
+						'Master 2 Droit fiscal — Université Paris II Panthéon-Assas',
+						'Diplôme Supérieur de Notariat (DSN)',
+						'Ancien inspecteur des finances publiques',
+					),
+					'languages'   => array( 'Français', 'Anglais' ),
+					'bio'         => "Vingt ans d'expérience au service des contribuables. Accompagne particuliers, dirigeants et familles dans toutes leurs déclarations, optimisations et contentieux fiscaux.",
+				),
 			),
-			array(
-				'name'        => 'Maître Antoine BERNARD',
-				'role'        => 'Avocat collaborateur',
-				'barreau'     => 'Barreau de Paris — Inscrit depuis 2020',
-				'photo'       => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=85',
-				'specialties' => array(
-					'Droit immobilier',
-					'Droit de la copropriété',
-					'Baux commerciaux et d\'habitation',
-					'Vices cachés et constructions',
-				),
-				'education'   => array(
-					'Master 2 Droit immobilier — Université Aix-Marseille',
-					'Diplôme universitaire en Construction',
-					'CAPA — EFB',
-				),
-				'languages'   => array( 'Français', 'Anglais' ),
-				'bio'         => 'Expertise pointue en contentieux immobilier et copropriété. Conseille promoteurs, syndics et particuliers dans toutes leurs problématiques.',
-			),
-			array(
-				'name'        => 'Maître Léa DUBOIS',
-				'role'        => 'Avocate collaboratrice',
-				'barreau'     => 'Barreau de Paris — Inscrite depuis 2021',
-				'photo'       => 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&q=85',
-				'specialties' => array(
-					'Droit de la famille',
-					'Divorce et séparation',
-					'Droit des successions',
-					'Médiation familiale',
-				),
-				'education'   => array(
-					'Master 2 Droit de la famille — Université Paris II Panthéon-Assas',
-					'Diplôme universitaire en Médiation',
-					'CAPA — EFB',
-				),
-				'languages'   => array( 'Français', 'Anglais', 'Allemand' ),
-				'bio'         => 'Approche humaine et discrète des dossiers familiaux. Privilégie la médiation et le consentement mutuel quand c\'est possible.',
-			),
-		),
-	);
+		);
 	}
 
 	/**
@@ -1463,8 +1612,15 @@ Telephone : [telephone]</p>
 		// des sections de contenu.
 
 		if ( is_page( 'cabinet' ) ) {
-			// Cabinet : Cicéron entre associes et collaborateurs,
+			// Cabinet : Montesquieu entre fondateur et associes,
+			//           Cicéron entre associes et collaborateurs,
 			//           Pascal entre collaborateurs et "Nous trouver".
+			$citations[] = array(
+				'quote'       => 'L\'expérience fait plus de savants que les livres.',
+				'author'      => 'Montesquieu, De l\'esprit des lois',
+				'bg'          => 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1920&q=85',
+				'insertAfter' => '.ag-business-team-full--founder',
+			);
 			$citations[] = array(
 				'quote'       => 'Le silence est une chose admirable, mais qui demande une grande force pour ne pas être faiblesse.',
 				'author'      => 'Cicéron',
