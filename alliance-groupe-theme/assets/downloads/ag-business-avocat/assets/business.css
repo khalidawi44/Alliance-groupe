@@ -1009,6 +1009,36 @@ body.ag-business-active .ag-domaine-examples > .ag-domaine-examples__list {
     display: none !important;
 }
 
+/* ── Bouton 'Decouvrir' (sous Maitre, sous Associes, sous Equipe) ── */
+body.ag-business-active .ag-business-decouvrir-cta__btn {
+    display: inline-block;
+    padding: 12px 28px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+    font-size: .88rem !important;
+    border: 1px solid rgba(212, 180, 92, .4) !important;
+    background: transparent !important;
+    color: #D4B45C !important;
+    border-radius: 8px;
+    transition: background .25s, color .25s, transform .25s, border-color .25s;
+}
+body.ag-business-active .ag-business-decouvrir-cta__btn:hover {
+    background: rgba(212, 180, 92, .15) !important;
+    color: #FFE5A0 !important;
+    border-color: #FFE5A0 !important;
+    transform: translateY(-2px) !important;
+}
+body.ag-business-active.ag-light .ag-business-decouvrir-cta__btn {
+    border-color: rgba(123, 45, 59, .4) !important;
+    color: #7B2D3B !important;
+}
+body.ag-business-active.ag-light .ag-business-decouvrir-cta__btn:hover {
+    background: rgba(123, 45, 59, .1) !important;
+    color: #A03D4D !important;
+    border-color: #A03D4D !important;
+}
+
 /* ── Bouton 'Tous nos domaines' apres section Domaines de la home ── */
 body.ag-business-active .ag-business-tous-domaines-cta__btn {
     display: inline-block;
