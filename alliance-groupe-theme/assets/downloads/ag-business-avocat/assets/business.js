@@ -439,6 +439,31 @@
 		footer.insertAdjacentHTML('beforeend', html);
 	}
 
+	/* ── Page /boutique/ : retire le doublon WC archive ──
+	   Quand /boutique/ est aussi la page shop WC, WooCommerce rend
+	   automatiquement '3 résultats affichés' + tri + ul.products en
+	   plus de notre shortcode. On retire ces elements WC siblings
+	   pour ne garder que la presentation Business. */
+	function removeBoutiqueWcDoublon() {
+		if (!isBusinessActive()) return;
+		var ours = document.querySelector('.ag-business-boutique-page');
+		if (!ours) return;
+		var killSelectors = [
+			'.woocommerce-result-count',
+			'.woocommerce-ordering',
+			'.woocommerce-pagination',
+			'.woocommerce-notices-wrapper',
+			'.woocommerce > .woocommerce-products-header',
+			'ul.products'
+		];
+		killSelectors.forEach(function (sel) {
+			document.querySelectorAll(sel).forEach(function (el) {
+				if (el.closest('.ag-business-boutique-page')) return; // pas le notre
+				if (el.parentNode) el.parentNode.removeChild(el);
+			});
+		});
+	}
+
 	function run() {
 		animateCounters();
 		makeHonorairesClickable();
@@ -452,6 +477,7 @@
 		injectBoutiqueImages();
 		setupFaqAutoClose();
 		injectLegalFooter();
+		removeBoutiqueWcDoublon();
 	}
 
 	if (document.readyState === 'loading') {
