@@ -664,20 +664,27 @@ class AG_Business_Avocat {
 								/* translators: %d : count */
 								printf( esc_html( _n( '%d produit', '%d produits', count( $products ), 'ag-business-avocat' ) ), count( $products ) );
 							?></div>
-							<form method="get" action="" class="ag-business-boutique-page__sort-form">
-								<?php if ( '' !== $q ) : ?><input type="hidden" name="ag_q" value="<?php echo esc_attr( $q ); ?>"><?php endif; ?>
-								<?php if ( '' !== $cat ) : ?><input type="hidden" name="ag_cat" value="<?php echo esc_attr( $cat ); ?>"><?php endif; ?>
-								<?php if ( $min > 0 ) : ?><input type="hidden" name="ag_min" value="<?php echo esc_attr( $min ); ?>"><?php endif; ?>
-								<?php if ( $max > 0 ) : ?><input type="hidden" name="ag_max" value="<?php echo esc_attr( $max ); ?>"><?php endif; ?>
-								<label class="screen-reader-text" for="ag_sort"><?php esc_html_e( 'Trier par', 'ag-business-avocat' ); ?></label>
-								<select id="ag_sort" name="ag_sort" onchange="this.form.submit()">
-									<option value="date_desc" <?php selected( $sort, 'date_desc' ); ?>><?php esc_html_e( 'Plus récents', 'ag-business-avocat' ); ?></option>
-									<option value="popularity" <?php selected( $sort, 'popularity' ); ?>><?php esc_html_e( 'Popularité', 'ag-business-avocat' ); ?></option>
-									<option value="price_asc" <?php selected( $sort, 'price_asc' ); ?>><?php esc_html_e( 'Prix croissant', 'ag-business-avocat' ); ?></option>
-									<option value="price_desc" <?php selected( $sort, 'price_desc' ); ?>><?php esc_html_e( 'Prix décroissant', 'ag-business-avocat' ); ?></option>
-									<option value="name_asc" <?php selected( $sort, 'name_asc' ); ?>><?php esc_html_e( 'Nom (A-Z)', 'ag-business-avocat' ); ?></option>
-								</select>
-							</form>
+							<?php
+							// Tri sous forme de pills cliquables (au lieu d'un select
+							// HTML natif au look bof). Chaque pill = lien vers la
+							// meme URL avec ag_sort=X. La pill active est highlighted.
+							$sort_options = array(
+								'date_desc'  => __( 'Plus récents', 'ag-business-avocat' ),
+								'popularity' => __( 'Populaire', 'ag-business-avocat' ),
+								'price_asc'  => __( 'Prix ↑', 'ag-business-avocat' ),
+								'price_desc' => __( 'Prix ↓', 'ag-business-avocat' ),
+								'name_asc'   => __( 'A-Z', 'ag-business-avocat' ),
+							);
+							?>
+							<nav class="ag-business-boutique-page__sort-pills" aria-label="<?php esc_attr_e( 'Trier les produits', 'ag-business-avocat' ); ?>">
+								<span class="ag-business-boutique-page__sort-label"><?php esc_html_e( 'Trier', 'ag-business-avocat' ); ?></span>
+								<?php foreach ( $sort_options as $key => $label ) :
+									$url = add_query_arg( 'ag_sort', $key );
+									$is_active = ( $sort === $key );
+									?>
+									<a href="<?php echo esc_url( $url ); ?>" class="ag-business-boutique-pill<?php echo $is_active ? ' ag-business-boutique-pill--active' : ''; ?>" <?php echo $is_active ? 'aria-current="true"' : ''; ?>><?php echo esc_html( $label ); ?></a>
+								<?php endforeach; ?>
+							</nav>
 						</div>
 						<?php if ( $has_filters ) : ?>
 							<p class="ag-business-boutique-page__search-info">
