@@ -192,19 +192,20 @@ body.ag-business-active .ag-business-boutique-page .ag-container {
     margin-right: auto !important;
 }
 /* Boutique page : layout main + sidebar droite */
+/* Layout : sidebar en absolute pour ne pas etirer la section. La hauteur
+   de la section vient uniquement du main (= grille produits). La sidebar
+   flotte en sticky, son contenu peut overflow scroller si trop long. */
 .ag-business-boutique-page__layout {
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 40px;
-    align-items: start;
-}
-@media (max-width: 1024px) {
-    .ag-business-boutique-page__layout {
-        grid-template-columns: 1fr;
-    }
+    position: relative;
 }
 .ag-business-boutique-page__main {
     min-width: 0;
+    margin-right: 360px;
+}
+@media (max-width: 1024px) {
+    .ag-business-boutique-page__main {
+        margin-right: 0;
+    }
 }
 .ag-business-boutique-page__search-info {
     color: rgba(255, 255, 255, .8);
@@ -271,48 +272,131 @@ body.ag-light .ag-business-boutique-chip {
     border-color: rgba(123, 45, 59, .25);
     color: #7B2D3B;
 }
-/* Sidebar : widget filtres — prix range + actions */
+/* ── Widget filtres : style business raffine ──
+   - Pas de fond colore, juste un encadre subtil
+   - Inputs underline-only (sans box) en gold
+   - Bouton "Appliquer" cernes or (outline) au lieu d'un gradient
+   - Labels en Playfair italic */
 .ag-business-boutique-widget--filters {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 18px;
+    background: transparent !important;
+    border: 1px solid rgba(212, 180, 92, .35) !important;
+    padding: 24px 22px !important;
+    box-shadow: none !important;
+}
+body.ag-light .ag-business-boutique-widget--filters {
+    background: transparent !important;
+    border-color: rgba(123, 45, 59, .25) !important;
+    box-shadow: none !important;
+}
+.ag-business-boutique-widget--filters .ag-business-boutique-widget__title {
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif !important;
+    font-style: italic;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: .92rem !important;
+    letter-spacing: 1.5px;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    margin: 0 0 4px !important;
+}
+.ag-business-boutique-widget--filters .ag-business-booking-form__label {
+    color: rgba(255, 255, 255, .55);
+    font-size: .68rem;
+    letter-spacing: 1.5px;
+    font-weight: 500;
+    gap: 6px;
+}
+body.ag-light .ag-business-boutique-widget--filters .ag-business-booking-form__label {
+    color: #5A4549;
+}
+.ag-business-boutique-widget--filters input[type="search"],
+.ag-business-boutique-widget--filters input[type="number"],
+.ag-business-boutique-widget--filters select {
+    background: transparent !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(212, 180, 92, .35) !important;
+    border-radius: 0 !important;
+    color: #f4e4b8 !important;
+    padding: 8px 2px !important;
+    font-size: .92rem !important;
+    transition: border-color .2s ease;
+    text-transform: none;
+    letter-spacing: .3px;
+}
+.ag-business-boutique-widget--filters input[type="search"]:focus,
+.ag-business-boutique-widget--filters input[type="number"]:focus,
+.ag-business-boutique-widget--filters select:focus {
+    outline: none;
+    border-bottom-color: #D4B45C !important;
+}
+body.ag-light .ag-business-boutique-widget--filters input[type="search"],
+body.ag-light .ag-business-boutique-widget--filters input[type="number"],
+body.ag-light .ag-business-boutique-widget--filters select {
+    color: #2A1A1E !important;
+    border-bottom-color: rgba(123, 45, 59, .35) !important;
+}
+body.ag-light .ag-business-boutique-widget--filters input[type="search"]:focus,
+body.ag-light .ag-business-boutique-widget--filters input[type="number"]:focus,
+body.ag-light .ag-business-boutique-widget--filters select:focus {
+    border-bottom-color: #7B2D3B !important;
 }
 .ag-business-boutique-widget__price-range {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-.ag-business-boutique-widget__price-range input[type="number"] {
-    width: 100%;
-    background: rgba(255, 255, 255, .08);
-    border: 1px solid rgba(212, 180, 92, .22);
-    color: #fff;
-    padding: 9px 11px;
-    border-radius: 8px;
-    font-size: .9rem;
-    text-transform: none;
-}
-body.ag-light .ag-business-boutique-widget__price-range input[type="number"] {
-    background: #fafafa;
-    border-color: rgba(0, 0, 0, .12);
-    color: #2A1A1E;
+    gap: 14px;
 }
 .ag-business-boutique-widget__filter-actions {
     display: flex;
     gap: 12px;
     align-items: center;
-    margin-top: 4px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(212, 180, 92, .15);
 }
+body.ag-light .ag-business-boutique-widget__filter-actions {
+    border-top-color: rgba(123, 45, 59, .12);
+}
+/* Bouton Appliquer : style cernes or business (pas de gradient) */
 .ag-business-boutique-widget__filter-actions .ag-btn {
     flex: 1;
-    padding: 9px 18px;
-    font-size: .88rem;
+    padding: 10px 20px !important;
+    font-size: .82rem !important;
+    background: transparent !important;
+    color: #D4B45C !important;
+    border: 1px solid #D4B45C !important;
+    border-radius: 4px !important;
+    font-family: "Playfair Display", Georgia, serif !important;
+    font-style: italic;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    transition: background .25s ease, color .25s ease;
+    box-shadow: none !important;
+}
+.ag-business-boutique-widget__filter-actions .ag-btn:hover {
+    background: #D4B45C !important;
+    color: #0A0E1A !important;
+    transform: none !important;
+}
+body.ag-light .ag-business-boutique-widget__filter-actions .ag-btn {
+    color: #7B2D3B !important;
+    border-color: #7B2D3B !important;
+}
+body.ag-light .ag-business-boutique-widget__filter-actions .ag-btn:hover {
+    background: #7B2D3B !important;
+    color: #fff !important;
 }
 .ag-business-boutique-widget__reset {
-    color: rgba(255, 255, 255, .55);
+    color: rgba(255, 255, 255, .5);
     text-decoration: none;
-    font-size: .82rem;
+    font-size: .76rem;
+    letter-spacing: .8px;
+    text-transform: uppercase;
     transition: color .2s ease;
+    font-weight: 500;
 }
 .ag-business-boutique-widget__reset:hover {
     color: #D4B45C;
@@ -340,17 +424,23 @@ body.ag-business-active .ag-business-boutique-page .ag-boutique__grid {
     }
 }
 
-/* ── Sidebar Boutique : recherche + recos + best sellers + contact ── */
+/* ── Sidebar Boutique : recherche + recos + best sellers + contact ──
+   Position absolute dans __layout pour ne pas etirer la hauteur de
+   section. Contenu scrollable si plus long que la grille produits. */
 .ag-business-boutique-sidebar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 320px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    position: sticky;
-    top: 96px;
+    gap: 20px;
 }
 @media (max-width: 1024px) {
     .ag-business-boutique-sidebar {
         position: static;
+        width: 100%;
+        margin-top: 32px;
     }
 }
 .ag-business-boutique-widget {
