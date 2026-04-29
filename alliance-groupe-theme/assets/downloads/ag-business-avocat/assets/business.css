@@ -242,19 +242,72 @@ body.ag-light .ag-business-boutique-page__search-info a {
 body.ag-light .ag-business-boutique-page__count {
     color: #2A1A1E;
 }
-.ag-business-boutique-page__sort-form select {
-    background: rgba(255, 255, 255, .08);
-    border: 1px solid rgba(212, 180, 92, .25);
-    color: #fff;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: .88rem;
-    cursor: pointer;
+/* ── Toolbar : tri sous forme de pills (vs select HTML moche) ── */
+.ag-business-boutique-page__sort-pills {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
 }
-body.ag-light .ag-business-boutique-page__sort-form select {
-    background: #fafafa;
-    border-color: rgba(0, 0, 0, .12);
-    color: #2A1A1E;
+.ag-business-boutique-page__sort-label {
+    color: rgba(255, 255, 255, .55);
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 500;
+    margin-right: 8px;
+    font-family: "Playfair Display", Georgia, serif;
+    font-style: italic;
+}
+body.ag-light .ag-business-boutique-page__sort-label {
+    color: #5A4549;
+}
+.ag-business-boutique-pill {
+    display: inline-block;
+    padding: 7px 14px;
+    color: rgba(255, 255, 255, .65);
+    font-size: .8rem;
+    text-decoration: none;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    letter-spacing: .3px;
+    transition: color .25s ease, border-color .25s ease, background .25s ease;
+    font-family: "Playfair Display", Georgia, serif;
+    font-style: italic;
+}
+.ag-business-boutique-pill:hover {
+    color: #f4e4b8;
+    border-color: rgba(212, 180, 92, .35);
+}
+.ag-business-boutique-pill--active {
+    color: #0A0E1A;
+    background: linear-gradient(135deg, #D4B45C 0%, #B8941F 100%);
+    border-color: #D4B45C;
+    font-weight: 600;
+}
+.ag-business-boutique-pill--active:hover {
+    color: #0A0E1A;
+}
+body.ag-light .ag-business-boutique-pill {
+    color: #5A4549;
+}
+body.ag-light .ag-business-boutique-pill:hover {
+    color: #7B2D3B;
+    border-color: rgba(123, 45, 59, .35);
+}
+body.ag-light .ag-business-boutique-pill--active {
+    color: #fff;
+    background: linear-gradient(135deg, #7B2D3B 0%, #A03D4D 100%);
+    border-color: #7B2D3B;
+}
+body.ag-light .ag-business-boutique-pill--active:hover {
+    color: #fff;
+}
+@media (max-width: 700px) {
+    .ag-business-boutique-page__sort-label {
+        width: 100%;
+        margin-bottom: 6px;
+    }
 }
 /* Chips de filtres actifs */
 .ag-business-boutique-chip {
