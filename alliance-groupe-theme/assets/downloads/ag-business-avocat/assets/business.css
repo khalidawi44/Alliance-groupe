@@ -1632,12 +1632,12 @@ body.ag-light .ag-business-team-full__group-title {
    ratio 1/1 prend toute la largeur de section et devient enorme) */
 .ag-business-team-full__grid--founder {
     grid-template-columns: 1fr;
-    max-width: 720px;
+    max-width: 80%;
     margin: 0 auto;
 }
 .ag-business-team-full__grid--founder .ag-business-team-card {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 320px 1fr;
     align-items: start;
 }
 .ag-business-team-full__grid--founder .ag-business-team-card__photo {
