@@ -206,9 +206,9 @@ class AG_Business_Avocat {
 				),
 				// HTML de l'equipe injecte uniquement sur la page Cabinet
 				// (le template Free n'appelle pas the_content donc on
-				// passe par JS). Le fondateur n'est PAS injecte ici :
-				// c'est uniquement la home qui montre la card fondateur.
-				'cabinetFounderHtml'       => '',
+				// passe par JS). Ordre cabinet : fondateur puis associes
+				// puis collaborateurs, avec citations entre.
+				'cabinetFounderHtml'       => is_page( 'cabinet' ) ? $this->render_team_group_html( 'founder', __( 'Le fondateur', 'ag-business-avocat' ) ) : '',
 				'cabinetAssociatesHtml'    => is_page( 'cabinet' ) ? $this->render_team_group_html( 'associates', __( 'Avocats associés', 'ag-business-avocat' ) ) : '',
 				'cabinetCollaboratorsHtml' => is_page( 'cabinet' ) ? $this->render_team_group_html( 'collaborators', __( 'Collaborateurs', 'ag-business-avocat' ) ) : '',
 				// Citations parallax injectees entre les sections des
@@ -1685,8 +1685,15 @@ Telephone : [telephone]</p>
 		// des sections de contenu.
 
 		if ( is_page( 'cabinet' ) ) {
-			// Cabinet : Cicéron entre associes et collaborateurs,
-			//           Pascal entre collaborateurs et "Nous trouver".
+			// Cabinet ordre : fondateur > associes > collaborateurs.
+			// Citations : Montesquieu (founder→associes), Cicéron
+			// (associes→collaborateurs), Pascal (collaborateurs→map).
+			$citations[] = array(
+				'quote'       => 'L\'expérience fait plus de savants que les livres.',
+				'author'      => 'Montesquieu, De l\'esprit des lois',
+				'bg'          => 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1920&q=85',
+				'insertAfter' => '.ag-business-team-full--founder',
+			);
 			$citations[] = array(
 				'quote'       => 'Le silence est une chose admirable, mais qui demande une grande force pour ne pas être faiblesse.',
 				'author'      => 'Cicéron',

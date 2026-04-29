@@ -486,13 +486,13 @@
 		});
 	}
 
-	/* ── Home : regroupe Le cabinet (33% droite) + Prendre rdv (66% gauche) ──
-	   Refactor DOM uniquement sur la home (front-page.php). On detecte via
-	   la presence simultanee de #ag-cabinet ET #ag-rdv : ces deux ids ne
-	   coexistent que dans front-page.php (page-cabinet.php n'a ni id
-	   ag-cabinet ni section ag-rdv). Pas de check body class — celui-ci
-	   echouait dans certains setups WP. La carte (.ag-cabinet__map) est
-	   extraite et conservee plein largeur en dessous.  */
+	/* ── Home : regroupe Honoraires (top), Le cabinet (33% droite) et
+	   Prendre rdv (66% gauche) en une seule grosse section. Refactor DOM
+	   uniquement sur la home (front-page.php). Detection : presence
+	   simultanee de #ag-cabinet + #ag-rdv (ces 2 ids ne coexistent que
+	   dans front-page.php). Le bloc combine est insere AVANT
+	   .ag-honoraires pour apparaitre haut-de-page-fee. La carte
+	   (.ag-cabinet__map) est extraite plein largeur dessous.  */
 	function combineCabinetRdv() {
 		if (!isBusinessActive()) return;
 		if (document.querySelector('.ag-business-cabinet-rdv')) return; // deja fait
@@ -506,13 +506,26 @@
 		var rdvContainer = rdv.querySelector('.ag-container');
 		if (!cabContainer || !rdvContainer) return;
 
+		var honoraires = document.getElementById('ag-honoraires');
+		var honContainer = honoraires ? honoraires.querySelector('.ag-container') : null;
+
 		// Section combinee
 		var combined = document.createElement('section');
 		combined.className = 'ag-section ag-business-cabinet-rdv';
 		combined.id = 'ag-business-cabinet-rdv';
+		var inner = document.createElement('div');
+		inner.className = 'ag-container ag-business-cabinet-rdv__inner';
+		combined.appendChild(inner);
+
+		// Top : zone honoraires (full-width)
+		var topZone = document.createElement('div');
+		topZone.className = 'ag-business-cabinet-rdv__honoraires';
+		inner.appendChild(topZone);
+
+		// Bottom : grid 2-col (rdv | cabinet)
 		var grid = document.createElement('div');
-		grid.className = 'ag-container ag-business-cabinet-rdv__container';
-		combined.appendChild(grid);
+		grid.className = 'ag-business-cabinet-rdv__grid';
+		inner.appendChild(grid);
 
 		var left = document.createElement('div');
 		left.className = 'ag-business-cabinet-rdv__left';
@@ -526,9 +539,17 @@
 		var map = cabContainer.querySelector('.ag-cabinet__map');
 		if (map && map.parentNode) map.parentNode.removeChild(map);
 
-		// Inserer la section combinee avant le 1er des 2 (cabinet vient
-		// avant rdv dans front-page.php, donc on l'insere avant cabinet)
-		cabinet.parentNode.insertBefore(combined, cabinet);
+		// Inserer la section combinee : avant honoraires si presente,
+		// sinon avant cabinet.
+		var anchor = honoraires || cabinet;
+		anchor.parentNode.insertBefore(combined, anchor);
+
+		// Top zone : tout le contenu honoraires (titre + lead + grid + note)
+		if (honContainer) {
+			while (honContainer.firstChild) {
+				topZone.appendChild(honContainer.firstChild);
+			}
+		}
 
 		// Gauche : tout le contenu du form rdv (titre + status + form)
 		while (rdvContainer.firstChild) {
@@ -557,8 +578,13 @@
 		rdv.style.display = 'none';
 		cabinet.removeAttribute('id');
 		rdv.removeAttribute('id');
+		if (honoraires) {
+			honoraires.style.display = 'none';
+			honoraires.removeAttribute('id');
+		}
 		left.id = 'ag-rdv';
 		right.id = 'ag-cabinet';
+		topZone.id = 'ag-honoraires';
 	}
 
 	function run() {
