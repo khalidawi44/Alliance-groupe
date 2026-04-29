@@ -1574,6 +1574,30 @@ body.ag-light .ag-business-team-full__group-title {
     display: grid;
     gap: 32px;
 }
+/* Fondateur : 1 seule card mise en avant, largeur contenue (sinon photo
+   ratio 1/1 prend toute la largeur de section et devient enorme) */
+.ag-business-team-full__grid--founder {
+    grid-template-columns: 1fr;
+    max-width: 720px;
+    margin: 0 auto;
+}
+.ag-business-team-full__grid--founder .ag-business-team-card {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+}
+.ag-business-team-full__grid--founder .ag-business-team-card__photo {
+    aspect-ratio: auto !important;
+    min-height: 100%;
+}
+@media (max-width: 700px) {
+    .ag-business-team-full__grid--founder .ag-business-team-card {
+        grid-template-columns: 1fr;
+    }
+    .ag-business-team-full__grid--founder .ag-business-team-card__photo {
+        aspect-ratio: 4 / 3 !important;
+        min-height: 0;
+    }
+}
 /* Associes : 2 colonnes max (cards plus larges, mise en avant) */
 .ag-business-team-full__grid--associates {
     grid-template-columns: repeat(2, 1fr);
