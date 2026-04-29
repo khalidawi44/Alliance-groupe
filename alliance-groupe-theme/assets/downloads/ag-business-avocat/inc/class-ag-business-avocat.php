@@ -571,34 +571,183 @@ class AG_Business_Avocat {
 			return '<p style="text-align:center;padding:40px;">' . esc_html__( 'Aucun produit dans la boutique pour le moment.', 'ag-business-avocat' ) . '</p>';
 		}
 
+		// Recherche : si query ?ag_q=, filtrer par titre/description.
+		$q = isset( $_GET['ag_q'] ) ? sanitize_text_field( wp_unslash( $_GET['ag_q'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( '' !== $q ) {
+			$needle   = mb_strtolower( $q );
+			$products = array_filter( $products, function ( $p ) use ( $needle ) {
+				if ( ! is_object( $p ) ) return false;
+				$hay = mb_strtolower( $p->get_name() . ' ' . $p->get_short_description() . ' ' . $p->get_description() );
+				return false !== mb_strpos( $hay, $needle );
+			} );
+		}
+
+		// Best sellers (par total_sales) + recommandations (featured ou
+		// 3 random) — si WC n'a pas encore de ventes, on retombe sur la
+		// liste produits dans l'ordre par defaut.
+		$best_sellers = wc_get_products( array(
+			'limit'   => 3,
+			'status'  => 'publish',
+			'orderby' => 'meta_value_num',
+			'meta_key' => 'total_sales',
+			'order'   => 'DESC',
+		) );
+		if ( empty( $best_sellers ) ) {
+			$best_sellers = array_slice( array_values( wc_get_products( array( 'limit' => 3, 'status' => 'publish' ) ) ), 0, 3 );
+		}
+		$recos = wc_get_products( array(
+			'limit'    => 3,
+			'status'   => 'publish',
+			'featured' => true,
+		) );
+		if ( empty( $recos ) ) {
+			$recos = array_slice( array_values( wc_get_products( array( 'limit' => 3, 'status' => 'publish', 'orderby' => 'rand' ) ) ), 0, 3 );
+		}
+
+		$contact_phone = (string) get_theme_mod( 'ag_cabinet_phone', '' );
+		if ( ! $contact_phone && function_exists( 'ag_starter_avocat_get_option' ) ) {
+			$contact_phone = (string) ag_starter_avocat_get_option( 'ag_cabinet_phone' );
+		}
+		$contact_phone_clean = preg_replace( '/[^0-9+]/', '', $contact_phone );
+
 		ob_start();
 		?>
 		<div class="ag-section ag-boutique ag-business-boutique-page" id="ag-boutique">
-			<div class="ag-container">
-				<div class="ag-boutique__grid">
-					<?php foreach ( $products as $product ) :
-						if ( ! is_object( $product ) ) continue;
-						$img_id  = $product->get_image_id();
-						$img_url = $img_id ? wp_get_attachment_image_url( $img_id, 'large' ) : '';
-						$price   = wp_strip_all_tags( $product->get_price_html() );
-						$excerpt = $product->get_short_description();
-						if ( '' === $excerpt ) {
-							$excerpt = wp_trim_words( wp_strip_all_tags( $product->get_description() ), 24 );
-						}
-						$has_image = ! empty( $img_url );
-						?>
-						<article class="ag-boutique-card<?php echo $has_image ? ' ag-boutique-card--with-image' : ''; ?>">
-							<?php if ( $has_image ) : ?>
-								<div class="ag-boutique-card__image">
-									<img src="<?php echo esc_url( $img_url ); ?>" alt="<?php echo esc_attr( $product->get_name() ); ?>" loading="lazy">
-								</div>
+			<div class="ag-container ag-business-boutique-page__container">
+				<div class="ag-business-boutique-page__layout">
+					<div class="ag-business-boutique-page__main">
+						<?php if ( '' !== $q ) : ?>
+							<p class="ag-business-boutique-page__search-info"><?php
+								printf(
+									/* translators: %s : terme de recherche */
+									esc_html__( 'Résultats pour : %s', 'ag-business-avocat' ),
+									'<strong>' . esc_html( $q ) . '</strong>'
+								);
+							?> · <a href="<?php echo esc_url( remove_query_arg( 'ag_q' ) ); ?>"><?php esc_html_e( 'Effacer', 'ag-business-avocat' ); ?></a></p>
+						<?php endif; ?>
+						<?php if ( empty( $products ) ) : ?>
+							<p style="text-align:center;padding:40px;"><?php esc_html_e( 'Aucun produit ne correspond à cette recherche.', 'ag-business-avocat' ); ?></p>
+						<?php else : ?>
+							<div class="ag-boutique__grid">
+								<?php foreach ( $products as $product ) :
+									if ( ! is_object( $product ) ) continue;
+									$img_id  = $product->get_image_id();
+									$img_url = $img_id ? wp_get_attachment_image_url( $img_id, 'large' ) : '';
+									$price   = wp_strip_all_tags( $product->get_price_html() );
+									$excerpt = $product->get_short_description();
+									if ( '' === $excerpt ) {
+										$excerpt = wp_trim_words( wp_strip_all_tags( $product->get_description() ), 24 );
+									}
+									$has_image = ! empty( $img_url );
+									?>
+									<article class="ag-boutique-card<?php echo $has_image ? ' ag-boutique-card--with-image' : ''; ?>">
+										<?php if ( $has_image ) : ?>
+											<div class="ag-boutique-card__image">
+												<img src="<?php echo esc_url( $img_url ); ?>" alt="<?php echo esc_attr( $product->get_name() ); ?>" loading="lazy">
+											</div>
+										<?php endif; ?>
+										<h3 class="ag-boutique-card__title"><?php echo esc_html( $product->get_name() ); ?></h3>
+										<div class="ag-boutique-card__price"><?php echo esc_html( $price ); ?></div>
+										<p class="ag-boutique-card__desc"><?php echo esc_html( $excerpt ); ?></p>
+										<a href="<?php echo esc_url( get_permalink( $product->get_id() ) ); ?>" class="ag-btn ag-boutique-card__btn"><?php esc_html_e( 'Voir la fiche →', 'ag-business-avocat' ); ?></a>
+									</article>
+								<?php endforeach; ?>
+							</div>
+						<?php endif; ?>
+					</div>
+
+					<aside class="ag-business-boutique-sidebar">
+						<form class="ag-business-boutique-widget ag-business-boutique-widget--search" method="get" action="">
+							<h3 class="ag-business-boutique-widget__title"><?php esc_html_e( 'Recherche', 'ag-business-avocat' ); ?></h3>
+							<div class="ag-business-boutique-widget__search-row">
+								<input type="search" name="ag_q" value="<?php echo esc_attr( $q ); ?>" placeholder="<?php esc_attr_e( 'Rechercher un produit…', 'ag-business-avocat' ); ?>" aria-label="<?php esc_attr_e( 'Rechercher dans la boutique', 'ag-business-avocat' ); ?>">
+								<button type="submit" aria-label="<?php esc_attr_e( 'Lancer la recherche', 'ag-business-avocat' ); ?>">
+									<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+								</button>
+							</div>
+						</form>
+
+						<section class="ag-business-boutique-widget">
+							<h3 class="ag-business-boutique-widget__title"><?php esc_html_e( 'Nos recommandations', 'ag-business-avocat' ); ?></h3>
+							<ul class="ag-business-boutique-widget__list">
+								<?php foreach ( $recos as $r ) :
+									if ( ! is_object( $r ) ) continue;
+									$ri = $r->get_image_id();
+									$ru = $ri ? wp_get_attachment_image_url( $ri, 'thumbnail' ) : '';
+									?>
+									<li>
+										<a href="<?php echo esc_url( get_permalink( $r->get_id() ) ); ?>">
+											<?php if ( $ru ) : ?>
+												<span class="ag-business-boutique-widget__thumb" style="background-image:url('<?php echo esc_url( $ru ); ?>');" aria-hidden="true"></span>
+											<?php endif; ?>
+											<span class="ag-business-boutique-widget__txt">
+												<span class="ag-business-boutique-widget__name"><?php echo esc_html( $r->get_name() ); ?></span>
+												<span class="ag-business-boutique-widget__price"><?php echo wp_kses_post( $r->get_price_html() ); ?></span>
+											</span>
+										</a>
+									</li>
+								<?php endforeach; ?>
+							</ul>
+						</section>
+
+						<section class="ag-business-boutique-widget">
+							<h3 class="ag-business-boutique-widget__title"><?php esc_html_e( 'Meilleures ventes', 'ag-business-avocat' ); ?></h3>
+							<ul class="ag-business-boutique-widget__list">
+								<?php foreach ( $best_sellers as $b ) :
+									if ( ! is_object( $b ) ) continue;
+									$bi = $b->get_image_id();
+									$bu = $bi ? wp_get_attachment_image_url( $bi, 'thumbnail' ) : '';
+									?>
+									<li>
+										<a href="<?php echo esc_url( get_permalink( $b->get_id() ) ); ?>">
+											<?php if ( $bu ) : ?>
+												<span class="ag-business-boutique-widget__thumb" style="background-image:url('<?php echo esc_url( $bu ); ?>');" aria-hidden="true"></span>
+											<?php endif; ?>
+											<span class="ag-business-boutique-widget__txt">
+												<span class="ag-business-boutique-widget__name"><?php echo esc_html( $b->get_name() ); ?></span>
+												<span class="ag-business-boutique-widget__price"><?php echo wp_kses_post( $b->get_price_html() ); ?></span>
+											</span>
+										</a>
+									</li>
+								<?php endforeach; ?>
+							</ul>
+						</section>
+
+						<section class="ag-business-boutique-widget ag-business-boutique-widget--contact">
+							<h3 class="ag-business-boutique-widget__title"><?php esc_html_e( 'Nous contacter', 'ag-business-avocat' ); ?></h3>
+							<?php if ( $contact_phone ) : ?>
+								<a class="ag-business-boutique-widget__phone" href="tel:<?php echo esc_attr( $contact_phone_clean ); ?>">
+									<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.2 1l-2.2 2.3z"/></svg>
+									<?php echo esc_html( $contact_phone ); ?>
+								</a>
 							<?php endif; ?>
-							<h3 class="ag-boutique-card__title"><?php echo esc_html( $product->get_name() ); ?></h3>
-							<div class="ag-boutique-card__price"><?php echo esc_html( $price ); ?></div>
-							<p class="ag-boutique-card__desc"><?php echo esc_html( $excerpt ); ?></p>
-							<a href="<?php echo esc_url( get_permalink( $product->get_id() ) ); ?>" class="ag-btn ag-boutique-card__btn"><?php esc_html_e( 'Voir la fiche →', 'ag-business-avocat' ); ?></a>
-						</article>
-					<?php endforeach; ?>
+							<form class="ag-business-boutique-widget__form" method="post" action="<?php echo esc_url( home_url( '/#ag-rdv' ) ); ?>">
+								<?php wp_nonce_field( 'ag_rdv_send', 'ag_rdv_nonce' ); ?>
+								<input type="hidden" name="ag_rdv_domaine" value="<?php esc_attr_e( 'Question boutique', 'ag-business-avocat' ); ?>">
+								<input type="hidden" name="ag_rdv_format" value="cabinet">
+								<label>
+									<span class="screen-reader-text"><?php esc_html_e( 'Votre nom', 'ag-business-avocat' ); ?></span>
+									<input type="text" name="ag_rdv_nom" placeholder="<?php esc_attr_e( 'Nom *', 'ag-business-avocat' ); ?>" required>
+								</label>
+								<label>
+									<span class="screen-reader-text"><?php esc_html_e( 'Votre email', 'ag-business-avocat' ); ?></span>
+									<input type="email" name="ag_rdv_email" placeholder="<?php esc_attr_e( 'Email *', 'ag-business-avocat' ); ?>" required>
+								</label>
+								<label>
+									<span class="screen-reader-text"><?php esc_html_e( 'Votre message', 'ag-business-avocat' ); ?></span>
+									<textarea name="ag_rdv_message" rows="3" placeholder="<?php esc_attr_e( 'Votre question…', 'ag-business-avocat' ); ?>" required></textarea>
+								</label>
+								<label class="ag-business-boutique-widget__rgpd">
+									<input type="checkbox" name="ag_rdv_rgpd" value="1" required>
+									<span><?php esc_html_e( 'J\'accepte que mes données soient traitées dans le cadre de ma demande.', 'ag-business-avocat' ); ?></span>
+								</label>
+								<div class="ag-rdv__honeypot" aria-hidden="true" style="position:absolute;left:-9999px;">
+									<label><input type="text" name="ag_rdv_website" tabindex="-1" autocomplete="off"></label>
+								</div>
+								<button type="submit" name="ag_rdv_submit" class="ag-btn"><?php esc_html_e( 'Envoyer', 'ag-business-avocat' ); ?></button>
+							</form>
+						</section>
+					</aside>
 				</div>
 			</div>
 		</div>
@@ -1906,43 +2055,97 @@ Telephone : [telephone]</p>
 
 	private function render_domaine_extras_html( $extras ) {
 		ob_start();
+		?>
+		<div class="ag-business-domaine-grid">
+			<section class="ag-business-domaine-cas">
+				<h2 class="ag-business-domaine-cas__title"><?php esc_html_e( 'Cas concrets', 'ag-business-avocat' ); ?></h2>
+				<p class="ag-business-domaine-cas__lead"><?php esc_html_e( 'Quelques exemples représentatifs de dossiers traités.', 'ag-business-avocat' ); ?></p>
+				<ul class="ag-business-domaine-cas__list">
+					<?php foreach ( $extras['cas_concrets'] as $cas ) : ?>
+						<li class="ag-business-cas-item">
+							<h3 class="ag-business-cas-item__title"><?php echo esc_html( $cas['titre'] ); ?></h3>
+							<p class="ag-business-cas-item__desc"><?php echo esc_html( $cas['desc'] ); ?></p>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			</section>
 
-		// Citation 1 (avant cas concrets), si presente
-		if ( ! empty( $extras['citations'][0] ) ) {
-			echo $this->render_domaine_citation_html( $extras['citations'][0] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		}
-		?>
-		<section class="ag-business-domaine-cas">
-			<h2 class="ag-business-domaine-cas__title"><?php esc_html_e( 'Cas concrets traités par le cabinet', 'ag-business-avocat' ); ?></h2>
-			<p class="ag-business-domaine-cas__lead"><?php esc_html_e( 'Voici quelques exemples représentatifs de dossiers que nous accompagnons régulièrement dans ce domaine.', 'ag-business-avocat' ); ?></p>
-			<ul class="ag-business-domaine-cas__list">
-				<?php foreach ( $extras['cas_concrets'] as $cas ) : ?>
-					<li class="ag-business-cas-item">
-						<h3 class="ag-business-cas-item__title"><?php echo esc_html( $cas['titre'] ); ?></h3>
-						<p class="ag-business-cas-item__desc"><?php echo esc_html( $cas['desc'] ); ?></p>
-					</li>
-				<?php endforeach; ?>
-			</ul>
-		</section>
+			<section class="ag-business-domaine-faq">
+				<h2 class="ag-business-domaine-faq__title"><?php esc_html_e( 'Questions fréquentes', 'ag-business-avocat' ); ?></h2>
+				<div class="ag-business-faq">
+					<?php foreach ( $extras['faq'] as $idx => $qa ) : ?>
+						<details class="ag-business-faq__entry" name="ag-business-domaine-faq"<?php echo 0 === $idx ? ' open' : ''; ?>>
+							<summary class="ag-business-faq__question"><?php echo esc_html( $qa['q'] ); ?></summary>
+							<div class="ag-business-faq__answer"><?php echo esc_html( $qa['a'] ); ?></div>
+						</details>
+					<?php endforeach; ?>
+				</div>
+			</section>
+		</div>
 		<?php
-		// Citation 2 (avant FAQ), si presente
+		// Citation : une seule transition image entre 2-col et temoignages.
+		// Prefere citations[1] (apres FAQ historique), sinon [0].
+		$cite = null;
 		if ( ! empty( $extras['citations'][1] ) ) {
-			echo $this->render_domaine_citation_html( $extras['citations'][1] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$cite = $extras['citations'][1];
+		} elseif ( ! empty( $extras['citations'][0] ) ) {
+			$cite = $extras['citations'][0];
 		}
+		if ( $cite ) {
+			echo $this->render_domaine_citation_html( $cite ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
+		// Temoignages clients
+		$testimonials = ! empty( $extras['testimonials'] ) ? $extras['testimonials'] : $this->get_default_testimonials();
+		echo $this->render_domaine_testimonials_html( $testimonials ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+		return ob_get_clean();
+	}
+
+	private function render_domaine_testimonials_html( $items ) {
+		if ( empty( $items ) ) {
+			return '';
+		}
+		ob_start();
 		?>
-		<section class="ag-business-domaine-faq">
-			<h2 class="ag-business-domaine-faq__title"><?php esc_html_e( 'Questions fréquentes', 'ag-business-avocat' ); ?></h2>
-			<div class="ag-business-faq">
-				<?php foreach ( $extras['faq'] as $idx => $qa ) : ?>
-					<details class="ag-business-faq__entry" name="ag-business-domaine-faq"<?php echo 0 === $idx ? ' open' : ''; ?>>
-						<summary class="ag-business-faq__question"><?php echo esc_html( $qa['q'] ); ?></summary>
-						<div class="ag-business-faq__answer"><?php echo esc_html( $qa['a'] ); ?></div>
-					</details>
+		<section class="ag-business-domaine-testimonials">
+			<h2 class="ag-business-domaine-testimonials__title"><?php esc_html_e( 'Témoignages clients', 'ag-business-avocat' ); ?></h2>
+			<div class="ag-business-domaine-testimonials__grid">
+				<?php foreach ( $items as $t ) : ?>
+					<article class="ag-business-testimonial-card">
+						<p class="ag-business-testimonial-card__quote"><?php echo esc_html( $t['quote'] ); ?></p>
+						<footer class="ag-business-testimonial-card__author">
+							<span class="ag-business-testimonial-card__name"><?php echo esc_html( $t['name'] ); ?></span>
+							<?php if ( ! empty( $t['role'] ) ) : ?>
+								<span class="ag-business-testimonial-card__role"><?php echo esc_html( $t['role'] ); ?></span>
+							<?php endif; ?>
+						</footer>
+					</article>
 				<?php endforeach; ?>
 			</div>
 		</section>
 		<?php
 		return ob_get_clean();
+	}
+
+	private function get_default_testimonials() {
+		return array(
+			array(
+				'quote' => 'Accompagnement remarquable du début à la fin. Disponibilité, écoute, et stratégie juridique solide. Je recommande sans hésitation.',
+				'name'  => 'Sophie M.',
+				'role'  => 'Cliente — dirigeante de PME',
+			),
+			array(
+				'quote' => 'Cabinet sérieux et discret, des conseils clairs sans jargon inutile. Mon dossier a abouti dans les délais annoncés.',
+				'name'  => 'Jean-Marc T.',
+				'role'  => 'Client — particulier',
+			),
+			array(
+				'quote' => "Une expertise pointue dans un domaine pourtant très technique. J'ai été défendu avec rigueur et humanité.",
+				'name'  => 'Élisabeth R.',
+				'role'  => 'Cliente — particulier',
+			),
+		);
 	}
 
 	private function render_domaine_citation_html( $cite ) {
