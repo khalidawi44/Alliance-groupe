@@ -389,7 +389,11 @@ class AG_Business_Avocat {
 				<h2 class="ag-business-founder__title"><?php esc_html_e( 'Le fondateur et les associés', 'ag-business-avocat' ); ?></h2>
 				<div class="ag-business-founder__grid">
 					<article class="ag-business-founder-card">
-						<div class="ag-business-founder-card__photo" style="background-image:url('<?php echo esc_url( $photo_url ); ?>');" aria-hidden="true"></div>
+						<div class="ag-business-founder-card__photo" style="background-image:url('<?php echo esc_url( $photo_url ); ?>');" aria-hidden="true">
+							<?php // Signature posee en bas a droite de la photo, en cursive Allison.
+							$sig_label = $this->get_founder_signature_text( $founder['name'] ); ?>
+							<span class="ag-business-founder-card__signature" aria-hidden="true"><?php echo esc_html( $sig_label ); ?></span>
+						</div>
 						<div class="ag-business-founder-card__body">
 							<p class="ag-business-founder-card__tag"><?php esc_html_e( 'Fondateur', 'ag-business-avocat' ); ?></p>
 							<h3 class="ag-business-founder-card__name"><?php echo esc_html( $founder['name'] ); ?></h3>
@@ -423,15 +427,64 @@ class AG_Business_Avocat {
 	}
 
 	/**
+	 * Texte de signature pour la card fondateur. Utilise le 1er prenom +
+	 * patronyme du nom complet (ex: "Maitre Henri DELACROIX" → "H. Delacroix").
+	 * Format compact pour la cursive — peut etre override via Customizer.
+	 */
+	private function get_founder_signature_text( $name ) {
+		$override = (string) get_theme_mod( 'ag_business_founder_signature', '' );
+		if ( $override ) {
+			return $override;
+		}
+		// Compact: enleve le titre "Maitre", garde initiale + patronyme.
+		$clean = preg_replace( '/^(Maître|Maitre|Me|Mr|M\.)\s+/iu', '', $name );
+		$parts = preg_split( '/\s+/', trim( $clean ) );
+		if ( count( $parts ) >= 2 ) {
+			$first   = mb_substr( $parts[0], 0, 1 );
+			$last    = end( $parts );
+			$last_fmt = mb_strtoupper( mb_substr( $last, 0, 1 ) ) . mb_strtolower( mb_substr( $last, 1 ) );
+			return $first . '. ' . $last_fmt;
+		}
+		return $clean;
+	}
+
+	/**
 	 * Section "Notre equipe" sur la home (collaborateurs + conseiller
-	 * fiscal). Remplace visuellement la team_section de pro-features
-	 * qui est masquee en CSS sur la home.
+	 * fiscal). Version compacte : juste photo, nom, role, domaines, lien
+	 * "Decouvrir" vers la page cabinet. Pas de cursus/formation/langues.
 	 */
 	public function render_home_team_business() {
 		if ( ! $this->is_active() ) {
 			return;
 		}
-		echo $this->render_team_group_html( 'collaborators', __( 'Notre équipe', 'ag-business-avocat' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		$team    = $this->get_default_team_data();
+		$members = isset( $team['collaborators'] ) ? $team['collaborators'] : array();
+		if ( ! $members ) {
+			return;
+		}
+		$cabinet_url = function_exists( 'ag_page_url' ) ? ag_page_url( 'cabinet' ) : home_url( '/cabinet/' );
+		?>
+		<section class="ag-business-team-full ag-business-team-full--collaborators">
+			<h2 class="ag-business-team-full__group-title"><?php esc_html_e( 'Notre équipe', 'ag-business-avocat' ); ?></h2>
+			<div class="ag-business-team-full__grid ag-business-team-full__grid--collaborators ag-business-team-compact-grid">
+				<?php foreach ( $members as $m ) : ?>
+					<article class="ag-business-team-compact">
+						<div class="ag-business-team-compact__photo" style="background-image:url('<?php echo esc_url( $m['photo'] ); ?>');" aria-hidden="true"></div>
+						<div class="ag-business-team-compact__body">
+							<h3 class="ag-business-team-compact__name"><?php echo esc_html( $m['name'] ); ?></h3>
+							<p class="ag-business-team-compact__role"><?php echo esc_html( $m['role'] ); ?></p>
+							<ul class="ag-business-team-compact__domains">
+								<?php foreach ( $m['specialties'] as $s ) : ?>
+									<li><?php echo esc_html( $s ); ?></li>
+								<?php endforeach; ?>
+							</ul>
+							<a href="<?php echo esc_url( $cabinet_url ); ?>" class="ag-business-team-compact__link"><?php esc_html_e( 'Découvrir →', 'ag-business-avocat' ); ?></a>
+						</div>
+					</article>
+				<?php endforeach; ?>
+			</div>
+		</section>
+		<?php
 	}
 
 	/**
@@ -988,6 +1041,18 @@ class AG_Business_Avocat {
 			'section' => 'ag_business_founder',
 			'type'    => 'url',
 		) );
+
+		$wp_customize->add_setting( 'ag_business_founder_signature', array(
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_text_field',
+			'transport'         => 'refresh',
+		) );
+		$wp_customize->add_control( 'ag_business_founder_signature', array(
+			'label'       => __( 'Texte de la signature', 'ag-business-avocat' ),
+			'description' => __( "Texte pose en cursive sur la photo du fondateur. Vide = initiale + patronyme genere automatiquement.", 'ag-business-avocat' ),
+			'section'     => 'ag_business_founder',
+			'type'        => 'text',
+		) );
 	}
 
 	public function sanitize_boutique_symbol( $value ) {
@@ -1430,7 +1495,7 @@ Telephone : [telephone]</p>
 					// rend pas ce qu'attend le client, utiliser le
 					// Customizer (Apparence > Personnaliser > AG Business
 					// Options > Fondateur) pour overrider.
-					'photo'       => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=1400&q=85',
+					'photo'       => 'https://images.unsplash.com/photo-1542708708-2b34e0e6d8b1?w=1400&q=85',
 					'specialties' => array(
 						'Droit civil et commercial',
 						'Contentieux complexes',
