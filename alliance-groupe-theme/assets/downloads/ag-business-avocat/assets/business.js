@@ -16,6 +16,22 @@
 			: fallback;
 	}
 
+	/* ── Pose le flag body.ag-business-home en JS si is_front_page()
+	   PHP n'a pas pu le faire (certains setups WP). Detection : presence
+	   simultanee de #ag-cabinet + #ag-rdv (uniquement dans front-page.php).
+	   Pose aussi le hide inline immediat sur .ag-maitre + .ag-section.ag-team
+	   pour court-circuiter tout cas ou le CSS n'aurait pas pris. */
+	function markHomeBody() {
+		if (!isBusinessActive()) return;
+		if (!document.getElementById('ag-cabinet') || !document.getElementById('ag-rdv')) return;
+		document.body.classList.add('ag-business-home');
+		// Hide direct (belt-and-suspenders) si la regle CSS rate
+		var maitre = document.querySelector('.ag-section.ag-maitre');
+		if (maitre) maitre.style.display = 'none';
+		var team = document.querySelector('.ag-section.ag-team');
+		if (team) team.style.display = 'none';
+	}
+
 	/* ── Compteurs : count-up animation au scroll-in ────────────── */
 	function animateCounters() {
 		if (!isBusinessActive()) return;
@@ -546,6 +562,7 @@
 	}
 
 	function run() {
+		markHomeBody();
 		animateCounters();
 		makeHonorairesClickable();
 		makeDomainesClickable();
