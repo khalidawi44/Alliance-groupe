@@ -222,6 +222,107 @@ body.ag-light .ag-business-boutique-page__search-info {
 body.ag-light .ag-business-boutique-page__search-info a {
     color: #7B2D3B;
 }
+/* Toolbar (compteur + tri inline) en haut du main */
+.ag-business-boutique-page__toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 0 0 18px;
+    border-bottom: 1px solid rgba(212, 180, 92, .2);
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+.ag-business-boutique-page__count {
+    color: rgba(255, 255, 255, .85);
+    font-size: .92rem;
+    font-weight: 600;
+}
+body.ag-light .ag-business-boutique-page__count {
+    color: #2A1A1E;
+}
+.ag-business-boutique-page__sort-form select {
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(212, 180, 92, .25);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: .88rem;
+    cursor: pointer;
+}
+body.ag-light .ag-business-boutique-page__sort-form select {
+    background: #fafafa;
+    border-color: rgba(0, 0, 0, .12);
+    color: #2A1A1E;
+}
+/* Chips de filtres actifs */
+.ag-business-boutique-chip {
+    display: inline-block;
+    background: rgba(212, 180, 92, .15);
+    border: 1px solid rgba(212, 180, 92, .35);
+    color: #f4e4b8;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: .82rem;
+    margin: 0 4px;
+}
+body.ag-light .ag-business-boutique-chip {
+    background: rgba(123, 45, 59, .08);
+    border-color: rgba(123, 45, 59, .25);
+    color: #7B2D3B;
+}
+/* Sidebar : widget filtres — prix range + actions */
+.ag-business-boutique-widget--filters {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.ag-business-boutique-widget__price-range {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.ag-business-boutique-widget__price-range input[type="number"] {
+    width: 100%;
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(212, 180, 92, .22);
+    color: #fff;
+    padding: 9px 11px;
+    border-radius: 8px;
+    font-size: .9rem;
+    text-transform: none;
+}
+body.ag-light .ag-business-boutique-widget__price-range input[type="number"] {
+    background: #fafafa;
+    border-color: rgba(0, 0, 0, .12);
+    color: #2A1A1E;
+}
+.ag-business-boutique-widget__filter-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 4px;
+}
+.ag-business-boutique-widget__filter-actions .ag-btn {
+    flex: 1;
+    padding: 9px 18px;
+    font-size: .88rem;
+}
+.ag-business-boutique-widget__reset {
+    color: rgba(255, 255, 255, .55);
+    text-decoration: none;
+    font-size: .82rem;
+    transition: color .2s ease;
+}
+.ag-business-boutique-widget__reset:hover {
+    color: #D4B45C;
+}
+body.ag-light .ag-business-boutique-widget__reset {
+    color: #5A4549;
+}
+body.ag-light .ag-business-boutique-widget__reset:hover {
+    color: #7B2D3B;
+}
 /* Cards : 3 cols dans le main (pas 4 — la sidebar prend de la place) */
 body.ag-business-active .ag-business-boutique-page .ag-boutique__grid {
     gap: 32px !important;

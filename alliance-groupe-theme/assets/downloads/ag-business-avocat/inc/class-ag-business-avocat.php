@@ -560,19 +560,51 @@ class AG_Business_Avocat {
 			return '<p style="text-align:center;padding:40px;">' . esc_html__( 'WooCommerce n\'est pas activé. La boutique sera disponible dès l\'activation du plugin.', 'ag-business-avocat' ) . '</p>';
 		}
 
-		$products = wc_get_products( array(
-			'limit'   => 12,
-			'status'  => 'publish',
-			'orderby' => 'date',
-			'order'   => 'DESC',
-		) );
+		// Parametres GET pour les filtres : recherche, categorie, prix
+		// min/max, tri.
+		$q       = isset( $_GET['ag_q'] ) ? sanitize_text_field( wp_unslash( $_GET['ag_q'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$cat     = isset( $_GET['ag_cat'] ) ? sanitize_key( wp_unslash( $_GET['ag_cat'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$min     = isset( $_GET['ag_min'] ) ? floatval( wp_unslash( $_GET['ag_min'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$max     = isset( $_GET['ag_max'] ) ? floatval( wp_unslash( $_GET['ag_max'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$sort    = isset( $_GET['ag_sort'] ) ? sanitize_key( wp_unslash( $_GET['ag_sort'] ) ) : 'date_desc'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-		if ( empty( $products ) ) {
-			return '<p style="text-align:center;padding:40px;">' . esc_html__( 'Aucun produit dans la boutique pour le moment.', 'ag-business-avocat' ) . '</p>';
+		$args = array(
+			'limit'  => 24,
+			'status' => 'publish',
+		);
+		switch ( $sort ) {
+			case 'price_asc':
+				$args['orderby'] = 'price'; $args['order'] = 'ASC'; break;
+			case 'price_desc':
+				$args['orderby'] = 'price'; $args['order'] = 'DESC'; break;
+			case 'name_asc':
+				$args['orderby'] = 'title'; $args['order'] = 'ASC'; break;
+			case 'popularity':
+				$args['orderby']  = 'meta_value_num'; $args['meta_key'] = 'total_sales'; $args['order'] = 'DESC'; break;
+			case 'date_desc':
+			default:
+				$args['orderby'] = 'date'; $args['order'] = 'DESC';
+		}
+		if ( $cat ) {
+			$args['category'] = array( $cat );
+		}
+
+		$products = wc_get_products( $args );
+
+		// Filtre prix : applique apres car wc_get_products price filter
+		// fonctionne en meta_query sur _price (pas toujours fiable selon
+		// le type de produit), donc filtrage in-memory plus robuste.
+		if ( $min > 0 || $max > 0 ) {
+			$products = array_filter( $products, function ( $p ) use ( $min, $max ) {
+				if ( ! is_object( $p ) ) return false;
+				$price = floatval( $p->get_price() );
+				if ( $min > 0 && $price < $min ) return false;
+				if ( $max > 0 && $price > $max ) return false;
+				return true;
+			} );
 		}
 
 		// Recherche : si query ?ag_q=, filtrer par titre/description.
-		$q = isset( $_GET['ag_q'] ) ? sanitize_text_field( wp_unslash( $_GET['ag_q'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( '' !== $q ) {
 			$needle   = mb_strtolower( $q );
 			$products = array_filter( $products, function ( $p ) use ( $needle ) {
@@ -581,6 +613,17 @@ class AG_Business_Avocat {
 				return false !== mb_strpos( $hay, $needle );
 			} );
 		}
+
+		// Categories pour le filtre dropdown
+		$categories = function_exists( 'get_terms' ) ? get_terms( array(
+			'taxonomy'   => 'product_cat',
+			'hide_empty' => true,
+		) ) : array();
+		if ( is_wp_error( $categories ) ) {
+			$categories = array();
+		}
+
+		$has_filters = ( '' !== $q || '' !== $cat || $min > 0 || $max > 0 || 'date_desc' !== $sort );
 
 		// Best sellers (par total_sales) + recommandations (featured ou
 		// 3 random) — si WC n'a pas encore de ventes, on retombe sur la
@@ -616,17 +659,44 @@ class AG_Business_Avocat {
 			<div class="ag-container ag-business-boutique-page__container">
 				<div class="ag-business-boutique-page__layout">
 					<div class="ag-business-boutique-page__main">
-						<?php if ( '' !== $q ) : ?>
-							<p class="ag-business-boutique-page__search-info"><?php
-								printf(
-									/* translators: %s : terme de recherche */
-									esc_html__( 'Résultats pour : %s', 'ag-business-avocat' ),
-									'<strong>' . esc_html( $q ) . '</strong>'
-								);
-							?> · <a href="<?php echo esc_url( remove_query_arg( 'ag_q' ) ); ?>"><?php esc_html_e( 'Effacer', 'ag-business-avocat' ); ?></a></p>
+						<div class="ag-business-boutique-page__toolbar">
+							<div class="ag-business-boutique-page__count"><?php
+								/* translators: %d : count */
+								printf( esc_html( _n( '%d produit', '%d produits', count( $products ), 'ag-business-avocat' ) ), count( $products ) );
+							?></div>
+							<form method="get" action="" class="ag-business-boutique-page__sort-form">
+								<?php if ( '' !== $q ) : ?><input type="hidden" name="ag_q" value="<?php echo esc_attr( $q ); ?>"><?php endif; ?>
+								<?php if ( '' !== $cat ) : ?><input type="hidden" name="ag_cat" value="<?php echo esc_attr( $cat ); ?>"><?php endif; ?>
+								<?php if ( $min > 0 ) : ?><input type="hidden" name="ag_min" value="<?php echo esc_attr( $min ); ?>"><?php endif; ?>
+								<?php if ( $max > 0 ) : ?><input type="hidden" name="ag_max" value="<?php echo esc_attr( $max ); ?>"><?php endif; ?>
+								<label class="screen-reader-text" for="ag_sort"><?php esc_html_e( 'Trier par', 'ag-business-avocat' ); ?></label>
+								<select id="ag_sort" name="ag_sort" onchange="this.form.submit()">
+									<option value="date_desc" <?php selected( $sort, 'date_desc' ); ?>><?php esc_html_e( 'Plus récents', 'ag-business-avocat' ); ?></option>
+									<option value="popularity" <?php selected( $sort, 'popularity' ); ?>><?php esc_html_e( 'Popularité', 'ag-business-avocat' ); ?></option>
+									<option value="price_asc" <?php selected( $sort, 'price_asc' ); ?>><?php esc_html_e( 'Prix croissant', 'ag-business-avocat' ); ?></option>
+									<option value="price_desc" <?php selected( $sort, 'price_desc' ); ?>><?php esc_html_e( 'Prix décroissant', 'ag-business-avocat' ); ?></option>
+									<option value="name_asc" <?php selected( $sort, 'name_asc' ); ?>><?php esc_html_e( 'Nom (A-Z)', 'ag-business-avocat' ); ?></option>
+								</select>
+							</form>
+						</div>
+						<?php if ( $has_filters ) : ?>
+							<p class="ag-business-boutique-page__search-info">
+								<?php esc_html_e( 'Filtres actifs', 'ag-business-avocat' ); ?> :
+								<?php if ( '' !== $q ) : ?><span class="ag-business-boutique-chip"><?php echo esc_html( $q ); ?></span><?php endif; ?>
+								<?php if ( '' !== $cat ) :
+									$cat_obj = get_term_by( 'slug', $cat, 'product_cat' );
+									$cat_label = $cat_obj && ! is_wp_error( $cat_obj ) ? $cat_obj->name : $cat;
+									?><span class="ag-business-boutique-chip"><?php echo esc_html( $cat_label ); ?></span><?php endif; ?>
+								<?php if ( $min > 0 || $max > 0 ) : ?><span class="ag-business-boutique-chip"><?php
+									if ( $min > 0 && $max > 0 ) echo esc_html( $min . ' € — ' . $max . ' €' );
+									elseif ( $min > 0 ) echo esc_html( '≥ ' . $min . ' €' );
+									else echo esc_html( '≤ ' . $max . ' €' );
+								?></span><?php endif; ?>
+								· <a href="<?php echo esc_url( remove_query_arg( array( 'ag_q', 'ag_cat', 'ag_min', 'ag_max', 'ag_sort' ) ) ); ?>"><?php esc_html_e( 'Effacer tout', 'ag-business-avocat' ); ?></a>
+							</p>
 						<?php endif; ?>
 						<?php if ( empty( $products ) ) : ?>
-							<p style="text-align:center;padding:40px;"><?php esc_html_e( 'Aucun produit ne correspond à cette recherche.', 'ag-business-avocat' ); ?></p>
+							<p style="text-align:center;padding:40px;"><?php esc_html_e( 'Aucun produit ne correspond à ces critères.', 'ag-business-avocat' ); ?></p>
 						<?php else : ?>
 							<div class="ag-boutique__grid">
 								<?php foreach ( $products as $product ) :
@@ -657,13 +727,55 @@ class AG_Business_Avocat {
 					</div>
 
 					<aside class="ag-business-boutique-sidebar">
-						<form class="ag-business-boutique-widget ag-business-boutique-widget--search" method="get" action="">
-							<h3 class="ag-business-boutique-widget__title"><?php esc_html_e( 'Recherche', 'ag-business-avocat' ); ?></h3>
-							<div class="ag-business-boutique-widget__search-row">
-								<input type="search" name="ag_q" value="<?php echo esc_attr( $q ); ?>" placeholder="<?php esc_attr_e( 'Rechercher un produit…', 'ag-business-avocat' ); ?>" aria-label="<?php esc_attr_e( 'Rechercher dans la boutique', 'ag-business-avocat' ); ?>">
-								<button type="submit" aria-label="<?php esc_attr_e( 'Lancer la recherche', 'ag-business-avocat' ); ?>">
-									<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-								</button>
+						<form class="ag-business-boutique-widget ag-business-boutique-widget--filters" method="get" action="">
+							<h3 class="ag-business-boutique-widget__title"><?php esc_html_e( 'Recherche & filtres', 'ag-business-avocat' ); ?></h3>
+
+							<label class="ag-business-booking-form__label">
+								<span><?php esc_html_e( 'Mot-clé', 'ag-business-avocat' ); ?></span>
+								<input type="search" name="ag_q" value="<?php echo esc_attr( $q ); ?>" placeholder="<?php esc_attr_e( 'Rechercher un produit…', 'ag-business-avocat' ); ?>">
+							</label>
+
+							<?php if ( ! empty( $categories ) ) : ?>
+								<label class="ag-business-booking-form__label">
+									<span><?php esc_html_e( 'Catégorie', 'ag-business-avocat' ); ?></span>
+									<select name="ag_cat">
+										<option value=""><?php esc_html_e( 'Toutes', 'ag-business-avocat' ); ?></option>
+										<?php foreach ( $categories as $c ) : ?>
+											<option value="<?php echo esc_attr( $c->slug ); ?>" <?php selected( $cat, $c->slug ); ?>>
+												<?php echo esc_html( $c->name ); ?> (<?php echo (int) $c->count; ?>)
+											</option>
+										<?php endforeach; ?>
+									</select>
+								</label>
+							<?php endif; ?>
+
+							<div class="ag-business-boutique-widget__price-range">
+								<label class="ag-business-booking-form__label">
+									<span><?php esc_html_e( 'Prix min (€)', 'ag-business-avocat' ); ?></span>
+									<input type="number" name="ag_min" min="0" step="1" value="<?php echo $min > 0 ? esc_attr( $min ) : ''; ?>" placeholder="0">
+								</label>
+								<label class="ag-business-booking-form__label">
+									<span><?php esc_html_e( 'Prix max (€)', 'ag-business-avocat' ); ?></span>
+									<input type="number" name="ag_max" min="0" step="1" value="<?php echo $max > 0 ? esc_attr( $max ) : ''; ?>" placeholder="—">
+								</label>
+							</div>
+
+							<label class="ag-business-booking-form__label">
+								<span><?php esc_html_e( 'Trier par', 'ag-business-avocat' ); ?></span>
+								<select name="ag_sort">
+									<option value="date_desc" <?php selected( $sort, 'date_desc' ); ?>><?php esc_html_e( 'Plus récents', 'ag-business-avocat' ); ?></option>
+									<option value="popularity" <?php selected( $sort, 'popularity' ); ?>><?php esc_html_e( 'Popularité', 'ag-business-avocat' ); ?></option>
+									<option value="price_asc" <?php selected( $sort, 'price_asc' ); ?>><?php esc_html_e( 'Prix croissant', 'ag-business-avocat' ); ?></option>
+									<option value="price_desc" <?php selected( $sort, 'price_desc' ); ?>><?php esc_html_e( 'Prix décroissant', 'ag-business-avocat' ); ?></option>
+									<option value="name_asc" <?php selected( $sort, 'name_asc' ); ?>><?php esc_html_e( 'Nom (A-Z)', 'ag-business-avocat' ); ?></option>
+								</select>
+							</label>
+
+							<div class="ag-business-boutique-widget__filter-actions">
+								<button type="submit" class="ag-btn"><?php esc_html_e( 'Appliquer', 'ag-business-avocat' ); ?></button>
+								<?php if ( $has_filters ) : ?>
+									<a href="<?php echo esc_url( remove_query_arg( array( 'ag_q', 'ag_cat', 'ag_min', 'ag_max', 'ag_sort' ) ) ); ?>" class="ag-business-boutique-widget__reset"><?php esc_html_e( 'Réinitialiser', 'ag-business-avocat' ); ?></a>
+								<?php endif; ?>
 							</div>
 						</form>
 
