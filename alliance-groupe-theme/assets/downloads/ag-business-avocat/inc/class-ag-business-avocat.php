@@ -1028,7 +1028,7 @@ class AG_Business_Avocat {
 		// Section Fondateur — photo override
 		$wp_customize->add_section( 'ag_business_founder', array(
 			'title'       => __( 'Fondateur — section home', 'ag-business-avocat' ),
-			'description' => __( "Photo du fondateur affichee dans la section 'Le fondateur et les associes' sur la home. Coller une URL d'image (Unsplash, mediatheque WP, etc.) ou laisser vide pour le portrait par defaut.", 'ag-business-avocat' ),
+			'description' => __( "Photo du fondateur affichee dans la section 'Le fondateur et les associes' sur la home (et la card cabinet). Coller une URL d'image (mediatheque WP, Unsplash, etc.). Exemples Unsplash valides pour un homme age barbu : https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=1400&q=85 — ou cherche \"old man beard\" sur unsplash.com et copie le lien direct (botton Download > clic droit > copy image link).", 'ag-business-avocat' ),
 			'panel'       => 'ag_business_panel',
 		) );
 		$wp_customize->add_setting( 'ag_business_founder_photo', array(
@@ -1491,11 +1491,11 @@ Telephone : [telephone]</p>
 					'name'        => 'Maître Henri DELACROIX',
 					'role'        => 'Avocat fondateur du cabinet',
 					'barreau'     => 'Barreau de Paris — Inscrit depuis 1985',
-					// Defaut : portrait d'un homme age, barbu. Si l'URL ne
-					// rend pas ce qu'attend le client, utiliser le
-					// Customizer (Apparence > Personnaliser > AG Business
-					// Options > Fondateur) pour overrider.
-					'photo'       => 'https://images.unsplash.com/photo-1542708708-2b34e0e6d8b1?w=1400&q=85',
+					// URL Unsplash verifiee comme accessible. Pour un
+					// portrait plus marque "ancien barbu", l'utilisateur
+					// peut overrider via le Customizer (Apparence >
+					// Personnaliser > AG Business Options > Fondateur).
+					'photo'       => 'https://images.unsplash.com/photo-1559963110-71b394e7494d?w=1400&q=85',
 					'specialties' => array(
 						'Droit civil et commercial',
 						'Contentieux complexes',
