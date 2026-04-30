@@ -3694,8 +3694,14 @@ button:focus-visible{
    Un bouton "Voir toute l'equipe →" apparait dessous, qui amene a
    la page /a-propos ou tous les membres sont detailles.
 
-   Page /a-propos : utilise la meme partial mais comme body.home n'y
-   est pas, toute l'equipe reste visible normalement.
+   Detection : classe .ag-team__grid--home-condense ajoutee par PHP
+   uniquement quand la partial est rendue depuis la home (plus fiable
+   que body.home/front-page selon la config WP). Le bouton .ag-team__
+   see-all-mobile n'est rendu QUE si on est sur la home (PHP) et il
+   est invisible sur desktop via media query.
+
+   Page /a-propos : la classe n'est pas ajoutee, toute l'equipe
+   reste visible. Le bouton non plus n'est rendu.
 
    Desktop / tablet >700px : tout reste affiche partout.
    ───────────────────────────────────────────────────────────────── */
@@ -3703,12 +3709,10 @@ button:focus-visible{
     display: none;
 }
 @media (max-width: 700px) {
-    body.home .ag-team__grid > .ag-team-card:not(:first-child),
-    body.front-page .ag-team__grid > .ag-team-card:not(:first-child) {
+    .ag-team__grid--home-condense > .ag-team-card:not(:first-child) {
         display: none !important;
     }
-    body.home .ag-team__see-all-mobile,
-    body.front-page .ag-team__see-all-mobile {
+    .ag-team__see-all-mobile {
         display: block;
         text-align: center;
         margin-top: 32px;
