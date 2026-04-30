@@ -3686,3 +3686,31 @@ button:focus-visible{
         padding-left: 18px !important;
     }
 }
+
+/* ─────────────────────────────────────────────────────────────────
+   Home (page-accueil) mobile uniquement : dans la section "L'equipe"
+   incluse via template-parts/about.php, on cache les 6 collaborateurs
+   et on garde uniquement le fondateur (1ere card du grid = Fabrizio).
+   Un bouton "Voir toute l'equipe →" apparait dessous, qui amene a
+   la page /a-propos ou tous les membres sont detailles.
+
+   Page /a-propos : utilise la meme partial mais comme body.home n'y
+   est pas, toute l'equipe reste visible normalement.
+
+   Desktop / tablet >700px : tout reste affiche partout.
+   ───────────────────────────────────────────────────────────────── */
+.ag-team__see-all-mobile {
+    display: none;
+}
+@media (max-width: 700px) {
+    body.home .ag-team__grid > .ag-team-card:not(:first-child),
+    body.front-page .ag-team__grid > .ag-team-card:not(:first-child) {
+        display: none !important;
+    }
+    body.home .ag-team__see-all-mobile,
+    body.front-page .ag-team__see-all-mobile {
+        display: block;
+        text-align: center;
+        margin-top: 32px;
+    }
+}
