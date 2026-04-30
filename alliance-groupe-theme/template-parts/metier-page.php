@@ -78,9 +78,9 @@ $has_screenshot = file_exists( $screenshot_file );
 
                 <div>
                     <h3 style="font-size:1.2rem;color:#D4B45C;margin-bottom:18px;text-transform:uppercase;letter-spacing:1px;">✓ Inclus dans la version gratuite</h3>
-                    <ul style="list-style:none;padding:0;margin:0 0 28px 0;">
+                    <ul class="ag-metier-features-list" style="list-style:none;padding:0;margin:0 0 28px 0;">
                         <?php foreach ( $ag_metier['free_features'] as $feat ) : ?>
-                        <li style="padding:10px 0 10px 30px;position:relative;border-bottom:1px solid rgba(255,255,255,.05);color:#e8e6e0;font-size:.95rem;">
+                        <li class="ag-metier-features-list__item" style="padding:10px 0 10px 30px;position:relative;border-bottom:1px solid rgba(255,255,255,.05);color:#e8e6e0;font-size:.95rem;">
                             <span style="position:absolute;left:0;color:#28a745;font-weight:700;">✓</span>
                             <?php echo wp_kses_post( $feat ); ?>
                         </li>

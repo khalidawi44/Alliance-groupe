@@ -3651,3 +3651,38 @@ button:focus-visible{
     .ag-merci__checklist li{flex-direction:column;gap:10px}
     .ag-merci__icon{width:40px;height:40px}
 }
+
+/* ─────────────────────────────────────────────────────────────────
+   Page metier — liste features "Inclus dans la version gratuite"
+   Mobile uniquement : 2 colonnes condensees au lieu d'un stack
+   vertical (sinon chaque item prend trop de place verticale a
+   cause du wrap des descriptions longues).
+   ───────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .ag-metier-features-list {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px 14px !important;
+        margin-bottom: 20px !important;
+    }
+    .ag-metier-features-list__item {
+        padding: 8px 0 8px 22px !important;
+        font-size: .82rem !important;
+        line-height: 1.4 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, .04) !important;
+    }
+    .ag-metier-features-list__item span {
+        font-size: .9rem !important;
+    }
+    .ag-metier-features-list__item strong {
+        font-size: .82rem !important;
+        display: inline;
+    }
+}
+@media (max-width: 420px) {
+    /* Tres petits ecrans : reduit encore la font */
+    .ag-metier-features-list__item {
+        font-size: .76rem !important;
+        padding-left: 18px !important;
+    }
+}
