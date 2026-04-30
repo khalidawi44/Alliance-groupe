@@ -133,5 +133,11 @@
             </div>
             <?php endforeach; ?>
         </div>
+
+        <?php /* Mobile + home uniquement : bouton vers la page A propos
+                qui affiche toute l'equipe en grand. */ ?>
+        <div class="ag-team__see-all-mobile">
+            <a href="<?php echo esc_url(home_url('/a-propos')); ?>" class="ag-btn-outline">Voir toute l'équipe →</a>
+        </div>
     </div>
 </section>
