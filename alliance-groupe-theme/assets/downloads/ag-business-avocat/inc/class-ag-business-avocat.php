@@ -421,6 +421,9 @@ class AG_Business_Avocat {
 						<?php endforeach; ?>
 					</aside>
 				</div>
+				<div class="ag-business-founder__mobile-cta">
+					<a href="<?php echo esc_url( $cabinet_url ); ?>" class="ag-btn ag-business-founder__mobile-cta-btn"><?php esc_html_e( 'Voir toute l\'équipe →', 'ag-business-avocat' ); ?></a>
+				</div>
 			</div>
 		</section>
 		<?php
