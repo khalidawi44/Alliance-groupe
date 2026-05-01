@@ -50,11 +50,16 @@ function ag_dev_sync_run() {
 			'url'  => $base . 'ag-business-avocat.zip',
 			'dest' => WP_PLUGIN_DIR . '/ag-business-avocat',
 		),
-		// === Theme BARBER + plugin Business ===
+		// === Theme BARBER + plugins Premium/Business ===
 		array(
 			'name' => 'Theme AG Starter Barber',
 			'url'  => $base . 'ag-starter-barber.zip',
 			'dest' => get_theme_root() . '/ag-starter-barber',
+		),
+		array(
+			'name' => 'Plugin AG Premium Barber',
+			'url'  => $base . 'ag-premium-barber.zip',
+			'dest' => WP_PLUGIN_DIR . '/ag-premium-barber',
 		),
 		array(
 			'name' => 'Plugin AG Business Barber',

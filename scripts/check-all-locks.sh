@@ -33,6 +33,7 @@ ALL_SLUGS=(
     "ag-starter-companion"
     "ag-premium-avocat"
     "ag-business-avocat"
+    "ag-premium-barber"
     "ag-business-barber"
 )
 
