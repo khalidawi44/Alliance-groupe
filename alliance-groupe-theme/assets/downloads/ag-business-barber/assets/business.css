@@ -51,12 +51,13 @@ body.ag-bb-active .ag-hero__tag {
 }
 body.ag-bb-active .ag-hero h1 {
     font-family: "Bebas Neue", Impact, sans-serif !important;
-    font-size: clamp(4rem, 14vw, 11rem) !important;
-    line-height: .9 !important;
-    letter-spacing: 4px !important;
+    font-size: clamp(2.5rem, 6vw, 5rem) !important;
+    line-height: 1 !important;
+    letter-spacing: 3px !important;
     color: var(--bb-text) !important;
     text-transform: uppercase;
     margin: 0 0 18px !important;
+    max-width: 1100px;
 }
 body.ag-bb-active .ag-hero h1 em {
     font-family: "Bebas Neue", Impact, sans-serif !important;
@@ -65,9 +66,9 @@ body.ag-bb-active .ag-hero h1 em {
     text-shadow: 0 0 12px var(--bb-accent-glow), 0 0 28px var(--bb-accent-glow);
     text-transform: uppercase;
     font-size: 1em !important;
-    letter-spacing: 4px !important;
+    letter-spacing: 3px !important;
     display: inline;
-    margin: 0 0 0 .35em !important;
+    margin: 0 !important;
 }
 body.ag-bb-active .ag-hero__sub {
     font-family: "Cormorant Garamond", Georgia, serif !important;

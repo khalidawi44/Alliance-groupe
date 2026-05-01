@@ -184,6 +184,12 @@
 		if (!isActive()) return;
 		var main = document.querySelector('main') || document.getElementById('main');
 		if (!main) return;
+		// Restreint a la home : presence simultanee du hero + queue +
+		// services. Sur page-queue.php / autres pages, on n'injecte pas.
+		var isHome = !!document.querySelector('.ag-hero')
+			&& !!document.querySelector('#queue')
+			&& !!document.querySelector('#services');
+		if (!isHome) return;
 		if (document.getElementById('ag-bb-team')) return; // deja fait
 
 		var html = renderTeam() + renderGallery() + renderTestimonials() + renderBooking() + renderContact();
