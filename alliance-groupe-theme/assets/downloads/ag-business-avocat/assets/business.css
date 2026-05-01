@@ -1130,7 +1130,9 @@ body.ag-business-active .ag-primary-menu .sub-menu {
     max-width: 100vw;
     list-style: none;
     margin: 0 !important;
-    padding: 36px max(40px, 5vw) 32px;
+    /* Padding interne reduit (12px haut au lieu de 36) pour eviter
+       un gros espace visible entre le menu et la 1ere ligne d'items. */
+    padding: 12px max(40px, 5vw) 24px;
     background: rgba(8, 8, 12, .98);
     border-top: 1px solid rgba(212, 180, 92, .28);
     border-bottom: 1px solid rgba(212, 180, 92, .18);
@@ -1161,7 +1163,7 @@ body.ag-business-active .ag-primary-menu .sub-menu li {
 body.ag-business-active .ag-primary-menu .sub-menu a {
     display: flex !important;
     align-items: center;
-    padding: 14px 18px !important;
+    padding: 8px 18px !important;
     color: rgba(255, 255, 255, .82) !important;
     font-size: .95rem !important;
     text-transform: none !important;
