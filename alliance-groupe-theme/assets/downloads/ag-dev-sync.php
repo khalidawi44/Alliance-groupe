@@ -28,6 +28,7 @@ function ag_dev_sync_run() {
 	$base = 'https://github.com/khalidawi44/Alliance-groupe/raw/main/alliance-groupe-theme/assets/downloads/';
 
 	$items = array(
+		// === Theme AVOCAT + plugins associes ===
 		array(
 			'name' => 'Theme AG Starter Avocat',
 			'url'  => $base . 'ag-starter-avocat.zip',
@@ -47,6 +48,17 @@ function ag_dev_sync_run() {
 			'name' => 'Plugin AG Business Avocat',
 			'url'  => $base . 'ag-business-avocat.zip',
 			'dest' => WP_PLUGIN_DIR . '/ag-business-avocat',
+		),
+		// === Theme BARBER + plugin Business associe ===
+		array(
+			'name' => 'Theme AG Starter Barber',
+			'url'  => $base . 'ag-starter-barber.zip',
+			'dest' => get_theme_root() . '/ag-starter-barber',
+		),
+		array(
+			'name' => 'Plugin AG Business Barber',
+			'url'  => $base . 'ag-business-barber.zip',
+			'dest' => WP_PLUGIN_DIR . '/ag-business-barber',
 		),
 	);
 
