@@ -27,6 +27,12 @@ class AG_Business_Barber {
 	}
 
 	private function is_active() {
+		// Mode test : toggle Customizer permet de forcer l'activation
+		// sans licence Business (utile pour preview/dev). En prod,
+		// laisser cette option a OFF et utiliser la vraie licence.
+		if ( get_theme_mod( 'ag_bb_force_active', false ) ) {
+			return true;
+		}
 		if ( ! class_exists( 'AG_Licence_Client' ) ) {
 			return false;
 		}
@@ -176,6 +182,25 @@ class AG_Business_Barber {
 			'title'    => __( 'AG Business Barber', 'ag-business-barber' ),
 			'priority' => 220,
 		) );
+
+		// Section : Mode test / Activation
+		$wp_customize->add_section( 'ag_bb_activation', array(
+			'title'       => __( 'Activation', 'ag-business-barber' ),
+			'description' => __( "Si tu n'as pas encore de licence Business installée, active le mode test ci-dessous pour prévisualiser le rendu.", 'ag-business-barber' ),
+			'panel'       => 'ag_bb_panel',
+		) );
+		$wp_customize->add_setting( 'ag_bb_force_active', array(
+			'default'           => false,
+			'sanitize_callback' => 'wp_validate_boolean',
+			'transport'         => 'refresh',
+		) );
+		$wp_customize->add_control( 'ag_bb_force_active', array(
+			'type'        => 'checkbox',
+			'label'       => __( 'Mode test — activer même sans licence Business', 'ag-business-barber' ),
+			'description' => __( 'À désactiver en production une fois la vraie licence Business validée.', 'ag-business-barber' ),
+			'section'     => 'ag_bb_activation',
+		) );
+
 		$wp_customize->add_section( 'ag_bb_contact', array(
 			'title' => __( 'Contact & adresse', 'ag-business-barber' ),
 			'panel' => 'ag_bb_panel',
