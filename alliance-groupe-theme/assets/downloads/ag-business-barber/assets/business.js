@@ -55,13 +55,13 @@
 		var imgs = dataValue('gallery', []);
 		if (!imgs.length) return '';
 		var items = imgs.map(function (url) {
-			return '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener" style="background-image:url(\'' + escapeHtml(url) + '\');" aria-label="Voir la photo en grand"></a>';
+			return '<div class="ag-bb-gallery-item" style="background-image:url(\'' + escapeHtml(url) + '\');" aria-hidden="true"></div>';
 		}).join('');
 		return '' +
 			'<section class="ag-bb-section" id="ag-bb-gallery">' +
 				'<div class="ag-bb-container">' +
 					'<h2 class="ag-section__title">La <em>galerie</em></h2>' +
-					'<p class="ag-section__sub">Quelques coupes signées. Plus de photos sur Instagram.</p>' +
+					'<p class="ag-section__sub">Quelques coupes signées par l\'équipe.</p>' +
 					'<div class="ag-bb-gallery-grid">' + items + '</div>' +
 				'</div>' +
 			'</section>';

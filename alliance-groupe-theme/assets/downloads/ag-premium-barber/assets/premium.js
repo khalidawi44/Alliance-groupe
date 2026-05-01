@@ -1,10 +1,11 @@
 /**
  * AG Premium Barber — JS runtime.
  *
- * Active uniquement le toggle du menu burger : intercepte le clic
- * sur .ag-header__cta (qui est devenu un hamburger via CSS) pour
- * ouvrir un overlay menu plein-ecran au lieu de naviguer vers
- * /?ag_queue=join. Click hors menu ferme.
+ * 1. Smart header : transparent au top, dark on scroll, auto-hide
+ *    on scroll-down, reapparait on scroll-up.
+ * 2. Burger menu overlay (intercepte le CTA top-right).
+ * 3. Hero logo centre (gros crest barber).
+ * 4. QR code dans la section file d'attente (lien kiosk).
  */
 (function () {
 	'use strict';
@@ -13,6 +14,71 @@
 		return document.body.classList.contains('ag-bb-active');
 	}
 
+	/* ── Smart header : scroll-aware ───────────────────────── */
+	function setupSmartHeader() {
+		var header = document.querySelector('.ag-header');
+		if (!header) return;
+		var lastScroll = window.scrollY;
+		var ticking = false;
+		function onScroll() {
+			var current = window.scrollY;
+			// Dark bg quand on n'est plus tout en haut
+			if (current > 30) {
+				header.classList.add('ag-bb-header--scrolled');
+			} else {
+				header.classList.remove('ag-bb-header--scrolled');
+			}
+			// Auto-hide on scroll-down (page descend, on cache),
+			// reapparait on scroll-up. Threshold a 100px pour eviter
+			// des cache/show parasites en debut de page.
+			if (current > lastScroll && current > 100) {
+				header.classList.add('ag-bb-header--hidden');
+			} else if (current < lastScroll) {
+				header.classList.remove('ag-bb-header--hidden');
+			}
+			lastScroll = current;
+			ticking = false;
+		}
+		window.addEventListener('scroll', function () {
+			if (!ticking) {
+				window.requestAnimationFrame(onScroll);
+				ticking = true;
+			}
+		}, { passive: true });
+	}
+
+	/* ── Logo hero centre ──────────────────────────────────── */
+	function injectHeroLogo() {
+		var hero = document.querySelector('.ag-hero');
+		if (!hero) return;
+		if (hero.querySelector('.ag-bb-hero-logo')) return;
+		var content = hero.querySelector('div'); // 1er div interne
+		if (!content) return;
+		var logo = document.createElement('div');
+		logo.className = 'ag-bb-hero-logo';
+		logo.setAttribute('aria-hidden', 'true');
+		// Insere avant le 1er enfant du content (au-dessus du tag)
+		content.insertBefore(logo, content.firstChild);
+	}
+
+	/* ── QR code pour file d'attente ───────────────────────── */
+	function injectQrCode() {
+		var queue = document.getElementById('queue');
+		if (!queue) return;
+		if (queue.querySelector('.ag-bb-qr-wrap')) return;
+		var status = queue.querySelector('.ag-queue-status');
+		if (!status) return;
+		var qrUrl = (window.location.origin || '') + '/?ag_queue=join';
+		var qrImg = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=10&data=' + encodeURIComponent(qrUrl);
+		var wrap = document.createElement('div');
+		wrap.className = 'ag-bb-qr-wrap';
+		wrap.innerHTML =
+			'<div class="ag-bb-qr"><img src="' + qrImg + '" alt="QR code pour rejoindre la file"></div>' +
+			'<p class="ag-bb-qr-caption">Scannez pour prendre votre ticket</p>';
+		status.appendChild(wrap);
+	}
+
+	/* ── Burger menu overlay ───────────────────────────────── */
 	function buildOverlayMenu(navLinks, ticketUrl) {
 		var overlay = document.createElement('div');
 		overlay.className = 'ag-bb-menu-overlay';
@@ -54,13 +120,11 @@
 	}
 
 	function setupBurger() {
-		if (!isActive()) return;
 		var cta = document.querySelector('.ag-header__nav > .ag-header__cta');
 		if (!cta) return;
-		if (cta.dataset.bbBurger === '1') return; // deja fait
+		if (cta.dataset.bbBurger === '1') return;
 		cta.dataset.bbBurger = '1';
 
-		// Recolte les liens existants du nav (hors cta lui-meme)
 		var links = [];
 		document.querySelectorAll('.ag-header__nav > a:not(.ag-header__cta)').forEach(function (a) {
 			links.push({ href: a.href, label: a.textContent.trim() });
@@ -95,15 +159,22 @@
 		document.addEventListener('keydown', function (e) {
 			if (e.key === 'Escape' && built.overlay.classList.contains('is-open')) close();
 		});
-		// Si un lien interne est clique, on ferme l'overlay
 		built.overlay.querySelectorAll('a').forEach(function (a) {
 			a.addEventListener('click', function () { close(); });
 		});
 	}
 
-	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', setupBurger);
-	} else {
+	function run() {
+		if (!isActive()) return;
+		setupSmartHeader();
+		injectHeroLogo();
+		injectQrCode();
 		setupBurger();
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', run);
+	} else {
+		run();
 	}
 })();

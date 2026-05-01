@@ -129,6 +129,8 @@ class AG_Business_Barber {
 
 	private function get_gallery_data() {
 		return array(
+			// Photos d'exemple Unsplash : barbershops, coupes, fade,
+			// barbe, rasage. Mix portrait + atelier + outils.
 			'https://images.unsplash.com/photo-1521490683330-cd7d6b4f1bef?w=1200&q=85',
 			'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=1200&q=85',
 			'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&q=85',
@@ -137,6 +139,10 @@ class AG_Business_Barber {
 			'https://images.unsplash.com/photo-1626015449112-43e9a8a4f0e5?w=1200&q=85',
 			'https://images.unsplash.com/photo-1517832207067-4db24a2ae47c?w=1200&q=85',
 			'https://images.unsplash.com/photo-1565061828011-282424e8c14d?w=1200&q=85',
+			'https://images.unsplash.com/photo-1493256338651-d82f7acb2b38?w=1200&q=85',
+			'https://images.unsplash.com/photo-1635273051936-83f4b6e478c0?w=1200&q=85',
+			'https://images.unsplash.com/photo-1542833805-2b2b29ab66ec?w=1200&q=85',
+			'https://images.unsplash.com/photo-1593702288056-f173a2207898?w=1200&q=85',
 		);
 	}
 
