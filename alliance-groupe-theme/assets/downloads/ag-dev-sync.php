@@ -28,16 +28,17 @@ function ag_dev_sync_run() {
 	$base = 'https://github.com/khalidawi44/Alliance-groupe/raw/main/alliance-groupe-theme/assets/downloads/';
 
 	$items = array(
-		// === Theme AVOCAT + plugins associes ===
-		array(
-			'name' => 'Theme AG Starter Avocat',
-			'url'  => $base . 'ag-starter-avocat.zip',
-			'dest' => get_theme_root() . '/ag-starter-avocat',
-		),
+		// === Helper plugin commun a tous les themes ===
 		array(
 			'name' => 'Plugin AG Starter Companion',
 			'url'  => $base . 'ag-starter-companion.zip',
 			'dest' => WP_PLUGIN_DIR . '/ag-starter-companion',
+		),
+		// === Theme AVOCAT + plugins Premium/Business ===
+		array(
+			'name' => 'Theme AG Starter Avocat',
+			'url'  => $base . 'ag-starter-avocat.zip',
+			'dest' => get_theme_root() . '/ag-starter-avocat',
 		),
 		array(
 			'name' => 'Plugin AG Premium Avocat',
@@ -49,7 +50,7 @@ function ag_dev_sync_run() {
 			'url'  => $base . 'ag-business-avocat.zip',
 			'dest' => WP_PLUGIN_DIR . '/ag-business-avocat',
 		),
-		// === Theme BARBER + plugin Business associe ===
+		// === Theme BARBER + plugin Business ===
 		array(
 			'name' => 'Theme AG Starter Barber',
 			'url'  => $base . 'ag-starter-barber.zip',
@@ -59,6 +60,23 @@ function ag_dev_sync_run() {
 			'name' => 'Plugin AG Business Barber',
 			'url'  => $base . 'ag-business-barber.zip',
 			'dest' => WP_PLUGIN_DIR . '/ag-business-barber',
+		),
+		// === Themes ARTISAN / COACH / RESTAURANT (Free seul, pas de
+		// plugins Business specifiques pour l'instant) ===
+		array(
+			'name' => 'Theme AG Starter Artisan',
+			'url'  => $base . 'ag-starter-artisan.zip',
+			'dest' => get_theme_root() . '/ag-starter-artisan',
+		),
+		array(
+			'name' => 'Theme AG Starter Coach',
+			'url'  => $base . 'ag-starter-coach.zip',
+			'dest' => get_theme_root() . '/ag-starter-coach',
+		),
+		array(
+			'name' => 'Theme AG Starter Restaurant',
+			'url'  => $base . 'ag-starter-restaurant.zip',
+			'dest' => get_theme_root() . '/ag-starter-restaurant',
 		),
 	);
 

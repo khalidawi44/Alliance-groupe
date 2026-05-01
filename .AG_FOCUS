@@ -1,0 +1,15 @@
+# AG Focus — quel template est en developpement actif
+#
+# Format : un slug par ligne (sans .zip ni prefix). Tout ce qui n'est
+# PAS listed ici est verrouille (lock check fail au commit).
+#
+# Pour basculer le focus :
+#   1. Ajouter/retirer un slug ici
+#   2. Si nouveau focus : la prochaine fois que tu modifies, le lock
+#      check te dira "missing .LOCK.sha256" — utilise scripts/regenerate-lock.sh <slug>
+#   3. Pour reverrouiller un ancien focus : retirer du fichier puis
+#      bash scripts/regenerate-lock.sh <slug>
+#
+# === FOCUS ACTUEL ===
+ag-starter-barber
+ag-business-barber
