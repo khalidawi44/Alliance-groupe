@@ -2937,3 +2937,31 @@ body.ag-light .ag-business-testimonial-card__name {
 body.ag-light .ag-business-testimonial-card__role {
     color: #5A4549;
 }
+
+/* ─────────────────────────────────────────────────────────────────
+   Bouton "Haut de page" : remplace la fleche unicode ↑ par un SVG
+   chevron-up plus sobre. Utilise mask-image pour que la couleur
+   suive le currentColor du bouton (= adapte mode jour/nuit auto).
+   ───────────────────────────────────────────────────────────────── */
+body.ag-business-active .ag-totop {
+    font-size: 0 !important; /* cache le caractere unicode ↑ */
+    line-height: 0 !important;
+}
+body.ag-business-active .ag-totop::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background-color: currentColor;
+    -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='12' y1='19' x2='12' y2='5'/%3E%3Cpolyline points='5 12 12 5 19 12'/%3E%3C/svg%3E");
+            mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='12' y1='19' x2='12' y2='5'/%3E%3Cpolyline points='5 12 12 5 19 12'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+            mask-position: center;
+    -webkit-mask-size: contain;
+            mask-size: contain;
+    transition: transform .3s ease;
+}
+body.ag-business-active .ag-totop:hover::before {
+    transform: translateY(-2px);
+}

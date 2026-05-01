@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_BUSINESS_AVOCAT_VERSION', '0.48.0' );
+define( 'AG_BUSINESS_AVOCAT_VERSION', '0.49.0' );
 define( 'AG_BUSINESS_AVOCAT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AG_BUSINESS_AVOCAT_URL', plugin_dir_url( __FILE__ ) );
 
