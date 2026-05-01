@@ -70,6 +70,15 @@ class AG_Premium_Barber {
 				AG_PREMIUM_BARBER_VERSION
 			);
 		}
+		if ( file_exists( AG_PREMIUM_BARBER_DIR . 'assets/premium.js' ) ) {
+			wp_enqueue_script(
+				'ag-premium-barber-script',
+				AG_PREMIUM_BARBER_URL . 'assets/premium.js',
+				array(),
+				AG_PREMIUM_BARBER_VERSION,
+				true
+			);
+		}
 	}
 
 	public function register_customizer( $wp_customize ) {
