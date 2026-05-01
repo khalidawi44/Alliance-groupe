@@ -1097,13 +1097,18 @@ body.ag-business-active.ag-light .ag-domaine-card--bg .ag-domaine-card__examples
    sous le header. Le menu d'origine reste intact — on transforme
    uniquement l'apparence du <ul class="sub-menu"> existant.
 
-   Note : .ag-site-header est deja position:fixed (theme), ce qui
-   cree le contexte de positionnement dont le sub-menu absolute a
-   besoin. On NE TOUCHE PAS au position du header pour preserver
-   le sticky scroll.
+   IMPORTANT : .ag-primary-menu doit etre position:relative pour que
+   le sub-menu absolute s'ancre A LA HAUTEUR DU MENU LUI-MEME, pas
+   au bas du header (qui peut avoir du padding/marge en plus et
+   creer un decalage visible). Pour que le sub-menu reste full-width
+   alors que le menu est etroit, on utilise left:50% + transform
+   translateX(-50%) + width 100vw.
 */
 /* Les <li> top-level redeviennent statiques pour que .sub-menu
    ne soit PAS contraint a leur largeur. */
+body.ag-business-active .ag-primary-menu {
+    position: relative;
+}
 body.ag-business-active .ag-primary-menu > li.menu-item-has-children {
     position: static;
 }
@@ -1111,9 +1116,8 @@ body.ag-business-active .ag-primary-menu > li:not(.menu-item-has-children) {
     position: relative;
 }
 
-/* Mega menu : full-width, grid 4 colonnes
-   IMPORTANT : pas de gap entre menu primaire et sub-menu — on utilise
-   border-top header + top:100% sans aucune marge. */
+/* Mega menu : full-width via translateX, ancre direct sous menu UL.
+   Pas de top:100% reposant sur header (qui creait un decalage). */
 body.ag-business-active .ag-primary-menu > li.menu-item-has-children {
     padding: 0 !important;
     margin: 0 !important;
@@ -1121,9 +1125,8 @@ body.ag-business-active .ag-primary-menu > li.menu-item-has-children {
 body.ag-business-active .ag-primary-menu .sub-menu {
     position: absolute;
     top: 100%;
-    left: 0;
-    right: 0;
-    width: 100%;
+    left: 50%;
+    width: 100vw;
     max-width: 100vw;
     list-style: none;
     margin: 0 !important;
@@ -1138,7 +1141,7 @@ body.ag-business-active .ag-primary-menu .sub-menu {
     gap: 4px 36px;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-12px);
+    transform: translateX(-50%) translateY(-12px);
     transition: opacity .35s ease, transform .35s ease, visibility .35s ease;
     z-index: 1000;
 }
@@ -1146,7 +1149,7 @@ body.ag-business-active .ag-primary-menu > li:hover > .sub-menu,
 body.ag-business-active .ag-primary-menu > li:focus-within > .sub-menu {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: translateX(-50%) translateY(0);
 }
 
 /* Items du mega menu */
