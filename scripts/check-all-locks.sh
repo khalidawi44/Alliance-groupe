@@ -10,5 +10,6 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 bash "${REPO_ROOT}/scripts/check-free-lock.sh"
 bash "${REPO_ROOT}/scripts/check-premium-lock.sh"
+bash "${REPO_ROOT}/scripts/check-business-lock.sh"
 
 echo "All locks verified."
