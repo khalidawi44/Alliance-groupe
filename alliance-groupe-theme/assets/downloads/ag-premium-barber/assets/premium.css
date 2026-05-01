@@ -259,3 +259,257 @@ body.ag-bb-active .ag-queue-status__wait strong {
     color: var(--bb-accent) !important;
     font-weight: 600;
 }
+
+/* ════════════════════════════════════════════════════════════════
+   HEADER refonte : logo barber SVG + nav centree bigger + burger
+   ════════════════════════════════════════════════════════════════ */
+body.ag-bb-active .ag-header {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr !important;
+    align-items: center !important;
+    padding: 18px 32px !important;
+    background: rgba(7, 9, 12, .92) !important;
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(26, 139, 255, .15) !important;
+    position: sticky;
+    top: 0;
+    z-index: 500;
+}
+
+/* ── Logo : icone SVG ciseaux + texte ── */
+body.ag-bb-active .ag-header__logo {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 12px;
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    color: var(--bb-text) !important;
+    font-size: 1.4rem !important;
+    font-style: normal !important;
+    letter-spacing: 4px !important;
+    text-transform: uppercase;
+    text-decoration: none !important;
+    justify-self: start;
+}
+body.ag-bb-active .ag-header__logo::before {
+    content: '';
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    background-color: var(--bb-accent);
+    -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='6' r='3'/%3E%3Ccircle cx='6' cy='18' r='3'/%3E%3Cline x1='20' y1='4' x2='8.12' y2='15.88'/%3E%3Cline x1='14.47' y1='14.48' x2='20' y2='20'/%3E%3Cline x1='8.12' y1='8.12' x2='12' y2='12'/%3E%3C/svg%3E");
+            mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='6' r='3'/%3E%3Ccircle cx='6' cy='18' r='3'/%3E%3Cline x1='20' y1='4' x2='8.12' y2='15.88'/%3E%3Cline x1='14.47' y1='14.48' x2='20' y2='20'/%3E%3Cline x1='8.12' y1='8.12' x2='12' y2='12'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+            mask-position: center;
+    -webkit-mask-size: contain;
+            mask-size: contain;
+    filter: drop-shadow(0 0 8px var(--bb-accent-glow));
+}
+
+/* ── Nav : centree, bigger letters Bebas Neue ── */
+body.ag-bb-active .ag-header__nav {
+    display: flex !important;
+    align-items: center;
+    gap: 36px !important;
+    justify-self: center;
+}
+body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta) {
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    color: var(--bb-text) !important;
+    font-size: 1.15rem !important;
+    letter-spacing: 3px !important;
+    text-transform: uppercase;
+    text-decoration: none !important;
+    background: transparent !important;
+    padding: 6px 0 !important;
+    position: relative;
+    transition: color .25s ease;
+}
+body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta):hover {
+    color: var(--bb-accent) !important;
+    text-shadow: 0 0 8px var(--bb-accent-glow);
+}
+body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta)::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    width: 0;
+    height: 1px;
+    background: var(--bb-accent);
+    box-shadow: 0 0 8px var(--bb-accent);
+    transform: translateX(-50%);
+    transition: width .25s ease;
+}
+body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta):hover::after {
+    width: 100%;
+}
+
+/* ── Bouton "Prendre un ticket" en haut a droite : hamburger style ── */
+body.ag-bb-active .ag-header__nav > .ag-header__cta {
+    /* Cache le texte original "Prendre un ticket", remplace par burger */
+    font-size: 0 !important;
+    background: transparent !important;
+    border: 1px solid rgba(26, 139, 255, .35) !important;
+    border-radius: 4px !important;
+    width: 48px;
+    height: 48px;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    color: transparent !important;
+    box-shadow: none !important;
+    position: relative;
+    cursor: pointer;
+    transition: border-color .25s ease, background .25s ease;
+    justify-self: end;
+}
+body.ag-bb-active .ag-header__nav > .ag-header__cta:hover {
+    border-color: var(--bb-accent) !important;
+    background: rgba(26, 139, 255, .08) !important;
+}
+/* 3 lignes du hamburger en pseudo-elements */
+body.ag-bb-active .ag-header__nav > .ag-header__cta::before,
+body.ag-bb-active .ag-header__nav > .ag-header__cta::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    width: 22px;
+    height: 2px;
+    background: var(--bb-text);
+    transform: translateX(-50%);
+    transition: background .25s ease;
+}
+body.ag-bb-active .ag-header__nav > .ag-header__cta::before { top: 14px; box-shadow: 0 8px 0 var(--bb-text); }
+body.ag-bb-active .ag-header__nav > .ag-header__cta::after  { bottom: 14px; }
+body.ag-bb-active .ag-header__nav > .ag-header__cta:hover::before,
+body.ag-bb-active .ag-header__nav > .ag-header__cta:hover::after {
+    background: var(--bb-accent);
+}
+body.ag-bb-active .ag-header__nav > .ag-header__cta:hover::before {
+    box-shadow: 0 8px 0 var(--bb-accent);
+}
+
+/* Mobile : nav centree wraparound + cache certains items */
+@media (max-width: 768px) {
+    body.ag-bb-active .ag-header {
+        grid-template-columns: 1fr auto !important;
+        padding: 14px 20px !important;
+    }
+    body.ag-bb-active .ag-header__nav {
+        gap: 0 !important;
+    }
+    body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta) {
+        display: none !important;
+    }
+}
+
+/* ── Fix select dropdown options : dark bg + light text ── */
+body.ag-bb-active select,
+body.ag-bb-active select option {
+    background: var(--bb-bg-2) !important;
+    color: var(--bb-text) !important;
+}
+body.ag-bb-active select option:checked,
+body.ag-bb-active select option:hover {
+    background: var(--bb-bg-3) !important;
+    color: var(--bb-accent) !important;
+}
+
+/* ── Menu overlay plein-ecran (ouvert au clic sur le burger) ── */
+.ag-bb-menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(7, 9, 12, .96);
+    backdrop-filter: blur(18px);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .35s ease, visibility .35s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.ag-bb-menu-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+}
+.ag-bb-menu-overlay__inner {
+    text-align: center;
+    max-width: 720px;
+    padding: 40px;
+    position: relative;
+}
+.ag-bb-menu-overlay__close {
+    position: absolute;
+    top: -120px;
+    right: 0;
+    background: transparent;
+    border: 1px solid rgba(230, 236, 242, .25);
+    color: var(--bb-text);
+    width: 56px;
+    height: 56px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color .25s ease, color .25s ease;
+}
+.ag-bb-menu-overlay__close:hover {
+    border-color: var(--bb-accent);
+    color: var(--bb-accent);
+}
+.ag-bb-menu-overlay__list {
+    list-style: none;
+    margin: 0 0 48px;
+    padding: 0;
+}
+.ag-bb-menu-overlay__list li {
+    margin: 18px 0;
+}
+.ag-bb-menu-overlay__list a {
+    font-family: "Bebas Neue", Impact, sans-serif;
+    color: var(--bb-text);
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    line-height: 1.1;
+    display: inline-block;
+    transition: color .25s ease, text-shadow .25s ease, transform .25s ease;
+}
+.ag-bb-menu-overlay__list a:hover {
+    color: var(--bb-accent);
+    text-shadow: 0 0 16px var(--bb-accent-glow), 0 0 32px var(--bb-accent-glow);
+    transform: translateX(8px);
+}
+.ag-bb-menu-overlay__cta {
+    display: inline-block;
+    background: var(--bb-accent);
+    color: #fff;
+    font-family: "Bebas Neue", Impact, sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 18px 40px;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background .25s ease, transform .25s ease;
+    box-shadow: 0 8px 28px rgba(26, 139, 255, .35);
+}
+.ag-bb-menu-overlay__cta:hover {
+    background: var(--bb-accent-2);
+    transform: translateY(-2px);
+}
+@media (max-width: 600px) {
+    .ag-bb-menu-overlay__close {
+        top: -80px;
+    }
+    .ag-bb-menu-overlay__list a {
+        font-size: clamp(1.8rem, 8vw, 2.6rem);
+        letter-spacing: 3px;
+    }
+}
