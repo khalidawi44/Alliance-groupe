@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_PREMIUM_BARBER_VERSION', '0.4.0' );
+define( 'AG_PREMIUM_BARBER_VERSION', '0.5.0' );
 define( 'AG_PREMIUM_BARBER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AG_PREMIUM_BARBER_URL', plugin_dir_url( __FILE__ ) );
 

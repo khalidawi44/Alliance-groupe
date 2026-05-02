@@ -79,7 +79,7 @@ class AG_Premium_Barber {
 				true
 			);
 			wp_localize_script( 'ag-premium-barber-script', 'agPbData', array(
-				'logoUrl' => (string) get_theme_mod( 'ag_pb_logo_url', '' ),
+				'logoUrl' => (string) get_theme_mod( 'ag_pb_logo_url', home_url( '/logo.png' ) ),
 			) );
 		}
 	}
