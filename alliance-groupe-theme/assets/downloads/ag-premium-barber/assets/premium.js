@@ -106,136 +106,47 @@
 		status.appendChild(wrap);
 	}
 
-	/* ── Burger menu overlay ───────────────────────────────── */
-	function buildOverlayMenu(navLinks, ticketUrl) {
-		var overlay = document.createElement('div');
-		overlay.className = 'ag-bb-menu-overlay';
-		overlay.setAttribute('role', 'dialog');
-		overlay.setAttribute('aria-modal', 'true');
-		overlay.setAttribute('aria-hidden', 'true');
+	/* ── Injecte les ancres de toutes les sections dans le nav header.
+	   (Plus d'overlay/burger : tous les onglets sont visibles direct.)
+	   Smooth-scroll au clic. */
+	function injectNavAnchors() {
+		var nav = document.querySelector('.ag-header__nav');
+		if (!nav) return;
+		var cta = nav.querySelector('.ag-header__cta');
 
-		var inner = document.createElement('div');
-		inner.className = 'ag-bb-menu-overlay__inner';
-
-		var close = document.createElement('button');
-		close.className = 'ag-bb-menu-overlay__close';
-		close.setAttribute('aria-label', 'Fermer le menu');
-		close.innerHTML = '<svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
-		inner.appendChild(close);
-
-		var ul = document.createElement('ul');
-		ul.className = 'ag-bb-menu-overlay__list';
-		navLinks.forEach(function (l) {
-			var li = document.createElement('li');
-			var a = document.createElement('a');
-			a.href = l.href;
-			a.textContent = l.label;
-			li.appendChild(a);
-			ul.appendChild(li);
-		});
-		inner.appendChild(ul);
-
-		if (ticketUrl) {
-			var cta = document.createElement('a');
-			cta.className = 'ag-bb-menu-overlay__cta';
-			cta.href = ticketUrl;
-			cta.textContent = 'Prendre un ticket maintenant';
-			inner.appendChild(cta);
-		}
-
-		overlay.appendChild(inner);
-		return { overlay: overlay, close: close };
-	}
-
-	function setupBurger() {
-		var cta = document.querySelector('.ag-header__nav > .ag-header__cta');
-		if (!cta) return;
-		if (cta.dataset.bbBurger === '1') return;
-		cta.dataset.bbBurger = '1';
-
-		var ticketUrl = cta.href;
-
-		// Liste statique des sections potentielles (par ID DOM).
-		// On filtre au moment du clic pour n'afficher que celles qui
-		// existent reellement (Business plugin peut ne pas etre actif).
 		var sectionAnchors = [
-			{ id: 'queue',              label: "File d'attente" },
 			{ id: 'services',           label: 'Tarifs' },
-			{ id: 'ag-bb-team',         label: 'Notre équipe' },
-			{ id: 'ag-bb-gallery',      label: 'La galerie' },
-			{ id: 'ag-bb-testimonials', label: 'Témoignages' },
+			{ id: 'queue',              label: "File d'attente" },
+			{ id: 'ag-bb-team',         label: 'Équipe' },
+			{ id: 'ag-bb-gallery',      label: 'Galerie' },
+			{ id: 'ag-bb-testimonials', label: 'Avis' },
 			{ id: 'ag-bb-booking',      label: 'Réserver' },
-			{ id: 'ag-bb-contact',      label: 'Nous trouver' }
+			{ id: 'ag-bb-contact',      label: 'Contact' }
 		];
 
-		function buildLinks() {
-			var seen = {};
-			var links = [];
-			sectionAnchors.forEach(function (s) {
-				if (document.getElementById(s.id) && !seen[s.id]) {
-					seen[s.id] = 1;
-					links.push({ href: '#' + s.id, label: s.label });
+		// Retire les liens existants (sauf le CTA)
+		nav.querySelectorAll('a:not(.ag-header__cta)').forEach(function (a) {
+			a.remove();
+		});
+
+		// Insere les ancres trouvees avant le CTA
+		sectionAnchors.forEach(function (s) {
+			if (!document.getElementById(s.id)) return;
+			var a = document.createElement('a');
+			a.href = '#' + s.id;
+			a.textContent = s.label;
+			a.addEventListener('click', function (e) {
+				var target = document.getElementById(s.id);
+				if (target) {
+					e.preventDefault();
+					target.scrollIntoView({ behavior: 'smooth', block: 'start' });
 				}
 			});
-			return links;
-		}
-
-		// Build overlay une fois (sera mis a jour avant chaque ouverture)
-		var built = buildOverlayMenu(buildLinks(), ticketUrl);
-		document.body.appendChild(built.overlay);
-
-		function refreshLinks() {
-			var ul = built.overlay.querySelector('.ag-bb-menu-overlay__list');
-			if (!ul) return;
-			ul.innerHTML = '';
-			buildLinks().forEach(function (l) {
-				var li = document.createElement('li');
-				var a = document.createElement('a');
-				a.href = l.href;
-				a.textContent = l.label;
-				a.addEventListener('click', function (e) {
-					// Smooth scroll vers l'ancre
-					var target = document.querySelector(l.href);
-					if (target) {
-						e.preventDefault();
-						close();
-						setTimeout(function () {
-							target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-						}, 350);
-					} else {
-						close();
-					}
-				});
-				li.appendChild(a);
-				ul.appendChild(li);
-			});
-		}
-
-		function open() {
-			refreshLinks();
-			built.overlay.classList.add('is-open');
-			built.overlay.setAttribute('aria-hidden', 'false');
-			document.body.style.overflow = 'hidden';
-		}
-		function close() {
-			built.overlay.classList.remove('is-open');
-			built.overlay.setAttribute('aria-hidden', 'true');
-			document.body.style.overflow = '';
-		}
-
-		cta.addEventListener('click', function (e) {
-			e.preventDefault();
-			open();
-		});
-		built.close.addEventListener('click', function (e) {
-			e.preventDefault();
-			close();
-		});
-		built.overlay.addEventListener('click', function (e) {
-			if (e.target === built.overlay) close();
-		});
-		document.addEventListener('keydown', function (e) {
-			if (e.key === 'Escape' && built.overlay.classList.contains('is-open')) close();
+			if (cta) {
+				nav.insertBefore(a, cta);
+			} else {
+				nav.appendChild(a);
+			}
 		});
 	}
 
@@ -245,7 +156,9 @@
 		setupSmartHeader();
 		injectHeroLogo();
 		injectQrCode();
-		setupBurger();
+		// Defer pour laisser Business plugin injecter ses sections
+		// avant qu'on construise le nav qui les reference.
+		setTimeout(injectNavAnchors, 200);
 	}
 
 	if (document.readyState === 'loading') {
