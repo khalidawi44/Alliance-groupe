@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_BUSINESS_BARBER_VERSION', '0.5.0' );
+define( 'AG_BUSINESS_BARBER_VERSION', '0.6.0' );
 define( 'AG_BUSINESS_BARBER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AG_BUSINESS_BARBER_URL', plugin_dir_url( __FILE__ ) );
 
