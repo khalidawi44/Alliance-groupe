@@ -78,8 +78,12 @@ class AG_Premium_Barber {
 				AG_PREMIUM_BARBER_VERSION,
 				true
 			);
+			// Default logo : on cherche dans la mediatheque WP
+			// (wp-content/uploads/<year>/<month>/logo.png) puis fallback
+			// racine. Override via Customizer toujours dispo.
+			$default_logo = home_url( '/wp-content/uploads/2026/05/logo.png' );
 			wp_localize_script( 'ag-premium-barber-script', 'agPbData', array(
-				'logoUrl' => (string) get_theme_mod( 'ag_pb_logo_url', home_url( '/logo.png' ) ),
+				'logoUrl' => (string) get_theme_mod( 'ag_pb_logo_url', $default_logo ),
 			) );
 		}
 	}
