@@ -541,9 +541,16 @@ body.ag-bb-active .ag-header.ag-bb-header--hidden {
     transform: translateY(-100%);
 }
 
-/* Compense le header fixe : push hero vers le bas */
+/* Compense le header fixe : push hero vers le bas (clearance suffisante
+   pour que le logo ne soit pas masque par le menu sur petites resolutions) */
 body.ag-bb-active .ag-hero {
-    padding-top: 80px;
+    padding-top: 160px;
+    padding-bottom: 60px;
+}
+@media (max-width: 768px) {
+    body.ag-bb-active .ag-hero {
+        padding-top: 130px;
+    }
 }
 
 /* ── Logo gauche : on cache le texte "Alliance", on garde l'icone
