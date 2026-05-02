@@ -582,21 +582,12 @@ body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta) {
             mask-size: contain;
     filter: drop-shadow(0 0 30px var(--bb-accent-glow));
     transform-origin: 50% 50%;
-    /* 2 animations combinees : rotation continue + fade out/in periodique
-       (le logo disparait a 50% de la rotation, reapparait peu apres) */
-    animation:
-        ag-bb-logo-spin 12s linear infinite,
-        ag-bb-logo-fade 12s ease-in-out infinite;
+    /* Rotation continue 360 (sens horaire) en boucle 14s */
+    animation: ag-bb-logo-spin 14s linear infinite;
 }
 @keyframes ag-bb-logo-spin {
     from { transform: rotate(0deg); }
     to   { transform: rotate(360deg); }
-}
-@keyframes ag-bb-logo-fade {
-    0%, 42%   { opacity: 1; }
-    50%       { opacity: 0; }
-    58%       { opacity: 0; }
-    66%, 100% { opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
     .ag-bb-hero-logo { animation: none; }
