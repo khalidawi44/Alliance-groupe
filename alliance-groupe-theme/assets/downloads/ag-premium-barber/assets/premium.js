@@ -153,16 +153,66 @@
 		if (cta.dataset.bbBurger === '1') return;
 		cta.dataset.bbBurger = '1';
 
-		var links = [];
-		document.querySelectorAll('.ag-header__nav > a:not(.ag-header__cta)').forEach(function (a) {
-			links.push({ href: a.href, label: a.textContent.trim() });
-		});
-
 		var ticketUrl = cta.href;
-		var built = buildOverlayMenu(links, ticketUrl);
+
+		// Liste statique des sections potentielles (par ID DOM).
+		// On filtre au moment du clic pour n'afficher que celles qui
+		// existent reellement (Business plugin peut ne pas etre actif).
+		var sectionAnchors = [
+			{ id: 'queue',              label: "File d'attente" },
+			{ id: 'services',           label: 'Tarifs' },
+			{ id: 'ag-bb-team',         label: 'Notre équipe' },
+			{ id: 'ag-bb-gallery',      label: 'La galerie' },
+			{ id: 'ag-bb-testimonials', label: 'Témoignages' },
+			{ id: 'ag-bb-booking',      label: 'Réserver' },
+			{ id: 'ag-bb-contact',      label: 'Nous trouver' }
+		];
+
+		function buildLinks() {
+			var seen = {};
+			var links = [];
+			sectionAnchors.forEach(function (s) {
+				if (document.getElementById(s.id) && !seen[s.id]) {
+					seen[s.id] = 1;
+					links.push({ href: '#' + s.id, label: s.label });
+				}
+			});
+			return links;
+		}
+
+		// Build overlay une fois (sera mis a jour avant chaque ouverture)
+		var built = buildOverlayMenu(buildLinks(), ticketUrl);
 		document.body.appendChild(built.overlay);
 
+		function refreshLinks() {
+			var ul = built.overlay.querySelector('.ag-bb-menu-overlay__list');
+			if (!ul) return;
+			ul.innerHTML = '';
+			buildLinks().forEach(function (l) {
+				var li = document.createElement('li');
+				var a = document.createElement('a');
+				a.href = l.href;
+				a.textContent = l.label;
+				a.addEventListener('click', function (e) {
+					// Smooth scroll vers l'ancre
+					var target = document.querySelector(l.href);
+					if (target) {
+						e.preventDefault();
+						close();
+						setTimeout(function () {
+							target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+						}, 350);
+					} else {
+						close();
+					}
+				});
+				li.appendChild(a);
+				ul.appendChild(li);
+			});
+		}
+
 		function open() {
+			refreshLinks();
 			built.overlay.classList.add('is-open');
 			built.overlay.setAttribute('aria-hidden', 'false');
 			document.body.style.overflow = 'hidden';
@@ -186,9 +236,6 @@
 		});
 		document.addEventListener('keydown', function (e) {
 			if (e.key === 'Escape' && built.overlay.classList.contains('is-open')) close();
-		});
-		built.overlay.querySelectorAll('a').forEach(function (a) {
-			a.addEventListener('click', function () { close(); });
 		});
 	}
 
