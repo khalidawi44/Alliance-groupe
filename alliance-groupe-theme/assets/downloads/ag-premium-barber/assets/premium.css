@@ -47,13 +47,14 @@ body.ag-bb-active .ag-hero__tag {
 /* Titre geant style Back Alive : moitie blanc, moitie bleu glow */
 body.ag-bb-active .ag-hero h1 {
     font-family: "Bebas Neue", Impact, sans-serif !important;
-    font-size: clamp(2.2rem, 5vw, 4rem) !important;
-    line-height: 1 !important;
+    font-size: clamp(1.6rem, 4vw, 3rem) !important;
+    line-height: 1.05 !important;
     letter-spacing: 3px !important;
     color: var(--bb-text) !important;
     text-transform: uppercase;
     margin: 0 0 16px !important;
     max-width: 1100px;
+    perspective: 1000px;
 }
 body.ag-bb-active .ag-hero h1 em {
     font-family: "Bebas Neue", Impact, sans-serif !important;
@@ -65,8 +66,19 @@ body.ag-bb-active .ag-hero h1 em {
     text-transform: uppercase;
     font-size: 1em !important;
     letter-spacing: 3px !important;
-    display: inline;
+    display: inline-block;
     margin: 0 !important;
+    animation: ag-bb-title-swing 5s ease-in-out infinite;
+    transform-origin: center;
+}
+@keyframes ag-bb-title-swing {
+    0%, 100% { transform: perspective(800px) rotateY(0deg); }
+    25%      { transform: perspective(800px) rotateY(20deg); }
+    50%      { transform: perspective(800px) rotateY(0deg); }
+    75%      { transform: perspective(800px) rotateY(-20deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ag-bb-active .ag-hero h1 em { animation: none; }
 }
 body.ag-bb-active .ag-hero__sub {
     font-family: "Cormorant Garamond", Georgia, serif !important;
