@@ -39,29 +39,21 @@ body.ag-bb-active .ag-hero {
     text-align: center;
 }
 
-/* Tag du haut : "THE HOME OF DUBAI BARBERS" / "LE BARBIER PREMIUM..." */
+/* Tag du haut : on cache le shop_name "Alliance" pour rester epure */
 body.ag-bb-active .ag-hero__tag {
-    font-family: "Bebas Neue", Impact, sans-serif !important;
-    color: var(--bb-accent) !important;
-    letter-spacing: 6px !important;
-    text-transform: uppercase;
-    font-size: 1.05rem !important;
-    background: transparent !important;
-    border: 0 !important;
-    padding: 0 !important;
-    margin-bottom: 24px !important;
-    display: inline-block;
+    display: none !important;
 }
 
 /* Titre geant style Back Alive : moitie blanc, moitie bleu glow */
 body.ag-bb-active .ag-hero h1 {
     font-family: "Bebas Neue", Impact, sans-serif !important;
-    font-size: clamp(4rem, 14vw, 11rem) !important;
-    line-height: .9 !important;
-    letter-spacing: 4px !important;
+    font-size: clamp(2.2rem, 5vw, 4rem) !important;
+    line-height: 1 !important;
+    letter-spacing: 3px !important;
     color: var(--bb-text) !important;
     text-transform: uppercase;
-    margin: 0 0 18px !important;
+    margin: 0 0 16px !important;
+    max-width: 1100px;
 }
 body.ag-bb-active .ag-hero h1 em {
     font-family: "Bebas Neue", Impact, sans-serif !important;
@@ -72,9 +64,9 @@ body.ag-bb-active .ag-hero h1 em {
         0 0 28px var(--bb-accent-glow);
     text-transform: uppercase;
     font-size: 1em !important;
-    letter-spacing: 4px !important;
+    letter-spacing: 3px !important;
     display: inline;
-    margin: 0 0 0 .35em !important;
+    margin: 0 !important;
 }
 body.ag-bb-active .ag-hero__sub {
     font-family: "Cormorant Garamond", Georgia, serif !important;
@@ -577,12 +569,22 @@ body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta) {
     -webkit-mask-size: contain;
             mask-size: contain;
     filter: drop-shadow(0 0 30px var(--bb-accent-glow));
-    animation: ag-bb-logo-spin 22s linear infinite;
     transform-origin: 50% 50%;
+    /* 2 animations combinees : rotation continue + fade out/in periodique
+       (le logo disparait a 50% de la rotation, reapparait peu apres) */
+    animation:
+        ag-bb-logo-spin 12s linear infinite,
+        ag-bb-logo-fade 12s ease-in-out infinite;
 }
 @keyframes ag-bb-logo-spin {
     from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    to   { transform: rotate(360deg); }
+}
+@keyframes ag-bb-logo-fade {
+    0%, 42%   { opacity: 1; }
+    50%       { opacity: 0; }
+    58%       { opacity: 0; }
+    66%, 100% { opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
     .ag-bb-hero-logo { animation: none; }
