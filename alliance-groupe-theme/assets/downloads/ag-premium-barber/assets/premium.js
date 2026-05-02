@@ -13,6 +13,34 @@
 	function isActive() {
 		return document.body.classList.contains('ag-bb-active');
 	}
+	function customLogoUrl() {
+		return (typeof agPbData !== 'undefined' && agPbData.logoUrl) ? agPbData.logoUrl : '';
+	}
+
+	/* ── Logo personnalise : remplace l'icone SVG ciseaux par
+	   l'image fournie via Customizer (header gauche + hero centre). */
+	function applyCustomLogo() {
+		var url = customLogoUrl();
+		if (!url) return;
+		var safe = url.replace(/'/g, '%27').replace(/"/g, '%22');
+		var css =
+			'body.ag-bb-active .ag-header__logo::before{' +
+				'background-color:transparent !important;' +
+				'-webkit-mask:none !important;mask:none !important;' +
+				'background:url(\'' + safe + '\') center/contain no-repeat !important;' +
+				'filter:drop-shadow(0 0 10px var(--bb-accent-glow));' +
+			'}' +
+			'.ag-bb-hero-logo{' +
+				'background-color:transparent !important;' +
+				'-webkit-mask:none !important;mask:none !important;' +
+				'background:url(\'' + safe + '\') center/contain no-repeat !important;' +
+				'filter:drop-shadow(0 0 28px var(--bb-accent-glow)) drop-shadow(0 0 8px rgba(0,0,0,.6));' +
+			'}';
+		var style = document.createElement('style');
+		style.id = 'ag-bb-custom-logo';
+		style.textContent = css;
+		document.head.appendChild(style);
+	}
 
 	/* ── Smart header : scroll-aware ───────────────────────── */
 	function setupSmartHeader() {
@@ -166,6 +194,7 @@
 
 	function run() {
 		if (!isActive()) return;
+		applyCustomLogo();
 		setupSmartHeader();
 		injectHeroLogo();
 		injectQrCode();

@@ -78,6 +78,9 @@ class AG_Premium_Barber {
 				AG_PREMIUM_BARBER_VERSION,
 				true
 			);
+			wp_localize_script( 'ag-premium-barber-script', 'agPbData', array(
+				'logoUrl' => (string) get_theme_mod( 'ag_pb_logo_url', '' ),
+			) );
 		}
 	}
 
@@ -101,6 +104,23 @@ class AG_Premium_Barber {
 			'label'       => __( 'Mode test — activer Premium même sans licence', 'ag-premium-barber' ),
 			'description' => __( 'À désactiver en production une fois la licence Premium validée.', 'ag-premium-barber' ),
 			'section'     => 'ag_pb_activation',
+		) );
+
+		// Section : Logo personnalise
+		$wp_customize->add_section( 'ag_pb_logo', array(
+			'title'       => __( 'Logo barber', 'ag-premium-barber' ),
+			'description' => __( "URL d'une image PNG/JPG/SVG qui remplace l'icone ciseaux par defaut. Uploader d'abord l'image dans Medias > Bibliotheque, copier le 'URL du fichier', coller ici. Recommande : carre transparent (PNG/SVG), ~512x512.", 'ag-premium-barber' ),
+			'panel'       => 'ag_pb_panel',
+		) );
+		$wp_customize->add_setting( 'ag_pb_logo_url', array(
+			'default'           => '',
+			'sanitize_callback' => 'esc_url_raw',
+			'transport'         => 'refresh',
+		) );
+		$wp_customize->add_control( 'ag_pb_logo_url', array(
+			'label'   => __( 'URL du logo', 'ag-premium-barber' ),
+			'section' => 'ag_pb_logo',
+			'type'    => 'url',
 		) );
 	}
 }
