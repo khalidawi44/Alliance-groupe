@@ -563,9 +563,9 @@ body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta) {
    LOGO HERO centre : gros crest barber (SVG inline en CSS bg)
    ════════════════════════════════════════════════════════════════ */
 .ag-bb-hero-logo {
-    width: clamp(120px, 18vw, 200px);
-    height: clamp(120px, 18vw, 200px);
-    margin: 0 auto 28px;
+    width: clamp(100px, 14vw, 160px);
+    height: clamp(100px, 14vw, 160px);
+    margin: 0 auto 32px;
     display: block;
     background-color: var(--bb-accent);
     -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='50' cy='50' r='44'/%3E%3Ccircle cx='50' cy='50' r='38' stroke-dasharray='2 4'/%3E%3Cline x1='28' y1='28' x2='72' y2='72'/%3E%3Cline x1='72' y1='28' x2='28' y2='72'/%3E%3Ccircle cx='28' cy='28' r='5'/%3E%3Ccircle cx='28' cy='72' r='5'/%3E%3Ccircle cx='72' cy='28' r='5' fill='black'/%3E%3Cpath d='M67 33 L77 23 L82 28 L72 38 Z' fill='black'/%3E%3C/svg%3E");
@@ -577,6 +577,15 @@ body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta) {
     -webkit-mask-size: contain;
             mask-size: contain;
     filter: drop-shadow(0 0 30px var(--bb-accent-glow));
+    animation: ag-bb-logo-spin 22s linear infinite;
+    transform-origin: 50% 50%;
+}
+@keyframes ag-bb-logo-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .ag-bb-hero-logo { animation: none; }
 }
 
 /* ════════════════════════════════════════════════════════════════
