@@ -350,63 +350,55 @@ body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta):hover::after {
     width: 100%;
 }
 
-/* ── Bouton "Prendre un ticket" en haut a droite : hamburger style ── */
+/* ── Bouton "Prendre un ticket" en haut a droite : bouton normal,
+   plus de hamburger overlay (tous les onglets sont visibles dans le nav). */
 body.ag-bb-active .ag-header__nav > .ag-header__cta {
-    /* Cache le texte original "Prendre un ticket", remplace par burger */
-    font-size: 0 !important;
-    background: transparent !important;
-    border: 1px solid rgba(26, 139, 255, .35) !important;
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    font-size: .88rem !important;
+    color: #fff !important;
+    background: var(--bb-accent) !important;
+    border: 2px solid var(--bb-accent) !important;
     border-radius: 4px !important;
-    width: 48px;
-    height: 48px;
-    padding: 0 !important;
+    padding: 10px 22px !important;
+    letter-spacing: 3px !important;
+    text-transform: uppercase;
+    text-decoration: none !important;
+    transition: background .25s ease;
+    width: auto;
+    height: auto;
     display: inline-flex !important;
     align-items: center;
-    justify-content: center;
-    color: transparent !important;
-    box-shadow: none !important;
-    position: relative;
-    cursor: pointer;
-    transition: border-color .25s ease, background .25s ease;
+    box-shadow: 0 6px 18px rgba(26, 139, 255, .35);
     justify-self: end;
 }
 body.ag-bb-active .ag-header__nav > .ag-header__cta:hover {
-    border-color: var(--bb-accent) !important;
-    background: rgba(26, 139, 255, .08) !important;
+    background: var(--bb-accent-2) !important;
+    border-color: var(--bb-accent-2) !important;
 }
-/* 3 lignes du hamburger en pseudo-elements */
 body.ag-bb-active .ag-header__nav > .ag-header__cta::before,
 body.ag-bb-active .ag-header__nav > .ag-header__cta::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    width: 22px;
-    height: 2px;
-    background: var(--bb-text);
-    transform: translateX(-50%);
-    transition: background .25s ease;
-}
-body.ag-bb-active .ag-header__nav > .ag-header__cta::before { top: 14px; box-shadow: 0 8px 0 var(--bb-text); }
-body.ag-bb-active .ag-header__nav > .ag-header__cta::after  { bottom: 14px; }
-body.ag-bb-active .ag-header__nav > .ag-header__cta:hover::before,
-body.ag-bb-active .ag-header__nav > .ag-header__cta:hover::after {
-    background: var(--bb-accent);
-}
-body.ag-bb-active .ag-header__nav > .ag-header__cta:hover::before {
-    box-shadow: 0 8px 0 var(--bb-accent);
+    display: none !important;
+    content: none !important;
 }
 
-/* Mobile : nav centree wraparound + cache certains items */
+/* Mobile : nav wrap (tous les onglets restent visibles, pas
+   de burger). Sur tres petit ecran on garde le wrap mais font reduit. */
 @media (max-width: 768px) {
     body.ag-bb-active .ag-header {
-        grid-template-columns: 1fr auto !important;
-        padding: 14px 20px !important;
+        grid-template-columns: 1fr !important;
+        padding: 14px 16px !important;
     }
+    body.ag-bb-active .ag-header__logo { justify-self: center; }
     body.ag-bb-active .ag-header__nav {
-        gap: 0 !important;
+        gap: 14px !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        justify-self: center !important;
     }
     body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta) {
-        display: none !important;
+        display: inline-block !important;
+        font-size: .82rem !important;
+        letter-spacing: 1.5px !important;
     }
 }
 
@@ -541,16 +533,33 @@ body.ag-bb-active .ag-header.ag-bb-header--hidden {
     transform: translateY(-100%);
 }
 
-/* Compense le header fixe : push hero vers le bas (clearance suffisante
-   pour que le logo ne soit pas masque par le menu sur petites resolutions) */
+/* Compense le header fixe : push hero vers le bas + place pour le logo
+   qui est positionne sous le header (absolute). */
 body.ag-bb-active .ag-hero {
-    padding-top: 160px;
-    padding-bottom: 60px;
+    padding-top: 280px;
+    padding-bottom: 90px;
+    position: relative;
 }
 @media (max-width: 768px) {
     body.ag-bb-active .ag-hero {
-        padding-top: 130px;
+        padding-top: 230px;
+        padding-bottom: 110px;
     }
+}
+
+/* Hero buttons : positionnes en bas de la section a 10px des bords. */
+body.ag-bb-active .ag-hero__btns {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin: 0 !important;
+    z-index: 5;
 }
 
 /* ── Logo gauche : on cache le texte "Alliance", on garde l'icone
@@ -574,9 +583,15 @@ body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta) {
    LOGO HERO centre : gros crest barber (SVG inline en CSS bg)
    ════════════════════════════════════════════════════════════════ */
 .ag-bb-hero-logo {
-    width: clamp(100px, 14vw, 160px);
-    height: clamp(100px, 14vw, 160px);
-    margin: 0 auto 32px;
+    width: clamp(110px, 13vw, 170px);
+    height: clamp(110px, 13vw, 170px);
+    /* Positionne sous le header, ne rentre plus dans le flow du hero. */
+    position: absolute;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 6;
+    margin: 0;
     display: block;
     background-color: var(--bb-accent);
     -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='50' cy='50' r='44'/%3E%3Ccircle cx='50' cy='50' r='38' stroke-dasharray='2 4'/%3E%3Cline x1='28' y1='28' x2='72' y2='72'/%3E%3Cline x1='72' y1='28' x2='28' y2='72'/%3E%3Ccircle cx='28' cy='28' r='5'/%3E%3Ccircle cx='28' cy='72' r='5'/%3E%3Ccircle cx='72' cy='28' r='5' fill='black'/%3E%3Cpath d='M67 33 L77 23 L82 28 L72 38 Z' fill='black'/%3E%3C/svg%3E");
@@ -589,12 +604,13 @@ body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta) {
             mask-size: contain;
     filter: drop-shadow(0 0 30px var(--bb-accent-glow));
     transform-origin: 50% 50%;
-    /* Rotation continue 360 (sens horaire) en boucle 14s */
+    /* Rotation continue 360 (sens horaire) en boucle 14s.
+       translateX(-50%) preserve le centrage horizontal. */
     animation: ag-bb-logo-spin 14s linear infinite;
 }
 @keyframes ag-bb-logo-spin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
+    from { transform: translateX(-50%) rotate(0deg); }
+    to   { transform: translateX(-50%) rotate(360deg); }
 }
 @media (prefers-reduced-motion: reduce) {
     .ag-bb-hero-logo { animation: none; }
