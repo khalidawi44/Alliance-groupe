@@ -42,8 +42,8 @@ body.ag-bb-active .ag-hero__tag {
 }
 body.ag-bb-active .ag-hero h1 {
     font-family: "Bebas Neue", Impact, sans-serif !important;
-    font-size: clamp(2.2rem, 5vw, 4rem) !important;
-    line-height: 1 !important;
+    font-size: clamp(1.6rem, 4vw, 3rem) !important;
+    line-height: 1.05 !important;
     letter-spacing: 3px !important;
     color: var(--bb-text) !important;
     text-transform: uppercase;
