@@ -27,6 +27,25 @@ function ag_dev_sync_run() {
 	$results = array();
 	$base = 'https://github.com/khalidawi44/Alliance-groupe/raw/main/alliance-groupe-theme/assets/downloads/';
 
+	// Self-update : remplace le mu-plugin ag-dev-sync.php lui-meme
+	// par la version actuelle du repo. Ainsi pas besoin de copier
+	// manuellement le fichier a chaque ajout d'item.
+	$self_url  = 'https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/downloads/ag-dev-sync.php';
+	$self_dest = WPMU_PLUGIN_DIR . '/ag-dev-sync.php';
+	$results[] = '--- Self-update ag-dev-sync.php ---';
+	$resp = wp_remote_get( $self_url, array( 'timeout' => 30 ) );
+	if ( ! is_wp_error( $resp ) && 200 === wp_remote_retrieve_response_code( $resp ) ) {
+		$body = wp_remote_retrieve_body( $resp );
+		if ( $body && strpos( $body, 'ag_dev_sync_run' ) !== false ) {
+			file_put_contents( $self_dest, $body );
+			$results[] = 'OK — mu-plugin mis a jour (' . round( strlen( $body ) / 1024 ) . ' Ko). Recharge la page si besoin.';
+		} else {
+			$results[] = 'IGNORE : reponse invalide.';
+		}
+	} else {
+		$results[] = 'ERREUR self-update : ' . ( is_wp_error( $resp ) ? $resp->get_error_message() : 'HTTP ' . wp_remote_retrieve_response_code( $resp ) );
+	}
+
 	$items = array(
 		// === Helper plugin commun a tous les themes ===
 		array(
