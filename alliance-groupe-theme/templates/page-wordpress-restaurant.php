@@ -31,7 +31,7 @@ set_query_var( 'ag_metier', array(
         'Translation-ready (GPL v2+)',
     ),
 
-    'pro_features' => array(
+    'premium_features' => array(
         '<strong>Hero plein écran avec vidéo de fond</strong> (atmosphère du restaurant)',
         'Animations douces sur la section carte (fade-in plats)',
         '10 blocs Gutenberg culinaires (menu du jour, plat du chef, promo happy hour, galerie photos)',
@@ -40,16 +40,6 @@ set_query_var( 'ag_metier', array(
         'Polices Google Fonts (Playfair pour les titres, Manrope pour le texte)',
         'Support email 60 jours',
         'Documentation vidéo complète',
-    ),
-
-    'premium_features' => array(
-        '<strong>Tout Pro inclus</strong>',
-        '<strong>Menu de réservation multilingue</strong> (FR, EN, ES, IT, DE, AR) — parfait pour les villes touristiques',
-        '<strong>Module de commande en ligne WooCommerce</strong> — vendez vos plats à emporter',
-        'Section "Menu du midi" automatique (change tous les jours)',
-        'Intégration newsletter (inscription clients + envoi de la carte du jour)',
-        'Support prioritaire 12 mois + appel expert 30 min',
-        'Mises à jour à vie',
     ),
 
     'business_features' => array(

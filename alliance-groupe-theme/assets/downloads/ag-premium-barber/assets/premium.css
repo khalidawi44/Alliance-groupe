@@ -1,0 +1,725 @@
+/**
+ * AG Premium Barber — design enrichments.
+ *
+ * Inspiration : Back Alive Barbershop (Dubai). Dark + electric blue
+ * (no brass gold, no red blood). Big bold uppercase typography.
+ *
+ * Palette :
+ *   --bb-bg-1      #07090C   noir/charbon profond
+ *   --bb-bg-2      #0E1218   gris bleute fonce (cards)
+ *   --bb-bg-3      #151B24   plus clair (hover)
+ *   --bb-accent    #1A8BFF   bleu electrique (Back Alive style)
+ *   --bb-accent-2  #4FA8FF   bleu clair (highlight)
+ *   --bb-accent-glow  rgba(26, 139, 255, .55)   pour text-shadow
+ *   --bb-text      #E6ECF2   off-white
+ *   --bb-text-mute #8B95A3   gris bleute
+ */
+
+body.ag-bb-active {
+    --bb-bg-1: #07090C;
+    --bb-bg-2: #0E1218;
+    --bb-bg-3: #151B24;
+    --bb-accent: #1A8BFF;
+    --bb-accent-2: #4FA8FF;
+    --bb-accent-glow: rgba(26, 139, 255, .55);
+    --bb-text: #E6ECF2;
+    --bb-text-mute: #8B95A3;
+}
+
+/* ── Hero override : dark image bg + voile + two-tone giant title ── */
+body.ag-bb-active .ag-hero {
+    position: relative;
+    min-height: 92vh;
+    background:
+        linear-gradient(180deg, rgba(7, 9, 12, .55) 0%, rgba(7, 9, 12, .80) 60%, rgba(7, 9, 12, .96) 100%),
+        url('https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=2000&q=85') center/cover no-repeat fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* Tag du haut : on cache le shop_name "Alliance" pour rester epure */
+body.ag-bb-active .ag-hero__tag {
+    display: none !important;
+}
+
+/* Titre geant style Back Alive : moitie blanc, moitie bleu glow */
+body.ag-bb-active .ag-hero h1 {
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    font-size: clamp(1.6rem, 4vw, 3rem) !important;
+    line-height: 1.05 !important;
+    letter-spacing: 3px !important;
+    color: var(--bb-text) !important;
+    text-transform: uppercase;
+    margin: 0 0 16px !important;
+    max-width: 1100px;
+    perspective: 1000px;
+}
+body.ag-bb-active .ag-hero h1 em {
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    font-style: normal !important;
+    color: var(--bb-accent) !important;
+    text-shadow:
+        0 0 12px var(--bb-accent-glow),
+        0 0 28px var(--bb-accent-glow);
+    text-transform: uppercase;
+    font-size: 1em !important;
+    letter-spacing: 3px !important;
+    display: inline-block;
+    margin: 0 !important;
+    animation: ag-bb-title-swing 5s ease-in-out infinite;
+    transform-origin: center;
+}
+@keyframes ag-bb-title-swing {
+    0%, 100% { transform: perspective(800px) rotateY(0deg); }
+    25%      { transform: perspective(800px) rotateY(20deg); }
+    50%      { transform: perspective(800px) rotateY(0deg); }
+    75%      { transform: perspective(800px) rotateY(-20deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.ag-bb-active .ag-hero h1 em { animation: none; }
+}
+body.ag-bb-active .ag-hero__sub {
+    font-family: "Cormorant Garamond", Georgia, serif !important;
+    font-style: italic;
+    color: var(--bb-text-mute) !important;
+    font-size: 1.3rem !important;
+    max-width: 640px;
+    margin: 0 auto 26px !important;
+    line-height: 1.5 !important;
+}
+
+/* Bandeau prix d'appel, plus discret en mode Back Alive */
+body.ag-bb-active .ag-hero__price {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 14px;
+    border: 0 !important;
+    padding: 0 !important;
+    margin: 6px 0 30px !important;
+}
+body.ag-bb-active .ag-hero__price strong {
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    color: var(--bb-accent) !important;
+    font-size: 2.4rem !important;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px var(--bb-accent-glow);
+}
+body.ag-bb-active .ag-hero__price span {
+    font-family: "Cormorant Garamond", serif !important;
+    font-style: italic;
+    color: var(--bb-text) !important;
+}
+
+body.ag-bb-active .ag-hero .ag-btn {
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    letter-spacing: 4px !important;
+    text-transform: uppercase;
+    font-size: 1rem !important;
+    padding: 16px 32px !important;
+    border-radius: 0 !important;
+}
+body.ag-bb-active .ag-hero .ag-btn--gold {
+    background: var(--bb-accent) !important;
+    color: #fff !important;
+    border: 2px solid var(--bb-accent) !important;
+    box-shadow: 0 8px 28px rgba(26, 139, 255, .35);
+}
+body.ag-bb-active .ag-hero .ag-btn--gold:hover {
+    background: var(--bb-accent-2) !important;
+    border-color: var(--bb-accent-2) !important;
+}
+body.ag-bb-active .ag-hero .ag-btn--outline {
+    background: transparent !important;
+    color: var(--bb-text) !important;
+    border: 2px solid rgba(255, 255, 255, .35) !important;
+}
+body.ag-bb-active .ag-hero .ag-btn--outline:hover {
+    background: var(--bb-text) !important;
+    color: var(--bb-bg-1) !important;
+    border-color: var(--bb-text) !important;
+}
+
+/* ── Background global Premium : dark partout ── */
+body.ag-bb-active {
+    background: var(--bb-bg-1) !important;
+    color: var(--bb-text) !important;
+}
+body.ag-bb-active .ag-section--card,
+body.ag-bb-active .ag-section--dark {
+    background: var(--bb-bg-1) !important;
+}
+
+/* ── Section titles : Bebas Neue avec accent bleu glow ── */
+body.ag-bb-active .ag-section__title {
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    font-size: clamp(2.4rem, 6vw, 4rem) !important;
+    letter-spacing: 4px !important;
+    text-transform: uppercase;
+    color: var(--bb-text) !important;
+    text-align: center;
+    margin: 0 0 12px !important;
+}
+body.ag-bb-active .ag-section__title em {
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    font-style: normal !important;
+    color: var(--bb-accent) !important;
+    text-shadow: 0 0 12px var(--bb-accent-glow), 0 0 24px var(--bb-accent-glow);
+    letter-spacing: 4px !important;
+    text-transform: uppercase;
+    font-weight: 400 !important;
+}
+body.ag-bb-active .ag-section__sub {
+    text-align: center;
+    color: var(--bb-text-mute) !important;
+    margin: 0 auto 40px !important;
+    font-size: 1rem !important;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+}
+
+/* ── Service cards : look minimal Back Alive ── */
+body.ag-bb-active .ag-service-card {
+    background: var(--bb-bg-2) !important;
+    border: 1px solid rgba(26, 139, 255, .12) !important;
+    border-radius: 4px !important;
+    padding: 30px 28px !important;
+    text-align: left !important;
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    grid-template-rows: auto auto !important;
+    gap: 6px 14px !important;
+    align-items: start !important;
+    transition: border-color .3s ease, transform .3s ease, box-shadow .3s ease !important;
+}
+body.ag-bb-active .ag-service-card:hover {
+    border-color: var(--bb-accent) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 16px 40px rgba(26, 139, 255, .15) !important;
+}
+body.ag-bb-active .ag-service-card__icon {
+    display: none !important;
+}
+body.ag-bb-active .ag-service-card__name {
+    grid-column: 1;
+    grid-row: 1;
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    color: var(--bb-text) !important;
+    font-size: 1.2rem !important;
+    letter-spacing: 2px !important;
+    text-transform: uppercase;
+    margin: 0 !important;
+}
+body.ag-bb-active .ag-service-card__price {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    color: var(--bb-accent) !important;
+    font-size: 2.2rem !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    align-self: center;
+    letter-spacing: 1px;
+}
+body.ag-bb-active .ag-service-card__time {
+    grid-column: 1;
+    grid-row: 2;
+    color: var(--bb-text-mute) !important;
+    font-size: .82rem !important;
+    letter-spacing: 1px !important;
+    margin: 0 !important;
+}
+
+/* ── File d'attente ── */
+body.ag-bb-active .ag-queue-status {
+    background: var(--bb-bg-2);
+    border: 1px solid rgba(26, 139, 255, .15);
+    padding: 32px;
+    border-radius: 4px !important;
+}
+body.ag-bb-active .ag-queue-status__count {
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    color: var(--bb-accent) !important;
+    font-size: 5rem !important;
+    line-height: 1 !important;
+    letter-spacing: 2px;
+    text-shadow: 0 0 16px var(--bb-accent-glow);
+}
+body.ag-bb-active .ag-queue-status__label {
+    color: var(--bb-text-mute) !important;
+    letter-spacing: 2px !important;
+    text-transform: uppercase;
+    font-size: .82rem !important;
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+}
+body.ag-bb-active .ag-queue-status__wait {
+    font-family: "Cormorant Garamond", serif !important;
+    font-style: italic;
+    color: var(--bb-text) !important;
+}
+body.ag-bb-active .ag-queue-status__wait strong {
+    color: var(--bb-accent) !important;
+    font-weight: 600;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   HEADER refonte : logo barber SVG + nav centree bigger + burger
+   ════════════════════════════════════════════════════════════════ */
+body.ag-bb-active .ag-header {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr !important;
+    align-items: center !important;
+    padding: 18px 32px !important;
+    background: rgba(7, 9, 12, .92) !important;
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(26, 139, 255, .15) !important;
+    position: sticky;
+    top: 0;
+    z-index: 500;
+}
+
+/* ── Logo : icone SVG ciseaux + texte ── */
+body.ag-bb-active .ag-header__logo {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 12px;
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    color: var(--bb-text) !important;
+    font-size: 1.4rem !important;
+    font-style: normal !important;
+    letter-spacing: 4px !important;
+    text-transform: uppercase;
+    text-decoration: none !important;
+    justify-self: start;
+}
+body.ag-bb-active .ag-header__logo::before {
+    content: '';
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    background-color: var(--bb-accent);
+    -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='6' r='3'/%3E%3Ccircle cx='6' cy='18' r='3'/%3E%3Cline x1='20' y1='4' x2='8.12' y2='15.88'/%3E%3Cline x1='14.47' y1='14.48' x2='20' y2='20'/%3E%3Cline x1='8.12' y1='8.12' x2='12' y2='12'/%3E%3C/svg%3E");
+            mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='6' r='3'/%3E%3Ccircle cx='6' cy='18' r='3'/%3E%3Cline x1='20' y1='4' x2='8.12' y2='15.88'/%3E%3Cline x1='14.47' y1='14.48' x2='20' y2='20'/%3E%3Cline x1='8.12' y1='8.12' x2='12' y2='12'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+            mask-position: center;
+    -webkit-mask-size: contain;
+            mask-size: contain;
+    filter: drop-shadow(0 0 8px var(--bb-accent-glow));
+}
+
+/* ── Nav : centree, bigger letters Bebas Neue ── */
+body.ag-bb-active .ag-header__nav {
+    display: flex !important;
+    align-items: center;
+    gap: 36px !important;
+    justify-self: center;
+}
+body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta) {
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    color: var(--bb-text) !important;
+    font-size: 1.15rem !important;
+    letter-spacing: 3px !important;
+    text-transform: uppercase;
+    text-decoration: none !important;
+    background: transparent !important;
+    padding: 6px 0 !important;
+    position: relative;
+    transition: color .25s ease;
+}
+body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta):hover {
+    color: var(--bb-accent) !important;
+    text-shadow: 0 0 8px var(--bb-accent-glow);
+}
+body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta)::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    width: 0;
+    height: 1px;
+    background: var(--bb-accent);
+    box-shadow: 0 0 8px var(--bb-accent);
+    transform: translateX(-50%);
+    transition: width .25s ease;
+}
+body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta):hover::after {
+    width: 100%;
+}
+
+/* ── Bouton "Prendre un ticket" en haut a droite : bouton normal,
+   plus de hamburger overlay (tous les onglets sont visibles dans le nav). */
+body.ag-bb-active .ag-header__nav > .ag-header__cta {
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    font-size: .88rem !important;
+    color: #fff !important;
+    background: var(--bb-accent) !important;
+    border: 2px solid var(--bb-accent) !important;
+    border-radius: 4px !important;
+    padding: 10px 22px !important;
+    letter-spacing: 3px !important;
+    text-transform: uppercase;
+    text-decoration: none !important;
+    transition: background .25s ease;
+    width: auto;
+    height: auto;
+    display: inline-flex !important;
+    align-items: center;
+    box-shadow: 0 6px 18px rgba(26, 139, 255, .35);
+    justify-self: end;
+}
+body.ag-bb-active .ag-header__nav > .ag-header__cta:hover {
+    background: var(--bb-accent-2) !important;
+    border-color: var(--bb-accent-2) !important;
+}
+body.ag-bb-active .ag-header__nav > .ag-header__cta::before,
+body.ag-bb-active .ag-header__nav > .ag-header__cta::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* Mobile : nav wrap (tous les onglets restent visibles, pas
+   de burger). Sur tres petit ecran on garde le wrap mais font reduit. */
+@media (max-width: 768px) {
+    body.ag-bb-active .ag-header {
+        grid-template-columns: 1fr !important;
+        padding: 14px 16px !important;
+    }
+    body.ag-bb-active .ag-header__logo { justify-self: center; }
+    body.ag-bb-active .ag-header__nav {
+        gap: 14px !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        justify-self: center !important;
+    }
+    body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta) {
+        display: inline-block !important;
+        font-size: .82rem !important;
+        letter-spacing: 1.5px !important;
+    }
+}
+
+/* ── Fix select dropdown options : dark bg + light text ── */
+body.ag-bb-active select,
+body.ag-bb-active select option {
+    background: var(--bb-bg-2) !important;
+    color: var(--bb-text) !important;
+}
+body.ag-bb-active select option:checked,
+body.ag-bb-active select option:hover {
+    background: var(--bb-bg-3) !important;
+    color: var(--bb-accent) !important;
+}
+
+/* ── Menu overlay plein-ecran (ouvert au clic sur le burger) ── */
+.ag-bb-menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(7, 9, 12, .96);
+    backdrop-filter: blur(18px);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .35s ease, visibility .35s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.ag-bb-menu-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+}
+.ag-bb-menu-overlay__inner {
+    text-align: center;
+    max-width: 720px;
+    padding: 40px;
+    position: relative;
+}
+.ag-bb-menu-overlay__close {
+    position: absolute;
+    top: -120px;
+    right: 0;
+    background: transparent;
+    border: 1px solid rgba(230, 236, 242, .25);
+    color: var(--bb-text);
+    width: 56px;
+    height: 56px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color .25s ease, color .25s ease;
+}
+.ag-bb-menu-overlay__close:hover {
+    border-color: var(--bb-accent);
+    color: var(--bb-accent);
+}
+.ag-bb-menu-overlay__list {
+    list-style: none;
+    margin: 0 0 48px;
+    padding: 0;
+}
+.ag-bb-menu-overlay__list li {
+    margin: 18px 0;
+}
+.ag-bb-menu-overlay__list a {
+    font-family: "Bebas Neue", Impact, sans-serif;
+    color: var(--bb-text);
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    line-height: 1.1;
+    display: inline-block;
+    transition: color .25s ease, text-shadow .25s ease, transform .25s ease;
+}
+.ag-bb-menu-overlay__list a:hover {
+    color: var(--bb-accent);
+    text-shadow: 0 0 16px var(--bb-accent-glow), 0 0 32px var(--bb-accent-glow);
+    transform: translateX(8px);
+}
+.ag-bb-menu-overlay__cta {
+    display: inline-block;
+    background: var(--bb-accent);
+    color: #fff;
+    font-family: "Bebas Neue", Impact, sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 18px 40px;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background .25s ease, transform .25s ease;
+    box-shadow: 0 8px 28px rgba(26, 139, 255, .35);
+}
+.ag-bb-menu-overlay__cta:hover {
+    background: var(--bb-accent-2);
+    transform: translateY(-2px);
+}
+@media (max-width: 600px) {
+    .ag-bb-menu-overlay__close {
+        top: -80px;
+    }
+    .ag-bb-menu-overlay__list a {
+        font-size: clamp(1.8rem, 8vw, 2.6rem);
+        letter-spacing: 3px;
+    }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   HEADER smart-scroll : transparent au top, dark on scroll,
+   auto-hide on scroll down, reapparait on scroll up.
+   ════════════════════════════════════════════════════════════════ */
+body.ag-bb-active .ag-header {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    border-bottom: 1px solid transparent !important;
+    transition: background .35s ease, transform .35s ease, border-color .35s ease, backdrop-filter .35s ease;
+}
+body.ag-bb-active .ag-header.ag-bb-header--scrolled {
+    background: rgba(7, 9, 12, .94) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(26, 139, 255, .18) !important;
+}
+body.ag-bb-active .ag-header.ag-bb-header--hidden {
+    transform: translateY(-100%);
+}
+
+/* Compense le header fixe : push hero vers le bas + place pour le logo
+   qui est positionne sous le header (absolute). */
+body.ag-bb-active .ag-hero {
+    padding-top: 280px;
+    padding-bottom: 90px;
+    position: relative;
+}
+@media (max-width: 768px) {
+    body.ag-bb-active .ag-hero {
+        padding-top: 230px;
+        padding-bottom: 110px;
+    }
+}
+
+/* Hero buttons : positionnes en bas de la section a 10px des bords. */
+body.ag-bb-active .ag-hero__btns {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin: 0 !important;
+    z-index: 5;
+}
+
+/* ── Logo gauche : on cache le texte "Alliance", on garde l'icone
+   en plus gros et plus visible (logo barber crest) ── */
+body.ag-bb-active .ag-header__logo {
+    font-size: 0 !important;
+    color: transparent !important;
+}
+body.ag-bb-active .ag-header__logo::before {
+    width: 44px !important;
+    height: 44px !important;
+    filter: drop-shadow(0 0 12px var(--bb-accent-glow));
+}
+
+/* Liens nav : blanc capitale (deja en place mais on assure) */
+body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta) {
+    color: #fff !important;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   LOGO HERO centre : gros crest barber (SVG inline en CSS bg)
+   ════════════════════════════════════════════════════════════════ */
+.ag-bb-hero-logo {
+    width: clamp(110px, 13vw, 170px);
+    height: clamp(110px, 13vw, 170px);
+    /* Positionne sous le header, ne rentre plus dans le flow du hero. */
+    position: absolute;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 6;
+    margin: 0;
+    display: block;
+    background-color: var(--bb-accent);
+    -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='50' cy='50' r='44'/%3E%3Ccircle cx='50' cy='50' r='38' stroke-dasharray='2 4'/%3E%3Cline x1='28' y1='28' x2='72' y2='72'/%3E%3Cline x1='72' y1='28' x2='28' y2='72'/%3E%3Ccircle cx='28' cy='28' r='5'/%3E%3Ccircle cx='28' cy='72' r='5'/%3E%3Ccircle cx='72' cy='28' r='5' fill='black'/%3E%3Cpath d='M67 33 L77 23 L82 28 L72 38 Z' fill='black'/%3E%3C/svg%3E");
+            mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='50' cy='50' r='44'/%3E%3Ccircle cx='50' cy='50' r='38' stroke-dasharray='2 4'/%3E%3Cline x1='28' y1='28' x2='72' y2='72'/%3E%3Cline x1='72' y1='28' x2='28' y2='72'/%3E%3Ccircle cx='28' cy='28' r='5'/%3E%3Ccircle cx='28' cy='72' r='5'/%3E%3Ccircle cx='72' cy='28' r='5' fill='black'/%3E%3Cpath d='M67 33 L77 23 L82 28 L72 38 Z' fill='black'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+            mask-position: center;
+    -webkit-mask-size: contain;
+            mask-size: contain;
+    filter: drop-shadow(0 0 30px var(--bb-accent-glow));
+    transform-origin: 50% 50%;
+    /* Rotation continue 360 (sens horaire) en boucle 14s.
+       translateX(-50%) preserve le centrage horizontal. */
+    animation: ag-bb-logo-spin 14s linear infinite;
+}
+@keyframes ag-bb-logo-spin {
+    from { transform: translateX(-50%) rotate(0deg); }
+    to   { transform: translateX(-50%) rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .ag-bb-hero-logo { animation: none; }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   QR CODE pour file d'attente (kiosk + TV + alerte phone)
+   ════════════════════════════════════════════════════════════════ */
+.ag-bb-qr {
+    margin: 24px auto 0;
+    padding: 18px;
+    background: #fff;
+    border-radius: 8px;
+    display: inline-block;
+    box-shadow: 0 12px 40px rgba(26, 139, 255, .25);
+}
+.ag-bb-qr img {
+    display: block;
+    width: 200px;
+    height: 200px;
+}
+.ag-bb-qr-wrap {
+    text-align: center;
+    margin-top: 30px;
+}
+.ag-bb-qr-caption {
+    margin-top: 14px;
+    font-family: "Bebas Neue", Impact, sans-serif;
+    color: var(--bb-accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-size: .92rem;
+    text-shadow: 0 0 10px var(--bb-accent-glow);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   FOOTER : palette site (dark + accent bleu electrique)
+   ════════════════════════════════════════════════════════════════ */
+body.ag-bb-active .ag-footer {
+    background: var(--bb-bg-2) !important;
+    border-top: 1px solid rgba(26, 139, 255, .18) !important;
+    padding: 60px 24px 40px !important;
+    color: var(--bb-text-mute) !important;
+    text-align: center;
+    position: relative;
+}
+body.ag-bb-active .ag-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--bb-accent), transparent);
+    box-shadow: 0 0 16px var(--bb-accent-glow);
+}
+body.ag-bb-active .ag-footer .ag-container {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    align-items: center;
+    max-width: 720px;
+    margin: 0 auto;
+}
+body.ag-bb-active .ag-footer__name {
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    color: var(--bb-text) !important;
+    font-size: 2rem !important;
+    letter-spacing: 6px !important;
+    text-transform: uppercase;
+    text-shadow: 0 0 14px var(--bb-accent-glow);
+    margin: 0 !important;
+}
+body.ag-bb-active .ag-footer__addr {
+    color: var(--bb-text-mute) !important;
+    font-family: "Cormorant Garamond", serif !important;
+    font-style: italic;
+    font-size: 1rem !important;
+    line-height: 1.7 !important;
+    margin: 0 !important;
+}
+body.ag-bb-active .ag-footer__addr a {
+    color: var(--bb-accent) !important;
+    text-decoration: none !important;
+    border-bottom: 1px solid rgba(26, 139, 255, .35) !important;
+    transition: color .25s ease, border-color .25s ease !important;
+    font-style: normal;
+    font-family: "Bebas Neue", sans-serif !important;
+    letter-spacing: 2px;
+    font-size: 1rem;
+}
+body.ag-bb-active .ag-footer__addr a:hover {
+    color: var(--bb-accent-2) !important;
+    border-bottom-color: var(--bb-accent-2) !important;
+}
+body.ag-bb-active .ag-footer__copy {
+    color: rgba(139, 149, 163, .7) !important;
+    font-size: .82rem !important;
+    margin-top: 14px !important;
+    padding-top: 22px !important;
+    border-top: 1px solid rgba(26, 139, 255, .1) !important;
+    letter-spacing: 1px;
+    width: 100%;
+}
+body.ag-bb-active .ag-footer__copy a {
+    color: var(--bb-accent) !important;
+    text-decoration: none !important;
+}
+body.ag-bb-active .ag-footer__copy a:hover {
+    color: var(--bb-accent-2) !important;
+}

@@ -411,15 +411,6 @@ class AG_Starter_Companion {
 			$log[] = 'Page d\'accueil configuree';
 		}
 
-		// For avocat theme: create anchor-based menu (one-page scroll)
-		$use_anchors = ( 'ag-starter-avocat' === $slug );
-		$anchor_map  = array(
-			'expertise'   => '#ag-domaines',
-			'honoraires'  => '#ag-honoraires',
-			'cabinet'     => '#ag-cabinet',
-			'rendez-vous' => '#ag-rdv',
-		);
-
 		$menu_name = 'Menu principal AG';
 		$menu      = wp_get_nav_menu_object( $menu_name );
 		$menu_id   = false;
@@ -437,26 +428,16 @@ class AG_Starter_Companion {
 
 		if ( $menu_id && ! is_wp_error( $menu_id ) ) {
 			foreach ( $page_ids as $slug_key => $id ) {
-				if ( $use_anchors && isset( $anchor_map[ $slug_key ] ) ) {
-					// Anchor link (one-page scroll)
-					wp_update_nav_menu_item( $menu_id, 0, array(
-						'menu-item-title'  => $pages[ $slug_key ]['title'],
-						'menu-item-url'    => home_url( '/' . $anchor_map[ $slug_key ] ),
-						'menu-item-type'   => 'custom',
-						'menu-item-status' => 'publish',
-					) );
-				} elseif ( $slug_key === 'accueil' ) {
-					// Skip accueil in menu (logo links to home)
+				if ( $slug_key === 'accueil' ) {
 					continue;
-				} else {
-					wp_update_nav_menu_item( $menu_id, 0, array(
-						'menu-item-title'     => $pages[ $slug_key ]['title'],
-						'menu-item-object'    => 'page',
-						'menu-item-object-id' => $id,
-						'menu-item-type'      => 'post_type',
-						'menu-item-status'    => 'publish',
-					) );
 				}
+				wp_update_nav_menu_item( $menu_id, 0, array(
+					'menu-item-title'     => $pages[ $slug_key ]['title'],
+					'menu-item-object'    => 'page',
+					'menu-item-object-id' => $id,
+					'menu-item-type'      => 'post_type',
+					'menu-item-status'    => 'publish',
+				) );
 			}
 			$locations            = get_theme_mod( 'nav_menu_locations' );
 			$locations['primary'] = $menu_id;

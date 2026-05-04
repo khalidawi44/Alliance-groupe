@@ -1,10 +1,7 @@
 <?php
 /**
- * The header for our theme.
- *
  * @package AG_Starter_Avocat
  */
-
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
@@ -25,7 +22,10 @@
 			<?php if ( has_custom_logo() ) : ?>
 				<?php the_custom_logo(); ?>
 			<?php else : ?>
-				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a>
+				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
+					<?php do_action( 'ag_brand_fallback' ); ?>
+					<span class="ag-site-brand__text"><?php bloginfo( 'name' ); ?></span>
+				</a>
 			<?php endif; ?>
 		</div>
 
@@ -43,14 +43,25 @@
 				);
 			}
 			?>
+			<button class="ag-menu-toggle" aria-label="<?php esc_attr_e( 'Menu', 'ag-starter-avocat' ); ?>" aria-expanded="false">
+				<span></span><span></span><span></span>
+			</button>
 		</nav>
-		<?php
-		// Pro: phone button in header
-		if ( class_exists( 'AG_Pro_Features' ) ) {
-			global $ag_pro;
-			if ( ! isset( $ag_pro ) ) $ag_pro = new AG_Pro_Features( 'ag-starter-avocat' );
-			echo $ag_pro->render_header_phone();
-		}
-		?>
+		<div class="ag-header-actions">
+			<?php
+			if ( class_exists( 'AG_Pro_Features' ) ) {
+				global $ag_pro;
+				if ( ! isset( $ag_pro ) ) $ag_pro = new AG_Pro_Features( 'ag-starter-avocat' );
+				if ( $ag_pro->is_at_least( 'premium' ) ) {
+					echo $ag_pro->render_header_phone();
+					?>
+					<button class="ag-theme-toggle" aria-label="<?php esc_attr_e( 'Changer de theme', 'ag-starter-avocat' ); ?>" title="<?php esc_attr_e( 'Mode clair / sombre', 'ag-starter-avocat' ); ?>">
+						<span class="ag-theme-toggle__icon">🌙</span>
+					</button>
+					<?php
+				}
+			}
+			?>
+		</div>
 	</div>
 </header>

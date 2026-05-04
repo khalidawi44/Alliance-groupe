@@ -1,64 +1,56 @@
 <?php
 /**
- * The template for displaying search results pages.
- *
  * @package AG_Starter_Avocat
  */
-
 get_header();
 ?>
 
-<main id="ag-main" class="ag-main" role="main">
-	<div class="ag-container">
+<main id="ag-main" class="ag-main ag-page-single" role="main">
 
+	<section class="ag-page-hero">
+		<div class="ag-container">
+			<h1 class="ag-page-hero__title">
+				<?php printf( esc_html__( 'Resultats pour : %s', 'ag-starter-avocat' ), '<em>' . esc_html( get_search_query() ) . '</em>' ); ?>
+			</h1>
+		</div>
+	</section>
+
+	<div class="ag-container ag-archive-wrap">
 		<?php if ( have_posts() ) : ?>
-
-			<header>
-				<h1 class="ag-entry-title">
-					<?php
-					/* translators: %s: search query. */
-					printf( esc_html__( 'Resultats de recherche pour : %s', 'ag-starter-avocat' ), '<span>' . esc_html( get_search_query() ) . '</span>' );
-					?>
-				</h1>
-			</header>
-
-			<?php
-			while ( have_posts() ) :
-				the_post();
-				?>
-				<article <?php post_class(); ?>>
-					<header>
-						<?php the_title( sprintf( '<h2 class="ag-entry-title"><a href="%s" rel="bookmark">', esc_url( get_permalink() ) ), '</a></h2>' ); ?>
-						<div class="ag-entry-meta">
-							<time datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>"><?php echo esc_html( get_the_date() ); ?></time>
+			<div class="ag-posts-grid">
+				<?php while ( have_posts() ) : the_post(); ?>
+					<article <?php post_class( 'ag-post-card' ); ?>>
+						<?php if ( has_post_thumbnail() ) : ?>
+							<a href="<?php the_permalink(); ?>" class="ag-post-card__thumb">
+								<?php the_post_thumbnail( 'medium_large' ); ?>
+							</a>
+						<?php endif; ?>
+						<div class="ag-post-card__body">
+							<time class="ag-post-card__date" datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>"><?php echo esc_html( get_the_date() ); ?></time>
+							<h2 class="ag-post-card__title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
+							<p class="ag-post-card__excerpt"><?php echo esc_html( wp_trim_words( get_the_excerpt(), 20 ) ); ?></p>
+							<a href="<?php the_permalink(); ?>" class="ag-post-card__more"><?php esc_html_e( 'Lire la suite →', 'ag-starter-avocat' ); ?></a>
 						</div>
-					</header>
-					<div class="ag-entry-content">
-						<?php the_excerpt(); ?>
-					</div>
-				</article>
-				<?php
-			endwhile;
+					</article>
+				<?php endwhile; ?>
+			</div>
 
-			the_posts_pagination(
-				array(
-					'class'     => 'ag-pagination',
-					'prev_text' => esc_html__( 'Precedent', 'ag-starter-avocat' ),
-					'next_text' => esc_html__( 'Suivant', 'ag-starter-avocat' ),
-				)
-			);
-
-		else :
-			?>
-			<p><?php esc_html_e( 'Aucun resultat pour votre recherche. Essayez avec d\'autres mots-cles.', 'ag-starter-avocat' ); ?></p>
-			<?php get_search_form(); ?>
 			<?php
-		endif;
-		?>
+			the_posts_pagination( array(
+				'class'     => 'ag-pagination',
+				'prev_text' => '←',
+				'next_text' => '→',
+			) );
+			?>
 
+		<?php else : ?>
+			<div class="ag-page-article" style="text-align:center;padding:60px 40px;">
+				<p class="ag-404-text"><?php esc_html_e( 'Aucun resultat. Essayez avec d\'autres mots-cles.', 'ag-starter-avocat' ); ?></p>
+				<div style="margin-top:24px;"><?php get_search_form(); ?></div>
+			</div>
+		<?php endif; ?>
 	</div>
+
 </main>
 
-<?php
-get_sidebar();
-get_footer();
+<?php get_footer();

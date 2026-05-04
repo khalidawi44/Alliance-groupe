@@ -13,25 +13,24 @@
 			<div class="ag-footer-col">
 				<h3><?php esc_html_e( 'Cabinet', 'ag-starter-avocat' ); ?></h3>
 				<p>
-					<?php esc_html_e( '[Votre cabinet]', 'ag-starter-avocat' ); ?><br>
-					<?php esc_html_e( '15 boulevard du Palais', 'ag-starter-avocat' ); ?><br>
-					<?php esc_html_e( '75001 Paris, France', 'ag-starter-avocat' ); ?>
+					<?php echo nl2br( esc_html( ag_starter_avocat_get_option( 'ag_cabinet_address' ) ) ); ?>
 				</p>
 			</div>
 			<div class="ag-footer-col">
 				<h3><?php esc_html_e( 'Horaires', 'ag-starter-avocat' ); ?></h3>
-				<ul>
-					<li><?php esc_html_e( 'Lundi - Vendredi : 9h - 19h', 'ag-starter-avocat' ); ?></li>
-					<li><?php esc_html_e( 'Samedi : sur rendez-vous', 'ag-starter-avocat' ); ?></li>
-					<li><?php esc_html_e( 'Visio disponible', 'ag-starter-avocat' ); ?></li>
-				</ul>
+				<p><?php echo nl2br( esc_html( ag_starter_avocat_get_option( 'ag_cabinet_hours' ) ) ); ?></p>
 			</div>
 			<div class="ag-footer-col">
 				<h3><?php esc_html_e( 'Contact', 'ag-starter-avocat' ); ?></h3>
 				<p>
-					<?php esc_html_e( 'Telephone : 01 23 45 67 89', 'ag-starter-avocat' ); ?><br>
-					<?php esc_html_e( 'Email : contact@votre-cabinet.fr', 'ag-starter-avocat' ); ?>
+					<?php $phone = ag_starter_avocat_get_option( 'ag_cabinet_phone' ); if ( $phone ) : ?>
+						<a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $phone ) ); ?>"><?php echo esc_html( $phone ); ?></a><br>
+					<?php endif; ?>
+					<?php $email = ag_starter_avocat_get_option( 'ag_cabinet_email' ); if ( $email ) : ?>
+						<a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a>
+					<?php endif; ?>
 				</p>
+				<a href="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" class="ag-footer-rdv"><?php esc_html_e( 'Prendre rendez-vous →', 'ag-starter-avocat' ); ?></a>
 			</div>
 		</div>
 		<div class="ag-footer-bottom">

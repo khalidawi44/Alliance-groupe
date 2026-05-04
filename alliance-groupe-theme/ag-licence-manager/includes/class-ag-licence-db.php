@@ -68,10 +68,9 @@ class AG_Licence_DB {
     public static function generate_key( $tier = 'premium' ) {
         $prefixes = array(
             'premium'  => 'AGPRM',
-            'premium'  => 'AGPRM',
             'business' => 'AGBUS',
         );
-        $prefix = isset( $prefixes[ $tier ] ) ? $prefixes[ $tier ] : 'AGPRO';
+        $prefix = isset( $prefixes[ $tier ] ) ? $prefixes[ $tier ] : 'AGPRM';
         return $prefix . '-' . wp_generate_uuid4();
     }
 
@@ -125,13 +124,12 @@ class AG_Licence_DB {
 
         $prefix_map = array(
             'premium'  => 'AGPRM',
-            'premium'  => 'AGPRM',
             'business' => 'AGBUS',
         );
 
         $data = array(
             'licence_key_hash' => self::hash_key( $clear_key ),
-            'licence_prefix'   => isset( $prefix_map[ $tier ] ) ? $prefix_map[ $tier ] : 'AGPRO',
+            'licence_prefix'   => isset( $prefix_map[ $tier ] ) ? $prefix_map[ $tier ] : 'AGPRM',
             'tier'             => $tier,
             'email'            => sanitize_email( $email ),
             'status'           => 'inactive',

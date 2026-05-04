@@ -81,8 +81,8 @@ class AG_Theme_Updater {
         $info->requires    = $cached['requires'] ?? '6.0';
         $info->requires_php= $cached['requires_php'] ?? '7.4';
         $info->sections    = array(
-            'description' => 'Version Pro avec fonctionnalités avancées : layouts supplémentaires, header variants, footer personnalisable, animations, polices premium.',
-            'changelog'   => 'Mise à jour vers la version Pro. Activez votre clé de licence dans Apparence → Licence AG pour télécharger.',
+            'description' => 'Version Premium avec fonctionnalités avancées : layouts supplémentaires, header variants, footer personnalisable, animations, polices premium.',
+            'changelog'   => 'Mise a jour vers la version Premium. Activez votre clé de licence dans Apparence → Licence AG pour télécharger.',
         );
 
         if ( ! empty( $cached['download_url'] ) ) {

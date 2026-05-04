@@ -1,0 +1,605 @@
+/**
+ * AG Business Barber — feuille de styles.
+ *
+ * Design : inspire Back Alive Barbershop (Dubai). Dark + electric blue.
+ * Convention : classes prefixees `ag-bb-*`. Active si body.ag-bb-active.
+ *
+ * Palette :
+ *   --bb-bg-1      #07090C   noir/charbon profond
+ *   --bb-bg-2      #0E1218   gris bleute fonce (cards)
+ *   --bb-bg-3      #151B24   plus clair (hover)
+ *   --bb-accent    #1A8BFF   bleu electrique
+ *   --bb-accent-2  #4FA8FF   bleu clair
+ *   --bb-text      #E6ECF2
+ *   --bb-text-mute #8B95A3
+ */
+
+body.ag-bb-active {
+    --bb-bg-1: #07090C;
+    --bb-bg-2: #0E1218;
+    --bb-bg-3: #151B24;
+    --bb-accent: #1A8BFF;
+    --bb-accent-2: #4FA8FF;
+    --bb-accent-glow: rgba(26, 139, 255, .55);
+    --bb-text: #E6ECF2;
+    --bb-text-mute: #8B95A3;
+}
+
+/* ── Hero (override Free) ── */
+body.ag-bb-active .ag-hero {
+    position: relative;
+    min-height: 92vh;
+    background:
+        linear-gradient(180deg, rgba(7, 9, 12, .55) 0%, rgba(7, 9, 12, .80) 60%, rgba(7, 9, 12, .96) 100%),
+        url('https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=2000&q=85') center/cover no-repeat fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+body.ag-bb-active .ag-hero__tag {
+    display: none !important;
+}
+body.ag-bb-active .ag-hero h1 {
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    font-size: clamp(1.6rem, 4vw, 3rem) !important;
+    line-height: 1.05 !important;
+    letter-spacing: 3px !important;
+    color: var(--bb-text) !important;
+    text-transform: uppercase;
+    margin: 0 0 16px !important;
+    max-width: 1100px;
+}
+body.ag-bb-active .ag-hero h1 em {
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    font-style: normal !important;
+    color: var(--bb-accent) !important;
+    text-shadow: 0 0 12px var(--bb-accent-glow), 0 0 28px var(--bb-accent-glow);
+    text-transform: uppercase;
+    font-size: 1em !important;
+    letter-spacing: 3px !important;
+    display: inline;
+    margin: 0 !important;
+}
+body.ag-bb-active .ag-hero__sub {
+    font-family: "Cormorant Garamond", Georgia, serif !important;
+    font-style: italic;
+    color: var(--bb-text-mute) !important;
+    font-size: 1.3rem !important;
+    max-width: 640px;
+    margin: 0 auto 26px !important;
+    line-height: 1.5 !important;
+}
+body.ag-bb-active .ag-hero__price {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 14px;
+    border: 0 !important;
+    padding: 0 !important;
+    margin: 6px 0 30px !important;
+}
+body.ag-bb-active .ag-hero__price strong {
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    color: var(--bb-accent) !important;
+    font-size: 2.4rem !important;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px var(--bb-accent-glow);
+}
+body.ag-bb-active .ag-hero__price span {
+    font-family: "Cormorant Garamond", serif !important;
+    font-style: italic;
+    color: var(--bb-text) !important;
+}
+body.ag-bb-active .ag-hero .ag-btn {
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    letter-spacing: 4px !important;
+    text-transform: uppercase;
+    font-size: 1rem !important;
+    padding: 16px 32px !important;
+    border-radius: 0 !important;
+}
+body.ag-bb-active .ag-hero .ag-btn--gold {
+    background: var(--bb-accent) !important;
+    color: #fff !important;
+    border: 2px solid var(--bb-accent) !important;
+    box-shadow: 0 8px 28px rgba(26, 139, 255, .35);
+}
+body.ag-bb-active .ag-hero .ag-btn--gold:hover {
+    background: var(--bb-accent-2) !important;
+    border-color: var(--bb-accent-2) !important;
+}
+body.ag-bb-active .ag-hero .ag-btn--outline {
+    background: transparent !important;
+    color: var(--bb-text) !important;
+    border: 2px solid rgba(255, 255, 255, .35) !important;
+}
+body.ag-bb-active .ag-hero .ag-btn--outline:hover {
+    background: var(--bb-text) !important;
+    color: var(--bb-bg-1) !important;
+    border-color: var(--bb-text) !important;
+}
+
+/* Bg global + sections Free */
+body.ag-bb-active {
+    background: var(--bb-bg-1) !important;
+    color: var(--bb-text) !important;
+}
+body.ag-bb-active .ag-section--card,
+body.ag-bb-active .ag-section--dark {
+    background: var(--bb-bg-1) !important;
+}
+
+/* Section titles globaux */
+body.ag-bb-active .ag-section__title {
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    font-size: clamp(2.4rem, 6vw, 4rem) !important;
+    letter-spacing: 4px !important;
+    text-transform: uppercase;
+    color: var(--bb-text) !important;
+    text-align: center;
+    margin: 0 0 12px !important;
+}
+body.ag-bb-active .ag-section__title em {
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    font-style: normal !important;
+    color: var(--bb-accent) !important;
+    text-shadow: 0 0 12px var(--bb-accent-glow), 0 0 24px var(--bb-accent-glow);
+    letter-spacing: 4px !important;
+    text-transform: uppercase;
+    font-weight: 400 !important;
+}
+body.ag-bb-active .ag-section__sub {
+    text-align: center;
+    color: var(--bb-text-mute) !important;
+    margin: 0 auto 40px !important;
+    font-size: 1rem !important;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+}
+
+/* Service cards Back Alive style */
+body.ag-bb-active .ag-service-card {
+    background: var(--bb-bg-2) !important;
+    border: 1px solid rgba(26, 139, 255, .12) !important;
+    border-radius: 4px !important;
+    padding: 30px 28px !important;
+    text-align: left !important;
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    grid-template-rows: auto auto !important;
+    gap: 6px 14px !important;
+    align-items: start !important;
+    transition: border-color .3s ease, transform .3s ease, box-shadow .3s ease !important;
+}
+body.ag-bb-active .ag-service-card:hover {
+    border-color: var(--bb-accent) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 16px 40px rgba(26, 139, 255, .15) !important;
+}
+body.ag-bb-active .ag-service-card__icon { display: none !important; }
+body.ag-bb-active .ag-service-card__name {
+    grid-column: 1; grid-row: 1;
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    color: var(--bb-text) !important;
+    font-size: 1.2rem !important;
+    letter-spacing: 2px !important;
+    text-transform: uppercase;
+    margin: 0 !important;
+}
+body.ag-bb-active .ag-service-card__price {
+    grid-column: 2; grid-row: 1 / span 2;
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    color: var(--bb-accent) !important;
+    font-size: 2.2rem !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    align-self: center;
+    letter-spacing: 1px;
+}
+body.ag-bb-active .ag-service-card__time {
+    grid-column: 1; grid-row: 2;
+    color: var(--bb-text-mute) !important;
+    font-size: .82rem !important;
+    letter-spacing: 1px !important;
+    margin: 0 !important;
+}
+
+/* File d'attente */
+body.ag-bb-active .ag-queue-status {
+    background: var(--bb-bg-2);
+    border: 1px solid rgba(26, 139, 255, .15);
+    padding: 32px;
+    border-radius: 4px !important;
+}
+body.ag-bb-active .ag-queue-status__count {
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+    color: var(--bb-accent) !important;
+    font-size: 5rem !important;
+    line-height: 1 !important;
+    text-shadow: 0 0 16px var(--bb-accent-glow);
+}
+body.ag-bb-active .ag-queue-status__label {
+    color: var(--bb-text-mute) !important;
+    letter-spacing: 2px !important;
+    text-transform: uppercase;
+    font-size: .82rem !important;
+    font-family: "Bebas Neue", Impact, sans-serif !important;
+}
+body.ag-bb-active .ag-queue-status__wait {
+    font-family: "Cormorant Garamond", serif !important;
+    font-style: italic;
+    color: var(--bb-text) !important;
+}
+body.ag-bb-active .ag-queue-status__wait strong {
+    color: var(--bb-accent) !important;
+    font-weight: 600;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SECTIONS INJECTEES PAR LE PLUGIN BUSINESS (.ag-bb-section-*)
+   ════════════════════════════════════════════════════════════════ */
+.ag-bb-section {
+    padding: 100px 24px;
+    position: relative;
+    background: var(--bb-bg-1);
+}
+.ag-bb-section--alt {
+    background: var(--bb-bg-2);
+}
+.ag-bb-container {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+/* ── Equipe ── */
+.ag-bb-team-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+    margin-top: 40px;
+}
+@media (max-width: 1024px) { .ag-bb-team-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px)  { .ag-bb-team-grid { grid-template-columns: 1fr; } }
+.ag-bb-barber {
+    background: var(--bb-bg-2);
+    border: 1px solid rgba(26, 139, 255, .12);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: border-color .35s ease, transform .35s ease;
+}
+.ag-bb-barber:hover {
+    border-color: var(--bb-accent);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(26, 139, 255, .12);
+}
+.ag-bb-barber__photo {
+    aspect-ratio: 3 / 4;
+    background-size: cover;
+    background-position: center 20%;
+    border-bottom: 3px solid var(--bb-accent);
+    filter: grayscale(15%) contrast(1.05);
+    transition: filter .4s ease;
+}
+.ag-bb-barber:hover .ag-bb-barber__photo {
+    filter: grayscale(0%) contrast(1);
+}
+.ag-bb-barber__body {
+    padding: 22px 22px 26px;
+    text-align: center;
+}
+.ag-bb-barber__name {
+    font-family: "Bebas Neue", Impact, sans-serif;
+    color: var(--bb-text);
+    font-size: 1.3rem;
+    letter-spacing: 3px;
+    margin: 0 0 4px;
+}
+.ag-bb-barber__role {
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+    color: var(--bb-accent);
+    font-size: .95rem;
+    margin: 0 0 14px;
+}
+.ag-bb-barber__years {
+    display: inline-block;
+    border: 1px solid rgba(26, 139, 255, .35);
+    padding: 4px 12px;
+    color: var(--bb-text-mute);
+    font-size: .75rem;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    font-family: "Bebas Neue", sans-serif;
+}
+.ag-bb-barber__specialty {
+    color: var(--bb-text-mute);
+    font-size: .88rem;
+    line-height: 1.5;
+    margin: 0 0 14px;
+}
+.ag-bb-barber__insta {
+    color: var(--bb-accent);
+    font-size: .88rem;
+    text-decoration: none;
+    transition: color .25s ease;
+}
+.ag-bb-barber__insta:hover { color: var(--bb-accent-2); }
+
+/* ── Galerie masonry ── */
+.ag-bb-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 220px;
+    gap: 14px;
+    margin-top: 40px;
+}
+.ag-bb-gallery-grid > .ag-bb-gallery-item {
+    display: block;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    border-radius: 4px;
+    border: 1px solid rgba(26, 139, 255, .08);
+    filter: grayscale(12%) contrast(1.06);
+    transition: filter .4s ease, transform .4s ease;
+    pointer-events: none; /* non-clickable comme demande */
+    position: relative;
+}
+.ag-bb-gallery-grid > .ag-bb-gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+.ag-bb-gallery-grid > .ag-bb-gallery-item:nth-child(6) { grid-column: span 2; }
+@media (max-width: 900px) {
+    .ag-bb-gallery-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 180px; }
+    .ag-bb-gallery-grid > .ag-bb-gallery-item:nth-child(1),
+    .ag-bb-gallery-grid > .ag-bb-gallery-item:nth-child(6) { grid-column: span 2; }
+}
+
+/* ── Temoignages ── */
+.ag-bb-testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    margin-top: 40px;
+}
+@media (max-width: 768px) { .ag-bb-testimonials-grid { grid-template-columns: 1fr; } }
+.ag-bb-testimonial {
+    background: var(--bb-bg-1);
+    border: 1px solid rgba(26, 139, 255, .15);
+    border-left: 4px solid var(--bb-accent);
+    padding: 32px 30px;
+    border-radius: 4px;
+    position: relative;
+}
+.ag-bb-testimonial::before {
+    content: "\201C";
+    position: absolute;
+    top: 4px;
+    left: 18px;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 5rem;
+    color: rgba(26, 139, 255, .3);
+    line-height: 1;
+}
+.ag-bb-testimonial__quote {
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+    color: var(--bb-text);
+    font-size: 1.08rem;
+    line-height: 1.7;
+    margin: 18px 0 22px;
+    padding-left: 18px;
+}
+.ag-bb-testimonial__author {
+    border-top: 1px solid rgba(26, 139, 255, .15);
+    padding-top: 14px;
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+}
+.ag-bb-testimonial__name {
+    font-family: "Bebas Neue", Impact, sans-serif;
+    color: var(--bb-text);
+    letter-spacing: 2px;
+    font-size: 1rem;
+}
+.ag-bb-testimonial__role {
+    color: var(--bb-accent);
+    font-size: .82rem;
+    margin-top: 2px;
+}
+
+/* ── Reservation calendrier ── */
+.ag-bb-booking {
+    background: var(--bb-bg-2);
+    border: 1px solid rgba(26, 139, 255, .15);
+    border-radius: 4px;
+    padding: 48px 40px;
+    margin-top: 40px;
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.ag-bb-booking__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+@media (max-width: 600px) { .ag-bb-booking__row { grid-template-columns: 1fr; } }
+.ag-bb-booking__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.ag-bb-booking__field label {
+    font-family: "Bebas Neue", Impact, sans-serif;
+    color: var(--bb-accent);
+    font-size: .76rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+.ag-bb-booking__field input,
+.ag-bb-booking__field select {
+    background: var(--bb-bg-1);
+    border: 1px solid rgba(26, 139, 255, .25);
+    color: var(--bb-text);
+    padding: 12px 14px;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 1rem;
+    border-radius: 4px;
+}
+.ag-bb-booking__field input:focus,
+.ag-bb-booking__field select:focus {
+    outline: none;
+    border-color: var(--bb-accent);
+    box-shadow: 0 0 0 3px rgba(26, 139, 255, .15);
+}
+.ag-bb-booking__submit {
+    width: 100%;
+    background: var(--bb-accent);
+    color: #fff;
+    border: 2px solid var(--bb-accent);
+    font-family: "Bebas Neue", Impact, sans-serif;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    padding: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background .25s ease;
+    margin-top: 8px;
+    box-shadow: 0 8px 28px rgba(26, 139, 255, .3);
+}
+.ag-bb-booking__submit:hover { background: var(--bb-accent-2); border-color: var(--bb-accent-2); }
+.ag-bb-booking__note {
+    color: var(--bb-text-mute);
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+    font-size: .88rem;
+    text-align: center;
+    margin: 14px 0 0;
+}
+
+/* ── Contact + horaires ── */
+.ag-bb-contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    margin-top: 40px;
+    align-items: start;
+}
+@media (max-width: 768px) { .ag-bb-contact-grid { grid-template-columns: 1fr; gap: 32px; } }
+.ag-bb-contact-block,
+.ag-bb-hours-block {
+    background: var(--bb-bg-1);
+    border: 1px solid rgba(26, 139, 255, .15);
+    border-radius: 4px;
+    padding: 32px 30px;
+}
+.ag-bb-contact-block h3,
+.ag-bb-hours-block h3 {
+    font-family: "Bebas Neue", Impact, sans-serif;
+    color: var(--bb-text);
+    font-size: 1.4rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin: 0 0 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--bb-accent);
+}
+.ag-bb-contact-block p {
+    color: var(--bb-text-mute);
+    font-family: "Cormorant Garamond", serif;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin: 0 0 12px;
+}
+.ag-bb-contact-block a {
+    color: var(--bb-accent);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(26, 139, 255, .35);
+    transition: color .25s ease, border-color .25s ease;
+}
+.ag-bb-contact-block a:hover {
+    color: var(--bb-accent-2);
+    border-bottom-color: var(--bb-accent-2);
+}
+.ag-bb-hours-block ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.ag-bb-hours-block li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px dashed rgba(26, 139, 255, .15);
+    color: var(--bb-text-mute);
+    font-size: .95rem;
+}
+.ag-bb-hours-block li:last-child { border-bottom: 0; }
+.ag-bb-hours-block li.closed {
+    color: rgba(139, 149, 163, .4);
+    font-style: italic;
+}
+.ag-bb-hours-block li strong {
+    color: var(--bb-text);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: "Bebas Neue", sans-serif;
+}
+
+/* ── WhatsApp floating button (style Back Alive) ── */
+.ag-bb-whatsapp {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #25D366;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-shadow: 0 8px 28px rgba(37, 211, 102, .45);
+    z-index: 9999;
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+.ag-bb-whatsapp:hover {
+    transform: scale(1.08);
+    box-shadow: 0 12px 36px rgba(37, 211, 102, .6);
+}
+.ag-bb-whatsapp svg {
+    width: 30px;
+    height: 30px;
+}
+
+/* ── Premium badge bottom-right (au dessus de WhatsApp) ── */
+.ag-bb-premium-badge {
+    position: fixed;
+    bottom: 100px;
+    right: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: var(--bb-bg-2);
+    border: 1px solid var(--bb-accent);
+    color: var(--bb-text);
+    font-family: "Bebas Neue", Impact, sans-serif;
+    font-size: .82rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 4px;
+    z-index: 9998;
+    box-shadow: 0 6px 20px rgba(26, 139, 255, .25);
+}
+.ag-bb-premium-badge::before {
+    content: "✦";
+    color: var(--bb-accent);
+    font-size: 1rem;
+}

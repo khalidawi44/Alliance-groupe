@@ -33,18 +33,29 @@ get_header();
 			$ag_btn_label = ag_starter_avocat_get_option( 'ag_hero_button' );
 			$ag_btn_url   = ag_starter_avocat_get_option( 'ag_hero_button_url' );
 			if ( $ag_btn_label ) :
+				$ag_btn_href = ( strpos( $ag_btn_url, 'http' ) === 0 || strpos( $ag_btn_url, '#' ) === 0 ) ? $ag_btn_url : ag_page_url( trim( $ag_btn_url, '/' ) );
 				?>
-				<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn"><?php echo esc_html( $ag_btn_label ); ?></a>
+				<a href="<?php echo esc_url( $ag_btn_href ); ?>" class="ag-btn"><?php echo esc_html( $ag_btn_label ); ?></a>
 			<?php endif; ?>
 		</div>
 	</section>
 	<?php endif; ?>
 
+	<?php
+	// Business: trust badges + counters after hero
+	if ( class_exists( 'AG_Pro_Features' ) ) {
+		global $ag_pro;
+		if ( ! isset( $ag_pro ) ) $ag_pro = new AG_Pro_Features( 'ag-starter-avocat' );
+		$ag_pro->render_trust_badges();
+		$ag_pro->render_counters();
+	}
+	?>
+
 	<?php /* ─────────── 2. Domaines d'expertise (CPT) ─────────── */ ?>
 	<section class="ag-section ag-domaines" id="ag-domaines">
 		<div class="ag-container">
 			<h2 class="ag-section-title"><?php esc_html_e( 'Domaines d\'expertise', 'ag-starter-avocat' ); ?></h2>
-			<p class="ag-section-lead"><?php esc_html_e( 'Conseil et representation pour particuliers et entreprises. Cliquez sur un domaine pour decouvrir les cas que nous traitons.', 'ag-starter-avocat' ); ?></p>
+			<p class="ag-section-lead"><?php esc_html_e( 'Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit.', 'ag-starter-avocat' ); ?></p>
 
 			<?php
 			$domaines = ag_starter_avocat_get_domaines( 6 );
@@ -54,20 +65,30 @@ get_header();
 					<?php foreach ( $domaines as $d ) :
 						$icon     = get_post_meta( $d->ID, '_ag_domaine_icon', true );
 						$examples = get_post_meta( $d->ID, '_ag_domaine_examples', true );
+						$bg_url   = '';
+						if ( has_post_thumbnail( $d->ID ) ) {
+							$bg_url = get_the_post_thumbnail_url( $d->ID, 'large' );
+						} elseif ( function_exists( 'ag_starter_avocat_get_domaine_bg_url' ) ) {
+							$bg_url = ag_starter_avocat_get_domaine_bg_url( $icon );
+						}
 						?>
-						<a href="<?php echo esc_url( get_permalink( $d->ID ) ); ?>" class="ag-domaine-card">
-							<div class="ag-domaine-card__icon"><?php echo esc_html( $icon ? $icon : '⚖️' ); ?></div>
-							<h3 class="ag-domaine-card__title"><?php echo esc_html( get_the_title( $d ) ); ?></h3>
-							<p class="ag-domaine-card__excerpt"><?php echo esc_html( wp_strip_all_tags( get_the_excerpt( $d ) ) ); ?></p>
-							<?php if ( $examples ) : ?>
-								<ul class="ag-domaine-card__examples">
-									<?php foreach ( array_slice( array_filter( array_map( 'trim', explode( "\n", $examples ) ) ), 0, 3 ) as $ex ) : ?>
-										<li><?php echo esc_html( $ex ); ?></li>
-									<?php endforeach; ?>
-								</ul>
+						<div class="ag-domaine-card ag-domaine-card--bg">
+							<?php if ( $bg_url ) : ?>
+								<div class="ag-domaine-card__bg" style="background-image:url('<?php echo esc_url( $bg_url ); ?>');"></div>
 							<?php endif; ?>
-							<span class="ag-domaine-card__more"><?php esc_html_e( 'En savoir plus →', 'ag-starter-avocat' ); ?></span>
-						</a>
+							<div class="ag-domaine-card__overlay"></div>
+							<div class="ag-domaine-card__content">
+								<h3 class="ag-domaine-card__title"><?php echo esc_html( get_the_title( $d ) ); ?></h3>
+								<p class="ag-domaine-card__excerpt"><?php echo esc_html( wp_strip_all_tags( get_the_excerpt( $d ) ) ); ?></p>
+								<?php if ( $examples ) : ?>
+									<ul class="ag-domaine-card__examples">
+										<?php foreach ( array_slice( array_filter( array_map( 'trim', explode( "\n", $examples ) ) ), 0, 3 ) as $ex ) : ?>
+											<li><?php echo esc_html( $ex ); ?></li>
+										<?php endforeach; ?>
+									</ul>
+								<?php endif; ?>
+							</div>
+						</div>
 					<?php endforeach; ?>
 				</div>
 			<?php else : ?>
@@ -81,6 +102,8 @@ get_header();
 			<?php endif; ?>
 		</div>
 	</section>
+
+	<?php do_action( 'ag_after_domaines' ); ?>
 
 	<?php /* ─────────── 3. Le Maitre ─────────── */ ?>
 	<?php if ( ag_starter_avocat_get_option( 'ag_maitre_show' ) ) :
@@ -109,11 +132,14 @@ get_header();
 					<?php $spec = ag_starter_avocat_get_option( 'ag_maitre_specialties' ); if ( $spec ) : ?>
 						<p class="ag-maitre__specialties"><strong><?php esc_html_e( 'Specialites :', 'ag-starter-avocat' ); ?></strong> <?php echo esc_html( $spec ); ?></p>
 					<?php endif; ?>
+					<?php do_action( 'ag_inside_maitre_body' ); ?>
 				</div>
 			</div>
 		</div>
 	</section>
 	<?php endif; ?>
+
+	<?php do_action( 'ag_after_maitre' ); ?>
 
 	<?php /* ─────────── 4. Honoraires ─────────── */ ?>
 	<?php if ( ag_starter_avocat_get_option( 'ag_honoraires_show' ) ) : ?>
@@ -156,46 +182,52 @@ get_header();
 	</section>
 	<?php endif; ?>
 
-	<?php /* ─────────── 5. Cabinet (adresse + horaires + plan) ─────────── */ ?>
+	<?php do_action( 'ag_after_honoraires' ); ?>
+
+	<?php /* ─────────── 5. Cabinet (adresse + horaires + contact — 3 colonnes + map) ─────────── */ ?>
 	<section class="ag-section ag-cabinet" id="ag-cabinet">
 		<div class="ag-container">
 			<h2 class="ag-section-title"><?php esc_html_e( 'Le cabinet', 'ag-starter-avocat' ); ?></h2>
-			<div class="ag-cabinet__grid">
-				<div class="ag-cabinet__info">
-					<div class="ag-cabinet__block">
-						<h3>📍 <?php esc_html_e( 'Adresse', 'ag-starter-avocat' ); ?></h3>
-						<p><?php echo nl2br( esc_html( ag_starter_avocat_get_option( 'ag_cabinet_address' ) ) ); ?></p>
-					</div>
-					<div class="ag-cabinet__block">
-						<h3>🕓 <?php esc_html_e( 'Horaires', 'ag-starter-avocat' ); ?></h3>
-						<p><?php echo nl2br( esc_html( ag_starter_avocat_get_option( 'ag_cabinet_hours' ) ) ); ?></p>
-					</div>
-					<div class="ag-cabinet__block">
-						<h3>📞 <?php esc_html_e( 'Contact', 'ag-starter-avocat' ); ?></h3>
-						<p>
-							<?php $phone = ag_starter_avocat_get_option( 'ag_cabinet_phone' ); if ( $phone ) : ?>
-								<a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $phone ) ); ?>"><?php echo esc_html( $phone ); ?></a><br>
-							<?php endif; ?>
-							<?php $email = ag_starter_avocat_get_option( 'ag_cabinet_email' ); if ( $email ) : ?>
-								<a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a>
-							<?php endif; ?>
-						</p>
-						<?php $emergency = ag_starter_avocat_get_option( 'ag_cabinet_emergency' ); if ( $emergency ) : ?>
-							<p class="ag-cabinet__emergency">
-								🚨 <strong><?php esc_html_e( 'Garde à vue 24/7 :', 'ag-starter-avocat' ); ?></strong>
-								<a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $emergency ) ); ?>"><?php echo esc_html( $emergency ); ?></a>
-							</p>
-						<?php endif; ?>
-					</div>
+			<p class="ag-section-lead"><?php esc_html_e( 'Consultation au cabinet, en visio ou par telephone.', 'ag-starter-avocat' ); ?></p>
+			<div class="ag-cabinet__cards">
+				<div class="ag-cabinet__block">
+					<div class="ag-cabinet__block-icon">📍</div>
+					<h3><?php esc_html_e( 'Adresse', 'ag-starter-avocat' ); ?></h3>
+					<p><?php echo nl2br( esc_html( ag_starter_avocat_get_option( 'ag_cabinet_address' ) ) ); ?></p>
 				</div>
-				<?php $map = ag_starter_avocat_get_option( 'ag_cabinet_map_embed' ); if ( $map ) : ?>
-					<div class="ag-cabinet__map">
-						<iframe src="<?php echo esc_url( $map ); ?>" width="100%" height="320" style="border:0;border-radius:8px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-					</div>
-				<?php endif; ?>
+				<div class="ag-cabinet__block">
+					<div class="ag-cabinet__block-icon">🕓</div>
+					<h3><?php esc_html_e( 'Horaires', 'ag-starter-avocat' ); ?></h3>
+					<p><?php echo nl2br( esc_html( ag_starter_avocat_get_option( 'ag_cabinet_hours' ) ) ); ?></p>
+				</div>
+				<div class="ag-cabinet__block">
+					<div class="ag-cabinet__block-icon">📞</div>
+					<h3><?php esc_html_e( 'Contact', 'ag-starter-avocat' ); ?></h3>
+					<p>
+						<?php $phone = ag_starter_avocat_get_option( 'ag_cabinet_phone' ); if ( $phone ) : ?>
+							<a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $phone ) ); ?>"><?php echo esc_html( $phone ); ?></a><br>
+						<?php endif; ?>
+						<?php $email = ag_starter_avocat_get_option( 'ag_cabinet_email' ); if ( $email ) : ?>
+							<a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a>
+						<?php endif; ?>
+					</p>
+					<?php $emergency = ag_starter_avocat_get_option( 'ag_cabinet_emergency' ); if ( $emergency ) : ?>
+						<p class="ag-cabinet__emergency">
+							<strong><?php esc_html_e( 'Garde a vue 24/7 :', 'ag-starter-avocat' ); ?></strong>
+							<a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $emergency ) ); ?>"><?php echo esc_html( $emergency ); ?></a>
+						</p>
+					<?php endif; ?>
+				</div>
 			</div>
+			<?php $map = ag_starter_avocat_get_option( 'ag_cabinet_map_embed' ); if ( $map ) : ?>
+				<div class="ag-cabinet__map" style="margin-top:40px;">
+					<iframe src="<?php echo esc_url( $map ); ?>" width="100%" height="400" style="border:0;border-radius:16px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+				</div>
+			<?php endif; ?>
 		</div>
 	</section>
+
+	<?php do_action( 'ag_after_cabinet' ); ?>
 
 	<?php /* ─────────── 6. Prendre rendez-vous (form RGPD) ─────────── */ ?>
 	<?php if ( ag_starter_avocat_get_option( 'ag_rdv_show' ) ) :
@@ -301,5 +333,4 @@ get_header();
 </main>
 
 <?php
-get_sidebar();
 get_footer();

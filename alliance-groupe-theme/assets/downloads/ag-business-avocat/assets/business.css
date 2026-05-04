@@ -1,0 +1,2967 @@
+/**
+ * AG Business Avocat — feuille de styles.
+ *
+ * Convention : classes prefixees `ag-business-*` quand on en cree.
+ * Pour cibler des elements quand Business est actif, on scope a
+ * `body.ag-business-active`.
+ */
+
+/* ─────────────────────────────────────────────────────────────────
+   Largeur globale Business : chaque .ag-container occupe au minimum
+   80% de la largeur ecran (au lieu du max-width Free ~1200px qui
+   laissait des grandes marges sur les ecrans larges). Les overrides
+   plus specifiques (.ag-business-founder__container 95vw,
+   .ag-business-boutique-page .ag-container 95vw, header 95vw, card
+   fondateur cabinet 80%) gagnent grace a leur specificite superieure.
+   Mobile : on remonte a 95vw pour etre plus utilisable sur petit ecran.
+   ───────────────────────────────────────────────────────────────── */
+body.ag-business-active .ag-container {
+    max-width: 80vw !important;
+    width: 80vw !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+@media (max-width: 900px) {
+    body.ag-business-active .ag-container {
+        max-width: 95vw !important;
+        width: 95vw !important;
+    }
+}
+
+/* ── Menu principal : SOULIGNE UNIQUEMENT au hover ──
+   Override total des effets existants (sweep, color shift, text-shadow).
+   On garde uniquement l'underline doree qui apparait au hover, pas de
+   transformation du texte ni du background. Mode jour : bordeaux. */
+body.ag-business-active .ag-primary-menu a::before {
+    display: none !important;
+    animation: none !important;
+}
+body.ag-business-active .ag-primary-menu a {
+    background: transparent !important;
+    text-shadow: none !important;
+    transform: none !important;
+    transition: color .25s ease !important;
+    /* Compactage pour que tous les items tiennent sur une ligne */
+    font-size: .88rem !important;
+    letter-spacing: .4px !important;
+    padding: 8px 10px !important;
+    /* Force chaque item sur 1 ligne — sinon "DOMAINES D'EXPERTISE" et
+       "PRENDRE RENDEZ-VOUS" wraparound */
+    white-space: nowrap !important;
+}
+body.ag-business-active .ag-primary-menu {
+    gap: .35rem !important;
+    flex-wrap: nowrap !important;
+}
+/* Header : elargir le container principal pour donner de la place
+   au menu compact horizontal (au lieu du max-width par defaut Free). */
+body.ag-business-active .ag-header .ag-container,
+body.ag-business-active .ag-site-header .ag-container,
+body.ag-business-active .site-header .ag-container {
+    max-width: 95vw !important;
+    width: 95vw !important;
+}
+@media (max-width: 1380px) {
+    body.ag-business-active .ag-primary-menu a {
+        font-size: .82rem !important;
+        padding: 8px 7px !important;
+        letter-spacing: .3px !important;
+    }
+}
+@media (max-width: 1180px) {
+    body.ag-business-active .ag-primary-menu a {
+        font-size: .76rem !important;
+        padding: 8px 5px !important;
+        letter-spacing: .15px !important;
+    }
+}
+@media (max-width: 1024px) {
+    body.ag-business-active .ag-primary-menu a {
+        font-size: .72rem !important;
+        padding: 8px 4px !important;
+        letter-spacing: 0 !important;
+    }
+}
+@media (max-width: 900px) {
+    body.ag-business-active .ag-primary-menu {
+        flex-wrap: wrap !important;
+    }
+    body.ag-business-active .ag-primary-menu a {
+        white-space: normal !important;
+    }
+}
+body.ag-business-active .ag-primary-menu a:hover {
+    color: inherit !important;
+    background: transparent !important;
+    text-shadow: none !important;
+    transform: none !important;
+}
+body.ag-business-active .ag-primary-menu a::after {
+    background: linear-gradient(90deg, transparent, #D4B45C 20%, #FFE5A0 50%, #D4B45C 80%, transparent) !important;
+    box-shadow: 0 0 6px rgba(212, 180, 92, .45) !important;
+    height: 2px !important;
+    bottom: 4px !important;
+}
+body.ag-business-active.ag-light .ag-primary-menu a::after {
+    background: linear-gradient(90deg, transparent, #7B2D3B 20%, #A03D4D 50%, #7B2D3B 80%, transparent) !important;
+    box-shadow: 0 0 6px rgba(123, 45, 59, .35) !important;
+}
+
+/* ── Boutons CTA : aucune phase d'invisibilite au hover ──
+   Force opacity:1 et transform:translateY(0) au repos pour
+   neutraliser l'animation agHeroIn du theme qui laisse parfois
+   le bouton invisible apres un hover (l'animation se perd).
+   On sacrifie le fade-in d'entree mais on garantit la visibilite. */
+body.ag-business-active .ag-hero .ag-btn,
+body.ag-business-active .ag-btn,
+body.ag-business-active .ag-footer-rdv,
+body.ag-business-active .ag-cabinet-full__btn,
+body.ag-business-active .ag-boutique-card__btn {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+    animation: none !important;
+    transition: background .25s ease, transform .25s ease, box-shadow .25s ease, color .25s ease !important;
+}
+body.ag-business-active .ag-btn:hover,
+body.ag-business-active .ag-cabinet-full__btn:hover,
+body.ag-business-active .ag-boutique-card__btn:hover,
+body.ag-business-active .ag-footer-rdv:hover {
+    animation: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    color: #0a0a0f !important;
+    text-shadow: none !important;
+    background: #FFE5A0 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 30px rgba(212, 180, 92, .55) !important;
+}
+body.ag-business-active.ag-light .ag-btn:hover,
+body.ag-business-active.ag-light .ag-cabinet-full__btn:hover,
+body.ag-business-active.ag-light .ag-boutique-card__btn:hover,
+body.ag-business-active.ag-light .ag-footer-rdv:hover {
+    color: #ffffff !important;
+    background: #6A2433 !important;
+    box-shadow: 0 8px 25px rgba(123, 45, 59, .45) !important;
+}
+
+/* ── Compteurs : will-change pendant l'animation count-up ── */
+body.ag-business-active .ag-counter__number[data-counting="1"] {
+    will-change: contents;
+}
+
+/* ── Toggle masquer la section Boutique sur la home (Customizer) ── */
+body.ag-business-hide-home-boutique.home .ag-boutique:not(.ag-business-boutique-page),
+body.ag-business-hide-home-boutique.home #ag-boutique:not(.ag-business-boutique-page) {
+    display: none !important;
+}
+
+/* ── Section Boutique : presentation pro ───────────────────────
+   Plus d'espace, image en haut de chaque card, prix gradient,
+   bouton style coherent avec le reste du theme Business. */
+body.ag-business-active .ag-boutique {
+    padding: 80px 24px !important;
+    /* Fond bibliotheque classe : photo de rayonnages de livres
+       juridiques + voile sombre pour garder la lisibilite. */
+    background-image:
+        linear-gradient(180deg, rgba(10, 14, 26, .92) 0%, rgba(10, 14, 26, .85) 50%, rgba(10, 14, 26, .92) 100%),
+        url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=2000&q=85') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-attachment: fixed !important;
+    background-repeat: no-repeat !important;
+}
+body.ag-business-active.ag-light .ag-boutique {
+    background-image:
+        linear-gradient(180deg, rgba(245, 240, 235, .85) 0%, rgba(245, 240, 235, .78) 50%, rgba(245, 240, 235, .85) 100%),
+        url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=2000&q=85') !important;
+}
+/* Etoiles boutique : forcer le hide partout (le user les a explicitement
+   demande retirees, le Customizer "stars/scales/gavel" reste mais tout
+   est masque par defaut). */
+body.ag-business-active .ag-boutique-stars-host,
+body.ag-business-active .ag-boutique-shooting-stars,
+body.ag-business-active .ag-boutique-shooting-star {
+    display: none !important;
+}
+body.ag-business-active .ag-business-boutique-page .ag-container {
+    max-width: 95vw !important;
+    width: 95vw !important;
+    padding: 0 24px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+/* Boutique page : layout main + sidebar droite */
+/* Layout : sidebar en absolute pour ne pas etirer la section. La hauteur
+   de la section vient uniquement du main (= grille produits). La sidebar
+   flotte en sticky, son contenu peut overflow scroller si trop long. */
+.ag-business-boutique-page__layout {
+    position: relative;
+}
+.ag-business-boutique-page__main {
+    min-width: 0;
+    margin-right: 360px;
+}
+@media (max-width: 1024px) {
+    .ag-business-boutique-page__main {
+        margin-right: 0;
+    }
+}
+.ag-business-boutique-page__search-info {
+    color: rgba(255, 255, 255, .8);
+    margin: 0 0 20px;
+    font-size: .92rem;
+}
+.ag-business-boutique-page__search-info a {
+    color: #D4B45C;
+    text-decoration: none;
+    margin-left: 6px;
+}
+body.ag-light .ag-business-boutique-page__search-info {
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-boutique-page__search-info a {
+    color: #7B2D3B;
+}
+/* Toolbar (compteur + tri inline) en haut du main */
+.ag-business-boutique-page__toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 0 0 18px;
+    border-bottom: 1px solid rgba(212, 180, 92, .2);
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+.ag-business-boutique-page__count {
+    color: rgba(255, 255, 255, .85);
+    font-size: .92rem;
+    font-weight: 600;
+}
+body.ag-light .ag-business-boutique-page__count {
+    color: #2A1A1E;
+}
+/* ── Toolbar : tri sous forme de pills (vs select HTML moche) ── */
+.ag-business-boutique-page__sort-pills {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.ag-business-boutique-page__sort-label {
+    color: rgba(255, 255, 255, .55);
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 500;
+    margin-right: 8px;
+    font-family: "Playfair Display", Georgia, serif;
+    font-style: italic;
+}
+body.ag-light .ag-business-boutique-page__sort-label {
+    color: #5A4549;
+}
+.ag-business-boutique-pill {
+    display: inline-block;
+    padding: 7px 14px;
+    color: rgba(255, 255, 255, .65);
+    font-size: .8rem;
+    text-decoration: none;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    letter-spacing: .3px;
+    transition: color .25s ease, border-color .25s ease, background .25s ease;
+    font-family: "Playfair Display", Georgia, serif;
+    font-style: italic;
+}
+.ag-business-boutique-pill:hover {
+    color: #f4e4b8;
+    border-color: rgba(212, 180, 92, .35);
+}
+.ag-business-boutique-pill--active {
+    color: #0A0E1A;
+    background: linear-gradient(135deg, #D4B45C 0%, #B8941F 100%);
+    border-color: #D4B45C;
+    font-weight: 600;
+}
+.ag-business-boutique-pill--active:hover {
+    color: #0A0E1A;
+}
+body.ag-light .ag-business-boutique-pill {
+    color: #5A4549;
+}
+body.ag-light .ag-business-boutique-pill:hover {
+    color: #7B2D3B;
+    border-color: rgba(123, 45, 59, .35);
+}
+body.ag-light .ag-business-boutique-pill--active {
+    color: #fff;
+    background: linear-gradient(135deg, #7B2D3B 0%, #A03D4D 100%);
+    border-color: #7B2D3B;
+}
+body.ag-light .ag-business-boutique-pill--active:hover {
+    color: #fff;
+}
+@media (max-width: 700px) {
+    .ag-business-boutique-page__sort-label {
+        width: 100%;
+        margin-bottom: 6px;
+    }
+}
+/* Chips de filtres actifs */
+.ag-business-boutique-chip {
+    display: inline-block;
+    background: rgba(212, 180, 92, .15);
+    border: 1px solid rgba(212, 180, 92, .35);
+    color: #f4e4b8;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: .82rem;
+    margin: 0 4px;
+}
+body.ag-light .ag-business-boutique-chip {
+    background: rgba(123, 45, 59, .08);
+    border-color: rgba(123, 45, 59, .25);
+    color: #7B2D3B;
+}
+/* ── Widget filtres : style business raffine ──
+   - Pas de fond colore, juste un encadre subtil
+   - Inputs underline-only (sans box) en gold
+   - Bouton "Appliquer" cernes or (outline) au lieu d'un gradient
+   - Labels en Playfair italic */
+.ag-business-boutique-widget--filters {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    background: transparent !important;
+    border: 1px solid rgba(212, 180, 92, .35) !important;
+    padding: 24px 22px !important;
+    box-shadow: none !important;
+}
+body.ag-light .ag-business-boutique-widget--filters {
+    background: transparent !important;
+    border-color: rgba(123, 45, 59, .25) !important;
+    box-shadow: none !important;
+}
+.ag-business-boutique-widget--filters .ag-business-boutique-widget__title {
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif !important;
+    font-style: italic;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: .92rem !important;
+    letter-spacing: 1.5px;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    margin: 0 0 4px !important;
+}
+.ag-business-boutique-widget--filters .ag-business-booking-form__label {
+    color: rgba(255, 255, 255, .55);
+    font-size: .68rem;
+    letter-spacing: 1.5px;
+    font-weight: 500;
+    gap: 6px;
+}
+body.ag-light .ag-business-boutique-widget--filters .ag-business-booking-form__label {
+    color: #5A4549;
+}
+.ag-business-boutique-widget--filters input[type="search"],
+.ag-business-boutique-widget--filters input[type="number"],
+.ag-business-boutique-widget--filters select {
+    background: transparent !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(212, 180, 92, .35) !important;
+    border-radius: 0 !important;
+    color: #f4e4b8 !important;
+    padding: 8px 2px !important;
+    font-size: .92rem !important;
+    transition: border-color .2s ease;
+    text-transform: none;
+    letter-spacing: .3px;
+}
+.ag-business-boutique-widget--filters input[type="search"]:focus,
+.ag-business-boutique-widget--filters input[type="number"]:focus,
+.ag-business-boutique-widget--filters select:focus {
+    outline: none;
+    border-bottom-color: #D4B45C !important;
+}
+body.ag-light .ag-business-boutique-widget--filters input[type="search"],
+body.ag-light .ag-business-boutique-widget--filters input[type="number"],
+body.ag-light .ag-business-boutique-widget--filters select {
+    color: #2A1A1E !important;
+    border-bottom-color: rgba(123, 45, 59, .35) !important;
+}
+body.ag-light .ag-business-boutique-widget--filters input[type="search"]:focus,
+body.ag-light .ag-business-boutique-widget--filters input[type="number"]:focus,
+body.ag-light .ag-business-boutique-widget--filters select:focus {
+    border-bottom-color: #7B2D3B !important;
+}
+.ag-business-boutique-widget__price-range {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+.ag-business-boutique-widget__filter-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(212, 180, 92, .15);
+}
+body.ag-light .ag-business-boutique-widget__filter-actions {
+    border-top-color: rgba(123, 45, 59, .12);
+}
+/* Bouton Appliquer : style cernes or business (pas de gradient) */
+.ag-business-boutique-widget__filter-actions .ag-btn {
+    flex: 1;
+    padding: 10px 20px !important;
+    font-size: .82rem !important;
+    background: transparent !important;
+    color: #D4B45C !important;
+    border: 1px solid #D4B45C !important;
+    border-radius: 4px !important;
+    font-family: "Playfair Display", Georgia, serif !important;
+    font-style: italic;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    transition: background .25s ease, color .25s ease;
+    box-shadow: none !important;
+}
+.ag-business-boutique-widget__filter-actions .ag-btn:hover {
+    background: #D4B45C !important;
+    color: #0A0E1A !important;
+    transform: none !important;
+}
+body.ag-light .ag-business-boutique-widget__filter-actions .ag-btn {
+    color: #7B2D3B !important;
+    border-color: #7B2D3B !important;
+}
+body.ag-light .ag-business-boutique-widget__filter-actions .ag-btn:hover {
+    background: #7B2D3B !important;
+    color: #fff !important;
+}
+.ag-business-boutique-widget__reset {
+    color: rgba(255, 255, 255, .5);
+    text-decoration: none;
+    font-size: .76rem;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    transition: color .2s ease;
+    font-weight: 500;
+}
+.ag-business-boutique-widget__reset:hover {
+    color: #D4B45C;
+}
+body.ag-light .ag-business-boutique-widget__reset {
+    color: #5A4549;
+}
+body.ag-light .ag-business-boutique-widget__reset:hover {
+    color: #7B2D3B;
+}
+/* Cards : 3 cols dans le main (pas 4 — la sidebar prend de la place) */
+body.ag-business-active .ag-business-boutique-page .ag-boutique__grid {
+    gap: 32px !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    display: grid !important;
+}
+@media (max-width: 1380px) {
+    body.ag-business-active .ag-business-boutique-page .ag-boutique__grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+@media (max-width: 700px) {
+    body.ag-business-active .ag-business-boutique-page .ag-boutique__grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ── Sidebar Boutique : recherche + recos + best sellers + contact ──
+   Position absolute dans __layout pour ne pas etirer la hauteur de
+   section. Contenu scrollable si plus long que la grille produits. */
+.ag-business-boutique-sidebar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+@media (max-width: 1024px) {
+    .ag-business-boutique-sidebar {
+        position: static;
+        width: 100%;
+        margin-top: 32px;
+    }
+}
+.ag-business-boutique-widget {
+    background: rgba(20, 20, 30, .55);
+    border: 1px solid rgba(212, 180, 92, .2);
+    border-radius: 12px;
+    padding: 22px 22px 24px;
+}
+body.ag-light .ag-business-boutique-widget {
+    background: #fff;
+    border-color: rgba(123, 45, 59, .12);
+    box-shadow: 0 3px 16px rgba(0, 0, 0, .04);
+}
+.ag-business-boutique-widget__title {
+    color: #D4B45C !important;
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif !important;
+    font-style: italic;
+    font-size: 1.05rem !important;
+    margin: 0 0 16px !important;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(212, 180, 92, .25);
+    letter-spacing: .5px;
+}
+body.ag-light .ag-business-boutique-widget__title {
+    color: #7B2D3B !important;
+    border-bottom-color: rgba(123, 45, 59, .2);
+}
+.ag-business-boutique-widget__search-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+}
+.ag-business-boutique-widget__search-row input[type="search"] {
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(212, 180, 92, .25);
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: .92rem;
+    width: 100%;
+}
+.ag-business-boutique-widget__search-row input[type="search"]::placeholder {
+    color: rgba(255, 255, 255, .55);
+}
+.ag-business-boutique-widget__search-row button {
+    background: linear-gradient(135deg, #D4B45C 0%, #B8941F 100%);
+    color: #0A0E1A;
+    border: none;
+    padding: 0 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform .2s ease;
+}
+.ag-business-boutique-widget__search-row button:hover {
+    transform: translateY(-1px);
+}
+body.ag-light .ag-business-boutique-widget__search-row input[type="search"] {
+    background: #fafafa;
+    border-color: rgba(0, 0, 0, .12);
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-boutique-widget__search-row input[type="search"]::placeholder {
+    color: rgba(0, 0, 0, .45);
+}
+body.ag-light .ag-business-boutique-widget__search-row button {
+    background: linear-gradient(135deg, #7B2D3B 0%, #A03D4D 100%);
+    color: #fff;
+}
+.ag-business-boutique-widget__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.ag-business-boutique-widget__list a {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 12px;
+    align-items: center;
+    color: inherit;
+    text-decoration: none;
+    transition: transform .2s ease;
+}
+.ag-business-boutique-widget__list a:hover {
+    transform: translateX(3px);
+}
+.ag-business-boutique-widget__thumb {
+    display: block;
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid rgba(212, 180, 92, .2);
+}
+.ag-business-boutique-widget__txt {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.ag-business-boutique-widget__name {
+    color: #fff;
+    font-size: .88rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.ag-business-boutique-widget__price {
+    color: #D4B45C;
+    font-size: .85rem;
+    font-weight: 600;
+}
+body.ag-light .ag-business-boutique-widget__name {
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-boutique-widget__price {
+    color: #7B2D3B;
+}
+.ag-business-boutique-widget__phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #D4B45C 0%, #B8941F 100%);
+    color: #0A0E1A;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    transition: transform .2s ease;
+}
+.ag-business-boutique-widget__phone:hover {
+    transform: translateY(-1px);
+}
+body.ag-light .ag-business-boutique-widget__phone {
+    background: linear-gradient(135deg, #7B2D3B 0%, #A03D4D 100%);
+    color: #fff;
+}
+.ag-business-boutique-widget__form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.ag-business-boutique-widget__form input,
+.ag-business-boutique-widget__form textarea {
+    width: 100%;
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(212, 180, 92, .22);
+    color: #fff;
+    padding: 9px 11px;
+    border-radius: 8px;
+    font-size: .9rem;
+    resize: vertical;
+}
+.ag-business-boutique-widget__form input::placeholder,
+.ag-business-boutique-widget__form textarea::placeholder {
+    color: rgba(255, 255, 255, .55);
+}
+.ag-business-boutique-widget__form .ag-btn {
+    align-self: flex-start;
+    padding: 9px 18px;
+    font-size: .88rem;
+}
+.ag-business-booking-form__label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: rgba(255, 255, 255, .7);
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+.ag-business-booking-form__label > span {
+    font-weight: 600;
+}
+.ag-business-booking-form__label input[type="date"],
+.ag-business-booking-form__label select {
+    width: 100%;
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(212, 180, 92, .22);
+    color: #fff;
+    padding: 9px 11px;
+    border-radius: 8px;
+    font-size: .9rem;
+    text-transform: none;
+    letter-spacing: 0;
+}
+body.ag-light .ag-business-booking-form__label {
+    color: #5A4549;
+}
+body.ag-light .ag-business-booking-form__label input[type="date"],
+body.ag-light .ag-business-booking-form__label select {
+    background: #fafafa;
+    border-color: rgba(0, 0, 0, .12);
+    color: #2A1A1E;
+}
+.ag-business-boutique-widget__rgpd {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    color: rgba(255, 255, 255, .65);
+    font-size: .76rem;
+    line-height: 1.45;
+}
+.ag-business-boutique-widget__rgpd input[type="checkbox"] {
+    margin-top: 3px;
+    flex-shrink: 0;
+}
+body.ag-light .ag-business-boutique-widget__form input,
+body.ag-light .ag-business-boutique-widget__form textarea {
+    background: #fafafa;
+    border-color: rgba(0, 0, 0, .12);
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-boutique-widget__form input::placeholder,
+body.ag-light .ag-business-boutique-widget__form textarea::placeholder {
+    color: rgba(0, 0, 0, .45);
+}
+body.ag-light .ag-business-boutique-widget__rgpd {
+    color: #5A4549;
+}
+.screen-reader-text {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+}
+/* ── Section Boutique sur la HOME : 3 cols egales, compact 1 ligne ──
+   Differente de la page /boutique/ : ici on veut une presentation
+   teaser compacte, pas trop d'espace vertical. */
+body.ag-business-active .ag-boutique:not(.ag-business-boutique-page) .ag-boutique__grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 24px !important;
+}
+body.ag-business-active .ag-boutique:not(.ag-business-boutique-page) .ag-boutique-card {
+    padding: 0 0 22px !important;
+}
+body.ag-business-active .ag-boutique:not(.ag-business-boutique-page) .ag-boutique-card__image {
+    aspect-ratio: 16 / 11 !important;
+    margin-bottom: 16px !important;
+}
+body.ag-business-active .ag-boutique:not(.ag-business-boutique-page) .ag-boutique-card__title {
+    font-size: 1.05rem !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    margin: 0 0 6px !important;
+}
+body.ag-business-active .ag-boutique:not(.ag-business-boutique-page) .ag-boutique-card__price {
+    font-size: 1.6rem !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    margin: 4px 0 12px !important;
+}
+body.ag-business-active .ag-boutique:not(.ag-business-boutique-page) .ag-boutique-card__desc {
+    font-size: .85rem !important;
+    line-height: 1.55 !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    margin: 0 0 18px !important;
+}
+body.ag-business-active .ag-boutique:not(.ag-business-boutique-page) .ag-boutique-card__btn {
+    margin: 0 18px !important;
+    width: calc(100% - 36px) !important;
+    padding: 11px 16px !important;
+    font-size: .82rem !important;
+    letter-spacing: 1px !important;
+}
+@media (max-width: 900px) {
+    body.ag-business-active .ag-boutique:not(.ag-business-boutique-page) .ag-boutique__grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+body.ag-business-active .ag-boutique-card {
+    background: linear-gradient(180deg, rgba(20, 20, 30, .85) 0%, rgba(15, 15, 22, .95) 100%) !important;
+    border: 1px solid rgba(212, 180, 92, .22) !important;
+    border-radius: 16px !important;
+    padding: 0 0 30px !important;
+    overflow: hidden !important;
+    text-align: left !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+body.ag-business-active .ag-boutique-card__image,
+body.ag-business-active .ag-boutique-card__image--injected {
+    width: 100% !important;
+    aspect-ratio: 16 / 10 !important;
+    overflow: hidden !important;
+    border-radius: 0 !important;
+    margin: 0 0 24px !important;
+    background: #0F1320 !important;
+    position: relative;
+}
+body.ag-business-active .ag-boutique-card__image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 0%, rgba(8, 10, 18, .35) 80%, rgba(8, 10, 18, .55) 100%);
+    pointer-events: none;
+    transition: opacity .35s ease;
+}
+body.ag-business-active .ag-boutique-card:hover .ag-boutique-card__image::after {
+    opacity: .4;
+}
+body.ag-business-active .ag-boutique-card__image img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    transition: transform .8s cubic-bezier(.23,1,.32,1) !important;
+}
+body.ag-business-active .ag-boutique-card:hover .ag-boutique-card__image img {
+    transform: scale(1.06) !important;
+}
+body.ag-business-active .ag-boutique-card__title,
+body.ag-business-active .ag-boutique-card__price,
+body.ag-business-active .ag-boutique-card__desc {
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+}
+body.ag-business-active .ag-boutique-card__title {
+    font-family: "Playfair Display", Georgia, serif !important;
+    font-size: 1.35rem !important;
+    color: #FFE5A0 !important;
+    margin: 0 0 8px !important;
+    text-align: left !important;
+    font-style: italic !important;
+}
+body.ag-business-active .ag-boutique-card__price {
+    background: linear-gradient(135deg, #FFE5A0 0%, #D4B45C 50%, #9A7A2E 100%) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: transparent !important;
+    font-size: 2.2rem !important;
+    font-weight: 800 !important;
+    font-style: italic !important;
+    margin: 8px 0 16px !important;
+    text-align: left !important;
+    letter-spacing: -.5px;
+}
+body.ag-business-active .ag-boutique-card__desc {
+    color: rgba(255, 255, 255, .78) !important;
+    font-size: .95rem !important;
+    line-height: 1.7 !important;
+    margin: 0 0 24px !important;
+    text-align: left !important;
+}
+body.ag-business-active .ag-boutique-card__btn {
+    margin: 0 30px !important;
+    width: calc(100% - 60px) !important;
+    padding: 14px 24px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.2px !important;
+    font-size: .9rem !important;
+    border-radius: 8px !important;
+}
+/* Mode jour */
+body.ag-business-active.ag-light .ag-boutique-card {
+    background: #ffffff !important;
+    border-color: rgba(123, 45, 59, .22) !important;
+}
+body.ag-business-active.ag-light .ag-boutique-card__title {
+    color: #2A1A1E !important;
+}
+body.ag-business-active.ag-light .ag-boutique-card__price {
+    background: linear-gradient(135deg, #A03D4D 0%, #7B2D3B 50%, #5A1F2A 100%) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+body.ag-business-active.ag-light .ag-boutique-card__desc {
+    color: #2A1A1E !important;
+}
+
+/* ── Bouton Stripe "Payer en ligne" sous chaque card Honoraires ── */
+body.ag-business-active .ag-business-stripe-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 16px;
+    padding: 11px 22px;
+    background: linear-gradient(135deg, #635BFF 0%, #7E76FF 100%);
+    color: #ffffff !important;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: .92rem;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    box-shadow: 0 6px 18px rgba(99, 91, 255, .35), 0 0 0 1px rgba(99, 91, 255, .25) inset;
+    transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+    cursor: pointer;
+    position: relative;
+    z-index: 5;
+}
+body.ag-business-active .ag-business-stripe-btn:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #7E76FF 0%, #635BFF 100%);
+    box-shadow: 0 10px 26px rgba(99, 91, 255, .5), 0 0 0 1px rgba(126, 118, 255, .4) inset;
+    color: #ffffff !important;
+}
+body.ag-business-active .ag-business-stripe-btn:focus-visible {
+    outline: 2px solid #FFE5A0;
+    outline-offset: 3px;
+}
+
+/* ── Cartes Honoraires : cliquables, lift au hover ── */
+body.ag-business-active .ag-honoraires__card {
+    cursor: pointer;
+    transition: transform .35s cubic-bezier(.23,1,.32,1), box-shadow .35s ease, border-color .35s ease;
+}
+body.ag-business-active .ag-honoraires__card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 45px rgba(212, 180, 92, .3), 0 0 0 1px rgba(212, 180, 92, .35);
+}
+body.ag-business-active.ag-light .ag-honoraires__card:hover {
+    box-shadow: 0 18px 45px rgba(123, 45, 59, .25), 0 0 0 1px rgba(123, 45, 59, .35);
+}
+body.ag-business-active .ag-honoraires__card:focus-visible {
+    outline: 2px solid #D4B45C;
+    outline-offset: 4px;
+}
+
+/* ── Footer copyright : retire celui du theme Free pour eviter
+   le doublon avec render_footer_branding (Business). Le client
+   ne peut pas reactiver via Customizer puisque c'est du CSS du
+   plugin Business. */
+body.ag-business-active .ag-footer-bottom {
+    display: none !important;
+}
+
+/* ── Voile sur les cards Domaines de la page Expertise ──
+   Sur la home, les cards .ag-domaine-card--bg ont leur overlay.
+   Sur la page Expertise, les cards .ag-domaine-card (sans suffix
+   --bg) n'ont pas d'overlay. On en ajoute un via ::before avec
+   les memes images de fond que la home (deja appliquees par
+   output_domaine_bg_overrides). */
+body.ag-business-active .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+body.ag-business-active .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(8, 10, 18, .35) 0%, rgba(8, 10, 18, .75) 50%, rgba(8, 10, 18, .96) 100%);
+    pointer-events: none;
+    z-index: 1;
+    transition: background .35s ease;
+}
+body.ag-business-active .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) > * {
+    position: relative;
+    z-index: 2;
+}
+body.ag-business-active .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) .ag-domaine-card__title,
+body.ag-business-active .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) .ag-domaine-card__excerpt,
+body.ag-business-active .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) .ag-domaine-card__examples {
+    color: #fff !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, .85), 0 1px 3px rgba(0, 0, 0, .9) !important;
+}
+body.ag-business-active .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) .ag-domaine-card__icon {
+    color: #FFE5A0 !important;
+    filter: drop-shadow(0 2px 12px rgba(212, 180, 92, .55));
+}
+/* Mode jour */
+body.ag-business-active.ag-light .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg)::before {
+    background: linear-gradient(180deg, rgba(245, 240, 235, .35) 0%, rgba(245, 240, 235, .75) 50%, rgba(245, 240, 235, .96) 100%);
+}
+body.ag-business-active.ag-light .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) .ag-domaine-card__title,
+body.ag-business-active.ag-light .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) .ag-domaine-card__excerpt,
+body.ag-business-active.ag-light .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) .ag-domaine-card__examples {
+    color: #2A1A1E !important;
+    text-shadow: 0 1px 3px rgba(255, 255, 255, .85) !important;
+}
+body.ag-business-active.ag-light .ag-domaines__grid > .ag-domaine-card:not(.ag-domaine-card--bg) .ag-domaine-card__icon {
+    color: #7B2D3B !important;
+}
+
+/* ── Blocs Contact (Cabinet) : cliquables Telephone & Email ── */
+body.ag-business-active .ag-cabinet__block {
+    transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease, background .3s ease;
+}
+body.ag-business-active .ag-business-block--clickable {
+    cursor: pointer;
+}
+body.ag-business-active .ag-business-block--clickable:hover {
+    transform: translateY(-3px);
+    border-color: rgba(212, 180, 92, .55) !important;
+    box-shadow: 0 12px 32px rgba(212, 180, 92, .25), 0 0 0 1px rgba(212, 180, 92, .35) inset !important;
+    background: rgba(212, 180, 92, .06) !important;
+}
+body.ag-business-active .ag-business-block--clickable:focus-visible {
+    outline: 2px solid #D4B45C;
+    outline-offset: 4px;
+}
+/* Telephone en doré en mode nuit (couleur forte sur le numéro)
+   pro-features.php a `.ag-cabinet__block p { color:#ddd !important }`
+   On boost la specificite avec .ag-cabinet__block dans le selecteur
+   et on cible plusieurs elements possibles (p, a, strong, span). */
+body.ag-business-active:not(.ag-light) .ag-cabinet__block.ag-business-block--phone p,
+body.ag-business-active:not(.ag-light) .ag-cabinet__block.ag-business-block--phone a,
+body.ag-business-active:not(.ag-light) .ag-cabinet__block.ag-business-block--phone strong,
+body.ag-business-active:not(.ag-light) .ag-cabinet__block.ag-business-block--phone span,
+body.ag-business-active:not(.ag-light) .ag-business-block--phone p,
+body.ag-business-active:not(.ag-light) .ag-business-block--phone a {
+    color: #FFE5A0 !important;
+    font-weight: 700 !important;
+    font-size: 1.05rem !important;
+    letter-spacing: .8px;
+}
+body.ag-business-active:not(.ag-light) .ag-business-block--phone .ag-cabinet__block-icon {
+    filter: drop-shadow(0 0 10px rgba(212, 180, 92, .55));
+}
+/* Email un peu différencié visuellement */
+body.ag-business-active .ag-business-block--email p {
+    word-break: break-word;
+}
+/* Mode jour : palette bordeaux pour le hover et le téléphone */
+body.ag-business-active.ag-light .ag-business-block--clickable:hover {
+    border-color: rgba(123, 45, 59, .45) !important;
+    box-shadow: 0 12px 32px rgba(123, 45, 59, .2), 0 0 0 1px rgba(123, 45, 59, .3) inset !important;
+    background: rgba(123, 45, 59, .04) !important;
+}
+body.ag-business-active.ag-light .ag-cabinet__block.ag-business-block--phone p,
+body.ag-business-active.ag-light .ag-cabinet__block.ag-business-block--phone a,
+body.ag-business-active.ag-light .ag-business-block--phone p {
+    color: #7B2D3B !important;
+    font-weight: 700 !important;
+}
+
+/* ── Cartes Domaines : cliquables, focus visible ── */
+body.ag-business-active .ag-domaines .ag-domaine-card {
+    cursor: pointer;
+}
+body.ag-business-active .ag-domaines .ag-domaine-card:focus-visible {
+    outline: 2px solid #D4B45C;
+    outline-offset: 4px;
+}
+
+/* ── Cartes Domaines : forcer l'image de fond a etre visible ──
+   Le .ag-domaine-card__bg recoit l'image via inline style + nos
+   overrides CSS. On garantit que l'element est bien visible et
+   pas masque par opacity ou display:none. */
+body.ag-business-active .ag-domaine-card--bg .ag-domaine-card__bg {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}
+
+/* Overlay des cards Domaines : leger en haut pour voir l'image,
+   degrade qui s'intensifie vers le bas pour le contraste. */
+body.ag-business-active .ag-domaine-card--bg .ag-domaine-card__overlay {
+    background: linear-gradient(180deg, rgba(8, 10, 18, .05) 0%, rgba(8, 10, 18, .25) 50%, rgba(8, 10, 18, .55) 100%) !important;
+}
+body.ag-business-active.ag-light .ag-domaine-card--bg .ag-domaine-card__overlay {
+    background: linear-gradient(180deg, rgba(245, 240, 235, .05) 0%, rgba(245, 240, 235, .3) 50%, rgba(245, 240, 235, .7) 100%) !important;
+}
+
+/* Filtre derriere le texte uniquement (pas l'image) ──
+   Sur .ag-domaine-card__content (qui contient titre/excerpt/list)
+   on pose un fond degrade plus dense localement. Resultat :
+   - Image entierement visible en haut
+   - Texte parfaitement lisible sur la portion basse de la card */
+body.ag-business-active .ag-domaine-card--bg .ag-domaine-card__content {
+    background: linear-gradient(180deg, rgba(8, 10, 18, 0) 0%, rgba(8, 10, 18, .55) 30%, rgba(8, 10, 18, .92) 100%) !important;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    padding-top: 60px !important;
+}
+body.ag-business-active .ag-domaine-card--bg .ag-domaine-card__title,
+body.ag-business-active .ag-domaine-card--bg .ag-domaine-card__excerpt,
+body.ag-business-active .ag-domaine-card--bg .ag-domaine-card__examples {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, .85), 0 1px 3px rgba(0, 0, 0, .9) !important;
+}
+
+/* Mode jour : filtre creme pour texte sombre lisible */
+body.ag-business-active.ag-light .ag-domaine-card--bg .ag-domaine-card__content {
+    background: linear-gradient(180deg, rgba(245, 240, 235, 0) 0%, rgba(245, 240, 235, .65) 30%, rgba(245, 240, 235, .95) 100%) !important;
+}
+body.ag-business-active.ag-light .ag-domaine-card--bg .ag-domaine-card__title,
+body.ag-business-active.ag-light .ag-domaine-card--bg .ag-domaine-card__excerpt,
+body.ag-business-active.ag-light .ag-domaine-card--bg .ag-domaine-card__examples {
+    text-shadow: 0 1px 3px rgba(255, 255, 255, .85) !important;
+}
+
+/* ── MEGA MENU (sous-menu de "Domaines d'expertise") ──
+   Style full-width qui couvre toute la largeur du viewport, ancre
+   sous le header. Le menu d'origine reste intact — on transforme
+   uniquement l'apparence du <ul class="sub-menu"> existant.
+
+   IMPORTANT : .ag-primary-menu doit etre position:relative pour que
+   le sub-menu absolute s'ancre A LA HAUTEUR DU MENU LUI-MEME, pas
+   au bas du header (qui peut avoir du padding/marge en plus et
+   creer un decalage visible). Pour que le sub-menu reste full-width
+   alors que le menu est etroit, on utilise left:50% + transform
+   translateX(-50%) + width 100vw.
+*/
+/* Les <li> top-level redeviennent statiques pour que .sub-menu
+   ne soit PAS contraint a leur largeur. */
+body.ag-business-active .ag-primary-menu {
+    position: relative;
+}
+body.ag-business-active .ag-primary-menu > li.menu-item-has-children {
+    position: static;
+}
+body.ag-business-active .ag-primary-menu > li:not(.menu-item-has-children) {
+    position: relative;
+}
+
+/* Mega menu : full-width via translateX, ancre direct sous menu UL.
+   Pas de top:100% reposant sur header (qui creait un decalage). */
+body.ag-business-active .ag-primary-menu > li.menu-item-has-children {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+body.ag-business-active .ag-primary-menu .sub-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    width: 100vw;
+    max-width: 100vw;
+    list-style: none;
+    margin: 0 !important;
+    /* Padding interne reduit (12px haut au lieu de 36) pour eviter
+       un gros espace visible entre le menu et la 1ere ligne d'items. */
+    padding: 12px max(40px, 5vw) 24px;
+    background: rgba(8, 8, 12, .98);
+    border-top: 1px solid rgba(212, 180, 92, .28);
+    border-bottom: 1px solid rgba(212, 180, 92, .18);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .55), 0 0 32px rgba(212, 180, 92, .08);
+    backdrop-filter: blur(10px);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px 36px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-50%) translateY(-12px);
+    transition: opacity .35s ease, transform .35s ease, visibility .35s ease;
+    z-index: 1000;
+}
+body.ag-business-active .ag-primary-menu > li:hover > .sub-menu,
+body.ag-business-active .ag-primary-menu > li:focus-within > .sub-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Items du mega menu */
+body.ag-business-active .ag-primary-menu .sub-menu li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+body.ag-business-active .ag-primary-menu .sub-menu a {
+    display: flex !important;
+    align-items: center;
+    padding: 8px 18px !important;
+    color: rgba(255, 255, 255, .82) !important;
+    font-size: .95rem !important;
+    text-transform: none !important;
+    letter-spacing: .2px !important;
+    font-weight: 500 !important;
+    border-radius: 6px !important;
+    background: transparent !important;
+    text-shadow: none !important;
+    transform: none !important;
+    border: 1px solid transparent;
+    transition: background .25s ease, color .25s ease, border-color .25s ease, transform .25s ease;
+}
+body.ag-business-active .ag-primary-menu .sub-menu a::after {
+    display: none !important;
+}
+body.ag-business-active .ag-primary-menu .sub-menu a::before {
+    content: '⚖';
+    margin-right: 12px;
+    color: #D4B45C;
+    opacity: .55;
+    font-size: 1.05rem;
+    transition: opacity .25s ease, transform .25s ease;
+}
+body.ag-business-active .ag-primary-menu .sub-menu a:hover {
+    background: rgba(212, 180, 92, .1) !important;
+    color: #FFE5A0 !important;
+    border-color: rgba(212, 180, 92, .25);
+    transform: translateX(4px);
+}
+body.ag-business-active .ag-primary-menu .sub-menu a:hover::before {
+    opacity: 1;
+    transform: scale(1.15);
+}
+
+/* Lien final "Tous les domaines →" : full row, or vif, centre */
+body.ag-business-active .ag-primary-menu .sub-menu .ag-business-submenu-tous {
+    grid-column: 1 / -1;
+    margin-top: 14px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(212, 180, 92, .25);
+    text-align: center;
+}
+body.ag-business-active .ag-primary-menu .sub-menu .ag-business-submenu-tous a {
+    display: inline-flex !important;
+    color: #D4B45C !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.2px !important;
+    font-size: 1rem !important;
+    padding: 12px 28px !important;
+    border: 1px solid rgba(212, 180, 92, .35);
+}
+body.ag-business-active .ag-primary-menu .sub-menu .ag-business-submenu-tous a::before {
+    display: none;
+}
+body.ag-business-active .ag-primary-menu .sub-menu .ag-business-submenu-tous a:hover {
+    background: rgba(212, 180, 92, .15) !important;
+    color: #FFE5A0 !important;
+    border-color: #FFE5A0;
+    transform: translateY(-1px);
+}
+
+/* Mode jour : palette creme/bordeaux */
+body.ag-business-active.ag-light .ag-primary-menu .sub-menu {
+    background: rgba(245, 240, 235, .98);
+    border-top-color: rgba(123, 45, 59, .22);
+    border-bottom-color: rgba(123, 45, 59, .12);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .15), 0 0 32px rgba(123, 45, 59, .08);
+}
+body.ag-business-active.ag-light .ag-primary-menu .sub-menu a {
+    color: #2A1A1E !important;
+}
+body.ag-business-active.ag-light .ag-primary-menu .sub-menu a::before {
+    color: #7B2D3B;
+}
+body.ag-business-active.ag-light .ag-primary-menu .sub-menu a:hover {
+    background: rgba(123, 45, 59, .08) !important;
+    color: #7B2D3B !important;
+    border-color: rgba(123, 45, 59, .22);
+}
+body.ag-business-active.ag-light .ag-primary-menu .sub-menu .ag-business-submenu-tous {
+    border-top-color: rgba(123, 45, 59, .22);
+}
+body.ag-business-active.ag-light .ag-primary-menu .sub-menu .ag-business-submenu-tous a {
+    color: #7B2D3B !important;
+    border-color: rgba(123, 45, 59, .35);
+}
+body.ag-business-active.ag-light .ag-primary-menu .sub-menu .ag-business-submenu-tous a:hover {
+    background: rgba(123, 45, 59, .1) !important;
+    color: #A03D4D !important;
+    border-color: #A03D4D;
+}
+
+/* Sous-menu compte (Mon compte / Connexion) — meme format mega menu
+   full-width que Domaines d'expertise. Greeting et bouton deconnexion
+   occupent toute la largeur (grid-column 1/-1) ; les autres items
+   sont en grille 4 colonnes auto-fit. */
+body.ag-business-active .ag-primary-menu .ag-business-account-submenu .ag-business-account-submenu__greeting {
+    grid-column: 1 / -1 !important;
+    list-style: none;
+    text-align: center;
+    margin: 0 0 16px;
+    padding: 0 0 18px;
+    border-bottom: 1px solid rgba(212, 180, 92, .25);
+    color: #D4B45C !important;
+    font-family: "Playfair Display", Georgia, serif;
+    font-style: italic;
+    font-size: 1.15rem;
+    letter-spacing: .3px;
+}
+body.ag-business-active .ag-primary-menu .ag-business-account-submenu .ag-business-submenu-tous {
+    grid-column: 1 / -1 !important;
+    margin-top: 14px !important;
+    padding-top: 18px !important;
+    text-align: center;
+    border-top: 1px solid rgba(212, 180, 92, .25);
+}
+body.ag-light .ag-primary-menu .ag-business-account-submenu .ag-business-account-submenu__greeting {
+    color: #7B2D3B !important;
+    border-bottom-color: rgba(123, 45, 59, .22);
+}
+
+/* Sous-menu compte non-connecte : 'Se connecter' et 'Creer un compte'
+   sur la meme ligne avec separateur vertical au milieu. */
+body.ag-business-active .ag-primary-menu .ag-business-account-submenu--logged-out {
+    grid-template-columns: 1fr 1fr !important;
+    max-width: 720px !important;
+    margin: 0 auto !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) translateY(-12px) !important;
+    width: auto !important;
+}
+body.ag-business-active .ag-primary-menu > li:hover > .ag-business-account-submenu--logged-out,
+body.ag-business-active .ag-primary-menu > li:focus-within > .ag-business-account-submenu--logged-out {
+    transform: translateX(-50%) translateY(0) !important;
+}
+body.ag-business-active .ag-primary-menu .ag-business-account-submenu--logged-out .ag-business-account-submenu__col {
+    text-align: center;
+    padding: 18px 24px;
+    position: relative;
+}
+/* Separateur vertical entre les 2 colonnes */
+body.ag-business-active .ag-primary-menu .ag-business-account-submenu--logged-out .ag-business-account-submenu__col:first-child::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 15%;
+    bottom: 15%;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, rgba(212, 180, 92, .55), transparent);
+}
+body.ag-business-active.ag-light .ag-primary-menu .ag-business-account-submenu--logged-out .ag-business-account-submenu__col:first-child::after {
+    background: linear-gradient(180deg, transparent, rgba(123, 45, 59, .45), transparent);
+}
+body.ag-business-active .ag-primary-menu .ag-business-account-submenu--logged-out a {
+    display: inline-flex !important;
+    padding: 14px 26px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    color: #FFE5A0 !important;
+    border: 1px solid rgba(212, 180, 92, .4);
+    border-radius: 8px;
+    transition: background .25s, color .25s, transform .25s;
+}
+body.ag-business-active .ag-primary-menu .ag-business-account-submenu--logged-out a::before {
+    display: none !important;
+}
+body.ag-business-active .ag-primary-menu .ag-business-account-submenu--logged-out a:hover {
+    background: rgba(212, 180, 92, .15) !important;
+    color: #FFFFFF !important;
+    border-color: #FFE5A0 !important;
+    transform: translateY(-1px) !important;
+}
+body.ag-business-active.ag-light .ag-primary-menu .ag-business-account-submenu--logged-out a {
+    color: #7B2D3B !important;
+    border-color: rgba(123, 45, 59, .35);
+}
+body.ag-business-active.ag-light .ag-primary-menu .ag-business-account-submenu--logged-out a:hover {
+    background: rgba(123, 45, 59, .1) !important;
+    color: #A03D4D !important;
+}
+
+/* Tablette : 2 colonnes */
+@media (max-width: 1100px) {
+    body.ag-business-active .ag-primary-menu .sub-menu {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 28px max(24px, 4vw) 24px;
+    }
+}
+
+/* Mobile : pas de mega menu, fallback liste verticale plié */
+@media (max-width: 900px) {
+    body.ag-business-active .ag-primary-menu .sub-menu {
+        display: flex;
+        flex-direction: column;
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        padding: 8px 0 8px 24px;
+        margin: 0;
+        backdrop-filter: none;
+        gap: 0;
+    }
+    body.ag-business-active .ag-primary-menu .sub-menu .ag-business-submenu-tous {
+        grid-column: auto;
+        margin-top: 8px;
+        padding-top: 8px;
+        text-align: left;
+    }
+    body.ag-business-active .ag-primary-menu .sub-menu .ag-business-submenu-tous a {
+        display: inline-block !important;
+        padding: 8px 14px !important;
+    }
+}
+
+/* ── Citations parallax injectees entre sections (pages internes) ──
+   Reutilise le style .ag-parallax-business du theme, juste un peu
+   moins de padding pour ne pas dominer la page. */
+body.ag-business-active .ag-business-page-citation {
+    padding: 80px 24px !important;
+}
+@media (max-width: 768px) {
+    body.ag-business-active .ag-business-page-citation {
+        padding: 60px 20px !important;
+    }
+}
+
+/* ── Citations parallax : overlay plus transparent en mode nuit ──
+   L'overlay par defaut est a 88%/78% — trop dense, l'image n'apparait
+   pas. On l'allège a ~55% en gardant un degrade qui assombrit le coin
+   bas pour la lisibilite du texte. Texte renforce par text-shadow. */
+body.ag-business-active .ag-parallax-business .ag-parallax__overlay {
+    background: linear-gradient(135deg, rgba(8, 10, 18, .55) 0%, rgba(20, 15, 8, .45) 50%, rgba(8, 10, 18, .65) 100%) !important;
+}
+body.ag-business-active .ag-parallax-business .ag-parallax__quote {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, .85), 0 0 30px rgba(0, 0, 0, .6) !important;
+}
+body.ag-business-active .ag-parallax-business .ag-parallax__caption {
+    text-shadow: 0 2px 6px rgba(0, 0, 0, .8) !important;
+}
+
+/* Mode jour : overlay creme MOINS leger pour mieux lire le texte
+   sombre (l'image reste visible mais moins flashy). */
+body.ag-business-active.ag-light .ag-parallax-business .ag-parallax__overlay {
+    background: linear-gradient(135deg, rgba(245, 240, 235, .72) 0%, rgba(245, 240, 235, .60) 50%, rgba(245, 240, 235, .78) 100%) !important;
+}
+body.ag-business-active.ag-light .ag-parallax-business .ag-parallax__quote {
+    color: #2A1A1E !important;
+    text-shadow: 0 2px 8px rgba(255, 255, 255, .75) !important;
+}
+body.ag-business-active.ag-light .ag-parallax-business .ag-parallax__caption {
+    color: #5A4549 !important;
+    text-shadow: 0 1px 4px rgba(255, 255, 255, .8) !important;
+}
+body.ag-business-active .ag-business-search-btn {
+    background: transparent;
+    border: 1px solid rgba(212, 180, 92, .35);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    color: #D4B45C;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: border-color .3s, transform .3s, color .3s;
+    margin-left: 4px;
+}
+body.ag-business-active .ag-business-search-btn:hover {
+    border-color: #D4B45C;
+    transform: scale(1.1);
+    color: #FFE5A0;
+}
+body.ag-business-active.ag-light .ag-business-search-btn {
+    border-color: rgba(123, 45, 59, .35);
+    color: #7B2D3B;
+}
+body.ag-business-active.ag-light .ag-business-search-btn:hover {
+    border-color: #7B2D3B;
+    color: #A03D4D;
+}
+body.ag-business-active .ag-business-search-btn svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+.ag-business-search-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .85);
+    backdrop-filter: blur(10px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .3s ease, visibility .3s ease;
+    padding: 20px;
+}
+.ag-business-search-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+}
+body.ag-light .ag-business-search-overlay {
+    background: rgba(245, 240, 235, .92);
+}
+.ag-business-search-form {
+    display: flex;
+    align-items: stretch;
+    width: min(680px, 92vw);
+    background: rgba(20, 20, 30, .98);
+    border: 1px solid rgba(212, 180, 92, .35);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .6), 0 0 32px rgba(212, 180, 92, .15);
+}
+body.ag-light .ag-business-search-form {
+    background: #ffffff;
+    border-color: rgba(123, 45, 59, .35);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .15);
+}
+.ag-business-search-form input[type="search"] {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    padding: 18px 24px;
+    color: #ffffff;
+    font-size: 1.15rem;
+    outline: none;
+    font-family: inherit;
+}
+body.ag-light .ag-business-search-form input[type="search"] {
+    color: #2A1A1E;
+}
+.ag-business-search-form input[type="search"]::placeholder {
+    color: rgba(255, 255, 255, .4);
+}
+body.ag-light .ag-business-search-form input[type="search"]::placeholder {
+    color: rgba(42, 26, 30, .4);
+}
+.ag-business-search-form button[type="submit"] {
+    background: #D4B45C;
+    border: 0;
+    padding: 0 28px;
+    color: #0a0a0f;
+    font-size: 1.4rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .25s ease;
+}
+.ag-business-search-form button[type="submit"]:hover {
+    background: #FFE5A0;
+}
+body.ag-light .ag-business-search-form button[type="submit"] {
+    background: #7B2D3B;
+    color: #ffffff;
+}
+body.ag-light .ag-business-search-form button[type="submit"]:hover {
+    background: #A03D4D;
+}
+.ag-business-search-close {
+    position: absolute;
+    top: 28px;
+    right: 28px;
+    background: transparent;
+    border: 0;
+    color: #ffffff;
+    font-size: 2.4rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px 12px;
+    transition: color .25s ease, transform .25s ease;
+}
+.ag-business-search-close:hover {
+    color: #D4B45C;
+    transform: rotate(90deg);
+}
+body.ag-light .ag-business-search-close {
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-search-close:hover {
+    color: #7B2D3B;
+}
+
+/* ── Footer : liens vers pages legales (injectes par JS) ── */
+.ag-business-legal-footer {
+    padding: 18px 24px 24px;
+    text-align: center;
+    border-top: 1px solid rgba(212, 180, 92, .15);
+    margin-top: 24px;
+}
+.ag-business-legal-footer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 28px;
+}
+.ag-business-legal-footer li {
+    list-style: none;
+    margin: 0;
+}
+.ag-business-legal-footer a {
+    color: rgba(255, 255, 255, .5);
+    font-size: .82rem;
+    text-decoration: none;
+    transition: color .25s ease;
+    letter-spacing: .3px;
+}
+.ag-business-legal-footer a:hover {
+    color: #D4B45C;
+}
+body.ag-light .ag-business-legal-footer {
+    border-top-color: rgba(123, 45, 59, .15);
+}
+body.ag-light .ag-business-legal-footer a {
+    color: #5A4549;
+}
+body.ag-light .ag-business-legal-footer a:hover {
+    color: #7B2D3B;
+}
+
+/* ── Hide doublon des Exemples (.ag-domaine-examples) ──
+   On garde uniquement la nav '← Tous les domaines' visible. */
+body.ag-business-active .ag-domaine-examples > .ag-domaine-examples__title,
+body.ag-business-active .ag-domaine-examples > .ag-domaine-examples__list {
+    display: none !important;
+}
+
+/* ── Bouton 'Decouvrir' (sous Maitre, sous Associes, sous Equipe) ── */
+body.ag-business-active .ag-business-decouvrir-cta__btn {
+    display: inline-block;
+    padding: 12px 28px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+    font-size: .88rem !important;
+    border: 1px solid rgba(212, 180, 92, .4) !important;
+    background: transparent !important;
+    color: #D4B45C !important;
+    border-radius: 8px;
+    transition: background .25s, color .25s, transform .25s, border-color .25s;
+}
+body.ag-business-active .ag-business-decouvrir-cta__btn:hover {
+    background: rgba(212, 180, 92, .15) !important;
+    color: #FFE5A0 !important;
+    border-color: #FFE5A0 !important;
+    transform: translateY(-2px) !important;
+}
+body.ag-business-active.ag-light .ag-business-decouvrir-cta__btn {
+    border-color: rgba(123, 45, 59, .4) !important;
+    color: #7B2D3B !important;
+}
+body.ag-business-active.ag-light .ag-business-decouvrir-cta__btn:hover {
+    background: rgba(123, 45, 59, .1) !important;
+    color: #A03D4D !important;
+    border-color: #A03D4D !important;
+}
+
+/* ── Bouton 'Tous nos domaines' apres section Domaines de la home ── */
+body.ag-business-active .ag-business-tous-domaines-cta__btn {
+    display: inline-block;
+    padding: 14px 32px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+    font-size: .95rem !important;
+    border: 1px solid rgba(212, 180, 92, .4) !important;
+    background: transparent !important;
+    color: #D4B45C !important;
+    border-radius: 8px;
+    transition: background .25s, color .25s, transform .25s, border-color .25s;
+}
+body.ag-business-active .ag-business-tous-domaines-cta__btn:hover {
+    background: rgba(212, 180, 92, .15) !important;
+    color: #FFE5A0 !important;
+    border-color: #FFE5A0 !important;
+    transform: translateY(-2px) !important;
+}
+body.ag-business-active.ag-light .ag-business-tous-domaines-cta__btn {
+    border-color: rgba(123, 45, 59, .4) !important;
+    color: #7B2D3B !important;
+}
+body.ag-business-active.ag-light .ag-business-tous-domaines-cta__btn:hover {
+    background: rgba(123, 45, 59, .1) !important;
+    color: #A03D4D !important;
+    border-color: #A03D4D !important;
+}
+
+/* ── Citations parallax sur single domaine : breakout full-width ──
+   Injectees dans the_content (donc dans .ag-container), on les sort
+   du container avec margins negatives + 100vw. */
+.ag-business-domaine-citation {
+    margin-left: calc(-50vw + 50%) !important;
+    margin-right: calc(-50vw + 50%) !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-top: 60px !important;
+    margin-bottom: 60px !important;
+}
+
+/* ── Pages single domaine (ag_domaine) — Cas concrets + FAQ ── */
+.ag-business-domaine-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+    margin: 50px 0 30px;
+    align-items: start;
+}
+@media (max-width: 900px) {
+    .ag-business-domaine-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+}
+.ag-business-domaine-grid > .ag-business-domaine-cas,
+.ag-business-domaine-grid > .ag-business-domaine-faq {
+    margin: 0;
+    padding-top: 0;
+    border-top: none;
+}
+.ag-business-domaine-cas {
+    margin: 50px 0 30px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(212, 180, 92, .25);
+}
+.ag-business-domaine-cas__title,
+.ag-business-domaine-faq__title {
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif !important;
+    font-size: clamp(1.6rem, 2.5vw, 2.1rem) !important;
+    color: #D4B45C !important;
+    margin: 0 0 12px !important;
+    letter-spacing: .3px;
+}
+.ag-business-domaine-cas__lead {
+    color: rgba(255, 255, 255, .75);
+    margin: 0 0 28px;
+    font-size: 1rem;
+    line-height: 1.6;
+    font-style: italic;
+}
+.ag-business-domaine-cas__list {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 18px;
+}
+.ag-business-cas-item {
+    background: rgba(20, 20, 30, .55);
+    border: 1px solid rgba(212, 180, 92, .2);
+    border-radius: 10px;
+    padding: 18px 22px;
+    transition: border-color .3s, transform .3s, box-shadow .3s;
+    list-style: none !important;
+}
+.ag-business-cas-item:hover {
+    border-color: rgba(212, 180, 92, .5);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .3), 0 0 24px rgba(212, 180, 92, .08);
+}
+.ag-business-cas-item__title {
+    color: #FFE5A0 !important;
+    font-size: 1.05rem !important;
+    font-family: "Playfair Display", Georgia, serif !important;
+    font-style: italic !important;
+    margin: 0 0 8px !important;
+    line-height: 1.4;
+}
+.ag-business-cas-item__desc {
+    color: rgba(255, 255, 255, .82);
+    font-size: .92rem;
+    line-height: 1.65;
+    margin: 0;
+}
+
+.ag-business-domaine-faq {
+    margin: 40px 0;
+    padding-top: 30px;
+    border-top: 1px solid rgba(212, 180, 92, .25);
+}
+.ag-business-faq {
+    margin-top: 18px;
+    border-top: 1px solid rgba(212, 180, 92, .2);
+}
+.ag-business-faq__entry {
+    border-bottom: 1px solid rgba(212, 180, 92, .2);
+}
+.ag-business-faq__question {
+    cursor: pointer;
+    padding: 16px 36px 16px 0;
+    font-weight: 700;
+    font-size: 1rem;
+    list-style: none;
+    position: relative;
+    color: #FFE5A0;
+    transition: color .25s ease;
+}
+.ag-business-faq__question::-webkit-details-marker { display: none; }
+.ag-business-faq__question::after {
+    content: "+";
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.6rem;
+    line-height: 1;
+    color: #D4B45C;
+    transition: transform .3s ease;
+}
+.ag-business-faq__entry[open] .ag-business-faq__question::after {
+    content: "−";
+}
+.ag-business-faq__question:hover {
+    color: #D4B45C;
+}
+.ag-business-faq__answer {
+    padding: 0 8px 18px 0;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, .82);
+}
+
+/* Mode jour */
+body.ag-light .ag-business-domaine-cas,
+body.ag-light .ag-business-domaine-faq {
+    border-top-color: rgba(123, 45, 59, .22);
+}
+body.ag-light .ag-business-domaine-cas__title,
+body.ag-light .ag-business-domaine-faq__title {
+    color: #7B2D3B !important;
+}
+body.ag-light .ag-business-domaine-cas__lead {
+    color: #5A4549;
+}
+body.ag-light .ag-business-cas-item {
+    background: #ffffff;
+    border-color: rgba(123, 45, 59, .18);
+}
+body.ag-light .ag-business-cas-item:hover {
+    border-color: rgba(123, 45, 59, .45);
+}
+body.ag-light .ag-business-cas-item__title {
+    color: #2A1A1E !important;
+}
+body.ag-light .ag-business-cas-item__desc {
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-faq {
+    border-top-color: rgba(123, 45, 59, .2);
+}
+body.ag-light .ag-business-faq__entry {
+    border-bottom-color: rgba(123, 45, 59, .2);
+}
+body.ag-light .ag-business-faq__question {
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-faq__question::after {
+    color: #7B2D3B;
+}
+body.ag-light .ag-business-faq__question:hover {
+    color: #7B2D3B;
+}
+body.ag-light .ag-business-faq__answer {
+    color: #2A1A1E;
+}
+
+/* ── Titres "Avocats associés" / "Collaborateurs" : style business ── */
+.ag-business-team-full__group-title {
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif !important;
+    font-size: 1.6rem !important;
+    color: #D4B45C !important;
+    margin: 0 0 28px !important;
+    padding: 0 0 14px;
+    letter-spacing: 2.5px !important;
+    text-transform: uppercase;
+    font-weight: 700;
+    text-align: center;
+    position: relative;
+    display: block;
+}
+.ag-business-team-full__group-title::after {
+    content: "";
+    display: block;
+    width: 70px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #D4B45C, transparent);
+    margin: 14px auto 0;
+}
+body.ag-light .ag-business-team-full__group-title {
+    color: #7B2D3B !important;
+}
+body.ag-light .ag-business-team-full__group-title::after {
+    background: linear-gradient(90deg, transparent, #7B2D3B, transparent);
+}
+
+/* ── Section "Notre équipe" sur la page Cabinet ── */
+.ag-business-team-full {
+    margin: 60px 0 40px;
+    padding: 50px 0 30px;
+    border-top: 1px solid rgba(212, 180, 92, .25);
+}
+.ag-business-team-full__intro {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 50px;
+}
+.ag-business-team-full__title {
+    font-size: clamp(1.8rem, 3vw, 2.6rem) !important;
+    margin: 0 0 14px !important;
+    color: #D4B45C;
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif !important;
+    letter-spacing: .5px;
+}
+.ag-business-team-full__lead {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    opacity: .85;
+    margin: 0;
+}
+/* Groupes : associes (premier conteneur) et collaborateurs (en dessous) */
+.ag-business-team-full__group {
+    margin-bottom: 50px;
+}
+.ag-business-team-full__group:last-child {
+    margin-bottom: 0;
+}
+.ag-business-team-full__group-title {
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif !important;
+    font-size: 1.4rem !important;
+    color: #D4B45C;
+    margin: 0 0 24px !important;
+    padding: 0 0 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(212, 180, 92, .25);
+}
+body.ag-light .ag-business-team-full__group-title {
+    color: #7B2D3B;
+    border-bottom-color: rgba(123, 45, 59, .22);
+}
+
+.ag-business-team-full__grid {
+    display: grid;
+    gap: 32px;
+}
+/* Fondateur : 1 seule card mise en avant, largeur contenue (sinon photo
+   ratio 1/1 prend toute la largeur de section et devient enorme) */
+.ag-business-team-full__grid--founder {
+    grid-template-columns: 1fr;
+    max-width: 80%;
+    margin: 0 auto;
+}
+.ag-business-team-full__grid--founder .ag-business-team-card {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    align-items: start;
+}
+.ag-business-team-full__grid--founder .ag-business-team-card__photo {
+    aspect-ratio: 3 / 4 !important;
+    min-height: 0 !important;
+    align-self: start;
+    background-position: center top;
+}
+@media (max-width: 700px) {
+    .ag-business-team-full__grid--founder .ag-business-team-card {
+        grid-template-columns: 1fr;
+    }
+    .ag-business-team-full__grid--founder .ag-business-team-card__photo {
+        aspect-ratio: 4 / 3 !important;
+    }
+}
+/* Associes : 2 colonnes max (cards plus larges, mise en avant) */
+.ag-business-team-full__grid--associates {
+    grid-template-columns: repeat(2, 1fr);
+}
+/* Collaborateurs : 3 colonnes responsives */
+.ag-business-team-full__grid--collaborators {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+@media (max-width: 900px) {
+    .ag-business-team-full__grid--associates {
+        grid-template-columns: 1fr;
+    }
+}
+.ag-business-team-card {
+    background: rgba(20, 20, 30, .6);
+    border: 1px solid rgba(212, 180, 92, .2);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: transform .4s ease, box-shadow .4s ease, border-color .4s ease;
+}
+.ag-business-team-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(212, 180, 92, .5);
+    box-shadow: 0 24px 50px rgba(0, 0, 0, .45), 0 0 32px rgba(212, 180, 92, .12);
+}
+.ag-business-team-card__photo {
+    width: 100%;
+    /* Ratio carre : meilleur cadrage pour des portraits, on voit bien
+       le visage et le buste sans crop excessif. */
+    aspect-ratio: 1 / 1;
+    background-size: cover;
+    /* center 25% : cadre le visage en haut-milieu, plutot que tout en
+       haut (qui coupe le front sur certaines photos Unsplash). */
+    background-position: center 25%;
+    background-color: #0c0c12;
+    transition: transform .6s ease;
+}
+/* Sur les associes (cards plus larges en 2 colonnes), un format
+   16:10 plus paysage met mieux en valeur la photo. */
+.ag-business-team-full__grid--associates .ag-business-team-card__photo {
+    aspect-ratio: 16 / 10;
+    background-position: center 30%;
+}
+.ag-business-team-card:hover .ag-business-team-card__photo {
+    transform: scale(1.04);
+}
+.ag-business-team-card__body {
+    padding: 26px 26px 28px;
+}
+.ag-business-team-card__header {
+    border-bottom: 1px solid rgba(212, 180, 92, .18);
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+}
+.ag-business-team-card__name {
+    margin: 0 0 4px !important;
+    font-size: 1.3rem !important;
+    color: #FFE5A0;
+    font-family: "Playfair Display", Georgia, serif !important;
+    letter-spacing: .3px;
+}
+.ag-business-team-card__role {
+    margin: 0 0 4px;
+    color: #D4B45C;
+    font-size: .92rem;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+.ag-business-team-card__barreau {
+    margin: 0;
+    color: rgba(255, 255, 255, .55);
+    font-size: .82rem;
+}
+.ag-business-team-card__bio {
+    color: rgba(255, 255, 255, .82);
+    line-height: 1.65;
+    font-size: .95rem;
+    margin: 0 0 18px;
+    font-style: italic;
+}
+.ag-business-team-card__details {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.ag-business-team-card__block h4 {
+    margin: 0 0 6px !important;
+    font-size: .78rem !important;
+    color: #D4B45C;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+}
+.ag-business-team-card__block ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.ag-business-team-card__block li {
+    color: rgba(255, 255, 255, .85);
+    font-size: .9rem;
+    line-height: 1.55;
+    padding: 4px 0 4px 16px;
+    position: relative;
+}
+.ag-business-team-card__block li::before {
+    content: '⚖';
+    position: absolute;
+    left: 0;
+    color: #D4B45C;
+    opacity: .6;
+    font-size: .75rem;
+}
+.ag-business-team-card__block p {
+    margin: 0;
+    color: rgba(255, 255, 255, .85);
+    font-size: .9rem;
+}
+
+/* Mode jour : palette creme/bordeaux */
+body.ag-light .ag-business-team-full {
+    border-top-color: rgba(123, 45, 59, .22);
+}
+body.ag-light .ag-business-team-full__title {
+    color: #7B2D3B;
+}
+body.ag-light .ag-business-team-card {
+    background: #ffffff;
+    border-color: rgba(123, 45, 59, .18);
+}
+body.ag-light .ag-business-team-card:hover {
+    border-color: rgba(123, 45, 59, .45);
+    box-shadow: 0 24px 50px rgba(0, 0, 0, .12), 0 0 32px rgba(123, 45, 59, .08);
+}
+body.ag-light .ag-business-team-card__name {
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-team-card__role {
+    color: #7B2D3B;
+}
+body.ag-light .ag-business-team-card__barreau {
+    color: #5A4549;
+}
+body.ag-light .ag-business-team-card__header {
+    border-bottom-color: rgba(123, 45, 59, .15);
+}
+body.ag-light .ag-business-team-card__bio,
+body.ag-light .ag-business-team-card__block li,
+body.ag-light .ag-business-team-card__block p {
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-team-card__block h4 {
+    color: #7B2D3B;
+}
+body.ag-light .ag-business-team-card__block li::before {
+    color: #7B2D3B;
+}
+
+@media (max-width: 700px) {
+    .ag-business-team-full__grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    .ag-business-team-card__body {
+        padding: 22px 22px 24px;
+    }
+}
+
+/* ── Pages compte (Connexion / Inscription / Mon compte) ── */
+.ag-business-account {
+    max-width: 480px;
+    margin: 30px auto;
+    padding: 32px 36px;
+    background: rgba(20, 20, 30, .6);
+    border: 1px solid rgba(212, 180, 92, .25);
+    border-radius: 12px;
+}
+.ag-business-account h3 {
+    margin: 0 0 22px !important;
+    font-family: "Playfair Display", Georgia, serif !important;
+    font-size: 1.5rem !important;
+    color: #FFE5A0;
+    text-align: center;
+}
+.ag-business-account__greeting {
+    color: #D4B45C !important;
+}
+.ag-business-account__links {
+    list-style: none;
+    padding: 0;
+    margin: 18px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.ag-business-account__links a {
+    display: block;
+    padding: 12px 16px;
+    background: rgba(212, 180, 92, .08);
+    color: #FFE5A0;
+    text-decoration: none;
+    border-radius: 6px;
+    border: 1px solid rgba(212, 180, 92, .2);
+    transition: background .25s, border-color .25s;
+}
+.ag-business-account__links a:hover {
+    background: rgba(212, 180, 92, .18);
+    border-color: rgba(212, 180, 92, .5);
+}
+.ag-business-account-form input[type="text"],
+.ag-business-account-form input[type="email"],
+.ag-business-account-form input[type="password"],
+.ag-business-account form input[type="text"],
+.ag-business-account form input[type="email"],
+.ag-business-account form input[type="password"] {
+    width: 100%;
+    padding: 12px 14px;
+    background: rgba(0, 0, 0, .4);
+    border: 1px solid rgba(212, 180, 92, .25);
+    border-radius: 6px;
+    color: #fff;
+    font-size: 1rem;
+    margin-top: 4px;
+    box-sizing: border-box;
+}
+.ag-business-account-form input:focus,
+.ag-business-account form input:focus {
+    outline: 2px solid #D4B45C;
+    outline-offset: 2px;
+}
+.ag-business-account-form label,
+.ag-business-account form label {
+    display: block;
+    color: rgba(255, 255, 255, .8);
+    font-size: .9rem;
+    margin-bottom: 4px;
+}
+.ag-business-account-form button[type="submit"],
+.ag-business-account form input[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 13px 24px;
+    background: linear-gradient(135deg, #D4B45C 0%, #FFE5A0 100%);
+    color: #0a0a0f;
+    border: 0;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: transform .25s, box-shadow .25s;
+}
+.ag-business-account-form button[type="submit"]:hover,
+.ag-business-account form input[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(212, 180, 92, .4);
+}
+.ag-business-account-form__footnote {
+    margin-top: 22px !important;
+    font-size: .9rem;
+    color: rgba(255, 255, 255, .65);
+    text-align: center;
+}
+.ag-business-account-form__footnote a {
+    color: #D4B45C;
+    text-decoration: none;
+}
+.ag-business-account-form__footnote a:hover {
+    color: #FFE5A0;
+}
+/* Mode jour */
+body.ag-light .ag-business-account {
+    background: #ffffff;
+    border-color: rgba(123, 45, 59, .22);
+}
+body.ag-light .ag-business-account h3 {
+    color: #2A1A1E !important;
+}
+body.ag-light .ag-business-account__greeting {
+    color: #7B2D3B !important;
+}
+body.ag-light .ag-business-account__links a {
+    background: rgba(123, 45, 59, .06);
+    color: #7B2D3B;
+    border-color: rgba(123, 45, 59, .18);
+}
+body.ag-light .ag-business-account__links a:hover {
+    background: rgba(123, 45, 59, .1);
+}
+body.ag-light .ag-business-account form input[type="text"],
+body.ag-light .ag-business-account form input[type="email"],
+body.ag-light .ag-business-account form input[type="password"],
+body.ag-light .ag-business-account-form input {
+    background: #fafafa;
+    border-color: rgba(0, 0, 0, .12);
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-account-form button[type="submit"],
+body.ag-light .ag-business-account form input[type="submit"] {
+    background: linear-gradient(135deg, #7B2D3B 0%, #A03D4D 100%);
+    color: #ffffff;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   HOME : "Le fondateur et les associés" + "Notre équipe"
+   On masque la section .ag-maitre du theme Free et la section
+   pro-features .ag-section.ag-team uniquement sur la page d'accueil
+   (front-page) — sur la page Cabinet on garde la stack JS.
+   ───────────────────────────────────────────────────────────────── */
+body.ag-business-home .ag-section.ag-maitre,
+body.ag-business-home #ag-maitre,
+body.ag-business-home .ag-section.ag-team,
+body.ag-business-home #ag-team,
+body.ag-business-active.home .ag-section.ag-maitre,
+body.ag-business-active.home #ag-maitre,
+body.ag-business-active.home .ag-section.ag-team,
+body.ag-business-active.home #ag-team,
+body.ag-business-active.front-page .ag-section.ag-maitre,
+body.ag-business-active.front-page #ag-maitre,
+body.ag-business-active.front-page .ag-section.ag-team,
+body.ag-business-active.front-page #ag-team {
+    display: none !important;
+}
+
+/* Section conteneur founder + associes */
+.ag-business-founder {
+    padding: 80px 0;
+    background: linear-gradient(180deg, #0A0E1A 0%, #0F1320 100%);
+}
+body.ag-light .ag-business-founder {
+    background: #F5F0EB;
+}
+/* Container elargi a 95% de la largeur d'ecran */
+.ag-business-founder__container {
+    max-width: 95vw !important;
+    width: 95vw !important;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+.ag-business-founder__title {
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif;
+    font-style: italic;
+    font-weight: 600;
+    text-align: center;
+    color: #D4B45C;
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 0 0 56px;
+    position: relative;
+    padding-bottom: 18px;
+}
+.ag-business-founder__title::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #D4B45C, transparent);
+}
+body.ag-light .ag-business-founder__title {
+    color: #7B2D3B;
+}
+body.ag-light .ag-business-founder__title::after {
+    background: linear-gradient(90deg, transparent, #7B2D3B, transparent);
+}
+
+/* Grid 2/3 + 1/3 sur largeur 95vw */
+.ag-business-founder__grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    align-items: stretch;
+}
+@media (max-width: 980px) {
+    .ag-business-founder__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Card fondateur (grande, gauche) — photo XL pour utiliser la largeur */
+.ag-business-founder-card {
+    background: rgba(20, 20, 30, .6);
+    border: 1px solid rgba(212, 180, 92, .25);
+    border-radius: 16px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: minmax(420px, 48%) 1fr;
+    transition: transform .4s ease, box-shadow .4s ease, border-color .4s ease;
+}
+.ag-business-founder-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(212, 180, 92, .5);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .55), 0 0 40px rgba(212, 180, 92, .12);
+}
+@media (max-width: 1100px) {
+    .ag-business-founder-card {
+        grid-template-columns: minmax(320px, 45%) 1fr;
+    }
+}
+@media (max-width: 760px) {
+    .ag-business-founder-card {
+        grid-template-columns: 1fr;
+    }
+}
+.ag-business-founder-card__photo {
+    background-size: cover;
+    background-position: center 30%;
+    min-height: 520px;
+    position: relative;
+}
+/* Signature posee en bas-droite de la photo, cursive Allison */
+.ag-business-founder-card__signature {
+    position: absolute;
+    right: 24px;
+    bottom: 22px;
+    font-family: "Allison", "Mr Dafoe", "Dancing Script", cursive;
+    font-size: 3.2rem;
+    line-height: 1;
+    color: #f4e4b8;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, .65), 0 0 22px rgba(212, 180, 92, .35);
+    letter-spacing: .5px;
+    white-space: nowrap;
+    pointer-events: none;
+    transform: rotate(-4deg);
+    transform-origin: right bottom;
+}
+@media (max-width: 760px) {
+    .ag-business-founder-card__signature {
+        font-size: 2.4rem;
+        right: 18px;
+        bottom: 16px;
+    }
+}
+body.ag-light .ag-business-founder-card__signature {
+    color: #7B2D3B;
+    text-shadow: 0 2px 10px rgba(255, 255, 255, .6);
+}
+@media (max-width: 760px) {
+    .ag-business-founder-card__photo {
+        min-height: 420px;
+    }
+}
+.ag-business-founder-card__body {
+    padding: 48px 44px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.ag-business-founder-card__tag {
+    color: #D4B45C;
+    font-size: .82rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin: 0 0 14px;
+    font-weight: 600;
+}
+.ag-business-founder-card__name {
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif;
+    font-style: italic;
+    color: #fff;
+    font-size: 2.2rem;
+    margin: 0 0 8px;
+    line-height: 1.15;
+}
+.ag-business-founder-card__role {
+    color: rgba(255, 255, 255, .8);
+    font-size: 1rem;
+    margin: 0 0 24px;
+    font-weight: 500;
+}
+.ag-business-founder-card__domains {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.ag-business-founder-card__domains li {
+    color: #f4e4b8;
+    background: rgba(212, 180, 92, .12);
+    border: 1px solid rgba(212, 180, 92, .35);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: .85rem;
+    letter-spacing: .3px;
+}
+.ag-business-founder-card__btn {
+    align-self: flex-start;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, #D4B45C 0%, #B8941F 100%);
+    color: #0A0E1A !important;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 6px;
+    border: none;
+    transition: transform .25s ease, box-shadow .25s ease;
+    letter-spacing: .5px;
+}
+.ag-business-founder-card__btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(212, 180, 92, .35);
+}
+
+/* Colonne droite : 2 associes empiles */
+.ag-business-founder__associates {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.ag-business-founder__associates-tag {
+    color: #D4B45C;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-weight: 600;
+    margin: 0 0 4px;
+    text-align: center;
+}
+body.ag-light .ag-business-founder__associates-tag {
+    color: #7B2D3B;
+}
+
+/* Mini-card associate (compacte, simplifiee) */
+.ag-business-associate-mini {
+    background: rgba(20, 20, 30, .55);
+    border: 1px solid rgba(212, 180, 92, .18);
+    border-radius: 12px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
+    flex: 1;
+}
+.ag-business-associate-mini:hover {
+    transform: translateY(-3px);
+    border-color: rgba(212, 180, 92, .42);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, .45);
+}
+.ag-business-associate-mini__photo {
+    background-size: cover;
+    background-position: center 20%;
+    min-height: 100%;
+}
+.ag-business-associate-mini__body {
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+}
+.ag-business-associate-mini__name {
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif;
+    font-style: italic;
+    color: #D4B45C;
+    font-size: 1.1rem;
+    margin: 0;
+    line-height: 1.2;
+}
+.ag-business-associate-mini__domain {
+    color: #ddd;
+    font-size: .85rem;
+    margin: 0;
+    font-weight: 500;
+}
+.ag-business-associate-mini__link {
+    color: #D4B45C;
+    font-size: .82rem;
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: .5px;
+    margin-top: 4px;
+    transition: color .2s ease, transform .2s ease;
+    align-self: flex-start;
+}
+.ag-business-associate-mini__link:hover {
+    color: #f4e4b8;
+    transform: translateX(3px);
+}
+@media (max-width: 540px) {
+    .ag-business-associate-mini {
+        grid-template-columns: 100px 1fr;
+    }
+    .ag-business-associate-mini__photo {
+        min-height: 140px;
+    }
+}
+
+/* Light theme overrides */
+body.ag-light .ag-business-founder-card {
+    background: #fff;
+    border-color: rgba(123, 45, 59, .15);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, .06);
+}
+body.ag-light .ag-business-founder-card:hover {
+    border-color: rgba(123, 45, 59, .35);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .12);
+}
+body.ag-light .ag-business-founder-card__name {
+    color: #7B2D3B;
+}
+body.ag-light .ag-business-founder-card__role {
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-founder-card__tag {
+    color: #B8941F;
+}
+body.ag-light .ag-business-founder-card__domains li {
+    color: #7B2D3B;
+    background: rgba(123, 45, 59, .08);
+    border-color: rgba(123, 45, 59, .25);
+}
+body.ag-light .ag-business-founder-card__btn {
+    background: linear-gradient(135deg, #7B2D3B 0%, #A03D4D 100%);
+    color: #ffffff !important;
+}
+body.ag-light .ag-business-associate-mini {
+    background: #fff;
+    border-color: rgba(123, 45, 59, .12);
+    box-shadow: 0 3px 16px rgba(0, 0, 0, .05);
+}
+body.ag-light .ag-business-associate-mini:hover {
+    border-color: rgba(123, 45, 59, .3);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, .1);
+}
+body.ag-light .ag-business-associate-mini__name {
+    color: #7B2D3B;
+}
+body.ag-light .ag-business-associate-mini__domain {
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-associate-mini__link {
+    color: #7B2D3B;
+}
+body.ag-light .ag-business-associate-mini__link:hover {
+    color: #B8941F;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   HOME : "Notre equipe" cards compactes (sans cursus/formation)
+   Garde photo + nom + role + domaines + lien Decouvrir vers
+   /cabinet/. Override le grid d'origine pour 3 colonnes responsives.
+   ───────────────────────────────────────────────────────────────── */
+.ag-business-team-compact-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 28px !important;
+}
+@media (max-width: 980px) {
+    .ag-business-team-compact-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+@media (max-width: 600px) {
+    .ag-business-team-compact-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+.ag-business-team-compact {
+    background: rgba(20, 20, 30, .6);
+    border: 1px solid rgba(212, 180, 92, .2);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: transform .4s ease, box-shadow .4s ease, border-color .4s ease;
+    display: flex;
+    flex-direction: column;
+}
+.ag-business-team-compact:hover {
+    transform: translateY(-4px);
+    border-color: rgba(212, 180, 92, .45);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, .5);
+}
+.ag-business-team-compact__photo {
+    aspect-ratio: 4 / 3;
+    background-size: cover;
+    background-position: center 25%;
+}
+.ag-business-team-compact__body {
+    padding: 22px 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+.ag-business-team-compact__name {
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif;
+    font-style: italic;
+    color: #D4B45C;
+    font-size: 1.2rem;
+    margin: 0;
+    line-height: 1.2;
+}
+.ag-business-team-compact__role {
+    color: rgba(255, 255, 255, .8);
+    font-size: .85rem;
+    margin: 0;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.ag-business-team-compact__domains {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.ag-business-team-compact__domains li {
+    color: #f4e4b8;
+    background: rgba(212, 180, 92, .12);
+    border: 1px solid rgba(212, 180, 92, .3);
+    padding: 5px 11px;
+    border-radius: 999px;
+    font-size: .76rem;
+    letter-spacing: .2px;
+}
+.ag-business-team-compact__link {
+    margin-top: auto;
+    padding-top: 14px;
+    color: #D4B45C;
+    font-size: .88rem;
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: .5px;
+    align-self: flex-start;
+    transition: color .2s ease, transform .2s ease;
+}
+.ag-business-team-compact__link:hover {
+    color: #f4e4b8;
+    transform: translateX(4px);
+}
+body.ag-light .ag-business-team-compact {
+    background: #fff;
+    border-color: rgba(123, 45, 59, .12);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, .05);
+}
+body.ag-light .ag-business-team-compact:hover {
+    border-color: rgba(123, 45, 59, .3);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, .12);
+}
+body.ag-light .ag-business-team-compact__name {
+    color: #7B2D3B;
+}
+body.ag-light .ag-business-team-compact__role {
+    color: #5A4549;
+}
+body.ag-light .ag-business-team-compact__domains li {
+    color: #7B2D3B;
+    background: rgba(123, 45, 59, .08);
+    border-color: rgba(123, 45, 59, .25);
+}
+body.ag-light .ag-business-team-compact__link {
+    color: #7B2D3B;
+}
+body.ag-light .ag-business-team-compact__link:hover {
+    color: #B8941F;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   HOME : combine "Le cabinet" + "Prendre rendez-vous"
+   Form a gauche 2/3, infos cabinet a droite 1/3, map plein largeur
+   en dessous. Les sections d'origine sont videes + masquees par JS.
+   ───────────────────────────────────────────────────────────────── */
+.ag-business-cabinet-rdv {
+    padding: 80px 0 60px;
+    background: linear-gradient(180deg, #0F1320 0%, #0A0E1A 100%);
+}
+body.ag-light .ag-business-cabinet-rdv {
+    background: #ffffff;
+}
+/* Inner container : pile honoraires (top) puis grid (bottom) */
+.ag-business-cabinet-rdv__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+}
+
+/* Top zone : honoraires plein largeur */
+.ag-business-cabinet-rdv__honoraires {
+    width: 100%;
+}
+.ag-business-cabinet-rdv__honoraires .ag-section-title,
+.ag-business-cabinet-rdv__honoraires .ag-section-lead {
+    text-align: center;
+}
+.ag-business-cabinet-rdv__honoraires .ag-section-title {
+    margin-top: 0;
+}
+.ag-business-cabinet-rdv__honoraires .ag-honoraires__grid {
+    margin-top: 32px !important;
+}
+
+/* Bottom : grid 2-col rdv | cabinet */
+.ag-business-cabinet-rdv__grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 48px;
+    align-items: start;
+}
+.ag-business-cabinet-rdv__left,
+.ag-business-cabinet-rdv__right {
+    min-width: 0;
+}
+@media (max-width: 980px) {
+    .ag-business-cabinet-rdv__grid {
+        grid-template-columns: 1fr;
+        gap: 36px;
+    }
+}
+
+/* Titres dans chaque colonne : aligner */
+.ag-business-cabinet-rdv__left .ag-section-title,
+.ag-business-cabinet-rdv__right .ag-section-title {
+    text-align: left;
+    margin-top: 0;
+    font-size: clamp(1.4rem, 2.4vw, 1.85rem);
+}
+.ag-business-cabinet-rdv__left .ag-section-lead,
+.ag-business-cabinet-rdv__right .ag-section-lead {
+    text-align: left;
+    margin-bottom: 24px;
+}
+
+/* Colonne droite : 3 blocks empiles verticalement */
+.ag-business-cabinet-rdv__right .ag-cabinet__cards {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 18px !important;
+    margin-top: 0 !important;
+}
+.ag-business-cabinet-rdv__right .ag-cabinet__block {
+    text-align: left !important;
+    padding: 22px 22px !important;
+    margin: 0 !important;
+}
+.ag-business-cabinet-rdv__right .ag-cabinet__block-icon {
+    font-size: 1.6rem !important;
+    margin-bottom: 8px !important;
+}
+.ag-business-cabinet-rdv__right .ag-cabinet__block h3 {
+    margin-bottom: 6px !important;
+    font-size: .92rem !important;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+.ag-business-cabinet-rdv__right .ag-cabinet__block p {
+    font-size: .9rem !important;
+    line-height: 1.55 !important;
+    margin: 0 !important;
+}
+
+/* Colonne gauche : container etroit (ag-container--narrow) doit prendre
+   toute la largeur de la colonne ici */
+.ag-business-cabinet-rdv__left .ag-container,
+.ag-business-cabinet-rdv__left .ag-container--narrow {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+.ag-business-cabinet-rdv__left .ag-rdv__form {
+    margin: 0 !important;
+}
+
+/* Map dessous, plein largeur conteneur */
+.ag-business-cabinet-map-section {
+    padding: 0 0 80px;
+    background: linear-gradient(180deg, #0A0E1A 0%, #0F1320 100%);
+}
+body.ag-light .ag-business-cabinet-map-section {
+    background: #F5F0EB;
+}
+.ag-business-cabinet-map-section .ag-cabinet__map {
+    margin-top: 0 !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Pages single domaine — Temoignages clients (apres parallax)
+   ───────────────────────────────────────────────────────────────── */
+.ag-business-domaine-testimonials {
+    margin: 60px 0 30px;
+}
+.ag-business-domaine-testimonials__title {
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif !important;
+    font-style: italic;
+    text-align: center;
+    color: #D4B45C;
+    font-size: clamp(1.6rem, 2.5vw, 2.1rem);
+    letter-spacing: 1.5px;
+    margin: 0 0 32px;
+    text-transform: uppercase;
+    position: relative;
+    padding-bottom: 16px;
+}
+.ag-business-domaine-testimonials__title::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #D4B45C, transparent);
+}
+.ag-business-domaine-testimonials__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+@media (max-width: 900px) {
+    .ag-business-domaine-testimonials__grid {
+        grid-template-columns: 1fr;
+    }
+}
+.ag-business-testimonial-card {
+    background: rgba(20, 20, 30, .6);
+    border: 1px solid rgba(212, 180, 92, .22);
+    border-radius: 14px;
+    padding: 28px 26px;
+    position: relative;
+    transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+}
+.ag-business-testimonial-card::before {
+    content: "“";
+    position: absolute;
+    top: 6px;
+    left: 18px;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 4rem;
+    color: rgba(212, 180, 92, .35);
+    line-height: 1;
+}
+.ag-business-testimonial-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(212, 180, 92, .45);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, .45);
+}
+.ag-business-testimonial-card__quote {
+    color: #ddd;
+    font-size: .98rem;
+    line-height: 1.7;
+    font-style: italic;
+    margin: 18px 0 18px;
+}
+.ag-business-testimonial-card__author {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-top: 1px solid rgba(212, 180, 92, .18);
+    padding-top: 14px;
+}
+.ag-business-testimonial-card__name {
+    color: #D4B45C;
+    font-weight: 600;
+    font-size: .95rem;
+    letter-spacing: .3px;
+}
+.ag-business-testimonial-card__role {
+    color: rgba(255, 255, 255, .6);
+    font-size: .82rem;
+    font-style: italic;
+}
+body.ag-light .ag-business-testimonial-card {
+    background: #fff;
+    border-color: rgba(123, 45, 59, .12);
+    box-shadow: 0 3px 18px rgba(0, 0, 0, .05);
+}
+body.ag-light .ag-business-testimonial-card:hover {
+    border-color: rgba(123, 45, 59, .3);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, .12);
+}
+body.ag-light .ag-business-testimonial-card::before {
+    color: rgba(123, 45, 59, .25);
+}
+body.ag-light .ag-business-testimonial-card__quote {
+    color: #2A1A1E;
+}
+body.ag-light .ag-business-testimonial-card__name {
+    color: #7B2D3B;
+}
+body.ag-light .ag-business-testimonial-card__role {
+    color: #5A4549;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Bouton "Haut de page" : remplace la fleche unicode ↑ par un SVG
+   chevron-up plus sobre. Utilise mask-image pour que la couleur
+   suive le currentColor du bouton (= adapte mode jour/nuit auto).
+   ───────────────────────────────────────────────────────────────── */
+body.ag-business-active .ag-totop {
+    font-size: 0 !important; /* cache le caractere unicode ↑ */
+    line-height: 0 !important;
+}
+body.ag-business-active .ag-totop::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background-color: currentColor;
+    -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='12' y1='19' x2='12' y2='5'/%3E%3Cpolyline points='5 12 12 5 19 12'/%3E%3C/svg%3E");
+            mask-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='12' y1='19' x2='12' y2='5'/%3E%3Cpolyline points='5 12 12 5 19 12'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+            mask-position: center;
+    -webkit-mask-size: contain;
+            mask-size: contain;
+    transition: transform .3s ease;
+}
+body.ag-business-active .ag-totop:hover::before {
+    transform: translateY(-2px);
+}

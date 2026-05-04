@@ -78,9 +78,9 @@ $has_screenshot = file_exists( $screenshot_file );
 
                 <div>
                     <h3 style="font-size:1.2rem;color:#D4B45C;margin-bottom:18px;text-transform:uppercase;letter-spacing:1px;">✓ Inclus dans la version gratuite</h3>
-                    <ul style="list-style:none;padding:0;margin:0 0 28px 0;">
+                    <ul class="ag-metier-features-list" style="list-style:none;padding:0;margin:0 0 28px 0;">
                         <?php foreach ( $ag_metier['free_features'] as $feat ) : ?>
-                        <li style="padding:10px 0 10px 30px;position:relative;border-bottom:1px solid rgba(255,255,255,.05);color:#e8e6e0;font-size:.95rem;">
+                        <li class="ag-metier-features-list__item" style="padding:10px 0 10px 30px;position:relative;border-bottom:1px solid rgba(255,255,255,.05);color:#e8e6e0;font-size:.95rem;">
                             <span style="position:absolute;left:0;color:#28a745;font-weight:700;">✓</span>
                             <?php echo wp_kses_post( $feat ); ?>
                         </li>
@@ -144,7 +144,7 @@ $has_screenshot = file_exists( $screenshot_file );
                         <p class="ag-cfg__panel-note">Aucune carte bancaire demandée. Juste un email pour vous envoyer le ZIP.</p>
                     </div>
 
-                    <!-- Pro -->
+                    <!-- Premium -->
                     <div class="ag-cfg__panel" data-tier="premium" role="tabpanel">
                         <div class="ag-cfg__panel-head">
                             <h3>⚡ Pack Premium pour <?php echo esc_html( $ag_metier['name'] ); ?></h3>
@@ -152,7 +152,7 @@ $has_screenshot = file_exists( $screenshot_file );
                         </div>
                         <p class="ag-cfg__panel-sub">Le plugin qui transforme le thème basique en thème professionnel finalisé.</p>
                         <ul class="ag-cfg__features">
-                            <?php foreach ( $ag_metier['pro_features'] as $feat ) : ?>
+                            <?php foreach ( $ag_metier['premium_features'] as $feat ) : ?>
                             <li><?php echo wp_kses_post( $feat ); ?></li>
                             <?php endforeach; ?>
                         </ul>
@@ -161,8 +161,6 @@ $has_screenshot = file_exists( $screenshot_file );
                         </a>
                         <p class="ag-cfg__panel-note">Paiement unique, pas d'abonnement. Compatible avec les 5 thèmes AG Starter.</p>
                     </div>
-
-                    <!-- Premium tier removed — only Free/Pro/Business -->
 
                     <!-- Business -->
                     <div class="ag-cfg__panel" data-tier="business" role="tabpanel">

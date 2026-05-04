@@ -1,58 +1,168 @@
-/**
- * AG Starter Avocat Pro — animations + sticky header.
- * Targets .ag-site-header (avocat-specific class).
- */
 (function(){
     'use strict';
-
-    // Sticky header
+    var ease = 'cubic-bezier(.23,1,.32,1)';
     var header = document.querySelector('.ag-site-header');
+
+    // Header: transparent → solid
     if (header) {
-        var scrolled = false;
         window.addEventListener('scroll', function(){
-            var s = window.scrollY > 60;
-            if (s !== scrolled) {
-                scrolled = s;
-                header.classList.toggle('scrolled', s);
-            }
+            header.classList.toggle('scrolled', window.scrollY > 60);
         }, {passive:true});
     }
 
-    // Auto-apply animation classes
-    if (!document.body.classList.contains('ag-has-animations')) return;
-
-    var selectors = [
-        '.ag-hero__title', '.ag-hero__subtitle', '.ag-hero .ag-btn',
-        '.ag-domaine-card', '.ag-honoraires__card',
-        '.ag-maitre', '.ag-cabinet', '.ag-rdv',
-        '.ag-info', '.ag-testimonial-card',
-        '.ag-section > .ag-container > h2',
-        '.ag-section > .ag-container > p',
-        '.ag-footer-col'
-    ].join(',');
-
-    var elements = document.querySelectorAll(selectors);
-    elements.forEach(function(el, i) {
-        if (!el.classList.contains('ag-fade-in')) {
-            el.classList.add('ag-fade-in');
-            el.style.transitionDelay = Math.min(i * 0.06, 0.6) + 's';
-        }
+    // Smooth scroll
+    document.addEventListener('click', function(e) {
+        var link = e.target.closest('a[href*="#"]');
+        if (!link) return;
+        var href = link.getAttribute('href');
+        var hash = href.indexOf('#') !== -1 ? href.substring(href.indexOf('#')) : '';
+        if (!hash || hash === '#') return;
+        var target = document.querySelector(hash);
+        if (!target) return;
+        e.preventDefault();
+        var offset = header ? header.offsetHeight + 10 : 0;
+        window.scrollTo({ top: target.getBoundingClientRect().top + window.pageYOffset - offset, behavior: 'smooth' });
+        if (history.pushState) history.pushState(null, null, hash);
     });
 
-    // IntersectionObserver
+    // Mobile menu
+    var toggle = document.querySelector('.ag-menu-toggle');
+    var menu = document.querySelector('.ag-primary-menu');
+    if (toggle && menu) {
+        toggle.addEventListener('click', function() {
+            var open = menu.classList.toggle('open');
+            toggle.classList.toggle('active', open);
+            toggle.setAttribute('aria-expanded', open);
+        });
+        menu.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') {
+                menu.classList.remove('open');
+                toggle.classList.remove('active');
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    // Theme toggle — visitor can switch light/dark
+    var themeBtn = document.querySelector('.ag-theme-toggle');
+    if (themeBtn) {
+        var icon = themeBtn.querySelector('.ag-theme-toggle__icon');
+        var saved = localStorage.getItem('ag_mode');
+        if (saved === 'dark') document.body.classList.remove('ag-light');
+        else if (saved === 'light') document.body.classList.add('ag-light');
+
+        // Inject light mode style tag
+        var lightCSS = document.createElement('style');
+        lightCSS.id = 'ag-light-force';
+        lightCSS.textContent = 'body.ag-light .ag-maitre,body.ag-light .ag-section.ag-maitre{background:#EDE6DF !important;background-image:none !important;}body.ag-light .ag-section{background:#F5F0EB !important;background-image:none !important;}body.ag-light .ag-section:nth-of-type(even){background:#EDE6DF !important;}body.ag-light .ag-cabinet,body.ag-light .ag-cabinet-map-section{background:#F5F0EB !important;background-image:none !important;}body.ag-light .ag-rdv{background:#EDE6DF !important;background-image:none !important;}body.ag-light .ag-hero{background:linear-gradient(180deg,rgba(245,240,235,.15) 0%,rgba(245,240,235,.93) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center 20%/cover no-repeat !important;}body.ag-light .ag-hero::before{background:none !important;}body.ag-light .ag-page-hero{background:linear-gradient(180deg,rgba(245,240,235,.2) 0%,rgba(245,240,235,.95) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center 20%/cover !important;}body.ag-light .ag-site-header.scrolled{background:rgba(245,240,235,.97) !important;}body.ag-light .ag-rdv__form{background:#fff !important;}body.ag-light .ag-rdv-contact{background:#EDE6DF !important;background-image:none !important;}body.ag-light .ag-site-footer{background:#EDE6DF !important;}';
+        document.head.appendChild(lightCSS);
+
+        function applyMode() {
+            var light = document.body.classList.contains('ag-light');
+            if (icon) icon.textContent = light ? '☀️' : '🌙';
+        }
+        applyMode();
+
+        themeBtn.addEventListener('click', function() {
+            document.body.classList.toggle('ag-light');
+            localStorage.setItem('ag_mode', document.body.classList.contains('ag-light') ? 'light' : 'dark');
+            applyMode();
+        });
+    }
+
+    // Back to top
+    var totop = document.createElement('a');
+    totop.href = '#';
+    totop.className = 'ag-totop';
+    totop.innerHTML = '↑';
+    totop.setAttribute('aria-label', 'Haut de page');
+    document.body.appendChild(totop);
+    window.addEventListener('scroll', function(){
+        totop.classList.toggle('visible', window.scrollY > 400);
+    }, {passive:true});
+    totop.addEventListener('click', function(e){
+        e.preventDefault();
+        window.scrollTo({top:0, behavior:'smooth'});
+    });
+
+    // Animations
+    if (!document.body.classList.contains('ag-has-animations')) return;
+
+    var stagger = {card:120, domaine:120, honoraire:130, step:130, col:100};
+
+    function setInitial(el, type) {
+        var t = 'transition:opacity .7s '+ease+',transform .7s '+ease+';';
+        switch(type) {
+            case 'slide-right':
+                el.style.cssText += 'opacity:0;transform:translateX(60px);'+t; break;
+            case 'slide-left':
+                el.style.cssText += 'opacity:0;transform:translateX(-60px);'+t; break;
+            case 'scale':
+                el.style.cssText += 'opacity:0;transform:scale(.88);'+t; break;
+            case 'title':
+                el.style.cssText += 'opacity:0;transform:translateY(30px);'+t;
+                // Flying gold underline
+                el.style.position = 'relative';
+                var line = document.createElement('span');
+                line.className = 'ag-underline';
+                var accentColor = (typeof agSkin !== 'undefined') ? agSkin.accent : '#D4B45C';
+                line.style.cssText = 'position:absolute;bottom:-8px;left:0;width:0;height:3px;background:'+accentColor+';border-radius:2px;transition:width .8s '+ease+';';
+                el.appendChild(line);
+                el._underline = line;
+                break;
+            default:
+                el.style.cssText += 'opacity:0;transform:translateY(40px);'+t;
+        }
+        el._animType = type;
+    }
+
+    function reveal(el) {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0) translateX(0) scale(1)';
+        if (el._underline) el._underline.style.width = '55%';
+    }
+
+    // Map elements to animation types
+    var mappings = [
+        {sel: '.ag-section-title', type: 'title'},
+        {sel: '.ag-section-lead', type: 'default'},
+        {sel: '.ag-domaine-card', type: 'default', stag: 120},
+        {sel: '.ag-honoraires__card', type: 'default', stag: 130},
+        {sel: '.ag-maitre__photo', type: 'slide-left'},
+        {sel: '.ag-maitre__body', type: 'slide-right'},
+        {sel: '.ag-cabinet__block', type: 'scale', stag: 130},
+        {sel: '.ag-cabinet-full__map', type: 'slide-left'},
+        {sel: '.ag-cabinet-full__cards', type: 'slide-right'},
+        {sel: '.ag-testimonial-card', type: 'default', stag: 150},
+        {sel: '.ag-footer-col', type: 'default', stag: 100},
+        {sel: '.ag-post-card', type: 'default', stag: 120},
+        {sel: '.ag-page-article', type: 'default'},
+        {sel: '.ag-page-hero__lead', type: 'default'},
+        {sel: '.ag-rdv__form', type: 'scale'},
+        {sel: '.ag-domaine-examples', type: 'slide-left'},
+        {sel: '.ag-domaine-cta', type: 'default'},
+    ];
+
+    var allAnimated = [];
+    mappings.forEach(function(m) {
+        var els = document.querySelectorAll(m.sel);
+        els.forEach(function(el, i) {
+            setInitial(el, m.type);
+            if (m.stag) el.style.transitionDelay = (i * m.stag) + 'ms';
+            allAnimated.push(el);
+        });
+    });
+
     if (!('IntersectionObserver' in window)) {
-        document.querySelectorAll('.ag-fade-in').forEach(function(el){ el.classList.add('visible'); });
+        allAnimated.forEach(reveal);
         return;
     }
 
     var obs = new IntersectionObserver(function(entries){
         entries.forEach(function(e){
-            if (e.isIntersecting) {
-                e.target.classList.add('visible');
-                obs.unobserve(e.target);
-            }
+            if (e.isIntersecting) { reveal(e.target); obs.unobserve(e.target); }
         });
-    }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+    }, { threshold: 0.15 });
 
-    document.querySelectorAll('.ag-fade-in').forEach(function(el){ obs.observe(el); });
+    allAnimated.forEach(function(el){ obs.observe(el); });
 })();

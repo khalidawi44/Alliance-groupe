@@ -32,7 +32,7 @@ set_query_var( 'ag_metier', array(
         '100% responsive, blog, commentaires, recherche, compatible Gutenberg',
     ),
 
-    'pro_features' => array(
+    'premium_features' => array(
         'Animations douces sur les domaines d\'expertise (fade-in + hover)',
         '<strong>Sticky header</strong> avec téléphone toujours visible — facilite l\'appel depuis mobile',
         '10 blocs Gutenberg juridiques (FAQ, timeline, témoignages anonymisés, "Avant/Après procédure")',
@@ -41,17 +41,6 @@ set_query_var( 'ag_metier', array(
         'Notification par email plus stylée + copie automatique au demandeur',
         'Support email prioritaire 60 jours',
         'Documentation vidéo complète',
-    ),
-
-    'premium_features' => array(
-        '<strong>Tout Pro inclus</strong>',
-        '<strong>Multi-langue 6 langues</strong> (FR, EN, ES, IT, DE, AR) — idéal pour clients internationaux',
-        '<strong>Espace client sécurisé</strong> — partage de documents confidentiels, RGPD compliant',
-        '<strong>Calendrier RDV intégré</strong> — réservation automatisée sans Calendly externe',
-        'Intégration WooCommerce — vente de consultations en ligne',
-        'Import/export des réglages (utile si plusieurs cabinets)',
-        'Support prioritaire 12 mois (réponse sous 24h)',
-        'Mises à jour à vie + appel expert 30 min',
     ),
 
     'business_features' => array(

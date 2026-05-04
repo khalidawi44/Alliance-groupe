@@ -1,4 +1,11 @@
 <?php $img_base = get_stylesheet_directory_uri() . '/assets/images/team/'; ?>
+<?php
+// Detection PHP fiable : on cache les collaborateurs sur mobile
+// uniquement quand cette partial est incluse depuis la page d'accueil
+// (page-accueil.php). Ne depend pas des body classes WP qui peuvent
+// varier selon la config front-page-statique vs blog.
+$ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
+?>
 
 <section class="ag-section ag-section--or">
     <div class="ag-container">
@@ -43,7 +50,7 @@
         <h2 class="ag-section__title ag-anim" data-anim="title">Les visages derrière <em>Alliance Groupe</em></h2>
         <p class="ag-section__desc ag-anim" data-anim="desc">Une équipe internationale répartie entre Naples, Nantes et Marrakech.</p>
 
-        <div class="ag-team__grid">
+        <div class="ag-team__grid<?php if ( $ag_about_is_home ) echo ' ag-team__grid--home-condense'; ?>">
             <?php
             $team = [
                 [
@@ -133,5 +140,12 @@
             </div>
             <?php endforeach; ?>
         </div>
+
+        <?php if ( $ag_about_is_home ) : ?>
+            <?php /* Mobile + home uniquement : bouton vers la page A propos. */ ?>
+            <div class="ag-team__see-all-mobile">
+                <a href="<?php echo esc_url(home_url('/a-propos')); ?>" class="ag-btn-outline">Voir toute l'équipe →</a>
+            </div>
+        <?php endif; ?>
     </div>
 </section>

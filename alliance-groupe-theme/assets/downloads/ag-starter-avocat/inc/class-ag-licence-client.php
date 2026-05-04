@@ -214,7 +214,7 @@ class AG_Licence_Client {
                 <?php if ( $is_pro ) : ?>
                     <h2 style="margin-top:0;color:#28a745;">✅ Licence active — <?php echo esc_html( ucfirst( $tier ) ); ?></h2>
                     <p>Votre licence est activée pour <strong><?php echo esc_html( self::get_domain() ); ?></strong>.</p>
-                    <p>WordPress vous proposera automatiquement les mises à jour Pro. Allez dans <strong>Apparence → Thèmes</strong> pour vérifier.</p>
+                    <p>WordPress vous proposera automatiquement les mises a jour Premium. Allez dans <strong>Apparence → Thèmes</strong> pour vérifier.</p>
 
                     <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                         <?php wp_nonce_field( 'ag_licence_deactivate' ); ?>
@@ -223,7 +223,7 @@ class AG_Licence_Client {
                     </form>
 
                 <?php else : ?>
-                    <h2 style="margin-top:0;">Activez votre licence Pro</h2>
+                    <h2 style="margin-top:0;">Activez votre licence Premium</h2>
                     <p>Collez votre clé de licence reçue par email après achat. Elle ressemble à : <code>AGPRO-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx</code></p>
 
                     <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -238,7 +238,7 @@ class AG_Licence_Client {
                     <hr>
                     <p>Vous n'avez pas de licence ?
                         <a href="https://alliancegroupe-inc.com/templates-wordpress" target="_blank" rel="noopener" style="color:#D4B45C;font-weight:700;">
-                            Voir les packs Pro →
+                            Voir les packs Premium →
                         </a>
                     </p>
                 <?php endif; ?>

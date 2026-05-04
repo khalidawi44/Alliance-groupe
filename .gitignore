@@ -1,0 +1,109 @@
+# ─────────────────────────────────────────────────────────────────
+# WordPress — fichiers sensibles
+# ─────────────────────────────────────────────────────────────────
+# Identifiants DB + AUTH_KEY/NONCE_KEY/etc — JAMAIS dans git
+wp-config.php
+wp-config-local.php
+wp-config-staging.php
+wp-config-production.php
+wp-config-backup.php
+wp-config.bak
+.htaccess
+.htpasswd
+
+# Variables d'environnement
+.env
+.env.*
+!.env.example
+
+# Cles, certificats, secrets
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+secrets.json
+credentials.json
+
+# ─────────────────────────────────────────────────────────────────
+# WordPress — dossiers a exclure
+# ─────────────────────────────────────────────────────────────────
+# Uploads media (lourd, regenerable, peut contenir donnees clients)
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/cache/
+wp-content/backup/
+wp-content/backups/
+wp-content/wpforms/
+
+# Plugins/themes tiers (gerer via composer ou install manuelle)
+wp-content/plugins/akismet/
+wp-content/plugins/hello.php
+wp-content/plugins/woocommerce/
+wp-content/plugins/wp-simple-pay/
+wp-content/plugins/mailpoet/
+
+# Logs et debug
+wp-content/debug.log
+*.log
+debug.log
+error_log
+error.log
+
+# Coeur WP (ne devrait pas etre dans le repo, mais au cas ou)
+wp-admin/
+wp-includes/
+wp-*.php
+!wp-content/
+
+# ─────────────────────────────────────────────────────────────────
+# OS et editeurs
+# ─────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.code-workspace
+.project
+.settings/
+
+# ─────────────────────────────────────────────────────────────────
+# Build / dependencies
+# ─────────────────────────────────────────────────────────────────
+node_modules/
+vendor/
+composer.lock
+package-lock.json
+yarn.lock
+.npm/
+.cache/
+dist/
+build/
+
+# ─────────────────────────────────────────────────────────────────
+# Backups / dumps DB / archives
+# ─────────────────────────────────────────────────────────────────
+*.sql
+*.sql.gz
+*.sql.zip
+*.tar.gz
+*.tar.bz2
+backup-*.zip
+*.bak
+
+# ─────────────────────────────────────────────────────────────────
+# Tests / CI artifacts
+# ─────────────────────────────────────────────────────────────────
+.phpunit.result.cache
+coverage/
+.nyc_output/
+
+# ─────────────────────────────────────────────────────────────────
+# Specifique projet AG
+# ─────────────────────────────────────────────────────────────────
+# Note : les .zip des plugins distribuables (ag-business-avocat.zip
+# etc.) DOIVENT etre commit — ils sont references par ag-dev-sync.

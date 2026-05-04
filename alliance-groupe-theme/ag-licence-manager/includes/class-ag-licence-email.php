@@ -11,12 +11,12 @@ class AG_Licence_Email {
      *
      * @param string $email     Recipient.
      * @param string $clear_key The clear-text licence key.
-     * @param string $tier      pro|premium|business
+     * @param string $tier      premium|business
      */
     public static function send_licence( $email, $clear_key, $tier ) {
         $tier_labels = array(
             'premium'  => 'Pack Premium (99 €)',
-            'business' => 'Pack Business (149 €)',
+            'business' => 'Pack Business (199 €)',
         );
         $label = isset( $tier_labels[ $tier ] ) ? $tier_labels[ $tier ] : ucfirst( $tier );
 
@@ -32,7 +32,7 @@ class AG_Licence_Email {
               . "2. Allez dans Apparence → Licence AG Starter\n"
               . "3. Collez la clé ci-dessus dans le champ \"Clé de licence\"\n"
               . "4. Cliquez sur \"Activer\"\n"
-              . "5. WordPress vous proposera automatiquement la mise à jour vers la version Pro\n"
+              . "5. WordPress vous proposera automatiquement la mise à jour vers la version Premium\n"
               . "6. Cliquez sur \"Mettre à jour\" — c'est fait !\n\n"
               . "IMPORTANT :\n"
               . "- Cette clé est valable pour 1 site (1 domaine)\n"

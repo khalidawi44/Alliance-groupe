@@ -36,10 +36,10 @@ function ag_starter_avocat_customizer_defaults() {
 		// Hero.
 		'ag_hero_show'          => true,
 		'ag_hero_prefix'        => 'Cabinet',
-		'ag_hero_brand'         => '[Maitre Nom]',
+		'ag_hero_brand'         => '[Maître Nom]',
 		'ag_hero_subtitle'      => 'Avocat au barreau, conseil juridique et defense de vos interets en toute confidentialite.',
 		'ag_hero_button'        => 'Prendre rendez-vous',
-		'ag_hero_button_url'    => '#ag-rdv',
+		'ag_hero_button_url'    => '/rendez-vous/',
 		// Footer.
 		'ag_footer_copyright'   => '',
 		'ag_footer_credits'     => true,
@@ -53,12 +53,12 @@ function ag_starter_avocat_customizer_defaults() {
 		'ag_cabinet_rpva'       => '',
 		// Le Maître.
 		'ag_maitre_show'        => true,
-		'ag_maitre_name'        => '[Maitre Nom]',
+		'ag_maitre_name'        => '[Maître Nom]',
 		'ag_maitre_barreau'     => 'Inscrit au Barreau de Paris',
 		'ag_maitre_year'        => '2010',
 		'ag_maitre_bio'         => "Avocat au barreau depuis plus de quinze ans, j'accompagne particuliers et entreprises avec rigueur, ecoute et discretion. Mon approche : analyser chaque dossier en profondeur, vous expliquer clairement vos options, et batir avec vous la strategie la plus efficace.",
 		'ag_maitre_specialties' => 'Droit des affaires · Droit du travail · Droit de la famille',
-		'ag_maitre_photo'       => '',
+		'ag_maitre_photo'       => 'https://images.unsplash.com/photo-1556157382-97eda2d62296?w=400&q=80',
 		// Honoraires.
 		'ag_honoraires_show'        => true,
 		'ag_honoraires_first_label' => 'Premier rendez-vous',
@@ -609,32 +609,25 @@ function ag_starter_avocat_register_upgrade_control() {
 			$base = 'https://alliancegroupe-inc.com/templates-wordpress';
 			$contact = 'https://alliancegroupe-inc.com/contact' . $utm;
 			$packs = array(
-				'pro' => array(
-					'icon'  => '⚡',
-					'title' => 'Pack Pro',
-					'price' => '49€',
-					'desc'  => 'Animations sur les domaines, sticky header avec tel cliquable, FAQ et timeline juridiques, blocs temoignages anonymises',
-					'url'   => $base . $utm . '&pack=pro#ag-pricing',
-				),
 				'premium' => array(
-					'icon'  => '🌍',
+					'icon'  => '⭐',
 					'title' => 'Pack Premium',
 					'price' => '99€',
-					'desc'  => 'Multi-langue 6 langues (clientele internationale) + espace client securise pour partage de documents (RGPD) + calendrier de RDV integre',
+					'desc'  => 'Design luxe, animations scroll, header sticky, 2 skins de couleur, temoignages clients, telephone header',
 					'url'   => $base . $utm . '&pack=premium#ag-pricing',
 				),
 				'business' => array(
 					'icon'  => '💼',
 					'title' => 'Pack Business',
 					'price' => '149€',
-					'desc'  => 'Audit SEO juridique cible, white-label complet, integration CRM, maintenance 1 an, appel strategique avec Fabrizio',
+					'desc'  => 'Tout Premium + 4 skins de couleur, pub minimale, session strategique 30 min, support prioritaire',
 					'url'   => $base . $utm . '&pack=business#ag-pricing',
 				),
 			);
 			?>
 			<div style="background:#fff;border:1px solid #d4b45c;border-radius:8px;padding:14px;margin-top:8px;">
 				<p style="margin:0 0 12px;color:#50575e;font-size:12px;line-height:1.5;">
-					<?php esc_html_e( 'Vous utilisez la version gratuite. Trois packs payants debloquent plus de features :', 'ag-starter-avocat' ); ?>
+					<?php esc_html_e( 'Vous utilisez la version gratuite. Passez au Premium ou Business :', 'ag-starter-avocat' ); ?>
 				</p>
 
 				<?php foreach ( $packs as $p ) : ?>
