@@ -124,22 +124,55 @@ class AG_Fid_Pages {
 			}
 		}
 
-		// Evenements
+		// Evenements (avec meta date/heure/lieu)
 		if ( ! get_posts( array( "post_type" => "ag_evenement", "posts_per_page" => 1, "post_status" => "any" ) ) ) {
 			$events = array(
-				array( "Marche pour la justice climatique",        "Grande marche nationale samedi 15 juin. Départ 14h, place de la République à Paris, arrivée Bastille. Plus de 50 organisations partenaires, fanfare militante, prises de parole. Apportez vos pancartes !" ),
-				array( "Assemblée générale annuelle",              "AG ouverte à toutes les adhérent·es à jour de cotisation. Bilan moral, bilan financier, vote du programme stratégique 2027, élection du Conseil d'administration. Lyon, Bourse du Travail, 22 juin de 9h à 18h." ),
-				array( "Université d'été du mouvement",             "Trois jours de formations, ateliers, débats. Marseille, Friche Belle de Mai, du 6 au 8 juillet. Inscription obligatoire (gratuit pour adhérent·es, 30€ pour les autres). Hébergement solidaire possible." ),
-				array( "Atelier 'Je crée un groupe local'",          "Soirée de formation pour celles et ceux qui veulent lancer un groupe dans leur ville. Méthodologie, outils numériques, cadrage juridique. En visio, jeudi 5 juin 19h-21h. Inscription gratuite." ),
+				array(
+					"title"   => "Marche pour la justice climatique",
+					"date"    => "2026-06-15", "time" => "14:00", "end" => "18:00",
+					"city"    => "Paris", "place" => "République → Bastille",
+					"content" => "Grande marche nationale. Départ 14h place de la République, arrivée Bastille. Plus de 50 organisations partenaires, fanfare militante, prises de parole. <strong>Apportez vos pancartes !</strong> Mobilisation pour une transition écologique juste et sociale.",
+				),
+				array(
+					"title"   => "Assemblée générale annuelle",
+					"date"    => "2026-06-22", "time" => "09:00", "end" => "18:00",
+					"city"    => "Lyon", "place" => "Bourse du Travail",
+					"content" => "AG ouverte à toutes les adhérent·es à jour de cotisation. <strong>Bilan moral, bilan financier, vote du programme stratégique 2027, élection du Conseil d'administration.</strong> Émargement dès 8h30. Repas partagé sur place.",
+				),
+				array(
+					"title"   => "Université d'été du mouvement",
+					"date"    => "2026-07-06", "time" => "10:00", "end" => "18:00",
+					"city"    => "Marseille", "place" => "Friche Belle de Mai",
+					"content" => "Trois jours de formations, ateliers, débats du 6 au 8 juillet. Inscription obligatoire (gratuit pour adhérent·es, 30€ pour les autres). Hébergement solidaire possible chez les adhérent·es marseillais·es.",
+				),
+				array(
+					"title"   => "Atelier — Je crée un groupe local",
+					"date"    => "2026-06-05", "time" => "19:00", "end" => "21:00",
+					"city"    => "En visio", "place" => "Lien envoyé après inscription",
+					"content" => "Soirée de formation pour celles et ceux qui veulent lancer un groupe dans leur ville. <strong>Méthodologie, outils numériques, cadrage juridique.</strong> Inscription gratuite. Replay envoyé aux inscrit·es.",
+				),
+				array(
+					"title"   => "Conférence — Refonder l'hôpital public",
+					"date"    => "2026-06-28", "time" => "20:00", "end" => "22:30",
+					"city"    => "Toulouse", "place" => "Salle du Cabanis (centre-ville)",
+					"content" => "Présentation publique de notre contre-budget hôpital, en présence de 3 médecins de terrain et d'un économiste de la santé. <strong>Entrée libre</strong>, débat avec la salle après les interventions.",
+				),
 			);
 			foreach ( $events as $e ) {
-				wp_insert_post( array(
+				$post_id = wp_insert_post( array(
 					"post_type"    => "ag_evenement",
 					"post_status"  => "publish",
-					"post_title"   => $e[0],
-					"post_excerpt" => wp_trim_words( $e[1], 25 ),
-					"post_content" => $e[1],
+					"post_title"   => $e["title"],
+					"post_excerpt" => wp_trim_words( wp_strip_all_tags( $e["content"] ), 25 ),
+					"post_content" => $e["content"],
 				) );
+				if ( $post_id && ! is_wp_error( $post_id ) ) {
+					update_post_meta( $post_id, "_ag_event_date",  $e["date"] );
+					update_post_meta( $post_id, "_ag_event_time",  $e["time"] );
+					update_post_meta( $post_id, "_ag_event_end",   $e["end"] );
+					update_post_meta( $post_id, "_ag_event_city",  $e["city"] );
+					update_post_meta( $post_id, "_ag_event_place", $e["place"] );
+				}
 			}
 		}
 
@@ -177,6 +210,60 @@ class AG_Fid_Pages {
 					"post_title"   => $p[0],
 					"post_excerpt" => wp_trim_words( $p[1], 25 ),
 					"post_content" => $p[1],
+				) );
+			}
+		}
+
+		// Articles (post standard) — 5 articles d'actualite
+		$existing_posts = get_posts( array( "post_type" => "post", "posts_per_page" => 1, "post_status" => "any" ) );
+		$has_seeded = false;
+		foreach ( $existing_posts as $p ) {
+			if ( strpos( $p->post_title, 'ours d\'eau' ) === false && strpos( $p->post_title, 'Hello world' ) === false ) {
+				$has_seeded = true; break;
+			}
+		}
+		if ( ! $has_seeded ) {
+			$articles = array(
+				array(
+					"title"   => "Hôpital public : nous publions notre contre-budget 2026",
+					"excerpt" => "Notre groupe de travail santé publie un rapport de 60 pages chiffrant un plan d'urgence pour l'hôpital. À télécharger librement.",
+					"content" => "<p>Après 14 mois de travail, notre groupe santé publie aujourd'hui un <strong>contre-budget hôpital public</strong> de 60 pages, validé par 12 économistes universitaires et 35 médecins de terrain.</p>\n<h3>Ce que nous proposons</h3>\n<ul><li>Recrutement de 100 000 soignant·es sur 5 ans, financé par la suppression des aides aux complémentaires santé privées</li><li>Moratoire immédiat sur les fermetures de lits et de services en zone rurale</li><li>Revalorisation salariale ciblée pour les métiers en tension (infirmières, aides-soignantes)</li><li>Plan d'investissement de 12 milliards d'euros sur 5 ans pour rénover le bâti hospitalier</li></ul>\n<p>Le rapport est <strong>téléchargeable gratuitement</strong> sur notre site et a déjà été envoyé aux groupes parlementaires. Nous demanderons des auditions à la commission des Affaires sociales.</p>\n<p><em>Document écrit en licence libre Creative Commons. Diffusez-le.</em></p>",
+					"date"    => "2026-05-12 09:00:00",
+				),
+				array(
+					"title"   => "Pétition climat : 47 000 signatures en 3 semaines",
+					"excerpt" => "L'objectif de 50 000 est désormais à portée. Le dépôt à l'Assemblée est prévu pour la fin du mois. Merci à tou·tes.",
+					"content" => "<p>Lancée il y a tout juste 3 semaines, notre <strong>pétition pour la transparence des marchés publics</strong> vient de franchir la barre symbolique des <strong>47 000 signatures</strong>. À ce rythme, nous dépasserons l'objectif de 50 000 d'ici la fin du mois.</p>\n<h3>Et après ?</h3>\n<p>Nous prévoyons un dépôt officiel à l'Assemblée nationale le <strong>25 mai</strong>, en présence de plusieurs député·es de l'inter-groupe transparence. Une délégation du mouvement sera reçue à 14h dans les locaux du Palais Bourbon.</p>\n<p>Notre objectif : obtenir un débat parlementaire sur la <strong>publication open data systématique des marchés publics</strong> de plus de 25 000€, avec sanctions effectives en cas de non-respect.</p>\n<p>Vous n'avez pas encore signé ? <a href=\"/signer/\">C'est le moment.</a></p>",
+					"date"    => "2026-05-05 14:30:00",
+				),
+				array(
+					"title"   => "Nouveau groupe local à Saint-Étienne — bienvenue !",
+					"excerpt" => "Le 47e groupe local du mouvement vient d'être officialisé. Première réunion publique le 18 mai à la Maison des Syndicats.",
+					"content" => "<p>C'est officiel : le mouvement compte désormais <strong>47 groupes locaux</strong> partout en France. Le petit dernier vient d'être créé à <strong>Saint-Étienne</strong> par une équipe de 8 fondateurs et fondatrices.</p>\n<h3>Première rencontre publique</h3>\n<p>Vous habitez dans le bassin stéphanois ? Venez nous rencontrer le <strong>samedi 18 mai à 18h</strong>, à la Maison des Syndicats (Bourse du Travail, cours Victor Hugo).</p>\n<p>Au programme :</p>\n<ul><li>Présentation du mouvement et de ses combats</li><li>Tour de table : qu'est-ce qui vous fait venir ?</li><li>Identification des priorités locales (hôpital de Bellevue, transports en commun, logement étudiant)</li><li>Verre de l'amitié — bières locales offertes par la maison</li></ul>\n<p>Aucune adhésion requise pour la première réunion.</p>",
+					"date"    => "2026-04-28 17:15:00",
+				),
+				array(
+					"title"   => "Logement : nos 12 propositions pour 2027",
+					"excerpt" => "Encadrement réel des loyers, réquisition des logements vacants, plan massif de construction sociale. Un livret de 40 pages disponible.",
+					"content" => "<p>La crise du logement est devenue insupportable. Étudiant·es qui dorment dans leur voiture, familles qui consacrent 50% de leurs revenus au loyer, communes entières où il n'y a plus rien à louer. Nous publions aujourd'hui <strong>12 propositions chiffrées</strong> pour 2027.</p>\n<h3>Les axes principaux</h3>\n<ol><li><strong>Encadrement effectif des loyers</strong> en zone tendue avec contrôles aléatoires et sanctions dissuasives</li><li><strong>Réquisition des logements vacants</strong> depuis plus de 18 mois, indemnisation propriétaires</li><li><strong>200 000 logements sociaux par an</strong> pendant 5 ans, financés par un fléchage de l'épargne réglementée</li><li><strong>Plafonnement Airbnb</strong> à 90 jours/an en zone tendue (contre 120 actuellement)</li><li><strong>Garantie universelle des loyers</strong> à la charge de l'État</li></ol>\n<p>Le livret complet (40 pages) est disponible en PDF sur notre site. Nous le présenterons en avant-première lors de l'<strong>Université d'été</strong>, à Marseille du 6 au 8 juillet.</p>",
+					"date"    => "2026-04-20 10:00:00",
+				),
+				array(
+					"title"   => "AG 2026 : ce qui a été voté",
+					"excerpt" => "Compte-rendu de l'Assemblée générale annuelle de Lyon. Bilan financier, élection du CA, programme stratégique 2027.",
+					"content" => "<p>Le 22 juin dernier, plus de <strong>650 adhérent·es</strong> se sont réuni·es à la Bourse du Travail de Lyon pour notre Assemblée générale annuelle. Voici les principales décisions.</p>\n<h3>Bilan financier — adopté à 94%</h3>\n<p>Comptes 2025 certifiés sans réserve par notre commissaire aux comptes. Total des recettes : <strong>312 000€</strong> dont 78% de cotisations et dons d'adhérent·es. Aucun don de plus de 1 500€. Tous les comptes sont publiés en open data sur notre site.</p>\n<h3>Programme stratégique 2027 — adopté à 87%</h3>\n<ul><li>Lancement de 3 nouvelles campagnes thématiques : santé mentale, ruralité, handicap</li><li>Objectif de 60 groupes locaux d'ici fin 2027 (soit +28%)</li><li>Création d'un fonds d'aide juridique pour soutenir les actions des groupes locaux</li><li>Refonte du site internet et lancement d'une newsletter hebdomadaire</li></ul>\n<h3>Conseil d'administration — élu</h3>\n<p>Le nouveau CA compte 13 membres (parité respectée), élu·es pour 2 ans. Le bureau a été désigné le lendemain : Camille Lefèvre reconduite à la présidence, Léa Marchand trésorière, Mehdi El Amrani secrétaire général.</p>\n<p><a href=\"/mon-compte/\">Le PV intégral est consultable</a> par les adhérent·es à jour de cotisation.</p>",
+					"date"    => "2026-04-10 16:00:00",
+				),
+			);
+			foreach ( $articles as $a ) {
+				wp_insert_post( array(
+					"post_type"    => "post",
+					"post_status"  => "publish",
+					"post_title"   => $a["title"],
+					"post_excerpt" => $a["excerpt"],
+					"post_content" => $a["content"],
+					"post_date"    => $a["date"],
+					"post_date_gmt" => get_gmt_from_date( $a["date"] ),
 				) );
 			}
 		}
