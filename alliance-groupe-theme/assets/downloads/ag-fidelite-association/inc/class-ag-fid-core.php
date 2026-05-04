@@ -20,6 +20,25 @@ class AG_Fid_Core {
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ), 30 );
 		add_action( 'customize_register', array( $this, 'register_customizer' ), 30 );
+		add_action( 'admin_init',         array( $this, 'maybe_auto_reseed' ) );
+	}
+
+	/**
+	 * Re-seed automatique a chaque mise a jour du plugin. Compare la
+	 * version stockee en option avec AG_FID_VERSION : si differentes,
+	 * on relance pages + roles + cpts (force) puis on stocke la nouvelle
+	 * version. Evite au user de cliquer manuellement le bouton apres
+	 * chaque sync.
+	 */
+	public function maybe_auto_reseed() {
+		if ( ! current_user_can( 'manage_options' ) ) return;
+		$stored = get_option( 'ag_fid_seeded_version', '' );
+		if ( $stored === AG_FID_VERSION ) return;
+		AG_Fid_Roles::create_roles();
+		AG_Fid_Pages::create_default_pages();
+		AG_Fid_Pages::create_default_cpts( true );
+		flush_rewrite_rules();
+		update_option( 'ag_fid_seeded_version', AG_FID_VERSION );
 	}
 	public function enqueue_assets() {
 		if ( file_exists( AG_FID_DIR . 'assets/fidelite.css' ) ) {
