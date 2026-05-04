@@ -137,15 +137,27 @@ get_header();
     </section>
 
     <!-- Groupes locaux -->
-    <section class="ag-asso-section ag-asso-section--alt" id="groupes">
+    <section class="ag-asso-section ag-asso-section--alt ag-asso-section--map" id="groupes">
         <div class="ag-asso-container">
             <h2 class="ag-asso-section__title"><?php esc_html_e( 'Trouver mon', 'ag-starter-association' ); ?> <em><?php esc_html_e( 'groupe local', 'ag-starter-association' ); ?></em></h2>
-            <p class="ag-asso-section__lead">47 groupes locaux actifs partout en France. Tapez votre code postal pour trouver celui le plus proche.</p>
-            <form class="ag-asso-search" action="#" method="get">
-                <input type="text" name="cp" placeholder="<?php esc_attr_e( 'Code postal ou ville', 'ag-starter-association' ); ?>">
-                <button type="submit"><?php esc_html_e( 'Trouver', 'ag-starter-association' ); ?></button>
-            </form>
-            <p class="ag-asso-search__note">Pas de groupe près de chez vous ? <a href="<?php echo esc_url( home_url( '/groupes/' ) ); ?>">Créez le vôtre</a> — nous vous accompagnons.</p>
+            <div class="ag-asso-groupes-wrap">
+                <div class="ag-asso-groupes-text">
+                    <p class="ag-asso-section__lead">47 groupes locaux actifs partout en France. Tapez votre code postal pour trouver celui le plus proche.</p>
+                    <form class="ag-asso-search" action="#" method="get">
+                        <input type="text" name="cp" placeholder="<?php esc_attr_e( 'Code postal ou ville', 'ag-starter-association' ); ?>">
+                        <button type="submit"><?php esc_html_e( 'Trouver', 'ag-starter-association' ); ?></button>
+                    </form>
+                    <p class="ag-asso-search__note">Pas de groupe près de chez vous ? <a href="<?php echo esc_url( home_url( '/groupes/' ) ); ?>">Créez le vôtre</a> — nous vous accompagnons.</p>
+                    <div class="ag-asso-stats">
+                        <div><strong>47</strong><span>groupes locaux</span></div>
+                        <div><strong>2 130</strong><span>adhérents</span></div>
+                        <div><strong>12 480</strong><span>signataires</span></div>
+                    </div>
+                </div>
+                <div class="ag-asso-groupes-map">
+                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/france-map.svg' ); ?>" alt="Carte des groupes locaux en France" loading="lazy">
+                </div>
+            </div>
         </div>
     </section>
 
@@ -182,6 +194,44 @@ get_header();
                     <?php endforeach;
                 endif; ?>
             </div>
+        </div>
+    </section>
+
+    <!-- Équipe -->
+    <section class="ag-asso-section ag-asso-section--team" id="equipe">
+        <div class="ag-asso-container">
+            <h2 class="ag-asso-section__title"><?php esc_html_e( 'Notre', 'ag-starter-association' ); ?> <em><?php esc_html_e( 'équipe', 'ag-starter-association' ); ?></em></h2>
+            <p class="ag-asso-section__lead">Bénévoles, élu·es au CA, salarié·es — celles et ceux qui font vivre le mouvement au quotidien.</p>
+            <div class="ag-asso-team__grid">
+                <?php
+                $colors = array( '#E10F1A', '#FFD23F', '#0A0A0D', '#1F8A3D', '#3B5998', '#8B1A8B' );
+                for ( $i = 1; $i <= 6; $i++ ) :
+                    $photo = ag_asso_opt( "ag_asso_about_team_photo_$i", '' );
+                    $name  = ag_asso_opt( "ag_asso_about_team_name_$i", '' );
+                    $role  = ag_asso_opt( "ag_asso_about_team_role_$i", '' );
+                    if ( ! $name ) continue;
+                    $initials = '';
+                    foreach ( explode( ' ', $name ) as $part ) {
+                        if ( $part ) $initials .= mb_strtoupper( mb_substr( $part, 0, 1 ) );
+                    }
+                    $color = $colors[ ( $i - 1 ) % count( $colors ) ];
+                    ?>
+                    <article class="ag-asso-team__card">
+                        <?php if ( $photo ) : ?>
+                            <img class="ag-asso-team__photo" src="<?php echo esc_url( $photo ); ?>" alt="<?php echo esc_attr( $name ); ?>">
+                        <?php else : ?>
+                            <div class="ag-asso-team__photo ag-asso-team__photo--placeholder" style="background:<?php echo esc_attr( $color ); ?>;">
+                                <span><?php echo esc_html( $initials ); ?></span>
+                            </div>
+                        <?php endif; ?>
+                        <h4 class="ag-asso-team__name"><?php echo esc_html( $name ); ?></h4>
+                        <p class="ag-asso-team__role"><?php echo esc_html( $role ); ?></p>
+                    </article>
+                <?php endfor; ?>
+            </div>
+            <p style="text-align:center;margin-top:32px;">
+                <a class="ag-asso-btn ag-asso-btn--ghost ag-asso-btn--ghost-dark" href="<?php echo esc_url( home_url( '/qui-sommes-nous/' ) ); ?>">Découvrir toute l'équipe →</a>
+            </p>
         </div>
     </section>
 
