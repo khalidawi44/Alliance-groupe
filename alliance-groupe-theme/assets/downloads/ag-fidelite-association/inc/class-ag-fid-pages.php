@@ -102,7 +102,25 @@ class AG_Fid_Pages {
 	 * Cree des CPT exemples concrets (combats, evenements, groupes,
 	 * petitions) si aucune entree n\'existe deja. Ne duplique rien.
 	 */
-	public static function create_default_cpts() {
+	public static function create_default_cpts( $force = false ) {
+		if ( $force ) {
+			foreach ( array( 'ag_combat', 'ag_evenement', 'ag_groupe', 'ag_petition' ) as $cpt ) {
+				$old = get_posts( array( 'post_type' => $cpt, 'posts_per_page' => -1, 'post_status' => 'any', 'fields' => 'ids' ) );
+				foreach ( $old as $pid ) wp_delete_post( $pid, true );
+			}
+			// Articles : on supprime uniquement nos articles seedes (par titre exact)
+			$seed_titles = array(
+				"Hôpital public : nous publions notre contre-budget 2026",
+				"Pétition climat : 47 000 signatures en 3 semaines",
+				"Nouveau groupe local à Saint-Étienne — bienvenue !",
+				"Logement : nos 12 propositions pour 2027",
+				"AG 2026 : ce qui a été voté",
+			);
+			foreach ( $seed_titles as $t ) {
+				$existing = get_page_by_title( $t, OBJECT, 'post' );
+				if ( $existing ) wp_delete_post( $existing->ID, true );
+			}
+		}
 		// Combats
 		if ( ! get_posts( array( "post_type" => "ag_combat", "posts_per_page" => 1, "post_status" => "any" ) ) ) {
 			$combats = array(
