@@ -19,7 +19,18 @@ class AG_Fid_Recommendations {
 	private function __construct() {
 		add_action( 'admin_notices', array( $this, 'maybe_show_notice' ) );
 		add_action( 'admin_init',    array( $this, 'maybe_dismiss' ) );
+		add_action( 'admin_init',    array( $this, 'maybe_run_setup' ) );
 		add_action( 'admin_menu',    array( $this, 'register_page' ) );
+	}
+
+	public function maybe_run_setup() {
+		if ( empty( $_GET['ag_fid_setup'] ) || ! current_user_can( 'manage_options' ) ) return;
+		if ( ! wp_verify_nonce( $_GET['_wpnonce'] ?? '', 'ag_fid_setup' ) ) return;
+		AG_Fid_Roles::create_roles();
+		AG_Fid_Pages::create_default_pages();
+		flush_rewrite_rules();
+		wp_safe_redirect( add_query_arg( 'ag_fid_done', '1', remove_query_arg( array( 'ag_fid_setup', '_wpnonce' ) ) ) );
+		exit;
 	}
 
 	public function get_recos() {
@@ -162,7 +173,22 @@ class AG_Fid_Recommendations {
 		$recos = $this->get_recos();
 		?>
 		<div class="wrap">
-			<h1>Extensions recommandées pour votre association</h1>
+			<h1>Pack Fidélité — Association</h1>
+
+			<?php if ( ! empty( $_GET['ag_fid_done'] ) ) : ?>
+				<div class="notice notice-success"><p><strong>Setup terminé.</strong> Pages, rôles et permaliens ont été créés. Va voir tes pages dans <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=page' ) ); ?>">Pages</a>.</p></div>
+			<?php endif; ?>
+
+			<div style="margin:18px 0;padding:18px;background:#fff;border-left:4px solid #28a745;">
+				<h2 style="margin-top:0;">Configuration initiale</h2>
+				<p>Si les pages séparées (manifeste, combats, événements, dons, adhérer…) et les rôles (sympathisant, adhérent, militant, trésorier, secrétaire, président·e) n'ont pas été créés automatiquement à l'activation du plugin, clique ci-dessous pour les créer maintenant.</p>
+				<p>
+					<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=ag-fid-recommendations&ag_fid_setup=1' ), 'ag_fid_setup' ) ); ?>" class="button button-primary button-large">Lancer le setup (pages + rôles + permaliens)</a>
+				</p>
+				<p><small>Idempotent : tu peux le relancer sans danger, les pages déjà existantes ne seront pas dupliquées.</small></p>
+			</div>
+
+			<h2>Extensions recommandées</h2>
 			<p>Voici les outils que nous recommandons pour gérer une association moderne avec WordPress. Cliquez sur "Installer" pour ajouter une extension.</p>
 
 			<table class="widefat striped">
