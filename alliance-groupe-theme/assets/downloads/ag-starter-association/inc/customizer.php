@@ -26,9 +26,9 @@ function ag_asso_customize( $wp_customize ) {
 		'panel' => 'ag_asso_panel',
 	) );
 	$identity_fields = array(
-		'ag_asso_name'       => array( 'label' => 'Nom du mouvement',       'default' => '[Nom du mouvement]' ),
-		'ag_asso_slogan'     => array( 'label' => 'Slogan court (header)',  'default' => '[Slogan en quelques mots]' ),
-		'ag_asso_baseline'   => array( 'label' => 'Phrase de profession de foi (footer)', 'default' => '[Une phrase qui resume le combat]' ),
+		'ag_asso_name'       => array( 'label' => 'Nom du mouvement',       'default' => 'Mouvement Citoyen Solidaire' ),
+		'ag_asso_slogan'     => array( 'label' => 'Slogan court (header)',  'default' => 'Pour une société plus juste' ),
+		'ag_asso_baseline'   => array( 'label' => 'Phrase de profession de foi (footer)', 'default' => 'Association loi 1901 indépendante, financée par ses adhérents.' ),
 	);
 	foreach ( $identity_fields as $key => $f ) {
 		$wp_customize->add_setting( $key, array(
@@ -126,8 +126,8 @@ function ag_asso_customize( $wp_customize ) {
 		'panel' => 'ag_asso_panel',
 	) );
 	$hero_text = array(
-		'ag_asso_hero_title' => array( 'label' => 'Titre hero',     'default' => '[Le grand titre de mobilisation]' ),
-		'ag_asso_hero_sub'   => array( 'label' => 'Sous-titre',     'default' => '[Description courte du combat]' ),
+		'ag_asso_hero_title' => array( 'label' => 'Titre hero',     'default' => 'Ensemble, changeons les choses' ),
+		'ag_asso_hero_sub'   => array( 'label' => 'Sous-titre',     'default' => 'Plus de 12 000 citoyennes et citoyens engagés pour la justice sociale, climatique et démocratique.' ),
 		'ag_asso_cta_label'  => array( 'label' => 'Texte bouton principal',     'default' => 'Rejoindre le mouvement' ),
 		'ag_asso_cta_url'    => array( 'label' => 'URL bouton principal',       'default' => '' ),
 		'ag_asso_cta2_label' => array( 'label' => 'Texte bouton secondaire',    'default' => 'Faire un don' ),
@@ -226,7 +226,7 @@ function ag_asso_customize( $wp_customize ) {
 		'type'    => 'checkbox',
 	) );
 	$wp_customize->add_setting( 'ag_asso_alert_text', array(
-		'default'           => 'Mobilisation en cours — rejoignez-nous',
+		'default'           => 'Grande marche pour la justice climatique — samedi 15 juin à Paris',
 		'sanitize_callback' => 'sanitize_text_field',
 	) );
 	$wp_customize->add_control( 'ag_asso_alert_text', array(
@@ -325,13 +325,13 @@ function ag_asso_customize( $wp_customize ) {
 		'panel' => 'ag_asso_panel',
 	) );
 	$legal_fields = array(
-		'ag_fid_org_name'    => array( 'label' => 'Raison sociale',          'default' => '' ),
-		'ag_fid_org_siret'   => array( 'label' => 'SIRET',                   'default' => '' ),
-		'ag_fid_org_rna'     => array( 'label' => 'Numero RNA (W...)',       'default' => '' ),
-		'ag_fid_president'   => array( 'label' => 'Nom du/de la président·e','default' => '' ),
-		'ag_fid_iban'        => array( 'label' => 'IBAN',                    'default' => '' ),
-		'ag_asso_dpo_email'  => array( 'label' => 'Email DPO (RGPD)',        'default' => '' ),
-		'ag_asso_host'       => array( 'label' => 'Hebergeur',               'default' => '' ),
+		'ag_fid_org_name'    => array( 'label' => 'Raison sociale',          'default' => 'Mouvement Citoyen Solidaire' ),
+		'ag_fid_org_siret'   => array( 'label' => 'SIRET',                   'default' => '12345678900012' ),
+		'ag_fid_org_rna'     => array( 'label' => 'Numero RNA (W...)',       'default' => 'W751234567' ),
+		'ag_fid_president'   => array( 'label' => 'Nom du/de la président·e','default' => 'Camille Lefèvre' ),
+		'ag_fid_iban'        => array( 'label' => 'IBAN',                    'default' => 'FR76 1234 5678 9012 3456 7890 123' ),
+		'ag_asso_dpo_email'  => array( 'label' => 'Email DPO (RGPD)',        'default' => 'dpo@mouvement-citoyen.fr' ),
+		'ag_asso_host'       => array( 'label' => 'Hebergeur',               'default' => 'OVH SAS — 2 rue Kellermann, 59100 Roubaix' ),
 	);
 	foreach ( $legal_fields as $key => $f ) {
 		$wp_customize->add_setting( $key, array(
@@ -353,9 +353,9 @@ function ag_asso_customize( $wp_customize ) {
 		'panel' => 'ag_asso_panel',
 	) );
 	$contact_fields = array(
-		'ag_asso_address' => '[Adresse du local]',
-		'ag_asso_email'   => '[contact@mouvement.fr]',
-		'ag_asso_phone'   => '[01 00 00 00 00]',
+		'ag_asso_address' => '12 rue de la République, 75011 Paris',
+		'ag_asso_email'   => 'contact@mouvement-citoyen.fr',
+		'ag_asso_phone'   => '01 23 45 67 89',
 	);
 	foreach ( $contact_fields as $key => $default ) {
 		$wp_customize->add_setting( $key, array(
@@ -386,9 +386,9 @@ function ag_asso_customize( $wp_customize ) {
 		'section' => 'ag_asso_about',
 	) ) );
 	$president_text = array(
-		'ag_asso_about_president_name'  => array( 'label' => 'Nom président·e',           'default' => '[Prénom NOM]' ),
-		'ag_asso_about_president_role'  => array( 'label' => 'Titre/fonction',            'default' => 'Président·e' ),
-		'ag_asso_about_president_bio'   => array( 'label' => 'Bio courte (3-5 lignes)',   'default' => '[Texte de présentation du/de la président·e — son parcours, son engagement, sa vision pour le mouvement.]', 'type' => 'textarea' ),
+		'ag_asso_about_president_name'  => array( 'label' => 'Nom président·e',           'default' => 'Camille Lefèvre' ),
+		'ag_asso_about_president_role'  => array( 'label' => 'Titre/fonction',            'default' => 'Présidente — fondatrice' ),
+		'ag_asso_about_president_bio'   => array( 'label' => 'Bio courte (3-5 lignes)',   'default' => 'Engagée dans l\'éducation populaire depuis 15 ans, Camille a fondé le mouvement en 2018 après avoir constaté l\'urgence d\'un cadre citoyen indépendant des partis. Ancienne enseignante en zone REP, elle porte une vision d\'une démocratie vivante, où chacune et chacun peut peser sur les décisions qui le concernent.', 'type' => 'textarea' ),
 	);
 	foreach ( $president_text as $key => $f ) {
 		$wp_customize->add_setting( $key, array(
@@ -401,6 +401,23 @@ function ag_asso_customize( $wp_customize ) {
 	}
 
 	// Histoire (3 chapitres)
+	$histoire_defaults = array(
+		1 => array(
+			'year'  => '2018',
+			'title' => 'La naissance du mouvement',
+			'text'  => 'Quelques dizaines de citoyennes et citoyens se réunissent dans une salle des fêtes de banlieue. Le constat est partagé : ni les partis, ni les institutions n\'écoutent plus. L\'association est déclarée en préfecture le 14 juillet 2018.',
+		),
+		2 => array(
+			'year'  => '2021',
+			'title' => 'Première grande victoire',
+			'text'  => 'Après 18 mois de mobilisation et 47 000 signatures recueillies, notre pétition pour la transparence des marchés publics aboutit à une loi locale. Le mouvement compte désormais 12 groupes locaux dans toute la France.',
+		),
+		3 => array(
+			'year'  => 'Aujourd\'hui',
+			'title' => 'Un mouvement national',
+			'text'  => 'Plus de 2 000 adhérents, 47 groupes locaux, 6 grandes campagnes thématiques en cours. Nous restons indépendants : aucun parti, aucun lobby — uniquement nos cotisations et vos dons.',
+		),
+	);
 	for ( $i = 1; $i <= 3; $i++ ) {
 		$wp_customize->add_setting( "ag_asso_about_histoire_photo_$i", array(
 			'default' => '', 'sanitize_callback' => 'esc_url_raw',
@@ -410,19 +427,19 @@ function ag_asso_customize( $wp_customize ) {
 			'section' => 'ag_asso_about',
 		) ) );
 		$wp_customize->add_setting( "ag_asso_about_histoire_year_$i", array(
-			'default' => '', 'sanitize_callback' => 'sanitize_text_field',
+			'default' => $histoire_defaults[ $i ]['year'], 'sanitize_callback' => 'sanitize_text_field',
 		) );
 		$wp_customize->add_control( "ag_asso_about_histoire_year_$i", array(
 			'label' => sprintf( 'Année / étape %d', $i ), 'section' => 'ag_asso_about', 'type' => 'text',
 		) );
 		$wp_customize->add_setting( "ag_asso_about_histoire_title_$i", array(
-			'default' => "[Titre de l'étape $i]", 'sanitize_callback' => 'sanitize_text_field',
+			'default' => $histoire_defaults[ $i ]['title'], 'sanitize_callback' => 'sanitize_text_field',
 		) );
 		$wp_customize->add_control( "ag_asso_about_histoire_title_$i", array(
 			'label' => sprintf( 'Titre étape %d', $i ), 'section' => 'ag_asso_about', 'type' => 'text',
 		) );
 		$wp_customize->add_setting( "ag_asso_about_histoire_text_$i", array(
-			'default' => "[Description de l'étape $i de l'histoire de l'association.]",
+			'default' => $histoire_defaults[ $i ]['text'],
 			'sanitize_callback' => 'sanitize_textarea_field',
 		) );
 		$wp_customize->add_control( "ag_asso_about_histoire_text_$i", array(
@@ -431,6 +448,14 @@ function ag_asso_customize( $wp_customize ) {
 	}
 
 	// Galerie benevoles (6 photos + nom/role)
+	$team_defaults = array(
+		1 => array( 'name' => 'Yacine Bouzid',     'role' => 'Vice-président — pôle juridique' ),
+		2 => array( 'name' => 'Léa Marchand',      'role' => 'Trésorière' ),
+		3 => array( 'name' => 'Mehdi El Amrani',   'role' => 'Secrétaire général' ),
+		4 => array( 'name' => 'Sophie Tremblay',   'role' => 'Coordination groupes locaux' ),
+		5 => array( 'name' => 'Thomas Vasseur',    'role' => 'Responsable communication' ),
+		6 => array( 'name' => 'Aïcha Diallo',      'role' => 'Animation jeunes engagés' ),
+	);
 	for ( $i = 1; $i <= 6; $i++ ) {
 		$wp_customize->add_setting( "ag_asso_about_team_photo_$i", array(
 			'default' => '', 'sanitize_callback' => 'esc_url_raw',
@@ -440,13 +465,13 @@ function ag_asso_customize( $wp_customize ) {
 			'section' => 'ag_asso_about',
 		) ) );
 		$wp_customize->add_setting( "ag_asso_about_team_name_$i", array(
-			'default' => '', 'sanitize_callback' => 'sanitize_text_field',
+			'default' => $team_defaults[ $i ]['name'], 'sanitize_callback' => 'sanitize_text_field',
 		) );
 		$wp_customize->add_control( "ag_asso_about_team_name_$i", array(
 			'label' => sprintf( 'Nom bénévole %d', $i ), 'section' => 'ag_asso_about', 'type' => 'text',
 		) );
 		$wp_customize->add_setting( "ag_asso_about_team_role_$i", array(
-			'default' => '', 'sanitize_callback' => 'sanitize_text_field',
+			'default' => $team_defaults[ $i ]['role'], 'sanitize_callback' => 'sanitize_text_field',
 		) );
 		$wp_customize->add_control( "ag_asso_about_team_role_$i", array(
 			'label' => sprintf( 'Rôle bénévole %d', $i ), 'section' => 'ag_asso_about', 'type' => 'text',

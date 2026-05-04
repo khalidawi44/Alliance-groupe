@@ -59,7 +59,35 @@ class AG_Fid_Shortcodes {
 	public function render_actu()       { return $this->render_cpt_grid( 'post', 'Aucun article.' ); }
 
 	public function render_manifeste() {
-		return '<div class="ag-fid-manifeste-text"><p>[Texte du manifeste — éditer cette page pour remplacer.]</p></div>';
+		ob_start(); ?>
+		<div class="ag-fid-manifeste-text">
+			<p class="ag-fid-lead"><strong>Nous sommes des citoyennes et des citoyens.</strong> Pas un parti. Pas un syndicat. Un mouvement, ouvert et indépendant, qui croit qu'une autre société est possible — plus juste, plus écologique, plus démocratique.</p>
+
+			<h2>Notre constat</h2>
+			<p>La République promet l'égalité. Elle livre la précarité. Le mérite y est devenu un mirage : la naissance pèse plus que le travail. Les services publics, qui faisaient la fierté du pays, sont méthodiquement démantelés. Le climat se dérègle, et les solutions arrivent par décret au lieu de naître du débat.</p>
+
+			<h2>Nos principes</h2>
+			<ul>
+				<li><strong>Indépendance.</strong> Aucun parti, aucun lobby, aucun grand donateur. Nous vivons des cotisations et des dons des adhérents.</li>
+				<li><strong>Démocratie interne.</strong> Toutes les décisions importantes sont votées en assemblée générale. Les statuts sont publics, les comptes aussi.</li>
+				<li><strong>Action concrète.</strong> Nous menons des campagnes thématiques mesurables, avec des objectifs chiffrés et des bilans publics.</li>
+				<li><strong>Bienveillance.</strong> Nous combattons les idées, jamais les personnes. Aucun racisme, aucun sexisme, aucune homophobie ne sont tolérés dans nos rangs.</li>
+			</ul>
+
+			<h2>Nos priorités 2026</h2>
+			<ol>
+				<li>Justice climatique pour tou·tes — y compris les plus modestes.</li>
+				<li>Logement digne et abordable, partout, pour tout le monde.</li>
+				<li>Refondation des services publics — santé, école, transports, énergie.</li>
+				<li>Démocratie permanente — RIC, assemblées tirées au sort, transparence.</li>
+				<li>Égalité réelle — femmes/hommes, origines, handicaps, orientations.</li>
+				<li>Souveraineté citoyenne — sortir de l'emprise des géants du numérique.</li>
+			</ol>
+
+			<p class="ag-fid-cta-line">Vous partagez nos valeurs ? <a href="<?php echo esc_url( home_url( '/signer/' ) ); ?>">Signez l'appel</a> ou <a href="<?php echo esc_url( home_url( '/adherer/' ) ); ?>">adhérez au mouvement</a>.</p>
+		</div>
+		<?php
+		return ob_get_clean();
 	}
 
 	public function render_about() {
@@ -219,6 +247,75 @@ class AG_Fid_Shortcodes {
 		return ob_get_clean();
 	}
 
-	public function render_mentions() { return '<p>[Mentions légales : raison sociale, SIRET, RNA, hébergeur, contact DPO. Édite cette page.]</p>'; }
-	public function render_rgpd()     { return '<p>[Politique de confidentialité — texte standard RGPD pour associations à coller ici.]</p>'; }
+	public function render_mentions() {
+		$org    = get_theme_mod( 'ag_fid_org_name', get_theme_mod( 'ag_asso_name', 'Mouvement Citoyen Solidaire' ) );
+		$siret  = get_theme_mod( 'ag_fid_org_siret', '' );
+		$rna    = get_theme_mod( 'ag_fid_org_rna', '' );
+		$pres   = get_theme_mod( 'ag_fid_president', '' );
+		$addr   = get_theme_mod( 'ag_asso_address', '' );
+		$email  = get_theme_mod( 'ag_asso_email', '' );
+		$phone  = get_theme_mod( 'ag_asso_phone', '' );
+		$dpo    = get_theme_mod( 'ag_asso_dpo_email', '' );
+		$host   = get_theme_mod( 'ag_asso_host', 'OVH SAS — 2 rue Kellermann, 59100 Roubaix' );
+		ob_start(); ?>
+		<div class="ag-fid-legal">
+			<h2>Éditeur du site</h2>
+			<p>
+				<strong><?php echo esc_html( $org ); ?></strong><br>
+				Association loi 1901 à but non lucratif<br>
+				<?php if ( $rna ) echo 'Numéro RNA : ' . esc_html( $rna ) . '<br>'; ?>
+				<?php if ( $siret ) echo 'SIRET : ' . esc_html( $siret ) . '<br>'; ?>
+				<?php if ( $addr ) echo 'Siège social : ' . esc_html( $addr ) . '<br>'; ?>
+				<?php if ( $pres ) echo 'Directeur·rice de la publication : ' . esc_html( $pres ) . '<br>'; ?>
+				<?php if ( $email ) echo 'Email : <a href="mailto:' . esc_attr( $email ) . '">' . esc_html( $email ) . '</a><br>'; ?>
+				<?php if ( $phone ) echo 'Téléphone : ' . esc_html( $phone ); ?>
+			</p>
+
+			<h2>Hébergement</h2>
+			<p><?php echo esc_html( $host ); ?></p>
+
+			<h2>Propriété intellectuelle</h2>
+			<p>L'ensemble des contenus (textes, images, vidéos) publiés sur ce site sont la propriété de <?php echo esc_html( $org ); ?> ou de leurs auteurs respectifs. Toute reproduction est autorisée sous licence Creative Commons BY-NC-SA 4.0, à condition de citer la source.</p>
+
+			<h2>Données personnelles</h2>
+			<p>Pour toute question relative à vos données personnelles, contactez notre Délégué·e à la Protection des Données <?php if ( $dpo ) echo 'à <a href="mailto:' . esc_attr( $dpo ) . '">' . esc_html( $dpo ) . '</a>'; ?>. Voir aussi notre <a href="<?php echo esc_url( home_url( '/rgpd/' ) ); ?>">politique de confidentialité</a>.</p>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
+
+	public function render_rgpd() {
+		$org   = get_theme_mod( 'ag_fid_org_name', get_theme_mod( 'ag_asso_name', 'Mouvement Citoyen Solidaire' ) );
+		$dpo   = get_theme_mod( 'ag_asso_dpo_email', '' );
+		ob_start(); ?>
+		<div class="ag-fid-legal">
+			<p><em>Dernière mise à jour : <?php echo esc_html( date_i18n( 'j F Y' ) ); ?></em></p>
+
+			<h2>Quelles données collectons-nous ?</h2>
+			<ul>
+				<li><strong>Adhésion / signature de pétition :</strong> nom, prénom, email, code postal, téléphone (facultatif).</li>
+				<li><strong>Don :</strong> en plus du formulaire d'adhésion, l'adresse postale (obligation fiscale pour le reçu).</li>
+				<li><strong>Navigation :</strong> uniquement des cookies techniques. Pas de tracking publicitaire.</li>
+			</ul>
+
+			<h2>À quoi servent vos données ?</h2>
+			<ul>
+				<li>Vous tenir informé·e de nos campagnes et événements (newsletter).</li>
+				<li>Établir votre reçu fiscal annuel (dons et cotisations).</li>
+				<li>Vous mettre en lien avec votre groupe local le plus proche.</li>
+				<li>Statistiques internes anonymisées (jamais revendues).</li>
+			</ul>
+
+			<h2>Vos droits</h2>
+			<p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, de portabilité et d'opposition au traitement de vos données. Pour exercer ces droits, contactez<?php if ( $dpo ) echo ' notre DPO à <a href="mailto:' . esc_attr( $dpo ) . '">' . esc_html( $dpo ) . '</a>'; ?>. Vous pouvez aussi déposer une réclamation auprès de la CNIL.</p>
+
+			<h2>Durée de conservation</h2>
+			<p>Vos données sont conservées tant que vous êtes adhérent·e + 3 ans après. Les pièces comptables (dons) sont conservées 10 ans, conformément à la loi.</p>
+
+			<h2>Sous-traitants</h2>
+			<p>Nous n'utilisons que des prestataires européens conformes RGPD : OVH (hébergement, France), Stripe (paiement, Irlande), MailPoet (newsletter, France). <?php echo esc_html( $org ); ?> ne vend ni ne loue jamais ses données.</p>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
 }
