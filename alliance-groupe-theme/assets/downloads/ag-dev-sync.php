@@ -159,6 +159,13 @@ function ag_dev_sync_run() {
 		}
 	}
 
+	// Invalide l'opcache PHP pour que les nouveaux fichiers soient pris
+	// en compte sans avoir a redemarrer Apache.
+	if ( function_exists( 'opcache_reset' ) ) {
+		opcache_reset();
+		$results[] = '--- opcache vide ---';
+	}
+
 	return $results;
 }
 

@@ -19,12 +19,22 @@
             } ?>
         </a>
         <nav class="ag-asso-header__nav" aria-label="<?php esc_attr_e( 'Navigation principale', 'ag-starter-association' ); ?>">
-            <a href="#manifeste"><?php esc_html_e( 'Manifeste', 'ag-starter-association' ); ?></a>
-            <a href="#combats"><?php esc_html_e( 'Combats', 'ag-starter-association' ); ?></a>
-            <a href="#evenements"><?php esc_html_e( 'Événements', 'ag-starter-association' ); ?></a>
-            <a href="#groupes"><?php esc_html_e( 'Groupes locaux', 'ag-starter-association' ); ?></a>
-            <a href="#actu"><?php esc_html_e( 'Actualités', 'ag-starter-association' ); ?></a>
-            <a href="#don" class="ag-asso-cta"><?php esc_html_e( 'Faire un don', 'ag-starter-association' ); ?></a>
+            <?php if ( has_nav_menu( 'primary' ) ) : ?>
+                <?php wp_nav_menu( array(
+                    'theme_location' => 'primary',
+                    'container'      => false,
+                    'menu_class'     => 'ag-asso-header__menu',
+                    'depth'          => 1,
+                    'fallback_cb'    => false,
+                ) ); ?>
+            <?php else : ?>
+                <a href="<?php echo esc_url( home_url( '/manifeste/' ) ); ?>"><?php esc_html_e( 'Manifeste', 'ag-starter-association' ); ?></a>
+                <a href="<?php echo esc_url( home_url( '/combats/' ) ); ?>"><?php esc_html_e( 'Combats', 'ag-starter-association' ); ?></a>
+                <a href="<?php echo esc_url( home_url( '/evenements/' ) ); ?>"><?php esc_html_e( 'Événements', 'ag-starter-association' ); ?></a>
+                <a href="<?php echo esc_url( home_url( '/groupes/' ) ); ?>"><?php esc_html_e( 'Groupes locaux', 'ag-starter-association' ); ?></a>
+                <a href="<?php echo esc_url( home_url( '/actu/' ) ); ?>"><?php esc_html_e( 'Actualités', 'ag-starter-association' ); ?></a>
+                <a href="<?php echo esc_url( home_url( '/don/' ) ); ?>" class="ag-asso-cta"><?php esc_html_e( 'Faire un don', 'ag-starter-association' ); ?></a>
+            <?php endif; ?>
         </nav>
     </div>
 </header>

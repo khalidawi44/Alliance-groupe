@@ -17,7 +17,7 @@ get_header();
             <span class="ag-asso-hero__tag"><?php echo esc_html( ag_asso_opt( 'ag_asso_slogan', '[Slogan court]' ) ); ?></span>
             <h1 class="ag-asso-hero__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_hero_title', '[Le grand titre de mobilisation]' ) ); ?></h1>
             <p class="ag-asso-hero__sub"><?php echo esc_html( ag_asso_opt( 'ag_asso_hero_sub', '[Description courte du combat — 2 lignes max]' ) ); ?></p>
-            <a href="<?php echo esc_url( ag_asso_opt( 'ag_asso_cta_url', '#signer' ) ); ?>" class="ag-asso-btn ag-asso-btn--primary">
+            <a href="<?php echo esc_url( ag_asso_opt( 'ag_asso_cta_url', '' ) ?: ag_asso_link( 'signer' ) ); ?>" class="ag-asso-btn ag-asso-btn--primary">
                 <?php echo esc_html( ag_asso_opt( 'ag_asso_cta_label', 'Rejoindre le mouvement' ) ); ?>
             </a>
         </div>

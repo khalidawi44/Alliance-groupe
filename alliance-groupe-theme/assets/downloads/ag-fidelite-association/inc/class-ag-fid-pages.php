@@ -44,5 +44,59 @@ class AG_Fid_Pages {
 				'post_content' => isset( $page['shortcode'] ) ? $page['shortcode'] : $page['content'],
 			) );
 		}
+		self::create_default_menus();
+	}
+
+	/**
+	 * Cree (idempotent) les menus principal et footer puis les assigne
+	 * aux emplacements 'primary' et 'footer' du theme. Indispensable
+	 * pour que le menu pointe vers les pages reelles et non vers des
+	 * ancres.
+	 */
+	public static function create_default_menus() {
+		$primary_items = array(
+			'manifeste'  => 'Manifeste',
+			'combats'    => 'Combats',
+			'evenements' => 'Événements',
+			'groupes'    => 'Groupes locaux',
+			'actu'       => 'Actualités',
+			'don'        => 'Faire un don',
+		);
+		$footer_items = array(
+			'manifeste' => 'Le manifeste',
+			'groupes'   => 'Trouver mon groupe',
+			'don'       => 'Faire un don',
+			'mentions'  => 'Mentions légales',
+			'rgpd'      => 'Confidentialité',
+		);
+		self::ensure_menu( 'AG Fidélité — Principal', 'primary', $primary_items );
+		self::ensure_menu( 'AG Fidélité — Footer',    'footer',  $footer_items );
+	}
+
+	private static function ensure_menu( $menu_name, $location, $items ) {
+		$menu = wp_get_nav_menu_object( $menu_name );
+		if ( ! $menu ) {
+			$menu_id = wp_create_nav_menu( $menu_name );
+			if ( is_wp_error( $menu_id ) ) return;
+		} else {
+			$menu_id = $menu->term_id;
+			foreach ( (array) wp_get_nav_menu_items( $menu_id ) as $existing ) {
+				wp_delete_post( $existing->ID, true );
+			}
+		}
+		foreach ( $items as $slug => $label ) {
+			$page = get_page_by_path( $slug );
+			if ( ! $page ) continue;
+			wp_update_nav_menu_item( $menu_id, 0, array(
+				'menu-item-title'     => $label,
+				'menu-item-object'    => 'page',
+				'menu-item-object-id' => $page->ID,
+				'menu-item-type'      => 'post_type',
+				'menu-item-status'    => 'publish',
+			) );
+		}
+		$locations = get_theme_mod( 'nav_menu_locations', array() );
+		$locations[ $location ] = $menu_id;
+		set_theme_mod( 'nav_menu_locations', $locations );
 	}
 }
