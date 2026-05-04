@@ -155,7 +155,8 @@ get_header();
                     </div>
                 </div>
                 <div class="ag-asso-groupes-map">
-                    <img src="<?php echo esc_url( get_template_directory_uri() . '/assets/france-map.svg' ); ?>" alt="Carte des groupes locaux en France" loading="lazy">
+                    <?php $map_custom = ag_asso_opt( 'ag_asso_groupes_map', '' ); ?>
+                    <img src="<?php echo esc_url( $map_custom ?: get_template_directory_uri() . '/assets/france-map.svg' ); ?>" alt="Carte des groupes locaux en France" loading="lazy">
                 </div>
             </div>
         </div>

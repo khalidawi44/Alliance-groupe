@@ -484,14 +484,42 @@ function ag_asso_customize( $wp_customize ) {
 	$wp_customize->add_section( 'ag_asso_parallax', array(
 		'title' => __( 'Images de fond (parallax)', 'ag-starter-association' ),
 		'panel' => 'ag_asso_panel',
-		'description' => 'Images affichées en fond fixe entre les sections (effet de transition au scroll).',
+		'description' => 'Téléchargez vos images depuis Pexels (https://www.pexels.com/fr-fr/) puis uploadez-les ici. Recommandées : 1920x1080.',
 	) );
+
+	// Carte de France custom
+	$wp_customize->add_setting( 'ag_asso_groupes_map', array(
+		'default' => '', 'sanitize_callback' => 'esc_url_raw',
+	) );
+	$wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, 'ag_asso_groupes_map', array(
+		'label' => __( 'Carte de France (section groupes locaux)', 'ag-starter-association' ),
+		'description' => __( 'Image PNG/SVG de carte de France avec fond transparent. Si vide : carte SVG par défaut.', 'ag-starter-association' ),
+		'section' => 'ag_asso_parallax',
+	) ) );
+
+	// Images de fond sections principales (combats, evenements, signer, don, actu)
+	$bg_slots = array(
+		'combats'    => 'Fond section "Combats"',
+		'evenements' => 'Fond section "Événements"',
+		'signer'     => 'Fond section "Signer l\'appel"',
+		'don'        => 'Fond section "Don"',
+		'actu'       => 'Fond section "Actualités"',
+	);
+	foreach ( $bg_slots as $slot => $label ) {
+		$wp_customize->add_setting( "ag_asso_bg_$slot", array(
+			'default' => '', 'sanitize_callback' => 'esc_url_raw',
+		) );
+		$wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, "ag_asso_bg_$slot", array(
+			'label' => $label, 'section' => 'ag_asso_parallax',
+		) ) );
+	}
+
 	$parallax_slots = array(
-		'manifeste'  => 'Bandeau manifeste',
-		'combats'    => 'Bandeau combats',
-		'evenements' => 'Bandeau événements',
-		'groupes'    => 'Bandeau groupes locaux',
-		'don'        => 'Bandeau don',
+		'manifeste'  => 'Bandeau parallax manifeste',
+		'combats'    => 'Bandeau parallax combats',
+		'evenements' => 'Bandeau parallax événements',
+		'groupes'    => 'Bandeau parallax groupes locaux',
+		'don'        => 'Bandeau parallax don',
 	);
 	foreach ( $parallax_slots as $slot => $label ) {
 		$wp_customize->add_setting( "ag_asso_parallax_$slot", array(
@@ -577,6 +605,27 @@ function ag_asso_dynamic_css() {
 		if ( $img ) {
 			$css .= '.ag-asso-parallax--' . $slot . '{background-image:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.75) 100%),url(' . esc_url( $img ) . ');}';
 		}
+	}
+
+	// Images de fond sections principales (override des SVG patterns par defaut)
+	$bg_overrides = array(
+		'combats'    => array( 'rgba(245,245,242,.85)', 'rgba(245,225,225,.92)' ),
+		'evenements' => array( 'rgba(255,255,255,.88)', 'rgba(255,250,240,.94)' ),
+		'actu'       => array( 'rgba(255,255,255,.92)', 'rgba(245,245,242,.94)' ),
+		'signer'     => array( 'rgba(10,10,13,.88)',    'rgba(45,15,18,.92)' ),
+		'don'        => array( 'rgba(255,250,240,.85)', 'rgba(255,245,230,.92)' ),
+	);
+	foreach ( $bg_overrides as $slot => $voiles ) {
+		$img = get_theme_mod( 'ag_asso_bg_' . $slot, '' );
+		if ( $img ) {
+			$css .= '#' . $slot . '{background:linear-gradient(135deg,' . $voiles[0] . ' 0%,' . $voiles[1] . ' 100%),url(' . esc_url( $img ) . ') center/cover fixed !important;}';
+		}
+	}
+	// Hero : image custom override
+	$hero_bg = get_theme_mod( 'ag_asso_hero_image', '' );
+	if ( $hero_bg ) {
+		$ovr = (int) get_theme_mod( 'ag_asso_hero_overlay', 60 ) / 100;
+		$css .= '.ag-asso-hero{background:linear-gradient(rgba(0,0,0,' . $ovr . '),rgba(0,0,0,' . $ovr . ')),url(' . esc_url( $hero_bg ) . ') center/cover fixed !important;background-size:cover !important;}';
 	}
 
 	echo "<style id=\"ag-asso-customizer\">\n" . $css . "\n</style>\n";
