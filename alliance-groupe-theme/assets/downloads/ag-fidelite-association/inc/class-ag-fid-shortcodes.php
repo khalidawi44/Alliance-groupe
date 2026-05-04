@@ -22,6 +22,7 @@ class AG_Fid_Shortcodes {
 		add_shortcode( 'ag_fid_don',         array( $this, 'render_don' ) );
 		add_shortcode( 'ag_fid_adhesion',    array( $this, 'render_adhesion' ) );
 		add_shortcode( 'ag_fid_compte',      array( $this, 'render_compte' ) );
+		add_shortcode( 'ag_fid_qui_sommes_nous', array( $this, 'render_about' ) );
 		add_shortcode( 'ag_fid_manifeste',   array( $this, 'render_manifeste' ) );
 		add_shortcode( 'ag_fid_mentions',    array( $this, 'render_mentions' ) );
 		add_shortcode( 'ag_fid_rgpd',        array( $this, 'render_rgpd' ) );
@@ -59,6 +60,76 @@ class AG_Fid_Shortcodes {
 
 	public function render_manifeste() {
 		return '<div class="ag-fid-manifeste-text"><p>[Texte du manifeste — éditer cette page pour remplacer.]</p></div>';
+	}
+
+	public function render_about() {
+		ob_start(); ?>
+		<div class="ag-asso-about">
+			<header class="ag-asso-about__hero">
+				<h1>Qui sommes-nous</h1>
+			</header>
+
+			<?php
+			$pres_photo = get_theme_mod( 'ag_asso_about_president_photo', '' );
+			$pres_name  = get_theme_mod( 'ag_asso_about_president_name', '' );
+			$pres_role  = get_theme_mod( 'ag_asso_about_president_role', 'Président·e' );
+			$pres_bio   = get_theme_mod( 'ag_asso_about_president_bio', '' );
+			if ( $pres_name || $pres_photo || $pres_bio ) : ?>
+				<section class="ag-asso-president">
+					<?php if ( $pres_photo ) : ?>
+						<img class="ag-asso-president__photo" src="<?php echo esc_url( $pres_photo ); ?>" alt="<?php echo esc_attr( $pres_name ); ?>">
+					<?php endif; ?>
+					<div class="ag-asso-president__body">
+						<p class="ag-asso-president__role"><?php echo esc_html( $pres_role ); ?></p>
+						<h2><?php echo esc_html( $pres_name ?: '[Nom président·e]' ); ?></h2>
+						<?php echo wpautop( esc_html( $pres_bio ) ); ?>
+					</div>
+				</section>
+			<?php endif; ?>
+
+			<section class="ag-asso-histoire">
+				<?php for ( $i = 1; $i <= 3; $i++ ) :
+					$photo = get_theme_mod( "ag_asso_about_histoire_photo_$i", '' );
+					$year  = get_theme_mod( "ag_asso_about_histoire_year_$i", '' );
+					$title = get_theme_mod( "ag_asso_about_histoire_title_$i", "[Titre de l'étape $i]" );
+					$text  = get_theme_mod( "ag_asso_about_histoire_text_$i", "[Description de l'étape $i de l'histoire de l'association.]" );
+					?>
+					<div class="ag-asso-histoire__step">
+						<div class="ag-asso-histoire__photo" <?php if ( $photo ) echo 'style="background-image:url(' . esc_url( $photo ) . ');"'; ?>></div>
+						<div class="ag-asso-histoire__body">
+							<?php if ( $year ) : ?>
+								<span class="ag-asso-histoire__year"><?php echo esc_html( $year ); ?></span>
+							<?php endif; ?>
+							<h3 class="ag-asso-histoire__title"><?php echo esc_html( $title ); ?></h3>
+							<p class="ag-asso-histoire__text"><?php echo esc_html( $text ); ?></p>
+						</div>
+					</div>
+				<?php endfor; ?>
+			</section>
+
+			<section class="ag-asso-team">
+				<h2 class="ag-asso-section__title">Notre <em>équipe</em></h2>
+				<p class="ag-asso-section__lead">Les bénévoles qui font vivre l'association au quotidien.</p>
+				<div class="ag-asso-team__grid">
+					<?php for ( $i = 1; $i <= 6; $i++ ) :
+						$photo = get_theme_mod( "ag_asso_about_team_photo_$i", '' );
+						$name  = get_theme_mod( "ag_asso_about_team_name_$i", '' );
+						$role  = get_theme_mod( "ag_asso_about_team_role_$i", '' );
+						if ( ! $name && ! $photo ) continue;
+						?>
+						<article class="ag-asso-team__card">
+							<?php if ( $photo ) : ?>
+								<img class="ag-asso-team__photo" src="<?php echo esc_url( $photo ); ?>" alt="<?php echo esc_attr( $name ); ?>">
+							<?php endif; ?>
+							<h4 class="ag-asso-team__name"><?php echo esc_html( $name ?: '[Bénévole]' ); ?></h4>
+							<p class="ag-asso-team__role"><?php echo esc_html( $role ); ?></p>
+						</article>
+					<?php endfor; ?>
+				</div>
+			</section>
+		</div>
+		<?php
+		return ob_get_clean();
 	}
 
 	public function render_signer() {

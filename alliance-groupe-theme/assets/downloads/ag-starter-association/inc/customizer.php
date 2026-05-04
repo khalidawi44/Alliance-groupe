@@ -370,6 +370,114 @@ function ag_asso_customize( $wp_customize ) {
 	}
 
 	// =====================================================================
+	// Qui sommes-nous (page /qui-sommes-nous/)
+	// =====================================================================
+	$wp_customize->add_section( 'ag_asso_about', array(
+		'title' => __( 'Qui sommes-nous', 'ag-starter-association' ),
+		'panel' => 'ag_asso_panel',
+	) );
+
+	// President
+	$wp_customize->add_setting( 'ag_asso_about_president_photo', array(
+		'default' => '', 'sanitize_callback' => 'esc_url_raw',
+	) );
+	$wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, 'ag_asso_about_president_photo', array(
+		'label' => __( 'Photo président·e', 'ag-starter-association' ),
+		'section' => 'ag_asso_about',
+	) ) );
+	$president_text = array(
+		'ag_asso_about_president_name'  => array( 'label' => 'Nom président·e',           'default' => '[Prénom NOM]' ),
+		'ag_asso_about_president_role'  => array( 'label' => 'Titre/fonction',            'default' => 'Président·e' ),
+		'ag_asso_about_president_bio'   => array( 'label' => 'Bio courte (3-5 lignes)',   'default' => '[Texte de présentation du/de la président·e — son parcours, son engagement, sa vision pour le mouvement.]', 'type' => 'textarea' ),
+	);
+	foreach ( $president_text as $key => $f ) {
+		$wp_customize->add_setting( $key, array(
+			'default' => $f['default'], 'sanitize_callback' => 'sanitize_textarea_field',
+		) );
+		$wp_customize->add_control( $key, array(
+			'label' => $f['label'], 'section' => 'ag_asso_about',
+			'type' => isset( $f['type'] ) ? $f['type'] : 'text',
+		) );
+	}
+
+	// Histoire (3 chapitres)
+	for ( $i = 1; $i <= 3; $i++ ) {
+		$wp_customize->add_setting( "ag_asso_about_histoire_photo_$i", array(
+			'default' => '', 'sanitize_callback' => 'esc_url_raw',
+		) );
+		$wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, "ag_asso_about_histoire_photo_$i", array(
+			'label' => sprintf( __( 'Photo histoire %d', 'ag-starter-association' ), $i ),
+			'section' => 'ag_asso_about',
+		) ) );
+		$wp_customize->add_setting( "ag_asso_about_histoire_year_$i", array(
+			'default' => '', 'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( "ag_asso_about_histoire_year_$i", array(
+			'label' => sprintf( 'Année / étape %d', $i ), 'section' => 'ag_asso_about', 'type' => 'text',
+		) );
+		$wp_customize->add_setting( "ag_asso_about_histoire_title_$i", array(
+			'default' => "[Titre de l'étape $i]", 'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( "ag_asso_about_histoire_title_$i", array(
+			'label' => sprintf( 'Titre étape %d', $i ), 'section' => 'ag_asso_about', 'type' => 'text',
+		) );
+		$wp_customize->add_setting( "ag_asso_about_histoire_text_$i", array(
+			'default' => "[Description de l'étape $i de l'histoire de l'association.]",
+			'sanitize_callback' => 'sanitize_textarea_field',
+		) );
+		$wp_customize->add_control( "ag_asso_about_histoire_text_$i", array(
+			'label' => sprintf( 'Texte étape %d', $i ), 'section' => 'ag_asso_about', 'type' => 'textarea',
+		) );
+	}
+
+	// Galerie benevoles (6 photos + nom/role)
+	for ( $i = 1; $i <= 6; $i++ ) {
+		$wp_customize->add_setting( "ag_asso_about_team_photo_$i", array(
+			'default' => '', 'sanitize_callback' => 'esc_url_raw',
+		) );
+		$wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, "ag_asso_about_team_photo_$i", array(
+			'label' => sprintf( __( 'Photo bénévole %d', 'ag-starter-association' ), $i ),
+			'section' => 'ag_asso_about',
+		) ) );
+		$wp_customize->add_setting( "ag_asso_about_team_name_$i", array(
+			'default' => '', 'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( "ag_asso_about_team_name_$i", array(
+			'label' => sprintf( 'Nom bénévole %d', $i ), 'section' => 'ag_asso_about', 'type' => 'text',
+		) );
+		$wp_customize->add_setting( "ag_asso_about_team_role_$i", array(
+			'default' => '', 'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( "ag_asso_about_team_role_$i", array(
+			'label' => sprintf( 'Rôle bénévole %d', $i ), 'section' => 'ag_asso_about', 'type' => 'text',
+		) );
+	}
+
+	// =====================================================================
+	// Images de fond parallax (transitions sections)
+	// =====================================================================
+	$wp_customize->add_section( 'ag_asso_parallax', array(
+		'title' => __( 'Images de fond (parallax)', 'ag-starter-association' ),
+		'panel' => 'ag_asso_panel',
+		'description' => 'Images affichées en fond fixe entre les sections (effet de transition au scroll).',
+	) );
+	$parallax_slots = array(
+		'manifeste'  => 'Bandeau manifeste',
+		'combats'    => 'Bandeau combats',
+		'evenements' => 'Bandeau événements',
+		'groupes'    => 'Bandeau groupes locaux',
+		'don'        => 'Bandeau don',
+	);
+	foreach ( $parallax_slots as $slot => $label ) {
+		$wp_customize->add_setting( "ag_asso_parallax_$slot", array(
+			'default' => '', 'sanitize_callback' => 'esc_url_raw',
+		) );
+		$wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, "ag_asso_parallax_$slot", array(
+			'label' => $label, 'section' => 'ag_asso_parallax',
+		) ) );
+	}
+
+	// =====================================================================
 	// Footer
 	// =====================================================================
 	$wp_customize->add_section( 'ag_asso_footer', array(
@@ -436,6 +544,15 @@ function ag_asso_dynamic_css() {
 		$css .= '.ag-asso-hero{background-image:linear-gradient(rgba(0,0,0,' . esc_html( $hero_ovr ) . '),rgba(0,0,0,' . esc_html( $hero_ovr ) . ')),url(' . esc_url( $hero_img ) . ');background-size:cover;background-position:center;}';
 	}
 	$css .= '.ag-asso-hero__inner{text-align:' . esc_html( $hero_align ) . ';}';
+
+	// Bandeaux parallax entre sections
+	$parallax = array( 'manifeste', 'combats', 'evenements', 'groupes', 'don' );
+	foreach ( $parallax as $slot ) {
+		$img = get_theme_mod( 'ag_asso_parallax_' . $slot, '' );
+		if ( $img ) {
+			$css .= '.ag-asso-parallax--' . $slot . '{background-image:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.75) 100%),url(' . esc_url( $img ) . ');}';
+		}
+	}
 
 	echo "<style id=\"ag-asso-customizer\">\n" . $css . "\n</style>\n";
 }
