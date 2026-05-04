@@ -109,9 +109,9 @@ class AG_Fid_Shortcodes {
 
 			<?php
 			$pres_photo = get_theme_mod( 'ag_asso_about_president_photo', '' );
-			$pres_name  = get_theme_mod( 'ag_asso_about_president_name', '' );
-			$pres_role  = get_theme_mod( 'ag_asso_about_president_role', 'Président·e' );
-			$pres_bio   = get_theme_mod( 'ag_asso_about_president_bio', '' );
+			$pres_name  = get_theme_mod( 'ag_asso_about_president_name', 'Camille Lefèvre' );
+			$pres_role  = get_theme_mod( 'ag_asso_about_president_role', 'Présidente — fondatrice' );
+			$pres_bio   = get_theme_mod( 'ag_asso_about_president_bio',  'Engagée dans l\'éducation populaire depuis 15 ans, Camille a fondé le mouvement en 2018 après avoir constaté l\'urgence d\'un cadre citoyen indépendant des partis. Ancienne enseignante en zone REP, elle porte une vision d\'une démocratie vivante, où chacune et chacun peut peser sur les décisions qui le concernent.' );
 			$pres_initials = '';
 			foreach ( explode( ' ', $pres_name ) as $part ) { if ( $part ) $pres_initials .= mb_strtoupper( mb_substr( $part, 0, 1 ) ); }
 			?>
@@ -129,11 +129,17 @@ class AG_Fid_Shortcodes {
 			</section>
 
 			<section class="ag-asso-histoire">
-				<?php for ( $i = 1; $i <= 3; $i++ ) :
+				<?php
+				$histoire_fallback = array(
+					1 => array( 'year' => '2018',         'title' => 'La naissance du mouvement', 'text' => 'Quelques dizaines de citoyennes et citoyens se réunissent dans une salle des fêtes de banlieue. Le constat est partagé : ni les partis, ni les institutions n\'écoutent plus. L\'association est déclarée en préfecture le 14 juillet 2018.' ),
+					2 => array( 'year' => '2021',         'title' => 'Première grande victoire',  'text' => 'Après 18 mois de mobilisation et 47 000 signatures recueillies, notre pétition pour la transparence des marchés publics aboutit à une loi locale. Le mouvement compte désormais 12 groupes locaux dans toute la France.' ),
+					3 => array( 'year' => 'Aujourd\'hui', 'title' => 'Un mouvement national',     'text' => 'Plus de 2 000 adhérents, 47 groupes locaux, 6 grandes campagnes thématiques en cours. Nous restons indépendants : aucun parti, aucun lobby — uniquement nos cotisations et vos dons.' ),
+				);
+				for ( $i = 1; $i <= 3; $i++ ) :
 					$photo = get_theme_mod( "ag_asso_about_histoire_photo_$i", '' );
-					$year  = get_theme_mod( "ag_asso_about_histoire_year_$i", '' );
-					$title = get_theme_mod( "ag_asso_about_histoire_title_$i", '' );
-					$text  = get_theme_mod( "ag_asso_about_histoire_text_$i", '' );
+					$year  = get_theme_mod( "ag_asso_about_histoire_year_$i",  $histoire_fallback[ $i ]['year']  );
+					$title = get_theme_mod( "ag_asso_about_histoire_title_$i", $histoire_fallback[ $i ]['title'] );
+					$text  = get_theme_mod( "ag_asso_about_histoire_text_$i",  $histoire_fallback[ $i ]['text']  );
 					?>
 					<div class="ag-asso-histoire__step">
 						<div class="ag-asso-histoire__photo<?php echo $photo ? '' : ' ag-asso-histoire__photo--placeholder'; ?>" <?php if ( $photo ) echo 'style="background-image:url(' . esc_url( $photo ) . ');"'; ?>>
@@ -154,10 +160,19 @@ class AG_Fid_Shortcodes {
 				<h2 class="ag-asso-section__title">Notre <em>équipe</em></h2>
 				<p class="ag-asso-section__lead">Les bénévoles et salarié·es qui font vivre l'association au quotidien.</p>
 				<div class="ag-asso-team__grid ag-asso-team__grid--detailed">
-					<?php for ( $i = 1; $i <= 6; $i++ ) :
+					<?php
+					$team_fallback = array(
+						1 => array( 'name' => 'Yacine Bouzid',   'role' => 'Vice-président — pôle juridique' ),
+						2 => array( 'name' => 'Léa Marchand',    'role' => 'Trésorière' ),
+						3 => array( 'name' => 'Mehdi El Amrani', 'role' => 'Secrétaire général' ),
+						4 => array( 'name' => 'Sophie Tremblay', 'role' => 'Coordination groupes locaux' ),
+						5 => array( 'name' => 'Thomas Vasseur',  'role' => 'Responsable communication' ),
+						6 => array( 'name' => 'Aïcha Diallo',    'role' => 'Animation jeunes engagés' ),
+					);
+					for ( $i = 1; $i <= 6; $i++ ) :
 						$photo = get_theme_mod( "ag_asso_about_team_photo_$i", '' );
-						$name  = get_theme_mod( "ag_asso_about_team_name_$i", '' );
-						$role  = get_theme_mod( "ag_asso_about_team_role_$i", '' );
+						$name  = get_theme_mod( "ag_asso_about_team_name_$i", $team_fallback[ $i ]['name'] );
+						$role  = get_theme_mod( "ag_asso_about_team_role_$i", $team_fallback[ $i ]['role'] );
 						if ( ! $name && ! $photo ) continue;
 						$initials = '';
 						foreach ( explode( ' ', $name ) as $part ) { if ( $part ) $initials .= mb_strtoupper( mb_substr( $part, 0, 1 ) ); }
