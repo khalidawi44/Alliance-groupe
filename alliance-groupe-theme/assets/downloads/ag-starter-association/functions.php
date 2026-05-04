@@ -25,6 +25,10 @@ if ( ! function_exists( 'ag_starter_association_setup' ) ) :
 		) );
 		add_theme_support( 'html5', array( 'search-form', 'comment-form', 'comment-list', 'gallery', 'caption' ) );
 		add_theme_support( 'responsive-embeds' );
+		register_nav_menus( array(
+			'primary' => __( 'Menu principal',  'ag-starter-association' ),
+			'footer'  => __( 'Menu pied de page', 'ag-starter-association' ),
+		) );
 	}
 endif;
 add_action( 'after_setup_theme', 'ag_starter_association_setup' );
