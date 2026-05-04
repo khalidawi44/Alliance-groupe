@@ -654,3 +654,198 @@ a:hover { text-decoration: underline; }
     color: var(--asso-black);
 }
 .ag-asso-team__role { color: var(--asso-red); font-weight: 600; font-size: .9rem; text-transform: uppercase; letter-spacing: 1px; }
+
+/* ── Section Groupes locaux : carte France + stats ── */
+.ag-asso-section--map {
+    background: linear-gradient(135deg, var(--asso-black) 0%, #1a1a22 100%);
+    color: #fff;
+    background-image:
+        radial-gradient(circle at 20% 20%, rgba(225,15,26,.12) 0, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255,210,63,.08) 0, transparent 50%),
+        linear-gradient(135deg, var(--asso-black) 0%, #1a1a22 100%);
+}
+.ag-asso-section--map .ag-asso-section__title { color: #fff; }
+.ag-asso-section--map .ag-asso-section__lead { color: rgba(255,255,255,.85); }
+.ag-asso-groupes-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+@media (max-width: 900px) { .ag-asso-groupes-wrap { grid-template-columns: 1fr; gap: 32px; } }
+.ag-asso-groupes-map img {
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+    filter: drop-shadow(0 8px 20px rgba(225,15,26,.25));
+}
+.ag-asso-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 32px;
+}
+.ag-asso-stats > div {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
+    padding: 18px 14px;
+    text-align: center;
+    border-radius: 6px;
+}
+.ag-asso-stats strong {
+    display: block;
+    font-family: var(--asso-font-heading), Impact, sans-serif;
+    font-size: 1.9rem;
+    color: var(--asso-yellow);
+    line-height: 1;
+}
+.ag-asso-stats span {
+    display: block;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,.7);
+    margin-top: 6px;
+}
+.ag-asso-section--map .ag-asso-search input {
+    border-color: #fff;
+    background: rgba(255,255,255,.95);
+}
+
+/* ── Section équipe ── */
+.ag-asso-section--team {
+    background: var(--asso-bg-alt, #F5F5F2);
+    background-image:
+        radial-gradient(circle at 10% 10%, rgba(225,15,26,.04) 0, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(225,15,26,.04) 0, transparent 40%);
+}
+.ag-asso-team__photo--placeholder {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    margin: 0 auto 14px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid var(--asso-red);
+    color: #fff;
+}
+.ag-asso-team__photo--placeholder span {
+    font-family: var(--asso-font-heading), Impact, sans-serif;
+    font-size: 2.6rem;
+    letter-spacing: 1px;
+    line-height: 1;
+}
+.ag-asso-btn--ghost-dark {
+    border-color: var(--asso-black);
+    color: var(--asso-black);
+}
+.ag-asso-btn--ghost-dark:hover {
+    background: var(--asso-black);
+    color: #fff;
+}
+
+/* ── Background subtils sur sections claires ── */
+.ag-asso-section:not(.ag-asso-section--alt):not(.ag-asso-section--cta):not(.ag-asso-section--map):not(.ag-asso-section--team) {
+    background-image: radial-gradient(circle at 0% 0%, rgba(225,15,26,.03) 0, transparent 35%);
+}
+
+/* ── Photo placeholder dans la page Qui sommes-nous ── */
+.ag-asso-president__photo--placeholder {
+    width: 100%;
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, var(--asso-red) 0%, var(--asso-red-dark) 100%);
+    border-radius: 8px;
+    border: 6px solid var(--asso-red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-family: var(--asso-font-heading), Impact, sans-serif;
+    font-size: 5rem;
+    letter-spacing: 2px;
+}
+
+/* ── Page Qui sommes-nous : sous-titre hero ── */
+.ag-asso-about__hero-sub {
+    margin: 18px 0 0;
+    color: rgba(255,255,255,.85);
+    font-size: 1.1rem;
+}
+
+/* Histoire : placeholder photo si pas d'image uploadee */
+.ag-asso-histoire__photo--placeholder {
+    background: linear-gradient(135deg, var(--asso-red) 0%, var(--asso-red-dark) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+.ag-asso-histoire__photo--placeholder::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 30% 30%, rgba(255,255,255,.15) 0, transparent 50%),
+                      radial-gradient(circle at 70% 70%, rgba(255,210,63,.2) 0, transparent 50%);
+}
+.ag-asso-histoire__photo-year {
+    font-family: var(--asso-font-heading), Impact, sans-serif;
+    font-size: 4.5rem;
+    color: rgba(255,255,255,.95);
+    letter-spacing: 2px;
+    z-index: 1;
+}
+
+/* Equipe : version detaillee avec bios */
+.ag-asso-team__grid--detailed .ag-asso-team__card { text-align: left; padding: 28px 24px; }
+.ag-asso-team__grid--detailed .ag-asso-team__photo,
+.ag-asso-team__grid--detailed .ag-asso-team__photo--placeholder {
+    margin: 0 0 18px;
+}
+.ag-asso-team__bio {
+    color: var(--asso-text-light, #5A5A66);
+    font-size: .92rem;
+    line-height: 1.55;
+    margin: 12px 0 0;
+}
+
+/* Engagements (3 valeurs) */
+.ag-asso-about__values {
+    background: var(--asso-black);
+    color: #fff;
+    padding: 80px 0;
+    margin-top: 0;
+}
+.ag-asso-about__values .ag-asso-section__title { color: #fff; }
+.ag-asso-values-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    margin-top: 32px;
+}
+@media (max-width: 800px) { .ag-asso-values-grid { grid-template-columns: 1fr; } }
+.ag-asso-value {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.1);
+    padding: 30px 24px;
+    border-left: 4px solid var(--asso-red);
+}
+.ag-asso-value__num {
+    display: block;
+    font-family: var(--asso-font-heading), Impact, sans-serif;
+    font-size: 2.4rem;
+    color: var(--asso-yellow);
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+.ag-asso-value h4 {
+    font-family: var(--asso-font-heading), Impact, sans-serif;
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 10px;
+    color: #fff;
+}
+.ag-asso-value p { color: rgba(255,255,255,.78); font-size: .95rem; margin: 0; }
