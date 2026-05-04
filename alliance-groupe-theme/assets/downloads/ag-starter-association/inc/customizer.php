@@ -487,16 +487,6 @@ function ag_asso_customize( $wp_customize ) {
 		'description' => 'Téléchargez vos images depuis Pexels (https://www.pexels.com/fr-fr/) puis uploadez-les ici. Recommandées : 1920x1080.',
 	) );
 
-	// Carte de France custom
-	$wp_customize->add_setting( 'ag_asso_groupes_map', array(
-		'default' => '', 'sanitize_callback' => 'esc_url_raw',
-	) );
-	$wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, 'ag_asso_groupes_map', array(
-		'label' => __( 'Carte de France (section groupes locaux)', 'ag-starter-association' ),
-		'description' => __( 'Image PNG/SVG de carte de France avec fond transparent. Si vide : carte SVG par défaut.', 'ag-starter-association' ),
-		'section' => 'ag_asso_parallax',
-	) ) );
-
 	// Images de fond sections principales (combats, evenements, signer, don, actu)
 	$bg_slots = array(
 		'combats'    => 'Fond section "Combats"',
