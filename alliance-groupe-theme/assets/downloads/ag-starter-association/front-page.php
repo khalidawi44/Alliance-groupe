@@ -205,10 +205,18 @@ get_header();
             <div class="ag-asso-team__grid">
                 <?php
                 $colors = array( '#E10F1A', '#FFD23F', '#0A0A0D', '#1F8A3D', '#3B5998', '#8B1A8B' );
+                $team_fb = array(
+                    1 => array( 'Yacine Bouzid',   'Vice-président — pôle juridique' ),
+                    2 => array( 'Léa Marchand',    'Trésorière' ),
+                    3 => array( 'Mehdi El Amrani', 'Secrétaire général' ),
+                    4 => array( 'Sophie Tremblay', 'Coordination groupes locaux' ),
+                    5 => array( 'Thomas Vasseur',  'Responsable communication' ),
+                    6 => array( 'Aïcha Diallo',    'Animation jeunes engagés' ),
+                );
                 for ( $i = 1; $i <= 6; $i++ ) :
                     $photo = ag_asso_opt( "ag_asso_about_team_photo_$i", '' );
-                    $name  = ag_asso_opt( "ag_asso_about_team_name_$i", '' );
-                    $role  = ag_asso_opt( "ag_asso_about_team_role_$i", '' );
+                    $name  = ag_asso_opt( "ag_asso_about_team_name_$i", $team_fb[ $i ][0] );
+                    $role  = ag_asso_opt( "ag_asso_about_team_role_$i", $team_fb[ $i ][1] );
                     if ( ! $name ) continue;
                     $initials = '';
                     foreach ( explode( ' ', $name ) as $part ) {

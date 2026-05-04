@@ -1,68 +1,105 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 420" width="400" height="420">
-  <!-- Hexagone France stylisé -->
-  <path d="M195,15 C235,20 270,40 295,75 C320,110 335,160 330,210 C328,255 320,295 300,330 C280,360 250,385 215,400 C195,408 175,410 155,405 C125,395 100,375 80,345 C60,315 50,275 50,230 C50,185 55,145 70,110 C85,75 110,45 140,25 C155,18 175,13 195,15 Z"
-        fill="rgba(255,255,255,0.05)"
-        stroke="rgba(255,255,255,0.25)"
-        stroke-width="1.5"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <!-- Carte de France métropolitaine — contours simplifiés -->
+  <defs>
+    <linearGradient id="fr-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.08)"/>
+      <stop offset="100%" stop-color="rgba(225,15,26,0.18)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- France métropolitaine -->
+  <path d="M 195 70
+           L 215 65 L 240 75 L 260 70 L 280 80 L 300 95
+           L 320 110 L 340 130 L 360 145 L 375 165
+           L 385 190 L 395 215 L 400 245 L 395 275
+           L 385 305 L 380 335 L 370 365 L 350 385
+           L 325 400 L 295 410 L 265 415 L 235 420
+           L 205 415 L 175 405 L 150 390 L 130 370
+           L 115 345 L 105 315 L 100 285 L 95 255
+           L 100 225 L 110 195 L 120 165 L 135 140
+           L 155 115 L 175 90 L 195 70 Z
+           M 90 230 L 75 240 L 70 260 L 80 275 L 95 270 L 100 250 Z"
+        fill="url(#fr-grad)"
+        stroke="rgba(255,255,255,0.45)"
+        stroke-width="2"
+        stroke-linejoin="round"/>
+
+  <!-- Corse -->
+  <path d="M 415 380 L 425 375 L 435 385 L 432 410 L 425 425 L 418 422 L 415 405 Z"
+        fill="url(#fr-grad)"
+        stroke="rgba(255,255,255,0.45)"
+        stroke-width="2"
+        stroke-linejoin="round"/>
 
   <!-- Points groupes locaux : Paris, Lyon, Marseille, Saint-Etienne, Toulouse -->
+
   <!-- Paris -->
   <g>
-    <circle cx="208" cy="115" r="10" fill="#E10F1A" opacity="0.3">
-      <animate attributeName="r" values="10;18;10" dur="2s" repeatCount="indefinite"/>
-      <animate attributeName="opacity" values="0.3;0;0.3" dur="2s" repeatCount="indefinite"/>
+    <circle cx="248" cy="135" r="14" fill="#E10F1A" opacity="0.3">
+      <animate attributeName="r" values="14;24;14" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.35;0;0.35" dur="2s" repeatCount="indefinite"/>
     </circle>
-    <circle cx="208" cy="115" r="6" fill="#E10F1A"/>
-    <text x="220" y="119" fill="#fff" font-size="11" font-family="Inter,sans-serif" font-weight="600">Paris</text>
+    <circle cx="248" cy="135" r="7" fill="#E10F1A" stroke="#fff" stroke-width="2"/>
+    <text x="262" y="139" fill="#fff" font-size="13" font-family="Inter,sans-serif" font-weight="700">Paris</text>
   </g>
 
   <!-- Lyon -->
   <g>
-    <circle cx="245" cy="235" r="8" fill="#E10F1A" opacity="0.3">
-      <animate attributeName="r" values="8;15;8" dur="2.5s" repeatCount="indefinite"/>
-      <animate attributeName="opacity" values="0.3;0;0.3" dur="2.5s" repeatCount="indefinite"/>
+    <circle cx="305" cy="265" r="11" fill="#E10F1A" opacity="0.3">
+      <animate attributeName="r" values="11;20;11" dur="2.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.35;0;0.35" dur="2.5s" repeatCount="indefinite"/>
     </circle>
-    <circle cx="245" cy="235" r="5" fill="#E10F1A"/>
-    <text x="257" y="239" fill="#fff" font-size="11" font-family="Inter,sans-serif" font-weight="600">Lyon</text>
+    <circle cx="305" cy="265" r="6" fill="#E10F1A" stroke="#fff" stroke-width="2"/>
+    <text x="318" y="269" fill="#fff" font-size="12" font-family="Inter,sans-serif" font-weight="700">Lyon</text>
   </g>
 
-  <!-- Saint-Etienne -->
+  <!-- Saint-Étienne -->
   <g>
-    <circle cx="225" cy="255" r="5" fill="#FFD23F"/>
-    <text x="155" y="259" fill="#fff" font-size="10" font-family="Inter,sans-serif" font-weight="500">Saint-Étienne</text>
+    <circle cx="285" cy="285" r="6" fill="#FFD23F" stroke="#fff" stroke-width="1.5"/>
+    <text x="180" y="290" fill="#fff" font-size="11" font-family="Inter,sans-serif" font-weight="600">St-Étienne</text>
   </g>
 
   <!-- Marseille -->
   <g>
-    <circle cx="245" cy="335" r="8" fill="#E10F1A" opacity="0.3">
-      <animate attributeName="r" values="8;15;8" dur="3s" repeatCount="indefinite"/>
-      <animate attributeName="opacity" values="0.3;0;0.3" dur="3s" repeatCount="indefinite"/>
+    <circle cx="310" cy="370" r="11" fill="#E10F1A" opacity="0.3">
+      <animate attributeName="r" values="11;20;11" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.35;0;0.35" dur="3s" repeatCount="indefinite"/>
     </circle>
-    <circle cx="245" cy="335" r="5" fill="#E10F1A"/>
-    <text x="257" y="339" fill="#fff" font-size="11" font-family="Inter,sans-serif" font-weight="600">Marseille</text>
+    <circle cx="310" cy="370" r="6" fill="#E10F1A" stroke="#fff" stroke-width="2"/>
+    <text x="323" y="374" fill="#fff" font-size="12" font-family="Inter,sans-serif" font-weight="700">Marseille</text>
   </g>
 
   <!-- Toulouse -->
   <g>
-    <circle cx="155" cy="320" r="8" fill="#E10F1A" opacity="0.3">
-      <animate attributeName="r" values="8;15;8" dur="2.2s" repeatCount="indefinite"/>
-      <animate attributeName="opacity" values="0.3;0;0.3" dur="2.2s" repeatCount="indefinite"/>
+    <circle cx="195" cy="355" r="11" fill="#E10F1A" opacity="0.3">
+      <animate attributeName="r" values="11;20;11" dur="2.2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.35;0;0.35" dur="2.2s" repeatCount="indefinite"/>
     </circle>
-    <circle cx="155" cy="320" r="5" fill="#E10F1A"/>
-    <text x="100" y="324" fill="#fff" font-size="11" font-family="Inter,sans-serif" font-weight="600">Toulouse</text>
+    <circle cx="195" cy="355" r="6" fill="#E10F1A" stroke="#fff" stroke-width="2"/>
+    <text x="115" y="359" fill="#fff" font-size="12" font-family="Inter,sans-serif" font-weight="700">Toulouse</text>
   </g>
 
-  <!-- Autres points (groupes en formation) -->
-  <circle cx="115" cy="180" r="3" fill="rgba(255,255,255,0.5)"/>
-  <circle cx="170" cy="80" r="3" fill="rgba(255,255,255,0.5)"/>
-  <circle cx="280" cy="155" r="3" fill="rgba(255,255,255,0.5)"/>
-  <circle cx="290" cy="270" r="3" fill="rgba(255,255,255,0.5)"/>
-  <circle cx="180" cy="260" r="3" fill="rgba(255,255,255,0.5)"/>
-  <circle cx="100" cy="250" r="3" fill="rgba(255,255,255,0.5)"/>
-  <circle cx="135" cy="350" r="3" fill="rgba(255,255,255,0.5)"/>
-  <circle cx="200" cy="380" r="3" fill="rgba(255,255,255,0.5)"/>
-  <circle cx="305" cy="360" r="3" fill="rgba(255,255,255,0.5)"/>
-  <circle cx="135" cy="135" r="3" fill="rgba(255,255,255,0.5)"/>
-  <circle cx="240" cy="190" r="3" fill="rgba(255,255,255,0.5)"/>
-  <circle cx="195" cy="210" r="3" fill="rgba(255,255,255,0.5)"/>
+  <!-- Autres groupes (petits points) : Lille, Strasbourg, Nantes, Bordeaux, Brest, Rennes... -->
+  <circle cx="245" cy="85" r="4" fill="rgba(255,255,255,0.6)"/>      <!-- Lille -->
+  <circle cx="370" cy="160" r="4" fill="rgba(255,255,255,0.6)"/>      <!-- Strasbourg -->
+  <circle cx="160" cy="195" r="4" fill="rgba(255,255,255,0.6)"/>      <!-- Nantes -->
+  <circle cx="170" cy="305" r="4" fill="rgba(255,255,255,0.6)"/>      <!-- Bordeaux -->
+  <circle cx="120" cy="180" r="4" fill="rgba(255,255,255,0.6)"/>      <!-- Brest -->
+  <circle cx="155" cy="160" r="4" fill="rgba(255,255,255,0.6)"/>      <!-- Rennes -->
+  <circle cx="265" cy="195" r="4" fill="rgba(255,255,255,0.6)"/>      <!-- Dijon -->
+  <circle cx="335" cy="200" r="4" fill="rgba(255,255,255,0.6)"/>      <!-- Mulhouse -->
+  <circle cx="220" cy="220" r="4" fill="rgba(255,255,255,0.6)"/>      <!-- Clermont -->
+  <circle cx="265" cy="345" r="4" fill="rgba(255,255,255,0.6)"/>      <!-- Montpellier -->
+  <circle cx="350" cy="335" r="4" fill="rgba(255,255,255,0.6)"/>      <!-- Nice -->
+  <circle cx="190" cy="115" r="4" fill="rgba(255,255,255,0.6)"/>      <!-- Caen / Le Havre -->
+  <circle cx="220" cy="310" r="4" fill="rgba(255,255,255,0.6)"/>      <!-- Limoges -->
+  <circle cx="325" cy="105" r="4" fill="rgba(255,255,255,0.6)"/>      <!-- Reims -->
+
+  <!-- Légende -->
+  <g transform="translate(15,460)">
+    <circle cx="0" cy="0" r="5" fill="#E10F1A" stroke="#fff" stroke-width="1.5"/>
+    <text x="12" y="4" fill="rgba(255,255,255,0.85)" font-size="10" font-family="Inter,sans-serif" font-weight="600">Groupes principaux</text>
+    <circle cx="135" cy="0" r="3" fill="rgba(255,255,255,0.6)"/>
+    <text x="145" y="4" fill="rgba(255,255,255,0.85)" font-size="10" font-family="Inter,sans-serif" font-weight="600">Antennes locales</text>
+  </g>
 </svg>

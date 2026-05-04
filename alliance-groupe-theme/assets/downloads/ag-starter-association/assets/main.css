@@ -849,3 +849,67 @@ a:hover { text-decoration: underline; }
     color: #fff;
 }
 .ag-asso-value p { color: rgba(255,255,255,.78); font-size: .95rem; margin: 0; }
+
+/* ── Backgrounds sections : images thematiques + voile sombre ── */
+.ag-asso-section--alt#combats {
+    background:
+        linear-gradient(rgba(245,245,242,.92), rgba(245,245,242,.96)),
+        url("https://images.unsplash.com/photo-1591622180746-7eebbf85a4c2?w=1600&q=80") center/cover fixed;
+}
+.ag-asso-section#evenements {
+    background:
+        linear-gradient(rgba(255,255,255,.93), rgba(255,255,255,.96)),
+        url("https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1600&q=80") center/cover fixed;
+}
+.ag-asso-section#actu {
+    background:
+        linear-gradient(rgba(255,255,255,.94), rgba(255,255,255,.96)),
+        url("https://images.unsplash.com/photo-1495020689067-958852a7765e?w=1600&q=80") center/cover fixed;
+}
+.ag-asso-section--cta#signer {
+    background:
+        linear-gradient(rgba(10,10,13,.88), rgba(10,10,13,.94)),
+        url("https://images.unsplash.com/photo-1591622180461-c532a8a85a98?w=1600&q=80") center/cover fixed;
+}
+.ag-asso-section--alt#don {
+    background:
+        linear-gradient(rgba(245,245,242,.93), rgba(245,245,242,.96)),
+        url("https://images.unsplash.com/photo-1593113598332-cd288d649433?w=1600&q=80") center/cover fixed;
+}
+@media (max-width: 768px) {
+    .ag-asso-section--alt#combats,
+    .ag-asso-section#evenements,
+    .ag-asso-section#actu,
+    .ag-asso-section--cta#signer,
+    .ag-asso-section--alt#don { background-attachment: scroll; }
+}
+
+/* Hero : image background par defaut si pas customisee */
+.ag-asso-hero {
+    background-image:
+        linear-gradient(rgba(10,10,13,.78), rgba(10,10,13,.88)),
+        url("https://images.unsplash.com/photo-1591622180746-7eebbf85a4c2?w=1920&q=80") !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-attachment: fixed !important;
+}
+@media (max-width: 768px) { .ag-asso-hero { background-attachment: scroll !important; } }
+
+/* Fix .ag-asso-president : si placeholder, le rendre carre + bien aligne */
+.ag-asso-president {
+    grid-template-columns: 280px 1fr;
+}
+@media (max-width: 768px) { .ag-asso-president { grid-template-columns: 1fr; text-align: center; } }
+.ag-asso-president__photo,
+.ag-asso-president__photo--placeholder {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-width: 280px;
+    margin: 0 auto;
+}
+.ag-asso-president__body { min-width: 0; }
+.ag-asso-president__body h2 {
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    margin: 0 0 16px;
+}
+.ag-asso-president__body p { margin: 0 0 12px; font-size: 1rem; line-height: 1.65; }
