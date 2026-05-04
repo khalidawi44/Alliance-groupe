@@ -3,7 +3,7 @@
  * Plugin Name:       AG Fidélité Association
  * Plugin URI:        https://alliancegroupe-inc.com
  * Description:       Pack Fidélité (top tier 99€) pour le thème AG Starter Association. Pages séparées, CPT (combats / événements / groupes locaux), rôles utilisateurs (adhérent / militant / sympathisant), outils de gestion d'association, recommandations d'extensions.
- * Version:           0.7.0
+ * Version:           0.8.0
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Alliance Groupe
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_FID_VERSION', '0.7.0' );
+define( 'AG_FID_VERSION', '0.8.0' );
 define( 'AG_FID_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AG_FID_URL', plugin_dir_url( __FILE__ ) );
 

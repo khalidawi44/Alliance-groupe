@@ -53,7 +53,126 @@ class AG_Fid_Shortcodes {
 	}
 
 	public function render_combats()    { return $this->render_cpt_grid( 'ag_combat', 'Aucun combat publié.' ); }
-	public function render_evenements() { return $this->render_cpt_grid( 'ag_evenement', 'Aucun événement à venir.' ); }
+	public function render_evenements() {
+		$q = new WP_Query( array(
+			'post_type'      => 'ag_evenement',
+			'posts_per_page' => 30,
+			'meta_key'       => '_ag_event_date',
+			'orderby'        => 'meta_value',
+			'order'          => 'ASC',
+		) );
+		if ( ! $q->have_posts() ) {
+			return '<p>Aucun événement à venir.</p>';
+		}
+		// Calendrier mensuel (mois en cours + suivant)
+		$months_fr = array( 1=>'Janvier',2=>'Février',3=>'Mars',4=>'Avril',5=>'Mai',6=>'Juin',7=>'Juillet',8=>'Août',9=>'Septembre',10=>'Octobre',11=>'Novembre',12=>'Décembre' );
+		$months_short = array( 1=>'JAN',2=>'FÉV',3=>'MAR',4=>'AVR',5=>'MAI',6=>'JUIN',7=>'JUIL',8=>'AOÛT',9=>'SEPT',10=>'OCT',11=>'NOV',12=>'DÉC' );
+
+		// Group events by date
+		$events_by_date = array();
+		while ( $q->have_posts() ) {
+			$q->the_post();
+			$date  = get_post_meta( get_the_ID(), '_ag_event_date',  true );
+			$time  = get_post_meta( get_the_ID(), '_ag_event_time',  true );
+			$end   = get_post_meta( get_the_ID(), '_ag_event_end',   true );
+			$city  = get_post_meta( get_the_ID(), '_ag_event_city',  true );
+			$place = get_post_meta( get_the_ID(), '_ag_event_place', true );
+			if ( ! $date ) continue;
+			$events_by_date[ $date ][] = array(
+				'id'    => get_the_ID(),
+				'title' => get_the_title(),
+				'time'  => $time,
+				'end'   => $end,
+				'city'  => $city,
+				'place' => $place,
+				'desc'  => get_the_excerpt(),
+				'url'   => get_permalink(),
+			);
+		}
+		wp_reset_postdata();
+		ksort( $events_by_date );
+
+		ob_start(); ?>
+		<div class="ag-evt-wrap">
+			<?php
+			// Mini-calendrier du mois en cours avec dates surlignees
+			$now    = current_time( 'timestamp' );
+			$year   = (int) date( 'Y', $now );
+			$month  = (int) date( 'n', $now );
+			$first  = mktime( 0, 0, 0, $month, 1, $year );
+			$nb_days = (int) date( 't', $first );
+			$first_dow = (int) date( 'N', $first ); // 1 = lundi
+			$today_d   = (int) date( 'j', $now );
+			?>
+			<aside class="ag-evt-calendar">
+				<div class="ag-evt-cal-header">
+					<h3><?php echo esc_html( $months_fr[ $month ] . ' ' . $year ); ?></h3>
+				</div>
+				<table class="ag-evt-cal-grid">
+					<thead><tr><th>L</th><th>M</th><th>M</th><th>J</th><th>V</th><th>S</th><th>D</th></tr></thead>
+					<tbody><tr>
+						<?php
+						for ( $i = 1; $i < $first_dow; $i++ ) echo '<td></td>';
+						for ( $d = 1; $d <= $nb_days; $d++ ) {
+							$datestr = sprintf( '%04d-%02d-%02d', $year, $month, $d );
+							$has_evt = isset( $events_by_date[ $datestr ] );
+							$is_today = ( $d === $today_d );
+							$cls = '';
+							if ( $has_evt )  $cls .= ' has-evt';
+							if ( $is_today ) $cls .= ' is-today';
+							echo '<td class="' . esc_attr( trim( $cls ) ) . '">';
+							if ( $has_evt ) {
+								echo '<a href="#evt-' . esc_attr( $datestr ) . '">' . $d . '</a>';
+							} else {
+								echo $d;
+							}
+							echo '</td>';
+							if ( ( $first_dow + $d - 1 ) % 7 === 0 && $d < $nb_days ) echo '</tr><tr>';
+						}
+						?>
+					</tr></tbody>
+				</table>
+				<p class="ag-evt-cal-legend"><span class="ag-evt-dot"></span> Date avec événement</p>
+			</aside>
+
+			<div class="ag-evt-list">
+				<?php foreach ( $events_by_date as $date => $items ) :
+					$ts = strtotime( $date );
+					$jour    = (int) date( 'j', $ts );
+					$mois_n  = (int) date( 'n', $ts );
+					$annee   = date( 'Y', $ts );
+					$jour_lbl = strtoupper( substr( $months_fr[ (int) date( 'N', $ts ) <= 7 ? (int) date( 'N', $ts ) : 1 ], 0, 3 ) );
+					$dow_fr = array( 1=>'LUN',2=>'MAR',3=>'MER',4=>'JEU',5=>'VEN',6=>'SAM',7=>'DIM' );
+					$dow = $dow_fr[ (int) date( 'N', $ts ) ];
+					foreach ( $items as $ev ) : ?>
+						<article class="ag-evt-card" id="evt-<?php echo esc_attr( $date ); ?>">
+							<div class="ag-evt-date">
+								<span class="ag-evt-date__dow"><?php echo esc_html( $dow ); ?></span>
+								<span class="ag-evt-date__day"><?php echo esc_html( $jour ); ?></span>
+								<span class="ag-evt-date__month"><?php echo esc_html( $months_short[ $mois_n ] ); ?></span>
+								<span class="ag-evt-date__year"><?php echo esc_html( $annee ); ?></span>
+							</div>
+							<div class="ag-evt-body">
+								<div class="ag-evt-meta">
+									<?php if ( $ev['time'] ) : ?>
+										<span class="ag-evt-meta__time">⏱ <?php echo esc_html( $ev['time'] ); ?><?php if ( $ev['end'] ) echo ' – ' . esc_html( $ev['end'] ); ?></span>
+									<?php endif; ?>
+									<?php if ( $ev['city'] ) : ?>
+										<span class="ag-evt-meta__loc">📍 <?php echo esc_html( $ev['city'] ); ?><?php if ( $ev['place'] ) echo ' — ' . esc_html( $ev['place'] ); ?></span>
+									<?php endif; ?>
+								</div>
+								<h3 class="ag-evt-title"><a href="<?php echo esc_url( $ev['url'] ); ?>"><?php echo esc_html( $ev['title'] ); ?></a></h3>
+								<p class="ag-evt-desc"><?php echo wp_kses_post( $ev['desc'] ); ?></p>
+								<a class="ag-evt-cta" href="<?php echo esc_url( $ev['url'] ); ?>">M'inscrire / en savoir plus →</a>
+							</div>
+						</article>
+					<?php endforeach;
+				endforeach; ?>
+			</div>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
 	public function render_groupes()    { return $this->render_cpt_grid( 'ag_groupe', 'Aucun groupe local référencé.' ); }
 	public function render_petitions()  { return $this->render_cpt_grid( 'ag_petition', 'Aucune pétition active.' ); }
 	public function render_actu()       { return $this->render_cpt_grid( 'post', 'Aucun article.' ); }
