@@ -26,10 +26,12 @@ class AG_Fid_Recommendations {
 	public function maybe_run_setup() {
 		if ( empty( $_GET['ag_fid_setup'] ) || ! current_user_can( 'manage_options' ) ) return;
 		if ( ! wp_verify_nonce( $_GET['_wpnonce'] ?? '', 'ag_fid_setup' ) ) return;
+		$force = ! empty( $_GET['force'] );
 		AG_Fid_Roles::create_roles();
 		AG_Fid_Pages::create_default_pages();
+		AG_Fid_Pages::create_default_cpts( $force );
 		flush_rewrite_rules();
-		wp_safe_redirect( add_query_arg( 'ag_fid_done', '1', remove_query_arg( array( 'ag_fid_setup', '_wpnonce' ) ) ) );
+		wp_safe_redirect( add_query_arg( 'ag_fid_done', '1', remove_query_arg( array( 'ag_fid_setup', '_wpnonce', 'force' ) ) ) );
 		exit;
 	}
 
@@ -184,8 +186,10 @@ class AG_Fid_Recommendations {
 				<p>Si les pages séparées (manifeste, combats, événements, dons, adhérer…) et les rôles (sympathisant, adhérent, militant, trésorier, secrétaire, président·e) n'ont pas été créés automatiquement à l'activation du plugin, clique ci-dessous pour les créer maintenant.</p>
 				<p>
 					<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=ag-fid-recommendations&ag_fid_setup=1' ), 'ag_fid_setup' ) ); ?>" class="button button-primary button-large">Lancer le setup (pages + rôles + permaliens)</a>
+					&nbsp;
+					<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=ag-fid-recommendations&ag_fid_setup=1&force=1' ), 'ag_fid_setup' ) ); ?>" class="button button-large" style="border-color:#d4b45c;color:#a8800c;" onclick="return confirm('Cela va SUPPRIMER tous les combats, événements, groupes locaux, pétitions et 5 articles de démo, puis les recréer avec les dernières versions. Confirmer ?');">Réinitialiser la démo (supprime + recrée CPT + articles)</a>
 				</p>
-				<p><small>Idempotent : tu peux le relancer sans danger, les pages déjà existantes ne seront pas dupliquées.</small></p>
+				<p><small><strong>Bouton 1</strong> : idempotent, ajoute uniquement ce qui manque.<br><strong>Bouton 2</strong> : utile après une mise à jour du thème pour récupérer les nouveaux contenus de démo (ex: nouveaux événements avec date/heure, nouveaux articles).</small></p>
 			</div>
 
 			<h2>Extensions recommandées</h2>
