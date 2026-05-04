@@ -26,10 +26,11 @@ class AG_Fid_Recommendations {
 	public function maybe_run_setup() {
 		if ( empty( $_GET['ag_fid_setup'] ) || ! current_user_can( 'manage_options' ) ) return;
 		if ( ! wp_verify_nonce( $_GET['_wpnonce'] ?? '', 'ag_fid_setup' ) ) return;
-		$force = ! empty( $_GET['force'] );
 		AG_Fid_Roles::create_roles();
 		AG_Fid_Pages::create_default_pages();
-		AG_Fid_Pages::create_default_cpts( $force );
+		// On force toujours le re-seed pour recuperer les contenus de
+		// demo de la derniere version (events avec date/heure, articles, etc.).
+		AG_Fid_Pages::create_default_cpts( true );
 		flush_rewrite_rules();
 		wp_safe_redirect( add_query_arg( 'ag_fid_done', '1', remove_query_arg( array( 'ag_fid_setup', '_wpnonce', 'force' ) ) ) );
 		exit;
@@ -185,11 +186,9 @@ class AG_Fid_Recommendations {
 				<h2 style="margin-top:0;">Configuration initiale</h2>
 				<p>Si les pages séparées (manifeste, combats, événements, dons, adhérer…) et les rôles (sympathisant, adhérent, militant, trésorier, secrétaire, président·e) n'ont pas été créés automatiquement à l'activation du plugin, clique ci-dessous pour les créer maintenant.</p>
 				<p>
-					<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=ag-fid-recommendations&ag_fid_setup=1' ), 'ag_fid_setup' ) ); ?>" class="button button-primary button-large">Lancer le setup (pages + rôles + permaliens)</a>
-					&nbsp;
-					<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=ag-fid-recommendations&ag_fid_setup=1&force=1' ), 'ag_fid_setup' ) ); ?>" class="button button-large" style="border-color:#d4b45c;color:#a8800c;" onclick="return confirm('Cela va SUPPRIMER tous les combats, événements, groupes locaux, pétitions et 5 articles de démo, puis les recréer avec les dernières versions. Confirmer ?');">Réinitialiser la démo (supprime + recrée CPT + articles)</a>
+					<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=ag-fid-recommendations&ag_fid_setup=1' ), 'ag_fid_setup' ) ); ?>" class="button button-primary button-large" onclick="return confirm('Cela va supprimer les CPT et articles de démo existants puis les recréer avec les dernières versions. Pages + rôles seront mis à jour. Confirmer ?');">Lancer / réinitialiser la démo</a>
 				</p>
-				<p><small><strong>Bouton 1</strong> : idempotent, ajoute uniquement ce qui manque.<br><strong>Bouton 2</strong> : utile après une mise à jour du thème pour récupérer les nouveaux contenus de démo (ex: nouveaux événements avec date/heure, nouveaux articles).</small></p>
+				<p><small>Crée pages + rôles + permaliens, et <strong>réinitialise les contenus de démo</strong> (combats, événements avec date/heure, groupes locaux, pétitions, 5 articles d'actualité). À cliquer après chaque mise à jour du thème pour récupérer les nouveaux contenus.</small></p>
 			</div>
 
 			<h2>Extensions recommandées</h2>
