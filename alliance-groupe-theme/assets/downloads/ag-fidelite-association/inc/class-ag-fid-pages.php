@@ -20,6 +20,7 @@ class AG_Fid_Pages {
 
 	public static function create_default_pages() {
 		$pages = array(
+			'qui-sommes-nous' => array( 'title' => 'Qui sommes-nous',  'shortcode' => '[ag_fid_qui_sommes_nous]' ),
 			'manifeste'    => array( 'title' => 'Manifeste',           'shortcode' => '[ag_fid_manifeste]' ),
 			'combats'      => array( 'title' => 'Nos combats',         'shortcode' => '[ag_fid_combats]' ),
 			'evenements'   => array( 'title' => 'Événements',          'shortcode' => '[ag_fid_evenements]' ),
@@ -55,12 +56,13 @@ class AG_Fid_Pages {
 	 */
 	public static function create_default_menus() {
 		$primary_items = array(
-			'manifeste'  => 'Manifeste',
-			'combats'    => 'Combats',
-			'evenements' => 'Événements',
-			'groupes'    => 'Groupes locaux',
-			'actu'       => 'Actualités',
-			'don'        => 'Faire un don',
+			'qui-sommes-nous' => 'Qui sommes-nous',
+			'manifeste'       => 'Manifeste',
+			'combats'         => 'Combats',
+			'evenements'      => 'Événements',
+			'groupes'         => 'Groupes locaux',
+			'actu'            => 'Actualités',
+			'don'             => 'Faire un don',
 		);
 		$footer_items = array(
 			'manifeste' => 'Le manifeste',

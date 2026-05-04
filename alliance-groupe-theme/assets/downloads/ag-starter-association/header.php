@@ -9,6 +9,15 @@
 <?php wp_body_open(); ?>
 <a href="#main" class="screen-reader-text"><?php esc_html_e( 'Aller au contenu', 'ag-starter-association' ); ?></a>
 
+<?php if ( ag_asso_opt( 'ag_asso_alert_active', 0 ) ) : ?>
+    <div class="ag-asso-alert" role="alert">
+        <span class="ag-asso-alert__text"><?php echo esc_html( ag_asso_opt( 'ag_asso_alert_text', '' ) ); ?></span>
+        <?php if ( $alert_url = ag_asso_opt( 'ag_asso_alert_link_url', '' ) ) : ?>
+            <a class="ag-asso-alert__link" href="<?php echo esc_url( $alert_url ); ?>"><?php echo esc_html( ag_asso_opt( 'ag_asso_alert_link_label', 'En savoir plus' ) ); ?> →</a>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>
+
 <header class="ag-asso-header">
     <div class="ag-asso-header__inner">
         <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="ag-asso-header__logo">

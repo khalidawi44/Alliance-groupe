@@ -17,11 +17,39 @@ get_header();
             <span class="ag-asso-hero__tag"><?php echo esc_html( ag_asso_opt( 'ag_asso_slogan', '[Slogan court]' ) ); ?></span>
             <h1 class="ag-asso-hero__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_hero_title', '[Le grand titre de mobilisation]' ) ); ?></h1>
             <p class="ag-asso-hero__sub"><?php echo esc_html( ag_asso_opt( 'ag_asso_hero_sub', '[Description courte du combat — 2 lignes max]' ) ); ?></p>
-            <a href="<?php echo esc_url( ag_asso_opt( 'ag_asso_cta_url', '' ) ?: ag_asso_link( 'signer' ) ); ?>" class="ag-asso-btn ag-asso-btn--primary">
-                <?php echo esc_html( ag_asso_opt( 'ag_asso_cta_label', 'Rejoindre le mouvement' ) ); ?>
-            </a>
+            <div class="ag-asso-hero__ctas">
+                <a href="<?php echo esc_url( ag_asso_opt( 'ag_asso_cta_url', '' ) ?: ag_asso_link( 'signer' ) ); ?>" class="ag-asso-btn ag-asso-btn--primary">
+                    <?php echo esc_html( ag_asso_opt( 'ag_asso_cta_label', 'Rejoindre le mouvement' ) ); ?>
+                </a>
+                <?php if ( $cta2_label = ag_asso_opt( 'ag_asso_cta2_label', '' ) ) : ?>
+                    <a href="<?php echo esc_url( ag_asso_opt( 'ag_asso_cta2_url', '' ) ?: ag_asso_link( 'don' ) ); ?>" class="ag-asso-btn ag-asso-btn--ghost">
+                        <?php echo esc_html( $cta2_label ); ?>
+                    </a>
+                <?php endif; ?>
+            </div>
+            <?php
+            $sig_count  = ag_asso_opt( 'ag_asso_signatures_count', '' );
+            $sig_target = ag_asso_opt( 'ag_asso_signatures_target', '' );
+            $sig_label  = ag_asso_opt( 'ag_asso_signatures_label', 'signataires' );
+            if ( $sig_count ) : ?>
+                <div class="ag-asso-hero__counter">
+                    <strong><?php echo esc_html( $sig_count ); ?></strong>
+                    <?php if ( $sig_target ) : ?>
+                        <span>/ <?php echo esc_html( $sig_target ); ?></span>
+                    <?php endif; ?>
+                    <span class="ag-asso-hero__counter-lbl"><?php echo esc_html( $sig_label ); ?></span>
+                </div>
+            <?php endif; ?>
         </div>
     </section>
+
+    <!-- Parallax manifeste -->
+    <?php if ( ag_asso_opt( 'ag_asso_parallax_manifeste', '' ) ) : ?>
+        <section class="ag-asso-parallax ag-asso-parallax--manifeste">
+            <h2 class="ag-asso-parallax__title">Notre vision</h2>
+            <p class="ag-asso-parallax__text">Une société plus juste, plus solidaire — c'est notre combat quotidien.</p>
+        </section>
+    <?php endif; ?>
 
     <!-- Manifeste -->
     <section class="ag-asso-section" id="manifeste">
@@ -35,6 +63,14 @@ get_header();
             </div>
         </div>
     </section>
+
+    <!-- Parallax combats -->
+    <?php if ( ag_asso_opt( 'ag_asso_parallax_combats', '' ) ) : ?>
+        <section class="ag-asso-parallax ag-asso-parallax--combats">
+            <h2 class="ag-asso-parallax__title">Nos combats</h2>
+            <p class="ag-asso-parallax__text">Des actions concrètes, sur le terrain, partout en France.</p>
+        </section>
+    <?php endif; ?>
 
     <!-- Combats -->
     <section class="ag-asso-section ag-asso-section--alt" id="combats">
@@ -52,6 +88,14 @@ get_header();
             </div>
         </div>
     </section>
+
+    <!-- Parallax événements -->
+    <?php if ( ag_asso_opt( 'ag_asso_parallax_evenements', '' ) ) : ?>
+        <section class="ag-asso-parallax ag-asso-parallax--evenements">
+            <h2 class="ag-asso-parallax__title">Mobilisations</h2>
+            <p class="ag-asso-parallax__text">Marches, meetings, actions — rejoignez-nous sur le terrain.</p>
+        </section>
+    <?php endif; ?>
 
     <!-- Événements -->
     <section class="ag-asso-section" id="evenements">
@@ -139,6 +183,14 @@ get_header();
             </form>
         </div>
     </section>
+
+    <!-- Parallax don -->
+    <?php if ( ag_asso_opt( 'ag_asso_parallax_don', '' ) ) : ?>
+        <section class="ag-asso-parallax ag-asso-parallax--don">
+            <h2 class="ag-asso-parallax__title">Soutenir le mouvement</h2>
+            <p class="ag-asso-parallax__text">Chaque don nous donne plus de moyens d'action.</p>
+        </section>
+    <?php endif; ?>
 
     <!-- Don -->
     <section class="ag-asso-section ag-asso-section--alt" id="don">
