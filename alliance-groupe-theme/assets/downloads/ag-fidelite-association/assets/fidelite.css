@@ -1,0 +1,154 @@
+/* AG Fidélité Association — styles minimaux pour les shortcodes */
+
+.ag-fid-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin: 24px 0;
+}
+.ag-fid-card {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,.08);
+    border-top: 4px solid var(--asso-red, #E30613);
+    padding: 0 0 20px;
+    transition: transform .25s, box-shadow .25s;
+}
+.ag-fid-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(227,6,19,.1);
+}
+.ag-fid-card__img img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    display: block;
+}
+.ag-fid-card h3 {
+    margin: 18px 22px 8px;
+    font-family: "Anton", Impact, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.ag-fid-card h3 a { color: inherit; text-decoration: none; }
+.ag-fid-card h3 a:hover { color: var(--asso-red, #E30613); }
+.ag-fid-card p {
+    margin: 0 22px;
+    color: rgba(0,0,0,.65);
+    font-size: .92rem;
+    line-height: 1.55;
+}
+
+/* Forms */
+.ag-fid-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 600px;
+    margin: 24px 0;
+}
+.ag-fid-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.ag-fid-form input[type="text"],
+.ag-fid-form input[type="email"],
+.ag-fid-form input[type="tel"],
+.ag-fid-form select,
+.ag-fid-form textarea {
+    padding: 12px 14px;
+    border: 2px solid rgba(0,0,0,.15);
+    background: #fff;
+    font-size: 1rem;
+    font-family: inherit;
+}
+.ag-fid-form input:focus,
+.ag-fid-form select:focus,
+.ag-fid-form textarea:focus {
+    outline: none;
+    border-color: var(--asso-red, #E30613);
+}
+.ag-fid-form label {
+    font-size: .9rem;
+    color: rgba(0,0,0,.7);
+}
+.ag-fid-btn {
+    display: inline-block;
+    padding: 14px 30px;
+    font-family: "Anton", Impact, sans-serif;
+    font-size: 1.05rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: 2px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .2s, transform .2s;
+}
+.ag-fid-btn--primary {
+    background: var(--asso-red, #E30613);
+    color: #fff;
+}
+.ag-fid-btn--primary:hover {
+    background: var(--asso-red-dark, #B0040E);
+    transform: translateY(-2px);
+}
+
+/* Don grid */
+.ag-fid-don-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin: 24px 0;
+}
+@media (max-width: 700px) { .ag-fid-don-grid { grid-template-columns: repeat(2, 1fr); } }
+.ag-fid-don-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+    padding: 26px 14px;
+    background: #fff;
+    border: 2px solid #0F0F12;
+    text-decoration: none;
+    color: #0F0F12;
+    transition: all .25s;
+}
+.ag-fid-don-card:hover {
+    background: var(--asso-red, #E30613);
+    color: #fff;
+    border-color: var(--asso-red, #E30613);
+    transform: translateY(-3px);
+}
+.ag-fid-don-card__amount {
+    font-family: "Anton", Impact, sans-serif;
+    font-size: 2rem;
+    line-height: 1;
+}
+.ag-fid-don-card__note {
+    font-size: .72rem;
+    text-align: center;
+    opacity: .7;
+}
+.ag-fid-don-info {
+    color: rgba(0,0,0,.65);
+    font-style: italic;
+    font-size: .92rem;
+}
+
+/* Adhésion + compte */
+.ag-fid-adhesion h3 {
+    font-family: "Anton", Impact, sans-serif;
+    text-transform: uppercase;
+    color: var(--asso-red, #E30613);
+}
+.ag-fid-compte ul {
+    list-style: none;
+    padding: 0;
+    margin: 18px 0;
+}
+.ag-fid-compte ul li {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0,0,0,.08);
+}
+.ag-fid-compte ul li a { color: var(--asso-red, #E30613); text-decoration: none; font-weight: 600; }

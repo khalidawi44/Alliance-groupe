@@ -108,6 +108,11 @@ function ag_dev_sync_run() {
 			'url'  => $base . 'ag-starter-association.zip',
 			'dest' => get_theme_root() . '/ag-starter-association',
 		),
+		array(
+			'name' => 'Plugin AG Fidelite Association',
+			'url'  => $base . 'ag-fidelite-association.zip',
+			'dest' => WP_PLUGIN_DIR . '/ag-fidelite-association',
+		),
 	);
 
 	require_once ABSPATH . 'wp-admin/includes/file.php';
