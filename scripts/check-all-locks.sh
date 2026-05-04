@@ -30,7 +30,7 @@ ALL_SLUGS=(
     "ag-starter-artisan"
     "ag-starter-coach"
     "ag-starter-restaurant"
-    "ag-starter-lfi"
+    "ag-starter-association"
     "ag-starter-companion"
     "ag-premium-avocat"
     "ag-business-avocat"

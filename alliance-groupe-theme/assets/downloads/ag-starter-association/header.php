@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html <?php language_attributes(); ?>>
+<head>
+    <meta charset="<?php bloginfo( 'charset' ); ?>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?php wp_head(); ?>
+</head>
+<body <?php body_class(); ?>>
+<?php wp_body_open(); ?>
+<a href="#main" class="screen-reader-text"><?php esc_html_e( 'Aller au contenu', 'ag-starter-association' ); ?></a>
+
+<header class="ag-asso-header">
+    <div class="ag-asso-header__inner">
+        <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="ag-asso-header__logo">
+            <?php if ( has_custom_logo() ) {
+                the_custom_logo();
+            } else {
+                echo '<span class="ag-asso-header__name">' . esc_html( ag_asso_opt( 'ag_asso_name', '[Mouvement]' ) ) . '</span>';
+            } ?>
+        </a>
+        <nav class="ag-asso-header__nav" aria-label="<?php esc_attr_e( 'Navigation principale', 'ag-starter-association' ); ?>">
+            <a href="#manifeste"><?php esc_html_e( 'Manifeste', 'ag-starter-association' ); ?></a>
+            <a href="#combats"><?php esc_html_e( 'Combats', 'ag-starter-association' ); ?></a>
+            <a href="#evenements"><?php esc_html_e( 'Événements', 'ag-starter-association' ); ?></a>
+            <a href="#groupes"><?php esc_html_e( 'Groupes locaux', 'ag-starter-association' ); ?></a>
+            <a href="#actu"><?php esc_html_e( 'Actualités', 'ag-starter-association' ); ?></a>
+            <a href="#don" class="ag-asso-cta"><?php esc_html_e( 'Faire un don', 'ag-starter-association' ); ?></a>
+        </nav>
+    </div>
+</header>
