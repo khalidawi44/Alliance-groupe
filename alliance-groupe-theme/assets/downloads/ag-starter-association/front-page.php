@@ -140,24 +140,16 @@ get_header();
     <section class="ag-asso-section ag-asso-section--alt ag-asso-section--map" id="groupes">
         <div class="ag-asso-container">
             <h2 class="ag-asso-section__title"><?php esc_html_e( 'Trouver mon', 'ag-starter-association' ); ?> <em><?php esc_html_e( 'groupe local', 'ag-starter-association' ); ?></em></h2>
-            <div class="ag-asso-groupes-wrap">
-                <div class="ag-asso-groupes-text">
-                    <p class="ag-asso-section__lead">47 groupes locaux actifs partout en France. Tapez votre code postal pour trouver celui le plus proche.</p>
-                    <form class="ag-asso-search" action="#" method="get">
-                        <input type="text" name="cp" placeholder="<?php esc_attr_e( 'Code postal ou ville', 'ag-starter-association' ); ?>">
-                        <button type="submit"><?php esc_html_e( 'Trouver', 'ag-starter-association' ); ?></button>
-                    </form>
-                    <p class="ag-asso-search__note">Pas de groupe près de chez vous ? <a href="<?php echo esc_url( home_url( '/groupes/' ) ); ?>">Créez le vôtre</a> — nous vous accompagnons.</p>
-                    <div class="ag-asso-stats">
-                        <div><strong>47</strong><span>groupes locaux</span></div>
-                        <div><strong>2 130</strong><span>adhérents</span></div>
-                        <div><strong>12 480</strong><span>signataires</span></div>
-                    </div>
-                </div>
-                <div class="ag-asso-groupes-map">
-                    <?php $map_custom = ag_asso_opt( 'ag_asso_groupes_map', '' ); ?>
-                    <img src="<?php echo esc_url( $map_custom ?: get_template_directory_uri() . '/assets/france-map.svg' ); ?>" alt="Carte des groupes locaux en France" loading="lazy">
-                </div>
+            <p class="ag-asso-section__lead">47 groupes locaux actifs partout en France. Tapez votre code postal pour trouver celui le plus proche.</p>
+            <form class="ag-asso-search" action="#" method="get">
+                <input type="text" name="cp" placeholder="<?php esc_attr_e( 'Code postal ou ville', 'ag-starter-association' ); ?>">
+                <button type="submit"><?php esc_html_e( 'Trouver', 'ag-starter-association' ); ?></button>
+            </form>
+            <p class="ag-asso-search__note">Pas de groupe près de chez vous ? <a href="<?php echo esc_url( home_url( '/groupes/' ) ); ?>">Créez le vôtre</a> — nous vous accompagnons.</p>
+            <div class="ag-asso-stats">
+                <div><strong>47</strong><span>groupes locaux</span></div>
+                <div><strong>2 130</strong><span>adhérents</span></div>
+                <div><strong>12 480</strong><span>signataires</span></div>
             </div>
         </div>
     </section>

@@ -666,27 +666,16 @@ a:hover { text-decoration: underline; }
 }
 .ag-asso-section--map .ag-asso-section__title { color: #fff; }
 .ag-asso-section--map .ag-asso-section__lead { color: rgba(255,255,255,.85); }
-.ag-asso-groupes-wrap {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    align-items: center;
-}
-@media (max-width: 900px) { .ag-asso-groupes-wrap { grid-template-columns: 1fr; gap: 32px; } }
-.ag-asso-groupes-map img {
-    width: 100%;
-    max-width: 480px;
-    height: auto;
-    margin: 0 auto;
-    display: block;
-    filter: drop-shadow(0 8px 20px rgba(225,15,26,.25));
-}
+.ag-asso-section--map .ag-asso-search { margin: 0 auto 18px; }
+.ag-asso-section--map .ag-asso-search__note { text-align: center; margin: 0 auto 28px; color: rgba(255,255,255,.75); }
 .ag-asso-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-top: 32px;
+    gap: 24px;
+    margin: 40px auto 0;
+    max-width: 720px;
 }
+@media (max-width: 600px) { .ag-asso-stats { grid-template-columns: 1fr; } }
 .ag-asso-stats > div {
     background: rgba(255,255,255,.06);
     border: 1px solid rgba(255,255,255,.12);
