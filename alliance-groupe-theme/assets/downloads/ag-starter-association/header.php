@@ -19,12 +19,12 @@
             } ?>
         </a>
         <nav class="ag-asso-header__nav" aria-label="<?php esc_attr_e( 'Navigation principale', 'ag-starter-association' ); ?>">
-            <a href="#manifeste"><?php esc_html_e( 'Manifeste', 'ag-starter-association' ); ?></a>
-            <a href="#combats"><?php esc_html_e( 'Combats', 'ag-starter-association' ); ?></a>
-            <a href="#evenements"><?php esc_html_e( 'Événements', 'ag-starter-association' ); ?></a>
-            <a href="#groupes"><?php esc_html_e( 'Groupes locaux', 'ag-starter-association' ); ?></a>
-            <a href="#actu"><?php esc_html_e( 'Actualités', 'ag-starter-association' ); ?></a>
-            <a href="#don" class="ag-asso-cta"><?php esc_html_e( 'Faire un don', 'ag-starter-association' ); ?></a>
+            <a href="<?php echo esc_url( ag_asso_link( 'manifeste' ) ); ?>"><?php esc_html_e( 'Manifeste', 'ag-starter-association' ); ?></a>
+            <a href="<?php echo esc_url( ag_asso_link( 'combats' ) ); ?>"><?php esc_html_e( 'Combats', 'ag-starter-association' ); ?></a>
+            <a href="<?php echo esc_url( ag_asso_link( 'evenements' ) ); ?>"><?php esc_html_e( 'Événements', 'ag-starter-association' ); ?></a>
+            <a href="<?php echo esc_url( ag_asso_link( 'groupes' ) ); ?>"><?php esc_html_e( 'Groupes locaux', 'ag-starter-association' ); ?></a>
+            <a href="<?php echo esc_url( ag_asso_link( 'actu' ) ); ?>"><?php esc_html_e( 'Actualités', 'ag-starter-association' ); ?></a>
+            <a href="<?php echo esc_url( ag_asso_link( 'don' ) ); ?>" class="ag-asso-cta"><?php esc_html_e( 'Faire un don', 'ag-starter-association' ); ?></a>
         </nav>
     </div>
 </header>

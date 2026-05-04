@@ -48,4 +48,18 @@ function ag_asso_opt( $key, $default = '' ) {
 	return get_theme_mod( $key, $default );
 }
 
+/**
+ * Retourne l'URL d'une page si elle existe (via Pack Fidelite), sinon
+ * une ancre de fallback. Permet au theme de fonctionner en standalone
+ * (mode one-page avec ancres) ET avec le plugin Pack Fidelite (vraies
+ * pages separees /manifeste/, /combats/, etc.).
+ */
+function ag_asso_link( $slug, $fallback_anchor = '' ) {
+	$page = get_page_by_path( $slug );
+	if ( $page ) {
+		return get_permalink( $page );
+	}
+	return $fallback_anchor !== '' ? $fallback_anchor : '#' . $slug;
+}
+
 require_once get_template_directory() . '/inc/customizer.php';

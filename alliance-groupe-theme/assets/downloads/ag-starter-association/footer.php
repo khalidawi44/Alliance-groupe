@@ -15,10 +15,10 @@
         <div class="ag-asso-footer__col">
             <h4><?php esc_html_e( 'Liens', 'ag-starter-association' ); ?></h4>
             <ul>
-                <li><a href="#manifeste"><?php esc_html_e( 'Le manifeste', 'ag-starter-association' ); ?></a></li>
-                <li><a href="#groupes"><?php esc_html_e( 'Trouver mon groupe', 'ag-starter-association' ); ?></a></li>
-                <li><a href="#don"><?php esc_html_e( 'Faire un don', 'ag-starter-association' ); ?></a></li>
-                <li><a href="#"><?php esc_html_e( 'Mentions légales', 'ag-starter-association' ); ?></a></li>
+                <li><a href="<?php echo esc_url( ag_asso_link( 'manifeste' ) ); ?>"><?php esc_html_e( 'Le manifeste', 'ag-starter-association' ); ?></a></li>
+                <li><a href="<?php echo esc_url( ag_asso_link( 'groupes' ) ); ?>"><?php esc_html_e( 'Trouver mon groupe', 'ag-starter-association' ); ?></a></li>
+                <li><a href="<?php echo esc_url( ag_asso_link( 'don' ) ); ?>"><?php esc_html_e( 'Faire un don', 'ag-starter-association' ); ?></a></li>
+                <li><a href="<?php echo esc_url( ag_asso_link( 'mentions' ) ); ?>"><?php esc_html_e( 'Mentions légales', 'ag-starter-association' ); ?></a></li>
             </ul>
         </div>
     </div>
