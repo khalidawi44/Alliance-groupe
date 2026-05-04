@@ -102,11 +102,11 @@ function ag_dev_sync_run() {
 			'url'  => $base . 'ag-starter-restaurant.zip',
 			'dest' => get_theme_root() . '/ag-starter-restaurant',
 		),
-		// === Theme militant / associatif (LFI ou autre) ===
+		// === Theme militant / associatif ===
 		array(
-			'name' => 'Theme AG Starter LFI (militant)',
-			'url'  => $base . 'ag-starter-lfi.zip',
-			'dest' => get_theme_root() . '/ag-starter-lfi',
+			'name' => 'Theme AG Starter Association',
+			'url'  => $base . 'ag-starter-association.zip',
+			'dest' => get_theme_root() . '/ag-starter-association',
 		),
 	);
 
