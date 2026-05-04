@@ -433,3 +433,70 @@ a:hover { text-decoration: underline; }
     font-size: .82rem;
     color: rgba(255,255,255,.55);
 }
+
+/* ── Bandeau urgence (Customizer) ── */
+.ag-asso-alert {
+    background: var(--asso-red);
+    color: #fff;
+    text-align: center;
+    padding: 10px 18px;
+    font-weight: 600;
+    font-size: .9rem;
+    letter-spacing: .3px;
+}
+.ag-asso-alert__link { color: #fff; text-decoration: underline; margin-left: 12px; }
+.ag-asso-alert__link:hover { color: var(--asso-yellow); }
+
+/* ── Hero : second CTA + compteur ── */
+.ag-asso-hero__ctas { display: flex; gap: 14px; flex-wrap: wrap; justify-content: inherit; }
+.ag-asso-btn--ghost {
+    background: transparent;
+    border: 2px solid #fff;
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
+}
+.ag-asso-btn--ghost:hover { background: #fff; color: var(--asso-black); }
+.ag-asso-hero__counter {
+    margin-top: 22px;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    background: rgba(255,255,255,.08);
+    padding: 10px 18px;
+    border-radius: 4px;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,.15);
+}
+.ag-asso-hero__counter strong { font-family: var(--asso-font-heading); font-size: 1.6rem; color: var(--asso-yellow); }
+.ag-asso-hero__counter-lbl { text-transform: uppercase; font-size: .8rem; letter-spacing: 1px; }
+
+/* ── Footer : logo + reseaux sociaux ── */
+.ag-asso-footer__logo { max-width: 140px; margin-bottom: 14px; display: block; }
+.ag-asso-social {
+    display: flex !important;
+    gap: 10px;
+    margin-top: 18px !important;
+    list-style: none;
+    padding: 0;
+    flex-wrap: wrap;
+}
+.ag-asso-social li { margin: 0 !important; }
+.ag-asso-social a {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    background: rgba(255,255,255,.08);
+    border-radius: 4px;
+    font-size: .78rem;
+    color: #fff;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+.ag-asso-social a:hover { background: var(--asso-red); color: #fff; }
+.ag-asso-footer__phrase { display: block; margin: 6px 0; }
