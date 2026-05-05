@@ -66,12 +66,19 @@
             <span class="ag-asso-footer__phrase"><?php echo esc_html( $copy ); ?></span>
         <?php endif; ?>
     </div>
-    <div class="ag-asso-footer__credit">
-        🚀 Fièrement créé par
-        <a href="https://alliancegroupe-inc.com/wordpress-association" target="_blank" rel="noopener">Alliance Groupe</a>
-        ✨ Template WordPress 100% gratuit pour les associations 💎
-    </div>
 </footer>
+
+<?php // Sticky pub a gauche, suit le scroll, desktop seulement (>1100px) ?>
+<aside class="ag-asso-sticky-pub" aria-label="<?php esc_attr_e( 'Crédit thème', 'ag-starter-association' ); ?>">
+    <a href="https://alliancegroupe-inc.com/wordpress-association" target="_blank" rel="noopener">
+        <span class="ag-asso-sticky-pub__emoji" aria-hidden="true">🚀</span>
+        <span class="ag-asso-sticky-pub__text">
+            <strong>Template gratuit</strong>
+            <em>par Alliance Groupe</em>
+        </span>
+        <span class="ag-asso-sticky-pub__cta">→</span>
+    </a>
+</aside>
 
 <?php // Banner discrete avant footer + popup auto vers Alliance Groupe ?>
 <aside class="ag-asso-promo-banner" aria-label="<?php esc_attr_e( 'Crédit thème', 'ag-starter-association' ); ?>">

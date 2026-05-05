@@ -80,17 +80,18 @@ get_header();
             <div class="ag-asso-combats-grid">
                 <?php
                 $combats = array(
-                    array( 'Justice climatique',     'Pour une transition écologique qui ne pèse pas sur les plus modestes : rénovation thermique massive, transports gratuits, fin des aides aux énergies fossiles.' ),
-                    array( 'Logement digne',         'Plafonnement effectif des loyers, réquisition des logements vacants, construction massive de logements sociaux. Le logement n\'est pas une marchandise.' ),
-                    array( 'Service public fort',    'Refonder l\'hôpital, l\'école, la SNCF. Des investissements publics massifs, fin des fermetures de lits, recrutements à hauteur des besoins.' ),
-                    array( 'Démocratie réelle',      'Référendum d\'initiative citoyenne, assemblées tirées au sort, reconnaissance du vote blanc. Redonner le pouvoir aux citoyens.' ),
-                    array( 'Transparence publique', 'Open data total, traçabilité des marchés publics, registre obligatoire des lobbies. La démocratie sans transparence est une illusion.' ),
-                    array( 'Égalité réelle',         'Lutter contre toutes les discriminations : sexe, origine, handicap, orientation. Promouvoir activement la parité et l\'inclusion à tous les niveaux.' ),
+                    array( '🌍', 'Justice climatique',     '#1F8A3D', 'Pour une transition écologique qui ne pèse pas sur les plus modestes : rénovation thermique massive, transports gratuits, fin des aides aux énergies fossiles.' ),
+                    array( '🏠', 'Logement digne',         '#3B5998', 'Plafonnement effectif des loyers, réquisition des logements vacants, construction massive de logements sociaux. Le logement n\'est pas une marchandise.' ),
+                    array( '🏥', 'Service public fort',    '#E10F1A', 'Refonder l\'hôpital, l\'école, la SNCF. Des investissements publics massifs, fin des fermetures de lits, recrutements à hauteur des besoins.' ),
+                    array( '🗳️', 'Démocratie réelle',      '#8B1A8B', 'Référendum d\'initiative citoyenne, assemblées tirées au sort, reconnaissance du vote blanc. Redonner le pouvoir aux citoyens.' ),
+                    array( '🔍', 'Transparence publique', '#0A0A0D', 'Open data total, traçabilité des marchés publics, registre obligatoire des lobbies. La démocratie sans transparence est une illusion.' ),
+                    array( '⚖️', 'Égalité réelle',         '#FFD23F', 'Lutter contre toutes les discriminations : sexe, origine, handicap, orientation. Promouvoir activement la parité et l\'inclusion à tous les niveaux.' ),
                 );
                 foreach ( $combats as $c ) : ?>
                     <article class="ag-asso-combat">
-                        <h3><?php echo esc_html( $c[0] ); ?></h3>
-                        <p><?php echo esc_html( $c[1] ); ?></p>
+                        <div class="ag-asso-combat__icon" style="background:<?php echo esc_attr( $c[2] ); ?>;"><?php echo $c[0]; // phpcs:ignore ?></div>
+                        <h3><?php echo esc_html( $c[1] ); ?></h3>
+                        <p><?php echo esc_html( $c[3] ); ?></p>
                         <a href="<?php echo esc_url( home_url( '/combats/' ) ); ?>"><?php esc_html_e( 'En savoir plus →', 'ag-starter-association' ); ?></a>
                     </article>
                 <?php endforeach; ?>
@@ -119,7 +120,7 @@ get_header();
                     array( '06', 'JUIL.', 'Université d\'été du mouvement',    'Marseille — Friche Belle de Mai', 'Trois jours de formations, ateliers, débats. Inscription obligatoire (gratuit pour adhérents).' ),
                 );
                 foreach ( $events as $ev ) : ?>
-                    <article class="ag-asso-event">
+                    <a class="ag-asso-event ag-asso-event--link" href="<?php echo esc_url( home_url( '/evenements/' ) ); ?>">
                         <div class="ag-asso-event__date">
                             <span class="ag-asso-event__day"><?php echo esc_html( $ev[0] ); ?></span>
                             <span class="ag-asso-event__month"><?php echo esc_html( $ev[1] ); ?></span>
@@ -128,11 +129,16 @@ get_header();
                             <h3><?php echo esc_html( $ev[2] ); ?></h3>
                             <p class="ag-asso-event__where"><?php echo esc_html( $ev[3] ); ?></p>
                             <p><?php echo esc_html( $ev[4] ); ?></p>
-                            <a href="<?php echo esc_url( home_url( '/evenements/' ) ); ?>"><?php esc_html_e( "M'inscrire →", 'ag-starter-association' ); ?></a>
+                            <span class="ag-asso-event__cta"><?php esc_html_e( "M'inscrire →", 'ag-starter-association' ); ?></span>
                         </div>
-                    </article>
+                    </a>
                 <?php endforeach; ?>
             </div>
+            <p style="text-align:center;margin-top:32px;">
+                <a href="<?php echo esc_url( home_url( '/evenements/' ) ); ?>" class="ag-asso-btn ag-asso-btn--primary">
+                    📅 Tous les événements + calendrier
+                </a>
+            </p>
         </div>
     </section>
 
