@@ -1514,3 +1514,117 @@ body.ag-asso-welcome-open { overflow: hidden; }
     0%   { opacity: 0; transform: translateY(20px) scale(.92); }
     100% { opacity: 1; transform: translateY(0)    scale(1); }
 }
+
+/* ── Salle visio Jitsi (page /reunion/) ── */
+.ag-asso-visio { max-width: 1180px; margin: 30px auto; }
+.ag-asso-visio__header {
+    background: linear-gradient(135deg, var(--asso-black) 0%, #1a1a22 100%);
+    color: #fff;
+    padding: 32px 30px;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 4px solid var(--asso-red);
+}
+.ag-asso-visio__header h2 {
+    font-family: var(--asso-font-heading), Impact, sans-serif;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0 0 12px;
+    color: #fff;
+}
+.ag-asso-visio__header p { color: rgba(255,255,255,.85); margin: 0 0 16px; line-height: 1.65; }
+.ag-asso-visio__header strong { color: var(--asso-yellow); }
+.ag-asso-visio__features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.ag-asso-visio__features li {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: .85rem;
+    color: rgba(255,255,255,.9);
+}
+.ag-asso-visio__embed {
+    background: var(--asso-black);
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,.3);
+}
+@media (max-width: 700px) { .ag-asso-visio__embed { aspect-ratio: 4 / 5; } }
+.ag-asso-visio__embed iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+}
+.ag-asso-visio__share {
+    background: var(--asso-bg-alt, #F5F5F2);
+    padding: 14px 20px;
+    margin: 0;
+    text-align: center;
+    border-radius: 0 0 8px 8px;
+    color: var(--asso-text-light, #5A5A66);
+    font-size: .9rem;
+}
+.ag-asso-visio__share code {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,.1);
+    padding: 4px 10px;
+    border-radius: 4px;
+    color: var(--asso-red);
+    font-weight: 600;
+    user-select: all;
+    cursor: text;
+    word-break: break-all;
+}
+.ag-asso-visio__help {
+    margin: 24px 0 0;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,.08);
+    border-left: 4px solid var(--asso-red);
+    padding: 18px 22px;
+    border-radius: 4px;
+}
+.ag-asso-visio__help summary {
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--asso-black);
+    list-style: none;
+}
+.ag-asso-visio__help summary::-webkit-details-marker { display: none; }
+.ag-asso-visio__help[open] summary { margin-bottom: 14px; }
+.ag-asso-visio__help ol { padding-left: 24px; line-height: 1.8; }
+.ag-asso-visio__help ol li { margin-bottom: 6px; }
+
+/* Locked state (members only, not logged) */
+.ag-asso-visio-locked {
+    max-width: 720px;
+    margin: 50px auto;
+    background: linear-gradient(135deg, var(--asso-black) 0%, #1a1a22 100%);
+    color: #fff;
+    padding: 50px 36px;
+    text-align: center;
+    border-radius: 8px;
+    border: 2px solid rgba(225,15,26,.5);
+}
+.ag-asso-visio-locked h3 {
+    font-family: var(--asso-font-heading), Impact, sans-serif;
+    font-size: 1.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0 0 14px;
+    color: #fff;
+}
+.ag-asso-visio-locked p { color: rgba(255,255,255,.85); margin: 0; line-height: 1.7; }
+.ag-asso-visio-locked a {
+    color: var(--asso-yellow);
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 2px solid var(--asso-yellow);
+}

@@ -21,6 +21,7 @@ class AG_Fid_Pages {
 	public static function create_default_pages() {
 		$pages = array(
 			'qui-sommes-nous' => array( 'title' => 'Qui sommes-nous',  'shortcode' => '[ag_fid_qui_sommes_nous]' ),
+			'reunion'      => array( 'title' => 'Réunion en ligne',    'shortcode' => '[ag_fid_visio]' ),
 			'manifeste'    => array( 'title' => 'Manifeste',           'shortcode' => '[ag_fid_manifeste]' ),
 			'combats'      => array( 'title' => 'Nos combats',         'shortcode' => '[ag_fid_combats]' ),
 			'evenements'   => array( 'title' => 'Événements',          'shortcode' => '[ag_fid_evenements]' ),
@@ -300,6 +301,7 @@ class AG_Fid_Pages {
 			'combats'         => 'Combats',
 			'evenements'      => 'Événements',
 			'groupes'         => 'Groupes locaux',
+			'reunion'         => 'Réunion en ligne',
 			'actu'            => 'Actualités',
 			'don'             => 'Faire un don',
 		);

@@ -74,5 +74,32 @@ class AG_Fid_Core {
 				'type'    => 'text',
 			) );
 		}
+
+		// Section visio Jitsi (AG, reunions a distance)
+		$wp_customize->add_section( 'ag_fid_visio', array(
+			'title' => __( 'Visio AG / réunion en ligne', 'ag-fidelite-association' ),
+			'panel' => 'ag_fid_panel',
+			'description' => 'Salle de tchat + visio chiffrée bout-en-bout via Jitsi Meet. Aucun compte requis. Idéale pour les AG, réunions de bureau, ateliers, débats avec les adhérent·es absent·es.',
+		) );
+		$wp_customize->add_setting( 'ag_fid_visio_room', array(
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_title',
+		) );
+		$wp_customize->add_control( 'ag_fid_visio_room', array(
+			'label'       => __( 'Nom de la salle (slug)', 'ag-fidelite-association' ),
+			'description' => __( 'Ex: mouvement-citoyen-ag2026. Si vide, un nom unique est généré automatiquement à partir du nom de l\'association.', 'ag-fidelite-association' ),
+			'section'     => 'ag_fid_visio',
+			'type'        => 'text',
+		) );
+		$wp_customize->add_setting( 'ag_fid_visio_members_only', array(
+			'default'           => 0,
+			'sanitize_callback' => 'absint',
+		) );
+		$wp_customize->add_control( 'ag_fid_visio_members_only', array(
+			'label'       => __( 'Réservé aux adhérent·es (login requis)', 'ag-fidelite-association' ),
+			'description' => __( 'Si activé, seuls les utilisateurs connectés avec un rôle adhérent / militant / bureau peuvent accéder à la visio.', 'ag-fidelite-association' ),
+			'section'     => 'ag_fid_visio',
+			'type'        => 'checkbox',
+		) );
 	}
 }
