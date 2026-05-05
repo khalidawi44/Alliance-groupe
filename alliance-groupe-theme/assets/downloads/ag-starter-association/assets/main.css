@@ -2047,3 +2047,19 @@ body.ag-asso-welcome-open { overflow: hidden; }
     font-weight: 600;
 }
 .ag-asso-rdv__setup a { color: var(--asso-red); font-weight: 700; }
+
+/* ── Logo : taille raisonnable + mobile ── */
+.ag-asso-header__logo img,
+.ag-asso-header .custom-logo {
+    max-height: 56px;
+    width: auto;
+    display: block;
+}
+@media (max-width: 768px) {
+    .ag-asso-header__logo img,
+    .ag-asso-header .custom-logo { max-height: 40px; }
+    .ag-asso-header__name { font-size: 1.1rem; letter-spacing: 1px; }
+    .ag-asso-header__inner { padding: 10px 16px; gap: 10px; }
+}
+.ag-asso-footer__logo { max-height: 80px; width: auto; }
+@media (max-width: 768px) { .ag-asso-footer__logo { max-height: 60px; } }

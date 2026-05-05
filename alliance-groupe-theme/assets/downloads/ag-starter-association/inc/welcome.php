@@ -73,8 +73,19 @@ class AG_Asso_Welcome {
 		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 		require_once ABSPATH . 'wp-admin/includes/class-automatic-upgrader-skin.php';
 
+		// Telecharge le zip en local d'abord (raw.githubusercontent peut
+		// renvoyer un content-type bizarre que Plugin_Upgrader rejette
+		// en remote install).
+		WP_Filesystem();
+		$tmp = download_url( self::PLUGIN_ZIP_URL, 30 );
+		if ( is_wp_error( $tmp ) ) {
+			set_transient( 'ag_asso_fid_install_result', 'fail:' . $tmp->get_error_message(), 30 );
+			wp_safe_redirect( admin_url( 'themes.php?page=ag-asso-welcome&ag_asso_fid_done=1' ) );
+			exit;
+		}
 		$upgrader = new Plugin_Upgrader( new Automatic_Upgrader_Skin() );
-		$result   = $upgrader->install( self::PLUGIN_ZIP_URL );
+		$result   = $upgrader->install( $tmp );
+		@unlink( $tmp );
 		$ok = ! is_wp_error( $result ) && $result;
 		if ( $ok ) {
 			$plugin_file = 'ag-fidelite-association/ag-fidelite-association.php';
@@ -99,6 +110,19 @@ class AG_Asso_Welcome {
 		$has_combat    = (bool) get_posts( array( 'post_type' => 'ag_combat', 'posts_per_page' => 1, 'post_status' => 'any' ) );
 		$has_event     = (bool) get_posts( array( 'post_type' => 'ag_evenement', 'posts_per_page' => 1, 'post_status' => 'any' ) );
 		$has_logo      = has_custom_logo();
+
+		// Count extensions recommandees installees
+		$reco_slugs = array( 'paid-memberships-pro', 'give', 'wp-stripe-checkout', 'mailpoet', 'wpforms-lite', 'the-events-calendar', 'polylang', 'wordpress-seo', 'complianz-gdpr', 'wordfence', 'updraftplus', 'leaflet-map', 'wp-polls' );
+		$ext_installed = 0;
+		if ( function_exists( 'get_plugins' ) ) {
+			$all = array_keys( get_plugins() );
+			foreach ( $reco_slugs as $slug ) {
+				foreach ( $all as $p ) {
+					if ( strpos( $p, $slug . '/' ) === 0 || strpos( $p, $slug . '.php' ) !== false ) { $ext_installed++; break; }
+				}
+			}
+		}
+		$ext_done = $ext_installed >= 5;
 		$asso_name     = get_theme_mod( 'ag_asso_name', '' );
 		$name_done     = $asso_name && strpos( $asso_name, '[' ) === false && strpos( $asso_name, 'Mouvement Citoyen Solidaire' ) === false;
 
@@ -178,12 +202,12 @@ class AG_Asso_Welcome {
 				</div>
 
 				<!-- 3. Extensions recommandées -->
-				<div class="ag-asso-w__step ag-asso-w__step--todo">
+				<div class="ag-asso-w__step ag-asso-w__step--<?php echo $ext_done ? 'done' : 'todo'; ?>">
 					<div class="ag-asso-w__num">3</div>
 					<div class="ag-asso-w__body">
-						<?php echo self::step_status( false ); ?>
-						<h3>Installer les 13 extensions WordPress recommandées</h3>
-						<p>Paid Memberships Pro (adhésions Stripe), GiveWP (dons + reçus fiscaux 66%), MailPoet (newsletter), WPForms, Yoast SEO, CookieYes (RGPD), Wordfence (sécurité), UpdraftPlus (sauvegardes), Polylang (multilingue)…</p>
+						<?php echo self::step_status( $ext_done ); ?>
+						<h3>Installer les 13 extensions WordPress recommandées <small style="color:#888;font-weight:400;">(<?php echo (int) $ext_installed; ?>/13 installées)</small></h3>
+						<p>Paid Memberships Pro (adhésions Stripe), GiveWP (dons + reçus fiscaux 66%), MailPoet (newsletter), WPForms, Yoast SEO, Complianz (RGPD), Wordfence (sécurité), UpdraftPlus (sauvegardes), Polylang (multilingue)…</p>
 						<?php if ( $plugin_active ) : ?>
 							<a href="<?php echo esc_url( $reco_url ); ?>" class="ag-asso-w__cta">🧩 Voir et tout installer</a>
 						<?php else : ?>
