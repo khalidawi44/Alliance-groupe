@@ -22,6 +22,7 @@ class AG_Fid_Pages {
 		$pages = array(
 			'qui-sommes-nous' => array( 'title' => 'Qui sommes-nous',  'shortcode' => '[ag_fid_qui_sommes_nous]' ),
 			'reunion'      => array( 'title' => 'Réunion en ligne',    'shortcode' => '[ag_fid_visio]' ),
+			'rendez-vous'  => array( 'title' => 'Prendre rendez-vous', 'shortcode' => '[ag_fid_rdv]' ),
 			'manifeste'    => array( 'title' => 'Manifeste',           'shortcode' => '[ag_fid_manifeste]' ),
 			'combats'      => array( 'title' => 'Nos combats',         'shortcode' => '[ag_fid_combats]' ),
 			'evenements'   => array( 'title' => 'Événements',          'shortcode' => '[ag_fid_evenements]' ),

@@ -101,5 +101,32 @@ class AG_Fid_Core {
 			'section'     => 'ag_fid_visio',
 			'type'        => 'checkbox',
 		) );
+
+		// Section RDV Cal.com (alternative gratuite a Calendly)
+		$wp_customize->add_section( 'ag_fid_rdv', array(
+			'title' => __( 'Rendez-vous (Cal.com)', 'ag-fidelite-association' ),
+			'panel' => 'ag_fid_panel',
+			'description' => 'Cal.com est une alternative open source et 100% gratuite à Calendly. Créez un compte gratuit sur cal.com puis collez votre nom d\'utilisateur ci-dessous.',
+		) );
+		$wp_customize->add_setting( 'ag_fid_cal_username', array(
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( 'ag_fid_cal_username', array(
+			'label'       => __( 'Nom d\'utilisateur Cal.com', 'ag-fidelite-association' ),
+			'description' => __( 'Votre identifiant public, ex: mouvement-citoyen (sans https:// ni cal.com/)', 'ag-fidelite-association' ),
+			'section'     => 'ag_fid_rdv',
+			'type'        => 'text',
+		) );
+		$wp_customize->add_setting( 'ag_fid_cal_event', array(
+			'default'           => '30min',
+			'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( 'ag_fid_cal_event', array(
+			'label'       => __( 'Slug du type de rendez-vous', 'ag-fidelite-association' ),
+			'description' => __( 'Ex: 30min, premiere-rencontre, info-adhesion. Doit correspondre à un type créé dans votre compte Cal.com.', 'ag-fidelite-association' ),
+			'section'     => 'ag_fid_rdv',
+			'type'        => 'text',
+		) );
 	}
 }

@@ -67,6 +67,7 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
                     array( '📰', '5 articles d\'actu',    'Articles préremplis prêts à éditer ou supprimer.' ),
                     array( '👥', 'Qui sommes-nous',        'Page complète : président·e + bio, 3 étapes histoire, 6 bénévoles avec rôles, 3 engagements chiffrés.' ),
                     array( '📹', 'Visio AG sécurisée',     '<strong style="color:#FFD23F;">Tchat + visio chiffrée bout-en-bout</strong> via Jitsi Meet, intégrée au site. Pour les AG, réunions de bureau, ateliers — surtout pour les adhérent·es absent·es. Aucun compte, aucune limite, RGPD-compliant.' ),
+                    array( '📅', 'Prise de rendez-vous',  '<strong style="color:#FFD23F;">Cal.com intégré</strong> (alternative open source à Calendly), 100% gratuit, illimité. Synchro Google/Outlook/iCloud, rappels email auto, RGPD.' ),
                     array( '👤', 'Rôles utilisateurs',    'Sympathisant, adhérent, militant, trésorier·e, secrétaire, président·e — avec URLs personnalisées.' ),
                     array( '⚖️', 'Mentions &amp; RGPD auto', 'Mentions légales et politique de confidentialité générées automatiquement depuis l\'identité légale du Customizer.' ),
                     array( '📋', 'Statuts loi 1901',       '12 articles standards prêts à éditer (constitution, objet, composition, CA, AG, ressources, dissolution).' ),
