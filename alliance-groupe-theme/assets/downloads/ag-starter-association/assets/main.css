@@ -1960,3 +1960,90 @@ body.ag-asso-welcome-open { overflow: hidden; }
     margin: 0 0 32px;
 }
 .ag-asso-promo-banner--in-footer .ag-asso-promo-banner__text { color: rgba(255,255,255,.9); }
+
+/* ── Page RDV Cal.com ── */
+.ag-asso-rdv { max-width: 1180px; margin: 30px auto; }
+.ag-asso-rdv__header {
+    background: linear-gradient(135deg, var(--asso-black) 0%, #1a1a22 100%);
+    color: #fff;
+    padding: 32px 30px;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 4px solid var(--asso-red);
+}
+.ag-asso-rdv__header h2 {
+    font-family: var(--asso-font-heading), Impact, sans-serif;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0 0 12px;
+    color: #fff;
+}
+.ag-asso-rdv__header p { color: rgba(255,255,255,.85); margin: 0 0 16px; line-height: 1.65; }
+.ag-asso-rdv__header strong { color: var(--asso-yellow); }
+.ag-asso-rdv__features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.ag-asso-rdv__features li {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: .85rem;
+    color: rgba(255,255,255,.9);
+}
+.ag-asso-rdv__embed {
+    background: #fff;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,.15);
+    border: 1px solid rgba(0,0,0,.08);
+    border-top: 0;
+}
+.ag-asso-rdv__embed iframe { width: 100%; min-height: 700px; border: 0; display: block; }
+.ag-asso-rdv__share {
+    background: var(--asso-bg-alt, #F5F5F2);
+    padding: 14px 20px;
+    margin: 0;
+    text-align: center;
+    border-radius: 0 0 8px 8px;
+    color: var(--asso-text-light, #5A5A66);
+    font-size: .9rem;
+}
+.ag-asso-rdv__share code {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,.1);
+    padding: 4px 10px;
+    border-radius: 4px;
+    color: var(--asso-red);
+    font-weight: 600;
+    user-select: all;
+}
+.ag-asso-rdv__setup {
+    background: #fff;
+    padding: 36px 32px;
+    border-radius: 0 0 8px 8px;
+    border: 1px solid rgba(0,0,0,.08);
+    border-top: 0;
+}
+.ag-asso-rdv__setup h3 {
+    font-family: var(--asso-font-heading), Impact, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 18px;
+    color: var(--asso-black);
+}
+.ag-asso-rdv__setup ol { padding-left: 22px; line-height: 1.85; font-size: 1rem; }
+.ag-asso-rdv__setup ol li { margin-bottom: 10px; }
+.ag-asso-rdv__setup code {
+    background: var(--asso-bg-alt, #F5F5F2);
+    border: 1px solid rgba(0,0,0,.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: var(--asso-red);
+    font-weight: 600;
+}
+.ag-asso-rdv__setup a { color: var(--asso-red); font-weight: 700; }

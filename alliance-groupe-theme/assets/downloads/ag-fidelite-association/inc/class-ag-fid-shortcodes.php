@@ -24,6 +24,7 @@ class AG_Fid_Shortcodes {
 		add_shortcode( 'ag_fid_compte',      array( $this, 'render_compte' ) );
 		add_shortcode( 'ag_fid_qui_sommes_nous', array( $this, 'render_about' ) );
 		add_shortcode( 'ag_fid_visio',       array( $this, 'render_visio' ) );
+		add_shortcode( 'ag_fid_rdv',         array( $this, 'render_rdv' ) );
 		add_shortcode( 'ag_fid_manifeste',   array( $this, 'render_manifeste' ) );
 		add_shortcode( 'ag_fid_mentions',    array( $this, 'render_mentions' ) );
 		add_shortcode( 'ag_fid_rgpd',        array( $this, 'render_rgpd' ) );
@@ -177,6 +178,60 @@ class AG_Fid_Shortcodes {
 	public function render_groupes()    { return $this->render_cpt_grid( 'ag_groupe', 'Aucun groupe local référencé.' ); }
 	public function render_petitions()  { return $this->render_cpt_grid( 'ag_petition', 'Aucune pétition active.' ); }
 	public function render_actu()       { return $this->render_cpt_grid( 'post', 'Aucun article.' ); }
+
+	/**
+	 * Prise de rendez-vous via Cal.com (alternative gratuite et open
+	 * source a Calendly). Plan gratuit illimite : 1-on-1, multi-creneaux,
+	 * synchro Google/Outlook/iCloud, rappels email auto, notifications
+	 * web. RGPD-compliant, hebergement EU possible.
+	 *
+	 * Configuration : Apparence > Personnaliser > Pack Fidelite >
+	 * Rendez-vous (Cal.com).
+	 */
+	public function render_rdv() {
+		$cal_username = get_theme_mod( 'ag_fid_cal_username', '' );
+		$cal_event    = get_theme_mod( 'ag_fid_cal_event', '30min' );
+		$cal_color    = get_theme_mod( 'ag_asso_color_primary', '#E10F1A' );
+
+		ob_start(); ?>
+		<div class="ag-asso-rdv">
+			<header class="ag-asso-rdv__header">
+				<h2>📅 Prendre rendez-vous</h2>
+				<p>Réservez un créneau en ligne via <strong>Cal.com</strong>, l'alternative open source à Calendly. Plan gratuit illimité, synchronisé avec votre agenda, rappels automatiques par email. <strong>RGPD-compliant</strong>, hébergement Europe.</p>
+				<ul class="ag-asso-rdv__features">
+					<li>🆓 100% gratuit (illimité)</li>
+					<li>📧 Rappels email auto</li>
+					<li>📆 Synchro Google/Outlook/iCloud</li>
+					<li>🔒 RGPD-compliant</li>
+					<li>🌍 Open source (auto-hébergeable)</li>
+				</ul>
+			</header>
+
+			<?php if ( $cal_username ) : ?>
+				<div class="ag-asso-rdv__embed">
+					<iframe
+						src="https://cal.com/<?php echo esc_attr( $cal_username ); ?>/<?php echo esc_attr( $cal_event ); ?>?embed=true&theme=auto&primaryColor=<?php echo esc_attr( ltrim( $cal_color, '#' ) ); ?>"
+						width="100%" height="700"
+						frameborder="0" loading="lazy"
+						title="Prise de rendez-vous Cal.com"
+						allow="camera; microphone; autoplay"></iframe>
+				</div>
+				<p class="ag-asso-rdv__share">Lien direct : <code>https://cal.com/<?php echo esc_html( $cal_username ); ?></code></p>
+			<?php else : ?>
+				<div class="ag-asso-rdv__setup">
+					<h3>⚙️ Configuration en 3 étapes</h3>
+					<ol>
+						<li>Créez un compte gratuit sur <a href="https://cal.com/signup" target="_blank" rel="noopener"><strong>cal.com</strong></a> (1 minute, email + mot de passe)</li>
+						<li>Choisissez votre <strong>nom d'utilisateur</strong> public, ex: <code>mouvement-citoyen</code></li>
+						<li>Allez dans <strong>Apparence → Personnaliser → Pack Fidélité — Association → Rendez-vous (Cal.com)</strong> et collez votre nom d'utilisateur</li>
+					</ol>
+					<p>Le widget de réservation apparaîtra alors automatiquement sur cette page.</p>
+				</div>
+			<?php endif; ?>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
 
 	/**
 	 * Salle visio Jitsi Meet embed pour les AG, reunions, ateliers.
