@@ -60,6 +60,29 @@ function ag_asso_customize( $wp_customize ) {
 		'title' => __( 'Couleurs', 'ag-starter-association' ),
 		'panel' => 'ag_asso_panel',
 	) );
+
+	// Preset de couleurs (charge auto un theme predefini)
+	$wp_customize->add_setting( 'ag_asso_color_preset', array(
+		'default'           => 'rouge',
+		'sanitize_callback' => 'sanitize_text_field',
+		'transport'         => 'refresh',
+	) );
+	$wp_customize->add_control( 'ag_asso_color_preset', array(
+		'label'       => __( 'Préréglage de couleurs', 'ag-starter-association' ),
+		'description' => __( 'Choisissez un thème prédéfini ou "Personnalisé" pour utiliser les couleurs ci-dessous.', 'ag-starter-association' ),
+		'section'     => 'ag_asso_colors',
+		'type'        => 'select',
+		'choices'     => array(
+			'rouge'   => '🔴 Rouge militant (défaut)',
+			'bleu'    => '🔵 Bleu progressiste',
+			'vert'    => '🟢 Vert écolo',
+			'violet'  => '🟣 Violet féministe',
+			'orange'  => '🟠 Orange solidaire',
+			'noir'    => '⚫ Noir &amp; blanc — minimaliste',
+			'custom'  => '🎨 Personnalisé (couleurs ci-dessous)',
+		),
+	) );
+
 	$color_fields = array(
 		'ag_asso_color_primary'    => array( 'label' => 'Couleur principale (CTA, accent)',   'default' => '#E10F1A' ),
 		'ag_asso_color_primary_dk' => array( 'label' => 'Couleur principale survol',          'default' => '#B30B14' ),
@@ -78,6 +101,7 @@ function ag_asso_customize( $wp_customize ) {
 		$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, $key, array(
 			'label'   => $f['label'],
 			'section' => 'ag_asso_colors',
+			'description' => __( 'Utilisé seulement si "Personnalisé" est sélectionné ci-dessus.', 'ag-starter-association' ),
 		) ) );
 	}
 
@@ -547,13 +571,28 @@ add_action( 'customize_register', 'ag_asso_customize' );
  * les options Customizer. Injecte dans <head>.
  */
 function ag_asso_dynamic_css() {
-	$primary    = get_theme_mod( 'ag_asso_color_primary',    '#E10F1A' );
-	$primary_dk = get_theme_mod( 'ag_asso_color_primary_dk', '#B30B14' );
-	$accent     = get_theme_mod( 'ag_asso_color_accent',     '#FFD23F' );
-	$bg         = get_theme_mod( 'ag_asso_color_bg',         '#0A0A0D' );
-	$section    = get_theme_mod( 'ag_asso_color_section',    '#FFFFFF' );
-	$text       = get_theme_mod( 'ag_asso_color_text',       '#0A0A0D' );
-	$text_inv   = get_theme_mod( 'ag_asso_color_text_inv',   '#FFFFFF' );
+	// Presets de couleurs
+	$presets = array(
+		'rouge'  => array( '#E10F1A', '#B30B14', '#FFD23F', '#0A0A0D', '#FFFFFF', '#0A0A0D', '#FFFFFF' ),
+		'bleu'   => array( '#2B6BD9', '#1E4FA8', '#FFD23F', '#0F1A2E', '#FFFFFF', '#0F1A2E', '#FFFFFF' ),
+		'vert'   => array( '#1F8A3D', '#16682D', '#FFD23F', '#0A1A0E', '#FFFFFF', '#0F2014', '#FFFFFF' ),
+		'violet' => array( '#8B1A8B', '#6A116A', '#FFB1B6', '#1A0A1A', '#FFF5F8', '#1A0A1A', '#FFFFFF' ),
+		'orange' => array( '#F26522', '#C24A12', '#1E3A8A', '#1A100A', '#FFF8F0', '#1A100A', '#FFFFFF' ),
+		'noir'   => array( '#0A0A0D', '#000000', '#FFD23F', '#0A0A0D', '#FFFFFF', '#0A0A0D', '#FFFFFF' ),
+	);
+	$preset = get_theme_mod( 'ag_asso_color_preset', 'rouge' );
+
+	if ( isset( $presets[ $preset ] ) ) {
+		list( $primary, $primary_dk, $accent, $bg, $section, $text, $text_inv ) = $presets[ $preset ];
+	} else {
+		$primary    = get_theme_mod( 'ag_asso_color_primary',    '#E10F1A' );
+		$primary_dk = get_theme_mod( 'ag_asso_color_primary_dk', '#B30B14' );
+		$accent     = get_theme_mod( 'ag_asso_color_accent',     '#FFD23F' );
+		$bg         = get_theme_mod( 'ag_asso_color_bg',         '#0A0A0D' );
+		$section    = get_theme_mod( 'ag_asso_color_section',    '#FFFFFF' );
+		$text       = get_theme_mod( 'ag_asso_color_text',       '#0A0A0D' );
+		$text_inv   = get_theme_mod( 'ag_asso_color_text_inv',   '#FFFFFF' );
+	}
 	$font_h     = get_theme_mod( 'ag_asso_font_heading',     'Anton' );
 	$font_b     = get_theme_mod( 'ag_asso_font_body',        'Inter' );
 	$uppercase  = get_theme_mod( 'ag_asso_title_uppercase',  1 );
