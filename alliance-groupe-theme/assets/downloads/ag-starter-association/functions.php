@@ -180,3 +180,4 @@ function ag_asso_post_visual_html( $post_id = null, $size = 'large', $class = 'a
 
 require_once get_template_directory() . '/inc/customizer.php';
 require_once get_template_directory() . '/inc/welcome.php';
+require_once get_template_directory() . '/inc/theme-updater.php';
