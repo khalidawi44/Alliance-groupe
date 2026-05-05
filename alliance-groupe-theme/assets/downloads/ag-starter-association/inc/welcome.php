@@ -18,6 +18,21 @@ class AG_Asso_Welcome {
 		add_action( 'admin_notices',      array( __CLASS__, 'notice' ) );
 		add_action( 'admin_init',         array( __CLASS__, 'maybe_dismiss' ) );
 		add_action( 'admin_init',         array( __CLASS__, 'maybe_install_plugin' ) );
+		add_action( 'in_admin_header',    array( __CLASS__, 'kill_notices_on_welcome' ), 999 );
+	}
+
+	/**
+	 * Sur la page Demarrage rapide, on retire toutes les notices
+	 * d'autres plugins (Forminator, Pack Fidelite, etc.) pour ne pas
+	 * polluer l'interface du wizard.
+	 */
+	public static function kill_notices_on_welcome() {
+		$screen = get_current_screen();
+		if ( ! $screen || $screen->id !== 'appearance_page_ag-asso-welcome' ) return;
+		remove_all_actions( 'admin_notices' );
+		remove_all_actions( 'all_admin_notices' );
+		remove_all_actions( 'user_admin_notices' );
+		remove_all_actions( 'network_admin_notices' );
 	}
 
 	public static function on_activate() {
