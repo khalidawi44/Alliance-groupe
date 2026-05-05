@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class AG_Fid_Updater {
 	const JSON_URL  = 'https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/downloads/ag-fidelite-association.json';
 	const CACHE_KEY = 'ag_fid_remote_info';
-	const CACHE_TTL = 12 * HOUR_IN_SECONDS;
+	const CACHE_TTL = HOUR_IN_SECONDS;
 
 	public static function init() {
 		add_filter( 'pre_set_site_transient_update_plugins', array( __CLASS__, 'check_update' ) );

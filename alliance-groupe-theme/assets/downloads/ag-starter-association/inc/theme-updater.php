@@ -9,7 +9,7 @@ class AG_Asso_Theme_Updater {
 	const JSON_URL  = 'https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/downloads/ag-starter-association.json';
 	const SLUG      = 'ag-starter-association';
 	const CACHE_KEY = 'ag_asso_theme_remote';
-	const CACHE_TTL = 12 * HOUR_IN_SECONDS;
+	const CACHE_TTL = HOUR_IN_SECONDS;
 
 	public static function init() {
 		add_filter( 'pre_set_site_transient_update_themes', array( __CLASS__, 'check_update' ) );
