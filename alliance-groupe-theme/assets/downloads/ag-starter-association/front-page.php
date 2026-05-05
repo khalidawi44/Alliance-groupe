@@ -21,7 +21,7 @@ get_header();
                 <a href="<?php echo esc_url( ag_asso_opt( 'ag_asso_cta_url', '' ) ?: ag_asso_link( 'signer' ) ); ?>" class="ag-asso-btn ag-asso-btn--primary">
                     <?php echo esc_html( ag_asso_opt( 'ag_asso_cta_label', 'Rejoindre le mouvement' ) ); ?>
                 </a>
-                <?php if ( $cta2_label = ag_asso_opt( 'ag_asso_cta2_label', '' ) ) : ?>
+                <?php if ( ag_asso_opt( 'ag_asso_show_cta_secondaire', 1 ) && $cta2_label = ag_asso_opt( 'ag_asso_cta2_label', '' ) ) : ?>
                     <a href="<?php echo esc_url( ag_asso_opt( 'ag_asso_cta2_url', '' ) ?: ag_asso_link( 'don' ) ); ?>" class="ag-asso-btn ag-asso-btn--ghost">
                         <?php echo esc_html( $cta2_label ); ?>
                     </a>
@@ -31,14 +31,14 @@ get_header();
             $sig_count  = ag_asso_opt( 'ag_asso_signatures_count', '' );
             $sig_target = ag_asso_opt( 'ag_asso_signatures_target', '' );
             $sig_label  = ag_asso_opt( 'ag_asso_signatures_label', 'signataires' );
-            if ( $sig_count ) : ?>
-                <div class="ag-asso-hero__counter">
+            if ( $sig_count && ag_asso_opt( 'ag_asso_show_compteur_sig', 1 ) ) : ?>
+                <a href="<?php echo esc_url( ag_asso_link( 'signer' ) ); ?>" class="ag-asso-hero__counter" aria-label="<?php esc_attr_e( 'Voir la pétition', 'ag-starter-association' ); ?>">
                     <strong><?php echo esc_html( $sig_count ); ?></strong>
                     <?php if ( $sig_target ) : ?>
                         <span>/ <?php echo esc_html( $sig_target ); ?></span>
                     <?php endif; ?>
-                    <span class="ag-asso-hero__counter-lbl"><?php echo esc_html( $sig_label ); ?></span>
-                </div>
+                    <span class="ag-asso-hero__counter-lbl"><?php echo esc_html( $sig_label ); ?> →</span>
+                </a>
             <?php endif; ?>
         </div>
     </section>
@@ -50,6 +50,7 @@ get_header();
     </section>
 
     <!-- Manifeste -->
+    <?php if ( ag_asso_opt( 'ag_asso_show_manifeste', 1 ) ) : ?>
     <section class="ag-asso-section" id="manifeste">
         <div class="ag-asso-container">
             <h2 class="ag-asso-section__title"><?php esc_html_e( 'Notre', 'ag-starter-association' ); ?> <em><?php esc_html_e( 'manifeste', 'ag-starter-association' ); ?></em></h2>
@@ -62,6 +63,9 @@ get_header();
         </div>
     </section>
 
+    <?php endif; // /manifeste ?>
+
+    <?php if ( ag_asso_opt( 'ag_asso_show_combats', 1 ) ) : ?>
     <!-- Parallax combats -->
     <section class="ag-asso-parallax ag-asso-parallax--combats">
         <h2 class="ag-asso-parallax__title">Nos combats</h2>
@@ -95,6 +99,9 @@ get_header();
         </div>
     </section>
 
+    <?php endif; // /combats ?>
+
+    <?php if ( ag_asso_opt( 'ag_asso_show_evenements', 1 ) ) : ?>
     <!-- Parallax événements -->
     <section class="ag-asso-parallax ag-asso-parallax--evenements">
         <h2 class="ag-asso-parallax__title">Mobilisations</h2>
@@ -136,6 +143,9 @@ get_header();
         </div>
     </section>
 
+    <?php endif; // /evenements ?>
+
+    <?php if ( ag_asso_opt( 'ag_asso_show_groupes', 1 ) ) : ?>
     <!-- Groupes locaux -->
     <section class="ag-asso-section ag-asso-section--alt ag-asso-section--map" id="groupes">
         <div class="ag-asso-container">
@@ -154,6 +164,9 @@ get_header();
         </div>
     </section>
 
+    <?php endif; // /groupes ?>
+
+    <?php if ( ag_asso_opt( 'ag_asso_show_actu', 1 ) ) : ?>
     <!-- Actualités -->
     <section class="ag-asso-section" id="actu">
         <div class="ag-asso-container">
@@ -190,6 +203,9 @@ get_header();
         </div>
     </section>
 
+    <?php endif; // /actu ?>
+
+    <?php if ( ag_asso_opt( 'ag_asso_show_equipe', 1 ) ) : ?>
     <!-- Équipe -->
     <section class="ag-asso-section ag-asso-section--team" id="equipe">
         <div class="ag-asso-container">
@@ -206,10 +222,12 @@ get_header();
                     5 => array( 'Thomas Vasseur',  'Responsable communication' ),
                     6 => array( 'Aïcha Diallo',    'Animation jeunes engagés' ),
                 );
-                for ( $i = 1; $i <= 6; $i++ ) :
+                for ( $i = 1; $i <= 12; $i++ ) :
+                    $on    = (int) ag_asso_opt( "ag_asso_about_team_on_$i", $i <= 6 ? 1 : 0 );
+                    if ( ! $on ) continue;
                     $photo = ag_asso_opt( "ag_asso_about_team_photo_$i", '' );
-                    $name  = ag_asso_opt( "ag_asso_about_team_name_$i", $team_fb[ $i ][0] );
-                    $role  = ag_asso_opt( "ag_asso_about_team_role_$i", $team_fb[ $i ][1] );
+                    $name  = ag_asso_opt( "ag_asso_about_team_name_$i", isset( $team_fb[ $i ] ) ? $team_fb[ $i ][0] : '' );
+                    $role  = ag_asso_opt( "ag_asso_about_team_role_$i", isset( $team_fb[ $i ] ) ? $team_fb[ $i ][1] : '' );
                     if ( ! $name ) continue;
                     $initials = '';
                     foreach ( explode( ' ', $name ) as $part ) {
@@ -236,6 +254,9 @@ get_header();
         </div>
     </section>
 
+    <?php endif; // /equipe ?>
+
+    <?php if ( ag_asso_opt( 'ag_asso_show_signer', 1 ) ) : ?>
     <!-- Signer -->
     <section class="ag-asso-section ag-asso-section--cta" id="signer">
         <div class="ag-asso-container">
@@ -255,6 +276,9 @@ get_header();
         </div>
     </section>
 
+    <?php endif; // /signer ?>
+
+    <?php if ( ag_asso_opt( 'ag_asso_show_don', 1 ) ) : ?>
     <!-- Parallax don -->
     <section class="ag-asso-parallax ag-asso-parallax--don">
         <h2 class="ag-asso-parallax__title">Soutenir le mouvement</h2>
@@ -284,6 +308,7 @@ get_header();
             </div>
         </div>
     </section>
+    <?php endif; // /don ?>
 
 </main>
 
