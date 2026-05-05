@@ -233,14 +233,14 @@ class AG_Fid_Pages {
 		}
 
 		// Articles (post standard) — 5 articles d'actualite
-		$existing_posts = get_posts( array( "post_type" => "post", "posts_per_page" => 1, "post_status" => "any" ) );
-		$has_seeded = false;
-		foreach ( $existing_posts as $p ) {
-			if ( strpos( $p->post_title, 'ours d\'eau' ) === false && strpos( $p->post_title, 'Hello world' ) === false ) {
-				$has_seeded = true; break;
-			}
+		// Si force=true on a deja supprime les seeds connus, on reseed direct.
+		// Sinon : check si les seeds sont deja la (par titre exact).
+		$should_seed_articles = $force;
+		if ( ! $should_seed_articles ) {
+			$check = get_page_by_title( "Hôpital public : nous publions notre contre-budget 2026", OBJECT, 'post' );
+			$should_seed_articles = ! $check;
 		}
-		if ( ! $has_seeded ) {
+		if ( $should_seed_articles ) {
 			$articles = array(
 				array(
 					"title"   => "Hôpital public : nous publions notre contre-budget 2026",
