@@ -21,14 +21,18 @@
 <header class="ag-asso-header">
     <div class="ag-asso-header__inner">
         <?php if ( has_custom_logo() ) {
-            // the_custom_logo() genere deja son propre <a> vers home_url
             the_custom_logo();
         } else { ?>
             <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="ag-asso-header__logo">
                 <span class="ag-asso-header__name"><?php echo esc_html( ag_asso_opt( 'ag_asso_name', '[Mouvement]' ) ); ?></span>
             </a>
         <?php } ?>
-        <nav class="ag-asso-header__nav" aria-label="<?php esc_attr_e( 'Navigation principale', 'ag-starter-association' ); ?>">
+
+        <button type="button" class="ag-asso-burger" id="agAssoBurger" aria-label="<?php esc_attr_e( 'Ouvrir le menu', 'ag-starter-association' ); ?>" aria-expanded="false" aria-controls="agAssoNav">
+            <span></span><span></span><span></span>
+        </button>
+
+        <nav class="ag-asso-header__nav" id="agAssoNav" aria-label="<?php esc_attr_e( 'Navigation principale', 'ag-starter-association' ); ?>">
             <?php if ( has_nav_menu( 'primary' ) ) : ?>
                 <?php wp_nav_menu( array(
                     'theme_location' => 'primary',
@@ -48,3 +52,16 @@
         </nav>
     </div>
 </header>
+<script>
+(function(){
+    var b=document.getElementById('agAssoBurger'),h=document.querySelector('.ag-asso-header');
+    if(!b||!h)return;
+    b.addEventListener('click',function(){
+        var open=h.classList.toggle('is-mobile-open');
+        b.setAttribute('aria-expanded',open?'true':'false');
+    });
+    document.querySelectorAll('.ag-asso-header__menu a, .ag-asso-header__nav > a').forEach(function(a){
+        a.addEventListener('click',function(){h.classList.remove('is-mobile-open');b.setAttribute('aria-expanded','false');});
+    });
+})();
+</script>
