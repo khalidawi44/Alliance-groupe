@@ -87,7 +87,7 @@
         <span class="ag-asso-sticky-pub__emoji" aria-hidden="true">🚀</span>
         <span class="ag-asso-sticky-pub__text">Template gratuit · Alliance Groupe</span>
     </button>
-    <div class="ag-asso-sticky-pub__panel" id="agAssoStickyPubPanel" hidden>
+    <div class="ag-asso-sticky-pub__panel" id="agAssoStickyPubPanel">
         <button type="button" class="ag-asso-sticky-pub__close" aria-label="<?php esc_attr_e( 'Fermer', 'ag-starter-association' ); ?>" data-pub-close>×</button>
         <div class="ag-asso-sticky-pub__emojis" aria-hidden="true">
             <span style="--d:0s">🚀</span>
@@ -109,29 +109,26 @@
 (function () {
     var pub = document.getElementById('agAssoStickyPub');
     if (!pub) return;
-    var btn   = pub.querySelector('.ag-asso-sticky-pub__toggle');
-    var panel = pub.querySelector('.ag-asso-sticky-pub__panel');
-    function toggle(force) {
-        var open = (typeof force === 'boolean') ? force : !pub.classList.contains('is-open');
+    var btn = pub.querySelector('.ag-asso-sticky-pub__toggle');
+    function setOpen(open) {
         pub.classList.toggle('is-open', open);
         if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-        if (panel) panel.hidden = !open;
     }
     if (btn) btn.addEventListener('click', function (e) {
         e.stopPropagation();
-        toggle();
+        setOpen(!pub.classList.contains('is-open'));
     });
     pub.querySelectorAll('[data-pub-close]').forEach(function (b) {
         b.addEventListener('click', function (e) {
             e.stopPropagation();
-            toggle(false);
+            setOpen(false);
         });
     });
     document.addEventListener('click', function (e) {
-        if (!pub.contains(e.target) && pub.classList.contains('is-open')) toggle(false);
+        if (!pub.contains(e.target) && pub.classList.contains('is-open')) setOpen(false);
     });
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && pub.classList.contains('is-open')) toggle(false);
+        if (e.key === 'Escape' && pub.classList.contains('is-open')) setOpen(false);
     });
 })();
 </script>
