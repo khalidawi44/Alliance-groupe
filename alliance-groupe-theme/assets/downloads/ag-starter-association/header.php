@@ -20,13 +20,14 @@
 
 <header class="ag-asso-header">
     <div class="ag-asso-header__inner">
-        <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="ag-asso-header__logo">
-            <?php if ( has_custom_logo() ) {
-                the_custom_logo();
-            } else {
-                echo '<span class="ag-asso-header__name">' . esc_html( ag_asso_opt( 'ag_asso_name', '[Mouvement]' ) ) . '</span>';
-            } ?>
-        </a>
+        <?php if ( has_custom_logo() ) {
+            // the_custom_logo() genere deja son propre <a> vers home_url
+            the_custom_logo();
+        } else { ?>
+            <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="ag-asso-header__logo">
+                <span class="ag-asso-header__name"><?php echo esc_html( ag_asso_opt( 'ag_asso_name', '[Mouvement]' ) ); ?></span>
+            </a>
+        <?php } ?>
         <nav class="ag-asso-header__nav" aria-label="<?php esc_attr_e( 'Navigation principale', 'ag-starter-association' ); ?>">
             <?php if ( has_nav_menu( 'primary' ) ) : ?>
                 <?php wp_nav_menu( array(

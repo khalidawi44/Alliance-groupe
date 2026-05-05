@@ -621,13 +621,31 @@ function ag_asso_dynamic_css() {
 	}
 	$css .= '.ag-asso-hero__inner{text-align:' . esc_html( $hero_align ) . ';}';
 
-	// Bandeaux parallax entre sections
-	$parallax = array( 'manifeste', 'combats', 'evenements', 'groupes', 'don' );
-	foreach ( $parallax as $slot ) {
+	// Bandeaux parallax entre sections (fallback SVG si pas d'image custom)
+	$parallax_defaults = array(
+		'manifeste'  => array( '✊', $primary ),
+		'combats'    => array( '⚔️', $primary_dk ),
+		'evenements' => array( '📅', '#3B5998' ),
+		'groupes'    => array( '🗺️', '#1F8A3D' ),
+		'don'        => array( '💛', $accent ),
+	);
+	foreach ( $parallax_defaults as $slot => $info ) {
 		$img = get_theme_mod( 'ag_asso_parallax_' . $slot, '' );
 		if ( $img ) {
-			$css .= '.ag-asso-parallax--' . $slot . '{background-image:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.75) 100%),url(' . esc_url( $img ) . ');}';
+			$bg = "linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.75) 100%),url(" . esc_url( $img ) . ")";
+		} else {
+			$svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 500" preserveAspectRatio="xMidYMid slice">'
+			     . '<defs><linearGradient id="p' . $slot . '" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="' . $info[1] . '"/><stop offset="100%" stop-color="#0A0A0D"/></linearGradient></defs>'
+			     . '<rect width="1600" height="500" fill="url(#p' . $slot . '"/>'
+			     . '<g opacity=".15" fill="#fff">'
+			     . '<circle cx="120" cy="80"  r="3"/><circle cx="1480" cy="120" r="2"/><circle cx="800"  cy="60"  r="2"/>'
+			     . '<circle cx="300" cy="420" r="3"/><circle cx="1300" cy="380" r="2.5"/><circle cx="950" cy="450" r="2"/>'
+			     . '</g>'
+			     . '<text x="800" y="290" text-anchor="middle" font-size="220" dominant-baseline="middle" opacity=".25">' . $info[0] . '</text>'
+			     . '</svg>';
+			$bg = "linear-gradient(180deg,rgba(0,0,0,.25) 0%,rgba(0,0,0,.55) 100%),url('data:image/svg+xml;utf8," . rawurlencode( $svg ) . "')";
 		}
+		$css .= '.ag-asso-parallax--' . $slot . '{background-image:' . $bg . ';}';
 	}
 
 	// Images de fond sections principales (override des SVG patterns par defaut)
