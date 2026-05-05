@@ -1677,9 +1677,7 @@ body.ag-asso-welcome-open { overflow: hidden; }
     z-index: 9000;
     display: flex;
     align-items: stretch;
-    pointer-events: none;
 }
-.ag-asso-sticky-pub > * { pointer-events: auto; }
 .ag-asso-sticky-pub__toggle {
     background: linear-gradient(180deg, #080808 0%, #1a1a22 100%);
     border: 1px solid rgba(212,180,92,.35);
