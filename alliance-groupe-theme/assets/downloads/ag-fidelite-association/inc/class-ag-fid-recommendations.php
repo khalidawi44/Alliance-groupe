@@ -121,9 +121,9 @@ class AG_Fid_Recommendations {
 				'cat'    => 'SEO',
 			),
 			array(
-				'slug'   => 'cookie-law-info',
-				'name'   => 'CookieYes (RGPD)',
-				'desc'   => 'Bandeau cookies conforme CNIL/RGPD avec consentement granulaire.',
+				'slug'   => 'complianz-gdpr',
+				'name'   => 'Complianz (RGPD)',
+				'desc'   => 'Bandeau cookies + politique RGPD/CCPA conforme CNIL. 100% gratuit illimité (pas de quota mensuel comme CookieYes), génération auto des mentions légales.',
 				'cat'    => 'RGPD',
 			),
 			// === Sécurité / sauvegarde ===
@@ -238,6 +238,7 @@ class AG_Fid_Recommendations {
 
 			<h2>Extensions recommandées</h2>
 			<p>Voici les outils que nous recommandons pour gérer une association moderne avec WordPress. Cliquez sur "Installer" pour ajouter une extension.</p>
+			<p style="background:#d4edda;border-left:4px solid #28a745;padding:10px 14px;margin:12px 0;border-radius:4px;color:#155724;"><strong>✓ 100% versions gratuites</strong> — toutes ces extensions sont des plugins gratuits du dépôt WordPress.org, sans période d'essai ni quota mensuel imposé. Des fonctionnalités payantes optionnelles existent en addon mais ne sont jamais nécessaires.</p>
 
 			<table class="widefat striped">
 				<thead>
