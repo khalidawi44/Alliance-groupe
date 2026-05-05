@@ -1730,7 +1730,8 @@ body.ag-asso-welcome-open { overflow: hidden; }
     transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .25s ease, visibility 0s linear .25s;
 }
 .ag-asso-sticky-pub.is-open .ag-asso-sticky-pub__panel,
-.ag-asso-sticky-pub:hover .ag-asso-sticky-pub__panel {
+.ag-asso-sticky-pub__toggle:hover ~ .ag-asso-sticky-pub__panel,
+.ag-asso-sticky-pub__panel:hover {
     transform: translateX(0);
     opacity: 1;
     visibility: visible;
@@ -1738,7 +1739,10 @@ body.ag-asso-welcome-open { overflow: hidden; }
     transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .25s ease, visibility 0s linear 0s;
 }
 .ag-asso-sticky-pub.is-open .ag-asso-sticky-pub__toggle,
-.ag-asso-sticky-pub:hover .ag-asso-sticky-pub__toggle { background: linear-gradient(180deg, #18181f 0%, #2a2a35 100%); }
+.ag-asso-sticky-pub__toggle:hover { background: linear-gradient(180deg, #18181f 0%, #2a2a35 100%); }
+@media (max-width: 1100px) {
+    .ag-asso-sticky-pub { display: none !important; }
+}
 .ag-asso-sticky-pub__close {
     position: absolute;
     top: 8px; right: 10px;
