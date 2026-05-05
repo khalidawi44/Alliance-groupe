@@ -170,9 +170,9 @@ get_header();
                 if ( $recent ) :
                     foreach ( $recent as $post ) : setup_postdata( $post ); ?>
                         <article class="ag-asso-actu">
-                            <?php if ( has_post_thumbnail() ) : ?>
-                                <div class="ag-asso-actu__img"><?php the_post_thumbnail( 'medium' ); ?></div>
-                            <?php endif; ?>
+                            <a href="<?php the_permalink(); ?>" class="ag-asso-actu__imglink">
+                                <?php echo ag_asso_post_visual_html( get_the_ID(), 'medium', 'ag-asso-actu__img' ); ?>
+                            </a>
                             <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
                             <p class="ag-asso-actu__date"><?php echo get_the_date(); ?></p>
                             <p><?php echo wp_trim_words( get_the_excerpt(), 24 ); ?></p>
