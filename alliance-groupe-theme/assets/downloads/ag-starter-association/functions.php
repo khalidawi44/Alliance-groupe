@@ -102,4 +102,80 @@ function ag_asso_link( $slug, $fallback_anchor = '' ) {
 	return $fallback_anchor !== '' ? $fallback_anchor : '#' . $slug;
 }
 
+/**
+ * Retourne un visuel pour un post (combat / article / event...) :
+ * - Si une featured image existe : URL de la thumbnail
+ * - Sinon : data-uri SVG inline avec couleur + emoji thematique
+ *   selectionne automatiquement selon des mots-cles dans le titre
+ *   (climat, logement, sante, democratie, transparence, egalite,
+ *   hopital, petition, AG, etc.).
+ */
+function ag_asso_post_visual_html( $post_id = null, $size = 'large', $class = 'ag-asso-visual' ) {
+	$post_id = $post_id ?: get_the_ID();
+	if ( has_post_thumbnail( $post_id ) ) {
+		return '<div class="' . esc_attr( $class ) . '">' . get_the_post_thumbnail( $post_id, $size, array( 'loading' => 'lazy' ) ) . '</div>';
+	}
+	$title = get_the_title( $post_id );
+	$slug  = get_post_field( 'post_name', $post_id );
+	$haystack = mb_strtolower( $title . ' ' . $slug );
+
+	// Mots-cles -> [ emoji, couleur ]
+	$themes = array(
+		'climat'        => array( '🌍', '#1F8A3D' ),
+		'ecolog'        => array( '🌱', '#1F8A3D' ),
+		'logement'      => array( '🏠', '#3B5998' ),
+		'loyer'         => array( '🏠', '#3B5998' ),
+		'service public'=> array( '🏥', '#E10F1A' ),
+		'hopital'       => array( '🏥', '#E10F1A' ),
+		'hôpital'       => array( '🏥', '#E10F1A' ),
+		'sante'         => array( '🏥', '#E10F1A' ),
+		'santé'         => array( '🏥', '#E10F1A' ),
+		'ecole'         => array( '🎓', '#3B5998' ),
+		'école'         => array( '🎓', '#3B5998' ),
+		'democrat'      => array( '🗳️', '#8B1A8B' ),
+		'démocrat'      => array( '🗳️', '#8B1A8B' ),
+		'vote'          => array( '🗳️', '#8B1A8B' ),
+		'transparence'  => array( '🔍', '#0A0A0D' ),
+		'egalite'       => array( '⚖️', '#FFD23F' ),
+		'égalité'       => array( '⚖️', '#FFD23F' ),
+		'discrim'       => array( '🤝', '#FFD23F' ),
+		'petition'      => array( '✊', '#E10F1A' ),
+		'pétition'      => array( '✊', '#E10F1A' ),
+		'march'         => array( '🚶', '#E10F1A' ),
+		'manifest'      => array( '✊', '#E10F1A' ),
+		'mobilis'       => array( '✊', '#E10F1A' ),
+		'assemblee'     => array( '👥', '#3B5998' ),
+		'assemblée'     => array( '👥', '#3B5998' ),
+		'ag '           => array( '👥', '#3B5998' ),
+		'reunion'       => array( '📹', '#1F8A3D' ),
+		'réunion'       => array( '📹', '#1F8A3D' ),
+		'visio'         => array( '📹', '#1F8A3D' ),
+		'groupe local'  => array( '🗺️', '#FFD23F' ),
+		'don '          => array( '💛', '#FFD23F' ),
+		'budget'        => array( '💰', '#1F8A3D' ),
+		'universite'    => array( '🎓', '#3B5998' ),
+		'université'    => array( '🎓', '#3B5998' ),
+		'atelier'       => array( '🛠️', '#0A0A0D' ),
+		'conference'    => array( '🎤', '#8B1A8B' ),
+		'conférence'    => array( '🎤', '#8B1A8B' ),
+	);
+	$emoji = '✊';
+	$color = '#E10F1A';
+	foreach ( $themes as $kw => $pair ) {
+		if ( strpos( $haystack, $kw ) !== false ) { $emoji = $pair[0]; $color = $pair[1]; break; }
+	}
+	// SVG inline data-uri
+	$svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 360" preserveAspectRatio="xMidYMid slice">'
+	     . '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="' . $color . '"/><stop offset="100%" stop-color="rgba(0,0,0,.55)"/></linearGradient></defs>'
+	     . '<rect width="600" height="360" fill="url(#g)"/>'
+	     . '<g opacity=".18" fill="#fff">'
+	     . '<circle cx="80"  cy="60"  r="3"/><circle cx="540" cy="80" r="2"/><circle cx="120" cy="320" r="2.5"/>'
+	     . '<circle cx="500" cy="290" r="3"/><circle cx="300" cy="40"  r="2"/>'
+	     . '</g>'
+	     . '<text x="300" y="200" text-anchor="middle" font-size="160" dominant-baseline="middle">' . $emoji . '</text>'
+	     . '</svg>';
+	$datauri = 'data:image/svg+xml;utf8,' . rawurlencode( $svg );
+	return '<div class="' . esc_attr( $class ) . ' ag-asso-visual--svg" style="background-image:url(\'' . $datauri . '\');" role="img" aria-label="' . esc_attr( $title ) . '"></div>';
+}
+
 require_once get_template_directory() . '/inc/customizer.php';
