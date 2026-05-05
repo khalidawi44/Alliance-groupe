@@ -135,6 +135,10 @@
                                 <span class="ag-mega__icon">💈</span>
                                 <span><strong>Barber Shop <span style="display:inline-block;margin-left:4px;padding:1px 8px;background:var(--color-success);color:#fff;font-size:.62rem;font-weight:700;border-radius:100px;text-transform:uppercase;">Nouveau</span></strong><small>Coiffeur, barbier, file d'attente QR</small></span>
                             </a>
+                            <a href="<?php echo esc_url(home_url('/wordpress-association')); ?>" class="ag-mega__link" style="background:rgba(225,15,26,0.08);border:1px solid rgba(225,15,26,0.35);border-radius:8px;padding:10px 12px;">
+                                <span class="ag-mega__icon">🤝</span>
+                                <span><strong style="color:#ffb1b6;">Association <span style="display:inline-block;margin-left:4px;padding:1px 8px;background:#E10F1A;color:#fff;font-size:.62rem;font-weight:700;border-radius:100px;text-transform:uppercase;">100% gratuit</span></strong><small style="color:#ffd0d4;">Mouvement militant, asso loi 1901, syndicat</small></span>
+                            </a>
                             <a href="<?php echo esc_url(home_url('/contact?source=menu&demande=template-metier')); ?>" class="ag-mega__link ag-mega__link--all" style="margin-top:8px;border-top:1px dashed rgba(212,180,92,.25);padding-top:12px;">
                                 <span class="ag-mega__icon">💎</span>
                                 <span><strong>Votre métier ? Demandez-le</strong><small>On vous crée votre template sur mesure</small></span>
@@ -320,6 +324,7 @@
                     <a href="<?php echo esc_url(home_url('/wordpress-artisan')); ?>">🔨 Artisan</a>
                     <a href="<?php echo esc_url(home_url('/wordpress-coach')); ?>">💼 Coach</a>
                     <a href="<?php echo esc_url(home_url('/wordpress-barber')); ?>">💈 Barber Shop <span style="display:inline-block;margin-left:4px;padding:1px 6px;background:#28a745;color:#fff;font-size:.62rem;font-weight:700;border-radius:100px;text-transform:uppercase;">Nouveau</span></a>
+                    <a href="<?php echo esc_url(home_url('/wordpress-association')); ?>" style="color:#ffb1b6;">🤝 Association <span style="display:inline-block;margin-left:4px;padding:1px 6px;background:#E10F1A;color:#fff;font-size:.62rem;font-weight:700;border-radius:100px;text-transform:uppercase;">100% gratuit</span></a>
                     <a href="<?php echo esc_url(home_url('/contact?source=menu&demande=template-metier')); ?>" style="color:#D4B45C;font-weight:700;">💎 Votre métier ? Demandez-le</a>
                 </div>
             </div>
