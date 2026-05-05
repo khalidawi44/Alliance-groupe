@@ -101,12 +101,18 @@
     function toggle(force) {
         var open = (typeof force === 'boolean') ? force : !pub.classList.contains('is-open');
         pub.classList.toggle('is-open', open);
-        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-        panel.hidden = !open;
+        if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (panel) panel.hidden = !open;
     }
-    btn.addEventListener('click', function () { toggle(); });
+    if (btn) btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggle();
+    });
     pub.querySelectorAll('[data-pub-close]').forEach(function (b) {
-        b.addEventListener('click', function () { toggle(false); });
+        b.addEventListener('click', function (e) {
+            e.stopPropagation();
+            toggle(false);
+        });
     });
     document.addEventListener('click', function (e) {
         if (!pub.contains(e.target) && pub.classList.contains('is-open')) toggle(false);
