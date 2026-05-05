@@ -42,8 +42,44 @@ function ag_starter_association_assets() {
 	);
 	wp_enqueue_style( 'ag-starter-association-style', get_stylesheet_uri(), array( 'ag-asso-fonts' ), wp_get_theme()->get( 'Version' ) );
 	wp_enqueue_style( 'ag-asso-main', get_template_directory_uri() . '/assets/main.css', array( 'ag-starter-association-style' ), wp_get_theme()->get( 'Version' ) );
+
+	if ( is_singular( 'ag_evenement' ) ) {
+		wp_enqueue_script( 'ag-asso-event', get_template_directory_uri() . '/assets/event.js', array(), wp_get_theme()->get( 'Version' ), true );
+		wp_localize_script( 'ag-asso-event', 'agEvtCfg', array(
+			'ajax' => admin_url( 'admin-ajax.php' ),
+		) );
+	}
 }
 add_action( 'wp_enqueue_scripts', 'ag_starter_association_assets' );
+
+/**
+ * AJAX endpoint : incremente compteur participants/supports d'un event.
+ * Anti-double-click cote serveur via cookie de signature ; cote client
+ * le bouton est bloque apres clic. Pas de login requis.
+ */
+function ag_asso_event_count() {
+	$pid    = isset( $_POST['event_id'] ) ? (int) $_POST['event_id'] : 0;
+	$action = isset( $_POST['kind'] )     ? sanitize_key( $_POST['kind'] ) : '';
+	$nonce  = isset( $_POST['_wpnonce'] ) ? $_POST['_wpnonce'] : '';
+	if ( ! $pid || ! wp_verify_nonce( $nonce, 'ag_event_count' ) ) {
+		wp_send_json_error( array( 'msg' => 'Invalid request' ), 400 );
+	}
+	if ( get_post_type( $pid ) !== 'ag_evenement' ) {
+		wp_send_json_error( array( 'msg' => 'Unknown event' ), 404 );
+	}
+	$key = ( $action === 'support' ) ? '_ag_event_supports' : '_ag_event_participants';
+	$cookie = 'ag_evt_' . $pid . '_' . $action;
+	if ( isset( $_COOKIE[ $cookie ] ) ) {
+		wp_send_json_error( array( 'msg' => 'Already counted', 'count' => (int) get_post_meta( $pid, $key, true ) ), 200 );
+	}
+	$current = (int) get_post_meta( $pid, $key, true );
+	$new     = $current + 1;
+	update_post_meta( $pid, $key, $new );
+	setcookie( $cookie, '1', time() + YEAR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+	wp_send_json_success( array( 'count' => $new ) );
+}
+add_action( 'wp_ajax_ag_event_count',        'ag_asso_event_count' );
+add_action( 'wp_ajax_nopriv_ag_event_count', 'ag_asso_event_count' );
 
 /**
  * Helpers de lecture des options Customizer (placeholders [...] par defaut).
