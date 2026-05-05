@@ -1,0 +1,11 @@
+{
+    "version": "0.16.0",
+    "download_url": "https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/downloads/ag-fidelite-association.zip",
+    "homepage": "https://alliancegroupe-inc.com/wordpress-association",
+    "requires": "5.8",
+    "tested": "6.5",
+    "requires_php": "7.4",
+    "last_updated": "2026-05-05",
+    "description": "Pack Fidelite Association : pages, CPT (combats/evenements/groupes/petitions), 5 articles demo, roles utilisateurs, formulaire creation groupe, calendrier evenements, visio Jitsi AG, Cal.com RDV, 13 extensions recommandees, mentions/RGPD/statuts auto, popup Alliance Groupe.",
+    "changelog": "0.16.0 : auto-update via GitHub. 0.15.0 : wizard onboarding, plugins 100% gratuits sans trial. 0.14.0 : Cal.com RDV. 0.13.0 : visio Jitsi AG. 0.12.0 : tout installer extensions en 1 clic + bouton reinitialiser demo."
+}

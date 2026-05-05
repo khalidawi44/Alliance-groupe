@@ -236,6 +236,18 @@ class AG_Fid_Recommendations {
 				<p><small>Crée pages + rôles + permaliens, et <strong>réinitialise les contenus de démo</strong> (combats, événements avec date/heure, groupes locaux, pétitions, 5 articles d'actualité). À cliquer après chaque mise à jour du thème pour récupérer les nouveaux contenus.</small></p>
 			</div>
 
+			<div style="margin:18px 0;padding:18px;background:#fff;border-left:4px solid #0073aa;">
+				<h2 style="margin-top:0;">🔄 Mises à jour automatiques</h2>
+				<p>Ce plugin se met à jour automatiquement depuis GitHub (vérification toutes les 12h). Quand une nouvelle version est disponible, elle apparaît dans <strong>Extensions → Mises à jour</strong> comme n'importe quel plugin.</p>
+				<p>Version installée : <strong>v<?php echo esc_html( AG_FID_VERSION ); ?></strong></p>
+				<p>
+					<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=ag-fid-recommendations&ag_fid_check_update=1' ), 'ag_fid_check_update' ) ); ?>" class="button">🔄 Vérifier les mises à jour maintenant</a>
+				</p>
+				<?php if ( ! empty( $_GET['ag_fid_checked'] ) ) : ?>
+					<p style="color:#155724;"><strong>✓ Vérification effectuée.</strong> Allez dans <a href="<?php echo esc_url( admin_url( 'plugins.php' ) ); ?>">Extensions</a> pour voir les mises à jour disponibles.</p>
+				<?php endif; ?>
+			</div>
+
 			<h2>Extensions recommandées</h2>
 			<p>Voici les outils que nous recommandons pour gérer une association moderne avec WordPress. Cliquez sur "Installer" pour ajouter une extension.</p>
 			<p style="background:#d4edda;border-left:4px solid #28a745;padding:10px 14px;margin:12px 0;border-radius:4px;color:#155724;"><strong>✓ 100% versions gratuites</strong> — toutes ces extensions sont des plugins gratuits du dépôt WordPress.org, sans période d'essai ni quota mensuel imposé. Des fonctionnalités payantes optionnelles existent en addon mais ne sont jamais nécessaires.</p>
