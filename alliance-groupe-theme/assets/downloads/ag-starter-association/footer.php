@@ -1,4 +1,17 @@
 <footer class="ag-asso-footer">
+    <aside class="ag-asso-promo-banner ag-asso-promo-banner--in-footer" aria-label="<?php esc_attr_e( 'Crédit thème', 'ag-starter-association' ); ?>">
+        <div class="ag-asso-promo-banner__inner">
+            <span class="ag-asso-promo-banner__emoji" aria-hidden="true">🚀</span>
+            <span class="ag-asso-promo-banner__text">
+                Site militant créé avec le template gratuit
+                <strong>AG Starter Association</strong>
+                d'Alliance Groupe.
+            </span>
+            <a href="https://alliancegroupe-inc.com/templates-wordpress" target="_blank" rel="noopener" class="ag-asso-promo-banner__cta">
+                Découvrir nos templates →
+            </a>
+        </div>
+    </aside>
     <div class="ag-asso-footer__inner">
         <div class="ag-asso-footer__col">
             <?php if ( $logo_footer = ag_asso_opt( 'ag_asso_logo_footer', '' ) ) : ?>
@@ -129,21 +142,6 @@
         <path d="M12 4 L12 20 M5 11 L12 4 L19 11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
 </button>
-
-<?php // Banner discrete avant footer + popup auto vers Alliance Groupe ?>
-<aside class="ag-asso-promo-banner" aria-label="<?php esc_attr_e( 'Crédit thème', 'ag-starter-association' ); ?>">
-    <div class="ag-asso-promo-banner__inner">
-        <span class="ag-asso-promo-banner__emoji" aria-hidden="true">🚀</span>
-        <span class="ag-asso-promo-banner__text">
-            Site militant créé avec le template gratuit
-            <strong>AG Starter Association</strong>
-            d'Alliance Groupe.
-        </span>
-        <a href="https://alliancegroupe-inc.com/templates-wordpress" target="_blank" rel="noopener" class="ag-asso-promo-banner__cta">
-            Découvrir nos templates →
-        </a>
-    </div>
-</aside>
 
 <?php // Popup d'accueil — affichage 1 fois par session ?>
 <div class="ag-asso-welcome" id="agAssoWelcome" role="dialog" aria-modal="true" aria-labelledby="agAssoWelcomeTitle" hidden>

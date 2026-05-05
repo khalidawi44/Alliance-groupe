@@ -1938,3 +1938,12 @@ body.ag-asso-welcome-open { overflow: hidden; }
     border-radius: 6px;
     border-bottom: 4px solid var(--asso-red);
 }
+
+/* Banner promo placee dans le footer (au-dessus des colonnes contact/liens) */
+.ag-asso-promo-banner--in-footer {
+    background: linear-gradient(90deg, rgba(225,15,26,0.10) 0%, rgba(212,180,92,0.10) 50%, rgba(225,15,26,0.10) 100%);
+    border-top: 1px solid rgba(212,180,92,.15);
+    border-bottom: 1px solid rgba(212,180,92,.15);
+    margin: 0 0 32px;
+}
+.ag-asso-promo-banner--in-footer .ag-asso-promo-banner__text { color: rgba(255,255,255,.9); }
