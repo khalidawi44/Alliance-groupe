@@ -66,6 +66,7 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
                     array( '💛', 'Dons',                   'Grille de montants suggérés avec calcul auto du coût réel après réduction d\'impôt 66% ou 75%.' ),
                     array( '📰', '5 articles d\'actu',    'Articles préremplis prêts à éditer ou supprimer.' ),
                     array( '👥', 'Qui sommes-nous',        'Page complète : président·e + bio, 3 étapes histoire, 6 bénévoles avec rôles, 3 engagements chiffrés.' ),
+                    array( '📹', 'Visio AG sécurisée',     '<strong style="color:#FFD23F;">Tchat + visio chiffrée bout-en-bout</strong> via Jitsi Meet, intégrée au site. Pour les AG, réunions de bureau, ateliers — surtout pour les adhérent·es absent·es. Aucun compte, aucune limite, RGPD-compliant.' ),
                     array( '👤', 'Rôles utilisateurs',    'Sympathisant, adhérent, militant, trésorier·e, secrétaire, président·e — avec URLs personnalisées.' ),
                     array( '⚖️', 'Mentions &amp; RGPD auto', 'Mentions légales et politique de confidentialité générées automatiquement depuis l\'identité légale du Customizer.' ),
                     array( '📋', 'Statuts loi 1901',       '12 articles standards prêts à éditer (constitution, objet, composition, CA, AG, ressources, dissolution).' ),

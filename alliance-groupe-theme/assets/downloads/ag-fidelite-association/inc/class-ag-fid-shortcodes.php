@@ -23,6 +23,7 @@ class AG_Fid_Shortcodes {
 		add_shortcode( 'ag_fid_adhesion',    array( $this, 'render_adhesion' ) );
 		add_shortcode( 'ag_fid_compte',      array( $this, 'render_compte' ) );
 		add_shortcode( 'ag_fid_qui_sommes_nous', array( $this, 'render_about' ) );
+		add_shortcode( 'ag_fid_visio',       array( $this, 'render_visio' ) );
 		add_shortcode( 'ag_fid_manifeste',   array( $this, 'render_manifeste' ) );
 		add_shortcode( 'ag_fid_mentions',    array( $this, 'render_mentions' ) );
 		add_shortcode( 'ag_fid_rgpd',        array( $this, 'render_rgpd' ) );
@@ -176,6 +177,80 @@ class AG_Fid_Shortcodes {
 	public function render_groupes()    { return $this->render_cpt_grid( 'ag_groupe', 'Aucun groupe local référencé.' ); }
 	public function render_petitions()  { return $this->render_cpt_grid( 'ag_petition', 'Aucune pétition active.' ); }
 	public function render_actu()       { return $this->render_cpt_grid( 'post', 'Aucun article.' ); }
+
+	/**
+	 * Salle visio Jitsi Meet embed pour les AG, reunions, ateliers.
+	 * Chiffrement bout-en-bout, aucun compte requis. Restriction
+	 * adherents possible (si l'utilisateur n'a pas le role ag_adherent
+	 * ou superieur).
+	 */
+	public function render_visio() {
+		$room    = get_theme_mod( 'ag_fid_visio_room', '' );
+		$members_only = (int) get_theme_mod( 'ag_fid_visio_members_only', 0 );
+
+		if ( ! $room ) {
+			$org    = get_theme_mod( 'ag_asso_name', 'mouvement' );
+			$slug   = sanitize_title( $org );
+			$room   = $slug . '-ag-' . substr( md5( get_site_url() ), 0, 8 );
+		}
+
+		if ( $members_only && ! is_user_logged_in() ) {
+			return '<div class="ag-asso-visio-locked"><h3>🔒 Réservé aux adhérent·es</h3><p>Cette salle de réunion est privée. <a href="' . esc_url( wp_login_url( get_permalink() ) ) . '">Connectez-vous</a> pour rejoindre l\'AG en visio.</p></div>';
+		}
+		if ( $members_only && is_user_logged_in() ) {
+			$user = wp_get_current_user();
+			$ok   = false;
+			foreach ( array( 'ag_adherent', 'ag_militant', 'ag_tresorier', 'ag_secretaire', 'ag_president', 'administrator', 'editor' ) as $r ) {
+				if ( in_array( $r, (array) $user->roles, true ) ) { $ok = true; break; }
+			}
+			if ( ! $ok ) {
+				return '<div class="ag-asso-visio-locked"><h3>🔒 Réservé aux adhérent·es</h3><p>Vous devez être à jour de cotisation pour accéder à la visio. <a href="' . esc_url( home_url( '/adherer/' ) ) . '">Adhérer maintenant</a>.</p></div>';
+			}
+		}
+
+		$display_name = '';
+		if ( is_user_logged_in() ) {
+			$u = wp_get_current_user();
+			$display_name = $u->display_name ?: $u->user_login;
+		}
+
+		ob_start(); ?>
+		<div class="ag-asso-visio">
+			<header class="ag-asso-visio__header">
+				<h2>📹 Salle de réunion en ligne</h2>
+				<p>Tchat + visio chiffrée bout-en-bout via <strong>Jitsi Meet</strong>. Aucun compte requis. Vous pouvez activer/couper micro et caméra à tout moment, partager votre écran, lever la main, écrire dans le tchat. <strong>Idéal pour les AG, réunions de bureau, ateliers, débats internes</strong> — surtout pour celles et ceux qui ne peuvent pas se déplacer.</p>
+				<ul class="ag-asso-visio__features">
+					<li>🔒 Chiffrement bout-en-bout</li>
+					<li>🇪🇺 Hébergé en Europe (RGPD)</li>
+					<li>📱 Compatible mobile + tablette + desktop</li>
+					<li>♾ Aucune limite de durée ni de participants</li>
+					<li>🎥 Enregistrement possible (par l'animateur)</li>
+				</ul>
+			</header>
+			<div class="ag-asso-visio__embed">
+				<iframe
+					src="https://meet.jit.si/<?php echo esc_attr( $room ); ?>#userInfo.displayName=&quot;<?php echo esc_js( $display_name ); ?>&quot;&config.prejoinPageEnabled=false&config.disableDeepLinking=true&config.startWithAudioMuted=true&config.startWithVideoMuted=true"
+					allow="camera; microphone; fullscreen; display-capture; autoplay"
+					title="Salle visio"
+					loading="lazy"></iframe>
+			</div>
+			<p class="ag-asso-visio__share">Partagez le lien direct : <code>https://meet.jit.si/<?php echo esc_html( $room ); ?></code></p>
+			<details class="ag-asso-visio__help">
+				<summary>💡 Comment ça marche ?</summary>
+				<ol>
+					<li>Cliquez dans la fenêtre ci-dessus pour rejoindre la salle.</li>
+					<li>Autorisez votre navigateur à utiliser micro + caméra.</li>
+					<li>Indiquez votre prénom (ou laissez le pseudo automatique).</li>
+					<li>Vous êtes en ligne. Pour parler, levez la main avec ✋ ou activez votre micro.</li>
+					<li>Pour partager un document : icône <em>partage d'écran</em>.</li>
+					<li>Pour le tchat écrit : icône <em>bulle</em> en bas de l'écran.</li>
+				</ol>
+				<p><strong>En cas de problème de connexion :</strong> ouvrez le lien direct ci-dessus dans un autre navigateur (Firefox / Chrome récent recommandé).</p>
+			</details>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
 
 	public function render_manifeste() {
 		ob_start(); ?>
