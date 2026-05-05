@@ -179,6 +179,7 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-bureau-naples.php']   = 'Bureau — Naples';
     $templates['templates/page-bureau-nantes.php']   = 'Bureau — Nantes';
     $templates['templates/page-wordpress-barber.php']= 'Template WordPress — Barber Shop';
+    $templates['templates/page-wordpress-association.php'] = 'Template WordPress — Association';
     return $templates;
 } );
 
