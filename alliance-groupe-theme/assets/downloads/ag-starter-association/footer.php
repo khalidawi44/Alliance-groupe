@@ -65,11 +65,88 @@
         <?php if ( $copy = ag_asso_opt( 'ag_asso_footer_copy', '' ) ) : ?>
             <span class="ag-asso-footer__phrase"><?php echo esc_html( $copy ); ?></span>
         <?php endif; ?>
-        <?php if ( ag_asso_opt( 'ag_asso_show_credit', 1 ) ) : ?>
-            <?php esc_html_e( 'Thème par', 'ag-starter-association' ); ?> <a href="https://alliancegroupe-inc.com" rel="nofollow">Alliance Groupe</a>.
-        <?php endif; ?>
+    </div>
+    <div class="ag-asso-footer__credit">
+        🚀 Fièrement créé par
+        <a href="https://alliancegroupe-inc.com/wordpress-association" target="_blank" rel="noopener">Alliance Groupe</a>
+        ✨ Template WordPress 100% gratuit pour les associations 💎
     </div>
 </footer>
+
+<?php // Banner discrete avant footer + popup auto vers Alliance Groupe ?>
+<aside class="ag-asso-promo-banner" aria-label="<?php esc_attr_e( 'Crédit thème', 'ag-starter-association' ); ?>">
+    <div class="ag-asso-promo-banner__inner">
+        <span class="ag-asso-promo-banner__emoji" aria-hidden="true">🚀</span>
+        <span class="ag-asso-promo-banner__text">
+            Site militant créé avec le template gratuit
+            <strong>AG Starter Association</strong>
+            d'Alliance Groupe.
+        </span>
+        <a href="https://alliancegroupe-inc.com/templates-wordpress" target="_blank" rel="noopener" class="ag-asso-promo-banner__cta">
+            Découvrir nos templates →
+        </a>
+    </div>
+</aside>
+
+<?php // Popup d'accueil — affichage 1 fois par session ?>
+<div class="ag-asso-welcome" id="agAssoWelcome" role="dialog" aria-modal="true" aria-labelledby="agAssoWelcomeTitle" hidden>
+    <div class="ag-asso-welcome__backdrop" data-close></div>
+    <div class="ag-asso-welcome__box">
+        <button type="button" class="ag-asso-welcome__close" data-close aria-label="<?php esc_attr_e( 'Fermer', 'ag-starter-association' ); ?>">×</button>
+        <div class="ag-asso-welcome__emojis" aria-hidden="true">
+            <span style="--d:0s">🚀</span>
+            <span style="--d:.3s">✨</span>
+            <span style="--d:.6s">💎</span>
+            <span style="--d:.9s">🎯</span>
+            <span style="--d:1.2s">🤝</span>
+        </div>
+        <h2 id="agAssoWelcomeTitle" class="ag-asso-welcome__title">Vous aimez ce site ?</h2>
+        <p class="ag-asso-welcome__sub">
+            Ce site est construit avec <strong>AG Starter Association</strong>, un template
+            WordPress <span class="ag-asso-welcome__hl">100% gratuit</span> conçu par
+            <strong>Alliance Groupe</strong> pour les associations militantes, syndicats et
+            mouvements citoyens.
+        </p>
+        <p class="ag-asso-welcome__sub">
+            Lancez votre site asso en 10 minutes avec le même thème : pages, calendrier
+            événements, dons, adhérents, dons, manifestes — tout est déjà inclus.
+        </p>
+        <div class="ag-asso-welcome__actions">
+            <a href="https://alliancegroupe-inc.com/wordpress-association" target="_blank" rel="noopener" class="ag-asso-welcome__cta">
+                ⚡ Télécharger le template gratuit
+            </a>
+            <button type="button" class="ag-asso-welcome__skip" data-close>Plus tard</button>
+        </div>
+        <p class="ag-asso-welcome__credit">🚀 Fièrement créé par <strong>Alliance Groupe</strong> 💎</p>
+    </div>
+</div>
+
+<script>
+(function () {
+    var key = 'agAssoWelcomeSeen';
+    try {
+        if (sessionStorage.getItem(key)) return;
+    } catch (e) {}
+    var pop = document.getElementById('agAssoWelcome');
+    if (!pop) return;
+    setTimeout(function () {
+        pop.hidden = false;
+        document.body.classList.add('ag-asso-welcome-open');
+    }, 1500);
+    function close() {
+        pop.hidden = true;
+        document.body.classList.remove('ag-asso-welcome-open');
+        try { sessionStorage.setItem(key, '1'); } catch (e) {}
+    }
+    pop.querySelectorAll('[data-close]').forEach(function (b) {
+        b.addEventListener('click', close);
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !pop.hidden) close();
+    });
+})();
+</script>
+
 <?php wp_footer(); ?>
 </body>
 </html>
