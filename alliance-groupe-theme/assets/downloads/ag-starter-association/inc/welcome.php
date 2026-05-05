@@ -239,6 +239,17 @@ class AG_Asso_Welcome {
 
 			</div>
 
+			<div style="margin-top:28px;padding:18px 22px;background:#fff;border-left:4px solid #0073aa;border-radius:6px;">
+				<h3 style="margin:0 0 6px;">🔄 Mises à jour du thème</h3>
+				<p style="margin:0 0 10px;color:#555;">Version installée : <strong>v<?php echo esc_html( wp_get_theme()->get( 'Version' ) ); ?></strong>. Le thème se met à jour automatiquement depuis GitHub (vérification toutes les 12h, apparaît dans <strong>Apparence → Thèmes</strong>).</p>
+				<p style="margin:0;">
+					<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'themes.php?page=ag-asso-welcome&ag_asso_check_theme=1' ), 'ag_asso_check_theme' ) ); ?>" class="button">🔄 Vérifier maintenant</a>
+				</p>
+				<?php if ( ! empty( $_GET['ag_asso_theme_checked'] ) ) : ?>
+					<p style="color:#155724;margin:10px 0 0;"><strong>✓ Vérification effectuée.</strong> Allez dans <a href="<?php echo esc_url( admin_url( 'themes.php' ) ); ?>">Apparence → Thèmes</a> pour voir si une mise à jour est dispo.</p>
+				<?php endif; ?>
+			</div>
+
 			<div class="ag-asso-w__final">
 				<h2>💡 Besoin d'aide ?</h2>
 				<p style="max-width:680px;margin:0 auto 16px;line-height:1.6;">
