@@ -2063,3 +2063,15 @@ body.ag-asso-welcome-open { overflow: hidden; }
 }
 .ag-asso-footer__logo { max-height: 80px; width: auto; }
 @media (max-width: 768px) { .ag-asso-footer__logo { max-height: 60px; } }
+
+/* ── Fix : header au-dessus de la sticky pub + reserve espace logo ── */
+.ag-asso-header { z-index: 9100 !important; }
+@media (min-width: 1101px) {
+    .ag-asso-header__inner { padding-left: 60px; }
+}
+/* Sticky pub : limiter hauteur du panneau pour ne pas couvrir le header */
+.ag-asso-sticky-pub__panel {
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+}
+.ag-asso-sticky-pub { top: 55%; }
