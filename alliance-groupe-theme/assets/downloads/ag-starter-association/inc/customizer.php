@@ -19,6 +19,38 @@ function ag_asso_customize( $wp_customize ) {
 	) );
 
 	// =====================================================================
+	// Sections visibles sur la page d'accueil (toggle on/off)
+	// =====================================================================
+	$wp_customize->add_section( 'ag_asso_sections_visibility', array(
+		'title' => __( 'Sections visibles (accueil)', 'ag-starter-association' ),
+		'panel' => 'ag_asso_panel',
+		'description' => 'Cochez les sections à afficher sur la page d\'accueil. Décochez pour masquer.',
+	) );
+	$sections_toggle = array(
+		'manifeste'    => 'Manifeste',
+		'combats'      => 'Combats',
+		'evenements'   => 'Événements',
+		'groupes'      => 'Groupes locaux (carte + stats)',
+		'actu'         => 'Actualités',
+		'equipe'       => 'Notre équipe',
+		'signer'       => 'Signer l\'appel (formulaire)',
+		'don'          => 'Faire un don',
+		'compteur_sig' => 'Compteur de signatures (hero)',
+		'cta_secondaire' => 'Bouton secondaire du hero ("Faire un don")',
+	);
+	foreach ( $sections_toggle as $key => $label ) {
+		$wp_customize->add_setting( 'ag_asso_show_' . $key, array(
+			'default'           => 1,
+			'sanitize_callback' => 'absint',
+		) );
+		$wp_customize->add_control( 'ag_asso_show_' . $key, array(
+			'label'   => $label,
+			'section' => 'ag_asso_sections_visibility',
+			'type'    => 'checkbox',
+		) );
+	}
+
+	// =====================================================================
 	// Identite
 	// =====================================================================
 	$wp_customize->add_section( 'ag_asso_identity', array(
@@ -471,16 +503,30 @@ function ag_asso_customize( $wp_customize ) {
 		) );
 	}
 
-	// Galerie benevoles (6 photos + nom/role)
+	// Galerie benevoles (jusqu'a 12 personnes : photo + nom + role
+	// libre + date d'arrivee + toggle on/off pour ajouter/supprimer)
 	$team_defaults = array(
-		1 => array( 'name' => 'Yacine Bouzid',     'role' => 'Vice-président — pôle juridique' ),
-		2 => array( 'name' => 'Léa Marchand',      'role' => 'Trésorière' ),
-		3 => array( 'name' => 'Mehdi El Amrani',   'role' => 'Secrétaire général' ),
-		4 => array( 'name' => 'Sophie Tremblay',   'role' => 'Coordination groupes locaux' ),
-		5 => array( 'name' => 'Thomas Vasseur',    'role' => 'Responsable communication' ),
-		6 => array( 'name' => 'Aïcha Diallo',      'role' => 'Animation jeunes engagés' ),
+		1  => array( 'name' => 'Yacine Bouzid',     'role' => 'Vice-président — pôle juridique', 'date' => '2018', 'on' => 1 ),
+		2  => array( 'name' => 'Léa Marchand',      'role' => 'Trésorière',                       'date' => '2019', 'on' => 1 ),
+		3  => array( 'name' => 'Mehdi El Amrani',   'role' => 'Secrétaire général',               'date' => '2019', 'on' => 1 ),
+		4  => array( 'name' => 'Sophie Tremblay',   'role' => 'Coordination groupes locaux',      'date' => '2020', 'on' => 1 ),
+		5  => array( 'name' => 'Thomas Vasseur',    'role' => 'Responsable communication',        'date' => '2021', 'on' => 1 ),
+		6  => array( 'name' => 'Aïcha Diallo',      'role' => 'Animation jeunes engagés',         'date' => '2022', 'on' => 1 ),
+		7  => array( 'name' => '',                  'role' => '',                                  'date' => '',     'on' => 0 ),
+		8  => array( 'name' => '',                  'role' => '',                                  'date' => '',     'on' => 0 ),
+		9  => array( 'name' => '',                  'role' => '',                                  'date' => '',     'on' => 0 ),
+		10 => array( 'name' => '',                  'role' => '',                                  'date' => '',     'on' => 0 ),
+		11 => array( 'name' => '',                  'role' => '',                                  'date' => '',     'on' => 0 ),
+		12 => array( 'name' => '',                  'role' => '',                                  'date' => '',     'on' => 0 ),
 	);
-	for ( $i = 1; $i <= 6; $i++ ) {
+	for ( $i = 1; $i <= 12; $i++ ) {
+		$wp_customize->add_setting( "ag_asso_about_team_on_$i", array(
+			'default' => $team_defaults[ $i ]['on'], 'sanitize_callback' => 'absint',
+		) );
+		$wp_customize->add_control( "ag_asso_about_team_on_$i", array(
+			'label' => sprintf( '✓ Afficher bénévole %d', $i ),
+			'section' => 'ag_asso_about', 'type' => 'checkbox',
+		) );
 		$wp_customize->add_setting( "ag_asso_about_team_photo_$i", array(
 			'default' => '', 'sanitize_callback' => 'esc_url_raw',
 		) );
@@ -498,7 +544,14 @@ function ag_asso_customize( $wp_customize ) {
 			'default' => $team_defaults[ $i ]['role'], 'sanitize_callback' => 'sanitize_text_field',
 		) );
 		$wp_customize->add_control( "ag_asso_about_team_role_$i", array(
-			'label' => sprintf( 'Rôle bénévole %d', $i ), 'section' => 'ag_asso_about', 'type' => 'text',
+			'label' => sprintf( 'Rôle / fonction %d (libre, créez ce que vous voulez)', $i ), 'section' => 'ag_asso_about', 'type' => 'text',
+		) );
+		$wp_customize->add_setting( "ag_asso_about_team_date_$i", array(
+			'default' => $team_defaults[ $i ]['date'], 'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( "ag_asso_about_team_date_$i", array(
+			'label' => sprintf( 'Date d\'arrivée / élection %d (ex: 2019, mars 2021)', $i ),
+			'section' => 'ag_asso_about', 'type' => 'text',
 		) );
 	}
 

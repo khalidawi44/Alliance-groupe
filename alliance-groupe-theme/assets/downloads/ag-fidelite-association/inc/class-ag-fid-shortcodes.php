@@ -418,10 +418,13 @@ class AG_Fid_Shortcodes {
 						5 => array( 'name' => 'Thomas Vasseur',  'role' => 'Responsable communication' ),
 						6 => array( 'name' => 'Aïcha Diallo',    'role' => 'Animation jeunes engagés' ),
 					);
-					for ( $i = 1; $i <= 6; $i++ ) :
+					for ( $i = 1; $i <= 12; $i++ ) :
+						$on    = (int) get_theme_mod( "ag_asso_about_team_on_$i", $i <= 6 ? 1 : 0 );
+						if ( ! $on ) continue;
 						$photo = get_theme_mod( "ag_asso_about_team_photo_$i", '' );
-						$name  = get_theme_mod( "ag_asso_about_team_name_$i", $team_fallback[ $i ]['name'] );
-						$role  = get_theme_mod( "ag_asso_about_team_role_$i", $team_fallback[ $i ]['role'] );
+						$name  = get_theme_mod( "ag_asso_about_team_name_$i", isset( $team_fallback[ $i ] ) ? $team_fallback[ $i ]['name'] : '' );
+						$role  = get_theme_mod( "ag_asso_about_team_role_$i", isset( $team_fallback[ $i ] ) ? $team_fallback[ $i ]['role'] : '' );
+						$date  = get_theme_mod( "ag_asso_about_team_date_$i", '' );
 						if ( ! $name && ! $photo ) continue;
 						$initials = '';
 						foreach ( explode( ' ', $name ) as $part ) { if ( $part ) $initials .= mb_strtoupper( mb_substr( $part, 0, 1 ) ); }
@@ -437,6 +440,7 @@ class AG_Fid_Shortcodes {
 							<?php endif; ?>
 							<h4 class="ag-asso-team__name"><?php echo esc_html( $name ); ?></h4>
 							<p class="ag-asso-team__role"><?php echo esc_html( $role ); ?></p>
+							<?php if ( $date ) : ?><p class="ag-asso-team__date">📅 Depuis <?php echo esc_html( $date ); ?></p><?php endif; ?>
 							<p class="ag-asso-team__bio"><?php echo esc_html( isset( $team_bios[ $i ] ) ? $team_bios[ $i ] : '' ); ?></p>
 						</article>
 					<?php endfor; ?>

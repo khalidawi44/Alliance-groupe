@@ -2075,3 +2075,18 @@ body.ag-asso-welcome-open { overflow: hidden; }
     overflow-y: auto;
 }
 .ag-asso-sticky-pub { top: 55%; }
+
+/* Compteur signatures cliquable */
+a.ag-asso-hero__counter {
+    text-decoration: none;
+    color: #fff;
+    cursor: pointer;
+    transition: background .2s ease, transform .2s ease;
+}
+a.ag-asso-hero__counter:hover {
+    background: rgba(255,255,255,.14);
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.ag-asso-team__date { color: var(--asso-red); font-size: .8rem; font-weight: 600; margin: 8px 0 0; letter-spacing: .3px; }
