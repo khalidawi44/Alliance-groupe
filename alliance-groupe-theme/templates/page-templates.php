@@ -72,6 +72,17 @@ $ag_hub_metiers = array(
         'url'      => home_url( '/wordpress-barber' ),
         'is_new'   => true,
     ),
+    array(
+        'slug'      => 'association',
+        'icon'      => '🤝',
+        'name'      => 'Association',
+        'palette'   => 'Rouge &amp; noir',
+        'audience'  => 'Mouvement militant, association loi 1901, parti, syndicat, ONG.',
+        'tagline'   => 'Manifeste, combats, calendrier événements, groupes locaux, dons, adhérents.',
+        'url'       => home_url( '/wordpress-association' ),
+        'is_new'    => true,
+        'is_carity' => true,
+    ),
 );
 ?>
 
@@ -110,6 +121,9 @@ $ag_hub_metiers = array(
                                 <?php if ( $m['is_new'] ) : ?>
                                     <span style="display:inline-block;margin-left:6px;padding:2px 10px;background:#28a745;color:#fff;font-size:.7rem;font-weight:700;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;vertical-align:middle;">Nouveau</span>
                                 <?php endif; ?>
+                                <?php if ( ! empty( $m['is_carity'] ) ) : ?>
+                                    <span style="display:inline-block;margin-left:6px;padding:2px 10px;background:#E10F1A;color:#fff;font-size:.7rem;font-weight:700;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;vertical-align:middle;">Caritatif</span>
+                                <?php endif; ?>
                             </h3>
                             <span style="color:#888;font-size:.82rem;"><?php echo $m['palette']; // phpcs:ignore ?></span>
                         </div>
@@ -129,7 +143,7 @@ $ag_hub_metiers = array(
     <!-- Vue d'ensemble des 3 packs payants (courte, le détail est dans les pages métier) -->
     <section class="ag-section ag-section--marbre">
         <div class="ag-container">
-            <span class="ag-tag ag-anim" data-anim="tag">2 niveaux d'amélioration</span>
+            <span class="ag-tag ag-anim" data-anim="tag">3 niveaux d'amélioration</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">Passez au <em>niveau supérieur</em></h2>
             <p class="ag-section__desc ag-anim" data-anim="desc">Les 5 templates gratuits sont volontairement basiques. Deux packs payants viennent compléter <strong style="color:#e8e6e0;">n'importe lequel des 5 thèmes</strong> — un seul achat, il fonctionne avec le thème actif. Le détail de chaque pack vit sur la page métier correspondante.</p>
 
@@ -144,6 +158,12 @@ $ag_hub_metiers = array(
                     <div style="font-size:2rem;margin-bottom:6px;">💼</div>
                     <strong style="display:block;color:#D4B45C;font-size:1.1rem;margin-bottom:6px;">Pack Business — 199€</strong>
                     <p style="color:#b0b0bc;font-size:.88rem;line-height:1.55;margin:0;">Tout Premium + installation visio 1h + maintenance 1 an + audit SEO + white-label + intégration CRM + appel Fabrizio.</p>
+                </div>
+                <div style="padding:24px;background:rgba(225,15,26,.10);border:2px solid rgba(225,15,26,.5);border-radius:12px;text-align:center;position:relative;">
+                    <span style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#E10F1A;color:#fff;font-size:.68rem;font-weight:700;padding:3px 12px;border-radius:100px;text-transform:uppercase;letter-spacing:1px;">🤝 Caritatif</span>
+                    <div style="font-size:2rem;margin-bottom:6px;">💎</div>
+                    <strong style="display:block;color:#ffb1b6;font-size:1.1rem;margin-bottom:6px;">Pack Fidélité — 99€</strong>
+                    <p style="color:#b0b0bc;font-size:.88rem;line-height:1.55;margin:0;"><strong style="color:#FFD23F;">Réservé aux associations.</strong> Pack équivalent Premium avec en plus : 13 extensions WordPress installables en 1 clic, rôles utilisateurs, mentions/RGPD/statuts auto, espace adhérent. <a href="<?php echo esc_url( home_url( '/wordpress-association' ) ); ?>" style="color:#FFD23F;">Voir l'offre →</a></p>
                 </div>
             </div>
 
