@@ -72,13 +72,16 @@
 <aside class="ag-asso-sticky-pub" aria-label="<?php esc_attr_e( 'Crédit thème', 'ag-starter-association' ); ?>">
     <a href="https://alliancegroupe-inc.com/wordpress-association" target="_blank" rel="noopener">
         <span class="ag-asso-sticky-pub__emoji" aria-hidden="true">🚀</span>
-        <span class="ag-asso-sticky-pub__text">
-            <strong>Template gratuit</strong>
-            <em>par Alliance Groupe</em>
-        </span>
-        <span class="ag-asso-sticky-pub__cta">→</span>
+        <span class="ag-asso-sticky-pub__text">Template gratuit · Alliance Groupe</span>
     </a>
 </aside>
+
+<?php // Bouton retour haut de page (apparait apres 400px de scroll) ?>
+<button type="button" class="ag-asso-backtop" id="agAssoBackTop" aria-label="<?php esc_attr_e( 'Retour en haut', 'ag-starter-association' ); ?>" hidden>
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <path d="M12 4 L12 20 M5 11 L12 4 L19 11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+</button>
 
 <?php // Banner discrete avant footer + popup auto vers Alliance Groupe ?>
 <aside class="ag-asso-promo-banner" aria-label="<?php esc_attr_e( 'Crédit thème', 'ag-starter-association' ); ?>">
@@ -139,7 +142,7 @@
     setTimeout(function () {
         pop.hidden = false;
         document.body.classList.add('ag-asso-welcome-open');
-    }, 1500);
+    }, 60000);
     function close() {
         pop.hidden = true;
         document.body.classList.remove('ag-asso-welcome-open');
@@ -150,6 +153,45 @@
     });
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && !pop.hidden) close();
+    });
+})();
+
+/* Header sticky scroll-aware : disparait au scroll bas, reapparait au scroll haut */
+(function () {
+    var header = document.querySelector('.ag-asso-header');
+    if (!header) return;
+    var lastY = window.scrollY;
+    var ticking = false;
+    function update() {
+        var y = window.scrollY;
+        if (y > lastY && y > 120) {
+            header.classList.add('is-hidden');
+        } else {
+            header.classList.remove('is-hidden');
+        }
+        lastY = y;
+        ticking = false;
+    }
+    window.addEventListener('scroll', function () {
+        if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+})();
+
+/* Bouton retour haut */
+(function () {
+    var btn = document.getElementById('agAssoBackTop');
+    if (!btn) return;
+    var ticking = false;
+    function update() {
+        if (window.scrollY > 400) { btn.hidden = false; btn.classList.add('is-visible'); }
+        else { btn.classList.remove('is-visible'); }
+        ticking = false;
+    }
+    window.addEventListener('scroll', function () {
+        if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+    btn.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 })();
 </script>
