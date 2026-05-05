@@ -46,10 +46,21 @@ get_header();
             $now    = current_time( 'timestamp' );
             $year   = (int) date( 'Y', $now );
             $month  = (int) date( 'n', $now );
+            // Si pas d'event ce mois-ci, basculer sur le mois du prochain event
+            $cur_month_key = sprintf( '%04d-%02d', $year, $month );
+            $has_evt_this_month = false;
+            foreach ( $events_by_date as $d => $_ ) {
+                if ( strpos( $d, $cur_month_key ) === 0 ) { $has_evt_this_month = true; break; }
+            }
+            if ( ! $has_evt_this_month && ! empty( $events_by_date ) ) {
+                $next = strtotime( array_keys( $events_by_date )[0] );
+                $year  = (int) date( 'Y', $next );
+                $month = (int) date( 'n', $next );
+            }
             $first  = mktime( 0, 0, 0, $month, 1, $year );
             $nb_days = (int) date( 't', $first );
             $first_dow = (int) date( 'N', $first );
-            $today_d   = (int) date( 'j', $now );
+            $today_d   = ( (int) date( 'Y', $now ) === $year && (int) date( 'n', $now ) === $month ) ? (int) date( 'j', $now ) : -1;
             ?>
             <div class="ag-evt-wrap">
                 <aside class="ag-evt-calendar">

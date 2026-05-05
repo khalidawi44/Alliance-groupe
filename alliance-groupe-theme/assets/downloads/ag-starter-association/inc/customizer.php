@@ -536,15 +536,9 @@ function ag_asso_customize( $wp_customize ) {
 		'section' => 'ag_asso_footer',
 		'type'    => 'text',
 	) );
-	$wp_customize->add_setting( 'ag_asso_show_credit', array(
-		'default'           => 1,
-		'sanitize_callback' => 'absint',
-	) );
-	$wp_customize->add_control( 'ag_asso_show_credit', array(
-		'label'   => __( 'Afficher "Theme par Alliance Groupe"', 'ag-starter-association' ),
-		'section' => 'ag_asso_footer',
-		'type'    => 'checkbox',
-	) );
+	// Note : le credit Alliance Groupe (banner promo + popup + sticky)
+	// fait partie de la licence du theme gratuit. Pas d'option pour le
+	// retirer (offre caritative qui doit rester sourcable).
 }
 add_action( 'customize_register', 'ag_asso_customize' );
 
