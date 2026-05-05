@@ -68,13 +68,54 @@
     </div>
 </footer>
 
-<?php // Sticky pub a gauche, suit le scroll, desktop seulement (>1100px) ?>
-<aside class="ag-asso-sticky-pub" aria-label="<?php esc_attr_e( 'Crédit thème', 'ag-starter-association' ); ?>">
-    <a href="https://alliancegroupe-inc.com/wordpress-association" target="_blank" rel="noopener">
+<?php // Sticky pub a gauche : pilule verticale -> panneau au clic ?>
+<aside class="ag-asso-sticky-pub" id="agAssoStickyPub" aria-label="<?php esc_attr_e( 'Crédit thème — Alliance Groupe', 'ag-starter-association' ); ?>">
+    <button type="button" class="ag-asso-sticky-pub__toggle" aria-expanded="false" aria-controls="agAssoStickyPubPanel">
         <span class="ag-asso-sticky-pub__emoji" aria-hidden="true">🚀</span>
         <span class="ag-asso-sticky-pub__text">Template gratuit · Alliance Groupe</span>
-    </a>
+    </button>
+    <div class="ag-asso-sticky-pub__panel" id="agAssoStickyPubPanel" hidden>
+        <button type="button" class="ag-asso-sticky-pub__close" aria-label="<?php esc_attr_e( 'Fermer', 'ag-starter-association' ); ?>" data-pub-close>×</button>
+        <div class="ag-asso-sticky-pub__emojis" aria-hidden="true">
+            <span style="--d:0s">🚀</span>
+            <span style="--d:.3s">✨</span>
+            <span style="--d:.6s">💎</span>
+        </div>
+        <h3 class="ag-asso-sticky-pub__title">Alliance Groupe</h3>
+        <p class="ag-asso-sticky-pub__sub">Agence web &amp; IA française qui offre des templates WordPress 100% gratuits par métier.</p>
+        <h4 class="ag-asso-sticky-pub__h4">Pourquoi ce template ?</h4>
+        <p class="ag-asso-sticky-pub__sub">Les associations militantes ont rarement les budgets d'un développeur. On a donc conçu <strong>AG Starter Association</strong> avec toutes les fonctions premium (pages, calendrier, dons, AG en visio, espace adhérent…) — <strong style="color:#FFD23F;">offert sans contrepartie</strong> aux mouvements citoyens, syndicats et associations loi 1901.</p>
+        <div class="ag-asso-sticky-pub__actions">
+            <a href="https://alliancegroupe-inc.com/wordpress-association" target="_blank" rel="noopener" class="ag-asso-sticky-pub__cta-primary">⚡ Télécharger gratuitement</a>
+            <a href="https://alliancegroupe-inc.com/templates-wordpress" target="_blank" rel="noopener" class="ag-asso-sticky-pub__cta-secondary">Découvrir les autres →</a>
+        </div>
+        <p class="ag-asso-sticky-pub__credit">🚀 Fièrement créé par <strong>Alliance Groupe</strong> 💎</p>
+    </div>
 </aside>
+<script>
+(function () {
+    var pub = document.getElementById('agAssoStickyPub');
+    if (!pub) return;
+    var btn   = pub.querySelector('.ag-asso-sticky-pub__toggle');
+    var panel = pub.querySelector('.ag-asso-sticky-pub__panel');
+    function toggle(force) {
+        var open = (typeof force === 'boolean') ? force : !pub.classList.contains('is-open');
+        pub.classList.toggle('is-open', open);
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        panel.hidden = !open;
+    }
+    btn.addEventListener('click', function () { toggle(); });
+    pub.querySelectorAll('[data-pub-close]').forEach(function (b) {
+        b.addEventListener('click', function () { toggle(false); });
+    });
+    document.addEventListener('click', function (e) {
+        if (!pub.contains(e.target) && pub.classList.contains('is-open')) toggle(false);
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && pub.classList.contains('is-open')) toggle(false);
+    });
+})();
+</script>
 
 <?php // Bouton retour haut de page (apparait apres 400px de scroll) ?>
 <button type="button" class="ag-asso-backtop" id="agAssoBackTop" aria-label="<?php esc_attr_e( 'Retour en haut', 'ag-starter-association' ); ?>" hidden>
@@ -142,7 +183,7 @@
     setTimeout(function () {
         pop.hidden = false;
         document.body.classList.add('ag-asso-welcome-open');
-    }, 60000);
+    }, 10000);
     function close() {
         pop.hidden = true;
         document.body.classList.remove('ag-asso-welcome-open');
