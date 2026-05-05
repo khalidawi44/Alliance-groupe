@@ -20,7 +20,36 @@ class AG_Fid_Recommendations {
 		add_action( 'admin_notices', array( $this, 'maybe_show_notice' ) );
 		add_action( 'admin_init',    array( $this, 'maybe_dismiss' ) );
 		add_action( 'admin_init',    array( $this, 'maybe_run_setup' ) );
+		add_action( 'admin_init',    array( $this, 'maybe_install_all' ) );
 		add_action( 'admin_menu',    array( $this, 'register_page' ) );
+	}
+
+	public function maybe_install_all() {
+		if ( empty( $_GET['ag_fid_install_all'] ) || ! current_user_can( 'install_plugins' ) ) return;
+		if ( ! wp_verify_nonce( $_GET['_wpnonce'] ?? '', 'ag_fid_install_all' ) ) return;
+
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/misc.php';
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+		require_once ABSPATH . 'wp-admin/includes/class-automatic-upgrader-skin.php';
+
+		$installed = $skipped = $failed = 0;
+		foreach ( $this->get_recos() as $reco ) {
+			if ( $this->is_installed( $reco['slug'] ) ) { $skipped++; continue; }
+			$api = plugins_api( 'plugin_information', array(
+				'slug'   => $reco['slug'],
+				'fields' => array( 'sections' => false, 'short_description' => false ),
+			) );
+			if ( is_wp_error( $api ) || empty( $api->download_link ) ) { $failed++; continue; }
+			$upgrader = new Plugin_Upgrader( new Automatic_Upgrader_Skin() );
+			$result   = $upgrader->install( $api->download_link );
+			if ( is_wp_error( $result ) || ! $result ) { $failed++; } else { $installed++; }
+		}
+		set_transient( 'ag_fid_install_summary', compact( 'installed', 'skipped', 'failed' ), 60 );
+		wp_safe_redirect( add_query_arg( 'ag_fid_installed', '1', remove_query_arg( array( 'ag_fid_install_all', '_wpnonce' ) ) ) );
+		exit;
 	}
 
 	public function maybe_run_setup() {
@@ -181,6 +210,22 @@ class AG_Fid_Recommendations {
 			<?php if ( ! empty( $_GET['ag_fid_done'] ) ) : ?>
 				<div class="notice notice-success"><p><strong>Setup terminé.</strong> Pages, rôles et permaliens ont été créés. Va voir tes pages dans <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=page' ) ); ?>">Pages</a>.</p></div>
 			<?php endif; ?>
+
+			<?php if ( ! empty( $_GET['ag_fid_installed'] ) ) :
+				$s = get_transient( 'ag_fid_install_summary' );
+				if ( $s ) : ?>
+					<div class="notice notice-success"><p><strong>Installation extensions terminée.</strong> Installées : <?php echo (int) $s['installed']; ?> · Déjà présentes : <?php echo (int) $s['skipped']; ?> · Échecs : <?php echo (int) $s['failed']; ?>. Active-les depuis <a href="<?php echo esc_url( admin_url( 'plugins.php' ) ); ?>">Extensions</a>.</p></div>
+				<?php endif;
+			endif; ?>
+
+			<div style="margin:18px 0;padding:18px;background:#fff;border-left:4px solid #2271b1;">
+				<h2 style="margin-top:0;">Installer toutes les extensions recommandées en 1 clic</h2>
+				<p>Télécharge et installe automatiquement les <strong>13 extensions</strong> recommandées (Paid Memberships Pro, GiveWP, MailPoet, WPForms, The Events Calendar, Polylang, Yoast SEO, CookieYes, Wordfence, UpdraftPlus, Leaflet Map, WP-Polls, WP Simple Pay). Tu pourras les activer ensuite une à une depuis la page Extensions.</p>
+				<p>
+					<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=ag-fid-recommendations&ag_fid_install_all=1' ), 'ag_fid_install_all' ) ); ?>" class="button button-primary button-large" onclick="return confirm('Cela va télécharger et installer 13 extensions depuis WordPress.org. Continuer ?');">Installer les 13 extensions recommandées</a>
+				</p>
+				<p><small>Idempotent : les extensions déjà installées sont sautées. Aucune ne sera activée automatiquement (sécurité).</small></p>
+			</div>
 
 			<div style="margin:18px 0;padding:18px;background:#fff;border-left:4px solid #28a745;">
 				<h2 style="margin-top:0;">Configuration initiale</h2>
