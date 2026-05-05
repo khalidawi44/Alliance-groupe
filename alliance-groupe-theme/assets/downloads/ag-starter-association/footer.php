@@ -15,9 +15,13 @@
     <div class="ag-asso-footer__inner">
         <div class="ag-asso-footer__col">
             <?php if ( $logo_footer = ag_asso_opt( 'ag_asso_logo_footer', '' ) ) : ?>
-                <img class="ag-asso-footer__logo" src="<?php echo esc_url( $logo_footer ); ?>" alt="<?php echo esc_attr( ag_asso_opt( 'ag_asso_name', '' ) ); ?>">
+                <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="ag-asso-footer__logolink">
+                    <img class="ag-asso-footer__logo" src="<?php echo esc_url( $logo_footer ); ?>" alt="<?php echo esc_attr( ag_asso_opt( 'ag_asso_name', '' ) ); ?>">
+                </a>
             <?php endif; ?>
-            <div class="ag-asso-footer__name"><?php echo esc_html( ag_asso_opt( 'ag_asso_name', '[Mouvement]' ) ); ?></div>
+            <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="ag-asso-footer__namelink">
+                <span class="ag-asso-footer__name"><?php echo esc_html( ag_asso_opt( 'ag_asso_name', '[Mouvement]' ) ); ?></span>
+            </a>
             <p class="ag-asso-footer__slogan"><?php echo esc_html( ag_asso_opt( 'ag_asso_baseline', ag_asso_opt( 'ag_asso_slogan', '[Slogan]' ) ) ); ?></p>
             <?php
             $socials = array(
