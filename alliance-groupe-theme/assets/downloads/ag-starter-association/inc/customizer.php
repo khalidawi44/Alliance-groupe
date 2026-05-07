@@ -133,6 +133,24 @@ function ag_asso_customize( $wp_customize ) {
 		) );
 	}
 
+	// Images de fond des bandeaux parallax (4 sections)
+	$parallax_imgs = array(
+		'ag_asso_parallax_manifeste_image'  => 'Image fond — bandeau manifeste',
+		'ag_asso_parallax_combats_image'    => 'Image fond — bandeau combats',
+		'ag_asso_parallax_evenements_image' => 'Image fond — bandeau événements',
+		'ag_asso_parallax_don_image'        => 'Image fond — bandeau don',
+	);
+	foreach ( $parallax_imgs as $key => $label ) {
+		$wp_customize->add_setting( $key, array(
+			'default'           => '',
+			'sanitize_callback' => 'esc_url_raw',
+		) );
+		$wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, $key, array(
+			'label'   => $label,
+			'section' => 'ag_asso_home_content',
+		) ) );
+	}
+
 	// =====================================================================
 	// Identite
 	// =====================================================================

@@ -62,7 +62,8 @@ get_header();
     </section>
 
     <!-- Parallax manifeste -->
-    <section class="ag-asso-parallax ag-asso-parallax--manifeste">
+    <?php $parallax_manifeste_img = ag_asso_opt( 'ag_asso_parallax_manifeste_image', '' ); ?>
+    <section class="ag-asso-parallax ag-asso-parallax--manifeste"<?php if ( $parallax_manifeste_img ) echo ' style="background-image:linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.55)),url(' . esc_url( $parallax_manifeste_img ) . ');"'; ?>>
         <h2 class="ag-asso-parallax__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_parallax_manifeste_title', 'Notre vision' ) ); ?></h2>
         <p class="ag-asso-parallax__text"><?php echo esc_html( ag_asso_opt( 'ag_asso_parallax_manifeste_text', 'Une société plus juste, plus solidaire — c\'est notre combat quotidien.' ) ); ?></p>
     </section>
@@ -98,7 +99,8 @@ get_header();
 
     <?php if ( ag_asso_opt( 'ag_asso_show_combats', 1 ) ) : ?>
     <!-- Parallax combats -->
-    <section class="ag-asso-parallax ag-asso-parallax--combats">
+    <?php $parallax_combats_img = ag_asso_opt( 'ag_asso_parallax_combats_image', '' ); ?>
+    <section class="ag-asso-parallax ag-asso-parallax--combats"<?php if ( $parallax_combats_img ) echo ' style="background-image:linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.55)),url(' . esc_url( $parallax_combats_img ) . ');"'; ?>>
         <h2 class="ag-asso-parallax__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_parallax_combats_title', 'Nos combats' ) ); ?></h2>
         <p class="ag-asso-parallax__text"><?php echo esc_html( ag_asso_opt( 'ag_asso_parallax_combats_text', 'Des actions concrètes, sur le terrain, partout en France.' ) ); ?></p>
     </section>
@@ -159,7 +161,8 @@ get_header();
 
     <?php if ( ag_asso_opt( 'ag_asso_show_evenements', 1 ) ) : ?>
     <!-- Parallax événements -->
-    <section class="ag-asso-parallax ag-asso-parallax--evenements">
+    <?php $parallax_evenements_img = ag_asso_opt( 'ag_asso_parallax_evenements_image', '' ); ?>
+    <section class="ag-asso-parallax ag-asso-parallax--evenements"<?php if ( $parallax_evenements_img ) echo ' style="background-image:linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.55)),url(' . esc_url( $parallax_evenements_img ) . ');"'; ?>>
         <h2 class="ag-asso-parallax__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_parallax_evenements_title', 'Mobilisations' ) ); ?></h2>
         <p class="ag-asso-parallax__text"><?php echo esc_html( ag_asso_opt( 'ag_asso_parallax_evenements_text', 'Marches, meetings, actions — rejoignez-nous sur le terrain.' ) ); ?></p>
     </section>
@@ -339,7 +342,8 @@ get_header();
 
     <?php if ( ag_asso_opt( 'ag_asso_show_don', 1 ) ) : ?>
     <!-- Parallax don -->
-    <section class="ag-asso-parallax ag-asso-parallax--don">
+    <?php $parallax_don_img = ag_asso_opt( 'ag_asso_parallax_don_image', '' ); ?>
+    <section class="ag-asso-parallax ag-asso-parallax--don"<?php if ( $parallax_don_img ) echo ' style="background-image:linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.55)),url(' . esc_url( $parallax_don_img ) . ');"'; ?>>
         <h2 class="ag-asso-parallax__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_parallax_don_title', 'Soutenir le mouvement' ) ); ?></h2>
         <p class="ag-asso-parallax__text"><?php echo esc_html( ag_asso_opt( 'ag_asso_parallax_don_text', 'Chaque don nous donne plus de moyens d\'action.' ) ); ?></p>
     </section>
