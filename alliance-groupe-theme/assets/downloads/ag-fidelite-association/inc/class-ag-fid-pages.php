@@ -20,7 +20,7 @@ class AG_Fid_Pages {
 
 	public static function create_default_pages() {
 		$pages = array(
-			'accueil'      => array( 'title' => 'Accueil',             'content' => '' ),
+			'accueil'      => array( 'title' => 'Accueil',             'content' => self::default_home_content() ),
 			'qui-sommes-nous' => array( 'title' => 'Qui sommes-nous',  'shortcode' => '[ag_fid_qui_sommes_nous]' ),
 			'reunion'      => array( 'title' => 'Réunion en ligne',    'shortcode' => '[ag_fid_visio]' ),
 			'rendez-vous'  => array( 'title' => 'Prendre rendez-vous', 'shortcode' => '[ag_fid_rdv]' ),
@@ -47,6 +47,12 @@ class AG_Fid_Pages {
 				if ( $slug === 'accueil' && strpos( $existing->post_content, 'Cette zone est éditable depuis' ) !== false ) {
 					wp_update_post( array( 'ID' => $existing->ID, 'post_content' => '' ) );
 				}
+				// Premier seed des blocs Gutenberg dans l'accueil si la page
+				// est vide (utilisateurs qui ont active la version <0.25 puis
+				// upgrade : on leur injecte les blocs editables maintenant).
+				if ( $slug === 'accueil' && trim( $existing->post_content ) === '' ) {
+					wp_update_post( array( 'ID' => $existing->ID, 'post_content' => self::default_home_content() ) );
+				}
 				continue;
 			}
 			wp_insert_post( array(
@@ -65,6 +71,264 @@ class AG_Fid_Pages {
 		}
 		self::create_default_menus();
 		self::create_default_cpts();
+	}
+
+	/**
+	 * Contenu par defaut de la page d'accueil, en blocs Gutenberg.
+	 * L'utilisateur modifie tout via Pages > Accueil sans coder.
+	 * Si cette page contient du contenu, front-page.php l'affiche
+	 * a la place des sections PHP hardcodees.
+	 */
+	public static function default_home_content() {
+		return <<<'HTML'
+<!-- wp:cover {"overlayColor":"black","minHeight":420,"contentPosition":"center center","align":"full","style":{"spacing":{"padding":{"top":"60px","bottom":"60px"}}}} -->
+<div class="wp-block-cover alignfull" style="padding-top:60px;padding-bottom:60px;min-height:420px"><span aria-hidden="true" class="wp-block-cover__background has-black-background-color has-background-dim-100 has-background-dim"></span><div class="wp-block-cover__inner-container">
+<!-- wp:heading {"textAlign":"center","level":1,"style":{"typography":{"fontSize":"3rem","lineHeight":"1.1"},"color":{"text":"#ffffff"}}} -->
+<h1 class="wp-block-heading has-text-align-center has-text-color" style="color:#ffffff;font-size:3rem;line-height:1.1">Pour une société plus juste, écologique et démocratique</h1>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"align":"center","style":{"color":{"text":"#ffffff"},"typography":{"fontSize":"1.25rem"}}} -->
+<p class="has-text-align-center has-text-color" style="color:#ffffff;font-size:1.25rem">Notre mouvement rassemble des citoyennes et citoyens engagés pour transformer la société, pas à pas, ensemble.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+<div class="wp-block-buttons">
+<!-- wp:button {"backgroundColor":"vivid-red","textColor":"white","style":{"border":{"radius":"8px"}}} -->
+<div class="wp-block-button"><a class="wp-block-button__link has-white-color has-vivid-red-background-color has-text-color has-background wp-element-button" href="/signer/" style="border-radius:8px">Rejoindre le mouvement</a></div>
+<!-- /wp:button -->
+
+<!-- wp:button {"textColor":"white","style":{"border":{"radius":"8px","width":"2px"},"color":{"background":"transparent"}},"borderColor":"white"} -->
+<div class="wp-block-button"><a class="wp-block-button__link has-white-color has-text-color has-background has-border-color has-white-border-color wp-element-button" href="/don/" style="border-width:2px;border-radius:8px;background-color:transparent">Faire un don</a></div>
+<!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div></div>
+<!-- /wp:cover -->
+
+<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"80px","bottom":"80px","left":"24px","right":"24px"}}},"layout":{"type":"constrained","contentSize":"1100px"}} -->
+<div class="wp-block-group alignfull" style="padding-top:80px;padding-right:24px;padding-bottom:80px;padding-left:24px">
+<!-- wp:heading {"textAlign":"center","level":2,"style":{"typography":{"fontSize":"2.25rem"}}} -->
+<h2 class="wp-block-heading has-text-align-center" style="font-size:2.25rem">Notre <em>manifeste</em></h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"1.1rem"},"color":{"text":"#666"}}} -->
+<p class="has-text-align-center has-text-color" style="color:#666;font-size:1.1rem">Nous croyons qu'une autre société est possible — plus juste, plus écologique, plus démocratique. Voici nos engagements.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Nous sommes des citoyennes et des citoyens. Pas un parti. Pas un syndicat. Un mouvement, ouvert et indépendant, qui croit qu'une autre société est possible.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>La République promet l'égalité. Elle livre la précarité. Les services publics sont méthodiquement démantelés. Le climat se dérègle. Nous voulons changer cela.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Indépendance, démocratie interne, action concrète, bienveillance</strong> : voilà nos principes. Nous ne vivons que des cotisations et des dons de nos adhérent·es.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+<div class="wp-block-buttons">
+<!-- wp:button {"backgroundColor":"vivid-red","textColor":"white"} -->
+<div class="wp-block-button"><a class="wp-block-button__link has-white-color has-vivid-red-background-color has-text-color has-background wp-element-button" href="/manifeste/">Lire le manifeste complet →</a></div>
+<!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+
+<!-- wp:group {"align":"full","backgroundColor":"pale-pink","style":{"spacing":{"padding":{"top":"80px","bottom":"80px","left":"24px","right":"24px"}}},"layout":{"type":"constrained","contentSize":"1100px"}} -->
+<div class="wp-block-group alignfull has-pale-pink-background-color has-background" style="padding-top:80px;padding-right:24px;padding-bottom:80px;padding-left:24px">
+<!-- wp:heading {"textAlign":"center","level":2,"style":{"typography":{"fontSize":"2.25rem"}}} -->
+<h2 class="wp-block-heading has-text-align-center" style="font-size:2.25rem">Nos <em>combats</em></h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"1.1rem"},"color":{"text":"#666"}}} -->
+<p class="has-text-align-center has-text-color" style="color:#666;font-size:1.1rem">Six grandes campagnes que nous portons cette année, sur le terrain et dans les institutions.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:columns -->
+<div class="wp-block-columns">
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:heading {"level":3} --><h3 class="wp-block-heading">🌍 Justice climatique</h3><!-- /wp:heading -->
+<!-- wp:paragraph --><p>Pour une transition écologique qui ne pèse pas sur les plus modestes.</p><!-- /wp:paragraph -->
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:heading {"level":3} --><h3 class="wp-block-heading">🏠 Logement digne</h3><!-- /wp:heading -->
+<!-- wp:paragraph --><p>Plafonnement effectif des loyers, réquisition des logements vacants.</p><!-- /wp:paragraph -->
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:heading {"level":3} --><h3 class="wp-block-heading">🏥 Service public fort</h3><!-- /wp:heading -->
+<!-- wp:paragraph --><p>Refonder l'hôpital, l'école, les transports publics.</p><!-- /wp:paragraph -->
+</div>
+<!-- /wp:column -->
+</div>
+<!-- /wp:columns -->
+
+<!-- wp:columns -->
+<div class="wp-block-columns">
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:heading {"level":3} --><h3 class="wp-block-heading">🗳️ Démocratie réelle</h3><!-- /wp:heading -->
+<!-- wp:paragraph --><p>RIC, assemblées tirées au sort, reconnaissance du vote blanc.</p><!-- /wp:paragraph -->
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:heading {"level":3} --><h3 class="wp-block-heading">🔍 Transparence publique</h3><!-- /wp:heading -->
+<!-- wp:paragraph --><p>Open data, traçabilité des marchés publics, registre des lobbies.</p><!-- /wp:paragraph -->
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:heading {"level":3} --><h3 class="wp-block-heading">⚖️ Égalité réelle</h3><!-- /wp:heading -->
+<!-- wp:paragraph --><p>Lutte contre toutes les discriminations.</p><!-- /wp:paragraph -->
+</div>
+<!-- /wp:column -->
+</div>
+<!-- /wp:columns -->
+
+<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+<div class="wp-block-buttons">
+<!-- wp:button --><div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/combats/">Tous nos combats →</a></div><!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+
+<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"80px","bottom":"80px","left":"24px","right":"24px"}}},"layout":{"type":"constrained","contentSize":"1100px"}} -->
+<div class="wp-block-group alignfull" style="padding-top:80px;padding-right:24px;padding-bottom:80px;padding-left:24px">
+<!-- wp:heading {"textAlign":"center","level":2,"style":{"typography":{"fontSize":"2.25rem"}}} -->
+<h2 class="wp-block-heading has-text-align-center" style="font-size:2.25rem">Prochains <em>événements</em></h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"1.1rem"},"color":{"text":"#666"}}} -->
+<p class="has-text-align-center has-text-color" style="color:#666;font-size:1.1rem">Marches, meetings, AG, débats publics — venez nous rencontrer près de chez vous.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[ag_fid_evenements limit="3"]
+<!-- /wp:shortcode -->
+
+<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+<div class="wp-block-buttons">
+<!-- wp:button --><div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/evenements/">📅 Tous les événements + calendrier</a></div><!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+
+<!-- wp:group {"align":"full","backgroundColor":"pale-pink","style":{"spacing":{"padding":{"top":"80px","bottom":"80px","left":"24px","right":"24px"}}},"layout":{"type":"constrained","contentSize":"1100px"}} -->
+<div class="wp-block-group alignfull has-pale-pink-background-color has-background" style="padding-top:80px;padding-right:24px;padding-bottom:80px;padding-left:24px">
+<!-- wp:heading {"textAlign":"center","level":2,"style":{"typography":{"fontSize":"2.25rem"}}} -->
+<h2 class="wp-block-heading has-text-align-center" style="font-size:2.25rem">Trouver mon <em>groupe local</em></h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"align":"center"} -->
+<p class="has-text-align-center">47 groupes locaux actifs partout en France. Pas de groupe près de chez vous ? <a href="/groupes/">Créez le vôtre</a> — nous vous accompagnons.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+<div class="wp-block-buttons">
+<!-- wp:button --><div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/groupes/">Voir tous les groupes →</a></div><!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+
+<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"80px","bottom":"80px","left":"24px","right":"24px"}}},"layout":{"type":"constrained","contentSize":"1100px"}} -->
+<div class="wp-block-group alignfull" style="padding-top:80px;padding-right:24px;padding-bottom:80px;padding-left:24px">
+<!-- wp:heading {"textAlign":"center","level":2,"style":{"typography":{"fontSize":"2.25rem"}}} -->
+<h2 class="wp-block-heading has-text-align-center" style="font-size:2.25rem">Dernières <em>actualités</em></h2>
+<!-- /wp:heading -->
+
+<!-- wp:latest-posts {"postsToShow":3,"displayPostContentRadio":"excerpt","displayPostDate":true,"postLayout":"grid","columns":3,"align":"wide"} /-->
+
+<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+<div class="wp-block-buttons">
+<!-- wp:button --><div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/actu/">Toutes les actualités →</a></div><!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+
+<!-- wp:group {"align":"full","backgroundColor":"vivid-red","textColor":"white","style":{"spacing":{"padding":{"top":"80px","bottom":"80px","left":"24px","right":"24px"}}},"layout":{"type":"constrained","contentSize":"800px"}} -->
+<div class="wp-block-group alignfull has-white-color has-vivid-red-background-color has-text-color has-background" style="padding-top:80px;padding-right:24px;padding-bottom:80px;padding-left:24px">
+<!-- wp:heading {"textAlign":"center","level":2,"style":{"typography":{"fontSize":"2.25rem"}}} -->
+<h2 class="wp-block-heading has-text-align-center" style="font-size:2.25rem">Signez <em>l'appel</em></h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"1.1rem"}}} -->
+<p class="has-text-align-center" style="font-size:1.1rem">Pour une société plus juste, écologique et démocratique. Signer, c'est s'engager à recevoir nos appels et à les relayer.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+<div class="wp-block-buttons">
+<!-- wp:button {"backgroundColor":"white","textColor":"vivid-red","style":{"typography":{"fontSize":"1.15rem"}}} -->
+<div class="wp-block-button has-custom-font-size" style="font-size:1.15rem"><a class="wp-block-button__link has-vivid-red-color has-white-background-color has-text-color has-background wp-element-button" href="/signer/">Je signe l'appel</a></div>
+<!-- /wp:button -->
+</div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+
+<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"80px","bottom":"80px","left":"24px","right":"24px"}}},"layout":{"type":"constrained","contentSize":"1100px"}} -->
+<div class="wp-block-group alignfull" style="padding-top:80px;padding-right:24px;padding-bottom:80px;padding-left:24px">
+<!-- wp:heading {"textAlign":"center","level":2,"style":{"typography":{"fontSize":"2.25rem"}}} -->
+<h2 class="wp-block-heading has-text-align-center" style="font-size:2.25rem">Faire un <em>don</em></h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"1.1rem"},"color":{"text":"#666"}}} -->
+<p class="has-text-align-center has-text-color" style="color:#666;font-size:1.1rem">Indépendants des partis et des grands donateurs, nous ne tenons que par vous. 66% de votre don est déductible de vos impôts.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:columns {"style":{"spacing":{"blockGap":{"top":"16px","left":"16px"}}}} -->
+<div class="wp-block-columns">
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+<div class="wp-block-buttons"><!-- wp:button {"width":100} --><div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link wp-element-button" href="/don/">5€<br><small>(coût réel : 1,70€)</small></a></div><!-- /wp:button --></div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+<div class="wp-block-buttons"><!-- wp:button {"width":100} --><div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link wp-element-button" href="/don/">20€<br><small>(coût réel : 6,80€)</small></a></div><!-- /wp:button --></div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+<div class="wp-block-buttons"><!-- wp:button {"width":100} --><div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link wp-element-button" href="/don/">50€<br><small>(coût réel : 17€)</small></a></div><!-- /wp:button --></div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:column -->
+
+<!-- wp:column -->
+<div class="wp-block-column">
+<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+<div class="wp-block-buttons"><!-- wp:button {"width":100} --><div class="wp-block-button has-custom-width wp-block-button__width-100"><a class="wp-block-button__link wp-element-button" href="/don/">Libre</a></div><!-- /wp:button --></div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:column -->
+</div>
+<!-- /wp:columns -->
+</div>
+<!-- /wp:group -->
+HTML;
 	}
 
 	/**

@@ -9,22 +9,33 @@
 get_header();
 ?>
 
+<?php
+// MODE GUTENBERG : si la page d'accueil a du contenu (le Pack Fidelite
+// le populate avec des blocs editables a l'activation), on rend
+// uniquement ce contenu — l'utilisateur edite tout via Pages > Accueil
+// avec l'editeur de blocs WP (zero code).
+//
+// Si la page est vide, on retombe sur les sections PHP par defaut
+// (utile pour les sites sans le Pack Fidelite, ou avant activation).
+$ag_asso_has_gutenberg = false;
+if ( have_posts() ) {
+    while ( have_posts() ) {
+        the_post();
+        if ( strlen( trim( wp_strip_all_tags( get_the_content() ) ) ) > 80 ) {
+            $ag_asso_has_gutenberg = true;
+        }
+    }
+    rewind_posts();
+}
+?>
+
 <main id="main">
 
-    <?php // Zone editable : contenu de la page WP definie comme accueil
-    // (Reglages > Lecture > Page d'accueil = une page). Permet aux
-    // utilisateurs de modifier l'accueil via l'editeur WP standard
-    // sans toucher au theme. Si vide, on saute directement aux sections.
-    if ( have_posts() ) : while ( have_posts() ) : the_post();
-        $custom = trim( get_the_content() );
-        if ( $custom ) : ?>
-            <section class="ag-asso-section ag-asso-custom" style="padding:60px 24px;">
-                <div class="ag-asso-container ag-asso-custom__inner">
-                    <?php the_content(); ?>
-                </div>
-            </section>
-        <?php endif;
-    endwhile; rewind_posts(); endif; ?>
+    <?php if ( $ag_asso_has_gutenberg ) : ?>
+        <article class="ag-asso-gutenberg-home">
+            <?php while ( have_posts() ) : the_post(); the_content(); endwhile; ?>
+        </article>
+    <?php else : // Fallback : sections PHP hardcodees ?>
 
     <!-- Hero -->
     <section class="ag-asso-hero">
@@ -361,6 +372,8 @@ get_header();
         </div>
     </section>
     <?php endif; // /don ?>
+
+    <?php endif; // /fallback PHP sections ?>
 
 </main>
 

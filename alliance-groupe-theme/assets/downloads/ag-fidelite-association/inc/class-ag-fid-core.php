@@ -21,8 +21,30 @@ class AG_Fid_Core {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ), 30 );
 		add_action( 'customize_register', array( $this, 'register_customizer' ), 30 );
 		add_action( 'admin_init',         array( $this, 'maybe_auto_reseed' ) );
+		add_action( 'admin_init',         array( $this, 'maybe_regenerate_home' ) );
 		add_action( 'admin_notices',      array( $this, 'maybe_show_update_notice' ) );
 		add_action( 'wp_dashboard_setup', array( $this, 'add_dashboard_widget' ) );
+	}
+
+	/**
+	 * Bouton admin : "Regenerer l'accueil avec les blocs Gutenberg".
+	 * Ecrase le contenu de la page Accueil avec le default a jour, puis
+	 * redirige vers l'editeur de la page (ou l'utilisateur peut tout modifier).
+	 */
+	public function maybe_regenerate_home() {
+		if ( empty( $_GET['ag_fid_regen_home'] ) || ! current_user_can( 'manage_options' ) ) return;
+		check_admin_referer( 'ag_fid_regen_home' );
+		$home = get_page_by_path( 'accueil' );
+		if ( $home ) {
+			wp_update_post( array(
+				'ID'           => $home->ID,
+				'post_content' => AG_Fid_Pages::default_home_content(),
+			) );
+			wp_safe_redirect( get_edit_post_link( $home->ID, 'raw' ) . '&ag_fid_home_regen=1' );
+			exit;
+		}
+		wp_safe_redirect( admin_url( 'edit.php?post_type=page&ag_fid_home_regen_fail=1' ) );
+		exit;
 	}
 
 	/**
@@ -173,10 +195,12 @@ class AG_Fid_Core {
 		<div class="ag-fid-help">
 			<p><strong>Bienvenue !</strong> Voici les 4 endroits où modifier votre site :</p>
 
-			<h4>🏠 1. Page d'accueil</h4>
+			<h4>🏠 1. Page d'accueil — 100% Gutenberg, 100% éditable</h4>
 			<ul>
-				<li><a href="<?php echo esc_url( $home_id ? get_edit_post_link( $home_id ) : admin_url( 'edit.php?post_type=page' ) ); ?>">Pages → Accueil</a> : éditez librement avec Gutenberg (texte, images, blocs)</li>
-				<li>Si vous laissez vide : seules les sections automatiques apparaissent</li>
+				<li><a href="<?php echo esc_url( $home_id ? get_edit_post_link( $home_id ) : admin_url( 'edit.php?post_type=page' ) ); ?>"><strong>Pages → Accueil</strong></a> : ouvrez l'éditeur de blocs et changez TOUT (textes, titres, images, boutons, ordre des sections)</li>
+				<li>Hero, manifeste, combats, événements, dons : chaque section est un bloc déplaçable / supprimable / modifiable</li>
+				<li>Si la page est vide → les sections par défaut du thème s'affichent en fallback</li>
+				<li><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?ag_fid_regen_home=1' ), 'ag_fid_regen_home' ) ); ?>" onclick="return confirm('Cela va ECRASER le contenu actuel de la page Accueil avec les blocs par defaut. Continuer ?');" style="color:#E10F1A;font-weight:600;">🔄 Régénérer l'accueil avec les blocs par défaut</a> (utile si vous avez tout cassé)</li>
 			</ul>
 
 			<h4>🎨 2. Apparence du site (couleurs, typo, logo, sections)</h4>
