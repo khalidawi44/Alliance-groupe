@@ -24,7 +24,7 @@ class AG_Fid_Pages {
 			'qui-sommes-nous' => array( 'title' => 'Qui sommes-nous',  'shortcode' => '[ag_fid_qui_sommes_nous]' ),
 			'reunion'      => array( 'title' => 'Réunion en ligne',    'shortcode' => '[ag_fid_visio]' ),
 			'rendez-vous'  => array( 'title' => 'Prendre rendez-vous', 'shortcode' => '[ag_fid_rdv]' ),
-			'manifeste'    => array( 'title' => 'Manifeste',           'shortcode' => '[ag_fid_manifeste]' ),
+			'manifeste'    => array( 'title' => 'Manifeste',           'content'   => self::default_manifeste_content() ),
 			'combats'      => array( 'title' => 'Nos combats',         'shortcode' => '[ag_fid_combats]' ),
 			'evenements'   => array( 'title' => 'Événements',          'shortcode' => '[ag_fid_evenements]' ),
 			'groupes'      => array( 'title' => 'Groupes locaux',      'shortcode' => '[ag_fid_groupes]' ),
@@ -34,8 +34,8 @@ class AG_Fid_Pages {
 			'don'          => array( 'title' => 'Faire un don',        'shortcode' => '[ag_fid_don]' ),
 			'adherer'      => array( 'title' => 'Adhérer',             'shortcode' => '[ag_fid_adhesion]' ),
 			'mon-compte'   => array( 'title' => 'Mon espace',          'shortcode' => '[ag_fid_compte]' ),
-			'mentions'     => array( 'title' => 'Mentions légales',    'shortcode' => '[ag_fid_mentions]' ),
-			'rgpd'         => array( 'title' => 'Confidentialité',     'shortcode' => '[ag_fid_rgpd]' ),
+			'mentions'     => array( 'title' => 'Mentions légales',    'content'   => '<!-- wp:html --><p><em>Cette page est générée automatiquement à partir des informations saisies dans <strong>Apparence → Personnaliser → Pack Fidélité</strong>. Vous pouvez aussi remplacer ce shortcode par votre propre texte.</em></p>[ag_fid_mentions]<!-- /wp:html -->' ),
+			'rgpd'         => array( 'title' => 'Confidentialité',     'content'   => '<!-- wp:html --><p><em>Politique de confidentialité auto-générée. Modifiable directement ici (remplacez le shortcode ci-dessous par votre propre texte si besoin).</em></p>[ag_fid_rgpd]<!-- /wp:html -->' ),
 			'statuts'      => array( 'title' => 'Statuts',             'content'   => self::default_statuts_content() ),
 		);
 		foreach ( $pages as $slug => $page ) {
@@ -56,6 +56,13 @@ class AG_Fid_Pages {
 		}
 		self::create_default_menus();
 		self::create_default_cpts();
+	}
+
+	/**
+	 * Manifeste editable Gutenberg (au lieu d'un shortcode hardcode).
+	 */
+	private static function default_manifeste_content() {
+		return "<!-- wp:paragraph -->\n<p><strong>Nous sommes des citoyennes et des citoyens.</strong> Pas un parti. Pas un syndicat. Un mouvement, ouvert et indépendant, qui croit qu'une autre société est possible — plus juste, plus écologique, plus démocratique.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>Notre constat</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>La République promet l'égalité. Elle livre la précarité. Le mérite y est devenu un mirage : la naissance pèse plus que le travail. Les services publics, qui faisaient la fierté du pays, sont méthodiquement démantelés. Le climat se dérègle, et les solutions arrivent par décret au lieu de naître du débat.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>Nos principes</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul><li><strong>Indépendance.</strong> Aucun parti, aucun lobby, aucun grand donateur. Nous vivons des cotisations et des dons des adhérents.</li><li><strong>Démocratie interne.</strong> Toutes les décisions importantes sont votées en assemblée générale. Les statuts sont publics, les comptes aussi.</li><li><strong>Action concrète.</strong> Nous menons des campagnes thématiques mesurables, avec des objectifs chiffrés et des bilans publics.</li><li><strong>Bienveillance.</strong> Nous combattons les idées, jamais les personnes. Aucun racisme, aucun sexisme, aucune homophobie ne sont tolérés dans nos rangs.</li></ul>\n<!-- /wp:list -->\n\n<!-- wp:heading -->\n<h2>Nos priorités 2026</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list {\"ordered\":true} -->\n<ol><li>Justice climatique pour tou·tes — y compris les plus modestes.</li><li>Logement digne et abordable, partout, pour tout le monde.</li><li>Refondation des services publics — santé, école, transports, énergie.</li><li>Démocratie permanente — RIC, assemblées tirées au sort, transparence.</li><li>Égalité réelle — femmes/hommes, origines, handicaps, orientations.</li><li>Souveraineté citoyenne — sortir de l'emprise des géants du numérique.</li></ol>\n<!-- /wp:list -->";
 	}
 
 	/**
