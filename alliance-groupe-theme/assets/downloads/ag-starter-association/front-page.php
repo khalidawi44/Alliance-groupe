@@ -63,8 +63,8 @@ get_header();
 
     <!-- Parallax manifeste -->
     <section class="ag-asso-parallax ag-asso-parallax--manifeste">
-        <h2 class="ag-asso-parallax__title">Notre vision</h2>
-        <p class="ag-asso-parallax__text">Une société plus juste, plus solidaire — c'est notre combat quotidien.</p>
+        <h2 class="ag-asso-parallax__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_parallax_manifeste_title', 'Notre vision' ) ); ?></h2>
+        <p class="ag-asso-parallax__text"><?php echo esc_html( ag_asso_opt( 'ag_asso_parallax_manifeste_text', 'Une société plus juste, plus solidaire — c\'est notre combat quotidien.' ) ); ?></p>
     </section>
 
     <!-- Manifeste -->
@@ -89,7 +89,7 @@ get_header();
                 ?>
             </div>
             <p style="text-align:center;margin-top:24px;">
-                <a class="ag-asso-btn ag-asso-btn--primary" href="<?php echo esc_url( ag_asso_link( 'manifeste' ) ); ?>">Lire le manifeste complet →</a>
+                <a class="ag-asso-btn ag-asso-btn--primary" href="<?php echo esc_url( ag_asso_link( 'manifeste' ) ); ?>"><?php echo esc_html( ag_asso_opt( 'ag_asso_manifeste_btn_label', 'Lire le manifeste complet →' ) ); ?></a>
             </p>
         </div>
     </section>
@@ -99,14 +99,14 @@ get_header();
     <?php if ( ag_asso_opt( 'ag_asso_show_combats', 1 ) ) : ?>
     <!-- Parallax combats -->
     <section class="ag-asso-parallax ag-asso-parallax--combats">
-        <h2 class="ag-asso-parallax__title">Nos combats</h2>
-        <p class="ag-asso-parallax__text">Des actions concrètes, sur le terrain, partout en France.</p>
+        <h2 class="ag-asso-parallax__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_parallax_combats_title', 'Nos combats' ) ); ?></h2>
+        <p class="ag-asso-parallax__text"><?php echo esc_html( ag_asso_opt( 'ag_asso_parallax_combats_text', 'Des actions concrètes, sur le terrain, partout en France.' ) ); ?></p>
     </section>
 
     <!-- Combats -->
     <section class="ag-asso-section ag-asso-section--alt" id="combats">
         <div class="ag-asso-container">
-            <h2 class="ag-asso-section__title"><?php esc_html_e( 'Nos', 'ag-starter-association' ); ?> <em><?php esc_html_e( 'combats', 'ag-starter-association' ); ?></em></h2>
+            <h2 class="ag-asso-section__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_combats_title_pre', 'Nos' ) ); ?> <em><?php echo esc_html( ag_asso_opt( 'ag_asso_combats_title_em', 'combats' ) ); ?></em></h2>
             <p class="ag-asso-section__lead"><?php echo esc_html( ag_asso_opt( 'ag_asso_combats_lead', 'Six grandes campagnes que nous portons cette année, sur le terrain et dans les institutions.' ) ); ?></p>
             <div class="ag-asso-combats-grid">
                 <?php
@@ -118,14 +118,18 @@ get_header();
                 if ( $q_combats->have_posts() ) :
                     $i = 0;
                     while ( $q_combats->have_posts() ) : $q_combats->the_post();
-                        $color = $colors[ $i % count( $colors ) ];
-                        $emoji = $emojis[ $i % count( $emojis ) ];
+                        // Meta box admin > Combats > apparence : emoji + couleur per combat.
+                        // Fallback sur le cycle de couleurs/emojis par defaut si meta vide.
+                        $meta_emoji = get_post_meta( get_the_ID(), '_ag_combat_emoji', true );
+                        $meta_color = get_post_meta( get_the_ID(), '_ag_combat_color', true );
+                        $color = $meta_color ?: $colors[ $i % count( $colors ) ];
+                        $emoji = $meta_emoji ?: $emojis[ $i % count( $emojis ) ];
                         $i++; ?>
                         <article class="ag-asso-combat">
-                            <div class="ag-asso-combat__icon" style="background:<?php echo esc_attr( $color ); ?>;"><?php echo $emoji; ?></div>
+                            <div class="ag-asso-combat__icon" style="background:<?php echo esc_attr( $color ); ?>;"><?php echo esc_html( $emoji ); ?></div>
                             <h3><?php the_title(); ?></h3>
                             <p><?php echo esc_html( wp_trim_words( get_the_excerpt(), 30 ) ); ?></p>
-                            <a href="<?php the_permalink(); ?>"><?php esc_html_e( 'En savoir plus →', 'ag-starter-association' ); ?></a>
+                            <a href="<?php the_permalink(); ?>"><?php echo esc_html( ag_asso_opt( 'ag_asso_combats_btn_label', 'En savoir plus →' ) ); ?></a>
                         </article>
                     <?php endwhile;
                     wp_reset_postdata();
@@ -143,7 +147,7 @@ get_header();
                             <div class="ag-asso-combat__icon" style="background:<?php echo esc_attr( $c[2] ); ?>;"><?php echo $c[0]; ?></div>
                             <h3><?php echo esc_html( $c[1] ); ?></h3>
                             <p><?php echo esc_html( $c[3] ); ?></p>
-                            <a href="<?php echo esc_url( home_url( '/combats/' ) ); ?>"><?php esc_html_e( 'En savoir plus →', 'ag-starter-association' ); ?></a>
+                            <a href="<?php echo esc_url( home_url( '/combats/' ) ); ?>"><?php echo esc_html( ag_asso_opt( 'ag_asso_combats_btn_label', 'En savoir plus →' ) ); ?></a>
                         </article>
                     <?php endforeach;
                 endif; ?>
@@ -156,14 +160,14 @@ get_header();
     <?php if ( ag_asso_opt( 'ag_asso_show_evenements', 1 ) ) : ?>
     <!-- Parallax événements -->
     <section class="ag-asso-parallax ag-asso-parallax--evenements">
-        <h2 class="ag-asso-parallax__title">Mobilisations</h2>
-        <p class="ag-asso-parallax__text">Marches, meetings, actions — rejoignez-nous sur le terrain.</p>
+        <h2 class="ag-asso-parallax__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_parallax_evenements_title', 'Mobilisations' ) ); ?></h2>
+        <p class="ag-asso-parallax__text"><?php echo esc_html( ag_asso_opt( 'ag_asso_parallax_evenements_text', 'Marches, meetings, actions — rejoignez-nous sur le terrain.' ) ); ?></p>
     </section>
 
     <!-- Événements -->
     <section class="ag-asso-section" id="evenements">
         <div class="ag-asso-container">
-            <h2 class="ag-asso-section__title"><?php esc_html_e( 'Prochains', 'ag-starter-association' ); ?> <em><?php esc_html_e( 'événements', 'ag-starter-association' ); ?></em></h2>
+            <h2 class="ag-asso-section__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_evenements_title_pre', 'Prochains' ) ); ?> <em><?php echo esc_html( ag_asso_opt( 'ag_asso_evenements_title_em', 'événements' ) ); ?></em></h2>
             <p class="ag-asso-section__lead"><?php echo esc_html( ag_asso_opt( 'ag_asso_evenements_lead', 'Marches, meetings, assemblées générales, débats publics — venez nous rencontrer près de chez vous.' ) ); ?></p>
             <div class="ag-asso-events">
                 <?php
@@ -189,7 +193,7 @@ get_header();
             </div>
             <p style="text-align:center;margin-top:32px;">
                 <a href="<?php echo esc_url( home_url( '/evenements/' ) ); ?>" class="ag-asso-btn ag-asso-btn--primary">
-                    📅 Tous les événements + calendrier
+                    <?php echo esc_html( ag_asso_opt( 'ag_asso_evenements_btn_label', '📅 Tous les événements + calendrier' ) ); ?>
                 </a>
             </p>
         </div>
@@ -201,17 +205,17 @@ get_header();
     <!-- Groupes locaux -->
     <section class="ag-asso-section ag-asso-section--alt ag-asso-section--map" id="groupes">
         <div class="ag-asso-container">
-            <h2 class="ag-asso-section__title"><?php esc_html_e( 'Trouver mon', 'ag-starter-association' ); ?> <em><?php esc_html_e( 'groupe local', 'ag-starter-association' ); ?></em></h2>
-            <p class="ag-asso-section__lead">47 groupes locaux actifs partout en France. Tapez votre code postal pour trouver celui le plus proche.</p>
+            <h2 class="ag-asso-section__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_groupes_title_pre', 'Trouver mon' ) ); ?> <em><?php echo esc_html( ag_asso_opt( 'ag_asso_groupes_title_em', 'groupe local' ) ); ?></em></h2>
+            <p class="ag-asso-section__lead"><?php echo esc_html( ag_asso_opt( 'ag_asso_groupes_lead', '47 groupes locaux actifs partout en France. Tapez votre code postal pour trouver celui le plus proche.' ) ); ?></p>
             <form class="ag-asso-search" action="#" method="get">
                 <input type="text" name="cp" placeholder="<?php esc_attr_e( 'Code postal ou ville', 'ag-starter-association' ); ?>">
                 <button type="submit"><?php esc_html_e( 'Trouver', 'ag-starter-association' ); ?></button>
             </form>
-            <p class="ag-asso-search__note">Pas de groupe près de chez vous ? <a href="<?php echo esc_url( home_url( '/groupes/' ) ); ?>">Créez le vôtre</a> — nous vous accompagnons.</p>
+            <p class="ag-asso-search__note"><?php echo wp_kses_post( ag_asso_opt( 'ag_asso_groupes_search_note', 'Pas de groupe près de chez vous ? <a href="/groupes/">Créez le vôtre</a> — nous vous accompagnons.' ) ); ?></p>
             <div class="ag-asso-stats">
-                <div><strong>47</strong><span>groupes locaux</span></div>
-                <div><strong>2 130</strong><span>adhérents</span></div>
-                <div><strong>12 480</strong><span>signataires</span></div>
+                <div><strong><?php echo esc_html( ag_asso_opt( 'ag_asso_stat1_value', '47' ) ); ?></strong><span><?php echo esc_html( ag_asso_opt( 'ag_asso_stat1_label', 'groupes locaux' ) ); ?></span></div>
+                <div><strong><?php echo esc_html( ag_asso_opt( 'ag_asso_stat2_value', '2 130' ) ); ?></strong><span><?php echo esc_html( ag_asso_opt( 'ag_asso_stat2_label', 'adhérents' ) ); ?></span></div>
+                <div><strong><?php echo esc_html( ag_asso_opt( 'ag_asso_stat3_value', '12 480' ) ); ?></strong><span><?php echo esc_html( ag_asso_opt( 'ag_asso_stat3_label', 'signataires' ) ); ?></span></div>
             </div>
         </div>
     </section>
@@ -222,7 +226,7 @@ get_header();
     <!-- Actualités -->
     <section class="ag-asso-section" id="actu">
         <div class="ag-asso-container">
-            <h2 class="ag-asso-section__title"><?php esc_html_e( 'Dernières', 'ag-starter-association' ); ?> <em><?php esc_html_e( 'actualités', 'ag-starter-association' ); ?></em></h2>
+            <h2 class="ag-asso-section__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_actu_title_pre', 'Dernières' ) ); ?> <em><?php echo esc_html( ag_asso_opt( 'ag_asso_actu_title_em', 'actualités' ) ); ?></em></h2>
             <?php if ( $actu_lead = ag_asso_opt( 'ag_asso_actu_lead', '' ) ) : ?>
                 <p class="ag-asso-section__lead"><?php echo esc_html( $actu_lead ); ?></p>
             <?php endif; ?>
@@ -264,8 +268,8 @@ get_header();
     <!-- Équipe -->
     <section class="ag-asso-section ag-asso-section--team" id="equipe">
         <div class="ag-asso-container">
-            <h2 class="ag-asso-section__title"><?php esc_html_e( 'Notre', 'ag-starter-association' ); ?> <em><?php esc_html_e( 'équipe', 'ag-starter-association' ); ?></em></h2>
-            <p class="ag-asso-section__lead">Bénévoles, élu·es au CA, salarié·es — celles et ceux qui font vivre le mouvement au quotidien.</p>
+            <h2 class="ag-asso-section__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_equipe_title_pre', 'Notre' ) ); ?> <em><?php echo esc_html( ag_asso_opt( 'ag_asso_equipe_title_em', 'équipe' ) ); ?></em></h2>
+            <p class="ag-asso-section__lead"><?php echo esc_html( ag_asso_opt( 'ag_asso_equipe_lead', 'Bénévoles, élu·es au CA, salarié·es — celles et ceux qui font vivre le mouvement au quotidien.' ) ); ?></p>
             <div class="ag-asso-team__grid">
                 <?php
                 $colors = array( '#E10F1A', '#FFD23F', '#0A0A0D', '#1F8A3D', '#3B5998', '#8B1A8B' );
@@ -304,7 +308,7 @@ get_header();
                 <?php endfor; ?>
             </div>
             <p style="text-align:center;margin-top:32px;">
-                <a class="ag-asso-btn ag-asso-btn--ghost ag-asso-btn--ghost-dark" href="<?php echo esc_url( home_url( '/qui-sommes-nous/' ) ); ?>">Découvrir toute l'équipe →</a>
+                <a class="ag-asso-btn ag-asso-btn--ghost ag-asso-btn--ghost-dark" href="<?php echo esc_url( home_url( '/qui-sommes-nous/' ) ); ?>"><?php echo esc_html( ag_asso_opt( 'ag_asso_equipe_btn_label', 'Découvrir toute l\'équipe →' ) ); ?></a>
             </p>
         </div>
     </section>
@@ -315,7 +319,7 @@ get_header();
     <!-- Signer -->
     <section class="ag-asso-section ag-asso-section--cta" id="signer">
         <div class="ag-asso-container">
-            <h2 class="ag-asso-section__title"><?php esc_html_e( 'Signez', 'ag-starter-association' ); ?> <em><?php esc_html_e( 'l\'appel', 'ag-starter-association' ); ?></em></h2>
+            <h2 class="ag-asso-section__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_signer_title_pre', 'Signez' ) ); ?> <em><?php echo esc_html( ag_asso_opt( 'ag_asso_signer_title_em', 'l\'appel' ) ); ?></em></h2>
             <p class="ag-asso-section__lead"><?php echo esc_html( ag_asso_opt( 'ag_asso_signer_lead', 'Pour une société plus juste, écologique et démocratique. Signer, c\'est s\'engager à recevoir nos appels à mobilisation et à les relayer autour de soi.' ) ); ?></p>
             <form class="ag-asso-form" action="#" method="post">
                 <input type="text" name="prenom" placeholder="<?php esc_attr_e( 'Prénom', 'ag-starter-association' ); ?>" required>
@@ -324,9 +328,9 @@ get_header();
                 <input type="text" name="cp" placeholder="<?php esc_attr_e( 'Code postal', 'ag-starter-association' ); ?>" required>
                 <label class="ag-asso-form__rgpd">
                     <input type="checkbox" required>
-                    <span><?php esc_html_e( "J'accepte que mes données soient traitées dans le cadre de cet engagement. Conformément au RGPD, je peux les modifier ou les supprimer.", 'ag-starter-association' ); ?></span>
+                    <span><?php echo esc_html( ag_asso_opt( 'ag_asso_signer_rgpd', 'J\'accepte que mes données soient traitées dans le cadre de cet engagement. Conformément au RGPD, je peux les modifier ou les supprimer.' ) ); ?></span>
                 </label>
-                <button type="submit" class="ag-asso-btn ag-asso-btn--primary"><?php esc_html_e( 'Je signe', 'ag-starter-association' ); ?></button>
+                <button type="submit" class="ag-asso-btn ag-asso-btn--primary"><?php echo esc_html( ag_asso_opt( 'ag_asso_signer_btn_label', 'Je signe' ) ); ?></button>
             </form>
         </div>
     </section>
@@ -336,14 +340,14 @@ get_header();
     <?php if ( ag_asso_opt( 'ag_asso_show_don', 1 ) ) : ?>
     <!-- Parallax don -->
     <section class="ag-asso-parallax ag-asso-parallax--don">
-        <h2 class="ag-asso-parallax__title">Soutenir le mouvement</h2>
-        <p class="ag-asso-parallax__text">Chaque don nous donne plus de moyens d'action.</p>
+        <h2 class="ag-asso-parallax__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_parallax_don_title', 'Soutenir le mouvement' ) ); ?></h2>
+        <p class="ag-asso-parallax__text"><?php echo esc_html( ag_asso_opt( 'ag_asso_parallax_don_text', 'Chaque don nous donne plus de moyens d\'action.' ) ); ?></p>
     </section>
 
     <!-- Don -->
     <section class="ag-asso-section ag-asso-section--alt" id="don">
         <div class="ag-asso-container">
-            <h2 class="ag-asso-section__title"><?php esc_html_e( 'Faire un', 'ag-starter-association' ); ?> <em><?php esc_html_e( 'don', 'ag-starter-association' ); ?></em></h2>
+            <h2 class="ag-asso-section__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_don_title_pre', 'Faire un' ) ); ?> <em><?php echo esc_html( ag_asso_opt( 'ag_asso_don_title_em', 'don' ) ); ?></em></h2>
             <p class="ag-asso-section__lead"><?php echo esc_html( ag_asso_opt( 'ag_asso_don_lead', 'Indépendants des partis et des grands donateurs, nous ne tenons que par vous. 66% de votre don est déductible de vos impôts.' ) ); ?></p>
             <div class="ag-asso-don-grid">
                 <?php
@@ -358,7 +362,7 @@ get_header();
                     </a>
                 <?php endforeach; ?>
                 <a href="#" class="ag-asso-don-card ag-asso-don-card--free">
-                    <span class="ag-asso-don-card__amount"><?php esc_html_e( 'Libre', 'ag-starter-association' ); ?></span>
+                    <span class="ag-asso-don-card__amount"><?php echo esc_html( ag_asso_opt( 'ag_asso_don_libre_label', 'Libre' ) ); ?></span>
                 </a>
             </div>
         </div>

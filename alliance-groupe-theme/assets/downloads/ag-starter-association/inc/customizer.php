@@ -59,17 +59,67 @@ function ag_asso_customize( $wp_customize ) {
 		'description' => 'Personnalisez chaque texte des sections de l\'accueil. Pour les cartes Combats, allez dans le menu admin "Combats" (CPT lus dynamiquement).',
 	) );
 	$home_fields = array(
+		// Parallax bandeau manifeste
+		'ag_asso_parallax_manifeste_title' => array( 'label' => 'Bandeau parallax manifeste — titre',  'default' => 'Notre vision', 'type' => 'text' ),
+		'ag_asso_parallax_manifeste_text'  => array( 'label' => 'Bandeau parallax manifeste — texte',  'default' => 'Une société plus juste, plus solidaire — c\'est notre combat quotidien.', 'type' => 'textarea' ),
+		// Manifeste
 		'ag_asso_manifeste_title_pre' => array( 'label' => 'Manifeste — début du titre',  'default' => 'Notre',     'type' => 'text' ),
 		'ag_asso_manifeste_title_em'  => array( 'label' => 'Manifeste — mot en rouge',    'default' => 'manifeste', 'type' => 'text' ),
 		'ag_asso_manifeste_lead'      => array( 'label' => 'Manifeste — phrase d\'intro', 'default' => 'Nous croyons qu\'une autre société est possible — plus juste, plus écologique, plus démocratique. Voici nos engagements.', 'type' => 'textarea' ),
 		'ag_asso_manifeste_p1'        => array( 'label' => 'Manifeste — paragraphe 1',    'default' => '<strong>1. Justice sociale.</strong> Nous combattons les inégalités là où elles se creusent.', 'type' => 'textarea' ),
 		'ag_asso_manifeste_p2'        => array( 'label' => 'Manifeste — paragraphe 2',    'default' => '<strong>2. Urgence climatique.</strong> Le dérèglement climatique n\'est plus une menace lointaine.', 'type' => 'textarea' ),
 		'ag_asso_manifeste_p3'        => array( 'label' => 'Manifeste — paragraphe 3',    'default' => '<strong>3. Démocratie vivante.</strong> Voter tous les 5 ans ne suffit plus.', 'type' => 'textarea' ),
+		'ag_asso_manifeste_btn_label' => array( 'label' => 'Manifeste — texte du bouton', 'default' => 'Lire le manifeste complet →', 'type' => 'text' ),
+		// Parallax bandeau combats
+		'ag_asso_parallax_combats_title' => array( 'label' => 'Bandeau parallax combats — titre', 'default' => 'Nos combats', 'type' => 'text' ),
+		'ag_asso_parallax_combats_text'  => array( 'label' => 'Bandeau parallax combats — texte', 'default' => 'Des actions concrètes, sur le terrain, partout en France.', 'type' => 'textarea' ),
+		// Combats
+		'ag_asso_combats_title_pre'   => array( 'label' => 'Combats — début du titre',    'default' => 'Nos',     'type' => 'text' ),
+		'ag_asso_combats_title_em'    => array( 'label' => 'Combats — mot en rouge',      'default' => 'combats', 'type' => 'text' ),
 		'ag_asso_combats_lead'        => array( 'label' => 'Combats — phrase d\'intro',   'default' => 'Six grandes campagnes que nous portons cette année.', 'type' => 'textarea' ),
+		'ag_asso_combats_btn_label'   => array( 'label' => 'Combats — bouton "lien" carte', 'default' => 'En savoir plus →', 'type' => 'text' ),
+		// Parallax bandeau evenements
+		'ag_asso_parallax_evenements_title' => array( 'label' => 'Bandeau parallax événements — titre', 'default' => 'Mobilisations', 'type' => 'text' ),
+		'ag_asso_parallax_evenements_text'  => array( 'label' => 'Bandeau parallax événements — texte', 'default' => 'Marches, meetings, actions — rejoignez-nous sur le terrain.', 'type' => 'textarea' ),
+		// Evenements
+		'ag_asso_evenements_title_pre' => array( 'label' => 'Événements — début du titre', 'default' => 'Prochains',   'type' => 'text' ),
+		'ag_asso_evenements_title_em'  => array( 'label' => 'Événements — mot en rouge',   'default' => 'événements',  'type' => 'text' ),
 		'ag_asso_evenements_lead'     => array( 'label' => 'Événements — phrase d\'intro','default' => 'Marches, meetings, assemblées générales — venez nous rencontrer.', 'type' => 'textarea' ),
+		'ag_asso_evenements_btn_label' => array( 'label' => 'Événements — texte du bouton', 'default' => '📅 Tous les événements + calendrier', 'type' => 'text' ),
+		// Groupes locaux
+		'ag_asso_groupes_title_pre'   => array( 'label' => 'Groupes — début du titre',    'default' => 'Trouver mon',    'type' => 'text' ),
+		'ag_asso_groupes_title_em'    => array( 'label' => 'Groupes — mot en rouge',      'default' => 'groupe local',   'type' => 'text' ),
+		'ag_asso_groupes_lead'        => array( 'label' => 'Groupes — phrase d\'intro',   'default' => '47 groupes locaux actifs partout en France. Tapez votre code postal pour trouver celui le plus proche.', 'type' => 'textarea' ),
+		'ag_asso_groupes_search_note' => array( 'label' => 'Groupes — note sous formulaire (HTML accepté)', 'default' => 'Pas de groupe près de chez vous ? <a href="/groupes/">Créez le vôtre</a> — nous vous accompagnons.', 'type' => 'textarea' ),
+		'ag_asso_stat1_value'         => array( 'label' => 'Statistique 1 — chiffre',     'default' => '47',                'type' => 'text' ),
+		'ag_asso_stat1_label'         => array( 'label' => 'Statistique 1 — libellé',     'default' => 'groupes locaux',    'type' => 'text' ),
+		'ag_asso_stat2_value'         => array( 'label' => 'Statistique 2 — chiffre',     'default' => '2 130',             'type' => 'text' ),
+		'ag_asso_stat2_label'         => array( 'label' => 'Statistique 2 — libellé',     'default' => 'adhérents',         'type' => 'text' ),
+		'ag_asso_stat3_value'         => array( 'label' => 'Statistique 3 — chiffre',     'default' => '12 480',            'type' => 'text' ),
+		'ag_asso_stat3_label'         => array( 'label' => 'Statistique 3 — libellé',     'default' => 'signataires',       'type' => 'text' ),
+		// Actu
+		'ag_asso_actu_title_pre'      => array( 'label' => 'Actualités — début du titre', 'default' => 'Dernières',   'type' => 'text' ),
+		'ag_asso_actu_title_em'       => array( 'label' => 'Actualités — mot en rouge',   'default' => 'actualités',  'type' => 'text' ),
 		'ag_asso_actu_lead'           => array( 'label' => 'Actualités — phrase d\'intro','default' => 'Les dernières news du mouvement.', 'type' => 'textarea' ),
+		// Equipe
+		'ag_asso_equipe_title_pre'    => array( 'label' => 'Équipe — début du titre',     'default' => 'Notre',     'type' => 'text' ),
+		'ag_asso_equipe_title_em'     => array( 'label' => 'Équipe — mot en rouge',       'default' => 'équipe',    'type' => 'text' ),
+		'ag_asso_equipe_lead'         => array( 'label' => 'Équipe — phrase d\'intro',    'default' => 'Bénévoles, élu·es au CA, salarié·es — celles et ceux qui font vivre le mouvement au quotidien.', 'type' => 'textarea' ),
+		'ag_asso_equipe_btn_label'    => array( 'label' => 'Équipe — texte du bouton',    'default' => 'Découvrir toute l\'équipe →', 'type' => 'text' ),
+		// Signer
+		'ag_asso_signer_title_pre'    => array( 'label' => 'Signer — début du titre',     'default' => 'Signez',    'type' => 'text' ),
+		'ag_asso_signer_title_em'     => array( 'label' => 'Signer — mot en rouge',       'default' => 'l\'appel',  'type' => 'text' ),
 		'ag_asso_signer_lead'         => array( 'label' => 'Signer — phrase d\'intro',    'default' => 'Signer, c\'est s\'engager à recevoir nos appels à mobilisation et à les relayer.', 'type' => 'textarea' ),
+		'ag_asso_signer_rgpd'         => array( 'label' => 'Signer — texte RGPD',         'default' => 'J\'accepte que mes données soient traitées dans le cadre de cet engagement. Conformément au RGPD, je peux les modifier ou les supprimer.', 'type' => 'textarea' ),
+		'ag_asso_signer_btn_label'    => array( 'label' => 'Signer — texte du bouton',    'default' => 'Je signe',  'type' => 'text' ),
+		// Parallax bandeau don
+		'ag_asso_parallax_don_title'  => array( 'label' => 'Bandeau parallax don — titre','default' => 'Soutenir le mouvement', 'type' => 'text' ),
+		'ag_asso_parallax_don_text'   => array( 'label' => 'Bandeau parallax don — texte','default' => 'Chaque don nous donne plus de moyens d\'action.', 'type' => 'textarea' ),
+		// Don
+		'ag_asso_don_title_pre'       => array( 'label' => 'Don — début du titre',        'default' => 'Faire un', 'type' => 'text' ),
+		'ag_asso_don_title_em'        => array( 'label' => 'Don — mot en rouge',          'default' => 'don',      'type' => 'text' ),
 		'ag_asso_don_lead'            => array( 'label' => 'Don — phrase d\'intro',       'default' => 'Indépendants des partis. 66% de votre don est déductible de vos impôts.', 'type' => 'textarea' ),
+		'ag_asso_don_libre_label'     => array( 'label' => 'Don — texte carte "Libre"',   'default' => 'Libre',    'type' => 'text' ),
 	);
 	foreach ( $home_fields as $key => $f ) {
 		$wp_customize->add_setting( $key, array(
