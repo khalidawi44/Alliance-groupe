@@ -21,6 +21,7 @@ class AG_Fid_Core {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ), 30 );
 		add_action( 'customize_register', array( $this, 'register_customizer' ), 30 );
 		add_action( 'admin_init',         array( $this, 'maybe_auto_reseed' ) );
+		add_action( 'admin_notices',      array( $this, 'maybe_show_update_notice' ) );
 	}
 
 	/**
@@ -39,6 +40,23 @@ class AG_Fid_Core {
 		AG_Fid_Pages::create_default_cpts( true );
 		flush_rewrite_rules();
 		update_option( 'ag_fid_seeded_version', AG_FID_VERSION );
+		set_transient( 'ag_fid_just_updated_from', $stored, 60 );
+	}
+
+	public function maybe_show_update_notice() {
+		$prev = get_transient( 'ag_fid_just_updated_from' );
+		if ( $prev === false ) return;
+		?>
+		<div class="notice notice-success is-dismissible" style="border-left-width:4px;border-left-color:#E10F1A;padding:18px 22px;">
+			<h3 style="margin:0 0 8px;font-size:1.2rem;">🚀 Pack Fidélité mis à jour : v<?php echo esc_html( AG_FID_VERSION ); ?> <?php if ( $prev ) : ?><small style="color:#888;">(depuis v<?php echo esc_html( $prev ); ?>)</small><?php endif; ?></h3>
+			<p style="margin:0 0 6px;">Les pages, rôles, CPT et contenus de démo ont été automatiquement <strong>réinitialisés/mis à jour</strong> avec les dernières versions.</p>
+			<p style="margin:0;">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-fid-recommendations' ) ); ?>" class="button button-primary">Voir le Pack Fidélité</a>
+				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="button" target="_blank">👁 Voir le site</a>
+			</p>
+		</div>
+		<?php
+		delete_transient( 'ag_fid_just_updated_from' );
 	}
 	public function enqueue_assets() {
 		if ( file_exists( AG_FID_DIR . 'assets/fidelite.css' ) ) {

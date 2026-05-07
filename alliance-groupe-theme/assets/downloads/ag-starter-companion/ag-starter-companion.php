@@ -3,7 +3,7 @@
  * Plugin Name:       AG Starter Companion
  * Plugin URI:        https://alliancegroupe-inc.com/templates-wordpress
  * Description:       Importer un clic pour les themes AG Starter (Restaurant, Artisan, Coach, Avocat). Cree automatiquement les pages, le menu et les reglages pour un site pret a l'emploi.
- * Version:           1.9.0
+ * Version:           1.10.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            AGthèmes
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_STARTER_COMPANION_VERSION', '1.9.0' );
+define( 'AG_STARTER_COMPANION_VERSION', '1.10.0' );
 define( 'AG_STARTER_COMPANION_FILE', __FILE__ );
 
 /**
@@ -36,6 +36,8 @@ class AG_Starter_Companion {
 		add_action( 'admin_menu', array( $this, 'register_admin_page' ) );
 		add_action( 'admin_notices', array( $this, 'admin_notice' ) );
 		add_action( 'admin_init', array( $this, 'maybe_patch_theme' ) );
+		add_action( 'admin_init', array( $this, 'maybe_auto_reimport' ) );
+		add_action( 'admin_notices', array( $this, 'maybe_show_update_notice' ) );
 		add_action( 'admin_notices', array( $this, 'upgrade_banner' ) );
 		add_action( 'wp_dashboard_setup', array( $this, 'upgrade_dashboard_widget' ) );
 		add_action( 'customize_register', array( $this, 'upgrade_customizer_section' ), 99 );
@@ -374,6 +376,48 @@ class AG_Starter_Companion {
 	 * @param string $slug Theme slug.
 	 * @return array
 	 */
+	/**
+	 * Re-import auto a chaque MAJ du Companion : detecte le slug du
+	 * theme actif (ag-starter-avocat, restaurant, artisan, coach,
+	 * barber) et relance run_import si la version stockee differe.
+	 */
+	public function maybe_auto_reimport() {
+		if ( ! current_user_can( 'manage_options' ) ) return;
+		$theme = wp_get_theme();
+		$slug  = $theme->get_template();
+		$known = array( 'ag-starter-avocat', 'ag-starter-restaurant', 'ag-starter-artisan', 'ag-starter-coach', 'ag-starter-barber' );
+		if ( ! in_array( $slug, $known, true ) ) return;
+		$key  = 'ag_companion_imported_' . $slug;
+		$cur  = AG_STARTER_COMPANION_VERSION;
+		$prev = get_option( $key, '' );
+		if ( $prev === $cur ) return;
+		// Ne lance que si l'import initial a deja ete fait (sinon on
+		// laisse le user cliquer manuellement la 1ere fois).
+		if ( ! $prev ) {
+			update_option( $key, $cur );
+			return;
+		}
+		$this->run_import( $slug );
+		update_option( $key, $cur );
+		set_transient( 'ag_companion_just_updated_from', $prev, 60 );
+	}
+
+	public function maybe_show_update_notice() {
+		$prev = get_transient( 'ag_companion_just_updated_from' );
+		if ( $prev === false ) return;
+		?>
+		<div class="notice notice-success is-dismissible" style="border-left-width:4px;border-left-color:#D4B45C;padding:18px 22px;">
+			<h3 style="margin:0 0 8px;font-size:1.2rem;">🚀 AG Starter Companion mis à jour : v<?php echo esc_html( AG_STARTER_COMPANION_VERSION ); ?> <small style="color:#888;">(depuis v<?php echo esc_html( $prev ); ?>)</small></h3>
+			<p style="margin:0 0 6px;">Les pages, le menu et la page d'accueil de votre thème ont été <strong>réimportés automatiquement</strong> avec les dernières versions.</p>
+			<p style="margin:0;">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-starter-companion' ) ); ?>" class="button button-primary">Voir le tableau de bord</a>
+				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="button" target="_blank">👁 Voir le site</a>
+			</p>
+		</div>
+		<?php
+		delete_transient( 'ag_companion_just_updated_from' );
+	}
+
 	public function run_import( $slug ) {
 		$log = array();
 		$map = $this->get_theme_data_map();
