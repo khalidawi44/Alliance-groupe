@@ -45,6 +45,15 @@ function ag_starter_barber_scripts() {
 }
 add_action( 'wp_enqueue_scripts', 'ag_starter_barber_scripts' );
 
+/**
+ * Helper de lecture des options Customizer.
+ */
+if ( ! function_exists( 'ag_barber_opt' ) ) {
+    function ag_barber_opt( $key, $default = '' ) {
+        return get_theme_mod( $key, $default );
+    }
+}
+
 // Load Queue System
 require get_template_directory() . '/inc/queue-system.php';
 require get_template_directory() . '/inc/customizer.php';

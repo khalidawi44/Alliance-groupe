@@ -45,7 +45,7 @@
 			'<section class="ag-bb-section ag-bb-section--alt" id="ag-bb-team">' +
 				'<div class="ag-bb-container">' +
 					'<h2 class="ag-section__title">L\'<em>équipe</em></h2>' +
-					'<p class="ag-section__sub">Des barbiers passionnés, formés à la vieille école américaine.</p>' +
+					'<p class="ag-section__sub">' + escapeHtml(dataValue('teamLead', 'Des barbiers passionnés, formés à la vieille école américaine.')) + '</p>' +
 					'<div class="ag-bb-team-grid">' + cards + '</div>' +
 				'</div>' +
 			'</section>';
@@ -61,7 +61,7 @@
 			'<section class="ag-bb-section" id="ag-bb-gallery">' +
 				'<div class="ag-bb-container">' +
 					'<h2 class="ag-section__title">La <em>galerie</em></h2>' +
-					'<p class="ag-section__sub">Quelques coupes signées par l\'équipe.</p>' +
+					'<p class="ag-section__sub">' + escapeHtml(dataValue('galleryLead', 'Quelques coupes signées par l\'équipe.')) + '</p>' +
 					'<div class="ag-bb-gallery-grid">' + items + '</div>' +
 				'</div>' +
 			'</section>';
@@ -84,7 +84,7 @@
 			'<section class="ag-bb-section ag-bb-section--alt" id="ag-bb-testimonials">' +
 				'<div class="ag-bb-container">' +
 					'<h2 class="ag-section__title">Ils <em>parlent de nous</em></h2>' +
-					'<p class="ag-section__sub">Avis clients vérifiés.</p>' +
+					'<p class="ag-section__sub">' + escapeHtml(dataValue('testimonialsLead', 'Avis clients vérifiés.')) + '</p>' +
 					'<div class="ag-bb-testimonials-grid">' + cards + '</div>' +
 				'</div>' +
 			'</section>';
@@ -109,7 +109,7 @@
 			'<section class="ag-bb-section" id="ag-bb-booking">' +
 				'<div class="ag-bb-container">' +
 					'<h2 class="ag-section__title">Réserver un <em>créneau</em></h2>' +
-					'<p class="ag-section__sub">Plus simple qu\'un coup de fil. Confirmation immédiate par email.</p>' +
+					'<p class="ag-section__sub">' + escapeHtml(dataValue('bookingLead', 'Plus simple qu\'un coup de fil. Confirmation immédiate par email.')) + '</p>' +
 					'<form class="ag-bb-booking" method="post" action="#ag-bb-booking" onsubmit="return false;">' +
 						'<div class="ag-bb-booking__row">' +
 							'<div class="ag-bb-booking__field">' +
@@ -163,7 +163,7 @@
 			'<section class="ag-bb-section ag-bb-section--alt" id="ag-bb-contact">' +
 				'<div class="ag-bb-container">' +
 					'<h2 class="ag-section__title">Nous <em>trouver</em></h2>' +
-					'<p class="ag-section__sub">Le salon est ouvert du mardi au samedi.</p>' +
+					'<p class="ag-section__sub">' + escapeHtml(dataValue('contactLead', 'Le salon est ouvert du mardi au samedi.')) + '</p>' +
 					'<div class="ag-bb-contact-grid">' +
 						'<div class="ag-bb-contact-block">' +
 							'<h3>Coordonnées</h3>' +

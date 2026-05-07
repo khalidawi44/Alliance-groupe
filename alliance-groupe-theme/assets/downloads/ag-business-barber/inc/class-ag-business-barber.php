@@ -86,6 +86,12 @@ class AG_Business_Barber {
 				'shopInsta'    => (string) get_theme_mod( 'ag_bb_insta', '@alliancebarber' ),
 				'shopHours'    => $this->get_hours_data(),
 				'bookingSlots' => array( '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30', '19:00' ),
+				// Phrases d'intro (leads) sous chaque titre H2 — éditables via Customizer.
+				'teamLead'         => (string) get_theme_mod( 'ag_bb_team_lead', 'Des barbiers passionnés, formés à la vieille école américaine.' ),
+				'galleryLead'      => (string) get_theme_mod( 'ag_bb_gallery_lead', 'Quelques coupes signées par l\'équipe.' ),
+				'testimonialsLead' => (string) get_theme_mod( 'ag_bb_testimonials_lead', 'Avis clients vérifiés.' ),
+				'bookingLead'      => (string) get_theme_mod( 'ag_bb_booking_lead', 'Plus simple qu\'un coup de fil. Confirmation immédiate par email.' ),
+				'contactLead'      => (string) get_theme_mod( 'ag_bb_contact_lead', 'Le salon est ouvert du mardi au samedi.' ),
 			) );
 		}
 	}
@@ -226,6 +232,32 @@ class AG_Business_Barber {
 				'label'   => $f['label'],
 				'section' => 'ag_bb_contact',
 				'type'    => 'text',
+			) );
+		}
+
+		// Section : Contenu accueil — textes (phrases d'intro sous chaque H2).
+		$wp_customize->add_section( 'ag_bb_home_content', array(
+			'title'       => __( 'Contenu accueil — textes', 'ag-business-barber' ),
+			'description' => __( 'Personnalisez les phrases d\'introduction sous chaque titre des sections injectées par Business Barber.', 'ag-business-barber' ),
+			'panel'       => 'ag_bb_panel',
+		) );
+		$lead_fields = array(
+			'ag_bb_team_lead'         => array( 'label' => __( 'Équipe — phrase d\'intro', 'ag-business-barber' ),         'default' => 'Des barbiers passionnés, formés à la vieille école américaine.' ),
+			'ag_bb_gallery_lead'      => array( 'label' => __( 'Galerie — phrase d\'intro', 'ag-business-barber' ),         'default' => 'Quelques coupes signées par l\'équipe.' ),
+			'ag_bb_testimonials_lead' => array( 'label' => __( 'Témoignages — phrase d\'intro', 'ag-business-barber' ),     'default' => 'Avis clients vérifiés.' ),
+			'ag_bb_booking_lead'      => array( 'label' => __( 'Réservation — phrase d\'intro', 'ag-business-barber' ),     'default' => 'Plus simple qu\'un coup de fil. Confirmation immédiate par email.' ),
+			'ag_bb_contact_lead'      => array( 'label' => __( 'Contact / horaires — phrase d\'intro', 'ag-business-barber' ), 'default' => 'Le salon est ouvert du mardi au samedi.' ),
+		);
+		foreach ( $lead_fields as $key => $f ) {
+			$wp_customize->add_setting( $key, array(
+				'default'           => $f['default'],
+				'sanitize_callback' => 'sanitize_text_field',
+				'transport'         => 'refresh',
+			) );
+			$wp_customize->add_control( $key, array(
+				'label'   => $f['label'],
+				'section' => 'ag_bb_home_content',
+				'type'    => 'textarea',
 			) );
 		}
 	}

@@ -43,6 +43,12 @@ function ag_starter_coach_customizer_defaults() {
 		// Footer.
 		'ag_footer_copyright'   => '',
 		'ag_footer_credits'     => true,
+		// Home section leads (phrases d'intro sous les titres H2).
+		'ag_coach_individuel_lead' => 'Un accompagnement sur-mesure pour atteindre vos objectifs personnels ou professionnels. Seance d\'essai gratuite de 30 minutes.',
+		'ag_coach_groupe_lead'     => 'Ateliers thematiques et formations collectives pour progresser ensemble dans un cadre bienveillant et structurant.',
+		'ag_coach_temoignages_lead'=> 'Decouvrez les retours de mes clients : reconversion reussie, prise de parole debloquee, confiance retrouvee.',
+		'ag_coach_about_p1'        => 'Coach professionnelle certifiee, j\'accompagne depuis plus de dix ans des dirigeants, entrepreneurs et particuliers dans leurs transformations. Mon approche combine ecoute active, methodes eprouvees et ancrage concret.',
+		'ag_coach_about_p2'        => 'Chaque accompagnement est unique : je m\'adapte a votre rythme et a vos objectifs, avec pour seule boussole votre progres. Premier rendez-vous toujours gratuit pour valider ensemble la meilleure formule.',
 	);
 }
 
@@ -333,6 +339,45 @@ function ag_starter_coach_customize_register( $wp_customize ) {
 			'type'    => 'checkbox',
 		)
 	);
+
+	// ─── Section: Contenu accueil — textes (leads des sections) ───
+	$wp_customize->add_section(
+		'ag_section_home_content',
+		array(
+			'title'       => esc_html__( 'Contenu accueil — textes', 'ag-starter-coach' ),
+			'panel'       => 'ag_starter_panel',
+			'priority'    => 55,
+			'description' => esc_html__( 'Personnalisez les phrases d\'introduction (sous les titres) de chaque section de l\'accueil.', 'ag-starter-coach' ),
+		)
+	);
+	$ag_coach_home_fields = array(
+		'ag_coach_individuel_lead'  => esc_html__( 'Coaching individuel — phrase d\'intro', 'ag-starter-coach' ),
+		'ag_coach_groupe_lead'      => esc_html__( 'Seances de groupe — phrase d\'intro', 'ag-starter-coach' ),
+		'ag_coach_temoignages_lead' => esc_html__( 'Temoignages — phrase d\'intro', 'ag-starter-coach' ),
+		'ag_coach_about_p1'         => esc_html__( 'Mon parcours — paragraphe 1', 'ag-starter-coach' ),
+		'ag_coach_about_p2'         => esc_html__( 'Mon parcours — paragraphe 2', 'ag-starter-coach' ),
+	);
+	$ag_prio = 10;
+	foreach ( $ag_coach_home_fields as $ag_key => $ag_label ) {
+		$wp_customize->add_setting(
+			$ag_key,
+			array(
+				'default'           => isset( $defaults[ $ag_key ] ) ? $defaults[ $ag_key ] : '',
+				'sanitize_callback' => 'sanitize_textarea_field',
+				'transport'         => 'refresh',
+			)
+		);
+		$wp_customize->add_control(
+			$ag_key,
+			array(
+				'label'    => $ag_label,
+				'section'  => 'ag_section_home_content',
+				'type'     => 'textarea',
+				'priority' => $ag_prio,
+			)
+		);
+		$ag_prio += 5;
+	}
 }
 add_action( 'customize_register', 'ag_starter_coach_customize_register' );
 

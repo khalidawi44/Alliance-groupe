@@ -15,7 +15,7 @@
 
 get_header();
 
-<?php // Zone editable WP : contenu de la page "accueil" Gutenberg
+// Zone editable WP : contenu de la page "accueil" Gutenberg
 if ( have_posts() ) : while ( have_posts() ) : the_post();
     if ( trim( get_the_content() ) ) :
         echo "<section class=\"ag-custom-content\" style=\"padding:50px 24px;background:#fff;\"><div style=\"max-width:1180px;margin:0 auto;\">";
@@ -23,7 +23,6 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
         echo "</div></section>";
     endif;
 endwhile; rewind_posts(); endif; ?>
-?>
 
 <main id="ag-main" class="ag-main" role="main">
 
@@ -64,7 +63,7 @@ endwhile; rewind_posts(); endif; ?>
 	<section class="ag-section ag-domaines" id="ag-domaines">
 		<div class="ag-container">
 			<h2 class="ag-section-title"><?php esc_html_e( 'Domaines d\'expertise', 'ag-starter-avocat' ); ?></h2>
-			<p class="ag-section-lead"><?php esc_html_e( 'Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit.', 'ag-starter-avocat' ); ?></p>
+			<p class="ag-section-lead"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_domaines_lead', 'Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit.' ) ); ?></p>
 
 			<?php
 			$domaines = ag_starter_avocat_get_domaines( 6 );
@@ -155,7 +154,7 @@ endwhile; rewind_posts(); endif; ?>
 	<section class="ag-section ag-honoraires" id="ag-honoraires">
 		<div class="ag-container">
 			<h2 class="ag-section-title"><?php esc_html_e( 'Honoraires', 'ag-starter-avocat' ); ?></h2>
-			<p class="ag-section-lead"><?php esc_html_e( 'Transparence totale sur les tarifs : pas de mauvaise surprise, devis ecrit avant tout engagement.', 'ag-starter-avocat' ); ?></p>
+			<p class="ag-section-lead"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_honoraires_lead', 'Transparence totale sur les tarifs : pas de mauvaise surprise, devis ecrit avant tout engagement.' ) ); ?></p>
 
 			<div class="ag-honoraires__grid">
 				<?php
@@ -197,7 +196,7 @@ endwhile; rewind_posts(); endif; ?>
 	<section class="ag-section ag-cabinet" id="ag-cabinet">
 		<div class="ag-container">
 			<h2 class="ag-section-title"><?php esc_html_e( 'Le cabinet', 'ag-starter-avocat' ); ?></h2>
-			<p class="ag-section-lead"><?php esc_html_e( 'Consultation au cabinet, en visio ou par telephone.', 'ag-starter-avocat' ); ?></p>
+			<p class="ag-section-lead"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_cabinet_lead', 'Consultation au cabinet, en visio ou par telephone.' ) ); ?></p>
 			<div class="ag-cabinet__cards">
 				<div class="ag-cabinet__block">
 					<div class="ag-cabinet__block-icon">📍</div>

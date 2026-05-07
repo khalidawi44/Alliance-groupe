@@ -43,6 +43,12 @@ function ag_starter_restaurant_customizer_defaults() {
 		// Footer.
 		'ag_footer_copyright'   => '',
 		'ag_footer_credits'     => true,
+		// Home section leads (phrases d'intro sous les titres H2).
+		'ag_resto_carte_lead'        => 'Entrees, plats et desserts prepares chaque jour avec des produits locaux. Menu du midi a 18 euros, formule du soir a 32 euros.',
+		'ag_resto_reservation_lead'  => 'Reservez votre table en ligne ou par telephone au 01 23 45 67 89. Groupes jusqu\'a 20 personnes.',
+		'ag_resto_privatisation_lead'=> 'Organisez vos evenements professionnels ou familiaux dans un cadre elegant. Devis gratuit sur demande.',
+		'ag_resto_histoire_p1'       => 'Depuis 2010, notre equipe passionnee vous accueille dans un cadre chaleureux pour vous faire decouvrir une cuisine authentique inspiree du terroir. Chaque plat est prepare avec soin, a partir de produits selectionnes aupres de producteurs locaux.',
+		'ag_resto_histoire_p2'       => 'Notre chef compose chaque semaine une carte renouvelee au rythme des saisons. Une cuisine genereuse, des saveurs franches et une ambiance conviviale : voila ce qui fait la difference depuis plus de dix ans.',
 	);
 }
 
@@ -333,6 +339,45 @@ function ag_starter_restaurant_customize_register( $wp_customize ) {
 			'type'    => 'checkbox',
 		)
 	);
+
+	// ─── Section: Contenu accueil — textes (leads des sections) ───
+	$wp_customize->add_section(
+		'ag_section_home_content',
+		array(
+			'title'       => esc_html__( 'Contenu accueil — textes', 'ag-starter-restaurant' ),
+			'panel'       => 'ag_starter_panel',
+			'priority'    => 55,
+			'description' => esc_html__( 'Personnalisez les phrases d\'introduction (sous les titres) de chaque section de l\'accueil.', 'ag-starter-restaurant' ),
+		)
+	);
+	$ag_resto_home_fields = array(
+		'ag_resto_carte_lead'         => esc_html__( 'Notre carte — phrase d\'intro', 'ag-starter-restaurant' ),
+		'ag_resto_reservation_lead'   => esc_html__( 'Reservation — phrase d\'intro', 'ag-starter-restaurant' ),
+		'ag_resto_privatisation_lead' => esc_html__( 'Privatisation — phrase d\'intro', 'ag-starter-restaurant' ),
+		'ag_resto_histoire_p1'        => esc_html__( 'Notre histoire — paragraphe 1', 'ag-starter-restaurant' ),
+		'ag_resto_histoire_p2'        => esc_html__( 'Notre histoire — paragraphe 2', 'ag-starter-restaurant' ),
+	);
+	$ag_prio = 10;
+	foreach ( $ag_resto_home_fields as $ag_key => $ag_label ) {
+		$wp_customize->add_setting(
+			$ag_key,
+			array(
+				'default'           => isset( $defaults[ $ag_key ] ) ? $defaults[ $ag_key ] : '',
+				'sanitize_callback' => 'sanitize_textarea_field',
+				'transport'         => 'refresh',
+			)
+		);
+		$wp_customize->add_control(
+			$ag_key,
+			array(
+				'label'    => $ag_label,
+				'section'  => 'ag_section_home_content',
+				'type'     => 'textarea',
+				'priority' => $ag_prio,
+			)
+		);
+		$ag_prio += 5;
+	}
 }
 add_action( 'customize_register', 'ag_starter_restaurant_customize_register' );
 

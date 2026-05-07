@@ -84,6 +84,8 @@ class AG_Premium_Barber {
 			$default_logo = home_url( '/wp-content/uploads/2026/05/logo.png' );
 			wp_localize_script( 'ag-premium-barber-script', 'agPbData', array(
 				'logoUrl' => (string) get_theme_mod( 'ag_pb_logo_url', $default_logo ),
+				// Phrases / leads éditables via Customizer.
+				'qrCaption' => (string) get_theme_mod( 'ag_pb_qr_caption', 'Scannez pour prendre votre ticket' ),
 			) );
 		}
 	}
@@ -125,6 +127,23 @@ class AG_Premium_Barber {
 			'label'   => __( 'URL du logo', 'ag-premium-barber' ),
 			'section' => 'ag_pb_logo',
 			'type'    => 'url',
+		) );
+
+		// Section : Contenu accueil — textes (phrases d'intro injectées par Premium).
+		$wp_customize->add_section( 'ag_pb_home_content', array(
+			'title'       => __( 'Contenu accueil — textes', 'ag-premium-barber' ),
+			'description' => __( 'Personnalisez les phrases ajoutées par Premium Barber sur la home.', 'ag-premium-barber' ),
+			'panel'       => 'ag_pb_panel',
+		) );
+		$wp_customize->add_setting( 'ag_pb_qr_caption', array(
+			'default'           => 'Scannez pour prendre votre ticket',
+			'sanitize_callback' => 'sanitize_text_field',
+			'transport'         => 'refresh',
+		) );
+		$wp_customize->add_control( 'ag_pb_qr_caption', array(
+			'label'   => __( 'Légende du QR code (file d\'attente)', 'ag-premium-barber' ),
+			'section' => 'ag_pb_home_content',
+			'type'    => 'text',
 		) );
 	}
 }

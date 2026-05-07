@@ -7,7 +7,7 @@
 
 get_header();
 
-<?php // Zone editable WP : contenu de la page "accueil" Gutenberg
+// Zone editable WP : contenu de la page "accueil" Gutenberg
 if ( have_posts() ) : while ( have_posts() ) : the_post();
     if ( trim( get_the_content() ) ) :
         echo "<section class=\"ag-custom-content\" style=\"padding:50px 24px;background:#fff;\"><div style=\"max-width:1180px;margin:0 auto;\">";
@@ -15,7 +15,6 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
         echo "</div></section>";
     endif;
 endwhile; rewind_posts(); endif; ?>
-?>
 
 <main id="ag-main" class="ag-main" role="main">
 
@@ -44,15 +43,15 @@ endwhile; rewind_posts(); endif; ?>
 		<div class="ag-cards">
 			<div class="ag-card">
 				<h2><?php esc_html_e( 'Notre carte', 'ag-starter-restaurant' ); ?></h2>
-				<p><?php esc_html_e( 'Entrees, plats et desserts prepares chaque jour avec des produits locaux. Menu du midi a 18 euros, formule du soir a 32 euros.', 'ag-starter-restaurant' ); ?></p>
+				<p><?php echo esc_html( ag_resto_opt( 'ag_resto_carte_lead', 'Entrees, plats et desserts prepares chaque jour avec des produits locaux. Menu du midi a 18 euros, formule du soir a 32 euros.' ) ); ?></p>
 			</div>
 			<div class="ag-card">
 				<h2><?php esc_html_e( 'Reservation', 'ag-starter-restaurant' ); ?></h2>
-				<p><?php esc_html_e( 'Reservez votre table en ligne ou par telephone au 01 23 45 67 89. Groupes jusqu\'a 20 personnes.', 'ag-starter-restaurant' ); ?></p>
+				<p><?php echo esc_html( ag_resto_opt( 'ag_resto_reservation_lead', 'Reservez votre table en ligne ou par telephone au 01 23 45 67 89. Groupes jusqu\'a 20 personnes.' ) ); ?></p>
 			</div>
 			<div class="ag-card">
 				<h2><?php esc_html_e( 'Privatisation', 'ag-starter-restaurant' ); ?></h2>
-				<p><?php esc_html_e( 'Organisez vos evenements professionnels ou familiaux dans un cadre elegant. Devis gratuit sur demande.', 'ag-starter-restaurant' ); ?></p>
+				<p><?php echo esc_html( ag_resto_opt( 'ag_resto_privatisation_lead', 'Organisez vos evenements professionnels ou familiaux dans un cadre elegant. Devis gratuit sur demande.' ) ); ?></p>
 			</div>
 		</div>
 	</section>
@@ -60,8 +59,8 @@ endwhile; rewind_posts(); endif; ?>
 	<section class="ag-info">
 		<div class="ag-container">
 			<h2><?php esc_html_e( 'Notre histoire', 'ag-starter-restaurant' ); ?></h2>
-			<p><?php esc_html_e( 'Depuis 2010, notre equipe passionnee vous accueille dans un cadre chaleureux pour vous faire decouvrir une cuisine authentique inspiree du terroir. Chaque plat est prepare avec soin, a partir de produits selectionnes aupres de producteurs locaux.', 'ag-starter-restaurant' ); ?></p>
-			<p><?php esc_html_e( 'Notre chef compose chaque semaine une carte renouvelee au rythme des saisons. Une cuisine genereuse, des saveurs franches et une ambiance conviviale : voila ce qui fait la difference depuis plus de dix ans.', 'ag-starter-restaurant' ); ?></p>
+			<p><?php echo esc_html( ag_resto_opt( 'ag_resto_histoire_p1', 'Depuis 2010, notre equipe passionnee vous accueille dans un cadre chaleureux pour vous faire decouvrir une cuisine authentique inspiree du terroir. Chaque plat est prepare avec soin, a partir de produits selectionnes aupres de producteurs locaux.' ) ); ?></p>
+			<p><?php echo esc_html( ag_resto_opt( 'ag_resto_histoire_p2', 'Notre chef compose chaque semaine une carte renouvelee au rythme des saisons. Une cuisine genereuse, des saveurs franches et une ambiance conviviale : voila ce qui fait la difference depuis plus de dix ans.' ) ); ?></p>
 		</div>
 	</section>
 

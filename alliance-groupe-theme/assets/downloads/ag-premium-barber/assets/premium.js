@@ -16,6 +16,14 @@
 	function customLogoUrl() {
 		return (typeof agPbData !== 'undefined' && agPbData.logoUrl) ? agPbData.logoUrl : '';
 	}
+	function pbDataValue(key, fallback) {
+		return (typeof agPbData !== 'undefined' && agPbData[key] != null && agPbData[key] !== '') ? agPbData[key] : fallback;
+	}
+	function pbEscapeHtml(s) {
+		return String(s == null ? '' : s)
+			.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+	}
 
 	/* ── Logo personnalise : remplace l'icone SVG ciseaux par
 	   l'image fournie via Customizer (header gauche + hero centre). */
@@ -102,7 +110,7 @@
 		wrap.className = 'ag-bb-qr-wrap';
 		wrap.innerHTML =
 			'<div class="ag-bb-qr"><img src="' + qrImg + '" alt="QR code pour rejoindre la file"></div>' +
-			'<p class="ag-bb-qr-caption">Scannez pour prendre votre ticket</p>';
+			'<p class="ag-bb-qr-caption">' + pbEscapeHtml(pbDataValue('qrCaption', 'Scannez pour prendre votre ticket')) + '</p>';
 		status.appendChild(wrap);
 	}
 

@@ -7,7 +7,7 @@
 
 get_header();
 
-<?php // Zone editable WP : contenu de la page "accueil" Gutenberg
+// Zone editable WP : contenu de la page "accueil" Gutenberg
 if ( have_posts() ) : while ( have_posts() ) : the_post();
     if ( trim( get_the_content() ) ) :
         echo "<section class=\"ag-custom-content\" style=\"padding:50px 24px;background:#fff;\"><div style=\"max-width:1180px;margin:0 auto;\">";
@@ -15,7 +15,6 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
         echo "</div></section>";
     endif;
 endwhile; rewind_posts(); endif; ?>
-?>
 
 <main id="ag-main" class="ag-main" role="main">
 
@@ -44,15 +43,15 @@ endwhile; rewind_posts(); endif; ?>
 		<div class="ag-cards">
 			<div class="ag-card">
 				<h2><?php esc_html_e( 'Coaching individuel', 'ag-starter-coach' ); ?></h2>
-				<p><?php esc_html_e( 'Un accompagnement sur-mesure pour atteindre vos objectifs personnels ou professionnels. Seance d\'essai gratuite de 30 minutes.', 'ag-starter-coach' ); ?></p>
+				<p><?php echo esc_html( ag_coach_opt( 'ag_coach_individuel_lead', 'Un accompagnement sur-mesure pour atteindre vos objectifs personnels ou professionnels. Seance d\'essai gratuite de 30 minutes.' ) ); ?></p>
 			</div>
 			<div class="ag-card">
 				<h2><?php esc_html_e( 'Seances de groupe', 'ag-starter-coach' ); ?></h2>
-				<p><?php esc_html_e( 'Ateliers thematiques et formations collectives pour progresser ensemble dans un cadre bienveillant et structurant.', 'ag-starter-coach' ); ?></p>
+				<p><?php echo esc_html( ag_coach_opt( 'ag_coach_groupe_lead', 'Ateliers thematiques et formations collectives pour progresser ensemble dans un cadre bienveillant et structurant.' ) ); ?></p>
 			</div>
 			<div class="ag-card">
 				<h2><?php esc_html_e( 'Temoignages', 'ag-starter-coach' ); ?></h2>
-				<p><?php esc_html_e( 'Decouvrez les retours de mes clients : reconversion reussie, prise de parole debloquee, confiance retrouvee.', 'ag-starter-coach' ); ?></p>
+				<p><?php echo esc_html( ag_coach_opt( 'ag_coach_temoignages_lead', 'Decouvrez les retours de mes clients : reconversion reussie, prise de parole debloquee, confiance retrouvee.' ) ); ?></p>
 			</div>
 		</div>
 	</section>
@@ -60,8 +59,8 @@ endwhile; rewind_posts(); endif; ?>
 	<section class="ag-info">
 		<div class="ag-container">
 			<h2><?php esc_html_e( 'Mon parcours', 'ag-starter-coach' ); ?></h2>
-			<p><?php esc_html_e( 'Coach professionnelle certifiee, j\'accompagne depuis plus de dix ans des dirigeants, entrepreneurs et particuliers dans leurs transformations. Mon approche combine ecoute active, methodes eprouvees et ancrage concret.', 'ag-starter-coach' ); ?></p>
-			<p><?php esc_html_e( 'Chaque accompagnement est unique : je m\'adapte a votre rythme et a vos objectifs, avec pour seule boussole votre progres. Premier rendez-vous toujours gratuit pour valider ensemble la meilleure formule.', 'ag-starter-coach' ); ?></p>
+			<p><?php echo esc_html( ag_coach_opt( 'ag_coach_about_p1', 'Coach professionnelle certifiee, j\'accompagne depuis plus de dix ans des dirigeants, entrepreneurs et particuliers dans leurs transformations. Mon approche combine ecoute active, methodes eprouvees et ancrage concret.' ) ); ?></p>
+			<p><?php echo esc_html( ag_coach_opt( 'ag_coach_about_p2', 'Chaque accompagnement est unique : je m\'adapte a votre rythme et a vos objectifs, avec pour seule boussole votre progres. Premier rendez-vous toujours gratuit pour valider ensemble la meilleure formule.' ) ); ?></p>
 		</div>
 	</section>
 

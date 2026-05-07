@@ -43,6 +43,12 @@ function ag_starter_artisan_customizer_defaults() {
 		// Footer.
 		'ag_footer_copyright'   => '',
 		'ag_footer_credits'     => true,
+		// Home section leads (phrases d'intro sous les titres H2).
+		'ag_artisan_prestations_lead' => 'Renovation, installation, entretien : nous intervenons pour tous vos travaux avec serieux et precision. Devis gratuit sous 24h.',
+		'ag_artisan_zones_lead'       => 'Nous intervenons dans toute votre region, y compris en urgence. Appelez-nous au 06 00 00 00 00 pour toute demande rapide.',
+		'ag_artisan_realisations_lead'=> 'Decouvrez nos chantiers recents : renovations de maison, installations techniques et travaux sur-mesure pour particuliers et professionnels.',
+		'ag_artisan_about_p1'         => 'Depuis plus de dix ans, notre equipe d\'artisans qualifies accompagne particuliers et professionnels dans tous leurs projets de travaux. Rigueur, transparence sur les prix et respect des delais : voila notre engagement.',
+		'ag_artisan_about_p2'         => 'Nous mettons un point d\'honneur a livrer des chantiers propres et conformes aux normes. Chaque intervention est suivie personnellement du devis a la livraison finale.',
 	);
 }
 
@@ -333,6 +339,45 @@ function ag_starter_artisan_customize_register( $wp_customize ) {
 			'type'    => 'checkbox',
 		)
 	);
+
+	// ─── Section: Contenu accueil — textes (leads des sections) ───
+	$wp_customize->add_section(
+		'ag_section_home_content',
+		array(
+			'title'       => esc_html__( 'Contenu accueil — textes', 'ag-starter-artisan' ),
+			'panel'       => 'ag_starter_panel',
+			'priority'    => 55,
+			'description' => esc_html__( 'Personnalisez les phrases d\'introduction (sous les titres) de chaque section de l\'accueil.', 'ag-starter-artisan' ),
+		)
+	);
+	$ag_artisan_home_fields = array(
+		'ag_artisan_prestations_lead'  => esc_html__( 'Nos prestations — phrase d\'intro', 'ag-starter-artisan' ),
+		'ag_artisan_zones_lead'        => esc_html__( 'Zones d\'intervention — phrase d\'intro', 'ag-starter-artisan' ),
+		'ag_artisan_realisations_lead' => esc_html__( 'Nos realisations — phrase d\'intro', 'ag-starter-artisan' ),
+		'ag_artisan_about_p1'          => esc_html__( 'Qui sommes-nous — paragraphe 1', 'ag-starter-artisan' ),
+		'ag_artisan_about_p2'          => esc_html__( 'Qui sommes-nous — paragraphe 2', 'ag-starter-artisan' ),
+	);
+	$ag_prio = 10;
+	foreach ( $ag_artisan_home_fields as $ag_key => $ag_label ) {
+		$wp_customize->add_setting(
+			$ag_key,
+			array(
+				'default'           => isset( $defaults[ $ag_key ] ) ? $defaults[ $ag_key ] : '',
+				'sanitize_callback' => 'sanitize_textarea_field',
+				'transport'         => 'refresh',
+			)
+		);
+		$wp_customize->add_control(
+			$ag_key,
+			array(
+				'label'    => $ag_label,
+				'section'  => 'ag_section_home_content',
+				'type'     => 'textarea',
+				'priority' => $ag_prio,
+			)
+		);
+		$ag_prio += 5;
+	}
 }
 add_action( 'customize_register', 'ag_starter_artisan_customize_register' );
 

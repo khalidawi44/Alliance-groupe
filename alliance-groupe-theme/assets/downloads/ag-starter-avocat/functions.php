@@ -83,6 +83,16 @@ endif;
 add_action( 'after_setup_theme', 'ag_starter_avocat_setup' );
 
 /**
+ * Helper: read a Customizer option (alias for ag_starter_avocat_get_option
+ * with a runtime fallback default for safety).
+ */
+if ( ! function_exists( 'ag_avocat_opt' ) ) {
+	function ag_avocat_opt( $key, $default = '' ) {
+		return get_theme_mod( $key, $default );
+	}
+}
+
+/**
  * Get permalink for a page by slug — works with any permalink structure.
  *
  * In Free tier: pages dediees (rendez-vous, expertise, cabinet, honoraires)

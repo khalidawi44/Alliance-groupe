@@ -128,6 +128,15 @@ function ag_starter_artisan_pingback_header() {
 add_action( 'wp_head', 'ag_starter_artisan_pingback_header' );
 
 /**
+ * Helper: read a Customizer option (short alias for ag_starter_artisan_get_option).
+ */
+if ( ! function_exists( 'ag_artisan_opt' ) ) {
+	function ag_artisan_opt( $key, $default = '' ) {
+		return get_theme_mod( $key, $default );
+	}
+}
+
+/**
  * Load the customizer (panels, sections, settings) and its dynamic CSS output.
  */
 require get_template_directory() . '/inc/customizer.php';

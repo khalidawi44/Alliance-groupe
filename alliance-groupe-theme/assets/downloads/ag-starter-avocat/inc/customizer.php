@@ -79,6 +79,10 @@ function ag_starter_avocat_customizer_defaults() {
 		'ag_rdv_rgpd_text'        => 'J\'accepte que mes donnees soient utilisees uniquement pour traiter ma demande de rendez-vous, conformement au RGPD. Aucune donnee n\'est partagee avec des tiers.',
 		// RGPD / footer legal.
 		'ag_rgpd_mention'       => 'Cabinet inscrit au RPVA. Donnees personnelles traitees conformement au RGPD. Confidentialite absolue garantie par le secret professionnel.',
+		// Home section leads (phrases d'intro sous les titres H2).
+		'ag_avocat_domaines_lead'   => 'Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit.',
+		'ag_avocat_honoraires_lead' => 'Transparence totale sur les tarifs : pas de mauvaise surprise, devis ecrit avant tout engagement.',
+		'ag_avocat_cabinet_lead'    => 'Consultation au cabinet, en visio ou par telephone.',
 	);
 }
 
@@ -554,6 +558,43 @@ function ag_starter_avocat_customize_register( $wp_customize ) {
 			)
 		);
 		$prio += 5;
+	}
+
+	// ─── Section: Contenu accueil — textes (leads des sections) ───
+	$wp_customize->add_section(
+		'ag_section_home_content',
+		array(
+			'title'       => esc_html__( 'Contenu accueil — textes', 'ag-starter-avocat' ),
+			'panel'       => 'ag_starter_panel',
+			'priority'    => 55,
+			'description' => esc_html__( 'Personnalisez les phrases d\'introduction (sous les titres) de chaque section de l\'accueil.', 'ag-starter-avocat' ),
+		)
+	);
+	$ag_avocat_home_fields = array(
+		'ag_avocat_domaines_lead'   => esc_html__( 'Domaines d\'expertise — phrase d\'intro', 'ag-starter-avocat' ),
+		'ag_avocat_honoraires_lead' => esc_html__( 'Honoraires — phrase d\'intro', 'ag-starter-avocat' ),
+		'ag_avocat_cabinet_lead'    => esc_html__( 'Le cabinet — phrase d\'intro', 'ag-starter-avocat' ),
+	);
+	$ag_prio = 10;
+	foreach ( $ag_avocat_home_fields as $ag_key => $ag_label ) {
+		$wp_customize->add_setting(
+			$ag_key,
+			array(
+				'default'           => isset( $defaults[ $ag_key ] ) ? $defaults[ $ag_key ] : '',
+				'sanitize_callback' => 'sanitize_text_field',
+				'transport'         => 'refresh',
+			)
+		);
+		$wp_customize->add_control(
+			$ag_key,
+			array(
+				'label'    => $ag_label,
+				'section'  => 'ag_section_home_content',
+				'type'     => 'textarea',
+				'priority' => $ag_prio,
+			)
+		);
+		$ag_prio += 5;
 	}
 }
 add_action( 'customize_register', 'ag_starter_avocat_customize_register' );
