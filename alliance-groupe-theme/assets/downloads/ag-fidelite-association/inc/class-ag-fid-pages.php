@@ -20,7 +20,7 @@ class AG_Fid_Pages {
 
 	public static function create_default_pages() {
 		$pages = array(
-			'accueil'      => array( 'title' => 'Accueil',             'content' => self::default_home_content() ),
+			'accueil'      => array( 'title' => 'Accueil',             'content' => '' ),
 			'qui-sommes-nous' => array( 'title' => 'Qui sommes-nous',  'shortcode' => '[ag_fid_qui_sommes_nous]' ),
 			'reunion'      => array( 'title' => 'Réunion en ligne',    'shortcode' => '[ag_fid_visio]' ),
 			'rendez-vous'  => array( 'title' => 'Prendre rendez-vous', 'shortcode' => '[ag_fid_rdv]' ),
@@ -47,11 +47,13 @@ class AG_Fid_Pages {
 				if ( $slug === 'accueil' && strpos( $existing->post_content, 'Cette zone est éditable depuis' ) !== false ) {
 					wp_update_post( array( 'ID' => $existing->ID, 'post_content' => '' ) );
 				}
-				// Premier seed des blocs Gutenberg dans l'accueil si la page
-				// est vide (utilisateurs qui ont active la version <0.25 puis
-				// upgrade : on leur injecte les blocs editables maintenant).
-				if ( $slug === 'accueil' && trim( $existing->post_content ) === '' ) {
-					wp_update_post( array( 'ID' => $existing->ID, 'post_content' => self::default_home_content() ) );
+				// Si on detecte les blocs Gutenberg auto-generes par les
+				// versions 0.25.0/0.26.0 (qui changeaient l'apparence trop
+				// fort), on les supprime pour revenir a l'apparence stylee
+				// originale du theme (sections PHP). L'utilisateur peut
+				// toujours editer la page si il le souhaite.
+				if ( $slug === 'accueil' && strpos( $existing->post_content, 'Pour une société plus juste, écologique et démocratique' ) !== false && strpos( $existing->post_content, '<!-- wp:cover' ) !== false ) {
+					wp_update_post( array( 'ID' => $existing->ID, 'post_content' => '' ) );
 				}
 				continue;
 			}

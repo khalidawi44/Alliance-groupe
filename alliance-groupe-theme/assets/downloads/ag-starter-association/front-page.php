@@ -1,41 +1,33 @@
 <?php
 /**
  * Front page — sections placeholders.
- * Tous les textes sont entre crochets : a personnaliser via Customizer
- * ou directement dans ce fichier (apres copie en child theme).
+ * Apparence stylee preservee : les sections PHP rendent leur design
+ * d'origine (parallax, hero, combats grid, etc.). Tous les textes
+ * (titres, leads, contenu) sont editables sans coder via :
+ *   - Apparence > Personnaliser > Contenu accueil (textes des sections)
+ *   - Combats / Evenements / Articles (admin) pour les contenus dynamiques
+ *   - Pages > Manifeste / Qui sommes-nous (Gutenberg) pour les pages liees
  *
  * @package AG_Starter_Association
  */
 get_header();
 ?>
 
-<?php
-// MODE GUTENBERG : si la page d'accueil a du contenu (le Pack Fidelite
-// le populate avec des blocs editables a l'activation), on rend
-// uniquement ce contenu — l'utilisateur edite tout via Pages > Accueil
-// avec l'editeur de blocs WP (zero code).
-//
-// Si la page est vide, on retombe sur les sections PHP par defaut
-// (utile pour les sites sans le Pack Fidelite, ou avant activation).
-$ag_asso_has_gutenberg = false;
-if ( have_posts() ) {
-    while ( have_posts() ) {
-        the_post();
-        if ( strlen( trim( wp_strip_all_tags( get_the_content() ) ) ) > 80 ) {
-            $ag_asso_has_gutenberg = true;
-        }
-    }
-    rewind_posts();
-}
-?>
-
 <main id="main">
 
-    <?php if ( $ag_asso_has_gutenberg ) : ?>
-        <article class="ag-asso-gutenberg-home">
-            <?php while ( have_posts() ) : the_post(); the_content(); endwhile; ?>
-        </article>
-    <?php else : // Fallback : sections PHP hardcodees ?>
+    <?php // Zone Gutenberg optionnelle : si l'utilisateur ajoute du
+    // contenu sur la page Accueil (Pages > Accueil), il s'affiche EN PLUS
+    // au-dessus des sections design — utile pour annonce de derniere minute,
+    // bandeau de campagne, etc. Ne casse jamais le design d'origine.
+    if ( have_posts() ) : while ( have_posts() ) : the_post();
+        if ( trim( get_the_content() ) ) : ?>
+            <section class="ag-asso-section ag-asso-custom" style="padding:60px 24px;">
+                <div class="ag-asso-container ag-asso-custom__inner">
+                    <?php the_content(); ?>
+                </div>
+            </section>
+        <?php endif;
+    endwhile; rewind_posts(); endif; ?>
 
     <!-- Hero -->
     <section class="ag-asso-hero">
@@ -372,8 +364,6 @@ if ( have_posts() ) {
         </div>
     </section>
     <?php endif; // /don ?>
-
-    <?php endif; // /fallback PHP sections ?>
 
 </main>
 

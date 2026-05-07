@@ -195,12 +195,18 @@ class AG_Fid_Core {
 		<div class="ag-fid-help">
 			<p><strong>Bienvenue !</strong> Voici les 4 endroits où modifier votre site :</p>
 
-			<h4>🏠 1. Page d'accueil — 100% Gutenberg, 100% éditable</h4>
+			<h4>📝 1. Modifier les textes des sections (titres, intros, slogans)</h4>
 			<ul>
-				<li><a href="<?php echo esc_url( $home_id ? get_edit_post_link( $home_id ) : admin_url( 'edit.php?post_type=page' ) ); ?>"><strong>Pages → Accueil</strong></a> : ouvrez l'éditeur de blocs et changez TOUT (textes, titres, images, boutons, ordre des sections)</li>
-				<li>Hero, manifeste, combats, événements, dons : chaque section est un bloc déplaçable / supprimable / modifiable</li>
-				<li>Si la page est vide → les sections par défaut du thème s'affichent en fallback</li>
-				<li><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?ag_fid_regen_home=1' ), 'ag_fid_regen_home' ) ); ?>" onclick="return confirm('Cela va ECRASER le contenu actuel de la page Accueil avec les blocs par defaut. Continuer ?');" style="color:#E10F1A;font-weight:600;">🔄 Régénérer l'accueil avec les blocs par défaut</a> (utile si vous avez tout cassé)</li>
+				<li><strong><a href="<?php echo esc_url( admin_url( 'customize.php?autofocus[section]=ag_asso_home_content' ) ); ?>">Apparence → Personnaliser → Contenu accueil</a></strong> : tous les leads / intros / sous-titres de l'accueil</li>
+				<li>Manifeste, combats, événements, actualités, signature, dons : chaque texte est éditable, prévisualisation en direct</li>
+				<li>Cliquez "Publier" pour appliquer — c'est instantané sur le site</li>
+			</ul>
+
+			<h4>🏠 2. Ajouter du contenu libre sur l'accueil (annonce, bandeau)</h4>
+			<ul>
+				<li><a href="<?php echo esc_url( $home_id ? get_edit_post_link( $home_id ) : admin_url( 'edit.php?post_type=page' ) ); ?>"><strong>Pages → Accueil</strong></a> : ce que vous y mettez s'affiche EN PLUS au-dessus des sections design</li>
+				<li>Idéal pour : annonce de campagne, bandeau d'urgence, message du président·e, vidéo</li>
+				<li>Si vous laissez la page vide, les sections design du thème s'affichent normalement</li>
 			</ul>
 
 			<h4>🎨 2. Apparence du site (couleurs, typo, logo, sections)</h4>
@@ -211,13 +217,20 @@ class AG_Fid_Core {
 				<li><strong>Hero, Qui sommes-nous, Bandeau urgence, Réseaux sociaux</strong>… tout est là</li>
 			</ul>
 
-			<h4>📝 3. Contenu dynamique (combats, événements, articles)</h4>
+			<h4>🎨 3. Apparence (couleurs, logo, sections visibles)</h4>
+			<ul>
+				<li><a href="<?php echo esc_url( admin_url( 'customize.php' ) ); ?>">Apparence → Personnaliser → Mouvement militant</a></li>
+				<li><strong>Sections visibles</strong> : on/off pour chaque section (manifeste, combats, équipe, dons…)</li>
+				<li><strong>Couleurs / Hero / Bandeau urgence / Réseaux sociaux</strong>… tout est là</li>
+			</ul>
+
+			<h4>🃏 4. Contenu dynamique (combats, événements, articles)</h4>
 			<ul>
 				<li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=ag_combat' ) ); ?>">Combats</a> · <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=ag_evenement' ) ); ?>">Événements</a> · <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=ag_groupe' ) ); ?>">Groupes locaux</a> · <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=ag_petition' ) ); ?>">Pétitions</a> · <a href="<?php echo esc_url( admin_url( 'edit.php' ) ); ?>">Articles</a></li>
 				<li>Ajouter / supprimer / modifier — affiche auto sur le site</li>
 			</ul>
 
-			<h4>📄 4. Pages statiques (manifeste, mentions, RGPD, statuts)</h4>
+			<h4>📄 5. Pages statiques (manifeste, mentions, RGPD, statuts)</h4>
 			<ul>
 				<li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=page' ) ); ?>">Pages</a> → cliquez la page à modifier → Gutenberg</li>
 			</ul>
