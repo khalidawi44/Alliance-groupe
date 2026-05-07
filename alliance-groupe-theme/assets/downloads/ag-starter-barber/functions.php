@@ -108,3 +108,6 @@ function ag_starter_barber_dashboard_render() {
     echo '<div style="text-align:center;padding:20px 0;"><p style="font-size:1.15rem;"><strong>Votre thème barber est prêt !</strong></p><a href="' . esc_url( $url ) . '" class="button button-primary button-hero">Télécharger AG Starter Companion →</a></div>';
 }
 add_action( 'wp_dashboard_setup', 'ag_starter_barber_dashboard_widget' );
+
+// Auto-update via raw GitHub.
+require_once get_template_directory() . '/inc/theme-updater.php';

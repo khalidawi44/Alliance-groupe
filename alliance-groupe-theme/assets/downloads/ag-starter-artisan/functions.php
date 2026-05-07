@@ -210,3 +210,6 @@ function ag_starter_artisan_dashboard_widget_render() {
 	<?php
 }
 add_action( 'wp_dashboard_setup', 'ag_starter_artisan_dashboard_widget' );
+
+// Auto-update via raw GitHub.
+require_once get_template_directory() . '/inc/theme-updater.php';
