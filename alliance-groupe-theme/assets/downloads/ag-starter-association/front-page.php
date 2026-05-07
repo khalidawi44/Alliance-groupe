@@ -11,6 +11,21 @@ get_header();
 
 <main id="main">
 
+    <?php // Zone editable : contenu de la page WP definie comme accueil
+    // (Reglages > Lecture > Page d'accueil = une page). Permet aux
+    // utilisateurs de modifier l'accueil via l'editeur WP standard
+    // sans toucher au theme. Si vide, on saute directement aux sections.
+    if ( have_posts() ) : while ( have_posts() ) : the_post();
+        $custom = trim( get_the_content() );
+        if ( $custom ) : ?>
+            <section class="ag-asso-section ag-asso-custom" style="padding:60px 24px;">
+                <div class="ag-asso-container ag-asso-custom__inner">
+                    <?php the_content(); ?>
+                </div>
+            </section>
+        <?php endif;
+    endwhile; rewind_posts(); endif; ?>
+
     <!-- Hero -->
     <section class="ag-asso-hero">
         <div class="ag-asso-hero__inner">
