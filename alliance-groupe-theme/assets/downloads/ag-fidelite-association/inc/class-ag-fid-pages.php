@@ -39,13 +39,22 @@ class AG_Fid_Pages {
 			'statuts'      => array( 'title' => 'Statuts',             'content'   => self::default_statuts_content() ),
 		);
 		foreach ( $pages as $slug => $page ) {
-			if ( get_page_by_path( $slug ) ) continue;
+			$existing = get_page_by_path( $slug );
+			$content  = isset( $page['shortcode'] ) ? $page['shortcode'] : $page['content'];
+			if ( $existing ) {
+				// Reset force du contenu si placeholder admin detecte
+				// (ancien message "Bienvenue sur notre site militant.")
+				if ( $slug === 'accueil' && strpos( $existing->post_content, 'Cette zone est éditable depuis' ) !== false ) {
+					wp_update_post( array( 'ID' => $existing->ID, 'post_content' => '' ) );
+				}
+				continue;
+			}
 			wp_insert_post( array(
 				'post_type'    => 'page',
 				'post_status'  => 'publish',
 				'post_title'   => $page['title'],
 				'post_name'    => $slug,
-				'post_content' => isset( $page['shortcode'] ) ? $page['shortcode'] : $page['content'],
+				'post_content' => $content,
 			) );
 		}
 		// Definit auto la page 'accueil' comme page d'accueil du site
