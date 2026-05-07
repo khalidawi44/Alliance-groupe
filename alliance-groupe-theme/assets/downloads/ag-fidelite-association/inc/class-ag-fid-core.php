@@ -22,6 +22,7 @@ class AG_Fid_Core {
 		add_action( 'customize_register', array( $this, 'register_customizer' ), 30 );
 		add_action( 'admin_init',         array( $this, 'maybe_auto_reseed' ) );
 		add_action( 'admin_notices',      array( $this, 'maybe_show_update_notice' ) );
+		add_action( 'wp_dashboard_setup', array( $this, 'add_dashboard_widget' ) );
 	}
 
 	/**
@@ -146,5 +147,62 @@ class AG_Fid_Core {
 			'section'     => 'ag_fid_rdv',
 			'type'        => 'text',
 		) );
+	}
+
+	/**
+	 * Encart dashboard admin : explique au client comment editer son site.
+	 */
+	public function add_dashboard_widget() {
+		wp_add_dashboard_widget(
+			'ag_fid_help_widget',
+			'🚀 Pack Fidélité — Comment modifier votre site',
+			array( $this, 'render_dashboard_widget' )
+		);
+	}
+
+	public function render_dashboard_widget() {
+		$home_id = (int) get_option( 'page_on_front' );
+		?>
+		<style>
+			.ag-fid-help { font-size: .92rem; line-height: 1.6; }
+			.ag-fid-help h4 { margin: 14px 0 6px; color: #E10F1A; font-size: .95rem; }
+			.ag-fid-help ul { margin: 0; padding-left: 18px; }
+			.ag-fid-help li { margin-bottom: 4px; }
+			.ag-fid-help a { font-weight: 600; }
+		</style>
+		<div class="ag-fid-help">
+			<p><strong>Bienvenue !</strong> Voici les 4 endroits où modifier votre site :</p>
+
+			<h4>🏠 1. Page d'accueil</h4>
+			<ul>
+				<li><a href="<?php echo esc_url( $home_id ? get_edit_post_link( $home_id ) : admin_url( 'edit.php?post_type=page' ) ); ?>">Pages → Accueil</a> : éditez librement avec Gutenberg (texte, images, blocs)</li>
+				<li>Si vous laissez vide : seules les sections automatiques apparaissent</li>
+			</ul>
+
+			<h4>🎨 2. Apparence du site (couleurs, typo, logo, sections)</h4>
+			<ul>
+				<li><a href="<?php echo esc_url( admin_url( 'customize.php' ) ); ?>">Apparence → Personnaliser → Mouvement militant</a></li>
+				<li><strong>Sections visibles</strong> : on/off pour chaque section (manifeste, combats, équipe, dons…)</li>
+				<li><strong>Couleurs</strong> : 6 préréglages ou personnalisé</li>
+				<li><strong>Hero, Qui sommes-nous, Bandeau urgence, Réseaux sociaux</strong>… tout est là</li>
+			</ul>
+
+			<h4>📝 3. Contenu dynamique (combats, événements, articles)</h4>
+			<ul>
+				<li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=ag_combat' ) ); ?>">Combats</a> · <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=ag_evenement' ) ); ?>">Événements</a> · <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=ag_groupe' ) ); ?>">Groupes locaux</a> · <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=ag_petition' ) ); ?>">Pétitions</a> · <a href="<?php echo esc_url( admin_url( 'edit.php' ) ); ?>">Articles</a></li>
+				<li>Ajouter / supprimer / modifier — affiche auto sur le site</li>
+			</ul>
+
+			<h4>📄 4. Pages statiques (manifeste, mentions, RGPD, statuts)</h4>
+			<ul>
+				<li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=page' ) ); ?>">Pages</a> → cliquez la page à modifier → Gutenberg</li>
+			</ul>
+
+			<p style="margin-top:14px;padding-top:10px;border-top:1px solid #eee;">
+				<a href="<?php echo esc_url( admin_url( 'themes.php?page=ag-asso-welcome' ) ); ?>" class="button button-primary">🚀 Démarrage rapide</a>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-fid-recommendations' ) ); ?>" class="button">Pack Fidélité</a>
+			</p>
+		</div>
+		<?php
 	}
 }
