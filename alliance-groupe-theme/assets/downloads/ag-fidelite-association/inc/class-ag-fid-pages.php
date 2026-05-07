@@ -20,6 +20,7 @@ class AG_Fid_Pages {
 
 	public static function create_default_pages() {
 		$pages = array(
+			'accueil'      => array( 'title' => 'Accueil',             'content' => "<!-- wp:paragraph -->\n<p><strong>Bienvenue sur notre site militant.</strong> Cette zone est éditable depuis <em>Pages → Accueil</em>. Le reste de la page (manifeste, combats, événements, etc.) est défini dans le <em>Customizer</em> ou peut être désactivé section par section dans <em>Apparence → Personnaliser → Sections visibles</em>.</p>\n<!-- /wp:paragraph -->" ),
 			'qui-sommes-nous' => array( 'title' => 'Qui sommes-nous',  'shortcode' => '[ag_fid_qui_sommes_nous]' ),
 			'reunion'      => array( 'title' => 'Réunion en ligne',    'shortcode' => '[ag_fid_visio]' ),
 			'rendez-vous'  => array( 'title' => 'Prendre rendez-vous', 'shortcode' => '[ag_fid_rdv]' ),
@@ -46,6 +47,12 @@ class AG_Fid_Pages {
 				'post_name'    => $slug,
 				'post_content' => isset( $page['shortcode'] ) ? $page['shortcode'] : $page['content'],
 			) );
+		}
+		// Definit auto la page 'accueil' comme page d'accueil du site
+		$home = get_page_by_path( 'accueil' );
+		if ( $home ) {
+			update_option( 'show_on_front', 'page' );
+			update_option( 'page_on_front', $home->ID );
 		}
 		self::create_default_menus();
 		self::create_default_cpts();
