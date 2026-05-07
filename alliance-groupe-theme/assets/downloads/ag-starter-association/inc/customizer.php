@@ -51,6 +51,39 @@ function ag_asso_customize( $wp_customize ) {
 	}
 
 	// =====================================================================
+	// Contenu accueil (textes editables des sections par defaut)
+	// =====================================================================
+	$wp_customize->add_section( 'ag_asso_home_content', array(
+		'title' => __( 'Contenu accueil (textes des sections)', 'ag-starter-association' ),
+		'panel' => 'ag_asso_panel',
+		'description' => 'Personnalisez chaque texte des sections de l\'accueil. Pour les cartes Combats, allez dans le menu admin "Combats" (CPT lus dynamiquement).',
+	) );
+	$home_fields = array(
+		'ag_asso_manifeste_title_pre' => array( 'label' => 'Manifeste — début du titre',  'default' => 'Notre',     'type' => 'text' ),
+		'ag_asso_manifeste_title_em'  => array( 'label' => 'Manifeste — mot en rouge',    'default' => 'manifeste', 'type' => 'text' ),
+		'ag_asso_manifeste_lead'      => array( 'label' => 'Manifeste — phrase d\'intro', 'default' => 'Nous croyons qu\'une autre société est possible — plus juste, plus écologique, plus démocratique. Voici nos engagements.', 'type' => 'textarea' ),
+		'ag_asso_manifeste_p1'        => array( 'label' => 'Manifeste — paragraphe 1',    'default' => '<strong>1. Justice sociale.</strong> Nous combattons les inégalités là où elles se creusent.', 'type' => 'textarea' ),
+		'ag_asso_manifeste_p2'        => array( 'label' => 'Manifeste — paragraphe 2',    'default' => '<strong>2. Urgence climatique.</strong> Le dérèglement climatique n\'est plus une menace lointaine.', 'type' => 'textarea' ),
+		'ag_asso_manifeste_p3'        => array( 'label' => 'Manifeste — paragraphe 3',    'default' => '<strong>3. Démocratie vivante.</strong> Voter tous les 5 ans ne suffit plus.', 'type' => 'textarea' ),
+		'ag_asso_combats_lead'        => array( 'label' => 'Combats — phrase d\'intro',   'default' => 'Six grandes campagnes que nous portons cette année.', 'type' => 'textarea' ),
+		'ag_asso_evenements_lead'     => array( 'label' => 'Événements — phrase d\'intro','default' => 'Marches, meetings, assemblées générales — venez nous rencontrer.', 'type' => 'textarea' ),
+		'ag_asso_actu_lead'           => array( 'label' => 'Actualités — phrase d\'intro','default' => 'Les dernières news du mouvement.', 'type' => 'textarea' ),
+		'ag_asso_signer_lead'         => array( 'label' => 'Signer — phrase d\'intro',    'default' => 'Signer, c\'est s\'engager à recevoir nos appels à mobilisation et à les relayer.', 'type' => 'textarea' ),
+		'ag_asso_don_lead'            => array( 'label' => 'Don — phrase d\'intro',       'default' => 'Indépendants des partis. 66% de votre don est déductible de vos impôts.', 'type' => 'textarea' ),
+	);
+	foreach ( $home_fields as $key => $f ) {
+		$wp_customize->add_setting( $key, array(
+			'default'           => $f['default'],
+			'sanitize_callback' => $f['type'] === 'textarea' ? 'wp_kses_post' : 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( $key, array(
+			'label'   => $f['label'],
+			'section' => 'ag_asso_home_content',
+			'type'    => $f['type'],
+		) );
+	}
+
+	// =====================================================================
 	// Identite
 	// =====================================================================
 	$wp_customize->add_section( 'ag_asso_identity', array(

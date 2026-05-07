@@ -68,13 +68,26 @@ get_header();
     <?php if ( ag_asso_opt( 'ag_asso_show_manifeste', 1 ) ) : ?>
     <section class="ag-asso-section" id="manifeste">
         <div class="ag-asso-container">
-            <h2 class="ag-asso-section__title"><?php esc_html_e( 'Notre', 'ag-starter-association' ); ?> <em><?php esc_html_e( 'manifeste', 'ag-starter-association' ); ?></em></h2>
-            <p class="ag-asso-section__lead">Nous croyons qu'une autre société est possible — plus juste, plus écologique, plus démocratique. Voici nos engagements.</p>
+            <h2 class="ag-asso-section__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_manifeste_title_pre', 'Notre' ) ); ?> <em><?php echo esc_html( ag_asso_opt( 'ag_asso_manifeste_title_em', 'manifeste' ) ); ?></em></h2>
+            <p class="ag-asso-section__lead"><?php echo esc_html( ag_asso_opt( 'ag_asso_manifeste_lead', 'Nous croyons qu\'une autre société est possible — plus juste, plus écologique, plus démocratique. Voici nos engagements.' ) ); ?></p>
             <div class="ag-asso-manifeste">
-                <p><strong>1. Justice sociale.</strong> Nous combattons les inégalités là où elles se creusent : accès au logement, au soin, à l'éducation. Aucun territoire ne doit être abandonné, aucune personne ne doit être laissée de côté.</p>
-                <p><strong>2. Urgence climatique.</strong> Le dérèglement climatique n'est plus une menace lointaine, c'est notre quotidien. Nous portons un projet de transition juste, qui ne fasse pas peser l'effort sur les plus modestes.</p>
-                <p><strong>3. Démocratie vivante.</strong> Voter tous les cinq ans ne suffit plus. Nous défendons des assemblées citoyennes tirées au sort, le référendum d'initiative citoyenne et la transparence totale de l'action publique.</p>
+                <?php
+                // Si page WP "manifeste" existe et a du contenu, l'utiliser. Sinon
+                // 3 paragraphes editables via Customizer.
+                $manif_page = get_page_by_path( 'manifeste' );
+                if ( $manif_page && trim( $manif_page->post_content ) ) {
+                    echo apply_filters( 'the_content', $manif_page->post_content );
+                } else {
+                    for ( $i = 1; $i <= 3; $i++ ) {
+                        $p = ag_asso_opt( "ag_asso_manifeste_p$i", '' );
+                        if ( $p ) echo '<p>' . wp_kses_post( $p ) . '</p>';
+                    }
+                }
+                ?>
             </div>
+            <p style="text-align:center;margin-top:24px;">
+                <a class="ag-asso-btn ag-asso-btn--primary" href="<?php echo esc_url( ag_asso_link( 'manifeste' ) ); ?>">Lire le manifeste complet →</a>
+            </p>
         </div>
     </section>
 
@@ -91,25 +104,46 @@ get_header();
     <section class="ag-asso-section ag-asso-section--alt" id="combats">
         <div class="ag-asso-container">
             <h2 class="ag-asso-section__title"><?php esc_html_e( 'Nos', 'ag-starter-association' ); ?> <em><?php esc_html_e( 'combats', 'ag-starter-association' ); ?></em></h2>
-            <p class="ag-asso-section__lead">Six grandes campagnes que nous portons en 2026, sur le terrain et dans les institutions.</p>
+            <p class="ag-asso-section__lead"><?php echo esc_html( ag_asso_opt( 'ag_asso_combats_lead', 'Six grandes campagnes que nous portons cette année, sur le terrain et dans les institutions.' ) ); ?></p>
             <div class="ag-asso-combats-grid">
                 <?php
-                $combats = array(
-                    array( '🌍', 'Justice climatique',     '#1F8A3D', 'Pour une transition écologique qui ne pèse pas sur les plus modestes : rénovation thermique massive, transports gratuits, fin des aides aux énergies fossiles.' ),
-                    array( '🏠', 'Logement digne',         '#3B5998', 'Plafonnement effectif des loyers, réquisition des logements vacants, construction massive de logements sociaux. Le logement n\'est pas une marchandise.' ),
-                    array( '🏥', 'Service public fort',    '#E10F1A', 'Refonder l\'hôpital, l\'école, la SNCF. Des investissements publics massifs, fin des fermetures de lits, recrutements à hauteur des besoins.' ),
-                    array( '🗳️', 'Démocratie réelle',      '#8B1A8B', 'Référendum d\'initiative citoyenne, assemblées tirées au sort, reconnaissance du vote blanc. Redonner le pouvoir aux citoyens.' ),
-                    array( '🔍', 'Transparence publique', '#0A0A0D', 'Open data total, traçabilité des marchés publics, registre obligatoire des lobbies. La démocratie sans transparence est une illusion.' ),
-                    array( '⚖️', 'Égalité réelle',         '#FFD23F', 'Lutter contre toutes les discriminations : sexe, origine, handicap, orientation. Promouvoir activement la parité et l\'inclusion à tous les niveaux.' ),
-                );
-                foreach ( $combats as $c ) : ?>
-                    <article class="ag-asso-combat">
-                        <div class="ag-asso-combat__icon" style="background:<?php echo esc_attr( $c[2] ); ?>;"><?php echo $c[0]; // phpcs:ignore ?></div>
-                        <h3><?php echo esc_html( $c[1] ); ?></h3>
-                        <p><?php echo esc_html( $c[3] ); ?></p>
-                        <a href="<?php echo esc_url( home_url( '/combats/' ) ); ?>"><?php esc_html_e( 'En savoir plus →', 'ag-starter-association' ); ?></a>
-                    </article>
-                <?php endforeach; ?>
+                // Lecture dynamique : CPT ag_combat (modifiables via Combats > admin).
+                // Fallback hardcode si CPT vide.
+                $colors = array( '#1F8A3D', '#3B5998', '#E10F1A', '#8B1A8B', '#0A0A0D', '#FFD23F' );
+                $emojis = array( '🌍', '🏠', '🏥', '🗳️', '🔍', '⚖️' );
+                $q_combats = new WP_Query( array( 'post_type' => 'ag_combat', 'posts_per_page' => 6 ) );
+                if ( $q_combats->have_posts() ) :
+                    $i = 0;
+                    while ( $q_combats->have_posts() ) : $q_combats->the_post();
+                        $color = $colors[ $i % count( $colors ) ];
+                        $emoji = $emojis[ $i % count( $emojis ) ];
+                        $i++; ?>
+                        <article class="ag-asso-combat">
+                            <div class="ag-asso-combat__icon" style="background:<?php echo esc_attr( $color ); ?>;"><?php echo $emoji; ?></div>
+                            <h3><?php the_title(); ?></h3>
+                            <p><?php echo esc_html( wp_trim_words( get_the_excerpt(), 30 ) ); ?></p>
+                            <a href="<?php the_permalink(); ?>"><?php esc_html_e( 'En savoir plus →', 'ag-starter-association' ); ?></a>
+                        </article>
+                    <?php endwhile;
+                    wp_reset_postdata();
+                else :
+                    $combats_fb = array(
+                        array( '🌍', 'Justice climatique',     '#1F8A3D', 'Pour une transition écologique qui ne pèse pas sur les plus modestes.' ),
+                        array( '🏠', 'Logement digne',         '#3B5998', 'Plafonnement effectif des loyers, réquisition des vacants.' ),
+                        array( '🏥', 'Service public fort',    '#E10F1A', 'Refonder l\'hôpital, l\'école, les transports publics.' ),
+                        array( '🗳️', 'Démocratie réelle',      '#8B1A8B', 'RIC, assemblées tirées au sort, reconnaissance du vote blanc.' ),
+                        array( '🔍', 'Transparence publique', '#0A0A0D', 'Open data, traçabilité des marchés publics, registre des lobbies.' ),
+                        array( '⚖️', 'Égalité réelle',         '#FFD23F', 'Lutte contre toutes les discriminations.' ),
+                    );
+                    foreach ( $combats_fb as $c ) : ?>
+                        <article class="ag-asso-combat">
+                            <div class="ag-asso-combat__icon" style="background:<?php echo esc_attr( $c[2] ); ?>;"><?php echo $c[0]; ?></div>
+                            <h3><?php echo esc_html( $c[1] ); ?></h3>
+                            <p><?php echo esc_html( $c[3] ); ?></p>
+                            <a href="<?php echo esc_url( home_url( '/combats/' ) ); ?>"><?php esc_html_e( 'En savoir plus →', 'ag-starter-association' ); ?></a>
+                        </article>
+                    <?php endforeach;
+                endif; ?>
             </div>
         </div>
     </section>
@@ -127,7 +161,7 @@ get_header();
     <section class="ag-asso-section" id="evenements">
         <div class="ag-asso-container">
             <h2 class="ag-asso-section__title"><?php esc_html_e( 'Prochains', 'ag-starter-association' ); ?> <em><?php esc_html_e( 'événements', 'ag-starter-association' ); ?></em></h2>
-            <p class="ag-asso-section__lead">Marches, meetings, assemblées générales, débats publics — venez nous rencontrer près de chez vous.</p>
+            <p class="ag-asso-section__lead"><?php echo esc_html( ag_asso_opt( 'ag_asso_evenements_lead', 'Marches, meetings, assemblées générales, débats publics — venez nous rencontrer près de chez vous.' ) ); ?></p>
             <div class="ag-asso-events">
                 <?php
                 $events = array(
@@ -186,6 +220,9 @@ get_header();
     <section class="ag-asso-section" id="actu">
         <div class="ag-asso-container">
             <h2 class="ag-asso-section__title"><?php esc_html_e( 'Dernières', 'ag-starter-association' ); ?> <em><?php esc_html_e( 'actualités', 'ag-starter-association' ); ?></em></h2>
+            <?php if ( $actu_lead = ag_asso_opt( 'ag_asso_actu_lead', '' ) ) : ?>
+                <p class="ag-asso-section__lead"><?php echo esc_html( $actu_lead ); ?></p>
+            <?php endif; ?>
             <div class="ag-asso-actu-grid">
                 <?php
                 $recent = get_posts( array( 'numberposts' => 3 ) );
@@ -276,7 +313,7 @@ get_header();
     <section class="ag-asso-section ag-asso-section--cta" id="signer">
         <div class="ag-asso-container">
             <h2 class="ag-asso-section__title"><?php esc_html_e( 'Signez', 'ag-starter-association' ); ?> <em><?php esc_html_e( 'l\'appel', 'ag-starter-association' ); ?></em></h2>
-            <p class="ag-asso-section__lead">Pour une société plus juste, écologique et démocratique. Signer, c'est s'engager à recevoir nos appels à mobilisation et à les relayer autour de soi.</p>
+            <p class="ag-asso-section__lead"><?php echo esc_html( ag_asso_opt( 'ag_asso_signer_lead', 'Pour une société plus juste, écologique et démocratique. Signer, c\'est s\'engager à recevoir nos appels à mobilisation et à les relayer autour de soi.' ) ); ?></p>
             <form class="ag-asso-form" action="#" method="post">
                 <input type="text" name="prenom" placeholder="<?php esc_attr_e( 'Prénom', 'ag-starter-association' ); ?>" required>
                 <input type="text" name="nom" placeholder="<?php esc_attr_e( 'Nom', 'ag-starter-association' ); ?>" required>
@@ -304,7 +341,7 @@ get_header();
     <section class="ag-asso-section ag-asso-section--alt" id="don">
         <div class="ag-asso-container">
             <h2 class="ag-asso-section__title"><?php esc_html_e( 'Faire un', 'ag-starter-association' ); ?> <em><?php esc_html_e( 'don', 'ag-starter-association' ); ?></em></h2>
-            <p class="ag-asso-section__lead">Indépendants des partis et des grands donateurs, nous ne tenons que par vous. 66% de votre don est déductible de vos impôts.</p>
+            <p class="ag-asso-section__lead"><?php echo esc_html( ag_asso_opt( 'ag_asso_don_lead', 'Indépendants des partis et des grands donateurs, nous ne tenons que par vous. 66% de votre don est déductible de vos impôts.' ) ); ?></p>
             <div class="ag-asso-don-grid">
                 <?php
                 $reduc = (int) ag_asso_opt( 'ag_asso_don_tax_reduc', 66 );
