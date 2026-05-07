@@ -62,7 +62,7 @@ endwhile; rewind_posts(); endif; ?>
 	<?php /* ─────────── 2. Domaines d'expertise (CPT) ─────────── */ ?>
 	<section class="ag-section ag-domaines" id="ag-domaines">
 		<div class="ag-container">
-			<h2 class="ag-section-title"><?php esc_html_e( 'Domaines d\'expertise', 'ag-starter-avocat' ); ?></h2>
+			<h2 class="ag-section-title"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_domaines_title', 'Domaines d\'expertise' ) ); ?></h2>
 			<p class="ag-section-lead"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_domaines_lead', 'Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit.' ) ); ?></p>
 
 			<?php
@@ -101,10 +101,10 @@ endwhile; rewind_posts(); endif; ?>
 				</div>
 			<?php else : ?>
 				<div class="ag-domaines__empty">
-					<p><?php esc_html_e( 'Aucun domaine d\'expertise n\'est encore publie.', 'ag-starter-avocat' ); ?></p>
+					<p><?php echo esc_html( ag_avocat_opt( 'ag_avocat_domaines_empty', 'Aucun domaine d\'expertise n\'est encore publie.' ) ); ?></p>
 					<?php if ( current_user_can( 'edit_posts' ) ) : ?>
-						<p><a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=ag_domaine' ) ); ?>" class="ag-btn"><?php esc_html_e( 'Ajouter un premier domaine', 'ag-starter-avocat' ); ?></a></p>
-						<p class="ag-domaines__hint"><?php esc_html_e( 'Astuce : creez 4 a 6 domaines (Droit des affaires, Droit du travail, Droit de la famille, Droit immobilier...) avec un emoji et 3 exemples de cas chacun.', 'ag-starter-avocat' ); ?></p>
+						<p><a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=ag_domaine' ) ); ?>" class="ag-btn"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_domaines_empty_btn', 'Ajouter un premier domaine' ) ); ?></a></p>
+						<p class="ag-domaines__hint"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_domaines_empty_hint', 'Astuce : creez 4 a 6 domaines (Droit des affaires, Droit du travail, Droit de la famille, Droit immobilier...) avec un emoji et 3 exemples de cas chacun.' ) ); ?></p>
 					<?php endif; ?>
 				</div>
 			<?php endif; ?>
@@ -126,19 +126,17 @@ endwhile; rewind_posts(); endif; ?>
 					</div>
 				<?php endif; ?>
 				<div class="ag-maitre__body">
-					<span class="ag-maitre__tag"><?php esc_html_e( 'Le Maître', 'ag-starter-avocat' ); ?></span>
+					<span class="ag-maitre__tag"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_maitre_tag', 'Le Maître' ) ); ?></span>
 					<h2 class="ag-maitre__name"><?php echo esc_html( ag_starter_avocat_get_option( 'ag_maitre_name' ) ); ?></h2>
 					<div class="ag-maitre__meta">
 						<span><?php echo esc_html( ag_starter_avocat_get_option( 'ag_maitre_barreau' ) ); ?></span>
 						<?php $year = ag_starter_avocat_get_option( 'ag_maitre_year' ); if ( $year ) : ?>
-							<span> · <?php
-							/* translators: %s : year (e.g. 2010). */
-							printf( esc_html__( 'Inscrit depuis %s', 'ag-starter-avocat' ), esc_html( $year ) ); ?></span>
+							<span> · <?php echo esc_html( ag_avocat_opt( 'ag_avocat_maitre_year_prefix', 'Inscrit depuis' ) ); ?> <?php echo esc_html( $year ); ?></span>
 						<?php endif; ?>
 					</div>
 					<p class="ag-maitre__bio"><?php echo nl2br( esc_html( ag_starter_avocat_get_option( 'ag_maitre_bio' ) ) ); ?></p>
 					<?php $spec = ag_starter_avocat_get_option( 'ag_maitre_specialties' ); if ( $spec ) : ?>
-						<p class="ag-maitre__specialties"><strong><?php esc_html_e( 'Specialites :', 'ag-starter-avocat' ); ?></strong> <?php echo esc_html( $spec ); ?></p>
+						<p class="ag-maitre__specialties"><strong><?php echo esc_html( ag_avocat_opt( 'ag_avocat_maitre_specialties_label', 'Specialites :' ) ); ?></strong> <?php echo esc_html( $spec ); ?></p>
 					<?php endif; ?>
 					<?php do_action( 'ag_inside_maitre_body' ); ?>
 				</div>
@@ -153,7 +151,7 @@ endwhile; rewind_posts(); endif; ?>
 	<?php if ( ag_starter_avocat_get_option( 'ag_honoraires_show' ) ) : ?>
 	<section class="ag-section ag-honoraires" id="ag-honoraires">
 		<div class="ag-container">
-			<h2 class="ag-section-title"><?php esc_html_e( 'Honoraires', 'ag-starter-avocat' ); ?></h2>
+			<h2 class="ag-section-title"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_honoraires_title', 'Honoraires' ) ); ?></h2>
 			<p class="ag-section-lead"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_honoraires_lead', 'Transparence totale sur les tarifs : pas de mauvaise surprise, devis ecrit avant tout engagement.' ) ); ?></p>
 
 			<div class="ag-honoraires__grid">
@@ -195,22 +193,22 @@ endwhile; rewind_posts(); endif; ?>
 	<?php /* ─────────── 5. Cabinet (adresse + horaires + contact — 3 colonnes + map) ─────────── */ ?>
 	<section class="ag-section ag-cabinet" id="ag-cabinet">
 		<div class="ag-container">
-			<h2 class="ag-section-title"><?php esc_html_e( 'Le cabinet', 'ag-starter-avocat' ); ?></h2>
+			<h2 class="ag-section-title"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_cabinet_title', 'Le cabinet' ) ); ?></h2>
 			<p class="ag-section-lead"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_cabinet_lead', 'Consultation au cabinet, en visio ou par telephone.' ) ); ?></p>
 			<div class="ag-cabinet__cards">
 				<div class="ag-cabinet__block">
 					<div class="ag-cabinet__block-icon">📍</div>
-					<h3><?php esc_html_e( 'Adresse', 'ag-starter-avocat' ); ?></h3>
+					<h3><?php echo esc_html( ag_avocat_opt( 'ag_avocat_cabinet_address_heading', 'Adresse' ) ); ?></h3>
 					<p><?php echo nl2br( esc_html( ag_starter_avocat_get_option( 'ag_cabinet_address' ) ) ); ?></p>
 				</div>
 				<div class="ag-cabinet__block">
 					<div class="ag-cabinet__block-icon">🕓</div>
-					<h3><?php esc_html_e( 'Horaires', 'ag-starter-avocat' ); ?></h3>
+					<h3><?php echo esc_html( ag_avocat_opt( 'ag_avocat_cabinet_hours_heading', 'Horaires' ) ); ?></h3>
 					<p><?php echo nl2br( esc_html( ag_starter_avocat_get_option( 'ag_cabinet_hours' ) ) ); ?></p>
 				</div>
 				<div class="ag-cabinet__block">
 					<div class="ag-cabinet__block-icon">📞</div>
-					<h3><?php esc_html_e( 'Contact', 'ag-starter-avocat' ); ?></h3>
+					<h3><?php echo esc_html( ag_avocat_opt( 'ag_avocat_cabinet_contact_heading', 'Contact' ) ); ?></h3>
 					<p>
 						<?php $phone = ag_starter_avocat_get_option( 'ag_cabinet_phone' ); if ( $phone ) : ?>
 							<a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $phone ) ); ?>"><?php echo esc_html( $phone ); ?></a><br>
@@ -221,7 +219,7 @@ endwhile; rewind_posts(); endif; ?>
 					</p>
 					<?php $emergency = ag_starter_avocat_get_option( 'ag_cabinet_emergency' ); if ( $emergency ) : ?>
 						<p class="ag-cabinet__emergency">
-							<strong><?php esc_html_e( 'Garde a vue 24/7 :', 'ag-starter-avocat' ); ?></strong>
+							<strong><?php echo esc_html( ag_avocat_opt( 'ag_avocat_cabinet_emergency_label', 'Garde a vue 24/7 :' ) ); ?></strong>
 							<a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $emergency ) ); ?>"><?php echo esc_html( $emergency ); ?></a>
 						</p>
 					<?php endif; ?>
@@ -257,29 +255,29 @@ endwhile; rewind_posts(); endif; ?>
 
 				<div class="ag-rdv__row">
 					<div class="ag-rdv__field">
-						<label for="ag_rdv_prenom"><?php esc_html_e( 'Prénom', 'ag-starter-avocat' ); ?></label>
+						<label for="ag_rdv_prenom"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_rdv_label_prenom', 'Prénom' ) ); ?></label>
 						<input type="text" id="ag_rdv_prenom" name="ag_rdv_prenom" autocomplete="given-name">
 					</div>
 					<div class="ag-rdv__field">
-						<label for="ag_rdv_nom"><?php esc_html_e( 'Nom', 'ag-starter-avocat' ); ?> *</label>
+						<label for="ag_rdv_nom"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_rdv_label_nom', 'Nom' ) ); ?> *</label>
 						<input type="text" id="ag_rdv_nom" name="ag_rdv_nom" required autocomplete="family-name">
 					</div>
 				</div>
 				<div class="ag-rdv__row">
 					<div class="ag-rdv__field">
-						<label for="ag_rdv_email"><?php esc_html_e( 'Email', 'ag-starter-avocat' ); ?> *</label>
+						<label for="ag_rdv_email"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_rdv_label_email', 'Email' ) ); ?> *</label>
 						<input type="email" id="ag_rdv_email" name="ag_rdv_email" required autocomplete="email">
 					</div>
 					<div class="ag-rdv__field">
-						<label for="ag_rdv_tel"><?php esc_html_e( 'Téléphone', 'ag-starter-avocat' ); ?></label>
+						<label for="ag_rdv_tel"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_rdv_label_tel', 'Téléphone' ) ); ?></label>
 						<input type="tel" id="ag_rdv_tel" name="ag_rdv_tel" autocomplete="tel">
 					</div>
 				</div>
 				<div class="ag-rdv__row">
 					<div class="ag-rdv__field">
-						<label for="ag_rdv_domaine"><?php esc_html_e( 'Domaine concerné', 'ag-starter-avocat' ); ?></label>
+						<label for="ag_rdv_domaine"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_rdv_label_domaine', 'Domaine concerné' ) ); ?></label>
 						<select id="ag_rdv_domaine" name="ag_rdv_domaine">
-							<option value=""><?php esc_html_e( '— Sélectionnez —', 'ag-starter-avocat' ); ?></option>
+							<option value=""><?php echo esc_html( ag_avocat_opt( 'ag_avocat_rdv_domaine_select', '— Sélectionnez —' ) ); ?></option>
 							<?php
 							$dropdown = ag_starter_avocat_get_domaines( 20 );
 							if ( $dropdown ) {
@@ -290,20 +288,20 @@ endwhile; rewind_posts(); endif; ?>
 								echo '<option>' . esc_html__( 'Conseil general', 'ag-starter-avocat' ) . '</option>';
 							}
 							?>
-							<option value="autre"><?php esc_html_e( 'Autre / a determiner', 'ag-starter-avocat' ); ?></option>
+							<option value="autre"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_rdv_domaine_other', 'Autre / a determiner' ) ); ?></option>
 						</select>
 					</div>
 					<div class="ag-rdv__field">
-						<label for="ag_rdv_format"><?php esc_html_e( 'Format souhaité', 'ag-starter-avocat' ); ?></label>
+						<label for="ag_rdv_format"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_rdv_label_format', 'Format souhaité' ) ); ?></label>
 						<select id="ag_rdv_format" name="ag_rdv_format">
-							<option value="cabinet"><?php esc_html_e( 'Au cabinet', 'ag-starter-avocat' ); ?></option>
-							<option value="visio"><?php esc_html_e( 'En visio', 'ag-starter-avocat' ); ?></option>
-							<option value="telephone"><?php esc_html_e( 'Par téléphone', 'ag-starter-avocat' ); ?></option>
+							<option value="cabinet"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_rdv_format_cabinet', 'Au cabinet' ) ); ?></option>
+							<option value="visio"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_rdv_format_visio', 'En visio' ) ); ?></option>
+							<option value="telephone"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_rdv_format_phone', 'Par téléphone' ) ); ?></option>
 						</select>
 					</div>
 				</div>
 				<div class="ag-rdv__field">
-					<label for="ag_rdv_message"><?php esc_html_e( 'Description du dossier (en quelques lignes)', 'ag-starter-avocat' ); ?> *</label>
+					<label for="ag_rdv_message"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_rdv_label_message', 'Description du dossier (en quelques lignes)' ) ); ?> *</label>
 					<textarea id="ag_rdv_message" name="ag_rdv_message" rows="5" required></textarea>
 				</div>
 
@@ -321,9 +319,9 @@ endwhile; rewind_posts(); endif; ?>
 				</div>
 
 				<button type="submit" name="ag_rdv_submit" class="ag-btn ag-rdv__submit">
-					<?php esc_html_e( 'Envoyer ma demande →', 'ag-starter-avocat' ); ?>
+					<?php echo esc_html( ag_avocat_opt( 'ag_avocat_rdv_submit_label', 'Envoyer ma demande →' ) ); ?>
 				</button>
-				<p class="ag-rdv__legal"><?php esc_html_e( 'Demande confidentielle protégée par le secret professionnel. Réponse sous 48h ouvrées.', 'ag-starter-avocat' ); ?></p>
+				<p class="ag-rdv__legal"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_rdv_legal_note', 'Demande confidentielle protégée par le secret professionnel. Réponse sous 48h ouvrées.' ) ); ?></p>
 			</form>
 		</div>
 	</section>

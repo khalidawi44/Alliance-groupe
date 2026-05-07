@@ -92,6 +92,34 @@ class AG_Business_Barber {
 				'testimonialsLead' => (string) get_theme_mod( 'ag_bb_testimonials_lead', 'Avis clients vérifiés.' ),
 				'bookingLead'      => (string) get_theme_mod( 'ag_bb_booking_lead', 'Plus simple qu\'un coup de fil. Confirmation immédiate par email.' ),
 				'contactLead'      => (string) get_theme_mod( 'ag_bb_contact_lead', 'Le salon est ouvert du mardi au samedi.' ),
+				// Titres H2 (pre + em).
+				'teamTitlePre'         => (string) get_theme_mod( 'ag_bb_team_title_pre', 'L\'' ),
+				'teamTitleEm'          => (string) get_theme_mod( 'ag_bb_team_title_em', 'équipe' ),
+				'galleryTitlePre'      => (string) get_theme_mod( 'ag_bb_gallery_title_pre', 'La' ),
+				'galleryTitleEm'       => (string) get_theme_mod( 'ag_bb_gallery_title_em', 'galerie' ),
+				'testimonialsTitlePre' => (string) get_theme_mod( 'ag_bb_testimonials_title_pre', 'Ils' ),
+				'testimonialsTitleEm'  => (string) get_theme_mod( 'ag_bb_testimonials_title_em', 'parlent de nous' ),
+				'bookingTitlePre'      => (string) get_theme_mod( 'ag_bb_booking_title_pre', 'Réserver un' ),
+				'bookingTitleEm'       => (string) get_theme_mod( 'ag_bb_booking_title_em', 'créneau' ),
+				'contactTitlePre'      => (string) get_theme_mod( 'ag_bb_contact_title_pre', 'Nous' ),
+				'contactTitleEm'       => (string) get_theme_mod( 'ag_bb_contact_title_em', 'trouver' ),
+				// Booking form labels + CTA.
+				'bookingLabelDate'    => (string) get_theme_mod( 'ag_bb_booking_label_date',    'Date' ),
+				'bookingLabelSlot'    => (string) get_theme_mod( 'ag_bb_booking_label_slot',    'Créneau' ),
+				'bookingLabelService' => (string) get_theme_mod( 'ag_bb_booking_label_service', 'Prestation' ),
+				'bookingLabelBarber'  => (string) get_theme_mod( 'ag_bb_booking_label_barber',  'Barbier' ),
+				'bookingLabelName'    => (string) get_theme_mod( 'ag_bb_booking_label_name',    'Prénom' ),
+				'bookingLabelPhone'   => (string) get_theme_mod( 'ag_bb_booking_label_phone',   'Téléphone' ),
+				'bookingPlaceholderSlot'    => (string) get_theme_mod( 'ag_bb_booking_placeholder_slot',    '— Choisir un créneau —' ),
+				'bookingPlaceholderBarber'  => (string) get_theme_mod( 'ag_bb_booking_placeholder_barber',  '— N\'importe lequel —' ),
+				'bookingSubmit'       => (string) get_theme_mod( 'ag_bb_booking_submit', 'Confirmer la réservation' ),
+				'bookingNote'         => (string) get_theme_mod( 'ag_bb_booking_note', 'En cliquant, vous acceptez d\'être recontacté pour confirmation.' ),
+				// Contact block headings.
+				'contactCoordHeading' => (string) get_theme_mod( 'ag_bb_contact_coord_heading', 'Coordonnées' ),
+				'contactHoursHeading' => (string) get_theme_mod( 'ag_bb_contact_hours_heading', 'Horaires' ),
+				// Misc.
+				'experienceSuffix'    => (string) get_theme_mod( 'ag_bb_experience_suffix', 'ans d\'expérience' ),
+				'premiumBadge'        => (string) get_theme_mod( 'ag_bb_premium_badge', 'Premium' ),
 			) );
 		}
 	}
@@ -242,22 +270,53 @@ class AG_Business_Barber {
 			'panel'       => 'ag_bb_panel',
 		) );
 		$lead_fields = array(
-			'ag_bb_team_lead'         => array( 'label' => __( 'Équipe — phrase d\'intro', 'ag-business-barber' ),         'default' => 'Des barbiers passionnés, formés à la vieille école américaine.' ),
-			'ag_bb_gallery_lead'      => array( 'label' => __( 'Galerie — phrase d\'intro', 'ag-business-barber' ),         'default' => 'Quelques coupes signées par l\'équipe.' ),
-			'ag_bb_testimonials_lead' => array( 'label' => __( 'Témoignages — phrase d\'intro', 'ag-business-barber' ),     'default' => 'Avis clients vérifiés.' ),
-			'ag_bb_booking_lead'      => array( 'label' => __( 'Réservation — phrase d\'intro', 'ag-business-barber' ),     'default' => 'Plus simple qu\'un coup de fil. Confirmation immédiate par email.' ),
-			'ag_bb_contact_lead'      => array( 'label' => __( 'Contact / horaires — phrase d\'intro', 'ag-business-barber' ), 'default' => 'Le salon est ouvert du mardi au samedi.' ),
+			// Équipe
+			'ag_bb_team_title_pre'    => array( 'label' => __( 'Équipe — début du titre', 'ag-business-barber' ),     'default' => 'L\'',     'type' => 'text' ),
+			'ag_bb_team_title_em'     => array( 'label' => __( 'Équipe — mot en accent', 'ag-business-barber' ),       'default' => 'équipe',  'type' => 'text' ),
+			'ag_bb_team_lead'         => array( 'label' => __( 'Équipe — phrase d\'intro', 'ag-business-barber' ),     'default' => 'Des barbiers passionnés, formés à la vieille école américaine.', 'type' => 'textarea' ),
+			'ag_bb_experience_suffix' => array( 'label' => __( 'Équipe — suffixe expérience', 'ag-business-barber' ),  'default' => 'ans d\'expérience', 'type' => 'text' ),
+			// Galerie
+			'ag_bb_gallery_title_pre' => array( 'label' => __( 'Galerie — début du titre', 'ag-business-barber' ),     'default' => 'La',       'type' => 'text' ),
+			'ag_bb_gallery_title_em'  => array( 'label' => __( 'Galerie — mot en accent', 'ag-business-barber' ),      'default' => 'galerie',  'type' => 'text' ),
+			'ag_bb_gallery_lead'      => array( 'label' => __( 'Galerie — phrase d\'intro', 'ag-business-barber' ),    'default' => 'Quelques coupes signées par l\'équipe.', 'type' => 'textarea' ),
+			// Témoignages
+			'ag_bb_testimonials_title_pre' => array( 'label' => __( 'Témoignages — début du titre', 'ag-business-barber' ),  'default' => 'Ils',             'type' => 'text' ),
+			'ag_bb_testimonials_title_em'  => array( 'label' => __( 'Témoignages — mot en accent', 'ag-business-barber' ),    'default' => 'parlent de nous', 'type' => 'text' ),
+			'ag_bb_testimonials_lead'      => array( 'label' => __( 'Témoignages — phrase d\'intro', 'ag-business-barber' ),  'default' => 'Avis clients vérifiés.', 'type' => 'textarea' ),
+			// Réservation
+			'ag_bb_booking_title_pre' => array( 'label' => __( 'Réservation — début du titre', 'ag-business-barber' ), 'default' => 'Réserver un', 'type' => 'text' ),
+			'ag_bb_booking_title_em'  => array( 'label' => __( 'Réservation — mot en accent', 'ag-business-barber' ),  'default' => 'créneau',     'type' => 'text' ),
+			'ag_bb_booking_lead'      => array( 'label' => __( 'Réservation — phrase d\'intro', 'ag-business-barber' ),'default' => 'Plus simple qu\'un coup de fil. Confirmation immédiate par email.', 'type' => 'textarea' ),
+			'ag_bb_booking_label_date'    => array( 'label' => __( 'Réservation — label Date', 'ag-business-barber' ),   'default' => 'Date',       'type' => 'text' ),
+			'ag_bb_booking_label_slot'    => array( 'label' => __( 'Réservation — label Créneau', 'ag-business-barber' ),'default' => 'Créneau',    'type' => 'text' ),
+			'ag_bb_booking_label_service' => array( 'label' => __( 'Réservation — label Prestation', 'ag-business-barber' ), 'default' => 'Prestation', 'type' => 'text' ),
+			'ag_bb_booking_label_barber'  => array( 'label' => __( 'Réservation — label Barbier', 'ag-business-barber' ),'default' => 'Barbier',    'type' => 'text' ),
+			'ag_bb_booking_label_name'    => array( 'label' => __( 'Réservation — label Prénom', 'ag-business-barber' ), 'default' => 'Prénom',     'type' => 'text' ),
+			'ag_bb_booking_label_phone'   => array( 'label' => __( 'Réservation — label Téléphone', 'ag-business-barber' ), 'default' => 'Téléphone', 'type' => 'text' ),
+			'ag_bb_booking_placeholder_slot'    => array( 'label' => __( 'Réservation — placeholder Créneau', 'ag-business-barber' ), 'default' => '— Choisir un créneau —', 'type' => 'text' ),
+			'ag_bb_booking_placeholder_barber'  => array( 'label' => __( 'Réservation — placeholder Barbier', 'ag-business-barber' ), 'default' => '— N\'importe lequel —', 'type' => 'text' ),
+			'ag_bb_booking_submit'        => array( 'label' => __( 'Réservation — bouton submit', 'ag-business-barber' ),'default' => 'Confirmer la réservation', 'type' => 'text' ),
+			'ag_bb_booking_note'          => array( 'label' => __( 'Réservation — note RGPD/contact', 'ag-business-barber' ), 'default' => 'En cliquant, vous acceptez d\'être recontacté pour confirmation.', 'type' => 'textarea' ),
+			// Contact
+			'ag_bb_contact_title_pre' => array( 'label' => __( 'Contact — début du titre', 'ag-business-barber' ),     'default' => 'Nous',     'type' => 'text' ),
+			'ag_bb_contact_title_em'  => array( 'label' => __( 'Contact — mot en accent', 'ag-business-barber' ),      'default' => 'trouver',  'type' => 'text' ),
+			'ag_bb_contact_lead'      => array( 'label' => __( 'Contact / horaires — phrase d\'intro', 'ag-business-barber' ), 'default' => 'Le salon est ouvert du mardi au samedi.', 'type' => 'textarea' ),
+			'ag_bb_contact_coord_heading' => array( 'label' => __( 'Contact — titre bloc Coordonnées', 'ag-business-barber' ), 'default' => 'Coordonnées', 'type' => 'text' ),
+			'ag_bb_contact_hours_heading' => array( 'label' => __( 'Contact — titre bloc Horaires', 'ag-business-barber' ),    'default' => 'Horaires',    'type' => 'text' ),
+			// Misc
+			'ag_bb_premium_badge'     => array( 'label' => __( 'Badge bas-droite (Premium)', 'ag-business-barber' ),    'default' => 'Premium',  'type' => 'text' ),
 		);
 		foreach ( $lead_fields as $key => $f ) {
+			$type = isset( $f['type'] ) ? $f['type'] : 'textarea';
 			$wp_customize->add_setting( $key, array(
 				'default'           => $f['default'],
-				'sanitize_callback' => 'sanitize_text_field',
+				'sanitize_callback' => $type === 'textarea' ? 'wp_kses_post' : 'sanitize_text_field',
 				'transport'         => 'refresh',
 			) );
 			$wp_customize->add_control( $key, array(
 				'label'   => $f['label'],
 				'section' => 'ag_bb_home_content',
-				'type'    => 'textarea',
+				'type'    => $type,
 			) );
 		}
 	}

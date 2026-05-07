@@ -27,6 +27,8 @@ THEMES=(
 )
 PLUGINS=(
     ag-fidelite-association
+    ag-premium-avocat
+    ag-business-avocat
     ag-premium-barber
     ag-business-barber
 )

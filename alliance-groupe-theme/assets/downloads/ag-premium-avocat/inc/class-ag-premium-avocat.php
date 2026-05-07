@@ -179,7 +179,11 @@ class AG_Premium_Avocat {
 			'honoraires_lead'  => 'Transparence totale sur les tarifs : pas de mauvaise surprise, devis ecrit avant tout engagement.',
 			'maitre_tag'       => 'Le Maître',
 			'cabinet_title'    => 'Cabinet',
+			'cabinet_lead'     => 'Consultation au cabinet, en visio ou par telephone.',
 			'rdv_section_title' => 'Prendre rendez-vous',
+			'rdv_subtitle'     => 'Premier rendez-vous confidentiel sous 48h ouvrees. Votre demande est traitee directement par le cabinet.',
+			'rdv_submit_label' => 'Envoyer ma demande →',
+			'rdv_legal_note'   => 'Demande confidentielle protégée par le secret professionnel. Réponse sous 48h ouvrées.',
 			'faq_h2'           => 'Comment sont calcules nos honoraires ?',
 			'faq_intro'        => "Avant toute intervention, une convention d'honoraires ecrite vous est remise. Elle precise le mode de facturation choisi, le montant ou le taux horaire applicable, ainsi que les eventuels frais annexes.",
 		);
@@ -257,7 +261,11 @@ class AG_Premium_Avocat {
 			'honoraires_lead'   => array( 'Accroche — Honoraires', 'textarea' ),
 			'maitre_tag'        => array( 'Etiquette — Le Maître', 'text' ),
 			'cabinet_title'     => array( 'Titre — Cabinet', 'text' ),
+			'cabinet_lead'      => array( 'Accroche — Cabinet', 'textarea' ),
 			'rdv_section_title' => array( 'Titre — Prendre rendez-vous', 'text' ),
+			'rdv_subtitle'      => array( 'Sous-titre — Prendre rendez-vous', 'textarea' ),
+			'rdv_submit_label'  => array( 'Bouton — Envoyer la demande', 'text' ),
+			'rdv_legal_note'    => array( 'Note légale — sous bouton', 'textarea' ),
 			'faq_h2'            => array( 'Titre FAQ honoraires', 'text' ),
 			'faq_intro'         => array( 'Intro FAQ honoraires', 'textarea' ),
 		);

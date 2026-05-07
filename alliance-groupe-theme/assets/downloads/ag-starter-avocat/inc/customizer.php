@@ -83,6 +83,35 @@ function ag_starter_avocat_customizer_defaults() {
 		'ag_avocat_domaines_lead'   => 'Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit.',
 		'ag_avocat_honoraires_lead' => 'Transparence totale sur les tarifs : pas de mauvaise surprise, devis ecrit avant tout engagement.',
 		'ag_avocat_cabinet_lead'    => 'Consultation au cabinet, en visio ou par telephone.',
+		// Section H2 titles + supplementary labels.
+		'ag_avocat_domaines_title'      => 'Domaines d\'expertise',
+		'ag_avocat_honoraires_title'    => 'Honoraires',
+		'ag_avocat_cabinet_title'       => 'Le cabinet',
+		'ag_avocat_maitre_tag'          => 'Le Maître',
+		'ag_avocat_maitre_year_prefix'  => 'Inscrit depuis',
+		'ag_avocat_maitre_specialties_label' => 'Specialites :',
+		'ag_avocat_cabinet_address_heading'  => 'Adresse',
+		'ag_avocat_cabinet_hours_heading'    => 'Horaires',
+		'ag_avocat_cabinet_contact_heading'  => 'Contact',
+		'ag_avocat_cabinet_emergency_label'  => 'Garde a vue 24/7 :',
+		'ag_avocat_domaines_empty'           => 'Aucun domaine d\'expertise n\'est encore publie.',
+		'ag_avocat_domaines_empty_btn'       => 'Ajouter un premier domaine',
+		'ag_avocat_domaines_empty_hint'      => 'Astuce : creez 4 a 6 domaines (Droit des affaires, Droit du travail, Droit de la famille, Droit immobilier...) avec un emoji et 3 exemples de cas chacun.',
+		// RDV form labels.
+		'ag_avocat_rdv_label_prenom'    => 'Prénom',
+		'ag_avocat_rdv_label_nom'       => 'Nom',
+		'ag_avocat_rdv_label_email'     => 'Email',
+		'ag_avocat_rdv_label_tel'       => 'Téléphone',
+		'ag_avocat_rdv_label_domaine'   => 'Domaine concerné',
+		'ag_avocat_rdv_label_format'    => 'Format souhaité',
+		'ag_avocat_rdv_label_message'   => 'Description du dossier (en quelques lignes)',
+		'ag_avocat_rdv_domaine_select'  => '— Sélectionnez —',
+		'ag_avocat_rdv_domaine_other'   => 'Autre / a determiner',
+		'ag_avocat_rdv_format_cabinet'  => 'Au cabinet',
+		'ag_avocat_rdv_format_visio'    => 'En visio',
+		'ag_avocat_rdv_format_phone'    => 'Par téléphone',
+		'ag_avocat_rdv_submit_label'    => 'Envoyer ma demande →',
+		'ag_avocat_rdv_legal_note'      => 'Demande confidentielle protégée par le secret professionnel. Réponse sous 48h ouvrées.',
 	);
 }
 
@@ -571,26 +600,59 @@ function ag_starter_avocat_customize_register( $wp_customize ) {
 		)
 	);
 	$ag_avocat_home_fields = array(
-		'ag_avocat_domaines_lead'   => esc_html__( 'Domaines d\'expertise — phrase d\'intro', 'ag-starter-avocat' ),
-		'ag_avocat_honoraires_lead' => esc_html__( 'Honoraires — phrase d\'intro', 'ag-starter-avocat' ),
-		'ag_avocat_cabinet_lead'    => esc_html__( 'Le cabinet — phrase d\'intro', 'ag-starter-avocat' ),
+		// Domaines.
+		'ag_avocat_domaines_title'      => array( 'label' => esc_html__( 'Domaines — titre H2', 'ag-starter-avocat' ),                'type' => 'text' ),
+		'ag_avocat_domaines_lead'       => array( 'label' => esc_html__( 'Domaines — phrase d\'intro', 'ag-starter-avocat' ),         'type' => 'textarea' ),
+		'ag_avocat_domaines_empty'      => array( 'label' => esc_html__( 'Domaines — message si vide', 'ag-starter-avocat' ),         'type' => 'textarea' ),
+		'ag_avocat_domaines_empty_btn'  => array( 'label' => esc_html__( 'Domaines — bouton ajout (admin)', 'ag-starter-avocat' ),    'type' => 'text' ),
+		'ag_avocat_domaines_empty_hint' => array( 'label' => esc_html__( 'Domaines — astuce admin', 'ag-starter-avocat' ),            'type' => 'textarea' ),
+		// Le Maître.
+		'ag_avocat_maitre_tag'                 => array( 'label' => esc_html__( 'Maître — étiquette', 'ag-starter-avocat' ),                   'type' => 'text' ),
+		'ag_avocat_maitre_year_prefix'         => array( 'label' => esc_html__( 'Maître — préfixe année (Inscrit depuis…)', 'ag-starter-avocat' ), 'type' => 'text' ),
+		'ag_avocat_maitre_specialties_label'   => array( 'label' => esc_html__( 'Maître — libellé Specialités', 'ag-starter-avocat' ),         'type' => 'text' ),
+		// Honoraires.
+		'ag_avocat_honoraires_title' => array( 'label' => esc_html__( 'Honoraires — titre H2', 'ag-starter-avocat' ),        'type' => 'text' ),
+		'ag_avocat_honoraires_lead'  => array( 'label' => esc_html__( 'Honoraires — phrase d\'intro', 'ag-starter-avocat' ), 'type' => 'textarea' ),
+		// Cabinet.
+		'ag_avocat_cabinet_title'           => array( 'label' => esc_html__( 'Cabinet — titre H2', 'ag-starter-avocat' ),                  'type' => 'text' ),
+		'ag_avocat_cabinet_lead'            => array( 'label' => esc_html__( 'Cabinet — phrase d\'intro', 'ag-starter-avocat' ),           'type' => 'textarea' ),
+		'ag_avocat_cabinet_address_heading' => array( 'label' => esc_html__( 'Cabinet — titre bloc Adresse', 'ag-starter-avocat' ),        'type' => 'text' ),
+		'ag_avocat_cabinet_hours_heading'   => array( 'label' => esc_html__( 'Cabinet — titre bloc Horaires', 'ag-starter-avocat' ),       'type' => 'text' ),
+		'ag_avocat_cabinet_contact_heading' => array( 'label' => esc_html__( 'Cabinet — titre bloc Contact', 'ag-starter-avocat' ),        'type' => 'text' ),
+		'ag_avocat_cabinet_emergency_label' => array( 'label' => esc_html__( 'Cabinet — libellé garde à vue', 'ag-starter-avocat' ),       'type' => 'text' ),
+		// RDV form.
+		'ag_avocat_rdv_label_prenom'   => array( 'label' => esc_html__( 'RDV — label Prénom', 'ag-starter-avocat' ),         'type' => 'text' ),
+		'ag_avocat_rdv_label_nom'      => array( 'label' => esc_html__( 'RDV — label Nom', 'ag-starter-avocat' ),            'type' => 'text' ),
+		'ag_avocat_rdv_label_email'    => array( 'label' => esc_html__( 'RDV — label Email', 'ag-starter-avocat' ),          'type' => 'text' ),
+		'ag_avocat_rdv_label_tel'      => array( 'label' => esc_html__( 'RDV — label Téléphone', 'ag-starter-avocat' ),      'type' => 'text' ),
+		'ag_avocat_rdv_label_domaine'  => array( 'label' => esc_html__( 'RDV — label Domaine', 'ag-starter-avocat' ),        'type' => 'text' ),
+		'ag_avocat_rdv_label_format'   => array( 'label' => esc_html__( 'RDV — label Format', 'ag-starter-avocat' ),         'type' => 'text' ),
+		'ag_avocat_rdv_label_message'  => array( 'label' => esc_html__( 'RDV — label Description', 'ag-starter-avocat' ),    'type' => 'text' ),
+		'ag_avocat_rdv_domaine_select' => array( 'label' => esc_html__( 'RDV — placeholder domaine', 'ag-starter-avocat' ),  'type' => 'text' ),
+		'ag_avocat_rdv_domaine_other'  => array( 'label' => esc_html__( 'RDV — option « Autre »', 'ag-starter-avocat' ),     'type' => 'text' ),
+		'ag_avocat_rdv_format_cabinet' => array( 'label' => esc_html__( 'RDV — format Au cabinet', 'ag-starter-avocat' ),    'type' => 'text' ),
+		'ag_avocat_rdv_format_visio'   => array( 'label' => esc_html__( 'RDV — format En visio', 'ag-starter-avocat' ),      'type' => 'text' ),
+		'ag_avocat_rdv_format_phone'   => array( 'label' => esc_html__( 'RDV — format Par téléphone', 'ag-starter-avocat' ), 'type' => 'text' ),
+		'ag_avocat_rdv_submit_label'   => array( 'label' => esc_html__( 'RDV — bouton submit', 'ag-starter-avocat' ),        'type' => 'text' ),
+		'ag_avocat_rdv_legal_note'     => array( 'label' => esc_html__( 'RDV — note légale (sous bouton)', 'ag-starter-avocat' ), 'type' => 'textarea' ),
 	);
 	$ag_prio = 10;
-	foreach ( $ag_avocat_home_fields as $ag_key => $ag_label ) {
+	foreach ( $ag_avocat_home_fields as $ag_key => $ag_f ) {
+		$ag_type = isset( $ag_f['type'] ) ? $ag_f['type'] : 'textarea';
 		$wp_customize->add_setting(
 			$ag_key,
 			array(
 				'default'           => isset( $defaults[ $ag_key ] ) ? $defaults[ $ag_key ] : '',
-				'sanitize_callback' => 'sanitize_text_field',
+				'sanitize_callback' => $ag_type === 'textarea' ? 'wp_kses_post' : 'sanitize_text_field',
 				'transport'         => 'refresh',
 			)
 		);
 		$wp_customize->add_control(
 			$ag_key,
 			array(
-				'label'    => $ag_label,
+				'label'    => $ag_f['label'],
 				'section'  => 'ag_section_home_content',
-				'type'     => 'textarea',
+				'type'     => $ag_type,
 				'priority' => $ag_prio,
 			)
 		);

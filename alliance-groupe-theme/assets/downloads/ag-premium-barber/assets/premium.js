@@ -122,14 +122,18 @@
 		if (!nav) return;
 		var cta = nav.querySelector('.ag-header__cta');
 
+		var navLabels = (typeof agPbData !== 'undefined' && agPbData.navLabels) ? agPbData.navLabels : {};
+		function navLabel(id, fallback) {
+			return (navLabels[id] != null && navLabels[id] !== '') ? navLabels[id] : fallback;
+		}
 		var sectionAnchors = [
-			{ id: 'services',           label: 'Tarifs' },
-			{ id: 'queue',              label: "File d'attente" },
-			{ id: 'ag-bb-team',         label: 'Équipe' },
-			{ id: 'ag-bb-gallery',      label: 'Galerie' },
-			{ id: 'ag-bb-testimonials', label: 'Avis' },
-			{ id: 'ag-bb-booking',      label: 'Réserver' },
-			{ id: 'ag-bb-contact',      label: 'Contact' }
+			{ id: 'services',           label: navLabel('services',           'Tarifs') },
+			{ id: 'queue',              label: navLabel('queue',              "File d'attente") },
+			{ id: 'ag-bb-team',         label: navLabel('ag-bb-team',         'Équipe') },
+			{ id: 'ag-bb-gallery',      label: navLabel('ag-bb-gallery',      'Galerie') },
+			{ id: 'ag-bb-testimonials', label: navLabel('ag-bb-testimonials', 'Avis') },
+			{ id: 'ag-bb-booking',      label: navLabel('ag-bb-booking',      'Réserver') },
+			{ id: 'ag-bb-contact',      label: navLabel('ag-bb-contact',      'Contact') }
 		];
 
 		// Retire les liens existants (sauf le CTA)

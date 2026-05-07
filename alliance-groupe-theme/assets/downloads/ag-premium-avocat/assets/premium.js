@@ -145,6 +145,14 @@
             { selector: '.ag-honoraires .ag-section-lead',  matchSubstr: 'Transparence totale', key: 'honoraires_lead' },
             // Maitre tag
             { selector: '.ag-maitre__tag', defaultText: 'Le Maître', key: 'maitre_tag' },
+            // Cabinet
+            { selector: '.ag-cabinet .ag-section-title', defaultText: 'Le cabinet', key: 'cabinet_title' },
+            { selector: '.ag-cabinet .ag-section-lead',  matchSubstr: 'Consultation au cabinet', key: 'cabinet_lead' },
+            // RDV
+            { selector: '.ag-rdv .ag-section-title', matchSubstr: 'rendez-vous', key: 'rdv_section_title' },
+            { selector: '.ag-rdv .ag-section-lead',  matchSubstr: 'confidentiel sous 48h', key: 'rdv_subtitle' },
+            { selector: '.ag-rdv__submit',           matchSubstr: 'Envoyer', key: 'rdv_submit_label' },
+            { selector: '.ag-rdv__legal',            matchSubstr: 'secret professionnel', key: 'rdv_legal_note' },
             // FAQ Honoraires : H2 et intro
             { selector: '.ag-page-article h2', matchSubstr: 'Comment sont calcules', key: 'faq_h2' },
             { selector: '.ag-page-article p', matchSubstr: "convention d'honoraires", key: 'faq_intro' }

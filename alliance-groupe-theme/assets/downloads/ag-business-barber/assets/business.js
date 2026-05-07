@@ -28,6 +28,7 @@
 	function renderTeam() {
 		var team = dataValue('team', []);
 		if (!team.length) return '';
+		var expSuffix = dataValue('experienceSuffix', 'ans d\'expérience');
 		var cards = team.map(function (b) {
 			return '' +
 				'<article class="ag-bb-barber">' +
@@ -35,7 +36,7 @@
 					'<div class="ag-bb-barber__body">' +
 						'<h3 class="ag-bb-barber__name">' + escapeHtml(b.name) + '</h3>' +
 						'<p class="ag-bb-barber__role">' + escapeHtml(b.role) + '</p>' +
-						'<span class="ag-bb-barber__years">' + escapeHtml(b.years) + ' ans d\'expérience</span>' +
+						'<span class="ag-bb-barber__years">' + escapeHtml(b.years) + ' ' + escapeHtml(expSuffix) + '</span>' +
 						'<p class="ag-bb-barber__specialty">' + escapeHtml(b.specialty) + '</p>' +
 						'<a class="ag-bb-barber__insta" href="https://instagram.com/' + escapeHtml(String(b.insta).replace(/^@/, '')) + '" target="_blank" rel="noopener">' + escapeHtml(b.insta) + ' →</a>' +
 					'</div>' +
@@ -44,7 +45,7 @@
 		return '' +
 			'<section class="ag-bb-section ag-bb-section--alt" id="ag-bb-team">' +
 				'<div class="ag-bb-container">' +
-					'<h2 class="ag-section__title">L\'<em>équipe</em></h2>' +
+					'<h2 class="ag-section__title">' + escapeHtml(dataValue('teamTitlePre', 'L\'')) + '<em>' + escapeHtml(dataValue('teamTitleEm', 'équipe')) + '</em></h2>' +
 					'<p class="ag-section__sub">' + escapeHtml(dataValue('teamLead', 'Des barbiers passionnés, formés à la vieille école américaine.')) + '</p>' +
 					'<div class="ag-bb-team-grid">' + cards + '</div>' +
 				'</div>' +
@@ -60,7 +61,7 @@
 		return '' +
 			'<section class="ag-bb-section" id="ag-bb-gallery">' +
 				'<div class="ag-bb-container">' +
-					'<h2 class="ag-section__title">La <em>galerie</em></h2>' +
+					'<h2 class="ag-section__title">' + escapeHtml(dataValue('galleryTitlePre', 'La')) + ' <em>' + escapeHtml(dataValue('galleryTitleEm', 'galerie')) + '</em></h2>' +
 					'<p class="ag-section__sub">' + escapeHtml(dataValue('galleryLead', 'Quelques coupes signées par l\'équipe.')) + '</p>' +
 					'<div class="ag-bb-gallery-grid">' + items + '</div>' +
 				'</div>' +
@@ -83,7 +84,7 @@
 		return '' +
 			'<section class="ag-bb-section ag-bb-section--alt" id="ag-bb-testimonials">' +
 				'<div class="ag-bb-container">' +
-					'<h2 class="ag-section__title">Ils <em>parlent de nous</em></h2>' +
+					'<h2 class="ag-section__title">' + escapeHtml(dataValue('testimonialsTitlePre', 'Ils')) + ' <em>' + escapeHtml(dataValue('testimonialsTitleEm', 'parlent de nous')) + '</em></h2>' +
 					'<p class="ag-section__sub">' + escapeHtml(dataValue('testimonialsLead', 'Avis clients vérifiés.')) + '</p>' +
 					'<div class="ag-bb-testimonials-grid">' + cards + '</div>' +
 				'</div>' +
@@ -94,10 +95,10 @@
 		var team = dataValue('team', []);
 		var slots = dataValue('bookingSlots', []);
 		var todayIso = new Date().toISOString().slice(0, 10);
-		var barberOpts = '<option value="">— N\'importe lequel —</option>' + team.map(function (b) {
+		var barberOpts = '<option value="">' + escapeHtml(dataValue('bookingPlaceholderBarber', '— N\'importe lequel —')) + '</option>' + team.map(function (b) {
 			return '<option value="' + escapeHtml(b.name) + '">' + escapeHtml(b.name) + '</option>';
 		}).join('');
-		var slotOpts = '<option value="">— Choisir un créneau —</option>' + slots.map(function (s) {
+		var slotOpts = '<option value="">' + escapeHtml(dataValue('bookingPlaceholderSlot', '— Choisir un créneau —')) + '</option>' + slots.map(function (s) {
 			return '<option value="' + escapeHtml(s) + '">' + escapeHtml(s) + '</option>';
 		}).join('');
 		var serviceOpts = [
@@ -108,41 +109,41 @@
 		return '' +
 			'<section class="ag-bb-section" id="ag-bb-booking">' +
 				'<div class="ag-bb-container">' +
-					'<h2 class="ag-section__title">Réserver un <em>créneau</em></h2>' +
+					'<h2 class="ag-section__title">' + escapeHtml(dataValue('bookingTitlePre', 'Réserver un')) + ' <em>' + escapeHtml(dataValue('bookingTitleEm', 'créneau')) + '</em></h2>' +
 					'<p class="ag-section__sub">' + escapeHtml(dataValue('bookingLead', 'Plus simple qu\'un coup de fil. Confirmation immédiate par email.')) + '</p>' +
 					'<form class="ag-bb-booking" method="post" action="#ag-bb-booking" onsubmit="return false;">' +
 						'<div class="ag-bb-booking__row">' +
 							'<div class="ag-bb-booking__field">' +
-								'<label for="ag-bb-date">Date</label>' +
+								'<label for="ag-bb-date">' + escapeHtml(dataValue('bookingLabelDate', 'Date')) + '</label>' +
 								'<input type="date" id="ag-bb-date" name="date" min="' + todayIso + '" required>' +
 							'</div>' +
 							'<div class="ag-bb-booking__field">' +
-								'<label for="ag-bb-slot">Créneau</label>' +
+								'<label for="ag-bb-slot">' + escapeHtml(dataValue('bookingLabelSlot', 'Créneau')) + '</label>' +
 								'<select id="ag-bb-slot" name="slot" required>' + slotOpts + '</select>' +
 							'</div>' +
 						'</div>' +
 						'<div class="ag-bb-booking__row">' +
 							'<div class="ag-bb-booking__field">' +
-								'<label for="ag-bb-service">Prestation</label>' +
+								'<label for="ag-bb-service">' + escapeHtml(dataValue('bookingLabelService', 'Prestation')) + '</label>' +
 								'<select id="ag-bb-service" name="service" required>' + serviceOpts + '</select>' +
 							'</div>' +
 							'<div class="ag-bb-booking__field">' +
-								'<label for="ag-bb-barber">Barbier</label>' +
+								'<label for="ag-bb-barber">' + escapeHtml(dataValue('bookingLabelBarber', 'Barbier')) + '</label>' +
 								'<select id="ag-bb-barber" name="barber">' + barberOpts + '</select>' +
 							'</div>' +
 						'</div>' +
 						'<div class="ag-bb-booking__row">' +
 							'<div class="ag-bb-booking__field">' +
-								'<label for="ag-bb-name">Prénom</label>' +
+								'<label for="ag-bb-name">' + escapeHtml(dataValue('bookingLabelName', 'Prénom')) + '</label>' +
 								'<input type="text" id="ag-bb-name" name="name" required>' +
 							'</div>' +
 							'<div class="ag-bb-booking__field">' +
-								'<label for="ag-bb-phone">Téléphone</label>' +
+								'<label for="ag-bb-phone">' + escapeHtml(dataValue('bookingLabelPhone', 'Téléphone')) + '</label>' +
 								'<input type="tel" id="ag-bb-phone" name="phone" required>' +
 							'</div>' +
 						'</div>' +
-						'<button type="submit" class="ag-bb-booking__submit">Confirmer la réservation</button>' +
-						'<p class="ag-bb-booking__note">En cliquant, vous acceptez d\'être recontacté pour confirmation.</p>' +
+						'<button type="submit" class="ag-bb-booking__submit">' + escapeHtml(dataValue('bookingSubmit', 'Confirmer la réservation')) + '</button>' +
+						'<p class="ag-bb-booking__note">' + escapeHtml(dataValue('bookingNote', 'En cliquant, vous acceptez d\'être recontacté pour confirmation.')) + '</p>' +
 					'</form>' +
 				'</div>' +
 			'</section>';
@@ -162,17 +163,17 @@
 		return '' +
 			'<section class="ag-bb-section ag-bb-section--alt" id="ag-bb-contact">' +
 				'<div class="ag-bb-container">' +
-					'<h2 class="ag-section__title">Nous <em>trouver</em></h2>' +
+					'<h2 class="ag-section__title">' + escapeHtml(dataValue('contactTitlePre', 'Nous')) + ' <em>' + escapeHtml(dataValue('contactTitleEm', 'trouver')) + '</em></h2>' +
 					'<p class="ag-section__sub">' + escapeHtml(dataValue('contactLead', 'Le salon est ouvert du mardi au samedi.')) + '</p>' +
 					'<div class="ag-bb-contact-grid">' +
 						'<div class="ag-bb-contact-block">' +
-							'<h3>Coordonnées</h3>' +
+							'<h3>' + escapeHtml(dataValue('contactCoordHeading', 'Coordonnées')) + '</h3>' +
 							'<p>📍 ' + escapeHtml(addr) + '</p>' +
 							'<p>📞 <a href="tel:' + escapeHtml(phoneClean) + '">' + escapeHtml(phone) + '</a></p>' +
 							'<p>📷 <a href="https://instagram.com/' + escapeHtml(instaHandle) + '" target="_blank" rel="noopener">' + escapeHtml(insta) + '</a></p>' +
 						'</div>' +
 						'<div class="ag-bb-hours-block">' +
-							'<h3>Horaires</h3>' +
+							'<h3>' + escapeHtml(dataValue('contactHoursHeading', 'Horaires')) + '</h3>' +
 							'<ul>' + hoursHtml + '</ul>' +
 						'</div>' +
 					'</div>' +
@@ -215,7 +216,7 @@
 		if (!document.querySelector('.ag-bb-premium-badge')) {
 			var badge = document.createElement('div');
 			badge.className = 'ag-bb-premium-badge';
-			badge.textContent = 'Premium';
+			badge.textContent = dataValue('premiumBadge', 'Premium');
 			document.body.appendChild(badge);
 		}
 	}

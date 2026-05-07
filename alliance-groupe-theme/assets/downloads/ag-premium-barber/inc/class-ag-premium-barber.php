@@ -86,6 +86,15 @@ class AG_Premium_Barber {
 				'logoUrl' => (string) get_theme_mod( 'ag_pb_logo_url', $default_logo ),
 				// Phrases / leads éditables via Customizer.
 				'qrCaption' => (string) get_theme_mod( 'ag_pb_qr_caption', 'Scannez pour prendre votre ticket' ),
+				'navLabels' => array(
+					'services'           => (string) get_theme_mod( 'ag_pb_nav_services',     'Tarifs' ),
+					'queue'              => (string) get_theme_mod( 'ag_pb_nav_queue',        'File d\'attente' ),
+					'ag-bb-team'         => (string) get_theme_mod( 'ag_pb_nav_team',         'Équipe' ),
+					'ag-bb-gallery'      => (string) get_theme_mod( 'ag_pb_nav_gallery',      'Galerie' ),
+					'ag-bb-testimonials' => (string) get_theme_mod( 'ag_pb_nav_testimonials', 'Avis' ),
+					'ag-bb-booking'      => (string) get_theme_mod( 'ag_pb_nav_booking',      'Réserver' ),
+					'ag-bb-contact'      => (string) get_theme_mod( 'ag_pb_nav_contact',      'Contact' ),
+				),
 			) );
 		}
 	}
@@ -135,15 +144,27 @@ class AG_Premium_Barber {
 			'description' => __( 'Personnalisez les phrases ajoutées par Premium Barber sur la home.', 'ag-premium-barber' ),
 			'panel'       => 'ag_pb_panel',
 		) );
-		$wp_customize->add_setting( 'ag_pb_qr_caption', array(
-			'default'           => 'Scannez pour prendre votre ticket',
-			'sanitize_callback' => 'sanitize_text_field',
-			'transport'         => 'refresh',
-		) );
-		$wp_customize->add_control( 'ag_pb_qr_caption', array(
-			'label'   => __( 'Légende du QR code (file d\'attente)', 'ag-premium-barber' ),
-			'section' => 'ag_pb_home_content',
-			'type'    => 'text',
-		) );
+		$ag_pb_home_fields = array(
+			'ag_pb_qr_caption'       => array( 'label' => __( 'Légende du QR code (file d\'attente)', 'ag-premium-barber' ), 'default' => 'Scannez pour prendre votre ticket', 'type' => 'text' ),
+			'ag_pb_nav_services'     => array( 'label' => __( 'Nav — onglet Tarifs', 'ag-premium-barber' ),                  'default' => 'Tarifs',         'type' => 'text' ),
+			'ag_pb_nav_queue'        => array( 'label' => __( 'Nav — onglet File d\'attente', 'ag-premium-barber' ),         'default' => 'File d\'attente','type' => 'text' ),
+			'ag_pb_nav_team'         => array( 'label' => __( 'Nav — onglet Équipe', 'ag-premium-barber' ),                  'default' => 'Équipe',         'type' => 'text' ),
+			'ag_pb_nav_gallery'      => array( 'label' => __( 'Nav — onglet Galerie', 'ag-premium-barber' ),                 'default' => 'Galerie',        'type' => 'text' ),
+			'ag_pb_nav_testimonials' => array( 'label' => __( 'Nav — onglet Avis', 'ag-premium-barber' ),                    'default' => 'Avis',           'type' => 'text' ),
+			'ag_pb_nav_booking'      => array( 'label' => __( 'Nav — onglet Réserver', 'ag-premium-barber' ),                'default' => 'Réserver',       'type' => 'text' ),
+			'ag_pb_nav_contact'      => array( 'label' => __( 'Nav — onglet Contact', 'ag-premium-barber' ),                 'default' => 'Contact',        'type' => 'text' ),
+		);
+		foreach ( $ag_pb_home_fields as $ag_pb_key => $ag_pb_f ) {
+			$wp_customize->add_setting( $ag_pb_key, array(
+				'default'           => $ag_pb_f['default'],
+				'sanitize_callback' => $ag_pb_f['type'] === 'textarea' ? 'wp_kses_post' : 'sanitize_text_field',
+				'transport'         => 'refresh',
+			) );
+			$wp_customize->add_control( $ag_pb_key, array(
+				'label'   => $ag_pb_f['label'],
+				'section' => 'ag_pb_home_content',
+				'type'    => $ag_pb_f['type'],
+			) );
+		}
 	}
 }
