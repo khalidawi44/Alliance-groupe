@@ -49,6 +49,17 @@ function ag_starter_restaurant_customizer_defaults() {
 		'ag_resto_privatisation_lead'=> 'Organisez vos evenements professionnels ou familiaux dans un cadre elegant. Devis gratuit sur demande.',
 		'ag_resto_histoire_p1'       => 'Depuis 2010, notre equipe passionnee vous accueille dans un cadre chaleureux pour vous faire decouvrir une cuisine authentique inspiree du terroir. Chaque plat est prepare avec soin, a partir de produits selectionnes aupres de producteurs locaux.',
 		'ag_resto_histoire_p2'       => 'Notre chef compose chaque semaine une carte renouvelee au rythme des saisons. Une cuisine genereuse, des saveurs franches et une ambiance conviviale : voila ce qui fait la difference depuis plus de dix ans.',
+		// Home section H2 titles (split pre + em for editorial flexibility).
+		'ag_resto_carte_title_pre'        => 'Notre',
+		'ag_resto_carte_title_em'         => 'carte',
+		'ag_resto_reservation_title_pre'  => '',
+		'ag_resto_reservation_title_em'   => 'Reservation',
+		'ag_resto_privatisation_title_pre'=> '',
+		'ag_resto_privatisation_title_em' => 'Privatisation',
+		'ag_resto_histoire_title_pre'     => 'Notre',
+		'ag_resto_histoire_title_em'      => 'histoire',
+		'ag_resto_actu_title_pre'         => 'Actualites',
+		'ag_resto_actu_title_em'          => 'du restaurant',
 	);
 }
 
@@ -351,28 +362,41 @@ function ag_starter_restaurant_customize_register( $wp_customize ) {
 		)
 	);
 	$ag_resto_home_fields = array(
-		'ag_resto_carte_lead'         => esc_html__( 'Notre carte — phrase d\'intro', 'ag-starter-restaurant' ),
-		'ag_resto_reservation_lead'   => esc_html__( 'Reservation — phrase d\'intro', 'ag-starter-restaurant' ),
-		'ag_resto_privatisation_lead' => esc_html__( 'Privatisation — phrase d\'intro', 'ag-starter-restaurant' ),
-		'ag_resto_histoire_p1'        => esc_html__( 'Notre histoire — paragraphe 1', 'ag-starter-restaurant' ),
-		'ag_resto_histoire_p2'        => esc_html__( 'Notre histoire — paragraphe 2', 'ag-starter-restaurant' ),
+		// Section H2 titles (split en deux : "pre" + "em" pour souligner un mot).
+		'ag_resto_carte_title_pre'         => array( 'label' => esc_html__( 'Carte — debut du titre', 'ag-starter-restaurant' ),         'type' => 'text' ),
+		'ag_resto_carte_title_em'          => array( 'label' => esc_html__( 'Carte — mot accentue', 'ag-starter-restaurant' ),           'type' => 'text' ),
+		'ag_resto_carte_lead'              => array( 'label' => esc_html__( 'Carte — phrase d\'intro', 'ag-starter-restaurant' ),         'type' => 'textarea' ),
+		'ag_resto_reservation_title_pre'   => array( 'label' => esc_html__( 'Reservation — debut du titre', 'ag-starter-restaurant' ),    'type' => 'text' ),
+		'ag_resto_reservation_title_em'    => array( 'label' => esc_html__( 'Reservation — mot accentue', 'ag-starter-restaurant' ),      'type' => 'text' ),
+		'ag_resto_reservation_lead'        => array( 'label' => esc_html__( 'Reservation — phrase d\'intro', 'ag-starter-restaurant' ),   'type' => 'textarea' ),
+		'ag_resto_privatisation_title_pre' => array( 'label' => esc_html__( 'Privatisation — debut du titre', 'ag-starter-restaurant' ),  'type' => 'text' ),
+		'ag_resto_privatisation_title_em'  => array( 'label' => esc_html__( 'Privatisation — mot accentue', 'ag-starter-restaurant' ),    'type' => 'text' ),
+		'ag_resto_privatisation_lead'      => array( 'label' => esc_html__( 'Privatisation — phrase d\'intro', 'ag-starter-restaurant' ), 'type' => 'textarea' ),
+		'ag_resto_histoire_title_pre'      => array( 'label' => esc_html__( 'Notre histoire — debut du titre', 'ag-starter-restaurant' ), 'type' => 'text' ),
+		'ag_resto_histoire_title_em'       => array( 'label' => esc_html__( 'Notre histoire — mot accentue', 'ag-starter-restaurant' ),   'type' => 'text' ),
+		'ag_resto_histoire_p1'             => array( 'label' => esc_html__( 'Notre histoire — paragraphe 1', 'ag-starter-restaurant' ),   'type' => 'textarea' ),
+		'ag_resto_histoire_p2'             => array( 'label' => esc_html__( 'Notre histoire — paragraphe 2', 'ag-starter-restaurant' ),   'type' => 'textarea' ),
+		'ag_resto_actu_title_pre'          => array( 'label' => esc_html__( 'Actualites — debut du titre', 'ag-starter-restaurant' ),     'type' => 'text' ),
+		'ag_resto_actu_title_em'           => array( 'label' => esc_html__( 'Actualites — mot accentue', 'ag-starter-restaurant' ),       'type' => 'text' ),
 	);
 	$ag_prio = 10;
-	foreach ( $ag_resto_home_fields as $ag_key => $ag_label ) {
+	foreach ( $ag_resto_home_fields as $ag_key => $ag_meta ) {
+		$ag_type     = isset( $ag_meta['type'] ) ? $ag_meta['type'] : 'textarea';
+		$ag_sanitize = ( 'textarea' === $ag_type ) ? 'sanitize_textarea_field' : 'sanitize_text_field';
 		$wp_customize->add_setting(
 			$ag_key,
 			array(
 				'default'           => isset( $defaults[ $ag_key ] ) ? $defaults[ $ag_key ] : '',
-				'sanitize_callback' => 'sanitize_textarea_field',
+				'sanitize_callback' => $ag_sanitize,
 				'transport'         => 'refresh',
 			)
 		);
 		$wp_customize->add_control(
 			$ag_key,
 			array(
-				'label'    => $ag_label,
+				'label'    => $ag_meta['label'],
 				'section'  => 'ag_section_home_content',
-				'type'     => 'textarea',
+				'type'     => $ag_type,
 				'priority' => $ag_prio,
 			)
 		);

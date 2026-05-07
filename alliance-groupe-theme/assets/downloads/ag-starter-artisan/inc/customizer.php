@@ -49,6 +49,15 @@ function ag_starter_artisan_customizer_defaults() {
 		'ag_artisan_realisations_lead'=> 'Decouvrez nos chantiers recents : renovations de maison, installations techniques et travaux sur-mesure pour particuliers et professionnels.',
 		'ag_artisan_about_p1'         => 'Depuis plus de dix ans, notre equipe d\'artisans qualifies accompagne particuliers et professionnels dans tous leurs projets de travaux. Rigueur, transparence sur les prix et respect des delais : voila notre engagement.',
 		'ag_artisan_about_p2'         => 'Nous mettons un point d\'honneur a livrer des chantiers propres et conformes aux normes. Chaque intervention est suivie personnellement du devis a la livraison finale.',
+		// Home section H2 titles (split pre + em for editorial flexibility).
+		'ag_artisan_prestations_title_pre'  => 'Nos',
+		'ag_artisan_prestations_title_em'   => 'prestations',
+		'ag_artisan_zones_title_pre'        => 'Zones',
+		'ag_artisan_zones_title_em'         => 'd\'intervention',
+		'ag_artisan_realisations_title_pre' => 'Nos',
+		'ag_artisan_realisations_title_em'  => 'realisations',
+		'ag_artisan_about_title_pre'        => 'Qui',
+		'ag_artisan_about_title_em'         => 'sommes-nous',
 	);
 }
 
@@ -351,28 +360,38 @@ function ag_starter_artisan_customize_register( $wp_customize ) {
 		)
 	);
 	$ag_artisan_home_fields = array(
-		'ag_artisan_prestations_lead'  => esc_html__( 'Nos prestations — phrase d\'intro', 'ag-starter-artisan' ),
-		'ag_artisan_zones_lead'        => esc_html__( 'Zones d\'intervention — phrase d\'intro', 'ag-starter-artisan' ),
-		'ag_artisan_realisations_lead' => esc_html__( 'Nos realisations — phrase d\'intro', 'ag-starter-artisan' ),
-		'ag_artisan_about_p1'          => esc_html__( 'Qui sommes-nous — paragraphe 1', 'ag-starter-artisan' ),
-		'ag_artisan_about_p2'          => esc_html__( 'Qui sommes-nous — paragraphe 2', 'ag-starter-artisan' ),
+		'ag_artisan_prestations_title_pre'  => array( 'label' => esc_html__( 'Prestations — debut du titre', 'ag-starter-artisan' ),         'type' => 'text' ),
+		'ag_artisan_prestations_title_em'   => array( 'label' => esc_html__( 'Prestations — mot accentue', 'ag-starter-artisan' ),           'type' => 'text' ),
+		'ag_artisan_prestations_lead'       => array( 'label' => esc_html__( 'Prestations — phrase d\'intro', 'ag-starter-artisan' ),        'type' => 'textarea' ),
+		'ag_artisan_zones_title_pre'        => array( 'label' => esc_html__( 'Zones — debut du titre', 'ag-starter-artisan' ),               'type' => 'text' ),
+		'ag_artisan_zones_title_em'         => array( 'label' => esc_html__( 'Zones — mot accentue', 'ag-starter-artisan' ),                 'type' => 'text' ),
+		'ag_artisan_zones_lead'             => array( 'label' => esc_html__( 'Zones d\'intervention — phrase d\'intro', 'ag-starter-artisan' ), 'type' => 'textarea' ),
+		'ag_artisan_realisations_title_pre' => array( 'label' => esc_html__( 'Realisations — debut du titre', 'ag-starter-artisan' ),        'type' => 'text' ),
+		'ag_artisan_realisations_title_em'  => array( 'label' => esc_html__( 'Realisations — mot accentue', 'ag-starter-artisan' ),          'type' => 'text' ),
+		'ag_artisan_realisations_lead'      => array( 'label' => esc_html__( 'Realisations — phrase d\'intro', 'ag-starter-artisan' ),       'type' => 'textarea' ),
+		'ag_artisan_about_title_pre'        => array( 'label' => esc_html__( 'Qui sommes-nous — debut du titre', 'ag-starter-artisan' ),     'type' => 'text' ),
+		'ag_artisan_about_title_em'         => array( 'label' => esc_html__( 'Qui sommes-nous — mot accentue', 'ag-starter-artisan' ),       'type' => 'text' ),
+		'ag_artisan_about_p1'               => array( 'label' => esc_html__( 'Qui sommes-nous — paragraphe 1', 'ag-starter-artisan' ),       'type' => 'textarea' ),
+		'ag_artisan_about_p2'               => array( 'label' => esc_html__( 'Qui sommes-nous — paragraphe 2', 'ag-starter-artisan' ),       'type' => 'textarea' ),
 	);
 	$ag_prio = 10;
-	foreach ( $ag_artisan_home_fields as $ag_key => $ag_label ) {
+	foreach ( $ag_artisan_home_fields as $ag_key => $ag_meta ) {
+		$ag_type     = isset( $ag_meta['type'] ) ? $ag_meta['type'] : 'textarea';
+		$ag_sanitize = ( 'textarea' === $ag_type ) ? 'sanitize_textarea_field' : 'sanitize_text_field';
 		$wp_customize->add_setting(
 			$ag_key,
 			array(
 				'default'           => isset( $defaults[ $ag_key ] ) ? $defaults[ $ag_key ] : '',
-				'sanitize_callback' => 'sanitize_textarea_field',
+				'sanitize_callback' => $ag_sanitize,
 				'transport'         => 'refresh',
 			)
 		);
 		$wp_customize->add_control(
 			$ag_key,
 			array(
-				'label'    => $ag_label,
+				'label'    => $ag_meta['label'],
 				'section'  => 'ag_section_home_content',
-				'type'     => 'textarea',
+				'type'     => $ag_type,
 				'priority' => $ag_prio,
 			)
 		);

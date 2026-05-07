@@ -208,9 +208,9 @@ class AG_Business_Avocat {
 				// (le template Free n'appelle pas the_content donc on
 				// passe par JS). Ordre cabinet : fondateur puis associes
 				// puis collaborateurs, avec citations entre.
-				'cabinetFounderHtml'       => is_page( 'cabinet' ) ? $this->render_team_group_html( 'founder', __( 'Le fondateur', 'ag-business-avocat' ) ) : '',
-				'cabinetAssociatesHtml'    => is_page( 'cabinet' ) ? $this->render_team_group_html( 'associates', __( 'Avocats associés', 'ag-business-avocat' ) ) : '',
-				'cabinetCollaboratorsHtml' => is_page( 'cabinet' ) ? $this->render_team_group_html( 'collaborators', __( 'Collaborateurs', 'ag-business-avocat' ) ) : '',
+				'cabinetFounderHtml'       => is_page( 'cabinet' ) ? $this->render_team_group_html( 'founder',       (string) get_theme_mod( 'ag_business_cabinet_founder_title',       __( 'Le fondateur', 'ag-business-avocat' ) ) ) : '',
+				'cabinetAssociatesHtml'    => is_page( 'cabinet' ) ? $this->render_team_group_html( 'associates',    (string) get_theme_mod( 'ag_business_cabinet_associates_title',    __( 'Avocats associés', 'ag-business-avocat' ) ) ) : '',
+				'cabinetCollaboratorsHtml' => is_page( 'cabinet' ) ? $this->render_team_group_html( 'collaborators', (string) get_theme_mod( 'ag_business_cabinet_collaborators_title', __( 'Collaborateurs', 'ag-business-avocat' ) ) ) : '',
 				// Citations parallax injectees entre les sections des
 				// pages internes (cabinet, honoraires, expertise).
 				// JAMAIS apres le titre haut de page (.ag-page-hero).
@@ -218,6 +218,19 @@ class AG_Business_Avocat {
 				// URLs d'images pour les 3 offres Boutique sur la home —
 				// JS les injecte dans les cards si pas deja presentes.
 				'boutiqueOfferImages'      => $this->get_boutique_offer_images(),
+				// Textes editables des injections JS Business.
+				'searchPlaceholder'  => (string) get_theme_mod( 'ag_business_search_placeholder', 'Rechercher un domaine, un article...' ),
+				'stripeBtnLabel'     => (string) get_theme_mod( 'ag_business_stripe_btn_label', 'Payer en ligne' ),
+				'cabinetFounderTitle'       => (string) get_theme_mod( 'ag_business_cabinet_founder_title', 'Le fondateur' ),
+				'cabinetAssociatesTitle'    => (string) get_theme_mod( 'ag_business_cabinet_associates_title', 'Avocats associés' ),
+				'cabinetCollaboratorsTitle' => (string) get_theme_mod( 'ag_business_cabinet_collaborators_title', 'Collaborateurs' ),
+				'legalLabels'        => array(
+					'mentions'        => (string) get_theme_mod( 'ag_business_legal_mentions',        'Mentions légales' ),
+					'confidentialite' => (string) get_theme_mod( 'ag_business_legal_confidentialite', 'Politique de confidentialité' ),
+					'cookies'         => (string) get_theme_mod( 'ag_business_legal_cookies',         'Politique de cookies' ),
+					'cgv'             => (string) get_theme_mod( 'ag_business_legal_cgv',             'CGV' ),
+					'retour'          => (string) get_theme_mod( 'ag_business_legal_retour',          'Politique de retour' ),
+				),
 			) );
 		}
 	}
@@ -1335,6 +1348,38 @@ class AG_Business_Avocat {
 			'section'     => 'ag_business_founder',
 			'type'        => 'text',
 		) );
+
+		// Section : Contenu accueil — textes (labels et placeholders injectes par JS Business).
+		$wp_customize->add_section( 'ag_business_home_content', array(
+			'title'       => __( 'Contenu accueil — textes', 'ag-business-avocat' ),
+			'description' => __( 'Personnalisez les textes des elements injectes par Business Avocat (recherche, paiement, footer legal, equipe cabinet).', 'ag-business-avocat' ),
+			'panel'       => 'ag_business_panel',
+		) );
+		$ag_ba_home_fields = array(
+			'ag_business_search_placeholder'           => array( 'label' => __( 'Recherche — placeholder', 'ag-business-avocat' ),         'default' => 'Rechercher un domaine, un article...', 'type' => 'text' ),
+			'ag_business_stripe_btn_label'             => array( 'label' => __( 'Bouton Stripe — texte', 'ag-business-avocat' ),           'default' => 'Payer en ligne',                       'type' => 'text' ),
+			'ag_business_cabinet_founder_title'        => array( 'label' => __( 'Cabinet — titre groupe Fondateur', 'ag-business-avocat' ), 'default' => 'Le fondateur',                         'type' => 'text' ),
+			'ag_business_cabinet_associates_title'     => array( 'label' => __( 'Cabinet — titre groupe Associés', 'ag-business-avocat' ),  'default' => 'Avocats associés',                     'type' => 'text' ),
+			'ag_business_cabinet_collaborators_title'  => array( 'label' => __( 'Cabinet — titre groupe Collaborateurs', 'ag-business-avocat' ), 'default' => 'Collaborateurs',               'type' => 'text' ),
+			'ag_business_legal_mentions'               => array( 'label' => __( 'Footer légal — Mentions légales', 'ag-business-avocat' ),  'default' => 'Mentions légales',                     'type' => 'text' ),
+			'ag_business_legal_confidentialite'        => array( 'label' => __( 'Footer légal — Confidentialité', 'ag-business-avocat' ),   'default' => 'Politique de confidentialité',         'type' => 'text' ),
+			'ag_business_legal_cookies'                => array( 'label' => __( 'Footer légal — Cookies', 'ag-business-avocat' ),           'default' => 'Politique de cookies',                 'type' => 'text' ),
+			'ag_business_legal_cgv'                    => array( 'label' => __( 'Footer légal — CGV', 'ag-business-avocat' ),               'default' => 'CGV',                                  'type' => 'text' ),
+			'ag_business_legal_retour'                 => array( 'label' => __( 'Footer légal — Politique de retour', 'ag-business-avocat' ), 'default' => 'Politique de retour',                'type' => 'text' ),
+		);
+		foreach ( $ag_ba_home_fields as $ag_ba_key => $ag_ba_f ) {
+			$ag_ba_type = isset( $ag_ba_f['type'] ) ? $ag_ba_f['type'] : 'text';
+			$wp_customize->add_setting( $ag_ba_key, array(
+				'default'           => $ag_ba_f['default'],
+				'sanitize_callback' => $ag_ba_type === 'textarea' ? 'wp_kses_post' : 'sanitize_text_field',
+				'transport'         => 'refresh',
+			) );
+			$wp_customize->add_control( $ag_ba_key, array(
+				'label'   => $ag_ba_f['label'],
+				'section' => 'ag_business_home_content',
+				'type'    => $ag_ba_type,
+			) );
+		}
 	}
 
 	public function sanitize_boutique_symbol( $value ) {

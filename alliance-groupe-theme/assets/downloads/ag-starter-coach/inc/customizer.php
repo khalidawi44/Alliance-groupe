@@ -49,6 +49,15 @@ function ag_starter_coach_customizer_defaults() {
 		'ag_coach_temoignages_lead'=> 'Decouvrez les retours de mes clients : reconversion reussie, prise de parole debloquee, confiance retrouvee.',
 		'ag_coach_about_p1'        => 'Coach professionnelle certifiee, j\'accompagne depuis plus de dix ans des dirigeants, entrepreneurs et particuliers dans leurs transformations. Mon approche combine ecoute active, methodes eprouvees et ancrage concret.',
 		'ag_coach_about_p2'        => 'Chaque accompagnement est unique : je m\'adapte a votre rythme et a vos objectifs, avec pour seule boussole votre progres. Premier rendez-vous toujours gratuit pour valider ensemble la meilleure formule.',
+		// Home section H2 titles (split pre + em for editorial flexibility).
+		'ag_coach_individuel_title_pre'  => 'Coaching',
+		'ag_coach_individuel_title_em'   => 'individuel',
+		'ag_coach_groupe_title_pre'      => 'Seances',
+		'ag_coach_groupe_title_em'       => 'de groupe',
+		'ag_coach_temoignages_title_pre' => '',
+		'ag_coach_temoignages_title_em'  => 'Temoignages',
+		'ag_coach_about_title_pre'       => 'Mon',
+		'ag_coach_about_title_em'        => 'parcours',
 	);
 }
 
@@ -351,28 +360,38 @@ function ag_starter_coach_customize_register( $wp_customize ) {
 		)
 	);
 	$ag_coach_home_fields = array(
-		'ag_coach_individuel_lead'  => esc_html__( 'Coaching individuel — phrase d\'intro', 'ag-starter-coach' ),
-		'ag_coach_groupe_lead'      => esc_html__( 'Seances de groupe — phrase d\'intro', 'ag-starter-coach' ),
-		'ag_coach_temoignages_lead' => esc_html__( 'Temoignages — phrase d\'intro', 'ag-starter-coach' ),
-		'ag_coach_about_p1'         => esc_html__( 'Mon parcours — paragraphe 1', 'ag-starter-coach' ),
-		'ag_coach_about_p2'         => esc_html__( 'Mon parcours — paragraphe 2', 'ag-starter-coach' ),
+		'ag_coach_individuel_title_pre'  => array( 'label' => esc_html__( 'Coaching individuel — debut du titre', 'ag-starter-coach' ),  'type' => 'text' ),
+		'ag_coach_individuel_title_em'   => array( 'label' => esc_html__( 'Coaching individuel — mot accentue', 'ag-starter-coach' ),    'type' => 'text' ),
+		'ag_coach_individuel_lead'       => array( 'label' => esc_html__( 'Coaching individuel — phrase d\'intro', 'ag-starter-coach' ), 'type' => 'textarea' ),
+		'ag_coach_groupe_title_pre'      => array( 'label' => esc_html__( 'Seances de groupe — debut du titre', 'ag-starter-coach' ),    'type' => 'text' ),
+		'ag_coach_groupe_title_em'       => array( 'label' => esc_html__( 'Seances de groupe — mot accentue', 'ag-starter-coach' ),      'type' => 'text' ),
+		'ag_coach_groupe_lead'           => array( 'label' => esc_html__( 'Seances de groupe — phrase d\'intro', 'ag-starter-coach' ),   'type' => 'textarea' ),
+		'ag_coach_temoignages_title_pre' => array( 'label' => esc_html__( 'Temoignages — debut du titre', 'ag-starter-coach' ),          'type' => 'text' ),
+		'ag_coach_temoignages_title_em'  => array( 'label' => esc_html__( 'Temoignages — mot accentue', 'ag-starter-coach' ),            'type' => 'text' ),
+		'ag_coach_temoignages_lead'      => array( 'label' => esc_html__( 'Temoignages — phrase d\'intro', 'ag-starter-coach' ),         'type' => 'textarea' ),
+		'ag_coach_about_title_pre'       => array( 'label' => esc_html__( 'Mon parcours — debut du titre', 'ag-starter-coach' ),         'type' => 'text' ),
+		'ag_coach_about_title_em'        => array( 'label' => esc_html__( 'Mon parcours — mot accentue', 'ag-starter-coach' ),           'type' => 'text' ),
+		'ag_coach_about_p1'              => array( 'label' => esc_html__( 'Mon parcours — paragraphe 1', 'ag-starter-coach' ),           'type' => 'textarea' ),
+		'ag_coach_about_p2'              => array( 'label' => esc_html__( 'Mon parcours — paragraphe 2', 'ag-starter-coach' ),           'type' => 'textarea' ),
 	);
 	$ag_prio = 10;
-	foreach ( $ag_coach_home_fields as $ag_key => $ag_label ) {
+	foreach ( $ag_coach_home_fields as $ag_key => $ag_meta ) {
+		$ag_type     = isset( $ag_meta['type'] ) ? $ag_meta['type'] : 'textarea';
+		$ag_sanitize = ( 'textarea' === $ag_type ) ? 'sanitize_textarea_field' : 'sanitize_text_field';
 		$wp_customize->add_setting(
 			$ag_key,
 			array(
 				'default'           => isset( $defaults[ $ag_key ] ) ? $defaults[ $ag_key ] : '',
-				'sanitize_callback' => 'sanitize_textarea_field',
+				'sanitize_callback' => $ag_sanitize,
 				'transport'         => 'refresh',
 			)
 		);
 		$wp_customize->add_control(
 			$ag_key,
 			array(
-				'label'    => $ag_label,
+				'label'    => $ag_meta['label'],
 				'section'  => 'ag_section_home_content',
-				'type'     => 'textarea',
+				'type'     => $ag_type,
 				'priority' => $ag_prio,
 			)
 		);

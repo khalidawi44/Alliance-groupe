@@ -177,9 +177,10 @@
 		overlay.setAttribute('role', 'dialog');
 		overlay.setAttribute('aria-modal', 'true');
 		overlay.setAttribute('aria-label', 'Recherche');
+		var searchPlaceholder = (typeof agBusinessData !== 'undefined' && agBusinessData.searchPlaceholder) ? agBusinessData.searchPlaceholder : 'Rechercher un domaine, un article...';
 		overlay.innerHTML =
 			'<form role="search" method="get" action="' + actionUrl + '" class="ag-business-search-form">' +
-			'<input type="search" name="s" placeholder="Rechercher un domaine, un article..." aria-label="Rechercher">' +
+			'<input type="search" name="s" placeholder="' + escapeHtml(searchPlaceholder) + '" aria-label="Rechercher">' +
 			'<button type="submit" aria-label="Lancer la recherche">→</button>' +
 			'</form>' +
 			'<button type="button" class="ag-business-search-close" aria-label="Fermer la recherche">×</button>';
@@ -224,7 +225,8 @@
 			btn.href = url;
 			btn.target = '_blank';
 			btn.rel = 'noopener noreferrer';
-			btn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="vertical-align:middle;margin-right:8px;"><path d="M13 9V3.5L18.5 9M6 2c-1.11 0-2 .89-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6H6m4 11h2v3h3v2h-3v3h-2v-3H7v-2h3v-3z"/></svg>Payer en ligne';
+			var stripeBtnLabel = (typeof agBusinessData !== 'undefined' && agBusinessData.stripeBtnLabel) ? agBusinessData.stripeBtnLabel : 'Payer en ligne';
+			btn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="vertical-align:middle;margin-right:8px;"><path d="M13 9V3.5L18.5 9M6 2c-1.11 0-2 .89-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6H6m4 11h2v3h3v2h-3v3h-2v-3H7v-2h3v-3z"/></svg>' + escapeHtml(stripeBtnLabel);
 			btn.setAttribute('aria-label', 'Payer cette offre en ligne via Stripe');
 			btn.addEventListener('click', function (e) {
 				e.stopPropagation(); // ne pas declencher le click de la card
@@ -436,12 +438,16 @@
 		var footer = document.querySelector('.ag-site-footer');
 		if (!footer) return;
 		if (document.querySelector('.ag-business-legal-footer')) return;
+		var legalLabels = (typeof agBusinessData !== 'undefined' && agBusinessData.legalLabels) ? agBusinessData.legalLabels : {};
+		function legalLabel(key, fallback) {
+			return (legalLabels[key] && String(legalLabels[key]).trim() !== '') ? legalLabels[key] : fallback;
+		}
 		var links = [
-			{ href: '/mentions-legales/',          label: 'Mentions légales' },
-			{ href: '/politique-confidentialite/', label: 'Politique de confidentialité' },
-			{ href: '/politique-cookies/',         label: 'Politique de cookies' },
-			{ href: '/cgv/',                       label: 'CGV' },
-			{ href: '/politique-retour/',          label: 'Politique de retour' }
+			{ href: '/mentions-legales/',          label: legalLabel('mentions',        'Mentions légales') },
+			{ href: '/politique-confidentialite/', label: legalLabel('confidentialite', 'Politique de confidentialité') },
+			{ href: '/politique-cookies/',         label: legalLabel('cookies',         'Politique de cookies') },
+			{ href: '/cgv/',                       label: legalLabel('cgv',             'CGV') },
+			{ href: '/politique-retour/',          label: legalLabel('retour',          'Politique de retour') }
 		];
 		var html = '<nav class="ag-business-legal-footer" aria-label="Liens legaux"><ul>';
 		links.forEach(function (l) {
