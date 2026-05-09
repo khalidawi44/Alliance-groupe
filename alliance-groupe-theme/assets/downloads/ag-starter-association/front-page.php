@@ -76,16 +76,16 @@ get_header();
             <p class="ag-asso-section__lead"><?php echo esc_html( ag_asso_opt( 'ag_asso_manifeste_lead', 'Nous croyons qu\'une autre société est possible — plus juste, plus écologique, plus démocratique. Voici nos engagements.' ) ); ?></p>
             <div class="ag-asso-manifeste">
                 <?php
-                // Si page WP "manifeste" existe et a du contenu, l'utiliser. Sinon
-                // 3 paragraphes editables via Customizer.
+                // Le corps du manifeste se modifie via Pages > Manifeste
+                // (editeur Gutenberg standard). Si la page n'existe pas
+                // ou est vide, on affiche un message d'admin guidant
+                // l'utilisateur (visible uniquement aux admins connectes).
                 $manif_page = get_page_by_path( 'manifeste' );
                 if ( $manif_page && trim( $manif_page->post_content ) ) {
                     echo apply_filters( 'the_content', $manif_page->post_content );
-                } else {
-                    for ( $i = 1; $i <= 3; $i++ ) {
-                        $p = ag_asso_opt( "ag_asso_manifeste_p$i", '' );
-                        if ( $p ) echo '<p>' . wp_kses_post( $p ) . '</p>';
-                    }
+                } elseif ( current_user_can( 'edit_pages' ) ) {
+                    $edit_url = $manif_page ? get_edit_post_link( $manif_page->ID ) : admin_url( 'post-new.php?post_type=page' );
+                    echo '<p style="opacity:.7;font-style:italic;">[Editez le contenu du manifeste dans <a href="' . esc_url( $edit_url ) . '">Pages > Manifeste</a> avec l\'editeur de blocs.]</p>';
                 }
                 ?>
             </div>
