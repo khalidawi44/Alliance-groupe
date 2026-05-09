@@ -606,20 +606,42 @@ HTML;
 		self::ensure_menu( 'AG Fidélité — Footer',    'footer',  $footer_items );
 	}
 
+	/**
+	 * Ajoute les items par defaut dans le menu, SANS jamais effacer les items
+	 * deja presents (ajouts manuels de l'utilisateur preserves).
+	 *
+	 * Logique :
+	 *  - Si le menu n'existe pas : on le cree et on ajoute tous les items
+	 *  - Si le menu existe : on liste les pages deja liees, et on ajoute
+	 *    UNIQUEMENT les pages par defaut absentes (pas de wipe)
+	 *  - Les items personnalises de l'utilisateur (Connexion, Boutique,
+	 *    liens externes, sous-menus...) sont TOUJOURS preserves
+	 *
+	 * Bug fix v0.29 : avant cette version, le menu etait wipe a chaque update
+	 * du plugin, faisant disparaitre les ajouts manuels (page Connexion etc).
+	 */
 	private static function ensure_menu( $menu_name, $location, $items ) {
 		$menu = wp_get_nav_menu_object( $menu_name );
 		if ( ! $menu ) {
 			$menu_id = wp_create_nav_menu( $menu_name );
 			if ( is_wp_error( $menu_id ) ) return;
+			$existing_page_ids = array();
 		} else {
 			$menu_id = $menu->term_id;
+			// Liste des post_id des pages deja dans le menu (preservation
+			// totale : on n'efface AUCUN item utilisateur).
+			$existing_page_ids = array();
 			foreach ( (array) wp_get_nav_menu_items( $menu_id ) as $existing ) {
-				wp_delete_post( $existing->ID, true );
+				if ( $existing->object === 'page' && $existing->object_id ) {
+					$existing_page_ids[] = (int) $existing->object_id;
+				}
 			}
 		}
 		foreach ( $items as $slug => $label ) {
 			$page = get_page_by_path( $slug );
 			if ( ! $page ) continue;
+			// Skip si la page est deja liee au menu (eviter les doublons).
+			if ( in_array( (int) $page->ID, $existing_page_ids, true ) ) continue;
 			wp_update_nav_menu_item( $menu_id, 0, array(
 				'menu-item-title'     => $label,
 				'menu-item-object'    => 'page',
@@ -628,8 +650,13 @@ HTML;
 				'menu-item-status'    => 'publish',
 			) );
 		}
+		// Assigne le menu a son emplacement seulement s'il n'y en a pas deja un
+		// (preservation des choix utilisateur : si l'utilisateur a affecte un
+		// autre menu a 'primary', on ne le force pas).
 		$locations = get_theme_mod( 'nav_menu_locations', array() );
-		$locations[ $location ] = $menu_id;
-		set_theme_mod( 'nav_menu_locations', $locations );
+		if ( empty( $locations[ $location ] ) ) {
+			$locations[ $location ] = $menu_id;
+			set_theme_mod( 'nav_menu_locations', $locations );
+		}
 	}
 }
