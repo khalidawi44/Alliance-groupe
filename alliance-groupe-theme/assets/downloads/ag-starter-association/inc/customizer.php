@@ -56,19 +56,19 @@ function ag_asso_customize( $wp_customize ) {
 	$wp_customize->add_section( 'ag_asso_home_content', array(
 		'title' => __( 'Contenu accueil (textes des sections)', 'ag-starter-association' ),
 		'panel' => 'ag_asso_panel',
-		'description' => 'Personnalisez chaque texte des sections de l\'accueil. Pour les cartes Combats, allez dans le menu admin "Combats" (CPT lus dynamiquement).',
+		'description' => 'Modifiez ici les TITRES et phrases d\'INTRO de chaque section. <br><br><strong>Le CORPS du contenu se modifie ailleurs :</strong><br>• Manifeste (long texte) → Pages > Manifeste (éditeur Gutenberg)<br>• Cartes Combats → Combats > admin (chaque combat = 1 entrée)<br>• Cartes Événements → Événements > admin<br>• Articles d\'actualité → Articles > admin<br>• Équipe (12 photos/noms) → autre section "Équipe" du Customizer',
 	) );
 	$home_fields = array(
 		// Parallax bandeau manifeste
 		'ag_asso_parallax_manifeste_title' => array( 'label' => 'Bandeau parallax manifeste — titre',  'default' => 'Notre vision', 'type' => 'text' ),
 		'ag_asso_parallax_manifeste_text'  => array( 'label' => 'Bandeau parallax manifeste — texte',  'default' => 'Une société plus juste, plus solidaire — c\'est notre combat quotidien.', 'type' => 'textarea' ),
 		// Manifeste
+		// Manifeste — corps lu depuis Pages > Manifeste (Gutenberg).
+		// Les anciens champs p1/p2/p3 ont ete retires : ils etaient ignores
+		// quand la page Manifeste avait du contenu (= cas par defaut).
 		'ag_asso_manifeste_title_pre' => array( 'label' => 'Manifeste — début du titre',  'default' => 'Notre',     'type' => 'text' ),
 		'ag_asso_manifeste_title_em'  => array( 'label' => 'Manifeste — mot en rouge',    'default' => 'manifeste', 'type' => 'text' ),
-		'ag_asso_manifeste_lead'      => array( 'label' => 'Manifeste — phrase d\'intro', 'default' => 'Nous croyons qu\'une autre société est possible — plus juste, plus écologique, plus démocratique. Voici nos engagements.', 'type' => 'textarea' ),
-		'ag_asso_manifeste_p1'        => array( 'label' => 'Manifeste — paragraphe 1',    'default' => '<strong>1. Justice sociale.</strong> Nous combattons les inégalités là où elles se creusent.', 'type' => 'textarea' ),
-		'ag_asso_manifeste_p2'        => array( 'label' => 'Manifeste — paragraphe 2',    'default' => '<strong>2. Urgence climatique.</strong> Le dérèglement climatique n\'est plus une menace lointaine.', 'type' => 'textarea' ),
-		'ag_asso_manifeste_p3'        => array( 'label' => 'Manifeste — paragraphe 3',    'default' => '<strong>3. Démocratie vivante.</strong> Voter tous les 5 ans ne suffit plus.', 'type' => 'textarea' ),
+		'ag_asso_manifeste_lead'      => array( 'label' => 'Manifeste — phrase d\'intro (sous le titre)', 'default' => 'Nous croyons qu\'une autre société est possible — plus juste, plus écologique, plus démocratique. Voici nos engagements.', 'type' => 'textarea' ),
 		'ag_asso_manifeste_btn_label' => array( 'label' => 'Manifeste — texte du bouton', 'default' => 'Lire le manifeste complet →', 'type' => 'text' ),
 		// Parallax bandeau combats
 		'ag_asso_parallax_combats_title' => array( 'label' => 'Bandeau parallax combats — titre', 'default' => 'Nos combats', 'type' => 'text' ),
