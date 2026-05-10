@@ -39,63 +39,41 @@ endwhile; rewind_posts(); endif; ?>
 	</section>
 	<?php endif; ?>
 
+	<?php
+	$prest_fb_title = trim( ag_artisan_opt( 'ag_artisan_prestations_title_pre', 'Nos' ) . ' ' . ag_artisan_opt( 'ag_artisan_prestations_title_em', 'prestations' ) );
+	list( $prest_title, $prest_lead ) = ag_artisan_page_section_text( 'prestations', $prest_fb_title, ag_artisan_opt( 'ag_artisan_prestations_lead', 'Renovation, installation, entretien : nous intervenons pour tous vos travaux avec serieux et precision. Devis gratuit sous 24h.' ) );
+
+	$zones_fb_title = trim( ag_artisan_opt( 'ag_artisan_zones_title_pre', 'Zones' ) . ' ' . ag_artisan_opt( 'ag_artisan_zones_title_em', 'd\'intervention' ) );
+	list( $zones_title, $zones_lead ) = ag_artisan_page_section_text( 'zones-intervention', $zones_fb_title, ag_artisan_opt( 'ag_artisan_zones_lead', 'Nous intervenons dans toute votre region, y compris en urgence. Appelez-nous au 06 00 00 00 00 pour toute demande rapide.' ) );
+
+	$real_fb_title = trim( ag_artisan_opt( 'ag_artisan_realisations_title_pre', 'Nos' ) . ' ' . ag_artisan_opt( 'ag_artisan_realisations_title_em', 'realisations' ) );
+	list( $real_title, $real_lead ) = ag_artisan_page_section_text( 'realisations', $real_fb_title, ag_artisan_opt( 'ag_artisan_realisations_lead', 'Decouvrez nos chantiers recents : renovations de maison, installations techniques et travaux sur-mesure pour particuliers et professionnels.' ) );
+	?>
 	<section class="ag-container" id="ag-services">
 		<div class="ag-cards">
 			<div class="ag-card">
-				<h2>
-					<?php
-					$ag_artisan_prest_pre = ag_artisan_opt( 'ag_artisan_prestations_title_pre', 'Nos' );
-					$ag_artisan_prest_em  = ag_artisan_opt( 'ag_artisan_prestations_title_em',  'prestations' );
-					if ( '' !== $ag_artisan_prest_pre ) :
-						echo esc_html( $ag_artisan_prest_pre ) . ' ';
-					endif;
-					?>
-					<span><?php echo esc_html( $ag_artisan_prest_em ); ?></span>
-				</h2>
-				<p><?php echo esc_html( ag_artisan_opt( 'ag_artisan_prestations_lead', 'Renovation, installation, entretien : nous intervenons pour tous vos travaux avec serieux et precision. Devis gratuit sous 24h.' ) ); ?></p>
+				<h2><?php echo ag_artisan_render_split_title( $prest_title ); ?></h2>
+				<p><?php echo esc_html( $prest_lead ); ?></p>
 			</div>
 			<div class="ag-card">
-				<h2>
-					<?php
-					$ag_artisan_zones_pre = ag_artisan_opt( 'ag_artisan_zones_title_pre', 'Zones' );
-					$ag_artisan_zones_em  = ag_artisan_opt( 'ag_artisan_zones_title_em',  'd\'intervention' );
-					if ( '' !== $ag_artisan_zones_pre ) :
-						echo esc_html( $ag_artisan_zones_pre ) . ' ';
-					endif;
-					?>
-					<span><?php echo esc_html( $ag_artisan_zones_em ); ?></span>
-				</h2>
-				<p><?php echo esc_html( ag_artisan_opt( 'ag_artisan_zones_lead', 'Nous intervenons dans toute votre region, y compris en urgence. Appelez-nous au 06 00 00 00 00 pour toute demande rapide.' ) ); ?></p>
+				<h2><?php echo ag_artisan_render_split_title( $zones_title ); ?></h2>
+				<p><?php echo esc_html( $zones_lead ); ?></p>
 			</div>
 			<div class="ag-card">
-				<h2>
-					<?php
-					$ag_artisan_real_pre = ag_artisan_opt( 'ag_artisan_realisations_title_pre', 'Nos' );
-					$ag_artisan_real_em  = ag_artisan_opt( 'ag_artisan_realisations_title_em',  'realisations' );
-					if ( '' !== $ag_artisan_real_pre ) :
-						echo esc_html( $ag_artisan_real_pre ) . ' ';
-					endif;
-					?>
-					<span><?php echo esc_html( $ag_artisan_real_em ); ?></span>
-				</h2>
-				<p><?php echo esc_html( ag_artisan_opt( 'ag_artisan_realisations_lead', 'Decouvrez nos chantiers recents : renovations de maison, installations techniques et travaux sur-mesure pour particuliers et professionnels.' ) ); ?></p>
+				<h2><?php echo ag_artisan_render_split_title( $real_title ); ?></h2>
+				<p><?php echo esc_html( $real_lead ); ?></p>
 			</div>
 		</div>
 	</section>
 
+	<?php
+	$about_fb_title = trim( ag_artisan_opt( 'ag_artisan_about_title_pre', 'Qui' ) . ' ' . ag_artisan_opt( 'ag_artisan_about_title_em', 'sommes-nous' ) );
+	list( $about_title, $about_lead ) = ag_artisan_page_section_text( 'qui-sommes-nous', $about_fb_title, ag_artisan_opt( 'ag_artisan_about_p1', 'Depuis plus de dix ans, notre equipe d\'artisans qualifies accompagne particuliers et professionnels dans tous leurs projets de travaux. Rigueur, transparence sur les prix et respect des delais : voila notre engagement.' ) );
+	?>
 	<section class="ag-info">
 		<div class="ag-container">
-			<h2>
-				<?php
-				$ag_artisan_about_pre = ag_artisan_opt( 'ag_artisan_about_title_pre', 'Qui' );
-				$ag_artisan_about_em  = ag_artisan_opt( 'ag_artisan_about_title_em',  'sommes-nous' );
-				if ( '' !== $ag_artisan_about_pre ) :
-					echo esc_html( $ag_artisan_about_pre ) . ' ';
-				endif;
-				?>
-				<span><?php echo esc_html( $ag_artisan_about_em ); ?></span>
-			</h2>
-			<p><?php echo esc_html( ag_artisan_opt( 'ag_artisan_about_p1', 'Depuis plus de dix ans, notre equipe d\'artisans qualifies accompagne particuliers et professionnels dans tous leurs projets de travaux. Rigueur, transparence sur les prix et respect des delais : voila notre engagement.' ) ); ?></p>
+			<h2><?php echo ag_artisan_render_split_title( $about_title ); ?></h2>
+			<p><?php echo esc_html( $about_lead ); ?></p>
 			<p><?php echo esc_html( ag_artisan_opt( 'ag_artisan_about_p2', 'Nous mettons un point d\'honneur a livrer des chantiers propres et conformes aux normes. Chaque intervention est suivie personnellement du devis a la livraison finale.' ) ); ?></p>
 		</div>
 	</section>

@@ -38,10 +38,11 @@ $qr_url   = home_url( '/?ag_queue=join' );
     </section>
 
     <!-- File d'attente en temps réel -->
+    <?php list( $queue_title, $queue_lead ) = ag_barber_page_section_text( 'file-attente', ag_barber_opt( 'ag_barber_queue_title_pre', 'File d\'attente' ) . ' ' . ag_barber_opt( 'ag_barber_queue_title_em', 'en direct' ), ag_barber_opt( 'ag_barber_queue_lead', 'Mis à jour en temps réel. Scannez le QR code en vitrine ou cliquez ci-dessous.' ) ); ?>
     <section class="ag-section ag-section--card" id="queue">
         <div class="ag-container">
-            <h2 class="ag-section__title"><?php echo esc_html( ag_barber_opt( 'ag_barber_queue_title_pre', 'File d\'attente' ) ); ?> <em><?php echo esc_html( ag_barber_opt( 'ag_barber_queue_title_em', 'en direct' ) ); ?></em></h2>
-            <p class="ag-section__sub"><?php echo esc_html( ag_barber_opt( 'ag_barber_queue_lead', 'Mis à jour en temps réel. Scannez le QR code en vitrine ou cliquez ci-dessous.' ) ); ?></p>
+            <h2 class="ag-section__title"><?php echo ag_barber_render_split_title( $queue_title ); ?></h2>
+            <p class="ag-section__sub"><?php echo esc_html( $queue_lead ); ?></p>
 
             <div class="ag-queue-status">
                 <div class="ag-queue-status__count" id="ag-q-count"><?php echo esc_html( $waiting ); ?></div>
@@ -59,10 +60,11 @@ $qr_url   = home_url( '/?ag_queue=join' );
     </section>
 
     <!-- Tarifs -->
+    <?php list( $services_title, $services_lead ) = ag_barber_page_section_text( 'tarifs', ag_barber_opt( 'ag_barber_services_title_pre', 'Nos' ) . ' ' . ag_barber_opt( 'ag_barber_services_title_em', 'tarifs' ), ag_barber_opt( 'ag_barber_services_lead', 'Tarifs fixes, pas de surprise. Paiement en espèces ou carte bancaire.' ) ); ?>
     <section class="ag-section ag-section--dark" id="services">
         <div class="ag-container">
-            <h2 class="ag-section__title"><?php echo esc_html( ag_barber_opt( 'ag_barber_services_title_pre', 'Nos' ) ); ?> <em><?php echo esc_html( ag_barber_opt( 'ag_barber_services_title_em', 'tarifs' ) ); ?></em></h2>
-            <p class="ag-section__sub"><?php echo esc_html( ag_barber_opt( 'ag_barber_services_lead', 'Tarifs fixes, pas de surprise. Paiement en espèces ou carte bancaire.' ) ); ?></p>
+            <h2 class="ag-section__title"><?php echo ag_barber_render_split_title( $services_title ); ?></h2>
+            <p class="ag-section__sub"><?php echo esc_html( $services_lead ); ?></p>
 
             <div class="ag-services">
                 <?php
@@ -82,10 +84,11 @@ $qr_url   = home_url( '/?ag_queue=join' );
     </section>
 
     <!-- Comment ça marche -->
+    <?php list( $how_title, $how_lead ) = ag_barber_page_section_text( 'comment-ca-marche', ag_barber_opt( 'ag_barber_howitworks_title_pre', 'Comment' ) . ' ' . ag_barber_opt( 'ag_barber_howitworks_title_em', 'ça marche' ), ag_barber_opt( 'ag_barber_howitworks_lead', 'Plus besoin d\'attendre debout. 3 étapes, 30 secondes.' ) ); ?>
     <section class="ag-section ag-section--card">
         <div class="ag-container">
-            <h2 class="ag-section__title"><?php echo esc_html( ag_barber_opt( 'ag_barber_howitworks_title_pre', 'Comment' ) ); ?> <em><?php echo esc_html( ag_barber_opt( 'ag_barber_howitworks_title_em', 'ça marche' ) ); ?></em> ?</h2>
-            <p class="ag-section__sub"><?php echo esc_html( ag_barber_opt( 'ag_barber_howitworks_lead', 'Plus besoin d\'attendre debout. 3 étapes, 30 secondes.' ) ); ?></p>
+            <h2 class="ag-section__title"><?php echo ag_barber_render_split_title( $how_title ); ?> ?</h2>
+            <p class="ag-section__sub"><?php echo esc_html( $how_lead ); ?></p>
 
             <div class="ag-services" style="grid-template-columns:repeat(3,1fr);">
                 <div class="ag-service-card">
