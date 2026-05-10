@@ -193,7 +193,11 @@ class AG_Fid_Core {
 			.ag-fid-help a { font-weight: 600; }
 		</style>
 		<div class="ag-fid-help">
-			<p><strong>Bienvenue !</strong> Voici les 4 endroits où modifier votre site :</p>
+			<p style="background:#fff3cd;border-left:4px solid #E10F1A;padding:12px 14px;margin:0 0 14px;font-size:1rem;">
+				<strong>📖 Guide complet d'utilisation</strong> — toutes les zones modifiables du site, regroupées en une seule page :<br>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-fid-guide' ) ); ?>" class="button button-primary" style="margin-top:6px;">📖 Ouvrir le Guide d'utilisation</a>
+			</p>
+			<p><strong>Aperçu rapide</strong> — les 5 endroits où modifier votre site :</p>
 
 			<h4>📝 1. Modifier les textes des sections (titres, intros, slogans)</h4>
 			<ul>
