@@ -60,10 +60,11 @@ endwhile; rewind_posts(); endif; ?>
 	?>
 
 	<?php /* ─────────── 2. Domaines d'expertise (CPT) ─────────── */ ?>
+	<?php list( $dom_title, $dom_lead ) = ag_avocat_page_section_text( 'expertise', ag_avocat_opt( 'ag_avocat_domaines_title', 'Domaines d\'expertise' ), ag_avocat_opt( 'ag_avocat_domaines_lead', 'Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit.' ) ); ?>
 	<section class="ag-section ag-domaines" id="ag-domaines">
 		<div class="ag-container">
-			<h2 class="ag-section-title"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_domaines_title', 'Domaines d\'expertise' ) ); ?></h2>
-			<p class="ag-section-lead"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_domaines_lead', 'Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit.' ) ); ?></p>
+			<h2 class="ag-section-title"><?php echo ag_avocat_render_split_title( $dom_title ); ?></h2>
+			<p class="ag-section-lead"><?php echo esc_html( $dom_lead ); ?></p>
 
 			<?php
 			$domaines = ag_starter_avocat_get_domaines( 6 );
@@ -148,11 +149,13 @@ endwhile; rewind_posts(); endif; ?>
 	<?php do_action( 'ag_after_maitre' ); ?>
 
 	<?php /* ─────────── 4. Honoraires ─────────── */ ?>
-	<?php if ( ag_starter_avocat_get_option( 'ag_honoraires_show' ) ) : ?>
+	<?php if ( ag_starter_avocat_get_option( 'ag_honoraires_show' ) ) :
+		list( $hono_title, $hono_lead ) = ag_avocat_page_section_text( 'honoraires', ag_avocat_opt( 'ag_avocat_honoraires_title', 'Honoraires' ), ag_avocat_opt( 'ag_avocat_honoraires_lead', 'Transparence totale sur les tarifs : pas de mauvaise surprise, devis ecrit avant tout engagement.' ) );
+	?>
 	<section class="ag-section ag-honoraires" id="ag-honoraires">
 		<div class="ag-container">
-			<h2 class="ag-section-title"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_honoraires_title', 'Honoraires' ) ); ?></h2>
-			<p class="ag-section-lead"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_honoraires_lead', 'Transparence totale sur les tarifs : pas de mauvaise surprise, devis ecrit avant tout engagement.' ) ); ?></p>
+			<h2 class="ag-section-title"><?php echo ag_avocat_render_split_title( $hono_title ); ?></h2>
+			<p class="ag-section-lead"><?php echo esc_html( $hono_lead ); ?></p>
 
 			<div class="ag-honoraires__grid">
 				<?php
@@ -191,10 +194,11 @@ endwhile; rewind_posts(); endif; ?>
 	<?php do_action( 'ag_after_honoraires' ); ?>
 
 	<?php /* ─────────── 5. Cabinet (adresse + horaires + contact — 3 colonnes + map) ─────────── */ ?>
+	<?php list( $cab_title, $cab_lead ) = ag_avocat_page_section_text( 'cabinet', ag_avocat_opt( 'ag_avocat_cabinet_title', 'Le cabinet' ), ag_avocat_opt( 'ag_avocat_cabinet_lead', 'Consultation au cabinet, en visio ou par telephone.' ) ); ?>
 	<section class="ag-section ag-cabinet" id="ag-cabinet">
 		<div class="ag-container">
-			<h2 class="ag-section-title"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_cabinet_title', 'Le cabinet' ) ); ?></h2>
-			<p class="ag-section-lead"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_cabinet_lead', 'Consultation au cabinet, en visio ou par telephone.' ) ); ?></p>
+			<h2 class="ag-section-title"><?php echo ag_avocat_render_split_title( $cab_title ); ?></h2>
+			<p class="ag-section-lead"><?php echo esc_html( $cab_lead ); ?></p>
 			<div class="ag-cabinet__cards">
 				<div class="ag-cabinet__block">
 					<div class="ag-cabinet__block-icon">📍</div>
@@ -238,11 +242,12 @@ endwhile; rewind_posts(); endif; ?>
 	<?php /* ─────────── 6. Prendre rendez-vous (form RGPD) ─────────── */ ?>
 	<?php if ( ag_starter_avocat_get_option( 'ag_rdv_show' ) ) :
 		$status = ag_starter_avocat_get_rdv_status();
+		list( $rdv_title, $rdv_lead ) = ag_avocat_page_section_text( 'rendez-vous', ag_starter_avocat_get_option( 'ag_rdv_title' ), ag_starter_avocat_get_option( 'ag_rdv_subtitle' ) );
 		?>
 	<section class="ag-section ag-rdv" id="ag-rdv">
 		<div class="ag-container ag-container--narrow">
-			<h2 class="ag-section-title"><?php echo esc_html( ag_starter_avocat_get_option( 'ag_rdv_title' ) ); ?></h2>
-			<p class="ag-section-lead"><?php echo esc_html( ag_starter_avocat_get_option( 'ag_rdv_subtitle' ) ); ?></p>
+			<h2 class="ag-section-title"><?php echo ag_avocat_render_split_title( $rdv_title ); ?></h2>
+			<p class="ag-section-lead"><?php echo esc_html( $rdv_lead ); ?></p>
 
 			<?php if ( $status ) : ?>
 				<div class="ag-rdv__status ag-rdv__status--<?php echo esc_attr( $status['type'] ); ?>">

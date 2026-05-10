@@ -137,6 +137,59 @@ if ( ! function_exists( 'ag_resto_opt' ) ) {
 }
 
 /**
+ * Lit le titre + l'intro d'une section directement depuis la page WP
+ * correspondante (Pages > [slug]). L'utilisateur edite UNIQUEMENT la page :
+ * son titre devient le H2 de la section, son premier paragraphe devient
+ * l'intro de la section sur l'accueil.
+ *
+ * @param string $slug          Slug de la page
+ * @param string $fallback_h2   Titre de secours
+ * @param string $fallback_lead Intro de secours
+ * @return array [titre, intro]
+ */
+if ( ! function_exists( 'ag_resto_page_section_text' ) ) {
+	function ag_resto_page_section_text( $slug, $fallback_h2, $fallback_lead = '' ) {
+		$page  = get_page_by_path( $slug );
+		$title = $fallback_h2;
+		$lead  = $fallback_lead;
+		if ( $page ) {
+			$title = get_the_title( $page->ID ) ?: $fallback_h2;
+			if ( $page->post_excerpt ) {
+				$lead = $page->post_excerpt;
+			} else {
+				$blocks = function_exists( 'parse_blocks' ) ? parse_blocks( $page->post_content ) : array();
+				foreach ( $blocks as $block ) {
+					if ( ! empty( $block['blockName'] ) && $block['blockName'] === 'core/paragraph' ) {
+						$txt = trim( wp_strip_all_tags( $block['innerHTML'] ) );
+						if ( $txt ) {
+							$lead = wp_trim_words( $txt, 30, '...' );
+							break;
+						}
+					}
+				}
+			}
+		}
+		return array( $title, $lead );
+	}
+}
+
+/**
+ * Rend un titre H2 avec auto-italique du dernier mot — preserve le design
+ * d'origine (mot final dans <span> pour la couleur accent).
+ */
+if ( ! function_exists( 'ag_resto_render_split_title' ) ) {
+	function ag_resto_render_split_title( $title ) {
+		$words = preg_split( '/\s+/', trim( $title ) );
+		if ( count( $words ) < 2 ) {
+			return '<span>' . esc_html( $title ) . '</span>';
+		}
+		$last  = array_pop( $words );
+		$first = implode( ' ', $words );
+		return esc_html( $first ) . ' <span>' . esc_html( $last ) . '</span>';
+	}
+}
+
+/**
  * Load the customizer (panels, sections, settings) and its dynamic CSS output.
  */
 require get_template_directory() . '/inc/customizer.php';
@@ -259,3 +312,6 @@ add_action( 'wp_dashboard_setup', 'ag_starter_restaurant_dashboard_widget' );
 
 // Auto-update via raw GitHub.
 require_once get_template_directory() . '/inc/theme-updater.php';
+
+// Guide d'utilisation (admin)
+require_once get_template_directory() . '/inc/guide.php';

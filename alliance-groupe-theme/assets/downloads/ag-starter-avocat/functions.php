@@ -93,6 +93,58 @@ if ( ! function_exists( 'ag_avocat_opt' ) ) {
 }
 
 /**
+ * Lit le titre + l'intro d'une section directement depuis la page WP
+ * correspondante (Pages > [slug]). Ainsi l'utilisateur edite UNIQUEMENT
+ * la page : titre = H2 de la section, premier paragraphe = lead.
+ *
+ * @param string $slug          Slug de la page
+ * @param string $fallback_h2   Titre de secours si la page n'existe pas
+ * @param string $fallback_lead Intro de secours
+ * @return array [titre, intro]
+ */
+if ( ! function_exists( 'ag_avocat_page_section_text' ) ) {
+	function ag_avocat_page_section_text( $slug, $fallback_h2, $fallback_lead = '' ) {
+		$page  = get_page_by_path( $slug );
+		$title = $fallback_h2;
+		$lead  = $fallback_lead;
+		if ( $page ) {
+			$title = get_the_title( $page->ID ) ?: $fallback_h2;
+			if ( $page->post_excerpt ) {
+				$lead = $page->post_excerpt;
+			} else {
+				$blocks = function_exists( 'parse_blocks' ) ? parse_blocks( $page->post_content ) : array();
+				foreach ( $blocks as $block ) {
+					if ( ! empty( $block['blockName'] ) && $block['blockName'] === 'core/paragraph' ) {
+						$txt = trim( wp_strip_all_tags( $block['innerHTML'] ) );
+						if ( $txt ) {
+							$lead = wp_trim_words( $txt, 30, '...' );
+							break;
+						}
+					}
+				}
+			}
+		}
+		return array( $title, $lead );
+	}
+}
+
+/**
+ * Rend un titre H2 avec auto-italique du dernier mot — preserve le design
+ * d'origine (mot final en couleur accent via .ag-section-title em / span).
+ */
+if ( ! function_exists( 'ag_avocat_render_split_title' ) ) {
+	function ag_avocat_render_split_title( $title ) {
+		$words = preg_split( '/\s+/', trim( $title ) );
+		if ( count( $words ) < 2 ) {
+			return esc_html( $title );
+		}
+		$last  = array_pop( $words );
+		$first = implode( ' ', $words );
+		return esc_html( $first ) . ' <em>' . esc_html( $last ) . '</em>';
+	}
+}
+
+/**
  * Get permalink for a page by slug — works with any permalink structure.
  *
  * In Free tier: pages dediees (rendez-vous, expertise, cabinet, honoraires)
@@ -267,3 +319,6 @@ add_action( 'wp_dashboard_setup', 'ag_starter_avocat_dashboard_widget' );
 
 // Auto-update via raw GitHub.
 require_once get_template_directory() . '/inc/theme-updater.php';
+
+// Guide d'utilisation (admin)
+require_once get_template_directory() . '/inc/guide.php';
