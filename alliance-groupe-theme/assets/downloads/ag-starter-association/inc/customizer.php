@@ -19,6 +19,25 @@ function ag_asso_customize( $wp_customize ) {
 	) );
 
 	// =====================================================================
+	// Animations (anime.js : counters, reveal sections, CTA pulse)
+	// =====================================================================
+	$wp_customize->add_section( 'ag_asso_animations', array(
+		'title'       => __( 'Animations', 'ag-starter-association' ),
+		'panel'       => 'ag_asso_panel',
+		'priority'    => 22,
+		'description' => 'Animations legeres au scroll : compteurs anime de 0 a la valeur cible, sections en fade-up, CTA hero avec pulse subtil. Respecte automatiquement prefers-reduced-motion (utilisateurs sensibles aux mouvements). Desactivez si vous voulez un site 100% statique.',
+	) );
+	$wp_customize->add_setting( 'ag_asso_enable_animations', array(
+		'default'           => 1,
+		'sanitize_callback' => 'absint',
+	) );
+	$wp_customize->add_control( 'ag_asso_enable_animations', array(
+		'label'   => __( 'Activer les animations', 'ag-starter-association' ),
+		'section' => 'ag_asso_animations',
+		'type'    => 'checkbox',
+	) );
+
+	// =====================================================================
 	// Sections visibles sur la page d'accueil (toggle on/off)
 	// =====================================================================
 	$wp_customize->add_section( 'ag_asso_sections_visibility', array(

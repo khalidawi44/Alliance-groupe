@@ -66,6 +66,7 @@ class AG_Fid_Guide {
 					array( 'Membres équipe (12 photos/noms/rôles)',                'Apparence > Personnaliser > Équipe' ),
 					array( 'Sections visibles/masquées (on/off par section)',      'Apparence > Personnaliser > Sections visibles' ),
 					array( 'Couleurs + typo + logo',                                'Apparence > Personnaliser > Couleurs / Typo / Logo' ),
+					array( 'Animations (counters animés, fade-up sections, CTA pulse)', 'Apparence > Personnaliser > Animations (on/off)' ),
 				),
 			),
 

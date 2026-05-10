@@ -103,6 +103,27 @@ function ag_starter_association_assets() {
 			'ajax' => admin_url( 'admin-ajax.php' ),
 		) );
 	}
+
+	// Animations legeres via anime.js (front-page + interieur). Toggle
+	// via Customizer 'ag_asso_enable_animations' (ON par defaut).
+	// Respecte prefers-reduced-motion (auto-OFF cote JS pour utilisateurs
+	// sensibles). anime.js depuis CDN jsdelivr (16 KB gzip, cache global).
+	if ( get_theme_mod( 'ag_asso_enable_animations', 1 ) ) {
+		wp_enqueue_script(
+			'animejs',
+			'https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js',
+			array(),
+			'3.2.2',
+			true
+		);
+		wp_enqueue_script(
+			'ag-asso-animations',
+			get_template_directory_uri() . '/assets/animations.js',
+			array( 'animejs' ),
+			wp_get_theme()->get( 'Version' ),
+			true
+		);
+	}
 }
 add_action( 'wp_enqueue_scripts', 'ag_starter_association_assets' );
 
