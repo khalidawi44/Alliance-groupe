@@ -18,29 +18,59 @@ class AG_Fid_Pages {
 		// l'activation du plugin (cf. register_activation_hook).
 	}
 
+	/**
+	 * Wrappe un shortcode dans des blocs Gutenberg : heading editable +
+	 * paragraphe d'intro editable + bloc shortcode. L'utilisateur peut
+	 * modifier le titre et l'intro, le shortcode genere les cards CPT.
+	 */
+	private static function wrap_shortcode( $title, $intro, $shortcode ) {
+		return "<!-- wp:heading {\"level\":1} -->\n<h1 class=\"wp-block-heading\">" . esc_html( $title ) . "</h1>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>" . esc_html( $intro ) . "</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n" . $shortcode . "\n<!-- /wp:shortcode -->";
+	}
+
 	public static function create_default_pages() {
 		$pages = array(
 			'accueil'      => array( 'title' => 'Accueil',             'content' => '' ),
-			'qui-sommes-nous' => array( 'title' => 'Qui sommes-nous',  'shortcode' => '[ag_fid_qui_sommes_nous]' ),
-			'reunion'      => array( 'title' => 'Réunion en ligne',    'shortcode' => '[ag_fid_visio]' ),
-			'rendez-vous'  => array( 'title' => 'Prendre rendez-vous', 'shortcode' => '[ag_fid_rdv]' ),
-			'manifeste'    => array( 'title' => 'Manifeste',           'content'   => self::default_manifeste_content() ),
-			'combats'      => array( 'title' => 'Nos combats',         'shortcode' => '[ag_fid_combats]' ),
-			'evenements'   => array( 'title' => 'Événements',          'shortcode' => '[ag_fid_evenements]' ),
-			'groupes'      => array( 'title' => 'Groupes locaux',      'shortcode' => '[ag_fid_groupes]' ),
-			'actu'         => array( 'title' => 'Actualités',          'shortcode' => '[ag_fid_actu]' ),
-			'signer'       => array( 'title' => 'Signer l\'appel',     'shortcode' => '[ag_fid_signer]' ),
-			'petitions'    => array( 'title' => 'Pétitions',           'shortcode' => '[ag_fid_petitions]' ),
-			'don'          => array( 'title' => 'Faire un don',        'shortcode' => '[ag_fid_don]' ),
-			'adherer'      => array( 'title' => 'Adhérer',             'shortcode' => '[ag_fid_adhesion]' ),
-			'mon-compte'   => array( 'title' => 'Mon espace',          'shortcode' => '[ag_fid_compte]' ),
-			'mentions'     => array( 'title' => 'Mentions légales',    'content'   => '<!-- wp:html --><p><em>Cette page est générée automatiquement à partir des informations saisies dans <strong>Apparence → Personnaliser → Pack Fidélité</strong>. Vous pouvez aussi remplacer ce shortcode par votre propre texte.</em></p>[ag_fid_mentions]<!-- /wp:html -->' ),
-			'rgpd'         => array( 'title' => 'Confidentialité',     'content'   => '<!-- wp:html --><p><em>Politique de confidentialité auto-générée. Modifiable directement ici (remplacez le shortcode ci-dessous par votre propre texte si besoin).</em></p>[ag_fid_rgpd]<!-- /wp:html -->' ),
-			'statuts'      => array( 'title' => 'Statuts',             'content'   => self::default_statuts_content() ),
+			'qui-sommes-nous' => array( 'title' => 'Qui sommes-nous',  'content' => self::wrap_shortcode( 'Qui sommes-nous', 'Présentez ici votre association : son histoire, ses valeurs, son équipe. Le bloc ci-dessous affiche dynamiquement votre identité.', '[ag_fid_qui_sommes_nous]' ) ),
+			'reunion'      => array( 'title' => 'Réunion en ligne',    'content' => self::wrap_shortcode( 'Réunion en ligne', 'Rejoignez nos AG et réunions de bureau via la salle visio chiffrée ci-dessous (Jitsi Meet, sans compte).', '[ag_fid_visio]' ) ),
+			'rendez-vous'  => array( 'title' => 'Prendre rendez-vous', 'content' => self::wrap_shortcode( 'Prendre rendez-vous', 'Choisissez un créneau dans le calendrier ci-dessous pour un échange en visio ou en présentiel.', '[ag_fid_rdv]' ) ),
+			'manifeste'    => array( 'title' => 'Manifeste',           'content' => self::default_manifeste_content() ),
+			'combats'      => array( 'title' => 'Nos combats',         'content' => self::wrap_shortcode( 'Nos combats', 'Découvrez les grandes campagnes que nous portons cette année, sur le terrain et dans les institutions. Modifiez ce texte et ajoutez vos combats via Combats > admin.', '[ag_fid_combats]' ) ),
+			'evenements'   => array( 'title' => 'Événements',          'content' => self::wrap_shortcode( 'Événements', 'Marches, meetings, AG, débats publics — venez nous rencontrer. Ajoutez vos événements via Événements > admin.', '[ag_fid_evenements]' ) ),
+			'groupes'      => array( 'title' => 'Groupes locaux',      'content' => self::wrap_shortcode( 'Groupes locaux', 'Trouvez le groupe local actif près de chez vous, ou créez le vôtre. Ajoutez vos groupes via Groupes locaux > admin.', '[ag_fid_groupes]' ) ),
+			'actu'         => array( 'title' => 'Actualités',          'content' => self::wrap_shortcode( 'Actualités', 'Les dernières news du mouvement : analyses, communiqués, comptes rendus. Publiez via Articles > admin.', '[ag_fid_actu]' ) ),
+			'signer'       => array( 'title' => 'Signer l\'appel',     'content' => self::wrap_shortcode( 'Signer l\'appel', 'Pour une société plus juste, écologique et démocratique. Signer, c\'est s\'engager à recevoir nos appels et à les relayer.', '[ag_fid_signer]' ) ),
+			'petitions'    => array( 'title' => 'Pétitions',           'content' => self::wrap_shortcode( 'Pétitions', 'Découvrez nos pétitions en cours et leur progression. Ajoutez vos pétitions via Pétitions > admin.', '[ag_fid_petitions]' ) ),
+			'don'          => array( 'title' => 'Faire un don',        'content' => self::wrap_shortcode( 'Faire un don', 'Indépendants des partis et des grands donateurs, nous ne tenons que par vous. 66% de votre don est déductible de vos impôts.', '[ag_fid_don]' ) ),
+			'adherer'      => array( 'title' => 'Adhérer',             'content' => self::wrap_shortcode( 'Adhérer', 'Rejoignez le mouvement comme adhérent·e à jour de cotisation. Vous aurez accès à l\'AG, au vote des décisions et à l\'espace adhérent privé.', '[ag_fid_adhesion]' ) ),
+			'mon-compte'   => array( 'title' => 'Mon espace',          'content' => self::wrap_shortcode( 'Mon espace', 'Espace réservé aux adhérent·es : PV des AG, ressources, badge numérique.', '[ag_fid_compte]' ) ),
+			'mentions'     => array( 'title' => 'Mentions légales',    'content'  => '<!-- wp:html --><p><em>Cette page est générée automatiquement à partir des informations saisies dans <strong>Apparence → Personnaliser → Pack Fidélité</strong>. Vous pouvez aussi remplacer ce shortcode par votre propre texte.</em></p>[ag_fid_mentions]<!-- /wp:html -->' ),
+			'rgpd'         => array( 'title' => 'Confidentialité',     'content'  => '<!-- wp:html --><p><em>Politique de confidentialité auto-générée. Modifiable directement ici (remplacez le shortcode ci-dessous par votre propre texte si besoin).</em></p>[ag_fid_rgpd]<!-- /wp:html -->' ),
+			'statuts'      => array( 'title' => 'Statuts',             'content'  => self::default_statuts_content() ),
 		);
+		// Liste des pages dont le contenu legacy etait juste un shortcode brut.
+		// Si la page existante contient EXACTEMENT le shortcode legacy (cas
+		// installs anciennes), on migre vers le contenu Gutenberg riche
+		// (heading editable + intro + shortcode). Si l'utilisateur a deja
+		// modifie la page (autre contenu), on ne touche pas.
+		$legacy_shortcodes = array(
+			'qui-sommes-nous' => '[ag_fid_qui_sommes_nous]',
+			'reunion'         => '[ag_fid_visio]',
+			'rendez-vous'     => '[ag_fid_rdv]',
+			'manifeste'       => '[ag_fid_manifeste]',
+			'combats'         => '[ag_fid_combats]',
+			'evenements'      => '[ag_fid_evenements]',
+			'groupes'         => '[ag_fid_groupes]',
+			'actu'            => '[ag_fid_actu]',
+			'signer'          => '[ag_fid_signer]',
+			'petitions'       => '[ag_fid_petitions]',
+			'don'             => '[ag_fid_don]',
+			'adherer'         => '[ag_fid_adhesion]',
+			'mon-compte'      => '[ag_fid_compte]',
+		);
+
 		foreach ( $pages as $slug => $page ) {
 			$existing = get_page_by_path( $slug );
-			$content  = isset( $page['shortcode'] ) ? $page['shortcode'] : $page['content'];
+			$content  = $page['content'];
 			if ( $existing ) {
 				// Reset force du contenu si placeholder admin detecte
 				// (ancien message "Bienvenue sur notre site militant.")
@@ -54,6 +84,12 @@ class AG_Fid_Pages {
 				// toujours editer la page si il le souhaite.
 				if ( $slug === 'accueil' && strpos( $existing->post_content, 'Pour une société plus juste, écologique et démocratique' ) !== false && strpos( $existing->post_content, '<!-- wp:cover' ) !== false ) {
 					wp_update_post( array( 'ID' => $existing->ID, 'post_content' => '' ) );
+				}
+				// Migration v0.30 : si la page contient EXACTEMENT le shortcode
+				// legacy seul (pas modifiee par l'utilisateur), on la remplace
+				// par du Gutenberg editable.
+				if ( isset( $legacy_shortcodes[ $slug ] ) && trim( $existing->post_content ) === $legacy_shortcodes[ $slug ] ) {
+					wp_update_post( array( 'ID' => $existing->ID, 'post_content' => $content ) );
 				}
 				continue;
 			}
