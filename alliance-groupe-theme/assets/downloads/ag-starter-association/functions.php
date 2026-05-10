@@ -29,12 +29,23 @@ function ag_asso_page_section_text( $slug, $fallback_h2, $fallback_lead = '' ) {
 	$lead  = $fallback_lead;
 	if ( $page ) {
 		$title = get_the_title( $page->ID ) ?: $fallback_h2;
-		// Excerpt manuel sinon premier paragraphe auto.
+		// Excerpt manuel prioritaire si l'utilisateur en a defini un.
 		if ( $page->post_excerpt ) {
 			$lead = $page->post_excerpt;
 		} else {
-			$auto = wp_trim_words( wp_strip_all_tags( $page->post_content ), 24, '...' );
-			if ( $auto ) $lead = $auto;
+			// Parse les blocs Gutenberg et extrait UNIQUEMENT le premier
+			// paragraphe (skip les headings et shortcodes pour eviter de
+			// concatener le H1 + le paragraphe + le shortcode).
+			$blocks = function_exists( 'parse_blocks' ) ? parse_blocks( $page->post_content ) : array();
+			foreach ( $blocks as $block ) {
+				if ( ! empty( $block['blockName'] ) && $block['blockName'] === 'core/paragraph' ) {
+					$txt = trim( wp_strip_all_tags( $block['innerHTML'] ) );
+					if ( $txt ) {
+						$lead = wp_trim_words( $txt, 30, '...' );
+						break;
+					}
+				}
+			}
 		}
 	}
 	return array( $title, $lead );
