@@ -69,11 +69,13 @@ get_header();
     </section>
 
     <!-- Manifeste -->
-    <?php if ( ag_asso_opt( 'ag_asso_show_manifeste', 1 ) ) : ?>
+    <?php if ( ag_asso_opt( 'ag_asso_show_manifeste', 1 ) ) :
+        list( $manif_title, $manif_lead ) = ag_asso_page_section_text( 'manifeste', 'Notre manifeste', 'Nous croyons qu\'une autre société est possible — plus juste, plus écologique, plus démocratique. Voici nos engagements.' );
+    ?>
     <section class="ag-asso-section" id="manifeste">
         <div class="ag-asso-container">
-            <h2 class="ag-asso-section__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_manifeste_title_pre', 'Notre' ) ); ?> <em><?php echo esc_html( ag_asso_opt( 'ag_asso_manifeste_title_em', 'manifeste' ) ); ?></em></h2>
-            <p class="ag-asso-section__lead"><?php echo esc_html( ag_asso_opt( 'ag_asso_manifeste_lead', 'Nous croyons qu\'une autre société est possible — plus juste, plus écologique, plus démocratique. Voici nos engagements.' ) ); ?></p>
+            <h2 class="ag-asso-section__title"><?php echo ag_asso_render_split_title( $manif_title ); ?></h2>
+            <p class="ag-asso-section__lead"><?php echo esc_html( $manif_lead ); ?></p>
             <div class="ag-asso-manifeste">
                 <?php
                 // Le corps du manifeste se modifie via Pages > Manifeste
@@ -106,10 +108,11 @@ get_header();
     </section>
 
     <!-- Combats -->
+    <?php list( $combats_title, $combats_lead ) = ag_asso_page_section_text( 'combats', 'Nos combats', 'Six grandes campagnes que nous portons cette année, sur le terrain et dans les institutions.' ); ?>
     <section class="ag-asso-section ag-asso-section--alt" id="combats">
         <div class="ag-asso-container">
-            <h2 class="ag-asso-section__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_combats_title_pre', 'Nos' ) ); ?> <em><?php echo esc_html( ag_asso_opt( 'ag_asso_combats_title_em', 'combats' ) ); ?></em></h2>
-            <p class="ag-asso-section__lead"><?php echo esc_html( ag_asso_opt( 'ag_asso_combats_lead', 'Six grandes campagnes que nous portons cette année, sur le terrain et dans les institutions.' ) ); ?></p>
+            <h2 class="ag-asso-section__title"><?php echo ag_asso_render_split_title( $combats_title ); ?></h2>
+            <p class="ag-asso-section__lead"><?php echo esc_html( $combats_lead ); ?></p>
             <div class="ag-asso-combats-grid">
                 <?php
                 // Lecture dynamique : CPT ag_combat (modifiables via Combats > admin).
@@ -168,10 +171,11 @@ get_header();
     </section>
 
     <!-- Événements -->
+    <?php list( $evt_title, $evt_lead ) = ag_asso_page_section_text( 'evenements', 'Prochains événements', 'Marches, meetings, assemblées générales, débats publics — venez nous rencontrer près de chez vous.' ); ?>
     <section class="ag-asso-section" id="evenements">
         <div class="ag-asso-container">
-            <h2 class="ag-asso-section__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_evenements_title_pre', 'Prochains' ) ); ?> <em><?php echo esc_html( ag_asso_opt( 'ag_asso_evenements_title_em', 'événements' ) ); ?></em></h2>
-            <p class="ag-asso-section__lead"><?php echo esc_html( ag_asso_opt( 'ag_asso_evenements_lead', 'Marches, meetings, assemblées générales, débats publics — venez nous rencontrer près de chez vous.' ) ); ?></p>
+            <h2 class="ag-asso-section__title"><?php echo ag_asso_render_split_title( $evt_title ); ?></h2>
+            <p class="ag-asso-section__lead"><?php echo esc_html( $evt_lead ); ?></p>
             <div class="ag-asso-events">
                 <?php
                 $events = array(
@@ -208,8 +212,9 @@ get_header();
     <!-- Groupes locaux -->
     <section class="ag-asso-section ag-asso-section--alt ag-asso-section--map" id="groupes">
         <div class="ag-asso-container">
-            <h2 class="ag-asso-section__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_groupes_title_pre', 'Trouver mon' ) ); ?> <em><?php echo esc_html( ag_asso_opt( 'ag_asso_groupes_title_em', 'groupe local' ) ); ?></em></h2>
-            <p class="ag-asso-section__lead"><?php echo esc_html( ag_asso_opt( 'ag_asso_groupes_lead', '47 groupes locaux actifs partout en France. Tapez votre code postal pour trouver celui le plus proche.' ) ); ?></p>
+            <?php list( $grp_title, $grp_lead ) = ag_asso_page_section_text( 'groupes', 'Groupes locaux', '47 groupes locaux actifs partout en France. Tapez votre code postal pour trouver celui le plus proche.' ); ?>
+            <h2 class="ag-asso-section__title"><?php echo ag_asso_render_split_title( $grp_title ); ?></h2>
+            <p class="ag-asso-section__lead"><?php echo esc_html( $grp_lead ); ?></p>
             <form class="ag-asso-search" action="#" method="get">
                 <input type="text" name="cp" placeholder="<?php esc_attr_e( 'Code postal ou ville', 'ag-starter-association' ); ?>">
                 <button type="submit"><?php esc_html_e( 'Trouver', 'ag-starter-association' ); ?></button>
@@ -229,8 +234,9 @@ get_header();
     <!-- Actualités -->
     <section class="ag-asso-section" id="actu">
         <div class="ag-asso-container">
-            <h2 class="ag-asso-section__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_actu_title_pre', 'Dernières' ) ); ?> <em><?php echo esc_html( ag_asso_opt( 'ag_asso_actu_title_em', 'actualités' ) ); ?></em></h2>
-            <?php if ( $actu_lead = ag_asso_opt( 'ag_asso_actu_lead', '' ) ) : ?>
+            <?php list( $actu_title, $actu_lead ) = ag_asso_page_section_text( 'actu', 'Dernières actualités', '' ); ?>
+            <h2 class="ag-asso-section__title"><?php echo ag_asso_render_split_title( $actu_title ); ?></h2>
+            <?php if ( $actu_lead ) : ?>
                 <p class="ag-asso-section__lead"><?php echo esc_html( $actu_lead ); ?></p>
             <?php endif; ?>
             <div class="ag-asso-actu-grid">
@@ -322,8 +328,9 @@ get_header();
     <!-- Signer -->
     <section class="ag-asso-section ag-asso-section--cta" id="signer">
         <div class="ag-asso-container">
-            <h2 class="ag-asso-section__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_signer_title_pre', 'Signez' ) ); ?> <em><?php echo esc_html( ag_asso_opt( 'ag_asso_signer_title_em', 'l\'appel' ) ); ?></em></h2>
-            <p class="ag-asso-section__lead"><?php echo esc_html( ag_asso_opt( 'ag_asso_signer_lead', 'Pour une société plus juste, écologique et démocratique. Signer, c\'est s\'engager à recevoir nos appels à mobilisation et à les relayer autour de soi.' ) ); ?></p>
+            <?php list( $sign_title, $sign_lead ) = ag_asso_page_section_text( 'signer', 'Signez l\'appel', 'Pour une société plus juste, écologique et démocratique. Signer, c\'est s\'engager à recevoir nos appels à mobilisation et à les relayer autour de soi.' ); ?>
+            <h2 class="ag-asso-section__title"><?php echo ag_asso_render_split_title( $sign_title ); ?></h2>
+            <p class="ag-asso-section__lead"><?php echo esc_html( $sign_lead ); ?></p>
             <form class="ag-asso-form" action="#" method="post">
                 <input type="text" name="prenom" placeholder="<?php esc_attr_e( 'Prénom', 'ag-starter-association' ); ?>" required>
                 <input type="text" name="nom" placeholder="<?php esc_attr_e( 'Nom', 'ag-starter-association' ); ?>" required>
@@ -351,8 +358,9 @@ get_header();
     <!-- Don -->
     <section class="ag-asso-section ag-asso-section--alt" id="don">
         <div class="ag-asso-container">
-            <h2 class="ag-asso-section__title"><?php echo esc_html( ag_asso_opt( 'ag_asso_don_title_pre', 'Faire un' ) ); ?> <em><?php echo esc_html( ag_asso_opt( 'ag_asso_don_title_em', 'don' ) ); ?></em></h2>
-            <p class="ag-asso-section__lead"><?php echo esc_html( ag_asso_opt( 'ag_asso_don_lead', 'Indépendants des partis et des grands donateurs, nous ne tenons que par vous. 66% de votre don est déductible de vos impôts.' ) ); ?></p>
+            <?php list( $don_title, $don_lead ) = ag_asso_page_section_text( 'don', 'Faire un don', 'Indépendants des partis et des grands donateurs, nous ne tenons que par vous. 66% de votre don est déductible de vos impôts.' ); ?>
+            <h2 class="ag-asso-section__title"><?php echo ag_asso_render_split_title( $don_title ); ?></h2>
+            <p class="ag-asso-section__lead"><?php echo esc_html( $don_lead ); ?></p>
             <div class="ag-asso-don-grid">
                 <?php
                 $reduc = (int) ag_asso_opt( 'ag_asso_don_tax_reduc', 66 );
