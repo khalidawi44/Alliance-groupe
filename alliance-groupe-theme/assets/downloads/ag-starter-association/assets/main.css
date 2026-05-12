@@ -93,16 +93,37 @@ a:hover { text-decoration: underline; }
 .ag-asso-header__menu a:hover {
     color: var(--asso-yellow);
 }
-.ag-asso-cta,
-.ag-asso-header__menu li:last-child a {
+/* CTA button : seulement les <a> qui ont la classe explicite .ag-asso-cta.
+   PAS le li:last-child — ca surlignait n'importe quel dernier item du
+   menu meme si ce n'etait pas un CTA "don". */
+.ag-asso-cta {
     background: var(--asso-red);
     padding: 10px 18px;
     border-radius: 4px;
 }
-.ag-asso-cta:hover,
-.ag-asso-header__menu li:last-child a:hover {
+.ag-asso-cta:hover {
     background: var(--asso-red-dark);
     color: #fff !important;
+}
+/* Item actif du menu (page courante) : surligne en couleur accent.
+   Couvre les classes WordPress standard : current-menu-item / current_page_item. */
+.ag-asso-header__menu .current-menu-item > a,
+.ag-asso-header__menu .current_page_item > a,
+.ag-asso-header__menu .current-menu-ancestor > a {
+    color: var(--asso-yellow);
+    font-weight: 700;
+    position: relative;
+}
+.ag-asso-header__menu .current-menu-item > a::after,
+.ag-asso-header__menu .current_page_item > a::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--asso-yellow);
+    border-radius: 2px;
 }
 
 /* ── Hero ── */
@@ -1745,6 +1766,8 @@ body.ag-asso-welcome-open { overflow: hidden; }
 }
 
 /* ── Sticky DROITE : "Soutenir" (don rapide via popup AP) ── */
+/* Couleur : utilise var(--asso-red) qui suit le preset Customizer
+   (rouge par defaut, mais violet/bleu/autre selon le choix). */
 .ag-asso-sticky-soutien {
     position: fixed;
     right: 0;
@@ -1753,14 +1776,14 @@ body.ag-asso-welcome-open { overflow: hidden; }
     z-index: 9000;
     display: flex;
     align-items: stretch;
-    pointer-events: none;
+    /* PAS de pointer-events:none ici ! Sinon les events hover ne se
+       declenchent pas sur les enfants. */
 }
 .ag-asso-sticky-soutien__toggle {
-    pointer-events: auto;
-    background: linear-gradient(135deg, #E10F1A 0%, #B30D14 100%);
+    background: var(--asso-red);
     color: #fff;
     border: none;
-    padding: 16px 10px;
+    padding: 18px 12px;
     border-radius: 12px 0 0 12px;
     cursor: pointer;
     writing-mode: vertical-rl;
@@ -1774,9 +1797,10 @@ body.ag-asso-welcome-open { overflow: hidden; }
     flex-direction: column;
     align-items: center;
     gap: 8px;
+    transition: background .2s, transform .2s;
 }
 .ag-asso-sticky-soutien__toggle:hover {
-    background: linear-gradient(135deg, #FF1A26 0%, #E10F1A 100%);
+    background: var(--asso-red-dark);
 }
 .ag-asso-sticky-soutien__emoji {
     writing-mode: horizontal-tb;
@@ -1784,7 +1808,6 @@ body.ag-asso-welcome-open { overflow: hidden; }
     font-size: 1.3rem;
 }
 .ag-asso-sticky-soutien__panel {
-    pointer-events: auto;
     background: #0A0A0D;
     color: #fff;
     width: 0;
@@ -1792,9 +1815,9 @@ body.ag-asso-welcome-open { overflow: hidden; }
     transition: width .35s cubic-bezier(.4,0,.2,1), padding .35s;
     border-radius: 12px 0 0 12px;
     box-shadow: -6px 0 20px rgba(0,0,0,.4);
-    border-left: 4px solid #E10F1A;
+    border-left: 4px solid var(--asso-red);
     position: relative;
-    margin-right: -1px; /* coller au toggle */
+    margin-right: -1px;
 }
 .ag-asso-sticky-soutien.is-open .ag-asso-sticky-soutien__panel {
     width: 340px;
@@ -1967,7 +1990,7 @@ body.ag-asso-welcome-open { overflow: hidden; }
     letter-spacing: .8px;
     white-space: nowrap;
 }
-.ag-asso-header__menu li:last-child a,
+.ag-asso-header__menu li:last-child a.ag-asso-cta,
 .ag-asso-cta { padding: 8px 14px; font-size: .8rem; }
 @media (max-width: 1100px) {
     .ag-asso-header__inner { flex-wrap: wrap; }
