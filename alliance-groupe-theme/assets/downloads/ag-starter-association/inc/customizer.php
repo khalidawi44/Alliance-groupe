@@ -38,6 +38,26 @@ function ag_asso_customize( $wp_customize ) {
 	) );
 
 	// =====================================================================
+	// Integration Action Populaire (LFI) — UUID du groupe + popup
+	// =====================================================================
+	$wp_customize->add_section( 'ag_asso_actionpop', array(
+		'title'       => __( 'Action Populaire (LFI)', 'ag-starter-association' ),
+		'panel'       => 'ag_asso_panel',
+		'priority'    => 23,
+		'description' => 'Si votre groupe est référencé sur actionpopulaire.fr, collez son UUID ici (récupéré dans l\'URL de la page du groupe). Les boutons "Faire un don" et "Rejoindre le groupe" ouvriront alors une fenêtre popup pointant vers Action Populaire — les visiteurs restent sur votre site.',
+	) );
+	$wp_customize->add_setting( 'ag_asso_ap_group_uuid', array(
+		'default'           => '',
+		'sanitize_callback' => 'sanitize_text_field',
+	) );
+	$wp_customize->add_control( 'ag_asso_ap_group_uuid', array(
+		'label'       => __( 'UUID du groupe Action Populaire', 'ag-starter-association' ),
+		'description' => __( 'Ex : 3f07362c-8238-4a63-9b0c-4128e9ec6ede (trouvé dans l\'URL actionpopulaire.fr/groupes/{UUID}/)', 'ag-starter-association' ),
+		'section'     => 'ag_asso_actionpop',
+		'type'        => 'text',
+	) );
+
+	// =====================================================================
 	// Sections visibles sur la page d'accueil (toggle on/off)
 	// =====================================================================
 	$wp_customize->add_section( 'ag_asso_sections_visibility', array(

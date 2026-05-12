@@ -104,6 +104,17 @@ function ag_starter_association_assets() {
 		) );
 	}
 
+	// Popups Action Populaire : ouvre les liens AP (don, adhesion, groupe)
+	// dans une fenetre centree au lieu de rediriger. Garde le visiteur
+	// visuellement sur le site principal.
+	wp_enqueue_script(
+		'ag-asso-popups',
+		get_template_directory_uri() . '/assets/popups.js',
+		array(),
+		wp_get_theme()->get( 'Version' ),
+		true
+	);
+
 	// Animations legeres via anime.js (front-page + interieur). Toggle
 	// via Customizer 'ag_asso_enable_animations' (ON par defaut).
 	// Respecte prefers-reduced-motion (auto-OFF cote JS pour utilisateurs
