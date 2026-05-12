@@ -358,6 +358,23 @@ class AG_Fid_Presets {
 			AG_Fid_Pages::rebuild_primary_menu();
 		}
 
+		// 9. Force re-check des MAJ theme + plugin (vide les transients)
+		delete_site_transient( 'update_themes' );
+		delete_site_transient( 'update_plugins' );
+		delete_transient( 'ag_asso_theme_remote' );
+		delete_transient( 'ag_fid_remote_info' );
+
+		// 10. Purge cache LiteSpeed (si actif)
+		if ( defined( 'LSCWP_V' ) && class_exists( 'LiteSpeed\Purge' ) ) {
+			do_action( 'litespeed_purge_all' );
+		}
+		// Purge autres caches communs
+		if ( function_exists( 'wp_cache_flush' ) ) {
+			wp_cache_flush();
+		}
+		// Hook generique pour autres plugins de cache
+		do_action( 'ag_fid_preset_applied_hook' );
+
 		set_transient( 'ag_fid_preset_applied', $key, 60 );
 		// Memorise de maniere persistante (option) le preset applique :
 		// empeche l'auto-reseed CPT de wiper ce contenu a chaque MAJ plugin.
@@ -372,9 +389,10 @@ class AG_Fid_Presets {
 		$presets = self::get_presets();
 		$label = isset( $presets[ $applied ] ) ? $presets[ $applied ]['label'] : $applied;
 		?>
-		<div class="notice notice-success is-dismissible" style="border-left-color:#1F8A3D;padding:14px 18px;">
-			<p style="margin:0;font-size:1.05rem;"><strong>✓ Preset appliqué : <?php echo esc_html( $label ); ?></strong></p>
-			<p style="margin:6px 0 0;">Tous les textes et combats ont été mis à jour. <a href="<?php echo esc_url( home_url( '/' ) ); ?>" target="_blank">👁 Voir le site</a> ou <a href="<?php echo esc_url( admin_url( 'customize.php' ) ); ?>">🎨 personnaliser davantage</a>.</p>
+		<div class="notice notice-success is-dismissible" style="border-left-color:#8B1A8B;padding:14px 18px;">
+			<p style="margin:0;font-size:1.1rem;"><strong>✓ TOUT RESET terminé : <?php echo esc_html( $label ); ?></strong></p>
+			<p style="margin:6px 0 0;">Effectué en 1 clic : <strong>textes Customizer · contenu des pages · combats/événements/groupes/pétitions/articles · menu reset · force update theme+plugin · cache LiteSpeed vidé</strong>.</p>
+			<p style="margin:8px 0 0;"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" target="_blank" class="button button-primary">👁 Voir le site</a> <a href="<?php echo esc_url( admin_url( 'customize.php' ) ); ?>" class="button">🎨 Customizer</a></p>
 		</div>
 		<?php
 		delete_transient( 'ag_fid_preset_applied' );
@@ -409,25 +427,16 @@ class AG_Fid_Presets {
 						<?php echo (int) $pages_count; ?> pages ·
 						<?php echo (int) $combats_count; ?> combats
 					</p>
-					<form method="post" onsubmit="return confirm('⚠ Cela va REMPLACER le contenu actuel (Customizer hero/identité/stats + textes des pages + combats existants). Continuer ?');">
+					<form method="post" onsubmit="return confirm('⚠ Ce bouton fait TOUT en 1 clic :\n• Remplace les textes (Customizer hero/identité/stats)\n• Remplace le contenu des pages\n• Remplace les combats / événements / groupes / pétitions / articles\n• Reset le menu principal\n• Force la vérification des MAJ thème + plugin\n• Vide le cache LiteSpeed\n\nContinuer ?');">
 						<?php wp_nonce_field( 'ag_fid_apply_preset' ); ?>
 						<input type="hidden" name="ag_fid_preset_apply" value="<?php echo esc_attr( $key ); ?>">
-						<button type="submit" class="button button-primary" style="background:#E10F1A;border-color:#E10F1A;">
-							🎯 Appliquer ce preset
+						<button type="submit" class="button button-primary button-hero" style="background:#8B1A8B;border-color:#8B1A8B;font-size:1.15em;padding:14px 28px;height:auto;">
+							🚀 TOUT RESET + appliquer ce preset
 						</button>
+						<p style="font-size:.85em;color:#555;margin-top:10px;">Inclus : preset content + reset menu + force update theme/plugin + purge cache LiteSpeed — <strong>tout en 1 clic</strong>, plus rien d'autre à faire après.</p>
 					</form>
 				</div>
 			<?php endforeach; ?>
-
-			<div class="ag-fid-preset-card" style="background:#e6f4ff;border-color:#3B5998;">
-				<h2>🔄 Reset du menu principal</h2>
-				<p>Le menu "AG Fidélité — Principal" est dans un état incohérent (items dupliqués, anciens slugs, "Accueil" qui reste) ? Ce bouton <strong>wipe et recrée</strong> le menu proprement avec les 7 items par défaut : Qui sommes-nous, Manifeste, Combats, Mobilisations à venir, Trouver mon groupe local LFI, Réunion en ligne, Actualités.</p>
-				<form method="post" onsubmit="return confirm('⚠ Cela va EFFACER le menu actuel et le recréer proprement. Continuer ?');">
-					<?php wp_nonce_field( 'ag_fid_rebuild_menu' ); ?>
-					<input type="hidden" name="ag_fid_rebuild_menu" value="1">
-					<button type="submit" class="button button-secondary">🔄 Reset le menu principal</button>
-				</form>
-			</div>
 
 			<div class="ag-fid-preset-card" style="background:#fffbe6;border-color:#f0d000;">
 				<h2>💡 Créer votre propre preset</h2>
