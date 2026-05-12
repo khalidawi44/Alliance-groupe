@@ -621,6 +621,11 @@ HTML;
 	 * ancres.
 	 */
 	public static function create_default_menus() {
+		// 'don' retire du menu principal : le bouton CTA "Faire un don" en
+		// fin de menu colle souvent au reste du menu et peut paraitre
+		// agressif sur un site associatif. L'item reste dans le footer +
+		// reste accessible via la page directement. Si l'utilisateur veut
+		// le remettre : Apparence > Menus.
 		$primary_items = array(
 			'qui-sommes-nous' => 'Qui sommes-nous',
 			'manifeste'       => 'Manifeste',
@@ -629,7 +634,6 @@ HTML;
 			'groupes'         => 'Groupes locaux',
 			'reunion'         => 'Réunion en ligne',
 			'actu'            => 'Actualités',
-			'don'             => 'Faire un don',
 		);
 		$footer_items = array(
 			'manifeste' => 'Le manifeste',
