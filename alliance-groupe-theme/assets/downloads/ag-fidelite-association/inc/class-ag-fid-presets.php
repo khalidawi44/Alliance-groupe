@@ -100,6 +100,26 @@ class AG_Fid_Presets {
 						'title'   => 'Soutenir le groupe',
 						'content' => "<!-- wp:paragraph -->\n<p>Indépendants des partis, des grandes entreprises et des grands donateurs, nous ne tenons que par vous. Chaque euro permet d'imprimer des tracts, louer des salles, financer les frais juridiques d'un dossier difficile.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_don]\n<!-- /wp:shortcode -->",
 					),
+					'adherer' => array(
+						'title'   => 'Rejoindre le groupe',
+						'content' => "<!-- wp:paragraph -->\n<p>Vous habitez Nantes Sud Clos Toreau ou un quartier voisin ? Vous voulez nous rejoindre, nous donner un coup de main, ou simplement venir voir ce qu'on fait ?</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p><strong>Nos réunions sont ouvertes à tou·tes</strong>, sans condition de prise de carte. Pas besoin d'être encarté·e à La France Insoumise pour participer — on accueille toutes les bonnes volontés.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>Pour nous contacter : <a href=\"/signer/\">remplissez le formulaire</a> en précisant ce qui vous intéresse (réunion, accompagnement, témoignage, distribution de tracts...).</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_adhesion]\n<!-- /wp:shortcode -->",
+					),
+					'mon-compte' => array(
+						'title'   => 'Espace adhérent·e',
+						'content' => "<!-- wp:paragraph -->\n<p>Espace réservé aux adhérent·es du groupe local LFI Nantes Sud Clos Toreau : comptes rendus de réunions, ressources internes, badge numérique.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_compte]\n<!-- /wp:shortcode -->",
+					),
+					'petitions' => array(
+						'title'   => 'Nos pétitions',
+						'content' => "<!-- wp:paragraph -->\n<p>Pétitions portées par notre groupe local autour de l'habitat et de la défense des droits des habitant·es du Clos Toreau et de Nantes Sud.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_petitions]\n<!-- /wp:shortcode -->",
+					),
+					'reunion' => array(
+						'title'   => 'Réunion en ligne',
+						'content' => "<!-- wp:paragraph -->\n<p>Salle de visioconférence ouverte aux adhérent·es et sympathisant·es du groupe pour les réunions à distance (commission habitat, préparation d'actions, AG).</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_visio]\n<!-- /wp:shortcode -->",
+					),
+					'rendez-vous' => array(
+						'title'   => 'Permanence — prendre rendez-vous',
+						'content' => "<!-- wp:paragraph -->\n<p>Pour un accompagnement administratif ou juridique personnalisé, prenez rendez-vous avec un·e bénévole du groupe. Permanences confidentielles, sans rendez-vous obligatoire mais conseillé.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_rdv]\n<!-- /wp:shortcode -->",
+					),
 				),
 				'combats' => array(
 					array(
@@ -122,6 +142,82 @@ class AG_Fid_Presets {
 						'color'   => '#1F8A3D',
 						'excerpt' => 'Nous aidons les habitant·es à faire valoir leurs droits : CAF, préfecture, bailleur social, recours juridiques.',
 						'content' => "Troisième axe : aider concrètement. Beaucoup d'habitant·es se retrouvent seul·es face à des démarches administratives complexes, ou face à des décisions injustes qu'il faudrait contester en justice.\n\nNous accompagnons celles et ceux qui en ont besoin : rédaction de courriers à la CAF ou au bailleur, prise de rendez-vous avec un·e avocat·e partenaire, médiation préfecture, dossiers de surendettement, recours administratifs. Service entièrement bénévole et confidentiel.",
+					),
+				),
+
+				// Evenements : UNIQUEMENT Nantes Sud Clos Toreau (pas Marseille,
+				// pas Lyon, pas Paris). Trois evenements types qu'un groupe local
+				// porte concretement sur son quartier.
+				'events' => array(
+					array(
+						'title'   => 'Permanence accompagnement administratif',
+						'date'    => '', 'time' => '14:00', 'end' => '17:00',
+						'city'    => 'Nantes Sud Clos Toreau',
+						'place'   => 'À préciser (lieu de permanence du groupe)',
+						'content' => "Permanence ouverte à tou·tes les habitant·es du quartier qui ont besoin d'aide pour : courriers CAF, contestation de loyer, dossier bailleur social, démarches préfecture, surendettement, recours juridique.\n\n<strong>Sans rendez-vous, gratuit, confidentiel.</strong> Apportez vos documents (courriers, factures, contrats) si possible.",
+					),
+					array(
+						'title'   => 'Recueil de témoignages — habitat',
+						'date'    => '', 'time' => '18:00', 'end' => '20:00',
+						'city'    => 'Nantes Sud Clos Toreau',
+						'place'   => 'À préciser (lieu de réunion du groupe)',
+						'content' => "Soirée d'écoute des habitant·es sur les conditions de logement dans le quartier : insalubrité, loyers, expulsions, charges abusives, problèmes avec le bailleur.\n\nNous recueillons vos témoignages (anonymisés sur demande) pour porter publiquement nos demandes auprès du bailleur, de la mairie, et des médias.",
+					),
+					array(
+						'title'   => 'Réunion publique mensuelle du groupe',
+						'date'    => '', 'time' => '19:00', 'end' => '21:00',
+						'city'    => 'Nantes Sud Clos Toreau',
+						'place'   => 'À préciser (lieu de réunion du groupe)',
+						'content' => "Réunion mensuelle ouverte à tou·tes : actu du quartier, retour sur les actions menées, préparation des prochaines mobilisations.\n\nVenez même si vous n'êtes jamais venu·e — on vous explique tout.",
+					),
+				),
+
+				// Groupes locaux : UNIQUEMENT le notre. Pas Lyon ni Marseille.
+				'groupes' => array(
+					array(
+						'title'   => 'Nantes Sud Clos Toreau',
+						'excerpt' => 'Notre seul groupe local : couvre Nantes Sud Clos Toreau et les quartiers voisins.',
+						'content' => "Notre groupe local LFI couvre <strong>Nantes Sud Clos Toreau et les quartiers limitrophes</strong>.\n\nNous nous réunissons régulièrement dans le quartier (lieu et horaires précisés sur la page Événements).\n\nRéunions ouvertes à tou·tes les habitant·es, sans condition de prise de carte. Pas besoin d'être encarté·e à La France Insoumise pour participer.\n\nPour nous rejoindre ou nous contacter : <a href=\"/signer/\">formulaire de contact</a>.",
+					),
+				),
+
+				// Petitions : axees habitat/droits, pas de petition climat globale
+				// ou autre theme hors-perimeter du groupe.
+				'petitions' => array(
+					array(
+						'title'   => 'Pour l\'encadrement effectif des loyers à Nantes Métropole',
+						'excerpt' => 'Nantes Métropole peut activer le dispositif d\'encadrement des loyers depuis 2019. Demandons-le.',
+						'content' => "Nantes Métropole est en zone tendue depuis 2019 et peut activer le <strong>dispositif d'encadrement des loyers</strong>. Lille, Lyon, Bordeaux, Montpellier l'ont fait. Nantes ne le fait toujours pas.\n\nNous demandons à Nantes Métropole d'activer immédiatement ce dispositif pour protéger les locataires de notre quartier et de toute l'agglomération.",
+					),
+					array(
+						'title'   => 'Réfection des logements insalubres au Clos Toreau',
+						'excerpt' => 'Plan de rénovation immédiat des logements signalés comme insalubres dans notre quartier.',
+						'content' => "Nous interpellons Nantes Métropole Habitat et la Ville de Nantes : <strong>plusieurs logements du Clos Toreau présentent des problèmes documentés</strong> (moisissures, infiltrations, ascenseurs en panne récurrente).\n\nNous demandons un plan de rénovation chiffré et calendrié, avec représentation des locataires dans le suivi des travaux.",
+					),
+					array(
+						'title'   => 'Permanence d\'accès au droit dans nos quartiers',
+						'excerpt' => 'Permanences d\'avocat·es et juristes gratuites dans les quartiers populaires de Nantes.',
+						'content' => "L'accès au droit est inégalement réparti dans la métropole. Nous demandons que la Ville et le Département financent des <strong>permanences d'accès au droit gratuites et hebdomadaires</strong> dans les quartiers populaires, dont Clos Toreau.\n\nLe groupe local fait sa part en bénévole — les institutions doivent prendre le relais.",
+					),
+				),
+
+				// Articles : actu LFI Clos Toreau uniquement (pas national, pas
+				// Saint-Etienne ou Toulouse). Trois articles types pour amorcer.
+				'articles' => array(
+					array(
+						'title'   => 'Le groupe LFI Clos Toreau a démarré ses permanences',
+						'excerpt' => 'Première permanence d\'accompagnement administratif et juridique tenue dans le quartier. Cinq habitant·es accueilli·es.',
+						'content' => "<p>Notre groupe local a tenu sa première permanence d'accompagnement administratif et juridique cette semaine. <strong>Cinq habitant·es</strong> sont venu·es nous rencontrer, principalement pour des questions de loyer, dossier CAF et recours bailleur.</p><p>Nous renouvelons ces permanences chaque semaine. Sans rendez-vous, gratuit, confidentiel. Détails sur la page <a href=\"/evenements/\">Événements</a>.</p>",
+					),
+					array(
+						'title'   => 'Encadrement des loyers : on relance Nantes Métropole',
+						'excerpt' => 'Notre pétition pour l\'activation du dispositif d\'encadrement des loyers à Nantes Métropole prend de l\'ampleur.',
+						'content' => "<p>Depuis 2019, Nantes Métropole peut activer le dispositif d'encadrement des loyers — comme l'ont fait Lille, Lyon, Bordeaux et Montpellier. Notre groupe a relancé cette demande auprès des élu·es métropolitain·es.</p><p>La <a href=\"/petitions/\">pétition</a> est ouverte à la signature. Pour celles et ceux qui veulent agir avec nous, <a href=\"/signer/\">contactez-nous</a>.</p>",
+					),
+					array(
+						'title'   => 'Témoignages habitat : ce qu\'on a recueilli ce trimestre',
+						'excerpt' => 'Synthèse des témoignages d\'habitant·es du Clos Toreau sur leurs conditions de logement.',
+						'content' => "<p>Nous avons recueilli ce trimestre des témoignages d'habitant·es sur leurs conditions de logement au Clos Toreau : moisissures persistantes, ascenseurs en panne récurrente, charges contestables, lenteur des interventions du bailleur.</p><p>Une synthèse anonymisée sera transmise au bailleur et à la Ville de Nantes la semaine prochaine. Si vous voulez ajouter votre témoignage, <a href=\"/signer/\">le formulaire est ici</a>.</p>",
 					),
 				),
 			),
@@ -156,22 +252,80 @@ class AG_Fid_Presets {
 			}
 		}
 
-		// 3. Combats CPT : delete existing + create new from preset.
-		if ( ! empty( $preset['combats'] ) ) {
-			$old = get_posts( array( 'post_type' => 'ag_combat', 'posts_per_page' => -1, 'post_status' => 'any', 'fields' => 'ids' ) );
+		// Helper : wipe + reseed un CPT a partir d'un array.
+		$reseed_cpt = function( $cpt, $items, $meta_map = array() ) {
+			$old = get_posts( array( 'post_type' => $cpt, 'posts_per_page' => -1, 'post_status' => 'any', 'fields' => 'ids' ) );
 			foreach ( $old as $pid ) wp_delete_post( $pid, true );
-			foreach ( $preset['combats'] as $c ) {
+			foreach ( $items as $it ) {
 				$pid = wp_insert_post( array(
-					'post_type'    => 'ag_combat',
+					'post_type'    => $cpt,
 					'post_status'  => 'publish',
-					'post_title'   => $c['title'],
-					'post_excerpt' => $c['excerpt'],
-					'post_content' => $c['content'],
+					'post_title'   => isset( $it['title'] ) ? $it['title'] : '',
+					'post_excerpt' => isset( $it['excerpt'] ) ? $it['excerpt'] : '',
+					'post_content' => isset( $it['content'] ) ? $it['content'] : '',
 				) );
 				if ( $pid && ! is_wp_error( $pid ) ) {
-					update_post_meta( $pid, '_ag_combat_emoji', $c['emoji'] );
-					update_post_meta( $pid, '_ag_combat_color', $c['color'] );
+					foreach ( $meta_map as $key => $meta_key ) {
+						if ( isset( $it[ $key ] ) && $it[ $key ] !== '' ) {
+							update_post_meta( $pid, $meta_key, $it[ $key ] );
+						}
+					}
 				}
+			}
+		};
+
+		// 3. Combats CPT (avec emoji + couleur).
+		if ( ! empty( $preset['combats'] ) ) {
+			$reseed_cpt( 'ag_combat', $preset['combats'], array(
+				'emoji' => '_ag_combat_emoji',
+				'color' => '_ag_combat_color',
+			) );
+		}
+
+		// 4. Evenements CPT (Clos Toreau uniquement, pas Marseille / Lyon / etc.).
+		if ( ! empty( $preset['events'] ) ) {
+			$reseed_cpt( 'ag_evenement', $preset['events'], array(
+				'date'  => '_ag_event_date',
+				'time'  => '_ag_event_time',
+				'end'   => '_ag_event_end',
+				'city'  => '_ag_event_city',
+				'place' => '_ag_event_place',
+			) );
+		}
+
+		// 5. Groupes locaux (uniquement Clos Toreau).
+		if ( ! empty( $preset['groupes'] ) ) {
+			$reseed_cpt( 'ag_groupe', $preset['groupes'] );
+		}
+
+		// 6. Petitions (axees habitat/droits).
+		if ( ! empty( $preset['petitions'] ) ) {
+			$reseed_cpt( 'ag_petition', $preset['petitions'] );
+		}
+
+		// 7. Articles standard WP (uniquement les seeds Alliance Groupe par
+		// titre, pour preserver les vrais articles de l'utilisateur).
+		if ( ! empty( $preset['articles'] ) ) {
+			$seed_titles = array(
+				'Hôpital public : nous publions notre contre-budget',
+				'Hôpital public : nous publions notre contre-budget 2026',
+				'Pétition climat : 47 000 signatures en 3 semaines',
+				'Nouveau groupe local à Saint-Étienne — bienvenue !',
+				'Logement : nos 12 propositions pour 2027',
+				'AG 2026 : ce qui a été voté',
+			);
+			foreach ( $seed_titles as $t ) {
+				$existing = get_page_by_title( $t, OBJECT, 'post' );
+				if ( $existing ) wp_delete_post( $existing->ID, true );
+			}
+			foreach ( $preset['articles'] as $a ) {
+				wp_insert_post( array(
+					'post_type'    => 'post',
+					'post_status'  => 'publish',
+					'post_title'   => $a['title'],
+					'post_excerpt' => isset( $a['excerpt'] ) ? $a['excerpt'] : '',
+					'post_content' => isset( $a['content'] ) ? $a['content'] : '',
+				) );
 			}
 		}
 
