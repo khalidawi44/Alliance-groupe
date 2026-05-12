@@ -109,6 +109,46 @@
         <p class="ag-asso-sticky-pub__credit">🚀 Fièrement créé par <strong>Alliance Groupe</strong> 💎</p>
     </div>
 </aside>
+
+<?php // Sticky droite : "Soutenir" — onglet vertical fixe a droite qui
+// s'ouvre au survol/clic et propose le don AP en popup. N'a pas
+// d'impact sur le menu ou le contenu (position:fixed + z-index gere).
+$ap_uuid_soutien = ag_asso_opt( 'ag_asso_ap_group_uuid', '' );
+if ( $ap_uuid_soutien ) :
+$ap_don_url = 'https://actionpopulaire.fr/dons/?group=' . rawurlencode( $ap_uuid_soutien );
+?>
+<aside class="ag-asso-sticky-soutien" id="agAssoStickySoutien" aria-label="<?php esc_attr_e( 'Soutenir', 'ag-starter-association' ); ?>">
+    <button type="button" class="ag-asso-sticky-soutien__toggle" aria-expanded="false" aria-controls="agAssoStickySoutienPanel">
+        <span class="ag-asso-sticky-soutien__emoji" aria-hidden="true">💛</span>
+        <span class="ag-asso-sticky-soutien__text">Soutenir</span>
+    </button>
+    <div class="ag-asso-sticky-soutien__panel" id="agAssoStickySoutienPanel" role="dialog" aria-modal="false">
+        <button type="button" class="ag-asso-sticky-soutien__close" aria-label="<?php esc_attr_e( 'Fermer', 'ag-starter-association' ); ?>" data-soutien-close>×</button>
+        <h3 class="ag-asso-sticky-soutien__title">💛 Soutenir notre groupe</h3>
+        <p class="ag-asso-sticky-soutien__sub">Indépendants des partis et des grands donateurs, nous ne tenons que par vous.</p>
+        <p class="ag-asso-sticky-soutien__sub" style="font-size:.85em;color:#bbb;">66% de votre don est déductible. Reçu fiscal automatique par email.</p>
+        <a href="<?php echo esc_url( $ap_don_url ); ?>" class="ag-asso-btn ag-asso-btn--primary ag-asso-sticky-soutien__cta" data-ag-popup data-popup-width="980" data-popup-height="820" rel="noopener">💛 Faire un don maintenant</a>
+        <a href="<?php echo esc_url( home_url( '/don/' ) ); ?>" class="ag-asso-sticky-soutien__more">Voir toutes les options →</a>
+    </div>
+</aside>
+<?php endif; ?>
+
+<script>
+(function () {
+    var soutien = document.getElementById('agAssoStickySoutien');
+    if (soutien) {
+        var stBtn = soutien.querySelector('.ag-asso-sticky-soutien__toggle');
+        var stClose = soutien.querySelector('[data-soutien-close]');
+        function stSetOpen(o){ soutien.classList.toggle('is-open', o); stBtn && stBtn.setAttribute('aria-expanded', o ? 'true' : 'false'); }
+        // Open au survol desktop, click partout (mobile-friendly)
+        soutien.addEventListener('mouseenter', function(){ if(window.innerWidth>768) stSetOpen(true); });
+        soutien.addEventListener('mouseleave', function(){ if(window.innerWidth>768) stSetOpen(false); });
+        stBtn && stBtn.addEventListener('click', function(){ stSetOpen(!soutien.classList.contains('is-open')); });
+        stClose && stClose.addEventListener('click', function(e){ e.stopPropagation(); stSetOpen(false); });
+    }
+})();
+</script>
+
 <script>
 (function () {
     var pub = document.getElementById('agAssoStickyPub');

@@ -178,25 +178,64 @@ get_header();
             <p class="ag-asso-section__lead"><?php echo esc_html( $evt_lead ); ?></p>
             <div class="ag-asso-events">
                 <?php
-                $events = array(
-                    array( '15', 'JUIN',  'Marche pour la justice climatique', 'Paris — République → Bastille', 'Grande mobilisation nationale. Départ 14h, République. Plus de 50 organisations partenaires.' ),
-                    array( '22', 'JUIN',  'Assemblée générale annuelle',       'Lyon — Bourse du Travail',     'AG ouverte aux adhérent·es : bilan moral, financier, vote du programme 2027.' ),
-                    array( '06', 'JUIL.', 'Université d\'été du mouvement',    'Marseille — Friche Belle de Mai', 'Trois jours de formations, ateliers, débats. Inscription obligatoire (gratuit pour adhérents).' ),
-                );
-                foreach ( $events as $ev ) : ?>
-                    <a class="ag-asso-event ag-asso-event--link" href="<?php echo esc_url( home_url( '/evenements/' ) ); ?>">
-                        <div class="ag-asso-event__date">
-                            <span class="ag-asso-event__day"><?php echo esc_html( $ev[0] ); ?></span>
-                            <span class="ag-asso-event__month"><?php echo esc_html( $ev[1] ); ?></span>
-                        </div>
-                        <div class="ag-asso-event__body">
-                            <h3><?php echo esc_html( $ev[2] ); ?></h3>
-                            <p class="ag-asso-event__where"><?php echo esc_html( $ev[3] ); ?></p>
-                            <p><?php echo esc_html( $ev[4] ); ?></p>
-                            <span class="ag-asso-event__cta"><?php esc_html_e( "M'inscrire →", 'ag-starter-association' ); ?></span>
-                        </div>
-                    </a>
-                <?php endforeach; ?>
+                // Lecture dynamique du CPT ag_evenement (modifiable via
+                // Evenements > admin). Trie par date (meta _ag_event_date)
+                // ASC. Fallback : 3 evenements hardcodes si CPT vide.
+                $months_fr = array( 1 => 'JAN', 'FEV', 'MARS', 'AVR', 'MAI', 'JUIN', 'JUIL', 'AOUT', 'SEPT', 'OCT', 'NOV', 'DEC' );
+                $q_evts = new WP_Query( array(
+                    'post_type'      => 'ag_evenement',
+                    'posts_per_page' => 3,
+                    'meta_key'       => '_ag_event_date',
+                    'orderby'        => 'meta_value',
+                    'order'          => 'ASC',
+                ) );
+                if ( $q_evts->have_posts() ) :
+                    while ( $q_evts->have_posts() ) : $q_evts->the_post();
+                        $date  = get_post_meta( get_the_ID(), '_ag_event_date', true );
+                        $city  = get_post_meta( get_the_ID(), '_ag_event_city',  true );
+                        $place = get_post_meta( get_the_ID(), '_ag_event_place', true );
+                        $day = $month_lbl = '';
+                        if ( $date && ( $ts = strtotime( $date ) ) ) {
+                            $day       = date( 'd', $ts );
+                            $month_lbl = isset( $months_fr[ (int) date( 'n', $ts ) ] ) ? $months_fr[ (int) date( 'n', $ts ) ] : '';
+                        }
+                        $where = trim( $city . ( $place ? ' — ' . $place : '' ), ' —' );
+                        ?>
+                        <a class="ag-asso-event ag-asso-event--link" href="<?php the_permalink(); ?>">
+                            <div class="ag-asso-event__date">
+                                <span class="ag-asso-event__day"><?php echo esc_html( $day ?: '—' ); ?></span>
+                                <span class="ag-asso-event__month"><?php echo esc_html( $month_lbl ); ?></span>
+                            </div>
+                            <div class="ag-asso-event__body">
+                                <h3><?php the_title(); ?></h3>
+                                <?php if ( $where ) : ?><p class="ag-asso-event__where"><?php echo esc_html( $where ); ?></p><?php endif; ?>
+                                <p><?php echo esc_html( wp_trim_words( get_the_excerpt(), 24 ) ); ?></p>
+                                <span class="ag-asso-event__cta"><?php esc_html_e( "M'inscrire →", 'ag-starter-association' ); ?></span>
+                            </div>
+                        </a>
+                    <?php endwhile;
+                    wp_reset_postdata();
+                else :
+                    $events_fb = array(
+                        array( '15', 'JUIN',  'Marche pour la justice climatique', 'Paris — République → Bastille', 'Grande mobilisation nationale. Départ 14h, République. Plus de 50 organisations partenaires.' ),
+                        array( '22', 'JUIN',  'Assemblée générale annuelle',       'Lyon — Bourse du Travail',     'AG ouverte aux adhérent·es : bilan moral, financier, vote du programme 2027.' ),
+                        array( '06', 'JUIL.', 'Université d\'été du mouvement',    'Marseille — Friche Belle de Mai', 'Trois jours de formations, ateliers, débats. Inscription obligatoire (gratuit pour adhérents).' ),
+                    );
+                    foreach ( $events_fb as $ev ) : ?>
+                        <a class="ag-asso-event ag-asso-event--link" href="<?php echo esc_url( home_url( '/evenements/' ) ); ?>">
+                            <div class="ag-asso-event__date">
+                                <span class="ag-asso-event__day"><?php echo esc_html( $ev[0] ); ?></span>
+                                <span class="ag-asso-event__month"><?php echo esc_html( $ev[1] ); ?></span>
+                            </div>
+                            <div class="ag-asso-event__body">
+                                <h3><?php echo esc_html( $ev[2] ); ?></h3>
+                                <p class="ag-asso-event__where"><?php echo esc_html( $ev[3] ); ?></p>
+                                <p><?php echo esc_html( $ev[4] ); ?></p>
+                                <span class="ag-asso-event__cta"><?php esc_html_e( "M'inscrire →", 'ag-starter-association' ); ?></span>
+                            </div>
+                        </a>
+                    <?php endforeach;
+                endif; ?>
             </div>
             <p style="text-align:center;margin-top:32px;">
                 <a href="<?php echo esc_url( home_url( '/evenements/' ) ); ?>" class="ag-asso-btn ag-asso-btn--primary">
