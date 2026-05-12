@@ -620,6 +620,48 @@ HTML;
 	 * pour que le menu pointe vers les pages reelles et non vers des
 	 * ancres.
 	 */
+	/**
+	 * Wipe + recreer le menu principal proprement.
+	 * Utilise par le bouton admin "Reset menu" quand le menu est dans
+	 * un etat incoherent (items dupliques, anciens slugs, etc.).
+	 */
+	public static function rebuild_primary_menu() {
+		$menu_name = 'AG Fidélité — Principal';
+		$menu = wp_get_nav_menu_object( $menu_name );
+		if ( $menu ) {
+			foreach ( (array) wp_get_nav_menu_items( $menu->term_id ) as $existing ) {
+				wp_delete_post( $existing->ID, true );
+			}
+			$menu_id = $menu->term_id;
+		} else {
+			$menu_id = wp_create_nav_menu( $menu_name );
+			if ( is_wp_error( $menu_id ) ) return;
+		}
+		$primary_items = array(
+			'qui-sommes-nous' => 'Qui sommes-nous',
+			'manifeste'       => 'Manifeste',
+			'combats'         => 'Combats',
+			'evenements'      => 'Mobilisations à venir',
+			'groupes'         => 'Trouver mon groupe local LFI',
+			'reunion'         => 'Réunion en ligne',
+			'actu'            => 'Actualités',
+		);
+		foreach ( $primary_items as $slug => $label ) {
+			$page = get_page_by_path( $slug );
+			if ( ! $page ) continue;
+			wp_update_nav_menu_item( $menu_id, 0, array(
+				'menu-item-title'     => $label,
+				'menu-item-object'    => 'page',
+				'menu-item-object-id' => $page->ID,
+				'menu-item-type'      => 'post_type',
+				'menu-item-status'    => 'publish',
+			) );
+		}
+		$locations = get_theme_mod( 'nav_menu_locations', array() );
+		$locations['primary'] = $menu_id;
+		set_theme_mod( 'nav_menu_locations', $locations );
+	}
+
 	public static function create_default_menus() {
 		// 'don' et 'accueil' retires du menu principal (CTA agressif +
 		// home accessible via logo). L'utilisateur peut les ajouter
