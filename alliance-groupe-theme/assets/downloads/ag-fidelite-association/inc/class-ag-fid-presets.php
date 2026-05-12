@@ -60,12 +60,16 @@ class AG_Fid_Presets {
 					'ag_asso_cta_url'      => '/adherer/',
 					'ag_asso_cta2_label'   => 'Témoigner / demander de l\'aide',
 					'ag_asso_cta2_url'     => '/signer/',
-					'ag_asso_stat1_value'  => '1',
-					'ag_asso_stat1_label'  => 'groupe local Clos Toreau',
-					'ag_asso_stat2_value'  => '',
-					'ag_asso_stat2_label'  => 'adhérent·es actif·ves',
-					'ag_asso_stat3_value'  => '',
-					'ag_asso_stat3_label'  => 'témoignages recueillis',
+					// Stats accueil : nombre groupes LFI (national + Loire-Atlantique
+					// + notre groupe local Clos Toreau). Editable plus tard via
+					// Customizer > Contenu accueil pour ajuster avec les vrais
+					// chiffres a jour.
+					'ag_asso_stat1_value'  => '1 200+',
+					'ag_asso_stat1_label'  => 'groupes LFI en France',
+					'ag_asso_stat2_value'  => '30+',
+					'ag_asso_stat2_label'  => 'groupes en Loire-Atlantique',
+					'ag_asso_stat3_value'  => '1',
+					'ag_asso_stat3_label'  => 'groupe au Clos Toreau',
 					// UUID du groupe sur Action Populaire — utilise dans
 					// les boutons popup don/adhesion (garde l'utilisateur
 					// visuellement sur le site, popup centree)
