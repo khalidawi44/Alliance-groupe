@@ -129,6 +129,12 @@ class AG_Fid_Presets {
 						'title'   => 'Permanence — prendre rendez-vous',
 						'content' => "<!-- wp:paragraph -->\n<p>Pour un accompagnement administratif ou juridique personnalisé, prenez rendez-vous avec un·e bénévole du groupe. Permanences confidentielles, sans rendez-vous obligatoire mais conseillé.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_rdv]\n<!-- /wp:shortcode -->",
 					),
+					// NOUVELLE PAGE (slug different, zero cache herite). Contient
+					// la carte AP + le bouton popup d'inscription au groupe LFI.
+					'rejoindre-lfi' => array(
+						'title'   => 'Rejoindre LFI Clos Toreau',
+						'content' => "<!-- wp:paragraph -->\n<p style=\"text-align:center;font-size:1.1em;\">Rejoignez notre groupe LFI Nantes Sud Clos Toreau ou trouvez le groupe le plus proche de chez vous sur la carte officielle Action Populaire. <strong>Aucun compte requis pour voir la carte.</strong></p>\n<!-- /wp:paragraph -->\n\n<!-- wp:html -->\n<p style=\"text-align:center;margin:40px 0;\"><a href=\"https://actionpopulaire.fr/groupes/3f07362c-8238-4a63-9b0c-4128e9ec6ede/\" class=\"ag-asso-btn ag-asso-btn--primary\" data-ag-popup data-popup-width=\"1000\" data-popup-height=\"800\" rel=\"noopener\" style=\"display:inline-block;padding:22px 44px;font-size:1.3em;border-radius:8px;\">✊ Rejoindre LFI Nantes Sud Clos Toreau</a></p>\n<p style=\"text-align:center;font-size:.9em;color:#666;margin-top:-20px;\">→ S'ouvre dans une petite fenêtre. Vous restez sur ce site.</p>\n<!-- /wp:html -->\n\n<!-- wp:heading -->\n<h2 style=\"text-align:center;\">🗺️ Carte de tous les groupes LFI en France</h2>\n<!-- /wp:heading -->\n\n<!-- wp:html -->\n<div style=\"max-width:1100px;margin:20px auto;\">\n<p style=\"text-align:center;margin-bottom:14px;\"><a href=\"https://actionpopulaire.fr/groupes/carte/\" class=\"ag-asso-btn ag-asso-btn--primary\" data-ag-popup data-popup-width=\"1100\" data-popup-height=\"800\" rel=\"noopener\" style=\"display:inline-block;padding:14px 28px;\">🗺️ Ouvrir la carte plein écran</a></p>\n<div style=\"position:relative;border:1px solid #ddd;border-radius:8px;overflow:hidden;background:#f5f5f5;\"><iframe src=\"https://actionpopulaire.fr/groupes/carte/\" width=\"100%\" height=\"600\" style=\"border:0;display:block;\" loading=\"lazy\" title=\"Carte des groupes LFI\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe></div>\n<p style=\"text-align:center;margin-top:10px;font-size:.85em;color:#888;\">Si la carte ne s'affiche pas, cliquez sur le bouton ci-dessus.</p>\n</div>\n<!-- /wp:html -->",
+					),
 				),
 				'combats' => array(
 					array(
@@ -266,12 +272,22 @@ class AG_Fid_Presets {
 		if ( ! empty( $preset['pages'] ) ) {
 			foreach ( $preset['pages'] as $slug => $data ) {
 				$page = get_page_by_path( $slug );
-				if ( ! $page ) continue;
-				wp_update_post( array(
-					'ID'           => $page->ID,
-					'post_title'   => $data['title'],
-					'post_content' => $data['content'],
-				) );
+				if ( $page ) {
+					wp_update_post( array(
+						'ID'           => $page->ID,
+						'post_title'   => $data['title'],
+						'post_content' => $data['content'],
+					) );
+				} else {
+					// Cree la page si elle n'existe pas (nouveaux slugs preset).
+					wp_insert_post( array(
+						'post_type'    => 'page',
+						'post_status'  => 'publish',
+						'post_title'   => $data['title'],
+						'post_name'    => $slug,
+						'post_content' => $data['content'],
+					) );
+				}
 			}
 		}
 
