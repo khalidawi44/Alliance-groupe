@@ -621,11 +621,10 @@ HTML;
 	 * ancres.
 	 */
 	public static function create_default_menus() {
-		// 'don' retire du menu principal (CTA collait au reste). 'accueil'
-		// AJOUTE en tete pour que la home soit l'item actif sur la
-		// page d'accueil (highlightable en couleur primaire).
+		// 'don' et 'accueil' retires du menu principal (CTA agressif +
+		// home accessible via logo). L'utilisateur peut les ajouter
+		// manuellement via Apparence > Menus.
 		$primary_items = array(
-			'accueil'         => 'Accueil',
 			'qui-sommes-nous' => 'Qui sommes-nous',
 			'manifeste'       => 'Manifeste',
 			'combats'         => 'Combats',

@@ -105,22 +105,22 @@ a:hover { text-decoration: underline; }
     background: var(--asso-red-dark);
     color: #fff !important;
 }
-/* Item actif du menu (page courante) : surligne en couleur PRIMAIRE
-   (violet sur le site LFI, suit le preset Customizer). Style fort
-   pour bien indiquer la page courante. */
+/* Item actif du menu (page courante) : surligne en VIOLET force
+   (#8B1A8B) — couleur fixe pour distinguer clairement de la couleur
+   primaire du theme (var(--asso-red) qui peut etre rouge/rose/autre). */
 .ag-asso-header__menu .current-menu-item > a,
 .ag-asso-header__menu .current_page_item > a,
 .ag-asso-header__menu .current-menu-ancestor > a {
     color: #fff !important;
-    background: var(--asso-red);
-    padding: 8px 14px;
-    border-radius: 4px;
-    font-weight: 700;
-    position: relative;
+    background: #8B1A8B !important;
+    padding: 8px 14px !important;
+    border-radius: 4px !important;
+    font-weight: 700 !important;
 }
 .ag-asso-header__menu .current-menu-item > a:hover,
-.ag-asso-header__menu .current_page_item > a:hover {
-    background: var(--asso-red-dark);
+.ag-asso-header__menu .current_page_item > a:hover,
+.ag-asso-header__menu .current-menu-ancestor > a:hover {
+    background: #6E1370 !important;
     color: #fff !important;
 }
 
@@ -1763,9 +1763,7 @@ body.ag-asso-welcome-open { overflow: hidden; }
     .ag-asso-sticky-pub { display: none !important; }
 }
 
-/* ── Sticky DROITE : "Soutenir" (don rapide via popup AP) ── */
-/* Couleur : utilise var(--asso-red) qui suit le preset Customizer
-   (rouge par defaut, mais violet/bleu/autre selon le choix). */
+/* ── Sticky DROITE : "Soutenir" — MIRROR EXACT du sticky pub gauche ── */
 .ag-asso-sticky-soutien {
     position: fixed;
     right: 0;
@@ -1774,69 +1772,88 @@ body.ag-asso-welcome-open { overflow: hidden; }
     z-index: 9000;
     display: flex;
     align-items: stretch;
-    /* PAS de pointer-events:none ici ! Sinon les events hover ne se
-       declenchent pas sur les enfants. */
+    flex-direction: row-reverse; /* miroir : toggle a DROITE, panel a GAUCHE du toggle */
 }
 .ag-asso-sticky-soutien__toggle {
     background: var(--asso-red);
+    border: 1px solid rgba(255,255,255,.18);
+    border-right: 0;
+    border-radius: 10px 0 0 10px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.35);
+    padding: 18px 8px;
     color: #fff;
-    border: none;
-    padding: 18px 12px;
-    border-radius: 12px 0 0 12px;
     cursor: pointer;
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    font-weight: 700;
-    font-size: .95rem;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    box-shadow: -4px 0 12px rgba(0,0,0,.3);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    transition: background .2s, transform .2s;
+    gap: 14px;
+    width: 42px;
+    transition: transform .25s ease, background .2s ease;
 }
-.ag-asso-sticky-soutien__toggle:hover {
-    background: var(--asso-red-dark);
-}
+.ag-asso-sticky-soutien__toggle:hover { background: var(--asso-red-dark); transform: translateX(-3px); }
 .ag-asso-sticky-soutien__emoji {
-    writing-mode: horizontal-tb;
+    font-size: 1.4rem;
+    animation: ag-bob 2.5s ease-in-out infinite;
+    flex-shrink: 0;
+}
+.ag-asso-sticky-soutien__text {
+    color: #fff;
+    writing-mode: vertical-rl;
     transform: rotate(180deg);
-    font-size: 1.3rem;
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 1;
+    white-space: nowrap;
 }
 .ag-asso-sticky-soutien__panel {
-    background: #0A0A0D;
+    width: 320px;
+    max-width: calc(100vw - 60px);
+    background: linear-gradient(135deg, #080808 0%, #18181f 50%, #0a0a0d 100%);
     color: #fff;
-    width: 0;
-    overflow: hidden;
-    transition: width .35s cubic-bezier(.4,0,.2,1), padding .35s;
+    border: 1px solid rgba(255,255,255,.18);
+    border-right: 0;
     border-radius: 12px 0 0 12px;
-    box-shadow: -6px 0 20px rgba(0,0,0,.4);
-    border-left: 4px solid var(--asso-red);
+    box-shadow: 0 30px 80px rgba(0,0,0,.6);
+    padding: 26px 24px 22px;
+    margin-right: -2px;
     position: relative;
-    margin-right: -1px;
+    transform: translateX(12px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .25s ease, visibility 0s linear .25s;
 }
-.ag-asso-sticky-soutien.is-open .ag-asso-sticky-soutien__panel {
-    width: 340px;
-    padding: 24px 22px;
+.ag-asso-sticky-soutien.is-open .ag-asso-sticky-soutien__panel,
+.ag-asso-sticky-soutien__toggle:hover ~ .ag-asso-sticky-soutien__panel,
+.ag-asso-sticky-soutien__panel:hover {
+    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .25s ease, visibility 0s linear 0s;
 }
+.ag-asso-sticky-soutien.is-open .ag-asso-sticky-soutien__toggle,
+.ag-asso-sticky-soutien__toggle:hover { background: var(--asso-red-dark); }
 .ag-asso-sticky-soutien__close {
     position: absolute;
-    top: 8px;
-    right: 10px;
+    top: 10px;
+    left: 12px;
     background: none;
     border: none;
     color: #888;
-    font-size: 1.4rem;
-    cursor: pointer;
+    font-size: 1.6rem;
     line-height: 1;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
 }
-.ag-asso-sticky-soutien__close:hover { color: #fff; }
+.ag-asso-sticky-soutien__close:hover { background: rgba(255,255,255,.1); color: #fff; }
 .ag-asso-sticky-soutien__title {
     font-family: var(--asso-font-heading), Impact, sans-serif;
     font-size: 1.2rem;
-    margin: 0 0 10px;
+    margin: 10px 0 8px;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -1860,10 +1877,8 @@ body.ag-asso-welcome-open { overflow: hidden; }
     text-decoration: none;
 }
 .ag-asso-sticky-soutien__more:hover { text-decoration: underline; }
-@media (max-width: 768px) {
-    .ag-asso-sticky-soutien { top: auto; bottom: 80px; transform: none; }
-    .ag-asso-sticky-soutien__toggle { padding: 12px 8px; font-size: .8rem; }
-    .ag-asso-sticky-soutien.is-open .ag-asso-sticky-soutien__panel { width: 280px; padding: 18px 16px; }
+@media (max-width: 1100px) {
+    .ag-asso-sticky-soutien { display: none !important; }
 }
 .ag-asso-sticky-pub__close {
     position: absolute;
