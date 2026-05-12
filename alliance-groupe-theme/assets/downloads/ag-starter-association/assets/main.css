@@ -105,25 +105,23 @@ a:hover { text-decoration: underline; }
     background: var(--asso-red-dark);
     color: #fff !important;
 }
-/* Item actif du menu (page courante) : surligne en couleur accent.
-   Couvre les classes WordPress standard : current-menu-item / current_page_item. */
+/* Item actif du menu (page courante) : surligne en couleur PRIMAIRE
+   (violet sur le site LFI, suit le preset Customizer). Style fort
+   pour bien indiquer la page courante. */
 .ag-asso-header__menu .current-menu-item > a,
 .ag-asso-header__menu .current_page_item > a,
 .ag-asso-header__menu .current-menu-ancestor > a {
-    color: var(--asso-yellow);
+    color: #fff !important;
+    background: var(--asso-red);
+    padding: 8px 14px;
+    border-radius: 4px;
     font-weight: 700;
     position: relative;
 }
-.ag-asso-header__menu .current-menu-item > a::after,
-.ag-asso-header__menu .current_page_item > a::after {
-    content: '';
-    position: absolute;
-    bottom: -6px;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--asso-yellow);
-    border-radius: 2px;
+.ag-asso-header__menu .current-menu-item > a:hover,
+.ag-asso-header__menu .current_page_item > a:hover {
+    background: var(--asso-red-dark);
+    color: #fff !important;
 }
 
 /* ── Hero ── */
