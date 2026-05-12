@@ -110,9 +110,7 @@
     </div>
 </aside>
 
-<?php // Sticky droite : "Soutenir" — onglet vertical fixe a droite qui
-// s'ouvre au survol/clic et propose le don AP en popup. N'a pas
-// d'impact sur le menu ou le contenu (position:fixed + z-index gere).
+<?php // Sticky droite : "Soutenir" — pilule verticale -> panneau (mirror gauche)
 $ap_uuid_soutien = ag_asso_opt( 'ag_asso_ap_group_uuid', '' );
 if ( $ap_uuid_soutien ) :
 $ap_don_url = 'https://actionpopulaire.fr/dons/?group=' . rawurlencode( $ap_uuid_soutien );
@@ -120,7 +118,7 @@ $ap_don_url = 'https://actionpopulaire.fr/dons/?group=' . rawurlencode( $ap_uuid
 <aside class="ag-asso-sticky-soutien" id="agAssoStickySoutien" aria-label="<?php esc_attr_e( 'Soutenir', 'ag-starter-association' ); ?>">
     <button type="button" class="ag-asso-sticky-soutien__toggle" aria-expanded="false" aria-controls="agAssoStickySoutienPanel">
         <span class="ag-asso-sticky-soutien__emoji" aria-hidden="true">💛</span>
-        <span class="ag-asso-sticky-soutien__text">Soutenir</span>
+        <span class="ag-asso-sticky-soutien__text">Soutenir notre groupe</span>
     </button>
     <div class="ag-asso-sticky-soutien__panel" id="agAssoStickySoutienPanel" role="dialog" aria-modal="false">
         <button type="button" class="ag-asso-sticky-soutien__close" aria-label="<?php esc_attr_e( 'Fermer', 'ag-starter-association' ); ?>" data-soutien-close>×</button>
@@ -136,16 +134,12 @@ $ap_don_url = 'https://actionpopulaire.fr/dons/?group=' . rawurlencode( $ap_uuid
 <script>
 (function () {
     var soutien = document.getElementById('agAssoStickySoutien');
-    if (soutien) {
-        var stBtn = soutien.querySelector('.ag-asso-sticky-soutien__toggle');
-        var stClose = soutien.querySelector('[data-soutien-close]');
-        function stSetOpen(o){ soutien.classList.toggle('is-open', o); stBtn && stBtn.setAttribute('aria-expanded', o ? 'true' : 'false'); }
-        // Open au survol desktop, click partout (mobile-friendly)
-        soutien.addEventListener('mouseenter', function(){ if(window.innerWidth>768) stSetOpen(true); });
-        soutien.addEventListener('mouseleave', function(){ if(window.innerWidth>768) stSetOpen(false); });
-        stBtn && stBtn.addEventListener('click', function(){ stSetOpen(!soutien.classList.contains('is-open')); });
-        stClose && stClose.addEventListener('click', function(e){ e.stopPropagation(); stSetOpen(false); });
-    }
+    if (!soutien) return;
+    var stBtn   = soutien.querySelector('.ag-asso-sticky-soutien__toggle');
+    var stClose = soutien.querySelector('[data-soutien-close]');
+    function stSetOpen(o){ soutien.classList.toggle('is-open', o); stBtn && stBtn.setAttribute('aria-expanded', o ? 'true' : 'false'); }
+    stBtn && stBtn.addEventListener('click', function(){ stSetOpen(!soutien.classList.contains('is-open')); });
+    stClose && stClose.addEventListener('click', function(e){ e.stopPropagation(); stSetOpen(false); });
 })();
 </script>
 
