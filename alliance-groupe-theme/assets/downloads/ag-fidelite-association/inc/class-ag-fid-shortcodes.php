@@ -54,8 +54,63 @@ class AG_Fid_Shortcodes {
 		return ob_get_clean();
 	}
 
-	public function render_combats()    { return $this->render_cpt_grid( 'ag_combat', 'Aucun combat publié.' ); }
-	public function render_evenements() {
+	/**
+	 * Shortcode groupes locaux : affiche d'abord la carte officielle
+	 * Action Populaire + bouton popup, puis les groupes CPT en dessous.
+	 * Les liens 'Voir le groupe' pointent vers Action Populaire si UUID
+	 * configure, sinon vers la page CPT locale.
+	 */
+	public function render_groupes() {
+		$ap_uuid = get_theme_mod( 'ag_asso_ap_group_uuid', '' );
+		$ap_map_url   = 'https://actionpopulaire.fr/groupes/carte/';
+		$ap_group_url = $ap_uuid ? 'https://actionpopulaire.fr/groupes/' . $ap_uuid . '/' : '';
+		ob_start();
+		?>
+		<div class="ag-fid-groupes-wrapper" style="margin-bottom:40px;">
+			<?php if ( $ap_group_url ) : ?>
+				<p style="text-align:center;margin:0 0 24px;">
+					<a href="<?php echo esc_url( $ap_group_url ); ?>" class="ag-asso-btn ag-asso-btn--primary" data-ag-popup data-popup-width="1000" data-popup-height="800" rel="noopener">
+						✊ Rejoindre notre groupe local
+					</a>
+				</p>
+			<?php endif; ?>
+			<h2 style="text-align:center;margin:24px 0 14px;">🗺️ Carte des groupes locaux LFI</h2>
+			<p style="text-align:center;margin-bottom:14px;">
+				<a href="<?php echo esc_url( $ap_map_url ); ?>" class="ag-asso-btn ag-asso-btn--primary" data-ag-popup data-popup-width="1100" data-popup-height="800" rel="noopener">
+					🗺️ Ouvrir la carte plein écran
+				</a>
+			</p>
+			<div style="position:relative;border:1px solid #ddd;border-radius:8px;overflow:hidden;background:#f5f5f5;max-width:1100px;margin:0 auto;">
+				<iframe src="<?php echo esc_url( $ap_map_url ); ?>" width="100%" height="600" style="border:0;display:block;" loading="lazy" title="Carte des groupes locaux LFI" referrerpolicy="no-referrer-when-downgrade"></iframe>
+			</div>
+			<p style="text-align:center;margin-top:10px;font-size:.85em;color:#888;">Si la carte ne s'affiche pas, utilisez le bouton ci-dessus.</p>
+		</div>
+		<?php
+		// Puis les groupes CPT locaux (notre seul groupe Clos Toreau)
+		$q = new WP_Query( array( 'post_type' => 'ag_groupe', 'posts_per_page' => 30 ) );
+		if ( $q->have_posts() ) :
+			?>
+			<h2 style="margin-top:40px;text-align:center;">Notre groupe local</h2>
+			<div class="ag-fid-grid">
+				<?php while ( $q->have_posts() ) : $q->the_post();
+					// Si UUID AP defini, lien 'Voir le groupe' pointe vers AP en popup
+					// au lieu de la page CPT locale qui peut etre 404 si rewrite cassee.
+					$link_target_url = $ap_group_url ?: get_permalink();
+					$link_attrs      = $ap_group_url ? ' data-ag-popup data-popup-width="1000" data-popup-height="800" rel="noopener"' : '';
+				?>
+				<article class="ag-fid-card">
+					<?php if ( has_post_thumbnail() ) : ?>
+						<div class="ag-fid-card__img"><?php the_post_thumbnail( 'medium' ); ?></div>
+					<?php endif; ?>
+					<h3><?php the_title(); ?></h3>
+					<p><?php echo wp_kses_post( wpautop( get_the_content() ) ); ?></p>
+					<p><a href="<?php echo esc_url( $link_target_url ); ?>"<?php echo $link_attrs; ?> class="ag-asso-btn ag-asso-btn--primary">Voir / rejoindre le groupe →</a></p>
+				</article>
+				<?php endwhile; wp_reset_postdata(); ?>
+			</div>
+		<?php endif;
+		return ob_get_clean();
+	}	public function render_evenements() {
 		$q = new WP_Query( array(
 			'post_type'      => 'ag_evenement',
 			'posts_per_page' => 30,
@@ -175,7 +230,6 @@ class AG_Fid_Shortcodes {
 		<?php
 		return ob_get_clean();
 	}
-	public function render_groupes()    { return $this->render_cpt_grid( 'ag_groupe', 'Aucun groupe local référencé.' ); }
 	public function render_petitions()  { return $this->render_cpt_grid( 'ag_petition', 'Aucune pétition active.' ); }
 	public function render_actu()       { return $this->render_cpt_grid( 'post', 'Aucun article.' ); }
 
