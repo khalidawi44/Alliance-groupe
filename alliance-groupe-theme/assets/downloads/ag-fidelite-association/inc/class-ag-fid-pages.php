@@ -621,12 +621,11 @@ HTML;
 	 * ancres.
 	 */
 	public static function create_default_menus() {
-		// 'don' retire du menu principal : le bouton CTA "Faire un don" en
-		// fin de menu colle souvent au reste du menu et peut paraitre
-		// agressif sur un site associatif. L'item reste dans le footer +
-		// reste accessible via la page directement. Si l'utilisateur veut
-		// le remettre : Apparence > Menus.
+		// 'don' retire du menu principal (CTA collait au reste). 'accueil'
+		// AJOUTE en tete pour que la home soit l'item actif sur la
+		// page d'accueil (highlightable en couleur primaire).
 		$primary_items = array(
+			'accueil'         => 'Accueil',
 			'qui-sommes-nous' => 'Qui sommes-nous',
 			'manifeste'       => 'Manifeste',
 			'combats'         => 'Combats',
