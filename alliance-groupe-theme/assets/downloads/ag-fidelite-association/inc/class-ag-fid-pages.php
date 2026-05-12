@@ -642,7 +642,7 @@ HTML;
 			'manifeste'       => 'Manifeste',
 			'combats'         => 'Combats',
 			'evenements'      => 'Mobilisations à venir',
-			'groupes'         => 'Trouver mon groupe local LFI',
+			'rejoindre-lfi'   => 'Rejoindre LFI',
 			'reunion'         => 'Réunion en ligne',
 			'actu'            => 'Actualités',
 		);
