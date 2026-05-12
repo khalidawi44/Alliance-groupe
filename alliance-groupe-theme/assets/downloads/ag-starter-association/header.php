@@ -21,7 +21,19 @@
 <header class="ag-asso-header">
     <div class="ag-asso-header__inner">
         <?php if ( has_custom_logo() ) {
-            the_custom_logo();
+            // Force le logo a etre toujours clickable vers l'accueil,
+            // meme quand on est deja sur la home (sinon WP retire le
+            // wrap <a> par defaut quand is_front_page() && is_home()).
+            $custom_logo_id = get_theme_mod( 'custom_logo' );
+            $logo_img = wp_get_attachment_image( $custom_logo_id, 'full', false, array(
+                'class' => 'custom-logo',
+                'alt'   => get_bloginfo( 'name' ),
+            ) );
+            if ( $logo_img ) : ?>
+                <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="ag-asso-header__logolink custom-logo-link">
+                    <?php echo $logo_img; ?>
+                </a>
+            <?php endif;
         } else { ?>
             <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="ag-asso-header__logo">
                 <span class="ag-asso-header__name"><?php echo esc_html( ag_asso_opt( 'ag_asso_name', '[Mouvement]' ) ); ?></span>
