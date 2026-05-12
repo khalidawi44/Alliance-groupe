@@ -105,21 +105,32 @@ a:hover { text-decoration: underline; }
     background: var(--asso-red-dark);
     color: #fff !important;
 }
-/* Item actif du menu (page courante) : surligne en VIOLET force
-   (#8B1A8B) — couleur fixe pour distinguer clairement de la couleur
-   primaire du theme (var(--asso-red) qui peut etre rouge/rose/autre). */
+/* Item actif du menu (page courante) : surligne en VIOLET force #8B1A8B.
+   Cible TOUS les selecteurs possibles que WordPress peut generer pour
+   marquer l'item actif (current-menu-item, current_page_item, current-menu-parent,
+   current-menu-ancestor, current-page-ancestor). !important sur tout pour
+   ecraser les hover/CTA styles meme avec specificite plus elevee. */
+.ag-asso-header__menu li.current-menu-item > a,
+.ag-asso-header__menu li.current_page_item > a,
+.ag-asso-header__menu li.current-menu-ancestor > a,
+.ag-asso-header__menu li.current-menu-parent > a,
+.ag-asso-header__menu li.current-page-ancestor > a,
 .ag-asso-header__menu .current-menu-item > a,
 .ag-asso-header__menu .current_page_item > a,
-.ag-asso-header__menu .current-menu-ancestor > a {
-    color: #fff !important;
+.ag-asso-header__menu .current-menu-ancestor > a,
+.ag-asso-header .current-menu-item > a,
+.ag-asso-header .current_page_item > a {
     background: #8B1A8B !important;
+    color: #fff !important;
     padding: 8px 14px !important;
     border-radius: 4px !important;
     font-weight: 700 !important;
+    text-decoration: none !important;
+    display: inline-block !important;
 }
-.ag-asso-header__menu .current-menu-item > a:hover,
-.ag-asso-header__menu .current_page_item > a:hover,
-.ag-asso-header__menu .current-menu-ancestor > a:hover {
+.ag-asso-header__menu li.current-menu-item > a:hover,
+.ag-asso-header__menu li.current_page_item > a:hover,
+.ag-asso-header__menu li.current-menu-ancestor > a:hover {
     background: #6E1370 !important;
     color: #fff !important;
 }

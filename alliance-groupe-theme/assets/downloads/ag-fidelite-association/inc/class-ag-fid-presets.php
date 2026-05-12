@@ -26,6 +26,7 @@ class AG_Fid_Presets {
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ), 28 );
 		add_action( 'admin_init', array( __CLASS__, 'maybe_apply_preset' ) );
+		add_action( 'admin_init', array( __CLASS__, 'maybe_rebuild_menu' ) );
 		add_action( 'admin_notices', array( __CLASS__, 'maybe_show_applied' ) );
 	}
 
@@ -235,6 +236,17 @@ class AG_Fid_Presets {
 		);
 	}
 
+	public static function maybe_rebuild_menu() {
+		if ( empty( $_POST['ag_fid_rebuild_menu'] ) || ! current_user_can( 'manage_options' ) ) return;
+		check_admin_referer( 'ag_fid_rebuild_menu' );
+		if ( method_exists( 'AG_Fid_Pages', 'rebuild_primary_menu' ) ) {
+			AG_Fid_Pages::rebuild_primary_menu();
+		}
+		set_transient( 'ag_fid_menu_rebuilt', 1, 60 );
+		wp_safe_redirect( admin_url( 'admin.php?page=ag-fid-presets&menu_rebuilt=1' ) );
+		exit;
+	}
+
 	public static function maybe_apply_preset() {
 		if ( empty( $_POST['ag_fid_preset_apply'] ) || ! current_user_can( 'manage_options' ) ) return;
 		check_admin_referer( 'ag_fid_apply_preset' );
@@ -340,6 +352,12 @@ class AG_Fid_Presets {
 			}
 		}
 
+		// 8. Rebuild menu principal proprement (evite items dupliques /
+		// anciens slugs apres preset applique).
+		if ( method_exists( 'AG_Fid_Pages', 'rebuild_primary_menu' ) ) {
+			AG_Fid_Pages::rebuild_primary_menu();
+		}
+
 		set_transient( 'ag_fid_preset_applied', $key, 60 );
 		// Memorise de maniere persistante (option) le preset applique :
 		// empeche l'auto-reseed CPT de wiper ce contenu a chaque MAJ plugin.
@@ -400,6 +418,16 @@ class AG_Fid_Presets {
 					</form>
 				</div>
 			<?php endforeach; ?>
+
+			<div class="ag-fid-preset-card" style="background:#e6f4ff;border-color:#3B5998;">
+				<h2>🔄 Reset du menu principal</h2>
+				<p>Le menu "AG Fidélité — Principal" est dans un état incohérent (items dupliqués, anciens slugs, "Accueil" qui reste) ? Ce bouton <strong>wipe et recrée</strong> le menu proprement avec les 7 items par défaut : Qui sommes-nous, Manifeste, Combats, Mobilisations à venir, Trouver mon groupe local LFI, Réunion en ligne, Actualités.</p>
+				<form method="post" onsubmit="return confirm('⚠ Cela va EFFACER le menu actuel et le recréer proprement. Continuer ?');">
+					<?php wp_nonce_field( 'ag_fid_rebuild_menu' ); ?>
+					<input type="hidden" name="ag_fid_rebuild_menu" value="1">
+					<button type="submit" class="button button-secondary">🔄 Reset le menu principal</button>
+				</form>
+			</div>
 
 			<div class="ag-fid-preset-card" style="background:#fffbe6;border-color:#f0d000;">
 				<h2>💡 Créer votre propre preset</h2>
