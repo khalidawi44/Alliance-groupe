@@ -58,9 +58,19 @@ class AG_Fid_Core {
 		if ( ! current_user_can( 'manage_options' ) ) return;
 		$stored = get_option( 'ag_fid_seeded_version', '' );
 		if ( $stored === AG_FID_VERSION ) return;
+		// Toujours sur : creer roles + s'assurer que les pages WP existent
+		// (n'ecrase JAMAIS un contenu deja modifie par l'utilisateur).
 		AG_Fid_Roles::create_roles();
 		AG_Fid_Pages::create_default_pages();
-		AG_Fid_Pages::create_default_cpts( true );
+		// CPT seeding : SEULEMENT a la premiere installation (pas a chaque
+		// update). Si un preset a deja ete applique OU si l'utilisateur a
+		// deja des CPT crees, on ne touche a rien — sinon on ecraserait
+		// son contenu LFI/perso a chaque bump de version.
+		$preset_applied = get_option( 'ag_fid_preset_applied', '' );
+		$first_install  = ( $stored === '' );
+		if ( $first_install && ! $preset_applied ) {
+			AG_Fid_Pages::create_default_cpts( false ); // false = ne pas wipe
+		}
 		flush_rewrite_rules();
 		update_option( 'ag_fid_seeded_version', AG_FID_VERSION );
 		set_transient( 'ag_fid_just_updated_from', $stored, 60 );
@@ -72,7 +82,7 @@ class AG_Fid_Core {
 		?>
 		<div class="notice notice-success is-dismissible" style="border-left-width:4px;border-left-color:#E10F1A;padding:18px 22px;">
 			<h3 style="margin:0 0 8px;font-size:1.2rem;">🚀 Pack Fidélité mis à jour : v<?php echo esc_html( AG_FID_VERSION ); ?> <?php if ( $prev ) : ?><small style="color:#888;">(depuis v<?php echo esc_html( $prev ); ?>)</small><?php endif; ?></h3>
-			<p style="margin:0 0 6px;">Les pages, rôles, CPT et contenus de démo ont été automatiquement <strong>réinitialisés/mis à jour</strong> avec les dernières versions.</p>
+			<p style="margin:0 0 6px;">Mise à jour appliquée. <strong>Votre contenu personnalisé (combats, événements, pages) est préservé</strong> — seuls les rôles et les pages manquantes ont été régénérés au besoin.</p>
 			<p style="margin:0;">
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-fid-recommendations' ) ); ?>" class="button button-primary">Voir le Pack Fidélité</a>
 				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="button" target="_blank">👁 Voir le site</a>
