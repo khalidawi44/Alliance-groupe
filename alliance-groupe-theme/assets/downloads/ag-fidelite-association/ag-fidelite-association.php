@@ -29,6 +29,7 @@ require_once AG_FID_DIR . 'inc/class-ag-fid-shortcodes.php';
 require_once AG_FID_DIR . 'inc/class-ag-fid-recommendations.php';
 require_once AG_FID_DIR . 'inc/class-ag-fid-updater.php';
 require_once AG_FID_DIR . 'inc/class-ag-fid-guide.php';
+require_once AG_FID_DIR . 'inc/class-ag-fid-presets.php';
 
 add_action( 'plugins_loaded', array( 'AG_Fid_Core', 'instance' ), 5 );
 register_activation_hook( __FILE__, array( 'AG_Fid_Roles', 'create_roles' ) );
