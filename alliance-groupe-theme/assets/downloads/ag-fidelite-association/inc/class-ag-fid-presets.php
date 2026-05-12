@@ -330,6 +330,9 @@ class AG_Fid_Presets {
 		}
 
 		set_transient( 'ag_fid_preset_applied', $key, 60 );
+		// Memorise de maniere persistante (option) le preset applique :
+		// empeche l'auto-reseed CPT de wiper ce contenu a chaque MAJ plugin.
+		update_option( 'ag_fid_preset_applied', $key );
 		wp_safe_redirect( admin_url( 'admin.php?page=ag-fid-presets&applied=1' ) );
 		exit;
 	}
