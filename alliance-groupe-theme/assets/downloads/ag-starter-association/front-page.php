@@ -212,14 +212,15 @@ get_header();
     <!-- Groupes locaux -->
     <section class="ag-asso-section ag-asso-section--alt ag-asso-section--map" id="groupes">
         <div class="ag-asso-container">
-            <?php list( $grp_title, $grp_lead ) = ag_asso_page_section_text( 'groupes', 'Groupes locaux', '47 groupes locaux actifs partout en France. Tapez votre code postal pour trouver celui le plus proche.' ); ?>
+            <?php list( $grp_title, $grp_lead ) = ag_asso_page_section_text( 'groupes', 'Groupes locaux', 'Trouvez le groupe local actif près de chez vous via la carte officielle Action Populaire.' ); ?>
             <h2 class="ag-asso-section__title"><?php echo ag_asso_render_split_title( $grp_title ); ?></h2>
             <p class="ag-asso-section__lead"><?php echo esc_html( $grp_lead ); ?></p>
-            <form class="ag-asso-search" action="#" method="get">
-                <input type="text" name="cp" placeholder="<?php esc_attr_e( 'Code postal ou ville', 'ag-starter-association' ); ?>">
-                <button type="submit"><?php esc_html_e( 'Trouver', 'ag-starter-association' ); ?></button>
-            </form>
-            <p class="ag-asso-search__note"><?php echo wp_kses_post( ag_asso_opt( 'ag_asso_groupes_search_note', 'Pas de groupe près de chez vous ? <a href="/groupes/">Créez le vôtre</a> — nous vous accompagnons.' ) ); ?></p>
+            <p style="text-align:center;margin:24px 0;">
+                <a href="<?php echo esc_url( home_url( '/groupes/' ) ); ?>" class="ag-asso-btn ag-asso-btn--primary">
+                    🗺️ <?php echo esc_html( ag_asso_opt( 'ag_asso_groupes_btn_label', 'Trouver mon groupe local LFI' ) ); ?>
+                </a>
+            </p>
+            <p class="ag-asso-search__note" style="text-align:center;"><?php echo wp_kses_post( ag_asso_opt( 'ag_asso_groupes_search_note', 'Pas de groupe près de chez vous ? <a href="/groupes/">Contactez-nous</a> — nous vous accompagnons pour créer le vôtre.' ) ); ?></p>
             <div class="ag-asso-stats">
                 <div><strong><?php echo esc_html( ag_asso_opt( 'ag_asso_stat1_value', '47' ) ); ?></strong><span><?php echo esc_html( ag_asso_opt( 'ag_asso_stat1_label', 'groupes locaux' ) ); ?></span></div>
                 <div><strong><?php echo esc_html( ag_asso_opt( 'ag_asso_stat2_value', '2 130' ) ); ?></strong><span><?php echo esc_html( ag_asso_opt( 'ag_asso_stat2_label', 'adhérents' ) ); ?></span></div>

@@ -108,8 +108,9 @@ function ag_asso_customize( $wp_customize ) {
 		// Groupes locaux
 		'ag_asso_groupes_title_pre'   => array( 'label' => 'Groupes — début du titre',    'default' => 'Trouver mon',    'type' => 'text' ),
 		'ag_asso_groupes_title_em'    => array( 'label' => 'Groupes — mot en rouge',      'default' => 'groupe local',   'type' => 'text' ),
-		'ag_asso_groupes_lead'        => array( 'label' => 'Groupes — phrase d\'intro',   'default' => '47 groupes locaux actifs partout en France. Tapez votre code postal pour trouver celui le plus proche.', 'type' => 'textarea' ),
-		'ag_asso_groupes_search_note' => array( 'label' => 'Groupes — note sous formulaire (HTML accepté)', 'default' => 'Pas de groupe près de chez vous ? <a href="/groupes/">Créez le vôtre</a> — nous vous accompagnons.', 'type' => 'textarea' ),
+		'ag_asso_groupes_lead'        => array( 'label' => 'Groupes — phrase d\'intro',   'default' => 'Trouvez le groupe local actif près de chez vous via la carte officielle.', 'type' => 'textarea' ),
+		'ag_asso_groupes_btn_label'   => array( 'label' => 'Groupes — texte du bouton',  'default' => 'Trouver mon groupe local LFI', 'type' => 'text' ),
+		'ag_asso_groupes_search_note' => array( 'label' => 'Groupes — note sous bouton (HTML accepté)', 'default' => 'Pas de groupe près de chez vous ? <a href="/groupes/">Contactez-nous</a> — nous vous accompagnons pour créer le vôtre.', 'type' => 'textarea' ),
 		'ag_asso_stat1_value'         => array( 'label' => 'Statistique 1 — chiffre',     'default' => '47',                'type' => 'text' ),
 		'ag_asso_stat1_label'         => array( 'label' => 'Statistique 1 — libellé',     'default' => 'groupes locaux',    'type' => 'text' ),
 		'ag_asso_stat2_value'         => array( 'label' => 'Statistique 2 — chiffre',     'default' => '2 130',             'type' => 'text' ),

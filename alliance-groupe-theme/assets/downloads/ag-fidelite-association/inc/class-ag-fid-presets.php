@@ -85,8 +85,8 @@ class AG_Fid_Presets {
 						'content' => "<!-- wp:paragraph -->\n<p>Réunions publiques, permanences d'accompagnement juridique, distributions de tracts, mobilisations sur le terrain. Retrouvez-nous dans le quartier du Clos Toreau et à Nantes Sud.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_evenements]\n<!-- /wp:shortcode -->",
 					),
 					'groupes' => array(
-						'title'   => 'Le groupe Clos Toreau',
-						'content' => "<!-- wp:paragraph -->\n<p>Notre groupe local LFI couvre Nantes Sud Clos Toreau et les quartiers voisins. Réunions ouvertes à tou·tes, sans condition de prise de carte.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_groupes]\n<!-- /wp:shortcode -->",
+						'title'   => 'Trouver mon groupe local LFI',
+						'content' => "<!-- wp:paragraph -->\n<p>La carte officielle Action Populaire ci-dessous liste tous les groupes locaux LFI en France. Zoomez sur votre ville pour trouver le vôtre, ou rejoignez directement notre groupe Nantes Sud Clos Toreau.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:buttons {\"layout\":{\"type\":\"flex\",\"justifyContent\":\"center\"}} -->\n<div class=\"wp-block-buttons\">\n<!-- wp:button {\"backgroundColor\":\"vivid-red\",\"textColor\":\"white\"} -->\n<div class=\"wp-block-button\"><a class=\"wp-block-button__link has-white-color has-vivid-red-background-color has-text-color has-background wp-element-button\" href=\"https://actionpopulaire.fr/groupes/3f07362c-8238-4a63-9b0c-4128e9ec6ede/\" target=\"_blank\" rel=\"noopener\">✊ Rejoindre le groupe LFI Nantes Sud Clos Toreau</a></div>\n<!-- /wp:button -->\n</div>\n<!-- /wp:buttons -->\n\n<!-- wp:heading -->\n<h2>🗺️ Carte des groupes locaux LFI</h2>\n<!-- /wp:heading -->\n\n<!-- wp:html -->\n<div style=\"max-width:1100px;margin:0 auto;\"><iframe src=\"https://actionpopulaire.fr/groupes/carte/\" width=\"100%\" height=\"600\" style=\"border:1px solid #ddd;border-radius:8px;\" loading=\"lazy\" title=\"Carte des groupes locaux La France Insoumise\"></iframe></div>\n<!-- /wp:html -->\n\n<!-- wp:heading -->\n<h2>📧 Pas de groupe près de chez vous ?</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Si vous habitez le quartier Clos Toreau ou Nantes Sud, rejoignez-nous directement (bouton ci-dessus). Sinon, contactez-nous via le formulaire suivant et nous vous orienterons vers le groupe le plus proche ou vous accompagnerons pour en créer un.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_signer]\n<!-- /wp:shortcode -->",
 					),
 					'actu' => array(
 						'title'   => 'Actualités du quartier',
@@ -146,38 +146,41 @@ class AG_Fid_Presets {
 				),
 
 				// Evenements : UNIQUEMENT Nantes Sud Clos Toreau (pas Marseille,
-				// pas Lyon, pas Paris). Trois evenements types qu'un groupe local
-				// porte concretement sur son quartier.
+				// pas Lyon, pas Paris). Trois evenements types recurrents qu'un
+				// groupe local porte concretement sur son quartier.
+				// Dates : 2-3 semaines apres l'install (rythme realiste).
+				// L'utilisateur peut editer chaque evenement pour mettre les
+				// vraies dates/lieux dans Evenements > admin.
 				'events' => array(
 					array(
-						'title'   => 'Permanence accompagnement administratif',
-						'date'    => '', 'time' => '14:00', 'end' => '17:00',
+						'title'   => 'Permanence accompagnement (tous les samedis)',
+						'date'    => '2026-05-24', 'time' => '14:00', 'end' => '17:00',
 						'city'    => 'Nantes Sud Clos Toreau',
-						'place'   => 'À préciser (lieu de permanence du groupe)',
-						'content' => "Permanence ouverte à tou·tes les habitant·es du quartier qui ont besoin d'aide pour : courriers CAF, contestation de loyer, dossier bailleur social, démarches préfecture, surendettement, recours juridique.\n\n<strong>Sans rendez-vous, gratuit, confidentiel.</strong> Apportez vos documents (courriers, factures, contrats) si possible.",
+						'place'   => 'Maison de quartier du Clos Toreau (à confirmer)',
+						'content' => "Permanence ouverte à tou·tes les habitant·es du quartier qui ont besoin d'aide pour : courriers CAF, contestation de loyer, dossier bailleur social, démarches préfecture, surendettement, recours juridique.\n\n<strong>Sans rendez-vous, gratuit, confidentiel.</strong> Apportez vos documents (courriers, factures, contrats) si possible.\n\nPour préparer votre venue ou prendre un créneau prioritaire : voir page <a href=\"/rendez-vous/\">Rendez-vous</a>.",
 					),
 					array(
-						'title'   => 'Recueil de témoignages — habitat',
-						'date'    => '', 'time' => '18:00', 'end' => '20:00',
+						'title'   => 'Recueil de témoignages habitat',
+						'date'    => '2026-05-30', 'time' => '18:00', 'end' => '20:00',
 						'city'    => 'Nantes Sud Clos Toreau',
-						'place'   => 'À préciser (lieu de réunion du groupe)',
-						'content' => "Soirée d'écoute des habitant·es sur les conditions de logement dans le quartier : insalubrité, loyers, expulsions, charges abusives, problèmes avec le bailleur.\n\nNous recueillons vos témoignages (anonymisés sur demande) pour porter publiquement nos demandes auprès du bailleur, de la mairie, et des médias.",
+						'place'   => 'Centre social du Clos Toreau (à confirmer)',
+						'content' => "Soirée d'écoute des habitant·es sur les conditions de logement dans le quartier : insalubrité, loyers, expulsions, charges abusives, problèmes avec le bailleur.\n\nNous recueillons vos témoignages (anonymisés sur demande) pour porter publiquement nos demandes auprès du bailleur (Nantes Métropole Habitat), de la mairie et des médias.\n\n<strong>Café et thé offerts.</strong>",
 					),
 					array(
 						'title'   => 'Réunion publique mensuelle du groupe',
-						'date'    => '', 'time' => '19:00', 'end' => '21:00',
+						'date'    => '2026-06-03', 'time' => '19:00', 'end' => '21:00',
 						'city'    => 'Nantes Sud Clos Toreau',
-						'place'   => 'À préciser (lieu de réunion du groupe)',
-						'content' => "Réunion mensuelle ouverte à tou·tes : actu du quartier, retour sur les actions menées, préparation des prochaines mobilisations.\n\nVenez même si vous n'êtes jamais venu·e — on vous explique tout.",
+						'place'   => 'Maison de quartier du Clos Toreau (à confirmer)',
+						'content' => "Réunion mensuelle ouverte à tou·tes : actu du quartier, retour sur les actions menées (permanences, témoignages, mobilisations), préparation des prochaines initiatives.\n\nVenez même si vous n'êtes jamais venu·e — on vous explique tout en début de séance.\n\n<strong>Réunion ouverte, sans condition de prise de carte.</strong>",
 					),
 				),
 
 				// Groupes locaux : UNIQUEMENT le notre. Pas Lyon ni Marseille.
 				'groupes' => array(
 					array(
-						'title'   => 'Nantes Sud Clos Toreau',
-						'excerpt' => 'Notre seul groupe local : couvre Nantes Sud Clos Toreau et les quartiers voisins.',
-						'content' => "Notre groupe local LFI couvre <strong>Nantes Sud Clos Toreau et les quartiers limitrophes</strong>.\n\nNous nous réunissons régulièrement dans le quartier (lieu et horaires précisés sur la page Événements).\n\nRéunions ouvertes à tou·tes les habitant·es, sans condition de prise de carte. Pas besoin d'être encarté·e à La France Insoumise pour participer.\n\nPour nous rejoindre ou nous contacter : <a href=\"/signer/\">formulaire de contact</a>.",
+						'title'   => 'LFI Nantes Sud Clos Toreau',
+						'excerpt' => 'Groupe local LFI couvrant le quartier Clos Toreau et Nantes Sud. Permanences hebdomadaires + réunions publiques mensuelles.',
+						'content' => "<strong>Notre groupe local LFI couvre Nantes Sud Clos Toreau et les quartiers limitrophes.</strong>\n\n<strong>Trois activités régulières :</strong>\n• Permanences d'accompagnement administratif et juridique (tous les samedis 14h-17h)\n• Recueil de témoignages habitat (jeudis soir mensuels)\n• Réunion publique mensuelle (premier mardi du mois)\n\n<strong>Trois axes prioritaires :</strong>\n• 🏠 L'habitat — encadrement loyers, lutte contre l'insalubrité, défense des locataires\n• 🎙️ Recueil de témoignages — documenter violences et discriminations vécues dans le quartier\n• ⚖️ Accompagnement administratif et juridique — CAF, préfecture, bailleur, recours\n\nRéunions ouvertes à tou·tes les habitant·es, sans condition de prise de carte. Pas besoin d'être encarté·e à La France Insoumise pour participer.\n\n<strong>📍 Notre fiche officielle sur Action Populaire :</strong>\n<a href=\"https://actionpopulaire.fr/groupes/3f07362c-8238-4a63-9b0c-4128e9ec6ede/\" target=\"_blank\" rel=\"noopener\">→ actionpopulaire.fr/groupes/...</a>\n\n<strong>Pour nous rejoindre :</strong> <a href=\"/signer/\">formulaire de contact</a> ou venez directement à une permanence.",
 					),
 				),
 
