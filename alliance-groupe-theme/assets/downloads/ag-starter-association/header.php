@@ -20,25 +20,26 @@
 
 <header class="ag-asso-header">
     <div class="ag-asso-header__inner">
-        <?php if ( has_custom_logo() ) {
-            // Force le logo a etre toujours clickable vers l'accueil,
-            // meme quand on est deja sur la home (sinon WP retire le
-            // wrap <a> par defaut quand is_front_page() && is_home()).
-            $custom_logo_id = get_theme_mod( 'custom_logo' );
-            $logo_img = wp_get_attachment_image( $custom_logo_id, 'full', false, array(
-                'class' => 'custom-logo',
-                'alt'   => get_bloginfo( 'name' ),
-            ) );
-            if ( $logo_img ) : ?>
-                <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="ag-asso-header__logolink custom-logo-link">
-                    <?php echo $logo_img; ?>
-                </a>
-            <?php endif;
-        } else { ?>
-            <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="ag-asso-header__logo">
-                <span class="ag-asso-header__name"><?php echo esc_html( ag_asso_opt( 'ag_asso_name', '[Mouvement]' ) ); ?></span>
-            </a>
-        <?php } ?>
+        <?php
+        // Logo toujours visible et cliquable vers l'accueil :
+        //  - Si custom logo upload : image clickable
+        //  - Sinon : nom du site / mouvement clickable (texte stylise)
+        // WP retire le wrap <a> par defaut sur is_front_page() — on
+        // construit nous-memes pour garantir le lien partout.
+        $custom_logo_id = get_theme_mod( 'custom_logo' );
+        $logo_img = $custom_logo_id ? wp_get_attachment_image( $custom_logo_id, 'full', false, array(
+            'class' => 'custom-logo',
+            'alt'   => get_bloginfo( 'name' ),
+        ) ) : '';
+        $name = ag_asso_opt( 'ag_asso_name', get_bloginfo( 'name' ) );
+        ?>
+        <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="ag-asso-header__logolink custom-logo-link" aria-label="<?php echo esc_attr( $name ); ?> — Accueil">
+            <?php if ( $logo_img ) : ?>
+                <?php echo $logo_img; ?>
+            <?php else : ?>
+                <span class="ag-asso-header__name"><?php echo esc_html( $name ); ?></span>
+            <?php endif; ?>
+        </a>
 
         <button type="button" class="ag-asso-burger" id="agAssoBurger" aria-label="<?php esc_attr_e( 'Ouvrir le menu', 'ag-starter-association' ); ?>" aria-expanded="false" aria-controls="agAssoNav">
             <span></span><span></span><span></span>
