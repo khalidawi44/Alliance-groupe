@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour restaurant, bistrot, bar ou cafe. Structure minimaliste noir et or, responsive, sans fioritures. Contenu pre-redige en francais natif : hero, carte, reservation, contact. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.0.3
+Version: 1.0.4
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -521,4 +521,21 @@ p {
     .ag-cards {
         padding: 1.5rem 0;
     }
+}
+
+/* Item actif du menu (page courante) : surligne en VIOLET #8B1A8B.
+   La classe current-menu-item est posee par WordPress quand l'item de
+   menu est lie a une page WP ; pour les liens custom, le JS du footer
+   ajoute la classe en comparant l'URL active. */
+.ag-primary-menu li.current-menu-item > a,
+.ag-primary-menu li.current_page_item > a,
+.ag-primary-menu li.current-menu-ancestor > a,
+.ag-primary-nav li.current-menu-item > a,
+.ag-primary-nav li.current_page_item > a,
+.ag-primary-nav li.current-menu-ancestor > a {
+    background: #8B1A8B !important;
+    color: #fff !important;
+    padding: 8px 14px !important;
+    border-radius: 4px !important;
+    font-weight: 700 !important;
 }

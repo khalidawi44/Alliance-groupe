@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Thème WordPress gratuit pour barbershops et salons de coiffure. Design sombre premium, système de file d'attente QR code intégré, gestion des créneaux en temps réel. Contenu pré-rédigé en français, personnalisable via le Customizer.
-Version: 1.0.3
+Version: 1.0.4
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -250,4 +250,19 @@ a{text-decoration:none;color:inherit}
     .ag-services{grid-template-columns:1fr;}
     .ag-queue-form{padding:28px 20px;}
     .ag-ticket{padding:28px 20px;}
+}
+
+/* Item actif du menu (page courante) : surligne en VIOLET #8B1A8B.
+   Le JS du footer ajoute la classe current-menu-item (sur <li> si menu WP,
+   sinon sur <a> directement pour la nav flat de l'en-tete barber). */
+.ag-header__nav a.current-menu-item,
+.ag-header__nav a.current_page_item,
+.ag-header__nav li.current-menu-item > a,
+.ag-header__nav li.current_page_item > a,
+.ag-header__nav li.current-menu-ancestor > a {
+    background: #8B1A8B !important;
+    color: #fff !important;
+    padding: 8px 14px !important;
+    border-radius: 4px !important;
+    font-weight: 700 !important;
 }
