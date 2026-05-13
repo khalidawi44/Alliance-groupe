@@ -1,11 +1,14 @@
 <?php
 /**
- * Alliance Groupe — Calendly admin page
+ * Alliance Groupe — RDV admin page (Cal.com, alternative gratuite à Calendly)
  *
  * Multi-tier admin screen under Réglages so the user can paste
- * each Calendly event URL (free discovery + 3 paid tiers) without
+ * each Cal.com event URL (free discovery + 3 paid tiers) without
  * editing code. Values are read by templates/page-rdv.php to power
  * the booking grid.
+ *
+ * Option names kept as `ag_calendly_url*` for backward compatibility
+ * (do not rename — values would be orphaned).
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -18,12 +21,12 @@ if ( defined( 'AG_CALENDLY_ADMIN_LOADED' ) ) {
 define( 'AG_CALENDLY_ADMIN_LOADED', true );
 
 /**
- * Default Calendly base URL used as a fallback when a wp_option is
+ * Default Cal.com base URL used as a fallback when a wp_option is
  * empty. The site owner can override each tier from Réglages >
- * Calendly AG without touching code.
+ * RDV (Cal.com) without touching code.
  */
 if ( ! defined( 'AG_CALENDLY_DEFAULT_URL' ) ) {
-	define( 'AG_CALENDLY_DEFAULT_URL', 'https://calendly.com/advise-alliance-group/30min' );
+	define( 'AG_CALENDLY_DEFAULT_URL', 'https://cal.com/advise-alliance-group/30min' );
 }
 
 /**
@@ -78,8 +81,8 @@ function ag_calendly_tiers() {
  */
 add_action( 'admin_menu', function () {
 	add_options_page(
-		'Configuration Calendly AG',
-		'Calendly AG',
+		'Configuration RDV (Cal.com)',
+		'RDV (Cal.com)',
 		'manage_options',
 		'ag-calendly-config',
 		'ag_calendly_admin_render'
@@ -105,8 +108,8 @@ add_action( 'admin_init', function () {
 } );
 
 /**
- * Sanitize a Calendly URL. Accepts only https://calendly.com/...
- * Empty string is valid (clean reset to default).
+ * Sanitize a Cal.com URL. Accepts only https://cal.com/... or
+ * https://app.cal.com/... Empty string is valid (clean reset to default).
  */
 function ag_calendly_sanitize_url( $value ) {
 	$value = trim( (string) $value );
@@ -119,11 +122,11 @@ function ag_calendly_sanitize_url( $value ) {
 		return '';
 	}
 	$host = wp_parse_url( $url, PHP_URL_HOST );
-	if ( 'calendly.com' !== $host ) {
+	if ( ! in_array( $host, array( 'cal.com', 'app.cal.com' ), true ) ) {
 		add_settings_error(
 			'ag_calendly_config',
 			'bad_host',
-			sprintf( 'Hôte rejeté (%s). Seul calendly.com est accepté.', esc_html( $host ) )
+			sprintf( 'Hôte rejeté (%s). Seuls cal.com et app.cal.com sont acceptés.', esc_html( $host ) )
 		);
 		return '';
 	}
@@ -170,22 +173,24 @@ function ag_calendly_admin_render() {
 
 	?>
 	<div class="wrap">
-		<h1>Configuration Calendly AG</h1>
+		<h1>Configuration RDV (Cal.com)</h1>
 		<p style="font-size:.95rem;color:#50575e;max-width:820px;">
-			Collez l'URL Calendly de chaque offre proposée sur la page <em>/rendez-vous</em>.
+			Collez l'URL <strong>Cal.com</strong> de chaque offre proposée sur la page <em>/rendez-vous</em>.
+			Cal.com est une alternative open source et 100% gratuite à Calendly.
 			Les 3 offres payantes nécessitent d'avoir créé préalablement des <em>Paid event types</em>
-			dans Calendly (intégration Stripe native). Les champs laissés vides retombent
+			dans Cal.com (intégration Stripe native). Les champs laissés vides retombent
 			automatiquement sur l'URL par défaut du thème.
 		</p>
 
 		<div style="max-width:820px;margin-top:16px;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #D4B45C;">
-			<strong>Comment créer un Calendly payant ?</strong>
+			<strong>Comment créer un Cal.com payant ?</strong>
 			<ol style="margin:8px 0 0 22px;">
-				<li>Dashboard Calendly → <em>Event Types</em> → <em>+ Create</em> → choisissez <strong>One-on-One</strong>.</li>
-				<li>Dans les réglages de l'événement, onglet <em>Payment</em>, activez le paiement via <strong>Stripe</strong> et renseignez le montant (ex. 89 € / 179 € / 390 €).</li>
+				<li>Créez un compte gratuit sur <a href="https://cal.com/signup" target="_blank" rel="noopener"><strong>cal.com</strong></a> (1 minute, email + mot de passe).</li>
+				<li>Dashboard Cal.com → <em>Event Types</em> → <em>+ New</em> → choisissez <strong>Individual Event</strong>.</li>
+				<li>Dans les réglages de l'événement, section <em>Apps</em>, activez <strong>Stripe</strong> et renseignez le montant (ex. 89 € / 179 € / 390 €).</li>
 				<li>Fixez la durée exacte (45 min, 1h15, 2h selon l'offre).</li>
-				<li>Dans l'onglet <em>What event is this?</em>, donnez un nom clair ("Audit Flash — 89 €").</li>
-				<li>Sauvegardez puis copiez l'URL publique et collez-la dans le champ correspondant ci-dessous.</li>
+				<li>Donnez un titre clair ("Audit Flash — 89 €") et un slug court (<em>audit-flash</em>).</li>
+				<li>Sauvegardez puis copiez l'URL publique (<code>https://cal.com/votre-nom/audit-flash</code>) et collez-la dans le champ correspondant ci-dessous.</li>
 			</ol>
 		</div>
 
@@ -222,7 +227,7 @@ function ag_calendly_admin_render() {
 								</span>
 							<?php else : ?>
 								<span style="display:inline-block;padding:3px 10px;background:#e7f5e9;color:#1a7a33;border:1px solid #a7d8b3;border-radius:12px;font-size:.8rem;font-weight:700;">
-									✓ Calendly configuré
+									✓ Cal.com configuré
 								</span>
 							<?php endif; ?>
 							<br><em style="color:#666;"><?php echo esc_html( $tier['description'] ); ?></em>
@@ -232,7 +237,7 @@ function ag_calendly_admin_render() {
 				<?php endforeach; ?>
 			</table>
 
-			<?php submit_button( 'Enregistrer les URLs Calendly' ); ?>
+			<?php submit_button( 'Enregistrer les URLs Cal.com' ); ?>
 		</form>
 
 		<div style="max-width:820px;margin-top:24px;padding:18px 20px;background:#f0f6fc;border:1px solid #c3dffb;border-radius:6px;">

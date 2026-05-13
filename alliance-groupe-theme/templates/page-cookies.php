@@ -63,13 +63,13 @@ get_header();
                 </table>
 
                 <h3>2. Cookies fonctionnels</h3>
-                <p>Améliorent votre expérience utilisateur&nbsp;: mémorisation de vos choix, intégration de services tiers nécessaires à certaines fonctionnalités (prise de rendez-vous Calendly, lecture de vidéos intégrées).</p>
+                <p>Améliorent votre expérience utilisateur&nbsp;: mémorisation de vos choix, intégration de services tiers nécessaires à certaines fonctionnalités (prise de rendez-vous Cal.com, lecture de vidéos intégrées).</p>
                 <table>
                     <thead>
                         <tr><th>Service</th><th>Finalité</th><th>Durée</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td>Calendly</td><td>Affichage du widget de prise de rendez-vous</td><td>Jusqu'à 1 an</td></tr>
+                        <tr><td>Cal.com</td><td>Affichage du widget de prise de rendez-vous</td><td>Jusqu'à 1 an</td></tr>
                         <tr><td>Stripe</td><td>Traitement sécurisé des paiements en ligne</td><td>Jusqu'à 1 an</td></tr>
                     </tbody>
                 </table>

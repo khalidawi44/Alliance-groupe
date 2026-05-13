@@ -71,7 +71,7 @@ get_header();
                     <li>Message / description du projet</li>
                 </ul>
 
-                <h3>Prise de rendez-vous (Calendly)</h3>
+                <h3>Prise de rendez-vous (Cal.com)</h3>
                 <ul>
                     <li>Nom et prénom</li>
                     <li>Adresse email</li>
@@ -118,7 +118,7 @@ get_header();
                     </thead>
                     <tbody>
                         <tr><td>Répondre à vos demandes de contact</td><td>Nom, email, téléphone, message</td></tr>
-                        <tr><td>Planifier et réaliser les consultations</td><td>Nom, email, données Calendly</td></tr>
+                        <tr><td>Planifier et réaliser les consultations</td><td>Nom, email, données Cal.com</td></tr>
                         <tr><td>Traiter les Questions Flash</td><td>Nom, email, activité, question, pack</td></tr>
                         <tr><td>Traiter les paiements</td><td>Données de facturation (via Stripe)</td></tr>
                         <tr><td>Envoyer les confirmations et livrables</td><td>Nom, email</td></tr>
@@ -174,7 +174,7 @@ get_header();
                     </thead>
                     <tbody>
                         <tr><td>Stripe, Inc.</td><td>Paiement en ligne</td><td>USA</td><td>Certifié PCI-DSS, clauses contractuelles types (CCT)</td></tr>
-                        <tr><td>Calendly, LLC</td><td>Prise de rendez-vous</td><td>USA</td><td>CCT, SOC 2 Type II</td></tr>
+                        <tr><td>Cal.com, Inc.</td><td>Prise de rendez-vous</td><td>USA</td><td>CCT, SOC 2 Type II, open source</td></tr>
                         <tr><td>Hostinger International</td><td>Hébergement web</td><td>Lituanie (UE)</td><td>Serveurs UE, conforme RGPD</td></tr>
                         <tr><td>Google LLC</td><td>Analytics, Google Meet</td><td>USA</td><td>CCT, cadre de protection des données UE-US</td></tr>
                     </tbody>
@@ -183,7 +183,7 @@ get_header();
 
                 <!-- 7 -->
                 <h2 id="transferts">7. Transferts hors Union européenne</h2>
-                <p>Certains de nos sous-traitants (Stripe, Calendly, Google) sont basés aux États-Unis. Ces transferts sont encadrés par&nbsp;:</p>
+                <p>Certains de nos sous-traitants (Stripe, Cal.com, Google) sont basés aux États-Unis. Ces transferts sont encadrés par&nbsp;:</p>
                 <ul>
                     <li>Les <strong>Clauses Contractuelles Types (CCT)</strong> adoptées par la Commission européenne</li>
                     <li>Le <strong>EU-U.S. Data Privacy Framework</strong> pour les entreprises certifiées</li>

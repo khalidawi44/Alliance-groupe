@@ -9,10 +9,10 @@ $selected       = isset( $_GET['offer'] ) ? sanitize_key( $_GET['offer'] ) : 'fr
 if ( ! isset( $tiers[ $selected ] ) ) {
 	$selected = 'free';
 }
-$calendly_params = 'hide_gdpr_banner=1&background_color=0a0a0f&text_color=e8e6e0&primary_color=d4b45c';
+$calendly_params = 'embed=true&theme=dark&primaryColor=d4b45c';
 
 /**
- * Build a Calendly embed URL with our theme params appended.
+ * Build a Cal.com embed URL with our theme params appended.
  */
 $build_embed_url = function( $base ) use ( $calendly_params ) {
 	if ( ! $base ) return '';
@@ -80,7 +80,7 @@ $selected_tier  = $tiers[ $selected ];
         </div>
     </section>
 
-    <!-- Calendly embed for the selected tier -->
+    <!-- Cal.com embed for the selected tier -->
     <section class="ag-section ag-section--darker" id="ag-booking">
         <div class="ag-container">
             <div class="ag-calendly">
@@ -99,11 +99,11 @@ $selected_tier  = $tiers[ $selected ];
                 <?php if ( $selected_url ) : ?>
                     <div class="ag-calendly__action">
                         <a href="<?php echo esc_url( $selected_url ); ?>"
-                           onclick="event.preventDefault(); window.open(this.href, 'calendly', 'width=480,height=700,left=' + (screen.width/2-240) + ',top=' + (screen.height/2-350) + ',toolbar=no,menubar=no,scrollbars=yes,resizable=yes');"
+                           onclick="event.preventDefault(); window.open(this.href, 'ag_rdv', 'width=520,height=760,left=' + (screen.width/2-260) + ',top=' + (screen.height/2-380) + ',toolbar=no,menubar=no,scrollbars=yes,resizable=yes');"
                            class="ag-btn-gold ag-btn-gold--xl">
                             📅 Choisir un créneau — <?php echo esc_html( $selected_tier['label'] ); ?> →
                         </a>
-                        <p class="ag-calendly__action-sub">Vous serez redirigé vers notre agenda Calendly (ouverture dans un nouvel onglet). Choisissez le jour et l'heure qui vous conviennent, c'est instantané.</p>
+                        <p class="ag-calendly__action-sub">Vous serez redirigé vers notre agenda Cal.com (ouverture dans une fenêtre dédiée). Choisissez le jour et l'heure qui vous conviennent, c'est instantané.</p>
                         <div class="ag-calendly__reassurance">
                             <span>✓ Confirmation immédiate par email</span>
                             <span>✓ Lien Google Meet automatique</span>
@@ -116,7 +116,7 @@ $selected_tier  = $tiers[ $selected ];
                         <p style="color:#b0b0bc;">Widget non configuré pour cette offre.</p>
                         <?php if ( current_user_can( 'manage_options' ) ) : ?>
                         <p style="margin-top:14px;padding:10px 16px;background:rgba(212,180,92,.08);border:1px dashed rgba(212,180,92,.35);border-radius:10px;color:#D4B45C;font-size:.88rem;display:inline-block;">
-                            <strong>Admin :</strong> allez dans <a href="<?php echo esc_url( admin_url( 'options-general.php?page=ag-calendly-config' ) ); ?>" style="color:#D4B45C;text-decoration:underline;">Réglages &rsaquo; Calendly AG</a> pour configurer l'URL de <?php echo esc_html( $selected_tier['label'] ); ?>.
+                            <strong>Admin :</strong> allez dans <a href="<?php echo esc_url( admin_url( 'options-general.php?page=ag-calendly-config' ) ); ?>" style="color:#D4B45C;text-decoration:underline;">Réglages &rsaquo; RDV (Cal.com)</a> pour configurer l'URL de <?php echo esc_html( $selected_tier['label'] ); ?>.
                         </p>
                         <?php endif; ?>
                     </div>

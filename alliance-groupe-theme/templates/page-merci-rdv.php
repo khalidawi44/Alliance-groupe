@@ -2,14 +2,13 @@
 /**
  * Template Name: Merci — Rendez-vous confirmé
  *
- * Dedicated thank-you page triggered after a successful Calendly
- * booking. Calendly is configured (per event type, in the advanced
+ * Dedicated thank-you page triggered after a successful Cal.com
+ * booking. Cal.com is configured (per event type, in the advanced
  * settings) to redirect here once the buyer has finished the flow.
  *
  * Supported query params:
  *   ?offer=free|flash|strategique|deep  → label the confirmation
- *   ?event_type_uuid=...                → forwarded by Calendly, not used here
- *   ?invitee_uuid=...                   → forwarded by Calendly, not used here
+ *   ?bookingUid=...                     → forwarded by Cal.com, not used here
  */
 get_header();
 

@@ -87,7 +87,7 @@ function ag_render() {
     echo '</form></div>';
 
     // Lien GitHub
-    echo '<p style="text-align:center;color:#666;">Repo : <a href="https://github.com/khalidawi44/Alliance-groupe/tree/claude/rebuild-alliance-theme-fl7ca/content" target="_blank">github.com/khalidawi44/Alliance-groupe</a></p>';
+    echo '<p style="text-align:center;color:#666;">Repo : <a href="https://github.com/khalidawi44/Alliance-groupe/tree/main/content" target="_blank">github.com/khalidawi44/Alliance-groupe</a></p>';
 
     // Logs
     $logs = get_option( 'ag_log', array() );
@@ -213,7 +213,7 @@ function ag_do_import() {
 
 // ── Sync COMPLÈTE depuis GitHub ──────────────────────────────────
 function ag_do_github_sync() {
-    $repo_base = 'https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/claude/rebuild-alliance-theme-fl7ca';
+    $repo_base = 'https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main';
     $content_base = $repo_base . '/content';
     $theme_base = $repo_base . '/alliance-groupe-theme';
     $theme_dir = get_stylesheet_directory();

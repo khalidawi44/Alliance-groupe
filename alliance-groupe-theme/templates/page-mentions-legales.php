@@ -99,7 +99,7 @@ get_header();
                 <h3>2.4 Délais & exécution</h3>
                 <ul>
                     <li><strong>Questions Flash</strong>&nbsp;: réponse écrite livrée sous 48 h ouvrées à compter de la réception de la question complète.</li>
-                    <li><strong>Audits payants</strong>&nbsp;: RDV planifié via Calendly aux créneaux disponibles, dans un délai de 1 à 10 jours ouvrés selon l'agenda.</li>
+                    <li><strong>Audits payants</strong>&nbsp;: RDV planifié via Cal.com aux créneaux disponibles, dans un délai de 1 à 10 jours ouvrés selon l'agenda.</li>
                     <li><strong>Prestations sur devis</strong>&nbsp;: délais précisés dans chaque devis et acceptés à la signature.</li>
                 </ul>
                 <p>Le client s'engage à fournir toutes les informations nécessaires à la bonne exécution de la prestation. Tout retard imputable au client peut entraîner un report équivalent du délai de livraison.</p>
@@ -122,7 +122,7 @@ get_header();
                 <p>Au-delà du strict minimum légal, nous appliquons une politique commerciale volontairement favorable au client&nbsp;:</p>
                 <ul>
                     <li><strong>Question Flash non traitée</strong> — Si pour une raison quelconque nous ne pouvons pas traiter votre question (hors périmètre de compétence, manque d'information impossible à combler), vous êtes intégralement remboursé sous 7 jours ouvrés.</li>
-                    <li><strong>Audit payant annulé par vos soins</strong> — Annulation gratuite et remboursement intégral jusqu'à 24 h avant le RDV via le lien d'annulation Calendly inclus dans votre email de confirmation.</li>
+                    <li><strong>Audit payant annulé par vos soins</strong> — Annulation gratuite et remboursement intégral jusqu'à 24 h avant le RDV via le lien d'annulation Cal.com inclus dans votre email de confirmation.</li>
                     <li><strong>Audit payant annulé moins de 24 h avant</strong> — Possibilité de reporter le RDV sans frais (1 fois). Au-delà, l'audit est considéré comme consommé.</li>
                     <li><strong>Insatisfaction sur un audit réalisé</strong> — Si la prestation ne correspond pas à ce qui avait été annoncé, vous disposez de 7 jours pour nous adresser une réclamation motivée. Nous vous proposerons soit une nouvelle session gratuite, soit un remboursement partiel ou intégral selon la situation.</li>
                     <li><strong>Abonnement Expert</strong> — Résiliable à tout moment depuis l'email de confirmation Stripe. Aucun remboursement au prorata du mois en cours, mais aucun prélèvement futur.</li>

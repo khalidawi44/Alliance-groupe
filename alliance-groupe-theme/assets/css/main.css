@@ -2827,7 +2827,7 @@ button:focus-visible{
     .ag-section--image-marble{background-attachment:scroll}
 }
 
-/* ── Calendly inline embed (contact page) ─────────────────── */
+/* ── Cal.com inline embed (RDV page — classes .ag-calendly conservées par legacy) ─ */
 .ag-section--darker{background:linear-gradient(180deg,var(--color-bg-graphite) 0%,#060609 100%)}
 .ag-calendly{
     max-width:960px;

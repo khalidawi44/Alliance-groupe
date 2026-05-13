@@ -18,7 +18,7 @@ if ( is_admin() ) {
     }
 }
 
-// ── 1c. Charger ag-calendly-admin.php (page de config Calendly) ─
+// ── 1c. Charger ag-calendly-admin.php (page de config Cal.com — filename legacy) ─
 $ag_calendly_admin_file = get_stylesheet_directory() . '/ag-calendly-admin.php';
 if ( file_exists( $ag_calendly_admin_file ) ) {
     require_once $ag_calendly_admin_file;
