@@ -1040,7 +1040,7 @@ class AG_Starter_Companion {
 			wp_mkdir_p( $inc_dir );
 		}
 
-		$gh_base = 'https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/claude/rebuild-alliance-theme-fl7ca/alliance-groupe-theme/assets/downloads/' . $slug . '/inc/';
+		$gh_base = 'https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/downloads/' . $slug . '/inc/';
 
 		$files_to_patch = array(
 			'class-ag-licence-client.php',
