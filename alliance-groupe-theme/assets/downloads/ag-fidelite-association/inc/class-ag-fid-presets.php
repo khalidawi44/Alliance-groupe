@@ -239,6 +239,173 @@ class AG_Fid_Presets {
 					),
 				),
 			),
+
+			// Preset générique de démonstration : utilisable pour n'importe quelle
+			// association citoyenne. Contenu placeholder neutre — pas de marque,
+			// pas de référence géographique, pas d'UUID Action Populaire (le sticky
+			// Soutenir basculera automatiquement sur /don/).
+			'association_generique' => array(
+				'label' => '🌱 Association citoyenne (démo)',
+				'desc'  => 'Preset générique pour démarrer rapidement : 3 combats (justice sociale, écologie, démocratie locale), 3 événements, 3 pétitions, 3 articles, toutes les pages remplies avec contenu placeholder neutre. Idéal pour découvrir le template ou comme starter avant personnalisation.',
+				'mods'  => array(
+					'ag_asso_name'         => 'Mon Association',
+					'ag_asso_baseline'     => 'Collectif citoyen engagé',
+					'ag_asso_slogan'       => 'Pour une société plus juste',
+					'ag_asso_hero_title'   => 'Ensemble, changeons les choses',
+					'ag_asso_hero_sub'     => 'Un collectif d\'habitant·es engagé·es pour la justice sociale, l\'écologie et la démocratie locale.',
+					'ag_asso_cta_label'    => 'Rejoindre le collectif',
+					'ag_asso_cta_url'      => '/adherer/',
+					'ag_asso_cta2_label'   => 'Faire un don',
+					'ag_asso_cta2_url'     => '/don/',
+					'ag_asso_stat1_value'  => '320+',
+					'ag_asso_stat1_label'  => 'adhérent·es',
+					'ag_asso_stat2_value'  => '12',
+					'ag_asso_stat2_label'  => 'actions menées en 2026',
+					'ag_asso_stat3_value'  => '4',
+					'ag_asso_stat3_label'  => 'années d\'existence',
+				),
+				'pages' => array(
+					'qui-sommes-nous' => array(
+						'title'   => 'Qui sommes-nous',
+						'content' => "<!-- wp:paragraph -->\n<p>Nous sommes un <strong>collectif citoyen indépendant</strong> de toute formation politique. Habitant·es, bénévoles, militant·es du quotidien, nous nous organisons autour de causes concrètes qui touchent notre territoire.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>Notre fonctionnement</h2>\n<!-- /wp:heading -->\n\n<!-- wp:list -->\n<ul><li><strong>Démocratie interne</strong> : décisions collectives en assemblée générale, aucun chef</li><li><strong>Transparence</strong> : comptes publiés chaque année, ressources humaines bénévoles</li><li><strong>Action concrète</strong> : nous privilégions le terrain, l'écoute, l'accompagnement</li></ul>\n<!-- /wp:list -->\n\n<!-- wp:paragraph -->\n<p>Pour nous rejoindre ou en savoir plus : <a href=\"/signer/\">contactez-nous</a>.</p>\n<!-- /wp:paragraph -->",
+					),
+					'manifeste' => array(
+						'title'   => 'Notre manifeste',
+						'content' => "<!-- wp:paragraph -->\n<p>Nous croyons qu'<strong>une autre société est possible</strong> et qu'elle se construit à partir du local, dans la durée, par l'action collective. Trois axes structurent notre engagement.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>Justice sociale</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Lutter contre les inégalités qui détruisent le tissu social : précarité, accès inégal aux droits, discriminations. Nous soutenons celles et ceux qui n'ont pas la voix au chapitre.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>Transition écologique</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Préserver le vivant, transformer notre rapport au monde. Sobriété, partage des ressources, justice environnementale : la transition est sociale ou ne sera pas.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:heading -->\n<h2>Démocratie locale</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Donner le pouvoir aux habitant·es. Conseils de quartier vivants, budgets participatifs, contrôle citoyen des décisions publiques. La démocratie ne s'arrête pas à l'élection.</p>\n<!-- /wp:paragraph -->",
+					),
+					'combats' => array(
+						'title'   => 'Nos combats',
+						'content' => "<!-- wp:paragraph -->\n<p>Nos trois axes d'engagement, portés concrètement par nos bénévoles et nos partenaires.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_combats]\n<!-- /wp:shortcode -->",
+					),
+					'evenements' => array(
+						'title'   => 'Événements à venir',
+						'content' => "<!-- wp:paragraph -->\n<p>Rencontres publiques, ateliers, mobilisations, assemblées : retrouvez-nous sur le terrain.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_evenements]\n<!-- /wp:shortcode -->",
+					),
+					'groupes' => array(
+						'title'   => 'Nos groupes',
+						'content' => "<!-- wp:paragraph -->\n<p>Liste de nos groupes locaux et thématiques. Rejoignez celui qui correspond à votre quartier ou à votre cause.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_groupes]\n<!-- /wp:shortcode -->",
+					),
+					'actu' => array(
+						'title'   => 'Actualités',
+						'content' => "<!-- wp:paragraph -->\n<p>Nos dernières publications : comptes rendus d'actions, prises de position, événements à venir.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_actu]\n<!-- /wp:shortcode -->",
+					),
+					'signer' => array(
+						'title'   => 'Nous contacter',
+						'content' => "<!-- wp:paragraph -->\n<p>Une question, un témoignage, une demande d'aide ? Remplissez le formulaire ci-dessous, un·e bénévole vous recontactera rapidement.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_signer]\n<!-- /wp:shortcode -->",
+					),
+					'don' => array(
+						'title'   => 'Faire un don',
+						'content' => "<!-- wp:paragraph -->\n<p>Notre association est indépendante de tout pouvoir économique ou politique. Nous ne tenons que par les dons de nos sympathisant·es.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p><strong>66% de votre don est déductible</strong> de votre impôt sur le revenu (loi française). Reçu fiscal envoyé automatiquement par email.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:html -->\n<p style=\"text-align:center;margin:24px 0;\"><a href=\"#\" class=\"ag-asso-btn ag-asso-btn--primary\">💛 Faire un don</a></p>\n<p style=\"text-align:center;font-size:.9em;color:#888;\">Configurez votre solution de don (HelloAsso, Stripe, Action Populaire) dans <em>Apparence → Personnaliser</em>.</p>\n<!-- /wp:html -->",
+					),
+					'adherer' => array(
+						'title'   => 'Adhérer / rejoindre',
+						'content' => "<!-- wp:paragraph -->\n<p>Vous voulez rejoindre notre collectif, participer aux décisions, nous donner un coup de main ?</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p><strong>Nos assemblées sont ouvertes à tou·tes</strong>, sans condition. On ne demande pas de prise de carte pour participer — uniquement de l'envie et un peu de temps.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_adhesion]\n<!-- /wp:shortcode -->",
+					),
+					'mon-compte' => array(
+						'title'   => 'Espace adhérent·e',
+						'content' => "<!-- wp:paragraph -->\n<p>Espace réservé aux adhérent·es : comptes rendus, ressources internes, badge numérique.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_compte]\n<!-- /wp:shortcode -->",
+					),
+					'petitions' => array(
+						'title'   => 'Nos pétitions',
+						'content' => "<!-- wp:paragraph -->\n<p>Pétitions actives portées par notre collectif. Chaque signature compte.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_petitions]\n<!-- /wp:shortcode -->",
+					),
+					'reunion' => array(
+						'title'   => 'Réunion en ligne',
+						'content' => "<!-- wp:paragraph -->\n<p>Salle de visioconférence sécurisée pour nos réunions à distance (commissions, AG, formations).</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_visio]\n<!-- /wp:shortcode -->",
+					),
+					'rendez-vous' => array(
+						'title'   => 'Prendre rendez-vous',
+						'content' => "<!-- wp:paragraph -->\n<p>Pour un échange individuel avec un·e bénévole : prenez rendez-vous via notre agenda en ligne.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n[ag_fid_rdv]\n<!-- /wp:shortcode -->",
+					),
+				),
+				'combats' => array(
+					array(
+						'title'   => 'Justice sociale',
+						'emoji'   => '🤝',
+						'color'   => '#3B5998',
+						'excerpt' => 'Lutter contre les inégalités, défendre l\'accès aux droits, soutenir les plus précaires.',
+						'content' => "Notre premier axe d'engagement. Nous luttons contre toutes les formes d'inégalités qui fragilisent le tissu social : précarité, mal-logement, accès inégal à la santé, à l'éducation, aux droits.\n\nNous accompagnons les personnes en difficulté dans leurs démarches, nous portons leurs voix devant les institutions, et nous mobilisons sur les politiques publiques qui aggravent ou réduisent ces inégalités.",
+					),
+					array(
+						'title'   => 'Transition écologique',
+						'emoji'   => '🌱',
+						'color'   => '#1F8A3D',
+						'excerpt' => 'Préserver le vivant, sortir des énergies fossiles, repenser nos modes de vie collectifs.',
+						'content' => "Deuxième axe : nous croyons que la transition écologique est indissociable de la justice sociale. Pas de planète vivable sans répartition équitable des efforts et des bénéfices.\n\nNous portons des projets concrets sur notre territoire : ateliers de sensibilisation, jardins partagés, mobilisation contre les projets nuisibles à l'environnement, plaidoyer pour des politiques publiques ambitieuses.",
+					),
+					array(
+						'title'   => 'Démocratie locale',
+						'emoji'   => '🗳️',
+						'color'   => '#7B2D8E',
+						'excerpt' => 'Donner le pouvoir aux habitant·es : conseils de quartier, budgets participatifs, contrôle citoyen.',
+						'content' => "Troisième axe : faire vivre la démocratie au-delà des élections. Trop souvent, les décisions qui nous concernent sont prises sans nous, par des élu·es qui consultent peu et expliquent encore moins.\n\nNous animons des conseils de quartier ouverts, nous suivons les budgets municipaux, nous proposons des outils de contrôle citoyen. L'objectif : que les habitant·es reprennent la main sur leur territoire.",
+					),
+				),
+				'evenements' => array(
+					array(
+						'title'   => 'Assemblée générale annuelle',
+						'date'    => '2026-06-15', 'time' => '18:00', 'end' => '21:00',
+						'city'    => 'À définir',
+						'place'   => 'Salle à confirmer (voir événement)',
+						'content' => "Notre assemblée générale annuelle, ouverte à tou·tes les adhérent·es à jour de cotisation.\n\nOrdre du jour : bilan financier 2025, vote du programme stratégique 2027, élection du conseil d'administration.\n\nUn buffet partagé suivra l'AG. Apportez ce qui vous plaît.",
+					),
+					array(
+						'title'   => 'Réunion publique mensuelle',
+						'date'    => '2026-06-04', 'time' => '19:00', 'end' => '21:00',
+						'city'    => 'À définir',
+						'place'   => 'Maison des associations',
+						'content' => "Réunion publique mensuelle ouverte à tou·tes — adhérent·es comme sympathisant·es.\n\nAu programme : retour sur les actions du mois, préparation des prochaines mobilisations, débat thématique.\n\nPremière venue ? Aucun souci, on vous accueille avec un café.",
+					),
+					array(
+						'title'   => 'Atelier de formation citoyenne',
+						'date'    => '2026-06-22', 'time' => '14:00', 'end' => '17:00',
+						'city'    => 'À définir',
+						'place'   => 'À confirmer',
+						'content' => "Atelier de formation gratuit : comprendre les institutions locales, savoir s'adresser à un·e élu·e, monter un dossier de subvention, organiser une réunion publique.\n\nNiveau débutant. Inscription conseillée (places limitées à 25 personnes).",
+					),
+				),
+				'groupes' => array(
+					array(
+						'title'   => 'Commission Justice sociale',
+						'excerpt' => 'Notre commission qui anime nos actions d\'accompagnement et de plaidoyer sur les inégalités.',
+						'content' => "Cette commission rassemble une dizaine de bénévoles qui se réunissent chaque mois. Trois activités régulières :\n\n• Permanences d'accompagnement administratif (samedis matins)\n• Veille sur les politiques sociales locales\n• Organisation de campagnes de sensibilisation\n\nPour rejoindre la commission : <a href=\"/signer/\">contactez-nous</a>.",
+					),
+				),
+				'petitions' => array(
+					array(
+						'title'   => 'Pour un budget participatif municipal',
+						'excerpt' => 'Demandons à notre commune d\'instaurer un vrai budget participatif, abondé d\'au moins 5% du budget d\'investissement.',
+						'content' => "Trop de communes affichent un « budget participatif » qui ne représente que 1% ou moins de leurs investissements, avec des règles d'éligibilité opaques.\n\nNous demandons un budget participatif <strong>réellement consistant</strong> (minimum 5% des investissements), avec des règles claires, des jurys citoyens tirés au sort, et un suivi public des projets réalisés.",
+				),
+				array(
+						'title'   => 'Plus de pistes cyclables sécurisées',
+						'excerpt' => 'Pour un plan vélo ambitieux avec des aménagements protégés sur les axes principaux.',
+						'content' => "Notre commune fait des annonces vélo mais sur le terrain, les aménagements restent dérisoires : peintures au sol, discontinuités dangereuses, partage forcé avec les voitures.\n\nNous demandons un plan vélo chiffré, avec un objectif clair (par exemple 50 km de pistes protégées en 3 ans), et un comité de suivi avec des associations de cyclistes.",
+					),
+					array(
+						'title'   => 'Transparence des décisions municipales',
+						'excerpt' => 'Publication des comptes rendus de conseil municipal, des notes de service, des conventions avec des opérateurs privés.',
+						'content' => "L'accès aux documents administratifs est un droit, garanti par la CADA. En pratique, il faut souvent insister, attendre des mois, ou ne rien recevoir.\n\nNous demandons une politique de transparence proactive : publication automatique des comptes rendus, des conventions avec des opérateurs privés (eau, déchets, transports), des notes de service éclairant les décisions municipales.",
+					),
+				),
+				'articles' => array(
+					array(
+						'title'   => 'Bienvenue sur notre nouveau site',
+						'excerpt' => 'Nous lançons notre site internet pour mieux communiquer nos actions et faciliter votre engagement.',
+						'content' => "<p>Bienvenue ! Vous lisez le premier article publié sur notre tout nouveau site. Nous l'avons mis en ligne pour <strong>mieux partager nos actions</strong>, <strong>faciliter votre engagement</strong>, et donner accès à nos ressources.</p><p>Au programme dans les prochaines semaines : comptes rendus de nos AG, calendrier des événements, formulaire de contact direct, et lancement de nos premières pétitions.</p><p>Bonne visite — et <a href=\"/signer/\">contactez-nous</a> pour toute question.</p>",
+					),
+					array(
+						'title'   => 'Trois axes pour 2026',
+						'excerpt' => 'Notre conseil d\'administration a défini les priorités d\'action pour 2026 : justice sociale, écologie, démocratie locale.',
+						'content' => "<p>Réuni en janvier, notre conseil d'administration a validé les <strong>trois axes prioritaires</strong> qui guideront notre action cette année.</p><p><strong>1. Justice sociale</strong> — Permanences d'accompagnement renforcées, plaidoyer sur les politiques sociales locales, campagne contre la précarité énergétique.</p><p><strong>2. Transition écologique</strong> — Ateliers de sensibilisation dans les écoles, plaidoyer pour un plan vélo ambitieux, mobilisation contre les projets nuisibles à l'environnement.</p><p><strong>3. Démocratie locale</strong> — Animation de conseils de quartier ouverts, suivi du budget municipal, outils de contrôle citoyen.</p><p>Pour participer à l'une de ces actions : <a href=\"/adherer/\">rejoignez-nous</a>.</p>",
+					),
+					array(
+						'title'   => 'Nos comptes 2025 sont publiés',
+						'excerpt' => 'Transparence totale : nos comptes annuels sont en accès libre. Recettes, dépenses, bilan détaillé.',
+						'content' => "<p>Comme chaque année, nous publions <strong>nos comptes annuels en accès libre</strong>. Vous pouvez les consulter, les commenter, nous interroger.</p><p>Total des recettes 2025 : <strong>42 800€</strong>, dont 78% de cotisations et dons d'adhérent·es (aucun don supérieur à 500€). Le reste vient de subventions publiques (Conseil départemental, Région) et d'un partenariat avec une fondation reconnue d'utilité publique.</p><p>Total des dépenses : <strong>41 100€</strong>, principalement frais de fonctionnement (salle, communication, frais juridiques) et soutien à nos actions de terrain.</p><p>Pour le détail complet : <a href=\"/signer/\">demandez-nous le rapport financier</a>.</p>",
+					),
+				),
+			),
 		);
 	}
 
