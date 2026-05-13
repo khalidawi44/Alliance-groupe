@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://assets.calendly.com">
-    <link rel="dns-prefetch" href="//calendly.com">
+    <link rel="preconnect" href="https://app.cal.com">
+    <link rel="dns-prefetch" href="//cal.com">
     <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>

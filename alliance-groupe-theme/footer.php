@@ -82,7 +82,7 @@
                         <input type="checkbox" data-ag-cat="functional">
                         <span class="ag-cookie__cat"><strong>Fonctionnels</strong></span>
                     </label>
-                    <p class="ag-cookie__desc">Améliorent l'expérience : mémorisation de vos choix, intégration de Calendly pour la prise de rendez-vous, lecture de vidéos intégrées.</p>
+                    <p class="ag-cookie__desc">Améliorent l'expérience : mémorisation de vos choix, intégration de Cal.com pour la prise de rendez-vous, lecture de vidéos intégrées.</p>
                 </li>
                 <li class="ag-cookie__item">
                     <label class="ag-cookie__label">

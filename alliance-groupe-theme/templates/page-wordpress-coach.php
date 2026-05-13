@@ -34,7 +34,7 @@ set_query_var( 'ag_metier', array(
     'premium_features' => array(
         '<strong>Témoignages animés</strong> avec photo client + résultat obtenu (slider)',
         '<strong>Bloc "Parcours de transformation"</strong> (timeline avant/après)',
-        '<strong>Booking Calendly intégré</strong> — réservation directe depuis le site',
+        '<strong>Booking Cal.com intégré</strong> — réservation directe depuis le site',
         'Animations douces sur les sections offres et témoignages',
         '10 blocs Gutenberg coaching (offre avec prix, FAQ, CTA "Séance découverte", citation inspirante)',
         'Sticky header avec bouton "Prendre rendez-vous" toujours visible',
