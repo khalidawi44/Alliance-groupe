@@ -66,14 +66,16 @@ class AG_Fid_Shortcodes {
 		$ap_group_url = $ap_uuid ? 'https://actionpopulaire.fr/groupes/' . $ap_uuid . '/' : '';
 		ob_start();
 		?>
+		<?php // Carte officielle Action Populaire : affichee uniquement si
+		// l'UUID groupe AP est configure (sinon, c'est une asso non-LFI,
+		// la carte des groupes LFI n'a pas a s'afficher).
+		if ( $ap_uuid ) : ?>
 		<div class="ag-fid-groupes-wrapper" style="margin-bottom:40px;">
-			<?php if ( $ap_group_url ) : ?>
-				<p style="text-align:center;margin:0 0 24px;">
-					<a href="<?php echo esc_url( $ap_group_url ); ?>" class="ag-asso-btn ag-asso-btn--primary" data-ag-popup data-popup-width="1000" data-popup-height="800" rel="noopener">
-						✊ Rejoindre notre groupe local
-					</a>
-				</p>
-			<?php endif; ?>
+			<p style="text-align:center;margin:0 0 24px;">
+				<a href="<?php echo esc_url( $ap_group_url ); ?>" class="ag-asso-btn ag-asso-btn--primary" data-ag-popup data-popup-width="1000" data-popup-height="800" rel="noopener">
+					✊ Rejoindre notre groupe local
+				</a>
+			</p>
 			<h2 style="text-align:center;margin:24px 0 14px;">🗺️ Carte des groupes locaux LFI</h2>
 			<p style="text-align:center;margin-bottom:14px;">
 				<a href="<?php echo esc_url( $ap_map_url ); ?>" class="ag-asso-btn ag-asso-btn--primary" data-ag-popup data-popup-width="1100" data-popup-height="800" rel="noopener">
@@ -85,8 +87,9 @@ class AG_Fid_Shortcodes {
 			</div>
 			<p style="text-align:center;margin-top:10px;font-size:.85em;color:#888;">Si la carte ne s'affiche pas, utilisez le bouton ci-dessus.</p>
 		</div>
+		<?php endif; ?>
 		<?php
-		// Puis les groupes CPT locaux (notre seul groupe Clos Toreau)
+		// Puis les groupes CPT locaux (asso non-LFI : c'est le seul affichage groupes).
 		$q = new WP_Query( array( 'post_type' => 'ag_groupe', 'posts_per_page' => 30 ) );
 		if ( $q->have_posts() ) :
 			?>

@@ -148,7 +148,7 @@ class AG_Fid_Presets {
 						'content' => "Troisième axe : faire vivre la démocratie au-delà des élections. Trop souvent, les décisions qui nous concernent sont prises sans nous, par des élu·es qui consultent peu et expliquent encore moins.\n\nNous animons des conseils de quartier ouverts, nous suivons les budgets municipaux, nous proposons des outils de contrôle citoyen. L'objectif : que les habitant·es reprennent la main sur leur territoire.",
 					),
 				),
-				'evenements' => array(
+				'events' => array(
 					array(
 						'title'   => 'Assemblée générale annuelle',
 						'date'    => '2026-06-15', 'time' => '18:00', 'end' => '21:00',

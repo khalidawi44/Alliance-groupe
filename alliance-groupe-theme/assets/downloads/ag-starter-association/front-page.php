@@ -256,7 +256,7 @@ get_header();
             <p class="ag-asso-section__lead"><?php echo esc_html( $grp_lead ); ?></p>
             <p style="text-align:center;margin:24px 0;">
                 <a href="<?php echo esc_url( home_url( '/groupes/' ) ); ?>" class="ag-asso-btn ag-asso-btn--primary">
-                    🗺️ <?php echo esc_html( ag_asso_opt( 'ag_asso_groupes_btn_label', 'Trouver mon groupe local LFI' ) ); ?>
+                    🗺️ <?php echo esc_html( ag_asso_opt( 'ag_asso_groupes_btn_label', 'Trouver mon groupe local' ) ); ?>
                 </a>
             </p>
             <p class="ag-asso-search__note" style="text-align:center;"><?php echo wp_kses_post( ag_asso_opt( 'ag_asso_groupes_search_note', 'Pas de groupe près de chez vous ? <a href="/groupes/">Contactez-nous</a> — nous vous accompagnons pour créer le vôtre.' ) ); ?></p>
