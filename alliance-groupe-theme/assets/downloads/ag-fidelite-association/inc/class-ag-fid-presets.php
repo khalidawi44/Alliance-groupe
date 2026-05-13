@@ -43,9 +43,14 @@ class AG_Fid_Presets {
 	/**
 	 * Definition des presets disponibles. Chaque preset = un identifiant
 	 * + label + description + payload (theme_mods, pages, combats).
+	 *
+	 * Filter ag_fid_presets : permet d'ajouter des presets externes via
+	 * un mu-plugin local (ex : preset specifique LFI Nantes Clos Toreau
+	 * uploade uniquement sur le site LFI). Le template generique reste
+	 * propre, tout en autorisant des extensions par site.
 	 */
 	private static function get_presets() {
-		return array(
+		$presets = array(
 
 			// Preset générique de démonstration : utilisable pour n'importe quelle
 			// association citoyenne. Contenu placeholder neutre — pas de marque,
@@ -214,6 +219,8 @@ class AG_Fid_Presets {
 				),
 			),
 		);
+
+		return apply_filters( 'ag_fid_presets', $presets );
 	}
 
 	public static function maybe_rebuild_menu() {
