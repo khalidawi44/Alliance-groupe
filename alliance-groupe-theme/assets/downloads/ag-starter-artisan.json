@@ -1,9 +1,9 @@
 {
-    "version": "1.0.3",
+    "version": "1.0.4",
     "download_url": "https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/downloads/ag-starter-artisan.zip",
     "homepage": "https://alliancegroupe-inc.com/wordpress-artisan",
     "requires": "6.0",
     "tested": "6.5",
-    "last_updated": "2026-05-10",
+    "last_updated": "2026-05-13",
     "description": "Theme WordPress 100% gratuit pour artisan (plombier, electricien, menuisier...). Prestations, zones d'intervention, realisations, devis."
 }

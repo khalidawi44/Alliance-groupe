@@ -19,14 +19,24 @@
 <header class="ag-site-header" role="banner">
 	<div class="ag-container ag-site-header__inner">
 		<div class="ag-site-brand">
-			<?php if ( has_custom_logo() ) : ?>
-				<?php the_custom_logo(); ?>
-			<?php else : ?>
-				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
+			<?php
+			// Logo toujours cliquable vers l'accueil, meme sur is_front_page().
+			// WP retire le wrap <a> par defaut sur la home — on construit
+			// nous-memes pour garantir le lien partout.
+			$custom_logo_id = get_theme_mod( 'custom_logo' );
+			$logo_img       = $custom_logo_id ? wp_get_attachment_image( $custom_logo_id, 'full', false, array(
+				'class' => 'custom-logo',
+				'alt'   => get_bloginfo( 'name' ),
+			) ) : '';
+			?>
+			<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="custom-logo-link" aria-label="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?> — <?php esc_attr_e( 'Accueil', 'ag-starter-avocat' ); ?>">
+				<?php if ( $logo_img ) : ?>
+					<?php echo $logo_img; ?>
+				<?php else : ?>
 					<?php do_action( 'ag_brand_fallback' ); ?>
 					<span class="ag-site-brand__text"><?php bloginfo( 'name' ); ?></span>
-				</a>
-			<?php endif; ?>
+				<?php endif; ?>
+			</a>
 		</div>
 
 		<nav class="ag-primary-nav" aria-label="<?php esc_attr_e( 'Menu principal', 'ag-starter-avocat' ); ?>">
