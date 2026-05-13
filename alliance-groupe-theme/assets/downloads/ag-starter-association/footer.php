@@ -111,9 +111,13 @@
 </aside>
 
 <?php // Sticky droite : "Soutenir" — pilule verticale -> panneau (mirror gauche)
+// Toujours affiché. Si UUID Action Populaire configuré, CTA principal pointe
+// vers Action Populaire en popup ; sinon, fallback sur la page locale /don/.
 $ap_uuid_soutien = ag_asso_opt( 'ag_asso_ap_group_uuid', '' );
-if ( $ap_uuid_soutien ) :
-$ap_don_url = 'https://actionpopulaire.fr/dons/?group=' . rawurlencode( $ap_uuid_soutien );
+$ap_don_url      = $ap_uuid_soutien
+    ? 'https://actionpopulaire.fr/dons/?group=' . rawurlencode( $ap_uuid_soutien )
+    : home_url( '/don/' );
+$ap_popup_attrs  = $ap_uuid_soutien ? ' data-ag-popup data-popup-width="980" data-popup-height="820"' : '';
 ?>
 <aside class="ag-asso-sticky-soutien" id="agAssoStickySoutien" aria-label="<?php esc_attr_e( 'Soutenir', 'ag-starter-association' ); ?>">
     <button type="button" class="ag-asso-sticky-soutien__toggle" aria-expanded="false" aria-controls="agAssoStickySoutienPanel">
@@ -125,11 +129,10 @@ $ap_don_url = 'https://actionpopulaire.fr/dons/?group=' . rawurlencode( $ap_uuid
         <h3 class="ag-asso-sticky-soutien__title">💛 Soutenir notre groupe</h3>
         <p class="ag-asso-sticky-soutien__sub">Indépendants des partis et des grands donateurs, nous ne tenons que par vous.</p>
         <p class="ag-asso-sticky-soutien__sub" style="font-size:.85em;color:#bbb;">66% de votre don est déductible. Reçu fiscal automatique par email.</p>
-        <a href="<?php echo esc_url( $ap_don_url ); ?>" class="ag-asso-btn ag-asso-btn--primary ag-asso-sticky-soutien__cta" data-ag-popup data-popup-width="980" data-popup-height="820" rel="noopener">💛 Faire un don maintenant</a>
+        <a href="<?php echo esc_url( $ap_don_url ); ?>" class="ag-asso-btn ag-asso-btn--primary ag-asso-sticky-soutien__cta"<?php echo $ap_popup_attrs; ?> rel="noopener">💛 Faire un don maintenant</a>
         <a href="<?php echo esc_url( home_url( '/don/' ) ); ?>" class="ag-asso-sticky-soutien__more">Voir toutes les options →</a>
     </div>
 </aside>
-<?php endif; ?>
 
 <script>
 (function () {

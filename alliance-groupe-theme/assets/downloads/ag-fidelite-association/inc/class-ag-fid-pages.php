@@ -641,8 +641,8 @@ HTML;
 			'qui-sommes-nous' => 'Qui sommes-nous',
 			'manifeste'       => 'Manifeste',
 			'combats'         => 'Combats',
-			'evenements'      => 'Mobilisations à venir',
-			'rejoindre-lfi'   => 'Rejoindre LFI',
+			'evenements'      => 'Événements',
+			'adherer'         => 'Adhérer',
 			'reunion'         => 'Réunion en ligne',
 			'actu'            => 'Actualités',
 		);
