@@ -383,6 +383,10 @@ AG_Artisan_Presets::init();
 add_filter( 'body_class', function ( $classes ) {
 	if ( class_exists( 'AG_Artisan_Presets' ) && AG_Artisan_Presets::get_active_preset() ) {
 		$classes[] = 'ag-premium-mode';
+		$slug = get_theme_mod( 'ag_artisan_metier_slug', '' );
+		if ( $slug ) {
+			$classes[] = 'ag-metier-' . sanitize_html_class( $slug );
+		}
 	}
 	return $classes;
 } );

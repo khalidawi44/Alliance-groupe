@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour artisans, plombiers, electriciens, menuisiers, BTP. Structure minimaliste noir et bronze, responsive, sans fioritures. Contenu pre-redige en francais natif : prestations, zones d'intervention, devis. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.4.0
+Version: 1.5.0
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -645,3 +645,94 @@ body.ag-premium-mode .ag-hero-pro{min-height:560px}
 /* ── Menu actif : couleur accent (override violet du theme parent) ── */
 body.ag-premium-mode .ag-primary-menu .current-menu-item a,
 body.ag-premium-mode .ag-primary-menu .current_page_item a{color:var(--ag-color-accent,#F37A1F)!important;font-weight:700}
+
+/* ════════════════════════════════════════════════════════════════════
+   ANIMATIONS THÉMATIQUES PAR MÉTIER
+   Active uniquement quand body a la classe ag-metier-<slug>
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── 🧱 MAÇON : mur de briques qui se construit en bas du hero ─── */
+@keyframes agBrickPlace {
+    0%   { opacity:0; transform:translateY(-40px) rotate(-8deg); }
+    60%  { opacity:1; transform:translateY(4px) rotate(2deg); }
+    100% { opacity:1; transform:translateY(0) rotate(0); }
+}
+body.ag-metier-macon .ag-hero-pro{position:relative;overflow:hidden}
+body.ag-metier-macon .ag-hero-pro::after{
+    content:'';position:absolute;left:0;right:0;bottom:0;height:60px;pointer-events:none;
+    background-image:
+        linear-gradient(90deg, #a0522d 0 calc(100%/6 - 4px), transparent calc(100%/6 - 4px)),
+        linear-gradient(90deg, #8b4513 0 calc(100%/6 - 4px), transparent calc(100%/6 - 4px)),
+        linear-gradient(90deg, #a0522d 0 calc(100%/6 - 4px), transparent calc(100%/6 - 4px));
+    background-size: calc(100%/6) 20px, calc(100%/6) 20px, calc(100%/6) 20px;
+    background-position: 0 60px, calc(100%/12) 40px, 0 20px;
+    background-repeat: repeat-x;
+    animation: agBrickWallRise 1.8s cubic-bezier(.2,.7,.2,1) .3s both;
+}
+@keyframes agBrickWallRise { from { transform: translateY(60px); opacity:0; } to { transform: translateY(0); opacity:.85; } }
+/* Hover sur card service maçon : la brique de l'icône "tremble" puis se replace */
+body.ag-metier-macon .ag-service-card:hover .ag-service-card__icon{animation:agBrickPlace .45s ease both}
+
+/* ── ⚡ ÉLECTRICIEN : éclairs jaunes qui zappent en background hero ── */
+@keyframes agSparkFlash {
+    0%, 92%, 100% { opacity:0; }
+    93%, 96%      { opacity:1; }
+    94%, 97%      { opacity:0; }
+}
+body.ag-metier-electricien .ag-hero-pro{position:relative;overflow:hidden}
+body.ag-metier-electricien .ag-hero-pro::before{
+    content:'⚡⚡⚡';position:absolute;top:30%;left:-10%;font-size:4rem;letter-spacing:200px;color:#FFB400;
+    text-shadow:0 0 30px rgba(255,180,0,.9);
+    animation:agSparkFlash 3.5s infinite, agSparkMove 8s infinite linear;
+    pointer-events:none;
+}
+@keyframes agSparkMove { from { transform: translateX(0); } to { transform: translateX(50%); } }
+/* Hover : icône électricien zappe */
+@keyframes agZap { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
+body.ag-metier-electricien .ag-service-card:hover .ag-service-card__icon{animation:agZap .35s ease infinite}
+
+/* ── 🥖 BOULANGER : vapeur qui monte du hero ──────────────────── */
+@keyframes agSteamRise {
+    0%   { opacity:0; transform:translateY(20px) scale(1) ; }
+    30%  { opacity:.6; }
+    100% { opacity:0; transform:translateY(-80px) scale(2.4); }
+}
+body.ag-metier-boulanger .ag-hero-pro{position:relative;overflow:hidden}
+body.ag-metier-boulanger .ag-hero-pro::after,
+body.ag-metier-boulanger .ag-hero-pro::before{
+    content:'';position:absolute;bottom:20px;width:40px;height:40px;border-radius:50%;
+    background:radial-gradient(circle, rgba(255,255,255,.7) 0%, rgba(255,255,255,0) 70%);
+    pointer-events:none;
+    animation: agSteamRise 4s ease-in infinite;
+}
+body.ag-metier-boulanger .ag-hero-pro::before{left:25%;animation-delay:0s}
+body.ag-metier-boulanger .ag-hero-pro::after{left:65%;animation-delay:1.5s}
+/* Hover : icône qui "gonfle" comme une pâte */
+@keyframes agPuff { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.18); } }
+body.ag-metier-boulanger .ag-service-card:hover .ag-service-card__icon{animation:agPuff .55s ease infinite}
+
+/* ── 🛠️ MULTISERVICES : outils flottants en background ──────────── */
+@keyframes agFloat { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-12px) rotate(8deg); } }
+body.ag-metier-multiservice .ag-hero-pro::before{
+    content:'🔧 🔨 🪛 🧰 ⚙️ 🪚';position:absolute;top:20%;left:0;width:100%;font-size:1.6rem;
+    opacity:.15;letter-spacing:60px;color:#fff;pointer-events:none;
+    animation: agFloat 5s ease-in-out infinite;
+}
+body.ag-metier-multiservice .ag-service-card:hover .ag-service-card__icon{animation:agFloat 1.2s ease-in-out infinite}
+
+/* ── 🔧 GÉNÉRALISTE : engrenage qui tourne ──────────────────────── */
+@keyframes agSpin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+body.ag-metier-generaliste .ag-hero-pro::after{
+    content:'⚙️';position:absolute;top:20px;right:30px;font-size:5rem;opacity:.18;color:#fff;
+    animation: agSpin 12s linear infinite; pointer-events:none;
+}
+body.ag-metier-generaliste .ag-service-card:hover .ag-service-card__icon{animation:agSpin 1.5s linear infinite}
+
+/* Respect prefers-reduced-motion : kill toutes ces animations */
+@media (prefers-reduced-motion: reduce) {
+    body[class*="ag-metier-"] .ag-hero-pro::before,
+    body[class*="ag-metier-"] .ag-hero-pro::after,
+    body[class*="ag-metier-"] .ag-service-card:hover .ag-service-card__icon {
+        animation: none !important;
+    }
+}

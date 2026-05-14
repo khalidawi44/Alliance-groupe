@@ -61,6 +61,7 @@ class AG_Artisan_Reset {
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ), 30 );
 		add_action( 'admin_post_ag_artisan_reset', array( __CLASS__, 'handle_reset' ) );
+		add_action( 'admin_post_ag_artisan_sync_reset', array( __CLASS__, 'handle_sync_reset' ) );
 	}
 
 	public static function register_menu() {
@@ -75,15 +76,34 @@ class AG_Artisan_Reset {
 
 	public static function render() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
-		$done = isset( $_GET['reset_done'] ) ? (int) $_GET['reset_done'] : 0;
-		$stats = $done ? get_transient( 'ag_artisan_reset_stats' ) : null;
+		$done      = isset( $_GET['reset_done'] ) ? (int) $_GET['reset_done'] : 0;
+		$sync_done = isset( $_GET['sync_done'] ) ? (int) $_GET['sync_done'] : 0;
+		$stats     = ( $done || $sync_done ) ? get_transient( 'ag_artisan_reset_stats' ) : null;
 		?>
 		<div class="wrap">
 			<h1>🔄 <?php esc_html_e( 'Réinitialiser le thème — AG Starter Artisan', 'ag-starter-artisan' ); ?></h1>
 
-			<?php if ( $done && $stats ) : ?>
+			<!-- BOUTON TOUT-EN-UN : sync GitHub + companion + reset -->
+			<div style="background:linear-gradient(135deg,#0a0a0f 0%,#1a1a2e 100%);border-radius:12px;padding:28px 32px;margin:20px 0;color:#fff;max-width:820px;">
+				<h2 style="margin:0 0 10px;color:#fff;font-size:1.3em;">🚀 <?php esc_html_e( 'Tout faire en 1 clic', 'ag-starter-artisan' ); ?></h2>
+				<p style="color:rgba(255,255,255,.8);margin:0 0 18px;line-height:1.55;"><?php esc_html_e( 'Force la vérification des mises à jour GitHub (theme + companion), purge tous les caches (LiteSpeed, transients WP, mises à jour) ET nettoie les résidus d\'autres templates. Idéal après modification du repo Alliance Groupe.', 'ag-starter-artisan' ); ?></p>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="return confirm('Lancer le combo SYNC GITHUB + RESET ? Tous les caches seront purges et les residus supprimes.');">
+					<input type="hidden" name="action" value="ag_artisan_sync_reset" />
+					<?php wp_nonce_field( 'ag_artisan_sync_reset' ); ?>
+					<button type="submit" class="button button-primary button-hero" style="background:#F37A1F;border-color:#F37A1F;color:#fff;font-weight:700;padding:0 30px;">
+						🚀 <?php esc_html_e( 'SYNC GITHUB + RESET COMPLET', 'ag-starter-artisan' ); ?>
+					</button>
+				</form>
+			</div>
+			<hr style="margin:30px 0;border:none;border-top:1px solid #ddd;">
+			<h2><?php esc_html_e( 'Ou : reset seul (sans sync GitHub)', 'ag-starter-artisan' ); ?></h2>
+
+			<?php if ( ( $done || $sync_done ) && $stats ) : ?>
 				<div class="notice notice-success">
-					<p><strong>✅ Réinitialisation effectuée.</strong></p>
+					<p><strong>✅ <?php echo $sync_done ? esc_html__( 'Sync GitHub + reset complet effectués.', 'ag-starter-artisan' ) : esc_html__( 'Réinitialisation effectuée.', 'ag-starter-artisan' ); ?></strong></p>
+					<?php if ( $sync_done ) : ?>
+						<p>🔄 <?php esc_html_e( 'Caches mises à jour purgés (theme + companion + LiteSpeed). Si une nouvelle version est disponible, elle apparaîtra dans', 'ag-starter-artisan' ); ?> <a href="<?php echo esc_url( admin_url( 'themes.php' ) ); ?>"><?php esc_html_e( 'Apparence > Thèmes', 'ag-starter-artisan' ); ?></a>.</p>
+					<?php endif; ?>
 					<ul style="margin-left:20px;list-style:disc;">
 						<li><?php printf( esc_html__( '%d options Customizer d\'autres templates supprimées', 'ag-starter-artisan' ), (int) $stats['mods_deleted'] ); ?></li>
 						<li><?php printf( esc_html__( '%d entrées CPT (combats/événements/pétitions/etc.) supprimées', 'ag-starter-artisan' ), (int) $stats['cpt_deleted'] ); ?></li>
@@ -124,6 +144,145 @@ class AG_Artisan_Reset {
 			</form>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Combo : force-check GitHub theme + companion + purge transients +
+	 * reset complet + purge LiteSpeed. Tout en 1 clic.
+	 */
+	public static function handle_sync_reset() {
+		if ( ! current_user_can( 'manage_options' ) ) wp_die( 'forbidden' );
+		check_admin_referer( 'ag_artisan_sync_reset' );
+
+		// 1. Force-check GitHub theme (transients de l'updater + WP)
+		delete_site_transient( 'update_themes' );
+		delete_site_transient( 'update_plugins' );
+		// Le theme-updater du theme utilise un transient nomme ag_artisan_remote_manifest
+		// (consts dans inc/theme-updater.php), on tente toutes les variantes.
+		delete_transient( 'ag_artisan_remote_manifest' );
+		delete_transient( 'ag_starter_artisan_remote_manifest' );
+
+		// 2. Force-check companion (si plugin installe)
+		delete_transient( 'ag_starter_companion_remote_manifest' );
+		delete_transient( 'ag_companion_remote_manifest' );
+
+		// 3. Reset complet (re-utilise la logique du reset classique)
+		$_POST['ag_artisan_reset_confirm'] = '1';
+		// On simule l'envoi du formulaire reset en respectant son nonce :
+		// pour simplifier, on appelle directement la logique interne.
+		$stats = self::do_reset_logic();
+
+		// 4. Purge cache LiteSpeed + WP
+		if ( has_action( 'litespeed_purge_all' ) ) {
+			do_action( 'litespeed_purge_all' );
+		}
+		wp_cache_flush();
+
+		set_transient( 'ag_artisan_reset_stats', $stats, 60 );
+		wp_safe_redirect( admin_url( 'themes.php?page=ag-artisan-reset&sync_done=1' ) );
+		exit;
+	}
+
+	/**
+	 * Logique interne du reset (utilisable par handle_reset OU handle_sync_reset).
+	 * @return array stats
+	 */
+	private static function do_reset_logic() {
+		$stats = array(
+			'mods_deleted'  => 0,
+			'cpt_deleted'   => 0,
+			'pages_deleted' => 0,
+			'pages_created' => 0,
+		);
+
+		// 1. theme_mods d'autres templates
+		$mods = get_theme_mods();
+		if ( is_array( $mods ) ) {
+			foreach ( array_keys( $mods ) as $key ) {
+				foreach ( self::FOREIGN_MOD_PREFIXES as $prefix ) {
+					if ( strpos( $key, $prefix ) === 0 ) {
+						remove_theme_mod( $key );
+						$stats['mods_deleted']++;
+						break;
+					}
+				}
+			}
+		}
+
+		// 2. CPT en SQL direct (marche meme si post_type non enregistre)
+		global $wpdb;
+		foreach ( self::FOREIGN_CPT as $cpt ) {
+			$ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_type = %s", $cpt ) );
+			foreach ( (array) $ids as $id ) {
+				wp_delete_post( (int) $id, true );
+				$stats['cpt_deleted']++;
+			}
+		}
+
+		// 3. Pages aux slugs non-artisan
+		foreach ( self::FOREIGN_PAGE_SLUGS as $slug ) {
+			$page = get_page_by_path( $slug );
+			if ( $page ) {
+				wp_delete_post( $page->ID, true );
+				$stats['pages_deleted']++;
+			}
+		}
+
+		// 4. Recreer pages artisan manquantes
+		$created_page_ids = array();
+		foreach ( self::ARTISAN_PAGES as $slug => $data ) {
+			$page = get_page_by_path( $slug );
+			if ( ! $page ) {
+				$new_id = wp_insert_post( array(
+					'post_title'   => $data['title'],
+					'post_name'    => $slug,
+					'post_content' => '<!-- wp:paragraph --><p>' . esc_html( $data['content'] ) . '</p><!-- /wp:paragraph -->',
+					'post_status'  => 'publish',
+					'post_type'    => 'page',
+				) );
+				if ( $new_id && ! is_wp_error( $new_id ) ) {
+					$stats['pages_created']++;
+					$created_page_ids[ $slug ] = $new_id;
+				}
+			} else {
+				$created_page_ids[ $slug ] = $page->ID;
+			}
+		}
+
+		// 5. Reconstruire le menu primary
+		$menu_name = 'AG Artisan — Principal';
+		$menu = wp_get_nav_menu_object( $menu_name );
+		if ( $menu ) {
+			foreach ( (array) wp_get_nav_menu_items( $menu->term_id ) as $existing ) {
+				wp_delete_post( $existing->ID, true );
+			}
+			$menu_id = $menu->term_id;
+		} else {
+			$menu_id = wp_create_nav_menu( $menu_name );
+		}
+		if ( ! is_wp_error( $menu_id ) ) {
+			wp_update_nav_menu_item( $menu_id, 0, array(
+				'menu-item-title'  => 'Accueil',
+				'menu-item-url'    => home_url( '/' ),
+				'menu-item-type'   => 'custom',
+				'menu-item-status' => 'publish',
+			) );
+			foreach ( array( 'prestations', 'zones-intervention', 'realisations', 'qui-sommes-nous', 'contact' ) as $slug ) {
+				if ( empty( $created_page_ids[ $slug ] ) ) continue;
+				wp_update_nav_menu_item( $menu_id, 0, array(
+					'menu-item-title'     => self::ARTISAN_PAGES[ $slug ]['title'],
+					'menu-item-object'    => 'page',
+					'menu-item-object-id' => $created_page_ids[ $slug ],
+					'menu-item-type'      => 'post_type',
+					'menu-item-status'    => 'publish',
+				) );
+			}
+			$locations = get_theme_mod( 'nav_menu_locations', array() );
+			$locations['primary'] = $menu_id;
+			set_theme_mod( 'nav_menu_locations', $locations );
+		}
+
+		return $stats;
 	}
 
 	public static function handle_reset() {
