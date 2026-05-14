@@ -237,6 +237,15 @@ class AG_Artisan_Presets {
 		// 3. Stocke la liste des services en JSON (relu par front-page.php)
 		set_theme_mod( 'ag_artisan_services_json', wp_json_encode( $preset['services'] ) );
 
+		// 4. Purge les caches (LiteSpeed front + transients WP) pour que le
+		// nouveau hero / la nouvelle grille soit visible immediatement sur
+		// la home, sans attendre l'expiration de cache.
+		if ( has_action( 'litespeed_purge_all' ) ) {
+			do_action( 'litespeed_purge_all' );
+		}
+		wp_cache_flush();
+		delete_site_transient( 'update_themes' );
+
 		wp_safe_redirect( admin_url( 'themes.php?page=ag-artisan-presets&applied=' . $slug ) );
 		exit;
 	}

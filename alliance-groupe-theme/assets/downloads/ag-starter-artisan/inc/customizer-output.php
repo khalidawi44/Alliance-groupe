@@ -60,6 +60,13 @@ function ag_starter_artisan_customizer_css() {
 
 	ob_start();
 	?>
+:root {
+	--ag-color-accent: <?php echo esc_html( $accent ); ?>;
+	--ag-color-background: <?php echo esc_html( $background ); ?>;
+	--ag-color-heading: <?php echo esc_html( $heading ); ?>;
+	--ag-color-text: <?php echo esc_html( $text ); ?>;
+	--ag-color-muted: <?php echo esc_html( $muted ); ?>;
+}
 body {
 	font-family: <?php echo esc_html( $family_css ); ?>;
 	font-size: <?php echo esc_html( $size ); ?>px;

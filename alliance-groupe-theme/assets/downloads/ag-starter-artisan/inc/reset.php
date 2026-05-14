@@ -155,11 +155,19 @@ class AG_Artisan_Reset {
 			}
 		}
 
-		// 2. CPT d'autres templates : suppression force
+		// 2. CPT d'autres templates : suppression force via SQL direct.
+		// On n'utilise pas get_posts() car le post_type peut ne plus etre
+		// enregistre (plugins desactives par theme guard) — auquel cas
+		// get_posts retourne vide alors que les posts existent encore en BDD.
+		global $wpdb;
 		foreach ( self::FOREIGN_CPT as $cpt ) {
-			$ids = get_posts( array( 'post_type' => $cpt, 'numberposts' => -1, 'post_status' => 'any', 'fields' => 'ids' ) );
-			foreach ( $ids as $id ) {
-				wp_delete_post( $id, true );
+			$ids = $wpdb->get_col( $wpdb->prepare(
+				"SELECT ID FROM {$wpdb->posts} WHERE post_type = %s",
+				$cpt
+			) );
+			foreach ( (array) $ids as $id ) {
+				// wp_delete_post handle meta + relationships cleanup
+				wp_delete_post( (int) $id, true );
 				$stats['cpt_deleted']++;
 			}
 		}
@@ -230,6 +238,9 @@ class AG_Artisan_Reset {
 		}
 
 		// 6. Purger les caches WP/transients de mise a jour (LiteSpeed/etc.)
+		if ( has_action( 'litespeed_purge_all' ) ) {
+			do_action( 'litespeed_purge_all' );
+		}
 		wp_cache_flush();
 		delete_site_transient( 'update_themes' );
 		delete_site_transient( 'update_plugins' );
