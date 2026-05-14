@@ -233,15 +233,26 @@ class AG_Artisan_Reset {
 			}
 		}
 
-		// 4. Recreer pages artisan manquantes
+		// 4. Recreer pages artisan manquantes.
+		// Si le content commence par [shortcode], on wrap dans un block Gutenberg
+		// 'core/shortcode' pour qu'il soit evalue au rendu (sinon esc_html
+		// transformerait les crochets en entites HTML et le shortcode resterait
+		// inerte).
 		$created_page_ids = array();
 		foreach ( self::ARTISAN_PAGES as $slug => $data ) {
 			$page = get_page_by_path( $slug );
 			if ( ! $page ) {
+				$content = trim( $data['content'] );
+				if ( preg_match( '/^\[\w+/', $content ) ) {
+					// Shortcode → wrap dans un block Gutenberg dedie
+					$post_content = "<!-- wp:shortcode -->\n" . $content . "\n<!-- /wp:shortcode -->";
+				} else {
+					$post_content = '<!-- wp:paragraph --><p>' . esc_html( $content ) . '</p><!-- /wp:paragraph -->';
+				}
 				$new_id = wp_insert_post( array(
 					'post_title'   => $data['title'],
 					'post_name'    => $slug,
-					'post_content' => '<!-- wp:paragraph --><p>' . esc_html( $data['content'] ) . '</p><!-- /wp:paragraph -->',
+					'post_content' => $post_content,
 					'post_status'  => 'publish',
 					'post_type'    => 'page',
 				) );
@@ -345,15 +356,21 @@ class AG_Artisan_Reset {
 			}
 		}
 
-		// 4. Recreer les pages artisan manquantes
+		// 4. Recreer les pages artisan manquantes (avec support shortcode)
 		$created_page_ids = array();
 		foreach ( self::ARTISAN_PAGES as $slug => $data ) {
 			$page = get_page_by_path( $slug );
 			if ( ! $page ) {
+				$content = trim( $data['content'] );
+				if ( preg_match( '/^\[\w+/', $content ) ) {
+					$post_content = "<!-- wp:shortcode -->\n" . $content . "\n<!-- /wp:shortcode -->";
+				} else {
+					$post_content = '<!-- wp:paragraph --><p>' . esc_html( $content ) . '</p><!-- /wp:paragraph -->';
+				}
 				$new_id = wp_insert_post( array(
 					'post_title'   => $data['title'],
 					'post_name'    => $slug,
-					'post_content' => '<!-- wp:paragraph --><p>' . esc_html( $data['content'] ) . '</p><!-- /wp:paragraph -->',
+					'post_content' => $post_content,
 					'post_status'  => 'publish',
 					'post_type'    => 'page',
 				) );

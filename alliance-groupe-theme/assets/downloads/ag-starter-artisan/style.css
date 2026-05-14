@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour artisans, plombiers, electriciens, menuisiers, BTP. Structure minimaliste noir et bronze, responsive, sans fioritures. Contenu pre-redige en francais natif : prestations, zones d'intervention, devis. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.6.1
+Version: 1.6.2
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -788,3 +788,17 @@ body.ag-premium-mode .ag-primary-menu a:hover{
 .ag-devis-result__label{color:#666;font-size:.95rem;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px}
 .ag-devis-result__price{color:var(--ag-color-accent,#F37A1F);font-size:2.4rem;font-weight:800;margin:0 0 4px;line-height:1.1}
 .ag-devis-result__note{color:#777;font-size:.88rem;margin:14px 0 0;line-height:1.5}
+
+/* ── Fix sticky header au scroll : reste clair en mode premium ────── */
+body.ag-premium-mode .ag-site-header.scrolled{
+    background:rgba(255,255,255,.97)!important;
+    box-shadow:0 2px 20px rgba(0,0,0,.08)!important;
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+}
+body.ag-premium-mode .ag-site-header.scrolled .ag-site-brand{color:var(--ag-color-accent,#F37A1F)!important}
+body.ag-premium-mode .ag-site-header.scrolled .ag-primary-menu a{color:#333!important}
+body.ag-premium-mode .ag-site-header.scrolled .ag-primary-menu .current-menu-item > a,
+body.ag-premium-mode .ag-site-header.scrolled .ag-primary-menu .current_page_item > a{
+    background:var(--ag-color-accent,#F37A1F)!important;color:#fff!important;
+}
