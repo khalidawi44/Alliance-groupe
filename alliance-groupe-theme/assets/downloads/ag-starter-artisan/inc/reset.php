@@ -283,7 +283,7 @@ class AG_Artisan_Reset {
 				'menu-item-type'   => 'custom',
 				'menu-item-status' => 'publish',
 			) );
-			foreach ( array( 'prestations', 'zones-intervention', 'realisations', 'qui-sommes-nous', 'contact' ) as $slug ) {
+			foreach ( array( 'prestations', 'zones-intervention', 'realisations', 'qui-sommes-nous', 'devis', 'contact' ) as $slug ) {
 				if ( empty( $created_page_ids[ $slug ] ) ) continue;
 				wp_update_nav_menu_item( $menu_id, 0, array(
 					'menu-item-title'     => self::ARTISAN_PAGES[ $slug ]['title'],
@@ -403,7 +403,7 @@ class AG_Artisan_Reset {
 				'menu-item-status' => 'publish',
 			) );
 			// Items pages artisan dans l'ordre
-			foreach ( array( 'prestations', 'zones-intervention', 'realisations', 'qui-sommes-nous', 'contact' ) as $slug ) {
+			foreach ( array( 'prestations', 'zones-intervention', 'realisations', 'qui-sommes-nous', 'devis', 'contact' ) as $slug ) {
 				if ( empty( $created_page_ids[ $slug ] ) ) continue;
 				wp_update_nav_menu_item( $menu_id, 0, array(
 					'menu-item-title'     => self::ARTISAN_PAGES[ $slug ]['title'],

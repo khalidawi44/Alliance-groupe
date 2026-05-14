@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour artisans, plombiers, electriciens, menuisiers, BTP. Structure minimaliste noir et bronze, responsive, sans fioritures. Contenu pre-redige en francais natif : prestations, zones d'intervention, devis. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.8.0
+Version: 1.8.1
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -879,3 +879,17 @@ body.ag-premium-mode .ag-btn-pro{
     border-radius:6px;font-weight:600;letter-spacing:.02em;
     padding:16px 32px;font-size:.98rem;text-transform:uppercase;
 }
+
+/* ── Page Hero (Prestations, etc.) ────────────────────────────────── */
+body.ag-premium-mode .ag-page-hero{padding:80px 24px 40px;background:#fafafa;text-align:center}
+.ag-page-tag{display:inline-block;background:var(--ag-color-accent,#F37A1F);color:#fff;font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:6px 14px;border-radius:50px;margin-bottom:18px}
+.ag-page-title{font-size:2.6rem;font-weight:800;letter-spacing:-.02em;color:#1a1a1a;margin:0 0 24px}
+.ag-page-title em{font-family:'Playfair Display',serif;font-style:italic;font-weight:500;color:var(--ag-color-accent,#F37A1F)}
+.ag-page-lead{max-width:760px;margin:0 auto;color:#555;font-size:1.05rem;line-height:1.7}
+.ag-page-lead p{margin:0 0 14px}
+
+/* ── CTA band (bas de page prestations) ───────────────────────────── */
+.ag-cta-band{padding:70px 24px;background:linear-gradient(135deg,#0a0a0f 0%,#1a1a2e 100%);text-align:center;color:#fff}
+.ag-cta-band__title{font-size:2rem;font-weight:700;color:#fff;margin:0 0 10px;letter-spacing:-.02em}
+.ag-cta-band__lead{color:rgba(255,255,255,.78);font-size:1.05rem;margin:0 0 28px}
+.ag-cta-band .ag-btn-pro{font-size:1.05rem;padding:18px 36px}
