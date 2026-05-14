@@ -75,7 +75,7 @@ endwhile; rewind_posts(); endif; ?>
 	<?php if ( ! empty( $ag_services ) ) : ?>
 		<!-- Grille services 4x2 style meilleur-artisan.com -->
 		<section class="ag-container ag-services-grid-wrap" id="ag-services">
-			<div class="ag-services-grid-header">
+			<div class="ag-services-grid-header ag-anim">
 				<h2 class="ag-services-grid-title">Nos <span>services</span></h2>
 				<p class="ag-services-grid-lead">
 					<?php if ( $ag_metier_nom ) : ?>
@@ -86,11 +86,23 @@ endwhile; rewind_posts(); endif; ?>
 				</p>
 			</div>
 			<div class="ag-services-grid">
-				<?php foreach ( $ag_services as $svc ) : ?>
-					<div class="ag-service-card">
+				<?php foreach ( $ag_services as $svc ) :
+					// Chaque service est cliquable. URL : 'url' du service si defini,
+					// sinon page Contact, sinon ancre #ag-contact.
+					$svc_url = ! empty( $svc['url'] ) ? $svc['url'] : '';
+					if ( ! $svc_url ) {
+						$contact_page = get_page_by_path( 'contact' );
+						$svc_url = $contact_page ? get_permalink( $contact_page ) : '#ag-contact';
+						// Ajoute un parametre service en query string pour pre-remplir
+						// le formulaire de contact si possible.
+						$svc_url = add_query_arg( 'service', sanitize_title( $svc['title'] ), $svc_url );
+					}
+				?>
+					<a class="ag-service-card ag-anim" href="<?php echo esc_url( $svc_url ); ?>">
 						<div class="ag-service-card__icon"><?php echo esc_html( isset( $svc['emoji'] ) ? $svc['emoji'] : '🔧' ); ?></div>
 						<h3 class="ag-service-card__title"><?php echo esc_html( isset( $svc['title'] ) ? $svc['title'] : '' ); ?></h3>
-					</div>
+						<span class="ag-service-card__arrow">→</span>
+					</a>
 				<?php endforeach; ?>
 			</div>
 		</section>
@@ -126,13 +138,13 @@ endwhile; rewind_posts(); endif; ?>
 		<!-- Comment ça marche : 3 étapes -->
 		<section class="ag-howit-wrap">
 			<div class="ag-container">
-				<div class="ag-services-grid-header">
+				<div class="ag-services-grid-header ag-anim">
 					<h2 class="ag-services-grid-title">Comment ça <span>marche</span> ?</h2>
 					<p class="ag-services-grid-lead">3 étapes simples pour démarrer votre projet.</p>
 				</div>
 				<div class="ag-howit-grid">
 					<?php foreach ( $ag_how as $i => $step ) : ?>
-						<div class="ag-howit-card">
+						<div class="ag-howit-card ag-anim">
 							<div class="ag-howit-num"><?php echo (int) ( $i + 1 ); ?></div>
 							<div class="ag-howit-emoji"><?php echo esc_html( $step['emoji'] ); ?></div>
 							<h3 class="ag-howit-title"><?php echo esc_html( $step['title'] ); ?></h3>
@@ -152,14 +164,14 @@ endwhile; rewind_posts(); endif; ?>
 		<!-- Témoignages clients -->
 		<section class="ag-testi-wrap">
 			<div class="ag-container">
-				<div class="ag-services-grid-header">
+				<div class="ag-services-grid-header ag-anim">
 					<h2 class="ag-services-grid-title">Ils nous font <span>confiance</span></h2>
 					<p class="ag-services-grid-lead">⭐⭐⭐⭐⭐ Plus de 200 avis clients vérifiés.</p>
 				</div>
 				<div class="ag-testi-grid">
 					<?php foreach ( array( $t1, $t2, $t3 ) as $t ) :
 						if ( ! $t ) continue; ?>
-						<div class="ag-testi-card">
+						<div class="ag-testi-card ag-anim">
 							<div class="ag-testi-stars">★★★★★</div>
 							<p class="ag-testi-text">« <?php echo esc_html( $t['text'] ); ?> »</p>
 							<p class="ag-testi-author"><strong><?php echo esc_html( $t['name'] ); ?></strong><?php if ( $t['city'] ) : ?> · <?php echo esc_html( $t['city'] ); ?><?php endif; ?></p>
@@ -174,12 +186,12 @@ endwhile; rewind_posts(); endif; ?>
 		<!-- FAQ accordéon -->
 		<section class="ag-faq-wrap">
 			<div class="ag-container ag-faq-container">
-				<div class="ag-services-grid-header">
+				<div class="ag-services-grid-header ag-anim">
 					<h2 class="ag-services-grid-title">Questions <span>fréquentes</span></h2>
 				</div>
 				<div class="ag-faq-list">
 					<?php foreach ( $ag_faq as $item ) : ?>
-						<details class="ag-faq-item">
+						<details class="ag-faq-item ag-anim">
 							<summary class="ag-faq-q"><?php echo esc_html( $item['q'] ); ?></summary>
 							<div class="ag-faq-a"><?php echo esc_html( $item['a'] ); ?></div>
 						</details>

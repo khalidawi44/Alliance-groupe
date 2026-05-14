@@ -277,3 +277,34 @@ require_once get_template_directory() . '/inc/reset.php';
 // macon, boulanger, multiservices, generaliste). Pilote la grille
 // services 4x2 affichee sur la page d'accueil.
 require_once get_template_directory() . '/inc/presets.php';
+
+/**
+ * Active les animations scroll-reveal (.ag-anim -> .is-visible) via
+ * IntersectionObserver. Inline pour eviter une requete http supplementaire.
+ * Respecte prefers-reduced-motion (le CSS .ag-anim ne s'active pas dans ce cas).
+ */
+add_action( 'wp_footer', function () {
+	if ( ! ( class_exists( 'AG_Artisan_Presets' ) && AG_Artisan_Presets::get_active_preset() ) ) {
+		return; // animations seulement en mode premium (preset metier applique)
+	}
+	?>
+	<script>
+	(function () {
+		if ( window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ) return;
+		if ( ! ( 'IntersectionObserver' in window ) ) {
+			document.querySelectorAll('.ag-anim').forEach(function (el) { el.classList.add('is-visible'); });
+			return;
+		}
+		var io = new IntersectionObserver(function (entries) {
+			entries.forEach(function (entry) {
+				if ( entry.isIntersecting ) {
+					entry.target.classList.add('is-visible');
+					io.unobserve(entry.target);
+				}
+			});
+		}, { rootMargin: '0px 0px -50px 0px', threshold: 0.08 });
+		document.querySelectorAll('.ag-anim').forEach(function (el) { io.observe(el); });
+	})();
+	</script>
+	<?php
+}, 30 );
