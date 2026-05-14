@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour artisans, plombiers, electriciens, menuisiers, BTP. Structure minimaliste noir et bronze, responsive, sans fioritures. Contenu pre-redige en francais natif : prestations, zones d'intervention, devis. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.1.0
+Version: 1.2.0
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -539,3 +539,18 @@ p {
     border-radius: 4px !important;
     font-weight: 700 !important;
 }
+
+/* ── Grille services style meilleur-artisan.com ─────────────────── */
+/* Activee uniquement si un preset metier a ete applique             */
+.ag-services-grid-wrap{padding:60px 24px;background:#fafafa;border-radius:16px;margin:40px 0}
+.ag-services-grid-header{text-align:center;max-width:680px;margin:0 auto 36px}
+.ag-services-grid-title{font-size:2rem;font-weight:800;margin:0 0 12px;color:var(--ag-color-heading,#111)}
+.ag-services-grid-title span{color:var(--ag-color-accent,#F37A1F)}
+.ag-services-grid-lead{font-size:1.05rem;color:#666;margin:0;line-height:1.6}
+.ag-services-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;max-width:1180px;margin:0 auto}
+@media (max-width:980px){.ag-services-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.ag-services-grid{grid-template-columns:1fr}}
+.ag-service-card{background:#fff;border:1px solid #ececec;border-radius:12px;padding:28px 18px;text-align:center;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;cursor:default}
+.ag-service-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.08);border-color:var(--ag-color-accent,#F37A1F)}
+.ag-service-card__icon{font-size:2.6rem;line-height:1;margin-bottom:14px}
+.ag-service-card__title{font-size:1rem;font-weight:600;color:var(--ag-color-heading,#111);margin:0;line-height:1.35}

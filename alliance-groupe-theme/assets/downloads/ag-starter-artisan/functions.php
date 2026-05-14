@@ -272,3 +272,8 @@ require_once get_template_directory() . '/inc/guide.php';
 // Reinitialisation du theme — bouton "TOUT RESET" qui nettoie les
 // residus d'autres templates Alliance Groupe (menus, CPT, pages, mods).
 require_once get_template_directory() . '/inc/reset.php';
+
+// Presets metier : Apparence > 🎯 Configuration metier (electricien,
+// macon, boulanger, multiservices, generaliste). Pilote la grille
+// services 4x2 affichee sur la page d'accueil.
+require_once get_template_directory() . '/inc/presets.php';

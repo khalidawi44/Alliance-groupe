@@ -49,22 +49,52 @@ endwhile; rewind_posts(); endif; ?>
 	$real_fb_title = trim( ag_artisan_opt( 'ag_artisan_realisations_title_pre', 'Nos' ) . ' ' . ag_artisan_opt( 'ag_artisan_realisations_title_em', 'realisations' ) );
 	list( $real_title, $real_lead ) = ag_artisan_page_section_text( 'realisations', $real_fb_title, ag_artisan_opt( 'ag_artisan_realisations_lead', 'Decouvrez nos chantiers recents : renovations de maison, installations techniques et travaux sur-mesure pour particuliers et professionnels.' ) );
 	?>
-	<section class="ag-container" id="ag-services">
-		<div class="ag-cards">
-			<div class="ag-card">
-				<h2><?php echo ag_artisan_render_split_title( $prest_title ); ?></h2>
-				<p><?php echo esc_html( $prest_lead ); ?></p>
+	<?php
+	// Grille services style "meilleur-artisan.com" : 4x2 cards icone + titre.
+	// Pilotee par le preset metier (Apparence > 🎯 Configuration metier).
+	// Si aucun preset applique, fallback sur les 3 cards historiques.
+	$ag_services = class_exists( 'AG_Artisan_Presets' ) ? AG_Artisan_Presets::get_active_services() : array();
+	$ag_metier_nom = ag_artisan_opt( 'ag_artisan_metier_nom', '' );
+	?>
+	<?php if ( ! empty( $ag_services ) ) : ?>
+		<section class="ag-container ag-services-grid-wrap" id="ag-services">
+			<div class="ag-services-grid-header">
+				<h2 class="ag-services-grid-title">Nos <span>services</span></h2>
+				<p class="ag-services-grid-lead">
+					<?php if ( $ag_metier_nom ) : ?>
+						Découvrez les prestations proposées par votre <?php echo esc_html( strtolower( $ag_metier_nom ) ); ?>.
+					<?php else : ?>
+						Tous nos services en un coup d'œil — devis gratuit sur demande.
+					<?php endif; ?>
+				</p>
 			</div>
-			<div class="ag-card">
-				<h2><?php echo ag_artisan_render_split_title( $zones_title ); ?></h2>
-				<p><?php echo esc_html( $zones_lead ); ?></p>
+			<div class="ag-services-grid">
+				<?php foreach ( $ag_services as $svc ) : ?>
+					<div class="ag-service-card">
+						<div class="ag-service-card__icon"><?php echo esc_html( isset( $svc['emoji'] ) ? $svc['emoji'] : '🔧' ); ?></div>
+						<h3 class="ag-service-card__title"><?php echo esc_html( isset( $svc['title'] ) ? $svc['title'] : '' ); ?></h3>
+					</div>
+				<?php endforeach; ?>
 			</div>
-			<div class="ag-card">
-				<h2><?php echo ag_artisan_render_split_title( $real_title ); ?></h2>
-				<p><?php echo esc_html( $real_lead ); ?></p>
+		</section>
+	<?php else : ?>
+		<section class="ag-container" id="ag-services">
+			<div class="ag-cards">
+				<div class="ag-card">
+					<h2><?php echo ag_artisan_render_split_title( $prest_title ); ?></h2>
+					<p><?php echo esc_html( $prest_lead ); ?></p>
+				</div>
+				<div class="ag-card">
+					<h2><?php echo ag_artisan_render_split_title( $zones_title ); ?></h2>
+					<p><?php echo esc_html( $zones_lead ); ?></p>
+				</div>
+				<div class="ag-card">
+					<h2><?php echo ag_artisan_render_split_title( $real_title ); ?></h2>
+					<p><?php echo esc_html( $real_lead ); ?></p>
+				</div>
 			</div>
-		</div>
-	</section>
+		</section>
+	<?php endif; ?>
 
 	<?php
 	$about_fb_title = trim( ag_artisan_opt( 'ag_artisan_about_title_pre', 'Qui' ) . ' ' . ag_artisan_opt( 'ag_artisan_about_title_em', 'sommes-nous' ) );
