@@ -33,6 +33,10 @@ class AG_Artisan_Presets {
 					'ag_hero_subtitle'       => 'Devis gratuit, intervention rapide, satisfaction garantie. Plus de 10 ans d\'expérience à votre service.',
 					'ag_hero_button'         => 'Demander un devis',
 					'ag_artisan_metier_nom'  => 'Artisan généraliste',
+					'ag_artisan_hero_image'  => 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=1600&q=80',
+					'ag_artisan_testi_1'     => 'Travail soigné, équipe ponctuelle, devis respecté à l\'euro près. Je recommande.|Sophie M.|Lyon',
+					'ag_artisan_testi_2'     => 'Intervenu en urgence un dimanche pour une fuite, et tout réparé en 2h. Top !|Karim B.|Marseille',
+					'ag_artisan_testi_3'     => 'Rénovation complète de mon appart, chantier impeccable et finitions parfaites.|Laure D.|Paris',
 				),
 				'services' => array(
 					array( 'emoji' => '🔧', 'title' => 'Petits travaux' ),
@@ -43,6 +47,16 @@ class AG_Artisan_Presets {
 					array( 'emoji' => '🚜', 'title' => 'Travaux extérieur' ),
 					array( 'emoji' => '💼', 'title' => 'Devis sur mesure' ),
 					array( 'emoji' => '🔍', 'title' => 'Diagnostic' ),
+				),
+				'how' => array(
+					array( 'emoji' => '📞', 'title' => 'Décrivez vos travaux', 'desc' => 'Appelez-nous ou remplissez le formulaire pour expliquer votre besoin.' ),
+					array( 'emoji' => '📋', 'title' => 'Devis gratuit sous 24h', 'desc' => 'Visite technique offerte si nécessaire, puis devis détaillé sans engagement.' ),
+					array( 'emoji' => '✅', 'title' => 'Travaux réalisés', 'desc' => 'Intervention rapide, chantier propre, garantie sur les travaux réalisés.' ),
+				),
+				'faq' => array(
+					array( 'q' => 'Combien coûte un devis ?', 'a' => 'Nos devis sont 100% gratuits et sans engagement, même après visite technique.' ),
+					array( 'q' => 'Sous quel délai intervenez-vous ?', 'a' => 'En général sous 48h pour un devis, et 7 à 21 jours pour démarrer les travaux selon leur ampleur.' ),
+					array( 'q' => 'Êtes-vous assurés ?', 'a' => 'Oui, garantie décennale + responsabilité civile professionnelle. Attestations sur demande.' ),
 				),
 			),
 
@@ -57,6 +71,10 @@ class AG_Artisan_Presets {
 					'ag_hero_subtitle'       => 'Installation, dépannage, mise aux normes — intervention 7j/7, devis gratuit. Certification Qualifelec.',
 					'ag_hero_button'         => 'Dépannage urgent',
 					'ag_artisan_metier_nom'  => 'Électricien',
+					'ag_artisan_hero_image'  => 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=1600&q=80',
+					'ag_artisan_testi_1'     => 'Tableau électrique refait en 1 journée, propre et conforme. Excellent.|Pierre L.|Toulouse',
+					'ag_artisan_testi_2'     => 'Dépannage un dimanche soir : arrivé en 40 min, panne réglée. Sauveur !|Aïcha R.|Lille',
+					'ag_artisan_testi_3'     => 'Installation domotique complète : éclairage, volets, alarme. Travail au top.|Julien G.|Nantes',
 				),
 				'services' => array(
 					array( 'emoji' => '⚡', 'title' => 'Dépannage urgent' ),
@@ -67,6 +85,16 @@ class AG_Artisan_Presets {
 					array( 'emoji' => '🚗', 'title' => 'Bornes de recharge' ),
 					array( 'emoji' => '🔍', 'title' => 'Diagnostic électrique' ),
 					array( 'emoji' => '🛠️', 'title' => 'Rénovation totale' ),
+				),
+				'how' => array(
+					array( 'emoji' => '📞', 'title' => 'Diagnostic au téléphone', 'desc' => 'Décrivez votre panne ou besoin, on évalue tout de suite avec vous.' ),
+					array( 'emoji' => '⚡', 'title' => 'Intervention rapide', 'desc' => 'Dépannage sous 2h en urgence, RDV planifié pour les travaux programmés.' ),
+					array( 'emoji' => '📜', 'title' => 'Attestation Consuel', 'desc' => 'Pour toute nouvelle installation : mise en service après contrôle Consuel.' ),
+				),
+				'faq' => array(
+					array( 'q' => 'Êtes-vous certifié Qualifelec ?', 'a' => 'Oui, certification Qualifelec à jour. Garantie décennale + assurance pro.' ),
+					array( 'q' => 'Acceptez-vous les urgences nuit/week-end ?', 'a' => 'Oui, ligne d\'astreinte 7j/7. Majoration tarif nuit/dimanche selon barème transparent.' ),
+					array( 'q' => 'Puis-je bénéficier d\'aides MaPrimeRénov\' ?', 'a' => 'Pour rénovation électrique avec gain énergétique (chauffage, isolation), oui. On vous guide dans le montage du dossier.' ),
 				),
 			),
 
@@ -81,6 +109,10 @@ class AG_Artisan_Presets {
 					'ag_hero_subtitle'       => 'Construction, rénovation, extension. Devis sous 48h, travaux soignés, garantie décennale.',
 					'ag_hero_button'         => 'Devis travaux',
 					'ag_artisan_metier_nom'  => 'Maçon',
+					'ag_artisan_hero_image'  => 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&q=80',
+					'ag_artisan_testi_1'     => 'Extension de 35m² livrée dans les délais, finitions impeccables. Équipe pro.|Bruno T.|Bordeaux',
+					'ag_artisan_testi_2'     => 'Ravalement de façade complet, échafaudage propre, voisinage respecté.|Catherine L.|Strasbourg',
+					'ag_artisan_testi_3'     => 'Dalle béton 80m² coulée en 1 journée, parfaitement nivelée. Excellent rapport qualité-prix.|Marc V.|Rennes',
 				),
 				'services' => array(
 					array( 'emoji' => '🏠', 'title' => 'Construction maison' ),
@@ -91,6 +123,16 @@ class AG_Artisan_Presets {
 					array( 'emoji' => '🪨', 'title' => 'Murets / clôtures' ),
 					array( 'emoji' => '🚜', 'title' => 'Terrassement' ),
 					array( 'emoji' => '◼️', 'title' => 'Carrelage' ),
+				),
+				'how' => array(
+					array( 'emoji' => '📞', 'title' => 'Visite gratuite du chantier', 'desc' => 'Sur place, on évalue le projet et on échange sur vos contraintes.' ),
+					array( 'emoji' => '📐', 'title' => 'Devis détaillé sous 48h', 'desc' => 'Métré précis, matériaux chiffrés, planning prévisionnel.' ),
+					array( 'emoji' => '🏗️', 'title' => 'Chantier livré', 'desc' => 'Suivi quotidien, propreté du chantier, garantie décennale signée.' ),
+				),
+				'faq' => array(
+					array( 'q' => 'Avez-vous la garantie décennale ?', 'a' => 'Oui, garantie décennale obligatoire + biennale + responsabilité civile. Attestations fournies au devis.' ),
+					array( 'q' => 'Combien de temps pour une extension ?', 'a' => 'Comptez 6 à 12 semaines selon m² + complexité (permis de construire à anticiper si > 20m²).' ),
+					array( 'q' => 'Faites-vous le permis de construire ?', 'a' => 'Oui, nous accompagnons le dépôt en mairie et travaillons avec un architecte si > 150m².' ),
 				),
 			),
 
@@ -105,6 +147,10 @@ class AG_Artisan_Presets {
 					'ag_hero_subtitle'       => 'Pains traditionnels, viennoiseries, pâtisseries — fait maison chaque jour avec des produits frais et locaux.',
 					'ag_hero_button'         => 'Voir la carte',
 					'ag_artisan_metier_nom'  => 'Boulanger / Pâtissier',
+					'ag_artisan_hero_image'  => 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1600&q=80',
+					'ag_artisan_testi_1'     => 'Le meilleur pain au levain du quartier, croûte parfaite. J\'y vais tous les matins.|Émilie F.|Lyon',
+					'ag_artisan_testi_2'     => 'Gâteau d\'anniversaire sur commande : magnifique et délicieux. Tout le monde a adoré.|Thomas D.|Paris',
+					'ag_artisan_testi_3'     => 'Buffet de 80 personnes livré à l\'heure, fraîcheur exceptionnelle, prestation au top.|Nora M.|Nice',
 				),
 				'services' => array(
 					array( 'emoji' => '🥖', 'title' => 'Pains traditionnels' ),
@@ -115,6 +161,16 @@ class AG_Artisan_Presets {
 					array( 'emoji' => '🥧', 'title' => 'Tartes maison' ),
 					array( 'emoji' => '🧁', 'title' => 'Macarons / petits fours' ),
 					array( 'emoji' => '🍞', 'title' => 'Buffet réception' ),
+				),
+				'how' => array(
+					array( 'emoji' => '🌾', 'title' => 'Farines locales', 'desc' => 'Nous travaillons avec des meuniers de la région. Traçabilité totale.' ),
+					array( 'emoji' => '👨‍🍳', 'title' => 'Fait maison chaque jour', 'desc' => 'Pétrissage manuel, longue fermentation, cuisson au four à sole.' ),
+					array( 'emoji' => '🛍️', 'title' => 'Disponible en boutique', 'desc' => 'Ouverture 6h–20h du mardi au dimanche. Commandes sur mesure 48h à l\'avance.' ),
+				),
+				'faq' => array(
+					array( 'q' => 'Acceptez-vous les commandes sur mesure ?', 'a' => 'Oui — pièces montées, gâteaux personnalisés, buffets : passez commande 48h à l\'avance.' ),
+					array( 'q' => 'Avez-vous du pain sans gluten ?', 'a' => 'Oui, une gamme sans gluten et une gamme bio. Demandez la liste complète en boutique.' ),
+					array( 'q' => 'Livrez-vous pour les événements ?', 'a' => 'Oui, livraison locale pour mariages, baptêmes, événements pro. Devis sur demande.' ),
 				),
 			),
 
@@ -129,6 +185,10 @@ class AG_Artisan_Presets {
 					'ag_hero_subtitle'       => 'Plomberie, électricité, peinture, jardinage, bricolage. Un seul interlocuteur, intervention rapide.',
 					'ag_hero_button'         => 'Demander un devis',
 					'ag_artisan_metier_nom'  => 'Multiservices',
+					'ag_artisan_hero_image'  => 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1600&q=80',
+					'ag_artisan_testi_1'     => 'Plomberie, peinture, montage de meubles : tout fait en 1 jour. Pratique !|Anne C.|Montpellier',
+					'ag_artisan_testi_2'     => 'Équipe sympa, devis transparent, travail soigné. Je rappelle pour la suite.|Mehdi A.|Lille',
+					'ag_artisan_testi_3'     => 'Jardin réaménagé + clôture + abri : un seul artisan pour tout. Super expérience.|Valérie P.|Toulouse',
 				),
 				'services' => array(
 					array( 'emoji' => '🚿', 'title' => 'Plomberie' ),
@@ -139,6 +199,16 @@ class AG_Artisan_Presets {
 					array( 'emoji' => '📦', 'title' => 'Déménagement' ),
 					array( 'emoji' => '🧹', 'title' => 'Nettoyage' ),
 					array( 'emoji' => '🛠️', 'title' => 'Réparations' ),
+				),
+				'how' => array(
+					array( 'emoji' => '📞', 'title' => 'Un seul interlocuteur', 'desc' => 'Décrivez l\'ensemble de vos besoins, on coordonne tout pour vous.' ),
+					array( 'emoji' => '📋', 'title' => 'Devis groupé', 'desc' => 'Devis unique pour plusieurs prestations = économies + planning optimisé.' ),
+					array( 'emoji' => '🛠️', 'title' => 'Intervention coordonnée', 'desc' => 'Notre équipe enchaîne les prestations, vous gagnez du temps.' ),
+				),
+				'faq' => array(
+					array( 'q' => 'Travaillez-vous pour les pros aussi ?', 'a' => 'Oui — bureaux, commerces, copropriétés. Facture et devis professionnels sur demande.' ),
+					array( 'q' => 'Quels types de travaux refusez-vous ?', 'a' => 'Très gros œuvre (charpente, terrassement lourd) — pour cela on vous oriente vers un confrère spécialisé.' ),
+					array( 'q' => 'Acceptez-vous les chèques emploi-service (CESU) ?', 'a' => 'Oui pour les particuliers, sur les prestations éligibles (jardinage, petit bricolage, ménage).' ),
 				),
 			),
 
@@ -263,5 +333,56 @@ class AG_Artisan_Presets {
 		$arr = json_decode( $json, true );
 		return is_array( $arr ) ? $arr : array();
 	}
+
+	/**
+	 * Recupere le preset actuellement applique (data complete, pas que mods).
+	 *
+	 * @return array|null
+	 */
+	public static function get_active_preset() {
+		$slug = get_theme_mod( 'ag_artisan_metier_slug', '' );
+		if ( ! $slug ) return null;
+		$presets = self::get_presets();
+		return isset( $presets[ $slug ] ) ? $presets[ $slug ] : null;
+	}
+
+	/** @return array [['emoji', 'title', 'desc'], ...] */
+	public static function get_active_how() {
+		$p = self::get_active_preset();
+		return ( $p && isset( $p['how'] ) ) ? $p['how'] : array();
+	}
+
+	/** @return array [['q', 'a'], ...] */
+	public static function get_active_faq() {
+		$p = self::get_active_preset();
+		return ( $p && isset( $p['faq'] ) ) ? $p['faq'] : array();
+	}
+
+	/**
+	 * Recupere un temoignage stocke en theme_mod (format "texte|nom|ville").
+	 * @return array|null ['text', 'name', 'city']
+	 */
+	public static function get_testimonial( $i ) {
+		$raw = get_theme_mod( 'ag_artisan_testi_' . (int) $i, '' );
+		if ( ! $raw ) return null;
+		$parts = array_map( 'trim', explode( '|', $raw ) );
+		return array(
+			'text' => isset( $parts[0] ) ? $parts[0] : '',
+			'name' => isset( $parts[1] ) ? $parts[1] : '',
+			'city' => isset( $parts[2] ) ? $parts[2] : '',
+		);
+	}
 }
 AG_Artisan_Presets::init();
+
+/**
+ * Quand un preset est applique, on ajoute la classe body 'ag-premium-mode'
+ * pour permettre au CSS d'overrider le theme sombre par defaut et passer
+ * en palette claire style meilleur-artisan.com.
+ */
+add_filter( 'body_class', function ( $classes ) {
+	if ( class_exists( 'AG_Artisan_Presets' ) && AG_Artisan_Presets::get_active_preset() ) {
+		$classes[] = 'ag-premium-mode';
+	}
+	return $classes;
+} );
