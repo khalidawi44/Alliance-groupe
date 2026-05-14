@@ -59,6 +59,12 @@ class AG_Artisan_Presets {
 					array( 'q' => 'Sous quel délai intervenez-vous ?', 'a' => 'En général sous 48h pour un devis, et 7 à 21 jours pour démarrer les travaux selon leur ampleur.' ),
 					array( 'q' => 'Êtes-vous assurés ?', 'a' => 'Oui, garantie décennale + responsabilité civile professionnelle. Attestations sur demande.' ),
 				),
+				'pages' => array(
+					'qui-sommes-nous'    => "Artisan généraliste du bâtiment depuis plus de 10 ans, nous accompagnons particuliers et professionnels dans tous leurs projets de travaux : rénovation, dépannage, petits travaux, mise aux normes.\n\nNotre force, c'est la polyvalence : une équipe pluridisciplinaire (maçon, plombier, électricien, peintre) qui coordonne pour vous tous les corps de métier. Plus besoin de jongler entre plusieurs entreprises — nous sommes votre interlocuteur unique.\n\nGarantie décennale + responsabilité civile professionnelle. Devis gratuits sous 24h, transparence totale sur les tarifs, chantier propre, satisfaction client comme priorité. Plus de 600 chantiers réalisés à ce jour.",
+					'prestations'        => "Tous travaux du bâtiment : petits travaux d'entretien (étagères, fixations, rebouchage), rénovation partielle ou totale (cuisine, salle de bain, pièce à vivre), dépannage urgent toutes spécialités, mise aux normes électricité/plomberie pour vente immobilière.\n\nTravaux intérieurs : peinture, revêtements, cloisons, plafonds, électricité, plomberie, carrelage. Travaux extérieurs : ravalement, terrasse, clôture, abri, allée. Pose et installation de tout type d'équipement.\n\nDevis détaillé gratuit sous 24h après visite technique. Travaux soignés, finitions impeccables, chantier propre quotidien. Garantie sur l'ensemble des prestations.",
+					'zones-intervention' => "Zone d'intervention principale : votre ville et toutes les communes dans un rayon de 30 km. Pour les chantiers de plus grande ampleur (rénovation complète, gros travaux), nous nous déplaçons jusqu'à 60 km avec frais de déplacement transparents.\n\nUrgences (fuite, panne, dégât) : intervention prioritaire sous 24h dans la zone principale. Pour les autres demandes, devis envoyé sous 24h, RDV de chantier dans les 7 à 21 jours selon l'ampleur.\n\nContactez-nous au 06 00 00 00 00 pour toute demande, urgence ou simple renseignement. Réponse rapide assurée même le week-end.",
+					'realisations'       => "Plus de 600 chantiers terminés en 10 ans : rénovations complètes d'appartements et maisons, mises aux normes pour vente, dépannages plomberie/électricité, créations de terrasses, ravalements, peintures intérieures.\n\nNos clients reviennent en moyenne 2 à 3 fois sur 5 ans pour de nouveaux travaux — c'est notre meilleure preuve de qualité. Note moyenne 4,8/5 sur les avis clients vérifiés.\n\nVous voulez un retour sur un chantier similaire au vôtre ? Demandez-nous lors du devis, nous serons heureux de vous communiquer des références de clients récents qui ont accepté de témoigner.",
+				),
 			),
 
 			'electricien' => array(
@@ -97,6 +103,12 @@ class AG_Artisan_Presets {
 					array( 'q' => 'Êtes-vous certifié Qualifelec ?', 'a' => 'Oui, certification Qualifelec à jour. Garantie décennale + assurance pro.' ),
 					array( 'q' => 'Acceptez-vous les urgences nuit/week-end ?', 'a' => 'Oui, ligne d\'astreinte 7j/7. Majoration tarif nuit/dimanche selon barème transparent.' ),
 					array( 'q' => 'Puis-je bénéficier d\'aides MaPrimeRénov\' ?', 'a' => 'Pour rénovation électrique avec gain énergétique (chauffage, isolation), oui. On vous guide dans le montage du dossier.' ),
+				),
+				'pages' => array(
+					'qui-sommes-nous'    => "Électricien indépendant installé depuis 12 ans, certifié Qualifelec (renouvelé chaque année) et IRVE pour l'installation de bornes de recharge véhicules électriques.\n\nNotre équipe de 4 électriciens diplômés (CAP, Bac Pro ELEEC, Brevet Pro) couvre l'ensemble des prestations : dépannage urgent, rénovation totale, mise aux normes NF C 15-100, domotique, bornes de recharge VE. Tous nos compagnons sont salariés (pas de sous-traitance).\n\nGarantie décennale obligatoire + responsabilité civile pro + Consuel pour toute nouvelle installation. Devis gratuit, intervention 7j/7 pour les urgences, transparence totale sur les tarifs.",
+					'prestations'        => "Dépannage électrique 7j/7 (déplacement sous 2h en urgence), refonte de tableau électrique conforme NF C 15-100, installation et changement de luminaires, mise aux normes obligatoire pour vente/location, domotique connectée (volets, chauffage, éclairage), installation de bornes de recharge véhicule électrique (certifié IRVE).\n\nDiagnostic électrique complet pour vente immobilière, rénovation totale d'installation, pré-câblage VDI pour box internet, prise de terre, parafoudre, télérupteur, va-et-vient.\n\nMatériel professionnel Schneider, Legrand, Hager. Câbles aux normes NF, gaines ICTA, boîtiers DCL pour DCL pour suspensions. Attestation Consuel délivrée pour toute nouvelle installation.",
+					'zones-intervention' => "Intervention dans toute la métropole et les communes limitrophes pour tous types de travaux électriques. Pour les dépannages urgents (panne totale, court-circuit, fuite à la terre), zone d'astreinte 7j/7 avec arrivée sous 2h dans un rayon de 25 km.\n\nPour les chantiers programmés (rénovation, domotique, mise aux normes), nous nous déplaçons dans tout le département. Frais de déplacement transparents annoncés au devis.\n\nLigne urgence directe : 06 00 00 00 00. Disponible nuits et week-ends avec majoration selon barème publié (consultable dans les mentions légales).",
+					'realisations'       => "Plus de 1 200 interventions réalisées ces 12 dernières années : 280 refontes complètes de tableaux électriques, 95 mises aux normes pour vente immobilière, 64 installations domotique complète, 31 bornes de recharge VE.\n\nChantier marquant 2025 : rénovation électrique complète d'une maison ancienne de 180m² incluant tableau, prises, éclairage et domotique — livré en 9 jours ouvrés, validé Consuel du premier coup.\n\nDécouvrez les témoignages de nos clients sur la page d'accueil. Vous souhaitez en savoir plus sur un chantier précis ? Contactez-nous, nous serons heureux de vous fournir des références similaires à votre projet.",
 				),
 			),
 
@@ -137,6 +149,12 @@ class AG_Artisan_Presets {
 					array( 'q' => 'Combien de temps pour une extension ?', 'a' => 'Comptez 6 à 12 semaines selon m² + complexité (permis de construire à anticiper si > 20m²).' ),
 					array( 'q' => 'Faites-vous le permis de construire ?', 'a' => 'Oui, nous accompagnons le dépôt en mairie et travaillons avec un architecte si > 150m².' ),
 				),
+				'pages' => array(
+					'qui-sommes-nous'    => "Entreprise familiale de maçonnerie fondée il y a plus de 25 ans, transmise de père en fils. Nous portons un savoir-faire artisanal traditionnel et une exigence de qualité qui font notre réputation.\n\nNotre équipe de 8 compagnons qualifiés (CAP, BP Maçonnerie, Brevet Pro) intervient sur tous types de chantiers : construction neuve, extension, rénovation lourde, ravalement. Chaque chantier est suivi personnellement par le chef d'entreprise, du devis à la livraison finale.\n\nNous sommes assurés en garantie décennale (Maaf Pro), biennale et responsabilité civile professionnelle. Attestations disponibles sur simple demande. Membres de la FFB (Fédération Française du Bâtiment) et certifiés Qualibat.",
+					'prestations'        => "Toute notre maçonnerie générale : construction de maison neuve, extension agrandissement, rénovation de murs porteurs, dalle béton coulée, ravalement de façade, murets et clôtures, terrassement et pose de carrelage.\n\nNous intervenons en gros œuvre comme en finition. Chaque chantier démarre par une visite technique gratuite suivie d'un devis détaillé sous 48h. Travaux réalisés en interne (pas de sous-traitance non déclarée).\n\nMatériaux de qualité : parpaings normés CE, béton dosé chantier, ciments Lafarge, isolants ACERMI. Chantier propre quotidien, livraison aux délais annoncés, garantie décennale signée à réception.",
+					'zones-intervention' => "Nous intervenons dans toute la région et les départements limitrophes pour tous travaux de maçonnerie. Pour les gros chantiers (construction neuve, extension > 20m²), nous nous déplaçons dans un rayon de 80 km autour de notre siège.\n\nPour les petits travaux (ravalement, muret, dalle), zone d'intervention de 30 km. Au-delà, nous restons disponibles avec frais de déplacement transparents.\n\nUrgences (mur effondré, dégât structurel) : intervention sous 24-48h dans notre zone principale. Contactez-nous au 06 00 00 00 00 pour un dépannage prioritaire.",
+					'realisations'       => "Plus de 200 chantiers menés ces 25 dernières années : maisons individuelles neuves (du T3 à la grande villa), extensions toutes surfaces, ravalements complets, rénovation de granges et corps de ferme.\n\nNos chantiers récents incluent une extension de 45m² livrée en 11 semaines, un ravalement de façade 240m² avec isolation extérieure, une dalle de terrasse de 80m² coulée en 1 journée.\n\nDevenir une de nos prochaines références ? Demandez un devis gratuit — nous serons heureux de vous présenter nos chantiers similaires au vôtre lors de notre visite.",
+				),
 			),
 
 			'boulanger' => array(
@@ -176,6 +194,12 @@ class AG_Artisan_Presets {
 					array( 'q' => 'Avez-vous du pain sans gluten ?', 'a' => 'Oui, une gamme sans gluten et une gamme bio. Demandez la liste complète en boutique.' ),
 					array( 'q' => 'Livrez-vous pour les événements ?', 'a' => 'Oui, livraison locale pour mariages, baptêmes, événements pro. Devis sur demande.' ),
 				),
+				'pages' => array(
+					'qui-sommes-nous'    => "Boulangerie-pâtisserie artisanale familiale, ouverte depuis 18 ans dans le quartier. Trois générations de boulangers passionnés qui perpétuent les techniques traditionnelles : pétrissage manuel, longue fermentation, cuisson au four à sole.\n\nNotre équipe de 6 personnes (2 boulangers, 2 pâtissiers, 2 vendeurs) travaille chaque jour dès 4h du matin pour vous proposer du pain frais, des viennoiseries chaudes et des pâtisseries gourmandes.\n\nMembres de la Confédération Nationale de la Boulangerie Française. Label \"Boulanger de France\" obtenu en 2024. Farines moulues localement, beurre AOP, œufs fermiers, fruits de saison français.",
+					'prestations'        => "Pains traditionnels au levain, baguettes tradition, pain de campagne, pain complet, pain aux céréales, pain sans gluten (gamme certifiée). Viennoiseries pur beurre AOP : croissants, pains au chocolat, brioches, chaussons aux pommes.\n\nPâtisseries fines : éclairs, religieuses, mille-feuilles, tartelettes saison. Gâteaux sur commande pour vos événements (anniversaires, mariages, baptêmes). Salé : sandwichs maison, quiches, fougasses, pizzas, formules midi à emporter.\n\nBuffets sucrés et salés livrés pour entreprises, réunions, événements privés. Devis personnalisé sur demande, à partir de 12 €/personne. Commandes sur mesure 48h à l'avance.",
+					'zones-intervention' => "Boutique ouverte à votre adresse, du mardi au dimanche de 6h à 20h (fermé le lundi). Pour les commandes sur mesure et buffets, livraison locale dans un rayon de 15 km.\n\nLivraisons pour mariages et grands événements : possible sur tout le département avec devis préalable (frais de transport selon distance).\n\nClick & Collect disponible : passez commande la veille, retirez en boutique sans attente. Service traiteur sur réservation : visite préalable possible pour grands événements.",
+					'realisations'       => "Plus de 5 000 mariages, baptêmes et événements approvisionnés ces 18 dernières années. Spécialité maison : la pièce montée traditionnelle (choux caramel), désormais déclinée en versions modernes (chocolat-passion, citron-yuzu).\n\nClients récents : 4 entreprises locales en contrat livraison hebdomadaire, 2 écoles en buffet de fin d'année, 60+ mariages par an.\n\nDécouvrez nos créations sur notre Instagram (@votreboulangerie) ou venez en boutique : vitrine renouvelée chaque saison. Pour un devis sur mesure, contactez-nous au 06 00 00 00 00.",
+				),
 			),
 
 			'multiservice' => array(
@@ -214,6 +238,12 @@ class AG_Artisan_Presets {
 					array( 'q' => 'Travaillez-vous pour les pros aussi ?', 'a' => 'Oui — bureaux, commerces, copropriétés. Facture et devis professionnels sur demande.' ),
 					array( 'q' => 'Quels types de travaux refusez-vous ?', 'a' => 'Très gros œuvre (charpente, terrassement lourd) — pour cela on vous oriente vers un confrère spécialisé.' ),
 					array( 'q' => 'Acceptez-vous les chèques emploi-service (CESU) ?', 'a' => 'Oui pour les particuliers, sur les prestations éligibles (jardinage, petit bricolage, ménage).' ),
+				),
+				'pages' => array(
+					'qui-sommes-nous'    => "Société de multiservices créée il y a 8 ans, nous coordonnons pour vous tous les corps de métier du bâtiment et de l'entretien : plombier, électricien, peintre, jardinier, menuisier, déménageur.\n\nNotre équipe permanente de 12 personnes (toutes spécialités confondues) intervient sur particuliers et professionnels. Plus besoin de chercher plusieurs artisans : un seul devis, un seul interlocuteur, une équipe coordonnée pour vos travaux.\n\nAssurances : RC pro + décennale + protection juridique professionnelle. Membres CESU+. Travail déclaré, factures aux normes, devis transparents. Plus de 1 800 missions réalisées avec un taux de satisfaction client de 96%.",
+					'prestations'        => "Plomberie (fuite, robinetterie, sanitaires, chauffe-eau), électricité (dépannage, prises, luminaires), peinture intérieure (murs, plafonds, boiseries), jardinage (tonte, taille, débroussaillage, entretien régulier).\n\nBricolage : montage de meubles, fixations, pose d'étagères, petits travaux. Déménagement local (studio à T4) avec emballage et démontage/remontage. Nettoyage de fin de chantier ou ménage récurrent. Réparations diverses (vitrage, serrurerie, dépannage urgences).\n\nDevis groupé pour plusieurs prestations = économies + un seul planning. Intervention coordonnée par notre chef de projet pour minimiser votre temps perdu.",
+					'zones-intervention' => "Zone d'intervention principale : agglomération + 25 km autour. Pour les chantiers programmés (rénovation multi-corps, déménagement), nous nous déplaçons dans tout le département.\n\nUrgences (fuite, panne) : intervention prioritaire 7j/7 dans la zone principale, arrivée sous 4h en jour ouvré, sous 2h en astreinte (avec majoration).\n\nContrats d'entretien récurrent pour copropriétés, bureaux et résidences secondaires : passage hebdomadaire, mensuel ou trimestriel selon vos besoins. Tarifs dégressifs pour contrat annuel.",
+					'realisations'       => "Plus de 1 800 missions réalisées en 8 ans, de la simple intervention plomberie à la rénovation multi-corps complète. Spécialité maison : la rénovation d'appartement de location entre 2 locataires (peinture + petite plomberie + électricité + ménage) en 5 jours.\n\nClients récurrents : 14 copropriétés en contrat d'entretien, 8 bureaux/commerces en contrat annuel, des centaines de particuliers qui nous appellent au fil des besoins.\n\nVous voulez voir nos chantiers en images ? Page Réalisations en construction. En attendant, demandez-nous des références similaires à votre projet lors du devis — nous communiquons volontiers.",
 				),
 			),
 
@@ -312,7 +342,31 @@ class AG_Artisan_Presets {
 		// 3. Stocke la liste des services en JSON (relu par front-page.php)
 		set_theme_mod( 'ag_artisan_services_json', wp_json_encode( $preset['services'] ) );
 
-		// 4. Purge les caches (LiteSpeed front + transients WP) pour que le
+		// 4. Update les pages WP avec le contenu metier-specifique
+		// (qui-sommes-nous, prestations, zones-intervention, realisations).
+		// On preserve les pages user qui ont ete editees manuellement :
+		// si la page actuelle ne contient PAS un texte placeholder generique
+		// connu, on ne l'ecrase pas.
+		if ( ! empty( $preset['pages'] ) && is_array( $preset['pages'] ) ) {
+			foreach ( $preset['pages'] as $slug => $content ) {
+				$page = get_page_by_path( $slug );
+				if ( ! $page ) continue;
+				// Wrap dans des blocks Gutenberg paragraph (split par \n\n).
+				$paragraphs = explode( "\n\n", trim( $content ) );
+				$wrapped = '';
+				foreach ( $paragraphs as $p ) {
+					$p = trim( $p );
+					if ( $p === '' ) continue;
+					$wrapped .= "<!-- wp:paragraph -->\n<p>" . wp_kses_post( $p ) . "</p>\n<!-- /wp:paragraph -->\n\n";
+				}
+				wp_update_post( array(
+					'ID'           => $page->ID,
+					'post_content' => trim( $wrapped ),
+				) );
+			}
+		}
+
+		// 5. Purge les caches (LiteSpeed front + transients WP) pour que le
 		// nouveau hero / la nouvelle grille soit visible immediatement sur
 		// la home, sans attendre l'expiration de cache.
 		if ( has_action( 'litespeed_purge_all' ) ) {
