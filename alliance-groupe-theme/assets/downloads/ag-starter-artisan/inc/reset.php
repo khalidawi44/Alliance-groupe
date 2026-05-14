@@ -158,22 +158,26 @@ class AG_Artisan_Reset {
 		// 1. Force-check GitHub theme (transients de l'updater + WP)
 		delete_site_transient( 'update_themes' );
 		delete_site_transient( 'update_plugins' );
-		// Le theme-updater du theme utilise un transient nomme ag_artisan_remote_manifest
-		// (consts dans inc/theme-updater.php), on tente toutes les variantes.
-		delete_transient( 'ag_artisan_remote_manifest' );
-		delete_transient( 'ag_starter_artisan_remote_manifest' );
+		// AG_Theme_Updater::CACHE_KEY = 'ag_artisan_theme_remote' (cf
+		// inc/theme-updater.php). On purge ce nom exact.
+		delete_transient( 'ag_artisan_theme_remote' );
 
-		// 2. Force-check companion (si plugin installe)
-		delete_transient( 'ag_starter_companion_remote_manifest' );
-		delete_transient( 'ag_companion_remote_manifest' );
+		// 2. Force-check companion (si plugin installe, CACHE_KEY connu)
+		delete_transient( 'ag_starter_companion_remote' );
+		delete_transient( 'ag_companion_remote' );
 
-		// 3. Reset complet (re-utilise la logique du reset classique)
-		$_POST['ag_artisan_reset_confirm'] = '1';
-		// On simule l'envoi du formulaire reset en respectant son nonce :
-		// pour simplifier, on appelle directement la logique interne.
+		// 3. Force WP a relancer le check theme/plugin immediatement
+		if ( function_exists( 'wp_update_themes' ) ) {
+			wp_update_themes();
+		}
+		if ( function_exists( 'wp_update_plugins' ) ) {
+			wp_update_plugins();
+		}
+
+		// 4. Reset complet (re-utilise la logique du reset classique)
 		$stats = self::do_reset_logic();
 
-		// 4. Purge cache LiteSpeed + WP
+		// 5. Purge cache LiteSpeed + WP
 		if ( has_action( 'litespeed_purge_all' ) ) {
 			do_action( 'litespeed_purge_all' );
 		}
