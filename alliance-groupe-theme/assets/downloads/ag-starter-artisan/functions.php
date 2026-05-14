@@ -268,3 +268,7 @@ require_once get_template_directory() . '/inc/theme-updater.php';
 
 // Guide d'utilisation (admin)
 require_once get_template_directory() . '/inc/guide.php';
+
+// Reinitialisation du theme — bouton "TOUT RESET" qui nettoie les
+// residus d'autres templates Alliance Groupe (menus, CPT, pages, mods).
+require_once get_template_directory() . '/inc/reset.php';
