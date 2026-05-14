@@ -59,6 +59,11 @@ class AG_Artisan_Presets {
 					array( 'q' => 'Sous quel délai intervenez-vous ?', 'a' => 'En général sous 48h pour un devis, et 7 à 21 jours pour démarrer les travaux selon leur ampleur.' ),
 					array( 'q' => 'Êtes-vous assurés ?', 'a' => 'Oui, garantie décennale + responsabilité civile professionnelle. Attestations sur demande.' ),
 				),
+				'stats' => array(
+					array( 'value' => '600+',  'label' => 'Chantiers terminés' ),
+					array( 'value' => '4,8/5', 'label' => 'Avis clients' ),
+					array( 'value' => '10 ans','label' => "D'expérience" ),
+				),
 				'pages' => array(
 					'qui-sommes-nous'    => "Artisan généraliste du bâtiment depuis plus de 10 ans, nous accompagnons particuliers et professionnels dans tous leurs projets de travaux : rénovation, dépannage, petits travaux, mise aux normes.\n\nNotre force, c'est la polyvalence : une équipe pluridisciplinaire (maçon, plombier, électricien, peintre) qui coordonne pour vous tous les corps de métier. Plus besoin de jongler entre plusieurs entreprises — nous sommes votre interlocuteur unique.\n\nGarantie décennale + responsabilité civile professionnelle. Devis gratuits sous 24h, transparence totale sur les tarifs, chantier propre, satisfaction client comme priorité. Plus de 600 chantiers réalisés à ce jour.",
 					'prestations'        => "Tous travaux du bâtiment : petits travaux d'entretien (étagères, fixations, rebouchage), rénovation partielle ou totale (cuisine, salle de bain, pièce à vivre), dépannage urgent toutes spécialités, mise aux normes électricité/plomberie pour vente immobilière.\n\nTravaux intérieurs : peinture, revêtements, cloisons, plafonds, électricité, plomberie, carrelage. Travaux extérieurs : ravalement, terrasse, clôture, abri, allée. Pose et installation de tout type d'équipement.\n\nDevis détaillé gratuit sous 24h après visite technique. Travaux soignés, finitions impeccables, chantier propre quotidien. Garantie sur l'ensemble des prestations.",
@@ -103,6 +108,11 @@ class AG_Artisan_Presets {
 					array( 'q' => 'Êtes-vous certifié Qualifelec ?', 'a' => 'Oui, certification Qualifelec à jour. Garantie décennale + assurance pro.' ),
 					array( 'q' => 'Acceptez-vous les urgences nuit/week-end ?', 'a' => 'Oui, ligne d\'astreinte 7j/7. Majoration tarif nuit/dimanche selon barème transparent.' ),
 					array( 'q' => 'Puis-je bénéficier d\'aides MaPrimeRénov\' ?', 'a' => 'Pour rénovation électrique avec gain énergétique (chauffage, isolation), oui. On vous guide dans le montage du dossier.' ),
+				),
+				'stats' => array(
+					array( 'value' => '1 200+', 'label' => 'Interventions' ),
+					array( 'value' => '7j/7',   'label' => 'Astreinte urgence' ),
+					array( 'value' => '12 ans', 'label' => "D'expérience" ),
 				),
 				'pages' => array(
 					'qui-sommes-nous'    => "Électricien indépendant installé depuis 12 ans, certifié Qualifelec (renouvelé chaque année) et IRVE pour l'installation de bornes de recharge véhicules électriques.\n\nNotre équipe de 4 électriciens diplômés (CAP, Bac Pro ELEEC, Brevet Pro) couvre l'ensemble des prestations : dépannage urgent, rénovation totale, mise aux normes NF C 15-100, domotique, bornes de recharge VE. Tous nos compagnons sont salariés (pas de sous-traitance).\n\nGarantie décennale obligatoire + responsabilité civile pro + Consuel pour toute nouvelle installation. Devis gratuit, intervention 7j/7 pour les urgences, transparence totale sur les tarifs.",
@@ -149,6 +159,11 @@ class AG_Artisan_Presets {
 					array( 'q' => 'Combien de temps pour une extension ?', 'a' => 'Comptez 6 à 12 semaines selon m² + complexité (permis de construire à anticiper si > 20m²).' ),
 					array( 'q' => 'Faites-vous le permis de construire ?', 'a' => 'Oui, nous accompagnons le dépôt en mairie et travaillons avec un architecte si > 150m².' ),
 				),
+				'stats' => array(
+					array( 'value' => '200+',  'label' => 'Chantiers réalisés' ),
+					array( 'value' => '25 ans','label' => "D'expérience" ),
+					array( 'value' => '100%',  'label' => 'Garantie décennale' ),
+				),
 				'pages' => array(
 					'qui-sommes-nous'    => "Entreprise familiale de maçonnerie fondée il y a plus de 25 ans, transmise de père en fils. Nous portons un savoir-faire artisanal traditionnel et une exigence de qualité qui font notre réputation.\n\nNotre équipe de 8 compagnons qualifiés (CAP, BP Maçonnerie, Brevet Pro) intervient sur tous types de chantiers : construction neuve, extension, rénovation lourde, ravalement. Chaque chantier est suivi personnellement par le chef d'entreprise, du devis à la livraison finale.\n\nNous sommes assurés en garantie décennale (Maaf Pro), biennale et responsabilité civile professionnelle. Attestations disponibles sur simple demande. Membres de la FFB (Fédération Française du Bâtiment) et certifiés Qualibat.",
 					'prestations'        => "Toute notre maçonnerie générale : construction de maison neuve, extension agrandissement, rénovation de murs porteurs, dalle béton coulée, ravalement de façade, murets et clôtures, terrassement et pose de carrelage.\n\nNous intervenons en gros œuvre comme en finition. Chaque chantier démarre par une visite technique gratuite suivie d'un devis détaillé sous 48h. Travaux réalisés en interne (pas de sous-traitance non déclarée).\n\nMatériaux de qualité : parpaings normés CE, béton dosé chantier, ciments Lafarge, isolants ACERMI. Chantier propre quotidien, livraison aux délais annoncés, garantie décennale signée à réception.",
@@ -194,6 +209,11 @@ class AG_Artisan_Presets {
 					array( 'q' => 'Avez-vous du pain sans gluten ?', 'a' => 'Oui, une gamme sans gluten et une gamme bio. Demandez la liste complète en boutique.' ),
 					array( 'q' => 'Livrez-vous pour les événements ?', 'a' => 'Oui, livraison locale pour mariages, baptêmes, événements pro. Devis sur demande.' ),
 				),
+				'stats' => array(
+					array( 'value' => '18 ans',  'label' => 'Au service du quartier' ),
+					array( 'value' => '5 000+',  'label' => 'Événements approvisionnés' ),
+					array( 'value' => '6h-20h',  'label' => 'Mardi au dimanche' ),
+				),
 				'pages' => array(
 					'qui-sommes-nous'    => "Boulangerie-pâtisserie artisanale familiale, ouverte depuis 18 ans dans le quartier. Trois générations de boulangers passionnés qui perpétuent les techniques traditionnelles : pétrissage manuel, longue fermentation, cuisson au four à sole.\n\nNotre équipe de 6 personnes (2 boulangers, 2 pâtissiers, 2 vendeurs) travaille chaque jour dès 4h du matin pour vous proposer du pain frais, des viennoiseries chaudes et des pâtisseries gourmandes.\n\nMembres de la Confédération Nationale de la Boulangerie Française. Label \"Boulanger de France\" obtenu en 2024. Farines moulues localement, beurre AOP, œufs fermiers, fruits de saison français.",
 					'prestations'        => "Pains traditionnels au levain, baguettes tradition, pain de campagne, pain complet, pain aux céréales, pain sans gluten (gamme certifiée). Viennoiseries pur beurre AOP : croissants, pains au chocolat, brioches, chaussons aux pommes.\n\nPâtisseries fines : éclairs, religieuses, mille-feuilles, tartelettes saison. Gâteaux sur commande pour vos événements (anniversaires, mariages, baptêmes). Salé : sandwichs maison, quiches, fougasses, pizzas, formules midi à emporter.\n\nBuffets sucrés et salés livrés pour entreprises, réunions, événements privés. Devis personnalisé sur demande, à partir de 12 €/personne. Commandes sur mesure 48h à l'avance.",
@@ -238,6 +258,11 @@ class AG_Artisan_Presets {
 					array( 'q' => 'Travaillez-vous pour les pros aussi ?', 'a' => 'Oui — bureaux, commerces, copropriétés. Facture et devis professionnels sur demande.' ),
 					array( 'q' => 'Quels types de travaux refusez-vous ?', 'a' => 'Très gros œuvre (charpente, terrassement lourd) — pour cela on vous oriente vers un confrère spécialisé.' ),
 					array( 'q' => 'Acceptez-vous les chèques emploi-service (CESU) ?', 'a' => 'Oui pour les particuliers, sur les prestations éligibles (jardinage, petit bricolage, ménage).' ),
+				),
+				'stats' => array(
+					array( 'value' => '1 800+', 'label' => 'Missions réalisées' ),
+					array( 'value' => '96%',    'label' => 'Clients satisfaits' ),
+					array( 'value' => '6',      'label' => 'Corps de métier' ),
 				),
 				'pages' => array(
 					'qui-sommes-nous'    => "Société de multiservices créée il y a 8 ans, nous coordonnons pour vous tous les corps de métier du bâtiment et de l'entretien : plombier, électricien, peintre, jardinier, menuisier, déménageur.\n\nNotre équipe permanente de 12 personnes (toutes spécialités confondues) intervient sur particuliers et professionnels. Plus besoin de chercher plusieurs artisans : un seul devis, un seul interlocuteur, une équipe coordonnée pour vos travaux.\n\nAssurances : RC pro + décennale + protection juridique professionnelle. Membres CESU+. Travail déclaré, factures aux normes, devis transparents. Plus de 1 800 missions réalisées avec un taux de satisfaction client de 96%.",
@@ -403,6 +428,12 @@ class AG_Artisan_Presets {
 		if ( ! $slug ) return null;
 		$presets = self::get_presets();
 		return isset( $presets[ $slug ] ) ? $presets[ $slug ] : null;
+	}
+
+	/** @return array [['value', 'label'], ...] */
+	public static function get_active_stats() {
+		$p = self::get_active_preset();
+		return ( $p && isset( $p['stats'] ) ) ? $p['stats'] : array();
 	}
 
 	/** @return array [['emoji', 'title', 'desc'], ...] */

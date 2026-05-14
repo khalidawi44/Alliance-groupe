@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour artisans, plombiers, electriciens, menuisiers, BTP. Structure minimaliste noir et bronze, responsive, sans fioritures. Contenu pre-redige en francais natif : prestations, zones d'intervention, devis. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.7.0
+Version: 1.8.0
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -801,4 +801,81 @@ body.ag-premium-mode .ag-site-header.scrolled .ag-primary-menu a{color:#333!impo
 body.ag-premium-mode .ag-site-header.scrolled .ag-primary-menu .current-menu-item > a,
 body.ag-premium-mode .ag-site-header.scrolled .ag-primary-menu .current_page_item > a{
     background:var(--ag-color-accent,#F37A1F)!important;color:#fff!important;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   STYLE ALLIANCE GROUPE — sobriete pro, italics emphase, stats hero,
+   process numerote 01/02/03 minimaliste, fonts premium.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* Police premium Google Fonts via @import inline */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,500;1,700&display=swap');
+
+body.ag-premium-mode{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;font-feature-settings:'ss01','cv11';letter-spacing:-.005em}
+body.ag-premium-mode h1,body.ag-premium-mode h2,body.ag-premium-mode h3{font-family:'Inter',sans-serif;letter-spacing:-.02em}
+
+/* ── Hero title : <em> en italique Playfair pour accent ────────────── */
+body.ag-premium-mode .ag-hero-pro__title em{
+    font-family:'Playfair Display',serif;
+    font-style:italic;
+    font-weight:500;
+    color:var(--ag-color-accent,#F37A1F);
+    border-bottom:none;
+    padding-bottom:0;
+    display:inline;
+}
+
+/* ── Stats bar dans le hero ───────────────────────────────────────── */
+.ag-hero-stats{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+    margin-top:40px;padding-top:32px;border-top:1px solid rgba(255,255,255,.18);
+    max-width:760px;margin-left:auto;margin-right:auto;
+}
+@media (max-width:680px){.ag-hero-stats{grid-template-columns:1fr;gap:14px}}
+.ag-hero-stat{display:flex;flex-direction:column;align-items:center;gap:4px}
+.ag-hero-stat__value{
+    font-family:'Inter',sans-serif;font-size:2rem;font-weight:800;color:#fff;line-height:1;
+    letter-spacing:-.02em;
+}
+.ag-hero-stat__label{
+    font-size:.78rem;color:rgba(255,255,255,.75);text-transform:uppercase;letter-spacing:1.5px;font-weight:500;
+}
+
+/* ── Section title : italics Playfair sur l'accent ────────────────── */
+body.ag-premium-mode .ag-services-grid-title span{
+    font-family:'Playfair Display',serif;
+    font-style:italic;
+    font-weight:500;
+    color:var(--ag-color-accent,#F37A1F);
+}
+body.ag-premium-mode .ag-services-grid-title::after{display:none} /* retire l'underline qu'on avait */
+
+/* ── Process 'Comment ça marche' : style numerote 01/02/03 Alliance ─ */
+body.ag-premium-mode .ag-howit-card{
+    background:#fff;border:none;border-radius:0;border-left:1px solid #e8e8e8;padding:30px 26px 26px 36px;
+    text-align:left;position:relative;box-shadow:none;
+}
+body.ag-premium-mode .ag-howit-card:hover{transform:none;box-shadow:none;border-left-color:var(--ag-color-accent,#F37A1F)}
+body.ag-premium-mode .ag-howit-num{
+    position:static;transform:none;background:transparent;color:var(--ag-color-accent,#F37A1F);
+    width:auto;height:auto;border-radius:0;box-shadow:none;display:block;
+    font-family:'Inter',sans-serif;font-size:3.2rem;font-weight:200;letter-spacing:-.04em;
+    line-height:1;margin:0 0 12px;
+}
+body.ag-premium-mode .ag-howit-num::before{content:'0'}
+body.ag-premium-mode .ag-howit-emoji{font-size:1.6rem;margin:0 0 10px;display:none} /* on simplifie en mode AG */
+body.ag-premium-mode .ag-howit-title{font-size:1.2rem;font-weight:700;letter-spacing:-.01em}
+body.ag-premium-mode .ag-howit-desc{color:#555;line-height:1.65;font-size:.96rem}
+
+/* ── Padding sections plus aere (style AG) ────────────────────────── */
+body.ag-premium-mode .ag-howit-wrap,
+body.ag-premium-mode .ag-testi-wrap,
+body.ag-premium-mode .ag-faq-wrap{padding:100px 24px}
+body.ag-premium-mode .ag-services-grid-wrap{padding:80px 24px}
+
+/* ── CTA hero : style AG (navy alt) ──────────────────────────────── */
+body.ag-premium-mode .ag-btn-pro{
+    background:var(--ag-color-accent,#F37A1F);color:#fff;
+    border-radius:6px;font-weight:600;letter-spacing:.02em;
+    padding:16px 32px;font-size:.98rem;text-transform:uppercase;
 }

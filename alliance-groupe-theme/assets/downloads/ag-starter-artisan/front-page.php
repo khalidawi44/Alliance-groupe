@@ -16,6 +16,7 @@ $ag_has_preset = class_exists( 'AG_Artisan_Presets' ) && AG_Artisan_Presets::get
 $ag_services   = $ag_has_preset ? AG_Artisan_Presets::get_active_services() : array();
 $ag_how        = $ag_has_preset ? AG_Artisan_Presets::get_active_how() : array();
 $ag_faq        = $ag_has_preset ? AG_Artisan_Presets::get_active_faq() : array();
+$ag_stats      = $ag_has_preset ? AG_Artisan_Presets::get_active_stats() : array();
 $ag_metier_nom = ag_artisan_opt( 'ag_artisan_metier_nom', '' );
 $ag_hero_image = ag_artisan_opt( 'ag_artisan_hero_image', '' );
 
@@ -37,7 +38,7 @@ endwhile; rewind_posts(); endif; ?>
 			<div class="ag-container">
 				<h1 class="ag-hero-pro__title">
 					<?php echo esc_html( ag_starter_artisan_get_option( 'ag_hero_prefix' ) ); ?>
-					<span><?php echo esc_html( ag_starter_artisan_get_option( 'ag_hero_brand' ) ); ?></span>
+					<em><?php echo esc_html( ag_starter_artisan_get_option( 'ag_hero_brand' ) ); ?></em>
 				</h1>
 				<p class="ag-hero-pro__subtitle">
 					<?php echo esc_html( ag_starter_artisan_get_option( 'ag_hero_subtitle' ) ); ?>
@@ -47,6 +48,17 @@ endwhile; rewind_posts(); endif; ?>
 				$ag_btn_url   = ag_starter_artisan_get_option( 'ag_hero_button_url' );
 				if ( $ag_btn_label ) : ?>
 					<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn-pro"><?php echo esc_html( $ag_btn_label ); ?> →</a>
+				<?php endif; ?>
+
+				<?php if ( ! empty( $ag_stats ) ) : ?>
+					<div class="ag-hero-stats">
+						<?php foreach ( $ag_stats as $stat ) : ?>
+							<div class="ag-hero-stat">
+								<span class="ag-hero-stat__value"><?php echo esc_html( $stat['value'] ); ?></span>
+								<span class="ag-hero-stat__label"><?php echo esc_html( $stat['label'] ); ?></span>
+							</div>
+						<?php endforeach; ?>
+					</div>
 				<?php endif; ?>
 			</div>
 		</section>
