@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour artisans, plombiers, electriciens, menuisiers, BTP. Structure minimaliste noir et bronze, responsive, sans fioritures. Contenu pre-redige en francais natif : prestations, zones d'intervention, devis. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.5.0
+Version: 1.6.0
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -736,3 +736,55 @@ body.ag-metier-generaliste .ag-service-card:hover .ag-service-card__icon{animati
         animation: none !important;
     }
 }
+
+/* ── Fix menu actif : override violet du theme parent ─────────────── */
+body.ag-premium-mode .ag-primary-menu li,
+body.ag-premium-mode .ag-primary-menu .current-menu-item,
+body.ag-premium-mode .ag-primary-menu .current_page_item,
+body.ag-premium-mode #menu-primary li,
+body.ag-premium-mode .menu-item.current-menu-item,
+body.ag-premium-mode .menu-item.current_page_item{
+    background:transparent!important;
+}
+body.ag-premium-mode .ag-primary-menu a,
+body.ag-premium-mode .menu-item a{
+    background:transparent!important;
+    color:#333!important;
+    font-weight:500;
+    padding:8px 14px;
+    border-radius:6px;
+    transition:background .2s ease,color .2s ease;
+}
+body.ag-premium-mode .ag-primary-menu .current-menu-item > a,
+body.ag-premium-mode .ag-primary-menu .current_page_item > a,
+body.ag-premium-mode .menu-item.current-menu-item > a,
+body.ag-premium-mode .menu-item.current_page_item > a{
+    background:var(--ag-color-accent,#F37A1F)!important;
+    color:#fff!important;
+    font-weight:700;
+}
+body.ag-premium-mode .ag-primary-menu a:hover{
+    background:rgba(0,0,0,.05)!important;
+    color:var(--ag-color-accent,#F37A1F)!important;
+}
+
+/* ── Page devis (style meilleur-artisan) ──────────────────────────── */
+.ag-devis-wrap{padding:60px 24px;background:#fafafa;border-radius:14px;margin:30px 0;max-width:920px;margin-left:auto;margin-right:auto}
+.ag-devis-form{display:grid;gap:16px}
+.ag-devis-form label{font-weight:600;color:#1a1a1a;margin-bottom:4px;display:block}
+.ag-devis-form input,.ag-devis-form select,.ag-devis-form textarea{
+    width:100%;padding:12px 14px;border:1px solid #d0d0d0;border-radius:8px;font-size:1rem;font-family:inherit;background:#fff;
+    transition:border-color .15s ease,box-shadow .15s ease;
+}
+.ag-devis-form input:focus,.ag-devis-form select:focus,.ag-devis-form textarea:focus{
+    outline:none;border-color:var(--ag-color-accent,#F37A1F);box-shadow:0 0 0 3px color-mix(in srgb, var(--ag-color-accent,#F37A1F) 20%, transparent);
+}
+.ag-devis-form textarea{min-height:90px;resize:vertical}
+.ag-devis-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:540px){.ag-devis-row-2{grid-template-columns:1fr}}
+.ag-devis-submit{background:var(--ag-color-accent,#F37A1F);color:#fff;border:none;padding:14px 28px;font-size:1.05rem;font-weight:700;border-radius:50px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.1);transition:transform .15s ease,box-shadow .15s ease}
+.ag-devis-submit:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(0,0,0,.15)}
+.ag-devis-result{background:#fff;border:2px solid var(--ag-color-accent,#F37A1F);border-radius:12px;padding:28px 24px;margin-top:24px;text-align:center}
+.ag-devis-result__label{color:#666;font-size:.95rem;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px}
+.ag-devis-result__price{color:var(--ag-color-accent,#F37A1F);font-size:2.4rem;font-weight:800;margin:0 0 4px;line-height:1.1}
+.ag-devis-result__note{color:#777;font-size:.88rem;margin:14px 0 0;line-height:1.5}

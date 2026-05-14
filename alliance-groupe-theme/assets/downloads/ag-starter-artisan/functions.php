@@ -278,6 +278,11 @@ require_once get_template_directory() . '/inc/reset.php';
 // services 4x2 affichee sur la page d'accueil.
 require_once get_template_directory() . '/inc/presets.php';
 
+// Systeme de devis : page /devis/ avec formulaire dynamique + fourchette
+// de prix par metier x service + multiplicateur regional. Demandes
+// stockees en CPT ag_devis_lead (admin > Devis demandes).
+require_once get_template_directory() . '/inc/devis.php';
+
 /**
  * Active les animations scroll-reveal (.ag-anim -> .is-visible) via
  * IntersectionObserver. Inline pour eviter une requete http supplementaire.

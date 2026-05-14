@@ -50,12 +50,13 @@ class AG_Artisan_Reset {
 	 * slug => array( title, content_placeholder )
 	 */
 	const ARTISAN_PAGES = array(
-		'prestations'        => array( 'title' => 'Prestations',        'content' => 'Nos prestations principales : rénovation, installation, entretien. Devis gratuit sous 24h.' ),
+		'prestations'        => array( 'title' => 'Prestations',          'content' => 'Nos prestations principales : rénovation, installation, entretien. Devis gratuit sous 24h.' ),
 		'zones-intervention' => array( 'title' => "Zones d'intervention", 'content' => 'Nous intervenons dans toute votre région, y compris en urgence.' ),
-		'realisations'       => array( 'title' => 'Réalisations',       'content' => 'Découvrez nos chantiers récents : rénovations, installations techniques, travaux sur-mesure.' ),
-		'qui-sommes-nous'    => array( 'title' => 'Qui sommes-nous',    'content' => "Depuis plus de dix ans, notre équipe d'artisans qualifiés accompagne particuliers et professionnels." ),
-		'mentions'           => array( 'title' => 'Mentions légales',   'content' => 'Mentions légales et informations sur l\'entreprise.' ),
-		'contact'            => array( 'title' => 'Contact',            'content' => 'Pour toute demande de devis ou de renseignement, contactez-nous.' ),
+		'realisations'       => array( 'title' => 'Réalisations',         'content' => 'Découvrez nos chantiers récents : rénovations, installations techniques, travaux sur-mesure.' ),
+		'qui-sommes-nous'    => array( 'title' => 'Qui sommes-nous',      'content' => "Depuis plus de dix ans, notre équipe d'artisans qualifiés accompagne particuliers et professionnels." ),
+		'devis'              => array( 'title' => 'Devis en ligne',       'content' => '[ag_artisan_devis]' ),
+		'mentions'           => array( 'title' => 'Mentions légales',     'content' => 'Mentions légales et informations sur l\'entreprise.' ),
+		'contact'            => array( 'title' => 'Contact',              'content' => 'Pour toute demande de devis ou de renseignement, contactez-nous.' ),
 	);
 
 	public static function init() {
