@@ -13,13 +13,11 @@ $ag_hero_image = ag_artisan_opt( 'ag_artisan_hero_image', '' );
 
 <main id="ag-main" class="ag-main ag-main--premium" role="main">
 
-	<section class="ag-page-hero"<?php if ( $ag_hero_image ) : ?> style="background-image:url('<?php echo esc_url( $ag_hero_image ); ?>');"<?php endif; ?>>
+	<section class="ag-page-hero ag-page-hero--full"<?php if ( $ag_hero_image ) : ?> style="background-image:url('<?php echo esc_url( $ag_hero_image ); ?>');"<?php endif; ?>>
 		<div class="ag-container">
 			<span class="ag-page-tag">Devis en ligne</span>
 			<h1 class="ag-page-title">Estimation <em>instantanée</em></h1>
-			<div class="ag-page-lead">
-				<p>Fourchette de prix basée sur les tarifs moyens dans votre région.</p>
-			</div>
+			<p class="ag-page-hero-sub">Fourchette de prix basée sur les tarifs moyens dans votre région.</p>
 		</div>
 	</section>
 

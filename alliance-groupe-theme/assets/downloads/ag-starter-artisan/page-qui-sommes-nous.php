@@ -67,10 +67,11 @@ $timeline = isset( $timelines[ $metier_slug ] ) ? $timelines[ $metier_slug ] : $
 <main id="ag-main" class="ag-main ag-main--premium" role="main">
 
 	<?php while ( have_posts() ) : the_post(); ?>
-		<section class="ag-page-hero"<?php if ( $ag_hero_image ) : ?> style="background-image:url('<?php echo esc_url( $ag_hero_image ); ?>');"<?php endif; ?>>
+		<section class="ag-page-hero ag-page-hero--full"<?php if ( $ag_hero_image ) : ?> style="background-image:url('<?php echo esc_url( $ag_hero_image ); ?>');"<?php endif; ?>>
 			<div class="ag-container">
 				<span class="ag-page-tag"><?php echo esc_html( $ag_metier_nom ?: 'L\'équipe' ); ?></span>
 				<h1 class="ag-page-title">Qui <em>sommes-nous</em></h1>
+				<p class="ag-page-hero-sub">Un savoir-faire artisanal, transmis et entretenu chaque jour.</p>
 			</div>
 		</section>
 	<?php endwhile; ?>

@@ -22,15 +22,21 @@ get_header();
 	$ag_metier_nom = ag_artisan_opt( 'ag_artisan_metier_nom', '' );
 	$ag_hero_image = ag_artisan_opt( 'ag_artisan_hero_image', '' );
 	while ( have_posts() ) : the_post(); ?>
-		<section class="ag-page-hero"<?php if ( $ag_hero_image ) : ?> style="background-image:url('<?php echo esc_url( $ag_hero_image ); ?>');"<?php endif; ?>>
+		<section class="ag-page-hero ag-page-hero--full"<?php if ( $ag_hero_image ) : ?> style="background-image:url('<?php echo esc_url( $ag_hero_image ); ?>');"<?php endif; ?>>
 			<div class="ag-container">
 				<span class="ag-page-tag"><?php echo esc_html( $ag_metier_nom ?: 'Nos services' ); ?></span>
 				<h1 class="ag-page-title">Toutes nos <em>prestations</em></h1>
-				<div class="ag-page-lead">
-					<?php the_content(); ?>
-				</div>
+				<p class="ag-page-hero-sub">Devis gratuit, fourchette de prix instantanée selon votre région.</p>
 			</div>
 		</section>
+
+		<?php if ( trim( get_the_content() ) ) : ?>
+			<section class="ag-page-intro">
+				<div class="ag-container">
+					<?php the_content(); ?>
+				</div>
+			</section>
+		<?php endif; ?>
 	<?php endwhile; ?>
 
 	<?php
