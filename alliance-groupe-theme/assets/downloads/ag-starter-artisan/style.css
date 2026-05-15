@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour artisans, plombiers, electriciens, menuisiers, BTP. Structure minimaliste noir et bronze, responsive, sans fioritures. Contenu pre-redige en francais natif : prestations, zones d'intervention, devis. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.14.1
+Version: 1.14.2
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -1178,3 +1178,39 @@ body.ag-premium-mode .ag-page-intro p{color:#444;font-size:1.05rem;line-height:1
 
 /* Pages internes : retire padding-top:90px obsolete (le hero gere le top) */
 body.ag-premium-mode.page:not(.home) .ag-main--premium{padding-top:0!important}
+
+/* ── Pages internes : header transparent comme la home ────────────── */
+/* Annule l'ancien override 'header blanc plein sur pages internes' */
+body.ag-premium-mode.page:not(.home) .ag-site-header{
+    background:linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.2) 70%, transparent 100%)!important;
+    padding:24px 0!important;
+    border-bottom:none!important;
+    box-shadow:none!important;
+}
+body.ag-premium-mode.page:not(.home) .ag-site-header .ag-site-brand{
+    color:#fff!important;text-shadow:0 1px 3px rgba(0,0,0,.4)!important;
+}
+body.ag-premium-mode.page:not(.home) .ag-site-header .ag-primary-menu a{
+    color:#fff!important;text-shadow:0 1px 3px rgba(0,0,0,.4)!important;
+}
+/* Au scroll, header passe blanc plein (idem home) */
+body.ag-premium-mode.page:not(.home) .ag-site-header.scrolled{
+    background:rgba(255,255,255,.96)!important;
+    box-shadow:0 4px 20px rgba(0,0,0,.08)!important;
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    padding:14px 0!important;
+}
+body.ag-premium-mode.page:not(.home) .ag-site-header.scrolled .ag-site-brand{
+    color:var(--ag-color-accent,#F37A1F)!important;text-shadow:none!important;
+}
+body.ag-premium-mode.page:not(.home) .ag-site-header.scrolled .ag-primary-menu a{
+    color:#333!important;text-shadow:none!important;
+}
+
+/* Force hero photo a coller au sommet sur pages internes (pas d'espace) */
+html body.ag-premium-mode.page:not(.home),
+html body.ag-premium-mode.page:not(.home) .ag-main,
+html body.ag-premium-mode.page:not(.home) .ag-main--premium,
+html body.ag-premium-mode.page:not(.home) #ag-main{
+    margin-top:0!important;padding-top:0!important;
+}
