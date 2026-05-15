@@ -23,7 +23,7 @@ class ag_coach_Reset {
 	 * Prefixes theme_mod d'autres templates Alliance Groupe — supprimes
 	 * lors du reset (laisse ag_coach_*, background_color, blogname, etc.).
 	 */
-	const FOREIGN_MOD_PREFIXES = array( 'ag_asso_', 'ag_avocat_', 'ag_barber_', 'ag_coach_', 'ag_resto_', 'ag_fid_' );
+	const FOREIGN_MOD_PREFIXES = array( 'ag_asso_', 'ag_avocat_', 'ag_barber_', 'ag_artisan_', 'ag_resto_', 'ag_fid_' );
 
 	/**
 	 * CPT d'autres templates a wipe completement (pas de raison d'avoir
@@ -63,6 +63,117 @@ class ag_coach_Reset {
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ), 30 );
 		add_action( 'admin_post_ag_coach_reset', array( __CLASS__, 'handle_reset' ) );
 		add_action( 'admin_post_ag_coach_sync_reset', array( __CLASS__, 'handle_sync_reset' ) );
+		// Auto-install des pages au switch_theme (utilisateur n'a pas a cliquer reset).
+		add_action( 'after_switch_theme', array( __CLASS__, 'auto_install_pages' ) );
+		// Safety net : a chaque admin_init, si la page devis manque, on la recree.
+		add_action( 'admin_init', array( __CLASS__, 'ensure_core_pages' ) );
+	}
+
+	/**
+	 * Au switch_theme : exécuter la logique de création pages + menu sans purger
+	 * les mods (le user vient juste d'activer le thème, il ne faut RIEN supprimer).
+	 */
+	public static function auto_install_pages() {
+		self::install_pages_and_menu();
+	}
+
+	/**
+	 * Safety net executee a chaque admin_init : si la page devis (ou autre page core)
+	 * est absente, on la recree. Coût quasi-nul (un get_page_by_path).
+	 */
+	public static function ensure_core_pages() {
+		// Seulement pour les admins, evite execution sur chaque requete front
+		if ( ! is_admin() || ! current_user_can( 'manage_options' ) ) return;
+		// Only every hour
+		if ( get_transient( 'ag_coach_ensure_pages_ran' ) ) return;
+		set_transient( 'ag_coach_ensure_pages_ran', 1, HOUR_IN_SECONDS );
+
+		$missing = false;
+		foreach ( array_keys( self::ARTISAN_PAGES ) as $slug ) {
+			if ( ! get_page_by_path( $slug ) ) { $missing = true; break; }
+		}
+		if ( $missing ) {
+			self::install_pages_and_menu();
+		}
+	}
+
+	/**
+	 * Crée les pages coach manquantes ET reconstruit le menu primary.
+	 * NE PURGE PAS les mods/CPT/pages d'autres templates (différence avec do_reset_logic).
+	 * @return array stats
+	 */
+	public static function install_pages_and_menu() {
+		$stats = array( 'pages_created' => 0 );
+		$created_page_ids = array();
+		foreach ( self::ARTISAN_PAGES as $slug => $data ) {
+			$page = get_page_by_path( $slug );
+			if ( ! $page ) {
+				$content = trim( $data['content'] );
+				if ( preg_match( '/^\[\w+/', $content ) ) {
+					$post_content = "<!-- wp:shortcode -->\n" . $content . "\n<!-- /wp:shortcode -->";
+				} else {
+					$post_content = '<!-- wp:paragraph --><p>' . esc_html( $content ) . '</p><!-- /wp:paragraph -->';
+				}
+				$new_id = wp_insert_post( array(
+					'post_title'   => $data['title'],
+					'post_name'    => $slug,
+					'post_content' => $post_content,
+					'post_status'  => 'publish',
+					'post_type'    => 'page',
+				) );
+				if ( $new_id && ! is_wp_error( $new_id ) ) {
+					$stats['pages_created']++;
+					$created_page_ids[ $slug ] = $new_id;
+				}
+			} else {
+				$created_page_ids[ $slug ] = $page->ID;
+				// Si page existe mais contenu vide ou shortcode echappé, on le repare
+				if ( '[ag_coach_devis]' === trim( $data['content'] ) ) {
+					$current = get_post_field( 'post_content', $page->ID );
+					if ( false === strpos( $current, 'wp:shortcode' ) && false === strpos( $current, '[ag_coach_devis]' ) ) {
+						wp_update_post( array(
+							'ID'           => $page->ID,
+							'post_content' => "<!-- wp:shortcode -->\n[ag_coach_devis]\n<!-- /wp:shortcode -->",
+						) );
+					}
+				}
+			}
+		}
+
+		// Reconstruire le menu primary
+		$menu_name = 'AG Coach — Principal';
+		$menu = wp_get_nav_menu_object( $menu_name );
+		if ( $menu ) {
+			foreach ( (array) wp_get_nav_menu_items( $menu->term_id ) as $existing ) {
+				wp_delete_post( $existing->ID, true );
+			}
+			$menu_id = $menu->term_id;
+		} else {
+			$menu_id = wp_create_nav_menu( $menu_name );
+		}
+		if ( ! is_wp_error( $menu_id ) ) {
+			wp_update_nav_menu_item( $menu_id, 0, array(
+				'menu-item-title'  => 'Accueil',
+				'menu-item-url'    => home_url( '/' ),
+				'menu-item-type'   => 'custom',
+				'menu-item-status' => 'publish',
+			) );
+			foreach ( array( 'prestations', 'zones-intervention', 'realisations', 'qui-sommes-nous', 'devis', 'contact' ) as $slug ) {
+				if ( empty( $created_page_ids[ $slug ] ) ) continue;
+				wp_update_nav_menu_item( $menu_id, 0, array(
+					'menu-item-title'     => self::ARTISAN_PAGES[ $slug ]['title'],
+					'menu-item-object'    => 'page',
+					'menu-item-object-id' => $created_page_ids[ $slug ],
+					'menu-item-type'      => 'post_type',
+					'menu-item-status'    => 'publish',
+				) );
+			}
+			$locations = get_theme_mod( 'nav_menu_locations', array() );
+			$locations['primary'] = $menu_id;
+			set_theme_mod( 'nav_menu_locations', $locations );
+		}
+
+		return $stats;
 	}
 
 	public static function register_menu() {
