@@ -9,6 +9,7 @@
 get_header();
 
 $ag_metier_nom = ag_artisan_opt( 'ag_artisan_metier_nom', '' );
+$ag_hero_image = ag_artisan_opt( 'ag_artisan_hero_image', '' );
 $map_query     = urlencode( ag_artisan_opt( 'ag_artisan_address', 'Paris, France' ) );
 $map_src       = 'https://maps.google.com/maps?q=' . $map_query . '&output=embed&z=15';
 ?>
@@ -16,7 +17,7 @@ $map_src       = 'https://maps.google.com/maps?q=' . $map_query . '&output=embed
 <main id="ag-main" class="ag-main ag-main--premium" role="main">
 
 	<?php while ( have_posts() ) : the_post(); ?>
-		<section class="ag-page-hero">
+		<section class="ag-page-hero"<?php if ( $ag_hero_image ) : ?> style="background-image:url('<?php echo esc_url( $ag_hero_image ); ?>');"<?php endif; ?>>
 			<div class="ag-container">
 				<span class="ag-page-tag">Contact</span>
 				<h1 class="ag-page-title">Nous <em>contacter</em></h1>

@@ -13,6 +13,7 @@ get_header();
 
 $metier_slug   = get_theme_mod( 'ag_artisan_metier_slug', '' );
 $ag_metier_nom = ag_artisan_opt( 'ag_artisan_metier_nom', '' );
+$ag_hero_image = ag_artisan_opt( 'ag_artisan_hero_image', '' );
 
 // Galerie d'images Unsplash par metier (6 photos lifestyle differentes
 // que le hero pour eviter la redite). Photos libres Unsplash.
@@ -73,7 +74,7 @@ if ( class_exists( 'AG_Artisan_Presets' ) ) {
 <main id="ag-main" class="ag-main ag-main--premium" role="main">
 
 	<?php while ( have_posts() ) : the_post(); ?>
-		<section class="ag-page-hero">
+		<section class="ag-page-hero"<?php if ( $ag_hero_image ) : ?> style="background-image:url('<?php echo esc_url( $ag_hero_image ); ?>');"<?php endif; ?>>
 			<div class="ag-container">
 				<span class="ag-page-tag"><?php echo esc_html( $ag_metier_nom ?: 'Nos réalisations' ); ?></span>
 				<h1 class="ag-page-title">Nos <em>réalisations</em></h1>

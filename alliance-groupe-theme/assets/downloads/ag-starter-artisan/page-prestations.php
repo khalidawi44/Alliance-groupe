@@ -20,8 +20,9 @@ get_header();
 	<?php
 	// Hero compact en haut de page (titre + lead intro)
 	$ag_metier_nom = ag_artisan_opt( 'ag_artisan_metier_nom', '' );
+	$ag_hero_image = ag_artisan_opt( 'ag_artisan_hero_image', '' );
 	while ( have_posts() ) : the_post(); ?>
-		<section class="ag-page-hero">
+		<section class="ag-page-hero"<?php if ( $ag_hero_image ) : ?> style="background-image:url('<?php echo esc_url( $ag_hero_image ); ?>');"<?php endif; ?>>
 			<div class="ag-container">
 				<span class="ag-page-tag"><?php echo esc_html( $ag_metier_nom ?: 'Nos services' ); ?></span>
 				<h1 class="ag-page-title">Toutes nos <em>prestations</em></h1>

@@ -12,6 +12,7 @@ get_header();
 
 $metier_slug   = get_theme_mod( 'ag_artisan_metier_slug', '' );
 $ag_metier_nom = ag_artisan_opt( 'ag_artisan_metier_nom', '' );
+$ag_hero_image = ag_artisan_opt( 'ag_artisan_hero_image', '' );
 
 // Adresse par defaut affichee sur la carte (modifiable via Customizer
 // quand on aura ajoute le champ — pour l'instant Paris centre).
@@ -27,7 +28,7 @@ $zones_couvertes = array( 'Paris', 'Boulogne-Billancourt', 'Issy-les-Moulineaux'
 <main id="ag-main" class="ag-main ag-main--premium" role="main">
 
 	<?php while ( have_posts() ) : the_post(); ?>
-		<section class="ag-page-hero">
+		<section class="ag-page-hero"<?php if ( $ag_hero_image ) : ?> style="background-image:url('<?php echo esc_url( $ag_hero_image ); ?>');"<?php endif; ?>>
 			<div class="ag-container">
 				<span class="ag-page-tag"><?php echo esc_html( $ag_metier_nom ?: 'Couverture' ); ?></span>
 				<h1 class="ag-page-title">Zones <em>d'intervention</em></h1>
