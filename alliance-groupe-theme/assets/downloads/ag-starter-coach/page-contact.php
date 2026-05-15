@@ -1,9 +1,9 @@
-﻿<?php
+<?php
 /**
- * Template page Contact : coordonnees + carte Google Maps + lien direct
- * vers le formulaire devis.
+ * Template page Contact (variante coach) : coordonnées + carte Google Maps +
+ * lien direct vers le formulaire séance découverte.
  *
- * @package AG_Starter_Artisan
+ * @package AG_Starter_Coach
  */
 
 get_header();
@@ -21,7 +21,7 @@ $map_src       = 'https://maps.google.com/maps?q=' . $map_query . '&output=embed
 			<div class="ag-container">
 				<span class="ag-page-tag">Contact</span>
 				<h1 class="ag-page-title">Nous <em>contacter</em></h1>
-				<p class="ag-page-hero-sub">Devis sous 24h, intervention rapide, équipe à votre écoute.</p>
+				<p class="ag-page-hero-sub">Séance découverte offerte, réponse sous 24h, à votre écoute.</p>
 			</div>
 		</section>
 
@@ -44,24 +44,24 @@ $map_src       = 'https://maps.google.com/maps?q=' . $map_query . '&output=embed
 				<h2>Coordonnées</h2>
 				<ul style="list-style:none;padding:0;">
 					<li style="border-bottom:1px solid #ececec;padding:14px 0;">
-						<strong style="display:block;color:var(--ag-color-accent,#F37A1F);font-size:.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">📍 Adresse</strong>
-						<span style="color:#333;">[Votre entreprise]<br>12 rue des Artisans<br>75001 Paris, France</span>
+						<strong style="display:block;color:var(--ag-color-accent,#2E86AB);font-size:.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">📍 Cabinet</strong>
+						<span style="color:#333;">[Votre cabinet]<br>12 rue de la Confiance<br>75001 Paris, France</span>
 					</li>
 					<li style="border-bottom:1px solid #ececec;padding:14px 0;">
-						<strong style="display:block;color:var(--ag-color-accent,#F37A1F);font-size:.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">📞 Téléphone</strong>
+						<strong style="display:block;color:var(--ag-color-accent,#2E86AB);font-size:.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">📞 Téléphone</strong>
 						<a href="tel:0600000000" style="color:#333;font-size:1.1rem;font-weight:600;text-decoration:none;">06 00 00 00 00</a>
 					</li>
 					<li style="border-bottom:1px solid #ececec;padding:14px 0;">
-						<strong style="display:block;color:var(--ag-color-accent,#F37A1F);font-size:.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">✉️ Email</strong>
-						<a href="mailto:contact@votre-entreprise.fr" style="color:#333;text-decoration:none;">contact@votre-entreprise.fr</a>
+						<strong style="display:block;color:var(--ag-color-accent,#2E86AB);font-size:.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">✉️ Email</strong>
+						<a href="mailto:contact@votre-cabinet.fr" style="color:#333;text-decoration:none;">contact@votre-cabinet.fr</a>
 					</li>
 					<li style="padding:14px 0;">
-						<strong style="display:block;color:var(--ag-color-accent,#F37A1F);font-size:.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">🕒 Horaires</strong>
-						<span style="color:#333;">Lundi - Vendredi : 8h - 18h<br>Samedi : 9h - 12h<br>Urgences 7j/7</span>
+						<strong style="display:block;color:var(--ag-color-accent,#2E86AB);font-size:.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">🕒 Horaires</strong>
+						<span style="color:#333;">Lundi - Vendredi : 9h - 19h<br>Samedi : sur rendez-vous<br>Visio disponible</span>
 					</li>
 				</ul>
 				<p style="margin-top:24px;">
-					<a href="<?php echo esc_url( home_url( '/devis/' ) ); ?>" class="ag-btn-pro" style="display:inline-block;">🚀 Demander un devis en ligne →</a>
+					<a href="<?php echo esc_url( home_url( '/devis/' ) ); ?>" class="ag-btn-pro" style="display:inline-block;">🚀 Réserver une séance découverte →</a>
 				</p>
 			</div>
 		</div>

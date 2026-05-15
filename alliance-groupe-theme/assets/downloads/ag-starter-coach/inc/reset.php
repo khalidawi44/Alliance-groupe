@@ -52,13 +52,13 @@ class ag_coach_Reset {
 	 * slug => array( title, content_placeholder )
 	 */
 	const ARTISAN_PAGES = array(
-		'prestations'        => array( 'title' => 'Prestations',          'content' => 'Nos prestations principales : rénovation, installation, entretien. Devis gratuit sous 24h.' ),
-		'zones-intervention' => array( 'title' => "Zones d'intervention", 'content' => 'Nous intervenons dans toute votre région, y compris en urgence.' ),
-		'realisations'       => array( 'title' => 'Réalisations',         'content' => 'Découvrez nos chantiers récents : rénovations, installations techniques, travaux sur-mesure.' ),
-		'qui-sommes-nous'    => array( 'title' => 'Qui sommes-nous',      'content' => "Depuis plus de dix ans, notre équipe d'artisans qualifiés accompagne particuliers et professionnels." ),
-		'devis'              => array( 'title' => 'Devis en ligne',       'content' => '[ag_coach_devis]' ),
-		'mentions'           => array( 'title' => 'Mentions légales',     'content' => 'Mentions légales et informations sur l\'entreprise.' ),
-		'contact'            => array( 'title' => 'Contact',              'content' => 'Pour toute demande de devis ou de renseignement, contactez-nous.' ),
+		'prestations'        => array( 'title' => 'Mes accompagnements', 'content' => "Coaching individuel, accompagnement de groupe, séances en présentiel ou en visio. Une approche bienveillante et structurée vers vos objectifs." ),
+		'zones-intervention' => array( 'title' => "Modes de séance",     'content' => "Choisissez le format qui vous convient : présentiel en cabinet, visio sécurisée, à domicile ou en extérieur (marche-coaching, séances sportives)." ),
+		'realisations'       => array( 'title' => 'Témoignages',         'content' => "Découvrez des parcours d'accompagnement et ce qu'en disent les personnes accompagnées. Burn-out, transition de carrière, préparation mentale, performance sportive — chaque histoire est unique." ),
+		'qui-sommes-nous'    => array( 'title' => 'À propos',            'content' => "Coach certifié, je vous accompagne avec écoute, sans jugement, vers vos objectifs personnels ou professionnels. Découvrez mon parcours et ma méthode." ),
+		'devis'              => array( 'title' => 'Réserver une séance', 'content' => '[ag_coach_devis]' ),
+		'mentions'           => array( 'title' => 'Mentions légales',   'content' => 'Mentions légales et informations sur le cabinet.' ),
+		'contact'            => array( 'title' => 'Contact',            'content' => "Pour réserver votre séance découverte (offerte) ou toute question, contactez-moi. Réponse sous 24h." ),
 	);
 
 	/**
@@ -66,7 +66,20 @@ class ag_coach_Reset {
 	 * les sites qui ont déjà l'ancien menu/pages. Stocké dans option
 	 * ag_coach_installer_version.
 	 */
-	const INSTALLER_VERSION = 2;
+	const INSTALLER_VERSION = 3;
+
+	/**
+	 * Anciens titres de pages (artisan ou template basique) qui doivent être
+	 * migrés vers les nouveaux titres coach lors de install_pages_and_menu.
+	 */
+	const LEGACY_PAGE_TITLES = array(
+		'prestations'        => array( 'Prestations' ),
+		'zones-intervention' => array( "Zones d'intervention", 'Zones d&#8217;intervention', "Zones d&rsquo;intervention" ),
+		'realisations'       => array( 'Réalisations', 'Realisations' ),
+		'qui-sommes-nous'    => array( 'Qui sommes-nous' ),
+		'devis'              => array( 'Devis en ligne' ),
+		'contact'            => array( 'Contact' ),
+	);
 
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ), 30 );
@@ -149,7 +162,7 @@ class ag_coach_Reset {
 				}
 			} else {
 				$created_page_ids[ $slug ] = $page->ID;
-				// Si page existe mais contenu vide ou shortcode echappé, on le repare
+				// Si page existe mais contenu vide ou shortcode echappé, on le répare.
 				if ( '[ag_coach_devis]' === trim( $data['content'] ) ) {
 					$current = get_post_field( 'post_content', $page->ID );
 					if ( false === strpos( $current, 'wp:shortcode' ) && false === strpos( $current, '[ag_coach_devis]' ) ) {
@@ -158,6 +171,26 @@ class ag_coach_Reset {
 							'post_content' => "<!-- wp:shortcode -->\n[ag_coach_devis]\n<!-- /wp:shortcode -->",
 						) );
 					}
+				}
+				// Migration douce des pages existantes au titre artisan/basique :
+				// si le titre actuel correspond à un ancien preset (Prestations,
+				// Réalisations, …) ET ne correspond pas déjà au nouveau, on
+				// remplace titre + contenu par les nouveaux. N'écrase JAMAIS une
+				// édition utilisateur (titre custom = pas dans LEGACY).
+				$current_title = get_the_title( $page->ID );
+				$legacy_titles = isset( self::LEGACY_PAGE_TITLES[ $slug ] ) ? self::LEGACY_PAGE_TITLES[ $slug ] : array();
+				if ( in_array( $current_title, $legacy_titles, true ) && $current_title !== $data['title'] ) {
+					$content = trim( $data['content'] );
+					if ( preg_match( '/^\[\w+/', $content ) ) {
+						$post_content = "<!-- wp:shortcode -->\n" . $content . "\n<!-- /wp:shortcode -->";
+					} else {
+						$post_content = '<!-- wp:paragraph --><p>' . esc_html( $content ) . '</p><!-- /wp:paragraph -->';
+					}
+					wp_update_post( array(
+						'ID'           => $page->ID,
+						'post_title'   => $data['title'],
+						'post_content' => $post_content,
+					) );
 				}
 			}
 		}

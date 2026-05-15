@@ -1,11 +1,12 @@
-﻿<?php
+<?php
 /**
- * Template page "Qui sommes-nous".
+ * Template page "Qui sommes-nous" (variante coach).
  *
- * Layout 2 colonnes (texte + photo équipe) + timeline historique +
- * témoignages + CTA. Photo et timeline dependent du metier actif.
+ * Layout 2 colonnes (texte + photo coach) + timeline parcours +
+ * témoignages + CTA. Photo et timeline dépendent de la spécialité
+ * coach active (général, sportif, vie, business, mental).
  *
- * @package AG_Starter_Artisan
+ * @package AG_Starter_Coach
  */
 
 get_header();
@@ -14,54 +15,55 @@ $metier_slug   = get_theme_mod( 'ag_coach_metier_slug', '' );
 $ag_metier_nom = ag_coach_opt( 'ag_coach_metier_nom', '' );
 $ag_hero_image = ag_coach_opt( 'ag_coach_hero_image', '' );
 
-// Photo "équipe / atelier" Unsplash par metier
+// Photo "coach en séance / cabinet" Unsplash par spécialité coach
 $about_photos = array(
-	'macon'        => 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=900&q=80',
-	'electricien'  => 'https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0?w=900&q=80',
-	'traiteur'     => 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=900&q=80',
-	'multiservice' => 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900&q=80',
-	'generaliste'  => 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=900&q=80',
+	'coach_general'  => 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=900&q=80',
+	'coach_sportif'  => 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=900&q=80',
+	'coach_vie'      => 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=900&q=80',
+	'coach_business' => 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=900&q=80',
+	'coach_mental'   => 'https://images.unsplash.com/photo-1545389336-cf090694435e?w=900&q=80',
 );
-$about_photo = isset( $about_photos[ $metier_slug ] ) ? $about_photos[ $metier_slug ] : $about_photos['generaliste'];
+$about_photo = isset( $about_photos[ $metier_slug ] ) ? $about_photos[ $metier_slug ] : $about_photos['coach_general'];
 
-// Timeline historique par metier (4-5 etapes)
+// Timeline parcours par spécialité coach (4-5 étapes : formation, certif, exp)
 $timelines = array(
-	'macon' => array(
-		array( 'year' => '2001', 'text' => "Création de l'entreprise par Pierre Martin, compagnon maçon depuis 15 ans." ),
-		array( 'year' => '2008', 'text' => "Embauche du 3e compagnon. Premier chantier d'extension d'envergure (120m²)." ),
-		array( 'year' => '2015', 'text' => "Certification Qualibat. Entrée dans la FFB (Fédération Française du Bâtiment)." ),
-		array( 'year' => '2022', 'text' => "Reprise par son fils Thomas. 8 compagnons salariés, chantiers dans 4 départements." ),
-		array( 'year' => 'Aujourd\'hui', 'text' => "Plus de 200 chantiers livrés, label Qualibat renouvelé, garantie décennale Maaf Pro." ),
+	'coach_general' => array(
+		array( 'year' => '2014', 'text' => "Première formation coach professionnel certifiée (RNCP niveau 6, école Linkup)." ),
+		array( 'year' => '2017', 'text' => "Certification ICF (International Coach Federation) — Associate Certified Coach." ),
+		array( 'year' => '2020', 'text' => "Spécialisation accompagnement de transition : 80 personnes coachées sur 3 ans." ),
+		array( 'year' => '2024', 'text' => "Plus de 200 personnes accompagnées. Note 4,9/5 sur Google Avis vérifiés." ),
+		array( 'year' => "Aujourd'hui", 'text' => "Cabinet présentiel + visio. Séance découverte offerte sur simple demande." ),
 	),
-	'electricien' => array(
-		array( 'year' => '2013', 'text' => "Lancement de l'activité par Sami, électricien diplômé Bac Pro ELEEC." ),
-		array( 'year' => '2017', 'text' => "Obtention de la certification Qualifelec. Premier gros chantier domotique." ),
-		array( 'year' => '2021', 'text' => "Agrément IRVE (Infrastructure de Recharge VE). 1ère borne de recharge installée." ),
-		array( 'year' => '2024', 'text' => "Équipe de 4 électriciens. 1 200 interventions, astreinte 7j/7." ),
-		array( 'year' => 'Aujourd\'hui', 'text' => "Spécialiste mise aux normes NF C 15-100 + domotique + bornes VE." ),
+	'coach_sportif' => array(
+		array( 'year' => '2012', 'text' => "Diplôme BPJEPS Activités de la Forme + Licence STAPS Entraînement Sportif." ),
+		array( 'year' => '2016', 'text' => "Certification préparation mentale Sport (INSEP). 1er athlète coaché en compétition." ),
+		array( 'year' => '2019', 'text' => "Spécialisation nutrition sportive (DU Université Paris-Cité)." ),
+		array( 'year' => '2023', 'text' => "Plus de 300 athlètes accompagnés. 2 podiums marathon France, 1 record perso semi." ),
+		array( 'year' => "Aujourd'hui", 'text' => "Programmes individualisés, suivi en salle + à domicile + visio." ),
 	),
-	'traiteur' => array(
-		array( 'year' => '2007', 'text' => "Création par le chef Olivier, formé au Plaza Athénée et chez Drouant." ),
-		array( 'year' => '2012', 'text' => "Premier mariage de 200 invités. Acquisition d'un camion frigorifique." ),
-		array( 'year' => '2018', 'text' => "Référencé sur Mariages.net et Zankyou. Top 10 traiteurs de la région." ),
-		array( 'year' => '2023', 'text' => "Équipe de 12 personnes. 1 200 événements à notre actif." ),
-		array( 'year' => 'Aujourd\'hui', 'text' => "Spécialités mariages, séminaires entreprise, cocktails de prestige." ),
+	'coach_vie' => array(
+		array( 'year' => '2013', 'text' => "Reconversion après 10 ans en entreprise. Formation Coach de vie (RNCP niveau 6)." ),
+		array( 'year' => '2016', 'text' => "Praticien certifié PNL (Programmation Neuro-Linguistique)." ),
+		array( 'year' => '2019', 'text' => "Spécialisation accompagnement burn-out et reconversion professionnelle." ),
+		array( 'year' => '2024', 'text' => "Plus de 250 personnes accompagnées. Auteur de l'ouvrage 'Se retrouver'." ),
+		array( 'year' => "Aujourd'hui", 'text' => "Approche systémique, séances individuelles, ateliers groupe trimestriels." ),
 	),
-	'multiservice' => array(
-		array( 'year' => '2017', 'text' => "Lancement de l'activité — coordination de tous corps de métier en 1 contact." ),
-		array( 'year' => '2020', 'text' => "Embauche du 5e compagnon. Premier contrat annuel avec une copropriété." ),
-		array( 'year' => '2023', 'text' => "Équipe de 12 polyvalents (plomberie, élec, peinture, jardin)." ),
-		array( 'year' => '2025', 'text' => "1 800 missions réalisées. 14 copropriétés en contrat d'entretien." ),
-		array( 'year' => 'Aujourd\'hui', 'text' => "Un seul interlocuteur pour tous vos travaux — 96% satisfaction client." ),
+	'coach_business' => array(
+		array( 'year' => '2010', 'text' => "MBA HEC + 12 ans en cabinet conseil (McKinsey, BCG)." ),
+		array( 'year' => '2016', 'text' => "Certification Master Coach EMCC. Premier accompagnement de COMEX." ),
+		array( 'year' => '2019', 'text' => "Référencé OPCO (Atlas, Constructys, Akto). Datadock + Qualiopi." ),
+		array( 'year' => '2024', 'text' => "Plus de 150 dirigeants accompagnés. 40 équipes en coaching collectif." ),
+		array( 'year' => "Aujourd'hui", 'text' => "Coaching individuel dirigeants + team building + co-développement." ),
 	),
-	'generaliste' => array(
-		array( 'year' => '2015', 'text' => "Création de l'entreprise sur le principe : un artisan polyvalent, partout." ),
-		array( 'year' => '2018', 'text' => "Premier gros chantier de rénovation complète d'appartement (T3)." ),
-		array( 'year' => '2022', 'text' => "Équipe stabilisée, 600 chantiers livrés, note 4,8/5 sur avis clients." ),
-		array( 'year' => 'Aujourd\'hui', 'text' => "Devis 24h, intervention sous 7 jours, satisfaction garantie." ),
+	'coach_mental' => array(
+		array( 'year' => '2011', 'text' => "Master Psychologie Clinique + DU Préparation Mentale (Paris-Saclay)." ),
+		array( 'year' => '2015', 'text' => "Formation MBSR (Mindfulness Based Stress Reduction) Université Massachusetts." ),
+		array( 'year' => '2019', 'text' => "Spécialisation gestion stress sportifs haut niveau et chefs d'entreprise." ),
+		array( 'year' => '2024', 'text' => "Plus de 400 personnes accompagnées en présentiel + visio." ),
+		array( 'year' => "Aujourd'hui", 'text' => "Cabinet + visio. Séances individuelles + groupes de méditation hebdo." ),
 	),
 );
-$timeline = isset( $timelines[ $metier_slug ] ) ? $timelines[ $metier_slug ] : $timelines['generaliste'];
+$timeline = isset( $timelines[ $metier_slug ] ) ? $timelines[ $metier_slug ] : $timelines['coach_general'];
 ?>
 
 <main id="ag-main" class="ag-main ag-main--premium" role="main">
@@ -69,9 +71,9 @@ $timeline = isset( $timelines[ $metier_slug ] ) ? $timelines[ $metier_slug ] : $
 	<?php while ( have_posts() ) : the_post(); ?>
 		<section class="ag-page-hero ag-page-hero--full"<?php if ( $ag_hero_image ) : ?> style="background-image:url('<?php echo esc_url( $ag_hero_image ); ?>');"<?php endif; ?>>
 			<div class="ag-container">
-				<span class="ag-page-tag"><?php echo esc_html( $ag_metier_nom ?: 'L\'équipe' ); ?></span>
-				<h1 class="ag-page-title">Qui <em>sommes-nous</em></h1>
-				<p class="ag-page-hero-sub">Un savoir-faire artisanal, transmis et entretenu chaque jour.</p>
+				<span class="ag-page-tag"><?php echo esc_html( $ag_metier_nom ?: 'Votre coach' ); ?></span>
+				<h1 class="ag-page-title">Qui <em>suis-je</em></h1>
+				<p class="ag-page-hero-sub">Une approche bienveillante, des résultats concrets, à vos côtés sur la durée.</p>
 			</div>
 		</section>
 	<?php endwhile; ?>
@@ -79,8 +81,8 @@ $timeline = isset( $timelines[ $metier_slug ] ) ? $timelines[ $metier_slug ] : $
 	<section class="ag-about-wrap">
 		<div class="ag-about-grid">
 			<div class="ag-about-text ag-anim">
-				<h3>Notre engagement</h3>
-				<h2>Un savoir-faire artisanal, transmis et entretenu chaque jour.</h2>
+				<h3>Mon engagement</h3>
+				<h2>Vous accompagner avec écoute, sans jugement, vers vos objectifs.</h2>
 				<?php while ( have_posts() ) : the_post(); the_content(); endwhile; ?>
 			</div>
 			<div class="ag-about-photo ag-anim" style="background-image:url('<?php echo esc_url( $about_photo ); ?>');"></div>
@@ -90,7 +92,7 @@ $timeline = isset( $timelines[ $metier_slug ] ) ? $timelines[ $metier_slug ] : $
 	<section class="ag-timeline">
 		<div class="ag-container">
 			<div class="ag-services-grid-header ag-anim">
-				<h2 class="ag-services-grid-title">Notre <em>histoire</em></h2>
+				<h2 class="ag-services-grid-title">Mon <em>parcours</em></h2>
 			</div>
 			<div class="ag-timeline-grid">
 				<?php foreach ( $timeline as $step ) : ?>
@@ -105,9 +107,9 @@ $timeline = isset( $timelines[ $metier_slug ] ) ? $timelines[ $metier_slug ] : $
 
 	<section class="ag-cta-band">
 		<div class="ag-container">
-			<h2 class="ag-cta-band__title">Travaillons ensemble</h2>
-			<p class="ag-cta-band__lead">Devis gratuit, contact direct, estimation instantanée.</p>
-			<a href="<?php echo esc_url( home_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Obtenir mon devis →</a>
+			<h2 class="ag-cta-band__title">Parlons de votre projet</h2>
+			<p class="ag-cta-band__lead">Séance découverte offerte — sans engagement, pour clarifier vos besoins.</p>
+			<a href="<?php echo esc_url( home_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Réserver ma séance découverte →</a>
 		</div>
 	</section>
 
