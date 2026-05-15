@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour artisans, plombiers, electriciens, menuisiers, BTP. Structure minimaliste noir et bronze, responsive, sans fioritures. Contenu pre-redige en francais natif : prestations, zones d'intervention, devis. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.13.2
+Version: 1.13.3
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -1112,4 +1112,22 @@ body.ag-premium-mode.page:not(.home) .ag-site-header{
     padding:10px 0!important;
     border-bottom:1px solid #ececec!important;
     box-shadow:0 2px 10px rgba(0,0,0,.05);
+}
+
+/* ── Cache la section gutenberg de la page Accueil (qui crée l'espace) ── */
+body.ag-premium-mode.home .ag-custom-content{display:none!important}
+
+/* ── Menu plus lisible : police plus grande + padding header ────────── */
+body.ag-premium-mode .ag-site-header{padding:24px 0!important}
+body.ag-premium-mode .ag-site-brand{font-size:1.5rem!important;letter-spacing:2px}
+body.ag-premium-mode .ag-primary-menu a{font-size:1rem!important;padding:10px 14px!important;font-weight:600}
+body.ag-premium-mode .ag-site-header.scrolled{padding:14px 0!important}
+body.ag-premium-mode.page:not(.home) .ag-site-header{padding:14px 0!important}
+
+/* Hero photo : commence vraiment a 0 (top), pleine hauteur derriere header */
+body.ag-premium-mode.home .ag-hero-pro{
+    margin-top:0!important;
+    min-height:100vh!important;
+    padding-top:140px!important;
+    padding-bottom:80px!important;
 }
