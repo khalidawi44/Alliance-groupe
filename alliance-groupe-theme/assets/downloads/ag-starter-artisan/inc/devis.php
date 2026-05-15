@@ -45,15 +45,15 @@ class AG_Artisan_Devis {
 			'diagnostic-electrique'    => array( 'min' => 120,   'max' => 280,   'unit' => 'forfait', 'label' => 'Diagnostic électrique complet' ),
 			'renovation-totale'        => array( 'min' => 110,   'max' => 180,   'unit' => 'm2',     'label' => 'Rénovation électrique totale (au m²)' ),
 		),
-		'boulanger' => array(
-			'pains-traditionnels'     => array( 'min' => 3,    'max' => 8,    'unit' => 'forfait', 'label' => 'Pain traditionnel (à l\'unité)' ),
-			'viennoiseries'           => array( 'min' => 1,    'max' => 3,    'unit' => 'forfait', 'label' => 'Viennoiserie (à l\'unité)' ),
-			'patisseries-fines'       => array( 'min' => 3,    'max' => 8,    'unit' => 'forfait', 'label' => 'Pâtisserie individuelle' ),
-			'gateaux-sur-commande'    => array( 'min' => 30,   'max' => 150,  'unit' => 'forfait', 'label' => 'Gâteau sur commande (selon parts)' ),
-			'sandwich-snacking'       => array( 'min' => 4,    'max' => 9,    'unit' => 'forfait', 'label' => 'Sandwich / formule' ),
-			'tartes-maison'           => array( 'min' => 18,   'max' => 45,   'unit' => 'forfait', 'label' => 'Tarte (6-8 parts)' ),
-			'macarons-petits-fours'   => array( 'min' => 1.5,  'max' => 3,    'unit' => 'forfait', 'label' => 'Macaron / mignardise' ),
-			'buffet-reception'        => array( 'min' => 12,   'max' => 28,   'unit' => 'forfait', 'label' => 'Buffet sucré/salé (par personne)' ),
+		'traiteur' => array(
+			'cocktails-aperitifs'    => array( 'min' => 18, 'max' => 32,  'unit' => 'personne', 'label' => 'Cocktail apéritif (par personne)' ),
+			'buffets-froidschauds'   => array( 'min' => 28, 'max' => 48,  'unit' => 'personne', 'label' => 'Buffet froid/chaud (par personne)' ),
+			'repas-assis-service'    => array( 'min' => 45, 'max' => 95,  'unit' => 'personne', 'label' => 'Repas assis 3 services + serveur' ),
+			'mariages-cle-en-main'   => array( 'min' => 75, 'max' => 180, 'unit' => 'personne', 'label' => 'Mariage clé en main (cocktail + dîner + pièce montée)' ),
+			'seminaires-entreprise'  => array( 'min' => 32, 'max' => 65,  'unit' => 'personne', 'label' => 'Séminaire (pauses + déjeuner)' ),
+			'pieces-montees'         => array( 'min' => 7,  'max' => 14,  'unit' => 'personne', 'label' => 'Pièce montée traditionnelle (au choux)' ),
+			'plateaux-repas-pro'     => array( 'min' => 16, 'max' => 30,  'unit' => 'personne', 'label' => 'Plateau repas pro (livraison bureau)' ),
+			'menu-vegevegan'         => array( 'min' => 28, 'max' => 55,  'unit' => 'personne', 'label' => 'Menu végétarien / vegan dédié' ),
 		),
 		'multiservice' => array(
 			'plomberie'      => array( 'min' => 60,  'max' => 150, 'unit' => 'forfait', 'label' => 'Intervention plomberie (1h)' ),
@@ -123,10 +123,66 @@ class AG_Artisan_Devis {
 	}
 
 	/**
+	 * Champs de formulaire specifiques par metier.
+	 * Chaque champ : type (number/date/select/checkbox_group), name, label,
+	 * required, placeholder, options (pour select/checkbox_group).
+	 */
+	public static function get_metier_fields( $metier_slug ) {
+		$fields = array(
+			'macon' => array(
+				array( 'type' => 'number', 'name' => 'surface', 'label' => 'Surface en m²', 'placeholder' => 'ex : 80', 'required' => false, 'hint' => 'Approximative si vous ne savez pas' ),
+				array( 'type' => 'date',   'name' => 'date_souhaite', 'label' => 'Date souhaitée de démarrage', 'required' => false ),
+			),
+			'electricien' => array(
+				array( 'type' => 'select', 'name' => 'urgence', 'label' => "Niveau d'urgence", 'required' => true, 'options' => array(
+					'standard' => 'Standard (sous 7 jours)',
+					'rapide'   => 'Rapide (sous 48h)',
+					'urgent'   => 'URGENT (sous 2h, astreinte)',
+				) ),
+				array( 'type' => 'number', 'name' => 'surface', 'label' => 'Surface concernée en m² (si rénovation)', 'placeholder' => 'ex : 75', 'required' => false ),
+				array( 'type' => 'date',   'name' => 'date_souhaite', 'label' => 'Date souhaitée', 'required' => false ),
+			),
+			'traiteur' => array(
+				array( 'type' => 'date',   'name' => 'date_evenement', 'label' => "Date de l'événement", 'required' => true ),
+				array( 'type' => 'number', 'name' => 'nb_personnes',  'label' => 'Nombre de personnes', 'placeholder' => 'ex : 80', 'required' => true ),
+				array( 'type' => 'select', 'name' => 'type_evenement', 'label' => "Type d'événement", 'required' => false, 'options' => array(
+					'cocktail'    => 'Cocktail apéritif',
+					'buffet'      => 'Buffet',
+					'repas-assis' => 'Repas assis avec service',
+					'mariage'     => 'Mariage',
+					'seminaire'   => 'Séminaire entreprise',
+					'anniversaire'=> 'Anniversaire / fête privée',
+				) ),
+				array( 'type' => 'checkbox_group', 'name' => 'regimes', 'label' => 'Régimes alimentaires à prévoir', 'options' => array(
+					'vegetarien' => 'Végétarien',
+					'vegan'      => 'Vegan',
+					'sansgluten' => 'Sans gluten',
+					'halal'      => 'Halal',
+					'casher'     => 'Casher',
+				) ),
+			),
+			'multiservice' => array(
+				array( 'type' => 'number', 'name' => 'surface', 'label' => 'Surface en m² (si applicable)', 'placeholder' => 'ex : 40', 'required' => false ),
+				array( 'type' => 'select', 'name' => 'urgence', 'label' => "Délai d'intervention", 'required' => false, 'options' => array(
+					'standard' => 'Standard (sous 7 jours)',
+					'rapide'   => 'Rapide (sous 48h)',
+					'urgent'   => 'URGENT (sous 4h)',
+				) ),
+				array( 'type' => 'date', 'name' => 'date_souhaite', 'label' => 'Date souhaitée', 'required' => false ),
+			),
+			'generaliste' => array(
+				array( 'type' => 'number', 'name' => 'surface', 'label' => 'Surface en m² (si applicable)', 'placeholder' => 'ex : 50', 'required' => false ),
+				array( 'type' => 'date',   'name' => 'date_souhaite', 'label' => 'Date souhaitée', 'required' => false ),
+			),
+		);
+		return isset( $fields[ $metier_slug ] ) ? $fields[ $metier_slug ] : $fields['generaliste'];
+	}
+
+	/**
 	 * Calcule la fourchette estimative.
 	 * @return array ['min' => int, 'max' => int, 'label' => string, 'unit' => string]
 	 */
-	public static function estimate( $metier_slug, $service_slug, $surface, $postal_code ) {
+	public static function estimate( $metier_slug, $service_slug, $multiplier, $postal_code ) {
 		if ( ! isset( self::PRICES[ $metier_slug ][ $service_slug ] ) ) return null;
 		$row = self::PRICES[ $metier_slug ][ $service_slug ];
 		$min = (float) $row['min'];
@@ -138,10 +194,10 @@ class AG_Artisan_Devis {
 		$min *= $mult;
 		$max *= $mult;
 
-		// Si prix au m² et surface fournie, multiplie
-		if ( 'm2' === $row['unit'] && (float) $surface > 0 ) {
-			$min *= (float) $surface;
-			$max *= (float) $surface;
+		// Si prix au m² ou par personne, multiplie par la quantite fournie
+		if ( in_array( $row['unit'], array( 'm2', 'personne' ), true ) && (float) $multiplier > 0 ) {
+			$min *= (float) $multiplier;
+			$max *= (float) $multiplier;
 		}
 
 		return array(
@@ -187,36 +243,70 @@ class AG_Artisan_Devis {
 					<a href="<?php echo esc_url( remove_query_arg( array( 'ag_devis_result', 'ag_devis_min', 'ag_devis_max', 'ag_devis_label' ) ) ); ?>" class="ag-devis-submit" style="display:inline-block;text-decoration:none;">Faire une autre estimation</a>
 				</p>
 			<?php else : ?>
+				<?php
+				$metier_fields = self::get_metier_fields( $metier_slug );
+				// Pre-selection du service via query string (?service=slug-svc)
+				$preselected_service = isset( $_GET['service'] ) ? sanitize_title( wp_unslash( $_GET['service'] ) ) : '';
+				?>
 				<form class="ag-devis-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 					<input type="hidden" name="action" value="ag_artisan_devis_submit" />
 					<input type="hidden" name="redirect" value="<?php echo esc_url( get_permalink() ); ?>" />
 					<?php wp_nonce_field( 'ag_artisan_devis_submit' ); ?>
 
 					<div>
-						<label for="ag_devis_service">Quel service vous intéresse ?</label>
+						<label for="ag_devis_service">Quel service vous intéresse ? *</label>
 						<select name="service" id="ag_devis_service" required>
 							<option value="">— Choisir —</option>
 							<?php foreach ( $services as $svc ) :
 								$slug = sanitize_title( $svc['title'] ); ?>
-								<option value="<?php echo esc_attr( $slug ); ?>"><?php echo esc_html( $svc['emoji'] . ' ' . $svc['title'] ); ?></option>
+								<option value="<?php echo esc_attr( $slug ); ?>"<?php selected( $preselected_service, $slug ); ?>><?php echo esc_html( $svc['emoji'] . ' ' . $svc['title'] ); ?></option>
 							<?php endforeach; ?>
 						</select>
 					</div>
 
-					<div class="ag-devis-row-2">
+					<?php // Champs DYNAMIQUES selon le metier ?>
+					<?php foreach ( $metier_fields as $field ) : ?>
 						<div>
-							<label for="ag_devis_surface">Surface en m² <em style="color:#999;font-weight:normal;">(facultatif)</em></label>
-							<input type="number" name="surface" id="ag_devis_surface" min="0" step="1" placeholder="ex : 80" />
+							<label for="ag_devis_<?php echo esc_attr( $field['name'] ); ?>">
+								<?php echo esc_html( $field['label'] ); ?>
+								<?php if ( ! empty( $field['required'] ) ) : ?> *<?php endif; ?>
+								<?php if ( empty( $field['required'] ) ) : ?> <em style="color:#999;font-weight:normal;">(facultatif)</em><?php endif; ?>
+							</label>
+							<?php if ( 'number' === $field['type'] ) : ?>
+								<input type="number" name="<?php echo esc_attr( $field['name'] ); ?>" id="ag_devis_<?php echo esc_attr( $field['name'] ); ?>" min="0" step="1" placeholder="<?php echo esc_attr( isset( $field['placeholder'] ) ? $field['placeholder'] : '' ); ?>"<?php if ( ! empty( $field['required'] ) ) : ?> required<?php endif; ?> />
+							<?php elseif ( 'date' === $field['type'] ) : ?>
+								<input type="date" name="<?php echo esc_attr( $field['name'] ); ?>" id="ag_devis_<?php echo esc_attr( $field['name'] ); ?>" min="<?php echo esc_attr( date( 'Y-m-d' ) ); ?>"<?php if ( ! empty( $field['required'] ) ) : ?> required<?php endif; ?> />
+							<?php elseif ( 'select' === $field['type'] ) : ?>
+								<select name="<?php echo esc_attr( $field['name'] ); ?>" id="ag_devis_<?php echo esc_attr( $field['name'] ); ?>"<?php if ( ! empty( $field['required'] ) ) : ?> required<?php endif; ?>>
+									<option value="">— Choisir —</option>
+									<?php foreach ( $field['options'] as $key => $label ) : ?>
+										<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></option>
+									<?php endforeach; ?>
+								</select>
+							<?php elseif ( 'checkbox_group' === $field['type'] ) : ?>
+								<div style="display:flex;flex-wrap:wrap;gap:14px;padding:8px 0;">
+									<?php foreach ( $field['options'] as $key => $label ) : ?>
+										<label style="display:inline-flex;align-items:center;gap:6px;font-weight:normal;cursor:pointer;background:#fff;border:1px solid #d0d0d0;padding:8px 14px;border-radius:50px;">
+											<input type="checkbox" name="<?php echo esc_attr( $field['name'] ); ?>[]" value="<?php echo esc_attr( $key ); ?>" style="margin:0;" />
+											<?php echo esc_html( $label ); ?>
+										</label>
+									<?php endforeach; ?>
+								</div>
+							<?php endif; ?>
+							<?php if ( ! empty( $field['hint'] ) ) : ?>
+								<small style="display:block;color:#888;margin-top:4px;font-size:.85rem;"><?php echo esc_html( $field['hint'] ); ?></small>
+							<?php endif; ?>
 						</div>
-						<div>
-							<label for="ag_devis_postal">Code postal *</label>
-							<input type="text" name="postal" id="ag_devis_postal" pattern="[0-9]{5}" placeholder="75001" required />
-						</div>
+					<?php endforeach; ?>
+
+					<div>
+						<label for="ag_devis_postal">Code postal *</label>
+						<input type="text" name="postal" id="ag_devis_postal" pattern="[0-9]{5}" placeholder="75001" required />
 					</div>
 
 					<div>
 						<label for="ag_devis_message">Précisez votre besoin <em style="color:#999;font-weight:normal;">(facultatif)</em></label>
-						<textarea name="message" id="ag_devis_message" placeholder="Détails du chantier, contraintes, délai souhaité..."></textarea>
+						<textarea name="message" id="ag_devis_message" placeholder="Détails, contraintes, autres précisions..."></textarea>
 					</div>
 
 					<div class="ag-devis-row-2">
@@ -256,7 +346,6 @@ class AG_Artisan_Devis {
 		check_admin_referer( 'ag_artisan_devis_submit' );
 
 		$service_slug = isset( $_POST['service'] ) ? sanitize_key( $_POST['service'] ) : '';
-		$surface      = isset( $_POST['surface'] ) ? (float) $_POST['surface'] : 0;
 		$postal       = isset( $_POST['postal'] )  ? preg_replace( '/\D/', '', wp_unslash( $_POST['postal'] ) ) : '';
 		$message      = isset( $_POST['message'] ) ? sanitize_textarea_field( wp_unslash( $_POST['message'] ) ) : '';
 		$name         = isset( $_POST['name'] )    ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
@@ -265,11 +354,57 @@ class AG_Artisan_Devis {
 		$redirect     = isset( $_POST['redirect'] ) ? esc_url_raw( wp_unslash( $_POST['redirect'] ) ) : home_url( '/devis/' );
 
 		$metier_slug = get_theme_mod( 'ag_artisan_metier_slug', '' );
-		$estimate = self::estimate( $metier_slug, $service_slug, $surface, $postal );
+
+		// Capture les champs dynamiques specifiques au metier
+		$dynamic_fields = self::get_metier_fields( $metier_slug );
+		$dynamic_data   = array();
+		foreach ( $dynamic_fields as $f ) {
+			$key = $f['name'];
+			if ( 'checkbox_group' === $f['type'] ) {
+				$dynamic_data[ $key ] = isset( $_POST[ $key ] ) && is_array( $_POST[ $key ] )
+					? array_map( 'sanitize_key', wp_unslash( $_POST[ $key ] ) )
+					: array();
+			} elseif ( 'number' === $f['type'] ) {
+				$dynamic_data[ $key ] = isset( $_POST[ $key ] ) ? (float) $_POST[ $key ] : 0;
+			} elseif ( 'date' === $f['type'] ) {
+				$dynamic_data[ $key ] = isset( $_POST[ $key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) : '';
+			} elseif ( 'select' === $f['type'] ) {
+				$dynamic_data[ $key ] = isset( $_POST[ $key ] ) ? sanitize_key( wp_unslash( $_POST[ $key ] ) ) : '';
+			}
+		}
+
+		// Pour le calcul : on multiplie par surface (m²) ou nb_personnes (traiteur)
+		// selon ce qui est present dans les donnees dynamiques.
+		$multiplier = 0;
+		if ( ! empty( $dynamic_data['surface'] ) ) {
+			$multiplier = (float) $dynamic_data['surface'];
+		} elseif ( ! empty( $dynamic_data['nb_personnes'] ) ) {
+			$multiplier = (float) $dynamic_data['nb_personnes'];
+		}
+
+		$estimate = self::estimate( $metier_slug, $service_slug, $multiplier, $postal );
 
 		if ( ! $estimate ) {
 			wp_safe_redirect( $redirect );
 			exit;
+		}
+
+		// Construit un body lisible des champs dynamiques pour l'email + content CPT
+		$dynamic_summary = '';
+		foreach ( $dynamic_fields as $f ) {
+			$key = $f['name'];
+			$val = isset( $dynamic_data[ $key ] ) ? $dynamic_data[ $key ] : '';
+			if ( '' === $val || array() === $val ) continue;
+			if ( is_array( $val ) ) {
+				$labels = array();
+				foreach ( $val as $opt_key ) {
+					if ( isset( $f['options'][ $opt_key ] ) ) $labels[] = $f['options'][ $opt_key ];
+				}
+				$val = implode( ', ', $labels );
+			} elseif ( 'select' === $f['type'] && isset( $f['options'][ $val ] ) ) {
+				$val = $f['options'][ $val ];
+			}
+			$dynamic_summary .= sprintf( "• %s : %s\n", $f['label'], $val );
 		}
 
 		// Stocke la demande en CPT pour suivi admin
@@ -277,25 +412,25 @@ class AG_Artisan_Devis {
 			'post_type'    => 'ag_devis_lead',
 			'post_status'  => 'publish',
 			'post_title'   => sprintf( '%s — %s (%s)', $name ?: 'Anonyme', $estimate['label'], $postal ),
-			'post_content' => $message,
+			'post_content' => $message . "\n\n" . $dynamic_summary,
 			'meta_input'   => array(
 				'_ag_devis_service'  => $service_slug,
 				'_ag_devis_metier'   => $metier_slug,
-				'_ag_devis_surface'  => $surface,
 				'_ag_devis_postal'   => $postal,
 				'_ag_devis_name'     => $name,
 				'_ag_devis_email'    => $email,
 				'_ag_devis_phone'    => $phone,
 				'_ag_devis_min'      => $estimate['min'],
 				'_ag_devis_max'      => $estimate['max'],
+				'_ag_devis_dynamic'  => wp_json_encode( $dynamic_data ),
 			),
 		) );
 
 		// Email admin (notification de nouvelle demande)
 		if ( $email && get_option( 'admin_email' ) ) {
 			$body = sprintf(
-				"Nouvelle demande de devis :\n\n• Prestation : %s\n• Surface : %s m²\n• Code postal : %s\n• Estimation : %d € – %d €\n\n• Nom : %s\n• Email : %s\n• Téléphone : %s\n\n• Message : %s",
-				$estimate['label'], $surface, $postal, $estimate['min'], $estimate['max'], $name, $email, $phone, $message
+				"Nouvelle demande de devis :\n\n• Prestation : %s\n%s• Code postal : %s\n• Estimation : %d € – %d €\n\n• Nom : %s\n• Email : %s\n• Téléphone : %s\n\n• Message : %s",
+				$estimate['label'], $dynamic_summary, $postal, $estimate['min'], $estimate['max'], $name, $email, $phone, $message
 			);
 			wp_mail( get_option( 'admin_email' ), 'Nouvelle demande de devis — ' . $estimate['label'], $body );
 		}
