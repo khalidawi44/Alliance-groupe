@@ -128,7 +128,7 @@ if ( class_exists( 'ag_coach_Presets' ) ) {
 		<div class="ag-container">
 			<h2 class="ag-cta-band__title">Votre parcours sera le prochain ?</h2>
 			<p class="ag-cta-band__lead">Séance découverte offerte — 30 minutes pour clarifier vos besoins, sans engagement.</p>
-			<a href="<?php echo esc_url( home_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Réserver ma séance découverte →</a>
+			<a href="<?php echo esc_url( ag_coach_resolve_cta_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Réserver ma séance découverte →</a>
 		</div>
 	</section>
 

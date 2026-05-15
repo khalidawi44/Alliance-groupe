@@ -71,7 +71,7 @@ $zones_couvertes = array( 'Paris', 'Boulogne-Billancourt', 'Issy-les-Moulineaux'
 						<li><?php echo esc_html( $zone ); ?></li>
 					<?php endforeach; ?>
 				</ul>
-				<p style="color:#666;font-size:.9rem;">Hors zone ? <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>" style="color:var(--ag-color-accent,#2E86AB);font-weight:600;">Visio disponible partout</a> — France, DOM-TOM, international.</p>
+				<p style="color:#666;font-size:.9rem;">Hors zone ? <a href="<?php echo esc_url( ag_coach_resolve_cta_url( '/contact/' ) ); ?>" style="color:var(--ag-color-accent,#2E86AB);font-weight:600;">Visio disponible partout</a> — France, DOM-TOM, international.</p>
 				<div class="ag-zones-contact-card">
 					<strong>📞 Premier contact</strong>
 					<p style="margin:0;font-size:1.4rem;font-weight:700;">06 00 00 00 00</p>
@@ -85,7 +85,7 @@ $zones_couvertes = array( 'Paris', 'Boulogne-Billancourt', 'Issy-les-Moulineaux'
 		<div class="ag-container">
 			<h2 class="ag-cta-band__title">Prêt à démarrer ?</h2>
 			<p class="ag-cta-band__lead">Séance découverte offerte, sans engagement.</p>
-			<a href="<?php echo esc_url( home_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Réserver ma séance →</a>
+			<a href="<?php echo esc_url( ag_coach_resolve_cta_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Réserver ma séance →</a>
 		</div>
 	</section>
 

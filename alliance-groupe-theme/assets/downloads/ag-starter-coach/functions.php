@@ -284,6 +284,45 @@ require_once get_template_directory() . '/inc/presets.php';
 require_once get_template_directory() . '/inc/devis.php';
 
 /**
+ * Résout une URL CTA potentiellement relative ('/devis/', '/contact/', etc.)
+ * en URL absolue de la page WP correspondante. Si la page n'existe pas en
+ * BDD, on la crée à la volée (via install_pages_and_menu si dispo) puis on
+ * retourne l'URL. Garantit qu'AUCUN lien CTA n'est mort.
+ *
+ * @param string $raw URL brute du Customizer (peut être '/devis/' ou absolue).
+ * @return string URL utilisable dans href.
+ */
+function ag_coach_resolve_cta_url( $raw ) {
+	$raw = trim( (string) $raw );
+	if ( ! $raw ) return home_url( '/' );
+
+	// URL absolue (http://, https://, //) : on la laisse telle quelle.
+	if ( preg_match( '#^(https?:)?//#i', $raw ) ) return $raw;
+
+	// Ancre seule (#section) : telle quelle.
+	if ( '#' === substr( $raw, 0, 1 ) ) return $raw;
+
+	// Extrait le slug du path : '/devis/' -> 'devis', '/contact/?utm=x' -> 'contact'.
+	$path = parse_url( $raw, PHP_URL_PATH );
+	$slug = trim( (string) $path, '/' );
+	if ( '' === $slug ) return home_url( $raw );
+
+	// Si la page existe, retourne son permalien.
+	$page = get_page_by_path( $slug );
+	if ( $page ) return get_permalink( $page->ID );
+
+	// Sinon, tente de provoquer la création immédiate via le Reset class.
+	if ( class_exists( 'ag_coach_Reset' ) && method_exists( 'ag_coach_Reset', 'install_pages_and_menu' ) ) {
+		ag_coach_Reset::install_pages_and_menu();
+		$page = get_page_by_path( $slug );
+		if ( $page ) return get_permalink( $page->ID );
+	}
+
+	// Fallback ultime : home_url (jamais une 404).
+	return home_url( '/' );
+}
+
+/**
  * Active les animations scroll-reveal (.ag-anim -> .is-visible) via
  * IntersectionObserver. Inline pour eviter une requete http supplementaire.
  * Respecte prefers-reduced-motion (le CSS .ag-anim ne s'active pas dans ce cas).

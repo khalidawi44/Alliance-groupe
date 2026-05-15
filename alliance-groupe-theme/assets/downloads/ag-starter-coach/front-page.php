@@ -46,6 +46,7 @@ endwhile; rewind_posts(); endif; ?>
 				<?php
 				$ag_btn_label = ag_starter_coach_get_option( 'ag_hero_button' );
 				$ag_btn_url   = ag_starter_coach_get_option( 'ag_hero_button_url' );
+				$ag_btn_url   = ag_coach_resolve_cta_url( $ag_btn_url );
 				if ( $ag_btn_label ) : ?>
 					<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn-pro"><?php echo esc_html( $ag_btn_label ); ?> →</a>
 				<?php endif; ?>
@@ -76,6 +77,7 @@ endwhile; rewind_posts(); endif; ?>
 				<?php
 				$ag_btn_label = ag_starter_coach_get_option( 'ag_hero_button' );
 				$ag_btn_url   = ag_starter_coach_get_option( 'ag_hero_button_url' );
+				$ag_btn_url   = ag_coach_resolve_cta_url( $ag_btn_url );
 				if ( $ag_btn_label ) : ?>
 					<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn"><?php echo esc_html( $ag_btn_label ); ?></a>
 				<?php endif; ?>
@@ -103,9 +105,8 @@ endwhile; rewind_posts(); endif; ?>
 					// sinon page Devis avec le slug service pre-rempli en query string.
 					$svc_url = ! empty( $svc['url'] ) ? $svc['url'] : '';
 					if ( ! $svc_url ) {
-						$devis_page = get_page_by_path( 'devis' );
-						$svc_url    = $devis_page ? get_permalink( $devis_page ) : home_url( '/devis/' );
-						$svc_url    = add_query_arg( 'service', sanitize_title( $svc['title'] ), $svc_url );
+						$svc_url = ag_coach_resolve_cta_url( '/devis/' );
+						$svc_url = add_query_arg( 'service', sanitize_title( $svc['title'] ), $svc_url );
 					}
 				?>
 					<a class="ag-service-card ag-anim" href="<?php echo esc_url( $svc_url ); ?>">
