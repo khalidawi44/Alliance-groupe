@@ -31,21 +31,21 @@ endwhile; rewind_posts(); endif; ?>
 
 <main id="ag-main" class="<?php echo $ag_has_preset ? 'ag-main ag-main--premium' : 'ag-main'; ?>" role="main">
 
-	<?php if ( ag_starter_artisan_get_option( 'ag_hero_show' ) ) : ?>
+	<?php if ( ag_starter_coach_get_option( 'ag_hero_show' ) ) : ?>
 	<?php if ( $ag_has_preset && $ag_hero_image ) : ?>
 		<!-- Hero photo lifestyle style meilleur-artisan.com -->
 		<section class="ag-hero-pro" style="background-image:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.55)),url('<?php echo esc_url( $ag_hero_image ); ?>');">
 			<div class="ag-container">
 				<h1 class="ag-hero-pro__title">
-					<?php echo esc_html( ag_starter_artisan_get_option( 'ag_hero_prefix' ) ); ?>
-					<em><?php echo esc_html( ag_starter_artisan_get_option( 'ag_hero_brand' ) ); ?></em>
+					<?php echo esc_html( ag_starter_coach_get_option( 'ag_hero_prefix' ) ); ?>
+					<em><?php echo esc_html( ag_starter_coach_get_option( 'ag_hero_brand' ) ); ?></em>
 				</h1>
 				<p class="ag-hero-pro__subtitle">
-					<?php echo esc_html( ag_starter_artisan_get_option( 'ag_hero_subtitle' ) ); ?>
+					<?php echo esc_html( ag_starter_coach_get_option( 'ag_hero_subtitle' ) ); ?>
 				</p>
 				<?php
-				$ag_btn_label = ag_starter_artisan_get_option( 'ag_hero_button' );
-				$ag_btn_url   = ag_starter_artisan_get_option( 'ag_hero_button_url' );
+				$ag_btn_label = ag_starter_coach_get_option( 'ag_hero_button' );
+				$ag_btn_url   = ag_starter_coach_get_option( 'ag_hero_button_url' );
 				if ( $ag_btn_label ) : ?>
 					<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn-pro"><?php echo esc_html( $ag_btn_label ); ?> →</a>
 				<?php endif; ?>
@@ -67,15 +67,15 @@ endwhile; rewind_posts(); endif; ?>
 		<section class="ag-hero">
 			<div class="ag-container">
 				<h1 class="ag-hero__title">
-					<?php echo esc_html( ag_starter_artisan_get_option( 'ag_hero_prefix' ) ); ?>
-					<span><?php echo esc_html( ag_starter_artisan_get_option( 'ag_hero_brand' ) ); ?></span>
+					<?php echo esc_html( ag_starter_coach_get_option( 'ag_hero_prefix' ) ); ?>
+					<span><?php echo esc_html( ag_starter_coach_get_option( 'ag_hero_brand' ) ); ?></span>
 				</h1>
 				<p class="ag-hero__subtitle">
-					<?php echo esc_html( ag_starter_artisan_get_option( 'ag_hero_subtitle' ) ); ?>
+					<?php echo esc_html( ag_starter_coach_get_option( 'ag_hero_subtitle' ) ); ?>
 				</p>
 				<?php
-				$ag_btn_label = ag_starter_artisan_get_option( 'ag_hero_button' );
-				$ag_btn_url   = ag_starter_artisan_get_option( 'ag_hero_button_url' );
+				$ag_btn_label = ag_starter_coach_get_option( 'ag_hero_button' );
+				$ag_btn_url   = ag_starter_coach_get_option( 'ag_hero_button_url' );
 				if ( $ag_btn_label ) : ?>
 					<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn"><?php echo esc_html( $ag_btn_label ); ?></a>
 				<?php endif; ?>
