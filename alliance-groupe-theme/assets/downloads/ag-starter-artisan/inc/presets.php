@@ -210,9 +210,9 @@ class AG_Artisan_Presets {
 					array( 'q' => 'Quel délai pour réserver un mariage ?', 'a' => 'Idéalement 3 à 6 mois avant. En urgence (< 1 mois) selon disponibilité avec menu pré-établi.' ),
 				),
 				'stats' => array(
-					array( 'value' => '18 ans',  'label' => 'Au service du quartier' ),
-					array( 'value' => '5 000+',  'label' => 'Événements approvisionnés' ),
-					array( 'value' => '6h-20h',  'label' => 'Mardi au dimanche' ),
+					array( 'value' => '18 ans',  'label' => 'D\'expérience' ),
+					array( 'value' => '1 200+',  'label' => 'Événements réalisés' ),
+					array( 'value' => '320',     'label' => 'Mariages organisés' ),
 				),
 				'pages' => array(
 					'qui-sommes-nous'    => "Maison de traiteur indépendante depuis 18 ans, dirigée par un chef formé en hôtellerie de prestige. Notre équipe de 12 personnes (chefs, commis, maîtres d'hôtel, sommelier) accompagne particuliers et entreprises sur tous types d'événements.\n\nNotre signature : une cuisine maison, du produit frais, des sauces faites le jour même, des dressages travaillés à l'assiette. Pas de surgelé, pas de gain de production industrielle — uniquement du fait main, en quantité raisonnée selon votre nombre d'invités.\n\nPartenaires locaux : maraîchers, éleveurs, pêcheurs et fromagers de la région. Certifications : Métiers de Bouche, agrément sanitaire à jour, hygiène HACCP rigoureuse, équipe assurée RC pro.",
