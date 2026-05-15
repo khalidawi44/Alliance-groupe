@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour artisans, plombiers, electriciens, menuisiers, BTP. Structure minimaliste noir et bronze, responsive, sans fioritures. Contenu pre-redige en francais natif : prestations, zones d'intervention, devis. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.8.1
+Version: 1.9.0
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -893,3 +893,34 @@ body.ag-premium-mode .ag-page-hero{padding:80px 24px 40px;background:#fafafa;tex
 .ag-cta-band__title{font-size:2rem;font-weight:700;color:#fff;margin:0 0 10px;letter-spacing:-.02em}
 .ag-cta-band__lead{color:rgba(255,255,255,.78);font-size:1.05rem;margin:0 0 28px}
 .ag-cta-band .ag-btn-pro{font-size:1.05rem;padding:18px 36px}
+
+/* ── Fix menu decale sur pages internes (sans hero) ───────────────── */
+/* Sur la home, .ag-main--premium colle au header (hero photo direct).
+   Sur les pages internes (sans hero photo), il faut un padding-top
+   pour eviter que le contenu soit sous le sticky header. */
+body.ag-premium-mode.page:not(.home) .ag-main--premium{padding-top:30px}
+body.ag-premium-mode.page:not(.home) .ag-page-hero{padding-top:60px}
+
+/* Site brand + menu alignes verticalement dans le header */
+body.ag-premium-mode .ag-site-header__inner{padding:0 24px}
+body.ag-premium-mode .ag-primary-menu{align-items:center}
+
+/* ── Galerie Réalisations ─────────────────────────────────────────── */
+.ag-realisations-gallery{padding:60px 24px;background:#fafafa}
+.ag-realisations-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:1180px;margin:0 auto}
+@media (max-width:900px){.ag-realisations-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.ag-realisations-grid{grid-template-columns:1fr}}
+.ag-realisations-card{
+    position:relative;display:block;aspect-ratio:4/3;border-radius:14px;
+    background-size:cover;background-position:center;overflow:hidden;
+    text-decoration:none!important;cursor:pointer;
+    transition:transform .25s ease,box-shadow .25s ease;
+    box-shadow:0 4px 14px rgba(0,0,0,.08);
+}
+.ag-realisations-card:hover{transform:translateY(-4px);box-shadow:0 16px 32px rgba(0,0,0,.18)}
+.ag-realisations-card__caption{
+    position:absolute;left:0;right:0;bottom:0;padding:14px 18px;
+    color:#fff;font-weight:600;font-size:.95rem;line-height:1.3;
+    background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.7) 100%);
+    text-shadow:0 1px 4px rgba(0,0,0,.5);
+}

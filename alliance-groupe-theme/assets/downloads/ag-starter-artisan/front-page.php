@@ -100,14 +100,12 @@ endwhile; rewind_posts(); endif; ?>
 			<div class="ag-services-grid">
 				<?php foreach ( $ag_services as $svc ) :
 					// Chaque service est cliquable. URL : 'url' du service si defini,
-					// sinon page Contact, sinon ancre #ag-contact.
+					// sinon page Devis avec le slug service pre-rempli en query string.
 					$svc_url = ! empty( $svc['url'] ) ? $svc['url'] : '';
 					if ( ! $svc_url ) {
-						$contact_page = get_page_by_path( 'contact' );
-						$svc_url = $contact_page ? get_permalink( $contact_page ) : '#ag-contact';
-						// Ajoute un parametre service en query string pour pre-remplir
-						// le formulaire de contact si possible.
-						$svc_url = add_query_arg( 'service', sanitize_title( $svc['title'] ), $svc_url );
+						$devis_page = get_page_by_path( 'devis' );
+						$svc_url    = $devis_page ? get_permalink( $devis_page ) : home_url( '/devis/' );
+						$svc_url    = add_query_arg( 'service', sanitize_title( $svc['title'] ), $svc_url );
 					}
 				?>
 					<a class="ag-service-card ag-anim" href="<?php echo esc_url( $svc_url ); ?>">
