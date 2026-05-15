@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour artisans, plombiers, electriciens, menuisiers, BTP. Structure minimaliste noir et bronze, responsive, sans fioritures. Contenu pre-redige en francais natif : prestations, zones d'intervention, devis. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.13.0
+Version: 1.13.1
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -1065,3 +1065,22 @@ body.ag-premium-mode .ag-services-grid{max-width:1280px;margin:0 auto;grid-templ
     0%, 100% { box-shadow: 0 8px 24px color-mix(in srgb, var(--ag-color-accent,#F37A1F) 50%, transparent), 0 0 0 0 color-mix(in srgb, var(--ag-color-accent,#F37A1F) 40%, transparent); }
     50%      { box-shadow: 0 8px 24px color-mix(in srgb, var(--ag-color-accent,#F37A1F) 50%, transparent), 0 0 0 10px transparent; }
 }
+
+/* ── Force H1 hero blanc (override le sombre des autres titres) ──── */
+body.ag-premium-mode .ag-hero-pro__title,
+body.ag-premium-mode .ag-hero-pro__subtitle{color:#fff!important}
+body.ag-premium-mode .ag-hero-pro__title span{color:var(--ag-color-accent,#F37A1F)!important}
+
+/* ── Élimine la bande grise au-dessus du hero (home) ──────────────── */
+body.ag-premium-mode.home,
+body.ag-premium-mode.home .ag-main,
+body.ag-premium-mode.home .ag-main--premium{
+    margin-top:0!important;padding-top:0!important;
+}
+body.ag-premium-mode.home .ag-hero-pro{margin-top:0!important}
+
+/* Menu : sur fond transparent (avant scroll) les items doivent etre
+   blancs ET le hover background plus fonce pour rester visibles */
+body.ag-premium-mode .ag-site-header:not(.scrolled) .ag-primary-menu a:hover{background:rgba(255,255,255,.18)!important;color:#fff!important}
+body.ag-premium-mode .ag-site-header:not(.scrolled) .ag-primary-menu .current-menu-item > a,
+body.ag-premium-mode .ag-site-header:not(.scrolled) .ag-primary-menu .current_page_item > a{background:rgba(255,255,255,.25)!important;color:#fff!important;text-shadow:0 1px 3px rgba(0,0,0,.4)!important}
