@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour artisans, plombiers, electriciens, menuisiers, BTP. Structure minimaliste noir et bronze, responsive, sans fioritures. Contenu pre-redige en francais natif : prestations, zones d'intervention, devis. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.12.0
+Version: 1.13.0
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -1025,4 +1025,43 @@ body.ag-premium-mode .ag-site-header.is-hidden{transform:translateY(-100%)}
     .ag-lightbox__prev,.ag-lightbox__next{width:42px;height:42px;font-size:1.3rem}
     .ag-lightbox__prev{left:10px}.ag-lightbox__next{right:10px}
     .ag-lightbox__close{top:14px;right:14px}
+}
+
+/* ── Header transparent initial, devient blanc plein au scroll ────── */
+body.ag-premium-mode .ag-site-header{background:transparent!important;border-bottom:none!important;position:fixed;top:0;left:0;right:0;z-index:9000;padding:14px 0}
+body.ag-premium-mode .ag-site-header .ag-site-brand{color:#fff!important;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+body.ag-premium-mode .ag-site-header .ag-primary-menu a{color:#fff!important;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+body.ag-premium-mode .ag-site-header.scrolled{background:#fff!important;border-bottom:1px solid #ececec!important;box-shadow:0 4px 20px rgba(0,0,0,.08);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+body.ag-premium-mode .ag-site-header.scrolled .ag-site-brand{color:var(--ag-color-accent,#F37A1F)!important;text-shadow:none}
+body.ag-premium-mode .ag-site-header.scrolled .ag-primary-menu a{color:#333!important;text-shadow:none}
+body.ag-premium-mode .ag-site-header.scrolled .ag-primary-menu .current-menu-item > a,
+body.ag-premium-mode .ag-site-header.scrolled .ag-primary-menu .current_page_item > a{background:var(--ag-color-accent,#F37A1F)!important;color:#fff!important;text-shadow:none}
+/* Sur les pages internes (sans hero photo), header toujours visible blanc */
+body.ag-premium-mode.page:not(.home) .ag-site-header{background:#fff!important;border-bottom:1px solid #ececec!important;position:fixed}
+body.ag-premium-mode.page:not(.home) .ag-site-header .ag-site-brand{color:var(--ag-color-accent,#F37A1F)!important;text-shadow:none}
+body.ag-premium-mode.page:not(.home) .ag-site-header .ag-primary-menu a{color:#333!important;text-shadow:none}
+body.ag-premium-mode.page:not(.home) .ag-main--premium{padding-top:90px}
+
+/* ── Section "Nos services" : full-width au lieu de container ────── */
+body.ag-premium-mode .ag-services-grid-wrap{max-width:none!important;width:100%;margin-left:calc(50% - 50vw)!important;margin-right:calc(50% - 50vw)!important;border-radius:0;padding:80px 24px}
+body.ag-premium-mode .ag-services-grid{max-width:1280px;margin:0 auto;grid-template-columns:repeat(4,1fr)}
+@media (max-width:980px){body.ag-premium-mode .ag-services-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){body.ag-premium-mode .ag-services-grid{grid-template-columns:1fr}}
+
+/* ── Bouton retour-haut stylé (gradient + glow) ──────────────────── */
+.ag-backtop{
+    width:54px!important;height:54px!important;
+    background:linear-gradient(135deg,var(--ag-color-accent,#F37A1F) 0%,color-mix(in srgb, var(--ag-color-accent,#F37A1F) 70%, #000) 100%)!important;
+    box-shadow:0 8px 24px color-mix(in srgb, var(--ag-color-accent,#F37A1F) 50%, transparent),0 0 0 0 color-mix(in srgb, var(--ag-color-accent,#F37A1F) 40%, transparent)!important;
+    animation:agBacktopPulse 2.5s ease-in-out infinite;
+    font-size:0!important; /* hide native ↑ */
+}
+.ag-backtop::after{
+    content:'';display:block;width:14px;height:14px;border-top:3px solid #fff;border-right:3px solid #fff;
+    transform:rotate(-45deg);margin-top:6px;
+}
+.ag-backtop:hover{filter:brightness(1.12) saturate(1.1);box-shadow:0 12px 32px color-mix(in srgb, var(--ag-color-accent,#F37A1F) 60%, transparent)!important}
+@keyframes agBacktopPulse{
+    0%, 100% { box-shadow: 0 8px 24px color-mix(in srgb, var(--ag-color-accent,#F37A1F) 50%, transparent), 0 0 0 0 color-mix(in srgb, var(--ag-color-accent,#F37A1F) 40%, transparent); }
+    50%      { box-shadow: 0 8px 24px color-mix(in srgb, var(--ag-color-accent,#F37A1F) 50%, transparent), 0 0 0 10px transparent; }
 }
