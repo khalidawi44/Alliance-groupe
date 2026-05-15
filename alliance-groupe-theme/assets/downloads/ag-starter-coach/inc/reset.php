@@ -40,9 +40,11 @@ class ag_coach_Reset {
 		'manifeste', 'combats', 'evenements', 'groupes', 'actu', 'signer',
 		'don', 'adherer', 'mon-compte', 'petitions', 'reunion', 'rendez-vous',
 		'rejoindre-lfi',
-		// Avocat / Barber / Resto / Coach
+		// Avocat / Barber / Resto / Artisan
 		'domaines', 'honoraires', 'cabinet', 'reservation', 'carte', 'menu',
 		'tarifs-coach', 'seances',
+		// Pages du template coach BASIQUE d'origine — à remplacer par les pages premium
+		'mes-accompagnements', 'temoignages', 'a-propos',
 	);
 
 	/**
@@ -59,42 +61,62 @@ class ag_coach_Reset {
 		'contact'            => array( 'title' => 'Contact',              'content' => 'Pour toute demande de devis ou de renseignement, contactez-nous.' ),
 	);
 
+	/**
+	 * Version de l'installer — incrémenter pour forcer une réinstall sur tous
+	 * les sites qui ont déjà l'ancien menu/pages. Stocké dans option
+	 * ag_coach_installer_version.
+	 */
+	const INSTALLER_VERSION = 2;
+
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ), 30 );
 		add_action( 'admin_post_ag_coach_reset', array( __CLASS__, 'handle_reset' ) );
 		add_action( 'admin_post_ag_coach_sync_reset', array( __CLASS__, 'handle_sync_reset' ) );
-		// Auto-install des pages au switch_theme (utilisateur n'a pas a cliquer reset).
+		// Auto-install au switch_theme (activation initiale du thème).
 		add_action( 'after_switch_theme', array( __CLASS__, 'auto_install_pages' ) );
-		// Safety net : a chaque admin_init, si la page devis manque, on la recree.
-		add_action( 'admin_init', array( __CLASS__, 'ensure_core_pages' ) );
+		// Auto-install au upgrader (mise à jour du thème via GitHub).
+		add_action( 'upgrader_process_complete', array( __CLASS__, 'on_upgrade' ), 10, 2 );
+		// Filet de sécurité : à chaque `init` (front + admin), si la version
+		// d'installer en base < version courante, on relance. 1 SQL get_option par hit.
+		add_action( 'init', array( __CLASS__, 'maybe_install' ), 99 );
 	}
 
-	/**
-	 * Au switch_theme : exécuter la logique de création pages + menu sans purger
-	 * les mods (le user vient juste d'activer le thème, il ne faut RIEN supprimer).
-	 */
 	public static function auto_install_pages() {
 		self::install_pages_and_menu();
+		update_option( 'ag_coach_installer_version', self::INSTALLER_VERSION );
+	}
+
+	public static function on_upgrade( $upgrader, $hook_extra ) {
+		if ( empty( $hook_extra['type'] ) || 'theme' !== $hook_extra['type'] ) return;
+		if ( empty( $hook_extra['themes'] ) ) return;
+		if ( ! in_array( 'ag-starter-coach', (array) $hook_extra['themes'], true ) ) return;
+		// Reset le flag pour forcer maybe_install à relancer au prochain init.
+		delete_option( 'ag_coach_installer_version' );
 	}
 
 	/**
-	 * Safety net executee a chaque admin_init : si la page devis (ou autre page core)
-	 * est absente, on la recree. Coût quasi-nul (un get_page_by_path).
+	 * Lance install_pages_and_menu si :
+	 *  - le flag d'installer en base est < à la version compilée, OU
+	 *  - la page /devis/ n'existe pas (filet contre tout cas exotique).
+	 * Le flag est ensuite mis à jour pour ne plus rejouer.
 	 */
-	public static function ensure_core_pages() {
-		// Seulement pour les admins, evite execution sur chaque requete front
-		if ( ! is_admin() || ! current_user_can( 'manage_options' ) ) return;
-		// Only every hour
-		if ( get_transient( 'ag_coach_ensure_pages_ran' ) ) return;
-		set_transient( 'ag_coach_ensure_pages_ran', 1, HOUR_IN_SECONDS );
+	public static function maybe_install() {
+		// Ne pas tourner pendant cron/ajax/REST front non-authentifié pour pas
+		// ralentir les visiteurs (sera rejoué à la prochaine vraie pageview admin).
+		if ( wp_doing_cron() || wp_doing_ajax() ) return;
 
-		$missing = false;
-		foreach ( array_keys( self::ARTISAN_PAGES ) as $slug ) {
-			if ( ! get_page_by_path( $slug ) ) { $missing = true; break; }
+		$stored = (int) get_option( 'ag_coach_installer_version', 0 );
+		$needs  = ( $stored < self::INSTALLER_VERSION );
+
+		// Vérif renforcée : si la page devis manque, on installe de toute façon
+		if ( ! $needs ) {
+			if ( ! get_page_by_path( 'devis' ) ) $needs = true;
 		}
-		if ( $missing ) {
-			self::install_pages_and_menu();
-		}
+
+		if ( ! $needs ) return;
+
+		self::install_pages_and_menu();
+		update_option( 'ag_coach_installer_version', self::INSTALLER_VERSION );
 	}
 
 	/**
