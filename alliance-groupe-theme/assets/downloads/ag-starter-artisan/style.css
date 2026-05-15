@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour artisans, plombiers, electriciens, menuisiers, BTP. Structure minimaliste noir et bronze, responsive, sans fioritures. Contenu pre-redige en francais natif : prestations, zones d'intervention, devis. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.11.0
+Version: 1.12.0
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -974,3 +974,55 @@ body.ag-premium-mode .ag-entry-content a,
 body.ag-premium-mode .ag-comments .comment-author,
 body.ag-premium-mode .ag-widget-title{color:var(--ag-color-accent,#F37A1F)!important}
 body.ag-premium-mode .ag-entry-content blockquote{border-left-color:var(--ag-color-accent,#F37A1F)!important}
+
+/* ── Fix titres devis et autres titres invisibles ─────────────────── */
+body.ag-premium-mode .ag-devis-wrap h2{color:#1a1a1a;font-size:1.8rem;margin:0 0 12px;font-weight:700}
+body.ag-premium-mode .ag-devis-wrap h2 span{color:var(--ag-color-accent,#F37A1F)}
+body.ag-premium-mode .ag-devis-wrap p{color:#444}
+body.ag-premium-mode .ag-devis-wrap label{color:#222!important;font-weight:600}
+
+/* ── Smart sticky header : disparait au scroll down, revient au up ── */
+body.ag-premium-mode .ag-site-header{transition:transform .35s cubic-bezier(.4,0,.2,1),background .3s,box-shadow .3s}
+body.ag-premium-mode .ag-site-header.is-hidden{transform:translateY(-100%)}
+
+/* ── Bouton back-to-top ───────────────────────────────────────────── */
+.ag-backtop{
+    position:fixed;bottom:24px;right:24px;width:50px;height:50px;border-radius:50%;
+    background:var(--ag-color-accent,#F37A1F);color:#fff;border:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+    box-shadow:0 6px 20px rgba(0,0,0,.25);
+    opacity:0;pointer-events:none;transform:translateY(20px);
+    transition:opacity .25s ease,transform .25s ease,background .15s;
+    z-index:9998;
+}
+.ag-backtop.is-visible{opacity:1;pointer-events:auto;transform:translateY(0)}
+.ag-backtop:hover{transform:translateY(-4px);filter:brightness(1.1)}
+
+/* ── Lightbox galerie réalisations ────────────────────────────────── */
+.ag-lightbox{
+    position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:99999;
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;pointer-events:none;transition:opacity .25s ease;
+}
+.ag-lightbox.is-open{opacity:1;pointer-events:auto}
+.ag-lightbox__img{max-width:90vw;max-height:85vh;object-fit:contain;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.5);cursor:default}
+.ag-lightbox__caption{
+    position:absolute;bottom:60px;left:50%;transform:translateX(-50%);
+    color:#fff;background:rgba(0,0,0,.6);padding:10px 20px;border-radius:50px;
+    font-size:.95rem;max-width:80vw;text-align:center;backdrop-filter:blur(8px);
+}
+.ag-lightbox__close,.ag-lightbox__prev,.ag-lightbox__next{
+    position:absolute;background:rgba(255,255,255,.12);color:#fff;border:none;cursor:pointer;
+    width:50px;height:50px;border-radius:50%;font-size:1.6rem;
+    display:flex;align-items:center;justify-content:center;
+    backdrop-filter:blur(8px);transition:background .2s;
+}
+.ag-lightbox__close:hover,.ag-lightbox__prev:hover,.ag-lightbox__next:hover{background:rgba(255,255,255,.25)}
+.ag-lightbox__close{top:24px;right:24px}
+.ag-lightbox__prev{left:24px;top:50%;transform:translateY(-50%)}
+.ag-lightbox__next{right:24px;top:50%;transform:translateY(-50%)}
+@media (max-width:560px){
+    .ag-lightbox__prev,.ag-lightbox__next{width:42px;height:42px;font-size:1.3rem}
+    .ag-lightbox__prev{left:10px}.ag-lightbox__next{right:10px}
+    .ag-lightbox__close{top:14px;right:14px}
+}
