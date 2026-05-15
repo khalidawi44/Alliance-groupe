@@ -447,10 +447,16 @@ function ag_starter_coach_register_upgrade_control() {
 		public $type = 'ag_upgrade_banner';
 
 		public function render_content() {
-			$utm  = '?utm_source=wp-customizer&utm_medium=ag-starter-coach&utm_campaign=upgrade';
-			$base = 'https://alliancegroupe-inc.com/templates-wordpress';
+			$utm     = '?utm_source=wp-customizer&utm_medium=ag-starter-coach&utm_campaign=upgrade';
+			$base    = 'https://alliancegroupe-inc.com/templates-wordpress';
 			$contact = 'https://alliancegroupe-inc.com/contact' . $utm;
-			$packs = array(
+
+			// Détecte le tier de licence active (free / pro / premium / business).
+			$tier  = class_exists( 'AG_Licence_Client' ) ? AG_Licence_Client::get_tier() : 'free';
+			$order = array( 'free' => 0, 'pro' => 1, 'premium' => 2, 'business' => 3 );
+			$cur   = isset( $order[ $tier ] ) ? $order[ $tier ] : 0;
+
+			$all_packs = array(
 				'pro' => array(
 					'icon'  => '⚡',
 					'title' => 'Pack Pro',
@@ -473,24 +479,52 @@ function ag_starter_coach_register_upgrade_control() {
 					'url'   => $base . $utm . '&pack=business#ag-pricing',
 				),
 			);
+
+			// Ne garde QUE les packs strictement supérieurs au tier courant.
+			$packs = array();
+			foreach ( $all_packs as $key => $p ) {
+				if ( $order[ $key ] > $cur ) $packs[ $key ] = $p;
+			}
+
+			$tier_labels = array(
+				'pro'      => '⚡ Pack Pro',
+				'premium'  => '🌍 Pack Premium',
+				'business' => '💼 Pack Business',
+			);
 			?>
 			<div style="background:#fff;border:1px solid #d4b45c;border-radius:8px;padding:14px;margin-top:8px;">
-				<p style="margin:0 0 12px;color:#50575e;font-size:12px;line-height:1.5;">
-					<?php esc_html_e( 'Vous utilisez la version gratuite. Trois packs payants debloquent plus de features :', 'ag-starter-coach' ); ?>
-				</p>
 
-				<?php foreach ( $packs as $p ) : ?>
-					<a href="<?php echo esc_url( $p['url'] ); ?>" target="_blank" rel="noopener" style="display:block;padding:10px 12px;background:#f6f7f7;border:1px solid #ddd;border-left:3px solid #d4b45c;border-radius:4px;color:#1d2327;text-decoration:none;margin-bottom:8px;transition:background .15s;">
-						<strong style="display:block;color:#1d2327;font-size:13px;">
-							<span style="margin-right:4px;"><?php echo esc_html( $p['icon'] ); ?></span>
-							<?php echo esc_html( $p['title'] ); ?>
-							<span style="float:right;color:#d4b45c;"><?php echo esc_html( $p['price'] ); ?></span>
-						</strong>
-						<span style="display:block;margin-top:3px;font-size:11px;color:#50575e;line-height:1.45;">
-							<?php echo esc_html( $p['desc'] ); ?>
-						</span>
-					</a>
-				<?php endforeach; ?>
+				<?php if ( 'free' !== $tier ) : ?>
+					<div style="background:linear-gradient(135deg,#d4b45c 0%,#b8941f 100%);color:#0a0a0a;padding:12px 14px;border-radius:6px;margin-bottom:<?php echo empty( $packs ) ? '0' : '12px'; ?>;text-align:center;">
+						<strong style="display:block;font-size:13px;">✓ <?php echo esc_html( $tier_labels[ $tier ] ); ?> actif</strong>
+						<span style="display:block;font-size:11px;margin-top:2px;opacity:.85;">Merci pour votre confiance !</span>
+					</div>
+				<?php endif; ?>
+
+				<?php if ( ! empty( $packs ) ) : ?>
+					<?php if ( 'free' === $tier ) : ?>
+						<p style="margin:0 0 12px;color:#50575e;font-size:12px;line-height:1.5;">
+							<?php esc_html_e( 'Vous utilisez la version gratuite. Packs payants disponibles :', 'ag-starter-coach' ); ?>
+						</p>
+					<?php else : ?>
+						<p style="margin:0 0 12px;color:#50575e;font-size:12px;line-height:1.5;">
+							<?php esc_html_e( 'Upgrader vers le niveau supérieur :', 'ag-starter-coach' ); ?>
+						</p>
+					<?php endif; ?>
+
+					<?php foreach ( $packs as $p ) : ?>
+						<a href="<?php echo esc_url( $p['url'] ); ?>" target="_blank" rel="noopener" style="display:block;padding:10px 12px;background:#f6f7f7;border:1px solid #ddd;border-left:3px solid #d4b45c;border-radius:4px;color:#1d2327;text-decoration:none;margin-bottom:8px;transition:background .15s;">
+							<strong style="display:block;color:#1d2327;font-size:13px;">
+								<span style="margin-right:4px;"><?php echo esc_html( $p['icon'] ); ?></span>
+								<?php echo esc_html( $p['title'] ); ?>
+								<span style="float:right;color:#d4b45c;"><?php echo esc_html( $p['price'] ); ?></span>
+							</strong>
+							<span style="display:block;margin-top:3px;font-size:11px;color:#50575e;line-height:1.45;">
+								<?php echo esc_html( $p['desc'] ); ?>
+							</span>
+						</a>
+					<?php endforeach; ?>
+				<?php endif; ?>
 
 				<div style="margin-top:14px;padding-top:12px;border-top:1px dashed #d4b45c;text-align:center;">
 					<a href="<?php echo esc_url( $contact ); ?>" target="_blank" rel="noopener" style="display:inline-block;color:#0a0a0a;background:#d4b45c;padding:8px 14px;border-radius:4px;font-size:12px;font-weight:700;text-decoration:none;">
