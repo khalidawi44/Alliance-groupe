@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour coachs, consultants, formateurs, therapeutes. Structure minimaliste marine et teal, responsive, sans fioritures. Contenu pre-redige en francais natif : accompagnements, temoignages, rendez-vous. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.2.0
+Version: 1.2.1
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -1035,8 +1035,8 @@ body.ag-premium-mode .ag-site-header.is-hidden{transform:translateY(-100%)}
 
 /* ── Header transparent initial, devient blanc plein au scroll ────── */
 body.ag-premium-mode .ag-site-header{background:transparent!important;border-bottom:none!important;position:fixed;top:0;left:0;right:0;z-index:9000;padding:14px 0}
-body.ag-premium-mode .ag-site-header .ag-site-brand{color:#fff!important;text-shadow:0 1px 3px rgba(0,0,0,.4)}
-body.ag-premium-mode .ag-site-header .ag-primary-menu a{color:#fff!important;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+body.ag-premium-mode .ag-site-header .ag-site-brand{color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.6),0 2px 8px rgba(0,0,0,.5),0 0 14px rgba(0,0,0,.35)}
+body.ag-premium-mode .ag-site-header .ag-primary-menu a{color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.7),0 2px 6px rgba(0,0,0,.55),0 0 12px rgba(0,0,0,.4);font-weight:700!important}
 body.ag-premium-mode .ag-site-header.scrolled{background:#fff!important;border-bottom:1px solid #ececec!important;box-shadow:0 4px 20px rgba(0,0,0,.08);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 body.ag-premium-mode .ag-site-header.scrolled .ag-site-brand{color:var(--ag-color-accent,#F37A1F)!important;text-shadow:none}
 body.ag-premium-mode .ag-site-header.scrolled .ag-primary-menu a{color:#333!important;text-shadow:none}
@@ -1090,7 +1090,7 @@ body.ag-premium-mode.home .ag-hero-pro{margin-top:0!important}
 body.ag-premium-mode .ag-site-header:not(.scrolled) .ag-primary-menu a{background:transparent!important}
 body.ag-premium-mode .ag-site-header:not(.scrolled) .ag-primary-menu a:hover{background:rgba(255,255,255,.12)!important;color:#fff!important}
 body.ag-premium-mode .ag-site-header:not(.scrolled) .ag-primary-menu .current-menu-item > a,
-body.ag-premium-mode .ag-site-header:not(.scrolled) .ag-primary-menu .current_page_item > a{background:transparent!important;color:#fff!important;text-shadow:0 1px 3px rgba(0,0,0,.5)!important;font-weight:700!important}
+body.ag-premium-mode .ag-site-header:not(.scrolled) .ag-primary-menu .current_page_item > a{background:transparent!important;color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.8),0 2px 8px rgba(0,0,0,.6),0 0 14px rgba(0,0,0,.45)!important;font-weight:800!important;text-decoration:underline!important;text-decoration-color:rgba(255,255,255,.7)!important;text-underline-offset:6px!important}
 
 /* ── Header 100% transparent en haut (pas de voile sombre) ──────────
    Lisibilité assurée par le text-shadow sur les items et l'overlay
