@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Template pour la page Prestations.
  *
@@ -55,8 +55,7 @@ get_header();
 					<a class="ag-service-card ag-anim" href="<?php echo esc_url( $svc_url ); ?>">
 						<div class="ag-service-card__icon"><?php echo esc_html( $svc['emoji'] ); ?></div>
 						<h3 class="ag-service-card__title"><?php echo esc_html( $svc['title'] ); ?></h3>
-						<span class="ag-service-card__arrow">→</span>
-					</a>
+						</a>
 				<?php endforeach; ?>
 			</div>
 		</section>
@@ -65,7 +64,7 @@ get_header();
 			<div class="ag-container">
 				<h2 class="ag-cta-band__title">Un projet en tête ?</h2>
 				<p class="ag-cta-band__lead">Devis gratuit, fourchette de prix instantanée selon votre code postal.</p>
-				<a href="<?php echo esc_url( home_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Obtenir mon devis →</a>
+				<a href="<?php echo esc_url( home_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Obtenir mon devis</a>
 			</div>
 		</section>
 	<?php endif; ?>

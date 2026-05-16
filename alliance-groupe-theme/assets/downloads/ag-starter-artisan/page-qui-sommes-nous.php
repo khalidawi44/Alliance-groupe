@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Template page "Qui sommes-nous".
  *
@@ -107,7 +107,7 @@ $timeline = isset( $timelines[ $metier_slug ] ) ? $timelines[ $metier_slug ] : $
 		<div class="ag-container">
 			<h2 class="ag-cta-band__title">Travaillons ensemble</h2>
 			<p class="ag-cta-band__lead">Devis gratuit, contact direct, estimation instantanée.</p>
-			<a href="<?php echo esc_url( home_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Obtenir mon devis →</a>
+			<a href="<?php echo esc_url( home_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Obtenir mon devis</a>
 		</div>
 	</section>
 

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * AG Starter Avocat functions and definitions.
  *
@@ -288,7 +288,7 @@ function ag_starter_avocat_companion_notice() {
 			</ul>
 		</div>
 		<div style="text-align:center;">
-			<a href="<?php echo esc_url( $search_url ); ?>" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-size:1.05rem;font-weight:700;padding:16px 32px;border-radius:8px;text-decoration:none;box-shadow:0 4px 16px rgba(212,180,92,.3);"><?php esc_html_e( 'Télécharger AG Starter Companion →', 'ag-starter-avocat' ); ?></a>
+			<a href="<?php echo esc_url( $search_url ); ?>" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-size:1.05rem;font-weight:700;padding:16px 32px;border-radius:8px;text-decoration:none;box-shadow:0 4px 16px rgba(212,180,92,.3);"><?php esc_html_e( 'Télécharger AG Starter Companion', 'ag-starter-avocat' ); ?></a>
 			<p style="color:rgba(255,255,255,.4);font-size:.8rem;margin-top:10px;"><?php esc_html_e( 'Téléchargez le ZIP, puis Extensions → Ajouter → Téléverser', 'ag-starter-avocat' ); ?></p>
 		</div>
 	</div>
@@ -310,7 +310,7 @@ function ag_starter_avocat_dashboard_widget_render() {
 	<div style="text-align:center;padding:20px 0;">
 		<p style="font-size:1.15rem;margin:0 0 16px;"><strong><?php esc_html_e( 'Votre theme est pret !', 'ag-starter-avocat' ); ?></strong></p>
 		<p style="color:#666;margin:0 0 20px;"><?php esc_html_e( 'Installez le plugin gratuit AG Starter Companion pour creer automatiquement vos pages, votre menu et configurer votre site en 1 clic.', 'ag-starter-avocat' ); ?></p>
-		<a href="<?php echo esc_url( $search_url ); ?>" class="button button-primary button-hero"><?php esc_html_e( 'Télécharger AG Starter Companion →', 'ag-starter-avocat' ); ?></a>
+		<a href="<?php echo esc_url( $search_url ); ?>" class="button button-primary button-hero"><?php esc_html_e( 'Télécharger AG Starter Companion', 'ag-starter-avocat' ); ?></a>
 		<p style="color:#999;font-size:.85rem;margin-top:12px;"><?php esc_html_e( 'Gratuit — 10 secondes — aucune inscription', 'ag-starter-avocat' ); ?></p>
 	</div>
 	<?php

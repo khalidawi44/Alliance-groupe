@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Template page Contact : coordonnees + carte Google Maps + lien direct
  * vers le formulaire devis.
@@ -61,7 +61,7 @@ $map_src       = 'https://maps.google.com/maps?q=' . $map_query . '&output=embed
 					</li>
 				</ul>
 				<p style="margin-top:24px;">
-					<a href="<?php echo esc_url( home_url( '/devis/' ) ); ?>" class="ag-btn-pro" style="display:inline-block;">🚀 Demander un devis en ligne →</a>
+					<a href="<?php echo esc_url( home_url( '/devis/' ) ); ?>" class="ag-btn-pro" style="display:inline-block;">🚀 Demander un devis en ligne</a>
 				</p>
 			</div>
 		</div>

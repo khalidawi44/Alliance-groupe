@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * @package AG_Starter_Avocat
  */
@@ -47,7 +47,7 @@ get_header();
 			<?php endif; ?>
 			<div class="ag-domaine-cta">
 				<p><?php esc_html_e( 'Vous avez un dossier dans ce domaine ?', 'ag-starter-avocat' ); ?></p>
-				<a href="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" class="ag-btn"><?php esc_html_e( 'Prendre rendez-vous →', 'ag-starter-avocat' ); ?></a>
+				<a href="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" class="ag-btn"><?php esc_html_e( 'Prendre rendez-vous', 'ag-starter-avocat' ); ?></a>
 			</div>
 		</article>
 	<?php endwhile; ?>

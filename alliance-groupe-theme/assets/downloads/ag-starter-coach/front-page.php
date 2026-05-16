@@ -48,7 +48,7 @@ endwhile; rewind_posts(); endif; ?>
 				$ag_btn_url   = ag_starter_coach_get_option( 'ag_hero_button_url' );
 				$ag_btn_url   = ag_coach_resolve_cta_url( $ag_btn_url );
 				if ( $ag_btn_label ) : ?>
-					<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn-pro"><?php echo esc_html( $ag_btn_label ); ?> →</a>
+					<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn-pro"><?php echo esc_html( $ag_btn_label ); ?></a>
 				<?php endif; ?>
 
 				<?php if ( ! empty( $ag_stats ) ) : ?>
@@ -112,7 +112,6 @@ endwhile; rewind_posts(); endif; ?>
 					<a class="ag-service-card ag-anim" href="<?php echo esc_url( $svc_url ); ?>">
 						<div class="ag-service-card__icon"><?php echo esc_html( isset( $svc['emoji'] ) ? $svc['emoji'] : '🔧' ); ?></div>
 						<h3 class="ag-service-card__title"><?php echo esc_html( isset( $svc['title'] ) ? $svc['title'] : '' ); ?></h3>
-						<span class="ag-service-card__arrow">→</span>
 					</a>
 				<?php endforeach; ?>
 			</div>

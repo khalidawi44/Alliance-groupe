@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Template for the "Domaines d'expertise" page.
  * WordPress auto-loads this for the page with slug "expertise".
@@ -64,7 +64,7 @@ get_header();
 		<div class="ag-container">
 			<h2 class="ag-section-title"><?php esc_html_e( 'Besoin d\'un conseil ?', 'ag-starter-avocat' ); ?></h2>
 			<p class="ag-section-lead"><?php esc_html_e( 'Prenez rendez-vous pour une premiere consultation confidentielle.', 'ag-starter-avocat' ); ?></p>
-			<a href="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" class="ag-btn"><?php esc_html_e( 'Prendre rendez-vous →', 'ag-starter-avocat' ); ?></a>
+			<a href="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" class="ag-btn"><?php esc_html_e( 'Prendre rendez-vous', 'ag-starter-avocat' ); ?></a>
 		</div>
 	</section>
 

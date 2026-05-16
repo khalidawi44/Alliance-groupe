@@ -85,7 +85,7 @@ $zones_couvertes = array( 'Paris', 'Boulogne-Billancourt', 'Issy-les-Moulineaux'
 		<div class="ag-container">
 			<h2 class="ag-cta-band__title">Prêt à démarrer ?</h2>
 			<p class="ag-cta-band__lead">Séance découverte offerte, sans engagement.</p>
-			<a href="<?php echo esc_url( ag_coach_resolve_cta_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Réserver ma séance →</a>
+			<a href="<?php echo esc_url( ag_coach_resolve_cta_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Réserver ma séance</a>
 		</div>
 	</section>
 

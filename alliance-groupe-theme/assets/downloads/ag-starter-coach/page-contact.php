@@ -61,7 +61,7 @@ $map_src       = 'https://maps.google.com/maps?q=' . $map_query . '&output=embed
 					</li>
 				</ul>
 				<p style="margin-top:24px;">
-					<a href="<?php echo esc_url( ag_coach_resolve_cta_url( '/devis/' ) ); ?>" class="ag-btn-pro" style="display:inline-block;">🚀 Réserver une séance découverte →</a>
+					<a href="<?php echo esc_url( ag_coach_resolve_cta_url( '/devis/' ) ); ?>" class="ag-btn-pro" style="display:inline-block;">🚀 Réserver une séance découverte</a>
 				</p>
 			</div>
 		</div>

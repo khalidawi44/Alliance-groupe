@@ -55,7 +55,6 @@ get_header();
 					<a class="ag-service-card ag-anim" href="<?php echo esc_url( $svc_url ); ?>">
 						<div class="ag-service-card__icon"><?php echo esc_html( $svc['emoji'] ); ?></div>
 						<h3 class="ag-service-card__title"><?php echo esc_html( $svc['title'] ); ?></h3>
-						<span class="ag-service-card__arrow">→</span>
 					</a>
 				<?php endforeach; ?>
 			</div>
@@ -65,7 +64,7 @@ get_header();
 			<div class="ag-container">
 				<h2 class="ag-cta-band__title">Un projet en tête ?</h2>
 				<p class="ag-cta-band__lead">Séance découverte offerte — 30 minutes pour clarifier vos besoins, sans engagement.</p>
-				<a href="<?php echo esc_url( ag_coach_resolve_cta_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Réserver ma séance découverte →</a>
+				<a href="<?php echo esc_url( ag_coach_resolve_cta_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Réserver ma séance découverte</a>
 			</div>
 		</section>
 	<?php endif; ?>

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Template pour la page Realisations.
  *
@@ -130,7 +130,7 @@ if ( class_exists( 'AG_Artisan_Presets' ) ) {
 		<div class="ag-container">
 			<h2 class="ag-cta-band__title">Votre projet sera le prochain ?</h2>
 			<p class="ag-cta-band__lead">Devis gratuit + fourchette de prix instantanée selon votre code postal.</p>
-			<a href="<?php echo esc_url( home_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Obtenir mon devis →</a>
+			<a href="<?php echo esc_url( home_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Obtenir mon devis</a>
 		</div>
 	</section>
 

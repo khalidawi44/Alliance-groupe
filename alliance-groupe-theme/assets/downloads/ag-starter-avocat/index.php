@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * @package AG_Starter_Avocat
  */
@@ -31,7 +31,7 @@ get_header();
 							<time class="ag-post-card__date" datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>"><?php echo esc_html( get_the_date() ); ?></time>
 							<h2 class="ag-post-card__title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
 							<p class="ag-post-card__excerpt"><?php echo esc_html( wp_trim_words( get_the_excerpt(), 20 ) ); ?></p>
-							<a href="<?php the_permalink(); ?>" class="ag-post-card__more"><?php esc_html_e( 'Lire la suite →', 'ag-starter-avocat' ); ?></a>
+							<a href="<?php the_permalink(); ?>" class="ag-post-card__more"><?php esc_html_e( 'Lire la suite', 'ag-starter-avocat' ); ?></a>
 						</div>
 					</article>
 				<?php endwhile; ?>

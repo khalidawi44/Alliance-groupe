@@ -109,7 +109,7 @@ $timeline = isset( $timelines[ $metier_slug ] ) ? $timelines[ $metier_slug ] : $
 		<div class="ag-container">
 			<h2 class="ag-cta-band__title">Parlons de votre projet</h2>
 			<p class="ag-cta-band__lead">Séance découverte offerte — sans engagement, pour clarifier vos besoins.</p>
-			<a href="<?php echo esc_url( ag_coach_resolve_cta_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Réserver ma séance découverte →</a>
+			<a href="<?php echo esc_url( ag_coach_resolve_cta_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Réserver ma séance découverte</a>
 		</div>
 	</section>
 

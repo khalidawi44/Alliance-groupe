@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Template for the "Prendre rendez-vous" page.
  * WordPress auto-loads this for the page with slug "rendez-vous".
@@ -96,7 +96,7 @@ $status = ag_starter_avocat_get_rdv_status();
 				</div>
 
 				<button type="submit" name="ag_rdv_submit" class="ag-btn ag-rdv__submit">
-					<?php esc_html_e( 'Envoyer ma demande →', 'ag-starter-avocat' ); ?>
+					<?php esc_html_e( 'Envoyer ma demande', 'ag-starter-avocat' ); ?>
 				</button>
 				<p class="ag-rdv__legal"><?php esc_html_e( 'Demande confidentielle protegee par le secret professionnel. Reponse sous 48h ouvrees.', 'ag-starter-avocat' ); ?></p>
 			</form>

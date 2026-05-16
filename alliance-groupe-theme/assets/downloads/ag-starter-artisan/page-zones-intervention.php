@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Template page "Zones d'intervention".
  *
@@ -72,7 +72,7 @@ $zones_couvertes = array( 'Paris', 'Boulogne-Billancourt', 'Issy-les-Moulineaux'
 		<div class="ag-container">
 			<h2 class="ag-cta-band__title">Une intervention à prévoir ?</h2>
 			<p class="ag-cta-band__lead">Devis gratuit + fourchette de prix instantanée selon votre code postal.</p>
-			<a href="<?php echo esc_url( home_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Obtenir mon devis →</a>
+			<a href="<?php echo esc_url( home_url( '/devis/' ) ); ?>" class="ag-btn-pro">🚀 Obtenir mon devis</a>
 		</div>
 	</section>
 
