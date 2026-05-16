@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour coachs, consultants, formateurs, therapeutes. Structure minimaliste marine et teal, responsive, sans fioritures. Contenu pre-redige en francais natif : accompagnements, temoignages, rendez-vous. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.1.9
+Version: 1.2.0
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -1085,15 +1085,18 @@ body.ag-premium-mode.home .ag-main--premium{
 }
 body.ag-premium-mode.home .ag-hero-pro{margin-top:0!important}
 
-/* Menu : sur fond transparent (avant scroll) les items doivent etre
-   blancs ET le hover background plus fonce pour rester visibles */
-body.ag-premium-mode .ag-site-header:not(.scrolled) .ag-primary-menu a:hover{background:rgba(255,255,255,.18)!important;color:#fff!important}
+/* Menu : sur fond 100% transparent (avant scroll) les items doivent
+   rester blancs et lisibles via text-shadow uniquement (aucun fond). */
+body.ag-premium-mode .ag-site-header:not(.scrolled) .ag-primary-menu a{background:transparent!important}
+body.ag-premium-mode .ag-site-header:not(.scrolled) .ag-primary-menu a:hover{background:rgba(255,255,255,.12)!important;color:#fff!important}
 body.ag-premium-mode .ag-site-header:not(.scrolled) .ag-primary-menu .current-menu-item > a,
-body.ag-premium-mode .ag-site-header:not(.scrolled) .ag-primary-menu .current_page_item > a{background:rgba(255,255,255,.25)!important;color:#fff!important;text-shadow:0 1px 3px rgba(0,0,0,.4)!important}
+body.ag-premium-mode .ag-site-header:not(.scrolled) .ag-primary-menu .current_page_item > a{background:transparent!important;color:#fff!important;text-shadow:0 1px 3px rgba(0,0,0,.5)!important;font-weight:700!important}
 
-/* ── Header semi-transparent sombre (lisible sur tout fond) ───────── */
+/* ── Header 100% transparent en haut (pas de voile sombre) ──────────
+   Lisibilité assurée par le text-shadow sur les items et l'overlay
+   sombre du hero (linear-gradient .35→.55 dans .ag-hero-pro). */
 body.ag-premium-mode .ag-site-header{
-    background:linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.2) 70%, transparent 100%)!important;
+    background:transparent!important;
     padding:18px 0!important;
     border-bottom:none!important;
 }
