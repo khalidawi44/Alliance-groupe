@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour coachs, consultants, formateurs, therapeutes. Structure minimaliste marine et teal, responsive, sans fioritures. Contenu pre-redige en francais natif : accompagnements, temoignages, rendez-vous. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.1.7
+Version: 1.1.8
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -566,7 +566,7 @@ p {
 .ag-main--premium h1,.ag-main--premium h2,.ag-main--premium h3{color:#1a1a1a}
 
 /* ── Hero photo lifestyle ─────────────────────────────────────────── */
-.ag-hero-pro{position:relative;min-height:520px;display:flex;align-items:center;justify-content:center;text-align:center;background-size:cover;background-position:center;padding:80px 24px;color:#fff}
+.ag-hero-pro{position:relative;min-height:520px;display:flex;align-items:center;justify-content:center;text-align:center;background-size:cover;background-position:center 20%;padding:80px 24px;color:#fff}
 .ag-hero-pro .ag-container{max-width:900px}
 .ag-hero-pro__title{font-size:3rem;font-weight:800;line-height:1.15;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.4);margin:0 0 18px}
 .ag-hero-pro__title span{color:var(--ag-color-accent,#F37A1F);display:inline-block;border-bottom:4px solid var(--ag-color-accent,#F37A1F);padding-bottom:2px}
@@ -1144,7 +1144,7 @@ body.ag-premium-mode .ag-page-hero{
     min-height:420px;
     padding:140px 24px 60px!important;
     background-size:cover!important;
-    background-position:center!important;
+    background-position:center 20%!important;
     color:#fff;
     text-align:center;
     display:flex;align-items:center;justify-content:center;
