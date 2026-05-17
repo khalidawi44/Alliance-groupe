@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour artisans, plombiers, electriciens, menuisiers, BTP. Structure minimaliste noir et bronze, responsive, sans fioritures. Contenu pre-redige en francais natif : prestations, zones d'intervention, devis. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.14.4
+Version: 1.14.5
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -1213,4 +1213,95 @@ html body.ag-premium-mode.page:not(.home) .ag-main,
 html body.ag-premium-mode.page:not(.home) .ag-main--premium,
 html body.ag-premium-mode.page:not(.home) #ag-main{
     margin-top:0!important;padding-top:0!important;
+}
+
+/* =====================================================================
+   PREMIUM MODE — Override final v2 (parité avec coach v1.2.2)
+   Menu 100% transparent (home + pages internes) + lisibilité triple
+   text-shadow + anti-bande-blanche + admin-bar offset.
+   Ajouté en fin de fichier pour battre toutes les règles précédentes.
+   ===================================================================== */
+
+/* HOME : wrappers transparents, hero collé au top */
+html body.ag-premium-mode.home{margin-top:0!important;padding-top:0!important;background:transparent!important}
+html body.ag-premium-mode.home > .ag-main,
+html body.ag-premium-mode.home .ag-main--premium,
+html body.ag-premium-mode.home #ag-main{margin-top:0!important;padding-top:0!important;background:transparent!important;border:none!important;outline:none!important}
+body.ag-premium-mode.home .ag-hero-pro{margin:0!important;border-top:none!important}
+body.ag-premium-mode.home .ag-main--premium > *:first-child:not(.ag-hero-pro){display:none!important}
+
+/* PAGES INTERNES : idem */
+html body.ag-premium-mode.page:not(.home),
+html body.ag-premium-mode.page:not(.home) .ag-main,
+html body.ag-premium-mode.page:not(.home) .ag-main--premium,
+html body.ag-premium-mode.page:not(.home) #ag-main{margin-top:0!important;padding-top:0!important;background:transparent!important;border:none!important;outline:none!important}
+body.ag-premium-mode.page:not(.home) .ag-page-hero--full{margin-top:0!important;border-top:none!important}
+
+/* MENU 100% transparent en non-scrolled, home + pages internes */
+body.ag-premium-mode .ag-site-header,
+body.ag-premium-mode.page:not(.home) .ag-site-header{
+    background:transparent!important;border-bottom:none!important;box-shadow:none!important;
+}
+body.ag-premium-mode .ag-site-header .ag-site-brand,
+body.ag-premium-mode.page:not(.home) .ag-site-header .ag-site-brand{
+    color:#fff!important;
+    text-shadow:0 1px 2px rgba(0,0,0,.6),0 2px 8px rgba(0,0,0,.5),0 0 14px rgba(0,0,0,.35)!important;
+}
+body.ag-premium-mode .ag-site-header .ag-primary-menu a,
+body.ag-premium-mode.page:not(.home) .ag-site-header .ag-primary-menu a{
+    color:#fff!important;
+    text-shadow:0 1px 2px rgba(0,0,0,.7),0 2px 6px rgba(0,0,0,.55),0 0 12px rgba(0,0,0,.4)!important;
+    background:transparent!important;font-weight:700!important;
+}
+body.ag-premium-mode .ag-site-header:not(.scrolled) .ag-primary-menu a:hover,
+body.ag-premium-mode.page:not(.home) .ag-site-header:not(.scrolled) .ag-primary-menu a:hover{
+    background:rgba(255,255,255,.12)!important;color:#fff!important;
+}
+body.ag-premium-mode .ag-site-header:not(.scrolled) .ag-primary-menu .current-menu-item > a,
+body.ag-premium-mode .ag-site-header:not(.scrolled) .ag-primary-menu .current_page_item > a,
+body.ag-premium-mode.page:not(.home) .ag-site-header:not(.scrolled) .ag-primary-menu .current-menu-item > a,
+body.ag-premium-mode.page:not(.home) .ag-site-header:not(.scrolled) .ag-primary-menu .current_page_item > a{
+    background:transparent!important;color:#fff!important;
+    text-shadow:0 1px 2px rgba(0,0,0,.8),0 2px 8px rgba(0,0,0,.6),0 0 14px rgba(0,0,0,.45)!important;
+    font-weight:800!important;
+    text-decoration:underline!important;text-decoration-color:rgba(255,255,255,.7)!important;text-underline-offset:6px!important;
+}
+
+/* SCROLLED : header blanc plein, partout */
+body.ag-premium-mode .ag-site-header.scrolled,
+body.ag-premium-mode.page:not(.home) .ag-site-header.scrolled{
+    background:rgba(255,255,255,.96)!important;
+    box-shadow:0 4px 20px rgba(0,0,0,.08)!important;
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    padding:14px 0!important;border-bottom:1px solid #ececec!important;
+}
+body.ag-premium-mode .ag-site-header.scrolled .ag-site-brand,
+body.ag-premium-mode.page:not(.home) .ag-site-header.scrolled .ag-site-brand{
+    color:var(--ag-color-accent,#F37A1F)!important;text-shadow:none!important;
+}
+body.ag-premium-mode .ag-site-header.scrolled .ag-primary-menu a,
+body.ag-premium-mode.page:not(.home) .ag-site-header.scrolled .ag-primary-menu a{
+    color:#333!important;text-shadow:none!important;background:transparent!important;font-weight:600!important;text-decoration:none!important;
+}
+body.ag-premium-mode .ag-site-header.scrolled .ag-primary-menu .current-menu-item > a,
+body.ag-premium-mode .ag-site-header.scrolled .ag-primary-menu .current_page_item > a,
+body.ag-premium-mode.page:not(.home) .ag-site-header.scrolled .ag-primary-menu .current-menu-item > a,
+body.ag-premium-mode.page:not(.home) .ag-site-header.scrolled .ag-primary-menu .current_page_item > a{
+    background:var(--ag-color-accent,#F37A1F)!important;color:#fff!important;text-decoration:none!important;
+}
+
+/* ADMIN BAR OFFSET : hero remonte de 32px pour rester collé au menu */
+html.wp-toolbar body.ag-premium-mode.home .ag-hero-pro,
+body.admin-bar.ag-premium-mode.home .ag-hero-pro,
+html.wp-toolbar body.ag-premium-mode.page:not(.home) .ag-page-hero--full,
+body.admin-bar.ag-premium-mode.page:not(.home) .ag-page-hero--full{
+    margin-top:-32px!important;padding-top:calc(140px + 32px)!important;
+}
+@media screen and (max-width:782px){
+    html.wp-toolbar body.ag-premium-mode.home .ag-hero-pro,
+    body.admin-bar.ag-premium-mode.home .ag-hero-pro,
+    html.wp-toolbar body.ag-premium-mode.page:not(.home) .ag-page-hero--full,
+    body.admin-bar.ag-premium-mode.page:not(.home) .ag-page-hero--full{
+        margin-top:-46px!important;padding-top:calc(140px + 46px)!important;
+    }
 }
