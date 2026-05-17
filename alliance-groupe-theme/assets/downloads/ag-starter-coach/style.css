@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour coachs, consultants, formateurs, therapeutes. Structure minimaliste marine et teal, responsive, sans fioritures. Contenu pre-redige en francais natif : accompagnements, temoignages, rendez-vous. Version gratuite simple pour demarrer rapidement. Passez au pack Pro ou Premium pour un design plus travaille.
-Version: 1.2.1
+Version: 1.2.2
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -1108,12 +1108,26 @@ body.ag-premium-mode .ag-site-header.scrolled{
     backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
 }
 
-/* Force home : aucune marge/padding parasite, hero colle au header */
-html body.ag-premium-mode.home{margin-top:0!important;padding-top:0!important}
+/* Force home : aucune marge/padding parasite, hero colle au header.
+   Background transparent partout pour qu'on ne voie JAMAIS la zone blanche
+   de .ag-main--premium (qui sinon apparait entre </header> et <hero>). */
+html body.ag-premium-mode.home{margin-top:0!important;padding-top:0!important;background:transparent!important}
 html body.ag-premium-mode.home > .ag-main,
 html body.ag-premium-mode.home .ag-main--premium,
-html body.ag-premium-mode.home #ag-main{margin-top:0!important;padding-top:0!important}
-body.ag-premium-mode.home .ag-hero-pro{margin:0!important;padding-top:120px}
+html body.ag-premium-mode.home #ag-main{margin-top:0!important;padding-top:0!important;background:transparent!important;border:none!important;outline:none!important}
+body.ag-premium-mode.home .ag-hero-pro{margin:0!important;padding-top:120px;border-top:none!important}
+/* Tue toute section/elt avant le hero qui pourrait introduire un gap */
+body.ag-premium-mode.home .ag-main--premium > *:first-child:not(.ag-hero-pro){display:none!important}
+body.ag-premium-mode.home .ag-main--premium::before,
+body.ag-premium-mode.home #ag-main::before{display:none!important;content:none!important}
+/* WP admin bar visible : html a margin-top:32px → le hero recule du même
+   montant vers le haut pour rester collé au menu transparent. */
+html.wp-toolbar body.ag-premium-mode.home .ag-hero-pro,
+body.admin-bar.ag-premium-mode.home .ag-hero-pro{margin-top:-32px!important;padding-top:calc(120px + 32px)!important}
+@media screen and (max-width:782px){
+    html.wp-toolbar body.ag-premium-mode.home .ag-hero-pro,
+    body.admin-bar.ag-premium-mode.home .ag-hero-pro{margin-top:-46px!important;padding-top:calc(120px + 46px)!important}
+}
 
 /* Page interne header blanc plein, hauteur 70px reserve top */
 body.ag-premium-mode.page:not(.home) .ag-site-header{
