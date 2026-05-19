@@ -63,8 +63,8 @@ get_header();
     </div>
 </section>
 
-<!-- Promo vidéo Alliance (style Apple AirPods : cards 3D qui s'assemblent) -->
-<?php get_template_part('template-parts/promo-video'); ?>
+<!-- Scroll FX plein écran style Apple — 6 templates métier en sections pinned -->
+<?php get_template_part('template-parts/alliance-scroll-fx'); ?>
 
 <!-- Marquee -->
 <?php get_template_part('template-parts/marquee'); ?>
