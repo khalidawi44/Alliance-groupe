@@ -20,7 +20,7 @@ $ag_stripe_premium      = get_option( 'ag_stripe_premium_url', $ag_stripe_placeh
 $ag_stripe_premium  = get_option( 'ag_stripe_premium_url', $ag_stripe_placeholder );
 $ag_stripe_business = get_option( 'ag_stripe_business_url', $ag_stripe_placeholder );
 
-// 5 métiers → chaque entrée mappe vers sa page dédiée.
+// 6 métiers → chaque entrée mappe vers sa page dédiée.
 $ag_hub_metiers = array(
     array(
         'slug'     => 'avocat',
@@ -145,7 +145,7 @@ $ag_hub_metiers = array(
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">3 niveaux d'amélioration</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">Passez au <em>niveau supérieur</em></h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc">Les 5 templates gratuits sont volontairement basiques. Deux packs payants viennent compléter <strong style="color:#e8e6e0;">n'importe lequel des 5 thèmes</strong> — un seul achat, il fonctionne avec le thème actif. Le détail de chaque pack vit sur la page métier correspondante.</p>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Les 6 templates métier sont volontairement basiques en version gratuite (Coach, Artisan, Avocat, Barber, Restaurant, Association). Deux packs payants viennent compléter <strong style="color:#e8e6e0;">n'importe lequel des 6 thèmes</strong> — un seul achat, il fonctionne avec le thème actif. Le détail de chaque pack vit sur la page métier correspondante.</p>
 
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:760px;margin:40px auto 0;">
                 <div style="padding:24px;background:rgba(212,180,92,.08);border:2px solid rgba(212,180,92,.4);border-radius:12px;text-align:center;position:relative;">

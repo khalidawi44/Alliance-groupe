@@ -482,3 +482,295 @@ body.home .ag-hero__dot{
         animation: none !important; transition: none !important;
     }
 }
+
+/* =====================================================================
+   RÉALISATIONS — refonte stylée case-study cards
+   ===================================================================== */
+.ag-reals__grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 28px;
+    margin-top: 50px;
+}
+.ag-rcard{
+    position: relative;
+    background: linear-gradient(180deg, #14141c 0%, #0a0a0f 100%);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(212,180,92,.12);
+    transition: transform .5s cubic-bezier(.16,1,.3,1), border-color .35s ease, box-shadow .35s ease;
+    isolation: isolate;
+}
+.ag-rcard::before{
+    /* Halo champagne qui suit le hover via gradient */
+    content:''; position:absolute; inset:-1px;
+    background: linear-gradient(135deg, transparent 0%, rgba(212,180,92,.3) 50%, transparent 100%);
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity .5s ease;
+    z-index: -1;
+}
+.ag-rcard:hover{
+    transform: translateY(-8px);
+    border-color: rgba(212,180,92,.4);
+    box-shadow: 0 30px 80px rgba(0,0,0,.5), 0 0 60px rgba(212,180,92,.15);
+}
+.ag-rcard:hover::before{ opacity:1; }
+
+.ag-rcard__img{
+    position: relative;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: #0a0a0f;
+}
+.ag-rcard__img img{
+    width:100%; height:100%; object-fit: cover;
+    transition: transform 1.2s cubic-bezier(.16,1,.3,1), filter .5s ease;
+}
+.ag-rcard:hover .ag-rcard__img img{
+    transform: scale(1.1);
+    filter: brightness(1.1) saturate(1.1);
+}
+.ag-rcard__img::after{
+    content:''; position:absolute; inset:0;
+    background: linear-gradient(180deg, transparent 40%, rgba(10,10,15,.95) 100%);
+    pointer-events: none;
+}
+.ag-rcard__placeholder{
+    position: absolute; inset:0;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center; padding: 24px;
+    background:
+        radial-gradient(circle at 30% 30%, rgba(212,180,92,.15) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(243,122,31,.1) 0%, transparent 50%),
+        linear-gradient(135deg, #1a1a2e 0%, #0a0a0f 100%);
+}
+.ag-rcard__placeholder-title{
+    font-family: Georgia, serif;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 700;
+    color: #D4B45C;
+    letter-spacing: -0.01em;
+}
+.ag-rcard__placeholder-tags{
+    font-size: .75rem; letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(255,255,255,.5); margin-top: 8px;
+}
+
+.ag-rcard__body{
+    padding: 28px 28px 32px;
+    position: relative;
+}
+.ag-rcard__tags{
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 14px;
+}
+.ag-rcard__tag{
+    display: inline-block;
+    padding: 4px 10px;
+    background: rgba(212,180,92,.08);
+    border: 1px solid rgba(212,180,92,.2);
+    border-radius: 999px;
+    color: #D4B45C;
+    font-size: .7rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.ag-rcard__title{
+    font-family: Georgia, 'Playfair Display', serif !important;
+    font-size: clamp(1.4rem, 2.2vw, 1.9rem) !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+    margin: 0 0 12px !important;
+    line-height: 1.2 !important;
+}
+.ag-rcard__text{
+    color: rgba(255,255,255,.7);
+    font-size: .95rem;
+    line-height: 1.65;
+    margin: 0 0 20px;
+}
+.ag-rcard__stats{
+    display: flex; flex-wrap: wrap; gap: 8px;
+    padding: 14px 0;
+    margin: 0 0 20px;
+    border-top: 1px solid rgba(212,180,92,.1);
+    border-bottom: 1px solid rgba(212,180,92,.1);
+}
+.ag-rcard__stat{
+    flex: 1; min-width: 90px;
+    text-align: center;
+    padding: 4px 0;
+    color: #D4B45C;
+    font-size: .82rem;
+    font-weight: 700;
+    letter-spacing: .5px;
+    text-shadow: 0 0 12px rgba(212,180,92,.3);
+}
+.ag-rcard__link{
+    display: inline-flex; align-items: center; gap: 8px;
+    color: #D4B45C;
+    text-decoration: none;
+    font-size: .9rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: gap .3s ease, color .3s ease;
+}
+.ag-rcard__link:hover{ gap: 14px; color: #F37A1F; text-decoration: none; }
+
+/* =====================================================================
+   ÉQUIPE — Cards holographiques futuristes
+   ===================================================================== */
+.ag-team__grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 50px;
+    perspective: 1500px;
+}
+.ag-team-card{
+    position: relative;
+    background:
+        linear-gradient(180deg, rgba(20,20,28,.8) 0%, rgba(10,10,15,.95) 100%);
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(212,180,92,.15);
+    transition: transform .55s cubic-bezier(.16,1,.3,1), border-color .35s ease, box-shadow .35s ease;
+    isolation: isolate;
+    backdrop-filter: blur(20px);
+    transform-style: preserve-3d;
+}
+/* Aura holographique animée derrière */
+.ag-team-card::before{
+    content:''; position:absolute;
+    top:-50%; left:-50%; width:200%; height:200%;
+    background:
+        conic-gradient(from 0deg at 50% 50%,
+            transparent 0deg,
+            rgba(212,180,92,.15) 90deg,
+            rgba(243,122,31,.2) 180deg,
+            rgba(212,180,92,.15) 270deg,
+            transparent 360deg);
+    animation: agTeamHolo 8s linear infinite;
+    opacity: 0;
+    transition: opacity .6s ease;
+    z-index: -1;
+}
+@keyframes agTeamHolo {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+.ag-team-card:hover::before{ opacity:1; }
+.ag-team-card::after{
+    /* Voile sombre intérieur qui révèle le halo */
+    content:''; position:absolute; inset:1px;
+    background: linear-gradient(180deg, rgba(20,20,28,.92) 0%, rgba(10,10,15,.98) 100%);
+    border-radius: 17px;
+    z-index: -1;
+}
+.ag-team-card:hover{
+    transform: translateY(-10px);
+    border-color: rgba(212,180,92,.6);
+    box-shadow: 0 40px 100px rgba(0,0,0,.6), 0 0 50px rgba(212,180,92,.2);
+}
+
+.ag-team-card__img{
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+}
+.ag-team-card__img img{
+    width:100%; height:100%; object-fit: cover;
+    transition: transform 1s cubic-bezier(.16,1,.3,1), filter .5s ease;
+    filter: grayscale(40%) contrast(1.05);
+}
+.ag-team-card:hover .ag-team-card__img img{
+    transform: scale(1.08);
+    filter: grayscale(0%) contrast(1.1) saturate(1.15);
+}
+.ag-team-card__placeholder{
+    position: absolute; inset:0;
+    display: flex; align-items: center; justify-content: center;
+    background:
+        radial-gradient(circle at 30% 30%, rgba(212,180,92,.18) 0%, transparent 50%),
+        linear-gradient(135deg, #1a1a2e 0%, #0a0a0f 100%);
+    font-family: Georgia, serif;
+    font-size: 6rem;
+    font-weight: 700;
+    color: #D4B45C;
+    text-shadow: 0 0 40px rgba(212,180,92,.5);
+}
+.ag-team-card__img::after{
+    /* Scan-line holographique au hover */
+    content:''; position:absolute; left:0; right:0; height:2px;
+    top: -10%;
+    background: linear-gradient(90deg, transparent 0%, rgba(212,180,92,.8) 50%, transparent 100%);
+    box-shadow: 0 0 20px rgba(212,180,92,.6);
+    opacity: 0;
+    transition: opacity .3s ease;
+    pointer-events: none;
+}
+.ag-team-card:hover .ag-team-card__img::after{
+    opacity: 1;
+    animation: agTeamScan 2s linear infinite;
+}
+@keyframes agTeamScan {
+    from { top: -10%; }
+    to   { top: 110%; }
+}
+
+.ag-team-card__body{
+    padding: 24px 24px 28px;
+    position: relative;
+}
+.ag-team-card__name{
+    font-family: Georgia, 'Playfair Display', serif !important;
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+    margin: 0 0 6px !important;
+}
+.ag-team-card__role{
+    display: block;
+    color: #D4B45C !important;
+    font-size: .82rem !important;
+    letter-spacing: 2px !important;
+    text-transform: uppercase;
+    font-weight: 700 !important;
+    margin-bottom: 12px;
+}
+.ag-team-card__desc{
+    color: rgba(255,255,255,.7) !important;
+    font-size: .9rem !important;
+    line-height: 1.7 !important;
+    margin: 14px 0 0 !important;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .55s cubic-bezier(.16,1,.3,1), opacity .35s ease;
+    opacity: 0;
+}
+.ag-team-card:hover .ag-team-card__desc{
+    max-height: 400px;
+    opacity: 1;
+}
+.ag-team-card__link{
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 16px;
+    color: #D4B45C !important;
+    font-size: .8rem !important;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: gap .3s ease;
+}
+.ag-team-card__link:hover{ gap: 12px; color: #F37A1F !important; text-decoration: none; }
+
+@media (prefers-reduced-motion: reduce){
+    .ag-team-card::before, .ag-team-card__img::after{
+        animation: none !important; opacity:0 !important;
+    }
+    .ag-team-card__desc{ max-height: 400px !important; opacity: 1 !important; }
+}

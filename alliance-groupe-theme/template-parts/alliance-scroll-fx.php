@@ -17,13 +17,15 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+// 6 métiers — photos Unsplash spécifiques à CHAQUE métier (pas générique)
 $ag_fx_sections = array(
 	array(
 		'id'    => 'coach',
 		'left'  => 'Bien-être',
 		'title' => 'Coach',
 		'right' => 'Performance',
-		'bg'    => 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=1920&q=85',
+		// Femme coach en discussion avec un client (séance réelle)
+		'bg'    => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1920&q=85',
 		'link'  => home_url( '/wordpress-coach' ),
 	),
 	array(
@@ -31,7 +33,8 @@ $ag_fx_sections = array(
 		'left'  => 'Savoir-faire',
 		'title' => 'Artisan',
 		'right' => 'Métier',
-		'bg'    => 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1920&q=85',
+		// Artisan menuisier mains au travail dans atelier
+		'bg'    => 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1920&q=85',
 		'link'  => home_url( '/wordpress-artisan' ),
 	),
 	array(
@@ -39,6 +42,7 @@ $ag_fx_sections = array(
 		'left'  => 'Conseil',
 		'title' => 'Avocat',
 		'right' => 'Justice',
+		// Sculpture Justice + bibliothèque juridique
 		'bg'    => 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1920&q=85',
 		'link'  => home_url( '/wordpress-avocat' ),
 	),
@@ -47,7 +51,8 @@ $ag_fx_sections = array(
 		'left'  => 'Style',
 		'title' => 'Barber',
 		'right' => 'Élégance',
-		'bg'    => 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1920&q=85',
+		// Barbier en action coupe avec rasoir
+		'bg'    => 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=1920&q=85',
 		'link'  => home_url( '/wordpress-barber' ),
 	),
 	array(
@@ -55,7 +60,8 @@ $ag_fx_sections = array(
 		'left'  => 'Gastronomie',
 		'title' => 'Restaurant',
 		'right' => 'Expérience',
-		'bg'    => 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=85',
+		// Intérieur restaurant chic warm light
+		'bg'    => 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&q=85',
 		'link'  => home_url( '/wordpress-restaurant' ),
 	),
 	array(
@@ -63,7 +69,8 @@ $ag_fx_sections = array(
 		'left'  => 'Engagement',
 		'title' => 'Association',
 		'right' => 'Communauté',
-		'bg'    => 'https://images.unsplash.com/photo-1593113598332-cd288d649433?w=1920&q=85',
+		// Bénévoles mains tendues (réelle action associative)
+		'bg'    => 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1920&q=85',
 		'link'  => home_url( '/wordpress-association' ),
 	),
 );

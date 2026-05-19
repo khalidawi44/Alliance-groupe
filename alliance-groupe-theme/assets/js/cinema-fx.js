@@ -73,6 +73,8 @@
 	// =====================================================================
 	function initTilt() {
 		if (IS_TOUCH || REDUCED) return;
+		// Skip tilt sur petits écrans (perf + UX mobile)
+		if (window.innerWidth < 1024) return;
 		var selectors = '.ag-card, .ag-service-card, .ag-domaine-card, .ag-realisation-card, .ag-team-card, [data-tilt]';
 		var els = document.querySelectorAll(selectors);
 		if (!els.length) return;
@@ -80,26 +82,32 @@
 		els.forEach(function (el) {
 			el.style.transformStyle = 'preserve-3d';
 			el.style.transition = 'transform .35s cubic-bezier(.16,1,.3,1)';
-			var rect, cx, cy, maxTilt = 8;
+			var rect, cx, cy, maxTilt = 6, rafId = null, pendingX = 0, pendingY = 0;
 
 			el.addEventListener('mouseenter', function () {
 				rect = el.getBoundingClientRect();
 				cx = rect.left + rect.width / 2;
 				cy = rect.top + rect.height / 2;
 				el.style.transition = 'transform .12s ease-out';
-			});
+			}, { passive: true });
+
 			el.addEventListener('mousemove', function (e) {
 				if (!rect) return;
-				var dx = (e.clientX - cx) / (rect.width / 2);
-				var dy = (e.clientY - cy) / (rect.height / 2);
-				var rotY = dx * maxTilt;
-				var rotX = -dy * maxTilt;
-				el.style.transform = 'perspective(900px) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) scale3d(1.02,1.02,1.02)';
-			});
+				pendingX = e.clientX; pendingY = e.clientY;
+				if (rafId) return;
+				rafId = requestAnimationFrame(function () {
+					var dx = (pendingX - cx) / (rect.width / 2);
+					var dy = (pendingY - cy) / (rect.height / 2);
+					el.style.transform = 'perspective(900px) rotateX(' + (-dy * maxTilt).toFixed(2) + 'deg) rotateY(' + (dx * maxTilt).toFixed(2) + 'deg)';
+					rafId = null;
+				});
+			}, { passive: true });
+
 			el.addEventListener('mouseleave', function () {
+				if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
 				el.style.transition = 'transform .5s cubic-bezier(.16,1,.3,1)';
-				el.style.transform = 'perspective(900px) rotateX(0) rotateY(0) scale3d(1,1,1)';
-			});
+				el.style.transform = 'perspective(900px) rotateX(0) rotateY(0)';
+			}, { passive: true });
 		});
 	}
 
