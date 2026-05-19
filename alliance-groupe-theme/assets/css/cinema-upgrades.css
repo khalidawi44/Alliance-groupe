@@ -1,0 +1,213 @@
+/* =====================================================================
+   CINEMA UPGRADES — enrichit le menu et le hero des pages internes
+   sans casser le style existant. Chargé après style.css principal.
+
+   Couleurs Alliance : noir #0a0a0f / champagne #D4B45C / accent orange #F37A1F
+   ===================================================================== */
+
+/* ── 1. MENU — glassmorphism + sticky animé ──────────────────────── */
+.ag-nav{
+    transition: background .35s ease, backdrop-filter .35s ease, padding .35s ease, box-shadow .35s ease;
+    will-change: background, backdrop-filter, padding;
+}
+/* État initial (haut de page) : très transparent + backdrop-blur subtil */
+body:not(.scrolled-nav) .ag-nav{
+    background: linear-gradient(180deg, rgba(10,10,15,.45) 0%, rgba(10,10,15,.15) 70%, transparent 100%) !important;
+    backdrop-filter: blur(8px) saturate(140%);
+    -webkit-backdrop-filter: blur(8px) saturate(140%);
+}
+/* État scrollé : noir solide + blur + ombre */
+body.scrolled-nav .ag-nav{
+    background: rgba(10,10,15,.92) !important;
+    backdrop-filter: blur(18px) saturate(180%);
+    -webkit-backdrop-filter: blur(18px) saturate(180%);
+    box-shadow: 0 4px 28px rgba(0,0,0,.45), 0 0 0 1px rgba(212,180,92,.08);
+}
+/* Padding plus compact au scroll */
+body.scrolled-nav .ag-nav__inner{ padding-top:8px !important; padding-bottom:8px !important; }
+
+/* Logo : micro-glow champagne */
+.ag-nav__logo{ position:relative; transition: transform .3s ease; }
+.ag-nav__logo:hover{ transform: translateY(-1px); }
+.ag-nav__logo-img{ transition: filter .3s ease; }
+.ag-nav__logo:hover .ag-nav__logo-img{ filter: drop-shadow(0 0 12px rgba(212,180,92,.5)); }
+.ag-nav__logo-text{ transition: color .3s ease; }
+.ag-nav__logo:hover .ag-nav__logo-text{ color:#D4B45C !important; }
+
+/* Items menu : underline animé champagne sous chaque lien */
+.ag-nav__list > li > a{ position:relative; transition: color .25s ease; }
+.ag-nav__list > li > a::after{
+    content:''; position:absolute; left:50%; bottom:0; width:0; height:2px;
+    background: linear-gradient(90deg, transparent, #D4B45C, transparent);
+    transition: width .35s cubic-bezier(.16,1,.3,1), left .35s cubic-bezier(.16,1,.3,1);
+}
+.ag-nav__list > li:hover > a::after,
+.ag-nav__list > li.current-menu-item > a::after{
+    width:100%; left:0;
+}
+.ag-nav__list > li:hover > a{ color:#D4B45C !important; }
+
+/* Pulse pill "GRATUIT" plus vibrant */
+.ag-nav__pulse-pill{
+    animation: agPulsePill 2.2s ease-in-out infinite;
+    box-shadow: 0 0 12px rgba(34,197,94,.5);
+}
+@keyframes agPulsePill {
+    0%,100%{ transform:scale(1); box-shadow:0 0 12px rgba(34,197,94,.5); }
+    50%   { transform:scale(1.08); box-shadow:0 0 22px rgba(34,197,94,.85); }
+}
+
+/* Mega menu : slide-down élégant + backdrop-blur */
+.ag-mega{
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(10,10,15,.95) !important;
+    border-top: 1px solid rgba(212,180,92,.15);
+    box-shadow: 0 24px 50px rgba(0,0,0,.5);
+}
+
+/* ── 2. HERO PAGES INTERNES — photo background ciné + titre élégant ── */
+/* Cible uniquement les .ag-hero des pages NON-accueil (min-height:60vh
+   les distingue du hero d'accueil qui est plus haut) */
+body:not(.home) main > .ag-hero,
+body:not(.home) .ag-hero[style*="60vh"]{
+    position: relative;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    isolation: isolate;
+}
+/* Background photo via ::before — chaque page peut override avec --hero-photo */
+body:not(.home) main > .ag-hero::before,
+body:not(.home) .ag-hero[style*="60vh"]::before{
+    content:'';
+    position: absolute; inset:0;
+    background-image: var(--hero-photo, url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=85'));
+    background-size: cover;
+    background-position: center;
+    filter: brightness(.45) contrast(1.05) saturate(.9);
+    transform: scale(1.06);
+    transition: transform 8s ease-out, opacity .8s ease;
+    z-index: -2;
+    animation: agHeroZoom 18s ease-out infinite alternate;
+}
+@keyframes agHeroZoom {
+    from { transform: scale(1.06); }
+    to   { transform: scale(1.14); }
+}
+/* Vignette gradient pour profondeur + lisibilité */
+body:not(.home) main > .ag-hero::after,
+body:not(.home) .ag-hero[style*="60vh"]::after{
+    content:'';
+    position: absolute; inset:0;
+    background:
+        radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(0,0,0,.45) 100%),
+        linear-gradient(180deg, rgba(10,10,15,.4) 0%, rgba(10,10,15,.1) 40%, rgba(10,10,15,.7) 100%);
+    z-index: -1;
+}
+
+/* Tag pill : champagne avec glow */
+body:not(.home) .ag-hero .ag-tag{
+    display: inline-flex; align-items: center; gap:8px;
+    padding: 8px 18px;
+    background: rgba(212,180,92,.12);
+    border: 1px solid rgba(212,180,92,.4);
+    border-radius: 999px;
+    color: #D4B45C !important;
+    font-size: .82rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 24px rgba(212,180,92,.18);
+    margin-bottom: 24px;
+    animation: agTagFloat 4s ease-in-out infinite alternate;
+}
+@keyframes agTagFloat { from{transform:translateY(0)} to{transform:translateY(-3px)} }
+body:not(.home) .ag-hero .ag-tag::before{
+    content:'';
+    width:6px; height:6px;
+    background:#D4B45C;
+    border-radius:50%;
+    box-shadow: 0 0 8px #D4B45C;
+    animation: agTagBlink 1.5s ease-in-out infinite;
+}
+@keyframes agTagBlink {
+    0%,100%{ opacity:.4; transform:scale(.85); }
+    50%   { opacity:1;  transform:scale(1.15); }
+}
+
+/* Titre H1 : serif élégant style Apple */
+body:not(.home) .ag-hero .ag-hero__title{
+    font-family: Georgia, 'Playfair Display', 'Times New Roman', serif !important;
+    font-size: clamp(2.4rem, 6.5vw, 5.5rem) !important;
+    font-weight: 700 !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.025em !important;
+    color: #fff !important;
+    text-shadow: 0 4px 32px rgba(0,0,0,.6), 0 2px 8px rgba(0,0,0,.4);
+    margin: 0 0 24px !important;
+    max-width: 14ch;
+}
+body:not(.home) .ag-hero .ag-hero__title em{
+    color: #D4B45C !important;
+    font-style: italic;
+    background: linear-gradient(135deg, #D4B45C 0%, #F37A1F 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
+    filter: drop-shadow(0 2px 12px rgba(212,180,92,.4));
+}
+body:not(.home) .ag-hero .ag-line{ display:block; }
+
+/* Sous-titre */
+body:not(.home) .ag-hero .ag-hero__sub{
+    font-size: clamp(1rem, 1.4vw, 1.25rem) !important;
+    color: rgba(255,255,255,.82) !important;
+    line-height: 1.7 !important;
+    max-width: 620px;
+    margin: 0 auto !important;
+    text-shadow: 0 2px 12px rgba(0,0,0,.5);
+}
+
+/* Hero content : animation fade-in slide-up à l'entrée */
+body:not(.home) .ag-hero .ag-hero__content{
+    position: relative;
+    z-index: 2;
+    padding: 0 24px;
+    animation: agHeroIn 1.2s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes agHeroIn {
+    from{ opacity:0; transform:translateY(40px); }
+    to  { opacity:1; transform:translateY(0); }
+}
+
+/* Indicateur scroll en bas du hero */
+body:not(.home) .ag-hero::before{ pointer-events:none; }
+body:not(.home) main > .ag-hero{ padding-bottom: 60px; }
+
+/* Variables CSS par slug de page — overridables si tu veux changer l'image */
+body.page-services .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=85'); }
+body.page-realisations .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1920&q=85'); }
+body.page-apropos .ag-hero,
+body.page-fondateur .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1920&q=85'); }
+body.page-rdv .ag-hero,
+body.page-contact .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1920&q=85'); }
+body.page-templates .ag-hero,
+body[class*="wordpress-"] .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1551434678-e076c223a692?w=1920&q=85'); }
+body.page-blog .ag-hero,
+body.blog .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1920&q=85'); }
+
+/* Responsive */
+@media (max-width: 768px){
+    body:not(.home) .ag-hero .ag-hero__title{ font-size: clamp(2rem, 9vw, 3.2rem) !important; }
+}
+@media (prefers-reduced-motion: reduce){
+    body:not(.home) .ag-hero::before{ animation:none; transform:none; }
+    .ag-nav__pulse-pill, body:not(.home) .ag-hero .ag-tag, body:not(.home) .ag-hero .ag-tag::before{ animation:none; }
+    body:not(.home) .ag-hero .ag-hero__content{ animation:none; }
+}

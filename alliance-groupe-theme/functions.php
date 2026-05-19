@@ -78,6 +78,36 @@ add_action( 'wp_enqueue_scripts', function () {
             : '2.0.2'
     );
 
+    // Enrichissements ciné : menu glassmorphism + hero pages internes
+    $ag_cinema_css = get_stylesheet_directory() . '/assets/css/cinema-upgrades.css';
+    if ( file_exists( $ag_cinema_css ) ) {
+        wp_enqueue_style(
+            'ag-cinema-upgrades',
+            get_stylesheet_directory_uri() . '/assets/css/cinema-upgrades.css',
+            array( 'ag-main-css' ),
+            filemtime( $ag_cinema_css )
+        );
+    }
+} );
+
+// JS scroll-listener pour activer .scrolled-nav sur le body (menu glassmorphism)
+add_action( 'wp_footer', function () {
+    if ( ! file_exists( get_stylesheet_directory() . '/assets/css/cinema-upgrades.css' ) ) return;
+    ?>
+    <script>
+    (function(){
+        var b=document.body, ticking=false;
+        function update(){ b.classList.toggle('scrolled-nav', window.scrollY>40); ticking=false; }
+        window.addEventListener('scroll', function(){
+            if(!ticking){ requestAnimationFrame(update); ticking=true; }
+        }, {passive:true});
+        update();
+    })();
+    </script>
+    <?php
+}, 99 );
+
+add_action( 'wp_enqueue_scripts', function () {
     wp_enqueue_script(
         'ag-main-js',
         get_stylesheet_directory_uri() . '/assets/js/main.js',

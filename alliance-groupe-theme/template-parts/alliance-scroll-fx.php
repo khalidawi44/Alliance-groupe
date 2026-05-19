@@ -175,15 +175,22 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 		font-family:'Manrope','Rubik Wide',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
 		text-transform:uppercase;letter-spacing:-0.02em;
 	}
-	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-fixed-section{height:<?php echo (int) ( $ag_fx_total + 1 ); ?>00vh;position:relative}
-	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-fixed{position:sticky;top:0;height:100vh;width:100%;overflow:hidden;background:var(--fx-stage-bg)}
+	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-fixed-section{height:<?php echo (int) ( $ag_fx_total + 1 ); ?>00vh;position:relative;z-index:10}
+	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-fixed{position:sticky;top:0;height:100vh;width:100%;overflow:hidden;background:var(--fx-stage-bg);z-index:11}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--fx-gap);padding:0 var(--fx-grid-px);position:relative;height:100%;z-index:2}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-bgs{position:absolute;inset:0;background:var(--fx-stage-bg);z-index:1}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-bg{position:absolute;inset:0}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-bg-img{position:absolute;inset:-10% 0 -10% 0;width:100%;height:120%;object-fit:cover;filter:brightness(0.7);opacity:0;will-change:transform,opacity}
+	/* Fallback CSS si GSAP n'a pas chargé : montre au moins la 1re image */
+	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-bg-img[data-bg-index="0"]{opacity:1}
+	/* Fallback featured : 1re section visible si JS désactivé */
+	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured[data-featured-index="0"]{opacity:1;visibility:visible}
+	/* S'assure que tout passe AU-DESSUS des sections suivantes (parallax etc.) */
+	#<?php echo esc_attr( $ag_fx_uid ); ?> *{box-sizing:border-box}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-bg-overlay{position:absolute;inset:0;background:var(--fx-overlay)}
-	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-header{grid-column:1/13;align-self:start;padding-top:6vh;font-size:clamp(2rem,7vw,7rem);line-height:0.86;text-align:center;color:var(--fx-text);font-weight:900;letter-spacing:-0.02em;position:relative;z-index:3}
-	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-header>*{display:block}
+	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-header{grid-column:1/13;align-self:start;padding-top:5vh;font-size:clamp(0.7rem,1.1vw,1rem);line-height:1.2;text-align:center;color:var(--fx-text);font-weight:700;letter-spacing:6px;position:relative;z-index:3;opacity:.55;text-transform:uppercase}
+	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-header>*{display:inline}
+	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-header>*:first-child::after{content:" · ";opacity:.5}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-content{grid-column:1/13;position:absolute;inset:0;display:grid;grid-template-columns:1fr 1.3fr 1fr;align-items:center;height:100%;padding:0 var(--fx-grid-px);z-index:2}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-left,#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-right{height:60vh;overflow:hidden;display:grid;align-content:center}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-left{justify-items:start}
@@ -197,8 +204,8 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-left-item.active::before{left:0}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-right-item.active::after{right:0}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-center{display:grid;place-items:center;text-align:center;height:60vh;overflow:hidden;position:relative}
-	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured{position:absolute;opacity:0;visibility:hidden;display:flex;flex-direction:column;align-items:center;gap:24px}
-	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured.active{opacity:1;visibility:visible}
+	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;visibility:hidden;display:flex;flex-direction:column;align-items:center;gap:24px;width:100%;pointer-events:none}
+	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured.active{opacity:1;visibility:visible;pointer-events:auto}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured-title{margin:0;color:var(--fx-text);font-weight:900;letter-spacing:-0.01em;font-size:clamp(2.5rem,9vw,7rem);line-height:0.95}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-word-mask{display:inline-block;overflow:hidden;vertical-align:middle}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-word{display:inline-block;vertical-align:middle}
