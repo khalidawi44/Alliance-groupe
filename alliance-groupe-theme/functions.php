@@ -24,6 +24,12 @@ if ( file_exists( $ag_calendly_admin_file ) ) {
     require_once $ag_calendly_admin_file;
 }
 
+// ── 1c2. Auto-sync GitHub : Apparence > 🚀 Sync GitHub ─────────
+$ag_github_sync_file = get_stylesheet_directory() . '/inc/ag-github-sync.php';
+if ( file_exists( $ag_github_sync_file ) ) {
+    require_once $ag_github_sync_file;
+}
+
 // ── 1d. Shortcode [ag_promo_video] : insère la vidéo promo Alliance ─────
 // Usage Gutenberg : ajouter un block "Shortcode" et taper [ag_promo_video]
 // Attributs : title="..." lead="..." cta_label="..." cta_url="..."
