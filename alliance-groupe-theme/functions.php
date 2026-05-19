@@ -30,6 +30,12 @@ if ( file_exists( $ag_github_sync_file ) ) {
     require_once $ag_github_sync_file;
 }
 
+// ── 1c3. Données détaillées des 6 services (consommées par template-parts/service-detail.php)
+$ag_services_data_file = get_stylesheet_directory() . '/inc/services-data.php';
+if ( file_exists( $ag_services_data_file ) ) {
+    require_once $ag_services_data_file;
+}
+
 // ── 1d. Shortcode [ag_promo_video] : insère la vidéo promo Alliance ─────
 // Usage Gutenberg : ajouter un block "Shortcode" et taper [ag_promo_video]
 // Attributs : title="..." lead="..." cta_label="..." cta_url="..."

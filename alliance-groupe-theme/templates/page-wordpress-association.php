@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Template Name: Template WordPress — Association
  *
@@ -108,5 +108,8 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
     </section>
 
 </main>
+
+<!-- CTA audit gratuit ajout stratu00e9gie de vente -->
+<?php get_template_part( 'template-parts/audit-cta' ); ?>
 
 <?php get_footer(); ?>

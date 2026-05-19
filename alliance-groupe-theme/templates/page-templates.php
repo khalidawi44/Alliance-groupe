@@ -140,6 +140,12 @@ $ag_hub_metiers = array(
         </div>
     </section>
 
+    <!-- 🆕 Comparatif détaillé des 3 packs (tableau ✓ par feature) -->
+    <?php get_template_part( 'template-parts/packs-comparatif' ); ?>
+
+    <!-- 🆕 CTA audit gratuit (lead capture sur-mesure) -->
+    <?php get_template_part( 'template-parts/audit-cta' ); ?>
+
     <!-- Vue d'ensemble des 3 packs payants (courte, le détail est dans les pages métier) -->
     <section class="ag-section ag-section--marbre">
         <div class="ag-container">

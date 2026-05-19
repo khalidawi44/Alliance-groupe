@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Template Name: Service — SEO
  */
@@ -97,5 +97,11 @@ get_header();
 
     <?php get_template_part('template-parts/cta'); ?>
 </main>
+
+<!-- Detail exhaustif (livrables, process, tarifs, FAQ) -->
+<?php if ( function_exists( 'ag_get_service_detail' ) ) { $GLOBALS['ag_service_detail'] = ag_get_service_detail( 'seo' ); get_template_part( 'template-parts/service-detail' ); } ?>
+
+<!-- CTA audit gratuit (strategie funnel) -->
+<?php get_template_part( 'template-parts/audit-cta' ); ?>
 
 <?php get_footer(); ?>
