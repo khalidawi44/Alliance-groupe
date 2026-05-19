@@ -11,11 +11,21 @@ REM    - OU configurer les identifiants FTP ci-dessous
 REM
 REM ═══════════════════════════════════════════════════════════════════
 
-REM ── CONFIGURATION — MODIFIE CES VALEURS ────────────────────────
+REM ── CONFIGURATION ───────────────────────────────────────────────
+REM Charge les credentials depuis deploy\.env (gitignored) si présent.
+REM Sinon utilise les placeholders ci-dessous.
 set FTP_HOST=ftp.ton-serveur.o2switch.net
 set FTP_USER=ton-identifiant-ftp
 set FTP_PASS=ton-mot-de-passe-ftp
 set FTP_PATH=/www/wp-content/themes
+if exist "%~dp0.env" (
+    for /f "usebackq tokens=1,2 delims==" %%A in ("%~dp0.env") do (
+        if "%%A"=="FTP_HOST" set FTP_HOST=%%B
+        if "%%A"=="FTP_USER" set FTP_USER=%%B
+        if "%%A"=="FTP_PASS" set FTP_PASS=%%B
+        if "%%A"=="FTP_PATH" set FTP_PATH=%%B
+    )
+)
 REM ───────────────────────────────────────────────────────────────
 
 set THEME_DIR=%~dp0..\alliance-groupe-theme

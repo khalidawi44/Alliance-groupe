@@ -17,11 +17,18 @@
 #
 # ═══════════════════════════════════════════════════════════════════
 
-# ── CONFIGURATION — MODIFIE CES VALEURS ──────────────────────────
-FTP_HOST="ftp.ton-serveur.o2switch.net"      # ← Ton serveur FTP o2switch
-FTP_USER="ton-identifiant-ftp"                # ← Ton identifiant FTP
-FTP_PASS="ton-mot-de-passe-ftp"              # ← Ton mot de passe FTP
-FTP_PATH="/www/wp-content/themes"            # ← Chemin vers le dossier themes
+# ── CONFIGURATION ────────────────────────────────────────────────
+# Charge les credentials depuis deploy/.env (gitignored) si présent.
+# Sinon utilise les valeurs ci-dessous (placeholders).
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+if [ -f "$SCRIPT_DIR/.env" ]; then
+    # shellcheck disable=SC1090,SC1091
+    set -a; . "$SCRIPT_DIR/.env"; set +a
+fi
+FTP_HOST="${FTP_HOST:-ftp.ton-serveur.o2switch.net}"
+FTP_USER="${FTP_USER:-ton-identifiant-ftp}"
+FTP_PASS="${FTP_PASS:-ton-mot-de-passe-ftp}"
+FTP_PATH="${FTP_PATH:-/www/wp-content/themes}"
 # ─────────────────────────────────────────────────────────────────
 
 # Couleurs
@@ -30,7 +37,6 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 THEME_DIR="$SCRIPT_DIR/../alliance-groupe-theme"
 
 echo ""
