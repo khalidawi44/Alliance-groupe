@@ -10,21 +10,21 @@
     transition: background .35s ease, backdrop-filter .35s ease, padding .35s ease, box-shadow .35s ease;
     will-change: background, backdrop-filter, padding;
 }
-/* État initial (haut de page) : très transparent + backdrop-blur subtil */
-body:not(.scrolled-nav) .ag-nav{
-    background: linear-gradient(180deg, rgba(10,10,15,.45) 0%, rgba(10,10,15,.15) 70%, transparent 100%) !important;
-    backdrop-filter: blur(8px) saturate(140%);
-    -webkit-backdrop-filter: blur(8px) saturate(140%);
+/* État initial (haut de page) : très transparent + backdrop-blur subtil
+   ⚠️ le thème toggle .scrolled DIRECTEMENT sur .ag-nav (cf main.js) */
+.ag-nav:not(.scrolled){
+    background: linear-gradient(180deg, rgba(10,10,15,.55) 0%, rgba(10,10,15,.2) 70%, transparent 100%) !important;
+    backdrop-filter: blur(10px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(140%) !important;
+    box-shadow: none !important;
 }
-/* État scrollé : noir solide + blur + ombre */
-body.scrolled-nav .ag-nav{
+/* État scrollé : noir solide + blur + ombre champagne */
+.ag-nav.scrolled{
     background: rgba(10,10,15,.92) !important;
-    backdrop-filter: blur(18px) saturate(180%);
-    -webkit-backdrop-filter: blur(18px) saturate(180%);
-    box-shadow: 0 4px 28px rgba(0,0,0,.45), 0 0 0 1px rgba(212,180,92,.08);
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    box-shadow: 0 4px 32px rgba(0,0,0,.5), 0 0 0 1px rgba(212,180,92,.1) !important;
 }
-/* Padding plus compact au scroll */
-body.scrolled-nav .ag-nav__inner{ padding-top:8px !important; padding-bottom:8px !important; }
 
 /* Logo : micro-glow champagne */
 .ag-nav__logo{ position:relative; transition: transform .3s ease; }

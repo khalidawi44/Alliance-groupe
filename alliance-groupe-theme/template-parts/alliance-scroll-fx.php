@@ -156,9 +156,6 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 		</div>
 	</div>
 
-	<div class="ag-fx-end">
-		<p class="ag-fx-fin">fin</p>
-	</div>
 </section>
 
 <style>
@@ -217,8 +214,6 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-progress{width:200px;height:2px;margin:1.5rem auto 0;background:rgba(245,245,245,0.28);position:relative}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-progress-fill{position:absolute;inset:0 auto 0 0;width:0%;background:var(--fx-accent);height:100%;transition:width 0.4s ease;box-shadow:0 0 12px var(--fx-accent)}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-progress-numbers{position:absolute;inset:auto 0 100% 0;display:flex;justify-content:space-between;font-size:0.8rem;color:var(--fx-text);margin-bottom:8px;font-weight:700;letter-spacing:1px}
-	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-end{height:50vh;display:grid;place-items:center;background:var(--fx-page-bg)}
-	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-fin{transform:rotate(90deg);color:#999;font-size:1.2rem;letter-spacing:8px;font-weight:300}
 	@media (max-width:900px){
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-content{grid-template-columns:1fr;row-gap:3vh;place-items:center}
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-left,#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-right{height:auto;display:none}

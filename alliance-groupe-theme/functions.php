@@ -90,23 +90,6 @@ add_action( 'wp_enqueue_scripts', function () {
     }
 } );
 
-// JS scroll-listener pour activer .scrolled-nav sur le body (menu glassmorphism)
-add_action( 'wp_footer', function () {
-    if ( ! file_exists( get_stylesheet_directory() . '/assets/css/cinema-upgrades.css' ) ) return;
-    ?>
-    <script>
-    (function(){
-        var b=document.body, ticking=false;
-        function update(){ b.classList.toggle('scrolled-nav', window.scrollY>40); ticking=false; }
-        window.addEventListener('scroll', function(){
-            if(!ticking){ requestAnimationFrame(update); ticking=true; }
-        }, {passive:true});
-        update();
-    })();
-    </script>
-    <?php
-}, 99 );
-
 add_action( 'wp_enqueue_scripts', function () {
     wp_enqueue_script(
         'ag-main-js',
