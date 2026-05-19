@@ -24,6 +24,25 @@ if ( file_exists( $ag_calendly_admin_file ) ) {
     require_once $ag_calendly_admin_file;
 }
 
+// ── 1d. Shortcode [ag_promo_video] : insère la vidéo promo Alliance ─────
+// Usage Gutenberg : ajouter un block "Shortcode" et taper [ag_promo_video]
+// Attributs : title="..." lead="..." cta_label="..." cta_url="..."
+//             poster="..." video_url="..." (tous optionnels)
+add_shortcode( 'ag_promo_video', function ( $atts ) {
+    $atts = shortcode_atts( array(
+        'title'     => '',
+        'lead'      => '',
+        'cta_label' => '',
+        'cta_url'   => '',
+        'poster'    => '',
+        'video_url' => '',
+    ), $atts, 'ag_promo_video' );
+    ob_start();
+    set_query_var( 'args', $atts );
+    get_template_part( 'template-parts/promo-video' );
+    return ob_get_clean();
+} );
+
 // ── 2. Enqueue styles & scripts ─────────────────────────────────
 add_action( 'wp_enqueue_scripts', function () {
     // Style du thème (style.css obligatoire pour WordPress)

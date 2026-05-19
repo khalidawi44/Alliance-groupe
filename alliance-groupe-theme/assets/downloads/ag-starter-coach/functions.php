@@ -283,6 +283,9 @@ require_once get_template_directory() . '/inc/presets.php';
 // stockees en CPT ag_devis_lead (admin > Devis demandes).
 require_once get_template_directory() . '/inc/devis.php';
 
+// Section "Alliance Groupe en vidéo" — affichée en mode premium uniquement.
+require_once get_template_directory() . '/inc/promo-video.php';
+
 /**
  * Résout une URL CTA potentiellement relative ('/devis/', '/contact/', etc.)
  * en URL absolue de la page WP correspondante. Si la page n'existe pas en
