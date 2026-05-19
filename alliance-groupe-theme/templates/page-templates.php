@@ -174,7 +174,7 @@ $ag_hub_metiers = array(
                 </div>
                 <div style="padding:24px;background:rgba(212,180,92,.10);border:2px solid rgba(212,180,92,.5);border-radius:12px;text-align:center;">
                     <div style="font-size:2rem;margin-bottom:6px;">💼</div>
-                    <strong style="display:block;color:#D4B45C;font-size:1.1rem;margin-bottom:6px;">Pack Business — 199€</strong>
+                    <strong style="display:block;color:#D4B45C;font-size:1.1rem;margin-bottom:6px;">Pack Business — 149€</strong>
                     <p style="color:#b0b0bc;font-size:.88rem;line-height:1.55;margin:0;">Tout Premium + installation visio 1h + maintenance 1 an + audit SEO + white-label + intégration CRM + appel Fabrizio.</p>
                 </div>
                 <div style="padding:24px;background:rgba(225,15,26,.10);border:2px solid rgba(225,15,26,.5);border-radius:12px;text-align:center;position:relative;">

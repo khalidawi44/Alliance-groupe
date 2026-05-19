@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * REST API endpoints for licence operations.
  *
@@ -129,7 +129,7 @@ class AG_Licence_API {
                 . '<h4>Packs payants disponibles</h4>'
                 . '<p>Débloquez des fonctionnalités avancées avec un paiement unique :</p><ul>'
                 . '<li><strong>Premium (99€)</strong> — Header sticky, animations, couleurs avancées, footer personnalisable</li>'
-                . '<li><strong>Business (199€)</strong> — Tout Premium + WooCommerce, multi-langue, pub reduite, session stratégique 30 min</li>'
+                . '<li><strong>Business (149€)</strong> — Tout Premium + WooCommerce, multi-langue, pub reduite, session stratégique 30 min</li>'
                 . '</ul>',
             'banners'      => array(
                 'high' => home_url( '/wp-content/themes/alliance-groupe-theme/assets/images/promo-cards/ag-premium-card.png' ),

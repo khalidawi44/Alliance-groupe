@@ -20,7 +20,7 @@ $pack_data = array(
     ),
     'business' => array(
         'title'  => 'AG Starter Business',
-        'price'  => '199€',
+        'price'  => '149€',
         'icon'   => '💼',
         'desc'   => 'Votre Pack Business est confirmé. Notre équipe va vous contacter sous 24h ouvrées pour planifier votre installation assistée et l\'appel stratégique de lancement avec Fabrizio.',
     ),

@@ -32,7 +32,7 @@ $business_target = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? ' target
 
 $premium_label      = ( $ag_stripe_premium      !== $ag_stripe_placeholder ) ? 'Payer 99€ via Stripe →'  : 'Acheter — 99€ une fois';
 
-$business_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'Payer 199€ via Stripe →' : 'Acheter — 199€ une fois';
+$business_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'Payer 149€ via Stripe →' : 'Acheter — 149€ une fois';
 
 $screenshot_url = get_stylesheet_directory_uri() . '/assets/downloads/' . $ag_metier['slug_full'] . '/screenshot.png';
 $screenshot_file = get_stylesheet_directory() . '/assets/downloads/' . $ag_metier['slug_full'] . '/screenshot.png';
@@ -119,7 +119,7 @@ $has_screenshot = file_exists( $screenshot_file );
                     <button type="button" class="ag-cfg__tile ag-cfg__tile--business" data-tier="business" role="tab" aria-selected="false">
                         <span class="ag-cfg__tile-icon">💼</span>
                         <strong class="ag-cfg__tile-name">Je veux la tranquillité</strong>
-                        <span class="ag-cfg__tile-price">199€</span>
+                        <span class="ag-cfg__tile-price">149€</span>
                     </button>
                 </div>
 
@@ -166,7 +166,7 @@ $has_screenshot = file_exists( $screenshot_file );
                     <div class="ag-cfg__panel" data-tier="business" role="tabpanel">
                         <div class="ag-cfg__panel-head">
                             <h3>💼 Pack Business pour <?php echo esc_html( $ag_metier['name'] ); ?></h3>
-                            <span class="ag-cfg__panel-price">199€ une fois</span>
+                            <span class="ag-cfg__panel-price">149€ une fois</span>
                         </div>
                         <p class="ag-cfg__panel-sub">Tout le Premium + installation assistée, maintenance 1 an, audit SEO, white-label.</p>
                         <ul class="ag-cfg__features">

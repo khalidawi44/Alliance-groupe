@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Alliance Groupe — Stripe Payment Links admin page
  *
@@ -41,7 +41,7 @@ add_action( 'admin_init', function () {
 			'description' => 'URL du Payment Link Stripe pour le Pack Premium. Ex : https://buy.stripe.com/xxxxxxx',
 		),
 		'ag_stripe_business_url' => array(
-			'label'       => 'Pack Business — 199€',
+			'label'       => 'Pack Business — 149€',
 			'description' => 'URL du Payment Link Stripe pour le Pack Business.',
 		),
 		'ag_stripe_question_single_url' => array(
@@ -159,7 +159,7 @@ function ag_stripe_admin_render() {
 				<li>Cliquez sur <em>Payment links</em> &gt; <em>Nouveau lien de paiement</em>.</li>
 				<li>Créez un produit (ex. « AG Starter Premium »), tarif unique, montant 99,00&nbsp;€ TTC.</li>
 				<li>Copiez le lien <code>https://buy.stripe.com/xxxxxxx</code> puis collez-le ci-dessous.</li>
-				<li>Répétez pour Business (199&nbsp;€).</li>
+				<li>Répétez pour Business (149&nbsp;€).</li>
 			</ol>
 		</div>
 
@@ -183,7 +183,7 @@ function ag_stripe_admin_render() {
 				</tr>
 				<tr>
 					<th scope="row">
-						<label for="ag_stripe_business_url">Pack Business — 199€</label>
+						<label for="ag_stripe_business_url">Pack Business — 149€</label>
 					</th>
 					<td>
 						<input type="url" name="ag_stripe_business_url" id="ag_stripe_business_url"
@@ -276,7 +276,7 @@ function ag_stripe_admin_render() {
 				'success' => "Merci pour votre achat ! Votre plugin Premium arrive par email sous 5 min. 💎 Site sur-mesure (+340% leads en 3 mois) : alliancegroupe-inc.com/contact",
 			),
 			'business' => array(
-				'name'  => 'AG Starter Business — 199€',
+				'name'  => 'AG Starter Business — 149€',
 				'price' => '199,00 €',
 				'desc'  => "Pack tout-en-un AG Starter : tout Premium + installation assistee en visio 1h, maintenance WP 1 an, audit SEO mensuel, rapport perf trimestriel, support 2h, white-label, integration CRM (HubSpot/Pipedrive/Brevo), appel strategique avec Fabrizio. Paiement unique. 💎 Site totalement sur-mesure (+340% leads en 3 mois) : alliancegroupe-inc.com/contact",
 				'success' => "Merci pour votre achat du Pack Business ! Notre equipe vous contacte sous 24h ouvrees pour planifier l'installation et l'appel strategique avec Fabrizio. Tel : 06.23.52.60.74",
