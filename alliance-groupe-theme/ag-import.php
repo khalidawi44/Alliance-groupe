@@ -135,6 +135,33 @@ function ag_render() {
         }
     }
 
+    // ── Panneau Auto-Sync (WP Cron toutes les 5 min) ──
+    if ( class_exists( 'AG_GitHub_Sync' ) ) {
+        $next      = AG_GitHub_Sync::get_next_cron_run();
+        $cron_log  = AG_GitHub_Sync::get_cron_log();
+        $next_str  = $next ? human_time_diff( time(), $next ) : '— non planifié —';
+        $is_late   = $next && $next < time();
+        echo '<div style="margin:20px 0;padding:18px 22px;background:linear-gradient(135deg,#0c1b0f 0%,#0a0a0f 100%);border:1px solid rgba(34,197,94,.35);border-radius:12px;color:#fff;">';
+        echo '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">';
+        echo '<div><h2 style="color:#fff;margin:0;font-size:1.15em;">🤖 Auto-sync GitHub (WP Cron)</h2>';
+        echo '<p style="color:rgba(255,255,255,.75);margin:6px 0 0;font-size:.88em;">Tourne en arrière-plan toutes les 5 min — déclenché automatiquement par le trafic du site. <strong style="color:#22c55e;">Aucune action requise.</strong></p></div>';
+        echo '<div style="text-align:right;font-size:.85em;color:rgba(255,255,255,.7);">';
+        if ( $next ) {
+            echo 'Prochain : <strong style="color:' . ( $is_late ? '#fbbf24' : '#22c55e' ) . ';">' . esc_html( $is_late ? 'imminent' : 'dans ' . $next_str ) . '</strong>';
+            echo '<br><span style="font-size:.75em;opacity:.7;">' . esc_html( wp_date( 'd/m H:i:s', $next ) ) . '</span>';
+        } else {
+            echo '<span style="color:#ef4444;">⚠️ cron non planifié</span>';
+        }
+        echo '</div></div>';
+        if ( ! empty( $cron_log ) ) {
+            echo '<details style="margin-top:14px;"><summary style="color:rgba(255,255,255,.7);cursor:pointer;font-size:.85em;">📜 Log des derniers passages (' . count( $cron_log ) . ')</summary>';
+            echo '<div style="background:rgba(0,0,0,.4);color:#9ff;font-family:monospace;font-size:11px;padding:12px;border-radius:6px;margin-top:8px;max-height:240px;overflow:auto;line-height:1.55;">';
+            foreach ( $cron_log as $line ) echo '<div>' . esc_html( $line ) . '</div>';
+            echo '</div></details>';
+        }
+        echo '</div>';
+    }
+
     // ── Deux boutons côte à côte ──
     echo '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;">';
 

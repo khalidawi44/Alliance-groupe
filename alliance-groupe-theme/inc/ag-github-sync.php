@@ -42,10 +42,86 @@ class AG_GitHub_Sync {
 	/** Fichiers/dossiers à NE JAMAIS écraser même s'ils sont dans le repo. */
 	const PROTECTED = array( 'wp-config.php', '.env', '.htaccess' );
 
+	const CRON_HOOK     = 'ag_github_sync_cron';
+	const CRON_INTERVAL = 'ag_every_five_minutes';
+	const CRON_LOG_OPT  = 'ag_github_sync_cron_log';
+
 	public static function init() {
 		// Pas de page admin propre — l'UI est dans ag-import.php
 		// Garde admin-post pour le standalone si besoin futur
 		add_action( 'admin_post_ag_github_sync_run', array( __CLASS__, 'handle_run' ) );
+
+		// ── Cron auto-sync : toutes les 5 min, en arriere-plan, zero clic ──
+		// Declenche par n'importe quelle visite du site (WP cron classique).
+		add_filter( 'cron_schedules', array( __CLASS__, 'add_cron_interval' ) );
+		add_action( self::CRON_HOOK, array( __CLASS__, 'cron_run' ) );
+		// Auto-schedule si pas deja en place
+		if ( ! wp_next_scheduled( self::CRON_HOOK ) ) {
+			wp_schedule_event( time() + 60, self::CRON_INTERVAL, self::CRON_HOOK );
+		}
+	}
+
+	/** Ajoute l'intervalle 5 min aux schedules WP-Cron disponibles. */
+	public static function add_cron_interval( $schedules ) {
+		if ( ! isset( $schedules[ self::CRON_INTERVAL ] ) ) {
+			$schedules[ self::CRON_INTERVAL ] = array(
+				'interval' => 5 * MINUTE_IN_SECONDS,
+				'display'  => 'AG : Toutes les 5 minutes',
+			);
+		}
+		return $schedules;
+	}
+
+	/**
+	 * Handler du cron : pour chaque repo configure, compare SHA distant vs local
+	 * et lance la sync si different. Tourne en arriere-plan, sans UI.
+	 */
+	public static function cron_run() {
+		if ( ! class_exists( 'AG_GitHub_Sync' ) ) return;
+		$log = array();
+		$log[] = '[' . wp_date( 'Y-m-d H:i:s' ) . '] Cron auto-sync demarre';
+		$any_synced = false;
+		foreach ( array_keys( self::get_repos() ) as $slug ) {
+			$remote = self::get_remote_sha( $slug, true );
+			$local  = self::get_local_sha( $slug );
+			if ( ! $remote ) {
+				$log[] = $slug . ' : API GitHub injoignable, skip';
+				continue;
+			}
+			if ( $remote === $local ) {
+				$log[] = $slug . ' : deja a jour (' . $remote . ')';
+				continue;
+			}
+			$log[] = $slug . ' : MAJ detectee (' . substr( $local, 0, 7 ) . ' -> ' . substr( $remote, 0, 7 ) . ') — sync...';
+			$result = self::sync( $slug );
+			if ( $result['ok'] ) {
+				$n = (int) ( $result['stats']['updated'] ?? 0 ) + (int) ( $result['stats']['created'] ?? 0 );
+				$log[] = $slug . ' : OK, ' . $n . ' fichiers mis a jour';
+				$any_synced = true;
+			} else {
+				$log[] = $slug . ' : ERREUR — ' . $result['error'];
+			}
+		}
+		if ( ! $any_synced ) {
+			$log[] = 'Rien a sync.';
+		}
+		// Garde les 50 dernieres entrees (taille raisonnable)
+		$prev = get_option( self::CRON_LOG_OPT, array() );
+		if ( ! is_array( $prev ) ) $prev = array();
+		$merged = array_merge( $log, $prev );
+		if ( count( $merged ) > 50 ) $merged = array_slice( $merged, 0, 50 );
+		update_option( self::CRON_LOG_OPT, $merged );
+	}
+
+	/** Recupere l'historique des derniers passages cron. */
+	public static function get_cron_log() {
+		$log = get_option( self::CRON_LOG_OPT, array() );
+		return is_array( $log ) ? $log : array();
+	}
+
+	/** Heure prevue du prochain run cron (timestamp Unix), ou false si pas planifie. */
+	public static function get_next_cron_run() {
+		return wp_next_scheduled( self::CRON_HOOK );
 	}
 
 	/**
