@@ -312,6 +312,105 @@
 	}
 
 	// =====================================================================
+	// I. STATS COUNT-UP au scroll
+	//    Cible : .ag-metric__value, .ag-gain-card__value, [data-count]
+	//    Lit le textContent, extrait le nombre + suffixe (% / + / / ...),
+	//    anime de 0 → cible en 1.5s avec easing.
+	// =====================================================================
+	function initCountUp() {
+		if (REDUCED) return;
+		var selectors = '.ag-metric__value, .ag-client__stat-value, .ag-gain-card__value, [data-count]';
+		var els = document.querySelectorAll(selectors);
+		if (!els.length || !('IntersectionObserver' in window)) return;
+
+		var io = new IntersectionObserver(function (entries) {
+			entries.forEach(function (e) {
+				if (!e.isIntersecting) return;
+				var el = e.target;
+				var raw = el.dataset.count || el.textContent;
+				// Extrait : optionnel - puis nombre puis suffixe
+				var m = raw.match(/^(-?\d+(?:[.,]\d+)?)(.*)$/);
+				if (!m) { io.unobserve(el); return; }
+				var target = parseFloat(m[1].replace(',', '.'));
+				var suffix = m[2] || '';
+				var isInt = m[1].indexOf('.') === -1 && m[1].indexOf(',') === -1;
+				var prefix = '';
+				if (raw.charAt(0) === '+' && target >= 0) prefix = '+'; // ex: "+340%"
+				var start = performance.now();
+				var duration = 1500;
+				function tick(now) {
+					var t = Math.min(1, (now - start) / duration);
+					// easing ease-out expo
+					var eased = t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+					var current = target * eased;
+					var disp = isInt ? Math.floor(current).toString() : current.toFixed(1);
+					el.textContent = prefix + disp + suffix;
+					if (t < 1) requestAnimationFrame(tick);
+				}
+				requestAnimationFrame(tick);
+				io.unobserve(el);
+			});
+		}, { threshold: 0.3 });
+
+		els.forEach(function (el) {
+			// Préserve la valeur originale dans data-count si pas déjà
+			if (!el.dataset.count) el.dataset.count = el.textContent.trim();
+			io.observe(el);
+		});
+	}
+
+	// =====================================================================
+	// J. PROCESS STEPS reveal au scroll (ajoute is-revealed)
+	// =====================================================================
+	function initProcessReveal() {
+		var steps = document.querySelectorAll('.ag-pstep');
+		if (!steps.length || !('IntersectionObserver' in window)) return;
+		var io = new IntersectionObserver(function (entries) {
+			entries.forEach(function (e) {
+				if (e.isIntersecting) {
+					e.target.classList.add('is-revealed');
+					io.unobserve(e.target);
+				}
+			});
+		}, { threshold: 0.4 });
+		steps.forEach(function (s) { io.observe(s); });
+	}
+
+	// =====================================================================
+	// K. SECTIONS reveal au scroll (ajoute ag-revealed)
+	// =====================================================================
+	function initSectionReveal() {
+		if (REDUCED) return;
+		var sections = document.querySelectorAll('.ag-section, .ag-services, .ag-process, .ag-realisations, .ag-mk-team, .ag-about, .ag-faq, .ag-cta');
+		if (!sections.length || !('IntersectionObserver' in window)) return;
+		var io = new IntersectionObserver(function (entries) {
+			entries.forEach(function (e) {
+				if (e.isIntersecting) {
+					e.target.classList.add('ag-revealed');
+					io.unobserve(e.target);
+				}
+			});
+		}, { threshold: 0.1, rootMargin: '0px 0px -5% 0px' });
+		sections.forEach(function (s) { io.observe(s); });
+	}
+
+	// =====================================================================
+	// L. FAQ : convertit les <div.ag-faq-item> en <details> si pas déjà
+	//    (rendre la rotation icon native, sans JS toggle)
+	// =====================================================================
+	function initFaq() {
+		// Click toggle pour les ag-faq-item qui ne sont pas des <details>
+		var items = document.querySelectorAll('.ag-faq-item:not(details)');
+		items.forEach(function (item) {
+			var q = item.querySelector('.ag-faq-q');
+			if (!q) return;
+			q.addEventListener('click', function () {
+				item.toggleAttribute('open');
+			});
+		});
+	}
+
+	// =====================================================================
 	// BOOT
 	// =====================================================================
 	ready(function () {
@@ -320,5 +419,9 @@
 		initCursor();
 		initTextReveal();
 		initParticles();
+		initCountUp();
+		initProcessReveal();
+		initSectionReveal();
+		initFaq();
 	});
 })();
