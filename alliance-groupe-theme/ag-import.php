@@ -77,6 +77,64 @@ function ag_render() {
         }
     }
 
+    // ── Auto-sync mobile : déclenche la sync sans clic quand un téléphone
+    //    visite cette page ET qu'une MAJ est dispo. Sur desktop : aucun
+    //    changement (les boutons restent manuels). Throttle 30s pour
+    //    éviter qu'un refresh ne relance en boucle.
+    //
+    //    Override possible : ?ag_no_auto=1 (escape hatch debug) ou ?ag_auto=1
+    //    (force depuis desktop si besoin).
+    $ag_is_mobile_admin = function_exists( 'wp_is_mobile' ) && wp_is_mobile();
+    $ag_force_auto      = isset( $_GET['ag_auto'] );
+    $ag_skip_auto       = isset( $_GET['ag_no_auto'] );
+    $ag_should_auto     = ( $ag_is_mobile_admin || $ag_force_auto ) && ! $ag_skip_auto && empty( $_POST ) && class_exists( 'AG_GitHub_Sync' );
+
+    if ( $ag_is_mobile_admin && ! $ag_skip_auto ) {
+        echo '<div class="notice notice-info" style="margin:12px 0;"><p>📱 <strong>Mode mobile détecté</strong> — la sync GitHub se lance automatiquement à chaque ouverture (aucun clic requis). <a href="' . esc_url( add_query_arg( 'ag_no_auto', '1' ) ) . '">Désactiver pour cette visite</a></p></div>';
+    }
+
+    if ( $ag_should_auto ) {
+        $last_auto = (int) get_option( 'ag_mobile_auto_sync_last', 0 );
+        if ( time() - $last_auto > 30 ) {
+            update_option( 'ag_mobile_auto_sync_last', time() );
+            $auto_total   = 0;
+            $auto_synced  = array();
+            $auto_skipped = array();
+            $auto_errors  = array();
+            foreach ( array_keys( AG_GitHub_Sync::get_repos() ) as $slug ) {
+                $remote = AG_GitHub_Sync::get_remote_sha( $slug, true );
+                $local  = AG_GitHub_Sync::get_local_sha( $slug );
+                if ( ! $remote ) {
+                    $auto_errors[] = $slug . ' (API GitHub injoignable)';
+                    continue;
+                }
+                if ( $remote === $local ) {
+                    $auto_skipped[] = $slug;
+                    continue;
+                }
+                $result = AG_GitHub_Sync::sync( $slug );
+                if ( $result['ok'] ) {
+                    $n = (int) ( $result['stats']['updated'] ?? 0 ) + (int) ( $result['stats']['created'] ?? 0 );
+                    $auto_total += $n;
+                    $auto_synced[] = $slug . ' (' . $n . ')';
+                } else {
+                    $auto_errors[] = $slug . ' : ' . $result['error'];
+                }
+            }
+            if ( ! empty( $auto_synced ) ) {
+                echo '<div class="notice notice-success"><p>📱 <strong>Auto-sync mobile</strong> : ' . esc_html( $auto_total ) . ' fichiers mis à jour — <code>' . esc_html( implode( ', ', $auto_synced ) ) . '</code></p></div>';
+            } elseif ( ! empty( $auto_skipped ) && empty( $auto_errors ) ) {
+                echo '<div class="notice notice-info"><p>✅ Auto-sync : déjà à jour (<code>' . esc_html( implode( ', ', $auto_skipped ) ) . '</code>)</p></div>';
+            }
+            if ( ! empty( $auto_errors ) ) {
+                echo '<div class="notice notice-warning"><p>⚠️ Auto-sync : ' . esc_html( implode( ' · ', $auto_errors ) ) . '</p></div>';
+            }
+        } else {
+            $wait = 30 - ( time() - $last_auto );
+            echo '<div class="notice notice-info"><p>⏳ Auto-sync en cooldown (' . esc_html( $wait ) . 's) — refresh dans un instant ou utilise le bouton manuel.</p></div>';
+        }
+    }
+
     // ── Deux boutons côte à côte ──
     echo '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;">';
 
