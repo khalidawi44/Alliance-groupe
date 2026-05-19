@@ -22,7 +22,13 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$ag_video_args = isset( $args ) && is_array( $args ) ? $args : array();
+// Récupère les args : depuis get_template_part (WP 5.5+) ou globale fallback.
+$ag_video_args = array();
+if ( isset( $args ) && is_array( $args ) ) {
+	$ag_video_args = $args;
+} elseif ( ! empty( $GLOBALS['ag_promo_video_args'] ) && is_array( $GLOBALS['ag_promo_video_args'] ) ) {
+	$ag_video_args = $GLOBALS['ag_promo_video_args'];
+}
 
 $ag_video_title  = ! empty( $ag_video_args['title'] )
 	? $ag_video_args['title']

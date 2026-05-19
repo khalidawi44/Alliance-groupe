@@ -38,8 +38,11 @@ add_shortcode( 'ag_promo_video', function ( $atts ) {
         'video_url' => '',
     ), $atts, 'ag_promo_video' );
     ob_start();
-    set_query_var( 'args', $atts );
-    get_template_part( 'template-parts/promo-video' );
+    // get_template_part avec args nécessite WP 5.5+. On expose aussi $args
+    // en variable globale pour compatibilité.
+    $GLOBALS['ag_promo_video_args'] = $atts;
+    get_template_part( 'template-parts/promo-video', null, $atts );
+    unset( $GLOBALS['ag_promo_video_args'] );
     return ob_get_clean();
 } );
 
