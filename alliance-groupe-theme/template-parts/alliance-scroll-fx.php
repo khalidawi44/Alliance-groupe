@@ -243,15 +243,16 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-cta{padding:12px 24px;font-size:.78rem;letter-spacing:1.5px;}
 		/* Footer "CHOISISSEZ VOTRE MÉTIER" : letter-spacing tue le texte sur 390px */
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-footer{padding-bottom:24px;padding-left:16px;padding-right:16px;}
-		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-footer-title{font-size:.78rem;letter-spacing:1.5px;line-height:1.25;}
-		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-progress{width:160px;margin-top:14px;}
-		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-progress-numbers{font-size:.7rem;}
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-footer-title{font-size:.78rem;letter-spacing:1.5px;line-height:1.4;margin-bottom:28px;}
+		/* Numbers (01/06) sous la barre au lieu d'au-dessus pour ne pas chevaucher le titre */
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-progress{width:160px;margin-top:8px;}
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-progress-numbers{font-size:.7rem;inset:100% 0 auto 0;margin-top:8px;margin-bottom:0;}
 	}
 	/* Petit mobile (<=480px) : encore plus serre */
 	@media (max-width:480px){
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-header{padding-top:130px;font-size:.65rem;letter-spacing:2.5px;}
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured-title{font-size:clamp(2rem,12vw,3rem);}
-		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-footer-title{font-size:.72rem;letter-spacing:1px;}
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-footer-title{font-size:.72rem;letter-spacing:1px;margin-bottom:22px;}
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-progress{width:140px;}
 	}
 	/* Cache le back-to-top tant qu'on est dans la section scroll-fx mobile
