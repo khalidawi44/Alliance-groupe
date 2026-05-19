@@ -31,6 +31,7 @@ $ag_hub_metiers = array(
         'tagline'  => 'CPT Domaines, formulaire RDV RGPD, honoraires transparents.',
         'url'      => home_url( '/wordpress-avocat' ),
         'is_new'   => true,
+        'image'    => 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1200&q=85',
     ),
     array(
         'slug'     => 'restaurant',
@@ -41,6 +42,7 @@ $ag_hub_metiers = array(
         'tagline'  => 'Hero, carte, réservation, privatisation, horaires.',
         'url'      => home_url( '/wordpress-restaurant' ),
         'is_new'   => false,
+        'image'    => 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=85',
     ),
     array(
         'slug'     => 'artisan',
@@ -51,6 +53,7 @@ $ag_hub_metiers = array(
         'tagline'  => 'Prestations, zones d\'intervention, devis, réalisations.',
         'url'      => home_url( '/wordpress-artisan' ),
         'is_new'   => false,
+        'image'    => 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=85',
     ),
     array(
         'slug'     => 'coach',
@@ -61,6 +64,7 @@ $ag_hub_metiers = array(
         'tagline'  => 'Services, séances, témoignages, prise de rendez-vous.',
         'url'      => home_url( '/wordpress-coach' ),
         'is_new'   => false,
+        'image'    => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1200&q=85',
     ),
     array(
         'slug'     => 'barber',
@@ -71,6 +75,7 @@ $ag_hub_metiers = array(
         'tagline'  => 'File d\'attente QR code, tarifs, prestations, ticket en temps réel.',
         'url'      => home_url( '/wordpress-barber' ),
         'is_new'   => true,
+        'image'    => 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=1200&q=85',
     ),
     array(
         'slug'      => 'association',
@@ -82,6 +87,7 @@ $ag_hub_metiers = array(
         'url'       => home_url( '/wordpress-association' ),
         'is_new'    => true,
         'is_carity' => true,
+        'image'     => 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1200&q=85',
     ),
 );
 ?>
@@ -112,9 +118,14 @@ $ag_hub_metiers = array(
 
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;max-width:1200px;margin:48px auto 0;">
                 <?php foreach ( $ag_hub_metiers as $m ) : ?>
-                <a href="<?php echo esc_url( $m['url'] ); ?>" class="ag-anim" data-anim="card" style="display:flex;flex-direction:column;background:rgba(255,255,255,.025);border:1px solid rgba(212,180,92,.25);border-radius:16px;padding:28px;text-decoration:none;transition:border-color .3s,transform .3s,box-shadow .3s;color:inherit;">
+                <a href="<?php echo esc_url( $m['url'] ); ?>" class="ag-metier-card ag-anim" data-anim="card" style="display:flex;flex-direction:column;background:rgba(255,255,255,.025);border:1px solid rgba(212,180,92,.25);border-radius:16px;text-decoration:none;transition:border-color .3s,transform .3s,box-shadow .3s;color:inherit;overflow:hidden;">
+                    <?php if ( ! empty( $m['image'] ) ) : ?>
+                    <div class="ag-metier-card__img" style="aspect-ratio:16/10;background-image:linear-gradient(180deg,transparent 40%,rgba(10,10,15,.95) 100%),url('<?php echo esc_url( $m['image'] ); ?>');background-size:cover;background-position:center;position:relative;">
+                        <span class="ag-metier-card__emoji" style="position:absolute;bottom:14px;left:18px;width:54px;height:54px;background:linear-gradient(135deg,rgba(212,180,92,.95) 0%,rgba(243,122,31,.95) 100%);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.9rem;box-shadow:0 8px 24px rgba(0,0,0,.5),0 0 0 2px rgba(255,255,255,.1);"><?php echo $m['icon']; // phpcs:ignore ?></span>
+                    </div>
+                    <?php endif; ?>
+                    <div style="padding:24px 28px;display:flex;flex-direction:column;flex:1;">
                     <div style="display:flex;align-items:flex-start;gap:16px;margin-bottom:18px;">
-                        <span style="font-size:2.4rem;line-height:1;"><?php echo $m['icon']; // phpcs:ignore ?></span>
                         <div style="flex:1;">
                             <h3 style="color:#fff;font-size:1.3rem;margin:0 0 4px;">
                                 <?php echo esc_html( $m['name'] ); ?>
@@ -134,6 +145,7 @@ $ag_hub_metiers = array(
                         <span style="color:#D4B45C;font-weight:700;font-size:.92rem;">Voir la fiche →</span>
                         <span style="color:#28a745;font-size:.78rem;font-weight:700;">Gratuit</span>
                     </div>
+                    </div><!-- /padding wrapper -->
                 </a>
                 <?php endforeach; ?>
             </div>

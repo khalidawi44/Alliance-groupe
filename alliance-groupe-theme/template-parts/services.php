@@ -6,39 +6,40 @@
 
         <div class="ag-services__grid">
             <?php
+            // SVG icônes stroke style Heroicons (champagne), remplacent les emojis
             $services = [
                 [
-                    'icon'  => '🌐',
+                    'svg'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>',
                     'title' => 'Création Web',
                     'text'  => 'Sites vitrines et e-commerce performants, optimisés pour convertir vos visiteurs en clients.',
                     'link'  => home_url('/service-creation-web'),
                 ],
                 [
-                    'icon'  => '🤖',
+                    'svg'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="16" height="14" rx="3"/><path d="M9 2v4M15 2v4M12 13v2M9 10h.01M15 10h.01"/><circle cx="9" cy="15" r=".5" fill="currentColor"/><circle cx="15" cy="15" r=".5" fill="currentColor"/></svg>',
                     'title' => 'IA & Automatisation',
                     'text'  => 'Chatbots, automatisation des process, intégration d\'IA pour gagner du temps et de l\'argent.',
                     'link'  => home_url('/service-ia'),
                 ],
                 [
-                    'icon'  => '🔍',
+                    'svg'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/><path d="M8 11h6M11 8v6" opacity=".5"/></svg>',
                     'title' => 'SEO',
                     'text'  => 'Référencement naturel pour dominer les résultats Google et attirer un trafic qualifié.',
                     'link'  => home_url('/service-seo'),
                 ],
                 [
-                    'icon'  => '📢',
+                    'svg'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a4 4 0 0 1 0 7M18.5 5.5a8 8 0 0 1 0 13"/></svg>',
                     'title' => 'Publicité Digitale',
                     'text'  => 'Campagnes Google Ads et Meta Ads avec un ROI mesurable et optimisé.',
                     'link'  => home_url('/service-publicite'),
                 ],
                 [
-                    'icon'  => '🎨',
+                    'svg'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a9 9 0 0 0-9 9c0 5 4 7 6 7h2a2 2 0 0 0 0-4 1 1 0 0 1 0-2h2.5a4.5 4.5 0 0 0 4.5-4.5C18 4.4 15.3 2 12 2z"/><circle cx="7" cy="11" r="1" fill="currentColor"/><circle cx="9" cy="6.5" r="1" fill="currentColor"/><circle cx="14" cy="6" r="1" fill="currentColor"/><circle cx="17" cy="10" r="1" fill="currentColor"/></svg>',
                     'title' => 'Branding',
                     'text'  => 'Identité visuelle forte et cohérente qui marque les esprits et inspire confiance.',
                     'link'  => home_url('/service-branding'),
                 ],
                 [
-                    'icon'  => '💡',
+                    'svg'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21h6M10 17h4M7 13a5 5 0 0 1-2-4 7 7 0 1 1 14 0 5 5 0 0 1-2 4v3a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1z"/><path d="M12 6v6" opacity=".4"/></svg>',
                     'title' => 'Conseil Stratégique',
                     'text'  => 'Audit digital, stratégie de croissance et accompagnement sur-mesure.',
                     'link'  => home_url('/service-conseil'),
@@ -47,7 +48,7 @@
             foreach ($services as $s) :
             ?>
             <div class="ag-scard ag-anim" data-anim="card">
-                <div class="ag-scard__icon"><?php echo $s['icon']; ?></div>
+                <div class="ag-scard__icon ag-scard__icon--svg"><?php echo $s['svg']; // phpcs:ignore — SVG inline contrôlé ?></div>
                 <h3 class="ag-scard__title"><?php echo esc_html($s['title']); ?></h3>
                 <p class="ag-scard__text"><?php echo esc_html($s['text']); ?></p>
                 <a href="<?php echo esc_url($s['link']); ?>" class="ag-btn-outline ag-scard__btn">Découvrir →</a>

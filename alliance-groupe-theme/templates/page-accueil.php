@@ -68,6 +68,10 @@ get_header();
 <!-- Marquee -->
 <?php get_template_part('template-parts/marquee'); ?>
 
+<!-- 🔄 RÉORG : Templates AVANT la présentation services/process -->
+<!-- Templates WordPress gratuits — scroll-jacking GSAP plein écran style Apple -->
+<?php get_template_part('template-parts/alliance-scroll-fx'); ?>
+
 <!-- Services -->
 <?php get_template_part('template-parts/services'); ?>
 
@@ -81,9 +85,6 @@ get_header();
         <p class="ag-parallax__quote">"La technologie seule ne suffit pas. C'est la technologie mariée au design qui nous donne le résultat qui fait chanter notre cœur."</p>
     </div>
 </section>
-
-<!-- Templates WordPress gratuits — scroll-jacking GSAP plein écran style Apple -->
-<?php get_template_part('template-parts/alliance-scroll-fx'); ?>
 
 <!-- Promo Templates : carte mockup + features + 2 CTAs (restaurée) -->
 <section class="ag-section ag-promo-tpl ag-section--onyx">

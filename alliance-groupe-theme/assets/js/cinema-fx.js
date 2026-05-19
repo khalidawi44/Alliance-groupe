@@ -423,6 +423,35 @@
 	}
 
 	// =====================================================================
+	// M. BACK-TO-TOP progress ring (met à jour --scroll en %)
+	// =====================================================================
+	function initBackToTopProgress() {
+		var btn = document.getElementById('ag-totop');
+		if (!btn) return;
+		var ticking = false;
+		function update() {
+			var h = document.documentElement;
+			var max = (h.scrollHeight - h.clientHeight) || 1;
+			var p = Math.min(100, Math.max(0, (window.scrollY / max) * 100));
+			btn.style.setProperty('--scroll', p + '%');
+			ticking = false;
+		}
+		window.addEventListener('scroll', function () {
+			if (!ticking) { requestAnimationFrame(update); ticking = true; }
+		}, { passive: true });
+		update();
+		// Smooth scroll au clic (en plus du natif)
+		btn.addEventListener('click', function (e) {
+			e.preventDefault();
+			if (window.__agLenis && window.__agLenis.scrollTo) {
+				window.__agLenis.scrollTo(0, { duration: 1.5 });
+			} else {
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+			}
+		});
+	}
+
+	// =====================================================================
 	// BOOT
 	// =====================================================================
 	ready(function () {
@@ -435,5 +464,6 @@
 		initProcessReveal();
 		initSectionReveal();
 		initFaq();
+		initBackToTopProgress();
 	});
 })();
