@@ -52,6 +52,31 @@ function ag_render() {
         echo '<div class="notice notice-success"><p>🧹 Purge complète : ' . intval( $deleted ) . ' entrées supprimées (caches licence, transients companion, MAJ plugins/thèmes).</p></div>';
     }
 
+    // Action: Sync fichiers depuis GitHub (AG_GitHub_Sync)
+    if ( isset( $_POST['ag_files_sync'] ) && check_admin_referer( 'ag_files_sync_nonce' ) ) {
+        $slug = isset( $_POST['repo_slug'] ) ? sanitize_key( wp_unslash( $_POST['repo_slug'] ) ) : 'theme';
+        if ( class_exists( 'AG_GitHub_Sync' ) ) {
+            $result = AG_GitHub_Sync::sync( $slug );
+            if ( $result['ok'] ) {
+                $total = (int) ( $result['stats']['updated'] ?? 0 ) + (int) ( $result['stats']['created'] ?? 0 );
+                echo '<div class="notice notice-success"><p>✅ Sync fichiers terminée : <strong>' . esc_html( $total ) . ' fichiers</strong> mis à jour pour <code>' . esc_html( $slug ) . '</code>.</p></div>';
+            } else {
+                echo '<div class="notice notice-error"><p>❌ Erreur sync fichiers : ' . esc_html( $result['error'] ) . '</p></div>';
+            }
+        } else {
+            echo '<div class="notice notice-error"><p>❌ AG_GitHub_Sync indisponible — vérifie que inc/ag-github-sync.php est bien chargé dans functions.php.</p></div>';
+        }
+    }
+    // Refresh SHA distant (vide transient)
+    if ( isset( $_POST['ag_files_check'] ) && check_admin_referer( 'ag_files_check_nonce' ) ) {
+        if ( class_exists( 'AG_GitHub_Sync' ) ) {
+            foreach ( array_keys( AG_GitHub_Sync::get_repos() ) as $slug ) {
+                AG_GitHub_Sync::get_remote_sha( $slug, true );
+            }
+            echo '<div class="notice notice-success"><p>🔄 SHA distants rafraîchis pour tous les repos.</p></div>';
+        }
+    }
+
     // ── Deux boutons côte à côte ──
     echo '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;">';
 
@@ -76,6 +101,68 @@ function ag_render() {
     echo '</form></div>';
 
     echo '</div>';
+
+    // ── Section "Sync fichiers depuis GitHub" (extensible multi-repos) ──
+    if ( class_exists( 'AG_GitHub_Sync' ) ) {
+        $repos = AG_GitHub_Sync::get_repos();
+        echo '<div style="margin:24px 0;padding:24px 28px;background:linear-gradient(135deg,#0a0a0f 0%,#1a1a2e 100%);color:#fff;border-radius:12px;">';
+        echo '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:18px;">';
+        echo '<div><h2 style="color:#fff;margin:0;font-size:1.3em;">🚀 Synchroniser fichiers depuis GitHub</h2>';
+        echo '<p style="color:rgba(255,255,255,.7);margin:6px 0 0;font-size:.9em;">Télécharge le tarball + remplace les fichiers (PHP / CSS / JS / images / vidéos) du thème depuis GitHub. Backup auto dans <code style="background:rgba(255,255,255,.1);padding:2px 6px;border-radius:3px;color:#D4B45C;">/uploads/ag-backups/</code></p></div>';
+        echo '<form method="post" style="margin:0;">';
+        wp_nonce_field( 'ag_files_check_nonce' );
+        echo '<button type="submit" name="ag_files_check" class="button" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;">🔄 Vérifier MAJ</button>';
+        echo '</form>';
+        echo '</div>';
+
+        echo '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:16px;">';
+        foreach ( $repos as $slug => $cfg ) {
+            $remote_sha = AG_GitHub_Sync::get_remote_sha( $slug );
+            $local_sha  = AG_GitHub_Sync::get_local_sha( $slug );
+            $last_time  = AG_GitHub_Sync::get_last_time( $slug );
+            $up_to_date = $remote_sha && $local_sha && $remote_sha === $local_sha;
+            $status_color = $up_to_date ? '#4ade80' : ( $remote_sha ? '#fbbf24' : '#94a3b8' );
+            $status_text  = $up_to_date ? '✓ À jour' : ( $remote_sha ? '⚠️ MAJ dispo' : '— inconnu —' );
+
+            echo '<div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:18px 20px;">';
+            echo '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">';
+            echo '<div><h3 style="color:#fff;margin:0 0 4px;font-size:1.05em;">' . esc_html( $cfg['label'] ) . '</h3>';
+            echo '<p style="color:rgba(255,255,255,.55);margin:0;font-size:.78em;font-family:monospace;">' . esc_html( $cfg['repo'] ) . '@' . esc_html( $cfg['branch'] );
+            if ( ! empty( $cfg['subdir'] ) ) echo ' › ' . esc_html( $cfg['subdir'] );
+            echo '</p></div>';
+            echo '<span style="background:' . esc_attr( $status_color ) . '22;color:' . esc_attr( $status_color ) . ';padding:4px 10px;border-radius:999px;font-size:.75em;font-weight:700;white-space:nowrap;">' . esc_html( $status_text ) . '</span>';
+            echo '</div>';
+
+            echo '<div style="display:flex;gap:16px;font-size:.78em;color:rgba(255,255,255,.65);margin-bottom:14px;">';
+            echo '<div>Local : <code style="background:rgba(255,255,255,.08);padding:2px 6px;border-radius:3px;color:#D4B45C;">' . esc_html( $local_sha ?: '—' ) . '</code></div>';
+            echo '<div>Distant : <code style="background:rgba(255,255,255,.08);padding:2px 6px;border-radius:3px;color:#D4B45C;">' . esc_html( $remote_sha ?: '—' ) . '</code></div>';
+            if ( $last_time ) echo '<div>il y a ' . esc_html( human_time_diff( $last_time ) ) . '</div>';
+            echo '</div>';
+
+            echo '<form method="post" onsubmit="return confirm(\'Lancer la sync \\\'' . esc_js( $cfg['label'] ) . '\\\' ? Les fichiers locaux seront remplacés (backup auto).\');" style="margin:0;">';
+            wp_nonce_field( 'ag_files_sync_nonce' );
+            echo '<input type="hidden" name="repo_slug" value="' . esc_attr( $slug ) . '">';
+            echo '<button type="submit" name="ag_files_sync" class="button button-primary" style="background:#F37A1F;border-color:#F37A1F;color:#fff;font-weight:700;width:100%;height:38px;font-size:.95em;">🚀 SYNC ' . esc_html( strtoupper( $cfg['label'] ) ) . '</button>';
+            echo '</form>';
+            echo '</div>';
+        }
+        echo '</div>';
+
+        // Log du dernier sync (premier repo)
+        $first_slug = array_key_first( $repos );
+        if ( $first_slug ) {
+            $log = AG_GitHub_Sync::get_last_log( $first_slug );
+            if ( ! empty( $log ) ) {
+                echo '<details style="margin-top:18px;"><summary style="color:rgba(255,255,255,.7);cursor:pointer;font-size:.85em;">📜 Log de la dernière sync (' . esc_html( $first_slug ) . ')</summary>';
+                echo '<div style="background:rgba(0,0,0,.4);color:#0f0;font-family:monospace;font-size:11px;padding:14px;border-radius:6px;margin-top:8px;max-height:300px;overflow:auto;line-height:1.55;">';
+                foreach ( $log as $line ) echo '<div>' . esc_html( $line ) . '</div>';
+                echo '</div></details>';
+            }
+        }
+        echo '</div>';
+    } else {
+        echo '<div class="notice notice-warning"><p>⚠️ <strong>AG_GitHub_Sync indisponible.</strong> Le fichier <code>inc/ag-github-sync.php</code> doit être présent dans le thème et chargé dans <code>functions.php</code>. Upload via FTP puis recharge cette page.</p></div>';
+    }
 
     // Bouton purge
     echo '<div style="margin:20px 0;padding:20px;background:#fff3cd;border:2px solid #ffc107;border-radius:8px;text-align:center;">';
