@@ -7,9 +7,15 @@
 
 /* ── 1. MENU — glassmorphism + sticky animé ──────────────────────── */
 .ag-nav{
-    transition: background .35s ease, backdrop-filter .35s ease, padding .35s ease, box-shadow .35s ease;
-    will-change: background, backdrop-filter, padding;
+    transition: background .35s ease, backdrop-filter .35s ease, padding .35s ease, box-shadow .35s ease, transform .35s cubic-bezier(.16,1,.3,1) !important;
+    will-change: background, backdrop-filter, padding, transform;
 }
+/* Auto-hide nav + burger au scroll vers le bas (style Apple) */
+body.ag-nav-hidden .ag-nav{ transform: translateY(-100%) !important; }
+body.ag-nav-hidden .ag-fsm-toggle{ transform: translateX(-50%) translateY(calc(-100% - 100px)) !important; }
+/* Reset au hover/menu ouvert */
+body.ag-fsm-open .ag-nav,
+body.ag-fsm-open .ag-fsm-toggle{ transform: none !important; }
 /* MENU CLASSIQUE remplacé par le menu fullscreen burger.
    Layout centré : LOGO GROS au top centre + burger centré juste en dessous. */
 .ag-nav__list{ display: none !important; }

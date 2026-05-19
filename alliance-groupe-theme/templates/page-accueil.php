@@ -70,8 +70,11 @@ get_header();
 <!-- Marquee -->
 <?php get_template_part('template-parts/marquee'); ?>
 
-<!-- 🔄 RÉORG : Templates AVANT la présentation services/process -->
-<!-- Templates WordPress gratuits — scroll-jacking GSAP plein écran style Apple -->
+<!-- 🔄 RÉORG : CTA Téléchargez d'abord, puis section métiers en dessous -->
+<!-- 1/ Section "Téléchargez un template" (intro + features + CTAs) -->
+<?php get_template_part('template-parts/templates-cta'); ?>
+
+<!-- 2/ Section "métiers" — scroll-jacking GSAP plein écran style Apple -->
 <?php get_template_part('template-parts/alliance-scroll-fx'); ?>
 
 <!-- Services -->
@@ -95,44 +98,15 @@ get_header();
 <!-- Réalisations -->
 <?php get_template_part('template-parts/realisations'); ?>
 
-<!-- Parallax 2 — slideshow des 3 bureaux -->
-<?php
-$parallax_slides = array();
-$cities_path = get_stylesheet_directory() . '/assets/images/cities/';
-$cities_uri  = get_stylesheet_directory_uri() . '/assets/images/cities/';
-foreach ( array( 'nantes-1.jpg', 'naples-1.jpg', 'marrakech-1.jpg' ) as $slide ) {
-    if ( file_exists( $cities_path . $slide ) ) {
-        $parallax_slides[] = $cities_uri . $slide;
-    }
-}
-// Fallback : photo locale de Naples si aucune photo de ville n'est encore uploadée
-if ( empty( $parallax_slides ) ) {
-    $fallback = get_stylesheet_directory() . '/assets/images/team/1_bureau_naples.jpg';
-    if ( file_exists( $fallback ) ) {
-        $parallax_slides[] = get_stylesheet_directory_uri() . '/assets/images/team/1_bureau_naples.jpg';
-    }
-}
-$parallax_first = ! empty( $parallax_slides ) ? $parallax_slides[0] : '';
-?>
-<section class="ag-parallax ag-parallax--slideshow"<?php echo $parallax_first ? ' style="background-image:url(\'' . esc_url( $parallax_first ) . '\');"' : ''; ?>>
-    <?php if ( count( $parallax_slides ) > 1 ) : ?>
-    <div class="ag-hero__slideshow" aria-hidden="true">
-        <?php foreach ( $parallax_slides as $src ) : ?>
-            <div class="ag-hero__slide" style="background-image:url('<?php echo esc_url( $src ); ?>');"></div>
-        <?php endforeach; ?>
-    </div>
-    <?php endif; ?>
-    <div class="ag-parallax__overlay"></div>
-    <div class="ag-parallax__content ag-anim" data-anim="parallax-text">
-        <p class="ag-parallax__quote">"Votre site web est votre meilleur commercial. Il travaille 24h/24, ne prend jamais de vacances et ne demande pas de commission."</p>
-        <p class="ag-parallax__caption" style="margin-top:14px;color:var(--color-text-secondary);font-size:.88rem;letter-spacing:.5px;text-transform:uppercase;">— Nantes · Naples · Marrakech</p>
-    </div>
-</section>
+<!-- 🔄 REGROUPEMENT : About (Qui sommes-nous + équipe + valeurs)
+     immédiatement suivi du Globe 3D (présence internationale +
+     3 bureaux). La parallax slideshow bureaux a été supprimée :
+     redondante avec le Globe 3D qui montre déjà les 3 villes. -->
 
-<!-- About -->
+<!-- About : Qui sommes-nous + valeurs + équipe -->
 <?php get_template_part('template-parts/about'); ?>
 
-<!-- Globe 3D Three.js : Nos bureaux Nantes / Marrakech / Naples -->
+<!-- Globe 3D : présence internationale Nantes / Marrakech / Naples -->
 <?php get_template_part('template-parts/globe-3d'); ?>
 
 <!-- FAQ -->

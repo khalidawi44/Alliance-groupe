@@ -423,6 +423,30 @@
 	}
 
 	// =====================================================================
+	// N. AUTO-HIDE NAV + BURGER au scroll down, show au scroll up
+	//    Style moderne (Apple-like). Active class .ag-nav-hidden sur body.
+	// =====================================================================
+	function initAutoHideNav() {
+		var lastY = window.scrollY;
+		var ticking = false;
+		var hideThreshold = 100; // px avant de cacher
+		function update() {
+			var y = window.scrollY;
+			var goingDown = y > lastY;
+			if (y > hideThreshold && goingDown) {
+				document.body.classList.add('ag-nav-hidden');
+			} else {
+				document.body.classList.remove('ag-nav-hidden');
+			}
+			lastY = y;
+			ticking = false;
+		}
+		window.addEventListener('scroll', function () {
+			if (!ticking) { requestAnimationFrame(update); ticking = true; }
+		}, { passive: true });
+	}
+
+	// =====================================================================
 	// M. BACK-TO-TOP progress ring (met à jour --scroll en %)
 	// =====================================================================
 	function initBackToTopProgress() {
@@ -465,5 +489,6 @@
 		initSectionReveal();
 		initFaq();
 		initBackToTopProgress();
+		initAutoHideNav();
 	});
 })();
