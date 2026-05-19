@@ -63,6 +63,9 @@ get_header();
     </div>
 </section>
 
+<!-- Promo vidéo Alliance (style Apple AirPods : cards 3D qui s'assemblent) -->
+<?php get_template_part('template-parts/promo-video'); ?>
+
 <!-- Marquee -->
 <?php get_template_part('template-parts/marquee'); ?>
 
