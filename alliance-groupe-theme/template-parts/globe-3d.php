@@ -97,20 +97,39 @@ $ag_globe_markers = apply_filters( 'ag_globe_markers', array(
             var globeGroup = new THREE.Group();
             scene.add(globeGroup);
 
-            // Sphère wireframe principale
-            var geo = new THREE.SphereGeometry(1.5, 48, 48);
-            var mat = new THREE.MeshBasicMaterial({ color: 0xD4B45C, wireframe: true, transparent: true, opacity: 0.18 });
-            var sphere = new THREE.Mesh(geo, mat);
+            // Lights pour le rendu texturé Terre
+            scene.add(new THREE.AmbientLight(0xffffff, 0.65));
+            var dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+            dirLight.position.set(5, 3, 5);
+            scene.add(dirLight);
+
+            // Terre texturée (jour, vraie texture earth)
+            var loader = new THREE.TextureLoader();
+            loader.crossOrigin = 'anonymous';
+            var earthTexture = loader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
+            var bumpTexture = loader.load('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg');
+            var specTexture = loader.load('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg');
+
+            var sphere = new THREE.Mesh(
+                new THREE.SphereGeometry(1.5, 64, 64),
+                new THREE.MeshPhongMaterial({
+                    map: earthTexture,
+                    normalMap: bumpTexture,
+                    specularMap: specTexture,
+                    specular: new THREE.Color(0x333333),
+                    shininess: 18
+                })
+            );
             globeGroup.add(sphere);
 
-            // Inner solid foncé
-            var inner = new THREE.Mesh(
-                new THREE.SphereGeometry(1.48, 48, 48),
-                new THREE.MeshBasicMaterial({ color: 0x0a0a0f, transparent: true, opacity: 0.6 })
+            // Subtle wireframe champagne overlay pour garder l'identité Alliance
+            var grid = new THREE.Mesh(
+                new THREE.SphereGeometry(1.51, 24, 24),
+                new THREE.MeshBasicMaterial({ color: 0xD4B45C, wireframe: true, transparent: true, opacity: 0.06 })
             );
-            globeGroup.add(inner);
+            globeGroup.add(grid);
 
-            // Halo
+            // Halo atmosphère orange (rétro-éclairage)
             var halo = new THREE.Mesh(
                 new THREE.SphereGeometry(1.7, 32, 32),
                 new THREE.ShaderMaterial({
@@ -118,7 +137,7 @@ $ag_globe_markers = apply_filters( 'ag_globe_markers', array(
                     side: THREE.BackSide,
                     uniforms: { c: { value: new THREE.Color(0xF37A1F) } },
                     vertexShader: 'varying float i;void main(){vec3 n=normalize(normalMatrix*normal);i=pow(.6-dot(n,vec3(0.,0.,1.)),3.);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-                    fragmentShader: 'uniform vec3 c;varying float i;void main(){gl_FragColor=vec4(c,1.)*i*.4;}'
+                    fragmentShader: 'uniform vec3 c;varying float i;void main(){gl_FragColor=vec4(c,1.)*i*.45;}'
                 })
             );
             globeGroup.add(halo);
@@ -191,9 +210,15 @@ $ag_globe_markers = apply_filters( 'ag_globe_markers', array(
                 cam.updateProjectionMatrix();
             }).observe(canvas);
 
-            // Animation
-            var t = 0;
+            // Animation (paused quand sort du viewport pour économiser CPU)
+            var t = 0, visible = true, rafId = null;
+            new IntersectionObserver(function(entries){
+                visible = entries[0].isIntersecting;
+                if (visible && !rafId) loop();
+            }, { threshold: 0 }).observe(canvas);
+
             function loop(){
+                if (!visible) { rafId = null; return; }
                 t += 0.01;
                 if (auto){ targetRotY += 0.002; }
                 rotY += (targetRotY - rotY) * 0.08;
@@ -201,7 +226,6 @@ $ag_globe_markers = apply_filters( 'ag_globe_markers', array(
                 globeGroup.rotation.y = rotY;
                 globeGroup.rotation.x = rotX;
 
-                // Pulse markers
                 markerMeshes.forEach(function(mk, i){
                     var pulse = 1 + 0.4 * Math.sin(t * 2 + mk.delay);
                     mk.ring.scale.set(pulse, pulse, 1);
@@ -209,7 +233,7 @@ $ag_globe_markers = apply_filters( 'ag_globe_markers', array(
                 });
 
                 renderer.render(scene, cam);
-                requestAnimationFrame(loop);
+                rafId = requestAnimationFrame(loop);
             }
             loop();
         });

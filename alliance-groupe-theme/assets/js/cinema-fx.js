@@ -221,21 +221,22 @@
 	// =====================================================================
 	function initParticles() {
 		if (REDUCED) return;
+		// Skip mobile pour performance
+		if (window.innerWidth < 768) return;
 		var hero = document.querySelector('.ag-hero');
 		if (!hero) return;
-		// Évite de doubler
 		if (hero.querySelector('canvas[data-ag-particles]')) return;
 
 		var canvas = document.createElement('canvas');
 		canvas.dataset.agParticles = '1';
-		canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;mix-blend-mode:screen;opacity:.55';
+		canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;mix-blend-mode:screen;opacity:.45';
 		hero.insertBefore(canvas, hero.firstChild);
 		var ctx = canvas.getContext('2d');
 
-		var DPR = Math.min(window.devicePixelRatio || 1, 2);
+		var DPR = Math.min(window.devicePixelRatio || 1, 1.5);
 		var W, H, particles = [];
-		var COUNT = window.innerWidth < 768 ? 35 : 70;
-		var MAX_DIST = 130;
+		var COUNT = 35; // réduit de 70 à 35 (perf)
+		var MAX_DIST = 120;
 
 		function resize() {
 			W = canvas.clientWidth;

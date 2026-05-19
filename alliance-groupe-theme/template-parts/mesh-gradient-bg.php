@@ -47,6 +47,8 @@ $ag_mesh_uid = 'agmesh-' . wp_rand( 1000, 9999 );
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         canvas.style.display='none'; return;
     }
+    // Skip mobile pour performance (shader WebGL très coûteux)
+    if (window.innerWidth < 900) { canvas.style.display='none'; return; }
 
     var colors = JSON.parse(canvas.dataset.colors);
     function hex2rgb(h){ h=h.replace('#',''); return [parseInt(h.slice(0,2),16)/255, parseInt(h.slice(2,4),16)/255, parseInt(h.slice(4,6),16)/255]; }
@@ -131,13 +133,22 @@ $ag_mesh_uid = 'agmesh-' . wp_rand( 1000, 9999 );
     });
 
     var start = performance.now();
+    var visible = true, rafId = null;
+    // Pause quand le canvas sort du viewport (énorme gain CPU)
+    if ('IntersectionObserver' in window){
+        new IntersectionObserver(function(entries){
+            visible = entries[0].isIntersecting;
+            if (visible && !rafId) frame();
+        }, { threshold: 0 }).observe(canvas);
+    }
     function frame(){
+        if (!visible) { rafId = null; return; }
         mouse[0] += (tMouse[0]-mouse[0])*.05;
         mouse[1] += (tMouse[1]-mouse[1])*.05;
         gl.uniform1f(uTime, (performance.now()-start)/1000);
         gl.uniform2f(uMouse, mouse[0], mouse[1]);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
-        requestAnimationFrame(frame);
+        rafId = requestAnimationFrame(frame);
     }
     frame();
 })();

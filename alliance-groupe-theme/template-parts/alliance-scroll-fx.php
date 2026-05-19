@@ -203,7 +203,7 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-center{display:grid;place-items:center;text-align:center;height:60vh;overflow:hidden;position:relative}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;visibility:hidden;display:flex;flex-direction:column;align-items:center;gap:24px;width:100%;pointer-events:none}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured.active{opacity:1;visibility:visible;pointer-events:auto}
-	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured-title{margin:0;color:var(--fx-text);font-weight:900;letter-spacing:-0.01em;font-size:clamp(2.5rem,9vw,7rem);line-height:0.95}
+	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured-title{margin:0;color:var(--fx-text);font-weight:900;letter-spacing:-0.01em;font-size:clamp(2rem,5.5vw,4.5rem);line-height:1;max-width:90vw;word-break:break-word;hyphens:auto}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-word-mask{display:inline-block;overflow:hidden;vertical-align:middle}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-word{display:inline-block;vertical-align:middle}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-cta{display:inline-block;padding:14px 28px;background:var(--fx-accent);color:#fff;font-weight:800;font-size:0.85rem;letter-spacing:2px;border-radius:999px;text-decoration:none;text-transform:uppercase;box-shadow:0 8px 24px rgba(243,122,31,0.4);transition:transform 0.2s,box-shadow 0.2s;opacity:0;transform:translateY(20px)}
