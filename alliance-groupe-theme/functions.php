@@ -88,6 +88,17 @@ add_action( 'wp_enqueue_scripts', function () {
             filemtime( $ag_cinema_css )
         );
     }
+    // Pack JS ciné : Lenis + tilt + cursor + reveal + particles
+    $ag_cinema_js = get_stylesheet_directory() . '/assets/js/cinema-fx.js';
+    if ( file_exists( $ag_cinema_js ) ) {
+        wp_enqueue_script(
+            'ag-cinema-fx',
+            get_stylesheet_directory_uri() . '/assets/js/cinema-fx.js',
+            array(),
+            filemtime( $ag_cinema_js ),
+            true
+        );
+    }
 } );
 
 add_action( 'wp_enqueue_scripts', function () {

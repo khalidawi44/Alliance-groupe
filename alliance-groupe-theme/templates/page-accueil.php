@@ -7,6 +7,8 @@ get_header();
 
 <!-- Hero -->
 <section class="ag-hero" id="ag-main-content">
+    <!-- Mesh gradient WebGL animé (style Stripe/Linear) -->
+    <?php get_template_part('template-parts/mesh-gradient-bg'); ?>
     <div class="ag-hero__bg">
         <div class="ag-hero__circles">
             <div class="ag-hero__circle"></div>
@@ -123,6 +125,9 @@ $parallax_first = ! empty( $parallax_slides ) ? $parallax_slides[0] : '';
 
 <!-- About -->
 <?php get_template_part('template-parts/about'); ?>
+
+<!-- Globe 3D Three.js : Nos bureaux Nantes / Marrakech / Naples -->
+<?php get_template_part('template-parts/globe-3d'); ?>
 
 <!-- FAQ -->
 <?php get_template_part('template-parts/faq'); ?>

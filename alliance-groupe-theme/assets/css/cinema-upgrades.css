@@ -211,3 +211,107 @@ body.blog .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1499750
     .ag-nav__pulse-pill, body:not(.home) .ag-hero .ag-tag, body:not(.home) .ag-hero .ag-tag::before{ animation:none; }
     body:not(.home) .ag-hero .ag-hero__content{ animation:none; }
 }
+
+/* =====================================================================
+   D. CURSOR CUSTOM
+   ===================================================================== */
+html.ag-has-custom-cursor,
+html.ag-has-custom-cursor body{ cursor:none; }
+html.ag-has-custom-cursor a,
+html.ag-has-custom-cursor button,
+html.ag-has-custom-cursor input,
+html.ag-has-custom-cursor textarea,
+html.ag-has-custom-cursor [role=button]{ cursor:none !important; }
+
+.ag-cursor{
+    position:fixed; top:0; left:0;
+    width:40px; height:40px;
+    border:1.5px solid rgba(212,180,92,.7);
+    border-radius:50%;
+    pointer-events:none;
+    z-index:99999;
+    transition: width .25s cubic-bezier(.16,1,.3,1), height .25s cubic-bezier(.16,1,.3,1),
+                background .25s ease, border-color .25s ease, opacity .25s ease;
+    mix-blend-mode: difference;
+    will-change: transform;
+}
+.ag-cursor-dot{
+    position:fixed; top:0; left:0;
+    width:6px; height:6px;
+    background:#D4B45C;
+    border-radius:50%;
+    pointer-events:none;
+    z-index:99999;
+    mix-blend-mode: difference;
+    will-change: transform;
+}
+.ag-cursor.is-hover{
+    width:64px; height:64px;
+    border-color: rgba(243,122,31,.9);
+    background: rgba(243,122,31,.08);
+    transform: translate3d(var(--cx,0), var(--cy,0), 0) scale(1);
+}
+.ag-cursor.is-hover ~ .ag-cursor-dot{ opacity:0; }
+
+/* Quand le scroll-fx prend le focus, on désactive le mix-blend-mode pour visibilité */
+.ag-fx-fixed .ag-cursor,
+.ag-fx-fixed .ag-cursor-dot{ mix-blend-mode: normal; }
+
+/* =====================================================================
+   F. TEXT REVEAL SPLIT-WORDS
+   ===================================================================== */
+.ag-rv-mask{
+    display:inline-block;
+    overflow:hidden;
+    vertical-align: bottom;
+    line-height: 1.05;
+}
+.ag-rv-word{
+    display:inline-block;
+    transform: translate3d(0, 110%, 0) rotateZ(8deg);
+    transition: transform .9s cubic-bezier(.16,1,.3,1), opacity .9s ease;
+    opacity:0;
+    will-change: transform, opacity;
+}
+.ag-rv-word.is-in{
+    transform: translate3d(0,0,0) rotateZ(0);
+    opacity:1;
+}
+
+/* =====================================================================
+   C. CARDS TILT 3D — préparation (le JS applique le transform)
+   ===================================================================== */
+.ag-card, .ag-service-card, .ag-domaine-card,
+.ag-realisation-card, .ag-team-card{
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+/* Glow subtil au tilt (via shadow qui suit la souris en CSS pure pas possible
+   sans JS, on met juste un boost de shadow général) */
+.ag-card:hover, .ag-service-card:hover, .ag-domaine-card:hover,
+.ag-realisation-card:hover, .ag-team-card:hover{
+    box-shadow: 0 32px 80px rgba(0,0,0,.5), 0 0 0 1px rgba(212,180,92,.2) !important;
+}
+
+/* =====================================================================
+   MAGNETIC BUTTONS — préparation (le JS applique le translate)
+   ===================================================================== */
+.ag-btn-gold, .ag-btn-outline, [data-magnetic]{
+    will-change: transform;
+    display: inline-block;
+}
+
+/* Désactive cursor custom sur touch */
+@media (hover: none) and (pointer: coarse){
+    html.ag-has-custom-cursor,
+    html.ag-has-custom-cursor body,
+    html.ag-has-custom-cursor *{ cursor: auto !important; }
+    .ag-cursor, .ag-cursor-dot{ display:none !important; }
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce){
+    .ag-rv-word{ opacity:1 !important; transform:none !important; }
+    .ag-cursor, .ag-cursor-dot{ display:none !important; }
+    html.ag-has-custom-cursor, html.ag-has-custom-cursor body, html.ag-has-custom-cursor *{ cursor:auto !important; }
+}
