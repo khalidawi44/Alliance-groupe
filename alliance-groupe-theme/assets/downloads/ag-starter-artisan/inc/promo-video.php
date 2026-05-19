@@ -11,7 +11,8 @@ function ag_artisan_render_promo_video() {
 	$is_premium = class_exists( 'ag_artisan_Presets' ) && ag_artisan_Presets::get_active_preset();
 	if ( ! $is_premium ) return;
 
-	$video_url = 'https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/videos/promo-alliance-16x9.mp4';
+	// jsDelivr CDN (raw.githubusercontent.com sert en octet-stream nosniff = navigateurs refusent)
+	$video_url = 'https://cdn.jsdelivr.net/gh/khalidawi44/Alliance-groupe@main/alliance-groupe-theme/assets/videos/promo-alliance-16x9.mp4';
 	$cta_url   = 'https://alliancegroupe-inc.com/contact';
 	$vid_id    = 'ag-artisan-promo-' . wp_rand( 1000, 9999 );
 	?>

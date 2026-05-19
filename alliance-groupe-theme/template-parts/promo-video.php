@@ -50,9 +50,12 @@ $ag_video_poster    = ! empty( $ag_video_args['poster'] )
 	? $ag_video_args['poster']
 	: '';
 
+// jsDelivr CDN — mirror auto de GitHub, sert Content-Type: video/mp4
+// + CORS ouvert. raw.githubusercontent.com sert en octet-stream avec
+// nosniff → navigateurs refusent de lire comme vidéo.
 $ag_video_url       = ! empty( $ag_video_args['video_url'] )
 	? $ag_video_args['video_url']
-	: 'https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/videos/promo-alliance-16x9.mp4';
+	: 'https://cdn.jsdelivr.net/gh/khalidawi44/Alliance-groupe@main/alliance-groupe-theme/assets/videos/promo-alliance-16x9.mp4';
 
 $ag_video_id = 'ag-promo-video-' . wp_rand( 1000, 9999 );
 ?>

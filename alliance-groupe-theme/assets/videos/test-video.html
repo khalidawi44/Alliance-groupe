@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Test vidéo promo Alliance</title>
+  <style>
+    body { background: #0a0a0f; color: #fff; font-family: Arial; padding: 40px; margin: 0; }
+    h1 { color: #F37A1F; }
+    .box { max-width: 900px; margin: 20px auto; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 12px; }
+    video { width: 100%; height: auto; border-radius: 8px; }
+    code { background: #1a1a2e; padding: 2px 8px; border-radius: 4px; color: #D4B45C; font-size: 0.9rem; }
+    .status { padding: 10px; border-radius: 6px; margin-top: 10px; }
+    .ok { background: #1e7e3477; border: 1px solid #1e7e34; }
+    .ko { background: #d6363877; border: 1px solid #d63638; }
+  </style>
+</head>
+<body>
+  <h1>Test promo vidéo Alliance Groupe</h1>
+
+  <div class="box">
+    <h2>✓ jsDelivr CDN (recommandé)</h2>
+    <p>URL : <code>https://cdn.jsdelivr.net/gh/khalidawi44/Alliance-groupe@main/alliance-groupe-theme/assets/videos/promo-alliance-16x9.mp4</code></p>
+    <video id="v1" controls autoplay muted loop playsinline preload="metadata">
+      <source src="https://cdn.jsdelivr.net/gh/khalidawi44/Alliance-groupe@main/alliance-groupe-theme/assets/videos/promo-alliance-16x9.mp4" type="video/mp4">
+    </video>
+    <div id="s1" class="status">Chargement…</div>
+  </div>
+
+  <div class="box">
+    <h2>✗ raw.githubusercontent.com (broken — pour comparaison)</h2>
+    <p>URL : <code>https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/videos/promo-alliance-16x9.mp4</code></p>
+    <p>Cette URL sert le fichier avec <code>Content-Type: application/octet-stream</code> + <code>X-Content-Type-Options: nosniff</code>, ce qui bloque la lecture vidéo dans le navigateur.</p>
+    <video id="v2" controls muted playsinline preload="metadata">
+      <source src="https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/videos/promo-alliance-16x9.mp4" type="video/mp4">
+    </video>
+    <div id="s2" class="status">Chargement…</div>
+  </div>
+
+  <script>
+    function check(id, statusId) {
+      var v = document.getElementById(id);
+      var s = document.getElementById(statusId);
+      v.addEventListener('loadeddata', function () {
+        s.className = 'status ok';
+        s.textContent = '✓ Vidéo chargée — durée : ' + Math.round(v.duration) + 's, dimensions : ' + v.videoWidth + '×' + v.videoHeight;
+      });
+      v.addEventListener('error', function () {
+        s.className = 'status ko';
+        s.textContent = '✗ Erreur de chargement : ' + (v.error ? v.error.message : 'inconnue');
+      });
+      setTimeout(function () {
+        if (s.textContent === 'Chargement…') {
+          s.className = 'status ko';
+          s.textContent = '✗ Timeout : la vidéo ne s\'est pas chargée dans 10s';
+        }
+      }, 10000);
+    }
+    check('v1', 's1');
+    check('v2', 's2');
+  </script>
+</body>
+</html>
