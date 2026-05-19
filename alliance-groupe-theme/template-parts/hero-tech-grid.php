@@ -131,6 +131,9 @@ $uid = 'agtg-' . wp_rand( 1000, 9999 );
 	var el = document.getElementById('<?php echo esc_js( $uid ); ?>');
 	if (!el) return;
 	if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+	// Skip mobile + low-end pour fluidité (animations CSS coûteuses)
+	if (window.innerWidth < 1024) { el.style.display='none'; return; }
+	if (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4) { el.style.display='none'; return; }
 	var hero = el.closest('.ag-hero, section') || el.parentElement;
 	if (!hero) return;
 	var rect, raf=null, mx=50, my=50, tx=50, ty=50;

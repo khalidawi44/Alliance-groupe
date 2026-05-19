@@ -127,15 +127,16 @@ $ag_fsm_items = array(
 	position: relative;
 	width: 100%; height: 100%;
 	display: flex; flex-direction: column; justify-content: center;
-	padding: 80px 8vw;
+	padding: 100px 8vw 120px;
 	opacity: 0;
 	transition: opacity .35s ease .2s;
+	overflow-y: auto;
 }
 .ag-fsm-overlay.is-open .ag-fsm-nav{ opacity: 1; }
 .ag-fsm-list{
 	list-style: none;
 	padding: 0; margin: 0;
-	display: flex; flex-direction: column; gap: 4px;
+	display: flex; flex-direction: column; gap: 0;
 }
 
 /* ITEM (animé en stagger) */
@@ -152,14 +153,14 @@ $ag_fsm_items = array(
 	transition-delay: calc(var(--i) * 80ms + 300ms);
 }
 .ag-fsm-link{
-	display: flex; align-items: baseline; gap: 24px;
-	padding: 14px 0;
+	display: flex; align-items: baseline; gap: 20px;
+	padding: 8px 0;
 	color: #fff;
 	text-decoration: none;
 	font-family: Georgia, 'Playfair Display', serif;
-	font-size: clamp(2.6rem, 6.5vw, 5.5rem);
+	font-size: clamp(1.6rem, 4.2vw, 3.4rem);
 	font-weight: 700;
-	line-height: 1;
+	line-height: 1.1;
 	letter-spacing: -0.025em;
 	transition: color .35s ease, padding-left .35s ease;
 	position: relative;
@@ -203,11 +204,13 @@ $ag_fsm_items = array(
 /* FOOTER overlay */
 .ag-fsm-footer{
 	position: absolute;
-	left: 8vw; right: 8vw; bottom: 40px;
-	display: flex; justify-content: space-between; align-items: flex-end;
-	flex-wrap: wrap; gap: 20px;
+	left: 8vw; right: 8vw; bottom: 28px;
+	display: flex; justify-content: space-between; align-items: center;
+	flex-wrap: wrap; gap: 16px;
 	opacity: 0;
 	transition: opacity .4s ease .9s;
+	background: linear-gradient(180deg, transparent 0%, rgba(10,10,15,.95) 50%);
+	padding-top: 30px;
 }
 .ag-fsm-overlay.is-open .ag-fsm-footer{ opacity: 1; }
 .ag-fsm-tagline{
@@ -253,9 +256,15 @@ body.ag-fsm-open{ overflow: hidden; }
 
 @media (max-width: 768px){
 	.ag-fsm-toggle{ top: 16px; right: 16px; width: 48px; height: 48px; }
-	.ag-fsm-link{ font-size: clamp(2rem, 11vw, 3.5rem); gap: 16px; }
-	.ag-fsm-num{ min-width: 32px; font-size: .7rem; }
-	.ag-fsm-footer{ flex-direction: column; align-items: flex-start; }
+	.ag-fsm-link{ font-size: clamp(1.4rem, 6vw, 2.4rem); gap: 14px; padding: 6px 0; }
+	.ag-fsm-num{ min-width: 30px; font-size: .65rem; }
+	.ag-fsm-nav{ padding: 90px 6vw 130px; }
+	.ag-fsm-footer{ flex-direction: column; align-items: flex-start; bottom: 20px; }
+}
+/* Hauteur très réduite (laptop 13") : font encore plus serrée */
+@media (max-height: 720px){
+	.ag-fsm-link{ font-size: clamp(1.4rem, 3.4vw, 2.4rem); padding: 6px 0; }
+	.ag-fsm-nav{ padding: 80px 8vw 100px; }
 }
 
 @media (prefers-reduced-motion: reduce){

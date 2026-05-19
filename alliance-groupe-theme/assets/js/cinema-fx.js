@@ -43,27 +43,18 @@
 	// A. LENIS SMOOTH SCROLL
 	// =====================================================================
 	function initLenis() {
+		// DÉSACTIVÉ : Lenis + ScrollTrigger (scroll-fx) + WebGL = trop de
+		// charge → saccades sur certaines machines. Le scroll natif est
+		// déjà très fluide sur les browsers récents. À réactiver si besoin
+		// avec un audit perf machine par machine.
+		return;
+		// eslint-disable-next-line no-unreachable
 		if (REDUCED) return;
 		loadScript('https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js', function () {
 			if (typeof Lenis === 'undefined') return;
-			var lenis = new Lenis({
-				duration: 1.2,
-				easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); }, // ease-out expo
-				smoothWheel: true,
-				wheelMultiplier: 1,
-				touchMultiplier: 2,
-			});
+			var lenis = new Lenis({ duration: 1.2, smoothWheel: true });
 			function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
 			requestAnimationFrame(raf);
-
-			// Bridge avec GSAP ScrollTrigger si présent (pour le scroll-fx existant)
-			if (typeof ScrollTrigger !== 'undefined') {
-				lenis.on('scroll', ScrollTrigger.update);
-				if (typeof gsap !== 'undefined') {
-					gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
-					gsap.ticker.lagSmoothing(0);
-				}
-			}
 			window.__agLenis = lenis;
 		});
 	}
@@ -72,8 +63,12 @@
 	// C. TILT 3D SUR CARDS
 	// =====================================================================
 	function initTilt() {
+		// DÉSACTIVÉ pour fluidité globale — cause de saccades sur certaines
+		// configs (chaque mousemove déclenche un re-paint perspective).
+		// Les hover effects CSS purs des cards restent actifs.
+		return;
+		// eslint-disable-next-line no-unreachable
 		if (IS_TOUCH || REDUCED) return;
-		// Skip tilt sur petits écrans (perf + UX mobile)
 		if (window.innerWidth < 1024) return;
 		var selectors = '.ag-card, .ag-service-card, .ag-domaine-card, .ag-realisation-card, .ag-team-card, [data-tilt]';
 		var els = document.querySelectorAll(selectors);
@@ -232,22 +227,24 @@
 	// H. PARTICLES CONNECTÉES (canvas 2D, léger)
 	// =====================================================================
 	function initParticles() {
+		// DÉSACTIVÉ pour fluidité — déjà le mesh gradient WebGL + tech grid
+		// + scroll-fx GSAP dans le hero, ajouter un canvas 2D animé en
+		// plus = trop de couches qui se peignent à chaque frame.
+		return;
+		// eslint-disable-next-line no-unreachable
 		if (REDUCED) return;
-		// Skip mobile pour performance
 		if (window.innerWidth < 768) return;
 		var hero = document.querySelector('.ag-hero');
 		if (!hero) return;
 		if (hero.querySelector('canvas[data-ag-particles]')) return;
-
 		var canvas = document.createElement('canvas');
 		canvas.dataset.agParticles = '1';
 		canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;mix-blend-mode:screen;opacity:.45';
 		hero.insertBefore(canvas, hero.firstChild);
 		var ctx = canvas.getContext('2d');
-
 		var DPR = Math.min(window.devicePixelRatio || 1, 1.5);
 		var W, H, particles = [];
-		var COUNT = 35; // réduit de 70 à 35 (perf)
+		var COUNT = 35;
 		var MAX_DIST = 120;
 
 		function resize() {

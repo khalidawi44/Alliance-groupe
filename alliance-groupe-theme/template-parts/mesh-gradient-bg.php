@@ -47,8 +47,10 @@ $ag_mesh_uid = 'agmesh-' . wp_rand( 1000, 9999 );
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         canvas.style.display='none'; return;
     }
-    // Skip mobile pour performance (shader WebGL très coûteux)
-    if (window.innerWidth < 900) { canvas.style.display='none'; return; }
+    // Skip mobile + tablette + low-end pour performance (shader WebGL très coûteux)
+    if (window.innerWidth < 1100) { canvas.style.display='none'; return; }
+    // Skip si peu de coeurs CPU (mobile/low-end laptops)
+    if (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4) { canvas.style.display='none'; return; }
 
     var colors = JSON.parse(canvas.dataset.colors);
     function hex2rgb(h){ h=h.replace('#',''); return [parseInt(h.slice(0,2),16)/255, parseInt(h.slice(2,4),16)/255, parseInt(h.slice(4,6),16)/255]; }
