@@ -230,6 +230,35 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-left,#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-right{height:auto;display:none}
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-center{height:auto}
 	}
+	/* ── Mobile fix (<=768px) : section pas trop haute + textes lisibles ── */
+	@media (max-width:768px){
+		#<?php echo esc_attr( $ag_fx_uid ); ?>{--fx-grid-px:1rem;--fx-overlay:rgba(0,0,0,0.62);}
+		/* Sticky en svh (small viewport height) = sans la barre Safari mobile */
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-fixed{height:100svh;}
+		/* Header (TEMPLATES · WORDPRESS) : evite collision avec burger top */
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-header{padding-top:140px;font-size:.7rem;letter-spacing:3px;opacity:.7;}
+		/* Featured title centre : plus gros + ombre forte pour lisibilité */
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured{gap:18px;}
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured-title{font-size:clamp(2.4rem,11vw,3.6rem);text-shadow:0 4px 24px rgba(0,0,0,.7),0 2px 8px rgba(0,0,0,.5);max-width:92vw;}
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-cta{padding:12px 24px;font-size:.78rem;letter-spacing:1.5px;}
+		/* Footer "CHOISISSEZ VOTRE MÉTIER" : letter-spacing tue le texte sur 390px */
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-footer{padding-bottom:24px;padding-left:16px;padding-right:16px;}
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-footer-title{font-size:.78rem;letter-spacing:1.5px;line-height:1.25;}
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-progress{width:160px;margin-top:14px;}
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-progress-numbers{font-size:.7rem;}
+	}
+	/* Petit mobile (<=480px) : encore plus serre */
+	@media (max-width:480px){
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-header{padding-top:130px;font-size:.65rem;letter-spacing:2.5px;}
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured-title{font-size:clamp(2rem,12vw,3rem);}
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-footer-title{font-size:.72rem;letter-spacing:1px;}
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-progress{width:140px;}
+	}
+	/* Cache le back-to-top tant qu'on est dans la section scroll-fx mobile
+	   pour eviter qu'il chevauche le titre footer */
+	@media (max-width:768px){
+		body.ag-in-scroll-fx .ag-totop{opacity:0 !important;pointer-events:none !important;visibility:hidden !important;}
+	}
 </style>
 
 <script>
@@ -378,6 +407,10 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 			end: 'bottom bottom',
 			pin: fixed,
 			pinSpacing: true,
+			onEnter: function(){ document.body.classList.add('ag-in-scroll-fx'); },
+			onEnterBack: function(){ document.body.classList.add('ag-in-scroll-fx'); },
+			onLeave: function(){ document.body.classList.remove('ag-in-scroll-fx'); },
+			onLeaveBack: function(){ document.body.classList.remove('ag-in-scroll-fx'); },
 			onUpdate: function(self){
 				if (prefersReduced || isSnapping) return;
 				var prog = self.progress;
