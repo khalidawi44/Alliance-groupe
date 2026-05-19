@@ -115,6 +115,10 @@
 	// D. CURSOR CUSTOM + MAGNETIC BUTTONS
 	// =====================================================================
 	function initCursor() {
+		// Désactivé sur demande user : cursor custom = perf + UX gênante.
+		// Retour au cursor natif du système.
+		return;
+		// eslint-disable-next-line no-unreachable
 		if (IS_TOUCH || REDUCED) return;
 
 		// Création des éléments cursor

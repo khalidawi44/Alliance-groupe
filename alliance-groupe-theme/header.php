@@ -13,6 +13,9 @@
 <?php wp_body_open(); ?>
 <a href="#ag-main-content" class="ag-skip-link">Aller au contenu principal</a>
 
+<!-- Menu fullscreen animé (burger overlay) -->
+<?php get_template_part( 'template-parts/fullscreen-menu' ); ?>
+
 <nav class="ag-nav" id="ag-nav" aria-label="Navigation principale">
     <div class="ag-nav__inner">
         <!-- Logo -->
