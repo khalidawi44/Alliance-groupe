@@ -11,12 +11,61 @@
     will-change: background, backdrop-filter, padding;
 }
 /* MENU CLASSIQUE remplacé par le menu fullscreen burger.
-   On garde le logo + on cache la liste d'items + on cache le CTA RDV
-   (toutes ces choses sont dans le menu fullscreen maintenant). */
+   Layout centré : LOGO GROS au top centre + burger centré juste en dessous. */
 .ag-nav__list{ display: none !important; }
 .ag-nav__cta-wrap, .ag-nav__cta, .ag-nav .ag-btn-gold{ display: none !important; }
-.ag-nav__burger{ display: none !important; } /* Au cas où un burger natif existe */
-.ag-nav__inner{ justify-content: flex-start !important; }
+.ag-nav__burger{ display: none !important; }
+.ag-nav__inner{
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
+/* Logo plus gros + centré */
+.ag-nav__logo{
+    margin: 0 auto !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0 !important;
+}
+.ag-nav__logo-img{
+    height: 64px !important;
+    width: auto !important;
+}
+.ag-nav__logo-text{
+    font-size: 1.5rem !important;
+    letter-spacing: 6px !important;
+    margin-top: 2px !important;
+}
+/* Quand scrollé, on compacte un peu */
+.ag-nav.scrolled .ag-nav__logo-img{ height: 44px !important; }
+.ag-nav.scrolled .ag-nav__logo-text{ font-size: 1.1rem !important; letter-spacing: 4px !important; }
+/* BURGER repositionné CENTRÉ sous le logo (au lieu de top-right) */
+.ag-fsm-toggle{
+    position: fixed !important;
+    top: auto !important;
+    bottom: auto !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    top: 96px !important;
+    z-index: 100001 !important;
+}
+.ag-fsm-toggle:hover{ transform: translateX(-50%) scale(1.06) !important; }
+.ag-nav.scrolled ~ .ag-fsm-toggle,
+body.scrolled-nav .ag-fsm-toggle{ top: 72px !important; }
+/* Adapte ag-nav pour laisser de la place au burger en dessous */
+.ag-nav{ padding-bottom: 70px !important; }
+.ag-nav.scrolled{ padding-bottom: 56px !important; }
+
+@media (max-width: 768px){
+    .ag-nav__logo-img{ height: 48px !important; }
+    .ag-nav__logo-text{ font-size: 1.1rem !important; letter-spacing: 4px !important; }
+    .ag-fsm-toggle{ top: 76px !important; width: 48px !important; height: 48px !important; }
+    .ag-nav{ padding-bottom: 56px !important; }
+}
 /* État initial (haut de page) : très transparent + backdrop-blur subtil
    ⚠️ le thème toggle .scrolled DIRECTEMENT sur .ag-nav (cf main.js) */
 .ag-nav:not(.scrolled){

@@ -9,6 +9,8 @@ get_header();
 <section class="ag-hero" id="ag-main-content">
     <!-- Mesh gradient WebGL animé (style Stripe/Linear) -->
     <?php get_template_part('template-parts/mesh-gradient-bg'); ?>
+    <!-- Grille tech high-tech parallax qui réagit à la souris -->
+    <?php get_template_part('template-parts/hero-tech-grid'); ?>
     <div class="ag-hero__bg">
         <div class="ag-hero__circles">
             <div class="ag-hero__circle"></div>
@@ -86,41 +88,9 @@ get_header();
     </div>
 </section>
 
-<!-- Promo Templates : carte mockup + features + 2 CTAs (restaurée) -->
-<section class="ag-section ag-promo-tpl ag-section--onyx">
-    <div class="ag-container">
-        <div class="ag-promo-tpl__inner ag-anim" data-anim="card">
-            <div class="ag-promo-tpl__content">
-                <span class="ag-tag ag-tag--green">Nouveau — Gratuit</span>
-                <h2 style="font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:12px;">Téléchargez nos templates <em>WordPress gratuits</em></h2>
-                <p style="color:#b0b0bc;font-size:1.05rem;line-height:1.7;margin-bottom:16px;">Pas encore prêt pour un site sur-mesure ? Commencez dès maintenant avec l'un de nos <strong style="color:#e8e6e0;">6 thèmes WordPress 100% français</strong> : coach, artisan, avocat, barber, restaurant ou association. Contenu déjà rédigé, design sombre premium, aucun plugin requis — il ne vous reste qu'à remplacer quelques éléments entre crochets et votre site est en ligne.</p>
-                <p style="color:#b0b0bc;font-size:1.05rem;line-height:1.7;margin-bottom:24px;">Vous hésitez sur le choix du template, ou vous bloquez sur l'installation ? <a href="<?php echo esc_url(home_url('/contact')); ?>" style="color:#D4B45C;font-weight:700;">Contactez-nous</a> — on vous aide gratuitement à démarrer, même si vous avez zéro compétence technique.</p>
-                <div class="ag-promo-tpl__features">
-                    <span>🎨 Design premium</span>
-                    <span>📱 100% responsive</span>
-                    <span>⚡ Installation en 2 min</span>
-                    <span>🆓 Totalement gratuit</span>
-                </div>
-                <div class="ag-hero__buttons" style="margin-top:24px;">
-                    <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>" class="ag-btn-gold">Découvrir les templates gratuits →</a>
-                    <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Besoin d'aide ? On en parle</a>
-                </div>
-            </div>
-            <div class="ag-promo-tpl__visual">
-                <div class="ag-promo-tpl__mock">
-                    <div class="ag-promo-tpl__mock-bar">
-                        <span></span><span></span><span></span>
-                    </div>
-                    <div class="ag-promo-tpl__mock-content">
-                        <div style="font-size:1.8rem;margin-bottom:8px;">🍽️</div>
-                        <strong style="color:#D4B45C;font-size:1rem;">AG Starter Restaurant</strong>
-                        <small style="color:#b0b0bc;font-size:.75rem;display:block;margin-top:4px;">Thème WordPress gratuit</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+<!-- (Section 'Promo Templates' fusionnée avec le scroll-fx ci-dessus :
+     features pills + CTAs sont maintenant injectés DANS le scroll-fx,
+     plus de redondance) -->
 
 <!-- Réalisations -->
 <?php get_template_part('template-parts/realisations'); ?>
