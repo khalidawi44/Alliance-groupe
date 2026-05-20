@@ -283,38 +283,26 @@
 	}
 
 	// =====================================================================
-	// EQUIPE — titre fixe + petites cartes qui defilent horizontalement.
-	// Le bloc s'epingle (manuel), seules les cartes glissent ; le titre reste.
+	// EQUIPE — defilement HORIZONTAL natif (pas d'epinglage = pas de saut/vide).
+	// Drag a la souris + molette verticale -> horizontale tant qu'on n'est pas
+	// au bout (sinon la page scrolle normalement).
 	// =====================================================================
 	function initTeamRow() {
-		if ( IS_TOUCH || window.innerWidth <= 1024 ) return;
-		document.querySelectorAll( '.ag-teamrow' ).forEach( function ( sec ) {
-			var pin  = sec.querySelector( '.ag-teamrow__pin' );
-			var grid = sec.querySelector( '.ag-team__grid' );
-			if ( ! pin || ! grid ) return;
-			sec.classList.add( 'is-cinematic' );
-			var dist = 0, state = '';
-			function measure() {
-				dist = Math.max( 0, grid.scrollWidth - window.innerWidth + Math.round( window.innerWidth * 0.10 ) );
-				sec.style.height = ( window.innerHeight + dist ) + 'px';
-			}
-			function update() {
-				var rect = sec.getBoundingClientRect(), vh = window.innerHeight;
-				var into = -rect.top, total = sec.offsetHeight - vh, st, prog;
-				if ( into <= 0 ) { st = 'before'; prog = 0; }
-				else if ( into >= total ) { st = 'after'; prog = 1; }
-				else { st = 'fixed'; prog = total > 0 ? into / total : 0; }
-				if ( st !== state ) {
-					sec.classList.toggle( 'is-fixed', st === 'fixed' );
-					sec.classList.toggle( 'is-after', st === 'after' );
-					state = st;
-				}
-				grid.style.transform = 'translate3d(' + Math.round( -prog * dist ) + 'px,0,0)';
-			}
-			measure();
-			onTick( update );
-			window.addEventListener( 'resize', function () { measure(); }, { passive: true } );
-			update();
+		document.querySelectorAll( '.ag-teamrow__track' ).forEach( function ( track ) {
+			// drag a la souris
+			var down = false, startX = 0, startL = 0;
+			track.addEventListener( 'mousedown', function ( e ) { down = true; startX = e.pageX; startL = track.scrollLeft; track.classList.add( 'is-drag' ); } );
+			window.addEventListener( 'mouseup', function () { down = false; track.classList.remove( 'is-drag' ); } );
+			track.addEventListener( 'mouseleave', function () { down = false; track.classList.remove( 'is-drag' ); } );
+			track.addEventListener( 'mousemove', function ( e ) { if ( ! down ) return; e.preventDefault(); track.scrollLeft = startL - ( e.pageX - startX ); } );
+			// molette verticale -> defile les cartes, puis relache au bout
+			track.addEventListener( 'wheel', function ( e ) {
+				if ( Math.abs( e.deltaY ) <= Math.abs( e.deltaX ) ) return;
+				var max = track.scrollWidth - track.clientWidth;
+				if ( ( track.scrollLeft <= 0 && e.deltaY < 0 ) || ( track.scrollLeft >= max - 1 && e.deltaY > 0 ) ) return;
+				track.scrollLeft += e.deltaY;
+				e.preventDefault();
+			}, { passive: false } );
 		} );
 	}
 
