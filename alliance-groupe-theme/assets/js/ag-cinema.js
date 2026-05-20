@@ -149,11 +149,13 @@
 	function initHeroDepth() {
 		var hero = document.querySelector('.ag-hero');
 		if (!hero) return;
+		// On NE bouge QUE les orbes/cercles decoratifs (legers). Le gros titre
+		// (.ag-hero__content) n'est PAS anime : le transformer a chaque frame
+		// + son degrade = recompositions couteuses = lag.
 		var layers = [
 			{ el: hero.querySelector('.ag-hero__orb--1'),  d: 26 },
 			{ el: hero.querySelector('.ag-hero__orb--2'),  d: -20 },
-			{ el: hero.querySelector('.ag-hero__circles'), d: 12 },
-			{ el: hero.querySelector('.ag-hero__content'), d: -7 }
+			{ el: hero.querySelector('.ag-hero__circles'), d: 12 }
 		].filter(function (l) { return l.el; });
 		if (!layers.length) return;
 
