@@ -283,6 +283,7 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-bureau-nantes.php']   = 'Bureau — Nantes';
     $templates['templates/page-wordpress-barber.php']= 'Template WordPress — Barber Shop';
     $templates['templates/page-wordpress-association.php'] = 'Template WordPress — Association';
+    $templates['templates/page-programme-racines.php'] = 'Programme Racines';
     return $templates;
 } );
 
@@ -686,6 +687,66 @@ if ( ! function_exists( 'ag_submit_question' ) ) {
 
         // Redirect back with success
         wp_safe_redirect( add_query_arg( array( 'question_sent' => '1' ), home_url( '/questions-flash' ) ) );
+        exit;
+    }
+}
+
+// ── 11a2. Programme Racines — candidatures ──────────────────────
+add_action( 'admin_post_nopriv_ag_submit_racines', 'ag_submit_racines' );
+add_action( 'admin_post_ag_submit_racines', 'ag_submit_racines' );
+
+if ( ! function_exists( 'ag_submit_racines' ) ) {
+    function ag_submit_racines() {
+        if ( ! isset( $_POST['ag_racines_nonce'] ) || ! wp_verify_nonce( $_POST['ag_racines_nonce'], 'ag_racines_nonce' ) ) {
+            wp_die( 'Nonce invalide.', 'Erreur', array( 'response' => 403 ) );
+        }
+
+        $name    = sanitize_text_field(     isset( $_POST['name'] )    ? $_POST['name']    : '' );
+        $email   = sanitize_email(          isset( $_POST['email'] )   ? $_POST['email']   : '' );
+        $phone   = sanitize_text_field(     isset( $_POST['phone'] )   ? $_POST['phone']   : '' );
+        $city    = sanitize_text_field(     isset( $_POST['city'] )    ? $_POST['city']    : '' );
+        $project = sanitize_textarea_field( isset( $_POST['project'] ) ? $_POST['project'] : '' );
+        $why     = sanitize_textarea_field( isset( $_POST['why'] )     ? $_POST['why']     : '' );
+
+        if ( empty( $name ) || empty( $email ) || empty( $project ) ) {
+            wp_die( 'Merci de remplir au minimum nom, email et projet.', 'Champs manquants', array( 'response' => 400, 'back_link' => true ) );
+        }
+        if ( ! is_email( $email ) ) {
+            wp_die( 'Email invalide.', 'Erreur', array( 'response' => 400, 'back_link' => true ) );
+        }
+
+        // Save to DB
+        $apps = get_option( 'ag_racines_applications', array() );
+        if ( ! is_array( $apps ) ) $apps = array();
+        $apps[] = array(
+            'name'    => $name,
+            'email'   => $email,
+            'phone'   => $phone,
+            'city'    => $city,
+            'project' => $project,
+            'why'     => $why,
+            'date'    => current_time( 'd/m/Y H:i' ),
+        );
+        update_option( 'ag_racines_applications', $apps );
+
+        // Notify admin
+        $admin_body  = "Nouvelle candidature Programme Racines\n\n";
+        $admin_body .= "Nom : $name\nEmail : $email\nTel : $phone\nVille/Quartier : $city\n\n";
+        $admin_body .= "Projet :\n$project\n\nMotivation :\n$why\n\n";
+        $admin_body .= 'Date : ' . current_time( 'd/m/Y H:i' );
+        wp_mail( 'contact@alliancegroupe-inc.com', 'Candidature Programme Racines : ' . $name, $admin_body );
+
+        // Confirmation candidat
+        $headers = array( 'Content-Type: text/plain; charset=UTF-8' );
+        $client_body  = "Bonjour $name,\n\n";
+        $client_body .= "Merci d'avoir candidaté au Programme Racines d'Alliance Groupe. 🌱\n\n";
+        $client_body .= "On lit chaque candidature avec attention. Si ton projet correspond au programme, ";
+        $client_body .= "on te recontacte sous 7 jours pour un premier échange.\n\n";
+        $client_body .= "En attendant, prépare bien ton idée — c'est ton énergie qui fera la différence.\n\n";
+        $client_body .= "L'équipe Alliance Groupe\ncontact@alliancegroupe-inc.com";
+        wp_mail( $email, 'Ta candidature Programme Racines est bien reçue 🌱', $client_body, $headers );
+
+        wp_safe_redirect( add_query_arg( array( 'racines' => 'ok' ), home_url( '/programme-racines' ) ) . '#racines-candidature' );
         exit;
     }
 }

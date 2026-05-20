@@ -171,6 +171,11 @@ function ag_seo_meta() {
 			'desc'    => '6 expertises Alliance Groupe : création WordPress, IA & automatisation, SEO, Google Ads, branding, conseil stratégique. Agence Nantes, Marrakech, Naples.',
 			'img_alt' => 'Services Alliance Groupe',
 		),
+		'programme-racines' => array(
+			'title'   => 'Programme Racines — Devenez Entrepreneur avec Alliance Groupe',
+			'desc'    => 'Programme Racines : Alliance Groupe devient votre associé. Site premium, accompagnement création d\'entreprise, gestion du numérique et formation pour les quartiers populaires.',
+			'img_alt' => 'Programme Racines Alliance Groupe — entrepreneuriat quartiers populaires',
+		),
 	);
 
 	$cache = array( 'title' => '', 'desc' => '', 'img_alt' => '' );
