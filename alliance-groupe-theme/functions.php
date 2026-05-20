@@ -111,6 +111,27 @@ add_action( 'wp_enqueue_scripts', function () {
             true
         );
     }
+
+    // ── Couche cinématographique expérimentale (module isolé) ──
+    $ag_cine_css = get_stylesheet_directory() . '/assets/css/ag-cinema.css';
+    if ( file_exists( $ag_cine_css ) ) {
+        wp_enqueue_style(
+            'ag-cinema',
+            get_stylesheet_directory_uri() . '/assets/css/ag-cinema.css',
+            array( 'ag-main-css' ),
+            filemtime( $ag_cine_css )
+        );
+    }
+    $ag_cine_js = get_stylesheet_directory() . '/assets/js/ag-cinema.js';
+    if ( file_exists( $ag_cine_js ) ) {
+        wp_enqueue_script(
+            'ag-cinema',
+            get_stylesheet_directory_uri() . '/assets/js/ag-cinema.js',
+            array(),
+            filemtime( $ag_cine_js ),
+            true
+        );
+    }
 } );
 
 add_action( 'wp_enqueue_scripts', function () {

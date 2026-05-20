@@ -1,0 +1,73 @@
+/* =====================================================================
+   AG CINEMA — couche cinematographique experimentale (CSS)
+   Curseur custom, particules hero, etats de revelation.
+   Tout est gate : desactive sur tactile + prefers-reduced-motion.
+   ===================================================================== */
+
+/* ── Curseur custom ─────────────────────────────────────────────── */
+@media (hover: hover) and (pointer: fine) {
+	html.ag-cine-has-cursor,
+	html.ag-cine-has-cursor body { cursor: none; }
+	html.ag-cine-has-cursor a,
+	html.ag-cine-has-cursor button,
+	html.ag-cine-has-cursor input,
+	html.ag-cine-has-cursor textarea,
+	html.ag-cine-has-cursor select,
+	html.ag-cine-has-cursor [role="button"] { cursor: none; }
+}
+.ag-cine-cursor {
+	position: fixed; top: 0; left: 0;
+	width: 38px; height: 38px;
+	margin: -19px 0 0 -19px;
+	border: 1.5px solid rgba(212,180,92,.7);
+	border-radius: 50%;
+	pointer-events: none;
+	z-index: 2147483646;
+	transition: width .28s cubic-bezier(.16,1,.3,1), height .28s cubic-bezier(.16,1,.3,1),
+		margin .28s cubic-bezier(.16,1,.3,1), background .28s ease, border-color .28s ease;
+	will-change: transform;
+	mix-blend-mode: difference;
+}
+.ag-cine-cursor-dot {
+	position: fixed; top: 0; left: 0;
+	width: 6px; height: 6px;
+	margin: -3px 0 0 -3px;
+	background: #F37A1F;
+	border-radius: 50%;
+	pointer-events: none;
+	z-index: 2147483647;
+	box-shadow: 0 0 10px rgba(243,122,31,.7);
+	will-change: transform;
+}
+.ag-cine-cursor.is-hover {
+	width: 64px; height: 64px;
+	margin: -32px 0 0 -32px;
+	background: rgba(212,180,92,.10);
+	border-color: rgba(212,180,92,.9);
+}
+.ag-cine-cursor.is-down { width: 28px; height: 28px; margin: -14px 0 0 -14px; }
+
+/* ── Particules hero ────────────────────────────────────────────── */
+.ag-cine-particles {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+}
+.ag-hero__content { position: relative; z-index: 2; }
+
+/* Les couches parallaxe du hero : transition douce au reset souris */
+.ag-hero__orb--1, .ag-hero__orb--2, .ag-hero__circles {
+	will-change: transform;
+}
+
+/* ── Garde-fous ─────────────────────────────────────────────────── */
+@media (hover: none), (pointer: coarse) {
+	.ag-cine-cursor, .ag-cine-cursor-dot { display: none !important; }
+	html.ag-cine-has-cursor, html.ag-cine-has-cursor body,
+	html.ag-cine-has-cursor * { cursor: auto !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.ag-cine-cursor, .ag-cine-cursor-dot, .ag-cine-particles { display: none !important; }
+	html.ag-cine-has-cursor, html.ag-cine-has-cursor body { cursor: auto !important; }
+}
