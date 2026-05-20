@@ -341,7 +341,12 @@
 			if ( sec.classList.contains( 'ag-stackover' ) ) { z++; continue; } // deja gere (Racines)
 			sec.classList.add( 'ag-autostack' );
 			sec.style.zIndex = z++;
-			if ( j < secs.length - 1 && sec.offsetHeight >= vh * 0.85 ) sec.classList.add( 'ag-autostack--hold' );
+			// "tenir" (sticky) UNIQUEMENT si la section tient dans l'ecran. Une
+			// section plus haute que le viewport, une fois epinglee, cacherait son
+			// propre bas (boutons inaccessibles) -> on ne l'epingle pas.
+			if ( j < secs.length - 1 && sec.offsetHeight >= vh * 0.6 && sec.offsetHeight <= vh * 1.05 ) {
+				sec.classList.add( 'ag-autostack--hold' );
+			}
 		}
 	}
 
