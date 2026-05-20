@@ -39,10 +39,12 @@
 	}
 	function lerp(a, b, t) { return a + (b - a) * t; }
 	function loadScript(src, cb) {
-		var ex = document.querySelector('script[data-cine-src="' + src + '"]');
+		// detecte aussi un <script src> deja pose par un autre module (ex. scroll-fx
+		// charge GSAP depuis la meme url) -> evite le double-chargement.
+		var ex = document.querySelector('script[data-cine-src="' + src + '"], script[src="' + src + '"]');
 		if (ex) {
-			if (ex.dataset.loaded) cb();
-			else ex.addEventListener('load', cb);
+			if (ex.dataset.loaded || ex.getAttribute('data-loaded')) cb();
+			else ex.addEventListener('load', function () { cb(); });
 			return;
 		}
 		var s = document.createElement('script');

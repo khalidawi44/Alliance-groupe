@@ -173,13 +173,13 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 	#<?php echo esc_attr( $ag_fx_uid ); ?>{
 		--fx-text:rgba(245,245,245,0.92);
 		--fx-overlay:rgba(0,0,0,0.30);
-		--fx-page-bg:#ffffff;
+		--fx-page-bg:#080808;
 		--fx-stage-bg:#0a0a0f;
 		--fx-accent:#F37A1F;
 		--fx-gap:1rem;
 		--fx-grid-px:2rem;
 		--fx-row-gap:10px;
-		width:100%;overflow:hidden;background:var(--fx-page-bg);color:#000;
+		width:100%;overflow:hidden;background:var(--fx-page-bg);color:var(--fx-text);
 		font-family:'Manrope','Rubik Wide',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
 		text-transform:uppercase;letter-spacing:-0.02em;
 	}
@@ -288,7 +288,12 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 	}
 	function init(){
 		var ROOT = document.getElementById('<?php echo esc_js( $ag_fx_uid ); ?>');
-		if (!ROOT || typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+		if (!ROOT) return;
+		if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+			init._t = (init._t || 0) + 1;
+			if (init._t < 80) setTimeout(init, 80); // reessaie : GSAP charge par un autre module
+			return;
+		}
 		gsap.registerPlugin(ScrollTrigger);
 
 		var TOTAL = <?php echo (int) $ag_fx_total; ?>;
