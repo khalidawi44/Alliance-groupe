@@ -277,12 +277,11 @@
 			initCursor();
 			initHeroDepth();
 		}
-		// Lourd (pins) : APRES le load complet -> mesures correctes, pas de
-		// rate au demarrage. Double rAF pour laisser le layout se stabiliser.
+		// Pin GSAP (scroll horizontal) : APRES le load complet -> mesures
+		// correctes. Le cinescene, lui, est deja lance tot (manuel, sans dep).
 		function initPins() {
 			requestAnimationFrame(function () {
 				requestAnimationFrame(function () {
-					initCineScene();
 					initHScroll();
 					if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
 				});
@@ -295,6 +294,10 @@
 	ready(function () {
 		if (REDUCED) return;
 		HAS_SCROLLJACK = !!document.querySelector('.ag-fx-fixed-section');
+		// Cinescene : epinglage MANUEL sans dependance CDN -> lance tout de
+		// suite pour eviter la latence/flash au demarrage (s'auto-corrige a
+		// chaque frame, donc pas de probleme de mesure precoce).
+		initCineScene();
 		// On charge gsap (si absent) -> ScrollTrigger -> Lenis, puis boot.
 		var need = [];
 		if (typeof gsap === 'undefined') need.push(CDN.gsap);

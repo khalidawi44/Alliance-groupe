@@ -107,9 +107,9 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
                     </article>
 
                 </div>
-                <div class="ag-cinescene__dots" aria-hidden="true">
-                    <span class="is-active"></span><span></span><span></span><span></span><span></span><span></span>
-                </div>
+            </div>
+            <div class="ag-cinescene__dots" aria-hidden="true">
+                <span class="is-active"></span><span></span><span></span><span></span><span></span><span></span>
             </div>
         </div>
     </section>
