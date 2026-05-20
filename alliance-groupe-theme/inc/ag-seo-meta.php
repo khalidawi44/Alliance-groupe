@@ -176,6 +176,11 @@ function ag_seo_meta() {
 			'desc'    => 'Programme Racines : Alliance Groupe devient votre associé. Site premium, accompagnement création d\'entreprise, gestion du numérique et formation pour les quartiers populaires.',
 			'img_alt' => 'Programme Racines Alliance Groupe — entrepreneuriat quartiers populaires',
 		),
+		'ambassadeurs' => array(
+			'title'   => 'Programme Ambassadeurs — Gagnez 10% en vendant nos services',
+			'desc'    => 'Rejoignez le programme ambassadeurs Alliance Groupe : vendez nos services digitaux et touchez 10% de commission par vente, payés via PayPal. Inscription gratuite par email.',
+			'img_alt' => 'Programme Ambassadeurs Alliance Groupe — 10% de commission',
+		),
 	);
 
 	$cache = array( 'title' => '', 'desc' => '', 'img_alt' => '' );

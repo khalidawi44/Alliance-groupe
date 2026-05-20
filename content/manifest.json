@@ -30,6 +30,7 @@
         "pages/contact.json",
         "pages/articles.json",
         "pages/programme-racines.json",
+        "pages/ambassadeurs.json",
         "pages/service-creation-web.json",
         "pages/service-ia.json",
         "pages/service-seo.json",

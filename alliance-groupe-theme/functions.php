@@ -42,6 +42,12 @@ if ( file_exists( $ag_seo_meta_file ) ) {
     require_once $ag_seo_meta_file;
 }
 
+// ── 1c5. Programme Ambassadeurs (inscriptions, ventes, commissions 10%, paiements)
+$ag_ambassadeurs_file = get_stylesheet_directory() . '/inc/ag-ambassadeurs.php';
+if ( file_exists( $ag_ambassadeurs_file ) ) {
+    require_once $ag_ambassadeurs_file;
+}
+
 // ── 1d. Shortcode [ag_promo_video] : insère la vidéo promo Alliance ─────
 // Usage Gutenberg : ajouter un block "Shortcode" et taper [ag_promo_video]
 // Attributs : title="..." lead="..." cta_label="..." cta_url="..."
@@ -305,6 +311,7 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-wordpress-barber.php']= 'Template WordPress — Barber Shop';
     $templates['templates/page-wordpress-association.php'] = 'Template WordPress — Association';
     $templates['templates/page-programme-racines.php'] = 'Programme Racines';
+    $templates['templates/page-ambassadeurs.php']    = 'Programme Ambassadeurs';
     return $templates;
 } );
 

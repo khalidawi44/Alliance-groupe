@@ -22,9 +22,10 @@ $ag_fsm_items = array(
 	array( 'url' => home_url( '/pourquoi-alliance' ),      'label' => 'Pourquoi Alliance', 'sub' => '04' ),
 	array( 'url' => home_url( '/realisations' ),           'label' => 'Réalisations',      'sub' => '05' ),
 	array( 'url' => home_url( '/programme-racines' ),      'label' => 'Programme Racines', 'sub' => '06' ),
-	array( 'url' => home_url( '/articles' ),               'label' => 'Articles',          'sub' => '07' ),
-	array( 'url' => home_url( '/a-propos' ),               'label' => 'À propos',          'sub' => '08' ),
-	array( 'url' => home_url( '/contact' ),                'label' => 'Contact',           'sub' => '09' ),
+	array( 'url' => home_url( '/ambassadeurs' ),           'label' => 'Ambassadeurs',      'sub' => '07' ),
+	array( 'url' => home_url( '/articles' ),               'label' => 'Articles',          'sub' => '08' ),
+	array( 'url' => home_url( '/a-propos' ),               'label' => 'À propos',          'sub' => '09' ),
+	array( 'url' => home_url( '/contact' ),                'label' => 'Contact',           'sub' => '10' ),
 );
 ?>
 
