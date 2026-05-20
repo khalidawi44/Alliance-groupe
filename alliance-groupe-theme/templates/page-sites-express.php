@@ -75,6 +75,15 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
         </div>
     </section>
 
+    <!-- Barre de réassurance -->
+    <div class="ag-xpress__reassure">
+        <span>⚡ Livraison en quelques jours</span>
+        <span>🔒 Paiement sécurisé Stripe</span>
+        <span>✅ Révisions incluses</span>
+        <span>🇫🇷 Équipe française</span>
+        <span>🙅 Sans rendez-vous</span>
+    </div>
+
     <!-- Packs -->
     <section class="ag-section ag-section--graphite" id="packs">
         <div class="ag-container">
@@ -148,6 +157,24 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
         </div>
     </section>
 
+    <!-- FAQ : lève les objections pour acheter sans échange -->
+    <section class="ag-section ag-section--onyx" id="faq-express">
+        <div class="ag-container ag-container--narrow">
+            <span class="ag-tag ag-anim" data-anim="tag">Questions fréquentes</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Tout ce qu'il faut savoir <em>avant d'acheter</em></h2>
+            <div class="ag-xpress__faq">
+                <details><summary>Comment ça marche, sans rendez-vous ?</summary><p>Tu choisis ton pack, tu paies en ligne, puis tu remplis un court formulaire (10 min) avec tes infos. On construit ton site et on t'envoie une vidéo de présentation. Les retouches se font par écrit. Aucun appel nécessaire.</p></details>
+                <details><summary>En combien de temps mon site est livré ?</summary><p>Essentiel : ~5 jours · Pro : ~8 jours · Boutique : ~12 jours, à partir du moment où tu as envoyé ton brief et tes éléments (logo, photos, textes).</p></details>
+                <details><summary>Et si le résultat ne me plaît pas ?</summary><p>Des révisions sont incluses : on ajuste jusqu'à ce que tu sois satisfait, par échanges écrits. On ne te laisse pas avec un site qui ne te convient pas.</p></details>
+                <details><summary>Je n'ai pas de logo ni de photos, c'est grave ?</summary><p>Non. On peut partir de ton nom et utiliser des visuels professionnels adaptés à ton métier. Si tu as un logo, tu l'envoies ; sinon on t'oriente.</p></details>
+                <details><summary>Le nom de domaine et l'hébergement sont inclus ?</summary><p>On s'occupe de la mise en ligne. L'hébergement + le nom de domaine sont gérés via l'abonnement maintenance (à partir de 29€/mois) pour garder ton site en ligne, sécurisé et à jour.</p></details>
+                <details><summary>Et après la livraison, qui s'occupe du site ?</summary><p>Toi si tu veux, ou nous via l'abonnement maintenance : mises à jour, sécurité, sauvegardes, petites retouches et référencement. Tu ne touches à rien.</p></details>
+                <details><summary>Le paiement est-il sécurisé ?</summary><p>Oui, 100% via Stripe (leader mondial du paiement en ligne). Tes données bancaires ne passent jamais par nous.</p></details>
+                <details><summary>Puis-je avoir une facture ?</summary><p>Oui, une facture est émise automatiquement pour chaque commande.</p></details>
+            </div>
+        </div>
+    </section>
+
     <!-- Brief -->
     <section class="ag-section ag-section--or" id="brief">
         <div class="ag-container ag-container--narrow">
@@ -192,6 +219,15 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
 #brief .ag-form__group{position:relative;margin-bottom:0;}
 #brief .ag-form__group label{position:static;top:auto;left:auto;display:block;font-size:.88rem;font-weight:600;color:var(--color-text-soft);margin-bottom:8px;text-transform:none;letter-spacing:normal;pointer-events:auto;}
 #brief .ag-form__group input,#brief .ag-form__group textarea{padding:14px 18px;}
+.ag-xpress__reassure{display:flex;flex-wrap:wrap;justify-content:center;gap:14px 30px;padding:18px 24px;background:rgba(212,180,92,.06);border-top:1px solid rgba(212,180,92,.15);border-bottom:1px solid rgba(212,180,92,.15);color:var(--color-text-soft);font-size:.9rem;font-weight:600;}
+.ag-xpress__faq{margin-top:32px;display:flex;flex-direction:column;gap:12px;}
+.ag-xpress__faq details{background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.16);border-radius:12px;padding:0 20px;transition:border-color .3s;}
+.ag-xpress__faq details[open]{border-color:rgba(212,180,92,.4);}
+.ag-xpress__faq summary{cursor:pointer;list-style:none;padding:18px 0;font-weight:700;color:#fff;font-size:1.02rem;position:relative;padding-right:32px;}
+.ag-xpress__faq summary::-webkit-details-marker{display:none;}
+.ag-xpress__faq summary::after{content:'+';position:absolute;right:4px;top:50%;transform:translateY(-50%);color:var(--color-gold);font-size:1.4rem;font-weight:400;transition:transform .3s;}
+.ag-xpress__faq details[open] summary::after{transform:translateY(-50%) rotate(45deg);}
+.ag-xpress__faq p{margin:0 0 18px;color:var(--color-text-secondary);line-height:1.65;font-size:.96rem;}
 .ag-xpress__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:46px;align-items:start;}
 .ag-xpress__card{position:relative;display:flex;flex-direction:column;padding:38px 30px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.18);border-radius:20px;transition:transform .4s,border-color .4s,box-shadow .4s;}
 .ag-xpress__card:hover{transform:translateY(-6px);border-color:rgba(212,180,92,.45);box-shadow:0 30px 70px rgba(0,0,0,.45);}
