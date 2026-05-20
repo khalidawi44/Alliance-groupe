@@ -52,6 +52,39 @@
             </div>
         </div>
 
+        <!-- Maillage interne SEO — liens vers les pages clés (toutes les pages article) -->
+        <section class="ag-article-links">
+            <div class="ag-container ag-container--narrow">
+                <div class="ag-article-links__box">
+                    <h2 class="ag-article-links__title">Pour aller plus loin <em>avec Alliance Groupe</em></h2>
+                    <div class="ag-article-links__grid">
+                        <div class="ag-article-links__col">
+                            <span class="ag-article-links__label">Nos services</span>
+                            <ul>
+                                <li><a href="<?php echo esc_url(home_url('/service-creation-web')); ?>">Création de site WordPress sur-mesure</a></li>
+                                <li><a href="<?php echo esc_url(home_url('/service-seo')); ?>">SEO &amp; référencement naturel</a></li>
+                                <li><a href="<?php echo esc_url(home_url('/service-ia')); ?>">IA &amp; automatisation</a></li>
+                                <li><a href="<?php echo esc_url(home_url('/service-publicite')); ?>">Publicité Google &amp; Meta Ads</a></li>
+                                <li><a href="<?php echo esc_url(home_url('/service-branding')); ?>">Branding &amp; identité visuelle</a></li>
+                                <li><a href="<?php echo esc_url(home_url('/service-conseil')); ?>">Conseil stratégique digital</a></li>
+                            </ul>
+                        </div>
+                        <div class="ag-article-links__col">
+                            <span class="ag-article-links__label">Ressources &amp; agence</span>
+                            <ul>
+                                <li><a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">Templates WordPress métier gratuits</a></li>
+                                <li><a href="<?php echo esc_url(home_url('/realisations')); ?>">Nos réalisations</a></li>
+                                <li><a href="<?php echo esc_url(home_url('/pourquoi-alliance')); ?>">Pourquoi Alliance vs ThemeForest</a></li>
+                                <li><a href="<?php echo esc_url(home_url('/bureau-nantes')); ?>">Agence web à Nantes</a></li>
+                                <li><a href="<?php echo esc_url(home_url('/bureau-marrakech')); ?>">Agence web à Marrakech</a></li>
+                                <li><a href="<?php echo esc_url(home_url('/rendez-vous')); ?>">Réserver un audit gratuit</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- CTA Intermédiaire — Bandeau conversion -->
         <section class="ag-article-cta">
             <div class="ag-container ag-container--narrow">
