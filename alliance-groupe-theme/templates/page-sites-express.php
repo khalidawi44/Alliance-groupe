@@ -34,8 +34,30 @@ $packs = array(
 	),
 );
 
+$maint = array(
+	'serenite' => array(
+		'url'  => get_option( 'ag_stripe_maint_serenite_url', $ph ),
+		'nom'  => 'Sérénité', 'prix' => '29 €',
+		'desc' => 'Ton site toujours en ligne et sécurisé.',
+		'feats'=> array( 'Hébergement + nom de domaine', 'Sauvegardes automatiques', 'Mises à jour & sécurité', 'Support par email' ),
+	),
+	'croissance' => array(
+		'url'  => get_option( 'ag_stripe_maint_croissance_url', $ph ),
+		'nom'  => 'Croissance', 'prix' => '59 €', 'star' => true,
+		'desc' => 'Ton site évolue avec ton activité.',
+		'feats'=> array( 'Tout « Sérénité »', '30 min de retouches / mois', 'Suivi & conseils', 'Statistiques de visites' ),
+	),
+	'performance' => array(
+		'url'  => get_option( 'ag_stripe_maint_performance_url', $ph ),
+		'nom'  => 'Performance', 'prix' => '99 €',
+		'desc' => 'On pousse ta visibilité chaque mois.',
+		'feats'=> array( 'Tout « Croissance »', 'SEO continu (Google)', '1h de retouches / mois', 'Rapport mensuel' ),
+	),
+);
+
 $paid = isset( $_GET['paid'] ) ? sanitize_key( $_GET['paid'] ) : '';
 $brief_ok = isset( $_GET['brief'] ) && $_GET['brief'] === 'ok';
+$abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
 ?>
 
 <main id="ag-main-content">
@@ -94,6 +116,38 @@ $brief_ok = isset( $_GET['brief'] ) && $_GET['brief'] === 'ok';
         </div>
     </section>
 
+    <!-- Maintenance (abonnement) -->
+    <section class="ag-section ag-section--graphite" id="maintenance">
+        <div class="ag-container">
+            <span class="ag-tag ag-anim" data-anim="tag">Après la livraison</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Garde ton site <em>au top</em>, chaque mois</h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Hébergement, sécurité, retouches et visibilité. Sans y penser. Résiliable à tout moment.</p>
+
+            <?php if ( $abo_ok ) : ?>
+                <p style="text-align:center;background:rgba(0,132,61,.12);border:1px solid rgba(0,132,61,.3);border-radius:12px;padding:16px 20px;color:#fff;max-width:560px;margin:24px auto 0;">✅ Merci, ton abonnement est actif ! Ton site est entre de bonnes mains.</p>
+            <?php endif; ?>
+
+            <div class="ag-xpress__grid">
+                <?php foreach ( $maint as $key => $p ) :
+                    $is_set  = ( $p['url'] !== $ph && $p['url'] !== '' );
+                    $cta_url = $is_set ? $p['url'] : ( home_url( '/contact' ) );
+                ?>
+                <div class="ag-xpress__card<?php echo ! empty( $p['star'] ) ? ' ag-xpress__card--star' : ''; ?> ag-anim" data-anim="card">
+                    <?php if ( ! empty( $p['star'] ) ) echo '<span class="ag-xpress__badge">Recommandé</span>'; ?>
+                    <h3 class="ag-xpress__name"><?php echo esc_html( $p['nom'] ); ?></h3>
+                    <div class="ag-xpress__price"><?php echo esc_html( $p['prix'] ); ?><span class="ag-xpress__per">/mois</span></div>
+                    <p class="ag-xpress__desc"><?php echo esc_html( $p['desc'] ); ?></p>
+                    <ul class="ag-xpress__feats">
+                        <?php foreach ( $p['feats'] as $f ) echo '<li>' . esc_html( $f ) . '</li>'; ?>
+                    </ul>
+                    <a href="<?php echo esc_url( $cta_url ); ?>" class="ag-btn-gold ag-xpress__cta">S'abonner →</a>
+                    <?php if ( ! $is_set ) echo '<small class="ag-xpress__note">Abonnement bientôt en ligne — contacte-nous en attendant.</small>'; ?>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+
     <!-- Brief -->
     <section class="ag-section ag-section--or" id="brief">
         <div class="ag-container ag-container--narrow">
@@ -145,6 +199,7 @@ $brief_ok = isset( $_GET['brief'] ) && $_GET['brief'] === 'ok';
 .ag-xpress__badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#1a1207;font-weight:800;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;padding:5px 14px;border-radius:20px;white-space:nowrap;}
 .ag-xpress__name{font-family:var(--font-serif);font-size:1.5rem;color:#fff;margin:0 0 6px;}
 .ag-xpress__price{font-family:var(--font-serif);font-size:2.4rem;font-weight:800;background:linear-gradient(135deg,#D4B45C,#F37A1F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;margin-bottom:8px;}
+.ag-xpress__per{font-family:var(--font-sans);font-size:.95rem;font-weight:600;-webkit-text-fill-color:var(--color-text-muted);color:var(--color-text-muted);}
 .ag-xpress__desc{color:var(--color-text-secondary);font-size:.95rem;margin:0 0 18px;}
 .ag-xpress__feats{list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:10px;}
 .ag-xpress__feats li{position:relative;padding-left:26px;color:var(--color-text-soft);font-size:.95rem;line-height:1.4;}

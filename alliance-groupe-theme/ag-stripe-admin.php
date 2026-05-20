@@ -68,6 +68,18 @@ add_action( 'admin_init', function () {
 			'label'       => 'Site Express — Boutique (1490€)',
 			'description' => 'URL du Payment Link Stripe pour le pack Site Express Boutique. Redirection après paiement : ' . esc_url( home_url( '/sites-express?paid=boutique#brief' ) ),
 		),
+		'ag_stripe_maint_serenite_url' => array(
+			'label'       => 'Maintenance — Sérénité (29€/mois)',
+			'description' => 'Payment Link Stripe en mode ABONNEMENT (récurrent mensuel). Redirection : ' . esc_url( home_url( '/sites-express?abo=ok#maintenance' ) ),
+		),
+		'ag_stripe_maint_croissance_url' => array(
+			'label'       => 'Maintenance — Croissance (59€/mois)',
+			'description' => 'Payment Link Stripe en mode ABONNEMENT mensuel.',
+		),
+		'ag_stripe_maint_performance_url' => array(
+			'label'       => 'Maintenance — Performance (99€/mois)',
+			'description' => 'Payment Link Stripe en mode ABONNEMENT mensuel.',
+		),
 	);
 	foreach ( $fields as $key => $meta ) {
 		register_setting(
