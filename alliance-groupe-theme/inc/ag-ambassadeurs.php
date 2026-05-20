@@ -17,6 +17,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! defined( 'AG_COMMISSION_RATE' ) ) {
 	define( 'AG_COMMISSION_RATE', 0.10 ); // 10 % par vente
 }
+if ( ! defined( 'AG_KYC_RETENTION_DAYS' ) ) {
+	define( 'AG_KYC_RETENTION_DAYS', 30 ); // RGPD : suppression auto de la piece apres X jours
+}
 
 /**
  * Infos légales de la société (pour le contrat).
@@ -103,12 +106,16 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 		$motiv     = sanitize_textarea_field( $_POST['motivation'] ?? '' );
 		$signature = sanitize_text_field( $_POST['signature'] ?? '' );
 		$accept    = ! empty( $_POST['accept_contract'] );
+		$rgpd      = ! empty( $_POST['rgpd_consent'] );
 
 		if ( empty( $name ) || ! is_email( $email ) || empty( $birthdate ) || empty( $address ) ) {
 			wp_die( 'Merci d\'indiquer ton nom, email, date de naissance et adresse (identité requise).', 'Champs manquants', array( 'response' => 400, 'back_link' => true ) );
 		}
 		if ( ! $accept || empty( $signature ) ) {
 			wp_die( 'Tu dois accepter le contrat d\'apporteur d\'affaires et le signer (nom complet) pour rejoindre le programme.', 'Contrat requis', array( 'response' => 400, 'back_link' => true ) );
+		}
+		if ( ! $rgpd ) {
+			wp_die( 'Tu dois donner ton consentement RGPD pour le traitement de ta pièce d\'identité.', 'Consentement requis', array( 'response' => 400, 'back_link' => true ) );
 		}
 
 		// KYC : piece d'identite obligatoire, stockee de facon protegee
@@ -142,6 +149,8 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 			'status'     => 'en_attente',          // -> 'actif' apres verification identite par l'admin
 			'identite'   => 'a_verifier',
 			'kyc_file'   => $kyc_file,
+			'kyc_ts'     => time(),
+			'rgpd'       => array( 'consent' => true, 'date' => current_time( 'd/m/Y H:i' ) ),
 			'contrat'    => array(
 				'accepte'   => true,
 				'signature' => $signature,
@@ -433,5 +442,32 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 		}
 
 		echo '</div>';
+	}
+}
+
+/* =====================================================================
+   4. RGPD — suppression automatique des pieces d'identite (cron quotidien)
+   ===================================================================== */
+add_action( 'init', function () {
+	if ( ! wp_next_scheduled( 'ag_kyc_cleanup' ) ) {
+		wp_schedule_event( time() + 3600, 'daily', 'ag_kyc_cleanup' );
+	}
+} );
+add_action( 'ag_kyc_cleanup', 'ag_kyc_cleanup_run' );
+if ( ! function_exists( 'ag_kyc_cleanup_run' ) ) {
+	function ag_kyc_cleanup_run() {
+		$list = get_option( 'ag_ambassadeurs', array() );
+		if ( ! is_array( $list ) ) return;
+		$changed = false;
+		$limit = AG_KYC_RETENTION_DAYS * DAY_IN_SECONDS;
+		foreach ( $list as $k => $a ) {
+			if ( ! empty( $a['kyc_file'] ) && ! empty( $a['kyc_ts'] ) && ( time() - (int) $a['kyc_ts'] ) > $limit ) {
+				@unlink( ag_kyc_dir() . '/' . basename( $a['kyc_file'] ) );
+				$list[ $k ]['kyc_file']   = '';
+				$list[ $k ]['kyc_purged'] = current_time( 'd/m/Y' );
+				$changed = true;
+			}
+		}
+		if ( $changed ) update_option( 'ag_ambassadeurs', $list );
 	}
 }

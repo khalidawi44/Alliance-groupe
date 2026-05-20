@@ -101,6 +101,7 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
                         <p>Pour des raisons légales, ton identité est vérifiée et un <strong>contrat d'apporteur d'affaires</strong> encadre ta rémunération de 10%.
                         <a href="<?php echo esc_url( home_url( '/contrat-ambassadeur' ) ); ?>" target="_blank" rel="noopener">Lire le contrat →</a></p>
                         <label class="ag-amb__check"><input type="checkbox" name="accept_contract" value="1" required> J'ai lu et j'accepte le contrat d'apporteur d'affaires Alliance Groupe, et je certifie que mon identité est exacte. *</label>
+                        <label class="ag-amb__check"><input type="checkbox" name="rgpd_consent" value="1" required> J'autorise Alliance Groupe (EI Fabrice Doucet) à traiter et conserver ma pièce d'identité dans le seul but de vérifier mon identité. Elle est stockée de façon sécurisée et <strong>automatiquement supprimée sous 30 jours</strong>. Je peux demander sa suppression à tout moment à contact@alliancegroupe-inc.com. *</label>
                         <div class="ag-form__group"><label for="amb-sign">Signature — recopie ton nom et prénom complets *</label><input type="text" id="amb-sign" name="signature" required placeholder="Prénom NOM"></div>
                     </div>
 
