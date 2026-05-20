@@ -37,7 +37,7 @@ $current = $pack_data[ $pack ];
     <section class="ag-section ag-section--or" style="padding:120px 0 80px;">
         <div class="ag-container">
             <div style="max-width:780px;margin:0 auto;text-align:center;">
-                <div style="font-size:4rem;margin-bottom:16px;">✅</div>
+                <div style="font-size:clamp(2.8rem,10vw,4rem);margin-bottom:16px;">✅</div>
                 <span class="ag-tag" style="background:rgba(40,167,69,.15);color:#28a745;border-color:rgba(40,167,69,.3);">Paiement reçu</span>
                 <h1 class="ag-section__title" style="margin-top:16px;">Merci pour votre <em>confiance</em> !</h1>
                 <div style="display:inline-flex;align-items:center;gap:12px;margin:24px 0 12px;padding:14px 28px;background:rgba(212,180,92,.08);border:1px solid rgba(212,180,92,.3);border-radius:100px;">
@@ -73,7 +73,7 @@ $current = $pack_data[ $pack ];
                     </p>
                 </div>
 
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:36px;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:24px;margin-bottom:36px;">
                     <div style="text-align:center;padding:24px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.2);border-radius:12px;">
                         <div style="font-size:2.4rem;font-weight:800;color:#D4B45C;margin-bottom:4px;">+340%</div>
                         <div style="color:#b0b0bc;font-size:.92rem;">Leads générés en moyenne par nos sites sur-mesure</div>
@@ -118,7 +118,7 @@ $current = $pack_data[ $pack ];
     <section class="ag-section ag-section--graphite">
         <div class="ag-container">
             <h2 class="ag-section__title" style="text-align:center;">Et maintenant, <em>concrètement</em> ?</h2>
-            <div style="max-width:900px;margin:32px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+            <div style="max-width:900px;margin:32px auto 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:20px;">
                 <div style="padding:24px;background:rgba(255,255,255,.025);border:1px solid rgba(212,180,92,.2);border-radius:12px;text-align:center;">
                     <div style="width:48px;height:48px;border-radius:50%;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.3);color:#D4B45C;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.2rem;margin:0 auto 12px;">1</div>
                     <strong style="color:#fff;display:block;margin-bottom:6px;">Vérifiez vos emails</strong>

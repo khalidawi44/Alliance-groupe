@@ -195,7 +195,7 @@ $has_screenshot = file_exists( $screenshot_file );
                     <h2 style="font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:14px;line-height:1.2;">Votre <?php echo esc_html( $ag_metier['audience_short'] ); ?> mérite plus qu'un template</h2>
                     <p style="font-size:1.05rem;color:#e8e6e0;max-width:720px;margin:0 auto 24px;line-height:1.7;"><?php echo esc_html( $ag_metier['upsell_text'] ); ?></p>
 
-                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0;max-width:640px;margin-left:auto;margin-right:auto;">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:16px;margin:28px 0;max-width:640px;margin-left:auto;margin-right:auto;">
                         <div style="padding:16px 10px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.2);border-radius:10px;">
                             <div style="font-size:1.8rem;font-weight:800;color:#D4B45C;">+340%</div>
                             <div style="color:#b0b0bc;font-size:.82rem;">Leads générés</div>
