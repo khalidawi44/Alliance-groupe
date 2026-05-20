@@ -252,6 +252,33 @@ body:not(.home) .ag-hero .ag-hero__content{
 body:not(.home) .ag-hero::before{ pointer-events:none; }
 body:not(.home) main > .ag-hero{ padding-bottom: 60px; }
 
+/* ── Pages internes SANS hero (blog/articles, archives, recherche, pages
+   qui commencent direct par .ag-section) : la 1re section doit passer SOUS
+   le nav fixe (logo centre + burger a top:96px = ~155px de haut), sinon
+   le titre est masque par le menu. ────────────────────────────────────── */
+body:not(.home) main > .ag-section:first-child,
+body.blog main > .ag-section:first-child,
+body.archive main > .ag-section:first-child,
+body.search main > .ag-section:first-child{
+	padding-top: 200px !important;
+}
+@media (max-width: 768px){
+	body:not(.home) main > .ag-section:first-child,
+	body.blog main > .ag-section:first-child,
+	body.archive main > .ag-section:first-child,
+	body.search main > .ag-section:first-child{
+		padding-top: 150px !important;
+	}
+}
+@media (max-width: 480px){
+	body:not(.home) main > .ag-section:first-child,
+	body.blog main > .ag-section:first-child,
+	body.archive main > .ag-section:first-child,
+	body.search main > .ag-section:first-child{
+		padding-top: 135px !important;
+	}
+}
+
 /* Variables CSS par slug de page — overridables si tu veux changer l'image */
 body.page-services .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=85'); }
 body.page-realisations .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1920&q=85'); }

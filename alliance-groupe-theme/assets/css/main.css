@@ -1493,7 +1493,7 @@ em,.ag-gold{
 }
 
 /* ── Single Article ───────────────────────────────────────────── */
-.ag-article__header{padding:140px 0 60px}
+.ag-article__header{padding:185px 0 60px}
 .ag-breadcrumb{
     display:flex;
     align-items:center;
@@ -3445,7 +3445,7 @@ button:focus-visible{
 }
 
 /* ── /merci-rdv — thank-you page after booking ─────────── */
-.ag-merci-hero{padding-top:120px}
+.ag-merci-hero{padding-top:185px}
 .ag-merci{
     max-width:860px;
     margin:0 auto;
