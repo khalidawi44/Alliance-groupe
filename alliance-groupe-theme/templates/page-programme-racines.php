@@ -62,13 +62,9 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
                         <span class="ag-tag">D'où ça vient</span>
                         <h2 class="ag-cinescene__title">Né dans un <em>quartier populaire</em></h2>
                         <p class="ag-cinescene__lead">
-                            Fabrizio, notre fondateur, a grandi à Naples dans les Quartieri Spagnoli.
-                            Il a commencé par former gratuitement des familles défavorisées au digital,
-                            dans l'arrière-salle d'une église. <strong>Le web comme outil d'émancipation.</strong>
-                        </p>
-                        <p class="ag-cinescene__lead">
-                            Le Programme Racines, c'est cette conviction transformée en action :
-                            le talent est partout, les opportunités non. On vient corriger ça.
+                            Fabrizio, notre fondateur, a grandi à Naples et a commencé par former
+                            gratuitement des familles défavorisées au digital. <strong>Le talent est
+                            partout, les opportunités non</strong> — le Programme Racines vient corriger ça.
                         </p>
                         <a href="<?php echo esc_url( home_url( '/notre-fondateur' ) ); ?>" class="ag-btn-outline">Lire l'histoire de Fabrizio →</a>
                     </article>
@@ -114,8 +110,8 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
         </div>
     </section>
 
-    <!-- Le deal clairement -->
-    <section class="ag-section ag-section--or">
+    <!-- Le deal clairement — remonte et recouvre la cinescene fixe (effet stacking) -->
+    <section class="ag-section ag-section--or ag-stackover">
         <div class="ag-container ag-container--narrow">
             <div class="ag-racines__deal">
                 <h2 class="ag-racines__deal-title">Le deal, clairement</h2>

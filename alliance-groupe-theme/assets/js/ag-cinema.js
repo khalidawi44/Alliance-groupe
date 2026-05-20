@@ -205,11 +205,13 @@
 				var rect = scene.getBoundingClientRect();
 				var vh = window.innerHeight;
 				var into = -rect.top;                       // px scrolles dans la scene
-				var total = scene.offsetHeight - vh;        // distance utile
+				var total = scene.offsetHeight - vh;        // distance utile pour les slides
 				var st, prog;
 				if (into <= 0) { st = 'before'; prog = 0; }
-				else if (into >= total) { st = 'after'; prog = 1; }
-				else { st = 'fixed'; prog = into / total; }
+				else if (rect.bottom <= 0) { st = 'after'; prog = 1; }  // scene entierement passee
+				else { st = 'fixed'; prog = total > 0 ? Math.min(1, into / total) : 0; }
+				// -> reste 'fixed' meme apres la derniere slide : la section suivante
+				//    (.ag-stackover, opaque, z-index superieur) remonte et la recouvre.
 				if (st !== state) {
 					scene.classList.toggle('is-fixed', st === 'fixed');
 					scene.classList.toggle('is-after', st === 'after');
