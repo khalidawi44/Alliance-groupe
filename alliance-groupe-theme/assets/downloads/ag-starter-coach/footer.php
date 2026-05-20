@@ -35,9 +35,28 @@
 			</div>
 		</div>
 		<div class="ag-footer-bottom">
+			<div class="ag-credit">
+				<small>
+					&copy; <?php echo date( 'Y' ); ?> &mdash;
+					<?php esc_html_e( 'Site WordPress', 'ag-starter-coach' ); ?>
+					<?php
+					printf(
+						/* translators: %s: lien Alliance Groupe */
+						wp_kses( __( 'conçu par %s', 'ag-starter-coach' ), array( 'a' => array( 'href' => array(), 'title' => array() ) ) ),
+						'<a href="https://alliancegroupe-inc.com/wordpress-coach" title="Site WordPress sur-mesure pour coach par Alliance Groupe">Alliance Groupe</a>'
+					);
+					?>
+					&middot;
+					<a href="https://alliancegroupe-inc.com/bureau-nantes" title="Agence web Alliance Groupe à Nantes"><?php esc_html_e( 'Agence Web Nantes', 'ag-starter-coach' ); ?></a>
+				</small>
+			</div>
 		</div>
 	</div>
 </footer>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"Alliance Groupe","url":"https://alliancegroupe-inc.com","logo":"https://alliancegroupe-inc.com/wp-content/themes/alliance-groupe-theme/assets/images/logo.jpg","description":"Agence web & IA franco-italo-marocaine. Création de sites WordPress sur-mesure pour coachs sportifs, mentaux et bien-être.","areaServed":["FR","MA","IT"]}
+</script>
 
 <script>
 // Fix : detecte l'URL active et ajoute la classe 'current-menu-item' sur

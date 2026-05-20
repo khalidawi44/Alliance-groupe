@@ -304,6 +304,29 @@ add_action( 'wp_head', function () {
 	echo '<script type="application/ld+json">' . wp_json_encode( $lb, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
 }, 6 );
 
+// ── 3b. Verification webmaster tools (Google Search Console + Bing) ──
+//    Codes stockes en options WP, configurables depuis Outils > Import AG.
+//    Affiche les meta tags dans <head> si configures.
+add_action( 'wp_head', function () {
+	$gsc  = trim( (string) get_option( 'ag_gsc_verification', '' ) );
+	$bing = trim( (string) get_option( 'ag_bing_verification', '' ) );
+	$fb   = trim( (string) get_option( 'ag_fb_domain_verification', '' ) );
+	$pin  = trim( (string) get_option( 'ag_pinterest_verification', '' ) );
+
+	if ( $gsc !== '' ) {
+		echo '<meta name="google-site-verification" content="' . esc_attr( $gsc ) . '">' . "\n";
+	}
+	if ( $bing !== '' ) {
+		echo '<meta name="msvalidate.01" content="' . esc_attr( $bing ) . '">' . "\n";
+	}
+	if ( $fb !== '' ) {
+		echo '<meta name="facebook-domain-verification" content="' . esc_attr( $fb ) . '">' . "\n";
+	}
+	if ( $pin !== '' ) {
+		echo '<meta name="p:domain_verify" content="' . esc_attr( $pin ) . '">' . "\n";
+	}
+}, 1 );
+
 // ── 4. Offer schema sur la page Templates (prix Pro/Premium/Business) ──
 add_action( 'wp_head', function () {
 	if ( ! is_page( 'templates' ) ) return;

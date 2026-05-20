@@ -35,9 +35,26 @@
 			</div>
 		</div>
 		<div class="ag-footer-bottom">
+			<div class="ag-credit">
+				<small>
+					&copy; <?php echo date( 'Y' ); ?> &mdash;
+					<?php
+					printf(
+						wp_kses( __( 'Création du site : %s', 'ag-starter-artisan' ), array( 'a' => array( 'href' => array(), 'title' => array() ) ) ),
+						'<a href="https://alliancegroupe-inc.com/wordpress-artisan" title="Création de site WordPress pour artisan par Alliance Groupe">Alliance Groupe</a>'
+					);
+					?>
+					&middot;
+					<a href="https://alliancegroupe-inc.com" title="Agence web et IA Alliance Groupe"><?php esc_html_e( 'Agence Web & IA', 'ag-starter-artisan' ); ?></a>
+				</small>
+			</div>
 		</div>
 	</div>
 </footer>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"Alliance Groupe","url":"https://alliancegroupe-inc.com","logo":"https://alliancegroupe-inc.com/wp-content/themes/alliance-groupe-theme/assets/images/logo.jpg","description":"Agence web & IA franco-italo-marocaine. Sites WordPress sur-mesure pour artisans, menuisiers, plombiers, électriciens.","areaServed":["FR","MA","IT"]}
+</script>
 
 <script>
 // Fix : detecte l'URL active et ajoute la classe 'current-menu-item' sur

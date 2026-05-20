@@ -38,9 +38,23 @@
 				&copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?>.
 				<?php esc_html_e( 'Tous droits reserves.', 'ag-starter-avocat' ); ?>
 			</p>
+			<p class="ag-credit"><small>
+				<?php
+				printf(
+					wp_kses( __( 'Site realise par %s', 'ag-starter-avocat' ), array( 'a' => array( 'href' => array(), 'title' => array() ) ) ),
+					'<a href="https://alliancegroupe-inc.com/wordpress-avocat" title="Site WordPress pour avocat par Alliance Groupe">Alliance Groupe</a>'
+				);
+				?>
+				&middot;
+				<a href="https://alliancegroupe-inc.com/bureau-nantes" title="Agence web Alliance Groupe Nantes"><?php esc_html_e( 'Agence Web Nantes & Marrakech', 'ag-starter-avocat' ); ?></a>
+			</small></p>
 		</div>
 	</div>
 </footer>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"Alliance Groupe","url":"https://alliancegroupe-inc.com","logo":"https://alliancegroupe-inc.com/wp-content/themes/alliance-groupe-theme/assets/images/logo.jpg","description":"Agence web & IA franco-italo-marocaine. Sites WordPress sur-mesure pour avocats, cabinets et professions juridiques.","areaServed":["FR","MA","IT"]}
+</script>
 
 <?php
 // AG branding (rendered by pro-features.php based on tier)

@@ -77,6 +77,31 @@ function ag_render() {
         }
     }
 
+    // ── Action: Save SEO verification codes (Google Search Console, Bing, etc.) ──
+    if ( isset( $_POST['ag_seo_save'] ) && check_admin_referer( 'ag_seo_save_nonce' ) ) {
+        $fields = array(
+            'ag_gsc_verification'        => 'Google Search Console',
+            'ag_bing_verification'       => 'Bing Webmaster Tools',
+            'ag_fb_domain_verification'  => 'Facebook Domain',
+            'ag_pinterest_verification'  => 'Pinterest',
+        );
+        $saved = array();
+        foreach ( $fields as $opt => $label ) {
+            $val = isset( $_POST[ $opt ] ) ? sanitize_text_field( wp_unslash( $_POST[ $opt ] ) ) : '';
+            // Strip si l'utilisateur a colle la balise complete au lieu du content
+            if ( preg_match( '/content=["\']([^"\']+)["\']/', $val, $m ) ) {
+                $val = $m[1];
+            }
+            update_option( $opt, $val );
+            if ( $val !== '' ) $saved[] = $label;
+        }
+        if ( ! empty( $saved ) ) {
+            echo '<div class="notice notice-success"><p>✅ Codes de vérification enregistrés : <strong>' . esc_html( implode( ', ', $saved ) ) . '</strong></p></div>';
+        } else {
+            echo '<div class="notice notice-info"><p>ℹ️ Codes vidés (aucune vérification active).</p></div>';
+        }
+    }
+
     // ── Auto-sync mobile : déclenche la sync sans clic quand un téléphone
     //    visite cette page ET qu'une MAJ est dispo. Sur desktop : aucun
     //    changement (les boutons restent manuels). Throttle 30s pour
@@ -161,6 +186,43 @@ function ag_render() {
         }
         echo '</div>';
     }
+
+    // ── Panneau SEO : vérification webmaster tools ──
+    $gsc_val  = (string) get_option( 'ag_gsc_verification', '' );
+    $bing_val = (string) get_option( 'ag_bing_verification', '' );
+    $fb_val   = (string) get_option( 'ag_fb_domain_verification', '' );
+    $pin_val  = (string) get_option( 'ag_pinterest_verification', '' );
+    echo '<div style="margin:20px 0;padding:22px 26px;background:linear-gradient(135deg,#0c0c1f 0%,#0a0a0f 100%);border:1px solid rgba(100,140,255,.35);border-radius:12px;color:#fff;">';
+    echo '<h2 style="color:#fff;margin:0 0 6px;font-size:1.15em;">🔍 Vérification SEO (Search Console, Bing, etc.)</h2>';
+    echo '<p style="color:rgba(255,255,255,.7);margin:0 0 18px;font-size:.88em;">Colle ici le code de vérification fourni par chaque plateforme (ou la balise meta complète — on extrait le content auto). Le code est injecté dans le &lt;head&gt; du site.</p>';
+    echo '<form method="post">';
+    wp_nonce_field( 'ag_seo_save_nonce' );
+    $fields = array(
+        'ag_gsc_verification'       => array( 'label' => 'Google Search Console', 'icon' => '🌐', 'help' => 'Méthode HTML tag. Recolle juste le code après content="..."', 'val' => $gsc_val ),
+        'ag_bing_verification'      => array( 'label' => 'Bing Webmaster Tools',  'icon' => '🅱️', 'help' => 'Meta tag msvalidate.01 — paste le content', 'val' => $bing_val ),
+        'ag_fb_domain_verification' => array( 'label' => 'Facebook Domain',       'icon' => '📘', 'help' => 'Pour le pixel Meta — facebook-domain-verification', 'val' => $fb_val ),
+        'ag_pinterest_verification' => array( 'label' => 'Pinterest',              'icon' => '📌', 'help' => 'Domain verification Pinterest — p:domain_verify', 'val' => $pin_val ),
+    );
+    echo '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:14px;">';
+    foreach ( $fields as $opt => $f ) {
+        $status_color = $f['val'] !== '' ? '#22c55e' : 'rgba(255,255,255,.3)';
+        $status_text  = $f['val'] !== '' ? '✓ actif' : 'inactif';
+        echo '<label style="display:block;background:rgba(255,255,255,.04);padding:14px 16px;border-radius:8px;border:1px solid rgba(255,255,255,.08);">';
+        echo '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">';
+        echo '<span style="color:#fff;font-weight:600;font-size:.95em;">' . esc_html( $f['icon'] ) . ' ' . esc_html( $f['label'] ) . '</span>';
+        echo '<span style="color:' . esc_attr( $status_color ) . ';font-size:.78em;font-weight:700;">' . esc_html( $status_text ) . '</span>';
+        echo '</div>';
+        echo '<input type="text" name="' . esc_attr( $opt ) . '" value="' . esc_attr( $f['val'] ) . '" placeholder="content=&quot;...&quot;" style="width:100%;padding:8px 10px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:#fff;font-family:monospace;font-size:.85em;">';
+        echo '<div style="color:rgba(255,255,255,.5);font-size:.75em;margin-top:6px;">' . esc_html( $f['help'] ) . '</div>';
+        echo '</label>';
+    }
+    echo '</div>';
+    echo '<div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">';
+    echo '<button type="submit" name="ag_seo_save" class="button button-primary" style="background:#3b82f6;border-color:#3b82f6;">💾 Enregistrer les codes</button>';
+    echo '<div style="color:rgba(255,255,255,.55);font-size:.82em;">Sitemap : <a href="' . esc_url( home_url( '/sitemap.xml' ) ) . '" target="_blank" style="color:#60a5fa;">' . esc_url( home_url( '/sitemap.xml' ) ) . '</a> &middot; Une fois vérifié sur GSC, soumets ce sitemap.</div>';
+    echo '</div>';
+    echo '</form>';
+    echo '</div>';
 
     // ── Deux boutons côte à côte ──
     echo '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0;">';

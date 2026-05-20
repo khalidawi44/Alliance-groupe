@@ -7,9 +7,13 @@
             <?php echo esc_html( get_theme_mod( 'ag_barber_hours', 'Lun-Sam : 9h-20h | Dim : fermé' ) ); ?><br>
             <a href="tel:<?php echo esc_attr( get_theme_mod( 'ag_barber_phone', '+33612345678' ) ); ?>" style="color:#D4B45C;"><?php echo esc_html( get_theme_mod( 'ag_barber_phone', '06 12 34 56 78' ) ); ?></a>
         </div>
-        <div class="ag-footer__copy">&copy; <?php echo date( 'Y' ); ?> <?php echo esc_html( $settings['shop_name'] ); ?>. <?php printf( wp_kses( __( 'Thème par %s.', 'ag-starter-barber' ), array( 'a' => array( 'href' => array(), 'rel' => array() ) ) ), '<a href="https://alliancegroupe-inc.com" rel="nofollow">Alliance Groupe</a>' ); ?></div>
+        <div class="ag-footer__copy">&copy; <?php echo date( 'Y' ); ?> <?php echo esc_html( $settings['shop_name'] ); ?>. <?php printf( wp_kses( __( 'Design & développement : %s', 'ag-starter-barber' ), array( 'a' => array( 'href' => array(), 'title' => array() ) ) ), '<a href="https://alliancegroupe-inc.com/wordpress-barber" title="Site WordPress pour barber shop par Alliance Groupe">Alliance Groupe</a>' ); ?> &middot; <a href="https://alliancegroupe-inc.com/bureau-nantes" title="Agence web Alliance Groupe Nantes" style="color:#D4B45C;"><?php esc_html_e( 'Agence Web Nantes', 'ag-starter-barber' ); ?></a></div>
     </div>
 </footer>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"Alliance Groupe","url":"https://alliancegroupe-inc.com","logo":"https://alliancegroupe-inc.com/wp-content/themes/alliance-groupe-theme/assets/images/logo.jpg","description":"Agence web & IA franco-italo-marocaine. Sites WordPress sur-mesure pour barber shops, salons de coiffure et instituts.","areaServed":["FR","MA","IT"]}
+</script>
 
 <script>
 // Fix : detecte l'URL active et ajoute la classe 'current-menu-item' sur
