@@ -841,6 +841,12 @@ if ( ! function_exists( 'ag_submit_brief' ) ) {
         $c  = "Bonjour $name,\n\nMerci ! On a bien reçu le brief de ton site ($business).\n";
         $c .= "On démarre la production et on t'envoie une première version rapidement, ";
         $c .= "avec une vidéo de présentation. Tout se fait par écrit, sans rendez-vous.\n\n";
+        $c .= "----------------------------------------\n";
+        $c .= "👉 GARDE TON SITE AU TOP CHAQUE MOIS\n";
+        $c .= "Hébergement, sécurité, sauvegardes, retouches et référencement :\n";
+        $c .= "nos forfaits maintenance à partir de 29€/mois.\n";
+        $c .= home_url( '/sites-express#maintenance' ) . "\n";
+        $c .= "----------------------------------------\n\n";
         $c .= "L'équipe Alliance Groupe\ncontact@alliancegroupe-inc.com";
         wp_mail( $email, 'On a reçu le brief de ton site 🚀', $c, $headers );
 

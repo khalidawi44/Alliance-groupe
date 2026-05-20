@@ -135,10 +135,19 @@ unset( $GLOBALS['ag_audit_cta_args'] );
 .ag-comparo-cell--us{color:#D4B45C;font-weight:600;background:rgba(212,180,92,.04)}
 .ag-comparo-row--head .ag-comparo-cell{font-weight:800;letter-spacing:1.5px;text-transform:uppercase;font-size:.82rem;color:#D4B45C}
 @media (max-width:768px){
-	.ag-comparo-row{grid-template-columns:1fr}
-	.ag-comparo-cell{border-right:none;border-bottom:1px solid rgba(255,255,255,.04)}
-	.ag-comparo-cell--label{background:rgba(212,180,92,.1);padding:10px 18px;font-size:.85rem}
-	.ag-comparo-row:not(.ag-comparo-row--head){padding-bottom:8px}
+	/* En-tete inutile une fois empile : chaque valeur est etiquetee ci-dessous */
+	.ag-comparo-row--head{display:none}
+	/* Chaque critere = une carte autonome, claire */
+	.ag-comparo-table{background:transparent;border:none;border-radius:0;overflow:visible}
+	.ag-comparo-row{grid-template-columns:1fr;background:rgba(20,20,28,.7);border:1px solid rgba(212,180,92,.18);border-radius:14px;margin-bottom:14px;overflow:hidden}
+	.ag-comparo-cell{border-right:none;border-bottom:1px solid rgba(255,255,255,.06);padding:12px 16px}
+	.ag-comparo-cell:last-child{border-bottom:none}
+	.ag-comparo-cell--label{background:rgba(212,180,92,.14);font-size:1rem;font-weight:800;color:#D4B45C;letter-spacing:.3px}
+	/* Etiquette chaque valeur : on sait toujours qui est qui */
+	.ag-comparo-cell--them::before{content:"❌ ThemeForest";display:block;font-size:.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:3px}
+	.ag-comparo-cell--us::before{content:"✅ Alliance Groupe";display:block;font-size:.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#46b450;margin-bottom:3px}
+	.ag-comparo-cell--them{color:rgba(255,255,255,.6)}
+	.ag-comparo-cell--us{background:rgba(212,180,92,.06)}
 }
 </style>
 

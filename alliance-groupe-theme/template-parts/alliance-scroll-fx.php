@@ -233,8 +233,11 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 	/* ── Mobile fix (<=768px) : section pas trop haute + textes lisibles ── */
 	@media (max-width:768px){
 		#<?php echo esc_attr( $ag_fx_uid ); ?>{--fx-grid-px:1rem;--fx-overlay:rgba(0,0,0,0.45);}
-		/* Sticky en svh (small viewport height) = sans la barre Safari mobile */
-		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-fixed{height:100svh;}
+		/* dvh = hauteur dynamique : le sticky remplit toujours l'ecran visible
+		   (corrige le bandeau blanc quand la barre Safari iOS se masque). */
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-fixed{height:100dvh;}
+		/* fond sombre de secours derriere le sticky (jamais de vide blanc) */
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-fixed-section{background:var(--fx-stage-bg);}
 		/* Center cell : doit avoir une hauteur reelle pour que le featured (absolute)
 		   se positionne correctement. min-height + flex centrage = featured visible */
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-content{align-items:stretch;}

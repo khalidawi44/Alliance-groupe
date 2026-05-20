@@ -4057,3 +4057,10 @@ button:focus-visible{
     .ag-cookie__title{font-size:1rem;}
 }
 
+
+/* ── Lisibilité mobile : comparatifs qui s'empilent (≤768px, PC inchangé) ── */
+@media (max-width:768px){
+    .ag-compare{grid-template-columns:1fr;gap:16px;}
+    .ag-compare__vs{justify-self:center;margin:2px 0;}
+    .ag-compare__col{padding:24px 20px;}
+}
