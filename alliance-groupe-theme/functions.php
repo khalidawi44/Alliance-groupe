@@ -312,6 +312,7 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-wordpress-association.php'] = 'Template WordPress — Association';
     $templates['templates/page-programme-racines.php'] = 'Programme Racines';
     $templates['templates/page-ambassadeurs.php']    = 'Programme Ambassadeurs';
+    $templates['templates/page-contrat-ambassadeur.php'] = 'Contrat Ambassadeur';
     return $templates;
 } );
 

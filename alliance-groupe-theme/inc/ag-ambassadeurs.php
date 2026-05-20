@@ -18,6 +18,26 @@ if ( ! defined( 'AG_COMMISSION_RATE' ) ) {
 	define( 'AG_COMMISSION_RATE', 0.10 ); // 10 % par vente
 }
 
+/**
+ * Infos légales de la société (pour le contrat).
+ * /!\ À COMPLÉTER par l'admin : SIRET, forme juridique et adresse exacts
+ * (non récupérables automatiquement ici). Modifiables via le filtre
+ * 'ag_company_legal' ou directement ci-dessous.
+ */
+if ( ! function_exists( 'ag_company_legal' ) ) {
+	function ag_company_legal() {
+		return apply_filters( 'ag_company_legal', array(
+			'raison'   => 'Advise Alliance Group',
+			'dirigeant'=> 'Fabrice Doucet',
+			'forme'    => '[forme juridique à compléter]',
+			'siret'    => '[SIRET à compléter]',
+			'adresse'  => '[adresse du siège à compléter]',
+			'email'    => 'contact@alliancegroupe-inc.com',
+			'site'     => 'alliancegroupe-inc.com',
+		) );
+	}
+}
+
 /* =====================================================================
    1. INSCRIPTION AU PROGRAMME
    ===================================================================== */
@@ -29,16 +49,23 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 		if ( ! isset( $_POST['ag_amb_nonce'] ) || ! wp_verify_nonce( $_POST['ag_amb_nonce'], 'ag_amb_signup' ) ) {
 			wp_die( 'Nonce invalide.', 'Erreur', array( 'response' => 403 ) );
 		}
-		$name    = sanitize_text_field( $_POST['name']    ?? '' );
-		$email   = sanitize_email(      $_POST['email']   ?? '' );
-		$phone   = sanitize_text_field( $_POST['phone']   ?? '' );
-		$city    = sanitize_text_field( $_POST['city']    ?? '' );
-		$payout  = sanitize_text_field( $_POST['payout_method'] ?? 'PayPal' );
+		$name      = sanitize_text_field( $_POST['name']    ?? '' );
+		$email     = sanitize_email(      $_POST['email']   ?? '' );
+		$phone     = sanitize_text_field( $_POST['phone']   ?? '' );
+		$city      = sanitize_text_field( $_POST['city']    ?? '' );
+		$birthdate = sanitize_text_field( $_POST['birthdate'] ?? '' );
+		$address   = sanitize_text_field( $_POST['address'] ?? '' );
+		$payout    = sanitize_text_field( $_POST['payout_method'] ?? 'PayPal' );
 		$payout_id = sanitize_text_field( $_POST['payout_id'] ?? '' );
-		$motiv   = sanitize_textarea_field( $_POST['motivation'] ?? '' );
+		$motiv     = sanitize_textarea_field( $_POST['motivation'] ?? '' );
+		$signature = sanitize_text_field( $_POST['signature'] ?? '' );
+		$accept    = ! empty( $_POST['accept_contract'] );
 
-		if ( empty( $name ) || ! is_email( $email ) ) {
-			wp_die( 'Merci d\'indiquer au minimum un nom et un email valide.', 'Champs manquants', array( 'response' => 400, 'back_link' => true ) );
+		if ( empty( $name ) || ! is_email( $email ) || empty( $birthdate ) || empty( $address ) ) {
+			wp_die( 'Merci d\'indiquer ton nom, email, date de naissance et adresse (identité requise).', 'Champs manquants', array( 'response' => 400, 'back_link' => true ) );
+		}
+		if ( ! $accept || empty( $signature ) ) {
+			wp_die( 'Tu dois accepter le contrat d\'apporteur d\'affaires et le signer (nom complet) pour rejoindre le programme.', 'Contrat requis', array( 'response' => 400, 'back_link' => true ) );
 		}
 
 		$list = get_option( 'ag_ambassadeurs', array() );
@@ -58,10 +85,19 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 			'email'      => $email,
 			'phone'      => $phone,
 			'city'       => $city,
+			'birthdate'  => $birthdate,
+			'address'    => $address,
 			'payout'     => $payout,
 			'payout_id'  => $payout_id,
 			'motivation' => $motiv,
-			'status'     => 'en_attente',
+			'status'     => 'en_attente',          // -> 'actif' apres verification identite par l'admin
+			'identite'   => 'a_verifier',
+			'contrat'    => array(
+				'accepte'   => true,
+				'signature' => $signature,
+				'date'      => current_time( 'd/m/Y H:i' ),
+				'ip'        => sanitize_text_field( $_SERVER['REMOTE_ADDR'] ?? '' ),
+			),
 			'date'       => current_time( 'd/m/Y H:i' ),
 		);
 		update_option( 'ag_ambassadeurs', $list );
@@ -107,13 +143,21 @@ if ( ! function_exists( 'ag_ambassadeur_vente' ) ) {
 			wp_die( 'Merci d\'indiquer ton email, le client et un montant valide.', 'Champs manquants', array( 'response' => 400, 'back_link' => true ) );
 		}
 
-		// retrouve l'ambassadeur (nom) si inscrit
-		$amb_name = '';
+		// L'ambassadeur doit etre inscrit ET valide (identite verifiee) pour vendre
+		$amb_name = ''; $amb_ok = false;
 		foreach ( get_option( 'ag_ambassadeurs', array() ) as $a ) {
 			if ( isset( $a['email'] ) && strtolower( $a['email'] ) === strtolower( $email ) ) {
 				$amb_name = $a['name'];
+				$amb_ok   = ( ( $a['status'] ?? '' ) === 'actif' );
 				break;
 			}
+		}
+		if ( ! $amb_ok ) {
+			wp_die(
+				'Ton compte ambassadeur doit d\'abord être inscrit et validé (identité vérifiée + contrat signé) avant de déclarer une vente. Inscris-toi ou attends la validation de ton inscription.',
+				'Compte non validé',
+				array( 'response' => 403, 'back_link' => true )
+			);
 		}
 
 		$ventes = get_option( 'ag_ambassadeur_ventes', array() );
@@ -274,17 +318,24 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 		if ( empty( $ambs ) ) {
 			echo '<p>Aucun inscrit.</p>';
 		} else {
-			echo '<table class="widefat striped"><thead><tr><th>Date</th><th>Nom</th><th>Email</th><th>Tél</th><th>Ville</th><th>Paiement</th><th>Statut</th><th>Actions</th></tr></thead><tbody>';
+			echo '<p style="color:#646970;">« Activer » = identité vérifiée + contrat OK → l\'ambassadeur peut alors déclarer des ventes.</p>';
+			echo '<table class="widefat striped"><thead><tr><th>Date</th><th>Nom</th><th>Email</th><th>Tél / Ville</th><th>Identité</th><th>Contrat signé</th><th>Paiement</th><th>Statut</th><th>Actions</th></tr></thead><tbody>';
 			foreach ( $ambs as $a ) {
+				$contrat = $a['contrat'] ?? array();
 				echo '<tr>';
 				echo '<td>' . esc_html( $a['date'] ?? '' ) . '</td>';
 				echo '<td><strong>' . esc_html( $a['name'] ?? '' ) . '</strong></td>';
 				echo '<td><a href="mailto:' . esc_attr( $a['email'] ?? '' ) . '">' . esc_html( $a['email'] ?? '' ) . '</a></td>';
-				echo '<td>' . esc_html( $a['phone'] ?? '' ) . '</td>';
-				echo '<td>' . esc_html( $a['city'] ?? '' ) . '</td>';
-				echo '<td>' . esc_html( ( $a['payout'] ?? '' ) . ' ' . ( $a['payout_id'] ?? '' ) ) . '</td>';
+				echo '<td>' . esc_html( ( $a['phone'] ?? '' ) . ' · ' . ( $a['city'] ?? '' ) ) . '</td>';
+				echo '<td style="max-width:220px;white-space:normal;font-size:12px;">Né(e) : ' . esc_html( $a['birthdate'] ?? '—' ) . '<br>' . esc_html( $a['address'] ?? '—' ) . '</td>';
+				if ( ! empty( $contrat['accepte'] ) ) {
+					echo '<td style="font-size:12px;">✅ Signé<br>' . esc_html( $contrat['signature'] ?? '' ) . '<br><small>' . esc_html( $contrat['date'] ?? '' ) . ' · IP ' . esc_html( $contrat['ip'] ?? '' ) . '</small></td>';
+				} else {
+					echo '<td style="color:#b32d2e;">non</td>';
+				}
+				echo '<td style="font-size:12px;">' . esc_html( ( $a['payout'] ?? '' ) . ' ' . ( $a['payout_id'] ?? '' ) ) . '</td>';
 				$actif = ( ( $a['status'] ?? '' ) === 'actif' );
-				echo '<td>' . ( $actif ? '<span style="color:#46b450;font-weight:700;">ACTIF</span>' : '<span style="color:#999;">en attente</span>' ) . '</td>';
+				echo '<td>' . ( $actif ? '<span style="color:#46b450;font-weight:700;">ACTIF</span>' : '<span style="color:#999;">à vérifier</span>' ) . '</td>';
 				echo '<td>';
 				if ( ! $actif ) echo '<a class="button button-primary button-small" href="' . esc_url( $nonce_url( 'amb_valider', $a['id'] ) ) . '">Activer</a> ';
 				echo '<a class="button button-small" style="color:#b32d2e;" href="' . esc_url( $nonce_url( 'amb_suppr', $a['id'] ) ) . '" onclick="return confirm(\'Supprimer cet ambassadeur ?\')">✕</a>';

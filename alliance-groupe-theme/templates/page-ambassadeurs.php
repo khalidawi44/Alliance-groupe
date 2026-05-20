@@ -75,6 +75,10 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
                         <div class="ag-form__group"><label for="amb-city">Ville</label><input type="text" id="amb-city" name="city" placeholder="Ta ville"></div>
                     </div>
                     <div class="ag-form__row">
+                        <div class="ag-form__group"><label for="amb-birth">Date de naissance *</label><input type="date" id="amb-birth" name="birthdate" required></div>
+                        <div class="ag-form__group"><label for="amb-address">Adresse complète *</label><input type="text" id="amb-address" name="address" required placeholder="N°, rue, code postal, ville"></div>
+                    </div>
+                    <div class="ag-form__row">
                         <div class="ag-form__group">
                             <label for="amb-payout">Moyen de paiement</label>
                             <select id="amb-payout" name="payout_method">
@@ -87,7 +91,15 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
                         <div class="ag-form__group"><label for="amb-payid">Email PayPal / coordonnées</label><input type="text" id="amb-payid" name="payout_id" placeholder="email PayPal, IBAN, n° Lydia..."></div>
                     </div>
                     <div class="ag-form__group"><label for="amb-motiv">Pourquoi tu veux rejoindre ? (optionnel)</label><textarea id="amb-motiv" name="motivation" placeholder="Ton réseau, ta motivation..."></textarea></div>
-                    <button type="submit" class="ag-btn-gold">Je rejoins le programme 🤝</button>
+
+                    <div class="ag-amb__contract">
+                        <p>Pour des raisons légales, ton identité est vérifiée et un <strong>contrat d'apporteur d'affaires</strong> encadre ta rémunération de 10%.
+                        <a href="<?php echo esc_url( home_url( '/contrat-ambassadeur' ) ); ?>" target="_blank" rel="noopener">Lire le contrat →</a></p>
+                        <label class="ag-amb__check"><input type="checkbox" name="accept_contract" value="1" required> J'ai lu et j'accepte le contrat d'apporteur d'affaires Alliance Groupe, et je certifie que mon identité est exacte. *</label>
+                        <div class="ag-form__group"><label for="amb-sign">Signature — recopie ton nom et prénom complets *</label><input type="text" id="amb-sign" name="signature" required placeholder="Prénom NOM"></div>
+                    </div>
+
+                    <button type="submit" class="ag-btn-gold">Je signe et je rejoins 🤝</button>
                 </form>
             <?php endif; ?>
         </div>
@@ -144,6 +156,11 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
 #rejoindre .ag-form__group label, #declarer .ag-form__group label{position:static;top:auto;left:auto;display:block;font-size:.88rem;font-weight:600;color:var(--color-text-soft);margin-bottom:8px;text-transform:none;letter-spacing:normal;pointer-events:auto;}
 #rejoindre .ag-form__group input, #rejoindre .ag-form__group textarea, #rejoindre .ag-form__group select,
 #declarer .ag-form__group input, #declarer .ag-form__group textarea, #declarer .ag-form__group select{padding:14px 18px;}
+.ag-amb__contract{background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.25);border-radius:14px;padding:20px 22px;margin:6px 0 4px;}
+.ag-amb__contract p{color:var(--color-text-secondary);font-size:.95rem;line-height:1.6;margin:0 0 14px;}
+.ag-amb__contract a{color:var(--color-gold);font-weight:700;}
+.ag-amb__check{display:flex;gap:10px;align-items:flex-start;color:var(--color-text-soft);font-size:.92rem;line-height:1.5;margin-bottom:16px;cursor:pointer;}
+.ag-amb__check input{margin-top:3px;flex:0 0 auto;width:18px;height:18px;accent-color:var(--color-gold);}
 .ag-amb__steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:46px;}
 .ag-amb__step{padding:30px 24px;background:rgba(255,255,255,.025);border:1px solid rgba(212,180,92,.15);border-radius:18px;}
 .ag-amb__num{display:inline-block;font-family:var(--font-serif);font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,#D4B45C,#F37A1F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;margin-bottom:10px;}
