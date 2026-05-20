@@ -42,7 +42,7 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
          quartier populaire" jusqu'apres l'etape 4. Le contenu (origine, principe,
          etapes 1-4) s'enchaine en fondu sur place ; le fond ne bouge pas. -->
     <section class="ag-cinescene" id="racines-comment" aria-label="L'origine, le principe et les étapes du Programme Racines">
-        <div class="ag-cinescene__pin">
+        <div class="ag-cinescene__stage">
             <div class="ag-cinescene__bg" aria-hidden="true">
                 <img class="ag-cinescene__bgimg" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg' ); ?>" alt="" loading="lazy" decoding="async">
                 <div class="ag-cinescene__veil"></div>

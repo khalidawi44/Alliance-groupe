@@ -174,40 +174,53 @@
 	}
 
 	// =====================================================================
-	// CINESCENE — UN SEUL pin : fond image FIXE + slides en fondu enchaine.
-	// Fond ne bouge pas (juste un zoom doux). Fallback empile si pas de pin.
+	// CINESCENE — epinglage MANUEL (pas de pin GSAP) : le "stage" passe en
+	// position:fixed pendant la traversee de la scene, sinon il reste cale en
+	// haut/bas de la scene. Le fond image ne bouge pas, les slides s'enchainent
+	// en fondu. Aucun spacer = aucun saut, et le stage ne masque jamais une
+	// autre section (il n'est fixe que dans la plage de la scene).
 	// =====================================================================
 	function initCineScene() {
-		if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
 		if (IS_TOUCH || window.innerWidth <= 1024) return; // mobile = fallback empile (CSS)
 		document.querySelectorAll('.ag-cinescene').forEach(function (scene) {
-			var pin    = scene.querySelector('.ag-cinescene__pin');
+			var stage  = scene.querySelector('.ag-cinescene__stage');
 			var slides = scene.querySelectorAll('.ag-cinescene__slide');
 			var ghosts = scene.querySelectorAll('.ag-cinescene__ghost');
 			var dots   = scene.querySelectorAll('.ag-cinescene__dots span');
 			var img    = scene.querySelector('.ag-cinescene__bgimg');
 			var n = slides.length;
-			if (!pin || !n) return;
+			if (!stage || !n) return;
 
 			scene.classList.add('is-cinematic');
-			var cur = -1;
+			scene.style.height = (n * 100) + 'vh'; // longueur de scroll = 1 ecran par slide
+
+			var cur = -1, state = '';
 			function setActive(i) {
 				if (i === cur) return; cur = i;
 				slides.forEach(function (s, idx) { s.classList.toggle('is-active', idx === i); });
 				ghosts.forEach(function (g, idx) { g.classList.toggle('is-active', idx === i); });
 				dots.forEach(function (d, idx) { d.classList.toggle('is-active', idx === i); });
 			}
-			setActive(0);
-
-			ScrollTrigger.create({
-				trigger: scene, start: 'top top',
-				end: function () { return '+=' + (n * Math.round(window.innerHeight * 0.85)); },
-				pin: pin, scrub: true, anticipatePin: 1, invalidateOnRefresh: true,
-				onUpdate: function (self) {
-					setActive(Math.min(n - 1, Math.floor(self.progress * n * 0.999)));
-					if (img) img.style.transform = 'scale(' + (1.06 + self.progress * 0.12).toFixed(3) + ')';
+			function update() {
+				var rect = scene.getBoundingClientRect();
+				var vh = window.innerHeight;
+				var into = -rect.top;                       // px scrolles dans la scene
+				var total = scene.offsetHeight - vh;        // distance utile
+				var st, prog;
+				if (into <= 0) { st = 'before'; prog = 0; }
+				else if (into >= total) { st = 'after'; prog = 1; }
+				else { st = 'fixed'; prog = into / total; }
+				if (st !== state) {
+					scene.classList.toggle('is-fixed', st === 'fixed');
+					scene.classList.toggle('is-after', st === 'after');
+					state = st;
 				}
-			});
+				setActive(Math.min(n - 1, Math.floor(prog * n * 0.9999)));
+				if (img) img.style.transform = 'scale(' + (1.06 + prog * 0.1).toFixed(3) + ')';
+			}
+			onTick(update);            // synchronise avec Lenis (gsap.ticker) ou rAF
+			window.addEventListener('resize', function () { scene.style.height = (n * 100) + 'vh'; }, { passive: true });
+			update();
 		});
 	}
 
