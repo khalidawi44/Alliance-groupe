@@ -225,41 +225,54 @@
 	}
 
 	// =====================================================================
-	// SCROLL HORIZONTAL (pin) — la piste glisse au scroll vertical (desktop)
+	// SCROLL HORIZONTAL — epinglage MANUEL (pas de pin GSAP) : le stage passe
+	// en fixed pendant la traversee, la piste glisse selon la progression.
+	// Cartes en 3D selon leur distance au centre. Auto-corrige chaque frame.
 	// =====================================================================
 	function initHScroll() {
-		if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
 		if (IS_TOUCH || window.innerWidth <= 1024) return; // mobile = scroll natif (CSS)
 		document.querySelectorAll('.ag-hscroll').forEach(function (sec) {
 			var pin   = sec.querySelector('.ag-hscroll__pin');
 			var track = sec.querySelector('.ag-hscroll__track');
 			if (!pin || !track) return;
 			var cards = track.querySelectorAll('.ag-hscroll__card');
-			sec.classList.add('is-3d');
-			var dist = function () { return Math.max(0, track.scrollWidth - window.innerWidth); };
-			// items qui se placent en 3D : rotateY/scale selon la distance au centre
-			function tilt() {
+			sec.classList.add('is-cinematic', 'is-3d');
+
+			var dist = 0, state = '';
+			function measure() {
+				dist = Math.max(0, track.scrollWidth - window.innerWidth);
+				sec.style.height = (window.innerHeight + dist) + 'px';
+			}
+			function update() {
+				var rect = sec.getBoundingClientRect();
+				var vh = window.innerHeight;
+				var into = -rect.top;
+				var total = sec.offsetHeight - vh;
+				var st, prog;
+				if (into <= 0) { st = 'before'; prog = 0; }
+				else if (into >= total) { st = 'after'; prog = 1; }
+				else { st = 'fixed'; prog = total > 0 ? into / total : 0; }
+				if (st !== state) {
+					sec.classList.toggle('is-fixed', st === 'fixed');
+					sec.classList.toggle('is-after', st === 'after');
+					state = st;
+				}
+				track.style.transform = 'translate3d(' + (-prog * dist) + 'px,0,0)';
+				// cartes en 3D selon la distance au centre du viewport
 				var vw = window.innerWidth, mid = vw / 2;
 				cards.forEach(function (card) {
 					var r = card.getBoundingClientRect();
-					if (r.right < -200 || r.left > vw + 200) return; // hors champ : skip
-					var off = (r.left + r.width / 2 - mid) / vw; // -1 .. 1
+					if (r.right < -200 || r.left > vw + 200) return;
+					var off = (r.left + r.width / 2 - mid) / vw;
 					var rot = Math.max(-16, Math.min(16, off * 20));
 					var sc  = 1 - Math.min(0.12, Math.abs(off) * 0.16);
 					card.style.transform = 'perspective(1300px) rotateY(' + (-rot) + 'deg) scale(' + sc.toFixed(3) + ')';
 				});
 			}
-			gsap.to(track, {
-				x: function () { return -dist(); },
-				ease: 'none',
-				scrollTrigger: {
-					trigger: sec, start: 'top top',
-					end: function () { return '+=' + dist(); },
-					scrub: 1, pin: pin, anticipatePin: 1, invalidateOnRefresh: true,
-					onUpdate: tilt, onRefresh: tilt
-				}
-			});
-			tilt();
+			measure();
+			onTick(update);
+			window.addEventListener('resize', function () { measure(); }, { passive: true });
+			update();
 		});
 	}
 
@@ -270,34 +283,23 @@
 		if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
 			gsap.registerPlugin(ScrollTrigger);
 		}
-		// Leger et immediat : smooth scroll + curseur + image reveal.
+		// Smooth scroll (Lenis) + reveal d'images (ScrollTrigger) + curseur.
 		initSmoothScroll();
 		initImageReveal();
 		if (DESKTOP_FX) {
 			initCursor();
 			initHeroDepth();
 		}
-		// Pin GSAP (scroll horizontal) : APRES le load complet -> mesures
-		// correctes. Le cinescene, lui, est deja lance tot (manuel, sans dep).
-		function initPins() {
-			requestAnimationFrame(function () {
-				requestAnimationFrame(function () {
-					initHScroll();
-					if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
-				});
-			});
-		}
-		if (document.readyState === 'complete') initPins();
-		else window.addEventListener('load', initPins);
 	}
 
 	ready(function () {
 		if (REDUCED) return;
 		HAS_SCROLLJACK = !!document.querySelector('.ag-fx-fixed-section');
-		// Cinescene : epinglage MANUEL sans dependance CDN -> lance tout de
-		// suite pour eviter la latence/flash au demarrage (s'auto-corrige a
-		// chaque frame, donc pas de probleme de mesure precoce).
+		// Epinglages MANUELS (sans dependance CDN, auto-corriges chaque frame)
+		// -> lances tout de suite : pas de latence/flash, pas de pin GSAP qui
+		// se mesure mal et se superpose aux sections voisines.
 		initCineScene();
+		initHScroll();
 		// On charge gsap (si absent) -> ScrollTrigger -> Lenis, puis boot.
 		var need = [];
 		if (typeof gsap === 'undefined') need.push(CDN.gsap);

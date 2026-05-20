@@ -208,11 +208,16 @@
 }
 
 /* =====================================================================
-   SCROLL HORIZONTAL (pin) — la piste glisse de cote au scroll vertical
+   SCROLL HORIZONTAL — epinglage MANUEL (pas de pin GSAP) : le stage passe
+   en fixed pendant la traversee, la piste glisse selon la progression.
    ===================================================================== */
-.ag-hscroll { position: relative; padding: 0; overflow: hidden; }
-.ag-hscroll__pin { height: 100vh; display: flex; align-items: center; overflow: hidden; }
-.ag-hscroll__track { display: flex; gap: 30px; padding: 0 7vw; will-change: transform; }
+.ag-hscroll { position: relative; padding: 0; }
+.ag-hscroll__pin { position: relative; overflow: hidden; }
+.ag-hscroll__track { display: flex; gap: 30px; padding: 50px 6vw; }
+.ag-hscroll.is-cinematic .ag-hscroll__pin { position: absolute; top: 0; left: 0; width: 100%; height: 100vh; display: flex; align-items: center; overflow: hidden; }
+.ag-hscroll.is-cinematic.is-fixed .ag-hscroll__pin { position: fixed; top: 0; }
+.ag-hscroll.is-cinematic.is-after .ag-hscroll__pin { position: absolute; top: auto; bottom: 0; }
+.ag-hscroll.is-cinematic .ag-hscroll__track { padding: 0 7vw; will-change: transform; }
 .ag-hscroll__head { flex: 0 0 auto; width: min(420px, 78vw); align-self: center; }
 .ag-hscroll__title { font-family: var(--font-serif); font-size: clamp(1.8rem, 3.5vw, 2.8rem); color: #fff; margin: 14px 0 16px; line-height: 1.1; }
 .ag-hscroll__title em { color: var(--color-gold); font-style: italic; }
@@ -233,12 +238,12 @@
 .ag-hscroll__card--cta { background: linear-gradient(160deg, rgba(212,180,92,.14), rgba(243,122,31,.06)); border-color: rgba(212,180,92,.4); }
 .ag-hscroll__card--cta .ag-btn-gold { margin-top: 20px; }
 
-/* Mobile / tactile : pas de pin, scroll horizontal natif avec snap */
+/* Fallback (pas de JS / mobile) : scroll horizontal natif avec snap */
+.ag-hscroll:not(.is-cinematic) .ag-hscroll__track { overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+.ag-hscroll:not(.is-cinematic) .ag-hscroll__card { scroll-snap-align: center; }
 @media (max-width: 1024px) {
-	.ag-hscroll__pin { height: auto; overflow: visible; }
-	.ag-hscroll__track { overflow-x: auto; scroll-snap-type: x mandatory; transform: none !important; padding: 40px 6vw; -webkit-overflow-scrolling: touch; }
 	.ag-hscroll__head { width: 80vw; }
-	.ag-hscroll__card { width: 76vw; min-height: 0; scroll-snap-align: center; }
+	.ag-hscroll__card { width: 76vw; min-height: 0; }
 }
 /* =====================================================================
    ZOOM COVER — fond image qui se rapproche au scroll (on "avance" dedans)
