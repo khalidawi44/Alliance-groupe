@@ -232,9 +232,9 @@
                 </div>
             </li>
 
-            <!-- Blog + dropdown -->
+            <!-- Articles + dropdown -->
             <li class="ag-nav__has-sub">
-                <a href="<?php echo esc_url(home_url('/blog')); ?>">Blog <span class="ag-nav__arrow">&#9662;</span></a>
+                <a href="<?php echo esc_url(home_url('/articles')); ?>">Articles <span class="ag-nav__arrow">&#9662;</span></a>
                 <div class="ag-mega ag-mega--sm">
                     <div class="ag-mega__inner">
                         <div class="ag-mega__col">
@@ -248,7 +248,7 @@
                                 <span><strong><?php echo wp_trim_words(get_the_title(), 6); ?></strong><small><?php echo get_the_date('d M Y'); ?></small></span>
                             </a>
                             <?php endwhile; wp_reset_postdata(); endif; ?>
-                            <a href="<?php echo esc_url(home_url('/blog')); ?>" class="ag-mega__link ag-mega__link--all">
+                            <a href="<?php echo esc_url(home_url('/articles')); ?>" class="ag-mega__link ag-mega__link--all">
                                 <span><strong>Tous les articles →</strong></span>
                             </a>
                         </div>
@@ -356,9 +356,9 @@
             </div>
 
             <div class="ag-mobile-menu__group">
-                <button class="ag-mobile-menu__toggle" type="button">Blog <span class="ag-mobile-menu__arrow">+</span></button>
+                <button class="ag-mobile-menu__toggle" type="button">Articles <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
-                    <a href="<?php echo esc_url(home_url('/blog')); ?>">Tous les articles</a>
+                    <a href="<?php echo esc_url(home_url('/articles')); ?>">Tous les articles</a>
                     <?php
                     $recent_m = new WP_Query(['posts_per_page' => 4, 'post_status' => 'publish']);
                     if ($recent_m->have_posts()) :

@@ -9,7 +9,7 @@
                 <nav class="ag-breadcrumb" aria-label="Fil d'Ariane">
                     <a href="<?php echo esc_url(home_url('/')); ?>">Accueil</a>
                     <span>›</span>
-                    <a href="<?php echo esc_url(home_url('/blog')); ?>">Blog</a>
+                    <a href="<?php echo esc_url(home_url('/articles')); ?>">Articles</a>
                     <span>›</span>
                     <?php
                     $cats = get_the_category();
@@ -152,7 +152,7 @@
 
         <footer class="ag-article__footer">
             <div class="ag-container ag-container--narrow">
-                <a href="<?php echo esc_url(home_url('/blog')); ?>" class="ag-btn-outline">← Retour au blog</a>
+                <a href="<?php echo esc_url(home_url('/articles')); ?>" class="ag-btn-outline">← Retour aux articles</a>
             </div>
         </footer>
     </article>

@@ -8,7 +8,7 @@
         "blogdescription": "Agence Web & IA — France",
         "permalink_structure": "/%postname%/",
         "front_page": "accueil",
-        "blog_page": "blog"
+        "blog_page": "articles"
     },
 
     "categories": [
@@ -19,7 +19,7 @@
     "menu": {
         "name": "Menu Principal",
         "location": "primary",
-        "items": ["accueil", "services", "realisations", "a-propos", "blog", "contact"]
+        "items": ["accueil", "services", "realisations", "articles", "a-propos", "contact"]
     },
 
     "pages": [
@@ -28,7 +28,7 @@
         "pages/realisations.json",
         "pages/a-propos.json",
         "pages/contact.json",
-        "pages/blog.json",
+        "pages/articles.json",
         "pages/service-creation-web.json",
         "pages/service-ia.json",
         "pages/service-seo.json",

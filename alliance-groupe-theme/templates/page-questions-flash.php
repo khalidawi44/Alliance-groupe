@@ -65,7 +65,7 @@ $question_sent = isset( $_GET['question_sent'] ) && '1' === $_GET['question_sent
                     Si vous avez besoin d'ajouter du contexte ou une précision, répondez simplement à cet email.
                 </p>
                 <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
-                    <a href="<?php echo esc_url( home_url( '/blog' ) ); ?>" class="ag-btn-outline">Lire notre blog →</a>
+                    <a href="<?php echo esc_url( home_url( '/articles' ) ); ?>" class="ag-btn-outline">Lire notre blog →</a>
                     <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="ag-btn-gold">Retour à l'accueil</a>
                 </div>
             </div>

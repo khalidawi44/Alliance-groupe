@@ -21,7 +21,7 @@
             <ul>
                 <li><a href="<?php echo esc_url(home_url('/realisations')); ?>">Réalisations</a></li>
                 <li><a href="<?php echo esc_url(home_url('/a-propos')); ?>">À propos</a></li>
-                <li><a href="<?php echo esc_url(home_url('/blog')); ?>">Blog</a></li>
+                <li><a href="<?php echo esc_url(home_url('/articles')); ?>">Articles</a></li>
                 <li><a href="<?php echo esc_url(home_url('/contact')); ?>">Contact</a></li>
             </ul>
         </div>

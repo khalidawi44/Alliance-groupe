@@ -357,7 +357,7 @@ function ag_do_import() {
         array( 'Réalisations', 'realisations', 'templates/page-realisations.php' ),
         array( 'À propos', 'a-propos', 'templates/page-apropos.php' ),
         array( 'Contact', 'contact', 'templates/page-contact.php' ),
-        array( 'Blog', 'blog', '' ),
+        array( 'Articles', 'articles', '' ),
         array( 'Création Web', 'service-creation-web', 'templates/page-service-web.php' ),
         array( 'IA & Automatisation', 'service-ia', 'templates/page-service-ia.php' ),
         array( 'SEO', 'service-seo', 'templates/page-service-seo.php' ),
@@ -387,7 +387,7 @@ function ag_do_import() {
         update_option( 'show_on_front', 'page' );
         update_option( 'page_on_front', $pids['accueil'] );
     }
-    if ( isset( $pids['blog'] ) ) update_option( 'page_for_posts', $pids['blog'] );
+    if ( isset( $pids['articles'] ) ) update_option( 'page_for_posts', $pids['articles'] );
     global $wp_rewrite;
     $wp_rewrite->set_permalink_structure( '/%postname%/' );
     $wp_rewrite->flush_rules();
@@ -398,7 +398,7 @@ function ag_do_import() {
     // Menu
     if ( ! wp_get_nav_menu_object( 'Menu Principal' ) ) {
         $mid = wp_create_nav_menu( 'Menu Principal' );
-        $items = array( 'accueil'=>'Accueil','services'=>'Services','realisations'=>'Réalisations','a-propos'=>'À propos','blog'=>'Blog','contact'=>'Contact' );
+        $items = array( 'accueil'=>'Accueil','services'=>'Services','realisations'=>'Réalisations','articles'=>'Articles','a-propos'=>'À propos','contact'=>'Contact' );
         $pos = 0;
         foreach ( $items as $slug => $label ) {
             if ( isset( $pids[ $slug ] ) ) {
@@ -622,7 +622,7 @@ function ag_do_github_sync() {
     // Menu
     if ( ! empty( $manifest['menu'] ) && ! wp_get_nav_menu_object( $manifest['menu']['name'] ) ) {
         $mid = wp_create_nav_menu( $manifest['menu']['name'] );
-        $labels = array( 'accueil'=>'Accueil','services'=>'Services','realisations'=>'Réalisations','a-propos'=>'À propos','blog'=>'Blog','contact'=>'Contact' );
+        $labels = array( 'accueil'=>'Accueil','services'=>'Services','realisations'=>'Réalisations','articles'=>'Articles','a-propos'=>'À propos','contact'=>'Contact' );
         $pos = 0;
         foreach ( $manifest['menu']['items'] as $slug ) {
             if ( isset( $pids[ $slug ] ) ) {

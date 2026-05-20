@@ -21,8 +21,9 @@ $ag_fsm_items = array(
 	array( 'url' => home_url( '/templates-wordpress' ),    'label' => 'Templates',         'sub' => '03' ),
 	array( 'url' => home_url( '/pourquoi-alliance' ),      'label' => 'Pourquoi Alliance', 'sub' => '04' ),
 	array( 'url' => home_url( '/realisations' ),           'label' => 'Réalisations',      'sub' => '05' ),
-	array( 'url' => home_url( '/a-propos' ),               'label' => 'À propos',          'sub' => '06' ),
-	array( 'url' => home_url( '/contact' ),                'label' => 'Contact',           'sub' => '07' ),
+	array( 'url' => home_url( '/articles' ),               'label' => 'Articles',          'sub' => '06' ),
+	array( 'url' => home_url( '/a-propos' ),               'label' => 'À propos',          'sub' => '07' ),
+	array( 'url' => home_url( '/contact' ),                'label' => 'Contact',           'sub' => '08' ),
 );
 ?>
 

@@ -140,7 +140,7 @@ $tier   = isset( $tiers[ $offer ] ) ? $tiers[ $offer ] : null;
                             </a>
                         </li>
                         <?php endwhile; wp_reset_postdata(); else : ?>
-                        <li><a href="<?php echo esc_url( home_url( '/blog' ) ); ?>">Voir tous nos articles →</a></li>
+                        <li><a href="<?php echo esc_url( home_url( '/articles' ) ); ?>">Voir tous nos articles →</a></li>
                         <?php endif; ?>
                     </ul>
                 </div>

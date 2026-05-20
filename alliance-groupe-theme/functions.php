@@ -225,6 +225,18 @@ add_action( 'template_redirect', function () {
 // Désactiver le sitemap natif WP (on gère tout nous-mêmes)
 add_filter( 'wp_sitemaps_enabled', '__return_false' );
 
+// ── 3d. Redirection 301 /blog → /articles (conserve le SEO des anciennes URLs)
+// L'ancienne page blog a ete renommee en "articles". On redirige proprement
+// /blog et /blog/xxx pour ne pas perdre le jus des liens deja indexes par Google.
+add_action( 'template_redirect', function () {
+    $path = trim( parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ), '/' );
+    if ( $path === 'blog' || strpos( $path, 'blog/' ) === 0 ) {
+        $new = home_url( '/' . preg_replace( '#^blog#', 'articles', $path ) . '/' );
+        wp_redirect( $new, 301 );
+        exit;
+    }
+}, 1 );
+
 // ── 4. Auto-create categories ───────────────────────────────────
 add_action( 'init', function () {
     if ( ! term_exists( 'Tech & IA', 'category' ) ) wp_insert_term( 'Tech & IA', 'category' );
@@ -463,7 +475,7 @@ add_action( 'wp_head', function () {
             '@type' => 'BreadcrumbList',
             'itemListElement' => array(
                 array( '@type' => 'ListItem', 'position' => 1, 'name' => 'Accueil', 'item' => $site_url ),
-                array( '@type' => 'ListItem', 'position' => 2, 'name' => 'Blog', 'item' => $site_url . 'blog/' ),
+                array( '@type' => 'ListItem', 'position' => 2, 'name' => 'Articles', 'item' => $site_url . 'articles/' ),
                 array( '@type' => 'ListItem', 'position' => 3, 'name' => get_the_title() ),
             ),
         );
