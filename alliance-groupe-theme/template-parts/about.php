@@ -113,9 +113,9 @@ $ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
 <section class="ag-section ag-section--cendre ag-teamrow">
     <div class="ag-teamrow__pin">
     <div class="ag-container ag-teamrow__head">
-        <span class="ag-tag ag-anim" data-anim="tag">L'équipe</span>
-        <h2 class="ag-section__title ag-anim" data-anim="title">Les visages derrière <em>Alliance Groupe</em></h2>
-        <p class="ag-section__desc ag-anim" data-anim="desc">Une équipe internationale répartie entre Naples, Nantes et Marrakech. <span class="ag-teamrow__hint">Fais défiler →</span></p>
+        <span class="ag-tag">L'équipe</span>
+        <h2 class="ag-section__title">Les visages derrière <em>Alliance Groupe</em></h2>
+        <p class="ag-section__desc">Une équipe internationale répartie entre Naples, Nantes et Marrakech. <span class="ag-teamrow__hint">Fais défiler →</span></p>
     </div>
     <div class="ag-teamrow__track">
         <div class="ag-team__grid<?php if ( $ag_about_is_home ) echo ' ag-team__grid--home-condense'; ?>">
