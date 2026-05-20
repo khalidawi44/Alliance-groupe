@@ -70,15 +70,22 @@ get_header();
 <!-- Marquee -->
 <?php get_template_part('template-parts/marquee'); ?>
 
-<!-- 🔄 RÉORG : CTA Téléchargez d'abord, puis section métiers en dessous -->
-<!-- 1/ Section "Téléchargez un template" (intro + features + CTAs) -->
+<!-- 🔄 NOUVELLE ORG : 1) Ce que je fais (services sur-mesure)
+                       2) Templates gratuits (CTA + scroll-fx metiers)
+                       3) Equipe (about)
+                       4) Le reste comme avant -->
+
+<!-- 1/ Services — "Ce que je fais" : sites sur-mesure -->
+<?php get_template_part('template-parts/services'); ?>
+
+<!-- 2a/ Section "Telechargez un template" (intro + features + CTAs) -->
 <?php get_template_part('template-parts/templates-cta'); ?>
 
-<!-- 2/ Section "métiers" — scroll-jacking GSAP plein écran style Apple -->
+<!-- 2b/ Section "metiers" — scroll-jacking GSAP plein ecran style Apple -->
 <?php get_template_part('template-parts/alliance-scroll-fx'); ?>
 
-<!-- Services -->
-<?php get_template_part('template-parts/services'); ?>
+<!-- 3/ About : Qui sommes-nous + valeurs + equipe -->
+<?php get_template_part('template-parts/about'); ?>
 
 <!-- Process -->
 <?php get_template_part('template-parts/process'); ?>
@@ -91,20 +98,8 @@ get_header();
     </div>
 </section>
 
-<!-- (Section 'Promo Templates' fusionnée avec le scroll-fx ci-dessus :
-     features pills + CTAs sont maintenant injectés DANS le scroll-fx,
-     plus de redondance) -->
-
 <!-- Réalisations -->
 <?php get_template_part('template-parts/realisations'); ?>
-
-<!-- 🔄 REGROUPEMENT : About (Qui sommes-nous + équipe + valeurs)
-     immédiatement suivi du Globe 3D (présence internationale +
-     3 bureaux). La parallax slideshow bureaux a été supprimée :
-     redondante avec le Globe 3D qui montre déjà les 3 villes. -->
-
-<!-- About : Qui sommes-nous + valeurs + équipe -->
-<?php get_template_part('template-parts/about'); ?>
 
 <!-- Globe 3D : présence internationale Nantes / Marrakech / Naples -->
 <?php get_template_part('template-parts/globe-3d'); ?>
