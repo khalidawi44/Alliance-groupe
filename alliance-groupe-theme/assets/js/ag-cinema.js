@@ -373,20 +373,28 @@
 	ready(function () {
 		if (REDUCED) return;
 		HAS_SCROLLJACK = !!document.querySelector('.ag-fx-fixed-section');
-		// Epinglages MANUELS (sans dependance CDN, auto-corriges chaque frame)
-		// -> lances tout de suite : pas de latence/flash, pas de pin GSAP qui
-		// se mesure mal et se superpose aux sections voisines.
+
+		// PAGE AVEC SCROLL-JACKING MAISON (accueil) : ce composant possede SON
+		// propre GSAP/ScrollTrigger. On NE charge PAS GSAP ici et on N'utilise
+		// PAS ScrollTrigger (sinon conflit -> scroll-jack casse, sections noires).
+		// On se limite au curseur + profondeur hero (vanilla).
+		if (HAS_SCROLLJACK) {
+			if (DESKTOP_FX) { initCursor(); initHeroDepth(); }
+			return;
+		}
+
+		// Pages normales : effets complets.
+		// Epinglages MANUELS (sans dependance CDN, auto-corriges chaque frame).
 		initCineScene();
 		initHScroll();
 		initTeamRow();
-		// Empilement global (toutes pages) : apres le load (hauteurs stables)
 		if (document.readyState === 'complete') initSectionStack();
 		else window.addEventListener('load', initSectionStack);
 		// On charge gsap (si absent) -> ScrollTrigger -> Lenis, puis boot.
 		var need = [];
 		if (typeof gsap === 'undefined') need.push(CDN.gsap);
 		need.push(CDN.st);
-		if (!HAS_SCROLLJACK && !IS_TOUCH) need.push(CDN.lenis);
+		if (!IS_TOUCH) need.push(CDN.lenis);
 		loadSeq(need, boot);
 	});
 })();
