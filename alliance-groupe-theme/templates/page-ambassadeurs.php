@@ -63,7 +63,7 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
                 <h2 class="ag-section__title ag-anim" data-anim="title">Inscris-toi au <em>programme</em></h2>
                 <p class="ag-section__desc ag-anim" data-anim="desc">Gratuit, sans engagement. Tu gagnes sur ce que tu vends, c'est tout.</p>
 
-                <form class="ag-form" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="POST">
+                <form class="ag-form" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="ag_ambassadeur_signup">
                     <?php wp_nonce_field( 'ag_amb_signup', 'ag_amb_nonce' ); ?>
                     <div class="ag-form__row">
@@ -77,6 +77,11 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
                     <div class="ag-form__row">
                         <div class="ag-form__group"><label for="amb-birth">Date de naissance *</label><input type="date" id="amb-birth" name="birthdate" required></div>
                         <div class="ag-form__group"><label for="amb-address">Adresse complète *</label><input type="text" id="amb-address" name="address" required placeholder="N°, rue, code postal, ville"></div>
+                    </div>
+                    <div class="ag-form__group">
+                        <label for="amb-id">Pièce d'identité (vérification KYC) *</label>
+                        <input type="file" id="amb-id" name="id_document" accept="image/jpeg,image/png,application/pdf" required>
+                        <small style="display:block;color:var(--color-text-muted);margin-top:6px;">Carte d'identité, passeport ou titre de séjour (JPG, PNG ou PDF, 5 Mo max). Stockée de façon sécurisée, consultée uniquement pour vérifier ton identité.</small>
                     </div>
                     <div class="ag-form__row">
                         <div class="ag-form__group">

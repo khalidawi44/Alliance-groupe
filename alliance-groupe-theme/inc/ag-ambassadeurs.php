@@ -27,14 +27,57 @@ if ( ! defined( 'AG_COMMISSION_RATE' ) ) {
 if ( ! function_exists( 'ag_company_legal' ) ) {
 	function ag_company_legal() {
 		return apply_filters( 'ag_company_legal', array(
-			'raison'   => 'Advise Alliance Group',
+			'raison'   => 'Entreprise individuelle Fabrice Doucet (enseigne « Alliance Groupe »)',
 			'dirigeant'=> 'Fabrice Doucet',
-			'forme'    => '[forme juridique à compléter]',
-			'siret'    => '[SIRET à compléter]',
-			'adresse'  => '[adresse du siège à compléter]',
+			'forme'    => 'Entreprise individuelle (artisan)',
+			'siren'    => '513 593 921',
+			'siret'    => '513 593 921 00010',
+			'tva'      => 'FR19513593921',
+			'rcs'      => 'RCS Nantes',
+			'adresse'  => '14 rue de Saint Jean de Luz, 44200 Nantes',
 			'email'    => 'contact@alliancegroupe-inc.com',
 			'site'     => 'alliancegroupe-inc.com',
 		) );
+	}
+}
+
+/**
+ * Stockage SECURISE d'une piece d'identite (KYC).
+ * - Dossier uploads/ag-kyc protege (.htaccess deny + index) + nom aleatoire.
+ * - Jamais d'URL publique : la piece n'est servie qu'aux admins (voir ag_kyc_view).
+ * Retourne le nom de fichier stocke, ou '' en cas d'echec.
+ */
+if ( ! function_exists( 'ag_kyc_dir' ) ) {
+	function ag_kyc_dir() {
+		$up  = wp_upload_dir();
+		$dir = trailingslashit( $up['basedir'] ) . 'ag-kyc';
+		if ( ! file_exists( $dir ) ) {
+			wp_mkdir_p( $dir );
+			@file_put_contents( $dir . '/.htaccess', "Require all denied\n<IfModule !mod_authz_core.c>\nDeny from all\n</IfModule>\n" );
+			@file_put_contents( $dir . '/index.html', '' );
+			@file_put_contents( $dir . '/web.config', '<configuration><system.webServer><authorization><deny users="*"/></authorization></system.webServer></configuration>' );
+		}
+		return $dir;
+	}
+}
+if ( ! function_exists( 'ag_kyc_store' ) ) {
+	function ag_kyc_store( $file ) {
+		if ( empty( $file ) || ! isset( $file['tmp_name'] ) || ! is_uploaded_file( $file['tmp_name'] ) ) return '';
+		if ( ! empty( $file['error'] ) ) return '';
+		if ( (int) $file['size'] > 5 * 1024 * 1024 ) return '';
+		$check = wp_check_filetype( $file['name'] );
+		$allowed = array( 'jpg' => 1, 'jpeg' => 1, 'png' => 1, 'pdf' => 1 );
+		$ext = strtolower( $check['ext'] ?? '' );
+		if ( ! isset( $allowed[ $ext ] ) ) return '';
+		// double-check du contenu reel
+		$real = function_exists( 'mime_content_type' ) ? mime_content_type( $file['tmp_name'] ) : ( $check['type'] ?? '' );
+		$ok_mimes = array( 'image/jpeg', 'image/png', 'application/pdf' );
+		if ( $real && ! in_array( $real, $ok_mimes, true ) ) return '';
+		$name = wp_generate_password( 24, false, false ) . '.' . $ext;
+		$dest = ag_kyc_dir() . '/' . $name;
+		if ( ! move_uploaded_file( $file['tmp_name'], $dest ) ) return '';
+		@chmod( $dest, 0640 );
+		return $name;
 	}
 }
 
@@ -68,6 +111,12 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 			wp_die( 'Tu dois accepter le contrat d\'apporteur d\'affaires et le signer (nom complet) pour rejoindre le programme.', 'Contrat requis', array( 'response' => 400, 'back_link' => true ) );
 		}
 
+		// KYC : piece d'identite obligatoire, stockee de facon protegee
+		$kyc_file = ag_kyc_store( $_FILES['id_document'] ?? null );
+		if ( $kyc_file === '' ) {
+			wp_die( 'La pièce d\'identité est obligatoire et doit être un JPG, PNG ou PDF de 5 Mo maximum.', 'Pièce d\'identité requise', array( 'response' => 400, 'back_link' => true ) );
+		}
+
 		$list = get_option( 'ag_ambassadeurs', array() );
 		if ( ! is_array( $list ) ) $list = array();
 
@@ -92,6 +141,7 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 			'motivation' => $motiv,
 			'status'     => 'en_attente',          // -> 'actif' apres verification identite par l'admin
 			'identite'   => 'a_verifier',
+			'kyc_file'   => $kyc_file,
 			'contrat'    => array(
 				'accepte'   => true,
 				'signature' => $signature,
@@ -190,6 +240,33 @@ if ( ! function_exists( 'ag_ambassadeur_vente' ) ) {
 }
 
 /* =====================================================================
+   2b. CONSULTATION SECURISEE DE LA PIECE D'IDENTITE (admin only)
+   ===================================================================== */
+add_action( 'admin_post_ag_kyc_view', 'ag_kyc_view' );
+if ( ! function_exists( 'ag_kyc_view' ) ) {
+	function ag_kyc_view() {
+		if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Accès refusé.', 'Erreur', array( 'response' => 403 ) );
+		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'ag_kyc_view' ) ) wp_die( 'Lien invalide.', 'Erreur', array( 'response' => 403 ) );
+		$id = sanitize_text_field( $_GET['id'] ?? '' );
+		$file = '';
+		foreach ( get_option( 'ag_ambassadeurs', array() ) as $a ) {
+			if ( ( $a['id'] ?? '' ) === $id ) { $file = $a['kyc_file'] ?? ''; break; }
+		}
+		if ( ! $file ) wp_die( 'Aucune pièce pour cet ambassadeur.', 'Introuvable', array( 'response' => 404 ) );
+		$path = ag_kyc_dir() . '/' . basename( $file ); // basename : anti path-traversal
+		if ( ! file_exists( $path ) ) wp_die( 'Fichier introuvable.', 'Introuvable', array( 'response' => 404 ) );
+		$ft = wp_check_filetype( $path );
+		nocache_headers();
+		header( 'Content-Type: ' . ( $ft['type'] ?: 'application/octet-stream' ) );
+		header( 'Content-Disposition: inline; filename="piece-identite"' );
+		header( 'X-Content-Type-Options: nosniff' );
+		header( 'X-Robots-Tag: noindex, nofollow' );
+		readfile( $path );
+		exit;
+	}
+}
+
+/* =====================================================================
    3. TABLEAU DE BORD ADMIN
    ===================================================================== */
 add_action( 'admin_menu', function () {
@@ -213,12 +290,16 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 			$act = sanitize_key( $_GET['ag_action'] );
 			$id  = sanitize_text_field( $_GET['id'] ?? '' );
 
-			if ( $act === 'amb_valider' || $act === 'amb_suppr' ) {
+			if ( in_array( $act, array( 'amb_valider', 'amb_suppr', 'amb_kyc_suppr' ), true ) ) {
 				$list = get_option( 'ag_ambassadeurs', array() );
 				foreach ( $list as $k => $a ) {
 					if ( $a['id'] === $id ) {
-						if ( $act === 'amb_valider' ) $list[ $k ]['status'] = 'actif';
-						if ( $act === 'amb_suppr' )   unset( $list[ $k ] );
+						if ( $act === 'amb_valider' ) { $list[ $k ]['status'] = 'actif'; $list[ $k ]['identite'] = 'verifiee'; }
+						if ( $act === 'amb_kyc_suppr' || $act === 'amb_suppr' ) {
+							if ( ! empty( $a['kyc_file'] ) ) { @unlink( ag_kyc_dir() . '/' . basename( $a['kyc_file'] ) ); }
+						}
+						if ( $act === 'amb_kyc_suppr' ) $list[ $k ]['kyc_file'] = '';
+						if ( $act === 'amb_suppr' )      unset( $list[ $k ] );
 					}
 				}
 				update_option( 'ag_ambassadeurs', array_values( $list ) );
@@ -327,7 +408,14 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 				echo '<td><strong>' . esc_html( $a['name'] ?? '' ) . '</strong></td>';
 				echo '<td><a href="mailto:' . esc_attr( $a['email'] ?? '' ) . '">' . esc_html( $a['email'] ?? '' ) . '</a></td>';
 				echo '<td>' . esc_html( ( $a['phone'] ?? '' ) . ' · ' . ( $a['city'] ?? '' ) ) . '</td>';
-				echo '<td style="max-width:220px;white-space:normal;font-size:12px;">Né(e) : ' . esc_html( $a['birthdate'] ?? '—' ) . '<br>' . esc_html( $a['address'] ?? '—' ) . '</td>';
+				echo '<td style="max-width:220px;white-space:normal;font-size:12px;">Né(e) : ' . esc_html( $a['birthdate'] ?? '—' ) . '<br>' . esc_html( $a['address'] ?? '—' );
+				if ( ! empty( $a['kyc_file'] ) ) {
+					$kyc_view = wp_nonce_url( admin_url( 'admin-post.php?action=ag_kyc_view&id=' . $a['id'] ), 'ag_kyc_view' );
+					echo '<br>📄 <a href="' . esc_url( $kyc_view ) . '" target="_blank" rel="noopener">Voir la pièce</a> · <a href="' . esc_url( $nonce_url( 'amb_kyc_suppr', $a['id'] ) ) . '" style="color:#b32d2e;" onclick="return confirm(\'Supprimer la pièce ?\')">suppr.</a>';
+				} else {
+					echo '<br><span style="color:#b32d2e;">pas de pièce</span>';
+				}
+				echo '</td>';
 				if ( ! empty( $contrat['accepte'] ) ) {
 					echo '<td style="font-size:12px;">✅ Signé<br>' . esc_html( $contrat['signature'] ?? '' ) . '<br><small>' . esc_html( $contrat['date'] ?? '' ) . ' · IP ' . esc_html( $contrat['ip'] ?? '' ) . '</small></td>';
 				} else {

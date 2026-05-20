@@ -7,9 +7,9 @@
  */
 get_header();
 $ag_lg = function_exists( 'ag_company_legal' ) ? ag_company_legal() : array(
-	'raison' => 'Advise Alliance Group', 'dirigeant' => 'Fabrice Doucet',
-	'forme' => '[forme]', 'siret' => '[SIRET]', 'adresse' => '[adresse]',
-	'email' => 'contact@alliancegroupe-inc.com', 'site' => 'alliancegroupe-inc.com',
+	'raison' => 'Entreprise individuelle Fabrice Doucet', 'dirigeant' => 'Fabrice Doucet',
+	'forme' => 'Entreprise individuelle', 'siren' => '', 'siret' => '', 'tva' => '', 'rcs' => '',
+	'adresse' => '', 'email' => 'contact@alliancegroupe-inc.com', 'site' => 'alliancegroupe-inc.com',
 );
 ?>
 <main id="ag-main-content">
@@ -21,8 +21,9 @@ $ag_lg = function_exists( 'ag_company_legal' ) ? ag_company_legal() : array(
 
             <h2>Entre les soussignés</h2>
             <p><strong>La Société :</strong> <?php echo esc_html( $ag_lg['raison'] ); ?>, <?php echo esc_html( $ag_lg['forme'] ); ?>,
-            représentée par <?php echo esc_html( $ag_lg['dirigeant'] ); ?>, SIRET <?php echo esc_html( $ag_lg['siret'] ); ?>,
-            siège : <?php echo esc_html( $ag_lg['adresse'] ); ?> — ci-après « la Société ».</p>
+            représentée par <?php echo esc_html( $ag_lg['dirigeant'] ); ?>.<br>
+            SIREN <?php echo esc_html( $ag_lg['siren'] ?? '' ); ?> · SIRET <?php echo esc_html( $ag_lg['siret'] ); ?> · TVA <?php echo esc_html( $ag_lg['tva'] ?? '' ); ?> · <?php echo esc_html( $ag_lg['rcs'] ?? '' ); ?>.<br>
+            Siège : <?php echo esc_html( $ag_lg['adresse'] ); ?> — ci-après « la Société ».</p>
             <p><strong>L'Apporteur :</strong> la personne physique majeure qui s'inscrit au programme et signe
             électroniquement le présent contrat (nom, prénom, date de naissance et adresse renseignés à l'inscription)
             — ci-après « l'Apporteur ».</p>
