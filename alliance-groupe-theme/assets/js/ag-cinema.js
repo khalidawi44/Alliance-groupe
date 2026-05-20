@@ -283,30 +283,6 @@
 	}
 
 	// =====================================================================
-	// EQUIPE — defilement HORIZONTAL natif (pas d'epinglage = pas de saut/vide).
-	// Drag a la souris + molette verticale -> horizontale tant qu'on n'est pas
-	// au bout (sinon la page scrolle normalement).
-	// =====================================================================
-	function initTeamRow() {
-		document.querySelectorAll( '.ag-teamrow__track' ).forEach( function ( track ) {
-			// drag a la souris
-			var down = false, startX = 0, startL = 0;
-			track.addEventListener( 'mousedown', function ( e ) { down = true; startX = e.pageX; startL = track.scrollLeft; track.classList.add( 'is-drag' ); } );
-			window.addEventListener( 'mouseup', function () { down = false; track.classList.remove( 'is-drag' ); } );
-			track.addEventListener( 'mouseleave', function () { down = false; track.classList.remove( 'is-drag' ); } );
-			track.addEventListener( 'mousemove', function ( e ) { if ( ! down ) return; e.preventDefault(); track.scrollLeft = startL - ( e.pageX - startX ); } );
-			// molette verticale -> defile les cartes, puis relache au bout
-			track.addEventListener( 'wheel', function ( e ) {
-				if ( Math.abs( e.deltaY ) <= Math.abs( e.deltaX ) ) return;
-				var max = track.scrollWidth - track.clientWidth;
-				if ( ( track.scrollLeft <= 0 && e.deltaY < 0 ) || ( track.scrollLeft >= max - 1 && e.deltaY > 0 ) ) return;
-				track.scrollLeft += e.deltaY;
-				e.preventDefault();
-			}, { passive: false } );
-		} );
-	}
-
-	// =====================================================================
 	// EMPILEMENT AUTOMATIQUE (tout le site) — applique le stacking aux
 	// sections de contenu des autres pages, avec garde-fous anti-casse.
 	// =====================================================================
@@ -371,7 +347,6 @@
 		if (HAS_SCROLLJACK) {
 			initCineScene();
 			initHScroll();
-			initTeamRow();
 			if (document.readyState === 'complete') initSectionStack();
 			else window.addEventListener('load', initSectionStack);
 			if (DESKTOP_FX) { initCursor(); initHeroDepth(); }
@@ -382,7 +357,6 @@
 		// Epinglages MANUELS (sans dependance CDN, auto-corriges chaque frame).
 		initCineScene();
 		initHScroll();
-		initTeamRow();
 		if (document.readyState === 'complete') initSectionStack();
 		else window.addEventListener('load', initSectionStack);
 		// On charge gsap (si absent) -> ScrollTrigger -> Lenis, puis boot.
