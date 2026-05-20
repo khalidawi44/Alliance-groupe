@@ -103,14 +103,106 @@ class AG_GitHub_Sync {
 			}
 		}
 		if ( ! $any_synced ) {
-			$log[] = 'Rien a sync.';
+			$log[] = 'Rien a sync (theme).';
 		}
+
+		// ── Import auto des NOUVEAUX articles/pages depuis le manifest ──
+		$content = self::import_new_content();
+		if ( $content['articles'] > 0 || $content['pages'] > 0 ) {
+			$log[] = 'Contenu : ' . $content['articles'] . ' articles + ' . $content['pages'] . ' pages importes';
+		}
+		if ( ! empty( $content['error'] ) ) {
+			$log[] = 'Contenu : ' . $content['error'];
+		}
+
 		// Garde les 50 dernieres entrees (taille raisonnable)
 		$prev = get_option( self::CRON_LOG_OPT, array() );
 		if ( ! is_array( $prev ) ) $prev = array();
 		$merged = array_merge( $log, $prev );
 		if ( count( $merged ) > 50 ) $merged = array_slice( $merged, 0, 50 );
 		update_option( self::CRON_LOG_OPT, $merged );
+	}
+
+	/**
+	 * Importe les NOUVEAUX articles + pages depuis le manifest GitHub.
+	 * Idempotent : un article/page deja present (meme slug) est ignore.
+	 * Leger quand rien de neuf (1 requete manifest + checks DB par slug).
+	 *
+	 * @return array{articles:int, pages:int, error:string}
+	 */
+	public static function import_new_content() {
+		$out = array( 'articles' => 0, 'pages' => 0, 'error' => '' );
+
+		// Le helper ag_gh_json vient de ag-import.php (charge globalement)
+		if ( ! function_exists( 'ag_gh_json' ) ) {
+			$out['error'] = 'ag_gh_json indisponible';
+			return $out;
+		}
+
+		$cfg = self::get_repos();
+		$repo   = isset( $cfg['theme']['repo'] ) ? $cfg['theme']['repo'] : 'khalidawi44/Alliance-groupe';
+		$branch = isset( $cfg['theme']['branch'] ) ? $cfg['theme']['branch'] : 'main';
+		$content_base = 'https://raw.githubusercontent.com/' . $repo . '/' . $branch . '/content';
+
+		$manifest = ag_gh_json( $content_base . '/manifest.json' );
+		if ( ! $manifest ) {
+			$out['error'] = 'manifest injoignable';
+			return $out;
+		}
+
+		// Map categories par nom -> id (creees au besoin)
+		$cat_ids = array();
+		if ( ! empty( $manifest['categories'] ) ) {
+			foreach ( $manifest['categories'] as $c ) {
+				$term = term_exists( $c['name'], 'category' );
+				if ( ! $term ) $term = wp_insert_term( $c['name'], 'category' );
+				if ( ! is_wp_error( $term ) ) $cat_ids[ $c['name'] ] = (int) ( is_array( $term ) ? $term['term_id'] : $term );
+			}
+		}
+
+		// ── Pages : importe seulement celles dont le slug n'existe pas ──
+		if ( ! empty( $manifest['pages'] ) ) {
+			foreach ( $manifest['pages'] as $path ) {
+				$p = ag_gh_json( $content_base . '/' . $path );
+				if ( ! $p || empty( $p['slug'] ) ) continue;
+				if ( get_page_by_path( $p['slug'] ) ) continue; // existe deja
+				$pid = wp_insert_post( array(
+					'post_title'    => $p['title'],
+					'post_name'     => $p['slug'],
+					'post_status'   => 'publish',
+					'post_type'     => 'page',
+					'post_content'  => '',
+					'page_template' => isset( $p['template'] ) ? $p['template'] : '',
+				) );
+				if ( $pid && ! is_wp_error( $pid ) ) $out['pages']++;
+			}
+		}
+
+		// ── Articles : importe seulement les nouveaux slugs ──
+		if ( ! empty( $manifest['articles'] ) ) {
+			foreach ( $manifest['articles'] as $path ) {
+				$a = ag_gh_json( $content_base . '/' . $path );
+				if ( ! $a || empty( $a['slug'] ) ) continue;
+				if ( get_page_by_path( $a['slug'], OBJECT, 'post' ) ) continue; // existe deja
+				$cat_name = isset( $a['category'] ) ? $a['category'] : 'Conseils Digital';
+				$cid = isset( $cat_ids[ $cat_name ] ) ? $cat_ids[ $cat_name ] : 0;
+				$pid = wp_insert_post( array(
+					'post_title'   => $a['title'],
+					'post_name'    => $a['slug'],
+					'post_status'  => 'publish',
+					'post_type'    => 'post',
+					'post_content' => wp_kses_post( $a['content'] ),
+					'post_excerpt' => isset( $a['excerpt'] ) ? $a['excerpt'] : '',
+					'post_category' => $cid ? array( $cid ) : array(),
+				) );
+				if ( $pid && ! is_wp_error( $pid ) ) {
+					if ( ! empty( $a['tags'] ) ) wp_set_post_tags( $pid, $a['tags'] );
+					$out['articles']++;
+				}
+			}
+		}
+
+		return $out;
 	}
 
 	/** Recupere l'historique des derniers passages cron. */
