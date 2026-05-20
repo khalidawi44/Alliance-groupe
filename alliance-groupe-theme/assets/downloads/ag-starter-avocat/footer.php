@@ -38,16 +38,7 @@
 				&copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?>.
 				<?php esc_html_e( 'Tous droits reserves.', 'ag-starter-avocat' ); ?>
 			</p>
-			<p class="ag-credit"><small>
-				<?php
-				printf(
-					wp_kses( __( 'Site realise par %s', 'ag-starter-avocat' ), array( 'a' => array( 'href' => array(), 'title' => array() ) ) ),
-					'<a href="https://alliancegroupe-inc.com/wordpress-avocat" title="Site WordPress pour avocat par Alliance Groupe">Alliance Groupe</a>'
-				);
-				?>
-				&middot;
-				<a href="https://alliancegroupe-inc.com/bureau-nantes" title="Agence web Alliance Groupe Nantes"><?php esc_html_e( 'Agence Web Nantes & Marrakech', 'ag-starter-avocat' ); ?></a>
-			</small></p>
+			<?php if ( function_exists( 'ag_avocat_credit' ) ) ag_avocat_credit(); ?>
 		</div>
 	</div>
 </footer>

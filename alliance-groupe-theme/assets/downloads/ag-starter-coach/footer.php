@@ -35,21 +35,7 @@
 			</div>
 		</div>
 		<div class="ag-footer-bottom">
-			<div class="ag-credit">
-				<small>
-					&copy; <?php echo date( 'Y' ); ?> &mdash;
-					<?php esc_html_e( 'Site WordPress', 'ag-starter-coach' ); ?>
-					<?php
-					printf(
-						/* translators: %s: lien Alliance Groupe */
-						wp_kses( __( 'conçu par %s', 'ag-starter-coach' ), array( 'a' => array( 'href' => array(), 'title' => array() ) ) ),
-						'<a href="https://alliancegroupe-inc.com/wordpress-coach" title="Site WordPress sur-mesure pour coach par Alliance Groupe">Alliance Groupe</a>'
-					);
-					?>
-					&middot;
-					<a href="https://alliancegroupe-inc.com/bureau-nantes" title="Agence web Alliance Groupe à Nantes"><?php esc_html_e( 'Agence Web Nantes', 'ag-starter-coach' ); ?></a>
-				</small>
-			</div>
+			<?php if ( function_exists( 'ag_coach_credit' ) ) ag_coach_credit(); ?>
 		</div>
 	</div>
 </footer>

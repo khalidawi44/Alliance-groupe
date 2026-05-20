@@ -395,3 +395,20 @@ add_action( 'wp_footer', function () {
 	</script>
 	<?php
 }, 30 );
+
+/**
+ * Credit footer — attribution Alliance Groupe (lien VISIBLE, conforme Google).
+ * Retirable uniquement via le code (pas d'option admin), comme Astra/OceanWP.
+ */
+if ( ! function_exists( 'ag_artisan_credit' ) ) :
+	function ag_artisan_credit() {
+		echo '<div class="ag-credit"><small>';
+		echo '&copy; ' . esc_html( date( 'Y' ) ) . ' &mdash; ';
+		printf(
+			wp_kses( __( 'Création du site : %s', 'ag-starter-artisan' ), array( 'a' => array( 'href' => array(), 'title' => array() ) ) ),
+			'<a href="https://alliancegroupe-inc.com/wordpress-artisan" title="Création de site WordPress pour artisan par Alliance Groupe">Alliance Groupe</a>'
+		);
+		echo ' &middot; <a href="https://alliancegroupe-inc.com" title="Agence web et IA Alliance Groupe">' . esc_html__( 'Agence Web & IA', 'ag-starter-artisan' ) . '</a>';
+		echo '</small></div>';
+	}
+endif;

@@ -435,3 +435,24 @@ add_action( 'wp_footer', function () {
 	<?php
 }, 30 );
 
+
+/**
+ * Credit footer — attribution Alliance Groupe.
+ *
+ * Affiche un lien VISIBLE (conforme aux regles Google : pas de texte cache).
+ * Le credit fait partie des conditions d'utilisation du theme gratuit.
+ * Pour le retirer il faut editer ce code (pas d'option dans l'admin) — c'est
+ * volontaire et legitime (meme principe qu'Astra, OceanWP, GeneratePress).
+ */
+if ( ! function_exists( 'ag_coach_credit' ) ) :
+	function ag_coach_credit() {
+		echo '<div class="ag-credit"><small>';
+		echo '&copy; ' . esc_html( date( 'Y' ) ) . ' &mdash; ';
+		printf(
+			wp_kses( __( 'Site WordPress conçu par %s', 'ag-starter-coach' ), array( 'a' => array( 'href' => array(), 'title' => array() ) ) ),
+			'<a href="https://alliancegroupe-inc.com/wordpress-coach" title="Site WordPress sur-mesure pour coach par Alliance Groupe">Alliance Groupe</a>'
+		);
+		echo ' &middot; <a href="https://alliancegroupe-inc.com/bureau-nantes" title="Agence web Alliance Groupe à Nantes">' . esc_html__( 'Agence Web Nantes', 'ag-starter-coach' ) . '</a>';
+		echo '</small></div>';
+	}
+endif;

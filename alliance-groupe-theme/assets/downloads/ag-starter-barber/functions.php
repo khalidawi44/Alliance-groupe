@@ -167,3 +167,17 @@ require_once get_template_directory() . '/inc/theme-updater.php';
 
 // Guide d'utilisation (admin)
 require_once get_template_directory() . '/inc/guide.php';
+
+/**
+ * Credit footer — attribution Alliance Groupe (lien VISIBLE, conforme Google).
+ * Retirable uniquement via le code (pas d'option admin), comme Astra/OceanWP.
+ */
+if ( ! function_exists( 'ag_barber_credit' ) ) :
+	function ag_barber_credit() {
+		printf(
+			wp_kses( __( 'Design & développement : %s', 'ag-starter-barber' ), array( 'a' => array( 'href' => array(), 'title' => array(), 'style' => array() ) ) ),
+			'<a href="https://alliancegroupe-inc.com/wordpress-barber" title="Site WordPress pour barber shop par Alliance Groupe">Alliance Groupe</a>'
+		);
+		echo ' &middot; <a href="https://alliancegroupe-inc.com/bureau-nantes" title="Agence web Alliance Groupe Nantes" style="color:#D4B45C;">' . esc_html__( 'Agence Web Nantes', 'ag-starter-barber' ) . '</a>';
+	}
+endif;

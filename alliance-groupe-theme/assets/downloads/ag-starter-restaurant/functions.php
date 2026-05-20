@@ -315,3 +315,21 @@ require_once get_template_directory() . '/inc/theme-updater.php';
 
 // Guide d'utilisation (admin)
 require_once get_template_directory() . '/inc/guide.php';
+
+/**
+ * Credit footer — attribution Alliance Groupe (lien VISIBLE, conforme Google).
+ * Retirable uniquement via le code (pas d'option admin), comme Astra/OceanWP.
+ */
+if ( ! function_exists( 'ag_restaurant_credit' ) ) :
+	function ag_restaurant_credit() {
+		echo '<div class="ag-credit"><small>';
+		echo '&copy; ' . esc_html( date( 'Y' ) ) . ' &mdash; ';
+		printf(
+			wp_kses( __( 'Site WordPress %1$s par %2$s', 'ag-starter-restaurant' ), array( 'a' => array( 'href' => array(), 'title' => array() ) ) ),
+			esc_html__( 'restaurant', 'ag-starter-restaurant' ),
+			'<a href="https://alliancegroupe-inc.com/wordpress-restaurant" title="Site WordPress sur-mesure pour restaurant par Alliance Groupe">Alliance Groupe</a>'
+		);
+		echo ' &middot; <a href="https://alliancegroupe-inc.com" title="Agence web et IA Alliance Groupe">' . esc_html__( 'Agence digitale française', 'ag-starter-restaurant' ) . '</a>';
+		echo '</small></div>';
+	}
+endif;

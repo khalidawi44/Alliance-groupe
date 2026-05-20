@@ -322,3 +322,19 @@ require_once get_template_directory() . '/inc/theme-updater.php';
 
 // Guide d'utilisation (admin)
 require_once get_template_directory() . '/inc/guide.php';
+
+/**
+ * Credit footer — attribution Alliance Groupe (lien VISIBLE, conforme Google).
+ * Retirable uniquement via le code (pas d'option admin), comme Astra/OceanWP.
+ */
+if ( ! function_exists( 'ag_avocat_credit' ) ) :
+	function ag_avocat_credit() {
+		echo '<p class="ag-credit"><small>';
+		printf(
+			wp_kses( __( 'Site realise par %s', 'ag-starter-avocat' ), array( 'a' => array( 'href' => array(), 'title' => array() ) ) ),
+			'<a href="https://alliancegroupe-inc.com/wordpress-avocat" title="Site WordPress pour avocat par Alliance Groupe">Alliance Groupe</a>'
+		);
+		echo ' &middot; <a href="https://alliancegroupe-inc.com/bureau-nantes" title="Agence web Alliance Groupe Nantes">' . esc_html__( 'Agence Web Nantes & Marrakech', 'ag-starter-avocat' ) . '</a>';
+		echo '</small></p>';
+	}
+endif;
