@@ -75,46 +75,41 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
                 </div>
             </div>
 
-            <div class="ag-bgscene__panel ag-bgscene__panel--step">
-                <span class="ag-bgscene__num" aria-hidden="true">01</span>
-                <div class="ag-container">
-                    <div class="ag-bgscene__step ag-anim" data-anim="card">
-                        <span class="ag-bgscene__step-label">Étape 01</span>
-                        <h3>On crée ton site au top</h3>
-                        <p>Un site professionnel premium, le même niveau que nos clients payants. Conçu pour vendre et te rendre crédible dès le jour 1.</p>
+            <!-- 4 etapes : crossfade epingle (etape 1 fixe -> disparait -> etape 2...) par-dessus le fond Naples -->
+            <div class="ag-cine-stage ag-cine-stage--over" aria-label="Les 4 étapes du programme">
+                <div class="ag-cine-stage__pin">
+                    <div class="ag-cine-stage__ghosts" aria-hidden="true">
+                        <span class="ag-cine-stage__ghost is-active">01</span>
+                        <span class="ag-cine-stage__ghost">02</span>
+                        <span class="ag-cine-stage__ghost">03</span>
+                        <span class="ag-cine-stage__ghost">04</span>
                     </div>
-                </div>
-            </div>
-
-            <div class="ag-bgscene__panel ag-bgscene__panel--step">
-                <span class="ag-bgscene__num" aria-hidden="true">02</span>
-                <div class="ag-container">
-                    <div class="ag-bgscene__step ag-anim" data-anim="card">
-                        <span class="ag-bgscene__step-label">Étape 02</span>
-                        <h3>On devient associés</h3>
-                        <p>Plutôt qu'une facture impossible à payer, on prend une part dans ton business. Ton succès devient le nôtre — on rame dans le même bateau.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ag-bgscene__panel ag-bgscene__panel--step">
-                <span class="ag-bgscene__num" aria-hidden="true">03</span>
-                <div class="ag-container">
-                    <div class="ag-bgscene__step ag-anim" data-anim="card">
-                        <span class="ag-bgscene__step-label">Étape 03</span>
-                        <h3>On t'accompagne de A à Z</h3>
-                        <p>Création de l'entreprise, gestion, démarches, stratégie. On t'épaule sur tout ce que tu ne maîtrises pas encore, étape par étape.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="ag-bgscene__panel ag-bgscene__panel--step">
-                <span class="ag-bgscene__num" aria-hidden="true">04</span>
-                <div class="ag-container">
-                    <div class="ag-bgscene__step ag-anim" data-anim="card">
-                        <span class="ag-bgscene__step-label">Étape 04</span>
-                        <h3>On gère ton numérique + formation</h3>
-                        <p>Site, SEO, réseaux, automatisation : on s'occupe de tout le digital. Et on te forme pour que tu deviennes autonome et maître de ton outil.</p>
+                    <div class="ag-container ag-cine-stage__inner">
+                        <div class="ag-cine-stage__chapters">
+                            <article class="ag-cine-stage__chapter is-active">
+                                <span class="ag-cine-stage__step">Étape 01</span>
+                                <h3>On crée ton site au top</h3>
+                                <p>Un site professionnel premium, le même niveau que nos clients payants. Conçu pour vendre et te rendre crédible dès le jour 1.</p>
+                            </article>
+                            <article class="ag-cine-stage__chapter">
+                                <span class="ag-cine-stage__step">Étape 02</span>
+                                <h3>On devient associés</h3>
+                                <p>Plutôt qu'une facture impossible à payer, on prend une part dans ton business. Ton succès devient le nôtre — on rame dans le même bateau.</p>
+                            </article>
+                            <article class="ag-cine-stage__chapter">
+                                <span class="ag-cine-stage__step">Étape 03</span>
+                                <h3>On t'accompagne de A à Z</h3>
+                                <p>Création de l'entreprise, gestion, démarches, stratégie. On t'épaule sur tout ce que tu ne maîtrises pas encore, étape par étape.</p>
+                            </article>
+                            <article class="ag-cine-stage__chapter">
+                                <span class="ag-cine-stage__step">Étape 04</span>
+                                <h3>On gère ton numérique + formation</h3>
+                                <p>Site, SEO, réseaux, automatisation : on s'occupe de tout le digital. Et on te forme pour que tu deviennes autonome et maître de ton outil.</p>
+                            </article>
+                        </div>
+                        <div class="ag-cine-stage__dots" aria-hidden="true">
+                            <span class="is-active"></span><span></span><span></span><span></span>
+                        </div>
                     </div>
                 </div>
             </div>

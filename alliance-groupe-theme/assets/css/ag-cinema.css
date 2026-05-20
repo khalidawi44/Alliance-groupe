@@ -158,6 +158,9 @@
 		linear-gradient(90deg, rgba(8,8,10,.93) 0%, rgba(8,8,10,.7) 46%, rgba(8,8,10,.4) 100%);
 }
 .ag-bgscene__content { position: relative; z-index: 1; }
+/* Le crossfade des etapes est pose PAR-DESSUS le fond Naples fixe -> transparent */
+.ag-bgscene .ag-cine-stage,
+.ag-cine-stage--over { background: transparent; }
 .ag-bgscene__panel { min-height: 82vh; display: flex; align-items: center; position: relative; padding: 60px 0; }
 .ag-bgscene__title { font-family: var(--font-serif); color: #fff; line-height: 1.06; font-size: clamp(2rem, 5vw, 3.6rem); margin: 16px 0 22px; }
 .ag-bgscene__title em { color: var(--color-gold); font-style: italic; }

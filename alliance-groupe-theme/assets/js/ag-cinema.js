@@ -196,6 +196,42 @@
 	}
 
 	// =====================================================================
+	// CROSSFADE EPINGLE — etapes qui se figent et s'enchainent en fondu
+	// (etape 1 fixe -> disparait -> etape 2...). Fallback empile si pas de pin.
+	// =====================================================================
+	function initCineStage() {
+		if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+		if (IS_TOUCH || window.innerWidth <= 1024) return; // mobile = fallback empile (CSS)
+		document.querySelectorAll('.ag-cine-stage').forEach(function (stage) {
+			var pin      = stage.querySelector('.ag-cine-stage__pin');
+			var chapters = stage.querySelectorAll('.ag-cine-stage__chapter');
+			var ghosts   = stage.querySelectorAll('.ag-cine-stage__ghost');
+			var dots     = stage.querySelectorAll('.ag-cine-stage__dots span');
+			var n = chapters.length;
+			if (!pin || !n) return;
+
+			stage.classList.add('is-cinematic');
+			var cur = -1;
+			function setActive(i) {
+				if (i === cur) return; cur = i;
+				chapters.forEach(function (c, idx) { c.classList.toggle('is-active', idx === i); });
+				ghosts.forEach(function (g, idx) { g.classList.toggle('is-active', idx === i); });
+				dots.forEach(function (d, idx) { d.classList.toggle('is-active', idx === i); });
+			}
+			setActive(0);
+
+			ScrollTrigger.create({
+				trigger: stage, start: 'top top',
+				end: function () { return '+=' + (n * Math.round(window.innerHeight * 0.9)); },
+				pin: pin, scrub: true, anticipatePin: 1, invalidateOnRefresh: true,
+				onUpdate: function (self) {
+					setActive(Math.min(n - 1, Math.floor(self.progress * n * 0.999)));
+				}
+			});
+		});
+	}
+
+	// =====================================================================
 	// SCROLL HORIZONTAL (pin) — la piste glisse au scroll vertical (desktop)
 	// =====================================================================
 	function initHScroll() {
@@ -254,6 +290,7 @@
 			requestAnimationFrame(function () {
 				requestAnimationFrame(function () {
 					initBgScene();
+					initCineStage();
 					initHScroll();
 					if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
 				});
