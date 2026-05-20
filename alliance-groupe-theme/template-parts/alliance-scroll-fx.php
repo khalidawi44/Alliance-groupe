@@ -183,9 +183,7 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 		font-family:'Manrope','Rubik Wide',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
 		text-transform:uppercase;letter-spacing:-0.02em;
 	}
-	/* hauteur par defaut 100vh (1 ecran) : si GSAP/pin ne marche pas, pas de
-	   grand vide noir. Le JS l'etend a la vraie hauteur une fois le pin cree. */
-	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-fixed-section{height:100vh;position:relative;z-index:10}
+	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-fixed-section{height:<?php echo (int) ( $ag_fx_total + 1 ); ?>00vh;position:relative;z-index:10}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-fixed{position:sticky;top:0;height:100vh;width:100%;overflow:hidden;background:var(--fx-stage-bg);z-index:11}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--fx-gap);padding:0 var(--fx-grid-px);position:relative;height:100%;z-index:2}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-bgs{position:absolute;inset:0;background:var(--fx-stage-bg);z-index:1}
@@ -304,8 +302,6 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 
 		var fixedSection = ROOT.querySelector('.ag-fx-fixed-section');
 		var fixed = ROOT.querySelector('.ag-fx-fixed');
-		// GSAP est pret : on etend la section a sa vraie hauteur pour le scroll-jack
-		if (fixedSection) fixedSection.style.height = ((TOTAL + 1) * 100) + 'vh';
 		var bgs = ROOT.querySelectorAll('.ag-fx-bg-img');
 		var featureds = ROOT.querySelectorAll('.ag-fx-featured');
 		var leftItems = ROOT.querySelectorAll('.ag-fx-left-item');
