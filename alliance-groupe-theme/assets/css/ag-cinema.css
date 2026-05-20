@@ -104,9 +104,12 @@
 }
 .ag-cine-stage.is-cinematic .ag-cine-stage__ghosts { display: block; position: absolute; inset: 0; pointer-events: none; z-index: 1; }
 .ag-cine-stage.is-cinematic .ag-cine-stage__ghost {
-	position: absolute; top: 50%; right: -3vw; transform: translateY(-50%) scale(.92);
+	position: absolute; top: 50%; right: 2vw; transform: translateY(-50%) scale(.92);
 	font-family: var(--font-serif); font-weight: 800; line-height: .8;
-	font-size: 62vh; color: rgba(212,180,92,.07);
+	font-size: 64vh;
+	background: linear-gradient(135deg, rgba(212,180,92,.32), rgba(243,122,31,.16));
+	-webkit-background-clip: text; background-clip: text;
+	-webkit-text-fill-color: transparent; color: transparent;
 	opacity: 0; transition: opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1);
 }
 .ag-cine-stage.is-cinematic .ag-cine-stage__ghost.is-active { opacity: 1; transform: translateY(-50%) scale(1); }
@@ -154,7 +157,48 @@
 	.ag-hscroll__head { width: 80vw; }
 	.ag-hscroll__card { width: 76vw; min-height: 0; scroll-snap-align: center; }
 }
+/* =====================================================================
+   ZOOM COVER — fond image qui se rapproche au scroll (on "avance" dedans)
+   ===================================================================== */
+.ag-zoomcover { position: relative; height: 100vh; overflow: hidden; background: #0a0a0c; }
+.ag-zoomcover__media { position: absolute; inset: 0; z-index: 0; }
+.ag-zoomcover__img {
+	position: absolute; inset: 0; width: 100%; height: 100%;
+	object-fit: cover; transform: scale(1.08); transform-origin: 50% 50%;
+	will-change: transform;
+}
+.ag-zoomcover__veil {
+	position: absolute; inset: 0;
+	background:
+		radial-gradient(ellipse at 30% 50%, rgba(0,0,0,.35), transparent 60%),
+		linear-gradient(90deg, rgba(8,8,10,.92) 0%, rgba(8,8,10,.72) 40%, rgba(8,8,10,.35) 100%);
+}
+.ag-zoomcover__content {
+	position: relative; z-index: 2; height: 100%;
+	max-width: var(--container-w, 1200px); margin: 0 auto; padding: 0 clamp(20px, 5vw, 64px);
+	display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+	max-width: 1200px;
+}
+.ag-zoomcover__title {
+	font-family: var(--font-serif); color: #fff; line-height: 1.04;
+	font-size: clamp(2.2rem, 6vw, 4.4rem); margin: 16px 0 22px; max-width: 16ch;
+}
+.ag-zoomcover__title em { color: var(--color-gold); font-style: italic; }
+.ag-zoomcover__text { color: rgba(255,255,255,.82); font-size: clamp(1rem, 1.5vw, 1.2rem); line-height: 1.7; max-width: 46ch; margin: 0 0 18px; }
+.ag-zoomcover__content .ag-btn-outline { margin-top: 14px; }
+
+@media (max-width: 1024px) {
+	.ag-zoomcover { height: auto; min-height: 86vh; }
+	.ag-zoomcover__content { padding-top: 90px; padding-bottom: 90px; }
+}
+
+/* =====================================================================
+   3D sur les cartes du scroll horizontal (items qui se placent en 3D)
+   ===================================================================== */
+.ag-hscroll.is-3d .ag-hscroll__card { will-change: transform; backface-visibility: hidden; }
+
 @media (prefers-reduced-motion: reduce) {
 	.ag-hscroll__track { transform: none !important; }
 	.ag-cine-stage__chapter { opacity: 1 !important; transform: none !important; }
+	.ag-zoomcover__img { transform: scale(1.02) !important; }
 }

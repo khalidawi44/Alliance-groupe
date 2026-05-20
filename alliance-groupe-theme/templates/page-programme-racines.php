@@ -38,17 +38,21 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
         </div>
     </section>
 
-    <!-- Origine / mission -->
-    <section class="ag-section ag-section--onyx">
-        <div class="ag-container ag-container--narrow" style="text-align:center;">
-            <span class="ag-tag ag-anim" data-anim="tag">D'où ça vient</span>
-            <h2 class="ag-section__title ag-anim" data-anim="title" style="margin-left:auto;margin-right:auto;">Né dans un <em>quartier populaire</em></h2>
-            <p class="ag-body-lg ag-anim" data-anim="desc" style="max-width:680px;margin:0 auto 20px;">
+    <!-- Origine / mission — cover immersif zoom (style "on avance dans la scene") -->
+    <section class="ag-zoomcover" aria-label="D'où vient le Programme Racines">
+        <div class="ag-zoomcover__media" aria-hidden="true">
+            <img class="ag-zoomcover__img" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg' ); ?>" alt="" loading="lazy" decoding="async">
+            <div class="ag-zoomcover__veil"></div>
+        </div>
+        <div class="ag-zoomcover__content">
+            <span class="ag-tag">D'où ça vient</span>
+            <h2 class="ag-zoomcover__title">Né dans un <em>quartier populaire</em></h2>
+            <p class="ag-zoomcover__text">
                 Fabrizio, notre fondateur, a grandi à Naples dans les Quartieri Spagnoli.
                 Il a commencé par former gratuitement des familles défavorisées au digital,
                 dans l'arrière-salle d'une église. <strong>Le web comme outil d'émancipation.</strong>
             </p>
-            <p class="ag-body-lg ag-anim" data-anim="desc" style="max-width:680px;margin:0 auto 28px;">
+            <p class="ag-zoomcover__text">
                 Le Programme Racines, c'est cette conviction transformée en action :
                 le talent est partout, les opportunités non. On vient corriger ça.
             </p>

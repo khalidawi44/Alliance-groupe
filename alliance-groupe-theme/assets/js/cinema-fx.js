@@ -427,8 +427,10 @@
 		var lastY = window.scrollY;
 		var ticking = false;
 		var hideThreshold = 100; // px avant de cacher
+		var DEADZONE = 10;       // ignore les micro-variations (anti-flicker smooth scroll)
 		function update() {
 			var y = window.scrollY;
+			if (Math.abs(y - lastY) < DEADZONE) { ticking = false; return; } // pas assez bouge -> garde l'etat
 			var goingDown = y > lastY;
 			if (y > hideThreshold && goingDown) {
 				document.body.classList.add('ag-nav-hidden');

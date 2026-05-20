@@ -219,16 +219,54 @@
 			var pin   = sec.querySelector('.ag-hscroll__pin');
 			var track = sec.querySelector('.ag-hscroll__track');
 			if (!pin || !track) return;
+			var cards = track.querySelectorAll('.ag-hscroll__card');
+			sec.classList.add('is-3d');
 			var dist = function () { return Math.max(0, track.scrollWidth - window.innerWidth); };
+			// items qui se placent en 3D : rotateY/scale selon la distance au centre
+			function tilt() {
+				var vw = window.innerWidth, mid = vw / 2;
+				cards.forEach(function (card) {
+					var r = card.getBoundingClientRect();
+					if (r.right < -200 || r.left > vw + 200) return; // hors champ : skip
+					var off = (r.left + r.width / 2 - mid) / vw; // -1 .. 1
+					var rot = Math.max(-16, Math.min(16, off * 20));
+					var sc  = 1 - Math.min(0.12, Math.abs(off) * 0.16);
+					card.style.transform = 'perspective(1300px) rotateY(' + (-rot) + 'deg) scale(' + sc.toFixed(3) + ')';
+				});
+			}
 			gsap.to(track, {
 				x: function () { return -dist(); },
 				ease: 'none',
 				scrollTrigger: {
 					trigger: sec, start: 'top top',
 					end: function () { return '+=' + dist(); },
-					scrub: 1, pin: pin, anticipatePin: 1, invalidateOnRefresh: true
+					scrub: 1, pin: pin, anticipatePin: 1, invalidateOnRefresh: true,
+					onUpdate: tilt, onRefresh: tilt
 				}
 			});
+			tilt();
+		});
+	}
+
+	// =====================================================================
+	// ZOOM COVER — fond image qui se rapproche au scroll (on "avance")
+	// =====================================================================
+	function initZoomCover() {
+		if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+		if (IS_TOUCH || window.innerWidth <= 1024) return; // mobile = cover statique (CSS)
+		document.querySelectorAll('.ag-zoomcover').forEach(function (sec) {
+			var img = sec.querySelector('.ag-zoomcover__img');
+			var content = sec.querySelector('.ag-zoomcover__content');
+			if (!img) return;
+			var tl = gsap.timeline({
+				scrollTrigger: {
+					trigger: sec, start: 'top top',
+					end: '+=' + Math.round(window.innerHeight * 1.1),
+					pin: true, scrub: true, anticipatePin: 1, invalidateOnRefresh: true
+				}
+			});
+			tl.fromTo(img, { scale: 1.08 }, { scale: 1.42, ease: 'none' }, 0);
+			if (content) tl.fromTo(content, { y: 36 }, { y: -28, ease: 'none' }, 0); // parallaxe douce, texte toujours visible
 		});
 	}
 
@@ -251,6 +289,7 @@
 		function initPins() {
 			requestAnimationFrame(function () {
 				requestAnimationFrame(function () {
+					initZoomCover();
 					initCineStage();
 					initHScroll();
 					if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
