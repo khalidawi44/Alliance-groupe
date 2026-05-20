@@ -38,21 +38,17 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
         </div>
     </section>
 
-    <!-- Origine / mission — cover immersif zoom (style "on avance dans la scene") -->
-    <section class="ag-zoomcover" aria-label="D'où vient le Programme Racines">
-        <div class="ag-zoomcover__media" aria-hidden="true">
-            <img class="ag-zoomcover__img" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg' ); ?>" alt="" loading="lazy" decoding="async">
-            <div class="ag-zoomcover__veil"></div>
-        </div>
-        <div class="ag-zoomcover__content">
-            <span class="ag-tag">D'où ça vient</span>
-            <h2 class="ag-zoomcover__title">Né dans un <em>quartier populaire</em></h2>
-            <p class="ag-zoomcover__text">
+    <!-- Origine / mission -->
+    <section class="ag-section ag-section--onyx">
+        <div class="ag-container ag-container--narrow" style="text-align:center;">
+            <span class="ag-tag ag-anim" data-anim="tag">D'où ça vient</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title" style="margin-left:auto;margin-right:auto;">Né dans un <em>quartier populaire</em></h2>
+            <p class="ag-body-lg ag-anim" data-anim="desc" style="max-width:680px;margin:0 auto 20px;">
                 Fabrizio, notre fondateur, a grandi à Naples dans les Quartieri Spagnoli.
                 Il a commencé par former gratuitement des familles défavorisées au digital,
                 dans l'arrière-salle d'une église. <strong>Le web comme outil d'émancipation.</strong>
             </p>
-            <p class="ag-zoomcover__text">
+            <p class="ag-body-lg ag-anim" data-anim="desc" style="max-width:680px;margin:0 auto 28px;">
                 Le Programme Racines, c'est cette conviction transformée en action :
                 le talent est partout, les opportunités non. On vient corriger ça.
             </p>
@@ -60,21 +56,13 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
         </div>
     </section>
 
-    <!-- Comment ça marche : intro -->
-    <section class="ag-section ag-section--graphite" id="racines-comment">
-        <div class="ag-container ag-container--narrow" style="text-align:center;">
-            <span class="ag-tag ag-anim" data-anim="tag">Le principe</span>
-            <h2 class="ag-section__title ag-anim" data-anim="title" style="margin-left:auto;margin-right:auto;">On ne te vend rien. <em>On s'associe.</em></h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc" style="margin-left:auto;margin-right:auto;">
-                Pas de grosse facture à payer au démarrage. On investit notre travail dans
-                ton projet, et on grandit ensemble : on devient partenaires de ton business.
-            </p>
-        </div>
-    </section>
-
-    <!-- Stage cinematographique epingle : 4 chapitres en fondu -->
-    <section class="ag-cine-stage" aria-label="Comment ça marche, étape par étape">
+    <!-- Stage cinematographique : fond Naples + intro + 4 chapitres en fondu -->
+    <section class="ag-cine-stage ag-cine-stage--bg" id="racines-comment" aria-label="Le principe, étape par étape">
         <div class="ag-cine-stage__pin">
+            <div class="ag-cine-stage__bg" aria-hidden="true">
+                <img class="ag-cine-stage__bgimg" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg' ); ?>" alt="" loading="lazy" decoding="async">
+                <div class="ag-cine-stage__veil"></div>
+            </div>
             <div class="ag-cine-stage__ghosts" aria-hidden="true">
                 <span class="ag-cine-stage__ghost is-active">01</span>
                 <span class="ag-cine-stage__ghost">02</span>
@@ -82,6 +70,10 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
                 <span class="ag-cine-stage__ghost">04</span>
             </div>
             <div class="ag-container ag-cine-stage__inner">
+                <div class="ag-cine-stage__intro">
+                    <span class="ag-tag">Le principe</span>
+                    <p class="ag-cine-stage__lead">On ne te vend rien. <em>On s'associe.</em></p>
+                </div>
                 <div class="ag-cine-stage__chapters">
                     <article class="ag-cine-stage__chapter is-active">
                         <span class="ag-cine-stage__step">Étape 01</span>

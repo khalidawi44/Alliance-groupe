@@ -124,6 +124,25 @@
 .ag-cine-stage.is-cinematic .ag-cine-stage__dots span { width: 34px; height: 3px; border-radius: 3px; background: rgba(255,255,255,.16); transition: background .4s ease; }
 .ag-cine-stage.is-cinematic .ag-cine-stage__dots span.is-active { background: linear-gradient(90deg, #D4B45C, #F37A1F); }
 
+/* Intro persistante (titre "On ne te vend rien") */
+.ag-cine-stage__intro { position: relative; z-index: 2; margin-bottom: 30px; }
+.ag-cine-stage__lead { font-family: var(--font-serif); color: #fff; line-height: 1.1; font-size: clamp(1.5rem, 3.2vw, 2.4rem); margin: 14px 0 0; }
+.ag-cine-stage__lead em { color: var(--color-gold); font-style: italic; }
+
+/* Fond image (Naples) — visible seulement en mode cinematique */
+.ag-cine-stage__bg { display: none; }
+.ag-cine-stage.is-cinematic .ag-cine-stage__bg { display: block; position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.ag-cine-stage.is-cinematic .ag-cine-stage__bgimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.06); transform-origin: 60% 50%; will-change: transform; }
+.ag-cine-stage.is-cinematic .ag-cine-stage__veil {
+	position: absolute; inset: 0;
+	background:
+		radial-gradient(ellipse at 28% 50%, rgba(0,0,0,.4), transparent 62%),
+		linear-gradient(90deg, rgba(8,8,10,.94) 0%, rgba(8,8,10,.75) 42%, rgba(8,8,10,.42) 100%);
+}
+.ag-cine-stage.is-cinematic .ag-cine-stage__inner { position: relative; z-index: 2; }
+/* Fallback : sur fond image non-cinematique, on garde le fond sombre du theme */
+.ag-cine-stage--bg:not(.is-cinematic) { background: #0c0c0e; }
+
 /* =====================================================================
    SCROLL HORIZONTAL (pin) — la piste glisse de cote au scroll vertical
    ===================================================================== */

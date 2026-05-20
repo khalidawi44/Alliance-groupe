@@ -185,6 +185,7 @@
 			var chapters = stage.querySelectorAll('.ag-cine-stage__chapter');
 			var ghosts   = stage.querySelectorAll('.ag-cine-stage__ghost');
 			var dots     = stage.querySelectorAll('.ag-cine-stage__dots span');
+			var bgimg    = stage.querySelector('.ag-cine-stage__bgimg');
 			var n = chapters.length;
 			if (!pin || !n) return;
 
@@ -204,6 +205,7 @@
 				pin: pin, scrub: true, anticipatePin: 1, invalidateOnRefresh: true,
 				onUpdate: function (self) {
 					setActive(Math.min(n - 1, Math.floor(self.progress * n * 0.999)));
+					if (bgimg) bgimg.style.transform = 'scale(' + (1.06 + self.progress * 0.16).toFixed(3) + ')'; // zoom doux du fond
 				}
 			});
 		});
