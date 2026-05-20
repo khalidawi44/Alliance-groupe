@@ -1,0 +1,82 @@
+/* =====================================================================
+   AG IMMERSIVE — couche "jeu video / film" (module isole)
+   Intro, transitions, grain, vignette, letterbox, toggle son.
+   Tout est neutralise si prefers-reduced-motion.
+   ===================================================================== */
+
+/* ── 1. Intro cinematique ───────────────────────────────────────── */
+.ag-intro-lock { overflow: hidden; }
+.ag-intro {
+	position: fixed; inset: 0; z-index: 2147483000;
+	background: #0a0a0c;
+	display: flex; align-items: center; justify-content: center;
+	transition: opacity .7s ease, visibility .7s ease;
+}
+.ag-intro.is-out { opacity: 0; visibility: hidden; }
+.ag-intro__inner { text-align: center; }
+.ag-intro__brand {
+	display: block; font-family: var(--font-serif, serif); font-weight: 800;
+	font-size: clamp(1.8rem, 6vw, 4rem); letter-spacing: 2px;
+	background: linear-gradient(135deg, #D4B45C, #F37A1F);
+	-webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
+	opacity: 0; transform: translateY(18px);
+	animation: agIntroIn .9s cubic-bezier(.16,1,.3,1) forwards;
+}
+.ag-intro__bar { display: block; width: 180px; max-width: 60vw; height: 2px; margin: 22px auto 0; background: rgba(255,255,255,.12); border-radius: 2px; overflow: hidden; }
+.ag-intro__bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #D4B45C, #F37A1F); animation: agIntroBar 1.6s cubic-bezier(.6,0,.2,1) forwards .2s; }
+@keyframes agIntroIn { to { opacity: 1; transform: none; } }
+@keyframes agIntroBar { to { width: 100%; } }
+
+/* ── 2/3. Transition de page + barre de chargement ──────────────── */
+.ag-trans {
+	position: fixed; inset: 0; z-index: 2147482000;
+	background: #0a0a0c; pointer-events: none;
+	opacity: 1; visibility: visible;
+	transition: opacity .45s ease, visibility .45s ease;
+}
+.ag-trans.is-ready { opacity: 0; visibility: hidden; }       /* fondu d'entree */
+.ag-trans.is-active { opacity: 1; visibility: visible; pointer-events: all; } /* fondu de sortie */
+.ag-trans__bar { position: absolute; top: 0; left: 0; height: 3px; width: 0; background: linear-gradient(90deg, #D4B45C, #F37A1F); }
+.ag-trans.is-active .ag-trans__bar { width: 100%; transition: width .5s ease; }
+
+/* ── Grain de film + vignette (overlay global, tres leger) ──────── */
+body::after {
+	content: ""; position: fixed; inset: 0; z-index: 2147480000; pointer-events: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+	opacity: .035; mix-blend-mode: overlay;
+}
+body::before {
+	content: ""; position: fixed; inset: 0; z-index: 2147479999; pointer-events: none;
+	background: radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,.45) 100%);
+}
+
+/* ── 4. Letterbox cine pendant la scene epinglee (cinescene) ────── */
+.ag-cinescene.is-cinematic.is-fixed .ag-cinescene__stage::before,
+.ag-cinescene.is-cinematic.is-fixed .ag-cinescene__stage::after {
+	content: ""; position: absolute; left: 0; right: 0; height: 6vh; z-index: 4; pointer-events: none;
+	background: #07070a;
+}
+.ag-cinescene.is-cinematic.is-fixed .ag-cinescene__stage::before { top: 0; }
+.ag-cinescene.is-cinematic.is-fixed .ag-cinescene__stage::after { bottom: 0; }
+
+/* ── 5. Toggle son ──────────────────────────────────────────────── */
+.ag-sound-toggle {
+	position: fixed; left: 18px; bottom: 18px; z-index: 2147481000;
+	width: 44px; height: 44px; border-radius: 50%;
+	background: rgba(10,10,12,.7); border: 1px solid rgba(212,180,92,.4);
+	backdrop-filter: blur(8px); color: #fff; font-size: 18px; cursor: pointer;
+	display: flex; align-items: center; justify-content: center;
+	transition: transform .25s ease, border-color .25s ease, background .25s ease;
+}
+.ag-sound-toggle:hover { transform: scale(1.08); border-color: rgba(212,180,92,.8); }
+.ag-sound-toggle.is-on { background: rgba(212,180,92,.18); }
+
+@media (max-width: 768px) {
+	body::before, body::after { display: none; } /* pas de grain/vignette sur mobile */
+	.ag-sound-toggle { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.ag-intro, .ag-trans { display: none !important; }
+	body::before, body::after { display: none !important; }
+	.ag-cinescene__stage::before, .ag-cinescene__stage::after { display: none !important; }
+}

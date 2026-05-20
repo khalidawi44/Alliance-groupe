@@ -138,6 +138,27 @@ add_action( 'wp_enqueue_scripts', function () {
             true
         );
     }
+
+    // ── Couche immersive (intro, transitions, grain, sons) — module isolé ──
+    $ag_imm_css = get_stylesheet_directory() . '/assets/css/ag-immersive.css';
+    if ( file_exists( $ag_imm_css ) ) {
+        wp_enqueue_style(
+            'ag-immersive',
+            get_stylesheet_directory_uri() . '/assets/css/ag-immersive.css',
+            array( 'ag-main-css' ),
+            filemtime( $ag_imm_css )
+        );
+    }
+    $ag_imm_js = get_stylesheet_directory() . '/assets/js/ag-immersive.js';
+    if ( file_exists( $ag_imm_js ) ) {
+        wp_enqueue_script(
+            'ag-immersive',
+            get_stylesheet_directory_uri() . '/assets/js/ag-immersive.js',
+            array(),
+            filemtime( $ag_imm_js ),
+            true
+        );
+    }
 } );
 
 add_action( 'wp_enqueue_scripts', function () {
