@@ -355,12 +355,12 @@
 			return;
 		}
 
-		// Pages normales : effets complets.
-		// Epinglages MANUELS (sans dependance CDN, auto-corriges chaque frame).
+		// Pages normales : effets cinematographiques sur-mesure (cinescene /
+		// hscroll de la page Racines). Le stacking AUTOMATIQUE (initSectionStack)
+		// est DESACTIVE : trop de risques de chevauchement selon les sections.
+		// La page Racines garde son stacking dedie (.ag-stackover, CSS pur).
 		initCineScene();
 		initHScroll();
-		if (document.readyState === 'complete') initSectionStack();
-		else window.addEventListener('load', initSectionStack);
 		// On charge gsap (si absent) -> ScrollTrigger -> Lenis, puis boot.
 		var need = [];
 		if (typeof gsap === 'undefined') need.push(CDN.gsap);
