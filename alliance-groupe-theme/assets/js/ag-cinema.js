@@ -174,38 +174,22 @@
 	}
 
 	// =====================================================================
-	// STAGE CINEMATOGRAPHIQUE (pin + fondu) — chapitres qui se fondent sur
-	// place + numero geant en filigrane. Fallback empile si pas de pin.
+	// SCENE A FOND FIXE — l'image se fige (pin pinSpacing:false = aucun saut),
+	// le texte defile par-dessus. Zoom doux du fond pendant le defilement.
 	// =====================================================================
-	function initCineStage() {
+	function initBgScene() {
 		if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
-		if (IS_TOUCH || window.innerWidth <= 1024) return; // mobile = fallback empile (CSS)
-		document.querySelectorAll('.ag-cine-stage').forEach(function (stage) {
-			var pin      = stage.querySelector('.ag-cine-stage__pin');
-			var chapters = stage.querySelectorAll('.ag-cine-stage__chapter');
-			var ghosts   = stage.querySelectorAll('.ag-cine-stage__ghost');
-			var dots     = stage.querySelectorAll('.ag-cine-stage__dots span');
-			var bgimg    = stage.querySelector('.ag-cine-stage__bgimg');
-			var n = chapters.length;
-			if (!pin || !n) return;
-
-			stage.classList.add('is-cinematic');
-			var cur = -1;
-			function setActive(i) {
-				if (i === cur) return; cur = i;
-				chapters.forEach(function (c, idx) { c.classList.toggle('is-active', idx === i); });
-				ghosts.forEach(function (g, idx) { g.classList.toggle('is-active', idx === i); });
-				dots.forEach(function (d, idx) { d.classList.toggle('is-active', idx === i); });
-			}
-			setActive(0);
-
+		if (IS_TOUCH || window.innerWidth <= 1024) return; // mobile = fond statique (CSS)
+		document.querySelectorAll('.ag-bgscene').forEach(function (scene) {
+			var bg  = scene.querySelector('.ag-bgscene__bg');
+			var img = scene.querySelector('.ag-bgscene__bgimg');
+			if (!bg) return;
+			scene.classList.add('is-pinned');
 			ScrollTrigger.create({
-				trigger: stage, start: 'top top',
-				end: function () { return '+=' + (n * Math.round(window.innerHeight * 0.85)); },
-				pin: pin, scrub: true, anticipatePin: 1, invalidateOnRefresh: true,
+				trigger: scene, start: 'top top', end: 'bottom bottom',
+				pin: bg, pinSpacing: false, anticipatePin: 1, invalidateOnRefresh: true,
 				onUpdate: function (self) {
-					setActive(Math.min(n - 1, Math.floor(self.progress * n * 0.999)));
-					if (bgimg) bgimg.style.transform = 'scale(' + (1.06 + self.progress * 0.16).toFixed(3) + ')'; // zoom doux du fond
+					if (img) img.style.transform = 'scale(' + (1.05 + self.progress * 0.16).toFixed(3) + ')';
 				}
 			});
 		});
@@ -251,28 +235,6 @@
 	}
 
 	// =====================================================================
-	// ZOOM COVER — fond image qui se rapproche au scroll (on "avance")
-	// =====================================================================
-	function initZoomCover() {
-		if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
-		if (IS_TOUCH || window.innerWidth <= 1024) return; // mobile = cover statique (CSS)
-		document.querySelectorAll('.ag-zoomcover').forEach(function (sec) {
-			var img = sec.querySelector('.ag-zoomcover__img');
-			var content = sec.querySelector('.ag-zoomcover__content');
-			if (!img) return;
-			var tl = gsap.timeline({
-				scrollTrigger: {
-					trigger: sec, start: 'top top',
-					end: '+=' + Math.round(window.innerHeight * 1.1),
-					pin: true, scrub: true, anticipatePin: 1, invalidateOnRefresh: true
-				}
-			});
-			tl.fromTo(img, { scale: 1.08 }, { scale: 1.42, ease: 'none' }, 0);
-			if (content) tl.fromTo(content, { y: 36 }, { y: -28, ease: 'none' }, 0); // parallaxe douce, texte toujours visible
-		});
-	}
-
-	// =====================================================================
 	// BOOT
 	// =====================================================================
 	function boot() {
@@ -291,8 +253,7 @@
 		function initPins() {
 			requestAnimationFrame(function () {
 				requestAnimationFrame(function () {
-					initZoomCover();
-					initCineStage();
+					initBgScene();
 					initHScroll();
 					if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
 				});
