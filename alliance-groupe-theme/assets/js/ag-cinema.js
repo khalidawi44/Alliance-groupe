@@ -342,7 +342,9 @@
 			// uniquement les sections de contenu STANDARD (.ag-section) -> exclut
 			// d'office hero, parallax, globe, cinescene, hscroll, teamrow...
 			if ( ! sec.classList.contains( 'ag-section' ) ) continue;
-			if ( sec.classList.contains( 'ag-stackover' ) ) { z++; continue; } // deja gere (Racines)
+			// deja gerees par leur propre effet -> ne pas doubler
+			if ( sec.classList.contains( 'ag-stackover' ) || sec.classList.contains( 'ag-teamrow' ) ||
+				sec.classList.contains( 'ag-cinescene' ) || sec.classList.contains( 'ag-hscroll' ) ) { z++; continue; }
 			sec.classList.add( 'ag-autostack' );
 			sec.style.zIndex = z++;
 			// "tenir" (sticky) UNIQUEMENT si la section tient dans l'ecran. Une
@@ -375,10 +377,15 @@
 		HAS_SCROLLJACK = !!document.querySelector('.ag-fx-fixed-section');
 
 		// PAGE AVEC SCROLL-JACKING MAISON (accueil) : ce composant possede SON
-		// propre GSAP/ScrollTrigger. On NE charge PAS GSAP ici et on N'utilise
-		// PAS ScrollTrigger (sinon conflit -> scroll-jack casse, sections noires).
-		// On se limite au curseur + profondeur hero (vanilla).
+		// propre GSAP/ScrollTrigger. On NE charge PAS GSAP et on N'utilise PAS
+		// ScrollTrigger ici (sinon conflit). MAIS les effets MANUELS (CSS sticky
+		// / rAF, sans GSAP) sont surs et restent actifs : stacking + equipe.
 		if (HAS_SCROLLJACK) {
+			initCineScene();
+			initHScroll();
+			initTeamRow();
+			if (document.readyState === 'complete') initSectionStack();
+			else window.addEventListener('load', initSectionStack);
 			if (DESKTOP_FX) { initCursor(); initHeroDepth(); }
 			return;
 		}
