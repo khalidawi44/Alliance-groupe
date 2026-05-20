@@ -1433,6 +1433,56 @@ em,.ag-gold{
 }
 
 /* ── Blog Cards ───────────────────────────────────────────────── */
+/* ── Articles : filtres par catégorie ─────────────────────────── */
+.ag-blog-filters{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:40px;
+}
+.ag-blog-filter{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:9px 20px;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:100px;
+    color:var(--color-text-secondary);
+    font-family:var(--font-sans);
+    font-size:.9rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:border-color .25s,color .25s,background .25s;
+}
+.ag-blog-filter:hover{
+    border-color:rgba(212,180,92,.4);
+    color:var(--color-text);
+}
+.ag-blog-filter.is-active{
+    background:rgba(212,180,92,.12);
+    border-color:var(--color-gold);
+    color:var(--color-gold);
+}
+.ag-blog-filter__count{
+    font-size:.72rem;
+    font-weight:700;
+    background:rgba(212,180,92,.18);
+    color:var(--color-gold);
+    border-radius:100px;
+    padding:1px 8px;
+    line-height:1.5;
+}
+.ag-blog-filter.is-active .ag-blog-filter__count{
+    background:var(--color-gold);
+    color:var(--color-bg);
+}
+.ag-blog__noresult{
+    color:var(--color-text-secondary);
+    text-align:center;
+    padding:40px 0;
+}
+
 .ag-blog__grid{
     display:grid;
     grid-template-columns:repeat(2,1fr);
@@ -1449,9 +1499,32 @@ em,.ag-gold{
     border-color:rgba(212,180,92,.2);
     transform:translateY(-4px);
 }
+.ag-blog-card__img{
+    display:block;
+    position:relative;
+    overflow:hidden;
+}
 .ag-blog-card__img img{
     width:100%;height:200px;object-fit:cover;
+    transition:transform .6s cubic-bezier(.16,1,.3,1);
 }
+.ag-blog-card:hover .ag-blog-card__img img{transform:scale(1.06);}
+.ag-blog-card__badge{
+    position:absolute;
+    top:14px;left:14px;
+    padding:5px 14px;
+    background:rgba(10,10,15,.78);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    border:1px solid rgba(212,180,92,.4);
+    border-radius:100px;
+    color:var(--color-gold);
+    font-size:.74rem;
+    font-weight:700;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+}
+.ag-blog-card__read{color:var(--color-text-muted);}
 .ag-blog-card__body{padding:28px}
 .ag-blog-card__meta{
     display:flex;
