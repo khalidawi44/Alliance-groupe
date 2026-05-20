@@ -26,7 +26,6 @@
 	transition: width .28s cubic-bezier(.16,1,.3,1), height .28s cubic-bezier(.16,1,.3,1),
 		margin .28s cubic-bezier(.16,1,.3,1), background .28s ease, border-color .28s ease;
 	will-change: transform;
-	mix-blend-mode: difference;
 }
 .ag-cine-cursor-dot {
 	position: fixed; top: 0; left: 0;
@@ -73,48 +72,54 @@
 }
 
 /* =====================================================================
-   STORYTELLING FIGE (pin) — gros numero sticky + chapitres qui defilent
+   STAGE CINEMATOGRAPHIQUE (pin + fondu) — chapitres qui se fondent sur
+   place + numero geant en filigrane. Fallback empile si JS/pin absent.
    ===================================================================== */
-.ag-story { display: grid; grid-template-columns: .85fr 1.15fr; gap: 60px; margin-top: 40px; }
-.ag-story__sticky {
-	position: sticky; top: 0; height: 100vh; align-self: start;
-	display: flex; flex-direction: column; justify-content: center; gap: 28px;
+.ag-cine-stage { position: relative; background: #0c0c0e; }
+.ag-cine-stage__pin { position: relative; }
+.ag-cine-stage__inner { position: relative; z-index: 2; }
+.ag-cine-stage__ghosts { display: none; }
+.ag-cine-stage__step {
+	display: block; color: var(--color-gold); font-weight: 700;
+	font-size: .82rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 16px;
 }
-.ag-story__nums { position: relative; height: clamp(7rem, 16vw, 15rem); }
-.ag-story__num {
-	position: absolute; inset: 0; line-height: 1;
-	font-family: var(--font-serif); font-weight: 800;
-	font-size: clamp(7rem, 16vw, 15rem);
-	background: linear-gradient(135deg, #D4B45C, #F37A1F);
-	-webkit-background-clip: text; background-clip: text;
-	-webkit-text-fill-color: transparent; color: transparent;
-	opacity: 0; transform: translateY(24px) scale(.96);
-	transition: opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1);
-	pointer-events: none;
+.ag-cine-stage__chapter h3 {
+	font-family: var(--font-serif); color: #fff; line-height: 1.05;
+	font-size: clamp(1.9rem, 4.6vw, 3.4rem); margin: 0 0 18px;
 }
-.ag-story__num.is-active { opacity: 1; transform: translateY(0) scale(1); }
-.ag-story__bar { width: 100%; max-width: 260px; height: 3px; background: rgba(255,255,255,.12); border-radius: 3px; overflow: hidden; }
-.ag-story__bar-fill { display: block; width: 25%; height: 100%; background: linear-gradient(90deg,#D4B45C,#F37A1F); border-radius: 3px; transition: width .6s cubic-bezier(.16,1,.3,1); }
-.ag-story__hint { color: var(--color-text-muted); font-size: .82rem; letter-spacing: 2px; text-transform: uppercase; }
-.ag-story__panels { display: flex; flex-direction: column; }
-.ag-story__panel {
-	min-height: 92vh; display: flex; flex-direction: column; justify-content: center;
-	opacity: .25; transition: opacity .6s ease, transform .6s cubic-bezier(.16,1,.3,1);
-	transform: translateY(20px);
+.ag-cine-stage__chapter p {
+	color: var(--color-text-secondary); line-height: 1.7;
+	font-size: clamp(1rem, 1.5vw, 1.22rem); max-width: 46ch; margin: 0;
 }
-.ag-story__panel.is-active { opacity: 1; transform: translateY(0); }
-.ag-story__panel h3 { font-family: var(--font-serif); font-size: clamp(1.6rem, 3.4vw, 2.6rem); color: #fff; margin: 0 0 18px; }
-.ag-story__panel p { color: var(--color-text-secondary); font-size: 1.1rem; line-height: 1.7; max-width: 30ch; margin: 0; }
+.ag-cine-stage__dots { display: none; }
 
-@media (max-width: 1024px) {
-	.ag-story { grid-template-columns: 1fr; gap: 0; }
-	.ag-story__sticky { height: auto; position: sticky; top: 70px; padding: 24px 0; flex-direction: row; align-items: center; gap: 18px; background: var(--color-bg, #0b0b0d); z-index: 5; }
-	.ag-story__nums { height: clamp(4rem, 18vw, 6rem); flex: 0 0 auto; width: clamp(5rem, 22vw, 8rem); }
-	.ag-story__num { font-size: clamp(4rem, 18vw, 6rem); }
-	.ag-story__hint { display: none; }
-	.ag-story__panel { min-height: 70vh; }
-	.ag-story__panel p { max-width: none; }
+/* Fallback (pas de JS / mobile / reduced) : chapitres empiles, espaces */
+.ag-cine-stage:not(.is-cinematic) .ag-cine-stage__pin { padding: 90px 0; }
+.ag-cine-stage:not(.is-cinematic) .ag-cine-stage__chapter { padding: 34px 0; border-top: 1px solid rgba(255,255,255,.07); }
+.ag-cine-stage:not(.is-cinematic) .ag-cine-stage__chapter:first-child { border-top: 0; }
+
+/* Mode cinematique (JS desktop) : plein ecran epingle, fondu enchaine */
+.ag-cine-stage.is-cinematic .ag-cine-stage__pin {
+	height: 100vh; overflow: hidden; display: flex; align-items: center;
 }
+.ag-cine-stage.is-cinematic .ag-cine-stage__ghosts { display: block; position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.ag-cine-stage.is-cinematic .ag-cine-stage__ghost {
+	position: absolute; top: 50%; right: -3vw; transform: translateY(-50%) scale(.92);
+	font-family: var(--font-serif); font-weight: 800; line-height: .8;
+	font-size: 62vh; color: rgba(212,180,92,.07);
+	opacity: 0; transition: opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1);
+}
+.ag-cine-stage.is-cinematic .ag-cine-stage__ghost.is-active { opacity: 1; transform: translateY(-50%) scale(1); }
+.ag-cine-stage.is-cinematic .ag-cine-stage__chapters { position: relative; min-height: 46vh; }
+.ag-cine-stage.is-cinematic .ag-cine-stage__chapter {
+	position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center;
+	opacity: 0; transform: translateY(38px); pointer-events: none;
+	transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
+}
+.ag-cine-stage.is-cinematic .ag-cine-stage__chapter.is-active { opacity: 1; transform: none; pointer-events: auto; }
+.ag-cine-stage.is-cinematic .ag-cine-stage__dots { display: flex; gap: 12px; margin-top: 44px; }
+.ag-cine-stage.is-cinematic .ag-cine-stage__dots span { width: 34px; height: 3px; border-radius: 3px; background: rgba(255,255,255,.16); transition: background .4s ease; }
+.ag-cine-stage.is-cinematic .ag-cine-stage__dots span.is-active { background: linear-gradient(90deg, #D4B45C, #F37A1F); }
 
 /* =====================================================================
    SCROLL HORIZONTAL (pin) — la piste glisse de cote au scroll vertical
@@ -151,6 +156,5 @@
 }
 @media (prefers-reduced-motion: reduce) {
 	.ag-hscroll__track { transform: none !important; }
-	.ag-story__num, .ag-story__panel { opacity: 1 !important; transform: none !important; }
-	.ag-story__sticky { position: static; height: auto; }
+	.ag-cine-stage__chapter { opacity: 1 !important; transform: none !important; }
 }

@@ -56,44 +56,52 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
         </div>
     </section>
 
-    <!-- Comment ça marche : 4 étapes -->
+    <!-- Comment ça marche : intro -->
     <section class="ag-section ag-section--graphite" id="racines-comment">
-        <div class="ag-container">
+        <div class="ag-container ag-container--narrow" style="text-align:center;">
             <span class="ag-tag ag-anim" data-anim="tag">Le principe</span>
-            <h2 class="ag-section__title ag-anim" data-anim="title">On ne te vend rien. <em>On s'associe.</em></h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc">
+            <h2 class="ag-section__title ag-anim" data-anim="title" style="margin-left:auto;margin-right:auto;">On ne te vend rien. <em>On s'associe.</em></h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc" style="margin-left:auto;margin-right:auto;">
                 Pas de grosse facture à payer au démarrage. On investit notre travail dans
                 ton projet, et on grandit ensemble : on devient partenaires de ton business.
             </p>
+        </div>
+    </section>
 
-            <div class="ag-story">
-                <div class="ag-story__sticky">
-                    <div class="ag-story__nums">
-                        <span class="ag-story__num is-active" data-step="0">01</span>
-                        <span class="ag-story__num" data-step="1">02</span>
-                        <span class="ag-story__num" data-step="2">03</span>
-                        <span class="ag-story__num" data-step="3">04</span>
-                    </div>
-                    <div class="ag-story__bar"><span class="ag-story__bar-fill"></span></div>
-                    <span class="ag-story__hint">Fais défiler ↓</span>
-                </div>
-                <div class="ag-story__panels">
-                    <article class="ag-story__panel is-active" data-step="0">
+    <!-- Stage cinematographique epingle : 4 chapitres en fondu -->
+    <section class="ag-cine-stage" aria-label="Comment ça marche, étape par étape">
+        <div class="ag-cine-stage__pin">
+            <div class="ag-cine-stage__ghosts" aria-hidden="true">
+                <span class="ag-cine-stage__ghost is-active">01</span>
+                <span class="ag-cine-stage__ghost">02</span>
+                <span class="ag-cine-stage__ghost">03</span>
+                <span class="ag-cine-stage__ghost">04</span>
+            </div>
+            <div class="ag-container ag-cine-stage__inner">
+                <div class="ag-cine-stage__chapters">
+                    <article class="ag-cine-stage__chapter is-active">
+                        <span class="ag-cine-stage__step">Étape 01</span>
                         <h3>On crée ton site au top</h3>
                         <p>Un site professionnel premium, le même niveau que nos clients payants. Conçu pour vendre et te rendre crédible dès le jour 1.</p>
                     </article>
-                    <article class="ag-story__panel" data-step="1">
+                    <article class="ag-cine-stage__chapter">
+                        <span class="ag-cine-stage__step">Étape 02</span>
                         <h3>On devient associés</h3>
                         <p>Plutôt qu'une facture impossible à payer, on prend une part dans ton business. Ton succès devient le nôtre — on rame dans le même bateau.</p>
                     </article>
-                    <article class="ag-story__panel" data-step="2">
+                    <article class="ag-cine-stage__chapter">
+                        <span class="ag-cine-stage__step">Étape 03</span>
                         <h3>On t'accompagne de A à Z</h3>
                         <p>Création de l'entreprise, gestion, démarches, stratégie. On t'épaule sur tout ce que tu ne maîtrises pas encore, étape par étape.</p>
                     </article>
-                    <article class="ag-story__panel" data-step="3">
+                    <article class="ag-cine-stage__chapter">
+                        <span class="ag-cine-stage__step">Étape 04</span>
                         <h3>On gère ton numérique + formation</h3>
                         <p>Site, SEO, réseaux, automatisation : on s'occupe de tout le digital. Et on te forme pour que tu deviennes autonome et maître de ton outil.</p>
                     </article>
+                </div>
+                <div class="ag-cine-stage__dots" aria-hidden="true">
+                    <span class="is-active"></span><span></span><span></span><span></span>
                 </div>
             </div>
         </div>

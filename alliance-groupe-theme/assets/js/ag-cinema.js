@@ -24,7 +24,6 @@
 	var REDUCED  = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	var FINE     = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 	var IS_TOUCH = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
-	var CORES    = navigator.hardwareConcurrency || 4;
 	var DESKTOP_FX    = FINE && !IS_TOUCH && window.innerWidth >= 1025;
 	var HAS_SCROLLJACK = false; // calcule au boot (DOM pret)
 
@@ -175,91 +174,38 @@
 	}
 
 	// =====================================================================
-	// PARTICULES HERO (canvas 2D leger) — pilote par le ticker unifie
+	// STAGE CINEMATOGRAPHIQUE (pin + fondu) — chapitres qui se fondent sur
+	// place + numero geant en filigrane. Fallback empile si pas de pin.
 	// =====================================================================
-	function initParticles() {
-		var hero = document.querySelector('.ag-hero');
-		if (!hero) return;
-		var canvas = document.createElement('canvas');
-		canvas.className = 'ag-cine-particles';
-		hero.appendChild(canvas);
-		var ctx = canvas.getContext('2d');
-		var w, h, dpr = Math.min(window.devicePixelRatio || 1, 2);
-		var pts = [], COUNT = 0, LINK2 = 9000;
+	function initCineStage() {
+		if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+		if (IS_TOUCH || window.innerWidth <= 1024) return; // mobile = fallback empile (CSS)
+		document.querySelectorAll('.ag-cine-stage').forEach(function (stage) {
+			var pin      = stage.querySelector('.ag-cine-stage__pin');
+			var chapters = stage.querySelectorAll('.ag-cine-stage__chapter');
+			var ghosts   = stage.querySelectorAll('.ag-cine-stage__ghost');
+			var dots     = stage.querySelectorAll('.ag-cine-stage__dots span');
+			var n = chapters.length;
+			if (!pin || !n) return;
 
-		function resize() {
-			w = hero.offsetWidth; h = hero.offsetHeight;
-			canvas.width = w * dpr; canvas.height = h * dpr;
-			canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
-			ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-			COUNT = Math.min(42, Math.round(w * h / 26000));
-			pts = [];
-			for (var i = 0; i < COUNT; i++) {
-				pts.push({
-					x: Math.random() * w, y: Math.random() * h,
-					vx: (Math.random() - 0.5) * 0.22, vy: (Math.random() - 0.5) * 0.22,
-					r: Math.random() * 1.5 + 0.4, a: Math.random() * 0.4 + 0.12
-				});
-			}
-		}
-		resize();
-		window.addEventListener('resize', resize, { passive: true });
-
-		var visible = true;
-		if ('IntersectionObserver' in window) {
-			new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }, { threshold: 0 }).observe(hero);
-		}
-
-		onTick(function () {
-			if (!visible) return;
-			ctx.clearRect(0, 0, w, h);
-			var i, p;
-			for (i = 0; i < pts.length; i++) {
-				p = pts[i];
-				p.x += p.vx; p.y += p.vy;
-				if (p.x < 0 || p.x > w) p.vx *= -1;
-				if (p.y < 0 || p.y > h) p.vy *= -1;
-				ctx.beginPath();
-				ctx.arc(p.x, p.y, p.r, 0, 6.283);
-				ctx.fillStyle = 'rgba(212,180,92,' + p.a + ')';
-				ctx.fill();
-			}
-			for (i = 0; i < pts.length; i++) {
-				for (var j = i + 1; j < pts.length; j++) {
-					var dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y, d2 = dx * dx + dy * dy;
-					if (d2 < LINK2) {
-						ctx.beginPath();
-						ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[j].x, pts[j].y);
-						ctx.strokeStyle = 'rgba(212,180,92,' + (0.09 * (1 - d2 / LINK2)) + ')';
-						ctx.lineWidth = 0.5; ctx.stroke();
-					}
-				}
-			}
-		});
-	}
-
-	// =====================================================================
-	// STORYTELLING FIGE (pin) — gros numero sticky qui change par chapitre
-	// =====================================================================
-	function initStory() {
-		if (typeof ScrollTrigger === 'undefined') return;
-		document.querySelectorAll('.ag-story').forEach(function (story) {
-			var nums   = story.querySelectorAll('.ag-story__num');
-			var panels = story.querySelectorAll('.ag-story__panel');
-			var fill   = story.querySelector('.ag-story__bar-fill');
-			var total  = panels.length || 1;
+			stage.classList.add('is-cinematic');
+			var cur = -1;
 			function setActive(i) {
-				nums.forEach(function (n, idx) { n.classList.toggle('is-active', idx === i); });
-				panels.forEach(function (p, idx) { p.classList.toggle('is-active', idx === i); });
-				if (fill) fill.style.width = (((i + 1) / total) * 100) + '%';
+				if (i === cur) return; cur = i;
+				chapters.forEach(function (c, idx) { c.classList.toggle('is-active', idx === i); });
+				ghosts.forEach(function (g, idx) { g.classList.toggle('is-active', idx === i); });
+				dots.forEach(function (d, idx) { d.classList.toggle('is-active', idx === i); });
 			}
-			panels.forEach(function (panel, i) {
-				ScrollTrigger.create({
-					trigger: panel, start: 'top center', end: 'bottom center',
-					onToggle: function (self) { if (self.isActive) setActive(i); }
-				});
-			});
 			setActive(0);
+
+			ScrollTrigger.create({
+				trigger: stage, start: 'top top',
+				end: function () { return '+=' + (n * Math.round(window.innerHeight * 0.85)); },
+				pin: pin, scrub: true, anticipatePin: 1, invalidateOnRefresh: true,
+				onUpdate: function (self) {
+					setActive(Math.min(n - 1, Math.floor(self.progress * n * 0.999)));
+				}
+			});
 		});
 	}
 
@@ -293,19 +239,26 @@
 		if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
 			gsap.registerPlugin(ScrollTrigger);
 		}
+		// Leger et immediat : smooth scroll + curseur + image reveal.
 		initSmoothScroll();
-		initStory();
-		initHScroll();
 		initImageReveal();
 		if (DESKTOP_FX) {
 			initCursor();
 			initHeroDepth();
-			if (CORES >= 4) initParticles();
 		}
-		if (typeof ScrollTrigger !== 'undefined') {
-			ScrollTrigger.refresh();
-			window.addEventListener('load', function () { ScrollTrigger.refresh(); });
+		// Lourd (pins) : APRES le load complet -> mesures correctes, pas de
+		// rate au demarrage. Double rAF pour laisser le layout se stabiliser.
+		function initPins() {
+			requestAnimationFrame(function () {
+				requestAnimationFrame(function () {
+					initCineStage();
+					initHScroll();
+					if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
+				});
+			});
 		}
+		if (document.readyState === 'complete') initPins();
+		else window.addEventListener('load', initPins);
 	}
 
 	ready(function () {
