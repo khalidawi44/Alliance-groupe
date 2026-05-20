@@ -345,10 +345,12 @@
 		// ScrollTrigger ici (sinon conflit). MAIS les effets MANUELS (CSS sticky
 		// / rAF, sans GSAP) sont surs et restent actifs : stacking + equipe.
 		if (HAS_SCROLLJACK) {
+			// PAS de stacking (initSectionStack) ici : l'accueil a des sections
+			// complexes (carrousel pin, parallax, globe 3D, FAQ avec image de
+			// fond) qui se chevauchent mal quand on les empile. On garde juste
+			// les effets surs.
 			initCineScene();
 			initHScroll();
-			if (document.readyState === 'complete') initSectionStack();
-			else window.addEventListener('load', initSectionStack);
 			if (DESKTOP_FX) { initCursor(); initHeroDepth(); }
 			return;
 		}
