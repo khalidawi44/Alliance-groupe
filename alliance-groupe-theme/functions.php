@@ -36,6 +36,12 @@ if ( file_exists( $ag_services_data_file ) ) {
     require_once $ag_services_data_file;
 }
 
+// ── 1c4. SEO meta (titres + descriptions tunes par mot-cle, LocalBusiness bureaux, Offers templates)
+$ag_seo_meta_file = get_stylesheet_directory() . '/inc/ag-seo-meta.php';
+if ( file_exists( $ag_seo_meta_file ) ) {
+    require_once $ag_seo_meta_file;
+}
+
 // ── 1d. Shortcode [ag_promo_video] : insère la vidéo promo Alliance ─────
 // Usage Gutenberg : ajouter un block "Shortcode" et taper [ag_promo_video]
 // Attributs : title="..." lead="..." cta_label="..." cta_url="..."
@@ -249,8 +255,11 @@ if ( ! function_exists( 'ag_reading_time' ) ) {
     }
 }
 
-// ── 8. SEO meta description (toutes les pages) ────────────────
+// ── 8. SEO meta description (fallback — utilise excerpt/contenu si pas d'override custom)
+//    Si inc/ag-seo-meta.php a deja sorti une description tunee mot-cle, ce hook skippe
+//    (via filter ag_skip_legacy_meta_description) pour eviter les doublons.
 add_action( 'wp_head', function () {
+    if ( apply_filters( 'ag_skip_legacy_meta_description', false ) ) return;
     $description = '';
     if ( is_singular() ) {
         if ( has_excerpt() ) {
@@ -312,8 +321,12 @@ add_action( 'publish_page', function () {
 
 // ── 8c. Canonical URL — WordPress le gère nativement, pas de doublon ──
 
-// ── 8d. Open Graph + Twitter Card (enrichi) ────────────────────
+// ── 8d. Open Graph + Twitter Card (enrichi)
+//    Note : title + description peuvent etre overrides plus tot par inc/ag-seo-meta.php
+//    via le hook priority 1. Dans ce cas on n'emet PAS de doublon ici (skip via filter).
 add_action( 'wp_head', function () {
+    $has_override = apply_filters( 'ag_skip_legacy_meta_description', false );
+
     $title   = wp_get_document_title();
     $desc    = get_bloginfo( 'description' );
     $url     = home_url( '/' );
@@ -335,8 +348,10 @@ add_action( 'wp_head', function () {
     }
 
     echo '<meta property="og:type" content="' . esc_attr( $og_type ) . '">' . "\n";
-    echo '<meta property="og:title" content="' . esc_attr( $title ) . '">' . "\n";
-    echo '<meta property="og:description" content="' . esc_attr( $desc ) . '">' . "\n";
+    if ( ! $has_override ) {
+        echo '<meta property="og:title" content="' . esc_attr( $title ) . '">' . "\n";
+        echo '<meta property="og:description" content="' . esc_attr( $desc ) . '">' . "\n";
+    }
     echo '<meta property="og:url" content="' . esc_url( $url ) . '">' . "\n";
     if ( $img ) {
         echo '<meta property="og:image" content="' . esc_url( $img ) . '">' . "\n";
@@ -346,8 +361,10 @@ add_action( 'wp_head', function () {
     echo '<meta property="og:site_name" content="Alliance Groupe">' . "\n";
     echo '<meta property="og:locale" content="fr_FR">' . "\n";
     echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
-    echo '<meta name="twitter:title" content="' . esc_attr( $title ) . '">' . "\n";
-    echo '<meta name="twitter:description" content="' . esc_attr( $desc ) . '">' . "\n";
+    if ( ! $has_override ) {
+        echo '<meta name="twitter:title" content="' . esc_attr( $title ) . '">' . "\n";
+        echo '<meta name="twitter:description" content="' . esc_attr( $desc ) . '">' . "\n";
+    }
     if ( $img ) {
         echo '<meta name="twitter:image" content="' . esc_url( $img ) . '">' . "\n";
     }
