@@ -109,6 +109,31 @@ get_header();
 	</div>
 </section>
 
+<!-- ENCART : nos offres de templates -->
+<section class="ag-section ag-section--or">
+	<div class="ag-container">
+		<div class="ag-pq-offres">
+			<span class="ag-tag">Nos offres</span>
+			<h2 class="ag-pq-offres__title">Découvrez nos <em>templates métier</em></h2>
+			<p class="ag-pq-offres__sub">6 thèmes WordPress déjà adaptés à votre métier (gratuits + packs), ou un site clé en main livré en quelques jours. À vous de choisir.</p>
+			<div class="ag-pq-offres__cards">
+				<div class="ag-pq-offre">
+					<span class="ag-pq-offre__ic">🎨</span>
+					<h3>Templates WordPress</h3>
+					<p>Coach, Artisan, Avocat, Barber, Resto, Asso. Gratuits, + packs Pro / Premium / Business (49 à 149€).</p>
+					<a href="<?php echo esc_url( home_url( '/templates-wordpress' ) ); ?>" class="ag-btn-gold">Voir les templates →</a>
+				</div>
+				<div class="ag-pq-offre">
+					<span class="ag-pq-offre__ic">⚡</span>
+					<h3>Site clé en main</h3>
+					<p>On crée tout pour vous : design, contenu, mise en ligne. Prix fixe, sans rendez-vous, livré en quelques jours.</p>
+					<a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>" class="ag-btn-outline">Voir les packs Express →</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
 <!-- CTA AUDIT GRATUIT -->
 <?php
 $GLOBALS['ag_audit_cta_args'] = array(
@@ -149,6 +174,16 @@ unset( $GLOBALS['ag_audit_cta_args'] );
 	.ag-comparo-cell--them{color:rgba(255,255,255,.6)}
 	.ag-comparo-cell--us{background:rgba(212,180,92,.06)}
 }
+.ag-pq-offres{text-align:center;max-width:1000px;margin:0 auto;}
+.ag-pq-offres__title{font-family:Georgia,'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,2.6rem);color:#fff;margin:14px 0 12px;}
+.ag-pq-offres__title em{background:linear-gradient(135deg,#D4B45C,#F37A1F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;font-style:italic;}
+.ag-pq-offres__sub{color:rgba(255,255,255,.72);max-width:620px;margin:0 auto 36px;line-height:1.6;}
+.ag-pq-offres__cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:22px;text-align:left;}
+.ag-pq-offre{display:flex;flex-direction:column;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.2);border-radius:18px;padding:30px 26px;}
+.ag-pq-offre__ic{font-size:2.2rem;margin-bottom:12px;}
+.ag-pq-offre h3{font-family:Georgia,'Playfair Display',serif;font-size:1.4rem;color:#fff;margin:0 0 10px;}
+.ag-pq-offre p{color:rgba(255,255,255,.72);font-size:.96rem;line-height:1.6;margin:0 0 22px;flex:1;}
+.ag-pq-offre .ag-btn-gold,.ag-pq-offre .ag-btn-outline{align-self:flex-start;}
 </style>
 
 <?php get_footer(); ?>
