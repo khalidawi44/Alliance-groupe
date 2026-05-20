@@ -66,26 +66,34 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
                 ton projet, et on grandit ensemble : on devient partenaires de ton business.
             </p>
 
-            <div class="ag-racines__steps">
-                <div class="ag-racines__step ag-anim" data-anim="card">
-                    <span class="ag-racines__num">01</span>
-                    <h3>On crée ton site au top</h3>
-                    <p>Un site professionnel premium, le même niveau que nos clients payants. Conçu pour vendre et te rendre crédible dès le jour 1.</p>
+            <div class="ag-story">
+                <div class="ag-story__sticky">
+                    <div class="ag-story__nums">
+                        <span class="ag-story__num is-active" data-step="0">01</span>
+                        <span class="ag-story__num" data-step="1">02</span>
+                        <span class="ag-story__num" data-step="2">03</span>
+                        <span class="ag-story__num" data-step="3">04</span>
+                    </div>
+                    <div class="ag-story__bar"><span class="ag-story__bar-fill"></span></div>
+                    <span class="ag-story__hint">Fais défiler ↓</span>
                 </div>
-                <div class="ag-racines__step ag-anim" data-anim="card">
-                    <span class="ag-racines__num">02</span>
-                    <h3>On devient associés</h3>
-                    <p>Plutôt qu'une facture impossible à payer, on prend une part dans ton business. Ton succès devient le nôtre — on rame dans le même bateau.</p>
-                </div>
-                <div class="ag-racines__step ag-anim" data-anim="card">
-                    <span class="ag-racines__num">03</span>
-                    <h3>On t'accompagne de A à Z</h3>
-                    <p>Création de l'entreprise, gestion, démarches, stratégie. On t'épaule sur tout ce que tu ne maîtrises pas encore, étape par étape.</p>
-                </div>
-                <div class="ag-racines__step ag-anim" data-anim="card">
-                    <span class="ag-racines__num">04</span>
-                    <h3>On gère ton numérique + formation</h3>
-                    <p>Site, SEO, réseaux, automatisation : on s'occupe de tout le digital. Et on te forme pour que tu deviennes autonome et maître de ton outil.</p>
+                <div class="ag-story__panels">
+                    <article class="ag-story__panel is-active" data-step="0">
+                        <h3>On crée ton site au top</h3>
+                        <p>Un site professionnel premium, le même niveau que nos clients payants. Conçu pour vendre et te rendre crédible dès le jour 1.</p>
+                    </article>
+                    <article class="ag-story__panel" data-step="1">
+                        <h3>On devient associés</h3>
+                        <p>Plutôt qu'une facture impossible à payer, on prend une part dans ton business. Ton succès devient le nôtre — on rame dans le même bateau.</p>
+                    </article>
+                    <article class="ag-story__panel" data-step="2">
+                        <h3>On t'accompagne de A à Z</h3>
+                        <p>Création de l'entreprise, gestion, démarches, stratégie. On t'épaule sur tout ce que tu ne maîtrises pas encore, étape par étape.</p>
+                    </article>
+                    <article class="ag-story__panel" data-step="3">
+                        <h3>On gère ton numérique + formation</h3>
+                        <p>Site, SEO, réseaux, automatisation : on s'occupe de tout le digital. Et on te forme pour que tu deviennes autonome et maître de ton outil.</p>
+                    </article>
                 </div>
             </div>
         </div>
@@ -104,6 +112,50 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
                 <p class="ag-racines__deal-note">
                     🤝 Transparence totale : chaque partenariat est défini noir sur blanc, équitablement, avant de commencer. Pas de piège, pas de petites lignes.
                 </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scroll horizontal : ce qu'on construit ensemble -->
+    <section class="ag-hscroll ag-section--onyx" id="racines-build" aria-label="Ce qu'on construit ensemble">
+        <div class="ag-hscroll__pin">
+            <div class="ag-hscroll__track">
+                <div class="ag-hscroll__head">
+                    <span class="ag-tag">Ce qu'on construit</span>
+                    <h2 class="ag-hscroll__title">Tout ce dont ton <em>business</em> a besoin</h2>
+                    <p class="ag-hscroll__lead">Un écosystème complet, pas juste un site. <span>Fais défiler →</span></p>
+                </div>
+                <article class="ag-hscroll__card">
+                    <span class="ag-hscroll__ic">🌐</span>
+                    <h3>Site premium</h3>
+                    <p>Vitrine ou boutique en ligne, rapide et pensée pour convertir tes visiteurs en clients.</p>
+                </article>
+                <article class="ag-hscroll__card">
+                    <span class="ag-hscroll__ic">🎨</span>
+                    <h3>Identité de marque</h3>
+                    <p>Logo, couleurs, ton : une image pro et cohérente qui inspire confiance immédiatement.</p>
+                </article>
+                <article class="ag-hscroll__card">
+                    <span class="ag-hscroll__ic">📱</span>
+                    <h3>Présence réseaux</h3>
+                    <p>Instagram, TikTok, Google : on installe ta présence là où sont tes futurs clients.</p>
+                </article>
+                <article class="ag-hscroll__card">
+                    <span class="ag-hscroll__ic">🔍</span>
+                    <h3>Référencement Google</h3>
+                    <p>On te rend visible sur les recherches qui comptent pour ton métier, dans ta ville.</p>
+                </article>
+                <article class="ag-hscroll__card">
+                    <span class="ag-hscroll__ic">🎓</span>
+                    <h3>Formation</h3>
+                    <p>On te forme pour devenir autonome : tu maîtrises tes outils, tu ne dépends de personne.</p>
+                </article>
+                <article class="ag-hscroll__card ag-hscroll__card--cta">
+                    <span class="ag-hscroll__ic">🤝</span>
+                    <h3>Accompagnement business</h3>
+                    <p>Création d'entreprise, gestion, stratégie : un vrai associé à tes côtés sur la durée.</p>
+                    <a href="#racines-candidature" class="ag-btn-gold">Je candidate →</a>
+                </article>
             </div>
         </div>
     </section>
@@ -203,12 +255,6 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
 }
 #racines-candidature .ag-form__group input,
 #racines-candidature .ag-form__group textarea{padding:14px 18px;}
-.ag-racines__steps{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:50px;}
-.ag-racines__step{position:relative;padding:36px 30px 32px;background:rgba(255,255,255,.025);border:1px solid rgba(212,180,92,.15);border-radius:18px;transition:transform .4s,border-color .4s,box-shadow .4s;}
-.ag-racines__step:hover{transform:translateY(-5px);border-color:rgba(212,180,92,.4);box-shadow:0 24px 60px rgba(0,0,0,.4);}
-.ag-racines__num{display:inline-block;font-family:var(--font-serif);font-size:2rem;font-weight:800;background:linear-gradient(135deg,#D4B45C,#F37A1F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;margin-bottom:14px;}
-.ag-racines__step h3{font-family:var(--font-serif);font-size:1.3rem;color:#fff;margin:0 0 10px;}
-.ag-racines__step p{color:var(--color-text-secondary);font-size:.95rem;line-height:1.65;margin:0;}
 .ag-racines__deal{background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.25);border-radius:20px;padding:44px 44px 38px;}
 .ag-racines__deal-title{font-family:var(--font-serif);font-size:clamp(1.5rem,3vw,2rem);color:#fff;margin:0 0 24px;text-align:center;}
 .ag-racines__deal-list{list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:16px;}

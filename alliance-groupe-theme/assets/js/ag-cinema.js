@@ -239,6 +239,54 @@
 	}
 
 	// =====================================================================
+	// STORYTELLING FIGE (pin) — gros numero sticky qui change par chapitre
+	// =====================================================================
+	function initStory() {
+		if (typeof ScrollTrigger === 'undefined') return;
+		document.querySelectorAll('.ag-story').forEach(function (story) {
+			var nums   = story.querySelectorAll('.ag-story__num');
+			var panels = story.querySelectorAll('.ag-story__panel');
+			var fill   = story.querySelector('.ag-story__bar-fill');
+			var total  = panels.length || 1;
+			function setActive(i) {
+				nums.forEach(function (n, idx) { n.classList.toggle('is-active', idx === i); });
+				panels.forEach(function (p, idx) { p.classList.toggle('is-active', idx === i); });
+				if (fill) fill.style.width = (((i + 1) / total) * 100) + '%';
+			}
+			panels.forEach(function (panel, i) {
+				ScrollTrigger.create({
+					trigger: panel, start: 'top center', end: 'bottom center',
+					onToggle: function (self) { if (self.isActive) setActive(i); }
+				});
+			});
+			setActive(0);
+		});
+	}
+
+	// =====================================================================
+	// SCROLL HORIZONTAL (pin) — la piste glisse au scroll vertical (desktop)
+	// =====================================================================
+	function initHScroll() {
+		if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+		if (IS_TOUCH || window.innerWidth <= 1024) return; // mobile = scroll natif (CSS)
+		document.querySelectorAll('.ag-hscroll').forEach(function (sec) {
+			var pin   = sec.querySelector('.ag-hscroll__pin');
+			var track = sec.querySelector('.ag-hscroll__track');
+			if (!pin || !track) return;
+			var dist = function () { return Math.max(0, track.scrollWidth - window.innerWidth); };
+			gsap.to(track, {
+				x: function () { return -dist(); },
+				ease: 'none',
+				scrollTrigger: {
+					trigger: sec, start: 'top top',
+					end: function () { return '+=' + dist(); },
+					scrub: 1, pin: pin, anticipatePin: 1, invalidateOnRefresh: true
+				}
+			});
+		});
+	}
+
+	// =====================================================================
 	// BOOT
 	// =====================================================================
 	function boot() {
@@ -246,11 +294,17 @@
 			gsap.registerPlugin(ScrollTrigger);
 		}
 		initSmoothScroll();
+		initStory();
+		initHScroll();
 		initImageReveal();
 		if (DESKTOP_FX) {
 			initCursor();
 			initHeroDepth();
 			if (CORES >= 4) initParticles();
+		}
+		if (typeof ScrollTrigger !== 'undefined') {
+			ScrollTrigger.refresh();
+			window.addEventListener('load', function () { ScrollTrigger.refresh(); });
 		}
 	}
 
