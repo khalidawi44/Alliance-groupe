@@ -279,30 +279,69 @@
 	}
 
 	// =====================================================================
+	// EQUIPE — titre fixe + petites cartes qui defilent horizontalement.
+	// Le bloc s'epingle (manuel), seules les cartes glissent ; le titre reste.
+	// =====================================================================
+	function initTeamRow() {
+		if ( IS_TOUCH || window.innerWidth <= 1024 ) return;
+		document.querySelectorAll( '.ag-teamrow' ).forEach( function ( sec ) {
+			var pin  = sec.querySelector( '.ag-teamrow__pin' );
+			var grid = sec.querySelector( '.ag-team__grid' );
+			if ( ! pin || ! grid ) return;
+			sec.classList.add( 'is-cinematic' );
+			var dist = 0, state = '';
+			function measure() {
+				dist = Math.max( 0, grid.scrollWidth - window.innerWidth + Math.round( window.innerWidth * 0.10 ) );
+				sec.style.height = ( window.innerHeight + dist ) + 'px';
+			}
+			function update() {
+				var rect = sec.getBoundingClientRect(), vh = window.innerHeight;
+				var into = -rect.top, total = sec.offsetHeight - vh, st, prog;
+				if ( into <= 0 ) { st = 'before'; prog = 0; }
+				else if ( into >= total ) { st = 'after'; prog = 1; }
+				else { st = 'fixed'; prog = total > 0 ? into / total : 0; }
+				if ( st !== state ) {
+					sec.classList.toggle( 'is-fixed', st === 'fixed' );
+					sec.classList.toggle( 'is-after', st === 'after' );
+					state = st;
+				}
+				grid.style.transform = 'translate3d(' + Math.round( -prog * dist ) + 'px,0,0)';
+			}
+			measure();
+			onTick( update );
+			window.addEventListener( 'resize', function () { measure(); }, { passive: true } );
+			update();
+		} );
+	}
+
+	// =====================================================================
 	// EMPILEMENT AUTOMATIQUE (tout le site) — applique le stacking aux
 	// sections de contenu des autres pages, avec garde-fous anti-casse.
 	// =====================================================================
 	function initSectionStack() {
-		if (IS_TOUCH || window.innerWidth <= 1024) return;          // desktop seulement
-		if (document.querySelector('.ag-fx-fixed-section')) return;  // accueil scroll-jack : on n'y touche pas
-		var main = document.querySelector('main');
-		if (!main) return;
+		if ( IS_TOUCH || window.innerWidth <= 1024 ) return;        // desktop seulement
+		var container = document.querySelector( 'main' ) || document.body; // accueil = pas de <main>
 		var secs = [];
-		for (var i = 0; i < main.children.length; i++) {
-			if (main.children[i].tagName === 'SECTION') secs.push(main.children[i]);
+		for ( var i = 0; i < container.children.length; i++ ) {
+			if ( container.children[ i ].tagName === 'SECTION' ) secs.push( container.children[ i ] );
 		}
-		if (secs.length < 2) return;
+		if ( secs.length < 2 ) return;
+		// si scroll-jack present (accueil) : on ne stacke que ce qui vient APRES lui
+		var startIdx = 1; // saute le hero
+		for ( var s = 0; s < secs.length; s++ ) {
+			if ( secs[ s ].querySelector && secs[ s ].querySelector( '.ag-fx-fixed-section' ) ) startIdx = s + 1;
+			if ( secs[ s ].classList.contains( 'ag-fx-fixed-section' ) ) startIdx = s + 1;
+		}
 		var vh = window.innerHeight, z = 2;
-		for (var j = 0; j < secs.length; j++) {
-			var sec = secs[j];
-			if (j === 0) continue; // garde le hero intact
-			// deja gere manuellement (page Programme Racines) -> ne pas doubler
-			if (sec.classList.contains('ag-cinescene') || sec.classList.contains('ag-hscroll') ||
-				sec.classList.contains('ag-stackover')) { z++; continue; }
-			sec.classList.add('ag-autostack');
+		for ( var j = startIdx; j < secs.length; j++ ) {
+			var sec = secs[ j ];
+			// uniquement les sections de contenu STANDARD (.ag-section) -> exclut
+			// d'office hero, parallax, globe, cinescene, hscroll, teamrow...
+			if ( ! sec.classList.contains( 'ag-section' ) ) continue;
+			if ( sec.classList.contains( 'ag-stackover' ) ) { z++; continue; } // deja gere (Racines)
+			sec.classList.add( 'ag-autostack' );
 			sec.style.zIndex = z++;
-			// "tenir" en haut seulement si assez haute ET pas la derniere (footer apres)
-			if (j < secs.length - 1 && sec.offsetHeight >= vh * 0.85) sec.classList.add('ag-autostack--hold');
+			if ( j < secs.length - 1 && sec.offsetHeight >= vh * 0.85 ) sec.classList.add( 'ag-autostack--hold' );
 		}
 	}
 
@@ -330,7 +369,8 @@
 		// se mesure mal et se superpose aux sections voisines.
 		initCineScene();
 		initHScroll();
-		// Empilement global des autres pages : apres le load (hauteurs stables)
+		initTeamRow();
+		// Empilement global (toutes pages) : apres le load (hauteurs stables)
 		if (document.readyState === 'complete') initSectionStack();
 		else window.addEventListener('load', initSectionStack);
 		// On charge gsap (si absent) -> ScrollTrigger -> Lenis, puis boot.

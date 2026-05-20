@@ -110,12 +110,14 @@ $ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
 </section>
 
 <!-- Équipe -->
-<section class="ag-section ag-section--cendre">
-    <div class="ag-container">
+<section class="ag-section ag-section--cendre<?php if ( ! $ag_about_is_home ) echo ' ag-teamrow'; ?>">
+    <div class="ag-teamrow__pin">
+    <div class="ag-container ag-teamrow__head">
         <span class="ag-tag ag-anim" data-anim="tag">L'équipe</span>
         <h2 class="ag-section__title ag-anim" data-anim="title">Les visages derrière <em>Alliance Groupe</em></h2>
-        <p class="ag-section__desc ag-anim" data-anim="desc">Une équipe internationale répartie entre Naples, Nantes et Marrakech.</p>
-
+        <p class="ag-section__desc ag-anim" data-anim="desc">Une équipe internationale répartie entre Naples, Nantes et Marrakech.<?php if ( ! $ag_about_is_home ) echo ' <span class="ag-teamrow__hint">Fais défiler →</span>'; ?></p>
+    </div>
+    <div class="ag-teamrow__track">
         <div class="ag-team__grid<?php if ( $ag_about_is_home ) echo ' ag-team__grid--home-condense'; ?>">
             <?php
             $team = [
@@ -206,9 +208,9 @@ $ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
             </div>
             <?php endforeach; ?>
         </div>
+        </div>
 
         <?php if ( $ag_about_is_home ) : ?>
-            <?php /* Mobile + home uniquement : bouton vers la page A propos. */ ?>
             <div class="ag-team__see-all-mobile">
                 <a href="<?php echo esc_url(home_url('/a-propos')); ?>" class="ag-btn-outline">Voir toute l'équipe →</a>
             </div>

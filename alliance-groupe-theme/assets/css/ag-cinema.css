@@ -176,6 +176,22 @@
 	box-shadow: 0 -34px 70px rgba(0,0,0,.5);
 }
 .ag-autostack--hold { position: sticky; top: 0; }
+
+/* === EQUIPE : titre fige + petites cartes qui defilent (desktop) === */
+.ag-teamrow__hint { color: var(--color-gold); font-weight: 700; }
+/* Etat par defaut (accueil condense / mobile / sans JS) : track = conteneur classique */
+.ag-teamrow__track { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.ag-teamrow.is-cinematic .ag-teamrow__track { max-width: none; margin: 0; }
+.ag-teamrow.is-cinematic .ag-teamrow__pin { position: absolute; top: 0; left: 0; width: 100%; height: 100vh; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+.ag-teamrow.is-cinematic.is-fixed .ag-teamrow__pin { position: fixed; top: 0; }
+.ag-teamrow.is-cinematic.is-after .ag-teamrow__pin { position: absolute; top: auto; bottom: 0; }
+.ag-teamrow.is-cinematic .ag-teamrow__head { margin-bottom: 36px; }
+.ag-teamrow.is-cinematic .ag-teamrow__track { overflow: visible; padding: 0 6vw; }
+.ag-teamrow.is-cinematic .ag-team__grid { display: flex; flex-wrap: nowrap; width: max-content; gap: 24px; grid-template-columns: none !important; margin: 0; will-change: transform; }
+.ag-teamrow.is-cinematic .ag-team-card { flex: 0 0 300px; width: 300px; }
+.ag-teamrow.is-cinematic .ag-team-card__img { height: 280px; }
+.ag-teamrow.is-cinematic .ag-team-card__desc,
+.ag-teamrow.is-cinematic .ag-team-card__link { display: none; } /* "petites cartes" */
 .ag-cinescene__bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
 .ag-cinescene__bgimg { width: 100%; height: 100%; object-fit: cover; object-position: 60% 50%; transform: scale(1.06); transform-origin: 60% 50%; will-change: transform; }
 .ag-cinescene__veil {
