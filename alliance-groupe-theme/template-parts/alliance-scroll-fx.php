@@ -476,14 +476,18 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 		});
 	}
 
-	loadScript('https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js', function(){
-		loadScript('https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js', function(){
-			if (document.readyState === 'loading') {
-				document.addEventListener('DOMContentLoaded', init);
-			} else {
-				init();
-			}
+	function start(){
+		if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+		else init();
+	}
+	// GSAP + ScrollTrigger sont normalement deja charges globalement (enqueue WP).
+	// Sinon, filet de secours : on les charge depuis le CDN.
+	if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+		start();
+	} else {
+		loadScript('https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js', function(){
+			loadScript('https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js', start);
 		});
-	});
+	}
 })();
 </script>

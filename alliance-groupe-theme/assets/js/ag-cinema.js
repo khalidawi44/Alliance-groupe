@@ -361,11 +361,12 @@
 		// La page Racines garde son stacking dedie (.ag-stackover, CSS pur).
 		initCineScene();
 		initHScroll();
-		// On charge gsap (si absent) -> ScrollTrigger -> Lenis, puis boot.
+		// GSAP + ScrollTrigger sont deja charges globalement (enqueue WP, <head>).
+		// On ne charge dynamiquement que Lenis (smooth scroll).
 		var need = [];
-		if (typeof gsap === 'undefined') need.push(CDN.gsap);
-		need.push(CDN.st);
-		if (!IS_TOUCH) need.push(CDN.lenis);
+		if (typeof gsap === 'undefined') need.push(CDN.gsap);              // filet de secours
+		if (typeof ScrollTrigger === 'undefined') need.push(CDN.st);      // filet de secours
+		if (!IS_TOUCH && typeof Lenis === 'undefined') need.push(CDN.lenis);
 		loadSeq(need, boot);
 	});
 })();

@@ -72,6 +72,25 @@ add_shortcode( 'ag_promo_video', function ( $atts ) {
 
 // ── 2. Enqueue styles & scripts ─────────────────────────────────
 add_action( 'wp_enqueue_scripts', function () {
+    // ── GSAP + ScrollTrigger : charges UNE FOIS, dans le <head>, AVANT tous les
+    //    autres scripts -> fini les chargements dynamiques concurrents (= bugs
+    //    d'animation). Utilise les fichiers LOCAUX si presents
+    //    (assets/js/vendor/gsap.min.js + ScrollTrigger.min.js), sinon le CDN.
+    $ag_vendor_dir = get_stylesheet_directory() . '/assets/js/vendor/';
+    $ag_vendor_uri = get_stylesheet_directory_uri() . '/assets/js/vendor/';
+    $ag_gsap_ok = file_exists( $ag_vendor_dir . 'gsap.min.js' )         && filesize( $ag_vendor_dir . 'gsap.min.js' )         > 1000;
+    $ag_st_ok   = file_exists( $ag_vendor_dir . 'ScrollTrigger.min.js' ) && filesize( $ag_vendor_dir . 'ScrollTrigger.min.js' ) > 1000;
+    wp_enqueue_script(
+        'ag-gsap',
+        $ag_gsap_ok ? $ag_vendor_uri . 'gsap.min.js' : 'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js',
+        array(), '3.13.0', false
+    );
+    wp_enqueue_script(
+        'ag-gsap-st',
+        $ag_st_ok ? $ag_vendor_uri . 'ScrollTrigger.min.js' : 'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js',
+        array( 'ag-gsap' ), '3.13.0', false
+    );
+
     // Style du thème (style.css obligatoire pour WordPress)
     wp_enqueue_style(
         'ag-theme-style',
@@ -133,7 +152,7 @@ add_action( 'wp_enqueue_scripts', function () {
         wp_enqueue_script(
             'ag-cinema',
             get_stylesheet_directory_uri() . '/assets/js/ag-cinema.js',
-            array(),
+            array( 'ag-gsap', 'ag-gsap-st' ),
             filemtime( $ag_cine_js ),
             true
         );
