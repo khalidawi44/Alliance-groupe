@@ -192,6 +192,17 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
 </main>
 
 <style>
+/* Formulaire : labels classiques empiles (neutralise les floating labels
+   de cinema-upgrades.css qui exigent un markup input-avant-label) */
+#racines-candidature .ag-form__group{position:relative;margin-bottom:0;}
+#racines-candidature .ag-form__group label{
+    position:static;top:auto;left:auto;
+    display:block;font-size:.88rem;font-weight:600;
+    color:var(--color-text-soft);margin-bottom:8px;
+    text-transform:none;letter-spacing:normal;pointer-events:auto;
+}
+#racines-candidature .ag-form__group input,
+#racines-candidature .ag-form__group textarea{padding:14px 18px;}
 .ag-racines__steps{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:50px;}
 .ag-racines__step{position:relative;padding:36px 30px 32px;background:rgba(255,255,255,.025);border:1px solid rgba(212,180,92,.15);border-radius:18px;transition:transform .4s,border-color .4s,box-shadow .4s;}
 .ag-racines__step:hover{transform:translateY(-5px);border-color:rgba(212,180,92,.4);box-shadow:0 24px 60px rgba(0,0,0,.4);}
