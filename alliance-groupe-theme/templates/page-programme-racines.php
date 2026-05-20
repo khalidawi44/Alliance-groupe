@@ -38,82 +38,79 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
         </div>
     </section>
 
-    <!-- Scene a fond fixe : image de Naples derriere origine + principe + 4 etapes.
-         Le fond reste fixe (pin pinSpacing:false = aucun saut), le texte defile par-dessus. -->
-    <section class="ag-bgscene" id="racines-comment" aria-label="L'origine et le principe du Programme Racines">
-        <div class="ag-bgscene__bg" aria-hidden="true">
-            <img class="ag-bgscene__bgimg" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg' ); ?>" alt="" loading="lazy" decoding="async">
-            <div class="ag-bgscene__veil"></div>
-        </div>
-        <div class="ag-bgscene__content">
+    <!-- Scene cinematographique : UN SEUL pin. Fond Naples FIXE de "ne dans un
+         quartier populaire" jusqu'apres l'etape 4. Le contenu (origine, principe,
+         etapes 1-4) s'enchaine en fondu sur place ; le fond ne bouge pas. -->
+    <section class="ag-cinescene" id="racines-comment" aria-label="L'origine, le principe et les étapes du Programme Racines">
+        <div class="ag-cinescene__pin">
+            <div class="ag-cinescene__bg" aria-hidden="true">
+                <img class="ag-cinescene__bgimg" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg' ); ?>" alt="" loading="lazy" decoding="async">
+                <div class="ag-cinescene__veil"></div>
+            </div>
+            <div class="ag-cinescene__ghosts" aria-hidden="true">
+                <span class="ag-cinescene__ghost is-active"></span>
+                <span class="ag-cinescene__ghost"></span>
+                <span class="ag-cinescene__ghost">01</span>
+                <span class="ag-cinescene__ghost">02</span>
+                <span class="ag-cinescene__ghost">03</span>
+                <span class="ag-cinescene__ghost">04</span>
+            </div>
+            <div class="ag-container ag-cinescene__inner">
+                <div class="ag-cinescene__slides">
 
-            <div class="ag-bgscene__panel">
-                <div class="ag-container ag-container--narrow">
-                    <span class="ag-tag ag-anim" data-anim="tag">D'où ça vient</span>
-                    <h2 class="ag-bgscene__title ag-anim" data-anim="title">Né dans un <em>quartier populaire</em></h2>
-                    <p class="ag-bgscene__lead ag-anim" data-anim="desc">
-                        Fabrizio, notre fondateur, a grandi à Naples dans les Quartieri Spagnoli.
-                        Il a commencé par former gratuitement des familles défavorisées au digital,
-                        dans l'arrière-salle d'une église. <strong>Le web comme outil d'émancipation.</strong>
-                    </p>
-                    <p class="ag-bgscene__lead ag-anim" data-anim="desc">
-                        Le Programme Racines, c'est cette conviction transformée en action :
-                        le talent est partout, les opportunités non. On vient corriger ça.
-                    </p>
-                    <a href="<?php echo esc_url( home_url( '/notre-fondateur' ) ); ?>" class="ag-btn-outline ag-anim" data-anim="desc">Lire l'histoire de Fabrizio →</a>
+                    <article class="ag-cinescene__slide is-active">
+                        <span class="ag-tag">D'où ça vient</span>
+                        <h2 class="ag-cinescene__title">Né dans un <em>quartier populaire</em></h2>
+                        <p class="ag-cinescene__lead">
+                            Fabrizio, notre fondateur, a grandi à Naples dans les Quartieri Spagnoli.
+                            Il a commencé par former gratuitement des familles défavorisées au digital,
+                            dans l'arrière-salle d'une église. <strong>Le web comme outil d'émancipation.</strong>
+                        </p>
+                        <p class="ag-cinescene__lead">
+                            Le Programme Racines, c'est cette conviction transformée en action :
+                            le talent est partout, les opportunités non. On vient corriger ça.
+                        </p>
+                        <a href="<?php echo esc_url( home_url( '/notre-fondateur' ) ); ?>" class="ag-btn-outline">Lire l'histoire de Fabrizio →</a>
+                    </article>
+
+                    <article class="ag-cinescene__slide">
+                        <span class="ag-tag">Le principe</span>
+                        <h2 class="ag-cinescene__title">On ne te vend rien. <em>On s'associe.</em></h2>
+                        <p class="ag-cinescene__lead">
+                            Pas de grosse facture à payer au démarrage. On investit notre travail dans
+                            ton projet, et on grandit ensemble : on devient partenaires de ton business.
+                        </p>
+                    </article>
+
+                    <article class="ag-cinescene__slide ag-cinescene__slide--step">
+                        <span class="ag-cinescene__step-label">Étape 01</span>
+                        <h3>On crée ton site au top</h3>
+                        <p>Un site professionnel premium, le même niveau que nos clients payants. Conçu pour vendre et te rendre crédible dès le jour 1.</p>
+                    </article>
+
+                    <article class="ag-cinescene__slide ag-cinescene__slide--step">
+                        <span class="ag-cinescene__step-label">Étape 02</span>
+                        <h3>On devient associés</h3>
+                        <p>Plutôt qu'une facture impossible à payer, on prend une part dans ton business. Ton succès devient le nôtre — on rame dans le même bateau.</p>
+                    </article>
+
+                    <article class="ag-cinescene__slide ag-cinescene__slide--step">
+                        <span class="ag-cinescene__step-label">Étape 03</span>
+                        <h3>On t'accompagne de A à Z</h3>
+                        <p>Création de l'entreprise, gestion, démarches, stratégie. On t'épaule sur tout ce que tu ne maîtrises pas encore, étape par étape.</p>
+                    </article>
+
+                    <article class="ag-cinescene__slide ag-cinescene__slide--step">
+                        <span class="ag-cinescene__step-label">Étape 04</span>
+                        <h3>On gère ton numérique + formation</h3>
+                        <p>Site, SEO, réseaux, automatisation : on s'occupe de tout le digital. Et on te forme pour que tu deviennes autonome et maître de ton outil.</p>
+                    </article>
+
+                </div>
+                <div class="ag-cinescene__dots" aria-hidden="true">
+                    <span class="is-active"></span><span></span><span></span><span></span><span></span><span></span>
                 </div>
             </div>
-
-            <div class="ag-bgscene__panel">
-                <div class="ag-container ag-container--narrow">
-                    <span class="ag-tag ag-anim" data-anim="tag">Le principe</span>
-                    <h2 class="ag-bgscene__title ag-anim" data-anim="title">On ne te vend rien. <em>On s'associe.</em></h2>
-                    <p class="ag-bgscene__lead ag-anim" data-anim="desc">
-                        Pas de grosse facture à payer au démarrage. On investit notre travail dans
-                        ton projet, et on grandit ensemble : on devient partenaires de ton business.
-                    </p>
-                </div>
-            </div>
-
-            <!-- 4 etapes : crossfade epingle (etape 1 fixe -> disparait -> etape 2...) par-dessus le fond Naples -->
-            <div class="ag-cine-stage ag-cine-stage--over" aria-label="Les 4 étapes du programme">
-                <div class="ag-cine-stage__pin">
-                    <div class="ag-cine-stage__ghosts" aria-hidden="true">
-                        <span class="ag-cine-stage__ghost is-active">01</span>
-                        <span class="ag-cine-stage__ghost">02</span>
-                        <span class="ag-cine-stage__ghost">03</span>
-                        <span class="ag-cine-stage__ghost">04</span>
-                    </div>
-                    <div class="ag-container ag-cine-stage__inner">
-                        <div class="ag-cine-stage__chapters">
-                            <article class="ag-cine-stage__chapter is-active">
-                                <span class="ag-cine-stage__step">Étape 01</span>
-                                <h3>On crée ton site au top</h3>
-                                <p>Un site professionnel premium, le même niveau que nos clients payants. Conçu pour vendre et te rendre crédible dès le jour 1.</p>
-                            </article>
-                            <article class="ag-cine-stage__chapter">
-                                <span class="ag-cine-stage__step">Étape 02</span>
-                                <h3>On devient associés</h3>
-                                <p>Plutôt qu'une facture impossible à payer, on prend une part dans ton business. Ton succès devient le nôtre — on rame dans le même bateau.</p>
-                            </article>
-                            <article class="ag-cine-stage__chapter">
-                                <span class="ag-cine-stage__step">Étape 03</span>
-                                <h3>On t'accompagne de A à Z</h3>
-                                <p>Création de l'entreprise, gestion, démarches, stratégie. On t'épaule sur tout ce que tu ne maîtrises pas encore, étape par étape.</p>
-                            </article>
-                            <article class="ag-cine-stage__chapter">
-                                <span class="ag-cine-stage__step">Étape 04</span>
-                                <h3>On gère ton numérique + formation</h3>
-                                <p>Site, SEO, réseaux, automatisation : on s'occupe de tout le digital. Et on te forme pour que tu deviennes autonome et maître de ton outil.</p>
-                            </article>
-                        </div>
-                        <div class="ag-cine-stage__dots" aria-hidden="true">
-                            <span class="is-active"></span><span></span><span></span><span></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </section>
 

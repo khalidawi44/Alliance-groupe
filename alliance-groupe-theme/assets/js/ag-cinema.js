@@ -174,58 +174,38 @@
 	}
 
 	// =====================================================================
-	// SCENE A FOND FIXE — l'image se fige (pin pinSpacing:false = aucun saut),
-	// le texte defile par-dessus. Zoom doux du fond pendant le defilement.
+	// CINESCENE — UN SEUL pin : fond image FIXE + slides en fondu enchaine.
+	// Fond ne bouge pas (juste un zoom doux). Fallback empile si pas de pin.
 	// =====================================================================
-	function initBgScene() {
-		if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
-		if (IS_TOUCH || window.innerWidth <= 1024) return; // mobile = fond statique (CSS)
-		document.querySelectorAll('.ag-bgscene').forEach(function (scene) {
-			var bg  = scene.querySelector('.ag-bgscene__bg');
-			var img = scene.querySelector('.ag-bgscene__bgimg');
-			if (!bg) return;
-			scene.classList.add('is-pinned');
-			ScrollTrigger.create({
-				trigger: scene, start: 'top top', end: 'bottom bottom',
-				pin: bg, pinSpacing: false, anticipatePin: 1, invalidateOnRefresh: true,
-				onUpdate: function (self) {
-					if (img) img.style.transform = 'scale(' + (1.05 + self.progress * 0.16).toFixed(3) + ')';
-				}
-			});
-		});
-	}
-
-	// =====================================================================
-	// CROSSFADE EPINGLE — etapes qui se figent et s'enchainent en fondu
-	// (etape 1 fixe -> disparait -> etape 2...). Fallback empile si pas de pin.
-	// =====================================================================
-	function initCineStage() {
+	function initCineScene() {
 		if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
 		if (IS_TOUCH || window.innerWidth <= 1024) return; // mobile = fallback empile (CSS)
-		document.querySelectorAll('.ag-cine-stage').forEach(function (stage) {
-			var pin      = stage.querySelector('.ag-cine-stage__pin');
-			var chapters = stage.querySelectorAll('.ag-cine-stage__chapter');
-			var ghosts   = stage.querySelectorAll('.ag-cine-stage__ghost');
-			var dots     = stage.querySelectorAll('.ag-cine-stage__dots span');
-			var n = chapters.length;
+		document.querySelectorAll('.ag-cinescene').forEach(function (scene) {
+			var pin    = scene.querySelector('.ag-cinescene__pin');
+			var slides = scene.querySelectorAll('.ag-cinescene__slide');
+			var ghosts = scene.querySelectorAll('.ag-cinescene__ghost');
+			var dots   = scene.querySelectorAll('.ag-cinescene__dots span');
+			var img    = scene.querySelector('.ag-cinescene__bgimg');
+			var n = slides.length;
 			if (!pin || !n) return;
 
-			stage.classList.add('is-cinematic');
+			scene.classList.add('is-cinematic');
 			var cur = -1;
 			function setActive(i) {
 				if (i === cur) return; cur = i;
-				chapters.forEach(function (c, idx) { c.classList.toggle('is-active', idx === i); });
+				slides.forEach(function (s, idx) { s.classList.toggle('is-active', idx === i); });
 				ghosts.forEach(function (g, idx) { g.classList.toggle('is-active', idx === i); });
 				dots.forEach(function (d, idx) { d.classList.toggle('is-active', idx === i); });
 			}
 			setActive(0);
 
 			ScrollTrigger.create({
-				trigger: stage, start: 'top top',
-				end: function () { return '+=' + (n * Math.round(window.innerHeight * 0.9)); },
+				trigger: scene, start: 'top top',
+				end: function () { return '+=' + (n * Math.round(window.innerHeight * 0.85)); },
 				pin: pin, scrub: true, anticipatePin: 1, invalidateOnRefresh: true,
 				onUpdate: function (self) {
 					setActive(Math.min(n - 1, Math.floor(self.progress * n * 0.999)));
+					if (img) img.style.transform = 'scale(' + (1.06 + self.progress * 0.12).toFixed(3) + ')';
 				}
 			});
 		});
@@ -289,8 +269,7 @@
 		function initPins() {
 			requestAnimationFrame(function () {
 				requestAnimationFrame(function () {
-					initBgScene();
-					initCineStage();
+					initCineScene();
 					initHScroll();
 					if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
 				});
