@@ -228,17 +228,23 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 	@media (max-width:900px){
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-content{grid-template-columns:1fr;row-gap:3vh;place-items:center}
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-left,#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-right{height:auto;display:none}
-		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-center{height:auto}
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-center{height:auto;min-height:55vh;width:100%;display:grid;place-items:center;position:relative;}
 	}
 	/* ── Mobile fix (<=768px) : section pas trop haute + textes lisibles ── */
 	@media (max-width:768px){
 		#<?php echo esc_attr( $ag_fx_uid ); ?>{--fx-grid-px:1rem;--fx-overlay:rgba(0,0,0,0.62);}
 		/* Sticky en svh (small viewport height) = sans la barre Safari mobile */
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-fixed{height:100svh;}
+		/* Center cell : doit avoir une hauteur reelle pour que le featured (absolute)
+		   se positionne correctement. min-height + flex centrage = featured visible */
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-content{align-items:stretch;}
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-center{min-height:50vh;align-self:center;}
+		/* Featured : passe en static (flow) au lieu d'absolute pour s'afficher
+		   meme si parent n'a pas de hauteur exploitable */
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured{position:absolute;inset:auto;top:50%;left:50%;transform:translate(-50%,-50%);width:100%;gap:18px;}
 		/* Header (TEMPLATES · WORDPRESS) : evite collision avec burger top */
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-header{padding-top:140px;font-size:.7rem;letter-spacing:3px;opacity:.7;}
 		/* Featured title centre : plus gros + ombre forte pour lisibilité */
-		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured{gap:18px;}
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured-title{font-size:clamp(2.4rem,11vw,3.6rem);text-shadow:0 4px 24px rgba(0,0,0,.7),0 2px 8px rgba(0,0,0,.5);max-width:92vw;}
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-cta{padding:12px 24px;font-size:.78rem;letter-spacing:1.5px;}
 		/* Footer "CHOISISSEZ VOTRE MÉTIER" : letter-spacing tue le texte sur 390px */
@@ -247,6 +253,12 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 		/* Numbers (01/06) sous la barre au lieu d'au-dessus pour ne pas chevaucher le titre */
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-progress{width:160px;margin-top:8px;}
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-progress-numbers{font-size:.7rem;inset:100% 0 auto 0;margin-top:8px;margin-bottom:0;}
+		/* Force les mots du titre featured a etre visibles (GSAP les met a yPercent:100
+		   par defaut sur sections >0, et si l'animation rate sur mobile = invisible) */
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-word{transform:translate3d(0,0,0) !important;opacity:1 !important;}
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-word-mask{overflow:visible;}
+		/* CTA du featured : visible aussi (etait opacity:0 par defaut, anime via .active) */
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured.active .ag-fx-cta{opacity:1 !important;transform:translateY(0) !important;}
 	}
 	/* Petit mobile (<=480px) : encore plus serre */
 	@media (max-width:480px){
