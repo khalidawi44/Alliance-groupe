@@ -111,7 +111,7 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
     </section>
 
     <!-- Le deal clairement — remonte et recouvre la cinescene fixe (effet stacking) -->
-    <section class="ag-section ag-section--or ag-stackover">
+    <section class="ag-section ag-section--or ag-stackover" style="z-index:2;">
         <div class="ag-container ag-container--narrow">
             <div class="ag-racines__deal">
                 <h2 class="ag-racines__deal-title">Le deal, clairement</h2>
@@ -128,7 +128,7 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
     </section>
 
     <!-- Scroll horizontal : ce qu'on construit ensemble -->
-    <section class="ag-hscroll ag-section--onyx" id="racines-build" aria-label="Ce qu'on construit ensemble">
+    <section class="ag-hscroll ag-section--onyx" id="racines-build" aria-label="Ce qu'on construit ensemble" style="z-index:3;">
         <div class="ag-hscroll__pin">
             <div class="ag-hscroll__track">
                 <div class="ag-hscroll__head">
@@ -172,7 +172,7 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
     </section>
 
     <!-- Pour qui -->
-    <section class="ag-section ag-section--graphite">
+    <section class="ag-section ag-section--graphite ag-stackover" style="z-index:4;">
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">Pour qui</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">Ce programme est fait pour <em>toi</em> si...</h2>
@@ -186,7 +186,7 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
     </section>
 
     <!-- Formulaire de candidature -->
-    <section class="ag-section ag-section--onyx" id="racines-candidature">
+    <section class="ag-section ag-section--onyx ag-stackover ag-stackover--flat" id="racines-candidature" style="z-index:5;">
         <div class="ag-container ag-container--narrow">
             <?php if ( $ag_racines_submitted ) : ?>
             <div class="ag-question-success">
