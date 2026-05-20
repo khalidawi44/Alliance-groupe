@@ -181,6 +181,11 @@ function ag_seo_meta() {
 			'desc'    => 'Rejoignez le programme ambassadeurs Alliance Groupe : vendez nos services digitaux et touchez 10% de commission par vente, payés via PayPal. Inscription gratuite par email.',
 			'img_alt' => 'Programme Ambassadeurs Alliance Groupe — 10% de commission',
 		),
+		'sites-express' => array(
+			'title'   => 'Sites Express — Votre site pro livré en quelques jours, prix fixe',
+			'desc'    => 'Commandez votre site web en ligne : packs à prix fixe (490€, 890€, 1490€), paiement sécurisé, livraison rapide. Sans rendez-vous — vous payez, vous briefez, on livre.',
+			'img_alt' => 'Sites Express Alliance Groupe — sites web à prix fixe livrés vite',
+		),
 	);
 
 	$cache = array( 'title' => '', 'desc' => '', 'img_alt' => '' );

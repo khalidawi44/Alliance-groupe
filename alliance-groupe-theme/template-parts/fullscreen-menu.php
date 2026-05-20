@@ -18,14 +18,15 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 $ag_fsm_items = array(
 	array( 'url' => home_url( '/' ),                       'label' => 'Accueil',           'sub' => '01' ),
 	array( 'url' => home_url( '/services' ),               'label' => 'Services',          'sub' => '02' ),
-	array( 'url' => home_url( '/templates-wordpress' ),    'label' => 'Templates',         'sub' => '03' ),
-	array( 'url' => home_url( '/pourquoi-alliance' ),      'label' => 'Pourquoi Alliance', 'sub' => '04' ),
-	array( 'url' => home_url( '/realisations' ),           'label' => 'Réalisations',      'sub' => '05' ),
-	array( 'url' => home_url( '/programme-racines' ),      'label' => 'Programme Racines', 'sub' => '06' ),
-	array( 'url' => home_url( '/ambassadeurs' ),           'label' => 'Ambassadeurs',      'sub' => '07' ),
-	array( 'url' => home_url( '/articles' ),               'label' => 'Articles',          'sub' => '08' ),
-	array( 'url' => home_url( '/a-propos' ),               'label' => 'À propos',          'sub' => '09' ),
-	array( 'url' => home_url( '/contact' ),                'label' => 'Contact',           'sub' => '10' ),
+	array( 'url' => home_url( '/sites-express' ),          'label' => 'Sites Express ⚡',   'sub' => '03' ),
+	array( 'url' => home_url( '/templates-wordpress' ),    'label' => 'Templates',         'sub' => '04' ),
+	array( 'url' => home_url( '/pourquoi-alliance' ),      'label' => 'Pourquoi Alliance', 'sub' => '05' ),
+	array( 'url' => home_url( '/realisations' ),           'label' => 'Réalisations',      'sub' => '06' ),
+	array( 'url' => home_url( '/programme-racines' ),      'label' => 'Programme Racines', 'sub' => '07' ),
+	array( 'url' => home_url( '/ambassadeurs' ),           'label' => 'Ambassadeurs',      'sub' => '08' ),
+	array( 'url' => home_url( '/articles' ),               'label' => 'Articles',          'sub' => '09' ),
+	array( 'url' => home_url( '/a-propos' ),               'label' => 'À propos',          'sub' => '10' ),
+	array( 'url' => home_url( '/contact' ),                'label' => 'Contact',           'sub' => '11' ),
 );
 ?>
 

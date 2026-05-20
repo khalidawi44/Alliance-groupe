@@ -313,6 +313,7 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-programme-racines.php'] = 'Programme Racines';
     $templates['templates/page-ambassadeurs.php']    = 'Programme Ambassadeurs';
     $templates['templates/page-contrat-ambassadeur.php'] = 'Contrat Ambassadeur';
+    $templates['templates/page-sites-express.php']   = 'Sites Express';
     return $templates;
 } );
 
@@ -777,6 +778,76 @@ if ( ! function_exists( 'ag_submit_racines' ) ) {
 
         wp_safe_redirect( add_query_arg( array( 'racines' => 'ok' ), home_url( '/programme-racines' ) ) . '#racines-candidature' );
         exit;
+    }
+}
+
+// ── 11a3. Sites Express — brief projet (post-paiement) ──────────
+add_action( 'admin_post_nopriv_ag_submit_brief', 'ag_submit_brief' );
+add_action( 'admin_post_ag_submit_brief', 'ag_submit_brief' );
+
+if ( ! function_exists( 'ag_submit_brief' ) ) {
+    function ag_submit_brief() {
+        if ( ! isset( $_POST['ag_brief_nonce'] ) || ! wp_verify_nonce( $_POST['ag_brief_nonce'], 'ag_brief_nonce' ) ) {
+            wp_die( 'Nonce invalide.', 'Erreur', array( 'response' => 403 ) );
+        }
+        $pack     = sanitize_text_field(     $_POST['pack']     ?? '' );
+        $business = sanitize_text_field(     $_POST['business'] ?? '' );
+        $name     = sanitize_text_field(     $_POST['name']     ?? '' );
+        $email    = sanitize_email(          $_POST['email']    ?? '' );
+        $phone    = sanitize_text_field(     $_POST['phone']    ?? '' );
+        $sector   = sanitize_text_field(     $_POST['sector']   ?? '' );
+        $domain   = sanitize_text_field(     $_POST['domain']   ?? '' );
+        $content  = sanitize_textarea_field( $_POST['content']  ?? '' );
+        $inspi    = sanitize_textarea_field( $_POST['inspiration'] ?? '' );
+
+        if ( empty( $name ) || ! is_email( $email ) || empty( $business ) ) {
+            wp_die( 'Merci d\'indiquer ton nom, email et le nom de ton activité.', 'Champs manquants', array( 'response' => 400, 'back_link' => true ) );
+        }
+
+        $briefs = get_option( 'ag_express_briefs', array() );
+        if ( ! is_array( $briefs ) ) $briefs = array();
+        $briefs[] = compact( 'pack', 'business', 'name', 'email', 'phone', 'sector', 'domain', 'content', 'inspi' )
+            + array( 'date' => current_time( 'd/m/Y H:i' ) );
+        update_option( 'ag_express_briefs', $briefs );
+
+        $body  = "Nouveau brief Site Express\n\n";
+        $body .= "Pack : $pack\nActivité : $business\nContact : $name <$email> $phone\n";
+        $body .= "Secteur : $sector\nNom de domaine souhaité : $domain\n\n";
+        $body .= "Contenu/textes :\n$content\n\nInspirations :\n$inspi\n\nDate : " . current_time( 'd/m/Y H:i' );
+        wp_mail( 'contact@alliancegroupe-inc.com', 'Brief Site Express : ' . $business, $body );
+
+        $headers = array( 'Content-Type: text/plain; charset=UTF-8' );
+        $c  = "Bonjour $name,\n\nMerci ! On a bien reçu le brief de ton site ($business).\n";
+        $c .= "On démarre la production et on t'envoie une première version rapidement, ";
+        $c .= "avec une vidéo de présentation. Tout se fait par écrit, sans rendez-vous.\n\n";
+        $c .= "L'équipe Alliance Groupe\ncontact@alliancegroupe-inc.com";
+        wp_mail( $email, 'On a reçu le brief de ton site 🚀', $c, $headers );
+
+        wp_safe_redirect( add_query_arg( array( 'brief' => 'ok' ), home_url( '/sites-express' ) ) . '#brief' );
+        exit;
+    }
+}
+
+// ── 11a4. Admin : voir les briefs Sites Express ─────────────────
+add_action( 'admin_menu', function () {
+    add_menu_page( 'Sites Express', 'Sites Express', 'manage_options', 'ag-express-briefs', 'ag_render_express_briefs', 'dashicons-laptop', 29 );
+} );
+if ( ! function_exists( 'ag_render_express_briefs' ) ) {
+    function ag_render_express_briefs() {
+        if ( ! current_user_can( 'manage_options' ) ) return;
+        $briefs = array_reverse( get_option( 'ag_express_briefs', array() ) );
+        echo '<div class="wrap"><h1>Briefs Sites Express</h1>';
+        if ( empty( $briefs ) ) { echo '<p>Aucun brief pour le moment.</p></div>'; return; }
+        echo '<table class="widefat striped"><thead><tr><th>Date</th><th>Pack</th><th>Activité</th><th>Contact</th><th>Secteur</th><th>Domaine</th><th>Contenu</th><th>Inspi</th></tr></thead><tbody>';
+        foreach ( $briefs as $b ) {
+            echo '<tr><td>' . esc_html( $b['date'] ?? '' ) . '</td><td>' . esc_html( $b['pack'] ?? '' ) . '</td>';
+            echo '<td><strong>' . esc_html( $b['business'] ?? '' ) . '</strong></td>';
+            echo '<td>' . esc_html( $b['name'] ?? '' ) . '<br><a href="mailto:' . esc_attr( $b['email'] ?? '' ) . '">' . esc_html( $b['email'] ?? '' ) . '</a><br>' . esc_html( $b['phone'] ?? '' ) . '</td>';
+            echo '<td>' . esc_html( $b['sector'] ?? '' ) . '</td><td>' . esc_html( $b['domain'] ?? '' ) . '</td>';
+            echo '<td style="max-width:280px;white-space:normal;">' . esc_html( $b['content'] ?? '' ) . '</td>';
+            echo '<td style="max-width:200px;white-space:normal;">' . esc_html( $b['inspi'] ?? '' ) . '</td></tr>';
+        }
+        echo '</tbody></table></div>';
     }
 }
 

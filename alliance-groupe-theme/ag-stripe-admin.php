@@ -56,6 +56,18 @@ add_action( 'admin_init', function () {
 			'label'       => 'Abonnement Expert — 199€/mois',
 			'description' => 'URL du Payment Link Stripe pour l\'abonnement mensuel Questions Expert (199€/mois, jusqu\'à 8 questions/mois).',
 		),
+		'ag_stripe_express_essentiel_url' => array(
+			'label'       => 'Site Express — Essentiel (490€)',
+			'description' => 'URL du Payment Link Stripe pour le pack Site Express Essentiel. Configure l\'URL de redirection après paiement vers : ' . esc_url( home_url( '/sites-express?paid=essentiel#brief' ) ),
+		),
+		'ag_stripe_express_pro_url' => array(
+			'label'       => 'Site Express — Pro (890€)',
+			'description' => 'URL du Payment Link Stripe pour le pack Site Express Pro. Redirection après paiement : ' . esc_url( home_url( '/sites-express?paid=pro#brief' ) ),
+		),
+		'ag_stripe_express_boutique_url' => array(
+			'label'       => 'Site Express — Boutique (1490€)',
+			'description' => 'URL du Payment Link Stripe pour le pack Site Express Boutique. Redirection après paiement : ' . esc_url( home_url( '/sites-express?paid=boutique#brief' ) ),
+		),
 	);
 	foreach ( $fields as $key => $meta ) {
 		register_setting(

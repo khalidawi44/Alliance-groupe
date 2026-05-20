@@ -32,6 +32,7 @@
         "pages/programme-racines.json",
         "pages/ambassadeurs.json",
         "pages/contrat-ambassadeur.json",
+        "pages/sites-express.json",
         "pages/service-creation-web.json",
         "pages/service-ia.json",
         "pages/service-seo.json",
