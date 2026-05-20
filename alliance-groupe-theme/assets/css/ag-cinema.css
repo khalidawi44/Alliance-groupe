@@ -164,6 +164,18 @@
 /* Sections a pin manuel (cinescene / hscroll) : meme look de "carte qui remonte" */
 .ag-cinescene.is-cinematic .ag-cinescene__stage,
 .ag-hscroll.is-cinematic .ag-hscroll__pin { border-radius: 28px 28px 0 0; box-shadow: 0 -34px 70px rgba(0,0,0,.5); }
+
+/* === Empilement AUTOMATIQUE (tout le site) : applique par JS aux sections
+   de contenu. Fond rendu opaque (anti-transparence), coin haut arrondi +
+   ombre = "carte qui remonte". Le sticky (--hold) n'est mis que sur les
+   sections assez hautes pour ne pas creer de vide sur les pages courtes. === */
+.ag-autostack {
+	position: relative;
+	background-color: var(--color-bg, #0a0a0c);
+	border-radius: 28px 28px 0 0;
+	box-shadow: 0 -34px 70px rgba(0,0,0,.5);
+}
+.ag-autostack--hold { position: sticky; top: 0; }
 .ag-cinescene__bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
 .ag-cinescene__bgimg { width: 100%; height: 100%; object-fit: cover; object-position: 60% 50%; transform: scale(1.06); transform-origin: 60% 50%; will-change: transform; }
 .ag-cinescene__veil {

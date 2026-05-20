@@ -279,6 +279,34 @@
 	}
 
 	// =====================================================================
+	// EMPILEMENT AUTOMATIQUE (tout le site) — applique le stacking aux
+	// sections de contenu des autres pages, avec garde-fous anti-casse.
+	// =====================================================================
+	function initSectionStack() {
+		if (IS_TOUCH || window.innerWidth <= 1024) return;          // desktop seulement
+		if (document.querySelector('.ag-fx-fixed-section')) return;  // accueil scroll-jack : on n'y touche pas
+		var main = document.querySelector('main');
+		if (!main) return;
+		var secs = [];
+		for (var i = 0; i < main.children.length; i++) {
+			if (main.children[i].tagName === 'SECTION') secs.push(main.children[i]);
+		}
+		if (secs.length < 2) return;
+		var vh = window.innerHeight, z = 2;
+		for (var j = 0; j < secs.length; j++) {
+			var sec = secs[j];
+			if (j === 0) continue; // garde le hero intact
+			// deja gere manuellement (page Programme Racines) -> ne pas doubler
+			if (sec.classList.contains('ag-cinescene') || sec.classList.contains('ag-hscroll') ||
+				sec.classList.contains('ag-stackover')) { z++; continue; }
+			sec.classList.add('ag-autostack');
+			sec.style.zIndex = z++;
+			// "tenir" en haut seulement si assez haute ET pas la derniere (footer apres)
+			if (j < secs.length - 1 && sec.offsetHeight >= vh * 0.85) sec.classList.add('ag-autostack--hold');
+		}
+	}
+
+	// =====================================================================
 	// BOOT
 	// =====================================================================
 	function boot() {
@@ -302,6 +330,9 @@
 		// se mesure mal et se superpose aux sections voisines.
 		initCineScene();
 		initHScroll();
+		// Empilement global des autres pages : apres le load (hauteurs stables)
+		if (document.readyState === 'complete') initSectionStack();
+		else window.addEventListener('load', initSectionStack);
 		// On charge gsap (si absent) -> ScrollTrigger -> Lenis, puis boot.
 		var need = [];
 		if (typeof gsap === 'undefined') need.push(CDN.gsap);
