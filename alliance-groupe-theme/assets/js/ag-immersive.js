@@ -35,11 +35,16 @@
 		el.className = 'ag-intro';
 		el.innerHTML = '<div class="ag-intro__inner"><span class="ag-intro__brand">Alliance Groupe</span><span class="ag-intro__bar"><i></i></span></div>';
 		document.body.appendChild( el );
-		document.documentElement.classList.add( 'ag-intro-lock' );
+		// NB : on NE bloque PAS le scroll (overflow:hidden) pendant l'intro -> ca
+		// faussait le calcul de l'epinglage (ScrollTrigger / scroll-jack) qui
+		// mesurait une page non-scrollable -> sections cassees.
 		function done() {
 			el.classList.add( 'is-out' );
-			document.documentElement.classList.remove( 'ag-intro-lock' );
 			setTimeout( function () { if ( el && el.parentNode ) el.parentNode.removeChild( el ); }, 800 );
+			// recalcule les epinglages une fois l'intro retiree
+			if ( window.ScrollTrigger && window.ScrollTrigger.refresh ) {
+				setTimeout( function () { window.ScrollTrigger.refresh(); }, 60 );
+			}
 		}
 		// se retire au load, avec un mini delai pour laisser jouer l'anim ; filet a 2.6s
 		var fired = false;

@@ -5,7 +5,6 @@
    ===================================================================== */
 
 /* ── 1. Intro cinematique ───────────────────────────────────────── */
-.ag-intro-lock { overflow: hidden; }
 .ag-intro {
 	position: fixed; inset: 0; z-index: 2147483000;
 	background: #0a0a0c;
