@@ -154,46 +154,73 @@ add_filter( 'wp_robots', function ( $robots ) {
 }, 9999 );
 
 // ── 3c. Custom XML sitemap (indépendant de Yoast / WP natif) ───
-// Intercepte /sitemap.xml ET /sitemap_index.xml ET /wp-sitemap.xml
+// /sitemap.xml + /ag-sitemap.xml + /wp-sitemap.xml  →  urlset (toutes les URLs)
+// /sitemap_index.xml                                 →  sitemapindex (vrai format index)
 add_action( 'template_redirect', function () {
     $path = trim( parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ), '/' );
-    if ( ! in_array( $path, array( 'sitemap.xml', 'sitemap_index.xml', 'wp-sitemap.xml', 'ag-sitemap.xml' ), true ) ) {
+    $allowed = array( 'sitemap.xml', 'sitemap_index.xml', 'wp-sitemap.xml', 'ag-sitemap.xml' );
+    if ( ! in_array( $path, $allowed, true ) ) {
         return;
     }
 
-    // Pages à NE PAS indexer
+    // Nettoie tout output deja envoye (au cas ou un plugin a deja imprime
+    // quelque chose) — un sitemap doit etre pur XML, pas un mot avant.
+    if ( ob_get_level() ) {
+        while ( ob_get_level() ) ob_end_clean();
+    }
+
+    // Headers : XML strict, pas de cache navigateur, pas de noindex
+    // (Google a parfois refuse les sitemaps avec X-Robots-Tag noindex)
+    header( 'Content-Type: application/xml; charset=UTF-8' );
+    header( 'X-Robots-Tag: noindex, follow' ); // OK pour le sitemap lui-meme
+    header( 'Cache-Control: public, max-age=3600' );
+    status_header( 200 ); // force 200 (pas 404 / WP par defaut)
+
+    echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+
+    // ── Cas 1 : /sitemap_index.xml = vrai sitemapindex ──
+    if ( $path === 'sitemap_index.xml' ) {
+        echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+        echo '<sitemap><loc>' . esc_url( home_url( '/sitemap.xml' ) ) . '</loc><lastmod>' . esc_html( wp_date( 'Y-m-d' ) ) . '</lastmod></sitemap>' . "\n";
+        echo '</sitemapindex>';
+        exit;
+    }
+
+    // ── Cas 2 : sitemap classique = urlset ──
+    // Pages a NE PAS indexer
     $excluded = array( 'merci-rdv', 'merci-achat' );
 
-    // Collecter toutes les pages publiées
+    // Collecter toutes les pages publiees
     $pages = get_pages( array( 'post_status' => 'publish', 'sort_column' => 'post_modified', 'sort_order' => 'DESC' ) );
 
-    // Collecter tous les articles publiés
+    // Collecter tous les articles publies
     $posts = get_posts( array( 'post_type' => 'post', 'post_status' => 'publish', 'posts_per_page' => -1, 'orderby' => 'modified', 'order' => 'DESC' ) );
 
-    header( 'Content-Type: application/xml; charset=UTF-8' );
-    header( 'X-Robots-Tag: noindex' ); // le sitemap lui-même ne doit pas être indexé
-    echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
     echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
 
     // Homepage
     echo '<url><loc>' . esc_url( home_url( '/' ) ) . '</loc><changefreq>daily</changefreq><priority>1.0</priority></url>' . "\n";
 
     // Pages
-    foreach ( $pages as $page ) {
-        if ( in_array( $page->post_name, $excluded, true ) ) continue;
-        $mod = get_the_modified_date( 'Y-m-d', $page );
-        echo '<url><loc>' . esc_url( get_permalink( $page ) ) . '</loc><lastmod>' . $mod . '</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>' . "\n";
+    if ( is_array( $pages ) ) {
+        foreach ( $pages as $page ) {
+            if ( in_array( $page->post_name, $excluded, true ) ) continue;
+            $mod = get_the_modified_date( 'Y-m-d', $page );
+            echo '<url><loc>' . esc_url( get_permalink( $page ) ) . '</loc><lastmod>' . $mod . '</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>' . "\n";
+        }
     }
 
     // Articles
-    foreach ( $posts as $post ) {
-        $mod = get_the_modified_date( 'Y-m-d', $post );
-        echo '<url><loc>' . esc_url( get_permalink( $post ) ) . '</loc><lastmod>' . $mod . '</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>' . "\n";
+    if ( is_array( $posts ) ) {
+        foreach ( $posts as $post ) {
+            $mod = get_the_modified_date( 'Y-m-d', $post );
+            echo '<url><loc>' . esc_url( get_permalink( $post ) ) . '</loc><lastmod>' . $mod . '</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>' . "\n";
+        }
     }
 
     echo '</urlset>';
     exit;
-} );
+}, 0 ); // priority 0 = avant tout autre handler
 
 // Désactiver le sitemap natif WP (on gère tout nous-mêmes)
 add_filter( 'wp_sitemaps_enabled', '__return_false' );
@@ -294,15 +321,28 @@ add_action( 'wp_head', function () {
 // ── 8b. Robots.txt amélioration ─────────────────────────────────
 add_filter( 'robots_txt', function ( $output, $public ) {
     if ( $public ) {
+        $home   = home_url( '/' );
         $output  = "User-agent: *\n";
         $output .= "Allow: /\n";
+        $output .= "Allow: /sitemap.xml\n";
+        $output .= "Allow: /sitemap_index.xml\n";
+        $output .= "Allow: /ag-sitemap.xml\n";
         $output .= "Disallow: /wp-admin/\n";
         $output .= "Disallow: /wp-includes/\n";
         $output .= "Disallow: /?s=\n";
         $output .= "Disallow: /merci-rdv\n";
         $output .= "Disallow: /merci-achat\n";
         $output .= "\n";
-        $output .= "Sitemap: " . home_url( '/sitemap.xml' ) . "\n";
+        // Whitelist explicite Googlebot pour eviter blocage serveur (mod_security)
+        $output .= "User-agent: Googlebot\n";
+        $output .= "Allow: /\n";
+        $output .= "Allow: /sitemap.xml\n";
+        $output .= "\n";
+        $output .= "User-agent: Bingbot\n";
+        $output .= "Allow: /\n";
+        $output .= "Allow: /sitemap.xml\n";
+        $output .= "\n";
+        $output .= "Sitemap: " . $home . "sitemap.xml\n";
     }
     return $output;
 }, 10, 2 );
