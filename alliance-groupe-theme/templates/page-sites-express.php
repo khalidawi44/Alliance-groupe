@@ -11,7 +11,7 @@ get_header();
 $ph = 'STRIPE_PLACEHOLDER';
 $packs = array(
 	'essentiel' => array(
-		'url'   => get_option( 'ag_stripe_express_essentiel_url', 'https://www.paypal.com/ncp/payment/N9DCC5VWTS5LY' ),
+		'url'   => get_option( 'ag_stripe_express_essentiel_url', 'https://www.paypal.com/ncp/payment/YNEZPTYSYR6EU' ),
 		'nom'   => 'Essentiel',
 		'prix'  => '490 €',
 		'desc'  => 'Le site vitrine qui te rend crédible.',
@@ -26,7 +26,7 @@ $packs = array(
 		'star'  => true,
 	),
 	'boutique' => array(
-		'url'   => get_option( 'ag_stripe_express_boutique_url', 'https://www.paypal.com/ncp/payment/YNEZPTYSYR6EU' ),
+		'url'   => get_option( 'ag_stripe_express_boutique_url', 'https://www.paypal.com/ncp/payment/N9DCC5VWTS5LY' ),
 		'nom'   => 'Boutique',
 		'prix'  => '1 490 €',
 		'desc'  => 'Ta boutique en ligne, prête à vendre.',
@@ -36,7 +36,7 @@ $packs = array(
 
 $maint = array(
 	'serenite' => array(
-		'url'  => get_option( 'ag_stripe_maint_serenite_url', 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9Y6BHFKDPLMSQ' ),
+		'url'  => get_option( 'ag_stripe_maint_serenite_url', 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ARWC8AS5NM7HQ' ),
 		'nom'  => 'Sérénité', 'prix' => '29 €',
 		'desc' => 'Ton site toujours en ligne et sécurisé.',
 		'feats'=> array( 'Hébergement + nom de domaine', 'Sauvegardes automatiques', 'Mises à jour & sécurité', 'Support par email' ),
@@ -48,7 +48,7 @@ $maint = array(
 		'feats'=> array( 'Tout « Sérénité »', '30 min de retouches / mois', 'Suivi & conseils', 'Statistiques de visites' ),
 	),
 	'performance' => array(
-		'url'  => get_option( 'ag_stripe_maint_performance_url', $ph ),
+		'url'  => get_option( 'ag_stripe_maint_performance_url', 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9Y6BHFKDPLMSQ' ),
 		'nom'  => 'Performance', 'prix' => '99 €',
 		'desc' => 'On pousse ta visibilité chaque mois.',
 		'feats'=> array( 'Tout « Croissance »', 'SEO continu (Google)', '1h de retouches / mois', 'Rapport mensuel' ),
