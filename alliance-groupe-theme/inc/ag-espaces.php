@@ -778,3 +778,49 @@ add_action( 'template_redirect', function () {
 		nocache_headers();
 	}
 }, 0 );
+
+/* ── 12. Notifications Google Agenda (invitation .ics avec rappel pop-up) ──
+   À chaque inscription ambassadeur / achat de site, le site envoie une
+   invitation d'agenda à ton adresse Gmail → Google l'ajoute à ton agenda
+   avec un rappel (pop-up + sonnerie selon tes réglages Google Agenda). */
+if ( ! function_exists( 'ag_calendar_notify' ) ) {
+	function ag_calendar_notify( $summary, $description, $location = '' ) {
+		$to = apply_filters( 'ag_calendar_notify_email', 'advise.alliance.group@gmail.com' );
+		if ( ! is_email( $to ) ) return;
+		$now   = time();
+		$start = $now + 120;          // 2 min plus tard : garantit le déclenchement du pop-up
+		$end   = $start + 1800;       // 30 min
+		$uid   = uniqid( 'ag_' ) . '@alliancegroupe-inc.com';
+		$z     = function ( $t ) { return gmdate( 'Ymd\THis\Z', $t ); };
+		$esc   = function ( $s ) { return preg_replace( '/([,;\\\\])/', '\\\\$1', str_replace( array( "\r\n", "\n" ), '\\n', (string) $s ) ); };
+		$ics  = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Alliance Groupe//Notifs//FR\r\nCALSCALE:GREGORIAN\r\nMETHOD:REQUEST\r\n";
+		$ics .= "BEGIN:VEVENT\r\nUID:" . $uid . "\r\nDTSTAMP:" . $z( $now ) . "\r\nDTSTART:" . $z( $start ) . "\r\nDTEND:" . $z( $end ) . "\r\n";
+		$ics .= "SUMMARY:" . $esc( $summary ) . "\r\nDESCRIPTION:" . $esc( $description ) . "\r\n";
+		if ( $location ) $ics .= "LOCATION:" . $esc( $location ) . "\r\n";
+		$ics .= "ORGANIZER;CN=Alliance Groupe:mailto:contact@alliancegroupe-inc.com\r\n";
+		$ics .= "ATTENDEE;CN=Alliance Groupe;RSVP=TRUE:mailto:" . $to . "\r\n";
+		$ics .= "STATUS:CONFIRMED\r\nTRANSP:OPAQUE\r\n";
+		$ics .= "BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:" . $esc( $summary ) . "\r\nTRIGGER:-PT0M\r\nEND:VALARM\r\n";
+		$ics .= "END:VEVENT\r\nEND:VCALENDAR\r\n";
+		$headers = array(
+			'Content-Type: text/calendar; charset=UTF-8; method=REQUEST',
+			'From: Alliance Groupe <contact@alliancegroupe-inc.com>',
+		);
+		wp_mail( $to, $summary, $ics, $headers );
+	}
+}
+// Nouvel ambassadeur inscrit -> évènement agenda.
+add_action( 'ag_ambassadeur_registered', function ( $email, $name ) {
+	ag_calendar_notify(
+		'🤝 Nouvel ambassadeur : ' . $name,
+		"Inscription au programme commercial.\nNom : $name\nEmail : $email\nÀ valider (identité + contrat) dans l'admin."
+	);
+}, 20, 2 );
+// Achat de site (brief reçu = commande) -> évènement agenda.
+add_action( 'ag_client_brief_submitted', function ( $email, $name, $pack = '' ) {
+	$p = $pack ? ucfirst( $pack ) : '';
+	ag_calendar_notify(
+		'🎯 Vente site' . ( $p ? ' (' . $p . ')' : '' ) . ' : ' . $name,
+		"Commande d'un site reçue (brief envoyé).\nClient : $name\nEmail : $email\nPack : " . ( $p ? $p : 'non précisé' ) . "\nVérifie le paiement PayPal puis valide la vente."
+	);
+}, 20, 3 );
