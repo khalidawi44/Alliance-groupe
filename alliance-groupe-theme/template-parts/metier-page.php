@@ -15,7 +15,7 @@ if ( ! is_array( $ag_metier ) || empty( $ag_metier['slug'] ) ) {
 
 $dl_base   = get_stylesheet_directory_uri() . '/assets/downloads/';
 
-// Load the Stripe URLs from options (same as page-templates.php).
+// Load the payment link URLs from options (same as page-templates.php).
 $ag_stripe_placeholder    = 'STRIPE_PLACEHOLDER';
 $ag_stripe_premium      = get_option( 'ag_stripe_premium_url', $ag_stripe_placeholder );
 
@@ -30,9 +30,9 @@ $premium_target      = ( $ag_stripe_premium      !== $ag_stripe_placeholder ) ? 
 
 $business_target = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : '';
 
-$premium_label      = ( $ag_stripe_premium      !== $ag_stripe_placeholder ) ? 'Payer 99€ via Stripe →'  : 'Acheter — 99€ une fois';
+$premium_label      = ( $ag_stripe_premium      !== $ag_stripe_placeholder ) ? 'Payer 99€ via PayPal →'  : 'Acheter — 99€ une fois';
 
-$business_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'Payer 149€ via Stripe →' : 'Acheter — 149€ une fois';
+$business_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'Payer 149€ via PayPal →' : 'Acheter — 149€ une fois';
 
 $screenshot_url = get_stylesheet_directory_uri() . '/assets/downloads/' . $ag_metier['slug_full'] . '/screenshot.png';
 $screenshot_file = get_stylesheet_directory() . '/assets/downloads/' . $ag_metier['slug_full'] . '/screenshot.png';

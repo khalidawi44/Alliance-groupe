@@ -5,11 +5,11 @@
  * Pricing grid for the written-consultation offers ("Questions Flash")
  * + post-purchase form for the buyer to submit their question.
  * The form is shown automatically when the page is hit with ?paid=1,
- * which is the Success URL configured on the Stripe Payment Links.
+ * which is the return URL configured on the PayPal payment links.
  */
 get_header();
 
-// ── Stripe URLs (fallback to /contact if not configured) ──────
+// ── Payment link URLs (fallback to /contact if not configured) ──────
 $contact_url = home_url( '/contact' );
 $stripe_single = get_option( 'ag_stripe_question_single_url', 'STRIPE_PLACEHOLDER' );
 $stripe_pack   = get_option( 'ag_stripe_question_pack_url', 'STRIPE_PLACEHOLDER' );
@@ -22,7 +22,7 @@ $btn_url = function( $stripe ) use ( $contact_url ) {
 	return $stripe;
 };
 
-// ── Is the buyer coming back from Stripe? ───────────────────
+// ── Is the buyer coming back from PayPal? ───────────────────
 $paid_pack = isset( $_GET['paid'] ) && isset( $_GET['pack'] ) ? sanitize_key( $_GET['pack'] ) : '';
 $pack_labels = array(
 	'single' => '1 Question Flash (45 €)',
@@ -72,7 +72,7 @@ $question_sent = isset( $_GET['question_sent'] ) && '1' === $_GET['question_sent
         </div>
     </section>
     <?php elseif ( $is_success ) : ?>
-    <!-- ── POST-PURCHASE FORM (shown when redirected from Stripe) ── -->
+    <!-- ── POST-PURCHASE FORM (shown when redirected from PayPal) ── -->
     <section class="ag-section ag-section--darker" id="ag-question-form">
         <div class="ag-container">
             <div class="ag-question-success">
@@ -209,7 +209,7 @@ $question_sent = isset( $_GET['question_sent'] ) && '1' === $_GET['question_sent
                 <div class="ag-rdv-expect__item">
                     <span class="ag-rdv-expect__num">1</span>
                     <h3>Vous choisissez un pack</h3>
-                    <p>Payez en ligne via Stripe en 30 secondes. Sécurisé, carte bancaire ou Apple Pay. Aucun abonnement caché (sauf si vous choisissez l'Abonnement Expert, évidemment).</p>
+                    <p>Payez en ligne via PayPal en 30 secondes. Sécurisé, par carte bancaire ou compte PayPal. Aucun abonnement caché (sauf si vous choisissez l'Abonnement Expert, évidemment).</p>
                 </div>
                 <div class="ag-rdv-expect__item">
                     <span class="ag-rdv-expect__num">2</span>

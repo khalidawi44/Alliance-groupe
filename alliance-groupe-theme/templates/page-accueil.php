@@ -7,7 +7,7 @@ get_header();
 
 <!-- Hero -->
 <section class="ag-hero" id="ag-main-content">
-    <!-- Mesh gradient WebGL animé (style Stripe/Linear) -->
+    <!-- Mesh gradient WebGL animé (dégradé animé moderne) -->
     <?php get_template_part('template-parts/mesh-gradient-bg'); ?>
     <!-- Grille tech high-tech parallax qui réagit à la souris -->
     <?php get_template_part('template-parts/hero-tech-grid'); ?>

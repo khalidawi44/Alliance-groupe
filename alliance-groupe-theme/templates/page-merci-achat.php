@@ -2,7 +2,7 @@
 /**
  * Template Name: Merci pour votre achat
  *
- * Page de remerciement post-paiement Stripe. Détecte le pack acheté
+ * Page de remerciement post-paiement PayPal. Détecte le pack acheté
  * via le paramètre ?pack=premium|business dans l'URL et affiche
  * le bon contenu. Met en avant l'offre de site sur-mesure pour
  * remonter les acheteurs vers le ticket le plus élevé.

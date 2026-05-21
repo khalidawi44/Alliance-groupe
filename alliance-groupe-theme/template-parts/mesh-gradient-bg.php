@@ -1,7 +1,7 @@
 <?php
 /**
  * Mesh gradient WebGL animé — fond cinématographique pour le hero
- * (effet Stripe.com / Linear.app).
+ * (effet dégradé animé moderne).
  *
  * Shader fragment GLSL custom : 4 colors mix avec simplex noise animé
  * dans le temps, légèrement influencé par la position de la souris.

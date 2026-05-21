@@ -10,7 +10,7 @@ if ( file_exists( $ag_import_file ) ) {
     require_once $ag_import_file;
 }
 
-// ── 1b. Charger ag-stripe-admin.php (page de config Stripe) ─────
+// ── 1b. Charger ag-stripe-admin.php (page Liens de paiement) ─────
 if ( is_admin() ) {
     $ag_stripe_admin_file = get_stylesheet_directory() . '/ag-stripe-admin.php';
     if ( file_exists( $ag_stripe_admin_file ) ) {
@@ -688,7 +688,7 @@ if ( ! function_exists( 'ag_save_lead' ) ) {
     }
 }
 
-// ── 11. Questions Flash submission (post-Stripe) ────────────────
+// ── 11. Questions Flash submission (post-paiement) ────────────────
 add_action( 'admin_post_nopriv_ag_submit_question', 'ag_submit_question' );
 add_action( 'admin_post_ag_submit_question', 'ag_submit_question' );
 

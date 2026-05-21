@@ -70,7 +70,7 @@ get_header();
                     </thead>
                     <tbody>
                         <tr><td>Cal.com</td><td>Affichage du widget de prise de rendez-vous</td><td>Jusqu'à 1 an</td></tr>
-                        <tr><td>Stripe</td><td>Traitement sécurisé des paiements en ligne</td><td>Jusqu'à 1 an</td></tr>
+                        <tr><td>PayPal</td><td>Traitement sécurisé des paiements en ligne</td><td>Jusqu'à 1 an</td></tr>
                     </tbody>
                 </table>
 

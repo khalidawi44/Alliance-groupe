@@ -3,8 +3,8 @@
  * Template Name: Sites Express
  *
  * Vente de sites "produit" 100% en ligne, sans rendez-vous :
- * 3 packs a prix fixe -> paiement Stripe (Payment Links) -> formulaire de brief.
- * Les URLs Stripe se configurent dans Reglages > Stripe (admin).
+ * 3 packs a prix fixe -> paiement PayPal (liens de paiement) -> formulaire de brief.
+ * Les liens de paiement se configurent dans Reglages > Liens de paiement (admin).
  */
 get_header();
 
@@ -78,7 +78,7 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
     <!-- Barre de réassurance -->
     <div class="ag-xpress__reassure">
         <span>⚡ Livraison en quelques jours</span>
-        <span>🔒 Paiement sécurisé Stripe</span>
+        <span>🔒 Paiement sécurisé PayPal</span>
         <span>✅ Révisions incluses</span>
         <span>🇫🇷 Équipe française</span>
         <span>🙅 Sans rendez-vous</span>
@@ -165,7 +165,7 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
                 <details><summary>Je n'ai pas de logo ni de photos, c'est grave ?</summary><p>Non. On peut partir de ton nom et utiliser des visuels professionnels adaptés à ton métier. Si tu as un logo, tu l'envoies ; sinon on t'oriente.</p></details>
                 <details><summary>Le nom de domaine et l'hébergement sont inclus ?</summary><p>On s'occupe de la mise en ligne. L'hébergement + le nom de domaine sont gérés via l'abonnement maintenance (à partir de 29€/mois) pour garder ton site en ligne, sécurisé et à jour.</p></details>
                 <details><summary>Et après la livraison, qui s'occupe du site ?</summary><p>Toi si tu veux, ou nous via l'abonnement maintenance : mises à jour, sécurité, sauvegardes, petites retouches et référencement. Tu ne touches à rien.</p></details>
-                <details><summary>Le paiement est-il sécurisé ?</summary><p>Oui, 100% via Stripe (leader mondial du paiement en ligne). Tes données bancaires ne passent jamais par nous.</p></details>
+                <details><summary>Le paiement est-il sécurisé ?</summary><p>Oui, 100% via PayPal (leader mondial du paiement en ligne). Tes données bancaires ne passent jamais par nous : tu paies sur la page sécurisée PayPal, par carte ou avec ton compte PayPal.</p></details>
                 <details><summary>Puis-je avoir une facture ?</summary><p>Oui, une facture est émise automatiquement pour chaque commande.</p></details>
             </div>
         </div>

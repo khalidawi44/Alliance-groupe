@@ -88,7 +88,7 @@ get_header();
                 </ul>
 
                 <h3>2.3 Prix & paiement</h3>
-                <p>Les prix sont indiqués en euros, TTC. Le paiement s'effectue exclusivement en ligne via <strong>Stripe</strong>, prestataire de paiement sécurisé agréé. Aucune donnée bancaire n'est stockée sur nos serveurs.</p>
+                <p>Les prix sont indiqués en euros, TTC. Le paiement s'effectue exclusivement en ligne via <strong>PayPal</strong>, prestataire de paiement sécurisé agréé. Aucune donnée bancaire n'est stockée sur nos serveurs.</p>
                 <ul>
                     <li>Les prestations ponctuelles (audits, questions unitaires) sont réglées en une fois avant exécution.</li>
                     <li>Les prestations sur devis peuvent faire l'objet d'un acompte de 30 % à 50 % selon le montant, le solde étant dû à la livraison.</li>
@@ -125,7 +125,7 @@ get_header();
                     <li><strong>Audit payant annulé par vos soins</strong> — Annulation gratuite et remboursement intégral jusqu'à 24 h avant le RDV via le lien d'annulation Cal.com inclus dans votre email de confirmation.</li>
                     <li><strong>Audit payant annulé moins de 24 h avant</strong> — Possibilité de reporter le RDV sans frais (1 fois). Au-delà, l'audit est considéré comme consommé.</li>
                     <li><strong>Insatisfaction sur un audit réalisé</strong> — Si la prestation ne correspond pas à ce qui avait été annoncé, vous disposez de 7 jours pour nous adresser une réclamation motivée. Nous vous proposerons soit une nouvelle session gratuite, soit un remboursement partiel ou intégral selon la situation.</li>
-                    <li><strong>Abonnement Expert</strong> — Résiliable à tout moment depuis l'email de confirmation Stripe. Aucun remboursement au prorata du mois en cours, mais aucun prélèvement futur.</li>
+                    <li><strong>Abonnement Expert</strong> — Résiliable à tout moment depuis votre compte PayPal (ou l'email de confirmation PayPal). Aucun remboursement au prorata du mois en cours, mais aucun prélèvement futur.</li>
                     <li><strong>Prestations sur devis</strong> — Les conditions de remboursement sont précisées dans chaque devis et dépendent de l'état d'avancement des travaux.</li>
                 </ul>
 

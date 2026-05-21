@@ -80,7 +80,7 @@
 			if ( /^(mailto:|tel:|javascript:)/i.test( href ) ) return;
 			var url;
 			try { url = new URL( a.href, window.location.href ); } catch ( err ) { return; }
-			if ( url.origin !== window.location.origin ) return;              // liens externes (Stripe...) : nav normale
+			if ( url.origin !== window.location.origin ) return;              // liens externes (PayPal...) : nav normale
 			if ( url.pathname === window.location.pathname && url.hash ) return; // meme page + ancre
 			e.preventDefault();
 			cover.classList.remove( 'is-ready' );

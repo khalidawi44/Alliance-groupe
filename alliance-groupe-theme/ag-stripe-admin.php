@@ -1,12 +1,11 @@
 ﻿<?php
 /**
- * Alliance Groupe — Stripe Payment Links admin page
+ * Alliance Groupe — Liens de paiement (admin page)
  *
- * Provides a minimal "Configuration Stripe AG" screen under the
- * Réglages menu so the user can paste the 2 Stripe Payment Link
- * URLs (Premium / Business) without editing any code. The
- * values are stored in standard wp_options entries read by
- * templates/page-templates.php.
+ * Provides a "Liens de paiement" screen under the Réglages menu so the
+ * user can paste any HTTPS payment link (PayPal, bank, SumUp, Lydia…)
+ * for each offer without editing any code. The values are stored in
+ * standard wp_options entries read by the front-end templates.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -23,8 +22,8 @@ define( 'AG_STRIPE_ADMIN_LOADED', true );
  */
 add_action( 'admin_menu', function () {
 	add_options_page(
-		'Configuration Stripe AG',
-		'Stripe AG',
+		'Liens de paiement',
+		'Liens de paiement',
 		'manage_options',
 		'ag-stripe-config',
 		'ag_stripe_admin_render'
@@ -38,47 +37,47 @@ add_action( 'admin_init', function () {
 	$fields = array(
 		'ag_stripe_premium_url'  => array(
 			'label'       => 'Pack Premium — 99€',
-			'description' => 'URL du Payment Link Stripe pour le Pack Premium. Ex : https://buy.stripe.com/xxxxxxx',
+			'description' => 'URL du lien de paiement pour le Pack Premium. Ex : https://www.paypal.com/ncp/payment/xxxxxxx',
 		),
 		'ag_stripe_business_url' => array(
 			'label'       => 'Pack Business — 149€',
-			'description' => 'URL du Payment Link Stripe pour le Pack Business.',
+			'description' => 'URL du lien de paiement pour le Pack Business.',
 		),
 		'ag_stripe_question_single_url' => array(
 			'label'       => 'Question Flash — 45€ (1 question)',
-			'description' => 'URL du Payment Link Stripe pour 1 Question Flash (45€, réponse écrite sous 48h).',
+			'description' => 'URL du lien de paiement pour 1 Question Flash (45€, réponse écrite sous 48h).',
 		),
 		'ag_stripe_question_pack_url'   => array(
 			'label'       => 'Pack 3 Questions — 120€',
-			'description' => 'URL du Payment Link Stripe pour le pack de 3 Questions Flash (120€, utilisables sur 90 jours).',
+			'description' => 'URL du lien de paiement pour le pack de 3 Questions Flash (120€, utilisables sur 90 jours).',
 		),
 		'ag_stripe_question_sub_url'    => array(
 			'label'       => 'Abonnement Expert — 199€/mois',
-			'description' => 'URL du Payment Link Stripe pour l\'abonnement mensuel Questions Expert (199€/mois, jusqu\'à 8 questions/mois).',
+			'description' => 'URL du lien de paiement pour l\'abonnement mensuel Questions Expert (199€/mois, jusqu\'à 8 questions/mois).',
 		),
 		'ag_stripe_express_essentiel_url' => array(
 			'label'       => 'Site Express — Essentiel (490€)',
-			'description' => 'URL du Payment Link Stripe pour le pack Site Express Essentiel. Configure l\'URL de redirection après paiement vers : ' . esc_url( home_url( '/sites-express?paid=essentiel#brief' ) ),
+			'description' => 'URL du lien de paiement pour le pack Site Express Essentiel. Configure l\'URL de redirection après paiement vers : ' . esc_url( home_url( '/sites-express?paid=essentiel#brief' ) ),
 		),
 		'ag_stripe_express_pro_url' => array(
 			'label'       => 'Site Express — Pro (890€)',
-			'description' => 'URL du Payment Link Stripe pour le pack Site Express Pro. Redirection après paiement : ' . esc_url( home_url( '/sites-express?paid=pro#brief' ) ),
+			'description' => 'URL du lien de paiement pour le pack Site Express Pro. Redirection après paiement : ' . esc_url( home_url( '/sites-express?paid=pro#brief' ) ),
 		),
 		'ag_stripe_express_boutique_url' => array(
 			'label'       => 'Site Express — Boutique (1490€)',
-			'description' => 'URL du Payment Link Stripe pour le pack Site Express Boutique. Redirection après paiement : ' . esc_url( home_url( '/sites-express?paid=boutique#brief' ) ),
+			'description' => 'URL du lien de paiement pour le pack Site Express Boutique. Redirection après paiement : ' . esc_url( home_url( '/sites-express?paid=boutique#brief' ) ),
 		),
 		'ag_stripe_maint_serenite_url' => array(
 			'label'       => 'Maintenance — Sérénité (29€/mois)',
-			'description' => 'Payment Link Stripe en mode ABONNEMENT (récurrent mensuel). Redirection : ' . esc_url( home_url( '/sites-express?abo=ok#maintenance' ) ),
+			'description' => 'lien de paiement en mode ABONNEMENT (récurrent mensuel). Redirection : ' . esc_url( home_url( '/sites-express?abo=ok#maintenance' ) ),
 		),
 		'ag_stripe_maint_croissance_url' => array(
 			'label'       => 'Maintenance — Croissance (59€/mois)',
-			'description' => 'Payment Link Stripe en mode ABONNEMENT mensuel.',
+			'description' => 'lien de paiement en mode ABONNEMENT mensuel.',
 		),
 		'ag_stripe_maint_performance_url' => array(
 			'label'       => 'Maintenance — Performance (99€/mois)',
-			'description' => 'Payment Link Stripe en mode ABONNEMENT mensuel.',
+			'description' => 'lien de paiement en mode ABONNEMENT mensuel.',
 		),
 	);
 	foreach ( $fields as $key => $meta ) {
@@ -96,18 +95,10 @@ add_action( 'admin_init', function () {
 } );
 
 /**
- * Sanitize the Stripe URL input : empty string or the placeholder
+ * Sanitize the payment link input : empty string or the placeholder
  * both map back to STRIPE_PLACEHOLDER so the front-end fallback
- * kicks in. Real URLs must use one of the allowed Stripe hosts
- * (official or AG custom domain) — anything else is rejected.
- *
- * Allowed hosts :
- *   - buy.stripe.com            (default Payment Links)
- *   - checkout.stripe.com       (Checkout sessions)
- *   - paiement.alliancegroupe-inc.com  (AG custom domain)
- *
- * Additional hosts can be plugged in via the `ag_stripe_allowed_hosts`
- * filter without editing this file.
+ * kicks in. Any valid HTTPS payment link is accepted (PayPal, bank,
+ * SumUp, Lydia…) — only the https:// scheme is required.
  *
  * @param string $value Raw value.
  * @return string
@@ -123,7 +114,7 @@ function ag_stripe_sanitize_url( $value ) {
 		return 'STRIPE_PLACEHOLDER';
 	}
 	// On accepte TOUT lien de paiement HTTPS valide : ta banque, PayPal,
-	// SumUp, Lydia, Stripe... Securite : on exige juste le https://.
+	// SumUp, Lydia... Securite : on exige juste le https://.
 	if ( 'https' !== wp_parse_url( $url, PHP_URL_SCHEME ) ) {
 		add_settings_error(
 			'ag_stripe_config',
@@ -162,20 +153,20 @@ function ag_stripe_admin_render() {
 		<p style="font-size:.95rem;color:#50575e;max-width:760px;">
 			Collez ici vos <strong>liens de paiement</strong> pour chaque offre.
 			Vous pouvez utiliser <strong>n'importe quel service</strong> : votre banque,
-			PayPal, SumUp, Lydia, Stripe… (un simple lien en <code>https://</code> suffit).
-			Tant qu'un champ est vide / <code>STRIPE_PLACEHOLDER</code>, le bouton
+			PayPal, SumUp, Lydia… (un simple lien en <code>https://</code> suffit).
+			Tant qu'un champ est vide, le bouton
 			correspondant retombe sur le formulaire <em>/contact</em> ou le brief (le
 			contact est quand même capturé).
 		</p>
 
 		<div style="max-width:760px;margin-top:16px;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #D4B45C;">
-			<strong>Comment créer un Payment Link Stripe ?</strong>
+			<strong>Comment créer un lien de paiement PayPal ?</strong>
 			<ol style="margin:8px 0 0 22px;">
-				<li>Connectez-vous à votre <a href="https://dashboard.stripe.com/payment-links" target="_blank" rel="noopener">dashboard Stripe</a>.</li>
-				<li>Cliquez sur <em>Payment links</em> &gt; <em>Nouveau lien de paiement</em>.</li>
-				<li>Créez un produit (ex. « AG Starter Premium »), tarif unique, montant 99,00&nbsp;€ TTC.</li>
-				<li>Copiez le lien <code>https://buy.stripe.com/xxxxxxx</code> puis collez-le ci-dessous.</li>
-				<li>Répétez pour Business (149&nbsp;€).</li>
+				<li>Connectez-vous à votre <a href="https://www.paypal.com/" target="_blank" rel="noopener">compte PayPal Business</a>.</li>
+				<li>Pour un paiement unique : <em>Pay &amp; Get Paid</em> &gt; <em>Liens de paiement</em>. Pour un abonnement : <em>Boutons PayPal</em> &gt; <em>S'abonner</em>.</li>
+				<li>Créez le produit (ex. « AG Starter Premium »), montant TTC en EUR.</li>
+				<li>Copiez le lien <code>https://www.paypal.com/ncp/payment/xxxxxxx</code> (ou le lien du bouton d'abonnement) puis collez-le ci-dessous.</li>
+				<li>Répétez pour chaque offre.</li>
 			</ol>
 		</div>
 
@@ -191,7 +182,7 @@ function ag_stripe_admin_render() {
 						<input type="url" name="ag_stripe_premium_url" id="ag_stripe_premium_url"
 							value="<?php echo esc_attr( $premium ); ?>"
 							class="regular-text code"
-							placeholder="https://buy.stripe.com/...">
+							placeholder="https://www.paypal.com/ncp/payment/...">
 						<p class="description">
 							<?php echo $state_badge( $premium ); // phpcs:ignore ?>
 						</p>
@@ -205,14 +196,14 @@ function ag_stripe_admin_render() {
 						<input type="url" name="ag_stripe_business_url" id="ag_stripe_business_url"
 							value="<?php echo esc_attr( $business ); ?>"
 							class="regular-text code"
-							placeholder="https://buy.stripe.com/...">
+							placeholder="https://www.paypal.com/ncp/payment/...">
 						<p class="description">
 							<?php echo $state_badge( $business ); // phpcs:ignore ?>
 						</p>
 					</td>
 				</tr>
 
-				<tr><td colspan="2" style="padding:16px 0 4px;"><h2 style="margin:0;font-size:1.15rem;color:#1d2327;">Questions Flash — consultations écrites</h2><p style="color:#50575e;font-size:.9rem;margin:4px 0 0;">Payment Links Stripe pour les offres de réponse écrite sous 48h proposées sur la page <em>/questions-flash</em>.</p></td></tr>
+				<tr><td colspan="2" style="padding:16px 0 4px;"><h2 style="margin:0;font-size:1.15rem;color:#1d2327;">Questions Flash — consultations écrites</h2><p style="color:#50575e;font-size:.9rem;margin:4px 0 0;">Liens de paiement pour les offres de réponse écrite sous 48h proposées sur la page <em>/questions-flash</em>.</p></td></tr>
 
 				<tr>
 					<th scope="row">
@@ -222,7 +213,7 @@ function ag_stripe_admin_render() {
 						<input type="url" name="ag_stripe_question_single_url" id="ag_stripe_question_single_url"
 							value="<?php echo esc_attr( $q_single ); ?>"
 							class="regular-text code"
-							placeholder="https://buy.stripe.com/...">
+							placeholder="https://www.paypal.com/ncp/payment/...">
 						<p class="description">
 							<?php echo $state_badge( $q_single ); // phpcs:ignore ?>
 						</p>
@@ -236,7 +227,7 @@ function ag_stripe_admin_render() {
 						<input type="url" name="ag_stripe_question_pack_url" id="ag_stripe_question_pack_url"
 							value="<?php echo esc_attr( $q_pack ); ?>"
 							class="regular-text code"
-							placeholder="https://buy.stripe.com/...">
+							placeholder="https://www.paypal.com/ncp/payment/...">
 						<p class="description">
 							<?php echo $state_badge( $q_pack ); // phpcs:ignore ?>
 						</p>
@@ -250,7 +241,7 @@ function ag_stripe_admin_render() {
 						<input type="url" name="ag_stripe_question_sub_url" id="ag_stripe_question_sub_url"
 							value="<?php echo esc_attr( $q_sub ); ?>"
 							class="regular-text code"
-							placeholder="https://buy.stripe.com/...">
+							placeholder="https://www.paypal.com/ncp/payment/...">
 						<p class="description">
 							<?php echo $state_badge( $q_sub ); // phpcs:ignore ?>
 							<br><em style="color:#666;">Doit être un Payment Link en mode « subscription » (abonnement mensuel).</em>
@@ -259,22 +250,22 @@ function ag_stripe_admin_render() {
 				</tr>
 			</table>
 
-			<?php submit_button( 'Enregistrer les URLs Stripe' ); ?>
+			<?php submit_button( 'Enregistrer les liens de paiement' ); ?>
 		</form>
 
 		<div style="max-width:760px;margin-top:24px;padding:18px 20px;background:#f0f6fc;border:1px solid #c3dffb;border-radius:6px;">
 			<strong>Astuce :</strong> pour vider une URL et revenir au fallback <em>/contact</em>,
-			laissez le champ vide et cliquez sur <em>Enregistrer</em>. Les hôtes acceptés sont
-			<code>buy.stripe.com</code> et <code>checkout.stripe.com</code>, toute autre URL est
-			rejetée avec un message d'erreur en haut de page.
+			laissez le champ vide et cliquez sur <em>Enregistrer</em>. Tout lien de paiement
+			valide en <code>https://</code> est accepté (PayPal, banque, SumUp, Lydia…) ;
+			une URL non sécurisée est rejetée avec un message d'erreur en haut de page.
 		</div>
 
 		<hr style="margin:40px 0 24px;border:none;border-top:1px solid #ddd;">
 
-		<h2 style="font-size:1.4rem;">📋 Descriptions produit prêtes à coller dans Stripe</h2>
+		<h2 style="font-size:1.4rem;">📋 Descriptions produit prêtes à coller dans PayPal</h2>
 		<p style="color:#50575e;max-width:780px;">
-			Pour chaque Payment Link Stripe, copiez-collez la description correspondante
-			dans le champ <em>« Description du produit »</em> de Stripe lors de la création.
+			Pour chaque lien de paiement PayPal, copiez-collez la description correspondante
+			dans le champ <em>« Description du produit »</em> de PayPal lors de la création.
 			Chaque description rappelle votre offre de site sur-mesure pour faire remonter
 			les acheteurs vers le ticket le plus élevé.
 		</p>
@@ -301,7 +292,7 @@ function ag_stripe_admin_render() {
 		?>
 
 		<div style="background:#fff8e6;border:1px solid #f5c64d;border-left:4px solid #D4B45C;padding:18px 22px;border-radius:6px;margin-bottom:24px;max-width:780px;">
-			<strong>🎯 Page de remerciement à utiliser comme « URL de réussite » dans Stripe :</strong><br>
+			<strong>🎯 Page de remerciement à utiliser comme « URL de retour après paiement » dans PayPal :</strong><br>
 			<code style="background:#fff;padding:4px 8px;border-radius:3px;display:inline-block;margin-top:6px;font-size:.95rem;">
 				<?php echo esc_html( $thank_you_url ); ?>?pack=premium
 			</code><br>
@@ -338,7 +329,7 @@ function ag_stripe_admin_render() {
 				</div>
 
 				<div style="padding:14px 22px;background:#f6f7f7;font-size:.88rem;color:#50575e;">
-					<strong>Prix Stripe :</strong> <?php echo esc_html( $prod['price'] ); ?> · paiement unique ·
+					<strong>Prix :</strong> <?php echo esc_html( $prod['price'] ); ?> · paiement unique ·
 					<strong>Devise :</strong> EUR ·
 					<strong>URL de réussite recommandée :</strong>
 					<code><?php echo esc_html( $thank_you_url . '?pack=' . $key ); ?></code>

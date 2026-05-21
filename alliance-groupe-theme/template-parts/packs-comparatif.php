@@ -2,7 +2,7 @@
 /**
  * Comparatif visuel des 3 packs Pro / Premium / Business.
  *
- * Tableau de fonctionnalités avec ✓ / ✗ + CTA Stripe checkout.
+ * Tableau de fonctionnalités avec ✓ / ✗ + CTA paiement.
  * Inclus dans page-templates.php pour structurer l'upsell.
  *
  * @package Alliance_Groupe_Theme

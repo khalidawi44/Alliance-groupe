@@ -88,10 +88,10 @@ get_header();
                     <li>Pack acheté</li>
                 </ul>
 
-                <h3>Paiement en ligne (Stripe)</h3>
+                <h3>Paiement en ligne (PayPal)</h3>
                 <ul>
                     <li>Données de facturation (nom, adresse email)</li>
-                    <li>Données de paiement (numéro de carte, date d'expiration) — <strong>traitées exclusivement par Stripe, jamais stockées sur nos serveurs</strong></li>
+                    <li>Données de paiement (numéro de carte, compte PayPal) — <strong>traitées exclusivement par PayPal, jamais stockées sur nos serveurs</strong></li>
                 </ul>
 
                 <h3>Téléchargement de templates gratuits</h3>
@@ -120,7 +120,7 @@ get_header();
                         <tr><td>Répondre à vos demandes de contact</td><td>Nom, email, téléphone, message</td></tr>
                         <tr><td>Planifier et réaliser les consultations</td><td>Nom, email, données Cal.com</td></tr>
                         <tr><td>Traiter les Questions Flash</td><td>Nom, email, activité, question, pack</td></tr>
-                        <tr><td>Traiter les paiements</td><td>Données de facturation (via Stripe)</td></tr>
+                        <tr><td>Traiter les paiements</td><td>Données de facturation (via PayPal)</td></tr>
                         <tr><td>Envoyer les confirmations et livrables</td><td>Nom, email</td></tr>
                         <tr><td>Envoyer des communications marketing (avec consentement)</td><td>Nom, email</td></tr>
                         <tr><td>Améliorer le site (analytics)</td><td>Données de navigation anonymisées</td></tr>
@@ -173,7 +173,7 @@ get_header();
                         <tr><th>Sous-traitant</th><th>Service</th><th>Pays</th><th>Garanties</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td>Stripe, Inc.</td><td>Paiement en ligne</td><td>USA</td><td>Certifié PCI-DSS, clauses contractuelles types (CCT)</td></tr>
+                        <tr><td>PayPal (Europe) S.à r.l. et Cie, S.C.A.</td><td>Paiement en ligne</td><td>Luxembourg (UE)</td><td>Établissement de crédit agréé, certifié PCI-DSS</td></tr>
                         <tr><td>Cal.com, Inc.</td><td>Prise de rendez-vous</td><td>USA</td><td>CCT, SOC 2 Type II, open source</td></tr>
                         <tr><td>Hostinger International</td><td>Hébergement web</td><td>Lituanie (UE)</td><td>Serveurs UE, conforme RGPD</td></tr>
                         <tr><td>Google LLC</td><td>Analytics, Google Meet</td><td>USA</td><td>CCT, cadre de protection des données UE-US</td></tr>
@@ -183,7 +183,7 @@ get_header();
 
                 <!-- 7 -->
                 <h2 id="transferts">7. Transferts hors Union européenne</h2>
-                <p>Certains de nos sous-traitants (Stripe, Cal.com, Google) sont basés aux États-Unis. Ces transferts sont encadrés par&nbsp;:</p>
+                <p>Certains de nos sous-traitants (Cal.com, Google) sont basés aux États-Unis. Ces transferts sont encadrés par&nbsp;:</p>
                 <ul>
                     <li>Les <strong>Clauses Contractuelles Types (CCT)</strong> adoptées par la Commission européenne</li>
                     <li>Le <strong>EU-U.S. Data Privacy Framework</strong> pour les entreprises certifiées</li>
@@ -226,7 +226,7 @@ get_header();
                     <li><strong>Mots de passe hashés</strong> — aucun mot de passe stocké en clair</li>
                     <li><strong>Accès restreint</strong> — seuls les membres autorisés de l'équipe accèdent aux données</li>
                     <li><strong>Sauvegardes régulières</strong> de la base de données</li>
-                    <li><strong>Paiements PCI-DSS</strong> — données bancaires traitées exclusivement par Stripe, jamais stockées sur nos serveurs</li>
+                    <li><strong>Paiements PCI-DSS</strong> — données bancaires traitées exclusivement par PayPal, jamais stockées sur nos serveurs</li>
                     <li><strong>Mises à jour régulières</strong> de WordPress, des plugins et du thème</li>
                 </ul>
 
