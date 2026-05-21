@@ -80,9 +80,6 @@ get_header();
 <!-- P1/ VENDRE — offres claires a prix fixe -->
 <?php get_template_part('template-parts/home-offres'); ?>
 
-<!-- P1b/ Services sur-mesure (ticket plus eleve) -->
-<?php get_template_part('template-parts/services'); ?>
-
 <!-- Bande parallax (fond ville fixe, nuit) : punchline vente -->
 <section class="ag-parallax ag-parallax--punch" style="background-image:url('<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/nantes-3.jpg' ); ?>');">
     <div class="ag-parallax__overlay" style="background:linear-gradient(180deg,rgba(6,8,16,.62),rgba(6,8,16,.46) 45%,rgba(6,8,16,.74));"></div>
