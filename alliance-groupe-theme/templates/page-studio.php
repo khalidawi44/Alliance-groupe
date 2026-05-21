@@ -12,14 +12,11 @@ $u            = wp_get_current_user();
 $email        = ( $u && $u->ID ) ? $u->user_email : '';
 $ag_sale_link = ( $email && function_exists( 'ag_ambassadeur_sale_link' ) ) ? ag_ambassadeur_sale_link( $email ) : home_url( '/sites-express' );
 
-$studio = get_stylesheet_directory_uri() . '/assets/images/studio/';
-$prod   = get_stylesheet_directory_uri() . '/assets/images/produits/';
-$media  = array(
-	$studio . 'studio-247.jpg', $studio . 'studio-490.jpg', $studio . 'studio-10pct.jpg',
-	$studio . 'studio-racines.jpg', $studio . 'studio-boutique.jpg', $studio . 'studio-rdv.jpg',
-	$prod . 'produit-essentiel.jpg', $prod . 'produit-pro.jpg', $prod . 'produit-boutique.jpg',
-	$prod . 'produit-serenite.jpg', $prod . 'produit-croissance.jpg', $prod . 'produit-performance.jpg',
-);
+$studio_uri = get_stylesheet_directory_uri() . '/assets/images/studio/';
+$prod_uri   = get_stylesheet_directory_uri() . '/assets/images/produits/';
+$media = array();
+foreach ( glob( get_stylesheet_directory() . '/assets/images/studio/*.jpg' ) as $f ) { $media[] = $studio_uri . basename( $f ); }
+foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) as $f ) { $media[] = $prod_uri . basename( $f ); }
 ?>
 <main id="ag-main-content" class="ag-esp ag-studio">
 	<section class="ag-section ag-section--graphite">
@@ -238,8 +235,9 @@ $media  = array(
 .ag-tools summary{cursor:pointer;padding:16px 0;font-weight:700;color:#fff;list-style:none;}
 .ag-tools summary::-webkit-details-marker{display:none;}
 .ag-tools details p{color:var(--color-text-soft);margin:0 0 16px;line-height:1.6;}
-@media(max-width:768px){#ag-main-content.ag-studio > .ag-section:first-child{padding-top:120px;}}
+@media(max-width:768px){#ag-main-content.ag-studio > .ag-section:first-child{padding-top:170px;}}
 @media(max-width:760px){.ag-vis-grid{grid-template-columns:1fr 1fr;}.ag-maker{grid-template-columns:1fr;}.ag-maker--v .ag-maker__preview canvas{max-height:60vh;}}
+@media(max-width:480px){.ag-vis-grid{gap:12px;}.ag-vis__btns{padding:8px;gap:6px;}.ag-vis__btns .ag-btn-gold,.ag-vis__btns .ag-btn-outline{padding:9px 8px;font-size:.8rem;}.ag-sbtn{padding:12px 14px;}.ag-btn-gold,.ag-btn-outline{width:100%;justify-content:center;text-align:center;}}
 </style>
 
 <?php get_footer(); ?>

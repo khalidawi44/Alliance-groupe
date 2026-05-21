@@ -259,8 +259,8 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 .ag-share-msg__head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
 .ag-share-msg__head strong{color:#fff;}
 .ag-share-msg textarea{width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(212,180,92,.3);background:rgba(255,255,255,.05);color:#fff;font-size:.95rem;line-height:1.5;resize:vertical;}
-@media(max-width:768px){#ag-main-content.ag-esp > .ag-section:first-child{padding-top:120px;}}
-@media(max-width:760px){.ag-esp-stats{grid-template-columns:1fr 1fr;}.ag-lb-grid{grid-template-columns:1fr;}.ag-studio-cta{flex-direction:column;align-items:flex-start;}}
+@media(max-width:768px){#ag-main-content.ag-esp > .ag-section:first-child{padding-top:170px;}}
+@media(max-width:760px){.ag-esp-stats{grid-template-columns:1fr 1fr;}.ag-lb-grid{grid-template-columns:1fr;}.ag-studio-cta{flex-direction:column;align-items:flex-start;}.ag-studio-cta__btn{width:100%;justify-content:center;text-align:center;}.ag-share-btns .ag-sbtn{flex:1;justify-content:center;min-width:44%;}}
 </style>
 
 <?php get_footer(); ?>
