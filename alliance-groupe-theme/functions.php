@@ -75,9 +75,10 @@ add_action( 'wp_enqueue_scripts', function () {
     // ── GSAP + ScrollTrigger : charges UNE FOIS, dans le <head>, AVANT tous les
     //    autres scripts -> fini les chargements dynamiques concurrents (= bugs
     //    d'animation). Utilise les fichiers LOCAUX si presents
-    //    (assets/js/vendor/gsap.min.js + ScrollTrigger.min.js), sinon le CDN.
-    $ag_vendor_dir = get_stylesheet_directory() . '/assets/js/vendor/';
-    $ag_vendor_uri = get_stylesheet_directory_uri() . '/assets/js/vendor/';
+    //    (assets/js/lib/gsap.min.js + ScrollTrigger.min.js), sinon le CDN.
+    //    NB : on n'utilise PAS "vendor" (ignore par .gitignore).
+    $ag_vendor_dir = get_stylesheet_directory() . '/assets/js/lib/';
+    $ag_vendor_uri = get_stylesheet_directory_uri() . '/assets/js/lib/';
     $ag_gsap_ok = file_exists( $ag_vendor_dir . 'gsap.min.js' )         && filesize( $ag_vendor_dir . 'gsap.min.js' )         > 1000;
     $ag_st_ok   = file_exists( $ag_vendor_dir . 'ScrollTrigger.min.js' ) && filesize( $ag_vendor_dir . 'ScrollTrigger.min.js' ) > 1000;
     wp_enqueue_script(
