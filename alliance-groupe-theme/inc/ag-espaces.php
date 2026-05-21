@@ -222,7 +222,7 @@ add_action( 'template_redirect', function () {
 	if ( is_page_template( 'templates/page-connexion.php' ) && is_user_logged_in() ) {
 		wp_safe_redirect( ag_espace_url() ); exit;
 	}
-	$amb = is_page_template( 'templates/page-espace-ambassadeur.php' );
+	$amb = is_page_template( 'templates/page-espace-ambassadeur.php' ) || is_page_template( 'templates/page-studio.php' );
 	$cli = is_page_template( 'templates/page-espace-client.php' );
 	if ( ! $amb && ! $cli ) return;
 
@@ -248,13 +248,14 @@ add_filter( 'login_redirect', function ( $redirect, $requested, $user ) {
 
 /* ── 7. Auto-création des pages (une seule fois) ───────────────────── */
 add_action( 'init', function () {
-	if ( get_option( 'ag_espaces_pages_v3' ) ) return;
+	if ( get_option( 'ag_espaces_pages_v4' ) ) return;
 	$pages = array(
 		'connexion'           => array( 'Connexion',          'templates/page-connexion.php' ),
 		'espace-client'       => array( 'Espace Client',      'templates/page-espace-client.php' ),
 		'espace-ambassadeur'  => array( 'Espace Commercial',  'templates/page-espace-ambassadeur.php' ),
 		'classement'          => array( 'Classement',         'templates/page-classement.php' ),
 		'mot-de-passe'        => array( 'Mot de passe',       'templates/page-mot-de-passe.php' ),
+		'studio'              => array( 'Studio',             'templates/page-studio.php' ),
 	);
 	foreach ( $pages as $slug => $d ) {
 		if ( get_page_by_path( $slug ) ) continue;
@@ -267,7 +268,7 @@ add_action( 'init', function () {
 			'page_template'=> $d[1],
 		) );
 	}
-	update_option( 'ag_espaces_pages_v3', 1 );
+	update_option( 'ag_espaces_pages_v4', 1 );
 } );
 
 /* ── 8. Classement & récompenses (gamification commerciale) ────────── */
