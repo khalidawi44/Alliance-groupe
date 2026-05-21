@@ -175,6 +175,62 @@ $labels = array( 'declaree' => 'En attente', 'validee' => 'Validée', 'payee' =>
 	})();
 	</script>
 
+	<section class="ag-section ag-section--graphite">
+		<div class="ag-container ag-container--narrow">
+			<h2 class="ag-section__title">Crée ta vidéo perso 🎬 <span style="font-size:.55em;color:#4bbf77;vertical-align:middle;">gratuit</span></h2>
+			<p class="ag-section__desc">Mets <strong>ta</strong> photo ou ton clip (ta Ferrari, Naples, toi…), ton accroche — on en fait une vidéo verticale brandée avec ton lien. Ajoute un son tendance dans TikTok après.</p>
+			<div class="ag-maker ag-maker--v">
+				<div class="ag-maker__preview"><canvas id="ag-vcanvas" width="1080" height="1920"></canvas></div>
+				<div class="ag-maker__ctrl">
+					<label>Ta photo ou vidéo<input type="file" id="ag-vfile" accept="image/*,video/*"></label>
+					<label>Ton accroche<input type="text" id="ag-vhead" value="Du quartier à la réussite." maxlength="42"></label>
+					<label>Sous-texte<input type="text" id="ag-vsub" value="Vends des sites. Touche 10 %." maxlength="48"></label>
+					<button type="button" class="ag-btn-gold" id="ag-vgen">🎬 Générer ma vidéo (8 s)</button>
+					<p class="ag-vstatus" id="ag-vstatus"></p>
+					<a class="ag-btn-outline" id="ag-vdl" style="display:none;" download="alliance-video.webm">⬇ Télécharger la vidéo</a>
+				</div>
+			</div>
+		</div>
+	</section>
+	<script>
+	(function(){
+		var cv=document.getElementById('ag-vcanvas'); if(!cv) return;
+		var ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
+		var link=<?php echo wp_json_encode( $ag_sale_link ); ?>;
+		var media=null, isVideo=false;
+		var statusEl=document.getElementById('ag-vstatus'), dlEl=document.getElementById('ag-vdl');
+		function wrap(text,x,y,maxW,lh){var w=(text||'').split(' '),l='',yy=y;for(var i=0;i<w.length;i++){var t=l+w[i]+' ';if(ctx.measureText(t).width>maxW&&i>0){ctx.fillText(l.trim(),x,yy);l=w[i]+' ';yy+=lh;}else l=t;}ctx.fillText(l.trim(),x,yy);return yy;}
+		function frame(p){
+			ctx.fillStyle='#0e0d11';ctx.fillRect(0,0,W,H);
+			if(media){var mw=isVideo?media.videoWidth:media.width,mh=isVideo?media.videoHeight:media.height;if(mw&&mh){var ir=mw/mh,cr=W/H,dw,dh,z=1.06+0.12*p;if(ir>cr){dh=H*z;dw=dh*ir;}else{dw=W*z;dh=dw/ir;}ctx.drawImage(media,(W-dw)/2,(H-dh)/2,dw,dh);}}
+			var g=ctx.createLinearGradient(0,H*0.45,0,H);g.addColorStop(0,'rgba(7,7,12,0)');g.addColorStop(1,'rgba(7,7,12,.95)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+			var ap=Math.min(1,p/0.12),ty=(1-ap)*40;
+			ctx.globalAlpha=ap;ctx.shadowColor='rgba(0,0,0,.7)';ctx.shadowBlur=16;ctx.textAlign='left';
+			ctx.fillStyle='#D4B45C';ctx.font='bold 40px Georgia, serif';ctx.fillText('ALLIANCE GROUPE',70,104);
+			ctx.fillStyle='#ffffff';ctx.font='bold 86px Georgia, serif';wrap(document.getElementById('ag-vhead').value||'',70,H-360+ty,W-140,94);
+			ctx.fillStyle='#E8C766';ctx.font='600 46px Arial';ctx.fillText(document.getElementById('ag-vsub').value||'',70,H-220+ty);
+			ctx.shadowBlur=0;ctx.fillStyle='#cfc7b8';ctx.font='600 36px Arial';ctx.fillText(link.replace(/^https?:\/\//,''),70,H-140+ty);
+			ctx.globalAlpha=1;
+		}
+		function loadFile(f){isVideo=/^video\//.test(f.type);var url=URL.createObjectURL(f);if(isVideo){var v=document.createElement('video');v.muted=true;v.loop=true;v.playsInline=true;v.src=url;v.onloadeddata=function(){media=v;frame(0);};}else{var im=new Image();im.onload=function(){media=im;frame(0);};im.src=url;}}
+		document.getElementById('ag-vfile').addEventListener('change',function(e){var f=e.target.files&&e.target.files[0];if(f)loadFile(f);});
+		document.getElementById('ag-vhead').addEventListener('input',function(){frame(0);});
+		document.getElementById('ag-vsub').addEventListener('input',function(){frame(0);});
+		document.getElementById('ag-vgen').addEventListener('click',function(){
+			if(!media){statusEl.textContent='Ajoute d\'abord une photo ou une vidéo.';return;}
+			if(!cv.captureStream||!window.MediaRecorder){statusEl.textContent='Ton navigateur ne permet pas l\'enregistrement. Essaie Chrome (Android/PC).';return;}
+			var mime=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm','video/mp4'].find(function(m){return MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m);})||'';
+			var stream=cv.captureStream(30),rec=new MediaRecorder(stream,mime?{mimeType:mime}:undefined),chunks=[];
+			rec.ondataavailable=function(ev){if(ev.data&&ev.data.size)chunks.push(ev.data);};
+			rec.onstop=function(){var blob=new Blob(chunks,{type:mime||'video/webm'});dlEl.href=URL.createObjectURL(blob);dlEl.download='alliance-video.'+(mime.indexOf('mp4')>-1?'mp4':'webm');dlEl.style.display='inline-flex';statusEl.textContent='✓ Vidéo prête ! Télécharge-la, puis ajoute un son tendance dans TikTok.';};
+			if(isVideo){try{media.currentTime=0;media.play();}catch(e){}}
+			var DUR=8000,start=performance.now();rec.start();statusEl.textContent='Génération en cours… (8 s)';
+			(function tick(now){var p=Math.min(1,(now-start)/DUR);frame(p);if(p<1)requestAnimationFrame(tick);else{rec.stop();if(isVideo){try{media.pause();}catch(e){}}}})(start);
+		});
+		frame(0);
+	})();
+	</script>
+
 	<?php
 	$lb    = function_exists( 'ag_ambassadeur_leaderboard' ) ? ag_ambassadeur_leaderboard() : array();
 	$tiers = function_exists( 'ag_ambassadeur_tiers' ) ? ag_ambassadeur_tiers() : array();
@@ -327,7 +383,10 @@ $labels = array( 'declaree' => 'En attente', 'validee' => 'Validée', 'payee' =>
 .ag-maker__ctrl label{display:flex;flex-direction:column;gap:8px;color:var(--color-text-soft);font-size:.9rem;font-weight:600;}
 .ag-maker__ctrl input[type=text]{padding:13px 16px;border-radius:12px;border:1px solid rgba(212,180,92,.3);background:rgba(255,255,255,.05);color:#fff;font-size:.95rem;}
 .ag-maker__ctrl input[type=file]{color:var(--color-text-soft);font-size:.88rem;}
-@media(max-width:760px){.ag-vis-grid{grid-template-columns:1fr 1fr;}.ag-maker{grid-template-columns:1fr;}}
+.ag-maker--v .ag-maker__preview{display:flex;justify-content:center;background:#0e0d11;}
+.ag-maker--v .ag-maker__preview canvas{width:auto;max-width:100%;max-height:540px;}
+.ag-vstatus{margin:6px 0 0;color:var(--color-text-soft);font-size:.9rem;min-height:1.2em;}
+@media(max-width:760px){.ag-vis-grid{grid-template-columns:1fr 1fr;}.ag-maker{grid-template-columns:1fr;}.ag-maker--v .ag-maker__preview canvas{max-height:60vh;}}
 @media(max-width:760px){.ag-esp-stats{grid-template-columns:1fr 1fr;}.ag-lb-grid{grid-template-columns:1fr;}}
 </style>
 
