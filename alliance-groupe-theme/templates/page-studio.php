@@ -111,7 +111,17 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 					<label>Ou ta photo / vidéo<input type="file" id="ag-vfile" accept="image/*,video/*"></label>
 					<label>Ton accroche<input type="text" id="ag-vhead" value="Du quartier à la réussite." maxlength="42"></label>
 					<label>Sous-texte<input type="text" id="ag-vsub" value="Vends des sites. Touche 10 %." maxlength="48"></label>
-					<button type="button" class="ag-btn-gold" id="ag-vgen">🎬 Générer ma vidéo (8 s)</button>
+					<div class="ag-dur">
+						<span class="ag-dur__lbl">Durée de la vidéo</span>
+						<div class="ag-dur__row">
+							<button type="button" class="ag-dur-btn is-active" data-sec="8">8 s</button>
+							<button type="button" class="ag-dur-btn" data-sec="16">16 s</button>
+							<button type="button" class="ag-dur-btn" data-sec="24">24 s</button>
+							<button type="button" class="ag-dur-btn ag-dur-btn--pro" data-sec="60">1 min 💰</button>
+						</div>
+						<span class="ag-dur__hint">💡 À partir d'<strong>1 minute</strong>, tes vidéos peuvent être <strong>monétisées</strong> sur TikTok.</span>
+					</div>
+					<button type="button" class="ag-btn-gold" id="ag-vgen">🎬 Générer ma vidéo</button>
 					<p class="ag-vstatus" id="ag-vstatus"></p>
 					<button type="button" class="ag-btn-gold ag-vshare-btn" id="ag-vshare" style="display:none;">
 						<span class="ag-vshare-ic" aria-hidden="true"><span class="ag-vsi ag-vsi--tt">🎵</span><span class="ag-vsi ag-vsi--snap">👻</span><span class="ag-vsi ag-vsi--ig">📸</span></span>
@@ -128,15 +138,18 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 		var cv=document.getElementById('ag-vcanvas'); if(!cv) return;
 		var ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
 		var link=window.AG_LINK, caption=window.AG_CAPTION;
-		window.agVideoRefresh=function(){ link=window.AG_LINK; caption=window.AG_CAPTION; frame(0); };
-		var media=null, isVideo=false, lastBlob=null, lastExt='webm', lastUrl=null;
+		var media=null, isVideo=false, lastBlob=null, lastExt='webm', lastUrl=null, previewRAF=null;
+		function stopPreview(){ if(previewRAF){ cancelAnimationFrame(previewRAF); previewRAF=null; } }
+		function renderOnce(){ stopPreview(); frame(0); }
+		function startVideoPreview(){ stopPreview(); (function loop(){ frame(0); previewRAF=requestAnimationFrame(loop); })(); }
+		window.agVideoRefresh=function(){ link=window.AG_LINK; caption=window.AG_CAPTION; if(isVideo) startVideoPreview(); else renderOnce(); };
 		var statusEl=document.getElementById('ag-vstatus'), shEl=document.getElementById('ag-vshare'), capEl=document.getElementById('ag-vcap'), hintEl=document.getElementById('ag-vhint');
 		function wrap(text,x,y,maxW,lh){var w=(text||'').split(' '),l='',yy=y;for(var i=0;i<w.length;i++){var t=l+w[i]+' ';if(ctx.measureText(t).width>maxW&&i>0){ctx.fillText(l.trim(),x,yy);l=w[i]+' ';yy+=lh;}else l=t;}ctx.fillText(l.trim(),x,yy);return yy;}
-		function frame(p){
+		function frame(p,tsec){
 			ctx.fillStyle='#0e0d11';ctx.fillRect(0,0,W,H);
-			if(media){var mw=isVideo?media.videoWidth:media.width,mh=isVideo?media.videoHeight:media.height;if(mw&&mh){var ir=mw/mh,cr=W/H,dw,dh,z=1.06+0.12*p;if(ir>cr){dh=H*z;dw=dh*ir;}else{dw=W*z;dh=dw/ir;}ctx.drawImage(media,(W-dw)/2,(H-dh)/2,dw,dh);}}
+			if(media){var mw=isVideo?media.videoWidth:media.width,mh=isVideo?media.videoHeight:media.height;if(mw&&mh){var ir=mw/mh,cr=W/H,dw,dh,z=1.04+0.10*p;if(ir>cr){dh=H*z;dw=dh*ir;}else{dw=W*z;dh=dw/ir;}ctx.drawImage(media,(W-dw)/2,(H-dh)/2,dw,dh);}}
 			var g=ctx.createLinearGradient(0,H*0.45,0,H);g.addColorStop(0,'rgba(7,7,12,0)');g.addColorStop(1,'rgba(7,7,12,.95)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-			var ap=Math.min(1,p/0.12),ty=(1-ap)*40;
+			var ap=(tsec===undefined)?1:Math.min(1,tsec/1.0),ty=(1-ap)*40;
 			ctx.globalAlpha=ap;ctx.shadowColor='rgba(0,0,0,.7)';ctx.shadowBlur=16;ctx.textAlign='left';
 			ctx.fillStyle='#D4B45C';ctx.font='bold 40px Georgia, serif';ctx.fillText('ALLIANCE GROUPE',70,104);
 			ctx.fillStyle='#ffffff';ctx.font='bold 86px Georgia, serif';wrap(document.getElementById('ag-vhead').value||'',70,H-360+ty,W-140,94);
@@ -144,17 +157,37 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 			ctx.shadowBlur=0;ctx.fillStyle='#cfc7b8';ctx.font='600 36px Arial';ctx.fillText(link.replace(/^https?:\/\//,''),70,H-140+ty);
 			ctx.globalAlpha=1;
 		}
-		function loadFile(f){isVideo=/^video\//.test(f.type);var url=URL.createObjectURL(f);if(isVideo){var v=document.createElement('video');v.muted=true;v.loop=true;v.playsInline=true;v.src=url;v.onloadeddata=function(){media=v;frame(0);};}else{var im=new Image();im.onload=function(){media=im;frame(0);};im.src=url;}}
-		function loadUrl(url,cb){isVideo=false;var im=new Image();im.onload=function(){media=im;frame(0);if(cb)cb();};im.src=url;}
+		function loadFile(f){
+			stopPreview();
+			var url=URL.createObjectURL(f);
+			if(/^video\//.test(f.type)){
+				var v=document.createElement('video');
+				v.muted=true; v.defaultMuted=true; v.loop=true; v.playsInline=true;
+				v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.preload='auto';
+				v.style.cssText='position:fixed;left:-9999px;top:0;width:2px;height:2px;opacity:0;pointer-events:none;';
+				document.body.appendChild(v);
+				v.src=url;
+				var ready=function(){ if(media===v) return; isVideo=true; media=v; v.play().catch(function(){}); startVideoPreview(); };
+				v.addEventListener('loadeddata', ready);
+				v.addEventListener('loadedmetadata', ready);
+				v.load();
+			} else {
+				var im=new Image(); im.onload=function(){ isVideo=false; media=im; renderOnce(); }; im.src=url;
+			}
+		}
+		function loadUrl(url,cb){var im=new Image();im.onload=function(){isVideo=false;media=im;renderOnce();if(cb)cb();};im.src=url;}
 		function setBg(url,el){ loadUrl(url); document.querySelectorAll('.ag-vbg').forEach(function(t){ t.classList.toggle('is-active', t===el); }); }
 		document.querySelectorAll('.ag-vbg').forEach(function(b){ b.addEventListener('click',function(){ setBg(b.getAttribute('data-src'), b); }); });
 		(function(){ var first=document.querySelector('.ag-vbg'); if(first){ loadUrl(first.getAttribute('data-src')); } })();
 		document.getElementById('ag-vfile').addEventListener('change',function(e){var f=e.target.files&&e.target.files[0];if(f)loadFile(f);});
-		document.getElementById('ag-vhead').addEventListener('input',function(){frame(0);});
-		document.getElementById('ag-vsub').addEventListener('input',function(){frame(0);});
+		document.getElementById('ag-vhead').addEventListener('input',function(){ if(!isVideo) renderOnce(); });
+		document.getElementById('ag-vsub').addEventListener('input',function(){ if(!isVideo) renderOnce(); });
+		function agSelectedDuration(){ var el=document.querySelector('.ag-dur-btn.is-active'); return el ? parseInt(el.getAttribute('data-sec'),10)*1000 : 8000; }
+		document.querySelectorAll('.ag-dur-btn').forEach(function(b){ b.addEventListener('click',function(){ document.querySelectorAll('.ag-dur-btn').forEach(function(x){ x.classList.toggle('is-active', x===b); }); }); });
 		document.getElementById('ag-vgen').addEventListener('click',function(){
-			if(!media){statusEl.textContent='Choisis un visuel ou ajoute une photo/vidéo.';return;}
+			if(!media){statusEl.textContent='Choisis un fond ou ajoute une photo/vidéo.';return;}
 			if(!cv.captureStream||!window.MediaRecorder){statusEl.textContent='Ton navigateur ne permet pas l\'enregistrement. Essaie Chrome (Android/PC).';return;}
+			stopPreview();
 			var mime=['video/mp4;codecs=h264','video/mp4','video/webm;codecs=h264','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'].find(function(m){return MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m);})||'';
 			var stream=cv.captureStream(30),rec=new MediaRecorder(stream,mime?{mimeType:mime}:undefined),chunks=[];
 			rec.ondataavailable=function(ev){if(ev.data&&ev.data.size)chunks.push(ev.data);};
@@ -165,10 +198,13 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 				if(lastUrl) URL.revokeObjectURL(lastUrl); lastUrl=URL.createObjectURL(lastBlob);
 				shEl.style.display='inline-flex';capEl.style.display='inline-flex';hintEl.style.display='block';
 				statusEl.textContent='✓ Vidéo prête ! Partage-la ou enregistre-la juste en dessous 👇';
+				if(isVideo) startVideoPreview(); else renderOnce();
 			};
 			if(isVideo){try{media.currentTime=0;media.play();}catch(e){}}
-			var DUR=8000,start=performance.now();rec.start();statusEl.textContent='Génération en cours… (8 s)';
-			(function tick(now){var p=Math.min(1,(now-start)/DUR);frame(p);if(p<1)requestAnimationFrame(tick);else{rec.stop();if(isVideo){try{media.pause();}catch(e){}}}})(start);
+			var DUR=agSelectedDuration(),secs=Math.round(DUR/1000),start=performance.now();rec.start();
+			statusEl.textContent='Génération en cours… ('+secs+' s) — laisse l\'écran allumé';
+			document.getElementById('ag-vgen').disabled=true;
+			(function tick(now){var el=now-start,p=Math.min(1,el/DUR);frame(p,el/1000);if(el<DUR)requestAnimationFrame(tick);else{rec.stop();if(isVideo){try{media.pause();}catch(e){}}document.getElementById('ag-vgen').disabled=false;}})(start);
 		});
 		function saveAndGuide(){
 			var a=document.createElement('a');a.href=lastUrl||URL.createObjectURL(lastBlob);a.download='alliance-video.'+lastExt;document.body.appendChild(a);a.click();a.remove();
@@ -321,6 +357,14 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 .ag-bgpick__thumb{width:54px;height:72px;border-radius:10px;border:2px solid rgba(212,180,92,.25);background-size:cover;background-position:center;cursor:pointer;padding:0;transition:transform .2s,border-color .2s;}
 .ag-bgpick__thumb:hover{transform:translateY(-2px);border-color:rgba(212,180,92,.6);}
 .ag-bgpick__thumb.is-active{border-color:#e8c766;box-shadow:0 0 0 2px rgba(232,199,102,.3);}
+.ag-dur{display:flex;flex-direction:column;gap:8px;}
+.ag-dur__lbl{color:var(--color-text-soft);font-size:.9rem;font-weight:600;}
+.ag-dur__row{display:flex;gap:8px;flex-wrap:wrap;}
+.ag-dur-btn{flex:1;min-width:60px;padding:11px 8px;border-radius:10px;border:1px solid rgba(212,180,92,.25);background:rgba(255,255,255,.05);color:#fff;font-weight:700;font-size:.92rem;cursor:pointer;transition:background .2s,border-color .2s;}
+.ag-dur-btn.is-active{background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;border-color:transparent;}
+.ag-dur-btn--pro{border-color:rgba(232,199,102,.6);}
+.ag-dur__hint{color:var(--color-text-muted);font-size:.82rem;line-height:1.4;}
+.ag-dur__hint strong{color:#e8c766;}
 .ag-vstatus{margin:6px 0 0;color:var(--color-text-soft);font-size:.9rem;min-height:1.2em;}
 .ag-vhint{margin:0;padding:14px 16px;background:rgba(212,180,92,.08);border:1px solid rgba(212,180,92,.22);border-radius:12px;color:var(--color-text-soft);font-size:.88rem;line-height:1.7;}
 .ag-vhint strong{color:#e8c766;}
