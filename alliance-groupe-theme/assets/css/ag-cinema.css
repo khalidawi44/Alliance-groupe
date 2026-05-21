@@ -230,6 +230,8 @@
 
 @media (max-width: 1024px) {
 	.ag-cinescene__lead, .ag-cinescene__slide--step p { max-width: none; }
+	/* Mobile/tablette : pas d'empilement sticky (sinon les sections se recouvrent et se coupent) */
+	.ag-stackover { position: relative; top: auto; min-height: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
 	.ag-cinescene__slide { opacity: 1 !important; transform: none !important; }
