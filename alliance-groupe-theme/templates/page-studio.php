@@ -110,7 +110,7 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 						<span>Partager ma vidéo</span>
 					</button>
 					<button type="button" class="ag-btn-outline" id="ag-vcap" style="display:none;">📋 Copier la légende (+ ton lien)</button>
-					<p class="ag-vhint" id="ag-vhint" style="display:none;">Touche <strong>Partager</strong> puis choisis ton appli (<strong>TikTok, Snap, Insta…</strong>) ou <strong>« Enregistrer la vidéo »</strong> pour la poster depuis ta galerie 🚀</p>
+					<p class="ag-vhint" id="ag-vhint" style="display:none;">En touchant <strong>Partager</strong>, <strong>ta légende (avec ton lien) est copiée automatiquement</strong>. Choisis ton appli (ou « Enregistrer la vidéo »), puis dans TikTok/Snap : appui long → <strong>Coller</strong>. (TikTok n'accepte pas de légende auto, c'est la seule façon.)</p>
 				</div>
 			</div>
 		</div>
@@ -164,15 +164,17 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 		});
 		function saveAndGuide(){
 			var a=document.createElement('a');a.href=lastUrl||URL.createObjectURL(lastBlob);a.download='alliance-video.'+lastExt;document.body.appendChild(a);a.click();a.remove();
-			statusEl.textContent='Vidéo enregistrée 📁 Ouvre TikTok / Snap / Insta et choisis-la dans ta galerie.';
+			statusEl.textContent='Vidéo enregistrée 📁 + légende copiée ✓ Ouvre TikTok/Snap/Insta, choisis la vidéo dans ta galerie, colle la légende.';
 		}
 		function agShareVideo(){
 			if(!lastBlob){ statusEl.textContent='Génère d\'abord ta vidéo (bouton ci-dessus).'; return; }
+			// Copie AUTO la légende (avec le lien) : plus qu'à coller dans TikTok/Snap.
+			try{ if(navigator.clipboard) navigator.clipboard.writeText(caption); }catch(e){}
 			// Fichier SEUL (sans texte/titre) : c'est ce qui fait apparaitre le plus d'apps (TikTok, Insta, Snap) dans le menu iOS.
 			var file=new File([lastBlob],'alliance-video.'+lastExt,{type:lastBlob.type||'video/mp4'});
 			if(navigator.canShare && navigator.canShare({files:[file]})){
 				navigator.share({files:[file]}).then(function(){
-					statusEl.textContent='✓ Astuce : choisis « Enregistrer la vidéo », puis ouvre ton appli et publie-la depuis ta galerie.';
+					statusEl.textContent='✓ Légende déjà copiée ! Dans TikTok/Snap : appui long sur le champ texte → « Coller », puis publie.';
 				}).catch(function(err){
 					if(err && err.name==='AbortError') return;
 					saveAndGuide();
@@ -225,7 +227,7 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 		document.getElementById('ag-head').addEventListener('input',draw);
 		document.getElementById('ag-sub').addEventListener('input',draw);
 		document.getElementById('ag-dl').addEventListener('click',function(){canvas.toBlob(function(b){var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='alliance-visuel.png';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(a.href);},'image/png');});
-		document.getElementById('ag-imgshare').addEventListener('click',function(){canvas.toBlob(function(b){if(!b)return;var file=new File([b],'alliance-visuel.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file]}).catch(function(){});}else{var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='alliance-visuel.png';document.body.appendChild(a);a.click();a.remove();}},'image/png');});
+		document.getElementById('ag-imgshare').addEventListener('click',function(){try{if(navigator.clipboard)navigator.clipboard.writeText(window.AG_CAPTION);}catch(e){}canvas.toBlob(function(b){if(!b)return;var file=new File([b],'alliance-visuel.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file]}).catch(function(){});}else{var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='alliance-visuel.png';document.body.appendChild(a);a.click();a.remove();}},'image/png');});
 		draw();
 	})();
 	</script>
