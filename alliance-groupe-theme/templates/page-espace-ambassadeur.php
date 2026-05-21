@@ -66,6 +66,14 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 					<p class="ag-vstatus" id="ag-vstatus"></p>
 					<button type="button" class="ag-btn-gold" id="ag-vshare" style="display:none;">⤴ Partager ma vidéo (TikTok, Snap…)</button>
 					<a class="ag-btn-outline" id="ag-vdl" style="display:none;" download="alliance-video.webm">⬇ Télécharger la vidéo</a>
+					<div class="ag-vapps" id="ag-vapps" style="display:none;">
+						<span class="ag-vapps__lbl">Ouvrir l'appli :</span>
+						<a class="ag-sbtn" id="ag-vtt" target="_blank" rel="noopener">TikTok</a>
+						<a class="ag-sbtn" id="ag-vsnap" target="_blank" rel="noopener">Snapchat</a>
+						<a class="ag-sbtn" id="ag-vinsta" target="_blank" rel="noopener">Instagram</a>
+						<a class="ag-sbtn" id="ag-vwa" target="_blank" rel="noopener">WhatsApp</a>
+						<a class="ag-sbtn" id="ag-vtg" target="_blank" rel="noopener">Telegram</a>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -101,7 +109,17 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 			var mime=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm','video/mp4'].find(function(m){return MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m);})||'';
 			var stream=cv.captureStream(30),rec=new MediaRecorder(stream,mime?{mimeType:mime}:undefined),chunks=[];
 			rec.ondataavailable=function(ev){if(ev.data&&ev.data.size)chunks.push(ev.data);};
-			rec.onstop=function(){lastExt=(mime.indexOf('mp4')>-1?'mp4':'webm');lastBlob=new Blob(chunks,{type:mime||'video/webm'});dlEl.href=URL.createObjectURL(lastBlob);dlEl.download='alliance-video.'+lastExt;dlEl.style.display='inline-flex';shEl.style.display='inline-flex';statusEl.textContent='✓ Vidéo prête ! Partage-la directement, ou télécharge-la.';};
+			rec.onstop=function(){
+				lastExt=(mime.indexOf('mp4')>-1?'mp4':'webm');lastBlob=new Blob(chunks,{type:mime||'video/webm'});
+				dlEl.href=URL.createObjectURL(lastBlob);dlEl.download='alliance-video.'+lastExt;dlEl.style.display='inline-flex';shEl.style.display='inline-flex';
+				document.getElementById('ag-vtt').href='https://www.tiktok.com/';
+				document.getElementById('ag-vsnap').href='https://www.snapchat.com/';
+				document.getElementById('ag-vinsta').href='https://www.instagram.com/';
+				document.getElementById('ag-vwa').href='https://wa.me/?text='+encodeURIComponent(caption);
+				document.getElementById('ag-vtg').href='https://t.me/share/url?url='+encodeURIComponent(link)+'&text='+encodeURIComponent(caption);
+				document.getElementById('ag-vapps').style.display='flex';
+				statusEl.textContent='✓ Vidéo prête ! Touche « Partager ma vidéo » pour l\'envoyer dans TikTok/Snap, ou ouvre l\'appli ci-dessous.';
+			};
 			if(isVideo){try{media.currentTime=0;media.play();}catch(e){}}
 			var DUR=8000,start=performance.now();rec.start();statusEl.textContent='Génération en cours… (8 s)';
 			(function tick(now){var p=Math.min(1,(now-start)/DUR);frame(p);if(p<1)requestAnimationFrame(tick);else{rec.stop();if(isVideo){try{media.pause();}catch(e){}}}})(start);
@@ -439,6 +457,8 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 .ag-maker--v .ag-maker__preview{display:flex;justify-content:center;background:#0e0d11;}
 .ag-maker--v .ag-maker__preview canvas{width:auto;max-width:100%;max-height:540px;}
 .ag-vstatus{margin:6px 0 0;color:var(--color-text-soft);font-size:.9rem;min-height:1.2em;}
+.ag-vapps{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:6px;}
+.ag-vapps__lbl{color:var(--color-text-muted);font-size:.85rem;width:100%;}
 @media(max-width:768px){#ag-main-content.ag-esp > .ag-section:first-child{padding-top:120px;}}
 .ag-tools h3{color:#fff;font-family:var(--font-serif);font-size:1.2rem;margin:32px 0 12px;}
 .ag-tools__note{color:var(--color-text-muted);font-size:.85rem;margin:8px 0 0;}
