@@ -83,13 +83,19 @@ get_header();
 <!-- P1b/ Services sur-mesure (ticket plus eleve) -->
 <?php get_template_part('template-parts/services'); ?>
 
-<!-- Bande parallax (fond ville fixe) : punchline vente -->
-<section class="ag-parallax" style="background-image:url('<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-2.jpg' ); ?>');min-height:70vh;display:flex;align-items:center;">
-    <div class="ag-parallax__overlay" style="background:linear-gradient(180deg,rgba(8,8,8,.55),rgba(8,8,8,.7));"></div>
+<!-- Bande parallax (fond ville fixe, nuit) : punchline vente -->
+<section class="ag-parallax ag-parallax--punch" style="background-image:url('<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/nantes-3.jpg' ); ?>');">
+    <div class="ag-parallax__overlay" style="background:linear-gradient(180deg,rgba(6,8,16,.62),rgba(6,8,16,.46) 45%,rgba(6,8,16,.74));"></div>
     <div class="ag-parallax__content ag-anim" data-anim="parallax-text">
-        <p class="ag-parallax__quote">"Pendant que tu dors, ton site travaille. Un client peut commander à 3h du matin."</p>
+        <p class="ag-parallax__quote">« Pendant que tu dors, ton site travaille.<br>Un client peut commander à 3 h du matin. »</p>
     </div>
 </section>
+<style>
+.ag-parallax--punch{min-height:74vh;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ag-parallax--punch .ag-parallax__content{position:relative;z-index:1;width:100%;max-width:920px;margin:0 auto;padding:0 24px;text-align:center;}
+.ag-parallax--punch .ag-parallax__quote{max-width:860px;margin:0 auto;line-height:1.45;text-shadow:0 2px 26px rgba(0,0,0,.7);}
+@media(max-width:768px){.ag-parallax--punch{min-height:58vh;}.ag-parallax--punch .ag-parallax__quote br{display:none;}}
+</style>
 
 <!-- P2/ RECRUTER — programme ambassadeurs 10% -->
 <?php get_template_part('template-parts/home-ambassadeurs'); ?>
