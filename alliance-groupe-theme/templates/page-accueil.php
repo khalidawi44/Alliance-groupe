@@ -83,6 +83,14 @@ get_header();
 <!-- P1b/ Services sur-mesure (ticket plus eleve) -->
 <?php get_template_part('template-parts/services'); ?>
 
+<!-- Bande parallax (fond ville fixe) : punchline vente -->
+<section class="ag-parallax" style="background-image:url('<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-2.jpg' ); ?>');">
+    <div class="ag-parallax__overlay"></div>
+    <div class="ag-parallax__content ag-anim" data-anim="parallax-text">
+        <p class="ag-parallax__quote">"Pendant que tu dors, ton site travaille. Un client peut commander à 3h du matin."</p>
+    </div>
+</section>
+
 <!-- P2/ RECRUTER — programme ambassadeurs 10% -->
 <?php get_template_part('template-parts/home-ambassadeurs'); ?>
 

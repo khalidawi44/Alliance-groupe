@@ -21,7 +21,8 @@ $ag_racines_bg = get_stylesheet_directory_uri() . '/assets/images/cities/naples-
 
 <style>
 .ag-home-racines{position:relative;padding:120px 0;background:#07140d;overflow:hidden;text-align:center;}
-.ag-home-racines::before{content:"";position:absolute;inset:0;background-image:var(--racines-bg);background-size:cover;background-position:center;opacity:.22;}
+.ag-home-racines::before{content:"";position:absolute;inset:0;background-image:var(--racines-bg);background-size:cover;background-position:center;background-attachment:fixed;opacity:.26;}
+@media(max-width:768px){.ag-home-racines::before{background-attachment:scroll;}}
 .ag-home-racines__overlay{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 38%,rgba(0,132,61,.28),transparent 70%),linear-gradient(180deg,rgba(7,20,13,.82),rgba(7,20,13,.95));}
 .ag-home-racines__inner{position:relative;z-index:2;max-width:780px;margin:0 auto;}
 .ag-home-racines .ag-section__title{margin-top:14px;}

@@ -1,11 +1,14 @@
 <?php
 /**
  * Accueil — Priorité 2 : RECRUTER des commerciaux.
- * Teaser du programme ambassadeurs (10% par vente), lien vers /ambassadeurs.
+ * Teaser du programme ambassadeurs (10% par vente), fond image + overlay,
+ * lien vers /ambassadeurs.
  */
+$ag_amb_bg = get_stylesheet_directory_uri() . '/assets/images/team/1_bureau_naples.jpg';
 ?>
-<section class="ag-section ag-section--onyx" id="recrutement">
-	<div class="ag-container">
+<section class="ag-section ag-section--onyx ag-home-amb" id="recrutement" style="--amb-bg:url('<?php echo esc_url( $ag_amb_bg ); ?>');">
+	<div class="ag-home-amb__bg" aria-hidden="true"></div>
+	<div class="ag-container ag-home-amb__inner">
 		<span class="ag-tag ag-anim" data-anim="tag">Programme Ambassadeurs 🤝</span>
 		<h2 class="ag-section__title ag-anim" data-anim="title">Vends nos services, <em>touche 10 %</em></h2>
 		<p class="ag-section__desc ag-anim" data-anim="desc">Rejoins notre équipe de vente. Pour chaque client que tu ramènes, tu gagnes 10 % du montant, payé via PayPal. Pas besoin d'être expert : on te donne tous les outils (scripts, pitch, supports).</p>
@@ -24,10 +27,15 @@
 </section>
 
 <style>
+.ag-home-amb{position:relative;overflow:hidden;}
+.ag-home-amb__bg{position:absolute;inset:0;background-image:var(--amb-bg);background-size:cover;background-position:center;background-attachment:fixed;opacity:.16;}
+.ag-home-amb__bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,12,.62),rgba(10,10,12,.92));}
+.ag-home-amb__inner{position:relative;z-index:2;}
 .ag-home-amb__steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:46px;}
-.ag-home-amb__step{padding:24px 20px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.16);border-radius:16px;text-align:center;}
+.ag-home-amb__step{padding:24px 20px;background:rgba(20,18,24,.55);backdrop-filter:blur(4px);border:1px solid rgba(212,180,92,.16);border-radius:16px;text-align:center;}
 .ag-home-amb__step span{display:inline-block;font-family:var(--font-serif);font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,#D4B45C,#F37A1F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;margin-bottom:8px;}
 .ag-home-amb__step p{margin:0;color:var(--color-text-soft);font-weight:600;font-size:.95rem;line-height:1.4;}
 .ag-home-amb__cta{text-align:center;margin-top:40px;}
 @media(max-width:760px){.ag-home-amb__steps{grid-template-columns:1fr 1fr;}}
+@media(max-width:768px){.ag-home-amb__bg{background-attachment:scroll;}}
 </style>
