@@ -231,6 +231,50 @@ $labels = array( 'declaree' => 'En attente', 'validee' => 'Validée', 'payee' =>
 	})();
 	</script>
 
+	<section class="ag-section ag-section--onyx">
+		<div class="ag-container ag-tools">
+			<h2 class="ag-section__title">Boîte à outils 🧰</h2>
+			<p class="ag-section__desc">Tout pour aller vite : médias gratuits, idées de vidéos, sons et scripts de vente.</p>
+
+			<h3>📥 Images &amp; vidéos gratuites (libres de droits)</h3>
+			<div class="ag-share-btns">
+				<a class="ag-sbtn" href="https://www.pexels.com/search/videos/ferrari/" target="_blank" rel="noopener">🎥 Ferrari</a>
+				<a class="ag-sbtn" href="https://www.pexels.com/search/videos/naples/" target="_blank" rel="noopener">🎥 Naples</a>
+				<a class="ag-sbtn" href="https://www.pexels.com/search/videos/luxury/" target="_blank" rel="noopener">🎥 Luxe</a>
+				<a class="ag-sbtn" href="https://www.pexels.com/search/videos/city%20night/" target="_blank" rel="noopener">🎥 Ville la nuit</a>
+				<a class="ag-sbtn" href="https://www.pexels.com/search/ferrari/" target="_blank" rel="noopener">🖼️ Photos Ferrari</a>
+				<a class="ag-sbtn" href="https://www.pexels.com/search/naples/" target="_blank" rel="noopener">🖼️ Photos Naples</a>
+				<a class="ag-sbtn" href="https://pixabay.com/videos/search/luxury/" target="_blank" rel="noopener">➕ Pixabay vidéos</a>
+				<a class="ag-sbtn" href="https://unsplash.com/s/photos/luxury-car" target="_blank" rel="noopener">➕ Unsplash photos</a>
+			</div>
+			<p class="ag-tools__note">Gratuit, sans attribution (Pexels/Pixabay). Télécharge → glisse-le dans le générateur de vidéo plus haut.</p>
+
+			<h3>💡 Idées de vidéos (accroches qui marchent)</h3>
+			<ul class="ag-ideas">
+				<li>« On m'a dit que mon quartier ne réussit pas. » → puis tu montres la réussite</li>
+				<li>« Lui il livre. Moi je vends des sites depuis mon tel. »</li>
+				<li>« Pendant que tu dors, ton site vend. Un client peut commander à 3h. »</li>
+				<li>« Ce commerce passait à côté de clients à cause de ÇA. » (avant / après)</li>
+				<li>« POV : t'as 18 ans et t'as déjà un business. »</li>
+				<li>« Comment je gagne 10 % sans rien créer moi-même. »</li>
+				<li>« Le talent est partout, les opportunités non. » (Programme Racines)</li>
+			</ul>
+
+			<h3>🔊 Format &amp; son (pour percer)</h3>
+			<ul class="ag-ideas ag-ideas--tips">
+				<li><strong>Son tendance</strong> : dans TikTok → ➕ → Sons → « Tendances ». Ajoute-le après avoir importé ta vidéo.</li>
+				<li><strong>Accroche dans les 2 premières secondes</strong>, sinon les gens scrollent.</li>
+				<li><strong>Sous-titres</strong> toujours activés · format <strong>9:16</strong> vertical.</li>
+				<li>Poste <strong>1 vidéo/jour</strong>, varie les angles. Mets ton <strong>lien en bio</strong> + en légende (copie le message du kit plus haut).</li>
+			</ul>
+
+			<h3>🗣️ Scripts de vente</h3>
+			<details><summary>Message d'approche (DM / WhatsApp)</summary><p>Bonjour [Nom], je suis tombé sur votre [commerce/page]. Je travaille avec Alliance Groupe : on fait des sites pros à <strong>prix fixe (dès 490 €)</strong>, livrés en quelques jours, sans rendez-vous. Ça vous dirait un site qui vous ramène des clients 24/7 ? Voici un aperçu 👉 [ton lien]</p></details>
+			<details><summary>Objection : « je n'ai pas le budget »</summary><p>Je comprends. Justement c'est un <strong>prix fixe clair</strong> (dès 490 €), sans abonnement caché, et ça travaille pour vous en continu. Beaucoup le rentabilisent avec 1–2 clients en plus. On peut démarrer petit (one-page) : [ton lien]</p></details>
+			<details><summary>Objection : « j'ai déjà un site »</summary><p>Top ! Souvent on peut le moderniser pour qu'il convertisse mieux (mobile, rapidité, Google). Je vous fais un avis rapide ? Sinon nos offres sont ici : [ton lien]</p></details>
+		</div>
+	</section>
+
 	<?php
 	$lb    = function_exists( 'ag_ambassadeur_leaderboard' ) ? ag_ambassadeur_leaderboard() : array();
 	$tiers = function_exists( 'ag_ambassadeur_tiers' ) ? ag_ambassadeur_tiers() : array();
@@ -386,6 +430,17 @@ $labels = array( 'declaree' => 'En attente', 'validee' => 'Validée', 'payee' =>
 .ag-maker--v .ag-maker__preview{display:flex;justify-content:center;background:#0e0d11;}
 .ag-maker--v .ag-maker__preview canvas{width:auto;max-width:100%;max-height:540px;}
 .ag-vstatus{margin:6px 0 0;color:var(--color-text-soft);font-size:.9rem;min-height:1.2em;}
+.ag-tools h3{color:#fff;font-family:var(--font-serif);font-size:1.2rem;margin:32px 0 12px;}
+.ag-tools__note{color:var(--color-text-muted);font-size:.85rem;margin:8px 0 0;}
+.ag-ideas{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px;}
+.ag-ideas li{position:relative;padding-left:26px;color:var(--color-text-soft);line-height:1.5;}
+.ag-ideas li::before{content:'💡';position:absolute;left:0;}
+.ag-ideas--tips li::before{content:'✅';}
+.ag-tools details{background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.16);border-radius:12px;padding:0 18px;margin-bottom:10px;}
+.ag-tools details[open]{border-color:rgba(212,180,92,.4);}
+.ag-tools summary{cursor:pointer;padding:16px 0;font-weight:700;color:#fff;list-style:none;}
+.ag-tools summary::-webkit-details-marker{display:none;}
+.ag-tools details p{color:var(--color-text-soft);margin:0 0 16px;line-height:1.6;}
 @media(max-width:760px){.ag-vis-grid{grid-template-columns:1fr 1fr;}.ag-maker{grid-template-columns:1fr;}.ag-maker--v .ag-maker__preview canvas{max-height:60vh;}}
 @media(max-width:760px){.ag-esp-stats{grid-template-columns:1fr 1fr;}.ag-lb-grid{grid-template-columns:1fr;}}
 </style>
