@@ -110,6 +110,72 @@ $labels = array( 'declaree' => 'En attente', 'validee' => 'Validée', 'payee' =>
 	</script>
 
 	<?php
+	$ag_assets  = get_stylesheet_directory_uri() . '/assets/images/produits/';
+	$ag_visuels = array(
+		'produit-essentiel.jpg'   => 'Essentiel — 490 €',
+		'produit-pro.jpg'         => 'Pro — 890 €',
+		'produit-boutique.jpg'    => 'Boutique — 1 490 €',
+		'produit-serenite.jpg'    => 'Maintenance — 29 €/mois',
+		'produit-croissance.jpg'  => 'Maintenance — 59 €/mois',
+		'produit-performance.jpg' => 'Maintenance — 99 €/mois',
+	);
+	?>
+	<section class="ag-section ag-section--graphite">
+		<div class="ag-container">
+			<h2 class="ag-section__title">Visuels prêts à poster 🎨</h2>
+			<p class="ag-section__desc">Télécharge un visuel, poste-le, et mets ton message (lien intégré) en légende.</p>
+			<div class="ag-vis-grid">
+				<?php foreach ( $ag_visuels as $file => $label ) : $src = $ag_assets . $file; ?>
+					<div class="ag-vis">
+						<img src="<?php echo esc_url( $src ); ?>" alt="<?php echo esc_attr( $label ); ?>" loading="lazy">
+						<a class="ag-btn-gold ag-vis__dl" href="<?php echo esc_url( $src ); ?>" download>⬇ Télécharger</a>
+					</div>
+				<?php endforeach; ?>
+			</div>
+		</div>
+	</section>
+
+	<section class="ag-section ag-section--onyx">
+		<div class="ag-container ag-container--narrow">
+			<h2 class="ag-section__title">Crée ton visuel perso 🖌️</h2>
+			<p class="ag-section__desc">Mets <strong>ta</strong> photo et ton accroche — on ajoute la marque et ton lien automatiquement. Télécharge et poste sur TikTok, Insta, Snap…</p>
+			<div class="ag-maker">
+				<div class="ag-maker__preview"><canvas id="ag-canvas" width="1080" height="1350"></canvas></div>
+				<div class="ag-maker__ctrl">
+					<label>Ta photo<input type="file" id="ag-img" accept="image/*"></label>
+					<label>Ton accroche<input type="text" id="ag-head" value="Ton site pro, dès 490 €" maxlength="48"></label>
+					<label>Sous-texte<input type="text" id="ag-sub" value="Livré en quelques jours · sans rendez-vous" maxlength="64"></label>
+					<button type="button" class="ag-btn-gold" id="ag-dl">⬇ Télécharger mon visuel</button>
+				</div>
+			</div>
+		</div>
+	</section>
+	<script>
+	(function(){
+		var canvas=document.getElementById('ag-canvas'); if(!canvas) return;
+		var ctx=canvas.getContext('2d'), W=canvas.width, H=canvas.height, userImg=null;
+		var link=<?php echo wp_json_encode( $ag_sale_link ); ?>;
+		function wrap(text,x,y,maxW,lh){var words=(text||'').split(' '),line='',yy=y;for(var i=0;i<words.length;i++){var t=line+words[i]+' ';if(ctx.measureText(t).width>maxW&&i>0){ctx.fillText(line.trim(),x,yy);line=words[i]+' ';yy+=lh;}else line=t;}ctx.fillText(line.trim(),x,yy);return yy;}
+		function draw(){
+			ctx.fillStyle='#0e0d11';ctx.fillRect(0,0,W,H);
+			if(userImg){var ir=userImg.width/userImg.height,cr=W/H,dw,dh,dx,dy;if(ir>cr){dh=H;dw=H*ir;dx=(W-dw)/2;dy=0;}else{dw=W;dh=W/ir;dx=0;dy=(H-dh)/2;}ctx.drawImage(userImg,dx,dy,dw,dh);}
+			else{ctx.fillStyle='#1a1820';ctx.fillRect(0,0,W,H);ctx.fillStyle='#6b6675';ctx.font='34px Arial';ctx.textAlign='center';ctx.fillText('Ajoute ta photo ↑',W/2,H/2);}
+			var g=ctx.createLinearGradient(0,H*0.4,0,H);g.addColorStop(0,'rgba(7,7,12,0)');g.addColorStop(1,'rgba(7,7,12,.94)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+			ctx.shadowColor='rgba(0,0,0,.6)';ctx.shadowBlur=12;
+			ctx.textAlign='left';ctx.fillStyle='#D4B45C';ctx.font='bold 36px Georgia, serif';ctx.fillText('ALLIANCE GROUPE',60,84);
+			ctx.fillStyle='#ffffff';ctx.font='bold 70px Georgia, serif';wrap((document.getElementById('ag-head').value||''),60,H-250,W-120,78);
+			ctx.fillStyle='#E8C766';ctx.font='600 36px Arial';ctx.fillText((document.getElementById('ag-sub').value||''),60,H-150);
+			ctx.shadowBlur=0;ctx.fillStyle='#cfc7b8';ctx.font='600 32px Arial';ctx.fillText(link.replace(/^https?:\/\//,''),60,H-88);
+		}
+		document.getElementById('ag-img').addEventListener('change',function(e){var f=e.target.files&&e.target.files[0];if(!f)return;var img=new Image();img.onload=function(){userImg=img;draw();};img.src=URL.createObjectURL(f);});
+		document.getElementById('ag-head').addEventListener('input',draw);
+		document.getElementById('ag-sub').addEventListener('input',draw);
+		document.getElementById('ag-dl').addEventListener('click',function(){canvas.toBlob(function(b){var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='alliance-visuel.png';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(a.href);},'image/png');});
+		draw();
+	})();
+	</script>
+
+	<?php
 	$lb    = function_exists( 'ag_ambassadeur_leaderboard' ) ? ag_ambassadeur_leaderboard() : array();
 	$tiers = function_exists( 'ag_ambassadeur_tiers' ) ? ag_ambassadeur_tiers() : array();
 	$cur = $tiers ? $tiers[0] : null; $next = null;
@@ -250,6 +316,18 @@ $labels = array( 'declaree' => 'En attente', 'validee' => 'Validée', 'payee' =>
 .ag-share-msg__head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
 .ag-share-msg__head strong{color:#fff;}
 .ag-share-msg textarea{width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(212,180,92,.3);background:rgba(255,255,255,.05);color:#fff;font-size:.95rem;line-height:1.5;resize:vertical;}
+.ag-vis-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:30px;}
+.ag-vis{background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.18);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;}
+.ag-vis img{width:100%;height:auto;display:block;}
+.ag-vis__dl{margin:14px;text-align:center;}
+.ag-maker{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:28px;align-items:start;}
+.ag-maker__preview{background:#0e0d11;border:1px solid rgba(212,180,92,.18);border-radius:14px;overflow:hidden;}
+.ag-maker__preview canvas{width:100%;height:auto;display:block;}
+.ag-maker__ctrl{display:flex;flex-direction:column;gap:16px;}
+.ag-maker__ctrl label{display:flex;flex-direction:column;gap:8px;color:var(--color-text-soft);font-size:.9rem;font-weight:600;}
+.ag-maker__ctrl input[type=text]{padding:13px 16px;border-radius:12px;border:1px solid rgba(212,180,92,.3);background:rgba(255,255,255,.05);color:#fff;font-size:.95rem;}
+.ag-maker__ctrl input[type=file]{color:var(--color-text-soft);font-size:.88rem;}
+@media(max-width:760px){.ag-vis-grid{grid-template-columns:1fr 1fr;}.ag-maker{grid-template-columns:1fr;}}
 @media(max-width:760px){.ag-esp-stats{grid-template-columns:1fr 1fr;}.ag-lb-grid{grid-template-columns:1fr;}}
 </style>
 
