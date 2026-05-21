@@ -11,14 +11,14 @@ get_header();
 $ph = 'STRIPE_PLACEHOLDER';
 $packs = array(
 	'essentiel' => array(
-		'url'   => get_option( 'ag_stripe_express_essentiel_url', $ph ),
+		'url'   => get_option( 'ag_stripe_express_essentiel_url', 'https://www.paypal.com/ncp/payment/N9DCC5VWTS5LY' ),
 		'nom'   => 'Essentiel',
 		'prix'  => '490 €',
 		'desc'  => 'Le site vitrine qui te rend crédible.',
 		'feats' => array( 'Site 1 page (one-page) premium', 'Design sur-mesure à ta marque', 'Optimisé mobile + rapide', 'Formulaire de contact + Google Maps', 'Livré en 5 jours', 'Référencement de base' ),
 	),
 	'pro' => array(
-		'url'   => get_option( 'ag_stripe_express_pro_url', $ph ),
+		'url'   => get_option( 'ag_stripe_express_pro_url', 'https://www.paypal.com/ncp/payment/EHEAJGG96G7SY' ),
 		'nom'   => 'Pro',
 		'prix'  => '890 €',
 		'desc'  => 'Le site complet pour développer ton activité.',
@@ -26,7 +26,7 @@ $packs = array(
 		'star'  => true,
 	),
 	'boutique' => array(
-		'url'   => get_option( 'ag_stripe_express_boutique_url', $ph ),
+		'url'   => get_option( 'ag_stripe_express_boutique_url', 'https://www.paypal.com/ncp/payment/YNEZPTYSYR6EU' ),
 		'nom'   => 'Boutique',
 		'prix'  => '1 490 €',
 		'desc'  => 'Ta boutique en ligne, prête à vendre.',
