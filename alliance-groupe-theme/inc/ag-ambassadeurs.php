@@ -17,6 +17,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! defined( 'AG_COMMISSION_RATE' ) ) {
 	define( 'AG_COMMISSION_RATE', 0.10 ); // 10 % par vente
 }
+if ( ! defined( 'AG_OVERRIDE_RATE' ) ) {
+	// Parrainage : part de la commission du FILLEUL reversée au PARRAIN, sur les
+	// VENTES réelles uniquement (jamais une prime pour le simple recrutement).
+	// 0.20 = le parrain touche 20% de la commission du filleul (soit 2% de la vente).
+	define( 'AG_OVERRIDE_RATE', 0.20 );
+}
 if ( ! defined( 'AG_KYC_RETENTION_DAYS' ) ) {
 	define( 'AG_KYC_RETENTION_DAYS', 30 ); // RGPD : suppression auto de la piece apres X jours
 }
@@ -124,6 +130,11 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 			wp_die( 'La pièce d\'identité est obligatoire et doit être un JPG, PNG ou PDF de 5 Mo maximum.', 'Pièce d\'identité requise', array( 'response' => 400, 'back_link' => true ) );
 		}
 
+		// Parrainage : qui a recruté ce nouvel ambassadeur (cookie posé via ?parrain=CODE) ?
+		$parrain_ref   = isset( $_COOKIE['ag_parrain'] ) ? preg_replace( '/[^A-Za-z0-9]/', '', wp_unslash( $_COOKIE['ag_parrain'] ) ) : '';
+		$parrain       = ( $parrain_ref && function_exists( 'ag_ambassadeur_by_ref' ) ) ? ag_ambassadeur_by_ref( $parrain_ref ) : null;
+		$parrain_store = ( $parrain && isset( $parrain['email'] ) && strtolower( $parrain['email'] ) !== strtolower( $email ) ) ? ( $parrain['ref'] ?? $parrain_ref ) : '';
+
 		$list = get_option( 'ag_ambassadeurs', array() );
 		if ( ! is_array( $list ) ) $list = array();
 
@@ -150,6 +161,7 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 			'identite'   => 'a_verifier',
 			'kyc_file'   => $kyc_file,
 			'kyc_ts'     => time(),
+			'parrain'    => $parrain_store,
 			'rgpd'       => array( 'consent' => true, 'date' => current_time( 'd/m/Y H:i' ) ),
 			'contrat'    => array(
 				'accepte'   => true,
@@ -373,6 +385,28 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 			echo '</tbody></table>';
 		}
 
+		// BONUS DE PARRAINAGE (override sur les ventes des filleuls)
+		$parrains = array();
+		foreach ( get_option( 'ag_ambassadeurs', array() ) as $a ) {
+			if ( empty( $a['ref'] ) ) continue;
+			$ov = function_exists( 'ag_ambassadeur_override_for' ) ? ag_ambassadeur_override_for( $a['ref'] ) : array( 'team' => 0, 'generated' => 0, 'paid' => 0 );
+			if ( $ov['team'] > 0 ) $parrains[] = array( 'name' => $a['name'] ?? $a['email'], 'email' => $a['email'], 'ov' => $ov );
+		}
+		echo '<h2 style="margin-top:30px;">🌐 Bonus de parrainage <small style="font-weight:400;color:#646970;">(' . esc_html( (int) ( ( defined( 'AG_OVERRIDE_RATE' ) ? AG_OVERRIDE_RATE : 0.2 ) * 100 ) ) . '% de la commission des filleuls, sur ventes réelles)</small></h2>';
+		if ( empty( $parrains ) ) {
+			echo '<p>Aucun parrainage avec ventes pour le moment.</p>';
+		} else {
+			echo '<table class="widefat striped"><thead><tr><th>Parrain</th><th>Email</th><th>Filleuls</th><th>Bonus généré</th><th>Déjà payé</th></tr></thead><tbody>';
+			foreach ( $parrains as $p ) {
+				echo '<tr><td><strong>' . esc_html( $p['name'] ) . '</strong></td>';
+				echo '<td><a href="mailto:' . esc_attr( $p['email'] ) . '">' . esc_html( $p['email'] ) . '</a></td>';
+				echo '<td>' . (int) $p['ov']['team'] . '</td>';
+				echo '<td><strong style="color:#b8860b;">' . esc_html( $eur( $p['ov']['generated'] ) ) . '</strong></td>';
+				echo '<td>' . esc_html( $eur( $p['ov']['paid'] ) ) . '</td></tr>';
+			}
+			echo '</tbody></table>';
+		}
+
 		// VENTES
 		echo '<h2 style="margin-top:30px;">🧾 Ventes déclarées</h2>';
 		if ( empty( $ventes ) ) {
@@ -412,7 +446,7 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 				$contrat = $a['contrat'] ?? array();
 				echo '<tr>';
 				echo '<td>' . esc_html( $a['date'] ?? '' ) . '</td>';
-				echo '<td><strong>' . esc_html( $a['name'] ?? '' ) . '</strong></td>';
+				echo '<td><strong>' . esc_html( $a['name'] ?? '' ) . '</strong>' . ( ! empty( $a['parrain'] ) ? '<br><small style="color:#646970;">parrain : ' . esc_html( $a['parrain'] ) . '</small>' : '' ) . '</td>';
 				echo '<td><a href="mailto:' . esc_attr( $a['email'] ?? '' ) . '">' . esc_html( $a['email'] ?? '' ) . '</a></td>';
 				echo '<td>' . esc_html( ( $a['phone'] ?? '' ) . ' · ' . ( $a['city'] ?? '' ) ) . '</td>';
 				echo '<td style="max-width:220px;white-space:normal;font-size:12px;">Né(e) : ' . esc_html( $a['birthdate'] ?? '—' ) . '<br>' . esc_html( $a['address'] ?? '—' );

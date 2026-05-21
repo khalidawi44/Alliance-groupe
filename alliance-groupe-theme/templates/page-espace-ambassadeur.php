@@ -119,6 +119,27 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 	</script>
 
 	<?php
+	$ag_ref     = function_exists( 'ag_ambassadeur_ref' ) ? ag_ambassadeur_ref( $email ) : '';
+	$ag_recruit = function_exists( 'ag_ambassadeur_recruit_link' ) ? ag_ambassadeur_recruit_link( $email ) : home_url( '/ambassadeurs' );
+	$ag_team    = function_exists( 'ag_ambassadeur_override_for' ) ? ag_ambassadeur_override_for( $ag_ref ) : array( 'team' => 0, 'generated' => 0, 'paid' => 0 );
+	?>
+	<section class="ag-section ag-section--graphite">
+		<div class="ag-container">
+			<h2 class="ag-section__title">Recrute ton équipe 🌐</h2>
+			<p class="ag-section__desc">Recrute d'autres commerciaux avec ce lien. Quand <strong>ils vendent</strong>, tu touches un bonus de parrainage sur leurs ventes (en plus de tes 10 %). Plus ton équipe vend, plus tu gagnes.</p>
+			<div class="ag-esp-stats" style="grid-template-columns:repeat(2,1fr);max-width:560px;">
+				<div class="ag-esp-stat"><span class="ag-esp-stat__val"><?php echo (int) $ag_team['team']; ?></span><span class="ag-esp-stat__lbl">Filleuls recrutés</span></div>
+				<div class="ag-esp-stat ag-esp-stat--gold"><span class="ag-esp-stat__val"><?php echo esc_html( $eur( $ag_team['generated'] ) ); ?></span><span class="ag-esp-stat__lbl">Bonus parrainage généré</span></div>
+			</div>
+			<div class="ag-share" style="margin-top:22px;">
+				<input id="ag-recruitlink" type="text" readonly value="<?php echo esc_attr( $ag_recruit ); ?>" onclick="this.select();">
+				<button type="button" class="ag-btn-gold" id="ag-recruitcopy" onclick="navigator.clipboard.writeText(document.getElementById('ag-recruitlink').value).then(function(){var b=document.getElementById('ag-recruitcopy');b.textContent='✓ Copié';setTimeout(function(){b.textContent='Copier le lien de recrutement';},1500);});">Copier le lien de recrutement</button>
+			</div>
+			<p class="ag-share__note">Tu es payé sur les <strong>ventes</strong> de ton équipe, jamais pour le simple recrutement (c'est la règle).</p>
+		</div>
+	</section>
+
+	<?php
 	$lb    = function_exists( 'ag_ambassadeur_leaderboard' ) ? ag_ambassadeur_leaderboard() : array();
 	$tiers = function_exists( 'ag_ambassadeur_tiers' ) ? ag_ambassadeur_tiers() : array();
 	$cur = $tiers ? $tiers[0] : null; $next = null;

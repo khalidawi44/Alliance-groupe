@@ -386,14 +386,59 @@ if ( ! function_exists( 'ag_ambassadeur_sale_link' ) ) {
 	}
 }
 
-// Mémorise le code de parrainage en cookie (30 jours) dès qu'un visiteur arrive via un lien.
+// Mémorise les codes en cookie (30 jours) : ?ref= (vente) et ?parrain= (recrutement).
 add_action( 'init', function () {
-	if ( empty( $_GET['ref'] ) ) return;
-	$ref = preg_replace( '/[^A-Za-z0-9]/', '', wp_unslash( $_GET['ref'] ) );
-	if ( $ref && ! headers_sent() ) {
-		setcookie( 'ag_ref', $ref, time() + 30 * DAY_IN_SECONDS, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN );
+	if ( ! empty( $_GET['ref'] ) ) {
+		$ref = preg_replace( '/[^A-Za-z0-9]/', '', wp_unslash( $_GET['ref'] ) );
+		if ( $ref && ! headers_sent() ) setcookie( 'ag_ref', $ref, time() + 30 * DAY_IN_SECONDS, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN );
+	}
+	if ( ! empty( $_GET['parrain'] ) ) {
+		$p = preg_replace( '/[^A-Za-z0-9]/', '', wp_unslash( $_GET['parrain'] ) );
+		if ( $p && ! headers_sent() ) setcookie( 'ag_parrain', $p, time() + 30 * DAY_IN_SECONDS, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN );
 	}
 } );
+
+/* ── 9b. Parrainage : recruter une équipe + override sur leurs ventes ── */
+if ( ! function_exists( 'ag_ambassadeur_recruit_link' ) ) {
+	/** Lien à partager pour recruter de nouveaux ambassadeurs sous son parrainage. */
+	function ag_ambassadeur_recruit_link( $email ) {
+		$ref = ag_ambassadeur_ref( $email );
+		return $ref ? add_query_arg( 'parrain', $ref, home_url( '/ambassadeurs' ) ) : home_url( '/ambassadeurs' );
+	}
+}
+if ( ! function_exists( 'ag_ambassadeur_filleuls' ) ) {
+	/** Ambassadeurs recrutés par ce parrain (par son code ref). */
+	function ag_ambassadeur_filleuls( $parrain_ref ) {
+		$out = array();
+		$parrain_ref = strtoupper( (string) $parrain_ref );
+		if ( '' === $parrain_ref ) return $out;
+		foreach ( (array) get_option( 'ag_ambassadeurs', array() ) as $a ) {
+			if ( ! empty( $a['parrain'] ) && strtoupper( $a['parrain'] ) === $parrain_ref ) $out[] = $a;
+		}
+		return $out;
+	}
+}
+if ( ! function_exists( 'ag_ambassadeur_override_for' ) ) {
+	/**
+	 * Commissions de parrainage du parrain : un % de la commission de ses filleuls,
+	 * sur leurs VENTES réelles (validées/payées) uniquement.
+	 * Retourne array( team, generated, paid ).
+	 */
+	function ag_ambassadeur_override_for( $parrain_ref ) {
+		$rate   = defined( 'AG_OVERRIDE_RATE' ) ? AG_OVERRIDE_RATE : 0.20;
+		$team   = ag_ambassadeur_filleuls( $parrain_ref );
+		$emails = array();
+		foreach ( $team as $a ) { $emails[] = strtolower( $a['email'] ?? '' ); }
+		$generated = 0; $paid = 0;
+		foreach ( (array) get_option( 'ag_ambassadeur_ventes', array() ) as $v ) {
+			if ( ! in_array( strtolower( $v['email'] ?? '' ), $emails, true ) ) continue;
+			$st = $v['statut'] ?? '';
+			if ( 'validee' === $st || 'payee' === $st ) $generated += (float) $v['commission'] * $rate;
+			if ( 'payee' === $st ) $paid += (float) $v['commission'] * $rate;
+		}
+		return array( 'team' => count( $team ), 'generated' => $generated, 'paid' => $paid );
+	}
+}
 
 // Attribution automatique : à l'envoi du brief, si un cookie de parrainage existe,
 // crée une vente (en attente) au crédit de l'ambassadeur — sans déclaration manuelle.
