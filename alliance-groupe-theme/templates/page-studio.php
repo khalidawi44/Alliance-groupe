@@ -9,9 +9,15 @@
 get_header();
 
 $u            = wp_get_current_user();
+$kind         = function_exists( 'ag_espace_member_kind' ) ? ag_espace_member_kind() : '';
+$is_admin     = ( 'admin' === $kind );
+$is_seller    = in_array( $kind, array( 'ambassadeur', 'admin' ), true ); // a son propre lien + compte au classement
 $email        = ( $u && $u->ID ) ? $u->user_email : '';
-$ag_sale_link    = ( $email && function_exists( 'ag_ambassadeur_sale_link' ) ) ? ag_ambassadeur_sale_link( $email ) : home_url( '/sites-express' );
-$ag_recruit_link = ( $email && function_exists( 'ag_ambassadeur_recruit_link' ) ) ? ag_ambassadeur_recruit_link( $email ) : home_url( '/ambassadeurs' );
+// L'admin compte aussi dans le classement : on lui garantit une fiche + un code de parrainage.
+if ( $is_admin && function_exists( 'ag_ensure_ambassador_for_user' ) ) { ag_ensure_ambassador_for_user( $u ); }
+// Le lien intégré aux contenus = celui du vendeur connecté ; sinon lien simple du site (sans code).
+$ag_sale_link    = ( $is_seller && function_exists( 'ag_ambassadeur_sale_link' ) )    ? ag_ambassadeur_sale_link( $email )    : home_url( '/sites-express' );
+$ag_recruit_link = ( $is_seller && function_exists( 'ag_ambassadeur_recruit_link' ) ) ? ag_ambassadeur_recruit_link( $email ) : home_url( '/ambassadeurs' );
 
 $studio_uri = get_stylesheet_directory_uri() . '/assets/images/studio/';
 $prod_uri   = get_stylesheet_directory_uri() . '/assets/images/produits/';
@@ -29,10 +35,19 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 		<div class="ag-container">
 			<div class="ag-esp-head">
 				<div><span class="ag-tag">Studio créatif 🎬</span><h1 class="ag-section__title">Crée &amp; partage, sans quitter le site</h1></div>
-				<a href="<?php echo esc_url( home_url( '/espace-ambassadeur' ) ); ?>" class="ag-btn-outline ag-esp-logout">← Mon compte</a>
+				<?php if ( $is_seller ) : ?>
+					<a href="<?php echo esc_url( home_url( '/espace-ambassadeur' ) ); ?>" class="ag-btn-outline ag-esp-logout">← Mon compte</a>
+				<?php else : ?>
+					<a href="<?php echo esc_url( home_url( '/ambassadeurs' ) ); ?>" class="ag-btn-gold ag-esp-logout">Gagner 10 % — devenir ambassadeur →</a>
+				<?php endif; ?>
 			</div>
-			<?php get_template_part( 'template-parts/espace-nav', null, array( 'active' => 'studio' ) ); ?>
-			<p class="ag-section__desc">Choisis ton objectif, prends un visuel, fais-en une vidéo avec ton lien, et partage direct. Ton code est toujours intégré.</p>
+			<?php if ( $is_seller ) : ?>
+				<?php get_template_part( 'template-parts/espace-nav', null, array( 'active' => 'studio' ) ); ?>
+			<?php endif; ?>
+			<p class="ag-section__desc">Crée une vidéo ou une image pro en quelques secondes, et partage-la direct. <?php echo $is_seller ? 'Ton lien de vente est toujours intégré.' : 'C\'est gratuit pour tout le monde.'; ?></p>
+			<?php if ( ! $is_seller ) : ?>
+				<div class="ag-studio-guest">💡 Tu peux créer et partager librement — le contenu renvoie vers le site. <strong><?php echo is_user_logged_in() ? 'Deviens ambassadeur' : 'Connecte-toi ou deviens ambassadeur'; ?></strong> pour intégrer <strong>TON lien</strong> et toucher <strong>10 % sur chaque vente</strong>. <a href="<?php echo esc_url( home_url( '/ambassadeurs' ) ); ?>">En savoir plus →</a></div>
+			<?php endif; ?>
 			<div class="ag-mode">
 				<button type="button" class="ag-mode-btn is-active" data-mode="sale" onclick="agSetMode('sale')">🛒 Vendre des sites</button>
 				<button type="button" class="ag-mode-btn" data-mode="recruit" onclick="agSetMode('recruit')">🤝 Recruter mon équipe</button>
@@ -283,6 +298,9 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 .ag-ct{display:flex;gap:10px;margin-top:22px;padding:6px;background:rgba(255,255,255,.04);border:1px solid rgba(212,180,92,.2);border-radius:14px;max-width:420px;}
 .ag-ct-btn{flex:1;padding:14px 12px;border:none;background:transparent;color:var(--color-text-soft);font-weight:800;font-size:1rem;border-radius:10px;cursor:pointer;transition:background .2s,color .2s;}
 .ag-ct-btn.is-active{background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;}
+.ag-studio-guest{margin-top:18px;padding:15px 20px;background:linear-gradient(135deg,rgba(212,180,92,.14),rgba(243,122,31,.06));border:1px solid rgba(212,180,92,.4);border-radius:14px;color:#fff;font-size:.92rem;line-height:1.6;}
+.ag-studio-guest strong{color:#e8c766;}
+.ag-studio-guest a{color:var(--color-gold);font-weight:700;}
 .ag-vis-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:30px;}
 .ag-vis{background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.18);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;}
 .ag-vis img{width:100%;height:auto;display:block;}

@@ -223,7 +223,7 @@ add_action( 'template_redirect', function () {
 	if ( is_page_template( 'templates/page-connexion.php' ) && is_user_logged_in() ) {
 		wp_safe_redirect( ag_espace_url() ); exit;
 	}
-	$amb = is_page_template( 'templates/page-espace-ambassadeur.php' ) || is_page_template( 'templates/page-studio.php' ) || is_page_template( 'templates/page-guide-ambassadeur.php' );
+	$amb = is_page_template( 'templates/page-espace-ambassadeur.php' ) || is_page_template( 'templates/page-guide-ambassadeur.php' );
 	$cli = is_page_template( 'templates/page-espace-client.php' );
 	if ( ! $amb && ! $cli ) return;
 
@@ -385,6 +385,27 @@ if ( ! function_exists( 'ag_ambassadeur_sale_link' ) ) {
 	function ag_ambassadeur_sale_link( $email ) {
 		$ref = ag_ambassadeur_ref( $email );
 		return $ref ? add_query_arg( 'ref', $ref, home_url( '/sites-express' ) ) : home_url( '/sites-express' );
+	}
+}
+if ( ! function_exists( 'ag_ensure_ambassador_for_user' ) ) {
+	/** Garantit qu'un utilisateur (ex. l'admin) a une fiche ambassadeur -> il obtient un code de parrainage et compte au classement. Retourne le ref. */
+	function ag_ensure_ambassador_for_user( $user ) {
+		if ( ! $user || ! $user->ID ) return '';
+		$email = $user->user_email;
+		if ( ! is_email( $email ) ) return '';
+		if ( ! ag_ambassadeur_record( $email ) ) {
+			$list = get_option( 'ag_ambassadeurs', array() );
+			if ( ! is_array( $list ) ) $list = array();
+			$list[] = array(
+				'email'  => $email,
+				'name'   => $user->display_name ? $user->display_name : $user->user_login,
+				'status' => 'actif',
+				'ref'    => '',
+				'date'   => current_time( 'd/m/Y H:i' ),
+			);
+			update_option( 'ag_ambassadeurs', $list );
+		}
+		return ag_ambassadeur_ref( $email );
 	}
 }
 

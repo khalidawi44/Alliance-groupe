@@ -12,6 +12,8 @@ get_header();
 $u      = wp_get_current_user();
 $email  = $u->user_email;
 $name   = $u->display_name ? $u->display_name : $u->user_login;
+// L'admin compte aussi dans le classement : on lui garantit une fiche ambassadeur (ref + statut actif).
+if ( function_exists( 'ag_espace_member_kind' ) && 'admin' === ag_espace_member_kind() && function_exists( 'ag_ensure_ambassador_for_user' ) ) { ag_ensure_ambassador_for_user( $u ); }
 $rec    = function_exists( 'ag_ambassadeur_record' ) ? ag_ambassadeur_record( $email ) : null;
 $actif  = $rec && ( ( $rec['status'] ?? '' ) === 'actif' );
 $ventes = function_exists( 'ag_ambassadeur_ventes_for' ) ? ag_ambassadeur_ventes_for( $email ) : array();
