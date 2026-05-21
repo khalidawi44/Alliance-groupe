@@ -191,3 +191,62 @@ add_action( 'init', function () {
 	}
 	update_option( 'ag_espaces_pages_v1', 1 );
 } );
+
+/* ── 8. Classement & récompenses (gamification commerciale) ────────── */
+if ( ! function_exists( 'ag_ambassadeur_tiers' ) ) {
+	/**
+	 * Paliers de récompense (indicatifs, ajustables via le filtre).
+	 * Les primes/cadeaux sont attribués par l'admin (non auto-calculés).
+	 */
+	function ag_ambassadeur_tiers() {
+		return apply_filters( 'ag_ambassadeur_tiers', array(
+			array( 'key' => 'bronze',  'label' => 'Bronze',  'emoji' => '🥉', 'min_ca' => 0,     'reward' => '10 % sur chaque vente + tous les outils de vente' ),
+			array( 'key' => 'argent',  'label' => 'Argent',  'emoji' => '🥈', 'min_ca' => 3000,  'reward' => 'Prime de 100 € + mise en avant' ),
+			array( 'key' => 'or',      'label' => 'Or',      'emoji' => '🥇', 'min_ca' => 10000, 'reward' => 'Prime de 300 € + leads fournis' ),
+			array( 'key' => 'platine', 'label' => 'Platine', 'emoji' => '💎', 'min_ca' => 25000, 'reward' => 'Prime de 800 € + cadeau + statut VIP' ),
+		) );
+	}
+}
+if ( ! function_exists( 'ag_ambassadeur_tier_for' ) ) {
+	function ag_ambassadeur_tier_for( $ca ) {
+		$tiers = ag_ambassadeur_tiers();
+		$cur   = $tiers[0];
+		foreach ( $tiers as $t ) { if ( (float) $ca >= (float) $t['min_ca'] ) $cur = $t; }
+		return $cur;
+	}
+}
+if ( ! function_exists( 'ag_ambassadeur_short_name' ) ) {
+	/** "Karim Benali" -> "Karim B." (respect vie privée pour l'affichage public). */
+	function ag_ambassadeur_short_name( $full ) {
+		$full = trim( (string) $full );
+		if ( '' === $full ) return 'Ambassadeur';
+		$parts = preg_split( '/\s+/', $full );
+		$first = $parts[0];
+		$init  = ( count( $parts ) > 1 ) ? mb_strtoupper( mb_substr( end( $parts ), 0, 1 ) ) . '.' : '';
+		return trim( $first . ' ' . $init );
+	}
+}
+if ( ! function_exists( 'ag_ambassadeur_leaderboard' ) ) {
+	/** Classement par CA généré (ventes validées + payées), du + au -. */
+	function ag_ambassadeur_leaderboard() {
+		$agg = array();
+		foreach ( (array) get_option( 'ag_ambassadeur_ventes', array() ) as $v ) {
+			$st = $v['statut'] ?? '';
+			if ( ! in_array( $st, array( 'validee', 'payee' ), true ) ) continue;
+			$k = strtolower( $v['email'] ?? '' );
+			if ( '' === $k ) continue;
+			if ( ! isset( $agg[ $k ] ) ) {
+				$agg[ $k ] = array( 'email' => $v['email'], 'name' => $v['name'] ?: $v['email'], 'ca' => 0, 'ventes' => 0, 'commission' => 0 );
+			}
+			$agg[ $k ]['ca']         += (float) $v['montant'];
+			$agg[ $k ]['ventes']     += 1;
+			$agg[ $k ]['commission'] += (float) $v['commission'];
+		}
+		$agg = array_values( $agg );
+		usort( $agg, function ( $a, $b ) { return $b['ca'] <=> $a['ca']; } );
+		$rank = 1;
+		foreach ( $agg as &$row ) { $row['rank'] = $rank++; }
+		unset( $row );
+		return $agg;
+	}
+}

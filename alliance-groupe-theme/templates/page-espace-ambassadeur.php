@@ -51,6 +51,51 @@ $labels = array( 'declaree' => 'En attente', 'validee' => 'Validée', 'payee' =>
 		</div>
 	</section>
 
+	<?php
+	$lb    = function_exists( 'ag_ambassadeur_leaderboard' ) ? ag_ambassadeur_leaderboard() : array();
+	$tiers = function_exists( 'ag_ambassadeur_tiers' ) ? ag_ambassadeur_tiers() : array();
+	$cur = $tiers ? $tiers[0] : null; $next = null;
+	foreach ( $tiers as $i => $t ) { if ( $ca >= $t['min_ca'] ) { $cur = $t; $next = $tiers[ $i + 1 ] ?? null; } }
+	$myrank = 0;
+	foreach ( $lb as $row ) { if ( strtolower( $row['email'] ) === strtolower( $email ) ) { $myrank = $row['rank']; break; } }
+	$progress = 100;
+	if ( $next && $cur ) { $span = max( 1, $next['min_ca'] - $cur['min_ca'] ); $progress = min( 100, max( 0, round( ( $ca - $cur['min_ca'] ) / $span * 100 ) ) ); }
+	$medals = array( 1 => '🥇', 2 => '🥈', 3 => '🥉' );
+	?>
+	<section class="ag-section ag-section--onyx">
+		<div class="ag-container">
+			<h2 class="ag-section__title">Classement &amp; récompenses 🏆</h2>
+			<p class="ag-section__desc">Plus tu vends, plus tu montes. Chaque mois, le top des commerciaux décroche des primes.</p>
+			<div class="ag-lb-grid">
+				<div class="ag-lb-tier">
+					<div class="ag-lb-tier__badge"><?php echo esc_html( $cur ? $cur['emoji'] . ' ' . $cur['label'] : '—' ); ?></div>
+					<?php if ( $myrank ) : ?><div class="ag-lb-rank"><?php echo esc_html( ( $medals[ $myrank ] ?? '#' . $myrank ) ); ?> au classement</div><?php endif; ?>
+					<?php if ( $next ) : ?>
+						<div class="ag-lb-progress"><span style="width:<?php echo (int) $progress; ?>%"></span></div>
+						<p class="ag-lb-next">Plus que <strong><?php echo esc_html( $eur( max( 0, $next['min_ca'] - $ca ) ) ); ?></strong> de CA pour passer <?php echo esc_html( $next['emoji'] . ' ' . $next['label'] ); ?></p>
+					<?php else : ?>
+						<p class="ag-lb-next">Niveau maximum atteint 💎 Bravo !</p>
+					<?php endif; ?>
+					<p class="ag-lb-reward">🎁 <?php echo esc_html( $cur ? $cur['reward'] : '' ); ?></p>
+				</div>
+				<div class="ag-lb-board">
+					<?php if ( empty( $lb ) ) : ?>
+						<p class="ag-section__desc" style="margin:0;">Sois le premier à apparaître au classement 🚀</p>
+					<?php else : $shown = 0; foreach ( $lb as $row ) :
+						$me = strtolower( $row['email'] ) === strtolower( $email );
+						if ( $shown >= 5 && ! $me ) continue;
+						$shown++; ?>
+						<div class="ag-lb-row<?php echo $me ? ' is-me' : ''; ?>">
+							<span class="ag-lb-row__rank"><?php echo esc_html( $medals[ $row['rank'] ] ?? '#' . $row['rank'] ); ?></span>
+							<span class="ag-lb-row__name"><?php echo esc_html( $me ? 'Toi' : ag_ambassadeur_short_name( $row['name'] ) ); ?></span>
+							<span class="ag-lb-row__ca"><?php echo esc_html( $eur( $row['ca'] ) ); ?></span>
+						</div>
+					<?php endforeach; endif; ?>
+				</div>
+			</div>
+		</div>
+	</section>
+
 	<?php if ( $actif ) : ?>
 	<section class="ag-section ag-section--onyx">
 		<div class="ag-container ag-container--narrow">
@@ -118,7 +163,21 @@ $labels = array( 'declaree' => 'En attente', 'validee' => 'Validée', 'payee' =>
 .ag-esp-badge--declaree{background:rgba(255,255,255,.1);color:#cfc7b8;}
 .ag-esp-badge--validee{background:rgba(34,113,177,.2);color:#79b6e6;}
 .ag-esp-badge--payee{background:rgba(0,132,61,.2);color:#4bbf77;}
-@media(max-width:760px){.ag-esp-stats{grid-template-columns:1fr 1fr;}}
+.ag-lb-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:22px;margin-top:30px;align-items:start;}
+.ag-lb-tier{padding:26px 24px;background:linear-gradient(160deg,rgba(212,180,92,.14),rgba(243,122,31,.06));border:1px solid rgba(212,180,92,.4);border-radius:18px;}
+.ag-lb-tier__badge{font-family:var(--font-serif);font-size:1.7rem;font-weight:800;color:#fff;}
+.ag-lb-rank{margin-top:6px;color:#e8c766;font-weight:700;}
+.ag-lb-progress{height:10px;border-radius:10px;background:rgba(255,255,255,.1);overflow:hidden;margin:16px 0 10px;}
+.ag-lb-progress span{display:block;height:100%;background:linear-gradient(90deg,#D4B45C,#F37A1F);}
+.ag-lb-next{color:var(--color-text-soft);font-size:.9rem;margin:0 0 12px;}
+.ag-lb-reward{color:#fff;font-size:.92rem;margin:0;}
+.ag-lb-board{display:flex;flex-direction:column;gap:8px;}
+.ag-lb-row{display:grid;grid-template-columns:48px 1fr auto;align-items:center;gap:12px;padding:14px 18px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.14);border-radius:12px;}
+.ag-lb-row.is-me{border-color:rgba(212,180,92,.6);background:linear-gradient(160deg,rgba(212,180,92,.16),rgba(243,122,31,.06));}
+.ag-lb-row__rank{font-size:1.2rem;font-weight:800;color:#e8c766;}
+.ag-lb-row__name{color:#fff;font-weight:600;}
+.ag-lb-row__ca{color:var(--color-text-soft);font-weight:700;}
+@media(max-width:760px){.ag-esp-stats{grid-template-columns:1fr 1fr;}.ag-lb-grid{grid-template-columns:1fr;}}
 </style>
 
 <?php get_footer(); ?>

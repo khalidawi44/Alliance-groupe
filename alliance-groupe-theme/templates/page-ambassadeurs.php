@@ -45,6 +45,58 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
         </div>
     </section>
 
+    <!-- Classement & récompenses (motivation) -->
+    <section class="ag-section ag-section--graphite" id="classement">
+        <div class="ag-container">
+            <span class="ag-tag ag-anim" data-anim="tag">Classement &amp; récompenses 🏆</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Plus tu vends, <em>plus tu gagnes</em></h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc">10 % sur chaque vente, et un challenge chaque mois : le top des commerciaux décroche des primes et des cadeaux. Le classement est affiché — à toi de viser la 1re place.</p>
+
+            <div class="ag-amb-tiers">
+                <?php foreach ( ( function_exists( 'ag_ambassadeur_tiers' ) ? ag_ambassadeur_tiers() : array() ) as $t ) : ?>
+                    <div class="ag-amb-tier ag-anim" data-anim="card">
+                        <div class="ag-amb-tier__emoji"><?php echo esc_html( $t['emoji'] ); ?></div>
+                        <h3><?php echo esc_html( $t['label'] ); ?></h3>
+                        <p class="ag-amb-tier__seuil"><?php echo $t['min_ca'] > 0 ? 'dès ' . esc_html( number_format( $t['min_ca'], 0, ',', ' ' ) ) . ' € de ventes' : 'dès ta 1re vente'; ?></p>
+                        <p class="ag-amb-tier__reward"><?php echo esc_html( $t['reward'] ); ?></p>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <?php $ag_lb = function_exists( 'ag_ambassadeur_leaderboard' ) ? ag_ambassadeur_leaderboard() : array(); if ( ! empty( $ag_lb ) ) : ?>
+                <h3 class="ag-amb-top__title">🔥 Top du moment</h3>
+                <div class="ag-amb-top">
+                    <?php $ag_m = array( 1 => '🥇', 2 => '🥈', 3 => '🥉' ); foreach ( array_slice( $ag_lb, 0, 3 ) as $row ) : ?>
+                        <div class="ag-amb-top__row">
+                            <span><?php echo esc_html( $ag_m[ $row['rank'] ] ?? '#' . $row['rank'] ); ?></span>
+                            <strong><?php echo esc_html( ag_ambassadeur_short_name( $row['name'] ) ); ?></strong>
+                            <em><?php echo esc_html( number_format( $row['ca'], 0, ',', ' ' ) ); ?> €</em>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
+            <div style="text-align:center;margin-top:36px;">
+                <a href="#rejoindre" class="ag-btn-gold">Je rejoins et je grimpe →</a>
+            </div>
+        </div>
+    </section>
+    <style>
+    .ag-amb-tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:40px;}
+    .ag-amb-tier{padding:26px 20px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.18);border-radius:16px;text-align:center;}
+    .ag-amb-tier__emoji{font-size:2rem;}
+    .ag-amb-tier h3{margin:8px 0 4px;font-family:var(--font-serif);color:#fff;font-size:1.2rem;}
+    .ag-amb-tier__seuil{color:#e8c766;font-size:.82rem;font-weight:700;margin:0 0 10px;text-transform:uppercase;letter-spacing:.5px;}
+    .ag-amb-tier__reward{color:var(--color-text-soft);font-size:.92rem;margin:0;line-height:1.45;}
+    .ag-amb-top__title{margin:40px 0 16px;color:#fff;font-family:var(--font-serif);}
+    .ag-amb-top{display:flex;flex-direction:column;gap:10px;max-width:520px;}
+    .ag-amb-top__row{display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:12px;padding:14px 18px;background:linear-gradient(160deg,rgba(212,180,92,.1),rgba(243,122,31,.04));border:1px solid rgba(212,180,92,.2);border-radius:12px;}
+    .ag-amb-top__row span{font-size:1.2rem;}
+    .ag-amb-top__row strong{color:#fff;}
+    .ag-amb-top__row em{color:#e8c766;font-style:normal;font-weight:700;}
+    @media(max-width:860px){.ag-amb-tiers{grid-template-columns:1fr 1fr;}}
+    </style>
+
     <!-- Inscription -->
     <section class="ag-section ag-section--onyx" id="rejoindre">
         <div class="ag-container ag-container--narrow">
