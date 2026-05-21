@@ -51,18 +51,63 @@ $labels = array( 'declaree' => 'En attente', 'validee' => 'Validée', 'payee' =>
 		</div>
 	</section>
 
-	<?php $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_sale_link( $email ) : home_url( '/sites-express' ); ?>
+	<?php
+	$ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_sale_link( $email ) : home_url( '/sites-express' );
+	$ag_pitch = 'Ton site pro à prix fixe, livré en quelques jours — dès 490 €, sans rendez-vous. 👇';
+	$ag_full  = $ag_pitch . ' ' . $ag_sale_link;
+	$ag_u = rawurlencode( $ag_sale_link );
+	$ag_t = rawurlencode( $ag_pitch );
+	$ag_f = rawurlencode( $ag_full );
+	$ag_wa   = 'https://wa.me/?text=' . $ag_f;
+	$ag_fb   = 'https://www.facebook.com/sharer/sharer.php?u=' . $ag_u;
+	$ag_x    = 'https://twitter.com/intent/tweet?text=' . $ag_t . '&url=' . $ag_u;
+	$ag_tg   = 'https://t.me/share/url?url=' . $ag_u . '&text=' . $ag_t;
+	$ag_sms  = 'sms:?&body=' . $ag_f;
+	$ag_mail = 'mailto:?subject=' . rawurlencode( 'Une offre qui peut t\'intéresser' ) . '&body=' . $ag_f;
+	?>
 	<section class="ag-section ag-section--onyx">
 		<div class="ag-container">
-			<h2 class="ag-section__title">Ton lien de vente 🔗</h2>
-			<p class="ag-section__desc">Partage ce lien (DM, story, WhatsApp…). Quand un client passe par lui et envoie son brief, la vente <strong>se crédite automatiquement</strong> sur ton compte — sans rien déclarer.</p>
+			<h2 class="ag-section__title">Partager les offres 🚀</h2>
+			<p class="ag-section__desc">Ton <strong>code de vente est déjà intégré</strong> dans chaque partage. Dès qu'un client passe par ton lien et envoie son brief, la vente se crédite automatiquement sur ton compte — sans rien déclarer.</p>
+
 			<div class="ag-share">
 				<input id="ag-sharelink" type="text" readonly value="<?php echo esc_attr( $ag_sale_link ); ?>" onclick="this.select();">
-				<button type="button" class="ag-btn-gold" id="ag-copybtn" onclick="navigator.clipboard.writeText(document.getElementById('ag-sharelink').value).then(function(){var b=document.getElementById('ag-copybtn');b.textContent='✓ Copié';setTimeout(function(){b.textContent='Copier le lien';},1500);});">Copier le lien</button>
+				<button type="button" class="ag-btn-gold" id="ag-copybtn" onclick="navigator.clipboard.writeText(document.getElementById('ag-sharelink').value).then(function(){var b=document.getElementById('ag-copybtn');b.textContent='✓ Lien copié';setTimeout(function(){b.textContent='Copier le lien';},1500);});">Copier le lien</button>
 			</div>
-			<p class="ag-share__note">Vendu en direct, sans le lien ? Déclare la vente plus bas.</p>
+
+			<div class="ag-share-btns">
+				<a class="ag-sbtn ag-sbtn--wa"   href="<?php echo esc_url( $ag_wa ); ?>"   target="_blank" rel="noopener">📲 WhatsApp</a>
+				<a class="ag-sbtn ag-sbtn--fb"   href="<?php echo esc_url( $ag_fb ); ?>"   target="_blank" rel="noopener">f  Facebook</a>
+				<a class="ag-sbtn ag-sbtn--x"    href="<?php echo esc_url( $ag_x ); ?>"    target="_blank" rel="noopener">𝕏  Twitter</a>
+				<a class="ag-sbtn ag-sbtn--tg"   href="<?php echo esc_url( $ag_tg ); ?>"   target="_blank" rel="noopener">✈ Telegram</a>
+				<a class="ag-sbtn ag-sbtn--sms"  href="<?php echo esc_url( $ag_sms ); ?>">💬 SMS</a>
+				<a class="ag-sbtn ag-sbtn--mail" href="<?php echo esc_url( $ag_mail ); ?>">✉ Email</a>
+				<button type="button" class="ag-sbtn ag-sbtn--native" id="ag-native">⤴ Partager…</button>
+			</div>
+
+			<div class="ag-share-msg">
+				<div class="ag-share-msg__head">
+					<strong>Message prêt à coller (TikTok, Insta, Snap, bio…)</strong>
+					<button type="button" class="ag-btn-outline" id="ag-copymsg">Copier le message</button>
+				</div>
+				<textarea id="ag-msgtext" readonly rows="3"><?php echo esc_textarea( $ag_full ); ?></textarea>
+				<p class="ag-share__note">TikTok / Instagram / Snapchat n'autorisent pas les liens cliquables dans les vidéos : colle ce message dans ta <strong>bio</strong> ou en <strong>DM</strong>. Sur mobile, « Partager… » ouvre directement TikTok, Snap, etc.</p>
+			</div>
 		</div>
 	</section>
+	<script>
+	(function(){
+		var link = <?php echo wp_json_encode( $ag_sale_link ); ?>;
+		var pitch = <?php echo wp_json_encode( $ag_pitch ); ?>;
+		var nb = document.getElementById('ag-native');
+		if (nb) {
+			if (navigator.share) { nb.addEventListener('click', function(){ navigator.share({title:'Alliance Groupe', text:pitch, url:link}).catch(function(){}); }); }
+			else { nb.style.display = 'none'; }
+		}
+		var cm = document.getElementById('ag-copymsg');
+		if (cm) cm.addEventListener('click', function(){ navigator.clipboard.writeText(document.getElementById('ag-msgtext').value).then(function(){ cm.textContent='✓ Copié'; setTimeout(function(){ cm.textContent='Copier le message'; },1500); }); });
+	})();
+	</script>
 
 	<?php
 	$lb    = function_exists( 'ag_ambassadeur_leaderboard' ) ? ag_ambassadeur_leaderboard() : array();
@@ -193,6 +238,18 @@ $labels = array( 'declaree' => 'En attente', 'validee' => 'Validée', 'payee' =>
 .ag-share{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:24px;}
 .ag-share input{flex:1;min-width:260px;padding:14px 18px;border-radius:12px;border:1px solid rgba(212,180,92,.3);background:rgba(255,255,255,.05);color:#fff;font-size:.95rem;}
 .ag-share__note{margin-top:14px;color:var(--color-text-muted);font-size:.88rem;}
+.ag-share-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;}
+.ag-sbtn{display:inline-flex;align-items:center;gap:6px;padding:11px 16px;border-radius:12px;font-weight:700;font-size:.9rem;text-decoration:none;color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);cursor:pointer;transition:transform .2s,border-color .2s,background .2s;}
+.ag-sbtn:hover{transform:translateY(-2px);border-color:rgba(212,180,92,.5);color:#fff;text-decoration:none;}
+.ag-sbtn--wa:hover{background:rgba(37,211,102,.18);}
+.ag-sbtn--fb:hover{background:rgba(24,119,242,.18);}
+.ag-sbtn--x:hover{background:rgba(255,255,255,.14);}
+.ag-sbtn--tg:hover{background:rgba(42,171,238,.18);}
+.ag-sbtn--native{background:linear-gradient(135deg,rgba(212,180,92,.25),rgba(243,122,31,.12));border-color:rgba(212,180,92,.5);}
+.ag-share-msg{margin-top:26px;}
+.ag-share-msg__head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+.ag-share-msg__head strong{color:#fff;}
+.ag-share-msg textarea{width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(212,180,92,.3);background:rgba(255,255,255,.05);color:#fff;font-size:.95rem;line-height:1.5;resize:vertical;}
 @media(max-width:760px){.ag-esp-stats{grid-template-columns:1fr 1fr;}.ag-lb-grid{grid-template-columns:1fr;}}
 </style>
 

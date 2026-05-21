@@ -125,6 +125,12 @@ add_filter( 'wp_mail_from', function ( $email ) {
 	return ( is_string( $email ) && strpos( $email, 'wordpress@' ) === 0 ) ? 'contact@alliancegroupe-inc.com' : $email;
 }, 9 );
 
+// Autorise les liens sms: (boutons de partage) que WordPress bloque par défaut.
+add_filter( 'kses_allowed_protocols', function ( $protocols ) {
+	$protocols[] = 'sms';
+	return $protocols;
+} );
+
 if ( ! function_exists( 'ag_email_wrap' ) ) {
 	/** Gabarit HTML d'email à la marque (dark + or). */
 	function ag_email_wrap( $heading, $inner ) {
