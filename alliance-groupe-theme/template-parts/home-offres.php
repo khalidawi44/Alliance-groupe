@@ -39,8 +39,10 @@ $ag_offres_bg = get_stylesheet_directory_uri() . '/assets/images/cities/nantes-1
 .ag-rise{position:relative;z-index:2;margin-top:-58px;border-top-left-radius:44px;border-top-right-radius:44px;box-shadow:0 -50px 90px rgba(0,0,0,.55);overflow:hidden;}
 .ag-home-offres{background:#0d0d11;}
 .ag-home-offres__bg{position:absolute;inset:0;background-image:var(--offres-bg);background-size:cover;background-position:center;background-attachment:fixed;opacity:1;}
-.ag-home-offres__bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,13,17,.62),rgba(13,13,17,.55) 45%,rgba(13,13,17,.82));}
+.ag-home-offres__bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,13,17,.64),rgba(13,13,17,.6) 45%,rgba(13,13,17,.84));}
 .ag-home-offres__inner{position:relative;z-index:2;}
+.ag-home-offres__inner .ag-section__title{text-shadow:0 2px 18px rgba(0,0,0,.7);}
+.ag-home-offres__inner .ag-section__desc{color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.85);}
 .ag-home-offres__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:46px;}
 .ag-home-offres__card{display:block;border-radius:18px;overflow:hidden;border:1px solid rgba(212,180,92,.22);box-shadow:0 20px 50px rgba(0,0,0,.45);transition:transform .4s ease,border-color .4s ease,box-shadow .4s ease;}
 .ag-home-offres__card:hover{transform:translateY(-8px);border-color:rgba(212,180,92,.6);box-shadow:0 36px 80px rgba(0,0,0,.6);}

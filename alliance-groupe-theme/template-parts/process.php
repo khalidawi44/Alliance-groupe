@@ -7,7 +7,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 ?>
-<section class="ag-section ag-section--image-luxe ag-process">
+<section class="ag-section ag-section--image-luxe ag-process ag-rise">
 	<div class="ag-container">
 		<span class="ag-tag ag-anim" data-anim="tag">Notre méthode</span>
 		<h2 class="ag-section__title ag-anim" data-anim="title">Un process <em>éprouvé</em></h2>
