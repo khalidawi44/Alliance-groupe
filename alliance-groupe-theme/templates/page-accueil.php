@@ -40,8 +40,8 @@ get_header();
         </p>
 
         <div class="ag-hero__buttons">
-            <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-gold">Parlons de votre projet →</a>
-            <a href="<?php echo esc_url(home_url('/realisations')); ?>" class="ag-btn-outline">Voir nos réalisations</a>
+            <a href="<?php echo esc_url(home_url('/sites-express')); ?>" class="ag-btn-gold">Voir les offres →</a>
+            <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Parlons de votre projet</a>
         </div>
 
         <div class="ag-hero__metrics">
@@ -70,21 +70,32 @@ get_header();
 <!-- Marquee -->
 <?php get_template_part('template-parts/marquee'); ?>
 
-<!-- 🔄 NOUVELLE ORG : 1) Ce que je fais (services sur-mesure)
-                       2) Templates gratuits (CTA + scroll-fx metiers)
-                       3) Equipe (about)
-                       4) Le reste comme avant -->
+<!-- 🎯 ENTONNOIR PAR PRIORITE :
+       P1) VENDRE      → offres Sites Express (prix fixes)
+       P1b) sur-mesure → services
+       P2) RECRUTER    → programme ambassadeurs (10%)
+       P3) CARITATIF   → Programme Racines
+       puis : preuves & contenu (templates, metiers, equipe, process, realisations, FAQ) -->
 
-<!-- 1/ Services — "Ce que je fais" : sites sur-mesure -->
+<!-- P1/ VENDRE — offres claires a prix fixe -->
+<?php get_template_part('template-parts/home-offres'); ?>
+
+<!-- P1b/ Services sur-mesure (ticket plus eleve) -->
 <?php get_template_part('template-parts/services'); ?>
 
-<!-- 2a/ Section "Telechargez un template" (intro + features + CTAs) -->
+<!-- P2/ RECRUTER — programme ambassadeurs 10% -->
+<?php get_template_part('template-parts/home-ambassadeurs'); ?>
+
+<!-- P3/ CARITATIF — Programme Racines -->
+<?php get_template_part('template-parts/home-racines'); ?>
+
+<!-- Templates gratuits (aimant a prospects) -->
 <?php get_template_part('template-parts/templates-cta'); ?>
 
-<!-- 2b/ Section "metiers" — scroll-jacking GSAP plein ecran style Apple -->
+<!-- Section "metiers" — scroll-jacking GSAP plein ecran style Apple -->
 <?php get_template_part('template-parts/alliance-scroll-fx'); ?>
 
-<!-- 3/ About : Qui sommes-nous + valeurs + equipe -->
+<!-- About : Qui sommes-nous + valeurs + equipe -->
 <?php get_template_part('template-parts/about'); ?>
 
 <!-- Process -->
