@@ -32,7 +32,7 @@ $ag_redirect = isset( $_GET['redirect_to'] ) ? esc_url_raw( wp_unslash( $_GET['r
 				<button type="submit" class="ag-btn-gold" style="width:100%;justify-content:center;">Se connecter →</button>
 			</form>
 
-			<p class="ag-login-links"><a href="<?php echo esc_url( wp_lostpassword_url() ); ?>">Mot de passe oublié ?</a></p>
+			<p class="ag-login-links"><a href="<?php echo esc_url( home_url( '/mot-de-passe?action=lost' ) ); ?>">Mot de passe oublié ?</a></p>
 			<p class="ag-login-note">Pas encore de compte ? Ton accès est créé automatiquement quand tu commandes un site (client) ou quand tu rejoins le <a href="<?php echo esc_url( home_url( '/ambassadeurs' ) ); ?>">programme commercial</a>. Tu reçois alors un email pour définir ton mot de passe.</p>
 		</div>
 	</section>

@@ -158,7 +158,7 @@ if ( ! function_exists( 'ag_send_member_welcome' ) ) {
 		if ( ! $user || ! $user->ID ) return;
 		$key = get_password_reset_key( $user );
 		if ( is_wp_error( $key ) ) { wp_new_user_notification( $user->ID, null, 'user' ); return; }
-		$url  = network_site_url( 'wp-login.php?action=rp&key=' . rawurlencode( $key ) . '&login=' . rawurlencode( $user->user_login ), 'login' );
+		$url  = add_query_arg( array( 'key' => $key, 'login' => $user->user_login ), home_url( '/mot-de-passe' ) );
 		$name = $user->display_name ? $user->display_name : $user->user_login;
 
 		if ( 'ambassadeur' === $kind ) {
@@ -242,12 +242,13 @@ add_filter( 'login_redirect', function ( $redirect, $requested, $user ) {
 
 /* ── 7. Auto-création des pages (une seule fois) ───────────────────── */
 add_action( 'init', function () {
-	if ( get_option( 'ag_espaces_pages_v2' ) ) return;
+	if ( get_option( 'ag_espaces_pages_v3' ) ) return;
 	$pages = array(
 		'connexion'           => array( 'Connexion',          'templates/page-connexion.php' ),
 		'espace-client'       => array( 'Espace Client',      'templates/page-espace-client.php' ),
 		'espace-ambassadeur'  => array( 'Espace Commercial',  'templates/page-espace-ambassadeur.php' ),
 		'classement'          => array( 'Classement',         'templates/page-classement.php' ),
+		'mot-de-passe'        => array( 'Mot de passe',       'templates/page-mot-de-passe.php' ),
 	);
 	foreach ( $pages as $slug => $d ) {
 		if ( get_page_by_path( $slug ) ) continue;
@@ -260,7 +261,7 @@ add_action( 'init', function () {
 			'page_template'=> $d[1],
 		) );
 	}
-	update_option( 'ag_espaces_pages_v2', 1 );
+	update_option( 'ag_espaces_pages_v3', 1 );
 } );
 
 /* ── 8. Classement & récompenses (gamification commerciale) ────────── */
@@ -421,3 +422,78 @@ add_action( 'ag_client_brief_submitted', function ( $email, $name, $pack = '' ) 
 		"Attribution automatique (à valider après encaissement PayPal)\n\nAmbassadeur : " . ( $amb['name'] ?? '' ) . " <" . $amb['email'] . ">\nClient : $name <$email>\nPack : $pack ($montant €)\nCommission : " . round( $montant * $rate, 2 ) . " €\nDate : " . current_time( 'd/m/Y H:i' )
 	);
 }, 10, 3 );
+
+/* ── 10. Page mot de passe sur-mesure + blocage wp-login / wp-admin ── */
+
+// Traitement des formulaires de /mot-de-passe (avant tout affichage).
+add_action( 'template_redirect', function () {
+	if ( ! is_page_template( 'templates/page-mot-de-passe.php' ) ) return;
+
+	// (a) Demande de réinitialisation (mot de passe oublié)
+	if ( ! empty( $_POST['ag_lost_submit'] ) ) {
+		if ( isset( $_POST['ag_lost_nonce'] ) && wp_verify_nonce( $_POST['ag_lost_nonce'], 'ag_lost' ) ) {
+			$email = sanitize_email( wp_unslash( $_POST['user_email'] ?? '' ) );
+			$user  = $email ? get_user_by( 'email', $email ) : false;
+			if ( $user && function_exists( 'ag_email_wrap' ) ) {
+				$key = get_password_reset_key( $user );
+				if ( ! is_wp_error( $key ) ) {
+					$url   = add_query_arg( array( 'key' => $key, 'login' => $user->user_login ), home_url( '/mot-de-passe' ) );
+					$inner = '<p>Bonjour ' . esc_html( $user->display_name ) . ',</p>'
+						. '<p>Tu as demandé à réinitialiser ton mot de passe. Clique sur le bouton ci-dessous.</p>'
+						. ag_email_button( 'Choisir un nouveau mot de passe', $url )
+						. '<p style="color:#9a9aa5;font-size:13px;">Si tu n\'es pas à l\'origine de cette demande, ignore cet email.</p>';
+					wp_mail( $user->user_email, 'Réinitialiser ton mot de passe — Alliance Groupe', ag_email_wrap( 'Réinitialisation du mot de passe', $inner ), array( 'Content-Type: text/html; charset=UTF-8', 'From: Alliance Groupe <contact@alliancegroupe-inc.com>' ) );
+				}
+			}
+			wp_safe_redirect( add_query_arg( 'lost', 'sent', home_url( '/mot-de-passe' ) ) ); exit;
+		}
+	}
+
+	// (b) Définition du nouveau mot de passe (via clé sécurisée)
+	if ( ! empty( $_POST['ag_setpass_submit'] ) ) {
+		if ( isset( $_POST['ag_setpass_nonce'] ) && wp_verify_nonce( $_POST['ag_setpass_nonce'], 'ag_setpass' ) ) {
+			$login = sanitize_text_field( wp_unslash( $_POST['login'] ?? '' ) );
+			$key   = sanitize_text_field( wp_unslash( $_POST['key'] ?? '' ) );
+			$p1    = (string) ( $_POST['pass1'] ?? '' );
+			$p2    = (string) ( $_POST['pass2'] ?? '' );
+			$base  = add_query_arg( array( 'key' => $key, 'login' => $login ), home_url( '/mot-de-passe' ) );
+			$user  = check_password_reset_key( $key, $login );
+			if ( is_wp_error( $user ) ) { wp_safe_redirect( add_query_arg( 'pw', 'expired', home_url( '/mot-de-passe' ) ) ); exit; }
+			if ( strlen( $p1 ) < 8 ) { wp_safe_redirect( add_query_arg( 'pw', 'short', $base ) ); exit; }
+			if ( $p1 !== $p2 ) { wp_safe_redirect( add_query_arg( 'pw', 'mismatch', $base ) ); exit; }
+			reset_password( $user, $p1 );
+			wp_safe_redirect( add_query_arg( 'reset', 'ok', home_url( '/connexion' ) ) ); exit;
+		}
+	}
+} );
+
+// Bloque l'accès direct à wp-login.php : tout est redirigé vers les pages custom
+// (on laisse passer la déconnexion et la protection par mot de passe d'article).
+add_action( 'login_init', function () {
+	$action = isset( $_REQUEST['action'] ) ? sanitize_key( $_REQUEST['action'] ) : 'login';
+	if ( in_array( $action, array( 'logout', 'postpass' ), true ) ) return;
+	if ( in_array( $action, array( 'rp', 'resetpass' ), true ) ) {
+		$key   = isset( $_REQUEST['key'] ) ? wp_unslash( $_REQUEST['key'] ) : '';
+		$login = isset( $_REQUEST['login'] ) ? wp_unslash( $_REQUEST['login'] ) : '';
+		wp_safe_redirect( add_query_arg( array( 'key' => $key, 'login' => $login ), home_url( '/mot-de-passe' ) ) ); exit;
+	}
+	if ( 'lostpassword' === $action || 'retrievepassword' === $action ) {
+		wp_safe_redirect( home_url( '/mot-de-passe?action=lost' ) ); exit;
+	}
+	wp_safe_redirect( home_url( '/connexion' ) ); exit;
+} );
+
+// Bloque wp-admin pour les non-admins -> leur espace.
+add_action( 'admin_init', function () {
+	if ( current_user_can( 'manage_options' ) ) return;
+	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) return;
+	if ( defined( 'DOING_CRON' ) && DOING_CRON ) return;
+	$pagenow = $GLOBALS['pagenow'] ?? '';
+	if ( in_array( $pagenow, array( 'admin-post.php', 'admin-ajax.php' ), true ) ) return;
+	wp_safe_redirect( is_user_logged_in() ? ag_espace_url() : home_url( '/connexion' ) ); exit;
+} );
+
+// Masque la barre d'admin WordPress pour les non-admins.
+add_filter( 'show_admin_bar', function ( $show ) {
+	return current_user_can( 'manage_options' ) ? $show : false;
+} );
