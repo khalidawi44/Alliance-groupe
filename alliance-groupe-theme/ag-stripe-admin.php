@@ -122,21 +122,13 @@ function ag_stripe_sanitize_url( $value ) {
 		add_settings_error( 'ag_stripe_config', 'bad_url', 'URL invalide ignorée : ' . esc_html( $value ) );
 		return 'STRIPE_PLACEHOLDER';
 	}
-	$host    = wp_parse_url( $url, PHP_URL_HOST );
-	$allowed = apply_filters( 'ag_stripe_allowed_hosts', array(
-		'buy.stripe.com',
-		'checkout.stripe.com',
-		'paiement.alliancegroupe-inc.com',
-	) );
-	if ( ! in_array( $host, $allowed, true ) ) {
+	// On accepte TOUT lien de paiement HTTPS valide : ta banque, PayPal,
+	// SumUp, Lydia, Stripe... Securite : on exige juste le https://.
+	if ( 'https' !== wp_parse_url( $url, PHP_URL_SCHEME ) ) {
 		add_settings_error(
 			'ag_stripe_config',
-			'bad_host',
-			sprintf(
-				'Hôte rejeté (%s). Hôtes acceptés : %s',
-				esc_html( $host ),
-				esc_html( implode( ', ', $allowed ) )
-			)
+			'not_https',
+			'Le lien de paiement doit commencer par https:// : ' . esc_html( $value )
 		);
 		return 'STRIPE_PLACEHOLDER';
 	}
@@ -161,19 +153,19 @@ function ag_stripe_admin_render() {
 		if ( 'STRIPE_PLACEHOLDER' === $value || '' === $value ) {
 			return '<span style="display:inline-block;padding:3px 10px;background:#fff8c2;color:#8a6d00;border:1px solid #e8d676;border-radius:12px;font-size:.8rem;font-weight:700;">⚠ Placeholder (fallback /contact actif)</span>';
 		}
-		return '<span style="display:inline-block;padding:3px 10px;background:#e7f5e9;color:#1a7a33;border:1px solid #a7d8b3;border-radius:12px;font-size:.8rem;font-weight:700;">✓ Stripe actif</span>';
+		return '<span style="display:inline-block;padding:3px 10px;background:#e7f5e9;color:#1a7a33;border:1px solid #a7d8b3;border-radius:12px;font-size:.8rem;font-weight:700;">✓ Lien actif</span>';
 	};
 
 	?>
 	<div class="wrap">
-		<h1>Configuration Stripe AG</h1>
+		<h1>Liens de paiement</h1>
 		<p style="font-size:.95rem;color:#50575e;max-width:760px;">
-			Collez ici les URLs des Payment Links Stripe pour les 2 packs
-			<strong>Premium</strong> et <strong>Business</strong>.
-			Tant qu'une URL est à <code>STRIPE_PLACEHOLDER</code> (ou vide), le bouton
-			correspondant sur la page <em>/templates-wordpress</em> retombe sur le
-			formulaire <em>/contact</em> avec le pack en paramètre (le lead est quand
-			même capturé).
+			Collez ici vos <strong>liens de paiement</strong> pour chaque offre.
+			Vous pouvez utiliser <strong>n'importe quel service</strong> : votre banque,
+			PayPal, SumUp, Lydia, Stripe… (un simple lien en <code>https://</code> suffit).
+			Tant qu'un champ est vide / <code>STRIPE_PLACEHOLDER</code>, le bouton
+			correspondant retombe sur le formulaire <em>/contact</em> ou le brief (le
+			contact est quand même capturé).
 		</p>
 
 		<div style="max-width:760px;margin-top:16px;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #D4B45C;">
