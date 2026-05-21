@@ -91,15 +91,14 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 					<label>Sous-texte<input type="text" id="ag-vsub" value="Vends des sites. Touche 10 %." maxlength="48"></label>
 					<button type="button" class="ag-btn-gold" id="ag-vgen">🎬 Générer ma vidéo (8 s)</button>
 					<p class="ag-vstatus" id="ag-vstatus"></p>
-					<button type="button" class="ag-btn-gold" id="ag-vshare" style="display:none;">⤴ Partager ma vidéo (TikTok, Snap…)</button>
-					<a class="ag-btn-outline" id="ag-vdl" style="display:none;" download="alliance-video.webm">⬇ Télécharger la vidéo</a>
+					<button type="button" class="ag-btn-gold" id="ag-vshare" style="display:none;">⤴ Partager ma vidéo</button>
+					<a class="ag-btn-outline" id="ag-vdl" style="display:none;">⬇ Enregistrer dans ma galerie</a>
+					<p class="ag-vhint" id="ag-vhint" style="display:none;">Touche <strong>Partager</strong> puis choisis <strong>TikTok, Snap, Insta, WhatsApp…</strong> dans le menu : <strong>la vidéo part avec</strong>.</p>
 					<div class="ag-vapps" id="ag-vapps" style="display:none;">
-						<span class="ag-vapps__lbl">Partager la vidéo dans :</span>
-						<button type="button" class="ag-sbtn ag-sbtn--tt ag-vshareapp" data-scheme="snssdk1233://">🎵 TikTok</button>
-						<button type="button" class="ag-sbtn ag-sbtn--snap ag-vshareapp" data-scheme="snapchat://">👻 Snapchat</button>
-						<button type="button" class="ag-sbtn ag-sbtn--insta ag-vshareapp" data-scheme="instagram://camera">📸 Instagram</button>
-						<a class="ag-sbtn" id="ag-vwa" target="_blank" rel="noopener">WhatsApp</a>
-						<a class="ag-sbtn" id="ag-vtg" target="_blank" rel="noopener">Telegram</a>
+						<span class="ag-vapps__lbl">✅ Vidéo enregistrée dans ta galerie. Ouvre ton app et choisis-la depuis ta pellicule :</span>
+						<a class="ag-sbtn ag-sbtn--tt" href="snssdk1233://" rel="noopener">🎵 TikTok</a>
+						<a class="ag-sbtn ag-sbtn--snap" href="snapchat://" rel="noopener">👻 Snapchat</a>
+						<a class="ag-sbtn ag-sbtn--insta" href="instagram://library" rel="noopener">📸 Instagram</a>
 					</div>
 				</div>
 			</div>
@@ -136,34 +135,43 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 		document.getElementById('ag-vgen').addEventListener('click',function(){
 			if(!media){statusEl.textContent='Choisis un visuel ou ajoute une photo/vidéo.';return;}
 			if(!cv.captureStream||!window.MediaRecorder){statusEl.textContent='Ton navigateur ne permet pas l\'enregistrement. Essaie Chrome (Android/PC).';return;}
-			var mime=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm','video/mp4'].find(function(m){return MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m);})||'';
+			var mime=['video/mp4;codecs=h264','video/mp4','video/webm;codecs=h264','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'].find(function(m){return MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m);})||'';
 			var stream=cv.captureStream(30),rec=new MediaRecorder(stream,mime?{mimeType:mime}:undefined),chunks=[];
 			rec.ondataavailable=function(ev){if(ev.data&&ev.data.size)chunks.push(ev.data);};
 			rec.onstop=function(){
-				lastExt=(mime.indexOf('mp4')>-1?'mp4':'webm');lastBlob=new Blob(chunks,{type:mime||'video/webm'});
-				dlEl.href=URL.createObjectURL(lastBlob);dlEl.download='alliance-video.'+lastExt;dlEl.style.display='inline-flex';shEl.style.display='inline-flex';
-				document.getElementById('ag-vwa').href='whatsapp://send?text='+encodeURIComponent(caption);
-				document.getElementById('ag-vtg').href='https://t.me/share/url?url='+encodeURIComponent(link)+'&text='+encodeURIComponent(caption);
-				document.getElementById('ag-vapps').style.display='flex';
-				statusEl.textContent='✓ Vidéo prête ! Touche « Partager ma vidéo » pour l\'envoyer dans TikTok/Snap.';
+				var actual=(rec.mimeType||mime||'video/webm');
+				lastExt=(actual.indexOf('mp4')>-1?'mp4':'webm');
+				lastBlob=new Blob(chunks,{type:actual});
+				dlEl.href=URL.createObjectURL(lastBlob);dlEl.download='alliance-video.'+lastExt;dlEl.style.display='inline-flex';
+				shEl.style.display='inline-flex';
+				document.getElementById('ag-vhint').style.display='block';
+				statusEl.textContent='✓ Vidéo prête ! Touche « Partager ma vidéo ».';
 			};
 			if(isVideo){try{media.currentTime=0;media.play();}catch(e){}}
 			var DUR=8000,start=performance.now();rec.start();statusEl.textContent='Génération en cours… (8 s)';
 			(function tick(now){var p=Math.min(1,(now-start)/DUR);frame(p);if(p<1)requestAnimationFrame(tick);else{rec.stop();if(isVideo){try{media.pause();}catch(e){}}}})(start);
 		});
-		function agShareVideo(scheme){
+		function saveAndGuide(){
+			var a=document.createElement('a');a.href=dlEl.href||URL.createObjectURL(lastBlob);a.download='alliance-video.'+lastExt;document.body.appendChild(a);a.click();a.remove();
+			document.getElementById('ag-vapps').style.display='flex';
+			statusEl.textContent='Vidéo enregistrée 📁 Ouvre TikTok / Snap / Insta et choisis-la dans ta galerie.';
+		}
+		function agShareVideo(){
 			if(!lastBlob){ statusEl.textContent='Génère d\'abord ta vidéo (bouton ci-dessus).'; return; }
-			var file=new File([lastBlob],'alliance-video.'+lastExt,{type:lastBlob.type});
+			var file=new File([lastBlob],'alliance-video.'+lastExt,{type:lastBlob.type||'video/mp4'});
 			if(navigator.canShare && navigator.canShare({files:[file]})){
-				navigator.share({files:[file],text:caption,title:'Alliance Groupe'}).catch(function(){});
+				navigator.share({files:[file],text:caption,title:'Alliance Groupe'}).then(function(){
+					statusEl.textContent='✓ Partagé ! Choisis l\'app dans le menu.';
+				}).catch(function(err){
+					if(err && err.name==='AbortError') return;
+					saveAndGuide();
+				});
 			} else {
-				var a=document.createElement('a');a.href=URL.createObjectURL(lastBlob);a.download='alliance-video.'+lastExt;document.body.appendChild(a);a.click();a.remove();
-				statusEl.textContent='Vidéo téléchargée — importe-la dans l\'app qui s\'ouvre.';
-				if(scheme) setTimeout(function(){ location.href=scheme; },500);
+				saveAndGuide();
 			}
 		}
-		shEl.addEventListener('click',function(){ agShareVideo(''); });
-		document.querySelectorAll('.ag-vshareapp').forEach(function(b){ b.addEventListener('click',function(){ agShareVideo(b.getAttribute('data-scheme')); }); });
+		shEl.addEventListener('click',agShareVideo);
+		dlEl.addEventListener('click',function(){ document.getElementById('ag-vapps').style.display='flex'; });
 		frame(0);
 	})();
 	</script>
@@ -264,6 +272,8 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 .ag-maker--v .ag-maker__preview{display:flex;justify-content:center;background:#0e0d11;}
 .ag-maker--v .ag-maker__preview canvas{width:auto;max-width:100%;max-height:540px;}
 .ag-vstatus{margin:6px 0 0;color:var(--color-text-soft);font-size:.9rem;min-height:1.2em;}
+.ag-vhint{margin:2px 0 0;padding:12px 14px;background:rgba(212,180,92,.08);border:1px solid rgba(212,180,92,.22);border-radius:12px;color:var(--color-text-soft);font-size:.86rem;line-height:1.5;}
+.ag-vhint strong{color:#e8c766;}
 .ag-vapps{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:6px;}
 .ag-vapps__lbl{color:var(--color-text-muted);font-size:.85rem;width:100%;}
 .ag-sbtn{display:inline-flex;align-items:center;gap:6px;padding:11px 16px;border-radius:12px;font-weight:700;font-size:.9rem;text-decoration:none;color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);cursor:pointer;transition:transform .2s,border-color .2s,background .2s;}

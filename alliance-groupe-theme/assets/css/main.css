@@ -66,7 +66,7 @@
 
 /* ── Reset & Base ─────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;scroll-padding-top:110px}
 body{
     font-family:var(--font-sans);
     font-weight:400;
@@ -3901,6 +3901,9 @@ button:focus-visible{
     /* Boutons globaux : taille adaptee tap mobile */
     .ag-btn-gold,
     .ag-btn-outline{padding:13px 26px;font-size:.98rem;}
+
+    /* Le menu fixe est plus haut sur mobile : on decale l'ancrage des liens/scroll */
+    html{scroll-padding-top:140px;}
 
     /* Parallax : reduit padding + quote ; background-attachment:fixed n'est pas rendu sur iOS Safari -> scroll pour que l'image s'affiche */
     .ag-parallax{padding:60px 20px;background-attachment:scroll;}
