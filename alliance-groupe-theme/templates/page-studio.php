@@ -94,11 +94,12 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 					<button type="button" class="ag-btn-gold" id="ag-vshare" style="display:none;">⤴ Partager / Enregistrer ma vidéo</button>
 					<button type="button" class="ag-btn-outline" id="ag-vcap" style="display:none;">📋 Copier la légende (+ ton lien)</button>
 					<div class="ag-vsteps" id="ag-vsteps" style="display:none;">
-						<p class="ag-vhint">📲 <strong>Pour poster sur TikTok / Snap / Insta :</strong><br>1. Touche <strong>Partager</strong> ci-dessus → <strong>« Enregistrer la vidéo »</strong> (elle va dans ta galerie).<br>2. Ouvre ton appli et choisis la vidéo dans ta <strong>galerie</strong>.<br>3. Colle ta légende (bouton ci-dessus) et publie 🚀</p>
+						<p class="ag-vhint">📲 <strong>Pour poster :</strong> 1. <strong>Partager</strong> → <strong>« Enregistrer la vidéo »</strong> (va dans ta galerie). 2. Ouvre ton appli ci-dessous. 3. Choisis la vidéo dans ta <strong>galerie</strong>, colle ta légende, publie 🚀</p>
 						<div class="ag-vapps">
-							<a class="ag-sbtn ag-sbtn--tt" href="snssdk1233://" rel="noopener">🎵 Ouvrir TikTok</a>
-							<a class="ag-sbtn ag-sbtn--snap" href="snapchat://" rel="noopener">👻 Ouvrir Snap</a>
-							<a class="ag-sbtn ag-sbtn--insta" href="instagram://library" rel="noopener">📸 Ouvrir Insta</a>
+							<button type="button" class="ag-sbtn ag-sbtn--tt ag-openapp" data-scheme="snssdk1233://" data-web="https://www.tiktok.com/">🎵 Ouvrir TikTok</button>
+							<button type="button" class="ag-sbtn ag-sbtn--snap ag-openapp" data-scheme="snapchat://" data-web="https://www.snapchat.com/">👻 Ouvrir Snap</button>
+							<button type="button" class="ag-sbtn ag-sbtn--insta ag-openapp" data-scheme="instagram://library" data-web="https://www.instagram.com/">📸 Ouvrir Insta</button>
+							<button type="button" class="ag-sbtn ag-sbtn--wa ag-openapp" data-scheme="whatsapp://send" data-web="https://wa.me/">📲 Ouvrir WhatsApp</button>
 						</div>
 					</div>
 				</div>
@@ -173,6 +174,24 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 		}
 		shEl.addEventListener('click',agShareVideo);
 		capEl.addEventListener('click',function(){ navigator.clipboard.writeText(caption).then(function(){ capEl.textContent='✓ Légende copiée'; setTimeout(function(){ capEl.textContent='📋 Copier la légende (+ ton lien)'; },1600); }); });
+		// Ouvre l'application directement (deep link) ; si l'app n'est pas installee, repli sur le site apres 1,4 s.
+		function openApp(scheme, web){
+			var left=false;
+			function gone(){ left=true; }
+			document.addEventListener('visibilitychange',gone);
+			window.addEventListener('pagehide',gone);
+			window.addEventListener('blur',gone);
+			var timer=setTimeout(function(){
+				document.removeEventListener('visibilitychange',gone);
+				window.removeEventListener('pagehide',gone);
+				window.removeEventListener('blur',gone);
+				if(!left && web){ window.location.href=web; }
+			},1400);
+			try{ window.location.href=scheme; }catch(e){ if(web) window.location.href=web; }
+		}
+		document.querySelectorAll('.ag-openapp').forEach(function(b){
+			b.addEventListener('click',function(){ openApp(b.getAttribute('data-scheme'), b.getAttribute('data-web')); });
+		});
 		frame(0);
 	})();
 	</script>
@@ -283,6 +302,7 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 .ag-sbtn--tt{background:rgba(0,0,0,.5);border-color:#25F4EE;}
 .ag-sbtn--snap{background:rgba(255,252,0,.14);border-color:#FFFC00;}
 .ag-sbtn--insta{background:linear-gradient(135deg,rgba(225,48,108,.2),rgba(253,89,73,.15));border-color:#E1306C;}
+.ag-sbtn--wa{background:rgba(37,211,102,.16);border-color:#25D366;}
 .ag-tools h3{color:#fff;font-family:var(--font-serif);font-size:1.2rem;margin:32px 0 12px;}
 .ag-ideas{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px;}
 .ag-ideas li{position:relative;padding-left:26px;color:var(--color-text-soft);line-height:1.5;}
