@@ -11,28 +11,6 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 $ag_packs = array(
 	array(
-		'slug'    => 'pro',
-		'name'    => 'Pack Pro',
-		'price'   => 49,
-		'tagline' => 'Le minimum pour un site qui en jette',
-		'best'    => false,
-		'features'=> array(
-			'theme_base'      => true,
-			'fonts_premium'   => true,
-			'animations'      => true,
-			'sticky_header'   => true,
-			'gutenberg_blocks'=> true,
-			'testimonials'    => false,
-			'multilang'       => false,
-			'woocommerce'     => false,
-			'support_12m'     => false,
-			'install_visio'   => false,
-			'audit_seo'       => false,
-			'white_label'     => false,
-		),
-		'url'     => 'https://alliancegroupe-inc.com/contact?pack=pro',
-	),
-	array(
 		'slug'    => 'premium',
 		'name'    => 'Pack Premium',
 		'price'   => 99,
@@ -97,7 +75,7 @@ $ag_pack_features = array(
 <section class="ag-packs-compare">
 	<div class="ag-container">
 		<span class="ag-tag">Comparatif</span>
-		<h2 class="ag-section__title">3 packs pour <em>booster</em> votre template</h2>
+		<h2 class="ag-section__title">2 packs pour <em>booster</em> votre template</h2>
 		<p class="ag-section__desc">Le template gratuit fait déjà le job. Les packs ajoutent du carburant — choisissez selon votre niveau d'ambition.</p>
 
 		<div class="ag-packs-grid">

@@ -22,7 +22,7 @@ $ag_stripe_premium      = get_option( 'ag_stripe_premium_url', $ag_stripe_placeh
 $ag_stripe_business = get_option( 'ag_stripe_business_url', $ag_stripe_placeholder );
 
 $contact_base = home_url( '/contact' );
-$premium_url      = ( $ag_stripe_premium      !== $ag_stripe_placeholder ) ? $ag_stripe_pro      : add_query_arg( array( 'pack' => 'pro', 'metier' => $ag_metier['slug'] ), $contact_base );
+$premium_url      = ( $ag_stripe_premium      !== $ag_stripe_placeholder ) ? $ag_stripe_premium  : add_query_arg( array( 'pack' => 'premium', 'metier' => $ag_metier['slug'] ), $contact_base );
 
 $business_url = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? $ag_stripe_business : add_query_arg( array( 'pack' => 'business', 'metier' => $ag_metier['slug'] ), $contact_base );
 

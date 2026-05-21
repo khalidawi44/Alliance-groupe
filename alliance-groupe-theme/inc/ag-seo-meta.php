@@ -367,14 +367,6 @@ add_action( 'wp_head', function () {
 			),
 			array(
 				'@type'         => 'Offer',
-				'name'          => 'Pack Pro',
-				'price'         => '49',
-				'priceCurrency' => 'EUR',
-				'availability'  => 'https://schema.org/InStock',
-				'url'           => get_permalink(),
-			),
-			array(
-				'@type'         => 'Offer',
 				'name'          => 'Pack Premium',
 				'price'         => '99',
 				'priceCurrency' => 'EUR',
