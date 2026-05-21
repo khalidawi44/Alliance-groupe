@@ -62,10 +62,10 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 					<button type="button" class="ag-btn-gold" id="ag-vshare" style="display:none;">⤴ Partager ma vidéo (TikTok, Snap…)</button>
 					<a class="ag-btn-outline" id="ag-vdl" style="display:none;" download="alliance-video.webm">⬇ Télécharger la vidéo</a>
 					<div class="ag-vapps" id="ag-vapps" style="display:none;">
-						<span class="ag-vapps__lbl">Ouvrir l'appli :</span>
-						<a class="ag-sbtn" id="ag-vtt" target="_blank" rel="noopener">TikTok</a>
-						<a class="ag-sbtn" id="ag-vsnap" target="_blank" rel="noopener">Snapchat</a>
-						<a class="ag-sbtn" id="ag-vinsta" target="_blank" rel="noopener">Instagram</a>
+						<span class="ag-vapps__lbl">Ouvrir l'appli (ta vidéo est téléchargée, importe-la) :</span>
+						<a class="ag-sbtn ag-sbtn--tt" id="ag-vtt" href="snssdk1233://">🎵 TikTok</a>
+						<a class="ag-sbtn ag-sbtn--snap" id="ag-vsnap" href="snapchat://">👻 Snapchat</a>
+						<a class="ag-sbtn ag-sbtn--insta" id="ag-vinsta" href="instagram://camera">📸 Instagram</a>
 						<a class="ag-sbtn" id="ag-vwa" target="_blank" rel="noopener">WhatsApp</a>
 						<a class="ag-sbtn" id="ag-vtg" target="_blank" rel="noopener">Telegram</a>
 					</div>
@@ -110,10 +110,7 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 			rec.onstop=function(){
 				lastExt=(mime.indexOf('mp4')>-1?'mp4':'webm');lastBlob=new Blob(chunks,{type:mime||'video/webm'});
 				dlEl.href=URL.createObjectURL(lastBlob);dlEl.download='alliance-video.'+lastExt;dlEl.style.display='inline-flex';shEl.style.display='inline-flex';
-				document.getElementById('ag-vtt').href='https://www.tiktok.com/';
-				document.getElementById('ag-vsnap').href='https://www.snapchat.com/';
-				document.getElementById('ag-vinsta').href='https://www.instagram.com/';
-				document.getElementById('ag-vwa').href='https://wa.me/?text='+encodeURIComponent(caption);
+				document.getElementById('ag-vwa').href='whatsapp://send?text='+encodeURIComponent(caption);
 				document.getElementById('ag-vtg').href='https://t.me/share/url?url='+encodeURIComponent(link)+'&text='+encodeURIComponent(caption);
 				document.getElementById('ag-vapps').style.display='flex';
 				statusEl.textContent='✓ Vidéo prête ! Touche « Partager ma vidéo » pour l\'envoyer dans TikTok/Snap.';
@@ -225,6 +222,9 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 .ag-vapps__lbl{color:var(--color-text-muted);font-size:.85rem;width:100%;}
 .ag-sbtn{display:inline-flex;align-items:center;gap:6px;padding:11px 16px;border-radius:12px;font-weight:700;font-size:.9rem;text-decoration:none;color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);cursor:pointer;transition:transform .2s,border-color .2s,background .2s;}
 .ag-sbtn:hover{transform:translateY(-2px);border-color:rgba(212,180,92,.5);color:#fff;text-decoration:none;}
+.ag-sbtn--tt{background:rgba(0,0,0,.5);border-color:#25F4EE;}
+.ag-sbtn--snap{background:rgba(255,252,0,.14);border-color:#FFFC00;}
+.ag-sbtn--insta{background:linear-gradient(135deg,rgba(225,48,108,.2),rgba(253,89,73,.15));border-color:#E1306C;}
 .ag-tools h3{color:#fff;font-family:var(--font-serif);font-size:1.2rem;margin:32px 0 12px;}
 .ag-ideas{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px;}
 .ag-ideas li{position:relative;padding-left:26px;color:var(--color-text-soft);line-height:1.5;}

@@ -365,6 +365,20 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 		echo '<div class="wrap"><h1>Programme Ambassadeurs</h1>';
 		echo '<p>Commission : <strong>' . esc_html( (int) ( AG_COMMISSION_RATE * 100 ) ) . '%</strong> par vente. Les commissions « à payer » correspondent aux ventes validées non encore payées.</p>';
 
+		// Réglage du taux de parrainage (override)
+		if ( isset( $_POST['ag_save_override'] ) && check_admin_referer( 'ag_override' ) ) {
+			$pct = max( 0, min( 100, (float) str_replace( ',', '.', $_POST['ag_override_pct'] ?? '' ) ) );
+			update_option( 'ag_override_rate', $pct / 100 );
+			echo '<div class="notice notice-success is-dismissible"><p>Taux de parrainage enregistré : ' . esc_html( $pct ) . '%.</p></div>';
+		}
+		$ov_rate = function_exists( 'ag_override_rate' ) ? ag_override_rate() : 0.20;
+		echo '<form method="post" style="margin:6px 0 22px;padding:14px 18px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #D4B45C;max-width:560px;">';
+		wp_nonce_field( 'ag_override' );
+		echo '<strong>Taux de parrainage</strong> <small style="color:#646970;">— part de la commission du filleul reversée au parrain (sur ventes réelles uniquement)</small><br>';
+		echo '<input type="number" step="1" min="0" max="100" name="ag_override_pct" value="' . esc_attr( round( $ov_rate * 100 ) ) . '" style="width:90px;margin-top:8px;"> %&nbsp; ';
+		echo '<button class="button button-primary" name="ag_save_override" value="1">Enregistrer</button>';
+		echo '</form>';
+
 		// SYNTHESE
 		echo '<h2>💰 Commissions par ambassadeur</h2>';
 		if ( empty( $synthese ) ) {
@@ -392,7 +406,7 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 			$ov = function_exists( 'ag_ambassadeur_override_for' ) ? ag_ambassadeur_override_for( $a['ref'] ) : array( 'team' => 0, 'generated' => 0, 'paid' => 0 );
 			if ( $ov['team'] > 0 ) $parrains[] = array( 'name' => $a['name'] ?? $a['email'], 'email' => $a['email'], 'ov' => $ov );
 		}
-		echo '<h2 style="margin-top:30px;">🌐 Bonus de parrainage <small style="font-weight:400;color:#646970;">(' . esc_html( (int) ( ( defined( 'AG_OVERRIDE_RATE' ) ? AG_OVERRIDE_RATE : 0.2 ) * 100 ) ) . '% de la commission des filleuls, sur ventes réelles)</small></h2>';
+		echo '<h2 style="margin-top:30px;">🌐 Bonus de parrainage <small style="font-weight:400;color:#646970;">(' . esc_html( (int) round( ( function_exists( 'ag_override_rate' ) ? ag_override_rate() : 0.2 ) * 100 ) ) . '% de la commission des filleuls, sur ventes réelles)</small></h2>';
 		if ( empty( $parrains ) ) {
 			echo '<p>Aucun parrainage avec ventes pour le moment.</p>';
 		} else {
