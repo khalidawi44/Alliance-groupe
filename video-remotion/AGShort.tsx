@@ -16,6 +16,7 @@ import React from 'react';
 import {
 	AbsoluteFill,
 	Img,
+	OffthreadVideo,
 	Series,
 	Audio,
 	useCurrentFrame,
@@ -48,6 +49,9 @@ const resolveSrc = (s?: string): string | null => {
 	return /^https?:\/\//.test(s) ? s : staticFile(s);
 };
 
+/** Le fond est-il une vidéo (clip IA Picsart) plutôt qu'une image ? */
+const isVideo = (s?: string): boolean => !!s && /\.(mp4|webm|mov|m4v)(\?|$)/i.test(s);
+
 /** Calcule la durée totale (utile pour la prop durationInFrames du <Composition>). */
 export const totalFrames = (scenes: AGScene[], fps = 30): number =>
 	scenes.reduce((sum, s) => sum + (s.durationInFrames ?? Math.round(fps * 3)), 0);
@@ -74,11 +78,12 @@ const SceneView: React.FC<{scene: AGScene}> = ({scene}) => {
 	return (
 		<AbsoluteFill style={{opacity, backgroundColor: '#07070a'}}>
 			{src && (
-				<AbsoluteFill>
-					<Img
-						src={src}
-						style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${zoom})`}}
-					/>
+				<AbsoluteFill style={{transform: `scale(${zoom})`}}>
+					{isVideo(scene.bg) ? (
+						<OffthreadVideo src={src} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+					) : (
+						<Img src={src} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+					)}
 				</AbsoluteFill>
 			)}
 			{/* Voile pour la lisibilité du texte */}
