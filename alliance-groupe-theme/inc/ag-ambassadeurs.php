@@ -161,6 +161,10 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 		);
 		update_option( 'ag_ambassadeurs', $list );
 
+		// Crée le compte ambassadeur pour son espace réservé (connexion possible,
+		// déclaration de ventes seulement une fois validé par l'admin).
+		do_action( 'ag_ambassadeur_registered', $email, $name );
+
 		// Notif admin
 		$body  = "Nouvelle inscription Programme Ambassadeurs\n\n";
 		$body .= "Nom : $name\nEmail : $email\nTel : $phone\nVille : $city\n";

@@ -48,6 +48,12 @@ if ( file_exists( $ag_ambassadeurs_file ) ) {
     require_once $ag_ambassadeurs_file;
 }
 
+// ── 1c6. Espaces membres (clients & commerciaux) : comptes, connexion, dashboards
+$ag_espaces_file = get_stylesheet_directory() . '/inc/ag-espaces.php';
+if ( file_exists( $ag_espaces_file ) ) {
+    require_once $ag_espaces_file;
+}
+
 // ── 1d. Shortcode [ag_promo_video] : insère la vidéo promo Alliance ─────
 // Usage Gutenberg : ajouter un block "Shortcode" et taper [ag_promo_video]
 // Attributs : title="..." lead="..." cta_label="..." cta_url="..."
@@ -854,6 +860,9 @@ if ( ! function_exists( 'ag_submit_brief' ) ) {
         $briefs[] = compact( 'pack', 'business', 'name', 'email', 'phone', 'sector', 'domain', 'content', 'inspi' )
             + array( 'date' => current_time( 'd/m/Y H:i' ) );
         update_option( 'ag_express_briefs', $briefs );
+
+        // Crée (ou retrouve) le compte client pour son espace réservé.
+        do_action( 'ag_client_brief_submitted', $email, $name );
 
         $body  = "Nouveau brief Site Express\n\n";
         $body .= "Pack : $pack\nActivité : $business\nContact : $name <$email> $phone\n";

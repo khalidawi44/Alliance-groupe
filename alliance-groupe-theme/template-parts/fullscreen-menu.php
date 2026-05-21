@@ -58,8 +58,14 @@ $ag_fsm_items = array(
 		<div class="ag-fsm-footer">
 			<div class="ag-fsm-tagline">Agence Web &amp; IA — Alliance Groupe</div>
 			<div class="ag-fsm-contact">
-				<a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" class="ag-fsm-cta">Prendre RDV →</a>
-				<a href="mailto:contact@alliancegroupe-inc.com" class="ag-fsm-mail">contact@alliancegroupe-inc.com</a>
+				<?php if ( is_user_logged_in() ) :
+					$ag_espace = function_exists( 'ag_espace_url' ) ? ag_espace_url() : home_url( '/espace-client' ); ?>
+					<a href="<?php echo esc_url( $ag_espace ); ?>" class="ag-fsm-cta">Mon espace →</a>
+					<a href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>" class="ag-fsm-mail">Déconnexion</a>
+				<?php else : ?>
+					<a href="<?php echo esc_url( home_url( '/connexion' ) ); ?>" class="ag-fsm-cta">Connexion →</a>
+					<a href="mailto:contact@alliancegroupe-inc.com" class="ag-fsm-mail">contact@alliancegroupe-inc.com</a>
+				<?php endif; ?>
 			</div>
 		</div>
 	</nav>
