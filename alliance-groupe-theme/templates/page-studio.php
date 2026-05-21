@@ -93,10 +93,10 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 					<button type="button" class="ag-btn-gold" id="ag-vshare" style="display:none;">⤴ Partager ma vidéo (TikTok, Snap…)</button>
 					<a class="ag-btn-outline" id="ag-vdl" style="display:none;" download="alliance-video.webm">⬇ Télécharger la vidéo</a>
 					<div class="ag-vapps" id="ag-vapps" style="display:none;">
-						<span class="ag-vapps__lbl">Ouvrir l'appli (ta vidéo est téléchargée, importe-la) :</span>
-						<a class="ag-sbtn ag-sbtn--tt" id="ag-vtt" href="snssdk1233://">🎵 TikTok</a>
-						<a class="ag-sbtn ag-sbtn--snap" id="ag-vsnap" href="snapchat://">👻 Snapchat</a>
-						<a class="ag-sbtn ag-sbtn--insta" id="ag-vinsta" href="instagram://camera">📸 Instagram</a>
+						<span class="ag-vapps__lbl">Partager la vidéo dans :</span>
+						<button type="button" class="ag-sbtn ag-sbtn--tt ag-vshareapp" data-scheme="snssdk1233://">🎵 TikTok</button>
+						<button type="button" class="ag-sbtn ag-sbtn--snap ag-vshareapp" data-scheme="snapchat://">👻 Snapchat</button>
+						<button type="button" class="ag-sbtn ag-sbtn--insta ag-vshareapp" data-scheme="instagram://camera">📸 Instagram</button>
 						<a class="ag-sbtn" id="ag-vwa" target="_blank" rel="noopener">WhatsApp</a>
 						<a class="ag-sbtn" id="ag-vtg" target="_blank" rel="noopener">Telegram</a>
 					</div>
@@ -150,13 +150,19 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 			var DUR=8000,start=performance.now();rec.start();statusEl.textContent='Génération en cours… (8 s)';
 			(function tick(now){var p=Math.min(1,(now-start)/DUR);frame(p);if(p<1)requestAnimationFrame(tick);else{rec.stop();if(isVideo){try{media.pause();}catch(e){}}}})(start);
 		});
-		shEl.addEventListener('click',function(){
-			if(!lastBlob) return;
+		function agShareVideo(scheme){
+			if(!lastBlob){ statusEl.textContent='Génère d\'abord ta vidéo (bouton ci-dessus).'; return; }
 			var file=new File([lastBlob],'alliance-video.'+lastExt,{type:lastBlob.type});
-			if(navigator.canShare && navigator.canShare({files:[file]})){ navigator.share({files:[file],text:caption,title:'Alliance Groupe'}).catch(function(){}); }
-			else if(navigator.share){ navigator.share({text:caption,url:link}).catch(function(){}); }
-			else { statusEl.textContent='Partage direct non supporté ici : télécharge la vidéo puis poste-la.'; }
-		});
+			if(navigator.canShare && navigator.canShare({files:[file]})){
+				navigator.share({files:[file],text:caption,title:'Alliance Groupe'}).catch(function(){});
+			} else {
+				var a=document.createElement('a');a.href=URL.createObjectURL(lastBlob);a.download='alliance-video.'+lastExt;document.body.appendChild(a);a.click();a.remove();
+				statusEl.textContent='Vidéo téléchargée — importe-la dans l\'app qui s\'ouvre.';
+				if(scheme) setTimeout(function(){ location.href=scheme; },500);
+			}
+		}
+		shEl.addEventListener('click',function(){ agShareVideo(''); });
+		document.querySelectorAll('.ag-vshareapp').forEach(function(b){ b.addEventListener('click',function(){ agShareVideo(b.getAttribute('data-scheme')); }); });
 		frame(0);
 	})();
 	</script>
@@ -171,7 +177,8 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 					<label>Ta photo<input type="file" id="ag-img" accept="image/*"></label>
 					<label>Ton accroche<input type="text" id="ag-head" value="Ton site pro, dès 490 €" maxlength="48"></label>
 					<label>Sous-texte<input type="text" id="ag-sub" value="Livré en quelques jours · sans rendez-vous" maxlength="64"></label>
-					<button type="button" class="ag-btn-gold" id="ag-dl">⬇ Télécharger mon visuel</button>
+					<button type="button" class="ag-btn-gold" id="ag-imgshare">⤴ Partager l'image (TikTok, Snap…)</button>
+					<button type="button" class="ag-btn-outline" id="ag-dl">⬇ Télécharger</button>
 				</div>
 			</div>
 		</div>
@@ -198,6 +205,7 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 		document.getElementById('ag-head').addEventListener('input',draw);
 		document.getElementById('ag-sub').addEventListener('input',draw);
 		document.getElementById('ag-dl').addEventListener('click',function(){canvas.toBlob(function(b){var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='alliance-visuel.png';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(a.href);},'image/png');});
+		document.getElementById('ag-imgshare').addEventListener('click',function(){canvas.toBlob(function(b){if(!b)return;var file=new File([b],'alliance-visuel.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],text:window.AG_CAPTION,title:'Alliance Groupe'}).catch(function(){});}else{var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='alliance-visuel.png';document.body.appendChild(a);a.click();a.remove();}},'image/png');});
 		draw();
 	})();
 	</script>
