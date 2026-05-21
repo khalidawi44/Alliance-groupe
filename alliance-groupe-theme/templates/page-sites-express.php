@@ -36,7 +36,7 @@ $packs = array(
 
 $maint = array(
 	'serenite' => array(
-		'url'  => get_option( 'ag_stripe_maint_serenite_url', $ph ),
+		'url'  => get_option( 'ag_stripe_maint_serenite_url', 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9Y6BHFKDPLMSQ' ),
 		'nom'  => 'Sérénité', 'prix' => '29 €',
 		'desc' => 'Ton site toujours en ligne et sécurisé.',
 		'feats'=> array( 'Hébergement + nom de domaine', 'Sauvegardes automatiques', 'Mises à jour & sécurité', 'Support par email' ),
@@ -95,16 +95,14 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
                 <?php foreach ( $packs as $key => $p ) :
                     $is_set = ( $p['url'] !== $ph && $p['url'] !== '' );
                     $cta_url = $is_set ? $p['url'] : ( home_url( '/sites-express?paid=' . $key ) . '#brief' );
+                    $img = get_stylesheet_directory_uri() . '/assets/images/produits/produit-' . $key . '.jpg';
                 ?>
-                <div class="ag-xpress__card<?php echo ! empty( $p['star'] ) ? ' ag-xpress__card--star' : ''; ?> ag-anim" data-anim="card">
-                    <?php if ( ! empty( $p['star'] ) ) echo '<span class="ag-xpress__badge">Le plus choisi</span>'; ?>
-                    <h3 class="ag-xpress__name"><?php echo esc_html( $p['nom'] ); ?></h3>
-                    <div class="ag-xpress__price"><?php echo esc_html( $p['prix'] ); ?></div>
-                    <p class="ag-xpress__desc"><?php echo esc_html( $p['desc'] ); ?></p>
+                <div class="ag-xpress__card ag-xpress__card--img<?php echo ! empty( $p['star'] ) ? ' ag-xpress__card--star' : ''; ?> ag-anim" data-anim="card">
+                    <img class="ag-xpress__img" src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $p['nom'] . ' — ' . $p['prix'] ); ?>" loading="lazy" width="1024" height="1024">
                     <ul class="ag-xpress__feats">
                         <?php foreach ( $p['feats'] as $f ) echo '<li>' . esc_html( $f ) . '</li>'; ?>
                     </ul>
-                    <a href="<?php echo esc_url( $cta_url ); ?>" class="ag-btn-gold ag-xpress__cta"<?php echo $is_set ? '' : ' '; ?>>Commander →</a>
+                    <a href="<?php echo esc_url( $cta_url ); ?>" class="ag-btn-gold ag-xpress__cta">Commander →</a>
                     <?php if ( ! $is_set ) echo '<small class="ag-xpress__note">Paiement bientôt en ligne — remplis le brief, on te recontacte.</small>'; ?>
                 </div>
                 <?php endforeach; ?>
@@ -140,12 +138,10 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
                 <?php foreach ( $maint as $key => $p ) :
                     $is_set  = ( $p['url'] !== $ph && $p['url'] !== '' );
                     $cta_url = $is_set ? $p['url'] : ( home_url( '/contact' ) );
+                    $img = get_stylesheet_directory_uri() . '/assets/images/produits/produit-' . $key . '.jpg';
                 ?>
-                <div class="ag-xpress__card<?php echo ! empty( $p['star'] ) ? ' ag-xpress__card--star' : ''; ?> ag-anim" data-anim="card">
-                    <?php if ( ! empty( $p['star'] ) ) echo '<span class="ag-xpress__badge">Recommandé</span>'; ?>
-                    <h3 class="ag-xpress__name"><?php echo esc_html( $p['nom'] ); ?></h3>
-                    <div class="ag-xpress__price"><?php echo esc_html( $p['prix'] ); ?><span class="ag-xpress__per">/mois</span></div>
-                    <p class="ag-xpress__desc"><?php echo esc_html( $p['desc'] ); ?></p>
+                <div class="ag-xpress__card ag-xpress__card--img<?php echo ! empty( $p['star'] ) ? ' ag-xpress__card--star' : ''; ?> ag-anim" data-anim="card">
+                    <img class="ag-xpress__img" src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $p['nom'] . ' — ' . $p['prix'] . '/mois' ); ?>" loading="lazy" width="1024" height="1024">
                     <ul class="ag-xpress__feats">
                         <?php foreach ( $p['feats'] as $f ) echo '<li>' . esc_html( $f ) . '</li>'; ?>
                     </ul>
@@ -232,6 +228,9 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
 .ag-xpress__card{position:relative;display:flex;flex-direction:column;padding:38px 30px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.18);border-radius:20px;transition:transform .4s,border-color .4s,box-shadow .4s;}
 .ag-xpress__card:hover{transform:translateY(-6px);border-color:rgba(212,180,92,.45);box-shadow:0 30px 70px rgba(0,0,0,.45);}
 .ag-xpress__card--star{border-color:rgba(212,180,92,.5);background:linear-gradient(160deg,rgba(212,180,92,.12),rgba(243,122,31,.05));}
+.ag-xpress__card--img{padding:14px 14px 30px;}
+.ag-xpress__img{display:block;width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;border-radius:16px;margin-bottom:24px;border:1px solid rgba(212,180,92,.16);}
+.ag-xpress__card--img .ag-xpress__feats,.ag-xpress__card--img .ag-xpress__cta{margin-left:16px;margin-right:16px;}
 .ag-xpress__badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#1a1207;font-weight:800;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;padding:5px 14px;border-radius:20px;white-space:nowrap;}
 .ag-xpress__name{font-family:var(--font-serif);font-size:1.5rem;color:#fff;margin:0 0 6px;}
 .ag-xpress__price{font-family:var(--font-serif);font-size:2.4rem;font-weight:800;background:linear-gradient(135deg,#D4B45C,#F37A1F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;margin-bottom:8px;}
