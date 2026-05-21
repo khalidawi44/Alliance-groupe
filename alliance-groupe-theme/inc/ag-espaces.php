@@ -712,3 +712,14 @@ if ( ! function_exists( 'ag_google_login_handler' ) ) {
 }
 add_action( 'admin_post_nopriv_ag_google_login', 'ag_google_login_handler' );
 add_action( 'admin_post_ag_google_login', 'ag_google_login_handler' );
+
+/* ── 11. Membres connectés : jamais de page en cache ────────────────
+   Empêche qu'après une purge de cache un membre se retrouve sur une
+   version « déconnectée » du site (cache servi sans tenir compte du
+   cookie de connexion). Les visiteurs anonymes gardent le cache rapide. */
+add_action( 'template_redirect', function () {
+	if ( is_user_logged_in() ) {
+		if ( ! defined( 'DONOTCACHEPAGE' ) ) define( 'DONOTCACHEPAGE', true );
+		nocache_headers();
+	}
+}, 0 );

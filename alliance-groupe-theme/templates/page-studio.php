@@ -18,6 +18,11 @@ $prod_uri   = get_stylesheet_directory_uri() . '/assets/images/produits/';
 $media = array();
 foreach ( glob( get_stylesheet_directory() . '/assets/images/studio/*.jpg' ) as $f ) { $media[] = $studio_uri . basename( $f ); }
 foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) as $f ) { $media[] = $prod_uri . basename( $f ); }
+
+// Fonds PROPRES (sans texte) pour le créateur de vidéo : évite le « texte sur texte ».
+$cities_uri = get_stylesheet_directory_uri() . '/assets/images/cities/';
+$bg = array();
+foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as $f ) { $bg[] = $cities_uri . basename( $f ); }
 ?>
 <main id="ag-main-content" class="ag-esp ag-studio">
 	<section class="ag-section ag-section--graphite">
@@ -63,15 +68,14 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 
 	<section class="ag-section ag-section--onyx">
 		<div class="ag-container">
-			<h2 class="ag-section__title">Médiathèque prête à poster 🖼️</h2>
-			<p class="ag-section__desc">Télécharge l'image, ou transforme-la en vidéo (🎬) — tout est déjà ici, rien à chercher ailleurs.</p>
+			<h2 class="ag-section__title">Visuels prêts à poster 🖼️</h2>
+			<p class="ag-section__desc">Déjà brandés avec ton lien : télécharge et poste direct. Pour une <strong>vidéo</strong>, descends au créateur ci-dessous (avec des fonds propres, sans texte par-dessus).</p>
 			<div class="ag-vis-grid">
 				<?php foreach ( $media as $m ) : ?>
 					<div class="ag-vis">
 						<img src="<?php echo esc_url( $m ); ?>" alt="visuel Alliance Groupe" loading="lazy">
 						<div class="ag-vis__btns">
-							<button type="button" class="ag-btn-gold ag-vis__use" data-src="<?php echo esc_url( $m ); ?>">🎬 En vidéo</button>
-							<a class="ag-btn-outline" href="<?php echo esc_url( $m ); ?>" download>⬇ Image</a>
+							<a class="ag-btn-gold" href="<?php echo esc_url( $m ); ?>" download>⬇ Télécharger</a>
 						</div>
 					</div>
 				<?php endforeach; ?>
@@ -82,11 +86,21 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 	<section class="ag-section ag-section--graphite" id="studio-video">
 		<div class="ag-container ag-container--narrow">
 			<h2 class="ag-section__title">Ta vidéo (8 s) 🎬</h2>
-			<p class="ag-section__desc">Un visuel de la médiathèque (bouton 🎬) ou ta propre photo/clip. On ajoute ton lien, tu partages direct.</p>
+			<p class="ag-section__desc">Choisis un fond propre (ou mets ta propre photo/clip), écris ton accroche : on ajoute ton lien et tu partages direct. Un seul texte, bien lisible.</p>
 			<div class="ag-maker ag-maker--v">
 				<div class="ag-maker__preview"><canvas id="ag-vcanvas" width="1080" height="1920"></canvas></div>
 				<div class="ag-maker__ctrl">
-					<label>Ta photo ou vidéo<input type="file" id="ag-vfile" accept="image/*,video/*"></label>
+					<?php if ( $bg ) : ?>
+					<div class="ag-bgpick">
+						<span class="ag-bgpick__lbl">Choisis un fond</span>
+						<div class="ag-bgpick__row">
+							<?php foreach ( $bg as $i => $b ) : ?>
+								<button type="button" class="ag-bgpick__thumb ag-vbg<?php echo 0 === $i ? ' is-active' : ''; ?>" data-src="<?php echo esc_url( $b ); ?>" style="background-image:url('<?php echo esc_url( $b ); ?>');" aria-label="Fond <?php echo (int) $i + 1; ?>"></button>
+							<?php endforeach; ?>
+						</div>
+					</div>
+					<?php endif; ?>
+					<label>Ou ta photo / vidéo<input type="file" id="ag-vfile" accept="image/*,video/*"></label>
 					<label>Ton accroche<input type="text" id="ag-vhead" value="Du quartier à la réussite." maxlength="42"></label>
 					<label>Sous-texte<input type="text" id="ag-vsub" value="Vends des sites. Touche 10 %." maxlength="48"></label>
 					<button type="button" class="ag-btn-gold" id="ag-vgen">🎬 Générer ma vidéo (8 s)</button>
@@ -124,8 +138,9 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 		}
 		function loadFile(f){isVideo=/^video\//.test(f.type);var url=URL.createObjectURL(f);if(isVideo){var v=document.createElement('video');v.muted=true;v.loop=true;v.playsInline=true;v.src=url;v.onloadeddata=function(){media=v;frame(0);};}else{var im=new Image();im.onload=function(){media=im;frame(0);};im.src=url;}}
 		function loadUrl(url,cb){isVideo=false;var im=new Image();im.onload=function(){media=im;frame(0);if(cb)cb();};im.src=url;}
-		window.agVideoLoad=function(url){loadUrl(url);var gen=document.getElementById('ag-vgen');if(gen){try{gen.scrollIntoView({behavior:'instant',block:'center'});}catch(e){gen.scrollIntoView();}}};
-		document.querySelectorAll('.ag-vis__use').forEach(function(b){b.addEventListener('click',function(){window.agVideoLoad(b.getAttribute('data-src'));});});
+		function setBg(url,el){ loadUrl(url); document.querySelectorAll('.ag-vbg').forEach(function(t){ t.classList.toggle('is-active', t===el); }); }
+		document.querySelectorAll('.ag-vbg').forEach(function(b){ b.addEventListener('click',function(){ setBg(b.getAttribute('data-src'), b); }); });
+		(function(){ var first=document.querySelector('.ag-vbg'); if(first){ loadUrl(first.getAttribute('data-src')); } })();
 		document.getElementById('ag-vfile').addEventListener('change',function(e){var f=e.target.files&&e.target.files[0];if(f)loadFile(f);});
 		document.getElementById('ag-vhead').addEventListener('input',function(){frame(0);});
 		document.getElementById('ag-vsub').addEventListener('input',function(){frame(0);});
@@ -267,6 +282,12 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 .ag-maker__ctrl input[type=file]{color:var(--color-text-soft);font-size:.88rem;}
 .ag-maker--v .ag-maker__preview{display:flex;justify-content:center;background:#0e0d11;}
 .ag-maker--v .ag-maker__preview canvas{width:auto;max-width:100%;max-height:540px;}
+.ag-bgpick{display:flex;flex-direction:column;gap:8px;}
+.ag-bgpick__lbl{color:var(--color-text-soft);font-size:.9rem;font-weight:600;}
+.ag-bgpick__row{display:flex;gap:8px;flex-wrap:wrap;}
+.ag-bgpick__thumb{width:54px;height:72px;border-radius:10px;border:2px solid rgba(212,180,92,.25);background-size:cover;background-position:center;cursor:pointer;padding:0;transition:transform .2s,border-color .2s;}
+.ag-bgpick__thumb:hover{transform:translateY(-2px);border-color:rgba(212,180,92,.6);}
+.ag-bgpick__thumb.is-active{border-color:#e8c766;box-shadow:0 0 0 2px rgba(232,199,102,.3);}
 .ag-vstatus{margin:6px 0 0;color:var(--color-text-soft);font-size:.9rem;min-height:1.2em;}
 .ag-vhint{margin:0;padding:14px 16px;background:rgba(212,180,92,.08);border:1px solid rgba(212,180,92,.22);border-radius:12px;color:var(--color-text-soft);font-size:.88rem;line-height:1.7;}
 .ag-vhint strong{color:#e8c766;}
