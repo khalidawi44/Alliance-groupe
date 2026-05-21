@@ -3869,8 +3869,12 @@ button:focus-visible{
     /* Section verticale : reduit l'air sur petits ecrans */
     .ag-section{padding:60px 0;}
     /* 1er bloc de page (pages sans hero : espace, connexion, classement, blog…) :
-       dégage la nav fixe + burger (~124px) pour que le titre ne soit plus caché. */
-    #ag-main-content > .ag-section:first-child{padding-top:150px;}
+       dégage la nav fixe + burger (~144px) pour que le titre ne soit plus caché. */
+    #ag-main-content > .ag-section:first-child{padding-top:160px;}
+    /* Pages dont le 1er bloc est centré verticalement (connexion, mot de passe) :
+       le centrage flex remontait le titre sous la nav -> on repasse en flux normal. */
+    #ag-main-content > .ag-login:first-child,
+    #ag-main-content > .ag-pw:first-child{min-height:auto;display:block;align-items:stretch;padding-top:160px;}
     .ag-section__title{font-size:clamp(1.7rem,6vw,2.2rem);margin-bottom:14px;}
     .ag-section__desc{font-size:1rem;margin-bottom:36px;}
 
