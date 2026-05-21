@@ -91,17 +91,12 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 					<label>Sous-texte<input type="text" id="ag-vsub" value="Vends des sites. Touche 10 %." maxlength="48"></label>
 					<button type="button" class="ag-btn-gold" id="ag-vgen">🎬 Générer ma vidéo (8 s)</button>
 					<p class="ag-vstatus" id="ag-vstatus"></p>
-					<button type="button" class="ag-btn-gold" id="ag-vshare" style="display:none;">⤴ Partager / Enregistrer ma vidéo</button>
+					<button type="button" class="ag-btn-gold ag-vshare-btn" id="ag-vshare" style="display:none;">
+						<span class="ag-vshare-ic" aria-hidden="true"><span class="ag-vsi ag-vsi--tt">🎵</span><span class="ag-vsi ag-vsi--snap">👻</span><span class="ag-vsi ag-vsi--ig">📸</span></span>
+						<span>Partager ma vidéo</span>
+					</button>
 					<button type="button" class="ag-btn-outline" id="ag-vcap" style="display:none;">📋 Copier la légende (+ ton lien)</button>
-					<div class="ag-vsteps" id="ag-vsteps" style="display:none;">
-						<p class="ag-vhint">📲 <strong>Pour poster :</strong> 1. <strong>Partager</strong> → <strong>« Enregistrer la vidéo »</strong> (va dans ta galerie). 2. Ouvre ton appli ci-dessous. 3. Choisis la vidéo dans ta <strong>galerie</strong>, colle ta légende, publie 🚀</p>
-						<div class="ag-vapps">
-							<button type="button" class="ag-sbtn ag-sbtn--tt ag-openapp" data-scheme="snssdk1233://" data-web="https://www.tiktok.com/">🎵 Ouvrir TikTok</button>
-							<button type="button" class="ag-sbtn ag-sbtn--snap ag-openapp" data-scheme="snapchat://" data-web="https://www.snapchat.com/">👻 Ouvrir Snap</button>
-							<button type="button" class="ag-sbtn ag-sbtn--insta ag-openapp" data-scheme="instagram://library" data-web="https://www.instagram.com/">📸 Ouvrir Insta</button>
-							<button type="button" class="ag-sbtn ag-sbtn--wa ag-openapp" data-scheme="whatsapp://send" data-web="https://wa.me/">📲 Ouvrir WhatsApp</button>
-						</div>
-					</div>
+					<p class="ag-vhint" id="ag-vhint" style="display:none;">Touche <strong>Partager</strong> puis choisis ton appli (<strong>TikTok, Snap, Insta…</strong>) ou <strong>« Enregistrer la vidéo »</strong> pour la poster depuis ta galerie 🚀</p>
 				</div>
 			</div>
 		</div>
@@ -113,7 +108,7 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 		var link=window.AG_LINK, caption=window.AG_CAPTION;
 		window.agVideoRefresh=function(){ link=window.AG_LINK; caption=window.AG_CAPTION; frame(0); };
 		var media=null, isVideo=false, lastBlob=null, lastExt='webm', lastUrl=null;
-		var statusEl=document.getElementById('ag-vstatus'), shEl=document.getElementById('ag-vshare'), capEl=document.getElementById('ag-vcap'), stepsEl=document.getElementById('ag-vsteps');
+		var statusEl=document.getElementById('ag-vstatus'), shEl=document.getElementById('ag-vshare'), capEl=document.getElementById('ag-vcap'), hintEl=document.getElementById('ag-vhint');
 		function wrap(text,x,y,maxW,lh){var w=(text||'').split(' '),l='',yy=y;for(var i=0;i<w.length;i++){var t=l+w[i]+' ';if(ctx.measureText(t).width>maxW&&i>0){ctx.fillText(l.trim(),x,yy);l=w[i]+' ';yy+=lh;}else l=t;}ctx.fillText(l.trim(),x,yy);return yy;}
 		function frame(p){
 			ctx.fillStyle='#0e0d11';ctx.fillRect(0,0,W,H);
@@ -145,7 +140,7 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 				lastExt=(actual.indexOf('mp4')>-1?'mp4':'webm');
 				lastBlob=new Blob(chunks,{type:actual});
 				if(lastUrl) URL.revokeObjectURL(lastUrl); lastUrl=URL.createObjectURL(lastBlob);
-				shEl.style.display='inline-flex';capEl.style.display='inline-flex';stepsEl.style.display='block';
+				shEl.style.display='inline-flex';capEl.style.display='inline-flex';hintEl.style.display='block';
 				statusEl.textContent='✓ Vidéo prête ! Partage-la ou enregistre-la juste en dessous 👇';
 			};
 			if(isVideo){try{media.currentTime=0;media.play();}catch(e){}}
@@ -173,24 +168,6 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 		}
 		shEl.addEventListener('click',agShareVideo);
 		capEl.addEventListener('click',function(){ navigator.clipboard.writeText(caption).then(function(){ capEl.textContent='✓ Légende copiée'; setTimeout(function(){ capEl.textContent='📋 Copier la légende (+ ton lien)'; },1600); }); });
-		// Ouvre l'application directement (deep link) ; si l'app n'est pas installee, repli sur le site apres 1,4 s.
-		function openApp(scheme, web){
-			var left=false;
-			function gone(){ left=true; }
-			document.addEventListener('visibilitychange',gone);
-			window.addEventListener('pagehide',gone);
-			window.addEventListener('blur',gone);
-			var timer=setTimeout(function(){
-				document.removeEventListener('visibilitychange',gone);
-				window.removeEventListener('pagehide',gone);
-				window.removeEventListener('blur',gone);
-				if(!left && web){ window.location.href=web; }
-			},1400);
-			try{ window.location.href=scheme; }catch(e){ if(web) window.location.href=web; }
-		}
-		document.querySelectorAll('.ag-openapp').forEach(function(b){
-			b.addEventListener('click',function(){ openApp(b.getAttribute('data-scheme'), b.getAttribute('data-web')); });
-		});
 		frame(0);
 	})();
 	</script>
@@ -291,17 +268,15 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 .ag-maker--v .ag-maker__preview{display:flex;justify-content:center;background:#0e0d11;}
 .ag-maker--v .ag-maker__preview canvas{width:auto;max-width:100%;max-height:540px;}
 .ag-vstatus{margin:6px 0 0;color:var(--color-text-soft);font-size:.9rem;min-height:1.2em;}
-.ag-vsteps{margin-top:8px;display:flex;flex-direction:column;gap:10px;}
 .ag-vhint{margin:0;padding:14px 16px;background:rgba(212,180,92,.08);border:1px solid rgba(212,180,92,.22);border-radius:12px;color:var(--color-text-soft);font-size:.88rem;line-height:1.7;}
 .ag-vhint strong{color:#e8c766;}
-.ag-vapps{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:6px;}
-.ag-vapps__lbl{color:var(--color-text-muted);font-size:.85rem;width:100%;}
-.ag-sbtn{display:inline-flex;align-items:center;gap:6px;padding:11px 16px;border-radius:12px;font-weight:700;font-size:.9rem;text-decoration:none;color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);cursor:pointer;transition:transform .2s,border-color .2s,background .2s;}
-.ag-sbtn:hover{transform:translateY(-2px);border-color:rgba(212,180,92,.5);color:#fff;text-decoration:none;}
-.ag-sbtn--tt{background:rgba(0,0,0,.5);border-color:#25F4EE;}
-.ag-sbtn--snap{background:rgba(255,252,0,.14);border-color:#FFFC00;}
-.ag-sbtn--insta{background:linear-gradient(135deg,rgba(225,48,108,.2),rgba(253,89,73,.15));border-color:#E1306C;}
-.ag-sbtn--wa{background:rgba(37,211,102,.16);border-color:#25D366;}
+.ag-vshare-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;}
+.ag-vshare-ic{display:inline-flex;gap:5px;}
+.ag-vsi{display:inline-block;font-size:1.2em;line-height:1;animation:ag-vsi-bob 1.4s ease-in-out infinite;}
+.ag-vsi--snap{animation-delay:.22s;}
+.ag-vsi--ig{animation-delay:.44s;}
+@keyframes ag-vsi-bob{0%,100%{transform:translateY(0) rotate(0deg);}30%{transform:translateY(-5px) rotate(-9deg);}60%{transform:translateY(1px) rotate(7deg);}}
+@media(prefers-reduced-motion:reduce){.ag-vsi{animation:none;}}
 .ag-tools h3{color:#fff;font-family:var(--font-serif);font-size:1.2rem;margin:32px 0 12px;}
 .ag-ideas{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px;}
 .ag-ideas li{position:relative;padding-left:26px;color:var(--color-text-soft);line-height:1.5;}
@@ -314,7 +289,7 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 .ag-tools details p{color:var(--color-text-soft);margin:0 0 16px;line-height:1.6;}
 @media(max-width:768px){#ag-main-content.ag-studio > .ag-section:first-child{padding-top:170px;}}
 @media(max-width:760px){.ag-vis-grid{grid-template-columns:1fr 1fr;}.ag-maker{grid-template-columns:1fr;}.ag-maker--v .ag-maker__preview canvas{max-height:60vh;}}
-@media(max-width:480px){.ag-vis-grid{gap:12px;}.ag-vis__btns{padding:8px;gap:6px;}.ag-vis__btns .ag-btn-gold,.ag-vis__btns .ag-btn-outline{padding:9px 8px;font-size:.8rem;}.ag-sbtn{padding:12px 14px;}.ag-btn-gold,.ag-btn-outline{width:100%;justify-content:center;text-align:center;}}
+@media(max-width:480px){.ag-vis-grid{gap:12px;}.ag-vis__btns{padding:8px;gap:6px;}.ag-vis__btns .ag-btn-gold,.ag-vis__btns .ag-btn-outline{padding:9px 8px;font-size:.8rem;}.ag-btn-gold,.ag-btn-outline{width:100%;justify-content:center;text-align:center;}}
 </style>
 
 <?php get_footer(); ?>
