@@ -174,6 +174,7 @@ if ( ! function_exists( 'ag_send_member_welcome' ) ) {
 				. '<p><strong>Première étape :</strong> définis ton mot de passe pour accéder à ton espace (lien de vente, suivi des commissions, classement).</p>'
 				. ag_email_button( 'Définir mon mot de passe', $url )
 				. '<p style="color:#9a9aa5;font-size:13px;">Si le bouton ne marche pas, copie ce lien :<br><span style="color:#cfc7b8;word-break:break-all;">' . esc_url( $url ) . '</span></p>'
+				. '<p>📚 <strong>Découvre ton programme</strong> : comment vendre des sites et recruter ton équipe, étape par étape — <a href="' . esc_url( home_url( '/programme-ambassadeur' ) ) . '" style="color:#D4B45C;">ouvre le guide</a>.</p>'
 				. '<p style="color:#9a9aa5;font-size:13px;">La déclaration de ventes s\'active une fois ton identité validée. On te prévient.</p>';
 		} else {
 			$heading = 'Bienvenue chez Alliance Groupe 👋';
@@ -222,7 +223,7 @@ add_action( 'template_redirect', function () {
 	if ( is_page_template( 'templates/page-connexion.php' ) && is_user_logged_in() ) {
 		wp_safe_redirect( ag_espace_url() ); exit;
 	}
-	$amb = is_page_template( 'templates/page-espace-ambassadeur.php' ) || is_page_template( 'templates/page-studio.php' );
+	$amb = is_page_template( 'templates/page-espace-ambassadeur.php' ) || is_page_template( 'templates/page-studio.php' ) || is_page_template( 'templates/page-guide-ambassadeur.php' );
 	$cli = is_page_template( 'templates/page-espace-client.php' );
 	if ( ! $amb && ! $cli ) return;
 
@@ -248,14 +249,15 @@ add_filter( 'login_redirect', function ( $redirect, $requested, $user ) {
 
 /* ── 7. Auto-création des pages (une seule fois) ───────────────────── */
 add_action( 'init', function () {
-	if ( get_option( 'ag_espaces_pages_v4' ) ) return;
+	if ( get_option( 'ag_espaces_pages_v5' ) ) return;
 	$pages = array(
-		'connexion'           => array( 'Connexion',          'templates/page-connexion.php' ),
-		'espace-client'       => array( 'Espace Client',      'templates/page-espace-client.php' ),
-		'espace-ambassadeur'  => array( 'Espace Commercial',  'templates/page-espace-ambassadeur.php' ),
-		'classement'          => array( 'Classement',         'templates/page-classement.php' ),
-		'mot-de-passe'        => array( 'Mot de passe',       'templates/page-mot-de-passe.php' ),
-		'studio'              => array( 'Studio',             'templates/page-studio.php' ),
+		'connexion'             => array( 'Connexion',            'templates/page-connexion.php' ),
+		'espace-client'         => array( 'Espace Client',        'templates/page-espace-client.php' ),
+		'espace-ambassadeur'    => array( 'Espace Commercial',    'templates/page-espace-ambassadeur.php' ),
+		'classement'            => array( 'Classement',           'templates/page-classement.php' ),
+		'mot-de-passe'          => array( 'Mot de passe',         'templates/page-mot-de-passe.php' ),
+		'studio'                => array( 'Studio',               'templates/page-studio.php' ),
+		'programme-ambassadeur' => array( 'Programme Ambassadeur', 'templates/page-guide-ambassadeur.php' ),
 	);
 	foreach ( $pages as $slug => $d ) {
 		if ( get_page_by_path( $slug ) ) continue;
@@ -268,7 +270,7 @@ add_action( 'init', function () {
 			'page_template'=> $d[1],
 		) );
 	}
-	update_option( 'ag_espaces_pages_v4', 1 );
+	update_option( 'ag_espaces_pages_v5', 1 );
 } );
 
 /* ── 8. Classement & récompenses (gamification commerciale) ────────── */
@@ -712,6 +714,59 @@ if ( ! function_exists( 'ag_google_login_handler' ) ) {
 }
 add_action( 'admin_post_nopriv_ag_google_login', 'ag_google_login_handler' );
 add_action( 'admin_post_ag_google_login', 'ag_google_login_handler' );
+
+/* ── 10b. Vidéo du programme ambassadeur (configurable) ─────────────── */
+if ( ! function_exists( 'ag_amb_guide_video' ) ) {
+	function ag_amb_guide_video() { return trim( (string) get_option( 'ag_amb_guide_video', '' ) ); }
+}
+if ( ! function_exists( 'ag_amb_guide_video_embed' ) ) {
+	/** Rend la vidéo du programme (YouTube / Vimeo / MP4 / lien). Retourne du HTML déjà échappé. */
+	function ag_amb_guide_video_embed() {
+		$u = ag_amb_guide_video();
+		if ( '' === $u ) return '';
+		if ( preg_match( '~(?:youtube\.com/(?:watch\?v=|embed/)|youtu\.be/)([A-Za-z0-9_-]{6,})~', $u, $m ) ) {
+			return '<div class="ag-guide-video"><iframe src="https://www.youtube.com/embed/' . esc_attr( $m[1] ) . '" title="Programme ambassadeur" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
+		}
+		if ( preg_match( '~vimeo\.com/(?:video/)?(\d+)~', $u, $m ) ) {
+			return '<div class="ag-guide-video"><iframe src="https://player.vimeo.com/video/' . esc_attr( $m[1] ) . '" title="Programme ambassadeur" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>';
+		}
+		if ( preg_match( '~\.(mp4|webm|mov)(\?.*)?$~i', $u ) ) {
+			return '<div class="ag-guide-video"><video src="' . esc_url( $u ) . '" controls playsinline></video></div>';
+		}
+		return '<p style="margin-top:24px;"><a class="ag-btn-gold" href="' . esc_url( $u ) . '" target="_blank" rel="noopener">▶ Voir la vidéo explicative</a></p>';
+	}
+}
+add_action( 'admin_menu', function () {
+	add_options_page( 'Programme ambassadeur', 'Programme ambassadeur', 'manage_options', 'ag-amb-programme', 'ag_amb_programme_render' );
+} );
+add_action( 'admin_init', function () {
+	register_setting( 'ag_amb_programme', 'ag_amb_guide_video', array(
+		'type' => 'string', 'sanitize_callback' => 'esc_url_raw', 'default' => '',
+	) );
+} );
+if ( ! function_exists( 'ag_amb_programme_render' ) ) {
+	function ag_amb_programme_render() {
+		if ( ! current_user_can( 'manage_options' ) ) return;
+		$v = ag_amb_guide_video();
+		?>
+		<div class="wrap">
+			<h1>Programme ambassadeur — vidéo explicative</h1>
+			<p style="max-width:760px;color:#50575e;">Colle ici le lien d'une <strong>vidéo explicative</strong> (YouTube, Vimeo, ou un fichier .mp4). Elle s'affichera en haut de la page <a href="<?php echo esc_url( home_url( '/programme-ambassadeur' ) ); ?>" target="_blank" rel="noopener">Programme</a> que voient les ambassadeurs. Tu peux la filmer simplement avec ton téléphone.</p>
+			<form method="post" action="options.php" style="max-width:760px;">
+				<?php settings_fields( 'ag_amb_programme' ); ?>
+				<table class="form-table"><tr>
+					<th scope="row"><label for="ag_amb_guide_video">Lien de la vidéo</label></th>
+					<td>
+						<input type="url" name="ag_amb_guide_video" id="ag_amb_guide_video" value="<?php echo esc_attr( $v ); ?>" class="regular-text" style="width:100%;max-width:560px;" placeholder="https://www.youtube.com/watch?v=… ou https://….mp4">
+						<p class="description"><?php echo $v ? '✓ Vidéo affichée sur la page Programme.' : 'Vide = un message « la vidéo arrive bientôt » + les étapes écrites s\'affichent.'; ?></p>
+					</td>
+				</tr></table>
+				<?php submit_button(); ?>
+			</form>
+		</div>
+		<?php
+	}
+}
 
 /* ── 11. Membres connectés : jamais de page en cache ────────────────
    Empêche qu'après une purge de cache un membre se retrouve sur une

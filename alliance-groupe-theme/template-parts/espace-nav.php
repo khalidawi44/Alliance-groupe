@@ -11,6 +11,7 @@ $ag_active = isset( $args['active'] ) ? $args['active'] : '';
 $ag_items  = array(
 	'compte'     => array( '💼', 'Mon compte', 'Ventes &amp; commissions', home_url( '/espace-ambassadeur' ) ),
 	'studio'     => array( '🎬', 'Studio',      'Créer &amp; partager',     home_url( '/studio' ) ),
+	'programme'  => array( '📚', 'Programme',   'Comment gagner',           home_url( '/programme-ambassadeur' ) ),
 	'classement' => array( '🏆', 'Classement',  'Le championnat',           home_url( '/classement' ) ),
 );
 ?>
@@ -35,5 +36,5 @@ $ag_items  = array(
 .ag-espnav__txt small{color:var(--color-text-soft);font-size:.78rem;}
 .ag-espnav__item.is-active{background:linear-gradient(160deg,rgba(212,180,92,.2),rgba(243,122,31,.07));border-color:rgba(212,180,92,.6);}
 .ag-espnav__item.is-active .ag-espnav__txt strong{color:#e8c766;}
-@media(max-width:760px){.ag-espnav__item{min-width:calc(50% - 6px);flex:1 1 calc(50% - 6px);}.ag-espnav__item:last-child{min-width:100%;}}
+@media(max-width:760px){.ag-espnav__item{min-width:calc(50% - 6px);flex:1 1 calc(50% - 6px);}}
 </style>

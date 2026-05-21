@@ -40,6 +40,8 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 
 			<?php get_template_part( 'template-parts/espace-nav', null, array( 'active' => 'compte' ) ); ?>
 
+			<a href="<?php echo esc_url( home_url( '/programme-ambassadeur' ) ); ?>" class="ag-esp-guide">📚 <strong>Découvre ton programme</strong> — comment vendre des sites &amp; recruter ton équipe, étape par étape <span>→</span></a>
+
 			<?php if ( $actif ) : ?>
 				<p class="ag-section__desc">Ton compte est <strong style="color:#4bbf77;">actif</strong>. Déclare tes ventes et suis tes commissions (10 %).</p>
 			<?php else : ?>
@@ -240,6 +242,10 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 .ag-esp-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;}
 .ag-esp-logout{flex-shrink:0;}
 .ag-esp-banner{background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.4);border-radius:12px;padding:16px 20px;color:#fff;margin:6px 0 0;}
+.ag-esp-guide{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:16px 0 0;padding:15px 20px;background:linear-gradient(135deg,rgba(212,180,92,.16),rgba(243,122,31,.06));border:1px solid rgba(212,180,92,.45);border-radius:14px;color:#fff;text-decoration:none;font-size:.95rem;transition:transform .2s,border-color .2s;}
+.ag-esp-guide:hover{transform:translateY(-2px);border-color:rgba(212,180,92,.7);color:#fff;text-decoration:none;}
+.ag-esp-guide strong{color:#e8c766;}
+.ag-esp-guide span{margin-left:auto;color:#e8c766;font-weight:800;}
 .ag-esp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:34px;}
 .ag-esp-stat{padding:24px 20px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.16);border-radius:16px;text-align:center;}
 .ag-esp-stat--gold{border-color:rgba(212,180,92,.5);background:linear-gradient(160deg,rgba(212,180,92,.12),rgba(243,122,31,.05));}
