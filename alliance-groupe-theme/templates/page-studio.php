@@ -129,7 +129,7 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 		}
 		function loadFile(f){isVideo=/^video\//.test(f.type);var url=URL.createObjectURL(f);if(isVideo){var v=document.createElement('video');v.muted=true;v.loop=true;v.playsInline=true;v.src=url;v.onloadeddata=function(){media=v;frame(0);};}else{var im=new Image();im.onload=function(){media=im;frame(0);};im.src=url;}}
 		function loadUrl(url,cb){isVideo=false;var im=new Image();im.onload=function(){media=im;frame(0);if(cb)cb();};im.src=url;}
-		window.agVideoLoad=function(url){loadUrl(url,function(){ document.getElementById('ag-vgen').click(); });document.getElementById('studio-video').scrollIntoView({behavior:'smooth',block:'start'});};
+		window.agVideoLoad=function(url){loadUrl(url);var gen=document.getElementById('ag-vgen');if(gen){try{gen.scrollIntoView({behavior:'instant',block:'center'});}catch(e){gen.scrollIntoView();}}};
 		document.querySelectorAll('.ag-vis__use').forEach(function(b){b.addEventListener('click',function(){window.agVideoLoad(b.getAttribute('data-src'));});});
 		document.getElementById('ag-vfile').addEventListener('change',function(e){var f=e.target.files&&e.target.files[0];if(f)loadFile(f);});
 		document.getElementById('ag-vhead').addEventListener('input',function(){frame(0);});
@@ -146,8 +146,7 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 				lastBlob=new Blob(chunks,{type:actual});
 				if(lastUrl) URL.revokeObjectURL(lastUrl); lastUrl=URL.createObjectURL(lastBlob);
 				shEl.style.display='inline-flex';capEl.style.display='inline-flex';stepsEl.style.display='block';
-				statusEl.textContent='✓ Vidéo prête !';
-				try{ shEl.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
+				statusEl.textContent='✓ Vidéo prête ! Partage-la ou enregistre-la juste en dessous 👇';
 			};
 			if(isVideo){try{media.currentTime=0;media.play();}catch(e){}}
 			var DUR=8000,start=performance.now();rec.start();statusEl.textContent='Génération en cours… (8 s)';
