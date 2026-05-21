@@ -42,7 +42,7 @@ $maint = array(
 		'feats'=> array( 'Hébergement + nom de domaine', 'Sauvegardes automatiques', 'Mises à jour & sécurité', 'Support par email' ),
 	),
 	'croissance' => array(
-		'url'  => get_option( 'ag_stripe_maint_croissance_url', $ph ),
+		'url'  => get_option( 'ag_stripe_maint_croissance_url', 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=374X8TRBN6QQW' ),
 		'nom'  => 'Croissance', 'prix' => '59 €', 'star' => true,
 		'desc' => 'Ton site évolue avec ton activité.',
 		'feats'=> array( 'Tout « Sérénité »', '30 min de retouches / mois', 'Suivi & conseils', 'Statistiques de visites' ),
