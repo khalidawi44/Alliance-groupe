@@ -10,7 +10,8 @@ get_header();
 
 $u            = wp_get_current_user();
 $email        = ( $u && $u->ID ) ? $u->user_email : '';
-$ag_sale_link = ( $email && function_exists( 'ag_ambassadeur_sale_link' ) ) ? ag_ambassadeur_sale_link( $email ) : home_url( '/sites-express' );
+$ag_sale_link    = ( $email && function_exists( 'ag_ambassadeur_sale_link' ) ) ? ag_ambassadeur_sale_link( $email ) : home_url( '/sites-express' );
+$ag_recruit_link = ( $email && function_exists( 'ag_ambassadeur_recruit_link' ) ) ? ag_ambassadeur_recruit_link( $email ) : home_url( '/ambassadeurs' );
 
 $studio_uri = get_stylesheet_directory_uri() . '/assets/images/studio/';
 $prod_uri   = get_stylesheet_directory_uri() . '/assets/images/produits/';
@@ -25,9 +26,39 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 				<div><span class="ag-tag">Studio créatif 🎬</span><h1 class="ag-section__title">Crée &amp; partage, sans quitter le site</h1></div>
 				<a href="<?php echo esc_url( home_url( '/espace-ambassadeur' ) ); ?>" class="ag-btn-outline ag-esp-logout">← Mon compte</a>
 			</div>
-			<p class="ag-section__desc">Choisis un visuel prêt, transforme-le en vidéo avec ton lien, et partage direct sur TikTok/Snap. Ton code de vente est toujours intégré.</p>
+			<p class="ag-section__desc">Choisis ton objectif, prends un visuel, fais-en une vidéo avec ton lien, et partage direct. Ton code est toujours intégré.</p>
+			<div class="ag-mode">
+				<button type="button" class="ag-mode-btn is-active" data-mode="sale" onclick="agSetMode('sale')">🛒 Vendre des sites</button>
+				<button type="button" class="ag-mode-btn" data-mode="recruit" onclick="agSetMode('recruit')">🤝 Recruter mon équipe</button>
+			</div>
+			<p class="ag-mode-hint" id="ag-mode-hint">Mode <strong>Vente</strong> : ton lien mène à tes offres (ta commission). Passe en <strong>Recrutement</strong> pour partager ton lien d'équipe (tu gagnes sur leurs ventes).</p>
 		</div>
 	</section>
+	<script>
+	window.AG_SALE = { link: <?php echo wp_json_encode( $ag_sale_link ); ?>, caption: <?php echo wp_json_encode( 'Ton site pro à prix fixe, livré en quelques jours — dès 490 €. 👉 ' . $ag_sale_link ); ?> };
+	window.AG_RECRUIT = { link: <?php echo wp_json_encode( $ag_recruit_link ); ?>, caption: <?php echo wp_json_encode( 'Gagne de l\'argent en vendant des sites — 10 % par vente, depuis ton tel. Rejoins l\'équipe 👉 ' . $ag_recruit_link ); ?> };
+	window.AG_LINK = window.AG_SALE.link; window.AG_CAPTION = window.AG_SALE.caption;
+	window.agSetMode = function(m){
+		var d = ( m === 'recruit' ) ? window.AG_RECRUIT : window.AG_SALE;
+		window.AG_LINK = d.link; window.AG_CAPTION = d.caption;
+		var defs = ( m === 'recruit' )
+			? { vh:'Rejoins l\'équipe.', vs:'Vends des sites, touche 10 %.', ih:'Deviens commercial.', is:'Travaille depuis ton téléphone' }
+			: { vh:'Du quartier à la réussite.', vs:'Vends des sites. Touche 10 %.', ih:'Ton site pro, dès 490 €', is:'Livré en quelques jours · sans rendez-vous' };
+		var e;
+		if((e=document.getElementById('ag-vhead'))) e.value=defs.vh;
+		if((e=document.getElementById('ag-vsub')))  e.value=defs.vs;
+		if((e=document.getElementById('ag-head')))  e.value=defs.ih;
+		if((e=document.getElementById('ag-sub')))   e.value=defs.is;
+		if(window.agVideoRefresh) window.agVideoRefresh();
+		if(window.agImageRefresh) window.agImageRefresh();
+		document.querySelectorAll('.ag-mode-btn').forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-mode')===m); });
+		var h=document.getElementById('ag-mode-hint');
+		if(h) h.innerHTML = (m==='recruit')
+			? 'Mode <strong>Recrutement</strong> : ton lien mène à l\'inscription ambassadeur (tu gagnes sur les ventes de ton équipe).'
+			: 'Mode <strong>Vente</strong> : ton lien mène à tes offres (ta commission de 10 %).';
+	};
+	(function(){ try{ if(new URLSearchParams(location.search).get('mode')==='recruit'){ var go=function(){ window.agSetMode('recruit'); }; if(document.readyState!=='loading') go(); else document.addEventListener('DOMContentLoaded', go); } }catch(e){} })();
+	</script>
 
 	<section class="ag-section ag-section--onyx">
 		<div class="ag-container">
@@ -77,8 +108,8 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 	(function(){
 		var cv=document.getElementById('ag-vcanvas'); if(!cv) return;
 		var ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
-		var link=<?php echo wp_json_encode( $ag_sale_link ); ?>;
-		var caption=<?php echo wp_json_encode( 'Ton site pro à prix fixe, livré en quelques jours — dès 490 €. 👉 ' . $ag_sale_link ); ?>;
+		var link=window.AG_LINK, caption=window.AG_CAPTION;
+		window.agVideoRefresh=function(){ link=window.AG_LINK; caption=window.AG_CAPTION; frame(0); };
 		var media=null, isVideo=false, lastBlob=null, lastExt='webm';
 		var statusEl=document.getElementById('ag-vstatus'), dlEl=document.getElementById('ag-vdl'), shEl=document.getElementById('ag-vshare');
 		function wrap(text,x,y,maxW,lh){var w=(text||'').split(' '),l='',yy=y;for(var i=0;i<w.length;i++){var t=l+w[i]+' ';if(ctx.measureText(t).width>maxW&&i>0){ctx.fillText(l.trim(),x,yy);l=w[i]+' ';yy+=lh;}else l=t;}ctx.fillText(l.trim(),x,yy);return yy;}
@@ -149,7 +180,8 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 	(function(){
 		var canvas=document.getElementById('ag-canvas'); if(!canvas) return;
 		var ctx=canvas.getContext('2d'), W=canvas.width, H=canvas.height, userImg=null;
-		var link=<?php echo wp_json_encode( $ag_sale_link ); ?>;
+		var link=window.AG_LINK;
+		window.agImageRefresh=function(){ link=window.AG_LINK; draw(); };
 		function wrap(text,x,y,maxW,lh){var words=(text||'').split(' '),line='',yy=y;for(var i=0;i<words.length;i++){var t=line+words[i]+' ';if(ctx.measureText(t).width>maxW&&i>0){ctx.fillText(line.trim(),x,yy);line=words[i]+' ';yy+=lh;}else line=t;}ctx.fillText(line.trim(),x,yy);return yy;}
 		function draw(){
 			ctx.fillStyle='#0e0d11';ctx.fillRect(0,0,W,H);
@@ -203,6 +235,11 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 <style>
 .ag-esp-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;}
 .ag-esp-logout{flex-shrink:0;}
+.ag-mode{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
+.ag-mode-btn{padding:12px 18px;border-radius:999px;font-weight:700;font-size:.95rem;color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(212,180,92,.25);cursor:pointer;transition:transform .2s,background .2s;}
+.ag-mode-btn:hover{transform:translateY(-2px);}
+.ag-mode-btn.is-active{background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;border-color:transparent;}
+.ag-mode-hint{margin-top:12px;color:var(--color-text-muted);font-size:.88rem;}
 .ag-vis-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:30px;}
 .ag-vis{background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.18);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;}
 .ag-vis img{width:100%;height:auto;display:block;}
