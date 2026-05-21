@@ -250,10 +250,23 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
                     <textarea id="ag-refer-msg" readonly rows="3">Je viens de faire faire mon site avec Alliance Groupe : à prix fixe (dès 490 €), livré en quelques jours, sans rendez-vous. Jette un œil 👉 <?php echo esc_url( home_url( '/sites-express' ) ); ?> (dis que tu viens de ma part)</textarea>
                     <button type="button" class="ag-btn-gold" id="ag-refer-copy" onclick="navigator.clipboard.writeText(document.getElementById('ag-refer-msg').value).then(function(){var b=document.getElementById('ag-refer-copy');b.textContent='✓ Copié';setTimeout(function(){b.textContent='Copier mon message';},1500);});">Copier mon message</button>
                 </div>
+            <?php elseif ( ! $paid ) : ?>
+                <span class="ag-tag">Étape 2</span>
+                <h2 class="ag-section__title">Le brief, <em>après ta commande</em></h2>
+                <p class="ag-section__desc">Le parcours est simple : tu choisis ton pack, tu paies en ligne (sécurisé PayPal), <strong>puis</strong> tu remplis le brief pour qu'on lance ton site. Pas besoin de le faire avant.</p>
+                <div class="ag-xpress__steps">
+                    <div class="ag-xpress__step"><span class="ag-xpress__step-n">1</span><strong>Choisis ton pack</strong><span>Essentiel, Pro ou Boutique.</span></div>
+                    <div class="ag-xpress__step"><span class="ag-xpress__step-n">2</span><strong>Tu paies en ligne</strong><span>Carte ou PayPal, 100% sécurisé.</span></div>
+                    <div class="ag-xpress__step"><span class="ag-xpress__step-n">3</span><strong>Tu remplis le brief</strong><span>On démarre la production.</span></div>
+                </div>
+                <div class="ag-xpress__brief-cta">
+                    <a href="#packs" class="ag-btn-gold">Voir les packs →</a>
+                    <a href="<?php echo esc_url( add_query_arg( 'paid', '1' ) ); ?>#brief" class="ag-xpress__paid-link">J'ai déjà payé — remplir le brief</a>
+                </div>
             <?php else : ?>
                 <span class="ag-tag">Étape 2</span>
                 <h2 class="ag-section__title">Le brief de <em>ton site</em></h2>
-                <p class="ag-section__desc"><?php echo $paid ? 'Paiement reçu ✅ Remplis ce brief pour qu\'on démarre.' : 'Déjà payé ? Remplis ce brief pour qu\'on lance ton site.'; ?></p>
+                <p class="ag-section__desc"><?php echo in_array( $paid, array_keys( $packs ), true ) ? 'Paiement reçu ✅ Remplis ce brief pour qu\'on démarre.' : 'Remplis ce brief pour qu\'on lance ton site.'; ?></p>
                 <form class="ag-form" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="POST">
                     <input type="hidden" name="action" value="ag_submit_brief">
                     <input type="hidden" name="pack" value="<?php echo esc_attr( $paid ); ?>">
@@ -308,6 +321,15 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
 .ag-xpress__reviews{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:30px;}
 .ag-xpress__reviews blockquote{margin:0;padding:22px 20px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.18);border-radius:16px;color:#fff;font-style:italic;line-height:1.55;}
 .ag-xpress__reviews cite{display:block;margin-top:12px;color:#e8c766;font-style:normal;font-weight:700;font-size:.9rem;}
+.ag-xpress__steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:30px 0;}
+.ag-xpress__step{padding:24px 18px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.18);border-radius:16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.ag-xpress__step-n{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;font-weight:800;font-size:1.1rem;margin-bottom:6px;}
+.ag-xpress__step strong{color:#fff;font-size:1.02rem;}
+.ag-xpress__step span:not(.ag-xpress__step-n){color:var(--color-text-soft);font-size:.9rem;line-height:1.45;}
+.ag-xpress__brief-cta{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:8px;}
+.ag-xpress__paid-link{color:var(--color-text-soft);font-size:.9rem;text-decoration:underline;text-underline-offset:3px;}
+.ag-xpress__paid-link:hover{color:#e8c766;}
+@media(max-width:760px){.ag-xpress__steps{grid-template-columns:1fr;}}
 .ag-xpress__refer{margin-top:26px;padding:22px 24px;background:linear-gradient(160deg,rgba(212,180,92,.12),rgba(243,122,31,.05));border:1px solid rgba(212,180,92,.4);border-radius:16px;text-align:center;}
 .ag-xpress__refer p{color:#fff;margin:0 0 14px;}
 .ag-xpress__refer textarea{width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(212,180,92,.3);background:rgba(0,0,0,.25);color:#fff;font-size:.92rem;line-height:1.5;resize:vertical;margin-bottom:12px;}

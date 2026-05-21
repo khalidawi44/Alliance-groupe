@@ -3902,8 +3902,8 @@ button:focus-visible{
     .ag-btn-gold,
     .ag-btn-outline{padding:13px 26px;font-size:.98rem;}
 
-    /* Parallax : reduit padding + quote */
-    .ag-parallax{padding:60px 20px;}
+    /* Parallax : reduit padding + quote ; background-attachment:fixed n'est pas rendu sur iOS Safari -> scroll pour que l'image s'affiche */
+    .ag-parallax{padding:60px 20px;background-attachment:scroll;}
     .ag-parallax__quote{font-size:clamp(1.15rem,4.5vw,1.6rem);line-height:1.4;}
 
     /* CTA section bas de page */
