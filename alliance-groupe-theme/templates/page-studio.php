@@ -38,6 +38,10 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 				<button type="button" class="ag-mode-btn" data-mode="recruit" onclick="agSetMode('recruit')">🤝 Recruter mon équipe</button>
 			</div>
 			<p class="ag-mode-hint" id="ag-mode-hint">Mode <strong>Vente</strong> : ton lien mène à tes offres (ta commission). Passe en <strong>Recrutement</strong> pour partager ton lien d'équipe (tu gagnes sur leurs ventes).</p>
+			<div class="ag-ct" role="tablist">
+				<button type="button" class="ag-ct-btn is-active" data-pane="video" role="tab">🎬 Vidéo</button>
+				<button type="button" class="ag-ct-btn" data-pane="image" role="tab">🖼️ Image</button>
+			</div>
 		</div>
 	</section>
 	<script>
@@ -64,26 +68,15 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 			: 'Mode <strong>Vente</strong> : ton lien mène à tes offres (ta commission de 10 %).';
 	};
 	(function(){ try{ if(new URLSearchParams(location.search).get('mode')==='recruit'){ var go=function(){ window.agSetMode('recruit'); }; if(document.readyState!=='loading') go(); else document.addEventListener('DOMContentLoaded', go); } }catch(e){} })();
+	// Bascule Vidéo / Image (deux boutons en haut)
+	(function(){
+		var btns=document.querySelectorAll('.ag-ct-btn'), panes=document.querySelectorAll('.ag-pane');
+		function show(p){ btns.forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-pane')===p); }); panes.forEach(function(s){ s.style.display = s.classList.contains('ag-pane--'+p) ? '' : 'none'; }); }
+		btns.forEach(function(b){ b.addEventListener('click',function(){ show(b.getAttribute('data-pane')); }); });
+	})();
 	</script>
 
-	<section class="ag-section ag-section--onyx">
-		<div class="ag-container">
-			<h2 class="ag-section__title">Visuels prêts à poster 🖼️</h2>
-			<p class="ag-section__desc">Déjà brandés avec ton lien : télécharge et poste direct. Pour une <strong>vidéo</strong>, descends au créateur ci-dessous (avec des fonds propres, sans texte par-dessus).</p>
-			<div class="ag-vis-grid">
-				<?php foreach ( $media as $m ) : ?>
-					<div class="ag-vis">
-						<img src="<?php echo esc_url( $m ); ?>" alt="visuel Alliance Groupe" loading="lazy">
-						<div class="ag-vis__btns">
-							<a class="ag-btn-gold" href="<?php echo esc_url( $m ); ?>" download>⬇ Télécharger</a>
-						</div>
-					</div>
-				<?php endforeach; ?>
-			</div>
-		</div>
-	</section>
-
-	<section class="ag-section ag-section--graphite" id="studio-video">
+	<section class="ag-section ag-section--graphite ag-pane ag-pane--video" id="studio-video">
 		<div class="ag-container ag-container--narrow">
 			<h2 class="ag-section__title">Ta vidéo (8 s) 🎬</h2>
 			<p class="ag-section__desc">Choisis un fond propre (ou mets ta propre photo/clip), écris ton accroche : on ajoute ton lien et tu partages direct. Un seul texte, bien lisible.</p>
@@ -189,7 +182,7 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 	})();
 	</script>
 
-	<section class="ag-section ag-section--onyx">
+	<section class="ag-section ag-section--onyx ag-pane ag-pane--image" style="display:none;">
 		<div class="ag-container ag-container--narrow">
 			<h2 class="ag-section__title">Ton image perso 🖌️</h2>
 			<p class="ag-section__desc">Ta photo + ton accroche → image brandée avec ton lien, prête à poster.</p>
@@ -232,6 +225,23 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 	})();
 	</script>
 
+	<section class="ag-section ag-section--graphite ag-pane ag-pane--image" style="display:none;">
+		<div class="ag-container">
+			<h2 class="ag-section__title">Visuels prêts à poster 🖼️</h2>
+			<p class="ag-section__desc">Déjà brandés avec ton lien : télécharge-les et poste-les direct.</p>
+			<div class="ag-vis-grid">
+				<?php foreach ( $media as $m ) : ?>
+					<div class="ag-vis">
+						<img src="<?php echo esc_url( $m ); ?>" alt="visuel Alliance Groupe" loading="lazy">
+						<div class="ag-vis__btns">
+							<a class="ag-btn-gold" href="<?php echo esc_url( $m ); ?>" download>⬇ Télécharger</a>
+						</div>
+					</div>
+				<?php endforeach; ?>
+			</div>
+		</div>
+	</section>
+
 	<section class="ag-section ag-section--graphite">
 		<div class="ag-container ag-tools">
 			<h2 class="ag-section__title">Idées &amp; scripts 🧰</h2>
@@ -270,6 +280,9 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 .ag-mode-btn:hover{transform:translateY(-2px);}
 .ag-mode-btn.is-active{background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;border-color:transparent;}
 .ag-mode-hint{margin-top:12px;color:var(--color-text-muted);font-size:.88rem;}
+.ag-ct{display:flex;gap:10px;margin-top:22px;padding:6px;background:rgba(255,255,255,.04);border:1px solid rgba(212,180,92,.2);border-radius:14px;max-width:420px;}
+.ag-ct-btn{flex:1;padding:14px 12px;border:none;background:transparent;color:var(--color-text-soft);font-weight:800;font-size:1rem;border-radius:10px;cursor:pointer;transition:background .2s,color .2s;}
+.ag-ct-btn.is-active{background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;}
 .ag-vis-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:30px;}
 .ag-vis{background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.18);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;}
 .ag-vis img{width:100%;height:auto;display:block;}
