@@ -172,14 +172,8 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 		$body .= 'Date : ' . current_time( 'd/m/Y H:i' );
 		wp_mail( 'contact@alliancegroupe-inc.com', 'Nouvel ambassadeur : ' . $name, $body );
 
-		// Confirmation candidat
-		$headers = array( 'Content-Type: text/plain; charset=UTF-8' );
-		$c  = "Bonjour $name,\n\n";
-		$c .= "Merci de vouloir rejoindre le programme de vente d'Alliance Groupe ! 🤝\n\n";
-		$c .= "Tu touches 10% sur chaque vente que tu realises. On valide ton inscription ";
-		$c .= "et on te recontacte rapidement avec tes outils de vente.\n\n";
-		$c .= "L'equipe Alliance Groupe\ncontact@alliancegroupe-inc.com";
-		wp_mail( $email, 'Bienvenue dans le programme ambassadeurs 🤝', $c, $headers );
+		// L'email de bienvenue brandé (avec lien « définir mon mot de passe »)
+		// est envoyé par ag_create_member() via le hook ag_ambassadeur_registered.
 
 		wp_safe_redirect( add_query_arg( array( 'ambassadeur' => 'ok' ), home_url( '/ambassadeurs' ) ) . '#rejoindre' );
 		exit;

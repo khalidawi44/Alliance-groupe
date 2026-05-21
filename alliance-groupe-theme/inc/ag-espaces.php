@@ -101,8 +101,9 @@ if ( ! function_exists( 'ag_create_member' ) ) {
 		) );
 		if ( is_wp_error( $uid ) ) return 0;
 
-		// Email standard WP : lien sécurisé pour définir son mot de passe.
-		wp_new_user_notification( $uid, null, 'user' );
+		// Email de bienvenue brandé + lien sécurisé pour définir le mot de passe.
+		$role_kind = ( 'ag_ambassadeur' === $role ) ? 'ambassadeur' : 'client';
+		ag_send_member_welcome( get_user_by( 'id', $uid ), $role_kind );
 		return $uid;
 	}
 }
@@ -114,6 +115,75 @@ add_action( 'ag_ambassadeur_registered', function ( $email, $name ) {
 add_action( 'ag_client_brief_submitted', function ( $email, $name ) {
 	ag_create_member( $email, $name, 'ag_client' );
 }, 10, 2 );
+
+/* ── 3b. Emails brandés (HTML) + expéditeur « Alliance Groupe » ────── */
+// L'expéditeur par défaut « WordPress » devient « Alliance Groupe ».
+add_filter( 'wp_mail_from_name', function ( $name ) {
+	return ( 'WordPress' === $name || '' === $name ) ? 'Alliance Groupe' : $name;
+}, 9 );
+add_filter( 'wp_mail_from', function ( $email ) {
+	return ( is_string( $email ) && strpos( $email, 'wordpress@' ) === 0 ) ? 'contact@alliancegroupe-inc.com' : $email;
+}, 9 );
+
+if ( ! function_exists( 'ag_email_wrap' ) ) {
+	/** Gabarit HTML d'email à la marque (dark + or). */
+	function ag_email_wrap( $heading, $inner ) {
+		return '<!DOCTYPE html><html lang="fr"><body style="margin:0;padding:0;background:#0a0a0f;">'
+			. '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0f;padding:28px 12px;"><tr><td align="center">'
+			. '<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#14141c;border-radius:18px;overflow:hidden;border:1px solid rgba(212,180,92,.25);">'
+			. '<tr><td style="padding:28px 36px;background:#0f0f16;border-bottom:1px solid rgba(212,180,92,.25);">'
+			. '<div style="font-family:Georgia,serif;font-size:23px;font-weight:bold;color:#D4B45C;letter-spacing:1px;">ALLIANCE GROUPE</div>'
+			. '<div style="font-family:Arial,sans-serif;font-size:11px;color:#9a9aa5;letter-spacing:2px;text-transform:uppercase;margin-top:4px;">Agence Web &amp; IA</div>'
+			. '</td></tr>'
+			. '<tr><td style="padding:34px 36px;font-family:Arial,sans-serif;color:#e8e8ee;font-size:15px;line-height:1.65;">'
+			. '<h1 style="font-family:Georgia,serif;color:#ffffff;font-size:22px;margin:0 0 16px;">' . $heading . '</h1>'
+			. $inner
+			. '</td></tr>'
+			. '<tr><td style="padding:20px 36px;background:#0f0f16;border-top:1px solid rgba(255,255,255,.06);font-family:Arial,sans-serif;color:#6f6f7a;font-size:12px;">'
+			. 'Alliance Groupe — <a href="https://alliancegroupe-inc.com" style="color:#D4B45C;text-decoration:none;">alliancegroupe-inc.com</a><br>contact@alliancegroupe-inc.com'
+			. '</td></tr>'
+			. '</table></td></tr></table></body></html>';
+	}
+}
+if ( ! function_exists( 'ag_email_button' ) ) {
+	function ag_email_button( $label, $url ) {
+		return '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px 0;"><tr><td style="border-radius:999px;background:linear-gradient(135deg,#D4B45C,#F37A1F);">'
+			. '<a href="' . esc_url( $url ) . '" style="display:inline-block;padding:15px 34px;font-family:Arial,sans-serif;font-size:15px;font-weight:bold;color:#10100a;text-decoration:none;border-radius:999px;">' . esc_html( $label ) . '</a>'
+			. '</td></tr></table>';
+	}
+}
+if ( ! function_exists( 'ag_send_member_welcome' ) ) {
+	/** Email de bienvenue brandé avec lien sécurisé pour définir le mot de passe. */
+	function ag_send_member_welcome( $user, $kind ) {
+		if ( ! $user || ! $user->ID ) return;
+		$key = get_password_reset_key( $user );
+		if ( is_wp_error( $key ) ) { wp_new_user_notification( $user->ID, null, 'user' ); return; }
+		$url  = network_site_url( 'wp-login.php?action=rp&key=' . rawurlencode( $key ) . '&login=' . rawurlencode( $user->user_login ), 'login' );
+		$name = $user->display_name ? $user->display_name : $user->user_login;
+
+		if ( 'ambassadeur' === $kind ) {
+			$heading = 'Bienvenue dans l\'équipe commerciale 🤝';
+			$inner   = '<p>Bonjour ' . esc_html( $name ) . ',</p>'
+				. '<p>Ton inscription au <strong>programme commercial Alliance Groupe</strong> est enregistrée. Tu touches <strong style="color:#D4B45C;">10 % sur chaque vente</strong> que tu réalises.</p>'
+				. '<p><strong>Première étape :</strong> définis ton mot de passe pour accéder à ton espace (lien de vente, suivi des commissions, classement).</p>'
+				. ag_email_button( 'Définir mon mot de passe', $url )
+				. '<p style="color:#9a9aa5;font-size:13px;">Si le bouton ne marche pas, copie ce lien :<br><span style="color:#cfc7b8;word-break:break-all;">' . esc_url( $url ) . '</span></p>'
+				. '<p style="color:#9a9aa5;font-size:13px;">La déclaration de ventes s\'active une fois ton identité validée. On te prévient.</p>';
+		} else {
+			$heading = 'Bienvenue chez Alliance Groupe 👋';
+			$inner   = '<p>Bonjour ' . esc_html( $name ) . ',</p>'
+				. '<p>Ton compte client est créé. Définis ton mot de passe pour accéder à ton <strong>espace</strong> et suivre ton projet.</p>'
+				. ag_email_button( 'Définir mon mot de passe', $url )
+				. '<p style="color:#9a9aa5;font-size:13px;">Si le bouton ne marche pas, copie ce lien :<br><span style="color:#cfc7b8;word-break:break-all;">' . esc_url( $url ) . '</span></p>';
+		}
+
+		$headers = array(
+			'Content-Type: text/html; charset=UTF-8',
+			'From: Alliance Groupe <contact@alliancegroupe-inc.com>',
+		);
+		wp_mail( $user->user_email, 'Active ton compte Alliance Groupe', ag_email_wrap( $heading, $inner ), $headers );
+	}
+}
 
 /* ── 4. Connexion (traitement du formulaire de /connexion) ─────────── */
 add_action( 'template_redirect', function () {
