@@ -26,6 +26,7 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) a
 				<div><span class="ag-tag">Studio créatif 🎬</span><h1 class="ag-section__title">Crée &amp; partage, sans quitter le site</h1></div>
 				<a href="<?php echo esc_url( home_url( '/espace-ambassadeur' ) ); ?>" class="ag-btn-outline ag-esp-logout">← Mon compte</a>
 			</div>
+			<?php get_template_part( 'template-parts/espace-nav', null, array( 'active' => 'studio' ) ); ?>
 			<p class="ag-section__desc">Choisis ton objectif, prends un visuel, fais-en une vidéo avec ton lien, et partage direct. Ton code est toujours intégré.</p>
 			<div class="ag-mode">
 				<button type="button" class="ag-mode-btn is-active" data-mode="sale" onclick="agSetMode('sale')">🛒 Vendre des sites</button>

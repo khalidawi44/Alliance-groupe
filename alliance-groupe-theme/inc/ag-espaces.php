@@ -557,3 +557,158 @@ add_action( 'admin_init', function () {
 add_filter( 'show_admin_bar', function ( $show ) {
 	return current_user_can( 'manage_options' ) ? $show : false;
 } );
+
+/* ── 9. Inscription libre (email + mot de passe) ───────────────────── */
+if ( ! function_exists( 'ag_register_client' ) ) {
+	/** Crée un compte client avec le mot de passe choisi par la personne. */
+	function ag_register_client( $email, $name, $password ) {
+		if ( ! is_email( $email ) ) return 0;
+		$base  = sanitize_user( current( explode( '@', $email ) ), true );
+		if ( '' === $base ) $base = 'membre';
+		$login = $base; $n = 1;
+		while ( username_exists( $login ) ) { $login = $base . $n; $n++; }
+		$uid = wp_insert_user( array(
+			'user_login'   => $login,
+			'user_email'   => $email,
+			'user_pass'    => $password,
+			'display_name' => $name ? $name : $login,
+			'first_name'   => $name,
+			'role'         => 'ag_client',
+		) );
+		if ( is_wp_error( $uid ) ) return 0;
+		ag_send_signup_welcome( get_user_by( 'id', $uid ) );
+		return $uid;
+	}
+}
+if ( ! function_exists( 'ag_send_signup_welcome' ) ) {
+	/** Email de bienvenue (compte créé par la personne elle-même : pas de lien mot de passe). */
+	function ag_send_signup_welcome( $user ) {
+		if ( ! $user || ! $user->ID ) return;
+		$name    = $user->display_name ? $user->display_name : $user->user_login;
+		$heading = 'Bienvenue chez Alliance Groupe 👋';
+		$inner   = '<p>Bonjour ' . esc_html( $name ) . ',</p>'
+			. '<p>Ton compte est créé ✅ Tu peux dès maintenant accéder à ton espace.</p>'
+			. ag_email_button( 'Accéder à mon espace', home_url( '/espace-client' ) )
+			. '<p style="color:#9a9aa5;font-size:13px;">Tu t\'es connecté avec Google ? Tu peux aussi définir un mot de passe via « Mot de passe oublié » sur la page de connexion.</p>';
+		$headers = array(
+			'Content-Type: text/html; charset=UTF-8',
+			'From: Alliance Groupe <contact@alliancegroupe-inc.com>',
+		);
+		wp_mail( $user->user_email, 'Ton compte Alliance Groupe est créé', ag_email_wrap( $heading, $inner ), $headers );
+	}
+}
+
+add_action( 'template_redirect', function () {
+	if ( empty( $_POST['ag_register_submit'] ) ) return;
+	$back = home_url( '/connexion' );
+	$err  = function ( $code ) use ( $back ) {
+		wp_safe_redirect( add_query_arg( array( 'tab' => 'inscription', 'reg' => $code ), $back ) ); exit;
+	};
+	if ( ! isset( $_POST['ag_register_nonce'] ) || ! wp_verify_nonce( $_POST['ag_register_nonce'], 'ag_register' ) ) $err( 'nonce' );
+	if ( ! empty( $_POST['ag_hp'] ) ) $err( 'spam' ); // pot de miel anti-bot
+	$name  = sanitize_text_field( wp_unslash( $_POST['reg_name'] ?? '' ) );
+	$email = sanitize_email( wp_unslash( $_POST['reg_email'] ?? '' ) );
+	$pwd   = (string) ( $_POST['reg_pwd'] ?? '' );
+	$pwd2  = (string) ( $_POST['reg_pwd2'] ?? '' );
+	if ( ! is_email( $email ) )      $err( 'email' );
+	if ( strlen( $pwd ) < 8 )        $err( 'pwd' );
+	if ( $pwd !== $pwd2 )            $err( 'match' );
+	if ( get_user_by( 'email', $email ) ) $err( 'exists' );
+	$uid = ag_register_client( $email, $name, $pwd );
+	if ( ! $uid ) $err( 'fail' );
+	$user = get_user_by( 'id', $uid );
+	wp_set_current_user( $uid );
+	wp_set_auth_cookie( $uid, true, is_ssl() );
+	$dest = '';
+	if ( ! empty( $_POST['redirect_to'] ) ) $dest = wp_validate_redirect( wp_unslash( $_POST['redirect_to'] ), '' );
+	if ( ! $dest ) $dest = ag_espace_url( ag_espace_member_kind( $user ) );
+	wp_safe_redirect( $dest ); exit;
+} );
+
+/* ── 10. Connexion Google (Sign in with Google) ────────────────────── */
+if ( ! function_exists( 'ag_google_client_id' ) ) {
+	function ag_google_client_id() { return trim( (string) get_option( 'ag_google_client_id', '' ) ); }
+}
+
+// Page de réglages : Réglages > Connexion Google
+add_action( 'admin_menu', function () {
+	add_options_page( 'Connexion Google', 'Connexion Google', 'manage_options', 'ag-social-login', 'ag_social_login_render' );
+} );
+add_action( 'admin_init', function () {
+	register_setting( 'ag_social_login', 'ag_google_client_id', array(
+		'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '',
+	) );
+} );
+if ( ! function_exists( 'ag_social_login_render' ) ) {
+	function ag_social_login_render() {
+		if ( ! current_user_can( 'manage_options' ) ) return;
+		$cid    = ag_google_client_id();
+		$origin = home_url();
+		$cb     = admin_url( 'admin-post.php?action=ag_google_login' );
+		?>
+		<div class="wrap">
+			<h1>Connexion Google</h1>
+			<p style="max-width:760px;color:#50575e;">Active le bouton « <strong>Continuer avec Google</strong> » sur ta page de connexion. C'est <strong>gratuit</strong>. Il te faut juste un <strong>ID client OAuth</strong> créé dans Google Cloud.</p>
+			<div style="max-width:760px;margin:16px 0;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #D4B45C;">
+				<strong>Comment obtenir l'ID client (5 min) :</strong>
+				<ol style="margin:8px 0 0 22px;line-height:1.7;">
+					<li>Va sur <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">console.cloud.google.com/apis/credentials</a> et crée (ou choisis) un projet.</li>
+					<li>Configure l'« écran de consentement OAuth » (type <em>Externe</em>, nom « Alliance Groupe »).</li>
+					<li>« Créer des identifiants » &gt; « <strong>ID client OAuth</strong> » &gt; type <strong>Application Web</strong>.</li>
+					<li>Dans <strong>Origines JavaScript autorisées</strong>, ajoute :<br><code><?php echo esc_html( $origin ); ?></code></li>
+					<li>Dans <strong>URI de redirection autorisés</strong>, ajoute :<br><code><?php echo esc_html( $cb ); ?></code></li>
+					<li>Copie l'« <strong>ID client</strong> » (finit par <code>.apps.googleusercontent.com</code>) et colle-le ci-dessous.</li>
+				</ol>
+			</div>
+			<form method="post" action="options.php" style="max-width:760px;">
+				<?php settings_fields( 'ag_social_login' ); ?>
+				<table class="form-table"><tr>
+					<th scope="row"><label for="ag_google_client_id">ID client Google</label></th>
+					<td>
+						<input type="text" name="ag_google_client_id" id="ag_google_client_id" value="<?php echo esc_attr( $cid ); ?>" class="regular-text" style="width:100%;max-width:560px;" placeholder="xxxxxxxx.apps.googleusercontent.com">
+						<p class="description"><?php echo $cid ? '✓ Bouton Google actif sur /connexion.' : 'Vide = bouton Google masqué (connexion par email/mot de passe uniquement).'; ?></p>
+					</td>
+				</tr></table>
+				<?php submit_button(); ?>
+			</form>
+		</div>
+		<?php
+	}
+}
+
+// Traitement du retour Google (POST sur admin-post.php).
+if ( ! function_exists( 'ag_google_login_handler' ) ) {
+	function ag_google_login_handler() {
+		$back = home_url( '/connexion' );
+		$fail = function ( $code ) use ( $back ) { wp_safe_redirect( add_query_arg( 'login', $code, $back ) ); exit; };
+		$cid  = ag_google_client_id();
+		if ( '' === $cid ) $fail( 'failed' );
+		// Protection CSRF : double cookie g_csrf_token fourni par Google.
+		$body_csrf   = isset( $_POST['g_csrf_token'] ) ? (string) $_POST['g_csrf_token'] : '';
+		$cookie_csrf = isset( $_COOKIE['g_csrf_token'] ) ? (string) $_COOKIE['g_csrf_token'] : '';
+		if ( '' === $body_csrf || '' === $cookie_csrf || ! hash_equals( $cookie_csrf, $body_csrf ) ) $fail( 'google' );
+		$token = isset( $_POST['credential'] ) ? (string) $_POST['credential'] : '';
+		if ( '' === $token ) $fail( 'google' );
+		$resp = wp_remote_get( 'https://oauth2.googleapis.com/tokeninfo?id_token=' . rawurlencode( $token ), array( 'timeout' => 15 ) );
+		if ( is_wp_error( $resp ) || 200 !== (int) wp_remote_retrieve_response_code( $resp ) ) $fail( 'google' );
+		$data = json_decode( wp_remote_retrieve_body( $resp ), true );
+		if ( ! is_array( $data ) ) $fail( 'google' );
+		if ( empty( $data['aud'] ) || ! hash_equals( $cid, (string) $data['aud'] ) ) $fail( 'google' );
+		$iss = $data['iss'] ?? '';
+		if ( ! in_array( $iss, array( 'accounts.google.com', 'https://accounts.google.com' ), true ) ) $fail( 'google' );
+		$email    = sanitize_email( $data['email'] ?? '' );
+		$verified = $data['email_verified'] ?? '';
+		if ( ! is_email( $email ) || ! in_array( $verified, array( 'true', true, '1', 1 ), true ) ) $fail( 'google' );
+		$user = get_user_by( 'email', $email );
+		if ( ! $user ) {
+			$uid = ag_register_client( $email, sanitize_text_field( $data['name'] ?? '' ), wp_generate_password( 24 ) );
+			if ( ! $uid ) $fail( 'google' );
+			$user = get_user_by( 'id', $uid );
+		}
+		wp_set_current_user( $user->ID );
+		wp_set_auth_cookie( $user->ID, true, is_ssl() );
+		wp_safe_redirect( ag_espace_url( ag_espace_member_kind( $user ) ) ); exit;
+	}
+}
+add_action( 'admin_post_nopriv_ag_google_login', 'ag_google_login_handler' );
+add_action( 'admin_post_ag_google_login', 'ag_google_login_handler' );

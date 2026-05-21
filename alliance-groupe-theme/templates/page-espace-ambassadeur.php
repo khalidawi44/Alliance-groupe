@@ -38,6 +38,8 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 				<a href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>" class="ag-btn-outline ag-esp-logout">Déconnexion</a>
 			</div>
 
+			<?php get_template_part( 'template-parts/espace-nav', null, array( 'active' => 'compte' ) ); ?>
+
 			<?php if ( $actif ) : ?>
 				<p class="ag-section__desc">Ton compte est <strong style="color:#4bbf77;">actif</strong>. Déclare tes ventes et suis tes commissions (10 %).</p>
 			<?php else : ?>
@@ -53,15 +55,17 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 		</div>
 	</section>
 
-	<section class="ag-section ag-section--onyx">
+	<section class="ag-section ag-section--onyx" id="studio">
 		<div class="ag-container">
-			<div class="ag-studio-cta">
-				<div>
-					<h2 class="ag-section__title" style="margin:0 0 8px;">🎬 Studio créatif</h2>
-					<p class="ag-section__desc" style="margin:0;">Plein de visuels déjà prêts, ton générateur de vidéos &amp; d'images — tout au même endroit, avec ton lien intégré. Tu crées et tu partages, sans quitter le site.</p>
-				</div>
-				<a href="<?php echo esc_url( home_url( '/studio' ) ); ?>" class="ag-btn-gold ag-studio-cta__btn">Ouvrir le Studio →</a>
+			<span class="ag-tag">Espace création</span>
+			<h2 class="ag-section__title">Le Studio 🎬 <em>— ton atelier de contenu</em></h2>
+			<p class="ag-section__desc">C'est <strong>séparé de ton compte</strong> : ici tu crées ce que tu vas partager. Visuels déjà prêts, générateur de vidéos et d'images — ton lien de vente est toujours intégré automatiquement.</p>
+			<div class="ag-studio-feats">
+				<div class="ag-studio-feat"><span class="ag-studio-feat__ic">🖼️</span><strong>Visuels prêts</strong><span>Une médiathèque à poster direct, rien à chercher ailleurs.</span></div>
+				<div class="ag-studio-feat"><span class="ag-studio-feat__ic">🎬</span><strong>Vidéos en 1 clic</strong><span>Transforme une image en vidéo verticale avec ton accroche.</span></div>
+				<div class="ag-studio-feat"><span class="ag-studio-feat__ic">⤴</span><strong>Partage direct</strong><span>TikTok, Insta, Snap, WhatsApp — sans quitter le site.</span></div>
 			</div>
+			<a href="<?php echo esc_url( home_url( '/studio' ) ); ?>" class="ag-btn-gold ag-studio-cta__btn">Ouvrir le Studio →</a>
 		</div>
 	</section>
 
@@ -241,8 +245,12 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 .ag-esp-stat--gold{border-color:rgba(212,180,92,.5);background:linear-gradient(160deg,rgba(212,180,92,.12),rgba(243,122,31,.05));}
 .ag-esp-stat__val{display:block;font-family:var(--font-serif);font-size:1.9rem;font-weight:800;background:linear-gradient(135deg,#D4B45C,#F37A1F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;}
 .ag-esp-stat__lbl{display:block;margin-top:6px;color:var(--color-text-soft);font-size:.85rem;}
-.ag-studio-cta{display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap;padding:26px 28px;background:linear-gradient(160deg,rgba(212,180,92,.14),rgba(243,122,31,.06));border:1px solid rgba(212,180,92,.4);border-radius:18px;}
-.ag-studio-cta__btn{flex-shrink:0;}
+.ag-studio-cta__btn{flex-shrink:0;margin-top:26px;}
+.ag-studio-feats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px;}
+.ag-studio-feat{padding:22px 20px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.18);border-radius:16px;display:flex;flex-direction:column;gap:6px;}
+.ag-studio-feat__ic{font-size:1.7rem;}
+.ag-studio-feat strong{color:#fff;font-size:1rem;}
+.ag-studio-feat span:not(.ag-studio-feat__ic){color:var(--color-text-soft);font-size:.88rem;line-height:1.45;}
 .ag-esp .ag-form__group{position:relative;margin-bottom:16px;}
 .ag-esp .ag-form__group label{position:static;top:auto;left:auto;display:block;font-size:.88rem;font-weight:600;color:var(--color-text-soft);margin-bottom:8px;text-transform:none;letter-spacing:normal;pointer-events:auto;}
 .ag-esp .ag-form__group input{padding:14px 18px;}
@@ -282,7 +290,7 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 .ag-share-msg__head strong{color:#fff;}
 .ag-share-msg textarea{width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(212,180,92,.3);background:rgba(255,255,255,.05);color:#fff;font-size:.95rem;line-height:1.5;resize:vertical;}
 @media(max-width:768px){#ag-main-content.ag-esp > .ag-section:first-child{padding-top:170px;}}
-@media(max-width:760px){.ag-esp-stats{grid-template-columns:1fr 1fr;}.ag-lb-grid{grid-template-columns:1fr;}.ag-studio-cta{flex-direction:column;align-items:flex-start;}.ag-studio-cta__btn{width:100%;justify-content:center;text-align:center;}.ag-share-btns .ag-sbtn{flex:1;justify-content:center;min-width:44%;}}
+@media(max-width:760px){.ag-esp-stats{grid-template-columns:1fr 1fr;}.ag-lb-grid{grid-template-columns:1fr;}.ag-studio-feats{grid-template-columns:1fr;}.ag-studio-cta__btn{width:100%;justify-content:center;text-align:center;}.ag-share-btns .ag-sbtn{flex:1;justify-content:center;min-width:44%;}}
 </style>
 
 <?php get_footer(); ?>
