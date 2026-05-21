@@ -1,12 +1,12 @@
 <?php
 /**
  * Accueil — Priorité 3 : le côté CARITATIF.
- * Teaser du Programme Racines, traitement visuel distinct (accent vert +
- * fond Naples), lien vers /programme-racines.
+ * Section immersive plein écran : fond Naples FIXE bien visible, accent vert,
+ * la section remonte sur la précédente. Lien vers /programme-racines.
  */
 $ag_racines_bg = get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg';
 ?>
-<section class="ag-home-racines" id="racines" style="--racines-bg:url('<?php echo esc_url( $ag_racines_bg ); ?>');">
+<section class="ag-home-racines ag-rise" id="racines" style="--racines-bg:url('<?php echo esc_url( $ag_racines_bg ); ?>');">
 	<div class="ag-home-racines__overlay" aria-hidden="true"></div>
 	<div class="ag-container ag-home-racines__inner">
 		<span class="ag-tag ag-tag--green ag-anim" data-anim="tag">Programme Racines 🌱 · notre engagement</span>
@@ -20,12 +20,12 @@ $ag_racines_bg = get_stylesheet_directory_uri() . '/assets/images/cities/naples-
 </section>
 
 <style>
-.ag-home-racines{position:relative;padding:120px 0;background:#07140d;overflow:hidden;text-align:center;}
-.ag-home-racines::before{content:"";position:absolute;inset:0;background-image:var(--racines-bg);background-size:cover;background-position:center;background-attachment:fixed;opacity:.26;}
-@media(max-width:768px){.ag-home-racines::before{background-attachment:scroll;}}
-.ag-home-racines__overlay{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 38%,rgba(0,132,61,.28),transparent 70%),linear-gradient(180deg,rgba(7,20,13,.82),rgba(7,20,13,.95));}
-.ag-home-racines__inner{position:relative;z-index:2;max-width:780px;margin:0 auto;}
+.ag-rise{position:relative;z-index:4;margin-top:-58px;border-top-left-radius:44px;border-top-right-radius:44px;box-shadow:0 -50px 90px rgba(0,0,0,.55);overflow:hidden;}
+.ag-home-racines{min-height:94vh;display:flex;align-items:center;background:#07140d;text-align:center;}
+.ag-home-racines::before{content:"";position:absolute;inset:0;background-image:var(--racines-bg);background-size:cover;background-position:center;background-attachment:fixed;opacity:1;}
+.ag-home-racines__overlay{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(0,132,61,.34),transparent 68%),linear-gradient(180deg,rgba(7,20,13,.6),rgba(7,20,13,.5) 45%,rgba(7,20,13,.9));}
+.ag-home-racines__inner{position:relative;z-index:2;max-width:820px;margin:0 auto;}
 .ag-home-racines .ag-section__title{margin-top:14px;}
 .ag-home-racines__cta{margin-top:36px;display:flex;flex-wrap:wrap;gap:16px;justify-content:center;}
-@media(max-width:760px){.ag-home-racines{padding:84px 0;}}
+@media(max-width:768px){.ag-home-racines{min-height:auto;padding:84px 0;}.ag-home-racines::before{background-attachment:scroll;}.ag-rise{margin-top:-38px;border-top-left-radius:30px;border-top-right-radius:30px;}}
 </style>

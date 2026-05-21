@@ -1,8 +1,8 @@
 <?php
 /**
  * Accueil — Priorité 1 : VENDRE.
- * Teaser des offres Sites Express (prix fixes) avec les 3 visuels packs,
- * fond image + overlay pour la profondeur, lien vers /sites-express.
+ * Section immersive : fond ville FIXE bien visible, la section remonte
+ * (coins arrondis + ombre) sur la précédente. Visuels packs cliquables.
  */
 $ag_offres = array(
 	'essentiel' => array( 'nom' => 'Essentiel', 'prix' => '490 €' ),
@@ -12,7 +12,7 @@ $ag_offres = array(
 $ag_img_base = get_stylesheet_directory_uri() . '/assets/images/produits/produit-';
 $ag_offres_bg = get_stylesheet_directory_uri() . '/assets/images/cities/nantes-1.jpg';
 ?>
-<section class="ag-section ag-section--graphite ag-home-offres" id="offres" style="--offres-bg:url('<?php echo esc_url( $ag_offres_bg ); ?>');">
+<section class="ag-section ag-section--graphite ag-home-offres ag-rise" id="offres" style="--offres-bg:url('<?php echo esc_url( $ag_offres_bg ); ?>');">
 	<div class="ag-home-offres__bg" aria-hidden="true"></div>
 	<div class="ag-container ag-home-offres__inner">
 		<span class="ag-tag ag-anim" data-anim="tag">Nos offres ⚡ Sites Express</span>
@@ -35,15 +35,17 @@ $ag_offres_bg = get_stylesheet_directory_uri() . '/assets/images/cities/nantes-1
 </section>
 
 <style>
-.ag-home-offres{position:relative;overflow:hidden;}
-.ag-home-offres__bg{position:absolute;inset:0;background-image:var(--offres-bg);background-size:cover;background-position:center;background-attachment:fixed;opacity:.12;}
-.ag-home-offres__bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,13,17,.55),rgba(13,13,17,.9));}
+/* effet "remonte" : la section monte sur la precedente, coins arrondis + ombre */
+.ag-rise{position:relative;z-index:2;margin-top:-58px;border-top-left-radius:44px;border-top-right-radius:44px;box-shadow:0 -50px 90px rgba(0,0,0,.55);overflow:hidden;}
+.ag-home-offres{background:#0d0d11;}
+.ag-home-offres__bg{position:absolute;inset:0;background-image:var(--offres-bg);background-size:cover;background-position:center;background-attachment:fixed;opacity:1;}
+.ag-home-offres__bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,13,17,.62),rgba(13,13,17,.55) 45%,rgba(13,13,17,.82));}
 .ag-home-offres__inner{position:relative;z-index:2;}
 .ag-home-offres__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:46px;}
-.ag-home-offres__card{display:block;border-radius:18px;overflow:hidden;border:1px solid rgba(212,180,92,.18);transition:transform .4s ease,border-color .4s ease,box-shadow .4s ease;}
-.ag-home-offres__card:hover{transform:translateY(-6px);border-color:rgba(212,180,92,.5);box-shadow:0 30px 70px rgba(0,0,0,.45);}
+.ag-home-offres__card{display:block;border-radius:18px;overflow:hidden;border:1px solid rgba(212,180,92,.22);box-shadow:0 20px 50px rgba(0,0,0,.45);transition:transform .4s ease,border-color .4s ease,box-shadow .4s ease;}
+.ag-home-offres__card:hover{transform:translateY(-8px);border-color:rgba(212,180,92,.6);box-shadow:0 36px 80px rgba(0,0,0,.6);}
 .ag-home-offres__card img{display:block;width:100%;height:auto;}
 .ag-home-offres__cta{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-top:40px;}
 @media(max-width:900px){.ag-home-offres__grid{grid-template-columns:1fr;max-width:420px;margin-left:auto;margin-right:auto;}}
-@media(max-width:768px){.ag-home-offres__bg{background-attachment:scroll;}}
+@media(max-width:768px){.ag-home-offres__bg{background-attachment:scroll;}.ag-rise{margin-top:-38px;border-top-left-radius:30px;border-top-right-radius:30px;}}
 </style>

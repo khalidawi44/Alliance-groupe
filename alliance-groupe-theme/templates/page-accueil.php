@@ -84,8 +84,8 @@ get_header();
 <?php get_template_part('template-parts/services'); ?>
 
 <!-- Bande parallax (fond ville fixe) : punchline vente -->
-<section class="ag-parallax" style="background-image:url('<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-2.jpg' ); ?>');">
-    <div class="ag-parallax__overlay"></div>
+<section class="ag-parallax" style="background-image:url('<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-2.jpg' ); ?>');min-height:70vh;display:flex;align-items:center;">
+    <div class="ag-parallax__overlay" style="background:linear-gradient(180deg,rgba(8,8,8,.55),rgba(8,8,8,.7));"></div>
     <div class="ag-parallax__content ag-anim" data-anim="parallax-text">
         <p class="ag-parallax__quote">"Pendant que tu dors, ton site travaille. Un client peut commander à 3h du matin."</p>
     </div>
