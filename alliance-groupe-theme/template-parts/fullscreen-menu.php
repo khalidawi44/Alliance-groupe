@@ -24,9 +24,10 @@ $ag_fsm_items = array(
 	array( 'url' => home_url( '/realisations' ),           'label' => 'Réalisations',      'sub' => '06' ),
 	array( 'url' => home_url( '/programme-racines' ),      'label' => 'Programme Racines', 'sub' => '07' ),
 	array( 'url' => home_url( '/ambassadeurs' ),           'label' => 'Ambassadeurs',      'sub' => '08' ),
-	array( 'url' => home_url( '/articles' ),               'label' => 'Articles',          'sub' => '09' ),
-	array( 'url' => home_url( '/a-propos' ),               'label' => 'À propos',          'sub' => '10' ),
-	array( 'url' => home_url( '/contact' ),                'label' => 'Contact',           'sub' => '11' ),
+	array( 'url' => home_url( '/classement' ),             'label' => 'Classement 🏆',     'sub' => '09' ),
+	array( 'url' => home_url( '/articles' ),               'label' => 'Articles',          'sub' => '10' ),
+	array( 'url' => home_url( '/a-propos' ),               'label' => 'À propos',          'sub' => '11' ),
+	array( 'url' => home_url( '/contact' ),                'label' => 'Contact',           'sub' => '12' ),
 );
 ?>
 

@@ -861,8 +861,9 @@ if ( ! function_exists( 'ag_submit_brief' ) ) {
             + array( 'date' => current_time( 'd/m/Y H:i' ) );
         update_option( 'ag_express_briefs', $briefs );
 
-        // Crée (ou retrouve) le compte client pour son espace réservé.
-        do_action( 'ag_client_brief_submitted', $email, $name );
+        // Crée (ou retrouve) le compte client pour son espace réservé,
+        // et déclenche l'attribution auto à l'ambassadeur (si lien de parrainage).
+        do_action( 'ag_client_brief_submitted', $email, $name, $pack );
 
         $body  = "Nouveau brief Site Express\n\n";
         $body .= "Pack : $pack\nActivité : $business\nContact : $name <$email> $phone\n";

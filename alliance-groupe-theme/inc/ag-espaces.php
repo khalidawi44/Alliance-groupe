@@ -172,11 +172,12 @@ add_filter( 'login_redirect', function ( $redirect, $requested, $user ) {
 
 /* ── 7. Auto-création des pages (une seule fois) ───────────────────── */
 add_action( 'init', function () {
-	if ( get_option( 'ag_espaces_pages_v1' ) ) return;
+	if ( get_option( 'ag_espaces_pages_v2' ) ) return;
 	$pages = array(
 		'connexion'           => array( 'Connexion',          'templates/page-connexion.php' ),
 		'espace-client'       => array( 'Espace Client',      'templates/page-espace-client.php' ),
 		'espace-ambassadeur'  => array( 'Espace Commercial',  'templates/page-espace-ambassadeur.php' ),
+		'classement'          => array( 'Classement',         'templates/page-classement.php' ),
 	);
 	foreach ( $pages as $slug => $d ) {
 		if ( get_page_by_path( $slug ) ) continue;
@@ -189,7 +190,7 @@ add_action( 'init', function () {
 			'page_template'=> $d[1],
 		) );
 	}
-	update_option( 'ag_espaces_pages_v1', 1 );
+	update_option( 'ag_espaces_pages_v2', 1 );
 } );
 
 /* ── 8. Classement & récompenses (gamification commerciale) ────────── */
@@ -226,13 +227,32 @@ if ( ! function_exists( 'ag_ambassadeur_short_name' ) ) {
 		return trim( $first . ' ' . $init );
 	}
 }
+if ( ! function_exists( 'ag_vente_ts' ) ) {
+	/** Timestamp unix d'une vente (champ 'ts' sinon parse du champ 'date'). */
+	function ag_vente_ts( $v ) {
+		if ( ! empty( $v['ts'] ) ) return (int) $v['ts'];
+		if ( ! empty( $v['date'] ) ) {
+			$dt = DateTime::createFromFormat( 'd/m/Y H:i', $v['date'], wp_timezone() );
+			if ( $dt ) return $dt->getTimestamp();
+		}
+		return 0;
+	}
+}
 if ( ! function_exists( 'ag_ambassadeur_leaderboard' ) ) {
-	/** Classement par CA généré (ventes validées + payées), du + au -. */
-	function ag_ambassadeur_leaderboard() {
+	/** Classement par CA (ventes validées + payées). $period : 'all' | 'month' | 'day'. */
+	function ag_ambassadeur_leaderboard( $period = 'all' ) {
+		$today = wp_date( 'Y-m-d' );
+		$month = wp_date( 'Y-m' );
 		$agg = array();
 		foreach ( (array) get_option( 'ag_ambassadeur_ventes', array() ) as $v ) {
 			$st = $v['statut'] ?? '';
 			if ( ! in_array( $st, array( 'validee', 'payee' ), true ) ) continue;
+			if ( 'all' !== $period ) {
+				$ts = ag_vente_ts( $v );
+				if ( ! $ts ) continue;
+				if ( 'day' === $period && wp_date( 'Y-m-d', $ts ) !== $today ) continue;
+				if ( 'month' === $period && wp_date( 'Y-m', $ts ) !== $month ) continue;
+			}
 			$k = strtolower( $v['email'] ?? '' );
 			if ( '' === $k ) continue;
 			if ( ! isset( $agg[ $k ] ) ) {
@@ -250,3 +270,84 @@ if ( ! function_exists( 'ag_ambassadeur_leaderboard' ) ) {
 		return $agg;
 	}
 }
+
+/* ── 9. Lien de vente (parrainage) + attribution automatique ───────── */
+if ( ! function_exists( 'ag_ambassadeur_ref' ) ) {
+	/** Code de parrainage stable de l'ambassadeur (généré + stocké si absent). */
+	function ag_ambassadeur_ref( $email ) {
+		$list = get_option( 'ag_ambassadeurs', array() );
+		if ( ! is_array( $list ) ) return '';
+		foreach ( $list as $k => $a ) {
+			if ( isset( $a['email'] ) && strtolower( $a['email'] ) === strtolower( $email ) ) {
+				if ( empty( $a['ref'] ) ) {
+					$list[ $k ]['ref'] = strtoupper( substr( md5( $a['email'] . wp_salt() ), 0, 8 ) );
+					update_option( 'ag_ambassadeurs', $list );
+					return $list[ $k ]['ref'];
+				}
+				return $a['ref'];
+			}
+		}
+		return '';
+	}
+}
+if ( ! function_exists( 'ag_ambassadeur_by_ref' ) ) {
+	function ag_ambassadeur_by_ref( $ref ) {
+		$ref = strtoupper( preg_replace( '/[^A-Za-z0-9]/', '', (string) $ref ) );
+		if ( '' === $ref ) return null;
+		foreach ( (array) get_option( 'ag_ambassadeurs', array() ) as $a ) {
+			if ( ! empty( $a['ref'] ) && strtoupper( $a['ref'] ) === $ref ) return $a;
+		}
+		return null;
+	}
+}
+if ( ! function_exists( 'ag_ambassadeur_sale_link' ) ) {
+	/** Lien de vente à partager par l'ambassadeur. */
+	function ag_ambassadeur_sale_link( $email ) {
+		$ref = ag_ambassadeur_ref( $email );
+		return $ref ? add_query_arg( 'ref', $ref, home_url( '/sites-express' ) ) : home_url( '/sites-express' );
+	}
+}
+
+// Mémorise le code de parrainage en cookie (30 jours) dès qu'un visiteur arrive via un lien.
+add_action( 'init', function () {
+	if ( empty( $_GET['ref'] ) ) return;
+	$ref = preg_replace( '/[^A-Za-z0-9]/', '', wp_unslash( $_GET['ref'] ) );
+	if ( $ref && ! headers_sent() ) {
+		setcookie( 'ag_ref', $ref, time() + 30 * DAY_IN_SECONDS, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN );
+	}
+} );
+
+// Attribution automatique : à l'envoi du brief, si un cookie de parrainage existe,
+// crée une vente (en attente) au crédit de l'ambassadeur — sans déclaration manuelle.
+add_action( 'ag_client_brief_submitted', function ( $email, $name, $pack = '' ) {
+	$ref = isset( $_COOKIE['ag_ref'] ) ? $_COOKIE['ag_ref'] : '';
+	$amb = ag_ambassadeur_by_ref( $ref );
+	if ( ! $amb ) return;
+	if ( isset( $amb['email'] ) && strtolower( $amb['email'] ) === strtolower( $email ) ) return; // pas d'auto-parrainage
+	$prices  = apply_filters( 'ag_express_prices', array( 'essentiel' => 490, 'pro' => 890, 'boutique' => 1490 ) );
+	$montant = isset( $prices[ $pack ] ) ? (float) $prices[ $pack ] : 0;
+	if ( $montant <= 0 ) return;
+	$rate   = defined( 'AG_COMMISSION_RATE' ) ? AG_COMMISSION_RATE : 0.10;
+	$ventes = get_option( 'ag_ambassadeur_ventes', array() );
+	if ( ! is_array( $ventes ) ) $ventes = array();
+	$ventes[] = array(
+		'id'            => uniqid( 'v_' ),
+		'email'         => $amb['email'],
+		'name'          => $amb['name'] ?? $amb['email'],
+		'client'        => $name . ' (' . $email . ')',
+		'activite'      => 'Site Express ' . ucfirst( $pack ),
+		'montant'       => $montant,
+		'commission'    => round( $montant * $rate, 2 ),
+		'statut'        => 'declaree',
+		'source'        => 'lien',
+		'date'          => current_time( 'd/m/Y H:i' ),
+		'ts'            => time(),
+		'date_paiement' => '',
+	);
+	update_option( 'ag_ambassadeur_ventes', $ventes );
+	wp_mail(
+		'contact@alliancegroupe-inc.com',
+		'Vente via lien ambassadeur : ' . ( $amb['name'] ?? '' ),
+		"Attribution automatique (à valider après encaissement PayPal)\n\nAmbassadeur : " . ( $amb['name'] ?? '' ) . " <" . $amb['email'] . ">\nClient : $name <$email>\nPack : $pack ($montant €)\nCommission : " . round( $montant * $rate, 2 ) . " €\nDate : " . current_time( 'd/m/Y H:i' )
+	);
+}, 10, 3 );

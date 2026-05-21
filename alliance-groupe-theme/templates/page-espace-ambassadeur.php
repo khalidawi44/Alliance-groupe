@@ -51,6 +51,19 @@ $labels = array( 'declaree' => 'En attente', 'validee' => 'Validée', 'payee' =>
 		</div>
 	</section>
 
+	<?php $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_sale_link( $email ) : home_url( '/sites-express' ); ?>
+	<section class="ag-section ag-section--onyx">
+		<div class="ag-container">
+			<h2 class="ag-section__title">Ton lien de vente 🔗</h2>
+			<p class="ag-section__desc">Partage ce lien (DM, story, WhatsApp…). Quand un client passe par lui et envoie son brief, la vente <strong>se crédite automatiquement</strong> sur ton compte — sans rien déclarer.</p>
+			<div class="ag-share">
+				<input id="ag-sharelink" type="text" readonly value="<?php echo esc_attr( $ag_sale_link ); ?>" onclick="this.select();">
+				<button type="button" class="ag-btn-gold" id="ag-copybtn" onclick="navigator.clipboard.writeText(document.getElementById('ag-sharelink').value).then(function(){var b=document.getElementById('ag-copybtn');b.textContent='✓ Copié';setTimeout(function(){b.textContent='Copier le lien';},1500);});">Copier le lien</button>
+			</div>
+			<p class="ag-share__note">Vendu en direct, sans le lien ? Déclare la vente plus bas.</p>
+		</div>
+	</section>
+
 	<?php
 	$lb    = function_exists( 'ag_ambassadeur_leaderboard' ) ? ag_ambassadeur_leaderboard() : array();
 	$tiers = function_exists( 'ag_ambassadeur_tiers' ) ? ag_ambassadeur_tiers() : array();
@@ -177,6 +190,9 @@ $labels = array( 'declaree' => 'En attente', 'validee' => 'Validée', 'payee' =>
 .ag-lb-row__rank{font-size:1.2rem;font-weight:800;color:#e8c766;}
 .ag-lb-row__name{color:#fff;font-weight:600;}
 .ag-lb-row__ca{color:var(--color-text-soft);font-weight:700;}
+.ag-share{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:24px;}
+.ag-share input{flex:1;min-width:260px;padding:14px 18px;border-radius:12px;border:1px solid rgba(212,180,92,.3);background:rgba(255,255,255,.05);color:#fff;font-size:.95rem;}
+.ag-share__note{margin-top:14px;color:var(--color-text-muted);font-size:.88rem;}
 @media(max-width:760px){.ag-esp-stats{grid-template-columns:1fr 1fr;}.ag-lb-grid{grid-template-columns:1fr;}}
 </style>
 
