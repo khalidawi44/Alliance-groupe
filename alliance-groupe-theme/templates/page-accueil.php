@@ -100,6 +100,9 @@ get_header();
 <!-- P2/ RECRUTER — programme ambassadeurs 10% -->
 <?php get_template_part('template-parts/home-ambassadeurs'); ?>
 
+<!-- Studio : l'outil de creation (videos, visuels, lien) -->
+<?php get_template_part('template-parts/home-studio'); ?>
+
 <!-- P3/ CARITATIF — Programme Racines -->
 <?php get_template_part('template-parts/home-racines'); ?>
 

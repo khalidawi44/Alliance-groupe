@@ -54,6 +54,38 @@
         <!-- Desktop Mega Menu -->
         <ul class="ag-nav__list" id="ag-nav-list">
 
+            <!-- Gagner / Studio + dropdown -->
+            <li class="ag-nav__has-sub ag-nav__highlight">
+                <a href="<?php echo esc_url(home_url('/sites-express')); ?>">🚀 Gagner <span class="ag-nav__arrow">&#9662;</span></a>
+                <div class="ag-mega ag-mega--sm">
+                    <div class="ag-mega__inner">
+                        <div class="ag-mega__col">
+                            <span class="ag-mega__label">Commander &amp; créer</span>
+                            <a href="<?php echo esc_url(home_url('/sites-express')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🛒</span>
+                                <span><strong>Commander mon site</strong><small>Prix fixe dès 490 € · payable en 4× PayPal</small></span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/studio')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🎬</span>
+                                <span><strong>Studio créatif</strong><small>Crée vidéos &amp; visuels, partage en 1 clic</small></span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/ambassadeurs')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🤝</span>
+                                <span><strong>Devenir ambassadeur</strong><small>Gagne 10 % sur chaque vente</small></span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/classement')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🏆</span>
+                                <span><strong>Classement</strong><small>Le championnat des commerciaux</small></span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/connexion')); ?>" class="ag-mega__link ag-mega__link--all" style="margin-top:8px;border-top:1px dashed rgba(212,180,92,.25);padding-top:12px;">
+                                <span class="ag-mega__icon">👤</span>
+                                <span><strong>Mon espace</strong><small>Connexion / tableau de bord</small></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
             <!-- Services + dropdown -->
             <li class="ag-nav__has-sub">
                 <a href="<?php echo esc_url(home_url('/services')); ?>">Services <span class="ag-nav__arrow">&#9662;</span></a>
@@ -304,6 +336,17 @@
         </div>
 
         <div class="ag-mobile-menu__content">
+
+            <div class="ag-mobile-menu__group">
+                <button class="ag-mobile-menu__toggle" type="button">🚀 Gagner <span class="ag-mobile-menu__arrow">+</span></button>
+                <div class="ag-mobile-menu__sub">
+                    <a href="<?php echo esc_url(home_url('/sites-express')); ?>">🛒 Commander mon site (payable 4×)</a>
+                    <a href="<?php echo esc_url(home_url('/studio')); ?>">🎬 Studio créatif</a>
+                    <a href="<?php echo esc_url(home_url('/ambassadeurs')); ?>">🤝 Devenir ambassadeur (10 %)</a>
+                    <a href="<?php echo esc_url(home_url('/classement')); ?>">🏆 Classement</a>
+                    <a href="<?php echo esc_url(home_url('/connexion')); ?>">👤 Mon espace</a>
+                </div>
+            </div>
 
             <div class="ag-mobile-menu__group">
                 <button class="ag-mobile-menu__toggle" type="button">Services <span class="ag-mobile-menu__arrow">+</span></button>
