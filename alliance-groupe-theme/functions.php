@@ -84,12 +84,16 @@ add_action( 'wp_enqueue_scripts', function () {
     wp_enqueue_script(
         'ag-gsap',
         $ag_gsap_ok ? $ag_vendor_uri . 'gsap.min.js' : 'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js',
-        array(), '3.13.0', false
+        array(),
+        $ag_gsap_ok ? filemtime( $ag_vendor_dir . 'gsap.min.js' ) : '3.13.0',
+        false
     );
     wp_enqueue_script(
         'ag-gsap-st',
         $ag_st_ok ? $ag_vendor_uri . 'ScrollTrigger.min.js' : 'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js',
-        array( 'ag-gsap' ), '3.13.0', false
+        array( 'ag-gsap' ),
+        $ag_st_ok ? filemtime( $ag_vendor_dir . 'ScrollTrigger.min.js' ) : '3.13.0',
+        false
     );
 
     // Style du thème (style.css obligatoire pour WordPress)
