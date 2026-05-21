@@ -79,10 +79,14 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
     <div class="ag-xpress__reassure">
         <span>⚡ Livraison en quelques jours</span>
         <span>🔒 Paiement sécurisé PayPal</span>
+        <span>💳 Payable en 4× sans frais</span>
         <span>✅ Révisions incluses</span>
         <span>🇫🇷 Équipe française</span>
         <span>🙅 Sans rendez-vous</span>
     </div>
+
+    <!-- Urgence / rareté -->
+    <div class="ag-xpress__urgency">🔥 On lance un <strong>nombre limité de sites par semaine</strong> pour garder la qualité — réserve ta place ce mois-ci.</div>
 
     <!-- Packs -->
     <section class="ag-section ag-section--graphite" id="packs">
@@ -102,6 +106,7 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
                     <ul class="ag-xpress__feats">
                         <?php foreach ( $p['feats'] as $f ) echo '<li>' . esc_html( $f ) . '</li>'; ?>
                     </ul>
+                    <p class="ag-xpress__pay4">💳 Payable en 4× sans frais via PayPal</p>
                     <a href="<?php echo esc_url( $cta_url ); ?>" class="ag-btn-gold ag-xpress__cta">Commander →</a>
                     <?php if ( ! $is_set ) echo '<small class="ag-xpress__note">Paiement bientôt en ligne — remplis le brief, on te recontacte.</small>'; ?>
                 </div>
@@ -110,8 +115,68 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
         </div>
     </section>
 
-    <!-- Comment ça marche -->
+    <!-- Garantie -->
     <section class="ag-section ag-section--onyx">
+        <div class="ag-container">
+            <h2 class="ag-section__title ag-anim" data-anim="title">Zéro risque pour toi</h2>
+            <div class="ag-xpress__guar">
+                <div class="ag-xpress__guar-item"><span class="ag-xpress__guar-ic">🛡️</span><strong>Satisfait ou ajusté</strong><span>On retouche jusqu'à ce que ça te plaise.</span></div>
+                <div class="ag-xpress__guar-item"><span class="ag-xpress__guar-ic">⏱️</span><strong>Délai annoncé tenu</strong><span>En retard de notre faute ? 1 mois de maintenance offert.</span></div>
+                <div class="ag-xpress__guar-item"><span class="ag-xpress__guar-ic">💳</span><strong>Payable en 4×</strong><span>Sans frais, via PayPal — étale le paiement.</span></div>
+                <div class="ag-xpress__guar-item"><span class="ag-xpress__guar-ic">🧾</span><strong>Facture &amp; sans engagement</strong><span>Facture émise, maintenance résiliable à tout moment.</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Avant / Après -->
+    <section class="ag-section ag-section--graphite">
+        <div class="ag-container">
+            <span class="ag-tag ag-anim" data-anim="tag">Avant / Après</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">La différence qui ramène <em>des clients</em></h2>
+            <div class="ag-xpress__ba">
+                <div class="ag-xpress__ba-col ag-xpress__ba-col--before">
+                    <span class="ag-xpress__ba-tag">Avant</span>
+                    <ul>
+                        <li>Pas de site, ou un site lent et daté</li>
+                        <li>Invisible sur Google</li>
+                        <li>Illisible sur mobile</li>
+                        <li>Les clients vont chez le concurrent</li>
+                    </ul>
+                </div>
+                <div class="ag-xpress__ba-col ag-xpress__ba-col--after">
+                    <span class="ag-xpress__ba-tag">Après</span>
+                    <ul>
+                        <li>Site premium qui inspire confiance</li>
+                        <li>Optimisé Google (SEO de base)</li>
+                        <li>Parfait sur mobile, ultra-rapide</li>
+                        <li>Contact &amp; commandes 24h/24</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Preuve sociale (à compléter avec de vrais avis) -->
+    <section class="ag-section ag-section--onyx">
+        <div class="ag-container">
+            <span class="ag-tag ag-anim" data-anim="tag">Ils nous font confiance</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Pourquoi nous choisir</h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Paiement 100 % sécurisé (PayPal), équipe française joignable, révisions incluses, sans engagement. Tu gardes la main, on fait le boulot.</p>
+            <?php
+            // Avis clients : remplis ce tableau avec de VRAIS avis dès que tu en as.
+            $ag_reviews = apply_filters( 'ag_express_reviews', array() );
+            if ( ! empty( $ag_reviews ) ) : ?>
+                <div class="ag-xpress__reviews">
+                    <?php foreach ( $ag_reviews as $r ) : ?>
+                        <blockquote>« <?php echo esc_html( $r['text'] ?? '' ); ?> »<cite>— <?php echo esc_html( $r['author'] ?? '' ); ?></cite></blockquote>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </section>
+
+    <!-- Comment ça marche -->
+    <section class="ag-section ag-section--graphite">
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">Comment ça marche</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">3 étapes, <em>sans rendez-vous</em></h2>
@@ -124,11 +189,11 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
     </section>
 
     <!-- Maintenance (abonnement) -->
-    <section class="ag-section ag-section--graphite" id="maintenance">
+    <section class="ag-section ag-section--onyx" id="maintenance">
         <div class="ag-container">
-            <span class="ag-tag ag-anim" data-anim="tag">Après la livraison</span>
+            <span class="ag-tag ag-anim" data-anim="tag">Après la livraison · revenu tranquille</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">Garde ton site <em>au top</em>, chaque mois</h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc">Hébergement, sécurité, retouches et visibilité. Sans y penser. Résiliable à tout moment.</p>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Un site sans maintenance se dégrade (sécurité, bugs, Google). Pour <strong>quelques euros par mois</strong>, on s'occupe de tout — et toi tu restes serein. <strong>Vivement recommandé avec chaque site.</strong> Résiliable à tout moment.</p>
 
             <?php if ( $abo_ok ) : ?>
                 <p style="text-align:center;background:rgba(0,132,61,.12);border:1px solid rgba(0,132,61,.3);border-radius:12px;padding:16px 20px;color:#fff;max-width:560px;margin:24px auto 0;">✅ Merci, ton abonnement est actif ! Ton site est entre de bonnes mains.</p>
@@ -154,7 +219,7 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
     </section>
 
     <!-- FAQ : lève les objections pour acheter sans échange -->
-    <section class="ag-section ag-section--onyx" id="faq-express">
+    <section class="ag-section ag-section--graphite" id="faq-express">
         <div class="ag-container ag-container--narrow">
             <span class="ag-tag ag-anim" data-anim="tag">Questions fréquentes</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">Tout ce qu'il faut savoir <em>avant d'acheter</em></h2>
@@ -179,6 +244,11 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
                     <div class="ag-question-success__check">✓</div>
                     <h2>Brief reçu 🚀</h2>
                     <p class="ag-question-success__sub">Merci ! On démarre la production de ton site et on t'envoie une première version rapidement, avec une vidéo. Tout par écrit, sans rendez-vous.</p>
+                </div>
+                <div class="ag-xpress__refer">
+                    <p>🎁 <strong>Parraine un commerçant</strong> — s'il commande un site en disant qu'il vient de ta part, tu gagnes <strong>1 mois de maintenance offert</strong>.</p>
+                    <textarea id="ag-refer-msg" readonly rows="3">Je viens de faire faire mon site avec Alliance Groupe : à prix fixe (dès 490 €), livré en quelques jours, sans rendez-vous. Jette un œil 👉 <?php echo esc_url( home_url( '/sites-express' ) ); ?> (dis que tu viens de ma part)</textarea>
+                    <button type="button" class="ag-btn-gold" id="ag-refer-copy" onclick="navigator.clipboard.writeText(document.getElementById('ag-refer-msg').value).then(function(){var b=document.getElementById('ag-refer-copy');b.textContent='✓ Copié';setTimeout(function(){b.textContent='Copier mon message';},1500);});">Copier mon message</button>
                 </div>
             <?php else : ?>
                 <span class="ag-tag">Étape 2</span>
@@ -216,6 +286,32 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
 #brief .ag-form__group label{position:static;top:auto;left:auto;display:block;font-size:.88rem;font-weight:600;color:var(--color-text-soft);margin-bottom:8px;text-transform:none;letter-spacing:normal;pointer-events:auto;}
 #brief .ag-form__group input,#brief .ag-form__group textarea{padding:14px 18px;}
 .ag-xpress__reassure{display:flex;flex-wrap:wrap;justify-content:center;gap:14px 30px;padding:18px 24px;background:rgba(212,180,92,.06);border-top:1px solid rgba(212,180,92,.15);border-bottom:1px solid rgba(212,180,92,.15);color:var(--color-text-soft);font-size:.9rem;font-weight:600;}
+.ag-xpress__urgency{text-align:center;padding:14px 20px;background:linear-gradient(90deg,rgba(243,122,31,.16),rgba(212,180,92,.12));color:#fff;font-size:.95rem;border-bottom:1px solid rgba(212,180,92,.18);}
+.ag-xpress__pay4{margin:0 16px 12px;text-align:center;color:#e8c766;font-size:.85rem;font-weight:600;}
+.ag-xpress__guar{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:34px;}
+.ag-xpress__guar-item{padding:24px 18px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.18);border-radius:16px;text-align:center;display:flex;flex-direction:column;gap:6px;}
+.ag-xpress__guar-ic{font-size:2rem;}
+.ag-xpress__guar-item strong{color:#fff;font-size:1.02rem;}
+.ag-xpress__guar-item span:not(.ag-xpress__guar-ic){color:var(--color-text-soft);font-size:.9rem;line-height:1.45;}
+.ag-xpress__ba{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:34px;}
+.ag-xpress__ba-col{padding:28px 24px;border-radius:18px;border:1px solid rgba(255,255,255,.1);}
+.ag-xpress__ba-col--before{background:rgba(255,255,255,.02);}
+.ag-xpress__ba-col--after{background:linear-gradient(160deg,rgba(212,180,92,.12),rgba(243,122,31,.05));border-color:rgba(212,180,92,.4);}
+.ag-xpress__ba-tag{display:inline-block;padding:4px 14px;border-radius:20px;font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;}
+.ag-xpress__ba-col--before .ag-xpress__ba-tag{background:rgba(255,255,255,.1);color:#cfc7b8;}
+.ag-xpress__ba-col--after .ag-xpress__ba-tag{background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;}
+.ag-xpress__ba-col ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;}
+.ag-xpress__ba-col--before li{color:var(--color-text-muted);padding-left:24px;position:relative;}
+.ag-xpress__ba-col--before li::before{content:'✕';position:absolute;left:0;color:#b35a5a;}
+.ag-xpress__ba-col--after li{color:#fff;padding-left:24px;position:relative;}
+.ag-xpress__ba-col--after li::before{content:'✓';position:absolute;left:0;color:#4bbf77;font-weight:800;}
+.ag-xpress__reviews{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:30px;}
+.ag-xpress__reviews blockquote{margin:0;padding:22px 20px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.18);border-radius:16px;color:#fff;font-style:italic;line-height:1.55;}
+.ag-xpress__reviews cite{display:block;margin-top:12px;color:#e8c766;font-style:normal;font-weight:700;font-size:.9rem;}
+.ag-xpress__refer{margin-top:26px;padding:22px 24px;background:linear-gradient(160deg,rgba(212,180,92,.12),rgba(243,122,31,.05));border:1px solid rgba(212,180,92,.4);border-radius:16px;text-align:center;}
+.ag-xpress__refer p{color:#fff;margin:0 0 14px;}
+.ag-xpress__refer textarea{width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(212,180,92,.3);background:rgba(0,0,0,.25);color:#fff;font-size:.92rem;line-height:1.5;resize:vertical;margin-bottom:12px;}
+@media(max-width:760px){.ag-xpress__guar{grid-template-columns:1fr 1fr;}.ag-xpress__ba{grid-template-columns:1fr;}}
 .ag-xpress__faq{margin-top:32px;display:flex;flex-direction:column;gap:12px;}
 .ag-xpress__faq details{background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.16);border-radius:12px;padding:0 20px;transition:border-color .3s;}
 .ag-xpress__faq details[open]{border-color:rgba(212,180,92,.4);}

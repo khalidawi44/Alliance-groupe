@@ -36,6 +36,7 @@ $render_table = function ( $rows, $empty ) use ( $eur, $sname, $medal ) {
 			<span class="ag-tag ag-anim" data-anim="tag">Le championnat 🏆</span>
 			<h1 class="ag-section__title ag-anim" data-anim="title">Classement des <em>commerciaux</em></h1>
 			<p class="ag-section__desc ag-anim" data-anim="desc">Chaque vente compte. Monte sur le podium, décroche les primes du mois. Mis à jour en continu (ventes validées).</p>
+			<div class="ag-cls-challenge">🏆 <strong>Challenge du mois</strong> — le n°1 du classement « Ce mois-ci » remporte une <strong>prime</strong>. Tout est remis à zéro chaque mois : tout le monde a sa chance.</div>
 
 			<?php if ( ! empty( $podium ) ) : ?>
 			<div class="ag-cls-podium">
@@ -82,6 +83,7 @@ $render_table = function ( $rows, $empty ) use ( $eur, $sname, $medal ) {
 </main>
 
 <style>
+.ag-cls-challenge{max-width:680px;margin:18px auto 0;padding:14px 20px;background:linear-gradient(160deg,rgba(212,180,92,.14),rgba(243,122,31,.06));border:1px solid rgba(212,180,92,.4);border-radius:14px;color:#fff;text-align:center;font-size:.95rem;}
 .ag-cls-podium{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:end;max-width:680px;margin:46px auto 10px;}
 .ag-cls-pod{text-align:center;padding:22px 14px;border-radius:16px 16px 0 0;background:rgba(255,255,255,.04);border:1px solid rgba(212,180,92,.2);border-bottom:none;}
 .ag-cls-pod--1{background:linear-gradient(180deg,rgba(212,180,92,.25),rgba(243,122,31,.08));border-color:rgba(212,180,92,.6);transform:translateY(-18px);}
