@@ -12,7 +12,7 @@
 import React from 'react';
 import {Composition} from 'remotion';
 import {AGShort, totalFrames} from './AGShort';
-import {videoRecrutement, videoVente247, videoAvantApres} from './scripts';
+import {videoRecrutement, videoVente247, videoLuxe} from './scripts';
 
 const FPS = 30;
 const W = 1080;
@@ -40,13 +40,13 @@ export const RemotionRoot: React.FC = () => {
 				defaultProps={videoVente247}
 			/>
 			<Composition
-				id="AG-AvantApres"
+				id="AG-Luxe"
 				component={AGShort}
 				fps={FPS}
 				width={W}
 				height={H}
-				durationInFrames={totalFrames(videoAvantApres.scenes, FPS)}
-				defaultProps={videoAvantApres}
+				durationInFrames={totalFrames(videoLuxe.scenes, FPS)}
+				defaultProps={videoLuxe}
 			/>
 		</>
 	);
