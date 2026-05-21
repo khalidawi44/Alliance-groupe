@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'RAPPEL: brancher les webhooks/IPN PayPal pour le credit automatique des commissions ambassadeurs (en attente).'"
+          }
+        ]
+      }
+    ]
+  }
+}
