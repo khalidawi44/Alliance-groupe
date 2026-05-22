@@ -423,9 +423,34 @@ if ( ! function_exists( 'ag_prospect_message' ) ) {
 		elseif ( false !== strpos( $type, 'coiffeur' ) || false !== strpos( $type, 'barbier' ) || false !== strpos( $type, 'beauté' ) || false !== strpos( $type, 'institut' ) ) $promesse = "imaginez un agenda qui se remplit tout seul : vos clients prennent rendez-vous en ligne, 24h/24, même quand le salon est fermé.";
 		elseif ( false !== strpos( $type, 'plombier' ) || false !== strpos( $type, 'électricien' ) || false !== strpos( $type, 'garagiste' ) || false !== strpos( $type, 'artisan' ) ) $promesse = "imaginez recevoir les demandes de devis urgentes directement sur votre téléphone, avant que le client n'appelle le concurrent d'à côté.";
 
-		return "Bonjour,\n\n{$accroche}\n\nJe suis d'Alliance Groupe. On crée des sites professionnels à prix fixe (dès 490 €), livrés en quelques jours, payables en 4×, et sans rendez-vous. {$promesse}\n\nVotre métier mérite d'être vu. Est-ce que ça vous dirait qu'on en parle 5 minutes, sans engagement ?\n\nUn aperçu de ce qu'on fait : {$site}\n\nBien à vous,\nAlliance Groupe — contact@alliancegroupe-inc.com\n(Si vous préférez ne pas être recontacté, dites-le-moi simplement, j'en prends note et je n'insiste pas.)";
+		$msg = "Bonjour,\n\n{$accroche}\n\nJe suis d'Alliance Groupe. On crée des sites professionnels à prix fixe (dès 490 €), livrés en quelques jours, payables en 4×, et sans rendez-vous. {$promesse}\n\nVotre métier mérite d'être vu. Est-ce que ça vous dirait qu'on en parle 5 minutes, sans engagement ?\n\nUn aperçu de ce qu'on fait : {$site}\n\nBien à vous,\nAlliance Groupe — contact@alliancegroupe-inc.com\n(Si vous préférez ne pas être recontacté, dites-le-moi simplement, j'en prends note et je n'insiste pas.)";
+		if ( ! empty( $p['id'] ) && function_exists( 'ag_prospect_unsub_url' ) ) $msg .= "\nNe plus jamais être contacté (1 clic) : " . ag_prospect_unsub_url( $p );
+		return $msg;
 	}
 }
+
+/* ── Désinscription en 1 clic : bloque le prospect pour TOUTE l'équipe (admin inclus) ── */
+if ( ! function_exists( 'ag_prospect_unsub_token' ) ) {
+	function ag_prospect_unsub_token( $id ) { return substr( wp_hash( 'ag_unsub|' . $id ), 0, 20 ); }
+}
+if ( ! function_exists( 'ag_prospect_unsub_url' ) ) {
+	function ag_prospect_unsub_url( $p ) {
+		$id = $p['id'] ?? '';
+		if ( '' === $id ) return '';
+		return add_query_arg( array( 'ag_unsub' => rawurlencode( $id ), 't' => ag_prospect_unsub_token( $id ) ), home_url( '/' ) );
+	}
+}
+add_action( 'template_redirect', function () {
+	if ( empty( $_GET['ag_unsub'] ) || empty( $_GET['t'] ) ) return;
+	$id = sanitize_text_field( wp_unslash( $_GET['ag_unsub'] ) );
+	$t  = sanitize_text_field( wp_unslash( $_GET['t'] ) );
+	if ( ! hash_equals( ag_prospect_unsub_token( $id ), $t ) ) wp_die( 'Lien invalide ou expiré.' );
+	$list = (array) get_option( 'ag_prospects', array() ); $name = '';
+	foreach ( $list as $k => $p ) { if ( ( $p['id'] ?? '' ) === $id ) { $list[ $k ]['status'] = 'ne_pas_contacter'; $name = $p['name'] ?? ''; break; } }
+	update_option( 'ag_prospects', array_values( $list ) );
+	if ( function_exists( 'ag_push' ) ) ag_push( '🚫 Désinscription', ( $name ?: $id ) . ' a demandé à ne plus être contacté — bloqué pour toute l\'équipe (toi compris).' );
+	wp_die( '<div style="font-family:sans-serif;max-width:520px;margin:60px auto;text-align:center;"><h1 style="color:#1e7e34;">C\'est noté ✓</h1><p style="font-size:1.1rem;color:#333;">Vous ne serez plus contacté·e par Alliance Groupe. Toutes nos excuses pour le dérangement.</p></div>', 'Désinscription', array( 'response' => 200 ) );
+} );
 
 /* ── 6. Page admin "Prospection" ────────────────────────────────── */
 add_action( 'admin_menu', function () {
