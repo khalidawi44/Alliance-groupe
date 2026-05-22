@@ -651,7 +651,7 @@ add_action( 'template_redirect', function () {
 
 /* ── 10. Connexion Google (Sign in with Google) ────────────────────── */
 if ( ! function_exists( 'ag_google_client_id' ) ) {
-	function ag_google_client_id() { return trim( (string) get_option( 'ag_google_client_id', '' ) ); }
+	function ag_google_client_id() { return trim( (string) get_option( 'ag_google_client_id', '994246329599-af9bgp7t7tsf7sofs6fkvnh4npb14ep2.apps.googleusercontent.com' ) ); }
 }
 
 // Page de réglages : Réglages > Connexion Google
