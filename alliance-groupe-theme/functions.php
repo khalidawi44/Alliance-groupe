@@ -74,6 +74,12 @@ $ag_prospection_file = get_stylesheet_directory() . '/inc/ag-prospection.php';
 if ( file_exists( $ag_prospection_file ) ) {
     require_once $ag_prospection_file;
 }
+
+// ── 1c9. Centre de contrôle admin (un seul écran pour tout piloter)
+$ag_admin_hub_file = get_stylesheet_directory() . '/inc/ag-admin-hub.php';
+if ( is_admin() && file_exists( $ag_admin_hub_file ) ) {
+    require_once $ag_admin_hub_file;
+}
 add_action( 'wp_footer', function () {
     if ( is_admin() ) return;
     $kind = function_exists( 'ag_espace_member_kind' ) ? ag_espace_member_kind() : '';
