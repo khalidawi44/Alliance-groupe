@@ -71,14 +71,6 @@ get_header();
                     <li>Message / description du projet</li>
                 </ul>
 
-                <h3>Prise de rendez-vous (Cal.com)</h3>
-                <ul>
-                    <li>Nom et prénom</li>
-                    <li>Adresse email</li>
-                    <li>Réponses aux questions pré-rendez-vous (activité, objectifs)</li>
-                    <li>Données de planification (date, heure choisies)</li>
-                </ul>
-
                 <h3>Questions Flash (consultation écrite payante)</h3>
                 <ul>
                     <li>Nom complet</li>
@@ -174,7 +166,6 @@ get_header();
                     </thead>
                     <tbody>
                         <tr><td>PayPal (Europe) S.à r.l. et Cie, S.C.A.</td><td>Paiement en ligne</td><td>Luxembourg (UE)</td><td>Établissement de crédit agréé, certifié PCI-DSS</td></tr>
-                        <tr><td>Cal.com, Inc.</td><td>Prise de rendez-vous</td><td>USA</td><td>CCT, SOC 2 Type II, open source</td></tr>
                         <tr><td>Hostinger International</td><td>Hébergement web</td><td>Lituanie (UE)</td><td>Serveurs UE, conforme RGPD</td></tr>
                         <tr><td>Google LLC</td><td>Analytics, Google Meet</td><td>USA</td><td>CCT, cadre de protection des données UE-US</td></tr>
                     </tbody>
