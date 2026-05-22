@@ -54,7 +54,7 @@ if ( ! function_exists( 'ag_places_search' ) ) {
 			'headers' => array(
 				'Content-Type'     => 'application/json',
 				'X-Goog-Api-Key'   => $key,
-				'X-Goog-FieldMask' => 'places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.websiteUri,places.id',
+				'X-Goog-FieldMask' => 'places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.websiteUri,places.id,places.rating,places.userRatingCount,places.businessStatus',
 			),
 			'body'    => wp_json_encode( array( 'textQuery' => $query, 'languageCode' => 'fr', 'maxResultCount' => 20 ) ),
 		) );
@@ -64,11 +64,14 @@ if ( ! function_exists( 'ag_places_search' ) ) {
 		if ( 200 !== $code ) return array( 'error' => ( $data['error']['message'] ?? ( 'Erreur ' . $code ) ) );
 		$out = array();
 		foreach ( (array) ( $data['places'] ?? array() ) as $p ) {
+			if ( isset( $p['businessStatus'] ) && 'OPERATIONAL' !== $p['businessStatus'] ) continue; // on ignore les fermés
 			$out[] = array(
 				'name'    => $p['displayName']['text'] ?? '',
 				'address' => $p['formattedAddress'] ?? '',
 				'phone'   => $p['nationalPhoneNumber'] ?? '',
 				'website' => $p['websiteUri'] ?? '',
+				'rating'  => $p['rating'] ?? 0,
+				'reviews' => $p['userRatingCount'] ?? 0,
 			);
 		}
 		return $out;
@@ -98,8 +101,10 @@ add_action( 'admin_post_ag_prospect_update', function () {
 	$st = sanitize_text_field( wp_unslash( $_POST['status'] ?? '' ) );
 	$owner = sanitize_email( wp_unslash( $_POST['owner'] ?? '' ) );
 	$list = (array) get_option( 'ag_prospects', array() );
+	$pname = '';
 	foreach ( $list as $k => $p ) {
 		if ( ( $p['id'] ?? '' ) === $id ) {
+			$pname = $p['name'] ?? '';
 			if ( $del ) { unset( $list[ $k ] ); break; }
 			if ( $has_status ) $list[ $k ]['status'] = $st;
 			if ( $has_owner ) {
@@ -111,6 +116,9 @@ add_action( 'admin_post_ag_prospect_update', function () {
 		}
 	}
 	update_option( 'ag_prospects', array_values( $list ) );
+	if ( $has_status && in_array( $st, array( 'interesse', 'client' ), true ) && function_exists( 'ag_push' ) ) {
+		ag_push( ( 'client' === $st ? '✅ Nouveau client : ' : '🔥 Prospect intéressé : ' ) . $pname, 'Mis à jour dans le tableau de prospection.' );
+	}
 	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-prospects' ), admin_url( 'admin.php' ) ) ); exit;
 } );
 
@@ -167,8 +175,8 @@ if ( ! function_exists( 'ag_prospect_add_record' ) ) {
 		$list   = (array) get_option( 'ag_prospects', array() );
 		$list[] = array_merge( array(
 			'id' => uniqid( 'p_' ), 'name' => '', 'type' => '', 'city' => '', 'phone' => '', 'email' => '',
-			'website' => '', 'address' => '', 'status' => 'nouveau', 'owner_email' => '', 'owner_name' => '',
-			'notes' => '', 'source' => 'manuel', 'ts' => time(),
+			'website' => '', 'address' => '', 'rating' => 0, 'reviews' => 0, 'status' => 'nouveau',
+			'owner_email' => '', 'owner_name' => '', 'notes' => '', 'source' => 'manuel', 'ts' => time(),
 		), $data );
 		update_option( 'ag_prospects', array_slice( $list, -5000 ) );
 		return true;
@@ -185,6 +193,8 @@ add_action( 'wp_ajax_ag_prospect_add', function () {
 		'phone'   => sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) ),
 		'website' => esc_url_raw( wp_unslash( $_POST['website'] ?? '' ) ),
 		'address' => sanitize_text_field( wp_unslash( $_POST['address'] ?? '' ) ),
+		'rating'  => (float) ( $_POST['rating'] ?? 0 ),
+		'reviews' => (int) ( $_POST['reviews'] ?? 0 ),
 		'source'  => 'recherche',
 	) );
 	wp_send_json_success( array( 'added' => $ok ) );
@@ -192,16 +202,61 @@ add_action( 'wp_ajax_ag_prospect_add', function () {
 
 /* ── 5. Priorité (qui en a vraiment besoin), pourquoi, et message émotionnel ─ */
 if ( ! function_exists( 'ag_prospect_score' ) ) {
-	/** Score de besoin 0-100 : plus c'est haut, plus l'entreprise a besoin d'un site. */
+	/** Score 0-100 de PROBABILITÉ D'ACHAT : un commerce actif & populaire SANS vrai site = acheteur idéal. */
 	function ag_prospect_score( $p ) {
 		$kind = ag_site_kind( $p['website'] ?? '' )[0];
-		$s = ( 'none' === $kind ) ? 80 : ( ( 'social' === $kind ) ? 60 : 20 );
-		// Métiers où un site rapporte beaucoup (visibilité, réservations, commandes).
+		// Le manque (pas de vrai site) = le plus gros levier d'achat.
+		$s = ( 'none' === $kind ) ? 55 : ( ( 'social' === $kind ) ? 45 : 8 );
+		// Activité / demande réelle : beaucoup d'avis = clients + budget = plus susceptible d'acheter.
+		$rev = (int) ( $p['reviews'] ?? 0 );
+		if ( $rev >= 300 )      $s += 25;
+		elseif ( $rev >= 100 )  $s += 20;
+		elseif ( $rev >= 30 )   $s += 13;
+		elseif ( $rev >= 8 )    $s += 7;
+		// Note correcte = établissement sérieux qui investit dans son image.
+		$rating = (float) ( $p['rating'] ?? 0 );
+		if ( $rating >= 4.2 )      $s += 8;
+		elseif ( $rating >= 3.5 )  $s += 4;
+		// Joignable tout de suite.
+		if ( ! empty( $p['phone'] ) ) $s += 6;
+		// Léger bonus secteurs où le web convertit fort (mais TOUS secteurs sont gardés).
 		$type = strtolower( $p['type'] ?? '' );
-		$hot = array( 'restaurant', 'coiffeur', 'barbier', 'institut', 'beauté', 'plombier', 'électricien', 'garagiste', 'artisan', 'boulangerie', 'bar', 'coach', 'photographe', 'fleuriste', 'avocat', 'commerce', 'btp' );
-		foreach ( $hot as $h ) { if ( false !== strpos( $type, $h ) ) { $s += 15; break; } }
-		if ( ! empty( $p['phone'] ) ) $s += 5; // joignable = actionnable
-		return min( 100, $s );
+		$hot  = array( 'restaurant', 'coiffeur', 'barbier', 'institut', 'beauté', 'plombier', 'électricien', 'garagiste', 'artisan', 'boulangerie', 'bar', 'coach', 'photographe', 'fleuriste', 'immobil', 'dentiste', 'opticien' );
+		foreach ( $hot as $h ) { if ( false !== strpos( $type, $h ) ) { $s += 6; break; } }
+		return max( 0, min( 100, $s ) );
+	}
+}
+if ( ! function_exists( 'ag_prospect_categories' ) ) {
+	/** Secteurs balayés pour « toutes les entreprises » d'une ville. */
+	function ag_prospect_categories() {
+		return apply_filters( 'ag_prospect_categories', array(
+			'restaurant', 'pizzeria', 'bar', 'boulangerie', 'coiffeur', 'barbier', 'institut de beauté', 'onglerie',
+			'plombier', 'électricien', 'garagiste', 'menuisier', 'maçon', 'peintre', 'artisan',
+			'fleuriste', 'opticien', 'dentiste', 'kiné', 'coach sportif', 'salle de sport', 'photographe',
+			'agence immobilière', 'auto-école', 'pressing', 'toiletteur',
+		) );
+	}
+}
+if ( ! function_exists( 'ag_places_sweep' ) ) {
+	/** Balaye tous les secteurs d'une ville, fusionne (anti-doublon) et trie par probabilité d'achat. */
+	function ag_places_sweep( $city ) {
+		$city = trim( (string) $city );
+		if ( '' === $city || '' === ag_places_key() ) return array();
+		$seen = array(); $out = array();
+		foreach ( ag_prospect_categories() as $cat ) {
+			$res = ag_places_search( $cat . ' ' . $city );
+			if ( ! is_array( $res ) || isset( $res['error'] ) ) continue;
+			foreach ( $res as $r ) {
+				if ( empty( $r['name'] ) ) continue;
+				$sig = ag_prospect_sig( $r['name'], $city );
+				if ( isset( $seen[ $sig ] ) ) continue;
+				$seen[ $sig ] = 1;
+				$r['type'] = $cat; $r['city'] = $city;
+				$out[] = $r;
+			}
+		}
+		usort( $out, function ( $a, $b ) { return ag_prospect_score( $b ) <=> ag_prospect_score( $a ); } );
+		return $out;
 	}
 }
 if ( ! function_exists( 'ag_prospect_why' ) ) {
@@ -251,10 +306,15 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 		$key    = ag_places_key();
 		$q      = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : '';
 		$city   = isset( $_GET['city'] ) ? sanitize_text_field( wp_unslash( $_GET['city'] ) ) : '';
-		$results = ( $q || $city ) ? ag_places_search( trim( $q . ' ' . $city ) ) : null;
-		if ( is_array( $results ) && ! isset( $results['error'] ) ) {
-			foreach ( $results as &$_r ) { $_r['type'] = $q; } unset( $_r );
-			usort( $results, function ( $a, $b ) { return ag_prospect_score( $b ) <=> ag_prospect_score( $a ); } );
+		$allsec = ! empty( $_GET['all'] );
+		if ( $allsec && $city ) {
+			$results = ag_places_sweep( $city ); // déjà trié par probabilité d'achat
+		} else {
+			$results = ( $q || $city ) ? ag_places_search( trim( $q . ' ' . $city ) ) : null;
+			if ( is_array( $results ) && ! isset( $results['error'] ) ) {
+				foreach ( $results as &$_r ) { $_r['type'] = $q; } unset( $_r );
+				usort( $results, function ( $a, $b ) { return ag_prospect_score( $b ) <=> ag_prospect_score( $a ); } );
+			}
 		}
 		$prospects = (array) get_option( 'ag_prospects', array() );
 		$leads     = array_reverse( (array) get_option( 'ag_leads', array() ) );
@@ -294,6 +354,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 						<input type="text" name="q" id="ag-q" value="<?php echo esc_attr( $q ); ?>" placeholder="Type d'activité (ex : restaurant, coiffeur, plombier)" style="width:320px;">
 						<input type="text" name="city" value="<?php echo esc_attr( $city ); ?>" placeholder="Ville (ex : Nantes)" style="width:200px;">
 						<?php submit_button( 'Chercher', 'primary', 'submit', false ); ?>
+						<button type="submit" name="all" value="1" class="button" title="Balaye tous les secteurs de la ville (plusieurs requêtes) et trie par probabilité d'achat">🌍 Toutes entreprises de la ville</button>
 						<a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-prospects' ) ); ?>" class="button">Réinitialiser</a>
 					</form>
 					<div style="margin:8px 0 0;color:#50575e;font-size:.9rem;">Idées rapides :
@@ -304,19 +365,21 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					<?php if ( is_array( $results ) && isset( $results['error'] ) ) : ?>
 						<p style="color:#b32d2e;">Erreur Places : <?php echo esc_html( $results['error'] ); ?> (vérifie que « Places API (New) » est activée et la facturation aussi.)</p>
 					<?php elseif ( is_array( $results ) ) : ?>
-						<p style="color:#50575e;margin-top:14px;"><?php echo count( $results ); ?> résultat(s). <label style="margin-left:8px;"><input type="checkbox" id="ag-onlyno"> N'afficher que ceux <strong>sans vrai site</strong> (réseaux sociaux inclus)</label></p>
-						<table class="widefat striped" id="ag-results"><thead><tr><th>Entreprise</th><th>Adresse</th><th>Téléphone</th><th>Présence en ligne</th><th></th></tr></thead><tbody>
-						<?php foreach ( $results as $r ) : if ( empty( $r['name'] ) ) continue; $kind = ag_site_kind( $r['website'] ); ?>
+						<p style="color:#50575e;margin-top:14px;"><?php echo count( $results ); ?> résultat(s), triés par <strong>probabilité d'achat</strong>. <label style="margin-left:8px;"><input type="checkbox" id="ag-onlyno"> N'afficher que ceux <strong>sans vrai site</strong></label></p>
+						<table class="widefat striped" id="ag-results"><thead><tr><th>Achat</th><th>Entreprise</th><th>Avis</th><th>Téléphone</th><th>Présence en ligne</th><th></th></tr></thead><tbody>
+						<?php foreach ( $results as $r ) : if ( empty( $r['name'] ) ) continue; $kind = ag_site_kind( $r['website'] ); $rsc = ag_prospect_score( $r ); $rcol = $rsc >= 80 ? '#b32d2e' : ( $rsc >= 60 ? '#bd7b00' : '#50575e' ); ?>
 							<tr data-kind="<?php echo esc_attr( $kind[0] ); ?>">
-								<td><strong><?php echo esc_html( $r['name'] ); ?></strong></td>
-								<td><?php echo esc_html( $r['address'] ); ?></td>
+								<td><span style="display:inline-block;min-width:32px;text-align:center;font-weight:800;color:#fff;background:<?php echo esc_attr( $rcol ); ?>;border-radius:6px;padding:2px 6px;"><?php echo (int) $rsc; ?></span></td>
+								<td><strong><?php echo esc_html( $r['name'] ); ?></strong><br><small><?php echo esc_html( ( $r['type'] ?? '' ) . ' · ' . ( $r['address'] ?? '' ) ); ?></small></td>
+								<td><?php echo ( $r['reviews'] ?? 0 ) ? esc_html( (int) $r['reviews'] . ' avis · ' . number_format( (float) ( $r['rating'] ?? 0 ), 1 ) . '★' ) : '—'; ?></td>
 								<td><?php echo esc_html( $r['phone'] ); ?></td>
 								<td><?php echo ( 'real' === $kind[0] ) ? '<a href="' . esc_url( $r['website'] ) . '" target="_blank" rel="noopener">site ✓</a>' : '<strong style="color:#b32d2e;">' . esc_html( $kind[1] ) . '</strong>'; ?></td>
 								<td>
 									<button type="button" class="button button-primary ag-add"
-										data-name="<?php echo esc_attr( $r['name'] ); ?>" data-type="<?php echo esc_attr( $q ); ?>"
-										data-city="<?php echo esc_attr( $city ); ?>" data-phone="<?php echo esc_attr( $r['phone'] ); ?>"
-										data-website="<?php echo esc_attr( $r['website'] ); ?>" data-address="<?php echo esc_attr( $r['address'] ); ?>">+ Suivre</button>
+										data-name="<?php echo esc_attr( $r['name'] ); ?>" data-type="<?php echo esc_attr( $r['type'] ?? $q ); ?>"
+										data-city="<?php echo esc_attr( $r['city'] ?? $city ); ?>" data-phone="<?php echo esc_attr( $r['phone'] ); ?>"
+										data-website="<?php echo esc_attr( $r['website'] ); ?>" data-address="<?php echo esc_attr( $r['address'] ); ?>"
+										data-rating="<?php echo esc_attr( $r['rating'] ?? 0 ); ?>" data-reviews="<?php echo esc_attr( $r['reviews'] ?? 0 ); ?>">+ Suivre</button>
 								</td>
 							</tr>
 						<?php endforeach; ?>
@@ -338,14 +401,15 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					<form method="post" action="<?php echo esc_url( $post ); ?>" style="margin-bottom:10px;">
 						<input type="hidden" name="action" value="ag_autosearch_add">
 						<input type="hidden" name="_n" value="<?php echo esc_attr( $nonce ); ?>">
-						<input type="text" name="q" placeholder="Type (restaurant, coiffeur…)" required style="width:240px;">
-						<input type="text" name="city" placeholder="Ville" style="width:160px;">
+						<input type="text" name="q" placeholder="Type (laisse vide = TOUS secteurs)" style="width:240px;">
+						<input type="text" name="city" placeholder="Ville *" required style="width:160px;">
 						<?php submit_button( '+ Ajouter une recherche auto', 'primary', 'submit', false ); ?>
+						<p class="description" style="margin:4px 0 0;">Astuce : laisse le <strong>métier vide</strong> et mets juste la <strong>ville</strong> → l'agent balaie <strong>tous les secteurs</strong> et garde les plus susceptibles d'acheter.</p>
 					</form>
 					<?php if ( $auto ) : ?>
 						<ul style="margin:0 0 10px;">
 						<?php foreach ( $auto as $i => $a ) : ?>
-							<li style="margin-bottom:4px;">🔁 <strong><?php echo esc_html( ( $a['q'] ?? '' ) . ( ! empty( $a['city'] ) ? ' — ' . $a['city'] : '' ) ); ?></strong>
+							<li style="margin-bottom:4px;">🔁 <strong><?php echo esc_html( ( '' !== trim( $a['q'] ?? '' ) ? $a['q'] : '🌍 Tous secteurs' ) . ( ! empty( $a['city'] ) ? ' — ' . $a['city'] : '' ) ); ?></strong>
 								<form method="post" action="<?php echo esc_url( $post ); ?>" style="display:inline;">
 									<input type="hidden" name="action" value="ag_autosearch_del"><input type="hidden" name="_n" value="<?php echo esc_attr( $nonce ); ?>"><input type="hidden" name="i" value="<?php echo (int) $i; ?>">
 									<button class="button-link" style="color:#b32d2e;">retirer</button>
@@ -480,7 +544,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			// Ajout en AJAX (sans recharger -> la recherche reste).
 			document.querySelectorAll('.ag-add').forEach(function(b){ b.addEventListener('click',function(){
 				var fd=new FormData(); fd.append('action','ag_prospect_add'); fd.append('_n',nonce);
-				['name','type','city','phone','website','address'].forEach(function(k){ fd.append(k, b.getAttribute('data-'+k)||''); });
+				['name','type','city','phone','website','address','rating','reviews'].forEach(function(k){ fd.append(k, b.getAttribute('data-'+k)||''); });
 				b.disabled=true; b.textContent='…';
 				fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ b.textContent=(j&&j.success)?'✓ Ajouté':'Erreur'; }).catch(function(){ b.textContent='Erreur'; b.disabled=false; });
 			}); });
@@ -520,13 +584,14 @@ if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
 		if ( empty( $searches ) || '' === ag_places_key() ) return;
 		$added = 0; $nosite = 0;
 		foreach ( $searches as $s ) {
-			$res = ag_places_search( trim( ( $s['q'] ?? '' ) . ' ' . ( $s['city'] ?? '' ) ) );
+			$res = ( '' === trim( $s['q'] ?? '' ) && ! empty( $s['city'] ) ) ? ag_places_sweep( $s['city'] ) : ag_places_search( trim( ( $s['q'] ?? '' ) . ' ' . ( $s['city'] ?? '' ) ) );
 			if ( ! is_array( $res ) || isset( $res['error'] ) ) continue;
 			foreach ( $res as $r ) {
 				if ( empty( $r['name'] ) ) continue;
 				$ok = ag_prospect_add_record( array(
-					'name' => $r['name'], 'type' => $s['q'] ?? '', 'city' => $s['city'] ?? '',
-					'phone' => $r['phone'] ?? '', 'website' => $r['website'] ?? '', 'address' => $r['address'] ?? '', 'source' => 'robot',
+					'name' => $r['name'], 'type' => $r['type'] ?? ( $s['q'] ?? '' ), 'city' => $s['city'] ?? '',
+					'phone' => $r['phone'] ?? '', 'website' => $r['website'] ?? '', 'address' => $r['address'] ?? '',
+					'rating' => $r['rating'] ?? 0, 'reviews' => $r['reviews'] ?? 0, 'source' => 'robot',
 				) );
 				if ( $ok ) { $added++; if ( 'real' !== ag_site_kind( $r['website'] ?? '' )[0] ) $nosite++; }
 			}
@@ -554,9 +619,82 @@ add_action( 'admin_post_ag_amb_prospect_status', function () {
 	$id = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
 	$st = sanitize_text_field( wp_unslash( $_POST['status'] ?? '' ) );
 	$list = (array) get_option( 'ag_prospects', array() );
+	$pname = '';
 	foreach ( $list as $k => $p ) {
-		if ( ( $p['id'] ?? '' ) === $id && strtolower( $p['owner_email'] ?? '' ) === $email ) { $list[ $k ]['status'] = $st; break; }
+		if ( ( $p['id'] ?? '' ) === $id && strtolower( $p['owner_email'] ?? '' ) === $email ) { $pname = $p['name'] ?? ''; $list[ $k ]['status'] = $st; break; }
 	}
 	update_option( 'ag_prospects', array_values( $list ) );
+	if ( in_array( $st, array( 'interesse', 'client' ), true ) && function_exists( 'ag_push' ) ) {
+		ag_push( ( 'client' === $st ? '✅ Vente : ' : '🔥 Intéressé : ' ) . $pname, 'Mis à jour par ' . ( wp_get_current_user()->display_name ?: $email ) . '.' );
+	}
 	wp_safe_redirect( home_url( '/espace-ambassadeur#prospects' ) ); exit;
 } );
+
+/* ── 9. Notifications téléphone (Telegram, gratuit & instantané) ──── */
+if ( ! function_exists( 'ag_tg_cfg' ) ) {
+	function ag_tg_cfg( $k ) { return trim( (string) get_option( 'ag_tg_' . $k, '' ) ); }
+}
+if ( ! function_exists( 'ag_push' ) ) {
+	/** Envoie une notif push sur le téléphone via Telegram (si configuré). */
+	function ag_push( $title, $body = '' ) {
+		$token = ag_tg_cfg( 'token' ); $chat = ag_tg_cfg( 'chat' );
+		if ( '' === $token || '' === $chat ) return false;
+		$text = $title . ( $body ? "\n\n" . $body : '' );
+		$resp = wp_remote_post( 'https://api.telegram.org/bot' . $token . '/sendMessage', array(
+			'timeout' => 15,
+			'body'    => array( 'chat_id' => $chat, 'text' => $text, 'disable_web_page_preview' => 'true' ),
+		) );
+		return ! is_wp_error( $resp ) && 200 === (int) wp_remote_retrieve_response_code( $resp );
+	}
+}
+add_action( 'admin_init', function () {
+	register_setting( 'ag_tg_cfg', 'ag_tg_token', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
+	register_setting( 'ag_tg_cfg', 'ag_tg_chat', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
+} );
+add_action( 'admin_menu', function () {
+	add_options_page( 'Notifications téléphone', 'Notifications téléphone', 'manage_options', 'ag-notify', 'ag_notify_render' );
+} );
+add_action( 'admin_post_ag_push_test', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_push_test' ) ) wp_die( 'no' );
+	$ok = ag_push( '✅ Test Alliance Groupe', 'Si tu lis ça sur ton téléphone, les notifications marchent !' );
+	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-notify', 'test' => $ok ? 1 : 0 ), admin_url( 'options-general.php' ) ) ); exit;
+} );
+if ( ! function_exists( 'ag_notify_render' ) ) {
+	function ag_notify_render() {
+		if ( ! current_user_can( 'manage_options' ) ) return;
+		$active = ag_tg_cfg( 'token' ) && ag_tg_cfg( 'chat' );
+		?>
+		<div class="wrap">
+			<h1>📲 Notifications téléphone (Telegram)</h1>
+			<p style="max-width:780px;color:#50575e;">Reçois une <strong>notification instantanée sur ton téléphone</strong> dès qu'un prospect répond (chat), passe « intéressé », ou qu'une vente tombe. C'est <strong>gratuit</strong> via Telegram.</p>
+			<?php if ( isset( $_GET['test'] ) ) : ?>
+				<div class="notice notice-<?php echo $_GET['test'] ? 'success' : 'error'; ?>"><p><?php echo $_GET['test'] ? 'Test envoyé ✅ Regarde ton Telegram.' : 'Échec : vérifie le token et le chat ID.'; ?></p></div>
+			<?php endif; ?>
+			<div style="max-width:780px;margin:16px 0;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #D4B45C;">
+				<strong>Configuration (5 min) :</strong>
+				<ol style="margin:8px 0 0 22px;line-height:1.8;">
+					<li>Sur ton téléphone, ouvre Telegram → cherche <strong>@BotFather</strong> → écris <code>/newbot</code> → choisis un nom. Il te donne un <strong>token</strong> (du type <code>123456:ABC...</code>). Colle-le ci-dessous.</li>
+					<li>Cherche ton nouveau bot, ouvre-le et écris-lui <strong>« Bonjour »</strong> (obligatoire pour qu'il puisse t'écrire).</li>
+					<li>Cherche <strong>@userinfobot</strong> → écris-lui → il te donne ton <strong>Chat ID</strong> (un nombre). Colle-le ci-dessous.</li>
+					<li>Enregistre, puis clique <strong>« Envoyer un test »</strong>.</li>
+				</ol>
+			</div>
+			<form method="post" action="options.php" style="max-width:780px;">
+				<?php settings_fields( 'ag_tg_cfg' ); ?>
+				<table class="form-table">
+					<tr><th scope="row"><label for="ag_tg_token">Token du bot</label></th><td><input type="text" name="ag_tg_token" id="ag_tg_token" value="<?php echo esc_attr( ag_tg_cfg( 'token' ) ); ?>" class="regular-text" style="width:100%;max-width:520px;"></td></tr>
+					<tr><th scope="row"><label for="ag_tg_chat">Chat ID</label></th><td><input type="text" name="ag_tg_chat" id="ag_tg_chat" value="<?php echo esc_attr( ag_tg_cfg( 'chat' ) ); ?>" class="regular-text" style="width:260px;"><p class="description"><?php echo $active ? '✓ Notifications actives.' : 'Vide = pas de notif (les emails continuent d\'arriver).'; ?></p></td></tr>
+				</table>
+				<?php submit_button(); ?>
+			</form>
+			<?php if ( $active ) : ?>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="max-width:780px;">
+				<input type="hidden" name="action" value="ag_push_test">
+				<?php wp_nonce_field( 'ag_push_test', '_n' ); ?>
+				<?php submit_button( '📲 Envoyer un test', 'secondary', 'submit', false ); ?>
+			</form>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
+}

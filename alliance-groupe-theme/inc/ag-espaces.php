@@ -829,6 +829,7 @@ if ( ! function_exists( 'ag_calendar_notify' ) ) {
 			'From: Alliance Groupe <contact@alliancegroupe-inc.com>',
 		);
 		wp_mail( $to, $summary, $ics, $headers );
+		if ( function_exists( 'ag_push' ) ) ag_push( $summary, $description ); // notif téléphone (Telegram)
 	}
 }
 // Nouvel ambassadeur inscrit -> évènement agenda.
