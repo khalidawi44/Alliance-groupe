@@ -746,6 +746,46 @@ add_action( 'admin_post_ag_amb_prospect_status', function () {
 	wp_safe_redirect( home_url( '/espace-ambassadeur#prospects' ) ); exit;
 } );
 
+/* Ambassadeur : enregistre un contact (AJAX, sur SES prospects uniquement). */
+add_action( 'wp_ajax_ag_amb_touch', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error();
+	$email = strtolower( wp_get_current_user()->user_email );
+	$id    = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+	$list  = (array) get_option( 'ag_prospects', array() );
+	foreach ( $list as $k => $p ) {
+		if ( ( $p['id'] ?? '' ) === $id && ( current_user_can( 'manage_options' ) || strtolower( $p['owner_email'] ?? '' ) === $email ) ) {
+			$now = current_time( 'd/m/Y' );
+			$cnt = (int) ( $p['contact_count'] ?? 0 ) + 1;
+			$list[ $k ]['contact_count'] = $cnt;
+			$list[ $k ]['last_contact']  = $now;
+			if ( empty( $p['date_contact'] ) ) $list[ $k ]['date_contact'] = $now;
+			$cur = $p['status'] ?? 'nouveau';
+			if ( 'nouveau' === $cur ) $list[ $k ]['status'] = 'contacte';
+			elseif ( in_array( $cur, array( 'contacte', 'sans_reponse' ), true ) ) $list[ $k ]['status'] = 'relance';
+			update_option( 'ag_prospects', array_values( $list ) );
+			wp_send_json_success( array( 'count' => $cnt, 'date' => $now ) );
+		}
+	}
+	wp_send_json_error();
+} );
+
+/* Ambassadeur : marque "a répondu" (AJAX, sur SES prospects uniquement). */
+add_action( 'wp_ajax_ag_amb_reply', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error();
+	$email = strtolower( wp_get_current_user()->user_email );
+	$id    = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+	$list  = (array) get_option( 'ag_prospects', array() );
+	foreach ( $list as $k => $p ) {
+		if ( ( $p['id'] ?? '' ) === $id && ( current_user_can( 'manage_options' ) || strtolower( $p['owner_email'] ?? '' ) === $email ) ) {
+			$list[ $k ]['replied']    = 1;
+			$list[ $k ]['date_reply'] = current_time( 'd/m/Y' );
+			update_option( 'ag_prospects', array_values( $list ) );
+			wp_send_json_success( array( 'date' => $list[ $k ]['date_reply'] ) );
+		}
+	}
+	wp_send_json_error();
+} );
+
 /* ── 9. Notifications téléphone (Telegram, gratuit & instantané) ──── */
 if ( ! function_exists( 'ag_tg_cfg' ) ) {
 	function ag_tg_cfg( $k ) { return trim( (string) get_option( 'ag_tg_' . $k, '' ) ); }

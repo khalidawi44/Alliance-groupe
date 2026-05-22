@@ -223,11 +223,38 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 		$ag_pstat = function_exists( 'ag_prospect_statuses' ) ? ag_prospect_statuses() : array();
 		$ag_ppost = admin_url( 'admin-post.php' );
 		$ag_pnonce = wp_nonce_field( 'ag_amb_prospect', '_n', true, false );
+		$ag_ajax_url = admin_url( 'admin-ajax.php' );
+		$ag_ajax_nonce = wp_create_nonce( 'ag_amb_prospect' );
+		$ag_pc = array( 'nouveau' => 0, 'contacte' => 0, 'sans_reponse' => 0, 'interesse' => 0, 'client' => 0, 'bloque' => 0 );
+		foreach ( $ag_my_prospects as $ppp ) {
+			$ss = $ppp['status'] ?? 'nouveau';
+			if ( 'nouveau' === $ss ) $ag_pc['nouveau']++;
+			elseif ( in_array( $ss, array( 'contacte', 'relance' ), true ) ) $ag_pc['contacte']++;
+			elseif ( 'sans_reponse' === $ss ) $ag_pc['sans_reponse']++;
+			elseif ( 'interesse' === $ss ) $ag_pc['interesse']++;
+			elseif ( 'client' === $ss ) $ag_pc['client']++;
+			elseif ( in_array( $ss, array( 'refus', 'ne_pas_contacter' ), true ) ) $ag_pc['bloque']++;
+		}
 	?>
 	<section class="ag-section ag-section--graphite" id="prospects">
 		<div class="ag-container">
 			<h2 class="ag-section__title">Mes prospects à contacter 🎯</h2>
-			<p class="ag-section__desc">Des entreprises qui ont besoin d'un site, <strong>rien que pour toi</strong> (pas de doublon avec l'équipe). Triées par priorité. Contacte, puis mets à jour le statut.</p>
+			<p class="ag-section__desc">Des entreprises qui ont besoin d'un site, <strong>rien que pour toi</strong> (pas de doublon avec l'équipe). Triées par priorité. Quand tu cliques WhatsApp ou Email, le contact est <strong>noté automatiquement</strong> (date + nombre de fois).</p>
+			<div class="ag-amb-chips" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0 22px;">
+				<?php
+				$ag_chipsdef = array(
+					array( 'all', 'Tous', count( $ag_my_prospects ), '#3a3a44' ),
+					array( 'nouveau', '🆕 À contacter', $ag_pc['nouveau'], '#b32d2e' ),
+					array( 'contacte', '📞 Contactés', $ag_pc['contacte'], '#2271b1' ),
+					array( 'sans_reponse', '🔇 Sans réponse', $ag_pc['sans_reponse'], '#8a6d1f' ),
+					array( 'interesse', '🔥 Intéressés', $ag_pc['interesse'], '#bd7b00' ),
+					array( 'client', '✅ Clients', $ag_pc['client'], '#1e7e34' ),
+				);
+				foreach ( $ag_chipsdef as $c ) :
+					if ( 'all' !== $c[0] && 0 === (int) $c[2] ) continue; ?>
+					<button type="button" class="ag-amb-chip" data-f="<?php echo esc_attr( $c[0] ); ?>" style="cursor:pointer;border:none;border-radius:100px;padding:6px 14px;font-weight:700;font-size:.84rem;color:#fff;background:<?php echo esc_attr( $c[3] ); ?>;opacity:<?php echo 'all' === $c[0] ? '1' : '.85'; ?>;"><?php echo esc_html( $c[1] ); ?> <?php echo (int) $c[2]; ?></button>
+				<?php endforeach; ?>
+			</div>
 			<div class="ag-esp-table-wrap">
 				<table class="ag-esp-table">
 					<thead><tr><th>Entreprise</th><th>Pourquoi</th><th>Contacter</th><th>Statut</th></tr></thead>
@@ -237,18 +264,29 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 						$pdig = function_exists( 'ag_wa_number' ) ? ag_wa_number( $pp['phone'] ?? '', $pp['phone_intl'] ?? '' ) : preg_replace( '/[^0-9]/', '', $pp['phone'] ?? '' );
 						$pwa  = $pdig ? 'https://wa.me/' . $pdig . '?text=' . rawurlencode( $pmsg ) : '';
 						$pmail = ! empty( $pp['email'] ) ? 'mailto:' . rawurlencode( $pp['email'] ) . '?subject=' . rawurlencode( 'Votre site web — Alliance Groupe' ) . '&body=' . rawurlencode( $pmsg ) : '';
-						$pblock = function_exists( 'ag_prospect_blocked' ) && ag_prospect_blocked( $pp['status'] ?? '' );
+						$pstatus = $pp['status'] ?? 'nouveau';
+						if ( in_array( $pstatus, array( 'refus', 'ne_pas_contacter' ), true ) ) continue; // bloqué : ne réapparaît plus
+						$pgrp = in_array( $pstatus, array( 'contacte', 'relance' ), true ) ? 'contacte' : $pstatus;
+						$pid  = $pp['id'] ?? '';
 					?>
-						<tr<?php echo $pblock ? ' style="opacity:.5;"' : ''; ?>>
+						<tr class="ag-amb-prow" data-grp="<?php echo esc_attr( $pgrp ); ?>">
 							<td><strong><?php echo esc_html( $pp['name'] ?? '' ); ?></strong><br><small><?php echo esc_html( ( $pp['type'] ?? '' ) . ( ! empty( $pp['city'] ) ? ' · ' . $pp['city'] : '' ) ); ?></small></td>
 							<td style="font-size:.85em;color:var(--color-text-soft);max-width:240px;"><?php echo esc_html( function_exists( 'ag_prospect_why' ) ? ag_prospect_why( $pp ) : '' ); ?></td>
 							<td>
-								<?php if ( ! $pblock ) : ?>
-									<?php if ( ! empty( $pp['phone'] ) ) : ?><a href="tel:<?php echo esc_attr( $pp['phone'] ); ?>" class="ag-btn-outline" style="padding:6px 10px;">📞 Appeler</a> <?php endif; ?>
-									<?php if ( $pwa ) : ?><a href="<?php echo esc_url( $pwa ); ?>" target="_blank" rel="noopener" class="ag-btn-outline" style="padding:6px 10px;">WhatsApp</a> <?php endif; ?>
-									<?php if ( $pmail ) : ?><a href="<?php echo esc_url( $pmail ); ?>" class="ag-btn-outline" style="padding:6px 10px;">Email</a> <?php endif; ?>
-									<details style="margin-top:6px;"><summary style="cursor:pointer;color:var(--color-gold);">Voir le message</summary><textarea readonly rows="8" style="width:100%;margin-top:6px;background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(212,180,92,.3);border-radius:10px;padding:10px;"><?php echo esc_textarea( $pmsg ); ?></textarea></details>
-								<?php else : ?><em style="color:var(--color-text-muted);">à ne pas recontacter</em><?php endif; ?>
+								<div class="ag-amb-suivi" data-id="<?php echo esc_attr( $pid ); ?>" style="font-size:.82em;margin-bottom:6px;line-height:1.5;<?php echo empty( $pp['date_contact'] ) ? 'color:#e6b35a;' : 'color:var(--color-text-soft);'; ?>">
+									<?php if ( ! empty( $pp['date_contact'] ) ) : ?>
+										📨 Contacté le <strong><?php echo esc_html( $pp['date_contact'] ); ?></strong> (×<?php echo (int) ( $pp['contact_count'] ?? 1 ); ?>)<br>
+										<?php if ( ! empty( $pp['replied'] ) ) : ?>
+											<span style="color:#5fd08a;font-weight:700;">✅ A répondu<?php echo $pp['date_reply'] ? ' le ' . esc_html( $pp['date_reply'] ) : ''; ?></span>
+										<?php else : ?>
+											<button type="button" class="ag-amb-reply ag-btn-outline" data-id="<?php echo esc_attr( $pid ); ?>" style="padding:3px 10px;font-size:.95em;">A répondu ?</button>
+										<?php endif; ?>
+									<?php else : ?>⏳ Pas encore contacté<?php endif; ?>
+								</div>
+								<?php if ( ! empty( $pp['phone'] ) ) : ?><a href="tel:<?php echo esc_attr( $pp['phone'] ); ?>" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" style="padding:6px 10px;">📞 Appeler</a> <?php endif; ?>
+								<?php if ( $pwa ) : ?><a href="<?php echo esc_url( $pwa ); ?>" target="_blank" rel="noopener" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" style="padding:6px 10px;">WhatsApp</a> <?php endif; ?>
+								<?php if ( $pmail ) : ?><a href="<?php echo esc_url( $pmail ); ?>" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" style="padding:6px 10px;">Email</a> <?php endif; ?>
+								<details style="margin-top:6px;"><summary style="cursor:pointer;color:var(--color-gold);">Voir le message</summary><textarea readonly rows="8" style="width:100%;margin-top:6px;background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(212,180,92,.3);border-radius:10px;padding:10px;"><?php echo esc_textarea( $pmsg ); ?></textarea></details>
 							</td>
 							<td>
 								<form method="post" action="<?php echo esc_url( $ag_ppost ); ?>">
@@ -266,6 +304,28 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 				</table>
 			</div>
 		</div>
+		<script>
+		(function(){
+			var au=<?php echo wp_json_encode( $ag_ajax_url ); ?>, n=<?php echo wp_json_encode( $ag_ajax_nonce ); ?>;
+			document.querySelectorAll('.ag-amb-touch').forEach(function(a){ a.addEventListener('click',function(){
+				var id=a.getAttribute('data-id'); if(!id) return;
+				var fd=new FormData(); fd.append('action','ag_amb_touch'); fd.append('_n',n); fd.append('id',id);
+				fetch(au,{method:'POST',body:fd,credentials:'same-origin',keepalive:true}).then(function(r){return r.json();}).then(function(j){
+					if(j&&j.success){ var d=a.closest('td').querySelector('.ag-amb-suivi'); if(d){ d.style.color='var(--color-text-soft)'; d.innerHTML='📨 Contacté le <strong>'+j.data.date+'</strong> (×'+j.data.count+')<br><button type="button" class="ag-amb-reply ag-btn-outline" data-id="'+id+'" style="padding:3px 10px;font-size:.95em;">A répondu ?</button>'; bindReply(d.querySelector('.ag-amb-reply')); } }
+				}).catch(function(){});
+			}); });
+			function bindReply(btn){ if(!btn) return; btn.addEventListener('click',function(){
+				var id=btn.getAttribute('data-id'); var fd=new FormData(); fd.append('action','ag_amb_reply'); fd.append('_n',n); fd.append('id',id);
+				btn.disabled=true; fetch(au,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ if(j&&j.success){ btn.outerHTML='<span style="color:#5fd08a;font-weight:700;">✅ A répondu le '+j.data.date+'</span>'; } else { btn.disabled=false; } }).catch(function(){ btn.disabled=false; });
+			}); }
+			document.querySelectorAll('.ag-amb-reply').forEach(bindReply);
+			document.querySelectorAll('.ag-amb-chip').forEach(function(c){ c.addEventListener('click',function(){
+				var f=c.getAttribute('data-f');
+				document.querySelectorAll('.ag-amb-chip').forEach(function(x){ x.style.opacity=(x===c)?'1':'.6'; });
+				document.querySelectorAll('.ag-amb-prow').forEach(function(tr){ tr.style.display=(f==='all'||tr.getAttribute('data-grp')===f)?'':'none'; });
+			}); });
+		})();
+		</script>
 	</section>
 	<?php endif; ?>
 
