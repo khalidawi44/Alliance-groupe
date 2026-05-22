@@ -37,7 +37,7 @@ if ( ! function_exists( 'ag_hub_card' ) ) {
 	/** Carte raccourci (titre, description, lien, emoji). */
 	function ag_hub_card( $emoji, $title, $desc, $url, $cta = 'Ouvrir' ) {
 		printf(
-			'<a href="%1$s" style="display:flex;flex-direction:column;gap:6px;text-decoration:none;background:#fff;border:1px solid #dcdcde;border-radius:14px;padding:18px 18px 16px;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:.15s;min-height:120px;" onmouseover="this.style.borderColor=\'#d4b45c\';this.style.boxShadow=\'0 6px 18px rgba(120,100,40,.12)\'" onmouseout="this.style.borderColor=\'#dcdcde\';this.style.boxShadow=\'0 1px 2px rgba(0,0,0,.04)\'">'
+			'<a href="%1$s" target="_blank" rel="noopener" style="display:flex;flex-direction:column;gap:6px;text-decoration:none;background:#fff;border:1px solid #dcdcde;border-radius:14px;padding:18px 18px 16px;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:.15s;min-height:120px;" onmouseover="this.style.borderColor=\'#d4b45c\';this.style.boxShadow=\'0 6px 18px rgba(120,100,40,.12)\'" onmouseout="this.style.borderColor=\'#dcdcde\';this.style.boxShadow=\'0 1px 2px rgba(0,0,0,.04)\'">'
 				. '<span style="font-size:1.7rem;line-height:1;">%2$s</span>'
 				. '<strong style="color:#1d2327;font-size:1.05rem;">%3$s</strong>'
 				. '<span style="color:#646970;font-size:.88rem;line-height:1.4;flex:1;">%4$s</span>'
@@ -78,7 +78,7 @@ if ( ! function_exists( 'ag_hub_render' ) ) {
 
 		$stat = function ( $emoji, $value, $label, $url, $hot = false ) {
 			printf(
-				'<a href="%5$s" style="text-decoration:none;flex:1;min-width:150px;display:block;background:%6$s;border:1px solid %7$s;border-radius:14px;padding:16px 18px;">'
+				'<a href="%5$s" target="_blank" rel="noopener" style="text-decoration:none;flex:1;min-width:150px;display:block;background:%6$s;border:1px solid %7$s;border-radius:14px;padding:16px 18px;">'
 					. '<div style="font-size:1.3rem;">%1$s</div>'
 					. '<div style="font-size:2rem;font-weight:800;color:#1d2327;line-height:1.1;margin:2px 0;">%2$s</div>'
 					. '<div style="color:#646970;font-size:.85rem;font-weight:600;">%3$s%4$s</div>'
