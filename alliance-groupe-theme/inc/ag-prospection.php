@@ -663,7 +663,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			<?php if ( empty( $prospects ) ) : ?>
 				<p>Aucun prospect (avec ces filtres). Cherche des entreprises ci-dessus ou ajoute-en à la main.</p>
 			<?php else : ?>
-				<table class="widefat striped"><thead><tr><th>Priorité</th><th>Entreprise</th><th>Pourquoi (besoin)</th><th>Contact</th><th>Statut</th><th>Assigné à</th><th>Prospecter</th><th></th></tr></thead><tbody>
+				<table class="widefat striped"><thead><tr><th>Priorité</th><th>Entreprise</th><th>Zone</th><th>Pourquoi (besoin)</th><th>Contact</th><th>Statut</th><th>Assigné à</th><th>Prospecter</th><th></th></tr></thead><tbody>
 				<?php foreach ( $prospects as $p ) :
 					$digits = ag_wa_number( $p['phone'] ?? '', $p['phone_intl'] ?? '' );
 					$msg    = ag_prospect_message( $p );
@@ -676,6 +676,15 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					<tr<?php echo $blocked ? ' style="opacity:.55;"' : ''; ?>>
 						<td><span style="display:inline-block;min-width:34px;text-align:center;font-weight:800;color:#fff;background:<?php echo esc_attr( $scol ); ?>;border-radius:6px;padding:2px 6px;"><?php echo (int) $score; ?></span></td>
 						<td><strong><?php echo esc_html( $p['name'] ?? '' ); ?></strong><?php $pk = ag_site_kind( $p['website'] ?? '' ); echo ( 'real' !== $pk[0] ) ? ' <span style="color:#b32d2e;" title="' . esc_attr( $pk[1] ) . '">❗</span>' : ''; ?><br><small><?php echo esc_html( ( $p['type'] ?? '' ) . ( ! empty( $p['city'] ) ? ' · ' . $p['city'] : '' ) ); ?></small></td>
+						<td style="font-size:.85em;white-space:nowrap;"><?php
+							$pdept = function_exists( 'ag_prospect_dept' ) ? ag_prospect_dept( $p ) : '';
+							if ( $pdept ) {
+								$dn = function_exists( 'ag_dept_names' ) ? ( ag_dept_names()[ $pdept ] ?? '' ) : '';
+								$owned = function_exists( 'ag_zone_owners' ) && ! empty( ag_zone_owners( $pdept ) );
+								echo '<span style="display:inline-block;background:' . ( $owned ? '#e9f7ee' : '#f0f0f1' ) . ';border-radius:6px;padding:2px 8px;font-weight:700;">' . esc_html( $pdept ) . '</span>';
+								if ( $dn ) echo '<br><small style="color:#646970;">' . esc_html( $dn ) . '</small>';
+							} else { echo '<span style="color:#b9b9c0;">—</span>'; }
+						?></td>
 						<td style="max-width:280px;font-size:.85em;color:#50575e;"><?php echo esc_html( ag_prospect_why( $p ) ); ?></td>
 						<td>
 							<?php if ( ! empty( $p['phone'] ) ) : ?><a href="tel:<?php echo esc_attr( $p['phone'] ); ?>">📞 <?php echo esc_html( $p['phone'] ); ?></a><br><?php endif; ?>
