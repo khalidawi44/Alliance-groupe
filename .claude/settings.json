@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo 'RAPPELS A FAIRE (a redire au user a chaque message tant que non confirme): 1) brancher les webhooks/IPN PayPal pour le credit automatique des commissions ambassadeurs ; 2) coller l ID client Google dans Reglages > Connexion Google pour activer le bouton Google ; 3) verifier sur telephone que le partage des videos/images du Studio fonctionne (TikTok/Snap/Insta via le menu Partager natif) ; 4) filmer/enregistrer la VIDEO explicative pour les ambassadeurs puis coller le lien dans Reglages > Programme ambassadeur.'"
+            "command": "echo 'RAPPELS A FAIRE (a redire au user a chaque message tant que non confirme): 1) coller l ID client Google dans Reglages > Connexion Google pour activer le bouton Google ; 2) verifier sur telephone que le partage des videos/images du Studio fonctionne (TikTok/Snap/Insta via le menu Partager natif) ; 3) filmer/enregistrer la VIDEO explicative pour les ambassadeurs puis coller le lien dans Reglages > Programme ambassadeur.'"
           }
         ]
       }
