@@ -635,21 +635,34 @@ if ( ! function_exists( 'ag_tg_cfg' ) ) {
 	function ag_tg_cfg( $k ) { return trim( (string) get_option( 'ag_tg_' . $k, '' ) ); }
 }
 if ( ! function_exists( 'ag_push' ) ) {
-	/** Envoie une notif push sur le téléphone via Telegram (si configuré). */
+	/** Envoie une notif sur le téléphone : WhatsApp (CallMeBot, 1:1) et/ou Telegram (perso ou groupe). */
 	function ag_push( $title, $body = '' ) {
-		$token = ag_tg_cfg( 'token' ); $chat = ag_tg_cfg( 'chat' );
-		if ( '' === $token || '' === $chat ) return false;
 		$text = $title . ( $body ? "\n\n" . $body : '' );
-		$resp = wp_remote_post( 'https://api.telegram.org/bot' . $token . '/sendMessage', array(
-			'timeout' => 15,
-			'body'    => array( 'chat_id' => $chat, 'text' => $text, 'disable_web_page_preview' => 'true' ),
-		) );
-		return ! is_wp_error( $resp ) && 200 === (int) wp_remote_retrieve_response_code( $resp );
+		$sent = false;
+		// WhatsApp via CallMeBot (vers TON numéro perso uniquement — pas les groupes).
+		$wa_phone = preg_replace( '/[^0-9]/', '', (string) get_option( 'ag_wa_phone', '' ) );
+		$wa_key   = trim( (string) get_option( 'ag_wa_apikey', '' ) );
+		if ( $wa_phone && $wa_key ) {
+			$resp = wp_remote_get( 'https://api.callmebot.com/whatsapp.php?phone=' . rawurlencode( $wa_phone ) . '&text=' . rawurlencode( $text ) . '&apikey=' . rawurlencode( $wa_key ), array( 'timeout' => 15 ) );
+			if ( ! is_wp_error( $resp ) ) $sent = true;
+		}
+		// Telegram (perso OU groupe : il suffit du bon chat_id).
+		$token = ag_tg_cfg( 'token' ); $chat = ag_tg_cfg( 'chat' );
+		if ( '' !== $token && '' !== $chat ) {
+			$resp = wp_remote_post( 'https://api.telegram.org/bot' . $token . '/sendMessage', array(
+				'timeout' => 15,
+				'body'    => array( 'chat_id' => $chat, 'text' => $text, 'disable_web_page_preview' => 'true' ),
+			) );
+			if ( ! is_wp_error( $resp ) && 200 === (int) wp_remote_retrieve_response_code( $resp ) ) $sent = true;
+		}
+		return $sent;
 	}
 }
 add_action( 'admin_init', function () {
 	register_setting( 'ag_tg_cfg', 'ag_tg_token', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
 	register_setting( 'ag_tg_cfg', 'ag_tg_chat', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
+	register_setting( 'ag_tg_cfg', 'ag_wa_phone', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
+	register_setting( 'ag_tg_cfg', 'ag_wa_apikey', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
 } );
 add_action( 'admin_menu', function () {
 	add_options_page( 'Notifications téléphone', 'Notifications téléphone', 'manage_options', 'ag-notify', 'ag_notify_render' );
@@ -662,16 +675,25 @@ add_action( 'admin_post_ag_push_test', function () {
 if ( ! function_exists( 'ag_notify_render' ) ) {
 	function ag_notify_render() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
-		$active = ag_tg_cfg( 'token' ) && ag_tg_cfg( 'chat' );
+		$active = ( ag_tg_cfg( 'token' ) && ag_tg_cfg( 'chat' ) ) || ( get_option( 'ag_wa_phone' ) && get_option( 'ag_wa_apikey' ) );
 		?>
 		<div class="wrap">
-			<h1>📲 Notifications téléphone (Telegram)</h1>
-			<p style="max-width:780px;color:#50575e;">Reçois une <strong>notification instantanée sur ton téléphone</strong> dès qu'un prospect répond (chat), passe « intéressé », ou qu'une vente tombe. C'est <strong>gratuit</strong> via Telegram.</p>
+			<h1>📲 Notifications téléphone</h1>
+			<p style="max-width:780px;color:#50575e;">Reçois une <strong>notification instantanée</strong> dès qu'un prospect répond (chat), passe « intéressé », ou qu'une vente tombe. Choisis <strong>WhatsApp</strong> et/ou <strong>Telegram</strong>.</p>
 			<?php if ( isset( $_GET['test'] ) ) : ?>
-				<div class="notice notice-<?php echo $_GET['test'] ? 'success' : 'error'; ?>"><p><?php echo $_GET['test'] ? 'Test envoyé ✅ Regarde ton Telegram.' : 'Échec : vérifie le token et le chat ID.'; ?></p></div>
+				<div class="notice notice-<?php echo $_GET['test'] ? 'success' : 'error'; ?>"><p><?php echo $_GET['test'] ? 'Test envoyé ✅ Regarde ton téléphone.' : 'Échec : vérifie tes identifiants.'; ?></p></div>
 			<?php endif; ?>
+			<div style="max-width:780px;margin:16px 0;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #25D366;">
+				<strong>📲 Option A — WhatsApp (sur TON numéro, gratuit via CallMeBot) :</strong>
+				<ol style="margin:8px 0 0 22px;line-height:1.8;">
+					<li>Sur ton téléphone, ajoute le contact <strong>+34 644 51 95 23</strong> (CallMeBot).</li>
+					<li>Envoie-lui ce message WhatsApp : <code>I allow callmebot to send me messages</code></li>
+					<li>Il te répond avec une <strong>API key</strong>. Mets ton <strong>numéro</strong> (format international, ex : 33612345678) + l'<strong>API key</strong> ci-dessous.</li>
+				</ol>
+				<p style="margin:10px 0 0;color:#b32d2e;"><strong>Important :</strong> WhatsApp n'autorise l'envoi automatique que vers <strong>ton numéro personnel</strong>, <strong>pas vers un groupe</strong>. Pour notifier <strong>toute l'équipe dans un groupe</strong>, utilise <strong>Telegram</strong> (option B) : crée un groupe Telegram, ajoute ton bot dedans, et mets le <strong>Chat ID du groupe</strong> (un nombre négatif).</p>
+			</div>
 			<div style="max-width:780px;margin:16px 0;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #D4B45C;">
-				<strong>Configuration (5 min) :</strong>
+				<strong>✈ Option B — Telegram (perso OU groupe d'équipe) :</strong>
 				<ol style="margin:8px 0 0 22px;line-height:1.8;">
 					<li>Sur ton téléphone, ouvre Telegram → cherche <strong>@BotFather</strong> → écris <code>/newbot</code> → choisis un nom. Il te donne un <strong>token</strong> (du type <code>123456:ABC...</code>). Colle-le ci-dessous.</li>
 					<li>Cherche ton nouveau bot, ouvre-le et écris-lui <strong>« Bonjour »</strong> (obligatoire pour qu'il puisse t'écrire).</li>
@@ -682,8 +704,12 @@ if ( ! function_exists( 'ag_notify_render' ) ) {
 			<form method="post" action="options.php" style="max-width:780px;">
 				<?php settings_fields( 'ag_tg_cfg' ); ?>
 				<table class="form-table">
+					<tr><th colspan="2" style="padding-bottom:0;"><span style="color:#25D366;">WhatsApp (CallMeBot)</span></th></tr>
+					<tr><th scope="row"><label for="ag_wa_phone">Mon numéro WhatsApp</label></th><td><input type="text" name="ag_wa_phone" id="ag_wa_phone" value="<?php echo esc_attr( get_option( 'ag_wa_phone', '' ) ); ?>" class="regular-text" style="width:260px;" placeholder="33612345678 (format international)"></td></tr>
+					<tr><th scope="row"><label for="ag_wa_apikey">API key CallMeBot</label></th><td><input type="text" name="ag_wa_apikey" id="ag_wa_apikey" value="<?php echo esc_attr( get_option( 'ag_wa_apikey', '' ) ); ?>" class="regular-text" style="width:260px;"></td></tr>
+					<tr><th colspan="2" style="padding-bottom:0;"><span style="color:#D4B45C;">Telegram (perso ou groupe)</span></th></tr>
 					<tr><th scope="row"><label for="ag_tg_token">Token du bot</label></th><td><input type="text" name="ag_tg_token" id="ag_tg_token" value="<?php echo esc_attr( ag_tg_cfg( 'token' ) ); ?>" class="regular-text" style="width:100%;max-width:520px;"></td></tr>
-					<tr><th scope="row"><label for="ag_tg_chat">Chat ID</label></th><td><input type="text" name="ag_tg_chat" id="ag_tg_chat" value="<?php echo esc_attr( ag_tg_cfg( 'chat' ) ); ?>" class="regular-text" style="width:260px;"><p class="description"><?php echo $active ? '✓ Notifications actives.' : 'Vide = pas de notif (les emails continuent d\'arriver).'; ?></p></td></tr>
+					<tr><th scope="row"><label for="ag_tg_chat">Chat ID</label></th><td><input type="text" name="ag_tg_chat" id="ag_tg_chat" value="<?php echo esc_attr( ag_tg_cfg( 'chat' ) ); ?>" class="regular-text" style="width:260px;"><p class="description"><?php echo $active ? '✓ Notifications actives.' : 'Tout vide = pas de notif (les emails continuent d\'arriver).'; ?></p></td></tr>
 				</table>
 				<?php submit_button(); ?>
 			</form>
