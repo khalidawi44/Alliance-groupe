@@ -4,6 +4,8 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 
 / Lu automatiquement à chaque session : j'y puise pour aider et conseiller. /
 
+> 📚 Détail complet (raccourcis, création vidéo, agents, meilleur système par type de site, config, limites) : **`INFRASTRUCTURE.md`**.
+
 ## Déploiement (workflow)
 - Dév sur la branche `claude/fix-mobile-responsive-design-zERWc`, puis **merge ff-only dans `main`** + push.
 - Le site applique via **Apparence → SYNC GitHub** : « Vérifier MAJ » puis « SYNC FICHIERS DU THÈME », puis purge cache + Ctrl/recharge.
