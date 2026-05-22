@@ -634,43 +634,56 @@ add_action( 'admin_post_ag_amb_prospect_status', function () {
 if ( ! function_exists( 'ag_tg_cfg' ) ) {
 	function ag_tg_cfg( $k ) { return trim( (string) get_option( 'ag_tg_' . $k, '' ) ); }
 }
+if ( ! function_exists( 'ag_tg_send' ) ) {
+	function ag_tg_send( $chat_id, $text ) {
+		$token = ag_tg_cfg( 'token' );
+		if ( '' === $token || '' === trim( (string) $chat_id ) ) return false;
+		$resp = wp_remote_post( 'https://api.telegram.org/bot' . $token . '/sendMessage', array(
+			'timeout' => 15,
+			'body'    => array( 'chat_id' => $chat_id, 'text' => $text, 'disable_web_page_preview' => 'true' ),
+		) );
+		return ! is_wp_error( $resp ) && 200 === (int) wp_remote_retrieve_response_code( $resp );
+	}
+}
 if ( ! function_exists( 'ag_push' ) ) {
-	/** Envoie une notif sur le téléphone : WhatsApp (CallMeBot, 1:1) et/ou Telegram (perso ou groupe). */
+	/** Alerte INTERNE (équipe) : WhatsApp (CallMeBot, 1:1) et/ou Telegram (canal interne). */
 	function ag_push( $title, $body = '' ) {
 		$text = $title . ( $body ? "\n\n" . $body : '' );
 		$sent = false;
-		// WhatsApp via CallMeBot (vers TON numéro perso uniquement — pas les groupes).
 		$wa_phone = preg_replace( '/[^0-9]/', '', (string) get_option( 'ag_wa_phone', '' ) );
 		$wa_key   = trim( (string) get_option( 'ag_wa_apikey', '' ) );
 		if ( $wa_phone && $wa_key ) {
 			$resp = wp_remote_get( 'https://api.callmebot.com/whatsapp.php?phone=' . rawurlencode( $wa_phone ) . '&text=' . rawurlencode( $text ) . '&apikey=' . rawurlencode( $wa_key ), array( 'timeout' => 15 ) );
 			if ( ! is_wp_error( $resp ) ) $sent = true;
 		}
-		// Telegram (perso OU groupe : il suffit du bon chat_id).
-		$token = ag_tg_cfg( 'token' ); $chat = ag_tg_cfg( 'chat' );
-		if ( '' !== $token && '' !== $chat ) {
-			$resp = wp_remote_post( 'https://api.telegram.org/bot' . $token . '/sendMessage', array(
-				'timeout' => 15,
-				'body'    => array( 'chat_id' => $chat, 'text' => $text, 'disable_web_page_preview' => 'true' ),
-			) );
-			if ( ! is_wp_error( $resp ) && 200 === (int) wp_remote_retrieve_response_code( $resp ) ) $sent = true;
-		}
+		if ( ag_tg_send( ag_tg_cfg( 'chat' ), $text ) ) $sent = true;
 		return $sent;
 	}
 }
+if ( ! function_exists( 'ag_push_clients' ) ) {
+	/** Diffusion vers le CANAL GÉNÉRAL clients (Telegram). */
+	function ag_push_clients( $title, $body = '' ) {
+		return ag_tg_send( ag_tg_cfg( 'chan' ), $title . ( $body ? "\n\n" . $body : '' ) );
+	}
+}
 add_action( 'admin_init', function () {
-	register_setting( 'ag_tg_cfg', 'ag_tg_token', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
-	register_setting( 'ag_tg_cfg', 'ag_tg_chat', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
-	register_setting( 'ag_tg_cfg', 'ag_wa_phone', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
-	register_setting( 'ag_tg_cfg', 'ag_wa_apikey', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
+	foreach ( array( 'ag_tg_token', 'ag_tg_chat', 'ag_tg_chan', 'ag_tg_chan_link', 'ag_wa_phone', 'ag_wa_apikey' ) as $opt ) {
+		register_setting( 'ag_tg_cfg', $opt, array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
+	}
 } );
 add_action( 'admin_menu', function () {
 	add_options_page( 'Notifications téléphone', 'Notifications téléphone', 'manage_options', 'ag-notify', 'ag_notify_render' );
 } );
 add_action( 'admin_post_ag_push_test', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_push_test' ) ) wp_die( 'no' );
-	$ok = ag_push( '✅ Test Alliance Groupe', 'Si tu lis ça sur ton téléphone, les notifications marchent !' );
+	$ok = ag_push( '✅ Test interne Alliance Groupe', 'Si tu lis ça, les alertes équipe marchent !' );
 	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-notify', 'test' => $ok ? 1 : 0 ), admin_url( 'options-general.php' ) ) ); exit;
+} );
+add_action( 'admin_post_ag_push_clients', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_push_clients' ) ) wp_die( 'no' );
+	$msg = sanitize_textarea_field( wp_unslash( $_POST['msg'] ?? '' ) );
+	$ok = ( '' !== $msg ) && ag_push_clients( $msg );
+	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-notify', 'bc' => $ok ? 1 : 0 ), admin_url( 'options-general.php' ) ) ); exit;
 } );
 add_action( 'admin_post_ag_tg_detect', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_tg_detect' ) ) wp_die( 'no' );
@@ -712,13 +725,14 @@ if ( ! function_exists( 'ag_notify_render' ) ) {
 				<p style="margin:10px 0 0;color:#b32d2e;"><strong>Important :</strong> WhatsApp n'autorise l'envoi automatique que vers <strong>ton numéro personnel</strong>, <strong>pas vers un groupe</strong>. Pour notifier <strong>toute l'équipe dans un groupe</strong>, utilise <strong>Telegram</strong> (option B) : crée un groupe Telegram, ajoute ton bot dedans, et mets le <strong>Chat ID du groupe</strong> (un nombre négatif).</p>
 			</div>
 			<div style="max-width:780px;margin:16px 0;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #D4B45C;">
-				<strong>✈ Option B — Telegram (perso OU groupe d'équipe) :</strong>
+				<strong>✈ Option B — Telegram (canal interne équipe + canal général clients) :</strong>
 				<ol style="margin:8px 0 0 22px;line-height:1.8;">
-					<li>Sur ton téléphone, ouvre Telegram → cherche <strong>@BotFather</strong> → écris <code>/newbot</code> → choisis un nom. Il te donne un <strong>token</strong> (du type <code>123456:ABC...</code>). Colle-le ci-dessous.</li>
-					<li>Cherche ton nouveau bot, ouvre-le et écris-lui <strong>« Bonjour »</strong> (obligatoire pour qu'il puisse t'écrire).</li>
-					<li>Cherche <strong>@userinfobot</strong> → écris-lui → il te donne ton <strong>Chat ID</strong> (un nombre). Colle-le ci-dessous.</li>
-					<li>Enregistre, puis clique <strong>« Envoyer un test »</strong>.</li>
+					<li><strong>@BotFather</strong> → <code>/newbot</code> → récupère le <strong>token</strong> → colle-le ci-dessous → <strong>Enregistre</strong>.</li>
+					<li><strong>Ajoute ton bot dans le groupe/canal</strong> (comme membre pour un groupe ; comme <strong>administrateur</strong> pour un canal).</li>
+					<li><strong>Récupérer l'ID (méthode infaillible) :</strong> ajoute <strong>@getidsbot</strong> (ou <strong>@RawDataBot</strong>) au groupe/canal → il affiche aussitôt l'<strong>ID</strong> (un nombre, négatif pour un groupe/canal) → copie-le → puis tu peux retirer ce bot.</li>
+					<li>Colle l'ID dans <strong>« Canal interne »</strong> (équipe) et/ou <strong>« Canal général »</strong> (clients) → Enregistre → <strong>« Envoyer un test »</strong>.</li>
 				</ol>
+				<p style="margin:8px 0 0;color:#50575e;">Le bouton « 🔎 Détecter » marche aussi : écris <code>/start@TonBot</code> dans le groupe, puis clique Détecter. (S'il ne trouve rien : @BotFather → <code>/setprivacy</code> → ton bot → <strong>Disable</strong>.)</p>
 			</div>
 			<form method="post" action="options.php" style="max-width:780px;">
 				<?php settings_fields( 'ag_tg_cfg' ); ?>
@@ -726,17 +740,31 @@ if ( ! function_exists( 'ag_notify_render' ) ) {
 					<tr><th colspan="2" style="padding-bottom:0;"><span style="color:#25D366;">WhatsApp (CallMeBot)</span></th></tr>
 					<tr><th scope="row"><label for="ag_wa_phone">Mon numéro WhatsApp</label></th><td><input type="text" name="ag_wa_phone" id="ag_wa_phone" value="<?php echo esc_attr( get_option( 'ag_wa_phone', '' ) ); ?>" class="regular-text" style="width:260px;" placeholder="33612345678 (format international)"></td></tr>
 					<tr><th scope="row"><label for="ag_wa_apikey">API key CallMeBot</label></th><td><input type="text" name="ag_wa_apikey" id="ag_wa_apikey" value="<?php echo esc_attr( get_option( 'ag_wa_apikey', '' ) ); ?>" class="regular-text" style="width:260px;"></td></tr>
-					<tr><th colspan="2" style="padding-bottom:0;"><span style="color:#D4B45C;">Telegram (perso ou groupe)</span></th></tr>
+					<tr><th colspan="2" style="padding-bottom:0;"><span style="color:#D4B45C;">Telegram</span></th></tr>
 					<tr><th scope="row"><label for="ag_tg_token">Token du bot</label></th><td><input type="text" name="ag_tg_token" id="ag_tg_token" value="<?php echo esc_attr( ag_tg_cfg( 'token' ) ); ?>" class="regular-text" style="width:100%;max-width:520px;"></td></tr>
-					<tr><th scope="row"><label for="ag_tg_chat">Chat ID</label></th><td><input type="text" name="ag_tg_chat" id="ag_tg_chat" value="<?php echo esc_attr( ag_tg_cfg( 'chat' ) ); ?>" class="regular-text" style="width:260px;"><p class="description"><?php echo $active ? '✓ Notifications actives.' : 'Tout vide = pas de notif (les emails continuent d\'arriver).'; ?></p></td></tr>
+					<tr><th scope="row"><label for="ag_tg_chat">🔒 Canal INTERNE (équipe) — Chat ID</label></th><td><input type="text" name="ag_tg_chat" id="ag_tg_chat" value="<?php echo esc_attr( ag_tg_cfg( 'chat' ) ); ?>" class="regular-text" style="width:260px;"><p class="description">Reçoit les alertes prospects / ventes / leads. Groupe d'équipe (ID négatif).</p></td></tr>
+					<tr><th scope="row"><label for="ag_tg_chan">📣 Canal GÉNÉRAL (clients) — Chat ID</label></th><td><input type="text" name="ag_tg_chan" id="ag_tg_chan" value="<?php echo esc_attr( ag_tg_cfg( 'chan' ) ); ?>" class="regular-text" style="width:260px;"><p class="description">Pour diffuser des annonces aux clients (canal Telegram public, le bot doit en être admin).</p></td></tr>
+					<tr><th scope="row"><label for="ag_tg_chan_link">Lien d'invitation du canal clients</label></th><td><input type="url" name="ag_tg_chan_link" id="ag_tg_chan_link" value="<?php echo esc_attr( ag_tg_cfg( 'chan_link' ) ); ?>" class="regular-text" style="width:360px;" placeholder="https://t.me/ton_canal"><p class="description"><?php echo $active ? '✓ Notifications internes actives.' : 'Tout vide = pas de notif (les emails continuent).'; ?></p></td></tr>
 				</table>
 				<?php submit_button(); ?>
 			</form>
+			<?php if ( isset( $_GET['bc'] ) ) : ?><div class="notice notice-<?php echo $_GET['bc'] ? 'success' : 'error'; ?>"><p><?php echo $_GET['bc'] ? 'Annonce envoyée aux clients ✅' : 'Échec : configure le canal général (clients).'; ?></p></div><?php endif; ?>
+			<?php if ( ag_tg_cfg( 'chan' ) ) : ?>
+			<div style="max-width:780px;margin:16px 0;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #5ab0ff;">
+				<strong>📣 Publier une annonce aux clients (canal général)</strong>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-top:8px;">
+					<input type="hidden" name="action" value="ag_push_clients">
+					<?php wp_nonce_field( 'ag_push_clients', '_n' ); ?>
+					<textarea name="msg" rows="3" style="width:100%;" placeholder="Ex : 🎉 Nouvelle offre du mois — site pro dès 490 €, payable en 4× !"></textarea>
+					<?php submit_button( '📣 Publier aux clients', 'primary', 'submit', false ); ?>
+				</form>
+			</div>
+			<?php endif; ?>
 			<?php if ( $active ) : ?>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="max-width:780px;display:inline;">
 				<input type="hidden" name="action" value="ag_push_test">
 				<?php wp_nonce_field( 'ag_push_test', '_n' ); ?>
-				<?php submit_button( '📲 Envoyer un test', 'secondary', 'submit', false ); ?>
+				<?php submit_button( '📲 Test (canal interne)', 'secondary', 'submit', false ); ?>
 			</form>
 			<?php endif; ?>
 			<?php if ( ag_tg_cfg( 'token' ) ) : ?>
