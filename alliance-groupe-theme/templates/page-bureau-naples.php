@@ -19,10 +19,8 @@ $resolve = function( $slug ) use ( $img_base, $img_dir ) {
     return '';
 };
 
-// Slideshow hero : cherche toutes les images de Naples disponibles
-$naples_candidates = array(
-    get_stylesheet_directory_uri() . '/assets/images/team/1_bureau_naples.jpg',
-);
+// Slideshow hero : villes de Naples (pas de photo de bureau)
+$naples_candidates = array();
 $extra_dir = get_stylesheet_directory() . '/assets/images/cities/';
 foreach ( array( 'naples-1.jpg', 'naples-2.jpg', 'naples-3.jpg' ) as $slide ) {
     if ( file_exists( $extra_dir . $slide ) ) {

@@ -50,7 +50,7 @@ get_header();
         </div>
     </section>
 
-    <section class="ag-parallax" style="background-image:url('<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/team/1_bureau_naples.jpg' ); ?>');">
+    <section class="ag-parallax" style="background-image:url('<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-2.jpg' ); ?>');">
         <div class="ag-parallax__overlay"></div>
         <div class="ag-parallax__content ag-anim" data-anim="parallax-text">
             <p class="ag-parallax__quote">"Notre mission : rendre la puissance du digital accessible à toutes les entreprises ambitieuses."</p>

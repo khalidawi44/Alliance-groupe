@@ -1,10 +1,10 @@
 <?php
 /**
  * Accueil — Priorité 2 : RECRUTER des commerciaux.
- * Section immersive : fond bureau Naples FIXE bien visible, la section
+ * Section immersive : fond ville Naples FIXE bien visible, la section
  * remonte sur la précédente. Lien vers /ambassadeurs.
  */
-$ag_amb_bg = get_stylesheet_directory_uri() . '/assets/images/team/1_bureau_naples.jpg';
+$ag_amb_bg = get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg';
 ?>
 <section class="ag-section ag-section--onyx ag-home-amb ag-rise" id="recrutement" style="--amb-bg:url('<?php echo esc_url( $ag_amb_bg ); ?>');">
 	<div class="ag-home-amb__bg" aria-hidden="true"></div>
