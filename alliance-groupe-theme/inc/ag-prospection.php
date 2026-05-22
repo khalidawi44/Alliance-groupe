@@ -667,7 +667,7 @@ if ( ! function_exists( 'ag_push_clients' ) ) {
 	}
 }
 add_action( 'admin_init', function () {
-	foreach ( array( 'ag_tg_token', 'ag_tg_chat', 'ag_tg_chan', 'ag_tg_chan_link', 'ag_wa_phone', 'ag_wa_apikey' ) as $opt ) {
+	foreach ( array( 'ag_tg_token', 'ag_tg_chat', 'ag_tg_chan', 'ag_tg_chan_link', 'ag_tg_group_link', 'ag_wa_phone', 'ag_wa_apikey' ) as $opt ) {
 		register_setting( 'ag_tg_cfg', $opt, array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
 	}
 } );
@@ -743,6 +743,7 @@ if ( ! function_exists( 'ag_notify_render' ) ) {
 					<tr><th colspan="2" style="padding-bottom:0;"><span style="color:#D4B45C;">Telegram</span></th></tr>
 					<tr><th scope="row"><label for="ag_tg_token">Token du bot</label></th><td><input type="text" name="ag_tg_token" id="ag_tg_token" value="<?php echo esc_attr( ag_tg_cfg( 'token' ) ); ?>" class="regular-text" style="width:100%;max-width:520px;"></td></tr>
 					<tr><th scope="row"><label for="ag_tg_chat">🔒 Canal INTERNE (équipe) — Chat ID</label></th><td><input type="text" name="ag_tg_chat" id="ag_tg_chat" value="<?php echo esc_attr( ag_tg_cfg( 'chat' ) ); ?>" class="regular-text" style="width:260px;"><p class="description">Reçoit les alertes prospects / ventes / leads. Groupe d'équipe (ID négatif).</p></td></tr>
+					<tr><th scope="row"><label for="ag_tg_group_link">Lien d'invitation du groupe ÉQUIPE</label></th><td><input type="url" name="ag_tg_group_link" id="ag_tg_group_link" value="<?php echo esc_attr( ag_tg_cfg( 'group_link' ) ); ?>" class="regular-text" style="width:360px;" placeholder="https://t.me/+xxxxx (lien d'invitation du groupe privé)"><p class="description">Envoyé aux nouveaux ambassadeurs pour qu'ils rejoignent le groupe interne.</p></td></tr>
 					<tr><th scope="row"><label for="ag_tg_chan">📣 Canal GÉNÉRAL (clients) — Chat ID</label></th><td><input type="text" name="ag_tg_chan" id="ag_tg_chan" value="<?php echo esc_attr( ag_tg_cfg( 'chan' ) ); ?>" class="regular-text" style="width:260px;"><p class="description">Pour diffuser des annonces aux clients (canal Telegram public, le bot doit en être admin).</p></td></tr>
 					<tr><th scope="row"><label for="ag_tg_chan_link">Lien d'invitation du canal clients</label></th><td><input type="url" name="ag_tg_chan_link" id="ag_tg_chan_link" value="<?php echo esc_attr( ag_tg_cfg( 'chan_link' ) ); ?>" class="regular-text" style="width:360px;" placeholder="https://t.me/ton_canal"><p class="description"><?php echo $active ? '✓ Notifications internes actives.' : 'Tout vide = pas de notif (les emails continuent).'; ?></p></td></tr>
 				</table>

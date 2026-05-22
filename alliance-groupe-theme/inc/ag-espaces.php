@@ -175,13 +175,15 @@ if ( ! function_exists( 'ag_send_member_welcome' ) ) {
 				. ag_email_button( 'Définir mon mot de passe', $url )
 				. '<p style="color:#9a9aa5;font-size:13px;">Si le bouton ne marche pas, copie ce lien :<br><span style="color:#cfc7b8;word-break:break-all;">' . esc_url( $url ) . '</span></p>'
 				. '<p>📚 <strong>Découvre ton programme</strong> : comment vendre des sites et recruter ton équipe, étape par étape — <a href="' . esc_url( home_url( '/programme-ambassadeur' ) ) . '" style="color:#D4B45C;">ouvre le guide</a>.</p>'
+				. ( ( function_exists( 'ag_tg_cfg' ) && ag_tg_cfg( 'group_link' ) ) ? '<p>💬 <strong>Rejoins le groupe Telegram de l\'équipe</strong> (annonces, entraide, classement) :</p>' . ag_email_button( 'Rejoindre le groupe équipe', ag_tg_cfg( 'group_link' ) ) : '' )
 				. '<p style="color:#9a9aa5;font-size:13px;">La déclaration de ventes s\'active une fois ton identité validée. On te prévient.</p>';
 		} else {
 			$heading = 'Bienvenue chez Alliance Groupe 👋';
 			$inner   = '<p>Bonjour ' . esc_html( $name ) . ',</p>'
 				. '<p>Ton compte client est créé. Définis ton mot de passe pour accéder à ton <strong>espace</strong> et suivre ton projet.</p>'
 				. ag_email_button( 'Définir mon mot de passe', $url )
-				. '<p style="color:#9a9aa5;font-size:13px;">Si le bouton ne marche pas, copie ce lien :<br><span style="color:#cfc7b8;word-break:break-all;">' . esc_url( $url ) . '</span></p>';
+				. '<p style="color:#9a9aa5;font-size:13px;">Si le bouton ne marche pas, copie ce lien :<br><span style="color:#cfc7b8;word-break:break-all;">' . esc_url( $url ) . '</span></p>'
+				. ( ( function_exists( 'ag_tg_cfg' ) && ag_tg_cfg( 'chan_link' ) ) ? '<p>📣 <strong>Rejoins notre canal Telegram</strong> pour nos offres et nouveautés :</p>' . ag_email_button( 'Rejoindre le canal', ag_tg_cfg( 'chan_link' ) ) : '' );
 		}
 
 		$headers = array(
@@ -613,6 +615,7 @@ if ( ! function_exists( 'ag_send_signup_welcome' ) ) {
 		$inner   = '<p>Bonjour ' . esc_html( $name ) . ',</p>'
 			. '<p>Ton compte est créé ✅ Tu peux dès maintenant accéder à ton espace.</p>'
 			. ag_email_button( 'Accéder à mon espace', home_url( '/espace-client' ) )
+			. ( ( function_exists( 'ag_tg_cfg' ) && ag_tg_cfg( 'chan_link' ) ) ? '<p>📣 <strong>Rejoins notre canal Telegram</strong> pour nos offres et nouveautés :</p>' . ag_email_button( 'Rejoindre le canal', ag_tg_cfg( 'chan_link' ) ) : '' )
 			. '<p style="color:#9a9aa5;font-size:13px;">Tu t\'es connecté avec Google ? Tu peux aussi définir un mot de passe via « Mot de passe oublié » sur la page de connexion.</p>';
 		$headers = array(
 			'Content-Type: text/html; charset=UTF-8',
