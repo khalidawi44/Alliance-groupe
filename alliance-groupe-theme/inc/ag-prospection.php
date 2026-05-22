@@ -111,6 +111,37 @@ add_action( 'admin_post_ag_prospect_update', function () {
 	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-prospects' ), admin_url( 'admin.php' ) ) ); exit;
 } );
 
+/* ── 4b. Type de présence en ligne (réseau social = pas un vrai site) ─ */
+if ( ! function_exists( 'ag_site_kind' ) ) {
+	function ag_site_kind( $url ) {
+		$u = strtolower( trim( (string) $url ) );
+		if ( '' === $u ) return array( 'none', '❗ Pas de site' );
+		$social = array( 'facebook.com', 'fb.com', 'fb.me', 'instagram.com', 'tiktok.com', 'twitter.com', 'x.com', 'linktr.ee', 'snapchat.com', 'business.site', 'linkedin.com', 'youtube.com', 'wa.me', 'pages.', 'google.com/maps' );
+		foreach ( $social as $s ) { if ( false !== strpos( $u, $s ) ) return array( 'social', '⚠ Réseau social' ); }
+		return array( 'real', 'site ✓' );
+	}
+}
+
+/* ── 4c. Ajout d'un prospect en AJAX (depuis les résultats, sans recharger) ─ */
+add_action( 'wp_ajax_ag_prospect_add', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
+	$list = (array) get_option( 'ag_prospects', array() );
+	$list[] = array(
+		'id'      => uniqid( 'p_' ),
+		'name'    => sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) ),
+		'type'    => sanitize_text_field( wp_unslash( $_POST['type'] ?? '' ) ),
+		'city'    => sanitize_text_field( wp_unslash( $_POST['city'] ?? '' ) ),
+		'phone'   => sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) ),
+		'email'   => '',
+		'website' => esc_url_raw( wp_unslash( $_POST['website'] ?? '' ) ),
+		'address' => sanitize_text_field( wp_unslash( $_POST['address'] ?? '' ) ),
+		'status'  => 'a_contacter',
+		'ts'      => time(),
+	);
+	update_option( 'ag_prospects', array_slice( $list, -2000 ) );
+	wp_send_json_success();
+} );
+
 /* ── 5. Message de prospection prêt à envoyer ───────────────────── */
 if ( ! function_exists( 'ag_prospect_message' ) ) {
 	function ag_prospect_message( $p ) {
@@ -154,36 +185,34 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 						<?php submit_button( 'Enregistrer la clé', 'secondary', 'submit', false ); ?>
 					</form>
 				<?php else : ?>
-					<form method="get" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>">
+					<form method="get" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>" id="ag-search-form">
 						<input type="hidden" name="page" value="ag-prospects">
-						<input type="text" name="q" value="<?php echo esc_attr( $q ); ?>" placeholder="Type d'activité (ex : restaurant, coiffeur, plombier)" style="width:320px;">
+						<input type="text" name="q" id="ag-q" value="<?php echo esc_attr( $q ); ?>" placeholder="Type d'activité (ex : restaurant, coiffeur, plombier)" style="width:320px;">
 						<input type="text" name="city" value="<?php echo esc_attr( $city ); ?>" placeholder="Ville (ex : Nantes)" style="width:200px;">
 						<?php submit_button( 'Chercher', 'primary', 'submit', false ); ?>
 						<a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-prospects' ) ); ?>" class="button">Réinitialiser</a>
 					</form>
+					<div style="margin:8px 0 0;color:#50575e;font-size:.9rem;">Idées rapides :
+						<?php foreach ( array( 'restaurant', 'coiffeur', 'barbier', 'plombier', 'électricien', 'garagiste', 'boulangerie', 'bar', 'institut de beauté', 'artisan', 'coach sportif', 'photographe', 'fleuriste', 'avocat' ) as $c ) : ?>
+							<button type="button" class="button button-small ag-chip" data-q="<?php echo esc_attr( $c ); ?>"><?php echo esc_html( $c ); ?></button>
+						<?php endforeach; ?>
+					</div>
 					<?php if ( is_array( $results ) && isset( $results['error'] ) ) : ?>
 						<p style="color:#b32d2e;">Erreur Places : <?php echo esc_html( $results['error'] ); ?> (vérifie que « Places API (New) » est activée et la facturation aussi.)</p>
 					<?php elseif ( is_array( $results ) ) : ?>
-						<p style="color:#50575e;"><?php echo count( $results ); ?> résultat(s). Les ❗ <strong>sans site web</strong> sont les meilleurs prospects.</p>
-						<table class="widefat striped"><thead><tr><th>Entreprise</th><th>Adresse</th><th>Téléphone</th><th>Site web</th><th></th></tr></thead><tbody>
-						<?php foreach ( $results as $r ) : if ( empty( $r['name'] ) ) continue; ?>
-							<tr>
+						<p style="color:#50575e;margin-top:14px;"><?php echo count( $results ); ?> résultat(s). <label style="margin-left:8px;"><input type="checkbox" id="ag-onlyno"> N'afficher que ceux <strong>sans vrai site</strong> (réseaux sociaux inclus)</label></p>
+						<table class="widefat striped" id="ag-results"><thead><tr><th>Entreprise</th><th>Adresse</th><th>Téléphone</th><th>Présence en ligne</th><th></th></tr></thead><tbody>
+						<?php foreach ( $results as $r ) : if ( empty( $r['name'] ) ) continue; $kind = ag_site_kind( $r['website'] ); ?>
+							<tr data-kind="<?php echo esc_attr( $kind[0] ); ?>">
 								<td><strong><?php echo esc_html( $r['name'] ); ?></strong></td>
 								<td><?php echo esc_html( $r['address'] ); ?></td>
 								<td><?php echo esc_html( $r['phone'] ); ?></td>
-								<td><?php echo $r['website'] ? '<a href="' . esc_url( $r['website'] ) . '" target="_blank" rel="noopener">site ✓</a>' : '<strong style="color:#b32d2e;">❗ Pas de site</strong>'; ?></td>
+								<td><?php echo ( 'real' === $kind[0] ) ? '<a href="' . esc_url( $r['website'] ) . '" target="_blank" rel="noopener">site ✓</a>' : '<strong style="color:#b32d2e;">' . esc_html( $kind[1] ) . '</strong>'; ?></td>
 								<td>
-									<form method="post" action="<?php echo esc_url( $post ); ?>" style="margin:0;">
-										<input type="hidden" name="action" value="ag_prospect_save">
-										<input type="hidden" name="_n" value="<?php echo esc_attr( $nonce ); ?>">
-										<input type="hidden" name="name" value="<?php echo esc_attr( $r['name'] ); ?>">
-										<input type="hidden" name="type" value="<?php echo esc_attr( $q ); ?>">
-										<input type="hidden" name="city" value="<?php echo esc_attr( $city ); ?>">
-										<input type="hidden" name="phone" value="<?php echo esc_attr( $r['phone'] ); ?>">
-										<input type="hidden" name="website" value="<?php echo esc_attr( $r['website'] ); ?>">
-										<input type="hidden" name="address" value="<?php echo esc_attr( $r['address'] ); ?>">
-										<button class="button button-primary">+ Suivre</button>
-									</form>
+									<button type="button" class="button button-primary ag-add"
+										data-name="<?php echo esc_attr( $r['name'] ); ?>" data-type="<?php echo esc_attr( $q ); ?>"
+										data-city="<?php echo esc_attr( $city ); ?>" data-phone="<?php echo esc_attr( $r['phone'] ); ?>"
+										data-website="<?php echo esc_attr( $r['website'] ); ?>" data-address="<?php echo esc_attr( $r['address'] ); ?>">+ Suivre</button>
 								</td>
 							</tr>
 						<?php endforeach; ?>
@@ -260,7 +289,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					$wa     = $digits ? 'https://wa.me/' . $digits . '?text=' . rawurlencode( $msg ) : '';
 					?>
 					<tr>
-						<td><strong><?php echo esc_html( $p['name'] ?? '' ); ?></strong><?php echo empty( $p['website'] ) ? ' <span style="color:#b32d2e;">❗</span>' : ''; ?><br><small><?php echo esc_html( $p['type'] ?? '' ); ?></small></td>
+						<td><strong><?php echo esc_html( $p['name'] ?? '' ); ?></strong><?php $pk = ag_site_kind( $p['website'] ?? '' ); echo ( 'real' !== $pk[0] ) ? ' <span style="color:#b32d2e;" title="' . esc_attr( $pk[1] ) . '">❗</span>' : ''; ?><br><small><?php echo esc_html( $p['type'] ?? '' ); ?></small></td>
 						<td><?php echo esc_html( $p['city'] ?? '' ); ?></td>
 						<td>
 							<?php if ( ! empty( $p['phone'] ) ) : ?><a href="tel:<?php echo esc_attr( $p['phone'] ); ?>">📞 <?php echo esc_html( $p['phone'] ); ?></a><br><?php endif; ?>
@@ -312,6 +341,22 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				</tbody></table>
 			<?php endif; ?>
 		</div>
+		<script>
+		(function(){
+			var nonce=<?php echo wp_json_encode( $nonce ); ?>;
+			// Raccourcis métiers : remplit la recherche et lance.
+			document.querySelectorAll('.ag-chip').forEach(function(b){ b.addEventListener('click',function(){ var i=document.getElementById('ag-q'); if(i){ i.value=b.getAttribute('data-q'); document.getElementById('ag-search-form').submit(); } }); });
+			// Filtre "sans vrai site".
+			var only=document.getElementById('ag-onlyno'); if(only){ only.addEventListener('change',function(){ document.querySelectorAll('#ag-results tbody tr').forEach(function(tr){ tr.style.display=(only.checked && tr.getAttribute('data-kind')==='real')?'none':''; }); }); }
+			// Ajout en AJAX (sans recharger -> la recherche reste).
+			document.querySelectorAll('.ag-add').forEach(function(b){ b.addEventListener('click',function(){
+				var fd=new FormData(); fd.append('action','ag_prospect_add'); fd.append('_n',nonce);
+				['name','type','city','phone','website','address'].forEach(function(k){ fd.append(k, b.getAttribute('data-'+k)||''); });
+				b.disabled=true; b.textContent='…';
+				fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ b.textContent=(j&&j.success)?'✓ Ajouté':'Erreur'; }).catch(function(){ b.textContent='Erreur'; b.disabled=false; });
+			}); });
+		})();
+		</script>
 		<?php
 	}
 }
