@@ -44,6 +44,23 @@ if ( ! function_exists( 'ag_places_key' ) ) {
 	function ag_places_key() { return trim( (string) get_option( 'ag_places_key', '' ) ); }
 }
 
+if ( ! function_exists( 'ag_wa_number' ) ) {
+	/**
+	 * Normalise un numéro pour WhatsApp (wa.me) : chiffres uniquement, au
+	 * format international SANS « + » ni « 0 » initial. wa.me refuse les
+	 * numéros nationaux (06…) → il ouvre l'accueil au lieu de la conversation.
+	 * On privilégie un numéro déjà international ; sinon on suppose la France.
+	 */
+	function ag_wa_number( $raw, $intl = '' ) {
+		$src = ( '' !== trim( (string) $intl ) ) ? $intl : $raw;
+		$d   = preg_replace( '/[^0-9]/', '', (string) $src );
+		if ( '' === $d ) return '';
+		if ( 0 === strpos( $d, '00' ) ) $d = substr( $d, 2 );   // 0033… -> 33…
+		if ( '0' === substr( $d, 0, 1 ) ) $d = '33' . ltrim( $d, '0' ); // national FR 06… -> 336…
+		return $d;
+	}
+}
+
 /* ── 3. Recherche d'entreprises via Google Places (New) ─────────── */
 if ( ! function_exists( 'ag_places_search' ) ) {
 	function ag_places_search( $query ) {
@@ -54,7 +71,7 @@ if ( ! function_exists( 'ag_places_search' ) ) {
 			'headers' => array(
 				'Content-Type'     => 'application/json',
 				'X-Goog-Api-Key'   => $key,
-				'X-Goog-FieldMask' => 'places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.websiteUri,places.id,places.rating,places.userRatingCount,places.businessStatus',
+				'X-Goog-FieldMask' => 'places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.internationalPhoneNumber,places.websiteUri,places.id,places.rating,places.userRatingCount,places.businessStatus',
 			),
 			'body'    => wp_json_encode( array( 'textQuery' => $query, 'languageCode' => 'fr', 'maxResultCount' => 20 ) ),
 		) );
@@ -66,10 +83,11 @@ if ( ! function_exists( 'ag_places_search' ) ) {
 		foreach ( (array) ( $data['places'] ?? array() ) as $p ) {
 			if ( isset( $p['businessStatus'] ) && 'OPERATIONAL' !== $p['businessStatus'] ) continue; // on ignore les fermés
 			$out[] = array(
-				'name'    => $p['displayName']['text'] ?? '',
-				'address' => $p['formattedAddress'] ?? '',
-				'phone'   => $p['nationalPhoneNumber'] ?? '',
-				'website' => $p['websiteUri'] ?? '',
+				'name'       => $p['displayName']['text'] ?? '',
+				'address'    => $p['formattedAddress'] ?? '',
+				'phone'      => $p['nationalPhoneNumber'] ?? '',
+				'phone_intl' => $p['internationalPhoneNumber'] ?? '',
+				'website'    => $p['websiteUri'] ?? '',
 				'rating'  => $p['rating'] ?? 0,
 				'reviews' => $p['userRatingCount'] ?? 0,
 			);
@@ -174,7 +192,7 @@ if ( ! function_exists( 'ag_prospect_add_record' ) ) {
 		if ( ag_prospect_find( $data['name'], $data['city'] ?? '', $data['phone'] ?? '' ) ) return false;
 		$list   = (array) get_option( 'ag_prospects', array() );
 		$list[] = array_merge( array(
-			'id' => uniqid( 'p_' ), 'name' => '', 'type' => '', 'city' => '', 'phone' => '', 'email' => '',
+			'id' => uniqid( 'p_' ), 'name' => '', 'type' => '', 'city' => '', 'phone' => '', 'phone_intl' => '', 'email' => '',
 			'website' => '', 'address' => '', 'rating' => 0, 'reviews' => 0, 'status' => 'nouveau',
 			'owner_email' => '', 'owner_name' => '', 'notes' => '', 'source' => 'manuel', 'ts' => time(),
 		), $data );
@@ -459,7 +477,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			<?php else : ?>
 				<table class="widefat striped"><thead><tr><th>Priorité</th><th>Entreprise</th><th>Pourquoi (besoin)</th><th>Contact</th><th>Statut</th><th>Assigné à</th><th>Prospecter</th><th></th></tr></thead><tbody>
 				<?php foreach ( $prospects as $p ) :
-					$digits = preg_replace( '/[^0-9]/', '', $p['phone'] ?? '' );
+					$digits = ag_wa_number( $p['phone'] ?? '', $p['phone_intl'] ?? '' );
 					$msg    = ag_prospect_message( $p );
 					$mailto = $p['email'] ? 'mailto:' . rawurlencode( $p['email'] ) . '?subject=' . rawurlencode( 'Votre site web — Alliance Groupe' ) . '&body=' . rawurlencode( $msg ) : '';
 					$wa     = $digits ? 'https://wa.me/' . $digits . '?text=' . rawurlencode( $msg ) : '';
