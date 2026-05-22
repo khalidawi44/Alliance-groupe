@@ -738,9 +738,9 @@ if ( ! function_exists( 'ag_notify_render' ) ) {
 			<div style="max-width:780px;margin:16px 0;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #25D366;">
 				<strong>📲 Option A — WhatsApp (sur TON numéro, gratuit via CallMeBot) :</strong>
 				<ol style="margin:8px 0 0 22px;line-height:1.8;">
-					<li>Sur ton téléphone, ajoute le contact <strong>+34 644 51 95 23</strong> (CallMeBot).</li>
-					<li>Envoie-lui ce message WhatsApp : <code>I allow callmebot to send me messages</code></li>
-					<li>Il te répond avec une <strong>API key</strong>. Mets ton <strong>numéro</strong> (format international, ex : 33612345678) + l'<strong>API key</strong> ci-dessous.</li>
+					<li>Ouvre la page officielle <a href="https://www.callmebot.com/blog/free-api-whatsapp-messages/" target="_blank" rel="noopener"><strong>callmebot.com (API WhatsApp)</strong></a> et récupère le <strong>numéro CallMeBot du moment</strong> (il change parfois — c'est pour ça qu'on ne le fige pas ici).</li>
+					<li>Ajoute ce numéro en contact sur ton téléphone, puis envoie-lui sur WhatsApp : <code>I allow callmebot to send me messages</code></li>
+					<li>Il te répond avec une <strong>API key</strong>. Mets ton <strong>numéro</strong> (format international, ex : 33612345678) + l'<strong>API key</strong> ci-dessous, puis « Envoyer un test ».</li>
 				</ol>
 				<p style="margin:10px 0 0;color:#b32d2e;"><strong>Important :</strong> WhatsApp n'autorise l'envoi automatique que vers <strong>ton numéro personnel</strong>, <strong>pas vers un groupe</strong>. Pour notifier <strong>toute l'équipe dans un groupe</strong>, utilise <strong>Telegram</strong> (option B) : crée un groupe Telegram, ajoute ton bot dedans, et mets le <strong>Chat ID du groupe</strong> (un nombre négatif).</p>
 			</div>
