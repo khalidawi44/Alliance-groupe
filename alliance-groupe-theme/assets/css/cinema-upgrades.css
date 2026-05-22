@@ -952,3 +952,39 @@ body.home .ag-hero__dot{
 		transform: none !important;
 	}
 }
+
+/* ================================================================
+   AJUSTEMENTS — curseur perso désactivé + nav logo gauche / burger droite
+   ================================================================ */
+/* 1. Curseur personnalisé OFF (le "halo" rond qui ressortait sur fond clair) */
+.ag-cursor, .ag-cursor-dot { display:none !important; }
+html.ag-has-custom-cursor, html.ag-has-custom-cursor body,
+html.ag-has-custom-cursor a, html.ag-has-custom-cursor button,
+html.ag-has-custom-cursor input, html.ag-has-custom-cursor textarea,
+html.ag-has-custom-cursor [role=button] { cursor:auto !important; }
+
+/* 2. Barre de nav : LOGO à gauche, ACCORDÉON à droite (au lieu du centré) */
+.ag-nav__inner{
+    flex-direction:row !important;
+    justify-content:space-between !important;
+    align-items:center !important;
+    gap:14px !important;
+    padding-top:0 !important;
+    padding-bottom:0 !important;
+}
+.ag-nav{ padding-top:12px !important; padding-bottom:12px !important; }
+.ag-nav.scrolled{ padding-top:8px !important; padding-bottom:8px !important; }
+.ag-nav__logo{ margin:0 !important; flex-direction:row !important; align-items:center !important; gap:10px !important; }
+.ag-nav__logo-img{ height:46px !important; width:auto !important; }
+.ag-nav.scrolled .ag-nav__logo-img{ height:40px !important; }
+.ag-nav__logo-text{ font-size:1.05rem !important; letter-spacing:3px !important; margin-top:0 !important; }
+/* l'accordéon (toggle plein écran) : fixé en haut à DROITE */
+.ag-fsm-toggle{ position:fixed !important; top:16px !important; right:18px !important; left:auto !important; bottom:auto !important; transform:none !important; }
+.ag-fsm-toggle:hover{ transform:scale(1.06) !important; }
+.ag-nav.scrolled ~ .ag-fsm-toggle, body.scrolled-nav .ag-fsm-toggle{ top:12px !important; }
+@media (max-width:768px){
+    .ag-nav__logo-img{ height:40px !important; }
+    .ag-nav__logo-text{ font-size:.95rem !important; letter-spacing:2px !important; }
+    .ag-fsm-toggle{ top:14px !important; right:14px !important; }
+    .ag-nav{ padding-top:10px !important; padding-bottom:10px !important; }
+}

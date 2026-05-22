@@ -3886,19 +3886,18 @@ button:focus-visible{
 
     /* Section verticale : reduit l'air sur petits ecrans */
     .ag-section{padding:60px 0;}
-    /* 1er bloc de page (pages sans hero : espace, connexion, classement, blog…) :
-       dégage la nav fixe + burger (~144px) pour que le titre ne soit plus caché. */
-    #ag-main-content > .ag-section:first-child{padding-top:160px;}
+    /* 1er bloc de page (pages sans hero) : dégage la nav fixe compacte (~70px) sans laisser de gros vide. */
+    #ag-main-content > .ag-section:first-child{padding-top:120px;}
     /* Pages dont le 1er bloc est centré verticalement (connexion, mot de passe) :
        le centrage flex remontait le titre sous la nav -> on repasse en flux normal. */
     #ag-main-content > .ag-login:first-child,
-    #ag-main-content > .ag-pw:first-child{min-height:auto;display:block;align-items:stretch;padding-top:160px;}
+    #ag-main-content > .ag-pw:first-child{min-height:auto;display:block;align-items:stretch;padding-top:120px;}
     .ag-section__title{font-size:clamp(1.7rem,6vw,2.2rem);margin-bottom:14px;}
     .ag-section__desc{font-size:1rem;margin-bottom:36px;}
 
     /* Hero : titre lisible sans deborder, padding-top large pour passer
        sous le burger fullscreen-menu (top:76px + height:48px = 124px) */
-    .ag-hero{padding:165px 20px 60px;min-height:auto;}
+    .ag-hero{padding:120px 20px 56px;min-height:auto;}
     .ag-hero__title{font-size:clamp(1.9rem,7vw,2.6rem);line-height:1.15;margin-bottom:18px;}
     .ag-hero__sub{font-size:1rem;line-height:1.6;margin:0 auto 28px;}
     .ag-hero__badge{font-size:.78rem;padding:7px 16px;margin-bottom:22px;}
@@ -3925,7 +3924,7 @@ button:focus-visible{
     .ag-btn-outline{padding:13px 26px;font-size:.98rem;}
 
     /* Le menu fixe est plus haut sur mobile : on decale l'ancrage des liens/scroll */
-    html{scroll-padding-top:140px;}
+    html{scroll-padding-top:110px;}
 
     /* Parallax : reduit padding + quote ; background-attachment:fixed n'est pas rendu sur iOS Safari -> scroll pour que l'image s'affiche */
     .ag-parallax{padding:60px 20px;background-attachment:scroll;}
@@ -4012,7 +4011,7 @@ button:focus-visible{
 
     /* Hero un poil plus compact */
     /* Burger sur petit ecran : top:70px + height:44px = 114px - on prevoit large */
-    .ag-hero{padding:150px 16px 50px;}
+    .ag-hero{padding:112px 16px 48px;}
     .ag-hero__title{font-size:clamp(1.7rem,7.5vw,2.2rem);}
     .ag-hero__sub{font-size:.95rem;}
     .ag-hero__badge{font-size:.72rem;padding:6px 14px;letter-spacing:.2px;}

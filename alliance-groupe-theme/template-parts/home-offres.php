@@ -37,7 +37,7 @@ $ag_offres_bg = get_stylesheet_directory_uri() . '/assets/images/cities/nantes-1
 <style>
 /* effet "remonte" : la section monte sur la precedente, coins arrondis + ombre */
 .ag-rise{position:relative;z-index:2;margin-top:-58px;border-top-left-radius:44px;border-top-right-radius:44px;box-shadow:0 -50px 90px rgba(0,0,0,.55);overflow:hidden;}
-.ag-home-offres{background:transparent;}
+.ag-home-offres{background:linear-gradient(160deg,#fbf8f1 0%,#f4eedf 100%);}
 .ag-home-offres__bg{display:none;}
 .ag-home-offres__inner{position:relative;z-index:2;}
 .ag-home-offres__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:46px;}
