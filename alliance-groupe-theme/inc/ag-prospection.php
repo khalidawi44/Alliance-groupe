@@ -192,6 +192,45 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				<?php endif; ?>
 			</div>
 
+			<!-- Agent automatique -->
+			<div style="max-width:980px;margin-top:18px;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #F37A1F;border-radius:6px;">
+				<h2 style="margin-top:0;">🤖 Agent automatique</h2>
+				<?php if ( '' === $key ) : ?>
+					<p>Ajoute d'abord ta <strong>clé Google Places</strong> ci-dessus pour activer la recherche automatique.</p>
+				<?php else :
+					$auto = (array) get_option( 'ag_auto_searches', array() );
+					$lr   = (array) get_option( 'ag_prospect_lastrun', array() );
+					?>
+					<p>L'agent cherche <strong>tout seul (1×/jour)</strong> les recherches ci-dessous et ajoute les nouvelles entreprises à ta liste (tu reçois un email récap). <strong>Il ne contacte personne automatiquement</strong> — tu prospectes toi-même, en 1 clic.</p>
+					<form method="post" action="<?php echo esc_url( $post ); ?>" style="margin-bottom:10px;">
+						<input type="hidden" name="action" value="ag_autosearch_add">
+						<input type="hidden" name="_n" value="<?php echo esc_attr( $nonce ); ?>">
+						<input type="text" name="q" placeholder="Type (restaurant, coiffeur…)" required style="width:240px;">
+						<input type="text" name="city" placeholder="Ville" style="width:160px;">
+						<?php submit_button( '+ Ajouter une recherche auto', 'primary', 'submit', false ); ?>
+					</form>
+					<?php if ( $auto ) : ?>
+						<ul style="margin:0 0 10px;">
+						<?php foreach ( $auto as $i => $a ) : ?>
+							<li style="margin-bottom:4px;">🔁 <strong><?php echo esc_html( ( $a['q'] ?? '' ) . ( ! empty( $a['city'] ) ? ' — ' . $a['city'] : '' ) ); ?></strong>
+								<form method="post" action="<?php echo esc_url( $post ); ?>" style="display:inline;">
+									<input type="hidden" name="action" value="ag_autosearch_del"><input type="hidden" name="_n" value="<?php echo esc_attr( $nonce ); ?>"><input type="hidden" name="i" value="<?php echo (int) $i; ?>">
+									<button class="button-link" style="color:#b32d2e;">retirer</button>
+								</form>
+							</li>
+						<?php endforeach; ?>
+						</ul>
+						<form method="post" action="<?php echo esc_url( $post ); ?>" style="display:inline;">
+							<input type="hidden" name="action" value="ag_autosearch_run"><input type="hidden" name="_n" value="<?php echo esc_attr( $nonce ); ?>">
+							<button class="button">▶ Lancer maintenant</button>
+						</form>
+						<?php if ( ! empty( $lr['ts'] ) ) : ?><span style="color:#50575e;margin-left:10px;">Dernier passage : <?php echo esc_html( date_i18n( 'd/m/Y H:i', $lr['ts'] ) ); ?> (+<?php echo (int) ( $lr['added'] ?? 0 ); ?>)</span><?php endif; ?>
+					<?php else : ?>
+						<p style="color:#50575e;">Ajoute au moins une recherche pour activer l'agent.</p>
+					<?php endif; ?>
+				<?php endif; ?>
+			</div>
+
 			<!-- Ajout manuel -->
 			<div style="max-width:980px;margin-top:18px;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-radius:6px;">
 				<h2 style="margin-top:0;">➕ Ajouter un prospect à la main</h2>
@@ -274,5 +313,62 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			<?php endif; ?>
 		</div>
 		<?php
+	}
+}
+
+/* ── 7. Agent automatique (cron quotidien : recherche planifiée) ─── */
+add_action( 'admin_post_ag_autosearch_add', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_die( 'no' );
+	$q = sanitize_text_field( wp_unslash( $_POST['q'] ?? '' ) );
+	$city = sanitize_text_field( wp_unslash( $_POST['city'] ?? '' ) );
+	if ( $q || $city ) { $s = (array) get_option( 'ag_auto_searches', array() ); $s[] = array( 'q' => $q, 'city' => $city ); update_option( 'ag_auto_searches', $s ); }
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-prospects' ) ); exit;
+} );
+add_action( 'admin_post_ag_autosearch_del', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_die( 'no' );
+	$i = (int) ( $_POST['i'] ?? -1 ); $s = (array) get_option( 'ag_auto_searches', array() );
+	if ( isset( $s[ $i ] ) ) { unset( $s[ $i ] ); update_option( 'ag_auto_searches', array_values( $s ) ); }
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-prospects' ) ); exit;
+} );
+add_action( 'admin_post_ag_autosearch_run', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_die( 'no' );
+	ag_run_auto_prospection();
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-prospects&ran=1' ) ); exit;
+} );
+
+add_action( 'init', function () {
+	if ( ! wp_next_scheduled( 'ag_prospect_cron' ) ) wp_schedule_event( time() + 600, 'daily', 'ag_prospect_cron' );
+} );
+add_action( 'ag_prospect_cron', 'ag_run_auto_prospection' );
+if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
+	function ag_run_auto_prospection() {
+		$searches = (array) get_option( 'ag_auto_searches', array() );
+		if ( empty( $searches ) || '' === ag_places_key() ) return;
+		$list = (array) get_option( 'ag_prospects', array() );
+		$seen = array();
+		foreach ( $list as $p ) { $seen[ strtolower( ( $p['name'] ?? '' ) . '|' . ( $p['city'] ?? '' ) ) ] = 1; }
+		$added = 0; $nosite = 0;
+		foreach ( $searches as $s ) {
+			$res = ag_places_search( trim( ( $s['q'] ?? '' ) . ' ' . ( $s['city'] ?? '' ) ) );
+			if ( ! is_array( $res ) || isset( $res['error'] ) ) continue;
+			foreach ( $res as $r ) {
+				if ( empty( $r['name'] ) ) continue;
+				$sig = strtolower( $r['name'] . '|' . ( $s['city'] ?? '' ) );
+				if ( isset( $seen[ $sig ] ) ) continue;
+				$seen[ $sig ] = 1;
+				$list[] = array(
+					'id' => uniqid( 'p_' ), 'name' => $r['name'], 'type' => $s['q'] ?? '', 'city' => $s['city'] ?? '',
+					'phone' => $r['phone'] ?? '', 'email' => '', 'website' => $r['website'] ?? '', 'address' => $r['address'] ?? '',
+					'status' => 'a_contacter', 'source' => 'auto', 'ts' => time(),
+				);
+				$added++; if ( empty( $r['website'] ) ) $nosite++;
+			}
+		}
+		update_option( 'ag_prospect_lastrun', array( 'ts' => time(), 'added' => $added ) );
+		if ( $added ) {
+			update_option( 'ag_prospects', array_slice( $list, -5000 ) );
+			$to = apply_filters( 'ag_calendar_notify_email', 'advise.alliance.group@gmail.com' );
+			wp_mail( $to, "🤖 $added nouveaux prospects trouvés (dont $nosite sans site)", "L'agent automatique a ajouté $added entreprises a ta liste ($nosite sans site web).\n\nVa les prospecter : " . admin_url( 'admin.php?page=ag-prospects' ) );
+		}
 	}
 }
