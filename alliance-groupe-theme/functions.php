@@ -54,6 +54,21 @@ if ( file_exists( $ag_paypal_file ) ) {
     require_once $ag_paypal_file;
 }
 
+// ── 1c7. Pop-up d'incitation "devenir ambassadeur" (visiteurs non-membres)
+add_action( 'wp_footer', function () {
+    if ( is_admin() ) return;
+    $kind = function_exists( 'ag_espace_member_kind' ) ? ag_espace_member_kind() : '';
+    if ( in_array( $kind, array( 'ambassadeur', 'admin' ), true ) ) return; // pas pour les vendeurs/admin
+    $exclude = array(
+        'templates/page-connexion.php', 'templates/page-ambassadeurs.php',
+        'templates/page-espace-ambassadeur.php', 'templates/page-espace-client.php',
+        'templates/page-studio.php', 'templates/page-mot-de-passe.php',
+        'templates/page-guide-ambassadeur.php',
+    );
+    foreach ( $exclude as $tpl ) { if ( is_page_template( $tpl ) ) return; }
+    get_template_part( 'template-parts/ambassador-popup' );
+}, 50 );
+
 // ── 1c6. Espaces membres (clients & commerciaux) : comptes, connexion, dashboards
 $ag_espaces_file = get_stylesheet_directory() . '/inc/ag-espaces.php';
 if ( file_exists( $ag_espaces_file ) ) {

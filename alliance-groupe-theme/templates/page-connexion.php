@@ -34,25 +34,26 @@ $reg_errs = array(
 		<div class="ag-container ag-container--narrow ag-login__box">
 			<span class="ag-tag">Espace membre</span>
 			<h1 class="ag-section__title">Bienvenue</h1>
-			<p class="ag-section__desc">Connecte-toi à ton espace, ou crée ton compte en 30 secondes.</p>
-
-			<div class="ag-auth-tabs" role="tablist">
-				<button type="button" class="ag-auth-tab<?php echo 'connexion' === $ag_tab ? ' is-active' : ''; ?>" data-tab="connexion" role="tab">Se connecter</button>
-				<button type="button" class="ag-auth-tab<?php echo 'inscription' === $ag_tab ? ' is-active' : ''; ?>" data-tab="inscription" role="tab">Créer un compte</button>
-			</div>
+			<p class="ag-section__desc">La façon la plus simple : connecte-toi en <strong>1 clic</strong> avec Google. (Ou par email si tu préfères.)</p>
 
 			<?php if ( $ag_gid ) : ?>
-				<div class="ag-auth-google">
+				<div class="ag-auth-google-hero">
+					<p class="ag-auth-google-hero__lbl">⚡ Recommandé — connexion en 1 clic, rien à retenir</p>
 					<div id="g_id_onload"
 						data-client_id="<?php echo esc_attr( $ag_gid ); ?>"
 						data-login_uri="<?php echo esc_url( admin_url( 'admin-post.php?action=ag_google_login' ) ); ?>"
 						data-ux_mode="redirect"
 						data-auto_prompt="false"></div>
-					<div class="g_id_signin" data-type="standard" data-theme="filled_black" data-text="continue_with" data-shape="pill" data-logo_alignment="left" data-size="large"></div>
+					<div class="g_id_signin" data-type="standard" data-theme="filled_black" data-text="continue_with" data-shape="pill" data-logo_alignment="center" data-size="large" data-width="340"></div>
+					<script src="https://accounts.google.com/gsi/client" async defer></script>
 				</div>
-				<div class="ag-auth-or"><span>ou avec ton email</span></div>
-				<script src="https://accounts.google.com/gsi/client" async defer></script>
+				<div class="ag-auth-or"><span>ou par email</span></div>
 			<?php endif; ?>
+
+			<div class="ag-auth-tabs" role="tablist">
+				<button type="button" class="ag-auth-tab<?php echo 'connexion' === $ag_tab ? ' is-active' : ''; ?>" data-tab="connexion" role="tab">Se connecter</button>
+				<button type="button" class="ag-auth-tab<?php echo 'inscription' === $ag_tab ? ' is-active' : ''; ?>" data-tab="inscription" role="tab">Créer un compte</button>
+			</div>
 
 			<!-- Panneau : Connexion -->
 			<div class="ag-auth-panel" data-panel="connexion"<?php echo 'connexion' === $ag_tab ? '' : ' hidden'; ?>>
@@ -101,7 +102,9 @@ $reg_errs = array(
 .ag-auth-tab{flex:1;padding:12px 10px;border:none;background:transparent;color:var(--color-text-soft);font-weight:700;font-size:.95rem;border-radius:10px;cursor:pointer;transition:background .2s,color .2s;}
 .ag-auth-tab.is-active{background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;}
 .ag-auth-google{display:flex;justify-content:center;margin-bottom:8px;min-height:44px;}
-.ag-auth-or{display:flex;align-items:center;gap:14px;margin:16px 0;color:var(--color-text-muted);font-size:.82rem;}
+.ag-auth-google-hero{display:flex;flex-direction:column;align-items:center;gap:12px;margin:22px 0 6px;padding:22px 18px;background:linear-gradient(160deg,rgba(212,180,92,.16),rgba(243,122,31,.06));border:1px solid rgba(212,180,92,.5);border-radius:18px;box-shadow:0 8px 30px rgba(0,0,0,.25);}
+.ag-auth-google-hero__lbl{margin:0;color:#e8c766;font-weight:700;font-size:.92rem;text-align:center;}
+.ag-auth-or{display:flex;align-items:center;gap:14px;margin:18px 0;color:var(--color-text-muted);font-size:.82rem;}
 .ag-auth-or::before,.ag-auth-or::after{content:"";flex:1;height:1px;background:rgba(212,180,92,.2);}
 .ag-auth-panel[hidden]{display:none;}
 .ag-login .ag-form__group{position:relative;margin-bottom:16px;}

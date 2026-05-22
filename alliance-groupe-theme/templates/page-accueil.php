@@ -103,6 +103,9 @@ get_header();
 <!-- P3/ CARITATIF — Programme Racines -->
 <?php get_template_part('template-parts/home-racines'); ?>
 
+<!-- Offre solidaire : site GRATUIT pour les associations -->
+<?php get_template_part('template-parts/home-associations'); ?>
+
 <!-- Templates gratuits (aimant a prospects) -->
 <?php get_template_part('template-parts/templates-cta'); ?>
 
