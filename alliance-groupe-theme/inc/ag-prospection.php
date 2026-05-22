@@ -43,6 +43,13 @@ add_action( 'admin_init', function () {
 if ( ! function_exists( 'ag_places_key' ) ) {
 	function ag_places_key() { return trim( (string) get_option( 'ag_places_key', '' ) ); }
 }
+if ( ! function_exists( 'ag_places_usage' ) ) {
+	/** Usage Google Places du mois : nb d'appels + coût estimé (~0,04 €/appel, hors palier gratuit Google). */
+	function ag_places_usage() {
+		$n = (int) get_option( 'ag_places_calls_' . gmdate( 'Ym' ), 0 );
+		return array( 'calls' => $n, 'cost' => round( $n * 0.04, 2 ) );
+	}
+}
 
 if ( ! function_exists( 'ag_wa_number' ) ) {
 	/**
@@ -66,6 +73,9 @@ if ( ! function_exists( 'ag_places_search' ) ) {
 	function ag_places_search( $query ) {
 		$key = ag_places_key();
 		if ( '' === $key || '' === trim( $query ) ) return null;
+		// Compteur d'appels (transparence du coût Google : ~0,04 € / appel).
+		$ck = 'ag_places_calls_' . gmdate( 'Ym' );
+		update_option( $ck, (int) get_option( $ck, 0 ) + 1, false );
 		$resp = wp_remote_post( 'https://places.googleapis.com/v1/places:searchText', array(
 			'timeout' => 20,
 			'headers' => array(
@@ -507,6 +517,11 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			<!-- Chasse Google Places -->
 			<div style="max-width:980px;margin-top:14px;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #D4B45C;border-radius:6px;">
 				<h2 style="margin-top:0;">🔎 Trouver des entreprises</h2>
+				<?php $ag_use = ag_places_usage(); ?>
+				<div style="display:inline-block;background:#f6f7f7;border:1px solid #dcdcde;border-radius:8px;padding:8px 14px;margin-bottom:10px;font-size:.9rem;">
+					📊 <strong><?php echo (int) $ag_use['calls']; ?></strong> recherche(s) ce mois-ci · coût estimé Google ≈ <strong><?php echo esc_html( number_format( $ag_use['cost'], 2, ',', ' ' ) ); ?> €</strong>
+					<span style="color:#646970;"> (1 recherche ≈ 0,04 € · 1 balayage « tous secteurs » ≈ 1,60 € · <strong>Google offre un palier gratuit/mois</strong>, donc souvent 0 € réel).</span>
+				</div>
 				<?php if ( '' === $key ) : ?>
 					<p>Pour la recherche automatique, ajoute ta <strong>clé Google Places (New)</strong> ci-dessous (dans ton projet Google Cloud → active « Places API (New) » → crée une clé API). En attendant, tu peux ajouter des prospects à la main plus bas, ou chercher sur <a href="https://www.google.com/maps" target="_blank" rel="noopener">Google Maps</a> (ex. « restaurant Nantes ») et copier les infos.</p>
 					<form method="post" action="options.php">
