@@ -197,9 +197,9 @@ if ( ! function_exists( 'ag_prospect_add_record' ) ) {
 			'owner_email' => '', 'owner_name' => '', 'notes' => '', 'source' => 'manuel', 'ts' => time(),
 		), $data );
 		// Auto-assignation à l'ambassadeur propriétaire de la zone (département).
-		if ( '' === $rec['owner_email'] && function_exists( 'ag_zone_owner' ) ) {
+		if ( '' === $rec['owner_email'] && function_exists( 'ag_zone_next_owner' ) ) {
 			$dept = function_exists( 'ag_prospect_dept' ) ? ag_prospect_dept( $rec ) : '';
-			$zo   = $dept ? ag_zone_owner( $dept ) : '';
+			$zo   = $dept ? ag_zone_next_owner( $dept ) : '';
 			if ( $zo ) {
 				$rec['owner_email'] = $zo;
 				$zrec = function_exists( 'ag_ambassadeur_record' ) ? ag_ambassadeur_record( $zo ) : null;
