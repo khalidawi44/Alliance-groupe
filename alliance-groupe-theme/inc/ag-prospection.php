@@ -248,10 +248,11 @@ if ( ! function_exists( 'ag_prospect_categories' ) ) {
 	/** Secteurs balayés pour « toutes les entreprises » d'une ville. */
 	function ag_prospect_categories() {
 		return apply_filters( 'ag_prospect_categories', array(
-			'restaurant', 'pizzeria', 'bar', 'boulangerie', 'coiffeur', 'barbier', 'institut de beauté', 'onglerie',
-			'plombier', 'électricien', 'garagiste', 'menuisier', 'maçon', 'peintre', 'artisan',
-			'fleuriste', 'opticien', 'dentiste', 'kiné', 'coach sportif', 'salle de sport', 'photographe',
-			'agence immobilière', 'auto-école', 'pressing', 'toiletteur',
+			'restaurant', 'pizzeria', 'bar', 'boulangerie', 'traiteur', 'coiffeur', 'barbier', 'institut de beauté', 'onglerie', 'spa',
+			'plombier', 'électricien', 'garagiste', 'menuisier', 'maçon', 'peintre', 'serrurier', 'chauffagiste', 'artisan',
+			'fleuriste', 'opticien', 'dentiste', 'kiné', 'ostéopathe', 'coach sportif', 'salle de sport', 'photographe',
+			'agence immobilière', 'auto-école', 'pressing', 'toiletteur', 'avocat', 'notaire', 'comptable', 'assurance',
+			'agence de voyage', 'vétérinaire', 'pharmacie', 'tatoueur', 'food truck',
 		) );
 	}
 }
@@ -325,7 +326,8 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 		$q      = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : '';
 		$city   = isset( $_GET['city'] ) ? sanitize_text_field( wp_unslash( $_GET['city'] ) ) : '';
 		$allsec = ! empty( $_GET['all'] );
-		if ( $allsec && $city ) {
+		// Métier vide + ville = balayage tous secteurs (comme l'agent auto).
+		if ( ( $allsec || '' === trim( $q ) ) && $city ) {
 			$results = ag_places_sweep( $city ); // déjà trié par probabilité d'achat
 		} else {
 			$results = ( $q || $city ) ? ag_places_search( trim( $q . ' ' . $city ) ) : null;
@@ -608,7 +610,7 @@ if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
 				if ( empty( $r['name'] ) ) continue;
 				$ok = ag_prospect_add_record( array(
 					'name' => $r['name'], 'type' => $r['type'] ?? ( $s['q'] ?? '' ), 'city' => $s['city'] ?? '',
-					'phone' => $r['phone'] ?? '', 'website' => $r['website'] ?? '', 'address' => $r['address'] ?? '',
+					'phone' => $r['phone'] ?? '', 'phone_intl' => $r['phone_intl'] ?? '', 'website' => $r['website'] ?? '', 'address' => $r['address'] ?? '',
 					'rating' => $r['rating'] ?? 0, 'reviews' => $r['reviews'] ?? 0, 'source' => 'robot',
 				) );
 				if ( $ok ) { $added++; if ( 'real' !== ag_site_kind( $r['website'] ?? '' )[0] ) $nosite++; }
