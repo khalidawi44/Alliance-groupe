@@ -69,6 +69,24 @@ add_action( 'wp_footer', function () {
     get_template_part( 'template-parts/ambassador-popup' );
 }, 50 );
 
+// ── 1c8. Prospection : moteur (capture prospects + admin) + chat sur le site
+$ag_prospection_file = get_stylesheet_directory() . '/inc/ag-prospection.php';
+if ( file_exists( $ag_prospection_file ) ) {
+    require_once $ag_prospection_file;
+}
+add_action( 'wp_footer', function () {
+    if ( is_admin() ) return;
+    $kind = function_exists( 'ag_espace_member_kind' ) ? ag_espace_member_kind() : '';
+    if ( in_array( $kind, array( 'ambassadeur', 'admin' ), true ) ) return;
+    $exclude = array(
+        'templates/page-espace-ambassadeur.php', 'templates/page-espace-client.php',
+        'templates/page-studio.php', 'templates/page-mot-de-passe.php',
+        'templates/page-guide-ambassadeur.php',
+    );
+    foreach ( $exclude as $tpl ) { if ( is_page_template( $tpl ) ) return; }
+    get_template_part( 'template-parts/prospect-chat' );
+}, 60 );
+
 // ── 1c6. Espaces membres (clients & commerciaux) : comptes, connexion, dashboards
 $ag_espaces_file = get_stylesheet_directory() . '/inc/ag-espaces.php';
 if ( file_exists( $ag_espaces_file ) ) {
