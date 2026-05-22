@@ -363,19 +363,21 @@ if ( ! function_exists( 'ag_bodacc_search' ) ) {
 			$out[] = array(
 				'name' => $name, 'city' => $ville ?: $city, 'activite' => $activite, 'siren' => $siren,
 				'nature' => $nature ?: 'Procédure collective', 'date' => $rec['dateparution'] ?? '', 'tribunal' => is_array( $rec['tribunal'] ?? '' ) ? '' : ( $rec['tribunal'] ?? '' ),
+				'complement' => is_string( $compl ) ? $compl : '',
 			);
 		}
 		return $out;
 	}
 }
 if ( ! function_exists( 'ag_bodacc_message' ) ) {
-	/** Message empathique adapté à une entreprise en redressement : on l'aide à rebondir. */
+	/** Message pour une entreprise en redressement : on n'essaie PAS de vendre,
+	    on apporte son expertise (pro-bono / partenariat) pour l'aider à rebondir,
+	    en coordination avec l'administrateur / mandataire judiciaire. */
 	function ag_bodacc_message( $c ) {
 		$name = $c['name'] ?? 'votre entreprise';
 		$act  = trim( (string) ( $c['activite'] ?? '' ) );
-		$site = home_url( '/sites-express' );
 		$acc  = $act ? "votre activité ($act)" : 'votre activité';
-		return "Bonjour,\n\nJe me permets de vous écrire avec respect : je sais que $name traverse une période difficile (redressement judiciaire). C'est justement dans ces moments qu'il faut regagner de la visibilité et ramener des clients, sans exploser le budget.\n\nChez Alliance Groupe, on crée des sites professionnels à prix fixe (dès 490 €, payables en 4× sans frais) qui travaillent pour vous 24h/24 : on vous rend visible sur Google, on capte des demandes, et on vous aide à rebondir avec $acc.\n\nSi ça peut aider, on peut commencer par un échange gratuit, sans engagement — je vous dirai franchement ce qui est faisable et utile pour vous, tout de suite.\n\nUn aperçu de ce qu'on fait : $site\n\nBien à vous,\nAlliance Groupe\n(Si vous préférez ne pas être recontacté, dites-le-moi, j'en prends note immédiatement.)";
+		return "Bonjour,\n\nJe sais que $name traverse une période difficile (redressement judiciaire). Je ne viens pas vous vendre quelque chose : je viens proposer mon aide.\n\nJe dirige Alliance Groupe, une agence web & IA. Je peux apporter gratuitement mon expertise pour vous aider à rebondir avec $acc : un site professionnel, de la visibilité sur Google et des outils qui ramènent des clients — sans coût pour votre trésorerie.\n\nPour les projets que je crois prometteurs, je m'engage dans la durée, en accompagnement (pas en simple prestation). Tout peut se mettre en place proprement, en coordination avec votre administrateur / mandataire judiciaire, dans le cadre du plan de redressement.\n\nSi vous êtes ouvert·e, on en parle 10 minutes, sans aucun engagement.\n\nBien à vous,\nAlliance Groupe — advise.alliance.group@gmail.com\n(Si vous préférez ne pas être recontacté·e, dites-le-moi, j'en prends note immédiatement.)";
 	}
 }
 if ( ! function_exists( 'ag_prospect_why' ) ) {
@@ -529,7 +531,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					<?php elseif ( empty( $tres ) ) : ?>
 						<p style="color:#50575e;">Aucune entreprise en redressement trouvée pour « <?php echo esc_html( $tcity ); ?> » (ou aucune annonce récente). Essaie une grande ville proche.</p>
 					<?php else : ?>
-						<p style="color:#50575e;margin-top:12px;"><strong><?php echo count( $tres ); ?></strong> entreprise(s) en redressement / sauvegarde. ⚠️ Budget souvent limité : pense à proposer un <strong>tarif « rebond »</strong> ou l'échange gratuit.</p>
+						<p style="color:#50575e;margin-top:12px;"><strong><?php echo count( $tres ); ?></strong> entreprise(s) en redressement / sauvegarde. 💡 Approche <strong>solidaire</strong> (comme l'offre quartiers/assos) : tu apportes ton <strong>expertise gratuitement</strong> (ou en partenariat sur les projets prometteurs), à coordonner avec l'<strong>administrateur / mandataire judiciaire</strong>. Le message ci-dessous est déjà rédigé dans cet esprit.</p>
 						<table class="widefat striped"><thead><tr><th>Entreprise</th><th>Activité</th><th>Procédure</th><th>Contact</th><th>Message</th><th></th></tr></thead><tbody>
 						<?php foreach ( $tres as $tc ) :
 							$tex = ag_prospect_find( $tc['name'], $tc['city'], '' );
@@ -540,7 +542,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 							<tr>
 								<td><strong><?php echo esc_html( $tc['name'] ); ?></strong><br><small><?php echo esc_html( $tc['city'] ); ?></small><?php if ( $tex ) : ?> <span style="background:#e7eef7;color:#1d4f8b;border-radius:10px;padding:1px 8px;font-size:.78em;">déjà en liste</span><?php endif; ?></td>
 								<td style="font-size:.85em;"><?php echo esc_html( $tc['activite'] ?: '—' ); ?></td>
-								<td style="font-size:.82em;color:#7a4ed4;font-weight:600;"><?php echo esc_html( $tc['nature'] ); ?><?php echo $tc['date'] ? '<br><span style="color:#50575e;font-weight:400;">' . esc_html( $tc['date'] ) . '</span>' : ''; ?></td>
+								<td style="font-size:.82em;color:#7a4ed4;font-weight:600;max-width:240px;"><?php echo esc_html( $tc['nature'] ); ?><?php echo $tc['date'] ? '<br><span style="color:#50575e;font-weight:400;">' . esc_html( $tc['date'] ) . '</span>' : ''; ?><?php if ( ! empty( $tc['complement'] ) ) : ?><br><span style="color:#50575e;font-weight:400;font-style:italic;">⚖️ <?php echo esc_html( wp_trim_words( $tc['complement'], 30 ) ); ?></span><?php endif; ?></td>
 								<td><a class="button button-small" href="<?php echo esc_url( $tsearch ); ?>" title="Trouver le téléphone via Google Places">🔎 Trouver le tel</a></td>
 								<td><details><summary class="button button-small">Message</summary><textarea readonly rows="9" style="width:340px;margin-top:6px;"><?php echo esc_textarea( $tmsg ); ?></textarea></details></td>
 								<td><?php if ( $tex ) : ?><span style="color:#50575e;font-size:.85em;">✓ suivi</span><?php else : ?><button type="button" class="button button-primary ag-add" data-name="<?php echo esc_attr( $tc['name'] ); ?>" data-type="<?php echo esc_attr( $tc['activite'] ); ?>" data-city="<?php echo esc_attr( $tc['city'] ); ?>" data-phone="" data-website="" data-address="" data-rating="0" data-reviews="0" data-notes="<?php echo esc_attr( $tnotes ); ?>" data-source="tribunal">+ Suivre</button><?php endif; ?></td>
