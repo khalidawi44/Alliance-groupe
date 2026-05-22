@@ -61,7 +61,7 @@
             <h3 class="ag-services__cta-title">Vous avez un <em>projet</em> en tête ?</h3>
             <p class="ag-services__cta-sub">Parlons-en directement, sans détour. Un appel de 30 minutes suffit pour clarifier votre besoin et identifier les meilleures solutions.</p>
             <div class="ag-services__cta-btns">
-                <a href="<?php echo esc_url(home_url('/rendez-vous')); ?>" class="ag-btn-gold ag-btn-gold--xl">📅 Réserver un appel gratuit →</a>
+                <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>" class="ag-btn-gold ag-btn-gold--xl">✦ Demander un devis gratuit →</a>
                 <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">✉️ Nous écrire</a>
                 <a href="tel:+33623526074" class="ag-btn-outline">📞 06.23.52.60.74</a>
             </div>

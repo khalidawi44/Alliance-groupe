@@ -298,9 +298,9 @@
                                 <span class="ag-mega__icon">🚨</span>
                                 <span><strong>Contact d'urgence</strong><small>Besoin urgent — réponse sous 24h</small></span>
                             </a>
-                            <a href="<?php echo esc_url(home_url('/rendez-vous')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">📅</span>
-                                <span><strong>Prendre RDV</strong><small>Appel découverte gratuit ou audit payant</small></span>
+                            <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">✦</span>
+                                <span><strong>Projet sur-mesure</strong><small>Devis gratuit pour les projets exigeants</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/questions-flash')); ?>" class="ag-mega__link">
                                 <span class="ag-mega__icon">💬</span>
@@ -312,8 +312,8 @@
             </li>
         </ul>
 
-        <a href="<?php echo esc_url(home_url('/rendez-vous')); ?>" class="ag-nav__cta">
-            Prendre RDV <span>→</span>
+        <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>" class="ag-nav__cta">
+            Devis sur-mesure <span>→</span>
         </a>
 
         <button class="ag-nav__burger" id="ag-burger" aria-label="Menu" type="button">
@@ -416,7 +416,7 @@
                 <button class="ag-mobile-menu__toggle" type="button">Contact <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
                     <a href="<?php echo esc_url(home_url('/contact')); ?>">🚨 Contact d'urgence</a>
-                    <a href="<?php echo esc_url(home_url('/rendez-vous')); ?>">📅 Prendre RDV</a>
+                    <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>">✦ Projet sur-mesure</a>
                     <a href="<?php echo esc_url(home_url('/questions-flash')); ?>">💬 Questions Flash</a>
                 </div>
             </div>

@@ -29,7 +29,7 @@ $ag_offres_bg = get_stylesheet_directory_uri() . '/assets/images/cities/nantes-1
 
 		<div class="ag-home-offres__cta">
 			<a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>" class="ag-btn-gold">Voir les offres + maintenance →</a>
-			<a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" class="ag-btn-outline">Besoin de sur-mesure ?</a>
+			<a href="<?php echo esc_url( home_url( '/sur-mesure' ) ); ?>" class="ag-btn-outline">Besoin de sur-mesure ?</a>
 		</div>
 
 		<div class="ag-offres-trust">

@@ -38,7 +38,7 @@ $ag_audit_cta      = $ag_audit_args['cta']      ?? 'Réserver mon créneau →';
 					<span>📝 3 actions concrètes</span>
 					<span>🇫🇷 Équipe française</span>
 				</div>
-				<a href="<?php echo esc_url( home_url( '/rendez-vous' ) ); ?>" class="ag-audit-cta__btn">
+				<a href="<?php echo esc_url( home_url( '/sur-mesure' ) ); ?>" class="ag-audit-cta__btn">
 					<?php echo esc_html( $ag_audit_cta ); ?>
 				</a>
 				<p class="ag-audit-cta__guarantee">🔒 Sans CB, sans inscription, sans relance commerciale agressive.</p>

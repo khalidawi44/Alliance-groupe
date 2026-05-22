@@ -108,7 +108,7 @@ if ( empty( $d['slug'] ) ) return;
 										<?php endforeach; ?>
 									</ul>
 								<?php endif; ?>
-								<a href="<?php echo esc_url( home_url( '/rendez-vous' ) ); ?>" class="ag-svc-pricing-cta">Demander un devis →</a>
+								<a href="<?php echo esc_url( home_url( '/sur-mesure' ) ); ?>" class="ag-svc-pricing-cta">Demander un devis →</a>
 							</div>
 						</div>
 					</div>

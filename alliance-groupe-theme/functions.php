@@ -18,11 +18,34 @@ if ( is_admin() ) {
     }
 }
 
-// ── 1c. Charger ag-calendly-admin.php (page de config Cal.com — filename legacy) ─
-$ag_calendly_admin_file = get_stylesheet_directory() . '/ag-calendly-admin.php';
-if ( file_exists( $ag_calendly_admin_file ) ) {
-    require_once $ag_calendly_admin_file;
-}
+// ── 1c. Cal.com (prise de RDV payante) retiré : remplacé par l'offre sur-mesure gratuite.
+//        On ne charge plus ag-calendly-admin.php ; /rendez-vous redirige vers /sur-mesure.
+
+// Crée la page « Projet sur-mesure » si elle n'existe pas encore.
+add_action( 'admin_init', function () {
+    if ( get_option( 'ag_sur_mesure_page' ) ) return;
+    if ( ! get_page_by_path( 'sur-mesure' ) ) {
+        $pid = wp_insert_post( array(
+            'post_title'    => 'Projet sur-mesure',
+            'post_name'     => 'sur-mesure',
+            'post_status'   => 'publish',
+            'post_type'     => 'page',
+            'post_content'  => '',
+            'page_template' => 'templates/page-sur-mesure.php',
+        ) );
+        if ( $pid && ! is_wp_error( $pid ) ) update_option( 'ag_sur_mesure_page', $pid );
+    } else {
+        update_option( 'ag_sur_mesure_page', 1 );
+    }
+} );
+
+// L'ancienne page de prise de RDV (Cal.com) redirige vers l'offre sur-mesure.
+add_action( 'template_redirect', function () {
+    if ( is_page( 'rendez-vous' ) || is_page_template( 'templates/page-rdv.php' ) ) {
+        wp_safe_redirect( home_url( '/sur-mesure' ), 301 );
+        exit;
+    }
+} );
 
 // ── 1c2. Auto-sync GitHub : Apparence > 🚀 Sync GitHub ─────────
 $ag_github_sync_file = get_stylesheet_directory() . '/inc/ag-github-sync.php';
@@ -395,7 +418,8 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-service-conseil.php'] = 'Service — Conseil';
     $templates['templates/page-fondateur.php']       = 'Notre Fondateur';
     $templates['templates/page-templates.php']       = 'Templates WordPress';
-    $templates['templates/page-rdv.php']             = 'Prise de rendez-vous';
+    $templates['templates/page-sur-mesure.php']      = 'Projet sur-mesure';
+    $templates['templates/page-rdv.php']             = 'Prise de rendez-vous (déprécié)';
     $templates['templates/page-questions-flash.php'] = 'Questions Flash';
     $templates['templates/page-merci-rdv.php']       = 'Merci — Rendez-vous confirmé';
     $templates['templates/page-cookies.php']         = 'Cookies & Préférences';

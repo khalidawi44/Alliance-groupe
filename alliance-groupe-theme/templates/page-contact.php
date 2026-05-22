@@ -93,19 +93,19 @@ get_header();
         </div>
     </section>
 
-    <!-- ── Booking CTA — pointe vers la page dédiée /rendez-vous ── -->
+    <!-- ── CTA — pointe vers l'offre sur-mesure ── -->
     <section class="ag-section ag-section--darker">
         <div class="ag-container">
             <div class="ag-rdv-cta">
                 <div class="ag-rdv-cta__content">
-                    <span class="ag-tag ag-anim" data-anim="tag">Plus rapide qu'un email</span>
-                    <h2 class="ag-rdv-cta__title">Réservez votre <em>appel stratégique gratuit</em></h2>
+                    <span class="ag-tag ag-anim" data-anim="tag">Projet ambitieux ?</span>
+                    <h2 class="ag-rdv-cta__title">Un site <em>sur-mesure</em>, sur devis</h2>
                     <p class="ag-rdv-cta__sub">
-                        30 minutes en visio avec Fabrizio pour analyser votre projet et identifier
-                        les leviers prioritaires. Sans engagement, sans jargon.
+                        E-commerce complexe, plateforme, fonctionnalités avancées, IA &amp; automatisations.
+                        On conçoit tout sur-mesure. Devis gratuit, sans engagement.
                     </p>
-                    <a href="<?php echo esc_url( home_url( '/rendez-vous' ) ); ?>" class="ag-btn-gold">
-                        Choisir mon créneau <span>→</span>
+                    <a href="<?php echo esc_url( home_url( '/sur-mesure' ) ); ?>" class="ag-btn-gold">
+                        Découvrir le sur-mesure <span>→</span>
                     </a>
                 </div>
                 <div class="ag-rdv-cta__visual" aria-hidden="true">
