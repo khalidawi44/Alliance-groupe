@@ -246,6 +246,37 @@ if ( ! function_exists( 'ag_zones_render' ) ) {
 				<?php endforeach; ?>
 			</tbody></table>
 			<?php endif; ?>
+
+			<h2 style="margin-top:28px;">💎 Chasseur Pro — recherche payante (19 €/mois)</h2>
+			<p style="max-width:820px;color:#50575e;">Les ambassadeurs reçoivent les prospects du robot <strong>gratuitement</strong>. La <strong>recherche à la demande</strong> dans leur zone est une option payante : ça couvre le coût Google. Colle ici le <strong>lien d'abonnement PayPal</strong> (19 €/mois), puis <strong>active</strong> l'ambassadeur après son paiement.</p>
+			<form method="post" action="<?php echo esc_url( $post ); ?>" style="margin-bottom:14px;">
+				<input type="hidden" name="action" value="ag_chasseur_link">
+				<?php wp_nonce_field( 'ag_zone_admin', '_n' ); ?>
+				<input type="url" name="url" value="<?php echo esc_attr( get_option( 'ag_chasseur_paypal_url', '' ) ); ?>" placeholder="https://www.paypal.com/.../abonnement-19" style="width:420px;">
+				<?php submit_button( 'Enregistrer le lien', 'secondary', 'submit', false ); ?>
+			</form>
+			<?php $amb_users = get_users( array( 'role' => 'ag_ambassadeur' ) ); if ( $amb_users ) : ?>
+			<table class="widefat striped" style="max-width:820px;"><thead><tr><th>Ambassadeur</th><th>Téléphone</th><th>Chasseur Pro</th><th></th></tr></thead><tbody>
+				<?php foreach ( $amb_users as $au ) :
+					$until = (int) get_user_meta( $au->ID, 'ag_chasseur_until', true );
+					$active = $until > time();
+				?>
+				<tr>
+					<td><strong><?php echo esc_html( $au->display_name ?: $au->user_email ); ?></strong><br><small><?php echo esc_html( $au->user_email ); ?></small></td>
+					<td><?php echo esc_html( get_user_meta( $au->ID, 'ag_amb_phone', true ) ?: '—' ); ?></td>
+					<td><?php echo $active ? '<span style="color:#1e7e34;font-weight:700;">✅ Actif jusqu\'au ' . esc_html( wp_date( 'd/m/Y', $until ) ) . '</span>' : '<span style="color:#646970;">— inactif</span>'; ?></td>
+					<td>
+						<form method="post" action="<?php echo esc_url( $post ); ?>" style="margin:0;">
+							<input type="hidden" name="action" value="ag_chasseur_toggle"><?php wp_nonce_field( 'ag_zone_admin', '_n' ); ?>
+							<input type="hidden" name="uid" value="<?php echo (int) $au->ID; ?>">
+							<input type="hidden" name="on" value="<?php echo $active ? '0' : '1'; ?>">
+							<button class="button button-small"><?php echo $active ? 'Désactiver' : 'Activer 1 mois'; ?></button>
+						</form>
+					</td>
+				</tr>
+				<?php endforeach; ?>
+			</tbody></table>
+			<?php else : ?><p>Aucun ambassadeur inscrit pour l'instant.</p><?php endif; ?>
 		</div>
 		<?php
 	}
@@ -310,4 +341,18 @@ add_action( 'admin_post_ag_zone_request', function () {
 		}
 	}
 	wp_safe_redirect( home_url( '/espace-ambassadeur?zone=' . $res . '#zone' ) ); exit;
+} );
+
+/* ── Chasseur Pro : activation admin + lien d'abonnement PayPal ── */
+add_action( 'admin_post_ag_chasseur_toggle', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_zone_admin' ) ) wp_die( 'no' );
+	$uid = (int) ( $_POST['uid'] ?? 0 );
+	$on  = ! empty( $_POST['on'] );
+	if ( $uid ) update_user_meta( $uid, 'ag_chasseur_until', $on ? ( time() + 35 * DAY_IN_SECONDS ) : 0 );
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-zones&zmsg=chasseur' ) ); exit;
+} );
+add_action( 'admin_post_ag_chasseur_link', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_zone_admin' ) ) wp_die( 'no' );
+	update_option( 'ag_chasseur_paypal_url', esc_url_raw( wp_unslash( $_POST['url'] ?? '' ) ) );
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-zones&zmsg=chasseur' ) ); exit;
 } );

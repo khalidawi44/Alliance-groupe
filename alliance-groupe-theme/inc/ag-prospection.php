@@ -991,6 +991,76 @@ add_action( 'wp_ajax_ag_amb_reply', function () {
 	wp_send_json_error();
 } );
 
+/* ── Chasseur Pro (abonnement) : recherche à la demande dans SA zone ── */
+if ( ! function_exists( 'ag_is_chasseur' ) ) {
+	function ag_is_chasseur( $uid = 0 ) {
+		$uid = $uid ?: get_current_user_id();
+		if ( ! $uid ) return false;
+		if ( user_can( $uid, 'manage_options' ) ) return true;
+		return (int) get_user_meta( $uid, 'ag_chasseur_until', true ) > time();
+	}
+}
+if ( ! function_exists( 'ag_chasseur_quota_left' ) ) {
+	function ag_chasseur_quota_left( $uid = 0 ) {
+		$uid = $uid ?: get_current_user_id();
+		if ( user_can( $uid, 'manage_options' ) ) return 9999;
+		$cap = (int) apply_filters( 'ag_chasseur_quota', 300 );
+		return max( 0, $cap - (int) get_user_meta( $uid, 'ag_chasseur_n_' . gmdate( 'Ym' ), true ) );
+	}
+}
+add_action( 'wp_ajax_ag_amb_search', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error( array( 'm' => 'Session expirée.' ) );
+	$uid = get_current_user_id();
+	if ( ! ag_is_chasseur( $uid ) ) wp_send_json_error( array( 'm' => 'Abonnement Chasseur Pro requis.' ) );
+	if ( ag_chasseur_quota_left( $uid ) <= 0 ) wp_send_json_error( array( 'm' => 'Quota du mois atteint.' ) );
+	$email   = strtolower( wp_get_current_user()->user_email );
+	$myzones = function_exists( 'ag_zone_of_owner' ) ? ag_zone_of_owner( $email ) : array();
+	$admin   = user_can( $uid, 'manage_options' );
+	if ( ! $admin && empty( $myzones ) ) wp_send_json_error( array( 'm' => "Prends d'abord ta zone." ) );
+	$city = sanitize_text_field( wp_unslash( $_POST['city'] ?? '' ) );
+	if ( '' === $city ) wp_send_json_error( array( 'm' => 'Indique une ville de ta zone.' ) );
+	$res = ag_places_search( $city );
+	if ( ! $admin ) update_user_meta( $uid, 'ag_chasseur_n_' . gmdate( 'Ym' ), (int) get_user_meta( $uid, 'ag_chasseur_n_' . gmdate( 'Ym' ), true ) + 1 );
+	if ( ! is_array( $res ) || isset( $res['error'] ) ) wp_send_json_error( array( 'm' => ( $res['error'] ?? 'Erreur recherche.' ) ) );
+	$out = array();
+	foreach ( $res as $r ) {
+		if ( empty( $r['name'] ) ) continue;
+		$d = function_exists( 'ag_prospect_dept' ) ? ag_prospect_dept( $r ) : '';
+		if ( ! $admin && $myzones && $d && ! in_array( $d, $myzones, true ) ) continue; // hors de sa zone
+		$ex = ag_prospect_find( $r['name'], $r['city'] ?? $city, $r['phone'] ?? '' );
+		if ( $ex && ag_prospect_blocked( $ex['status'] ?? '' ) ) continue;
+		$kind = ag_site_kind( $r['website'] ?? '' );
+		$out[] = array(
+			'name' => $r['name'], 'type' => $r['type'] ?? '', 'city' => $r['city'] ?? $city, 'phone' => $r['phone'] ?? '', 'phone_intl' => $r['phone_intl'] ?? '',
+			'website' => $r['website'] ?? '', 'address' => $r['address'] ?? '', 'rating' => $r['rating'] ?? 0, 'reviews' => $r['reviews'] ?? 0,
+			'kind' => $kind[1], 'real' => ( 'real' === $kind[0] ), 'score' => ag_prospect_score( $r ), 'exists' => (bool) $ex,
+		);
+	}
+	usort( $out, function ( $a, $b ) { return $b['score'] <=> $a['score']; } );
+	wp_send_json_success( array( 'items' => $out, 'left' => ag_chasseur_quota_left( $uid ) ) );
+} );
+add_action( 'wp_ajax_ag_amb_add', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error();
+	$uid   = get_current_user_id();
+	$email = strtolower( wp_get_current_user()->user_email );
+	$name  = wp_get_current_user()->display_name ?: $email;
+	$myzones = function_exists( 'ag_zone_of_owner' ) ? ag_zone_of_owner( $email ) : array();
+	$data = array(
+		'name' => sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) ),
+		'type' => sanitize_text_field( wp_unslash( $_POST['type'] ?? '' ) ),
+		'city' => sanitize_text_field( wp_unslash( $_POST['city'] ?? '' ) ),
+		'phone' => sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) ),
+		'phone_intl' => sanitize_text_field( wp_unslash( $_POST['phone_intl'] ?? '' ) ),
+		'website' => esc_url_raw( wp_unslash( $_POST['website'] ?? '' ) ),
+		'address' => sanitize_text_field( wp_unslash( $_POST['address'] ?? '' ) ),
+		'rating' => (float) ( $_POST['rating'] ?? 0 ), 'reviews' => (int) ( $_POST['reviews'] ?? 0 ),
+		'owner_email' => $email, 'owner_name' => $name, 'source' => 'ambassadeur',
+	);
+	$d = function_exists( 'ag_prospect_dept' ) ? ag_prospect_dept( $data ) : '';
+	if ( ! user_can( $uid, 'manage_options' ) && $myzones && $d && ! in_array( $d, $myzones, true ) ) wp_send_json_error( array( 'm' => 'Hors de ta zone.' ) );
+	wp_send_json_success( array( 'added' => ag_prospect_add_record( $data ) ) );
+} );
+
 /* ── 9. Notifications téléphone (Telegram, gratuit & instantané) ──── */
 if ( ! function_exists( 'ag_tg_cfg' ) ) {
 	function ag_tg_cfg( $k ) { return trim( (string) get_option( 'ag_tg_' . $k, '' ) ); }

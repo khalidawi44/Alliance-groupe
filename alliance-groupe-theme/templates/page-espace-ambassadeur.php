@@ -263,6 +263,73 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 	</section>
 
 	<?php
+	$ag_is_chasseur = function_exists( 'ag_is_chasseur' ) && ag_is_chasseur( get_current_user_id() );
+	$ag_chasseur_link = get_option( 'ag_chasseur_paypal_url', '' );
+	$ag_chasseur_nonce = wp_create_nonce( 'ag_amb_prospect' );
+	$ag_chasseur_ajax = admin_url( 'admin-ajax.php' );
+	?>
+	<section class="ag-section ag-section--graphite" id="chercher">
+		<div class="ag-container">
+			<h2 class="ag-section__title">Trouver dans ma zone 🔎</h2>
+			<?php if ( $ag_is_chasseur ) : ?>
+				<p class="ag-section__desc">Cherche des entreprises de <strong>ta zone</strong> qui ont besoin d'un site. Ajoute-les en 1 clic à ta liste, puis contacte‑les. <span style="color:var(--color-text-soft);">(Restreint à ton département.)</span></p>
+				<form id="ag-amb-search-form" onsubmit="return false;" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-top:12px;">
+					<input type="text" id="ag-amb-city" placeholder="Ville de ta zone (ex : Bordeaux)" style="padding:10px 14px;border-radius:10px;border:1px solid rgba(212,180,92,.4);background:rgba(255,255,255,.05);color:#fff;width:240px;">
+					<button type="submit" class="ag-btn-gold" id="ag-amb-search-btn">Chercher →</button>
+				</form>
+				<p id="ag-amb-search-info" style="text-align:center;color:var(--color-text-soft);font-size:.85rem;margin-top:8px;"></p>
+				<div id="ag-amb-search-results" style="margin-top:14px;"></div>
+				<script>
+				(function(){
+					var au=<?php echo wp_json_encode( $ag_chasseur_ajax ); ?>, n=<?php echo wp_json_encode( $ag_chasseur_nonce ); ?>;
+					var form=document.getElementById('ag-amb-search-form'), out=document.getElementById('ag-amb-search-results'), info=document.getElementById('ag-amb-search-info'), btn=document.getElementById('ag-amb-search-btn');
+					function esc(s){var d=document.createElement('div');d.textContent=(s==null?'':s);return d.innerHTML;}
+					form.addEventListener('submit',function(){
+						var city=document.getElementById('ag-amb-city').value.trim(); if(!city) return;
+						btn.disabled=true; btn.textContent='…'; out.innerHTML=''; info.textContent='Recherche en cours…';
+						var fd=new FormData(); fd.append('action','ag_amb_search'); fd.append('_n',n); fd.append('city',city);
+						fetch(au,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){
+							btn.disabled=false; btn.textContent='Chercher →';
+							if(!j||!j.success){ info.textContent='⚠ '+((j&&j.data&&j.data.m)||'Erreur'); return; }
+							var items=j.data.items||[]; info.textContent=items.length+' résultat(s) dans ta zone · '+j.data.left+' recherches restantes ce mois.';
+							if(!items.length){ out.innerHTML='<p style="text-align:center;color:#b9b9c0;">Aucune entreprise (sans vrai site) trouvée dans ta zone pour cette ville.</p>'; return; }
+							var h='<div style="display:flex;flex-direction:column;gap:10px;">';
+							items.forEach(function(it,i){
+								h+='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(212,180,92,.25);border-radius:12px;padding:12px 14px;">'
+								+'<strong style="color:#fff;">'+esc(it.name)+'</strong> <span style="color:#e6b35a;">'+(it.real?'':'❗ '+esc(it.kind))+'</span>'
+								+'<br><small style="color:var(--color-text-soft);">'+esc(it.type)+' · '+esc(it.city)+(it.phone?' · '+esc(it.phone):'')+(it.reviews?' · '+it.reviews+'★avis':'')+'</small><br>'
+								+(it.exists?'<span style="color:#b9b9c0;font-size:.85em;">déjà en liste</span>':'<button class="ag-btn-outline ag-amb-follow" data-i="'+i+'" style="padding:5px 12px;margin-top:6px;">+ Suivre</button>')
+								+'</div>';
+							});
+							h+='</div>'; out.innerHTML=h;
+							out.querySelectorAll('.ag-amb-follow').forEach(function(b){ b.addEventListener('click',function(){
+								var it=items[+b.getAttribute('data-i')]; var fd=new FormData(); fd.append('action','ag_amb_add'); fd.append('_n',n);
+								['name','type','city','phone','phone_intl','website','address','rating','reviews'].forEach(function(k){ fd.append(k, it[k]!=null?it[k]:''); });
+								b.disabled=true; b.textContent='…';
+								fetch(au,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(jj){ b.textContent=(jj&&jj.success)?'✓ Ajouté à mes prospects':'Erreur'; }).catch(function(){ b.textContent='Erreur'; b.disabled=false; });
+							}); });
+						}).catch(function(){ btn.disabled=false; btn.textContent='Chercher →'; info.textContent='⚠ Erreur réseau.'; });
+					});
+				})();
+				</script>
+			<?php else : ?>
+				<p class="ag-section__desc">Tu reçois déjà des prospects <strong>automatiquement</strong> dans ta zone (gratuit). Pour <strong>chercher toi‑même</strong> de nouvelles entreprises quand tu veux, passe <strong>Chasseur Pro</strong>.</p>
+				<div style="max-width:460px;margin:18px auto 0;background:rgba(255,255,255,.04);border:1px solid rgba(212,180,92,.4);border-radius:18px;padding:28px;text-align:center;">
+					<div style="font-size:2rem;">💎</div>
+					<h3 style="color:#fff;font-family:var(--font-serif);margin:6px 0;">Chasseur Pro</h3>
+					<p style="color:var(--color-text-soft);">Recherche illimitée raisonnable dans ta zone (300/mois). <strong style="color:#fff;">19 €/mois</strong>, sans engagement.</p>
+					<?php if ( $ag_chasseur_link ) : ?>
+						<a href="<?php echo esc_url( $ag_chasseur_link ); ?>" target="_blank" rel="noopener" class="ag-btn-gold" style="margin-top:8px;display:inline-block;">S'abonner — 19 €/mois →</a>
+						<p style="color:var(--color-text-soft);font-size:.8rem;margin-top:10px;">Après paiement, ton accès est activé sous peu.</p>
+					<?php else : ?>
+						<p style="color:#e6b35a;">Abonnement bientôt disponible — reviens vite !</p>
+					<?php endif; ?>
+				</div>
+			<?php endif; ?>
+		</div>
+	</section>
+
+	<?php
 	$ag_my_prospects = function_exists( 'ag_prospects_for_owner' ) ? ag_prospects_for_owner( $email ) : array();
 	if ( $ag_my_prospects ) :
 		$ag_pstat = function_exists( 'ag_prospect_statuses' ) ? ag_prospect_statuses() : array();
