@@ -194,6 +194,7 @@ if ( ! function_exists( 'ag_prospect_add_record' ) ) {
 		$list[] = array_merge( array(
 			'id' => uniqid( 'p_' ), 'name' => '', 'type' => '', 'city' => '', 'phone' => '', 'phone_intl' => '', 'email' => '',
 			'website' => '', 'address' => '', 'rating' => 0, 'reviews' => 0, 'status' => 'nouveau',
+			'date_contact' => '', 'last_contact' => '', 'contact_count' => 0, 'replied' => 0, 'date_reply' => '',
 			'owner_email' => '', 'owner_name' => '', 'notes' => '', 'source' => 'manuel', 'ts' => time(),
 		), $data );
 		update_option( 'ag_prospects', array_slice( $list, -5000 ) );
@@ -216,6 +217,45 @@ add_action( 'wp_ajax_ag_prospect_add', function () {
 		'source'  => 'recherche',
 	) );
 	wp_send_json_success( array( 'added' => $ok ) );
+} );
+
+/* Enregistre un CONTACT (clic WhatsApp/Email/Tél) : date + compteur + statut auto. */
+add_action( 'wp_ajax_ag_prospect_touch', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
+	$id   = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+	$list = (array) get_option( 'ag_prospects', array() );
+	foreach ( $list as $k => $p ) {
+		if ( ( $p['id'] ?? '' ) === $id ) {
+			$now = current_time( 'd/m/Y' );
+			$cnt = (int) ( $p['contact_count'] ?? 0 ) + 1;
+			$list[ $k ]['contact_count'] = $cnt;
+			$list[ $k ]['last_contact']  = $now;
+			if ( empty( $p['date_contact'] ) ) $list[ $k ]['date_contact'] = $now;
+			$cur = $p['status'] ?? 'nouveau';
+			if ( 'nouveau' === $cur ) $list[ $k ]['status'] = 'contacte';
+			elseif ( in_array( $cur, array( 'contacte', 'sans_reponse' ), true ) ) $list[ $k ]['status'] = 'relance';
+			update_option( 'ag_prospects', array_values( $list ) );
+			wp_send_json_success( array( 'count' => $cnt, 'date' => $now, 'status' => $list[ $k ]['status'] ) );
+		}
+	}
+	wp_send_json_error();
+} );
+
+/* Marque qu'un prospect A RÉPONDU (ou annule). */
+add_action( 'wp_ajax_ag_prospect_reply', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
+	$id   = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+	$val  = ! empty( $_POST['replied'] );
+	$list = (array) get_option( 'ag_prospects', array() );
+	foreach ( $list as $k => $p ) {
+		if ( ( $p['id'] ?? '' ) === $id ) {
+			$list[ $k ]['replied']    = $val ? 1 : 0;
+			$list[ $k ]['date_reply'] = $val ? current_time( 'd/m/Y' ) : '';
+			update_option( 'ag_prospects', array_values( $list ) );
+			wp_send_json_success( array( 'replied' => $val ? 1 : 0, 'date' => $list[ $k ]['date_reply'] ) );
+		}
+	}
+	wp_send_json_error();
 } );
 
 /* ── 5. Priorité (qui en a vraiment besoin), pourquoi, et message émotionnel ─ */
@@ -387,10 +427,13 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					<?php elseif ( is_array( $results ) ) : ?>
 						<p style="color:#50575e;margin-top:14px;"><?php echo count( $results ); ?> résultat(s), triés par <strong>probabilité d'achat</strong>. <label style="margin-left:8px;"><input type="checkbox" id="ag-onlyno"> N'afficher que ceux <strong>sans vrai site</strong></label></p>
 						<table class="widefat striped" id="ag-results"><thead><tr><th>Achat</th><th>Entreprise</th><th>Avis</th><th>Téléphone</th><th>Présence en ligne</th><th></th></tr></thead><tbody>
-						<?php foreach ( $results as $r ) : if ( empty( $r['name'] ) ) continue; $kind = ag_site_kind( $r['website'] ); $rsc = ag_prospect_score( $r ); $rcol = $rsc >= 80 ? '#b32d2e' : ( $rsc >= 60 ? '#bd7b00' : '#50575e' ); ?>
+						<?php foreach ( $results as $r ) : if ( empty( $r['name'] ) ) continue;
+								$ex = ag_prospect_find( $r['name'], $r['city'] ?? $city, $r['phone'] ?? '' );
+								if ( $ex && ag_prospect_blocked( $ex['status'] ?? '' ) ) continue; // refusé / ne plus contacter / client → masqué
+								$kind = ag_site_kind( $r['website'] ); $rsc = ag_prospect_score( $r ); $rcol = $rsc >= 80 ? '#b32d2e' : ( $rsc >= 60 ? '#bd7b00' : '#50575e' ); ?>
 							<tr data-kind="<?php echo esc_attr( $kind[0] ); ?>">
 								<td><span style="display:inline-block;min-width:32px;text-align:center;font-weight:800;color:#fff;background:<?php echo esc_attr( $rcol ); ?>;border-radius:6px;padding:2px 6px;"><?php echo (int) $rsc; ?></span></td>
-								<td><strong><?php echo esc_html( $r['name'] ); ?></strong><br><small><?php echo esc_html( ( $r['type'] ?? '' ) . ' · ' . ( $r['address'] ?? '' ) ); ?></small></td>
+								<td><strong><?php echo esc_html( $r['name'] ); ?></strong><?php if ( $ex ) : $labs = ag_prospect_statuses(); ?> <span style="background:#e7eef7;color:#1d4f8b;border-radius:10px;padding:1px 8px;font-size:.78em;">déjà en liste · <?php echo esc_html( $labs[ $ex['status'] ?? 'nouveau' ] ?? '' ); ?></span><?php endif; ?><br><small><?php echo esc_html( ( $r['type'] ?? '' ) . ' · ' . ( $r['address'] ?? '' ) ); ?></small></td>
 								<td><?php echo ( $r['reviews'] ?? 0 ) ? esc_html( (int) $r['reviews'] . ' avis · ' . number_format( (float) ( $r['rating'] ?? 0 ), 1 ) . '★' ) : '—'; ?></td>
 								<td><?php echo esc_html( $r['phone'] ); ?></td>
 								<td><?php echo ( 'real' === $kind[0] ) ? '<a href="' . esc_url( $r['website'] ) . '" target="_blank" rel="noopener">site ✓</a>' : '<strong style="color:#b32d2e;">' . esc_html( $kind[1] ) . '</strong>'; ?></td>
@@ -466,6 +509,35 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 
 			<!-- Mes prospects -->
 			<h2 style="margin-top:26px;">📋 Mes prospects (<?php echo count( $prospects ); ?>) — triés par <strong>besoin</strong></h2>
+			<?php
+			$ag_all = (array) get_option( 'ag_prospects', array() );
+			$cnt = array( 'nouveau' => 0, 'contacte' => 0, 'sans_reponse' => 0, 'interesse' => 0, 'client' => 0, 'bloque' => 0 );
+			foreach ( $ag_all as $pp ) {
+				$s = $pp['status'] ?? 'nouveau';
+				if ( 'nouveau' === $s ) $cnt['nouveau']++;
+				elseif ( in_array( $s, array( 'contacte', 'relance' ), true ) ) $cnt['contacte']++;
+				elseif ( 'sans_reponse' === $s ) $cnt['sans_reponse']++;
+				elseif ( 'interesse' === $s ) $cnt['interesse']++;
+				elseif ( 'client' === $s ) $cnt['client']++;
+				elseif ( in_array( $s, array( 'refus', 'ne_pas_contacter' ), true ) ) $cnt['bloque']++;
+			}
+			$ag_chip = function ( $label, $n, $f, $bg ) use ( $f_status ) {
+				$url = add_query_arg( array( 'page' => 'ag-prospects', 'fstatus' => $f ), admin_url( 'admin.php' ) );
+				$on  = ( (string) $f_status === (string) $f );
+				return '<a href="' . esc_url( $url ) . '" style="text-decoration:none;display:inline-block;margin:0 6px 6px 0;padding:5px 12px;border-radius:100px;font-weight:700;font-size:.82rem;background:' . $bg . ';color:#fff;opacity:' . ( $on ? '1' : '.82' ) . ';border:' . ( $on ? '2px solid #1d2327' : '2px solid transparent' ) . ';">' . esc_html( $label ) . ' ' . (int) $n . '</a>';
+			};
+			?>
+			<div style="margin:8px 0 14px;">
+				<?php
+				echo $ag_chip( '🆕 À contacter', $cnt['nouveau'], 'nouveau', '#b32d2e' );
+				echo $ag_chip( '📞 Contactés', $cnt['contacte'], 'contacte', '#2271b1' );
+				echo $ag_chip( '🔇 Sans réponse', $cnt['sans_reponse'], 'sans_reponse', '#8a6d1f' );
+				echo $ag_chip( '🔥 Intéressés', $cnt['interesse'], 'interesse', '#bd7b00' );
+				echo $ag_chip( '✅ Clients', $cnt['client'], 'client', '#1e7e34' );
+				echo $ag_chip( '🚫 Bloqués', $cnt['bloque'], 'ne_pas_contacter', '#50575e' );
+				?>
+				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'ag-prospects' ), admin_url( 'admin.php' ) ) ); ?>" style="text-decoration:none;font-size:.82rem;color:#2271b1;margin-left:6px;">Tout afficher</a>
+			</div>
 			<form method="get" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>" style="margin-bottom:10px;">
 				<input type="hidden" name="page" value="ag-prospects">
 				<input type="search" name="fq" value="<?php echo esc_attr( $f_q ); ?>" placeholder="Filtrer (nom, ville, métier)" style="width:240px;">
@@ -520,8 +592,18 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 						</td>
 						<td>
 							<?php if ( $blocked ) : ?><em style="color:#50575e;">à ne pas recontacter</em><?php else : ?>
-							<?php if ( $wa ) : ?><a class="button button-small" href="<?php echo esc_url( $wa ); ?>" target="_blank" rel="noopener">WhatsApp</a> <?php endif; ?>
-							<?php if ( $mailto ) : ?><a class="button button-small" href="<?php echo esc_url( $mailto ); ?>">Email</a> <?php endif; ?>
+							<div class="ag-suivi" style="font-size:.8em;margin-bottom:6px;line-height:1.5;<?php echo empty( $p['date_contact'] ) ? 'color:#b26a00;' : 'color:#50575e;'; ?>">
+								<?php if ( ! empty( $p['date_contact'] ) ) : ?>
+									📨 Contacté le <strong><?php echo esc_html( $p['date_contact'] ); ?></strong> (×<?php echo (int) ( $p['contact_count'] ?? 1 ); ?>)<br>
+									<?php if ( ! empty( $p['replied'] ) ) : ?>
+										<span style="color:#1e7e34;font-weight:700;">✅ A répondu<?php echo $p['date_reply'] ? ' le ' . esc_html( $p['date_reply'] ) : ''; ?></span>
+									<?php else : ?>
+										<button type="button" class="button button-small ag-reply" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>">A répondu ?</button>
+									<?php endif; ?>
+								<?php else : ?>⏳ Pas encore contacté<?php endif; ?>
+							</div>
+							<?php if ( $wa ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" href="<?php echo esc_url( $wa ); ?>" target="_blank" rel="noopener">WhatsApp</a> <?php endif; ?>
+							<?php if ( $mailto ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" href="<?php echo esc_url( $mailto ); ?>">Email</a> <?php endif; ?>
 							<details style="display:inline-block;margin-top:4px;"><summary class="button button-small">Message émotionnel</summary><textarea readonly rows="9" style="width:360px;margin-top:6px;"><?php echo esc_textarea( $msg ); ?></textarea></details>
 							<?php endif; ?>
 						</td>
@@ -568,6 +650,20 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				b.disabled=true; b.textContent='…';
 				fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ b.textContent=(j&&j.success)?'✓ Ajouté':'Erreur'; }).catch(function(){ b.textContent='Erreur'; b.disabled=false; });
 			}); });
+			// Clic WhatsApp/Email = enregistre le contact (date + compteur + statut auto). Le lien s'ouvre normalement.
+			document.querySelectorAll('.ag-touch').forEach(function(a){ a.addEventListener('click',function(){
+				var id=a.getAttribute('data-id'); if(!id) return;
+				var fd=new FormData(); fd.append('action','ag_prospect_touch'); fd.append('_n',nonce); fd.append('id',id);
+				fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin',keepalive:true}).then(function(r){return r.json();}).then(function(j){
+					if(j&&j.success){ var d=a.closest('td').querySelector('.ag-suivi'); if(d){ d.style.color='#50575e'; d.innerHTML='📨 Contacté le <strong>'+j.data.date+'</strong> (×'+j.data.count+')<br><button type="button" class="button button-small ag-reply" data-id="'+id+'">A répondu ?</button>'; bindReply(d.querySelector('.ag-reply')); } }
+				}).catch(function(){});
+			}); });
+			// Marquer "a répondu".
+			function bindReply(btn){ if(!btn) return; btn.addEventListener('click',function(){
+				var id=btn.getAttribute('data-id'); var fd=new FormData(); fd.append('action','ag_prospect_reply'); fd.append('_n',nonce); fd.append('id',id); fd.append('replied','1');
+				btn.disabled=true; fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ if(j&&j.success){ btn.outerHTML='<span style="color:#1e7e34;font-weight:700;">✅ A répondu le '+j.data.date+'</span>'; } else { btn.disabled=false; } }).catch(function(){ btn.disabled=false; });
+			}); }
+			document.querySelectorAll('.ag-reply').forEach(bindReply);
 		})();
 		</script>
 		<?php
