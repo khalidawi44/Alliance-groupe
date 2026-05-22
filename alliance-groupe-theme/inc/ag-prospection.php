@@ -622,7 +622,25 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					$auto = (array) get_option( 'ag_auto_searches', array() );
 					$lr   = (array) get_option( 'ag_prospect_lastrun', array() );
 					?>
-					<p>L'agent cherche <strong>tout seul (1×/jour)</strong> les recherches ci-dessous et ajoute les nouvelles entreprises à ta liste (tu reçois un email récap). <strong>Il ne contacte personne automatiquement</strong> — tu prospectes toi-même, en 1 clic.</p>
+					<p>L'agent cherche <strong>tout seul</strong> les recherches ci-dessous et ajoute les nouvelles entreprises à ta liste (tu reçois un email récap). <strong>Il ne contacte personne automatiquement</strong> — tu prospectes toi-même, en 1 clic.</p>
+					<?php $ag_cap = (int) get_option( 'ag_places_cap', 1000 ); $ag_freq = get_option( 'ag_auto_freq', 'weekly' ); $ag_u2 = ag_places_usage(); ?>
+					<div style="background:#fff7e6;border:1px solid #e9c96a;border-radius:8px;padding:12px 16px;margin-bottom:12px;">
+						<strong>💰 Maîtrise du coût Google</strong>
+						<form method="post" action="<?php echo esc_url( $post ); ?>" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+							<input type="hidden" name="action" value="ag_auto_settings">
+							<input type="hidden" name="_n" value="<?php echo esc_attr( $nonce ); ?>">
+							<label>Fréquence :
+								<select name="freq">
+									<option value="weekly" <?php selected( $ag_freq, 'weekly' ); ?>>1×/semaine (recommandé)</option>
+									<option value="daily" <?php selected( $ag_freq, 'daily' ); ?>>1×/jour (plus cher)</option>
+									<option value="off" <?php selected( $ag_freq, 'off' ); ?>>Désactivé</option>
+								</select>
+							</label>
+							<label>Plafond d'appels / mois : <input type="number" name="cap" min="0" value="<?php echo (int) $ag_cap; ?>" style="width:110px;"></label>
+							<?php submit_button( 'Enregistrer', 'secondary', 'submit', false ); ?>
+							<span style="color:#7a5b00;">Utilisé : <strong><?php echo (int) $ag_u2['calls']; ?></strong> / <?php echo $ag_cap ? (int) $ag_cap : '∞'; ?> ce mois (≈ <?php echo esc_html( number_format( $ag_u2['cost'], 2, ',', ' ' ) ); ?> €). Au plafond, l'agent s'arrête.</span>
+						</form>
+					</div>
 					<form method="post" action="<?php echo esc_url( $post ); ?>" style="margin-bottom:10px;">
 						<input type="hidden" name="action" value="ag_autosearch_add">
 						<input type="hidden" name="_n" value="<?php echo esc_attr( $nonce ); ?>">
@@ -862,15 +880,31 @@ add_action( 'admin_post_ag_autosearch_run', function () {
 } );
 
 add_action( 'init', function () {
-	if ( ! wp_next_scheduled( 'ag_prospect_cron' ) ) wp_schedule_event( time() + 600, 'daily', 'ag_prospect_cron' );
+	$freq = get_option( 'ag_auto_freq', 'weekly' );
+	$next = wp_next_scheduled( 'ag_prospect_cron' );
+	if ( 'off' === $freq ) { if ( $next ) wp_unschedule_event( $next, 'ag_prospect_cron' ); return; }
+	if ( ! $next ) wp_schedule_event( time() + 600, ( 'daily' === $freq ? 'daily' : 'weekly' ), 'ag_prospect_cron' );
+} );
+add_action( 'admin_post_ag_auto_settings', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_die( 'no' );
+	update_option( 'ag_places_cap', max( 0, (int) ( $_POST['cap'] ?? 0 ) ) );
+	$freq = in_array( $_POST['freq'] ?? '', array( 'daily', 'weekly', 'off' ), true ) ? $_POST['freq'] : 'weekly';
+	update_option( 'ag_auto_freq', $freq );
+	$next = wp_next_scheduled( 'ag_prospect_cron' ); if ( $next ) wp_unschedule_event( $next, 'ag_prospect_cron' );
+	if ( 'off' !== $freq ) wp_schedule_event( time() + 600, ( 'daily' === $freq ? 'daily' : 'weekly' ), 'ag_prospect_cron' );
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-prospects' ) ); exit;
 } );
 add_action( 'ag_prospect_cron', 'ag_run_auto_prospection' );
 if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
 	function ag_run_auto_prospection() {
 		$searches = (array) get_option( 'ag_auto_searches', array() );
 		if ( empty( $searches ) || '' === ag_places_key() ) return;
+		$cap = (int) get_option( 'ag_places_cap', 1000 );
+		$ck  = 'ag_places_calls_' . gmdate( 'Ym' );
+		if ( $cap > 0 && (int) get_option( $ck, 0 ) >= $cap ) { update_option( 'ag_prospect_lastrun', array( 'ts' => time(), 'added' => 0, 'capped' => 1 ) ); return; }
 		$added = 0; $nosite = 0;
 		foreach ( $searches as $s ) {
+			if ( $cap > 0 && (int) get_option( $ck, 0 ) >= $cap ) break; // plafond atteint en cours de route
 			$res = ( '' === trim( $s['q'] ?? '' ) && ! empty( $s['city'] ) ) ? ag_places_sweep( $s['city'] ) : ag_places_search( trim( ( $s['q'] ?? '' ) . ' ' . ( $s['city'] ?? '' ) ) );
 			if ( ! is_array( $res ) || isset( $res['error'] ) ) continue;
 			foreach ( $res as $r ) {
