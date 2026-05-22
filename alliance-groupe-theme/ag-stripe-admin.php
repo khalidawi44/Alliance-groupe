@@ -55,6 +55,14 @@ add_action( 'admin_init', function () {
 			'label'       => 'Abonnement Expert — 199€/mois',
 			'description' => 'URL du lien de paiement pour l\'abonnement mensuel Questions Expert (199€/mois, jusqu\'à 8 questions/mois).',
 		),
+		'ag_stripe_consult_express_url' => array(
+			'label'       => 'Consultation Express — 30 min (59€)',
+			'description' => 'Lien de paiement pour un appel/visio de 30 min. Redirection après paiement : ' . esc_url( home_url( '/consultation?paid=1&offre=express' ) ),
+		),
+		'ag_stripe_consult_strategique_url' => array(
+			'label'       => 'Consultation Stratégique — 60 min (119€)',
+			'description' => 'Lien de paiement pour un appel/visio de 60 min. Redirection après paiement : ' . esc_url( home_url( '/consultation?paid=1&offre=strategique' ) ),
+		),
 		'ag_stripe_express_essentiel_url' => array(
 			'label'       => 'Site Express — Essentiel (490€)',
 			'description' => 'URL du lien de paiement pour le pack Site Express Essentiel. Configure l\'URL de redirection après paiement vers : ' . esc_url( home_url( '/sites-express?paid=essentiel#brief' ) ),
@@ -139,6 +147,8 @@ function ag_stripe_admin_render() {
 	$q_single = get_option( 'ag_stripe_question_single_url', 'STRIPE_PLACEHOLDER' );
 	$q_pack   = get_option( 'ag_stripe_question_pack_url', 'STRIPE_PLACEHOLDER' );
 	$q_sub    = get_option( 'ag_stripe_question_sub_url', 'STRIPE_PLACEHOLDER' );
+	$c_express = get_option( 'ag_stripe_consult_express_url', 'STRIPE_PLACEHOLDER' );
+	$c_strat   = get_option( 'ag_stripe_consult_strategique_url', 'STRIPE_PLACEHOLDER' );
 
 	$state_badge = function ( $value ) {
 		if ( 'STRIPE_PLACEHOLDER' === $value || '' === $value ) {
@@ -246,6 +256,26 @@ function ag_stripe_admin_render() {
 							<?php echo $state_badge( $q_sub ); // phpcs:ignore ?>
 							<br><em style="color:#666;">Doit être un Payment Link en mode « subscription » (abonnement mensuel).</em>
 						</p>
+					</td>
+				</tr>
+
+				<tr><td colspan="2" style="padding:16px 0 4px;"><h2 style="margin:0;font-size:1.15rem;color:#1d2327;">Consultations (appels payants)</h2><p style="color:#50575e;font-size:.9rem;margin:4px 0 0;">Liens de paiement pour les appels/visios payants proposés sur la page <em>/consultation</em>. Après paiement, le client est invité à choisir un créneau par retour de contact (pas d'outil payant).</p></td></tr>
+				<tr>
+					<th scope="row"><label for="ag_stripe_consult_express_url">Consultation Express — 30 min (59€)</label></th>
+					<td>
+						<input type="url" name="ag_stripe_consult_express_url" id="ag_stripe_consult_express_url"
+							value="<?php echo esc_attr( $c_express ); ?>" class="regular-text code"
+							placeholder="https://www.paypal.com/ncp/payment/...">
+						<p class="description"><?php echo $state_badge( $c_express ); // phpcs:ignore ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="ag_stripe_consult_strategique_url">Consultation Stratégique — 60 min (119€)</label></th>
+					<td>
+						<input type="url" name="ag_stripe_consult_strategique_url" id="ag_stripe_consult_strategique_url"
+							value="<?php echo esc_attr( $c_strat ); ?>" class="regular-text code"
+							placeholder="https://www.paypal.com/ncp/payment/...">
+						<p class="description"><?php echo $state_badge( $c_strat ); // phpcs:ignore ?></p>
 					</td>
 				</tr>
 			</table>

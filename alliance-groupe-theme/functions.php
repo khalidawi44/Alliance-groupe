@@ -21,22 +21,25 @@ if ( is_admin() ) {
 // ── 1c. Cal.com (prise de RDV payante) retiré : remplacé par l'offre sur-mesure gratuite.
 //        On ne charge plus ag-calendly-admin.php ; /rendez-vous redirige vers /sur-mesure.
 
-// Crée la page « Projet sur-mesure » si elle n'existe pas encore.
+// Crée les pages maison (sur-mesure, consultation) si elles n'existent pas.
 add_action( 'admin_init', function () {
-    if ( get_option( 'ag_sur_mesure_page' ) ) return;
-    if ( ! get_page_by_path( 'sur-mesure' ) ) {
-        $pid = wp_insert_post( array(
-            'post_title'    => 'Projet sur-mesure',
-            'post_name'     => 'sur-mesure',
+    if ( get_option( 'ag_auto_pages_v2' ) ) return;
+    $pages = array(
+        'sur-mesure'   => array( 'Projet sur-mesure', 'templates/page-sur-mesure.php' ),
+        'consultation' => array( 'Consultation payante', 'templates/page-consultation.php' ),
+    );
+    foreach ( $pages as $slug => $p ) {
+        if ( get_page_by_path( $slug ) ) continue;
+        wp_insert_post( array(
+            'post_title'    => $p[0],
+            'post_name'     => $slug,
             'post_status'   => 'publish',
             'post_type'     => 'page',
             'post_content'  => '',
-            'page_template' => 'templates/page-sur-mesure.php',
+            'page_template' => $p[1],
         ) );
-        if ( $pid && ! is_wp_error( $pid ) ) update_option( 'ag_sur_mesure_page', $pid );
-    } else {
-        update_option( 'ag_sur_mesure_page', 1 );
     }
+    update_option( 'ag_auto_pages_v2', 1 );
 } );
 
 // L'ancienne page de prise de RDV (Cal.com) redirige vers l'offre sur-mesure.
@@ -75,6 +78,12 @@ if ( file_exists( $ag_ambassadeurs_file ) ) {
 $ag_paypal_file = get_stylesheet_directory() . '/inc/ag-paypal.php';
 if ( file_exists( $ag_paypal_file ) ) {
     require_once $ag_paypal_file;
+}
+
+// ── 1c6b. Vente de licences de templates via PayPal (remplace Stripe)
+$ag_licence_paypal_file = get_stylesheet_directory() . '/inc/ag-licence-paypal.php';
+if ( file_exists( $ag_licence_paypal_file ) ) {
+    require_once $ag_licence_paypal_file;
 }
 
 // ── 1c7. Pop-up d'incitation "devenir ambassadeur" (visiteurs non-membres)
@@ -419,6 +428,7 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-fondateur.php']       = 'Notre Fondateur';
     $templates['templates/page-templates.php']       = 'Templates WordPress';
     $templates['templates/page-sur-mesure.php']      = 'Projet sur-mesure';
+    $templates['templates/page-consultation.php']    = 'Consultation payante';
     $templates['templates/page-rdv.php']             = 'Prise de rendez-vous (déprécié)';
     $templates['templates/page-questions-flash.php'] = 'Questions Flash';
     $templates['templates/page-merci-rdv.php']       = 'Merci — Rendez-vous confirmé';

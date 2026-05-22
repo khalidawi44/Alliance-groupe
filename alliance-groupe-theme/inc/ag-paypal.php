@@ -212,6 +212,7 @@ if ( ! function_exists( 'ag_paypal_webhook_handler' ) ) {
 		} else {
 			status_header( 200 ); exit; // évènement non géré : on accuse réception.
 		}
+		do_action( 'ag_paypal_payment_verified', $amount, $payer, (string) ( $r['id'] ?? '' ), $type, $r );
 		ag_paypal_apply_payment( $amount, $payer, (string) ( $r['id'] ?? '' ) );
 		status_header( 200 ); exit;
 	}
