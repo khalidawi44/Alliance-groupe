@@ -78,9 +78,7 @@ if ( ! function_exists( 'ag_places_search' ) ) {
 /* ── 4. Enregistrement / suivi des prospects ────────────────────── */
 add_action( 'admin_post_ag_prospect_save', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_die( 'no' );
-	$list = (array) get_option( 'ag_prospects', array() );
-	$list[] = array(
-		'id'      => uniqid( 'p_' ),
+	$ok = ag_prospect_add_record( array(
 		'name'    => sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) ),
 		'type'    => sanitize_text_field( wp_unslash( $_POST['type'] ?? '' ) ),
 		'city'    => sanitize_text_field( wp_unslash( $_POST['city'] ?? '' ) ),
@@ -88,22 +86,27 @@ add_action( 'admin_post_ag_prospect_save', function () {
 		'email'   => sanitize_email( wp_unslash( $_POST['email'] ?? '' ) ),
 		'website' => esc_url_raw( wp_unslash( $_POST['website'] ?? '' ) ),
 		'address' => sanitize_text_field( wp_unslash( $_POST['address'] ?? '' ) ),
-		'status'  => 'a_contacter',
-		'ts'      => time(),
-	);
-	update_option( 'ag_prospects', array_slice( $list, -2000 ) );
-	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-prospects', 'saved' => 1 ), admin_url( 'admin.php' ) ) ); exit;
+	) );
+	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-prospects', 'saved' => $ok ? 1 : 0, 'dup' => $ok ? 0 : 1 ), admin_url( 'admin.php' ) ) ); exit;
 } );
 add_action( 'admin_post_ag_prospect_update', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_die( 'no' );
-	$id = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
-	$st = sanitize_text_field( wp_unslash( $_POST['status'] ?? '' ) );
+	$id  = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
 	$del = ! empty( $_POST['delete'] );
+	$has_status = array_key_exists( 'status', $_POST );
+	$has_owner  = array_key_exists( 'owner', $_POST );
+	$st = sanitize_text_field( wp_unslash( $_POST['status'] ?? '' ) );
+	$owner = sanitize_email( wp_unslash( $_POST['owner'] ?? '' ) );
 	$list = (array) get_option( 'ag_prospects', array() );
 	foreach ( $list as $k => $p ) {
 		if ( ( $p['id'] ?? '' ) === $id ) {
-			if ( $del ) unset( $list[ $k ] );
-			else $list[ $k ]['status'] = $st;
+			if ( $del ) { unset( $list[ $k ] ); break; }
+			if ( $has_status ) $list[ $k ]['status'] = $st;
+			if ( $has_owner ) {
+				$list[ $k ]['owner_email'] = $owner;
+				$rec = ( $owner && function_exists( 'ag_ambassadeur_record' ) ) ? ag_ambassadeur_record( $owner ) : null;
+				$list[ $k ]['owner_name'] = $rec['name'] ?? '';
+			}
 			break;
 		}
 	}
@@ -122,34 +125,118 @@ if ( ! function_exists( 'ag_site_kind' ) ) {
 	}
 }
 
+/* ── 4d. CRM partagé : statuts, anti-doublon, ajout centralisé ──── */
+if ( ! function_exists( 'ag_prospect_statuses' ) ) {
+	function ag_prospect_statuses() {
+		return array(
+			'nouveau'          => '🆕 Nouveau',
+			'contacte'         => '📞 Contacté',
+			'relance'          => '🔁 Relancé',
+			'sans_reponse'     => '🔇 Sans réponse',
+			'interesse'        => '🔥 Intéressé',
+			'client'           => '✅ Client',
+			'refus'            => '✋ Refusé',
+			'ne_pas_contacter' => '🚫 Ne plus contacter',
+		);
+	}
+}
+if ( ! function_exists( 'ag_prospect_blocked' ) ) {
+	/** Statuts qui sortent le prospect du circuit (personne ne le recontacte). */
+	function ag_prospect_blocked( $status ) { return in_array( $status, array( 'refus', 'ne_pas_contacter', 'client' ), true ); }
+}
+if ( ! function_exists( 'ag_prospect_sig' ) ) {
+	function ag_prospect_sig( $name, $city ) { return strtolower( trim( preg_replace( '/\s+/', ' ', (string) $name ) ) ) . '|' . strtolower( trim( (string) $city ) ); }
+}
+if ( ! function_exists( 'ag_prospect_find' ) ) {
+	/** Cherche un prospect existant (anti-doublon) par nom+ville ou téléphone. */
+	function ag_prospect_find( $name, $city, $phone = '' ) {
+		$sig    = ag_prospect_sig( $name, $city );
+		$digits = preg_replace( '/[^0-9]/', '', (string) $phone );
+		foreach ( (array) get_option( 'ag_prospects', array() ) as $p ) {
+			if ( ag_prospect_sig( $p['name'] ?? '', $p['city'] ?? '' ) === $sig ) return $p;
+			if ( $digits && strlen( $digits ) >= 6 && preg_replace( '/[^0-9]/', '', $p['phone'] ?? '' ) === $digits ) return $p;
+		}
+		return null;
+	}
+}
+if ( ! function_exists( 'ag_prospect_add_record' ) ) {
+	/** Ajoute un prospect SANS doublon. Retourne true si ajouté, false si déjà présent. */
+	function ag_prospect_add_record( $data ) {
+		if ( empty( $data['name'] ) ) return false;
+		if ( ag_prospect_find( $data['name'], $data['city'] ?? '', $data['phone'] ?? '' ) ) return false;
+		$list   = (array) get_option( 'ag_prospects', array() );
+		$list[] = array_merge( array(
+			'id' => uniqid( 'p_' ), 'name' => '', 'type' => '', 'city' => '', 'phone' => '', 'email' => '',
+			'website' => '', 'address' => '', 'status' => 'nouveau', 'owner_email' => '', 'owner_name' => '',
+			'notes' => '', 'source' => 'manuel', 'ts' => time(),
+		), $data );
+		update_option( 'ag_prospects', array_slice( $list, -5000 ) );
+		return true;
+	}
+}
+
 /* ── 4c. Ajout d'un prospect en AJAX (depuis les résultats, sans recharger) ─ */
 add_action( 'wp_ajax_ag_prospect_add', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
-	$list = (array) get_option( 'ag_prospects', array() );
-	$list[] = array(
-		'id'      => uniqid( 'p_' ),
+	$ok = ag_prospect_add_record( array(
 		'name'    => sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) ),
 		'type'    => sanitize_text_field( wp_unslash( $_POST['type'] ?? '' ) ),
 		'city'    => sanitize_text_field( wp_unslash( $_POST['city'] ?? '' ) ),
 		'phone'   => sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) ),
-		'email'   => '',
 		'website' => esc_url_raw( wp_unslash( $_POST['website'] ?? '' ) ),
 		'address' => sanitize_text_field( wp_unslash( $_POST['address'] ?? '' ) ),
-		'status'  => 'a_contacter',
-		'ts'      => time(),
-	);
-	update_option( 'ag_prospects', array_slice( $list, -2000 ) );
-	wp_send_json_success();
+		'source'  => 'recherche',
+	) );
+	wp_send_json_success( array( 'added' => $ok ) );
 } );
 
-/* ── 5. Message de prospection prêt à envoyer ───────────────────── */
+/* ── 5. Priorité (qui en a vraiment besoin), pourquoi, et message émotionnel ─ */
+if ( ! function_exists( 'ag_prospect_score' ) ) {
+	/** Score de besoin 0-100 : plus c'est haut, plus l'entreprise a besoin d'un site. */
+	function ag_prospect_score( $p ) {
+		$kind = ag_site_kind( $p['website'] ?? '' )[0];
+		$s = ( 'none' === $kind ) ? 80 : ( ( 'social' === $kind ) ? 60 : 20 );
+		// Métiers où un site rapporte beaucoup (visibilité, réservations, commandes).
+		$type = strtolower( $p['type'] ?? '' );
+		$hot = array( 'restaurant', 'coiffeur', 'barbier', 'institut', 'beauté', 'plombier', 'électricien', 'garagiste', 'artisan', 'boulangerie', 'bar', 'coach', 'photographe', 'fleuriste', 'avocat', 'commerce', 'btp' );
+		foreach ( $hot as $h ) { if ( false !== strpos( $type, $h ) ) { $s += 15; break; } }
+		if ( ! empty( $p['phone'] ) ) $s += 5; // joignable = actionnable
+		return min( 100, $s );
+	}
+}
+if ( ! function_exists( 'ag_prospect_why' ) ) {
+	/** Pourquoi cette entreprise a besoin d'un site + ce que ça lui apporte. */
+	function ag_prospect_why( $p ) {
+		$kind = ag_site_kind( $p['website'] ?? '' )[0];
+		if ( 'none' === $kind )   $gap = "n'a aucun site web : elle est quasi invisible sur Google, et perd les clients qui la cherchent en ligne.";
+		elseif ( 'social' === $kind ) $gap = "n'a qu'une page de réseau social : pas de vraie vitrine, pas de référencement Google, dépendante d'une plateforme qui peut fermer son compte.";
+		else $gap = "a un site, mais il peut être modernisé (mobile, rapidité, réservation/commande) pour convertir plus.";
+		$type = strtolower( $p['type'] ?? '' );
+		$bene = "être trouvée 24h/24 sur Google, rassurer les clients, et recevoir des demandes en automatique";
+		if ( false !== strpos( $type, 'restaurant' ) || false !== strpos( $type, 'bar' ) ) $bene = "afficher son menu, prendre des réservations en ligne et remplir sa salle même la nuit";
+		elseif ( false !== strpos( $type, 'coiffeur' ) || false !== strpos( $type, 'barbier' ) || false !== strpos( $type, 'institut' ) || false !== strpos( $type, 'beauté' ) ) $bene = "permettre la prise de rendez-vous en ligne 24h/24 et réduire les trous dans le planning";
+		elseif ( false !== strpos( $type, 'plombier' ) || false !== strpos( $type, 'électricien' ) || false !== strpos( $type, 'garagiste' ) || false !== strpos( $type, 'artisan' ) || false !== strpos( $type, 'btp' ) ) $bene = "capter les demandes de devis urgentes et apparaître avant les concurrents sur Google";
+		return 'Cette entreprise ' . $gap . ' Un site lui permettrait de ' . $bene . '.';
+	}
+}
 if ( ! function_exists( 'ag_prospect_message' ) ) {
+	/** Message personnalisé et émotionnel, adapté au métier et au manque constaté. */
 	function ag_prospect_message( $p ) {
 		$site = home_url( '/sites-express' );
-		$no   = empty( $p['website'] );
-		$hook = $no ? "j'ai remarqué que vous n'avez pas encore de site web" : "j'ai vu votre présence en ligne et je pense qu'on peut la moderniser pour qu'elle vous ramène plus de clients";
 		$nom  = $p['name'] ? $p['name'] : 'votre établissement';
-		return "Bonjour,\n\nJe me permets de vous contacter au sujet de {$nom} : {$hook}. Chez Alliance Groupe, on crée des sites professionnels à prix fixe (dès 490 €), livrés en quelques jours, sans rendez-vous, et payables en 4×.\n\nUn site qui travaille pour vous 24h/24 et vous ramène des clients. Seriez-vous ouvert(e) à en discuter rapidement ?\n\nNos offres : {$site}\n\nBien à vous,\nAlliance Groupe — contact@alliancegroupe-inc.com\n(Si vous ne souhaitez pas être recontacté, dites-le-moi, j'en prends note.)";
+		$kind = ag_site_kind( $p['website'] ?? '' )[0];
+		$type = strtolower( $p['type'] ?? '' );
+
+		if ( 'none' === $kind )       $accroche = "j'ai cherché {$nom} sur Google… et je n'ai trouvé aucun site. Honnêtement, ça m'a fait quelque chose : vous faites sûrement un travail de qualité, mais des clients passent à côté de vous chaque jour, juste parce qu'ils ne vous trouvent pas en ligne.";
+		elseif ( 'social' === $kind ) $accroche = "j'ai vu {$nom} sur les réseaux, mais pas de vrai site. Le souci, c'est que tout votre travail repose sur une page que vous ne possédez pas vraiment — et beaucoup de clients vous cherchent sur Google, pas sur les réseaux.";
+		else                          $accroche = "j'ai regardé le site de {$nom}, et je pense sincèrement qu'avec quelques améliorations il pourrait vous ramener bien plus de clients.";
+
+		$promesse = "imaginez : pendant que vous travaillez (ou que vous dormez), votre site présente votre savoir-faire, rassure les clients et reçoit des demandes tout seul.";
+		if ( false !== strpos( $type, 'restaurant' ) || false !== strpos( $type, 'bar' ) ) $promesse = "imaginez votre salle qui se remplit grâce aux réservations prises en ligne, même tard le soir, sans que vous touchiez votre téléphone.";
+		elseif ( false !== strpos( $type, 'coiffeur' ) || false !== strpos( $type, 'barbier' ) || false !== strpos( $type, 'beauté' ) || false !== strpos( $type, 'institut' ) ) $promesse = "imaginez un agenda qui se remplit tout seul : vos clients prennent rendez-vous en ligne, 24h/24, même quand le salon est fermé.";
+		elseif ( false !== strpos( $type, 'plombier' ) || false !== strpos( $type, 'électricien' ) || false !== strpos( $type, 'garagiste' ) || false !== strpos( $type, 'artisan' ) ) $promesse = "imaginez recevoir les demandes de devis urgentes directement sur votre téléphone, avant que le client n'appelle le concurrent d'à côté.";
+
+		return "Bonjour,\n\n{$accroche}\n\nJe suis d'Alliance Groupe. On crée des sites professionnels à prix fixe (dès 490 €), livrés en quelques jours, payables en 4×, et sans rendez-vous. {$promesse}\n\nVotre métier mérite d'être vu. Est-ce que ça vous dirait qu'on en parle 5 minutes, sans engagement ?\n\nUn aperçu de ce qu'on fait : {$site}\n\nBien à vous,\nAlliance Groupe — contact@alliancegroupe-inc.com\n(Si vous préférez ne pas être recontacté, dites-le-moi simplement, j'en prends note et je n'insiste pas.)";
 	}
 }
 
@@ -165,10 +252,27 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 		$q      = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : '';
 		$city   = isset( $_GET['city'] ) ? sanitize_text_field( wp_unslash( $_GET['city'] ) ) : '';
 		$results = ( $q || $city ) ? ag_places_search( trim( $q . ' ' . $city ) ) : null;
-		$prospects = array_reverse( (array) get_option( 'ag_prospects', array() ) );
+		if ( is_array( $results ) && ! isset( $results['error'] ) ) {
+			foreach ( $results as &$_r ) { $_r['type'] = $q; } unset( $_r );
+			usort( $results, function ( $a, $b ) { return ag_prospect_score( $b ) <=> ag_prospect_score( $a ); } );
+		}
+		$prospects = (array) get_option( 'ag_prospects', array() );
 		$leads     = array_reverse( (array) get_option( 'ag_leads', array() ) );
-		$labels = array( 'a_contacter' => 'À contacter', 'contacte' => 'Contacté', 'interesse' => 'Intéressé', 'client' => 'Client ✅', 'perdu' => 'Perdu' );
-		$post = admin_url( 'admin-post.php' );
+		$labels    = ag_prospect_statuses();
+		$post      = admin_url( 'admin-post.php' );
+		$ambs = array();
+		foreach ( (array) get_option( 'ag_ambassadeurs', array() ) as $a ) { if ( ! empty( $a['email'] ) ) $ambs[ $a['email'] ] = $a['name'] ?? $a['email']; }
+		$f_status = isset( $_GET['fstatus'] ) ? sanitize_text_field( wp_unslash( $_GET['fstatus'] ) ) : '';
+		$f_q      = isset( $_GET['fq'] ) ? sanitize_text_field( wp_unslash( $_GET['fq'] ) ) : '';
+		$sortby   = isset( $_GET['sort'] ) ? sanitize_text_field( wp_unslash( $_GET['sort'] ) ) : 'besoin';
+		if ( '' !== $f_status ) $prospects = array_filter( $prospects, function ( $p ) use ( $f_status ) { return ( $p['status'] ?? 'nouveau' ) === $f_status; } );
+		if ( '' !== $f_q ) { $needle = strtolower( $f_q ); $prospects = array_filter( $prospects, function ( $p ) use ( $needle ) { return false !== strpos( strtolower( ( $p['name'] ?? '' ) . ' ' . ( $p['city'] ?? '' ) . ' ' . ( $p['type'] ?? '' ) ), $needle ); } ); }
+		$prospects = array_values( $prospects );
+		usort( $prospects, function ( $a, $b ) use ( $sortby ) {
+			if ( 'nom' === $sortby )  return strcasecmp( $a['name'] ?? '', $b['name'] ?? '' );
+			if ( 'date' === $sortby ) return ( $b['ts'] ?? 0 ) <=> ( $a['ts'] ?? 0 );
+			return ag_prospect_score( $b ) <=> ag_prospect_score( $a );
+		} );
 		?>
 		<div class="wrap ag-prospect-wrap">
 			<h1 style="display:flex;align-items:center;gap:10px;">🎯 Prospection <span style="font-size:.5em;background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;padding:3px 10px;border-radius:100px;">Alliance Groupe</span></h1>
@@ -277,20 +381,32 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			</div>
 
 			<!-- Mes prospects -->
-			<h2 style="margin-top:26px;">📋 Mes prospects (<?php echo count( $prospects ); ?>)</h2>
+			<h2 style="margin-top:26px;">📋 Mes prospects (<?php echo count( $prospects ); ?>) — triés par <strong>besoin</strong></h2>
+			<form method="get" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>" style="margin-bottom:10px;">
+				<input type="hidden" name="page" value="ag-prospects">
+				<input type="search" name="fq" value="<?php echo esc_attr( $f_q ); ?>" placeholder="Filtrer (nom, ville, métier)" style="width:240px;">
+				<select name="fstatus"><option value="">Tous les statuts</option><?php foreach ( $labels as $k => $lab ) : ?><option value="<?php echo esc_attr( $k ); ?>" <?php selected( $f_status, $k ); ?>><?php echo esc_html( $lab ); ?></option><?php endforeach; ?></select>
+				<select name="sort"><option value="besoin" <?php selected( $sortby, 'besoin' ); ?>>Tri : besoin (priorité)</option><option value="date" <?php selected( $sortby, 'date' ); ?>>Tri : plus récents</option><option value="nom" <?php selected( $sortby, 'nom' ); ?>>Tri : nom</option></select>
+				<?php submit_button( 'Filtrer', 'secondary', 'submit', false ); ?>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-prospects' ) ); ?>" class="button">Tout voir</a>
+			</form>
 			<?php if ( empty( $prospects ) ) : ?>
-				<p>Aucun prospect pour l'instant. Cherche des entreprises ci-dessus ou ajoute-en à la main.</p>
+				<p>Aucun prospect (avec ces filtres). Cherche des entreprises ci-dessus ou ajoute-en à la main.</p>
 			<?php else : ?>
-				<table class="widefat striped"><thead><tr><th>Entreprise</th><th>Ville</th><th>Contact</th><th>Statut</th><th>Prospecter</th><th></th></tr></thead><tbody>
+				<table class="widefat striped"><thead><tr><th>Priorité</th><th>Entreprise</th><th>Pourquoi (besoin)</th><th>Contact</th><th>Statut</th><th>Assigné à</th><th>Prospecter</th><th></th></tr></thead><tbody>
 				<?php foreach ( $prospects as $p ) :
 					$digits = preg_replace( '/[^0-9]/', '', $p['phone'] ?? '' );
 					$msg    = ag_prospect_message( $p );
 					$mailto = $p['email'] ? 'mailto:' . rawurlencode( $p['email'] ) . '?subject=' . rawurlencode( 'Votre site web — Alliance Groupe' ) . '&body=' . rawurlencode( $msg ) : '';
 					$wa     = $digits ? 'https://wa.me/' . $digits . '?text=' . rawurlencode( $msg ) : '';
+					$score  = ag_prospect_score( $p );
+					$scol   = $score >= 80 ? '#b32d2e' : ( $score >= 60 ? '#bd7b00' : '#50575e' );
+					$blocked = ag_prospect_blocked( $p['status'] ?? '' );
 					?>
-					<tr>
-						<td><strong><?php echo esc_html( $p['name'] ?? '' ); ?></strong><?php $pk = ag_site_kind( $p['website'] ?? '' ); echo ( 'real' !== $pk[0] ) ? ' <span style="color:#b32d2e;" title="' . esc_attr( $pk[1] ) . '">❗</span>' : ''; ?><br><small><?php echo esc_html( $p['type'] ?? '' ); ?></small></td>
-						<td><?php echo esc_html( $p['city'] ?? '' ); ?></td>
+					<tr<?php echo $blocked ? ' style="opacity:.55;"' : ''; ?>>
+						<td><span style="display:inline-block;min-width:34px;text-align:center;font-weight:800;color:#fff;background:<?php echo esc_attr( $scol ); ?>;border-radius:6px;padding:2px 6px;"><?php echo (int) $score; ?></span></td>
+						<td><strong><?php echo esc_html( $p['name'] ?? '' ); ?></strong><?php $pk = ag_site_kind( $p['website'] ?? '' ); echo ( 'real' !== $pk[0] ) ? ' <span style="color:#b32d2e;" title="' . esc_attr( $pk[1] ) . '">❗</span>' : ''; ?><br><small><?php echo esc_html( ( $p['type'] ?? '' ) . ( ! empty( $p['city'] ) ? ' · ' . $p['city'] : '' ) ); ?></small></td>
+						<td style="max-width:280px;font-size:.85em;color:#50575e;"><?php echo esc_html( ag_prospect_why( $p ) ); ?></td>
 						<td>
 							<?php if ( ! empty( $p['phone'] ) ) : ?><a href="tel:<?php echo esc_attr( $p['phone'] ); ?>">📞 <?php echo esc_html( $p['phone'] ); ?></a><br><?php endif; ?>
 							<?php if ( ! empty( $p['email'] ) ) : ?><a href="mailto:<?php echo esc_attr( $p['email'] ); ?>"><?php echo esc_html( $p['email'] ); ?></a><?php endif; ?>
@@ -302,15 +418,28 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 								<input type="hidden" name="id" value="<?php echo esc_attr( $p['id'] ?? '' ); ?>">
 								<select name="status" onchange="this.form.submit()">
 									<?php foreach ( $labels as $k => $lab ) : ?>
-										<option value="<?php echo esc_attr( $k ); ?>" <?php selected( $p['status'] ?? 'a_contacter', $k ); ?>><?php echo esc_html( $lab ); ?></option>
+										<option value="<?php echo esc_attr( $k ); ?>" <?php selected( $p['status'] ?? 'nouveau', $k ); ?>><?php echo esc_html( $lab ); ?></option>
 									<?php endforeach; ?>
 								</select>
 							</form>
 						</td>
 						<td>
+							<form method="post" action="<?php echo esc_url( $post ); ?>" style="margin:0;">
+								<input type="hidden" name="action" value="ag_prospect_update">
+								<input type="hidden" name="_n" value="<?php echo esc_attr( $nonce ); ?>">
+								<input type="hidden" name="id" value="<?php echo esc_attr( $p['id'] ?? '' ); ?>">
+								<select name="owner" onchange="this.form.submit()">
+									<option value="">— personne —</option>
+									<?php foreach ( $ambs as $em => $nm ) : ?><option value="<?php echo esc_attr( $em ); ?>" <?php selected( $p['owner_email'] ?? '', $em ); ?>><?php echo esc_html( $nm ); ?></option><?php endforeach; ?>
+								</select>
+							</form>
+						</td>
+						<td>
+							<?php if ( $blocked ) : ?><em style="color:#50575e;">à ne pas recontacter</em><?php else : ?>
 							<?php if ( $wa ) : ?><a class="button button-small" href="<?php echo esc_url( $wa ); ?>" target="_blank" rel="noopener">WhatsApp</a> <?php endif; ?>
 							<?php if ( $mailto ) : ?><a class="button button-small" href="<?php echo esc_url( $mailto ); ?>">Email</a> <?php endif; ?>
-							<details style="display:inline-block;margin-top:4px;"><summary class="button button-small">Message</summary><textarea readonly rows="7" style="width:340px;margin-top:6px;"><?php echo esc_textarea( $msg ); ?></textarea></details>
+							<details style="display:inline-block;margin-top:4px;"><summary class="button button-small">Message émotionnel</summary><textarea readonly rows="9" style="width:360px;margin-top:6px;"><?php echo esc_textarea( $msg ); ?></textarea></details>
+							<?php endif; ?>
 						</td>
 						<td>
 							<form method="post" action="<?php echo esc_url( $post ); ?>" style="margin:0;" onsubmit="return confirm('Supprimer ce prospect ?');">
@@ -389,31 +518,45 @@ if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
 	function ag_run_auto_prospection() {
 		$searches = (array) get_option( 'ag_auto_searches', array() );
 		if ( empty( $searches ) || '' === ag_places_key() ) return;
-		$list = (array) get_option( 'ag_prospects', array() );
-		$seen = array();
-		foreach ( $list as $p ) { $seen[ strtolower( ( $p['name'] ?? '' ) . '|' . ( $p['city'] ?? '' ) ) ] = 1; }
 		$added = 0; $nosite = 0;
 		foreach ( $searches as $s ) {
 			$res = ag_places_search( trim( ( $s['q'] ?? '' ) . ' ' . ( $s['city'] ?? '' ) ) );
 			if ( ! is_array( $res ) || isset( $res['error'] ) ) continue;
 			foreach ( $res as $r ) {
 				if ( empty( $r['name'] ) ) continue;
-				$sig = strtolower( $r['name'] . '|' . ( $s['city'] ?? '' ) );
-				if ( isset( $seen[ $sig ] ) ) continue;
-				$seen[ $sig ] = 1;
-				$list[] = array(
-					'id' => uniqid( 'p_' ), 'name' => $r['name'], 'type' => $s['q'] ?? '', 'city' => $s['city'] ?? '',
-					'phone' => $r['phone'] ?? '', 'email' => '', 'website' => $r['website'] ?? '', 'address' => $r['address'] ?? '',
-					'status' => 'a_contacter', 'source' => 'auto', 'ts' => time(),
-				);
-				$added++; if ( empty( $r['website'] ) ) $nosite++;
+				$ok = ag_prospect_add_record( array(
+					'name' => $r['name'], 'type' => $s['q'] ?? '', 'city' => $s['city'] ?? '',
+					'phone' => $r['phone'] ?? '', 'website' => $r['website'] ?? '', 'address' => $r['address'] ?? '', 'source' => 'robot',
+				) );
+				if ( $ok ) { $added++; if ( 'real' !== ag_site_kind( $r['website'] ?? '' )[0] ) $nosite++; }
 			}
 		}
 		update_option( 'ag_prospect_lastrun', array( 'ts' => time(), 'added' => $added ) );
 		if ( $added ) {
-			update_option( 'ag_prospects', array_slice( $list, -5000 ) );
 			$to = apply_filters( 'ag_calendar_notify_email', 'advise.alliance.group@gmail.com' );
-			wp_mail( $to, "🤖 $added nouveaux prospects trouvés (dont $nosite sans site)", "L'agent automatique a ajouté $added entreprises a ta liste ($nosite sans site web).\n\nVa les prospecter : " . admin_url( 'admin.php?page=ag-prospects' ) );
+			wp_mail( $to, "🤖 $added nouveaux prospects trouvés (dont $nosite sans vrai site)", "L'agent automatique a ajouté $added entreprises a ta liste ($nosite sans vrai site web — prioritaires).\n\nVa les prospecter : " . admin_url( 'admin.php?page=ag-prospects' ) );
 		}
 	}
 }
+
+/* ── 8. Côté ambassadeur : ses prospects assignés (liste partagée) ─ */
+if ( ! function_exists( 'ag_prospects_for_owner' ) ) {
+	function ag_prospects_for_owner( $email ) {
+		$out = array(); $email = strtolower( (string) $email );
+		foreach ( (array) get_option( 'ag_prospects', array() ) as $p ) { if ( strtolower( $p['owner_email'] ?? '' ) === $email ) $out[] = $p; }
+		usort( $out, function ( $a, $b ) { return ag_prospect_score( $b ) <=> ag_prospect_score( $a ); } );
+		return $out;
+	}
+}
+add_action( 'admin_post_ag_amb_prospect_status', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_die( 'no' );
+	$email = strtolower( wp_get_current_user()->user_email );
+	$id = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+	$st = sanitize_text_field( wp_unslash( $_POST['status'] ?? '' ) );
+	$list = (array) get_option( 'ag_prospects', array() );
+	foreach ( $list as $k => $p ) {
+		if ( ( $p['id'] ?? '' ) === $id && strtolower( $p['owner_email'] ?? '' ) === $email ) { $list[ $k ]['status'] = $st; break; }
+	}
+	update_option( 'ag_prospects', array_values( $list ) );
+	wp_safe_redirect( home_url( '/espace-ambassadeur#prospects' ) ); exit;
+} );

@@ -213,6 +213,58 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 	</section>
 	<?php endif; ?>
 
+	<?php
+	$ag_my_prospects = function_exists( 'ag_prospects_for_owner' ) ? ag_prospects_for_owner( $email ) : array();
+	if ( $ag_my_prospects ) :
+		$ag_pstat = function_exists( 'ag_prospect_statuses' ) ? ag_prospect_statuses() : array();
+		$ag_ppost = admin_url( 'admin-post.php' );
+		$ag_pnonce = wp_nonce_field( 'ag_amb_prospect', '_n', true, false );
+	?>
+	<section class="ag-section ag-section--graphite" id="prospects">
+		<div class="ag-container">
+			<h2 class="ag-section__title">Mes prospects à contacter 🎯</h2>
+			<p class="ag-section__desc">Des entreprises qui ont besoin d'un site, <strong>rien que pour toi</strong> (pas de doublon avec l'équipe). Triées par priorité. Contacte, puis mets à jour le statut.</p>
+			<div class="ag-esp-table-wrap">
+				<table class="ag-esp-table">
+					<thead><tr><th>Entreprise</th><th>Pourquoi</th><th>Contacter</th><th>Statut</th></tr></thead>
+					<tbody>
+					<?php foreach ( $ag_my_prospects as $pp ) :
+						$pmsg = function_exists( 'ag_prospect_message' ) ? ag_prospect_message( $pp ) : '';
+						$pdig = preg_replace( '/[^0-9]/', '', $pp['phone'] ?? '' );
+						$pwa  = $pdig ? 'https://wa.me/' . $pdig . '?text=' . rawurlencode( $pmsg ) : '';
+						$pmail = ! empty( $pp['email'] ) ? 'mailto:' . rawurlencode( $pp['email'] ) . '?subject=' . rawurlencode( 'Votre site web — Alliance Groupe' ) . '&body=' . rawurlencode( $pmsg ) : '';
+						$pblock = function_exists( 'ag_prospect_blocked' ) && ag_prospect_blocked( $pp['status'] ?? '' );
+					?>
+						<tr<?php echo $pblock ? ' style="opacity:.5;"' : ''; ?>>
+							<td><strong><?php echo esc_html( $pp['name'] ?? '' ); ?></strong><br><small><?php echo esc_html( ( $pp['type'] ?? '' ) . ( ! empty( $pp['city'] ) ? ' · ' . $pp['city'] : '' ) ); ?></small></td>
+							<td style="font-size:.85em;color:var(--color-text-soft);max-width:240px;"><?php echo esc_html( function_exists( 'ag_prospect_why' ) ? ag_prospect_why( $pp ) : '' ); ?></td>
+							<td>
+								<?php if ( ! $pblock ) : ?>
+									<?php if ( ! empty( $pp['phone'] ) ) : ?><a href="tel:<?php echo esc_attr( $pp['phone'] ); ?>" class="ag-btn-outline" style="padding:6px 10px;">📞 Appeler</a> <?php endif; ?>
+									<?php if ( $pwa ) : ?><a href="<?php echo esc_url( $pwa ); ?>" target="_blank" rel="noopener" class="ag-btn-outline" style="padding:6px 10px;">WhatsApp</a> <?php endif; ?>
+									<?php if ( $pmail ) : ?><a href="<?php echo esc_url( $pmail ); ?>" class="ag-btn-outline" style="padding:6px 10px;">Email</a> <?php endif; ?>
+									<details style="margin-top:6px;"><summary style="cursor:pointer;color:var(--color-gold);">Voir le message</summary><textarea readonly rows="8" style="width:100%;margin-top:6px;background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(212,180,92,.3);border-radius:10px;padding:10px;"><?php echo esc_textarea( $pmsg ); ?></textarea></details>
+								<?php else : ?><em style="color:var(--color-text-muted);">à ne pas recontacter</em><?php endif; ?>
+							</td>
+							<td>
+								<form method="post" action="<?php echo esc_url( $ag_ppost ); ?>">
+									<input type="hidden" name="action" value="ag_amb_prospect_status">
+									<?php echo $ag_pnonce; // phpcs:ignore ?>
+									<input type="hidden" name="id" value="<?php echo esc_attr( $pp['id'] ?? '' ); ?>">
+									<select name="status" onchange="this.form.submit()" style="padding:6px;border-radius:8px;">
+										<?php foreach ( $ag_pstat as $sk => $sl ) : ?><option value="<?php echo esc_attr( $sk ); ?>" <?php selected( $pp['status'] ?? 'nouveau', $sk ); ?>><?php echo esc_html( $sl ); ?></option><?php endforeach; ?>
+									</select>
+								</form>
+							</td>
+						</tr>
+					<?php endforeach; ?>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</section>
+	<?php endif; ?>
+
 	<section class="ag-section ag-section--onyx">
 		<div class="ag-container">
 			<h2 class="ag-section__title">Mes ventes</h2>
