@@ -67,11 +67,10 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 		var d = ( m === 'recruit' ) ? window.AG_RECRUIT : window.AG_SALE;
 		window.AG_LINK = d.link; window.AG_CAPTION = d.caption;
 		var defs = ( m === 'recruit' )
-			? { vh:'Rejoins l\'équipe.', vs:'Vends des sites, touche 10 %.', ih:'Deviens commercial.', is:'Travaille depuis ton téléphone' }
-			: { vh:'Du quartier à la réussite.', vs:'Vends des sites. Touche 10 %.', ih:'Ton site pro, dès 490 €', is:'Livré en quelques jours · sans rendez-vous' };
+			? { t:['Gagne de l\'argent','depuis ton téléphone','Vends des sites · 10 % par vente','Rejoins l\'équipe 👇'], ih:'Deviens commercial.', is:'Travaille depuis ton téléphone' }
+			: { t:['Du quartier à la réussite.','Vends des sites depuis ton tel.','Touche 10 % sur chaque vente.',''], ih:'Ton site pro, dès 490 €', is:'Livré en quelques jours · sans rendez-vous' };
 		var e;
-		if((e=document.getElementById('ag-vhead'))) e.value=defs.vh;
-		if((e=document.getElementById('ag-vsub')))  e.value=defs.vs;
+		['ag-t1','ag-t2','ag-t3','ag-t4'].forEach(function(id,i){ var el=document.getElementById(id); if(el) el.value=defs.t[i]||''; });
 		if((e=document.getElementById('ag-head')))  e.value=defs.ih;
 		if((e=document.getElementById('ag-sub')))   e.value=defs.is;
 		if(window.agVideoRefresh) window.agVideoRefresh();
@@ -94,7 +93,7 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 	<section class="ag-section ag-section--graphite ag-pane ag-pane--video" id="studio-video">
 		<div class="ag-container ag-container--narrow">
 			<h2 class="ag-section__title">Ta vidéo (8 s) 🎬</h2>
-			<p class="ag-section__desc">Choisis un fond propre (ou mets ta propre photo/clip), écris ton accroche : on ajoute ton lien et tu partages direct. Un seul texte, bien lisible.</p>
+			<p class="ag-section__desc">Choisis un fond (ou ta propre photo/vidéo), écris tes textes : ils <strong>s'enchaînent</strong> dans la vidéo (titre, puis messages). Choisis la police et la couleur. Ton lien va dans la légende (copiée automatiquement au partage).</p>
 			<div class="ag-maker ag-maker--v">
 				<div class="ag-maker__preview"><canvas id="ag-vcanvas" width="1080" height="1920"></canvas></div>
 				<div class="ag-maker__ctrl">
@@ -109,8 +108,26 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 					</div>
 					<?php endif; ?>
 					<label>Ou ta photo / vidéo<input type="file" id="ag-vfile" accept="image/*,video/*"></label>
-					<label>Ton accroche<input type="text" id="ag-vhead" value="Du quartier à la réussite." maxlength="42"></label>
-					<label>Sous-texte<input type="text" id="ag-vsub" value="Vends des sites. Touche 10 %." maxlength="48"></label>
+					<span class="ag-fields__lbl">Tes textes (ils s'enchaînent dans la vidéo)</span>
+					<input type="text" id="ag-t1" class="ag-tinput" value="Du quartier à la réussite." maxlength="60" placeholder="Texte 1 (titre)">
+					<input type="text" id="ag-t2" class="ag-tinput" value="Vends des sites depuis ton tel." maxlength="60" placeholder="Texte 2">
+					<input type="text" id="ag-t3" class="ag-tinput" value="Touche 10 % sur chaque vente." maxlength="60" placeholder="Texte 3">
+					<input type="text" id="ag-t4" class="ag-tinput" value="" maxlength="60" placeholder="Texte 4 (optionnel)">
+					<div class="ag-opt">
+						<span class="ag-opt__lbl">Police</span>
+						<div class="ag-seg"><button type="button" class="ag-font-btn is-active" data-font="serif" style="font-family:Georgia,serif;">Serif</button><button type="button" class="ag-font-btn" data-font="sans" style="font-family:Arial,sans-serif;">Sans serif</button></div>
+					</div>
+					<div class="ag-opt">
+						<span class="ag-opt__lbl">Couleur du texte</span>
+						<div class="ag-colors">
+							<button type="button" class="ag-color-btn is-active" data-color="#ffffff" style="background:#fff;" aria-label="Blanc"></button>
+							<button type="button" class="ag-color-btn" data-color="#E8C766" style="background:#E8C766;" aria-label="Or"></button>
+							<button type="button" class="ag-color-btn" data-color="#F37A1F" style="background:#F37A1F;" aria-label="Orange"></button>
+							<button type="button" class="ag-color-btn" data-color="#4bbf77" style="background:#4bbf77;" aria-label="Vert"></button>
+							<button type="button" class="ag-color-btn" data-color="#5ab0ff" style="background:#5ab0ff;" aria-label="Bleu"></button>
+							<button type="button" class="ag-color-btn" data-color="#ff5d8f" style="background:#ff5d8f;" aria-label="Rose"></button>
+						</div>
+					</div>
 					<div class="ag-dur">
 						<span class="ag-dur__lbl">Durée de la vidéo</span>
 						<div class="ag-dur__row">
@@ -140,22 +157,28 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 		var link=window.AG_LINK, caption=window.AG_CAPTION;
 		var media=null, isVideo=false, lastBlob=null, lastExt='webm', lastUrl=null, previewRAF=null;
 		function stopPreview(){ if(previewRAF){ cancelAnimationFrame(previewRAF); previewRAF=null; } }
-		function renderOnce(){ stopPreview(); frame(0); }
-		function startVideoPreview(){ stopPreview(); (function loop(){ frame(0); previewRAF=requestAnimationFrame(loop); })(); }
-		window.agVideoRefresh=function(){ link=window.AG_LINK; caption=window.AG_CAPTION; if(isVideo) startVideoPreview(); else renderOnce(); };
+		function startPreview(){ stopPreview(); var t0=performance.now(); (function loop(now){ frame(0,(now-t0)/1000,2.8); previewRAF=requestAnimationFrame(loop); })(performance.now()); }
+		function renderOnce(){ startPreview(); }
+		function startVideoPreview(){ startPreview(); }
+		window.agVideoRefresh=function(){ link=window.AG_LINK; caption=window.AG_CAPTION; startPreview(); };
 		var statusEl=document.getElementById('ag-vstatus'), shEl=document.getElementById('ag-vshare'), capEl=document.getElementById('ag-vcap'), hintEl=document.getElementById('ag-vhint');
-		function wrap(text,x,y,maxW,lh){var w=(text||'').split(' '),l='',yy=y;for(var i=0;i<w.length;i++){var t=l+w[i]+' ';if(ctx.measureText(t).width>maxW&&i>0){ctx.fillText(l.trim(),x,yy);l=w[i]+' ';yy+=lh;}else l=t;}ctx.fillText(l.trim(),x,yy);return yy;}
-		function frame(p,tsec){
+		function getSegments(){ var out=[]; ['ag-t1','ag-t2','ag-t3','ag-t4'].forEach(function(id){ var e=document.getElementById(id); if(e&&e.value.trim()) out.push(e.value.trim()); }); if(!out.length) out.push('Alliance Groupe'); return out; }
+		function agFont(){ var e=document.querySelector('.ag-font-btn.is-active'); return (e&&e.getAttribute('data-font')==='sans')?'Helvetica, Arial, sans-serif':'Georgia, serif'; }
+		function agColor(){ var e=document.querySelector('.ag-color-btn.is-active'); return e?e.getAttribute('data-color'):'#ffffff'; }
+		function wrapC(text,cx,cy,maxW,lh){var words=(text||'').split(' '),lines=[],line='';for(var i=0;i<words.length;i++){var t=line?line+' '+words[i]:words[i];if(ctx.measureText(t).width>maxW&&line){lines.push(line);line=words[i];}else line=t;}if(line)lines.push(line);var sy=cy-(lines.length-1)*lh/2;for(var j=0;j<lines.length;j++){ctx.fillText(lines[j],cx,sy+j*lh);}}
+		function frame(p,tsec,segDur){
 			ctx.fillStyle='#0e0d11';ctx.fillRect(0,0,W,H);
 			if(media){var mw=isVideo?media.videoWidth:media.width,mh=isVideo?media.videoHeight:media.height;if(mw&&mh){var ir=mw/mh,cr=W/H,dw,dh,z=1.04;if(ir>cr){dh=H*z;dw=dh*ir;}else{dw=W*z;dh=dw/ir;}ctx.drawImage(media,(W-dw)/2,(H-dh)/2,dw,dh);}}
-			var g=ctx.createLinearGradient(0,H*0.45,0,H);g.addColorStop(0,'rgba(7,7,12,0)');g.addColorStop(1,'rgba(7,7,12,.95)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-			var ap=(tsec===undefined)?1:Math.min(1,tsec/0.6),ty=0;
-			ctx.globalAlpha=ap;ctx.shadowColor='rgba(0,0,0,.7)';ctx.shadowBlur=16;ctx.textAlign='left';
-			ctx.fillStyle='#D4B45C';ctx.font='bold 40px Georgia, serif';ctx.fillText('ALLIANCE GROUPE',70,104);
-			ctx.fillStyle='#ffffff';ctx.font='bold 86px Georgia, serif';wrap(document.getElementById('ag-vhead').value||'',70,H-360+ty,W-140,94);
-			ctx.fillStyle='#E8C766';ctx.font='600 46px Arial';ctx.fillText(document.getElementById('ag-vsub').value||'',70,H-220+ty);
-			ctx.shadowBlur=0;ctx.fillStyle='#cfc7b8';ctx.font='600 36px Arial';ctx.fillText(link.replace(/^https?:\/\//,''),70,H-140+ty);
-			ctx.globalAlpha=1;
+			var g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'rgba(7,7,12,.5)');g.addColorStop(.5,'rgba(7,7,12,.12)');g.addColorStop(1,'rgba(7,7,12,.78)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+			ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.shadowColor='rgba(0,0,0,.75)';ctx.shadowBlur=14;
+			ctx.globalAlpha=1;ctx.fillStyle='#D4B45C';ctx.font='bold 38px Georgia, serif';ctx.fillText('ALLIANCE GROUPE',W/2,112);
+			var segs=getSegments(),n=segs.length,sd=segDur||2.8,t=(tsec===undefined)?0:tsec;
+			var raw=Math.floor(t/sd),local=(t/sd)-raw,idx=((raw%n)+n)%n;
+			var a=(tsec===undefined)?1:(local<0.18?local/0.18:(local>0.82?(1-local)/0.18:1));
+			var txt=segs[idx],size=txt.length>44?60:(txt.length>24?78:104);
+			ctx.globalAlpha=Math.max(0,Math.min(1,a));ctx.fillStyle=agColor();ctx.font='bold '+size+'px '+agFont();ctx.textBaseline='middle';
+			wrapC(txt,W/2,H*0.6,W-150,size*1.12);
+			ctx.globalAlpha=1;ctx.shadowBlur=0;ctx.textBaseline='alphabetic';
 		}
 		function loadFile(f){
 			stopPreview();
@@ -180,8 +203,8 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 		document.querySelectorAll('.ag-vbg').forEach(function(b){ b.addEventListener('click',function(){ setBg(b.getAttribute('data-src'), b); }); });
 		(function(){ var first=document.querySelector('.ag-vbg'); if(first){ loadUrl(first.getAttribute('data-src')); } })();
 		document.getElementById('ag-vfile').addEventListener('change',function(e){var f=e.target.files&&e.target.files[0];if(f)loadFile(f);});
-		document.getElementById('ag-vhead').addEventListener('input',function(){ if(!isVideo) renderOnce(); });
-		document.getElementById('ag-vsub').addEventListener('input',function(){ if(!isVideo) renderOnce(); });
+		document.querySelectorAll('.ag-font-btn').forEach(function(b){ b.addEventListener('click',function(){ document.querySelectorAll('.ag-font-btn').forEach(function(x){ x.classList.toggle('is-active', x===b); }); }); });
+		document.querySelectorAll('.ag-color-btn').forEach(function(b){ b.addEventListener('click',function(){ document.querySelectorAll('.ag-color-btn').forEach(function(x){ x.classList.toggle('is-active', x===b); }); }); });
 		function agSelectedDuration(){ var el=document.querySelector('.ag-dur-btn.is-active'); return el ? parseInt(el.getAttribute('data-sec'),10)*1000 : 8000; }
 		document.querySelectorAll('.ag-dur-btn').forEach(function(b){ b.addEventListener('click',function(){ document.querySelectorAll('.ag-dur-btn').forEach(function(x){ x.classList.toggle('is-active', x===b); }); }); });
 		document.getElementById('ag-vgen').addEventListener('click',function(){
@@ -189,7 +212,9 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 			if(!cv.captureStream||!window.MediaRecorder){statusEl.textContent='Ton navigateur ne permet pas l\'enregistrement. Essaie Chrome (Android/PC).';return;}
 			stopPreview();
 			var mime=['video/mp4;codecs=h264','video/mp4','video/webm;codecs=h264','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'].find(function(m){return MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m);})||'';
-			var stream=cv.captureStream(30), rec=null, tries=[];
+			// Enregistrement via un canvas hors-ecran en 720x1280 : bien plus fluide (surtout pour les videos importees), sans toucher au canvas visible.
+			var RW=720,RH=1280,recCv=document.createElement('canvas');recCv.width=RW;recCv.height=RH;var recCtx=recCv.getContext('2d');
+			var stream=recCv.captureStream(30), rec=null, tries=[];
 			if(mime){ tries.push({mimeType:mime}); }
 			tries.push(undefined);
 			for(var ti=0;ti<tries.length;ti++){ try{ rec=new MediaRecorder(stream,tries[ti]); break; }catch(e){} }
@@ -207,10 +232,11 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 			};
 			if(isVideo){try{media.currentTime=0;media.play();}catch(e){}}
 			var DUR=agSelectedDuration(),secs=Math.round(DUR/1000),start=performance.now();
+			var nSeg=getSegments().length,segDur=(DUR/1000)/Math.max(1,nSeg);
 			try{ rec.start(); }catch(e){ statusEl.textContent='Impossible de démarrer l\'enregistrement sur ce navigateur.'; return; }
 			statusEl.textContent='Génération en cours… ('+secs+' s) — laisse l\'écran allumé';
 			document.getElementById('ag-vgen').disabled=true;
-			(function tick(now){var el=now-start,p=Math.min(1,el/DUR);frame(p,el/1000);if(el<DUR)requestAnimationFrame(tick);else{rec.stop();if(isVideo){try{media.pause();}catch(e){}}document.getElementById('ag-vgen').disabled=false;}})(start);
+			(function tick(now){var el=now-start,p=Math.min(1,el/DUR);frame(p,el/1000,segDur);recCtx.drawImage(cv,0,0,RW,RH);if(el<DUR)requestAnimationFrame(tick);else{rec.stop();if(isVideo){try{media.pause();}catch(e){}}document.getElementById('ag-vgen').disabled=false;}})(start);
 		});
 		function saveAndGuide(){
 			var a=document.createElement('a');a.href=lastUrl||URL.createObjectURL(lastBlob);a.download='alliance-video.'+lastExt;document.body.appendChild(a);a.click();a.remove();
@@ -235,7 +261,7 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 		}
 		shEl.addEventListener('click',agShareVideo);
 		capEl.addEventListener('click',function(){ navigator.clipboard.writeText(caption).then(function(){ capEl.textContent='✓ Légende copiée'; setTimeout(function(){ capEl.textContent='📋 Copier la légende (+ ton lien)'; },1600); }); });
-		frame(0);
+		startPreview();
 	})();
 	</script>
 
@@ -363,6 +389,17 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 .ag-bgpick__thumb{width:54px;height:72px;border-radius:10px;border:2px solid rgba(212,180,92,.25);background-size:cover;background-position:center;cursor:pointer;padding:0;transition:transform .2s,border-color .2s;}
 .ag-bgpick__thumb:hover{transform:translateY(-2px);border-color:rgba(212,180,92,.6);}
 .ag-bgpick__thumb.is-active{border-color:#e8c766;box-shadow:0 0 0 2px rgba(232,199,102,.3);}
+.ag-fields__lbl{color:var(--color-text-soft);font-size:.9rem;font-weight:600;}
+.ag-tinput{padding:12px 16px;border-radius:12px;border:1px solid rgba(212,180,92,.3);background:rgba(255,255,255,.05);color:#fff;font-size:.95rem;}
+.ag-opt{display:flex;flex-direction:column;gap:8px;}
+.ag-opt__lbl{color:var(--color-text-soft);font-size:.9rem;font-weight:600;}
+.ag-seg{display:flex;gap:8px;}
+.ag-font-btn{flex:1;padding:11px 8px;border-radius:10px;border:1px solid rgba(212,180,92,.25);background:rgba(255,255,255,.05);color:#fff;font-weight:700;font-size:1rem;cursor:pointer;transition:background .2s,border-color .2s;}
+.ag-font-btn.is-active{background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;border-color:transparent;}
+.ag-colors{display:flex;gap:10px;flex-wrap:wrap;}
+.ag-color-btn{width:34px;height:34px;border-radius:50%;border:2px solid rgba(255,255,255,.25);cursor:pointer;padding:0;transition:transform .15s,border-color .15s;}
+.ag-color-btn:hover{transform:scale(1.1);}
+.ag-color-btn.is-active{border-color:#fff;box-shadow:0 0 0 2px rgba(232,199,102,.7);}
 .ag-dur{display:flex;flex-direction:column;gap:8px;}
 .ag-dur__lbl{color:var(--color-text-soft);font-size:.9rem;font-weight:600;}
 .ag-dur__row{display:flex;gap:8px;flex-wrap:wrap;}
