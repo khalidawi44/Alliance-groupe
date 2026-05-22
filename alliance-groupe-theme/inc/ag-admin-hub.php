@@ -199,10 +199,71 @@ if ( ! function_exists( 'ag_hub_render' ) ) {
 					</div>
 				</div>
 			</div>
-		</div>
-		<?php
+
+			<!-- MESSAGES AUTOMATIQUES CLIENTS -->
+			<?php
+			$daily_on  = get_option( 'ag_client_daily_on' ) === '1';
+			$next_run  = wp_next_scheduled( 'ag_client_daily' );
+			$msg_count = function_exists( 'ag_client_messages' ) ? count( ag_client_messages() ) : 0;
+			$today_msg = function_exists( 'ag_client_message_today' ) ? ag_client_message_today() : '';
+			$chan_ok   = '' !== ag_tg_cfg( 'chan' );
+			$auto_msg  = isset( $_GET['ag_auto'] ) ? sanitize_text_field( wp_unslash( $_GET['ag_auto'] ) ) : '';
+			?>
+			<div style="background:#fff;border:1px solid #dcdcde;border-radius:14px;padding:20px;margin-top:24px;">
+				<h2 style="margin:0 0 4px;font-size:1.2rem;">📅 Messages automatiques clients</h2>
+				<p style="color:#646970;font-size:.9rem;margin:0 0 14px;max-width:820px;">Un message percutant (urgence + offre limitée + exclusivité) part <strong>chaque jour à 9h</strong> dans le canal Telegram clients. Banque actuelle : <strong><?php echo (int) $msg_count; ?> messages</strong> en rotation (1 par jour).</p>
+
+				<?php if ( 'saved' === $auto_msg ) : ?>
+					<div class="notice notice-success inline" style="margin:0 0 12px;"><p>✅ Réglages des messages auto enregistrés.</p></div>
+				<?php elseif ( 'sent_ok' === $auto_msg ) : ?>
+					<div class="notice notice-success inline" style="margin:0 0 12px;"><p>✅ Message du jour envoyé aux clients.</p></div>
+				<?php elseif ( 'sent_err' === $auto_msg ) : ?>
+					<div class="notice notice-error inline" style="margin:0 0 12px;"><p>⚠ Envoi impossible : configure le canal clients dans Notifications.</p></div>
+				<?php endif; ?>
+
+				<p style="margin:0 0 16px;font-weight:600;">
+					État :
+					<?php if ( $daily_on && $chan_ok ) : ?>
+						<span style="color:#1e7e34;">🟢 Actif</span> <span style="font-weight:400;color:#646970;">— prochain envoi : <strong><?php echo $next_run ? esc_html( wp_date( 'd/m/Y à H:i', $next_run ) ) : 'demain 9h'; ?></strong></span>
+					<?php elseif ( $daily_on && ! $chan_ok ) : ?>
+						<span style="color:#b26a00;">⚠ Activé, mais canal clients non configuré</span> — <a href="<?php echo esc_url( $opt . 'ag-notify' ); ?>">Configurer le canal</a>
+					<?php else : ?>
+						<span style="color:#646970;">⚪ Désactivé</span>
+					<?php endif; ?>
+				</p>
+
+				<div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start;">
+					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+						<input type="hidden" name="action" value="ag_hub_save_auto">
+						<?php wp_nonce_field( 'ag_hub_save_auto', '_n' ); ?>
+						<label style="display:flex;gap:8px;align-items:center;font-weight:600;margin-bottom:12px;">
+							<input type="checkbox" name="ag_client_daily_on" value="1" <?php checked( $daily_on ); ?>>
+							Envoyer automatiquement chaque jour à 9h
+						</label>
+						<label style="display:block;font-weight:600;margin-bottom:4px;">Tes propres messages (optionnel)</label>
+						<p style="color:#646970;font-size:.82rem;margin:0 0 6px;">Sépare chaque message par une ligne contenant uniquement <code>---</code>. Ils s'ajoutent à la banque.</p>
+						<textarea name="ag_client_msgs_custom" rows="8" style="width:100%;border-radius:8px;" placeholder="🔥 Offre flash 48h ...&#10;---&#10;⏳ Dernières places du mois ..."><?php echo esc_textarea( get_option( 'ag_client_msgs_custom', '' ) ); ?></textarea>
+						<button type="submit" class="button button-primary" style="margin-top:10px;">Enregistrer</button>
+					</form>
+
+					<div>
+						<label style="display:block;font-weight:600;margin-bottom:6px;">Aperçu du message d'aujourd'hui</label>
+						<div style="white-space:pre-wrap;background:#f6f7f7;border:1px solid #e0e0e0;border-radius:8px;padding:14px;min-height:90px;color:#1d2327;line-height:1.5;"><?php echo $today_msg ? esc_html( $today_msg ) : 'Aucun message (banque vide).'; ?></div>
+						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-top:10px;">
+							<input type="hidden" name="action" value="ag_client_send_now">
+							<input type="hidden" name="_ag_hub" value="1">
+							<?php wp_nonce_field( 'ag_hub_now', '_n' ); ?>
+							<button type="submit" class="button"<?php echo $chan_ok ? '' : ' disabled'; ?>>📅 Envoyer celui-ci maintenant</button>
+						</form>
+						<?php if ( ! $chan_ok ) : ?>
+							<p style="color:#b32d2e;font-size:.82rem;margin:8px 0 0;">Configure le canal clients dans <a href="<?php echo esc_url( $opt . 'ag-notify' ); ?>">Notifications</a> pour activer l'envoi.</p>
+						<?php endif; ?>
+					</div>
+				</div>
+			</div>
+			<?php
+		}
 	}
-}
 
 /* ── Rediriger l'envoi "Publier aux clients" vers le hub avec un message ─ */
 add_action( 'admin_post_ag_push_clients', function () {
@@ -211,5 +272,23 @@ add_action( 'admin_post_ag_push_clients', function () {
 	$msg = trim( (string) wp_unslash( $_POST['msg'] ?? '' ) );
 	$ok  = ( '' !== $msg ) && function_exists( 'ag_push_clients' ) && ag_push_clients( $msg );
 	wp_safe_redirect( admin_url( 'admin.php?page=ag-hub&ag_hub_msg=' . ( $ok ? 'broadcast_ok' : 'broadcast_err' ) ) );
+	exit;
+}, 1 );
+
+/* ── Enregistrer les réglages des messages auto depuis le hub ───────── */
+add_action( 'admin_post_ag_hub_save_auto', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_hub_save_auto' ) ) wp_die( 'no' );
+	update_option( 'ag_client_daily_on', isset( $_POST['ag_client_daily_on'] ) ? '1' : '' );
+	update_option( 'ag_client_msgs_custom', sanitize_textarea_field( wp_unslash( $_POST['ag_client_msgs_custom'] ?? '' ) ) );
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-hub&ag_auto=saved' ) );
+	exit;
+} );
+
+/* ── "Envoyer le message du jour" depuis le hub (variante du handler) ── */
+add_action( 'admin_post_ag_client_send_now', function () {
+	if ( ! isset( $_POST['_ag_hub'] ) ) return; // laisse le handler de la page Notifications gérer
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_hub_now' ) ) wp_die( 'no' );
+	$ok = function_exists( 'ag_push_clients' ) && function_exists( 'ag_client_message_today' ) && ag_push_clients( ag_client_message_today() );
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-hub&ag_auto=' . ( $ok ? 'sent_ok' : 'sent_err' ) ) );
 	exit;
 }, 1 );
