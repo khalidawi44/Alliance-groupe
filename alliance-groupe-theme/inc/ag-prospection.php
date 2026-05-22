@@ -408,8 +408,8 @@ if ( ! function_exists( 'ag_prospect_why' ) ) {
 }
 if ( ! function_exists( 'ag_prospect_message' ) ) {
 	/** Message personnalisé et émotionnel, adapté au métier et au manque constaté. */
-	function ag_prospect_message( $p ) {
-		$site = home_url( '/sites-express' );
+	function ag_prospect_message( $p, $link = '' ) {
+		$site = $link ? $link : home_url( '/sites-express' );
 		$nom  = $p['name'] ? $p['name'] : 'votre établissement';
 		$kind = ag_site_kind( $p['website'] ?? '' )[0];
 		$type = strtolower( $p['type'] ?? '' );
@@ -423,8 +423,16 @@ if ( ! function_exists( 'ag_prospect_message' ) ) {
 		elseif ( false !== strpos( $type, 'coiffeur' ) || false !== strpos( $type, 'barbier' ) || false !== strpos( $type, 'beauté' ) || false !== strpos( $type, 'institut' ) ) $promesse = "imaginez un agenda qui se remplit tout seul : vos clients prennent rendez-vous en ligne, 24h/24, même quand le salon est fermé.";
 		elseif ( false !== strpos( $type, 'plombier' ) || false !== strpos( $type, 'électricien' ) || false !== strpos( $type, 'garagiste' ) || false !== strpos( $type, 'artisan' ) ) $promesse = "imaginez recevoir les demandes de devis urgentes directement sur votre téléphone, avant que le client n'appelle le concurrent d'à côté.";
 
-		$msg = "Bonjour,\n\n{$accroche}\n\nJe suis d'Alliance Groupe. On crée des sites professionnels à prix fixe (dès 490 €), livrés en quelques jours, payables en 4×, et sans rendez-vous. {$promesse}\n\nVotre métier mérite d'être vu. Est-ce que ça vous dirait qu'on en parle 5 minutes, sans engagement ?\n\nUn aperçu de ce qu'on fait : {$site}\n\nBien à vous,\nAlliance Groupe — contact@alliancegroupe-inc.com\n(Si vous préférez ne pas être recontacté, dites-le-moi simplement, j'en prends note et je n'insiste pas.)";
-		if ( ! empty( $p['id'] ) && function_exists( 'ag_prospect_unsub_url' ) ) $msg .= "\nNe plus jamais être contacté (1 clic) : " . ag_prospect_unsub_url( $p );
+		$msg  = "✨ Bonjour,\n\n{$accroche}\n\n";
+		$msg .= "Chez *Alliance Groupe*, on crée des sites pros 📱 qui travaillent pour vous 24h/24 :\n";
+		$msg .= "✅ Prix fixe dès *490 €* (payable en 4× sans frais)\n";
+		$msg .= "✅ Livré en quelques jours, *sans rendez-vous*\n";
+		$msg .= "✅ Optimisé Google + parfait sur mobile\n\n";
+		$msg .= "{$promesse}\n\n";
+		$msg .= "👉 Voir des exemples : {$site}\n\n";
+		$msg .= "On en parle 5 minutes, sans engagement ? 🙂\n\n";
+		$msg .= "🤝 Alliance Groupe\n📩 contact@alliancegroupe-inc.com";
+		if ( ! empty( $p['id'] ) && function_exists( 'ag_prospect_unsub_url' ) ) $msg .= "\n\n🚫 Ne plus être contacté (1 clic) : " . ag_prospect_unsub_url( $p );
 		return $msg;
 	}
 }

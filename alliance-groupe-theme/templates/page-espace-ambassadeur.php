@@ -289,7 +289,7 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 					<thead><tr><th>Entreprise</th><th>Pourquoi</th><th>Contacter</th><th>Statut</th></tr></thead>
 					<tbody>
 					<?php foreach ( $ag_my_prospects as $pp ) :
-						$pmsg = function_exists( 'ag_prospect_message' ) ? ag_prospect_message( $pp ) : '';
+						$pmsg = function_exists( 'ag_prospect_message' ) ? ag_prospect_message( $pp, $ag_sale_link ) : '';
 						$pdig = function_exists( 'ag_wa_number' ) ? ag_wa_number( $pp['phone'] ?? '', $pp['phone_intl'] ?? '' ) : preg_replace( '/[^0-9]/', '', $pp['phone'] ?? '' );
 						$pwa  = $pdig ? 'https://wa.me/' . $pdig . '?text=' . rawurlencode( $pmsg ) : '';
 						$pmail = ! empty( $pp['email'] ) ? 'mailto:' . rawurlencode( $pp['email'] ) . '?subject=' . rawurlencode( 'Votre site web — Alliance Groupe' ) . '&body=' . rawurlencode( $pmsg ) : '';
