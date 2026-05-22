@@ -672,6 +672,25 @@ add_action( 'admin_post_ag_push_test', function () {
 	$ok = ag_push( '✅ Test Alliance Groupe', 'Si tu lis ça sur ton téléphone, les notifications marchent !' );
 	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-notify', 'test' => $ok ? 1 : 0 ), admin_url( 'options-general.php' ) ) ); exit;
 } );
+add_action( 'admin_post_ag_tg_detect', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_tg_detect' ) ) wp_die( 'no' );
+	$token = ag_tg_cfg( 'token' ); $found = array();
+	if ( $token ) {
+		$resp = wp_remote_get( 'https://api.telegram.org/bot' . $token . '/getUpdates', array( 'timeout' => 15 ) );
+		if ( ! is_wp_error( $resp ) ) {
+			$d = json_decode( wp_remote_retrieve_body( $resp ), true );
+			foreach ( (array) ( $d['result'] ?? array() ) as $u ) {
+				$chat = $u['message']['chat'] ?? ( $u['my_chat_member']['chat'] ?? ( $u['channel_post']['chat'] ?? null ) );
+				if ( $chat && isset( $chat['id'] ) ) {
+					$name = $chat['title'] ?? trim( ( $chat['first_name'] ?? '' ) . ' ' . ( $chat['last_name'] ?? '' ) );
+					$found[ (string) $chat['id'] ] = ( $name ?: ( $chat['username'] ?? '' ) ) . ' [' . ( $chat['type'] ?? '' ) . ']';
+				}
+			}
+		}
+	}
+	set_transient( 'ag_tg_detected', $found, 300 );
+	wp_safe_redirect( admin_url( 'options-general.php?page=ag-notify' ) ); exit;
+} );
 if ( ! function_exists( 'ag_notify_render' ) ) {
 	function ag_notify_render() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
@@ -714,12 +733,30 @@ if ( ! function_exists( 'ag_notify_render' ) ) {
 				<?php submit_button(); ?>
 			</form>
 			<?php if ( $active ) : ?>
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="max-width:780px;">
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="max-width:780px;display:inline;">
 				<input type="hidden" name="action" value="ag_push_test">
 				<?php wp_nonce_field( 'ag_push_test', '_n' ); ?>
 				<?php submit_button( '📲 Envoyer un test', 'secondary', 'submit', false ); ?>
 			</form>
 			<?php endif; ?>
+			<?php if ( ag_tg_cfg( 'token' ) ) : ?>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;">
+				<input type="hidden" name="action" value="ag_tg_detect">
+				<?php wp_nonce_field( 'ag_tg_detect', '_n' ); ?>
+				<?php submit_button( '🔎 Détecter mon Chat ID', 'secondary', 'submit', false ); ?>
+			</form>
+			<p class="description" style="max-width:780px;">Pour un <strong>groupe</strong> : crée le groupe Telegram, ajoute ton bot dedans, écris un message dans le groupe, puis clique « Détecter ». Pour toi tout seul : écris « Bonjour » à ton bot puis « Détecter ».</p>
+			<?php $detected = get_transient( 'ag_tg_detected' ); if ( is_array( $detected ) && $detected ) : delete_transient( 'ag_tg_detected' ); ?>
+				<div style="max-width:780px;margin-top:8px;padding:14px 18px;background:#fff;border:1px solid #ccd0d4;">
+					<strong>Chats détectés (copie l'ID dans le champ « Chat ID » ci-dessus) :</strong>
+					<ul style="margin:8px 0 0 18px;">
+						<?php foreach ( $detected as $cid => $cname ) : ?>
+							<li><code style="user-select:all;font-size:1.05em;"><?php echo esc_html( $cid ); ?></code> — <?php echo esc_html( $cname ); ?></li>
+						<?php endforeach; ?>
+					</ul>
+				</div>
+			<?php endif; ?>
+			<?php endif; // fin bloc Telegram (token configuré) ?>
 		</div>
 		<?php
 	}
