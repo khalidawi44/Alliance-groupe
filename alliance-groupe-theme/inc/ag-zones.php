@@ -273,18 +273,41 @@ add_action( 'admin_post_ag_zone_reassign', function () {
 	wp_safe_redirect( admin_url( 'admin.php?page=ag-zones&zmsg=reassigned' . $n ) ); exit;
 } );
 
-/* ── Handler front (ambassadeur) : rejoindre une zone (gratuit, partage) ── */
+/* ── Téléphone ambassadeur (requis, unique = anti multi-comptes) ── */
+if ( ! function_exists( 'ag_amb_phone' ) ) {
+	function ag_amb_phone( $uid = 0 ) { $uid = $uid ?: get_current_user_id(); return trim( (string) get_user_meta( $uid, 'ag_amb_phone', true ) ); }
+}
+add_action( 'admin_post_ag_amb_phone_save', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_zone_front' ) ) wp_die( 'no' );
+	$uid   = get_current_user_id();
+	$phone = preg_replace( '/[^0-9+]/', '', (string) wp_unslash( $_POST['phone'] ?? '' ) );
+	$res   = 'phone_err';
+	if ( strlen( preg_replace( '/[^0-9]/', '', $phone ) ) >= 9 ) {
+		$dupe = get_users( array( 'meta_key' => 'ag_amb_phone', 'meta_value' => $phone, 'exclude' => array( $uid ), 'fields' => 'ID', 'number' => 1 ) );
+		if ( $dupe ) { $res = 'phone_dupe'; } else { update_user_meta( $uid, 'ag_amb_phone', $phone ); $res = 'phone_ok'; }
+	}
+	wp_safe_redirect( home_url( '/espace-ambassadeur?zone=' . $res . '#zone' ) ); exit;
+} );
+
+/* ── Handler front (ambassadeur) : prendre / changer de zone (1 seule zone) ── */
 add_action( 'admin_post_ag_zone_request', function () {
 	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_zone_front' ) ) wp_die( 'no' );
 	$u = wp_get_current_user();
 	$email = strtolower( $u->user_email );
 	$name  = $u->display_name ?: $email;
 	$dept  = ag_dept_norm( wp_unslash( $_POST['dept'] ?? '' ) );
-	$res   = 'err';
+	if ( '' === ag_amb_phone( $u->ID ) ) { wp_safe_redirect( home_url( '/espace-ambassadeur?zone=need_phone#zone' ) ); exit; }
+	$res = 'err';
 	if ( $dept && isset( ag_dept_names()[ $dept ] ) ) {
-		$res = ag_zone_add_owner( $dept, $email, $name ); // claimed | joined | mine
-		if ( 'claimed' === $res && function_exists( 'ag_push' ) ) ag_push( '🗺️ Zone ' . $dept . ' prise', $name . ' couvre désormais le ' . $dept . '.' );
-		if ( 'joined' === $res && function_exists( 'ag_push' ) ) ag_push( '🤝 Zone ' . $dept . ' partagée', $name . ' rejoint le ' . $dept . ' (partage 50/50).' );
+		$mine = ag_zone_of_owner( $email );
+		if ( in_array( $dept, $mine, true ) ) {
+			$res = 'mine';
+		} else {
+			foreach ( $mine as $old ) { ag_zone_remove_owner( $old, $email ); } // 1 zone max : on quitte l'ancienne
+			$add = ag_zone_add_owner( $dept, $email, $name ); // claimed | joined
+			$res = $mine ? 'changed' : $add;
+			if ( function_exists( 'ag_push' ) ) ag_push( '🗺️ Zone ' . $dept, $name . ' couvre le ' . $dept . ( $mine ? ' (changement de zone)' : '' ) . ( 'joined' === $add ? ' — partage 50/50' : '' ) . '.' );
+		}
 	}
 	wp_safe_redirect( home_url( '/espace-ambassadeur?zone=' . $res . '#zone' ) ); exit;
 } );

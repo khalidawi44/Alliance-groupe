@@ -220,29 +220,45 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 	<?php
 	$ag_myzones = function_exists( 'ag_zone_of_owner' ) ? ag_zone_of_owner( $email ) : array();
 	$ag_zfeed = isset( $_GET['zone'] ) ? sanitize_text_field( wp_unslash( $_GET['zone'] ) ) : '';
+	$ag_phone = function_exists( 'ag_amb_phone' ) ? ag_amb_phone( get_current_user_id() ) : '';
 	?>
 	<section class="ag-section ag-section--onyx" id="zone">
 		<div class="ag-container">
 			<h2 class="ag-section__title">Ma zone 🗺️</h2>
-			<?php if ( $ag_myzones ) : ?>
-				<p class="ag-section__desc">Tu couvres le département <strong style="color:var(--color-gold);"><?php echo esc_html( implode( ', ', $ag_myzones ) ); ?></strong>. Les nouveaux prospects de ta zone te sont <strong>attribués automatiquement</strong>. Si un coéquipier couvre la même zone, vous vous <strong>partagez les prospects 50/50</strong> — pas de concurrence.</p>
-			<?php else : ?>
-				<p class="ag-section__desc">Tu n'as pas encore de zone. <strong>Prends ton département</strong> (ex. 33) : le robot t'enverra automatiquement les prospects. Si la zone est déjà couverte, tu la <strong>partages 50/50</strong> avec l'autre ambassadeur.</p>
-			<?php endif; ?>
 
-			<?php if ( 'claimed' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">✅ Zone prise ! Les prospects arrivent automatiquement.</p>
-			<?php elseif ( 'joined' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">🤝 Tu as rejoint la zone — partage 50/50 des prospects avec ton coéquipier.</p>
+			<?php if ( 'phone_ok' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">✅ Numéro enregistré. Tu peux prendre ta zone.</p>
+			<?php elseif ( 'phone_dupe' === $ag_zfeed ) : ?><p style="text-align:center;color:#d98b8b;">Ce numéro est déjà utilisé par un autre compte. Un numéro = un ambassadeur.</p>
+			<?php elseif ( 'phone_err' === $ag_zfeed ) : ?><p style="text-align:center;color:#d98b8b;">Numéro invalide. Format : 0612345678.</p>
+			<?php elseif ( 'need_phone' === $ag_zfeed ) : ?><p style="text-align:center;color:#e6b35a;">Renseigne d'abord ton numéro de téléphone pour débloquer les zones.</p>
+			<?php elseif ( 'claimed' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">✅ Zone prise ! Les prospects arrivent automatiquement.</p>
+			<?php elseif ( 'joined' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">🤝 Tu as rejoint la zone — partage 50/50 des prospects.</p>
+			<?php elseif ( 'changed' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">✅ Tu as changé de zone.</p>
 			<?php elseif ( 'mine' === $ag_zfeed ) : ?><p style="text-align:center;color:var(--color-text-soft);">Cette zone est déjà la tienne.</p>
 			<?php elseif ( 'err' === $ag_zfeed ) : ?><p style="text-align:center;color:#d98b8b;">Département invalide. Mets 2 chiffres (ex. 33).</p>
 			<?php endif; ?>
 
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-top:14px;">
-				<input type="hidden" name="action" value="ag_zone_request">
-				<?php wp_nonce_field( 'ag_zone_front', '_n' ); ?>
-				<input type="text" name="dept" maxlength="3" placeholder="Département (ex : 33)" required style="padding:10px 14px;border-radius:10px;border:1px solid rgba(212,180,92,.4);background:rgba(255,255,255,.05);color:#fff;width:180px;">
-				<button type="submit" class="ag-btn-gold">Prendre / rejoindre cette zone →</button>
-			</form>
-			<p style="text-align:center;color:var(--color-text-soft);font-size:.85rem;margin-top:10px;">Zone libre = tu la prends. Zone déjà couverte = tu la <strong>partages 50/50</strong> (rotation automatique des prospects). C'est gratuit, on joue collectif.</p>
+			<?php if ( '' === $ag_phone ) : ?>
+				<p class="ag-section__desc">Avant de prendre une zone, <strong>vérifie ton numéro de téléphone</strong> (un numéro = un ambassadeur, pas de multi-comptes).</p>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-top:14px;">
+					<input type="hidden" name="action" value="ag_amb_phone_save">
+					<?php wp_nonce_field( 'ag_zone_front', '_n' ); ?>
+					<input type="tel" name="phone" placeholder="Ton numéro (ex : 0612345678)" required style="padding:10px 14px;border-radius:10px;border:1px solid rgba(212,180,92,.4);background:rgba(255,255,255,.05);color:#fff;width:240px;">
+					<button type="submit" class="ag-btn-gold">Enregistrer mon numéro →</button>
+				</form>
+			<?php else : ?>
+				<?php if ( $ag_myzones ) : ?>
+					<p class="ag-section__desc">Tu couvres le département <strong style="color:var(--color-gold);"><?php echo esc_html( implode( ', ', $ag_myzones ) ); ?></strong>. Les prospects de ta zone te sont <strong>attribués automatiquement</strong>. Tu peux <strong>changer de zone</strong> ci-dessous (1 seule zone à la fois).</p>
+				<?php else : ?>
+					<p class="ag-section__desc">📱 Numéro vérifié. <strong>Prends ton département</strong> (ex. 33) — une seule zone par ambassadeur. Le robot t'enverra les prospects ; si la zone est déjà couverte, vous la <strong>partagez 50/50</strong>.</p>
+				<?php endif; ?>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-top:14px;">
+					<input type="hidden" name="action" value="ag_zone_request">
+					<?php wp_nonce_field( 'ag_zone_front', '_n' ); ?>
+					<input type="text" name="dept" maxlength="3" placeholder="Département (ex : 33)" required style="padding:10px 14px;border-radius:10px;border:1px solid rgba(212,180,92,.4);background:rgba(255,255,255,.05);color:#fff;width:180px;">
+					<button type="submit" class="ag-btn-gold"><?php echo $ag_myzones ? 'Changer de zone →' : 'Prendre cette zone →'; ?></button>
+				</form>
+				<p style="text-align:center;color:var(--color-text-soft);font-size:.85rem;margin-top:10px;"><strong>1 seule zone</strong> par ambassadeur. Changer de zone te retire de l'ancienne. C'est gratuit, on joue collectif.</p>
+			<?php endif; ?>
 		</div>
 	</section>
 
