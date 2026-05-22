@@ -746,9 +746,25 @@ if ( ! function_exists( 'ag_notify_render' ) ) {
 					<tr><th scope="row"><label for="ag_tg_chan">📣 Canal GÉNÉRAL (clients) — Chat ID</label></th><td><input type="text" name="ag_tg_chan" id="ag_tg_chan" value="<?php echo esc_attr( ag_tg_cfg( 'chan' ) ); ?>" class="regular-text" style="width:260px;"><p class="description">Pour diffuser des annonces aux clients (canal Telegram public, le bot doit en être admin).</p></td></tr>
 					<tr><th scope="row"><label for="ag_tg_chan_link">Lien d'invitation du canal clients</label></th><td><input type="url" name="ag_tg_chan_link" id="ag_tg_chan_link" value="<?php echo esc_attr( ag_tg_cfg( 'chan_link' ) ); ?>" class="regular-text" style="width:360px;" placeholder="https://t.me/ton_canal"><p class="description"><?php echo $active ? '✓ Notifications internes actives.' : 'Tout vide = pas de notif (les emails continuent).'; ?></p></td></tr>
 				</table>
+				<h2 style="margin-top:20px;">📅 Message quotidien automatique aux clients</h2>
+				<p class="description" style="max-width:780px;">Un message <strong>percutant</strong> (urgence + offre limitée + exclusivité) part <strong>chaque jour à 9h</strong> dans le canal clients. Tu peux ajouter les tiens (sépare chaque message par une ligne <code>---</code>).</p>
+				<label style="display:block;margin:8px 0;"><input type="checkbox" name="ag_client_daily_on" value="1" <?php checked( get_option( 'ag_client_daily_on' ), '1' ); ?>> <strong>Activer le message quotidien automatique</strong></label>
+				<textarea name="ag_client_msgs_custom" rows="6" style="width:100%;max-width:780px;" placeholder="Tes propres messages (optionnel). Sépare-les par une ligne contenant seulement : ---"><?php echo esc_textarea( get_option( 'ag_client_msgs_custom', '' ) ); ?></textarea>
 				<?php submit_button(); ?>
 			</form>
-			<?php if ( isset( $_GET['bc'] ) ) : ?><div class="notice notice-<?php echo $_GET['bc'] ? 'success' : 'error'; ?>"><p><?php echo $_GET['bc'] ? 'Annonce envoyée aux clients ✅' : 'Échec : configure le canal général (clients).'; ?></p></div><?php endif; ?>
+			<?php if ( isset( $_GET['bc'] ) ) : ?><div class="notice notice-<?php echo $_GET['bc'] ? 'success' : 'error'; ?>"><p><?php echo $_GET['bc'] ? 'Annonce envoyée aux clients ✅' : 'Échec : configure le canal clients.'; ?></p></div><?php endif; ?>
+			<?php if ( isset( $_GET['sent'] ) ) : ?><div class="notice notice-<?php echo $_GET['sent'] ? 'success' : 'error'; ?>"><p><?php echo $_GET['sent'] ? 'Message du jour envoyé aux clients ✅' : 'Échec : configure le canal clients.'; ?></p></div><?php endif; ?>
+			<?php if ( ag_tg_cfg( 'chan' ) ) : ?>
+			<div style="max-width:780px;margin:10px 0;padding:14px 18px;background:#fff;border:1px solid #ccd0d4;">
+				<strong>Aperçu du message d'aujourd'hui :</strong>
+				<p style="white-space:pre-wrap;background:#f6f7f7;padding:12px;border-radius:8px;margin:8px 0;"><?php echo esc_html( ag_client_message_today() ); ?></p>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<input type="hidden" name="action" value="ag_client_send_now">
+					<?php wp_nonce_field( 'ag_client_now', '_n' ); ?>
+					<?php submit_button( '📅 Envoyer celui d\'aujourd\'hui maintenant', 'secondary', 'submit', false ); ?>
+				</form>
+			</div>
+			<?php endif; ?>
 			<?php if ( ag_tg_cfg( 'chan' ) ) : ?>
 			<div style="max-width:780px;margin:16px 0;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #5ab0ff;">
 				<strong>📣 Publier une annonce aux clients (canal général)</strong>
@@ -789,3 +805,49 @@ if ( ! function_exists( 'ag_notify_render' ) ) {
 		<?php
 	}
 }
+
+/* ── 10. Message QUOTIDIEN automatique au canal clients ──────────── */
+add_action( 'admin_init', function () {
+	register_setting( 'ag_tg_cfg', 'ag_client_daily_on', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
+	register_setting( 'ag_tg_cfg', 'ag_client_msgs_custom', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_textarea_field', 'default' => '' ) );
+} );
+if ( ! function_exists( 'ag_client_messages' ) ) {
+	/** Banque de messages clients : impactants, urgence + offre limitée + exclusivité. */
+	function ag_client_messages() {
+		$s = home_url( '/sites-express' );
+		$base = array(
+			"⏳ Chaque jour sans site, des clients vont chez le concurrent. Le tien, pro et livré en quelques jours, dès 490 € — on ne prend que quelques projets ce mois. Réserve ta place 👉 $s",
+			"🔥 Offre du jour : site pro à prix fixe, payable en 4×. On limite volontairement le nombre de projets pour garder la qualité. Quand c'est plein, c'est plein. 👉 $s",
+			"Tu es unique. Ton site devrait l'être aussi. Design sur-mesure, à ta marque — mais les places du mois partent vite. Bloque la tienne 👉 $s",
+			"😬 Pendant que tu hésites, ton concurrent encaisse les clients que TON site aurait captés. On répare ça en quelques jours, dès 490 €. 👉 $s",
+			"🎯 Aujourd'hui seulement : on étudie ton projet en priorité. Site clé en main, sans rendez-vous, payable en 4×. Réponds vite, l'agenda se remplit 👉 $s",
+			"💸 Un site qui travaille 24h/24 pendant que tu dors. Combien de ventes tu perds sans lui ? On le crée pour toi, dès 490 €. Places limitées 👉 $s",
+			"⭐ On choisit nos clients comme on choisit nos projets : peu, mais bien. Tu veux faire partie des prochains ? C'est maintenant 👉 $s",
+			"⚠️ Dernière ligne droite du mois : il reste quelques créneaux de production. Après, c'est le mois prochain. Prends le tien 👉 $s",
+			"🚀 Tes concurrents ont un site. Pas toi ? Ça se voit — et ça se paie en clients perdus. On t'en livre un pro en quelques jours 👉 $s",
+			"🤝 Offre exclusive abonnés : on accompagne ton lancement de A à Z, prix fixe, sans surprise. Mais on ferme bientôt les inscriptions du mois 👉 $s",
+			"📈 Imagine ton activité dans 3 mois avec un vrai site qui ramène des clients en automatique. Ça commence aujourd'hui, dès 490 € 👉 $s",
+			"⏰ Le bon moment, c'était hier. Le 2e meilleur, c'est maintenant. Site pro, livré vite, payable en 4× — places limitées 👉 $s",
+		);
+		$custom = array_filter( array_map( 'trim', preg_split( '/\n-{2,}\n/', (string) get_option( 'ag_client_msgs_custom', '' ) ) ) );
+		return apply_filters( 'ag_client_messages', array_values( array_merge( $base, $custom ) ) );
+	}
+}
+if ( ! function_exists( 'ag_client_message_today' ) ) {
+	function ag_client_message_today() {
+		$m = ag_client_messages();
+		if ( empty( $m ) ) return '';
+		return $m[ (int) gmdate( 'z' ) % count( $m ) ]; // rotation 1/jour
+	}
+}
+add_action( 'init', function () {
+	if ( ! wp_next_scheduled( 'ag_client_daily' ) ) wp_schedule_event( strtotime( 'tomorrow 9:00' ), 'daily', 'ag_client_daily' );
+} );
+add_action( 'ag_client_daily', function () {
+	if ( get_option( 'ag_client_daily_on' ) && ag_tg_cfg( 'chan' ) ) ag_push_clients( ag_client_message_today() );
+} );
+add_action( 'admin_post_ag_client_send_now', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_client_now' ) ) wp_die( 'no' );
+	$ok = ag_push_clients( ag_client_message_today() );
+	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-notify', 'sent' => $ok ? 1 : 0 ), admin_url( 'options-general.php' ) ) ); exit;
+} );
