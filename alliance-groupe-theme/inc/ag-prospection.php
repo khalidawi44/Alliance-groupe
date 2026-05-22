@@ -214,7 +214,8 @@ add_action( 'wp_ajax_ag_prospect_add', function () {
 		'address' => sanitize_text_field( wp_unslash( $_POST['address'] ?? '' ) ),
 		'rating'  => (float) ( $_POST['rating'] ?? 0 ),
 		'reviews' => (int) ( $_POST['reviews'] ?? 0 ),
-		'source'  => 'recherche',
+		'notes'   => sanitize_text_field( wp_unslash( $_POST['notes'] ?? '' ) ),
+		'source'  => sanitize_text_field( wp_unslash( $_POST['source'] ?? 'recherche' ) ),
 	) );
 	wp_send_json_success( array( 'added' => $ok ) );
 } );
@@ -316,6 +317,65 @@ if ( ! function_exists( 'ag_places_sweep' ) ) {
 		}
 		usort( $out, function ( $a, $b ) { return ag_prospect_score( $b ) <=> ag_prospect_score( $a ); } );
 		return $out;
+	}
+}
+
+/* ── Entreprises au tribunal (procédures collectives) via BODACC open data ──
+   Gratuit, sans clé. On vise le REDRESSEMENT / la SAUVEGARDE (l'entreprise
+   se bat pour rebondir → elle a besoin de regagner des clients vite) et on
+   EXCLUT la liquidation (l'entreprise ferme : inutile de la prospecter). */
+if ( ! function_exists( 'ag_bodacc_search' ) ) {
+	function ag_bodacc_search( $city ) {
+		$city = trim( (string) $city );
+		if ( '' === $city ) return array();
+		$where = rawurlencode( 'search(jugement, "redressement") and search("' . $city . '")' );
+		$url   = 'https://bodacc-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/annonces-commerciales/records?where=' . $where . '&order_by=dateparution%20desc&limit=60';
+		$resp  = wp_remote_get( $url, array( 'timeout' => 25, 'headers' => array( 'Accept' => 'application/json' ) ) );
+		if ( is_wp_error( $resp ) ) return array( 'error' => $resp->get_error_message() );
+		$code = (int) wp_remote_retrieve_response_code( $resp );
+		$data = json_decode( wp_remote_retrieve_body( $resp ), true );
+		if ( 200 !== $code ) return array( 'error' => ( $data['message'] ?? ( 'Erreur BODACC ' . $code ) ) );
+		$out = array(); $seen = array();
+		foreach ( (array) ( $data['results'] ?? array() ) as $rec ) {
+			$jug = $rec['jugement'] ?? '';
+			if ( is_string( $jug ) && '' !== $jug ) { $jd = json_decode( $jug, true ); if ( is_array( $jd ) ) $jug = $jd; }
+			$nature = is_array( $jug ) ? trim( ( $jug['nature'] ?? '' ) . ' ' . ( $jug['famille'] ?? '' ) ) : (string) $jug;
+			$compl  = is_array( $jug ) ? ( $jug['complementJugement'] ?? '' ) : '';
+			$low    = mb_strtolower( $nature . ' ' . $compl );
+			if ( false !== strpos( $low, 'liquidation' ) ) continue; // l'entreprise ferme → on ignore
+			if ( false === strpos( $low, 'redressement' ) && false === strpos( $low, 'sauvegarde' ) ) continue;
+			$lp = $rec['listepersonnes'] ?? '';
+			if ( is_string( $lp ) && '' !== $lp ) { $pd = json_decode( $lp, true ); if ( is_array( $pd ) ) $lp = $pd; }
+			$pers = array();
+			if ( is_array( $lp ) ) { $pers = $lp['personne'] ?? $lp; if ( isset( $pers['denomination'] ) || isset( $pers['nom'] ) ) $pers = array( $pers ); }
+			$name = ''; $activite = ''; $siren = '';
+			if ( ! empty( $pers[0] ) && is_array( $pers[0] ) ) {
+				$f0 = $pers[0];
+				$name = $f0['denomination'] ?? trim( ( $f0['nom'] ?? '' ) . ' ' . ( $f0['prenom'] ?? '' ) );
+				$activite = is_array( $f0['activite'] ?? '' ) ? '' : ( $f0['activite'] ?? '' );
+				$siren = is_array( $f0['numeroImmatriculation'] ?? '' ) ? ( $f0['numeroImmatriculation']['numeroIdentificationRCS'] ?? '' ) : ( $f0['numeroImmatriculation'] ?? '' );
+			}
+			if ( '' === $name ) $name = is_array( $rec['commercant'] ?? '' ) ? '' : ( $rec['commercant'] ?? '' );
+			if ( '' === $name ) continue;
+			$ville = is_array( $rec['ville'] ?? '' ) ? '' : ( $rec['ville'] ?? '' );
+			$sig = mb_strtolower( $name . '|' . $ville );
+			if ( isset( $seen[ $sig ] ) ) continue; $seen[ $sig ] = 1;
+			$out[] = array(
+				'name' => $name, 'city' => $ville ?: $city, 'activite' => $activite, 'siren' => $siren,
+				'nature' => $nature ?: 'Procédure collective', 'date' => $rec['dateparution'] ?? '', 'tribunal' => is_array( $rec['tribunal'] ?? '' ) ? '' : ( $rec['tribunal'] ?? '' ),
+			);
+		}
+		return $out;
+	}
+}
+if ( ! function_exists( 'ag_bodacc_message' ) ) {
+	/** Message empathique adapté à une entreprise en redressement : on l'aide à rebondir. */
+	function ag_bodacc_message( $c ) {
+		$name = $c['name'] ?? 'votre entreprise';
+		$act  = trim( (string) ( $c['activite'] ?? '' ) );
+		$site = home_url( '/sites-express' );
+		$acc  = $act ? "votre activité ($act)" : 'votre activité';
+		return "Bonjour,\n\nJe me permets de vous écrire avec respect : je sais que $name traverse une période difficile (redressement judiciaire). C'est justement dans ces moments qu'il faut regagner de la visibilité et ramener des clients, sans exploser le budget.\n\nChez Alliance Groupe, on crée des sites professionnels à prix fixe (dès 490 €, payables en 4× sans frais) qui travaillent pour vous 24h/24 : on vous rend visible sur Google, on capte des demandes, et on vous aide à rebondir avec $acc.\n\nSi ça peut aider, on peut commencer par un échange gratuit, sans engagement — je vous dirai franchement ce qui est faisable et utile pour vous, tout de suite.\n\nUn aperçu de ce qu'on fait : $site\n\nBien à vous,\nAlliance Groupe\n(Si vous préférez ne pas être recontacté, dites-le-moi, j'en prends note immédiatement.)";
 	}
 }
 if ( ! function_exists( 'ag_prospect_why' ) ) {
@@ -449,6 +509,47 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 						</tbody></table>
 					<?php endif; ?>
 				<?php endif; ?>
+			</div>
+
+			<!-- Entreprises au tribunal (redressement judiciaire) -->
+			<div style="max-width:980px;margin-top:18px;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #7a4ed4;border-radius:6px;">
+				<h2 style="margin-top:0;">🏛️ Entreprises au tribunal (redressement judiciaire)</h2>
+				<p style="color:#50575e;max-width:760px;">Données <strong>publiques BODACC</strong> (gratuit). On cible celles en <strong>redressement / sauvegarde</strong> (elles se battent pour rebondir → elles ont besoin de regagner des clients) et on <strong>exclut les liquidations</strong> (qui ferment). Le robot génère un <strong>message empathique adapté</strong>.</p>
+				<form method="get" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>">
+					<input type="hidden" name="page" value="ag-prospects">
+					<input type="text" name="tcity" value="<?php echo esc_attr( isset( $_GET['tcity'] ) ? sanitize_text_field( wp_unslash( $_GET['tcity'] ) ) : '' ); ?>" placeholder="Ville (ex : Nantes)" style="width:220px;">
+					<?php submit_button( '🏛️ Chercher au tribunal', 'secondary', 'submit', false ); ?>
+				</form>
+				<?php
+				$tcity = isset( $_GET['tcity'] ) ? sanitize_text_field( wp_unslash( $_GET['tcity'] ) ) : '';
+				if ( '' !== $tcity ) :
+					$tres = ag_bodacc_search( $tcity );
+					if ( is_array( $tres ) && isset( $tres['error'] ) ) : ?>
+						<p style="color:#b32d2e;">Erreur BODACC : <?php echo esc_html( $tres['error'] ); ?></p>
+					<?php elseif ( empty( $tres ) ) : ?>
+						<p style="color:#50575e;">Aucune entreprise en redressement trouvée pour « <?php echo esc_html( $tcity ); ?> » (ou aucune annonce récente). Essaie une grande ville proche.</p>
+					<?php else : ?>
+						<p style="color:#50575e;margin-top:12px;"><strong><?php echo count( $tres ); ?></strong> entreprise(s) en redressement / sauvegarde. ⚠️ Budget souvent limité : pense à proposer un <strong>tarif « rebond »</strong> ou l'échange gratuit.</p>
+						<table class="widefat striped"><thead><tr><th>Entreprise</th><th>Activité</th><th>Procédure</th><th>Contact</th><th>Message</th><th></th></tr></thead><tbody>
+						<?php foreach ( $tres as $tc ) :
+							$tex = ag_prospect_find( $tc['name'], $tc['city'], '' );
+							$tnotes = 'BODACC : ' . $tc['nature'] . ( $tc['date'] ? ' (' . $tc['date'] . ')' : '' ) . ( $tc['siren'] ? ' · SIREN ' . $tc['siren'] : '' );
+							$tmsg = ag_bodacc_message( $tc );
+							$tsearch = add_query_arg( array( 'page' => 'ag-prospects', 'q' => $tc['name'], 'city' => $tc['city'] ), admin_url( 'admin.php' ) );
+						?>
+							<tr>
+								<td><strong><?php echo esc_html( $tc['name'] ); ?></strong><br><small><?php echo esc_html( $tc['city'] ); ?></small><?php if ( $tex ) : ?> <span style="background:#e7eef7;color:#1d4f8b;border-radius:10px;padding:1px 8px;font-size:.78em;">déjà en liste</span><?php endif; ?></td>
+								<td style="font-size:.85em;"><?php echo esc_html( $tc['activite'] ?: '—' ); ?></td>
+								<td style="font-size:.82em;color:#7a4ed4;font-weight:600;"><?php echo esc_html( $tc['nature'] ); ?><?php echo $tc['date'] ? '<br><span style="color:#50575e;font-weight:400;">' . esc_html( $tc['date'] ) . '</span>' : ''; ?></td>
+								<td><a class="button button-small" href="<?php echo esc_url( $tsearch ); ?>" title="Trouver le téléphone via Google Places">🔎 Trouver le tel</a></td>
+								<td><details><summary class="button button-small">Message</summary><textarea readonly rows="9" style="width:340px;margin-top:6px;"><?php echo esc_textarea( $tmsg ); ?></textarea></details></td>
+								<td><?php if ( $tex ) : ?><span style="color:#50575e;font-size:.85em;">✓ suivi</span><?php else : ?><button type="button" class="button button-primary ag-add" data-name="<?php echo esc_attr( $tc['name'] ); ?>" data-type="<?php echo esc_attr( $tc['activite'] ); ?>" data-city="<?php echo esc_attr( $tc['city'] ); ?>" data-phone="" data-website="" data-address="" data-rating="0" data-reviews="0" data-notes="<?php echo esc_attr( $tnotes ); ?>" data-source="tribunal">+ Suivre</button><?php endif; ?></td>
+							</tr>
+						<?php endforeach; ?>
+						</tbody></table>
+					<?php endif;
+				endif;
+				?>
 			</div>
 
 			<!-- Agent automatique -->
@@ -646,7 +747,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			// Ajout en AJAX (sans recharger -> la recherche reste).
 			document.querySelectorAll('.ag-add').forEach(function(b){ b.addEventListener('click',function(){
 				var fd=new FormData(); fd.append('action','ag_prospect_add'); fd.append('_n',nonce);
-				['name','type','city','phone','website','address','rating','reviews'].forEach(function(k){ fd.append(k, b.getAttribute('data-'+k)||''); });
+				['name','type','city','phone','website','address','rating','reviews','notes','source'].forEach(function(k){ fd.append(k, b.getAttribute('data-'+k)||''); });
 				b.disabled=true; b.textContent='…';
 				fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ b.textContent=(j&&j.success)?'✓ Ajouté':'Erreur'; }).catch(function(){ b.textContent='Erreur'; b.disabled=false; });
 			}); });
