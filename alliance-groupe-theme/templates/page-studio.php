@@ -96,7 +96,7 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 			<h2 class="ag-section__title">Ta vidéo (8 s) 🎬</h2>
 			<p class="ag-section__desc">Choisis un fond propre (ou mets ta propre photo/clip), écris ton accroche : on ajoute ton lien et tu partages direct. Un seul texte, bien lisible.</p>
 			<div class="ag-maker ag-maker--v">
-				<div class="ag-maker__preview"><canvas id="ag-vcanvas" width="720" height="1280"></canvas></div>
+				<div class="ag-maker__preview"><canvas id="ag-vcanvas" width="1080" height="1920"></canvas></div>
 				<div class="ag-maker__ctrl">
 					<?php if ( $bg ) : ?>
 					<div class="ag-bgpick">
@@ -136,7 +136,7 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 	<script>
 	(function(){
 		var cv=document.getElementById('ag-vcanvas'); if(!cv) return;
-		var ctx=cv.getContext('2d'), W=1080, H=1920, S=cv.width/1080; // espace de design 1080x1920 -> rendu mis a l'echelle du canvas reel (720x1280)
+		var ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
 		var link=window.AG_LINK, caption=window.AG_CAPTION;
 		var media=null, isVideo=false, lastBlob=null, lastExt='webm', lastUrl=null, previewRAF=null;
 		function stopPreview(){ if(previewRAF){ cancelAnimationFrame(previewRAF); previewRAF=null; } }
@@ -146,7 +146,6 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 		var statusEl=document.getElementById('ag-vstatus'), shEl=document.getElementById('ag-vshare'), capEl=document.getElementById('ag-vcap'), hintEl=document.getElementById('ag-vhint');
 		function wrap(text,x,y,maxW,lh){var w=(text||'').split(' '),l='',yy=y;for(var i=0;i<w.length;i++){var t=l+w[i]+' ';if(ctx.measureText(t).width>maxW&&i>0){ctx.fillText(l.trim(),x,yy);l=w[i]+' ';yy+=lh;}else l=t;}ctx.fillText(l.trim(),x,yy);return yy;}
 		function frame(p,tsec){
-			ctx.setTransform(S,0,0,S,0,0);
 			ctx.fillStyle='#0e0d11';ctx.fillRect(0,0,W,H);
 			if(media){var mw=isVideo?media.videoWidth:media.width,mh=isVideo?media.videoHeight:media.height;if(mw&&mh){var ir=mw/mh,cr=W/H,dw,dh,z=1.04+0.10*p;if(ir>cr){dh=H*z;dw=dh*ir;}else{dw=W*z;dh=dw/ir;}ctx.drawImage(media,(W-dw)/2,(H-dh)/2,dw,dh);}}
 			var g=ctx.createLinearGradient(0,H*0.45,0,H);g.addColorStop(0,'rgba(7,7,12,0)');g.addColorStop(1,'rgba(7,7,12,.95)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
@@ -190,8 +189,11 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 			if(!cv.captureStream||!window.MediaRecorder){statusEl.textContent='Ton navigateur ne permet pas l\'enregistrement. Essaie Chrome (Android/PC).';return;}
 			stopPreview();
 			var mime=['video/mp4;codecs=h264','video/mp4','video/webm;codecs=h264','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'].find(function(m){return MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m);})||'';
-			var opts={videoBitsPerSecond:5000000}; if(mime) opts.mimeType=mime;
-			var stream=cv.captureStream(30),rec; try{ rec=new MediaRecorder(stream,opts); }catch(e){ rec=new MediaRecorder(stream,mime?{mimeType:mime}:undefined); }
+			var stream=cv.captureStream(30), rec=null, tries=[];
+			if(mime){ tries.push({mimeType:mime}); }
+			tries.push(undefined);
+			for(var ti=0;ti<tries.length;ti++){ try{ rec=new MediaRecorder(stream,tries[ti]); break; }catch(e){} }
+			if(!rec){ statusEl.textContent='Enregistrement non supporté sur ce navigateur. Essaie une autre appli ou mets à jour ton téléphone.'; return; }
 			var chunks=[];
 			rec.ondataavailable=function(ev){if(ev.data&&ev.data.size)chunks.push(ev.data);};
 			rec.onstop=function(){
@@ -204,11 +206,11 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 				if(isVideo) startVideoPreview(); else renderOnce();
 			};
 			if(isVideo){try{media.currentTime=0;media.play();}catch(e){}}
-			var DUR=agSelectedDuration(),secs=Math.round(DUR/1000),start=performance.now();rec.start();
+			var DUR=agSelectedDuration(),secs=Math.round(DUR/1000),start=performance.now();
+			try{ rec.start(); }catch(e){ statusEl.textContent='Impossible de démarrer l\'enregistrement sur ce navigateur.'; return; }
 			statusEl.textContent='Génération en cours… ('+secs+' s) — laisse l\'écran allumé';
 			document.getElementById('ag-vgen').disabled=true;
-			var lastDraw=0;
-			(function tick(now){var el=now-start;if(now-lastDraw>=33){lastDraw=now;frame(Math.min(1,el/DUR),el/1000);}if(el<DUR)requestAnimationFrame(tick);else{rec.stop();if(isVideo){try{media.pause();}catch(e){}}document.getElementById('ag-vgen').disabled=false;}})(start);
+			(function tick(now){var el=now-start,p=Math.min(1,el/DUR);frame(p,el/1000);if(el<DUR)requestAnimationFrame(tick);else{rec.stop();if(isVideo){try{media.pause();}catch(e){}}document.getElementById('ag-vgen').disabled=false;}})(start);
 		});
 		function saveAndGuide(){
 			var a=document.createElement('a');a.href=lastUrl||URL.createObjectURL(lastBlob);a.download='alliance-video.'+lastExt;document.body.appendChild(a);a.click();a.remove();
