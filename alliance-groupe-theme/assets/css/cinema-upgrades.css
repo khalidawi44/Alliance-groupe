@@ -890,7 +890,7 @@ body.home .ag-hero__dot{
    BACK-TO-TOP refondu — bouton circulaire avec progress ring scroll
    ===================================================================== */
 .ag-totop{
-	position: fixed; bottom: 30px; right: 30px;
+	position: fixed; bottom: 30px; left: 30px; right: auto; /* à gauche : ne chevauche plus le chat (en bas à droite) */
 	z-index: 9990;
 	width: 56px; height: 56px;
 	background: linear-gradient(135deg, rgba(20,20,28,.85) 0%, rgba(10,10,15,.95) 100%) !important;
