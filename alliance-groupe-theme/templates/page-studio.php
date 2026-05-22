@@ -187,7 +187,7 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 				var v=document.createElement('video');
 				v.muted=true; v.defaultMuted=true; v.loop=true; v.playsInline=true;
 				v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.preload='auto';
-				v.style.cssText='position:fixed;left:-9999px;top:0;width:2px;height:2px;opacity:0;pointer-events:none;';
+				v.style.cssText='position:fixed;right:0;bottom:0;width:2px;height:2px;opacity:0.01;pointer-events:none;z-index:-1;';
 				document.body.appendChild(v);
 				v.src=url;
 				var ready=function(){ if(media===v) return; isVideo=true; media=v; v.play().catch(function(){}); startVideoPreview(); };
@@ -236,7 +236,16 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 			try{ rec.start(); }catch(e){ statusEl.textContent='Impossible de démarrer l\'enregistrement sur ce navigateur.'; return; }
 			statusEl.textContent='Génération en cours… ('+secs+' s) — laisse l\'écran allumé';
 			document.getElementById('ag-vgen').disabled=true;
-			(function tick(now){var el=now-start,p=Math.min(1,el/DUR);frame(p,el/1000,segDur);recCtx.drawImage(cv,0,0,RW,RH);if(el<DUR)requestAnimationFrame(tick);else{rec.stop();if(isVideo){try{media.pause();}catch(e){}}document.getElementById('ag-vgen').disabled=false;}})(start);
+			var stopAt=start+DUR;
+			function drawF(){var el=performance.now()-start,p=Math.min(1,el/DUR);frame(p,el/1000,segDur);recCtx.drawImage(cv,0,0,RW,RH);}
+			function finishRec(){try{rec.stop();}catch(e){}if(isVideo){try{media.pause();}catch(e){}}document.getElementById('ag-vgen').disabled=false;}
+			if(isVideo && media.requestVideoFrameCallback){
+				// On dessine a chaque IMAGE de la video source -> cadence collee a la video -> fluide.
+				var vcb=function(){ drawF(); if(performance.now()<stopAt){ try{ media.requestVideoFrameCallback(vcb); }catch(e){ requestAnimationFrame(vcb); } } else { finishRec(); } };
+				media.requestVideoFrameCallback(vcb);
+			} else {
+				(function tick(){ drawF(); if(performance.now()<stopAt) requestAnimationFrame(tick); else finishRec(); })();
+			}
 		});
 		function saveAndGuide(){
 			var a=document.createElement('a');a.href=lastUrl||URL.createObjectURL(lastBlob);a.download='alliance-video.'+lastExt;document.body.appendChild(a);a.click();a.remove();
