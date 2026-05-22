@@ -112,6 +112,12 @@ $ag_admin_hub_file = get_stylesheet_directory() . '/inc/ag-admin-hub.php';
 if ( is_admin() && file_exists( $ag_admin_hub_file ) ) {
     require_once $ag_admin_hub_file;
 }
+
+// ── 1c10. Zones ambassadeurs (territoires par département + enchères)
+$ag_zones_file = get_stylesheet_directory() . '/inc/ag-zones.php';
+if ( file_exists( $ag_zones_file ) ) {
+    require_once $ag_zones_file;
+}
 add_action( 'wp_footer', function () {
     if ( is_admin() ) return;
     $kind = function_exists( 'ag_espace_member_kind' ) ? ag_espace_member_kind() : '';

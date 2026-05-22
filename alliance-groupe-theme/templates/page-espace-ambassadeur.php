@@ -218,6 +218,37 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 	<?php endif; ?>
 
 	<?php
+	$ag_myzones = function_exists( 'ag_zone_of_owner' ) ? ag_zone_of_owner( $email ) : array();
+	$ag_zfeed = isset( $_GET['zone'] ) ? sanitize_text_field( wp_unslash( $_GET['zone'] ) ) : '';
+	?>
+	<section class="ag-section ag-section--onyx" id="zone">
+		<div class="ag-container">
+			<h2 class="ag-section__title">Ma zone 🗺️</h2>
+			<?php if ( $ag_myzones ) : ?>
+				<p class="ag-section__desc">Tu es <strong>exclusif</strong> sur le département <strong style="color:var(--color-gold);"><?php echo esc_html( implode( ', ', $ag_myzones ) ); ?></strong>. Les nouveaux prospects de ta zone te sont <strong>attribués automatiquement</strong> — sans concurrence avec les autres.</p>
+			<?php else : ?>
+				<p class="ag-section__desc">Tu n'as pas encore de zone. <strong>Réserve ton département</strong> (ex. 33) : tu deviens exclusif dessus et le robot t'enverra automatiquement les prospects.</p>
+			<?php endif; ?>
+
+			<?php if ( 'claimed' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">✅ Zone réservée ! Elle est à toi.</p>
+			<?php elseif ( 'mine' === $ag_zfeed ) : ?><p style="text-align:center;color:var(--color-text-soft);">Cette zone est déjà la tienne.</p>
+			<?php elseif ( 'bid' === $ag_zfeed ) : ?><p style="text-align:center;color:#e6b35a;font-weight:700;">💰 Zone déjà prise : ton enchère est enregistrée. Le plus offrant remportera la zone.</p>
+			<?php elseif ( 'need_bid' === $ag_zfeed ) : ?><p style="text-align:center;color:#e6b35a;">Cette zone est prise. Pour la disputer, indique un <strong>montant d'enchère</strong>.</p>
+			<?php elseif ( 'err' === $ag_zfeed ) : ?><p style="text-align:center;color:#d98b8b;">Département invalide. Mets 2 chiffres (ex. 33).</p>
+			<?php endif; ?>
+
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-top:14px;">
+				<input type="hidden" name="action" value="ag_zone_request">
+				<?php wp_nonce_field( 'ag_zone_front', '_n' ); ?>
+				<input type="text" name="dept" maxlength="3" placeholder="Département (ex : 33)" required style="padding:10px 14px;border-radius:10px;border:1px solid rgba(212,180,92,.4);background:rgba(255,255,255,.05);color:#fff;width:180px;">
+				<input type="number" name="amount" min="0" step="1" placeholder="Enchère € (si zone prise)" style="padding:10px 14px;border-radius:10px;border:1px solid rgba(212,180,92,.4);background:rgba(255,255,255,.05);color:#fff;width:200px;">
+				<button type="submit" class="ag-btn-gold">Réserver / Enchérir →</button>
+			</form>
+			<p style="text-align:center;color:var(--color-text-soft);font-size:.85rem;margin-top:10px;">Zone libre = tu la prends gratuitement. Zone déjà prise = tu peux <strong>enchérir</strong> pour la disputer (le plus offrant gagne).</p>
+		</div>
+	</section>
+
+	<?php
 	$ag_my_prospects = function_exists( 'ag_prospects_for_owner' ) ? ag_prospects_for_owner( $email ) : array();
 	if ( $ag_my_prospects ) :
 		$ag_pstat = function_exists( 'ag_prospect_statuses' ) ? ag_prospect_statuses() : array();

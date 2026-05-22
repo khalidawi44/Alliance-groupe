@@ -190,13 +190,24 @@ if ( ! function_exists( 'ag_prospect_add_record' ) ) {
 	function ag_prospect_add_record( $data ) {
 		if ( empty( $data['name'] ) ) return false;
 		if ( ag_prospect_find( $data['name'], $data['city'] ?? '', $data['phone'] ?? '' ) ) return false;
-		$list   = (array) get_option( 'ag_prospects', array() );
-		$list[] = array_merge( array(
+		$rec = array_merge( array(
 			'id' => uniqid( 'p_' ), 'name' => '', 'type' => '', 'city' => '', 'phone' => '', 'phone_intl' => '', 'email' => '',
 			'website' => '', 'address' => '', 'rating' => 0, 'reviews' => 0, 'status' => 'nouveau',
 			'date_contact' => '', 'last_contact' => '', 'contact_count' => 0, 'replied' => 0, 'date_reply' => '',
 			'owner_email' => '', 'owner_name' => '', 'notes' => '', 'source' => 'manuel', 'ts' => time(),
 		), $data );
+		// Auto-assignation à l'ambassadeur propriétaire de la zone (département).
+		if ( '' === $rec['owner_email'] && function_exists( 'ag_zone_owner' ) ) {
+			$dept = function_exists( 'ag_prospect_dept' ) ? ag_prospect_dept( $rec ) : '';
+			$zo   = $dept ? ag_zone_owner( $dept ) : '';
+			if ( $zo ) {
+				$rec['owner_email'] = $zo;
+				$zrec = function_exists( 'ag_ambassadeur_record' ) ? ag_ambassadeur_record( $zo ) : null;
+				$rec['owner_name'] = $zrec['name'] ?? '';
+			}
+		}
+		$list   = (array) get_option( 'ag_prospects', array() );
+		$list[] = $rec;
 		update_option( 'ag_prospects', array_slice( $list, -5000 ) );
 		return true;
 	}
