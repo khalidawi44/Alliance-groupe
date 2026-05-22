@@ -48,6 +48,12 @@ if ( file_exists( $ag_ambassadeurs_file ) ) {
     require_once $ag_ambassadeurs_file;
 }
 
+// ── 1c6. PayPal automatique (webhooks : credit auto des commissions au paiement)
+$ag_paypal_file = get_stylesheet_directory() . '/inc/ag-paypal.php';
+if ( file_exists( $ag_paypal_file ) ) {
+    require_once $ag_paypal_file;
+}
+
 // ── 1c6. Espaces membres (clients & commerciaux) : comptes, connexion, dashboards
 $ag_espaces_file = get_stylesheet_directory() . '/inc/ag-espaces.php';
 if ( file_exists( $ag_espaces_file ) ) {

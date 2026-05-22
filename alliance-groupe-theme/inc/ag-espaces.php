@@ -489,6 +489,7 @@ add_action( 'ag_client_brief_submitted', function ( $email, $name, $pack = '' ) 
 		'email'         => $amb['email'],
 		'name'          => $amb['name'] ?? $amb['email'],
 		'client'        => $name . ' (' . $email . ')',
+		'client_email'  => strtolower( $email ),
 		'activite'      => 'Site Express ' . ucfirst( $pack ),
 		'montant'       => $montant,
 		'commission'    => round( $montant * $rate, 2 ),
