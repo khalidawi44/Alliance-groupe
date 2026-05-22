@@ -4,7 +4,7 @@
  * Met en avant l'outil à part : créer des vidéos, des visuels, son lien, partager en 1 clic.
  */
 ?>
-<section class="ag-section ag-section--onyx ag-home-studio">
+<section class="ag-section ag-section--light ag-home-studio">
 	<div class="ag-container">
 		<span class="ag-tag ag-anim" data-anim="tag">L'outil exclusif 🎬</span>
 		<h2 class="ag-section__title ag-anim" data-anim="title">Le <em>Studio</em> — crée &amp; partage en 1 clic</h2>
@@ -25,10 +25,10 @@
 </section>
 <style>
 .ag-home-studio__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:34px;}
-.ag-home-studio__feat{padding:22px 18px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.18);border-radius:16px;display:flex;flex-direction:column;gap:6px;}
+.ag-home-studio__feat{padding:22px 18px;background:rgba(255,255,255,.7);border:1px solid rgba(212,180,92,.4);border-radius:16px;display:flex;flex-direction:column;gap:6px;box-shadow:0 8px 22px rgba(120,100,40,.1);}
 .ag-home-studio__ic{font-size:1.9rem;}
-.ag-home-studio__feat strong{color:#fff;font-size:1.02rem;}
-.ag-home-studio__feat span:not(.ag-home-studio__ic){color:var(--color-text-soft);font-size:.88rem;line-height:1.45;}
+.ag-home-studio__feat strong{color:#17150f;font-size:1.02rem;}
+.ag-home-studio__feat span:not(.ag-home-studio__ic){color:#5b5446;font-size:.88rem;line-height:1.45;}
 .ag-home-studio__cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px;}
 @media(max-width:860px){.ag-home-studio__grid{grid-template-columns:1fr 1fr;}}
 @media(max-width:760px){.ag-home-studio__cta .ag-btn-gold,.ag-home-studio__cta .ag-btn-outline{width:100%;justify-content:center;text-align:center;}}

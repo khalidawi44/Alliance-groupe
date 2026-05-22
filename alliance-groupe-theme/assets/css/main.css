@@ -2826,6 +2826,24 @@ button:focus-visible{
     border-bottom:1px solid rgba(212,180,92,.06);
 }
 
+/* ── Section CLAIRE (ivoire + texte foncé) : pour alterner clair/sombre ── */
+.ag-section--light{
+    background:linear-gradient(160deg,#fbf8f1 0%,#f4eedf 100%);
+    color:#2a261d;
+    border-top:1px solid rgba(212,180,92,.35);
+    border-bottom:1px solid rgba(212,180,92,.2);
+}
+.ag-section--light .ag-section__title{color:#17150f;}
+.ag-section--light .ag-section__title em{color:#b08524;}
+.ag-section--light .ag-section__desc{color:#5b5446;}
+.ag-section--light p,.ag-section--light li{color:#3d382e;}
+.ag-section--light strong{color:#1a1813;}
+.ag-section--light .ag-tag{background:rgba(212,180,92,.2);color:#8a6d1f;border-color:rgba(212,180,92,.5);}
+.ag-section--light h2,.ag-section--light h3{color:#17150f;}
+.ag-section--light a:not(.ag-btn-gold):not(.ag-btn-outline){color:#a8852f;}
+.ag-section--light .ag-btn-outline{color:#4a3d16;border-color:rgba(74,61,22,.45);}
+.ag-section--light .ag-btn-outline:hover{background:rgba(212,180,92,.18);color:#2f2710;border-color:rgba(74,61,22,.7);}
+
 /* ── Graphite (lighter dark grey, diagonal sheen) ─────────────── */
 .ag-section--graphite{
     background:
