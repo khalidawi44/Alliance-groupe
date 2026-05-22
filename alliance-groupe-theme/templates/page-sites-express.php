@@ -89,7 +89,7 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
     <div class="ag-xpress__urgency">🔥 On lance un <strong>nombre limité de sites par semaine</strong> pour garder la qualité — réserve ta place ce mois-ci.</div>
 
     <!-- Packs -->
-    <section class="ag-section ag-section--graphite" id="packs">
+    <section class="ag-section ag-section--light" id="packs">
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">Nos packs</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">Un prix clair, <em>tout compris</em></h2>
@@ -129,7 +129,7 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
     </section>
 
     <!-- Avant / Après -->
-    <section class="ag-section ag-section--graphite">
+    <section class="ag-section ag-section--light">
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">Avant / Après</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">La différence qui ramène <em>des clients</em></h2>
@@ -176,7 +176,7 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
     </section>
 
     <!-- Comment ça marche -->
-    <section class="ag-section ag-section--graphite">
+    <section class="ag-section ag-section--light">
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">Comment ça marche</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">3 étapes, <em>sans rendez-vous</em></h2>
@@ -219,7 +219,7 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
     </section>
 
     <!-- FAQ : lève les objections pour acheter sans échange -->
-    <section class="ag-section ag-section--graphite" id="faq-express">
+    <section class="ag-section ag-section--light" id="faq-express">
         <div class="ag-container ag-container--narrow">
             <span class="ag-tag ag-anim" data-anim="tag">Questions fréquentes</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">Tout ce qu'il faut savoir <em>avant d'acheter</em></h2>
@@ -360,6 +360,34 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
 .ag-xpress__cta{margin-top:auto;text-align:center;}
 .ag-xpress__note{display:block;margin-top:10px;color:var(--color-text-muted);font-size:.8rem;text-align:center;}
 @media(max-width:900px){.ag-xpress__grid{grid-template-columns:1fr;max-width:440px;margin-left:auto;margin-right:auto;}}
+
+/* ── Variantes CLAIRES (sections ivoire) : cartes blanches + texte foncé ── */
+.ag-section--light .ag-xpress__card,
+.ag-section--light .ag-xpress__guar-item,
+.ag-section--light .ag-xpress__reviews blockquote,
+.ag-section--light .ag-amb__step{background:#fff;border-color:rgba(212,180,92,.45);box-shadow:0 12px 34px rgba(120,100,40,.10);}
+.ag-section--light .ag-xpress__card--star{background:linear-gradient(160deg,#fffaf0,#fdf3df);border-color:rgba(212,180,92,.7);}
+.ag-section--light .ag-xpress__card:hover{box-shadow:0 28px 60px rgba(120,100,40,.20);}
+.ag-section--light .ag-xpress__name,
+.ag-section--light .ag-xpress__guar-item strong,
+.ag-section--light .ag-xpress__reviews blockquote,
+.ag-section--light .ag-amb__step h3{color:#17150f;}
+.ag-section--light .ag-xpress__feats li,
+.ag-section--light .ag-xpress__guar-item span:not(.ag-xpress__guar-ic),
+.ag-section--light .ag-xpress__desc,
+.ag-section--light .ag-amb__step p{color:#5b5446;}
+.ag-section--light .ag-xpress__img{border-color:rgba(212,180,92,.3);}
+.ag-section--light .ag-xpress__pay4{color:#b07d1a;}
+.ag-section--light .ag-xpress__note{color:#8a7f6a;}
+.ag-section--light .ag-xpress__reviews cite{color:#8a6d1f;}
+.ag-section--light .ag-xpress__faq details{background:#fff;border-color:rgba(212,180,92,.4);}
+.ag-section--light .ag-xpress__faq summary{color:#17150f;}
+.ag-section--light .ag-xpress__faq p{color:#5b5446;}
+.ag-section--light .ag-xpress__ba-col{border-color:rgba(120,100,40,.18);}
+.ag-section--light .ag-xpress__ba-col--before{background:#faf7f0;}
+.ag-section--light .ag-xpress__ba-col--before li{color:#6b6354;}
+.ag-section--light .ag-xpress__ba-col--before .ag-xpress__ba-tag{background:rgba(120,100,40,.12);color:#6b6354;}
+.ag-section--light .ag-xpress__ba-col--after li{color:#3a3428;}
 </style>
 
 <?php get_footer(); ?>
