@@ -248,7 +248,7 @@ if ( ! function_exists( 'ag_zones_render' ) ) {
 			<?php endif; ?>
 
 			<h2 style="margin-top:28px;">💎 Chasseur Pro — recherche payante (19 €/mois)</h2>
-			<p style="max-width:820px;color:#50575e;">Les ambassadeurs reçoivent les prospects du robot <strong>gratuitement</strong>. La <strong>recherche à la demande</strong> dans leur zone est une option payante : ça couvre le coût Google. Colle ici le <strong>lien d'abonnement PayPal</strong> (19 €/mois), puis <strong>active</strong> l'ambassadeur après son paiement.</p>
+			<p style="max-width:820px;color:#50575e;">Les ambassadeurs reçoivent les prospects du robot <strong>gratuitement</strong>. La <strong>recherche à la demande</strong> dans leur zone est payante (couvre le coût Google). Colle le <strong>lien d'abonnement PayPal (19 €/mois)</strong> ci‑dessous : dès qu'un ambassadeur paie, son accès s'<strong>active automatiquement</strong> (via le webhook PayPal). Le bouton manuel reste un secours.</p>
 			<form method="post" action="<?php echo esc_url( $post ); ?>" style="margin-bottom:14px;">
 				<input type="hidden" name="action" value="ag_chasseur_link">
 				<?php wp_nonce_field( 'ag_zone_admin', '_n' ); ?>

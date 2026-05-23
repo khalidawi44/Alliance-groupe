@@ -1000,6 +1000,19 @@ if ( ! function_exists( 'ag_is_chasseur' ) ) {
 		return (int) get_user_meta( $uid, 'ag_chasseur_until', true ) > time();
 	}
 }
+if ( ! function_exists( 'ag_chasseur_activate_by_email' ) ) {
+	/** Active/prolonge Chasseur Pro pour l'utilisateur correspondant à l'email (paiement ~19 €). */
+	function ag_chasseur_activate_by_email( $email, $amount ) {
+		$price = (float) get_option( 'ag_chasseur_price', 19 );
+		if ( $price > 0 && abs( (float) $amount - $price ) > 1.5 ) return false;
+		$user = get_user_by( 'email', trim( (string) $email ) );
+		if ( ! $user ) return false;
+		$base = max( time(), (int) get_user_meta( $user->ID, 'ag_chasseur_until', true ) );
+		update_user_meta( $user->ID, 'ag_chasseur_until', $base + 35 * DAY_IN_SECONDS );
+		if ( function_exists( 'ag_push' ) ) ag_push( '💎 Chasseur Pro activé', ( $user->display_name ?: $email ) . ' a payé l\'abonnement — recherche débloquée automatiquement.' );
+		return true;
+	}
+}
 if ( ! function_exists( 'ag_chasseur_quota_left' ) ) {
 	function ag_chasseur_quota_left( $uid = 0 ) {
 		$uid = $uid ?: get_current_user_id();

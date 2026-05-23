@@ -286,6 +286,18 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
                     <div class="ag-form__group"><label for="b-content">Tes textes / infos (services, horaires, à propos...)</label><textarea id="b-content" name="content" placeholder="Décris ton activité, tes services, tes horaires, ce que tu veux mettre en avant..."></textarea></div>
                     <div class="ag-form__group"><label for="b-inspi">Sites que tu aimes (inspirations)</label><textarea id="b-inspi" name="inspiration" placeholder="Colle des liens de sites que tu trouves beaux."></textarea></div>
                     <p style="color:var(--color-text-secondary);font-size:.9rem;margin:0 0 14px;">Envoie ton logo et tes photos par email à <strong>contact@alliancegroupe-inc.com</strong> en répondant à l'email de confirmation.</p>
+                    <div class="ag-form__group">
+                        <label for="b-pays">Pays (droit applicable)</label>
+                        <select id="b-pays" name="pays">
+                            <option value="fr">🇫🇷 France</option>
+                            <option value="it">🇮🇹 Italie</option>
+                            <option value="ma">🇲🇦 Maroc</option>
+                        </select>
+                    </div>
+                    <label style="display:flex;gap:10px;align-items:flex-start;margin:6px 0 16px;font-size:.92rem;color:var(--color-text-secondary);">
+                        <input type="checkbox" name="cgv" value="1" required style="margin-top:4px;">
+                        <span>J'ai lu et j'accepte le <a href="<?php echo esc_url( home_url( '/contrat-client' ) ); ?>" target="_blank" rel="noopener" style="color:var(--color-gold);text-decoration:underline;">contrat de prestation &amp; les CGV</a>, et je demande le démarrage immédiat de la prestation. *</span>
+                    </label>
                     <button type="submit" class="ag-btn-gold">Envoyer mon brief 🚀</button>
                 </form>
             <?php endif; ?>

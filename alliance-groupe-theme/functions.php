@@ -23,10 +23,11 @@ if ( is_admin() ) {
 
 // Crée les pages maison (sur-mesure, consultation) si elles n'existent pas.
 add_action( 'admin_init', function () {
-    if ( get_option( 'ag_auto_pages_v2' ) ) return;
+    if ( get_option( 'ag_auto_pages_v3' ) ) return;
     $pages = array(
-        'sur-mesure'   => array( 'Projet sur-mesure', 'templates/page-sur-mesure.php' ),
-        'consultation' => array( 'Consultation payante', 'templates/page-consultation.php' ),
+        'sur-mesure'    => array( 'Projet sur-mesure', 'templates/page-sur-mesure.php' ),
+        'consultation'  => array( 'Consultation payante', 'templates/page-consultation.php' ),
+        'contrat-client' => array( 'Contrat Client', 'templates/page-contrat-client.php' ),
     );
     foreach ( $pages as $slug => $p ) {
         if ( get_page_by_path( $slug ) ) continue;
@@ -39,7 +40,7 @@ add_action( 'admin_init', function () {
             'page_template' => $p[1],
         ) );
     }
-    update_option( 'ag_auto_pages_v2', 1 );
+    update_option( 'ag_auto_pages_v3', 1 );
 } );
 
 // L'ancienne page de prise de RDV (Cal.com) redirige vers l'offre sur-mesure.
@@ -434,6 +435,7 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-fondateur.php']       = 'Notre Fondateur';
     $templates['templates/page-templates.php']       = 'Templates WordPress';
     $templates['templates/page-sur-mesure.php']      = 'Projet sur-mesure';
+    $templates['templates/page-contrat-client.php']  = 'Contrat Client';
     $templates['templates/page-consultation.php']    = 'Consultation payante';
     $templates['templates/page-rdv.php']             = 'Prise de rendez-vous (déprécié)';
     $templates['templates/page-questions-flash.php'] = 'Questions Flash';
@@ -939,11 +941,22 @@ if ( ! function_exists( 'ag_submit_brief' ) ) {
         if ( empty( $name ) || ! is_email( $email ) || empty( $business ) ) {
             wp_die( 'Merci d\'indiquer ton nom, email et le nom de ton activité.', 'Champs manquants', array( 'response' => 400, 'back_link' => true ) );
         }
+        if ( empty( $_POST['cgv'] ) ) {
+            wp_die( 'Tu dois accepter le contrat de prestation / les CGV pour continuer.', 'Contrat requis', array( 'response' => 400, 'back_link' => true ) );
+        }
+        $pays = in_array( $_POST['pays'] ?? 'fr', array( 'fr', 'it', 'ma' ), true ) ? $_POST['pays'] : 'fr';
+        $cgv  = array(
+            'accepted'  => 1,
+            'pays'      => $pays,
+            'ip'        => isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '',
+            'contract'  => home_url( '/contrat-client?pays=' . $pays ),
+            'date'      => current_time( 'd/m/Y H:i' ),
+        );
 
         $briefs = get_option( 'ag_express_briefs', array() );
         if ( ! is_array( $briefs ) ) $briefs = array();
         $briefs[] = compact( 'pack', 'business', 'name', 'email', 'phone', 'sector', 'domain', 'content', 'inspi' )
-            + array( 'date' => current_time( 'd/m/Y H:i' ) );
+            + array( 'date' => current_time( 'd/m/Y H:i' ), 'cgv' => $cgv );
         update_option( 'ag_express_briefs', $briefs );
 
         // Crée (ou retrouve) le compte client pour son espace réservé,
