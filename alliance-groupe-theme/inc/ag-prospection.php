@@ -219,6 +219,7 @@ if ( ! function_exists( 'ag_prospect_add_record' ) ) {
 		$list   = (array) get_option( 'ag_prospects', array() );
 		$list[] = $rec;
 		update_option( 'ag_prospects', array_slice( $list, -5000 ) );
+		do_action( 'ag_prospect_added', $rec );
 		return true;
 	}
 }
@@ -903,6 +904,13 @@ if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
 		$ck  = 'ag_places_calls_' . gmdate( 'Ym' );
 		if ( $cap > 0 && (int) get_option( $ck, 0 ) >= $cap ) { update_option( 'ag_prospect_lastrun', array( 'ts' => time(), 'added' => 0, 'capped' => 1 ) ); return; }
 		$added = 0; $nosite = 0;
+		// Compte les nouveaux prospects par ambassadeur (pour les prévenir).
+		$by_owner = array();
+		$collector = function ( $rec ) use ( &$by_owner ) {
+			$oe = strtolower( $rec['owner_email'] ?? '' );
+			if ( $oe ) $by_owner[ $oe ] = ( $by_owner[ $oe ] ?? 0 ) + 1;
+		};
+		add_action( 'ag_prospect_added', $collector );
 		foreach ( $searches as $s ) {
 			if ( $cap > 0 && (int) get_option( $ck, 0 ) >= $cap ) break; // plafond atteint en cours de route
 			$res = ( '' === trim( $s['q'] ?? '' ) && ! empty( $s['city'] ) ) ? ag_places_sweep( $s['city'] ) : ag_places_search( trim( ( $s['q'] ?? '' ) . ' ' . ( $s['city'] ?? '' ) ) );
@@ -917,7 +925,26 @@ if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
 				if ( $ok ) { $added++; if ( 'real' !== ag_site_kind( $r['website'] ?? '' )[0] ) $nosite++; }
 			}
 		}
+		remove_action( 'ag_prospect_added', $collector );
 		update_option( 'ag_prospect_lastrun', array( 'ts' => time(), 'added' => $added ) );
+
+		// Notifie chaque ambassadeur des nouveaux prospects de SA zone (auto, mains-libres).
+		$tg_lines = '';
+		foreach ( $by_owner as $oe => $cnt ) {
+			$u = get_user_by( 'email', $oe );
+			$nm = $u ? ( $u->display_name ?: $oe ) : $oe;
+			if ( $u ) {
+				wp_mail(
+					$oe,
+					"🎯 $cnt nouveau(x) prospect(s) à contacter dans ta zone",
+					"Salut $nm,\n\nLe robot vient de déposer $cnt nouveau(x) prospect(s) dans ta zone. Ils t'attendent dans ton espace.\n\n👉 " . home_url( '/espace-ambassadeur#prospects' ) . "\n\nPlus tu contactes vite, plus tu vends. 💪\nAlliance Groupe"
+				);
+			}
+			$tg_lines .= '• ' . $nm . ' : ' . $cnt . "\n";
+		}
+		if ( $tg_lines && function_exists( 'ag_push' ) ) {
+			ag_push( '🎯 Prospects répartis aux ambassadeurs', "Le robot a assigné de nouveaux prospects :\n" . $tg_lines );
+		}
 		if ( $added ) {
 			$to = apply_filters( 'ag_calendar_notify_email', 'advise.alliance.group@gmail.com' );
 			wp_mail( $to, "🤖 $added nouveaux prospects trouvés (dont $nosite sans vrai site)", "L'agent automatique a ajouté $added entreprises a ta liste ($nosite sans vrai site web — prioritaires).\n\nVa les prospecter : " . admin_url( 'admin.php?page=ag-prospects' ) );
