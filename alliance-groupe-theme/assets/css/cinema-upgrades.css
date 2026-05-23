@@ -501,24 +501,17 @@ html.ag-has-custom-cursor [role=button]{ cursor:none !important; }
     background: rgba(212,180,92,.05);
     box-shadow: 0 0 0 3px rgba(212,180,92,.15);
 }
+/* Libellés STATIQUES au-dessus du champ (fini le chevauchement avec le placeholder). */
 .ag-form__group label{
-    position: absolute;
-    top: 18px; left: 18px;
-    color: rgba(255,255,255,.5);
-    font-size: 1rem;
-    pointer-events: none;
-    transition: top .2s ease, font-size .2s ease, color .2s ease;
-}
-.ag-form__group input:focus + label,
-.ag-form__group textarea:focus + label,
-.ag-form__group input:not(:placeholder-shown) + label,
-.ag-form__group textarea:not(:placeholder-shown) + label{
-    top: 6px;
-    font-size: .72rem;
-    color: #D4B45C;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    font-weight: 700;
+    position: static;
+    display: block;
+    margin-bottom: 8px;
+    color: rgba(255,255,255,.78);
+    font-size: .82rem;
+    font-weight: 600;
+    letter-spacing: .4px;
+    pointer-events: auto;
+    text-transform: none;
 }
 
 /* SECTION REVEAL au scroll */
