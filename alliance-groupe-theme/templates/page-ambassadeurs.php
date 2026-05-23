@@ -159,8 +159,8 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
                     <div class="ag-amb__contract">
                         <p>Pour des raisons légales, ton identité est vérifiée et un <strong>contrat d'apporteur d'affaires</strong> encadre ta rémunération de 10%.
                         <a href="<?php echo esc_url( home_url( '/contrat-ambassadeur' ) ); ?>" target="_blank" rel="noopener">Lire le contrat →</a></p>
-                        <label class="ag-amb__check"><input type="checkbox" name="accept_contract" value="1" required> J'ai lu et j'accepte le contrat d'apporteur d'affaires Alliance Groupe, et je certifie que mon identité est exacte. *</label>
-                        <label class="ag-amb__check"><input type="checkbox" name="rgpd_consent" value="1" required> J'autorise Alliance Groupe (EI Fabrice Doucet) à traiter et conserver ma pièce d'identité dans le seul but de vérifier mon identité. Elle est stockée de façon sécurisée et <strong>automatiquement supprimée sous 30 jours</strong>. Je peux demander sa suppression à tout moment à contact@alliancegroupe-inc.com. *</label>
+                        <label class="ag-amb__check"><input type="checkbox" name="accept_contract" value="1" required> <span>J'ai lu et j'accepte le contrat d'apporteur d'affaires Alliance Groupe, et je certifie que mon identité est exacte. *</span></label>
+                        <label class="ag-amb__check"><input type="checkbox" name="rgpd_consent" value="1" required> <span>J'autorise Alliance Groupe à traiter et conserver ma pièce d'identité dans le seul but de vérifier mon identité. Elle est stockée de façon sécurisée et <strong>automatiquement supprimée sous 30 jours</strong>. Je peux demander sa suppression à tout moment à contact@alliancegroupe-inc.com. *</span></label>
                         <div class="ag-form__group"><label for="amb-sign">Signature — recopie ton nom et prénom complets *</label><input type="text" id="amb-sign" name="signature" required placeholder="Prénom NOM"></div>
                     </div>
 
@@ -226,6 +226,7 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
 .ag-amb__contract a{color:var(--color-gold);font-weight:700;}
 .ag-amb__check{display:flex;gap:10px;align-items:flex-start;color:var(--color-text-soft);font-size:.92rem;line-height:1.5;margin-bottom:16px;cursor:pointer;}
 .ag-amb__check input{margin-top:3px;flex:0 0 auto;width:18px;height:18px;accent-color:var(--color-gold);}
+.ag-amb__check span{flex:1 1 auto;min-width:0;}
 .ag-amb__steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:46px;}
 .ag-amb__step{padding:30px 24px;background:rgba(255,255,255,.025);border:1px solid rgba(212,180,92,.15);border-radius:18px;}
 .ag-amb__num{display:inline-block;font-family:var(--font-serif);font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,#D4B45C,#F37A1F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;margin-bottom:10px;}

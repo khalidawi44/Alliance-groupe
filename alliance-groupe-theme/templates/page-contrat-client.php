@@ -7,7 +7,7 @@
  */
 get_header();
 $ag_lg = function_exists( 'ag_company_legal' ) ? ag_company_legal() : array(
-	'raison' => 'Alliance Groupe', 'dirigeant' => 'Fabrice Doucet', 'forme' => 'Entreprise individuelle',
+	'raison' => 'Alliance Groupe', 'dirigeant' => 'la Direction', 'forme' => 'Entreprise individuelle',
 	'siren' => '', 'siret' => '', 'tva' => '', 'rcs' => '', 'adresse' => '', 'email' => 'contact@alliancegroupe-inc.com', 'site' => 'alliancegroupe-inc.com',
 );
 $ag_pays_lib = isset( $_GET['pays'] ) ? sanitize_text_field( wp_unslash( $_GET['pays'] ) ) : 'France';

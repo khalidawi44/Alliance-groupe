@@ -36,9 +36,9 @@ if ( ! defined( 'AG_KYC_RETENTION_DAYS' ) ) {
 if ( ! function_exists( 'ag_company_legal' ) ) {
 	function ag_company_legal() {
 		return apply_filters( 'ag_company_legal', array(
-			'raison'   => 'Entreprise individuelle Fabrice Doucet (enseigne « Alliance Groupe »)',
-			'dirigeant'=> 'Fabrice Doucet',
-			'forme'    => 'Entreprise individuelle (artisan)',
+			'raison'   => 'Alliance Groupe',
+			'dirigeant'=> 'la Direction',
+			'forme'    => 'Entreprise individuelle',
 			'siren'    => '513 593 921',
 			'siret'    => '513 593 921 00010',
 			'tva'      => 'FR19513593921',
