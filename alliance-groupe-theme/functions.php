@@ -119,6 +119,12 @@ $ag_zones_file = get_stylesheet_directory() . '/inc/ag-zones.php';
 if ( file_exists( $ag_zones_file ) ) {
     require_once $ag_zones_file;
 }
+
+// ── 1c11. Agent Coach (feuille de route quotidienne + rappels)
+$ag_coach_file = get_stylesheet_directory() . '/inc/ag-coach.php';
+if ( file_exists( $ag_coach_file ) ) {
+    require_once $ag_coach_file;
+}
 add_action( 'wp_footer', function () {
     if ( is_admin() ) return;
     $kind = function_exists( 'ag_espace_member_kind' ) ? ag_espace_member_kind() : '';

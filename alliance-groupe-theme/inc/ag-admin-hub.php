@@ -101,6 +101,36 @@ if ( ! function_exists( 'ag_hub_render' ) ) {
 				<div class="notice notice-success is-dismissible"><p>✅ Message envoyé au canal clients.</p></div>
 			<?php elseif ( 'broadcast_err' === $notice ) : ?>
 				<div class="notice notice-error is-dismissible"><p>⚠ Envoi impossible : vérifie le token et le canal dans <em>Notifications téléphone</em>.</p></div>
+			<?php elseif ( 'coach_ok' === $notice ) : ?>
+				<div class="notice notice-success is-dismissible"><p>✅ Feuille de route envoyée sur Telegram.</p></div>
+			<?php elseif ( 'coach_err' === $notice ) : ?>
+				<div class="notice notice-error is-dismissible"><p>⚠ Envoi impossible : configure le canal interne dans <em>Notifications téléphone</em>.</p></div>
+			<?php endif; ?>
+
+			<?php if ( function_exists( 'ag_daily_roadmap' ) ) :
+				$coach_on = '1' === get_option( 'ag_coach_on', '1' );
+			?>
+			<div style="background:linear-gradient(135deg,#1d2327,#2c3338);color:#fff;border-radius:14px;padding:18px 22px;margin:6px 0 22px;">
+				<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;">
+					<h2 style="margin:0;color:#fff;font-size:1.2rem;">🗺️ Ta feuille de route du jour</h2>
+					<div style="display:flex;gap:8px;">
+						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin:0;">
+							<input type="hidden" name="action" value="ag_coach_now"><?php wp_nonce_field( 'ag_coach', '_n' ); ?>
+							<button class="button button-small">📲 M'envoyer sur Telegram</button>
+						</form>
+						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin:0;">
+							<input type="hidden" name="action" value="ag_coach_toggle"><?php wp_nonce_field( 'ag_coach', '_n' ); ?>
+							<button class="button button-small"><?php echo $coach_on ? '🔔 Auto 8h : ON' : '🔕 Auto : OFF'; ?></button>
+						</form>
+					</div>
+				</div>
+				<ul style="margin:12px 0 0;padding-left:4px;list-style:none;line-height:1.9;">
+					<?php foreach ( ag_daily_roadmap() as $t ) : ?>
+						<li><?php echo esc_html( $t ); ?></li>
+					<?php endforeach; ?>
+				</ul>
+				<p style="margin:10px 0 0;color:#b9c0c7;font-size:.82rem;">Envoyée chaque matin 8h sur ton téléphone (Telegram) <?php echo $coach_on ? '— activé' : '— désactivé'; ?>.</p>
+			</div>
 			<?php endif; ?>
 
 			<!-- CHIFFRES CLÉS -->
