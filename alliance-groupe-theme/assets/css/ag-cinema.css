@@ -320,3 +320,10 @@
 	.ag-cine-stage__chapter { opacity: 1 !important; transform: none !important; }
 	.ag-zoomcover__img { transform: scale(1.02) !important; }
 }
+
+/* ── Fallback MOBILE des sections scroll horizontal (sinon cartes coupées) ── */
+@media (max-width: 1024px) {
+	.ag-hscroll__pin { overflow: visible !important; height: auto !important; position: relative !important; }
+	.ag-hscroll__track { flex-direction: column !important; transform: none !important; padding: 36px 18px !important; gap: 18px !important; align-items: stretch !important; }
+	.ag-hscroll__card { width: auto !important; max-width: 100% !important; min-height: 0 !important; }
+}
