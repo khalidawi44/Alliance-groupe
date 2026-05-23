@@ -258,7 +258,12 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-progress-numbers{font-size:.7rem;inset:100% 0 auto 0;margin-top:8px;margin-bottom:0;}
 		/* Force les mots du titre featured a etre visibles (GSAP les met a yPercent:100
 		   par defaut sur sections >0, et si l'animation rate sur mobile = invisible) */
-		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-word{transform:translate3d(0,0,0) !important;opacity:1 !important;}
+		/* Force les mots du titre featured ACTIF a etre visibles (GSAP les met a
+		   yPercent:100 ; si l'animation rate sur mobile = invisible). On scope a
+		   .active sinon les titres empiles (non-actifs) s'affichent en double (fantome). */
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured.active .ag-fx-word{transform:translate3d(0,0,0) !important;opacity:1 !important;}
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured:not(.active){opacity:0 !important;visibility:hidden !important;}
+		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured:not(.active) .ag-fx-word{opacity:0 !important;}
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-word-mask{overflow:visible;}
 		/* CTA du featured : visible aussi (etait opacity:0 par defaut, anime via .active) */
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-featured.active .ag-fx-cta{opacity:1 !important;transform:translateY(0) !important;}
