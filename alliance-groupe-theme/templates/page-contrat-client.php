@@ -10,9 +10,8 @@ $ag_lg = function_exists( 'ag_company_legal' ) ? ag_company_legal() : array(
 	'raison' => 'Alliance Groupe', 'dirigeant' => 'Fabrice Doucet', 'forme' => 'Entreprise individuelle',
 	'siren' => '', 'siret' => '', 'tva' => '', 'rcs' => '', 'adresse' => '', 'email' => 'contact@alliancegroupe-inc.com', 'site' => 'alliancegroupe-inc.com',
 );
-$ag_pays = isset( $_GET['pays'] ) ? sanitize_key( $_GET['pays'] ) : 'fr';
-if ( ! in_array( $ag_pays, array( 'fr', 'it', 'ma' ), true ) ) $ag_pays = 'fr';
-$ag_pays_lib = array( 'fr' => 'France', 'it' => 'Italie', 'ma' => 'Maroc' )[ $ag_pays ];
+$ag_pays_lib = isset( $_GET['pays'] ) ? sanitize_text_field( wp_unslash( $_GET['pays'] ) ) : 'France';
+if ( function_exists( 'ag_countries' ) && ! in_array( $ag_pays_lib, ag_countries(), true ) ) $ag_pays_lib = 'France';
 ?>
 <main id="ag-main-content">
 	<section class="ag-section ag-section--onyx" style="padding-top:140px;">
@@ -21,21 +20,10 @@ $ag_pays_lib = array( 'fr' => 'France', 'it' => 'Italie', 'ma' => 'Maroc' )[ $ag
 			<h1 class="ag-section__title" style="margin-bottom:10px;">Contrat de prestation &amp; CGV</h1>
 			<p class="ag-section__desc">Création de site web — Alliance Groupe. Droit applicable : <strong><?php echo esc_html( $ag_pays_lib ); ?></strong>. À lire et accepter avant tout paiement.</p>
 
-			<p style="background:rgba(212,180,92,.1);border:1px solid rgba(212,180,92,.35);border-radius:10px;padding:12px 16px;font-size:.9rem;">
-				Choisir le droit applicable :
-				<a href="?pays=fr" style="color:#D4B45C;">🇫🇷 France</a> ·
-				<a href="?pays=it" style="color:#D4B45C;">🇮🇹 Italie</a> ·
-				<a href="?pays=ma" style="color:#D4B45C;">🇲🇦 Maroc</a>
-			</p>
-
-			<?php if ( 'fr' !== $ag_pays ) : ?>
+			<?php if ( 'France' !== $ag_pays_lib ) : ?>
 				<p style="background:rgba(243,122,31,.12);border:1px solid rgba(243,122,31,.4);border-radius:10px;padding:14px 18px;">
-					⚠️ La version <strong><?php echo esc_html( $ag_pays_lib ); ?></strong> est en cours de finalisation avec un avocat local. En attendant, la version France ci-dessous s'applique à titre indicatif. (L'admin peut coller la version localisée définitive.)
+					ℹ️ Droit applicable choisi : <strong><?php echo esc_html( $ag_pays_lib ); ?></strong>. Le présent contrat s'applique avec ce droit pour droit applicable ; une version localisée définitive peut être validée par un avocat local.
 				</p>
-				<?php
-				$ag_custom = get_option( 'ag_contract_cli_' . $ag_pays, '' );
-				if ( $ag_custom ) { echo '<div>' . wp_kses_post( wpautop( $ag_custom ) ) . '</div>'; get_footer(); return; }
-				?>
 			<?php endif; ?>
 
 			<h2>1. Parties</h2>
@@ -46,7 +34,20 @@ $ag_pays_lib = array( 'fr' => 'France', 'it' => 'Italie', 'ma' => 'Maroc' )[ $ag
 			<p>Création d'un site internet professionnel selon le pack choisi (Essentiel, Pro ou Boutique), incluant les fonctionnalités décrites sur la page Sites Express au jour de la commande.</p>
 
 			<h2>3. Prix &amp; paiement</h2>
-			<p>Les prix sont indiqués en euros, à prix fixe selon le pack. Le paiement s'effectue en ligne (PayPal), en une fois ou en 4× sans frais lorsque proposé. La production démarre après réception du paiement (ou du 1er versement) et du brief complété par le Client.</p>
+			<p>Les prix sont indiqués en euros, à prix fixe selon le pack. Le paiement s'effectue en ligne (PayPal). La production démarre après réception du paiement (ou du 1er versement) et du brief complété par le Client.</p>
+
+			<h2>3 bis. Paiement en 4× sans frais — conditions</h2>
+			<p>Le paiement en 4× sans frais est une <strong>facilité accordée sous conditions</strong> et n'est pas un droit automatique :</p>
+			<ul>
+				<li>Il est réservé aux paiements par <strong>carte bancaire nominative à débit (carte « classique » à puce, numéros en relief)</strong> émise par une banque. Les <strong>cartes prépayées, cartes de néo-banques, cartes virtuelles ou à autorisation systématique</strong> peuvent être <strong>refusées</strong> pour le 4×.</li>
+				<li>Le Client autorise expressément le <strong>prélèvement automatique des 3 échéances restantes</strong> aux dates prévues.</li>
+				<li>En cas d'<strong>échéance impayée</strong> (rejet, provision insuffisante, opposition non justifiée), la <strong>totalité du solde restant devient immédiatement exigible</strong>, et le Prestataire peut <strong>suspendre la prestation et/ou la mise en ligne</strong> du site jusqu'au règlement complet.</li>
+			</ul>
+
+			<h2>3 ter. Retard, impayé &amp; recouvrement</h2>
+			<p>Le site et ses contenus <strong>restent la propriété du Prestataire jusqu'au paiement intégral</strong> ; aucun transfert de propriété ni mise en ligne définitive n'intervient avant règlement complet.</p>
+			<p>En cas de non-paiement à l'échéance, après une <strong>relance restée sans effet sous 8 jours</strong>, sont dus de plein droit : le <strong>solde total</strong>, des <strong>intérêts de retard</strong> au taux légal applicable, et une <strong>indemnité forfaitaire de recouvrement</strong> (40 € pour les professionnels, là où la loi le prévoit). Le Prestataire se réserve le droit de <strong>suspendre l'accès</strong>, de <strong>reprendre/dépublier</strong> les éléments non payés et d'engager toute <strong>procédure de recouvrement</strong>, les frais raisonnables restant à la charge du Client défaillant.</p>
+			<p>Le Client reconnaît que la prestation a une valeur dès son démarrage et qu'un défaut de paiement ne le dispense pas des sommes dues pour le travail déjà engagé.</p>
 
 			<h2>4. Délais &amp; livraison</h2>
 			<p>Les délais annoncés (en jours ouvrés) courent à compter de la réception du brief complet et des éléments nécessaires (textes, logo, photos). Le site est livré avec une vidéo de présentation ; les retouches raisonnables se font par écrit.</p>

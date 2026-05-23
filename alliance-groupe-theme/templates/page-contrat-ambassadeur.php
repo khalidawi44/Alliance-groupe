@@ -16,8 +16,12 @@ $ag_lg = function_exists( 'ag_company_legal' ) ? ag_company_legal() : array(
     <section class="ag-section ag-section--onyx" style="padding-top:140px;">
         <div class="ag-container ag-container--narrow ag-legal">
             <span class="ag-tag">Document contractuel</span>
+            <?php
+            $ag_amb_pays = isset( $_GET['pays'] ) ? sanitize_text_field( wp_unslash( $_GET['pays'] ) ) : 'France';
+            if ( function_exists( 'ag_countries' ) && ! in_array( $ag_amb_pays, ag_countries(), true ) ) $ag_amb_pays = 'France';
+            ?>
             <h1 class="ag-section__title" style="margin-bottom:10px;">Contrat d'apporteur d'affaires</h1>
-            <p class="ag-section__desc">Programme Ambassadeurs — Alliance Groupe. À lire avant de rejoindre le programme.</p>
+            <p class="ag-section__desc">Programme Ambassadeurs — Alliance Groupe. Droit applicable : <strong><?php echo esc_html( $ag_amb_pays ); ?></strong>. À lire avant de rejoindre le programme.</p>
 
             <h2>Entre les soussignés</h2>
             <p><strong>La Société :</strong> <?php echo esc_html( $ag_lg['raison'] ); ?>, <?php echo esc_html( $ag_lg['forme'] ); ?>,

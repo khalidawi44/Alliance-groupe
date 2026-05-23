@@ -289,9 +289,9 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
                     <div class="ag-form__group">
                         <label for="b-pays">Pays (droit applicable)</label>
                         <select id="b-pays" name="pays">
-                            <option value="fr">🇫🇷 France</option>
-                            <option value="it">🇮🇹 Italie</option>
-                            <option value="ma">🇲🇦 Maroc</option>
+                            <?php foreach ( ( function_exists( 'ag_countries' ) ? ag_countries() : array( 'France' ) ) as $ag_c ) : ?>
+                                <option value="<?php echo esc_attr( $ag_c ); ?>" <?php selected( 'France', $ag_c ); ?>><?php echo esc_html( $ag_c ); ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <label style="display:flex;gap:10px;align-items:flex-start;margin:6px 0 16px;font-size:.92rem;color:var(--color-text-secondary);">

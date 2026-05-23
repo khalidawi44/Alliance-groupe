@@ -129,6 +129,13 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
                     <div class="ag-form__row">
                         <div class="ag-form__group"><label for="amb-birth">Date de naissance *</label><input type="date" id="amb-birth" name="birthdate" required></div>
                         <div class="ag-form__group"><label for="amb-address">Adresse complète *</label><input type="text" id="amb-address" name="address" required placeholder="N°, rue, code postal, ville"></div>
+                        <div class="ag-form__group"><label for="amb-pays">Pays (droit applicable)</label>
+                            <select id="amb-pays" name="pays">
+                                <?php foreach ( ( function_exists( 'ag_countries' ) ? ag_countries() : array( 'France' ) ) as $ag_c ) : ?>
+                                    <option value="<?php echo esc_attr( $ag_c ); ?>" <?php selected( 'France', $ag_c ); ?>><?php echo esc_html( $ag_c ); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
                     </div>
                     <div class="ag-form__group">
                         <label for="amb-id">Pièce d'identité (vérification KYC) *</label>

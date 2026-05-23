@@ -944,12 +944,13 @@ if ( ! function_exists( 'ag_submit_brief' ) ) {
         if ( empty( $_POST['cgv'] ) ) {
             wp_die( 'Tu dois accepter le contrat de prestation / les CGV pour continuer.', 'Contrat requis', array( 'response' => 400, 'back_link' => true ) );
         }
-        $pays = in_array( $_POST['pays'] ?? 'fr', array( 'fr', 'it', 'ma' ), true ) ? $_POST['pays'] : 'fr';
+        $pays = sanitize_text_field( wp_unslash( $_POST['pays'] ?? 'France' ) );
+        if ( function_exists( 'ag_countries' ) && ! in_array( $pays, ag_countries(), true ) ) $pays = 'France';
         $cgv  = array(
             'accepted'  => 1,
             'pays'      => $pays,
             'ip'        => isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '',
-            'contract'  => home_url( '/contrat-client?pays=' . $pays ),
+            'contract'  => home_url( '/contrat-client?pays=' . rawurlencode( $pays ) ),
             'date'      => current_time( 'd/m/Y H:i' ),
         );
 
@@ -1051,3 +1052,33 @@ if ( ! function_exists( 'ag_render_questions_page' ) ) {
     }
 }
 
+
+// ── Liste mondiale des pays (noms FR) pour les contrats/sélecteurs ──
+if ( ! function_exists( 'ag_countries' ) ) {
+    function ag_countries() {
+        return array(
+            'France','Belgique','Suisse','Luxembourg','Monaco','Canada','Italie','Espagne','Portugal','Allemagne',
+            'Royaume-Uni','Irlande','Pays-Bas','Autriche','Danemark','Suède','Norvège','Finlande','Islande','Pologne',
+            'République tchèque','Slovaquie','Hongrie','Roumanie','Bulgarie','Grèce','Croatie','Slovénie','Serbie','Bosnie-Herzégovine',
+            'Albanie','Macédoine du Nord','Monténégro','Kosovo','Lituanie','Lettonie','Estonie','Ukraine','Biélorussie','Moldavie',
+            'Russie','Turquie','Chypre','Malte','Andorre','Saint-Marin','Liechtenstein',
+            'Maroc','Algérie','Tunisie','Libye','Égypte','Mauritanie','Sénégal','Mali','Burkina Faso','Niger',
+            'Côte d\'Ivoire','Guinée','Guinée-Bissau','Sierra Leone','Liberia','Ghana','Togo','Bénin','Nigeria','Cameroun',
+            'Tchad','Centrafrique','Gabon','Congo','République démocratique du Congo','Angola','Soudan','Soudan du Sud','Éthiopie','Érythrée',
+            'Djibouti','Somalie','Kenya','Ouganda','Rwanda','Burundi','Tanzanie','Mozambique','Madagascar','Maurice',
+            'Comores','Seychelles','Zambie','Zimbabwe','Malawi','Namibie','Botswana','Afrique du Sud','Lesotho','Eswatini',
+            'Cap-Vert','Gambie','São Tomé-et-Principe','Guinée équatoriale',
+            'États-Unis','Mexique','Guatemala','Belize','Honduras','Salvador','Nicaragua','Costa Rica','Panama','Cuba',
+            'Haïti','République dominicaine','Jamaïque','Trinité-et-Tobago','Bahamas','Barbade',
+            'Colombie','Venezuela','Équateur','Pérou','Bolivie','Brésil','Paraguay','Uruguay','Argentine','Chili','Guyana','Suriname',
+            'Chine','Japon','Corée du Sud','Corée du Nord','Mongolie','Taïwan','Hong Kong','Inde','Pakistan','Bangladesh',
+            'Sri Lanka','Népal','Bhoutan','Birmanie','Thaïlande','Laos','Cambodge','Vietnam','Malaisie','Singapour',
+            'Indonésie','Philippines','Brunei','Timor oriental',
+            'Arabie saoudite','Émirats arabes unis','Qatar','Koweït','Bahreïn','Oman','Yémen','Irak','Iran','Syrie',
+            'Liban','Jordanie','Israël','Palestine','Afghanistan','Kazakhstan','Ouzbékistan','Turkménistan','Kirghizistan','Tadjikistan',
+            'Azerbaïdjan','Arménie','Géorgie',
+            'Australie','Nouvelle-Zélande','Fidji','Papouasie-Nouvelle-Guinée','Nouvelle-Calédonie','Polynésie française',
+            'Guadeloupe','Martinique','Guyane','La Réunion','Mayotte','Autre',
+        );
+    }
+}

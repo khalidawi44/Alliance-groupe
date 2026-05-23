@@ -166,6 +166,7 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 			'contrat'    => array(
 				'accepte'   => true,
 				'signature' => $signature,
+				'pays'      => ( function_exists( 'ag_countries' ) && in_array( sanitize_text_field( wp_unslash( $_POST['pays'] ?? '' ) ), ag_countries(), true ) ) ? sanitize_text_field( wp_unslash( $_POST['pays'] ) ) : 'France',
 				'date'      => current_time( 'd/m/Y H:i' ),
 				'ip'        => sanitize_text_field( $_SERVER['REMOTE_ADDR'] ?? '' ),
 			),
