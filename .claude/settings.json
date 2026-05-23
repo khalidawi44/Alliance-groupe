@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo 'RAPPELS A FAIRE (a redire au user a chaque message tant que non confirme): 1) verifier sur telephone que le partage des videos/images du Studio fonctionne (TikTok/Snap/Insta via le menu Partager natif) ; 2) filmer/enregistrer la VIDEO explicative pour les ambassadeurs puis coller le lien dans Reglages > Programme ambassadeur.'"
+            "command": "echo 'RAPPELS A FAIRE (a redire au user a chaque message tant que non confirme): 1) verifier sur telephone que le partage des videos/images du Studio fonctionne (TikTok/Snap/Insta via le menu Partager natif) ; 2) filmer/enregistrer la VIDEO explicative pour les ambassadeurs puis coller le lien dans Reglages > Programme ambassadeur ; 3) envoyer les captures d ecran des 6 templates (avocat, restaurant, artisan, coach, barber, association) pour les pousser sur le site.'"
           }
         ]
       }
