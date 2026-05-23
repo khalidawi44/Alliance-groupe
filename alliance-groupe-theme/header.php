@@ -86,6 +86,11 @@
                 </div>
             </li>
 
+            <!-- Sur-mesure (offre premium) -->
+            <li class="ag-nav__item">
+                <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>">✦&nbsp;Sur-mesure</a>
+            </li>
+
             <!-- Services + dropdown -->
             <li class="ag-nav__has-sub">
                 <a href="<?php echo esc_url(home_url('/services')); ?>">Services <span class="ag-nav__arrow">&#9662;</span></a>
@@ -185,7 +190,7 @@
 
             <!-- Réalisations + dropdown -->
             <li class="ag-nav__has-sub">
-                <a href="<?php echo esc_url(home_url('/realisations')); ?>">Réalisations <span class="ag-nav__arrow">&#9662;</span></a>
+                <a href="<?php echo esc_url(home_url('/realisations')); ?>">Nos réalisations <span class="ag-nav__arrow">&#9662;</span></a>
                 <div class="ag-mega ag-mega--sm">
                     <div class="ag-mega__inner">
                         <div class="ag-mega__col">
@@ -348,6 +353,8 @@
                 </div>
             </div>
 
+            <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>" style="display:block;padding:15px 4px;color:#D4B45C;font-weight:700;border-bottom:1px solid rgba(212,180,92,.15);">✦ Sur-mesure <span style="opacity:.7;font-weight:400;">(sur devis)</span></a>
+
             <div class="ag-mobile-menu__group">
                 <button class="ag-mobile-menu__toggle" type="button">Services <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
@@ -376,7 +383,7 @@
             </div>
 
             <div class="ag-mobile-menu__group">
-                <button class="ag-mobile-menu__toggle" type="button">Réalisations <span class="ag-mobile-menu__arrow">+</span></button>
+                <button class="ag-mobile-menu__toggle" type="button">Nos réalisations <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
                     <a href="<?php echo esc_url(home_url('/realisations')); ?>">Tous les projets</a>
                     <a href="<?php echo esc_url(home_url('/realisations')); ?>#anna-photo">📸 Anna Photo</a>

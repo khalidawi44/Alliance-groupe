@@ -1088,3 +1088,46 @@ if ( ! function_exists( 'ag_countries' ) ) {
         );
     }
 }
+
+// ── Demande de devis SUR-MESURE (configurateur premium) ─────────
+add_action( 'admin_post_nopriv_ag_sur_mesure_submit', 'ag_sur_mesure_submit' );
+add_action( 'admin_post_ag_sur_mesure_submit', 'ag_sur_mesure_submit' );
+if ( ! function_exists( 'ag_sur_mesure_submit' ) ) {
+    function ag_sur_mesure_submit() {
+        if ( ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_sur_mesure' ) ) wp_die( 'Nonce invalide.', 'Erreur', array( 'response' => 403 ) );
+        $name  = sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) );
+        $email = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
+        if ( empty( $name ) || ! is_email( $email ) ) wp_die( 'Nom et email requis.', 'Champs manquants', array( 'response' => 400, 'back_link' => true ) );
+        if ( empty( $_POST['cgv'] ) ) wp_die( 'Tu dois accepter le contrat / les CGV.', 'Contrat requis', array( 'response' => 400, 'back_link' => true ) );
+        $feat = array_map( 'sanitize_text_field', (array) wp_unslash( $_POST['features'] ?? array() ) );
+        $req  = array(
+            'name'        => $name,
+            'email'       => $email,
+            'phone'       => sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) ),
+            'business'    => sanitize_text_field( wp_unslash( $_POST['business'] ?? '' ) ),
+            'type'        => sanitize_text_field( wp_unslash( $_POST['type'] ?? '' ) ),
+            'style'       => sanitize_text_field( wp_unslash( $_POST['style'] ?? '' ) ),
+            'couleurs'    => sanitize_text_field( wp_unslash( $_POST['couleurs'] ?? '' ) ),
+            'features'    => implode( ', ', $feat ),
+            'pages'       => sanitize_text_field( wp_unslash( $_POST['pages'] ?? '' ) ),
+            'budget'      => sanitize_text_field( wp_unslash( $_POST['budget'] ?? '' ) ),
+            'delai'       => sanitize_text_field( wp_unslash( $_POST['delai'] ?? '' ) ),
+            'description' => sanitize_textarea_field( wp_unslash( $_POST['description'] ?? '' ) ),
+            'pays'        => sanitize_text_field( wp_unslash( $_POST['pays'] ?? 'France' ) ),
+            'date'        => current_time( 'd/m/Y H:i' ),
+            'ip'          => isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '',
+        );
+        $list = (array) get_option( 'ag_sur_mesure_requests', array() );
+        $list[] = $req;
+        update_option( 'ag_sur_mesure_requests', array_slice( $list, -500 ) );
+
+        $body  = "Nouvelle demande de devis SUR-MESURE\n\n";
+        $body .= "Nom : {$req['name']}\nEmail : {$req['email']}\nTél : {$req['phone']}\nEntreprise : {$req['business']}\nPays : {$req['pays']}\n\n";
+        $body .= "Type : {$req['type']}\nStyle : {$req['style']}\nCouleurs : {$req['couleurs']}\nFonctionnalités : {$req['features']}\nPages : {$req['pages']}\nBudget : {$req['budget']}\nDélai : {$req['delai']}\n\nDescription :\n{$req['description']}\n\nDate : {$req['date']}";
+        wp_mail( apply_filters( 'ag_calendar_notify_email', 'advise.alliance.group@gmail.com' ), '✦ Devis sur-mesure : ' . $name . ' (' . $req['budget'] . ')', $body );
+        if ( function_exists( 'ag_push' ) ) ag_push( '✦ Demande de devis sur-mesure', $name . ' — ' . $req['type'] . ' · budget ' . $req['budget'] . ' · ' . $req['email'] );
+
+        wp_safe_redirect( home_url( '/sur-mesure?envoye=1#configurateur' ) );
+        exit;
+    }
+}

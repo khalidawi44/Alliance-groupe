@@ -21,6 +21,7 @@ add_action( 'admin_menu', function () {
 		2
 	);
 	add_submenu_page( 'ag-hub', 'Centre de contrôle', '🏠 Tableau de bord', 'manage_options', 'ag-hub', 'ag_hub_render' );
+	add_submenu_page( 'ag-hub', 'Devis sur-mesure', '✦ Devis sur-mesure', 'manage_options', 'ag-sur-mesure', 'ag_sur_mesure_list_render' );
 }, 1 );
 
 /* ── Petites aides ──────────────────────────────────────────────────── */
@@ -45,6 +46,34 @@ if ( ! function_exists( 'ag_hub_card' ) ) {
 			. '</a>',
 			esc_url( $url ), esc_html( $emoji ), esc_html( $title ), esc_html( $desc ), esc_html( $cta )
 		);
+	}
+}
+
+/* ── Liste des demandes de devis sur-mesure ─────────────────────────── */
+if ( ! function_exists( 'ag_sur_mesure_list_render' ) ) {
+	function ag_sur_mesure_list_render() {
+		if ( ! current_user_can( 'manage_options' ) ) return;
+		$reqs = array_reverse( (array) get_option( 'ag_sur_mesure_requests', array() ) );
+		echo '<div class="wrap"><h1>✦ Demandes de devis sur-mesure</h1>';
+		if ( empty( $reqs ) ) { echo '<p>Aucune demande pour le moment.</p></div>'; return; }
+		echo '<table class="widefat striped"><thead><tr><th>Date</th><th>Contact</th><th>Type / Style</th><th>Budget</th><th>Détails</th></tr></thead><tbody>';
+		foreach ( $reqs as $r ) {
+			printf(
+				'<tr><td>%s</td><td><strong>%s</strong><br><small>%s%s</small></td><td>%s<br><small>%s</small></td><td><strong>%s</strong><br><small>%s</small></td><td style="max-width:340px;font-size:.85em;">%s%s%s</td></tr>',
+				esc_html( $r['date'] ?? '' ),
+				esc_html( $r['name'] ?? '' ),
+				esc_html( $r['email'] ?? '' ),
+				! empty( $r['phone'] ) ? '<br>' . esc_html( $r['phone'] ) : '',
+				esc_html( $r['type'] ?? '' ),
+				esc_html( $r['style'] ?? '' ),
+				esc_html( $r['budget'] ?? '' ),
+				esc_html( $r['delai'] ?? '' ),
+				$r['features'] ? '<strong>Fonctions :</strong> ' . esc_html( $r['features'] ) . '<br>' : '',
+				$r['couleurs'] ? '<strong>Couleurs :</strong> ' . esc_html( $r['couleurs'] ) . '<br>' : '',
+				$r['description'] ? esc_html( $r['description'] ) : ''
+			);
+		}
+		echo '</tbody></table></div>';
 	}
 }
 
