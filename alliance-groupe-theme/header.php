@@ -342,16 +342,8 @@
 
         <div class="ag-mobile-menu__content">
 
-            <div class="ag-mobile-menu__group">
-                <button class="ag-mobile-menu__toggle" type="button">🚀 Gagner <span class="ag-mobile-menu__arrow">+</span></button>
-                <div class="ag-mobile-menu__sub">
-                    <a href="<?php echo esc_url(home_url('/sites-express')); ?>">🛒 Commander mon site (payable 4×)</a>
-                    <a href="<?php echo esc_url(home_url('/studio')); ?>">🎬 Studio créatif</a>
-                    <a href="<?php echo esc_url(home_url('/ambassadeurs')); ?>">🤝 Devenir ambassadeur (10 %)</a>
-                    <a href="<?php echo esc_url(home_url('/classement')); ?>">🏆 Classement</a>
-                    <a href="<?php echo esc_url(home_url('/connexion')); ?>">👤 Mon espace</a>
-                </div>
-            </div>
+            <!-- PRIORITÉ 1 : VENDRE — offres en haut -->
+            <a href="<?php echo esc_url(home_url('/sites-express')); ?>" style="display:block;padding:15px 4px;color:#fff;font-weight:700;border-bottom:1px solid rgba(212,180,92,.15);">🛒 Sites Express <span style="opacity:.7;font-weight:400;">(prix fixes, payable 4×)</span></a>
 
             <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>" style="display:block;padding:15px 4px;color:#D4B45C;font-weight:700;border-bottom:1px solid rgba(212,180,92,.15);">✦ Sur-mesure <span style="opacity:.7;font-weight:400;">(sur devis)</span></a>
 
@@ -391,6 +383,17 @@
                     <a href="<?php echo esc_url(home_url('/realisations')); ?>#maison-riviera">🏠 Maison Riviera</a>
                     <a href="<?php echo esc_url(home_url('/realisations')); ?>#cabinet-martin">⚖️ Cabinet Martin</a>
                     <a href="<?php echo esc_url(home_url('/realisations')); ?>#fitness-lab">💪 Fitness Lab</a>
+                </div>
+            </div>
+
+            <!-- PRIORITÉ 2 : GAGNER DE L'ARGENT (vendeurs/ambassadeurs) -->
+            <div class="ag-mobile-menu__group">
+                <button class="ag-mobile-menu__toggle" type="button">💸 Gagner de l'argent <span class="ag-mobile-menu__arrow">+</span></button>
+                <div class="ag-mobile-menu__sub">
+                    <a href="<?php echo esc_url(home_url('/ambassadeurs')); ?>">🤝 Devenir ambassadeur (10 %)</a>
+                    <a href="<?php echo esc_url(home_url('/studio')); ?>">🎬 Studio créatif</a>
+                    <a href="<?php echo esc_url(home_url('/classement')); ?>">🏆 Classement</a>
+                    <a href="<?php echo esc_url(home_url('/connexion')); ?>">👤 Mon espace</a>
                 </div>
             </div>
 
