@@ -117,10 +117,21 @@ $ag_hub_metiers = array(
             <p class="ag-section__desc ag-anim" data-anim="desc">Chaque fiche vous conduit vers une page dédiée avec le descriptif complet, le configurateur de pack, les CTA d'achat et les instructions d'installation.</p>
 
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;max-width:1200px;margin:48px auto 0;">
-                <?php foreach ( $ag_hub_metiers as $m ) : ?>
+                <?php foreach ( $ag_hub_metiers as $m ) :
+                    // Aperçu RÉEL du template : si une capture locale existe
+                    // (assets/images/templates/<slug>.jpg|png|webp), on l'utilise ;
+                    // sinon on retombe sur l'image générique.
+                    $ag_tpl_img = $m['image'] ?? '';
+                    if ( ! empty( $m['slug'] ) ) {
+                        foreach ( array( 'jpg', 'png', 'webp', 'jpeg' ) as $ag_ext ) {
+                            $ag_rel = '/assets/images/templates/' . $m['slug'] . '.' . $ag_ext;
+                            if ( file_exists( get_stylesheet_directory() . $ag_rel ) ) { $ag_tpl_img = get_stylesheet_directory_uri() . $ag_rel; break; }
+                        }
+                    }
+                ?>
                 <a href="<?php echo esc_url( $m['url'] ); ?>" class="ag-metier-card ag-anim" data-anim="card" style="display:flex;flex-direction:column;background:rgba(255,255,255,.025);border:1px solid rgba(212,180,92,.25);border-radius:16px;text-decoration:none;transition:border-color .3s,transform .3s,box-shadow .3s;color:inherit;overflow:hidden;">
-                    <?php if ( ! empty( $m['image'] ) ) : ?>
-                    <div class="ag-metier-card__img" style="aspect-ratio:16/10;background-image:linear-gradient(180deg,transparent 40%,rgba(10,10,15,.95) 100%),url('<?php echo esc_url( $m['image'] ); ?>');background-size:cover;background-position:center;position:relative;">
+                    <?php if ( ! empty( $ag_tpl_img ) ) : ?>
+                    <div class="ag-metier-card__img" style="aspect-ratio:16/10;background-image:linear-gradient(180deg,transparent 40%,rgba(10,10,15,.95) 100%),url('<?php echo esc_url( $ag_tpl_img ); ?>');background-size:cover;background-position:center;position:relative;">
                         <span class="ag-metier-card__emoji" style="position:absolute;bottom:14px;left:18px;width:54px;height:54px;background:linear-gradient(135deg,rgba(212,180,92,.95) 0%,rgba(243,122,31,.95) 100%);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.9rem;box-shadow:0 8px 24px rgba(0,0,0,.5),0 0 0 2px rgba(255,255,255,.1);"><?php echo $m['icon']; // phpcs:ignore ?></span>
                     </div>
                     <?php endif; ?>
