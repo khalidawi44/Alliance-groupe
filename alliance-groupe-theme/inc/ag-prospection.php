@@ -281,6 +281,22 @@ add_action( 'wp_ajax_ag_prospect_reply', function () {
 	wp_send_json_error();
 } );
 
+/* Enregistre une NOTE (ma fiche) sur un prospect existant. */
+add_action( 'wp_ajax_ag_prospect_note', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
+	$id   = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+	$note = sanitize_textarea_field( wp_unslash( $_POST['note'] ?? '' ) );
+	$list = (array) get_option( 'ag_prospects', array() );
+	foreach ( $list as $k => $p ) {
+		if ( ( $p['id'] ?? '' ) === $id ) {
+			$list[ $k ]['notes'] = $note;
+			update_option( 'ag_prospects', array_values( $list ) );
+			wp_send_json_success();
+		}
+	}
+	wp_send_json_error();
+} );
+
 /* ── 5. Priorité (qui en a vraiment besoin), pourquoi, et message émotionnel ─ */
 if ( ! function_exists( 'ag_prospect_score' ) ) {
 	/** Score 0-100 de PROBABILITÉ D'ACHAT : un commerce actif & populaire SANS vrai site = acheteur idéal. */
@@ -560,11 +576,12 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 								<td><?php echo esc_html( $r['phone'] ); ?></td>
 								<td><?php echo ( 'real' === $kind[0] ) ? '<a href="' . esc_url( $r['website'] ) . '" target="_blank" rel="noopener">site ✓</a>' : '<strong style="color:#b32d2e;">' . esc_html( $kind[1] ) . '</strong>'; ?></td>
 								<td>
+									<textarea class="ag-add-note" rows="2" placeholder="📝 Ma note (ce que je peux faire pour eux…)" style="width:210px;font-size:.82em;margin-bottom:4px;display:block;"></textarea>
 									<button type="button" class="button button-primary ag-add"
 										data-name="<?php echo esc_attr( $r['name'] ); ?>" data-type="<?php echo esc_attr( $r['type'] ?? $q ); ?>"
 										data-city="<?php echo esc_attr( $r['city'] ?? $city ); ?>" data-phone="<?php echo esc_attr( $r['phone'] ); ?>"
 										data-website="<?php echo esc_attr( $r['website'] ); ?>" data-address="<?php echo esc_attr( $r['address'] ); ?>"
-										data-rating="<?php echo esc_attr( $r['rating'] ?? 0 ); ?>" data-reviews="<?php echo esc_attr( $r['reviews'] ?? 0 ); ?>">+ Suivre</button>
+										data-rating="<?php echo esc_attr( $r['rating'] ?? 0 ); ?>" data-reviews="<?php echo esc_attr( $r['reviews'] ?? 0 ); ?>">+ Suivre (avec ma note)</button>
 								</td>
 							</tr>
 						<?php endforeach; ?>
@@ -798,6 +815,12 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 							<?php if ( $sms ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" href="<?php echo esc_attr( $sms ); ?>" title="Ouvre Messages sur ton ordi (lié à ton tél) -> envoi depuis ton numéro">📱 SMS</a> <?php endif; ?>
 							<?php if ( $mailto ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" href="<?php echo esc_url( $mailto ); ?>">Email</a> <?php endif; ?>
 							<details style="display:inline-block;margin-top:4px;"><summary class="button button-small">Message émotionnel</summary><textarea readonly rows="9" style="width:360px;margin-top:6px;"><?php echo esc_textarea( $msg ); ?></textarea></details>
+							<?php if ( ! empty( $p['website'] ) ) : ?><a class="button button-small" href="<?php echo esc_url( $p['website'] ); ?>" target="_blank" rel="noopener">🔗 Voir le site</a> <?php endif; ?>
+							<details style="display:block;margin-top:6px;"><summary class="button button-small">📝 Ma fiche (notes)</summary>
+								<textarea class="ag-note-field" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" rows="4" style="width:360px;margin-top:6px;" placeholder="Ce que je peux faire pour eux, points à dire, idées…"><?php echo esc_textarea( $p['notes'] ?? '' ); ?></textarea><br>
+								<button type="button" class="button button-small ag-note-save" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>">💾 Enregistrer la note</button>
+								<span class="ag-note-ok" style="color:#1e7e34;display:none;">✓ enregistré</span>
+							</details>
 							<?php endif; ?>
 						</td>
 						<td>
@@ -840,6 +863,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			document.querySelectorAll('.ag-add').forEach(function(b){ b.addEventListener('click',function(){
 				var fd=new FormData(); fd.append('action','ag_prospect_add'); fd.append('_n',nonce);
 				['name','type','city','phone','website','address','rating','reviews','notes','source'].forEach(function(k){ fd.append(k, b.getAttribute('data-'+k)||''); });
+					var nt=b.closest('td')?b.closest('td').querySelector('.ag-add-note'):null; if(nt&&nt.value){ fd.set('notes', nt.value); }
 				b.disabled=true; b.textContent='…';
 				fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ b.textContent=(j&&j.success)?'✓ Ajouté':'Erreur'; }).catch(function(){ b.textContent='Erreur'; b.disabled=false; });
 			}); });
@@ -857,6 +881,12 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				btn.disabled=true; fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ if(j&&j.success){ btn.outerHTML='<span style="color:#1e7e34;font-weight:700;">✅ A répondu le '+j.data.date+'</span>'; } else { btn.disabled=false; } }).catch(function(){ btn.disabled=false; });
 			}); }
 			document.querySelectorAll('.ag-reply').forEach(bindReply);
+			// Enregistrer une note (ma fiche) sur un prospect existant.
+			document.querySelectorAll('.ag-note-save').forEach(function(btn){ btn.addEventListener('click',function(){
+				var id=btn.getAttribute('data-id'); var box=btn.closest('details'); var ta=box?box.querySelector('.ag-note-field'):null; if(!ta) return;
+				var fd=new FormData(); fd.append('action','ag_prospect_note'); fd.append('_n',nonce); fd.append('id',id); fd.append('note',ta.value);
+				btn.disabled=true; fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ btn.disabled=false; var ok=box.querySelector('.ag-note-ok'); if(ok&&j&&j.success){ ok.style.display='inline'; setTimeout(function(){ok.style.display='none';},2500); } }).catch(function(){ btn.disabled=false; });
+			}); });
 		})();
 		</script>
 		<?php
