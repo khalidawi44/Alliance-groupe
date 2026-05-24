@@ -873,7 +873,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 						<td><?php echo (int) ( $h['count'] ?? 0 ); ?><?php echo $has_cache ? ' <span title="Résultats en cache, revoir gratuit">💾</span>' : ''; ?></td>
 						<td><?php echo esc_html( ! empty( $h['ts'] ) ? wp_date( 'd/m/Y', (int) $h['ts'] ) : '—' ); ?></td>
 						<td>
-							<?php if ( $has_cache ) : ?><a class="button button-small button-primary" href="<?php echo esc_url( $url ); ?>" title="Réaffiche les résultats déjà trouvés (gratuit)">👁 Revoir (gratuit)</a> <?php endif; ?>
+							<?php if ( $has_cache ) : ?><a class="button button-small button-primary" href="<?php echo esc_url( $url ); ?>" title="Réaffiche les résultats déjà trouvés (gratuit)">👁 Revoir (gratuit)</a> <?php else : ?><span style="color:#b26a00;font-size:.82em;">⚠ Pas en cache (faite avant la mise en cache) — clique « Actualiser » 1 fois pour activer « Revoir ».</span><br><?php endif; ?>
 							<a class="button button-small" href="<?php echo esc_url( $rurl ); ?>" title="Relance un appel Google payant pour chercher du nouveau" onclick="return confirm('Relancer un appel Google payant (≈ 0,04 € · balayage ≈ 1,60 €) ?');">🔄 Actualiser</a>
 						</td>
 					</tr>
