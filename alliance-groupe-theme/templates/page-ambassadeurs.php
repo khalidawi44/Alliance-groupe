@@ -45,6 +45,56 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
         </div>
     </section>
 
+    <!-- Simulateur de gains -->
+    <section class="ag-section ag-section--light" id="gains">
+        <div class="ag-container ag-container--narrow">
+            <span class="ag-tag ag-anim" data-anim="tag">Combien tu peux gagner</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Calcule tes <em>revenus</em></h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc">10 % sur chaque vente, payés sur PayPal. Bouge le curseur et vois ce que ça donne.</p>
+            <div class="ag-gain">
+                <label class="ag-gain__row">Ventes par semaine : <strong id="ag-gain-nb">3</strong>
+                    <input type="range" id="ag-gain-ventes" min="1" max="20" value="3">
+                </label>
+                <label class="ag-gain__row">Panier moyen :
+                    <select id="ag-gain-panier"><option value="490">Essentiel — 490 €</option><option value="890" selected>Pro — 890 €</option><option value="1490">Boutique — 1490 €</option></select>
+                </label>
+                <div class="ag-gain__out">
+                    <div class="ag-gain__box"><span id="ag-gain-sem">267 €</span><small>/ semaine</small></div>
+                    <div class="ag-gain__box ag-gain__box--big"><span id="ag-gain-mois">1 068 €</span><small>/ mois</small></div>
+                    <div class="ag-gain__box"><span id="ag-gain-an">12 816 €</span><small>/ an</small></div>
+                </div>
+                <p class="ag-gain__note">💡 Estimation à 10 % de commission. Plus tu vends, plus tu gagnes — sans plafond.</p>
+                <a href="#rejoindre" class="ag-btn-gold ag-btn-gold--xl" style="margin-top:8px;">Je veux gagner ça →</a>
+            </div>
+        </div>
+        <style>
+        .ag-gain{max-width:560px;margin:30px auto 0;background:#fff;border:1px solid rgba(212,180,92,.4);border-radius:20px;padding:28px;box-shadow:0 16px 40px rgba(120,100,40,.12);text-align:center;}
+        .ag-gain__row{display:block;text-align:left;font-weight:600;color:#17150f;margin-bottom:16px;}
+        .ag-gain__row input[type=range]{width:100%;accent-color:#b08524;margin-top:8px;}
+        .ag-gain__row select{display:block;margin-top:8px;padding:10px 12px;border-radius:10px;border:1px solid rgba(120,100,40,.3);width:100%;}
+        .ag-gain__out{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0;}
+        .ag-gain__box{background:#faf7f0;border:1px solid rgba(212,180,92,.35);border-radius:14px;padding:14px 8px;}
+        .ag-gain__box span{display:block;font-size:1.3rem;font-weight:800;color:#b08524;}
+        .ag-gain__box--big{background:linear-gradient(135deg,#D4B45C,#F37A1F);}
+        .ag-gain__box--big span{color:#fff;font-size:1.6rem;}
+        .ag-gain__box small{color:#5b5446;font-size:.8rem;}
+        .ag-gain__box--big small{color:#fff;}
+        .ag-gain__note{color:#5b5446;font-size:.86rem;margin:4px 0 12px;}
+        </style>
+        <script>
+        (function(){
+            var v=document.getElementById('ag-gain-ventes'), p=document.getElementById('ag-gain-panier'), nb=document.getElementById('ag-gain-nb');
+            if(!v) return;
+            function fmt(n){ return Math.round(n).toLocaleString('fr-FR')+' €'; }
+            function calc(){ var com=(+v.value)*(+p.value)*0.10; nb.textContent=v.value;
+                document.getElementById('ag-gain-sem').textContent=fmt(com);
+                document.getElementById('ag-gain-mois').textContent=fmt(com*4.33);
+                document.getElementById('ag-gain-an').textContent=fmt(com*52); }
+            v.addEventListener('input',calc); p.addEventListener('change',calc); calc();
+        })();
+        </script>
+    </section>
+
     <!-- Classement & récompenses (motivation) -->
     <section class="ag-section ag-section--graphite" id="classement">
         <div class="ag-container">
