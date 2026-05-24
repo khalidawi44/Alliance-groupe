@@ -482,6 +482,32 @@ if ( ! function_exists( 'ag_prospect_why' ) ) {
 		return 'Cette entreprise ' . $gap . ' Un site lui permettrait de ' . $bene . '.';
 	}
 }
+if ( ! function_exists( 'ag_proposal_from_notes' ) ) {
+	/** Traduit MES notes (problèmes/raccourcis) en PROPOSITIONS client. Ex : "pas un vrai site" -> "un vrai site qui vous appartient". */
+	function ag_proposal_from_notes( $notes ) {
+		$n = mb_strtolower( (string) $notes );
+		if ( '' === trim( $n ) ) return array();
+		$map = array(
+			array( array( 'pas un vrai site', 'pas de vrai site', 'faux site', 'pas de site', 'aucun site', 'planity', 'doctolib', 'treatwell', 'reseau', 'réseau', 'facebook', 'insta', 'page externe', 'que les reseaux', 'social' ), 'un *vrai site professionnel qui VOUS appartient* (au lieu d\'une simple page externe)' ),
+			array( array( 'reserv', 'réserv', 'rdv', 'rendez-vous', 'rendez vous', 'agenda', 'booking', 'prise de' ), 'une *vraie réservation / prise de RDV en ligne* 24h/24' ),
+			array( array( 'menu' ), 'un *menu clair et facile à utiliser*' ),
+			array( array( 'lent', 'rapide', 'vitesse', 'charge' ), 'un site *rapide à charger*' ),
+			array( array( 'mobile', 'téléphone', 'telephone', 'responsive', 'smartphone' ), 'un affichage *parfait sur mobile*' ),
+			array( array( 'remont', 'flèche', 'fleche', 'retour en haut', 'navigation', 'défil', 'defil', 'scroll' ), 'une *navigation fluide* (bouton retour en haut, défilement propre)' ),
+			array( array( 'seo', 'google', 'référenc', 'referenc', 'visib', 'introuvable', 'pas trouv' ), 'un site *optimisé pour être trouvé sur Google*' ),
+			array( array( 'photo', 'image', 'visuel', 'galerie' ), 'de *beaux visuels* qui valorisent votre travail' ),
+			array( array( 'vieux', 'daté', 'date', 'moche', 'vieillot', 'design', 'refonte', 'ancien', 'pas beau' ), 'un *design moderne et premium* à votre image' ),
+			array( array( 'avis', 'témoignage', 'temoignage' ), 'vos *avis clients* bien mis en avant' ),
+			array( array( 'contact', 'formulaire' ), 'un *formulaire de contact* qui capte les demandes' ),
+			array( array( 'paiement', 'boutique', 'ecommerce', 'e-commerce', 'vente', 'panier' ), 'une *boutique en ligne / paiement* intégré' ),
+		);
+		$out = array();
+		foreach ( $map as $row ) {
+			foreach ( $row[0] as $kw ) { if ( false !== strpos( $n, $kw ) ) { $out[ $row[1] ] = $row[1]; break; } }
+		}
+		return array_values( $out );
+	}
+}
 if ( ! function_exists( 'ag_prospect_message' ) ) {
 	/** Message personnalisé et émotionnel, adapté au métier et au manque constaté. */
 	function ag_prospect_message( $p, $link = '' ) {
@@ -503,10 +529,14 @@ if ( ! function_exists( 'ag_prospect_message' ) ) {
 		$notes = trim( (string) ( $p['notes'] ?? '' ) );
 
 		$msg  = "✨ Bonjour,\n\n{$accroche}\n\n";
-		if ( '' !== $notes ) {
-			// Message basé sur MES notes : on propose précisément ce que j'ai repéré.
-			$msg .= "👀 Concrètement, voici ce que je vous propose d'améliorer :\n{$notes}\n\n";
-			$msg .= "✅ Je m'occupe de tout, de A à Z : refonte du site, *vraie réservation / prise de RDV en ligne*, menu & navigation clairs, bouton retour en haut, fiche Google optimisée — exactement ce qu'il vous faut.\n\n";
+		$props = ag_proposal_from_notes( $notes );
+		if ( ! empty( $props ) ) {
+			// Mes notes (problèmes) traduites en propositions concrètes.
+			$msg .= "👉 Voici ce que je vous propose, sur-mesure pour vous :\n";
+			foreach ( $props as $pr ) $msg .= "✅ " . $pr . "\n";
+			$msg .= "\nJe m'occupe de tout, de A à Z.\n\n";
+		} elseif ( '' !== $notes ) {
+			$msg .= "👀 J'ai repéré quelques points à améliorer chez vous — je m'en occupe de A à Z : refonte, *vraie réservation en ligne*, navigation claire, fiche Google.\n\n";
 		} else {
 			$msg .= "Chez *Alliance Groupe*, on crée des sites pros 📱 qui travaillent pour vous 24h/24 :\n";
 			$msg .= "✅ Refonte complète, navigation claire, *vraie réservation en ligne*\n";
@@ -515,7 +545,7 @@ if ( ! function_exists( 'ag_prospect_message' ) ) {
 		}
 		$msg .= "💳 Prix fixe dès *490 €* (payable en 4× sans frais), livré en quelques jours, sans rendez-vous.\n\n";
 		$msg .= "👉 Voir ce qu'on fait : {$site}\n";
-		if ( '' !== $notes ) $msg .= "✦ Refonte sur-mesure : " . home_url( '/sur-mesure' ) . "\n";
+		if ( ! empty( $props ) || '' !== $notes ) $msg .= "✦ Refonte sur-mesure : " . home_url( '/sur-mesure' ) . "\n";
 		$msg .= "\nOn en parle 5 minutes, sans engagement ? 🙂\n📞 {$phone}\n\n🤝 Alliance Groupe\n📩 contact@alliancegroupe-inc.com";
 		if ( ! empty( $p['id'] ) && function_exists( 'ag_prospect_unsub_url' ) ) $msg .= "\n\n🚫 Ne plus être contacté (1 clic) : " . ag_prospect_unsub_url( $p );
 		return $msg;
