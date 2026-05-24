@@ -376,7 +376,7 @@ add_action( 'admin_post_ag_client_send_now', function () {
 add_action( 'wp_dashboard_setup', function () {
 	if ( ! current_user_can( 'manage_options' ) ) return;
 	// Déblaye les widgets WordPress par défaut (place nette pour notre résumé).
-	$boxes = array( 'dashboard_primary', 'dashboard_quick_press', 'dashboard_incoming_links', 'dashboard_plugins', 'dashboard_recent_drafts', 'dashboard_recent_comments', 'dashboard_activity', 'dashboard_site_health', 'dashboard_php_nag' );
+	$boxes = array( 'dashboard_primary', 'dashboard_quick_press', 'dashboard_incoming_links', 'dashboard_plugins', 'dashboard_recent_drafts', 'dashboard_recent_comments', 'dashboard_activity', 'dashboard_site_health', 'dashboard_php_nag', 'dashboard_right_now' );
 	foreach ( $boxes as $b ) { remove_meta_box( $b, 'dashboard', 'normal' ); remove_meta_box( $b, 'dashboard', 'side' ); }
 	wp_add_dashboard_widget( 'ag_dash_news', '🔔 Quoi de neuf — Alliance Groupe', 'ag_dashboard_news_render' );
 	// Notre widget tout en haut.
