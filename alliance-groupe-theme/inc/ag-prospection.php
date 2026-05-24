@@ -608,7 +608,11 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 		$f_status = isset( $_GET['fstatus'] ) ? sanitize_text_field( wp_unslash( $_GET['fstatus'] ) ) : '';
 		$f_q      = isset( $_GET['fq'] ) ? sanitize_text_field( wp_unslash( $_GET['fq'] ) ) : '';
 		$sortby   = isset( $_GET['sort'] ) ? sanitize_text_field( wp_unslash( $_GET['sort'] ) ) : 'besoin';
-		if ( '' !== $f_status ) $prospects = array_filter( $prospects, function ( $p ) use ( $f_status ) { return ( $p['status'] ?? 'nouveau' ) === $f_status; } );
+		if ( '' !== $f_status ) $prospects = array_filter( $prospects, function ( $p ) use ( $f_status ) {
+			$st = $p['status'] ?? 'nouveau';
+			if ( 'contacte' === $f_status ) return in_array( $st, array( 'contacte', 'relance' ), true ); // "Contactés" = contactés + relancés
+			return $st === $f_status;
+		} );
 		if ( '' !== $f_q ) { $needle = strtolower( $f_q ); $prospects = array_filter( $prospects, function ( $p ) use ( $needle ) { return false !== strpos( strtolower( ( $p['name'] ?? '' ) . ' ' . ( $p['city'] ?? '' ) . ' ' . ( $p['type'] ?? '' ) ), $needle ); } ); }
 		$prospects = array_values( $prospects );
 		usort( $prospects, function ( $a, $b ) use ( $sortby ) {
