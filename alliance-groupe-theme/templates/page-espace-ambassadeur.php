@@ -375,6 +375,8 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 						$pmsg = function_exists( 'ag_prospect_message' ) ? ag_prospect_message( $pp, $ag_sale_link ) : '';
 						$pdig = function_exists( 'ag_wa_number' ) ? ag_wa_number( $pp['phone'] ?? '', $pp['phone_intl'] ?? '' ) : preg_replace( '/[^0-9]/', '', $pp['phone'] ?? '' );
 						$pwa  = $pdig ? 'https://wa.me/' . $pdig . '?text=' . rawurlencode( $pmsg ) : '';
+						$psnum = preg_replace( '/[^0-9+]/', '', $pp['phone_intl'] ?? '' ) ?: preg_replace( '/[^0-9+]/', '', $pp['phone'] ?? '' );
+						$psms = $psnum ? 'sms:' . $psnum . '?body=' . rawurlencode( $pmsg ) : '';
 						$pmail = ! empty( $pp['email'] ) ? 'mailto:' . rawurlencode( $pp['email'] ) . '?subject=' . rawurlencode( 'Votre site web — Alliance Groupe' ) . '&body=' . rawurlencode( $pmsg ) : '';
 						$pstatus = $pp['status'] ?? 'nouveau';
 						if ( in_array( $pstatus, array( 'refus', 'ne_pas_contacter' ), true ) ) continue; // bloqué : ne réapparaît plus
@@ -397,6 +399,7 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 								</div>
 								<?php if ( ! empty( $pp['phone'] ) ) : ?><a href="tel:<?php echo esc_attr( $pp['phone'] ); ?>" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" style="padding:6px 10px;">📞 Appeler</a> <?php endif; ?>
 								<?php if ( $pwa ) : ?><a href="<?php echo esc_url( $pwa ); ?>" target="_blank" rel="noopener" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" style="padding:6px 10px;">WhatsApp</a> <?php endif; ?>
+								<?php if ( $psms ) : ?><a href="<?php echo esc_attr( $psms ); ?>" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" style="padding:6px 10px;">📱 SMS</a> <?php endif; ?>
 								<?php if ( $pmail ) : ?><a href="<?php echo esc_url( $pmail ); ?>" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" style="padding:6px 10px;">Email</a> <?php endif; ?>
 								<details style="margin-top:6px;"><summary style="cursor:pointer;color:var(--color-gold);">Voir le message</summary><textarea readonly rows="8" style="width:100%;margin-top:6px;background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(212,180,92,.3);border-radius:10px;padding:10px;"><?php echo esc_textarea( $pmsg ); ?></textarea></details>
 							</td>

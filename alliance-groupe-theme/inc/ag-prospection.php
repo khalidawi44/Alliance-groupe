@@ -736,6 +736,8 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					$msg    = ag_prospect_message( $p );
 					$mailto = $p['email'] ? 'mailto:' . rawurlencode( $p['email'] ) . '?subject=' . rawurlencode( 'Votre site web — Alliance Groupe' ) . '&body=' . rawurlencode( $msg ) : '';
 					$wa     = $digits ? 'https://wa.me/' . $digits . '?text=' . rawurlencode( $msg ) : '';
+					$smsnum = preg_replace( '/[^0-9+]/', '', $p['phone_intl'] ?? '' ) ?: preg_replace( '/[^0-9+]/', '', $p['phone'] ?? '' );
+					$sms    = $smsnum ? 'sms:' . $smsnum . '?body=' . rawurlencode( $msg ) : '';
 					$score  = ag_prospect_score( $p );
 					$scol   = $score >= 80 ? '#b32d2e' : ( $score >= 60 ? '#bd7b00' : '#50575e' );
 					$blocked = ag_prospect_blocked( $p['status'] ?? '' );
@@ -793,6 +795,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 								<?php else : ?>⏳ Pas encore contacté<?php endif; ?>
 							</div>
 							<?php if ( $wa ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" href="<?php echo esc_url( $wa ); ?>" target="_blank" rel="noopener">WhatsApp</a> <?php endif; ?>
+							<?php if ( $sms ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" href="<?php echo esc_attr( $sms ); ?>" title="Ouvre Messages sur ton ordi (lié à ton tél) -> envoi depuis ton numéro">📱 SMS</a> <?php endif; ?>
 							<?php if ( $mailto ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" href="<?php echo esc_url( $mailto ); ?>">Email</a> <?php endif; ?>
 							<details style="display:inline-block;margin-top:4px;"><summary class="button button-small">Message émotionnel</summary><textarea readonly rows="9" style="width:360px;margin-top:6px;"><?php echo esc_textarea( $msg ); ?></textarea></details>
 							<?php endif; ?>
