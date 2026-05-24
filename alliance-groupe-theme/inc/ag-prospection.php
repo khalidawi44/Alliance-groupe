@@ -157,6 +157,9 @@ if ( ! function_exists( 'ag_site_kind' ) ) {
 		if ( '' === $u ) return array( 'none', '❗ Pas de site' );
 		$social = array( 'facebook.com', 'fb.com', 'fb.me', 'instagram.com', 'tiktok.com', 'twitter.com', 'x.com', 'linktr.ee', 'snapchat.com', 'business.site', 'linkedin.com', 'youtube.com', 'wa.me', 'pages.', 'google.com/maps' );
 		foreach ( $social as $s ) { if ( false !== strpos( $u, $s ) ) return array( 'social', '⚠ Réseau social' ); }
+		// Plateformes de réservation / annuaires = PAS un vrai site possédé → prioritaire.
+		$platforms = array( 'planity.', 'doctolib.', 'treatwell.', 'resalib.', 'fresha.', 'booksy.', 'kiute.', 'leciseau.', 'balinea.', 'pagesjaunes.', 'yelp.', 'tripadvisor.', 'lafourchette.', 'thefork.', 'ubereats.', 'deliveroo.', 'just-eat.', 'justeat.' );
+		foreach ( $platforms as $pf ) { if ( false !== strpos( $u, $pf ) ) return array( 'social', '⚠ Plateforme (pas de vrai site)' ); }
 		return array( 'real', 'site ✓' );
 	}
 }
@@ -329,8 +332,8 @@ if ( ! function_exists( 'ag_prospect_score' ) ) {
 	/** Score 0-100 de PROBABILITÉ D'ACHAT : un commerce actif & populaire SANS vrai site = acheteur idéal. */
 	function ag_prospect_score( $p ) {
 		$kind = ag_site_kind( $p['website'] ?? '' )[0];
-		// Le manque (pas de vrai site) = le plus gros levier d'achat.
-		$s = ( 'none' === $kind ) ? 55 : ( ( 'social' === $kind ) ? 45 : 8 );
+		// Le manque (pas de vrai site) = le plus gros levier d'achat → priorité forte.
+		$s = ( 'none' === $kind ) ? 62 : ( ( 'social' === $kind ) ? 55 : 6 );
 		// Activité / demande réelle : beaucoup d'avis = clients + budget = plus susceptible d'acheter.
 		$rev = (int) ( $p['reviews'] ?? 0 );
 		if ( $rev >= 300 )      $s += 25;
