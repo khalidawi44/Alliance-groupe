@@ -89,6 +89,25 @@ if ( ! function_exists( 'ag_kyc_store' ) ) {
 		return $name;
 	}
 }
+if ( ! function_exists( 'ag_kyc_store_dataurl' ) ) {
+	/** Stocke une photo prise en direct (selfie, dataURL base64) de façon protégée. */
+	function ag_kyc_store_dataurl( $dataurl ) {
+		if ( ! is_string( $dataurl ) || '' === $dataurl ) return '';
+		if ( ! preg_match( '#^data:image/(jpeg|jpg|png);base64,#i', $dataurl, $m ) ) return '';
+		$ext = ( 'png' === strtolower( $m[1] ) ) ? 'png' : 'jpg';
+		$pos = strpos( $dataurl, ',' );
+		$bin = base64_decode( substr( $dataurl, $pos + 1 ), true );
+		if ( false === $bin || strlen( $bin ) < 100 ) return '';
+		if ( strlen( $bin ) > 5 * 1024 * 1024 ) return '';
+		$info = function_exists( 'getimagesizefromstring' ) ? @getimagesizefromstring( $bin ) : false;
+		if ( ! $info || ! in_array( $info[2], array( IMAGETYPE_JPEG, IMAGETYPE_PNG ), true ) ) return '';
+		$name = wp_generate_password( 24, false, false ) . '.' . $ext;
+		$dest = ag_kyc_dir() . '/' . $name;
+		if ( false === file_put_contents( $dest, $bin ) ) return ''; // phpcs:ignore WordPress.WP.AlternativeFunctions
+		@chmod( $dest, 0640 );
+		return $name;
+	}
+}
 
 /* =====================================================================
    1. INSCRIPTION AU PROGRAMME
@@ -135,6 +154,18 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 			wp_die( 'La pièce d\'identité est obligatoire et doit être un JPG, PNG ou PDF de 5 Mo maximum.', 'Pièce d\'identité requise', array( 'response' => 400, 'back_link' => true ) );
 		}
 
+		// Photo en direct (selfie) obligatoire : sert à comparer avec la pièce d'identité.
+		$selfie_file = '';
+		if ( ! empty( $_POST['selfie_data'] ) ) {
+			$selfie_file = ag_kyc_store_dataurl( wp_unslash( $_POST['selfie_data'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		}
+		if ( '' === $selfie_file && ! empty( $_FILES['selfie_file'] ) ) {
+			$selfie_file = ag_kyc_store( $_FILES['selfie_file'] ); // repli : champ fichier (caméra mobile)
+		}
+		if ( '' === $selfie_file ) {
+			wp_die( 'La photo en direct (selfie) est obligatoire : prends-toi en photo pour confirmer ton identité.', 'Photo en direct requise', array( 'response' => 400, 'back_link' => true ) );
+		}
+
 		// Parrainage : qui a recruté ce nouvel ambassadeur (cookie posé via ?parrain=CODE) ?
 		$parrain_ref   = isset( $_COOKIE['ag_parrain'] ) ? preg_replace( '/[^A-Za-z0-9]/', '', wp_unslash( $_COOKIE['ag_parrain'] ) ) : '';
 		$parrain       = ( $parrain_ref && function_exists( 'ag_ambassadeur_by_ref' ) ) ? ag_ambassadeur_by_ref( $parrain_ref ) : null;
@@ -166,6 +197,7 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 			'status'     => 'en_attente',          // -> 'actif' apres verification identite par l'admin
 			'identite'   => 'a_verifier',
 			'kyc_file'   => $kyc_file,
+			'selfie_file' => $selfie_file,
 			'kyc_ts'     => time(),
 			'parrain'    => $parrain_store,
 			'rgpd'       => array( 'consent' => true, 'date' => current_time( 'd/m/Y H:i' ) ),
@@ -294,17 +326,18 @@ if ( ! function_exists( 'ag_kyc_view' ) ) {
 		if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Accès refusé.', 'Erreur', array( 'response' => 403 ) );
 		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'ag_kyc_view' ) ) wp_die( 'Lien invalide.', 'Erreur', array( 'response' => 403 ) );
 		$id = sanitize_text_field( $_GET['id'] ?? '' );
+		$which = ( isset( $_GET['which'] ) && 'selfie' === $_GET['which'] ) ? 'selfie' : 'piece';
 		$file = '';
 		foreach ( get_option( 'ag_ambassadeurs', array() ) as $a ) {
-			if ( ( $a['id'] ?? '' ) === $id ) { $file = $a['kyc_file'] ?? ''; break; }
+			if ( ( $a['id'] ?? '' ) === $id ) { $file = ( 'selfie' === $which ) ? ( $a['selfie_file'] ?? '' ) : ( $a['kyc_file'] ?? '' ); break; }
 		}
-		if ( ! $file ) wp_die( 'Aucune pièce pour cet ambassadeur.', 'Introuvable', array( 'response' => 404 ) );
+		if ( ! $file ) wp_die( 'Aucun document pour cet ambassadeur.', 'Introuvable', array( 'response' => 404 ) );
 		$path = ag_kyc_dir() . '/' . basename( $file ); // basename : anti path-traversal
 		if ( ! file_exists( $path ) ) wp_die( 'Fichier introuvable.', 'Introuvable', array( 'response' => 404 ) );
 		$ft = wp_check_filetype( $path );
 		nocache_headers();
 		header( 'Content-Type: ' . ( $ft['type'] ?: 'application/octet-stream' ) );
-		header( 'Content-Disposition: inline; filename="piece-identite"' );
+		header( 'Content-Disposition: inline; filename="' . ( 'selfie' === $which ? 'photo-en-direct' : 'piece-identite' ) . '"' );
 		header( 'X-Content-Type-Options: nosniff' );
 		header( 'X-Robots-Tag: noindex, nofollow' );
 		readfile( $path );
@@ -343,8 +376,9 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 						if ( $act === 'amb_valider' ) { $list[ $k ]['status'] = 'actif'; $list[ $k ]['identite'] = 'verifiee'; }
 						if ( $act === 'amb_kyc_suppr' || $act === 'amb_suppr' ) {
 							if ( ! empty( $a['kyc_file'] ) ) { @unlink( ag_kyc_dir() . '/' . basename( $a['kyc_file'] ) ); }
+							if ( ! empty( $a['selfie_file'] ) ) { @unlink( ag_kyc_dir() . '/' . basename( $a['selfie_file'] ) ); }
 						}
-						if ( $act === 'amb_kyc_suppr' ) $list[ $k ]['kyc_file'] = '';
+						if ( $act === 'amb_kyc_suppr' ) { $list[ $k ]['kyc_file'] = ''; $list[ $k ]['selfie_file'] = ''; }
 						if ( $act === 'amb_suppr' )      unset( $list[ $k ] );
 					}
 				}
@@ -497,6 +531,12 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 				} else {
 					echo '<br><span style="color:#b32d2e;">pas de pièce</span>';
 				}
+				if ( ! empty( $a['selfie_file'] ) ) {
+					$selfie_view = wp_nonce_url( admin_url( 'admin-post.php?action=ag_kyc_view&which=selfie&id=' . $a['id'] ), 'ag_kyc_view' );
+					echo '<br>🤳 <a href="' . esc_url( $selfie_view ) . '" target="_blank" rel="noopener"><strong>Voir la photo en direct</strong></a> <small style="color:#646970;">(à comparer avec la pièce)</small>';
+				} else {
+					echo '<br><span style="color:#b32d2e;">pas de photo en direct</span>';
+				}
 				echo '</td>';
 				if ( ! empty( $contrat['accepte'] ) ) {
 					echo '<td style="font-size:12px;">✅ Signé<br>' . esc_html( $contrat['signature'] ?? '' ) . '<br><small>' . esc_html( $contrat['date'] ?? '' ) . ' · IP ' . esc_html( $contrat['ip'] ?? '' ) . '</small></td>';
@@ -534,10 +574,12 @@ if ( ! function_exists( 'ag_kyc_cleanup_run' ) ) {
 		$changed = false;
 		$limit = AG_KYC_RETENTION_DAYS * DAY_IN_SECONDS;
 		foreach ( $list as $k => $a ) {
-			if ( ! empty( $a['kyc_file'] ) && ! empty( $a['kyc_ts'] ) && ( time() - (int) $a['kyc_ts'] ) > $limit ) {
-				@unlink( ag_kyc_dir() . '/' . basename( $a['kyc_file'] ) );
-				$list[ $k ]['kyc_file']   = '';
-				$list[ $k ]['kyc_purged'] = current_time( 'd/m/Y' );
+			if ( ! empty( $a['kyc_ts'] ) && ( time() - (int) $a['kyc_ts'] ) > $limit && ( ! empty( $a['kyc_file'] ) || ! empty( $a['selfie_file'] ) ) ) {
+				if ( ! empty( $a['kyc_file'] ) )    @unlink( ag_kyc_dir() . '/' . basename( $a['kyc_file'] ) );
+				if ( ! empty( $a['selfie_file'] ) ) @unlink( ag_kyc_dir() . '/' . basename( $a['selfie_file'] ) );
+				$list[ $k ]['kyc_file']    = '';
+				$list[ $k ]['selfie_file'] = '';
+				$list[ $k ]['kyc_purged']  = current_time( 'd/m/Y' );
 				$changed = true;
 			}
 		}

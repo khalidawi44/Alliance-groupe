@@ -193,6 +193,54 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
                         <input type="file" id="amb-id" name="id_document" accept="image/jpeg,image/png,application/pdf" required>
                         <small style="display:block;color:var(--color-text-muted);margin-top:6px;">Carte d'identité, passeport ou titre de séjour (JPG, PNG ou PDF, 5 Mo max). Stockée de façon sécurisée, consultée uniquement pour vérifier ton identité.</small>
                     </div>
+                    <div class="ag-form__group">
+                        <label>Photo en direct (selfie) — obligatoire *</label>
+                        <small style="display:block;color:var(--color-text-muted);margin:0 0 10px;">Prends-toi en photo <strong>maintenant</strong>. On la compare à ta pièce d'identité pour confirmer que c'est bien toi. Stockée de façon sécurisée, supprimée automatiquement sous 30 jours.</small>
+                        <div id="ag-selfie" style="display:flex;flex-direction:column;gap:10px;align-items:flex-start;">
+                            <video id="ag-selfie-video" autoplay playsinline muted style="display:none;width:100%;max-width:280px;border-radius:12px;background:#000;"></video>
+                            <canvas id="ag-selfie-canvas" style="display:none;"></canvas>
+                            <img id="ag-selfie-preview" alt="" style="display:none;width:100%;max-width:280px;border-radius:12px;">
+                            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                                <button type="button" id="ag-selfie-start" class="ag-btn-outline">📷 Activer la caméra</button>
+                                <button type="button" id="ag-selfie-shot" class="ag-btn-gold" style="display:none;">📸 Prendre la photo</button>
+                                <button type="button" id="ag-selfie-retry" class="ag-btn-outline" style="display:none;">↺ Reprendre</button>
+                            </div>
+                            <input type="hidden" name="selfie_data" id="ag-selfie-data" value="">
+                            <p id="ag-selfie-fallback" style="display:none;color:var(--color-text-muted);font-size:.9rem;">Caméra indisponible ? Prends une photo avec ton téléphone : <input type="file" name="selfie_file" accept="image/*" capture="user"></p>
+                        </div>
+                    </div>
+                    <script>
+                    (function(){
+                        var startB=document.getElementById('ag-selfie-start'), shotB=document.getElementById('ag-selfie-shot'),
+                            retryB=document.getElementById('ag-selfie-retry'), video=document.getElementById('ag-selfie-video'),
+                            canvas=document.getElementById('ag-selfie-canvas'), prev=document.getElementById('ag-selfie-preview'),
+                            data=document.getElementById('ag-selfie-data'), fb=document.getElementById('ag-selfie-fallback');
+                        if(!startB) return;
+                        var stream=null;
+                        function stop(){ if(stream){ stream.getTracks().forEach(function(t){t.stop();}); stream=null; } }
+                        startB.addEventListener('click',function(){
+                            if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ fb.style.display='block'; startB.style.display='none'; return; }
+                            navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false}).then(function(s){
+                                stream=s; video.srcObject=s; video.style.display='block'; shotB.style.display='inline-block'; startB.style.display='none';
+                            }).catch(function(){ fb.style.display='block'; startB.style.display='none'; });
+                        });
+                        shotB.addEventListener('click',function(){
+                            var w=video.videoWidth||640, h=video.videoHeight||480;
+                            canvas.width=w; canvas.height=h; canvas.getContext('2d').drawImage(video,0,0,w,h);
+                            var url=canvas.toDataURL('image/jpeg',0.85);
+                            data.value=url; prev.src=url; prev.style.display='block';
+                            video.style.display='none'; shotB.style.display='none'; retryB.style.display='inline-block'; stop();
+                        });
+                        retryB.addEventListener('click',function(){
+                            data.value=''; prev.style.display='none'; retryB.style.display='none'; startB.style.display='inline-block';
+                        });
+                        var form=startB.closest('form');
+                        if(form) form.addEventListener('submit',function(e){
+                            var hasFile=fb && fb.querySelector('input[type=file]') && fb.querySelector('input[type=file]').files.length>0;
+                            if(!data.value && !hasFile){ e.preventDefault(); alert('Merci de prendre ta photo en direct (selfie) avant d\'envoyer.'); }
+                        });
+                    })();
+                    </script>
                     <div class="ag-form__row">
                         <div class="ag-form__group">
                             <label for="amb-payout">Moyen de paiement</label>
