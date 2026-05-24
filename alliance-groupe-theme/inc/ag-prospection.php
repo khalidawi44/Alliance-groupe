@@ -1436,6 +1436,11 @@ add_action( 'admin_post_ag_push_test', function () {
 	$ok = ag_push( '✅ Test interne Alliance Groupe', 'Si tu lis ça, les alertes équipe marchent !' );
 	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-notify', 'test' => $ok ? 1 : 0 ), admin_url( 'options-general.php' ) ) ); exit;
 } );
+add_action( 'admin_post_ag_sms_test', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_sms_test' ) ) wp_die( 'no' );
+	$ok = function_exists( 'ag_sms' ) && ag_sms( 'Test SMS Alliance Groupe : si tu lis ce SMS, tes alertes (inscriptions, messages, devis) fonctionnent !' );
+	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-notify', 'smstest' => $ok ? 1 : 0 ), admin_url( 'options-general.php' ) ) ); exit;
+} );
 add_action( 'admin_post_ag_push_clients', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_push_clients' ) ) wp_die( 'no' );
 	$msg = sanitize_textarea_field( wp_unslash( $_POST['msg'] ?? '' ) );
@@ -1471,6 +1476,9 @@ if ( ! function_exists( 'ag_notify_render' ) ) {
 			<p style="max-width:780px;color:#50575e;">Reçois une <strong>notification instantanée</strong> dès qu'un prospect répond (chat), passe « intéressé », ou qu'une vente tombe. Choisis <strong>WhatsApp</strong> et/ou <strong>Telegram</strong>.</p>
 			<?php if ( isset( $_GET['test'] ) ) : ?>
 				<div class="notice notice-<?php echo $_GET['test'] ? 'success' : 'error'; ?>"><p><?php echo $_GET['test'] ? 'Test envoyé ✅ Regarde ton téléphone.' : 'Échec : vérifie tes identifiants.'; ?></p></div>
+			<?php endif; ?>
+			<?php if ( isset( $_GET['smstest'] ) ) : ?>
+				<div class="notice notice-<?php echo $_GET['smstest'] ? 'success' : 'error'; ?>"><p><?php echo $_GET['smstest'] ? '📩 SMS envoyé ✅ Regarde ton téléphone (numéro Free).' : '❌ SMS non envoyé : vérifie l\'identifiant + la clé Free (ou le webhook).'; ?></p></div>
 			<?php endif; ?>
 			<div style="max-width:780px;margin:16px 0;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #25D366;">
 				<strong>📲 Option A — WhatsApp (sur TON numéro, gratuit via CallMeBot) :</strong>
@@ -1557,6 +1565,13 @@ if ( ! function_exists( 'ag_notify_render' ) ) {
 				<input type="hidden" name="action" value="ag_push_test">
 				<?php wp_nonce_field( 'ag_push_test', '_n' ); ?>
 				<?php submit_button( '📲 Test (canal interne)', 'secondary', 'submit', false ); ?>
+			</form>
+			<?php endif; ?>
+			<?php if ( ( get_option( 'ag_sms_free_user' ) && get_option( 'ag_sms_free_key' ) ) || get_option( 'ag_sms_webhook' ) ) : ?>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;">
+				<input type="hidden" name="action" value="ag_sms_test">
+				<?php wp_nonce_field( 'ag_sms_test', '_n' ); ?>
+				<?php submit_button( '📩 Test SMS', 'primary', 'submit', false ); ?>
 			</form>
 			<?php endif; ?>
 			<?php if ( ag_tg_cfg( 'token' ) ) : ?>
