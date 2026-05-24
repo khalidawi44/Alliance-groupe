@@ -39,9 +39,10 @@ $ag_envoye = isset( $_GET['envoye'] ) && '1' === $_GET['envoye'];
 			<div class="ag-sm-grid">
 				<div class="ag-sm-card ag-anim" data-anim="card"><span class="ag-sm-card__ic">✦</span><h3>Premium</h3><p class="ag-sm-price">dès 2 500 €</p><p>Vitrine haut de gamme, design 100% unique, animations soignées, SEO avancé.</p></div>
 				<div class="ag-sm-card ag-anim" data-anim="card"><span class="ag-sm-card__ic">🛒</span><h3>Avancé</h3><p class="ag-sm-price">dès 5 000 €</p><p>E-commerce, réservation, espace membre, intégrations &amp; automatisations.</p></div>
-				<div class="ag-sm-card ag-anim" data-anim="card"><span class="ag-sm-card__ic">🚀</span><h3>Plateforme</h3><p class="ag-sm-price">10 000 €+</p><p>Application web, fonctionnalités complexes, IA, sur-mesure complet de A à Z.</p></div>
+				<div class="ag-sm-card ag-anim" data-anim="card"><span class="ag-sm-card__ic">🚀</span><h3>Plateforme</h3><p class="ag-sm-price">10 000 €+</p><p>Application web, fonctionnalités complexes, IA, sur-mesure complet de A à Z — <strong>système de prospection inclus</strong>.</p></div>
 			</div>
 			<p style="text-align:center;color:var(--color-text-soft);margin-top:18px;font-size:.92rem;">💳 Paiement échelonné possible · devis gratuit · accompagnement de A à Z.</p>
+			<p style="text-align:center;margin-top:8px;"><a href="<?php echo esc_url( home_url( '/systeme-prospection' ) ); ?>" style="color:var(--color-gold);font-weight:700;">🤖 Découvrir notre Système de prospection (en option ou à part) →</a></p>
 		</div>
 	</section>
 
