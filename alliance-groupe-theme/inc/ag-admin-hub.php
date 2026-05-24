@@ -371,3 +371,84 @@ add_action( 'admin_post_ag_client_send_now', function () {
 	wp_safe_redirect( admin_url( 'admin.php?page=ag-hub&ag_auto=' . ( $ok ? 'sent_ok' : 'sent_err' ) ) );
 	exit;
 }, 1 );
+
+/* ── Tableau de bord WordPress : widget "Quoi de neuf" en page d'accueil ── */
+add_action( 'wp_dashboard_setup', function () {
+	if ( ! current_user_can( 'manage_options' ) ) return;
+	// Déblaye les widgets WordPress par défaut (place nette pour notre résumé).
+	$boxes = array( 'dashboard_primary', 'dashboard_quick_press', 'dashboard_incoming_links', 'dashboard_plugins', 'dashboard_recent_drafts', 'dashboard_recent_comments', 'dashboard_activity', 'dashboard_site_health', 'dashboard_php_nag' );
+	foreach ( $boxes as $b ) { remove_meta_box( $b, 'dashboard', 'normal' ); remove_meta_box( $b, 'dashboard', 'side' ); }
+	wp_add_dashboard_widget( 'ag_dash_news', '🔔 Quoi de neuf — Alliance Groupe', 'ag_dashboard_news_render' );
+	// Notre widget tout en haut.
+	global $wp_meta_boxes;
+	if ( isset( $wp_meta_boxes['dashboard']['normal']['core']['ag_dash_news'] ) ) {
+		$ours = array( 'ag_dash_news' => $wp_meta_boxes['dashboard']['normal']['core']['ag_dash_news'] );
+		unset( $wp_meta_boxes['dashboard']['normal']['core']['ag_dash_news'] );
+		$wp_meta_boxes['dashboard']['normal']['core'] = array_merge( $ours, $wp_meta_boxes['dashboard']['normal']['core'] );
+	}
+} );
+
+if ( ! function_exists( 'ag_dashboard_news_render' ) ) {
+	function ag_dashboard_news_render() {
+		$uid   = get_current_user_id();
+		$now   = time();
+		// "Depuis ta dernière visite" : on avance la référence après 30 min d'absence (= nouvelle session).
+		$seen  = (int) get_user_meta( $uid, 'ag_dash_seen', true );
+		$touch = (int) get_user_meta( $uid, 'ag_dash_touch', true );
+		if ( $touch && ( $now - $touch ) > 1800 ) { $seen = $touch; update_user_meta( $uid, 'ag_dash_seen', $seen ); }
+		update_user_meta( $uid, 'ag_dash_touch', $now );
+
+		$acts = array_reverse( (array) get_option( 'ag_activity', array() ) );
+		$new  = 0; foreach ( $acts as $a ) { if ( (int) ( $a['ts'] ?? 0 ) > $seen ) $new++; }
+
+		// Chiffres à traiter.
+		$prospects = (array) get_option( 'ag_prospects', array() );
+		$nb_contacter = 0; $nb_relance = 0;
+		foreach ( $prospects as $p ) {
+			if ( ( $p['status'] ?? 'nouveau' ) === 'nouveau' ) $nb_contacter++;
+			if ( function_exists( 'ag_prospect_relance_due' ) && ag_prospect_relance_due( $p ) ) $nb_relance++;
+		}
+		$nb_leads = count( (array) get_option( 'ag_leads', array() ) );
+		$nb_devis = count( (array) get_option( 'ag_sur_mesure_requests', array() ) );
+		$ventes = (array) get_option( 'ag_ambassadeur_ventes', array() ); $nb_valider = 0;
+		foreach ( $ventes as $v ) { if ( ( $v['statut'] ?? '' ) === 'declaree' ) $nb_valider++; }
+		$adm = admin_url( 'admin.php?page=' );
+
+		echo '<p style="font-size:1.05rem;margin:0 0 10px;">';
+		if ( $new ) echo '<strong style="background:#d63638;color:#fff;border-radius:100px;padding:2px 12px;">' . (int) $new . ' nouveauté' . ( $new > 1 ? 's' : '' ) . '</strong> depuis ta dernière visite.';
+		else echo '<span style="color:#646970;">Rien de neuf depuis ta dernière visite. 👍</span>';
+		echo '</p>';
+
+		// Tuiles "à traiter".
+		$tile = function ( $emoji, $n, $label, $url, $hot ) {
+			$bg = ( $hot && $n ) ? '#fff4f4' : '#f6f7f7'; $bd = ( $hot && $n ) ? '#f0b4b4' : '#dcdcde';
+			return '<a href="' . esc_url( $url ) . '" style="text-decoration:none;flex:1;min-width:120px;display:block;background:' . $bg . ';border:1px solid ' . $bd . ';border-radius:10px;padding:10px 12px;">'
+				. '<div style="font-size:1.1rem;">' . esc_html( $emoji ) . '</div>'
+				. '<div style="font-size:1.5rem;font-weight:800;color:#1d2327;line-height:1.1;">' . (int) $n . '</div>'
+				. '<div style="color:#646970;font-size:.78rem;font-weight:600;">' . esc_html( $label ) . '</div></a>';
+		};
+		echo '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;">';
+		echo $tile( '🎯', $nb_contacter, 'À contacter', $adm . 'ag-prospects', true );
+		echo $tile( '🔁', $nb_relance, 'À relancer (7j+)', add_query_arg( 'fstatus', 'relance7', $adm . 'ag-prospects' ), true );
+		echo $tile( '💬', $nb_leads, 'Leads du chat', $adm . 'ag-prospects', true );
+		echo $tile( '✦', $nb_devis, 'Devis sur-mesure', $adm . 'ag-sur-mesure', false );
+		echo $tile( '💰', $nb_valider, 'Ventes à valider', $adm . 'ag-ambassadeurs', true );
+		echo '</div>';
+
+		// Le fil.
+		if ( empty( $acts ) ) {
+			echo '<p style="color:#646970;">Aucune activité pour l\'instant. Dès qu\'un prospect répond, qu\'un message arrive, qu\'un devis ou un ambassadeur tombe, ça s\'affiche ici.</p>';
+		} else {
+			echo '<ul style="margin:0;padding:0;list-style:none;line-height:1.55;max-height:300px;overflow:auto;">';
+			foreach ( array_slice( $acts, 0, 30 ) as $a ) {
+				$is_new = (int) ( $a['ts'] ?? 0 ) > $seen;
+				echo '<li style="padding:6px 8px;border-bottom:1px solid #f0f0f1;' . ( $is_new ? 'background:#fff6f6;' : '' ) . '">'
+					. ( $is_new ? '<strong style="color:#d63638;">● </strong>' : '' )
+					. esc_html( $a['t'] ?? '' )
+					. ' <span style="color:#646970;font-size:.82em;">— ' . esc_html( ! empty( $a['ts'] ) ? wp_date( 'd/m H:i', (int) $a['ts'] ) : '' ) . '</span></li>';
+			}
+			echo '</ul>';
+		}
+		echo '<p style="margin:12px 0 0;"><a href="' . esc_url( $adm . 'ag-prospects' ) . '" class="button button-primary">Ouvrir la Prospection →</a> <a href="' . esc_url( admin_url( 'admin.php?page=ag-hub' ) ) . '" class="button">🦁 Centre de contrôle</a></p>';
+	}
+}
