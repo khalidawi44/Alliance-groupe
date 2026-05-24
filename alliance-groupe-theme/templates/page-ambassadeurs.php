@@ -175,6 +175,7 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
                     <div class="ag-form__row">
                         <div class="ag-form__group"><label for="amb-phone">Téléphone</label><input type="tel" id="amb-phone" name="phone" placeholder="06 ..."></div>
                         <div class="ag-form__group"><label for="amb-city">Ville</label><input type="text" id="amb-city" name="city" placeholder="Ta ville"></div>
+                        <div class="ag-form__group"><label for="amb-cp">Code postal</label><input type="text" id="amb-cp" name="cp" inputmode="numeric" pattern="[0-9 ]*" placeholder="ex : 44000"><small style="display:block;color:var(--color-text-muted);margin-top:6px;">Sert à t'attribuer ta zone de prospection automatiquement.</small></div>
                     </div>
                     <div class="ag-form__row">
                         <div class="ag-form__group"><label for="amb-birth">Date de naissance *</label><input type="date" id="amb-birth" name="birthdate" required></div>
@@ -211,6 +212,8 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
                         <a href="<?php echo esc_url( home_url( '/contrat-ambassadeur' ) ); ?>" target="_blank" rel="noopener">Lire le contrat →</a></p>
                         <label class="ag-amb__check"><input type="checkbox" name="accept_contract" value="1" required> <span>J'ai lu et j'accepte le contrat d'apporteur d'affaires Alliance Groupe, et je certifie que mon identité est exacte. *</span></label>
                         <label class="ag-amb__check"><input type="checkbox" name="rgpd_consent" value="1" required> <span>J'autorise Alliance Groupe à traiter et conserver ma pièce d'identité dans le seul but de vérifier mon identité. Elle est stockée de façon sécurisée et <strong>automatiquement supprimée sous 30 jours</strong>. Je peux demander sa suppression à tout moment à contact@alliancegroupe-inc.com. *</span></label>
+                        <?php $ag_grp = function_exists( 'ag_tg_cfg' ) ? ag_tg_cfg( 'group_link' ) : ''; ?>
+                        <label class="ag-amb__check"><input type="checkbox" name="telegram_join" value="1" required> <span>Je m'engage à rejoindre le <strong>groupe Telegram des ambassadeurs</strong> (obligatoire — entraide, annonces &amp; prospects de ma zone).<?php if ( $ag_grp ) : ?> <a href="<?php echo esc_url( $ag_grp ); ?>" target="_blank" rel="noopener">Ouvrir le groupe →</a><?php endif; ?> Le lien t'est aussi envoyé par email. *</span></label>
                         <div class="ag-form__group"><label for="amb-sign">Signature — recopie ton nom et prénom complets *</label><input type="text" id="amb-sign" name="signature" required placeholder="Prénom NOM"></div>
                     </div>
 

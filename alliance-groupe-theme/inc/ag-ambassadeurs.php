@@ -113,6 +113,8 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 		$signature = sanitize_text_field( $_POST['signature'] ?? '' );
 		$accept    = ! empty( $_POST['accept_contract'] );
 		$rgpd      = ! empty( $_POST['rgpd_consent'] );
+		$cp        = sanitize_text_field( $_POST['cp'] ?? '' );
+		$tg_join   = ! empty( $_POST['telegram_join'] );
 
 		if ( empty( $name ) || ! is_email( $email ) || empty( $birthdate ) || empty( $address ) ) {
 			wp_die( 'Merci d\'indiquer ton nom, email, date de naissance et adresse (identité requise).', 'Champs manquants', array( 'response' => 400, 'back_link' => true ) );
@@ -122,6 +124,9 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 		}
 		if ( ! $rgpd ) {
 			wp_die( 'Tu dois donner ton consentement RGPD pour le traitement de ta pièce d\'identité.', 'Consentement requis', array( 'response' => 400, 'back_link' => true ) );
+		}
+		if ( ! $tg_join ) {
+			wp_die( 'Pour rejoindre le programme, tu dois t\'engager à rejoindre le groupe Telegram des ambassadeurs (entraide, annonces, prospects).', 'Telegram requis', array( 'response' => 400, 'back_link' => true ) );
 		}
 
 		// KYC : piece d'identite obligatoire, stockee de facon protegee
@@ -152,6 +157,7 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 			'email'      => $email,
 			'phone'      => $phone,
 			'city'       => $city,
+			'cp'         => $cp,
 			'birthdate'  => $birthdate,
 			'address'    => $address,
 			'payout'     => $payout,
@@ -174,13 +180,33 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 		);
 		update_option( 'ag_ambassadeurs', $list );
 
+		// Zone de prospection auto-attribuée selon la ville / le code postal déclaré.
+		$assigned_dept = function_exists( 'ag_dept_from_location' ) ? ag_dept_from_location( $city, $cp, $address ) : '';
+		if ( $assigned_dept && function_exists( 'ag_dept_names' ) && isset( ag_dept_names()[ $assigned_dept ] )
+			&& function_exists( 'ag_zone_add_owner' ) && function_exists( 'ag_zone_of_owner' )
+			&& empty( ag_zone_of_owner( $email ) ) ) {
+			ag_zone_add_owner( $assigned_dept, $email, $name );
+		}
+
 		// Crée le compte ambassadeur pour son espace réservé (connexion possible,
 		// déclaration de ventes seulement une fois validé par l'admin).
 		do_action( 'ag_ambassadeur_registered', $email, $name );
 
+		// Numéro -> métadonnée (1 numéro = 1 ambassadeur) si fourni et non déjà pris.
+		if ( '' !== $phone ) {
+			$u_new = get_user_by( 'email', $email );
+			if ( $u_new ) {
+				$pn = preg_replace( '/[^0-9+]/', '', $phone );
+				if ( strlen( preg_replace( '/[^0-9]/', '', $pn ) ) >= 9 ) {
+					$dupe = get_users( array( 'meta_key' => 'ag_amb_phone', 'meta_value' => $pn, 'exclude' => array( $u_new->ID ), 'fields' => 'ID', 'number' => 1 ) );
+					if ( ! $dupe ) update_user_meta( $u_new->ID, 'ag_amb_phone', $pn );
+				}
+			}
+		}
+
 		// Notif admin
 		$body  = "Nouvelle inscription Programme Ambassadeurs\n\n";
-		$body .= "Nom : $name\nEmail : $email\nTel : $phone\nVille : $city\n";
+		$body .= "Nom : $name\nEmail : $email\nTel : $phone\nVille : $city\nZone : " . ( $assigned_dept ?: 'non détectée' ) . "\n";
 		$body .= "Paiement : $payout ($payout_id)\n\nMotivation :\n$motiv\n\n";
 		$body .= 'Date : ' . current_time( 'd/m/Y H:i' );
 		wp_mail( 'contact@alliancegroupe-inc.com', 'Nouvel ambassadeur : ' . $name, $body );

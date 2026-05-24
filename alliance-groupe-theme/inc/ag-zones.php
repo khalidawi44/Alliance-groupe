@@ -160,6 +160,117 @@ if ( ! function_exists( 'ag_dept_names' ) ) {
 		);
 	}
 }
+if ( ! function_exists( 'ag_dept_from_city' ) ) {
+	/** Devine le département depuis un nom de ville (grandes communes françaises). */
+	function ag_dept_from_city( $city ) {
+		$n = function_exists( 'remove_accents' ) ? remove_accents( (string) $city ) : (string) $city;
+		$n = preg_replace( '/[^a-z]/', '', strtolower( $n ) );
+		if ( '' === $n ) return '';
+		$map = array(
+			'paris' => '75',
+			'marseille' => '13', 'aixenprovence' => '13', 'aubagne' => '13', 'martigues' => '13', 'arles' => '13', 'salondeprovence' => '13',
+			'lyon' => '69', 'villeurbanne' => '69', 'venissieux' => '69',
+			'toulouse' => '31', 'colomiers' => '31',
+			'nice' => '06', 'cannes' => '06', 'antibes' => '06', 'grasse' => '06', 'cagnessurmer' => '06',
+			'nantes' => '44', 'saintnazaire' => '44', 'saintherblain' => '44', 'reze' => '44',
+			'montpellier' => '34', 'beziers' => '34', 'sete' => '34',
+			'strasbourg' => '67', 'haguenau' => '67',
+			'bordeaux' => '33', 'merignac' => '33', 'pessac' => '33', 'talence' => '33', 'arcachon' => '33',
+			'lille' => '59', 'roubaix' => '59', 'tourcoing' => '59', 'dunkerque' => '59', 'villeneuvedascq' => '59', 'valenciennes' => '59',
+			'rennes' => '35', 'saintmalo' => '35', 'fougeres' => '35',
+			'reims' => '51', 'chalonsenchampagne' => '51', 'epernay' => '51',
+			'saintetienne' => '42', 'roanne' => '42',
+			'toulon' => '83', 'laseynesurmer' => '83', 'hyeres' => '83', 'frejus' => '83', 'draguignan' => '83',
+			'grenoble' => '38', 'echirolles' => '38', 'vienne' => '38',
+			'dijon' => '21', 'beaune' => '21',
+			'angers' => '49', 'cholet' => '49', 'saumur' => '49',
+			'nimes' => '30', 'ales' => '30',
+			'clermontferrand' => '63', 'thiers' => '63',
+			'lehavre' => '76', 'rouen' => '76', 'dieppe' => '76', 'sottevillelesrouen' => '76',
+			'argenteuil' => '95', 'cergy' => '95', 'pontoise' => '95', 'sarcelles' => '95',
+			'montreuil' => '93', 'aubervilliers' => '93', 'bobigny' => '93', 'drancy' => '93', 'pantin' => '93', 'saintdenis' => '93', 'aulnaysousbois' => '93', 'noisylegrand' => '93',
+			'nanterre' => '92', 'boulognebillancourt' => '92', 'courbevoie' => '92', 'colombes' => '92', 'asnieressurseine' => '92', 'antony' => '92', 'levalloisperret' => '92', 'issylesmoulineaux' => '92', 'rueilmalmaison' => '92', 'neuillysurseine' => '92', 'clichy' => '92', 'meudon' => '92', 'clamart' => '92',
+			'creteil' => '94', 'vitrysurseine' => '94', 'vincennes' => '94', 'ivrysurseine' => '94', 'maisonsalfort' => '94', 'champignysurmarne' => '94', 'fontenaysousbois' => '94',
+			'versailles' => '78', 'saintgermainenlaye' => '78', 'manteslajolie' => '78', 'sartrouville' => '78', 'poissy' => '78',
+			'melun' => '77', 'meaux' => '77', 'chelles' => '77',
+			'evry' => '91', 'corbeilessonnes' => '91', 'massy' => '91', 'savignysurorge' => '91', 'palaiseau' => '91',
+			'nancy' => '54', 'vandoeuvrelesnancy' => '54',
+			'metz' => '57', 'thionville' => '57',
+			'mulhouse' => '68', 'colmar' => '68',
+			'besancon' => '25', 'montbeliard' => '25',
+			'caen' => '14', 'lisieux' => '14',
+			'orleans' => '45', 'montargis' => '45',
+			'tours' => '37', 'joue' => '37',
+			'limoges' => '87',
+			'amiens' => '80', 'abbeville' => '80',
+			'perpignan' => '66',
+			'brest' => '29', 'quimper' => '29', 'morlaix' => '29',
+			'lorient' => '56', 'vannes' => '56', 'lanester' => '56',
+			'pau' => '64', 'bayonne' => '64', 'biarritz' => '64', 'anglet' => '64',
+			'bourges' => '18', 'vierzon' => '18',
+			'avignon' => '84', 'carpentras' => '84', 'orange' => '84',
+			'annecy' => '74', 'annemasse' => '74', 'thononlesbains' => '74', 'chamonix' => '74',
+			'chambery' => '73', 'aixlesbains' => '73',
+			'valence' => '26', 'montelimar' => '26',
+			'troyes' => '10',
+			'poitiers' => '86', 'chatellerault' => '86',
+			'larochelle' => '17', 'rochefort' => '17', 'saintes' => '17',
+			'angouleme' => '16', 'cognac' => '16',
+			'niort' => '79',
+			'chartres' => '28', 'dreux' => '28',
+			'blois' => '41', 'vendome' => '41',
+			'lemans' => '72',
+			'laval' => '53',
+			'cherbourg' => '50', 'saintlo' => '50',
+			'evreux' => '27', 'vernon' => '27',
+			'beauvais' => '60', 'compiegne' => '60', 'creil' => '60',
+			'arras' => '62', 'calais' => '62', 'boulognesurmer' => '62', 'lens' => '62', 'bethune' => '62',
+			'charlevillemezieres' => '08', 'sedan' => '08',
+			'belfort' => '90',
+			'chaumont' => '52', 'saintdizier' => '52',
+			'epinal' => '88',
+			'barleduc' => '55', 'verdun' => '55',
+			'macon' => '71', 'chalonsursaone' => '71',
+			'nevers' => '58',
+			'auxerre' => '89', 'sens' => '89',
+			'moulins' => '03', 'montlucon' => '03', 'vichy' => '03',
+			'aurillac' => '15',
+			'lepuyenvelay' => '43',
+			'mende' => '48',
+			'rodez' => '12', 'millau' => '12',
+			'albi' => '81', 'castres' => '81',
+			'montauban' => '82',
+			'cahors' => '46',
+			'agen' => '47',
+			'montdemarsan' => '40', 'dax' => '40',
+			'tarbes' => '65', 'lourdes' => '65',
+			'foix' => '09', 'pamiers' => '09',
+			'carcassonne' => '11', 'narbonne' => '11',
+			'gap' => '05',
+			'dignelesbains' => '04', 'manosque' => '04',
+			'privas' => '07', 'aubenas' => '07',
+			'bourgenbresse' => '01', 'oyonnax' => '01',
+			'saintbrieuc' => '22', 'lannion' => '22', 'dinan' => '22',
+			'larochesuryon' => '85', 'lessablesdolonne' => '85', 'challans' => '85',
+			'ajaccio' => '20', 'bastia' => '20',
+			'gueret' => '23',
+			'tulle' => '19', 'brive' => '19', 'brivelagaillarde' => '19',
+			'perigueux' => '24', 'bergerac' => '24',
+			'auch' => '32',
+		);
+		return $map[ $n ] ?? '';
+	}
+}
+if ( ! function_exists( 'ag_dept_from_location' ) ) {
+	/** Département à partir du code postal (prioritaire), sinon adresse, sinon nom de ville. */
+	function ag_dept_from_location( $city = '', $cp = '', $address = '' ) {
+		$cpd = preg_replace( '/[^0-9]/', '', (string) $cp );
+		if ( strlen( $cpd ) >= 2 ) { $d = substr( $cpd, 0, 2 ); return ( '97' === $d || '98' === $d ) ? '97' : $d; }
+		$d = ag_dept_from_text( $address ); if ( '' !== $d ) return $d; // code postal présent dans l'adresse
+		$d = ag_dept_from_text( $city );    if ( '' !== $d ) return $d;
+		return ag_dept_from_city( $city );
+	}
+}
 
 /* ── Réassignation en masse des prospects existants (rotation équitable) ─ */
 if ( ! function_exists( 'ag_zones_reassign_all' ) ) {

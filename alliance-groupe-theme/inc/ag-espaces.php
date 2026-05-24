@@ -168,6 +168,9 @@ if ( ! function_exists( 'ag_send_member_welcome' ) ) {
 		$name = $user->display_name ? $user->display_name : $user->user_login;
 
 		if ( 'ambassadeur' === $kind ) {
+			$amb_zones = function_exists( 'ag_zone_of_owner' ) ? ag_zone_of_owner( $user->user_email ) : array();
+			$dn        = function_exists( 'ag_dept_names' ) ? ag_dept_names() : array();
+			$zone_html = ! empty( $amb_zones ) ? '<p>📍 <strong>Ta zone de prospection : ' . esc_html( $amb_zones[0] . ( isset( $dn[ $amb_zones[0] ] ) ? ' — ' . $dn[ $amb_zones[0] ] : '' ) ) . '</strong>. Les prospects de cette zone te sont envoyés <strong>automatiquement</strong>. Tu peux en changer dans ton espace (1 seule zone par ambassadeur).</p>' : '';
 			$heading = 'Bienvenue dans l\'équipe commerciale 🤝';
 			$inner   = '<p>Bonjour ' . esc_html( $name ) . ',</p>'
 				. '<p>Ton inscription au <strong>programme commercial Alliance Groupe</strong> est enregistrée. Tu touches <strong style="color:#D4B45C;">10 % sur chaque vente</strong> que tu réalises.</p>'
@@ -175,7 +178,8 @@ if ( ! function_exists( 'ag_send_member_welcome' ) ) {
 				. ag_email_button( 'Définir mon mot de passe', $url )
 				. '<p style="color:#9a9aa5;font-size:13px;">Si le bouton ne marche pas, copie ce lien :<br><span style="color:#cfc7b8;word-break:break-all;">' . esc_url( $url ) . '</span></p>'
 				. '<p>📚 <strong>Découvre ton programme</strong> : comment vendre des sites et recruter ton équipe, étape par étape — <a href="' . esc_url( home_url( '/programme-ambassadeur' ) ) . '" style="color:#D4B45C;">ouvre le guide</a>.</p>'
-				. ( ( function_exists( 'ag_tg_cfg' ) && ag_tg_cfg( 'group_link' ) ) ? '<p>💬 <strong>Rejoins le groupe Telegram de l\'équipe</strong> (annonces, entraide, classement) :</p>' . ag_email_button( 'Rejoindre le groupe équipe', ag_tg_cfg( 'group_link' ) ) : '' )
+				. ( ( function_exists( 'ag_tg_cfg' ) && ag_tg_cfg( 'group_link' ) ) ? '<p><strong>Étape 2 (obligatoire) :</strong> rejoins le <strong>groupe Telegram des ambassadeurs</strong> (annonces, entraide, prospects) :</p>' . ag_email_button( 'Rejoindre le groupe (obligatoire)', ag_tg_cfg( 'group_link' ) ) : '<p><strong>Étape 2 (obligatoire) :</strong> rejoins le groupe Telegram des ambassadeurs — le lien d\'invitation arrive très vite.</p>' )
+				. $zone_html
 				. '<p style="color:#9a9aa5;font-size:13px;">La déclaration de ventes s\'active une fois ton identité validée. On te prévient.</p>';
 		} else {
 			$heading = 'Bienvenue chez Alliance Groupe 👋';
