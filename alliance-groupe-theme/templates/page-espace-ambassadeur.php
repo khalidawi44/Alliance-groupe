@@ -296,6 +296,12 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 	$ag_phone = function_exists( 'ag_amb_phone' ) ? ag_amb_phone( get_current_user_id() ) : '';
 	// Département suggéré d'après la ville/code postal déclarés à l'inscription.
 	$ag_sugg = ( ! $ag_myzones && function_exists( 'ag_dept_from_location' ) && $rec ) ? ag_dept_from_location( $rec['city'] ?? '', $rec['cp'] ?? '', $rec['address'] ?? '' ) : '';
+	$ag_quota  = function_exists( 'ag_zone_quota' ) ? ag_zone_quota( $email ) : 1;
+	$ag_under  = count( $ag_myzones ) < $ag_quota; // peut encore prendre une zone
+	$ag_zprice = function_exists( 'ag_zone_price' ) ? ag_zone_price() : 49;
+	$ag_zurl   = get_option( 'ag_zone_paypal_url', '' );
+	$ag_dn     = function_exists( 'ag_dept_names' ) ? ag_dept_names() : array();
+	$ag_post   = admin_url( 'admin-post.php' );
 	?>
 	<?php if ( isset( $ob_step ) && 4 === $ob_step ) : ?>
 	<section class="ag-section ag-section--onyx" id="zone">
@@ -311,29 +317,59 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 			<?php elseif ( 'changed' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">✅ Tu as changé de zone.</p>
 			<?php elseif ( 'mine' === $ag_zfeed ) : ?><p style="text-align:center;color:var(--color-text-soft);">Cette zone est déjà la tienne.</p>
 			<?php elseif ( 'err' === $ag_zfeed ) : ?><p style="text-align:center;color:#d98b8b;">Département invalide. Mets 2 chiffres (ex. 33).</p>
+			<?php elseif ( 'released' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">✅ Zone libérée.</p>
+			<?php elseif ( 'quota' === $ag_zfeed ) : ?><p style="text-align:center;color:#e6b35a;font-weight:700;">Tu as atteint ton nombre de zones. Libère une zone, ou achète une zone en plus ci-dessous.</p>
 			<?php endif; ?>
 
 			<?php if ( '' === $ag_phone ) : ?>
 				<p class="ag-section__desc">Avant de prendre une zone, <strong>vérifie ton numéro de téléphone</strong> (un numéro = un ambassadeur, pas de multi-comptes).</p>
-				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-top:14px;">
+				<form method="post" action="<?php echo esc_url( $ag_post ); ?>" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-top:14px;">
 					<input type="hidden" name="action" value="ag_amb_phone_save">
 					<?php wp_nonce_field( 'ag_zone_front', '_n' ); ?>
 					<input type="tel" name="phone" placeholder="Ton numéro (ex : 0612345678)" required style="padding:10px 14px;border-radius:10px;border:1px solid rgba(212,180,92,.4);background:rgba(255,255,255,.05);color:#fff;width:240px;">
 					<button type="submit" class="ag-btn-gold">Enregistrer mon numéro →</button>
 				</form>
 			<?php else : ?>
+				<p class="ag-section__desc" style="text-align:center;">Tu peux couvrir <strong style="color:var(--color-gold);"><?php echo (int) $ag_quota; ?> zone<?php echo $ag_quota > 1 ? 's' : ''; ?></strong> (<?php echo count( $ag_myzones ); ?> utilisée<?php echo count( $ag_myzones ) > 1 ? 's' : ''; ?>). Les prospects de tes zones te sont <strong>attribués automatiquement</strong>.</p>
+
 				<?php if ( $ag_myzones ) : ?>
-					<p class="ag-section__desc">Tu couvres le département <strong style="color:var(--color-gold);"><?php echo esc_html( implode( ', ', $ag_myzones ) ); ?></strong>. Les prospects de ta zone te sont <strong>attribués automatiquement</strong>. Tu peux <strong>changer de zone</strong> ci-dessous (1 seule zone à la fois).</p>
-				<?php else : ?>
-					<p class="ag-section__desc">📱 Numéro vérifié. <strong>Prends ton département</strong> (ex. 33) — une seule zone par ambassadeur. Le robot t'enverra les prospects ; si la zone est déjà couverte, vous la <strong>partagez 50/50</strong>.<?php if ( $ag_sugg && isset( ag_dept_names()[ $ag_sugg ] ) ) : ?> <br><strong style="color:var(--color-gold);">Suggéré selon ta ville : <?php echo esc_html( $ag_sugg . ' · ' . ag_dept_names()[ $ag_sugg ] ); ?></strong> (déjà pré-rempli).<?php endif; ?></p>
+					<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0;">
+						<?php foreach ( $ag_myzones as $mz ) : ?>
+							<span style="display:inline-flex;align-items:center;gap:8px;background:rgba(212,180,92,.14);border:1px solid rgba(212,180,92,.45);border-radius:100px;padding:6px 12px;color:#fff;">
+								<strong><?php echo esc_html( $mz . ( isset( $ag_dn[ $mz ] ) ? ' · ' . $ag_dn[ $mz ] : '' ) ); ?></strong>
+								<form method="post" action="<?php echo esc_url( $ag_post ); ?>" style="margin:0;" onsubmit="return confirm('Libérer la zone <?php echo esc_attr( $mz ); ?> ? Tu ne recevras plus ses prospects.');">
+									<input type="hidden" name="action" value="ag_zone_release"><?php wp_nonce_field( 'ag_zone_front', '_n' ); ?>
+									<input type="hidden" name="dept" value="<?php echo esc_attr( $mz ); ?>">
+									<button type="submit" title="Libérer cette zone" style="background:none;border:none;color:#e88;cursor:pointer;font-weight:800;">✕</button>
+								</form>
+							</span>
+						<?php endforeach; ?>
+					</div>
 				<?php endif; ?>
-				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-top:14px;">
-					<input type="hidden" name="action" value="ag_zone_request">
-					<?php wp_nonce_field( 'ag_zone_front', '_n' ); ?>
-					<input type="text" name="dept" maxlength="3" value="<?php echo esc_attr( $ag_myzones ? '' : $ag_sugg ); ?>" placeholder="Département (ex : 33)" required style="padding:10px 14px;border-radius:10px;border:1px solid rgba(212,180,92,.4);background:rgba(255,255,255,.05);color:#fff;width:180px;">
-					<button type="submit" class="ag-btn-gold"><?php echo $ag_myzones ? 'Changer de zone →' : 'Prendre cette zone →'; ?></button>
-				</form>
-				<p style="text-align:center;color:var(--color-text-soft);font-size:.85rem;margin-top:10px;"><strong>1 seule zone</strong> par ambassadeur. Changer de zone te retire de l'ancienne. C'est gratuit, on joue collectif.</p>
+
+				<?php if ( $ag_under ) : ?>
+					<?php if ( ! $ag_myzones && $ag_sugg && isset( $ag_dn[ $ag_sugg ] ) ) : ?>
+						<p class="ag-section__desc" style="text-align:center;"><strong style="color:var(--color-gold);">Suggéré selon ta ville : <?php echo esc_html( $ag_sugg . ' · ' . $ag_dn[ $ag_sugg ] ); ?></strong> (déjà pré-rempli).</p>
+					<?php endif; ?>
+					<form method="post" action="<?php echo esc_url( $ag_post ); ?>" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-top:6px;">
+						<input type="hidden" name="action" value="ag_zone_request">
+						<?php wp_nonce_field( 'ag_zone_front', '_n' ); ?>
+						<input type="text" name="dept" maxlength="3" value="<?php echo esc_attr( $ag_myzones ? '' : $ag_sugg ); ?>" placeholder="Département (ex : 33)" required style="padding:10px 14px;border-radius:10px;border:1px solid rgba(212,180,92,.4);background:rgba(255,255,255,.05);color:#fff;width:180px;">
+						<button type="submit" class="ag-btn-gold">Prendre cette zone →</button>
+					</form>
+					<p style="text-align:center;color:var(--color-text-soft);font-size:.85rem;margin-top:10px;">Si la zone est déjà couverte, vous la <strong>partagez 50/50</strong>. On joue collectif.</p>
+				<?php else : ?>
+					<div style="max-width:520px;margin:14px auto 0;text-align:center;background:rgba(212,180,92,.1);border:1px solid rgba(212,180,92,.4);border-radius:14px;padding:18px;">
+						<p style="color:#fff;margin:0 0 6px;"><strong>Tu veux couvrir une zone de plus ?</strong></p>
+						<p style="color:var(--color-text-soft);margin:0 0 12px;">1 zone = <strong style="color:var(--color-gold);"><?php echo esc_html( number_format( $ag_zprice, 0, ',', ' ' ) ); ?> €</strong> (paiement unique). Tu peux en acheter autant que tu veux — toute la France si tu veux ! Dès le paiement, ta zone se débloque et tu la choisis ici.</p>
+						<?php if ( $ag_zurl ) : ?>
+							<a href="<?php echo esc_url( $ag_zurl ); ?>" target="_blank" rel="noopener" class="ag-btn-gold">🗺️ Acheter une zone en plus →</a>
+						<?php else : ?>
+							<p style="color:var(--color-text-soft);font-size:.85rem;">Lien d'achat bientôt disponible — contacte-nous.</p>
+						<?php endif; ?>
+						<p style="color:var(--color-text-soft);font-size:.8rem;margin:10px 0 0;">…ou libère une de tes zones ci-dessus pour en prendre une autre gratuitement.</p>
+					</div>
+				<?php endif; ?>
 			<?php endif; ?>
 		</div>
 	</section>

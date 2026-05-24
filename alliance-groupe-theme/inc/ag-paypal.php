@@ -105,6 +105,9 @@ if ( ! function_exists( 'ag_paypal_apply_payment' ) ) {
 		if ( $txn && in_array( $txn, $done, true ) ) return 'duplicate';
 		if ( $txn ) { $done[] = $txn; update_option( 'ag_paypal_processed', array_slice( $done, -500 ) ); }
 
+		// Zone supplémentaire ambassadeur (paiement unique) : +1 zone au quota, automatiquement.
+		if ( function_exists( 'ag_zone_extra_activate_by_email' ) && ag_zone_extra_activate_by_email( $email, $amount ) ) return 'zone_extra';
+
 		// Abonnement Chasseur Pro (~19 €) : débloque la recherche de l'ambassadeur, automatiquement.
 		if ( function_exists( 'ag_chasseur_activate_by_email' ) && ag_chasseur_activate_by_email( $email, $amount ) ) return 'chasseur';
 

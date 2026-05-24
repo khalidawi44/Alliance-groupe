@@ -134,6 +134,35 @@ if ( ! function_exists( 'ag_zone_of_owner' ) ) {
 		return $out;
 	}
 }
+/* ── Quota de zones : 1 gratuite + zones supplémentaires payées/accordées ── */
+if ( ! function_exists( 'ag_zone_extra' ) ) {
+	function ag_zone_extra( $uid ) { return max( 0, (int) get_user_meta( $uid, 'ag_zone_extra', true ) ); }
+}
+if ( ! function_exists( 'ag_zone_quota' ) ) {
+	/** Nombre TOTAL de zones autorisées pour un ambassadeur (1 + payées). Admin = illimité. */
+	function ag_zone_quota( $email ) {
+		$u = get_user_by( 'email', strtolower( (string) $email ) );
+		if ( ! $u ) return 1;
+		if ( user_can( $u->ID, 'manage_options' ) ) return 999;
+		return 1 + ag_zone_extra( $u->ID );
+	}
+}
+if ( ! function_exists( 'ag_zone_price' ) ) {
+	function ag_zone_price() { return (float) get_option( 'ag_zone_price', 49 ); }
+}
+if ( ! function_exists( 'ag_zone_extra_activate_by_email' ) ) {
+	/** Paiement d'une zone supplémentaire (~prix) : +1 au quota de l'ambassadeur, automatiquement. */
+	function ag_zone_extra_activate_by_email( $email, $amount ) {
+		$price = ag_zone_price();
+		if ( $price <= 0 || abs( (float) $amount - $price ) > 1.5 ) return false;
+		$u = get_user_by( 'email', trim( (string) $email ) );
+		if ( ! $u ) return false;
+		update_user_meta( $u->ID, 'ag_zone_extra', ag_zone_extra( $u->ID ) + 1 );
+		if ( function_exists( 'ag_push' ) ) ag_push( '🗺️ Zone supplémentaire achetée', ( $u->display_name ?: $email ) . ' a payé une zone en plus — il peut en prendre une de plus.' );
+		if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '🗺️ ' . ( $u->display_name ?: $email ) . ' a acheté une zone supplémentaire' );
+		return true;
+	}
+}
 if ( ! function_exists( 'ag_dept_names' ) ) {
 	function ag_dept_names() {
 		return array(
@@ -461,6 +490,8 @@ if ( ! function_exists( 'ag_zones_render' ) ) {
 			</div>
 			<?php if ( 'added' === $msg ) : ?><div class="notice notice-success is-dismissible"><p>✅ Ambassadeur ajouté à la zone.</p></div>
 			<?php elseif ( 'removed' === $msg ) : ?><div class="notice notice-success is-dismissible"><p>✅ Retiré de la zone.</p></div>
+			<?php elseif ( 'quota' === $msg ) : ?><div class="notice notice-error is-dismissible"><p>⛔ Quota atteint : cet ambassadeur a déjà son nombre de zones autorisées. Donne-lui une « zone supplémentaire » (payée/accordée) ci-dessous avant d'en ajouter une autre.</p></div>
+			<?php elseif ( 'extra' === $msg ) : ?><div class="notice notice-success is-dismissible"><p>✅ Réglage des zones supplémentaires enregistré.</p></div>
 			<?php elseif ( 0 === strpos( $msg, 'reassigned' ) ) : ?><div class="notice notice-success is-dismissible"><p>✅ <?php echo (int) substr( $msg, 11 ); ?> prospect(s) réassigné(s) à leur zone.</p></div>
 			<?php endif; ?>
 
@@ -573,6 +604,38 @@ if ( ! function_exists( 'ag_zones_render' ) ) {
 				<?php endforeach; ?>
 			</tbody></table>
 			<?php else : ?><p>Aucun ambassadeur inscrit pour l'instant.</p><?php endif; ?>
+
+			<h2 style="margin-top:28px;">🗺️ Zones supplémentaires (offre payante)</h2>
+			<p style="max-width:820px;color:#50575e;">Règle de base : <strong>1 seule zone</strong> par ambassadeur. Pour en couvrir plusieurs, il <strong>achète des zones en plus</strong> (1 zone par paiement, autant qu'il veut). Dès qu'il paie, son quota augmente <strong>automatiquement</strong> (webhook PayPal) et il choisit sa nouvelle zone dans son espace. Tu peux aussi accorder des zones à la main ci‑dessous.</p>
+			<form method="post" action="<?php echo esc_url( $post ); ?>" style="margin-bottom:14px;">
+				<input type="hidden" name="action" value="ag_zone_price_save">
+				<?php wp_nonce_field( 'ag_zone_admin', '_n' ); ?>
+				Prix d'une zone en plus : <input type="number" name="price" value="<?php echo esc_attr( ag_zone_price() ); ?>" step="1" min="0" style="width:90px;"> €
+				&nbsp; Lien PayPal : <input type="url" name="url" value="<?php echo esc_attr( get_option( 'ag_zone_paypal_url', '' ) ); ?>" placeholder="https://www.paypal.com/.../zone-49" style="width:360px;">
+				<?php submit_button( 'Enregistrer', 'secondary', 'submit', false ); ?>
+			</form>
+			<?php if ( ! empty( $amb_users ) ) : ?>
+			<table class="widefat striped" style="max-width:820px;"><thead><tr><th>Ambassadeur</th><th>Zones occupées</th><th>Quota (1 + payées)</th><th>Zones en plus</th></tr></thead><tbody>
+				<?php foreach ( $amb_users as $au ) :
+					$mz = ag_zone_of_owner( $au->user_email );
+					$ex = ag_zone_extra( $au->ID );
+				?>
+				<tr>
+					<td><strong><?php echo esc_html( $au->display_name ?: $au->user_email ); ?></strong></td>
+					<td><?php echo $mz ? esc_html( implode( ', ', $mz ) ) : '—'; ?> <strong>(<?php echo count( $mz ); ?>)</strong></td>
+					<td><?php echo (int) ( 1 + $ex ); ?></td>
+					<td>
+						<form method="post" action="<?php echo esc_url( $post ); ?>" style="margin:0;display:flex;gap:6px;align-items:center;">
+							<input type="hidden" name="action" value="ag_zone_extra_set"><?php wp_nonce_field( 'ag_zone_admin', '_n' ); ?>
+							<input type="hidden" name="uid" value="<?php echo (int) $au->ID; ?>">
+							<input type="number" name="extra" value="<?php echo (int) $ex; ?>" min="0" style="width:70px;">
+							<button class="button button-small">💾</button>
+						</form>
+					</td>
+				</tr>
+				<?php endforeach; ?>
+			</tbody></table>
+			<?php endif; ?>
 		</div>
 		<?php
 	}
@@ -583,11 +646,31 @@ add_action( 'admin_post_ag_zone_assign', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_zone_admin' ) ) wp_die( 'no' );
 	$dept = ag_dept_norm( wp_unslash( $_POST['dept'] ?? '' ) );
 	$owner = sanitize_email( wp_unslash( $_POST['owner'] ?? '' ) );
+	$zmsg = 'added';
 	if ( $dept && $owner ) {
-		$rec = function_exists( 'ag_ambassadeur_record' ) ? ag_ambassadeur_record( $owner ) : null;
-		ag_zone_add_owner( $dept, $owner, $rec['name'] ?? '' );
+		$mine = ag_zone_of_owner( $owner );
+		if ( ! in_array( $dept, $mine, true ) && count( $mine ) >= ag_zone_quota( $owner ) ) {
+			$zmsg = 'quota'; // 1 zone max sauf zones payées/accordées : on n'attribue pas au-delà du quota
+		} else {
+			$rec = function_exists( 'ag_ambassadeur_record' ) ? ag_ambassadeur_record( $owner ) : null;
+			ag_zone_add_owner( $dept, $owner, $rec['name'] ?? '' );
+		}
 	}
-	wp_safe_redirect( admin_url( 'admin.php?page=ag-zones&zmsg=added' ) ); exit;
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-zones&zmsg=' . $zmsg ) ); exit;
+} );
+/* ── Admin : régler le nombre de zones supplémentaires (offre payante) ── */
+add_action( 'admin_post_ag_zone_extra_set', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_zone_admin' ) ) wp_die( 'no' );
+	$uid = (int) ( $_POST['uid'] ?? 0 );
+	$n   = max( 0, (int) ( $_POST['extra'] ?? 0 ) );
+	if ( $uid ) update_user_meta( $uid, 'ag_zone_extra', $n );
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-zones&zmsg=extra' ) ); exit;
+} );
+add_action( 'admin_post_ag_zone_price_save', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_zone_admin' ) ) wp_die( 'no' );
+	update_option( 'ag_zone_price', max( 0, (float) ( $_POST['price'] ?? 49 ) ) );
+	update_option( 'ag_zone_paypal_url', esc_url_raw( wp_unslash( $_POST['url'] ?? '' ) ) );
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-zones&zmsg=extra' ) ); exit;
 } );
 add_action( 'admin_post_ag_zone_remove', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_zone_admin' ) ) wp_die( 'no' );
@@ -672,14 +755,24 @@ add_action( 'admin_post_ag_zone_request', function () {
 		$mine = ag_zone_of_owner( $email );
 		if ( in_array( $dept, $mine, true ) ) {
 			$res = 'mine';
+		} elseif ( count( $mine ) >= ag_zone_quota( $email ) ) {
+			$res = 'quota'; // quota atteint : doit libérer une zone ou en acheter une de plus
 		} else {
-			foreach ( $mine as $old ) { ag_zone_remove_owner( $old, $email ); } // 1 zone max : on quitte l'ancienne
-			$add = ag_zone_add_owner( $dept, $email, $name ); // claimed | joined
-			$res = $mine ? 'changed' : $add;
-			if ( function_exists( 'ag_push' ) ) ag_push( '🗺️ Zone ' . $dept, $name . ' couvre le ' . $dept . ( $mine ? ' (changement de zone)' : '' ) . ( 'joined' === $add ? ' — partage 50/50' : '' ) . '.' );
+			$add = ag_zone_add_owner( $dept, $email, $name ); // claimed | joined (pas de retrait : multi-zones possible si payé)
+			$res = $add;
+			if ( function_exists( 'ag_push' ) ) ag_push( '🗺️ Zone ' . $dept, $name . ' couvre le ' . $dept . ( 'joined' === $add ? ' — partage 50/50' : '' ) . '.' );
 		}
 	}
 	wp_safe_redirect( home_url( '/espace-ambassadeur?zone=' . $res . '#demarrage' ) ); exit;
+} );
+
+/* ── Handler front : libérer (quitter) une de ses zones ──────────── */
+add_action( 'admin_post_ag_zone_release', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_zone_front' ) ) wp_die( 'no' );
+	$u = wp_get_current_user();
+	$dept = ag_dept_norm( wp_unslash( $_POST['dept'] ?? '' ) );
+	if ( $dept ) ag_zone_remove_owner( $dept, strtolower( $u->user_email ) );
+	wp_safe_redirect( home_url( '/espace-ambassadeur?zone=released#demarrage' ) ); exit;
 } );
 
 /* ── Chasseur Pro : activation admin + lien d'abonnement PayPal ── */
