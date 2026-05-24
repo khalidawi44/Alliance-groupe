@@ -27,6 +27,7 @@ if ( ! function_exists( 'ag_lead_handler' ) ) {
 		$leads = (array) get_option( 'ag_leads', array() );
 		$leads[] = $lead;
 		update_option( 'ag_leads', array_slice( $leads, -1000 ) );
+		ag_activity_log( '📩 Nouveau message (chat) : ' . ( $lead['name'] ?: $lead['email'] ?: $lead['phone'] ) . ( $lead['interest'] ? ' — ' . $lead['interest'] : '' ) );
 		$to = apply_filters( 'ag_calendar_notify_email', 'advise.alliance.group@gmail.com' );
 		wp_mail( $to, '🎯 Nouveau prospect (chat) : ' . ( $lead['name'] ?: $lead['email'] ?: $lead['phone'] ), "Intérêt : {$lead['interest']}\nNom : {$lead['name']}\nEmail : {$lead['email']}\nTél : {$lead['phone']}\nMessage : {$lead['message']}\nDate : {$lead['date']}" );
 		if ( function_exists( 'ag_calendar_notify' ) ) ag_calendar_notify( '🎯 Prospect à rappeler : ' . ( $lead['name'] ?: $lead['email'] ?: $lead['phone'] ), "Intérêt : {$lead['interest']}\nEmail : {$lead['email']}\nTél : {$lead['phone']}\n{$lead['message']}" );
@@ -96,6 +97,34 @@ if ( ! function_exists( 'ag_search_history_get' ) ) {
 		$hist = (array) get_option( 'ag_search_history', array() );
 		$key  = ag_search_history_key( $q, $city );
 		return $hist[ $key ] ?? null;
+	}
+}
+
+/* ── Journal d'activité (« quoi de neuf depuis ma dernière visite ») ── */
+if ( ! function_exists( 'ag_activity_log' ) ) {
+	function ag_activity_log( $text ) {
+		$text = trim( wp_strip_all_tags( (string) $text ) );
+		if ( '' === $text ) return;
+		$log   = (array) get_option( 'ag_activity', array() );
+		$log[] = array( 'ts' => time(), 't' => $text );
+		if ( count( $log ) > 200 ) $log = array_slice( $log, -200 );
+		update_option( 'ag_activity', $log, false );
+	}
+}
+/* ── Relance : un prospect contacté, sans réponse, depuis N jours (def. 7) ── */
+if ( ! function_exists( 'ag_prospect_relance_due' ) ) {
+	function ag_prospect_relance_due( $p, $days = 7 ) {
+		if ( ! empty( $p['replied'] ) ) return false;
+		$st = $p['status'] ?? 'nouveau';
+		if ( in_array( $st, array( 'nouveau', 'interesse', 'client', 'refus', 'ne_pas_contacter', 'ignore' ), true ) ) return false;
+		$ts = (int) ( $p['last_contact_ts'] ?? 0 );
+		if ( ! $ts ) {
+			foreach ( array( 'last_contact', 'date_contact' ) as $f ) {
+				if ( ! empty( $p[ $f ] ) ) { $dt = DateTime::createFromFormat( 'd/m/Y', $p[ $f ], wp_timezone() ); if ( $dt ) { $ts = $dt->getTimestamp(); break; } }
+			}
+		}
+		if ( ! $ts ) return false;
+		return ( time() - $ts ) >= $days * DAY_IN_SECONDS;
 	}
 }
 
@@ -194,6 +223,10 @@ add_action( 'admin_post_ag_prospect_update', function () {
 	update_option( 'ag_prospects', array_values( $list ) );
 	if ( $has_status && in_array( $st, array( 'interesse', 'client' ), true ) && function_exists( 'ag_push' ) ) {
 		ag_push( ( 'client' === $st ? '✅ Nouveau client : ' : '🔥 Prospect intéressé : ' ) . $pname, 'Mis à jour dans le tableau de prospection.' );
+	}
+	if ( $has_status && function_exists( 'ag_activity_log' ) ) {
+		$lab = ag_prospect_statuses()[ $st ] ?? $st;
+		ag_activity_log( $lab . ' : ' . $pname );
 	}
 	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-prospects' ), admin_url( 'admin.php' ) ) ); exit;
 } );
@@ -314,6 +347,7 @@ add_action( 'wp_ajax_ag_prospect_touch', function () {
 			$cnt = (int) ( $p['contact_count'] ?? 0 ) + 1;
 			$list[ $k ]['contact_count'] = $cnt;
 			$list[ $k ]['last_contact']  = $now;
+			$list[ $k ]['last_contact_ts'] = time();
 			if ( $ch ) $list[ $k ]['last_channel'] = $ch;
 			if ( empty( $p['date_contact'] ) ) $list[ $k ]['date_contact'] = $now;
 			$cur = $p['status'] ?? 'nouveau';
@@ -337,6 +371,7 @@ add_action( 'wp_ajax_ag_prospect_reply', function () {
 			$list[ $k ]['replied']    = $val ? 1 : 0;
 			$list[ $k ]['date_reply'] = $val ? current_time( 'd/m/Y' ) : '';
 			update_option( 'ag_prospects', array_values( $list ) );
+			if ( $val ) ag_activity_log( '💬 ' . ( $p['name'] ?? 'Un prospect' ) . ' a répondu' );
 			wp_send_json_success( array( 'replied' => $val ? 1 : 0, 'date' => $list[ $k ]['date_reply'] ) );
 		}
 	}
@@ -357,6 +392,8 @@ add_action( 'wp_ajax_ag_prospect_outcome', function () {
 			$list[ $k ]['status'] = $st;
 			if ( 'interesse' === $st ) { $list[ $k ]['replied'] = 1; if ( empty( $list[ $k ]['date_reply'] ) ) $list[ $k ]['date_reply'] = current_time( 'd/m/Y' ); }
 			update_option( 'ag_prospects', array_values( $list ) );
+			$nm = $p['name'] ?? 'Un prospect';
+			ag_activity_log( ( 'ne_pas_contacter' === $st ? '⛔ ' . $nm . ' a bloqué / refusé' : ( 'sans_reponse' === $st ? '🔇 ' . $nm . ' : sans réponse' : '🔥 ' . $nm . ' intéressé' ) ) );
 			wp_send_json_success( array( 'status' => $st ) );
 		}
 	}
@@ -687,6 +724,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 		$f_q      = isset( $_GET['fq'] ) ? sanitize_text_field( wp_unslash( $_GET['fq'] ) ) : '';
 		$sortby   = isset( $_GET['sort'] ) ? sanitize_text_field( wp_unslash( $_GET['sort'] ) ) : 'besoin';
 		if ( '' !== $f_status ) $prospects = array_filter( $prospects, function ( $p ) use ( $f_status ) {
+			if ( 'relance7' === $f_status ) return ag_prospect_relance_due( $p ); // à relancer (sans réponse 7j+)
 			$st = $p['status'] ?? 'nouveau';
 			if ( 'contacte' === $f_status ) return in_array( $st, array( 'contacte', 'relance' ), true ); // "Contactés" = contactés + relancés
 			return $st === $f_status;
@@ -702,6 +740,31 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 		<div class="wrap ag-prospect-wrap">
 			<h1 style="display:flex;align-items:center;gap:10px;">🎯 Prospection <span style="font-size:.5em;background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;padding:3px 10px;border-radius:100px;">Alliance Groupe</span></h1>
 			<p style="max-width:820px;color:#50575e;">Trouve des entreprises qui ont besoin d'un site (Google Maps repère celles <strong>sans site web</strong>), ajoute-les à ta liste, puis prospecte-les toi-même avec le message prêt, l'appel, l'email ou WhatsApp. Tu gardes la main sur tout.</p>
+
+			<!-- Quoi de neuf depuis ma dernière visite -->
+			<?php
+			$ag_uid  = get_current_user_id();
+			$ag_seen = (int) get_user_meta( $ag_uid, 'ag_activity_seen', true );
+			$ag_acts = array_reverse( (array) get_option( 'ag_activity', array() ) );
+			$ag_new  = 0; foreach ( $ag_acts as $a ) { if ( (int) ( $a['ts'] ?? 0 ) > $ag_seen ) $ag_new++; }
+			?>
+			<div style="max-width:980px;margin:14px 0;border:1px solid #ccd0d4;border-left:4px solid #d63638;border-radius:6px;background:#fff;">
+				<details <?php echo $ag_new ? 'open' : ''; ?>>
+					<summary style="cursor:pointer;padding:14px 18px;font-weight:700;font-size:1.05rem;">🔔 Quoi de neuf<?php if ( $ag_new ) : ?> <span style="background:#d63638;color:#fff;border-radius:100px;padding:1px 10px;font-size:.8rem;"><?php echo (int) $ag_new; ?> nouveau<?php echo $ag_new > 1 ? 'x' : ''; ?></span><?php else : ?> <span style="color:#646970;font-weight:400;font-size:.85rem;">— rien de neuf depuis ta dernière visite</span><?php endif; ?></summary>
+					<div style="padding:0 18px 14px;">
+						<?php if ( empty( $ag_acts ) ) : ?>
+							<p style="color:#646970;">Aucune activité pour l'instant. Dès qu'un prospect répond, qu'un message arrive ou qu'un ambassadeur s'inscrit, ça apparaît ici.</p>
+						<?php else : ?>
+							<ul style="margin:0;padding:0;list-style:none;line-height:1.6;max-height:340px;overflow:auto;">
+								<?php foreach ( array_slice( $ag_acts, 0, 40 ) as $a ) : $is_new = (int) ( $a['ts'] ?? 0 ) > $ag_seen; ?>
+									<li style="padding:6px 8px;border-bottom:1px solid #f0f0f1;<?php echo $is_new ? 'background:#fff6f6;' : ''; ?>"><?php echo $is_new ? '<strong style="color:#d63638;">● </strong>' : ''; ?><?php echo esc_html( $a['t'] ?? '' ); ?> <span style="color:#646970;font-size:.82em;">— <?php echo esc_html( ! empty( $a['ts'] ) ? wp_date( 'd/m H:i', (int) $a['ts'] ) : '' ); ?></span></li>
+								<?php endforeach; ?>
+							</ul>
+						<?php endif; ?>
+					</div>
+				</details>
+			</div>
+			<?php update_user_meta( $ag_uid, 'ag_activity_seen', time() ); ?>
 
 			<!-- Chasse Google Places -->
 			<div style="max-width:980px;margin-top:14px;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #D4B45C;border-radius:6px;">
@@ -942,7 +1005,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			<h2 style="margin-top:26px;">📋 Mes prospects (<?php echo count( $prospects ); ?>) — triés par <strong>besoin</strong></h2>
 			<?php
 			$ag_all = (array) get_option( 'ag_prospects', array() );
-			$cnt = array( 'nouveau' => 0, 'contacte' => 0, 'sans_reponse' => 0, 'interesse' => 0, 'client' => 0, 'bloque' => 0, 'ignore' => 0 );
+			$cnt = array( 'nouveau' => 0, 'contacte' => 0, 'sans_reponse' => 0, 'interesse' => 0, 'client' => 0, 'bloque' => 0, 'ignore' => 0, 'relance7' => 0 );
 			foreach ( $ag_all as $pp ) {
 				$s = $pp['status'] ?? 'nouveau';
 				if ( 'nouveau' === $s ) $cnt['nouveau']++;
@@ -952,6 +1015,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				elseif ( 'client' === $s ) $cnt['client']++;
 				elseif ( 'ignore' === $s ) $cnt['ignore']++;
 				elseif ( in_array( $s, array( 'refus', 'ne_pas_contacter' ), true ) ) $cnt['bloque']++;
+				if ( ag_prospect_relance_due( $pp ) ) $cnt['relance7']++;
 			}
 			$ag_chip = function ( $label, $n, $f, $bg ) use ( $f_status ) {
 				$url = add_query_arg( array( 'page' => 'ag-prospects', 'fstatus' => $f ), admin_url( 'admin.php' ) );
@@ -966,6 +1030,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				echo $ag_chip( '🔇 Sans réponse', $cnt['sans_reponse'], 'sans_reponse', '#8a6d1f' );
 				echo $ag_chip( '🔥 Intéressés', $cnt['interesse'], 'interesse', '#bd7b00' );
 				echo $ag_chip( '✅ Clients', $cnt['client'], 'client', '#1e7e34' );
+				echo $ag_chip( '🔁 À relancer (7j+)', $cnt['relance7'], 'relance7', '#c2410c' );
 				echo $ag_chip( '🚫 Bloqués', $cnt['bloque'], 'ne_pas_contacter', '#50575e' );
 				echo $ag_chip( '🙈 Ignorés', $cnt['ignore'], 'ignore', '#7a4ed4' );
 				?>
@@ -1181,6 +1246,19 @@ add_action( 'admin_post_ag_auto_settings', function () {
 	wp_safe_redirect( admin_url( 'admin.php?page=ag-prospects' ) ); exit;
 } );
 add_action( 'ag_prospect_cron', 'ag_run_auto_prospection' );
+
+/* ── Relance auto : rappel quotidien des prospects sans réponse depuis 7j ── */
+add_action( 'init', function () {
+	if ( ! wp_next_scheduled( 'ag_relance_cron' ) ) wp_schedule_event( strtotime( 'tomorrow 9:30' ), 'daily', 'ag_relance_cron' );
+} );
+add_action( 'ag_relance_cron', function () {
+	$due = 0;
+	foreach ( (array) get_option( 'ag_prospects', array() ) as $p ) { if ( ag_prospect_relance_due( $p ) ) $due++; }
+	if ( $due > 0 ) {
+		if ( function_exists( 'ag_push' ) ) ag_push( '🔁 ' . $due . ' prospect(s) à relancer', 'Sans réponse depuis 7 jours et plus. Va dans Prospection → puce « 🔁 À relancer ».' );
+		if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '🔁 ' . $due . ' prospect(s) à relancer (7 jours sans réponse)' );
+	}
+} );
 if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
 	function ag_run_auto_prospection() {
 		$searches = (array) get_option( 'ag_auto_searches', array() );
@@ -1212,6 +1290,7 @@ if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
 		}
 		remove_action( 'ag_prospect_added', $collector );
 		update_option( 'ag_prospect_lastrun', array( 'ts' => time(), 'added' => $added ) );
+		if ( $added ) ag_activity_log( '🤖 Robot : ' . (int) $added . ' nouveau(x) prospect(s) trouvé(s)' );
 
 		// Notifie chaque ambassadeur des nouveaux prospects de SA zone (auto, mains-libres).
 		$tg_lines = '';
@@ -1276,6 +1355,7 @@ add_action( 'wp_ajax_ag_amb_touch', function () {
 			$cnt = (int) ( $p['contact_count'] ?? 0 ) + 1;
 			$list[ $k ]['contact_count'] = $cnt;
 			$list[ $k ]['last_contact']  = $now;
+			$list[ $k ]['last_contact_ts'] = time();
 			if ( $ch ) $list[ $k ]['last_channel'] = $ch;
 			if ( empty( $p['date_contact'] ) ) $list[ $k ]['date_contact'] = $now;
 			$cur = $p['status'] ?? 'nouveau';

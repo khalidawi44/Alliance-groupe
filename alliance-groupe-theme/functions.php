@@ -787,6 +787,7 @@ if ( ! function_exists( 'ag_save_lead' ) ) {
         if ( function_exists( 'ag_calendar_notify' ) ) {
             ag_calendar_notify( '📩 Nouveau message client : ' . $name, "Template : $template\nEmail : $email\nTél : $phone" );
         }
+        if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '📩 Nouveau message client : ' . $name . ( $template ? ' (' . $template . ')' : '' ) );
 
         wp_send_json_success();
     }
@@ -852,6 +853,7 @@ if ( ! function_exists( 'ag_submit_question' ) ) {
         if ( function_exists( 'ag_calendar_notify' ) ) {
             ag_calendar_notify( '💬 Question Flash : ' . $name . ' (' . $pack_label . ')', "Nom : $name\nEmail : $email\nActivité : $activity\nQuestion : $question" );
         }
+        if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '💬 Question Flash : ' . $name . ' (' . $pack_label . ')' );
 
         // Confirmation to the buyer
         $client_subject = 'Votre Question Flash a bien été reçue — Alliance Groupe';
@@ -1138,6 +1140,7 @@ if ( ! function_exists( 'ag_sur_mesure_submit' ) ) {
         } elseif ( function_exists( 'ag_push' ) ) {
             ag_push( '✦ Demande de devis sur-mesure', $name . ' — ' . $req['type'] . ' · budget ' . $req['budget'] . ' · ' . $req['email'] );
         }
+        if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '✦ Demande de devis sur-mesure : ' . $name . ' (budget ' . $req['budget'] . ')' );
 
         wp_safe_redirect( home_url( '/sur-mesure?envoye=1#configurateur' ) );
         exit;

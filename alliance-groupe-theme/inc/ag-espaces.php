@@ -845,6 +845,7 @@ add_action( 'ag_ambassadeur_registered', function ( $email, $name ) {
 		'🤝 Nouvel ambassadeur : ' . $name,
 		"Inscription au programme commercial.\nNom : $name\nEmail : $email\nÀ valider (identité + contrat) dans l'admin."
 	);
+	if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '🤝 Nouvel ambassadeur inscrit : ' . $name . ' (à valider)' );
 }, 20, 2 );
 // Achat de site (brief reçu = commande) -> évènement agenda.
 add_action( 'ag_client_brief_submitted', function ( $email, $name, $pack = '' ) {
@@ -853,4 +854,5 @@ add_action( 'ag_client_brief_submitted', function ( $email, $name, $pack = '' ) 
 		'🎯 Vente site' . ( $p ? ' (' . $p . ')' : '' ) . ' : ' . $name,
 		"Commande d'un site reçue (brief envoyé).\nClient : $name\nEmail : $email\nPack : " . ( $p ? $p : 'non précisé' ) . "\nVérifie le paiement PayPal puis valide la vente."
 	);
+	if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '🎯 Commande de site : ' . $name . ( $p ? ' (' . $p . ')' : '' ) );
 }, 20, 3 );
