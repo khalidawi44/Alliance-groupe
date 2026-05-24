@@ -617,7 +617,7 @@ add_action( 'wp_head', function () {
         'url' => $site_url,
         'logo' => $logo_url,
         'description' => 'Agence Web & IA basée en France — Naples, Nantes, Marrakech',
-        'telephone' => '+33623526074',
+        'telephone' => '+33744829516',
         'email' => 'contact@alliancegroupe-inc.com',
         'address' => array(
             array( '@type' => 'PostalAddress', 'addressLocality' => 'Naples', 'addressCountry' => 'IT' ),
@@ -727,9 +727,9 @@ add_action( 'wp_head', function () {
     // LocalBusiness schema (front page — SEO local)
     if ( is_front_page() ) {
         $offices = array(
-            array( 'Alliance Groupe — Nantes', 'Nantes', 'Pays de la Loire', 'FR', '+33623526074', 47.2173, -1.5534 ),
-            array( 'Alliance Groupe — Naples', 'Naples', 'Campania', 'IT', '+33623526074', 40.8518, 14.2681 ),
-            array( 'Alliance Groupe — Marrakech', 'Marrakech', 'Marrakech-Safi', 'MA', '+33623526074', 31.6295, -8.0088 ),
+            array( 'Alliance Groupe — Nantes', 'Nantes', 'Pays de la Loire', 'FR', '+33744829516', 47.2173, -1.5534 ),
+            array( 'Alliance Groupe — Naples', 'Naples', 'Campania', 'IT', '+33744829516', 40.8518, 14.2681 ),
+            array( 'Alliance Groupe — Marrakech', 'Marrakech', 'Marrakech-Safi', 'MA', '+33744829516', 31.6295, -8.0088 ),
         );
         foreach ( $offices as $o ) {
             $lb = array(
@@ -863,7 +863,7 @@ if ( ! function_exists( 'ag_submit_question' ) ) {
                        . "Si vous avez besoin d'ajouter du contexte entre-temps, répondez simplement à cet email.\n\n"
                        . "À très vite,\nFabrizio — Alliance Groupe\n"
                        . "contact@alliancegroupe-inc.com\n"
-                       . "06.23.52.60.74\n";
+                       . "07.44.82.95.16\n";
         $headers = array( 'From: Alliance Groupe <contact@alliancegroupe-inc.com>' );
         wp_mail( $email, $client_subject, $client_body, $headers );
 

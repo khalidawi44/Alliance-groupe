@@ -63,7 +63,7 @@
             <div class="ag-services__cta-btns">
                 <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>" class="ag-btn-gold ag-btn-gold--xl">✦ Demander un devis gratuit →</a>
                 <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">✉️ Nous écrire</a>
-                <a href="tel:+33623526074" class="ag-btn-outline">📞 06.23.52.60.74</a>
+                <a href="tel:+33744829516" class="ag-btn-outline">📞 07.44.82.95.16</a>
             </div>
         </div>
     </div>

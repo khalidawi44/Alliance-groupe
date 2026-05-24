@@ -303,7 +303,7 @@ function ag_stripe_admin_render() {
 		<?php
 		$thank_you_url    = home_url( '/merci-achat' );
 		$contact_url      = home_url( '/contact' );
-		$tel              = '+33623526074';
+		$tel              = '+33744829516';
 
 		$products = array(
 			'premium' => array(
@@ -316,7 +316,7 @@ function ag_stripe_admin_render() {
 				'name'  => 'AG Starter Business — 149€',
 				'price' => '149,00 €',
 				'desc'  => "Pack tout-en-un AG Starter : tout Premium + installation assistee en visio 1h, maintenance WP 1 an, audit SEO mensuel, rapport perf trimestriel, support 2h, white-label, integration CRM (HubSpot/Pipedrive/Brevo), appel strategique avec Fabrizio. Paiement unique. 💎 Site totalement sur-mesure (+340% leads en 3 mois) : alliancegroupe-inc.com/contact",
-				'success' => "Merci pour votre achat du Pack Business ! Notre equipe vous contacte sous 24h ouvrees pour planifier l'installation et l'appel strategique avec Fabrizio. Tel : 06.23.52.60.74",
+				'success' => "Merci pour votre achat du Pack Business ! Notre equipe vous contacte sous 24h ouvrees pour planifier l'installation et l'appel strategique avec Fabrizio. Tel : 07.44.82.95.16",
 			),
 		);
 		?>

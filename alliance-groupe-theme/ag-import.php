@@ -767,7 +767,7 @@ function ag_articles() { return array(
 <p>Chez Alliance Groupe, nous créons des sites web qui ne sont pas de simples vitrines — ce sont des <strong>machines à générer des leads</strong>, optimisées pour le référencement et la conversion.</p>
 
 <ul>
-<li>📞 <strong>Appelez-nous maintenant</strong> : <a href="tel:+33623526074">06.23.52.60.74</a></li>
+<li>📞 <strong>Appelez-nous maintenant</strong> : <a href="tel:+33744829516">07.44.82.95.16</a></li>
 <li>✉️ <strong>Écrivez-nous</strong> : <a href="mailto:contact@alliancegroupe-inc.com">contact@alliancegroupe-inc.com</a></li>
 <li>📅 <strong>Réservez votre diagnostic gratuit</strong> sur notre <a href="/contact">page contact</a></li>
 </ul>
@@ -849,7 +849,7 @@ function ag_articles() { return array(
 <p>Chez Alliance Groupe, nous construisons des présences digitales complètes qui génèrent un retour sur investissement mesurable dès les premiers mois.</p>
 
 <ul>
-<li>📞 <strong>Appelez-nous pour un calcul personnalisé</strong> : <a href="tel:+33623526074">06.23.52.60.74</a></li>
+<li>📞 <strong>Appelez-nous pour un calcul personnalisé</strong> : <a href="tel:+33744829516">07.44.82.95.16</a></li>
 <li>✉️ <strong>Envoyez-nous votre situation</strong> : <a href="mailto:contact@alliancegroupe-inc.com">contact@alliancegroupe-inc.com</a></li>
 <li>📅 <strong>Demandez un audit gratuit</strong> sur notre <a href="/contact">page contact</a></li>
 </ul>
@@ -936,7 +936,7 @@ function ag_articles() { return array(
 <p>Alliance Groupe réalise un <strong>diagnostic complet et gratuit</strong> de votre site web : performance, mobile, SEO, UX, conversion. En 48h, vous savez exactement ce qui ne va pas et comment le corriger.</p>
 
 <ul>
-<li>📞 <strong>Demandez votre diagnostic maintenant</strong> : <a href="tel:+33623526074">06.23.52.60.74</a></li>
+<li>📞 <strong>Demandez votre diagnostic maintenant</strong> : <a href="tel:+33744829516">07.44.82.95.16</a></li>
 <li>✉️ <strong>Envoyez-nous l\'URL de votre site</strong> : <a href="mailto:contact@alliancegroupe-inc.com">contact@alliancegroupe-inc.com</a></li>
 <li>📅 <strong>Réservez un créneau</strong> sur notre <a href="/contact">page contact</a></li>
 </ul>
@@ -1006,7 +1006,7 @@ function ag_articles() { return array(
 <p>Alliance Groupe est spécialisé dans l\'intégration d\'<a href="/service-ia">IA et automatisation</a> pour les PME. Nous rendons la puissance de l\'IA accessible et rentable.</p>
 
 <ul>
-<li>📞 <strong>Découvrez ce que l\'IA peut faire pour vous</strong> : <a href="tel:+33623526074">06.23.52.60.74</a></li>
+<li>📞 <strong>Découvrez ce que l\'IA peut faire pour vous</strong> : <a href="tel:+33744829516">07.44.82.95.16</a></li>
 <li>✉️ <strong>Décrivez-nous votre activité</strong> : <a href="mailto:contact@alliancegroupe-inc.com">contact@alliancegroupe-inc.com</a></li>
 <li>📅 <strong>Réservez une démo gratuite</strong> sur notre <a href="/contact">page contact</a></li>
 </ul>
@@ -1086,7 +1086,7 @@ function ag_articles() { return array(
 <p>Alliance Groupe est spécialisé en <a href="/service-seo">SEO local</a>. Nous avons les méthodes éprouvées pour vous propulser dans le Top 3 Google de votre zone.</p>
 
 <ul>
-<li>📞 <strong>Vérifiez votre position Google gratuitement</strong> : <a href="tel:+33623526074">06.23.52.60.74</a></li>
+<li>📞 <strong>Vérifiez votre position Google gratuitement</strong> : <a href="tel:+33744829516">07.44.82.95.16</a></li>
 <li>✉️ <strong>Envoyez-nous votre métier et votre ville</strong> : <a href="mailto:contact@alliancegroupe-inc.com">contact@alliancegroupe-inc.com</a></li>
 <li>📅 <strong>Réservez un audit SEO local gratuit</strong> sur notre <a href="/contact">page contact</a></li>
 </ul>
@@ -1152,7 +1152,7 @@ function ag_articles() { return array(
 <p>Alliance Groupe crée des <a href="/service-creation-web">sites web</a> qui sont de véritables machines à leads. Nos clients voient un ROI mesurable en moins de 3 mois.</p>
 
 <ul>
-<li>📞 <strong>Calculons ensemble votre économie</strong> : <a href="tel:+33623526074">06.23.52.60.74</a></li>
+<li>📞 <strong>Calculons ensemble votre économie</strong> : <a href="tel:+33744829516">07.44.82.95.16</a></li>
 <li>✉️ <strong>Demandez une simulation</strong> : <a href="mailto:contact@alliancegroupe-inc.com">contact@alliancegroupe-inc.com</a></li>
 <li>📅 <strong>Parlons de votre stratégie</strong> sur notre <a href="/contact">page contact</a></li>
 </ul>
@@ -1237,7 +1237,7 @@ function ag_articles() { return array(
 <p>Alliance Groupe peut reproduire ces résultats pour votre entreprise. Peu importe votre secteur, peu importe votre zone — la méthode fonctionne.</p>
 
 <ul>
-<li>📞 <strong>Parlons de votre projet maintenant</strong> : <a href="tel:+33623526074">06.23.52.60.74</a></li>
+<li>📞 <strong>Parlons de votre projet maintenant</strong> : <a href="tel:+33744829516">07.44.82.95.16</a></li>
 <li>✉️ <strong>Décrivez-nous votre situation</strong> : <a href="mailto:contact@alliancegroupe-inc.com">contact@alliancegroupe-inc.com</a></li>
 <li>📅 <strong>Réservez votre stratégie gratuite</strong> sur notre <a href="/contact">page contact</a></li>
 </ul>
@@ -1315,7 +1315,7 @@ function ag_articles() { return array(
 <p>Chez <a href="/services">Alliance Groupe</a>, nous auditons votre présence digitale et corrigeons chaque problème méthodiquement. Nos clients voient des résultats concrets en quelques semaines.</p>
 
 <ul>
-<li>📞 <strong>Faites auditer votre site gratuitement</strong> : <a href="tel:+33623526074">06.23.52.60.74</a></li>
+<li>📞 <strong>Faites auditer votre site gratuitement</strong> : <a href="tel:+33744829516">07.44.82.95.16</a></li>
 <li>✉️ <strong>Envoyez-nous votre URL</strong> : <a href="mailto:contact@alliancegroupe-inc.com">contact@alliancegroupe-inc.com</a></li>
 <li>📅 <strong>Réservez un audit complet</strong> sur notre <a href="/contact">page contact</a></li>
 </ul>
@@ -1402,7 +1402,7 @@ function ag_articles() { return array(
 <p>Chez <a href="/service-ia">Alliance Groupe</a>, nous auditons vos processus, identifions tout ce qui peut être automatisé, et mettons en place les outils adaptés à votre activité.</p>
 
 <ul>
-<li>📞 <strong>Découvrez ce qu\'on peut automatiser pour vous</strong> : <a href="tel:+33623526074">06.23.52.60.74</a></li>
+<li>📞 <strong>Découvrez ce qu\'on peut automatiser pour vous</strong> : <a href="tel:+33744829516">07.44.82.95.16</a></li>
 <li>✉️ <strong>Décrivez-nous vos tâches répétitives</strong> : <a href="mailto:contact@alliancegroupe-inc.com">contact@alliancegroupe-inc.com</a></li>
 <li>📅 <strong>Réservez un audit automatisation</strong> sur notre <a href="/contact">page contact</a></li>
 </ul>
@@ -1501,7 +1501,7 @@ function ag_articles() { return array(
 <p>Alliance Groupe diagnostique et corrige chacune de ces 6 raisons. Nous transformons des sites-brochures en <a href="/service-creation-web">véritables machines à leads</a>, avec des résultats mesurables dès le premier mois.</p>
 
 <ul>
-<li>📞 <strong>Diagnostiquons votre site ensemble</strong> : <a href="tel:+33623526074">06.23.52.60.74</a></li>
+<li>📞 <strong>Diagnostiquons votre site ensemble</strong> : <a href="tel:+33744829516">07.44.82.95.16</a></li>
 <li>✉️ <strong>Envoyez-nous votre URL pour un diagnostic</strong> : <a href="mailto:contact@alliancegroupe-inc.com">contact@alliancegroupe-inc.com</a></li>
 <li>📅 <strong>Réservez votre audit de conversion gratuit</strong> sur notre <a href="/contact">page contact</a></li>
 </ul>

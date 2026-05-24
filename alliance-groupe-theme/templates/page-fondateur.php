@@ -112,7 +112,7 @@ foreach (array('jpg','jpeg','png','webp') as $ext) {
                 <h3 style="font-size:1.6rem;margin-bottom:16px;">Vous avez un projet ?<br><em>Fabrizio et son équipe sont là.</em></h3>
                 <p style="color:#b0b0bc;margin-bottom:28px;">Le même engagement, la même passion — au service de votre réussite.</p>
                 <div class="ag-hero__buttons">
-                    <a href="tel:+33623526074" class="ag-btn-gold">Appeler Fabrizio — 06.23.52.60.74</a>
+                    <a href="tel:+33744829516" class="ag-btn-gold">Appeler Fabrizio — 07.44.82.95.16</a>
                     <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Nous contacter →</a>
                 </div>
             </div>

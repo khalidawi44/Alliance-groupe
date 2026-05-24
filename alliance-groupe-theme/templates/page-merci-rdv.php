@@ -111,7 +111,7 @@ $tier   = isset( $tiers[ $offer ] ) ? $tiers[ $offer ] : null;
                     <strong>Besoin de nous joindre avant l'appel ?</strong>
                     <p>Répondez simplement à l'email de confirmation que vous venez de recevoir, ou contactez-nous directement&nbsp;:</p>
                     <div class="ag-merci__urgent-btns">
-                        <a href="tel:+33623526074" class="ag-btn-gold">📞 06.23.52.60.74</a>
+                        <a href="tel:+33744829516" class="ag-btn-gold">📞 07.44.82.95.16</a>
                         <a href="mailto:contact@alliancegroupe-inc.com" class="ag-btn-outline">✉️ Nous écrire</a>
                     </div>
                 </div>

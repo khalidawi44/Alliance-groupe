@@ -39,7 +39,7 @@ function ag_seo_meta() {
 	$map = array(
 		'__home__' => array(
 			'title'   => 'Agence Web & IA à Nantes, Marrakech & Naples — Alliance Groupe',
-			'desc'    => 'Agence Web & IA franco-italo-marocaine : création de sites WordPress sur-mesure, SEO, IA, automatisation. Audit gratuit 30 min ☎ 06.23.52.60.74',
+			'desc'    => 'Agence Web & IA franco-italo-marocaine : création de sites WordPress sur-mesure, SEO, IA, automatisation. Audit gratuit 30 min ☎ 07.44.82.95.16',
 			'img_alt' => 'Alliance Groupe — agence web et IA multiculturelle',
 		),
 		// ── Services ──────────────────────────────────────────────
@@ -76,7 +76,7 @@ function ag_seo_meta() {
 		// ── Bureaux (SEO local) ───────────────────────────────────
 		'bureau-nantes' => array(
 			'title'   => 'Agence Web & IA à Nantes — Bureau Alliance Groupe',
-			'desc'    => 'Bureau Alliance Groupe à Nantes (Pays de la Loire). Création WordPress, SEO, IA pour PME locales. Équipe française ☎ 06.23.52.60.74 — Devis gratuit.',
+			'desc'    => 'Bureau Alliance Groupe à Nantes (Pays de la Loire). Création WordPress, SEO, IA pour PME locales. Équipe française ☎ 07.44.82.95.16 — Devis gratuit.',
 			'img_alt' => 'Bureau Alliance Groupe à Nantes',
 		),
 		'bureau-marrakech' => array(
@@ -143,7 +143,7 @@ function ag_seo_meta() {
 		),
 		'contact' => array(
 			'title'   => 'Contact — Agence Web Alliance Groupe (Nantes, Marrakech, Naples)',
-			'desc'    => 'Contactez Alliance Groupe : agence web & IA à Nantes, Marrakech et Naples ☎ 06.23.52.60.74 ✉ contact@alliancegroupe-inc.com — Réponse 24h garantie.',
+			'desc'    => 'Contactez Alliance Groupe : agence web & IA à Nantes, Marrakech et Naples ☎ 07.44.82.95.16 ✉ contact@alliancegroupe-inc.com — Réponse 24h garantie.',
 			'img_alt' => 'Contact Alliance Groupe',
 		),
 		'rendez-vous' => array(
@@ -292,7 +292,7 @@ add_action( 'wp_head', function () {
 		'@type'     => 'ProfessionalService',
 		'name'      => $b['name'],
 		'url'       => get_permalink(),
-		'telephone' => '+33623526074',
+		'telephone' => '+33744829516',
 		'email'     => 'contact@alliancegroupe-inc.com',
 		'address'   => array(
 			'@type'           => 'PostalAddress',

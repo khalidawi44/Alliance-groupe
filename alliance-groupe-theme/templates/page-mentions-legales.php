@@ -54,7 +54,7 @@ get_header();
                     RCS&nbsp;: <span style="color:#d4b45c;">[À COMPLÉTER — ex. Nantes B 123 456 789]</span><br>
                     N° TVA intracommunautaire&nbsp;: <span style="color:#d4b45c;">[À COMPLÉTER — ex. FR12345678900]</span><br>
                     Siège social&nbsp;: <span style="color:#d4b45c;">[À COMPLÉTER — adresse complète]</span><br>
-                    Téléphone&nbsp;: <a href="tel:+33623526074">06.23.52.60.74</a><br>
+                    Téléphone&nbsp;: <a href="tel:+33744829516">07.44.82.95.16</a><br>
                     Email&nbsp;: <a href="mailto:contact@alliancegroupe-inc.com">contact@alliancegroupe-inc.com</a>
                 </p>
 

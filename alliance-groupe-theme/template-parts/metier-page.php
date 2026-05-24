@@ -211,7 +211,7 @@ $has_screenshot = file_exists( $screenshot_file );
                     </div>
 
                     <div class="ag-hero__buttons" style="justify-content:center;flex-wrap:wrap;">
-                        <a href="tel:+33623526074" class="ag-btn-gold">📞 Appeler Fabrizio</a>
+                        <a href="tel:+33744829516" class="ag-btn-gold">📞 Appeler Fabrizio</a>
                         <a href="<?php echo esc_url( add_query_arg( array( 'source' => 'metier', 'metier' => $ag_metier['slug'] ), $contact_base ) ); ?>" class="ag-btn-outline">Réserver un appel →</a>
                     </div>
                 </div>

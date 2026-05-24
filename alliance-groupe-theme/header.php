@@ -430,7 +430,7 @@
         </div>
 
         <div class="ag-mobile-menu__footer">
-            <a href="tel:+33623526074" class="ag-btn-gold" style="width:100%;justify-content:center;">📞 06.23.52.60.74</a>
+            <a href="tel:+33744829516" class="ag-btn-gold" style="width:100%;justify-content:center;">📞 07.44.82.95.16</a>
             <a href="mailto:contact@alliancegroupe-inc.com" class="ag-btn-outline" style="width:100%;justify-content:center;">✉️ Nous écrire</a>
         </div>
     </div>

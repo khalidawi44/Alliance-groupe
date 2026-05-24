@@ -117,7 +117,7 @@ get_header();
                 <p>Pour toute question concernant notre politique de cookies ou l'exercice de vos droits&nbsp;:</p>
                 <ul>
                     <li>Email&nbsp;: <a href="mailto:contact@alliancegroupe-inc.com">contact@alliancegroupe-inc.com</a></li>
-                    <li>Téléphone&nbsp;: <a href="tel:+33623526074">06.23.52.60.74</a></li>
+                    <li>Téléphone&nbsp;: <a href="tel:+33744829516">07.44.82.95.16</a></li>
                 </ul>
                 <p style="color:#8a8a95;font-size:.85rem;margin-top:32px;">Dernière mise à jour&nbsp;: <?php echo esc_html( date_i18n( 'F Y' ) ); ?>.</p>
 

@@ -223,7 +223,7 @@ if ( ! empty( $ag_templates_only ) ) {
                     <strong style="color:#D4B45C;">+340% de leads en moyenne en 3 mois.</strong>
                 </p>
                 <div class="ag-hero__buttons" style="justify-content:center;flex-wrap:wrap;">
-                    <a href="tel:+33623526074" class="ag-btn-gold">📞 Appeler Fabrizio</a>
+                    <a href="tel:+33744829516" class="ag-btn-gold">📞 Appeler Fabrizio</a>
                     <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" class="ag-btn-outline">Réserver un appel gratuit →</a>
                 </div>
                 <p style="color:#888;font-size:.82rem;margin-top:16px;font-style:italic;">Premier appel 30 min gratuit, sans engagement.</p>
@@ -259,7 +259,7 @@ if ( ! empty( $ag_templates_only ) ) {
                     ['q' => 'Le plugin compagnon est-il obligatoire ?', 'a' => 'Non, mais il rend l\'installation 10x plus rapide. Sans le plugin, vous devez créer manuellement les 5 pages et le menu. Avec le plugin, un seul clic suffit. Il est gratuit et compatible avec les 5 thèmes.'],
                     ['q' => 'Un pack Premium marche-t-il avec les 5 thèmes ?', 'a' => 'Oui. Vous achetez UN seul plugin (Premium ou Business) et il fonctionne avec n\'importe quel thème AG Starter que vous avez activé. Le plugin détecte automatiquement le thème actif et adapte ses features.'],
                     ['q' => 'Les templates sont-ils sur WordPress.org ?', 'a' => 'En cours de soumission. Nos 5 thèmes et le plugin compagnon respectent les standards WordPress.org (GPL v2+, translation-ready, escaping strict, Theme Check compatible). Une fois validés, ils seront installables directement depuis votre admin WordPress.'],
-                    ['q' => 'Et si je veux un vrai site sur-mesure ?', 'a' => 'Contactez-nous au 06.23.52.60.74 ou via la page contact. Premier appel de 30 min gratuit avec Fabrizio, sans engagement. Nos clients génèrent +340% de leads en moyenne avec un site sur-mesure vs un template.'],
+                    ['q' => 'Et si je veux un vrai site sur-mesure ?', 'a' => 'Contactez-nous au 07.44.82.95.16 ou via la page contact. Premier appel de 30 min gratuit avec Fabrizio, sans engagement. Nos clients génèrent +340% de leads en moyenne avec un site sur-mesure vs un template.'],
                 ];
                 foreach ($tpl_faqs as $faq) :
                 ?>

@@ -28,7 +28,7 @@
         <div class="ag-footer__col">
             <h4 class="ag-footer__title">Contact</h4>
             <ul>
-                <li><a href="tel:+33623526074">06.23.52.60.74</a></li>
+                <li><a href="tel:+33744829516">07.44.82.95.16</a></li>
                 <li><a href="mailto:contact@alliancegroupe-inc.com">contact@alliancegroupe-inc.com</a></li>
             </ul>
         </div>

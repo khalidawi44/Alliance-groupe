@@ -93,7 +93,7 @@
                     <h3 class="ag-article-cta__title">Besoin d'un accompagnement <em>professionnel</em> ?</h3>
                     <p class="ag-article-cta__text">Ne laissez pas vos concurrents prendre l'avantage. Appelez-nous pour un diagnostic gratuit de votre présence digitale.</p>
                     <div class="ag-article-cta__actions">
-                        <a href="tel:+33623526074" class="ag-btn-gold">📞 Appeler maintenant — 06.23.52.60.74</a>
+                        <a href="tel:+33744829516" class="ag-btn-gold">📞 Appeler maintenant — 07.44.82.95.16</a>
                         <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Demander un devis gratuit →</a>
                     </div>
                 </div>
@@ -123,7 +123,7 @@
                         <span class="ag-author-box__label">Rédigé par</span>
                         <strong class="ag-author-box__name">L'équipe Alliance Groupe</strong>
                         <p class="ag-author-box__bio">Experts en création web, IA et stratégie digitale. Nous aidons les entreprises à transformer leur présence en ligne en machine à générer des leads.</p>
-                        <a href="tel:+33623526074" class="ag-author-box__cta">Nous appeler →</a>
+                        <a href="tel:+33744829516" class="ag-author-box__cta">Nous appeler →</a>
                     </div>
                 </div>
             </div>
@@ -175,7 +175,7 @@
                     <h2 class="ag-cta-final__title">Votre entreprise mérite d'<em>exister en ligne</em></h2>
                     <p class="ag-cta-final__desc">Chaque jour sans stratégie digitale, c'est des clients qui vont chez vos concurrents. Discutons de votre projet — c'est gratuit et sans engagement.</p>
                     <div class="ag-cta-final__actions">
-                        <a href="tel:+33623526074" class="ag-btn-gold">📞 06.23.52.60.74 — Appel gratuit</a>
+                        <a href="tel:+33744829516" class="ag-btn-gold">📞 07.44.82.95.16 — Appel gratuit</a>
                         <a href="mailto:contact@alliancegroupe-inc.com" class="ag-btn-outline">✉️ contact@alliancegroupe-inc.com</a>
                     </div>
                     <p class="ag-cta-final__trust">✓ Diagnostic gratuit &nbsp; ✓ Sans engagement &nbsp; ✓ Réponse sous 24h</p>

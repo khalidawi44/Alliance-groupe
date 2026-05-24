@@ -105,7 +105,7 @@ $current = $pack_data[ $pack ];
                         et nos clients le rentabilisent en 3 mois en moyenne. Contactez-nous maintenant.
                     </p>
                     <div class="ag-hero__buttons" style="justify-content:center;flex-wrap:wrap;">
-                        <a href="tel:+33623526074" class="ag-btn-gold">📞 Appeler Fabrizio — 06.23.52.60.74</a>
+                        <a href="tel:+33744829516" class="ag-btn-gold">📞 Appeler Fabrizio — 07.44.82.95.16</a>
                         <a href="<?php echo esc_url( home_url( '/contact?source=merci-achat&pack=' . $pack ) ); ?>" class="ag-btn-outline">Réserver mon appel gratuit →</a>
                     </div>
                     <p style="color:#888;font-size:.85rem;margin-top:20px;font-style:italic;">7j/7 · Réponse sous 24h · Aucun engagement</p>

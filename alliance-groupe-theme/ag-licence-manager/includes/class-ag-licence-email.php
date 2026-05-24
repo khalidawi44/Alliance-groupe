@@ -41,7 +41,7 @@ class AG_Licence_Email {
               . "BESOIN D'AIDE ?\n"
               . "Répondez simplement à cet email ou contactez-nous :\n"
               . "- Email : contact@alliancegroupe-inc.com\n"
-              . "- Téléphone : 06.23.52.60.74\n\n"
+              . "- Téléphone : 07.44.82.95.16\n\n"
               . "À très vite,\n"
               . "L'équipe Alliance Groupe\n"
               . "https://alliancegroupe-inc.com\n";

@@ -56,7 +56,7 @@ get_header();
                     Siège social&nbsp;: <span style="color:var(--color-gold);">[À COMPLÉTER — adresse complète]</span><br>
                     SIRET&nbsp;: <span style="color:var(--color-gold);">[À COMPLÉTER]</span><br>
                     Email&nbsp;: <a href="mailto:contact@alliancegroupe-inc.com">contact@alliancegroupe-inc.com</a><br>
-                    Téléphone&nbsp;: <a href="tel:+33623526074">06.23.52.60.74</a>
+                    Téléphone&nbsp;: <a href="tel:+33744829516">07.44.82.95.16</a>
                 </p>
 
                 <!-- 2 -->
@@ -234,7 +234,7 @@ get_header();
                 <p>Pour toute question relative à la protection de vos données personnelles&nbsp;:</p>
                 <ul>
                     <li>Email&nbsp;: <a href="mailto:contact@alliancegroupe-inc.com">contact@alliancegroupe-inc.com</a></li>
-                    <li>Téléphone&nbsp;: <a href="tel:+33623526074">06.23.52.60.74</a></li>
+                    <li>Téléphone&nbsp;: <a href="tel:+33744829516">07.44.82.95.16</a></li>
                     <li>Courrier&nbsp;: Alliance Groupe — <span style="color:var(--color-gold);">[À COMPLÉTER — adresse postale]</span></li>
                 </ul>
 

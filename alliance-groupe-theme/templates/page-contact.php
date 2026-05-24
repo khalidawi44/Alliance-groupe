@@ -29,7 +29,7 @@ get_header();
                             <div class="ag-contact-card__icon">📞</div>
                             <div class="ag-contact-card__label">Téléphone</div>
                             <div class="ag-contact-card__value">
-                                <a href="tel:+33623526074">06.23.52.60.74</a>
+                                <a href="tel:+33744829516">07.44.82.95.16</a>
                             </div>
                         </div>
                         <div class="ag-contact-card ag-anim" data-anim="card">

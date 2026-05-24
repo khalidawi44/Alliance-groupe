@@ -576,7 +576,7 @@ if ( ! function_exists( 'ag_prospect_message' ) ) {
 		elseif ( false !== strpos( $type, 'coiffeur' ) || false !== strpos( $type, 'barbier' ) || false !== strpos( $type, 'beauté' ) || false !== strpos( $type, 'institut' ) ) $promesse = "imaginez un agenda qui se remplit tout seul : vos clients prennent rendez-vous en ligne, 24h/24, même quand le salon est fermé.";
 		elseif ( false !== strpos( $type, 'plombier' ) || false !== strpos( $type, 'électricien' ) || false !== strpos( $type, 'garagiste' ) || false !== strpos( $type, 'artisan' ) ) $promesse = "imaginez recevoir les demandes de devis urgentes directement sur votre téléphone, avant que le client n'appelle le concurrent d'à côté.";
 
-		$phone = apply_filters( 'ag_contact_phone', '06 23 52 60 74' );
+		$phone = apply_filters( 'ag_contact_phone', '07 44 82 95 16' );
 		$notes = trim( (string) ( $p['notes'] ?? '' ) );
 
 		$msg  = "✨ Bonjour,\n\n{$accroche}\n\n";
