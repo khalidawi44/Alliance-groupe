@@ -183,6 +183,13 @@ if ( ! function_exists( 'ag_prospect_blocked' ) ) {
 if ( ! function_exists( 'ag_prospect_sig' ) ) {
 	function ag_prospect_sig( $name, $city ) { return strtolower( trim( preg_replace( '/\s+/', ' ', (string) $name ) ) ) . '|' . strtolower( trim( (string) $city ) ); }
 }
+if ( ! function_exists( 'ag_prospect_is_ignored' ) ) {
+	/** Liste "🚫 ignorés" (signatures) : pour ne plus les réafficher en recherche. */
+	function ag_prospect_is_ignored( $name, $city ) {
+		$sig = ag_prospect_sig( $name, $city );
+		return in_array( $sig, (array) get_option( 'ag_prospect_ignored', array() ), true );
+	}
+}
 if ( ! function_exists( 'ag_prospect_find' ) ) {
 	/** Cherche un prospect existant (anti-doublon) par nom+ville ou téléphone. */
 	function ag_prospect_find( $name, $city, $phone = '' ) {
@@ -199,6 +206,7 @@ if ( ! function_exists( 'ag_prospect_add_record' ) ) {
 	/** Ajoute un prospect SANS doublon. Retourne true si ajouté, false si déjà présent. */
 	function ag_prospect_add_record( $data ) {
 		if ( empty( $data['name'] ) ) return false;
+		if ( ag_prospect_is_ignored( $data['name'], $data['city'] ?? '' ) ) return false; // 🚫 ignoré : ne pas réintroduire
 		if ( ag_prospect_find( $data['name'], $data['city'] ?? '', $data['phone'] ?? '' ) ) return false;
 		$rec = array_merge( array(
 			'id' => uniqid( 'p_' ), 'name' => '', 'type' => '', 'city' => '', 'phone' => '', 'phone_intl' => '', 'email' => '',
@@ -295,6 +303,25 @@ add_action( 'wp_ajax_ag_prospect_note', function () {
 		}
 	}
 	wp_send_json_error();
+} );
+
+/* 🚫 Ignorer une entreprise (résultat non sélectionné) : ne plus la réafficher. */
+add_action( 'wp_ajax_ag_prospect_ignore', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
+	$name = sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) );
+	$city = sanitize_text_field( wp_unslash( $_POST['city'] ?? '' ) );
+	if ( '' === $name ) wp_send_json_error();
+	$sig  = ag_prospect_sig( $name, $city );
+	$list = (array) get_option( 'ag_prospect_ignored', array() );
+	if ( ! in_array( $sig, $list, true ) ) { $list[] = $sig; update_option( 'ag_prospect_ignored', array_slice( $list, -5000 ) ); }
+	wp_send_json_success();
+} );
+
+/* Réinitialiser la liste des ignorés. */
+add_action( 'admin_post_ag_prospect_ignore_reset', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_die( 'no' );
+	delete_option( 'ag_prospect_ignored' );
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-prospects' ) ); exit;
 } );
 
 /* ── 5. Priorité (qui en a vraiment besoin), pourquoi, et message émotionnel ─ */
@@ -539,6 +566,15 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					📊 <strong><?php echo (int) $ag_use['calls']; ?></strong> recherche(s) ce mois-ci · coût estimé Google ≈ <strong><?php echo esc_html( number_format( $ag_use['cost'], 2, ',', ' ' ) ); ?> €</strong>
 					<span style="color:#646970;"> (1 recherche ≈ 0,04 € · 1 balayage « tous secteurs » ≈ 1,60 € · <strong>Google offre un palier gratuit/mois</strong>, donc souvent 0 € réel).</span>
 				</div>
+				<?php $ag_ign = count( (array) get_option( 'ag_prospect_ignored', array() ) ); if ( $ag_ign ) : ?>
+					<div style="display:inline-block;background:#fdeeee;border:1px solid #f0c2c2;border-radius:8px;padding:6px 12px;margin:0 0 10px 8px;font-size:.85rem;">
+						🚫 <strong><?php echo (int) $ag_ign; ?></strong> entreprise(s) ignorée(s) (masquées des recherches)
+						<form method="post" action="<?php echo esc_url( $post ); ?>" style="display:inline;margin-left:6px;" onsubmit="return confirm('Réafficher toutes les entreprises ignorées ?');">
+							<input type="hidden" name="action" value="ag_prospect_ignore_reset"><input type="hidden" name="_n" value="<?php echo esc_attr( $nonce ); ?>">
+							<button class="button-link" style="color:#2271b1;">réinitialiser</button>
+						</form>
+					</div>
+				<?php endif; ?>
 				<?php if ( '' === $key ) : ?>
 					<p>Pour la recherche automatique, ajoute ta <strong>clé Google Places (New)</strong> ci-dessous (dans ton projet Google Cloud → active « Places API (New) » → crée une clé API). En attendant, tu peux ajouter des prospects à la main plus bas, ou chercher sur <a href="https://www.google.com/maps" target="_blank" rel="noopener">Google Maps</a> (ex. « restaurant Nantes ») et copier les infos.</p>
 					<form method="post" action="options.php">
@@ -566,6 +602,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 						<p style="color:#50575e;margin-top:14px;"><?php echo count( $results ); ?> résultat(s), triés par <strong>probabilité d'achat</strong>. <label style="margin-left:8px;"><input type="checkbox" id="ag-onlyno"> N'afficher que ceux <strong>sans vrai site</strong></label></p>
 						<table class="widefat striped" id="ag-results"><thead><tr><th>Achat</th><th>Entreprise</th><th>Avis</th><th>Téléphone</th><th>Présence en ligne</th><th></th></tr></thead><tbody>
 						<?php foreach ( $results as $r ) : if ( empty( $r['name'] ) ) continue;
+								if ( ag_prospect_is_ignored( $r['name'], $r['city'] ?? $city ) ) continue; // 🚫 ignoré → ne plus réafficher
 								$ex = ag_prospect_find( $r['name'], $r['city'] ?? $city, $r['phone'] ?? '' );
 								if ( $ex && ag_prospect_blocked( $ex['status'] ?? '' ) ) continue; // refusé / ne plus contacter / client → masqué
 								$kind = ag_site_kind( $r['website'] ); $rsc = ag_prospect_score( $r ); $rcol = $rsc >= 80 ? '#b32d2e' : ( $rsc >= 60 ? '#bd7b00' : '#50575e' ); ?>
@@ -582,6 +619,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 										data-city="<?php echo esc_attr( $r['city'] ?? $city ); ?>" data-phone="<?php echo esc_attr( $r['phone'] ); ?>"
 										data-website="<?php echo esc_attr( $r['website'] ); ?>" data-address="<?php echo esc_attr( $r['address'] ); ?>"
 										data-rating="<?php echo esc_attr( $r['rating'] ?? 0 ); ?>" data-reviews="<?php echo esc_attr( $r['reviews'] ?? 0 ); ?>">+ Suivre (avec ma note)</button>
+									<button type="button" class="button button-small ag-ignore" data-name="<?php echo esc_attr( $r['name'] ); ?>" data-city="<?php echo esc_attr( $r['city'] ?? $city ); ?>" title="Ne plus jamais afficher cette entreprise dans les recherches" style="margin-top:4px;color:#b32d2e;">🚫 Ignorer</button>
 								</td>
 							</tr>
 						<?php endforeach; ?>
@@ -867,6 +905,13 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				b.disabled=true; b.textContent='…';
 				fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ b.textContent=(j&&j.success)?'✓ Ajouté':'Erreur'; }).catch(function(){ b.textContent='Erreur'; b.disabled=false; });
 			}); });
+			// 🚫 Ignorer : ne plus réafficher cette entreprise dans les recherches.
+			document.querySelectorAll('.ag-ignore').forEach(function(b){ b.addEventListener('click',function(){
+				var fd=new FormData(); fd.append('action','ag_prospect_ignore'); fd.append('_n',nonce);
+				fd.append('name', b.getAttribute('data-name')||''); fd.append('city', b.getAttribute('data-city')||'');
+				b.disabled=true; b.textContent='…';
+				fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ var tr=b.closest('tr'); if(j&&j.success&&tr){ tr.style.opacity='.4'; tr.style.display='none'; } else { b.textContent='Erreur'; b.disabled=false; } }).catch(function(){ b.textContent='Erreur'; b.disabled=false; });
+			}); });
 			// Clic WhatsApp/Email = enregistre le contact (date + compteur + statut auto). Le lien s'ouvre normalement.
 			document.querySelectorAll('.ag-touch').forEach(function(a){ a.addEventListener('click',function(){
 				var id=a.getAttribute('data-id'); if(!id) return;
@@ -1100,6 +1145,7 @@ add_action( 'wp_ajax_ag_amb_search', function () {
 		if ( empty( $r['name'] ) ) continue;
 		$d = function_exists( 'ag_prospect_dept' ) ? ag_prospect_dept( $r ) : '';
 		if ( ! $admin && $myzones && $d && ! in_array( $d, $myzones, true ) ) continue; // hors de sa zone
+		if ( ag_prospect_is_ignored( $r['name'], $r['city'] ?? $city ) ) continue; // 🚫 ignoré
 		$ex = ag_prospect_find( $r['name'], $r['city'] ?? $city, $r['phone'] ?? '' );
 		if ( $ex && ag_prospect_blocked( $ex['status'] ?? '' ) ) continue;
 		$kind = ag_site_kind( $r['website'] ?? '' );
