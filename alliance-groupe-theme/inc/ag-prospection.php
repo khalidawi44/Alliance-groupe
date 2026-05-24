@@ -343,7 +343,25 @@ add_action( 'wp_ajax_ag_prospect_reply', function () {
 	wp_send_json_error();
 } );
 
-/* Enregistre une NOTE (ma fiche) sur un prospect existant. */
+/* Classe le RÉSULTAT d'un contact en 1 clic : bloqué / sans réponse / intéressé. */
+add_action( 'wp_ajax_ag_prospect_outcome', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
+	$id  = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+	$out = sanitize_text_field( wp_unslash( $_POST['outcome'] ?? '' ) );
+	$map = array( 'bloque' => 'ne_pas_contacter', 'sans_reponse' => 'sans_reponse', 'interesse' => 'interesse' );
+	if ( ! isset( $map[ $out ] ) ) wp_send_json_error();
+	$st   = $map[ $out ];
+	$list = (array) get_option( 'ag_prospects', array() );
+	foreach ( $list as $k => $p ) {
+		if ( ( $p['id'] ?? '' ) === $id ) {
+			$list[ $k ]['status'] = $st;
+			if ( 'interesse' === $st ) { $list[ $k ]['replied'] = 1; if ( empty( $list[ $k ]['date_reply'] ) ) $list[ $k ]['date_reply'] = current_time( 'd/m/Y' ); }
+			update_option( 'ag_prospects', array_values( $list ) );
+			wp_send_json_success( array( 'status' => $st ) );
+		}
+	}
+	wp_send_json_error();
+} );
 add_action( 'wp_ajax_ag_prospect_note', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
 	$id   = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
@@ -1026,6 +1044,9 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 									<?php else : ?>
 										<button type="button" class="button button-small ag-reply" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>">A répondu ?</button>
 									<?php endif; ?>
+									<br><span style="color:#646970;">Résultat :</span>
+									<button type="button" class="button button-small ag-outcome" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-outcome="bloque" title="Il a bloqué / refusé">⛔ Bloqué</button>
+									<button type="button" class="button button-small ag-outcome" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-outcome="sans_reponse" title="Pas de réponse">🔇 Sans réponse</button>
 								<?php else : ?>⏳ Pas encore contacté<?php endif; ?>
 							</div>
 							<?php if ( $wa ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-channel="WhatsApp" href="<?php echo esc_url( $wa ); ?>" target="_blank" rel="noopener">WhatsApp</a> <?php endif; ?>
@@ -1106,6 +1127,12 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				btn.disabled=true; fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ if(j&&j.success){ btn.outerHTML='<span style="color:#1e7e34;font-weight:700;">✅ A répondu le '+j.data.date+'</span>'; } else { btn.disabled=false; } }).catch(function(){ btn.disabled=false; });
 			}); }
 			document.querySelectorAll('.ag-reply').forEach(bindReply);
+			// Résultat du contact en 1 clic (bloqué / sans réponse).
+			document.querySelectorAll('.ag-outcome').forEach(function(btn){ btn.addEventListener('click',function(){
+				var id=btn.getAttribute('data-id'); var out=btn.getAttribute('data-outcome');
+				var fd=new FormData(); fd.append('action','ag_prospect_outcome'); fd.append('_n',nonce); fd.append('id',id); fd.append('outcome',out);
+				btn.disabled=true; fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ if(j&&j.success){ location.reload(); } else { btn.disabled=false; } }).catch(function(){ btn.disabled=false; });
+			}); });
 			// Enregistrer une note (ma fiche) sur un prospect existant.
 			document.querySelectorAll('.ag-note-save').forEach(function(btn){ btn.addEventListener('click',function(){
 				var id=btn.getAttribute('data-id'); var box=btn.closest('details'); var ta=box?box.querySelector('.ag-note-field'):null; if(!ta) return;
