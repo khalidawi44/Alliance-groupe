@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! function_exists( 'ag_recruit_message' ) ) {
 	function ag_recruit_message() {
 		$link = home_url( '/ambassadeurs' );
-		return "💸 Salut ! Tu veux un revenu en plus, simple et flexible ?\n\nDeviens *ambassadeur Alliance Groupe* : tu présentes nos sites web à des commerçants et artisans de ta ville, et tu touches *10 % sur chaque vente* (un site à 890 € = *89 € pour toi*, payé sur PayPal). Pas de plafond.\n\n✅ Aucune expérience requise\n✅ Outils & formation fournis\n✅ Tu bosses quand tu veux, depuis ton téléphone\n\n👉 Inscris-toi ici : {$link}\n\nDes questions ? Réponds à ce message 🙂";
+		return "💸 Salut{prenom} ! Tu veux un revenu en plus, simple et flexible ?\n\nDeviens *ambassadeur Alliance Groupe* : tu présentes nos sites web à des commerçants et artisans de ta ville, et tu touches *10 % sur chaque vente* (un site à 890 € = *89 € pour toi*, payé sur PayPal). Pas de plafond.\n\n✅ Aucune expérience requise\n✅ Outils & formation fournis\n✅ Tu bosses quand tu veux, depuis ton téléphone\n\n👉 Inscris-toi ici : {$link}\n\nDes questions ? Réponds à ce message 🙂";
 	}
 }
 
@@ -175,32 +175,39 @@ if ( ! function_exists( 'ag_zones_render' ) ) {
 			<!-- Recruter des ambassadeurs (SMS / WhatsApp) -->
 			<div style="background:#fff;border:1px solid #ccd0d4;border-left:4px solid #1e7e34;border-radius:8px;padding:16px 18px;margin:12px 0 22px;max-width:980px;">
 				<h2 style="margin-top:0;">📣 Recruter des ambassadeurs (SMS / WhatsApp)</h2>
-				<p style="color:#50575e;font-size:.9rem;">Colle les numéros (un par ligne), ajuste le message si besoin, puis clique <strong>Générer</strong>. Tu obtiens un lien <strong>SMS</strong> (depuis ton tél) et <strong>WhatsApp</strong> par personne, message + lien d'inscription + gains déjà dedans.</p>
+				<p style="color:#50575e;font-size:.9rem;">Une ligne par personne, au format <code>numéro, prénom</code> (le prénom est optionnel). Le message est <strong>personnalisé automatiquement</strong> : <code>{prenom}</code> est remplacé par le prénom de chacun. Clique <strong>Générer</strong> → tu obtiens un lien <strong>SMS</strong> (depuis ton tél) et <strong>WhatsApp</strong> par personne, message + lien d'inscription + gains déjà dedans.</p>
 				<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;">
 					<div>
-						<label style="font-weight:600;display:block;margin-bottom:4px;">Numéros (un par ligne)</label>
-						<textarea id="ag-recruit-nums" rows="6" style="width:100%;" placeholder="0612345678&#10;0699887766"></textarea>
+						<label style="font-weight:600;display:block;margin-bottom:4px;">Numéros &amp; prénoms (un par ligne)</label>
+						<textarea id="ag-recruit-nums" rows="6" style="width:100%;" placeholder="0612345678, Marc&#10;0699887766, Sofia&#10;0788990011"></textarea>
 					</div>
 					<div>
-						<label style="font-weight:600;display:block;margin-bottom:4px;">Message</label>
+						<label style="font-weight:600;display:block;margin-bottom:4px;">Message <span style="font-weight:400;color:#646970;">(utilise <code>{prenom}</code>)</span></label>
 						<textarea id="ag-recruit-msg" rows="6" style="width:100%;"><?php echo esc_textarea( ag_recruit_message() ); ?></textarea>
 					</div>
 				</div>
-				<button type="button" class="button button-primary" id="ag-recruit-go" style="margin-top:10px;">Générer les liens</button>
+				<button type="button" class="button button-primary" id="ag-recruit-go" style="margin-top:10px;">Générer les liens personnalisés</button>
 				<div id="ag-recruit-out" style="margin-top:12px;"></div>
 				<script>
 				(function(){
 					var go=document.getElementById('ag-recruit-go'); if(!go) return;
 					function wa(num){ var d=(num||'').replace(/[^0-9]/g,''); if(d.indexOf('00')===0)d=d.substr(2); if(d.charAt(0)==='0')d='33'+d.replace(/^0+/,''); return d; }
+					function esc(s){ return (s||'').replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];}); }
 					go.addEventListener('click',function(){
-						var nums=document.getElementById('ag-recruit-nums').value.split(/\n+/).map(function(s){return s.trim();}).filter(Boolean);
-						var msg=document.getElementById('ag-recruit-msg').value;
-						var out=document.getElementById('ag-recruit-out'); if(!nums.length){ out.innerHTML='<em>Ajoute au moins un numéro.</em>'; return; }
-						var h='<table class="widefat striped"><thead><tr><th>Numéro</th><th>Envoyer</th></tr></thead><tbody>';
-						nums.forEach(function(n){
-							var sms='sms:'+n.replace(/[^0-9+]/g,'')+'?body='+encodeURIComponent(msg);
-							var w='https://wa.me/'+wa(n)+'?text='+encodeURIComponent(msg);
-							h+='<tr><td>'+n.replace(/</g,'')+'</td><td><a class="button button-small" href="'+sms+'">📱 SMS</a> <a class="button button-small" target="_blank" rel="noopener" href="'+w+'">WhatsApp</a></td></tr>';
+						var lines=document.getElementById('ag-recruit-nums').value.split(/\n+/).map(function(s){return s.trim();}).filter(Boolean);
+						var tpl=document.getElementById('ag-recruit-msg').value;
+						var out=document.getElementById('ag-recruit-out'); if(!lines.length){ out.innerHTML='<em>Ajoute au moins un numéro.</em>'; return; }
+						var h='<table class="widefat striped"><thead><tr><th>Prénom</th><th>Numéro</th><th>Envoyer</th></tr></thead><tbody>';
+						lines.forEach(function(line){
+							var m=line.match(/^\s*([+0-9 ().-]{6,})\s*[,;:–-]?\s*(.*)$/);
+							var rawNum=m?m[1].trim():line;
+							var name=m?m[2].trim():'';
+							var num=rawNum.replace(/[^0-9+]/g,'');
+							var token=name?' '+name:'';                       // "Salut{prenom} !" -> "Salut Marc !" / "Salut !"
+							var msg=tpl.replace(/\{prenom\}/g,token);
+							var sms='sms:'+num+'?body='+encodeURIComponent(msg);
+							var w='https://wa.me/'+wa(rawNum)+'?text='+encodeURIComponent(msg);
+							h+='<tr><td><strong>'+esc(name||'—')+'</strong></td><td>'+esc(num)+'</td><td><a class="button button-small" href="'+sms+'">📱 SMS</a> <a class="button button-small" target="_blank" rel="noopener" href="'+w+'">WhatsApp</a></td></tr>';
 						});
 						h+='</tbody></table>'; out.innerHTML=h;
 					});
