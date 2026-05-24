@@ -389,7 +389,7 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 							<td>
 								<div class="ag-amb-suivi" data-id="<?php echo esc_attr( $pid ); ?>" style="font-size:.82em;margin-bottom:6px;line-height:1.5;<?php echo empty( $pp['date_contact'] ) ? 'color:#e6b35a;' : 'color:var(--color-text-soft);'; ?>">
 									<?php if ( ! empty( $pp['date_contact'] ) ) : ?>
-										📨 Contacté le <strong><?php echo esc_html( $pp['date_contact'] ); ?></strong> (×<?php echo (int) ( $pp['contact_count'] ?? 1 ); ?>)<br>
+										📨 Contacté<?php echo ! empty( $pp['last_channel'] ) ? ' par <strong>' . esc_html( $pp['last_channel'] ) . '</strong>' : ''; ?> le <strong><?php echo esc_html( $pp['date_contact'] ); ?></strong> (×<?php echo (int) ( $pp['contact_count'] ?? 1 ); ?>)<br>
 										<?php if ( ! empty( $pp['replied'] ) ) : ?>
 											<span style="color:#5fd08a;font-weight:700;">✅ A répondu<?php echo $pp['date_reply'] ? ' le ' . esc_html( $pp['date_reply'] ) : ''; ?></span>
 										<?php else : ?>
@@ -397,10 +397,10 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 										<?php endif; ?>
 									<?php else : ?>⏳ Pas encore contacté<?php endif; ?>
 								</div>
-								<?php if ( ! empty( $pp['phone'] ) ) : ?><a href="tel:<?php echo esc_attr( $pp['phone'] ); ?>" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" style="padding:6px 10px;">📞 Appeler</a> <?php endif; ?>
-								<?php if ( $pwa ) : ?><a href="<?php echo esc_url( $pwa ); ?>" target="_blank" rel="noopener" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" style="padding:6px 10px;">WhatsApp</a> <?php endif; ?>
-								<?php if ( $psms ) : ?><a href="<?php echo esc_attr( $psms ); ?>" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" style="padding:6px 10px;">📱 SMS</a> <?php endif; ?>
-								<?php if ( $pmail ) : ?><a href="<?php echo esc_url( $pmail ); ?>" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" style="padding:6px 10px;">Email</a> <?php endif; ?>
+								<?php if ( ! empty( $pp['phone'] ) ) : ?><a href="tel:<?php echo esc_attr( $pp['phone'] ); ?>" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="Appel" style="padding:6px 10px;">📞 Appeler</a> <?php endif; ?>
+								<?php if ( $pwa ) : ?><a href="<?php echo esc_url( $pwa ); ?>" target="_blank" rel="noopener" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="WhatsApp" style="padding:6px 10px;">WhatsApp</a> <?php endif; ?>
+								<?php if ( $psms ) : ?><a href="<?php echo esc_attr( $psms ); ?>" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="SMS" style="padding:6px 10px;">📱 SMS</a> <?php endif; ?>
+								<?php if ( $pmail ) : ?><a href="<?php echo esc_url( $pmail ); ?>" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="Email" style="padding:6px 10px;">Email</a> <?php endif; ?>
 								<details style="margin-top:6px;"><summary style="cursor:pointer;color:var(--color-gold);">Voir le message</summary><textarea readonly rows="8" style="width:100%;margin-top:6px;background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(212,180,92,.3);border-radius:10px;padding:10px;"><?php echo esc_textarea( $pmsg ); ?></textarea></details>
 							</td>
 							<td>
@@ -424,9 +424,10 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 			var au=<?php echo wp_json_encode( $ag_ajax_url ); ?>, n=<?php echo wp_json_encode( $ag_ajax_nonce ); ?>;
 			document.querySelectorAll('.ag-amb-touch').forEach(function(a){ a.addEventListener('click',function(){
 				var id=a.getAttribute('data-id'); if(!id) return;
-				var fd=new FormData(); fd.append('action','ag_amb_touch'); fd.append('_n',n); fd.append('id',id);
+				var ch=a.getAttribute('data-channel')||'';
+					var fd=new FormData(); fd.append('action','ag_amb_touch'); fd.append('_n',n); fd.append('id',id); fd.append('channel',ch);
 				fetch(au,{method:'POST',body:fd,credentials:'same-origin',keepalive:true}).then(function(r){return r.json();}).then(function(j){
-					if(j&&j.success){ var d=a.closest('td').querySelector('.ag-amb-suivi'); if(d){ d.style.color='var(--color-text-soft)'; d.innerHTML='📨 Contacté le <strong>'+j.data.date+'</strong> (×'+j.data.count+')<br><button type="button" class="ag-amb-reply ag-btn-outline" data-id="'+id+'" style="padding:3px 10px;font-size:.95em;">A répondu ?</button>'; bindReply(d.querySelector('.ag-amb-reply')); } }
+					if(j&&j.success){ var d=a.closest('td').querySelector('.ag-amb-suivi'); if(d){ var par=j.data.channel?(' par <strong>'+j.data.channel+'</strong>'):''; d.style.color='var(--color-text-soft)'; d.innerHTML='📨 Contacté'+par+' le <strong>'+j.data.date+'</strong> (×'+j.data.count+')<br><button type="button" class="ag-amb-reply ag-btn-outline" data-id="'+id+'" style="padding:3px 10px;font-size:.95em;">A répondu ?</button>'; bindReply(d.querySelector('.ag-amb-reply')); } }
 				}).catch(function(){});
 			}); });
 			function bindReply(btn){ if(!btn) return; btn.addEventListener('click',function(){

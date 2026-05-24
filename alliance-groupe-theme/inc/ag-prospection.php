@@ -269,6 +269,7 @@ add_action( 'wp_ajax_ag_prospect_add', function () {
 add_action( 'wp_ajax_ag_prospect_touch', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
 	$id   = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+	$ch   = sanitize_text_field( wp_unslash( $_POST['channel'] ?? '' ) );
 	$list = (array) get_option( 'ag_prospects', array() );
 	foreach ( $list as $k => $p ) {
 		if ( ( $p['id'] ?? '' ) === $id ) {
@@ -276,12 +277,13 @@ add_action( 'wp_ajax_ag_prospect_touch', function () {
 			$cnt = (int) ( $p['contact_count'] ?? 0 ) + 1;
 			$list[ $k ]['contact_count'] = $cnt;
 			$list[ $k ]['last_contact']  = $now;
+			if ( $ch ) $list[ $k ]['last_channel'] = $ch;
 			if ( empty( $p['date_contact'] ) ) $list[ $k ]['date_contact'] = $now;
 			$cur = $p['status'] ?? 'nouveau';
 			if ( 'nouveau' === $cur ) $list[ $k ]['status'] = 'contacte';
 			elseif ( in_array( $cur, array( 'contacte', 'sans_reponse' ), true ) ) $list[ $k ]['status'] = 'relance';
 			update_option( 'ag_prospects', array_values( $list ) );
-			wp_send_json_success( array( 'count' => $cnt, 'date' => $now, 'status' => $list[ $k ]['status'] ) );
+			wp_send_json_success( array( 'count' => $cnt, 'date' => $now, 'status' => $list[ $k ]['status'], 'channel' => $ch ) );
 		}
 	}
 	wp_send_json_error();
@@ -546,7 +548,10 @@ if ( ! function_exists( 'ag_prospect_message' ) ) {
 		$msg .= "💳 Prix fixe dès *490 €* (payable en 4× sans frais), livré en quelques jours, sans rendez-vous.\n\n";
 		$msg .= "👉 Voir ce qu'on fait : {$site}\n";
 		if ( ! empty( $props ) || '' !== $notes ) $msg .= "✦ Refonte sur-mesure : " . home_url( '/sur-mesure' ) . "\n";
-		$msg .= "\nOn en parle 5 minutes, sans engagement ? 🙂\n📞 {$phone}\n\n🤝 Alliance Groupe\n📩 contact@alliancegroupe-inc.com";
+		$msg .= "\nOn en parle 5 minutes, sans engagement ? 🙂\n📞 {$phone}\n";
+		$tg = function_exists( 'ag_tg_cfg' ) ? ag_tg_cfg( 'chan_link' ) : '';
+		if ( $tg ) $msg .= "📣 Notre canal clients (offres & nouveautés) : {$tg}\n";
+		$msg .= "\n🤝 Alliance Groupe\n📩 contact@alliancegroupe-inc.com";
 		if ( ! empty( $p['id'] ) && function_exists( 'ag_prospect_unsub_url' ) ) $msg .= "\n\n🚫 Ne plus être contacté (1 clic) : " . ag_prospect_unsub_url( $p );
 		return $msg;
 	}
@@ -941,7 +946,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 							<?php if ( $blocked ) : ?><em style="color:#50575e;">à ne pas recontacter</em><?php else : ?>
 							<div class="ag-suivi" style="font-size:.8em;margin-bottom:6px;line-height:1.5;<?php echo empty( $p['date_contact'] ) ? 'color:#b26a00;' : 'color:#50575e;'; ?>">
 								<?php if ( ! empty( $p['date_contact'] ) ) : ?>
-									📨 Contacté le <strong><?php echo esc_html( $p['date_contact'] ); ?></strong> (×<?php echo (int) ( $p['contact_count'] ?? 1 ); ?>)<br>
+									📨 Contacté<?php echo ! empty( $p['last_channel'] ) ? ' par <strong>' . esc_html( $p['last_channel'] ) . '</strong>' : ''; ?> le <strong><?php echo esc_html( $p['date_contact'] ); ?></strong> (×<?php echo (int) ( $p['contact_count'] ?? 1 ); ?>)<br>
 									<?php if ( ! empty( $p['replied'] ) ) : ?>
 										<span style="color:#1e7e34;font-weight:700;">✅ A répondu<?php echo $p['date_reply'] ? ' le ' . esc_html( $p['date_reply'] ) : ''; ?></span>
 									<?php else : ?>
@@ -949,9 +954,9 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 									<?php endif; ?>
 								<?php else : ?>⏳ Pas encore contacté<?php endif; ?>
 							</div>
-							<?php if ( $wa ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" href="<?php echo esc_url( $wa ); ?>" target="_blank" rel="noopener">WhatsApp</a> <?php endif; ?>
-							<?php if ( $sms ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" href="<?php echo esc_attr( $sms ); ?>" title="Ouvre Messages sur ton ordi (lié à ton tél) -> envoi depuis ton numéro">📱 SMS</a> <?php endif; ?>
-							<?php if ( $mailto ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" href="<?php echo esc_url( $mailto ); ?>">Email</a> <?php endif; ?>
+							<?php if ( $wa ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-channel="WhatsApp" href="<?php echo esc_url( $wa ); ?>" target="_blank" rel="noopener">WhatsApp</a> <?php endif; ?>
+							<?php if ( $sms ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-channel="SMS" href="<?php echo esc_attr( $sms ); ?>" title="Ouvre Messages sur ton ordi (lié à ton tél) -> envoi depuis ton numéro">📱 SMS</a> <?php endif; ?>
+							<?php if ( $mailto ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-channel="Email" href="<?php echo esc_url( $mailto ); ?>">Email</a> <?php endif; ?>
 							<details style="display:inline-block;margin-top:4px;"><summary class="button button-small">Message émotionnel</summary><textarea readonly rows="9" style="width:360px;margin-top:6px;"><?php echo esc_textarea( $msg ); ?></textarea></details>
 							<?php if ( ! empty( $p['website'] ) ) : ?><a class="button button-small" href="<?php echo esc_url( $p['website'] ); ?>" target="_blank" rel="noopener">🔗 Voir le site</a> <?php endif; ?>
 							<details style="display:block;margin-top:6px;"><summary class="button button-small">📝 Ma fiche (notes)</summary>
@@ -1015,9 +1020,10 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			// Clic WhatsApp/Email = enregistre le contact (date + compteur + statut auto). Le lien s'ouvre normalement.
 			document.querySelectorAll('.ag-touch').forEach(function(a){ a.addEventListener('click',function(){
 				var id=a.getAttribute('data-id'); if(!id) return;
-				var fd=new FormData(); fd.append('action','ag_prospect_touch'); fd.append('_n',nonce); fd.append('id',id);
+				var ch=a.getAttribute('data-channel')||'';
+				var fd=new FormData(); fd.append('action','ag_prospect_touch'); fd.append('_n',nonce); fd.append('id',id); fd.append('channel',ch);
 				fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin',keepalive:true}).then(function(r){return r.json();}).then(function(j){
-					if(j&&j.success){ var d=a.closest('td').querySelector('.ag-suivi'); if(d){ d.style.color='#50575e'; d.innerHTML='📨 Contacté le <strong>'+j.data.date+'</strong> (×'+j.data.count+')<br><button type="button" class="button button-small ag-reply" data-id="'+id+'">A répondu ?</button>'; bindReply(d.querySelector('.ag-reply')); } }
+					if(j&&j.success){ var d=a.closest('td').querySelector('.ag-suivi'); if(d){ var par=j.data.channel?(' par <strong>'+j.data.channel+'</strong>'):''; d.style.color='#50575e'; d.innerHTML='📨 Contacté'+par+' le <strong>'+j.data.date+'</strong> (×'+j.data.count+')<br><button type="button" class="button button-small ag-reply" data-id="'+id+'">A répondu ?</button>'; bindReply(d.querySelector('.ag-reply')); } }
 				}).catch(function(){});
 			}); });
 			// Marquer "a répondu".
@@ -1161,6 +1167,7 @@ add_action( 'wp_ajax_ag_amb_touch', function () {
 	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error();
 	$email = strtolower( wp_get_current_user()->user_email );
 	$id    = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+	$ch    = sanitize_text_field( wp_unslash( $_POST['channel'] ?? '' ) );
 	$list  = (array) get_option( 'ag_prospects', array() );
 	foreach ( $list as $k => $p ) {
 		if ( ( $p['id'] ?? '' ) === $id && ( current_user_can( 'manage_options' ) || strtolower( $p['owner_email'] ?? '' ) === $email ) ) {
@@ -1168,12 +1175,13 @@ add_action( 'wp_ajax_ag_amb_touch', function () {
 			$cnt = (int) ( $p['contact_count'] ?? 0 ) + 1;
 			$list[ $k ]['contact_count'] = $cnt;
 			$list[ $k ]['last_contact']  = $now;
+			if ( $ch ) $list[ $k ]['last_channel'] = $ch;
 			if ( empty( $p['date_contact'] ) ) $list[ $k ]['date_contact'] = $now;
 			$cur = $p['status'] ?? 'nouveau';
 			if ( 'nouveau' === $cur ) $list[ $k ]['status'] = 'contacte';
 			elseif ( in_array( $cur, array( 'contacte', 'sans_reponse' ), true ) ) $list[ $k ]['status'] = 'relance';
 			update_option( 'ag_prospects', array_values( $list ) );
-			wp_send_json_success( array( 'count' => $cnt, 'date' => $now ) );
+			wp_send_json_success( array( 'count' => $cnt, 'date' => $now, 'channel' => $ch ) );
 		}
 	}
 	wp_send_json_error();
