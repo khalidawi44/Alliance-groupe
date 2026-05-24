@@ -347,6 +347,8 @@
 
             <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>" style="display:block;padding:15px 4px;color:#D4B45C;font-weight:700;border-bottom:1px solid rgba(212,180,92,.15);">✦ Sur-mesure <span style="opacity:.7;font-weight:400;">(sur devis)</span></a>
 
+            <a href="<?php echo esc_url(home_url('/systeme-prospection')); ?>" style="display:block;padding:15px 4px;color:#fff;font-weight:700;border-bottom:1px solid rgba(212,180,92,.15);">🤖 Système de prospection <span style="opacity:.7;font-weight:400;">(trouve vos clients)</span></a>
+
             <div class="ag-mobile-menu__group">
                 <button class="ag-mobile-menu__toggle" type="button">Services <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
