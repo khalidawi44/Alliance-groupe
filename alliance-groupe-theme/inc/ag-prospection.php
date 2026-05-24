@@ -499,15 +499,24 @@ if ( ! function_exists( 'ag_prospect_message' ) ) {
 		elseif ( false !== strpos( $type, 'coiffeur' ) || false !== strpos( $type, 'barbier' ) || false !== strpos( $type, 'beauté' ) || false !== strpos( $type, 'institut' ) ) $promesse = "imaginez un agenda qui se remplit tout seul : vos clients prennent rendez-vous en ligne, 24h/24, même quand le salon est fermé.";
 		elseif ( false !== strpos( $type, 'plombier' ) || false !== strpos( $type, 'électricien' ) || false !== strpos( $type, 'garagiste' ) || false !== strpos( $type, 'artisan' ) ) $promesse = "imaginez recevoir les demandes de devis urgentes directement sur votre téléphone, avant que le client n'appelle le concurrent d'à côté.";
 
+		$phone = apply_filters( 'ag_contact_phone', '06 23 52 60 74' );
+		$notes = trim( (string) ( $p['notes'] ?? '' ) );
+
 		$msg  = "✨ Bonjour,\n\n{$accroche}\n\n";
-		$msg .= "Chez *Alliance Groupe*, on crée des sites pros 📱 qui travaillent pour vous 24h/24 :\n";
-		$msg .= "✅ Prix fixe dès *490 €* (payable en 4× sans frais)\n";
-		$msg .= "✅ Livré en quelques jours, *sans rendez-vous*\n";
-		$msg .= "✅ Optimisé Google + parfait sur mobile\n\n";
-		$msg .= "{$promesse}\n\n";
-		$msg .= "👉 Voir des exemples : {$site}\n\n";
-		$msg .= "On en parle 5 minutes, sans engagement ? 🙂\n\n";
-		$msg .= "🤝 Alliance Groupe\n📩 contact@alliancegroupe-inc.com";
+		if ( '' !== $notes ) {
+			// Message basé sur MES notes : on propose précisément ce que j'ai repéré.
+			$msg .= "👀 Concrètement, voici ce que je vous propose d'améliorer :\n{$notes}\n\n";
+			$msg .= "✅ Je m'occupe de tout, de A à Z : refonte du site, *vraie réservation / prise de RDV en ligne*, menu & navigation clairs, bouton retour en haut, fiche Google optimisée — exactement ce qu'il vous faut.\n\n";
+		} else {
+			$msg .= "Chez *Alliance Groupe*, on crée des sites pros 📱 qui travaillent pour vous 24h/24 :\n";
+			$msg .= "✅ Refonte complète, navigation claire, *vraie réservation en ligne*\n";
+			$msg .= "✅ Optimisé Google + parfait sur mobile\n\n";
+			$msg .= "{$promesse}\n\n";
+		}
+		$msg .= "💳 Prix fixe dès *490 €* (payable en 4× sans frais), livré en quelques jours, sans rendez-vous.\n\n";
+		$msg .= "👉 Voir ce qu'on fait : {$site}\n";
+		if ( '' !== $notes ) $msg .= "✦ Refonte sur-mesure : " . home_url( '/sur-mesure' ) . "\n";
+		$msg .= "\nOn en parle 5 minutes, sans engagement ? 🙂\n📞 {$phone}\n\n🤝 Alliance Groupe\n📩 contact@alliancegroupe-inc.com";
 		if ( ! empty( $p['id'] ) && function_exists( 'ag_prospect_unsub_url' ) ) $msg .= "\n\n🚫 Ne plus être contacté (1 clic) : " . ag_prospect_unsub_url( $p );
 		return $msg;
 	}
