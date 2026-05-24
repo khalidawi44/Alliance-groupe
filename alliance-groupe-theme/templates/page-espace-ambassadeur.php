@@ -54,17 +54,71 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 			$ob_tg    = function_exists( 'ag_tg_cfg' ) ? ag_tg_cfg( 'group_link' ) : '';
 			$ob_dn    = function_exists( 'ag_dept_names' ) ? ag_dept_names() : array();
 			$ob_zlbl  = $ob_zones ? ( $ob_zones[0] . ( isset( $ob_dn[ $ob_zones[0] ] ) ? ' · ' . $ob_dn[ $ob_zones[0] ] : '' ) ) : '';
-			$ob_done  = 1 + ( $ob_phone ? 1 : 0 ) + ( $ob_zones ? 1 : 0 );
+			$ob_tg_ack = (bool) get_user_meta( get_current_user_id(), 'ag_onboard_tg', true );
+			$ob_sugg   = ( function_exists( 'ag_dept_from_location' ) && $rec ) ? ag_dept_from_location( $rec['city'] ?? '', $rec['cp'] ?? '', $rec['address'] ?? '' ) : '';
+			$ob_feed   = isset( $_GET['zone'] ) ? sanitize_text_field( wp_unslash( $_GET['zone'] ) ) : '';
+			$ob_post   = admin_url( 'admin-post.php' );
+			if ( ! $ob_tg_ack )           $ob_step = 1;
+			elseif ( '' === $ob_phone )   $ob_step = 2;
+			elseif ( empty( $ob_zones ) ) $ob_step = 3;
+			else                          $ob_step = 4;
 			?>
-			<div class="ag-onboard">
-				<div class="ag-onboard__head"><strong>🚀 Bien démarrer</strong><span><?php echo (int) $ob_done; ?>/4 étapes prêtes</span></div>
-				<ol class="ag-onboard__steps">
-					<li class="is-done"><span class="ag-onboard__ic">✅</span><div><strong>Compte activé</strong><br><span>Tu es connecté à ton espace.</span></div></li>
-					<li><span class="ag-onboard__ic">💬</span><div><strong>Rejoindre le groupe Telegram <em>(obligatoire)</em></strong><br><span>Annonces, entraide &amp; prospects de ta zone.</span><?php if ( $ob_tg ) : ?> <a href="<?php echo esc_url( $ob_tg ); ?>" target="_blank" rel="noopener" class="ag-onboard__btn">Rejoindre →</a><?php endif; ?></div></li>
-					<li class="<?php echo $ob_phone ? 'is-done' : ''; ?>"><span class="ag-onboard__ic"><?php echo $ob_phone ? '✅' : '📱'; ?></span><div><strong>Vérifier mon numéro</strong><br><span><?php echo $ob_phone ? 'Numéro enregistré.' : 'Un numéro = un ambassadeur (anti multi-comptes).'; ?></span><?php if ( ! $ob_phone ) : ?> <a href="#zone" class="ag-onboard__btn">Ajouter →</a><?php endif; ?></div></li>
-					<li class="<?php echo $ob_zones ? 'is-done' : ''; ?>"><span class="ag-onboard__ic"><?php echo $ob_zones ? '✅' : '🗺️'; ?></span><div><strong>Choisir ma zone de prospection</strong><br><span><?php echo $ob_zones ? ( 'Ta zone : ' . esc_html( $ob_zlbl ) . '. Les prospects arrivent automatiquement.' ) : 'Ton département t\'est proposé selon ta ville. 1 seule zone chacun.'; ?></span> <a href="#zone" class="ag-onboard__btn"><?php echo $ob_zones ? 'Changer →' : 'Choisir →'; ?></a></div></li>
-				</ol>
-				<p class="ag-onboard__tip">💡 <strong>Comment marche ta zone :</strong> seul sur une zone = tu reçois <strong>tous</strong> les prospects. À plusieurs sur la même zone = partage <strong>50/50</strong> (moins chacun). Une zone où il n'y a encore <strong>personne</strong> = <strong>plus de prospects pour toi</strong>.</p>
+			<div class="ag-wiz" id="demarrage">
+				<div class="ag-wiz__bar"><span style="width:<?php echo (int) ( $ob_step * 25 ); ?>%;"></span></div>
+				<div class="ag-wiz__top">Étape <?php echo (int) $ob_step; ?> sur 4</div>
+
+				<?php if ( 1 === $ob_step ) : ?>
+					<div class="ag-wiz__step">
+						<div class="ag-wiz__ic">💬</div>
+						<h3 class="ag-wiz__q">Rejoins le groupe Telegram des ambassadeurs</h3>
+						<p class="ag-wiz__d">C'est <strong>obligatoire</strong> : on y partage les annonces, l'entraide et les prospects. Ouvre-le, rejoins, puis reviens cliquer sur « J'ai rejoint ».</p>
+						<?php if ( $ob_tg ) : ?><p><a href="<?php echo esc_url( $ob_tg ); ?>" target="_blank" rel="noopener" class="ag-btn-outline">📲 Ouvrir le groupe Telegram</a></p><?php else : ?><p class="ag-wiz__d">Le lien du groupe t'a été envoyé par email.</p><?php endif; ?>
+						<form method="post" action="<?php echo esc_url( $ob_post ); ?>">
+							<input type="hidden" name="action" value="ag_onboard_tg_ack">
+							<?php wp_nonce_field( 'ag_zone_front', '_n' ); ?>
+							<button type="submit" class="ag-btn-gold ag-wiz__next">✅ J'ai rejoint, continuer →</button>
+						</form>
+					</div>
+
+				<?php elseif ( 2 === $ob_step ) : ?>
+					<div class="ag-wiz__step">
+						<div class="ag-wiz__ic">📱</div>
+						<h3 class="ag-wiz__q">Vérifie ton numéro de téléphone</h3>
+						<p class="ag-wiz__d">Un numéro = un ambassadeur (pas de multi-comptes). Ça débloque ta zone.</p>
+						<?php if ( 'phone_dupe' === $ob_feed ) : ?><p class="ag-wiz__err">Ce numéro est déjà utilisé par un autre compte.</p>
+						<?php elseif ( 'phone_err' === $ob_feed ) : ?><p class="ag-wiz__err">Numéro invalide. Format : 0612345678.</p><?php endif; ?>
+						<form method="post" action="<?php echo esc_url( $ob_post ); ?>" class="ag-wiz__form">
+							<input type="hidden" name="action" value="ag_amb_phone_save">
+							<?php wp_nonce_field( 'ag_zone_front', '_n' ); ?>
+							<input type="tel" name="phone" value="<?php echo esc_attr( $rec['phone'] ?? '' ); ?>" placeholder="Ton numéro (ex : 0612345678)" required class="ag-wiz__input">
+							<button type="submit" class="ag-btn-gold ag-wiz__next">Valider mon numéro →</button>
+						</form>
+					</div>
+
+				<?php elseif ( 3 === $ob_step ) : ?>
+					<div class="ag-wiz__step">
+						<div class="ag-wiz__ic">🗺️</div>
+						<h3 class="ag-wiz__q">Choisis ta zone de prospection</h3>
+						<p class="ag-wiz__d">Ton département, d'après ta ville<?php if ( $ob_sugg && isset( $ob_dn[ $ob_sugg ] ) ) : ?> : <strong style="color:var(--color-gold);"><?php echo esc_html( $ob_sugg . ' · ' . $ob_dn[ $ob_sugg ] ); ?></strong> (déjà pré-rempli)<?php endif; ?>. <strong>1 seule zone</strong> chacun.</p>
+						<p class="ag-wiz__tip">💡 Seul sur la zone = <strong>tous</strong> les prospects pour toi. À plusieurs = partage <strong>50/50</strong>. Une zone vide = <strong>plus de prospects</strong>.</p>
+						<?php if ( 'err' === $ob_feed ) : ?><p class="ag-wiz__err">Département invalide. Mets 2 chiffres (ex. 33).</p><?php endif; ?>
+						<form method="post" action="<?php echo esc_url( $ob_post ); ?>" class="ag-wiz__form">
+							<input type="hidden" name="action" value="ag_zone_request">
+							<?php wp_nonce_field( 'ag_zone_front', '_n' ); ?>
+							<input type="text" name="dept" maxlength="3" value="<?php echo esc_attr( $ob_sugg ); ?>" placeholder="Dép. (ex : 33)" required class="ag-wiz__input" style="max-width:160px;">
+							<button type="submit" class="ag-btn-gold ag-wiz__next">Prendre cette zone →</button>
+						</form>
+					</div>
+
+				<?php else : ?>
+					<div class="ag-wiz__step">
+						<div class="ag-wiz__ic">🎉</div>
+						<h3 class="ag-wiz__q">Tu es prêt à prospecter !</h3>
+						<p class="ag-wiz__d">Ta zone : <strong style="color:var(--color-gold);"><?php echo esc_html( $ob_zlbl ); ?></strong>. Les prospects arrivent <strong>automatiquement</strong>. Lance-toi.</p>
+						<a href="#chercher" class="ag-btn-gold ag-wiz__next">🔎 Trouver des clients dans ma zone →</a>
+						<p class="ag-wiz__d" style="margin-top:10px;"><a href="<?php echo esc_url( $ag_sale_link ); ?>" style="color:var(--color-gold);">…ou partage ton lien de vente</a></p>
+					</div>
+				<?php endif; ?>
 			</div>
 
 			<?php if ( $actif ) : ?>
@@ -243,6 +297,7 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 	// Département suggéré d'après la ville/code postal déclarés à l'inscription.
 	$ag_sugg = ( ! $ag_myzones && function_exists( 'ag_dept_from_location' ) && $rec ) ? ag_dept_from_location( $rec['city'] ?? '', $rec['cp'] ?? '', $rec['address'] ?? '' ) : '';
 	?>
+	<?php if ( isset( $ob_step ) && 4 === $ob_step ) : ?>
 	<section class="ag-section ag-section--onyx" id="zone">
 		<div class="ag-container">
 			<h2 class="ag-section__title">Ma zone 🗺️</h2>
@@ -282,6 +337,7 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 			<?php endif; ?>
 		</div>
 	</section>
+	<?php endif; ?>
 
 	<?php
 	$ag_is_chasseur = function_exists( 'ag_is_chasseur' ) && ag_is_chasseur( get_current_user_id() );
@@ -501,17 +557,18 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 .ag-esp-guide:hover{transform:translateY(-2px);border-color:rgba(212,180,92,.7);color:#fff;text-decoration:none;}
 .ag-esp-guide strong{color:#e8c766;}
 .ag-esp-guide span{margin-left:auto;color:#e8c766;font-weight:800;}
-.ag-onboard{margin:18px 0 0;padding:18px 20px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.3);border-radius:16px;}
-.ag-onboard__head{display:flex;justify-content:space-between;align-items:center;color:#fff;font-size:1.05rem;margin-bottom:12px;}
-.ag-onboard__head span{color:#e8c766;font-weight:800;font-size:.85rem;}
-.ag-onboard__steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
-.ag-onboard__steps li{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);border-radius:12px;color:#dcdce4;}
-.ag-onboard__steps li.is-done{border-color:rgba(95,208,138,.4);background:rgba(95,208,138,.07);}
-.ag-onboard__ic{font-size:1.25rem;line-height:1.3;flex:0 0 auto;}
-.ag-onboard__steps strong{color:#fff;}
-.ag-onboard__steps em{color:#e8c766;font-style:normal;}
-.ag-onboard__btn{display:inline-block;margin-top:6px;padding:5px 12px;background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;font-weight:800;border-radius:100px;text-decoration:none;font-size:.82rem;}
-.ag-onboard__tip{margin:12px 0 0;padding:10px 14px;background:rgba(212,180,92,.1);border-radius:10px;color:#cfc7b8;font-size:.86rem;line-height:1.5;}
+.ag-wiz{margin:18px auto 0;max-width:620px;padding:24px 22px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.4);border-radius:18px;text-align:center;}
+.ag-wiz__bar{height:8px;background:rgba(255,255,255,.08);border-radius:100px;overflow:hidden;margin-bottom:10px;}
+.ag-wiz__bar span{display:block;height:100%;background:linear-gradient(90deg,#D4B45C,#F37A1F);transition:width .4s;}
+.ag-wiz__top{color:#e8c766;font-weight:800;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;margin-bottom:14px;}
+.ag-wiz__ic{font-size:2.6rem;line-height:1;margin-bottom:6px;}
+.ag-wiz__q{color:#fff;font-family:var(--font-serif,serif);font-size:1.5rem;margin:0 0 8px;}
+.ag-wiz__d{color:#cfcfd6;font-size:.98rem;line-height:1.5;margin:0 auto 14px;max-width:520px;}
+.ag-wiz__tip{color:#cfc7b8;font-size:.86rem;line-height:1.5;margin:0 auto 14px;max-width:520px;background:rgba(212,180,92,.1);border-radius:10px;padding:8px 12px;}
+.ag-wiz__err{color:#ffb3b3;font-weight:700;margin:0 0 10px;}
+.ag-wiz__form{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;align-items:center;}
+.ag-wiz__input{padding:12px 16px;border-radius:10px;border:1px solid rgba(212,180,92,.4);background:rgba(255,255,255,.06);color:#fff;font-size:1rem;width:260px;max-width:100%;}
+.ag-wiz__next{font-size:1.05rem;}
 .ag-esp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:34px;}
 .ag-esp-stat{padding:24px 20px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.16);border-radius:16px;text-align:center;}
 .ag-esp-stat--gold{border-color:rgba(212,180,92,.5);background:linear-gradient(160deg,rgba(212,180,92,.12),rgba(243,122,31,.05));}

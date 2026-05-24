@@ -635,6 +635,13 @@ add_action( 'admin_post_ag_recruit_update', function () {
 	wp_safe_redirect( admin_url( 'admin.php?page=ag-zones#recruits' ) ); exit;
 } );
 
+/* ── Parcours guidé : l'ambassadeur confirme avoir rejoint le groupe Telegram ── */
+add_action( 'admin_post_ag_onboard_tg_ack', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_zone_front' ) ) wp_die( 'no' );
+	update_user_meta( get_current_user_id(), 'ag_onboard_tg', 1 );
+	wp_safe_redirect( home_url( '/espace-ambassadeur?zone=tg_ok#demarrage' ) ); exit;
+} );
+
 /* ── Téléphone ambassadeur (requis, unique = anti multi-comptes) ── */
 if ( ! function_exists( 'ag_amb_phone' ) ) {
 	function ag_amb_phone( $uid = 0 ) { $uid = $uid ?: get_current_user_id(); return trim( (string) get_user_meta( $uid, 'ag_amb_phone', true ) ); }
@@ -648,7 +655,7 @@ add_action( 'admin_post_ag_amb_phone_save', function () {
 		$dupe = get_users( array( 'meta_key' => 'ag_amb_phone', 'meta_value' => $phone, 'exclude' => array( $uid ), 'fields' => 'ID', 'number' => 1 ) );
 		if ( $dupe ) { $res = 'phone_dupe'; } else { update_user_meta( $uid, 'ag_amb_phone', $phone ); $res = 'phone_ok'; }
 	}
-	wp_safe_redirect( home_url( '/espace-ambassadeur?zone=' . $res . '#zone' ) ); exit;
+	wp_safe_redirect( home_url( '/espace-ambassadeur?zone=' . $res . '#demarrage' ) ); exit;
 } );
 
 /* ── Handler front (ambassadeur) : prendre / changer de zone (1 seule zone) ── */
@@ -658,7 +665,7 @@ add_action( 'admin_post_ag_zone_request', function () {
 	$email = strtolower( $u->user_email );
 	$name  = $u->display_name ?: $email;
 	$dept  = ag_dept_norm( wp_unslash( $_POST['dept'] ?? '' ) );
-	if ( '' === ag_amb_phone( $u->ID ) ) { wp_safe_redirect( home_url( '/espace-ambassadeur?zone=need_phone#zone' ) ); exit; }
+	if ( '' === ag_amb_phone( $u->ID ) ) { wp_safe_redirect( home_url( '/espace-ambassadeur?zone=need_phone#demarrage' ) ); exit; }
 	$res = 'err';
 	if ( $dept && isset( ag_dept_names()[ $dept ] ) ) {
 		$mine = ag_zone_of_owner( $email );
@@ -671,7 +678,7 @@ add_action( 'admin_post_ag_zone_request', function () {
 			if ( function_exists( 'ag_push' ) ) ag_push( '🗺️ Zone ' . $dept, $name . ' couvre le ' . $dept . ( $mine ? ' (changement de zone)' : '' ) . ( 'joined' === $add ? ' — partage 50/50' : '' ) . '.' );
 		}
 	}
-	wp_safe_redirect( home_url( '/espace-ambassadeur?zone=' . $res . '#zone' ) ); exit;
+	wp_safe_redirect( home_url( '/espace-ambassadeur?zone=' . $res . '#demarrage' ) ); exit;
 } );
 
 /* ── Chasseur Pro : activation admin + lien d'abonnement PayPal ── */
