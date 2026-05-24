@@ -17,6 +17,50 @@ if ( ! function_exists( 'ag_recruit_message' ) ) {
 	}
 }
 
+/* ── CRM de recrutement (futurs ambassadeurs contactés) ───────────── */
+if ( ! function_exists( 'ag_recruit_statuses' ) ) {
+	function ag_recruit_statuses() {
+		return array(
+			'a_contacter'      => '🆕 À contacter',
+			'contacte'         => '📞 Contacté',
+			'repondu'          => '💬 A répondu',
+			'interesse'        => '🔥 Intéressé',
+			'pas_interesse'    => '🙁 Pas intéressé',
+			'inscrit'          => '✅ Inscrit (ambassadeur)',
+			'ne_pas_contacter' => '🚫 Ne plus contacter',
+		);
+	}
+}
+if ( ! function_exists( 'ag_recruit_replied' ) ) {
+	/** A donné une réponse (peu importe laquelle). */
+	function ag_recruit_replied( $status ) { return in_array( $status, array( 'repondu', 'interesse', 'pas_interesse', 'inscrit' ), true ); }
+}
+if ( ! function_exists( 'ag_recruits_get' ) ) {
+	function ag_recruits_get() { return (array) get_option( 'ag_recruits', array() ); }
+}
+if ( ! function_exists( 'ag_recruit_phone_norm' ) ) {
+	function ag_recruit_phone_norm( $raw ) { return preg_replace( '/[^0-9]/', '', (string) $raw ); }
+}
+if ( ! function_exists( 'ag_recruits_add_line' ) ) {
+	/** Ajoute un futur ambassadeur (anti-doublon par numéro). Retourne true si ajouté. */
+	function ag_recruits_add_line( $phone, $name ) {
+		$phone = trim( (string) $phone ); $name = trim( (string) $name );
+		$norm  = ag_recruit_phone_norm( $phone );
+		if ( '' === $norm ) return false;
+		$list = ag_recruits_get();
+		foreach ( $list as &$r ) {
+			if ( ag_recruit_phone_norm( $r['phone'] ?? '' ) === $norm ) {
+				if ( '' !== $name && '' === trim( (string) ( $r['name'] ?? '' ) ) ) { $r['name'] = $name; update_option( 'ag_recruits', $list, false ); }
+				return false; // déjà dans la liste
+			}
+		}
+		unset( $r );
+		$list[] = array( 'id' => uniqid( 'r' ), 'name' => $name, 'phone' => $phone, 'status' => 'a_contacter', 'note' => '', 'ts' => time() );
+		update_option( 'ag_recruits', $list, false );
+		return true;
+	}
+}
+
 /* ── Données ────────────────────────────────────────────────────── */
 if ( ! function_exists( 'ag_zones_get' ) ) {
 	/** dept(2) => array( 'owners' => [ {email,name,ts} ], 'rr' => int ) */
@@ -186,7 +230,16 @@ if ( ! function_exists( 'ag_zones_render' ) ) {
 						<textarea id="ag-recruit-msg" rows="6" style="width:100%;"><?php echo esc_textarea( ag_recruit_message() ); ?></textarea>
 					</div>
 				</div>
-				<button type="button" class="button button-primary" id="ag-recruit-go" style="margin-top:10px;">Générer les liens personnalisés</button>
+				<p style="margin:10px 0 0;">
+					<button type="button" class="button button-primary" id="ag-recruit-go">Générer les liens personnalisés</button>
+					<button type="button" class="button" id="ag-recruit-save" style="margin-left:6px;">💾 Enregistrer dans ma liste</button>
+					<span style="color:#646970;font-size:.85em;margin-left:6px;">(les garde pour suivre qui a répondu)</span>
+				</p>
+				<form method="post" action="<?php echo esc_url( $post ); ?>" id="ag-recruit-save-form" style="display:none;">
+					<input type="hidden" name="action" value="ag_recruits_add">
+					<?php wp_nonce_field( 'ag_recruit_crm', '_n' ); ?>
+					<input type="hidden" name="lines" id="ag-recruit-lines" value="">
+				</form>
 				<div id="ag-recruit-out" style="margin-top:12px;"></div>
 				<script>
 				(function(){
@@ -211,8 +264,88 @@ if ( ! function_exists( 'ag_zones_render' ) ) {
 						});
 						h+='</tbody></table>'; out.innerHTML=h;
 					});
+					var sv=document.getElementById('ag-recruit-save');
+					if(sv) sv.addEventListener('click',function(){
+						var v=document.getElementById('ag-recruit-nums').value.trim();
+						if(!v){ alert('Ajoute au moins un numéro.'); return; }
+						document.getElementById('ag-recruit-lines').value=v;
+						document.getElementById('ag-recruit-save-form').submit();
+					});
 				})();
 				</script>
+			</div>
+
+			<!-- CRM de recrutement : suivi des futurs ambassadeurs -->
+			<?php
+			$recruits = ag_recruits_get();
+			$rlabels  = ag_recruit_statuses();
+			$rf       = isset( $_GET['rf'] ) ? sanitize_text_field( wp_unslash( $_GET['rf'] ) ) : '';
+			$rsort    = isset( $_GET['rsort'] ) ? sanitize_text_field( wp_unslash( $_GET['rsort'] ) ) : 'date';
+			// Comptes par statut + "ont répondu".
+			$rc = array_fill_keys( array_keys( $rlabels ), 0 ); $rc_rep = 0;
+			foreach ( $recruits as $r ) { $st = $r['status'] ?? 'a_contacter'; if ( isset( $rc[ $st ] ) ) $rc[ $st ]++; if ( ag_recruit_replied( $st ) ) $rc_rep++; }
+			// Filtre.
+			$rview = $recruits;
+			if ( 'repondu_all' === $rf ) { $rview = array_filter( $rview, function ( $r ) { return ag_recruit_replied( $r['status'] ?? '' ); } ); }
+			elseif ( '' !== $rf ) { $rview = array_filter( $rview, function ( $r ) use ( $rf ) { return ( $r['status'] ?? 'a_contacter' ) === $rf; } ); }
+			$rview = array_values( $rview );
+			usort( $rview, function ( $a, $b ) use ( $rsort, $rlabels ) {
+				if ( 'nom' === $rsort )    return strcasecmp( $a['name'] ?? '', $b['name'] ?? '' );
+				if ( 'statut' === $rsort ) return strcmp( $a['status'] ?? '', $b['status'] ?? '' );
+				return ( $b['ts'] ?? 0 ) <=> ( $a['ts'] ?? 0 );
+			} );
+			$base = admin_url( 'admin.php?page=ag-zones' );
+			?>
+			<div id="recruits" style="background:#fff;border:1px solid #ccd0d4;border-left:4px solid #2271b1;border-radius:8px;padding:16px 18px;margin:0 0 22px;max-width:980px;">
+				<h2 style="margin-top:0;">📇 Mes futurs ambassadeurs (<?php echo count( $recruits ); ?>)</h2>
+				<p style="color:#50575e;font-size:.9rem;">Tout ce que tu as déjà contacté est gardé ici. Édite le prénom, change le statut selon leur réponse, relance par SMS/WhatsApp. Trie par <strong>qui a répondu</strong> ou par réponse.</p>
+				<?php if ( empty( $recruits ) ) : ?>
+					<p style="color:#646970;">Personne encore. Génère des liens ci-dessus puis clique <strong>« 💾 Enregistrer dans ma liste »</strong>.</p>
+				<?php else : ?>
+					<!-- Puces de classement -->
+					<div style="display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 14px;">
+						<a href="<?php echo esc_url( $base ); ?>" class="button button-small<?php echo '' === $rf ? ' button-primary' : ''; ?>">Tous (<?php echo count( $recruits ); ?>)</a>
+						<a href="<?php echo esc_url( add_query_arg( 'rf', 'repondu_all', $base ) ); ?>" class="button button-small<?php echo 'repondu_all' === $rf ? ' button-primary' : ''; ?>">💬 Ont répondu (<?php echo (int) $rc_rep; ?>)</a>
+						<?php foreach ( $rlabels as $sk => $sl ) : ?>
+							<a href="<?php echo esc_url( add_query_arg( 'rf', $sk, $base ) ); ?>" class="button button-small<?php echo $rf === $sk ? ' button-primary' : ''; ?>"><?php echo esc_html( $sl ); ?> (<?php echo (int) $rc[ $sk ]; ?>)</a>
+						<?php endforeach; ?>
+					</div>
+					<p style="margin:0 0 8px;font-size:.85rem;color:#646970;">Trier :
+						<a href="<?php echo esc_url( add_query_arg( array( 'rf' => $rf, 'rsort' => 'date' ), $base ) ); ?>"<?php echo 'date' === $rsort ? ' style="font-weight:700;"' : ''; ?>>récent</a> ·
+						<a href="<?php echo esc_url( add_query_arg( array( 'rf' => $rf, 'rsort' => 'nom' ), $base ) ); ?>"<?php echo 'nom' === $rsort ? ' style="font-weight:700;"' : ''; ?>>prénom</a> ·
+						<a href="<?php echo esc_url( add_query_arg( array( 'rf' => $rf, 'rsort' => 'statut' ), $base ) ); ?>"<?php echo 'statut' === $rsort ? ' style="font-weight:700;"' : ''; ?>>statut</a>
+					</p>
+					<div style="display:flex;gap:8px;font-weight:600;color:#646970;font-size:.82rem;padding:0 4px 4px;border-bottom:1px solid #e0e0e0;">
+						<span style="width:130px;">Prénom</span><span style="width:130px;">Numéro</span><span style="width:190px;">Statut (réponse)</span><span style="width:150px;">Note</span><span style="flex:1;">Contacter / fiche</span>
+					</div>
+					<?php foreach ( $rview as $r ) :
+						$rid = $r['id'] ?? ''; $rname = $r['name'] ?? ''; $rphone = $r['phone'] ?? ''; $rstatus = $r['status'] ?? 'a_contacter';
+						$tok  = '' !== trim( $rname ) ? ' ' . $rname : '';
+						$pmsg = str_replace( '{prenom}', $tok, ag_recruit_message() );
+						$smsn = preg_replace( '/[^0-9+]/', '', $rphone );
+						$wan  = ag_wa_number( $rphone );
+						$sms  = 'sms:' . $smsn . '?body=' . rawurlencode( $pmsg );
+						$wa   = 'https://wa.me/' . $wan . '?text=' . rawurlencode( $pmsg );
+					?>
+						<form method="post" action="<?php echo esc_url( $post ); ?>" style="display:flex;gap:8px;align-items:center;padding:7px 4px;border-bottom:1px solid #f0f0f1;flex-wrap:wrap;">
+							<input type="hidden" name="action" value="ag_recruit_update">
+							<?php wp_nonce_field( 'ag_recruit_crm', '_n' ); ?>
+							<input type="hidden" name="id" value="<?php echo esc_attr( $rid ); ?>">
+							<input type="text" name="name" value="<?php echo esc_attr( $rname ); ?>" placeholder="prénom" style="width:130px;">
+							<span style="width:130px;font-size:.9rem;"><?php echo esc_html( $rphone ); ?></span>
+							<select name="status" onchange="this.form.submit()" style="width:190px;">
+								<?php foreach ( $rlabels as $sk => $sl ) : ?><option value="<?php echo esc_attr( $sk ); ?>" <?php selected( $rstatus, $sk ); ?>><?php echo esc_html( $sl ); ?></option><?php endforeach; ?>
+							</select>
+							<input type="text" name="note" value="<?php echo esc_attr( $r['note'] ?? '' ); ?>" placeholder="note…" style="width:150px;">
+							<span style="flex:1;white-space:nowrap;">
+								<a class="button button-small" href="<?php echo esc_url( $sms ); ?>">📱 SMS</a>
+								<a class="button button-small" target="_blank" rel="noopener" href="<?php echo esc_url( $wa ); ?>">WhatsApp</a>
+								<button class="button button-small" title="Enregistrer prénom/note">💾</button>
+								<button class="button button-small" name="delete" value="1" onclick="return confirm('Supprimer cette fiche ?');" style="color:#b32d2e;" title="Supprimer">✕</button>
+							</span>
+						</form>
+					<?php endforeach; ?>
+				<?php endif; ?>
 			</div>
 			<?php if ( 'added' === $msg ) : ?><div class="notice notice-success is-dismissible"><p>✅ Ambassadeur ajouté à la zone.</p></div>
 			<?php elseif ( 'removed' === $msg ) : ?><div class="notice notice-success is-dismissible"><p>✅ Retiré de la zone.</p></div>
@@ -353,6 +486,42 @@ add_action( 'admin_post_ag_zone_reassign', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_zone_admin' ) ) wp_die( 'no' );
 	$n = ag_zones_reassign_all();
 	wp_safe_redirect( admin_url( 'admin.php?page=ag-zones&zmsg=reassigned' . $n ) ); exit;
+} );
+
+/* ── CRM recrutement : enregistrer une fournée de contacts ────────── */
+add_action( 'admin_post_ag_recruits_add', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_recruit_crm' ) ) wp_die( 'no' );
+	$raw = (string) wp_unslash( $_POST['lines'] ?? '' );
+	foreach ( preg_split( '/\r\n|\r|\n/', $raw ) as $line ) {
+		$line = trim( $line );
+		if ( '' === $line ) continue;
+		if ( preg_match( '/^\s*([+0-9 ().-]{6,})\s*[,;:–-]?\s*(.*)$/', $line, $m ) ) {
+			ag_recruits_add_line( sanitize_text_field( $m[1] ), sanitize_text_field( $m[2] ) );
+		} else {
+			ag_recruits_add_line( sanitize_text_field( $line ), '' );
+		}
+	}
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-zones#recruits' ) ); exit;
+} );
+/* ── CRM recrutement : éditer / supprimer une fiche ───────────────── */
+add_action( 'admin_post_ag_recruit_update', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_recruit_crm' ) ) wp_die( 'no' );
+	$id   = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+	$del  = ! empty( $_POST['delete'] );
+	$list = ag_recruits_get();
+	foreach ( $list as $k => $r ) {
+		if ( ( $r['id'] ?? '' ) !== $id ) continue;
+		if ( $del ) { unset( $list[ $k ] ); break; }
+		if ( array_key_exists( 'name', $_POST ) )   $list[ $k ]['name']   = sanitize_text_field( wp_unslash( $_POST['name'] ) );
+		if ( array_key_exists( 'note', $_POST ) )   $list[ $k ]['note']   = sanitize_text_field( wp_unslash( $_POST['note'] ) );
+		if ( array_key_exists( 'status', $_POST ) ) {
+			$st = sanitize_text_field( wp_unslash( $_POST['status'] ) );
+			if ( isset( ag_recruit_statuses()[ $st ] ) ) $list[ $k ]['status'] = $st;
+		}
+		break;
+	}
+	update_option( 'ag_recruits', array_values( $list ), false );
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-zones#recruits' ) ); exit;
 } );
 
 /* ── Téléphone ambassadeur (requis, unique = anti multi-comptes) ── */
