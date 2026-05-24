@@ -188,12 +188,13 @@ if ( ! function_exists( 'ag_prospect_statuses' ) ) {
 			'client'           => '✅ Client',
 			'refus'            => '✋ Refusé',
 			'ne_pas_contacter' => '🚫 Ne plus contacter',
+			'ignore'           => '🙈 Ignoré',
 		);
 	}
 }
 if ( ! function_exists( 'ag_prospect_blocked' ) ) {
 	/** Statuts qui sortent le prospect du circuit (personne ne le recontacte). */
-	function ag_prospect_blocked( $status ) { return in_array( $status, array( 'refus', 'ne_pas_contacter', 'client' ), true ); }
+	function ag_prospect_blocked( $status ) { return in_array( $status, array( 'refus', 'ne_pas_contacter', 'client', 'ignore' ), true ); }
 }
 if ( ! function_exists( 'ag_prospect_sig' ) ) {
 	function ag_prospect_sig( $name, $city ) { return strtolower( trim( preg_replace( '/\s+/', ' ', (string) $name ) ) ) . '|' . strtolower( trim( (string) $city ) ); }
@@ -322,15 +323,27 @@ add_action( 'wp_ajax_ag_prospect_note', function () {
 	wp_send_json_error();
 } );
 
-/* 🚫 Ignorer une entreprise (résultat non sélectionné) : ne plus la réafficher. */
+/* 🙈 Ignorer une entreprise : on l'enregistre avec le statut "ignore"
+   (consultable + triable dans Mes prospects) et exclue des futures recherches. */
 add_action( 'wp_ajax_ag_prospect_ignore', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
 	$name = sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) );
 	$city = sanitize_text_field( wp_unslash( $_POST['city'] ?? '' ) );
 	if ( '' === $name ) wp_send_json_error();
-	$sig  = ag_prospect_sig( $name, $city );
-	$list = (array) get_option( 'ag_prospect_ignored', array() );
-	if ( ! in_array( $sig, $list, true ) ) { $list[] = $sig; update_option( 'ag_prospect_ignored', array_slice( $list, -5000 ) ); }
+	$ex = ag_prospect_find( $name, $city, $_POST['phone'] ?? '' );
+	if ( $ex ) {
+		// déjà en liste : on bascule juste son statut en "ignore".
+		$list = (array) get_option( 'ag_prospects', array() );
+		foreach ( $list as $k => $p ) { if ( ( $p['id'] ?? '' ) === ( $ex['id'] ?? '' ) ) { $list[ $k ]['status'] = 'ignore'; break; } }
+		update_option( 'ag_prospects', array_values( $list ) );
+	} else {
+		ag_prospect_add_record( array(
+			'name' => $name, 'type' => sanitize_text_field( wp_unslash( $_POST['type'] ?? '' ) ), 'city' => $city,
+			'phone' => sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) ), 'website' => esc_url_raw( wp_unslash( $_POST['website'] ?? '' ) ),
+			'address' => sanitize_text_field( wp_unslash( $_POST['address'] ?? '' ) ), 'rating' => (float) ( $_POST['rating'] ?? 0 ), 'reviews' => (int) ( $_POST['reviews'] ?? 0 ),
+			'status' => 'ignore', 'source' => 'ignore',
+		) );
+	}
 	wp_send_json_success();
 } );
 
@@ -691,7 +704,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 										data-city="<?php echo esc_attr( $r['city'] ?? $city ); ?>" data-phone="<?php echo esc_attr( $r['phone'] ); ?>"
 										data-website="<?php echo esc_attr( $r['website'] ); ?>" data-address="<?php echo esc_attr( $r['address'] ); ?>"
 										data-rating="<?php echo esc_attr( $r['rating'] ?? 0 ); ?>" data-reviews="<?php echo esc_attr( $r['reviews'] ?? 0 ); ?>">+ Suivre (avec ma note)</button>
-									<button type="button" class="button button-small ag-ignore" data-name="<?php echo esc_attr( $r['name'] ); ?>" data-city="<?php echo esc_attr( $r['city'] ?? $city ); ?>" title="Ne plus jamais afficher cette entreprise dans les recherches" style="margin-top:4px;color:#b32d2e;">🚫 Ignorer</button>
+									<button type="button" class="button button-small ag-ignore" data-name="<?php echo esc_attr( $r['name'] ); ?>" data-city="<?php echo esc_attr( $r['city'] ?? $city ); ?>" data-type="<?php echo esc_attr( $r['type'] ?? $q ); ?>" data-phone="<?php echo esc_attr( $r['phone'] ); ?>" data-website="<?php echo esc_attr( $r['website'] ); ?>" data-address="<?php echo esc_attr( $r['address'] ); ?>" data-rating="<?php echo esc_attr( $r['rating'] ?? 0 ); ?>" data-reviews="<?php echo esc_attr( $r['reviews'] ?? 0 ); ?>" title="Garde l'entreprise en statut 'Ignoré' (consultable, mais retirée des recherches)" style="margin-top:4px;color:#b32d2e;">🙈 Ignorer</button>
 								</td>
 							</tr>
 						<?php endforeach; ?>
@@ -852,7 +865,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			<h2 style="margin-top:26px;">📋 Mes prospects (<?php echo count( $prospects ); ?>) — triés par <strong>besoin</strong></h2>
 			<?php
 			$ag_all = (array) get_option( 'ag_prospects', array() );
-			$cnt = array( 'nouveau' => 0, 'contacte' => 0, 'sans_reponse' => 0, 'interesse' => 0, 'client' => 0, 'bloque' => 0 );
+			$cnt = array( 'nouveau' => 0, 'contacte' => 0, 'sans_reponse' => 0, 'interesse' => 0, 'client' => 0, 'bloque' => 0, 'ignore' => 0 );
 			foreach ( $ag_all as $pp ) {
 				$s = $pp['status'] ?? 'nouveau';
 				if ( 'nouveau' === $s ) $cnt['nouveau']++;
@@ -860,6 +873,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				elseif ( 'sans_reponse' === $s ) $cnt['sans_reponse']++;
 				elseif ( 'interesse' === $s ) $cnt['interesse']++;
 				elseif ( 'client' === $s ) $cnt['client']++;
+				elseif ( 'ignore' === $s ) $cnt['ignore']++;
 				elseif ( in_array( $s, array( 'refus', 'ne_pas_contacter' ), true ) ) $cnt['bloque']++;
 			}
 			$ag_chip = function ( $label, $n, $f, $bg ) use ( $f_status ) {
@@ -876,6 +890,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				echo $ag_chip( '🔥 Intéressés', $cnt['interesse'], 'interesse', '#bd7b00' );
 				echo $ag_chip( '✅ Clients', $cnt['client'], 'client', '#1e7e34' );
 				echo $ag_chip( '🚫 Bloqués', $cnt['bloque'], 'ne_pas_contacter', '#50575e' );
+				echo $ag_chip( '🙈 Ignorés', $cnt['ignore'], 'ignore', '#7a4ed4' );
 				?>
 				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'ag-prospects' ), admin_url( 'admin.php' ) ) ); ?>" style="text-decoration:none;font-size:.82rem;color:#2271b1;margin-left:6px;">Tout afficher</a>
 			</div>
@@ -1013,7 +1028,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			// 🚫 Ignorer : ne plus réafficher cette entreprise dans les recherches.
 			document.querySelectorAll('.ag-ignore').forEach(function(b){ b.addEventListener('click',function(){
 				var fd=new FormData(); fd.append('action','ag_prospect_ignore'); fd.append('_n',nonce);
-				fd.append('name', b.getAttribute('data-name')||''); fd.append('city', b.getAttribute('data-city')||'');
+				['name','city','type','phone','website','address','rating','reviews'].forEach(function(k){ fd.append(k, b.getAttribute('data-'+k)||''); });
 				b.disabled=true; b.textContent='…';
 				fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ var tr=b.closest('tr'); if(j&&j.success&&tr){ tr.style.opacity='.4'; tr.style.display='none'; } else { b.textContent='Erreur'; b.disabled=false; } }).catch(function(){ b.textContent='Erreur'; b.disabled=false; });
 			}); });
