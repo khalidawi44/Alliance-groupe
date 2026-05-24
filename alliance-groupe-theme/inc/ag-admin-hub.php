@@ -176,16 +176,36 @@ if ( ! function_exists( 'ag_hub_render' ) ) {
 			<div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;align-items:start;">
 				<!-- COLONNE GAUCHE -->
 				<div>
-					<!-- ACTIONS RAPIDES -->
-					<h2 style="margin:0 0 12px;">⚡ Actions rapides</h2>
-					<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:30px;">
+					<!-- ANNUAIRE COMPLET : tout est accessible d'ici -->
+					<h2 style="margin:0 0 4px;">⚡ Tout piloter d'ici</h2>
+					<p style="color:#646970;font-size:.88rem;margin:0 0 14px;">Chaque outil de l'agence, regroupé. Tout s'ouvre dans un nouvel onglet.</p>
+
+					<h3 style="margin:0 0 10px;color:#b08524;">🎯 Vendre &amp; prospecter</h3>
+					<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:22px;">
 						<?php
 						ag_hub_card( '🎯', 'Prospection / CRM', 'Trouve des entreprises sans site, suis tes contacts.', $adm . 'ag-prospects', 'Prospecter' );
-						ag_hub_card( '🤝', 'Ambassadeurs', 'Valide les ventes, paie les commissions, classement.', $adm . 'ag-ambassadeurs', 'Gérer' );
-						ag_hub_card( '📝', 'Briefs Sites Express', 'Les commandes de sites reçues, prêtes à produire.', $adm . 'ag-express-briefs', 'Voir' );
-						ag_hub_card( '🎬', 'Studio créatif', 'Crée des vidéos & visuels prêts à publier.', home_url( '/studio' ), 'Ouvrir' );
+						ag_hub_card( '🗺️', 'Zones &amp; recruter', 'Recrute des ambassadeurs (SMS/WhatsApp) et gère les zones.', $adm . 'ag-zones', 'Recruter' );
+						ag_hub_card( '🤝', 'Ambassadeurs', 'Valide les ventes, paie les commissions.', $adm . 'ag-ambassadeurs', 'Gérer' );
 						ag_hub_card( '🏆', 'Classement', 'Le championnat des vendeurs (jour/mois/général).', home_url( '/classement' ), 'Voir' );
+						?>
+					</div>
+
+					<h3 style="margin:0 0 10px;color:#b08524;">📥 Demandes reçues</h3>
+					<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:22px;">
+						<?php
+						ag_hub_card( '✦', 'Devis sur-mesure', 'Les projets premium demandés par les clients.', $adm . 'ag-sur-mesure', 'Voir' );
+						ag_hub_card( '📝', 'Briefs Sites Express', 'Les commandes de sites reçues, prêtes à produire.', $adm . 'ag-express-briefs', 'Voir' );
 						ag_hub_card( '💬', 'Questions Flash', 'Les consultations écrites reçues.', $adm . 'ag-questions', 'Voir' );
+						?>
+					</div>
+
+					<h3 style="margin:0 0 10px;color:#b08524;">🎬 Contenu &amp; pages publiques</h3>
+					<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:30px;">
+						<?php
+						ag_hub_card( '🎬', 'Studio créatif', 'Crée des vidéos & visuels prêts à publier.', home_url( '/studio' ), 'Ouvrir' );
+						ag_hub_card( '🤖', 'Système de prospection', 'La page de vente du logiciel (1990 € + 49 €/mois).', home_url( '/systeme-prospection' ), 'Voir' );
+						ag_hub_card( '✦', 'Page Sur-mesure', 'L\'offre premium que voit le client.', home_url( '/sur-mesure' ), 'Voir' );
+						ag_hub_card( '🤝', 'Page Ambassadeurs', 'Le simulateur de gains & l\'inscription.', home_url( '/ambassadeurs' ), 'Voir' );
 						?>
 					</div>
 
