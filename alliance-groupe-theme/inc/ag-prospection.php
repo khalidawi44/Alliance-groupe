@@ -50,16 +50,52 @@ if ( ! function_exists( 'ag_places_usage' ) ) {
 		return array( 'calls' => $n, 'cost' => round( $n * 0.04, 2 ) );
 	}
 }
+if ( ! function_exists( 'ag_search_history_key' ) ) {
+	function ag_search_history_key( $q, $city ) { return strtolower( trim( (string) $q ) . '|' . trim( (string) $city ) ); }
+}
 if ( ! function_exists( 'ag_search_history_add' ) ) {
-	/** Garde l'historique des recherches faites (pour les revoir plus tard). */
-	function ag_search_history_add( $q, $city, $count ) {
+	/**
+	 * Garde l'historique des recherches faites ET met en cache leurs résultats,
+	 * pour pouvoir les REVOIR gratuitement (sans nouvel appel payant à Google).
+	 */
+	function ag_search_history_add( $q, $city, $count, $results = null ) {
 		$city = trim( (string) $city ); $q = trim( (string) $q );
 		if ( '' === $city && '' === $q ) return;
-		$key  = strtolower( $q . '|' . $city );
+		$key  = ag_search_history_key( $q, $city );
 		$hist = (array) get_option( 'ag_search_history', array() );
-		$hist[ $key ] = array( 'q' => $q, 'city' => $city, 'count' => (int) $count, 'ts' => time() );
-		if ( count( $hist ) > 300 ) $hist = array_slice( $hist, -300, null, true );
-		update_option( 'ag_search_history', $hist );
+		$entry = array( 'q' => $q, 'city' => $city, 'count' => (int) $count, 'ts' => time() );
+		if ( is_array( $results ) ) {
+			// On ne garde que l'essentiel (limité à 60) pour ne pas gonfler la base.
+			$slim = array();
+			foreach ( array_slice( $results, 0, 60 ) as $r ) {
+				if ( empty( $r['name'] ) ) continue;
+				$slim[] = array(
+					'name'       => $r['name'] ?? '',
+					'type'       => $r['type'] ?? $q,
+					'city'       => $r['city'] ?? $city,
+					'address'    => $r['address'] ?? '',
+					'phone'      => $r['phone'] ?? '',
+					'phone_intl' => $r['phone_intl'] ?? '',
+					'website'    => $r['website'] ?? '',
+					'rating'     => $r['rating'] ?? 0,
+					'reviews'    => $r['reviews'] ?? 0,
+				);
+			}
+			$entry['results'] = $slim;
+		} elseif ( isset( $hist[ $key ]['results'] ) ) {
+			$entry['results'] = $hist[ $key ]['results']; // on conserve l'ancien cache si pas de nouveaux résultats
+		}
+		$hist[ $key ] = $entry;
+		if ( count( $hist ) > 200 ) $hist = array_slice( $hist, -200, null, true );
+		update_option( 'ag_search_history', $hist, false ); // autoload=no (cache volumineux)
+	}
+}
+if ( ! function_exists( 'ag_search_history_get' ) ) {
+	/** Récupère une recherche en cache (résultats déjà payés) par métier + ville. */
+	function ag_search_history_get( $q, $city ) {
+		$hist = (array) get_option( 'ag_search_history', array() );
+		$key  = ag_search_history_key( $q, $city );
+		return $hist[ $key ] ?? null;
 	}
 }
 
@@ -605,8 +641,14 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 		$q      = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : '';
 		$city   = isset( $_GET['city'] ) ? sanitize_text_field( wp_unslash( $_GET['city'] ) ) : '';
 		$allsec = ! empty( $_GET['all'] );
-		// Métier vide + ville = balayage tous secteurs (comme l'agent auto).
-		if ( ( $allsec || '' === trim( $q ) ) && $city ) {
+		$force  = ! empty( $_GET['refresh'] ); // forcer un NOUVEL appel payant (sinon : cache gratuit)
+		$from_cache = false;
+		$cached = ( $q || $city ) ? ag_search_history_get( $q, $city ) : null;
+		if ( ! $force && $cached && ! empty( $cached['results'] ) && is_array( $cached['results'] ) ) {
+			// Réaffichage GRATUIT depuis le cache : 0 appel Google, 0 €.
+			$results    = $cached['results'];
+			$from_cache = true;
+		} elseif ( ( $allsec || '' === trim( $q ) ) && $city ) {
 			$results = ag_places_sweep( $city ); // déjà trié par probabilité d'achat
 		} else {
 			$results = ( $q || $city ) ? ag_places_search( trim( $q . ' ' . $city ) ) : null;
@@ -615,8 +657,8 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				usort( $results, function ( $a, $b ) { return ag_prospect_score( $b ) <=> ag_prospect_score( $a ); } );
 			}
 		}
-		// Garde la recherche dans l'historique (pour la revoir plus tard).
-		if ( is_array( $results ) && ! isset( $results['error'] ) ) ag_search_history_add( $q, $city, count( $results ) );
+		// Sauvegarde / met en cache uniquement après un VRAI appel (pas en relecture cache).
+		if ( ! $from_cache && is_array( $results ) && ! isset( $results['error'] ) ) ag_search_history_add( $q, $city, count( $results ), $results );
 		$prospects = (array) get_option( 'ag_prospects', array() );
 		$leads     = array_reverse( (array) get_option( 'ag_leads', array() ) );
 		$labels    = ag_prospect_statuses();
@@ -683,7 +725,19 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					</div>
 					<?php if ( is_array( $results ) && isset( $results['error'] ) ) : ?>
 						<p style="color:#b32d2e;">Erreur Places : <?php echo esc_html( $results['error'] ); ?> (vérifie que « Places API (New) » est activée et la facturation aussi.)</p>
-					<?php elseif ( is_array( $results ) ) : ?>
+					<?php elseif ( is_array( $results ) ) :
+						$ag_refresh_url = add_query_arg( array_filter( array( 'page' => 'ag-prospects', 'q' => $q, 'city' => $city, 'all' => $allsec ? 1 : null, 'refresh' => 1 ) ), admin_url( 'admin.php' ) );
+					?>
+						<?php if ( $from_cache ) : ?>
+							<div style="margin-top:12px;background:#eaf6ec;border:1px solid #b6e0bf;border-radius:8px;padding:8px 14px;font-size:.9rem;">
+								💾 <strong>Résultats en cache</strong> (dernier appel le <?php echo esc_html( ! empty( $cached['ts'] ) ? wp_date( 'd/m/Y à H:i', (int) $cached['ts'] ) : '—' ); ?>) — affichage <strong>gratuit, 0 appel Google</strong>.
+								<a href="<?php echo esc_url( $ag_refresh_url ); ?>" class="button button-small" style="margin-left:8px;" onclick="return confirm('Relancer un appel Google (≈ 0,04 € la recherche, ≈ 1,60 € le balayage) pour chercher du nouveau ?');">🔄 Actualiser (nouvel appel)</a>
+							</div>
+						<?php else : ?>
+							<div style="margin-top:12px;background:#fef6e7;border:1px solid #f0d9a8;border-radius:8px;padding:8px 14px;font-size:.9rem;">
+								🌐 <strong>Nouvel appel Google</strong> effectué — résultats mis en cache : les prochaines fois, « Revoir » sera <strong>gratuit</strong>.
+							</div>
+						<?php endif; ?>
 						<p style="color:#50575e;margin-top:14px;"><?php echo count( $results ); ?> résultat(s), triés par <strong>probabilité d'achat</strong>. <label style="margin-left:8px;"><input type="checkbox" id="ag-onlyno"> N'afficher que ceux <strong>sans vrai site</strong></label></p>
 						<table class="widefat striped" id="ag-results"><thead><tr><th>Achat</th><th>Entreprise</th><th>Avis</th><th>Téléphone</th><th>Présence en ligne</th><th></th></tr></thead><tbody>
 						<?php foreach ( $results as $r ) : if ( empty( $r['name'] ) ) continue;
@@ -724,18 +778,23 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			?>
 			<div style="max-width:980px;margin-top:18px;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #2271b1;border-radius:6px;">
 				<h2 style="margin-top:0;">📂 Mes recherches (<?php echo count( $ag_hist ); ?>)</h2>
-				<p style="color:#50575e;font-size:.9rem;">Toutes tes recherches sont gardées. Clique <strong>« Revoir »</strong> pour relancer et voir s'il y a du nouveau (triées par ville, puis métier).</p>
-				<table class="widefat striped" style="margin-top:8px;"><thead><tr><th>Ville</th><th>Métier</th><th>Dernier résultat</th><th>Dernière fois</th><th></th></tr></thead><tbody>
+				<p style="color:#50575e;font-size:.9rem;"><strong>« Revoir » est GRATUIT</strong> : ça réaffiche les résultats déjà trouvés (aucun appel Google). « Actualiser » relance un appel payant uniquement si tu veux chercher du nouveau. (Triées par ville, puis métier.)</p>
+				<table class="widefat striped" style="margin-top:8px;"><thead><tr><th>Ville</th><th>Métier</th><th>Résultats</th><th>Dernière fois</th><th></th></tr></thead><tbody>
 				<?php foreach ( $ag_hist as $h ) :
-					$hq = $h['q'] ?? ''; $hc = $h['city'] ?? '';
-					$url = add_query_arg( array_filter( array( 'page' => 'ag-prospects', 'q' => $hq, 'city' => $hc ) ), admin_url( 'admin.php' ) );
+					$hq = $h['q'] ?? ''; $hc = $h['city'] ?? ''; $hall = ( '' === trim( $hq ) );
+					$url  = add_query_arg( array_filter( array( 'page' => 'ag-prospects', 'q' => $hq, 'city' => $hc ) ), admin_url( 'admin.php' ) );
+					$rurl = add_query_arg( array_filter( array( 'page' => 'ag-prospects', 'q' => $hq, 'city' => $hc, 'all' => $hall ? 1 : null, 'refresh' => 1 ) ), admin_url( 'admin.php' ) );
+					$has_cache = ! empty( $h['results'] );
 				?>
 					<tr>
 						<td><strong><?php echo esc_html( $hc ?: '—' ); ?></strong></td>
 						<td><?php echo esc_html( $hq !== '' ? $hq : '🌍 Tous secteurs' ); ?></td>
-						<td><?php echo (int) ( $h['count'] ?? 0 ); ?></td>
+						<td><?php echo (int) ( $h['count'] ?? 0 ); ?><?php echo $has_cache ? ' <span title="Résultats en cache, revoir gratuit">💾</span>' : ''; ?></td>
 						<td><?php echo esc_html( ! empty( $h['ts'] ) ? wp_date( 'd/m/Y', (int) $h['ts'] ) : '—' ); ?></td>
-						<td><a class="button button-small button-primary" href="<?php echo esc_url( $url ); ?>">🔄 Revoir</a></td>
+						<td>
+							<?php if ( $has_cache ) : ?><a class="button button-small button-primary" href="<?php echo esc_url( $url ); ?>" title="Réaffiche les résultats déjà trouvés (gratuit)">👁 Revoir (gratuit)</a> <?php endif; ?>
+							<a class="button button-small" href="<?php echo esc_url( $rurl ); ?>" title="Relance un appel Google payant pour chercher du nouveau" onclick="return confirm('Relancer un appel Google payant (≈ 0,04 € · balayage ≈ 1,60 €) ?');">🔄 Actualiser</a>
+						</td>
 					</tr>
 				<?php endforeach; ?>
 				</tbody></table>
