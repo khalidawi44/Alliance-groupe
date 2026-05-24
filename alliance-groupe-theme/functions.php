@@ -784,6 +784,9 @@ if ( ! function_exists( 'ag_save_lead' ) ) {
             'Nouveau lead template : ' . $name,
             "Nom : $name\nEmail : $email\nTel : $phone\nTemplate : $template\nDate : " . current_time( 'd/m/Y H:i' )
         );
+        if ( function_exists( 'ag_calendar_notify' ) ) {
+            ag_calendar_notify( '📩 Nouveau message client : ' . $name, "Template : $template\nEmail : $email\nTél : $phone" );
+        }
 
         wp_send_json_success();
     }
@@ -846,6 +849,9 @@ if ( ! function_exists( 'ag_submit_question' ) ) {
                        . "Reçue le : " . current_time( 'd/m/Y H:i' ) . "\n"
                        . "Délai de réponse attendu : 48h ouvrées\n";
         wp_mail( 'contact@alliancegroupe-inc.com', $admin_subject, $admin_body );
+        if ( function_exists( 'ag_calendar_notify' ) ) {
+            ag_calendar_notify( '💬 Question Flash : ' . $name . ' (' . $pack_label . ')', "Nom : $name\nEmail : $email\nActivité : $activity\nQuestion : $question" );
+        }
 
         // Confirmation to the buyer
         $client_subject = 'Votre Question Flash a bien été reçue — Alliance Groupe';
@@ -1127,7 +1133,11 @@ if ( ! function_exists( 'ag_sur_mesure_submit' ) ) {
         $body .= "Nom : {$req['name']}\nEmail : {$req['email']}\nTél : {$req['phone']}\nEntreprise : {$req['business']}\nPays : {$req['pays']}\n\n";
         $body .= "Type : {$req['type']}\nStyle : {$req['style']}\nCouleurs : {$req['couleurs']}\nFonctionnalités : {$req['features']}\nPages : {$req['pages']}\nBudget : {$req['budget']}\nDélai : {$req['delai']}\n\nDescription :\n{$req['description']}\n\nDate : {$req['date']}";
         wp_mail( apply_filters( 'ag_calendar_notify_email', 'advise.alliance.group@gmail.com' ), '✦ Devis sur-mesure : ' . $name . ' (' . $req['budget'] . ')', $body );
-        if ( function_exists( 'ag_push' ) ) ag_push( '✦ Demande de devis sur-mesure', $name . ' — ' . $req['type'] . ' · budget ' . $req['budget'] . ' · ' . $req['email'] );
+        if ( function_exists( 'ag_calendar_notify' ) ) {
+            ag_calendar_notify( '✦ Demande de devis sur-mesure : ' . $name, $name . ' — ' . $req['type'] . ' · budget ' . $req['budget'] . "\nEmail : " . $req['email'] . "\nTél : " . $req['phone'] );
+        } elseif ( function_exists( 'ag_push' ) ) {
+            ag_push( '✦ Demande de devis sur-mesure', $name . ' — ' . $req['type'] . ' · budget ' . $req['budget'] . ' · ' . $req['email'] );
+        }
 
         wp_safe_redirect( home_url( '/sur-mesure?envoye=1#configurateur' ) );
         exit;

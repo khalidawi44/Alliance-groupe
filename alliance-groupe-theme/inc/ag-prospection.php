@@ -1377,11 +1377,36 @@ if ( ! function_exists( 'ag_tg_send' ) ) {
 		return ! is_wp_error( $resp ) && 200 === (int) wp_remote_retrieve_response_code( $resp );
 	}
 }
+if ( ! function_exists( 'ag_sms' ) ) {
+	/**
+	 * Envoie un SMS sur TON téléphone. Deux options gratuites/simples :
+	 *  - Free Mobile (gratuit, vers ta propre ligne Free) : user + clé.
+	 *  - Webhook générique (autre opérateur / Twilio via Make/Zapier) : URL avec {msg}.
+	 */
+	function ag_sms( $text ) {
+		$text = wp_strip_all_tags( (string) $text );
+		if ( '' === trim( $text ) ) return false;
+		$sent = false;
+		$fu = trim( (string) get_option( 'ag_sms_free_user', '' ) );
+		$fk = trim( (string) get_option( 'ag_sms_free_key', '' ) );
+		if ( $fu && $fk ) {
+			$resp = wp_remote_get( 'https://smsapi.free-mobile.fr/sendmsg?user=' . rawurlencode( $fu ) . '&pass=' . rawurlencode( $fk ) . '&msg=' . rawurlencode( $text ), array( 'timeout' => 15 ) );
+			if ( ! is_wp_error( $resp ) && 200 === (int) wp_remote_retrieve_response_code( $resp ) ) $sent = true;
+		}
+		$hook = trim( (string) get_option( 'ag_sms_webhook', '' ) );
+		if ( $hook && false !== strpos( $hook, '{msg}' ) ) {
+			$resp = wp_remote_get( str_replace( '{msg}', rawurlencode( $text ), $hook ), array( 'timeout' => 15 ) );
+			if ( ! is_wp_error( $resp ) && (int) wp_remote_retrieve_response_code( $resp ) < 400 ) $sent = true;
+		}
+		return $sent;
+	}
+}
 if ( ! function_exists( 'ag_push' ) ) {
-	/** Alerte INTERNE (équipe) : WhatsApp (CallMeBot, 1:1) et/ou Telegram (canal interne). */
+	/** Alerte INTERNE (équipe) : SMS (ton tél) + WhatsApp (CallMeBot, 1:1) et/ou Telegram (canal interne). */
 	function ag_push( $title, $body = '' ) {
 		$text = $title . ( $body ? "\n\n" . $body : '' );
 		$sent = false;
+		if ( ag_sms( $text ) ) $sent = true;
 		$wa_phone = preg_replace( '/[^0-9]/', '', (string) get_option( 'ag_wa_phone', '' ) );
 		$wa_key   = trim( (string) get_option( 'ag_wa_apikey', '' ) );
 		if ( $wa_phone && $wa_key ) {
@@ -1399,7 +1424,7 @@ if ( ! function_exists( 'ag_push_clients' ) ) {
 	}
 }
 add_action( 'admin_init', function () {
-	foreach ( array( 'ag_tg_token', 'ag_tg_chat', 'ag_tg_chan', 'ag_tg_chan_link', 'ag_tg_group_link', 'ag_wa_phone', 'ag_wa_apikey' ) as $opt ) {
+	foreach ( array( 'ag_tg_token', 'ag_tg_chat', 'ag_tg_chan', 'ag_tg_chan_link', 'ag_tg_group_link', 'ag_wa_phone', 'ag_wa_apikey', 'ag_sms_free_user', 'ag_sms_free_key', 'ag_sms_webhook' ) as $opt ) {
 		register_setting( 'ag_tg_cfg', $opt, array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
 	}
 } );
@@ -1439,7 +1464,7 @@ add_action( 'admin_post_ag_tg_detect', function () {
 if ( ! function_exists( 'ag_notify_render' ) ) {
 	function ag_notify_render() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
-		$active = ( ag_tg_cfg( 'token' ) && ag_tg_cfg( 'chat' ) ) || ( get_option( 'ag_wa_phone' ) && get_option( 'ag_wa_apikey' ) );
+		$active = ( ag_tg_cfg( 'token' ) && ag_tg_cfg( 'chat' ) ) || ( get_option( 'ag_wa_phone' ) && get_option( 'ag_wa_apikey' ) ) || ( get_option( 'ag_sms_free_user' ) && get_option( 'ag_sms_free_key' ) ) || get_option( 'ag_sms_webhook' );
 		?>
 		<div class="wrap">
 			<h1>📲 Notifications téléphone</h1>
@@ -1466,9 +1491,22 @@ if ( ! function_exists( 'ag_notify_render' ) ) {
 				</ol>
 				<p style="margin:8px 0 0;color:#50575e;">Le bouton « 🔎 Détecter » marche aussi : écris <code>/start@TonBot</code> dans le groupe, puis clique Détecter. (S'il ne trouve rien : @BotFather → <code>/setprivacy</code> → ton bot → <strong>Disable</strong>.)</p>
 			</div>
+			<div style="max-width:780px;margin:16px 0;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #6c5ce7;">
+				<strong>📩 Option C — SMS sur ton téléphone (alertes inscriptions, messages, devis) :</strong>
+				<p style="margin:8px 0 0;">Deux façons :</p>
+				<ol style="margin:6px 0 0 22px;line-height:1.8;">
+					<li><strong>Free Mobile (gratuit)</strong> — si tu as un forfait Free Mobile : dans ton espace abonné Free → <em>Gérer mon compte → Mes options → Notifications par SMS</em> → active-la et copie ton <strong>identifiant</strong> + la <strong>clé</strong>. Colle-les ci-dessous. Les SMS arrivent sur <strong>ta</strong> ligne Free, gratuitement.</li>
+					<li><strong>Autre opérateur</strong> — utilise un <strong>webhook</strong> (ex. un service comme Make/Zapier relié à Twilio/OVH/Brevo) : mets l'URL avec <code>{msg}</code> à l'endroit du message.</li>
+				</ol>
+				<p style="margin:8px 0 0;color:#50575e;">Une fois rempli, <strong>chaque inscription ambassadeur, message client et demande de devis</strong> t'envoie un SMS — et s'ajoute aussi à ton Google Agenda.</p>
+			</div>
 			<form method="post" action="options.php" style="max-width:780px;">
 				<?php settings_fields( 'ag_tg_cfg' ); ?>
 				<table class="form-table">
+					<tr><th colspan="2" style="padding-bottom:0;"><span style="color:#6c5ce7;">SMS (alertes sur ton téléphone)</span></th></tr>
+					<tr><th scope="row"><label for="ag_sms_free_user">Free Mobile — Identifiant</label></th><td><input type="text" name="ag_sms_free_user" id="ag_sms_free_user" value="<?php echo esc_attr( get_option( 'ag_sms_free_user', '' ) ); ?>" class="regular-text" style="width:260px;" placeholder="8 chiffres (login Free)"></td></tr>
+					<tr><th scope="row"><label for="ag_sms_free_key">Free Mobile — Clé</label></th><td><input type="text" name="ag_sms_free_key" id="ag_sms_free_key" value="<?php echo esc_attr( get_option( 'ag_sms_free_key', '' ) ); ?>" class="regular-text" style="width:260px;" placeholder="clé d'API SMS Free"></td></tr>
+					<tr><th scope="row"><label for="ag_sms_webhook">Webhook SMS (autre opérateur)</label></th><td><input type="url" name="ag_sms_webhook" id="ag_sms_webhook" value="<?php echo esc_attr( get_option( 'ag_sms_webhook', '' ) ); ?>" class="regular-text" style="width:100%;max-width:520px;" placeholder="https://…/send?text={msg}"><p class="description">Optionnel. L'URL doit contenir <code>{msg}</code> (remplacé par le message).</p></td></tr>
 					<tr><th colspan="2" style="padding-bottom:0;"><span style="color:#25D366;">WhatsApp (CallMeBot)</span></th></tr>
 					<tr><th scope="row"><label for="ag_wa_phone">Mon numéro WhatsApp</label></th><td><input type="text" name="ag_wa_phone" id="ag_wa_phone" value="<?php echo esc_attr( get_option( 'ag_wa_phone', '' ) ); ?>" class="regular-text" style="width:260px;" placeholder="33612345678 (format international)"></td></tr>
 					<tr><th scope="row"><label for="ag_wa_apikey">API key CallMeBot</label></th><td><input type="text" name="ag_wa_apikey" id="ag_wa_apikey" value="<?php echo esc_attr( get_option( 'ag_wa_apikey', '' ) ); ?>" class="regular-text" style="width:260px;"></td></tr>
