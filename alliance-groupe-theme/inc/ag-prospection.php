@@ -1493,12 +1493,17 @@ if ( ! function_exists( 'ag_notify_render' ) ) {
 			</div>
 			<div style="max-width:780px;margin:16px 0;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #6c5ce7;">
 				<strong>📩 Option C — SMS sur ton téléphone (alertes inscriptions, messages, devis) :</strong>
-				<p style="margin:8px 0 0;">Deux façons :</p>
-				<ol style="margin:6px 0 0 22px;line-height:1.8;">
-					<li><strong>Free Mobile (gratuit)</strong> — si tu as un forfait Free Mobile : dans ton espace abonné Free → <em>Gérer mon compte → Mes options → Notifications par SMS</em> → active-la et copie ton <strong>identifiant</strong> + la <strong>clé</strong>. Colle-les ci-dessous. Les SMS arrivent sur <strong>ta</strong> ligne Free, gratuitement.</li>
-					<li><strong>Autre opérateur</strong> — utilise un <strong>webhook</strong> (ex. un service comme Make/Zapier relié à Twilio/OVH/Brevo) : mets l'URL avec <code>{msg}</code> à l'endroit du message.</li>
-				</ol>
-				<p style="margin:8px 0 0;color:#50575e;">Une fois rempli, <strong>chaque inscription ambassadeur, message client et demande de devis</strong> t'envoie un SMS — et s'ajoute aussi à ton Google Agenda.</p>
+				<p style="margin:8px 0 0;color:#b32d2e;"><strong>⚠ L'API SMS gratuite n'existe que chez Free Mobile.</strong> Sur <strong>SFR / Orange / Bouygues</strong>, pas d'API SMS perso gratuite.</p>
+				<ul style="margin:6px 0 0 22px;line-height:1.8;">
+					<li><strong>Chez Free Mobile</strong> → espace abonné Free → <em>Gérer mon compte → Mes options → Notifications par SMS</em> → active, copie l'<strong>identifiant</strong> + la <strong>clé</strong> ci-dessous. Gratuit, sur ta ligne.</li>
+					<li><strong>Chez SFR / Orange / Bouygues</strong> → deux choix :
+						<ul style="margin:4px 0 0 18px;">
+							<li><strong>Gratuit (recommandé)</strong> : utilise <strong>Telegram</strong> (option B) ou <strong>WhatsApp</strong> (option A) — même effet qu'un SMS, notif instantanée sur ton tél, gratuit.</li>
+							<li><strong>Vrai SMS</strong> : passerelle payante (≈0,05–0,08 €/SMS : Brevo, OVH SMS, smsmode, spot-hit, Twilio) reliée par <strong>webhook</strong>. Le plus simple : <strong>Make.com</strong> (ou Zapier) → « Catch hook » → action SMS. Colle l'URL avec <code>{msg}</code> ci-dessous.</li>
+						</ul>
+					</li>
+				</ul>
+				<p style="margin:8px 0 0;color:#50575e;">Dans tous les cas, <strong>chaque inscription ambassadeur, message client et demande de devis</strong> déclenche l'alerte (SMS / Telegram / WhatsApp selon ce que tu remplis) — et s'ajoute aussi à ton Google Agenda.</p>
 			</div>
 			<form method="post" action="options.php" style="max-width:780px;">
 				<?php settings_fields( 'ag_tg_cfg' ); ?>
