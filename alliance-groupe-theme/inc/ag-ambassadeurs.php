@@ -360,6 +360,24 @@ add_action( 'admin_menu', function () {
 	);
 } );
 
+/* Diffusion Telegram à toute l'équipe d'ambassadeurs (canal interne). */
+add_action( 'admin_post_ag_amb_broadcast', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_tools' ) ) wp_die( 'no' );
+	$msg = trim( (string) wp_unslash( $_POST['msg'] ?? '' ) );
+	// Diffuse uniquement sur le groupe Telegram interne (équipe ambassadeurs).
+	$ok  = ( '' !== $msg ) && function_exists( 'ag_tg_send' ) && function_exists( 'ag_tg_cfg' ) && ag_tg_send( ag_tg_cfg( 'chat' ), '📣 ' . $msg );
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-ambassadeurs&abc=' . ( $ok ? 1 : 0 ) ) ); exit;
+} );
+/* Enregistre le pseudo Telegram d'un ambassadeur (pour le bouton ✈️). */
+add_action( 'admin_post_ag_amb_tg_save', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_tools' ) ) wp_die( 'no' );
+	$email = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
+	$tg    = preg_replace( '/[^A-Za-z0-9_]/', '', (string) wp_unslash( $_POST['tg'] ?? '' ) );
+	$u = $email ? get_user_by( 'email', $email ) : null;
+	if ( $u ) update_user_meta( $u->ID, 'ag_amb_telegram', $tg );
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-ambassadeurs#amb' ) ); exit;
+} );
+
 if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 	function ag_render_ambassadeurs_page() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
@@ -511,19 +529,89 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 		}
 
 		// AMBASSADEURS
-		echo '<h2 style="margin-top:30px;">🤝 Ambassadeurs inscrits</h2>';
+		echo '<h2 id="amb" style="margin-top:30px;">🤝 Ambassadeurs inscrits</h2>';
+
+		// Métriques (ventes par ambassadeur) pour tri/filtre.
+		$ventes_by = array();
+		foreach ( (array) get_option( 'ag_ambassadeur_ventes', array() ) as $vv ) { $oe = strtolower( $vv['email'] ?? '' ); if ( $oe ) $ventes_by[ $oe ] = ( $ventes_by[ $oe ] ?? 0 ) + 1; }
+		$azone   = isset( $_GET['azone'] ) ? sanitize_text_field( wp_unslash( $_GET['azone'] ) ) : '';
+		$asort   = isset( $_GET['asort'] ) ? sanitize_text_field( wp_unslash( $_GET['asort'] ) ) : 'recent';
+		$afilter = isset( $_GET['afilter'] ) ? sanitize_text_field( wp_unslash( $_GET['afilter'] ) ) : '';
+
+		// Outils : diffusion Telegram + filtres/tri.
+		if ( isset( $_GET['abc'] ) ) echo '<div class="notice notice-' . ( $_GET['abc'] ? 'success' : 'error' ) . ' is-dismissible"><p>' . ( $_GET['abc'] ? '📣 Annonce envoyée sur le Telegram des ambassadeurs.' : 'Échec : configure le canal interne dans Notifications téléphone.' ) . '</p></div>';
+		echo '<div style="background:#fff;border:1px solid #ccd0d4;border-left:4px solid #D4B45C;border-radius:8px;padding:14px 18px;max-width:980px;margin:10px 0 16px;">';
+		echo '<strong>📣 Message Telegram à tous les ambassadeurs</strong> <span style="color:#646970;font-size:.85em;">(annonce, offre, relance — envoyé au groupe interne)</span>';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin-top:8px;"><input type="hidden" name="action" value="ag_amb_broadcast">' . wp_nonce_field( 'ag_amb_tools', '_n', true, false ) . '<textarea name="msg" rows="2" style="width:100%;" placeholder="Ex : 🔥 Nouvelle offre ce week-end : foncez ! Lien : ..."></textarea><button class="button button-primary" style="margin-top:6px;">Envoyer à tous</button></form>';
+		echo '</div>';
+
+		// Filtre / tri.
+		$dn = function_exists( 'ag_dept_names' ) ? ag_dept_names() : array();
+		echo '<form method="get" action="' . esc_url( admin_url( 'admin.php' ) ) . '" style="margin:0 0 12px;"><input type="hidden" name="page" value="ag-ambassadeurs">';
+		echo 'Zone : <select name="azone"><option value="">Toutes</option>';
+		foreach ( $dn as $code => $nom ) { echo '<option value="' . esc_attr( $code ) . '" ' . selected( $azone, $code, false ) . '>' . esc_html( $code . ' ' . $nom ) . '</option>'; }
+		echo '</select> ';
+		echo 'Filtre : <select name="afilter"><option value="">Tous</option>'
+			. '<option value="actif" ' . selected( $afilter, 'actif', false ) . '>Actifs</option>'
+			. '<option value="attente" ' . selected( $afilter, 'attente', false ) . '>En attente de validation</option>'
+			. '<option value="sanszone" ' . selected( $afilter, 'sanszone', false ) . '>Sans zone</option>'
+			. '<option value="sansvente" ' . selected( $afilter, 'sansvente', false ) . '>Sans vente (à relancer / inactifs)</option>'
+			. '</select> ';
+		echo 'Tri : <select name="asort"><option value="recent" ' . selected( $asort, 'recent', false ) . '>Plus récents</option>'
+			. '<option value="ventes" ' . selected( $asort, 'ventes', false ) . '>Travaillent le + (ventes)</option>'
+			. '<option value="ventes_asc" ' . selected( $asort, 'ventes_asc', false ) . '>Travaillent le - (ventes)</option>'
+			. '<option value="nom" ' . selected( $asort, 'nom', false ) . '>Nom</option></select> ';
+		echo '<button class="button">Filtrer</button> <a class="button" href="' . esc_url( admin_url( 'admin.php?page=ag-ambassadeurs' ) ) . '">Réinitialiser</a></form>';
+
+		// Application filtre/tri.
+		$ambs = array_values( array_filter( $ambs, function ( $a ) use ( $azone, $afilter, $ventes_by ) {
+			$em = strtolower( $a['email'] ?? '' );
+			$zones = function_exists( 'ag_zone_of_owner' ) ? ag_zone_of_owner( $em ) : array();
+			$nv = $ventes_by[ $em ] ?? 0;
+			$actif = ( ( $a['status'] ?? '' ) === 'actif' );
+			if ( '' !== $azone && ! in_array( $azone, $zones, true ) ) return false;
+			if ( 'actif' === $afilter && ! $actif ) return false;
+			if ( 'attente' === $afilter && $actif ) return false;
+			if ( 'sanszone' === $afilter && ! empty( $zones ) ) return false;
+			if ( 'sansvente' === $afilter && $nv > 0 ) return false;
+			return true;
+		} ) );
+		usort( $ambs, function ( $a, $b ) use ( $asort, $ventes_by ) {
+			$na = $ventes_by[ strtolower( $a['email'] ?? '' ) ] ?? 0;
+			$nb = $ventes_by[ strtolower( $b['email'] ?? '' ) ] ?? 0;
+			if ( 'ventes' === $asort ) return $nb <=> $na;
+			if ( 'ventes_asc' === $asort ) return $na <=> $nb;
+			if ( 'nom' === $asort ) return strcasecmp( $a['name'] ?? '', $b['name'] ?? '' );
+			return 0;
+		} );
+
 		if ( empty( $ambs ) ) {
-			echo '<p>Aucun inscrit.</p>';
+			echo '<p>Aucun ambassadeur ne correspond.</p>';
 		} else {
 			echo '<p style="color:#646970;">« Activer » = identité vérifiée + contrat OK → l\'ambassadeur peut alors déclarer des ventes.</p>';
-			echo '<table class="widefat striped"><thead><tr><th>Date</th><th>Nom</th><th>Email</th><th>Tél / Ville</th><th>Identité</th><th>Contrat signé</th><th>Paiement</th><th>Statut</th><th>Actions</th></tr></thead><tbody>';
+			echo '<table class="widefat striped"><thead><tr><th>Date</th><th>Nom</th><th>Email</th><th>Tél / Zone / Ventes</th><th>Contacter</th><th>Identité</th><th>Contrat signé</th><th>Paiement</th><th>Statut</th><th>Actions</th></tr></thead><tbody>';
 			foreach ( $ambs as $a ) {
 				$contrat = $a['contrat'] ?? array();
+				$em  = strtolower( $a['email'] ?? '' );
+				$ph  = $a['phone'] ?? '';
+				$zones = function_exists( 'ag_zone_of_owner' ) ? ag_zone_of_owner( $em ) : array();
+				$nv  = $ventes_by[ $em ] ?? 0;
 				echo '<tr>';
 				echo '<td>' . esc_html( $a['date'] ?? '' ) . '</td>';
 				echo '<td><strong>' . esc_html( $a['name'] ?? '' ) . '</strong>' . ( ! empty( $a['parrain'] ) ? '<br><small style="color:#646970;">parrain : ' . esc_html( $a['parrain'] ) . '</small>' : '' ) . '</td>';
 				echo '<td><a href="mailto:' . esc_attr( $a['email'] ?? '' ) . '">' . esc_html( $a['email'] ?? '' ) . '</a></td>';
-				echo '<td>' . esc_html( ( $a['phone'] ?? '' ) . ' · ' . ( $a['city'] ?? '' ) ) . '</td>';
+				echo '<td style="font-size:12px;">' . esc_html( ( $ph ?: '—' ) . ' · ' . ( $a['city'] ?? '' ) ) . '<br>🗺️ ' . ( $zones ? esc_html( implode( ', ', $zones ) ) : '<span style="color:#b32d2e;">aucune</span>' ) . ' · 💰 ' . (int) $nv . ' vente(s)</td>';
+				// Contacter : SMS / WhatsApp / Telegram.
+				$smsn = preg_replace( '/[^0-9+]/', '', $ph );
+				$wan  = function_exists( 'ag_wa_number' ) ? ag_wa_number( $ph ) : preg_replace( '/[^0-9]/', '', $ph );
+				$body = rawurlencode( 'Salut ' . ( $a['name'] ? explode( ' ', trim( $a['name'] ) )[0] : '' ) . ' ! ' );
+				$tg_user = ( $u2 = get_user_by( 'email', $em ) ) ? get_user_meta( $u2->ID, 'ag_amb_telegram', true ) : '';
+				echo '<td style="font-size:12px;white-space:nowrap;">';
+				if ( $smsn ) echo '<a class="button button-small" href="sms:' . esc_attr( $smsn ) . '?body=' . $body . '">📱 SMS</a> ';
+				if ( $wan ) echo '<a class="button button-small" target="_blank" rel="noopener" href="https://wa.me/' . esc_attr( $wan ) . '?text=' . $body . '">🟢 WhatsApp</a> ';
+				if ( $tg_user ) echo '<a class="button button-small" target="_blank" rel="noopener" href="https://t.me/' . esc_attr( $tg_user ) . '">✈️ Telegram</a>';
+				echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin-top:4px;display:flex;gap:4px;"><input type="hidden" name="action" value="ag_amb_tg_save">' . wp_nonce_field( 'ag_amb_tools', '_n', true, false ) . '<input type="hidden" name="email" value="' . esc_attr( $em ) . '"><input type="text" name="tg" value="' . esc_attr( $tg_user ) . '" placeholder="@pseudo Telegram" style="width:120px;font-size:11px;"><button class="button button-small">💾</button></form>';
+				echo '</td>';
 				echo '<td style="max-width:220px;white-space:normal;font-size:12px;">Né(e) : ' . esc_html( $a['birthdate'] ?? '—' ) . '<br>' . esc_html( $a['address'] ?? '—' );
 				if ( ! empty( $a['kyc_file'] ) ) {
 					$kyc_view = wp_nonce_url( admin_url( 'admin-post.php?action=ag_kyc_view&id=' . $a['id'] ), 'ag_kyc_view' );
