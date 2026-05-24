@@ -1131,3 +1131,16 @@ if ( ! function_exists( 'ag_sur_mesure_submit' ) ) {
         exit;
     }
 }
+
+// ── FOCUS template association : bloque l'accès public aux autres templates
+//    (l'admin garde l'accès pour continuer à les travailler). Réversible :
+//    vider le filtre 'ag_templates_blocked' pour tout réautoriser.
+add_action( 'template_redirect', function () {
+    if ( current_user_can( 'manage_options' ) ) return; // toi (admin) vois tout
+    $blocked = apply_filters( 'ag_templates_blocked', array(
+        'wordpress-avocat', 'wordpress-restaurant', 'wordpress-artisan', 'wordpress-coach', 'wordpress-barber',
+    ) );
+    foreach ( $blocked as $slug ) {
+        if ( is_page( $slug ) ) { wp_safe_redirect( home_url( '/templates-wordpress' ), 302 ); exit; }
+    }
+} );
