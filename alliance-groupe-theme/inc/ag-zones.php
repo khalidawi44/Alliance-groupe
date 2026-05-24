@@ -341,25 +341,16 @@ if ( ! function_exists( 'ag_zones_render' ) ) {
 						<textarea id="ag-recruit-msg" rows="6" style="width:100%;"><?php echo esc_textarea( ag_recruit_message() ); ?></textarea>
 					</div>
 				</div>
-				<?php if ( isset( $_GET['smstest'] ) ) : ?>
-					<div class="notice notice-<?php echo $_GET['smstest'] ? 'success' : 'error'; ?>" style="margin:10px 0;"><p><?php echo $_GET['smstest'] ? '📩 SMS de test envoyé ✅ sur TA ligne Free (07 44 82 95 16). C\'est ce que verront les recrues.' : '❌ Échec : vérifie l\'identifiant + la clé Free dans Réglages → Notifications téléphone.'; ?></p></div>
-				<?php endif; ?>
 				<p style="margin:10px 0 0;">
 					<button type="button" class="button button-primary" id="ag-recruit-go">Générer les liens personnalisés</button>
 					<button type="button" class="button" id="ag-recruit-save" style="margin-left:6px;">💾 Enregistrer dans ma liste</button>
-					<button type="button" class="button" id="ag-recruit-smstest" style="margin-left:6px;">📩 Test : m'envoyer ce SMS</button>
-					<span style="color:#646970;font-size:.85em;margin-left:6px;">(le test part sur TA ligne Free, pour voir le rendu)</span>
+					<span style="color:#646970;font-size:.85em;margin-left:6px;">(les garde pour suivre qui a répondu)</span>
 				</p>
-				<p style="margin:6px 0 0;color:#646970;font-size:.85em;">ℹ️ L'API Free n'envoie qu'à <strong>toi</strong>. Pour envoyer aux recrues : « Générer les liens » puis tu tapes envoyer sur ton tél (gratuit, ta ligne Free), ou on branche une passerelle SMS payante pour un envoi 100% auto.</p>
+				<p style="margin:6px 0 0;color:#646970;font-size:.85em;">📱 Pour envoyer avec ta <strong>ligne Free</strong> : iPhone → Réglages → Messages → <em>Envoyer depuis</em> → choisis ta ligne Free (ou choisis-la en haut de la conversation). Les liens « SMS » utilisent la ligne par défaut de ton tél.</p>
 				<form method="post" action="<?php echo esc_url( $post ); ?>" id="ag-recruit-save-form" style="display:none;">
 					<input type="hidden" name="action" value="ag_recruits_add">
 					<?php wp_nonce_field( 'ag_recruit_crm', '_n' ); ?>
 					<input type="hidden" name="lines" id="ag-recruit-lines" value="">
-				</form>
-				<form method="post" action="<?php echo esc_url( $post ); ?>" id="ag-recruit-smstest-form" style="display:none;">
-					<input type="hidden" name="action" value="ag_recruit_sms_test">
-					<?php wp_nonce_field( 'ag_recruit_crm', '_n' ); ?>
-					<input type="hidden" name="msg" id="ag-recruit-smstest-msg" value="">
 				</form>
 				<div id="ag-recruit-out" style="margin-top:12px;"></div>
 				<script>
@@ -391,11 +382,6 @@ if ( ! function_exists( 'ag_zones_render' ) ) {
 						if(!v){ alert('Ajoute au moins un numéro.'); return; }
 						document.getElementById('ag-recruit-lines').value=v;
 						document.getElementById('ag-recruit-save-form').submit();
-					});
-					var st=document.getElementById('ag-recruit-smstest');
-					if(st) st.addEventListener('click',function(){
-						document.getElementById('ag-recruit-smstest-msg').value=document.getElementById('ag-recruit-msg').value;
-						document.getElementById('ag-recruit-smstest-form').submit();
 					});
 				})();
 				</script>
@@ -648,16 +634,6 @@ add_action( 'admin_post_ag_recruit_update', function () {
 	}
 	update_option( 'ag_recruits', array_values( $list ), false );
 	wp_safe_redirect( admin_url( 'admin.php?page=ag-zones#recruits' ) ); exit;
-} );
-
-/* ── Recrutement : test du SMS (envoyé sur MA propre ligne Free) ──── */
-add_action( 'admin_post_ag_recruit_sms_test', function () {
-	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_recruit_crm' ) ) wp_die( 'no' );
-	$msg = trim( (string) wp_unslash( $_POST['msg'] ?? '' ) );
-	if ( '' === $msg && function_exists( 'ag_recruit_message' ) ) $msg = ag_recruit_message();
-	$msg = str_replace( '{prenom}', ' (prénom)', $msg );
-	$ok  = function_exists( 'ag_sms' ) && ag_sms( $msg );
-	wp_safe_redirect( admin_url( 'admin.php?page=ag-zones&smstest=' . ( $ok ? 1 : 0 ) ) ); exit;
 } );
 
 /* ── Parcours guidé : l'ambassadeur confirme avoir rejoint le groupe Telegram ── */
