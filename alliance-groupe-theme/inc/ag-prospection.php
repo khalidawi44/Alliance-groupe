@@ -50,6 +50,18 @@ if ( ! function_exists( 'ag_places_usage' ) ) {
 		return array( 'calls' => $n, 'cost' => round( $n * 0.04, 2 ) );
 	}
 }
+if ( ! function_exists( 'ag_search_history_add' ) ) {
+	/** Garde l'historique des recherches faites (pour les revoir plus tard). */
+	function ag_search_history_add( $q, $city, $count ) {
+		$city = trim( (string) $city ); $q = trim( (string) $q );
+		if ( '' === $city && '' === $q ) return;
+		$key  = strtolower( $q . '|' . $city );
+		$hist = (array) get_option( 'ag_search_history', array() );
+		$hist[ $key ] = array( 'q' => $q, 'city' => $city, 'count' => (int) $count, 'ts' => time() );
+		if ( count( $hist ) > 300 ) $hist = array_slice( $hist, -300, null, true );
+		update_option( 'ag_search_history', $hist );
+	}
+}
 
 if ( ! function_exists( 'ag_wa_number' ) ) {
 	/**
@@ -327,6 +339,13 @@ add_action( 'admin_post_ag_prospect_ignore_reset', function () {
 	wp_safe_redirect( admin_url( 'admin.php?page=ag-prospects' ) ); exit;
 } );
 
+/* Effacer l'historique des recherches. */
+add_action( 'admin_post_ag_search_history_clear', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_die( 'no' );
+	delete_option( 'ag_search_history' );
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-prospects' ) ); exit;
+} );
+
 /* ── 5. Priorité (qui en a vraiment besoin), pourquoi, et message émotionnel ─ */
 if ( ! function_exists( 'ag_prospect_score' ) ) {
 	/** Score 0-100 de PROBABILITÉ D'ACHAT : un commerce actif & populaire SANS vrai site = acheteur idéal. */
@@ -539,6 +558,8 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				usort( $results, function ( $a, $b ) { return ag_prospect_score( $b ) <=> ag_prospect_score( $a ); } );
 			}
 		}
+		// Garde la recherche dans l'historique (pour la revoir plus tard).
+		if ( is_array( $results ) && ! isset( $results['error'] ) ) ag_search_history_add( $q, $city, count( $results ) );
 		$prospects = (array) get_option( 'ag_prospects', array() );
 		$leads     = array_reverse( (array) get_option( 'ag_leads', array() ) );
 		$labels    = ag_prospect_statuses();
@@ -630,6 +651,39 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					<?php endif; ?>
 				<?php endif; ?>
 			</div>
+
+			<!-- Mes recherches (historique) -->
+			<?php
+			$ag_hist = (array) get_option( 'ag_search_history', array() );
+			if ( $ag_hist ) :
+				usort( $ag_hist, function ( $a, $b ) {
+					$c = strcasecmp( $a['city'] ?? '', $b['city'] ?? '' );
+					return $c !== 0 ? $c : strcasecmp( $a['q'] ?? '', $b['q'] ?? '' );
+				} );
+			?>
+			<div style="max-width:980px;margin-top:18px;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #2271b1;border-radius:6px;">
+				<h2 style="margin-top:0;">📂 Mes recherches (<?php echo count( $ag_hist ); ?>)</h2>
+				<p style="color:#50575e;font-size:.9rem;">Toutes tes recherches sont gardées. Clique <strong>« Revoir »</strong> pour relancer et voir s'il y a du nouveau (triées par ville, puis métier).</p>
+				<table class="widefat striped" style="margin-top:8px;"><thead><tr><th>Ville</th><th>Métier</th><th>Dernier résultat</th><th>Dernière fois</th><th></th></tr></thead><tbody>
+				<?php foreach ( $ag_hist as $h ) :
+					$hq = $h['q'] ?? ''; $hc = $h['city'] ?? '';
+					$url = add_query_arg( array_filter( array( 'page' => 'ag-prospects', 'q' => $hq, 'city' => $hc ) ), admin_url( 'admin.php' ) );
+				?>
+					<tr>
+						<td><strong><?php echo esc_html( $hc ?: '—' ); ?></strong></td>
+						<td><?php echo esc_html( $hq !== '' ? $hq : '🌍 Tous secteurs' ); ?></td>
+						<td><?php echo (int) ( $h['count'] ?? 0 ); ?></td>
+						<td><?php echo esc_html( ! empty( $h['ts'] ) ? wp_date( 'd/m/Y', (int) $h['ts'] ) : '—' ); ?></td>
+						<td><a class="button button-small button-primary" href="<?php echo esc_url( $url ); ?>">🔄 Revoir</a></td>
+					</tr>
+				<?php endforeach; ?>
+				</tbody></table>
+				<form method="post" action="<?php echo esc_url( $post ); ?>" style="margin-top:8px;" onsubmit="return confirm('Effacer tout l\'historique des recherches ?');">
+					<input type="hidden" name="action" value="ag_search_history_clear"><input type="hidden" name="_n" value="<?php echo esc_attr( $nonce ); ?>">
+					<button class="button button-small">Effacer l'historique</button>
+				</form>
+			</div>
+			<?php endif; ?>
 
 			<!-- Entreprises au tribunal (redressement judiciaire) -->
 			<div style="max-width:980px;margin-top:18px;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #7a4ed4;border-radius:6px;">
