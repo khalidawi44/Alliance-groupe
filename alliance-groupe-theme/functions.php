@@ -566,8 +566,14 @@ add_action( 'wp_head', function () {
 
     $dir = get_stylesheet_directory() . '/assets/images/';
     $uri = get_stylesheet_directory_uri() . '/assets/images/';
+    $is_banner = false; // true = vraie bannière paysage 1200x630 -> grande carte ; false = logo -> petite vignette
     foreach ( array( 'jpg', 'jpeg', 'png', 'webp' ) as $ext ) {
-        if ( file_exists( $dir . 'logo.' . $ext ) ) { $img = $uri . 'logo.' . $ext; break; }
+        if ( file_exists( $dir . 'og-banner.' . $ext ) ) { $img = $uri . 'og-banner.' . $ext; $is_banner = true; break; }
+    }
+    if ( ! $img ) {
+        foreach ( array( 'jpg', 'jpeg', 'png', 'webp' ) as $ext ) {
+            if ( file_exists( $dir . 'logo.' . $ext ) ) { $img = $uri . 'logo.' . $ext; break; }
+        }
     }
 
     if ( is_singular() ) {
@@ -575,7 +581,7 @@ add_action( 'wp_head', function () {
         $url   = get_permalink();
         if ( is_single() ) $og_type = 'article';
         if ( has_excerpt() ) $desc = wp_strip_all_tags( get_the_excerpt() );
-        if ( has_post_thumbnail() ) $img = get_the_post_thumbnail_url( null, 'large' );
+        if ( has_post_thumbnail() ) { $img = get_the_post_thumbnail_url( null, 'large' ); $is_banner = true; }
     }
 
     echo '<meta property="og:type" content="' . esc_attr( $og_type ) . '">' . "\n";
@@ -586,12 +592,15 @@ add_action( 'wp_head', function () {
     echo '<meta property="og:url" content="' . esc_url( $url ) . '">' . "\n";
     if ( $img ) {
         echo '<meta property="og:image" content="' . esc_url( $img ) . '">' . "\n";
-        echo '<meta property="og:image:width" content="1200">' . "\n";
-        echo '<meta property="og:image:height" content="630">' . "\n";
+        if ( $is_banner ) {
+            echo '<meta property="og:image:width" content="1200">' . "\n";
+            echo '<meta property="og:image:height" content="630">' . "\n";
+        }
     }
     echo '<meta property="og:site_name" content="Alliance Groupe">' . "\n";
     echo '<meta property="og:locale" content="fr_FR">' . "\n";
-    echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
+    // Grande carte seulement pour une vraie bannière paysage ; sinon petite vignette (logo pas géant).
+    echo '<meta name="twitter:card" content="' . ( $is_banner ? 'summary_large_image' : 'summary' ) . '">' . "\n";
     if ( ! $has_override ) {
         echo '<meta name="twitter:title" content="' . esc_attr( $title ) . '">' . "\n";
         echo '<meta name="twitter:description" content="' . esc_attr( $desc ) . '">' . "\n";
