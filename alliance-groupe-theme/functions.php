@@ -517,27 +517,34 @@ add_action( 'wp_head', function () {
 add_filter( 'robots_txt', function ( $output, $public ) {
     if ( $public ) {
         $home   = home_url( '/' );
+        // Tous les robots : exploration complète du contenu (seuls l'admin/recherche/pages de remerciement sont exclus, ce qui est la norme SEO).
         $output  = "User-agent: *\n";
         $output .= "Allow: /\n";
-        $output .= "Allow: /sitemap.xml\n";
-        $output .= "Allow: /sitemap_index.xml\n";
-        $output .= "Allow: /ag-sitemap.xml\n";
         $output .= "Disallow: /wp-admin/\n";
+        $output .= "Allow: /wp-admin/admin-ajax.php\n";
         $output .= "Disallow: /wp-includes/\n";
         $output .= "Disallow: /?s=\n";
         $output .= "Disallow: /merci-rdv\n";
         $output .= "Disallow: /merci-achat\n";
         $output .= "\n";
-        // Whitelist explicite Googlebot pour eviter blocage serveur (mod_security)
-        $output .= "User-agent: Googlebot\n";
+        // AdSense : le robot doit pouvoir lire TOUTES les pages pour servir des pubs pertinentes.
+        $output .= "User-agent: Mediapartners-Google\n";
         $output .= "Allow: /\n";
-        $output .= "Allow: /sitemap.xml\n";
         $output .= "\n";
-        $output .= "User-agent: Bingbot\n";
+        // Google Ads : vérification des pages de destination.
+        $output .= "User-agent: AdsBot-Google\n";
         $output .= "Allow: /\n";
-        $output .= "Allow: /sitemap.xml\n";
+        $output .= "User-agent: AdsBot-Google-Mobile\n";
+        $output .= "Allow: /\n";
+        $output .= "\n";
+        // Whitelist explicite des grands moteurs (rassurance / anti-blocage serveur).
+        foreach ( array( 'Googlebot', 'Googlebot-Image', 'Bingbot', 'DuckDuckBot', 'YandexBot', 'Baiduspider', 'Applebot', 'facebookexternalhit', 'Twitterbot', 'LinkedInBot', 'WhatsApp', 'Slurp' ) as $bot ) {
+            $output .= "User-agent: $bot\n";
+            $output .= "Allow: /\n";
+        }
         $output .= "\n";
         $output .= "Sitemap: " . $home . "sitemap.xml\n";
+        $output .= "Sitemap: " . $home . "sitemap_index.xml\n";
     }
     return $output;
 }, 10, 2 );
