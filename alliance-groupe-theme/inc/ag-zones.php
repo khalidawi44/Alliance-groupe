@@ -163,6 +163,39 @@ if ( ! function_exists( 'ag_zone_extra_activate_by_email' ) ) {
 		return true;
 	}
 }
+/* ── Activité ambassadeur : on garde la zone à vie, sauf inactivité 7 jours ── */
+if ( ! function_exists( 'ag_amb_mark_active' ) ) {
+	function ag_amb_mark_active( $uid = 0 ) {
+		$uid = $uid ?: get_current_user_id();
+		if ( ! $uid ) return;
+		$u = get_user_by( 'id', $uid );
+		if ( $u && in_array( 'ag_ambassadeur', (array) $u->roles, true ) ) update_user_meta( $uid, 'ag_amb_last_active', time() );
+	}
+}
+add_action( 'init', function () {
+	if ( ! wp_next_scheduled( 'ag_amb_inactivity_cron' ) ) wp_schedule_event( strtotime( 'tomorrow 8:00' ), 'daily', 'ag_amb_inactivity_cron' );
+} );
+add_action( 'ag_amb_inactivity_cron', function () {
+	$limit = 7 * DAY_IN_SECONDS;
+	$now   = time();
+	foreach ( get_users( array( 'role' => 'ag_ambassadeur' ) ) as $u ) {
+		$zones = ag_zone_of_owner( $u->user_email );
+		if ( empty( $zones ) ) continue; // pas de zone = rien à retirer
+		$last = (int) get_user_meta( $u->ID, 'ag_amb_last_active', true );
+		if ( ! $last ) { $last = strtotime( $u->user_registered ) ?: $now; }
+		if ( ( $now - $last ) < $limit ) continue; // actif récemment : il garde sa zone
+		foreach ( $zones as $d ) ag_zone_remove_owner( $d, $u->user_email );
+		update_user_meta( $u->ID, 'ag_amb_zone_paused', $now );
+		$nm = $u->display_name ?: $u->user_email;
+		wp_mail(
+			$u->user_email,
+			'⏸️ Ta zone est en pause (inactivité) — reprends-la !',
+			"Salut $nm,\n\nTu n'as pas été actif depuis 7 jours, alors ta zone (" . implode( ', ', $zones ) . ") a été libérée pour laisser la place à l'équipe.\nAucun souci : reconnecte-toi et reprends une zone en 1 clic depuis ton espace.\n\n👉 " . home_url( '/espace-ambassadeur#demarrage' ) . "\n\nOn t'attend 💪\nAlliance Groupe"
+		);
+		if ( function_exists( 'ag_tg_send' ) && function_exists( 'ag_tg_cfg' ) ) ag_tg_send( ag_tg_cfg( 'chat' ), '⏸️ ' . $nm . ' retiré de sa zone (' . implode( ', ', $zones ) . ') pour inactivité (7 j). Rappel envoyé.' );
+		if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '⏸️ ' . $nm . ' retiré de sa zone pour inactivité (7 j)' );
+	}
+} );
 if ( ! function_exists( 'ag_dept_names' ) ) {
 	function ag_dept_names() {
 		return array(

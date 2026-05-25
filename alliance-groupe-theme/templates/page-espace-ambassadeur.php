@@ -12,6 +12,8 @@ get_header();
 $u      = wp_get_current_user();
 $email  = $u->user_email;
 $name   = $u->display_name ? $u->display_name : $u->user_login;
+// Marque l'ambassadeur "actif" (garde sa zone ; sinon retrait après 7 j d'inactivité).
+if ( function_exists( 'ag_amb_mark_active' ) ) ag_amb_mark_active( $u->ID );
 // L'admin compte aussi dans le classement : on lui garantit une fiche ambassadeur (ref + statut actif).
 if ( function_exists( 'ag_espace_member_kind' ) && 'admin' === ag_espace_member_kind() && function_exists( 'ag_ensure_ambassador_for_user' ) ) { ag_ensure_ambassador_for_user( $u ); }
 $rec    = function_exists( 'ag_ambassadeur_record' ) ? ag_ambassadeur_record( $email ) : null;

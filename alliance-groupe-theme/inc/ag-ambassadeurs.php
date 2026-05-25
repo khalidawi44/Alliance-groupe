@@ -236,6 +236,10 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 			}
 		}
 
+		// Marque l'activité initiale (évite un retrait pour inactivité juste après inscription).
+		$nu = get_user_by( 'email', $email );
+		if ( $nu ) update_user_meta( $nu->ID, 'ag_amb_last_active', time() );
+
 		// Notif admin
 		$body  = "Nouvelle inscription Programme Ambassadeurs\n\n";
 		$body .= "Nom : $name\nEmail : $email\nTel : $phone\nVille : $city\nZone : " . ( $assigned_dept ?: 'non détectée' ) . "\n";
