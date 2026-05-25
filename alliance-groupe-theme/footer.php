@@ -39,6 +39,8 @@
         <p class="ag-footer__legal">
             <a href="<?php echo esc_url( home_url( '/mentions-legales' ) ); ?>">Mentions légales & CGV</a>
             &nbsp;·&nbsp;
+            <a href="<?php echo esc_url( home_url( '/retours' ) ); ?>">Retours & remboursement</a>
+            &nbsp;·&nbsp;
             <a href="<?php echo esc_url( home_url( '/confidentialite' ) ); ?>">Confidentialité</a>
             &nbsp;·&nbsp;
             <a href="<?php echo esc_url( home_url( '/cookies' ) ); ?>">Cookies</a>

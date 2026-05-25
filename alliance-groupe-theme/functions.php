@@ -23,13 +23,14 @@ if ( is_admin() ) {
 
 // Crée les pages maison (sur-mesure, consultation) si elles n'existent pas.
 add_action( 'admin_init', function () {
-    if ( get_option( 'ag_auto_pages_v5' ) ) return;
+    if ( get_option( 'ag_auto_pages_v6' ) ) return;
     $pages = array(
         'sur-mesure'    => array( 'Projet sur-mesure', 'templates/page-sur-mesure.php' ),
         'consultation'  => array( 'Consultation payante', 'templates/page-consultation.php' ),
         'contrat-client' => array( 'Contrat Client', 'templates/page-contrat-client.php' ),
         'systeme-prospection' => array( 'Système de prospection', 'templates/page-systeme-prospection.php' ),
         'recruteur'     => array( 'Deviens recruteur', 'templates/page-recruteur.php' ),
+        'retours'       => array( 'Politique de retour', 'templates/page-retours.php' ),
     );
     foreach ( $pages as $slug => $p ) {
         if ( get_page_by_path( $slug ) ) continue;
@@ -42,7 +43,7 @@ add_action( 'admin_init', function () {
             'page_template' => $p[1],
         ) );
     }
-    update_option( 'ag_auto_pages_v5', 1 );
+    update_option( 'ag_auto_pages_v6', 1 );
 } );
 
 // L'ancienne page de prise de RDV (Cal.com) redirige vers l'offre sur-mesure.
@@ -446,6 +447,7 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-contrat-client.php']  = 'Contrat Client';
     $templates['templates/page-systeme-prospection.php'] = 'Système de prospection';
     $templates['templates/page-recruteur.php']       = 'Deviens recruteur';
+    $templates['templates/page-retours.php']         = 'Politique de retour';
     $templates['templates/page-consultation.php']    = 'Consultation payante';
     $templates['templates/page-rdv.php']             = 'Prise de rendez-vous (déprécié)';
     $templates['templates/page-questions-flash.php'] = 'Questions Flash';
