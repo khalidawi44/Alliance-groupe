@@ -34,6 +34,7 @@
         </div>
     </div>
     <div class="ag-footer__bottom">
+        <p style="margin:0 0 10px;font-size:.92rem;">💡 Vous connaissez un pro qui a besoin d'un site ? <a href="<?php echo esc_url( home_url( '/ambassadeurs' ) ); ?>" style="color:#D4B45C;font-weight:700;">Recommandez-le et soyez récompensé →</a></p>
         <p>&copy; <?php echo date('Y'); ?> Alliance Groupe. Tous droits réservés.</p>
         <p class="ag-footer__legal">
             <a href="<?php echo esc_url( home_url( '/mentions-legales' ) ); ?>">Mentions légales & CGV</a>
