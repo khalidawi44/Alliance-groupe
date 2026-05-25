@@ -981,3 +981,33 @@ html.ag-has-custom-cursor [role=button] { cursor:auto !important; }
     .ag-fsm-toggle{ top:14px !important; right:14px !important; }
     .ag-nav{ padding-top:10px !important; padding-bottom:10px !important; }
 }
+
+/* ── Burger CENTRÉ & bien visible (PC inclus) — prioritaire (fin de fichier) ── */
+.ag-nav__inner{ position: relative !important; }
+.ag-nav__burger{
+    display:flex !important;
+    position:absolute !important;
+    left:50% !important;
+    top:50% !important;
+    transform:translate(-50%,-50%) !important;
+    flex-direction:column !important;
+    justify-content:center !important;
+    align-items:center !important;
+    gap:5px !important;
+    width:52px !important;
+    height:52px !important;
+    padding:12px !important;
+    background:rgba(212,180,92,.14) !important;
+    border:1px solid rgba(212,180,92,.55) !important;
+    border-radius:12px !important;
+    z-index:1040 !important;
+    cursor:pointer !important;
+}
+.ag-nav__burger span{
+    display:block !important;
+    height:3px !important;
+    width:26px !important;
+    background:#D4B45C !important;
+    border-radius:2px !important;
+}
+.ag-nav__burger:hover{ background:rgba(212,180,92,.24) !important; }
