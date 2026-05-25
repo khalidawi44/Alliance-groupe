@@ -644,6 +644,27 @@ gtag('js',new Date());
     <?php
 }, 1 );
 
+// ── 8c. Google AdSense (balise de validation + pubs) ───────────────
+add_action( 'wp_head', function () {
+    $pub = trim( (string) apply_filters( 'ag_adsense_pub', get_option( 'ag_adsense_pub', 'ca-pub-4272988112057548' ) ) );
+    if ( '' === $pub ) return;
+    if ( 0 !== strpos( $pub, 'ca-pub-' ) ) $pub = 'ca-pub-' . preg_replace( '/[^0-9]/', '', $pub );
+    echo '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' . esc_attr( $pub ) . '" crossorigin="anonymous"></script>' . "\n";
+}, 2 );
+
+// ── 8c2. ads.txt (exigé par Google AdSense) ───────────────────────
+add_action( 'template_redirect', function () {
+    $path = trim( parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ), '/' );
+    if ( 'ads.txt' !== $path ) return;
+    $pub = trim( (string) apply_filters( 'ag_adsense_pub', get_option( 'ag_adsense_pub', 'ca-pub-4272988112057548' ) ) );
+    $num = preg_replace( '/[^0-9]/', '', $pub ); // ads.txt utilise "pub-XXXX" (sans ca-)
+    if ( ob_get_level() ) { while ( ob_get_level() ) ob_end_clean(); }
+    header( 'Content-Type: text/plain; charset=UTF-8' );
+    status_header( 200 );
+    if ( $num ) echo 'google.com, pub-' . $num . ', DIRECT, f08c47fec0942fa0' . "\n";
+    exit;
+}, 0 );
+
 // ── 9. JSON-LD Structured Data (SEO) ────────────────────────────
 add_action( 'wp_head', function () {
     $site_url  = home_url('/');
