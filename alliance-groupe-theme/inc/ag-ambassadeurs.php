@@ -420,6 +420,44 @@ if ( ! function_exists( 'ag_parrain_primes_for' ) ) {
 		return $out;
 	}
 }
+if ( ! function_exists( 'ag_recruiter_leaderboard' ) ) {
+	/** Classement des recruteurs : nb de filleuls, filleuls actifs (≥1 vente), primes gagnées. */
+	function ag_recruiter_leaderboard() {
+		$ambs = (array) get_option( 'ag_ambassadeurs', array() );
+		// Vendeurs actifs (emails ayant ≥1 vente validée/payée).
+		$sellers = array();
+		foreach ( (array) get_option( 'ag_ambassadeur_ventes', array() ) as $v ) {
+			if ( in_array( $v['statut'] ?? '', array( 'validee', 'payee' ), true ) ) $sellers[ strtolower( $v['email'] ?? '' ) ] = 1;
+		}
+		// Primes par parrain.
+		$primes = array();
+		foreach ( (array) get_option( 'ag_parrain_primes', array() ) as $p ) {
+			$pe = strtolower( $p['parrain_email'] ?? '' ); if ( $pe ) $primes[ $pe ] = ( $primes[ $pe ] ?? 0 ) + (float) ( $p['amount'] ?? 0 );
+		}
+		// Index ref -> email.
+		$by_ref = array();
+		foreach ( $ambs as $a ) { if ( ! empty( $a['ref'] ) ) $by_ref[ strtoupper( $a['ref'] ) ] = strtolower( $a['email'] ?? '' ); }
+		$agg = array();
+		foreach ( $ambs as $a ) {
+			$pr = strtoupper( (string) ( $a['parrain'] ?? '' ) );
+			if ( '' === $pr || empty( $by_ref[ $pr ] ) ) continue;
+			$pe = $by_ref[ $pr ];
+			if ( ! isset( $agg[ $pe ] ) ) $agg[ $pe ] = array( 'email' => $pe, 'name' => '', 'filleuls' => 0, 'actifs' => 0 );
+			$agg[ $pe ]['filleuls']++;
+			if ( ! empty( $sellers[ strtolower( $a['email'] ?? '' ) ] ) ) $agg[ $pe ]['actifs']++;
+		}
+		foreach ( $agg as $pe => &$row ) {
+			$rec = ag_ambassadeur_record( $pe );
+			$row['name']   = $rec['name'] ?? $pe;
+			$row['primes'] = $primes[ $pe ] ?? 0;
+		}
+		unset( $row );
+		$agg = array_values( $agg );
+		usort( $agg, function ( $a, $b ) { return ( $b['actifs'] <=> $a['actifs'] ) ?: ( $b['filleuls'] <=> $a['filleuls'] ); } );
+		$r = 1; foreach ( $agg as &$row ) { $row['rank'] = $r++; } unset( $row );
+		return $agg;
+	}
+}
 /* Marquer une prime payée. */
 add_action( 'admin_post_ag_prime_pay', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_tools' ) ) wp_die( 'no' );

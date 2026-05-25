@@ -393,6 +393,13 @@ if ( ! function_exists( 'ag_ambassadeur_sale_link' ) ) {
 		return $ref ? add_query_arg( 'ref', $ref, home_url( '/sites-express' ) ) : home_url( '/sites-express' );
 	}
 }
+if ( ! function_exists( 'ag_ambassadeur_parrain_link' ) ) {
+	/** Lien de RECRUTEMENT (parrainage) à partager pour recruter d'autres ambassadeurs. */
+	function ag_ambassadeur_parrain_link( $email ) {
+		$ref = ag_ambassadeur_ref( $email );
+		return $ref ? add_query_arg( 'parrain', $ref, home_url( '/ambassadeurs' ) ) : home_url( '/ambassadeurs' );
+	}
+}
 if ( ! function_exists( 'ag_ensure_ambassador_for_user' ) ) {
 	/** Garantit qu'un utilisateur (ex. l'admin) a une fiche ambassadeur -> il obtient un code de parrainage et compte au classement. Retourne le ref. */
 	function ag_ensure_ambassador_for_user( $user ) {

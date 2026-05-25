@@ -44,6 +44,8 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 
 			<a href="<?php echo esc_url( home_url( '/programme-ambassadeur' ) ); ?>" class="ag-esp-guide">📚 <strong>Découvre ton programme</strong> — comment vendre des sites &amp; recruter ton équipe, étape par étape <span>→</span></a>
 
+			<a href="<?php echo esc_url( home_url( '/recruteur' ) ); ?>" class="ag-esp-guide">🤝 <strong>Deviens recruteur</strong> — recrute des ambassadeurs : prime + % à vie sur leurs ventes <span>→</span></a>
+
 			<?php $ag_tg_group = function_exists( 'ag_tg_cfg' ) ? ag_tg_cfg( 'group_link' ) : ''; if ( $ag_tg_group ) : ?>
 			<a href="<?php echo esc_url( $ag_tg_group ); ?>" target="_blank" rel="noopener" class="ag-esp-guide">💬 <strong>Rejoins le groupe Telegram de l'équipe</strong> — annonces, entraide, classement <span>→</span></a>
 			<?php endif; ?>
