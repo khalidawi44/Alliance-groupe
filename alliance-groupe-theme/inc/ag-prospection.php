@@ -408,7 +408,8 @@ add_action( 'wp_ajax_ag_prospect_note', function () {
 		if ( ( $p['id'] ?? '' ) === $id ) {
 			$list[ $k ]['notes'] = $note;
 			update_option( 'ag_prospects', array_values( $list ) );
-			wp_send_json_success();
+			$msg = function_exists( 'ag_prospect_message' ) ? ag_prospect_message( $list[ $k ] ) : '';
+			wp_send_json_success( array( 'message' => $msg ) ); // message régénéré d'après la note
 		}
 	}
 	wp_send_json_error();
@@ -633,8 +634,15 @@ if ( ! function_exists( 'ag_prospect_message' ) ) {
 
 		$phone = apply_filters( 'ag_contact_phone', '07 44 82 95 16' );
 		$notes = trim( (string) ( $p['notes'] ?? '' ) );
+		$barter = false;
+		foreach ( array( 'echange', 'échange', 'troc', 'contre des', 'contre du', 'contre vos', 'contre un', 'en echange', 'en échange', 'barter', 'service contre', 'prestation contre' ) as $bkw ) {
+			if ( false !== mb_strpos( mb_strtolower( $notes ), $bkw ) ) { $barter = true; break; }
+		}
 
 		$msg  = "✨ Bonjour,\n\n{$accroche}\n\n";
+		if ( $barter ) {
+			$msg .= "💡 Et si on faisait un *échange de services*, sans que vous sortiez d'argent ?\nJe vous crée un *site professionnel complet* et je m'occupe de toute sa *gestion*, et en échange vous me faites profiter de *vos prestations*. Gagnant-gagnant 🤝\n\n";
+		}
 		$props = ag_proposal_from_notes( $notes );
 		if ( ! empty( $props ) ) {
 			// Mes notes (problèmes) traduites en propositions concrètes.
@@ -649,7 +657,9 @@ if ( ! function_exists( 'ag_prospect_message' ) ) {
 			$msg .= "✅ Optimisé Google + parfait sur mobile\n\n";
 			$msg .= "{$promesse}\n\n";
 		}
-		$msg .= "💳 Prix fixe dès *490 €* (payable en 4× sans frais), livré en quelques jours, sans rendez-vous.\n\n";
+		$msg .= $barter
+			? "💳 (Et si vous préférez payer en classique : prix fixe dès *490 €*, en 4× sans frais.)\n\n"
+			: "💳 Prix fixe dès *490 €* (payable en 4× sans frais), livré en quelques jours, sans rendez-vous.\n\n";
 		$msg .= "👉 Voir ce qu'on fait : {$site}\n";
 		if ( ! empty( $props ) || '' !== $notes ) $msg .= "✦ Refonte sur-mesure : " . home_url( '/sur-mesure' ) . "\n";
 		$msg .= "\nOn en parle 5 minutes, sans engagement ? 🙂\n📞 {$phone}\n";
@@ -1117,12 +1127,12 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 							<?php if ( $wa ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-channel="WhatsApp" href="<?php echo esc_url( $wa ); ?>" target="_blank" rel="noopener">WhatsApp</a> <?php endif; ?>
 							<?php if ( $sms ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-channel="SMS" href="<?php echo esc_attr( $sms ); ?>" title="Ouvre Messages sur ton ordi (lié à ton tél) -> envoi depuis ton numéro">📱 SMS</a> <?php endif; ?>
 							<?php if ( $mailto ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-channel="Email" href="<?php echo esc_url( $mailto ); ?>">Email</a> <?php endif; ?>
-							<details style="display:inline-block;margin-top:4px;"><summary class="button button-small">Message émotionnel</summary><textarea readonly rows="9" style="width:360px;margin-top:6px;"><?php echo esc_textarea( $msg ); ?></textarea></details>
+							<details style="display:inline-block;margin-top:4px;"><summary class="button button-small">Message émotionnel</summary><textarea class="ag-msg-field" readonly rows="9" style="width:360px;margin-top:6px;"><?php echo esc_textarea( $msg ); ?></textarea></details>
 							<?php if ( ! empty( $p['website'] ) ) : ?><a class="button button-small" href="<?php echo esc_url( $p['website'] ); ?>" target="_blank" rel="noopener">🔗 Voir le site</a> <?php endif; ?>
 							<details style="display:block;margin-top:6px;"><summary class="button button-small">📝 Ma fiche (notes)</summary>
 								<textarea class="ag-note-field" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" rows="4" style="width:360px;margin-top:6px;" placeholder="Ce que je peux faire pour eux, points à dire, idées…"><?php echo esc_textarea( $p['notes'] ?? '' ); ?></textarea><br>
-								<button type="button" class="button button-small ag-note-save" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>">💾 Enregistrer la note</button>
-								<span class="ag-note-ok" style="color:#1e7e34;display:none;">✓ enregistré</span>
+								<button type="button" class="button button-small button-primary ag-note-save" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>">💾 Enregistrer + régénérer le message</button>
+								<span class="ag-note-ok" style="color:#1e7e34;display:none;">✓ enregistré, message mis à jour</span>
 							</details>
 							<?php endif; ?>
 						</td>
@@ -1202,7 +1212,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			document.querySelectorAll('.ag-note-save').forEach(function(btn){ btn.addEventListener('click',function(){
 				var id=btn.getAttribute('data-id'); var box=btn.closest('details'); var ta=box?box.querySelector('.ag-note-field'):null; if(!ta) return;
 				var fd=new FormData(); fd.append('action','ag_prospect_note'); fd.append('_n',nonce); fd.append('id',id); fd.append('note',ta.value);
-				btn.disabled=true; fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ btn.disabled=false; var ok=box.querySelector('.ag-note-ok'); if(ok&&j&&j.success){ ok.style.display='inline'; setTimeout(function(){ok.style.display='none';},2500); } }).catch(function(){ btn.disabled=false; });
+				btn.disabled=true; fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ btn.disabled=false; var ok=box.querySelector('.ag-note-ok'); if(j&&j.success){ if(ok){ ok.style.display='inline'; setTimeout(function(){ok.style.display='none';},2500);} var td=btn.closest('td'); var mf=td?td.querySelector('.ag-msg-field'):null; if(mf&&j.data&&j.data.message){ mf.value=j.data.message; } } }).catch(function(){ btn.disabled=false; });
 			}); });
 		})();
 		</script>
