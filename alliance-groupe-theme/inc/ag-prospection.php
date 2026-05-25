@@ -407,10 +407,23 @@ add_action( 'wp_ajax_ag_prospect_note', function () {
 	foreach ( $list as $k => $p ) {
 		if ( ( $p['id'] ?? '' ) === $id ) {
 			$list[ $k ]['notes'] = $note;
+			$list[ $k ]['msg_custom'] = ''; // régénération = on repart du modèle (oublie l'ancienne version éditée)
 			update_option( 'ag_prospects', array_values( $list ) );
 			$msg = function_exists( 'ag_prospect_message' ) ? ag_prospect_message( $list[ $k ] ) : '';
 			wp_send_json_success( array( 'message' => $msg ) ); // message régénéré d'après la note
 		}
+	}
+	wp_send_json_error();
+} );
+
+/* Sauvegarde du message ÉDITÉ à la main (prend le dessus sur le modèle auto). */
+add_action( 'wp_ajax_ag_prospect_msg_save', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
+	$id  = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+	$msg = sanitize_textarea_field( wp_unslash( $_POST['msg'] ?? '' ) );
+	$list = (array) get_option( 'ag_prospects', array() );
+	foreach ( $list as $k => $p ) {
+		if ( ( $p['id'] ?? '' ) === $id ) { $list[ $k ]['msg_custom'] = $msg; update_option( 'ag_prospects', array_values( $list ) ); wp_send_json_success(); }
 	}
 	wp_send_json_error();
 } );
@@ -615,22 +628,82 @@ if ( ! function_exists( 'ag_proposal_from_notes' ) ) {
 		return array_values( $out );
 	}
 }
+if ( ! function_exists( 'ag_prospect_bucket' ) ) {
+	/** Famille de métier (pour adapter le ton : on ne parle pas pareil à un avocat ou un garagiste). */
+	function ag_prospect_bucket( $type ) {
+		$t = mb_strtolower( (string) $type );
+		$has = function ( $arr ) use ( $t ) { foreach ( $arr as $k ) { if ( false !== mb_strpos( $t, $k ) ) return true; } return false; };
+		if ( $has( array( 'avocat', 'notaire', 'juriste', 'huissier', 'comptable', 'expert-comptable', 'assurance', 'conseil', 'cabinet' ) ) ) return 'juridique';
+		if ( $has( array( 'garagiste', 'mécanic', 'mecanic', 'garage', 'carross', 'pneu', 'automobile', 'auto-' ) ) ) return 'auto';
+		if ( $has( array( 'restaurant', 'pizz', 'brasserie', 'traiteur', 'boulang', 'crêperie', 'creperie', 'snack', 'kebab', 'sushi', 'food', 'bar ', 'café', 'cafe' ) ) ) return 'resto';
+		if ( $has( array( 'coiffeur', 'barbier', 'institut', 'beaut', 'onglerie', 'spa', 'esthé', 'esthe', 'massage', 'masseu', 'tatou', 'manucure', 'maquill' ) ) ) return 'beaute';
+		if ( $has( array( 'plombier', 'électr', 'electr', 'chauffag', 'serrur', 'maçon', 'macon', 'menuis', 'peintre', 'couvreur', 'artisan', 'carrel', 'vitrier', 'jardin', 'paysag', 'btp' ) ) ) return 'artisan';
+		if ( $has( array( 'coach', 'sport', 'fitness', 'yoga', 'pilates', 'salle de sport' ) ) ) return 'coach';
+		if ( $has( array( 'photograph', 'vidéaste', 'videaste' ) ) ) return 'photo';
+		if ( $has( array( 'immobil', 'agence immo' ) ) ) return 'immo';
+		if ( $has( array( 'dentiste', 'kiné', 'kine', 'ostéo', 'osteo', 'médecin', 'medecin', 'vétérin', 'veterin', 'opticien', 'pharmac', 'infirmier', 'psycho', 'santé', 'sante', 'podo' ) ) ) return 'sante';
+		return 'general';
+	}
+}
 if ( ! function_exists( 'ag_prospect_message' ) ) {
-	/** Message personnalisé et émotionnel, adapté au métier et au manque constaté. */
+	/** Message personnalisé et humain, adapté au métier et au manque constaté. Éditable (msg_custom). */
 	function ag_prospect_message( $p, $link = '' ) {
+		if ( ! empty( $p['msg_custom'] ) ) return (string) $p['msg_custom']; // version écrite/éditée par l'admin
 		$site = $link ? $link : home_url( '/sites-express' );
 		$nom  = $p['name'] ? $p['name'] : 'votre établissement';
 		$kind = ag_site_kind( $p['website'] ?? '' )[0];
 		$type = strtolower( $p['type'] ?? '' );
+		$bucket = ag_prospect_bucket( $type );
 
-		if ( 'none' === $kind )       $accroche = "j'ai cherché {$nom} sur Google… et je n'ai trouvé aucun site. Honnêtement, ça m'a fait quelque chose : vous faites sûrement un travail de qualité, mais des clients passent à côté de vous chaque jour, juste parce qu'ils ne vous trouvent pas en ligne.";
-		elseif ( 'social' === $kind ) $accroche = "j'ai vu {$nom} sur les réseaux, mais pas de vrai site. Le souci, c'est que tout votre travail repose sur une page que vous ne possédez pas vraiment — et beaucoup de clients vous cherchent sur Google, pas sur les réseaux.";
-		else                          $accroche = "j'ai regardé le site de {$nom}, et je pense sincèrement qu'avec quelques améliorations il pourrait vous ramener bien plus de clients.";
-
-		$promesse = "imaginez : pendant que vous travaillez (ou que vous dormez), votre site présente votre savoir-faire, rassure les clients et reçoit des demandes tout seul.";
-		if ( false !== strpos( $type, 'restaurant' ) || false !== strpos( $type, 'bar' ) ) $promesse = "imaginez votre salle qui se remplit grâce aux réservations prises en ligne, même tard le soir, sans que vous touchiez votre téléphone.";
-		elseif ( false !== strpos( $type, 'coiffeur' ) || false !== strpos( $type, 'barbier' ) || false !== strpos( $type, 'beauté' ) || false !== strpos( $type, 'institut' ) ) $promesse = "imaginez un agenda qui se remplit tout seul : vos clients prennent rendez-vous en ligne, 24h/24, même quand le salon est fermé.";
-		elseif ( false !== strpos( $type, 'plombier' ) || false !== strpos( $type, 'électricien' ) || false !== strpos( $type, 'garagiste' ) || false !== strpos( $type, 'artisan' ) ) $promesse = "imaginez recevoir les demandes de devis urgentes directement sur votre téléphone, avant que le client n'appelle le concurrent d'à côté.";
+		// Ouvertures humaines, variées, par métier (none = pas de site, social = réseaux, real = a un site).
+		$A = array(
+			'juridique' => array(
+				'none'   => "en cherchant un avocat dans votre secteur, je suis tombé sur {$nom}… et je n'ai trouvé aucun site. Aujourd'hui, un justiciable choisit souvent son conseil après avoir consulté son site : sans présence en ligne, ce choix se fait chez un confrère.",
+				'social' => "je suis tombé sur {$nom} sur les réseaux, mais sans véritable site. Pour une profession où la confiance est tout, une simple page ne suffit pas à rassurer un futur client qui vous découvre.",
+				'real'   => "j'ai consulté le site de {$nom}. Il est correct, mais je pense qu'avec quelques ajustements il inspirerait davantage confiance et générerait plus de prises de contact.",
+				'prom'   => "Imaginez un site sobre et crédible qui présente clairement vos domaines d'expertise et reçoit les demandes de rendez-vous, pendant que vous êtes en audience.",
+			),
+			'auto' => array(
+				'none'   => "je cherchais un bon garage dans le coin et je suis tombé sur {$nom}… mais impossible de trouver votre site. Le problème : quand une voiture lâche, les gens tapent « garage + ville » sur Google et appellent le premier qui a l'air sérieux.",
+				'social' => "j'ai vu {$nom} sur les réseaux, mais pas de vrai site. Or un automobiliste pressé ne fouille pas Facebook : il cherche sur Google un garage avec horaires, avis et numéro à portée de clic.",
+				'real'   => "j'ai jeté un œil au site de {$nom}. Avec deux-trois améliorations (avis, demande de devis, mobile), il pourrait vous ramener nettement plus d'appels.",
+				'prom'   => "Imaginez recevoir les demandes de devis directement sur votre téléphone, avant que le client n'appelle le garage d'à côté.",
+			),
+			'resto' => array(
+				'none'   => "j'avais envie de réserver et je vous ai cherché en ligne… {$nom} n'a pas de site. Beaucoup de clients abandonnent quand ils ne trouvent ni la carte, ni les horaires, ni un moyen de réserver.",
+				'social' => "je vous ai trouvé sur les réseaux, mais sans vrai site. Le souci : un client qui a faim veut voir la carte et réserver en 2 clics, pas scroller un fil d'actu.",
+				'real'   => "j'ai regardé le site de {$nom}. Sympa, mais je pense qu'avec une vraie réservation en ligne et une carte plus claire, vous rempliriez davantage la salle.",
+				'prom'   => "Imaginez votre salle qui se remplit grâce aux réservations en ligne, même tard le soir, sans toucher votre téléphone.",
+			),
+			'beaute' => array(
+				'none'   => "je vous ai cherché pour prendre rendez-vous et… {$nom} n'a pas de site. C'est dommage : vos clientes veulent réserver en ligne, voir vos prestations et vos réalisations.",
+				'social' => "je vous ai vu sur les réseaux, mais sans vrai site. Vos plus belles photos méritent une vraie vitrine — et surtout un agenda de réservation en ligne.",
+				'real'   => "j'ai regardé votre site, {$nom}. Avec une vraie prise de RDV en ligne et une belle galerie, il travaillerait beaucoup plus pour vous.",
+				'prom'   => "Imaginez un agenda qui se remplit tout seul : vos clientes réservent en ligne 24h/24, même quand le salon est fermé.",
+			),
+			'artisan' => array(
+				'none'   => "j'avais besoin d'un pro et j'ai cherché {$nom} en ligne… aucun site. Quand les gens ont une urgence, ils appellent le premier artisan qu'ils trouvent sur Google avec des avis rassurants.",
+				'social' => "je vous ai trouvé sur les réseaux, mais pas de vrai site. Un client qui a une fuite ou une panne ne cherche pas sur Facebook : il veut un site clair avec vos services et votre numéro.",
+				'real'   => "j'ai regardé le site de {$nom}. Avec une page « devis » efficace et vos avis en avant, il vous amènerait plus de chantiers.",
+				'prom'   => "Imaginez recevoir les demandes de devis directement sur votre téléphone, avant le concurrent.",
+			),
+			'sante' => array(
+				'none'   => "j'ai cherché {$nom} pour prendre rendez-vous et je n'ai trouvé aucun site. Beaucoup de patients choisissent un praticien qui a un site clair (horaires, accès, prise de RDV).",
+				'social' => "je vous ai vu en ligne, mais sans vrai site professionnel. Pour rassurer un nouveau patient, une page réseau ne remplace pas un vrai site.",
+				'real'   => "j'ai regardé votre site. Avec quelques améliorations (prise de RDV, infos pratiques, mobile), il faciliterait la vie de vos patients et la vôtre.",
+				'prom'   => "Imaginez un site qui informe vos patients et gère les rendez-vous, pendant que vous vous occupez d'eux.",
+			),
+			'general' => array(
+				'none'   => "en cherchant un {$type} par chez vous, je suis tombé sur {$nom}… et j'ai été surpris de ne trouver aucun site. Vos futurs clients aussi cherchent en ligne — et passent peut-être à côté de vous.",
+				'social' => "je suis tombé sur {$nom} sur les réseaux, mais pas de vrai site. Tout votre travail repose sur une page que vous ne possédez pas vraiment, alors que beaucoup de clients vous cherchent sur Google.",
+				'real'   => "j'ai pris le temps de regarder le site de {$nom}, et je pense sincèrement qu'avec quelques améliorations il pourrait vous ramener bien plus de clients.",
+				'prom'   => "Imaginez : pendant que vous travaillez (ou que vous dormez), votre site présente votre savoir-faire, rassure les clients et reçoit des demandes tout seul.",
+			),
+		);
+		$set = $A[ $bucket ] ?? $A['general'];
+		$k2  = ( 'none' === $kind ) ? 'none' : ( ( 'social' === $kind ) ? 'social' : 'real' );
+		$accroche = $set[ $k2 ];
+		$promesse = $set['prom'];
 
 		$phone = apply_filters( 'ag_contact_phone', '07 44 82 95 16' );
 		$notes = trim( (string) ( $p['notes'] ?? '' ) );
@@ -1127,7 +1200,11 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 							<?php if ( $wa ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-channel="WhatsApp" href="<?php echo esc_url( $wa ); ?>" target="_blank" rel="noopener">WhatsApp</a> <?php endif; ?>
 							<?php if ( $sms ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-channel="SMS" href="<?php echo esc_attr( $sms ); ?>" title="Ouvre Messages sur ton ordi (lié à ton tél) -> envoi depuis ton numéro">📱 SMS</a> <?php endif; ?>
 							<?php if ( $mailto ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-channel="Email" href="<?php echo esc_url( $mailto ); ?>">Email</a> <?php endif; ?>
-							<details style="display:inline-block;margin-top:4px;"><summary class="button button-small">Message émotionnel</summary><textarea class="ag-msg-field" readonly rows="9" style="width:360px;margin-top:6px;"><?php echo esc_textarea( $msg ); ?></textarea></details>
+							<details style="display:inline-block;margin-top:4px;"><summary class="button button-small">✍️ Message (éditable)</summary>
+								<textarea class="ag-msg-field" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" rows="10" style="width:360px;margin-top:6px;"><?php echo esc_textarea( $msg ); ?></textarea><br>
+								<button type="button" class="button button-small button-primary ag-msg-save" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>">💾 Enregistrer mon message</button>
+								<span class="ag-msg-ok" style="color:#1e7e34;display:none;">✓ enregistré</span>
+							</details>
 							<?php if ( ! empty( $p['website'] ) ) : ?><a class="button button-small" href="<?php echo esc_url( $p['website'] ); ?>" target="_blank" rel="noopener">🔗 Voir le site</a> <?php endif; ?>
 							<details style="display:block;margin-top:6px;"><summary class="button button-small">📝 Ma fiche (notes)</summary>
 								<textarea class="ag-note-field" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" rows="4" style="width:360px;margin-top:6px;" placeholder="Ce que je peux faire pour eux, points à dire, idées…"><?php echo esc_textarea( $p['notes'] ?? '' ); ?></textarea><br>
@@ -1213,6 +1290,12 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				var id=btn.getAttribute('data-id'); var box=btn.closest('details'); var ta=box?box.querySelector('.ag-note-field'):null; if(!ta) return;
 				var fd=new FormData(); fd.append('action','ag_prospect_note'); fd.append('_n',nonce); fd.append('id',id); fd.append('note',ta.value);
 				btn.disabled=true; fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ btn.disabled=false; var ok=box.querySelector('.ag-note-ok'); if(j&&j.success){ if(ok){ ok.style.display='inline'; setTimeout(function(){ok.style.display='none';},2500);} var td=btn.closest('td'); var mf=td?td.querySelector('.ag-msg-field'):null; if(mf&&j.data&&j.data.message){ mf.value=j.data.message; } } }).catch(function(){ btn.disabled=false; });
+			}); });
+			// Enregistrer le message édité à la main.
+			document.querySelectorAll('.ag-msg-save').forEach(function(btn){ btn.addEventListener('click',function(){
+				var id=btn.getAttribute('data-id'); var box=btn.closest('details'); var ta=box?box.querySelector('.ag-msg-field'):null; if(!ta) return;
+				var fd=new FormData(); fd.append('action','ag_prospect_msg_save'); fd.append('_n',nonce); fd.append('id',id); fd.append('msg',ta.value);
+				btn.disabled=true; fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ btn.disabled=false; var ok=box.querySelector('.ag-msg-ok'); if(ok&&j&&j.success){ ok.style.display='inline'; setTimeout(function(){ok.style.display='none';},2500);} }).catch(function(){ btn.disabled=false; });
 			}); });
 		})();
 		</script>
