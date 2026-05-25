@@ -24,10 +24,10 @@
             $logo_url = '';
             $img_dir = get_stylesheet_directory() . '/assets/images/';
             $img_uri = get_stylesheet_directory_uri() . '/assets/images/';
-            foreach ( array('jpg','jpeg','png','webp','svg') as $ext ) {
-                if ( file_exists( $img_dir . 'logo.' . $ext ) ) {
-                    $logo_url = $img_uri . 'logo.' . $ext;
-                    break;
+            // Préfère la version d'en-tête (lion + AG, fond transparent) si présente.
+            foreach ( array('logo-header','logo') as $base ) {
+                foreach ( array('png','webp','svg','jpg','jpeg') as $ext ) {
+                    if ( file_exists( $img_dir . $base . '.' . $ext ) ) { $logo_url = $img_uri . $base . '.' . $ext; break 2; }
                 }
             }
             if ( $logo_url ) :
