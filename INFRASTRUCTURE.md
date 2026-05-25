@@ -8,7 +8,7 @@
 
 ## 1. Workflow & raccourcis
 
-- **Branche de dev** : `claude/fix-mobile-responsive-design-zERWc` → **merge ff-only dans `main`** → push.
+- **Branche de dev** : branche de travail courante (à ce jour `claude/site-config-commits-nZtU1`) → **merge ff-only dans `main`** → push.
 - **Mise en ligne** : WordPress → **Apparence → SYNC GitHub** : « Vérifier MAJ » → « SYNC FICHIERS DU THÈME » → **purger le cache** → **Ctrl+F5** (recharger l'onglet sur mobile).
 - **Avant chaque commit** : `php -l fichier.php` (jamais committer du PHP cassé). **Indentation = tabulations**.
 - **Thème autonome** (pas d'Elementor). Templates = `templates/page-*.php` (entête `Template Name`). Logique = `inc/*.php` chargés par `functions.php`. Blocs = `template-parts/*.php`.
@@ -39,6 +39,7 @@
 
 ## 5. Notifications & diffusion
 
+- **Alertes SMS via API Free (ACTIVES)** sur la ligne pro `07 44 82 95 16` : déclenchées sur inscription, message client, devis (+ .ics Google Agenda). Bouton « Test SMS » dédié, options listées par opérateur (SFR/Orange/Bouygues). WhatsApp CallMeBot = **optionnel** (les SMS suffisent).
 - `ag_push()` (interne équipe) : **WhatsApp** (CallMeBot, 1:1 sur ton numéro) + **Telegram canal interne**. `ag_push_clients()` : **canal général clients**.
 - **2 canaux Telegram** : interne (alertes confidentielles prospects/ventes) + général (`@ALLIANCE_GROUPE`, annonces clients). Réglages → Notifications téléphone (token + chat IDs + bouton « Détecter mon Chat ID »).
 - Évènements poussés : prospect qui répond, intéressé, vente, nouvel ambassadeur, message quotidien clients.
@@ -50,6 +51,10 @@
 - **Inscription email** + **Connexion Google** (Sign in with Google ; option `ag_google_client_id` ; ID redirige vers `admin-post.php?action=ag_google_login`). Écran de consentement à **publier** côté Google Cloud.
 - **PayPal automatique** — `inc/ag-paypal.php` : webhooks REST (Client ID/Secret/Webhook ID/email), vérif signature → **crédite la commission** (rapprochement montant+email, 2 sens). URL webhook = `admin-post.php?action=ag_paypal_webhook`.
 - **Programme ambassadeurs** — commission 10 % (`AG_COMMISSION_RATE`), override parrainage (`ag_override_rate`), liens `?ref=` (vente) / `?parrain=` (recrutement), attribution auto au brief, classement jour/mois/général, page Programme + vidéo configurable (`ag_amb_guide_video`).
+- **Inscription ambassadeur durcie (KYC)** : **selfie en direct obligatoire**, **Telegram obligatoire**, zone attribuée auto, **onboarding en assistant fléché** (1 étape à la fois).
+- **Recrutement de recruteurs** : page « Deviens recruteur » + **classement des recruteurs**, **prime de parrainage 25 €** auto à la 1re vente du filleul, outil SMS/WhatsApp perso (`{prenom}`) + simulateur de gains + **mini-CRM des futurs ambassadeurs**.
+- **Zones** : 1 zone max sauf zones supplémentaires payées (offre + quota) ; conservées à vie **sauf inactivité 7 jours** (retrait auto + rappel).
+- **Analytics / pub / SEO** : GA4 `G-RSQ6Y8DHK4` + Google Ads avec **Consent Mode RGPD** ; **AdSense** `ca-pub-4272988112057548` + `ads.txt` ; `robots.txt` ouvert. **Merchant Center** : pages `/retours` + `/livraison`. **Branding** : logo lion + « AG » (header transparent + bannière OG).
 
 ## 7. Design
 

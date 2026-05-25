@@ -7,7 +7,7 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 > 📚 Détail complet (raccourcis, création vidéo, agents, meilleur système par type de site, config, limites) : **`INFRASTRUCTURE.md`**.
 
 ## Déploiement (workflow)
-- Dév sur la branche `claude/fix-mobile-responsive-design-zERWc`, puis **merge ff-only dans `main`** + push.
+- Dév sur la branche de travail courante (à ce jour `claude/site-config-commits-nZtU1`), puis **merge ff-only dans `main`** + push.
 - Le site applique via **Apparence → SYNC GitHub** : « Vérifier MAJ » puis « SYNC FICHIERS DU THÈME », puis purge cache + Ctrl/recharge.
 - Thème autonome (pas d'Elementor). Templates = `alliance-groupe-theme/templates/page-*.php` (Template Name). Logique = `alliance-groupe-theme/inc/*.php`, chargés depuis `functions.php`.
 - Toujours `php -l` avant commit. Indentation = tabulations.
@@ -27,9 +27,12 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 - Liens de paiement PayPal par offre (Réglages → Liens de paiement). Packs Sites Express 490/890/1490 + maintenance 29/59/99.
 - **PayPal automatique (webhooks)** : Réglages → PayPal automatique (Client ID/Secret/Webhook ID/email). Vérif signature → crédite la commission ambassadeur (rapprochement montant+email, 2 sens).
 
-### 3. Programme ambassadeurs — `inc/ag-ambassadeurs.php`, `templates/page-espace-ambassadeur.php`, `page-guide-ambassadeur.php`, `page-classement.php`
+### 3. Programme ambassadeurs & recruteurs — `inc/ag-ambassadeurs.php`, `templates/page-espace-ambassadeur.php`, `page-guide-ambassadeur.php`, `page-classement.php`
 - Commission 10 % (`AG_COMMISSION_RATE`), parrainage/override (`ag_override_rate`), liens `?ref=` (vente) et `?parrain=` (recrutement), attribution auto au brief.
-- Dashboard + Programme (onboarding, vidéo configurable `ag_amb_guide_video`) + Classement (jour/mois/général).
+- Dashboard + Programme (onboarding **en assistant fléché**, 1 étape à la fois ; vidéo configurable `ag_amb_guide_video`) + Classement (jour/mois/général).
+- **Inscription durcie (KYC)** : **selfie en direct obligatoire** + **Telegram obligatoire** + zone attribuée auto.
+- **Recrutement de recruteurs** : page « Deviens recruteur » + **classement des recruteurs**, **prime de parrainage 25 €** auto à la 1re vente du filleul, outil SMS/WhatsApp perso (`{prenom}`) + simulateur de gains + **mini-CRM des futurs ambassadeurs**.
+- **Zones** : 1 zone max (sauf zones supplémentaires payées) ; conservées à vie **sauf inactivité 7 jours** (retrait auto + rappel).
 
 ### 4. Studio créatif — `templates/page-studio.php`
 - Ouvert à tous. Vidéo (canvas + MediaRecorder, **textes animés** séquentiels, police/couleur, fonds villes propres) + image. Partage fichier natif + légende auto-copiée. Lien perso intégré si vendeur connecté (admin inclus via `ag_ensure_ambassador_for_user`).
@@ -42,13 +45,17 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 ### 6. Notifications & diffusion — `inc/ag-prospection.php` (Réglages → Notifications téléphone)
 - `ag_push()` (interne : WhatsApp CallMeBot 1:1 + Telegram canal interne) ; `ag_push_clients()` (canal général Telegram).
 - **2 canaux Telegram** : interne (équipe, alertes confidentielles) / général (clients, `@ALLIANCE_GROUPE`). Liens d'invitation envoyés à l'inscription (ambassadeur→groupe, client→canal).
-- **Message quotidien clients** auto (banque urgence/offre limitée/exclusivité, cron 9h, option `ag_client_daily_on`).
+- **Message quotidien clients** auto (banque urgence/offre limitée/exclusivité, cron 9h, option `ag_client_daily_on`) + **message quotidien groupe ambassadeurs**.
+- **Alertes SMS via API Free (ACTIVES)** sur la ligne pro `07 44 82 95 16` : inscriptions, messages clients, devis (+ .ics Google Agenda). WhatsApp CallMeBot = optionnel. Bouton « Test SMS » dédié.
 - Limites Telegram à retenir : un bot ne peut PAS auto-ajouter au groupe ni poster dans un groupe WhatsApp ; Telegram ne donne pas d'email (pas de compte auto depuis Telegram).
 
 ### 7. Acquisition / marketing
 - Accueil priorisé (vendre → recruter → caritatif Racines) + bloc **Studio** + bloc **assos site gratuit**.
-- **Pop-up ambassadeur** (template-parts/ambassador-popup.php). Menu « 🚀 Gagner » (Sites Express/Studio/Ambassadeur/Classement/Espace).
+- **Pop-up ambassadeur** (template-parts/ambassador-popup.php). Menu « 🚀 Gagner » (Sites Express/Studio/Ambassadeur/Classement/Espace) + entrées « Deviens recruteur ».
 - SEO meta `inc/ag-seo-meta.php`. Templates WordPress métiers gratuits (aimant à prospects).
+- **Analytics & pub** : GA4 `G-RSQ6Y8DHK4` + Google Ads avec **Consent Mode RGPD** ; **AdSense** `ca-pub-4272988112057548` + `ads.txt` ; `robots.txt` ouvert (AdSense/AdsBot).
+- **Conformité Merchant Center** : pages `/retours` (offres numériques) et `/livraison`.
+- **Branding** : logo tête de lion + « AG » (header transparent `logo-header.png`, bannière OG) ; burger centré sur toutes tailles (PC inclus).
 
 ## Réutiliser sur un autre site
 - Le thème est autonome : copier `alliance-groupe-theme` (ou les `inc/*.php` voulus) sur l'autre site, adapter marque/couleurs/offres. Chaque brique est indépendante (guards `function_exists`).

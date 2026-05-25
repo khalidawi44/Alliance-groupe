@@ -1,7 +1,8 @@
 # HANDOFF — Alliance Groupe (site `alliancegroupe-inc.com`)
 
 > Document de reprise pour toute nouvelle session Claude (PC ou mobile via GitHub MCP).
-> Dernière mise à jour : 2026-05-20 — commit de référence : `c0f5620`.
+> Dernière mise à jour : 2026-05-25 — branche de travail : `claude/site-config-commits-nZtU1` (alignée sur `main` `bb0a75a`).
+> **Reprise rapide** : on a fait le point sur la config (`CLAUDE.md` + `INFRASTRUCTURE.md` à jour des 49 commits du 24-25 mai) et listé les tâches restantes → voir **§9**.
 
 ---
 
@@ -209,12 +210,27 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 
 ---
 
-## 9. Taches en attente / pistes futures
+## 9. Taches restantes (état au 25 mai)
 
-- [ ] Tester depuis le telephone que le GitHub MCP marche bien
-- [ ] Optionnel : GitHub Action pour SYNC auto WP (au lieu du clic manuel)
-- [ ] Creer la page WP `/pourquoi-alliance` avec le template "Pourquoi Alliance (vs ThemeForest)" (action manuelle dans WP admin)
-- [ ] Setup nurturing Brevo (email apres telechargement template)
+### ✅ Fait
+- **API SMS Free active** (alertes SMS OK sur la ligne pro `07 44 82 95 16`). WhatsApp CallMeBot = optionnel.
+- **Telegram** équipe (interne) + canal clients configurés dans Réglages.
+
+### 🟡 À faire (action de Khalid/Fabrice — dépend de lui)
+1. **Tester le partage du Studio** sur téléphone : vidéos/images vers TikTok/Snap/Insta via le menu « Partager » natif.
+2. **Filmer la vidéo explicative ambassadeurs** → coller le lien dans *Réglages > Programme ambassadeur* (`ag_amb_guide_video`).
+3. **Envoyer les 6 captures de templates** (avocat, restaurant, artisan, coach, barber, association) → à pousser sur le site.
+4. **Envoyer les images du Système de prospection** → à déposer dans `assets/images/systeme-prospection/` : `apercu.jpg`, `capture-1.jpg` … `capture-6.jpg`.
+5. **Ouvrir une ligne dédiée au démarchage** (recrutement + prospection sortante) : numéro dans les tranches démarchage (01 62/63, 09 48/49…) via un opérateur **VoIP** (OVH Telecom, Ringover, Aircall, Twilio) — **pas** un forfait mobile classique.
+
+### ⏳ Plus tard (décision de Khalid/Fabrice)
+6. **Robot vocal IA** pour appeler les fixes 02/04 (ou quand SMS/WhatsApp impossibles) : outil clé-en-main (Yelda/Allo-Media/Synthflow) ou API (Vapi/Retell + Twilio) → webhook branché au CRM Prospection (statut Intéressé / Ne plus contacter auto). Respect légal : Bloctel B2C, transparence IA, numéro de démarchage dédié.
+7. **Envoi SMS automatique en masse gratuit** via passerelle Android + SIM Free (appli open-source type httpSMS / android-sms-gateway) → coder `ag_sms_send(to, msg)` + bouton « Tout envoyer » dans l'outil de recrutement. Pour l'instant : envoi **manuel** un par un (liens SMS).
+
+### Pistes anciennes (toujours valables)
+- [ ] Optionnel : GitHub Action pour SYNC auto WP (au lieu du clic manuel).
+- [ ] Créer la page WP `/pourquoi-alliance` (template « Pourquoi Alliance vs ThemeForest »).
+- [ ] Setup nurturing Brevo (email après téléchargement template).
 
 ---
 
