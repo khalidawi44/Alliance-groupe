@@ -614,6 +614,29 @@ add_action( 'wp_head', function () {
     }
 }, 2 );
 
+// ── 8b. Google Analytics (GA4) + Google Ads, avec Consent Mode (RGPD) ──
+add_action( 'wp_head', function () {
+    $ga  = trim( (string) apply_filters( 'ag_ga4_id', get_option( 'ag_ga4_id', 'G-RSQ6Y8DHK4' ) ) );
+    $ads = trim( (string) apply_filters( 'ag_ads_id', get_option( 'ag_ads_id', '' ) ) );
+    if ( '' === $ga && '' === $ads ) return;
+    $primary = $ga ?: $ads;
+    ?>
+<!-- Google tag (gtag.js) — Alliance Groupe, déclenché après consentement -->
+<script>
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied'});
+(function(){try{var c=JSON.parse(localStorage.getItem('ag_cookie_consent')||'null');if(c){gtag('consent','update',{analytics_storage:c.analytics?'granted':'denied',ad_storage:c.marketing?'granted':'denied',ad_user_data:c.marketing?'granted':'denied',ad_personalization:c.marketing?'granted':'denied'});}}catch(e){}})();
+document.addEventListener('ag:consent',function(e){var c=e.detail||{};gtag('consent','update',{analytics_storage:c.analytics?'granted':'denied',ad_storage:c.marketing?'granted':'denied',ad_user_data:c.marketing?'granted':'denied',ad_personalization:c.marketing?'granted':'denied'});});
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr( $primary ); ?>"></script>
+<script>
+gtag('js',new Date());
+<?php if ( $ga ) : ?>gtag('config','<?php echo esc_js( $ga ); ?>');<?php endif; ?>
+<?php if ( $ads ) : ?>gtag('config','<?php echo esc_js( $ads ); ?>');<?php endif; ?>
+</script>
+    <?php
+}, 1 );
+
 // ── 9. JSON-LD Structured Data (SEO) ────────────────────────────
 add_action( 'wp_head', function () {
     $site_url  = home_url('/');
