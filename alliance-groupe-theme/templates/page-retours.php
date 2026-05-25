@@ -24,31 +24,26 @@ $ag_phone = function_exists( 'ag_contact_phone' ) ? apply_filters( 'ag_contact_p
     <section class="ag-section ag-section--graphite">
         <div class="ag-container" style="max-width:860px;color:var(--color-text-soft);line-height:1.7;">
 
-            <p><strong>Alliance Groupe</strong> — contact@alliancegroupe-inc.com · <?php echo esc_html( $ag_phone ); ?>. Dernière mise à jour : <?php echo esc_html( wp_date( 'd/m/Y' ) ); ?>.</p>
+            <p><strong>Alliance Groupe</strong> — contact@alliancegroupe-inc.com · <?php echo esc_html( $ag_phone ); ?>. Pays : <strong>France</strong>. Dernière mise à jour : <?php echo esc_html( wp_date( 'd/m/Y' ) ); ?>.</p>
 
             <div style="background:rgba(212,180,92,.08);border:1px solid rgba(212,180,92,.3);border-radius:14px;padding:18px 22px;margin:16px 0 30px;color:#fff;">
-                <strong>En résumé :</strong> nos offres sont des <strong>produits et services 100% numériques</strong> (création et gestion de sites, prestations en ligne). À ce titre, <strong>aucun retour ni remboursement n'est possible une fois la prestation commencée ou le contenu numérique livré</strong>.
+                <strong>En résumé :</strong> nous acceptons les retours, qu'il s'agisse de produits <strong>défectueux ou non défectueux</strong>, dans un délai de <strong>2 jours</strong>. Le produit doit être <strong>neuf</strong>. Les <strong>échanges ne sont pas acceptés</strong>. Aucuns frais de remise en stock. Remboursement traité sous <strong>15 jours</strong>.
             </div>
 
-            <h2 style="color:#fff;margin-top:30px;">1. Nature numérique de nos offres</h2>
-            <p>Alliance Groupe fournit exclusivement des <strong>services et contenus numériques</strong> (sites web, gestion, prestations en ligne). Il n'y a <strong>aucune livraison de produit physique</strong>, donc aucun retour de marchandise.</p>
+            <h2 style="color:#fff;margin-top:30px;">1. Retours acceptés</h2>
+            <p>Nous acceptons les retours pour les produits <strong>défectueux</strong> comme <strong>non défectueux</strong>. Les <strong>échanges ne sont pas acceptés</strong> (le retour donne lieu à un remboursement).</p>
 
-            <h2 style="color:#fff;margin-top:30px;">2. Pas de retour / pas de remboursement après le début de la prestation</h2>
-            <p>Conformément à l'<strong>article L221-28 du Code de la consommation</strong>, le droit de rétractation <strong>ne s'applique pas</strong> :</p>
-            <ul style="margin:8px 0 0 18px;">
-                <li>aux <strong>services pleinement exécutés</strong> dont l'exécution a commencé avec votre accord exprès et après renoncement à votre droit de rétractation ;</li>
-                <li>aux <strong>contenus numériques</strong> fournis sur un support immatériel dont l'exécution a commencé après votre accord exprès et votre renoncement au droit de rétractation.</li>
-            </ul>
-            <p>En validant votre commande, vous <strong>demandez le démarrage immédiat</strong> de la prestation et <strong>reconnaissez renoncer à votre droit de rétractation</strong>. Par conséquent, <strong>aucun remboursement</strong> ne pourra être exigé une fois la prestation entamée.</p>
+            <h2 style="color:#fff;margin-top:30px;">2. Délai &amp; état du produit</h2>
+            <p>Vous disposez d'un délai de <strong>2 jours</strong> à compter de la réception pour demander un retour. Le produit doit être retourné <strong>neuf</strong> (état d'origine, non utilisé, complet).</p>
 
-            <h2 style="color:#fff;margin-top:30px;">3. Avant le démarrage</h2>
-            <p><strong>Tant que la prestation n'a pas commencé</strong> (aucun travail engagé), vous pouvez annuler et être <strong>remboursé intégralement</strong>. Il suffit de nous prévenir rapidement par email.</p>
+            <h2 style="color:#fff;margin-top:30px;">3. Méthode de retour &amp; frais</h2>
+            <p>Le retour s'effectue <strong>en le déposant à un point de dépôt</strong> que nous vous indiquons après votre demande. <strong>Aucuns frais de remise en stock</strong> ne sont appliqués.</p>
 
-            <h2 style="color:#fff;margin-top:30px;">4. Notre engagement qualité</h2>
-            <p>L'absence de remboursement ne nous empêche pas d'être à vos côtés : en cas de souci, nous <strong>corrigeons et ajustons</strong> jusqu'à votre satisfaction dans le cadre de la prestation commandée. On privilégie toujours la solution amiable.</p>
+            <h2 style="color:#fff;margin-top:30px;">4. Remboursement</h2>
+            <p>Une fois le retour reçu et vérifié, le remboursement est <strong>traité sous 15 jours</strong>, via le <strong>même moyen de paiement</strong> que celui utilisé lors de la commande (sauf accord pour un autre moyen).</p>
 
-            <h2 style="color:#fff;margin-top:30px;">5. Contact</h2>
-            <p>Pour toute question, annulation (avant démarrage) ou réclamation : <strong>contact@alliancegroupe-inc.com</strong> ou <strong><?php echo esc_html( $ag_phone ); ?></strong>. Réponse sous 48 h ouvrées.</p>
+            <h2 style="color:#fff;margin-top:30px;">5. Comment demander un retour</h2>
+            <p>Contactez-nous à <strong>contact@alliancegroupe-inc.com</strong> ou au <strong><?php echo esc_html( $ag_phone ); ?></strong> en indiquant votre nom et votre commande. Nous vous communiquons le point de dépôt et la marche à suivre. Réponse sous 48 h ouvrées.</p>
 
             <p style="margin-top:30px;font-size:.9rem;">Voir aussi nos <a href="<?php echo esc_url( home_url( '/mentions-legales' ) ); ?>" style="color:var(--color-gold);">Mentions légales &amp; CGV</a> et notre <a href="<?php echo esc_url( home_url( '/confidentialite' ) ); ?>" style="color:var(--color-gold);">Politique de confidentialité</a>.</p>
 
