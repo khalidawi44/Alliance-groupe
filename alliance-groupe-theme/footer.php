@@ -41,6 +41,8 @@
             &nbsp;·&nbsp;
             <a href="<?php echo esc_url( home_url( '/retours' ) ); ?>">Retours & remboursement</a>
             &nbsp;·&nbsp;
+            <a href="<?php echo esc_url( home_url( '/livraison' ) ); ?>">Livraison</a>
+            &nbsp;·&nbsp;
             <a href="<?php echo esc_url( home_url( '/confidentialite' ) ); ?>">Confidentialité</a>
             &nbsp;·&nbsp;
             <a href="<?php echo esc_url( home_url( '/cookies' ) ); ?>">Cookies</a>
