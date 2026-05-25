@@ -150,6 +150,7 @@ if ( ! function_exists( 'ag_paypal_credit_matching_sale' ) ) {
 		if ( function_exists( 'ag_calendar_notify' ) ) {
 			ag_calendar_notify( '💰 Commission créditée : ' . ( $v['name'] ?? '' ), 'Paiement PayPal confirmé. Commission ' . ( $v['commission'] ?? 0 ) . ' € créditée pour ' . ( $v['client'] ?? '' ) . '.' );
 		}
+		if ( function_exists( 'ag_award_parrain_prime' ) && ! empty( $v['email'] ) ) ag_award_parrain_prime( $v['email'] );
 		return true;
 	}
 }

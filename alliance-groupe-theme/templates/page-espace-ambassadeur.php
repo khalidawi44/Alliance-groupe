@@ -133,6 +133,11 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 				<div class="ag-esp-stat ag-esp-stat--gold"><span class="ag-esp-stat__val"><?php echo esc_html( $eur( $due ) ); ?></span><span class="ag-esp-stat__lbl">Commission à recevoir</span></div>
 				<div class="ag-esp-stat"><span class="ag-esp-stat__val"><?php echo esc_html( $eur( $paid ) ); ?></span><span class="ag-esp-stat__lbl">Déjà payé</span></div>
 			</div>
+			<?php
+			$ag_primes = function_exists( 'ag_parrain_primes_for' ) ? ag_parrain_primes_for( $email ) : array();
+			if ( $ag_primes ) { $ptot = 0; foreach ( $ag_primes as $pp ) { $ptot += (float) ( $pp['amount'] ?? 0 ); } ?>
+				<p class="ag-section__desc" style="margin-top:14px;">🎁 <strong>Primes de parrainage</strong> : tu as gagné <strong style="color:var(--color-gold);"><?php echo esc_html( $eur( $ptot ) ); ?></strong> en recrutant <?php echo count( $ag_primes ); ?> ambassadeur(s) qui ont vendu. Continue à faire grandir ton équipe !</p>
+			<?php } ?>
 		</div>
 	</section>
 

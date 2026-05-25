@@ -378,10 +378,67 @@ add_action( 'admin_post_ag_amb_tg_save', function () {
 	wp_safe_redirect( admin_url( 'admin.php?page=ag-ambassadeurs#amb' ) ); exit;
 } );
 
+/* ── Prime de parrainage : montant fixe au RECRUTEUR à la 1re vente du filleul ── */
+if ( ! function_exists( 'ag_parrain_prime_amount' ) ) {
+	function ag_parrain_prime_amount() { return (float) get_option( 'ag_parrain_prime', 25 ); }
+}
+if ( ! function_exists( 'ag_award_parrain_prime' ) ) {
+	/** Crédite (une seule fois) la prime au parrain quand son filleul fait sa 1re vente. */
+	function ag_award_parrain_prime( $filleul_email ) {
+		$amount = ag_parrain_prime_amount();
+		if ( $amount <= 0 ) return false;
+		$filleul = function_exists( 'ag_ambassadeur_record' ) ? ag_ambassadeur_record( $filleul_email ) : null;
+		if ( ! $filleul || empty( $filleul['parrain'] ) ) return false;
+		$parrain = function_exists( 'ag_ambassadeur_by_ref' ) ? ag_ambassadeur_by_ref( $filleul['parrain'] ) : null;
+		if ( ! $parrain || empty( $parrain['email'] ) ) return false;
+		if ( strtolower( $parrain['email'] ) === strtolower( (string) $filleul_email ) ) return false; // pas d'auto-prime
+		$primes = (array) get_option( 'ag_parrain_primes', array() );
+		foreach ( $primes as $p ) { if ( strtolower( $p['filleul_email'] ?? '' ) === strtolower( (string) $filleul_email ) ) return false; } // 1 prime / filleul
+		$primes[] = array(
+			'id'            => uniqid( 'prime_' ),
+			'parrain_email' => strtolower( $parrain['email'] ),
+			'parrain_name'  => $parrain['name'] ?? $parrain['email'],
+			'filleul_email' => strtolower( (string) $filleul_email ),
+			'filleul_name'  => $filleul['name'] ?? $filleul_email,
+			'amount'        => $amount,
+			'date'          => current_time( 'd/m/Y' ),
+			'ts'            => time(),
+			'statut'        => 'due',
+		);
+		update_option( 'ag_parrain_primes', $primes );
+		$nm = $parrain['name'] ?? $parrain['email'];
+		if ( function_exists( 'ag_push' ) ) ag_push( '🎁 Prime de parrainage : ' . number_format( $amount, 0, ',', ' ' ) . ' €', $nm . ' a gagné une prime — son filleul ' . ( $filleul['name'] ?? '' ) . ' a fait sa 1re vente.' );
+		if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '🎁 Prime de parrainage ' . number_format( $amount, 0, ',', ' ' ) . ' € pour ' . $nm . ' (filleul : ' . ( $filleul['name'] ?? '' ) . ')' );
+		wp_mail( $parrain['email'], '🎁 Tu as gagné une prime de parrainage !', "Bravo $nm,\n\nTon filleul " . ( $filleul['name'] ?? '' ) . " vient de réaliser sa première vente.\nTu gagnes une prime de parrainage de " . number_format( $amount, 0, ',', ' ' ) . " € (en plus de ton override sur ses ventes).\n\nMerci de faire grandir l'équipe 💪\nAlliance Groupe" );
+		return true;
+	}
+}
+if ( ! function_exists( 'ag_parrain_primes_for' ) ) {
+	function ag_parrain_primes_for( $email ) {
+		$email = strtolower( (string) $email ); $out = array();
+		foreach ( (array) get_option( 'ag_parrain_primes', array() ) as $p ) { if ( strtolower( $p['parrain_email'] ?? '' ) === $email ) $out[] = $p; }
+		return $out;
+	}
+}
+/* Marquer une prime payée. */
+add_action( 'admin_post_ag_prime_pay', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_tools' ) ) wp_die( 'no' );
+	$id = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+	$primes = (array) get_option( 'ag_parrain_primes', array() );
+	foreach ( $primes as $k => $p ) { if ( ( $p['id'] ?? '' ) === $id ) { $primes[ $k ]['statut'] = 'payee'; $primes[ $k ]['date_paiement'] = current_time( 'd/m/Y' ); break; } }
+	update_option( 'ag_parrain_primes', $primes );
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-ambassadeurs#primes' ) ); exit;
+} );
+/* Réglage du montant de la prime. */
+add_action( 'admin_post_ag_prime_amount_save', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_tools' ) ) wp_die( 'no' );
+	update_option( 'ag_parrain_prime', max( 0, (float) ( $_POST['amount'] ?? 25 ) ) );
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-ambassadeurs#primes' ) ); exit;
+} );
+
 if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 	function ag_render_ambassadeurs_page() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
-
 		// --- Actions admin (validees par nonce) ---
 		if ( isset( $_GET['ag_action'], $_GET['_wpnonce'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'ag_amb_admin' ) ) {
 			$act = sanitize_key( $_GET['ag_action'] );
@@ -405,14 +462,16 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 
 			if ( in_array( $act, array( 'v_valider', 'v_payer', 'v_suppr' ), true ) ) {
 				$ventes = get_option( 'ag_ambassadeur_ventes', array() );
+				$award_email = '';
 				foreach ( $ventes as $k => $v ) {
 					if ( $v['id'] === $id ) {
-						if ( $act === 'v_valider' ) $ventes[ $k ]['statut'] = 'validee';
-						if ( $act === 'v_payer' )  { $ventes[ $k ]['statut'] = 'payee'; $ventes[ $k ]['date_paiement'] = current_time( 'd/m/Y' ); }
+						if ( $act === 'v_valider' ) { $ventes[ $k ]['statut'] = 'validee'; $award_email = $v['email'] ?? ''; }
+						if ( $act === 'v_payer' )  { $ventes[ $k ]['statut'] = 'payee'; $ventes[ $k ]['date_paiement'] = current_time( 'd/m/Y' ); $award_email = $v['email'] ?? ''; }
 						if ( $act === 'v_suppr' )  unset( $ventes[ $k ] );
 					}
 				}
 				update_option( 'ag_ambassadeur_ventes', array_values( $ventes ) );
+				if ( $award_email && function_exists( 'ag_award_parrain_prime' ) ) ag_award_parrain_prime( $award_email );
 			}
 			echo '<div class="notice notice-success is-dismissible"><p>Action effectuée.</p></div>';
 		}
@@ -496,6 +555,27 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 				echo '<td>' . (int) $p['ov']['team'] . '</td>';
 				echo '<td><strong style="color:#b8860b;">' . esc_html( $eur( $p['ov']['generated'] ) ) . '</strong></td>';
 				echo '<td>' . esc_html( $eur( $p['ov']['paid'] ) ) . '</td></tr>';
+			}
+			echo '</tbody></table>';
+		}
+
+		// PRIMES DE PARRAINAGE (recruteurs).
+		$primes    = array_reverse( (array) get_option( 'ag_parrain_primes', array() ) );
+		$prime_amt = ag_parrain_prime_amount();
+		echo '<h2 id="primes" style="margin-top:30px;">🎁 Primes de parrainage <small style="font-weight:400;color:#646970;">(prime fixe au recruteur à la 1re vente de son filleul)</small></h2>';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin:0 0 12px;"><input type="hidden" name="action" value="ag_prime_amount_save">' . wp_nonce_field( 'ag_amb_tools', '_n', true, false ) . 'Montant de la prime : <input type="number" name="amount" value="' . esc_attr( $prime_amt ) . '" step="1" min="0" style="width:90px;"> € <button class="button">Enregistrer</button></form>';
+		if ( empty( $primes ) ) {
+			echo '<p>Aucune prime pour le moment. Dès qu\'un filleul fait sa 1re vente, le recruteur gagne ' . esc_html( number_format( $prime_amt, 0, ',', ' ' ) ) . ' €.</p>';
+		} else {
+			echo '<table class="widefat striped"><thead><tr><th>Date</th><th>Recruteur (parrain)</th><th>Filleul</th><th>Prime</th><th>Statut</th><th></th></tr></thead><tbody>';
+			foreach ( $primes as $pr ) {
+				$pay = ( ( $pr['statut'] ?? '' ) === 'payee' );
+				echo '<tr><td>' . esc_html( $pr['date'] ?? '' ) . '</td>';
+				echo '<td><strong>' . esc_html( $pr['parrain_name'] ?? '' ) . '</strong><br><small>' . esc_html( $pr['parrain_email'] ?? '' ) . '</small></td>';
+				echo '<td>' . esc_html( $pr['filleul_name'] ?? '' ) . '</td>';
+				echo '<td><strong style="color:#b8860b;">' . esc_html( $eur( $pr['amount'] ?? 0 ) ) . '</strong></td>';
+				echo '<td>' . ( $pay ? '<span style="color:#46b450;font-weight:700;">payée</span>' : '<span style="color:#b26a00;">à payer</span>' ) . '</td>';
+				echo '<td>' . ( $pay ? '' : '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin:0;"><input type="hidden" name="action" value="ag_prime_pay"><input type="hidden" name="id" value="' . esc_attr( $pr['id'] ?? '' ) . '">' . wp_nonce_field( 'ag_amb_tools', '_n', true, false ) . '<button class="button button-small button-primary">Marquer payée</button></form>' ) . '</td></tr>';
 			}
 			echo '</tbody></table>';
 		}
