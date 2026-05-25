@@ -1641,6 +1641,11 @@ if ( ! function_exists( 'ag_notify_render' ) ) {
 				<p class="description" style="max-width:780px;">Un message <strong>percutant</strong> (urgence + offre limitée + exclusivité) part <strong>chaque jour à 9h</strong> dans le canal clients. Tu peux ajouter les tiens (sépare chaque message par une ligne <code>---</code>).</p>
 				<label style="display:block;margin:8px 0;"><input type="checkbox" name="ag_client_daily_on" value="1" <?php checked( get_option( 'ag_client_daily_on' ), '1' ); ?>> <strong>Activer le message quotidien automatique</strong></label>
 				<textarea name="ag_client_msgs_custom" rows="6" style="width:100%;max-width:780px;" placeholder="Tes propres messages (optionnel). Sépare-les par une ligne contenant seulement : ---"><?php echo esc_textarea( get_option( 'ag_client_msgs_custom', '' ) ); ?></textarea>
+
+				<h2 style="margin-top:20px;">🤝 Message quotidien automatique aux AMBASSADEURS</h2>
+				<p class="description" style="max-width:780px;">Un message <strong>motivant</strong> (objectif du jour, rappel des gains, astuce de vente) part <strong>chaque jour à 8h30</strong> dans le <strong>groupe interne équipe</strong>. Tu peux ajouter les tiens (séparés par une ligne <code>---</code>).</p>
+				<label style="display:block;margin:8px 0;"><input type="checkbox" name="ag_amb_daily_on" value="1" <?php checked( get_option( 'ag_amb_daily_on' ), '1' ); ?>> <strong>Activer le message quotidien automatique aux ambassadeurs</strong></label>
+				<textarea name="ag_amb_msgs_custom" rows="6" style="width:100%;max-width:780px;" placeholder="Tes propres messages d'équipe (optionnel). Sépare-les par une ligne contenant seulement : ---"><?php echo esc_textarea( get_option( 'ag_amb_msgs_custom', '' ) ); ?></textarea>
 				<?php submit_button(); ?>
 			</form>
 			<?php if ( isset( $_GET['bc'] ) ) : ?><div class="notice notice-<?php echo $_GET['bc'] ? 'success' : 'error'; ?>"><p><?php echo $_GET['bc'] ? 'Annonce envoyée aux clients ✅' : 'Échec : configure le canal clients.'; ?></p></div><?php endif; ?>
@@ -1664,6 +1669,29 @@ if ( ! function_exists( 'ag_notify_render' ) ) {
 					<?php wp_nonce_field( 'ag_push_clients', '_n' ); ?>
 					<textarea name="msg" rows="3" style="width:100%;" placeholder="Ex : 🎉 Nouvelle offre du mois — site pro dès 490 €, payable en 4× !"></textarea>
 					<?php submit_button( '📣 Publier aux clients', 'primary', 'submit', false ); ?>
+				</form>
+			</div>
+			<?php endif; ?>
+
+			<?php if ( isset( $_GET['asent'] ) ) : ?><div class="notice notice-<?php echo $_GET['asent'] ? 'success' : 'error'; ?>"><p><?php echo $_GET['asent'] ? 'Message du jour envoyé aux ambassadeurs ✅' : 'Échec : configure le canal interne (équipe).'; ?></p></div><?php endif; ?>
+			<?php if ( isset( $_GET['abc'] ) ) : ?><div class="notice notice-<?php echo $_GET['abc'] ? 'success' : 'error'; ?>"><p><?php echo $_GET['abc'] ? 'Annonce envoyée aux ambassadeurs ✅' : 'Échec : configure le canal interne (équipe).'; ?></p></div><?php endif; ?>
+			<?php if ( ag_tg_cfg( 'chat' ) ) : ?>
+			<div style="max-width:780px;margin:10px 0;padding:14px 18px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #D4B45C;">
+				<strong>Aperçu du message ambassadeurs d'aujourd'hui :</strong>
+				<p style="white-space:pre-wrap;background:#f6f7f7;padding:12px;border-radius:8px;margin:8px 0;"><?php echo esc_html( ag_amb_message_today() ); ?></p>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<input type="hidden" name="action" value="ag_amb_send_now">
+					<?php wp_nonce_field( 'ag_amb_now', '_n' ); ?>
+					<?php submit_button( '🤝 Envoyer aux ambassadeurs maintenant', 'secondary', 'submit', false ); ?>
+				</form>
+			</div>
+			<div style="max-width:780px;margin:16px 0;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #1e7e34;">
+				<strong>📣 Publier une annonce aux ambassadeurs (groupe équipe)</strong>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-top:8px;">
+					<input type="hidden" name="action" value="ag_amb_broadcast">
+					<?php wp_nonce_field( 'ag_amb_tools', '_n' ); ?>
+					<textarea name="msg" rows="3" style="width:100%;" placeholder="Ex : 🔥 Défi du week-end : 3 ventes = bonus surprise !"></textarea>
+					<?php submit_button( '📣 Publier aux ambassadeurs', 'primary', 'submit', false ); ?>
 				</form>
 			</div>
 			<?php endif; ?>
@@ -1708,6 +1736,8 @@ if ( ! function_exists( 'ag_notify_render' ) ) {
 add_action( 'admin_init', function () {
 	register_setting( 'ag_tg_cfg', 'ag_client_daily_on', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
 	register_setting( 'ag_tg_cfg', 'ag_client_msgs_custom', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_textarea_field', 'default' => '' ) );
+	register_setting( 'ag_tg_cfg', 'ag_amb_daily_on', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
+	register_setting( 'ag_tg_cfg', 'ag_amb_msgs_custom', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_textarea_field', 'default' => '' ) );
 } );
 if ( ! function_exists( 'ag_client_messages' ) ) {
 	/** Banque de messages pour CLIENTS EXISTANTS : fidélité, réductions, invitations privées, exclusivités. */
@@ -1750,4 +1780,45 @@ add_action( 'admin_post_ag_client_send_now', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_client_now' ) ) wp_die( 'no' );
 	$ok = ag_push_clients( ag_client_message_today() );
 	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-notify', 'sent' => $ok ? 1 : 0 ), admin_url( 'options-general.php' ) ) ); exit;
+} );
+
+/* ── Message QUOTIDIEN automatique au GROUPE AMBASSADEURS (motivation / vente) ── */
+if ( ! function_exists( 'ag_amb_messages' ) ) {
+	/** Banque de messages d'équipe : motivation, rappels de prospection, recrutement, studio. */
+	function ag_amb_messages() {
+		$base = array(
+			"💪 Objectif du jour : 5 contacts. 5 messages = des ventes qui tombent. On y va, l'équipe !",
+			"🔥 Rappel : 10% sur CHAQUE vente, sans plafond. Un site à 890 € = 89 € pour toi. Partage ton lien aujourd'hui.",
+			"🎬 Pas d'idée de contenu ? Le Studio te génère une vidéo/visuel en 1 clic avec ton lien intégré. Poste-en une aujourd'hui.",
+			"🤝 Recrute 1 ambassadeur cette semaine : prime + % à vie sur ses ventes. Ton lien recruteur est dans ton espace.",
+			"🗺️ Des prospects t'attendent dans ta zone — va les contacter avant qu'un autre le fasse.",
+			"📞 La règle d'or : le 1er qui contacte gagne. Sois rapide, sois pro, sois toi.",
+			"⭐ Le classement se joue cette semaine — grimpe en haut, fais-toi remarquer !",
+			"🚀 1 vente change ta semaine. 1 par jour change ta vie. Aujourd'hui, qui est chaud ?",
+			"💬 Un « non » n'est jamais définitif. Relance avec le sourire : beaucoup de « oui » sont juste des « pas encore ».",
+			"🎯 Astuce : commence par les commerces SANS vrai site. Les plus faciles à convaincre.",
+			"📈 Partage ton lien en story aujourd'hui : 1 story = des dizaines de vues = des ventes potentielles.",
+			"🏆 Team Alliance, on joue collectif : entraide et bons plans dans le groupe. Ensemble on va plus loin.",
+		);
+		$custom = array_filter( array_map( 'trim', preg_split( '/\n-{2,}\n/', (string) get_option( 'ag_amb_msgs_custom', '' ) ) ) );
+		return apply_filters( 'ag_amb_messages', array_values( array_merge( $base, $custom ) ) );
+	}
+}
+if ( ! function_exists( 'ag_amb_message_today' ) ) {
+	function ag_amb_message_today() {
+		$m = ag_amb_messages();
+		if ( empty( $m ) ) return '';
+		return $m[ (int) gmdate( 'z' ) % count( $m ) ];
+	}
+}
+add_action( 'init', function () {
+	if ( ! wp_next_scheduled( 'ag_amb_daily' ) ) wp_schedule_event( strtotime( 'tomorrow 8:30' ), 'daily', 'ag_amb_daily' );
+} );
+add_action( 'ag_amb_daily', function () {
+	if ( get_option( 'ag_amb_daily_on' ) && ag_tg_cfg( 'chat' ) ) ag_tg_send( ag_tg_cfg( 'chat' ), ag_amb_message_today() );
+} );
+add_action( 'admin_post_ag_amb_send_now', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_now' ) ) wp_die( 'no' );
+	$ok = function_exists( 'ag_tg_send' ) && ag_tg_send( ag_tg_cfg( 'chat' ), ag_amb_message_today() );
+	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-notify', 'asent' => $ok ? 1 : 0 ), admin_url( 'options-general.php' ) ) ); exit;
 } );

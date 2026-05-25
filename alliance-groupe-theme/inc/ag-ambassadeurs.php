@@ -370,7 +370,8 @@ add_action( 'admin_post_ag_amb_broadcast', function () {
 	$msg = trim( (string) wp_unslash( $_POST['msg'] ?? '' ) );
 	// Diffuse uniquement sur le groupe Telegram interne (équipe ambassadeurs).
 	$ok  = ( '' !== $msg ) && function_exists( 'ag_tg_send' ) && function_exists( 'ag_tg_cfg' ) && ag_tg_send( ag_tg_cfg( 'chat' ), '📣 ' . $msg );
-	wp_safe_redirect( admin_url( 'admin.php?page=ag-ambassadeurs&abc=' . ( $ok ? 1 : 0 ) ) ); exit;
+	$back = wp_get_referer() ?: admin_url( 'admin.php?page=ag-ambassadeurs' );
+	wp_safe_redirect( add_query_arg( 'abc', $ok ? 1 : 0, $back ) ); exit;
 } );
 /* Enregistre le pseudo Telegram d'un ambassadeur (pour le bouton ✈️). */
 add_action( 'admin_post_ag_amb_tg_save', function () {
