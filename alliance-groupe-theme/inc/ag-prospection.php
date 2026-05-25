@@ -78,6 +78,7 @@ if ( ! function_exists( 'ag_search_history_add' ) ) {
 					'phone'      => $r['phone'] ?? '',
 					'phone_intl' => $r['phone_intl'] ?? '',
 					'website'    => $r['website'] ?? '',
+					'maps_uri'   => $r['maps_uri'] ?? '',
 					'rating'     => $r['rating'] ?? 0,
 					'reviews'    => $r['reviews'] ?? 0,
 				);
@@ -145,7 +146,38 @@ if ( ! function_exists( 'ag_wa_number' ) ) {
 	}
 }
 
-/* ── 3. Recherche d'entreprises via Google Places (New) ─────────── */
+/* ── Lien Google (fiche + avis) et diagnostic « marche bien / a besoin de clients » ── */
+if ( ! function_exists( 'ag_google_link' ) ) {
+	function ag_google_link( $p ) {
+		if ( ! empty( $p['maps_uri'] ) ) return $p['maps_uri'];
+		$q = trim( ( $p['name'] ?? '' ) . ' ' . ( $p['address'] ?? ( $p['city'] ?? '' ) ) );
+		return $q ? 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $q ) : '';
+	}
+}
+if ( ! function_exists( 'ag_prospect_diagnostic' ) ) {
+	/** Lecture rapide : l'entreprise marche-t-elle bien ou a-t-elle besoin de clients ? */
+	function ag_prospect_diagnostic( $p ) {
+		$r = (float) ( $p['rating'] ?? 0 );
+		$n = (int) ( $p['reviews'] ?? 0 );
+		$kind = ag_site_kind( $p['website'] ?? '' )[0];
+		$bits = array();
+		if ( 'real' !== $kind ) $bits[] = '❗ pas de vrai site';
+		if ( 0 === $n )       $bits[] = '🆕 aucun avis (peu visible)';
+		elseif ( $n < 10 )    $bits[] = '🔎 peu d\'avis (' . $n . ')';
+		elseif ( $n < 50 )    $bits[] = '📈 ' . $n . ' avis';
+		else                  $bits[] = '⭐ ' . $n . ' avis (très visible)';
+		if ( $r > 0 ) {
+			if ( $r < 3.5 )       $bits[] = '⚠ note ' . number_format( $r, 1, ',', '' ) . ' (réputation à redresser)';
+			elseif ( $r >= 4.5 )  $bits[] = '👍 note ' . number_format( $r, 1, ',', '' );
+		}
+		if ( 'real' !== $kind || $n < 10 ) $concl = '🎯 a besoin de clients';
+		elseif ( $r >= 4.5 && $n >= 50 )   $concl = '💪 marche bien (vise refonte/SEO)';
+		else                               $concl = '🟡 potentiel à creuser';
+		return implode( ' · ', $bits ) . ' — ' . $concl;
+	}
+}
+
+
 if ( ! function_exists( 'ag_places_search' ) ) {
 	function ag_places_search( $query ) {
 		$key = ag_places_key();
@@ -158,7 +190,7 @@ if ( ! function_exists( 'ag_places_search' ) ) {
 			'headers' => array(
 				'Content-Type'     => 'application/json',
 				'X-Goog-Api-Key'   => $key,
-				'X-Goog-FieldMask' => 'places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.internationalPhoneNumber,places.websiteUri,places.id,places.rating,places.userRatingCount,places.businessStatus',
+				'X-Goog-FieldMask' => 'places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.internationalPhoneNumber,places.websiteUri,places.id,places.rating,places.userRatingCount,places.businessStatus,places.googleMapsUri',
 			),
 			'body'    => wp_json_encode( array( 'textQuery' => $query, 'languageCode' => 'fr', 'maxResultCount' => 20 ) ),
 		) );
@@ -175,6 +207,7 @@ if ( ! function_exists( 'ag_places_search' ) ) {
 				'phone'      => $p['nationalPhoneNumber'] ?? '',
 				'phone_intl' => $p['internationalPhoneNumber'] ?? '',
 				'website'    => $p['websiteUri'] ?? '',
+				'maps_uri'   => $p['googleMapsUri'] ?? '',
 				'rating'  => $p['rating'] ?? 0,
 				'reviews' => $p['userRatingCount'] ?? 0,
 			);
@@ -295,7 +328,7 @@ if ( ! function_exists( 'ag_prospect_add_record' ) ) {
 		if ( ag_prospect_find( $data['name'], $data['city'] ?? '', $data['phone'] ?? '' ) ) return false;
 		$rec = array_merge( array(
 			'id' => uniqid( 'p_' ), 'name' => '', 'type' => '', 'city' => '', 'phone' => '', 'phone_intl' => '', 'email' => '',
-			'website' => '', 'address' => '', 'rating' => 0, 'reviews' => 0, 'status' => 'nouveau',
+			'website' => '', 'address' => '', 'maps_uri' => '', 'rating' => 0, 'reviews' => 0, 'status' => 'nouveau',
 			'date_contact' => '', 'last_contact' => '', 'contact_count' => 0, 'replied' => 0, 'date_reply' => '',
 			'owner_email' => '', 'owner_name' => '', 'notes' => '', 'source' => 'manuel', 'ts' => time(),
 		), $data );
@@ -327,6 +360,7 @@ add_action( 'wp_ajax_ag_prospect_add', function () {
 		'phone'   => sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) ),
 		'website' => esc_url_raw( wp_unslash( $_POST['website'] ?? '' ) ),
 		'address' => sanitize_text_field( wp_unslash( $_POST['address'] ?? '' ) ),
+		'maps_uri' => esc_url_raw( wp_unslash( $_POST['maps'] ?? '' ) ),
 		'rating'  => (float) ( $_POST['rating'] ?? 0 ),
 		'reviews' => (int) ( $_POST['reviews'] ?? 0 ),
 		'notes'   => sanitize_text_field( wp_unslash( $_POST['notes'] ?? '' ) ),
@@ -911,8 +945,8 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 								$kind = ag_site_kind( $r['website'] ); $rsc = ag_prospect_score( $r ); $rcol = $rsc >= 80 ? '#b32d2e' : ( $rsc >= 60 ? '#bd7b00' : '#50575e' ); ?>
 							<tr data-kind="<?php echo esc_attr( $kind[0] ); ?>">
 								<td><span style="display:inline-block;min-width:32px;text-align:center;font-weight:800;color:#fff;background:<?php echo esc_attr( $rcol ); ?>;border-radius:6px;padding:2px 6px;"><?php echo (int) $rsc; ?></span></td>
-								<td><strong><?php echo esc_html( $r['name'] ); ?></strong><?php if ( $ex ) : $labs = ag_prospect_statuses(); ?> <span style="background:#e7eef7;color:#1d4f8b;border-radius:10px;padding:1px 8px;font-size:.78em;">déjà en liste · <?php echo esc_html( $labs[ $ex['status'] ?? 'nouveau' ] ?? '' ); ?></span><?php endif; ?><br><small><?php echo esc_html( ( $r['type'] ?? '' ) . ' · ' . ( $r['address'] ?? '' ) ); ?></small></td>
-								<td><?php echo ( $r['reviews'] ?? 0 ) ? esc_html( (int) $r['reviews'] . ' avis · ' . number_format( (float) ( $r['rating'] ?? 0 ), 1 ) . '★' ) : '—'; ?></td>
+								<td><strong><?php echo esc_html( $r['name'] ); ?></strong><?php if ( $ex ) : $labs = ag_prospect_statuses(); ?> <span style="background:#e7eef7;color:#1d4f8b;border-radius:10px;padding:1px 8px;font-size:.78em;">déjà en liste · <?php echo esc_html( $labs[ $ex['status'] ?? 'nouveau' ] ?? '' ); ?></span><?php endif; ?><br><small><?php echo esc_html( ( $r['type'] ?? '' ) . ' · ' . ( $r['address'] ?? '' ) ); ?></small><br><small style="color:#50575e;"><?php echo esc_html( ag_prospect_diagnostic( $r ) ); ?></small></td>
+								<td><?php $glink = ag_google_link( $r ); $av = ( $r['reviews'] ?? 0 ) ? ( (int) $r['reviews'] . ' avis · ' . number_format( (float) ( $r['rating'] ?? 0 ), 1 ) . '★' ) : 'Voir avis'; echo $glink ? '<a href="' . esc_url( $glink ) . '" target="_blank" rel="noopener" title="Ouvrir la fiche Google + avis">📍 ' . esc_html( $av ) . '</a>' : esc_html( $av ); ?></td>
 								<td><?php echo esc_html( $r['phone'] ); ?></td>
 								<td><?php echo ( 'real' === $kind[0] ) ? '<a href="' . esc_url( $r['website'] ) . '" target="_blank" rel="noopener">site ✓</a>' : '<strong style="color:#b32d2e;">' . esc_html( $kind[1] ) . '</strong>'; ?></td>
 								<td>
@@ -920,7 +954,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 									<button type="button" class="button button-primary ag-add"
 										data-name="<?php echo esc_attr( $r['name'] ); ?>" data-type="<?php echo esc_attr( $r['type'] ?? $q ); ?>"
 										data-city="<?php echo esc_attr( $r['city'] ?? $city ); ?>" data-phone="<?php echo esc_attr( $r['phone'] ); ?>"
-										data-website="<?php echo esc_attr( $r['website'] ); ?>" data-address="<?php echo esc_attr( $r['address'] ); ?>"
+										data-website="<?php echo esc_attr( $r['website'] ); ?>" data-address="<?php echo esc_attr( $r['address'] ); ?>" data-maps="<?php echo esc_attr( $r['maps_uri'] ?? '' ); ?>"
 										data-rating="<?php echo esc_attr( $r['rating'] ?? 0 ); ?>" data-reviews="<?php echo esc_attr( $r['reviews'] ?? 0 ); ?>">+ Suivre (avec ma note)</button>
 									<button type="button" class="button button-small ag-ignore" data-name="<?php echo esc_attr( $r['name'] ); ?>" data-city="<?php echo esc_attr( $r['city'] ?? $city ); ?>" data-type="<?php echo esc_attr( $r['type'] ?? $q ); ?>" data-phone="<?php echo esc_attr( $r['phone'] ); ?>" data-website="<?php echo esc_attr( $r['website'] ); ?>" data-address="<?php echo esc_attr( $r['address'] ); ?>" data-rating="<?php echo esc_attr( $r['rating'] ?? 0 ); ?>" data-reviews="<?php echo esc_attr( $r['reviews'] ?? 0 ); ?>" title="Garde l'entreprise en statut 'Ignoré' (consultable, mais retirée des recherches)" style="margin-top:4px;color:#b32d2e;">🙈 Ignorer</button>
 								</td>
@@ -1154,7 +1188,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 								if ( $dn ) echo '<br><small style="color:#646970;">' . esc_html( $dn ) . '</small>';
 							} else { echo '<span style="color:#b9b9c0;">—</span>'; }
 						?></td>
-						<td style="max-width:280px;font-size:.85em;color:#50575e;"><?php echo esc_html( ag_prospect_why( $p ) ); ?></td>
+						<td style="max-width:280px;font-size:.85em;color:#50575e;"><?php echo esc_html( ag_prospect_why( $p ) ); ?><br><span style="color:#1d4f8b;"><?php echo esc_html( ag_prospect_diagnostic( $p ) ); ?></span></td>
 						<td>
 							<?php if ( ! empty( $p['phone'] ) ) : ?><a href="tel:<?php echo esc_attr( $p['phone'] ); ?>">📞 <?php echo esc_html( $p['phone'] ); ?></a><br><?php endif; ?>
 							<?php if ( ! empty( $p['email'] ) ) : ?><a href="mailto:<?php echo esc_attr( $p['email'] ); ?>"><?php echo esc_html( $p['email'] ); ?></a><?php endif; ?>
@@ -1206,6 +1240,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 								<span class="ag-msg-ok" style="color:#1e7e34;display:none;">✓ enregistré</span>
 							</details>
 							<?php if ( ! empty( $p['website'] ) ) : ?><a class="button button-small" href="<?php echo esc_url( $p['website'] ); ?>" target="_blank" rel="noopener">🔗 Voir le site</a> <?php endif; ?>
+							<?php $pg = ag_google_link( $p ); if ( $pg ) : ?><a class="button button-small" href="<?php echo esc_url( $pg ); ?>" target="_blank" rel="noopener" title="Fiche Google + avis">📍 Avis Google</a> <?php endif; ?>
 							<details style="display:block;margin-top:6px;"><summary class="button button-small">📝 Ma fiche (notes)</summary>
 								<textarea class="ag-note-field" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" rows="4" style="width:360px;margin-top:6px;" placeholder="Ce que je peux faire pour eux, points à dire, idées…"><?php echo esc_textarea( $p['notes'] ?? '' ); ?></textarea><br>
 								<button type="button" class="button button-small button-primary ag-note-save" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>">💾 Enregistrer + régénérer le message</button>
@@ -1252,7 +1287,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			// Ajout en AJAX (sans recharger -> la recherche reste).
 			document.querySelectorAll('.ag-add').forEach(function(b){ b.addEventListener('click',function(){
 				var fd=new FormData(); fd.append('action','ag_prospect_add'); fd.append('_n',nonce);
-				['name','type','city','phone','website','address','rating','reviews','notes','source'].forEach(function(k){ fd.append(k, b.getAttribute('data-'+k)||''); });
+				['name','type','city','phone','website','address','rating','reviews','notes','source','maps'].forEach(function(k){ fd.append(k, b.getAttribute('data-'+k)||''); });
 					var nt=b.closest('td')?b.closest('td').querySelector('.ag-add-note'):null; if(nt&&nt.value){ fd.set('notes', nt.value); }
 				b.disabled=true; b.textContent='…';
 				fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ b.textContent=(j&&j.success)?'✓ Ajouté':'Erreur'; }).catch(function(){ b.textContent='Erreur'; b.disabled=false; });
@@ -1375,7 +1410,7 @@ if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
 				if ( empty( $r['name'] ) ) continue;
 				$ok = ag_prospect_add_record( array(
 					'name' => $r['name'], 'type' => $r['type'] ?? ( $s['q'] ?? '' ), 'city' => $s['city'] ?? '',
-					'phone' => $r['phone'] ?? '', 'phone_intl' => $r['phone_intl'] ?? '', 'website' => $r['website'] ?? '', 'address' => $r['address'] ?? '',
+					'phone' => $r['phone'] ?? '', 'phone_intl' => $r['phone_intl'] ?? '', 'website' => $r['website'] ?? '', 'address' => $r['address'] ?? '', 'maps_uri' => $r['maps_uri'] ?? '',
 					'rating' => $r['rating'] ?? 0, 'reviews' => $r['reviews'] ?? 0, 'source' => 'robot',
 				) );
 				if ( $ok ) { $added++; if ( 'real' !== ag_site_kind( $r['website'] ?? '' )[0] ) $nosite++; }
