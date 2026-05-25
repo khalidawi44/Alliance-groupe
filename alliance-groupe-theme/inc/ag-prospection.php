@@ -1710,22 +1710,24 @@ add_action( 'admin_init', function () {
 	register_setting( 'ag_tg_cfg', 'ag_client_msgs_custom', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_textarea_field', 'default' => '' ) );
 } );
 if ( ! function_exists( 'ag_client_messages' ) ) {
-	/** Banque de messages clients : impactants, urgence + offre limitée + exclusivité. */
+	/** Banque de messages pour CLIENTS EXISTANTS : fidélité, réductions, invitations privées, exclusivités. */
 	function ag_client_messages() {
-		$s = home_url( '/sites-express' );
+		$phone   = apply_filters( 'ag_contact_phone', '07 44 82 95 16' );
+		$contact = home_url( '/contact' );
+		$amb     = home_url( '/ambassadeurs' );
 		$base = array(
-			"⏳ Chaque jour sans site, des clients vont chez le concurrent. Le tien, pro et livré en quelques jours, dès 490 € — on ne prend que quelques projets ce mois. Réserve ta place 👉 $s",
-			"🔥 Offre du jour : site pro à prix fixe, payable en 4×. On limite volontairement le nombre de projets pour garder la qualité. Quand c'est plein, c'est plein. 👉 $s",
-			"Tu es unique. Ton site devrait l'être aussi. Design sur-mesure, à ta marque — mais les places du mois partent vite. Bloque la tienne 👉 $s",
-			"😬 Pendant que tu hésites, ton concurrent encaisse les clients que TON site aurait captés. On répare ça en quelques jours, dès 490 €. 👉 $s",
-			"🎯 Aujourd'hui seulement : on étudie ton projet en priorité. Site clé en main, sans rendez-vous, payable en 4×. Réponds vite, l'agenda se remplit 👉 $s",
-			"💸 Un site qui travaille 24h/24 pendant que tu dors. Combien de ventes tu perds sans lui ? On le crée pour toi, dès 490 €. Places limitées 👉 $s",
-			"⭐ On choisit nos clients comme on choisit nos projets : peu, mais bien. Tu veux faire partie des prochains ? C'est maintenant 👉 $s",
-			"⚠️ Dernière ligne droite du mois : il reste quelques créneaux de production. Après, c'est le mois prochain. Prends le tien 👉 $s",
-			"🚀 Tes concurrents ont un site. Pas toi ? Ça se voit — et ça se paie en clients perdus. On t'en livre un pro en quelques jours 👉 $s",
-			"🤝 Offre exclusive abonnés : on accompagne ton lancement de A à Z, prix fixe, sans surprise. Mais on ferme bientôt les inscriptions du mois 👉 $s",
-			"📈 Imagine ton activité dans 3 mois avec un vrai site qui ramène des clients en automatique. Ça commence aujourd'hui, dès 490 € 👉 $s",
-			"⏰ Le bon moment, c'était hier. Le 2e meilleur, c'est maintenant. Site pro, livré vite, payable en 4× — places limitées 👉 $s",
+			"🎁 Offre fidélité réservée à nos clients : -20% ce mois-ci sur l'ajout de pages, le SEO ou la maintenance de ton site. Réponds à ce message ou appelle le $phone.",
+			"🔒 Invitation privée : on ouvre quelques places pour booster ton site (référencement Google + vitesse). Réservé à nos clients du canal. Intéressé ? Réponds ici.",
+			"⭐ Exclu clients : passe ton site au niveau supérieur avec un module IA / automatisation (prise de RDV, chatbot, relances auto) à tarif préférentiel. Dis-moi si je t'en parle.",
+			"📈 Tu veux plus de clients via ton site actuel ? On t'offre un mini-audit SEO gratuit (15 min) — réservé aux clients du canal. Réponds « AUDIT ».",
+			"🤝 Tu connais un pro qui a besoin d'un site ? Recommande-le et gagne une récompense. C'est par ici 👉 $amb",
+			"🥂 Merci d'être client Alliance Groupe. Cadeau du mois : une retouche/évolution offerte sur ton site (dans la limite du raisonnable). Réponds pour en profiter.",
+			"🎟️ Offre flash 48h, clients uniquement : -15% sur une refonte ou un nouveau design. Places limitées. Appelle le $phone.",
+			"🚀 Nouveau : on peut connecter ton site à WhatsApp / un agenda / un paiement en ligne. Nos clients d'abord. Tu veux voir ce que ça donne pour toi ?",
+			"💡 Astuce clients : une page bien optimisée = plus d'appels. On te montre quoi améliorer en priorité, gratuitement. Réponds ici.",
+			"📣 En avant-première pour le canal : nouvelle prestation dispo ce mois. Tarif lancement réservé aux clients existants. Je t'envoie les détails ?",
+			"🔧 Ton site mérite d'être à jour (sécurité, vitesse, contenus). Pack maintenance en promo pour les clients du canal cette semaine. Infos : $contact",
+			"⏳ Offre privée de la semaine, réservée à nos clients fidèles : -25% sur un service au choix (SEO, pages, IA). Premier arrivé, premier servi — réponds vite !",
 		);
 		$custom = array_filter( array_map( 'trim', preg_split( '/\n-{2,}\n/', (string) get_option( 'ag_client_msgs_custom', '' ) ) ) );
 		return apply_filters( 'ag_client_messages', array_values( array_merge( $base, $custom ) ) );
