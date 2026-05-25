@@ -1637,8 +1637,12 @@ if ( ! function_exists( 'ag_sms' ) ) {
 	}
 }
 if ( ! function_exists( 'ag_push' ) ) {
-	/** Alerte INTERNE (équipe) : SMS (ton tél) + WhatsApp (CallMeBot, 1:1) et/ou Telegram (canal interne). */
-	function ag_push( $title, $body = '' ) {
+	/**
+	 * Alerte PERSO admin : SMS (ton tél) + WhatsApp (CallMeBot, 1:1).
+	 * Le groupe Telegram interne ne reçoit ces alertes QUE si $group = true
+	 * (sinon il ne garde que les messages d'équipe : message quotidien + annonces).
+	 */
+	function ag_push( $title, $body = '', $group = false ) {
 		$text = $title . ( $body ? "\n\n" . $body : '' );
 		$sent = false;
 		if ( ag_sms( $text ) ) $sent = true;
@@ -1648,7 +1652,7 @@ if ( ! function_exists( 'ag_push' ) ) {
 			$resp = wp_remote_get( 'https://api.callmebot.com/whatsapp.php?phone=' . rawurlencode( $wa_phone ) . '&text=' . rawurlencode( $text ) . '&apikey=' . rawurlencode( $wa_key ), array( 'timeout' => 15 ) );
 			if ( ! is_wp_error( $resp ) ) $sent = true;
 		}
-		if ( ag_tg_send( ag_tg_cfg( 'chat' ), $text ) ) $sent = true;
+		if ( $group && ag_tg_send( ag_tg_cfg( 'chat' ), $text ) ) $sent = true;
 		return $sent;
 	}
 }
@@ -1668,7 +1672,7 @@ add_action( 'admin_menu', function () {
 } );
 add_action( 'admin_post_ag_push_test', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_push_test' ) ) wp_die( 'no' );
-	$ok = ag_push( '✅ Test interne Alliance Groupe', 'Si tu lis ça, les alertes équipe marchent !' );
+	$ok = ag_push( '✅ Test Alliance Groupe', 'Si tu lis ça, les alertes (SMS + groupe Telegram) marchent !', true );
 	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-notify', 'test' => $ok ? 1 : 0 ), admin_url( 'options-general.php' ) ) ); exit;
 } );
 add_action( 'admin_post_ag_sms_test', function () {

@@ -192,7 +192,7 @@ add_action( 'ag_amb_inactivity_cron', function () {
 			'⏸️ Ta zone est en pause (inactivité) — reprends-la !',
 			"Salut $nm,\n\nTu n'as pas été actif depuis 7 jours, alors ta zone (" . implode( ', ', $zones ) . ") a été libérée pour laisser la place à l'équipe.\nAucun souci : reconnecte-toi et reprends une zone en 1 clic depuis ton espace.\n\n👉 " . home_url( '/espace-ambassadeur#demarrage' ) . "\n\nOn t'attend 💪\nAlliance Groupe"
 		);
-		if ( function_exists( 'ag_tg_send' ) && function_exists( 'ag_tg_cfg' ) ) ag_tg_send( ag_tg_cfg( 'chat' ), '⏸️ ' . $nm . ' retiré de sa zone (' . implode( ', ', $zones ) . ') pour inactivité (7 j). Rappel envoyé.' );
+		if ( function_exists( 'ag_push' ) ) ag_push( '⏸️ Zone libérée (inactivité)', $nm . ' retiré de sa zone (' . implode( ', ', $zones ) . ') après 7 j sans activité. Rappel envoyé.' ); // alerte perso admin, pas le groupe
 		if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '⏸️ ' . $nm . ' retiré de sa zone pour inactivité (7 j)' );
 	}
 } );
