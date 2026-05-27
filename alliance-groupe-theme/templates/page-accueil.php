@@ -26,6 +26,27 @@ get_header();
         <span style="left:92%; bottom:-10px; animation-duration:14s; animation-delay:3.6s;"></span>
         <span style="left:12%; bottom:-10px; animation-duration:23s; animation-delay:10s;"></span>
     </div>
+    <!-- 🌋 Vésuve en éruption : halo + fumée (CSS pur, visible partout) -->
+    <div class="ag-hero__vesuvius" aria-hidden="true"></div>
+    <div class="ag-hero__vesuvius-smoke" aria-hidden="true"></div>
+    <!-- 🚢 Bateaux qui glissent sur la baie -->
+    <div class="ag-hero__boats" aria-hidden="true">
+        <svg viewBox="0 0 50 22" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M2 18 L48 18 L42 22 L8 22 Z" fill="currentColor"/>
+            <path d="M22 18 L22 4 L34 14 L22 14 Z" fill="currentColor" opacity=".7"/>
+            <line x1="22" y1="4" x2="22" y2="18" stroke="currentColor" stroke-width="1"/>
+        </svg>
+        <svg viewBox="0 0 50 22" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M4 19 L46 19 L41 22 L9 22 Z" fill="currentColor"/>
+            <path d="M25 19 L25 6 L36 16 L25 16 Z" fill="currentColor" opacity=".75"/>
+        </svg>
+        <svg viewBox="0 0 50 22" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M2 18 L48 18 L43 22 L7 22 Z" fill="currentColor"/>
+            <path d="M20 18 L20 3 L33 14 L20 14 Z" fill="currentColor" opacity=".7"/>
+            <line x1="20" y1="3" x2="20" y2="18" stroke="currentColor" stroke-width="1"/>
+            <path d="M33 14 L20 14 L20 18 L33 18" fill="none" stroke="currentColor" stroke-width=".6" opacity=".5"/>
+        </svg>
+    </div>
     <!-- Mesh gradient WebGL conservé en sur-couche très subtile (skippé sur mobile/<4 cores) -->
     <?php get_template_part('template-parts/mesh-gradient-bg'); ?>
     <!-- Grille tech high-tech parallax qui réagit à la souris -->

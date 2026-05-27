@@ -171,8 +171,8 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 
 <style>
 	#<?php echo esc_attr( $ag_fx_uid ); ?>{
-		--fx-text:rgba(245,245,245,0.92);
-		--fx-overlay:rgba(0,0,0,0.30);
+		--fx-text:rgba(245,245,245,0.95);
+		--fx-overlay:rgba(0,0,0,0.18);
 		--fx-page-bg:#080808;
 		--fx-stage-bg:#0a0a0f;
 		--fx-accent:#F37A1F;
@@ -188,7 +188,7 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--fx-gap);padding:0 var(--fx-grid-px);position:relative;height:100%;z-index:2}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-bgs{position:absolute;inset:0;background:var(--fx-stage-bg);z-index:1}
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-bg{position:absolute;inset:0}
-	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-bg-img{position:absolute;inset:-10% 0 -10% 0;width:100%;height:120%;object-fit:cover;filter:brightness(0.95) contrast(1.02);opacity:0;will-change:transform,opacity}
+	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-bg-img{position:absolute;inset:-10% 0 -10% 0;width:100%;height:120%;object-fit:cover;filter:brightness(1.08) contrast(1.05) saturate(1.08);opacity:0;will-change:transform,opacity}
 	/* Fallback CSS si GSAP n'a pas chargé : montre au moins la 1re image */
 	#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-bg-img[data-bg-index="0"]{opacity:1}
 	/* Fallback featured : 1re section visible si JS désactivé */
@@ -232,7 +232,7 @@ $ag_fx_uid   = 'agfx-' . wp_rand( 1000, 9999 );
 	}
 	/* ── Mobile fix (<=768px) : section pas trop haute + textes lisibles ── */
 	@media (max-width:768px){
-		#<?php echo esc_attr( $ag_fx_uid ); ?>{--fx-grid-px:1rem;--fx-overlay:rgba(0,0,0,0.45);}
+		#<?php echo esc_attr( $ag_fx_uid ); ?>{--fx-grid-px:1rem;--fx-overlay:rgba(0,0,0,0.25);}
 		/* dvh = hauteur dynamique : le sticky remplit toujours l'ecran visible
 		   (corrige le bandeau blanc quand la barre Safari iOS se masque). */
 		#<?php echo esc_attr( $ag_fx_uid ); ?> .ag-fx-fixed{height:100dvh;}

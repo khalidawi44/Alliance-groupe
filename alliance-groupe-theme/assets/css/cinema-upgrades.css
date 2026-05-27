@@ -1094,5 +1094,90 @@ html.ag-has-custom-cursor [role=button] { cursor:auto !important; }
 }
 /* Accessibilité : moins de mouvement si demandé */
 @media (prefers-reduced-motion: reduce) {
-    .ag-hero__naples, .ag-hero__sunglow, .ag-hero__particles span { animation: none; }
+    .ag-hero__naples, .ag-hero__sunglow, .ag-hero__particles span,
+    .ag-hero__vesuvius, .ag-hero__vesuvius-smoke, .ag-hero__boats svg { animation: none; }
 }
+
+/* ── 🌋 Vésuve en éruption (CSS pur, ultra léger) ──
+   Position approx du volcan sur naples-1.jpg : ~68% / 38%. Si la photo
+   est différente, ajuste --vsv-x et --vsv-y. */
+.ag-hero { --vsv-x: 68%; --vsv-y: 38%; }
+.ag-hero__vesuvius {
+    position: absolute;
+    left: var(--vsv-x); top: var(--vsv-y);
+    transform: translate(-50%, -50%);
+    width: 320px; height: 320px;
+    z-index: 1;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(255,160,60,.55) 0%, rgba(243,80,15,.30) 25%, rgba(255,100,0,.10) 45%, transparent 65%);
+    mix-blend-mode: screen;
+    filter: blur(4px);
+    animation: ag-vesuvius-pulse 4.5s ease-in-out infinite, ag-vesuvius-eruption 11s ease-in-out infinite;
+}
+@keyframes ag-vesuvius-pulse {
+    0%, 100% { opacity: .70; transform: translate(-50%, -50%) scale(1); }
+    50%      { opacity: 1;   transform: translate(-50%, -50%) scale(1.10); }
+}
+@keyframes ag-vesuvius-eruption {
+    0%, 78%, 100% { filter: blur(4px) brightness(1);   }
+    82%           { filter: blur(2px) brightness(2.2); }
+    86%           { filter: blur(6px) brightness(1.6); }
+}
+/* Fumée du Vésuve (montée + dispersion) */
+.ag-hero__vesuvius-smoke {
+    position: absolute;
+    left: var(--vsv-x); top: var(--vsv-y);
+    transform: translate(-50%, -90%);
+    width: 140px; height: 220px;
+    z-index: 1;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center bottom, rgba(220,210,200,.55) 0%, rgba(180,170,160,.25) 40%, transparent 75%);
+    filter: blur(8px);
+    opacity: 0;
+    animation: ag-vesuvius-smoke 11s ease-out infinite;
+    transform-origin: center bottom;
+}
+@keyframes ag-vesuvius-smoke {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(.6); }
+    10%  { opacity: .75; }
+    60%  { opacity: .55; transform: translate(-45%, -180%) scale(1.5); }
+    100% { opacity: 0; transform: translate(-40%, -260%) scale(2.2); }
+}
+
+/* ── 🚢 Bateaux qui glissent sur la baie ──
+   SVG inline, positionnés dans la moitié basse, défilement très lent.
+   Léger wobble vertical pour simuler la houle. */
+.ag-hero__boats {
+    position: absolute;
+    inset: 60% 0 0 0;
+    z-index: 2;
+    pointer-events: none;
+    overflow: hidden;
+}
+.ag-hero__boats svg {
+    position: absolute;
+    height: 24px; width: 50px;
+    filter: drop-shadow(0 1px 4px rgba(0,0,0,.5));
+    color: rgba(20,18,15,.85);
+    animation-name: ag-boat-sail, ag-boat-bob;
+    animation-iteration-count: infinite, infinite;
+    animation-timing-function: linear, ease-in-out;
+    animation-direction: normal, alternate;
+}
+.ag-hero__boats svg:nth-child(1) { top: 30%; height: 22px; width: 46px; animation-duration: 70s, 3.2s; animation-delay: 0s, 0s; }
+.ag-hero__boats svg:nth-child(2) { top: 55%; height: 18px; width: 38px; animation-duration: 95s, 4s;   animation-delay: -20s, -2s; opacity: .85; }
+.ag-hero__boats svg:nth-child(3) { top: 75%; height: 28px; width: 58px; animation-duration: 80s, 3.6s; animation-delay: -45s, -1s; opacity: .95; }
+@keyframes ag-boat-sail {
+    0%   { transform: translateX(-12vw); }
+    100% { transform: translateX(112vw); }
+}
+@keyframes ag-boat-bob {
+    0%   { margin-top: 0; }
+    100% { margin-top: 3px; }
+}
+
+/* Espacement sous le hero (évite que la section suivante chevauche) */
+.ag-hero { padding-bottom: clamp(48px, 8vh, 96px); }
+.ag-hero + section,
+.ag-hero + .ag-marquee,
+.ag-marquee + section { padding-top: clamp(32px, 6vh, 72px); }
