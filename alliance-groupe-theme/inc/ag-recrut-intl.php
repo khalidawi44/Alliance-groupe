@@ -114,38 +114,38 @@ if ( ! function_exists( 'ag_ri_templates' ) ) {
 	function ag_ri_templates( $code ) {
 		$tpl = array(
 			'FR' => array(
-				"Salut, je teste un truc qui marche bien : Alliance Groupe (agence web) recrute des ambassadeurs. Tu fais s'inscrire quelqu'un, tu touches {prime} direct + 10% sur ses ventes a vie. Aucun frais, 100% en ligne. Lien : {parrain_link}",
-				"Hello, complement de revenu solide pour qui sait parler aux gens : tu parraines un ambassadeur Alliance Groupe -> {prime} dans ta poche des sa 1re vente, + 10% sur ses commissions. Si ca te tente, c'est par la : {parrain_link}",
+				"Salut, opportunite de complement de revenu serieuse : deviens ambassadeur Alliance Groupe (agence web). Tu touches *10% de commission a vie* sur chaque site vendu.\n\n📊 Exemple chiffre :\n• 1 site Pro vendu (890 €) = *89 € pour toi*\n• 1 vente/semaine = *4 624 €/an*\n• 6 ventes/semaine = *2 312 €/mois* = *27 768 €/an*\n\nSans plafond, paye sur PayPal, 100% en ligne. Lien : {parrain_link}",
+				"Hello, je gagne un complement avec Alliance Groupe (agence web) — 10% de commission a vie sur chaque vente. 1 vente Pro = 89 €. 6/semaine = 27 768 €/an net. Aucun frais. Inscription : {parrain_link}",
 			),
 			'BE' => array(
-				"Hello, Alliance Groupe (agence web FR) ouvre son reseau en Belgique. Tu parraines, tu touches {prime} + 10% des ventes du filleul. Aucun frais. Lien : {parrain_link}",
+				"Hello, Alliance Groupe (agence web FR) ouvre son reseau en Belgique. *10% de commission a vie* sur les ventes.\n📊 1 site Pro (890 €) = 89 € pour toi. 6 ventes/semaine = *2 312 €/mois* = *27 768 €/an*. Sans plafond. Inscription : {parrain_link}",
 			),
 			'CH' => array(
-				"Bonjour, Alliance Groupe (agence web) recrute des ambassadeurs en Suisse romande. {prime} de prime des qu'un de tes parraines s'inscrit, + 10% sur ses ventes. C'est gratuit et 100% en ligne. Infos : {parrain_link}",
+				"Bonjour, Alliance Groupe (agence web) recrute des ambassadeurs en Suisse romande. *10% de commission a vie* sur chaque vente.\n📊 1 vente Pro ≈ 87 CHF / 6 ventes par semaine ≈ *2 270 CHF/mois* (~27 240 CHF/an). 100% en ligne. Infos : {parrain_link}",
 			),
 			'QC' => array(
-				"Salut, j'ai trouve un programme cool : Alliance Groupe (agence web francaise) cherche des ambassadeurs au Québec. Tu parraines quelqu'un, tu pognes {prime} direct + 10% de ses ventes. Aucune avance. Lien : {parrain_link}",
-				"Yo, complement de revenu de la maison : tu parles d'Alliance Groupe a ton entourage, des qu'un parraine s'inscrit -> {prime} + 10% a vie sur ses ventes. Detail : {parrain_link}",
+				"Salut, j'ai trouve un programme cool : Alliance Groupe (agence web francaise) cherche des ambassadeurs au Québec. *10% de commission a vie* sur les ventes.\n📊 1 vente Pro ≈ 134 CAD / 6 ventes par semaine ≈ *3 480 CAD/mois* (~41 700 CAD/an). Aucune avance. Inscription : {parrain_link}",
+				"Yo, complement de revenu de la maison : ambassadeur Alliance Groupe, 10% a vie sur tes ventes. 1 site ≈ 134 CAD. Bien parti = *3 000+ CAD/mois*. Detail : {parrain_link}",
 			),
 			'MA' => array(
-				"Salam alaykum. Alliance Groupe (agence web francaise) ouvre son reseau d'ambassadeurs au Maroc. Tu touches {prime} des qu'une personne que tu parraines s'inscrit, et 10% de commission sur toutes ses ventes. 100% en ligne, gratuit, sans avance. Lien : {parrain_link}",
-				"Bonjour, opportunite serieuse : Alliance Groupe recrute des ambassadeurs au Maroc (Casa, Rabat, Marrakech, Agadir, Fes...). {prime} par parrainage + 10% de commission a vie. Sans frais. Infos : {parrain_link}",
+				"Salam alaykum. Alliance Groupe (agence web francaise) ouvre son reseau d'ambassadeurs au Maroc. *10% de commission a vie* sur les ventes.\n📊 1 site Pro (890 €) ≈ *970 MAD pour toi*\n• 1 vente/semaine ≈ *50 000 MAD/an*\n• 6 ventes/semaine ≈ *25 000 MAD/mois* (*300 000 MAD/an*)\n100% en ligne, gratuit, sans avance. Inscription : {parrain_link}",
+				"Bonjour, opportunite serieuse : Alliance Groupe recrute des ambassadeurs au Maroc (Casa, Rabat, Marrakech, Agadir, Fes...). 10% a vie sur chaque vente — 1 site ≈ 970 MAD, 6 ventes/semaine ≈ 25 000 MAD/mois. Sans frais. {parrain_link}",
 			),
 			'DZ' => array(
-				"Salam, Alliance Groupe (agence web FR) ouvre son reseau d'ambassadeurs en Algérie. {prime} de prime par parrainage + 10% de commission sur les ventes de tes filleuls. 100% en ligne, sans avance d'argent. Lien : {parrain_link}",
-				"Bonjour, programme serieux pour un complement de revenu : tu parraines -> {prime} + 10% a vie sur ses ventes. Gratuit, en ligne, dispo partout en Algérie. Detail : {parrain_link}",
+				"Salam, Alliance Groupe (agence web FR) ouvre son reseau d'ambassadeurs en Algérie. *10% de commission a vie* sur les ventes.\n📊 1 site Pro (890 €) ≈ *13 350 DZD pour toi*\n• 1 vente/semaine ≈ *690 000 DZD/an*\n• 6 ventes/semaine ≈ *345 000 DZD/mois* (~4,1 M DZD/an)\nSans avance, 100% en ligne. Inscription : {parrain_link}",
+				"Bonjour, programme serieux pour un complement de revenu en Algérie : 10% a vie sur chaque vente. 1 site ≈ 13 350 DZD. Bien parti = *plusieurs centaines de milliers de DZD/mois*. Detail : {parrain_link}",
 			),
 			'TN' => array(
-				"Salam, Alliance Groupe (agence web) ouvre son reseau en Tunisie. {prime} par parrainage + 10% des ventes de tes filleuls a vie. Gratuit, en ligne. Lien : {parrain_link}",
+				"Salam, Alliance Groupe (agence web) ouvre son reseau en Tunisie. *10% de commission a vie* sur les ventes.\n📊 1 site Pro (890 €) ≈ *290 TND pour toi*\n• 6 ventes/semaine ≈ *7 500 TND/mois* (~90 000 TND/an)\nGratuit, en ligne. Inscription : {parrain_link}",
 			),
 			'SN' => array(
-				"Bonjour, Alliance Groupe (agence web francaise) recrute des ambassadeurs au Sénégal. {prime} de prime des qu'un parraine s'inscrit, + 10% de commission a vie. C'est gratuit. Lien : {parrain_link}",
+				"Bonjour, Alliance Groupe (agence web francaise) recrute des ambassadeurs au Sénégal. *10% de commission a vie* sur les ventes.\n📊 1 site Pro (890 €) ≈ *58 400 FCFA pour toi*\n• 6 ventes/semaine ≈ *1,5 M FCFA/mois* (~18 M FCFA/an)\nC'est gratuit, 100% en ligne. Inscription : {parrain_link}",
 			),
 			'CI' => array(
-				"Akwaba ! Alliance Groupe (agence web) ouvre son reseau d'ambassadeurs en Côte d'Ivoire. {prime} par parrainage + 10% sur les ventes de tes filleuls. 100% en ligne, sans avance. Lien : {parrain_link}",
+				"Akwaba ! Alliance Groupe (agence web) ouvre son reseau d'ambassadeurs en Côte d'Ivoire. *10% de commission a vie* sur les ventes.\n📊 1 site Pro (890 €) ≈ *58 400 FCFA pour toi*\n• 6 ventes/semaine ≈ *1,5 M FCFA/mois* (~18 M FCFA/an)\n100% en ligne, sans avance. Inscription : {parrain_link}",
 			),
 			'CM' => array(
-				"Bonjour, Alliance Groupe (agence web FR) recrute des ambassadeurs au Cameroun. {prime} par parrainage + 10% de commission a vie sur les ventes de tes filleuls. Gratuit, en ligne. Lien : {parrain_link}",
+				"Bonjour, Alliance Groupe (agence web FR) recrute des ambassadeurs au Cameroun. *10% de commission a vie* sur les ventes.\n📊 1 site Pro (890 €) ≈ *58 400 FCFA pour toi*\n• 6 ventes/semaine ≈ *1,5 M FCFA/mois* (~18 M FCFA/an)\nGratuit, en ligne. Inscription : {parrain_link}",
 			),
 		);
 		$set = $tpl[ $code ] ?? array( $tpl['FR'][0] );

@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! function_exists( 'ag_recruit_message' ) ) {
 	function ag_recruit_message() {
 		$link = home_url( '/ambassadeurs' );
-		return "💸 Salut{prenom} ! Tu veux un revenu en plus, simple et flexible ?\n\nDeviens *ambassadeur Alliance Groupe* : tu présentes nos sites web à des commerçants et artisans de ta ville, et tu touches *10 % sur chaque vente* (un site à 890 € = *89 € pour toi*, payé sur PayPal). Pas de plafond.\n\n✅ Aucune expérience requise\n✅ Outils & formation fournis\n✅ Tu bosses quand tu veux, depuis ton téléphone\n\n👉 Inscris-toi ici : {$link}\n\nDes questions ? Réponds à ce message 🙂";
+		return "💸 Salut{prenom} ! Tu veux un revenu en plus, simple et flexible ?\n\nDeviens *ambassadeur Alliance Groupe* : tu présentes nos sites web à des commerçants/artisans de ta ville, et tu touches *10 % sur chaque vente, à vie* — payé sur PayPal, sans plafond.\n\n📊 *Le vrai potentiel* (commission de 10 %) :\n• 1 site Pro vendu (890 €) = *89 € pour toi*\n• 1 vente/semaine = *4 624 €/an*\n• 3 ventes/semaine = *13 884 €/an*\n• 6 ventes/semaine = *2 312 €/mois* = *27 768 €/an*\n\n✅ Aucune expérience requise\n✅ Outils & formation fournis\n✅ Tu bosses quand tu veux, depuis ton téléphone\n\n👉 Calcule ton revenu + inscris-toi : {$link}\n\nDes questions ? Réponds à ce message 🙂";
 	}
 }
 
