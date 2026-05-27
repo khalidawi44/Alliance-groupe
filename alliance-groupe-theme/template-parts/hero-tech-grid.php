@@ -146,6 +146,10 @@ $uid = 'agtg-' . wp_rand( 1000, 9999 );
 		el.style.setProperty('--pmy', ((my-50)/50).toFixed(3));
 		raf = (Math.abs(tx-mx) > .05 || Math.abs(ty-my) > .05) ? requestAnimationFrame(update) : null;
 	}
+	// Parallax souris désactivé : trop coûteux (repaint perspective à chaque
+	// mousemove) — la grille reste visible mais ne suit plus la souris.
+	// Si jamais on veut le réactiver : décommenter les 2 listeners ci-dessous.
+	/*
 	hero.addEventListener('mousemove', function(e){
 		rect = hero.getBoundingClientRect();
 		tx = ((e.clientX - rect.left) / rect.width) * 100;
@@ -156,5 +160,6 @@ $uid = 'agtg-' . wp_rand( 1000, 9999 );
 		tx = 50; ty = 50;
 		if (!raf) raf = requestAnimationFrame(update);
 	});
+	*/
 })();
 </script>

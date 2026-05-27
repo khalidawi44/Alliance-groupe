@@ -2149,7 +2149,7 @@ body.ag-cookie-open{overflow:auto;}
 .ag-mobile-menu__toggle{
     display:flex;
     align-items:center;
-    justify-content:space-between;
+    gap:8px;
     width:100%;
     padding:16px 0;
     font-size:1.3rem;
@@ -2161,10 +2161,13 @@ body.ag-cookie-open{overflow:auto;}
     cursor:pointer;
     font-family:var(--font-sans);
 }
+.ag-mobile-menu__toggle > *{ pointer-events:none; }
 .ag-mobile-menu__arrow{
+    margin-left:auto;
     font-size:1.4rem;
     color:var(--color-gold);
     transition:transform .3s;
+    flex-shrink:0;
 }
 .ag-mobile-menu__group.open .ag-mobile-menu__arrow{
     transform:rotate(45deg);

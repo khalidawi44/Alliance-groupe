@@ -128,11 +128,16 @@ $ag_mesh_uid = 'agmesh-' . wp_rand( 1000, 9999 );
     resize();
     new ResizeObserver(resize).observe(canvas);
 
+    // Mousemove désactivé : le mesh gradient continue à s'animer tout seul
+    // (uTime), mais ne suit plus la souris — gain CPU important sans perte
+    // visible.
+    /*
     host && host.addEventListener('mousemove', function(e){
         var r=host.getBoundingClientRect();
         tMouse[0] = (e.clientX - r.left) / r.width;
         tMouse[1] = 1 - (e.clientY - r.top) / r.height;
     });
+    */
 
     var start = performance.now();
     var visible = true, rafId = null;
