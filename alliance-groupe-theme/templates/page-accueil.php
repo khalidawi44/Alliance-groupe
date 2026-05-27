@@ -7,8 +7,25 @@ get_header();
 
 <!-- Hero -->
 <section class="ag-hero" id="ag-main-content">
-    <!-- Photo Naples (coucher de soleil) en fond du hero -->
+    <!-- Photo Naples — Vésuve coucher de soleil -->
     <div class="ag-hero__naples" aria-hidden="true"></div>
+    <!-- Halo de soleil/Vésuve qui pulse champagne (visible partout) -->
+    <div class="ag-hero__sunglow" aria-hidden="true"></div>
+    <!-- Particules dorées montantes en CSS pur (visibles mobile + desktop) -->
+    <div class="ag-hero__particles" aria-hidden="true">
+        <span style="left:8%;  bottom:-10px; animation-duration:14s; animation-delay:0s;"></span>
+        <span style="left:18%; bottom:-10px; animation-duration:18s; animation-delay:3s;"></span>
+        <span style="left:27%; bottom:-10px; animation-duration:12s; animation-delay:6s;"></span>
+        <span style="left:36%; bottom:-10px; animation-duration:16s; animation-delay:1.5s;"></span>
+        <span style="left:44%; bottom:-10px; animation-duration:20s; animation-delay:4.5s;"></span>
+        <span style="left:52%; bottom:-10px; animation-duration:13s; animation-delay:7s;"></span>
+        <span style="left:60%; bottom:-10px; animation-duration:17s; animation-delay:2s;"></span>
+        <span style="left:68%; bottom:-10px; animation-duration:19s; animation-delay:5s;"></span>
+        <span style="left:76%; bottom:-10px; animation-duration:15s; animation-delay:8s;"></span>
+        <span style="left:84%; bottom:-10px; animation-duration:21s; animation-delay:0.8s;"></span>
+        <span style="left:92%; bottom:-10px; animation-duration:14s; animation-delay:3.6s;"></span>
+        <span style="left:12%; bottom:-10px; animation-duration:23s; animation-delay:10s;"></span>
+    </div>
     <!-- Mesh gradient WebGL conservé en sur-couche très subtile (skippé sur mobile/<4 cores) -->
     <?php get_template_part('template-parts/mesh-gradient-bg'); ?>
     <!-- Grille tech high-tech parallax qui réagit à la souris -->

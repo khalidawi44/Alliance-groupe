@@ -1018,42 +1018,81 @@ html.ag-has-custom-cursor [role=button] { cursor:auto !important; }
     .ag-nav__burger:hover{ background:rgba(212,180,92,.24) !important; }
 }
 
-/* ── Hero : photo Naples coucher de soleil en fond ──
-   On utilise naples-3.jpg par défaut. Swap vers naples-1.jpg ou
-   naples-2.jpg dans background-image si tu préfères un autre cliché. */
+/* ── Hero : photo Naples (Vésuve coucher de soleil) en fond ──
+   On utilise naples-1.jpg (le cliché avec le volcan). Pour swap :
+   change `naples-1.jpg` en naples-2.jpg ou naples-3.jpg. */
 .ag-hero { position: relative; overflow: hidden; }
 .ag-hero__naples {
     position: absolute;
     inset: 0;
     z-index: 0;
-    background-image: url('../images/cities/naples-3.jpg');
+    background-image: url('../images/cities/naples-1.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    filter: saturate(1.08) contrast(1.05);
-    animation: ag-hero-naples-zoom 28s ease-in-out infinite alternate;
+    filter: saturate(1.15) contrast(1.08);
+    animation: ag-hero-naples-zoom 32s ease-in-out infinite alternate;
 }
+/* Overlay : moins sombre pour mieux voir la photo, gradient or doux centré */
 .ag-hero__naples::after {
     content: '';
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(ellipse at 30% 30%, rgba(212,180,92,.10) 0%, transparent 55%),
-        linear-gradient(160deg, rgba(8,8,12,.55) 0%, rgba(14,14,22,.72) 55%, rgba(8,8,12,.92) 100%);
+        radial-gradient(circle at 75% 28%, rgba(243,122,31,.28) 0%, rgba(212,180,92,.10) 22%, transparent 50%),
+        linear-gradient(180deg, rgba(8,8,12,.20) 0%, rgba(10,10,15,.55) 60%, rgba(8,8,12,.85) 100%);
 }
-/* Le mesh-gradient WebGL reste, mais en sur-couche douce — il ne doit pas
-   tuer l'image. On le passe en mix-blend pour qu'il s'intègre. */
+/* Halo de soleil/Vésuve animé — pulse champagne, visible partout */
+.ag-hero__sunglow {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: radial-gradient(circle at 75% 28%, rgba(255,200,120,.5) 0%, rgba(243,122,31,.18) 14%, transparent 38%);
+    mix-blend-mode: screen;
+    animation: ag-hero-sun-pulse 7s ease-in-out infinite;
+}
+/* Particules dorées CSS (visibles sur TOUS les appareils, mobile inclus) */
+.ag-hero__particles {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    overflow: hidden;
+}
+.ag-hero__particles span {
+    position: absolute;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,220,140,.95) 0%, rgba(212,180,92,.4) 60%, transparent 100%);
+    filter: blur(.4px);
+    animation: ag-hero-particle-rise linear infinite;
+    opacity: 0;
+}
+@keyframes ag-hero-particle-rise {
+    0%   { transform: translateY(0) translateX(0) scale(1);   opacity: 0; }
+    8%   { opacity: 1; }
+    50%  { transform: translateY(-50vh) translateX(20px) scale(1.1); }
+    92%  { opacity: 1; }
+    100% { transform: translateY(-110vh) translateX(-15px) scale(.6); opacity: 0; }
+}
+/* Le mesh-gradient WebGL reste, mais en sur-couche très douce */
 .ag-hero canvas[data-ag-mesh],
 .ag-hero canvas:not(#ag-hero-3d-canvas):not([data-ag-tech]) {
     mix-blend-mode: soft-light;
-    opacity: .55;
+    opacity: .35;
 }
-/* Léger zoom lent du paysage = sensation cinéma */
+/* Ken-burns lent du paysage */
 @keyframes ag-hero-naples-zoom {
-    0%   { transform: scale(1.00); }
-    100% { transform: scale(1.08); }
+    0%   { transform: scale(1.00) translateX(0); }
+    100% { transform: scale(1.10) translateX(-1.2%); }
 }
-/* Réduit le mouvement si l'utilisateur préfère (accessibilité) */
+/* Halo soleil qui pulse */
+@keyframes ag-hero-sun-pulse {
+    0%, 100% { opacity: .85; transform: scale(1); }
+    50%      { opacity: 1.0; transform: scale(1.05); }
+}
+/* Accessibilité : moins de mouvement si demandé */
 @media (prefers-reduced-motion: reduce) {
-    .ag-hero__naples { animation: none; }
+    .ag-hero__naples, .ag-hero__sunglow, .ag-hero__particles span { animation: none; }
 }
