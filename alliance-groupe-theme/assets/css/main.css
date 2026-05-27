@@ -593,16 +593,16 @@ em,.ag-gold{
     animation-delay:calc(var(--d) * .06s);
 }
 
-/* Burger ancien — DESACTIVE (on garde seulement .ag-fsm-toggle de
-   template-parts/fullscreen-menu.php qui ouvre le menu plein écran 01-11). */
+/* Burger — split responsive :
+   • Desktop (>1024px) : on garde uniquement .ag-fsm-toggle (rond doré top-right)
+     qui ouvre le menu plein écran 01-11. Le vieux .ag-nav__burger reste caché
+     (display:none par défaut).
+   • Mobile (≤1024px) : on bascule sur .ag-nav__burger + .ag-mobile-menu (menu
+     riche avec les offres "Sites Express", "Sur-mesure", "Système de
+     prospection", accordéons Services/Templates/Gagner de l'argent...). Le
+     burger doré .ag-fsm-toggle est caché en mobile pour éviter le doublon. */
 .ag-nav__burger{
-    display:none !important;
-}
-.ag-mobile-menu{
-    display:none !important;
-}
-/* Bloc-règles historiques conservées pour compat (jamais affichées) */
-.ag-nav__burger-legacy{
+    display:none;
     flex-direction:column;
     gap:5px;
     width:28px;
@@ -2784,6 +2784,10 @@ button:focus-visible{
     .ag-nav__list{display:none}
     .ag-nav__cta{display:none}
     .ag-nav__burger{display:flex}
+    /* En mobile, on cache le burger doré du menu plein écran (.ag-fsm-toggle)
+       pour ne PAS avoir 2 burgers à l'écran. Le menu mobile riche
+       (ag-mobile-menu, avec les offres) prend le relais. */
+    .ag-fsm-toggle{display:none !important}
 
     .ag-hero__title{font-size:clamp(1.8rem,8vw,2.6rem)}
     .ag-hero__metrics{gap:24px}
