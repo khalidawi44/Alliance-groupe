@@ -45,10 +45,10 @@ if ( ! function_exists( 'ag_kp_qr_url' ) ) {
 if ( ! function_exists( 'ag_kp_kits' ) ) {
 	function ag_kp_kits() {
 		return array(
-			'cartes'   => array( 'label' => '🪪 Cartes de visite', 'desc' => '4 cartes recto + 4 verso par feuille A4 (8.5 × 5.4 cm)' ),
-			'flyer'    => array( 'label' => '📄 Flyer A5', 'desc' => '2 flyers par feuille A4 (148 × 210 mm). Idéal pour boîtes aux lettres / commerces.' ),
-			'sticker'  => array( 'label' => '🟡 Autocollants', 'desc' => '12 autocollants ronds 50 mm par feuille A4. Pour vitrines, ordis, voitures.' ),
-			'affiche'  => array( 'label' => '🖼️ Affiche A4', 'desc' => '1 affiche pleine page A4 (210 × 297 mm). Pour vitrines pro, commerces partenaires.' ),
+			'cartes'   => array( 'label' => '🪪 Cartes de visite', 'desc' => 'Format 85 × 54 mm. Jusqu\'à 4 cartes recto + 4 verso par feuille A4.', 'qty_options' => array( 1, 2, 4 ), 'qty_default' => 4 ),
+			'flyer'    => array( 'label' => '📄 Flyer A5', 'desc' => '148 × 210 mm. Jusqu\'à 2 flyers par feuille A4. Idéal boîtes aux lettres / commerces.', 'qty_options' => array( 1, 2 ), 'qty_default' => 2 ),
+			'sticker'  => array( 'label' => '🟡 Autocollants ronds', 'desc' => '50 mm. Jusqu\'à 12 par feuille A4. Vitrines, ordis, voitures.', 'qty_options' => array( 1, 4, 6, 12 ), 'qty_default' => 12 ),
+			'affiche'  => array( 'label' => '🖼️ Affiche A4', 'desc' => '210 × 297 mm. Toujours 1 par page (pleine page). Vitrines pro.', 'qty_options' => array( 1 ), 'qty_default' => 1 ),
 		);
 	}
 }
@@ -118,12 +118,26 @@ if ( ! function_exists( 'ag_kp_render' ) ) {
 
 			<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;max-width:980px;">
 			<?php foreach ( $kits as $slug => $kit ) :
-				$preview_url = wp_nonce_url( add_query_arg( array_filter( array( 'action' => 'ag_kp_print', 'type' => $slug, 'rec' => $picked, 'mode' => $mode ), function ( $v ) { return '' !== $v && null !== $v; } ), admin_url( 'admin-post.php' ) ), 'ag_kp_print' );
+				$qty_opts = isset( $kit['qty_options'] ) ? $kit['qty_options'] : array( 1 );
+				$qty_def  = isset( $kit['qty_default'] ) ? $kit['qty_default'] : 1;
 			?>
 				<div style="background:#fff;border:1px solid #dcdcde;border-radius:12px;padding:18px;">
 					<h2 style="margin-top:0;font-size:1.15rem;"><?php echo esc_html( $kit['label'] ); ?></h2>
 					<p style="color:#50575e;font-size:.9rem;min-height:48px;"><?php echo esc_html( $kit['desc'] ); ?></p>
-					<a href="<?php echo esc_url( $preview_url ); ?>" target="_blank" rel="noopener" class="button button-primary">🖨️ Ouvrir l'aperçu imprimable</a>
+					<form method="get" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" target="_blank" rel="noopener" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+						<input type="hidden" name="action" value="ag_kp_print">
+						<input type="hidden" name="type" value="<?php echo esc_attr( $slug ); ?>">
+						<?php if ( 'ambassador' === $mode && '' !== $picked ) : ?><input type="hidden" name="rec" value="<?php echo esc_attr( $picked ); ?>"><?php endif; ?>
+						<input type="hidden" name="mode" value="<?php echo esc_attr( $mode ); ?>">
+						<?php wp_nonce_field( 'ag_kp_print', '_wpnonce', false, true ); ?>
+						<?php if ( count( $qty_opts ) > 1 ) : ?>
+							<label style="font-size:.85rem;color:#50575e;">Quantité :</label>
+							<select name="qty">
+								<?php foreach ( $qty_opts as $q ) : ?><option value="<?php echo (int) $q; ?>" <?php selected( $qty_def, $q ); ?>><?php echo (int) $q; ?>×</option><?php endforeach; ?>
+							</select>
+						<?php else : ?><input type="hidden" name="qty" value="1"><?php endif; ?>
+						<button type="submit" class="button button-primary">🖨️ Aperçu imprimable</button>
+					</form>
 					<p style="margin-top:8px;color:#50575e;font-size:.82em;">Dans le nouvel onglet : Ctrl+P (Cmd+P) pour imprimer. Choisis <em>« Sans en-têtes ni pieds de page »</em> et marges <em>« Aucune »</em>.</p>
 				</div>
 			<?php endforeach; ?>
@@ -161,6 +175,10 @@ add_action( 'admin_post_ag_kp_print', function () {
 	}
 
 	if ( ! in_array( $type, array( 'cartes', 'flyer', 'sticker', 'affiche' ), true ) ) $type = 'cartes';
+
+	// Quantité demandée (bornée selon le format).
+	$qty_max = array( 'cartes' => 4, 'flyer' => 2, 'sticker' => 12, 'affiche' => 1 );
+	$qty     = isset( $_GET['qty'] ) ? max( 1, min( (int) $qty_max[ $type ], (int) $_GET['qty'] ) ) : (int) $qty_max[ $type ];
 
 	nocache_headers();
 	header( 'Content-Type: text/html; charset=UTF-8' );
@@ -293,7 +311,7 @@ if ( 'cartes' === $type ) :
 	?>
 	<div class="sheet brand-grad">
 		<div class="cards-grid">
-			<?php for ( $i = 0; $i < 4; $i++ ) : ?>
+			<?php for ( $i = 0; $i < $qty; $i++ ) : ?>
 				<div class="card card-front brand-grad">
 					<div class="logo">Alliance Groupe<small>AGENCE WEB &amp; IA</small></div>
 					<div>
@@ -317,10 +335,10 @@ if ( 'cartes' === $type ) :
 			<?php endfor; ?>
 		</div>
 	</div>
-	<!-- Feuille verso : 4 cartes "offres" -->
+	<!-- Feuille verso : autant de cartes que demandé -->
 	<div class="sheet" style="background:#fff;">
 		<div class="cards-grid">
-			<?php for ( $i = 0; $i < 4; $i++ ) : ?>
+			<?php for ( $i = 0; $i < $qty; $i++ ) : ?>
 				<div class="card card-back">
 					<h3>Site web pro <span style="color:var(--orange);">dès 490 €</span></h3>
 					<div class="offers">
@@ -348,7 +366,7 @@ elseif ( 'flyer' === $type ) :
 	?>
 	<div class="sheet">
 		<div class="a5-flex">
-			<?php for ( $i = 0; $i < 2; $i++ ) : ?>
+			<?php for ( $i = 0; $i < $qty; $i++ ) : ?>
 				<div class="flyer brand-grad">
 					<div class="lead">
 						<h2>Votre site web pro <span class="accent">en 7 jours.</span></h2>
@@ -387,7 +405,7 @@ elseif ( 'sticker' === $type ) :
 	?>
 	<div class="sheet" style="background:#fff;">
 		<div class="stickers-grid">
-			<?php for ( $i = 0; $i < 12; $i++ ) : ?>
+			<?php for ( $i = 0; $i < $qty; $i++ ) : ?>
 				<div class="sticker brand-grad">
 					<div class="top">Alliance Groupe</div>
 					<div class="price">Site web<br>dès 490 €</div>
