@@ -844,6 +844,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			if ( 'relance7' === $f_status ) return ag_prospect_relance_due( $p ); // à relancer (sans réponse 7j+)
 			$st = $p['status'] ?? 'nouveau';
 			if ( 'contacte' === $f_status ) return in_array( $st, array( 'contacte', 'relance' ), true ); // "Contactés" = contactés + relancés
+			if ( 'ne_pas_contacter' === $f_status ) return in_array( $st, array( 'ne_pas_contacter', 'refus' ), true ); // "Bloqués" = refusés + ne plus contacter
 			return $st === $f_status;
 		} );
 		if ( '' !== $f_q ) { $needle = strtolower( $f_q ); $prospects = array_filter( $prospects, function ( $p ) use ( $needle ) { return false !== strpos( strtolower( ( $p['name'] ?? '' ) . ' ' . ( $p['city'] ?? '' ) . ' ' . ( $p['type'] ?? '' ) ), $needle ); } ); }
@@ -1448,7 +1449,14 @@ if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
 if ( ! function_exists( 'ag_prospects_for_owner' ) ) {
 	function ag_prospects_for_owner( $email ) {
 		$out = array(); $email = strtolower( (string) $email );
-		foreach ( (array) get_option( 'ag_prospects', array() ) as $p ) { if ( strtolower( $p['owner_email'] ?? '' ) === $email ) $out[] = $p; }
+		foreach ( (array) get_option( 'ag_prospects', array() ) as $p ) {
+			if ( strtolower( $p['owner_email'] ?? '' ) !== $email ) continue;
+			// Exclut les prospects bloqués (refus / ne_pas_contacter / client / ignore) :
+			// si l'entreprise a demandé à ne plus être contactée, elle disparaît de la
+			// file de l'ambassadeur immédiatement.
+			if ( ag_prospect_blocked( $p['status'] ?? '' ) ) continue;
+			$out[] = $p;
+		}
 		usort( $out, function ( $a, $b ) { return ag_prospect_score( $b ) <=> ag_prospect_score( $a ); } );
 		return $out;
 	}
