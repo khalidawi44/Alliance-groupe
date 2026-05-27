@@ -593,9 +593,16 @@ em,.ag-gold{
     animation-delay:calc(var(--d) * .06s);
 }
 
-/* Burger */
+/* Burger ancien — DESACTIVE (on garde seulement .ag-fsm-toggle de
+   template-parts/fullscreen-menu.php qui ouvre le menu plein écran 01-11). */
 .ag-nav__burger{
-    display:none;
+    display:none !important;
+}
+.ag-mobile-menu{
+    display:none !important;
+}
+/* Bloc-règles historiques conservées pour compat (jamais affichées) */
+.ag-nav__burger-legacy{
     flex-direction:column;
     gap:5px;
     width:28px;

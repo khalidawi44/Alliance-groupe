@@ -94,6 +94,11 @@
 	// 4. BOUTONS MAGNETIQUES (desktop)
 	// =====================================================================
 	function initMagnetic() {
+		// DESACTIVE sur demande user : effet magnétique sur boutons (mousemove
+		// pour chaque .ag-btn-gold/.ag-btn-outline/.ag-fsm-toggle) = re-paint
+		// transform à chaque pixel → ralentissement perçu.
+		return;
+		// eslint-disable-next-line no-unreachable
 		if ( REDUCED || IS_TOUCH || ! FINE ) return;
 		var sel = '.ag-btn-gold, .ag-btn-outline, .ag-fsm-toggle';
 		document.querySelectorAll( sel ).forEach( function ( btn ) {
@@ -112,6 +117,10 @@
 	// 5. SONS D'INTERFACE (WebAudio, OFF par defaut)
 	// =====================================================================
 	function initSound() {
+		// DESACTIVE sur demande user : bouton 🔊/🔇 + oscillator WebAudio
+		// (blip à chaque clic/hover) = bruit perçu + coût CPU inutile.
+		return;
+		// eslint-disable-next-line no-unreachable
 		if ( IS_TOUCH ) return; // pas de son sur tactile
 		var on = false;
 		try { on = localStorage.getItem( 'ag_sound' ) === '1'; } catch ( e ) {}
