@@ -11,6 +11,8 @@ get_header();
     <?php get_template_part('template-parts/mesh-gradient-bg'); ?>
     <!-- Grille tech high-tech parallax qui réagit à la souris -->
     <?php get_template_part('template-parts/hero-tech-grid'); ?>
+    <!-- Scène 3D Three.js (style Vexik) — desktop ≥1100px et ≥4 cores -->
+    <?php get_template_part('template-parts/hero-3d-scene'); ?>
     <div class="ag-hero__bg">
         <div class="ag-hero__circles">
             <div class="ag-hero__circle"></div>
