@@ -67,10 +67,59 @@ if ( ! function_exists( 'ag_zones_get' ) ) {
 	function ag_zones_get() { return (array) get_option( 'ag_zones', array() ); }
 }
 if ( ! function_exists( 'ag_dept_norm' ) ) {
-	function ag_dept_norm( $d ) { return substr( preg_replace( '/[^0-9]/', '', (string) $d ), 0, 2 ); }
+	function ag_dept_norm( $d ) {
+		$d = (string) $d;
+		// Zones Maroc : passent telles quelles (ex. MA-CAS).
+		if ( 0 === strpos( $d, 'MA-' ) ) return strtoupper( substr( $d, 0, 6 ) );
+		return substr( preg_replace( '/[^0-9]/', '', $d ), 0, 2 );
+	}
+}
+if ( ! function_exists( 'ag_ma_cities' ) ) {
+	/** Villes principales du Maroc → région (MA-XXX). Clés en minuscules, sans accents. */
+	function ag_ma_cities() {
+		return array(
+			'casablanca' => 'MA-CAS', 'casa' => 'MA-CAS', 'mohammedia' => 'MA-CAS', 'settat' => 'MA-CAS', 'el jadida' => 'MA-CAS', 'berrechid' => 'MA-CAS',
+			'rabat' => 'MA-RAB', 'sale' => 'MA-RAB', 'kenitra' => 'MA-RAB', 'temara' => 'MA-RAB', 'skhirat' => 'MA-RAB',
+			'marrakech' => 'MA-MAR', 'safi' => 'MA-MAR', 'essaouira' => 'MA-MAR', 'youssoufia' => 'MA-MAR',
+			'tanger' => 'MA-TAN', 'tetouan' => 'MA-TAN', 'al hoceima' => 'MA-TAN', 'larache' => 'MA-TAN', 'chefchaouen' => 'MA-TAN', 'asilah' => 'MA-TAN',
+			'fes' => 'MA-FES', 'meknes' => 'MA-FES', 'taza' => 'MA-FES', 'ifrane' => 'MA-FES', 'sefrou' => 'MA-FES',
+			'oujda' => 'MA-ORI', 'nador' => 'MA-ORI', 'berkane' => 'MA-ORI', 'taourirt' => 'MA-ORI', 'jerada' => 'MA-ORI',
+			'agadir' => 'MA-SOU', 'inezgane' => 'MA-SOU', 'tiznit' => 'MA-SOU', 'taroudant' => 'MA-SOU', 'ait melloul' => 'MA-SOU',
+			'beni mellal' => 'MA-BEN', 'khouribga' => 'MA-BEN', 'khenifra' => 'MA-BEN', 'fkih ben salah' => 'MA-BEN',
+			'errachidia' => 'MA-DRA', 'ouarzazate' => 'MA-DRA', 'tinghir' => 'MA-DRA', 'midelt' => 'MA-DRA', 'zagora' => 'MA-DRA',
+			'guelmim' => 'MA-GUE', 'tan tan' => 'MA-GUE', 'sidi ifni' => 'MA-GUE',
+			'laayoune' => 'MA-LAA', 'boujdour' => 'MA-LAA',
+			'dakhla' => 'MA-DAK',
+		);
+	}
+}
+if ( ! function_exists( 'ag_ma_dept_from_text' ) ) {
+	/** Cherche une ville marocaine dans le texte → renvoie la région MA-XXX. */
+	function ag_ma_dept_from_text( $text ) {
+		$t = function_exists( 'remove_accents' ) ? remove_accents( (string) $text ) : (string) $text;
+		$t = strtolower( $t );
+		if ( '' === trim( $t ) ) return '';
+		foreach ( ag_ma_cities() as $city => $dept ) {
+			if ( preg_match( '/\b' . preg_quote( $city, '/' ) . '\b/', $t ) ) return $dept;
+		}
+		return '';
+	}
 }
 if ( ! function_exists( 'ag_dept_from_text' ) ) {
-	function ag_dept_from_text( $text ) { return preg_match( '/\b(\d{2})\d{3}\b/', (string) $text, $m ) ? $m[1] : ''; }
+	function ag_dept_from_text( $text ) {
+		$t = (string) $text;
+		// Si le pays Maroc est explicitement marqué → tente d'abord la détection MA
+		// (les codes postaux MA 20000/10000/40000 entreraient sinon en collision avec
+		// les regex de codes postaux FR).
+		if ( preg_match( '/\b(maroc|morocco|kingdom of morocco)\b/i', $t ) ) {
+			$d = ag_ma_dept_from_text( $t );
+			if ( '' !== $d ) return $d;
+		}
+		// Code postal FR (XX XXX).
+		if ( preg_match( '/\b(\d{2})\d{3}\b/', $t, $m ) ) return $m[1];
+		// Sinon, tente de matcher une ville marocaine connue.
+		return ag_ma_dept_from_text( $t );
+	}
 }
 if ( ! function_exists( 'ag_prospect_dept' ) ) {
 	function ag_prospect_dept( $p ) {
@@ -219,6 +268,19 @@ if ( ! function_exists( 'ag_dept_names' ) ) {
 			'86' => 'Vienne', '87' => 'Haute-Vienne', '88' => 'Vosges', '89' => 'Yonne', '90' => 'Belfort',
 			'91' => 'Essonne', '92' => 'Hauts-de-Seine', '93' => 'Seine-St-Denis', '94' => 'Val-de-Marne', '95' => "Val-d'Oise",
 			'97' => 'Outre-mer (DOM)',
+			// Maroc — 12 régions administratives.
+			'MA-CAS' => '🇲🇦 Casablanca-Settat',
+			'MA-RAB' => '🇲🇦 Rabat-Salé-Kénitra',
+			'MA-MAR' => '🇲🇦 Marrakech-Safi',
+			'MA-TAN' => '🇲🇦 Tanger-Tétouan-Al Hoceïma',
+			'MA-FES' => '🇲🇦 Fès-Meknès',
+			'MA-ORI' => '🇲🇦 Oriental',
+			'MA-SOU' => '🇲🇦 Souss-Massa',
+			'MA-BEN' => '🇲🇦 Béni Mellal-Khénifra',
+			'MA-DRA' => '🇲🇦 Drâa-Tafilalet',
+			'MA-GUE' => '🇲🇦 Guelmim-Oued Noun',
+			'MA-LAA' => '🇲🇦 Laâyoune-Sakia El Hamra',
+			'MA-DAK' => '🇲🇦 Dakhla-Oued Ed Dahab',
 		);
 	}
 }
@@ -319,6 +381,19 @@ if ( ! function_exists( 'ag_dept_from_city' ) ) {
 			'tulle' => '19', 'brive' => '19', 'brivelagaillarde' => '19',
 			'perigueux' => '24', 'bergerac' => '24',
 			'auch' => '32',
+			// Maroc — villes principales (sans espaces ni accents).
+			'casablanca' => 'MA-CAS', 'casa' => 'MA-CAS', 'mohammedia' => 'MA-CAS', 'settat' => 'MA-CAS', 'eljadida' => 'MA-CAS', 'berrechid' => 'MA-CAS',
+			'rabat' => 'MA-RAB', 'sale' => 'MA-RAB', 'kenitra' => 'MA-RAB', 'temara' => 'MA-RAB', 'skhirat' => 'MA-RAB',
+			'marrakech' => 'MA-MAR', 'safi' => 'MA-MAR', 'essaouira' => 'MA-MAR', 'youssoufia' => 'MA-MAR',
+			'tanger' => 'MA-TAN', 'tetouan' => 'MA-TAN', 'alhoceima' => 'MA-TAN', 'larache' => 'MA-TAN', 'chefchaouen' => 'MA-TAN', 'asilah' => 'MA-TAN',
+			'fes' => 'MA-FES', 'meknes' => 'MA-FES', 'taza' => 'MA-FES', 'ifrane' => 'MA-FES', 'sefrou' => 'MA-FES',
+			'oujda' => 'MA-ORI', 'nador' => 'MA-ORI', 'berkane' => 'MA-ORI', 'taourirt' => 'MA-ORI', 'jerada' => 'MA-ORI',
+			'agadir' => 'MA-SOU', 'inezgane' => 'MA-SOU', 'tiznit' => 'MA-SOU', 'taroudant' => 'MA-SOU', 'aitmelloul' => 'MA-SOU',
+			'benimellal' => 'MA-BEN', 'khouribga' => 'MA-BEN', 'khenifra' => 'MA-BEN', 'fkihbensalah' => 'MA-BEN',
+			'errachidia' => 'MA-DRA', 'ouarzazate' => 'MA-DRA', 'tinghir' => 'MA-DRA', 'midelt' => 'MA-DRA', 'zagora' => 'MA-DRA',
+			'guelmim' => 'MA-GUE', 'tantan' => 'MA-GUE', 'sidiifni' => 'MA-GUE',
+			'laayoune' => 'MA-LAA', 'boujdour' => 'MA-LAA',
+			'dakhla' => 'MA-DAK',
 		);
 		return $map[ $n ] ?? '';
 	}
@@ -821,3 +896,115 @@ add_action( 'admin_post_ag_chasseur_link', function () {
 	update_option( 'ag_chasseur_paypal_url', esc_url_raw( wp_unslash( $_POST['url'] ?? '' ) ) );
 	wp_safe_redirect( admin_url( 'admin.php?page=ag-zones&zmsg=chasseur' ) ); exit;
 } );
+
+/* ── Carte des zones : tableau dense par pays (FR / MA), heatmap par opportunités ── */
+if ( ! function_exists( 'ag_zones_stats' ) ) {
+	function ag_zones_stats() {
+		$names = ag_dept_names();
+		$stats = array();
+		foreach ( array_keys( $names ) as $d ) {
+			$stats[ $d ] = array( 'prospects' => 0, 'clients' => 0, 'opportunites' => 0, 'score_sum' => 0, 'score_count' => 0, 'last_ts' => 0 );
+		}
+		foreach ( (array) get_option( 'ag_prospects', array() ) as $p ) {
+			$st = $p['status'] ?? 'nouveau';
+			if ( in_array( $st, array( 'refus', 'ne_pas_contacter', 'ignore' ), true ) ) continue;
+			$d = ag_prospect_dept( $p );
+			if ( '' === $d || ! isset( $stats[ $d ] ) ) continue;
+			if ( 'client' === $st ) $stats[ $d ]['clients']++;
+			else $stats[ $d ]['prospects']++;
+			if ( empty( $p['owner_email'] ) ) $stats[ $d ]['opportunites']++;
+			if ( function_exists( 'ag_prospect_score' ) ) {
+				$stats[ $d ]['score_sum'] += (int) ag_prospect_score( $p );
+				$stats[ $d ]['score_count']++;
+			}
+			$ts = (int) ( $p['ts'] ?? 0 );
+			if ( $ts > $stats[ $d ]['last_ts'] ) $stats[ $d ]['last_ts'] = $ts;
+		}
+		return $stats;
+	}
+}
+
+add_action( 'admin_menu', function () {
+	add_submenu_page( 'ag-ambassadeurs', 'Carte des zones', '🗺️ Carte des zones', 'manage_options', 'ag-zones-map', 'ag_zones_map_render' );
+}, 25 );
+
+if ( ! function_exists( 'ag_zones_map_render' ) ) {
+	function ag_zones_map_render() {
+		if ( ! current_user_can( 'manage_options' ) ) return;
+		$names = ag_dept_names();
+		$stats = ag_zones_stats();
+
+		// Heatmap : couleur de fond selon le nombre d'opportunités (prospects actifs SANS ambassadeur).
+		$heat = function ( $n ) {
+			if ( $n >= 16 ) return '#fde2e2';
+			if ( $n >= 6 )  return '#ffe9c9';
+			if ( $n >= 1 )  return '#fff7c2';
+			return '#f6f7f7';
+		};
+
+		// Split par pays (FR = clés numériques, MA = préfixe MA-).
+		$fr = array(); $ma = array();
+		foreach ( $names as $code => $nom ) {
+			if ( 0 === strpos( $code, 'MA-' ) ) $ma[ $code ] = $nom;
+			else $fr[ $code ] = $nom;
+		}
+
+		$render_country = function ( $title, $list ) use ( $stats, $heat ) {
+			$tot_p = 0; $tot_c = 0; $tot_o = 0; $tot_z = 0; $tot_cov = 0;
+			foreach ( $list as $code => $nom ) {
+				$s = $stats[ $code ] ?? array();
+				$tot_p += (int) ( $s['prospects'] ?? 0 );
+				$tot_c += (int) ( $s['clients'] ?? 0 );
+				$tot_o += (int) ( $s['opportunites'] ?? 0 );
+				$tot_z++;
+				if ( ag_zone_owners( $code ) ) $tot_cov++;
+			}
+			?>
+			<h2 style="margin-top:24px;"><?php echo esc_html( $title ); ?> <span style="color:#646970;font-weight:400;font-size:.8em;">— <?php echo (int) $tot_cov; ?>/<?php echo (int) $tot_z; ?> zones couvertes · <?php echo (int) $tot_p; ?> prospects actifs · <?php echo (int) $tot_c; ?> clients · <?php echo (int) $tot_o; ?> opportunités libres</span></h2>
+			<table class="widefat striped" style="max-width:1100px;">
+				<thead><tr>
+					<th>Zone</th>
+					<th>Ambassadeurs</th>
+					<th>Prospects actifs</th>
+					<th>Clients</th>
+					<th>Opportunités libres</th>
+					<th>Score moyen</th>
+					<th>Dernier contact</th>
+					<th></th>
+				</tr></thead>
+				<tbody>
+				<?php foreach ( $list as $code => $nom ) :
+					$s = $stats[ $code ] ?? array();
+					$opp = (int) ( $s['opportunites'] ?? 0 );
+					$bg = $heat( $opp );
+					$owners = ag_zone_owners( $code );
+					$avg = ! empty( $s['score_count'] ) ? round( $s['score_sum'] / $s['score_count'] ) : 0;
+					$last = ! empty( $s['last_ts'] ) ? wp_date( 'd/m/Y', (int) $s['last_ts'] ) : '—';
+					$amb_names = array_map( function ( $o ) { return $o['name'] ?: $o['email']; }, $owners );
+				?>
+					<tr style="background:<?php echo esc_attr( $bg ); ?>;">
+						<td><strong><?php echo esc_html( $code ); ?></strong><br><small style="color:#50575e;"><?php echo esc_html( $nom ); ?></small></td>
+						<td><?php if ( $owners ) : ?><strong><?php echo count( $owners ); ?></strong> <small style="color:#50575e;"><?php echo esc_html( implode( ', ', $amb_names ) ); ?></small><?php else : ?><span style="color:#b32d2e;font-weight:700;">— libre —</span><?php endif; ?></td>
+						<td style="font-weight:700;"><?php echo (int) ( $s['prospects'] ?? 0 ); ?></td>
+						<td style="font-weight:700;color:#1e7e34;"><?php echo (int) ( $s['clients'] ?? 0 ); ?></td>
+						<td style="font-weight:700;color:<?php echo $opp >= 16 ? '#b32d2e' : ( $opp >= 6 ? '#bd7b00' : '#1d2327' ); ?>;"><?php echo (int) $opp; ?></td>
+						<td><?php echo $avg ? (int) $avg : '—'; ?></td>
+						<td style="font-size:.85em;color:#50575e;"><?php echo esc_html( $last ); ?></td>
+						<td><a class="button button-small" href="<?php echo esc_url( admin_url( 'admin.php?page=ag-prospects&fq=' . rawurlencode( $nom ) ) ); ?>">Voir prospects</a></td>
+					</tr>
+				<?php endforeach; ?>
+				</tbody>
+			</table>
+			<?php
+		};
+		?>
+		<div class="wrap">
+			<h1>🗺️ Carte des zones — entreprises à démarcher & clients</h1>
+			<p style="max-width:1100px;color:#50575e;">Une vue par <strong>pays → zone</strong>. La couleur indique le nombre d'<strong>opportunités libres</strong> (prospects actifs sans ambassadeur assigné) : <span style="background:#fde2e2;padding:2px 8px;border-radius:4px;">rouge ≥ 16</span> <span style="background:#ffe9c9;padding:2px 8px;border-radius:4px;">orange 6-15</span> <span style="background:#fff7c2;padding:2px 8px;border-radius:4px;">jaune 1-5</span> <span style="background:#f6f7f7;padding:2px 8px;border-radius:4px;">vide</span>. Clique « Voir prospects » pour filtrer la prospection sur la zone.</p>
+			<p style="max-width:1100px;color:#50575e;">⚙️ Pour <strong>ajouter ou retirer un ambassadeur</strong> d'une zone : <a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-zones' ) ); ?>">Prospection → 🗺️ Zones</a>.</p>
+			<?php $render_country( '🇫🇷 France', $fr ); ?>
+			<?php $render_country( '🇲🇦 Maroc', $ma ); ?>
+		</div>
+		<?php
+	}
+}
