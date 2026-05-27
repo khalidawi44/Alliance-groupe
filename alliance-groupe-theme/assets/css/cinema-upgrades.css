@@ -1017,3 +1017,43 @@ html.ag-has-custom-cursor [role=button] { cursor:auto !important; }
     }
     .ag-nav__burger:hover{ background:rgba(212,180,92,.24) !important; }
 }
+
+/* ── Hero : photo Naples coucher de soleil en fond ──
+   On utilise naples-3.jpg par défaut. Swap vers naples-1.jpg ou
+   naples-2.jpg dans background-image si tu préfères un autre cliché. */
+.ag-hero { position: relative; overflow: hidden; }
+.ag-hero__naples {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image: url('../images/cities/naples-3.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: saturate(1.08) contrast(1.05);
+    animation: ag-hero-naples-zoom 28s ease-in-out infinite alternate;
+}
+.ag-hero__naples::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 30% 30%, rgba(212,180,92,.10) 0%, transparent 55%),
+        linear-gradient(160deg, rgba(8,8,12,.55) 0%, rgba(14,14,22,.72) 55%, rgba(8,8,12,.92) 100%);
+}
+/* Le mesh-gradient WebGL reste, mais en sur-couche douce — il ne doit pas
+   tuer l'image. On le passe en mix-blend pour qu'il s'intègre. */
+.ag-hero canvas[data-ag-mesh],
+.ag-hero canvas:not(#ag-hero-3d-canvas):not([data-ag-tech]) {
+    mix-blend-mode: soft-light;
+    opacity: .55;
+}
+/* Léger zoom lent du paysage = sensation cinéma */
+@keyframes ag-hero-naples-zoom {
+    0%   { transform: scale(1.00); }
+    100% { transform: scale(1.08); }
+}
+/* Réduit le mouvement si l'utilisateur préfère (accessibilité) */
+@media (prefers-reduced-motion: reduce) {
+    .ag-hero__naples { animation: none; }
+}

@@ -7,7 +7,9 @@ get_header();
 
 <!-- Hero -->
 <section class="ag-hero" id="ag-main-content">
-    <!-- Mesh gradient WebGL animé (dégradé animé moderne) -->
+    <!-- Photo Naples (coucher de soleil) en fond du hero -->
+    <div class="ag-hero__naples" aria-hidden="true"></div>
+    <!-- Mesh gradient WebGL conservé en sur-couche très subtile (skippé sur mobile/<4 cores) -->
     <?php get_template_part('template-parts/mesh-gradient-bg'); ?>
     <!-- Grille tech high-tech parallax qui réagit à la souris -->
     <?php get_template_part('template-parts/hero-tech-grid'); ?>
