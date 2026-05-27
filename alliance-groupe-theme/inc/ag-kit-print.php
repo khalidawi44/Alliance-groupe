@@ -28,9 +28,31 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! function_exists( 'ag_kp_offers' ) ) {
 	function ag_kp_offers() {
 		return array(
-			array( 'name' => 'STARTER',  'price' => '490 €',  'tag' => 'site vitrine 1 page', 'highlights' => array( 'Design pro', 'Mobile parfait', 'Livré en 7 jours' ) ),
-			array( 'name' => 'PRO',      'price' => '890 €',  'tag' => 'site complet 5 pages', 'highlights' => array( 'Formulaire', 'SEO de base', 'Hébergement 1 an' ), 'featured' => false ),
-			array( 'name' => 'BUSINESS', 'price' => '1 490 €','tag' => 'e-commerce / sur-mesure', 'highlights' => array( 'Paiement en ligne', 'SEO avancé', 'Maintenance 3 mois' ), 'featured' => true ),
+			array(
+				'name'      => 'PRO',
+				'subtitle'  => 'Transformez votre thème gratuit en thème professionnel',
+				'features'  => array( 'Animations & Dégradés', '10 Blocs Gutenberg', 'Customizer Avancé (50+ réglages)', 'Polices Google Fonts', 'Header Sticky', 'Support 60 jours' ),
+				'compatible'=> 'Restaurant / Artisan / Coach',
+				'badge'     => 'Paiement Unique',
+				'stat'      => '',
+			),
+			array(
+				'name'      => 'PREMIUM',
+				'subtitle'  => 'Plugin Multilingue & WooCommerce Complet',
+				'features'  => array( '6 Langues : FR · EN · IT · ES · DE · AR', 'Témoignages & Galerie', 'Intégration WooCommerce', 'Support Prioritaire 12 Mois', 'Mises à Jour à Vie', 'Appel Expert 30 Min' ),
+				'compatible'=> 'Restaurant / Artisan / Coach',
+				'badge'     => 'Pour un site sur-mesure ?',
+				'stat'      => '+340 % de Leads',
+				'featured'  => true,
+			),
+			array(
+				'name'      => 'BUSINESS',
+				'subtitle'  => 'Pack Tout-en-Un « Clé en Main »',
+				'features'  => array( 'Installation Assistée 1h', 'Maintenance & SEO', 'Rapports Trimestriels', 'Support 2h & White-Label', 'CRM : HubSpot · Pipedrive · Brevo', 'Appel Stratégique Fabrizio' ),
+				'compatible'=> 'Sur-mesure',
+				'badge'     => 'Paiement Unique',
+				'stat'      => 'Site Sur-Mesure · +340 % de Leads',
+			),
 		);
 	}
 }
@@ -136,6 +158,14 @@ if ( ! function_exists( 'ag_kp_render' ) ) {
 								<?php foreach ( $qty_opts as $q ) : ?><option value="<?php echo (int) $q; ?>" <?php selected( $qty_def, $q ); ?>><?php echo (int) $q; ?>×</option><?php endforeach; ?>
 							</select>
 						<?php else : ?><input type="hidden" name="qty" value="1"><?php endif; ?>
+						<?php if ( 'flyer' === $slug ) : ?>
+							<label style="font-size:.85rem;color:#50575e;">Tier :</label>
+							<select name="tier">
+								<option value="PRO">PRO</option>
+								<option value="PREMIUM" selected>PREMIUM</option>
+								<option value="BUSINESS">BUSINESS</option>
+							</select>
+						<?php endif; ?>
 						<button type="submit" class="button button-primary">🖨️ Aperçu imprimable</button>
 					</form>
 					<p style="margin-top:8px;color:#50575e;font-size:.82em;">Dans le nouvel onglet : Ctrl+P (Cmd+P) pour imprimer. Choisis <em>« Sans en-têtes ni pieds de page »</em> et marges <em>« Aucune »</em>.</p>
@@ -179,6 +209,10 @@ add_action( 'admin_post_ag_kp_print', function () {
 	// Quantité demandée (bornée selon le format).
 	$qty_max = array( 'cartes' => 4, 'flyer' => 2, 'sticker' => 12, 'affiche' => 1 );
 	$qty     = isset( $_GET['qty'] ) ? max( 1, min( (int) $qty_max[ $type ], (int) $_GET['qty'] ) ) : (int) $qty_max[ $type ];
+
+	// Tier sélectionné pour le flyer A5 (PRO / PREMIUM / BUSINESS).
+	$tier_pick = isset( $_GET['tier'] ) ? strtoupper( sanitize_text_field( wp_unslash( $_GET['tier'] ) ) ) : 'PREMIUM';
+	if ( ! in_array( $tier_pick, array( 'PRO', 'PREMIUM', 'BUSINESS' ), true ) ) $tier_pick = 'PREMIUM';
 
 	nocache_headers();
 	header( 'Content-Type: text/html; charset=UTF-8' );
@@ -282,18 +316,39 @@ add_action( 'admin_post_ag_kp_print', function () {
 	.sticker .scan { font-size: 5.5pt; color: rgba(255,255,255,.8); margin-top: 1mm; letter-spacing: .5pt; }
 
 	/* ====================================================================
-	   AFFICHE A4 — 1 par feuille
+	   TIER CARD — bloc vertical "AG Starter [TIER]" réutilisable
+	   (utilisé dans affiche A4 triptyque + flyer A5)
 	   ==================================================================== */
-	.affiche { width: 210mm; height: 297mm; padding: 14mm; display: flex; flex-direction: column; box-sizing: border-box; }
-	.affiche-inner { flex: 1; border: .35mm solid rgba(212,180,92,.55); border-radius: 3mm; padding: 14mm 12mm; display: flex; flex-direction: column; position: relative; }
-	.affiche .head { color: var(--gold); font-family: 'Playfair Display', Georgia, serif; font-size: 12pt; letter-spacing: 5pt; text-align: center; font-weight: 700; }
-	.affiche .head::before, .affiche .head::after { content: '  ◆  '; opacity: .8; }
-	.affiche .divider { width: 30mm; height: .35mm; background: var(--gold); margin: 4mm auto 5mm; opacity: .6; }
-	.affiche h1 { margin: 2mm 0 2mm; font-size: 38pt; line-height: 1.02; text-align: center; font-family: 'Playfair Display', Georgia, serif; color: #fff; font-weight: 800; }
-	.affiche h1 .accent { color: var(--gold); font-style: italic; }
-	.affiche .sub { text-align: center; color: rgba(255,255,255,.82); font-size: 12pt; margin: 4mm 0 4mm; }
-	.affiche .stat-row { text-align: center; margin: 4mm 0 6mm; }
-	.affiche .stat-row .stat-badge { font-size: 11pt; padding: 2.5mm 6mm; }
+	.tier-card { background: linear-gradient(165deg, #060608 0%, #14141c 55%, #060608 100%); color: #fff; border: .35mm solid rgba(212,180,92,.6); border-radius: 3mm; padding: 5mm 5mm 4mm; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+	.tier-card .ag-starter { font-family: 'Playfair Display', Georgia, serif; font-size: 21pt; font-weight: 800; color: var(--gold); text-align: center; line-height: 1; letter-spacing: .5pt; }
+	.tier-card .tier-name { font-family: 'Playfair Display', Georgia, serif; font-size: 15pt; font-weight: 700; color: var(--gold); text-align: center; margin-top: .5mm; letter-spacing: 1.2pt; }
+	.tier-card .tier-name-row { display: flex; align-items: center; justify-content: center; gap: 3mm; margin-top: 1mm; }
+	.tier-card .tier-name-row .line { flex: 0 0 6mm; height: .25mm; background: var(--gold); opacity: .65; }
+	.tier-card .subtitle { color: #fff; font-size: 9pt; text-align: center; margin: 3mm 2mm 2mm; line-height: 1.35; font-weight: 500; }
+	.tier-card .diam { color: var(--gold); text-align: center; margin: 2mm 0 1mm; font-size: 9pt; }
+	.tier-card ul.features { list-style: none; padding: 0; margin: 2mm 0; flex: 1; }
+	.tier-card ul.features li { padding: 1mm 0 1mm 6mm; color: #fff; font-size: 8.8pt; position: relative; line-height: 1.35; }
+	.tier-card ul.features li::before { content: '✓'; position: absolute; left: 0; color: var(--gold); font-weight: 900; font-size: 10pt; }
+	.tier-card .compat { text-align: center; color: rgba(255,255,255,.92); font-size: 8.2pt; border-top: .2mm solid rgba(212,180,92,.4); padding: 2mm 0 0; margin-top: 2mm; font-style: italic; }
+	.tier-card .stat-line { text-align: center; color: var(--gold); font-size: 10.5pt; font-weight: 900; margin: 2mm 0 1mm; font-family: 'Playfair Display', Georgia, serif; }
+	.tier-card .pay-badge { text-align: center; color: var(--gold); border-top: .2mm solid var(--gold); border-bottom: .2mm solid var(--gold); padding: 1.5mm 0; font-size: 7.5pt; letter-spacing: 1.5pt; margin: 2mm 0 3mm; font-weight: 700; text-transform: uppercase; }
+	.tier-card .pay-badge::before, .tier-card .pay-badge::after { content: ' ◆ '; opacity: .85; }
+	.tier-card .qr-footer { display: flex; align-items: flex-end; gap: 2mm; margin-top: 1mm; }
+	.tier-card .qr-footer .qr-box { background: #fff; padding: .8mm; border-radius: 1mm; position: relative; flex: 0 0 auto; }
+	.tier-card .qr-footer .qr-box img { width: 18mm; height: 18mm; display: block; }
+	.tier-card .qr-footer .qr-box .scan-me { position: absolute; left: 0; right: 0; bottom: -3mm; text-align: center; color: var(--gold); font-size: 5.5pt; font-weight: 700; letter-spacing: .8pt; text-transform: uppercase; }
+	.tier-card .qr-footer .contact { flex: 1; text-align: right; padding-bottom: 2mm; }
+	.tier-card .qr-footer .contact .phone { color: var(--gold); font-weight: 800; font-size: 11pt; font-family: 'Playfair Display', Georgia, serif; }
+	.tier-card .qr-footer .contact .url { color: rgba(255,255,255,.8); font-size: 7pt; margin-top: .5mm; }
+
+	/* ====================================================================
+	   AFFICHE A4 — triptyque AG Starter PRO · PREMIUM · BUSINESS
+	   ==================================================================== */
+	.affiche { width: 210mm; height: 297mm; padding: 10mm 8mm; display: flex; flex-direction: column; box-sizing: border-box; }
+	.affiche .top-head { text-align: center; color: var(--gold); font-family: 'Playfair Display', Georgia, serif; font-size: 11pt; letter-spacing: 4pt; font-weight: 700; margin-bottom: 6mm; }
+	.affiche .top-head::before, .affiche .top-head::after { content: ' ◆ '; opacity: .85; }
+	.affiche .triptyque { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; flex: 1; }
+	.affiche .triptyque .tier-card { padding: 6mm 5mm 5mm; }
 	.affiche .offers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5mm; margin-bottom: 10mm; }
 	.affiche .offer { background: rgba(255,255,255,.06); border: .4mm solid rgba(212,180,92,.5); border-radius: 3mm; padding: 6mm 4mm; text-align: center; color: #fff; }
 	.affiche .offer.featured { background: linear-gradient(135deg, var(--gold), var(--orange)); color: var(--black); border-color: var(--orange); }
@@ -352,23 +407,24 @@ if ( 'cartes' === $type ) :
 			<?php endfor; ?>
 		</div>
 	</div>
-	<!-- Verso : offres -->
+	<!-- Verso : offres AG Starter -->
 	<div class="sheet brand-grad">
 		<div class="cards-grid">
 			<?php for ( $i = 0; $i < $qty; $i++ ) : ?>
 				<div class="card card-back brand-grad gold-border">
-					<h3>◆ NOS OFFRES ◆</h3>
+					<h3>◆ AG STARTER ◆</h3>
 					<div class="offers">
 						<?php foreach ( $offers as $o ) : ?>
 							<div class="offer <?php echo ! empty( $o['featured'] ) ? 'featured' : ''; ?>">
 								<div class="n"><?php echo esc_html( $o['name'] ); ?></div>
-								<div class="p"><?php echo esc_html( $o['price'] ); ?></div>
+								<div class="p" style="font-size:7pt;font-weight:700;margin-top:.3mm;line-height:1.15;">✓</div>
 							</div>
 						<?php endforeach; ?>
 					</div>
+					<div style="text-align:center;color:var(--gold);font-size:7pt;font-weight:800;margin-top:1.5mm;letter-spacing:1pt;">+340 % DE LEADS</div>
 					<div class="footer">
 						<div>
-							<div class="url">alliancegroupe-inc.com</div>
+							<div class="url">alliancegroupe-inc.com/contact</div>
 							<div>📞 07 44 82 95 16</div>
 						</div>
 						<img src="<?php echo esc_url( $qr_medium ); ?>" alt="QR">
@@ -380,46 +436,37 @@ if ( 'cartes' === $type ) :
 	<?php
 
 elseif ( 'flyer' === $type ) :
+	// Récupère le tier choisi parmi les offres.
+	$pick = null;
+	foreach ( $offers as $o ) { if ( $o['name'] === $tier_pick ) { $pick = $o; break; } }
+	if ( ! $pick ) $pick = $offers[1];
 	?>
-	<div class="sheet">
-		<div class="a5-flex">
+	<div class="sheet brand-grad">
+		<div style="display:flex;flex-direction:column;height:297mm;padding:0;">
 			<?php for ( $i = 0; $i < $qty; $i++ ) : ?>
-				<div class="flyer brand-grad">
-					<div class="flyer-inner">
-						<div class="head-tier">ALLIANCE GROUPE · AGENCE WEB &amp; IA</div>
-						<div class="lead">
-							<h2>Votre site pro<br><span class="accent">en 7 jours.</span></h2>
-							<div class="stat-badge">+340 % DE LEADS EN MOYENNE</div>
-							<ul>
-								<li>Design premium, 100 % responsive</li>
-								<li>Référencement Google optimisé</li>
-								<li>Hébergement &amp; maintenance inclus</li>
-								<li>Paiement en 4× sans frais</li>
-							</ul>
-							<div class="offers">
-								<?php foreach ( $offers as $o ) : ?>
-									<div class="offer <?php echo ! empty( $o['featured'] ) ? 'featured' : ''; ?>">
-										<div class="n"><?php echo esc_html( $o['name'] ); ?></div>
-										<div class="p"><?php echo esc_html( $o['price'] ); ?></div>
-										<div class="t"><?php echo esc_html( $o['tag'] ); ?></div>
-									</div>
-								<?php endforeach; ?>
+				<div style="width:210mm;height:148.5mm;padding:6mm 30mm;box-sizing:border-box;">
+					<div class="tier-card" style="height:100%;padding:8mm 10mm;">
+						<div class="ag-starter">AG Starter</div>
+						<div class="tier-name-row"><span class="line"></span><span class="tier-name" style="font-size:18pt;"><?php echo esc_html( $pick['name'] ); ?></span><span class="line"></span></div>
+						<div class="subtitle" style="font-size:10pt;margin:4mm 4mm 2mm;"><?php echo esc_html( $pick['subtitle'] ); ?></div>
+						<div class="diam">◆</div>
+						<ul class="features" style="font-size:10pt;">
+							<?php foreach ( (array) $pick['features'] as $f ) : ?>
+								<li style="padding:1.5mm 0 1.5mm 7mm;font-size:10pt;"><?php echo esc_html( $f ); ?></li>
+							<?php endforeach; ?>
+						</ul>
+						<div class="compat" style="font-size:9pt;">Compatible <?php echo esc_html( $pick['compatible'] ); ?></div>
+						<div class="diam" style="margin-top:2mm;">◆</div>
+						<?php if ( ! empty( $pick['stat'] ) ) : ?><div class="stat-line" style="font-size:12pt;"><?php echo esc_html( $pick['stat'] ); ?></div><?php endif; ?>
+						<div class="pay-badge" style="font-size:8.5pt;"><?php echo esc_html( $pick['badge'] ); ?></div>
+						<div class="qr-footer">
+							<div class="qr-box"><img src="<?php echo esc_url( $qr_medium ); ?>" alt="QR" style="width:24mm;height:24mm;"><div class="scan-me">Scan Me</div></div>
+							<div class="contact">
+								<div class="phone" style="font-size:13pt;">07 44 82 95 16</div>
+								<div class="url" style="font-size:8pt;">alliancegroupe-inc.com/contact</div>
+								<?php if ( 'brand' !== $mode ) : ?><div style="color:var(--gold);font-size:8pt;margin-top:1mm;font-weight:700;"><?php echo esc_html( $name ); ?> · ambassadeur</div><?php endif; ?>
 							</div>
 						</div>
-						<div class="qr-block">
-							<div class="scan">◆ SCANNE ◆</div>
-							<img src="<?php echo esc_url( $qr_big ); ?>" alt="QR">
-							<div class="label">Devis gratuit en 1 min</div>
-							<?php if ( 'brand' !== $mode ) : ?>
-								<div class="name"><?php echo esc_html( $name ); ?></div>
-							<?php else : ?>
-								<div class="name">alliancegroupe-inc.com</div>
-							<?php endif; ?>
-						</div>
-					</div>
-					<div class="footer-line">
-						<div>alliancegroupe-inc.com · contact@alliancegroupe-inc.com</div>
-						<div class="url">📞 07 44 82 95 16</div>
 					</div>
 				</div>
 			<?php endfor; ?>
@@ -447,38 +494,32 @@ elseif ( 'affiche' === $type ) :
 	?>
 	<div class="sheet brand-grad">
 		<div class="affiche">
-			<div class="affiche-inner">
-				<div class="head">ALLIANCE GROUPE</div>
-				<div class="divider"></div>
-				<h1>Votre site pro<br><span class="accent">en 7 jours.</span></h1>
-				<div class="sub">Agence web &amp; IA · design premium · livré clé en main · paiement en 4× sans frais</div>
-				<div class="stat-row"><span class="stat-badge">+340 % DE LEADS EN MOYENNE</span></div>
-				<div class="offers">
-					<?php foreach ( $offers as $o ) : ?>
-						<div class="offer <?php echo ! empty( $o['featured'] ) ? 'featured' : ''; ?>">
-							<div class="n">◆ <?php echo esc_html( $o['name'] ); ?> ◆</div>
-							<div class="p"><?php echo esc_html( $o['price'] ); ?></div>
-							<div class="t"><?php echo esc_html( $o['tag'] ); ?></div>
-							<ul>
-								<?php foreach ( (array) $o['highlights'] as $h ) : ?>
-									<li><?php echo esc_html( $h ); ?></li>
-								<?php endforeach; ?>
-							</ul>
+			<div class="top-head">ALLIANCE GROUPE · AGENCE WEB &amp; IA</div>
+			<div class="triptyque">
+				<?php foreach ( $offers as $o ) : ?>
+					<div class="tier-card">
+						<div class="ag-starter">AG Starter</div>
+						<div class="tier-name-row"><span class="line"></span><span class="tier-name"><?php echo esc_html( $o['name'] ); ?></span><span class="line"></span></div>
+						<div class="subtitle"><?php echo esc_html( $o['subtitle'] ); ?></div>
+						<div class="diam">◆</div>
+						<ul class="features">
+							<?php foreach ( (array) $o['features'] as $f ) : ?>
+								<li><?php echo esc_html( $f ); ?></li>
+							<?php endforeach; ?>
+						</ul>
+						<div class="compat">Compatible <?php echo esc_html( $o['compatible'] ); ?></div>
+						<div class="diam" style="margin-top:1mm;">◆</div>
+						<?php if ( ! empty( $o['stat'] ) ) : ?><div class="stat-line"><?php echo esc_html( $o['stat'] ); ?></div><?php endif; ?>
+						<div class="pay-badge"><?php echo esc_html( $o['badge'] ); ?></div>
+						<div class="qr-footer">
+							<div class="qr-box"><img src="<?php echo esc_url( $qr_small ); ?>" alt="QR"><div class="scan-me">Scan Me</div></div>
+							<div class="contact">
+								<div class="phone">07 44 82 95 16</div>
+								<div class="url">alliancegroupe-inc.com/contact</div>
+							</div>
 						</div>
-					<?php endforeach; ?>
-				</div>
-				<div class="qr-row">
-					<img src="<?php echo esc_url( $qr_big ); ?>" alt="QR">
-					<div class="text">
-						<div class="scan">◆ SCANNE ◆</div>
-						<?php if ( 'brand' === $mode ) : ?>
-							<div class="name">Devis gratuit · réponse sous 24 h · <strong>📞 07 44 82 95 16</strong></div>
-						<?php else : ?>
-							<div class="name">Devis gratuit · réponse sous 24 h · <strong><?php echo esc_html( $name ); ?></strong></div>
-						<?php endif; ?>
-						<div class="url"><?php echo esc_html( $link ); ?></div>
 					</div>
-				</div>
+				<?php endforeach; ?>
 			</div>
 		</div>
 	</div>
