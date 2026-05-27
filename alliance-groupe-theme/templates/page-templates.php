@@ -90,10 +90,10 @@ $ag_hub_metiers = array(
         'image'     => 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1200&q=85',
     ),
 );
-/* ⚠️ FOCUS TEMPORAIRE : on n'affiche QUE le template "association"
-   (les autres sont en cours de finition). Pour TOUT réafficher, remettre
-   $ag_templates_only = array(); (ou supprimer ce bloc). */
-$ag_templates_only = apply_filters( 'ag_templates_only', array( 'association' ) );
+/* Filtre extensible pour restreindre l'affichage à certains slugs.
+   Par défaut : array() = tout afficher (les 6 métiers). Pour restreindre,
+   hook ag_templates_only et retourne un tableau de slugs autorisés. */
+$ag_templates_only = apply_filters( 'ag_templates_only', array() );
 if ( ! empty( $ag_templates_only ) ) {
     $ag_hub_metiers = array_values( array_filter( $ag_hub_metiers, function ( $m ) use ( $ag_templates_only ) {
         return in_array( $m['slug'] ?? '', $ag_templates_only, true );

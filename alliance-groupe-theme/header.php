@@ -367,9 +367,14 @@
             </div>
 
             <div class="ag-mobile-menu__group">
-                <button class="ag-mobile-menu__toggle" type="button">Templates <span class="ag-nav__pulse-pill">GRATUIT</span> <span class="ag-mobile-menu__arrow">+</span></button>
+                <button class="ag-mobile-menu__toggle" type="button">Nos templates <span class="ag-nav__pulse-pill">GRATUIT</span> <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
-                    <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">Tous les templates</a>
+                    <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>" style="color:#D4B45C;font-weight:700;">📂 Tous les templates · Choisissez votre métier</a>
+                    <a href="<?php echo esc_url(home_url('/wordpress-avocat')); ?>">⚖️ Avocat</a>
+                    <a href="<?php echo esc_url(home_url('/wordpress-restaurant')); ?>">🍽️ Restaurant</a>
+                    <a href="<?php echo esc_url(home_url('/wordpress-artisan')); ?>">🔨 Artisan</a>
+                    <a href="<?php echo esc_url(home_url('/wordpress-coach')); ?>">💼 Coach</a>
+                    <a href="<?php echo esc_url(home_url('/wordpress-barber')); ?>">💈 Barber Shop <span style="display:inline-block;margin-left:4px;padding:1px 6px;background:#22c55e;color:#fff;font-size:.62rem;font-weight:700;border-radius:100px;text-transform:uppercase;">Nouveau</span></a>
                     <a href="<?php echo esc_url(home_url('/wordpress-association')); ?>" style="color:#ffb1b6;">🤝 Association <span style="display:inline-block;margin-left:4px;padding:1px 6px;background:#E10F1A;color:#fff;font-size:.62rem;font-weight:700;border-radius:100px;text-transform:uppercase;">100% gratuit</span></a>
                     <a href="<?php echo esc_url(home_url('/contact?source=menu&demande=template-metier')); ?>" style="color:#D4B45C;font-weight:700;">💎 Votre métier ? Demandez-le</a>
                 </div>
