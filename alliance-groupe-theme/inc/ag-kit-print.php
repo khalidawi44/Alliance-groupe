@@ -197,10 +197,15 @@ add_action( 'admin_post_ag_kp_print', function () {
 	.toolbar .muted { color: rgba(255,255,255,.65); font-size: .85rem; margin-left: auto; }
 	.sheet { width: 210mm; min-height: 297mm; margin: 18px auto; background: #fff; box-shadow: 0 4px 24px rgba(0,0,0,.4); position: relative; overflow: hidden; }
 
-	/* Branding tokens */
-	:root { --gold: #D4B45C; --orange: #F37A1F; --black: #0a0a0f; --navy: #1a1a2e; }
-	.brand-grad { background: linear-gradient(135deg, var(--black) 0%, var(--navy) 50%, var(--black) 100%); color: #fff; }
+	/* Branding tokens (style AG Starter — dark + champagne) */
+	:root { --gold: #D4B45C; --gold2: #B8975A; --orange: #F37A1F; --black: #0a0a0f; --navy: #14141c; }
+	.brand-grad { background: linear-gradient(160deg, #050507 0%, var(--navy) 55%, #0a0a0f 100%); color: #fff; }
 	.gold-grad  { background: linear-gradient(135deg, var(--gold) 0%, var(--orange) 100%); color: var(--black); }
+	.gold-border { box-shadow: inset 0 0 0 .25mm var(--gold), inset 0 0 0 1mm rgba(212,180,92,.15); }
+	.serif { font-family: 'Playfair Display', Georgia, 'Times New Roman', serif; }
+	.diamond { color: var(--gold); }
+	.diamond::before { content: '◆'; }
+	.stat-badge { display: inline-block; background: linear-gradient(135deg, var(--gold), var(--orange)); color: var(--black); padding: 1.5mm 4mm; border-radius: 100px; font-weight: 900; letter-spacing: .5pt; font-size: 8pt; }
 
 	@page { size: A4 portrait; margin: 0; }
 	@media print {
@@ -211,49 +216,59 @@ add_action( 'admin_post_ag_kp_print', function () {
 	}
 
 	/* ====================================================================
-	   CARTES DE VISITE — 4 par feuille A4 (recto + verso)
-	   8.5 × 5.4 cm  (standard FR)
+	   CARTES DE VISITE — 1 à 4 par feuille A4 (recto + verso)
+	   8.5 × 5.4 cm (standard FR) — style AG Starter dark + champagne
 	   ==================================================================== */
 	.cards-grid { display: grid; grid-template-columns: repeat(2, 85mm); grid-template-rows: repeat(4, 54mm); gap: 4mm; padding: 14mm 16mm; justify-content: center; align-content: start; }
-	.card { width: 85mm; height: 54mm; border-radius: 3mm; overflow: hidden; position: relative; box-shadow: 0 0 0 .1mm #ddd; }
-	.card-front { padding: 5mm; display: flex; flex-direction: column; justify-content: space-between; color: #fff; }
-	.card-front .logo { font-family: Georgia, serif; font-size: 14pt; font-weight: 800; letter-spacing: .5pt; color: var(--gold); }
-	.card-front .logo small { display: block; font-size: 6.5pt; color: rgba(255,255,255,.65); letter-spacing: 2pt; margin-top: 1mm; font-weight: 400; font-family: Arial, sans-serif; }
-	.card-front .name { font-size: 12pt; font-weight: 800; margin-top: auto; }
-	.card-front .tagline { font-size: 7.5pt; color: var(--gold); margin-top: 1mm; }
-	.card-front .qr-line { display: flex; align-items: center; gap: 2mm; margin-top: 2mm; font-size: 6pt; color: rgba(255,255,255,.7); }
-	.card-front .qr-line img { width: 12mm; height: 12mm; border-radius: 1mm; background: #fff; padding: 1mm; }
-	.card-back { padding: 4mm 5mm; display: flex; flex-direction: column; justify-content: space-between; }
-	.card-back h3 { margin: 0; font-size: 10pt; color: var(--black); }
+	.card { width: 85mm; height: 54mm; border-radius: 2mm; overflow: hidden; position: relative; }
+	.card-front { padding: 4mm 5mm; display: flex; flex-direction: column; color: #fff; }
+	.card-front .head { text-align: center; font-family: 'Playfair Display', Georgia, serif; color: var(--gold); font-size: 7pt; letter-spacing: 3pt; font-weight: 700; }
+	.card-front .head::before, .card-front .head::after { content: ' ◆ '; opacity: .8; }
+	.card-front .logo { text-align: center; font-family: 'Playfair Display', Georgia, serif; font-size: 14pt; font-weight: 800; letter-spacing: .5pt; color: var(--gold); margin-top: 1.5mm; line-height: 1; }
+	.card-front .tier { text-align: center; font-size: 6pt; color: rgba(255,255,255,.55); letter-spacing: 4pt; margin-top: 1mm; font-weight: 400; }
+	.card-front .divider { width: 16mm; height: .25mm; background: var(--gold); margin: 2mm auto; opacity: .6; }
+	.card-front .name { font-size: 11pt; font-weight: 800; text-align: center; }
+	.card-front .role { font-size: 6.5pt; color: var(--gold); text-align: center; margin-top: .8mm; letter-spacing: 1.5pt; }
+	.card-front .qr-line { display: flex; align-items: center; gap: 2mm; margin-top: auto; padding-top: 2mm; font-size: 5.8pt; color: rgba(255,255,255,.7); border-top: .15mm solid rgba(212,180,92,.3); }
+	.card-front .qr-line img { width: 11mm; height: 11mm; border-radius: 1mm; background: #fff; padding: .5mm; }
+	.card-back { padding: 4mm 5mm; display: flex; flex-direction: column; color: #fff; }
+	.card-back h3 { margin: 0; font-size: 8.5pt; color: var(--gold); font-family: 'Playfair Display', Georgia, serif; text-align: center; letter-spacing: 1.5pt; text-transform: uppercase; }
 	.card-back .offers { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5mm; margin-top: 2mm; }
-	.card-back .offer { background: rgba(10,10,15,.05); border: .2mm solid rgba(212,180,92,.4); border-radius: 1.5mm; padding: 1.5mm; text-align: center; }
-	.card-back .offer.featured { background: var(--gold); color: var(--black); border-color: var(--orange); }
-	.card-back .offer .n { font-size: 6.5pt; font-weight: 700; letter-spacing: .3pt; }
-	.card-back .offer .p { font-size: 9pt; font-weight: 800; margin-top: .5mm; }
-	.card-back .footer { display: flex; justify-content: space-between; align-items: flex-end; font-size: 6.5pt; color: #666; margin-top: 2mm; }
-	.card-back .footer .url { color: var(--black); font-weight: 700; }
-	.card-back .footer img { width: 14mm; height: 14mm; background: #fff; padding: 0; border-radius: 1mm; }
+	.card-back .offer { background: rgba(212,180,92,.06); border: .2mm solid rgba(212,180,92,.5); border-radius: 1mm; padding: 1.5mm 1mm; text-align: center; color: #fff; }
+	.card-back .offer.featured { background: linear-gradient(135deg, var(--gold), var(--orange)); color: var(--black); border-color: var(--orange); }
+	.card-back .offer .n { font-size: 6pt; font-weight: 800; letter-spacing: 1pt; }
+	.card-back .offer .p { font-size: 9pt; font-weight: 900; margin-top: .3mm; }
+	.card-back .footer { display: flex; justify-content: space-between; align-items: center; font-size: 5.8pt; margin-top: auto; padding-top: 1.5mm; color: rgba(255,255,255,.7); }
+	.card-back .footer .url { color: var(--gold); font-weight: 700; }
+	.card-back .footer img { width: 14mm; height: 14mm; background: #fff; padding: .5mm; border-radius: 1mm; }
 
 	/* ====================================================================
-	   FLYER A5 — 2 par feuille A4
+	   FLYER A5 — 1 ou 2 par feuille A4 — style AG Starter PRO
 	   ==================================================================== */
 	.a5-flex { display: flex; flex-direction: column; gap: 0; padding: 0; height: 297mm; }
-	.flyer { width: 210mm; height: 148.5mm; padding: 12mm 14mm; display: grid; grid-template-columns: 1.4fr 1fr; gap: 8mm; align-items: center; position: relative; }
-	.flyer .lead h2 { margin: 0; font-size: 24pt; line-height: 1.05; font-family: Georgia, serif; }
+	.flyer { width: 210mm; height: 148.5mm; padding: 8mm 10mm; position: relative; box-sizing: border-box; }
+	.flyer-inner { width: 100%; height: 100%; border: .3mm solid rgba(212,180,92,.55); border-radius: 2mm; padding: 8mm 10mm; display: grid; grid-template-columns: 1.4fr 1fr; gap: 6mm; box-sizing: border-box; position: relative; }
+	.flyer .head-tier { text-align: center; font-family: 'Playfair Display', Georgia, serif; color: var(--gold); font-size: 8pt; letter-spacing: 4pt; font-weight: 700; grid-column: 1/3; margin-bottom: 2mm; }
+	.flyer .head-tier::before, .flyer .head-tier::after { content: ' ◆ '; opacity: .8; }
+	.flyer .lead h2 { margin: 0; font-size: 22pt; line-height: 1.05; font-family: 'Playfair Display', Georgia, serif; }
 	.flyer .lead h2 .accent { color: var(--gold); }
-	.flyer .lead p { margin: 4mm 0 0; font-size: 11pt; line-height: 1.45; color: rgba(255,255,255,.85); }
-	.flyer .lead .offers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; margin-top: 6mm; }
-	.flyer .lead .offer { background: rgba(255,255,255,.06); border: .3mm solid rgba(212,180,92,.5); border-radius: 2mm; padding: 4mm 3mm; text-align: center; }
+	.flyer .lead .stat-badge { margin-top: 3mm; }
+	.flyer .lead p { margin: 3mm 0 0; font-size: 10pt; line-height: 1.4; color: rgba(255,255,255,.82); }
+	.flyer .lead ul { list-style: none; padding: 0; margin: 3mm 0 0; font-size: 9pt; color: #fff; }
+	.flyer .lead ul li { padding: 1mm 0; }
+	.flyer .lead ul li::before { content: '◆  '; color: var(--gold); font-size: 8pt; }
+	.flyer .lead .offers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2mm; margin-top: 4mm; }
+	.flyer .lead .offer { background: rgba(255,255,255,.04); border: .25mm solid rgba(212,180,92,.5); border-radius: 1.5mm; padding: 3mm 2mm; text-align: center; }
 	.flyer .lead .offer.featured { background: linear-gradient(135deg, var(--gold), var(--orange)); color: var(--black); border-color: var(--orange); }
-	.flyer .lead .offer .n { font-size: 9pt; font-weight: 800; letter-spacing: .8pt; }
-	.flyer .lead .offer .p { font-size: 16pt; font-weight: 900; margin-top: 1mm; }
-	.flyer .lead .offer .t { font-size: 7pt; opacity: .85; margin-top: .5mm; }
-	.flyer .qr-block { text-align: center; }
-	.flyer .qr-block .scan { color: var(--gold); font-size: 12pt; font-weight: 800; letter-spacing: 1pt; margin-bottom: 3mm; }
-	.flyer .qr-block img { width: 56mm; height: 56mm; background: #fff; padding: 2mm; border-radius: 3mm; }
-	.flyer .qr-block .label { color: #fff; font-size: 9pt; margin-top: 3mm; }
-	.flyer .qr-block .name { color: var(--gold); font-size: 10pt; font-weight: 700; margin-top: 1mm; }
-	.flyer .footer-line { position: absolute; bottom: 6mm; left: 14mm; right: 14mm; display: flex; justify-content: space-between; align-items: center; color: rgba(255,255,255,.5); font-size: 7.5pt; }
+	.flyer .lead .offer .n { font-size: 8pt; font-weight: 800; letter-spacing: .8pt; }
+	.flyer .lead .offer .p { font-size: 14pt; font-weight: 900; margin-top: .5mm; }
+	.flyer .lead .offer .t { font-size: 6.5pt; opacity: .85; margin-top: .3mm; }
+	.flyer .qr-block { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+	.flyer .qr-block .scan { color: var(--gold); font-size: 11pt; font-weight: 800; letter-spacing: 2pt; margin-bottom: 2.5mm; font-family: 'Playfair Display', Georgia, serif; }
+	.flyer .qr-block img { width: 50mm; height: 50mm; background: #fff; padding: 1.5mm; border-radius: 2mm; }
+	.flyer .qr-block .label { color: #fff; font-size: 8pt; margin-top: 2.5mm; letter-spacing: .5pt; }
+	.flyer .qr-block .name { color: var(--gold); font-size: 9pt; font-weight: 700; margin-top: 1mm; }
+	.flyer .footer-line { position: absolute; bottom: 4mm; left: 16mm; right: 16mm; display: flex; justify-content: space-between; align-items: center; color: rgba(255,255,255,.55); font-size: 7pt; padding-top: 2mm; border-top: .15mm solid rgba(212,180,92,.25); }
 	.flyer .footer-line .url { color: var(--gold); font-weight: 700; }
 
 	/* ====================================================================
@@ -269,11 +284,16 @@ add_action( 'admin_post_ag_kp_print', function () {
 	/* ====================================================================
 	   AFFICHE A4 — 1 par feuille
 	   ==================================================================== */
-	.affiche { width: 210mm; height: 297mm; padding: 20mm 18mm; display: flex; flex-direction: column; }
-	.affiche .head { color: var(--gold); font-family: Georgia, serif; font-size: 14pt; letter-spacing: 2pt; text-align: center; font-weight: 800; }
-	.affiche h1 { margin: 4mm 0 2mm; font-size: 40pt; line-height: 1.05; text-align: center; font-family: Georgia, serif; color: #fff; }
-	.affiche h1 .accent { color: var(--gold); }
-	.affiche .sub { text-align: center; color: rgba(255,255,255,.85); font-size: 13pt; margin: 4mm 0 8mm; }
+	.affiche { width: 210mm; height: 297mm; padding: 14mm; display: flex; flex-direction: column; box-sizing: border-box; }
+	.affiche-inner { flex: 1; border: .35mm solid rgba(212,180,92,.55); border-radius: 3mm; padding: 14mm 12mm; display: flex; flex-direction: column; position: relative; }
+	.affiche .head { color: var(--gold); font-family: 'Playfair Display', Georgia, serif; font-size: 12pt; letter-spacing: 5pt; text-align: center; font-weight: 700; }
+	.affiche .head::before, .affiche .head::after { content: '  ◆  '; opacity: .8; }
+	.affiche .divider { width: 30mm; height: .35mm; background: var(--gold); margin: 4mm auto 5mm; opacity: .6; }
+	.affiche h1 { margin: 2mm 0 2mm; font-size: 38pt; line-height: 1.02; text-align: center; font-family: 'Playfair Display', Georgia, serif; color: #fff; font-weight: 800; }
+	.affiche h1 .accent { color: var(--gold); font-style: italic; }
+	.affiche .sub { text-align: center; color: rgba(255,255,255,.82); font-size: 12pt; margin: 4mm 0 4mm; }
+	.affiche .stat-row { text-align: center; margin: 4mm 0 6mm; }
+	.affiche .stat-row .stat-badge { font-size: 11pt; padding: 2.5mm 6mm; }
 	.affiche .offers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5mm; margin-bottom: 10mm; }
 	.affiche .offer { background: rgba(255,255,255,.06); border: .4mm solid rgba(212,180,92,.5); border-radius: 3mm; padding: 6mm 4mm; text-align: center; color: #fff; }
 	.affiche .offer.featured { background: linear-gradient(135deg, var(--gold), var(--orange)); color: var(--black); border-color: var(--orange); }
@@ -312,35 +332,32 @@ if ( 'cartes' === $type ) :
 	<div class="sheet brand-grad">
 		<div class="cards-grid">
 			<?php for ( $i = 0; $i < $qty; $i++ ) : ?>
-				<div class="card card-front brand-grad">
-					<div class="logo">Alliance Groupe<small>AGENCE WEB &amp; IA</small></div>
-					<div>
-						<?php if ( 'brand' === $mode ) : ?>
-							<div class="name">Votre site pro</div>
-							<div class="tagline">en 7 jours — dès 490 €</div>
-							<div class="qr-line">
-								<img src="<?php echo esc_url( $qr_small ); ?>" alt="QR">
-								<span>📞 07 44 82 95 16<br>alliancegroupe-inc.com</span>
-							</div>
-						<?php else : ?>
-							<div class="name"><?php echo esc_html( $name ); ?></div>
-							<div class="tagline">Ambassadeur officiel</div>
-							<div class="qr-line">
-								<img src="<?php echo esc_url( $qr_small ); ?>" alt="QR">
-								<span>Scanne — site web pro dès 490 €<br>10 % offert à ton parrain</span>
-							</div>
-						<?php endif; ?>
+				<div class="card card-front brand-grad gold-border">
+					<div class="head">ALLIANCE GROUPE</div>
+					<div class="logo">AG</div>
+					<div class="tier">AGENCE WEB &amp; IA</div>
+					<div class="divider"></div>
+					<?php if ( 'brand' === $mode ) : ?>
+						<div class="name">Votre site pro<br>en 7 jours</div>
+						<div class="role">DÈS 490 € · PAIEMENT 4× SANS FRAIS</div>
+					<?php else : ?>
+						<div class="name"><?php echo esc_html( $name ); ?></div>
+						<div class="role">AMBASSADEUR OFFICIEL</div>
+					<?php endif; ?>
+					<div class="qr-line">
+						<img src="<?php echo esc_url( $qr_small ); ?>" alt="QR">
+						<span><?php if ( 'brand' === $mode ) : ?>📞 07 44 82 95 16<br>alliancegroupe-inc.com<?php else : ?>Scanne → devis gratuit<br>Site pro dès 490 €<?php endif; ?></span>
 					</div>
 				</div>
 			<?php endfor; ?>
 		</div>
 	</div>
-	<!-- Feuille verso : autant de cartes que demandé -->
-	<div class="sheet" style="background:#fff;">
+	<!-- Verso : offres -->
+	<div class="sheet brand-grad">
 		<div class="cards-grid">
 			<?php for ( $i = 0; $i < $qty; $i++ ) : ?>
-				<div class="card card-back">
-					<h3>Site web pro <span style="color:var(--orange);">dès 490 €</span></h3>
+				<div class="card card-back brand-grad gold-border">
+					<h3>◆ NOS OFFRES ◆</h3>
 					<div class="offers">
 						<?php foreach ( $offers as $o ) : ?>
 							<div class="offer <?php echo ! empty( $o['featured'] ) ? 'featured' : ''; ?>">
@@ -352,7 +369,7 @@ if ( 'cartes' === $type ) :
 					<div class="footer">
 						<div>
 							<div class="url">alliancegroupe-inc.com</div>
-							<div>Scanne →</div>
+							<div>📞 07 44 82 95 16</div>
 						</div>
 						<img src="<?php echo esc_url( $qr_medium ); ?>" alt="QR">
 					</div>
@@ -368,32 +385,41 @@ elseif ( 'flyer' === $type ) :
 		<div class="a5-flex">
 			<?php for ( $i = 0; $i < $qty; $i++ ) : ?>
 				<div class="flyer brand-grad">
-					<div class="lead">
-						<h2>Votre site web pro <span class="accent">en 7 jours.</span></h2>
-						<p>Alliance Groupe — agence web &amp; IA. Site clé en main, design premium, optimisé Google.</p>
-						<div class="offers">
-							<?php foreach ( $offers as $o ) : ?>
-								<div class="offer <?php echo ! empty( $o['featured'] ) ? 'featured' : ''; ?>">
-									<div class="n"><?php echo esc_html( $o['name'] ); ?></div>
-									<div class="p"><?php echo esc_html( $o['price'] ); ?></div>
-									<div class="t"><?php echo esc_html( $o['tag'] ); ?></div>
-								</div>
-							<?php endforeach; ?>
+					<div class="flyer-inner">
+						<div class="head-tier">ALLIANCE GROUPE · AGENCE WEB &amp; IA</div>
+						<div class="lead">
+							<h2>Votre site pro<br><span class="accent">en 7 jours.</span></h2>
+							<div class="stat-badge">+340 % DE LEADS EN MOYENNE</div>
+							<ul>
+								<li>Design premium, 100 % responsive</li>
+								<li>Référencement Google optimisé</li>
+								<li>Hébergement &amp; maintenance inclus</li>
+								<li>Paiement en 4× sans frais</li>
+							</ul>
+							<div class="offers">
+								<?php foreach ( $offers as $o ) : ?>
+									<div class="offer <?php echo ! empty( $o['featured'] ) ? 'featured' : ''; ?>">
+										<div class="n"><?php echo esc_html( $o['name'] ); ?></div>
+										<div class="p"><?php echo esc_html( $o['price'] ); ?></div>
+										<div class="t"><?php echo esc_html( $o['tag'] ); ?></div>
+									</div>
+								<?php endforeach; ?>
+							</div>
 						</div>
-					</div>
-					<div class="qr-block">
-						<div class="scan">📱 SCANNE</div>
-						<img src="<?php echo esc_url( $qr_big ); ?>" alt="QR">
-						<div class="label">Devis gratuit en 1 min</div>
-						<?php if ( 'brand' !== $mode ) : ?>
-							<div class="name"><?php echo esc_html( $name ); ?></div>
-						<?php else : ?>
-							<div class="name">alliancegroupe-inc.com</div>
-						<?php endif; ?>
+						<div class="qr-block">
+							<div class="scan">◆ SCANNE ◆</div>
+							<img src="<?php echo esc_url( $qr_big ); ?>" alt="QR">
+							<div class="label">Devis gratuit en 1 min</div>
+							<?php if ( 'brand' !== $mode ) : ?>
+								<div class="name"><?php echo esc_html( $name ); ?></div>
+							<?php else : ?>
+								<div class="name">alliancegroupe-inc.com</div>
+							<?php endif; ?>
+						</div>
 					</div>
 					<div class="footer-line">
 						<div>alliancegroupe-inc.com · contact@alliancegroupe-inc.com</div>
-						<div class="url">07 44 82 95 16</div>
+						<div class="url">📞 07 44 82 95 16</div>
 					</div>
 				</div>
 			<?php endfor; ?>
@@ -421,33 +447,37 @@ elseif ( 'affiche' === $type ) :
 	?>
 	<div class="sheet brand-grad">
 		<div class="affiche">
-			<div class="head">ALLIANCE GROUPE — AGENCE WEB &amp; IA</div>
-			<h1>Votre site web pro<br><span class="accent">en 7 jours.</span></h1>
-			<div class="sub">Design premium · 100 % responsive · livré clé en main · paiement en 4 × sans frais</div>
-			<div class="offers">
-				<?php foreach ( $offers as $o ) : ?>
-					<div class="offer <?php echo ! empty( $o['featured'] ) ? 'featured' : ''; ?>">
-						<div class="n"><?php echo esc_html( $o['name'] ); ?></div>
-						<div class="p"><?php echo esc_html( $o['price'] ); ?></div>
-						<div class="t"><?php echo esc_html( $o['tag'] ); ?></div>
-						<ul>
-							<?php foreach ( (array) $o['highlights'] as $h ) : ?>
-								<li><?php echo esc_html( $h ); ?></li>
-							<?php endforeach; ?>
-						</ul>
+			<div class="affiche-inner">
+				<div class="head">ALLIANCE GROUPE</div>
+				<div class="divider"></div>
+				<h1>Votre site pro<br><span class="accent">en 7 jours.</span></h1>
+				<div class="sub">Agence web &amp; IA · design premium · livré clé en main · paiement en 4× sans frais</div>
+				<div class="stat-row"><span class="stat-badge">+340 % DE LEADS EN MOYENNE</span></div>
+				<div class="offers">
+					<?php foreach ( $offers as $o ) : ?>
+						<div class="offer <?php echo ! empty( $o['featured'] ) ? 'featured' : ''; ?>">
+							<div class="n">◆ <?php echo esc_html( $o['name'] ); ?> ◆</div>
+							<div class="p"><?php echo esc_html( $o['price'] ); ?></div>
+							<div class="t"><?php echo esc_html( $o['tag'] ); ?></div>
+							<ul>
+								<?php foreach ( (array) $o['highlights'] as $h ) : ?>
+									<li><?php echo esc_html( $h ); ?></li>
+								<?php endforeach; ?>
+							</ul>
+						</div>
+					<?php endforeach; ?>
+				</div>
+				<div class="qr-row">
+					<img src="<?php echo esc_url( $qr_big ); ?>" alt="QR">
+					<div class="text">
+						<div class="scan">◆ SCANNE ◆</div>
+						<?php if ( 'brand' === $mode ) : ?>
+							<div class="name">Devis gratuit · réponse sous 24 h · <strong>📞 07 44 82 95 16</strong></div>
+						<?php else : ?>
+							<div class="name">Devis gratuit · réponse sous 24 h · <strong><?php echo esc_html( $name ); ?></strong></div>
+						<?php endif; ?>
+						<div class="url"><?php echo esc_html( $link ); ?></div>
 					</div>
-				<?php endforeach; ?>
-			</div>
-			<div class="qr-row">
-				<img src="<?php echo esc_url( $qr_big ); ?>" alt="QR">
-				<div class="text">
-					<div class="scan">📱 SCANNE</div>
-					<?php if ( 'brand' === $mode ) : ?>
-						<div class="name">Devis gratuit · réponse sous 24 h · <strong>07 44 82 95 16</strong></div>
-					<?php else : ?>
-						<div class="name">Devis gratuit · réponse sous 24 h · <strong><?php echo esc_html( $name ); ?></strong></div>
-					<?php endif; ?>
-					<div class="url"><?php echo esc_html( $link ); ?></div>
 				</div>
 			</div>
 		</div>
