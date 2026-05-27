@@ -500,6 +500,20 @@ add_action( 'admin_post_ag_search_history_clear', function () {
 	wp_safe_redirect( admin_url( 'admin.php?page=ag-prospects' ) ); exit;
 } );
 
+/* Supprimer UNE recherche de l'historique (identifiée par sa clé q|city). */
+add_action( 'admin_post_ag_search_history_delete', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_die( 'no' );
+	$key  = sanitize_text_field( wp_unslash( $_POST['key'] ?? '' ) );
+	if ( '' === $key ) wp_die( 'no key' );
+	$hist = (array) get_option( 'ag_search_history', array() );
+	$hist = array_values( array_filter( $hist, function ( $h ) use ( $key ) {
+		return ag_search_history_key( $h['q'] ?? '', $h['city'] ?? '' ) !== $key;
+	} ) );
+	update_option( 'ag_search_history', $hist, false );
+	$back = isset( $_POST['_back'] ) ? esc_url_raw( wp_unslash( $_POST['_back'] ) ) : admin_url( 'admin.php?page=ag-prospects' );
+	wp_safe_redirect( $back ); exit;
+} );
+
 /* ── 5. Priorité (qui en a vraiment besoin), pourquoi, et message émotionnel ─ */
 if ( ! function_exists( 'ag_prospect_score' ) ) {
 	/** Score 0-100 de PROBABILITÉ D'ACHAT : un commerce actif & populaire SANS vrai site = acheteur idéal. */
@@ -970,20 +984,56 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			<?php
 			$ag_hist = (array) get_option( 'ag_search_history', array() );
 			if ( $ag_hist ) :
-				usort( $ag_hist, function ( $a, $b ) {
-					$c = strcasecmp( $a['city'] ?? '', $b['city'] ?? '' );
-					return $c !== 0 ? $c : strcasecmp( $a['q'] ?? '', $b['q'] ?? '' );
+				$hsort = isset( $_GET['hsort'] ) ? sanitize_text_field( wp_unslash( $_GET['hsort'] ) ) : 'city';
+				$hsort_options = array(
+					'city'       => 'Ville (A→Z), puis métier',
+					'q'          => 'Métier (A→Z), puis ville',
+					'date_desc'  => 'Plus récentes d\'abord',
+					'date_asc'   => 'Plus anciennes d\'abord',
+					'count_desc' => 'Plus de résultats d\'abord',
+					'count_asc'  => 'Moins de résultats d\'abord',
+				);
+				usort( $ag_hist, function ( $a, $b ) use ( $hsort ) {
+					switch ( $hsort ) {
+						case 'q':
+							$c = strcasecmp( $a['q'] ?? '', $b['q'] ?? '' );
+							return $c !== 0 ? $c : strcasecmp( $a['city'] ?? '', $b['city'] ?? '' );
+						case 'date_desc':
+							return ( (int) ( $b['ts'] ?? 0 ) ) <=> ( (int) ( $a['ts'] ?? 0 ) );
+						case 'date_asc':
+							return ( (int) ( $a['ts'] ?? 0 ) ) <=> ( (int) ( $b['ts'] ?? 0 ) );
+						case 'count_desc':
+							return ( (int) ( $b['count'] ?? 0 ) ) <=> ( (int) ( $a['count'] ?? 0 ) );
+						case 'count_asc':
+							return ( (int) ( $a['count'] ?? 0 ) ) <=> ( (int) ( $b['count'] ?? 0 ) );
+						case 'city':
+						default:
+							$c = strcasecmp( $a['city'] ?? '', $b['city'] ?? '' );
+							return $c !== 0 ? $c : strcasecmp( $a['q'] ?? '', $b['q'] ?? '' );
+					}
 				} );
+				$back_url = add_query_arg( array_filter( array( 'page' => 'ag-prospects', 'hsort' => 'city' === $hsort ? null : $hsort ) ), admin_url( 'admin.php' ) );
 			?>
 			<div style="max-width:980px;margin-top:18px;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #2271b1;border-radius:6px;">
 				<h2 style="margin-top:0;">📂 Mes recherches (<?php echo count( $ag_hist ); ?>)</h2>
-				<p style="color:#50575e;font-size:.9rem;"><strong>« Revoir » est GRATUIT</strong> : ça réaffiche les résultats déjà trouvés (aucun appel Google). « Actualiser » relance un appel payant uniquement si tu veux chercher du nouveau. (Triées par ville, puis métier.)</p>
+				<p style="color:#50575e;font-size:.9rem;"><strong>« Revoir » est GRATUIT</strong> : ça réaffiche les résultats déjà trouvés (aucun appel Google). « Actualiser » relance un appel payant uniquement si tu veux chercher du nouveau.</p>
+				<form method="get" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>" style="margin:6px 0 10px;">
+					<input type="hidden" name="page" value="ag-prospects">
+					<label style="font-size:.9rem;color:#50575e;">Trier par : </label>
+					<select name="hsort" onchange="this.form.submit()">
+						<?php foreach ( $hsort_options as $hk => $hlabel ) : ?>
+							<option value="<?php echo esc_attr( $hk ); ?>" <?php selected( $hsort, $hk ); ?>><?php echo esc_html( $hlabel ); ?></option>
+						<?php endforeach; ?>
+					</select>
+					<noscript><button class="button button-small">OK</button></noscript>
+				</form>
 				<table class="widefat striped" style="margin-top:8px;"><thead><tr><th>Ville</th><th>Métier</th><th>Résultats</th><th>Dernière fois</th><th></th></tr></thead><tbody>
 				<?php foreach ( $ag_hist as $h ) :
 					$hq = $h['q'] ?? ''; $hc = $h['city'] ?? ''; $hall = ( '' === trim( $hq ) );
 					$url  = add_query_arg( array_filter( array( 'page' => 'ag-prospects', 'q' => $hq, 'city' => $hc ) ), admin_url( 'admin.php' ) );
 					$rurl = add_query_arg( array_filter( array( 'page' => 'ag-prospects', 'q' => $hq, 'city' => $hc, 'all' => $hall ? 1 : null, 'refresh' => 1 ) ), admin_url( 'admin.php' ) );
 					$has_cache = ! empty( $h['results'] );
+					$hkey = ag_search_history_key( $hq, $hc );
 				?>
 					<tr>
 						<td><strong><?php echo esc_html( $hc ?: '—' ); ?></strong></td>
@@ -993,13 +1043,20 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 						<td>
 							<?php if ( $has_cache ) : ?><a class="button button-small button-primary" href="<?php echo esc_url( $url ); ?>" title="Réaffiche les résultats déjà trouvés (gratuit)">👁 Revoir (gratuit)</a> <?php else : ?><span style="color:#b26a00;font-size:.82em;">⚠ Pas en cache (faite avant la mise en cache) — clique « Actualiser » 1 fois pour activer « Revoir ».</span><br><?php endif; ?>
 							<a class="button button-small" href="<?php echo esc_url( $rurl ); ?>" title="Relance un appel Google payant pour chercher du nouveau" onclick="return confirm('Relancer un appel Google payant (≈ 0,04 € · balayage ≈ 1,60 €) ?');">🔄 Actualiser</a>
+							<form method="post" action="<?php echo esc_url( $post ); ?>" style="display:inline-block;margin:0;" onsubmit="return confirm('Supprimer cette recherche de l\'historique ?');">
+								<input type="hidden" name="action" value="ag_search_history_delete">
+								<input type="hidden" name="_n" value="<?php echo esc_attr( $nonce ); ?>">
+								<input type="hidden" name="key" value="<?php echo esc_attr( $hkey ); ?>">
+								<input type="hidden" name="_back" value="<?php echo esc_attr( $back_url ); ?>">
+								<button class="button button-small" title="Supprimer cette recherche">🗑️</button>
+							</form>
 						</td>
 					</tr>
 				<?php endforeach; ?>
 				</tbody></table>
-				<form method="post" action="<?php echo esc_url( $post ); ?>" style="margin-top:8px;" onsubmit="return confirm('Effacer tout l\'historique des recherches ?');">
+				<form method="post" action="<?php echo esc_url( $post ); ?>" style="margin-top:8px;" onsubmit="return confirm('Effacer TOUT l\'historique des recherches ?');">
 					<input type="hidden" name="action" value="ag_search_history_clear"><input type="hidden" name="_n" value="<?php echo esc_attr( $nonce ); ?>">
-					<button class="button button-small">Effacer l'historique</button>
+					<button class="button button-small">Effacer tout l'historique</button>
 				</form>
 			</div>
 			<?php endif; ?>
