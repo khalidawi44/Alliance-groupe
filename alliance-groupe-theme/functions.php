@@ -91,6 +91,12 @@ if ( file_exists( $ag_kit_print_file ) ) {
     require_once $ag_kit_print_file;
 }
 
+// ── 1c5d. Demo leaderboard (4 ambassadeurs + 6 recruteurs démo pour social proof)
+$ag_demo_board_file = get_stylesheet_directory() . '/inc/ag-demo-board.php';
+if ( file_exists( $ag_demo_board_file ) ) {
+    require_once $ag_demo_board_file;
+}
+
 // ── 1c6. PayPal automatique (webhooks : credit auto des commissions au paiement)
 $ag_paypal_file = get_stylesheet_directory() . '/inc/ag-paypal.php';
 if ( file_exists( $ag_paypal_file ) ) {

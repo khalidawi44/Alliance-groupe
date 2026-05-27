@@ -353,7 +353,9 @@ if ( ! function_exists( 'ag_ambassadeur_leaderboard' ) ) {
 		$rank = 1;
 		foreach ( $agg as &$row ) { $row['rank'] = $rank++; }
 		unset( $row );
-		return $agg;
+		// Filtre d'injection (ex. ambassadeurs démo pour montrer du monde
+		// quand le site démarre — cf. inc/ag-demo-board.php).
+		return apply_filters( 'ag_ambassadeur_leaderboard', $agg, $period );
 	}
 }
 

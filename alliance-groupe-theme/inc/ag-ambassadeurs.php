@@ -460,7 +460,8 @@ if ( ! function_exists( 'ag_recruiter_leaderboard' ) ) {
 		$agg = array_values( $agg );
 		usort( $agg, function ( $a, $b ) { return ( $b['actifs'] <=> $a['actifs'] ) ?: ( $b['filleuls'] <=> $a['filleuls'] ); } );
 		$r = 1; foreach ( $agg as &$row ) { $row['rank'] = $r++; } unset( $row );
-		return $agg;
+		// Filtre d'injection (ex. recruteurs démo — cf. inc/ag-demo-board.php).
+		return apply_filters( 'ag_recruiter_leaderboard', $agg );
 	}
 }
 /* Marquer une prime payée. */
