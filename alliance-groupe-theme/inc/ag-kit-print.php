@@ -68,12 +68,22 @@ if ( ! function_exists( 'ag_kp_render' ) ) {
 		foreach ( (array) get_option( 'ag_ambassadeurs', array() ) as $a ) {
 			if ( ! empty( $a['email'] ) ) $ambs[ strtolower( $a['email'] ) ] = $a['name'] ?? $a['email'];
 		}
-		$picked      = isset( $_GET['rec'] ) ? strtolower( sanitize_email( wp_unslash( $_GET['rec'] ) ) ) : strtolower( $current->user_email );
-		$picked_name = $ambs[ $picked ] ?? $current->display_name;
-		$picked_ref  = function_exists( 'ag_ambassadeur_ref' ) ? ag_ambassadeur_ref( $picked ) : '';
-		$link        = $picked_ref
-			? add_query_arg( array( 'parrain' => $picked_ref ), home_url( '/ambassadeurs' ) )
-			: home_url( '/sites-express' );
+		$mode = isset( $_GET['mode'] ) && 'brand' === $_GET['mode'] ? 'brand' : 'ambassador';
+
+		if ( 'brand' === $mode ) {
+			// Mode société : QR sans ?parrain= (promotion directe de la marque).
+			$picked      = '';
+			$picked_name = 'Alliance Groupe';
+			$picked_ref  = '';
+			$link        = home_url( '/sites-express' );
+		} else {
+			$picked      = isset( $_GET['rec'] ) ? strtolower( sanitize_email( wp_unslash( $_GET['rec'] ) ) ) : strtolower( $current->user_email );
+			$picked_name = $ambs[ $picked ] ?? $current->display_name;
+			$picked_ref  = function_exists( 'ag_ambassadeur_ref' ) ? ag_ambassadeur_ref( $picked ) : '';
+			$link        = $picked_ref
+				? add_query_arg( array( 'parrain' => $picked_ref ), home_url( '/ambassadeurs' ) )
+				: home_url( '/sites-express' );
+		}
 
 		$kits = ag_kp_kits();
 		?>
@@ -84,13 +94,21 @@ if ( ! function_exists( 'ag_kp_render' ) ) {
 			<form method="get" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>" style="margin:14px 0;">
 				<input type="hidden" name="page" value="ag-kit-print">
 				<label><strong>Pack pour :</strong> </label>
-				<select name="rec" onchange="this.form.submit()">
-					<option value="<?php echo esc_attr( $current->user_email ); ?>" <?php selected( $picked, strtolower( $current->user_email ) ); ?>>Moi (<?php echo esc_html( $current->display_name ); ?>)</option>
-					<?php foreach ( $ambs as $em => $nm ) : if ( strtolower( $em ) === strtolower( $current->user_email ) ) continue; ?>
-						<option value="<?php echo esc_attr( $em ); ?>" <?php selected( $picked, $em ); ?>><?php echo esc_html( $nm . ' — ' . $em ); ?></option>
-					<?php endforeach; ?>
+				<select name="mode" onchange="this.form.submit()" style="margin-right:10px;">
+					<option value="ambassador" <?php selected( $mode, 'ambassador' ); ?>>👤 Un ambassadeur (avec code parrain)</option>
+					<option value="brand" <?php selected( $mode, 'brand' ); ?>>🏢 Ma société (sans code parrain — promo directe)</option>
 				</select>
-				<?php if ( ! $picked_ref ) : ?><span style="color:#b32d2e;margin-left:8px;">⚠ Pas de code parrain pour ce recruteur — le QR pointe sur la page générale.</span><?php endif; ?>
+				<?php if ( 'ambassador' === $mode ) : ?>
+					<select name="rec" onchange="this.form.submit()">
+						<option value="<?php echo esc_attr( $current->user_email ); ?>" <?php selected( $picked, strtolower( $current->user_email ) ); ?>>Moi (<?php echo esc_html( $current->display_name ); ?>)</option>
+						<?php foreach ( $ambs as $em => $nm ) : if ( strtolower( $em ) === strtolower( $current->user_email ) ) continue; ?>
+							<option value="<?php echo esc_attr( $em ); ?>" <?php selected( $picked, $em ); ?>><?php echo esc_html( $nm . ' — ' . $em ); ?></option>
+						<?php endforeach; ?>
+					</select>
+					<?php if ( ! $picked_ref ) : ?><span style="color:#b32d2e;margin-left:8px;">⚠ Pas de code parrain — le QR pointe sur la page générale.</span><?php endif; ?>
+				<?php else : ?>
+					<span style="color:#1e7e34;margin-left:6px;">✓ Mode société : QR direct vers <code>/sites-express</code>, branding Alliance Groupe (pas d'ambassadeur affiché).</span>
+				<?php endif; ?>
 			</form>
 
 			<div style="background:#fff;border:1px solid #ccd0d4;border-radius:10px;padding:14px 18px;max-width:980px;margin:10px 0 18px;">
@@ -100,7 +118,7 @@ if ( ! function_exists( 'ag_kp_render' ) ) {
 
 			<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;max-width:980px;">
 			<?php foreach ( $kits as $slug => $kit ) :
-				$preview_url = wp_nonce_url( add_query_arg( array( 'action' => 'ag_kp_print', 'type' => $slug, 'rec' => $picked ), admin_url( 'admin-post.php' ) ), 'ag_kp_print' );
+				$preview_url = wp_nonce_url( add_query_arg( array_filter( array( 'action' => 'ag_kp_print', 'type' => $slug, 'rec' => $picked, 'mode' => $mode ), function ( $v ) { return '' !== $v && null !== $v; } ), admin_url( 'admin-post.php' ) ), 'ag_kp_print' );
 			?>
 				<div style="background:#fff;border:1px solid #dcdcde;border-radius:12px;padding:18px;">
 					<h2 style="margin-top:0;font-size:1.15rem;"><?php echo esc_html( $kit['label'] ); ?></h2>
@@ -126,13 +144,21 @@ add_action( 'admin_post_ag_kp_print', function () {
 	if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Non autorise' );
 	check_admin_referer( 'ag_kp_print' );
 
-	$type   = isset( $_GET['type'] ) ? sanitize_key( wp_unslash( $_GET['type'] ) ) : 'cartes';
-	$rec    = isset( $_GET['rec'] ) ? strtolower( sanitize_email( wp_unslash( $_GET['rec'] ) ) ) : strtolower( wp_get_current_user()->user_email );
-	$ambs   = array();
-	foreach ( (array) get_option( 'ag_ambassadeurs', array() ) as $a ) { if ( ! empty( $a['email'] ) ) $ambs[ strtolower( $a['email'] ) ] = $a['name'] ?? $a['email']; }
-	$name   = $ambs[ $rec ] ?? wp_get_current_user()->display_name;
-	$ref    = function_exists( 'ag_ambassadeur_ref' ) ? ag_ambassadeur_ref( $rec ) : '';
-	$link   = $ref ? add_query_arg( 'parrain', $ref, home_url( '/ambassadeurs' ) ) : home_url( '/sites-express' );
+	$type = isset( $_GET['type'] ) ? sanitize_key( wp_unslash( $_GET['type'] ) ) : 'cartes';
+	$mode = isset( $_GET['mode'] ) && 'brand' === $_GET['mode'] ? 'brand' : 'ambassador';
+
+	if ( 'brand' === $mode ) {
+		$name = 'Alliance Groupe';
+		$ref  = '';
+		$link = home_url( '/sites-express' );
+	} else {
+		$rec  = isset( $_GET['rec'] ) ? strtolower( sanitize_email( wp_unslash( $_GET['rec'] ) ) ) : strtolower( wp_get_current_user()->user_email );
+		$ambs = array();
+		foreach ( (array) get_option( 'ag_ambassadeurs', array() ) as $a ) { if ( ! empty( $a['email'] ) ) $ambs[ strtolower( $a['email'] ) ] = $a['name'] ?? $a['email']; }
+		$name = $ambs[ $rec ] ?? wp_get_current_user()->display_name;
+		$ref  = function_exists( 'ag_ambassadeur_ref' ) ? ag_ambassadeur_ref( $rec ) : '';
+		$link = $ref ? add_query_arg( 'parrain', $ref, home_url( '/ambassadeurs' ) ) : home_url( '/sites-express' );
+	}
 
 	if ( ! in_array( $type, array( 'cartes', 'flyer', 'sticker', 'affiche' ), true ) ) $type = 'cartes';
 
@@ -271,12 +297,21 @@ if ( 'cartes' === $type ) :
 				<div class="card card-front brand-grad">
 					<div class="logo">Alliance Groupe<small>AGENCE WEB &amp; IA</small></div>
 					<div>
-						<div class="name"><?php echo esc_html( $name ); ?></div>
-						<div class="tagline">Ambassadeur officiel</div>
-						<div class="qr-line">
-							<img src="<?php echo esc_url( $qr_small ); ?>" alt="QR">
-							<span>Scanne — site web pro dès 490 €<br>10 % offert à ton parrain</span>
-						</div>
+						<?php if ( 'brand' === $mode ) : ?>
+							<div class="name">Votre site pro</div>
+							<div class="tagline">en 7 jours — dès 490 €</div>
+							<div class="qr-line">
+								<img src="<?php echo esc_url( $qr_small ); ?>" alt="QR">
+								<span>📞 07 44 82 95 16<br>alliancegroupe-inc.com</span>
+							</div>
+						<?php else : ?>
+							<div class="name"><?php echo esc_html( $name ); ?></div>
+							<div class="tagline">Ambassadeur officiel</div>
+							<div class="qr-line">
+								<img src="<?php echo esc_url( $qr_small ); ?>" alt="QR">
+								<span>Scanne — site web pro dès 490 €<br>10 % offert à ton parrain</span>
+							</div>
+						<?php endif; ?>
 					</div>
 				</div>
 			<?php endfor; ?>
@@ -332,7 +367,11 @@ elseif ( 'flyer' === $type ) :
 						<div class="scan">📱 SCANNE</div>
 						<img src="<?php echo esc_url( $qr_big ); ?>" alt="QR">
 						<div class="label">Devis gratuit en 1 min</div>
-						<div class="name"><?php echo esc_html( $name ); ?></div>
+						<?php if ( 'brand' !== $mode ) : ?>
+							<div class="name"><?php echo esc_html( $name ); ?></div>
+						<?php else : ?>
+							<div class="name">alliancegroupe-inc.com</div>
+						<?php endif; ?>
 					</div>
 					<div class="footer-line">
 						<div>alliancegroupe-inc.com · contact@alliancegroupe-inc.com</div>
@@ -385,7 +424,11 @@ elseif ( 'affiche' === $type ) :
 				<img src="<?php echo esc_url( $qr_big ); ?>" alt="QR">
 				<div class="text">
 					<div class="scan">📱 SCANNE</div>
-					<div class="name">Devis gratuit · réponse sous 24 h · <strong><?php echo esc_html( $name ); ?></strong></div>
+					<?php if ( 'brand' === $mode ) : ?>
+						<div class="name">Devis gratuit · réponse sous 24 h · <strong>07 44 82 95 16</strong></div>
+					<?php else : ?>
+						<div class="name">Devis gratuit · réponse sous 24 h · <strong><?php echo esc_html( $name ); ?></strong></div>
+					<?php endif; ?>
 					<div class="url"><?php echo esc_html( $link ); ?></div>
 				</div>
 			</div>
