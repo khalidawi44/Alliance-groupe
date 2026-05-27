@@ -413,20 +413,27 @@ if ( ! function_exists( 'ag_dept_from_location' ) ) {
 if ( ! function_exists( 'ag_zones_reassign_all' ) ) {
 	function ag_zones_reassign_all() {
 		$list = (array) get_option( 'ag_prospects', array() );
-		$n = 0;
+		$stats = array( 'reassigned' => 0, 'kept' => 0, 'no_owner' => 0, 'no_dept' => 0, 'blocked' => 0 );
 		foreach ( $list as $k => $p ) {
-			if ( ! empty( $p['owner_email'] ) ) continue; // déjà assigné : on ne touche pas
+			// Skip les prospects bloqués (refus / ne_pas_contacter / client / ignore).
+			if ( function_exists( 'ag_prospect_blocked' ) && ag_prospect_blocked( $p['status'] ?? '' ) ) { $stats['blocked']++; continue; }
 			$dept = ag_prospect_dept( $p );
-			if ( '' === $dept ) continue;
+			if ( '' === $dept ) { $stats['no_dept']++; continue; }
+			$owners       = ag_zone_emails( $dept );
+			$current_own  = strtolower( $p['owner_email'] ?? '' );
+			$has_valid    = $current_own && in_array( $current_own, $owners, true );
+			if ( $has_valid ) { $stats['kept']++; continue; } // déjà bien assigné
+
+			if ( empty( $owners ) ) { $stats['no_owner']++; continue; } // zone libre
 			$owner = ag_zone_next_owner( $dept );
-			if ( '' === $owner ) continue;
+			if ( '' === $owner ) { $stats['no_owner']++; continue; }
 			$rec = function_exists( 'ag_ambassadeur_record' ) ? ag_ambassadeur_record( $owner ) : null;
 			$list[ $k ]['owner_email'] = $owner;
 			$list[ $k ]['owner_name']  = $rec['name'] ?? '';
-			$n++;
+			$stats['reassigned']++;
 		}
-		if ( $n ) update_option( 'ag_prospects', array_values( $list ) );
-		return $n;
+		if ( $stats['reassigned'] ) update_option( 'ag_prospects', array_values( $list ) );
+		return $stats;
 	}
 }
 
@@ -600,7 +607,19 @@ if ( ! function_exists( 'ag_zones_render' ) ) {
 			<?php elseif ( 'removed' === $msg ) : ?><div class="notice notice-success is-dismissible"><p>✅ Retiré de la zone.</p></div>
 			<?php elseif ( 'quota' === $msg ) : ?><div class="notice notice-error is-dismissible"><p>⛔ Quota atteint : cet ambassadeur a déjà son nombre de zones autorisées. Donne-lui une « zone supplémentaire » (payée/accordée) ci-dessous avant d'en ajouter une autre.</p></div>
 			<?php elseif ( 'extra' === $msg ) : ?><div class="notice notice-success is-dismissible"><p>✅ Réglage des zones supplémentaires enregistré.</p></div>
-			<?php elseif ( 0 === strpos( $msg, 'reassigned' ) ) : ?><div class="notice notice-success is-dismissible"><p>✅ <?php echo (int) substr( $msg, 11 ); ?> prospect(s) réassigné(s) à leur zone.</p></div>
+			<?php elseif ( 0 === strpos( $msg, 'reassigned-' ) ) :
+				$parts = explode( '-', substr( $msg, 11 ) );
+				$r_n   = (int) ( $parts[0] ?? 0 );
+				$r_k   = (int) ( $parts[1] ?? 0 );
+				$r_o   = (int) ( $parts[2] ?? 0 );
+				$r_d   = (int) ( $parts[3] ?? 0 );
+				$cls   = $r_n > 0 ? 'notice-success' : 'notice-warning';
+			?><div class="notice <?php echo esc_attr( $cls ); ?> is-dismissible"><p>
+				<?php if ( $r_n ) : ?>✅ <strong><?php echo $r_n; ?> prospect(s) réassigné(s)</strong> à leur zone.<?php else : ?>ℹ️ Aucun prospect à réassigner.<?php endif; ?>
+				<?php if ( $r_k ) : ?> · <?php echo $r_k; ?> déjà bien assigné(s).<?php endif; ?>
+				<?php if ( $r_o ) : ?> · <strong style="color:#bd7b00;"><?php echo $r_o; ?> en zone libre</strong> (assigne un ambassadeur à cette zone d'abord).<?php endif; ?>
+				<?php if ( $r_d ) : ?> · <strong style="color:#b32d2e;"><?php echo $r_d; ?> sans département</strong> détectable (adresse/ville vide ou ville inconnue).<?php endif; ?>
+			</p></div>
 			<?php endif; ?>
 
 			<div style="display:flex;flex-wrap:wrap;gap:12px;margin:8px 0 18px;">
@@ -623,20 +642,83 @@ if ( ! function_exists( 'ag_zones_render' ) ) {
 			</div>
 			<?php endif; ?>
 
-			<h2>🗺️ Carte des départements</h2>
-			<p style="color:#646970;font-size:.86rem;margin:4px 0 10px;"><span style="background:#1e7e34;color:#fff;border-radius:4px;padding:1px 6px;">couvert</span> <span style="background:#2271b1;color:#fff;border-radius:4px;padding:1px 6px;">partagé / à pourvoir</span> <span style="background:#e0e0e0;color:#333;border-radius:4px;padding:1px 6px;">libre</span></p>
+			<h2 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">🗺️ Carte des départements
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-zones' ) ); ?>" class="button button-small" title="Recharger la page">🔄 Actualiser</a>
+			</h2>
+			<?php
+			$zf    = isset( $_GET['zf'] ) ? sanitize_text_field( wp_unslash( $_GET['zf'] ) ) : '';
+			$zsort = isset( $_GET['zsort'] ) ? sanitize_text_field( wp_unslash( $_GET['zsort'] ) ) : 'code';
+			$base  = admin_url( 'admin.php?page=ag-zones' );
+
+			// Pré-classe chaque zone : couvert / partage / a_pourvoir / libre.
+			$zone_state = array(); $zone_count = array( 'couvert' => 0, 'partage' => 0, 'a_pourvoir' => 0, 'libre' => 0 );
+			foreach ( $names as $code => $nom ) {
+				$ow = ag_zone_owners( $code );
+				if ( count( $ow ) >= 2 ) { $state = 'partage'; }
+				elseif ( count( $ow ) === 1 ) { $state = 'couvert'; }
+				elseif ( ! empty( $pcount[ $code ] ) ) { $state = 'a_pourvoir'; }
+				else { $state = 'libre'; }
+				$zone_state[ $code ] = $state;
+				$zone_count[ $state ]++;
+			}
+
+			// Chips de filtre.
+			$chips = array(
+				''            => array( 'Toutes', count( $names ), '#1d2327' ),
+				'couvert'     => array( '✅ Couvert', $zone_count['couvert'], '#1e7e34' ),
+				'partage'     => array( '🤝 Partagé', $zone_count['partage'], '#2271b1' ),
+				'a_pourvoir'  => array( '🎯 À pourvoir', $zone_count['a_pourvoir'], '#bd7b00' ),
+				'libre'       => array( '⚪ Libre', $zone_count['libre'], '#646970' ),
+			);
+			?>
+			<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 6px;">
+				<?php foreach ( $chips as $k => $c ) :
+					$url = add_query_arg( array_filter( array( 'page' => 'ag-zones', 'zf' => $k === '' ? null : $k, 'zsort' => 'code' === $zsort ? null : $zsort ) ), admin_url( 'admin.php' ) );
+					$on  = ( $zf === $k );
+				?>
+					<a href="<?php echo esc_url( $url ); ?>" style="text-decoration:none;display:inline-block;padding:5px 12px;border-radius:100px;font-weight:700;font-size:.84rem;background:<?php echo $c[2]; ?>;color:#fff;opacity:<?php echo $on ? '1' : '.65'; ?>;border:<?php echo $on ? '2px solid #1d2327' : '2px solid transparent'; ?>;"><?php echo esc_html( $c[0] ); ?> <?php echo (int) $c[1]; ?></a>
+				<?php endforeach; ?>
+			</div>
+			<form method="get" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>" style="margin:6px 0 12px;">
+				<input type="hidden" name="page" value="ag-zones">
+				<?php if ( '' !== $zf ) : ?><input type="hidden" name="zf" value="<?php echo esc_attr( $zf ); ?>"><?php endif; ?>
+				<label style="font-size:.9rem;color:#50575e;">Trier par : </label>
+				<select name="zsort" onchange="this.form.submit()">
+					<option value="code"      <?php selected( $zsort, 'code' ); ?>>Code département (01 → 95, MA en fin)</option>
+					<option value="name"      <?php selected( $zsort, 'name' ); ?>>Nom de zone (A → Z)</option>
+					<option value="prospects" <?php selected( $zsort, 'prospects' ); ?>>Nombre de prospects (décroissant)</option>
+					<option value="state"     <?php selected( $zsort, 'state' ); ?>>État (couverts d'abord, libres après)</option>
+				</select>
+			</form>
+			<?php
+			// Application du tri.
+			$entries = array();
+			$state_order = array( 'couvert' => 0, 'partage' => 1, 'a_pourvoir' => 2, 'libre' => 3 );
+			foreach ( $names as $code => $nom ) {
+				if ( '' !== $zf && $zone_state[ $code ] !== $zf ) continue;
+				$entries[] = array( 'code' => $code, 'nom' => $nom, 'p' => (int) ( $pcount[ $code ] ?? 0 ), 'state' => $zone_state[ $code ] );
+			}
+			usort( $entries, function ( $a, $b ) use ( $zsort, $state_order ) {
+				if ( 'name' === $zsort )      return strcasecmp( $a['nom'], $b['nom'] );
+				if ( 'prospects' === $zsort ) return $b['p'] <=> $a['p'];
+				if ( 'state' === $zsort )     return ( $state_order[ $a['state'] ] <=> $state_order[ $b['state'] ] ) ?: strcasecmp( $a['code'], $b['code'] );
+				return strcasecmp( $a['code'], $b['code'] );
+			} );
+			?>
 			<div style="display:flex;flex-wrap:wrap;gap:6px;max-width:1000px;margin-bottom:26px;">
-				<?php foreach ( $names as $code => $nom ) :
+				<?php foreach ( $entries as $e ) :
+					$code = $e['code']; $nom = $e['nom'];
 					$ow = ag_zone_owners( $code );
 					if ( count( $ow ) >= 2 ) { $bg = '#2271b1'; $fg = '#fff'; $sub = '🤝 ×' . count( $ow ); }
 					elseif ( count( $ow ) === 1 ) { $bg = '#1e7e34'; $fg = '#fff'; $sub = explode( ' ', trim( $ow[0]['name'] ?? '' ) )[0] ?: 'pris'; }
-					elseif ( ! empty( $pcount[ $code ] ) ) { $bg = '#2271b1'; $fg = '#fff'; $sub = $pcount[ $code ] . ' pr.'; }
+					elseif ( $e['p'] ) { $bg = '#bd7b00'; $fg = '#fff'; $sub = $e['p'] . ' pr.'; }
 					else { $bg = '#e0e0e0'; $fg = '#333'; $sub = ''; }
 				?>
-					<div title="<?php echo esc_attr( $code . ' ' . $nom . ( ! empty( $pcount[ $code ] ) ? ' — ' . $pcount[ $code ] . ' prospect(s)' : '' ) ); ?>" style="width:96px;background:<?php echo $bg; ?>;color:<?php echo $fg; ?>;border-radius:8px;padding:6px 8px;font-size:.74rem;line-height:1.25;">
+					<div title="<?php echo esc_attr( $code . ' ' . $nom . ( $e['p'] ? ' — ' . $e['p'] . ' prospect(s)' : '' ) ); ?>" style="width:96px;background:<?php echo $bg; ?>;color:<?php echo $fg; ?>;border-radius:8px;padding:6px 8px;font-size:.74rem;line-height:1.25;">
 						<strong><?php echo esc_html( $code ); ?></strong> <?php echo esc_html( mb_strimwidth( $nom, 0, 13, '…' ) ); ?><?php echo $sub ? '<br><span style="opacity:.85;">' . esc_html( $sub ) . '</span>' : ''; ?>
 					</div>
 				<?php endforeach; ?>
+				<?php if ( empty( $entries ) ) : ?><p style="color:#646970;">Aucune zone avec ce filtre.</p><?php endif; ?>
 			</div>
 
 			<h2>Ajouter un ambassadeur à une zone</h2>
@@ -787,8 +869,10 @@ add_action( 'admin_post_ag_zone_remove', function () {
 } );
 add_action( 'admin_post_ag_zone_reassign', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_zone_admin' ) ) wp_die( 'no' );
-	$n = ag_zones_reassign_all();
-	wp_safe_redirect( admin_url( 'admin.php?page=ag-zones&zmsg=reassigned' . $n ) ); exit;
+	$s = ag_zones_reassign_all();
+	// Compact pour passage en query string (zmsg=reassigned-3-0-1-2 = 3 réassignés / 0 dej-ok / 1 zone-libre / 2 sans-dept).
+	$payload = (int) $s['reassigned'] . '-' . (int) $s['kept'] . '-' . (int) $s['no_owner'] . '-' . (int) $s['no_dept'];
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-zones&zmsg=reassigned-' . $payload ) ); exit;
 } );
 
 /* ── CRM recrutement : enregistrer une fournée de contacts ────────── */
