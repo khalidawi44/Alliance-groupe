@@ -75,8 +75,24 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 
 .agx{position:fixed;inset:0;width:100vw;height:100vh;overflow:hidden;z-index:50;background:#05060a;color:#fff;font-family:'Helvetica Neue',Arial,sans-serif;touch-action:pan-y}
 .agx__media{position:absolute;inset:0;z-index:0}
-.agx__media video,.agx__media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1s ease}
+.agx__media video,.agx__media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.1s ease}
+.agx__media img{transform:scale(1.08);filter:saturate(1.08) contrast(1.04)}
+.agx__media img.is-on{animation:agx-kenburns 26s ease-in-out infinite alternate}
+@keyframes agx-kenburns{from{transform:scale(1.06) translate(-1%,1%)}to{transform:scale(1.18) translate(2%,-2%)}}
 .agx__media .is-on{opacity:1}
+/* Ciel étoilé plein écran (station Univers) : on est "dans les étoiles" */
+.agx__sky{position:absolute;inset:0;z-index:1;opacity:0;transition:opacity 1.2s ease;pointer-events:none}
+.agx.is-menu .agx__sky{opacity:1}
+.agx__sky::before,.agx__sky::after{content:'';position:absolute;inset:-50%;background-repeat:repeat;background-image:
+	radial-gradient(1.5px 1.5px at 12% 22%,#fff,transparent),radial-gradient(1.5px 1.5px at 28% 64%,#fff,transparent),
+	radial-gradient(2px 2px at 44% 33%,#fff,transparent),radial-gradient(1.5px 1.5px at 61% 78%,#fff,transparent),
+	radial-gradient(1.5px 1.5px at 73% 18%,#fff,transparent),radial-gradient(2px 2px at 87% 52%,#fff,transparent),
+	radial-gradient(1.5px 1.5px at 19% 88%,#FCEFC4,transparent),radial-gradient(1.5px 1.5px at 53% 7%,#fff,transparent),
+	radial-gradient(2px 2px at 92% 84%,#fff,transparent),radial-gradient(1.5px 1.5px at 36% 50%,#fff,transparent);
+	background-size:340px 340px;animation:agx-drift 90s linear infinite,agx-tw 4s ease-in-out infinite}
+.agx__sky::after{background-size:520px 520px;opacity:.6;animation-duration:140s,6s;animation-direction:reverse,normal}
+@keyframes agx-drift{from{transform:translate(0,0)}to{transform:translate(-340px,-340px)}}
+@keyframes agx-tw{0%,100%{opacity:1}50%{opacity:.55}}
 .agx__veil{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 80% 75% at 50% 45%,transparent 0%,transparent 45%,rgba(5,6,10,.55) 82%,rgba(3,4,8,.95) 100%),linear-gradient(180deg,rgba(5,6,10,.35) 0%,transparent 30%,transparent 62%,rgba(4,4,8,.85) 100%)}
 .agx__canvas{position:absolute;inset:0;width:100%;height:100%;z-index:2}
 
@@ -180,6 +196,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 		<img id="agx-img" src="<?php echo esc_url( $office ); ?>" alt="" class="is-on">
 	</div>
 	<div class="agx__veil"></div>
+	<div class="agx__sky" id="agx-sky" aria-hidden="true"></div>
 	<canvas class="agx__canvas" id="agx-canvas"></canvas>
 
 	<div class="agx__cap" id="agx-cap">
@@ -189,13 +206,6 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 	</div>
 
 	<div class="agx__constel" id="agx-menu">
-		<svg class="agx__lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-			<?php foreach ( $orb_links as $pair ) :
-				$a = $orbs[ $pair[0] ]; $b = $orbs[ $pair[1] ]; ?>
-				<line x1="<?php echo (int) $a['x']; ?>" y1="<?php echo (int) $a['y']; ?>" x2="<?php echo (int) $b['x']; ?>" y2="<?php echo (int) $b['y']; ?>" />
-			<?php endforeach; ?>
-		</svg>
-		<div class="agx__core"><span>Alliance</span><span>Groupe</span></div>
 		<?php foreach ( $orbs as $idx => $o ) : ?>
 			<div class="agx__orb" style="left:<?php echo (int) $o['x']; ?>%;top:<?php echo (int) $o['y']; ?>%" data-orb="<?php echo (int) $idx; ?>">
 				<button class="agx__orb-dot" type="button" aria-label="<?php echo esc_attr( $o['label'] ); ?>"></button>
@@ -263,9 +273,9 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const BASE = '<?php echo esc_js( $base ); ?>';
 const STATIONS = [
-	{ pre:'BIENVENUE CHEZ —', ttl:'Alliance Groupe', line:"C'est ici que votre projet prend vie.", model:'macbook_pro_2021.glb', media:'video' },
-	{ pre:'🌋 NOTRE ÉNERGIE', ttl:'Le Vésuve', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>' },
-	{ pre:'🇲🇦 NOTRE PÔLE SUD', ttl:'Marrakech', line:'SEO, IA, création — notre studio au soleil.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>' },
+	{ pre:'BIENVENUE CHEZ —', ttl:'Alliance Groupe', line:"C'est ici que votre projet prend vie.", model:'macbook_pro_2021.glb', media:'video', size:4.6, front:true, rotY:0.6, baseY:-0.6 },
+	{ pre:'🌋 NOTRE ÉNERGIE', ttl:'Le Vésuve', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', drag:true },
+	{ pre:'🇲🇦 NOTRE PÔLE SUD', ttl:'Marrakech', line:'SEO, IA, création — notre studio au soleil.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', drag:true, baseY:-2.2 },
 	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', model:'need_some_space.glb', media:'space', menu:true }
 ];
 
@@ -348,12 +358,17 @@ async function loadStation(i){
 		}
 		const sph = box.getBoundingSphere(new THREE.Sphere());
 		centered.position.sub(sph.center);                       // recentre l'objet à l'origine
-		const target = isPoints ? 17 : (flat ? 8.4 : 6.4);
+		const target = st.size || (isPoints ? 22 : (flat ? 8.4 : 6.4));
 		inner.scale.setScalar(target / (sph.radius || 1));
 		if (flat){ inner.rotation.x = -Math.PI * 0.30; inner.rotation.z = -0.05; } // vue 3/4 sur le cratère
-		if (isPoints) outer.position.set(0, -2.5, -3);           // galaxie englobante, dense band sous le texte
+		if (isPoints) outer.position.set(0, -0.5, -1);           // galaxie qui remplit l'écran
 	}
 	outer.userData.points = isPoints;
+	outer.userData.drag = !!st.drag;
+	outer.userData.front = !!st.front;
+	outer.userData.rotY = st.rotY || 0;
+	outer.userData.baseY = st.baseY || 0;
+	outer.userData.dragX = 0; outer.userData.dragY = 0;
 	cache[i] = outer; elLoader.classList.remove('is-on'); return outer;
 }
 
@@ -377,6 +392,8 @@ async function go(i, instant){
 	elEnter.classList.toggle('is-hidden', i!==0);
 	elMenu.classList.toggle('is-on', !!st.menu);
 	host.classList.toggle('is-menu', !!st.menu);
+	host.style.cursor = st.drag ? 'grab' : 'default';
+	elHint.textContent = st.drag ? '↔ Faites glisser pour tourner' : '← Glissez ou NEXT →';
 	if (!st.menu) closeOrbs();
 	elHint.style.opacity = (i===STATIONS.length-1) ? '0' : '';
 	setMedia(st);
@@ -413,7 +430,13 @@ elEnter.addEventListener('click', e=>{ e.preventDefault(); plunge(); });
 document.addEventListener('keydown', e=>{ if(e.key==='ArrowRight')go(cur+1); else if(e.key==='ArrowLeft')go(cur-1); });
 let x0=null;
 host.addEventListener('touchstart', e=>{ x0=e.touches[0].clientX; }, {passive:true});
-host.addEventListener('touchend', e=>{ if(x0===null)return; const dx=e.changedTouches[0].clientX-x0; if(Math.abs(dx)>55) go(cur+(dx<0?1:-1)); x0=null; }, {passive:true});
+host.addEventListener('touchend', e=>{ if(current3D&&current3D.userData.drag){ x0=null; return; } if(x0===null)return; const dx=e.changedTouches[0].clientX-x0; if(Math.abs(dx)>55) go(cur+(dx<0?1:-1)); x0=null; }, {passive:true});
+
+/* Drag pour faire tourner soi-même le modèle (Vésuve, tour de Marrakech) */
+let dragging=false, dpx=0, dpy=0;
+host.addEventListener('pointerdown', e=>{ if(current3D&&current3D.userData.drag){ dragging=true; dpx=e.clientX; dpy=e.clientY; host.style.cursor='grabbing'; } });
+window.addEventListener('pointermove', e=>{ if(!dragging||!current3D)return; const u=current3D.userData; u.dragY += (e.clientX-dpx)*0.008; u.dragX = Math.max(-0.7, Math.min(0.7, u.dragX + (e.clientY-dpy)*0.006)); dpx=e.clientX; dpy=e.clientY; });
+window.addEventListener('pointerup', ()=>{ dragging=false; if(current3D&&current3D.userData.drag) host.style.cursor='grab'; });
 
 let ttX=0,tX=0;
 host.addEventListener('mousemove', e=>{ const r=host.getBoundingClientRect(); ttX=((e.clientX-r.left)/r.width-0.5)*0.6; }, {passive:true});
@@ -450,8 +473,11 @@ function loop(){
 	const t=(performance.now()-t0)*0.001;
 	tX += (ttX-tX)*0.05;
 	if (current3D){
-		if (current3D.userData.points){ current3D.rotation.y = t*0.04 + tX*0.12; } // étoiles qui dérivent lentement
-		else { current3D.rotation.y = tX*0.5; current3D.position.y = Math.sin(t*0.5)*0.1; } // pas de rotation auto, léger suivi souris + flottement
+		const u = current3D.userData;
+		if (u.points){ current3D.rotation.y = t*0.04 + tX*0.12; }                                   // galaxie qui dérive
+		else if (u.drag){ current3D.rotation.y = u.dragY; current3D.rotation.x = u.dragX; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.05; } // l'utilisateur tourne l'objet
+		else if (u.front){ current3D.rotation.y = u.rotY + Math.sin(t*0.45)*0.12; current3D.position.y = u.baseY + Math.sin(t*0.6)*0.07; } // toujours de face, léger balancement
+		else { current3D.rotation.y = tX*0.5; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.1; }
 	}
 	renderer.render(scene, camera);
 	requestAnimationFrame(loop);
