@@ -18,7 +18,7 @@ $imgb   = get_stylesheet_directory_uri() . '/assets/images/';
 $poster = get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg'; // Naples (pas le bureau) : visible avant le chargement de la vidéo
 $logo   = get_stylesheet_directory_uri() . '/assets/images/logo.png';            // tête de lion, au centre de la constellation
 $vid    = get_stylesheet_directory_uri() . '/assets/images/video/naples.mp4';
-$music  = get_option( 'ag_xp_music', get_stylesheet_directory_uri() . '/assets/son/Napoli_con_bizonnio2.mp3' );
+$music  = get_option( 'ag_xp_music', get_stylesheet_directory_uri() . '/assets/images/son/Napoli_con_bizonnio2.m4a' );
 
 // Constellation de la station "Univers" : chaque étoile ouvre un panneau de
 // cartes flottantes (offres) au lieu d'un menu basique.
