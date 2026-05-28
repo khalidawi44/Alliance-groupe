@@ -43,6 +43,7 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 - **Chasse** Google Places (New) (option `ag_places_key`) : repère sans vrai site (réseaux sociaux = pas un vrai site), **score « probabilité d'achat »** (avis, note, joignable), **balayage tous secteurs** d'une ville, **agent auto** (cron quotidien).
 - **CRM partagé** : statuts (nouveau→contacté→relancé→sans réponse→intéressé→client→refusé→ne plus contacter), filtres/tri, **anti-doublon global**, **assignation** à un ambassadeur (1 proprio = pas de double-contact), message **émotionnel** personnalisé + « pourquoi ».
 - **Agent Coach** (`inc/ag-coach.php`) : feuille de route quotidienne (relances/leads/ventes/briefs) poussée Telegram + email à 8h (cron `ag_coach_daily`, option `ag_coach_on`).
+- **Le système vendu comme produit** (`templates/page-systeme-prospection.php`) : page commerciale qui vend le système prospection/CRM lui-même (1 990 € installation + 49 €/mois). Captures à déposer dans `assets/images/systeme-prospection/` (apercu.jpg, capture-1.jpg…capture-6.jpg).
 
 ### 6. Notifications & diffusion — `inc/ag-prospection.php` (Réglages → Notifications téléphone)
 - `ag_push()` (interne : WhatsApp CallMeBot 1:1 + Telegram canal interne) ; `ag_push_clients()` (canal général Telegram).
@@ -60,9 +61,10 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 - **Branding** : logo tête de lion + « AG » (header transparent `logo-header.png`, bannière OG) ; burger centré sur toutes tailles (PC inclus).
 
 ### 8. Expérience immersive 3D — `templates/page-experience.php` (« Le Voyage Alliance »)
-- Parcours plein écran en **4 stations** (Bureau / Vésuve / Marrakech / Univers), nav clavier/swipe/boutons. Three.js r0.160 (CDN) + GLTFLoader/DRACOLoader.
-- **Modèles `.glb` LOCAUX** dans `assets/images/img_3d/` ; chargement **lazy par station** + cache + spinner ; `pixelRatio` capé 1.6, auto-cadrage par bounding sphere, fallback sans crash.
-- ⚠️ Pas de dossier `assets/audio/` → fond sonore `ag_xp_music` en 404 tant que le mp3 n'est pas ajouté. Pas de garde `prefers-reduced-motion` (≠ scènes accueil `hero-3d-scene`/`globe-3d`/`atelier-3d`).
+- Parcours plein écran en **6 stations** (tableau JS `STATIONS`, ordre actuel) : **Vidéo** d'intro (`assets/images/video/naples.mp4`) → **Globe** « Alliance dans le monde » (Terre interactive + marqueurs cliquables `GLOBE_MARKERS` : bureaux Nantes/Naples/Marrakech + pages Ambassadeurs/Sites Express/Studio) → **Naples** (modèle `mt._vesuvius_italy.glb`) → **Nantes** (photo) → **Marrakech** (`marrakech-tower.glb`) → **L'Univers Alliance** (galaxie Sketchfab embarquée + constellation/menu de pages cliquables). Nav clavier/swipe/boutons. Three.js r0.160 (CDN) + GLTFLoader/DRACOLoader.
+- **Cartes ÉQUIPE** (tableau `$team`) sur Naples/Nantes/Marrakech : chaque membre (fabrizio, carlito, kate, laurent, julie, halim, amina) émerge en carte cliquable → mini-fiche bio dans l'expérience.
+- **Modèles `.glb` LOCAUX** dans `assets/images/img_3d/` ; chargement **lazy par station** + cache + spinner ; `pixelRatio` capé 1.6, auto-cadrage par bounding sphere, fallback sans crash. Rotation auto des modèles (touch & drag supprimé).
+- Fond sonore `ag_xp_music` : fichier **présent** (`assets/images/son/Napoli_con_bizonnio2.m4a`, valeur par défaut de l'option), volontairement faible à l'ouverture. ⚠️ Pas de garde `prefers-reduced-motion` (≠ scènes accueil `hero-3d-scene`/`globe-3d`/`atelier-3d`).
 
 ### 9. Cadeaux d'acquisition (lead magnets)
 - **Audit SEO gratuit** (`inc/ag-audit-seo.php` + `page-audit-seo.php`) : 12 checks, score /100, rapport imprimable, lead → CRM + push.
