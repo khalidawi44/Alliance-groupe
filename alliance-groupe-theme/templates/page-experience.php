@@ -365,7 +365,7 @@ async function loadStation(i){
 		centered.position.sub(sph.center);                       // recentre l'objet à l'origine
 		const target = st.size || (isPoints ? 22 : (flat ? 8.8 : 6.4));
 		inner.scale.setScalar(target / (sph.radius || 1));
-		if (flat){ inner.rotation.x = -Math.PI * 0.20; } // vue 3/4 sur le cratère
+		if (flat){ inner.rotation.x = -Math.PI * 0.42; } // vue 3/4 sur le cratère
 		if (isPoints) outer.position.set(0, -0.5, -1);           // galaxie qui remplit l'écran
 	}
 	outer.userData.points = isPoints;
