@@ -20,6 +20,17 @@ $logo   = get_stylesheet_directory_uri() . '/assets/images/logo.png';           
 $vid    = get_stylesheet_directory_uri() . '/assets/images/video/naples.mp4';
 $music  = get_option( 'ag_xp_music', get_stylesheet_directory_uri() . '/assets/images/son/Napoli_con_bizonnio2.m4a' );
 
+// Équipe (mêmes photos que la page "À propos", dossier assets/images/team/).
+$team_base = get_stylesheet_directory_uri() . '/assets/images/team/';
+$xp_team = array(
+	'fabrizio' => array( 'name' => 'Fabrizio', 'role' => 'Fondateur & CEO',                 'img' => $team_base . 'fabrizio.png' ),
+	'julie'    => array( 'name' => 'Julie',    'role' => 'Cheffe de projet',                'img' => $team_base . 'julie.jpg' ),
+	'laurent'  => array( 'name' => 'Laurent',  'role' => 'Responsable commercial',          'img' => $team_base . 'laurent.jpg' ),
+	'kate'     => array( 'name' => 'Kate',     'role' => 'Directrice artistique',           'img' => $team_base . 'kate.jpg' ),
+	'halim'    => array( 'name' => 'Halim',    'role' => 'Responsable SEO & Data',          'img' => $team_base . 'halim.jpg' ),
+	'amina'    => array( 'name' => 'Amina',    'role' => 'Responsable IA & Automatisation', 'img' => $team_base . 'amina.png' ),
+);
+
 // Constellation de la station "Univers" : chaque étoile ouvre un panneau de
 // cartes flottantes (offres) au lieu d'un menu basique.
 // x / y = position en % dans la zone ; les liens utilisent les vrais slugs.
@@ -174,6 +185,18 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__detail.is-on .agx__card{animation:agx-card-in .7s cubic-bezier(.22,1,.36,1) backwards,agx-float 6s ease-in-out infinite;animation-delay:calc(var(--i) * .12s),calc(var(--i) * -2s + .7s)}
 @keyframes agx-card-in{from{opacity:0;transform:translateY(40px) scale(.8)}to{opacity:1;transform:none}}
 @keyframes agx-float{0%,100%{transform:translateY(-7px)}50%{transform:translateY(9px)}}
+
+/* Cartes ÉQUIPE (stations Nantes / Marrakech) : émergent du bas (de la tour) */
+.agx__team{position:absolute;left:0;right:0;bottom:12vh;z-index:6;display:flex;gap:16px;justify-content:center;align-items:flex-end;flex-wrap:wrap;padding:0 16px;opacity:0;visibility:hidden;transition:opacity .6s ease;pointer-events:none}
+.agx__team.is-on{opacity:1;visibility:visible}
+.agx__tcard{width:152px;max-width:42vw;background:rgba(12,14,22,.5);backdrop-filter:blur(12px);border:1px solid rgba(212,180,92,.34);border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.55);text-align:center;opacity:0;transform:translateY(70px) scale(.82)}
+.agx__team.is-on .agx__tcard{animation:agx-emerge .85s cubic-bezier(.22,1,.36,1) forwards;animation-delay:calc(var(--i) * .15s)}
+@keyframes agx-emerge{to{opacity:1;transform:translateY(0) scale(1)}}
+.agx__tcard-photo{width:100%;aspect-ratio:1/1;overflow:hidden;border-bottom:1px solid rgba(212,180,92,.3)}
+.agx__tcard-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.agx__tcard-name{font-family:Georgia,serif;font-size:1.05rem;color:#fff;margin-top:9px}
+.agx__tcard-role{font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:#D4B45C;margin:3px 8px 12px}
+@media (max-width:720px){ .agx__team{gap:12px;bottom:13vh} .agx__tcard{width:40vw} .agx__tcard-name{font-size:.95rem} }
 .agx__card:hover{transform:translateY(-6px) scale(1.04);border-color:#D4B45C;box-shadow:0 40px 90px rgba(0,0,0,.7),0 0 40px rgba(212,180,92,.25);color:#fff;text-decoration:none}
 .agx__card-icon{display:flex;align-items:center;justify-content:center;height:118px;line-height:1;color:#F3D27A;background:linear-gradient(145deg,rgba(212,180,92,.22),rgba(243,122,31,.10) 45%,rgba(12,14,22,.55));border-bottom:1px solid rgba(212,180,92,.28)}
 .agx__card-icon svg{width:54px;height:54px;display:block;filter:drop-shadow(0 4px 14px rgba(243,122,31,.4))}
@@ -232,6 +255,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 	<div class="agx__sky" id="agx-sky" aria-hidden="true"></div>
 	<iframe class="agx__sky3d" id="agx-sky3d" title="Galaxie Alliance" frameborder="0" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" loading="lazy" aria-hidden="true"></iframe>
 	<canvas class="agx__canvas" id="agx-canvas"></canvas>
+	<div class="agx__team" id="agx-team" aria-hidden="true"></div>
 
 	<div class="agx__cap" id="agx-cap">
 		<div class="pre" id="agx-pre">BIENVENUE CHEZ —</div>
@@ -275,7 +299,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 
 	<div class="agx__nav">
 		<button id="agx-back">◂ BACK</button>
-		<span class="ct"><span id="agx-cur">01</span> / 04</span>
+		<span class="ct"><span id="agx-cur">01</span> / <span id="agx-tot">05</span></span>
 		<button id="agx-next">NEXT ▸</button>
 	</div>
 	<button class="agx__sound is-off" id="agx-sound" type="button" aria-label="Activer le son">
@@ -309,9 +333,11 @@ const BASE = '<?php echo esc_js( $base ); ?>';
 const STATIONS = [
 	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', media:'space', menu:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0.2&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' },
 	{ pre:'BIENVENUE CHEZ —', ttl:'Alliance Groupe', line:"C'est ici que votre projet prend vie.", model:'macbook_pro_2021.glb', media:'video', size:4.6, front:true, rotY:0.6, baseY:-0.6 },
+	{ pre:'✦ NOTRE QG', ttl:'Nantes', line:'Les visages de la maison.', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/nantes-1.jpg' ); ?>', team:['fabrizio','kate','laurent','julie'] },
 	{ pre:'✦ NOTRE ÉNERGIE', ttl:'Le Vésuve', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>' },
-	{ pre:'✦ NOTRE PÔLE SUD', ttl:'Marrakech', line:'SEO, IA, création — notre studio au soleil.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', baseY:-2.2 }
+	{ pre:'✦ NOTRE PÔLE SUD', ttl:'Marrakech', line:'L’équipe qui sort de la tour.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', baseY:-2.2, team:['halim','amina'] }
 ];
+const TEAM = <?php echo wp_json_encode( $xp_team ); ?>;
 
 const host = document.getElementById('agx');
 const canvas = document.getElementById('agx-canvas');
@@ -322,6 +348,19 @@ const bN = document.getElementById('agx-next'), bB = document.getElementById('ag
 const elVideo = document.getElementById('agx-video'), elImg = document.getElementById('agx-img');
 const elSound = document.getElementById('agx-sound'), audio = document.getElementById('agx-audio');
 const elSky3d = document.getElementById('agx-sky3d');
+const elTeam = document.getElementById('agx-team'), elTot = document.getElementById('agx-tot');
+if (elTot) elTot.textContent = String(STATIONS.length).padStart(2,'0');
+
+// Cartes équipe : reconstruites à chaque entrée (relance l'animation d'émergence).
+function buildTeam(st){
+	if (!st.team){ elTeam.classList.remove('is-on'); elTeam.innerHTML = ''; return; }
+	elTeam.innerHTML = st.team.map((k,i) => {
+		const m = TEAM[k]; if (!m) return '';
+		return '<div class="agx__tcard" style="--i:'+i+'"><div class="agx__tcard-photo"><img src="'+m.img+'" alt="'+m.name+'" loading="lazy"></div><div class="agx__tcard-name">'+m.name+'</div><div class="agx__tcard-role">'+m.role+'</div></div>';
+	}).join('');
+	void elTeam.offsetWidth;
+	elTeam.classList.add('is-on');
+}
 
 let cur = 0, current3D = null, busy = false;
 const cache = {};
@@ -434,6 +473,7 @@ async function go(i, instant){
 	if (!st.menu) closeOrbs();
 	elHint.style.opacity = (i===STATIONS.length-1) ? '0' : '';
 	setMedia(st);
+	buildTeam(st);
 	if (st.iframe && !elSky3d.getAttribute('src')) elSky3d.setAttribute('src', st.iframe); // galaxie Sketchfab chargée à la 1re visite (la visibilité suit la classe is-menu)
 	if (current3D){ scene.remove(current3D); current3D = null; }
 	if (!st.iframe){
