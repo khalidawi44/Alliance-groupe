@@ -1,8 +1,8 @@
 # HANDOFF — Alliance Groupe (site `alliancegroupe-inc.com`)
 
 > Document de reprise pour toute nouvelle session Claude (PC ou mobile via GitHub MCP).
-> Dernière mise à jour : 2026-05-25 — branche de travail : `claude/site-config-commits-nZtU1` (alignée sur `main` `bb0a75a`).
-> **Reprise rapide** : on a fait le point sur la config (`CLAUDE.md` + `INFRASTRUCTURE.md` à jour des 49 commits du 24-25 mai) et listé les tâches restantes → voir **§9**.
+> Dernière mise à jour : 2026-05-28 — branche de travail : `claude/conversation-linking-bug-O6HUR`.
+> **Reprise rapide** : mise en place de la **liaison automatique entre conversations** — hook `SessionStart` (`.claude/hooks/session-start.sh`) qui injecte branche + commits + travail non commité + cet en-tête à chaque nouvelle session. ⚠️ **Toujours mettre à jour ces 3 lignes + §9 avant de fermer une session** : c'est ce que la prochaine conversation lira.
 
 ---
 
