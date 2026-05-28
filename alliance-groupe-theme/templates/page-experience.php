@@ -264,7 +264,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const BASE = '<?php echo esc_js( $base ); ?>';
 const STATIONS = [
 	{ pre:'BIENVENUE CHEZ —', ttl:'Alliance Groupe', line:"C'est ici que votre projet prend vie.", model:'macbook_pro_2021.glb', media:'video' },
-	{ pre:'🌋 NOTRE ÉNERGIE', ttl:'Le Vésuve', line:'La force napolitaine qui ne s’éteint jamais.', model:['volcano.glb','mt._vesuvius_italy.glb'], media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>' },
+	{ pre:'🌋 NOTRE ÉNERGIE', ttl:'Le Vésuve', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>' },
 	{ pre:'🇲🇦 NOTRE PÔLE SUD', ttl:'Marrakech', line:'SEO, IA, création — notre studio au soleil.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>' },
 	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', model:'need_some_space.glb', media:'space', menu:true }
 ];
@@ -336,16 +336,21 @@ async function loadStation(i){
 
 	const inner = new THREE.Group(); inner.add(centered);
 	const outer = new THREE.Group(); outer.add(inner);
-	const box = new THREE.Box3().setFromObject(centered);
+	let box = new THREE.Box3().setFromObject(centered);
 	if (!box.isEmpty()){
-		const sph  = box.getBoundingSphere(new THREE.Sphere());
-		const size = box.getSize(new THREE.Vector3());
-		centered.position.sub(sph.center);                       // recentre l'objet à l'origine
+		let size = box.getSize(new THREE.Vector3());
 		const maxHoriz = Math.max(size.x, size.z);
-		const flat = !isPoints && size.y < 0.32 * maxHoriz;      // terrain plat (Vésuve)
-		const target = isPoints ? 17 : (flat ? 7.8 : 6.4);
+		const flat = !isPoints && size.y < 0.32 * maxHoriz;      // carte de terrain (Vésuve)
+		if (flat){
+			centered.scale.y = 2.6;                              // accentue le relief du volcan (carte aplatie)
+			box = new THREE.Box3().setFromObject(centered);      // recalcul après exagération
+			size = box.getSize(new THREE.Vector3());
+		}
+		const sph = box.getBoundingSphere(new THREE.Sphere());
+		centered.position.sub(sph.center);                       // recentre l'objet à l'origine
+		const target = isPoints ? 17 : (flat ? 8.4 : 6.4);
 		inner.scale.setScalar(target / (sph.radius || 1));
-		if (flat) inner.rotation.x = -Math.PI * 0.22;            // légèrement incliné face caméra
+		if (flat){ inner.rotation.x = -Math.PI * 0.30; inner.rotation.z = -0.05; } // vue 3/4 sur le cratère
 		if (isPoints) outer.position.set(0, -2.5, -3);           // galaxie englobante, dense band sous le texte
 	}
 	outer.userData.points = isPoints;
