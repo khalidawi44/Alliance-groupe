@@ -163,6 +163,8 @@ get_header();
 <?php get_template_part('template-parts/realisations'); ?>
 
 <!-- Globe 3D : présence internationale Nantes / Marrakech / Naples -->
+<?php get_template_part('template-parts/atelier-3d'); ?>
+
 <?php get_template_part('template-parts/globe-3d'); ?>
 
 <!-- FAQ -->
