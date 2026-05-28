@@ -362,11 +362,11 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const BASE = '<?php echo esc_js( $base ); ?>';
 const STATIONS = [
-	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', media:'space', menu:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_hint=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' },
 	{ pre:'BIENVENUE CHEZ —', ttl:'Alliance Groupe', line:"C'est ici que votre projet prend vie.", media:'video' },
+	{ pre:'✦ NOTRE ÉNERGIE', ttl:'Naples', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', size:6, baseY:-1.4, team:['fabrizio','carlito'] },
 	{ pre:'✦ NOTRE QG', ttl:'Nantes', line:'Les visages de la maison.', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/nantes-1.jpg' ); ?>', team:['kate','laurent','julie'] },
-	{ pre:'✦ NOTRE ÉNERGIE', ttl:'Naples', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', team:['fabrizio','carlito'] },
-	{ pre:'✦ NOTRE PÔLE SUD', ttl:'Marrakech', line:'L’équipe qui sort de la tour.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', baseY:-2.2, team:['halim','amina'] }
+	{ pre:'✦ NOTRE PÔLE SUD', ttl:'Marrakech', line:'L’équipe qui sort de la tour.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', baseY:-2.2, team:['halim','amina'] },
+	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', media:'space', menu:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_hint=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' }
 ];
 const TEAM = <?php echo wp_json_encode( $xp_team ); ?>;
 
@@ -611,7 +611,7 @@ function loop(){
 	if (current3D){
 		const u = current3D.userData;
 		if (u.points){ current3D.rotation.x = 1.2; current3D.rotation.y = 0; u.spinNode.rotation.y = t*0.05 + tX*0.25; } // galaxie DE FACE en orbite (on voit la spirale)
-		else if (u.flat){ current3D.rotation.x = 1.32 + u.dragX; current3D.rotation.y = 0; u.spinNode.rotation.y = u.dragY + Math.sin(t*0.18)*0.30; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.04; } // carte bien à plat, oscillation douce (pas de rotation complète => pas d'effet "diamant")
+		else if (u.flat){ current3D.rotation.x = 0.62 + u.dragX; current3D.rotation.y = 0; u.spinNode.rotation.y = u.dragY + Math.sin(t*0.18)*0.32; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.04; } // carte inclinée (de profil/3-quarts) : on voit la photo derrière, oscillation douce
 		else if (u.drag){ current3D.rotation.y = u.dragY + (u.spin ? t*0.18 : 0); current3D.rotation.x = u.dragX; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.05; } // l'utilisateur tourne l'objet
 		else if (u.front){ current3D.rotation.y = u.rotY + Math.sin(t*0.45)*0.12; current3D.position.y = u.baseY + Math.sin(t*0.6)*0.07; } // toujours de face, léger balancement
 		else { current3D.rotation.y = tX*0.5; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.1; }
