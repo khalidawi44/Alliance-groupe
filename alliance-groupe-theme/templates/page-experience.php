@@ -108,6 +108,9 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 /* Ciel étoilé plein écran (station Univers) : on est "dans les étoiles" */
 .agx__sky{position:absolute;inset:0;z-index:1;opacity:0;transition:opacity 1.2s ease;pointer-events:none}
 .agx.is-menu .agx__sky{opacity:1}
+/* Galaxie Sketchfab embarquée (station Univers) : décor qui tourne tout seul, derrière la constellation */
+.agx__sky3d{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1;opacity:0;visibility:hidden;transition:opacity 1.4s ease;pointer-events:none;background:#05060a}
+.agx.is-menu .agx__sky3d{opacity:1;visibility:visible}
 .agx__sky::before,.agx__sky::after{content:'';position:absolute;inset:-50%;background-repeat:repeat;background-image:
 	radial-gradient(1.5px 1.5px at 12% 22%,#fff,transparent),radial-gradient(1.5px 1.5px at 28% 64%,#fff,transparent),
 	radial-gradient(2px 2px at 44% 33%,#fff,transparent),radial-gradient(1.5px 1.5px at 61% 78%,#fff,transparent),
@@ -227,6 +230,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 	</div>
 	<div class="agx__veil"></div>
 	<div class="agx__sky" id="agx-sky" aria-hidden="true"></div>
+	<iframe class="agx__sky3d" id="agx-sky3d" title="Galaxie Alliance" frameborder="0" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" loading="lazy" aria-hidden="true"></iframe>
 	<canvas class="agx__canvas" id="agx-canvas"></canvas>
 
 	<div class="agx__cap" id="agx-cap">
@@ -307,7 +311,7 @@ const STATIONS = [
 	{ pre:'BIENVENUE CHEZ —', ttl:'Alliance Groupe', line:"C'est ici que votre projet prend vie.", model:'macbook_pro_2021.glb', media:'video', size:4.6, front:true, rotY:0.6, baseY:-0.6 },
 	{ pre:'✦ NOTRE ÉNERGIE', ttl:'Le Vésuve', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', drag:true, spin:true },
 	{ pre:'✦ NOTRE PÔLE SUD', ttl:'Marrakech', line:'SEO, IA, création — notre studio au soleil.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', drag:true, baseY:-2.2 },
-	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', model:'need_some_space.glb', media:'space', menu:true }
+	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', media:'space', menu:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=1&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' }
 ];
 
 const host = document.getElementById('agx');
@@ -318,6 +322,7 @@ const elLoader = document.getElementById('agx-loader'), elCur = document.getElem
 const bN = document.getElementById('agx-next'), bB = document.getElementById('agx-back'), elHint = document.getElementById('agx-hint');
 const elVideo = document.getElementById('agx-video'), elImg = document.getElementById('agx-img');
 const elSound = document.getElementById('agx-sound'), audio = document.getElementById('agx-audio');
+const elSky3d = document.getElementById('agx-sky3d');
 
 let cur = 0, current3D = null, busy = false;
 const cache = {};
@@ -430,11 +435,14 @@ async function go(i, instant){
 	if (!st.menu) closeOrbs();
 	elHint.style.opacity = (i===STATIONS.length-1) ? '0' : '';
 	setMedia(st);
+	if (st.iframe && !elSky3d.getAttribute('src')) elSky3d.setAttribute('src', st.iframe); // galaxie Sketchfab chargée à la 1re visite (la visibilité suit la classe is-menu)
 	if (current3D){ scene.remove(current3D); current3D = null; }
-	const grp = await loadStation(i);
-	if (cur === i){
-		current3D = grp; grp.scale.setScalar(0.55); scene.add(grp);
-		tween(720, k => grp.scale.setScalar(0.55 + 0.45*k), () => grp.scale.setScalar(1));
+	if (!st.iframe){
+		const grp = await loadStation(i);
+		if (cur === i){
+			current3D = grp; grp.scale.setScalar(0.55); scene.add(grp);
+			tween(720, k => grp.scale.setScalar(0.55 + 0.45*k), () => grp.scale.setScalar(1));
+		}
 	}
 	elCap.classList.remove('is-out'); replayCap();
 	elWarp.classList.remove('is-on');
