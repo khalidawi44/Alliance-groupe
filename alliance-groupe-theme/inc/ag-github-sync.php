@@ -37,7 +37,7 @@ class AG_GitHub_Sync {
 	const TRANSIENT_TTL = 5 * MINUTE_IN_SECONDS;
 
 	/** Extensions autorisées à être écrasées par la sync. */
-	const ALLOWED_EXT = array( 'php', 'css', 'js', 'json', 'md', 'mp4', 'webm', 'png', 'jpg', 'jpeg', 'svg', 'webp', 'gif', 'ico', 'woff', 'woff2', 'ttf', 'otf', 'txt' );
+	const ALLOWED_EXT = array( 'php', 'css', 'js', 'json', 'md', 'mp4', 'webm', 'png', 'jpg', 'jpeg', 'svg', 'webp', 'gif', 'ico', 'woff', 'woff2', 'ttf', 'otf', 'txt', 'glb', 'gltf', 'bin', 'hdr', 'ktx2', 'mp3', 'wav', 'm4a', 'ogg' );
 
 	/** Fichiers/dossiers à NE JAMAIS écraser même s'ils sont dans le repo. */
 	const PROTECTED = array( 'wp-config.php', '.env', '.htaccess' );

@@ -22,7 +22,7 @@ $music  = get_option( 'ag_xp_music', get_stylesheet_directory_uri() . '/assets/a
 // x / y = position en % dans la zone ; les liens utilisent les vrais slugs.
 $orbs = array(
 	array(
-		'label' => 'Sites & Offres', 'x' => 20, 'y' => 32,
+		'label' => 'Sites & Offres', 'x' => 16, 'y' => 30,
 		'sub'   => array(
 			array( 'l' => 'Sites Express', 'u' => home_url( '/sites-express' ) ),
 			array( 'l' => 'Templates WordPress', 'u' => home_url( '/templates-wordpress' ) ),
@@ -30,7 +30,7 @@ $orbs = array(
 		),
 	),
 	array(
-		'label' => 'Gagner', 'x' => 47, 'y' => 19,
+		'label' => 'Gagner', 'x' => 50, 'y' => 9,
 		'sub'   => array(
 			array( 'l' => 'Programme ambassadeurs', 'u' => home_url( '/programme-ambassadeur' ) ),
 			array( 'l' => 'Devenir recruteur', 'u' => home_url( '/recruteur' ) ),
@@ -38,7 +38,7 @@ $orbs = array(
 		),
 	),
 	array(
-		'label' => 'Cadeaux', 'x' => 76, 'y' => 31,
+		'label' => 'Cadeaux', 'x' => 84, 'y' => 30,
 		'sub'   => array(
 			array( 'l' => 'Audit SEO offert', 'u' => home_url( '/audit-seo' ) ),
 			array( 'l' => '1 site gratuit / mois', 'u' => home_url( '/tirage-au-sort' ) ),
@@ -46,14 +46,14 @@ $orbs = array(
 		),
 	),
 	array(
-		'label' => 'Solidaire', 'x' => 31, 'y' => 64,
+		'label' => 'Solidaire', 'x' => 29, 'y' => 76,
 		'sub'   => array(
 			array( 'l' => 'Programme Racines', 'u' => home_url( '/programme-racines' ) ),
 			array( 'l' => 'Site asso gratuit', 'u' => home_url( '/wordpress-association' ) ),
 		),
 	),
 	array(
-		'label' => 'Studio & Contact', 'x' => 66, 'y' => 63,
+		'label' => 'Studio & Contact', 'x' => 71, 'y' => 76,
 		'sub'   => array(
 			array( 'l' => 'Studio créatif', 'u' => home_url( '/studio' ) ),
 			array( 'l' => 'Nous contacter', 'u' => home_url( '/contact' ) ),
@@ -87,22 +87,31 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__cap .ttl{font-family:Georgia,serif;font-size:clamp(2rem,6.5vw,4.6rem);line-height:1.05;margin:0;text-shadow:0 4px 40px rgba(0,0,0,.95);background:linear-gradient(180deg,#fff,#e8dcc0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .agx__cap .line{margin:14px auto 0;max-width:560px;font-family:Georgia,serif;font-style:italic;font-size:clamp(.95rem,1.5vw,1.2rem);color:rgba(255,255,255,.85);text-shadow:0 2px 16px #000}
 
-/* Constellation (station Univers) */
-.agx__constel{position:absolute;inset:0;z-index:6;opacity:0;visibility:hidden;transition:opacity .9s ease;pointer-events:none}
+/* Station Univers : on réduit le gros titre pour laisser la place à la constellation */
+.agx.is-menu .agx__cap{top:5vh}
+.agx.is-menu .agx__cap .ttl{font-size:clamp(1.5rem,4.4vw,2.8rem)}
+.agx.is-menu .agx__cap .line{margin-top:8px;font-size:clamp(.85rem,1.4vw,1.05rem)}
+
+/* Constellation (station Univers) : confinée sous le titre, au-dessus de la nav */
+.agx__constel{position:absolute;left:0;right:0;top:26vh;bottom:13vh;z-index:6;opacity:0;visibility:hidden;transition:opacity .9s ease;pointer-events:none}
 .agx__constel.is-on{opacity:1;visibility:visible;pointer-events:auto}
 .agx__lines{position:absolute;inset:0;width:100%;height:100%}
-.agx__lines line{stroke:rgba(212,180,92,.32);stroke-width:.18;stroke-dasharray:1.4 1.4;animation:agx-dash 18s linear infinite}
+.agx__lines line{stroke:rgba(212,180,92,.3);stroke-width:.18;stroke-dasharray:1.4 1.4;animation:agx-dash 18s linear infinite}
 @keyframes agx-dash{to{stroke-dashoffset:-40}}
-.agx__core{position:absolute;left:50%;top:43%;transform:translate(-50%,-50%);text-align:center;display:flex;flex-direction:column;font-family:Georgia,serif;line-height:1.02;pointer-events:none}
-.agx__core span:first-child{font-size:clamp(1.4rem,3.4vw,2.4rem);color:#fff;text-shadow:0 2px 24px #000}
-.agx__core span:last-child{font-size:clamp(.8rem,1.8vw,1.15rem);letter-spacing:6px;text-transform:uppercase;color:#D4B45C}
-.agx__orb{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:9px}
-.agx__orb-dot{position:relative;width:20px;height:20px;border-radius:50%;border:0;cursor:pointer;background:radial-gradient(circle at 35% 35%,#fff,#F3D27A 45%,#D4B45C 70%,#9a7b2e);box-shadow:0 0 0 6px rgba(212,180,92,.12),0 0 22px 4px rgba(212,180,92,.55);transition:transform .25s ease,box-shadow .25s ease;animation:agx-pulse 3.2s ease-in-out infinite}
-.agx__orb-dot::after{content:'';position:absolute;inset:-14px;border-radius:50%;border:1px solid rgba(212,180,92,.25)}
-@keyframes agx-pulse{0%,100%{box-shadow:0 0 0 6px rgba(212,180,92,.10),0 0 18px 3px rgba(212,180,92,.45)}50%{box-shadow:0 0 0 9px rgba(212,180,92,.16),0 0 30px 7px rgba(212,180,92,.75)}}
-.agx__orb-dot:hover{transform:scale(1.25)}
-.agx__orb.is-open .agx__orb-dot{transform:scale(1.35);box-shadow:0 0 0 10px rgba(243,122,31,.18),0 0 34px 9px rgba(243,122,31,.8)}
-.agx__orb-label{font-family:Georgia,serif;font-size:clamp(.82rem,1.5vw,1.05rem);color:#fff;text-shadow:0 2px 12px #000;white-space:nowrap;letter-spacing:.5px;transition:color .25s}
+.agx__core{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);text-align:center;display:flex;flex-direction:column;font-family:Georgia,serif;line-height:1.02;pointer-events:none}
+.agx__core span:first-child{font-size:clamp(1.3rem,3.1vw,2.1rem);color:#fff;text-shadow:0 2px 24px #000}
+.agx__core span:last-child{font-size:clamp(.72rem,1.6vw,1rem);letter-spacing:6px;text-transform:uppercase;color:#D4B45C}
+.agx__orb{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:14px}
+
+/* Vraie étoile dorée : cœur lumineux + halo + branches de diffraction qui scintillent */
+.agx__orb-dot{position:relative;width:13px;height:13px;border:0;border-radius:50%;cursor:pointer;background:radial-gradient(circle at 50% 50%,#fff 0%,#FCEFC4 32%,#F3D27A 58%,#D4B45C 82%,rgba(212,180,92,0) 100%);box-shadow:0 0 10px 3px rgba(252,239,196,.9),0 0 26px 8px rgba(212,180,92,.5),0 0 60px 16px rgba(212,180,92,.22);transition:transform .25s ease;animation:agx-twinkle 3.6s ease-in-out infinite}
+.agx__orb-dot::before,.agx__orb-dot::after{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none}
+.agx__orb-dot::before{width:2px;height:52px;background:linear-gradient(rgba(255,240,205,0),rgba(255,240,205,.95),rgba(255,240,205,0))}
+.agx__orb-dot::after{width:52px;height:2px;background:linear-gradient(90deg,rgba(255,240,205,0),rgba(255,240,205,.95),rgba(255,240,205,0))}
+@keyframes agx-twinkle{0%,100%{box-shadow:0 0 8px 2px rgba(252,239,196,.75),0 0 20px 6px rgba(212,180,92,.4),0 0 48px 12px rgba(212,180,92,.18)}50%{box-shadow:0 0 15px 4px rgba(252,239,196,1),0 0 36px 12px rgba(212,180,92,.7),0 0 74px 22px rgba(212,180,92,.3)}}
+.agx__orb-dot:hover{transform:translate(0,0) scale(1.35)}
+.agx__orb.is-open .agx__orb-dot{transform:scale(1.4);background:radial-gradient(circle at 50% 50%,#fff 0%,#FFE3B0 35%,#F37A1F 75%,rgba(243,122,31,0) 100%);box-shadow:0 0 16px 5px rgba(255,225,170,1),0 0 44px 16px rgba(243,122,31,.7)}
+.agx__orb-label{font-family:Georgia,serif;font-size:clamp(.82rem,1.5vw,1.05rem);color:#fff;text-shadow:0 2px 12px #000,0 0 20px rgba(0,0,0,.8);white-space:nowrap;letter-spacing:.5px;transition:color .25s}
 .agx__orb.is-open .agx__orb-label{color:#F3D27A}
 .agx__sub{position:absolute;top:calc(100% + 12px);left:50%;transform:translate(-50%,8px);min-width:200px;display:flex;flex-direction:column;gap:6px;padding:12px;background:rgba(8,9,14,.82);backdrop-filter:blur(12px);border:1px solid rgba(212,180,92,.4);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.6);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,transform .28s ease;z-index:3}
 .agx__orb.is-open .agx__sub{opacity:1;visibility:visible;pointer-events:auto;transform:translate(-50%,0)}
@@ -302,6 +311,7 @@ async function go(i, instant){
 	bB.disabled = (i===0); bN.disabled = (i===STATIONS.length-1);
 	elEnter.classList.toggle('is-hidden', i!==0);
 	elMenu.classList.toggle('is-on', !!st.menu);
+	host.classList.toggle('is-menu', !!st.menu);
 	if (!st.menu) closeOrbs();
 	elHint.style.opacity = (i===STATIONS.length-1) ? '0' : '';
 	setMedia(st.media);
