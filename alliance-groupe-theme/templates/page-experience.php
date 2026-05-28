@@ -41,7 +41,11 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__veil{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 80% 75% at 50% 45%,transparent 0%,transparent 45%,rgba(5,6,10,.55) 82%,rgba(3,4,8,.95) 100%),linear-gradient(180deg,rgba(5,6,10,.35) 0%,transparent 30%,transparent 62%,rgba(4,4,8,.85) 100%)}
 .agx__canvas{position:absolute;inset:0;width:100%;height:100%;z-index:2}
 
-.agx__cap{position:absolute;left:0;right:0;top:10vh;text-align:center;padding:0 24px;z-index:5;pointer-events:none;transition:opacity .6s ease}
+.agx__cap{position:absolute;left:0;right:0;top:10vh;text-align:center;padding:0 24px;z-index:5;pointer-events:none;transition:opacity .55s ease,transform .55s cubic-bezier(.22,1,.36,1)}
+.agx__cap.is-out{opacity:0;transform:translateY(-26px)}
+.agx__cap .pre,.agx__cap .ttl,.agx__cap .line{opacity:0;transform:translateY(22px);animation:agx-rise .7s cubic-bezier(.22,1,.36,1) forwards}
+.agx__cap .ttl{animation-delay:.08s}.agx__cap .line{animation-delay:.16s}
+@keyframes agx-rise{to{opacity:1;transform:translateY(0)}}
 .agx__cap .pre{font-size:clamp(.7rem,1.2vw,.9rem);letter-spacing:6px;color:#D4B45C;text-shadow:0 2px 14px #000;margin-bottom:12px}
 .agx__cap .ttl{font-family:Georgia,serif;font-size:clamp(2rem,6.5vw,4.6rem);line-height:1.05;margin:0;text-shadow:0 4px 40px rgba(0,0,0,.95);background:linear-gradient(180deg,#fff,#e8dcc0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .agx__cap .line{margin:14px auto 0;max-width:560px;font-family:Georgia,serif;font-style:italic;font-size:clamp(.95rem,1.5vw,1.2rem);color:rgba(255,255,255,.85);text-shadow:0 2px 16px #000}
@@ -70,6 +74,8 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 @keyframes agx-spin{to{transform:rotate(360deg)}}
 .agx__loader p{color:rgba(255,255,255,.7);letter-spacing:2px;font-size:.8rem}
 .agx__hint{position:absolute;bottom:8vh;left:0;right:0;text-align:center;font-size:.7rem;letter-spacing:3px;color:rgba(255,255,255,.4);text-transform:uppercase;pointer-events:none;text-shadow:0 1px 10px #000;z-index:6}
+.agx__warp{position:absolute;inset:0;z-index:10;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 50%,rgba(255,245,225,.95) 0%,rgba(212,180,92,.7) 30%,rgba(243,122,31,.35) 55%,rgba(5,6,10,0) 78%);transition:opacity .5s ease}
+.agx__warp.is-on{opacity:1}
 </style>
 
 <main class="agx" id="agx">
@@ -96,6 +102,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 
 	<a href="#" class="agx__enter" id="agx-enter">Commencer le voyage →</a>
 
+	<div class="agx__warp" id="agx-warp"></div>
 	<div class="agx__loader" id="agx-loader"><div class="agx__spin"></div><p>Chargement du modèle 3D…</p></div>
 
 	<div class="agx__nav">
@@ -135,14 +142,21 @@ const host = document.getElementById('agx');
 const canvas = document.getElementById('agx-canvas');
 const elPre = document.getElementById('agx-pre'), elTtl = document.getElementById('agx-ttl'), elLine = document.getElementById('agx-line');
 const elCap = document.getElementById('agx-cap'), elMenu = document.getElementById('agx-menu'), elEnter = document.getElementById('agx-enter');
-const elLoader = document.getElementById('agx-loader'), elCur = document.getElementById('agx-cur');
+const elLoader = document.getElementById('agx-loader'), elCur = document.getElementById('agx-cur'), elWarp = document.getElementById('agx-warp');
 const bN = document.getElementById('agx-next'), bB = document.getElementById('agx-back'), elHint = document.getElementById('agx-hint');
 const elVideo = document.getElementById('agx-video'), elImg = document.getElementById('agx-img');
 const elSound = document.getElementById('agx-sound'), audio = document.getElementById('agx-audio');
 
-let cur = 0, current3D = null;
+let cur = 0, current3D = null, busy = false;
 const cache = {};
 const W = () => host.clientWidth, H = () => host.clientHeight;
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const ease = k => k < .5 ? 2*k*k : 1 - Math.pow(-2*k+2, 2)/2;
+function tween(dur, onUpdate, onDone){
+	const s = performance.now();
+	(function f(t){ const k = Math.min(1, (t-s)/dur); onUpdate(ease(k)); if (k < 1) requestAnimationFrame(f); else onDone && onDone(); })(performance.now());
+}
+function replayCap(){ [elPre, elTtl, elLine].forEach(el => { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; }); }
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
@@ -190,9 +204,13 @@ function setMedia(mode){
 	else { elVideo.classList.remove('is-on'); if (mode === 'space'){ elImg.classList.remove('is-on'); } else { elImg.classList.add('is-on'); } }
 }
 
-async function go(i){
+async function go(i, instant){
+	if (busy) return;
 	i = Math.max(0, Math.min(STATIONS.length-1, i));
-	cur = i; const st = STATIONS[i];
+	busy = true;
+	const st = STATIONS[i];
+	if (!instant){ elCap.classList.add('is-out'); elWarp.classList.add('is-on'); await wait(380); }
+	cur = i;
 	elPre.textContent = st.pre; elTtl.textContent = st.ttl; elLine.textContent = st.line;
 	elCur.textContent = String(i+1).padStart(2,'0');
 	bB.disabled = (i===0); bN.disabled = (i===STATIONS.length-1);
@@ -200,14 +218,36 @@ async function go(i){
 	elMenu.classList.toggle('is-on', !!st.menu);
 	elHint.style.opacity = (i===STATIONS.length-1) ? '0' : '';
 	setMedia(st.media);
-	if (current3D){ scene.remove(current3D); }
+	if (current3D){ scene.remove(current3D); current3D = null; }
 	const grp = await loadStation(i);
-	if (cur === i){ current3D = grp; scene.add(grp); }
+	if (cur === i){
+		current3D = grp; grp.scale.setScalar(0.55); scene.add(grp);
+		tween(720, k => grp.scale.setScalar(0.55 + 0.45*k), () => grp.scale.setScalar(1));
+	}
+	elCap.classList.remove('is-out'); replayCap();
+	elWarp.classList.remove('is-on');
+	busy = false;
+}
+
+function plunge(){
+	if (busy) return;
+	busy = true;
+	const z0 = camera.position.z, y0 = camera.position.y;
+	elHint.style.opacity = '0'; elEnter.classList.add('is-hidden'); elCap.classList.add('is-out');
+	tween(950, k => {
+		camera.position.z = z0 + (2.4 - z0)*k;
+		camera.position.y = y0 + (0.25 - y0)*k;
+		camera.fov = 45 - 13*k; camera.updateProjectionMatrix();
+		if (k > 0.5) elWarp.classList.add('is-on');
+	}, () => {
+		camera.position.set(0, 1, 16); camera.fov = 45; camera.updateProjectionMatrix();
+		busy = false; go(1);
+	});
 }
 
 bN.addEventListener('click', ()=>go(cur+1));
 bB.addEventListener('click', ()=>go(cur-1));
-elEnter.addEventListener('click', e=>{ e.preventDefault(); go(1); });
+elEnter.addEventListener('click', e=>{ e.preventDefault(); plunge(); });
 document.addEventListener('keydown', e=>{ if(e.key==='ArrowRight')go(cur+1); else if(e.key==='ArrowLeft')go(cur-1); });
 let x0=null;
 host.addEventListener('touchstart', e=>{ x0=e.touches[0].clientX; }, {passive:true});
@@ -229,7 +269,7 @@ function loop(){
 	renderer.render(scene, camera);
 	requestAnimationFrame(loop);
 }
-go(0); loop();
+go(0, true); loop();
 </script>
 
 <?php get_footer(); ?>
