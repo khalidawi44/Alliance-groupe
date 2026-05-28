@@ -23,12 +23,12 @@ $music  = get_option( 'ag_xp_music', get_stylesheet_directory_uri() . '/assets/i
 // Équipe (mêmes photos que la page "À propos", dossier assets/images/team/).
 $team_base = get_stylesheet_directory_uri() . '/assets/images/team/';
 $xp_team = array(
-	'fabrizio' => array( 'name' => 'Fabrizio', 'role' => 'Fondateur & CEO',                 'img' => $team_base . 'fabrizio.png' ),
-	'julie'    => array( 'name' => 'Julie',    'role' => 'Cheffe de projet',                'img' => $team_base . 'julie.jpg' ),
-	'laurent'  => array( 'name' => 'Laurent',  'role' => 'Responsable commercial',          'img' => $team_base . 'laurent.jpg' ),
-	'kate'     => array( 'name' => 'Kate',     'role' => 'Directrice artistique',           'img' => $team_base . 'kate.jpg' ),
-	'halim'    => array( 'name' => 'Halim',    'role' => 'Responsable SEO & Data',          'img' => $team_base . 'halim.jpg' ),
-	'amina'    => array( 'name' => 'Amina',    'role' => 'Responsable IA & Automatisation', 'img' => $team_base . 'amina.png' ),
+	'fabrizio' => array( 'name' => 'Fabrizio', 'role' => 'Fondateur & CEO',                 'city' => 'Nantes, France',  'img' => $team_base . 'fabrizio.png', 'desc' => 'Né à Naples dans les Quartieri Spagnoli, installé à Nantes depuis 2009. Fabrizio a commencé par former gratuitement des familles défavorisées au digital dans l\'arrière-salle d\'une église. Aujourd\'hui, il dirige Alliance Groupe avec la même conviction : le web est un outil d\'émancipation.' ),
+	'julie'    => array( 'name' => 'Julie',    'role' => 'Cheffe de projet',                'city' => 'Nantes, France',  'img' => $team_base . 'julie.jpg',    'desc' => 'La colonne vertébrale opérationnelle d\'Alliance Groupe. Organisée, méthodique et dotée d\'un sang-froid à toute épreuve, Julie coordonne au quotidien les équipes de Nantes, Naples et Marrakech. Son super-pouvoir : transformer un planning chaotique en machine bien huilée.' ),
+	'laurent'  => array( 'name' => 'Laurent',  'role' => 'Responsable commercial',          'city' => 'Nantes, France',  'img' => $team_base . 'laurent.jpg',  'desc' => '15 ans de vente B2B avant de rejoindre Alliance Groupe. Patient, relationnel et profondément honnête, Laurent refuse de vendre ce dont le client n\'a pas besoin — ce qui explique pourquoi nos clients reviennent. Il traduit les besoins business en cahier des charges concret pour l\'équipe tech.' ),
+	'kate'     => array( 'name' => 'Kate',     'role' => 'Directrice artistique',           'city' => 'Nantes, France',  'img' => $team_base . 'kate.jpg',     'desc' => 'Diplômée de l\'École de Design Nantes Atlantique, Kate a fait ses armes en agence parisienne avant de rejoindre Alliance Groupe. Créative perfectionniste, elle conçoit des identités visuelles qui marquent et des interfaces qui convertissent. Son obsession : les détails que personne d\'autre ne remarque.' ),
+	'halim'    => array( 'name' => 'Halim',    'role' => 'Responsable SEO & Data',          'city' => 'Marrakech, Maroc', 'img' => $team_base . 'halim.jpg',   'desc' => 'Mathématicien de formation devenu expert SEO, Halim combine rigueur analytique et patience d\'artisan marocain. Depuis le bureau de Marrakech, il pilote les stratégies de référencement, l\'audit technique et le linking pour propulser nos clients en première page de Google.' ),
+	'amina'    => array( 'name' => 'Amina',    'role' => 'Responsable IA & Automatisation', 'city' => 'Marrakech, Maroc', 'img' => $team_base . 'amina.png',   'desc' => 'Diplômée en informatique de l\'Université Cadi Ayyad, Amina est l\'une des pionnières de l\'IA générative pour PME francophones. Elle conçoit chatbots, workflows et agents personnalisés qui libèrent nos clients des tâches répétitives. Son mantra : "L\'IA ne remplace personne, elle libère du temps."' ),
 );
 
 // Constellation de la station "Univers" : chaque étoile ouvre un panneau de
@@ -189,7 +189,24 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 /* Cartes ÉQUIPE (stations Nantes / Marrakech) : émergent du bas (de la tour) */
 .agx__team{position:absolute;left:0;right:0;bottom:12vh;z-index:6;display:flex;gap:16px;justify-content:center;align-items:flex-end;flex-wrap:wrap;padding:0 16px;opacity:0;visibility:hidden;transition:opacity .6s ease;pointer-events:none}
 .agx__team.is-on{opacity:1;visibility:visible}
-.agx__tcard{width:152px;max-width:42vw;background:rgba(12,14,22,.5);backdrop-filter:blur(12px);border:1px solid rgba(212,180,92,.34);border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.55);text-align:center;opacity:0;transform:translateY(70px) scale(.82)}
+.agx__team{pointer-events:none}
+.agx__tcard{width:152px;max-width:42vw;background:rgba(12,14,22,.5);backdrop-filter:blur(12px);border:1px solid rgba(212,180,92,.34);border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.55);text-align:center;opacity:0;transform:translateY(70px) scale(.82);pointer-events:auto;cursor:pointer;transition:border-color .25s,box-shadow .25s}
+.agx__tcard:hover{border-color:#D4B45C;box-shadow:0 30px 70px rgba(0,0,0,.7),0 0 30px rgba(212,180,92,.25)}
+
+/* Mini-fiche bio (clic sur une carte équipe) */
+.agx__bio{position:absolute;inset:0;z-index:12;display:flex;align-items:center;justify-content:center;padding:7vh 20px;background:rgba(4,5,9,.78);backdrop-filter:blur(10px);opacity:0;visibility:hidden;transform:scale(1.04);transition:opacity .45s ease,transform .45s cubic-bezier(.22,1,.36,1)}
+.agx__bio.is-on{opacity:1;visibility:visible;transform:scale(1)}
+.agx__bio-close{position:absolute;top:22px;left:22px;background:rgba(10,10,15,.5);border:1px solid rgba(212,180,92,.4);color:#D4B45C;border-radius:999px;padding:10px 18px;font-size:.78rem;letter-spacing:1px;cursor:pointer;transition:.25s}
+.agx__bio-close:hover{background:#D4B45C;color:#0a0a0f}
+.agx__bio-card{display:flex;gap:26px;max-width:760px;width:100%;background:rgba(12,14,22,.7);border:1px solid rgba(212,180,92,.34);border-radius:22px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.6)}
+.agx__bio-photo{flex:0 0 42%;max-width:300px}
+.agx__bio-photo img{width:100%;height:100%;object-fit:cover;display:block;min-height:260px}
+.agx__bio-info{flex:1;padding:30px 30px 30px 4px;display:flex;flex-direction:column;justify-content:center}
+.agx__bio-city{font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.agx__bio-name{font-family:Georgia,serif;font-size:clamp(1.8rem,4vw,2.6rem);margin:6px 0 2px;background:linear-gradient(180deg,#fff,#e8dcc0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.agx__bio-role{color:#D4B45C;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-size:.82rem;margin-bottom:14px}
+.agx__bio-desc{color:rgba(255,255,255,.82);line-height:1.6;font-size:.96rem;margin:0}
+@media (max-width:720px){ .agx__bio-card{flex-direction:column;max-width:420px} .agx__bio-photo{flex:none;max-width:none;aspect-ratio:3/2} .agx__bio-photo img{min-height:0} .agx__bio-info{padding:22px} }
 .agx__team.is-on .agx__tcard{animation:agx-emerge .85s cubic-bezier(.22,1,.36,1) forwards;animation-delay:calc(var(--i) * .15s)}
 @keyframes agx-emerge{to{opacity:1;transform:translateY(0) scale(1)}}
 .agx__tcard-photo{width:100%;aspect-ratio:1/1;overflow:hidden;border-bottom:1px solid rgba(212,180,92,.3)}
@@ -256,6 +273,19 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 	<iframe class="agx__sky3d" id="agx-sky3d" title="Galaxie Alliance" frameborder="0" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" loading="lazy" aria-hidden="true"></iframe>
 	<canvas class="agx__canvas" id="agx-canvas"></canvas>
 	<div class="agx__team" id="agx-team" aria-hidden="true"></div>
+
+	<div class="agx__bio" id="agx-bio" aria-hidden="true">
+		<button class="agx__bio-close" id="agx-bio-close" type="button">← Retour</button>
+		<div class="agx__bio-card">
+			<div class="agx__bio-photo"><img id="agx-bio-img" src="" alt=""></div>
+			<div class="agx__bio-info">
+				<span class="agx__bio-city" id="agx-bio-city"></span>
+				<h3 class="agx__bio-name" id="agx-bio-name"></h3>
+				<span class="agx__bio-role" id="agx-bio-role"></span>
+				<p class="agx__bio-desc" id="agx-bio-desc"></p>
+			</div>
+		</div>
+	</div>
 
 	<div class="agx__cap" id="agx-cap">
 		<div class="pre" id="agx-pre">BIENVENUE CHEZ —</div>
@@ -353,14 +383,32 @@ if (elTot) elTot.textContent = String(STATIONS.length).padStart(2,'0');
 
 // Cartes équipe : reconstruites à chaque entrée (relance l'animation d'émergence).
 function buildTeam(st){
+	closeBio();
 	if (!st.team){ elTeam.classList.remove('is-on'); elTeam.innerHTML = ''; return; }
 	elTeam.innerHTML = st.team.map((k,i) => {
 		const m = TEAM[k]; if (!m) return '';
-		return '<div class="agx__tcard" style="--i:'+i+'"><div class="agx__tcard-photo"><img src="'+m.img+'" alt="'+m.name+'" loading="lazy"></div><div class="agx__tcard-name">'+m.name+'</div><div class="agx__tcard-role">'+m.role+'</div></div>';
+		return '<div class="agx__tcard" style="--i:'+i+'" data-k="'+k+'" role="button" tabindex="0"><div class="agx__tcard-photo"><img src="'+m.img+'" alt="'+m.name+'" loading="lazy"></div><div class="agx__tcard-name">'+m.name+'</div><div class="agx__tcard-role">'+m.role+'</div></div>';
 	}).join('');
 	void elTeam.offsetWidth;
 	elTeam.classList.add('is-on');
 }
+
+// Mini-fiche bio
+const elBio = document.getElementById('agx-bio'), elBioImg = document.getElementById('agx-bio-img'),
+	elBioName = document.getElementById('agx-bio-name'), elBioRole = document.getElementById('agx-bio-role'),
+	elBioCity = document.getElementById('agx-bio-city'), elBioDesc = document.getElementById('agx-bio-desc');
+function openBio(k){
+	const m = TEAM[k]; if (!m) return;
+	elBioImg.src = m.img; elBioImg.alt = m.name;
+	elBioName.textContent = m.name; elBioRole.textContent = m.role;
+	elBioCity.textContent = m.city || ''; elBioDesc.textContent = m.desc || '';
+	elBio.classList.add('is-on');
+}
+function closeBio(){ elBio.classList.remove('is-on'); }
+elTeam.addEventListener('click', e => { const c = e.target.closest('.agx__tcard'); if (c) openBio(c.dataset.k); });
+elTeam.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ const c = e.target.closest('.agx__tcard'); if (c){ e.preventDefault(); openBio(c.dataset.k); } } });
+document.getElementById('agx-bio-close').addEventListener('click', closeBio);
+elBio.addEventListener('click', e => { if (e.target === elBio) closeBio(); });
 
 let cur = 0, current3D = null, busy = false;
 const cache = {};
