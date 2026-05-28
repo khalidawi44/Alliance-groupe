@@ -120,6 +120,9 @@ get_header();
     </div>
 </section>
 
+<!-- "Choisissez votre chemin" — 4 panneaux qui s'ouvrent (style theirisk.com) -->
+<?php get_template_part('template-parts/paths-hero'); ?>
+
 <!-- Marquee -->
 <?php get_template_part('template-parts/marquee'); ?>
 
