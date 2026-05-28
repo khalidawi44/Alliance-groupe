@@ -15,9 +15,10 @@
 get_header();
 $base   = get_stylesheet_directory_uri() . '/assets/images/img_3d/';
 $imgb   = get_stylesheet_directory_uri() . '/assets/images/';
-$office = get_stylesheet_directory_uri() . '/assets/images/team/1_bureau_naples.jpg';
+$poster = get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg'; // Naples (pas le bureau) : visible avant le chargement de la vidéo
+$logo   = get_stylesheet_directory_uri() . '/assets/images/logo.png';            // tête de lion, au centre de la constellation
 $vid    = get_stylesheet_directory_uri() . '/assets/images/video/naples.mp4';
-$music  = get_option( 'ag_xp_music', get_stylesheet_directory_uri() . '/assets/audio/naples.mp3' );
+$music  = get_option( 'ag_xp_music', get_stylesheet_directory_uri() . '/assets/images/son/Napoli_con_bizonnio2.m4a' );
 
 // Constellation de la station "Univers" : chaque étoile ouvre un panneau de
 // cartes flottantes (offres) au lieu d'un menu basique.
@@ -26,40 +27,40 @@ $orbs = array(
 	array(
 		'label' => 'Sites & Offres', 'x' => 16, 'y' => 30,
 		'sub'   => array(
-			array( 'l' => 'Sites Express',       'u' => home_url( '/sites-express' ),        'd' => 'Site pro livré en 7 jours, prix fixe.',     'img' => $imgb . 'produits/produit-essentiel.jpg' ),
-			array( 'l' => 'Templates WordPress',  'u' => home_url( '/templates-wordpress' ),  'd' => '6 thèmes métier prêts à installer.',        'img' => $imgb . 'produits/produit-boutique.jpg' ),
-			array( 'l' => 'Sur-mesure',           'u' => home_url( '/sur-mesure' ),           'd' => 'Projet ambitieux, design unique.',          'img' => $imgb . 'produits/produit-pro.jpg' ),
+			array( 'l' => 'Sites Express',       'u' => home_url( '/sites-express' ),       'd' => 'Site pro livré en 7 jours, prix fixe.', 'ico' => '🚀' ),
+			array( 'l' => 'Templates WordPress', 'u' => home_url( '/templates-wordpress' ), 'd' => '6 thèmes métier prêts à installer.',     'ico' => '🎨' ),
+			array( 'l' => 'Sur-mesure',          'u' => home_url( '/sur-mesure' ),          'd' => 'Projet ambitieux, design unique.',       'ico' => '💎' ),
 		),
 	),
 	array(
 		'label' => 'Gagner', 'x' => 50, 'y' => 9,
 		'sub'   => array(
-			array( 'l' => 'Programme ambassadeurs', 'u' => home_url( '/programme-ambassadeur' ), 'd' => 'Gagnez 10 % sur chaque vente.',    'img' => $imgb . 'studio/studio-10pct.jpg' ),
-			array( 'l' => 'Devenir recruteur',      'u' => home_url( '/recruteur' ),             'd' => 'Recrutez et touchez des primes.',  'img' => $imgb . 'produits/produit-croissance.jpg' ),
-			array( 'l' => 'Classement',             'u' => home_url( '/classement' ),            'd' => 'Grimpez dans le top des vendeurs.','img' => $imgb . 'produits/produit-performance.jpg' ),
+			array( 'l' => 'Programme ambassadeurs', 'u' => home_url( '/programme-ambassadeur' ), 'd' => 'Gagnez 10 % sur chaque vente.',     'ico' => '💰' ),
+			array( 'l' => 'Devenir recruteur',      'u' => home_url( '/recruteur' ),             'd' => 'Recrutez et touchez des primes.',   'ico' => '📣' ),
+			array( 'l' => 'Classement',             'u' => home_url( '/classement' ),            'd' => 'Grimpez dans le top des vendeurs.', 'ico' => '🏆' ),
 		),
 	),
 	array(
 		'label' => 'Cadeaux', 'x' => 84, 'y' => 30,
 		'sub'   => array(
-			array( 'l' => 'Audit SEO offert',     'u' => home_url( '/audit-seo' ),       'd' => '12 points analysés, note /100.',   'img' => $imgb . 'produits/produit-performance.jpg' ),
-			array( 'l' => '1 site gratuit / mois','u' => home_url( '/tirage-au-sort' ),  'd' => 'Tirage au sort chaque mois.',      'img' => $imgb . 'produits/produit-essentiel.jpg' ),
-			array( 'l' => 'Templates gratuits',   'u' => home_url( '/templates-wordpress' ), 'd' => 'Téléchargement immédiat.',     'img' => $imgb . 'produits/produit-boutique.jpg' ),
+			array( 'l' => 'Audit SEO offert',      'u' => home_url( '/audit-seo' ),           'd' => '12 points analysés, note /100.', 'ico' => '🔍' ),
+			array( 'l' => '1 site gratuit / mois', 'u' => home_url( '/tirage-au-sort' ),      'd' => 'Tirage au sort chaque mois.',    'ico' => '🎁' ),
+			array( 'l' => 'Templates gratuits',    'u' => home_url( '/templates-wordpress' ), 'd' => 'Téléchargement immédiat.',       'ico' => '📦' ),
 		),
 	),
 	array(
 		'label' => 'Solidaire', 'x' => 29, 'y' => 76,
 		'sub'   => array(
-			array( 'l' => 'Programme Racines',  'u' => home_url( '/programme-racines' ),    'd' => 'On reverse à des causes qui comptent.', 'img' => $imgb . 'cities/nantes-1.jpg' ),
-			array( 'l' => 'Site asso gratuit',  'u' => home_url( '/wordpress-association' ), 'd' => 'Un site offert aux associations.',      'img' => $imgb . 'cities/marrakech-1.jpg' ),
+			array( 'l' => 'Programme Racines', 'u' => home_url( '/programme-racines' ),    'd' => 'On reverse à des causes qui comptent.', 'ico' => '🌱' ),
+			array( 'l' => 'Site asso gratuit', 'u' => home_url( '/wordpress-association' ), 'd' => 'Un site offert aux associations.',      'ico' => '🤝' ),
 		),
 	),
 	array(
 		'label' => 'Studio & Contact', 'x' => 71, 'y' => 76,
 		'sub'   => array(
-			array( 'l' => 'Studio créatif', 'u' => home_url( '/studio' ),        'd' => 'Créez vos visuels & vidéos.',  'img' => $imgb . 'studio/studio-247.jpg' ),
-			array( 'l' => 'Nous contacter', 'u' => home_url( '/contact' ),       'd' => 'Parlons de votre projet.',     'img' => $imgb . 'cities/naples-1.jpg' ),
-			array( 'l' => 'Espace client',  'u' => home_url( '/espace-client' ), 'd' => 'Suivez vos projets en cours.', 'img' => $imgb . 'cities/nantes-2.jpg' ),
+			array( 'l' => 'Studio créatif', 'u' => home_url( '/studio' ),        'd' => 'Créez vos visuels & vidéos.',  'ico' => '🎬' ),
+			array( 'l' => 'Nous contacter', 'u' => home_url( '/contact' ),       'd' => 'Parlons de votre projet.',     'ico' => '✉️' ),
+			array( 'l' => 'Espace client',  'u' => home_url( '/espace-client' ), 'd' => 'Suivez vos projets en cours.', 'ico' => '👤' ),
 		),
 	),
 );
@@ -119,6 +120,9 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__core{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);text-align:center;display:flex;flex-direction:column;font-family:Georgia,serif;line-height:1.02;pointer-events:none}
 .agx__core span:first-child{font-size:clamp(1.3rem,3.1vw,2.1rem);color:#fff;text-shadow:0 2px 24px #000}
 .agx__core span:last-child{font-size:clamp(.72rem,1.6vw,1rem);letter-spacing:6px;text-transform:uppercase;color:#D4B45C}
+/* Tête de lion (logo) au centre de la galaxie */
+.agx__logo{position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);width:clamp(96px,11vw,168px);height:auto;z-index:3;pointer-events:none;filter:drop-shadow(0 0 26px rgba(212,180,92,.6)) drop-shadow(0 8px 22px rgba(0,0,0,.75));animation:agx-logo-glow 5s ease-in-out infinite}
+@keyframes agx-logo-glow{0%,100%{transform:translate(-50%,-50%) scale(1);filter:drop-shadow(0 0 22px rgba(212,180,92,.5)) drop-shadow(0 8px 22px rgba(0,0,0,.75))}50%{transform:translate(-50%,-50%) scale(1.06);filter:drop-shadow(0 0 46px rgba(212,180,92,.88)) drop-shadow(0 8px 22px rgba(0,0,0,.75))}}
 .agx__orb{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:14px}
 
 /* Vraie étoile dorée : cœur lumineux + halo + branches de diffraction qui scintillent */
@@ -144,7 +148,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 @keyframes agx-card-in{from{opacity:0;transform:translateY(40px) scale(.8)}to{opacity:1;transform:none}}
 @keyframes agx-float{0%,100%{transform:translateY(-7px)}50%{transform:translateY(9px)}}
 .agx__card:hover{transform:translateY(-6px) scale(1.04);border-color:#D4B45C;box-shadow:0 40px 90px rgba(0,0,0,.7),0 0 40px rgba(212,180,92,.25);color:#fff;text-decoration:none}
-.agx__card-img{display:block;height:148px;background-size:cover;background-position:center}
+.agx__card-icon{display:flex;align-items:center;justify-content:center;height:118px;font-size:3.1rem;line-height:1;background:linear-gradient(145deg,rgba(212,180,92,.22),rgba(243,122,31,.10) 45%,rgba(12,14,22,.55));border-bottom:1px solid rgba(212,180,92,.28);text-shadow:0 6px 20px rgba(0,0,0,.5)}
 .agx__card-body{display:flex;flex-direction:column;gap:7px;padding:18px}
 .agx__card-ttl{font-family:Georgia,serif;font-size:1.18rem;color:#fff}
 .agx__card-desc{font-size:.9rem;line-height:1.5;color:rgba(255,255,255,.72)}
@@ -153,7 +157,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 	.agx__orb-label{font-size:.72rem}
 	.agx__cards{gap:16px}
 	.agx__card{width:84vw;flex-direction:row}
-	.agx__card-img{height:auto;width:38%;flex-shrink:0}
+	.agx__card-icon{height:auto;width:34%;flex-shrink:0;font-size:2.4rem}
 	.agx__card-body{flex:1}
 }
 
@@ -190,10 +194,10 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 
 <main class="agx" id="agx">
 	<div class="agx__media" id="agx-media">
-		<video id="agx-video" muted loop playsinline preload="none" poster="<?php echo esc_url( $office ); ?>">
+		<video id="agx-video" class="is-on" muted loop playsinline autoplay preload="auto" poster="<?php echo esc_url( $poster ); ?>">
 			<source src="<?php echo esc_url( $vid ); ?>" type="video/mp4">
 		</video>
-		<img id="agx-img" src="<?php echo esc_url( $office ); ?>" alt="" class="is-on">
+		<img id="agx-img" src="<?php echo esc_url( $poster ); ?>" alt="">
 	</div>
 	<div class="agx__veil"></div>
 	<div class="agx__sky" id="agx-sky" aria-hidden="true"></div>
@@ -206,6 +210,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 	</div>
 
 	<div class="agx__constel" id="agx-menu">
+		<img class="agx__logo" src="<?php echo esc_url( $logo ); ?>" alt="Alliance Groupe">
 		<?php foreach ( $orbs as $idx => $o ) : ?>
 			<div class="agx__orb" style="left:<?php echo (int) $o['x']; ?>%;top:<?php echo (int) $o['y']; ?>%" data-orb="<?php echo (int) $idx; ?>">
 				<button class="agx__orb-dot" type="button" aria-label="<?php echo esc_attr( $o['label'] ); ?>"></button>
@@ -222,7 +227,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 			<div class="agx__cards">
 				<?php foreach ( $o['sub'] as $n => $s ) : ?>
 					<a class="agx__card" href="<?php echo esc_url( $s['u'] ); ?>" style="--i:<?php echo (int) $n; ?>">
-						<span class="agx__card-img" style="background-image:url('<?php echo esc_url( $s['img'] ); ?>')"></span>
+						<span class="agx__card-icon" aria-hidden="true"><?php echo esc_html( $s['ico'] ); ?></span>
 						<span class="agx__card-body">
 							<span class="agx__card-ttl"><?php echo esc_html( $s['l'] ); ?></span>
 							<span class="agx__card-desc"><?php echo esc_html( $s['d'] ); ?></span>
@@ -274,7 +279,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const BASE = '<?php echo esc_js( $base ); ?>';
 const STATIONS = [
 	{ pre:'BIENVENUE CHEZ —', ttl:'Alliance Groupe', line:"C'est ici que votre projet prend vie.", model:'macbook_pro_2021.glb', media:'video', size:4.6, front:true, rotY:0.6, baseY:-0.6 },
-	{ pre:'🌋 NOTRE ÉNERGIE', ttl:'Le Vésuve', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', drag:true },
+	{ pre:'🌋 NOTRE ÉNERGIE', ttl:'Le Vésuve', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', drag:true, spin:true },
 	{ pre:'🇲🇦 NOTRE PÔLE SUD', ttl:'Marrakech', line:'SEO, IA, création — notre studio au soleil.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', drag:true, baseY:-2.2 },
 	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', model:'need_some_space.glb', media:'space', menu:true }
 ];
@@ -352,19 +357,20 @@ async function loadStation(i){
 		const maxHoriz = Math.max(size.x, size.z);
 		const flat = !isPoints && size.y < 0.32 * maxHoriz;      // carte de terrain (Vésuve)
 		if (flat){
-			centered.scale.y = 2.6;                              // accentue le relief du volcan (carte aplatie)
+			centered.scale.y = 1.4;                              // accentue le relief du volcan (carte aplatie)
 			box = new THREE.Box3().setFromObject(centered);      // recalcul après exagération
 			size = box.getSize(new THREE.Vector3());
 		}
 		const sph = box.getBoundingSphere(new THREE.Sphere());
 		centered.position.sub(sph.center);                       // recentre l'objet à l'origine
-		const target = st.size || (isPoints ? 22 : (flat ? 8.4 : 6.4));
+		const target = st.size || (isPoints ? 22 : (flat ? 8.8 : 6.4));
 		inner.scale.setScalar(target / (sph.radius || 1));
-		if (flat){ inner.rotation.x = -Math.PI * 0.30; inner.rotation.z = -0.05; } // vue 3/4 sur le cratère
+		if (flat){ inner.rotation.x = -Math.PI * 0.20; } // vue 3/4 sur le cratère
 		if (isPoints) outer.position.set(0, -0.5, -1);           // galaxie qui remplit l'écran
 	}
 	outer.userData.points = isPoints;
 	outer.userData.drag = !!st.drag;
+	outer.userData.spin = !!st.spin;
 	outer.userData.front = !!st.front;
 	outer.userData.rotY = st.rotY || 0;
 	outer.userData.baseY = st.baseY || 0;
@@ -475,7 +481,7 @@ function loop(){
 	if (current3D){
 		const u = current3D.userData;
 		if (u.points){ current3D.rotation.y = t*0.04 + tX*0.12; }                                   // galaxie qui dérive
-		else if (u.drag){ current3D.rotation.y = u.dragY; current3D.rotation.x = u.dragX; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.05; } // l'utilisateur tourne l'objet
+		else if (u.drag){ current3D.rotation.y = u.dragY + (u.spin ? t*0.18 : 0); current3D.rotation.x = u.dragX; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.05; } // l'utilisateur tourne l'objet
 		else if (u.front){ current3D.rotation.y = u.rotY + Math.sin(t*0.45)*0.12; current3D.position.y = u.baseY + Math.sin(t*0.6)*0.07; } // toujours de face, léger balancement
 		else { current3D.rotation.y = tX*0.5; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.1; }
 	}

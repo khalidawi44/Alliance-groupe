@@ -7,7 +7,7 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 > 📚 Détail complet (raccourcis, création vidéo, agents, meilleur système par type de site, config, limites) : **`INFRASTRUCTURE.md`**.
 
 ## Déploiement (workflow)
-- Dév sur la branche de travail courante (à ce jour `claude/site-config-commits-nZtU1`), puis **merge ff-only dans `main`** + push.
+- Dév sur la branche de travail courante (ex. `claude/infrastructure-md-review-6R3D2` ; vérifier `git branch --show-current`), puis **merge ff-only dans `main`** + push.
 - Le site applique via **Apparence → SYNC GitHub** : « Vérifier MAJ » puis « SYNC FICHIERS DU THÈME », puis purge cache + Ctrl/recharge.
 - Thème autonome (pas d'Elementor). Templates = `alliance-groupe-theme/templates/page-*.php` (Template Name). Logique = `alliance-groupe-theme/inc/*.php`, chargés depuis `functions.php`.
 - Toujours `php -l` avant commit. Indentation = tabulations.
@@ -24,15 +24,16 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 - **Notif agenda Google** (`ag_calendar_notify`) : .ics envoyé à l'email + push téléphone.
 
 ### 2. Paiement & commissions — `inc/ag-paypal.php`, `ag-stripe-admin.php`
-- Liens de paiement PayPal par offre (Réglages → Liens de paiement). Packs Sites Express 490/890/1490 + maintenance 29/59/99.
-- **PayPal automatique (webhooks)** : Réglages → PayPal automatique (Client ID/Secret/Webhook ID/email). Vérif signature → crédite la commission ambassadeur (rapprochement montant+email, 2 sens).
+- Liens de paiement PayPal par offre (Réglages → Liens de paiement, options `ag_stripe_*_url`). Packs Sites Express 490/890/1490 + maintenance 29/59/99.
+- **PayPal automatique (webhooks)** : Réglages → PayPal automatique (Client ID/Secret/Webhook ID/email). Vérif signature → crédite la commission ambassadeur (rapprochement montant+email, 2 sens). Émet le hook `ag_paypal_payment_verified` (réutilisé par les licences, brique 10).
 
 ### 3. Programme ambassadeurs & recruteurs — `inc/ag-ambassadeurs.php`, `templates/page-espace-ambassadeur.php`, `page-guide-ambassadeur.php`, `page-classement.php`
 - Commission 10 % (`AG_COMMISSION_RATE`), parrainage/override (`ag_override_rate`), liens `?ref=` (vente) et `?parrain=` (recrutement), attribution auto au brief.
 - Dashboard + Programme (onboarding **en assistant fléché**, 1 étape à la fois ; vidéo configurable `ag_amb_guide_video`) + Classement (jour/mois/général).
 - **Inscription durcie (KYC)** : **selfie en direct obligatoire** + **Telegram obligatoire** + zone attribuée auto.
 - **Recrutement de recruteurs** : page « Deviens recruteur » + **classement des recruteurs**, **prime de parrainage 25 €** auto à la 1re vente du filleul, outil SMS/WhatsApp perso (`{prenom}`) + simulateur de gains + **mini-CRM des futurs ambassadeurs**.
-- **Zones** : 1 zone max (sauf zones supplémentaires payées) ; conservées à vie **sauf inactivité 7 jours** (retrait auto + rappel).
+- **Zones** (`inc/ag-zones.php`) : zones **par département** (FR + régions Maroc `MA-XXX`), co-propriété multi-ambassadeurs + **rotation 50/50** des leads, **Chasseur Pro** et zones supplémentaires payantes (`ag_zone_price` défaut 49 €) ; conservées à vie **sauf inactivité 7 jours** (cron `ag_amb_inactivity_cron`, retrait auto + rappel). Carte admin `ag-zones-map`.
+- **Recrutement international** (`inc/ag-recrut-intl.php`) : 10 pays francophones, canaux curés + messages prêts, liens parrain UTM, marquage « posté » (manuel, conforme).
 
 ### 4. Studio créatif — `templates/page-studio.php`
 - Ouvert à tous. Vidéo (canvas + MediaRecorder, **textes animés** séquentiels, police/couleur, fonds villes propres) + image. Partage fichier natif + légende auto-copiée. Lien perso intégré si vendeur connecté (admin inclus via `ag_ensure_ambassador_for_user`).
@@ -41,6 +42,7 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 - **Chat équipe** (template-parts/prospect-chat.php) : Léo→Sofia→Karim→Nadia, capture de leads.
 - **Chasse** Google Places (New) (option `ag_places_key`) : repère sans vrai site (réseaux sociaux = pas un vrai site), **score « probabilité d'achat »** (avis, note, joignable), **balayage tous secteurs** d'une ville, **agent auto** (cron quotidien).
 - **CRM partagé** : statuts (nouveau→contacté→relancé→sans réponse→intéressé→client→refusé→ne plus contacter), filtres/tri, **anti-doublon global**, **assignation** à un ambassadeur (1 proprio = pas de double-contact), message **émotionnel** personnalisé + « pourquoi ».
+- **Agent Coach** (`inc/ag-coach.php`) : feuille de route quotidienne (relances/leads/ventes/briefs) poussée Telegram + email à 8h (cron `ag_coach_daily`, option `ag_coach_on`).
 
 ### 6. Notifications & diffusion — `inc/ag-prospection.php` (Réglages → Notifications téléphone)
 - `ag_push()` (interne : WhatsApp CallMeBot 1:1 + Telegram canal interne) ; `ag_push_clients()` (canal général Telegram).
@@ -56,6 +58,24 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 - **Analytics & pub** : GA4 `G-RSQ6Y8DHK4` + Google Ads avec **Consent Mode RGPD** ; **AdSense** `ca-pub-4272988112057548` + `ads.txt` ; `robots.txt` ouvert (AdSense/AdsBot).
 - **Conformité Merchant Center** : pages `/retours` (offres numériques) et `/livraison`.
 - **Branding** : logo tête de lion + « AG » (header transparent `logo-header.png`, bannière OG) ; burger centré sur toutes tailles (PC inclus).
+
+### 8. Expérience immersive 3D — `templates/page-experience.php` (« Le Voyage Alliance »)
+- Parcours plein écran en **4 stations** (Bureau / Vésuve / Marrakech / Univers), nav clavier/swipe/boutons. Three.js r0.160 (CDN) + GLTFLoader/DRACOLoader.
+- **Modèles `.glb` LOCAUX** dans `assets/images/img_3d/` ; chargement **lazy par station** + cache + spinner ; `pixelRatio` capé 1.6, auto-cadrage par bounding sphere, fallback sans crash.
+- ⚠️ Pas de dossier `assets/audio/` → fond sonore `ag_xp_music` en 404 tant que le mp3 n'est pas ajouté. Pas de garde `prefers-reduced-motion` (≠ scènes accueil `hero-3d-scene`/`globe-3d`/`atelier-3d`).
+
+### 9. Cadeaux d'acquisition (lead magnets)
+- **Audit SEO gratuit** (`inc/ag-audit-seo.php` + `page-audit-seo.php`) : 12 checks, score /100, rapport imprimable, lead → CRM + push.
+- **Tirage au sort mensuel** (`inc/ag-tirage-mensuel.php` + `page-tirage-au-sort.php`) : 1 site/mois, cron mensuel `ag_tirage_cron` + tirage manuel.
+- **Kit Print** (`inc/ag-kit-print.php`, sous-menu ambassadeurs) : cartes/flyer/stickers/affiche avec QR de parrainage.
+- **Demo board** (`inc/ag-demo-board.php`) : 4 ambassadeurs + 6 recruteurs démo dans le classement **général** (social proof). **Couper `ag_demo_leaderboard_on` dès assez de vrais inscrits.**
+
+### 10. Licences de templates — `ag-stripe-admin.php`, `inc/ag-licence-paypal.php`, plugin `ag-licence-manager/`
+- Système **séparé** des commissions ambassadeurs. 2 voies de paiement (webhook Stripe `/wp-json/ag/v1/stripe-webhook` + hook `ag_paypal_payment_verified`) → même génération de clé (`AG_Licence_DB::insert`) + email.
+- Plugin **auto-déployé/activé par `ag-import.php`** à la SYNC GitHub. Table `{prefix}ag_licences`, clés `AGPRM…`/`AGBUS…`, chiffrées AES (constante `AG_LICENCE_HMAC_KEY` à définir en `wp-config`). Prix `ag_licence_price_premium` (99) / `_business` (149).
+
+### 11. Admin Hub — `inc/ag-admin-hub.php`
+- **Écran unique de pilotage** (menu `ag-hub`) : chiffres clés (prospects/leads/ventes/briefs/sur-mesure), état des réglages, actions fréquentes + **widget « Quoi de neuf »** sur le dashboard WordPress.
 
 ## Réutiliser sur un autre site
 - Le thème est autonome : copier `alliance-groupe-theme` (ou les `inc/*.php` voulus) sur l'autre site, adapter marque/couleurs/offres. Chaque brique est indépendante (guards `function_exists`).
