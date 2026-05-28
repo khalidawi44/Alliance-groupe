@@ -1097,7 +1097,103 @@ html.ag-has-custom-cursor [role=button] { cursor:auto !important; }
 /* Accessibilité : moins de mouvement si demandé */
 @media (prefers-reduced-motion: reduce) {
     .ag-hero__naples, .ag-hero__sunglow, .ag-hero__particles span,
-    .ag-hero__vesuvius, .ag-hero__vesuvius-smoke, .ag-hero__boats svg { animation: none; }
+    .ag-hero__vesuvius, .ag-hero__vesuvius-smoke, .ag-hero__boats svg,
+    .ag-hero__phone, .ag-hero__phone-screen { animation: none; }
+}
+
+/* ── 📱 Smartphone CSS pur (visible TOUS appareils, garanti à 100%) ──
+   Pas de Three.js, pas de WebGL, ne peut pas planter. Floating card
+   façon Apple, positionnée bas-droite du hero. */
+.ag-hero__phone {
+    position: absolute;
+    right: 4%;
+    bottom: 12%;
+    width: 130px;
+    height: 260px;
+    background: linear-gradient(145deg, #1a1a22 0%, #08080c 100%);
+    border: 2px solid rgba(212,180,92,.7);
+    border-radius: 22px;
+    box-shadow:
+        0 30px 80px rgba(0,0,0,.6),
+        0 0 40px rgba(212,180,92,.35),
+        inset 0 0 0 1px rgba(212,180,92,.25);
+    z-index: 2;
+    transform: perspective(800px) rotateY(-14deg) rotateX(6deg) rotate(-3deg);
+    transform-style: preserve-3d;
+    animation: ag-phone-float 5.5s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+.ag-hero__phone::before {
+    /* "Encoche" (camera dot) en haut du téléphone */
+    content: '';
+    position: absolute;
+    top: 8px; left: 50%; transform: translateX(-50%);
+    width: 36px; height: 6px;
+    background: #050507;
+    border-radius: 999px;
+    z-index: 2;
+}
+.ag-hero__phone-screen {
+    position: absolute;
+    inset: 14px 8px 8px;
+    border-radius: 14px;
+    background:
+        linear-gradient(180deg, rgba(20,20,30,.95) 0%, rgba(56,40,18,.92) 28%, rgba(212,180,92,.92) 62%, rgba(243,122,31,.95) 100%);
+    overflow: hidden;
+}
+.ag-hero__phone-screen::after {
+    /* "Bouton CTA" or qui pulse au milieu de l'écran simulé */
+    content: '';
+    position: absolute;
+    left: 12%; right: 12%;
+    top: 50%; transform: translateY(-50%);
+    height: 22px;
+    background: linear-gradient(135deg, #f37a1f 0%, #d4b45c 100%);
+    border-radius: 100px;
+    box-shadow: 0 0 16px rgba(243,122,31,.5);
+    animation: ag-phone-cta-pulse 2.5s ease-in-out infinite;
+}
+.ag-hero__phone-screen .ag-hero__phone-lines {
+    position: absolute;
+    inset: 18px 14px auto;
+    display: flex; flex-direction: column; gap: 5px;
+}
+.ag-hero__phone-screen .ag-hero__phone-lines span {
+    display: block;
+    height: 5px;
+    background: rgba(255,255,255,.55);
+    border-radius: 4px;
+}
+.ag-hero__phone-screen .ag-hero__phone-lines span:nth-child(1) { width: 60%; height: 8px; background: rgba(255,255,255,.85); }
+.ag-hero__phone-screen .ag-hero__phone-lines span:nth-child(2) { width: 85%; }
+.ag-hero__phone-screen .ag-hero__phone-lines span:nth-child(3) { width: 70%; }
+.ag-hero__phone-screen .ag-hero__phone-lines span:nth-child(4) { width: 50%; opacity: .6; }
+.ag-hero__phone-screen .ag-hero__phone-bottom {
+    position: absolute;
+    bottom: 14px; left: 14px; right: 14px;
+    display: flex; gap: 6px;
+}
+.ag-hero__phone-screen .ag-hero__phone-bottom span {
+    flex: 1; height: 32px;
+    background: rgba(0,0,0,.30);
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,.18);
+}
+@keyframes ag-phone-float {
+    0%   { transform: perspective(800px) rotateY(-14deg) rotateX(6deg) rotate(-3deg) translateY(0); }
+    100% { transform: perspective(800px) rotateY(-10deg) rotateX(4deg) rotate(-1deg) translateY(-18px); }
+}
+@keyframes ag-phone-cta-pulse {
+    0%, 100% { box-shadow: 0 0 14px rgba(243,122,31,.45); transform: translateY(-50%) scale(1); }
+    50%      { box-shadow: 0 0 28px rgba(243,122,31,.85); transform: translateY(-50%) scale(1.05); }
+}
+/* Plus grand sur tablette/desktop */
+@media (min-width: 768px) {
+    .ag-hero__phone {
+        right: 6%; bottom: 14%;
+        width: 180px; height: 360px;
+    }
+    .ag-hero__phone::before { width: 48px; height: 7px; }
 }
 
 /* ── 🌋 Vésuve en éruption (CSS pur, ultra léger) ──

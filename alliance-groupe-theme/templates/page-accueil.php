@@ -47,12 +47,23 @@ get_header();
             <path d="M33 14 L20 14 L20 18 L33 18" fill="none" stroke="currentColor" stroke-width=".6" opacity=".5"/>
         </svg>
     </div>
+    <!-- 📱 Smartphone CSS pur (toujours visible, mobile et desktop) -->
+    <div class="ag-hero__phone" aria-hidden="true">
+        <div class="ag-hero__phone-screen">
+            <div class="ag-hero__phone-lines">
+                <span></span><span></span><span></span><span></span>
+            </div>
+            <div class="ag-hero__phone-bottom">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </div>
     <!-- Mesh gradient WebGL conservé en sur-couche très subtile (skippé sur mobile/<4 cores) -->
     <?php get_template_part('template-parts/mesh-gradient-bg'); ?>
     <!-- Grille tech high-tech parallax qui réagit à la souris -->
     <?php get_template_part('template-parts/hero-tech-grid'); ?>
-    <!-- Scène 3D Three.js (style Vexik) — desktop ≥1100px et ≥4 cores -->
-    <?php get_template_part('template-parts/hero-3d-scene'); ?>
+    <!-- Scène 3D Three.js temporairement désactivée — on garde le téléphone CSS qui marche partout. -->
+    <?php // get_template_part('template-parts/hero-3d-scene'); ?>
     <div class="ag-hero__bg">
         <div class="ag-hero__circles">
             <div class="ag-hero__circle"></div>
