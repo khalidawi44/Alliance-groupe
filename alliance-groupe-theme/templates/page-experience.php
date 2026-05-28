@@ -29,6 +29,7 @@ $xp_team = array(
 	'kate'     => array( 'name' => 'Kate',     'role' => 'Directrice artistique',           'city' => 'Nantes, France',  'img' => $team_base . 'kate.jpg',     'desc' => 'Diplômée de l\'École de Design Nantes Atlantique, Kate a fait ses armes en agence parisienne avant de rejoindre Alliance Groupe. Créative perfectionniste, elle conçoit des identités visuelles qui marquent et des interfaces qui convertissent. Son obsession : les détails que personne d\'autre ne remarque.' ),
 	'halim'    => array( 'name' => 'Halim',    'role' => 'Responsable SEO & Data',          'city' => 'Marrakech, Maroc', 'img' => $team_base . 'halim.jpg',   'desc' => 'Mathématicien de formation devenu expert SEO, Halim combine rigueur analytique et patience d\'artisan marocain. Depuis le bureau de Marrakech, il pilote les stratégies de référencement, l\'audit technique et le linking pour propulser nos clients en première page de Google.' ),
 	'amina'    => array( 'name' => 'Amina',    'role' => 'Responsable IA & Automatisation', 'city' => 'Marrakech, Maroc', 'img' => $team_base . 'amina.png',   'desc' => 'Diplômée en informatique de l\'Université Cadi Ayyad, Amina est l\'une des pionnières de l\'IA générative pour PME francophones. Elle conçoit chatbots, workflows et agents personnalisés qui libèrent nos clients des tâches répétitives. Son mantra : "L\'IA ne remplace personne, elle libère du temps."' ),
+	'carlito'  => array( 'name' => 'Carlito',  'role' => 'Directeur technique',             'city' => 'Naples, Italie',  'img' => $team_base . 'carlito.jpg',  'desc' => 'Ingénieur napolitain passé par plusieurs startups italiennes, Carlito dirige le pôle technique depuis le bureau de Naples. Architecture backend, intégrations WordPress avancées, DevOps — il transforme les visions en produits solides et scalables. Son credo : "La tecnologia è l\'arte di semplificare la complessità".' ),
 );
 
 // Constellation de la station "Univers" : chaque étoile ouvre un panneau de
@@ -135,7 +136,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__veil{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 80% 75% at 50% 45%,transparent 0%,transparent 45%,rgba(5,6,10,.55) 82%,rgba(3,4,8,.95) 100%),linear-gradient(180deg,rgba(5,6,10,.35) 0%,transparent 30%,transparent 62%,rgba(4,4,8,.85) 100%)}
 .agx__canvas{position:absolute;inset:0;width:100%;height:100%;z-index:2}
 
-.agx__cap{position:absolute;left:0;right:0;top:10vh;text-align:center;padding:0 24px;z-index:5;pointer-events:none;transition:opacity .55s ease,transform .55s cubic-bezier(.22,1,.36,1)}
+.agx__cap{position:absolute;left:0;right:0;top:10vh;text-align:center;padding:0 24px;z-index:8;pointer-events:none;transition:opacity .55s ease,transform .55s cubic-bezier(.22,1,.36,1)}
 .agx__cap.is-out{opacity:0;transform:translateY(-26px)}
 .agx__cap .pre,.agx__cap .ttl,.agx__cap .line{opacity:0;transform:translateY(22px);animation:agx-rise .7s cubic-bezier(.22,1,.36,1) forwards}
 .agx__cap .ttl{animation-delay:.08s}.agx__cap .line{animation-delay:.16s}
@@ -187,7 +188,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 @keyframes agx-float{0%,100%{transform:translateY(-7px)}50%{transform:translateY(9px)}}
 
 /* Cartes ÉQUIPE (stations Nantes / Marrakech) : émergent du bas (de la tour) */
-.agx__team{position:absolute;left:0;right:0;bottom:12vh;z-index:6;display:flex;gap:16px;justify-content:center;align-items:flex-end;flex-wrap:wrap;padding:0 16px;opacity:0;visibility:hidden;transition:opacity .6s ease;pointer-events:none}
+.agx__team{position:absolute;left:0;right:0;bottom:15vh;z-index:6;display:flex;gap:16px;justify-content:center;align-items:flex-end;flex-wrap:wrap;padding:0 16px;opacity:0;visibility:hidden;transition:opacity .6s ease;pointer-events:none}
 .agx__team.is-on{opacity:1;visibility:visible}
 .agx__team{pointer-events:none}
 .agx__tcard{width:152px;max-width:42vw;background:rgba(12,14,22,.5);backdrop-filter:blur(12px);border:1px solid rgba(212,180,92,.34);border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.55);text-align:center;opacity:0;transform:translateY(70px) scale(.82);pointer-events:auto;cursor:pointer;transition:border-color .25s,box-shadow .25s}
@@ -213,7 +214,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__tcard-photo img{width:100%;height:100%;object-fit:cover;display:block}
 .agx__tcard-name{font-family:Georgia,serif;font-size:1.05rem;color:#fff;margin-top:9px}
 .agx__tcard-role{font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:#D4B45C;margin:3px 8px 12px}
-@media (max-width:720px){ .agx__team{gap:12px;bottom:13vh} .agx__tcard{width:40vw} .agx__tcard-name{font-size:.95rem} }
+@media (max-width:720px){ .agx__team{gap:12px;bottom:18vh} .agx__tcard{width:40vw} .agx__tcard-name{font-size:.95rem} }
 .agx__card:hover{transform:translateY(-6px) scale(1.04);border-color:#D4B45C;box-shadow:0 40px 90px rgba(0,0,0,.7),0 0 40px rgba(212,180,92,.25);color:#fff;text-decoration:none}
 .agx__card-icon{display:flex;align-items:center;justify-content:center;height:118px;line-height:1;color:#F3D27A;background:linear-gradient(145deg,rgba(212,180,92,.22),rgba(243,122,31,.10) 45%,rgba(12,14,22,.55));border-bottom:1px solid rgba(212,180,92,.28)}
 .agx__card-icon svg{width:54px;height:54px;display:block;filter:drop-shadow(0 4px 14px rgba(243,122,31,.4))}
@@ -234,7 +235,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__enter:hover{background:#D4B45C;color:#0a0a0f;text-decoration:none;transform:translateX(-50%) translateY(-3px)}
 .agx__enter.is-hidden{opacity:0;pointer-events:none}
 
-.agx__nav{position:absolute;bottom:38px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:18px;z-index:7;font-size:.8rem;letter-spacing:2px;font-weight:700}
+.agx__nav{position:absolute;bottom:5vh;left:50%;transform:translateX(-50%);display:flex;justify-content:center;align-items:center;gap:14px;z-index:9;font-size:.82rem;letter-spacing:2px;font-weight:700;padding:8px 12px;border-radius:999px;background:rgba(8,9,14,.55);backdrop-filter:blur(10px);box-shadow:0 10px 36px rgba(0,0,0,.5)}
 .agx__nav button{display:inline-flex;align-items:center;gap:8px;background:rgba(212,180,92,.12);border:1.5px solid rgba(212,180,92,.65);color:#F3D27A;font:inherit;letter-spacing:inherit;cursor:pointer;padding:13px 26px;border-radius:999px;backdrop-filter:blur(8px);transition:background .25s,color .25s,border-color .25s,transform .2s;box-shadow:0 8px 30px rgba(0,0,0,.4)}
 .agx__nav button:hover:not(:disabled){background:#D4B45C;color:#0a0a0f;border-color:#D4B45C;transform:translateY(-2px)}
 .agx__nav button:disabled{opacity:.28;cursor:not-allowed}
@@ -252,11 +253,11 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__spin{width:46px;height:46px;border:3px solid rgba(212,180,92,.25);border-top-color:#D4B45C;border-radius:50%;animation:agx-spin 1s linear infinite}
 @keyframes agx-spin{to{transform:rotate(360deg)}}
 .agx__loader p{color:rgba(255,255,255,.7);letter-spacing:2px;font-size:.8rem}
-.agx__hint{position:absolute;bottom:8vh;left:0;right:0;text-align:center;font-size:.7rem;letter-spacing:3px;color:rgba(255,255,255,.4);text-transform:uppercase;pointer-events:none;text-shadow:0 1px 10px #000;z-index:6}
+.agx__hint{display:none}
 .agx__warp{position:absolute;inset:0;z-index:10;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 50%,rgba(255,245,225,.95) 0%,rgba(212,180,92,.7) 30%,rgba(243,122,31,.35) 55%,rgba(5,6,10,0) 78%);transition:opacity .5s ease}
 .agx__warp.is-on{opacity:1}
 /* Quand on est "dans l'étoile", on masque la constellation + l'UI de navigation */
-.agx.is-detail .agx__constel,.agx.is-detail .agx__cap,.agx.is-detail .agx__nav,.agx.is-detail .agx__hint{opacity:0!important;pointer-events:none!important;transition:opacity .4s ease}
+.agx.is-detail .agx__constel,.agx.is-detail .agx__nav,.agx.is-detail .agx__hint{opacity:0!important;pointer-events:none!important;transition:opacity .4s ease}
 .agx__orb.is-diving .agx__orb-dot{animation:none;transform:scale(7);opacity:0;transition:transform .45s ease,opacity .45s ease}
 .agx__orb.is-diving .agx__orb-label{opacity:0;transition:opacity .25s ease}
 </style>
@@ -361,11 +362,11 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const BASE = '<?php echo esc_js( $base ); ?>';
 const STATIONS = [
-	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', media:'space', menu:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0.2&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' },
-	{ pre:'BIENVENUE CHEZ —', ttl:'Alliance Groupe', line:"C'est ici que votre projet prend vie.", model:'macbook_pro_2021.glb', media:'video', size:4.6, front:true, rotY:0.6, baseY:-0.6 },
-	{ pre:'✦ NOTRE QG', ttl:'Nantes', line:'Les visages de la maison.', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/nantes-1.jpg' ); ?>', team:['fabrizio','kate','laurent','julie'] },
-	{ pre:'✦ NOTRE ÉNERGIE', ttl:'Le Vésuve', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>' },
-	{ pre:'✦ NOTRE PÔLE SUD', ttl:'Marrakech', line:'L’équipe qui sort de la tour.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', baseY:-2.2, team:['halim','amina'] }
+	{ pre:'BIENVENUE CHEZ —', ttl:'Alliance Groupe', line:"C'est ici que votre projet prend vie.", media:'video' },
+	{ pre:'✦ NOTRE QG', ttl:'Nantes', line:'Les visages de la maison.', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/nantes-1.jpg' ); ?>', team:['kate','laurent','julie'] },
+	{ pre:'✦ NOTRE ÉNERGIE', ttl:'Naples', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', team:['fabrizio','carlito'] },
+	{ pre:'✦ NOTRE PÔLE SUD', ttl:'Marrakech', line:'L’équipe qui sort de la tour.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', baseY:-2.2, team:['halim','amina'] },
+	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', media:'space', menu:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0.2&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' }
 ];
 const TEAM = <?php echo wp_json_encode( $xp_team ); ?>;
 
@@ -524,7 +525,7 @@ async function go(i, instant){
 	buildTeam(st);
 	if (st.iframe && !elSky3d.getAttribute('src')) elSky3d.setAttribute('src', st.iframe); // galaxie Sketchfab chargée à la 1re visite (la visibilité suit la classe is-menu)
 	if (current3D){ scene.remove(current3D); current3D = null; }
-	if (!st.iframe){
+	if (!st.iframe && st.model){
 		const grp = await loadStation(i);
 		if (cur === i){
 			current3D = grp; grp.scale.setScalar(0.55); scene.add(grp);
