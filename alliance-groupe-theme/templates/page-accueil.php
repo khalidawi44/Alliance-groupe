@@ -26,9 +26,8 @@ get_header();
         <span style="left:92%; bottom:-10px; animation-duration:14s; animation-delay:3.6s;"></span>
         <span style="left:12%; bottom:-10px; animation-duration:23s; animation-delay:10s;"></span>
     </div>
-    <!-- 🌋 Vésuve en éruption : halo + fumée (CSS pur, visible partout) -->
+    <!-- 🌋 Vésuve en éruption : halo seulement (fumée retirée sur demande user) -->
     <div class="ag-hero__vesuvius" aria-hidden="true"></div>
-    <div class="ag-hero__vesuvius-smoke" aria-hidden="true"></div>
     <!-- 🚢 Bateaux qui glissent sur la baie -->
     <div class="ag-hero__boats" aria-hidden="true">
         <svg viewBox="0 0 50 22" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -47,17 +46,7 @@ get_header();
             <path d="M33 14 L20 14 L20 18 L33 18" fill="none" stroke="currentColor" stroke-width=".6" opacity=".5"/>
         </svg>
     </div>
-    <!-- 📱 Smartphone CSS pur (toujours visible, mobile et desktop) -->
-    <div class="ag-hero__phone" aria-hidden="true">
-        <div class="ag-hero__phone-screen">
-            <div class="ag-hero__phone-lines">
-                <span></span><span></span><span></span><span></span>
-            </div>
-            <div class="ag-hero__phone-bottom">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-    </div>
+    <!-- Téléphone CSS retiré sur demande user. -->
     <!-- Mesh gradient WebGL conservé en sur-couche très subtile (skippé sur mobile/<4 cores) -->
     <?php get_template_part('template-parts/mesh-gradient-bg'); ?>
     <!-- Grille tech high-tech parallax qui réagit à la souris -->
@@ -166,7 +155,7 @@ get_header();
 <?php get_template_part('template-parts/realisations'); ?>
 
 <!-- Globe 3D : présence internationale Nantes / Marrakech / Naples -->
-<?php get_template_part('template-parts/atelier-3d'); ?>
+<?php // Section "atelier 3d" retirée sur demande user. ?>
 
 <?php get_template_part('template-parts/globe-3d'); ?>
 
