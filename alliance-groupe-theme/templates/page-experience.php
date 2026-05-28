@@ -23,7 +23,10 @@ body.page-template-page-experience .ag-fsm-toggle { display: none !important; }
 </style>
 
 <main class="ag-xp" id="ag-xp" role="region" aria-roledescription="carousel">
-	<!-- Starfield CSS (étoiles fixes + petites étoiles qui scintillent) -->
+	<!-- Fond : bureau de Naples -->
+	<div class="ag-xp__bg" aria-hidden="true" style="background-image:url('<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/team/1_bureau_naples.jpg' ); ?>');"></div>
+	<div class="ag-xp__bg-overlay" aria-hidden="true"></div>
+	<!-- Starfield CSS subtil par-dessus -->
 	<div class="ag-xp__stars" aria-hidden="true"></div>
 	<div class="ag-xp__stars ag-xp__stars--alt" aria-hidden="true"></div>
 
@@ -59,8 +62,8 @@ body.page-template-page-experience .ag-fsm-toggle { display: none !important; }
 		<div class="ag-xp__stage" data-stage="4">
 			<div class="ag-xp__pre">BEGIN —</div>
 			<h1 class="ag-xp__title">L'AVENTURE</h1>
-			<div class="ag-xp__sub">DÉCOUVREZ NOS OFFRES</div>
-			<a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>" class="ag-xp__cta">Voir les packs →</a>
+			<div class="ag-xp__sub">CLIQUEZ POUR ENTRER</div>
+			<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="ag-xp__cta" id="ag-xp-enter">Entrer dans le site →</a>
 		</div>
 	</div>
 
@@ -71,12 +74,15 @@ body.page-template-page-experience .ag-fsm-toggle { display: none !important; }
 		<button type="button" class="ag-xp__next" id="ag-xp-next" aria-label="Suivant">NEXT ▸</button>
 	</div>
 
-	<!-- Hint swipe (visible sur mobile au début) -->
-	<div class="ag-xp__hint" id="ag-xp-hint">← Glissez pour explorer →</div>
+	<!-- Hint : naviguer + entrer -->
+	<div class="ag-xp__hint" id="ag-xp-hint">← Glissez pour explorer · cliquez l'écran pour entrer →</div>
 </main>
 
 <style>
-.ag-xp{position:fixed;inset:0;width:100vw;height:100vh;background:#000;color:#e8e6e0;overflow:hidden;z-index:50;touch-action:pan-y}
+.ag-xp{position:fixed;inset:0;width:100vw;height:100vh;background:#05060a;color:#e8e6e0;overflow:hidden;z-index:50;touch-action:pan-y}
+.ag-xp__bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:saturate(1.05) brightness(.7);transform:scale(1.05);animation:ag-xp-bg-zoom 40s ease-in-out infinite alternate}
+.ag-xp__bg-overlay{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(8,8,14,.35) 0%,rgba(6,7,12,.78) 70%,rgba(4,4,8,.95) 100%)}
+@keyframes ag-xp-bg-zoom{from{transform:scale(1.05)}to{transform:scale(1.16)}}
 .ag-xp__stars,.ag-xp__stars--alt{position:absolute;inset:-50%;width:200%;height:200%;background-image:
 	radial-gradient(1.5px 1.5px at 25% 15%, #fff 50%, transparent 100%),
 	radial-gradient(1px 1px at 38% 62%, rgba(255,255,255,.85) 50%, transparent 100%),
@@ -89,15 +95,18 @@ body.page-template-page-experience .ag-fsm-toggle { display: none !important; }
 	radial-gradient(1.4px 1.4px at 48% 92%, #fff 50%, transparent 100%),
 	radial-gradient(1px 1px at 65% 8%, rgba(255,255,255,.55) 50%, transparent 100%);
 	background-size:600px 600px,800px 800px,500px 500px,700px 700px,650px 650px,900px 900px,750px 750px,580px 580px,820px 820px,550px 550px;
-	animation:ag-xp-stars-drift 240s linear infinite;opacity:.85}
-.ag-xp__stars--alt{animation-duration:380s;animation-direction:reverse;opacity:.55;filter:blur(.3px)}
+	animation:ag-xp-stars-drift 240s linear infinite;opacity:.45}
+.ag-xp__stars--alt{animation-duration:380s;animation-direction:reverse;opacity:.28;filter:blur(.3px)}
 @keyframes ag-xp-stars-drift{from{transform:translate(0,0)}to{transform:translate(-20%,-12%)}}
 
 .ag-xp__canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 
 .ag-xp__stages{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 24px;pointer-events:none}
 .ag-xp__stage{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transform:translateX(40px);transition:opacity .9s ease,transform 1.1s cubic-bezier(.16,1,.3,1);pointer-events:none}
-.ag-xp__stage.is-active{opacity:1;transform:none;pointer-events:auto;transition-delay:.15s}
+.ag-xp__stage.is-active{opacity:1;transform:none;transition-delay:.15s}
+/* le texte ne capture pas les clics → le canvas (laptop) reste cliquable ;
+   seuls les liens/boutons sont interactifs */
+.ag-xp__cta{pointer-events:auto}
 .ag-xp__stage.is-prev{transform:translateX(-40px)}
 
 .ag-xp__pre{font-family:'Helvetica Neue',Arial,sans-serif;font-size:clamp(.7rem,1.2vw,.9rem);letter-spacing:6px;color:rgba(232,230,224,.55);margin-bottom:18px;font-weight:400}
@@ -215,30 +224,67 @@ body.page-template-page-experience .ag-fsm-toggle { display: none !important; }
 		renderer.setClearColor(0x000000, 0);
 		var scene = new T.Scene();
 		var camera = new T.PerspectiveCamera(45, W/H, 0.1, 100);
-		camera.position.set(0, 0, 18);
+		camera.position.set(0, 1.5, 16);
+		camera.lookAt(0, 0, 0);
 
-		scene.add(new T.AmbientLight(0xffffff, 0.5));
-		var l1 = new T.PointLight(0xd4b45c, 2.0, 50, 1.6); l1.position.set(8, 6, 8); scene.add(l1);
-		var l2 = new T.PointLight(0xf37a1f, 1.3, 45, 1.6); l2.position.set(-8, -4, 6); scene.add(l2);
+		scene.add(new T.AmbientLight(0xffffff, 0.55));
+		var l1 = new T.PointLight(0xd4b45c, 2.0, 60, 1.6); l1.position.set(8, 7, 10); scene.add(l1);
+		var l2 = new T.PointLight(0xf37a1f, 1.3, 50, 1.6); l2.position.set(-9, -3, 7); scene.add(l2);
+		var l3 = new T.PointLight(0x88aaff, 1.4, 40, 2); l3.position.set(0, 1, 7); scene.add(l3); // reflet écran
 
-		// 5 géométries pour les 5 stages
-		var geos = [
-			new T.IcosahedronGeometry(3.2, 1),       // 0 — sphère facettée (welcome)
-			new T.BoxGeometry(4.6, 4.6, 0.4),        // 1 — "écran" (we build)
-			new T.TorusKnotGeometry(2.4, 0.6, 90, 16),// 2 — knot (réseau)
-			new T.DodecahedronGeometry(3.4, 0),       // 3 — gem (croissance)
-			new T.OctahedronGeometry(3.5, 0)          // 4 — octaèdre (aventure)
-		];
-		var mat = new T.MeshStandardMaterial({
-			color: 0xc9a866, metalness: 0.92, roughness: 0.22,
-			emissive: 0x4a3c1e, emissiveIntensity: 0.35, flatShading: true
-		});
-		var mesh = new T.Mesh(geos[0], mat);
-		scene.add(mesh);
+		// ── ORDINATEUR PORTABLE ──
+		var laptop = new T.Group();
+		var metal = new T.MeshStandardMaterial({ color: 0x1c1c24, metalness: 0.85, roughness: 0.3 });
 
-		// Halo wireframe doré
-		var halo = new T.Mesh(new T.IcosahedronGeometry(3.9, 0), new T.MeshBasicMaterial({ color: 0xd4b45c, wireframe: true, transparent: true, opacity: 0.22 }));
-		scene.add(halo);
+		// Base / clavier (incliné légèrement)
+		var base = new T.Mesh(new T.BoxGeometry(9, 0.4, 6), metal);
+		base.position.y = -2.4;
+		laptop.add(base);
+		// Pavé clavier (légèrement plus clair)
+		var kb = new T.Mesh(new T.BoxGeometry(8, 0.06, 4.6), new T.MeshStandardMaterial({ color: 0x2a2a34, metalness: 0.5, roughness: 0.6 }));
+		kb.position.set(0, -2.18, 0.4);
+		laptop.add(kb);
+		// Trackpad
+		var pad = new T.Mesh(new T.BoxGeometry(2.4, 0.04, 1.4), new T.MeshStandardMaterial({ color: 0x33333f, metalness: 0.4, roughness: 0.7 }));
+		pad.position.set(0, -2.15, 2.0);
+		laptop.add(pad);
+
+		// Écran (cadre)
+		var screenGroup = new T.Group();
+		screenGroup.position.set(0, -2.4, -2.7);
+		var frame = new T.Mesh(new T.BoxGeometry(9, 5.6, 0.3), new T.MeshStandardMaterial({ color: 0x14141a, metalness: 0.8, roughness: 0.35 }));
+		frame.position.y = 2.8;
+		screenGroup.add(frame);
+
+		// Dalle écran : texture canvas (mockup site qui pulse)
+		var sc = document.createElement('canvas'); sc.width = 512; sc.height = 320;
+		var sctx = sc.getContext('2d');
+		function paintScreen(p){
+			var g = sctx.createLinearGradient(0,0,0,320);
+			g.addColorStop(0,'#10101a'); g.addColorStop(.4,'#2a2012'); g.addColorStop(.7,'#b8975a'); g.addColorStop(1,'#f37a1f');
+			sctx.fillStyle=g; sctx.fillRect(0,0,512,320);
+			sctx.fillStyle='rgba(255,255,255,.85)'; sctx.fillRect(40,42,120,20); // logo
+			sctx.fillRect(40,82,360,12); sctx.fillRect(40,104,300,12); // titres
+			sctx.fillStyle='rgba(255,210,140,.95)'; sctx.fillRect(40,150,150,40); // CTA
+			sctx.fillStyle='rgba(255,255,255,.4)';
+			for(var i=0;i<4;i++) sctx.fillRect(40,230+i*18,380-(i%2)*60,8);
+			sctx.fillStyle='rgba(212,180,92,'+(0.35+Math.abs(Math.sin(p))*0.3)+')'; sctx.fillRect(330,150,140,90); // image qui pulse
+			tex.needsUpdate = true;
+		}
+		var tex = new T.CanvasTexture(sc); tex.minFilter = T.LinearFilter;
+		var screen = new T.Mesh(new T.PlaneGeometry(8.4, 5.0), new T.MeshBasicMaterial({ map: tex }));
+		screen.position.set(0, 2.8, 0.18);
+		screenGroup.add(screen);
+
+		// Inclinaison de l'écran (ouvert ~100°)
+		screenGroup.rotation.x = -0.42;
+		laptop.add(screenGroup);
+
+		laptop.position.y = 0.5;
+		scene.add(laptop);
+
+		// Position monde de l'écran (cible du zoom)
+		var screenTarget = new T.Vector3(0, 1.8, -1.2);
 
 		new ResizeObserver(function(){
 			var w = host.clientWidth, h = host.clientHeight;
@@ -248,25 +294,59 @@ body.page-template-page-experience .ag-fsm-toggle { display: none !important; }
 			renderer.setSize(w, h, false);
 		}).observe(host);
 
-		// Morph d'une géométrie à l'autre au changement de stage
-		var targetGeo = 0;
-		window._agXpOnStage = function(idx){ targetGeo = idx; mesh.geometry.dispose(); mesh.geometry = geos[idx]; halo.scale.set(0.6, 0.6, 0.6); };
+		// ── CLIC : la caméra plonge dans l'écran puis entre sur le site ──
+		var entering = false, enterT = 0;
+		var camFrom = new T.Vector3(), camStart = camera.position.clone();
+		function enterScreen(){
+			if (entering) return;
+			entering = true; enterT = 0; camFrom.copy(camera.position);
+			// Voile qui apparaît
+			var veil = document.createElement('div');
+			veil.id = 'ag-xp-veil';
+			veil.style.cssText = 'position:fixed;inset:0;background:#0a0a0f;opacity:0;z-index:60;transition:opacity .6s ease;pointer-events:none';
+			document.body.appendChild(veil);
+			setTimeout(function(){ veil.style.opacity = '1'; }, 700);
+			// Redirection vers l'accueil après l'immersion
+			setTimeout(function(){ window.location.href = '<?php echo esc_url( home_url( '/' ) ); ?>'; }, 1350);
+		}
+		canvas.addEventListener('click', enterScreen);
+		var enterBtn = document.getElementById('ag-xp-enter');
+		if (enterBtn) enterBtn.addEventListener('click', function(e){ e.preventDefault(); enterScreen(); });
 
 		var t0 = performance.now();
 		function loop(){
 			var t = (performance.now() - t0) * 0.001;
-			mesh.rotation.x = t * 0.18;
-			mesh.rotation.y = t * 0.26;
-			mesh.position.y = Math.sin(t * 0.7) * 0.25;
-			halo.rotation.x = -t * 0.10;
-			halo.rotation.y = -t * 0.16;
-			// Halo scale lerp pour effet "pop" au changement de stage
-			var s = halo.scale.x;
-			s += (1 - s) * 0.08;
-			halo.scale.setScalar(s * (1 + Math.sin(t * 1.2) * 0.04));
+			paintScreen(t * 1.4);
+
+			if (entering) {
+				enterT = Math.min(1, enterT + 0.018);
+				var e = 1 - Math.pow(1 - enterT, 3); // easeOutCubic
+				camera.position.lerpVectors(camFrom, screenTarget, e);
+				camera.fov = 45 - e * 28; // l'écran remplit le champ
+				camera.updateProjectionMatrix();
+				camera.lookAt(screenTarget);
+			} else {
+				// Rotation douce + bobbing du laptop, léger suivi souris
+				laptop.rotation.y = Math.sin(t * 0.4) * 0.18 + tiltX;
+				laptop.rotation.x = -0.04 + Math.sin(t * 0.6) * 0.03 + tiltY;
+				laptop.position.y = 0.5 + Math.sin(t * 0.8) * 0.18;
+			}
 			renderer.render(scene, camera);
 			requestAnimationFrame(loop);
 		}
+
+		// Léger tilt souris (desktop)
+		var tiltX = 0, tiltY = 0, ttX = 0, ttY = 0;
+		host.addEventListener('mousemove', function(ev){
+			var r = host.getBoundingClientRect();
+			ttX = ((ev.clientX - r.left)/r.width - 0.5) * 0.5;
+			ttY = ((ev.clientY - r.top)/r.height - 0.5) * 0.2;
+		}, { passive: true });
+		(function damp(){ tiltX += (ttX - tiltX)*0.05; tiltY += (ttY - tiltY)*0.05; requestAnimationFrame(damp); })();
+
+		// Le laptop reste l'objet ; les stages ne changent plus la géométrie.
+		window._agXpOnStage = function(){};
+
 		loop();
 	});
 })();
