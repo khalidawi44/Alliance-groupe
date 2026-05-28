@@ -191,7 +191,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__team{position:absolute;left:0;right:0;bottom:15vh;z-index:6;display:flex;gap:16px;justify-content:center;align-items:flex-end;flex-wrap:wrap;padding:0 16px;opacity:0;visibility:hidden;transition:opacity .6s ease;pointer-events:none}
 .agx__team.is-on{opacity:1;visibility:visible}
 .agx__team{pointer-events:none}
-.agx__tcard{width:152px;max-width:42vw;background:rgba(12,14,22,.5);backdrop-filter:blur(12px);border:1px solid rgba(212,180,92,.34);border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.55);text-align:center;opacity:0;transform:translateY(70px) scale(.82);pointer-events:auto;cursor:pointer;transition:border-color .25s,box-shadow .25s}
+.agx__tcard{width:126px;max-width:38vw;background:rgba(12,14,22,.5);backdrop-filter:blur(12px);border:1px solid rgba(212,180,92,.34);border-radius:14px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.55);text-align:center;opacity:0;transform:translateY(70px) scale(.82);pointer-events:auto;cursor:pointer;transition:border-color .25s,box-shadow .25s}
 .agx__tcard:hover{border-color:#D4B45C;box-shadow:0 30px 70px rgba(0,0,0,.7),0 0 30px rgba(212,180,92,.25)}
 
 /* Mini-fiche bio (clic sur une carte équipe) */
@@ -201,7 +201,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__bio-close:hover{background:#D4B45C;color:#0a0a0f}
 .agx__bio-card{display:flex;gap:26px;max-width:760px;width:100%;background:rgba(12,14,22,.7);border:1px solid rgba(212,180,92,.34);border-radius:22px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.6)}
 .agx__bio-photo{flex:0 0 42%;max-width:300px}
-.agx__bio-photo img{width:100%;height:100%;object-fit:cover;display:block;min-height:260px}
+.agx__bio-photo img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;min-height:260px}
 .agx__bio-info{flex:1;padding:30px 30px 30px 4px;display:flex;flex-direction:column;justify-content:center}
 .agx__bio-city{font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.6)}
 .agx__bio-name{font-family:Georgia,serif;font-size:clamp(1.8rem,4vw,2.6rem);margin:6px 0 2px;background:linear-gradient(180deg,#fff,#e8dcc0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
@@ -211,10 +211,10 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__team.is-on .agx__tcard{animation:agx-emerge .85s cubic-bezier(.22,1,.36,1) forwards;animation-delay:calc(var(--i) * .15s)}
 @keyframes agx-emerge{to{opacity:1;transform:translateY(0) scale(1)}}
 .agx__tcard-photo{width:100%;aspect-ratio:1/1;overflow:hidden;border-bottom:1px solid rgba(212,180,92,.3)}
-.agx__tcard-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.agx__tcard-photo img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
 .agx__tcard-name{font-family:Georgia,serif;font-size:1.05rem;color:#fff;margin-top:9px}
 .agx__tcard-role{font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:#D4B45C;margin:3px 8px 12px}
-@media (max-width:720px){ .agx__team{gap:12px;bottom:18vh} .agx__tcard{width:40vw} .agx__tcard-name{font-size:.95rem} }
+@media (max-width:720px){ .agx__team{gap:10px;bottom:18vh} .agx__tcard{width:32vw} .agx__tcard-name{font-size:.9rem} .agx__tcard-role{font-size:.66rem} }
 .agx__card:hover{transform:translateY(-6px) scale(1.04);border-color:#D4B45C;box-shadow:0 40px 90px rgba(0,0,0,.7),0 0 40px rgba(212,180,92,.25);color:#fff;text-decoration:none}
 .agx__card-icon{display:flex;align-items:center;justify-content:center;height:118px;line-height:1;color:#F3D27A;background:linear-gradient(145deg,rgba(212,180,92,.22),rgba(243,122,31,.10) 45%,rgba(12,14,22,.55));border-bottom:1px solid rgba(212,180,92,.28)}
 .agx__card-icon svg{width:54px;height:54px;display:block;filter:drop-shadow(0 4px 14px rgba(243,122,31,.4))}
@@ -231,8 +231,8 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 	.agx__card-body{flex:1}
 }
 
-.agx__enter{position:absolute;bottom:15vh;left:50%;transform:translateX(-50%);z-index:6;display:inline-flex;align-items:center;gap:10px;padding:16px 40px;border:1px solid rgba(212,180,92,.7);border-radius:999px;background:rgba(10,10,15,.4);backdrop-filter:blur(8px);color:#D4B45C;font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:.85rem;text-decoration:none;cursor:pointer;transition:.3s}
-.agx__enter:hover{background:#D4B45C;color:#0a0a0f;text-decoration:none;transform:translateX(-50%) translateY(-3px)}
+.agx__enter{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9;display:inline-flex;align-items:center;gap:10px;padding:16px 40px;border:1px solid rgba(212,180,92,.7);border-radius:999px;background:rgba(10,10,15,.45);backdrop-filter:blur(8px);color:#D4B45C;font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:.85rem;text-decoration:none;cursor:pointer;transition:background .3s,color .3s;box-shadow:0 14px 44px rgba(0,0,0,.5)}
+.agx__enter:hover{background:#D4B45C;color:#0a0a0f;text-decoration:none}
 .agx__enter.is-hidden{opacity:0;pointer-events:none}
 
 .agx__nav{position:absolute;bottom:5vh;left:50%;transform:translateX(-50%);display:flex;justify-content:center;align-items:center;gap:14px;z-index:9;font-size:.82rem;letter-spacing:2px;font-weight:700;padding:8px 12px;border-radius:999px;background:rgba(8,9,14,.55);backdrop-filter:blur(10px);box-shadow:0 10px 36px rgba(0,0,0,.5)}
@@ -333,7 +333,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 		<span class="ct"><span id="agx-cur">01</span> / <span id="agx-tot">05</span></span>
 		<button id="agx-next">NEXT ▸</button>
 	</div>
-	<button class="agx__sound is-off" id="agx-sound" type="button" aria-label="Activer le son">
+	<button class="agx__sound" id="agx-sound" type="button" aria-label="Couper le son">
 		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 			<path d="M4 9 L8 9 L13 5 L13 19 L8 15 L4 15 Z" fill="currentColor" stroke="none"/>
 			<path class="wave" d="M16 8.8a4.5 4.5 0 0 1 0 6.4"/>
@@ -341,7 +341,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 			<path class="cross" d="M17.5 9.5l5 5M22.5 9.5l-5 5"/>
 		</svg>
 	</button>
-	<audio id="agx-audio" loop preload="none" src="<?php echo esc_url( $music ); ?>"></audio>
+	<audio id="agx-audio" loop preload="auto" autoplay src="<?php echo esc_url( $music ); ?>"></audio>
 	<div class="agx__hint" id="agx-hint">← Glissez ou NEXT →</div>
 </main>
 
@@ -366,7 +366,7 @@ const STATIONS = [
 	{ pre:'✦ NOTRE QG', ttl:'Nantes', line:'Les visages de la maison.', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/nantes-1.jpg' ); ?>', team:['kate','laurent','julie'] },
 	{ pre:'✦ NOTRE ÉNERGIE', ttl:'Naples', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', team:['fabrizio','carlito'] },
 	{ pre:'✦ NOTRE PÔLE SUD', ttl:'Marrakech', line:'L’équipe qui sort de la tour.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', baseY:-2.2, team:['halim','amina'] },
-	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', media:'space', menu:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0.2&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' }
+	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', media:'space', menu:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' }
 ];
 const TEAM = <?php echo wp_json_encode( $xp_team ); ?>;
 
@@ -570,8 +570,15 @@ window.addEventListener('pointerup', ()=>{ dragging=false; if(current3D&&current
 let ttX=0,tX=0;
 host.addEventListener('mousemove', e=>{ const r=host.getBoundingClientRect(); ttX=((e.clientX-r.left)/r.width-0.5)*0.6; }, {passive:true});
 
-let on=false;
-elSound.addEventListener('click', ()=>{ on=!on; elSound.classList.toggle('is-off', !on); elSound.setAttribute('aria-label', on ? 'Couper le son' : 'Activer le son'); if(on){ audio.volume=0; audio.play().then(()=>{ let v=0,f=setInterval(()=>{v=Math.min(.45,v+.03);audio.volume=v;if(v>=.45)clearInterval(f);},120); }).catch(()=>{}); } else { audio.pause(); } });
+const AGX_VOL = 0.12; // volume faible
+function agxFade(target){ let v = audio.volume; const f = setInterval(()=>{ v += (target>v?0.01:-0.02); audio.volume = Math.max(0, Math.min(target, v)); if (Math.abs(audio.volume-target) < 0.011){ audio.volume = target; clearInterval(f); if (target===0) audio.pause(); } }, 110); }
+function agxPlay(){ audio.volume = 0; audio.play().then(()=>agxFade(AGX_VOL)).catch(()=>{}); }
+let on=true; // son activé à l'ouverture (faible)
+agxPlay();
+// si l'autoplay est bloqué par le navigateur, on démarre au tout premier geste
+const agxResume = ()=>{ if (on && audio.paused) agxPlay(); };
+['pointerdown','touchstart','keydown'].forEach(ev => window.addEventListener(ev, agxResume, {once:true}));
+elSound.addEventListener('click', ()=>{ on=!on; elSound.classList.toggle('is-off', !on); elSound.setAttribute('aria-label', on ? 'Couper le son' : 'Activer le son'); if(on){ agxPlay(); } else { agxFade(0); } });
 
 /* Constellation : cliquer une étoile -> plongée dans l'étoile -> cartes d'offres flottantes */
 const details = Array.from(document.querySelectorAll('.agx__detail'));
