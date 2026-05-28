@@ -264,7 +264,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const BASE = '<?php echo esc_js( $base ); ?>';
 const STATIONS = [
 	{ pre:'BIENVENUE CHEZ —', ttl:'Alliance Groupe', line:"C'est ici que votre projet prend vie.", model:'macbook_pro_2021.glb', media:'video' },
-	{ pre:'🌋 NOTRE ÉNERGIE', ttl:'Le Vésuve', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>' },
+	{ pre:'🌋 NOTRE ÉNERGIE', ttl:'Le Vésuve', line:'La force napolitaine qui ne s’éteint jamais.', model:['volcano.glb','mt._vesuvius_italy.glb'], media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>' },
 	{ pre:'🇲🇦 NOTRE PÔLE SUD', ttl:'Marrakech', line:'SEO, IA, création — notre studio au soleil.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>' },
 	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', model:'need_some_space.glb', media:'space', menu:true }
 ];
@@ -309,6 +309,13 @@ draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/li
 gltf.setDRACOLoader(draco);
 
 const loadOne = url => new Promise(res => gltf.load(url, g => res(g.scene), undefined, err => { console.warn('[XP] échec du modèle', url, err); res(null); }));
+// Essaie plusieurs modèles dans l'ordre (1er trouvé gagne) : permet d'ajouter
+// volcano.glb plus tard sans rien casser (fallback sur la carte actuelle).
+async function loadFirst(models){
+	const list = Array.isArray(models) ? models : [models];
+	for (const m of list){ const g = await loadOne(BASE + m); if (g) return g; }
+	return null;
+}
 
 // Charge une station : centre + cadre n'importe quel modèle (terrain plat incliné,
 // nuage de points = étoiles visibles), peu importe sa taille d'origine.
@@ -317,7 +324,7 @@ async function loadStation(i){
 	const st = STATIONS[i];
 	elLoader.classList.add('is-on');
 	const centered = new THREE.Group();
-	const main = await loadOne(BASE + st.model);
+	const main = await loadFirst(st.model);
 	if (main) centered.add(main);
 	if (st.extra){ const ex = await loadOne(BASE + st.extra); if (ex){ ex.scale.setScalar(0.5); ex.position.set(2.6, -2.2, 1.2); centered.add(ex); } }
 
