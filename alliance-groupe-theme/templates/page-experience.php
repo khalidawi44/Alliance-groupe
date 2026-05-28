@@ -264,8 +264,8 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const BASE = '<?php echo esc_js( $base ); ?>';
 const STATIONS = [
 	{ pre:'BIENVENUE CHEZ —', ttl:'Alliance Groupe', line:"C'est ici que votre projet prend vie.", model:'macbook_pro_2021.glb', media:'video' },
-	{ pre:'🌋 NOTRE ÉNERGIE', ttl:'Le Vésuve', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'dark' },
-	{ pre:'🇲🇦 NOTRE PÔLE SUD', ttl:'Marrakech', line:'SEO, IA, création — notre studio au soleil.', model:'marrakech-tower.glb', media:'dark' },
+	{ pre:'🌋 NOTRE ÉNERGIE', ttl:'Le Vésuve', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>' },
+	{ pre:'🇲🇦 NOTRE PÔLE SUD', ttl:'Marrakech', line:'SEO, IA, création — notre studio au soleil.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>' },
 	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', model:'need_some_space.glb', media:'space', menu:true }
 ];
 
@@ -336,18 +336,20 @@ async function loadStation(i){
 		centered.position.sub(sph.center);                       // recentre l'objet à l'origine
 		const maxHoriz = Math.max(size.x, size.z);
 		const flat = !isPoints && size.y < 0.32 * maxHoriz;      // terrain plat (Vésuve)
-		const target = isPoints ? 14 : (flat ? 7.8 : 6.4);
+		const target = isPoints ? 17 : (flat ? 7.8 : 6.4);
 		inner.scale.setScalar(target / (sph.radius || 1));
 		if (flat) inner.rotation.x = -Math.PI * 0.22;            // légèrement incliné face caméra
-		if (isPoints) outer.position.set(0, -1, -6);             // galaxie en fond, sous le texte
+		if (isPoints) outer.position.set(0, -2.5, -3);           // galaxie englobante, dense band sous le texte
 	}
 	outer.userData.points = isPoints;
 	cache[i] = outer; elLoader.classList.remove('is-on'); return outer;
 }
 
-function setMedia(mode){
+function setMedia(st){
+	const mode = st.media;
 	if (mode === 'video'){ elImg.classList.remove('is-on'); elVideo.classList.add('is-on'); elVideo.play().catch(()=>{}); }
-	else { elVideo.classList.remove('is-on'); elImg.classList.remove('is-on'); } // 'dark' & 'space' : scène sombre épurée
+	else if (mode === 'photo' && st.bg){ elVideo.classList.remove('is-on'); if (elImg.getAttribute('src') !== st.bg) elImg.src = st.bg; elImg.classList.add('is-on'); }
+	else { elVideo.classList.remove('is-on'); elImg.classList.remove('is-on'); } // 'space' : scène sombre étoilée
 }
 
 async function go(i, instant){
@@ -365,7 +367,7 @@ async function go(i, instant){
 	host.classList.toggle('is-menu', !!st.menu);
 	if (!st.menu) closeOrbs();
 	elHint.style.opacity = (i===STATIONS.length-1) ? '0' : '';
-	setMedia(st.media);
+	setMedia(st);
 	if (current3D){ scene.remove(current3D); current3D = null; }
 	const grp = await loadStation(i);
 	if (cur === i){
@@ -424,7 +426,10 @@ function openDetail(idx){
 elMenu.querySelectorAll('.agx__orb-dot').forEach(btn => {
 	btn.addEventListener('click', e => { e.stopPropagation(); openDetail(btn.closest('.agx__orb').dataset.orb); });
 });
-details.forEach(d => d.querySelector('.agx__detail-back').addEventListener('click', e => { e.preventDefault(); closeOrbs(); }));
+details.forEach(d => {
+	d.querySelector('.agx__detail-back').addEventListener('click', e => { e.preventDefault(); closeOrbs(); });
+	d.addEventListener('click', e => { if (e.target === d || e.target.classList.contains('agx__cards') || e.target.classList.contains('agx__detail-title')) closeOrbs(); });
+});
 
 new ResizeObserver(()=>{ const w=W(),h=H(); if(!w||!h)return; camera.aspect=w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h,false); }).observe(host);
 
@@ -433,7 +438,7 @@ function loop(){
 	const t=(performance.now()-t0)*0.001;
 	tX += (ttX-tX)*0.05;
 	if (current3D){
-		if (current3D.userData.points){ current3D.rotation.y = tX*0.12; }
+		if (current3D.userData.points){ current3D.rotation.y = t*0.04 + tX*0.12; } // étoiles qui dérivent lentement
 		else { current3D.rotation.y = tX*0.5; current3D.position.y = Math.sin(t*0.5)*0.1; } // pas de rotation auto, léger suivi souris + flottement
 	}
 	renderer.render(scene, camera);
