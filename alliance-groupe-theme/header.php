@@ -90,6 +90,30 @@
                 </div>
             </li>
 
+            <!-- Cadeaux gratuits + dropdown -->
+            <li class="ag-nav__has-sub ag-nav__highlight">
+                <a href="<?php echo esc_url(home_url('/audit-seo')); ?>">🎁 Cadeaux <span class="ag-nav__arrow">&#9662;</span></a>
+                <div class="ag-mega ag-mega--sm">
+                    <div class="ag-mega__inner">
+                        <div class="ag-mega__col">
+                            <span class="ag-mega__label">Offert · 0 €</span>
+                            <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🎁</span>
+                                <span><strong>6 templates WordPress</strong><small>Thèmes métier gratuits, prêts à installer</small></span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/audit-seo')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">📊</span>
+                                <span><strong>Audit SEO gratuit</strong><small>Note /100 + rapport PDF de votre site</small></span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/tirage-au-sort')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🎰</span>
+                                <span><strong>1 site gratuit / mois</strong><small>Tirage au sort, participation gratuite</small></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
             <!-- Sur-mesure (offre premium) -->
             <li class="ag-nav__item">
                 <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>">✦&nbsp;Sur-mesure</a>
@@ -352,6 +376,15 @@
             <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>" style="display:block;padding:15px 4px;color:#D4B45C;font-weight:700;border-bottom:1px solid rgba(212,180,92,.15);">✦ Sur-mesure <span style="opacity:.7;font-weight:400;">(sur devis)</span></a>
 
             <a href="<?php echo esc_url(home_url('/systeme-prospection')); ?>" style="display:block;padding:15px 4px;color:#fff;font-weight:700;border-bottom:1px solid rgba(212,180,92,.15);">🤖 Système de prospection <span style="opacity:.7;font-weight:400;">(trouve vos clients)</span></a>
+
+            <div class="ag-mobile-menu__group">
+                <button class="ag-mobile-menu__toggle" type="button">🎁 Cadeaux gratuits <span class="ag-nav__pulse-pill">0 €</span> <span class="ag-mobile-menu__arrow">+</span></button>
+                <div class="ag-mobile-menu__sub">
+                    <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">🎁 6 templates WordPress gratuits</a>
+                    <a href="<?php echo esc_url(home_url('/audit-seo')); ?>">📊 Audit SEO gratuit (note /100)</a>
+                    <a href="<?php echo esc_url(home_url('/tirage-au-sort')); ?>">🎰 Gagner 1 site / mois (tirage)</a>
+                </div>
+            </div>
 
             <div class="ag-mobile-menu__group">
                 <button class="ag-mobile-menu__toggle" type="button">Services <span class="ag-mobile-menu__arrow">+</span></button>

@@ -112,6 +112,9 @@ get_header();
 <!-- "Choisissez votre chemin" — 4 panneaux qui s'ouvrent (style theirisk.com) -->
 <?php get_template_part('template-parts/paths-hero'); ?>
 
+<!-- 3 cadeaux pour démarrer (lead magnets) -->
+<?php get_template_part('template-parts/cadeaux-banner'); ?>
+
 <!-- Marquee -->
 <?php get_template_part('template-parts/marquee'); ?>
 
