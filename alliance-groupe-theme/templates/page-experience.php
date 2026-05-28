@@ -265,7 +265,7 @@ const BASE = '<?php echo esc_js( $base ); ?>';
 const STATIONS = [
 	{ pre:'BIENVENUE CHEZ —', ttl:'Alliance Groupe', line:"C'est ici que votre projet prend vie.", model:'macbook_pro_2021.glb', media:'video' },
 	{ pre:'🌋 NOTRE ÉNERGIE', ttl:'Le Vésuve', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'dark' },
-	{ pre:'🇲🇦 NOTRE PÔLE SUD', ttl:'Marrakech', line:'SEO, IA, création — notre studio au soleil.', model:'marrakech-tower.glb', extra:'moroccan_street_light.glb', media:'dark' },
+	{ pre:'🇲🇦 NOTRE PÔLE SUD', ttl:'Marrakech', line:'SEO, IA, création — notre studio au soleil.', model:'marrakech-tower.glb', media:'dark' },
 	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', model:'need_some_space.glb', media:'space', menu:true }
 ];
 
@@ -323,7 +323,7 @@ async function loadStation(i){
 
 	let isPoints = false;
 	centered.traverse(o => {
-		if (o.isPoints){ isPoints = true; o.material.size = 2.4; o.material.sizeAttenuation = false; o.material.vertexColors = true; o.material.transparent = true; o.material.depthWrite = false; o.material.needsUpdate = true; }
+		if (o.isPoints){ isPoints = true; o.material.size = 1.5; o.material.sizeAttenuation = false; o.material.vertexColors = true; o.material.transparent = true; o.material.opacity = 0.5; o.material.depthWrite = false; o.material.needsUpdate = true; }
 		else if (o.isMesh && o.material){ o.material.side = THREE.DoubleSide; }
 	});
 
@@ -334,9 +334,12 @@ async function loadStation(i){
 		const sph  = box.getBoundingSphere(new THREE.Sphere());
 		const size = box.getSize(new THREE.Vector3());
 		centered.position.sub(sph.center);                       // recentre l'objet à l'origine
-		inner.scale.setScalar((isPoints ? 9 : 5.2) / (sph.radius || 1));
 		const maxHoriz = Math.max(size.x, size.z);
-		if (!isPoints && size.y < 0.32 * maxHoriz) inner.rotation.x = -Math.PI * 0.26; // terrain plat -> incliné face caméra
+		const flat = !isPoints && size.y < 0.32 * maxHoriz;      // terrain plat (Vésuve)
+		const target = isPoints ? 14 : (flat ? 7.8 : 6.4);
+		inner.scale.setScalar(target / (sph.radius || 1));
+		if (flat) inner.rotation.x = -Math.PI * 0.22;            // légèrement incliné face caméra
+		if (isPoints) outer.position.set(0, -1, -6);             // galaxie en fond, sous le texte
 	}
 	outer.userData.points = isPoints;
 	cache[i] = outer; elLoader.classList.remove('is-on'); return outer;
@@ -430,8 +433,8 @@ function loop(){
 	const t=(performance.now()-t0)*0.001;
 	tX += (ttX-tX)*0.05;
 	if (current3D){
-		if (current3D.userData.points){ current3D.rotation.y = t*0.05; current3D.rotation.x = tX*0.3; }
-		else { current3D.rotation.y = t*0.22 + tX; current3D.position.y = Math.sin(t*0.6)*0.2; }
+		if (current3D.userData.points){ current3D.rotation.y = tX*0.12; }
+		else { current3D.rotation.y = tX*0.5; current3D.position.y = Math.sin(t*0.5)*0.1; } // pas de rotation auto, léger suivi souris + flottement
 	}
 	renderer.render(scene, camera);
 	requestAnimationFrame(loop);
