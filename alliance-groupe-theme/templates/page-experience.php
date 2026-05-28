@@ -120,6 +120,16 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 /* Ciel étoilé plein écran (station Univers) : on est "dans les étoiles" */
 .agx__sky{position:absolute;inset:0;z-index:1;opacity:0;transition:opacity 1.2s ease;pointer-events:none}
 .agx.is-menu .agx__sky{opacity:1}
+.agx.is-globe .agx__sky{opacity:1}
+/* Points cliquables sur le globe Terre (station Monde) */
+.agx__globe-markers{position:absolute;inset:0;z-index:7;pointer-events:none;opacity:0;transition:opacity .8s ease}
+.agx__globe-markers.is-on{opacity:1}
+.agx__gm{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;cursor:pointer;pointer-events:auto;padding:6px}
+.agx__gm-dot{width:13px;height:13px;border-radius:50%;background:radial-gradient(circle at 50% 50%,#fff 0%,#F3D27A 55%,#D4B45C 80%,rgba(212,180,92,0) 100%);box-shadow:0 0 10px 3px rgba(252,239,196,.85),0 0 22px 7px rgba(212,180,92,.5);animation:agx-twinkle 3s ease-in-out infinite}
+.agx__gm--office .agx__gm-dot{width:16px;height:16px;background:radial-gradient(circle at 50% 50%,#fff 0%,#FFE3B0 45%,#F37A1F 80%,rgba(243,122,31,0) 100%);box-shadow:0 0 14px 4px rgba(255,225,170,.95),0 0 30px 10px rgba(243,122,31,.55)}
+.agx__gm-label{font-family:Georgia,serif;font-size:.74rem;color:#fff;text-shadow:0 2px 10px #000,0 0 16px rgba(0,0,0,.9);white-space:nowrap;opacity:.92}
+.agx__gm--office .agx__gm-label{color:#F3D27A;font-size:.82rem}
+.agx__gm:hover .agx__gm-dot{transform:scale(1.3)}
 /* Galaxie Sketchfab embarquée (station Univers) : décor qui tourne tout seul, derrière la constellation */
 .agx__sky3d{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1;opacity:0;visibility:hidden;transition:opacity 1.4s ease;pointer-events:none;background:#05060a}
 .agx.is-menu .agx__sky3d{opacity:1;visibility:visible}
@@ -274,6 +284,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 	<iframe class="agx__sky3d" id="agx-sky3d" title="Galaxie Alliance" frameborder="0" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" loading="lazy" aria-hidden="true"></iframe>
 	<canvas class="agx__canvas" id="agx-canvas"></canvas>
 	<div class="agx__team" id="agx-team" aria-hidden="true"></div>
+	<div class="agx__globe-markers" id="agx-globe-markers" aria-hidden="true"></div>
 
 	<div class="agx__bio" id="agx-bio" aria-hidden="true">
 		<button class="agx__bio-close" id="agx-bio-close" type="button">← Retour</button>
@@ -363,10 +374,21 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const BASE = '<?php echo esc_js( $base ); ?>';
 const STATIONS = [
 	{ pre:'BIENVENUE CHEZ —', ttl:'Alliance Groupe', line:"C'est ici que votre projet prend vie.", media:'video' },
+	{ pre:'✦ NOTRE MONDE', ttl:'Alliance dans le monde', line:'Touchez un bureau ou un point pour explorer.', media:'space', globe:true },
 	{ pre:'✦ NOTRE ÉNERGIE', ttl:'Naples', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', size:5.2, baseY:1.4, team:['fabrizio','carlito'] },
 	{ pre:'✦ NOTRE QG', ttl:'Nantes', line:'Les visages de la maison.', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/nantes-1.jpg' ); ?>', team:['kate','laurent','julie'] },
 	{ pre:'✦ NOTRE PÔLE SUD', ttl:'Marrakech', line:'L’équipe qui sort de la tour.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', baseY:-2.2, team:['halim','amina'] },
 	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', media:'space', menu:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0.2&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_hint=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' }
+];
+const GLOBE_MARKERS = [
+	{ lat:47.22, lon:-1.55, label:'Nantes',    kind:'office', target:'Nantes' },
+	{ lat:40.85, lon:14.26, label:'Naples',    kind:'office', target:'Naples' },
+	{ lat:31.63, lon:-7.99, label:'Marrakech', kind:'office', target:'Marrakech' },
+	{ lat:20, lon:-30, label:'Ambassadeurs', kind:'page', url:'<?php echo esc_js( home_url( '/programme-ambassadeur' ) ); ?>' },
+	{ lat:8,  lon:24,  label:'Sites Express', kind:'page', url:'<?php echo esc_js( home_url( '/sites-express' ) ); ?>' },
+	{ lat:-18, lon:-58, label:'Studio',       kind:'page', url:'<?php echo esc_js( home_url( '/studio' ) ); ?>' },
+	{ lat:-25, lon:30, label:'Audit SEO',     kind:'page', url:'<?php echo esc_js( home_url( '/audit-seo' ) ); ?>' },
+	{ lat:35, lon:90, label:'Classement',     kind:'page', url:'<?php echo esc_js( home_url( '/classement' ) ); ?>' }
 ];
 const TEAM = <?php echo wp_json_encode( $xp_team ); ?>;
 
@@ -523,9 +545,15 @@ async function go(i, instant){
 	elHint.style.opacity = (i===STATIONS.length-1) ? '0' : '';
 	setMedia(st);
 	buildTeam(st);
+	host.classList.toggle('is-globe', !!st.globe);
+	if (!st.globe) elGlobeMarkers.classList.remove('is-on');
 	if (st.iframe && !elSky3d.getAttribute('src')) elSky3d.setAttribute('src', st.iframe); // galaxie Sketchfab chargée à la 1re visite (la visibilité suit la classe is-menu)
 	if (current3D){ scene.remove(current3D); current3D = null; }
-	if (!st.iframe && st.model){
+	if (st.globe){
+		const g = buildGlobe(); current3D = g; g.scale.setScalar(0.15); g.rotation.set(0,0,0); scene.add(g);
+		buildGlobeMarkers();
+		setTimeout(() => { if (cur !== i) return; tween(1500, k => g.scale.setScalar(0.15 + 1.15*k)); setTimeout(() => { if (cur === i) elGlobeMarkers.classList.add('is-on'); }, 800); }, 900); // terre minuscule -> zoom ~1s -> points
+	} else if (!st.iframe && st.model){
 		const grp = await loadStation(i);
 		if (cur === i){
 			current3D = grp; grp.scale.setScalar(0.55); scene.add(grp);
