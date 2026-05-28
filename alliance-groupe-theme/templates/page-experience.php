@@ -240,7 +240,6 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 	</div>
 
 	<div class="agx__constel" id="agx-menu">
-		<img class="agx__logo" src="<?php echo esc_url( $logo ); ?>" alt="Alliance Groupe">
 		<?php foreach ( $orbs as $idx => $o ) : ?>
 			<div class="agx__orb" style="left:<?php echo (int) $o['x']; ?>%;top:<?php echo (int) $o['y']; ?>%" data-orb="<?php echo (int) $idx; ?>">
 				<button class="agx__orb-dot" type="button" aria-label="<?php echo esc_attr( $o['label'] ); ?>"></button>
@@ -311,7 +310,7 @@ const STATIONS = [
 	{ pre:'BIENVENUE CHEZ —', ttl:'Alliance Groupe', line:"C'est ici que votre projet prend vie.", model:'macbook_pro_2021.glb', media:'video', size:4.6, front:true, rotY:0.6, baseY:-0.6 },
 	{ pre:'✦ NOTRE ÉNERGIE', ttl:'Le Vésuve', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', drag:true, spin:true },
 	{ pre:'✦ NOTRE PÔLE SUD', ttl:'Marrakech', line:'SEO, IA, création — notre studio au soleil.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', drag:true, baseY:-2.2 },
-	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', media:'space', menu:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=1&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' }
+	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', media:'space', menu:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0.2&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' }
 ];
 
 const host = document.getElementById('agx');
@@ -516,7 +515,7 @@ function loop(){
 	if (current3D){
 		const u = current3D.userData;
 		if (u.points){ current3D.rotation.x = 1.2; current3D.rotation.y = 0; u.spinNode.rotation.y = t*0.05 + tX*0.25; } // galaxie DE FACE en orbite (on voit la spirale)
-		else if (u.flat){ current3D.rotation.x = 1.05 + u.dragX; current3D.rotation.y = 0; u.spinNode.rotation.y = u.dragY + (u.spin ? t*0.18 : 0); current3D.position.y = u.baseY + Math.sin(t*0.5)*0.05; } // carte posée à plat qui tourne sur elle-même (vue plongée 3/4)
+		else if (u.flat){ current3D.rotation.x = 1.32 + u.dragX; current3D.rotation.y = 0; u.spinNode.rotation.y = u.dragY + Math.sin(t*0.18)*0.30; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.04; } // carte bien à plat, oscillation douce (pas de rotation complète => pas d'effet "diamant")
 		else if (u.drag){ current3D.rotation.y = u.dragY + (u.spin ? t*0.18 : 0); current3D.rotation.x = u.dragX; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.05; } // l'utilisateur tourne l'objet
 		else if (u.front){ current3D.rotation.y = u.rotY + Math.sin(t*0.45)*0.12; current3D.position.y = u.baseY + Math.sin(t*0.6)*0.07; } // toujours de face, léger balancement
 		else { current3D.rotation.y = tX*0.5; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.1; }
