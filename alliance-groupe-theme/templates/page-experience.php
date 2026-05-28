@@ -345,7 +345,7 @@ async function loadStation(i){
 
 	let isPoints = false;
 	centered.traverse(o => {
-		if (o.isPoints){ isPoints = true; o.material.size = 1.5; o.material.sizeAttenuation = false; o.material.vertexColors = true; o.material.transparent = true; o.material.opacity = 0.5; o.material.depthWrite = false; o.material.needsUpdate = true; }
+		if (o.isPoints){ isPoints = true; o.material.size = 2.0; o.material.sizeAttenuation = false; o.material.vertexColors = true; o.material.transparent = true; o.material.opacity = 0.9; o.material.depthWrite = false; o.material.blending = THREE.AdditiveBlending; o.material.needsUpdate = true; }
 		else if (o.isMesh && o.material){ o.material.side = THREE.DoubleSide; }
 	});
 
