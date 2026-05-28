@@ -97,6 +97,18 @@ if ( file_exists( $ag_demo_board_file ) ) {
     require_once $ag_demo_board_file;
 }
 
+// ── 1c5e. Audit SEO gratuit (lead magnet)
+$ag_audit_seo_file = get_stylesheet_directory() . '/inc/ag-audit-seo.php';
+if ( file_exists( $ag_audit_seo_file ) ) {
+    require_once $ag_audit_seo_file;
+}
+
+// ── 1c5f. Tirage au sort mensuel (1 site gratuit / mois)
+$ag_tirage_file = get_stylesheet_directory() . '/inc/ag-tirage-mensuel.php';
+if ( file_exists( $ag_tirage_file ) ) {
+    require_once $ag_tirage_file;
+}
+
 // ── 1c6. PayPal automatique (webhooks : credit auto des commissions au paiement)
 $ag_paypal_file = get_stylesheet_directory() . '/inc/ag-paypal.php';
 if ( file_exists( $ag_paypal_file ) ) {
