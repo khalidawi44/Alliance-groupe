@@ -1,0 +1,1 @@
+CreateObject("WScript.Shell").Run "C:\Users\Utilisateur\Documents\GitHub\Alliance-groupe\auto-pull.bat", 0, False

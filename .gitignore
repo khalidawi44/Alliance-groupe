@@ -107,3 +107,6 @@ coverage/
 # ─────────────────────────────────────────────────────────────────
 # Note : les .zip des plugins distribuables (ag-business-avocat.zip
 # etc.) DOIVENT etre commit — ils sont references par ag-dev-sync.
+
+auto-pull.log
+*.log
