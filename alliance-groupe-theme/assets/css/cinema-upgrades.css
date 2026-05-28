@@ -1103,7 +1103,7 @@ html.ag-has-custom-cursor [role=button] { cursor:auto !important; }
 /* ── 🌋 Vésuve en éruption (CSS pur, ultra léger) ──
    Position approx du volcan sur naples-1.jpg : ~68% / 38%. Si la photo
    est différente, ajuste --vsv-x et --vsv-y. */
-.ag-hero { --vsv-x: 68%; --vsv-y: 38%; }
+.ag-hero { --vsv-x: 70%; --vsv-y: 28%; }
 .ag-hero__vesuvius {
     position: absolute;
     left: var(--vsv-x); top: var(--vsv-y);

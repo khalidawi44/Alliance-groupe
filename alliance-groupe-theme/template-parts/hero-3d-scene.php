@@ -72,8 +72,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		var T = window.THREE;
 		var scene = new T.Scene();
 		var camera = new T.PerspectiveCamera(45, host.clientWidth / host.clientHeight, 0.1, 200);
-		// Caméra plus reculée + scène plus petite sur mobile : laisse de l'air pour le texte du hero
-		camera.position.set(0, 0, lowSpec ? 55 : 38);
+		// Caméra plus proche → le téléphone est bien visible même en mobile portrait
+		camera.position.set(0, 0, lowSpec ? 26 : 30);
 		var renderer = new T.WebGLRenderer({ canvas: canvas, antialias: !lowSpec, alpha: true });
 		renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MAX_DPR));
 		renderer.setSize(host.clientWidth, host.clientHeight, false);
@@ -87,8 +87,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 		// ── Objet principal : SMARTPHONE 3D flottant (corps + écran lumineux) ──
 		var phoneGroup = new T.Group();
-		// Position décalée à droite + en bas pour ne pas chevaucher le texte du hero
-		phoneGroup.position.set(lowSpec ? 8 : 12, lowSpec ? -3 : -2, 0);
+		// Position : décalée mais visible — mobile = bas-droite proche du bord, desktop = milieu-droite.
+		phoneGroup.position.set(lowSpec ? 4.5 : 7.5, lowSpec ? -5 : -2, 0);
 		phoneGroup.rotation.set(-0.18, -0.42, 0.08);
 
 		// Corps du téléphone (rectangle arrondi via BoxGeometry biseautée)
@@ -239,7 +239,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 			// Phone flottant : rotation douce + bobbing
 			phoneGroup.rotation.y = -0.42 + currentTilt.x + Math.sin(t * 0.35) * 0.14 + sp * 0.6;
 			phoneGroup.rotation.x = -0.18 + currentTilt.y + Math.sin(t * 0.5) * 0.07;
-			phoneGroup.position.y = (lowSpec ? -3 : -2) + Math.sin(t * 0.7) * 0.5;
+			phoneGroup.position.y = (lowSpec ? -5 : -2) + Math.sin(t * 0.7) * 0.5;
 
 			// Repaint écran toutes les 0.15s (pulse "site qui vit")
 			if (t - lastScreenPaint > 0.15) { paintScreen(t); lastScreenPaint = t; }
@@ -262,7 +262,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 			particles.rotation.x = Math.sin(t * 0.15) * 0.05;
 
 			// Caméra : très léger zoom-in au scroll
-			camera.position.z = (lowSpec ? 55 : 38) - sp * 6;
+			camera.position.z = (lowSpec ? 26 : 30) - sp * 4;
 
 			renderer.render(scene, camera);
 			rafId = requestAnimationFrame(frame);
