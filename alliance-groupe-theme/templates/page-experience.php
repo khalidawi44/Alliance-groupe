@@ -27,45 +27,69 @@ $orbs = array(
 	array(
 		'label' => 'Sites & Offres', 'x' => 16, 'y' => 30,
 		'sub'   => array(
-			array( 'l' => 'Sites Express',       'u' => home_url( '/sites-express' ),       'd' => 'Site pro livré en 7 jours, prix fixe.', 'ico' => '🚀' ),
-			array( 'l' => 'Templates WordPress', 'u' => home_url( '/templates-wordpress' ), 'd' => '6 thèmes métier prêts à installer.',     'ico' => '🎨' ),
-			array( 'l' => 'Sur-mesure',          'u' => home_url( '/sur-mesure' ),          'd' => 'Projet ambitieux, design unique.',       'ico' => '💎' ),
+			array( 'l' => 'Sites Express',       'u' => home_url( '/sites-express' ),       'd' => 'Site pro livré en 7 jours, prix fixe.', 'ico' => 'rocket' ),
+			array( 'l' => 'Templates WordPress', 'u' => home_url( '/templates-wordpress' ), 'd' => '6 thèmes métier prêts à installer.',     'ico' => 'layout' ),
+			array( 'l' => 'Sur-mesure',          'u' => home_url( '/sur-mesure' ),          'd' => 'Projet ambitieux, design unique.',       'ico' => 'gem' ),
 		),
 	),
 	array(
 		'label' => 'Gagner', 'x' => 50, 'y' => 9,
 		'sub'   => array(
-			array( 'l' => 'Programme ambassadeurs', 'u' => home_url( '/programme-ambassadeur' ), 'd' => 'Gagnez 10 % sur chaque vente.',     'ico' => '💰' ),
-			array( 'l' => 'Devenir recruteur',      'u' => home_url( '/recruteur' ),             'd' => 'Recrutez et touchez des primes.',   'ico' => '📣' ),
-			array( 'l' => 'Classement',             'u' => home_url( '/classement' ),            'd' => 'Grimpez dans le top des vendeurs.', 'ico' => '🏆' ),
+			array( 'l' => 'Programme ambassadeurs', 'u' => home_url( '/programme-ambassadeur' ), 'd' => 'Gagnez 10 % sur chaque vente.',     'ico' => 'coins' ),
+			array( 'l' => 'Devenir recruteur',      'u' => home_url( '/recruteur' ),             'd' => 'Recrutez et touchez des primes.',   'ico' => 'megaphone' ),
+			array( 'l' => 'Classement',             'u' => home_url( '/classement' ),            'd' => 'Grimpez dans le top des vendeurs.', 'ico' => 'trophy' ),
 		),
 	),
 	array(
 		'label' => 'Cadeaux', 'x' => 84, 'y' => 30,
 		'sub'   => array(
-			array( 'l' => 'Audit SEO offert',      'u' => home_url( '/audit-seo' ),           'd' => '12 points analysés, note /100.', 'ico' => '🔍' ),
-			array( 'l' => '1 site gratuit / mois', 'u' => home_url( '/tirage-au-sort' ),      'd' => 'Tirage au sort chaque mois.',    'ico' => '🎁' ),
-			array( 'l' => 'Templates gratuits',    'u' => home_url( '/templates-wordpress' ), 'd' => 'Téléchargement immédiat.',       'ico' => '📦' ),
+			array( 'l' => 'Audit SEO offert',      'u' => home_url( '/audit-seo' ),           'd' => '12 points analysés, note /100.', 'ico' => 'search' ),
+			array( 'l' => '1 site gratuit / mois', 'u' => home_url( '/tirage-au-sort' ),      'd' => 'Tirage au sort chaque mois.',    'ico' => 'gift' ),
+			array( 'l' => 'Templates gratuits',    'u' => home_url( '/templates-wordpress' ), 'd' => 'Téléchargement immédiat.',       'ico' => 'package' ),
 		),
 	),
 	array(
 		'label' => 'Solidaire', 'x' => 29, 'y' => 76,
 		'sub'   => array(
-			array( 'l' => 'Programme Racines', 'u' => home_url( '/programme-racines' ),    'd' => 'On reverse à des causes qui comptent.', 'ico' => '🌱' ),
-			array( 'l' => 'Site asso gratuit', 'u' => home_url( '/wordpress-association' ), 'd' => 'Un site offert aux associations.',      'ico' => '🤝' ),
+			array( 'l' => 'Programme Racines', 'u' => home_url( '/programme-racines' ),    'd' => 'On reverse à des causes qui comptent.', 'ico' => 'sprout' ),
+			array( 'l' => 'Site asso gratuit', 'u' => home_url( '/wordpress-association' ), 'd' => 'Un site offert aux associations.',      'ico' => 'heart' ),
 		),
 	),
 	array(
 		'label' => 'Studio & Contact', 'x' => 71, 'y' => 76,
 		'sub'   => array(
-			array( 'l' => 'Studio créatif', 'u' => home_url( '/studio' ),        'd' => 'Créez vos visuels & vidéos.',  'ico' => '🎬' ),
-			array( 'l' => 'Nous contacter', 'u' => home_url( '/contact' ),       'd' => 'Parlons de votre projet.',     'ico' => '✉️' ),
-			array( 'l' => 'Espace client',  'u' => home_url( '/espace-client' ), 'd' => 'Suivez vos projets en cours.', 'ico' => '👤' ),
+			array( 'l' => 'Studio créatif', 'u' => home_url( '/studio' ),        'd' => 'Créez vos visuels & vidéos.',  'ico' => 'film' ),
+			array( 'l' => 'Nous contacter', 'u' => home_url( '/contact' ),       'd' => 'Parlons de votre projet.',     'ico' => 'mail' ),
+			array( 'l' => 'Espace client',  'u' => home_url( '/espace-client' ), 'd' => 'Suivez vos projets en cours.', 'ico' => 'user' ),
 		),
 	),
 );
 // Paires d'orbes reliées par une ligne (index 0-based) pour dessiner la constellation.
 $orb_links = array( array(0,1), array(1,2), array(0,3), array(3,4), array(4,2), array(1,4) );
+
+// Icônes SVG dorées (remplacent les émojis sur les cartes). Trait = couleur du conteneur.
+if ( ! function_exists( 'agx_icon' ) ) {
+	function agx_icon( $key ) {
+		$p = array(
+			'rocket'    => '<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09Z"/><path d="M12 15 9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2Z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
+			'layout'    => '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/>',
+			'gem'       => '<path d="M6 3h12l4 6-10 12L2 9Z"/><path d="M2 9h20"/><path d="m8 3 4 18 4-18"/>',
+			'coins'     => '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5a4 4 0 1 0 0 7"/><path d="M7.5 11h5.5"/><path d="M7.5 13.5h4.5"/>',
+			'megaphone' => '<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
+			'trophy'    => '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.7V17c0 .6-.5 1-1 1.2C7.8 18.8 7 20.2 7 22"/><path d="M14 14.7V17c0 .6.5 1 1 1.2 1.2.6 2 2 2 3.8"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+			'search'    => '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+			'gift'      => '<path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7Z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7Z"/>',
+			'package'   => '<path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
+			'sprout'    => '<path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8Z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2Z"/>',
+			'heart'     => '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+			'film'      => '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18"/><path d="M17 3v18"/><path d="M3 7.5h4"/><path d="M3 12h18"/><path d="M3 16.5h4"/><path d="M17 7.5h4"/><path d="M17 16.5h4"/>',
+			'mail'      => '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/>',
+			'user'      => '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+		);
+		$svg = isset( $p[ $key ] ) ? $p[ $key ] : '<circle cx="12" cy="12" r="9"/>';
+		return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . $svg . '</svg>';
+	}
+}
 ?>
 
 <style>
@@ -148,7 +172,8 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 @keyframes agx-card-in{from{opacity:0;transform:translateY(40px) scale(.8)}to{opacity:1;transform:none}}
 @keyframes agx-float{0%,100%{transform:translateY(-7px)}50%{transform:translateY(9px)}}
 .agx__card:hover{transform:translateY(-6px) scale(1.04);border-color:#D4B45C;box-shadow:0 40px 90px rgba(0,0,0,.7),0 0 40px rgba(212,180,92,.25);color:#fff;text-decoration:none}
-.agx__card-icon{display:flex;align-items:center;justify-content:center;height:118px;font-size:3.1rem;line-height:1;background:linear-gradient(145deg,rgba(212,180,92,.22),rgba(243,122,31,.10) 45%,rgba(12,14,22,.55));border-bottom:1px solid rgba(212,180,92,.28);text-shadow:0 6px 20px rgba(0,0,0,.5)}
+.agx__card-icon{display:flex;align-items:center;justify-content:center;height:118px;line-height:1;color:#F3D27A;background:linear-gradient(145deg,rgba(212,180,92,.22),rgba(243,122,31,.10) 45%,rgba(12,14,22,.55));border-bottom:1px solid rgba(212,180,92,.28)}
+.agx__card-icon svg{width:54px;height:54px;display:block;filter:drop-shadow(0 4px 14px rgba(243,122,31,.4))}
 .agx__card-body{display:flex;flex-direction:column;gap:7px;padding:18px}
 .agx__card-ttl{font-family:Georgia,serif;font-size:1.18rem;color:#fff}
 .agx__card-desc{font-size:.9rem;line-height:1.5;color:rgba(255,255,255,.72)}
@@ -157,7 +182,8 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 	.agx__orb-label{font-size:.72rem}
 	.agx__cards{gap:16px}
 	.agx__card{width:84vw;flex-direction:row}
-	.agx__card-icon{height:auto;width:34%;flex-shrink:0;font-size:2.4rem}
+	.agx__card-icon{height:auto;width:34%;flex-shrink:0;padding:18px 0}
+	.agx__card-icon svg{width:42px;height:42px}
 	.agx__card-body{flex:1}
 }
 
@@ -227,7 +253,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 			<div class="agx__cards">
 				<?php foreach ( $o['sub'] as $n => $s ) : ?>
 					<a class="agx__card" href="<?php echo esc_url( $s['u'] ); ?>" style="--i:<?php echo (int) $n; ?>">
-						<span class="agx__card-icon" aria-hidden="true"><?php echo esc_html( $s['ico'] ); ?></span>
+						<span class="agx__card-icon" aria-hidden="true"><?php echo agx_icon( $s['ico'] ); // SVG de confiance (pas de saisie utilisateur) ?></span>
 						<span class="agx__card-body">
 							<span class="agx__card-ttl"><?php echo esc_html( $s['l'] ); ?></span>
 							<span class="agx__card-desc"><?php echo esc_html( $s['d'] ); ?></span>
@@ -279,8 +305,8 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const BASE = '<?php echo esc_js( $base ); ?>';
 const STATIONS = [
 	{ pre:'BIENVENUE CHEZ —', ttl:'Alliance Groupe', line:"C'est ici que votre projet prend vie.", model:'macbook_pro_2021.glb', media:'video', size:4.6, front:true, rotY:0.6, baseY:-0.6 },
-	{ pre:'🌋 NOTRE ÉNERGIE', ttl:'Le Vésuve', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', drag:true, spin:true },
-	{ pre:'🇲🇦 NOTRE PÔLE SUD', ttl:'Marrakech', line:'SEO, IA, création — notre studio au soleil.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', drag:true, baseY:-2.2 },
+	{ pre:'✦ NOTRE ÉNERGIE', ttl:'Le Vésuve', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', drag:true, spin:true },
+	{ pre:'✦ NOTRE PÔLE SUD', ttl:'Marrakech', line:'SEO, IA, création — notre studio au soleil.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', drag:true, baseY:-2.2 },
 	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', model:'need_some_space.glb', media:'space', menu:true }
 ];
 
@@ -345,7 +371,7 @@ async function loadStation(i){
 
 	let isPoints = false;
 	centered.traverse(o => {
-		if (o.isPoints){ isPoints = true; o.material.size = 2.0; o.material.sizeAttenuation = false; o.material.vertexColors = true; o.material.transparent = true; o.material.opacity = 0.9; o.material.depthWrite = false; o.material.blending = THREE.AdditiveBlending; o.material.needsUpdate = true; }
+		if (o.isPoints){ isPoints = true; o.material.size = 2.8; o.material.sizeAttenuation = false; o.material.vertexColors = true; o.material.transparent = true; o.material.opacity = 0.95; o.material.depthWrite = false; o.material.blending = THREE.AdditiveBlending; o.material.needsUpdate = true; }
 		else if (o.isMesh && o.material){ o.material.side = THREE.DoubleSide; }
 	});
 
@@ -365,10 +391,11 @@ async function loadStation(i){
 		centered.position.sub(sph.center);                       // recentre l'objet à l'origine
 		const target = st.size || (isPoints ? 22 : (flat ? 8.8 : 6.4));
 		inner.scale.setScalar(target / (sph.radius || 1));
-		if (flat){ inner.rotation.x = -Math.PI * 0.20; } // vue 3/4 sur le cratère
+		if (flat){ outer.userData.flat = true; } // carte posée à plat : rotation sur place + inclinaison fixe gérées dans la boucle
 		if (isPoints) outer.position.set(0, -0.5, -1);           // galaxie qui remplit l'écran
 	}
 	outer.userData.points = isPoints;
+	outer.userData.spinNode = inner;                             // nœud qui tourne sur lui-même (carte à plat / galaxie de face)
 	outer.userData.drag = !!st.drag;
 	outer.userData.spin = !!st.spin;
 	outer.userData.front = !!st.front;
@@ -480,7 +507,8 @@ function loop(){
 	tX += (ttX-tX)*0.05;
 	if (current3D){
 		const u = current3D.userData;
-		if (u.points){ current3D.rotation.y = t*0.04 + tX*0.12; }                                   // galaxie qui dérive
+		if (u.points){ current3D.rotation.x = 1.2; current3D.rotation.y = 0; u.spinNode.rotation.y = t*0.05 + tX*0.25; } // galaxie DE FACE en orbite (on voit la spirale)
+		else if (u.flat){ current3D.rotation.x = 1.05 + u.dragX; current3D.rotation.y = 0; u.spinNode.rotation.y = u.dragY + (u.spin ? t*0.18 : 0); current3D.position.y = u.baseY + Math.sin(t*0.5)*0.05; } // carte posée à plat qui tourne sur elle-même (vue plongée 3/4)
 		else if (u.drag){ current3D.rotation.y = u.dragY + (u.spin ? t*0.18 : 0); current3D.rotation.x = u.dragX; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.05; } // l'utilisateur tourne l'objet
 		else if (u.front){ current3D.rotation.y = u.rotY + Math.sin(t*0.45)*0.12; current3D.position.y = u.baseY + Math.sin(t*0.6)*0.07; } // toujours de face, léger balancement
 		else { current3D.rotation.y = tX*0.5; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.1; }
