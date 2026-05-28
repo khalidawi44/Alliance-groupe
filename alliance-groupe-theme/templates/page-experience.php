@@ -14,50 +14,52 @@
 
 get_header();
 $base   = get_stylesheet_directory_uri() . '/assets/images/img_3d/';
+$imgb   = get_stylesheet_directory_uri() . '/assets/images/';
 $office = get_stylesheet_directory_uri() . '/assets/images/team/1_bureau_naples.jpg';
 $vid    = get_stylesheet_directory_uri() . '/assets/images/video/naples.mp4';
 $music  = get_option( 'ag_xp_music', get_stylesheet_directory_uri() . '/assets/audio/naples.mp3' );
 
-// Constellation de la station "Univers" : chaque orbe ouvre un sous-menu.
+// Constellation de la station "Univers" : chaque étoile ouvre un panneau de
+// cartes flottantes (offres) au lieu d'un menu basique.
 // x / y = position en % dans la zone ; les liens utilisent les vrais slugs.
 $orbs = array(
 	array(
 		'label' => 'Sites & Offres', 'x' => 16, 'y' => 30,
 		'sub'   => array(
-			array( 'l' => 'Sites Express', 'u' => home_url( '/sites-express' ) ),
-			array( 'l' => 'Templates WordPress', 'u' => home_url( '/templates-wordpress' ) ),
-			array( 'l' => 'Sur-mesure', 'u' => home_url( '/sur-mesure' ) ),
+			array( 'l' => 'Sites Express',       'u' => home_url( '/sites-express' ),        'd' => 'Site pro livré en 7 jours, prix fixe.',     'img' => $imgb . 'produits/produit-essentiel.jpg' ),
+			array( 'l' => 'Templates WordPress',  'u' => home_url( '/templates-wordpress' ),  'd' => '6 thèmes métier prêts à installer.',        'img' => $imgb . 'produits/produit-boutique.jpg' ),
+			array( 'l' => 'Sur-mesure',           'u' => home_url( '/sur-mesure' ),           'd' => 'Projet ambitieux, design unique.',          'img' => $imgb . 'produits/produit-pro.jpg' ),
 		),
 	),
 	array(
 		'label' => 'Gagner', 'x' => 50, 'y' => 9,
 		'sub'   => array(
-			array( 'l' => 'Programme ambassadeurs', 'u' => home_url( '/programme-ambassadeur' ) ),
-			array( 'l' => 'Devenir recruteur', 'u' => home_url( '/recruteur' ) ),
-			array( 'l' => 'Classement', 'u' => home_url( '/classement' ) ),
+			array( 'l' => 'Programme ambassadeurs', 'u' => home_url( '/programme-ambassadeur' ), 'd' => 'Gagnez 10 % sur chaque vente.',    'img' => $imgb . 'studio/studio-10pct.jpg' ),
+			array( 'l' => 'Devenir recruteur',      'u' => home_url( '/recruteur' ),             'd' => 'Recrutez et touchez des primes.',  'img' => $imgb . 'produits/produit-croissance.jpg' ),
+			array( 'l' => 'Classement',             'u' => home_url( '/classement' ),            'd' => 'Grimpez dans le top des vendeurs.','img' => $imgb . 'produits/produit-performance.jpg' ),
 		),
 	),
 	array(
 		'label' => 'Cadeaux', 'x' => 84, 'y' => 30,
 		'sub'   => array(
-			array( 'l' => 'Audit SEO offert', 'u' => home_url( '/audit-seo' ) ),
-			array( 'l' => '1 site gratuit / mois', 'u' => home_url( '/tirage-au-sort' ) ),
-			array( 'l' => 'Templates gratuits', 'u' => home_url( '/templates-wordpress' ) ),
+			array( 'l' => 'Audit SEO offert',     'u' => home_url( '/audit-seo' ),       'd' => '12 points analysés, note /100.',   'img' => $imgb . 'produits/produit-performance.jpg' ),
+			array( 'l' => '1 site gratuit / mois','u' => home_url( '/tirage-au-sort' ),  'd' => 'Tirage au sort chaque mois.',      'img' => $imgb . 'produits/produit-essentiel.jpg' ),
+			array( 'l' => 'Templates gratuits',   'u' => home_url( '/templates-wordpress' ), 'd' => 'Téléchargement immédiat.',     'img' => $imgb . 'produits/produit-boutique.jpg' ),
 		),
 	),
 	array(
 		'label' => 'Solidaire', 'x' => 29, 'y' => 76,
 		'sub'   => array(
-			array( 'l' => 'Programme Racines', 'u' => home_url( '/programme-racines' ) ),
-			array( 'l' => 'Site asso gratuit', 'u' => home_url( '/wordpress-association' ) ),
+			array( 'l' => 'Programme Racines',  'u' => home_url( '/programme-racines' ),    'd' => 'On reverse à des causes qui comptent.', 'img' => $imgb . 'cities/nantes-1.jpg' ),
+			array( 'l' => 'Site asso gratuit',  'u' => home_url( '/wordpress-association' ), 'd' => 'Un site offert aux associations.',      'img' => $imgb . 'cities/marrakech-1.jpg' ),
 		),
 	),
 	array(
 		'label' => 'Studio & Contact', 'x' => 71, 'y' => 76,
 		'sub'   => array(
-			array( 'l' => 'Studio créatif', 'u' => home_url( '/studio' ) ),
-			array( 'l' => 'Nous contacter', 'u' => home_url( '/contact' ) ),
-			array( 'l' => 'Espace client', 'u' => home_url( '/espace-client' ) ),
+			array( 'l' => 'Studio créatif', 'u' => home_url( '/studio' ),        'd' => 'Créez vos visuels & vidéos.',  'img' => $imgb . 'studio/studio-247.jpg' ),
+			array( 'l' => 'Nous contacter', 'u' => home_url( '/contact' ),       'd' => 'Parlons de votre projet.',     'img' => $imgb . 'cities/naples-1.jpg' ),
+			array( 'l' => 'Espace client',  'u' => home_url( '/espace-client' ), 'd' => 'Suivez vos projets en cours.', 'img' => $imgb . 'cities/nantes-2.jpg' ),
 		),
 	),
 );
@@ -113,28 +115,48 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__orb.is-open .agx__orb-dot{transform:scale(1.4);background:radial-gradient(circle at 50% 50%,#fff 0%,#FFE3B0 35%,#F37A1F 75%,rgba(243,122,31,0) 100%);box-shadow:0 0 16px 5px rgba(255,225,170,1),0 0 44px 16px rgba(243,122,31,.7)}
 .agx__orb-label{font-family:Georgia,serif;font-size:clamp(.82rem,1.5vw,1.05rem);color:#fff;text-shadow:0 2px 12px #000,0 0 20px rgba(0,0,0,.8);white-space:nowrap;letter-spacing:.5px;transition:color .25s}
 .agx__orb.is-open .agx__orb-label{color:#F3D27A}
-.agx__sub{position:absolute;top:calc(100% + 12px);left:50%;transform:translate(-50%,8px);min-width:200px;display:flex;flex-direction:column;gap:6px;padding:12px;background:rgba(8,9,14,.82);backdrop-filter:blur(12px);border:1px solid rgba(212,180,92,.4);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.6);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,transform .28s ease;z-index:3}
-.agx__orb.is-open .agx__sub{opacity:1;visibility:visible;pointer-events:auto;transform:translate(-50%,0)}
-.agx__sub a{padding:10px 14px;border-radius:9px;color:rgba(255,255,255,.9);text-decoration:none;font-size:.92rem;font-family:'Helvetica Neue',Arial,sans-serif;transition:background .2s,color .2s;white-space:nowrap}
-.agx__sub a:hover{background:rgba(212,180,92,.18);color:#fff;text-decoration:none}
+
+/* "Dans l'étoile" : cartes d'offres flottant dans l'espace 3D */
+.agx__detail{position:absolute;inset:0;z-index:9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:9vh 24px 13vh;opacity:0;visibility:hidden;transform:scale(1.18);transition:opacity .6s ease,transform .6s cubic-bezier(.22,1,.36,1);perspective:1300px;pointer-events:none}
+.agx__detail.is-on{opacity:1;visibility:visible;transform:scale(1);pointer-events:auto}
+.agx__detail-back{position:absolute;top:22px;left:22px;z-index:3;background:rgba(10,10,15,.5);backdrop-filter:blur(8px);border:1px solid rgba(212,180,92,.4);color:#D4B45C;border-radius:999px;padding:10px 18px;font-size:.78rem;letter-spacing:1px;cursor:pointer;transition:.25s}
+.agx__detail-back:hover{background:#D4B45C;color:#0a0a0f}
+.agx__detail-title{font-family:Georgia,serif;font-size:clamp(1.6rem,4vw,2.8rem);margin:0;text-align:center;background:linear-gradient(180deg,#fff,#e8dcc0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 4px 30px rgba(0,0,0,.8)}
+.agx__cards{display:flex;gap:26px;justify-content:center;align-items:stretch;flex-wrap:wrap;transform-style:preserve-3d;max-width:1000px}
+.agx__card{width:262px;max-width:80vw;display:flex;flex-direction:column;background:rgba(12,14,22,.55);backdrop-filter:blur(14px);border:1px solid rgba(212,180,92,.32);border-radius:18px;overflow:hidden;text-decoration:none;color:#fff;box-shadow:0 30px 70px rgba(0,0,0,.55);transition:transform .35s ease,border-color .35s ease,box-shadow .35s ease;animation:agx-float 6s ease-in-out infinite;animation-delay:calc(var(--i) * -2s);transform:translateZ(0)}
+.agx__detail.is-on .agx__card{animation:agx-card-in .7s cubic-bezier(.22,1,.36,1) backwards,agx-float 6s ease-in-out infinite;animation-delay:calc(var(--i) * .12s),calc(var(--i) * -2s + .7s)}
+@keyframes agx-card-in{from{opacity:0;transform:translateY(40px) scale(.8)}to{opacity:1;transform:none}}
+@keyframes agx-float{0%,100%{transform:translateY(-7px)}50%{transform:translateY(9px)}}
+.agx__card:hover{transform:translateY(-6px) scale(1.04);border-color:#D4B45C;box-shadow:0 40px 90px rgba(0,0,0,.7),0 0 40px rgba(212,180,92,.25);color:#fff;text-decoration:none}
+.agx__card-img{display:block;height:148px;background-size:cover;background-position:center}
+.agx__card-body{display:flex;flex-direction:column;gap:7px;padding:18px}
+.agx__card-ttl{font-family:Georgia,serif;font-size:1.18rem;color:#fff}
+.agx__card-desc{font-size:.9rem;line-height:1.5;color:rgba(255,255,255,.72)}
+.agx__card-cta{margin-top:6px;color:#D4B45C;font-weight:800;letter-spacing:1px;text-transform:uppercase;font-size:.78rem}
 @media (max-width:720px){
 	.agx__orb-label{font-size:.72rem}
-	.agx__sub{min-width:168px}
-	.agx__orb[data-orb="2"] .agx__sub,.agx__orb[data-orb="4"] .agx__sub{left:auto;right:-10px;transform:translate(0,8px)}
-	.agx__orb[data-orb="2"].is-open .agx__sub,.agx__orb[data-orb="4"].is-open .agx__sub{transform:translate(0,0)}
+	.agx__cards{gap:16px}
+	.agx__card{width:84vw;flex-direction:row}
+	.agx__card-img{height:auto;width:38%;flex-shrink:0}
+	.agx__card-body{flex:1}
 }
 
 .agx__enter{position:absolute;bottom:15vh;left:50%;transform:translateX(-50%);z-index:6;display:inline-flex;align-items:center;gap:10px;padding:16px 40px;border:1px solid rgba(212,180,92,.7);border-radius:999px;background:rgba(10,10,15,.4);backdrop-filter:blur(8px);color:#D4B45C;font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:.85rem;text-decoration:none;cursor:pointer;transition:.3s}
 .agx__enter:hover{background:#D4B45C;color:#0a0a0f;text-decoration:none;transform:translateX(-50%) translateY(-3px)}
 .agx__enter.is-hidden{opacity:0;pointer-events:none}
 
-.agx__nav{position:absolute;bottom:42px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:26px;z-index:7;font-size:.78rem;letter-spacing:3px;font-weight:600;color:rgba(255,255,255,.6)}
-.agx__nav button{background:none;border:none;color:rgba(255,255,255,.6);font:inherit;letter-spacing:inherit;cursor:pointer;padding:8px 14px;transition:color .25s}
-.agx__nav button:hover{color:#fff}
-.agx__nav button:disabled{opacity:.25;cursor:not-allowed}
-.agx__nav .ct{color:rgba(255,255,255,.4);font-variant-numeric:tabular-nums}
-.agx__sound{position:absolute;top:22px;right:22px;z-index:8;background:rgba(10,10,15,.45);backdrop-filter:blur(8px);border:1px solid rgba(212,180,92,.4);color:#D4B45C;border-radius:999px;padding:9px 16px;font-size:.72rem;letter-spacing:2px;cursor:pointer;text-transform:uppercase}
-.agx__sound:hover{color:#fff;border-color:#D4B45C}
+.agx__nav{position:absolute;bottom:38px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:18px;z-index:7;font-size:.8rem;letter-spacing:2px;font-weight:700}
+.agx__nav button{display:inline-flex;align-items:center;gap:8px;background:rgba(212,180,92,.12);border:1.5px solid rgba(212,180,92,.65);color:#F3D27A;font:inherit;letter-spacing:inherit;cursor:pointer;padding:13px 26px;border-radius:999px;backdrop-filter:blur(8px);transition:background .25s,color .25s,border-color .25s,transform .2s;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.agx__nav button:hover:not(:disabled){background:#D4B45C;color:#0a0a0f;border-color:#D4B45C;transform:translateY(-2px)}
+.agx__nav button:disabled{opacity:.28;cursor:not-allowed}
+.agx__nav .ct{color:rgba(255,255,255,.75);font-variant-numeric:tabular-nums;letter-spacing:3px;padding:0 4px}
+.agx__sound{position:absolute;top:20px;right:20px;z-index:8;width:46px;height:46px;display:flex;align-items:center;justify-content:center;background:rgba(10,10,15,.5);backdrop-filter:blur(8px);border:1.5px solid rgba(212,180,92,.5);color:#D4B45C;border-radius:50%;cursor:pointer;transition:.25s}
+.agx__sound:hover{color:#fff;border-color:#D4B45C;background:rgba(212,180,92,.2)}
+.agx__sound svg{width:22px;height:22px;display:block}
+.agx__sound .wave{transition:opacity .2s}
+.agx__sound.is-off .wave{opacity:.25}
+.agx__sound.is-off .cross{opacity:1}
+.agx__sound .cross{opacity:0}
 
 .agx__loader{position:absolute;inset:0;z-index:9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:rgba(5,6,10,.55);opacity:0;visibility:hidden;transition:opacity .3s ease}
 .agx__loader.is-on{opacity:1;visibility:visible}
@@ -144,6 +166,10 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__hint{position:absolute;bottom:8vh;left:0;right:0;text-align:center;font-size:.7rem;letter-spacing:3px;color:rgba(255,255,255,.4);text-transform:uppercase;pointer-events:none;text-shadow:0 1px 10px #000;z-index:6}
 .agx__warp{position:absolute;inset:0;z-index:10;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 50%,rgba(255,245,225,.95) 0%,rgba(212,180,92,.7) 30%,rgba(243,122,31,.35) 55%,rgba(5,6,10,0) 78%);transition:opacity .5s ease}
 .agx__warp.is-on{opacity:1}
+/* Quand on est "dans l'étoile", on masque la constellation + l'UI de navigation */
+.agx.is-detail .agx__constel,.agx.is-detail .agx__cap,.agx.is-detail .agx__nav,.agx.is-detail .agx__hint{opacity:0!important;pointer-events:none!important;transition:opacity .4s ease}
+.agx__orb.is-diving .agx__orb-dot{animation:none;transform:scale(7);opacity:0;transition:transform .45s ease,opacity .45s ease}
+.agx__orb.is-diving .agx__orb-label{opacity:0;transition:opacity .25s ease}
 </style>
 
 <main class="agx" id="agx">
@@ -172,16 +198,31 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 		<div class="agx__core"><span>Alliance</span><span>Groupe</span></div>
 		<?php foreach ( $orbs as $idx => $o ) : ?>
 			<div class="agx__orb" style="left:<?php echo (int) $o['x']; ?>%;top:<?php echo (int) $o['y']; ?>%" data-orb="<?php echo (int) $idx; ?>">
-				<button class="agx__orb-dot" type="button" aria-expanded="false" aria-label="<?php echo esc_attr( $o['label'] ); ?>"></button>
+				<button class="agx__orb-dot" type="button" aria-label="<?php echo esc_attr( $o['label'] ); ?>"></button>
 				<span class="agx__orb-label"><?php echo esc_html( $o['label'] ); ?></span>
-				<div class="agx__sub">
-					<?php foreach ( $o['sub'] as $s ) : ?>
-						<a href="<?php echo esc_url( $s['u'] ); ?>"><?php echo esc_html( $s['l'] ); ?></a>
-					<?php endforeach; ?>
-				</div>
 			</div>
 		<?php endforeach; ?>
 	</div>
+
+	<!-- Panneaux "dans l'étoile" : cartes d'offres flottantes en 3D -->
+	<?php foreach ( $orbs as $idx => $o ) : ?>
+		<div class="agx__detail" data-detail="<?php echo (int) $idx; ?>">
+			<button class="agx__detail-back" type="button">← Retour aux étoiles</button>
+			<h2 class="agx__detail-title"><?php echo esc_html( $o['label'] ); ?></h2>
+			<div class="agx__cards">
+				<?php foreach ( $o['sub'] as $n => $s ) : ?>
+					<a class="agx__card" href="<?php echo esc_url( $s['u'] ); ?>" style="--i:<?php echo (int) $n; ?>">
+						<span class="agx__card-img" style="background-image:url('<?php echo esc_url( $s['img'] ); ?>')"></span>
+						<span class="agx__card-body">
+							<span class="agx__card-ttl"><?php echo esc_html( $s['l'] ); ?></span>
+							<span class="agx__card-desc"><?php echo esc_html( $s['d'] ); ?></span>
+							<span class="agx__card-cta">Découvrir →</span>
+						</span>
+					</a>
+				<?php endforeach; ?>
+			</div>
+		</div>
+	<?php endforeach; ?>
 
 	<a href="#" class="agx__enter" id="agx-enter">Commencer le voyage →</a>
 
@@ -193,7 +234,14 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 		<span class="ct"><span id="agx-cur">01</span> / 04</span>
 		<button id="agx-next">NEXT ▸</button>
 	</div>
-	<button class="agx__sound" id="agx-sound" type="button">♪ Son</button>
+	<button class="agx__sound is-off" id="agx-sound" type="button" aria-label="Activer le son">
+		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<path d="M4 9 L8 9 L13 5 L13 19 L8 15 L4 15 Z" fill="currentColor" stroke="none"/>
+			<path class="wave" d="M16 8.8a4.5 4.5 0 0 1 0 6.4"/>
+			<path class="wave" d="M18.6 6.2a8 8 0 0 1 0 11.6"/>
+			<path class="cross" d="M17.5 9.5l5 5M22.5 9.5l-5 5"/>
+		</svg>
+	</button>
 	<audio id="agx-audio" loop preload="none" src="<?php echo esc_url( $music ); ?>"></audio>
 	<div class="agx__hint" id="agx-hint">← Glissez ou NEXT →</div>
 </main>
@@ -354,19 +402,26 @@ let ttX=0,tX=0;
 host.addEventListener('mousemove', e=>{ const r=host.getBoundingClientRect(); ttX=((e.clientX-r.left)/r.width-0.5)*0.6; }, {passive:true});
 
 let on=false;
-elSound.addEventListener('click', ()=>{ on=!on; if(on){ audio.volume=0; audio.play().then(()=>{ let v=0,f=setInterval(()=>{v=Math.min(.45,v+.03);audio.volume=v;if(v>=.45)clearInterval(f);},120); }).catch(()=>{}); elSound.textContent='♪ Couper'; } else { audio.pause(); elSound.textContent='♪ Son'; } });
+elSound.addEventListener('click', ()=>{ on=!on; elSound.classList.toggle('is-off', !on); elSound.setAttribute('aria-label', on ? 'Couper le son' : 'Activer le son'); if(on){ audio.volume=0; audio.play().then(()=>{ let v=0,f=setInterval(()=>{v=Math.min(.45,v+.03);audio.volume=v;if(v>=.45)clearInterval(f);},120); }).catch(()=>{}); } else { audio.pause(); } });
 
-/* Constellation : ouvrir/fermer les sous-menus des orbes */
-function closeOrbs(){ elMenu.querySelectorAll('.agx__orb.is-open').forEach(o => { o.classList.remove('is-open'); o.querySelector('.agx__orb-dot').setAttribute('aria-expanded','false'); }); }
+/* Constellation : cliquer une étoile -> plongée dans l'étoile -> cartes d'offres flottantes */
+const details = Array.from(document.querySelectorAll('.agx__detail'));
+function closeOrbs(){ details.forEach(d => d.classList.remove('is-on')); host.classList.remove('is-detail'); }
+function openDetail(idx){
+	const orb = elMenu.querySelector('.agx__orb[data-orb="'+idx+'"]');
+	if (orb) orb.classList.add('is-diving');
+	elWarp.classList.add('is-on');
+	setTimeout(() => {
+		host.classList.add('is-detail');
+		details.forEach(d => d.classList.toggle('is-on', d.dataset.detail === String(idx)));
+		elWarp.classList.remove('is-on');
+		if (orb) orb.classList.remove('is-diving');
+	}, 430);
+}
 elMenu.querySelectorAll('.agx__orb-dot').forEach(btn => {
-	btn.addEventListener('click', e => {
-		e.stopPropagation();
-		const orb = btn.closest('.agx__orb'); const wasOpen = orb.classList.contains('is-open');
-		closeOrbs();
-		if (!wasOpen){ orb.classList.add('is-open'); btn.setAttribute('aria-expanded','true'); }
-	});
+	btn.addEventListener('click', e => { e.stopPropagation(); openDetail(btn.closest('.agx__orb').dataset.orb); });
 });
-elMenu.addEventListener('click', e => { if (e.target === elMenu || e.target.closest('.agx__lines')) closeOrbs(); });
+details.forEach(d => d.querySelector('.agx__detail-back').addEventListener('click', e => { e.preventDefault(); closeOrbs(); }));
 
 new ResizeObserver(()=>{ const w=W(),h=H(); if(!w||!h)return; camera.aspect=w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h,false); }).observe(host);
 
