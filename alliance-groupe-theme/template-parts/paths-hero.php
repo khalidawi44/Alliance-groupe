@@ -25,6 +25,16 @@ $ag_paths = array(
 		'glow'  => '#D4B45C',
 	),
 	array(
+		'emoji' => '🎁',
+		'tag'   => 'Templates WordPress',
+		'title' => 'Gratuits & prêts',
+		'desc'  => '6 thèmes métier 100 % français : avocat, restaurant, artisan, coach, barber, association. Téléchargement immédiat, installation en 2 min, aucun plugin payant.',
+		'cta'   => 'Choisir mon métier',
+		'url'   => home_url( '/templates-wordpress' ),
+		'tint'  => '#0f1c10',
+		'glow'  => '#28a745',
+	),
+	array(
 		'emoji' => '✦',
 		'tag'   => 'Sur-mesure · Premium',
 		'title' => 'Un projet exigeant',
