@@ -402,6 +402,7 @@ const elVideo = document.getElementById('agx-video'), elImg = document.getElemen
 const elSound = document.getElementById('agx-sound'), audio = document.getElementById('agx-audio');
 const elSky3d = document.getElementById('agx-sky3d');
 const elTeam = document.getElementById('agx-team'), elTot = document.getElementById('agx-tot');
+const elGlobeMarkers = document.getElementById('agx-globe-markers');
 if (elTot) elTot.textContent = String(STATIONS.length).padStart(2,'0');
 
 // Cartes équipe : reconstruites à chaque entrée (relance l'animation d'émergence).
@@ -517,6 +518,81 @@ async function loadStation(i){
 	outer.userData.baseY = st.baseY || 0;
 	outer.userData.dragX = 0; outer.userData.dragY = 0;
 	cache[i] = outer; elLoader.classList.remove('is-on'); return outer;
+}
+
+// ── Station "Monde" : globe Terre 3D + marqueurs cliquables ──────────────────
+const GLOBE_R = 3.4;
+let globeGroup = null;
+function buildGlobe(){
+	if (globeGroup) return globeGroup;
+	const g = new THREE.Group();
+	const tl = new THREE.TextureLoader();
+	const earth = tl.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
+	earth.colorSpace = THREE.SRGBColorSpace;
+	const spec  = tl.load('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg');
+	const norm  = tl.load('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg');
+	const globe = new THREE.Mesh(
+		new THREE.SphereGeometry(GLOBE_R, 64, 64),
+		new THREE.MeshStandardMaterial({ map: earth, roughnessMap: spec, normalMap: norm, metalness: 0.05, roughness: 0.95 })
+	);
+	g.add(globe);
+	// Halo atmosphère champagne (rétro-éclairage)
+	const halo = new THREE.Mesh(
+		new THREE.SphereGeometry(GLOBE_R * 1.16, 32, 32),
+		new THREE.ShaderMaterial({
+			transparent: true, blending: THREE.AdditiveBlending, side: THREE.BackSide, depthWrite: false,
+			uniforms: { c: { value: new THREE.Color(0xF3D27A) } },
+			vertexShader: 'varying float i;void main(){vec3 n=normalize(normalMatrix*normal);i=pow(.72-dot(n,vec3(0.,0.,1.)),3.);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+			fragmentShader: 'uniform vec3 c;varying float i;void main(){gl_FragColor=vec4(c,1.)*clamp(i,0.,1.);}'
+		})
+	);
+	g.add(halo);
+	// Lumières propres au globe (la scène n'a qu'un environment doux).
+	const dir = new THREE.DirectionalLight(0xffffff, 2.1); dir.position.set(5, 3, 6); g.add(dir);
+	g.add(new THREE.AmbientLight(0x5a6480, 0.7));
+	globeGroup = g;
+	return g;
+}
+
+// lat/lon -> point 3D sur la sphère (rayon r), texture earth_atmos.
+function latLonToVec3(lat, lon, r){
+	const phi = (90 - lat) * Math.PI / 180;
+	const theta = (lon + 180) * Math.PI / 180;
+	return new THREE.Vector3(
+		-r * Math.sin(phi) * Math.cos(theta),
+		 r * Math.cos(phi),
+		 r * Math.sin(phi) * Math.sin(theta)
+	);
+}
+
+// Construit les marqueurs DOM (offices + pages) projetés sur le globe au repos.
+function buildGlobeMarkers(){
+	elGlobeMarkers.innerHTML = '';
+	const w = W(), h = H();
+	const scale = 1.3; // échelle finale du globe (cf. tween dans go())
+	GLOBE_MARKERS.forEach(m => {
+		const p = latLonToVec3(m.lat, m.lon, GLOBE_R * scale);
+		const front = p.z > -0.15 * GLOBE_R * scale; // hémisphère face caméra
+		const v = p.clone().project(camera);
+		const left = (v.x * 0.5 + 0.5) * 100;
+		const top  = (-v.y * 0.5 + 0.5) * 100;
+		const btn = document.createElement('button');
+		btn.type = 'button';
+		btn.className = 'agx__gm' + (m.kind === 'office' ? ' agx__gm--office' : '');
+		btn.style.left = left.toFixed(2) + '%';
+		btn.style.top  = top.toFixed(2) + '%';
+		if (!front) btn.style.display = 'none';
+		btn.innerHTML = '<span class="agx__gm-dot"></span><span class="agx__gm-label">' + m.label + '</span>';
+		btn.addEventListener('click', () => {
+			if (m.kind === 'office'){
+				const idx = STATIONS.findIndex(s => s.ttl === m.target);
+				if (idx >= 0) go(idx);
+			} else if (m.url){
+				window.location.href = m.url;
+			}
+		});
+		elGlobeMarkers.appendChild(btn);
+	});
 }
 
 function setMedia(st){
