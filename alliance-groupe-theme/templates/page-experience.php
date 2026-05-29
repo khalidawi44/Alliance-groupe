@@ -803,17 +803,30 @@ let agxIdx = 0;
 function agxLoadTrack(i){ if (!AGX_PLAYLIST.length) return; agxIdx = (i + AGX_PLAYLIST.length) % AGX_PLAYLIST.length; audio.src = AGX_PLAYLIST[agxIdx]; }
 function agxFade(target){ let v = audio.volume; const f = setInterval(()=>{ v += (target>v?0.01:-0.02); audio.volume = Math.max(0, Math.min(target, v)); if (Math.abs(audio.volume-target) < 0.011){ audio.volume = target; clearInterval(f); if (target===0) audio.pause(); } }, 110); }
 function agxPlay(){ audio.volume = 0; audio.play().then(()=>agxFade(agxVol)).catch(()=>{}); }
-// Quand un morceau finit, on enchaîne le suivant (sans coupure) -> jamais d'arrêt.
-audio.addEventListener('ended', ()=>{ if (!on) return; agxLoadTrack(agxIdx + 1); audio.volume = agxVol; audio.play().catch(()=>{}); });
-let on=true; // MUSIQUE ON par défaut
-agxLoadTrack(0);
-agxPlay();
+// État musique PARTAGÉ avec le reste du site (clés agxm_*) -> continuité voyage <-> pages.
+const agxSS = window.sessionStorage;
+const agxGet = (k,d)=>{ try{ const v=agxSS.getItem(k); return v===null?d:v; }catch(e){ return d; } };
+const agxSet = (k,v)=>{ try{ agxSS.setItem(k,String(v)); }catch(e){} };
+const agxSaveMusic = ()=>{ agxSet('agxm_src', audio.currentSrc||audio.src); agxSet('agxm_t', audio.currentTime||0); agxSet('agxm_on', on?'1':'0'); agxSet('agxm_vol', agxVol); };
+agxVol = parseFloat(agxGet('agxm_vol', agxVol)) || agxVol;
+let on = agxGet('agxm_on','1') === '1'; // reprend le choix son du reste du site (ON par défaut)
+// Quand un morceau finit, on enchaîne le suivant -> jamais d'arrêt.
+audio.addEventListener('ended', ()=>{ agxLoadTrack(agxIdx + 1); agxSet('agxm_src', audio.src); agxSet('agxm_t', 0); if (on){ audio.volume = agxVol; audio.play().catch(()=>{}); } });
+audio.addEventListener('timeupdate', agxSaveMusic);
+window.addEventListener('pagehide', agxSaveMusic);
+// Reprise de la piste + position venant des autres pages (continuité).
+const agxSavedSrc = agxGet('agxm_src',''), agxSavedT = parseFloat(agxGet('agxm_t','0')) || 0;
+if (agxSavedSrc){ audio.src = agxSavedSrc; if (agxSavedT>0){ audio.addEventListener('loadedmetadata', function once(){ try{ audio.currentTime=agxSavedT; }catch(e){} audio.removeEventListener('loadedmetadata', once); }); } }
+else { agxLoadTrack(0); }
+elSound.classList.toggle('is-off', !on);
+elSound.setAttribute('aria-label', on ? 'Couper le son' : 'Activer le son');
+if (on) agxPlay();
 // l'autoplay avec son est souvent bloqué : on (re)lance au tout premier geste
 const agxResume = ()=>{ if (on && audio.paused) agxPlay(); };
 ['pointerdown','touchstart','keydown'].forEach(ev => window.addEventListener(ev, agxResume, {once:true}));
-elSound.addEventListener('click', ()=>{ on=!on; elSound.classList.toggle('is-off', !on); elSound.setAttribute('aria-label', on ? 'Couper le son' : 'Activer le son'); if(on){ agxPlay(); } else { agxFade(0); } });
+elSound.addEventListener('click', ()=>{ on=!on; elSound.classList.toggle('is-off', !on); elSound.setAttribute('aria-label', on ? 'Couper le son' : 'Activer le son'); agxSaveMusic(); if(on){ agxPlay(); } else { agxFade(0); } });
 // Volume − / +
-function agxSetVol(v){ agxVol = Math.max(AGX_VOL_MIN, Math.min(AGX_VOL_MAX, v)); if(on){ if(audio.paused) agxPlay(); else audio.volume = agxVol; } }
+function agxSetVol(v){ agxVol = Math.max(AGX_VOL_MIN, Math.min(AGX_VOL_MAX, v)); agxSaveMusic(); if(on){ if(audio.paused) agxPlay(); else audio.volume = agxVol; } }
 const elVolDown = document.getElementById('agx-voldown'), elVolUp = document.getElementById('agx-volup');
 if (elVolDown) elVolDown.addEventListener('click', ()=> agxSetVol(agxVol - AGX_VOL_STEP));
 if (elVolUp) elVolUp.addEventListener('click', ()=> agxSetVol(agxVol + AGX_VOL_STEP));

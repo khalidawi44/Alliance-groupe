@@ -178,6 +178,12 @@ if ( file_exists( $ag_espaces_file ) ) {
     require_once $ag_espaces_file;
 }
 
+// ── Musique de fond persistante sur tout le site (reprise via sessionStorage) ──
+$ag_music_file = get_stylesheet_directory() . '/inc/ag-music.php';
+if ( file_exists( $ag_music_file ) ) {
+    require_once $ag_music_file;
+}
+
 // ── 1d. Shortcode [ag_promo_video] : insère la vidéo promo Alliance ─────
 // Usage Gutenberg : ajouter un block "Shortcode" et taper [ag_promo_video]
 // Attributs : title="..." lead="..." cta_label="..." cta_url="..."
