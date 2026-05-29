@@ -260,6 +260,10 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__acc-grp.is-open .agx__acc-panel{max-height:640px}
 .agx__acc-item{display:block;width:100%;text-align:left;background:none;border:0;color:#fff;font-family:Inter,system-ui,sans-serif;font-size:1.05rem;padding:13px 14px;cursor:pointer;opacity:.85;border-radius:8px}
 .agx__acc-item:hover{background:rgba(212,180,92,.12);opacity:1;color:#F3D27A}
+.agx__frame{position:fixed;inset:0;z-index:40;background:#07070a;opacity:0;visibility:hidden;transition:opacity .35s ease}
+.agx__frame.is-on{opacity:1;visibility:visible}
+.agx__frame-close{position:absolute;top:0;left:0;right:0;height:62px;display:flex;align-items:center;gap:8px;padding:0 20px;background:rgba(8,9,14,.95);backdrop-filter:blur(8px);border:0;border-bottom:1px solid rgba(212,180,92,.3);color:#D4B45C;font-family:Georgia,serif;font-size:1rem;letter-spacing:.5px;cursor:pointer;z-index:2}
+.agx__frame-if{position:absolute;left:0;top:62px;width:100%;height:calc(100% - 62px);border:0;background:#0a0a0f}
 .agx__nav button{display:inline-flex;align-items:center;gap:8px;background:rgba(212,180,92,.12);border:1.5px solid rgba(212,180,92,.65);color:#F3D27A;font:inherit;letter-spacing:inherit;cursor:pointer;padding:13px 26px;border-radius:999px;backdrop-filter:blur(8px);transition:background .25s,color .25s,border-color .25s,transform .2s;box-shadow:0 8px 30px rgba(0,0,0,.4)}
 .agx__nav button:hover:not(:disabled){background:#D4B45C;color:#0a0a0f;border-color:#D4B45C;transform:translateY(-2px)}
 .agx__nav button:disabled{opacity:.28;cursor:not-allowed}
@@ -370,6 +374,10 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 	<div class="agx__acc" id="agx-acc" aria-hidden="true">
 		<button class="agx__acc-close" id="agx-acc-close" type="button" aria-label="Fermer">✕</button>
 		<div class="agx__acc-inner" id="agx-acc-inner"></div>
+	</div>
+	<div class="agx__frame" id="agx-frame" aria-hidden="true">
+		<button class="agx__frame-close" id="agx-frame-close" type="button">← Retour au voyage</button>
+		<iframe class="agx__frame-if" id="agx-frame-if" title="Contenu Alliance Groupe" loading="lazy"></iframe>
 	</div>
 	<a href="<?php echo esc_url( home_url( '/rdv' ) ); ?>" class="agx__cta" id="agx-cta">✦ Devis gratuit</a>
 	<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="agx__skip" id="agx-skip">Passer ✕</a>
@@ -856,6 +864,22 @@ function loop(){
 			if (it.dataset.go != null){ go(+it.dataset.go); }
 			else if (it.dataset.detail != null){ const k=+it.dataset.detail; go(STATIONS.length-1); setTimeout(()=>openDetail(k), 750); }
 		});
+	});
+})();
+
+/* Cartes d'offres : ouvrir la page DANS le voyage (iframe) plutôt que recharger
+ * -> la musique continue. Le href reste (clic droit / SEO). */
+(function inVoyageCards(){
+	const elFrame = document.getElementById('agx-frame');
+	const elFrameIf = document.getElementById('agx-frame-if');
+	const elFrameClose = document.getElementById('agx-frame-close');
+	if (!elFrame || !elFrameIf) return;
+	function openFrame(url){ elFrameIf.src = url; elFrame.classList.add('is-on'); elFrame.setAttribute('aria-hidden','false'); agxTrack('agx_frame_open', { url: url }); }
+	function closeFrame(){ elFrame.classList.remove('is-on'); elFrame.setAttribute('aria-hidden','true'); setTimeout(()=>{ if (!elFrame.classList.contains('is-on')) elFrameIf.src = 'about:blank'; }, 400); }
+	if (elFrameClose) elFrameClose.addEventListener('click', closeFrame);
+	document.addEventListener('keydown', e=>{ if (e.key === 'Escape' && elFrame.classList.contains('is-on')) closeFrame(); });
+	document.querySelectorAll('.agx__card').forEach(c=>{
+		c.addEventListener('click', e=>{ const u = c.getAttribute('href'); if (!u || u === '#') return; e.preventDefault(); openFrame(u); });
 	});
 })();
 
