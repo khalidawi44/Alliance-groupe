@@ -285,6 +285,16 @@ if ( ! function_exists( 'ag_ri_render' ) ) {
 				<h2 style="margin-top:0;"><?php echo esc_html( $c['flag'] . ' ' . $c['name'] ); ?> — Prime affichée : <strong><?php echo esc_html( $c['prime'] ); ?></strong></h2>
 				<p style="color:#50575e;font-size:.9rem;"><em>Ton conseillé : <?php echo esc_html( $c['tone'] ); ?></em></p>
 
+				<?php $qr_link = ag_ri_parrain_link( $picked_ref, $active, 'generic' ); ?>
+				<div class="ag-ri-qrbox" data-link="<?php echo esc_attr( $qr_link ); ?>" data-logo="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/ag-logo.png' ); ?>" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;background:#0a0a0f;border:1px solid #D4B45C;border-radius:12px;padding:16px 18px;margin:14px 0;">
+					<canvas class="ag-ri-qr" width="320" height="320" style="width:180px;height:180px;background:#fff;border-radius:10px;flex:none;"></canvas>
+					<div style="flex:1;min-width:220px;color:#fff;">
+						<h3 style="margin:0 0 6px;color:#D4B45C;">📱 QR à poster (<?php echo esc_html( $c['flag'] . ' ' . $c['name'] ); ?>)</h3>
+						<p style="margin:0 0 10px;font-size:.9rem;color:#ddd;">QR de <strong>ton lien de parrainage</strong>, logo Alliance au centre. Télécharge-le et poste l'image dans les groupes/forums/blogs externes — chaque inscription via ce QR t'est attribuée dans le calcul des commissions.</p>
+						<a href="#" class="button button-primary ag-ri-dl">⬇ Télécharger le QR (PNG)</a>
+					</div>
+				</div>
+
 				<?php $tpls = ag_ri_templates( $active ); ?>
 				<h3 style="margin-top:18px;">📝 Messages prêts (clique « Copier »)</h3>
 				<?php foreach ( $tpls as $i => $tpl_msg ) : ?>
@@ -335,6 +345,45 @@ if ( ! function_exists( 'ag_ri_render' ) ) {
 				📈 Les inscriptions arrivées via ces liens sont attribuées automatiquement au recruteur (cookie <code>?parrain=</code> 30 j) — tu retrouves les filleuls dans <a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-ambassadeurs' ) ); ?>">Ambassadeurs</a> et le classement.
 			</p>
 		</div>
+
+		<script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+		<script>
+		(function(){
+			function build(box){
+				if (typeof QRCode === 'undefined'){ return setTimeout(function(){ build(box); }, 200); }
+				var link = box.getAttribute('data-link') || '';
+				var logoUrl = box.getAttribute('data-logo') || '';
+				var S = 320, frac = 0.22;
+				var holder = document.createElement('div');
+				new QRCode(holder, { text: link, width: S, height: S, correctLevel: QRCode.CorrectLevel.H, colorDark: '#1d2327', colorLight: '#ffffff' });
+				var canvas = box.querySelector('canvas.ag-ri-qr'); canvas.width = S; canvas.height = S;
+				var ctx = canvas.getContext('2d');
+				function paint(src){
+					ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, S, S);
+					ctx.drawImage(src, 0, 0, S, S);
+					var logo = new Image();
+					logo.onload = function(){
+						var ls = S * frac, pad = ls * 0.18, b = ls + pad * 2, x = (S - b) / 2, y = (S - b) / 2;
+						ctx.fillStyle = '#fff';
+						if (ctx.roundRect){ ctx.beginPath(); ctx.roundRect(x, y, b, b, 8); ctx.fill(); } else { ctx.fillRect(x, y, b, b); }
+						ctx.drawImage(logo, x + pad, y + pad, ls, ls);
+					};
+					logo.src = logoUrl;
+				}
+				var qc = holder.querySelector('canvas'), qi = holder.querySelector('img');
+				if (qc) paint(qc);
+				else if (qi){ qi.complete ? paint(qi) : (qi.onload = function(){ paint(qi); }); }
+				var dl = box.querySelector('.ag-ri-dl');
+				if (dl) dl.addEventListener('click', function(e){
+					e.preventDefault();
+					var medium = (link.match(/utm_medium=([a-z]+)/) || [])[1] || 'ag';
+					var a = document.createElement('a'); a.download = 'qr-recrutement-' + medium + '.png'; a.href = canvas.toDataURL('image/png'); a.click();
+				});
+			}
+			function init(){ document.querySelectorAll('.ag-ri-qrbox').forEach(build); }
+			if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+		})();
+		</script>
 		<?php
 	}
 }
