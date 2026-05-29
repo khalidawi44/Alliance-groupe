@@ -155,6 +155,20 @@ const SceneView: React.FC<{scene: AGScene}> = ({scene}) => {
 	);
 };
 
+const MusicTrack: React.FC<{src: string}> = ({src}) => {
+	const {fps, durationInFrames} = useVideoConfig();
+	const frame = useCurrentFrame();
+	const fade = Math.round(fps * 1.2); // fondu d'1,2 s en entrée et en sortie
+	// Musique DOUCE : volume max bas (0.18) + fondu début/fin.
+	const volume = interpolate(
+		frame,
+		[0, fade, durationInFrames - fade, durationInFrames],
+		[0, 0.18, 0.18, 0],
+		{extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}
+	);
+	return <Audio src={src} volume={volume} />;
+};
+
 export const AGShort: React.FC<AGShortProps> = ({scenes, brand = 'ALLIANCE GROUPE', music}) => {
 	const {fps} = useVideoConfig();
 	const def = Math.round(fps * 3);
@@ -162,7 +176,7 @@ export const AGShort: React.FC<AGShortProps> = ({scenes, brand = 'ALLIANCE GROUP
 
 	return (
 		<AbsoluteFill style={{backgroundColor: '#07070a'}}>
-			{musicSrc && <Audio src={musicSrc} />}
+			{musicSrc && <MusicTrack src={musicSrc} />}
 			<Series>
 				{scenes.map((sc, i) => (
 					<Series.Sequence key={i} durationInFrames={sc.durationInFrames ?? def}>
