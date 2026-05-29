@@ -12,7 +12,7 @@
 import React from 'react';
 import {Composition} from 'remotion';
 import {AGShort, totalFrames} from './AGShort';
-import {videoRecrutement, videoVente247, videoLuxe, videoNaplesSuite} from './scripts';
+import {videoRecrutement, videoVente247, videoLuxe, videoNaplesSuite, videoNaplesComplet} from './scripts';
 
 const FPS = 30;
 const W = 1080;
@@ -56,6 +56,15 @@ export const RemotionRoot: React.FC = () => {
 				height={H}
 				durationInFrames={totalFrames(videoNaplesSuite.scenes, FPS)}
 				defaultProps={videoNaplesSuite}
+			/>
+			<Composition
+				id="AG-Naples-Complet"
+				component={AGShort}
+				fps={FPS}
+				width={W}
+				height={H}
+				durationInFrames={totalFrames(videoNaplesComplet.scenes, FPS)}
+				defaultProps={videoNaplesComplet}
 			/>
 		</>
 	);

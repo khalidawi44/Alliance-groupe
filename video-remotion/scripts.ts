@@ -61,3 +61,10 @@ export const videoNaplesSuite: AGShortProps = {
 		{kind: 'cta',   headline: 'À ton tour d’écrire ton histoire.', ctaLabel: 'Deviens ambassadeur →', durationInFrames: 80},
 	],
 };
+
+/* NAPLES — VIDÉO COMPLÈTE : Partie 1 enchaînée directement sur la Partie 2.
+ * On retire le CTA de fin de la Partie 1 pour un récit continu jusqu’au CTA final. */
+export const videoNaplesComplet: AGShortProps = {
+	brand: 'ALLIANCE GROUPE',
+	scenes: [...videoRecrutement.scenes.slice(0, -1), ...videoNaplesSuite.scenes],
+};
