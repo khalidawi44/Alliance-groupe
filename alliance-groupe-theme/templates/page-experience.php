@@ -454,9 +454,9 @@ function agxTrack(name, params){ try { if (typeof gtag === 'function') gtag('eve
 function scheduleAuto(){
 	clearTimeout(autoTimer);
 	if (!autoOn) return;                                   // coupé (reduced-motion)
-	if (cur >= STATIONS.length - 1) return;                // stop à la dernière station
+	if (cur !== 0) return;                                 // avance auto UNIQUEMENT depuis la page 1
 	if (host.classList.contains('is-detail') || elBio.classList.contains('is-on')) return; // pause si l'utilisateur explore
-	autoTimer = setTimeout(() => { if (!busy && autoOn) go(cur + 1); }, AGX_AUTO_MS);
+	autoTimer = setTimeout(() => { if (!busy && autoOn && cur === 0) go(1); }, AGX_AUTO_MS);
 }
 const cache = {};
 const W = () => host.clientWidth, H = () => host.clientHeight;
@@ -586,8 +586,10 @@ function buildGlobe(){
 	g.add(new THREE.AmbientLight(0xffffff, 0.65));
 	const dir = new THREE.DirectionalLight(0xffffff, 1.0); dir.position.set(5, 3, 5); g.add(dir);
 	// IMPORTANT : userData défini sinon la boucle calcule position.y = undefined+… = NaN
-	// (le globe devient invisible). Flag dédié 'globe' = rotation continue.
-	g.userData.globe = true; g.userData.baseY = 0;
+	// (le globe devient invisible). 'globe' = rotation continue ; 'drag' = l'utilisateur
+	// peut la tourner ; 'manual' bascule auto-spin -> contrôle utilisateur.
+	g.userData.globe = true; g.userData.baseY = 0; g.userData.drag = true;
+	g.userData.dragX = 0; g.userData.dragY = 0; g.userData.manual = false;
 	globeGroup = g;
 	return g;
 }
@@ -662,8 +664,8 @@ async function go(i, instant){
 		elEnter.classList.toggle('is-hidden', i!==0);
 		elMenu.classList.toggle('is-on', !!st.menu);
 		host.classList.toggle('is-menu', !!st.menu);
-		host.style.cursor = st.drag ? 'grab' : 'default';
-		elHint.textContent = st.drag ? '↔ Faites glisser pour tourner' : '← Glissez ou NEXT →';
+		host.style.cursor = (st.drag || st.globe) ? 'grab' : 'default';
+		elHint.textContent = st.globe ? '↔ Tourne la Terre · pince / molette pour zoomer' : (st.drag ? '↔ Faites glisser pour tourner' : '← Glissez ou NEXT →');
 		if (!st.menu) closeOrbs();
 		elHint.style.opacity = (i===STATIONS.length-1) ? '0' : '';
 		setMedia(st);
@@ -673,7 +675,9 @@ async function go(i, instant){
 		if (st.iframe && !elSky3d.getAttribute('src')) elSky3d.setAttribute('src', st.iframe); // galaxie Sketchfab chargée à la 1re visite (la visibilité suit la classe is-menu)
 		if (current3D){ scene.remove(current3D); current3D = null; }
 		if (st.globe){
-			const g = buildGlobe(); current3D = g; g.scale.setScalar(0.06); g.rotation.set(0,0,0); scene.add(g);
+			const g = buildGlobe(); current3D = g; g.scale.setScalar(0.06); g.rotation.set(0,0,0);
+			g.userData.manual = false; g.userData.dragX = 0; g.userData.dragY = 0; // repart en auto-spin à chaque entrée
+			scene.add(g);
 			buildGlobeMarkers();
 			setTimeout(() => { if (cur !== i) return; tween(1400, k => g.scale.setScalar(0.06 + (GLOBE_SCALE-0.06)*k)); setTimeout(() => { if (cur === i) elGlobeMarkers.classList.add('is-on'); }, 700); }, 700); // petite Terre qui apparait au centre de la galaxie -> pins
 		} else if (!st.iframe && st.model){
@@ -725,9 +729,18 @@ host.addEventListener('touchend', e=>{ if(current3D&&current3D.userData.drag){ x
 
 /* Drag pour faire tourner soi-même le modèle (Vésuve, tour de Marrakech) */
 let dragging=false, dpx=0, dpy=0;
-host.addEventListener('pointerdown', e=>{ if(current3D&&current3D.userData.drag){ dragging=true; dpx=e.clientX; dpy=e.clientY; host.style.cursor='grabbing'; } });
+host.addEventListener('pointerdown', e=>{ if(current3D&&current3D.userData.drag){ dragging=true; dpx=e.clientX; dpy=e.clientY; host.style.cursor='grabbing'; if(current3D.userData.globe && !current3D.userData.manual){ current3D.userData.manual=true; current3D.userData.dragY=current3D.rotation.y; current3D.userData.dragX=current3D.rotation.x; } } });
 window.addEventListener('pointermove', e=>{ if(!dragging||!current3D)return; const u=current3D.userData; u.dragY += (e.clientX-dpx)*0.008; u.dragX = Math.max(-0.7, Math.min(0.7, u.dragX + (e.clientY-dpy)*0.006)); dpx=e.clientX; dpy=e.clientY; });
 window.addEventListener('pointerup', ()=>{ dragging=false; if(current3D&&current3D.userData.drag) host.style.cursor='grab'; });
+
+/* Zoom de la Terre : molette (PC) + pince (mobile) */
+function agxGlobeZoom(factor){ if(!current3D||!current3D.userData.globe)return; let s=current3D.scale.x*factor; s=Math.max(GLOBE_SCALE*0.6, Math.min(GLOBE_SCALE*5, s)); current3D.scale.setScalar(s); }
+host.addEventListener('wheel', e=>{ if(current3D&&current3D.userData.globe){ e.preventDefault(); agxGlobeZoom(e.deltaY<0?1.08:0.92); } }, {passive:false});
+let pinchD0=null, pinchS0=1;
+const agxTDist=t=>Math.hypot(t[0].clientX-t[1].clientX, t[0].clientY-t[1].clientY);
+host.addEventListener('touchstart', e=>{ if(e.touches.length===2 && current3D && current3D.userData.globe){ pinchD0=agxTDist(e.touches); pinchS0=current3D.scale.x; } }, {passive:true});
+host.addEventListener('touchmove', e=>{ if(pinchD0!==null && e.touches.length===2 && current3D && current3D.userData.globe){ let s=pinchS0*(agxTDist(e.touches)/pinchD0); s=Math.max(GLOBE_SCALE*0.6, Math.min(GLOBE_SCALE*5, s)); current3D.scale.setScalar(s); } }, {passive:true});
+host.addEventListener('touchend', e=>{ if(e.touches.length<2) pinchD0=null; }, {passive:true});
 
 let ttX=0,tX=0;
 host.addEventListener('mousemove', e=>{ const r=host.getBoundingClientRect(); ttX=((e.clientX-r.left)/r.width-0.5)*0.6; }, {passive:true});
@@ -773,9 +786,13 @@ function loop(){
 		const u = current3D.userData;
 		if (u.points){ current3D.rotation.x = 1.2; current3D.rotation.y = 0; u.spinNode.rotation.y = t*0.05 + tX*0.25; } // galaxie DE FACE en orbite (on voit la spirale)
 		else if (u.flat){ current3D.rotation.x = 0.62 + u.dragX; current3D.rotation.y = 0; u.spinNode.rotation.y = u.dragY + Math.sin(t*0.18)*0.32; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.04; } // carte inclinée (de profil/3-quarts) : on voit la photo derrière, oscillation douce
-		else if (u.drag){ current3D.rotation.y = u.dragY + (u.spin ? t*0.18 : 0); current3D.rotation.x = u.dragX; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.05; } // l'utilisateur tourne l'objet
+		else if (u.drag && !u.globe){ current3D.rotation.y = u.dragY + (u.spin ? t*0.18 : 0); current3D.rotation.x = u.dragX; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.05; } // l'utilisateur tourne l'objet
 		else if (u.front){ current3D.rotation.y = u.rotY + Math.sin(t*0.45)*0.12; current3D.position.y = u.baseY + Math.sin(t*0.6)*0.07; } // toujours de face, léger balancement
-		else if (u.globe){ current3D.rotation.y = t*0.12 + tX*0.3; current3D.position.y = 0; updateGlobeMarkers(current3D); } // Terre : rotation continue + pins qui suivent
+		else if (u.globe){ // Terre : auto-spin jusqu'à ce que l'utilisateur la saisisse, puis contrôle manuel
+			if (u.manual){ current3D.rotation.y = u.dragY; current3D.rotation.x = u.dragX; }
+			else { current3D.rotation.y = t*0.12 + tX*0.3; current3D.rotation.x = 0; }
+			current3D.position.y = 0; updateGlobeMarkers(current3D);
+		}
 		else { current3D.rotation.y = tX*0.5; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.1; }
 	}
 	renderer.render(scene, camera);
