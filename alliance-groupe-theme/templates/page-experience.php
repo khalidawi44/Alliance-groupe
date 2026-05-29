@@ -247,6 +247,19 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__enter.is-hidden{opacity:0;pointer-events:none}
 
 .agx__nav{position:absolute;bottom:5vh;left:50%;transform:translateX(-50%);display:flex;justify-content:center;align-items:center;gap:14px;z-index:9;font-size:.82rem;letter-spacing:2px;font-weight:700;padding:8px 12px;border-radius:999px;background:rgba(8,9,14,.55);backdrop-filter:blur(10px);box-shadow:0 10px 36px rgba(0,0,0,.5)}
+.agx__burger{position:absolute;top:18px;left:20px;z-index:10;width:46px;height:46px;display:flex;align-items:center;justify-content:center;background:rgba(10,10,15,.5);backdrop-filter:blur(8px);border:1.5px solid rgba(212,180,92,.5);color:#D4B45C;border-radius:12px;font-size:22px;cursor:pointer}
+.agx__acc{position:fixed;inset:0;z-index:30;background:rgba(5,6,12,.94);backdrop-filter:blur(12px);opacity:0;visibility:hidden;transition:opacity .35s ease;overflow-y:auto;padding:88px 22px 48px}
+.agx__acc.is-on{opacity:1;visibility:visible}
+.agx__acc-close{position:fixed;top:20px;right:20px;width:46px;height:46px;background:rgba(10,10,15,.5);border:1.5px solid rgba(212,180,92,.5);color:#D4B45C;border-radius:50%;font-size:20px;cursor:pointer;z-index:31}
+.agx__acc-inner{max-width:560px;margin:0 auto}
+.agx__acc-grp{border-bottom:1px solid rgba(212,180,92,.25)}
+.agx__acc-h{width:100%;text-align:left;background:none;border:0;color:#D4B45C;font-family:Georgia,serif;font-size:1.3rem;padding:18px 6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.agx__acc-h .chev{transition:transform .3s ease;font-size:.9rem}
+.agx__acc-grp.is-open .agx__acc-h .chev{transform:rotate(180deg)}
+.agx__acc-panel{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.agx__acc-grp.is-open .agx__acc-panel{max-height:640px}
+.agx__acc-item{display:block;width:100%;text-align:left;background:none;border:0;color:#fff;font-family:Inter,system-ui,sans-serif;font-size:1.05rem;padding:13px 14px;cursor:pointer;opacity:.85;border-radius:8px}
+.agx__acc-item:hover{background:rgba(212,180,92,.12);opacity:1;color:#F3D27A}
 .agx__nav button{display:inline-flex;align-items:center;gap:8px;background:rgba(212,180,92,.12);border:1.5px solid rgba(212,180,92,.65);color:#F3D27A;font:inherit;letter-spacing:inherit;cursor:pointer;padding:13px 26px;border-radius:999px;backdrop-filter:blur(8px);transition:background .25s,color .25s,border-color .25s,transform .2s;box-shadow:0 8px 30px rgba(0,0,0,.4)}
 .agx__nav button:hover:not(:disabled){background:#D4B45C;color:#0a0a0f;border-color:#D4B45C;transform:translateY(-2px)}
 .agx__nav button:disabled{opacity:.28;cursor:not-allowed}
@@ -351,8 +364,12 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 
 	<div class="agx__nav">
 		<button id="agx-back">◂ BACK</button>
-		<span class="ct"><span id="agx-cur">01</span> / <span id="agx-tot">05</span></span>
 		<button id="agx-next">NEXT ▸</button>
+	</div>
+	<button class="agx__burger" id="agx-burger" type="button" aria-label="Menu">☰</button>
+	<div class="agx__acc" id="agx-acc" aria-hidden="true">
+		<button class="agx__acc-close" id="agx-acc-close" type="button" aria-label="Fermer">✕</button>
+		<div class="agx__acc-inner" id="agx-acc-inner"></div>
 	</div>
 	<a href="<?php echo esc_url( home_url( '/rdv' ) ); ?>" class="agx__cta" id="agx-cta">✦ Devis gratuit</a>
 	<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="agx__skip" id="agx-skip">Passer ✕</a>
@@ -663,7 +680,7 @@ async function go(i, instant){
 		if (!instant){ elCap.classList.add('is-out'); elWarp.classList.add('is-on'); await wait(380); }
 		cur = i;
 		elPre.textContent = st.pre; elTtl.textContent = st.ttl; elLine.textContent = st.line;
-		elCur.textContent = String(i+1).padStart(2,'0');
+		if (elCur) elCur.textContent = String(i+1).padStart(2,'0');
 		bB.disabled = (i===0); bN.disabled = (i===STATIONS.length-1);
 		elEnter.classList.toggle('is-hidden', i!==0);
 		elMenu.classList.toggle('is-on', !!st.menu);
@@ -810,6 +827,38 @@ function loop(){
 	renderer.render(scene, camera);
 	requestAnimationFrame(loop);
 }
+/* Menu accordéon (style accueil) — navigation 100% DANS le voyage : la musique
+ * ne s'arrête jamais (aucun rechargement de page). */
+(function buildAccordion(){
+	const elBurger = document.getElementById('agx-burger');
+	const elAcc = document.getElementById('agx-acc');
+	const elAccInner = document.getElementById('agx-acc-inner');
+	const elAccClose = document.getElementById('agx-acc-close');
+	if (!elBurger || !elAcc || !elAccInner) return;
+	const open = ()=>{ elAcc.classList.add('is-on'); elAcc.setAttribute('aria-hidden','false'); };
+	const close = ()=>{ elAcc.classList.remove('is-on'); elAcc.setAttribute('aria-hidden','true'); };
+	elBurger.addEventListener('click', open);
+	if (elAccClose) elAccClose.addEventListener('click', close);
+	elAcc.addEventListener('click', e=>{ if (e.target === elAcc) close(); });
+
+	const offers = Array.from(elMenu.querySelectorAll('.agx__orb')).map(o=>({k:+o.dataset.orb, label:((o.querySelector('.agx__orb-label')||{}).textContent||'').trim()}));
+	const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+	const grp = (title, items)=> '<div class="agx__acc-grp"><button class="agx__acc-h" type="button">'+esc(title)+'<span class="chev">▾</span></button><div class="agx__acc-panel">'+items+'</div></div>';
+	const stationsHtml = STATIONS.map((s,i)=>'<button class="agx__acc-item" data-go="'+i+'">'+esc(s.ttl)+'</button>').join('');
+	const offersHtml = offers.map(o=>'<button class="agx__acc-item" data-detail="'+o.k+'">'+esc(o.label)+'</button>').join('');
+	elAccInner.innerHTML = grp('Le voyage', stationsHtml) + grp('Découvrir l’univers', offersHtml);
+
+	elAccInner.querySelectorAll('.agx__acc-h').forEach(h=> h.addEventListener('click', ()=> h.parentElement.classList.toggle('is-open')));
+	const firstGrp = elAccInner.querySelector('.agx__acc-grp'); if (firstGrp) firstGrp.classList.add('is-open');
+	elAccInner.querySelectorAll('.agx__acc-item').forEach(it=>{
+		it.addEventListener('click', ()=>{
+			close();
+			if (it.dataset.go != null){ go(+it.dataset.go); }
+			else if (it.dataset.detail != null){ const k=+it.dataset.detail; go(STATIONS.length-1); setTimeout(()=>openDetail(k), 750); }
+		});
+	});
+})();
+
 go(0, true); loop();
 </script>
 
