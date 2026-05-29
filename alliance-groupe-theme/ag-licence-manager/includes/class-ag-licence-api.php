@@ -56,6 +56,31 @@ class AG_Licence_API {
             'callback'            => array( __CLASS__, 'update_check' ),
             'permission_callback' => '__return_true',
         ) );
+
+        // Secure package download (token-gated). Was referenced by update_check
+        // but never registered -> now exists with strict validation.
+        register_rest_route( $ns, '/download/(?P<slug>[a-z0-9\-]+)', array(
+            'methods'             => 'GET',
+            'callback'            => array( __CLASS__, 'download' ),
+            'permission_callback' => '__return_true',
+        ) );
+    }
+
+    /**
+     * Per-email rate-limit (anti-abuse on email-triggered actions).
+     * Stricter than the IP limit: max 3 / hour / email.
+     */
+    private static function rate_limit_email( $email ) {
+        $key  = 'ag_rle_' . md5( strtolower( $email ) );
+        $hits = (int) get_transient( $key );
+        if ( $hits >= 3 ) {
+            return new WP_REST_Response(
+                array( 'success' => false, 'error' => 'rate_limit', 'message' => 'Too many requests.' ),
+                429
+            );
+        }
+        set_transient( $key, $hits + 1, HOUR_IN_SECONDS );
+        return null;
     }
 
     /**
@@ -89,6 +114,9 @@ class AG_Licence_API {
     // ─── COMPANION UPDATE CHECK ─────────────────────────────────
 
     public static function companion_update( WP_REST_Request $req ) {
+        $rl = self::rate_limit();
+        if ( $rl ) return $rl;
+
         $info = get_option( 'ag_lm_companion_version', array(
             'version'      => '1.9.0',
             'download_url' => home_url( '/wp-content/themes/alliance-groupe-theme/assets/downloads/ag-starter-companion.zip' ),
@@ -156,6 +184,10 @@ class AG_Licence_API {
             return self::signed_response( array( 'success' => false, 'message' => 'Email requis.' ), 400 );
         }
 
+        // Per-email throttle (in addition to the per-IP limit above).
+        $rle = self::rate_limit_email( $email );
+        if ( $rle ) return $rle;
+
         global $wpdb;
         $table = AG_Licence_DB::table();
         $licences = $wpdb->get_results( $wpdb->prepare(
@@ -163,23 +195,21 @@ class AG_Licence_API {
             $email
         ) );
 
-        if ( empty( $licences ) ) {
-            return self::signed_response( array( 'success' => false, 'message' => 'Aucune licence trouvée pour cet email.' ), 404 );
-        }
-
-        $sent = 0;
-        foreach ( $licences as $l ) {
-            $clear_key = AG_Licence_DB::decrypt_key( $l->licence_key_enc );
-            if ( $clear_key ) {
-                AG_Licence_Email::send_licence( $l->email, $clear_key, $l->tier );
-                $sent++;
+        // Send the keys only if the email actually has licences.
+        if ( ! empty( $licences ) ) {
+            foreach ( $licences as $l ) {
+                $clear_key = AG_Licence_DB::decrypt_key( $l->licence_key_enc );
+                if ( $clear_key ) {
+                    AG_Licence_Email::send_licence( $l->email, $clear_key, $l->tier );
+                }
             }
         }
 
+        // SECURITY: always return the SAME generic response (and never the count)
+        // so an attacker cannot tell whether an email is a customer (no enumeration).
         return self::signed_response( array(
             'success' => true,
-            'message' => $sent . ' clé(s) renvoyée(s) à ' . $email,
-            'count'   => $sent,
+            'message' => 'Si une licence est associée à cet email, elle vient d\'être renvoyée.',
         ) );
     }
 
@@ -319,6 +349,9 @@ class AG_Licence_API {
     // ─── UPDATE CHECK ─────────────────────────────────────────
 
     public static function update_check( WP_REST_Request $req ) {
+        $rl = self::rate_limit();
+        if ( $rl ) return $rl;
+
         $theme_slug = sanitize_key( $req->get_param( 'theme_slug' ) );
         $current_v  = sanitize_text_field( $req->get_param( 'current_version' ) );
         $key        = sanitize_text_field( $req->get_param( 'licence_key' ) );
@@ -363,12 +396,13 @@ class AG_Licence_API {
         );
 
         if ( $has_licence ) {
-            // Generate a signed temporary download token (valid 1 hour)
+            // Single-use, short-lived (15 min), domain-bound download token.
             $token = wp_generate_uuid4();
             set_transient( 'ag_dl_' . $token, array(
-                'theme' => $theme_slug,
-                'file'  => $pro['file'],
-            ), HOUR_IN_SECONDS );
+                'theme'  => $theme_slug,
+                'file'   => $pro['file'],
+                'domain' => $domain,
+            ), 15 * MINUTE_IN_SECONDS );
             $data['download_url'] = rest_url( 'ag/v1/download/' . $theme_slug . '?token=' . $token );
         } else {
             $data['download_url'] = null;
@@ -376,5 +410,52 @@ class AG_Licence_API {
         }
 
         return self::signed_response( $data );
+    }
+
+    // ─── SECURE PACKAGE DOWNLOAD ──────────────────────────────
+
+    public static function download( WP_REST_Request $req ) {
+        $rl = self::rate_limit();
+        if ( $rl ) return $rl;
+
+        $slug  = sanitize_key( $req->get_param( 'slug' ) );
+        $token = sanitize_text_field( $req->get_param( 'token' ) );
+
+        if ( empty( $token ) ) {
+            return new WP_REST_Response( array( 'error' => 'missing_token' ), 400 );
+        }
+
+        $tk = get_transient( 'ag_dl_' . $token );
+        // Token must exist and match the requested theme slug.
+        if ( ! is_array( $tk ) || empty( $tk['theme'] ) || $tk['theme'] !== $slug ) {
+            return new WP_REST_Response( array( 'error' => 'invalid_token' ), 403 );
+        }
+        // Single use: burn the token immediately.
+        delete_transient( 'ag_dl_' . $token );
+
+        // Validate the file: basename only (no path traversal), .zip only.
+        $file = basename( (string) $tk['file'] );
+        if ( '' === $file || ! preg_match( '/\.zip$/i', $file ) ) {
+            return new WP_REST_Response( array( 'error' => 'bad_file' ), 400 );
+        }
+
+        // Resolve against the downloads directory and confirm containment.
+        $base = trailingslashit( apply_filters(
+            'ag_lm_download_dir',
+            trailingslashit( get_theme_root() ) . 'alliance-groupe-theme/assets/downloads/'
+        ) );
+        $real_base = realpath( $base );
+        $path      = realpath( $base . $file );
+        if ( ! $real_base || ! $path || 0 !== strpos( $path, $real_base ) || ! is_file( $path ) ) {
+            return new WP_REST_Response( array( 'error' => 'not_found' ), 404 );
+        }
+
+        // Stream the package.
+        nocache_headers();
+        header( 'Content-Type: application/zip' );
+        header( 'Content-Disposition: attachment; filename="' . $file . '"' );
+        header( 'Content-Length: ' . filesize( $path ) );
+        readfile( $path );
+        exit;
     }
 }

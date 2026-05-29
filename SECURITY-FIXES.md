@@ -12,9 +12,9 @@
 | # | Sév | Fichier:ligne | Faille | État |
 |---|-----|---------------|--------|------|
 | 1 | 🔴 | `ag-licence-manager.php:26-28` ; `class-ag-licence-db.php:92,107` | Secret HMAC par défaut public → forge de réponses signées + déchiffrement de toutes les clés. IV AES statique (réutilisé). | ✅ corrigé |
-| 2 | 🟠 | `class-ag-licence-api.php:150-184` | `resend` public : renvoie les clés sur simple email (divulgation + énumération). | ⏳ |
-| 3 | 🟠 | `class-ag-licence-api.php:366-372` | Route `download` fantôme + token en GET (fuite URL), pas de lien licence/domaine, `file` non validé (path traversal ?). | ⏳ |
-| 4 | 🟠 | `class-ag-licence-api.php:54-58,321` | `update_check` / `companion_update` publics **sans** rate-limit. | ⏳ |
+| 2 | 🟠 | `class-ag-licence-api.php:150-184` | `resend` public : renvoie les clés sur simple email (divulgation + énumération). | ✅ corrigé (gardée + durcie) |
+| 3 | 🟠 | `class-ag-licence-api.php:366-372` | Route `download` fantôme + token en GET (fuite URL), pas de lien licence/domaine, `file` non validé (path traversal ?). | ✅ corrigé |
+| 4 | 🟠 | `class-ag-licence-api.php:54-58,321` | `update_check` / `companion_update` publics **sans** rate-limit. | ✅ corrigé |
 | 5 | 🟠 (design) | `ag-github-sync.php:312-446` ; `ag-import.php:449-567` | Sync GitHub = RCE : code PHP distant écrit/activé sans vérif d'intégrité ; cron + auto-sync mobile permanents. | ⏳ |
 | 6 | 🟡 | `ag-import.php:51` | SQL `LIKE` concaténé (pas d'injection ici — nonce+cap présents — conformité seulement). | ⏳ (cosmétique) |
 | 7 | 🟡 | `class-ag-licence-stripe.php:29-34` | Signature webhook Stripe **contournable** si `AG_STRIPE_WEBHOOK_SECRET` non défini → licences frauduleuses. | ⏳ |
@@ -41,6 +41,19 @@
 - ⚠️ **Caveat** : si des licences avaient été chiffrées avec l'ancienne clé par défaut,
   elles restent lisibles tant que la clé n'a pas changé. Dès qu'une vraie clé est posée en
   `wp-config`, les anciennes données chiffrées avec le défaut devront être régénérées.
+
+---
+
+### 2-3-4. 🟠 Durcissement de l'API licences (commit du 2026-05-29)
+- **#2 `resend_key`** : fonction **conservée** (un client peut récupérer sa clé) mais durcie —
+  rate-limit **par email** (3/h) en plus du rate-limit IP, et **réponse générique identique**
+  que l'email existe ou non (`'Si une licence est associée à cet email…'`, plus de `count`)
+  → fin de l'énumération d'emails clients.
+- **#3 route `download`** : la route `ag/v1/download/{slug}` était **référencée mais jamais
+  enregistrée** → elle existe désormais avec validation stricte : token **usage unique**
+  (supprimé dès consultation), **15 min** au lieu d'1 h, **lié au domaine**, fichier validé
+  (`basename` + `.zip` uniquement + `realpath` confiné au dossier downloads → anti path-traversal).
+- **#4 rate-limit** : ajouté sur `update_check` **et** `companion_update` (ils en étaient dépourvus).
 
 ---
 
