@@ -71,3 +71,17 @@ export const videoNaplesComplet: AGShortProps = {
 	music: 'Napoli_con_bizonnio2.m4a',
 	scenes: [...videoRecrutement.scenes.slice(0, -1), ...videoNaplesSuite.scenes],
 };
+
+/* VIDÉO LONGUE — montage de TOUTES les vidéos, avec musique.
+ * On retire les CTA intermédiaires (slice(0,-1)) pour un enchaînement continu ;
+ * un seul CTA à la toute fin (celui de la suite Naples). ~55 s. */
+export const videoLongue: AGShortProps = {
+	brand: 'ALLIANCE GROUPE',
+	music: 'Napoli_con_bizonnio2.m4a',
+	scenes: [
+		...videoRecrutement.scenes.slice(0, -1),
+		...videoVente247.scenes.slice(0, -1),
+		...videoLuxe.scenes.slice(0, -1),
+		...videoNaplesSuite.scenes,
+	],
+};
