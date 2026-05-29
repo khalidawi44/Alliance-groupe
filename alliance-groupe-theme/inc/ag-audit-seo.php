@@ -19,10 +19,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * ------------------------------------------------------------------------- */
 if ( ! function_exists( 'ag_audit_fetch' ) ) {
 	function ag_audit_fetch( $url ) {
+		// Anti-SSRF : refuse les URL pointant vers un hôte privé/loopback/réservé.
+		if ( ! wp_http_validate_url( $url ) ) return null;
 		$resp = wp_remote_get( $url, array(
-			'timeout'     => 12,
-			'redirection' => 3,
-			'user-agent'  => 'Alliance-Groupe-Audit/1.0',
+			'timeout'            => 12,
+			'redirection'        => 3,
+			'user-agent'         => 'Alliance-Groupe-Audit/1.0',
+			'reject_unsafe_urls' => true,
 		) );
 		if ( is_wp_error( $resp ) ) return null;
 		return array(

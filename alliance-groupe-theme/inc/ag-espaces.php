@@ -210,7 +210,7 @@ add_action( 'template_redirect', function () {
 		'user_password' => (string) ( $_POST['pwd'] ?? '' ),
 		'remember'      => ! empty( $_POST['rememberme'] ),
 	);
-	$user = wp_signon( $creds, is_ssl() );
+	$user = wp_signon( $creds, true ); // cookie secure forcé (site HTTPS)
 	if ( is_wp_error( $user ) ) {
 		wp_safe_redirect( add_query_arg( 'login', 'failed', $back ) ); exit;
 	}
@@ -658,7 +658,7 @@ add_action( 'template_redirect', function () {
 	if ( ! $uid ) $err( 'fail' );
 	$user = get_user_by( 'id', $uid );
 	wp_set_current_user( $uid );
-	wp_set_auth_cookie( $uid, true, is_ssl() );
+	wp_set_auth_cookie( $uid, true, true ); // cookie secure forcé (site HTTPS)
 	$dest = '';
 	if ( ! empty( $_POST['redirect_to'] ) ) $dest = wp_validate_redirect( wp_unslash( $_POST['redirect_to'] ), '' );
 	if ( ! $dest ) $dest = ag_espace_url( ag_espace_member_kind( $user ) );
@@ -746,7 +746,7 @@ if ( ! function_exists( 'ag_google_login_handler' ) ) {
 			$user = get_user_by( 'id', $uid );
 		}
 		wp_set_current_user( $user->ID );
-		wp_set_auth_cookie( $user->ID, true, is_ssl() );
+		wp_set_auth_cookie( $user->ID, true, true ); // cookie secure forcé (site HTTPS)
 		wp_safe_redirect( ag_espace_url( ag_espace_member_kind( $user ) ) ); exit;
 	}
 }

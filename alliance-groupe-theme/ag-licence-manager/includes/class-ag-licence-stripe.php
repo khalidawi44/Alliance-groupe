@@ -25,12 +25,15 @@ class AG_Licence_Stripe {
         $payload = $req->get_body();
         $sig     = $req->get_header( 'stripe-signature' );
 
-        // Verify signature if secret is configured
+        // SECURITY: the signature is MANDATORY. Without it, anyone could POST a
+        // forged "checkout.session.completed" and mint free licences.
         $secret = defined( 'AG_STRIPE_WEBHOOK_SECRET' ) ? AG_STRIPE_WEBHOOK_SECRET : '';
-        if ( $secret && $sig ) {
-            if ( ! self::verify_signature( $payload, $sig, $secret ) ) {
-                return new WP_REST_Response( array( 'error' => 'Invalid signature' ), 403 );
-            }
+        if ( empty( $secret ) ) {
+            // Misconfiguration: refuse rather than process unverified events.
+            return new WP_REST_Response( array( 'error' => 'Webhook secret not configured' ), 503 );
+        }
+        if ( empty( $sig ) || ! self::verify_signature( $payload, $sig, $secret ) ) {
+            return new WP_REST_Response( array( 'error' => 'Invalid signature' ), 403 );
         }
 
         $event = json_decode( $payload, true );

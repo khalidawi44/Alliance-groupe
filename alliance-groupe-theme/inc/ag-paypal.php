@@ -113,12 +113,16 @@ if ( ! function_exists( 'ag_paypal_apply_payment' ) ) {
 
 		if ( ag_paypal_credit_matching_sale( $amount, $email ) ) return 'credited';
 
-		// Pas de vente en attente correspondante : on réserve le paiement.
+		// Pas de vente en attente correspondante (email) : on réserve le paiement
+		// et on alerte pour rapprochement manuel (évite de créditer au hasard).
 		$prices = array_map( 'floatval', (array) apply_filters( 'ag_express_prices', array( 'essentiel' => 490, 'pro' => 890, 'boutique' => 1490 ) ) );
 		if ( in_array( round( $amount ), array_map( 'round', $prices ), true ) ) {
 			$pending = (array) get_option( 'ag_paypal_payments', array() );
 			$pending[] = array( 'amount' => $amount, 'email' => $email, 'txn' => $txn, 'ts' => time() );
 			update_option( 'ag_paypal_payments', array_slice( $pending, -200 ) );
+			if ( function_exists( 'ag_calendar_notify' ) ) {
+				ag_calendar_notify( '🕓 Paiement PayPal à rapprocher manuellement', 'Paiement de ' . $amount . ' € (' . $email . ') reçu sans vente déclarée correspondante. À rapprocher dans Réglages → PayPal.' );
+			}
 			return 'reserved';
 		}
 		return 'ignored';
@@ -129,13 +133,16 @@ if ( ! function_exists( 'ag_paypal_credit_matching_sale' ) ) {
 	function ag_paypal_credit_matching_sale( $amount, $email ) {
 		$ventes = get_option( 'ag_ambassadeur_ventes', array() );
 		if ( ! is_array( $ventes ) ) return false;
+		// SECURITY: ne créditer QUE sur correspondance email (montant + email).
+		// Le rapprochement « montant seul » créditait potentiellement la mauvaise
+		// vente / le mauvais ambassadeur. Sans email correspondant, on retourne
+		// false : le paiement part en réserve pour validation manuelle.
 		$best = -1;
 		foreach ( $ventes as $i => $v ) {
 			if ( ( $v['statut'] ?? '' ) !== 'declaree' ) continue;
 			if ( abs( (float) ( $v['montant'] ?? 0 ) - $amount ) > 0.5 ) continue;
 			$ve = strtolower( (string) ( $v['client_email'] ?? '' ) );
-			if ( $email && $ve && $ve === $email ) { $best = $i; break; } // correspondance email = idéale
-			if ( $best < 0 ) $best = $i; // sinon, 1re vente au bon montant
+			if ( $email && $ve && $ve === $email ) { $best = $i; break; } // correspondance email = requise
 		}
 		if ( $best < 0 ) return false;
 		$ventes[ $best ]['statut']        = 'payee';

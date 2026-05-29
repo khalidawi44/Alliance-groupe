@@ -40,7 +40,20 @@ class AG_GitHub_Sync {
 	const ALLOWED_EXT = array( 'php', 'css', 'js', 'json', 'md', 'mp4', 'webm', 'png', 'jpg', 'jpeg', 'svg', 'webp', 'gif', 'ico', 'woff', 'woff2', 'ttf', 'otf', 'txt', 'glb', 'gltf', 'bin', 'hdr', 'ktx2', 'mp3', 'wav', 'm4a', 'ogg' );
 
 	/** Fichiers/dossiers à NE JAMAIS écraser même s'ils sont dans le repo. */
-	const PROTECTED = array( 'wp-config.php', '.env', '.htaccess' );
+	const PROTECTED = array( 'wp-config.php', '.env', '.htaccess', '.user.ini', 'php.ini', '.htpasswd', 'web.config', '.git' );
+
+	/**
+	 * SECURITY: dépôts de confiance autorisés pour la sync (RCE = on écrit du PHP
+	 * exécuté ensuite). On ne synchronise JAMAIS depuis une autre source, même si
+	 * le filtre `ag_github_sync_repos` en injecte une. Étendre cette liste est une
+	 * décision de code délibérée (pas data-driven).
+	 */
+	const TRUSTED_REPOS = array( 'khalidawi44/Alliance-groupe' );
+
+	/** Le repo est-il dans la liste de confiance ? */
+	public static function is_trusted_repo( $repo ) {
+		return in_array( (string) $repo, self::TRUSTED_REPOS, true );
+	}
 
 	const CRON_HOOK     = 'ag_github_sync_cron';
 	const CRON_INTERVAL = 'ag_every_five_minutes';
@@ -248,6 +261,8 @@ class AG_GitHub_Sync {
 		$repos = self::get_repos();
 		if ( ! isset( $repos[ $slug ] ) ) return false;
 		$cfg = $repos[ $slug ];
+		// SECURITY: ne contacte jamais un dépôt hors liste de confiance.
+		if ( ! self::is_trusted_repo( $cfg['repo'] ?? '' ) ) return false;
 
 		$cache_key = 'ag_gh_sha_' . $slug;
 		if ( ! $force ) {
@@ -300,6 +315,12 @@ class AG_GitHub_Sync {
 		$log = array();
 		$log[] = '[' . wp_date( 'H:i:s' ) . '] Sync ' . $cfg['repo'] . '@' . $cfg['branch'] . ' (' . $slug . ')';
 
+		// 0. SECURITY: refuse toute source hors liste de confiance (anti-RCE).
+		if ( ! self::is_trusted_repo( $cfg['repo'] ?? '' ) ) {
+			$log[] = 'ERREUR : dépôt non autorisé : ' . ( $cfg['repo'] ?? '?' );
+			return array( 'ok' => false, 'error' => 'Dépôt non autorisé', 'log' => $log, 'sha' => '', 'stats' => array() );
+		}
+
 		// 1. SHA distant
 		$remote_sha = self::get_remote_sha( $slug, true );
 		if ( ! $remote_sha ) {
@@ -347,6 +368,15 @@ class AG_GitHub_Sync {
 		if ( empty( $dirs ) ) {
 			self::rm_recursive( $work );
 			return array( 'ok' => false, 'error' => 'Structure tarball inattendue', 'log' => $log, 'sha' => '', 'stats' => array() );
+		}
+		// SECURITY: le dossier racine du tarball est nommé "owner-repo-<sha>".
+		// On vérifie qu'il correspond bien au commit attendu (intégrité de base :
+		// le tarball n'est pas un contenu décorrélé du SHA annoncé).
+		$root_name = basename( $dirs[0] );
+		if ( false === strpos( $root_name, substr( $remote_sha, 0, 7 ) ) ) {
+			self::rm_recursive( $work );
+			$log[] = 'ERREUR : tarball incohérent avec le SHA ' . $remote_sha . ' (racine : ' . $root_name . ')';
+			return array( 'ok' => false, 'error' => 'Intégrité tarball', 'log' => $log, 'sha' => '', 'stats' => array() );
 		}
 		$source_root = $dirs[0];
 		if ( ! empty( $cfg['subdir'] ) ) $source_root .= '/' . $cfg['subdir'];
