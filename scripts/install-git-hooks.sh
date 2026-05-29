@@ -17,14 +17,22 @@ fi
 
 cat > "${HOOK_PATH}" <<'HOOK'
 #!/usr/bin/env bash
-# AG cadena — auto-installed by scripts/install-git-hooks.sh
-# Bloque tout commit qui modifie un template/plugin verrouille.
+# AG cadena + reprise — auto-installed by scripts/install-git-hooks.sh
+# 1) Bloque tout commit qui modifie un template/plugin verrouille.
+# 2) Tamponne HANDOFF.md (date + branche) a CHAQUE commit -> la reprise
+#    entre conversations ne peut plus se perimer, meme en cas de plantage.
 # Les templates en focus actif (.AG_FOCUS) sont autorises.
 
 set -e
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "${REPO_ROOT}"
+
+# --- Tampon de reprise (toujours, meme sur les commits "unlock-") ---
+if [[ -f scripts/stamp-handoff.sh ]]; then
+    bash scripts/stamp-handoff.sh || true
+    git add HANDOFF.md 2>/dev/null || true
+fi
 
 # Si le message de commit commence par "unlock-<slug>:" on autorise
 # (procedure exceptionnelle).

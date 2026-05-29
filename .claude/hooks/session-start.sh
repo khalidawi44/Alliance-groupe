@@ -12,6 +12,17 @@ set -euo pipefail
 
 cd "${CLAUDE_PROJECT_DIR:-.}"
 
+# --- (Re)installe les hooks git dans ce conteneur neuf -----------------------
+# .git/hooks ne survit pas au conteneur ephemere : on reinstalle a chaque
+# session pour que le tampon auto de HANDOFF.md (pre-commit) soit toujours actif.
+if [ -f scripts/install-git-hooks.sh ]; then
+	bash scripts/install-git-hooks.sh >/dev/null 2>&1 || true
+fi
+# Tampon immediat (date + branche), au cas ou aucun commit ne suit cette session.
+if [ -f scripts/stamp-handoff.sh ]; then
+	bash scripts/stamp-handoff.sh >/dev/null 2>&1 || true
+fi
+
 echo "===== REPRISE DE SESSION — Alliance Groupe ====="
 echo "(Genere par .claude/hooks/session-start.sh — etat reel du repo)"
 echo
