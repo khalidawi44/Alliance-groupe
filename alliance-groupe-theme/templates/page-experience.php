@@ -252,6 +252,9 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__nav button:disabled{opacity:.28;cursor:not-allowed}
 .agx__nav .ct{color:rgba(255,255,255,.75);font-variant-numeric:tabular-nums;letter-spacing:3px;padding:0 4px}
 .agx__sound{position:absolute;top:20px;right:20px;z-index:8;width:46px;height:46px;display:flex;align-items:center;justify-content:center;background:rgba(10,10,15,.5);backdrop-filter:blur(8px);border:1.5px solid rgba(212,180,92,.5);color:#D4B45C;border-radius:50%;cursor:pointer;transition:.25s}
+.agx__vol{position:absolute;right:23px;z-index:8;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:rgba(10,10,15,.5);backdrop-filter:blur(8px);border:1.5px solid rgba(212,180,92,.45);color:#D4B45C;border-radius:50%;cursor:pointer;font-size:22px;font-weight:700;line-height:1;font-family:Inter,system-ui,sans-serif}
+#agx-volup{top:74px}#agx-voldown{top:120px}
+@media(max-width:640px){.agx__vol{width:36px;height:36px;right:25px}#agx-volup{top:64px}#agx-voldown{top:104px}}
 .agx__sound:hover{color:#fff;border-color:#D4B45C;background:rgba(212,180,92,.2)}
 .agx__sound svg{width:22px;height:22px;display:block}
 .agx__sound .wave{transition:opacity .2s}
@@ -361,7 +364,9 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 			<path class="cross" d="M17.5 9.5l5 5M22.5 9.5l-5 5"/>
 		</svg>
 	</button>
-	<audio id="agx-audio" loop preload="none" src="<?php echo esc_url( $music ); ?>"></audio>
+	<button class="agx__vol" id="agx-volup" type="button" aria-label="Monter le volume">+</button>
+	<button class="agx__vol" id="agx-voldown" type="button" aria-label="Baisser le volume">−</button>
+	<audio id="agx-audio" loop preload="auto" src="<?php echo esc_url( $music ); ?>"></audio>
 	<div class="agx__hint" id="agx-hint">← Glissez ou NEXT →</div>
 </main>
 
@@ -449,7 +454,7 @@ let cur = 0, current3D = null, busy = false;
 // ── Avance auto + analytics + accessibilité ──────────────────────────────────
 const AGX_AUTO_MS = 15000; // délai d'avance auto (long pour ne pas gêner)
 const agxReduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-let autoOn = !agxReduced, autoTimer = null;
+let autoOn = false, autoTimer = null; // avance auto desactivee : l'utilisateur navigue lui-meme
 function agxTrack(name, params){ try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch(e){} }
 function scheduleAuto(){
 	clearTimeout(autoTimer);
@@ -546,6 +551,7 @@ async function loadStation(i){
 // ── Station "Monde" : globe Terre 3D + marqueurs cliquables ──────────────────
 const GLOBE_R = 2.3;            // rayon de la Terre (petite, au centre de la galaxie)
 const GLOBE_SCALE = 0.62;       // échelle finale du globe
+const GLOBE_FACE = -1.5;        // orientation par défaut : bureaux (France/Italie/Maroc) face caméra
 let globeGroup = null;
 let globeMarkers = [];          // marqueurs DOM des bureaux, repositionnés à chaque frame
 function buildGlobe(){
@@ -619,22 +625,20 @@ function buildGlobeMarkers(){
 		btn.innerHTML = '<span class="agx__gm-dot"></span><span class="agx__gm-label">' + m.label + '</span>';
 		btn.addEventListener('click', () => go(idx));
 		elGlobeMarkers.appendChild(btn);
-		globeMarkers.push({ el: btn, vec: latLonToVec3(m.lat, m.lon, GLOBE_R * 1.03) });
+		globeMarkers.push({ el: btn, vec: latLonToVec3(m.lat, m.lon, GLOBE_R) }); // pile sur la surface
 	});
 }
 
-// Repositionne les pins en projetant leur point 3D (qui tourne avec la Terre).
+// Repositionne chaque pin en projetant son point 3D via la matrice COMPLÈTE du
+// globe (rotation Y + inclinaison X + échelle/zoom) -> toujours pile sur la ville.
 function updateGlobeMarkers(group){
 	if (!globeMarkers.length) return;
-	const ry = group.rotation.y, s = group.scale.x, cy = group.position.y;
-	const cos = Math.cos(ry), sin = Math.sin(ry);
+	group.updateMatrixWorld();
 	const w = new THREE.Vector3();
 	globeMarkers.forEach(mk => {
-		const v = mk.vec;
-		const x = v.x * cos + v.z * sin;       // rotation Y
-		const z = -v.x * sin + v.z * cos;
-		const front = z > 0;                   // hémisphère face caméra
-		w.set(x * s, v.y * s + cy, z * s).project(camera);
+		w.copy(mk.vec).applyMatrix4(group.matrixWorld);
+		const front = w.z > 0; // devant le centre (origine) = face caméra
+		w.project(camera);
 		mk.el.style.left = ((w.x * 0.5 + 0.5) * 100).toFixed(2) + '%';
 		mk.el.style.top  = ((-w.y * 0.5 + 0.5) * 100).toFixed(2) + '%';
 		mk.el.style.opacity = front ? '1' : '0';
@@ -745,13 +749,21 @@ host.addEventListener('touchend', e=>{ if(e.touches.length<2) pinchD0=null; }, {
 let ttX=0,tX=0;
 host.addEventListener('mousemove', e=>{ const r=host.getBoundingClientRect(); ttX=((e.clientX-r.left)/r.width-0.5)*0.6; }, {passive:true});
 
-const AGX_VOL = 0.12; // volume faible
+let agxVol = 0.12; // volume musique (ajustable avec -/+)
+const AGX_VOL_MIN = 0.03, AGX_VOL_MAX = 0.5, AGX_VOL_STEP = 0.06;
 function agxFade(target){ let v = audio.volume; const f = setInterval(()=>{ v += (target>v?0.01:-0.02); audio.volume = Math.max(0, Math.min(target, v)); if (Math.abs(audio.volume-target) < 0.011){ audio.volume = target; clearInterval(f); if (target===0) audio.pause(); } }, 110); }
-function agxPlay(){ audio.volume = 0; audio.play().then(()=>agxFade(AGX_VOL)).catch(()=>{}); }
-let on=false; // son COUPÉ à l'ouverture (l'utilisateur l'active via le bouton)
-elSound.classList.add('is-off');
-elSound.setAttribute('aria-label', 'Activer le son');
+function agxPlay(){ audio.volume = 0; audio.play().then(()=>agxFade(agxVol)).catch(()=>{}); }
+let on=true; // MUSIQUE ON par défaut
+agxPlay();
+// l'autoplay avec son est souvent bloqué : on (re)lance au tout premier geste
+const agxResume = ()=>{ if (on && audio.paused) agxPlay(); };
+['pointerdown','touchstart','keydown'].forEach(ev => window.addEventListener(ev, agxResume, {once:true}));
 elSound.addEventListener('click', ()=>{ on=!on; elSound.classList.toggle('is-off', !on); elSound.setAttribute('aria-label', on ? 'Couper le son' : 'Activer le son'); if(on){ agxPlay(); } else { agxFade(0); } });
+// Volume − / +
+function agxSetVol(v){ agxVol = Math.max(AGX_VOL_MIN, Math.min(AGX_VOL_MAX, v)); if(on){ if(audio.paused) agxPlay(); else audio.volume = agxVol; } }
+const elVolDown = document.getElementById('agx-voldown'), elVolUp = document.getElementById('agx-volup');
+if (elVolDown) elVolDown.addEventListener('click', ()=> agxSetVol(agxVol - AGX_VOL_STEP));
+if (elVolUp) elVolUp.addEventListener('click', ()=> agxSetVol(agxVol + AGX_VOL_STEP));
 
 /* Constellation : cliquer une étoile -> plongée dans l'étoile -> cartes d'offres flottantes */
 const details = Array.from(document.querySelectorAll('.agx__detail'));
@@ -788,9 +800,9 @@ function loop(){
 		else if (u.flat){ current3D.rotation.x = 0.62 + u.dragX; current3D.rotation.y = 0; u.spinNode.rotation.y = u.dragY + Math.sin(t*0.18)*0.32; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.04; } // carte inclinée (de profil/3-quarts) : on voit la photo derrière, oscillation douce
 		else if (u.drag && !u.globe){ current3D.rotation.y = u.dragY + (u.spin ? t*0.18 : 0); current3D.rotation.x = u.dragX; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.05; } // l'utilisateur tourne l'objet
 		else if (u.front){ current3D.rotation.y = u.rotY + Math.sin(t*0.45)*0.12; current3D.position.y = u.baseY + Math.sin(t*0.6)*0.07; } // toujours de face, léger balancement
-		else if (u.globe){ // Terre : auto-spin jusqu'à ce que l'utilisateur la saisisse, puis contrôle manuel
+		else if (u.globe){ // Terre : bureaux face caméra par défaut (léger balancement) ; contrôle manuel dès que l'utilisateur la saisit
 			if (u.manual){ current3D.rotation.y = u.dragY; current3D.rotation.x = u.dragX; }
-			else { current3D.rotation.y = t*0.12 + tX*0.3; current3D.rotation.x = 0; }
+			else { current3D.rotation.y = GLOBE_FACE + Math.sin(t*0.18)*0.28 + tX*0.2; current3D.rotation.x = -0.12; }
 			current3D.position.y = 0; updateGlobeMarkers(current3D);
 		}
 		else { current3D.rotation.y = tX*0.5; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.1; }
