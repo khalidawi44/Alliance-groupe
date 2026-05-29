@@ -526,30 +526,40 @@ let globeGroup = null;
 function buildGlobe(){
 	if (globeGroup) return globeGroup;
 	const g = new THREE.Group();
-	// Globe bleu lumineux par défaut : visible immédiatement, MÊME si la texture
-	// Terre (CDN externe) ne charge pas. La vraie texture se pose par-dessus si OK.
-	const mat = new THREE.MeshStandardMaterial({ color: 0x18386a, metalness: 0.1, roughness: 0.85, emissive: 0x0b1e3d, emissiveIntensity: 0.45 });
-	const globe = new THREE.Mesh(new THREE.SphereGeometry(GLOBE_R, 64, 64), mat);
-	g.add(globe);
-	const tl = new THREE.TextureLoader();
-	tl.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg', tex => {
-		tex.colorSpace = THREE.SRGBColorSpace; mat.map = tex; mat.color.set(0xffffff); mat.emissiveIntensity = 0; mat.needsUpdate = true;
-	});
-	tl.load('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg', tex => { mat.normalMap = tex; mat.needsUpdate = true; });
-	// Halo atmosphère champagne (rétro-éclairage)
-	const halo = new THREE.Mesh(
-		new THREE.SphereGeometry(GLOBE_R * 1.16, 32, 32),
-		new THREE.ShaderMaterial({
-			transparent: true, blending: THREE.AdditiveBlending, side: THREE.BackSide, depthWrite: false,
-			uniforms: { c: { value: new THREE.Color(0xF3D27A) } },
-			vertexShader: 'varying float i;void main(){vec3 n=normalize(normalMatrix*normal);i=pow(.72-dot(n,vec3(0.,0.,1.)),3.);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-			fragmentShader: 'uniform vec3 c;varying float i;void main(){gl_FragColor=vec4(c,1.)*clamp(i,0.,1.);}'
-		})
+	// Reprise EXACTE du globe de la page d'accueil (template-parts/globe-3d.php) :
+	// Terre Phong texturée + grille champagne + halo orange + lumières dédiées.
+	const loader = new THREE.TextureLoader();
+	loader.crossOrigin = 'anonymous';
+	const earthTexture = loader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
+	const bumpTexture  = loader.load('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg');
+	const specTexture  = loader.load('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg');
+
+	const sphere = new THREE.Mesh(
+		new THREE.SphereGeometry(GLOBE_R, 64, 64),
+		new THREE.MeshPhongMaterial({ map: earthTexture, normalMap: bumpTexture, specularMap: specTexture, specular: new THREE.Color(0x333333), shininess: 18 })
 	);
-	g.add(halo);
-	// Lumières propres au globe (la scène n'a qu'un environment doux).
-	const dir = new THREE.DirectionalLight(0xffffff, 2.1); dir.position.set(5, 3, 6); g.add(dir);
-	g.add(new THREE.AmbientLight(0x5a6480, 0.7));
+	g.add(sphere);
+
+	// Grille champagne subtile (identité Alliance)
+	g.add(new THREE.Mesh(
+		new THREE.SphereGeometry(GLOBE_R * 1.007, 24, 24),
+		new THREE.MeshBasicMaterial({ color: 0xD4B45C, wireframe: true, transparent: true, opacity: 0.06 })
+	));
+
+	// Halo atmosphère orange (rétro-éclairage)
+	g.add(new THREE.Mesh(
+		new THREE.SphereGeometry(GLOBE_R * 1.133, 32, 32),
+		new THREE.ShaderMaterial({
+			transparent: true, side: THREE.BackSide,
+			uniforms: { c: { value: new THREE.Color(0xF37A1F) } },
+			vertexShader: 'varying float i;void main(){vec3 n=normalize(normalMatrix*normal);i=pow(.6-dot(n,vec3(0.,0.,1.)),3.);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+			fragmentShader: 'uniform vec3 c;varying float i;void main(){gl_FragColor=vec4(c,1.)*i*.45;}'
+		})
+	));
+
+	// Lumières (comme la page d'accueil : ambient + directionnelle)
+	g.add(new THREE.AmbientLight(0xffffff, 0.65));
+	const dir = new THREE.DirectionalLight(0xffffff, 1.0); dir.position.set(5, 3, 5); g.add(dir);
 	globeGroup = g;
 	return g;
 }
