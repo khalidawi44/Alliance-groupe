@@ -352,7 +352,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 			<path class="cross" d="M17.5 9.5l5 5M22.5 9.5l-5 5"/>
 		</svg>
 	</button>
-	<audio id="agx-audio" loop preload="auto" autoplay src="<?php echo esc_url( $music ); ?>"></audio>
+	<audio id="agx-audio" loop preload="none" src="<?php echo esc_url( $music ); ?>"></audio>
 	<div class="agx__hint" id="agx-hint">← Glissez ou NEXT →</div>
 </main>
 
@@ -683,11 +683,9 @@ host.addEventListener('mousemove', e=>{ const r=host.getBoundingClientRect(); tt
 const AGX_VOL = 0.12; // volume faible
 function agxFade(target){ let v = audio.volume; const f = setInterval(()=>{ v += (target>v?0.01:-0.02); audio.volume = Math.max(0, Math.min(target, v)); if (Math.abs(audio.volume-target) < 0.011){ audio.volume = target; clearInterval(f); if (target===0) audio.pause(); } }, 110); }
 function agxPlay(){ audio.volume = 0; audio.play().then(()=>agxFade(AGX_VOL)).catch(()=>{}); }
-let on=true; // son activé à l'ouverture (faible)
-agxPlay();
-// si l'autoplay est bloqué par le navigateur, on démarre au tout premier geste
-const agxResume = ()=>{ if (on && audio.paused) agxPlay(); };
-['pointerdown','touchstart','keydown'].forEach(ev => window.addEventListener(ev, agxResume, {once:true}));
+let on=false; // son COUPÉ à l'ouverture (l'utilisateur l'active via le bouton)
+elSound.classList.add('is-off');
+elSound.setAttribute('aria-label', 'Activer le son');
 elSound.addEventListener('click', ()=>{ on=!on; elSound.classList.toggle('is-off', !on); elSound.setAttribute('aria-label', on ? 'Couper le son' : 'Activer le son'); if(on){ agxPlay(); } else { agxFade(0); } });
 
 /* Constellation : cliquer une étoile -> plongée dans l'étoile -> cartes d'offres flottantes */
