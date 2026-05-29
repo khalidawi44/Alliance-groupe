@@ -270,6 +270,12 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx.is-detail .agx__constel,.agx.is-detail .agx__nav,.agx.is-detail .agx__hint{opacity:0!important;pointer-events:none!important;transition:opacity .4s ease}
 .agx__orb.is-diving .agx__orb-dot{animation:none;transform:scale(7);opacity:0;transition:transform .45s ease,opacity .45s ease}
 .agx__orb.is-diving .agx__orb-label{opacity:0;transition:opacity .25s ease}
+/* CTA conversion + bouton passer (toujours visibles) */
+.agx__cta{position:fixed;left:24px;bottom:24px;z-index:9;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:800;text-decoration:none;padding:12px 20px;border-radius:100px;font-family:Georgia,serif;box-shadow:0 6px 24px rgba(243,122,31,.45);transition:transform .25s ease}
+.agx__cta:hover{transform:translateY(-2px) scale(1.03);color:#0a0a0f}
+.agx__skip{position:fixed;right:62px;top:18px;z-index:9;color:rgba(255,255,255,.7);text-decoration:none;font-size:.82rem;letter-spacing:1px;padding:8px 12px;transition:color .2s ease}
+.agx__skip:hover{color:#fff}
+@media(max-width:640px){.agx__cta{left:12px;bottom:12px;padding:10px 16px;font-size:.9rem}.agx__skip{right:54px;top:14px}}
 </style>
 
 <main class="agx" id="agx">
@@ -344,6 +350,8 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 		<span class="ct"><span id="agx-cur">01</span> / <span id="agx-tot">05</span></span>
 		<button id="agx-next">NEXT ▸</button>
 	</div>
+	<a href="<?php echo esc_url( home_url( '/rdv' ) ); ?>" class="agx__cta" id="agx-cta">✦ Devis gratuit</a>
+	<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="agx__skip" id="agx-skip">Passer ✕</a>
 	<button class="agx__sound" id="agx-sound" type="button" aria-label="Couper le son">
 		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 			<path d="M4 9 L8 9 L13 5 L13 19 L8 15 L4 15 Z" fill="currentColor" stroke="none"/>
@@ -427,14 +435,28 @@ function openBio(k){
 	elBioName.textContent = m.name; elBioRole.textContent = m.role;
 	elBioCity.textContent = m.city || ''; elBioDesc.textContent = m.desc || '';
 	elBio.classList.add('is-on');
+	clearTimeout(autoTimer);          // pause l'avance auto pendant la lecture de la bio
 }
-function closeBio(){ elBio.classList.remove('is-on'); }
+function closeBio(){ elBio.classList.remove('is-on'); scheduleAuto(); }
 elTeam.addEventListener('click', e => { const c = e.target.closest('.agx__tcard'); if (c) openBio(c.dataset.k); });
 elTeam.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ const c = e.target.closest('.agx__tcard'); if (c){ e.preventDefault(); openBio(c.dataset.k); } } });
 document.getElementById('agx-bio-close').addEventListener('click', closeBio);
 elBio.addEventListener('click', e => { if (e.target === elBio) closeBio(); });
 
 let cur = 0, current3D = null, busy = false;
+
+// ── Avance auto + analytics + accessibilité ──────────────────────────────────
+const AGX_AUTO_MS = 15000; // délai d'avance auto (long pour ne pas gêner)
+const agxReduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+let autoOn = !agxReduced, autoTimer = null;
+function agxTrack(name, params){ try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch(e){} }
+function scheduleAuto(){
+	clearTimeout(autoTimer);
+	if (!autoOn) return;                                   // coupé (reduced-motion)
+	if (cur >= STATIONS.length - 1) return;                // stop à la dernière station
+	if (host.classList.contains('is-detail') || elBio.classList.contains('is-on')) return; // pause si l'utilisateur explore
+	autoTimer = setTimeout(() => { if (!busy && autoOn) go(cur + 1); }, AGX_AUTO_MS);
+}
 const cache = {};
 const W = () => host.clientWidth, H = () => host.clientHeight;
 const wait = ms => new Promise(r => setTimeout(r, ms));
@@ -530,14 +552,14 @@ function buildGlobe(){
 	// Terre Phong texturée + grille champagne + halo orange + lumières dédiées.
 	const loader = new THREE.TextureLoader();
 	loader.crossOrigin = 'anonymous';
-	const earthTexture = loader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
-	const bumpTexture  = loader.load('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg');
-	const specTexture  = loader.load('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg');
-
-	const sphere = new THREE.Mesh(
-		new THREE.SphereGeometry(GLOBE_R, 64, 64),
-		new THREE.MeshPhongMaterial({ map: earthTexture, normalMap: bumpTexture, specularMap: specTexture, specular: new THREE.Color(0x333333), shininess: 18 })
-	);
+	// Matériau bleu lumineux par défaut : globe visible IMMÉDIATEMENT même si le
+	// CDN externe (threejs.org) est lent/bloqué. La vraie Terre se pose dessus si OK.
+	const mat = new THREE.MeshPhongMaterial({ color: 0x18386a, emissive: new THREE.Color(0x0b1e3d), specular: new THREE.Color(0x333333), shininess: 18 });
+	loader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg',
+		function(tex){ tex.colorSpace = THREE.SRGBColorSpace; mat.map = tex; mat.color.set(0xffffff); mat.emissive.set(0x000000); mat.needsUpdate = true; });
+	loader.load('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg', function(tex){ mat.normalMap = tex; mat.needsUpdate = true; });
+	loader.load('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg', function(tex){ mat.specularMap = tex; mat.needsUpdate = true; });
+	const sphere = new THREE.Mesh(new THREE.SphereGeometry(GLOBE_R, 64, 64), mat);
 	g.add(sphere);
 
 	// Grille champagne subtile (identité Alliance)
@@ -612,39 +634,49 @@ async function go(i, instant){
 	if (busy) return;
 	i = Math.max(0, Math.min(STATIONS.length-1, i));
 	busy = true;
+	clearTimeout(autoTimer);            // reset du chrono d'avance auto
 	const st = STATIONS[i];
-	if (!instant){ elCap.classList.add('is-out'); elWarp.classList.add('is-on'); await wait(380); }
-	cur = i;
-	elPre.textContent = st.pre; elTtl.textContent = st.ttl; elLine.textContent = st.line;
-	elCur.textContent = String(i+1).padStart(2,'0');
-	bB.disabled = (i===0); bN.disabled = (i===STATIONS.length-1);
-	elEnter.classList.toggle('is-hidden', i!==0);
-	elMenu.classList.toggle('is-on', !!st.menu);
-	host.classList.toggle('is-menu', !!st.menu);
-	host.style.cursor = st.drag ? 'grab' : 'default';
-	elHint.textContent = st.drag ? '↔ Faites glisser pour tourner' : '← Glissez ou NEXT →';
-	if (!st.menu) closeOrbs();
-	elHint.style.opacity = (i===STATIONS.length-1) ? '0' : '';
-	setMedia(st);
-	buildTeam(st);
-	host.classList.toggle('is-globe', !!st.globe);
-	if (!st.globe) elGlobeMarkers.classList.remove('is-on');
-	if (st.iframe && !elSky3d.getAttribute('src')) elSky3d.setAttribute('src', st.iframe); // galaxie Sketchfab chargée à la 1re visite (la visibilité suit la classe is-menu)
-	if (current3D){ scene.remove(current3D); current3D = null; }
-	if (st.globe){
-		const g = buildGlobe(); current3D = g; g.scale.setScalar(0.15); g.rotation.set(0,0,0); scene.add(g);
-		buildGlobeMarkers();
-		setTimeout(() => { if (cur !== i) return; tween(1500, k => g.scale.setScalar(0.15 + 1.15*k)); setTimeout(() => { if (cur === i) elGlobeMarkers.classList.add('is-on'); }, 800); }, 900); // terre minuscule -> zoom ~1s -> points
-	} else if (!st.iframe && st.model){
-		const grp = await loadStation(i);
-		if (cur === i){
-			current3D = grp; grp.scale.setScalar(0.55); scene.add(grp);
-			tween(720, k => grp.scale.setScalar(0.55 + 0.45*k), () => grp.scale.setScalar(1));
+	try {
+		if (!instant){ elCap.classList.add('is-out'); elWarp.classList.add('is-on'); await wait(380); }
+		cur = i;
+		elPre.textContent = st.pre; elTtl.textContent = st.ttl; elLine.textContent = st.line;
+		elCur.textContent = String(i+1).padStart(2,'0');
+		bB.disabled = (i===0); bN.disabled = (i===STATIONS.length-1);
+		elEnter.classList.toggle('is-hidden', i!==0);
+		elMenu.classList.toggle('is-on', !!st.menu);
+		host.classList.toggle('is-menu', !!st.menu);
+		host.style.cursor = st.drag ? 'grab' : 'default';
+		elHint.textContent = st.drag ? '↔ Faites glisser pour tourner' : '← Glissez ou NEXT →';
+		if (!st.menu) closeOrbs();
+		elHint.style.opacity = (i===STATIONS.length-1) ? '0' : '';
+		setMedia(st);
+		buildTeam(st);
+		host.classList.toggle('is-globe', !!st.globe);
+		if (!st.globe) elGlobeMarkers.classList.remove('is-on');
+		if (st.iframe && !elSky3d.getAttribute('src')) elSky3d.setAttribute('src', st.iframe); // galaxie Sketchfab chargée à la 1re visite (la visibilité suit la classe is-menu)
+		if (current3D){ scene.remove(current3D); current3D = null; }
+		if (st.globe){
+			const g = buildGlobe(); current3D = g; g.scale.setScalar(0.15); g.rotation.set(0,0,0); scene.add(g);
+			buildGlobeMarkers();
+			setTimeout(() => { if (cur !== i) return; tween(1500, k => g.scale.setScalar(0.15 + 1.15*k)); setTimeout(() => { if (cur === i) elGlobeMarkers.classList.add('is-on'); }, 800); }, 900); // terre minuscule -> zoom ~1s -> points
+		} else if (!st.iframe && st.model){
+			const grp = await loadStation(i);
+			if (cur === i){
+				current3D = grp; grp.scale.setScalar(0.55); scene.add(grp);
+				tween(720, k => grp.scale.setScalar(0.55 + 0.45*k), () => grp.scale.setScalar(1));
+			}
 		}
+		elCap.classList.remove('is-out'); replayCap();
+		agxTrack('agx_station', { index: i, station: st.ttl });
+		if (i === STATIONS.length - 1) agxTrack('agx_complete', {});
+	} catch (e) {
+		console.error('[AGX] go() a échoué, navigation préservée :', e);
+	} finally {
+		// ANTI-GEL : quoi qu'il arrive, on libère la navigation.
+		elWarp.classList.remove('is-on');
+		busy = false;
+		scheduleAuto();
 	}
-	elCap.classList.remove('is-out'); replayCap();
-	elWarp.classList.remove('is-on');
-	busy = false;
 }
 
 function plunge(){
@@ -666,6 +698,9 @@ function plunge(){
 bN.addEventListener('click', ()=>go(cur+1));
 bB.addEventListener('click', ()=>go(cur-1));
 elEnter.addEventListener('click', e=>{ e.preventDefault(); plunge(); });
+const elCta = document.getElementById('agx-cta'), elSkip = document.getElementById('agx-skip');
+if (elCta) elCta.addEventListener('click', ()=> agxTrack('agx_cta_devis', { from: cur }));
+if (elSkip) elSkip.addEventListener('click', ()=> agxTrack('agx_skip', { from: cur }));
 document.addEventListener('keydown', e=>{ if(e.key==='ArrowRight')go(cur+1); else if(e.key==='ArrowLeft')go(cur-1); });
 let x0=null;
 host.addEventListener('touchstart', e=>{ x0=e.touches[0].clientX; }, {passive:true});
@@ -690,8 +725,9 @@ elSound.addEventListener('click', ()=>{ on=!on; elSound.classList.toggle('is-off
 
 /* Constellation : cliquer une étoile -> plongée dans l'étoile -> cartes d'offres flottantes */
 const details = Array.from(document.querySelectorAll('.agx__detail'));
-function closeOrbs(){ details.forEach(d => d.classList.remove('is-on')); host.classList.remove('is-detail'); }
+function closeOrbs(){ details.forEach(d => d.classList.remove('is-on')); host.classList.remove('is-detail'); scheduleAuto(); }
 function openDetail(idx){
+	clearTimeout(autoTimer);          // pause l'avance auto pendant l'exploration d'une offre
 	const orb = elMenu.querySelector('.agx__orb[data-orb="'+idx+'"]');
 	if (orb) orb.classList.add('is-diving');
 	elWarp.classList.add('is-on');
