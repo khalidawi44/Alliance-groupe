@@ -133,6 +133,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 /* Galaxie Sketchfab embarquée (station Univers) : décor qui tourne tout seul, derrière la constellation */
 .agx__sky3d{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1;opacity:0;visibility:hidden;transition:opacity 1.4s ease;pointer-events:none;background:#05060a}
 .agx.is-menu .agx__sky3d{opacity:1;visibility:visible}
+.agx.is-globe .agx__sky3d{opacity:1;visibility:visible}
 .agx__sky::before,.agx__sky::after{content:'';position:absolute;inset:-50%;background-repeat:repeat;background-image:
 	radial-gradient(1.5px 1.5px at 12% 22%,#fff,transparent),radial-gradient(1.5px 1.5px at 28% 64%,#fff,transparent),
 	radial-gradient(2px 2px at 44% 33%,#fff,transparent),radial-gradient(1.5px 1.5px at 61% 78%,#fff,transparent),
@@ -382,7 +383,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const BASE = '<?php echo esc_js( $base ); ?>';
 const STATIONS = [
 	{ pre:'BIENVENUE CHEZ —', ttl:'Alliance Groupe', line:"C'est ici que votre projet prend vie.", media:'video' },
-	{ pre:'✦ NOTRE MONDE', ttl:'Alliance dans le monde', line:'Touchez un bureau pour explorer.', media:'space', globe:true },
+	{ pre:'✦ NOTRE MONDE', ttl:'Alliance dans le monde', line:'Touchez un bureau pour explorer.', media:'space', globe:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0.2&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_hint=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' },
 	{ pre:'✦ NOTRE ÉNERGIE', ttl:'Naples', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', size:5.2, baseY:1.4, team:['fabrizio','carlito'] },
 	{ pre:'✦ NOTRE QG', ttl:'Nantes', line:'Les visages de la maison.', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/nantes-1.jpg' ); ?>', team:['kate','laurent','julie'] },
 	{ pre:'✦ NOTRE PÔLE SUD', ttl:'Marrakech', line:'L’équipe qui sort de la tour.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', baseY:-2.2, team:['halim','amina'] },
@@ -543,8 +544,10 @@ async function loadStation(i){
 }
 
 // ── Station "Monde" : globe Terre 3D + marqueurs cliquables ──────────────────
-const GLOBE_R = 3.4;
+const GLOBE_R = 2.3;            // rayon de la Terre (petite, au centre de la galaxie)
+const GLOBE_SCALE = 0.62;       // échelle finale du globe
 let globeGroup = null;
+let globeMarkers = [];          // marqueurs DOM des bureaux, repositionnés à chaque frame
 function buildGlobe(){
 	if (globeGroup) return globeGroup;
 	const g = new THREE.Group();
@@ -600,29 +603,40 @@ function latLonToVec3(lat, lon, r){
 	);
 }
 
-// Construit les marqueurs DOM (offices + pages) projetés sur le globe au repos.
+// Construit les pins bureaux (DOM). Leur position est recalculée à chaque frame
+// dans la boucle (updateGlobeMarkers) pour SUIVRE la rotation de la Terre.
 function buildGlobeMarkers(){
 	elGlobeMarkers.innerHTML = '';
-	const scale = 1.3; // échelle finale du globe (cf. tween dans go())
-	// On ne garde QUE les marqueurs qui mènent à une station du voyage
-	// (les bureaux). Aucun lien externe : on reste dans le parcours.
+	globeMarkers = [];
 	GLOBE_MARKERS.forEach(m => {
 		const idx = STATIONS.findIndex(s => s.ttl === m.target);
-		if (idx < 0) return; // pas de station correspondante -> on n'affiche pas
-		const p = latLonToVec3(m.lat, m.lon, GLOBE_R * scale);
-		const front = p.z > -0.15 * GLOBE_R * scale; // hémisphère face caméra
-		const v = p.clone().project(camera);
-		const left = (v.x * 0.5 + 0.5) * 100;
-		const top  = (-v.y * 0.5 + 0.5) * 100;
+		if (idx < 0) return; // que les bureaux (mènent à une station du voyage)
 		const btn = document.createElement('button');
 		btn.type = 'button';
 		btn.className = 'agx__gm agx__gm--office';
-		btn.style.left = left.toFixed(2) + '%';
-		btn.style.top  = top.toFixed(2) + '%';
-		if (!front) btn.style.display = 'none';
 		btn.innerHTML = '<span class="agx__gm-dot"></span><span class="agx__gm-label">' + m.label + '</span>';
 		btn.addEventListener('click', () => go(idx));
 		elGlobeMarkers.appendChild(btn);
+		globeMarkers.push({ el: btn, vec: latLonToVec3(m.lat, m.lon, GLOBE_R * 1.03) });
+	});
+}
+
+// Repositionne les pins en projetant leur point 3D (qui tourne avec la Terre).
+function updateGlobeMarkers(group){
+	if (!globeMarkers.length) return;
+	const ry = group.rotation.y, s = group.scale.x, cy = group.position.y;
+	const cos = Math.cos(ry), sin = Math.sin(ry);
+	const w = new THREE.Vector3();
+	globeMarkers.forEach(mk => {
+		const v = mk.vec;
+		const x = v.x * cos + v.z * sin;       // rotation Y
+		const z = -v.x * sin + v.z * cos;
+		const front = z > 0;                   // hémisphère face caméra
+		w.set(x * s, v.y * s + cy, z * s).project(camera);
+		mk.el.style.left = ((w.x * 0.5 + 0.5) * 100).toFixed(2) + '%';
+		mk.el.style.top  = ((-w.y * 0.5 + 0.5) * 100).toFixed(2) + '%';
+		mk.el.style.opacity = front ? '1' : '0';
+		mk.el.style.pointerEvents = front ? 'auto' : 'none';
 	});
 }
 
@@ -659,9 +673,9 @@ async function go(i, instant){
 		if (st.iframe && !elSky3d.getAttribute('src')) elSky3d.setAttribute('src', st.iframe); // galaxie Sketchfab chargée à la 1re visite (la visibilité suit la classe is-menu)
 		if (current3D){ scene.remove(current3D); current3D = null; }
 		if (st.globe){
-			const g = buildGlobe(); current3D = g; g.scale.setScalar(0.15); g.rotation.set(0,0,0); scene.add(g);
+			const g = buildGlobe(); current3D = g; g.scale.setScalar(0.06); g.rotation.set(0,0,0); scene.add(g);
 			buildGlobeMarkers();
-			setTimeout(() => { if (cur !== i) return; tween(1500, k => g.scale.setScalar(0.15 + 1.15*k)); setTimeout(() => { if (cur === i) elGlobeMarkers.classList.add('is-on'); }, 800); }, 900); // terre minuscule -> zoom ~1s -> points
+			setTimeout(() => { if (cur !== i) return; tween(1400, k => g.scale.setScalar(0.06 + (GLOBE_SCALE-0.06)*k)); setTimeout(() => { if (cur === i) elGlobeMarkers.classList.add('is-on'); }, 700); }, 700); // petite Terre qui apparait au centre de la galaxie -> pins
 		} else if (!st.iframe && st.model){
 			const grp = await loadStation(i);
 			if (cur === i){
@@ -761,7 +775,7 @@ function loop(){
 		else if (u.flat){ current3D.rotation.x = 0.62 + u.dragX; current3D.rotation.y = 0; u.spinNode.rotation.y = u.dragY + Math.sin(t*0.18)*0.32; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.04; } // carte inclinée (de profil/3-quarts) : on voit la photo derrière, oscillation douce
 		else if (u.drag){ current3D.rotation.y = u.dragY + (u.spin ? t*0.18 : 0); current3D.rotation.x = u.dragX; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.05; } // l'utilisateur tourne l'objet
 		else if (u.front){ current3D.rotation.y = u.rotY + Math.sin(t*0.45)*0.12; current3D.position.y = u.baseY + Math.sin(t*0.6)*0.07; } // toujours de face, léger balancement
-		else if (u.globe){ current3D.rotation.y = t*0.12 + tX*0.3; current3D.position.y = 0; } // Terre : rotation continue (comme l'accueil)
+		else if (u.globe){ current3D.rotation.y = t*0.12 + tX*0.3; current3D.position.y = 0; updateGlobeMarkers(current3D); } // Terre : rotation continue + pins qui suivent
 		else { current3D.rotation.y = tX*0.5; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.1; }
 	}
 	renderer.render(scene, camera);
