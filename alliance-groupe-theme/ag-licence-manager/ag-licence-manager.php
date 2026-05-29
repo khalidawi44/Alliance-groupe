@@ -22,9 +22,18 @@ define( 'AG_LM_FILE', __FILE__ );
 define( 'AG_LM_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AG_LM_URL', plugin_dir_url( __FILE__ ) );
 
-// HMAC key for signing API responses (set in wp-config.php ideally)
+// HMAC key for signing API responses + deriving the licence AES key.
+// Best practice: define AG_LICENCE_HMAC_KEY (64+ random chars) in wp-config.php.
+// SECURITY: never fall back to a hardcoded/guessable default (it would let anyone
+// forge signed API responses and decrypt every licence key). If wp-config does not
+// define it, auto-generate a strong random key once and persist it in the DB.
 if ( ! defined( 'AG_LICENCE_HMAC_KEY' ) ) {
-    define( 'AG_LICENCE_HMAC_KEY', 'ag-default-hmac-change-me-in-wp-config' );
+    $ag_lm_hmac = get_option( 'ag_lm_hmac_key' );
+    if ( ! $ag_lm_hmac ) {
+        $ag_lm_hmac = wp_generate_password( 64, true, true );
+        add_option( 'ag_lm_hmac_key', $ag_lm_hmac, '', false ); // autoload = no
+    }
+    define( 'AG_LICENCE_HMAC_KEY', $ag_lm_hmac );
 }
 
 // Load classes

@@ -90,9 +90,11 @@ class AG_Licence_DB {
         }
         $method = 'aes-256-cbc';
         $key    = substr( hash( 'sha256', AG_LICENCE_HMAC_KEY ), 0, 32 );
-        $iv     = substr( hash( 'sha256', 'ag-iv-salt' ), 0, 16 );
-        $encrypted = openssl_encrypt( $clear_key, $method, $key, 0, $iv );
-        return $encrypted ? base64_encode( $encrypted ) : base64_encode( $clear_key );
+        // SECURITY: random IV per encryption (no static IV reuse). The IV is
+        // prepended to the ciphertext and the blob is tagged "v2:".
+        $iv        = random_bytes( 16 );
+        $encrypted = openssl_encrypt( $clear_key, $method, $key, OPENSSL_RAW_DATA, $iv );
+        return false !== $encrypted ? 'v2:' . base64_encode( $iv . $encrypted ) : base64_encode( $clear_key );
     }
 
     /**
@@ -104,7 +106,19 @@ class AG_Licence_DB {
         }
         $method = 'aes-256-cbc';
         $key    = substr( hash( 'sha256', AG_LICENCE_HMAC_KEY ), 0, 32 );
-        $iv     = substr( hash( 'sha256', 'ag-iv-salt' ), 0, 16 );
+        // New format ("v2:"): random IV prepended to the ciphertext.
+        if ( 0 === strpos( (string) $encrypted, 'v2:' ) ) {
+            $raw = base64_decode( substr( $encrypted, 3 ) );
+            if ( strlen( $raw ) > 16 ) {
+                $iv        = substr( $raw, 0, 16 );
+                $cipher    = substr( $raw, 16 );
+                $decrypted = openssl_decrypt( $cipher, $method, $key, OPENSSL_RAW_DATA, $iv );
+                return false !== $decrypted ? $decrypted : '';
+            }
+            return '';
+        }
+        // Legacy format (static IV) — kept for keys encrypted before the fix.
+        $iv        = substr( hash( 'sha256', 'ag-iv-salt' ), 0, 16 );
         $decrypted = openssl_decrypt( base64_decode( $encrypted ), $method, $key, 0, $iv );
         return $decrypted ? $decrypted : base64_decode( $encrypted );
     }
