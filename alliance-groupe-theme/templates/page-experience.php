@@ -582,6 +582,9 @@ function buildGlobe(){
 	// Lumières (comme la page d'accueil : ambient + directionnelle)
 	g.add(new THREE.AmbientLight(0xffffff, 0.65));
 	const dir = new THREE.DirectionalLight(0xffffff, 1.0); dir.position.set(5, 3, 5); g.add(dir);
+	// IMPORTANT : userData défini sinon la boucle calcule position.y = undefined+… = NaN
+	// (le globe devient invisible). Flag dédié 'globe' = rotation continue.
+	g.userData.globe = true; g.userData.baseY = 0;
 	globeGroup = g;
 	return g;
 }
@@ -758,6 +761,7 @@ function loop(){
 		else if (u.flat){ current3D.rotation.x = 0.62 + u.dragX; current3D.rotation.y = 0; u.spinNode.rotation.y = u.dragY + Math.sin(t*0.18)*0.32; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.04; } // carte inclinée (de profil/3-quarts) : on voit la photo derrière, oscillation douce
 		else if (u.drag){ current3D.rotation.y = u.dragY + (u.spin ? t*0.18 : 0); current3D.rotation.x = u.dragX; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.05; } // l'utilisateur tourne l'objet
 		else if (u.front){ current3D.rotation.y = u.rotY + Math.sin(t*0.45)*0.12; current3D.position.y = u.baseY + Math.sin(t*0.6)*0.07; } // toujours de face, léger balancement
+		else if (u.globe){ current3D.rotation.y = t*0.12 + tX*0.3; current3D.position.y = 0; } // Terre : rotation continue (comme l'accueil)
 		else { current3D.rotation.y = tX*0.5; current3D.position.y = u.baseY + Math.sin(t*0.5)*0.1; }
 	}
 	renderer.render(scene, camera);
