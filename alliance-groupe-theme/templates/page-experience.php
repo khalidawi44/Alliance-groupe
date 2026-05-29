@@ -374,7 +374,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const BASE = '<?php echo esc_js( $base ); ?>';
 const STATIONS = [
 	{ pre:'BIENVENUE CHEZ —', ttl:'Alliance Groupe', line:"C'est ici que votre projet prend vie.", media:'video' },
-	{ pre:'✦ NOTRE MONDE', ttl:'Alliance dans le monde', line:'Touchez un bureau ou un point pour explorer.', media:'space', globe:true },
+	{ pre:'✦ NOTRE MONDE', ttl:'Alliance dans le monde', line:'Touchez un bureau pour explorer.', media:'space', globe:true },
 	{ pre:'✦ NOTRE ÉNERGIE', ttl:'Naples', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', size:5.2, baseY:1.4, team:['fabrizio','carlito'] },
 	{ pre:'✦ NOTRE QG', ttl:'Nantes', line:'Les visages de la maison.', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/nantes-1.jpg' ); ?>', team:['kate','laurent','julie'] },
 	{ pre:'✦ NOTRE PÔLE SUD', ttl:'Marrakech', line:'L’équipe qui sort de la tour.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', baseY:-2.2, team:['halim','amina'] },
@@ -526,16 +526,16 @@ let globeGroup = null;
 function buildGlobe(){
 	if (globeGroup) return globeGroup;
 	const g = new THREE.Group();
-	const tl = new THREE.TextureLoader();
-	const earth = tl.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
-	earth.colorSpace = THREE.SRGBColorSpace;
-	const spec  = tl.load('https://threejs.org/examples/textures/planets/earth_specular_2048.jpg');
-	const norm  = tl.load('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg');
-	const globe = new THREE.Mesh(
-		new THREE.SphereGeometry(GLOBE_R, 64, 64),
-		new THREE.MeshStandardMaterial({ map: earth, roughnessMap: spec, normalMap: norm, metalness: 0.05, roughness: 0.95 })
-	);
+	// Globe bleu lumineux par défaut : visible immédiatement, MÊME si la texture
+	// Terre (CDN externe) ne charge pas. La vraie texture se pose par-dessus si OK.
+	const mat = new THREE.MeshStandardMaterial({ color: 0x18386a, metalness: 0.1, roughness: 0.85, emissive: 0x0b1e3d, emissiveIntensity: 0.45 });
+	const globe = new THREE.Mesh(new THREE.SphereGeometry(GLOBE_R, 64, 64), mat);
 	g.add(globe);
+	const tl = new THREE.TextureLoader();
+	tl.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg', tex => {
+		tex.colorSpace = THREE.SRGBColorSpace; mat.map = tex; mat.color.set(0xffffff); mat.emissiveIntensity = 0; mat.needsUpdate = true;
+	});
+	tl.load('https://threejs.org/examples/textures/planets/earth_normal_2048.jpg', tex => { mat.normalMap = tex; mat.needsUpdate = true; });
 	// Halo atmosphère champagne (rétro-éclairage)
 	const halo = new THREE.Mesh(
 		new THREE.SphereGeometry(GLOBE_R * 1.16, 32, 32),
@@ -568,9 +568,12 @@ function latLonToVec3(lat, lon, r){
 // Construit les marqueurs DOM (offices + pages) projetés sur le globe au repos.
 function buildGlobeMarkers(){
 	elGlobeMarkers.innerHTML = '';
-	const w = W(), h = H();
 	const scale = 1.3; // échelle finale du globe (cf. tween dans go())
+	// On ne garde QUE les marqueurs qui mènent à une station du voyage
+	// (les bureaux). Aucun lien externe : on reste dans le parcours.
 	GLOBE_MARKERS.forEach(m => {
+		const idx = STATIONS.findIndex(s => s.ttl === m.target);
+		if (idx < 0) return; // pas de station correspondante -> on n'affiche pas
 		const p = latLonToVec3(m.lat, m.lon, GLOBE_R * scale);
 		const front = p.z > -0.15 * GLOBE_R * scale; // hémisphère face caméra
 		const v = p.clone().project(camera);
@@ -578,19 +581,12 @@ function buildGlobeMarkers(){
 		const top  = (-v.y * 0.5 + 0.5) * 100;
 		const btn = document.createElement('button');
 		btn.type = 'button';
-		btn.className = 'agx__gm' + (m.kind === 'office' ? ' agx__gm--office' : '');
+		btn.className = 'agx__gm agx__gm--office';
 		btn.style.left = left.toFixed(2) + '%';
 		btn.style.top  = top.toFixed(2) + '%';
 		if (!front) btn.style.display = 'none';
 		btn.innerHTML = '<span class="agx__gm-dot"></span><span class="agx__gm-label">' + m.label + '</span>';
-		btn.addEventListener('click', () => {
-			if (m.kind === 'office'){
-				const idx = STATIONS.findIndex(s => s.ttl === m.target);
-				if (idx >= 0) go(idx);
-			} else if (m.url){
-				window.location.href = m.url;
-			}
-		});
+		btn.addEventListener('click', () => go(idx));
 		elGlobeMarkers.appendChild(btn);
 	});
 }
