@@ -16,6 +16,7 @@ import type {AGShortProps} from './AGShort';
 /* 1) RECRUTEMENT — fond : naples.mp4 — 95+95+95+95+70 = 450 (15 s) */
 export const videoRecrutement: AGShortProps = {
 	brand: 'ALLIANCE GROUPE',
+	music: 'Napoli_con_bizonnio2.m4a', // copier ce fichier dans alliance-videos/public/
 	scenes: [
 		{kind: 'hook',  bg: 'naples.mp4', headline: 'On m’a dit que mon quartier ne réussit pas.', durationInFrames: 95},
 		{kind: 'point', bg: 'naples.mp4', caption: 'Programme Racines 🌱', headline: 'Le talent est partout. Les opportunités, non.', durationInFrames: 95},
@@ -52,6 +53,7 @@ export const videoLuxe: AGShortProps = {
  * 95+95+95+95+90+80 = 550 images (~18 s à 30 fps). */
 export const videoNaplesSuite: AGShortProps = {
 	brand: 'ALLIANCE GROUPE',
+	music: 'Napoli_con_bizonnio2.m4a',
 	scenes: [
 		{kind: 'hook',  bg: 'naples.mp4', headline: 'Naples m’a tout appris : partir de rien, tout construire.', durationInFrames: 95},
 		{kind: 'point', bg: 'naples.mp4', caption: 'De la rue au digital', headline: 'Aujourd’hui, je vends des sites web.', durationInFrames: 95},
@@ -66,5 +68,6 @@ export const videoNaplesSuite: AGShortProps = {
  * On retire le CTA de fin de la Partie 1 pour un récit continu jusqu’au CTA final. */
 export const videoNaplesComplet: AGShortProps = {
 	brand: 'ALLIANCE GROUPE',
+	music: 'Napoli_con_bizonnio2.m4a',
 	scenes: [...videoRecrutement.scenes.slice(0, -1), ...videoNaplesSuite.scenes],
 };
