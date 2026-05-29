@@ -399,7 +399,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 		<button class="agx__frame-close" id="agx-frame-close" type="button">← Retour au voyage</button>
 		<iframe class="agx__frame-if" id="agx-frame-if" title="Contenu Alliance Groupe" loading="lazy"></iframe>
 	</div>
-	<a href="<?php echo esc_url( home_url( '/rdv' ) ); ?>" class="agx__cta" id="agx-cta">✦ Devis gratuit</a>
+	<a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" class="agx__cta" id="agx-cta">✦ Devis gratuit</a>
 	<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="agx__skip" id="agx-skip">Passer ✕</a>
 	<button class="agx__sound" id="agx-sound" type="button" aria-label="Couper le son">
 		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
