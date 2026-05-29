@@ -46,3 +46,18 @@ export const videoLuxe: AGShortProps = {
 		{kind: 'cta',   headline: 'Rejoins l’équipe.', ctaLabel: 'alliancegroupe-inc.com', durationInFrames: 90},
 	],
 };
+
+/* 4) NAPLES — LA SUITE (Partie 2 du recrutement, fond naples.mp4)
+ * Prolonge l’histoire : des racines napolitaines à l’indépendance par le web.
+ * 95+95+95+95+90+80 = 550 images (~18 s à 30 fps). */
+export const videoNaplesSuite: AGShortProps = {
+	brand: 'ALLIANCE GROUPE',
+	scenes: [
+		{kind: 'hook',  bg: 'naples.mp4', headline: 'Naples m’a tout appris : partir de rien, tout construire.', durationInFrames: 95},
+		{kind: 'point', bg: 'naples.mp4', caption: 'De la rue au digital', headline: 'Aujourd’hui, je vends des sites web.', durationInFrames: 95},
+		{kind: 'point', bg: 'naples.mp4', caption: '10 % à vie', headline: 'Chaque client me rapporte, chaque mois.', durationInFrames: 95},
+		{kind: 'point', bg: 'naples.mp4', caption: 'Mon équipe grandit 🤝', headline: 'Je recrute, et je touche aussi sur leurs ventes.', durationInFrames: 95},
+		{kind: 'point', bg: 'naples.mp4', caption: 'Sans diplôme', headline: 'On te donne les outils. Toi, tu oses.', durationInFrames: 90},
+		{kind: 'cta',   headline: 'À ton tour d’écrire ton histoire.', ctaLabel: 'Deviens ambassadeur →', durationInFrames: 80},
+	],
+};

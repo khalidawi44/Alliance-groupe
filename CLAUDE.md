@@ -42,6 +42,7 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 
 ### 4. Studio créatif — `templates/page-studio.php`
 - Ouvert à tous. Vidéo (canvas + MediaRecorder, **textes animés** séquentiels, police/couleur, fonds villes propres) + image. Partage fichier natif + légende auto-copiée. Lien perso intégré si vendeur connecté (admin inclus via `ag_ensure_ambassador_for_user`).
+- **Vidéos pro (Remotion) — on peut en créer ensemble** : dossier `video-remotion/` (`AGShort.tsx` = moteur de shorts verticaux 1080×1920 à la marque or/orange ; `scripts.ts` = les vidéos décrites en **données** (scènes : `hook`/`point`/`cta`, `headline`, `caption`, `bg`, durée) ; `Root.tsx` = les compositions). Pour ajouter/continuer une vidéo : éditer `scripts.ts` (+ enregistrer dans `Root.tsx`). Rendu sur le PC : copier ces fichiers dans le repo `alliance-videos` (src/) + images/clips dans `public/`, puis `npx remotion studio` (aperçu) / `npx remotion render <id> out/x.mp4`. Compositions actuelles : `AG-Recrutement` (Naples), `AG-Vente-247`, `AG-Luxe`, `AG-Naples-Suite`.
 
 ### 5. Prospection / CRM — `inc/ag-prospection.php` (menu **Prospection**)
 - **Chat équipe** (template-parts/prospect-chat.php) : Léo→Sofia→Karim→Nadia, capture de leads.
