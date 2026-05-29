@@ -18,7 +18,21 @@ $imgb   = get_stylesheet_directory_uri() . '/assets/images/';
 $poster = get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg'; // Naples (pas le bureau) : visible avant le chargement de la vidéo
 $logo   = get_stylesheet_directory_uri() . '/assets/images/logo.png';            // tête de lion, au centre de la constellation
 $vid    = get_stylesheet_directory_uri() . '/assets/images/video/naples.mp4';
-$music  = get_option( 'ag_xp_music', get_stylesheet_directory_uri() . '/assets/images/son/Napoli_con_bizonnio2.m4a' );
+// Playlist : TOUS les fichiers audio déposés dans assets/images/son/ sont
+// enchaînés en boucle (aléatoire) -> ajoute des titres « style Naples » et ils
+// rejoignent automatiquement la rotation. La musique ne s'arrête jamais.
+$son_dir = get_stylesheet_directory() . '/assets/images/son';
+$son_url = get_stylesheet_directory_uri() . '/assets/images/son';
+$music_list = array();
+if ( is_dir( $son_dir ) ) {
+	foreach ( (array) glob( $son_dir . '/*.{m4a,mp3,ogg,wav,aac}', GLOB_BRACE ) as $f ) {
+		$music_list[] = $son_url . '/' . rawurlencode( basename( $f ) );
+	}
+}
+if ( empty( $music_list ) ) {
+	$music_list[] = get_option( 'ag_xp_music', $son_url . '/Napoli_con_bizonnio2.m4a' );
+}
+$music = $music_list[0];
 
 // Équipe (mêmes photos que la page "À propos", dossier assets/images/team/).
 $team_base = get_stylesheet_directory_uri() . '/assets/images/team/';
@@ -391,7 +405,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 	</button>
 	<button class="agx__vol" id="agx-volup" type="button" aria-label="Monter le volume">+</button>
 	<button class="agx__vol" id="agx-voldown" type="button" aria-label="Baisser le volume">−</button>
-	<audio id="agx-audio" loop preload="auto" src="<?php echo esc_url( $music ); ?>"></audio>
+	<audio id="agx-audio" preload="auto" src="<?php echo esc_url( $music ); ?>"></audio>
 	<div class="agx__hint" id="agx-hint">← Glissez ou NEXT →</div>
 </main>
 
@@ -776,9 +790,17 @@ host.addEventListener('mousemove', e=>{ const r=host.getBoundingClientRect(); tt
 
 let agxVol = 0.12; // volume musique (ajustable avec -/+)
 const AGX_VOL_MIN = 0.03, AGX_VOL_MAX = 0.5, AGX_VOL_STEP = 0.06;
+// Playlist : tous les morceaux du dossier son/, enchaînés en boucle aléatoire.
+const AGX_PLAYLIST = <?php echo wp_json_encode( array_values( $music_list ) ); ?>;
+for (let i = AGX_PLAYLIST.length - 1; i > 0; i--){ const j = Math.floor(Math.random()*(i+1)); const t = AGX_PLAYLIST[i]; AGX_PLAYLIST[i] = AGX_PLAYLIST[j]; AGX_PLAYLIST[j] = t; } // mélange
+let agxIdx = 0;
+function agxLoadTrack(i){ if (!AGX_PLAYLIST.length) return; agxIdx = (i + AGX_PLAYLIST.length) % AGX_PLAYLIST.length; audio.src = AGX_PLAYLIST[agxIdx]; }
 function agxFade(target){ let v = audio.volume; const f = setInterval(()=>{ v += (target>v?0.01:-0.02); audio.volume = Math.max(0, Math.min(target, v)); if (Math.abs(audio.volume-target) < 0.011){ audio.volume = target; clearInterval(f); if (target===0) audio.pause(); } }, 110); }
 function agxPlay(){ audio.volume = 0; audio.play().then(()=>agxFade(agxVol)).catch(()=>{}); }
+// Quand un morceau finit, on enchaîne le suivant (sans coupure) -> jamais d'arrêt.
+audio.addEventListener('ended', ()=>{ if (!on) return; agxLoadTrack(agxIdx + 1); audio.volume = agxVol; audio.play().catch(()=>{}); });
 let on=true; // MUSIQUE ON par défaut
+agxLoadTrack(0);
 agxPlay();
 // l'autoplay avec son est souvent bloqué : on (re)lance au tout premier geste
 const agxResume = ()=>{ if (on && audio.paused) agxPlay(); };
