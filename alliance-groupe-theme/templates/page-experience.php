@@ -29,6 +29,12 @@ if ( is_dir( $son_dir ) ) {
 		$music_list[] = $son_url . '/' . rawurlencode( basename( $f ) );
 	}
 }
+// Liens directs embarqués (URLs https de musiques libres de droits), 1 par ligne
+// dans l'option ag_xp_music_urls — rejoignent la playlist sans upload de fichier.
+foreach ( preg_split( '/[\r\n,]+/', (string) get_option( 'ag_xp_music_urls', '' ) ) as $u ) {
+	$u = trim( $u );
+	if ( $u !== '' && preg_match( '#^https?://#i', $u ) ) $music_list[] = esc_url_raw( $u );
+}
 if ( empty( $music_list ) ) {
 	$music_list[] = get_option( 'ag_xp_music', $son_url . '/Napoli_con_bizonnio2.m4a' );
 }
