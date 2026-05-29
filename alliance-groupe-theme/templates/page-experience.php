@@ -881,6 +881,9 @@ function loop(){
 	document.querySelectorAll('.agx__card').forEach(c=>{
 		c.addEventListener('click', e=>{ const u = c.getAttribute('href'); if (!u || u === '#') return; e.preventDefault(); openFrame(u); });
 	});
+	// Bouton "Devis gratuit" : ouvre /rdv DANS le voyage (musique conservée).
+	const elCtaBtn = document.getElementById('agx-cta');
+	if (elCtaBtn) elCtaBtn.addEventListener('click', e=>{ const u = elCtaBtn.getAttribute('href'); if (!u || u === '#') return; e.preventDefault(); openFrame(u); });
 })();
 
 go(0, true); loop();
