@@ -241,20 +241,20 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		</div>
 	</div>
 	<div class="ag-hack__veil" aria-hidden="true"></div>
+	<button class="ag-hack__close" id="ag-hack-close" type="button" aria-label="Fermer">Non merci, continuer ✕</button>
 	<div class="ag-hack__center">
 		<span class="ag-hack__tag">⚠️ Simulation</span>
 		<h2 class="ag-hack__title" data-text="Un piratage ressemble à ça.">Un piratage ressemble à ça.</h2>
 		<p class="ag-hack__sub">Écran noir, données volées, site hors-ligne. Le jour où ça arrive, il est trop tard. Le seul moyen de savoir si vous êtes exposé : un audit.</p>
-		<a href="<?php echo esc_url( home_url( '/le-voyage' ) ); ?>" class="ag-hack__btn" id="ag-hack-btn">🔍 AUDITER MON SITE →</a>
-		<p class="ag-hack__loading" id="ag-hack-loading" aria-hidden="true">▸ Lancement de l'audit de sécurité…</p>
+		<a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-hack__btn" id="ag-hack-btn">🔍 AUDITER MON SITE →</a>
 	</div>
 </div>
 <style>
-.ag-hack{position:fixed;inset:0;z-index:100000;display:none;background:#000;overflow:hidden;cursor:pointer}
+.ag-hack{position:fixed;inset:0;z-index:100000;display:none;background:#000;overflow:hidden}
 .ag-hack.is-on{display:block;animation:agHackIn .3s ease}
-/* Toute la zone est cliquable = AUDITER (une seule action possible). */
-.ag-hack__center{pointer-events:none}
-.ag-hack__btn{pointer-events:auto;cursor:pointer}
+.ag-hack__close{position:absolute;top:18px;right:20px;z-index:3;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.75);font-size:.85rem;padding:9px 16px;border-radius:999px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .4s ease}
+.ag-hack__close.is-ready{opacity:1;pointer-events:auto}
+.ag-hack__close:hover{color:#fff;border-color:#fff}
 @keyframes agHackIn{from{opacity:0}to{opacity:1}}
 body.ag-hack-lock{overflow:hidden}
 .ag-hack__term{position:absolute;inset:0;font-family:"Courier New",monospace;font-size:15px;line-height:1.9;color:#39ff14;text-shadow:0 0 6px rgba(57,255,20,.5);padding:24px 18px;opacity:.55}
@@ -288,32 +288,27 @@ body.ag-hack-lock{overflow:hidden}
 	var pop = document.getElementById('ag-menace-pop');
 	var sec = document.querySelector('.ag-menace');
 	if(!pop||!sec) return;
-	var btn = document.getElementById('ag-hack-btn');
-	// Le mur enchaîne sur le PARCOURS (Voyage immersif avec le globe Kaspersky).
-	var go  = '<?php echo esc_url( home_url( '/le-voyage' ) ); ?>';
-	var shown = false, fired = false;
-	var endSentinel = document.getElementById('ag-menace-end');
+	var closeBtn = document.getElementById('ag-hack-close');
+	var shown = false;
+	try{ if(sessionStorage.getItem('ag_menace_pop')==='1') shown = true; }catch(e){}
 
 	function open(){
 		if(shown) return; shown = true;
+		try{ sessionStorage.setItem('ag_menace_pop','1'); }catch(e){}
 		pop.classList.add('is-on'); pop.setAttribute('aria-hidden','false');
 		document.body.classList.add('ag-hack-lock');
-		if(btn){ try{ btn.focus(); }catch(e){} }
+		// Effet choc d'abord, sortie possible après 5 s (jamais de piège).
+		setTimeout(function(){ if(closeBtn) closeBtn.classList.add('is-ready'); }, 5000);
 	}
-	// Clic n'importe où dans le mur → vrai plein écran cinéma, puis audit.
-	function triggerAudit(e){
-		if(e) e.preventDefault();
-		if(fired) return; fired = true;
-		pop.classList.add('is-loading');
-		var el = document.documentElement;
-		var req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
-		try{ if(req){ var p = req.call(el); if(p && p.catch) p.catch(function(){}); } }catch(err){}
-		setTimeout(function(){ window.location.href = go; }, 1100);
+	function close(){
+		pop.classList.remove('is-on'); pop.setAttribute('aria-hidden','true');
+		document.body.classList.remove('ag-hack-lock');
 	}
-	pop.addEventListener('click', triggerAudit);
+	if(closeBtn) closeBtn.addEventListener('click', close);
+	document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
 
 	// Déclenche quand le BAS de la section entre dans l'écran (fin du globe).
-	var target = endSentinel || sec;
+	var target = document.getElementById('ag-menace-end') || sec;
 	if('IntersectionObserver' in window){
 		var io = new IntersectionObserver(function(entries){
 			entries.forEach(function(en){ if(en.isIntersecting){ open(); io.disconnect(); } });
