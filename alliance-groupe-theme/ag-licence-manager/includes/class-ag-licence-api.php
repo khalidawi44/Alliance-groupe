@@ -84,10 +84,33 @@ class AG_Licence_API {
     }
 
     /**
+     * IP réelle du visiteur.
+     * Par défaut REMOTE_ADDR (NON spoofable). Derrière un proxy/CDN de confiance
+     * (Cloudflare, load-balancer), définir `define('AG_TRUST_PROXY', true)` en
+     * wp-config pour utiliser l'IP d'origine. ⚠️ Ne PAS activer sans proxy de
+     * confiance : X-Forwarded-For serait spoofable -> contournement du rate-limit.
+     */
+    private static function client_ip() {
+        if ( defined( 'AG_TRUST_PROXY' ) && AG_TRUST_PROXY ) {
+            if ( ! empty( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) {
+                return sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) );
+            }
+            if ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+                $parts = explode( ',', wp_unslash( $_SERVER['HTTP_X_FORWARDED_FOR'] ) );
+                $ip    = trim( $parts[0] ); // 1er hop = IP d'origine
+                if ( filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+                    return sanitize_text_field( $ip );
+                }
+            }
+        }
+        return sanitize_text_field( $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0' );
+    }
+
+    /**
      * Rate-limit check.
      */
     private static function rate_limit() {
-        $ip  = sanitize_text_field( $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0' );
+        $ip  = self::client_ip();
         $key = 'ag_rl_' . md5( $ip );
         $hits = (int) get_transient( $key );
         if ( $hits >= self::RATE_LIMIT ) {

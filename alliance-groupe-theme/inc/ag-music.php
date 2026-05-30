@@ -44,7 +44,10 @@ add_action( 'wp_footer', 'ag_music_render', 60 );
 function ag_music_render() {
 	if ( is_admin() ) return;
 	// Le voyage a son propre lecteur (état partagé via sessionStorage) -> on évite le doublon.
-	if ( function_exists( 'is_page_template' ) && is_page_template( 'templates/page-experience.php' ) ) return;
+	if ( function_exists( 'is_page_template' ) && (
+		is_page_template( 'templates/page-experience.php' )      // a son propre lecteur
+		|| is_page_template( 'templates/page-audit-securite.php' ) // page audit : pas de musique
+	) ) return;
 
 	$list = ag_music_playlist();
 	if ( empty( $list ) ) return;

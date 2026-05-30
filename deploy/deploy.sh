@@ -78,6 +78,8 @@ if command -v lftp &> /dev/null; then
     lftp -e "
         set ssl:verify-certificate no;
         set ftp:ssl-allow yes;
+        set ftp:ssl-force true;
+        set ftp:ssl-protect-data true;
         open ftp://$FTP_USER:$FTP_PASS@$FTP_HOST;
         mirror --reverse --delete --verbose \
             $THEME_DIR \

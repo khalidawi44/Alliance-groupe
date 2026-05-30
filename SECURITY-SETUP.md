@@ -13,10 +13,16 @@ define( 'AG_LICENCE_HMAC_KEY', 'COLLE_ICI_64_CARACTERES_ALEATOIRES' );
 
 // Secret du webhook Stripe (Dashboard Stripe → Developers → Webhooks → ton endpoint → "Signing secret", commence par whsec_)
 define( 'AG_STRIPE_WEBHOOK_SECRET', 'whsec_xxxxxxxxxxxxxxxxxxxxxxxx' );
+
+// OPTIONNEL — uniquement si le site est derrière un proxy/CDN de confiance
+// (Cloudflare, load-balancer). Active l'IP réelle du visiteur pour le rate-limit
+// de l'API licences. ⚠️ NE PAS activer sans proxy (X-Forwarded-For spoofable).
+// define( 'AG_TRUST_PROXY', true );
 ```
 
 - [ ] `AG_LICENCE_HMAC_KEY` défini — sinon une clé aléatoire est générée en base (OK mais propre à ce site).
 - [ ] `AG_STRIPE_WEBHOOK_SECRET` défini — ⚠️ **obligatoire** : sans lui, le webhook Stripe refuse tout (503) et aucune licence ne se crée automatiquement via Stripe. (PayPal non concerné.)
+- [ ] `AG_TRUST_PROXY` — **seulement si** derrière Cloudflare/LB (sinon laisser commenté).
 
 > Générer 64 caractères aléatoires : https://roll.urandom.fr/ ou dans WP `wp_generate_password(64,true,true)`.
 

@@ -63,7 +63,7 @@ REM Methode 1 : WinSCP (recommande)
 where winscp.com >nul 2>nul
 if %errorlevel% equ 0 (
     winscp.com /command ^
-        "open ftp://%FTP_USER%:%FTP_PASS%@%FTP_HOST%/" ^
+        "open ftpes://%FTP_USER%:%FTP_PASS%@%FTP_HOST%/" ^
         "synchronize remote ""%THEME_DIR%"" ""%FTP_PATH%/alliance-groupe-theme/"" -delete" ^
         "exit"
     goto :check_result
