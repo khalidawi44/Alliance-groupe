@@ -53,7 +53,7 @@ $orbs = array(
 	array(
 		'label' => 'L’audit', 'x' => 16, 'y' => 30,
 		'sub'   => array(
-			array( 'l' => 'Audit de sécurité',  'u' => home_url( '/ag-audit' ),  'd' => 'Vos failles révélées en 48 h, rapport clair.', 'ico' => 'search' ),
+			array( 'l' => 'Audit de sécurité',  'u' => home_url( '/tester-mon-site' ),  'd' => 'Vos failles révélées en 48 h, rapport clair.', 'ico' => 'search' ),
 			array( 'l' => 'Audit SEO offert',   'u' => home_url( '/audit-seo' ), 'd' => '12 points analysés, note /100.',              'ico' => 'gift' ),
 		),
 	),
@@ -879,7 +879,7 @@ if (agxCtaBtn) agxCtaBtn.addEventListener('click', e=>{ const u = agxCtaBtn.getA
 /* Menu accordéon : "Le voyage" (stations) + "Le site" (vrai menu accueil).
  * Tout s'ouvre DANS le voyage (iframe) -> la musique ne s'arrête jamais. */
 const AGX_SITE_MENU = <?php echo wp_json_encode( array(
-	array( 'u' => home_url( '/ag-audit' ),            'l' => '📊 Audit gratuit' ),
+	array( 'u' => home_url( '/tester-mon-site' ),            'l' => '📊 Audit gratuit' ),
 	array( 'u' => home_url( '/' ),                    'l' => 'Accueil' ),
 	array( 'u' => home_url( '/services' ),            'l' => 'Services' ),
 	array( 'u' => home_url( '/sites-express' ),       'l' => 'Sites Express ⚡' ),

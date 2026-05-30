@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 get_header();
 
 $ag_contact = home_url( '/contact' );
-$ag_audit   = home_url( '/ag-audit' );
+$ag_audit   = home_url( '/tester-mon-site' );
 
 // Paliers (modifiables ici). Prix indicatifs HT / mois, sans engagement.
 $ag_plans = array(
