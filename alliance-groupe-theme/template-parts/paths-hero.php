@@ -15,63 +15,53 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 $ag_paths = array(
 	array(
-		'emoji' => '🛒',
-		'tag'   => 'Commerçant · Artisan',
-		'title' => 'Votre site en 7 jours',
-		'desc'  => 'Prix fixes dès 490 €, payable en 4× sans frais. Restaurant, salon, plombier, coach — un site clé en main qui ramène des clients pendant que vous bossez.',
-		'cta'   => 'Voir les packs',
+		'emoji' => '🔒',
+		'tag'   => 'Sécurité · le 1er pas',
+		'title' => 'Audit de votre site',
+		'desc'  => 'Je révèle vos failles en 48 h : rapport clair, sans jargon, recommandations chiffrées. Le point de départ, presque obligatoire, vers la sérénité.',
+		'cta'   => 'Démarrer l\'audit',
+		'url'   => home_url( '/ag-audit' ),
+		'tint'  => '#0f0f1c',
+		'glow'  => '#F37A1F',
+	),
+	array(
+		'emoji' => '✨',
+		'tag'   => 'Création',
+		'title' => 'Un site qui inspire confiance',
+		'desc'  => 'Vitrine, e-commerce, sur-mesure — conçu rapide, propre et sécurisé dès le départ. Dès 490 €, payable en 4× sans frais.',
+		'cta'   => 'Voir les offres',
 		'url'   => home_url( '/sites-express' ),
 		'tint'  => '#1a1a26',
 		'glow'  => '#D4B45C',
 	),
 	array(
-		'emoji' => '🎁',
-		'tag'   => 'Templates WordPress',
-		'title' => 'Gratuits & prêts',
-		'desc'  => '6 thèmes métier 100 % français : avocat, restaurant, artisan, coach, barber, association. Téléchargement immédiat, installation en 2 min, aucun plugin payant.',
-		'cta'   => 'Choisir mon métier',
-		'url'   => home_url( '/templates-wordpress' ),
-		'tint'  => '#0f1c10',
+		'emoji' => '🛡️',
+		'tag'   => 'Tranquillité',
+		'title' => 'Maintenance & sérénité',
+		'desc'  => 'Mises à jour, sauvegardes, surveillance, sécurité — votre site sain chaque mois, sans y penser. Dès 49 €/mois, sans engagement.',
+		'cta'   => 'Voir les formules',
+		'url'   => home_url( '/maintenance' ),
+		'tint'  => '#0f1c14',
 		'glow'  => '#28a745',
 	),
 	array(
-		'emoji' => '✦',
-		'tag'   => 'Sur-mesure · Premium',
-		'title' => 'Un projet exigeant',
-		'desc'  => 'E-commerce, SaaS, plateforme avec IA, refonte stratégique — on vous chiffre sous 48h. +340 % de leads en moyenne.',
-		'cta'   => 'Demander un devis',
-		'url'   => home_url( '/sur-mesure' ),
-		'tint'  => '#0f0f1c',
-		'glow'  => '#F37A1F',
-	),
-	array(
-		'emoji' => '🚀',
-		'tag'   => 'Vendeur · Recruteur',
-		'title' => 'Gagner avec nous',
-		'desc'  => 'Devenez ambassadeur : 10 % de commission à vie sur chaque vente. 6 ventes/semaine = 27 768 €/an. Aucun frais, paiement PayPal.',
-		'cta'   => 'Rejoindre le programme',
-		'url'   => home_url( '/ambassadeurs' ),
+		'emoji' => '📦',
+		'tag'   => 'Prêt à l\'emploi',
+		'title' => 'Templates métier',
+		'desc'  => '6 thèmes français (avocat, resto, artisan, coach, barber, asso) prêts à installer en 2 min. Téléchargement immédiat.',
+		'cta'   => 'Choisir mon métier',
+		'url'   => home_url( '/templates-wordpress' ),
 		'tint'  => '#1c1410',
 		'glow'  => '#D4B45C',
-	),
-	array(
-		'emoji' => '🤝',
-		'tag'   => 'Association · Cause',
-		'title' => 'Site 100 % gratuit',
-		'desc'  => 'Mouvement militant, asso loi 1901, syndicat, action solidaire — on offre le site complet. Notre engagement citoyen.',
-		'cta'   => 'En savoir plus',
-		'url'   => home_url( '/wordpress-association' ),
-		'tint'  => '#1a0f0f',
-		'glow'  => '#E10F1A',
 	),
 );
 ?>
 
-<section class="ag-paths" aria-label="Choisissez votre chemin">
+<section class="ag-paths" aria-label="Choisissez votre parcours">
 	<div class="ag-paths__head">
-		<span class="ag-paths__tag">⟶ Choisissez votre chemin</span>
+		<span class="ag-paths__tag">⟶ Choisissez votre parcours</span>
 		<h2 class="ag-paths__title">Quel est <em>votre projet</em> ?</h2>
-		<p class="ag-paths__lead">4 chemins, 4 audiences, 1 même atelier. Touchez le panneau qui vous concerne.</p>
+		<p class="ag-paths__lead">Sécuriser, créer, rester tranquille — touchez le panneau qui vous concerne. Tout commence par l'audit.</p>
 	</div>
 
 	<div class="ag-paths__grid">

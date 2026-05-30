@@ -2,7 +2,7 @@
 
 > Document de reprise pour toute nouvelle session Claude (PC ou mobile via GitHub MCP).
 > Dernière mise à jour : 2026-05-30 — branche de travail : `claude/conversation-linking-bug-O6HUR` (tampon auto à chaque commit).
-> **Reprise rapide** : mise en place de la **liaison automatique entre conversations** — hook `SessionStart` (`.claude/hooks/session-start.sh`) qui injecte branche + commits + travail non commité + cet en-tête à chaque nouvelle session. ⚠️ **Toujours mettre à jour ces 3 lignes + §9 avant de fermer une session** : c'est ce que la prochaine conversation lira.
+> **Reprise rapide** : vraie home (`page-accueil.php`) recentrée audit-first — hero copy alignée sécurité/confiance (fini « commerciaux/+340% »), cartes **« Choisissez votre parcours »** (`paths-hero.php` : audit / création / maintenance / templates) réactivées après le hero, puis nouvelle section **« La menace en direct »** (`menace-live.php` : carte Kaspersky dans un champ d'étoiles 3D qui tourne + compteurs dynamiques estimés honnêtement). ⚠️ **Toujours mettre à jour ces 3 lignes + §9 avant de fermer une session** : c'est ce que la prochaine conversation lira.
 
 ---
 
@@ -221,6 +221,7 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 - **Musique site-wide** (`inc/ag-music.php`, 30/05) : lecteur de fond persistant (reprise piste+position via sessionStorage), playlist dossier `son/` + URLs (`ag_xp_music_urls`), état partagé avec le voyage. ON par défaut + volume.
 - **Page audit-first** (`templates/page-audit-securite.php` + `assets/css/audit-home.css`, 30/05) : landing « cabinet d'audit » générique (PAS WordPress en façade), styles dédiés + fonts enqueue, styles thème déchargés. **Page WP `/audit-securite` créée** — gardée SÉPARÉE (pas en accueil, décision : séparer Création vs Sécurité).
 - **Vidéos Remotion** (`video-remotion/`) : compositions `AG-Recrutement` (Naples), `AG-Vente-247`, `AG-Luxe`, `AG-Naples-Suite`, `AG-Naples-Complet`, `AG-Long` (Naples 1+2, musique douce + fondu). À RENDRE sur le PC.
+- **Vraie home recentrée audit-first** (`templates/page-accueil.php`, 30/05) : hero = **vidéo Naples** en fond + copy alignée sécurité/confiance (fini « Arrêtez de payer des commerciaux/+340% leads » → « Un site qui inspire confiance. Et qui le reste. », metrics 48 h / 24·7 / 1 interlocuteur, CTA → `/ag-audit`). Bloc « Tout commence par un audit ». Cartes **« Choisissez votre parcours »** réactivées (`template-parts/paths-hero.php` refaites : 🔒 Audit `/ag-audit` · ✨ Création `/sites-express` · 🛡️ Maintenance `/maintenance` · 📦 Templates `/templates-wordpress`). Nouvelle section **« La menace en direct »** (`template-parts/menace-live.php`) : carte **Kaspersky** (`cybermap.kaspersky.com/fr/widget/dynamic/dark`) posée dans un **champ d'étoiles 3D CSS qui tourne** + **compteurs dynamiques** (estimations honnêtement étiquetées : ~30 000 sites/j Sucuri, ~9,1 M attaques/j Kaspersky, 196 j IBM, 43 % Verizon ; carte = vrai live, compteurs = est.). Sections en trop déjà commentées (cadeaux/marquee/gagner-MLM/solidaire/globe). Menu 7 entrées cohérent.
 
 ### 🔒 Sécurité — à activer par Khalid/Fabrice (voir `SECURITY-SETUP.md`)
 - **`wp-config.php`** : définir `AG_LICENCE_HMAC_KEY` (64 car.) et **`AG_STRIPE_WEBHOOK_SECRET`** (⚠️ sinon webhook Stripe = 503, plus de licence auto Stripe).

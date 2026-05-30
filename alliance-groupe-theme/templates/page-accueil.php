@@ -77,37 +77,37 @@ get_header();
     <div class="ag-hero__content">
         <div class="ag-hero__badge">
             <span class="ag-hero__dot"></span>
-            Agence Web &amp; IA — Alliance Groupe
+            Studio web &amp; sécurité — Alliance Groupe
             <span class="ag-heritage-dots" aria-hidden="true"><span></span><span></span><span></span></span>
         </div>
 
         <h1 class="ag-hero__title">
-            <span class="ag-line">Arrêtez de payer</span>
-            <span class="ag-line"><em>des commerciaux.</em></span>
-            <span class="ag-line">Votre site le fait mieux.</span>
+            <span class="ag-line">Un site qui inspire</span>
+            <span class="ag-line"><em>confiance.</em></span>
+            <span class="ag-line">Et qui le reste.</span>
         </h1>
 
         <p class="ag-hero__sub">
-            Nous créons des sites web qui génèrent des leads 24h/24, automatisent votre prospection et réduisent vos coûts commerciaux grâce à l'IA.
+            J'audite, je sécurise et je crée des sites soignés — puis je veille sur eux. Un interlocuteur unique, sans jargon. Tout commence par un audit qui révèle où vous en êtes vraiment.
         </p>
 
         <div class="ag-hero__buttons">
-            <a href="<?php echo esc_url(home_url('/sites-express')); ?>" class="ag-btn-gold">Voir les offres →</a>
+            <a href="<?php echo esc_url(home_url('/ag-audit')); ?>" class="ag-btn-gold">🔒 Démarrer par l'audit →</a>
             <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Parlons de votre projet</a>
         </div>
 
         <div class="ag-hero__metrics">
             <div class="ag-metric">
-                <span class="ag-metric__value">+340%</span>
-                <span class="ag-metric__label">Leads générés</span>
+                <span class="ag-metric__value">48 h</span>
+                <span class="ag-metric__label">Audit rendu</span>
             </div>
             <div class="ag-metric">
                 <span class="ag-metric__value">24/7</span>
-                <span class="ag-metric__label">Disponibilité</span>
+                <span class="ag-metric__label">Surveillance</span>
             </div>
             <div class="ag-metric">
-                <span class="ag-metric__value">-60%</span>
-                <span class="ag-metric__label">Coûts commerciaux</span>
+                <span class="ag-metric__value">1</span>
+                <span class="ag-metric__label">Interlocuteur unique</span>
             </div>
         </div>
 
@@ -138,8 +138,11 @@ get_header();
 .ag-audit-hero__btn:hover{transform:translateY(-2px) scale(1.02)}
 </style>
 
-<!-- "Choisissez votre chemin" — 4 panneaux qui s'ouvrent (style theirisk.com) -->
-<?php /* MENAGE: get_template_part('template-parts/paths-hero'); */ ?>
+<!-- "Choisissez votre parcours" — 4 panneaux priorisés (audit / création / maintenance / templates) -->
+<?php get_template_part('template-parts/paths-hero'); ?>
+
+<!-- La menace en direct — carte Kaspersky dans les étoiles + compteurs dynamiques -->
+<?php get_template_part('template-parts/menace-live'); ?>
 
 <!-- 3 cadeaux pour démarrer (lead magnets) -->
 <?php /* MENAGE: get_template_part('template-parts/cadeaux-banner'); */ ?>
