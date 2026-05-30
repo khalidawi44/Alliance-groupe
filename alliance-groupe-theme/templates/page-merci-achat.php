@@ -22,7 +22,7 @@ $pack_data = array(
         'title'  => 'AG Starter Business',
         'price'  => '149€',
         'icon'   => '💼',
-        'desc'   => 'Votre Pack Business est confirmé. Notre équipe va vous contacter sous 24h ouvrées pour planifier votre installation assistée et l\'appel stratégique de lancement avec Fabrizio.',
+        'desc'   => 'Votre Pack Business est confirmé. Je vous contacte sous 24h ouvrées pour planifier votre installation assistée et l\'appel stratégique de lancement avec Fabrizio.',
     ),
 );
 if ( ! isset( $pack_data[ $pack ] ) ) {
@@ -75,12 +75,12 @@ $current = $pack_data[ $pack ];
 
                 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:24px;margin-bottom:36px;">
                     <div style="text-align:center;padding:24px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.2);border-radius:12px;">
-                        <div style="font-size:2.4rem;font-weight:800;color:#D4B45C;margin-bottom:4px;">+340%</div>
-                        <div style="color:#b0b0bc;font-size:.92rem;">Leads générés en moyenne par nos sites sur-mesure</div>
+                        <div style="font-size:2.4rem;font-weight:800;color:#D4B45C;margin-bottom:4px;">48 h</div>
+                        <div style="color:#b0b0bc;font-size:.92rem;">Audit de sécurité rendu, sans jargon</div>
                     </div>
                     <div style="text-align:center;padding:24px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.2);border-radius:12px;">
-                        <div style="font-size:2.4rem;font-weight:800;color:#D4B45C;margin-bottom:4px;">3 mois</div>
-                        <div style="color:#b0b0bc;font-size:.92rem;">Délai moyen pour rentabiliser le site</div>
+                        <div style="font-size:2.4rem;font-weight:800;color:#D4B45C;margin-bottom:4px;">24/7</div>
+                        <div style="color:#b0b0bc;font-size:.92rem;">Surveillance &amp; site sain dans la durée</div>
                     </div>
                     <div style="text-align:center;padding:24px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.2);border-radius:12px;">
                         <div style="font-size:2.4rem;font-weight:800;color:#D4B45C;margin-bottom:4px;">0€</div>
