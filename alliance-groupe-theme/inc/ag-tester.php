@@ -640,6 +640,14 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 				usort( $results, function ( $x, $y ) { return (int) ( $x['score'] ?? 0 ) <=> (int) ( $y['score'] ?? 0 ); } );
 				?>
 				<h2>Résultats (<?php echo count( $results ); ?>)<?php echo $deep_mode ? ' — <span style="color:#b91c1c">audit approfondi (actif, sous mandat)</span>' : ' — audit passif'; ?></h2>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin:0 0 12px">
+					<input type="hidden" name="action" value="ag_audit_export_csv">
+					<?php wp_nonce_field( 'ag_audit_export' ); ?>
+					<input type="hidden" name="urls" value="<?php echo esc_attr( isset( $_POST['urls'] ) ? wp_unslash( $_POST['urls'] ) : '' ); ?>">
+					<input type="hidden" name="mode" value="<?php echo $deep_mode ? 'deep' : 'passive'; ?>">
+					<input type="hidden" name="mandat" value="<?php echo $deep_mode ? '1' : ''; ?>">
+					<button type="submit" class="button">📥 Exporter en CSV (prospects + coordonnées)</button>
+				</form>
 				<?php foreach ( $results as $i => $a ) :
 					$url   = $a['url'] ?? '';
 					$host  = wp_parse_url( $url, PHP_URL_HOST );
@@ -780,5 +788,49 @@ if ( ! function_exists( 'ag_dashboard_audit_widget' ) ) {
 		<?php endif; ?>
 		<p style="font-size:12px;color:#777;margin:6px 0 0">Diagnostic passif. <a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-espace-audit' ) ); ?>">Ouvrir l'Espace Audit complet →</a></p>
 		<?php
+	}
+}
+
+/* =========================================================================
+ * EXPORT CSV des prospects audités (réexécute l'audit + extraction contacts).
+ * ====================================================================== */
+add_action( 'admin_post_ag_audit_export_csv', 'ag_audit_export_csv' );
+if ( ! function_exists( 'ag_audit_export_csv' ) ) {
+	function ag_audit_export_csv() {
+		if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Accès refusé.' );
+		if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'ag_audit_export' ) ) wp_die( 'Lien expiré.' );
+
+		$raw  = sanitize_textarea_field( wp_unslash( $_POST['urls'] ?? '' ) );
+		$urls = array_filter( array_map( 'trim', preg_split( '/[\r\n,]+/', $raw ) ) );
+		$urls = array_slice( array_unique( $urls ), 0, 8 );
+		$deep = ( 'deep' === ( $_POST['mode'] ?? 'passive' ) ) && ! empty( $_POST['mandat'] );
+
+		nocache_headers();
+		header( 'Content-Type: text/csv; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="prospects-audit-' . gmdate( 'Y-m-d' ) . '.csv"' );
+		$out = fopen( 'php://output', 'w' );
+		fwrite( $out, "\xEF\xBB\xBF" ); // BOM Excel
+		fputcsv( $out, array( 'Site', 'Score', 'Failles', 'Critiques', 'Liste des failles', 'Entreprise', 'Email', 'Telephone', 'Adresse', 'SIRET', 'Reseaux' ), ';' );
+
+		foreach ( $urls as $u ) {
+			$a  = $deep && function_exists( 'ag_audit_run_deep' ) ? ag_audit_run_deep( $u ) : ag_audit_run( $u );
+			$ct = function_exists( 'ag_audit_extract_contacts' ) ? ag_audit_extract_contacts( $u ) : array();
+			$pb = function_exists( 'ag_audit_fail_list' ) ? ag_audit_fail_list( $a ) : array();
+			fputcsv( $out, array(
+				$a['url'] ?? $u,
+				(int) ( $a['score'] ?? 0 ),
+				count( $pb ),
+				(int) ( $a['critical'] ?? 0 ),
+				implode( ' | ', $pb ),
+				$ct['company'] ?? '',
+				implode( ' ', $ct['emails'] ?? array() ),
+				implode( ' ', $ct['phones'] ?? array() ),
+				$ct['address'] ?? '',
+				$ct['siret'] ?? '',
+				implode( ' ', $ct['socials'] ?? array() ),
+			), ';' );
+		}
+		fclose( $out );
+		exit;
 	}
 }
