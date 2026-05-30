@@ -7,7 +7,17 @@ get_header();
 
 <!-- Hero -->
 <section class="ag-hero" id="ag-main-content">
-    <!-- Photo Naples — Vésuve coucher de soleil -->
+    <!-- Vidéo Naples en fond (remplace la photo du hero) -->
+    <video class="ag-hero__video" autoplay muted loop playsinline preload="auto" poster="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg' ); ?>">
+        <source src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/video/naples.mp4' ); ?>" type="video/mp4">
+    </video>
+    <div class="ag-hero__video-veil" aria-hidden="true"></div>
+    <style>
+    .ag-hero__naples{display:none!important}
+    .ag-hero__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+    .ag-hero__video-veil{position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,rgba(10,10,15,.5) 0%,rgba(10,10,15,.72) 100%)}
+    </style>
+    <!-- Photo Naples (fallback masqué) -->
     <div class="ag-hero__naples" aria-hidden="true"></div>
     <!-- Halo de soleil/Vésuve qui pulse champagne (visible partout) -->
     <div class="ag-hero__sunglow" aria-hidden="true"></div>
@@ -112,10 +122,10 @@ get_header();
 <!-- 📊 AUDIT GRATUIT — lead magnet prioritaire (revenu principal) -->
 <section class="ag-audit-hero" id="ag-audit-hero">
 	<div class="ag-audit-hero__inner">
-		<span class="ag-audit-hero__tag">🎁 100% offert · sans engagement</span>
-		<h2 class="ag-audit-hero__title">Votre site vous fait-il vraiment gagner des clients ?</h2>
-		<p class="ag-audit-hero__sub">Recevez votre <strong>audit gratuit</strong> : on analyse votre site et on vous dit exactement quoi améliorer pour vendre plus.</p>
-		<a href="<?php echo esc_url( home_url( '/ag-audit' ) ); ?>" class="ag-audit-hero__btn">📊 Obtenir mon audit gratuit →</a>
+		<span class="ag-audit-hero__tag">⟶ Quel que soit votre projet</span>
+		<h2 class="ag-audit-hero__title">Tout commence par un audit.</h2>
+		<p class="ag-audit-hero__sub">Refonte, nouveau site, ou juste dormir tranquille : le premier pas est toujours le même. L'<strong>audit de sécurité</strong> met les choses au clair — le point de départ, presque obligatoire, vers la sérénité.</p>
+		<a href="<?php echo esc_url( home_url( '/ag-audit' ) ); ?>" class="ag-audit-hero__btn">🔒 Démarrer par l'audit →</a>
 	</div>
 </section>
 <style>
@@ -129,13 +139,13 @@ get_header();
 </style>
 
 <!-- "Choisissez votre chemin" — 4 panneaux qui s'ouvrent (style theirisk.com) -->
-<?php get_template_part('template-parts/paths-hero'); ?>
+<?php /* MENAGE: get_template_part('template-parts/paths-hero'); */ ?>
 
 <!-- 3 cadeaux pour démarrer (lead magnets) -->
-<?php get_template_part('template-parts/cadeaux-banner'); ?>
+<?php /* MENAGE: get_template_part('template-parts/cadeaux-banner'); */ ?>
 
 <!-- Marquee -->
-<?php get_template_part('template-parts/marquee'); ?>
+<?php /* MENAGE: get_template_part('template-parts/marquee'); */ ?>
 
 <!-- 🎯 ENTONNOIR PAR PRIORITE :
        P1) VENDRE      → offres Sites Express (prix fixes)
@@ -148,10 +158,10 @@ get_header();
 <?php get_template_part('template-parts/home-offres'); ?>
 
 <!-- P2/ GAGNER — Ambassadeur + Studio fusionnés (2 colonnes) -->
-<?php get_template_part('template-parts/home-gagner'); ?>
+<?php /* MENAGE: get_template_part('template-parts/home-gagner'); */ ?>
 
 <!-- P3/ SOLIDAIRE — Racines + Associations fusionnés (2 colonnes) -->
-<?php get_template_part('template-parts/home-solidaire'); ?>
+<?php /* MENAGE: get_template_part('template-parts/home-solidaire'); */ ?>
 
 <!-- Templates gratuits (aimant a prospects) -->
 <?php get_template_part('template-parts/templates-cta'); ?>
@@ -179,7 +189,7 @@ get_header();
 <!-- Globe 3D : présence internationale Nantes / Marrakech / Naples -->
 <?php // Section "atelier 3d" retirée sur demande user. ?>
 
-<?php get_template_part('template-parts/globe-3d'); ?>
+<?php /* MENAGE: get_template_part('template-parts/globe-3d'); */ ?>
 
 <!-- FAQ -->
 <?php get_template_part('template-parts/faq'); ?>
