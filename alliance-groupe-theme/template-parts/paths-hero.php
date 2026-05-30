@@ -13,7 +13,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$ag_img = get_stylesheet_directory_uri() . '/assets/images/cities/';
+$ag_img = get_stylesheet_directory_uri() . '/assets/images/parcours/';
 $ag_paths = array(
 	array(
 		'emoji' => '🔒',
@@ -24,7 +24,7 @@ $ag_paths = array(
 		'url'   => home_url( '/tester-mon-site' ),
 		'tint'  => '#0f0f1c',
 		'glow'  => '#F37A1F',
-		'img'   => $ag_img . 'nantes-3.jpg',
+		'img'   => $ag_img . 'audit.jpg',
 	),
 	array(
 		'emoji' => '✨',
@@ -35,7 +35,7 @@ $ag_paths = array(
 		'url'   => home_url( '/sites-express' ),
 		'tint'  => '#1a1a26',
 		'glow'  => '#D4B45C',
-		'img'   => $ag_img . 'naples-2.jpg',
+		'img'   => $ag_img . 'creation.jpg',
 	),
 	array(
 		'emoji' => '🛡️',
@@ -46,7 +46,7 @@ $ag_paths = array(
 		'url'   => home_url( '/maintenance' ),
 		'tint'  => '#0f1c14',
 		'glow'  => '#28a745',
-		'img'   => $ag_img . 'nantes-2.jpg',
+		'img'   => $ag_img . 'maintenance.jpg',
 	),
 	array(
 		'emoji' => '📦',
@@ -57,7 +57,7 @@ $ag_paths = array(
 		'url'   => home_url( '/templates-wordpress' ),
 		'tint'  => '#1c1410',
 		'glow'  => '#D4B45C',
-		'img'   => $ag_img . 'marrakech-2.jpg',
+		'img'   => $ag_img . 'templates.jpg',
 	),
 );
 ?>
