@@ -207,36 +207,70 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 })();
 </script>
 
-<!-- Pop-up déclenché à l'arrivée sur le globe Kaspersky (1×/visite) -->
-<div id="ag-menace-pop" class="ag-mpop" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Testez votre site">
-	<div class="ag-mpop__backdrop" data-close></div>
-	<div class="ag-mpop__card">
-		<button class="ag-mpop__x" type="button" data-close aria-label="Fermer">×</button>
-		<span class="ag-mpop__tag">🚨 En direct</span>
-		<h3 class="ag-mpop__title">Ces attaques sont réelles. <em>Et votre site ?</em></h3>
-		<p class="ag-mpop__text">Pendant que vous regardez cette carte, des milliers de sites sont scannés par des robots. Vérifiez le vôtre en 30 secondes — gratuit, sans engagement.</p>
-		<a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-mpop__btn">🔍 Tester mon site →</a>
-		<button class="ag-mpop__later" type="button" data-close>Continuer à regarder</button>
+<!-- Mur PLEIN ÉCRAN « un piratage ressemble à ça » — seule issue : AUDITER -->
+<div id="ag-menace-pop" class="ag-hack" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Un piratage ressemble à ça">
+	<div class="ag-hack__term" aria-hidden="true">
+		<div class="ag-hack__scroll">
+			<p>root@target:~# nmap -p- cible.fr</p>
+			<p class="g">[+] 443/tcp open  https</p>
+			<p class="g">[+] xmlrpc.php  EXPOSÉ</p>
+			<p>root@target:~# hydra -l admin -P rockyou.txt cible.fr</p>
+			<p class="g">[+] tentative 1842... admin:123456</p>
+			<p class="r">[!] MOT DE PASSE TROUVÉ — accès administrateur</p>
+			<p>&gt; export base de données clients...</p>
+			<p class="r">&gt; 12 480 emails + mots de passe exfiltrés</p>
+			<p>&gt; chiffrement des fichiers... 41% ... 88% ... 100%</p>
+			<p class="r">&gt;&gt; RANSOM : payez 2 BTC pour récupérer vos données</p>
+			<p class="r">&gt;&gt; site mis hors-ligne</p>
+			<p>root@target:~# _</p>
+			<!-- duplication pour boucle continue -->
+			<p>root@target:~# nmap -p- cible.fr</p>
+			<p class="g">[+] 443/tcp open  https</p>
+			<p class="g">[+] xmlrpc.php  EXPOSÉ</p>
+			<p>root@target:~# hydra -l admin -P rockyou.txt cible.fr</p>
+			<p class="g">[+] tentative 1842... admin:123456</p>
+			<p class="r">[!] MOT DE PASSE TROUVÉ — accès administrateur</p>
+			<p>&gt; export base de données clients...</p>
+			<p class="r">&gt; 12 480 emails + mots de passe exfiltrés</p>
+			<p>&gt; chiffrement des fichiers... 41% ... 88% ... 100%</p>
+			<p class="r">&gt;&gt; RANSOM : payez 2 BTC pour récupérer vos données</p>
+			<p class="r">&gt;&gt; site mis hors-ligne</p>
+			<p>root@target:~# _</p>
+		</div>
+	</div>
+	<div class="ag-hack__veil" aria-hidden="true"></div>
+	<div class="ag-hack__center">
+		<span class="ag-hack__tag">⚠️ Simulation</span>
+		<h2 class="ag-hack__title" data-text="Un piratage ressemble à ça.">Un piratage ressemble à ça.</h2>
+		<p class="ag-hack__sub">Écran noir, données volées, site hors-ligne. Le jour où ça arrive, il est trop tard. Le seul moyen de savoir si vous êtes exposé : un audit.</p>
+		<a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-hack__btn">🔍 AUDITER MON SITE →</a>
 	</div>
 </div>
 <style>
-.ag-mpop{position:fixed;inset:0;z-index:99998;display:none;align-items:center;justify-content:center;padding:20px}
-.ag-mpop.is-on{display:flex;animation:agMpopIn .35s ease}
-@keyframes agMpopIn{from{opacity:0}to{opacity:1}}
-.ag-mpop__backdrop{position:absolute;inset:0;background:rgba(4,4,10,.78);backdrop-filter:blur(3px)}
-.ag-mpop__card{position:relative;z-index:1;max-width:440px;width:100%;background:linear-gradient(180deg,#12121c,#0b0b12);border:1px solid rgba(243,122,31,.4);border-radius:20px;padding:30px 26px 26px;text-align:center;color:#fff;box-shadow:0 30px 90px rgba(0,0,0,.6),0 0 60px rgba(243,122,31,.15);animation:agMpopPop .4s cubic-bezier(.16,1,.3,1)}
-@keyframes agMpopPop{from{transform:translateY(20px) scale(.96);opacity:0}to{transform:none;opacity:1}}
-.ag-mpop__x{position:absolute;top:12px;right:16px;background:none;border:none;color:rgba(255,255,255,.5);font-size:26px;line-height:1;cursor:pointer}
-.ag-mpop__x:hover{color:#fff}
-.ag-mpop__tag{display:inline-block;padding:5px 13px;background:rgba(225,15,26,.18);border:1px solid rgba(225,15,26,.5);border-radius:999px;color:#ff6b6b;font-size:.74rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
-.ag-mpop__title{font-family:Georgia,'Playfair Display',serif;font-size:1.7rem;line-height:1.15;margin:0 0 12px}
-.ag-mpop__title em{font-style:italic;background:linear-gradient(135deg,#F37A1F,#ff5252);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
-.ag-mpop__text{color:rgba(255,255,255,.8);font-size:.98rem;line-height:1.55;margin:0 0 22px}
-.ag-mpop__btn{display:block;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:800;text-decoration:none;padding:15px 24px;border-radius:999px;font-size:1.05rem;box-shadow:0 10px 30px rgba(243,122,31,.45);transition:transform .2s}
-.ag-mpop__btn:hover{transform:translateY(-2px) scale(1.02)}
-.ag-mpop__later{margin-top:14px;background:none;border:none;color:rgba(255,255,255,.55);font-size:.85rem;cursor:pointer;text-decoration:underline}
-.ag-mpop__later:hover{color:#fff}
-@media(prefers-reduced-motion:reduce){.ag-mpop.is-on,.ag-mpop__card{animation:none}}
+.ag-hack{position:fixed;inset:0;z-index:100000;display:none;background:#000;overflow:hidden}
+.ag-hack.is-on{display:block;animation:agHackIn .3s ease}
+@keyframes agHackIn{from{opacity:0}to{opacity:1}}
+body.ag-hack-lock{overflow:hidden}
+.ag-hack__term{position:absolute;inset:0;font-family:"Courier New",monospace;font-size:15px;line-height:1.9;color:#39ff14;text-shadow:0 0 6px rgba(57,255,20,.5);padding:24px 18px;opacity:.55}
+.ag-hack__scroll{animation:agHackScroll 22s linear infinite}
+.ag-hack__scroll p{margin:0;white-space:nowrap}
+.ag-hack__term .g{color:#39ff14}
+.ag-hack__term .r{color:#ff2d2d;text-shadow:0 0 8px rgba(255,45,45,.7)}
+@keyframes agHackScroll{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+.ag-hack__veil{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,0,0,.55) 0%,rgba(0,0,0,.86) 70%);animation:agHackFlicker 4s steps(2) infinite}
+@keyframes agHackFlicker{0%,97%,100%{opacity:1}98%{opacity:.85}99%{opacity:.95}}
+.ag-hack__center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;color:#fff}
+.ag-hack__tag{display:inline-block;padding:5px 14px;border:1px solid rgba(255,45,45,.6);border-radius:999px;color:#ff6b6b;font-family:"Courier New",monospace;font-size:.78rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:22px}
+.ag-hack__title{font-family:Georgia,'Playfair Display',serif;font-size:clamp(2.1rem,7vw,4.4rem);line-height:1.05;margin:0 0 18px;color:#fff;position:relative;text-shadow:0 0 30px rgba(255,45,45,.45)}
+.ag-hack__title::before,.ag-hack__title::after{content:attr(data-text);position:absolute;left:0;top:0;width:100%;overflow:hidden}
+.ag-hack__title::before{color:#ff2d2d;animation:agGlitch 2.6s infinite;clip-path:inset(0 0 55% 0);transform:translateX(-2px)}
+.ag-hack__title::after{color:#00e5ff;animation:agGlitch 3.4s infinite reverse;clip-path:inset(55% 0 0 0);transform:translateX(2px)}
+@keyframes agGlitch{0%,92%,100%{transform:translateX(0)}93%{transform:translateX(-3px)}95%{transform:translateX(3px)}97%{transform:translateX(-2px)}}
+.ag-hack__sub{max-width:560px;color:rgba(255,255,255,.85);font-size:1.08rem;line-height:1.6;margin:0 0 32px}
+.ag-hack__btn{display:inline-block;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:900;text-decoration:none;padding:20px 42px;border-radius:999px;font-size:1.2rem;letter-spacing:.5px;box-shadow:0 16px 50px rgba(243,122,31,.55);animation:agHackPulse 2s ease-in-out infinite}
+.ag-hack__btn:hover{transform:translateY(-2px) scale(1.03)}
+@keyframes agHackPulse{0%,100%{box-shadow:0 16px 50px rgba(243,122,31,.45)}50%{box-shadow:0 16px 80px rgba(243,122,31,.9)}}
+@media(prefers-reduced-motion:reduce){.ag-hack__scroll,.ag-hack__veil,.ag-hack__title::before,.ag-hack__title::after,.ag-hack__btn{animation:none}}
 </style>
 <script>
 (function(){
@@ -249,10 +283,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		if(shown) return; shown = true;
 		try{ sessionStorage.setItem('ag_menace_pop','1'); }catch(e){}
 		pop.classList.add('is-on'); pop.setAttribute('aria-hidden','false');
+		document.body.classList.add('ag-hack-lock');
 	}
-	function close(){ pop.classList.remove('is-on'); pop.setAttribute('aria-hidden','true'); }
-	pop.addEventListener('click', function(e){ if(e.target.hasAttribute('data-close')) close(); });
-	document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
 	if('IntersectionObserver' in window){
 		var io = new IntersectionObserver(function(entries){
 			entries.forEach(function(en){ if(en.isIntersecting){ open(); io.disconnect(); } });
