@@ -213,6 +213,7 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 ## 9. Taches restantes (état au 30 mai)
 
 ### ✅ Fait
+- **Cohérence visiteur finalisée (30/05)** : `about.php` = **1 section fusionnée** (head + 4 cases sécurité-first « Sécurité d'abord / Interlocuteur unique / Sans jargon / Dans la durée » à GAUCHE + carte photo/présentation Fabrizio à DROITE + bande stats 48h/1/6/24h pleine largeur dessous). **FAQ réécrite** audit/sécurité (prix 490/maint 49 alignés, non-intrusif/mandat) + schema FAQPage synchro. `page-fondateur`/`page-service-web`/`page-merci-achat` purgés (+340%/bureaux/équipe). `/sites-express` sécurité-first. Cartes parcours → `assets/images/parcours/{audit,creation,maintenance,templates}.jpg` (⚠️ **images à fournir par Fabrice** — fallback dégradé propre en attendant).
 - **API SMS Free active** (alertes SMS OK sur la ligne pro `07 44 82 95 16`). WhatsApp CallMeBot = optionnel.
 - **Telegram** équipe (interne) + canal clients configurés dans Réglages.
 - **Continuité entre conversations** (29/05) : hook `SessionStart` (`.claude/hooks/session-start.sh`) + tampon auto de l'en-tête `HANDOFF.md` à **chaque commit** (pre-commit via `scripts/install-git-hooks.sh` + `scripts/stamp-handoff.sh`, réinstallés à chaque session). Lock `ag-starter-artisan` régénéré (débloquait les commits).
