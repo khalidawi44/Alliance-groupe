@@ -542,6 +542,35 @@ if ( ! function_exists( 'ag_audit_risk_detail' ) ) {
 		return $map[ $name ] ?? 'point de sécurité à corriger';
 	}
 }
+if ( ! function_exists( 'ag_audit_risk_scenario' ) ) {
+	/** Conséquence CONCRÈTE et alarmiste (mais factuelle) par type de faille. */
+	function ag_audit_risk_scenario( $name ) {
+		$map = array(
+			'xmlrpc.php (force brute / DDoS)'        => "des robots testent des milliers de mots de passe par minute sur votre compte admin. Le jour où ils entrent, votre site est modifié, redirigé vers un site douteux, ou effacé — souvent un matin, sans prévenir.",
+			'xmlrpc : pingback (amplification)'      => "votre serveur peut être utilisé à votre insu pour attaquer d'autres sites. Vous pourriez en être tenu responsable, et votre hébergeur peut suspendre votre site.",
+			'Énumération des comptes (wp-json)'      => "la liste de vos identifiants de connexion est déjà publique : il ne reste plus qu'à deviner le mot de passe. Le travail du pirate est à moitié fait.",
+			'Énumération d\'auteur (?author=1)'      => "votre identifiant administrateur s'affiche en clair pour n'importe qui.",
+			'Fichiers sensibles exposés (.git/.env)' => "vos mots de passe de base de données et vos clés sont téléchargeables par un inconnu. Il peut copier TOUTE votre base clients (emails, téléphones, commandes) en quelques secondes.",
+			'Sauvegardes / config exposées'          => "une copie complète de votre site et de votre base de données est téléchargeable directement depuis l'extérieur.",
+			'Certificat SSL'                         => "Google affiche un écran rouge « Site non sécurisé » à chaque visiteur. La plupart font demi-tour aussitôt : vous perdez des clients sans même le voir.",
+			'Connexion sécurisée (HTTPS)'            => "les données saisies sur votre site (formulaires, mots de passe) circulent en clair et peuvent être interceptées.",
+			'En-têtes de sécurité HTTP'              => "un pirate peut superposer une fausse page à la vôtre pour voler les coordonnées de vos visiteurs — ils croient être chez vous.",
+			'Versions de plugins exposées'           => "vos extensions affichent leur version exacte. Si l'une a une faille connue, des outils automatiques l'exploitent en masse, sans vous cibler personnellement.",
+			'Divulgation de version (techno)'        => "la version de votre site et de votre serveur est visible : elle indique aux attaquants exactement quelles failles tester.",
+			'Listing de répertoire (uploads)'        => "n'importe qui peut parcourir vos dossiers comme un répertoire ouvert et y trouver des fichiers que vous pensiez privés.",
+			'Listing de répertoires (système)'       => "vos répertoires système sont explorables publiquement, fichier par fichier.",
+		);
+		return $map[ $name ] ?? ag_audit_risk_detail( $name );
+	}
+}
+if ( ! function_exists( 'ag_audit_has_data_leak' ) ) {
+	/** Vrai si une faille détectée expose potentiellement des DONNÉES personnelles (→ volet RGPD). */
+	function ag_audit_has_data_leak( $S ) {
+		$leak = array( 'Fichiers sensibles exposés (.git/.env)', 'Sauvegardes / config exposées', 'Énumération des comptes (wp-json)', 'Listing de répertoire (uploads)', 'Listing de répertoires (système)' );
+		foreach ( $S as $c ) { if ( in_array( $c['name'], $leak, true ) ) return true; }
+		return false;
+	}
+}
 if ( ! function_exists( 'ag_wa_phone' ) ) {
 	/** Normalise un téléphone FR en chiffres internationaux pour wa.me. */
 	function ag_wa_phone( $phone ) {
@@ -566,19 +595,22 @@ if ( ! function_exists( 'ag_audit_msg_securite' ) ) {
 		$m  = "Bonjour$hi,\n\n";
 		$m .= "⚠️ Je viens d'analyser la sécurité de votre site ($host) et je dois vous alerter : ";
 		$m .= "j'ai détecté " . count( $S ) . " faille(s)" . ( $crit ? ", dont $crit CRITIQUE(S)" : '' ) . ". Score de sécurité : $score/100.\n\n";
-		$m .= "Voici ce qui est exposé, concrètement :\n";
+		$m .= "Concrètement, voici ce que ça veut dire pour vous :\n\n";
 		$n = 0;
 		foreach ( $S as $c ) {
 			if ( $n >= 4 ) break; $n++;
 			$flag = ( ! empty( $c['critical'] ) && 'fail' === $c['status'] ) ? '🔴' : '🟠';
-			$m .= "$flag " . $c['name'] . " → " . ag_audit_risk_detail( $c['name'] ) . ".\n";
+			$m .= "$flag " . $c['name'] . "\n   → " . ag_audit_risk_scenario( $c['name'] ) . "\n\n";
 		}
-		$m .= "\nCe n'est pas théorique : ces failles sont scannées en continu par des robots automatisés, 24h/24. ";
-		$m .= "Une fois qu'un site est repéré, l'attaque (vol de données, défiguration, rançon, mise hors-ligne) peut tomber à tout moment.\n\n";
-		$m .= "Je peux sécuriser votre site et vous remettre le rapport complet (toutes les failles + les corrections).\n\n";
+		$m .= "Ce n'est pas théorique : ces failles sont scannées en continu par des robots automatisés, 24h/24, qui ne ciblent personne en particulier — ils ramassent tous les sites vulnérables qu'ils croisent.\n\n";
+		$m .= "Le scénario classique : un matin, votre site affiche une page de pirates ou réclame une rançon en bitcoins pour rendre vos données. Vos clients ne peuvent plus vous joindre, votre référencement Google s'effondre, et la confiance, elle, ne revient pas.\n\n";
+		if ( ag_audit_has_data_leak( $S ) ) {
+			$m .= "⚖️ Et ce n'est pas qu'un problème technique : si les données personnelles de vos clients fuient (emails, téléphones, commandes), la loi vous oblige à le déclarer à la CNIL sous 72 h, avec à la clé des sanctions financières — sans parler de votre réputation.\n\n";
+		}
+		$m .= "La bonne nouvelle : tout ça se corrige. Je peux sécuriser votre site et vous remettre le rapport complet (toutes les failles + comment les corriger).\n\n";
 		if ( $phone ) $m .= "📞 Le plus simple : rappelez-moi au $phone.\n";
 		if ( $order_link ) $m .= "🔓 Ou débloquez votre rapport de sécurité complet maintenant : $order_link\n";
-		$m .= "\nFabrizio — Alliance Groupe (Nantes)\n— STOP pour ne plus être contacté.";
+		$m .= "\nFabrizio — Alliance Groupe\n— STOP pour ne plus être contacté.";
 		return $m;
 	}
 }
@@ -588,8 +620,8 @@ if ( ! function_exists( 'ag_audit_sms_securite' ) ) {
 		$score = (int) ( $audit['score'] ?? 0 );
 		list( $S ) = ag_audit_split_fails( $audit );
 		$f1 = ! empty( $S[0]['name'] ) ? $S[0]['name'] : 'failles de securite';
-		$t  = "ALERTE securite : votre site $host a " . count( $S ) . " faille(s) (score $score/100), dont $f1. Risque reel d'attaque. ";
-		$t .= $order_link ? "Rapport complet : $order_link" : "Je peux vous aider.";
+		$t  = "ALERTE securite $host : " . count( $S ) . " faille(s), score $score/100. Risque : piratage, vol de vos donnees clients, site hors-ligne ou rancon. ";
+		$t .= $order_link ? "Votre rapport complet : $order_link" : "Je peux vous aider a corriger.";
 		$t .= " Fabrizio-Alliance Groupe. STOP pour stop.";
 		return $t;
 	}
