@@ -143,6 +143,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__sky3d{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1;opacity:0;visibility:hidden;transition:opacity 1.4s ease;pointer-events:none;background:#05060a}
 .agx.is-menu .agx__sky3d{opacity:1;visibility:visible}
 .agx.is-globe .agx__sky3d{opacity:1;visibility:visible}
+.agx.is-cyber .agx__sky3d{opacity:1;visibility:visible;pointer-events:auto;z-index:3}
 .agx__sky::before,.agx__sky::after{content:'';position:absolute;inset:-50%;background-repeat:repeat;background-image:
 	radial-gradient(1.5px 1.5px at 12% 22%,#fff,transparent),radial-gradient(1.5px 1.5px at 28% 64%,#fff,transparent),
 	radial-gradient(2px 2px at 44% 33%,#fff,transparent),radial-gradient(1.5px 1.5px at 61% 78%,#fff,transparent),
@@ -422,7 +423,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const BASE = '<?php echo esc_js( $base ); ?>';
 const STATIONS = [
 	{ pre:'VOTRE SITE EST-IL UNE CIBLE ?', ttl:'Alliance Groupe', line:"La plupart des sites piratés l'étaient sur une faille connue. On va trouver la vôtre avant les autres.", media:'video' },
-	{ pre:'✦ LA MENACE', ttl:'30 000 par jour', line:'Sites web piratés chaque jour dans le monde. La question n’est pas « si », mais « quand ».', media:'space', globe:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0.2&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_hint=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' },
+	{ pre:'✦ LA MENACE — EN DIRECT', ttl:'Les attaques, maintenant', line:'Carte mondiale des cyberattaques en temps réel. La question n’est pas « si », mais « quand ».', media:'space', iframe:'https://cybermap.kaspersky.com/fr/widget/dynamic/dark' },
 	{ pre:'✦ MES RACINES', ttl:'Naples', line:'Né à Naples, maison familiale. On y apprend à protéger ce qui compte — votre site aussi.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', size:5.2, baseY:1.4 },
 	{ pre:'✦ ÉTAPE 1 — L’AUDIT', ttl:'Je révèle les failles', line:'En 48 h, un rapport clair de tout ce qui expose votre site. Sans jargon, sans engagement.', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/nantes-1.jpg' ); ?>' },
 	{ pre:'✦ ÉTAPE 2 — JE SÉCURISE', ttl:'Je reprends ou je recrée', line:'Je corrige votre site existant — ou j’en construis un neuf, sécurisé dès le départ. Puis je le maintiens.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', baseY:-2.2 },
@@ -702,8 +703,10 @@ async function go(i, instant){
 		setMedia(st);
 		buildTeam(st);
 		host.classList.toggle('is-globe', !!st.globe);
+		host.classList.toggle('is-cyber', !!(st.iframe && !st.menu)); // station « La menace » = carte cyber Kaspersky
 		if (!st.globe) elGlobeMarkers.classList.remove('is-on');
-		if (st.iframe && !elSky3d.getAttribute('src')) elSky3d.setAttribute('src', st.iframe); // galaxie Sketchfab chargée à la 1re visite (la visibilité suit la classe is-menu)
+		// iframe partagé (cybermap OU galaxie) : on met à jour la source si elle change.
+		if (st.iframe && elSky3d.getAttribute('src') !== st.iframe) elSky3d.setAttribute('src', st.iframe);
 		if (current3D){ scene.remove(current3D); current3D = null; }
 		if (st.globe){
 			const g = buildGlobe(); current3D = g; g.scale.setScalar(0.06); g.rotation.set(0,0,0);
