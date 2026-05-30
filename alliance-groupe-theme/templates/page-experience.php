@@ -43,13 +43,7 @@ $music = $music_list[0];
 // Équipe (mêmes photos que la page "À propos", dossier assets/images/team/).
 $team_base = get_stylesheet_directory_uri() . '/assets/images/team/';
 $xp_team = array(
-	'fabrizio' => array( 'name' => 'Fabrizio', 'role' => 'Fondateur & CEO',                 'city' => 'Nantes, France',  'img' => $team_base . 'fabrizio.png', 'desc' => 'Né à Naples dans les Quartieri Spagnoli, installé à Nantes depuis 2009. Fabrizio a commencé par former gratuitement des familles défavorisées au digital dans l\'arrière-salle d\'une église. Aujourd\'hui, il dirige Alliance Groupe avec la même conviction : le web est un outil d\'émancipation.' ),
-	'julie'    => array( 'name' => 'Julie',    'role' => 'Cheffe de projet',                'city' => 'Nantes, France',  'img' => $team_base . 'julie.jpg',    'desc' => 'La colonne vertébrale opérationnelle d\'Alliance Groupe. Organisée, méthodique et dotée d\'un sang-froid à toute épreuve, Julie coordonne au quotidien les équipes de Nantes, Naples et Marrakech. Son super-pouvoir : transformer un planning chaotique en machine bien huilée.' ),
-	'laurent'  => array( 'name' => 'Laurent',  'role' => 'Responsable commercial',          'city' => 'Nantes, France',  'img' => $team_base . 'laurent.jpg',  'desc' => '15 ans de vente B2B avant de rejoindre Alliance Groupe. Patient, relationnel et profondément honnête, Laurent refuse de vendre ce dont le client n\'a pas besoin — ce qui explique pourquoi nos clients reviennent. Il traduit les besoins business en cahier des charges concret pour l\'équipe tech.' ),
-	'kate'     => array( 'name' => 'Kate',     'role' => 'Directrice artistique',           'city' => 'Nantes, France',  'img' => $team_base . 'kate.jpg',     'desc' => 'Diplômée de l\'École de Design Nantes Atlantique, Kate a fait ses armes en agence parisienne avant de rejoindre Alliance Groupe. Créative perfectionniste, elle conçoit des identités visuelles qui marquent et des interfaces qui convertissent. Son obsession : les détails que personne d\'autre ne remarque.' ),
-	'halim'    => array( 'name' => 'Halim',    'role' => 'Responsable SEO & Data',          'city' => 'Marrakech, Maroc', 'img' => $team_base . 'halim.jpg',   'desc' => 'Mathématicien de formation devenu expert SEO, Halim combine rigueur analytique et patience d\'artisan marocain. Depuis le bureau de Marrakech, il pilote les stratégies de référencement, l\'audit technique et le linking pour propulser nos clients en première page de Google.' ),
-	'amina'    => array( 'name' => 'Amina',    'role' => 'Responsable IA & Automatisation', 'city' => 'Marrakech, Maroc', 'img' => $team_base . 'amina.png',   'desc' => 'Diplômée en informatique de l\'Université Cadi Ayyad, Amina est l\'une des pionnières de l\'IA générative pour PME francophones. Elle conçoit chatbots, workflows et agents personnalisés qui libèrent nos clients des tâches répétitives. Son mantra : "L\'IA ne remplace personne, elle libère du temps."' ),
-	'carlito'  => array( 'name' => 'Carlito',  'role' => 'Directeur technique',             'city' => 'Naples, Italie',  'img' => $team_base . 'carlito.jpg',  'desc' => 'Ingénieur napolitain passé par plusieurs startups italiennes, Carlito dirige le pôle technique depuis le bureau de Naples. Architecture backend, intégrations WordPress avancées, DevOps — il transforme les visions en produits solides et scalables. Son credo : "La tecnologia è l\'arte di semplificare la complessità".' ),
+	'fabrizio' => array( 'name' => 'Fabrizio', 'role' => 'Fondateur — votre interlocuteur unique', 'city' => 'Nantes, France', 'img' => $team_base . 'fabrizio.png', 'desc' => 'Né à Naples (Quartieri Spagnoli), installé à Nantes. Studio indépendant : un seul interlocuteur, du conseil à la livraison. Ma conviction : un site, ça se protège comme on protège ce qui compte. Pour les gros projets, je m\'entoure de partenaires freelances de confiance.' ),
 );
 
 // Constellation de la station "Univers" : chaque étoile ouvre un panneau de
@@ -57,40 +51,36 @@ $xp_team = array(
 // x / y = position en % dans la zone ; les liens utilisent les vrais slugs.
 $orbs = array(
 	array(
-		'label' => 'Sites & Offres', 'x' => 16, 'y' => 30,
+		'label' => 'L’audit', 'x' => 16, 'y' => 30,
 		'sub'   => array(
-			array( 'l' => 'Sites Express',       'u' => home_url( '/sites-express' ),       'd' => 'Site pro livré en 7 jours, prix fixe.', 'ico' => 'rocket' ),
-			array( 'l' => 'Templates WordPress', 'u' => home_url( '/templates-wordpress' ), 'd' => '6 thèmes métier prêts à installer.',     'ico' => 'layout' ),
-			array( 'l' => 'Sur-mesure',          'u' => home_url( '/sur-mesure' ),          'd' => 'Projet ambitieux, design unique.',       'ico' => 'gem' ),
+			array( 'l' => 'Audit de sécurité',  'u' => home_url( '/ag-audit' ),  'd' => 'Vos failles révélées en 48 h, rapport clair.', 'ico' => 'search' ),
+			array( 'l' => 'Audit SEO offert',   'u' => home_url( '/audit-seo' ), 'd' => '12 points analysés, note /100.',              'ico' => 'gift' ),
 		),
 	),
 	array(
-		'label' => 'Gagner', 'x' => 50, 'y' => 9,
+		'label' => 'Reprendre mon site', 'x' => 50, 'y' => 9,
 		'sub'   => array(
-			array( 'l' => 'Programme ambassadeurs', 'u' => home_url( '/programme-ambassadeur' ), 'd' => 'Gagnez 10 % sur chaque vente.',     'ico' => 'coins' ),
-			array( 'l' => 'Classement',             'u' => home_url( '/classement' ),            'd' => 'Grimpez dans le top des vendeurs.', 'ico' => 'trophy' ),
+			array( 'l' => 'Reprise & sécurisation', 'u' => home_url( '/contact' ), 'd' => 'Je récupère votre site et je le corrige.', 'ico' => 'rocket' ),
 		),
 	),
 	array(
-		'label' => 'Cadeaux', 'x' => 84, 'y' => 30,
+		'label' => 'Créer sécurisé', 'x' => 84, 'y' => 30,
 		'sub'   => array(
-			array( 'l' => 'Audit SEO offert',      'u' => home_url( '/audit-seo' ),           'd' => '12 points analysés, note /100.', 'ico' => 'search' ),
-			array( 'l' => '1 site gratuit / mois', 'u' => home_url( '/tirage-au-sort' ),      'd' => 'Tirage au sort chaque mois.',    'ico' => 'gift' ),
-			array( 'l' => 'Templates gratuits',    'u' => home_url( '/templates-wordpress' ), 'd' => 'Téléchargement immédiat.',       'ico' => 'package' ),
+			array( 'l' => 'Sites Express',       'u' => home_url( '/sites-express' ),       'd' => 'Site pro livré, sécurisé dès le départ.', 'ico' => 'rocket' ),
+			array( 'l' => 'Sur-mesure',          'u' => home_url( '/sur-mesure' ),          'd' => 'Projet ambitieux, blindé.',              'ico' => 'gem' ),
+			array( 'l' => 'Templates métier',    'u' => home_url( '/templates-wordpress' ), 'd' => '6 thèmes prêts à installer.',            'ico' => 'layout' ),
 		),
 	),
 	array(
-		'label' => 'Solidaire', 'x' => 29, 'y' => 76,
+		'label' => 'Maintenance', 'x' => 29, 'y' => 76,
 		'sub'   => array(
-			array( 'l' => 'Programme Racines', 'u' => home_url( '/programme-racines' ),    'd' => 'On reverse à des causes qui comptent.', 'ico' => 'sprout' ),
-			array( 'l' => 'Site asso gratuit', 'u' => home_url( '/wordpress-association' ), 'd' => 'Un site offert aux associations.',      'ico' => 'heart' ),
+			array( 'l' => 'Maintenance & Sérénité', 'u' => home_url( '/maintenance' ), 'd' => 'À jour, protégé, sauvegardé — chaque mois.', 'ico' => 'package' ),
 		),
 	),
 	array(
-		'label' => 'Studio & Contact', 'x' => 71, 'y' => 76,
+		'label' => 'Contact', 'x' => 71, 'y' => 76,
 		'sub'   => array(
-			array( 'l' => 'Studio créatif', 'u' => home_url( '/studio' ),        'd' => 'Créez vos visuels & vidéos.',  'ico' => 'film' ),
-			array( 'l' => 'Nous contacter', 'u' => home_url( '/contact' ),       'd' => 'Parlons de votre projet.',     'ico' => 'mail' ),
+			array( 'l' => 'Nous contacter', 'u' => home_url( '/contact' ),       'd' => 'Parlons de votre site.',       'ico' => 'mail' ),
 			array( 'l' => 'Espace client',  'u' => home_url( '/espace-client' ), 'd' => 'Suivez vos projets en cours.', 'ico' => 'user' ),
 		),
 	),
@@ -431,22 +421,15 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const BASE = '<?php echo esc_js( $base ); ?>';
 const STATIONS = [
-	{ pre:'BIENVENUE CHEZ —', ttl:'Alliance Groupe', line:"C'est ici que votre projet prend vie.", media:'video' },
-	{ pre:'✦ NOTRE MONDE', ttl:'Alliance dans le monde', line:'Touchez un bureau pour explorer.', media:'space', globe:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0.2&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_hint=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' },
-	{ pre:'✦ NOTRE ÉNERGIE', ttl:'Naples', line:'La force napolitaine qui ne s’éteint jamais.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', size:5.2, baseY:1.4, team:['fabrizio','carlito'] },
-	{ pre:'✦ NOTRE QG', ttl:'Nantes', line:'Les visages de la maison.', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/nantes-1.jpg' ); ?>', team:['kate','laurent','julie'] },
-	{ pre:'✦ NOTRE PÔLE SUD', ttl:'Marrakech', line:'L’équipe qui sort de la tour.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', baseY:-2.2, team:['halim','amina'] },
-	{ pre:'✦ À VOUS DE JOUER', ttl:'L’Univers Alliance', line:'Touchez une étoile pour explorer.', media:'space', menu:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0.2&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_hint=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' }
+	{ pre:'VOTRE SITE EST-IL UNE CIBLE ?', ttl:'Alliance Groupe', line:"La plupart des sites piratés l'étaient sur une faille connue. On va trouver la vôtre avant les autres.", media:'video' },
+	{ pre:'✦ LA MENACE', ttl:'30 000 par jour', line:'Sites web piratés chaque jour dans le monde. La question n’est pas « si », mais « quand ».', media:'space', globe:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0.2&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_hint=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' },
+	{ pre:'✦ MES RACINES', ttl:'Naples', line:'Né à Naples, maison familiale. On y apprend à protéger ce qui compte — votre site aussi.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', size:5.2, baseY:1.4 },
+	{ pre:'✦ ÉTAPE 1 — L’AUDIT', ttl:'Je révèle les failles', line:'En 48 h, un rapport clair de tout ce qui expose votre site. Sans jargon, sans engagement.', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/nantes-1.jpg' ); ?>' },
+	{ pre:'✦ ÉTAPE 2 — JE SÉCURISE', ttl:'Je reprends ou je recrée', line:'Je corrige votre site existant — ou j’en construis un neuf, sécurisé dès le départ. Puis je le maintiens.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', baseY:-2.2 },
+	{ pre:'✦ ON COMMENCE ?', ttl:'Par où démarrer', line:'Touchez une étoile : audit, reprise, création sécurisée, maintenance.', media:'space', menu:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0.2&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_hint=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' }
 ];
 const GLOBE_MARKERS = [
-	{ lat:47.22, lon:-1.55, label:'Nantes',    kind:'office', target:'Nantes' },
-	{ lat:40.85, lon:14.26, label:'Naples',    kind:'office', target:'Naples' },
-	{ lat:31.63, lon:-7.99, label:'Marrakech', kind:'office', target:'Marrakech' },
-	{ lat:20, lon:-30, label:'Ambassadeurs', kind:'page', url:'<?php echo esc_js( home_url( '/programme-ambassadeur' ) ); ?>' },
-	{ lat:8,  lon:24,  label:'Sites Express', kind:'page', url:'<?php echo esc_js( home_url( '/sites-express' ) ); ?>' },
-	{ lat:-18, lon:-58, label:'Studio',       kind:'page', url:'<?php echo esc_js( home_url( '/studio' ) ); ?>' },
-	{ lat:-25, lon:30, label:'Audit SEO',     kind:'page', url:'<?php echo esc_js( home_url( '/audit-seo' ) ); ?>' },
-	{ lat:35, lon:90, label:'Classement',     kind:'page', url:'<?php echo esc_js( home_url( '/classement' ) ); ?>' }
+	{ lat:40.85, lon:14.26, label:'Naples · mes racines', kind:'office', target:'Naples' }
 ];
 const TEAM = <?php echo wp_json_encode( $xp_team ); ?>;
 
