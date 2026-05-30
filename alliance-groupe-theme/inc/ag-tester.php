@@ -431,24 +431,56 @@ add_action( 'admin_menu', function () {
 	add_menu_page( 'Espace Audit', '🔍 Espace Audit', 'manage_options', 'ag-espace-audit', 'ag_audit_prospect_page', 'dashicons-shield', 58 );
 } );
 
+if ( ! function_exists( 'ag_audit_fail_list' ) ) {
+	/** Liste des intitulés de checks non-OK, critiques en tête. */
+	function ag_audit_fail_list( $audit ) {
+		$crit = array(); $other = array();
+		foreach ( ( $audit['checks'] ?? array() ) as $c ) {
+			if ( 'ok' === ( $c['status'] ?? '' ) ) continue;
+			if ( ! empty( $c['critical'] ) && 'fail' === $c['status'] ) $crit[] = $c['name'];
+			else $other[] = $c['name'];
+		}
+		return array_merge( $crit, $other );
+	}
+}
+if ( ! function_exists( 'ag_wa_phone' ) ) {
+	/** Normalise un téléphone FR en chiffres internationaux pour wa.me. */
+	function ag_wa_phone( $phone ) {
+		$d = preg_replace( '#\D#', '', $phone );
+		if ( '' === $d ) return '';
+		if ( 0 === strpos( $d, '33' ) ) return $d;
+		if ( '0' === $d[0] ) return '33' . substr( $d, 1 );
+		return $d;
+	}
+}
 if ( ! function_exists( 'ag_audit_outreach_message' ) ) {
-	/** Construit un message de démarchage à partir des failles trouvées. */
-	function ag_audit_outreach_message( $audit ) {
+	/** Email de démarchage : divulgation responsable + preuve (failles) + offre + opt-out. */
+	function ag_audit_outreach_message( $audit, $contacts = array() ) {
 		$url   = $audit['url'] ?? 'votre site';
 		$score = (int) ( $audit['score'] ?? 0 );
-		$pb    = array();
-		foreach ( ( $audit['checks'] ?? array() ) as $c ) {
-			if ( 'ok' !== ( $c['status'] ?? '' ) ) $pb[] = $c['name'];
-		}
-		$top = array_slice( $pb, 0, 3 );
+		$pb    = ag_audit_fail_list( $audit );
+		$hi    = ! empty( $contacts['company'] ) ? ' ' . $contacts['company'] : '';
+		$top   = array_slice( $pb, 0, 3 );
 		$liste = $top ? '- ' . implode( "\n- ", $top ) : '';
-		$msg  = "Bonjour,\n\n";
-		$msg .= "Je suis tombé sur votre site ($url) et j'ai fait un rapide diagnostic gratuit. ";
-		$msg .= "Son score global est de $score/100, et j'ai relevé " . count( $pb ) . " point(s) à corriger, notamment :\n";
-		$msg .= $liste ? $liste . "\n\n" : "\n";
-		$msg .= "Ce sont des choses qui peuvent vous coûter des visiteurs (et vous exposer). Je peux vous envoyer le rapport complet avec les corrections, sans engagement.\n\n";
-		$msg .= "Souhaitez-vous que je vous l'envoie ?\n\nFabrizio — Alliance Groupe\n";
+		$msg   = "Bonjour$hi,\n\n";
+		$msg  .= "En consultant votre site ($url), j'ai réalisé un diagnostic de sécurité. Résultat : $score/100, avec " . count( $pb ) . " point(s) à corriger, notamment :\n";
+		$msg  .= $liste ? $liste . "\n\n" : "\n";
+		if ( ! empty( $audit['critical'] ) ) {
+			$msg .= "⚠️ Certains de ces points sont activement exploités par des attaquants (force brute, vol de données). Ce n'est pas urgent au point de paniquer, mais c'est à corriger.\n\n";
+		}
+		$msg  .= "Je suis Fabrizio, d'Alliance Groupe (Nantes). Je peux vous transmettre le rapport complet et vous aider à corriger — sans engagement.\n\n";
+		$msg  .= "Souhaitez-vous que je vous l'envoie ?\n\nFabrizio — Alliance Groupe\ncontact@alliancegroupe-inc.com\n\n— Pour ne plus recevoir de message de ma part, répondez STOP.";
 		return $msg;
+	}
+}
+if ( ! function_exists( 'ag_audit_outreach_sms' ) ) {
+	/** Version courte SMS / WhatsApp. */
+	function ag_audit_outreach_sms( $audit ) {
+		$host  = wp_parse_url( $audit['url'] ?? '', PHP_URL_HOST );
+		$score = (int) ( $audit['score'] ?? 0 );
+		$pb    = ag_audit_fail_list( $audit );
+		$f1    = $pb ? $pb[0] : 'failles de sécurité';
+		return "Bonjour, votre site $host présente " . count( $pb ) . " point(s) de sécurite a corriger (score $score/100), dont : $f1. Je peux vous aider, sans engagement. Fabrizio - Alliance Groupe. STOP pour ne plus etre contacte.";
 	}
 }
 
@@ -458,17 +490,25 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 		$results = array();
 		$notice  = '';
 
-		// Ajout au CRM (action ligne par ligne).
+		// Ajout au CRM (action ligne par ligne) avec coordonnées extraites.
 		if ( isset( $_POST['ag_add_crm'], $_POST['_agp_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_agp_nonce'] ) ), 'ag_audit_prospect' ) ) {
-			$u  = esc_url_raw( wp_unslash( $_POST['crm_url'] ?? '' ) );
-			$sc = (int) ( $_POST['crm_score'] ?? 0 );
+			$u    = esc_url_raw( wp_unslash( $_POST['crm_url'] ?? '' ) );
+			$sc   = (int) ( $_POST['crm_score'] ?? 0 );
+			$cm   = sanitize_text_field( wp_unslash( $_POST['crm_name'] ?? '' ) );
+			$ce   = sanitize_email( wp_unslash( $_POST['crm_email'] ?? '' ) );
+			$cp   = sanitize_text_field( wp_unslash( $_POST['crm_phone'] ?? '' ) );
+			$ca   = sanitize_text_field( wp_unslash( $_POST['crm_addr'] ?? '' ) );
+			$cv   = sanitize_text_field( wp_unslash( $_POST['crm_vulns'] ?? '' ) );
 			if ( $u && function_exists( 'ag_prospect_add_record' ) ) {
 				ag_prospect_add_record( array(
-					'name' => wp_parse_url( $u, PHP_URL_HOST ) ?: $u, 'website' => $u,
-					'source' => 'espace-audit', 'status' => 'nouveau',
-					'notes'  => 'Audité depuis l\'Espace Audit le ' . current_time( 'd/m/Y H:i' ) . ' — score ' . $sc . '/100',
+					'name'    => $cm ?: ( wp_parse_url( $u, PHP_URL_HOST ) ?: $u ),
+					'website' => $u, 'email' => $ce, 'phone' => $cp,
+					'source'  => 'espace-audit', 'status' => 'nouveau',
+					'notes'   => 'Audit Espace Audit ' . current_time( 'd/m/Y H:i' ) . ' — score ' . $sc . '/100.'
+						. ( $ca ? ' Adresse : ' . $ca . '.' : '' )
+						. ( $cv ? ' Failles : ' . $cv . '.' : '' ),
 				) );
-				$notice = '✅ ' . esc_html( $u ) . ' ajouté au CRM Prospection.';
+				$notice = '✅ ' . esc_html( $cm ?: $u ) . ' ajouté au CRM (coordonnées incluses).';
 			}
 		}
 
@@ -514,39 +554,79 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 				<p><button type="submit" name="ag_run_audits" value="1" class="button button-primary button-large">🔍 Lancer les audits</button></p>
 			</form>
 
-			<?php if ( $results ) : ?>
+			<?php if ( $results ) :
+				// Trie : prospects les plus faibles (plus chauds) en premier.
+				usort( $results, function ( $x, $y ) { return (int) ( $x['score'] ?? 0 ) <=> (int) ( $y['score'] ?? 0 ); } );
+				?>
 				<h2>Résultats (<?php echo count( $results ); ?>)<?php echo $deep_mode ? ' — <span style="color:#b91c1c">audit approfondi (actif, sous mandat)</span>' : ' — audit passif'; ?></h2>
-				<table class="widefat striped" style="max-width:1000px">
-					<thead><tr><th>Site</th><th>Score</th><th>Failles</th><th>Principaux problèmes</th><th>Actions</th></tr></thead>
-					<tbody>
-					<?php foreach ( $results as $i => $a ) :
-						$score = (int) ( $a['score'] ?? 0 );
-						$col   = $score >= 75 ? '#1a7f37' : ( $score >= 50 ? '#bf6a02' : '#b91c1c' );
-						$pb    = array();
-						foreach ( ( $a['checks'] ?? array() ) as $c ) { if ( 'ok' !== ( $c['status'] ?? '' ) ) $pb[] = $c['name']; }
-						$msg = ag_audit_outreach_message( $a ); ?>
-						<tr>
-							<td><a href="<?php echo esc_url( $a['url'] ?? '' ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $a['url'] ?? '' ); ?></a></td>
-							<td><strong style="color:<?php echo esc_attr( $col ); ?>;font-size:16px"><?php echo $score; ?>/100</strong></td>
-							<td><?php echo count( $pb ); ?></td>
-							<td style="font-size:12px"><?php echo esc_html( implode( ' · ', array_slice( $pb, 0, 4 ) ) ); ?></td>
-							<td style="white-space:nowrap">
-								<form method="post" style="display:inline">
-									<?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?>
-									<input type="hidden" name="crm_url" value="<?php echo esc_attr( $a['url'] ?? '' ); ?>">
-									<input type="hidden" name="crm_score" value="<?php echo $score; ?>">
-									<button type="submit" name="ag_add_crm" value="1" class="button button-small">➕ CRM</button>
-								</form>
-								<button type="button" class="button button-small" onclick="var d=document.getElementById('agmsg<?php echo $i; ?>');d.style.display=d.style.display==='none'?'block':'none'">✉️ Message</button>
-								<div id="agmsg<?php echo $i; ?>" style="display:none;margin-top:8px">
-									<textarea rows="9" style="width:420px;font-size:12px" onclick="this.select()"><?php echo esc_textarea( $msg ); ?></textarea>
-								</div>
-							</td>
-						</tr>
-					<?php endforeach; ?>
-					</tbody>
-				</table>
-				<p style="color:#666;font-size:12px;margin-top:10px">⚖️ Diagnostic passif (lecture publique). N'effectue aucune intrusion. Pour le démarchage : respecte l'opposition (Bloctel pour le tél, désinscription email).</p>
+				<?php foreach ( $results as $i => $a ) :
+					$url   = $a['url'] ?? '';
+					$score = (int) ( $a['score'] ?? 0 );
+					$col   = $score >= 75 ? '#1a7f37' : ( $score >= 50 ? '#bf6a02' : '#b91c1c' );
+					$pb    = ag_audit_fail_list( $a );
+					$hot   = ( $score < 60 || ! empty( $a['critical'] ) );
+					$ct    = function_exists( 'ag_audit_extract_contacts' ) ? ag_audit_extract_contacts( $url ) : array();
+					$email = $ct['emails'][0] ?? '';
+					$phone = $ct['phones'][0] ?? '';
+					$emsg  = ag_audit_outreach_message( $a, $ct );
+					$smsg  = ag_audit_outreach_sms( $a );
+					$subj  = 'Sécurité de votre site (' . wp_parse_url( $url, PHP_URL_HOST ) . ')';
+					$wa    = ag_wa_phone( $phone );
+					?>
+					<div style="background:#fff;border:1px solid #ccd0d4;border-left:5px solid <?php echo esc_attr( $col ); ?>;border-radius:8px;padding:16px 18px;margin:14px 0;max-width:1000px">
+						<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+							<div>
+								<strong style="font-size:15px"><?php echo esc_html( $ct['company'] ?: ( wp_parse_url( $url, PHP_URL_HOST ) ?: $url ) ); ?></strong>
+								<?php if ( $hot ) echo ' <span style="background:#b91c1c;color:#fff;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:700">🎯 PROSPECT CHAUD</span>'; ?>
+								<br><a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener" style="font-size:12px"><?php echo esc_html( $url ); ?></a>
+							</div>
+							<div style="text-align:right">
+								<span style="color:<?php echo esc_attr( $col ); ?>;font-size:22px;font-weight:800"><?php echo $score; ?>/100</span>
+								<div style="font-size:12px;color:#666"><?php echo count( $pb ); ?> faille(s)<?php echo ! empty( $a['critical'] ) ? ' · <span style="color:#b91c1c">' . (int) $a['critical'] . ' critique(s)</span>' : ''; ?></div>
+							</div>
+						</div>
+
+						<div style="font-size:12px;color:#444;margin:8px 0"><strong>Problèmes :</strong> <?php echo esc_html( implode( ' · ', array_slice( $pb, 0, 6 ) ) ); ?></div>
+
+						<div style="font-size:13px;background:#f6f7f7;border-radius:6px;padding:8px 12px;margin:6px 0">
+							<strong>📇 Coordonnées publiques :</strong>
+							<?php echo $email ? '✉️ <a href="mailto:' . esc_attr( $email ) . '">' . esc_html( $email ) . '</a> ' : ''; ?>
+							<?php echo $phone ? '· 📞 ' . esc_html( $phone ) . ' ' : ''; ?>
+							<?php echo ! empty( $ct['address'] ) ? '· 📍 ' . esc_html( $ct['address'] ) . ' ' : ''; ?>
+							<?php echo ! empty( $ct['siret'] ) ? '· SIRET ' . esc_html( $ct['siret'] ) : ''; ?>
+							<?php if ( ! $email && ! $phone ) echo '<em>aucune coordonnée trouvée sur le site</em>'; ?>
+						</div>
+
+						<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px">
+							<?php if ( $email ) : ?>
+								<a class="button button-primary button-small" href="mailto:<?php echo esc_attr( $email ); ?>?subject=<?php echo rawurlencode( $subj ); ?>&body=<?php echo rawurlencode( $emsg ); ?>">✉️ Email pré-rempli</a>
+							<?php endif; ?>
+							<?php if ( $phone ) : ?>
+								<a class="button button-small" href="tel:<?php echo esc_attr( preg_replace( '#\s#', '', $phone ) ); ?>">📞 Appeler</a>
+								<?php if ( $wa ) : ?><a class="button button-small" target="_blank" rel="noopener" href="https://wa.me/<?php echo esc_attr( $wa ); ?>?text=<?php echo rawurlencode( $smsg ); ?>">💬 WhatsApp</a><?php endif; ?>
+							<?php endif; ?>
+							<button type="button" class="button button-small" onclick="var d=document.getElementById('agm<?php echo $i; ?>');d.style.display=d.style.display==='none'?'block':'none'">✏️ Voir/éditer le message</button>
+							<form method="post" style="display:inline">
+								<?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?>
+								<input type="hidden" name="crm_url" value="<?php echo esc_attr( $url ); ?>">
+								<input type="hidden" name="crm_score" value="<?php echo $score; ?>">
+								<input type="hidden" name="crm_name" value="<?php echo esc_attr( $ct['company'] ?? '' ); ?>">
+								<input type="hidden" name="crm_email" value="<?php echo esc_attr( $email ); ?>">
+								<input type="hidden" name="crm_phone" value="<?php echo esc_attr( $phone ); ?>">
+								<input type="hidden" name="crm_addr" value="<?php echo esc_attr( $ct['address'] ?? '' ); ?>">
+								<input type="hidden" name="crm_vulns" value="<?php echo esc_attr( implode( ', ', array_slice( $pb, 0, 6 ) ) ); ?>">
+								<button type="submit" name="ag_add_crm" value="1" class="button button-small">➕ CRM</button>
+							</form>
+						</div>
+						<div id="agm<?php echo $i; ?>" style="display:none;margin-top:10px">
+							<p style="margin:4px 0;font-size:12px;color:#666">Email :</p>
+							<textarea rows="9" style="width:100%;max-width:640px;font-size:12px" onclick="this.select()"><?php echo esc_textarea( $emsg ); ?></textarea>
+							<p style="margin:8px 0 4px;font-size:12px;color:#666">SMS / WhatsApp :</p>
+							<textarea rows="3" style="width:100%;max-width:640px;font-size:12px" onclick="this.select()"><?php echo esc_textarea( $smsg ); ?></textarea>
+						</div>
+					</div>
+				<?php endforeach; ?>
+				<p style="color:#666;font-size:12px;margin-top:10px">⚖️ Coordonnées extraites des pages publiques du site (info éditée par l'entreprise). Démarchage : B2B autorisé avec opt-out (le message inclut « STOP ») ; respecte <strong>Bloctel</strong> pour le téléphone. Aucune donnée issue de fuites/bases tierces.</p>
 			<?php endif; ?>
 		</div>
 		<?php

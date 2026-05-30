@@ -68,6 +68,83 @@ if ( ! function_exists( 'ag_audit_score' ) ) {
 	}
 }
 
+/**
+ * Extrait les COORDONNÉES PUBLIQUES publiées sur le site lui-même
+ * (accueil + /mentions-legales + /contact) : email, téléphone, adresse,
+ * nom, réseaux, SIRET. Uniquement de l'info publique éditée par le site.
+ */
+if ( ! function_exists( 'ag_audit_extract_contacts' ) ) {
+	function ag_audit_extract_contacts( $url ) {
+		$out  = array( 'emails' => array(), 'phones' => array(), 'address' => '', 'company' => '', 'siret' => '', 'socials' => array() );
+		$host = wp_parse_url( $url, PHP_URL_SCHEME ) . '://' . wp_parse_url( $url, PHP_URL_HOST );
+		$pages = array( $url, $host . '/mentions-legales', $host . '/mentions-legales-cgu', $host . '/contact', $host . '/mentions' );
+		$blob = ''; $count = 0;
+		foreach ( $pages as $p ) {
+			if ( $count >= 3 ) break;
+			$r = ag_audit_fetch( $p );
+			if ( ! $r || (int) $r['code'] >= 400 ) continue;
+			$count++; $blob .= ' ' . (string) $r['body'];
+		}
+
+		// Emails (mailto + texte), filtrage du bruit.
+		if ( preg_match_all( '#[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}#i', $blob, $m ) ) {
+			foreach ( array_unique( $m[0] ) as $e ) {
+				$e = strtolower( $e );
+				if ( preg_match( '#\.(png|jpe?g|gif|svg|webp|css|js)$#', $e ) ) continue;
+				if ( preg_match( '#(sentry|wixpress|example\.|@2x|sentry\.io|\.w3\.org|domain\.tld|email@)#', $e ) ) continue;
+				$out['emails'][] = $e;
+			}
+		}
+		$out['emails'] = array_slice( array_values( array_unique( $out['emails'] ) ), 0, 5 );
+
+		// Téléphones (tel: + format FR).
+		if ( preg_match_all( '#tel:\+?([0-9 ().\-]{8,})#i', $blob, $tm ) ) { foreach ( $tm[1] as $t ) $out['phones'][] = trim( $t ); }
+		if ( preg_match_all( '#(?:\+33|0)\s?[1-9](?:[\s.\-]?\d{2}){4}#', $blob, $pm ) ) { foreach ( $pm[0] as $t ) $out['phones'][] = trim( $t ); }
+		$out['phones'] = array_slice( array_values( array_unique( $out['phones'] ) ), 0, 4 );
+
+		// SIRET (souvent en mentions légales).
+		if ( preg_match( '#\b(\d{3}[\s.]?\d{3}[\s.]?\d{3}[\s.]?\d{5})\b#', $blob, $sm ) ) $out['siret'] = trim( $sm[1] );
+
+		// JSON-LD (nom, tel, adresse).
+		if ( preg_match_all( '#<script[^>]+application/ld\+json[^>]*>(.*?)</script>#is', $blob, $jm ) ) {
+			foreach ( $jm[1] as $j ) {
+				$data = json_decode( trim( $j ), true );
+				if ( ! is_array( $data ) ) continue;
+				$nodes = isset( $data[0] ) ? $data : array( $data );
+				foreach ( $nodes as $node ) {
+					if ( ! is_array( $node ) ) continue;
+					if ( ! $out['company'] && ! empty( $node['name'] ) && is_string( $node['name'] ) ) $out['company'] = $node['name'];
+					if ( ! empty( $node['telephone'] ) && is_string( $node['telephone'] ) ) $out['phones'][] = trim( $node['telephone'] );
+					if ( ! $out['address'] && ! empty( $node['address'] ) ) {
+						$a = $node['address'];
+						if ( is_array( $a ) ) $out['address'] = trim( ( $a['streetAddress'] ?? '' ) . ' ' . ( $a['postalCode'] ?? '' ) . ' ' . ( $a['addressLocality'] ?? '' ) );
+						elseif ( is_string( $a ) ) $out['address'] = $a;
+					}
+				}
+			}
+		}
+		$out['phones'] = array_slice( array_values( array_unique( $out['phones'] ) ), 0, 4 );
+
+		// Nom : fallback og:site_name / title.
+		if ( ! $out['company'] ) {
+			if ( preg_match( '#property=[\'"]og:site_name[\'"][^>]+content=[\'"]([^\'"]+)#i', $blob, $cm ) ) $out['company'] = trim( $cm[1] );
+			elseif ( preg_match( '#<title[^>]*>(.*?)</title>#is', $blob, $cm ) ) $out['company'] = trim( wp_strip_all_tags( $cm[1] ) );
+		}
+		$out['company'] = mb_substr( $out['company'], 0, 80 );
+
+		// Adresse : fallback motif postal FR.
+		if ( ! $out['address'] && preg_match( '#\d{1,4}\s+(?:rue|avenue|av\.|bd|boulevard|impasse|chemin|place|all[ée]e|route)\s+[^,<\n]{3,40}[,\s]+\d{5}\s+[A-Za-zÀ-ÿ \-]{2,30}#i', $blob, $am ) ) {
+			$out['address'] = trim( preg_replace( '#\s+#', ' ', $am[0] ) );
+		}
+
+		// Réseaux sociaux.
+		foreach ( array( 'facebook.com', 'instagram.com', 'linkedin.com' ) as $s ) {
+			if ( preg_match( '#https?://(?:www\.)?' . preg_quote( $s, '#' ) . '/[A-Za-z0-9_.\-/]+#i', $blob, $sm ) ) $out['socials'][] = $sm[0];
+		}
+		return $out;
+	}
+}
+
 if ( ! function_exists( 'ag_audit_run' ) ) {
 	function ag_audit_run( $url ) {
 		$url = trim( $url );
