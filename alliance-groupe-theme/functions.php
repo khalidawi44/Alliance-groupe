@@ -29,7 +29,6 @@ add_action( 'admin_init', function () {
         'consultation'  => array( 'Consultation payante', 'templates/page-consultation.php' ),
         'contrat-client' => array( 'Contrat Client', 'templates/page-contrat-client.php' ),
         'systeme-prospection' => array( 'Système de prospection', 'templates/page-systeme-prospection.php' ),
-        'recruteur'     => array( 'Deviens recruteur', 'templates/page-recruteur.php' ),
         'retours'       => array( 'Politique de retour', 'templates/page-retours.php' ),
         'livraison'     => array( 'Politique de livraison', 'templates/page-livraison.php' ),
     );
@@ -508,7 +507,6 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-sur-mesure.php']      = 'Projet sur-mesure';
     $templates['templates/page-contrat-client.php']  = 'Contrat Client';
     $templates['templates/page-systeme-prospection.php'] = 'Système de prospection';
-    $templates['templates/page-recruteur.php']       = 'Deviens recruteur';
     $templates['templates/page-retours.php']         = 'Politique de retour';
     $templates['templates/page-livraison.php']       = 'Politique de livraison';
     $templates['templates/page-consultation.php']    = 'Consultation payante';

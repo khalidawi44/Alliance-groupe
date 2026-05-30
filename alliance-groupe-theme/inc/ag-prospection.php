@@ -1987,7 +1987,7 @@ if ( ! function_exists( 'ag_amb_messages' ) ) {
 			"💪 Objectif du jour : 5 contacts. 5 messages = des ventes qui tombent. On y va, l'équipe !",
 			"🔥 Rappel : 10% sur CHAQUE vente, sans plafond. Un site à 890 € = 89 € pour toi. Partage ton lien aujourd'hui.",
 			"🎬 Pas d'idée de contenu ? Le Studio te génère une vidéo/visuel en 1 clic avec ton lien intégré. Poste-en une aujourd'hui.",
-			"🤝 Recrute 1 ambassadeur cette semaine : prime + % à vie sur ses ventes. Ton lien recruteur est dans ton espace.",
+			"🎯 Fixe-toi 1 vente cette semaine : un site vendu = 10 % de commission directe pour toi. Relance tes prospects chauds.",
 			"🗺️ Des prospects t'attendent dans ta zone — va les contacter avant qu'un autre le fasse.",
 			"📞 La règle d'or : le 1er qui contacte gagne. Sois rapide, sois pro, sois toi.",
 			"⭐ Le classement se joue cette semaine — grimpe en haut, fais-toi remarquer !",

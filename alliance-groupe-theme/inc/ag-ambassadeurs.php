@@ -385,7 +385,7 @@ add_action( 'admin_post_ag_amb_tg_save', function () {
 
 /* ── Prime de parrainage : montant fixe au RECRUTEUR à la 1re vente du filleul ── */
 if ( ! function_exists( 'ag_parrain_prime_amount' ) ) {
-	function ag_parrain_prime_amount() { return (float) get_option( 'ag_parrain_prime', 25 ); }
+	function ag_parrain_prime_amount() { return 0.0; /* niveau « recruteur » supprimé (MLM 2 niveaux interdit FR) */ }
 }
 if ( ! function_exists( 'ag_award_parrain_prime' ) ) {
 	/** Crédite (une seule fois) la prime au parrain quand son filleul fait sa 1re vente. */

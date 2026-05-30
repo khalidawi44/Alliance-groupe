@@ -1,11 +1,16 @@
 <?php
 /**
- * Template Name: Deviens recruteur
+ * Template Name: Deviens recruteur (DÉSACTIVÉ — redirige vers /ambassadeurs)
  *
- * Programme recruteur : un ambassadeur recrute d'autres ambassadeurs et gagne
- * une prime fixe à leur 1re vente + un override à vie sur leurs ventes.
- * Affiche le lien de parrainage de l'ambassadeur connecté + le classement.
+ * Le niveau « recruteur » (parrainage rémunéré + override sur les ventes des
+ * filleuls) a été SUPPRIMÉ : un système à 2 niveaux est interdit en France.
+ * Redirige vers le programme ambassadeur (commission directe 10 %, légal).
+ * Template conservé pour ne pas casser d'anciens liens.
  */
+if ( ! defined( 'ABSPATH' ) ) exit;
+wp_safe_redirect( home_url( '/ambassadeurs' ), 301 );
+exit;
+
 get_header();
 
 $u          = wp_get_current_user();

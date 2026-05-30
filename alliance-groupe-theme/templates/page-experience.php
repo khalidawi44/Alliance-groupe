@@ -68,7 +68,6 @@ $orbs = array(
 		'label' => 'Gagner', 'x' => 50, 'y' => 9,
 		'sub'   => array(
 			array( 'l' => 'Programme ambassadeurs', 'u' => home_url( '/programme-ambassadeur' ), 'd' => 'Gagnez 10 % sur chaque vente.',     'ico' => 'coins' ),
-			array( 'l' => 'Devenir recruteur',      'u' => home_url( '/recruteur' ),             'd' => 'Recrutez et touchez des primes.',   'ico' => 'megaphone' ),
 			array( 'l' => 'Classement',             'u' => home_url( '/classement' ),            'd' => 'Grimpez dans le top des vendeurs.', 'ico' => 'trophy' ),
 		),
 	),

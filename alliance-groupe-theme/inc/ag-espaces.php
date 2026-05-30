@@ -457,11 +457,9 @@ if ( ! function_exists( 'ag_ambassadeur_filleuls' ) ) {
 	}
 }
 if ( ! function_exists( 'ag_override_rate' ) ) {
-	/** Taux de parrainage effectif (option modifiable en admin, défaut AG_OVERRIDE_RATE). */
+	/** Override de parrainage = 0 : niveau « recruteur » supprimé (MLM 2 niveaux interdit FR). */
 	function ag_override_rate() {
-		$def = defined( 'AG_OVERRIDE_RATE' ) ? AG_OVERRIDE_RATE : 0.20;
-		$r   = (float) get_option( 'ag_override_rate', $def );
-		return ( $r > 0 && $r <= 1 ) ? $r : $def;
+		return 0.0;
 	}
 }
 if ( ! function_exists( 'ag_ambassadeur_override_for' ) ) {
