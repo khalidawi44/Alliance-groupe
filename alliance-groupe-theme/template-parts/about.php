@@ -28,24 +28,24 @@ $ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
             <?php
             $valeurs = array(
                 array(
-                    'title' => 'Résultats',
-                    'text'  => 'Chaque projet piloté par des KPIs concrets et mesurables.',
-                    'svg'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>',
+                    'title' => 'Sécurité d\'abord',
+                    'text'  => 'J\'audite et je verrouille votre site. Protégé comme on protège ce qui compte.',
+                    'svg'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>',
                 ),
                 array(
-                    'title' => 'Performance',
-                    'text'  => 'Sites ultra-rapides, code optimisé, UX fluide partout.',
-                    'svg'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z" fill="currentColor" fill-opacity=".15"/><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+                    'title' => 'Interlocuteur unique',
+                    'text'  => 'Un seul contact, du conseil à la livraison. Pas de service client anonyme.',
+                    'svg'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>',
                 ),
                 array(
-                    'title' => 'Transparence',
-                    'text'  => 'Communication claire, reporting régulier, pas de jargon.',
+                    'title' => 'Sans jargon',
+                    'text'  => 'Un rapport clair, des explications simples. Vous comprenez ce que vous payez.',
                     'svg'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3.5"/></svg>',
                 ),
                 array(
-                    'title' => 'Innovation',
-                    'text'  => 'IA, automatisation et tech de pointe au service de votre croissance.',
-                    'svg'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21h14M12 3a7 7 0 0 0-4 13l1 2v3h6v-3l1-2a7 7 0 0 0-4-13z"/><path d="M12 16v-4M10 12h4" opacity=".5"/></svg>',
+                    'title' => 'Dans la durée',
+                    'text'  => 'Mises à jour, sauvegardes, surveillance : votre site reste sain chaque mois.',
+                    'svg'   => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v4h-4"/></svg>',
                 ),
             );
             foreach ( $valeurs as $i => $v ) :
