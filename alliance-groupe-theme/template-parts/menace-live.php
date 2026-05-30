@@ -250,9 +250,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 	</div>
 </div>
 <style>
-.ag-hack{position:fixed;inset:0;z-index:100000;display:none;background:#000;overflow:hidden;cursor:not-allowed}
+.ag-hack{position:fixed;inset:0;z-index:100000;display:none;background:#000;overflow:hidden;cursor:pointer}
 .ag-hack.is-on{display:block;animation:agHackIn .3s ease}
-/* Seul le bouton est interactif (souris + tactile). Tout le reste est mort. */
+/* Toute la zone est cliquable = AUDITER (une seule action possible). */
 .ag-hack__center{pointer-events:none}
 .ag-hack__btn{pointer-events:auto;cursor:pointer}
 @keyframes agHackIn{from{opacity:0}to{opacity:1}}
@@ -273,7 +273,8 @@ body.ag-hack-lock{overflow:hidden}
 .ag-hack__title::after{color:#00e5ff;animation:agGlitch 3.4s infinite reverse;clip-path:inset(55% 0 0 0);transform:translateX(2px)}
 @keyframes agGlitch{0%,92%,100%{transform:translateX(0)}93%{transform:translateX(-3px)}95%{transform:translateX(3px)}97%{transform:translateX(-2px)}}
 .ag-hack__sub{max-width:560px;color:rgba(255,255,255,.85);font-size:1.08rem;line-height:1.6;margin:0 0 32px}
-.ag-hack__btn{display:inline-block;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:900;text-decoration:none;padding:20px 42px;border-radius:999px;font-size:1.2rem;letter-spacing:.5px;box-shadow:0 16px 50px rgba(243,122,31,.55);animation:agHackPulse 2s ease-in-out infinite}
+.ag-hack__btn{display:inline-block;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:900;text-decoration:none;padding:28px 64px;border-radius:999px;font-size:clamp(1.3rem,3.4vw,1.9rem);letter-spacing:.5px;box-shadow:0 16px 50px rgba(243,122,31,.55);animation:agHackPulse 2s ease-in-out infinite}
+@media(max-width:600px){.ag-hack__btn{display:block;width:100%;padding:26px 20px}}
 .ag-hack__btn:hover{transform:translateY(-2px) scale(1.03)}
 @keyframes agHackPulse{0%,100%{box-shadow:0 16px 50px rgba(243,122,31,.45)}50%{box-shadow:0 16px 80px rgba(243,122,31,.9)}}
 .ag-hack__loading{display:none;margin:20px 0 0;color:#39ff14;font-family:"Courier New",monospace;font-size:1rem;letter-spacing:1px;text-shadow:0 0 8px rgba(57,255,20,.6)}
@@ -287,29 +288,29 @@ body.ag-hack-lock{overflow:hidden}
 	var pop = document.getElementById('ag-menace-pop');
 	var sec = document.querySelector('.ag-menace');
 	if(!pop||!sec) return;
-	var shown = false;
-	try{ if(sessionStorage.getItem('ag_menace_pop')==='1') shown = true; }catch(e){}
+	var btn = document.getElementById('ag-hack-btn');
+	var go  = btn ? btn.getAttribute('href') : '<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>';
+	var shown = false, fired = false;
 	var endSentinel = document.getElementById('ag-menace-end');
+
 	function open(){
 		if(shown) return; shown = true;
-		try{ sessionStorage.setItem('ag_menace_pop','1'); }catch(e){}
 		pop.classList.add('is-on'); pop.setAttribute('aria-hidden','false');
 		document.body.classList.add('ag-hack-lock');
-		var b = document.getElementById('ag-hack-btn'); if(b){ try{ b.focus(); }catch(e){} }
+		if(btn){ try{ btn.focus(); }catch(e){} }
 	}
-	// Clic AUDITER → vrai plein écran cinéma, puis bascule sur l'audit.
-	var btn = document.getElementById('ag-hack-btn');
-	if(btn){
-		btn.addEventListener('click', function(e){
-			e.preventDefault();
-			var go = btn.getAttribute('href');
-			pop.classList.add('is-loading');
-			var el = document.documentElement;
-			var req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
-			try{ if(req){ var p = req.call(el); if(p && p.catch) p.catch(function(){}); } }catch(err){}
-			setTimeout(function(){ window.location.href = go; }, 1100);
-		});
+	// Clic n'importe où dans le mur → vrai plein écran cinéma, puis audit.
+	function triggerAudit(e){
+		if(e) e.preventDefault();
+		if(fired) return; fired = true;
+		pop.classList.add('is-loading');
+		var el = document.documentElement;
+		var req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+		try{ if(req){ var p = req.call(el); if(p && p.catch) p.catch(function(){}); } }catch(err){}
+		setTimeout(function(){ window.location.href = go; }, 1100);
 	}
+	pop.addEventListener('click', triggerAudit);
+
 	// Déclenche quand le BAS de la section entre dans l'écran (fin du globe).
 	var target = endSentinel || sec;
 	if('IntersectionObserver' in window){
@@ -318,7 +319,6 @@ body.ag-hack-lock{overflow:hidden}
 		}, { threshold: 0, rootMargin: '0px 0px -10% 0px' });
 		io.observe(target);
 	} else {
-		// Vieux navigateurs : repli au scroll.
 		window.addEventListener('scroll', function(){
 			var r = target.getBoundingClientRect();
 			if(r.top < window.innerHeight) open();
