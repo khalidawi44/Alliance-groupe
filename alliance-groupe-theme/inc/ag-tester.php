@@ -641,6 +641,26 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 			}
 		}
 
+		// Envoi Telegram du prospect (bouton 📲 Telegram ou lors de l'ajout CRM).
+		if ( isset( $_POST['_agp_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_agp_nonce'] ) ), 'ag_audit_prospect' ) && ( isset( $_POST['ag_send_tg'] ) || isset( $_POST['ag_add_crm'] ) ) && function_exists( 'ag_push' ) ) {
+			$tu  = esc_url_raw( wp_unslash( $_POST['crm_url'] ?? '' ) );
+			$ts  = (int) ( $_POST['crm_score'] ?? 0 );
+			$tn  = sanitize_text_field( wp_unslash( $_POST['crm_name'] ?? '' ) ) ?: ( wp_parse_url( $tu, PHP_URL_HOST ) ?: $tu );
+			$te  = sanitize_email( wp_unslash( $_POST['crm_email'] ?? '' ) );
+			$tp  = sanitize_text_field( wp_unslash( $_POST['crm_phone'] ?? '' ) );
+			$taa = sanitize_text_field( wp_unslash( $_POST['crm_addr'] ?? '' ) );
+			$tvv = sanitize_text_field( wp_unslash( $_POST['crm_vulns'] ?? '' ) );
+			$tsg = ( 'creation' === ( $_POST['crm_segment'] ?? 'securite' ) ) ? 'creation' : 'securite';
+			if ( $tu ) {
+				$tico  = ( 'securite' === $tsg ) ? '🛡️' : '✨';
+				$tbody = $tn . "\n" . $tu . "\nScore " . $ts . '/100 · ' . strtoupper( $tsg )
+					. ( $te ? "\n📧 " . $te : '' ) . ( $tp ? "\n📞 " . $tp : '' )
+					. ( $taa ? "\n📍 " . $taa : '' ) . ( $tvv ? "\n⚠️ " . $tvv : '' );
+				ag_push( $tico . ' Prospect ' . strtoupper( $tsg ), $tbody );
+				$notice = isset( $_POST['ag_add_crm'] ) ? ( '✅ ' . esc_html( $tn ) . ' → CRM + Telegram.' ) : ( '📲 ' . esc_html( $tn ) . ' envoyé sur Telegram.' );
+			}
+		}
+
 		// Lancement des audits.
 		$deep_mode = false;
 		if ( isset( $_POST['ag_run_audits'], $_POST['_agp_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_agp_nonce'] ) ), 'ag_audit_prospect' ) ) {
