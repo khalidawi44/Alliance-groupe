@@ -227,10 +227,13 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 - **GitHub** : activer 2FA + protéger `main` (block force pushes + restrict deletions, **sans** « require PR »). Repo gardé **public** (jsDelivr).
 - **Déployer** : Outils → Import AG → SYNC GitHub + purge cache.
 
-### 🧭 Stratégie EN ATTENTE (décision non tranchée — NE PAS coder avant)
-- **Identité/équipe** : choisir chemin **A** (studio 1 personne, Fabrice/Fabrizio Nantes) ou **B** (collectif de freelances vérifiables). ⚠️ **NE PAS toucher la page À propos / l'équipe** avant décision. Ne jamais réintroduire l'équipe internationale fictive.
-- **MLM** : isoler ambassadeurs/recruteurs sur sous-domaine `partenaires.alliancegroupe-inc.com` **ET supprimer le niveau « recruteur »** (limite légale FR). Retiré de l'accueil.
-- **Séparation des 2 métiers** : Création (sites) vs Sécurité (audit). Page `/audit-securite` volontairement séparée (pas accueil).
+### 🧭 Stratégie (30/05)
+- **Identité = chemin A (studio SOLO) tranché.** Fondateur = Fabrizio (réel, Nantes). ✅ Page **À propos refaite en studio solo** (équipe fictive retirée). Ne jamais réintroduire l'équipe internationale fictive (Carlito/Kate/Halim/Amina/Laurent/Julie) ni les « bureaux » étrangers.
+- ✅ **Niveau « recruteur » SUPPRIMÉ** : `ag_override_rate()`=0 + `ag_parrain_prime_amount()`=0, page `/recruteur` redirige vers `/ambassadeurs`, points d'entrée retirés. (Ambassadeur direct 10 % conservé, légal.)
+- ✅ **Funnel récurrent** : page **`/maintenance`** (Maintenance & Sérénité, 3 paliers 49/99/199 €/mois) = le MRR qui met « à l'aise ». Logique : audit → remédiation → maintenance.
+- **RESTE à dé-fictionnaliser** (équipe fictive encore présente) : `template-parts/about.php` (section équipe accueil), cartes équipe du **voyage** (`page-experience` `$xp_team`), pages **`page-bureau-naples`/`-marrakech`** (faux bureaux), `page-fondateur`, `metier-page`. → gros nettoyage multi-fichiers à faire.
+- **MLM** : isoler ambassadeurs sur sous-domaine `partenaires.alliancegroupe-inc.com` (à faire).
+- **Séparation des 2 métiers** : Création vs Sécurité. Page `/audit-securite` séparée (pas accueil).
 
 ### 🔧 Sécurité — gaps code (30/05)
 - ✅ `deploy/` : **FTPS forcé** (lftp `ssl-force`/`ssl-protect-data` ; deploy.bat `ftpes://`).
