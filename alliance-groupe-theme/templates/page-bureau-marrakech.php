@@ -1,10 +1,14 @@
 <?php
 /**
- * Template Name: Bureau Marrakech
+ * Template Name: Bureau Marrakech (désactivé — redirige vers /a-propos)
  *
- * Page dédiée à l'équipe du bureau de Marrakech.
- * Accent visuel : vert heritage + motif zellige SVG.
+ * Studio SOLO : ce bureau/équipe n'existe pas. Redirection. Template conservé
+ * pour ne pas casser d'anciens liens.
  */
+if ( ! defined( 'ABSPATH' ) ) exit;
+wp_safe_redirect( home_url( '/a-propos' ), 301 );
+exit;
+
 get_header();
 
 $img_base = get_stylesheet_directory_uri() . '/assets/images/team/';

@@ -1,10 +1,15 @@
 <?php
 /**
- * Template Name: Bureau Naples
+ * Template Name: Bureau Naples (désactivé — redirige vers /a-propos)
  *
- * Page dédiée à l'équipe du bureau de Naples (Italie).
- * Accent visuel : vert heritage + photo locale de Naples en slideshow.
+ * Studio SOLO : pas de bureau/équipe à Naples. Naples reste mes RACINES
+ * (raconté sur /a-propos + le parcours). Redirection pour ne pas exposer un
+ * faux bureau. Template conservé pour d'anciens liens.
  */
+if ( ! defined( 'ABSPATH' ) ) exit;
+wp_safe_redirect( home_url( '/a-propos' ), 301 );
+exit;
+
 get_header();
 
 $img_base = get_stylesheet_directory_uri() . '/assets/images/team/';

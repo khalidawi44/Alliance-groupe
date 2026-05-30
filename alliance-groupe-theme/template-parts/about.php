@@ -13,14 +13,12 @@ $ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
         <div class="ag-about-refondu__head">
             <span class="ag-about-refondu__tag">Qui sommes-nous</span>
             <h2 class="ag-about-refondu__title">
-                Une agence <em>multiculturelle</em><br>
-                au service de votre croissance
+                Un <em>artisan du web</em><br>
+                qui sécurise votre présence en ligne
             </h2>
             <p class="ag-about-refondu__lead">
-                Alliance Groupe est une agence web &amp; IA internationale avec 3 bureaux —
-                <strong>Naples</strong>, <strong>Nantes</strong>, <strong>Marrakech</strong>.
-                Design premium, développement performant et intelligence artificielle pour des
-                expériences digitales qui convertissent.
+                Alliance Groupe, c'est un <strong>studio indépendant</strong> basé à <strong>Nantes</strong>, aux racines <strong>napolitaines</strong>.
+                Un interlocuteur unique : audit de sécurité, création de sites et SEO — du conseil à la livraison, sans intermédiaire.
             </p>
         </div>
 
@@ -62,12 +60,12 @@ $ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
         <!-- Stats cards -->
         <div class="ag-about-refondu__stats">
             <div class="ag-about-refondu__stat">
-                <span class="ag-about-refondu__stat-num" data-count="3">3</span>
-                <span class="ag-about-refondu__stat-label">Bureaux internationaux</span>
+                <span class="ag-about-refondu__stat-num">48h</span>
+                <span class="ag-about-refondu__stat-label">Audit livré</span>
             </div>
             <div class="ag-about-refondu__stat">
-                <span class="ag-about-refondu__stat-num" data-count="7">7</span>
-                <span class="ag-about-refondu__stat-label">Experts en équipe</span>
+                <span class="ag-about-refondu__stat-num">1</span>
+                <span class="ag-about-refondu__stat-label">Interlocuteur unique</span>
             </div>
             <div class="ag-about-refondu__stat">
                 <span class="ag-about-refondu__stat-num" data-count="6">6</span>
@@ -112,68 +110,20 @@ $ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
 <!-- Équipe -->
 <section class="ag-section ag-section--cendre">
     <div class="ag-container">
-        <span class="ag-tag ag-anim" data-anim="tag">L'équipe</span>
-        <h2 class="ag-section__title ag-anim" data-anim="title">Les visages derrière <em>Alliance Groupe</em></h2>
-        <p class="ag-section__desc ag-anim" data-anim="desc">Une équipe internationale répartie entre Naples, Nantes et Marrakech.</p>
+        <span class="ag-tag ag-anim" data-anim="tag">Le studio</span>
+        <h2 class="ag-section__title ag-anim" data-anim="title">L'artisan derrière <em>Alliance Groupe</em></h2>
+        <p class="ag-section__desc ag-anim" data-anim="desc">Un seul interlocuteur, de A à Z. Pour les gros projets, un réseau de partenaires freelances de confiance.</p>
 
         <div class="ag-team__grid<?php if ( $ag_about_is_home ) echo ' ag-team__grid--home-condense'; ?>">
             <?php
             $team = [
                 [
                     'name'  => 'Fabrizio',
-                    'role'  => 'Fondateur & CEO',
-                    'city'  => 'Nantes, France',
+                    'role'  => 'Fondateur — votre interlocuteur unique',
+                    'city'  => 'Nantes, France · racines à Naples',
                     'img'   => 'fabrizio',
-                    'desc'  => 'Né à Naples dans les Quartieri Spagnoli, installé à Nantes depuis 2009. Fabrizio a commencé par former gratuitement des familles défavorisées au digital dans l\'arrière-salle d\'une église. Aujourd\'hui, il dirige Alliance Groupe avec la même conviction : le web est un outil d\'émancipation.',
-                    'link'  => home_url('/notre-fondateur'),
-                ],
-                [
-                    'name'  => 'Carlito',
-                    'role'  => 'Directeur Technique',
-                    'city'  => 'Naples, Italie',
-                    'img'   => 'carlito',
-                    'desc'  => 'Ingénieur napolitain passé par plusieurs startups italiennes, Carlito dirige le pôle technique depuis le bureau de Naples. Architecture backend, intégrations WordPress avancées, DevOps — il transforme les visions en produits solides et scalables. Son credo : "La tecnologia è l\'arte di semplificare la complessità".',
-                    'link'  => home_url('/bureau-naples'),
-                ],
-                [
-                    'name'  => 'Kate',
-                    'role'  => 'Directrice Artistique',
-                    'city'  => 'Nantes, France',
-                    'img'   => 'kate',
-                    'desc'  => 'Diplômée de l\'École de Design Nantes Atlantique, Kate a fait ses armes en agence parisienne avant de rejoindre Alliance Groupe. Créative perfectionniste, elle conçoit des identités visuelles qui marquent et des interfaces qui convertissent. Son obsession : les détails que personne d\'autre ne remarque.',
-                    'link'  => home_url('/bureau-nantes'),
-                ],
-                [
-                    'name'  => 'Halim',
-                    'role'  => 'Responsable SEO & Data',
-                    'city'  => 'Marrakech, Maroc',
-                    'img'   => 'halim',
-                    'desc'  => 'Mathématicien de formation devenu expert SEO, Halim combine rigueur analytique et patience d\'artisan marocain. Depuis le bureau de Marrakech, il pilote les stratégies de référencement, l\'audit technique et le linking pour propulser nos clients en première page de Google.',
-                    'link'  => home_url('/bureau-marrakech'),
-                ],
-                [
-                    'name'  => 'Amina',
-                    'role'  => 'Responsable IA & Automatisation',
-                    'city'  => 'Marrakech, Maroc',
-                    'img'   => 'amina',
-                    'desc'  => 'Diplômée en informatique de l\'Université Cadi Ayyad, Amina est l\'une des pionnières de l\'IA générative pour PME francophones. Elle conçoit chatbots, workflows et agents personnalisés qui libèrent nos clients des tâches répétitives. Son mantra : "L\'IA ne remplace personne, elle libère du temps."',
-                    'link'  => home_url('/bureau-marrakech'),
-                ],
-                [
-                    'name'  => 'Laurent',
-                    'role'  => 'Responsable Commercial',
-                    'city'  => 'Nantes, France',
-                    'img'   => 'laurent',
-                    'desc'  => '15 ans de vente B2B avant de rejoindre Alliance Groupe. Patient, relationnel et profondément honnête, Laurent refuse de vendre ce dont le client n\'a pas besoin — ce qui explique pourquoi nos clients reviennent. Il traduit les besoins business en cahier des charges concret pour l\'équipe tech.',
-                    'link'  => home_url('/bureau-nantes'),
-                ],
-                [
-                    'name'  => 'Julie',
-                    'role'  => 'Cheffe de Projet',
-                    'city'  => 'Nantes, France',
-                    'img'   => 'julie',
-                    'desc'  => 'La colonne vertébrale opérationnelle d\'Alliance Groupe. Organisée, méthodique et dotée d\'un sang-froid à toute épreuve, Julie coordonne au quotidien les équipes de Nantes, Naples et Marrakech. Son super-pouvoir : transformer un planning chaotique en machine bien huilée.',
-                    'link'  => home_url('/bureau-nantes'),
+                    'desc'  => 'Né à Naples (Quartieri Spagnoli), installé à Nantes. Studio indépendant : je conçois et sécurise des sites web, du conseil à la livraison. Ma conviction : un site, ça se protège comme on protège ce qui compte. Pour les projets ambitieux, je m\'entoure de partenaires freelances de confiance.',
+                    'link'  => home_url('/a-propos'),
                 ],
             ];
             foreach ($team as $m) :
@@ -209,7 +159,7 @@ $ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
 
         <?php if ( $ag_about_is_home ) : ?>
             <div class="ag-team__see-all-mobile">
-                <a href="<?php echo esc_url(home_url('/a-propos')); ?>" class="ag-btn-outline">Voir toute l'équipe →</a>
+                <a href="<?php echo esc_url(home_url('/a-propos')); ?>" class="ag-btn-outline">En savoir plus sur le studio →</a>
             </div>
         <?php endif; ?>
     </div>

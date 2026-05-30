@@ -1,10 +1,14 @@
 <?php
 /**
- * Template Name: Bureau Nantes
+ * Template Name: Bureau Nantes (désactivé — redirige vers /a-propos)
  *
- * Page dédiée à l'équipe du bureau de Nantes (siège).
- * Accent visuel : bleu royal France + slideshow hero.
+ * Studio SOLO : pas d'« équipe du bureau de Nantes ». Le studio est à Nantes,
+ * raconté sur /a-propos. Redirection. Template conservé pour d'anciens liens.
  */
+if ( ! defined( 'ABSPATH' ) ) exit;
+wp_safe_redirect( home_url( '/a-propos' ), 301 );
+exit;
+
 get_header();
 
 $img_base = get_stylesheet_directory_uri() . '/assets/images/team/';
