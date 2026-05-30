@@ -44,7 +44,7 @@ add_action( 'admin_menu', function () {
 	add_options_page( 'Tester / Audit', 'Tester / Audit', 'manage_options', 'ag-tester', 'ag_tester_settings_page' );
 } );
 add_action( 'admin_init', function () {
-	foreach ( array( 'price', 'pay_url', 'raison', 'siret', 'adresse', 'tva', 'email', 'popup_img', 'phone', 'img_audit', 'img_creation', 'img_maintenance', 'img_templates', 'img_menace' ) as $k ) {
+	foreach ( array( 'price', 'pay_url', 'raison', 'siret', 'adresse', 'tva', 'email', 'popup_img', 'phone', 'img_audit', 'img_creation', 'img_maintenance', 'img_templates', 'img_menace', 'tg_sec', 'tg_crea' ) as $k ) {
 		register_setting( 'ag_tester_group', 'ag_tester_' . $k );
 	}
 } );
@@ -66,6 +66,8 @@ if ( ! function_exists( 'ag_tester_settings_page' ) ) {
 			'img_maintenance' => '🖼️ URL image carte « Maintenance » (accueil)',
 			'img_templates'   => '🖼️ URL image carte « Templates » (accueil)',
 			'img_menace'      => '🖼️ URL image fond du mur « Un piratage ressemble à ça »',
+			'tg_sec'          => '📲 Chat ID Telegram — prospects SÉCURITÉ (vide = canal interne)',
+			'tg_crea'         => '📲 Chat ID Telegram — prospects CRÉATION/SEO (vide = canal interne)',
 		);
 		?>
 		<div class="wrap">
@@ -134,7 +136,11 @@ if ( ! function_exists( 'ag_tester_run' ) ) {
 				'notes' => 'A testé son site le ' . current_time( 'd/m/Y H:i' ) . ' — score ' . ( $audit['score'] ?? 0 ) . '/100',
 			) );
 		}
-		if ( function_exists( 'ag_push' ) ) {
+		$tg_lead = '🔍 Nouveau test de site' . "\n" . ( $prenom ?: $email ) . ' — ' . $url . ' — score ' . ( $audit['score'] ?? 0 ) . '/100' . ( $tel ? "\n📞 " . $tel : '' );
+		$tg_sec_chat = ag_tester_opt( 'tg_sec' );
+		if ( $tg_sec_chat && function_exists( 'ag_tg_send' ) ) {
+			ag_tg_send( $tg_sec_chat, $tg_lead ); // lead sécurité = canal sécurité dédié
+		} elseif ( function_exists( 'ag_push' ) ) {
 			ag_push( '🔍 Nouveau test de site', ( $prenom ?: $email ) . ' — ' . $url . ' — score ' . ( $audit['score'] ?? 0 ) . '/100' );
 		}
 
@@ -656,8 +662,14 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 				$tbody = $tn . "\n" . $tu . "\nScore " . $ts . '/100 · ' . strtoupper( $tsg )
 					. ( $te ? "\n📧 " . $te : '' ) . ( $tp ? "\n📞 " . $tp : '' )
 					. ( $taa ? "\n📍 " . $taa : '' ) . ( $tvv ? "\n⚠️ " . $tvv : '' );
-				ag_push( $tico . ' Prospect ' . strtoupper( $tsg ), $tbody );
-				$notice = isset( $_POST['ag_add_crm'] ) ? ( '✅ ' . esc_html( $tn ) . ' → CRM + Telegram.' ) : ( '📲 ' . esc_html( $tn ) . ' envoyé sur Telegram.' );
+				$ttitle = $tico . ' Prospect ' . strtoupper( $tsg );
+				$tchat  = ( 'securite' === $tsg ) ? ag_tester_opt( 'tg_sec' ) : ag_tester_opt( 'tg_crea' );
+				if ( $tchat && function_exists( 'ag_tg_send' ) ) {
+					ag_tg_send( $tchat, $ttitle . "\n\n" . $tbody ); // canal dédié au segment
+				} else {
+					ag_push( $ttitle, $tbody ); // repli : canal interne
+				}
+				$notice = isset( $_POST['ag_add_crm'] ) ? ( '✅ ' . esc_html( $tn ) . ' → CRM + Telegram (' . $tsg . ').' ) : ( '📲 ' . esc_html( $tn ) . ' envoyé sur Telegram (' . $tsg . ').' );
 			}
 		}
 

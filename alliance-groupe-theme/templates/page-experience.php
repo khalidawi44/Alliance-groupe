@@ -35,10 +35,9 @@ foreach ( preg_split( '/[\r\n,]+/', (string) get_option( 'ag_xp_music_urls', '' 
 	$u = trim( $u );
 	if ( $u !== '' && preg_match( '#^https?://#i', $u ) ) $music_list[] = esc_url_raw( $u );
 }
-if ( empty( $music_list ) ) {
-	$music_list[] = get_option( 'ag_xp_music', $son_url . '/Napoli_con_bizonnio2.m4a' );
-}
-$music = $music_list[0];
+// Musique RETIRÉE sur demande user : plus aucune musique sur le site (Voyage compris).
+$music_list = array();
+$music      = '';
 
 // Équipe (mêmes photos que la page "À propos", dossier assets/images/team/).
 $team_base = get_stylesheet_directory_uri() . '/assets/images/team/';
@@ -392,7 +391,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 	</div>
 	<a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" class="agx__cta" id="agx-cta">✦ Devis gratuit</a>
 	<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="agx__skip" id="agx-skip">Passer ✕</a>
-	<button class="agx__sound" id="agx-sound" type="button" aria-label="Couper le son">
+	<button class="agx__sound" id="agx-sound" type="button" aria-label="Couper le son" style="display:none">
 		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 			<path d="M4 9 L8 9 L13 5 L13 19 L8 15 L4 15 Z" fill="currentColor" stroke="none"/>
 			<path class="wave" d="M16 8.8a4.5 4.5 0 0 1 0 6.4"/>
@@ -400,8 +399,8 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 			<path class="cross" d="M17.5 9.5l5 5M22.5 9.5l-5 5"/>
 		</svg>
 	</button>
-	<button class="agx__vol" id="agx-volup" type="button" aria-label="Monter le volume">+</button>
-	<button class="agx__vol" id="agx-voldown" type="button" aria-label="Baisser le volume">−</button>
+	<button class="agx__vol" id="agx-volup" type="button" aria-label="Monter le volume" style="display:none">+</button>
+	<button class="agx__vol" id="agx-voldown" type="button" aria-label="Baisser le volume" style="display:none">−</button>
 	<audio id="agx-audio" preload="auto" src="<?php echo esc_url( $music ); ?>"></audio>
 	<div class="agx__hint" id="agx-hint">← Glissez ou NEXT →</div>
 </main>
