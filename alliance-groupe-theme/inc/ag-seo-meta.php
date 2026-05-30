@@ -38,9 +38,9 @@ function ag_seo_meta() {
 	// Chaque description ~150-160 chars, integre 1-3 mots-cles + ville + CTA.
 	$map = array(
 		'__home__' => array(
-			'title'   => 'Audit de sécurité & création de sites web à Nantes — Alliance Groupe',
-			'desc'    => 'Studio web indépendant à Nantes : audit de sécurité de votre site, création de sites qui inspirent confiance, et maintenance. Testez votre site gratuitement ☎ 07.44.82.95.16',
-			'img_alt' => 'Alliance Groupe — studio web et sécurité à Nantes',
+			'title'   => 'Audit de sécurité & création de sites web — Naples & Nantes — Alliance Groupe',
+			'desc'    => 'Studio web indépendant à Naples & Nantes : audit de sécurité de votre site, création de sites qui inspirent confiance, et maintenance. Testez votre site gratuitement ☎ 07.44.82.95.16',
+			'img_alt' => 'Alliance Groupe — studio web et sécurité à Naples & Nantes',
 		),
 		// ── Services ──────────────────────────────────────────────
 		'service-creation-web' => array(
@@ -127,13 +127,13 @@ function ag_seo_meta() {
 		),
 		// ── Pages stratégiques ─────────────────────────────────────
 		'a-propos' => array(
-			'title'   => 'À propos — Studio web indépendant à Nantes — Alliance Groupe',
+			'title'   => 'À propos — Studio web indépendant à Naples & Nantes.— Alliance Groupe',
 			'desc'    => 'Alliance Groupe : studio web indépendant à Nantes, fondé par Fabrizio. Audit de sécurité, création de sites, maintenance. Un seul interlocuteur, du conseil à la livraison.',
 			'img_alt' => 'À propos Alliance Groupe',
 		),
 		'notre-fondateur' => array(
 			'title'   => 'Fabrizio, fondateur d\'Alliance Groupe — Studio web à Nantes',
-			'desc'    => 'Fabrizio, fondateur d\'Alliance Groupe : né à Naples, installé à Nantes. Studio indépendant : un seul interlocuteur, du conseil à la livraison. Sécuriser ce qui compte.',
+			'desc'    => 'Fabrizio, fondateur d\'Alliance Groupe : né à Naples (sa base), aussi à Nantes. Studio indépendant : un seul interlocuteur, du conseil à la livraison. Sécuriser ce qui compte.',
 			'img_alt' => 'Fabrizio fondateur Alliance Groupe',
 		),
 		'realisations' => array(
@@ -142,8 +142,8 @@ function ag_seo_meta() {
 			'img_alt' => 'Réalisations Alliance Groupe',
 		),
 		'contact' => array(
-			'title'   => 'Contact — Alliance Groupe, studio web à Nantes',
-			'desc'    => 'Contactez Alliance Groupe, studio web à Nantes ☎ 07.44.82.95.16 ✉ contact@alliancegroupe-inc.com — Réponse sous 24 h.',
+			'title'   => 'Contact — Alliance Groupe, studio web à Naples & Nantes',
+			'desc'    => 'Contactez Alliance Groupe, studio web à Naples & Nantes ☎ 07.44.82.95.16 ✉ contact@alliancegroupe-inc.com — Réponse sous 24 h.',
 			'img_alt' => 'Contact Alliance Groupe',
 		),
 		'rendez-vous' => array(
@@ -168,7 +168,7 @@ function ag_seo_meta() {
 		),
 		'services' => array(
 			'title'   => 'Nos services — Audit, création, maintenance — Alliance Groupe',
-			'desc'    => 'Alliance Groupe : audit de sécurité, création de sites WordPress sur-mesure et maintenance. Studio web indépendant à Nantes.',
+			'desc'    => 'Alliance Groupe : audit de sécurité, création de sites WordPress sur-mesure et maintenance. Studio web indépendant à Naples & Nantes.',
 			'img_alt' => 'Services Alliance Groupe',
 		),
 		'programme-racines' => array(

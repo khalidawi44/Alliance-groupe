@@ -81,7 +81,7 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
         <span>🔒 Paiement sécurisé PayPal</span>
         <span>💳 Payable en 4× sans frais</span>
         <span>✅ Révisions incluses</span>
-        <span>🇫🇷 Interlocuteur unique, basé à Nantes</span>
+        <span>📍 Interlocuteur unique — Naples &amp; Nantes</span>
         <span>🔒 Sécurisé dès le départ</span>
     </div>
 

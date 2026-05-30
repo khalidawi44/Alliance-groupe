@@ -81,7 +81,7 @@ get_header();
     <div class="ag-hero__content">
         <div class="ag-hero__badge">
             <span class="ag-hero__dot"></span>
-            Audit · Création · Maintenance de sites web — Nantes
+            Audit · Création · Maintenance de sites web — Naples &amp; Nantes
             <span class="ag-heritage-dots" aria-hidden="true"><span></span><span></span><span></span></span>
         </div>
 

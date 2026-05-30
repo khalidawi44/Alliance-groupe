@@ -42,7 +42,7 @@ get_header();
                         <div class="ag-contact-card ag-anim" data-anim="card">
                             <div class="ag-contact-card__icon">📍</div>
                             <div class="ag-contact-card__label">Basé à</div>
-                            <div class="ag-contact-card__value">Nantes, France</div>
+                            <div class="ag-contact-card__value">Naples (Italie) &amp; Nantes</div>
                         </div>
                     </div>
                 </div>

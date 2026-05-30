@@ -3,7 +3,7 @@
         <div class="ag-footer__col">
             <h4 class="ag-footer__title">Alliance Groupe</h4>
             <span class="ag-heritage-strip" aria-hidden="true"></span>
-            <p class="ag-footer__text">Studio web indépendant à Nantes : audit de sécurité, création de sites qui inspirent confiance, et maintenance. Un seul interlocuteur, du conseil à la livraison.</p>
+            <p class="ag-footer__text">Studio web indépendant — Naples &amp; Nantes : audit de sécurité, création de sites qui inspirent confiance, et maintenance. Un seul interlocuteur, du conseil à la livraison.</p>
         </div>
         <div class="ag-footer__col">
             <h4 class="ag-footer__title">Services</h4>

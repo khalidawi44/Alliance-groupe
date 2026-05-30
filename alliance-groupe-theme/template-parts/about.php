@@ -17,7 +17,7 @@ $ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
                 qui sécurise votre présence en ligne
             </h2>
             <p class="ag-about-refondu__lead">
-                Alliance Groupe, c'est un <strong>studio indépendant</strong> basé à <strong>Nantes</strong>, aux racines <strong>napolitaines</strong>.
+                Alliance Groupe, c'est un <strong>studio indépendant</strong> basé à <strong>Naples</strong>, et à <strong>Nantes</strong>.
                 Un interlocuteur unique : audit de sécurité, création de sites et SEO — du conseil à la livraison, sans intermédiaire.
             </p>
         </div>
@@ -77,8 +77,8 @@ $ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
                 <div class="ag-team-card__body">
                     <span class="ag-team-card__role">Fondateur — votre interlocuteur unique</span>
                     <h3 class="ag-team-card__name">Fabrizio</h3>
-                    <span class="ag-team-card__city">Nantes, France · racines à Naples</span>
-                    <p class="ag-team-card__desc">Né à Naples (Quartieri Spagnoli), installé à Nantes. Studio indépendant : je conçois et sécurise des sites web, du conseil à la livraison. Ma conviction : un site, ça se protège comme on protège ce qui compte. Pour les projets ambitieux, je m'entoure de partenaires freelances de confiance.</p>
+                    <span class="ag-team-card__city">Naples (Italie) &amp; Nantes</span>
+                    <p class="ag-team-card__desc">Né à Naples (Quartieri Spagnoli), j'y suis basé — et aussi à Nantes. Studio indépendant : je conçois et sécurise des sites web, du conseil à la livraison. Ma conviction : un site, ça se protège comme on protège ce qui compte. Pour les projets ambitieux, je m'entoure de partenaires freelances de confiance.</p>
                     <a href="<?php echo esc_url( home_url( '/a-propos' ) ); ?>" class="ag-team-card__link">Découvrir son histoire →</a>
                 </div>
             </article>

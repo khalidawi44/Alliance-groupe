@@ -13,7 +13,7 @@ get_header();
         <div class="ag-hero__content">
             <span class="ag-tag ag-anim" data-anim="tag">À propos</span>
             <h1 class="ag-hero__title">
-                <span class="ag-line">Un <em>artisan du web</em>, basé à Nantes</span>
+                <span class="ag-line">Un <em>artisan du web</em>, basé à Naples &amp; Nantes</span>
             </h1>
             <span class="ag-heritage-strip ag-heritage-strip--center" aria-hidden="true"></span>
             <p class="ag-hero__sub">Alliance Groupe, c'est <strong>un studio indépendant</strong> : un interlocuteur unique, du conseil à la livraison. Sécurité, création de sites et SEO — sans intermédiaire, sans jargon.</p>
@@ -26,7 +26,7 @@ get_header();
             <div style="text-align:center;max-width:760px;margin:0 auto 48px;">
                 <span class="ag-tag">Le studio</span>
                 <h2 class="ag-section__title">Un seul interlocuteur, <em>de bout en bout</em></h2>
-                <p class="ag-section__desc" style="margin:0 auto;">Né à Naples, installé à Nantes, je conçois et sécurise des sites web pour des entreprises ambitieuses. Pas d'usine, pas de sous-traitance opaque : vous parlez directement à la personne qui fait le travail. Pour les projets plus larges, je m'appuie sur un réseau de <strong>partenaires freelances de confiance</strong>, choisis au cas par cas.</p>
+                <p class="ag-section__desc" style="margin:0 auto;">Né et basé à Naples, et aussi à Nantes, je conçois et sécurise des sites web pour des entreprises ambitieuses. Pas d'usine, pas de sous-traitance opaque : vous parlez directement à la personne qui fait le travail. Pour les projets plus larges, je m'appuie sur un réseau de <strong>partenaires freelances de confiance</strong>, choisis au cas par cas.</p>
             </div>
             <div class="ag-heritage-grid">
                 <div class="ag-heritage-card ag-heritage-card--fr">
