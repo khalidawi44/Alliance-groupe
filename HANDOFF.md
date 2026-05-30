@@ -212,6 +212,33 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 
 ## 9. Taches restantes (état au 30 mai)
 
+### 🅰️ RESTE À FAIRE — point de reprise (pause 30/05)
+
+**Côté Fabrice (toi) — bloquant :**
+1. **Apparence → SYNC GitHub + purge cache** (rien n'est visible sans ça).
+2. **Réglages → Tester / Audit** : prix audit, SIRET, adresse, mention TVA, lien de paiement (Stripe/PayPal), téléphone pro, image 3D du gate, + **URLs des 5 images** (4 cartes parcours + fond mur menace).
+3. **Créer la page `/cgv`** (liée dans la case de commande).
+4. **Menu WordPress natif** (Apparence → Menus) : vérifier qu'aucune ancienne entrée MLM/bureaux n'y traîne (c'est en base, pas dans le code).
+
+**Côté Fabrice — contenu à fournir :**
+5. **Images** (2 façons) : soit **coller les URLs** dans Réglages → Tester/Audit (Médiathèque), soit **déposer les fichiers dans le repo** : `assets/images/parcours/{audit,creation,maintenance,templates}.jpg` + `assets/images/securite/{menace,hacker}.jpg`. ⚠️ Les images hacker = OK pour Audit + mur ; Création/Maintenance/Templates = visuels POSITIFS (pas de masque).
+6. **Photo HD de Fabrizio** → `assets/images/team/fabrizio.jpg` (l'actuelle est un peu petite).
+7. **SIRET + statut juridique** dans mentions-légales / confidentialité (placeholders à remplir).
+8. **6 captures templates** (avocat/resto/artisan/coach/barber/asso) + **images système-prospection** (`assets/images/systeme-prospection/`) + **vidéo ambassadeur**.
+9. **Vrais avis Google** (si profil Google Business) pour la section témoignages.
+
+**Business / décisions :**
+10. **Sous-domaine `partenaires.alliancegroupe-inc.com`** (isoler le MLM) — en cours côté Fabrice.
+11. **Google Business Profile** adresse Nantes (pour le vrai SEO local Nantes).
+12. **Ligne VoIP de démarchage** + (plus tard) robot vocal IA + envoi SMS de masse (cf. plus bas).
+
+**Côté Claude (à faire à la reprise) :**
+13. **BLENDER 3D** : produire le **lion 3D animé** (logo), **assets 3D pour les shorts**, **.glb légers** pour le Voyage, **vidéo 3D**. Méthode = **BlenderMCP temps réel** (voir `BLENDER-SETUP.md`) — à lancer depuis **Claude Code sur le PC de Fabrice** (Blender + serveur MCP), pas depuis le cloud. Scripts `bpy` reproductibles à versionner dans `blender/`.
+14. **Rendre les vidéos Remotion** (`video-remotion/`) sur le PC.
+15. Optionnel : vérifier le **rendu mobile** (mur piratage, about 2 colonnes, cartes parcours) ; remplacer les 3 images positives parcours quand fournies.
+
+---
+
 ### ✅ Fait
 - **Cohérence visiteur finalisée (30/05)** : `about.php` = **1 section fusionnée** (head + 4 cases sécurité-first « Sécurité d'abord / Interlocuteur unique / Sans jargon / Dans la durée » à GAUCHE + carte photo/présentation Fabrizio à DROITE + bande stats 48h/1/6/24h pleine largeur dessous). **FAQ réécrite** audit/sécurité (prix 490/maint 49 alignés, non-intrusif/mandat) + schema FAQPage synchro. `page-fondateur`/`page-service-web`/`page-merci-achat` purgés (+340%/bureaux/équipe). `/sites-express` sécurité-first. Cartes parcours → `assets/images/parcours/{audit,creation,maintenance,templates}.jpg` (⚠️ **images à fournir par Fabrice** — fallback dégradé propre en attendant).
 - **API SMS Free active** (alertes SMS OK sur la ligne pro `07 44 82 95 16`). WhatsApp CallMeBot = optionnel.
