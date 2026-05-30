@@ -232,10 +232,11 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 - **MLM** : isoler ambassadeurs/recruteurs sur sous-domaine `partenaires.alliancegroupe-inc.com` **ET supprimer le niveau « recruteur »** (limite légale FR). Retiré de l'accueil.
 - **Séparation des 2 métiers** : Création (sites) vs Sécurité (audit). Page `/audit-securite` volontairement séparée (pas accueil).
 
-### 🔧 Sécurité — gaps code restants (optionnel, à faire ici)
-- `deploy/` : **forcer FTPS** (lftp `ssl-force`). 
-- API licences : **real-IP derrière proxy** (`X-Forwarded-For` maîtrisé) — actuellement `REMOTE_ADDR` seul.
-- **Divergence des 2 conversations** : HMAC (clé aléatoire DB ici ≠ salts WP côté web) et auto-pull (remote+ff-only ici ≠ GPG) — choisir une version par sujet.
+### 🔧 Sécurité — gaps code (30/05)
+- ✅ `deploy/` : **FTPS forcé** (lftp `ssl-force`/`ssl-protect-data` ; deploy.bat `ftpes://`).
+- ✅ API licences : **real-IP** via `client_ip()` (REMOTE_ADDR par défaut ; X-Forwarded-For/CF seulement si `AG_TRUST_PROXY` en wp-config).
+- ✅ Musique **OFF** sur la page audit (`page-audit-securite.php`).
+- **Divergence des 2 conversations** : HMAC (clé aléatoire DB) et auto-pull (remote+ff-only) — **versions actuelles conservées** (robustes). Rien à faire sauf si tu veux basculer sur la version web (salts/GPG).
 
 ### 🗂️ Fichiers / repos
 - **`OPSEC.md`** → repo **PRIVÉ `ag-audit`** (PAS dans Alliance-groupe qui est **public**).
