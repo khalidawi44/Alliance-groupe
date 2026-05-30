@@ -726,9 +726,28 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 				} );
 				$nb_sec  = count( array_filter( $results, function ( $r ) { return 'securite' === $r['_seg']; } ) );
 				$nb_cre  = count( $results ) - $nb_sec;
+				$nb_hot  = count( array_filter( $results, function ( $r ) { return ( (int) ( $r['score'] ?? 0 ) < 60 ) || ! empty( $r['critical'] ); } ) );
+				$avg     = count( $results ) ? (int) round( array_sum( array_map( function ( $r ) { return (int) ( $r['score'] ?? 0 ); }, $results ) ) / count( $results ) ) : 0;
 				$cur_seg = '';
+				$st = 'background:#f6f7f7;border:1px solid #dcdcde;border-radius:8px;padding:8px 14px;font-weight:600;font-size:13px';
 				?>
-				<h2>Résultats (<?php echo count( $results ); ?>) — <span style="color:#b91c1c"><?php echo (int) $nb_sec; ?> sécurité</span> · <span style="color:#1d4ed8"><?php echo (int) $nb_cre; ?> création</span><?php echo $deep_mode ? ' — <span style="color:#b91c1c">approfondi (mandat)</span>' : ''; ?></h2>
+				<h2>Résultats du démarchage<?php echo $deep_mode ? ' — <span style="color:#b91c1c">approfondi (mandat)</span>' : ''; ?></h2>
+				<!-- STATS -->
+				<div style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px">
+					<span style="<?php echo $st; ?>"><?php echo count( $results ); ?> prospects</span>
+					<span style="<?php echo $st; ?>;color:#b91c1c">🛡️ <?php echo (int) $nb_sec; ?> sécurité</span>
+					<span style="<?php echo $st; ?>;color:#1d4ed8">✨ <?php echo (int) $nb_cre; ?> création/SEO</span>
+					<span style="<?php echo $st; ?>">🔥 <?php echo (int) $nb_hot; ?> chauds</span>
+					<span style="<?php echo $st; ?>">⌀ score <?php echo (int) $avg; ?>/100</span>
+				</div>
+				<!-- OUTILS DE TRI -->
+				<div style="margin:0 0 12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+					<strong style="font-size:12px;color:#666">Filtrer :</strong>
+					<button type="button" class="button button-small button-primary agp-filter" data-f="all">Tous</button>
+					<button type="button" class="button button-small agp-filter" data-f="securite">🛡️ Sécurité</button>
+					<button type="button" class="button button-small agp-filter" data-f="creation">✨ Création/SEO</button>
+					<button type="button" class="button button-small agp-filter" data-f="hot">🔥 Chauds</button>
+				</div>
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin:0 0 12px">
 					<input type="hidden" name="action" value="ag_audit_export_csv">
 					<?php wp_nonce_field( 'ag_audit_export' ); ?>
@@ -760,15 +779,16 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 					$msg_sec  = ag_audit_msg_securite( $a, $ct, $order_link );
 					$sms_sec  = ag_audit_sms_securite( $a, $order_link );
 					$msg_crea = ag_audit_msg_creation( $a, $ct );
+					$sms_crea = 'Bonjour, votre site ' . $host . ' gagnerait a etre modernise (affichage, mobile, referencement). Je cree des sites pro et securises des 490e. Fabrizio - Alliance Groupe. STOP pour stop.';
 					$subj_sec = '⚠️ Faille de sécurité détectée sur ' . $host;
 					$subj_cr  = 'Votre site ' . $host . ' — idées pour le moderniser';
 					?>
 					<?php if ( $a['_seg'] !== $cur_seg ) : $cur_seg = $a['_seg']; ?>
-						<h3 style="margin:30px 0 6px;padding-bottom:6px;border-bottom:2px solid <?php echo 'securite' === $cur_seg ? '#f3c2c2' : '#c2d9f3'; ?>">
+						<h3 class="agp-head" data-seg="<?php echo esc_attr( $cur_seg ); ?>" style="margin:30px 0 6px;padding-bottom:6px;border-bottom:2px solid <?php echo 'securite' === $cur_seg ? '#f3c2c2' : '#c2d9f3'; ?>">
 							<?php echo 'securite' === $cur_seg ? '🛡️ Prospects SÉCURITÉ — failles à corriger (audit)' : '✨ Prospects CRÉATION / refonte — site à moderniser'; ?>
 						</h3>
 					<?php endif; ?>
-					<div style="background:#fff;border:1px solid #ccd0d4;border-left:5px solid <?php echo esc_attr( $col ); ?>;border-radius:8px;padding:16px 18px;margin:14px 0;max-width:1000px">
+					<div class="agp-card" data-seg="<?php echo esc_attr( $a['_seg'] ); ?>" data-score="<?php echo $score; ?>" data-hot="<?php echo $hot ? 1 : 0; ?>" style="background:#fff;border:1px solid #ccd0d4;border-left:5px solid <?php echo esc_attr( $col ); ?>;border-radius:8px;padding:16px 18px;margin:14px 0;max-width:1000px">
 						<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
 							<div>
 								<strong style="font-size:15px"><?php echo esc_html( $ct['company'] ?: ( $host ?: $url ) ); ?></strong>
@@ -798,7 +818,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 							<strong style="color:#b91c1c">🛡️ Démarchage SÉCURITÉ (alerte risque)</strong>
 							<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
 								<?php if ( $email ) : ?><a class="button button-primary button-small" href="mailto:<?php echo esc_attr( $email ); ?>?subject=<?php echo rawurlencode( $subj_sec ); ?>&body=<?php echo rawurlencode( $msg_sec ); ?>">✉️ Email sécurité</a><?php endif; ?>
-								<?php if ( $phone ) : ?><a class="button button-small" href="tel:<?php echo esc_attr( preg_replace( '#\s#', '', $phone ) ); ?>">📞 Appeler</a><?php if ( $wa ) : ?><a class="button button-small" target="_blank" rel="noopener" href="https://wa.me/<?php echo esc_attr( $wa ); ?>?text=<?php echo rawurlencode( $sms_sec ); ?>">💬 WhatsApp</a><?php endif; endif; ?>
+								<?php if ( $phone ) : ?><a class="button button-small" href="tel:<?php echo esc_attr( preg_replace( '#\s#', '', $phone ) ); ?>">📞 Appeler</a><a class="button button-small" href="sms:<?php echo esc_attr( preg_replace( '#\s#', '', $phone ) ); ?>?&body=<?php echo rawurlencode( $sms_sec ); ?>">💬 SMS</a><?php if ( $wa ) : ?><a class="button button-small" target="_blank" rel="noopener" href="https://wa.me/<?php echo esc_attr( $wa ); ?>?text=<?php echo rawurlencode( $sms_sec ); ?>">🟢 WhatsApp</a><?php endif; endif; ?>
 								<button type="button" class="button button-small" onclick="var d=document.getElementById('ags<?php echo $i; ?>');d.style.display=d.style.display==='none'?'block':'none'">✏️ Voir/éditer</button>
 								<form method="post" style="display:inline">
 									<?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?>
@@ -826,6 +846,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 							<strong style="color:#1d4ed8">✨ Démarchage CRÉATION (refonte / site moderne)</strong>
 							<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
 								<?php if ( $email ) : ?><a class="button button-small" href="mailto:<?php echo esc_attr( $email ); ?>?subject=<?php echo rawurlencode( $subj_cr ); ?>&body=<?php echo rawurlencode( $msg_crea ); ?>">✉️ Email création</a><?php endif; ?>
+								<?php if ( $phone ) : ?><a class="button button-small" href="tel:<?php echo esc_attr( preg_replace( '#\s#', '', $phone ) ); ?>">📞 Appeler</a><a class="button button-small" href="sms:<?php echo esc_attr( preg_replace( '#\s#', '', $phone ) ); ?>?&body=<?php echo rawurlencode( $sms_crea ); ?>">💬 SMS</a><?php if ( $wa ) : ?><a class="button button-small" target="_blank" rel="noopener" href="https://wa.me/<?php echo esc_attr( $wa ); ?>?text=<?php echo rawurlencode( $sms_crea ); ?>">🟢 WhatsApp</a><?php endif; endif; ?>
 								<button type="button" class="button button-small" onclick="var d=document.getElementById('agc<?php echo $i; ?>');d.style.display=d.style.display==='none'?'block':'none'">✏️ Voir/éditer</button>
 								<form method="post" style="display:inline">
 									<?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?>
@@ -844,6 +865,31 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 						<?php endif; ?>
 					</div>
 				<?php endforeach; ?>
+				<script>
+				(function(){
+					var cards = [].slice.call(document.querySelectorAll('.agp-card'));
+					var heads = [].slice.call(document.querySelectorAll('.agp-head'));
+					function apply(f){
+						cards.forEach(function(c){
+							var seg = c.getAttribute('data-seg'), hot = c.getAttribute('data-hot') === '1';
+							var show = ( f === 'all' ) || ( f === 'hot' ? hot : seg === f );
+							c.style.display = show ? '' : 'none';
+						});
+						heads.forEach(function(h){
+							var seg = h.getAttribute('data-seg');
+							var any = cards.some(function(c){ return c.getAttribute('data-seg') === seg && c.style.display !== 'none'; });
+							h.style.display = any ? '' : 'none';
+						});
+					}
+					document.querySelectorAll('.agp-filter').forEach(function(b){
+						b.addEventListener('click', function(){
+							document.querySelectorAll('.agp-filter').forEach(function(x){ x.classList.remove('button-primary'); });
+							b.classList.add('button-primary');
+							apply(b.getAttribute('data-f'));
+						});
+					});
+				})();
+				</script>
 				<p style="color:#666;font-size:12px;margin-top:10px">⚖️ Coordonnées extraites des pages publiques du site (info éditée par l'entreprise). Démarchage : B2B autorisé avec opt-out (le message inclut « STOP ») ; respecte <strong>Bloctel</strong> pour le téléphone. Aucune donnée issue de fuites/bases tierces.</p>
 			<?php endif; ?>
 		</div>
