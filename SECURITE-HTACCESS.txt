@@ -1,0 +1,73 @@
+============================================================
+ DURCISSEMENT .htaccess — alliancegroupe-inc.com (o2switch / Apache)
+============================================================
+
+OÙ COLLER (IMPORTANT) :
+  Fichier .htaccess à la RACINE du site (là où il y a wp-config.php).
+  Colle ce bloc TOUT EN HAUT du fichier, AVANT la ligne « # BEGIN WordPress ».
+  (Si tu le mets dans le bloc WordPress, WordPress peut l'écraser.)
+
+  Accès : o2switch → cPanel → Gestionnaire de fichiers → coche « Afficher
+  les fichiers cachés » → édite .htaccess à la racine (public_html).
+
+  ⚠️ Fais une COPIE du .htaccess avant de modifier (sécurité).
+
+------------------------------------------------------------
+COPIE À PARTIR D'ICI ⬇⬇⬇
+------------------------------------------------------------
+
+# ===== Sécurité Alliance Groupe =====
+
+# 1) Bloquer xmlrpc.php (force brute + DDoS pingback)
+<Files xmlrpc.php>
+    Require all denied
+</Files>
+
+# 2) Bloquer les fichiers qui révèlent la version (readme/license)
+<FilesMatch "^(readme\.html|readme\.txt|license\.txt|wp-config-sample\.php)$">
+    Require all denied
+</FilesMatch>
+
+# 3) Bloquer les fichiers sensibles (config, env, git, logs, sauvegardes)
+<FilesMatch "(^\.|\.(env|ini|log|sh|sql|bak|swp|old|orig|save|dist)$|wp-config\.php)">
+    Require all denied
+</FilesMatch>
+RedirectMatch 403 (?i)/\.git
+RedirectMatch 403 (?i)/\.env
+
+# 4) Désactiver le listing des répertoires (dossiers ouverts)
+Options -Indexes
+
+# 5) Masquer la signature du serveur (selon hébergeur)
+ServerSignature Off
+
+# 6) En-têtes de sécurité (doublent ceux du thème, au cas où)
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header always unset X-Powered-By
+    Header always unset X-Pingback
+</IfModule>
+
+# ===== Fin sécurité Alliance Groupe =====
+
+------------------------------------------------------------
+⬆⬆⬆ COPIE JUSQU'ICI
+------------------------------------------------------------
+
+APRÈS AVOIR COLLÉ + ENREGISTRÉ :
+  1. Recharge ton site (Ctrl/Cmd+Maj+R) — vérifie qu'il s'affiche normalement.
+  2. Re-lance l'audit de ton site → score qui doit grimper proche de 100.
+
+CE QUI PEUT RESTER (selon l'hébergeur) :
+  - En-tête « Server: Apache/x.y » : la VERSION ne se masque pas toujours via
+    .htaccess (ServerTokens = config serveur). C'est un « warn » mineur (poids 1).
+    Sur o2switch, tu peux l'ignorer : le score sera déjà excellent.
+
+EN CAS DE PÉPIN (site en erreur 500) :
+  - Retire le bloc que tu viens de coller (ou restaure ta copie) → le site revient.
+  - La directive la plus susceptible de poser souci selon l'hébergeur est
+    « ServerSignature Off » : si erreur, supprime juste cette ligne.
