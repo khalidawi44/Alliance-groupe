@@ -179,11 +179,11 @@ if ( file_exists( $ag_espaces_file ) ) {
     require_once $ag_espaces_file;
 }
 
-// ── Musique de fond persistante sur tout le site (reprise via sessionStorage) ──
-$ag_music_file = get_stylesheet_directory() . '/inc/ag-music.php';
-if ( file_exists( $ag_music_file ) ) {
-    require_once $ag_music_file;
-}
+// ── Musique de fond : DÉSACTIVÉE sur demande user (lecteur retiré du site). ──
+// $ag_music_file = get_stylesheet_directory() . '/inc/ag-music.php';
+// if ( file_exists( $ag_music_file ) ) {
+//     require_once $ag_music_file;
+// }
 
 // ── Landing "Audit sécurité" (home v2) : styles dédiés + déchargement des
 //    styles du thème sur ce template pour un rendu propre, sans conflit. ──
