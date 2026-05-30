@@ -38,9 +38,9 @@ function ag_seo_meta() {
 	// Chaque description ~150-160 chars, integre 1-3 mots-cles + ville + CTA.
 	$map = array(
 		'__home__' => array(
-			'title'   => 'Agence Web & IA à Nantes, Marrakech & Naples — Alliance Groupe',
-			'desc'    => 'Agence Web & IA franco-italo-marocaine : création de sites WordPress sur-mesure, SEO, IA, automatisation. Audit gratuit 30 min ☎ 07.44.82.95.16',
-			'img_alt' => 'Alliance Groupe — agence web et IA multiculturelle',
+			'title'   => 'Audit de sécurité & création de sites web à Nantes — Alliance Groupe',
+			'desc'    => 'Studio web indépendant à Nantes : audit de sécurité de votre site, création de sites qui inspirent confiance, et maintenance. Testez votre site gratuitement ☎ 07.44.82.95.16',
+			'img_alt' => 'Alliance Groupe — studio web et sécurité à Nantes',
 		),
 		// ── Services ──────────────────────────────────────────────
 		'service-creation-web' => array(
@@ -127,23 +127,23 @@ function ag_seo_meta() {
 		),
 		// ── Pages stratégiques ─────────────────────────────────────
 		'a-propos' => array(
-			'title'   => 'À propos — Agence Web Franco-Italo-Marocaine — Alliance Groupe',
-			'desc'    => 'Alliance Groupe : agence web et IA franco-italo-marocaine. 3 bureaux à Nantes, Marrakech, Naples. Équipe multiculturelle de 7 experts pour PME.',
+			'title'   => 'À propos — Studio web indépendant à Nantes — Alliance Groupe',
+			'desc'    => 'Alliance Groupe : studio web indépendant à Nantes, fondé par Fabrizio. Audit de sécurité, création de sites, maintenance. Un seul interlocuteur, du conseil à la livraison.',
 			'img_alt' => 'À propos Alliance Groupe',
 		),
 		'notre-fondateur' => array(
-			'title'   => 'Fabrizio, Fondateur Alliance Groupe — Du Bénévolat à l\'Agence',
-			'desc'    => 'Fabrizio, fondateur Alliance Groupe : né à Naples, installé à Nantes. Le digital comme outil d\'émancipation. L\'histoire derrière notre agence multiculturelle.',
+			'title'   => 'Fabrizio, fondateur d\'Alliance Groupe — Studio web à Nantes',
+			'desc'    => 'Fabrizio, fondateur d\'Alliance Groupe : né à Naples, installé à Nantes. Studio indépendant : un seul interlocuteur, du conseil à la livraison. Sécuriser ce qui compte.',
 			'img_alt' => 'Fabrizio fondateur Alliance Groupe',
 		),
 		'realisations' => array(
-			'title'   => 'Nos Réalisations — Sites & Projets IA — Alliance Groupe',
-			'desc'    => 'Réalisations Alliance Groupe : sites WordPress sur-mesure, projets IA, e-commerce. Études de cas chiffrées pour PME (Nantes, Marrakech, Naples).',
+			'title'   => 'Réalisations — Sites web sur-mesure — Alliance Groupe',
+			'desc'    => 'Réalisations Alliance Groupe : sites WordPress sur-mesure, refontes, e-commerce. Des projets concrets, des résultats mesurables.',
 			'img_alt' => 'Réalisations Alliance Groupe',
 		),
 		'contact' => array(
-			'title'   => 'Contact — Agence Web Alliance Groupe (Nantes, Marrakech, Naples)',
-			'desc'    => 'Contactez Alliance Groupe : agence web & IA à Nantes, Marrakech et Naples ☎ 07.44.82.95.16 ✉ contact@alliancegroupe-inc.com — Réponse 24h garantie.',
+			'title'   => 'Contact — Alliance Groupe, studio web à Nantes',
+			'desc'    => 'Contactez Alliance Groupe, studio web à Nantes ☎ 07.44.82.95.16 ✉ contact@alliancegroupe-inc.com — Réponse sous 24 h.',
 			'img_alt' => 'Contact Alliance Groupe',
 		),
 		'rendez-vous' => array(
@@ -167,8 +167,8 @@ function ag_seo_meta() {
 			'img_alt' => 'Questions Flash Alliance Groupe',
 		),
 		'services' => array(
-			'title'   => 'Tous nos Services — Web, IA, SEO, Pub, Branding — Alliance Groupe',
-			'desc'    => '6 expertises Alliance Groupe : création WordPress, IA & automatisation, SEO, Google Ads, branding, conseil stratégique. Agence Nantes, Marrakech, Naples.',
+			'title'   => 'Nos services — Audit, création, maintenance — Alliance Groupe',
+			'desc'    => 'Alliance Groupe : audit de sécurité, création de sites WordPress sur-mesure et maintenance. Studio web indépendant à Nantes.',
 			'img_alt' => 'Services Alliance Groupe',
 		),
 		'programme-racines' => array(

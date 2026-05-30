@@ -178,7 +178,8 @@ add_action( 'wp_footer', function () {
         'templates/page-guide-ambassadeur.php',
     );
     foreach ( $exclude as $tpl ) { if ( is_page_template( $tpl ) ) return; }
-    get_template_part( 'template-parts/prospect-chat' );
+    // Chat d'équipe fictive (Léo/Sofia/Karim/Nadia) désactivé : studio solo.
+    // get_template_part( 'template-parts/prospect-chat' );
 }, 60 );
 
 // ── 1c6. Espaces membres (clients & commerciaux) : comptes, connexion, dashboards
@@ -755,7 +756,7 @@ add_action( 'wp_head', function () {
         'name' => 'Alliance Groupe',
         'url' => $site_url,
         'logo' => $logo_url,
-        'description' => 'Agence Web & IA basée en France — Naples, Nantes, Marrakech',
+        'description' => 'Studio web indépendant à Nantes : audit de sécurité, création de sites et maintenance.',
         'telephone' => '+33744829516',
         'email' => 'contact@alliancegroupe-inc.com',
         'address' => array(

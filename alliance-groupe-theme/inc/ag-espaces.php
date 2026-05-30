@@ -139,7 +139,7 @@ if ( ! function_exists( 'ag_email_wrap' ) ) {
 			. '<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#14141c;border-radius:18px;overflow:hidden;border:1px solid rgba(212,180,92,.25);">'
 			. '<tr><td style="padding:28px 36px;background:#0f0f16;border-bottom:1px solid rgba(212,180,92,.25);">'
 			. '<div style="font-family:Georgia,serif;font-size:23px;font-weight:bold;color:#D4B45C;letter-spacing:1px;">ALLIANCE GROUPE</div>'
-			. '<div style="font-family:Arial,sans-serif;font-size:11px;color:#9a9aa5;letter-spacing:2px;text-transform:uppercase;margin-top:4px;">Agence Web &amp; IA</div>'
+			. '<div style="font-family:Arial,sans-serif;font-size:11px;color:#9a9aa5;letter-spacing:2px;text-transform:uppercase;margin-top:4px;">Studio web &amp; sécurité</div>'
 			. '</td></tr>'
 			. '<tr><td style="padding:34px 36px;font-family:Arial,sans-serif;color:#e8e8ee;font-size:15px;line-height:1.65;">'
 			. '<h1 style="font-family:Georgia,serif;color:#ffffff;font-size:22px;margin:0 0 16px;">' . $heading . '</h1>'

@@ -3,17 +3,15 @@
         <div class="ag-footer__col">
             <h4 class="ag-footer__title">Alliance Groupe</h4>
             <span class="ag-heritage-strip" aria-hidden="true"></span>
-            <p class="ag-footer__text">Agence Web &amp; IA basée en France. Racines franco-italo-marocaines, vision internationale. Nous transformons votre présence digitale en machine à générer des leads.</p>
+            <p class="ag-footer__text">Studio web indépendant à Nantes : audit de sécurité, création de sites qui inspirent confiance, et maintenance. Un seul interlocuteur, du conseil à la livraison.</p>
         </div>
         <div class="ag-footer__col">
             <h4 class="ag-footer__title">Services</h4>
             <ul>
-                <li><a href="<?php echo esc_url(home_url('/service-creation-web')); ?>">Création Web</a></li>
-                <li><a href="<?php echo esc_url(home_url('/service-ia')); ?>">IA & Automatisation</a></li>
-                <li><a href="<?php echo esc_url(home_url('/service-seo')); ?>">SEO</a></li>
-                <li><a href="<?php echo esc_url(home_url('/service-publicite')); ?>">Publicité</a></li>
-                <li><a href="<?php echo esc_url(home_url('/service-branding')); ?>">Branding</a></li>
-                <li><a href="<?php echo esc_url(home_url('/service-conseil')); ?>">Conseil</a></li>
+                <li><a href="<?php echo esc_url(home_url('/tester-mon-site')); ?>">Audit de sécurité</a></li>
+                <li><a href="<?php echo esc_url(home_url('/sites-express')); ?>">Création de site</a></li>
+                <li><a href="<?php echo esc_url(home_url('/maintenance')); ?>">Maintenance</a></li>
+                <li><a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">Templates métier</a></li>
             </ul>
         </div>
         <div class="ag-footer__col">
@@ -21,7 +19,7 @@
             <ul>
                 <li><a href="<?php echo esc_url(home_url('/realisations')); ?>">Réalisations</a></li>
                 <li><a href="<?php echo esc_url(home_url('/a-propos')); ?>">À propos</a></li>
-                <li><a href="<?php echo esc_url(home_url('/articles')); ?>">Articles</a></li>
+                <li><a href="<?php echo esc_url(home_url('/le-voyage')); ?>">Le Voyage</a></li>
                 <li><a href="<?php echo esc_url(home_url('/contact')); ?>">Contact</a></li>
             </ul>
         </div>
@@ -34,8 +32,7 @@
         </div>
     </div>
     <div class="ag-footer__bottom">
-        <p style="margin:0 0 10px;font-size:.92rem;">💡 Vous connaissez un pro qui a besoin d'un site ? <a href="<?php echo esc_url( home_url( '/ambassadeurs' ) ); ?>" style="color:#D4B45C;font-weight:700;">Recommandez-le et soyez récompensé →</a></p>
-        <p>&copy; <?php echo date('Y'); ?> Alliance Groupe. Tous droits réservés.</p>
+        <p>&copy; <?php echo date('Y'); ?> Alliance Groupe — Studio web &amp; sécurité, Nantes. Tous droits réservés.</p>
         <p class="ag-footer__legal">
             <a href="<?php echo esc_url( home_url( '/mentions-legales' ) ); ?>">Mentions légales & CGV</a>
             &nbsp;·&nbsp;
