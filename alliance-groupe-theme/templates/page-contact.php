@@ -41,8 +41,8 @@ get_header();
                         </div>
                         <div class="ag-contact-card ag-anim" data-anim="card">
                             <div class="ag-contact-card__icon">📍</div>
-                            <div class="ag-contact-card__label">Bureaux</div>
-                            <div class="ag-contact-card__value">Naples · Nantes · Marrakech</div>
+                            <div class="ag-contact-card__label">Basé à</div>
+                            <div class="ag-contact-card__value">Nantes, France</div>
                         </div>
                     </div>
                 </div>

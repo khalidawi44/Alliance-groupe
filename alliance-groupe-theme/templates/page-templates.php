@@ -219,8 +219,8 @@ if ( ! empty( $ag_templates_only ) ) {
                 <span style="display:inline-block;padding:6px 18px;background:rgba(212,180,92,.2);border:1px solid rgba(212,180,92,.5);border-radius:100px;color:#D4B45C;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;">💎 Et si vous alliez plus loin ?</span>
                 <h2 style="font-size:clamp(1.5rem,3vw,2rem);margin-bottom:12px;line-height:1.2;">Un template ne remplacera <em>jamais</em> un site sur-mesure</h2>
                 <p style="font-size:1rem;color:#e8e6e0;max-width:720px;margin:0 auto 24px;line-height:1.7;">
-                    Si votre business compte vraiment — restaurant en ville touristique, cabinet qui veut dominer sa zone, coach qui veut remplir son agenda, avocat qui veut gagner ses gros dossiers — un site sur-mesure conçu par notre équipe va beaucoup plus loin.
-                    <strong style="color:#D4B45C;">+340% de leads en moyenne en 3 mois.</strong>
+                    Si votre business compte vraiment — restaurant, cabinet, coach, artisan, avocat — un site sur-mesure, rapide et sécurisé dès le départ, va beaucoup plus loin qu'un template.
+                    <strong style="color:#D4B45C;">Conçu pour inspirer confiance et durer.</strong>
                 </p>
                 <div class="ag-hero__buttons" style="justify-content:center;flex-wrap:wrap;">
                     <a href="tel:+33744829516" class="ag-btn-gold">📞 Appeler Fabrizio</a>
@@ -259,7 +259,7 @@ if ( ! empty( $ag_templates_only ) ) {
                     ['q' => 'Le plugin compagnon est-il obligatoire ?', 'a' => 'Non, mais il rend l\'installation 10x plus rapide. Sans le plugin, vous devez créer manuellement les 5 pages et le menu. Avec le plugin, un seul clic suffit. Il est gratuit et compatible avec les 5 thèmes.'],
                     ['q' => 'Un pack Premium marche-t-il avec les 5 thèmes ?', 'a' => 'Oui. Vous achetez UN seul plugin (Premium ou Business) et il fonctionne avec n\'importe quel thème AG Starter que vous avez activé. Le plugin détecte automatiquement le thème actif et adapte ses features.'],
                     ['q' => 'Les templates sont-ils sur WordPress.org ?', 'a' => 'En cours de soumission. Nos 5 thèmes et le plugin compagnon respectent les standards WordPress.org (GPL v2+, translation-ready, escaping strict, Theme Check compatible). Une fois validés, ils seront installables directement depuis votre admin WordPress.'],
-                    ['q' => 'Et si je veux un vrai site sur-mesure ?', 'a' => 'Contactez-nous au 07.44.82.95.16 ou via la page contact. Premier appel de 30 min gratuit avec Fabrizio, sans engagement. Nos clients génèrent +340% de leads en moyenne avec un site sur-mesure vs un template.'],
+                    ['q' => 'Et si je veux un vrai site sur-mesure ?', 'a' => 'Contactez-nous au 07.44.82.95.16 ou via la page contact. Premier échange de 30 min gratuit avec Fabrizio, sans engagement. Un site sur-mesure, sécurisé dès le départ, va bien plus loin qu\'un template.'],
                 ];
                 foreach ($tpl_faqs as $faq) :
                 ?>

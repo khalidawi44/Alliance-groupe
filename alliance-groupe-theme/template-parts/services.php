@@ -2,7 +2,7 @@
     <div class="ag-container">
         <span class="ag-tag ag-anim" data-anim="tag">Nos services</span>
         <h2 class="ag-section__title ag-anim" data-anim="title">Ce que nous faisons <em>de mieux</em></h2>
-        <p class="ag-section__desc ag-anim" data-anim="desc">Des solutions digitales complètes pour transformer votre présence en ligne en machine à générer des leads.</p>
+        <p class="ag-section__desc ag-anim" data-anim="desc">Audit de sécurité, création de sites qui inspirent confiance et maintenance — un seul interlocuteur, du conseil à la livraison.</p>
 
         <div class="ag-services__grid">
             <?php

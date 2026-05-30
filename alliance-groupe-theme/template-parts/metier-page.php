@@ -197,12 +197,12 @@ $has_screenshot = file_exists( $screenshot_file );
 
                     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:16px;margin:28px 0;max-width:640px;margin-left:auto;margin-right:auto;">
                         <div style="padding:16px 10px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.2);border-radius:10px;">
-                            <div style="font-size:1.8rem;font-weight:800;color:#D4B45C;">+340%</div>
-                            <div style="color:#b0b0bc;font-size:.82rem;">Leads générés</div>
+                            <div style="font-size:1.8rem;font-weight:800;color:#D4B45C;">48 h</div>
+                            <div style="color:#b0b0bc;font-size:.82rem;">Audit rendu</div>
                         </div>
                         <div style="padding:16px 10px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.2);border-radius:10px;">
-                            <div style="font-size:1.8rem;font-weight:800;color:#D4B45C;">3 mois</div>
-                            <div style="color:#b0b0bc;font-size:.82rem;">Rentabilité</div>
+                            <div style="font-size:1.8rem;font-weight:800;color:#D4B45C;">1</div>
+                            <div style="color:#b0b0bc;font-size:.82rem;">Interlocuteur</div>
                         </div>
                         <div style="padding:16px 10px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.2);border-radius:10px;">
                             <div style="font-size:1.8rem;font-weight:800;color:#D4B45C;">0€</div>
