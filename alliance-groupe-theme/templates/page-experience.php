@@ -920,19 +920,4 @@ const AGX_SITE_MENU = <?php echo wp_json_encode( array(
 go(0, true); loop();
 </script>
 
-<script>
-/* Mode cinéma : (re)passe en plein écran dès la première interaction du
-   visiteur sur le Voyage (le plein écran retombe au changement de page). */
-(function(){
-	function fs(){
-		var el = document.documentElement;
-		var req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
-		try{ if(req && !document.fullscreenElement){ var p = req.call(el); if(p && p.catch) p.catch(function(){}); } }catch(e){}
-	}
-	['click','touchend','keydown'].forEach(function(ev){
-		document.addEventListener(ev, function once(){ fs(); }, { once:true, passive:true });
-	});
-})();
-</script>
-
 <?php get_footer(); ?>
