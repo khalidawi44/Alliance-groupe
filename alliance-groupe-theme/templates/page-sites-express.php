@@ -66,10 +66,10 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
         <div class="ag-hero__bg"><div class="ag-hero__orb ag-hero__orb--1"></div><div class="ag-hero__orb ag-hero__orb--2"></div></div>
         <div class="ag-hero__content">
             <span class="ag-tag ag-anim" data-anim="tag">Sites Express ⚡</span>
-            <h1 class="ag-hero__title"><span class="ag-line">Ton site pro,</span><span class="ag-line"><em>livré en quelques jours.</em></span></h1>
+            <h1 class="ag-hero__title"><span class="ag-line">Ton site pro,</span><span class="ag-line"><em>sécurisé dès le départ.</em></span></h1>
             <p class="ag-hero__sub">
                 Choisis ton pack, paie en ligne, remplis un court formulaire — on s'occupe de tout.
-                <strong>Zéro rendez-vous, zéro prise de tête.</strong>
+                Rapide, soigné, et <strong>blindé dès le premier jour</strong> (pas de dette de sécurité à corriger plus tard).
             </p>
             <div class="ag-hero__buttons"><a href="#packs" class="ag-btn-gold">Voir les packs →</a></div>
         </div>
@@ -81,8 +81,8 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
         <span>🔒 Paiement sécurisé PayPal</span>
         <span>💳 Payable en 4× sans frais</span>
         <span>✅ Révisions incluses</span>
-        <span>🇫🇷 Équipe française</span>
-        <span>🙅 Sans rendez-vous</span>
+        <span>🇫🇷 Interlocuteur unique, basé à Nantes</span>
+        <span>🔒 Sécurisé dès le départ</span>
     </div>
 
     <!-- Urgence / rareté -->

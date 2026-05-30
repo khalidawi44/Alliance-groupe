@@ -234,7 +234,7 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 - ✅ **Funnel récurrent** : page **`/maintenance`** (Maintenance & Sérénité, 3 paliers 49/99/199 €/mois) = le MRR qui met « à l'aise ». Logique : audit → remédiation → maintenance.
 - ✅ **Équipe fictive PURGÉE** (chemin A solo) : `about.php` accueil (studio solo, 1 fondateur), **voyage** (`page-experience` réorienté sécurité, `$xp_team` = Fabrizio seul), **header** (méga-menu « Nos bureaux » + noms retirés), pages **bureau-naples/marrakech/nantes** redirigées 301 → `/a-propos`. `page-fondateur` = ok (Fabrizio réel). Naples conservé = **racines** partout.
   - Restes mineurs (non visibles) : `inc/ag-seo-meta.php` (entrées SEO bureaux — pages redirigent, donc inertes), `template-parts/globe-3d.php` (3 marqueurs villes sur le globe d'accueil, décoratif), `ag-demo-board.php` (noms démo du classement, gated). À nettoyer si tu veux la perfection.
-- **MLM** : isoler ambassadeurs sur sous-domaine `partenaires.alliancegroupe-inc.com` (à faire).
+- **MLM / sous-domaine (⏳ EN COURS — côté Fabrice)** : Fabrice crée le sous-domaine `partenaires.alliancegroupe-inc.com` pour y isoler tout le volet ambassadeurs/recruteurs (hors du site vitrine). Côté code : modules ambassadeur/prospection **désactivés en façade** (menu masqué, footer nettoyé, chat fictif off) mais **fichiers conservés** (`inc/ag-ambassadeurs.php`, `ag-zones.php`, `ag-prospection.php`, templates `page-ambassadeurs/classement/espace-ambassadeur`). → Quand le sous-domaine est prêt : y déplacer ces modules, sinon les supprimer définitivement si abandon total.
 - **Séparation des 2 métiers** : Création vs Sécurité. Page `/audit-securite` séparée (pas accueil).
 
 ### 🔧 Sécurité — gaps code (30/05)
