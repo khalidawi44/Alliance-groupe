@@ -31,6 +31,7 @@ if ( ! function_exists( 'ag_tester_opt' ) ) {
 			'adresse'  => 'Nantes, France',
 			'tva'      => 'TVA non applicable, art. 293 B du CGI',
 			'email'    => 'contact@alliancegroupe-inc.com',
+			'popup_img'=> '',
 		);
 		$v = get_option( 'ag_tester_' . $key, '' );
 		return ( '' === $v || false === $v ) ? ( $def[ $key ] ?? '' ) : $v;
@@ -42,7 +43,7 @@ add_action( 'admin_menu', function () {
 	add_options_page( 'Tester / Audit', 'Tester / Audit', 'manage_options', 'ag-tester', 'ag_tester_settings_page' );
 } );
 add_action( 'admin_init', function () {
-	foreach ( array( 'price', 'pay_url', 'raison', 'siret', 'adresse', 'tva', 'email' ) as $k ) {
+	foreach ( array( 'price', 'pay_url', 'raison', 'siret', 'adresse', 'tva', 'email', 'popup_img' ) as $k ) {
 		register_setting( 'ag_tester_group', 'ag_tester_' . $k );
 	}
 } );
@@ -57,6 +58,7 @@ if ( ! function_exists( 'ag_tester_settings_page' ) ) {
 			'adresse' => 'Adresse',
 			'tva'     => 'Mention TVA',
 			'email'   => 'Email de contact (facture)',
+			'popup_img' => 'Image 3D du pop-up d\'accueil (URL complète) — vide = dégradé',
 		);
 		?>
 		<div class="wrap">
@@ -273,7 +275,54 @@ if ( ! function_exists( 'ag_tester_render' ) ) {
 if ( ! function_exists( 'ag_tester_render_form' ) ) {
 	function ag_tester_render_form() {
 		$in = 'padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(212,180,92,.3);border-radius:10px;color:#fff;font-size:1rem;width:100%;box-sizing:border-box';
+		// Image 3D du gate : option, sinon fichier par défaut du thème (à fournir).
+		$gate_img = ag_tester_opt( 'popup_img' );
+		if ( ! $gate_img ) $gate_img = get_stylesheet_directory_uri() . '/assets/images/tester-3d.png';
 		?>
+		<!-- GATE plein écran : seul « Tester mon site » est cliquable. Le clic vaut
+		     acceptation de l'autorisation de diagnostic + des conditions (clic-wrap). -->
+		<div id="ag-tester-gate" role="dialog" aria-modal="true" aria-label="Tester mon site">
+			<div class="ag-gate__img" style="background-image:linear-gradient(180deg,rgba(8,8,14,.45),rgba(8,8,14,.82)),url('<?php echo esc_url( $gate_img ); ?>');"></div>
+			<div class="ag-gate__inner">
+				<span class="ag-gate__tag">🔒 Diagnostic de sécurité</span>
+				<h1 class="ag-gate__title">Votre site est-il <em>une cible</em> ?</h1>
+				<p class="ag-gate__sub">Découvrez en 30 secondes le score de sécurité de votre site et le nombre de failles exposées. Gratuit, non-intrusif.</p>
+				<button type="button" id="ag-gate__btn" class="ag-gate__btn">🔍 Tester mon site →</button>
+				<p class="ag-gate__legal">En cliquant, je certifie être <strong>propriétaire ou mandaté</strong> pour ce site, j'autorise le <strong>diagnostic non-intrusif</strong> et j'accepte les <a href="<?php echo esc_url( home_url( '/cgv' ) ); ?>" target="_blank" rel="noopener">conditions</a>.</p>
+			</div>
+		</div>
+		<style>
+		#ag-tester-gate{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:#06060c;overflow:hidden;animation:agGateIn .4s ease}
+		@keyframes agGateIn{from{opacity:0}to{opacity:1}}
+		.ag-gate__img{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+		.ag-gate__inner{position:relative;z-index:1;max-width:620px;text-align:center;padding:32px 24px;color:#fff}
+		.ag-gate__tag{display:inline-block;padding:7px 16px;background:rgba(243,122,31,.18);border:1px solid rgba(243,122,31,.55);border-radius:999px;color:#F3D27A;font-size:.82rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px}
+		.ag-gate__title{font-family:Georgia,'Playfair Display',serif;font-size:clamp(2.1rem,6vw,3.8rem);line-height:1.08;margin:0 0 16px;text-shadow:0 6px 30px rgba(0,0,0,.6)}
+		.ag-gate__title em{font-style:italic;background:linear-gradient(135deg,#F37A1F,#ff5252);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+		.ag-gate__sub{color:rgba(255,255,255,.85);font-size:1.1rem;line-height:1.6;margin:0 0 30px;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+		.ag-gate__btn{padding:20px 44px;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:900;border:none;border-radius:999px;font-size:1.2rem;letter-spacing:.5px;cursor:pointer;box-shadow:0 16px 50px rgba(243,122,31,.5);transition:transform .2s;animation:agGatePulse 2.4s ease-in-out infinite}
+		.ag-gate__btn:hover{transform:translateY(-3px) scale(1.03)}
+		@keyframes agGatePulse{0%,100%{box-shadow:0 16px 50px rgba(243,122,31,.45)}50%{box-shadow:0 16px 70px rgba(243,122,31,.8)}}
+		.ag-gate__legal{color:rgba(255,255,255,.62);font-size:.78rem;line-height:1.5;margin:22px auto 0;max-width:460px}
+		.ag-gate__legal a{color:#D4B45C}
+		body.ag-gate-open{overflow:hidden}
+		@media(prefers-reduced-motion:reduce){.ag-gate__btn{animation:none}#ag-tester-gate{animation:none}}
+		</style>
+		<script>
+		(function(){
+			document.body.classList.add('ag-gate-open');
+			var gate = document.getElementById('ag-tester-gate');
+			var btn  = document.getElementById('ag-gate__btn');
+			if(!gate||!btn) return;
+			btn.addEventListener('click', function(){
+				gate.style.display='none';
+				document.body.classList.remove('ag-gate-open');
+				try{ sessionStorage.setItem('ag_gate_ok','1'); }catch(e){}
+				var f = document.querySelector('input[name="site_url"]'); if(f) f.focus();
+			});
+		})();
+		</script>
+
 		<section style="background:linear-gradient(180deg,#0a0a0f,#14141c);color:#fff;padding:80px 24px;min-height:78vh">
 			<div style="max-width:620px;margin:0 auto;text-align:center">
 				<span style="display:inline-block;padding:6px 14px;background:rgba(243,122,31,.15);border:1px solid rgba(243,122,31,.5);border-radius:999px;color:#F3D27A;font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:18px">🔍 Diagnostic gratuit · sans engagement</span>
