@@ -2221,7 +2221,7 @@ body.ag-cookie-open{overflow:auto;}
 }
 .ag-team-card__img{
     width:100%;
-    height:280px;
+    height:380px;
     overflow:hidden;
     position:relative;
 }
@@ -2229,7 +2229,20 @@ body.ag-cookie-open{overflow:auto;}
     width:100%;
     height:100%;
     object-fit:cover;
+    object-position:center 25%; /* cadre sur le visage, pas le torse */
     transition:transform .5s;
+}
+/* Studio solo : une seule carte → on la centre et on limite sa largeur
+   pour que la photo ne s'étire/coupe pas en plein écran. */
+.ag-team__grid:has(.ag-team-card:only-child){
+    display:flex;
+    justify-content:center;
+}
+.ag-team-card:only-child{
+    max-width:420px;
+}
+.ag-team-card:only-child .ag-team-card__img{
+    height:440px;
 }
 .ag-team-card:hover .ag-team-card__img img{
     transform:scale(1.05);
