@@ -73,10 +73,6 @@
                                 <span class="ag-mega__icon">🤝</span>
                                 <span><strong>Devenir ambassadeur</strong><small>Gagne 10 % sur chaque vente</small></span>
                             </a>
-                            <a href="<?php echo esc_url(home_url('/recruteur')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🚀</span>
-                                <span><strong>Deviens recruteur</strong><small>Recrute des ambassadeurs : prime + % à vie</small></span>
-                            </a>
                             <a href="<?php echo esc_url(home_url('/classement')); ?>" class="ag-mega__link">
                                 <span class="ag-mega__icon">🏆</span>
                                 <span><strong>Classement</strong><small>Le championnat des commerciaux</small></span>
@@ -430,7 +426,6 @@
                 <button class="ag-mobile-menu__toggle" type="button">💸 Gagner de l'argent <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
                     <a href="<?php echo esc_url(home_url('/ambassadeurs')); ?>">🤝 Devenir ambassadeur (10 %)</a>
-                    <a href="<?php echo esc_url(home_url('/recruteur')); ?>">🚀 Deviens recruteur (prime + % à vie)</a>
                     <a href="<?php echo esc_url(home_url('/studio')); ?>">🎬 Studio créatif</a>
                     <a href="<?php echo esc_url(home_url('/classement')); ?>">🏆 Classement</a>
                     <a href="<?php echo esc_url(home_url('/connexion')); ?>">👤 Mon espace</a>
