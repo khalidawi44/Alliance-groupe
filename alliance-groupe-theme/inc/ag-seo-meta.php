@@ -38,8 +38,8 @@ function ag_seo_meta() {
 	// Chaque description ~150-160 chars, integre 1-3 mots-cles + ville + CTA.
 	$map = array(
 		'__home__' => array(
-			'title'   => 'Audit de sécurité & création de sites web — Nantes — Alliance Groupe',
-			'desc'    => 'Studio web indépendant à Nantes : audit de sécurité de votre site, création de sites qui inspirent confiance, et maintenance. Testez votre site gratuitement ☎ 07.44.82.95.16',
+			'title'   => 'Sécurité & création de sites web à Nantes — Alliance Groupe',
+			'desc'    => 'Studio web à Nantes : audit de sécurité, création de sites de confiance, maintenance. Testez votre site gratuitement. ☎ 07.44.82.95.16',
 			'img_alt' => 'Alliance Groupe — studio web et sécurité à Nantes',
 		),
 		// ── Services ──────────────────────────────────────────────

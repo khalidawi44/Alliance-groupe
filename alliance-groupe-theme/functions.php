@@ -76,6 +76,12 @@ if ( file_exists( $ag_seo_meta_file ) ) {
     require_once $ag_seo_meta_file;
 }
 
+// ── Durcissement sécurité de NOTRE site (xmlrpc, énumération, en-têtes, version)
+$ag_hardening_file = get_stylesheet_directory() . '/inc/ag-hardening.php';
+if ( file_exists( $ag_hardening_file ) ) {
+    require_once $ag_hardening_file;
+}
+
 // ── 1c5. Programme Ambassadeurs (inscriptions, ventes, commissions 10%, paiements)
 $ag_ambassadeurs_file = get_stylesheet_directory() . '/inc/ag-ambassadeurs.php';
 if ( file_exists( $ag_ambassadeurs_file ) ) {
