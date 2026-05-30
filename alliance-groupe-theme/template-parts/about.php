@@ -22,7 +22,8 @@ $ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
             </p>
         </div>
 
-        <!-- 4 valeurs avec icônes SVG -->
+        <!-- 2 colonnes : 4 cases à gauche · photo + présentation à droite -->
+        <div class="ag-about-refondu__cols">
         <div class="ag-about-refondu__valeurs">
             <?php
             $valeurs = array(
@@ -57,27 +58,7 @@ $ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
             <?php endforeach; ?>
         </div>
 
-        <!-- Stats cards -->
-        <div class="ag-about-refondu__stats">
-            <div class="ag-about-refondu__stat">
-                <span class="ag-about-refondu__stat-num">48h</span>
-                <span class="ag-about-refondu__stat-label">Audit livré</span>
-            </div>
-            <div class="ag-about-refondu__stat">
-                <span class="ag-about-refondu__stat-num">1</span>
-                <span class="ag-about-refondu__stat-label">Interlocuteur unique</span>
-            </div>
-            <div class="ag-about-refondu__stat">
-                <span class="ag-about-refondu__stat-num" data-count="6">6</span>
-                <span class="ag-about-refondu__stat-label">Templates métier</span>
-            </div>
-            <div class="ag-about-refondu__stat">
-                <span class="ag-about-refondu__stat-num">24h</span>
-                <span class="ag-about-refondu__stat-label">Réponse garantie</span>
-            </div>
-        </div>
-
-        <!-- L'artisan : photo + présentation (fusionné depuis l'ancienne section "Le studio") -->
+        <!-- DROITE : photo + présentation -->
         <div class="ag-about-refondu__studio">
             <?php
             $ag_fab_img = '';
@@ -102,6 +83,28 @@ $ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
                 </div>
             </article>
         </div>
+
+        </div><!-- /.ag-about-refondu__cols -->
+
+        <!-- Stats (pleine largeur, sous les 2 colonnes) -->
+        <div class="ag-about-refondu__stats">
+            <div class="ag-about-refondu__stat">
+                <span class="ag-about-refondu__stat-num">48h</span>
+                <span class="ag-about-refondu__stat-label">Audit livré</span>
+            </div>
+            <div class="ag-about-refondu__stat">
+                <span class="ag-about-refondu__stat-num">1</span>
+                <span class="ag-about-refondu__stat-label">Interlocuteur unique</span>
+            </div>
+            <div class="ag-about-refondu__stat">
+                <span class="ag-about-refondu__stat-num" data-count="6">6</span>
+                <span class="ag-about-refondu__stat-label">Templates métier</span>
+            </div>
+            <div class="ag-about-refondu__stat">
+                <span class="ag-about-refondu__stat-num">24h</span>
+                <span class="ag-about-refondu__stat-label">Réponse garantie</span>
+            </div>
+        </div>
     </div>
 
     <style>
@@ -114,7 +117,8 @@ $ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
     .ag-about-refondu__title em{background:linear-gradient(135deg,#D4B45C 0%,#F37A1F 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;font-style:italic}
     .ag-about-refondu__lead{color:rgba(255,255,255,.78);font-size:1.08rem;line-height:1.75;margin:0}
     .ag-about-refondu__lead strong{color:#D4B45C;font-weight:700}
-    .ag-about-refondu__valeurs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-bottom:60px}
+    .ag-about-refondu__cols{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:stretch;margin-bottom:50px}
+    .ag-about-refondu__valeurs{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:0}
     .ag-about-refondu__valeur{background:linear-gradient(180deg,rgba(20,20,28,.6) 0%,rgba(10,10,15,.85) 100%);border:1px solid rgba(212,180,92,.12);border-radius:16px;padding:28px 24px;transition:transform .4s cubic-bezier(.16,1,.3,1),border-color .35s ease,box-shadow .35s ease;position:relative;overflow:hidden}
     .ag-about-refondu__valeur::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(212,180,92,.4),transparent);opacity:0;transition:opacity .35s ease}
     .ag-about-refondu__valeur:hover{transform:translateY(-6px);border-color:rgba(212,180,92,.4);box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 40px rgba(212,180,92,.1)}
@@ -130,19 +134,21 @@ $ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
     @media(max-width:768px){.ag-about-refondu__stat{border-right:none;border-bottom:1px solid rgba(212,180,92,.12);padding:14px}.ag-about-refondu__stat:last-child{border-bottom:none}}
     .ag-about-refondu__stat-num{display:block;font-family:Georgia,serif;font-size:2.6rem;font-weight:800;color:#D4B45C;line-height:1;text-shadow:0 0 24px rgba(212,180,92,.3);font-variant-numeric:tabular-nums}
     .ag-about-refondu__stat-label{display:block;margin-top:6px;color:rgba(255,255,255,.65);font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;font-weight:600}
-    /* Carte studio fusionnée : photo + présentation côte à côte */
-    .ag-about-refondu__studio{margin-top:56px;display:flex;justify-content:center}
-    .ag-team-card--solo{max-width:820px;width:100%;display:grid;grid-template-columns:300px 1fr;background:linear-gradient(180deg,rgba(20,20,28,.6),rgba(10,10,15,.85));border:1px solid rgba(212,180,92,.2);border-radius:18px;overflow:hidden}
-    .ag-team-card--solo .ag-team-card__img{height:100%;min-height:340px;overflow:hidden}
+    /* Colonne droite : carte studio (photo en haut, présentation dessous) */
+    .ag-about-refondu__studio{display:flex}
+    .ag-team-card--solo{display:flex;flex-direction:column;width:100%;background:linear-gradient(180deg,rgba(20,20,28,.6),rgba(10,10,15,.85));border:1px solid rgba(212,180,92,.2);border-radius:18px;overflow:hidden}
+    .ag-team-card--solo .ag-team-card__img{width:100%;height:300px;overflow:hidden}
     .ag-team-card--solo .ag-team-card__img img{width:100%;height:100%;object-fit:cover;object-position:center 25%}
-    .ag-team-card--solo .ag-team-card__body{padding:34px 32px;display:flex;flex-direction:column;justify-content:center;text-align:left}
-    .ag-team-card--solo .ag-team-card__role{color:#D4B45C;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;font-weight:700}
-    .ag-team-card--solo .ag-team-card__name{font-family:Georgia,serif;font-size:1.9rem;color:#fff;margin:6px 0 2px}
-    .ag-team-card--solo .ag-team-card__city{color:rgba(255,255,255,.55);font-size:.9rem}
-    .ag-team-card--solo .ag-team-card__desc{color:rgba(255,255,255,.78);font-size:.98rem;line-height:1.65;margin:16px 0 18px}
+    .ag-team-card--solo .ag-team-card__body{padding:28px 30px;display:flex;flex-direction:column;justify-content:center;text-align:left;flex:1}
+    .ag-team-card--solo .ag-team-card__role{color:#D4B45C;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;font-weight:700}
+    .ag-team-card--solo .ag-team-card__name{font-family:Georgia,serif;font-size:1.7rem;color:#fff;margin:6px 0 2px}
+    .ag-team-card--solo .ag-team-card__city{color:rgba(255,255,255,.55);font-size:.88rem}
+    .ag-team-card--solo .ag-team-card__desc{color:rgba(255,255,255,.78);font-size:.95rem;line-height:1.6;margin:14px 0 16px}
     .ag-team-card--solo .ag-team-card__link{color:#F3D27A;font-weight:700;text-decoration:none;align-self:flex-start}
     .ag-team-card--solo .ag-team-card__link:hover{text-decoration:underline}
-    @media(max-width:680px){.ag-team-card--solo{grid-template-columns:1fr}.ag-team-card--solo .ag-team-card__img{min-height:300px}}
+    .ag-about-refondu__stats{margin-top:0}
+    @media(max-width:860px){.ag-about-refondu__cols{grid-template-columns:1fr;gap:20px}}
+    @media(max-width:460px){.ag-about-refondu__valeurs{grid-template-columns:1fr}}
     </style>
 </section>
 
