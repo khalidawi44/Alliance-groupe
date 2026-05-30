@@ -210,18 +210,42 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 
 ---
 
-## 9. Taches restantes (état au 29 mai)
+## 9. Taches restantes (état au 30 mai)
 
 ### ✅ Fait
 - **API SMS Free active** (alertes SMS OK sur la ligne pro `07 44 82 95 16`). WhatsApp CallMeBot = optionnel.
 - **Telegram** équipe (interne) + canal clients configurés dans Réglages.
 - **Continuité entre conversations** (29/05) : hook `SessionStart` (`.claude/hooks/session-start.sh`) + tampon auto de l'en-tête `HANDOFF.md` à **chaque commit** (pre-commit via `scripts/install-git-hooks.sh` + `scripts/stamp-handoff.sh`, réinstallés à chaque session). Lock `ag-starter-artisan` régénéré (débloquait les commits).
 - **Audit + correctifs sécurité** (29/05, mergés sur `main`) : voir **`SECURITY-FIXES.md`** (10 findings, 8 corrigés). Faits : clé HMAC + IV AES, API licences (resend/download/rate-limit), webhook Stripe obligatoire, commission PayPal sur email, sync GitHub durcie (auto-sync conservée : `TRUSTED_REPOS` + intégrité tarball), cookies secure + anti-SSRF, auto-pull durci.
+- **Voyage immersif** (`templates/page-experience.php`, 30/05) : fix globe page 2 (Terre dans la galaxie, pins bureaux qui suivent rotation/zoom, tournable+zoomable), avance auto coupée, menu accordéon = vrai menu accueil, cartes+CTA ouverts en iframe interne.
+- **Musique site-wide** (`inc/ag-music.php`, 30/05) : lecteur de fond persistant (reprise piste+position via sessionStorage), playlist dossier `son/` + URLs (`ag_xp_music_urls`), état partagé avec le voyage. ON par défaut + volume.
+- **Page audit-first** (`templates/page-audit-securite.php` + `assets/css/audit-home.css`, 30/05) : landing « cabinet d'audit » générique (PAS WordPress en façade), styles dédiés + fonts enqueue, styles thème déchargés. **Page WP `/audit-securite` créée** — gardée SÉPARÉE (pas en accueil, décision : séparer Création vs Sécurité).
+- **Vidéos Remotion** (`video-remotion/`) : compositions `AG-Recrutement` (Naples), `AG-Vente-247`, `AG-Luxe`, `AG-Naples-Suite`, `AG-Naples-Complet`, `AG-Long` (Naples 1+2, musique douce + fondu). À RENDRE sur le PC.
 
 ### 🔒 Sécurité — à activer par Khalid/Fabrice (voir `SECURITY-SETUP.md`)
 - **`wp-config.php`** : définir `AG_LICENCE_HMAC_KEY` (64 car.) et **`AG_STRIPE_WEBHOOK_SECRET`** (⚠️ sinon webhook Stripe = 503, plus de licence auto Stripe).
 - **GitHub** : activer 2FA + protéger `main` (block force pushes + restrict deletions, **sans** « require PR »). Repo gardé **public** (jsDelivr).
 - **Déployer** : Outils → Import AG → SYNC GitHub + purge cache.
+
+### 🧭 Stratégie EN ATTENTE (décision non tranchée — NE PAS coder avant)
+- **Identité/équipe** : choisir chemin **A** (studio 1 personne, Fabrice/Fabrizio Nantes) ou **B** (collectif de freelances vérifiables). ⚠️ **NE PAS toucher la page À propos / l'équipe** avant décision. Ne jamais réintroduire l'équipe internationale fictive.
+- **MLM** : isoler ambassadeurs/recruteurs sur sous-domaine `partenaires.alliancegroupe-inc.com` **ET supprimer le niveau « recruteur »** (limite légale FR). Retiré de l'accueil.
+- **Séparation des 2 métiers** : Création (sites) vs Sécurité (audit). Page `/audit-securite` volontairement séparée (pas accueil).
+
+### 🔧 Sécurité — gaps code restants (optionnel, à faire ici)
+- `deploy/` : **forcer FTPS** (lftp `ssl-force`). 
+- API licences : **real-IP derrière proxy** (`X-Forwarded-For` maîtrisé) — actuellement `REMOTE_ADDR` seul.
+- **Divergence des 2 conversations** : HMAC (clé aléatoire DB ici ≠ salts WP côté web) et auto-pull (remote+ff-only ici ≠ GPG) — choisir une version par sujet.
+
+### 🗂️ Fichiers / repos
+- **`OPSEC.md`** → repo **PRIVÉ `ag-audit`** (PAS dans Alliance-groupe qui est **public**).
+- **`AG-AUDIT.md`** → pas encore poussé (me le coller pour l'ajouter à la racine).
+- **`tools.js` / `report.js`** → repo privé `ag-audit` (à pousser par toi, pas d'ici).
+- ⚠️ **CSV de données perso (membres d'un site militant)** : NE JAMAIS committer ; à mettre dans le coffre **VeraCrypt** et supprimer des uploads. Aucun usage ici.
+
+### 🎬 Vidéo / Musique
+- **Rendre les vidéos Remotion** sur le PC (voir §Remotion ci-dessous) puis poster/uploader.
+- **Ajouter d'autres musiques style Naples** (libres de droits) : fichiers dans `assets/images/son/` OU URLs dans option `ag_xp_music_urls`. (1 seul titre actuellement.)
 
 ### 🟡 À faire (action de Khalid/Fabrice — dépend de lui)
 1. **Tester le partage du Studio** sur téléphone : vidéos/images vers TikTok/Snap/Insta via le menu « Partager » natif.
