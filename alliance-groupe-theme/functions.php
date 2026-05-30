@@ -184,6 +184,31 @@ if ( file_exists( $ag_music_file ) ) {
     require_once $ag_music_file;
 }
 
+// ── Landing "Audit sécurité" (home v2) : styles dédiés + déchargement des
+//    styles du thème sur ce template pour un rendu propre, sans conflit. ──
+add_action( 'wp_enqueue_scripts', function () {
+    if ( ! is_page_template( 'templates/page-audit-securite.php' ) ) {
+        return;
+    }
+    foreach ( array( 'ag-theme-style', 'ag-main-css', 'ag-cinema-upgrades', 'ag-google-fonts' ) as $h ) {
+        wp_dequeue_style( $h );
+        wp_deregister_style( $h );
+    }
+    wp_enqueue_style(
+        'ag-audit-fonts',
+        'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Manrope:wght@200..800&family=JetBrains+Mono:wght@400;500&display=swap',
+        array(),
+        null
+    );
+    $ag_audit_css = get_stylesheet_directory() . '/assets/css/audit-home.css';
+    wp_enqueue_style(
+        'ag-audit-home',
+        get_stylesheet_directory_uri() . '/assets/css/audit-home.css',
+        array( 'ag-audit-fonts' ),
+        file_exists( $ag_audit_css ) ? filemtime( $ag_audit_css ) : '1.0'
+    );
+}, 100 );
+
 // ── 1d. Shortcode [ag_promo_video] : insère la vidéo promo Alliance ─────
 // Usage Gutenberg : ajouter un block "Shortcode" et taper [ag_promo_video]
 // Attributs : title="..." lead="..." cta_label="..." cta_url="..."
