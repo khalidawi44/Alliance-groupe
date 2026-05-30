@@ -130,6 +130,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__sky{position:absolute;inset:0;z-index:1;opacity:0;transition:opacity 1.2s ease;pointer-events:none}
 .agx.is-menu .agx__sky{opacity:1}
 .agx.is-globe .agx__sky{opacity:1}
+.agx.is-cyber .agx__sky{opacity:1}
 /* Points cliquables sur le globe Terre (station Monde) */
 .agx__globe-markers{position:absolute;inset:0;z-index:7;pointer-events:none;opacity:0;transition:opacity .8s ease}
 .agx__globe-markers.is-on{opacity:1}
@@ -143,7 +144,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__sky3d{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1;opacity:0;visibility:hidden;transition:opacity 1.4s ease;pointer-events:none;background:#05060a}
 .agx.is-menu .agx__sky3d{opacity:1;visibility:visible}
 .agx.is-globe .agx__sky3d{opacity:1;visibility:visible}
-.agx.is-cyber .agx__sky3d{opacity:1;visibility:visible;pointer-events:auto;z-index:3}
+.agx.is-cyber .agx__sky3d{opacity:1;visibility:visible;pointer-events:auto;z-index:3;background:transparent}
 .agx__sky::before,.agx__sky::after{content:'';position:absolute;inset:-50%;background-repeat:repeat;background-image:
 	radial-gradient(1.5px 1.5px at 12% 22%,#fff,transparent),radial-gradient(1.5px 1.5px at 28% 64%,#fff,transparent),
 	radial-gradient(2px 2px at 44% 33%,#fff,transparent),radial-gradient(1.5px 1.5px at 61% 78%,#fff,transparent),
