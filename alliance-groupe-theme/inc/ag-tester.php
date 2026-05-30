@@ -775,6 +775,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 									<input type="hidden" name="crm_phone" value="<?php echo esc_attr( $phone ); ?>"><input type="hidden" name="crm_addr" value="<?php echo esc_attr( $ct['address'] ?? '' ); ?>">
 									<input type="hidden" name="crm_vulns" value="<?php echo esc_attr( implode( ', ', array_slice( $pb, 0, 6 ) ) ); ?>"><input type="hidden" name="crm_segment" value="securite">
 									<button type="submit" name="ag_add_crm" value="1" class="button button-small">➕ Prospect Sécurité</button>
+									<button type="submit" name="ag_send_tg" value="1" class="button button-small">📲 Telegram</button>
 								</form>
 							</div>
 							<div id="ags<?php echo $i; ?>" style="display:none;margin-top:8px">
@@ -801,6 +802,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 									<input type="hidden" name="crm_phone" value="<?php echo esc_attr( $phone ); ?>"><input type="hidden" name="crm_addr" value="<?php echo esc_attr( $ct['address'] ?? '' ); ?>">
 									<input type="hidden" name="crm_vulns" value="<?php echo esc_attr( implode( ', ', array_slice( $pb, 0, 6 ) ) ); ?>"><input type="hidden" name="crm_segment" value="creation">
 									<button type="submit" name="ag_add_crm" value="1" class="button button-small">➕ Prospect Création</button>
+									<button type="submit" name="ag_send_tg" value="1" class="button button-small">📲 Telegram</button>
 								</form>
 							</div>
 							<div id="agc<?php echo $i; ?>" style="display:none;margin-top:8px">
