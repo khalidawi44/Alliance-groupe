@@ -39,12 +39,22 @@ add_filter( 'rest_endpoints', function ( $endpoints ) {
 	return $endpoints;
 } );
 
-/* ---- 3. Énumération d'auteur ?author=N et archives /author/ ---- */
+/* ---- 3. Énumération d'auteur ?author=N et archives /author/ ----
+ * IMPORTANT : on intercepte ?author= dès 'init' (priorité 1), AVANT le
+ * redirect_canonical de WordPress (template_redirect, priorité 10) qui, lui,
+ * révélait le login en redirigeant vers /author/{login}/. */
+add_action( 'init', function () {
+	if ( ! is_admin() && isset( $_GET['author'] ) && '' !== $_GET['author'] ) {
+		wp_safe_redirect( home_url( '/' ), 301 );
+		exit;
+	}
+}, 1 );
 add_action( 'template_redirect', function () {
-	if ( is_admin() ) return;
-	if ( isset( $_GET['author'] ) && '' !== $_GET['author'] ) { wp_safe_redirect( home_url( '/' ), 301 ); exit; }
-	if ( is_author() ) { wp_safe_redirect( home_url( '/' ), 301 ); exit; }
-} );
+	if ( ! is_admin() && is_author() ) {
+		wp_safe_redirect( home_url( '/' ), 301 );
+		exit;
+	}
+}, 0 );
 
 /* ---- 4. En-têtes de sécurité HTTP + retrait des divulgations ---- */
 add_action( 'send_headers', function () {

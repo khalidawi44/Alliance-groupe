@@ -594,7 +594,7 @@ if ( ! function_exists( 'ag_audit_msg_securite' ) ) {
 
 		$m  = "Bonjour$hi,\n\n";
 		$m .= "⚠️ Je viens d'analyser la sécurité de votre site ($host) et je dois vous alerter : ";
-		$m .= "j'ai détecté " . count( $S ) . " faille(s)" . ( $crit ? ", dont $crit CRITIQUE(S)" : '' ) . ". Score de sécurité : $score/100.\n\n";
+		$m .= "j'ai détecté " . count( $S ) . " faille(s) de sécurité" . ( $crit ? ", dont $crit CRITIQUE(S)" : '' ) . ". Score global : $score/100.\n\n";
 		$m .= "Concrètement, voici ce que ça veut dire pour vous :\n\n";
 		$n = 0;
 		foreach ( $S as $c ) {
@@ -620,7 +620,7 @@ if ( ! function_exists( 'ag_audit_sms_securite' ) ) {
 		$score = (int) ( $audit['score'] ?? 0 );
 		list( $S ) = ag_audit_split_fails( $audit );
 		$f1 = ! empty( $S[0]['name'] ) ? $S[0]['name'] : 'failles de securite';
-		$t  = "ALERTE securite $host : " . count( $S ) . " faille(s), score $score/100. Risque : piratage, vol de vos donnees clients, site hors-ligne ou rancon. ";
+		$t  = "ALERTE securite $host : " . count( $S ) . " faille(s) de securite, score global $score/100. Risque : piratage, vol de vos donnees clients, site hors-ligne ou rancon. ";
 		$t .= $order_link ? "Votre rapport complet : $order_link" : "Je peux vous aider a corriger.";
 		$t .= " Fabrizio-Alliance Groupe. STOP pour stop.";
 		return $t;
