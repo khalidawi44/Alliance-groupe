@@ -36,7 +36,7 @@ $ag_audit_cta      = $ag_audit_args['cta']      ?? 'Réserver mon créneau →';
 					<span>⏱️ 30 min</span>
 					<span>📹 100% visio</span>
 					<span>📝 3 actions concrètes</span>
-					<span>🇫🇷 Équipe française</span>
+					<span>📍 Interlocuteur unique</span>
 				</div>
 				<a href="<?php echo esc_url( home_url( '/sur-mesure' ) ); ?>" class="ag-audit-cta__btn">
 					<?php echo esc_html( $ag_audit_cta ); ?>

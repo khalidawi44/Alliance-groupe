@@ -50,7 +50,7 @@ function ag_seo_meta() {
 		),
 		'service-ia' => array(
 			'title'   => 'Agence IA & Automatisation pour PME — Alliance Groupe',
-			'desc'    => 'Agence IA & automatisation : chatbots, workflows n8n, agents OpenAI/Claude pour PME. Gains de temps mesurables. Audit IA gratuit ☎ Nantes & Marrakech.',
+			'desc'    => 'IA & automatisation : chatbots, workflows, agents OpenAI/Claude pour PME. Gains de temps mesurables, sécurisés. Audit gratuit ☎ Nantes.',
 			'img_alt' => 'Service IA et automatisation Alliance Groupe',
 		),
 		'service-seo' => array(
