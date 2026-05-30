@@ -130,60 +130,82 @@ get_header();
 <!-- "Choisissez votre parcours" — 4 panneaux priorisés (audit / création / maintenance / templates) -->
 <?php get_template_part('template-parts/paths-hero'); ?>
 
-<!-- 3 cadeaux pour démarrer (lead magnets) -->
-<?php /* MENAGE: get_template_part('template-parts/cadeaux-banner'); */ ?>
-
-<!-- Marquee -->
-<?php /* MENAGE: get_template_part('template-parts/marquee'); */ ?>
-
-<!-- 🎯 ENTONNOIR PAR PRIORITE :
-       P1) VENDRE      → offres Sites Express (prix fixes)
-       P1b) sur-mesure → services
-       P2) RECRUTER    → programme ambassadeurs (10%)
-       P3) CARITATIF   → Programme Racines
-       puis : preuves & contenu (templates, metiers, equipe, process, realisations, FAQ) -->
-
-<!-- P1/ VENDRE — offres + confiance (4x sans frais, sécurisé) + avis -->
-<?php get_template_part('template-parts/home-offres'); ?>
-
-<!-- P2/ GAGNER — Ambassadeur + Studio fusionnés (2 colonnes) -->
-<?php /* MENAGE: get_template_part('template-parts/home-gagner'); */ ?>
-
-<!-- P3/ SOLIDAIRE — Racines + Associations fusionnés (2 colonnes) -->
-<?php /* MENAGE: get_template_part('template-parts/home-solidaire'); */ ?>
-
-<!-- Templates gratuits (aimant a prospects) -->
-<?php get_template_part('template-parts/templates-cta'); ?>
-
-<!-- Section "metiers" — scroll-jacking GSAP plein ecran style Apple -->
-<?php get_template_part('template-parts/alliance-scroll-fx'); ?>
-
-<!-- About : Qui sommes-nous + valeurs + equipe -->
-<?php get_template_part('template-parts/about'); ?>
-
-<!-- Process « Notre méthode » retiré sur demande user. -->
-<?php /* MENAGE: get_template_part('template-parts/process'); */ ?>
-
-<!-- Parallax 1 (transition) -->
-<section class="ag-parallax" style="background-image:url('<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg' ); ?>');">
-    <div class="ag-parallax__overlay"></div>
-    <div class="ag-parallax__content ag-anim" data-anim="parallax-text">
-        <p class="ag-parallax__quote">"La technologie seule ne suffit pas. C'est la technologie mariée au design qui nous donne le résultat qui fait chanter notre cœur."</p>
-    </div>
-</section>
-
-<!-- Réalisations → témoignages style avis Google (avis + ce que j'ai fait) -->
+<!-- Preuve sociale REMONTÉE : avis Google (avant de demander d'acheter) -->
 <?php get_template_part('template-parts/temoignages'); ?>
 
-<!-- Globe 3D : présence internationale Nantes / Marrakech / Naples -->
-<?php // Section "atelier 3d" retirée sur demande user. ?>
+<!-- Bande de réassurance (remplace l'ancienne citation parallax) -->
+<section class="ag-trust" aria-label="Garanties">
+	<div class="ag-trust__inner">
+		<span class="ag-trust__item">⏱️ Réponse sous 24 h</span>
+		<span class="ag-trust__sep">·</span>
+		<span class="ag-trust__item">📝 Devis gratuit</span>
+		<span class="ag-trust__sep">·</span>
+		<span class="ag-trust__item">💳 Paiement 4× sans frais</span>
+		<span class="ag-trust__sep">·</span>
+		<span class="ag-trust__item">🔐 Conforme RGPD</span>
+		<span class="ag-trust__sep">·</span>
+		<span class="ag-trust__item">👤 Interlocuteur unique</span>
+	</div>
+</section>
+<style>
+.ag-trust{background:#0a0a12;border-top:1px solid rgba(212,180,92,.16);border-bottom:1px solid rgba(212,180,92,.16);padding:18px 20px}
+.ag-trust__inner{max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 14px;text-align:center}
+.ag-trust__item{color:rgba(255,255,255,.85);font-size:.92rem;font-weight:600;white-space:nowrap}
+.ag-trust__sep{color:rgba(212,180,92,.5)}
+@media(max-width:600px){.ag-trust__sep{display:none}.ag-trust__item{font-size:.85rem}}
+</style>
 
-<?php /* MENAGE: get_template_part('template-parts/globe-3d'); */ ?>
+<!-- P1/ VENDRE — offres création + maintenance (4x sans frais, sécurisé) -->
+<?php get_template_part('template-parts/home-offres'); ?>
+
+<!-- Templates métier — revenu passif, discret, plus bas -->
+<?php get_template_part('template-parts/templates-cta'); ?>
+
+<!-- About : studio solo (Fabrizio) — confiance / artisan unique -->
+<?php get_template_part('template-parts/about'); ?>
 
 <!-- FAQ -->
 <?php get_template_part('template-parts/faq'); ?>
 
 <!-- CTA -->
 <?php get_template_part('template-parts/cta'); ?>
+
+<!-- Bouton audit collant (sticky) + renversement du risque -->
+<div class="ag-stickycta" id="ag-stickycta" aria-hidden="false">
+	<div class="ag-stickycta__inner">
+		<span class="ag-stickycta__txt">Si on ne trouve rien d'exploitable, <strong>on vous le dit.</strong></span>
+		<a href="<?php echo esc_url( home_url( '/ag-audit' ) ); ?>" class="ag-stickycta__btn">🔒 Auditer mon site →</a>
+	</div>
+</div>
+<style>
+.ag-stickycta{position:fixed;left:0;right:0;bottom:0;z-index:9990;transform:translateY(120%);transition:transform .4s cubic-bezier(.16,1,.3,1);pointer-events:none}
+.ag-stickycta.is-on{transform:none;pointer-events:auto}
+.ag-stickycta__inner{max-width:760px;margin:0 auto 14px;display:flex;align-items:center;gap:16px;justify-content:space-between;background:rgba(12,12,20,.92);backdrop-filter:blur(10px);border:1px solid rgba(212,180,92,.35);border-radius:100px;padding:10px 12px 10px 22px;box-shadow:0 16px 50px rgba(0,0,0,.5)}
+.ag-stickycta__txt{color:rgba(255,255,255,.9);font-size:.92rem;line-height:1.3}
+.ag-stickycta__txt strong{color:#F3D27A}
+.ag-stickycta__btn{flex-shrink:0;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:800;text-decoration:none;padding:13px 22px;border-radius:100px;font-size:.95rem;white-space:nowrap;transition:transform .2s}
+.ag-stickycta__btn:hover{transform:scale(1.03)}
+@media(max-width:560px){
+	.ag-stickycta__inner{margin:0 10px 10px;padding:8px 8px 8px 16px;gap:10px}
+	.ag-stickycta__txt{display:none}
+	.ag-stickycta__btn{flex:1;text-align:center;padding:14px}
+}
+</style>
+<script>
+(function(){
+	var el = document.getElementById('ag-stickycta');
+	if(!el) return;
+	var hero = document.getElementById('ag-main-content');
+	function onScroll(){
+		// Apparaît dès qu'on a dépassé le hero, disparaît tout en bas (footer)
+		var past = window.scrollY > (hero ? hero.offsetHeight * 0.8 : 600);
+		var nearBottom = (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 220);
+		if(past && !nearBottom){ el.classList.add('is-on'); }
+		else { el.classList.remove('is-on'); }
+	}
+	window.addEventListener('scroll', onScroll, {passive:true});
+	onScroll();
+})();
+</script>
 
 <?php get_footer(); ?>
