@@ -243,7 +243,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		<span class="ag-hack__tag">⚠️ Simulation</span>
 		<h2 class="ag-hack__title" data-text="Un piratage ressemble à ça.">Un piratage ressemble à ça.</h2>
 		<p class="ag-hack__sub">Écran noir, données volées, site hors-ligne. Le jour où ça arrive, il est trop tard. Le seul moyen de savoir si vous êtes exposé : un audit.</p>
-		<a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-hack__btn">🔍 AUDITER MON SITE →</a>
+		<a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-hack__btn" id="ag-hack-btn">🔍 AUDITER MON SITE →</a>
+		<p class="ag-hack__loading" id="ag-hack-loading" aria-hidden="true">▸ Lancement de l'audit de sécurité…</p>
 	</div>
 </div>
 <style>
@@ -270,6 +271,10 @@ body.ag-hack-lock{overflow:hidden}
 .ag-hack__btn{display:inline-block;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:900;text-decoration:none;padding:20px 42px;border-radius:999px;font-size:1.2rem;letter-spacing:.5px;box-shadow:0 16px 50px rgba(243,122,31,.55);animation:agHackPulse 2s ease-in-out infinite}
 .ag-hack__btn:hover{transform:translateY(-2px) scale(1.03)}
 @keyframes agHackPulse{0%,100%{box-shadow:0 16px 50px rgba(243,122,31,.45)}50%{box-shadow:0 16px 80px rgba(243,122,31,.9)}}
+.ag-hack__loading{display:none;margin:20px 0 0;color:#39ff14;font-family:"Courier New",monospace;font-size:1rem;letter-spacing:1px;text-shadow:0 0 8px rgba(57,255,20,.6)}
+.ag-hack.is-loading .ag-hack__loading{display:block;animation:agHackBlink 1s steps(2) infinite}
+.ag-hack.is-loading .ag-hack__btn{opacity:.4;pointer-events:none}
+@keyframes agHackBlink{0%,100%{opacity:1}50%{opacity:.35}}
 @media(prefers-reduced-motion:reduce){.ag-hack__scroll,.ag-hack__veil,.ag-hack__title::before,.ag-hack__title::after,.ag-hack__btn{animation:none}}
 </style>
 <script>
@@ -284,6 +289,19 @@ body.ag-hack-lock{overflow:hidden}
 		try{ sessionStorage.setItem('ag_menace_pop','1'); }catch(e){}
 		pop.classList.add('is-on'); pop.setAttribute('aria-hidden','false');
 		document.body.classList.add('ag-hack-lock');
+	}
+	// Clic AUDITER → vrai plein écran cinéma, puis bascule sur l'audit.
+	var btn = document.getElementById('ag-hack-btn');
+	if(btn){
+		btn.addEventListener('click', function(e){
+			e.preventDefault();
+			var go = btn.getAttribute('href');
+			pop.classList.add('is-loading');
+			var el = document.documentElement;
+			var req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+			try{ if(req){ var p = req.call(el); if(p && p.catch) p.catch(function(){}); } }catch(err){}
+			setTimeout(function(){ window.location.href = go; }, 1100);
+		});
 	}
 	if('IntersectionObserver' in window){
 		var io = new IntersectionObserver(function(entries){
