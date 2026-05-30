@@ -245,7 +245,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		<span class="ag-hack__tag">⚠️ Simulation</span>
 		<h2 class="ag-hack__title" data-text="Un piratage ressemble à ça.">Un piratage ressemble à ça.</h2>
 		<p class="ag-hack__sub">Écran noir, données volées, site hors-ligne. Le jour où ça arrive, il est trop tard. Le seul moyen de savoir si vous êtes exposé : un audit.</p>
-		<a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-hack__btn" id="ag-hack-btn">🔍 AUDITER MON SITE →</a>
+		<a href="<?php echo esc_url( home_url( '/le-voyage' ) ); ?>" class="ag-hack__btn" id="ag-hack-btn">🔍 AUDITER MON SITE →</a>
 		<p class="ag-hack__loading" id="ag-hack-loading" aria-hidden="true">▸ Lancement de l'audit de sécurité…</p>
 	</div>
 </div>
@@ -289,7 +289,8 @@ body.ag-hack-lock{overflow:hidden}
 	var sec = document.querySelector('.ag-menace');
 	if(!pop||!sec) return;
 	var btn = document.getElementById('ag-hack-btn');
-	var go  = btn ? btn.getAttribute('href') : '<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>';
+	// Le mur enchaîne sur le PARCOURS (Voyage immersif avec le globe Kaspersky).
+	var go  = '<?php echo esc_url( home_url( '/le-voyage' ) ); ?>';
 	var shown = false, fired = false;
 	var endSentinel = document.getElementById('ag-menace-end');
 

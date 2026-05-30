@@ -23,7 +23,7 @@ if ( is_admin() ) {
 
 // Crée les pages maison (sur-mesure, consultation) si elles n'existent pas.
 add_action( 'admin_init', function () {
-    if ( get_option( 'ag_auto_pages_v8' ) ) return;
+    if ( get_option( 'ag_auto_pages_v9' ) ) return;
     $pages = array(
         'sur-mesure'    => array( 'Projet sur-mesure', 'templates/page-sur-mesure.php' ),
         'consultation'  => array( 'Consultation payante', 'templates/page-consultation.php' ),
@@ -32,6 +32,7 @@ add_action( 'admin_init', function () {
         'maintenance'   => array( 'Maintenance & Sérénité', 'templates/page-maintenance.php' ),
         'accueil-v2'    => array( 'Accueil (audit-first)', 'templates/page-accueil-epuree.php' ),
         'tester-mon-site' => array( 'Tester mon site', 'templates/page-tester.php' ),
+        'le-voyage'     => array( 'Le Voyage', 'templates/page-experience.php' ),
         'retours'       => array( 'Politique de retour', 'templates/page-retours.php' ),
         'livraison'     => array( 'Politique de livraison', 'templates/page-livraison.php' ),
     );
@@ -46,7 +47,7 @@ add_action( 'admin_init', function () {
             'page_template' => $p[1],
         ) );
     }
-    update_option( 'ag_auto_pages_v8', 1 );
+    update_option( 'ag_auto_pages_v9', 1 );
 } );
 
 // L'ancienne page de prise de RDV (Cal.com) redirige vers l'offre sur-mesure.
@@ -518,6 +519,7 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-systeme-prospection.php'] = 'Système de prospection';
     $templates['templates/page-maintenance.php']     = 'Maintenance & Sérénité';
     $templates['templates/page-tester.php']          = 'Tester mon site';
+    $templates['templates/page-experience.php']      = 'Expérience immersive (Le Voyage)';
     $templates['templates/page-accueil-epuree.php']  = 'Accueil épurée (audit-first)';
     $templates['templates/page-retours.php']         = 'Politique de retour';
     $templates['templates/page-livraison.php']       = 'Politique de livraison';

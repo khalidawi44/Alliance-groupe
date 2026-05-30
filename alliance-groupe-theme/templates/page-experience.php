@@ -340,7 +340,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 	<div class="agx__cap" id="agx-cap">
 		<div class="pre" id="agx-pre">BIENVENUE CHEZ —</div>
 		<h1 class="ttl" id="agx-ttl">Alliance Groupe</h1>
-		<div class="line" id="agx-line">Agence web &amp; IA · Nantes · Naples · Marrakech.</div>
+		<div class="line" id="agx-line">Studio web &amp; sécurité · Nantes · Naples.</div>
 	</div>
 
 	<div class="agx__constel" id="agx-menu">
@@ -425,9 +425,9 @@ const BASE = '<?php echo esc_js( $base ); ?>';
 const STATIONS = [
 	{ pre:'VOTRE SITE EST-IL UNE CIBLE ?', ttl:'Alliance Groupe', line:"La plupart des sites piratés l'étaient sur une faille connue. On va trouver la vôtre avant les autres.", media:'video' },
 	{ pre:'✦ LA MENACE — EN DIRECT', ttl:'Les attaques, maintenant', line:'Carte mondiale des cyberattaques en temps réel. La question n’est pas « si », mais « quand ».', media:'space', iframe:'https://cybermap.kaspersky.com/fr/widget/dynamic/dark' },
-	{ pre:'✦ MES RACINES', ttl:'Naples', line:'Né à Naples, maison familiale. On y apprend à protéger ce qui compte — votre site aussi.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', size:5.2, baseY:1.4 },
+	{ pre:'✦ LA FONDATION', ttl:'Naples', line:'Tout part de Naples : maison familiale, mes racines. C’est là qu’on apprend à protéger ce qui compte — et c’est exactement ce que je fais pour votre site. La sécurité n’est pas une option, c’est la fondation.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', size:5.2, baseY:1.4 },
 	{ pre:'✦ ÉTAPE 1 — L’AUDIT', ttl:'Je révèle les failles', line:'En 48 h, un rapport clair de tout ce qui expose votre site. Sans jargon, sans engagement.', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/nantes-1.jpg' ); ?>' },
-	{ pre:'✦ ÉTAPE 2 — JE SÉCURISE', ttl:'Je reprends ou je recrée', line:'Je corrige votre site existant — ou j’en construis un neuf, sécurisé dès le départ. Puis je le maintiens.', model:'marrakech-tower.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/marrakech-1.jpg' ); ?>', baseY:-2.2 },
+	{ pre:'✦ ÉTAPE 2 — JE SÉCURISE', ttl:'Je reprends ou je recrée', line:'Je corrige votre site existant — ou j’en construis un neuf, sécurisé dès le départ. Puis je le maintiens.', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/nantes-2.jpg' ); ?>' },
 	{ pre:'✦ ON COMMENCE ?', ttl:'Par où démarrer', line:'Touchez une étoile : audit, reprise, création sécurisée, maintenance.', media:'space', menu:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0.2&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_hint=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' }
 ];
 const GLOBE_MARKERS = [
@@ -918,6 +918,21 @@ const AGX_SITE_MENU = <?php echo wp_json_encode( array(
 })();
 
 go(0, true); loop();
+</script>
+
+<script>
+/* Mode cinéma : (re)passe en plein écran dès la première interaction du
+   visiteur sur le Voyage (le plein écran retombe au changement de page). */
+(function(){
+	function fs(){
+		var el = document.documentElement;
+		var req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+		try{ if(req && !document.fullscreenElement){ var p = req.call(el); if(p && p.catch) p.catch(function(){}); } }catch(e){}
+	}
+	['click','touchend','keydown'].forEach(function(ev){
+		document.addEventListener(ev, function once(){ fs(); }, { once:true, passive:true });
+	});
+})();
 </script>
 
 <?php get_footer(); ?>
