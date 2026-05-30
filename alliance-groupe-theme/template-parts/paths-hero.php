@@ -13,7 +13,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$ag_img = get_stylesheet_directory_uri() . '/assets/images/produits/';
+$ag_img = get_stylesheet_directory_uri() . '/assets/images/cities/';
 $ag_paths = array(
 	array(
 		'emoji' => '🔒',
@@ -24,7 +24,7 @@ $ag_paths = array(
 		'url'   => home_url( '/ag-audit' ),
 		'tint'  => '#0f0f1c',
 		'glow'  => '#F37A1F',
-		'img'   => $ag_img . 'produit-performance.jpg',
+		'img'   => $ag_img . 'nantes-3.jpg',
 	),
 	array(
 		'emoji' => '✨',
@@ -35,7 +35,7 @@ $ag_paths = array(
 		'url'   => home_url( '/sites-express' ),
 		'tint'  => '#1a1a26',
 		'glow'  => '#D4B45C',
-		'img'   => $ag_img . 'produit-essentiel.jpg',
+		'img'   => $ag_img . 'naples-2.jpg',
 	),
 	array(
 		'emoji' => '🛡️',
@@ -46,7 +46,7 @@ $ag_paths = array(
 		'url'   => home_url( '/maintenance' ),
 		'tint'  => '#0f1c14',
 		'glow'  => '#28a745',
-		'img'   => $ag_img . 'produit-serenite.jpg',
+		'img'   => $ag_img . 'nantes-2.jpg',
 	),
 	array(
 		'emoji' => '📦',
@@ -57,7 +57,7 @@ $ag_paths = array(
 		'url'   => home_url( '/templates-wordpress' ),
 		'tint'  => '#1c1410',
 		'glow'  => '#D4B45C',
-		'img'   => $ag_img . 'produit-boutique.jpg',
+		'img'   => $ag_img . 'marrakech-2.jpg',
 	),
 );
 ?>
@@ -102,8 +102,8 @@ $ag_paths = array(
 .ag-paths__grid{max-width:1400px;margin:0 auto;display:flex;gap:14px;height:520px;position:relative;z-index:1}
 .ag-path{flex:1;min-width:0;position:relative;overflow:hidden;border-radius:22px;text-decoration:none;color:#fff;border:1px solid rgba(212,180,92,.18);background:var(--ag-tint);transition:flex .55s cubic-bezier(.16,1,.3,1),border-color .35s ease,box-shadow .35s ease;cursor:pointer}
 /* Photo de fond + voile sombre pour garder le texte lisible */
-.ag-path__photo{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.5;z-index:0;transition:opacity .55s ease,transform .7s ease;will-change:transform,opacity}
-.ag-path__veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,7,14,.35) 0%,rgba(7,7,14,.55) 45%,var(--ag-tint) 100%);z-index:1}
+.ag-path__photo{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.42;z-index:0;transition:opacity .55s ease,transform .7s ease;will-change:transform,opacity}
+.ag-path__veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,7,14,.55) 0%,rgba(7,7,14,.62) 42%,var(--ag-tint) 100%);z-index:1}
 .ag-path__bg{position:absolute;inset:0;z-index:2;background:
 	radial-gradient(circle at 30% 20%,var(--ag-glow) 0%,transparent 38%),
 	radial-gradient(circle at 75% 90%,var(--ag-glow) 0%,transparent 50%);
