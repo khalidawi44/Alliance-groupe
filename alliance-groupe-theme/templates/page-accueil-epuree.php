@@ -39,6 +39,14 @@ $ag_voyage = home_url( '/experience' );
   </div>
 </header>
 
+<style>
+.ag-cybermap{max-width:920px;margin:0 auto 56px}
+.ag-cybermap__frame{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#05060a;box-shadow:0 30px 70px rgba(0,0,0,.45);aspect-ratio:16/10}
+.ag-cybermap__frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.ag-cybermap__cap{text-align:center;margin-top:14px;color:var(--text-mute);font-family:var(--mono);font-size:12px;letter-spacing:.05em}
+@media(max-width:700px){.ag-cybermap__frame{aspect-ratio:1/1}}
+</style>
+
 <!-- HERO -->
 <section class="hero">
   <div class="container">
@@ -64,6 +72,14 @@ $ag_voyage = home_url( '/experience' );
   <div class="container">
     <div class="section-tag">⟶ Pourquoi maintenant</div>
     <h2 class="section-h2">La question n'est pas <em>si</em>, mais <em>quand</em>.</h2>
+
+    <div class="ag-cybermap">
+      <div class="ag-cybermap__frame">
+        <iframe src="https://cybermap.kaspersky.com/fr/widget/dynamic/dark" loading="lazy" title="Carte mondiale des cyberattaques en temps réel" allowfullscreen></iframe>
+      </div>
+      <p class="ag-cybermap__cap">Carte mondiale des cyberattaques, <strong>en direct</strong> · source Kaspersky</p>
+    </div>
+
     <div class="stats-grid">
       <div class="stat">
         <div class="num">30 000</div>
