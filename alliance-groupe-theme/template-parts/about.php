@@ -76,6 +76,32 @@ $ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
                 <span class="ag-about-refondu__stat-label">Réponse garantie</span>
             </div>
         </div>
+
+        <!-- L'artisan : photo + présentation (fusionné depuis l'ancienne section "Le studio") -->
+        <div class="ag-about-refondu__studio">
+            <?php
+            $ag_fab_img = '';
+            foreach ( array( 'jpg', 'jpeg', 'png', 'webp' ) as $ext ) {
+                if ( file_exists( get_stylesheet_directory() . '/assets/images/team/fabrizio.' . $ext ) ) { $ag_fab_img = $img_base . 'fabrizio.' . $ext; break; }
+            }
+            ?>
+            <article class="ag-team-card ag-team-card--solo">
+                <div class="ag-team-card__img">
+                    <?php if ( $ag_fab_img ) : ?>
+                        <img src="<?php echo esc_url( $ag_fab_img ); ?>" alt="Fabrizio" loading="lazy">
+                    <?php else : ?>
+                        <div class="ag-team-card__placeholder">F</div>
+                    <?php endif; ?>
+                </div>
+                <div class="ag-team-card__body">
+                    <span class="ag-team-card__role">Fondateur — votre interlocuteur unique</span>
+                    <h3 class="ag-team-card__name">Fabrizio</h3>
+                    <span class="ag-team-card__city">Nantes, France · racines à Naples</span>
+                    <p class="ag-team-card__desc">Né à Naples (Quartieri Spagnoli), installé à Nantes. Studio indépendant : je conçois et sécurise des sites web, du conseil à la livraison. Ma conviction : un site, ça se protège comme on protège ce qui compte. Pour les projets ambitieux, je m'entoure de partenaires freelances de confiance.</p>
+                    <a href="<?php echo esc_url( home_url( '/a-propos' ) ); ?>" class="ag-team-card__link">Découvrir son histoire →</a>
+                </div>
+            </article>
+        </div>
     </div>
 
     <style>
@@ -104,63 +130,20 @@ $ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
     @media(max-width:768px){.ag-about-refondu__stat{border-right:none;border-bottom:1px solid rgba(212,180,92,.12);padding:14px}.ag-about-refondu__stat:last-child{border-bottom:none}}
     .ag-about-refondu__stat-num{display:block;font-family:Georgia,serif;font-size:2.6rem;font-weight:800;color:#D4B45C;line-height:1;text-shadow:0 0 24px rgba(212,180,92,.3);font-variant-numeric:tabular-nums}
     .ag-about-refondu__stat-label{display:block;margin-top:6px;color:rgba(255,255,255,.65);font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;font-weight:600}
+    /* Carte studio fusionnée : photo + présentation côte à côte */
+    .ag-about-refondu__studio{margin-top:56px;display:flex;justify-content:center}
+    .ag-team-card--solo{max-width:820px;width:100%;display:grid;grid-template-columns:300px 1fr;background:linear-gradient(180deg,rgba(20,20,28,.6),rgba(10,10,15,.85));border:1px solid rgba(212,180,92,.2);border-radius:18px;overflow:hidden}
+    .ag-team-card--solo .ag-team-card__img{height:100%;min-height:340px;overflow:hidden}
+    .ag-team-card--solo .ag-team-card__img img{width:100%;height:100%;object-fit:cover;object-position:center 25%}
+    .ag-team-card--solo .ag-team-card__body{padding:34px 32px;display:flex;flex-direction:column;justify-content:center;text-align:left}
+    .ag-team-card--solo .ag-team-card__role{color:#D4B45C;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;font-weight:700}
+    .ag-team-card--solo .ag-team-card__name{font-family:Georgia,serif;font-size:1.9rem;color:#fff;margin:6px 0 2px}
+    .ag-team-card--solo .ag-team-card__city{color:rgba(255,255,255,.55);font-size:.9rem}
+    .ag-team-card--solo .ag-team-card__desc{color:rgba(255,255,255,.78);font-size:.98rem;line-height:1.65;margin:16px 0 18px}
+    .ag-team-card--solo .ag-team-card__link{color:#F3D27A;font-weight:700;text-decoration:none;align-self:flex-start}
+    .ag-team-card--solo .ag-team-card__link:hover{text-decoration:underline}
+    @media(max-width:680px){.ag-team-card--solo{grid-template-columns:1fr}.ag-team-card--solo .ag-team-card__img{min-height:300px}}
     </style>
 </section>
 
-<!-- Équipe -->
-<section class="ag-section ag-section--cendre">
-    <div class="ag-container">
-        <span class="ag-tag ag-anim" data-anim="tag">Le studio</span>
-        <h2 class="ag-section__title ag-anim" data-anim="title">L'artisan derrière <em>Alliance Groupe</em></h2>
-        <p class="ag-section__desc ag-anim" data-anim="desc">Un seul interlocuteur, de A à Z. Pour les gros projets, un réseau de partenaires freelances de confiance.</p>
-
-        <div class="ag-team__grid<?php if ( $ag_about_is_home ) echo ' ag-team__grid--home-condense'; ?>">
-            <?php
-            $team = [
-                [
-                    'name'  => 'Fabrizio',
-                    'role'  => 'Fondateur — votre interlocuteur unique',
-                    'city'  => 'Nantes, France · racines à Naples',
-                    'img'   => 'fabrizio',
-                    'desc'  => 'Né à Naples (Quartieri Spagnoli), installé à Nantes. Studio indépendant : je conçois et sécurise des sites web, du conseil à la livraison. Ma conviction : un site, ça se protège comme on protège ce qui compte. Pour les projets ambitieux, je m\'entoure de partenaires freelances de confiance.',
-                    'link'  => home_url('/a-propos'),
-                ],
-            ];
-            foreach ($team as $m) :
-                $img_url = '';
-                $img_dir = get_stylesheet_directory() . '/assets/images/team/';
-                foreach (array('jpg','jpeg','png','webp') as $ext) {
-                    if (file_exists($img_dir . $m['img'] . '.' . $ext)) {
-                        $img_url = $img_base . $m['img'] . '.' . $ext;
-                        break;
-                    }
-                }
-            ?>
-            <div class="ag-team-card ag-anim" data-anim="card">
-                <div class="ag-team-card__img">
-                    <?php if ($img_url) : ?>
-                        <img src="<?php echo esc_url($img_url); ?>" alt="<?php echo esc_attr($m['name']); ?>" loading="lazy">
-                    <?php else : ?>
-                        <div class="ag-team-card__placeholder"><?php echo mb_substr($m['name'], 0, 1); ?></div>
-                    <?php endif; ?>
-                </div>
-                <div class="ag-team-card__body">
-                    <h3 class="ag-team-card__name"><?php echo esc_html($m['name']); ?></h3>
-                    <span class="ag-team-card__role"><?php echo esc_html($m['role']); ?></span>
-                    <span class="ag-team-card__city"><?php echo esc_html($m['city']); ?></span>
-                    <p class="ag-team-card__desc"><?php echo esc_html($m['desc']); ?></p>
-                    <?php if (!empty($m['link'])) : ?>
-                    <a href="<?php echo esc_url($m['link']); ?>" class="ag-team-card__link">Découvrir son histoire →</a>
-                    <?php endif; ?>
-                </div>
-            </div>
-            <?php endforeach; ?>
-        </div>
-
-        <?php if ( $ag_about_is_home ) : ?>
-            <div class="ag-team__see-all-mobile">
-                <a href="<?php echo esc_url(home_url('/a-propos')); ?>" class="ag-btn-outline">En savoir plus sur le studio →</a>
-            </div>
-        <?php endif; ?>
-    </div>
-</section>
+<!-- (Ancienne section "Le studio" fusionnée dans .ag-about-refondu ci-dessus) -->
