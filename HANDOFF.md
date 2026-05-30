@@ -231,7 +231,8 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 - **Identité = chemin A (studio SOLO) tranché.** Fondateur = Fabrizio (réel, Nantes). ✅ Page **À propos refaite en studio solo** (équipe fictive retirée). Ne jamais réintroduire l'équipe internationale fictive (Carlito/Kate/Halim/Amina/Laurent/Julie) ni les « bureaux » étrangers.
 - ✅ **Niveau « recruteur » SUPPRIMÉ** : `ag_override_rate()`=0 + `ag_parrain_prime_amount()`=0, page `/recruteur` redirige vers `/ambassadeurs`, points d'entrée retirés. (Ambassadeur direct 10 % conservé, légal.)
 - ✅ **Funnel récurrent** : page **`/maintenance`** (Maintenance & Sérénité, 3 paliers 49/99/199 €/mois) = le MRR qui met « à l'aise ». Logique : audit → remédiation → maintenance.
-- **RESTE à dé-fictionnaliser** (équipe fictive encore présente) : `template-parts/about.php` (section équipe accueil), cartes équipe du **voyage** (`page-experience` `$xp_team`), pages **`page-bureau-naples`/`-marrakech`** (faux bureaux), `page-fondateur`, `metier-page`. → gros nettoyage multi-fichiers à faire.
+- ✅ **Équipe fictive PURGÉE** (chemin A solo) : `about.php` accueil (studio solo, 1 fondateur), **voyage** (`page-experience` réorienté sécurité, `$xp_team` = Fabrizio seul), **header** (méga-menu « Nos bureaux » + noms retirés), pages **bureau-naples/marrakech/nantes** redirigées 301 → `/a-propos`. `page-fondateur` = ok (Fabrizio réel). Naples conservé = **racines** partout.
+  - Restes mineurs (non visibles) : `inc/ag-seo-meta.php` (entrées SEO bureaux — pages redirigent, donc inertes), `template-parts/globe-3d.php` (3 marqueurs villes sur le globe d'accueil, décoratif), `ag-demo-board.php` (noms démo du classement, gated). À nettoyer si tu veux la perfection.
 - **MLM** : isoler ambassadeurs sur sous-domaine `partenaires.alliancegroupe-inc.com` (à faire).
 - **Séparation des 2 métiers** : Création vs Sécurité. Page `/audit-securite` séparée (pas accueil).
 
