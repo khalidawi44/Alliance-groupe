@@ -13,7 +13,9 @@ $ag_mail   = 'contact@alliancegroupe-inc.com';
 $ag_audit  = home_url( '/ag-audit' );
 $ag_create = home_url( '/sites-express' );
 $ag_maint  = home_url( '/maintenance' );
-$ag_voyage = home_url( '/experience' );
+$ag_voyage = home_url( '/alliance-groupe' ); // page « Expérience immersive » (slug constaté)
+$ag_video  = get_stylesheet_directory_uri() . '/assets/images/video/naples.mp4';
+$ag_poster = get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg';
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
@@ -29,10 +31,11 @@ $ag_voyage = home_url( '/experience' );
       <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="logo"><span class="logo-mark"></span>Alliance Groupe</a>
       <nav>
         <ul>
-          <li><a href="#securite">Sécurité</a></li>
-          <li><a href="#creation">Création</a></li>
+          <li><a href="#projet">Votre projet</a></li>
+          <li><a href="#risque">La menace</a></li>
+          <li><a href="#methode">Méthode</a></li>
           <li><a href="<?php echo esc_url( $ag_voyage ); ?>">L'expérience</a></li>
-          <li><a href="#contact" class="cta-button">Audit gratuit →</a></li>
+          <li><a href="#contact" class="cta-button">Me contacter →</a></li>
         </ul>
       </nav>
     </div>
@@ -40,6 +43,10 @@ $ag_voyage = home_url( '/experience' );
 </header>
 
 <style>
+.hero{position:relative;overflow:hidden}
+.hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:.45}
+.hero-veil{position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,rgba(10,14,20,.55) 0%,rgba(10,14,20,.84) 100%)}
+.hero .container{position:relative;z-index:1}
 .ag-cybermap{max-width:920px;margin:0 auto 56px}
 .ag-cybermap__frame{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#05060a;box-shadow:0 30px 70px rgba(0,0,0,.45);aspect-ratio:16/10}
 .ag-cybermap__frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
@@ -49,6 +56,10 @@ $ag_voyage = home_url( '/experience' );
 
 <!-- HERO -->
 <section class="hero">
+  <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="<?php echo esc_url( $ag_poster ); ?>">
+    <source src="<?php echo esc_url( $ag_video ); ?>" type="video/mp4">
+  </video>
+  <div class="hero-veil"></div>
   <div class="container">
     <div class="hero-meta">Studio web &amp; sécurité · Nantes</div>
     <h1>Je <em>sécurise</em> et je crée<br>des sites qui inspirent confiance.</h1>
@@ -101,46 +112,38 @@ $ag_voyage = home_url( '/experience' );
 </section>
 
 <!-- 2 EXPERTISES -->
-<section class="audit-section">
+<section class="audit-section" id="projet">
   <div class="container">
     <div class="audit-header">
       <div>
-        <div class="section-tag">⟶ Deux façons de travailler ensemble</div>
-        <h2 class="section-h2">Sécuriser. Créer. <em>Sereinement.</em></h2>
+        <div class="section-tag">⟶ Quel est votre projet ?</div>
+        <h2 class="section-h2">Quoi qu'il arrive, <em>ça commence par un audit.</em></h2>
       </div>
-      <p>Que votre site existe déjà ou soit à venir, le point d'entrée est le même : on met les choses au clair, puis on agit. Un seul interlocuteur, du conseil à la livraison.</p>
+      <p>Refonte, nouveau site, ou simplement dormir tranquille : le premier pas est toujours le même. L'audit met les choses au clair — c'est le point de départ, presque obligatoire, vers la sérénité.</p>
     </div>
     <div class="audit-grid">
       <div class="audit-item" id="securite">
         <div class="audit-num">01</div>
         <div class="audit-content">
-          <h3>🔒 Sécurité</h3>
-          <p>Audit de sécurité en 48 h, remédiation des failles, puis maintenance continue (mises à jour, sauvegardes, monitoring).</p>
-          <span class="severity-tag warn"><a href="<?php echo esc_url( $ag_audit ); ?>" style="color:inherit;">Commencer par l'audit →</a></span>
+          <h3>J'ai déjà un site</h3>
+          <p>On l'audite, on corrige les failles, puis on le maintient sain dans la durée.</p>
+          <span class="severity-tag warn"><a href="<?php echo esc_url( $ag_audit ); ?>" style="color:inherit;">Auditer mon site →</a></span>
         </div>
       </div>
       <div class="audit-item" id="creation">
         <div class="audit-num">02</div>
         <div class="audit-content">
-          <h3>✨ Création</h3>
-          <p>Sites vitrines, e-commerce, plateformes métier — conçus rapides, propres et sécurisés dès le départ.</p>
+          <h3>Je veux un nouveau site</h3>
+          <p>On le conçoit rapide, propre et sécurisé dès le départ — sans dette technique à corriger plus tard.</p>
           <span class="severity-tag warn"><a href="<?php echo esc_url( $ag_create ); ?>" style="color:inherit;">Créer mon site →</a></span>
         </div>
       </div>
       <div class="audit-item">
         <div class="audit-num">03</div>
         <div class="audit-content">
-          <h3>🛡️ Maintenance</h3>
-          <p>Votre site reste à jour, protégé et sauvegardé — chaque mois, sans que vous y pensiez.</p>
-          <span class="severity-tag warn"><a href="<?php echo esc_url( $ag_maint ); ?>" style="color:inherit;">Voir les formules →</a></span>
-        </div>
-      </div>
-      <div class="audit-item">
-        <div class="audit-num">04</div>
-        <div class="audit-content">
-          <h3>🌍 L'expérience</h3>
-          <p>Découvrez la menace en direct et ma méthode dans un parcours immersif (la démo de ce que je sais construire).</p>
-          <span class="severity-tag warn"><a href="<?php echo esc_url( $ag_voyage ); ?>" style="color:inherit;">Vivre l'expérience →</a></span>
+          <h3>Je veux être tranquille</h3>
+          <p>Mises à jour, sauvegardes, surveillance : votre site protégé chaque mois, sans y penser.</p>
+          <span class="severity-tag warn"><a href="<?php echo esc_url( $ag_maint ); ?>" style="color:inherit;">Voir la maintenance →</a></span>
         </div>
       </div>
     </div>
@@ -148,7 +151,7 @@ $ag_voyage = home_url( '/experience' );
 </section>
 
 <!-- MÉTHODE -->
-<section class="process">
+<section class="process" id="methode">
   <div class="container">
     <div class="section-tag">⟶ Comment ça marche</div>
     <h2 class="section-h2">Trois temps, <em>zéro mauvaise surprise.</em></h2>
