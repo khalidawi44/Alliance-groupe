@@ -31,6 +31,30 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 			<p class="ag-menace__lead">La carte est <strong>en direct</strong> : chaque trait est une cyberattaque réelle, à la seconde. La question n'est pas <em>si</em> votre site sera visé, mais <em>quand</em>.</p>
 		</div>
 
+		<!-- Ce que ça peut vous coûter, concrètement -->
+		<div class="ag-menace__risks">
+			<div class="ag-menace__risk">
+				<span class="ag-menace__risk-ic">💰</span>
+				<strong>Rançon</strong>
+				<p>Vos fichiers chiffrés du jour au lendemain, une rançon en bitcoins réclamée pour les récupérer.</p>
+			</div>
+			<div class="ag-menace__risk">
+				<span class="ag-menace__risk-ic">🗄️</span>
+				<strong>Vol de vos données clients</strong>
+				<p>Emails, téléphones, commandes copiés et revendus. Fuite = déclaration <strong>CNIL sous 72 h</strong> + sanctions.</p>
+			</div>
+			<div class="ag-menace__risk">
+				<span class="ag-menace__risk-ic">⛔</span>
+				<strong>Site hors-ligne</strong>
+				<p>Site inaccessible ou redirigé vers un site douteux. Votre référencement Google s'effondre en quelques jours.</p>
+			</div>
+			<div class="ag-menace__risk">
+				<span class="ag-menace__risk-ic">🪪</span>
+				<strong>Réputation</strong>
+				<p>Vos clients reçoivent des arnaques en votre nom. La confiance, elle, ne revient pas.</p>
+			</div>
+		</div>
+
 		<div class="ag-menace__cols">
 			<!-- GAUCHE : compteurs au-dessus + globe des attaques -->
 			<div class="ag-menace__threat">
@@ -114,6 +138,15 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 .ag-menace__title{font-family:Georgia,'Playfair Display',serif;font-size:clamp(1.7rem,4vw,2.8rem);line-height:1.12;margin:0 0 12px}
 .ag-menace__title em{font-style:italic;background:linear-gradient(135deg,#F37A1F,#ff5252);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 .ag-menace__lead{color:rgba(255,255,255,.76);font-size:1rem;line-height:1.55;margin:0}
+/* Conséquences concrètes */
+.ag-menace__risks{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:1100px;margin:0 auto 40px}
+.ag-menace__risk{background:rgba(225,15,26,.06);border:1px solid rgba(225,15,26,.25);border-radius:14px;padding:18px 16px}
+.ag-menace__risk-ic{font-size:1.6rem;line-height:1}
+.ag-menace__risk strong{display:block;margin:8px 0 6px;color:#fff;font-size:1rem}
+.ag-menace__risk p{margin:0;color:rgba(255,255,255,.72);font-size:.84rem;line-height:1.45}
+.ag-menace__risk p strong{display:inline;color:#ff8a8a}
+@media(max-width:860px){.ag-menace__risks{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.ag-menace__risks{grid-template-columns:1fr}}
 
 /* --- 2 colonnes : globe (gauche) / audit (droite) --- */
 .ag-menace__cols{display:grid;grid-template-columns:1.45fr 1fr;gap:30px;align-items:start}
@@ -247,7 +280,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 	<div class="ag-hack__center">
 		<span class="ag-hack__tag">⚠️ Simulation</span>
 		<h2 class="ag-hack__title" data-text="Un piratage ressemble à ça.">Un piratage ressemble à ça.</h2>
-		<p class="ag-hack__sub">Écran noir, données volées, site hors-ligne. Le jour où ça arrive, il est trop tard. Le seul moyen de savoir si vous êtes exposé : un audit.</p>
+		<p class="ag-hack__sub">Le jour où ça arrive, il est déjà trop tard. Voilà ce qui peut tomber sur votre site, sans prévenir :</p>
+		<ul class="ag-hack__list">
+			<li>💰 Vos fichiers <strong>chiffrés</strong>, une <strong>rançon</strong> réclamée pour les récupérer.</li>
+			<li>🗄️ Votre <strong>base clients volée</strong> (emails, téléphones) — et la CNIL sur le dos.</li>
+			<li>⛔ <strong>Site hors-ligne</strong> ou défiguré, votre <strong>Google qui s'effondre</strong>.</li>
+		</ul>
+		<p class="ag-hack__sub" style="margin-top:6px">Le seul moyen de savoir si vous êtes exposé : un audit.</p>
 		<a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-hack__btn" id="ag-hack-btn">🔍 AUDITER MON SITE →</a>
 	</div>
 </div>
@@ -275,7 +314,11 @@ body.ag-hack-lock{overflow:hidden}
 .ag-hack__title::before{color:#ff2d2d;animation:agGlitch 2.6s infinite;clip-path:inset(0 0 55% 0);transform:translateX(-2px)}
 .ag-hack__title::after{color:#00e5ff;animation:agGlitch 3.4s infinite reverse;clip-path:inset(55% 0 0 0);transform:translateX(2px)}
 @keyframes agGlitch{0%,92%,100%{transform:translateX(0)}93%{transform:translateX(-3px)}95%{transform:translateX(3px)}97%{transform:translateX(-2px)}}
-.ag-hack__sub{max-width:560px;color:rgba(255,255,255,.85);font-size:1.08rem;line-height:1.6;margin:0 0 32px}
+.ag-hack__sub{max-width:560px;color:rgba(255,255,255,.85);font-size:1.08rem;line-height:1.6;margin:0 0 18px}
+.ag-hack__list{list-style:none;margin:0 0 24px;padding:0;max-width:560px;text-align:left}
+.ag-hack__list li{color:rgba(255,255,255,.9);font-size:1rem;line-height:1.5;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.ag-hack__list li:last-child{border-bottom:0}
+.ag-hack__list strong{color:#ff8a8a}
 .ag-hack__btn{display:inline-block;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:900;text-decoration:none;padding:28px 64px;border-radius:999px;font-size:clamp(1.3rem,3.4vw,1.9rem);letter-spacing:.5px;box-shadow:0 16px 50px rgba(243,122,31,.55);animation:agHackPulse 2s ease-in-out infinite}
 @media(max-width:600px){.ag-hack__btn{display:block;width:100%;padding:26px 20px}}
 .ag-hack__btn:hover{transform:translateY(-2px) scale(1.03)}
