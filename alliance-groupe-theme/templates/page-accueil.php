@@ -81,18 +81,18 @@ get_header();
     <div class="ag-hero__content">
         <div class="ag-hero__badge">
             <span class="ag-hero__dot"></span>
-            Studio web &amp; sécurité — Alliance Groupe
+            Audit · Création · Maintenance de sites web — Nantes
             <span class="ag-heritage-dots" aria-hidden="true"><span></span><span></span><span></span></span>
         </div>
 
         <h1 class="ag-hero__title">
-            <span class="ag-line">Un site qui inspire</span>
-            <span class="ag-line"><em>confiance.</em></span>
-            <span class="ag-line">Et qui le reste.</span>
+            <span class="ag-line">Votre site web</span>
+            <span class="ag-line"><em>est une cible.</em></span>
+            <span class="ag-line">Mettons-le à l'abri.</span>
         </h1>
 
         <p class="ag-hero__sub">
-            J'audite, je sécurise et je crée des sites soignés — puis je veille sur eux. Un interlocuteur unique, sans jargon. Tout commence par un audit qui révèle où vous en êtes vraiment.
+            J'audite, je sécurise et je crée des sites qui inspirent confiance — et qui le restent. Chaque jour, <strong>30 000 sites sont piratés</strong>. On commence par révéler vos failles. Avant les autres.
         </p>
 
         <div class="ag-hero__buttons">
@@ -123,28 +123,9 @@ get_header();
     </div>
 </section>
 
-<!-- ⚡ LA MENACE EN DIRECT — juste après le hero : on capte la peur avant tout
-       (carte Kaspersky dans les étoiles 3D + compteurs dynamiques) -->
+<!-- ⚡ LA MENACE EN DIRECT — juste après le hero : on capte la peur, puis
+       on donne la solution dans la même section (globe à gauche, audit à droite) -->
 <?php get_template_part('template-parts/menace-live'); ?>
-
-<!-- 📊 AUDIT GRATUIT — lead magnet prioritaire (revenu principal) -->
-<section class="ag-audit-hero" id="ag-audit-hero">
-	<div class="ag-audit-hero__inner">
-		<span class="ag-audit-hero__tag">⟶ Quel que soit votre projet</span>
-		<h2 class="ag-audit-hero__title">Tout commence par un audit.</h2>
-		<p class="ag-audit-hero__sub">Refonte, nouveau site, ou juste dormir tranquille : le premier pas est toujours le même. L'<strong>audit de sécurité</strong> met les choses au clair — le point de départ, presque obligatoire, vers la sérénité.</p>
-		<a href="<?php echo esc_url( home_url( '/ag-audit' ) ); ?>" class="ag-audit-hero__btn">🔒 Démarrer par l'audit →</a>
-	</div>
-</section>
-<style>
-.ag-audit-hero{padding:54px 20px;background:linear-gradient(135deg,#0a0a0f,#1a1a2e);text-align:center}
-.ag-audit-hero__inner{max-width:760px;margin:0 auto;background:linear-gradient(180deg,rgba(212,180,92,.08),rgba(243,122,31,.05));border:1px solid rgba(212,180,92,.35);border-radius:20px;padding:40px 28px}
-.ag-audit-hero__tag{display:inline-block;color:#F3D27A;font-weight:700;letter-spacing:1px;font-size:.85rem;margin-bottom:14px}
-.ag-audit-hero__title{font-family:Georgia,serif;font-size:clamp(1.6rem,4vw,2.6rem);color:#fff;margin:0 0 12px}
-.ag-audit-hero__sub{color:rgba(255,255,255,.82);font-size:1.05rem;max-width:560px;margin:0 auto 26px}
-.ag-audit-hero__btn{display:inline-block;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:800;text-decoration:none;padding:16px 30px;border-radius:100px;font-size:1.05rem;box-shadow:0 8px 28px rgba(243,122,31,.4);transition:transform .2s}
-.ag-audit-hero__btn:hover{transform:translateY(-2px) scale(1.02)}
-</style>
 
 <!-- "Choisissez votre parcours" — 4 panneaux priorisés (audit / création / maintenance / templates) -->
 <?php get_template_part('template-parts/paths-hero'); ?>
@@ -180,8 +161,8 @@ get_header();
 <!-- About : Qui sommes-nous + valeurs + equipe -->
 <?php get_template_part('template-parts/about'); ?>
 
-<!-- Process -->
-<?php get_template_part('template-parts/process'); ?>
+<!-- Process « Notre méthode » retiré sur demande user. -->
+<?php /* MENAGE: get_template_part('template-parts/process'); */ ?>
 
 <!-- Parallax 1 (transition) -->
 <section class="ag-parallax" style="background-image:url('<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg' ); ?>');">
@@ -191,8 +172,8 @@ get_header();
     </div>
 </section>
 
-<!-- Réalisations -->
-<?php get_template_part('template-parts/realisations'); ?>
+<!-- Réalisations → témoignages style avis Google (avis + ce que j'ai fait) -->
+<?php get_template_part('template-parts/temoignages'); ?>
 
 <!-- Globe 3D : présence internationale Nantes / Marrakech / Naples -->
 <?php // Section "atelier 3d" retirée sur demande user. ?>
