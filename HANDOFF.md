@@ -2,7 +2,7 @@
 
 > Document de reprise pour toute nouvelle session Claude (PC ou mobile via GitHub MCP).
 > Dernière mise à jour : 2026-05-30 — branche de travail : `claude/conversation-linking-bug-O6HUR` (tampon auto à chaque commit).
-> **Reprise rapide** : vraie home (`page-accueil.php`) recentrée audit-first — hero copy alignée sécurité/confiance (fini « commerciaux/+340% »), cartes **« Choisissez votre parcours »** (`paths-hero.php` : audit / création / maintenance / templates) réactivées après le hero, puis nouvelle section **« La menace en direct »** (`menace-live.php` : carte Kaspersky dans un champ d'étoiles 3D qui tourne + compteurs dynamiques estimés honnêtement). ⚠️ **Toujours mettre à jour ces 3 lignes + §9 avant de fermer une session** : c'est ce que la prochaine conversation lira.
+> **Reprise rapide** : tunnel **audit-first** clarifié. Entrée = **/tester-mon-site** (freemium : gate plein écran → audit passif réel → aperçu flouté → commande explicite = facture+rapport). Accueil : hero → **menace en direct** (globe Kaspersky + compteurs) → à la fin, **mur choc « Un piratage ressemble à ça »** ESCAMOTABLE (croix après 5 s, → /tester-mon-site) → parcours → témoignages → réassurance → offres → about → FAQ → CTA. **Espace Audit** admin (passif tout site / actif sous mandat) = prospection (failles + coordonnées publiques + messages sécurité/création + CRM + CSV) + widget dashboard. **Voyage** (/le-voyage) = expérience bonus (Marrakech retiré, Naples=fondation). ⚠️ **Toujours mettre à jour ces 3 lignes + §9 avant de fermer une session.**
 
 ---
 
