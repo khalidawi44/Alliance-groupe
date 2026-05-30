@@ -7,12 +7,12 @@
         <div class="ag-faq__list">
             <?php
             $faqs = [
-                ['q' => 'Combien coûte un site web ?', 'a' => 'Chaque projet est unique. Nos sites vitrines démarrent à partir de 1 500 € et les projets e-commerce à partir de 3 500 €. Nous établissons un devis précis après avoir compris vos besoins.'],
-                ['q' => 'Quels sont vos délais de livraison ?', 'a' => 'Un site vitrine est généralement livré en 2 à 4 semaines. Les projets plus complexes (e-commerce, plateformes) prennent 4 à 8 semaines. Nous travaillons en sprints avec des points réguliers.'],
-                ['q' => 'Est-ce que vous gérez l\'hébergement ?', 'a' => 'Oui, nous proposons des solutions d\'hébergement premium sur o2switch avec maintenance, sauvegardes automatiques et certificat SSL inclus.'],
-                ['q' => 'Comment l\'IA peut aider mon entreprise ?', 'a' => 'L\'IA peut automatiser vos réponses clients (chatbots), analyser vos données, personnaliser l\'expérience utilisateur et optimiser vos campagnes publicitaires pour un meilleur ROI.'],
-                ['q' => 'Proposez-vous un suivi après la mise en ligne ?', 'a' => 'Absolument. Nous proposons des contrats de maintenance et d\'accompagnement mensuel incluant mises à jour, optimisations SEO, reporting et support technique.'],
-                ['q' => 'Comment prendre rendez-vous ?', 'a' => 'Vous pouvez nous contacter par téléphone au 07.44.82.95.16, par email à contact@alliancegroupe-inc.com, ou réserver directement un créneau via notre page contact.'],
+                ['q' => 'C\'est quoi un audit de sécurité, concrètement ?', 'a' => 'Je passe votre site au crible (HTTPS, fichiers exposés, xmlrpc, en-têtes, version du CMS, comptes énumérables…) et je vous remets sous 48 h un rapport clair, sans jargon, avec les failles classées par gravité et comment les corriger.'],
+                ['q' => 'Mon site est petit/récent, suis-je vraiment une cible ?', 'a' => 'Oui. Les attaques sont automatisées : des robots scannent le web 24h/24 à la recherche de failles connues, sans cibler personne en particulier. Près de la moitié des attaques visent les petites structures, justement parce qu\'elles sont moins protégées.'],
+                ['q' => 'Combien coûte un site ?', 'a' => 'Les sites « Express » démarrent à 490 €, payables en 4× sans frais, sécurisés dès le départ. Pour un projet sur-mesure, je vous établis un devis clair après avoir compris votre besoin.'],
+                ['q' => 'Et la maintenance, ça comprend quoi ?', 'a' => 'Mises à jour, sauvegardes, surveillance et sécurité — votre site reste sain chaque mois, sans y penser. À partir de 49 €/mois, sans engagement, résiliable à tout moment.'],
+                ['q' => 'Vous touchez à mon site sans mon accord ?', 'a' => 'Non. Le diagnostic est non-intrusif : je lis uniquement ce qui est public, comme un visiteur. Un audit approfondi (qui sonde davantage) n\'est réalisé qu\'avec votre autorisation écrite. Tout est transparent.'],
+                ['q' => 'Comment vous joindre ?', 'a' => 'Par téléphone au 07.44.82.95.16, par email à contact@alliancegroupe-inc.com, ou via la page contact. Un seul interlocuteur : moi.'],
             ];
             foreach ($faqs as $faq) :
             ?>
@@ -38,12 +38,12 @@ $faq_schema = array(
     'mainEntity' => array(),
 );
 $faqs_data = array(
-    array('q' => 'Combien coûte un site web ?', 'a' => 'Nos sites vitrines démarrent à partir de 1 500 € et les projets e-commerce à partir de 3 500 €. Nous établissons un devis précis après avoir compris vos besoins.'),
-    array('q' => 'Quels sont vos délais de livraison ?', 'a' => 'Un site vitrine est généralement livré en 2 à 4 semaines. Les projets plus complexes prennent 4 à 8 semaines.'),
-    array('q' => 'Est-ce que vous gérez l\'hébergement ?', 'a' => 'Oui, nous proposons des solutions d\'hébergement premium sur o2switch avec maintenance, sauvegardes automatiques et certificat SSL inclus.'),
-    array('q' => 'Comment l\'IA peut aider mon entreprise ?', 'a' => 'L\'IA peut automatiser vos réponses clients, analyser vos données, personnaliser l\'expérience utilisateur et optimiser vos campagnes publicitaires.'),
-    array('q' => 'Proposez-vous un suivi après la mise en ligne ?', 'a' => 'Absolument. Nous proposons des contrats de maintenance et d\'accompagnement mensuel incluant mises à jour, optimisations SEO et support technique.'),
-    array('q' => 'Comment prendre rendez-vous ?', 'a' => 'Vous pouvez nous contacter par téléphone au 07.44.82.95.16, par email à contact@alliancegroupe-inc.com, ou réserver directement un créneau via notre page contact.'),
+    array('q' => 'C\'est quoi un audit de sécurité, concrètement ?', 'a' => 'Je passe votre site au crible (HTTPS, fichiers exposés, xmlrpc, en-têtes, version du CMS, comptes énumérables…) et je vous remets sous 48 h un rapport clair, sans jargon, avec les failles classées par gravité et comment les corriger.'),
+    array('q' => 'Mon site est petit/récent, suis-je vraiment une cible ?', 'a' => 'Oui. Les attaques sont automatisées : des robots scannent le web 24h/24 à la recherche de failles connues. Près de la moitié des attaques visent les petites structures, justement parce qu\'elles sont moins protégées.'),
+    array('q' => 'Combien coûte un site ?', 'a' => 'Les sites « Express » démarrent à 490 €, payables en 4× sans frais, sécurisés dès le départ. Pour un projet sur-mesure, je vous établis un devis clair après avoir compris votre besoin.'),
+    array('q' => 'Et la maintenance, ça comprend quoi ?', 'a' => 'Mises à jour, sauvegardes, surveillance et sécurité — votre site reste sain chaque mois. À partir de 49 €/mois, sans engagement, résiliable à tout moment.'),
+    array('q' => 'Vous touchez à mon site sans mon accord ?', 'a' => 'Non. Le diagnostic est non-intrusif : je lis uniquement ce qui est public, comme un visiteur. Un audit approfondi n\'est réalisé qu\'avec votre autorisation écrite.'),
+    array('q' => 'Comment vous joindre ?', 'a' => 'Par téléphone au 07.44.82.95.16, par email à contact@alliancegroupe-inc.com, ou via la page contact. Un seul interlocuteur : moi.'),
 );
 foreach ( $faqs_data as $f ) {
     $faq_schema['mainEntity'][] = array(
