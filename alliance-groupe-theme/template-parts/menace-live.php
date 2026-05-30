@@ -80,6 +80,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 			</aside>
 		</div>
 	</div>
+	<!-- capteur : déclenche le mur quand l'utilisateur atteint le BAS de la section -->
+	<div id="ag-menace-end" aria-hidden="true" style="height:1px"></div>
 </section>
 
 <style>
@@ -248,8 +250,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 	</div>
 </div>
 <style>
-.ag-hack{position:fixed;inset:0;z-index:100000;display:none;background:#000;overflow:hidden}
+.ag-hack{position:fixed;inset:0;z-index:100000;display:none;background:#000;overflow:hidden;cursor:not-allowed}
 .ag-hack.is-on{display:block;animation:agHackIn .3s ease}
+/* Seul le bouton est interactif (souris + tactile). Tout le reste est mort. */
+.ag-hack__center{pointer-events:none}
+.ag-hack__btn{pointer-events:auto;cursor:pointer}
 @keyframes agHackIn{from{opacity:0}to{opacity:1}}
 body.ag-hack-lock{overflow:hidden}
 .ag-hack__term{position:absolute;inset:0;font-family:"Courier New",monospace;font-size:15px;line-height:1.9;color:#39ff14;text-shadow:0 0 6px rgba(57,255,20,.5);padding:24px 18px;opacity:.55}
@@ -284,11 +289,13 @@ body.ag-hack-lock{overflow:hidden}
 	if(!pop||!sec) return;
 	var shown = false;
 	try{ if(sessionStorage.getItem('ag_menace_pop')==='1') shown = true; }catch(e){}
+	var endSentinel = document.getElementById('ag-menace-end');
 	function open(){
 		if(shown) return; shown = true;
 		try{ sessionStorage.setItem('ag_menace_pop','1'); }catch(e){}
 		pop.classList.add('is-on'); pop.setAttribute('aria-hidden','false');
 		document.body.classList.add('ag-hack-lock');
+		var b = document.getElementById('ag-hack-btn'); if(b){ try{ b.focus(); }catch(e){} }
 	}
 	// Clic AUDITER → vrai plein écran cinéma, puis bascule sur l'audit.
 	var btn = document.getElementById('ag-hack-btn');
@@ -303,11 +310,19 @@ body.ag-hack-lock{overflow:hidden}
 			setTimeout(function(){ window.location.href = go; }, 1100);
 		});
 	}
+	// Déclenche quand le BAS de la section entre dans l'écran (fin du globe).
+	var target = endSentinel || sec;
 	if('IntersectionObserver' in window){
 		var io = new IntersectionObserver(function(entries){
 			entries.forEach(function(en){ if(en.isIntersecting){ open(); io.disconnect(); } });
-		}, { threshold: 0.45 });
-		io.observe(sec);
+		}, { threshold: 0, rootMargin: '0px 0px -10% 0px' });
+		io.observe(target);
+	} else {
+		// Vieux navigateurs : repli au scroll.
+		window.addEventListener('scroll', function(){
+			var r = target.getBoundingClientRect();
+			if(r.top < window.innerHeight) open();
+		}, {passive:true});
 	}
 })();
 </script>
