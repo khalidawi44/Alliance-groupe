@@ -93,7 +93,7 @@ foreach (array('jpg','jpeg','png','webp') as $ext) {
 
                 <blockquote>"Quand je suis arrivé à Nantes, je ne parlais presque pas français. Mon premier client m'a fait confiance parce qu'il a vu mes résultats à Naples. Il m'a dit : 'Je me fiche de ton accent, je veux les mêmes chiffres.' Six mois plus tard, ses devis avaient triplé."</blockquote>
 
-                <p>Aujourd'hui, Fabrizio vit et travaille à <strong>Nantes</strong>, où se trouve le siège d'Alliance Groupe. L'agence a aussi des bureaux à <strong>Naples</strong> et <strong>Marrakech</strong>. Une équipe de sept personnes passionnées. Des dizaines de clients satisfaits.</p>
+                <p>Aujourd'hui, Fabrizio vit et travaille à <strong>Nantes</strong>, avec ses racines familiales à <strong>Naples</strong>. Studio indépendant : un seul interlocuteur, du conseil à la livraison. Pour les projets ambitieux, il s'entoure de partenaires freelances de confiance.</p>
 
                 <p>Mais Fabrizio n'a jamais arrêté les cours du soir à Naples. <strong>Chaque mardi et jeudi, de 19h à 22h</strong>, l'équipe napolitaine est dans cette même salle — avec de nouveaux ordinateurs, certes, mais la même mission.</p>
 

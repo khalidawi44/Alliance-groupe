@@ -28,9 +28,9 @@ get_header();
             <h2 class="ag-section__title ag-anim" data-anim="title">Des résultats <em>mesurables</em></h2>
             <div class="ag-gains__grid">
                 <div class="ag-gain-card ag-anim" data-anim="gain">
-                    <div class="ag-gain-card__value">+340%</div>
-                    <div class="ag-gain-card__label">Leads générés</div>
-                    <div class="ag-gain-card__desc">En moyenne sur les 12 premiers mois après la mise en ligne.</div>
+                    <div class="ag-gain-card__value">48 h</div>
+                    <div class="ag-gain-card__label">Audit rendu</div>
+                    <div class="ag-gain-card__desc">Un rapport clair de ce qui expose votre site, sans jargon.</div>
                 </div>
                 <div class="ag-gain-card ag-anim" data-anim="gain">
                     <div class="ag-gain-card__value">18 000€</div>
