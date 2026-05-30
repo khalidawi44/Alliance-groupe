@@ -473,28 +473,49 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 		}
 
 		// Lancement des audits.
+		$deep_mode = false;
 		if ( isset( $_POST['ag_run_audits'], $_POST['_agp_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_agp_nonce'] ) ), 'ag_audit_prospect' ) ) {
 			$raw  = sanitize_textarea_field( wp_unslash( $_POST['urls'] ?? '' ) );
 			$urls = array_filter( array_map( 'trim', preg_split( '/[\r\n,]+/', $raw ) ) );
 			$urls = array_slice( array_unique( $urls ), 0, 8 ); // cap anti-timeout
-			foreach ( $urls as $u ) {
-				if ( function_exists( 'ag_audit_run' ) ) $results[] = ag_audit_run( $u );
+			$want_deep = ( 'deep' === ( $_POST['mode'] ?? 'passive' ) );
+			// L'audit APPROFONDI (actif) exige l'attestation de mandat écrit.
+			if ( $want_deep && empty( $_POST['mandat'] ) ) {
+				$notice = '⛔ Audit approfondi refusé : cochez l\'attestation de mandat écrit du propriétaire. Sans mandat, seul l\'audit passif est autorisé.';
+			} else {
+				$deep_mode = $want_deep;
+				foreach ( $urls as $u ) {
+					if ( $deep_mode && function_exists( 'ag_audit_run_deep' ) ) {
+						$results[] = ag_audit_run_deep( $u );
+					} elseif ( function_exists( 'ag_audit_run' ) ) {
+						$results[] = ag_audit_run( $u );
+					}
+				}
 			}
 		}
 		?>
 		<div class="wrap">
 			<h1>🔍 Espace Audit — prospection</h1>
 			<p>Colle des URLs de sites à démarcher (une par ligne, max 8). Diagnostic <strong>non-intrusif</strong> : on lit les pages publiques, on relève les failles, et on génère un message de démarchage prêt à envoyer. Pour <em>trouver</em> des prospects sans bon site, utilise aussi le menu <strong>Prospection → Chasse</strong>.</p>
-			<?php if ( $notice ) echo '<div class="notice notice-success"><p>' . esc_html( $notice ) . '</p></div>'; ?>
+			<?php if ( $notice ) echo '<div class="notice ' . ( 0 === strpos( $notice, '⛔' ) ? 'notice-error' : 'notice-success' ) . '"><p>' . esc_html( $notice ) . '</p></div>'; ?>
 
 			<form method="post" style="margin:18px 0;max-width:760px">
 				<?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?>
 				<textarea name="urls" rows="6" style="width:100%;font-family:monospace" placeholder="https://site-prospect-1.fr&#10;https://site-prospect-2.fr"><?php echo isset( $_POST['urls'] ) ? esc_textarea( wp_unslash( $_POST['urls'] ) ) : ''; ?></textarea>
+
+				<fieldset style="margin:14px 0;border:1px solid #ccd0d4;border-radius:6px;padding:12px 16px">
+					<legend style="font-weight:600;padding:0 6px">Type d'audit</legend>
+					<label style="display:block;margin:4px 0"><input type="radio" name="mode" value="passive" checked> <strong>Passif</strong> — lecture des pages publiques. Légal sur tout site (prospects compris).</label>
+					<label style="display:block;margin:4px 0"><input type="radio" name="mode" value="deep"> <strong>Approfondi (actif)</strong> — sondes supplémentaires (énumération, sauvegardes, versions de plugins…).</label>
+					<label style="display:block;margin:10px 0 0;color:#b91c1c"><input type="checkbox" name="mandat" value="1"> ⚠️ Je certifie disposer d'une <strong>autorisation écrite (mandat)</strong> du propriétaire pour l'audit approfondi de ces sites.</label>
+					<p style="color:#666;font-size:12px;margin:8px 0 0">L'audit approfondi sans mandat est un délit (art. 323-1 C. pénal). Pour des prospects non clients : reste en <strong>passif</strong>.</p>
+				</fieldset>
+
 				<p><button type="submit" name="ag_run_audits" value="1" class="button button-primary button-large">🔍 Lancer les audits</button></p>
 			</form>
 
 			<?php if ( $results ) : ?>
-				<h2>Résultats (<?php echo count( $results ); ?>)</h2>
+				<h2>Résultats (<?php echo count( $results ); ?>)<?php echo $deep_mode ? ' — <span style="color:#b91c1c">audit approfondi (actif, sous mandat)</span>' : ' — audit passif'; ?></h2>
 				<table class="widefat striped" style="max-width:1000px">
 					<thead><tr><th>Site</th><th>Score</th><th>Failles</th><th>Principaux problèmes</th><th>Actions</th></tr></thead>
 					<tbody>

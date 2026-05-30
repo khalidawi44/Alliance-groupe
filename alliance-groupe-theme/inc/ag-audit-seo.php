@@ -37,6 +37,37 @@ if ( ! function_exists( 'ag_audit_fetch' ) ) {
 	}
 }
 
+/** Lit la date d'expiration du certificat SSL (timestamp) ou null. */
+if ( ! function_exists( 'ag_audit_ssl_expiry' ) ) {
+	function ag_audit_ssl_expiry( $host ) {
+		if ( ! function_exists( 'stream_socket_client' ) || ! function_exists( 'openssl_x509_parse' ) ) return null;
+		$ctx = stream_context_create( array( 'ssl' => array( 'capture_peer_cert' => true, 'verify_peer' => false, 'verify_peer_name' => false, 'SNI_enabled' => true ) ) );
+		$cl  = @stream_socket_client( 'ssl://' . $host . ':443', $en, $es, 6, STREAM_CLIENT_CONNECT, $ctx );
+		if ( ! $cl ) return null;
+		$p = stream_context_get_params( $cl );
+		fclose( $cl );
+		if ( empty( $p['options']['ssl']['peer_certificate'] ) ) return null;
+		$c = openssl_x509_parse( $p['options']['ssl']['peer_certificate'] );
+		return isset( $c['validTo_time_t'] ) ? (int) $c['validTo_time_t'] : null;
+	}
+}
+
+/** Score pondéré (ok=10/warn=5/fail=0 × poids) + plafond 60 si faille critique. */
+if ( ! function_exists( 'ag_audit_score' ) ) {
+	function ag_audit_score( $checks ) {
+		$score = 0; $max = 0; $crit = 0;
+		foreach ( $checks as $c ) {
+			$w = isset( $c['weight'] ) ? (int) $c['weight'] : 1;
+			$max   += 10 * $w;
+			$score += ( 'ok' === $c['status'] ? 10 : ( 'warn' === $c['status'] ? 5 : 0 ) ) * $w;
+			if ( ! empty( $c['critical'] ) && 'fail' === $c['status'] ) $crit++;
+		}
+		$pct = $max > 0 ? round( $score * 100 / $max ) : 0;
+		if ( $crit > 0 && $pct > 60 ) $pct = 60;
+		return array( $pct, $crit );
+	}
+}
+
 if ( ! function_exists( 'ag_audit_run' ) ) {
 	function ag_audit_run( $url ) {
 		$url = trim( $url );
@@ -254,18 +285,145 @@ if ( ! function_exists( 'ag_audit_run' ) ) {
 			'weight' => 3, 'critical' => (bool) $exposed,
 		);
 
-		/* ====================== Score pondéré + plafond si faille critique ====================== */
-		$score = 0; $max = 0; $nb_crit = 0;
-		foreach ( $checks as $c ) {
-			$w = isset( $c['weight'] ) ? (int) $c['weight'] : 1;
-			$max += 10 * $w;
-			$score += ( 'ok' === $c['status'] ? 10 : ( 'warn' === $c['status'] ? 5 : 0 ) ) * $w;
-			if ( ! empty( $c['critical'] ) && 'fail' === $c['status'] ) $nb_crit++;
+		// S6. Certificat SSL (validité / expiration).
+		if ( 0 === strpos( $url, 'https://' ) ) {
+			$exp = ag_audit_ssl_expiry( wp_parse_url( $url, PHP_URL_HOST ) );
+			if ( null === $exp ) {
+				$checks[] = array( 'name' => 'Certificat SSL', 'status' => 'warn', 'msg' => 'Certificat illisible.', 'advice' => 'Vérifier la configuration SSL.', 'weight' => 2 );
+			} else {
+				$days = (int) floor( ( $exp - time() ) / 86400 );
+				$st = $days < 0 ? 'fail' : ( $days < 15 ? 'warn' : 'ok' );
+				$checks[] = array(
+					'name' => 'Certificat SSL',
+					'status' => $st,
+					'msg' => $days < 0 ? 'EXPIRÉ depuis ' . abs( $days ) . ' j.' : 'Valide encore ' . $days . ' j.',
+					'advice' => $days < 0 ? 'Renouveler immédiatement le certificat (site signalé « non sécurisé »).' : ( $days < 15 ? 'Renouveler bientôt (activer l\'auto-renouvellement).' : 'Bien.' ),
+					'weight' => 2, 'critical' => ( $days < 0 ),
+				);
+			}
+		} else {
+			$checks[] = array( 'name' => 'Certificat SSL', 'status' => 'fail', 'msg' => 'Aucun HTTPS.', 'advice' => 'Activer un certificat SSL (Let\'s Encrypt gratuit).', 'weight' => 2, 'critical' => true );
 		}
-		$score_pct = $max > 0 ? round( $score * 100 / $max ) : 0;
-		if ( $nb_crit > 0 && $score_pct > 60 ) $score_pct = 60; // une faille critique plafonne la note
+
+		// S7. Listing de répertoire (uploads).
+		$ulr = wp_remote_get( $host . '/wp-content/uploads/', $probe );
+		$ulb = is_wp_error( $ulr ) ? '' : wp_remote_retrieve_body( $ulr );
+		$listing = ( false !== stripos( $ulb, 'Index of /' ) );
+		$checks[] = array(
+			'name' => 'Listing de répertoire (uploads)',
+			'status' => $listing ? 'warn' : 'ok',
+			'msg' => $listing ? 'Le contenu de /wp-content/uploads/ est listable publiquement.' : 'Non listable.',
+			'advice' => $listing ? 'Désactiver l\'autoindex (Options -Indexes) : expose vos fichiers.' : 'Bien.',
+			'weight' => 1,
+		);
+
+		/* ====================== Score pondéré + plafond si faille critique ====================== */
+		list( $score_pct, $nb_crit ) = ag_audit_score( $checks );
 
 		return array( 'url' => $url, 'checks' => $checks, 'score' => $score_pct, 'critical' => $nb_crit, 'time_ms' => $elapsed, 'ts' => time() );
+	}
+}
+
+/* ---------------------------------------------------------------------------
+ * AUDIT APPROFONDI (actif) — sondes supplémentaires.
+ * ⚠️ À N'UTILISER QU'AVEC AUTORISATION ÉCRITE DU PROPRIÉTAIRE (mandat).
+ * Reste de la reconnaissance (requêtes HTTP sur endpoints connus) : AUCUNE
+ * exploitation, aucun brute-force, aucune injection de payload.
+ * ------------------------------------------------------------------------- */
+if ( ! function_exists( 'ag_audit_run_deep' ) ) {
+	function ag_audit_run_deep( $url ) {
+		$base   = ag_audit_run( $url );           // toute la base passive
+		$url    = $base['url'];
+		$checks = $base['checks'];
+		$host   = wp_parse_url( $url, PHP_URL_SCHEME ) . '://' . wp_parse_url( $url, PHP_URL_HOST );
+		$probe  = array( 'timeout' => 7, 'user-agent' => 'Alliance-Groupe-Audit/1.0', 'reject_unsafe_urls' => true );
+
+		// D1. Énumération d'auteur via ?author=1 (révèle un identifiant).
+		$au  = wp_remote_get( $host . '/?author=1', array_merge( $probe, array( 'redirection' => 0 ) ) );
+		$loc = is_wp_error( $au ) ? '' : (string) wp_remote_retrieve_header( $au, 'location' );
+		$leak_user = preg_match( '#/author/([^/]+)/?#i', $loc, $am ) ? $am[1] : '';
+		$checks[] = array(
+			'name' => 'Énumération d\'auteur (?author=1)',
+			'status' => $leak_user ? 'fail' : 'ok',
+			'msg' => $leak_user ? 'Identifiant exposé : « ' . esc_html( $leak_user ) . ' ».' : 'Pas de fuite d\'identifiant.',
+			'advice' => $leak_user ? 'Bloquer la redirection ?author= : elle donne le login, moitié d\'un piratage.' : 'Bien.',
+			'weight' => 2, 'critical' => (bool) $leak_user,
+		);
+
+		// D2. Fichiers de sauvegarde / config exposés.
+		$bak_paths = array( '/wp-config.php.bak', '/wp-config.php~', '/wp-config.php.save', '/wp-config.php.txt', '/.wp-config.php.swp', '/backup.zip', '/backup.sql', '/database.sql', '/dump.sql', '/debug.log' );
+		$found_bak = array();
+		foreach ( $bak_paths as $bp ) {
+			$r = wp_remote_get( $host . $bp, $probe );
+			if ( ! is_wp_error( $r ) && 200 === (int) wp_remote_retrieve_response_code( $r ) ) {
+				$rb = wp_remote_retrieve_body( $r );
+				// Évite les faux positifs (page 404 HTML déguisée).
+				if ( $rb && false === stripos( substr( $rb, 0, 200 ), '<html' ) && false === stripos( substr( $rb, 0, 200 ), '<!doctype' ) ) {
+					$found_bak[] = $bp;
+				}
+			}
+		}
+		$checks[] = array(
+			'name' => 'Sauvegardes / config exposées',
+			'status' => $found_bak ? 'fail' : 'ok',
+			'msg' => $found_bak ? 'Téléchargeables : ' . implode( ', ', $found_bak ) : 'Aucun fichier de sauvegarde/config accessible.',
+			'advice' => $found_bak ? 'Supprimer/bloquer ces fichiers IMMÉDIATEMENT : ils contiennent souvent identifiants et base de données.' : 'Bien.',
+			'weight' => 3, 'critical' => (bool) $found_bak,
+		);
+
+		// D3. Listing de répertoires sensibles.
+		$dir_open = array();
+		foreach ( array( '/wp-content/', '/wp-content/plugins/', '/wp-includes/' ) as $d ) {
+			$r = wp_remote_get( $host . $d, $probe );
+			if ( ! is_wp_error( $r ) && false !== stripos( wp_remote_retrieve_body( $r ), 'Index of /' ) ) $dir_open[] = $d;
+		}
+		$checks[] = array(
+			'name' => 'Listing de répertoires (système)',
+			'status' => $dir_open ? 'warn' : 'ok',
+			'msg' => $dir_open ? 'Listables : ' . implode( ', ', $dir_open ) : 'Répertoires système non listables.',
+			'advice' => $dir_open ? 'Désactiver l\'autoindex (Options -Indexes).' : 'Bien.',
+			'weight' => 1,
+		);
+
+		// D4. Versions de plugins exposées (readme.txt) → matching CVE facile.
+		$res  = ag_audit_fetch( $url );
+		$body = $res ? (string) $res['body'] : '';
+		$plugins = array();
+		if ( preg_match_all( '#/wp-content/plugins/([a-z0-9\-_]+)/#i', $body, $pm ) ) {
+			$plugins = array_slice( array_unique( $pm[1] ), 0, 4 );
+		}
+		$plug_vers = array();
+		foreach ( $plugins as $slug ) {
+			$r = wp_remote_get( $host . '/wp-content/plugins/' . $slug . '/readme.txt', $probe );
+			if ( ! is_wp_error( $r ) && 200 === (int) wp_remote_retrieve_response_code( $r ) && preg_match( '#Stable tag:\s*([0-9.]+)#i', wp_remote_retrieve_body( $r ), $vm ) ) {
+				$plug_vers[] = $slug . ' ' . $vm[1];
+			}
+		}
+		$checks[] = array(
+			'name' => 'Versions de plugins exposées',
+			'status' => $plug_vers ? 'warn' : 'ok',
+			'msg' => $plug_vers ? implode( ' · ', array_map( 'esc_html', $plug_vers ) ) : ( $plugins ? 'Plugins détectés, versions non exposées.' : 'Aucun plugin détecté.' ),
+			'advice' => $plug_vers ? 'Masquer les readme.txt : un attaquant compare la version aux failles connues (CVE).' : 'Bien.',
+			'weight' => 1,
+		);
+
+		// D5. xmlrpc : pingback disponible (amplification réelle).
+		$pb = wp_remote_post( $host . '/xmlrpc.php', array_merge( $probe, array(
+			'headers' => array( 'Content-Type' => 'text/xml' ),
+			'body'    => '<?xml version="1.0"?><methodCall><methodName>system.listMethods</methodName><params></params></methodCall>',
+		) ) );
+		$pbb = is_wp_error( $pb ) ? '' : wp_remote_retrieve_body( $pb );
+		$ping = ( false !== stripos( $pbb, 'pingback.ping' ) );
+		$checks[] = array(
+			'name' => 'xmlrpc : pingback (amplification)',
+			'status' => $ping ? 'fail' : 'ok',
+			'msg' => $ping ? 'La méthode pingback.ping est active (DDoS par réflexion possible).' : 'Pingback non disponible.',
+			'advice' => $ping ? 'Désactiver pingback.ping / filtrer xmlrpc.' : 'Bien.',
+			'weight' => 2, 'critical' => $ping,
+		);
+
+		list( $score_pct, $nb_crit ) = ag_audit_score( $checks );
+		return array( 'url' => $url, 'checks' => $checks, 'score' => $score_pct, 'critical' => $nb_crit, 'deep' => true, 'ts' => time() );
 	}
 }
 
