@@ -372,6 +372,9 @@ if ( ! function_exists( 'ag_tester_render_teaser' ) ) {
 						</div>
 					</div>
 					<p style="font-size:1.15rem;margin:8px 0 0"><strong style="color:<?php echo esc_attr( $color ); ?>"><?php echo (int) $nb_pb; ?> problème(s)</strong> détecté(s) sur votre site.</p>
+					<?php if ( ! empty( $a['critical'] ) ) : ?>
+						<p style="margin:10px 0 0;color:#E10F1A;font-weight:800;font-size:1.05rem">🚨 <?php echo (int) $a['critical']; ?> faille(s) critique(s) — à corriger en priorité.</p>
+					<?php endif; ?>
 				</div>
 
 				<!-- Liste : noms visibles, détails MASQUÉS -->

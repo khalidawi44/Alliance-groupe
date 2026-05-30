@@ -177,14 +177,95 @@ if ( ! function_exists( 'ag_audit_run' ) ) {
 			'advice' => $has_favicon ? 'Bien.' : 'Ajouter une favicon (visible dans les onglets navigateur).',
 		);
 
-		// Score : ok=10, warn=5, fail=0 / max
-		$score = 0; $max = count( $checks ) * 10;
+		/* ====================== CONTRÔLES DE SÉCURITÉ (passifs) ====================== */
+		$probe = array( 'timeout' => 7, 'user-agent' => 'Alliance-Groupe-Audit/1.0', 'reject_unsafe_urls' => true );
+
+		// Entêtes en minuscules.
+		$hh = array();
+		$hdrs = $res['headers'] ?? array();
+		if ( is_array( $hdrs ) || is_object( $hdrs ) ) {
+			foreach ( $hdrs as $hk => $hv ) { $hh[ strtolower( $hk ) ] = is_array( $hv ) ? implode( ', ', $hv ) : (string) $hv; }
+		}
+
+		// S1. xmlrpc.php exposé (force brute / DDoS pingback).
+		$xr   = wp_remote_get( $host . '/xmlrpc.php', $probe );
+		$xc   = is_wp_error( $xr ) ? 0 : (int) wp_remote_retrieve_response_code( $xr );
+		$xb   = is_wp_error( $xr ) ? '' : wp_remote_retrieve_body( $xr );
+		$xopen = ( 405 === $xc ) || ( false !== stripos( $xb, 'XML-RPC server accepts POST' ) );
+		$checks[] = array(
+			'name' => 'xmlrpc.php (force brute / DDoS)',
+			'status' => $xopen ? 'fail' : 'ok',
+			'msg' => $xopen ? 'xmlrpc.php est exposé et actif.' : 'Non exposé / désactivé.',
+			'advice' => $xopen ? 'Bloquer ou désactiver xmlrpc.php : amplificateur d\'attaques par force brute et de DDoS via pingback.' : 'Bien.',
+			'weight' => 3, 'critical' => $xopen,
+		);
+
+		// S2. En-têtes de sécurité HTTP.
+		$want = array( 'strict-transport-security', 'content-security-policy', 'x-frame-options', 'x-content-type-options', 'referrer-policy' );
+		$present = 0; foreach ( $want as $w ) { if ( ! empty( $hh[ $w ] ) ) $present++; }
+		$checks[] = array(
+			'name' => 'En-têtes de sécurité HTTP',
+			'status' => $present >= 4 ? 'ok' : ( $present >= 2 ? 'warn' : 'fail' ),
+			'msg' => $present . '/5 en-têtes de protection présents (HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy).',
+			'advice' => $present >= 4 ? 'Bonne protection.' : 'Ajouter les en-têtes manquants (anti-clickjacking, anti-injection, HTTPS forcé).',
+			'weight' => 2,
+		);
+
+		// S3. Divulgation de version / technologie.
+		$gen = preg_match( '#<meta[^>]+name=[\'"]generator[\'"][^>]+content=[\'"]([^\'"]*)[\'"]#i', $body, $gm ) ? trim( $gm[1] ) : '';
+		$leak = array();
+		if ( $gen ) $leak[] = $gen;
+		if ( ! empty( $hh['x-powered-by'] ) ) $leak[] = 'X-Powered-By: ' . $hh['x-powered-by'];
+		if ( ! empty( $hh['server'] ) && preg_match( '#\d#', $hh['server'] ) ) $leak[] = 'Server: ' . $hh['server'];
+		$checks[] = array(
+			'name' => 'Divulgation de version (techno)',
+			'status' => empty( $leak ) ? 'ok' : 'warn',
+			'msg' => empty( $leak ) ? 'Aucune version sensible exposée.' : implode( ' · ', array_map( 'esc_html', $leak ) ),
+			'advice' => empty( $leak ) ? 'Bien.' : 'Masquer les versions (CMS / PHP / serveur) : elles guident les attaquants vers les exploits connus.',
+			'weight' => 1,
+		);
+
+		// S4. Énumération des comptes WordPress (REST /wp-json/wp/v2/users).
+		$ur   = wp_remote_get( $host . '/wp-json/wp/v2/users', $probe );
+		$uc   = is_wp_error( $ur ) ? 0 : (int) wp_remote_retrieve_response_code( $ur );
+		$ub   = is_wp_error( $ur ) ? '' : wp_remote_retrieve_body( $ur );
+		$enum = ( 200 === $uc && false !== strpos( $ub, '"slug"' ) );
+		$checks[] = array(
+			'name' => 'Énumération des comptes (wp-json)',
+			'status' => $enum ? 'fail' : 'ok',
+			'msg' => $enum ? 'Les identifiants/auteurs sont publics via /wp-json/wp/v2/users.' : 'Non exposée.',
+			'advice' => $enum ? 'Bloquer l\'endpoint REST users : il livre les logins, la moitié d\'un piratage par force brute.' : 'Bien.',
+			'weight' => 2, 'critical' => $enum,
+		);
+
+		// S5. Fichiers sensibles exposés (.git / .env).
+		$exposed = array();
+		foreach ( array( '/.git/HEAD' => 'ref:', '/.env' => '=' ) as $pf => $needle ) {
+			$r = wp_remote_get( $host . $pf, $probe );
+			if ( ! is_wp_error( $r ) && 200 === (int) wp_remote_retrieve_response_code( $r ) && false !== strpos( wp_remote_retrieve_body( $r ), $needle ) ) {
+				$exposed[] = $pf;
+			}
+		}
+		$checks[] = array(
+			'name' => 'Fichiers sensibles exposés (.git/.env)',
+			'status' => $exposed ? 'fail' : 'ok',
+			'msg' => $exposed ? 'Accessibles publiquement : ' . implode( ', ', $exposed ) : 'Aucun fichier sensible accessible.',
+			'advice' => $exposed ? 'Bloquer immédiatement : ces fichiers exposent code source, mots de passe et clés.' : 'Bien.',
+			'weight' => 3, 'critical' => (bool) $exposed,
+		);
+
+		/* ====================== Score pondéré + plafond si faille critique ====================== */
+		$score = 0; $max = 0; $nb_crit = 0;
 		foreach ( $checks as $c ) {
-			$score += 'ok' === $c['status'] ? 10 : ( 'warn' === $c['status'] ? 5 : 0 );
+			$w = isset( $c['weight'] ) ? (int) $c['weight'] : 1;
+			$max += 10 * $w;
+			$score += ( 'ok' === $c['status'] ? 10 : ( 'warn' === $c['status'] ? 5 : 0 ) ) * $w;
+			if ( ! empty( $c['critical'] ) && 'fail' === $c['status'] ) $nb_crit++;
 		}
 		$score_pct = $max > 0 ? round( $score * 100 / $max ) : 0;
+		if ( $nb_crit > 0 && $score_pct > 60 ) $score_pct = 60; // une faille critique plafonne la note
 
-		return array( 'url' => $url, 'checks' => $checks, 'score' => $score_pct, 'time_ms' => $elapsed, 'ts' => time() );
+		return array( 'url' => $url, 'checks' => $checks, 'score' => $score_pct, 'critical' => $nb_crit, 'time_ms' => $elapsed, 'ts' => time() );
 	}
 }
 
