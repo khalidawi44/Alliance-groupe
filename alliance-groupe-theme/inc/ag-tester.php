@@ -505,6 +505,17 @@ if ( ! function_exists( 'ag_audit_split_fails' ) ) {
 		return array( $S, $O );
 	}
 }
+if ( ! function_exists( 'ag_audit_segment' ) ) {
+	/** Oriente un prospect : 'securite' (failles) ou 'creation' (site faible/à refaire). */
+	function ag_audit_segment( $a ) {
+		if ( ! empty( $a['critical'] ) ) return 'securite';
+		$sec = ag_audit_sec_names(); $n = 0;
+		foreach ( ( $a['checks'] ?? array() ) as $c ) {
+			if ( 'ok' !== ( $c['status'] ?? '' ) && in_array( $c['name'], $sec, true ) ) $n++;
+		}
+		return ( $n >= 2 || (int) ( $a['score'] ?? 0 ) < 55 ) ? 'securite' : 'creation';
+	}
+}
 if ( ! function_exists( 'ag_audit_risk_detail' ) ) {
 	/** Détail technique « qui fait peur » par type de faille. */
 	function ag_audit_risk_detail( $name ) {
@@ -673,10 +684,19 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 			</form>
 
 			<?php if ( $results ) :
-				// Trie : prospects les plus faibles (plus chauds) en premier.
-				usort( $results, function ( $x, $y ) { return (int) ( $x['score'] ?? 0 ) <=> (int) ( $y['score'] ?? 0 ); } );
+				// Classe chaque prospect (sécurité vs création), puis trie : sécurité d'abord, plus faibles en tête.
+				foreach ( $results as &$rr ) { $rr['_seg'] = ag_audit_segment( $rr ); } unset( $rr );
+				usort( $results, function ( $x, $y ) {
+					$ps = ( 'securite' === $x['_seg'] ) ? 0 : 1;
+					$qs = ( 'securite' === $y['_seg'] ) ? 0 : 1;
+					if ( $ps !== $qs ) return $ps <=> $qs;
+					return (int) ( $x['score'] ?? 0 ) <=> (int) ( $y['score'] ?? 0 );
+				} );
+				$nb_sec  = count( array_filter( $results, function ( $r ) { return 'securite' === $r['_seg']; } ) );
+				$nb_cre  = count( $results ) - $nb_sec;
+				$cur_seg = '';
 				?>
-				<h2>Résultats (<?php echo count( $results ); ?>)<?php echo $deep_mode ? ' — <span style="color:#b91c1c">audit approfondi (actif, sous mandat)</span>' : ' — audit passif'; ?></h2>
+				<h2>Résultats (<?php echo count( $results ); ?>) — <span style="color:#b91c1c"><?php echo (int) $nb_sec; ?> sécurité</span> · <span style="color:#1d4ed8"><?php echo (int) $nb_cre; ?> création</span><?php echo $deep_mode ? ' — <span style="color:#b91c1c">approfondi (mandat)</span>' : ''; ?></h2>
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin:0 0 12px">
 					<input type="hidden" name="action" value="ag_audit_export_csv">
 					<?php wp_nonce_field( 'ag_audit_export' ); ?>
@@ -711,6 +731,11 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 					$subj_sec = '⚠️ Faille de sécurité détectée sur ' . $host;
 					$subj_cr  = 'Votre site ' . $host . ' — idées pour le moderniser';
 					?>
+					<?php if ( $a['_seg'] !== $cur_seg ) : $cur_seg = $a['_seg']; ?>
+						<h3 style="margin:30px 0 6px;padding-bottom:6px;border-bottom:2px solid <?php echo 'securite' === $cur_seg ? '#f3c2c2' : '#c2d9f3'; ?>">
+							<?php echo 'securite' === $cur_seg ? '🛡️ Prospects SÉCURITÉ — failles à corriger (audit)' : '✨ Prospects CRÉATION / refonte — site à moderniser'; ?>
+						</h3>
+					<?php endif; ?>
 					<div style="background:#fff;border:1px solid #ccd0d4;border-left:5px solid <?php echo esc_attr( $col ); ?>;border-radius:8px;padding:16px 18px;margin:14px 0;max-width:1000px">
 						<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
 							<div>
@@ -736,6 +761,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 						</div>
 
 						<!-- SEGMENT SÉCURITÉ -->
+						<?php if ( 'securite' === $a['_seg'] ) : ?>
 						<div style="border:1px solid #f3c2c2;background:#fff5f5;border-radius:6px;padding:10px 12px;margin:8px 0">
 							<strong style="color:#b91c1c">🛡️ Démarchage SÉCURITÉ (alerte risque)</strong>
 							<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
@@ -759,8 +785,10 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 								<p style="margin:6px 0 0;font-size:11px;color:#888">Lien commande : <code><?php echo esc_html( $order_link ); ?></code></p>
 							</div>
 						</div>
+						<?php endif; ?>
 
 						<!-- SEGMENT CRÉATION -->
+						<?php if ( 'creation' === $a['_seg'] ) : ?>
 						<div style="border:1px solid #c2d9f3;background:#f5f9ff;border-radius:6px;padding:10px 12px;margin:8px 0">
 							<strong style="color:#1d4ed8">✨ Démarchage CRÉATION (refonte / site moderne)</strong>
 							<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
@@ -779,6 +807,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 								<textarea rows="9" style="width:100%;max-width:660px;font-size:12px" onclick="this.select()"><?php echo esc_textarea( $msg_crea ); ?></textarea>
 							</div>
 						</div>
+						<?php endif; ?>
 					</div>
 				<?php endforeach; ?>
 				<p style="color:#666;font-size:12px;margin-top:10px">⚖️ Coordonnées extraites des pages publiques du site (info éditée par l'entreprise). Démarchage : B2B autorisé avec opt-out (le message inclut « STOP ») ; respecte <strong>Bloctel</strong> pour le téléphone. Aucune donnée issue de fuites/bases tierces.</p>
