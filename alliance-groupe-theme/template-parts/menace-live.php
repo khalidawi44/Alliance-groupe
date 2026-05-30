@@ -211,7 +211,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 <!-- Mur PLEIN ÉCRAN « un piratage ressemble à ça » — seule issue : AUDITER -->
 <div id="ag-menace-pop" class="ag-hack" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Un piratage ressemble à ça">
-	<div class="ag-hack__photo" aria-hidden="true" style="background-image:url('<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/securite/menace.jpg' ); ?>');"></div>
+	<?php $ag_menace_bg = get_option( 'ag_tester_img_menace', '' ) ?: get_stylesheet_directory_uri() . '/assets/images/securite/menace.jpg'; ?>
+	<div class="ag-hack__photo" aria-hidden="true" style="background-image:url('<?php echo esc_url( $ag_menace_bg ); ?>');"></div>
 	<div class="ag-hack__term" aria-hidden="true">
 		<div class="ag-hack__scroll">
 			<p>root@target:~# nmap -p- cible.fr</p>

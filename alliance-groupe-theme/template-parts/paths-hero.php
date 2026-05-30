@@ -14,6 +14,11 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 $ag_img = get_stylesheet_directory_uri() . '/assets/images/parcours/';
+// URL personnalisée (Réglages → Tester/Audit) sinon fichier local du dossier parcours/.
+$ag_cardimg = function ( $key ) use ( $ag_img ) {
+	$u = get_option( 'ag_tester_img_' . $key, '' );
+	return $u ? $u : $ag_img . $key . '.jpg';
+};
 $ag_paths = array(
 	array(
 		'emoji' => '🔒',
@@ -24,7 +29,7 @@ $ag_paths = array(
 		'url'   => home_url( '/tester-mon-site' ),
 		'tint'  => '#0f0f1c',
 		'glow'  => '#F37A1F',
-		'img'   => $ag_img . 'audit.jpg',
+		'img'   => $ag_cardimg( 'audit' ),
 	),
 	array(
 		'emoji' => '✨',
@@ -35,7 +40,7 @@ $ag_paths = array(
 		'url'   => home_url( '/sites-express' ),
 		'tint'  => '#1a1a26',
 		'glow'  => '#D4B45C',
-		'img'   => $ag_img . 'creation.jpg',
+		'img'   => $ag_cardimg( 'creation' ),
 	),
 	array(
 		'emoji' => '🛡️',
@@ -46,7 +51,7 @@ $ag_paths = array(
 		'url'   => home_url( '/maintenance' ),
 		'tint'  => '#0f1c14',
 		'glow'  => '#28a745',
-		'img'   => $ag_img . 'maintenance.jpg',
+		'img'   => $ag_cardimg( 'maintenance' ),
 	),
 	array(
 		'emoji' => '📦',
@@ -57,7 +62,7 @@ $ag_paths = array(
 		'url'   => home_url( '/templates-wordpress' ),
 		'tint'  => '#1c1410',
 		'glow'  => '#D4B45C',
-		'img'   => $ag_img . 'templates.jpg',
+		'img'   => $ag_cardimg( 'templates' ),
 	),
 );
 ?>
