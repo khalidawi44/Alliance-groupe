@@ -13,8 +13,12 @@ get_header();
     </video>
     <div class="ag-hero__video-veil" aria-hidden="true"></div>
     <style>
+    /* Home : hero plus court (on enchaîne vite sur la menace) */
+    body.home .ag-hero{min-height:74vh;padding-top:140px;padding-bottom:60px}
+    @media(max-width:900px){body.home .ag-hero{min-height:auto;padding-top:120px}}
     .ag-hero__naples{display:none!important}
-    .ag-hero__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+    /* Vidéo Naples : remplit sans trop zoomer (cadrage haut = baie + Vésuve) */
+    .ag-hero__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%;z-index:0}
     .ag-hero__video-veil{position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,rgba(10,10,15,.5) 0%,rgba(10,10,15,.72) 100%)}
     </style>
     <!-- Photo Naples (fallback masqué) -->
@@ -119,6 +123,10 @@ get_header();
     </div>
 </section>
 
+<!-- ⚡ LA MENACE EN DIRECT — juste après le hero : on capte la peur avant tout
+       (carte Kaspersky dans les étoiles 3D + compteurs dynamiques) -->
+<?php get_template_part('template-parts/menace-live'); ?>
+
 <!-- 📊 AUDIT GRATUIT — lead magnet prioritaire (revenu principal) -->
 <section class="ag-audit-hero" id="ag-audit-hero">
 	<div class="ag-audit-hero__inner">
@@ -140,9 +148,6 @@ get_header();
 
 <!-- "Choisissez votre parcours" — 4 panneaux priorisés (audit / création / maintenance / templates) -->
 <?php get_template_part('template-parts/paths-hero'); ?>
-
-<!-- La menace en direct — carte Kaspersky dans les étoiles + compteurs dynamiques -->
-<?php get_template_part('template-parts/menace-live'); ?>
 
 <!-- 3 cadeaux pour démarrer (lead magnets) -->
 <?php /* MENAGE: get_template_part('template-parts/cadeaux-banner'); */ ?>
