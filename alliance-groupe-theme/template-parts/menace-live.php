@@ -206,3 +206,58 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 	}
 })();
 </script>
+
+<!-- Pop-up déclenché à l'arrivée sur le globe Kaspersky (1×/visite) -->
+<div id="ag-menace-pop" class="ag-mpop" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Testez votre site">
+	<div class="ag-mpop__backdrop" data-close></div>
+	<div class="ag-mpop__card">
+		<button class="ag-mpop__x" type="button" data-close aria-label="Fermer">×</button>
+		<span class="ag-mpop__tag">🚨 En direct</span>
+		<h3 class="ag-mpop__title">Ces attaques sont réelles. <em>Et votre site ?</em></h3>
+		<p class="ag-mpop__text">Pendant que vous regardez cette carte, des milliers de sites sont scannés par des robots. Vérifiez le vôtre en 30 secondes — gratuit, sans engagement.</p>
+		<a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-mpop__btn">🔍 Tester mon site →</a>
+		<button class="ag-mpop__later" type="button" data-close>Continuer à regarder</button>
+	</div>
+</div>
+<style>
+.ag-mpop{position:fixed;inset:0;z-index:99998;display:none;align-items:center;justify-content:center;padding:20px}
+.ag-mpop.is-on{display:flex;animation:agMpopIn .35s ease}
+@keyframes agMpopIn{from{opacity:0}to{opacity:1}}
+.ag-mpop__backdrop{position:absolute;inset:0;background:rgba(4,4,10,.78);backdrop-filter:blur(3px)}
+.ag-mpop__card{position:relative;z-index:1;max-width:440px;width:100%;background:linear-gradient(180deg,#12121c,#0b0b12);border:1px solid rgba(243,122,31,.4);border-radius:20px;padding:30px 26px 26px;text-align:center;color:#fff;box-shadow:0 30px 90px rgba(0,0,0,.6),0 0 60px rgba(243,122,31,.15);animation:agMpopPop .4s cubic-bezier(.16,1,.3,1)}
+@keyframes agMpopPop{from{transform:translateY(20px) scale(.96);opacity:0}to{transform:none;opacity:1}}
+.ag-mpop__x{position:absolute;top:12px;right:16px;background:none;border:none;color:rgba(255,255,255,.5);font-size:26px;line-height:1;cursor:pointer}
+.ag-mpop__x:hover{color:#fff}
+.ag-mpop__tag{display:inline-block;padding:5px 13px;background:rgba(225,15,26,.18);border:1px solid rgba(225,15,26,.5);border-radius:999px;color:#ff6b6b;font-size:.74rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
+.ag-mpop__title{font-family:Georgia,'Playfair Display',serif;font-size:1.7rem;line-height:1.15;margin:0 0 12px}
+.ag-mpop__title em{font-style:italic;background:linear-gradient(135deg,#F37A1F,#ff5252);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.ag-mpop__text{color:rgba(255,255,255,.8);font-size:.98rem;line-height:1.55;margin:0 0 22px}
+.ag-mpop__btn{display:block;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:800;text-decoration:none;padding:15px 24px;border-radius:999px;font-size:1.05rem;box-shadow:0 10px 30px rgba(243,122,31,.45);transition:transform .2s}
+.ag-mpop__btn:hover{transform:translateY(-2px) scale(1.02)}
+.ag-mpop__later{margin-top:14px;background:none;border:none;color:rgba(255,255,255,.55);font-size:.85rem;cursor:pointer;text-decoration:underline}
+.ag-mpop__later:hover{color:#fff}
+@media(prefers-reduced-motion:reduce){.ag-mpop.is-on,.ag-mpop__card{animation:none}}
+</style>
+<script>
+(function(){
+	var pop = document.getElementById('ag-menace-pop');
+	var sec = document.querySelector('.ag-menace');
+	if(!pop||!sec) return;
+	var shown = false;
+	try{ if(sessionStorage.getItem('ag_menace_pop')==='1') shown = true; }catch(e){}
+	function open(){
+		if(shown) return; shown = true;
+		try{ sessionStorage.setItem('ag_menace_pop','1'); }catch(e){}
+		pop.classList.add('is-on'); pop.setAttribute('aria-hidden','false');
+	}
+	function close(){ pop.classList.remove('is-on'); pop.setAttribute('aria-hidden','true'); }
+	pop.addEventListener('click', function(e){ if(e.target.hasAttribute('data-close')) close(); });
+	document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
+	if('IntersectionObserver' in window){
+		var io = new IntersectionObserver(function(entries){
+			entries.forEach(function(en){ if(en.isIntersecting){ open(); io.disconnect(); } });
+		}, { threshold: 0.45 });
+		io.observe(sec);
+	}
+})();
+</script>
