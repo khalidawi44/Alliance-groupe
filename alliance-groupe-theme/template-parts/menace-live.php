@@ -75,7 +75,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 					<li>🛠️ Je corrige ou je (re)crée votre site</li>
 					<li>🛡️ Je veille dessus, chaque mois</li>
 				</ul>
-				<a href="<?php echo esc_url( home_url( '/ag-audit' ) ); ?>" class="ag-menace__cta">🔒 Démarrer par l'audit →</a>
+				<a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-menace__cta">🔍 Tester mon site →</a>
 				<span class="ag-menace__sol-note">Réponse sous 24 h · Devis gratuit. <strong>Si on ne trouve rien d'exploitable, on vous le dit honnêtement.</strong></span>
 			</aside>
 		</div>

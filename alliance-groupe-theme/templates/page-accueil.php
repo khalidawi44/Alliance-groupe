@@ -96,7 +96,7 @@ get_header();
         </p>
 
         <div class="ag-hero__buttons">
-            <a href="<?php echo esc_url(home_url('/ag-audit')); ?>" class="ag-btn-gold">🔒 Démarrer par l'audit →</a>
+            <a href="<?php echo esc_url(home_url('/tester-mon-site')); ?>" class="ag-btn-gold">🔍 Tester mon site →</a>
             <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Parlons de votre projet</a>
         </div>
 
@@ -174,7 +174,7 @@ get_header();
 <div class="ag-stickycta" id="ag-stickycta" aria-hidden="false">
 	<div class="ag-stickycta__inner">
 		<span class="ag-stickycta__txt">Si on ne trouve rien d'exploitable, <strong>on vous le dit.</strong></span>
-		<a href="<?php echo esc_url( home_url( '/ag-audit' ) ); ?>" class="ag-stickycta__btn">🔒 Auditer mon site →</a>
+		<a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-stickycta__btn">🔍 Tester mon site →</a>
 	</div>
 </div>
 <style>

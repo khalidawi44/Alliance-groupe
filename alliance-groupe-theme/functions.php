@@ -23,7 +23,7 @@ if ( is_admin() ) {
 
 // Crée les pages maison (sur-mesure, consultation) si elles n'existent pas.
 add_action( 'admin_init', function () {
-    if ( get_option( 'ag_auto_pages_v7' ) ) return;
+    if ( get_option( 'ag_auto_pages_v8' ) ) return;
     $pages = array(
         'sur-mesure'    => array( 'Projet sur-mesure', 'templates/page-sur-mesure.php' ),
         'consultation'  => array( 'Consultation payante', 'templates/page-consultation.php' ),
@@ -31,6 +31,7 @@ add_action( 'admin_init', function () {
         'systeme-prospection' => array( 'Système de prospection', 'templates/page-systeme-prospection.php' ),
         'maintenance'   => array( 'Maintenance & Sérénité', 'templates/page-maintenance.php' ),
         'accueil-v2'    => array( 'Accueil (audit-first)', 'templates/page-accueil-epuree.php' ),
+        'tester-mon-site' => array( 'Tester mon site', 'templates/page-tester.php' ),
         'retours'       => array( 'Politique de retour', 'templates/page-retours.php' ),
         'livraison'     => array( 'Politique de livraison', 'templates/page-livraison.php' ),
     );
@@ -45,7 +46,7 @@ add_action( 'admin_init', function () {
             'page_template' => $p[1],
         ) );
     }
-    update_option( 'ag_auto_pages_v7', 1 );
+    update_option( 'ag_auto_pages_v8', 1 );
 } );
 
 // L'ancienne page de prise de RDV (Cal.com) redirige vers l'offre sur-mesure.
@@ -102,6 +103,12 @@ if ( file_exists( $ag_demo_board_file ) ) {
 $ag_audit_seo_file = get_stylesheet_directory() . '/inc/ag-audit-seo.php';
 if ( file_exists( $ag_audit_seo_file ) ) {
     require_once $ag_audit_seo_file;
+}
+
+// ── 1c5e-bis. « Tester mon site » (freemium) + Espace Audit (prospection admin)
+$ag_tester_file = get_stylesheet_directory() . '/inc/ag-tester.php';
+if ( file_exists( $ag_tester_file ) ) {
+    require_once $ag_tester_file;
 }
 
 // ── 1c5f. Tirage au sort mensuel (1 site gratuit / mois)
@@ -510,6 +517,7 @@ add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-contrat-client.php']  = 'Contrat Client';
     $templates['templates/page-systeme-prospection.php'] = 'Système de prospection';
     $templates['templates/page-maintenance.php']     = 'Maintenance & Sérénité';
+    $templates['templates/page-tester.php']          = 'Tester mon site';
     $templates['templates/page-accueil-epuree.php']  = 'Accueil épurée (audit-first)';
     $templates['templates/page-retours.php']         = 'Politique de retour';
     $templates['templates/page-livraison.php']       = 'Politique de livraison';
