@@ -17,12 +17,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 // Items menu — duplique la nav primary pour rester cohérent
 $ag_fsm_items = array(
 	array( 'url' => home_url( '/' ),               'label' => 'Accueil',              'sub' => '01' ),
-	array( 'url' => home_url( '/ag-audit' ),       'label' => 'Audit de sécurité',    'sub' => '02' ),
+	array( 'url' => home_url( '/tester-mon-site' ),'label' => 'Tester mon site',      'sub' => '02' ),
 	array( 'url' => home_url( '/sites-express' ),  'label' => 'Création de sites',    'sub' => '03' ),
 	array( 'url' => home_url( '/maintenance' ),    'label' => 'Maintenance',          'sub' => '04' ),
 	array( 'url' => home_url( '/realisations' ),   'label' => 'Réalisations',         'sub' => '05' ),
-	array( 'url' => home_url( '/a-propos' ),       'label' => 'À propos',             'sub' => '06' ),
-	array( 'url' => home_url( '/contact' ),        'label' => 'Contact',              'sub' => '07' ),
+	array( 'url' => home_url( '/le-voyage' ),      'label' => 'Le Voyage',            'sub' => '06' ),
+	array( 'url' => home_url( '/a-propos' ),       'label' => 'À propos',             'sub' => '07' ),
+	array( 'url' => home_url( '/contact' ),        'label' => 'Contact',              'sub' => '08' ),
 );
 ?>
 
@@ -52,7 +53,7 @@ $ag_fsm_items = array(
 		</ul>
 
 		<div class="ag-fsm-footer">
-			<div class="ag-fsm-tagline">Agence Web &amp; IA — Alliance Groupe</div>
+			<div class="ag-fsm-tagline">Studio web &amp; sécurité — Alliance Groupe</div>
 			<div class="ag-fsm-contact">
 				<?php if ( is_user_logged_in() ) :
 					$ag_espace = function_exists( 'ag_espace_url' ) ? ag_espace_url() : home_url( '/espace-client' ); ?>
