@@ -17,6 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 // Items menu — duplique la nav primary pour rester cohérent
 $ag_fsm_items = array(
 	array( 'url' => home_url( '/' ),                       'label' => 'Accueil',           'sub' => '01' ),
+	array( 'url' => home_url( '/ag-audit' ),               'label' => '📊 Audit gratuit',   'sub' => '★' ),
 	array( 'url' => home_url( '/services' ),               'label' => 'Services',          'sub' => '02' ),
 	array( 'url' => home_url( '/sites-express' ),          'label' => 'Sites Express ⚡',   'sub' => '03' ),
 	array( 'url' => home_url( '/templates-wordpress' ),    'label' => 'Templates',         'sub' => '04' ),

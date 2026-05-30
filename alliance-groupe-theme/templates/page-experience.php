@@ -878,53 +878,57 @@ function loop(){
 }
 /* Menu accordéon (style accueil) — navigation 100% DANS le voyage : la musique
  * ne s'arrête jamais (aucun rechargement de page). */
+/* Panneau iframe : ouvre une page DANS le voyage (musique conservée, SEO ok). */
+const agxFrame = document.getElementById('agx-frame');
+const agxFrameIf = document.getElementById('agx-frame-if');
+const agxFrameClose = document.getElementById('agx-frame-close');
+function agxOpenFrame(url){ if (!agxFrame || !agxFrameIf || !url || url === '#') return; agxFrameIf.src = url; agxFrame.classList.add('is-on'); agxFrame.setAttribute('aria-hidden','false'); agxTrack('agx_frame_open', { url: url }); }
+function agxCloseFrame(){ if (!agxFrame) return; agxFrame.classList.remove('is-on'); agxFrame.setAttribute('aria-hidden','true'); setTimeout(()=>{ if (!agxFrame.classList.contains('is-on')) agxFrameIf.src = 'about:blank'; }, 400); }
+if (agxFrameClose) agxFrameClose.addEventListener('click', agxCloseFrame);
+document.addEventListener('keydown', e=>{ if (e.key === 'Escape' && agxFrame && agxFrame.classList.contains('is-on')) agxCloseFrame(); });
+document.querySelectorAll('.agx__card').forEach(c=>{ c.addEventListener('click', e=>{ const u = c.getAttribute('href'); if (!u || u === '#') return; e.preventDefault(); agxOpenFrame(u); }); });
+const agxCtaBtn = document.getElementById('agx-cta');
+if (agxCtaBtn) agxCtaBtn.addEventListener('click', e=>{ const u = agxCtaBtn.getAttribute('href'); if (!u || u === '#') return; e.preventDefault(); agxOpenFrame(u); });
+
+/* Menu accordéon : "Le voyage" (stations) + "Le site" (vrai menu accueil).
+ * Tout s'ouvre DANS le voyage (iframe) -> la musique ne s'arrête jamais. */
+const AGX_SITE_MENU = <?php echo wp_json_encode( array(
+	array( 'u' => home_url( '/ag-audit' ),            'l' => '📊 Audit gratuit' ),
+	array( 'u' => home_url( '/' ),                    'l' => 'Accueil' ),
+	array( 'u' => home_url( '/services' ),            'l' => 'Services' ),
+	array( 'u' => home_url( '/sites-express' ),       'l' => 'Sites Express ⚡' ),
+	array( 'u' => home_url( '/templates-wordpress' ), 'l' => 'Templates' ),
+	array( 'u' => home_url( '/pourquoi-alliance' ),   'l' => 'Pourquoi Alliance' ),
+	array( 'u' => home_url( '/realisations' ),        'l' => 'Réalisations' ),
+	array( 'u' => home_url( '/programme-racines' ),   'l' => 'Programme Racines' ),
+	array( 'u' => home_url( '/ambassadeurs' ),        'l' => 'Ambassadeurs' ),
+	array( 'u' => home_url( '/classement' ),          'l' => 'Classement 🏆' ),
+	array( 'u' => home_url( '/articles' ),            'l' => 'Articles' ),
+	array( 'u' => home_url( '/a-propos' ),            'l' => 'À propos' ),
+	array( 'u' => home_url( '/contact' ),             'l' => 'Contact' ),
+) ); ?>;
 (function buildAccordion(){
-	const elBurger = document.getElementById('agx-burger');
-	const elAcc = document.getElementById('agx-acc');
-	const elAccInner = document.getElementById('agx-acc-inner');
-	const elAccClose = document.getElementById('agx-acc-close');
+	const elBurger = document.getElementById('agx-burger'), elAcc = document.getElementById('agx-acc'), elAccInner = document.getElementById('agx-acc-inner'), elAccClose = document.getElementById('agx-acc-close');
 	if (!elBurger || !elAcc || !elAccInner) return;
 	const open = ()=>{ elAcc.classList.add('is-on'); elAcc.setAttribute('aria-hidden','false'); };
 	const close = ()=>{ elAcc.classList.remove('is-on'); elAcc.setAttribute('aria-hidden','true'); };
 	elBurger.addEventListener('click', open);
 	if (elAccClose) elAccClose.addEventListener('click', close);
 	elAcc.addEventListener('click', e=>{ if (e.target === elAcc) close(); });
-
-	const offers = Array.from(elMenu.querySelectorAll('.agx__orb')).map(o=>({k:+o.dataset.orb, label:((o.querySelector('.agx__orb-label')||{}).textContent||'').trim()}));
 	const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 	const grp = (title, items)=> '<div class="agx__acc-grp"><button class="agx__acc-h" type="button">'+esc(title)+'<span class="chev">▾</span></button><div class="agx__acc-panel">'+items+'</div></div>';
 	const stationsHtml = STATIONS.map((s,i)=>'<button class="agx__acc-item" data-go="'+i+'">'+esc(s.ttl)+'</button>').join('');
-	const offersHtml = offers.map(o=>'<button class="agx__acc-item" data-detail="'+o.k+'">'+esc(o.label)+'</button>').join('');
-	elAccInner.innerHTML = grp('Le voyage', stationsHtml) + grp('Découvrir l’univers', offersHtml);
-
+	const siteHtml = AGX_SITE_MENU.map(m=>'<button class="agx__acc-item" data-url="'+esc(m.u)+'">'+esc(m.l)+'</button>').join('');
+	elAccInner.innerHTML = grp('Le voyage', stationsHtml) + grp('Le site', siteHtml);
 	elAccInner.querySelectorAll('.agx__acc-h').forEach(h=> h.addEventListener('click', ()=> h.parentElement.classList.toggle('is-open')));
 	const firstGrp = elAccInner.querySelector('.agx__acc-grp'); if (firstGrp) firstGrp.classList.add('is-open');
 	elAccInner.querySelectorAll('.agx__acc-item').forEach(it=>{
 		it.addEventListener('click', ()=>{
 			close();
 			if (it.dataset.go != null){ go(+it.dataset.go); }
-			else if (it.dataset.detail != null){ const k=+it.dataset.detail; go(STATIONS.length-1); setTimeout(()=>openDetail(k), 750); }
+			else if (it.dataset.url){ agxOpenFrame(it.dataset.url); }
 		});
 	});
-})();
-
-/* Cartes d'offres : ouvrir la page DANS le voyage (iframe) plutôt que recharger
- * -> la musique continue. Le href reste (clic droit / SEO). */
-(function inVoyageCards(){
-	const elFrame = document.getElementById('agx-frame');
-	const elFrameIf = document.getElementById('agx-frame-if');
-	const elFrameClose = document.getElementById('agx-frame-close');
-	if (!elFrame || !elFrameIf) return;
-	function openFrame(url){ elFrameIf.src = url; elFrame.classList.add('is-on'); elFrame.setAttribute('aria-hidden','false'); agxTrack('agx_frame_open', { url: url }); }
-	function closeFrame(){ elFrame.classList.remove('is-on'); elFrame.setAttribute('aria-hidden','true'); setTimeout(()=>{ if (!elFrame.classList.contains('is-on')) elFrameIf.src = 'about:blank'; }, 400); }
-	if (elFrameClose) elFrameClose.addEventListener('click', closeFrame);
-	document.addEventListener('keydown', e=>{ if (e.key === 'Escape' && elFrame.classList.contains('is-on')) closeFrame(); });
-	document.querySelectorAll('.agx__card').forEach(c=>{
-		c.addEventListener('click', e=>{ const u = c.getAttribute('href'); if (!u || u === '#') return; e.preventDefault(); openFrame(u); });
-	});
-	// Bouton "Devis gratuit" : ouvre /rdv DANS le voyage (musique conservée).
-	const elCtaBtn = document.getElementById('agx-cta');
-	if (elCtaBtn) elCtaBtn.addEventListener('click', e=>{ const u = elCtaBtn.getAttribute('href'); if (!u || u === '#') return; e.preventDefault(); openFrame(u); });
 })();
 
 go(0, true); loop();

@@ -109,6 +109,25 @@ get_header();
     </div>
 </section>
 
+<!-- 📊 AUDIT GRATUIT — lead magnet prioritaire (revenu principal) -->
+<section class="ag-audit-hero" id="ag-audit-hero">
+	<div class="ag-audit-hero__inner">
+		<span class="ag-audit-hero__tag">🎁 100% offert · sans engagement</span>
+		<h2 class="ag-audit-hero__title">Votre site vous fait-il vraiment gagner des clients ?</h2>
+		<p class="ag-audit-hero__sub">Recevez votre <strong>audit gratuit</strong> : on analyse votre site et on vous dit exactement quoi améliorer pour vendre plus.</p>
+		<a href="<?php echo esc_url( home_url( '/ag-audit' ) ); ?>" class="ag-audit-hero__btn">📊 Obtenir mon audit gratuit →</a>
+	</div>
+</section>
+<style>
+.ag-audit-hero{padding:54px 20px;background:linear-gradient(135deg,#0a0a0f,#1a1a2e);text-align:center}
+.ag-audit-hero__inner{max-width:760px;margin:0 auto;background:linear-gradient(180deg,rgba(212,180,92,.08),rgba(243,122,31,.05));border:1px solid rgba(212,180,92,.35);border-radius:20px;padding:40px 28px}
+.ag-audit-hero__tag{display:inline-block;color:#F3D27A;font-weight:700;letter-spacing:1px;font-size:.85rem;margin-bottom:14px}
+.ag-audit-hero__title{font-family:Georgia,serif;font-size:clamp(1.6rem,4vw,2.6rem);color:#fff;margin:0 0 12px}
+.ag-audit-hero__sub{color:rgba(255,255,255,.82);font-size:1.05rem;max-width:560px;margin:0 auto 26px}
+.ag-audit-hero__btn{display:inline-block;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:800;text-decoration:none;padding:16px 30px;border-radius:100px;font-size:1.05rem;box-shadow:0 8px 28px rgba(243,122,31,.4);transition:transform .2s}
+.ag-audit-hero__btn:hover{transform:translateY(-2px) scale(1.02)}
+</style>
+
 <!-- "Choisissez votre chemin" — 4 panneaux qui s'ouvrent (style theirisk.com) -->
 <?php get_template_part('template-parts/paths-hero'); ?>
 
