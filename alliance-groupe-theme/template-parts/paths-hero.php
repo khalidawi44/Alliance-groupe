@@ -13,6 +13,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+$ag_img = get_stylesheet_directory_uri() . '/assets/images/produits/';
 $ag_paths = array(
 	array(
 		'emoji' => '🔒',
@@ -23,6 +24,7 @@ $ag_paths = array(
 		'url'   => home_url( '/ag-audit' ),
 		'tint'  => '#0f0f1c',
 		'glow'  => '#F37A1F',
+		'img'   => $ag_img . 'produit-performance.jpg',
 	),
 	array(
 		'emoji' => '✨',
@@ -33,6 +35,7 @@ $ag_paths = array(
 		'url'   => home_url( '/sites-express' ),
 		'tint'  => '#1a1a26',
 		'glow'  => '#D4B45C',
+		'img'   => $ag_img . 'produit-essentiel.jpg',
 	),
 	array(
 		'emoji' => '🛡️',
@@ -43,6 +46,7 @@ $ag_paths = array(
 		'url'   => home_url( '/maintenance' ),
 		'tint'  => '#0f1c14',
 		'glow'  => '#28a745',
+		'img'   => $ag_img . 'produit-serenite.jpg',
 	),
 	array(
 		'emoji' => '📦',
@@ -53,6 +57,7 @@ $ag_paths = array(
 		'url'   => home_url( '/templates-wordpress' ),
 		'tint'  => '#1c1410',
 		'glow'  => '#D4B45C',
+		'img'   => $ag_img . 'produit-boutique.jpg',
 	),
 );
 ?>
@@ -67,6 +72,8 @@ $ag_paths = array(
 	<div class="ag-paths__grid">
 		<?php foreach ( $ag_paths as $i => $p ) : ?>
 			<a href="<?php echo esc_url( $p['url'] ); ?>" class="ag-path" style="--ag-tint:<?php echo esc_attr( $p['tint'] ); ?>;--ag-glow:<?php echo esc_attr( $p['glow'] ); ?>;" tabindex="0">
+				<div class="ag-path__photo" aria-hidden="true" style="background-image:url('<?php echo esc_url( $p['img'] ); ?>');"></div>
+				<div class="ag-path__veil" aria-hidden="true"></div>
 				<div class="ag-path__bg" aria-hidden="true"></div>
 				<div class="ag-path__inner">
 					<div class="ag-path__top">
@@ -94,11 +101,14 @@ $ag_paths = array(
 /* Grille — desktop = 4 colonnes flex extensibles, mobile = stack */
 .ag-paths__grid{max-width:1400px;margin:0 auto;display:flex;gap:14px;height:520px;position:relative;z-index:1}
 .ag-path{flex:1;min-width:0;position:relative;overflow:hidden;border-radius:22px;text-decoration:none;color:#fff;border:1px solid rgba(212,180,92,.18);background:var(--ag-tint);transition:flex .55s cubic-bezier(.16,1,.3,1),border-color .35s ease,box-shadow .35s ease;cursor:pointer}
-.ag-path__bg{position:absolute;inset:0;background:
+/* Photo de fond + voile sombre pour garder le texte lisible */
+.ag-path__photo{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.5;z-index:0;transition:opacity .55s ease,transform .7s ease;will-change:transform,opacity}
+.ag-path__veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,7,14,.35) 0%,rgba(7,7,14,.55) 45%,var(--ag-tint) 100%);z-index:1}
+.ag-path__bg{position:absolute;inset:0;z-index:2;background:
 	radial-gradient(circle at 30% 20%,var(--ag-glow) 0%,transparent 38%),
 	radial-gradient(circle at 75% 90%,var(--ag-glow) 0%,transparent 50%);
 	opacity:.18;transition:opacity .55s ease,transform .55s ease;will-change:transform,opacity}
-.ag-path__inner{position:relative;z-index:2;height:100%;padding:30px 28px;display:flex;flex-direction:column;justify-content:flex-end}
+.ag-path__inner{position:relative;z-index:3;height:100%;padding:30px 28px;display:flex;flex-direction:column;justify-content:flex-end}
 .ag-path__top{position:absolute;top:24px;left:28px;right:28px;display:flex;align-items:center;gap:12px}
 .ag-path__emoji{font-size:2.2rem;line-height:1;flex-shrink:0;filter:drop-shadow(0 4px 12px rgba(0,0,0,.5))}
 .ag-path__tag{color:var(--ag-glow);font-size:.72rem;letter-spacing:2px;text-transform:uppercase;font-weight:700;opacity:.85;line-height:1.2}
@@ -110,6 +120,7 @@ $ag_paths = array(
 @media (min-width:900px){
 	.ag-path:hover,.ag-path:focus{flex:2.6;border-color:var(--ag-glow);box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 60px color-mix(in srgb,var(--ag-glow) 35%,transparent)}
 	.ag-path:hover .ag-path__bg,.ag-path:focus .ag-path__bg{opacity:.42;transform:scale(1.05)}
+	.ag-path:hover .ag-path__photo,.ag-path:focus .ag-path__photo{opacity:.72;transform:scale(1.06)}
 	.ag-path:hover .ag-path__desc,.ag-path:focus .ag-path__desc{max-height:200px;opacity:1;margin-bottom:18px}
 	.ag-path:hover .ag-path__cta,.ag-path:focus .ag-path__cta{opacity:1;transform:translateX(4px)}
 }
