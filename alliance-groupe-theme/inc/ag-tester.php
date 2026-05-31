@@ -24,15 +24,17 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 if ( ! function_exists( 'ag_tester_opt' ) ) {
 	function ag_tester_opt( $key ) {
 		$def = array(
-			'price'    => '49',
-			'pay_url'  => '',
-			'raison'   => 'Alliance Groupe',
-			'siret'    => '[SIRET à compléter dans Réglages → Tester / Audit]',
-			'adresse'  => 'Nantes, France',
-			'tva'      => 'TVA non applicable, art. 293 B du CGI',
-			'email'    => 'contact@alliancegroupe-inc.com',
-			'popup_img'=> '',
-			'phone'    => '',
+			'price'       => '49',
+			'deep_price'  => '290',   // Audit Sécurité Renforcé (scan Kali complet, sur mandat)
+			'deep_pay_url'=> '',      // lien de paiement dédié (vide = renvoie /contact)
+			'pay_url'     => '',
+			'raison'      => 'Alliance Groupe',
+			'siret'       => '[SIRET à compléter dans Réglages → Tester / Audit]',
+			'adresse'     => 'Nantes, France',
+			'tva'         => 'TVA non applicable, art. 293 B du CGI',
+			'email'       => 'contact@alliancegroupe-inc.com',
+			'popup_img'   => '',
+			'phone'       => '',
 		);
 		$v = get_option( 'ag_tester_' . $key, '' );
 		return ( '' === $v || false === $v ) ? ( $def[ $key ] ?? '' ) : $v;
@@ -44,7 +46,7 @@ add_action( 'admin_menu', function () {
 	add_options_page( 'Tester / Audit', 'Tester / Audit', 'manage_options', 'ag-tester', 'ag_tester_settings_page' );
 } );
 add_action( 'admin_init', function () {
-	foreach ( array( 'price', 'pay_url', 'raison', 'siret', 'adresse', 'tva', 'email', 'popup_img', 'phone', 'img_audit', 'img_creation', 'img_maintenance', 'img_templates', 'img_menace', 'tg_sec', 'tg_crea' ) as $k ) {
+	foreach ( array( 'price', 'deep_price', 'deep_pay_url', 'pay_url', 'raison', 'siret', 'adresse', 'tva', 'email', 'popup_img', 'phone', 'img_audit', 'img_creation', 'img_maintenance', 'img_templates', 'img_menace', 'tg_sec', 'tg_crea' ) as $k ) {
 		register_setting( 'ag_tester_group', 'ag_tester_' . $k );
 	}
 } );
@@ -52,7 +54,9 @@ if ( ! function_exists( 'ag_tester_settings_page' ) ) {
 	function ag_tester_settings_page() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
 		$fields = array(
-			'price'   => 'Prix du rapport complet (€ TTC)',
+			'price'        => 'Prix du rapport complet (€ TTC)',
+			'deep_price'   => '🔬 Prix Audit Sécurité Renforcé / pentest (€ TTC) — 0 = « sur devis »',
+			'deep_pay_url' => '🔬 Lien de paiement Audit Renforcé — vide = renvoie vers /contact',
 			'pay_url' => 'Lien de paiement (Stripe/PayPal) — vide = renvoie vers /contact',
 			'raison'  => 'Raison sociale (mentions facture)',
 			'siret'   => 'SIRET',
