@@ -1062,6 +1062,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 						<button type="button" class="button button-small aghs" data-s="score-asc">⬇️ Score faible (chaud)</button>
 						<button type="button" class="button button-small aghs" data-s="score-desc">⬆️ Score élevé</button>
 						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;margin-left:auto"><input type="hidden" name="action" value="ag_audit_hist_csv"><?php wp_nonce_field( 'ag_audit_hist_csv' ); ?><button type="submit" class="button button-small">📥 Exporter l'historique (CSV)</button></form>
+						<form method="post" style="display:inline" onsubmit="return confirm('Vider TOUT l\'historique des audits ? Action irreversible.')"><?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?><button type="submit" name="ag_hist_clear" value="1" class="button button-small" style="color:#b91c1c;margin-left:6px">🗑️ Tout effacer</button></form>
 					</div>
 					<div id="agh-list">
 				<?php foreach ( $AGH as $hid => $e ) :
@@ -1105,7 +1106,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 								<select name="hist_ch" style="font-size:12px;max-width:130px"><option>Email</option><option>SMS</option><option>WhatsApp</option><option>Telegram</option><option>Appel</option><option>Pas de réponse</option><option>Intéressé</option><option>Refusé</option></select>
 								<button type="submit" name="ag_hist_mark" value="1" class="button button-small">✓ Noté</button>
 							</form>
-							<form method="post" style="display:inline" onsubmit="return confirm('Supprimer cet audit ?')"><?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?><input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>"><button type="submit" name="ag_hist_del" value="1" class="button button-small" style="color:#b91c1c">🗑️</button></form>
+							<form method="post" style="display:inline" onsubmit="return confirm('Supprimer cet audit ?')"><?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?><input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>"><button type="submit" name="ag_hist_del" value="1" class="button button-small" style="color:#b91c1c">🗑️ Suppr.</button></form>
 						</div>
 						<?php $crm = ag_audit_prospect_by_site( $url ); if ( $crm ) :
 							$ce = ! empty( $crm['email'] ) ? $crm['email'] : $email;
