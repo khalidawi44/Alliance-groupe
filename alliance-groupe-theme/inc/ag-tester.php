@@ -688,6 +688,41 @@ if ( ! function_exists( 'ag_wa_phone' ) ) {
 }
 
 /* ----- Message SÉCURITÉ : alerte risque + détails techniques + lien commande ----- */
+if ( ! function_exists( 'ag_tester_kali_report_for' ) ) {
+	/** Synthese du dernier job Kali TERMINE pour ce domaine (ou ''). */
+	function ag_tester_kali_report_for( $url ) {
+		if ( ! function_exists( 'ag_pt_jobs' ) ) { return ''; }
+		$host = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
+		if ( '' === $host ) { return ''; }
+		$best = null;
+		foreach ( ag_pt_jobs() as $j ) {
+			if ( 'done' !== ( $j['status'] ?? '' ) || empty( $j['summary'] ) ) { continue; }
+			$jh = strtolower( (string) wp_parse_url( $j['target'] ?? '', PHP_URL_HOST ) );
+			if ( $jh !== $host ) { continue; }
+			if ( null === $best || (int) ( $j['finished'] ?? 0 ) > (int) ( $best['finished'] ?? 0 ) ) { $best = $j; }
+		}
+		return $best ? (string) $best['summary'] : '';
+	}
+}
+if ( ! function_exists( 'ag_audit_msg_global' ) ) {
+	/** Message GLOBAL : securite + creation/refonte fusionnes en un seul texte. */
+	function ag_audit_msg_global( $a, $ct = array() ) {
+		$host  = wp_parse_url( $a['url'] ?? '', PHP_URL_HOST );
+		$S     = ag_audit_split_fails( $a )[0];
+		$crit  = (int) ( $a['critical'] ?? 0 );
+		$score = (int) ( $a['score'] ?? 0 );
+		$m  = "Bonjour,\n\n";
+		$m .= "je viens d'analyser votre site (" . $host . ") et je me permets de vous contacter.\n\n";
+		$m .= "SECURITE - j'ai detecte " . count( $S ) . " faille(s)" . ( $crit ? ", dont $crit CRITIQUE(S)" : '' ) . " (score " . $score . "/100). Par exemple :\n";
+		foreach ( array_slice( $S, 0, 2 ) as $c ) {
+			$m .= "- " . ( $c['name'] ?? '' ) . "\n";
+		}
+		$m .= "\nSITE - je concois aussi des sites modernes, rapides et securises des le depart (des 490 EUR, payables en 4x). Selon votre cas : corriger l'existant ou repartir sur une base saine.\n\n";
+		$m .= "Je vous propose un echange gratuit de 10 min pour " . $host . " (failles + idees concretes). Reponse sous 24 h, sans jargon.\n\n";
+		$m .= "- Fabrizio, Alliance Groupe";
+		return $m;
+	}
+}
 if ( ! function_exists( 'ag_audit_msg_securite' ) ) {
 	function ag_audit_msg_securite( $audit, $contacts = array(), $order_link = '' ) {
 		$host  = wp_parse_url( $audit['url'] ?? '', PHP_URL_HOST );
@@ -1145,6 +1180,19 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 									<textarea readonly onclick="this.select()" style="width:100%;height:120px;font-size:11px"><?php echo esc_textarea( $sec_msg2 ); ?></textarea>
 									<p style="font-size:11px;color:#1d4ed8;font-weight:700;margin:6px 0 2px">✨ Message site/création :</p>
 									<textarea readonly onclick="this.select()" style="width:100%;height:120px;font-size:11px"><?php echo esc_textarea( $crea_msg ); ?></textarea>
+									<?php $gmsg = ag_audit_msg_global( $a, $ct ); ?>
+									<p style="font-size:11px;color:#7c3aed;font-weight:700;margin:8px 0 2px">🎯 Message GLOBAL (securite + site, un seul) :</p>
+									<textarea readonly onclick="this.select()" style="width:100%;height:140px;font-size:11px;border:1px solid #c4b5fd"><?php echo esc_textarea( $gmsg ); ?></textarea>
+									<div style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap">
+										<?php if ( $cpn ) : ?><a class="button button-small button-primary" href="sms:<?php echo esc_attr( $cpn ); ?>?&body=<?php echo rawurlencode( $gmsg ); ?>">📱 SMS global</a><?php if ( $cwa ) : ?><a class="button button-small button-primary" target="_blank" rel="noopener" href="https://wa.me/<?php echo esc_attr( $cwa ); ?>?text=<?php echo rawurlencode( $gmsg ); ?>">🟢 WhatsApp global</a><?php endif; endif; ?>
+										<?php if ( $ce ) : ?><a class="button button-small" href="mailto:<?php echo esc_attr( $ce ); ?>?subject=<?php echo rawurlencode( 'Votre site ' . $host . ' : securite + modernisation' ); ?>&body=<?php echo rawurlencode( $gmsg ); ?>">✉️ Email global</a><?php endif; ?>
+									</div>
+									<?php $ag_kali = ag_tester_kali_report_for( $url ); if ( $ag_kali ) : ?>
+									<details style="margin-top:8px;border:1px solid #0a6;border-radius:6px;background:#f3fff9;padding:6px 10px">
+										<summary style="cursor:pointer;font-size:11px;color:#093;font-weight:700">🛰️ Rapport Kali (audit approfondi) - voir la synthese</summary>
+										<pre style="white-space:pre-wrap;max-height:300px;overflow:auto;background:#0d1117;color:#c9d1d9;padding:10px;border-radius:6px;font-size:11px;margin:6px 0 0"><?php echo esc_html( $ag_kali ); ?></pre>
+									</details>
+									<?php endif; ?>
 								</div>
 							</div>
 						<?php endif; ?>
