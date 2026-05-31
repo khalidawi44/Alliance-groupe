@@ -370,8 +370,8 @@ if ( ! function_exists( 'ag_tester_render_form' ) ) {
 							<a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" style="display:inline-block;margin-top:12px;color:#F3D27A;font-weight:700;text-decoration:none">Demander un devis →</a>
 						</div>
 						<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:20px">
-							<div style="color:#fff;font-weight:800;letter-spacing:1px;font-size:.8rem;text-transform:uppercase">③ Pentest complet · sur devis</div>
-							<p style="color:rgba(255,255,255,.8);font-size:.92rem;line-height:1.5;margin:10px 0 0">Test d'intrusion encadré par un <strong style="color:#fff">contrat signé</strong> (périmètre, autorisation, confidentialité). Pour les sites sensibles.</p>
+							<div style="color:#fff;font-weight:800;letter-spacing:1px;font-size:.8rem;text-transform:uppercase">③ Audit Sécurité Renforcé · sur devis</div>
+							<p style="color:rgba(255,255,255,.8);font-size:.92rem;line-height:1.5;margin:10px 0 0">Simulation d'attaque réelle encadrée par un <strong style="color:#fff">contrat signé</strong> (périmètre, autorisation, confidentialité). Pour les sites sensibles.</p>
 							<a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" style="display:inline-block;margin-top:12px;color:#F3D27A;font-weight:700;text-decoration:none">Nous contacter →</a>
 						</div>
 					</div>
@@ -598,6 +598,76 @@ if ( ! function_exists( 'ag_audit_has_data_leak' ) ) {
 		$leak = array( 'Fichiers sensibles exposés (.git/.env)', 'Sauvegardes / config exposées', 'Énumération des comptes (wp-json)', 'Listing de répertoire (uploads)', 'Listing de répertoires (système)' );
 		foreach ( $S as $c ) { if ( in_array( $c['name'], $leak, true ) ) return true; }
 		return false;
+	}
+}
+if ( ! function_exists( 'ag_audit_public_label' ) ) {
+	/**
+	 * Libellé PUBLIC d'une faille pour le RAPPORT TEASER (image) : on dit la
+	 * NATURE du risque (ça fait peur) mais PAS l'emplacement/le correctif exact
+	 * (sinon le prospect corrige seul sans payer). Le détail technique reste
+	 * réservé au rapport complet payant.
+	 */
+	function ag_audit_public_label( $name ) {
+		$map = array(
+			'xmlrpc.php (force brute / DDoS)'        => "Porte d'entrée d'attaque ouverte",
+			'xmlrpc : pingback (amplification)'      => 'Serveur exploitable pour attaquer autrui',
+			'Énumération des comptes (wp-json)'      => 'Identifiants de connexion exposés',
+			'Énumération d\'auteur (?author=1)'      => 'Identifiant administrateur exposé',
+			'Fichiers sensibles exposés (.git/.env)' => 'Fichiers confidentiels accessibles',
+			'Sauvegardes / config exposées'          => 'Sauvegarde / base de données accessible',
+			'Certificat SSL'                         => 'Connexion non sécurisée',
+			'Connexion sécurisée (HTTPS)'            => 'Connexion non chiffrée',
+			'En-têtes de sécurité HTTP'              => 'Protections navigateur manquantes',
+			'Versions de plugins exposées'           => 'Versions logicielles exposées',
+			'Divulgation de version (techno)'        => 'Version du système exposée',
+			'Listing de répertoire (uploads)'        => 'Dossiers explorables publiquement',
+			'Listing de répertoires (système)'       => 'Répertoires système explorables',
+		);
+		return $map[ $name ] ?? 'Point de sécurité à corriger';
+	}
+}
+if ( ! function_exists( 'ag_audit_deep_projection' ) ) {
+	/**
+	 * Score PROJETÉ de l'audit approfondi (toujours pire que le simple) : sert de
+	 * référence pour montrer au prospect que le simple ne montre que la surface.
+	 * Déterministe (même site = même projection).
+	 */
+	function ag_audit_deep_projection( $score, $crit, $nb ) {
+		$score = (int) $score; $crit = (int) $crit; $nb = (int) $nb;
+		$deep = (int) round( $score * 0.55 ) - $crit * 6 - $nb * 2;
+		if ( $deep >= $score ) $deep = $score - 12;
+		return max( 3, min( 100, $deep ) );
+	}
+}
+if ( ! function_exists( 'ag_audit_report_payload' ) ) {
+	/**
+	 * Données du RAPPORT TEASER (image partageable) : score simple, projection
+	 * approfondie, failles MASQUÉES (nature seule), CTA. Renvoie un tableau
+	 * sérialisable en JSON pour le générateur d'image côté navigateur.
+	 */
+	function ag_audit_report_payload( $audit, $host = '', $order_link = '' ) {
+		$host  = $host ?: wp_parse_url( $audit['url'] ?? '', PHP_URL_HOST );
+		$score = (int) ( $audit['score'] ?? 0 );
+		$crit  = (int) ( $audit['critical'] ?? 0 );
+		list( $S ) = ag_audit_split_fails( $audit );
+		$fails = array();
+		foreach ( $S as $c ) {
+			$fails[] = array(
+				'label' => ag_audit_public_label( $c['name'] ),
+				'crit'  => ( ! empty( $c['critical'] ) && 'fail' === ( $c['status'] ?? '' ) ) ? 1 : 0,
+			);
+		}
+		return array(
+			'host'  => $host,
+			'score' => $score,
+			'crit'  => $crit,
+			'nb'    => count( $S ),
+			'deep'  => ag_audit_deep_projection( $score, $crit, count( $S ) ),
+			'fails' => $fails,
+			'phone' => ag_tester_opt( 'phone' ),
+			'order' => $order_link,
+			'brand' => 'Alliance Groupe — Sécurité & création web',
+		);
 	}
 }
 if ( ! function_exists( 'ag_wa_phone' ) ) {
@@ -892,6 +962,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 							<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
 								<?php if ( $email ) : ?><a class="button button-primary button-small" href="mailto:<?php echo esc_attr( $email ); ?>?subject=<?php echo rawurlencode( $subj_sec ); ?>&body=<?php echo rawurlencode( $msg_sec ); ?>">✉️ Email sécurité</a><?php endif; ?>
 								<?php if ( $phone ) : ?><a class="button button-small" href="tel:<?php echo esc_attr( preg_replace( '#\s#', '', $phone ) ); ?>">📞 Appeler</a><a class="button button-small" href="sms:<?php echo esc_attr( preg_replace( '#\s#', '', $phone ) ); ?>?&body=<?php echo rawurlencode( $sms_sec ); ?>">💬 SMS</a><?php if ( $wa ) : ?><a class="button button-small" target="_blank" rel="noopener" href="https://wa.me/<?php echo esc_attr( $wa ); ?>?text=<?php echo rawurlencode( $sms_sec ); ?>">🟢 WhatsApp</a><?php endif; endif; ?>
+									<button type="button" class="button button-small ag-report-btn" data-report="<?php echo esc_attr( wp_json_encode( ag_audit_report_payload( $a, $host, $order_link ) ) ); ?>" title="Image teaser du rapport (details masques) a joindre">📸 Image rapport</button>
 								<button type="button" class="button button-small" onclick="var d=document.getElementById('ags<?php echo $i; ?>');d.style.display=d.style.display==='none'?'block':'none'">✏️ Voir/éditer</button>
 								<form method="post" style="display:inline">
 									<?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?>
@@ -1018,6 +1089,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 							<?php if ( $email ) : ?><a class="button button-small" href="mailto:<?php echo esc_attr( $email ); ?>?subject=<?php echo rawurlencode( $subj ); ?>&body=<?php echo rawurlencode( $emsg ); ?>">✉️ Email</a><?php endif; ?>
 							<?php if ( $phone ) : ?><a class="button button-small" href="tel:<?php echo esc_attr( preg_replace( '#\s#', '', $phone ) ); ?>">📞</a><a class="button button-small" href="sms:<?php echo esc_attr( preg_replace( '#\s#', '', $phone ) ); ?>?&body=<?php echo rawurlencode( $smsg ); ?>">💬 SMS</a><?php if ( $wa ) : ?><a class="button button-small" target="_blank" rel="noopener" href="https://wa.me/<?php echo esc_attr( $wa ); ?>?text=<?php echo rawurlencode( $smsg ); ?>">🟢 WA</a><?php endif; endif; ?>
 							<button type="button" class="button button-small" onclick="var d=document.getElementById('aghf<?php echo esc_attr( $hid ); ?>');d.style.display=d.style.display==='none'?'block':'none'">📄 Fiche</button>
+								<button type="button" class="button button-small ag-report-btn" data-report="<?php echo esc_attr( wp_json_encode( ag_audit_report_payload( $a, $host, $ol ) ) ); ?>" title="Genere une image teaser (rapport leger, details masques) a joindre au message">📸 Image rapport</button>
 							<form method="post" style="display:inline"><?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?>
 								<input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>">
 								<select name="hist_ch" style="font-size:12px;max-width:130px"><option>Email</option><option>SMS</option><option>WhatsApp</option><option>Telegram</option><option>Appel</option><option>Pas de réponse</option><option>Intéressé</option><option>Refusé</option></select>
@@ -1071,6 +1143,90 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 				(function(){var list=document.getElementById('agh-list');if(!list)return;function cards(){return [].slice.call(list.querySelectorAll('.agh-card'));}document.querySelectorAll('.aghf').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghf').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');var f=b.getAttribute('data-f');cards().forEach(function(k){var seg=k.getAttribute('data-seg'),todo=k.getAttribute('data-todo')==='1';var sh=(f==='all')||(f==='todo'?todo:seg===f);k.style.display=sh?'':'none';});});});document.querySelectorAll('.aghs').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghs').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');var sp=b.getAttribute('data-s').split('-'),key=sp[0],dir=sp[1];var arr=cards();arr.sort(function(a,c){var x=+a.getAttribute('data-'+key),y=+c.getAttribute('data-'+key);return dir==='asc'?x-y:y-x;});arr.forEach(function(k){list.appendChild(k);});});});})();
 				</script>
 			<?php endif; ?>
+
+		<!-- ====== Générateur d'IMAGE rapport teaser (sécurité, détails masqués) ====== -->
+		<div id="ag-report-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:99999;align-items:center;justify-content:center;padding:20px">
+			<div style="background:#fff;border-radius:12px;max-width:560px;width:100%;max-height:92vh;overflow:auto;padding:18px;text-align:center">
+				<h3 style="margin:0 0 6px">📸 Image rapport (à joindre au message)</h3>
+				<p style="font-size:12px;color:#555;margin:0 0 10px">Rapport <strong>léger</strong> : on montre la nature des failles et le score, mais <strong>l'emplacement et le correctif restent masqués</strong> (réservés au rapport complet payant). Le client voit aussi sa note projetée en audit approfondi (pire) → il a envie du complet.</p>
+				<img id="ag-report-img" alt="rapport" style="max-width:100%;border:1px solid #ddd;border-radius:8px">
+				<div style="margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+					<a id="ag-report-dl" class="button button-primary" download="rapport-securite.png">⬇️ Télécharger l'image</a>
+					<button type="button" class="button" onclick="document.getElementById('ag-report-modal').style.display='none'">Fermer</button>
+				</div>
+				<p style="font-size:11px;color:#888;margin:10px 0 0">Astuce : enregistre l'image puis joins-la à ton email / WhatsApp avec le message d'alerte.</p>
+			</div>
+		</div>
+		<canvas id="ag-report-canvas" width="1080" height="1400" style="display:none"></canvas>
+		<script>
+		(function(){
+			function rr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();}
+			function col(s){return s>=75?'#28a745':(s>=50?'#F0A020':'#E10F1A');}
+			function draw(d){
+				var c=document.getElementById('ag-report-canvas'),W=1080,H=1400,x=c.getContext('2d');
+				x.clearRect(0,0,W,H);
+				var g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0e1016');g.addColorStop(1,'#1b2030');x.fillStyle=g;x.fillRect(0,0,W,H);
+				x.fillStyle='#E10F1A';x.fillRect(0,0,W,14);
+				x.textAlign='left';
+				x.fillStyle='#ffffff';x.font='bold 50px Arial';x.fillText('RAPPORT DE SÉCURITÉ',60,108);
+				x.fillStyle='#E10F1A';x.font='bold 26px Arial';x.fillText('DIAGNOSTIC EXPRESS — GRATUIT',60,150);
+				x.fillStyle='#aeb4c2';x.font='26px Arial';x.fillText((d.host||'').slice(0,46),60,196);
+				// Score circle (audit simple)
+				var cx=200,cy=320,rad=110,sc=col(d.score);
+				x.lineWidth=20;x.strokeStyle='rgba(255,255,255,.10)';x.beginPath();x.arc(cx,cy,rad,0,Math.PI*2);x.stroke();
+				x.strokeStyle=sc;x.beginPath();x.arc(cx,cy,rad,-Math.PI/2,-Math.PI/2+Math.PI*2*(Math.max(0,Math.min(100,d.score))/100));x.stroke();
+				x.fillStyle='#fff';x.textAlign='center';x.font='bold 78px Arial';x.fillText(d.score,cx,cy+18);
+				x.font='24px Arial';x.fillStyle='#aeb4c2';x.fillText('/ 100',cx,cy+54);
+				x.textAlign='left';
+				x.fillStyle='#fff';x.font='bold 34px Arial';x.fillText('Audit simple',360,280);
+				x.fillStyle=sc;x.font='bold 40px Arial';
+				x.fillText(d.nb+' faille'+(d.nb>1?'s':'')+' détectée'+(d.nb>1?'s':''),360,335);
+				if(d.crit>0){x.fillStyle='#E10F1A';x.font='bold 30px Arial';x.fillText('dont '+d.crit+' CRITIQUE'+(d.crit>1?'S':''),360,380);}
+				x.fillStyle='#8b93a4';x.font='22px Arial';x.fillText('Exposées publiquement, scannées 24h/24 par des robots.',360,422);
+				// Failles list (masquées)
+				var y=520;x.fillStyle='#fff';x.font='bold 30px Arial';x.fillText('CE QUE NOUS AVONS DÉTECTÉ',60,y);y+=18;
+				x.strokeStyle='rgba(255,255,255,.12)';x.lineWidth=2;x.beginPath();x.moveTo(60,y);x.lineTo(W-60,y);x.stroke();y+=44;
+				var show=d.fails.slice(0,6);
+				show.forEach(function(f){
+					x.fillStyle=f.crit?'#E10F1A':'#F0A020';x.beginPath();x.arc(80,y-8,11,0,Math.PI*2);x.fill();
+					x.fillStyle='#fff';x.font='bold 27px Arial';x.fillText((f.label||'').slice(0,40),110,y);
+					rr(x,640,y-26,380,36,8);x.fillStyle='rgba(255,255,255,.07)';x.fill();
+					x.fillStyle='#7d8597';x.font='19px Arial';x.fillText('🔒 emplacement & correctif masqués',656,y-2);
+					y+=58;
+				});
+				if(d.fails.length>6){x.fillStyle='#aeb4c2';x.font='italic 23px Arial';x.fillText('+ '+(d.fails.length-6)+' autre(s) faille(s) masquée(s)…',110,y);y+=44;}
+				// Boîte projection approfondie (pire)
+				y+=10;rr(x,60,y,W-120,180,14);x.fillStyle='rgba(225,15,26,.12)';x.fill();x.strokeStyle='rgba(225,15,26,.5)';x.lineWidth=2;rr(x,60,y,W-120,180,14);x.stroke();
+				x.fillStyle='#ff6b6b';x.font='bold 28px Arial';x.fillText('⚠️ Et ce n\'est que la surface visible',90,y+48);
+				x.fillStyle='#fff';x.font='24px Arial';x.fillText('Score audit simple',90,y+100);
+				x.fillStyle='#fff';x.font='24px Arial';x.fillText('Audit approfondi (projection)',90,y+146);
+				x.textAlign='right';
+				x.fillStyle=col(d.score);x.font='bold 40px Arial';x.fillText(d.score+' / 100',W-90,y+100);
+				x.fillStyle=col(d.deep);x.font='bold 40px Arial';x.fillText(d.deep+' / 100',W-90,y+146);
+				x.textAlign='left';
+				y+=180+40;
+				// CTA footer
+				rr(x,60,y,W-120,150,14);x.fillStyle='#F0A020';x.fill();
+				x.fillStyle='#1b2030';x.font='bold 30px Arial';x.fillText('Débloquez le rapport complet',90,y+54);
+				x.font='23px Arial';
+				var cta=d.order?('Toutes les failles + comment les corriger'):'Toutes les failles + corrections + accompagnement';
+				x.fillText(cta,90,y+92);
+				if(d.phone){x.font='bold 26px Arial';x.fillText('📞 '+d.phone+'  ·  Alliance Groupe',90,y+130);}else{x.font='bold 26px Arial';x.fillText('Alliance Groupe — Sécurité & création web',90,y+130);}
+				return c;
+			}
+			document.querySelectorAll('.ag-report-btn').forEach(function(b){
+				b.addEventListener('click',function(){
+					var d;try{d=JSON.parse(b.getAttribute('data-report'));}catch(e){alert('Données rapport illisibles');return;}
+					var c=draw(d);var url=c.toDataURL('image/png');
+					var img=document.getElementById('ag-report-img');img.src=url;
+					var dl=document.getElementById('ag-report-dl');dl.href=url;dl.setAttribute('download','rapport-securite-'+((d.host||'site').replace(/[^a-z0-9.-]/gi,'_'))+'.png');
+					document.getElementById('ag-report-modal').style.display='flex';
+				});
+			});
+			var m=document.getElementById('ag-report-modal');if(m){m.addEventListener('click',function(e){if(e.target===m)m.style.display='none';});}
+		})();
+		</script>
+
 		</div>
 		<?php
 	}
