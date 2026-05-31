@@ -1,7 +1,7 @@
 # HANDOFF — Alliance Groupe (site `alliancegroupe-inc.com`)
 
 > Document de reprise pour toute nouvelle session Claude (PC ou mobile via GitHub MCP).
-> Dernière mise à jour : 2026-05-31 — branche de travail : `claude/conversation-linking-bug-O6HUR` (tampon auto à chaque commit).
+> Dernière mise à jour : 2026-05-31 — branche de travail : `claude/pentest-local-security-offers-KNehV` (tampon auto à chaque commit).
 > **Reprise rapide** : **MÉNAGE DE FOND fait** (cohérence studio solo sécurité partout) — footer + SEO meta + tagline purgés de « Agence Web & IA / vision internationale / bureaux Marrakech-Naples / +340% leads / commerciaux », CTA ambassadeur retiré du footer, chat équipe fictive désactivé, **navigation unique = menu fullscreen épuré** (ancien méga-menu desktop MLM + burger mobile riche masqués en CSS). Tunnel **audit-first** : entrée = **/tester-mon-site** (freemium : gate → audit passif réel → aperçu flouté → commande = facture+rapport ; + 3 niveaux léger/approfondi-mandat/pentest-contrat + cross-sell). Accueil : hero → **menace en direct** (globe Kaspersky) → **mur choc « Un piratage ressemble à ça »** escamotable → parcours → témoignages → réassurance → offres → about → FAQ → CTA. **Espace Audit** admin (passif/actif-mandat) = prospection (failles + coordonnées publiques + messages sécurité/création + CRM + CSV) + widget dashboard. **Voyage** /le-voyage (Naples=fondation). ⚠️ **Toujours mettre à jour ces 3 lignes + §9 avant de fermer une session.**
 
 ---
