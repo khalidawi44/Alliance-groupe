@@ -110,3 +110,5 @@ coverage/
 
 auto-pull.log
 *.log
+# Outil pentest LOCAL (sur mandat) - NE PAS publier (OPSEC) : garder en prive
+pentest-local/
