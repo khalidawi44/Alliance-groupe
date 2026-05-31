@@ -1150,11 +1150,15 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 				<h3 style="margin:0 0 6px">📸 Image rapport (à joindre au message)</h3>
 				<p style="font-size:12px;color:#555;margin:0 0 10px">Rapport <strong>léger</strong> : on montre la nature des failles et le score, mais <strong>l'emplacement et le correctif restent masqués</strong> (réservés au rapport complet payant). Le client voit aussi sa note projetée en audit approfondi (pire) → il a envie du complet.</p>
 				<img id="ag-report-img" alt="rapport" style="max-width:100%;border:1px solid #ddd;border-radius:8px">
-				<div style="margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+				<div style="margin-top:10px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
+					<button type="button" class="button button-primary ag-fmt" data-fmt="attach">📎 Pièce jointe (4:5)</button>
+					<button type="button" class="button ag-fmt" data-fmt="story">📱 Story WhatsApp (9:16)</button>
+				</div>
+				<div style="margin-top:10px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
 					<a id="ag-report-dl" class="button button-primary" download="rapport-securite.png">⬇️ Télécharger l'image</a>
 					<button type="button" class="button" onclick="document.getElementById('ag-report-modal').style.display='none'">Fermer</button>
 				</div>
-				<p style="font-size:11px;color:#888;margin:10px 0 0">Astuce : enregistre l'image puis joins-la à ton email / WhatsApp avec le message d'alerte.</p>
+				<p style="font-size:11px;color:#888;margin:10px 0 0">Astuce : « Story WhatsApp » = plein écran 9:16 (statut WhatsApp / Insta). « Pièce jointe » = 4:5 pour email. Enregistre l'image puis joins-la à ton message d'alerte.</p>
 			</div>
 		</div>
 		<canvas id="ag-report-canvas" width="1080" height="1400" style="display:none"></canvas>
@@ -1162,8 +1166,8 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 		(function(){
 			function rr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();}
 			function col(s){return s>=75?'#28a745':(s>=50?'#F0A020':'#E10F1A');}
-			function draw(d){
-				var c=document.getElementById('ag-report-canvas'),W=1080,H=1400,x=c.getContext('2d');
+			function draw(d,H){
+				H=H||1400;var c=document.getElementById('ag-report-canvas'),W=1080;c.width=W;c.height=H;var x=c.getContext('2d');
 				x.clearRect(0,0,W,H);
 				var g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0e1016');g.addColorStop(1,'#1b2030');x.fillStyle=g;x.fillRect(0,0,W,H);
 				x.fillStyle='#E10F1A';x.fillRect(0,0,W,14);
@@ -1195,31 +1199,36 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 					y+=58;
 				});
 				if(d.fails.length>6){x.fillStyle='#aeb4c2';x.font='italic 23px Arial';x.fillText('+ '+(d.fails.length-6)+' autre(s) faille(s) masquée(s)…',110,y);y+=44;}
-				// Boîte projection approfondie (pire)
-				y+=10;rr(x,60,y,W-120,180,14);x.fillStyle='rgba(225,15,26,.12)';x.fill();x.strokeStyle='rgba(225,15,26,.5)';x.lineWidth=2;rr(x,60,y,W-120,180,14);x.stroke();
-				x.fillStyle='#ff6b6b';x.font='bold 28px Arial';x.fillText('⚠️ Et ce n\'est que la surface visible',90,y+48);
-				x.fillStyle='#fff';x.font='24px Arial';x.fillText('Score audit simple',90,y+100);
-				x.fillStyle='#fff';x.font='24px Arial';x.fillText('Audit approfondi (projection)',90,y+146);
+				var pb=H-430,cb=H-190;
+				if(H>1600){x.textAlign='center';x.fillStyle='#cfd4de';x.font='italic 27px Arial';x.fillText('Un site piraté = clients perdus, données volées,',W/2,pb-118);x.fillText('réputation détruite. Ça arrive sans prévenir.',W/2,pb-82);x.textAlign='left';}
+				rr(x,60,pb,W-120,180,14);x.fillStyle='rgba(225,15,26,.12)';x.fill();x.strokeStyle='rgba(225,15,26,.5)';x.lineWidth=2;rr(x,60,pb,W-120,180,14);x.stroke();
+				x.fillStyle='#ff6b6b';x.font='bold 28px Arial';x.fillText('⚠️ Et ce n\'est que la surface visible',90,pb+48);
+				x.fillStyle='#fff';x.font='24px Arial';x.fillText('Score audit simple',90,pb+100);
+				x.fillText('Audit approfondi (projection)',90,pb+146);
 				x.textAlign='right';
-				x.fillStyle=col(d.score);x.font='bold 40px Arial';x.fillText(d.score+' / 100',W-90,y+100);
-				x.fillStyle=col(d.deep);x.font='bold 40px Arial';x.fillText(d.deep+' / 100',W-90,y+146);
+				x.fillStyle=col(d.score);x.font='bold 40px Arial';x.fillText(d.score+' / 100',W-90,pb+100);
+				x.fillStyle=col(d.deep);x.fillText(d.deep+' / 100',W-90,pb+146);
 				x.textAlign='left';
-				y+=180+40;
-				// CTA footer
-				rr(x,60,y,W-120,150,14);x.fillStyle='#F0A020';x.fill();
-				x.fillStyle='#1b2030';x.font='bold 30px Arial';x.fillText('Débloquez le rapport complet',90,y+54);
+				rr(x,60,cb,W-120,150,14);x.fillStyle='#F0A020';x.fill();
+				x.fillStyle='#1b2030';x.font='bold 30px Arial';x.fillText('Débloquez le rapport complet',90,cb+54);
 				x.font='23px Arial';
 				var cta=d.order?('Toutes les failles + comment les corriger'):'Toutes les failles + corrections + accompagnement';
-				x.fillText(cta,90,y+92);
-				if(d.phone){x.font='bold 26px Arial';x.fillText('📞 '+d.phone+'  ·  Alliance Groupe',90,y+130);}else{x.font='bold 26px Arial';x.fillText('Alliance Groupe — Sécurité & création web',90,y+130);}
+				x.fillText(cta,90,cb+92);
+				x.font='bold 26px Arial';x.fillText(d.phone?('📞 '+d.phone+'  ·  Alliance Groupe'):'Alliance Groupe — Sécurité & création web',90,cb+130);
 				return c;
 			}
+			var agCur=null,agFmt='attach';
+			function render(){
+				if(!agCur)return;var H=agFmt==='story'?1920:1400;var c=draw(agCur,H);var url=c.toDataURL('image/png');
+				document.getElementById('ag-report-img').src=url;
+				var dl=document.getElementById('ag-report-dl');dl.href=url;dl.setAttribute('download','rapport-securite-'+agFmt+'-'+((agCur.host||'site').replace(/[^a-z0-9.-]/gi,'_'))+'.png');
+				document.querySelectorAll('.ag-fmt').forEach(function(z){z.classList.toggle('button-primary',z.getAttribute('data-fmt')===agFmt);});
+			}
+			document.querySelectorAll('.ag-fmt').forEach(function(z){z.addEventListener('click',function(){agFmt=z.getAttribute('data-fmt');render();});});
 			document.querySelectorAll('.ag-report-btn').forEach(function(b){
 				b.addEventListener('click',function(){
-					var d;try{d=JSON.parse(b.getAttribute('data-report'));}catch(e){alert('Données rapport illisibles');return;}
-					var c=draw(d);var url=c.toDataURL('image/png');
-					var img=document.getElementById('ag-report-img');img.src=url;
-					var dl=document.getElementById('ag-report-dl');dl.href=url;dl.setAttribute('download','rapport-securite-'+((d.host||'site').replace(/[^a-z0-9.-]/gi,'_'))+'.png');
+					try{agCur=JSON.parse(b.getAttribute('data-report'));}catch(e){alert('Données rapport illisibles');return;}
+					agFmt='attach';render();
 					document.getElementById('ag-report-modal').style.display='flex';
 				});
 			});
