@@ -1234,7 +1234,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					$scol   = $score >= 80 ? '#b32d2e' : ( $score >= 60 ? '#bd7b00' : '#50575e' );
 					$blocked = ag_prospect_blocked( $p['status'] ?? '' );
 					?>
-					<tr<?php echo $blocked ? ' style="opacity:.55;"' : ''; ?>>
+					<tr<?php echo $blocked ? ' style="opacity:.72;background:#fbf3f3;"' : ''; ?>>
 						<td><span style="display:inline-block;min-width:34px;text-align:center;font-weight:800;color:#fff;background:<?php echo esc_attr( $scol ); ?>;border-radius:6px;padding:2px 6px;"><?php echo (int) $score; ?></span></td>
 						<td><strong><?php echo esc_html( $p['name'] ?? '' ); ?></strong><?php $pk = ag_site_kind( $p['website'] ?? '' ); echo ( 'real' !== $pk[0] ) ? ' <span style="color:#b32d2e;" title="' . esc_attr( $pk[1] ) . '">❗</span>' : ''; ?><br><small><?php echo esc_html( ( $p['type'] ?? '' ) . ( ! empty( $p['city'] ) ? ' · ' . $p['city'] : '' ) ); ?></small></td>
 						<td style="font-size:.85em;white-space:nowrap;"><?php
@@ -1275,7 +1275,18 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 							</form>
 						</td>
 						<td>
-							<?php if ( $blocked ) : ?><em style="color:#50575e;">à ne pas recontacter</em><?php else : ?>
+							<?php if ( $blocked ) : ?>
+								<div style="font-size:.8em;color:#b32d2e;font-weight:700;margin-bottom:6px;">⛔ À ne pas recontacter — fiche conservée (consultable)</div>
+								<?php if ( ! empty( $p['phone'] ) ) : ?><a class="button button-small" href="tel:<?php echo esc_attr( $p['phone'] ); ?>">📞 <?php echo esc_html( $p['phone'] ); ?></a> <?php endif; ?>
+								<?php if ( ! empty( $p['email'] ) ) : ?><a class="button button-small" href="mailto:<?php echo esc_attr( $p['email'] ); ?>">✉️ <?php echo esc_html( $p['email'] ); ?></a> <?php endif; ?>
+								<?php if ( ! empty( $p['website'] ) ) : ?><a class="button button-small" href="<?php echo esc_url( $p['website'] ); ?>" target="_blank" rel="noopener">🔗 Voir le site</a> <?php endif; ?>
+								<?php $pg = ag_google_link( $p ); if ( $pg ) : ?><a class="button button-small" href="<?php echo esc_url( $pg ); ?>" target="_blank" rel="noopener" title="Fiche Google + avis">📍 Avis Google</a> <?php endif; ?>
+								<details style="display:block;margin-top:6px;"><summary class="button button-small">📝 Ma fiche (notes)</summary>
+									<textarea class="ag-note-field" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" rows="4" style="width:360px;margin-top:6px;" placeholder="Notes…"><?php echo esc_textarea( $p['notes'] ?? '' ); ?></textarea><br>
+									<button type="button" class="button button-small button-primary ag-note-save" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>">💾 Enregistrer</button>
+									<span class="ag-note-ok" style="color:#1e7e34;display:none;">✓ enregistré</span>
+								</details>
+							<?php else : ?>
 							<div class="ag-suivi" style="font-size:.8em;margin-bottom:6px;line-height:1.5;<?php echo empty( $p['date_contact'] ) ? 'color:#b26a00;' : 'color:#50575e;'; ?>">
 								<?php if ( ! empty( $p['date_contact'] ) ) : ?>
 									📨 Contacté<?php echo ! empty( $p['last_channel'] ) ? ' par <strong>' . esc_html( $p['last_channel'] ) . '</strong>' : ''; ?> le <strong><?php echo esc_html( $p['date_contact'] ); ?></strong> (×<?php echo (int) ( $p['contact_count'] ?? 1 ); ?>)<br>
