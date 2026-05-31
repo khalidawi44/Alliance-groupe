@@ -7,15 +7,26 @@ get_header();
 
 <!-- Hero -->
 <section class="ag-hero" id="ag-main-content">
-    <?php
-    // Vidéo de fond retirée (naples.mp4 autoplay/preload = lourd, ralentissait la page).
-    // Remplacée par une IMAGE sécurité (option ag_tester_img_menace, Réglages → Tester/Audit),
-    // sinon la photo Naples existante, sinon un dégradé « cyber » CSS. Zéro vidéo = page rapide.
-    $ag_hero_bg = ( function_exists( 'ag_tester_opt' ) ? ag_tester_opt( 'img_menace' ) : '' );
-    if ( ! $ag_hero_bg ) { $ag_hero_bg = get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg'; }
-    ?>
-    <div class="ag-hero__video" style="background:linear-gradient(180deg,rgba(10,10,15,.35),rgba(10,10,15,.55)),url('<?php echo esc_url( $ag_hero_bg ); ?>') center 35%/cover no-repeat"></div>
+    <!-- Vidéo Naples en fond (accueil seulement). Optimisée pour ne PAS ralentir :
+         - poster affiché INSTANTANÉMENT (la page ne paraît jamais vide)
+         - preload="none" : la vidéo ne se télécharge qu'une fois la page prête (chargée en JS)
+         - object-fit cover : plein écran sans déformer -->
+    <video class="ag-hero__video" id="ag-hero-video" autoplay muted loop playsinline preload="none"
+           poster="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg' ); ?>"></video>
     <div class="ag-hero__video-veil" aria-hidden="true"></div>
+    <script>
+    // Charge la vidéo de fond APRÈS l'affichage de la page (ne bloque plus le rendu).
+    window.addEventListener('load', function () {
+        var v = document.getElementById('ag-hero-video');
+        if (!v) return;
+        var s = document.createElement('source');
+        s.src = '<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/video/naples.mp4' ); ?>';
+        s.type = 'video/mp4';
+        v.appendChild(s);
+        v.load();
+        var p = v.play(); if (p && p.catch) { p.catch(function(){}); }
+    });
+    </script>
     <style>
     /* Home : hero plus court (on enchaîne vite sur la menace) */
     body.home .ag-hero{min-height:74vh;padding-top:140px;padding-bottom:60px}
