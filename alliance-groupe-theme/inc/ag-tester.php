@@ -977,6 +977,15 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 					<button type="button" class="button button-small aghf" data-f="creation">✨ Création/SEO</button>
 					<button type="button" class="button button-small aghf" data-f="todo">⏳ Pas encore contactés</button>
 				</p>
+					<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0 10px">
+						<strong style="font-size:12px;color:#666">Trier :</strong>
+						<button type="button" class="button button-small aghs" data-s="ts-desc">🕒 Récents</button>
+						<button type="button" class="button button-small aghs" data-s="ts-asc">🕒 Anciens</button>
+						<button type="button" class="button button-small aghs" data-s="score-asc">⬇️ Score faible (chaud)</button>
+						<button type="button" class="button button-small aghs" data-s="score-desc">⬆️ Score élevé</button>
+						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;margin-left:auto"><input type="hidden" name="action" value="ag_audit_hist_csv"><?php wp_nonce_field( 'ag_audit_hist_csv' ); ?><button type="submit" class="button button-small">📥 Exporter l'historique (CSV)</button></form>
+					</div>
+					<div id="agh-list">
 				<?php foreach ( $AGH as $hid => $e ) :
 					$score = (int) $e['score']; $col = $score >= 75 ? '#1a7f37' : ( $score >= 50 ? '#bf6a02' : '#b91c1c' ); $seg = $e['seg'];
 					$host = $e['host']; $url = $e['url']; $email = $e['email']; $phone = $e['phone']; $wa = ag_wa_phone( $phone );
@@ -991,7 +1000,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 					$done = array(); foreach ( ( $e['actions'] ?? array() ) as $ac ) { $done[ $ac['ch'] ] = $ac['date']; }
 					$todo = empty( $e['actions'] );
 					?>
-					<div class="agh-card" data-seg="<?php echo esc_attr( $seg ); ?>" data-todo="<?php echo $todo ? 1 : 0; ?>" style="background:#fff;border:1px solid #ccd0d4;border-left:5px solid <?php echo esc_attr( $col ); ?>;border-radius:8px;padding:14px 16px;margin:12px 0;max-width:1000px">
+					<div class="agh-card" data-seg="<?php echo esc_attr( $seg ); ?>" data-todo="<?php echo $todo ? 1 : 0; ?>" data-score="<?php echo $score; ?>" data-ts="<?php echo (int) $e['ts']; ?>" style="background:#fff;border:1px solid #ccd0d4;border-left:5px solid <?php echo esc_attr( $col ); ?>;border-radius:8px;padding:14px 16px;margin:12px 0;max-width:1000px">
 						<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px">
 							<div><strong><?php echo esc_html( $e['company'] ?: $host ); ?></strong>
 								<span style="background:<?php echo 'securite' === $seg ? '#b91c1c' : '#1d4ed8'; ?>;color:#fff;border-radius:4px;padding:1px 6px;font-size:11px"><?php echo 'securite' === $seg ? 'SÉCURITÉ' : 'CRÉATION'; ?></span>
@@ -1027,8 +1036,9 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 						</div>
 					</div>
 				<?php endforeach; ?>
+				</div>
 				<script>
-				(function(){var c=[].slice.call(document.querySelectorAll('.agh-card'));document.querySelectorAll('.aghf').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghf').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');var f=b.getAttribute('data-f');c.forEach(function(k){var seg=k.getAttribute('data-seg'),todo=k.getAttribute('data-todo')==='1';var sh=(f==='all')||(f==='todo'?todo:seg===f);k.style.display=sh?'':'none';});});});})();
+				(function(){var list=document.getElementById('agh-list');if(!list)return;function cards(){return [].slice.call(list.querySelectorAll('.agh-card'));}document.querySelectorAll('.aghf').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghf').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');var f=b.getAttribute('data-f');cards().forEach(function(k){var seg=k.getAttribute('data-seg'),todo=k.getAttribute('data-todo')==='1';var sh=(f==='all')||(f==='todo'?todo:seg===f);k.style.display=sh?'':'none';});});});document.querySelectorAll('.aghs').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghs').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');var sp=b.getAttribute('data-s').split('-'),key=sp[0],dir=sp[1];var arr=cards();arr.sort(function(a,c){var x=+a.getAttribute('data-'+key),y=+c.getAttribute('data-'+key);return dir==='asc'?x-y:y-x;});arr.forEach(function(k){list.appendChild(k);});});});})();
 				</script>
 			<?php endif; ?>
 		</div>
@@ -1113,6 +1123,42 @@ if ( ! function_exists( 'ag_audit_export_csv' ) ) {
 				$ct['address'] ?? '',
 				$ct['siret'] ?? '',
 				implode( ' ', $ct['socials'] ?? array() ),
+			), ';' );
+		}
+		fclose( $out );
+		exit;
+	}
+}
+
+/* =========================================================================
+ * EXPORT CSV de l'HISTORIQUE des audits (avec statut de contact).
+ * ====================================================================== */
+add_action( 'admin_post_ag_audit_hist_csv', 'ag_audit_hist_csv' );
+if ( ! function_exists( 'ag_audit_hist_csv' ) ) {
+	function ag_audit_hist_csv() {
+		if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Accès refusé.' );
+		if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'ag_audit_hist_csv' ) ) wp_die( 'Lien expiré.' );
+		$H = function_exists( 'ag_audit_hist_get' ) ? ag_audit_hist_get() : array();
+		uasort( $H, function ( $x, $y ) { return (int) ( $y['ts'] ?? 0 ) <=> (int) ( $x['ts'] ?? 0 ); } );
+
+		nocache_headers();
+		header( 'Content-Type: text/csv; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="historique-audits-' . gmdate( 'Y-m-d' ) . '.csv"' );
+		$out = fopen( 'php://output', 'w' );
+		fwrite( $out, "\xEF\xBB\xBF" );
+		fputcsv( $out, array( 'Date', 'Site', 'Entreprise', 'Score', 'Segment', 'Failles', 'Critiques', 'Liste failles', 'Email', 'Telephone', 'Adresse', 'SIRET', 'Reseaux', 'Contacte (canaux+dates)' ), ';' );
+		foreach ( $H as $e ) {
+			$fails = array();
+			$ncrit = 0;
+			foreach ( ( $e['checks'] ?? array() ) as $c ) { $fails[] = $c['name']; if ( ! empty( $c['critical'] ) && 'fail' === $c['status'] ) $ncrit++; }
+			$contacte = array();
+			foreach ( ( $e['actions'] ?? array() ) as $ac ) { $contacte[] = ( $ac['ch'] ?? '' ) . ' (' . ( $ac['date'] ?? '' ) . ')'; }
+			fputcsv( $out, array(
+				isset( $e['ts'] ) ? wp_date( 'd/m/Y H:i', (int) $e['ts'] ) : '',
+				$e['url'] ?? '', $e['company'] ?? '', (int) ( $e['score'] ?? 0 ),
+				$e['seg'] ?? '', count( $fails ), $ncrit, implode( ' | ', $fails ),
+				$e['email'] ?? '', $e['phone'] ?? '', $e['address'] ?? '', $e['siret'] ?? '',
+				implode( ' ', $e['socials'] ?? array() ), implode( ' · ', $contacte ),
 			), ';' );
 		}
 		fclose( $out );
