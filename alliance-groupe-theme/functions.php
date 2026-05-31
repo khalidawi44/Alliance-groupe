@@ -118,6 +118,12 @@ if ( file_exists( $ag_tester_file ) ) {
     require_once $ag_tester_file;
 }
 
+// ── 1c5e-ter. Pont « Audit approfondi » wp-admin ↔ Kali (file d'attente sécurisée)
+$ag_pentest_bridge_file = get_stylesheet_directory() . '/inc/ag-pentest-bridge.php';
+if ( file_exists( $ag_pentest_bridge_file ) ) {
+    require_once $ag_pentest_bridge_file;
+}
+
 // ── 1c5f. Tirage au sort mensuel (1 site gratuit / mois)
 $ag_tirage_file = get_stylesheet_directory() . '/inc/ag-tirage-mensuel.php';
 if ( file_exists( $ag_tirage_file ) ) {
