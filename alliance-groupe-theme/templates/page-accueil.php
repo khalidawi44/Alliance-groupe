@@ -7,10 +7,14 @@ get_header();
 
 <!-- Hero -->
 <section class="ag-hero" id="ag-main-content">
-    <!-- Vidéo Naples en fond (remplace la photo du hero) -->
-    <video class="ag-hero__video" autoplay muted loop playsinline preload="auto" poster="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg' ); ?>">
-        <source src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/video/naples.mp4' ); ?>" type="video/mp4">
-    </video>
+    <?php
+    // Vidéo de fond retirée (naples.mp4 autoplay/preload = lourd, ralentissait la page).
+    // Remplacée par une IMAGE sécurité (option ag_tester_img_menace, Réglages → Tester/Audit),
+    // sinon la photo Naples existante, sinon un dégradé « cyber » CSS. Zéro vidéo = page rapide.
+    $ag_hero_bg = ( function_exists( 'ag_tester_opt' ) ? ag_tester_opt( 'img_menace' ) : '' );
+    if ( ! $ag_hero_bg ) { $ag_hero_bg = get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg'; }
+    ?>
+    <div class="ag-hero__video" style="background:linear-gradient(180deg,rgba(10,10,15,.35),rgba(10,10,15,.55)),url('<?php echo esc_url( $ag_hero_bg ); ?>') center 35%/cover no-repeat"></div>
     <div class="ag-hero__video-veil" aria-hidden="true"></div>
     <style>
     /* Home : hero plus court (on enchaîne vite sur la menace) */
