@@ -7,26 +7,24 @@ get_header();
 
 <!-- Hero -->
 <section class="ag-hero" id="ag-main-content">
-    <!-- Vidéo Naples en fond (accueil seulement). Optimisée pour ne PAS ralentir :
-         - poster affiché INSTANTANÉMENT (la page ne paraît jamais vide)
-         - preload="none" : la vidéo ne se télécharge qu'une fois la page prête (chargée en JS)
-         - object-fit cover : plein écran sans déformer -->
-    <video class="ag-hero__video" id="ag-hero-video" autoplay muted loop playsinline preload="none"
-           poster="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg' ); ?>"></video>
+    <?php
+    // Vidéo de fond SUPPRIMÉE (naples.mp4 = 8,4 Mo en autoplay → ralentissait le site).
+    // Remplacée par une IMAGE sécurité : option ag_tester_img_menace (Réglages → Tester/Audit) ;
+    // sinon assets/images/securite/menace.jpg ; sinon dégradé « cyber » CSS (zéro requête).
+    $ag_hero_bg = ( function_exists( 'ag_tester_opt' ) ? ag_tester_opt( 'img_menace' ) : '' );
+    if ( ! $ag_hero_bg ) {
+        $ag_sec = get_stylesheet_directory() . '/assets/images/securite/menace.jpg';
+        if ( file_exists( $ag_sec ) ) { $ag_hero_bg = get_stylesheet_directory_uri() . '/assets/images/securite/menace.jpg'; }
+    }
+    ?>
+    <div class="ag-hero__video" style="<?php
+        if ( $ag_hero_bg ) {
+            echo "background:url('" . esc_url( $ag_hero_bg ) . "') center 35%/cover no-repeat";
+        } else {
+            echo 'background:radial-gradient(circle at 25% 25%,rgba(243,122,31,.20),transparent 55%),radial-gradient(circle at 80% 70%,rgba(212,180,92,.16),transparent 55%),#0a0a0f';
+        }
+    ?>"></div>
     <div class="ag-hero__video-veil" aria-hidden="true"></div>
-    <script>
-    // Charge la vidéo de fond APRÈS l'affichage de la page (ne bloque plus le rendu).
-    window.addEventListener('load', function () {
-        var v = document.getElementById('ag-hero-video');
-        if (!v) return;
-        var s = document.createElement('source');
-        s.src = '<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/video/naples.mp4' ); ?>';
-        s.type = 'video/mp4';
-        v.appendChild(s);
-        v.load();
-        var p = v.play(); if (p && p.catch) { p.catch(function(){}); }
-    });
-    </script>
     <style>
     /* Home : hero plus court (on enchaîne vite sur la menace) */
     body.home .ag-hero{min-height:74vh;padding-top:140px;padding-bottom:60px}
