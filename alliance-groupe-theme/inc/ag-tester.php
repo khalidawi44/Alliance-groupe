@@ -522,6 +522,35 @@ if ( ! function_exists( 'ag_audit_segment' ) ) {
 		return ( $n >= 2 || (int) ( $a['score'] ?? 0 ) < 55 ) ? 'securite' : 'creation';
 	}
 }
+
+/* ---- Historique PERSISTANT des audits (option ag_audit_history) ---- */
+if ( ! function_exists( 'ag_audit_hist_id' ) )  { function ag_audit_hist_id( $url ) { return substr( md5( strtolower( trim( $url ) ) ), 0, 12 ); } }
+if ( ! function_exists( 'ag_audit_hist_get' ) ) { function ag_audit_hist_get() { $h = get_option( 'ag_audit_history', array() ); return is_array( $h ) ? $h : array(); } }
+if ( ! function_exists( 'ag_audit_hist_save' ) ){ function ag_audit_hist_save( $h ) { update_option( 'ag_audit_history', $h, false ); } }
+if ( ! function_exists( 'ag_audit_hist_upsert' ) ) {
+	function ag_audit_hist_upsert( $a, $ct ) {
+		$url = $a['url'] ?? ''; if ( ! $url ) return '';
+		$id = ag_audit_hist_id( $url );
+		$h  = ag_audit_hist_get();
+		$checks = array();
+		foreach ( ( $a['checks'] ?? array() ) as $c ) {
+			if ( 'ok' !== ( $c['status'] ?? '' ) ) $checks[] = array( 'name' => $c['name'], 'status' => $c['status'], 'critical' => ! empty( $c['critical'] ) );
+		}
+		$prev = $h[ $id ] ?? array();
+		$h[ $id ] = array(
+			'url' => $url, 'host' => wp_parse_url( $url, PHP_URL_HOST ),
+			'ts' => time(), 'score' => (int) ( $a['score'] ?? 0 ), 'critical' => (int) ( $a['critical'] ?? 0 ),
+			'seg' => function_exists( 'ag_audit_segment' ) ? ag_audit_segment( $a ) : 'securite',
+			'checks' => $checks,
+			'company' => $ct['company'] ?? '', 'email' => $ct['emails'][0] ?? '', 'phone' => $ct['phones'][0] ?? '',
+			'address' => $ct['address'] ?? '', 'siret' => $ct['siret'] ?? '', 'socials' => array_values( $ct['socials'] ?? array() ),
+			'actions' => isset( $prev['actions'] ) && is_array( $prev['actions'] ) ? $prev['actions'] : array(),
+		);
+		if ( count( $h ) > 150 ) { uasort( $h, function ( $x, $y ) { return (int) ( $y['ts'] ?? 0 ) <=> (int) ( $x['ts'] ?? 0 ); } ); $h = array_slice( $h, 0, 150, true ); }
+		ag_audit_hist_save( $h );
+		return $id;
+	}
+}
 if ( ! function_exists( 'ag_audit_risk_detail' ) ) {
 	/** Détail technique « qui fait peur » par type de faille. */
 	function ag_audit_risk_detail( $name ) {
@@ -705,6 +734,18 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 			}
 		}
 
+		// Historique : marquer un canal contacté, ou supprimer une entrée.
+		if ( isset( $_POST['_agp_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_agp_nonce'] ) ), 'ag_audit_prospect' ) ) {
+			if ( isset( $_POST['ag_hist_mark'], $_POST['hist_id'], $_POST['hist_ch'] ) ) {
+				$hh = ag_audit_hist_get(); $hid = sanitize_text_field( wp_unslash( $_POST['hist_id'] ) ); $hch = sanitize_text_field( wp_unslash( $_POST['hist_ch'] ) );
+				if ( isset( $hh[ $hid ] ) ) { $hh[ $hid ]['actions'][] = array( 'ch' => $hch, 'date' => current_time( 'd/m/Y H:i' ) ); ag_audit_hist_save( $hh ); $notice = '✅ Contact marqué : ' . $hch . ' — ' . ( $hh[ $hid ]['host'] ?? '' ); }
+			}
+			if ( isset( $_POST['ag_hist_del'], $_POST['hist_id'] ) ) {
+				$hh = ag_audit_hist_get(); $hid = sanitize_text_field( wp_unslash( $_POST['hist_id'] ) );
+				if ( isset( $hh[ $hid ] ) ) { $host = $hh[ $hid ]['host'] ?? ''; unset( $hh[ $hid ] ); ag_audit_hist_save( $hh ); $notice = '🗑️ Audit supprimé : ' . $host; }
+			}
+		}
+
 		// Lancement des audits.
 		$deep_mode = false;
 		if ( isset( $_POST['ag_run_audits'], $_POST['_agp_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_agp_nonce'] ) ), 'ag_audit_prospect' ) ) {
@@ -718,10 +759,10 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 			} else {
 				$deep_mode = $want_deep;
 				foreach ( $urls as $u ) {
-					if ( $deep_mode && function_exists( 'ag_audit_run_deep' ) ) {
-						$results[] = ag_audit_run_deep( $u );
-					} elseif ( function_exists( 'ag_audit_run' ) ) {
-						$results[] = ag_audit_run( $u );
+					$au = ( $deep_mode && function_exists( 'ag_audit_run_deep' ) ) ? ag_audit_run_deep( $u ) : ( function_exists( 'ag_audit_run' ) ? ag_audit_run( $u ) : null );
+					if ( $au ) {
+						$results[] = $au;
+						ag_audit_hist_upsert( $au, function_exists( 'ag_audit_extract_contacts' ) ? ag_audit_extract_contacts( $u ) : array() );
 					}
 				}
 			}
@@ -923,6 +964,72 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 				})();
 				</script>
 				<p style="color:#666;font-size:12px;margin-top:10px">⚖️ Coordonnées extraites des pages publiques du site (info éditée par l'entreprise). Démarchage : B2B autorisé avec opt-out (le message inclut « STOP ») ; respecte <strong>Bloctel</strong> pour le téléphone. Aucune donnée issue de fuites/bases tierces.</p>
+			<?php endif; ?>
+			<?php $AGH = ag_audit_hist_get();
+			if ( $AGH ) :
+				uasort( $AGH, function ( $x, $y ) { return (int) ( $y['ts'] ?? 0 ) <=> (int) ( $x['ts'] ?? 0 ); } );
+				?>
+				<hr style="margin:30px 0">
+				<h2>📋 Historique des audits (<?php echo count( $AGH ); ?>) — sauvegardés</h2>
+				<p style="color:#666;font-size:12px;margin:0 0 8px">Chaque audit est conservé : fiche (failles + score), coordonnées, et suivi des contacts. Filtre :
+					<button type="button" class="button button-small button-primary aghf" data-f="all">Tous</button>
+					<button type="button" class="button button-small aghf" data-f="securite">🛡️ Sécurité</button>
+					<button type="button" class="button button-small aghf" data-f="creation">✨ Création/SEO</button>
+					<button type="button" class="button button-small aghf" data-f="todo">⏳ Pas encore contactés</button>
+				</p>
+				<?php foreach ( $AGH as $hid => $e ) :
+					$score = (int) $e['score']; $col = $score >= 75 ? '#1a7f37' : ( $score >= 50 ? '#bf6a02' : '#b91c1c' ); $seg = $e['seg'];
+					$host = $e['host']; $url = $e['url']; $email = $e['email']; $phone = $e['phone']; $wa = ag_wa_phone( $phone );
+					$fails = array_map( function ( $c ) { return $c['name']; }, $e['checks'] );
+					$ncrit = 0; foreach ( $e['checks'] as $c ) { if ( ! empty( $c['critical'] ) && 'fail' === $c['status'] ) $ncrit++; }
+					$a = array( 'url' => $url, 'score' => $score, 'critical' => $e['critical'], 'checks' => $e['checks'] );
+					$ct = array( 'emails' => $email ? array( $email ) : array(), 'phones' => $phone ? array( $phone ) : array(), 'address' => $e['address'], 'siret' => $e['siret'], 'company' => $e['company'], 'socials' => $e['socials'] );
+					$aid = wp_hash( $url . '|prospect|' . gmdate( 'Y-m-d' ) ); set_transient( 'ag_tester_' . $aid, array( 'audit' => $a, 'email' => $email, 'prenom' => $e['company'], 'phone' => $phone, 'unlocked' => false ), 30 * DAY_IN_SECONDS );
+					$ol = home_url( '/tester-mon-site?aid=' . $aid );
+					if ( 'securite' === $seg ) { $emsg = ag_audit_msg_securite( $a, $ct, $ol ); $smsg = ag_audit_sms_securite( $a, $ol ); $subj = '⚠️ Faille de sécurité détectée sur ' . $host; }
+					else { $emsg = ag_audit_msg_creation( $a, $ct ); $smsg = 'Bonjour, votre site ' . $host . ' gagnerait a etre modernise. Je cree des sites pro securises des 490e. Fabrizio-Alliance Groupe. STOP pour stop.'; $subj = 'Votre site ' . $host . ' — idées pour le moderniser'; }
+					$done = array(); foreach ( ( $e['actions'] ?? array() ) as $ac ) { $done[ $ac['ch'] ] = $ac['date']; }
+					$todo = empty( $e['actions'] );
+					?>
+					<div class="agh-card" data-seg="<?php echo esc_attr( $seg ); ?>" data-todo="<?php echo $todo ? 1 : 0; ?>" style="background:#fff;border:1px solid #ccd0d4;border-left:5px solid <?php echo esc_attr( $col ); ?>;border-radius:8px;padding:14px 16px;margin:12px 0;max-width:1000px">
+						<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px">
+							<div><strong><?php echo esc_html( $e['company'] ?: $host ); ?></strong>
+								<span style="background:<?php echo 'securite' === $seg ? '#b91c1c' : '#1d4ed8'; ?>;color:#fff;border-radius:4px;padding:1px 6px;font-size:11px"><?php echo 'securite' === $seg ? 'SÉCURITÉ' : 'CRÉATION'; ?></span>
+								<br><a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener" style="font-size:12px"><?php echo esc_html( $host ); ?></a></div>
+							<div style="text-align:right"><span style="color:<?php echo esc_attr( $col ); ?>;font-size:20px;font-weight:800"><?php echo $score; ?>/100</span>
+								<div style="font-size:11px;color:#666"><?php echo count( $fails ); ?> faille(s)<?php echo $ncrit ? ' · ' . $ncrit . ' critique(s)' : ''; ?> · <?php echo esc_html( wp_date( 'd/m/Y H:i', (int) $e['ts'] ) ); ?></div></div>
+						</div>
+						<div style="font-size:12px;color:#444;margin:6px 0"><strong>Failles :</strong> <?php echo esc_html( implode( ' · ', array_slice( $fails, 0, 8 ) ) ); ?></div>
+						<div style="font-size:12px;background:#f6f7f7;border-radius:6px;padding:6px 10px;margin:4px 0">📇
+							<?php echo $email ? '✉️ ' . esc_html( $email ) . ' ' : ''; ?><?php echo $phone ? '· 📞 ' . esc_html( $phone ) . ' ' : ''; ?><?php echo $e['address'] ? '· 📍 ' . esc_html( $e['address'] ) . ' ' : ''; ?><?php echo $e['siret'] ? '· SIRET ' . esc_html( $e['siret'] ) . ' ' : ''; ?>
+							<?php foreach ( ( $e['socials'] ?? array() ) as $so ) { echo '· <a href="' . esc_url( $so ) . '" target="_blank" rel="noopener">' . esc_html( preg_replace( '#https?://(www\.)?#', '', $so ) ) . '</a> '; } ?>
+							<?php if ( ! $email && ! $phone ) echo '<em>aucune coordonnée</em>'; ?>
+						</div>
+						<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px">
+							<?php if ( $email ) : ?><a class="button button-small" href="mailto:<?php echo esc_attr( $email ); ?>?subject=<?php echo rawurlencode( $subj ); ?>&body=<?php echo rawurlencode( $emsg ); ?>">✉️ Email</a><?php endif; ?>
+							<?php if ( $phone ) : ?><a class="button button-small" href="tel:<?php echo esc_attr( preg_replace( '#\s#', '', $phone ) ); ?>">📞</a><a class="button button-small" href="sms:<?php echo esc_attr( preg_replace( '#\s#', '', $phone ) ); ?>?&body=<?php echo rawurlencode( $smsg ); ?>">💬 SMS</a><?php if ( $wa ) : ?><a class="button button-small" target="_blank" rel="noopener" href="https://wa.me/<?php echo esc_attr( $wa ); ?>?text=<?php echo rawurlencode( $smsg ); ?>">🟢 WA</a><?php endif; endif; ?>
+							<button type="button" class="button button-small" onclick="var d=document.getElementById('aghf<?php echo esc_attr( $hid ); ?>');d.style.display=d.style.display==='none'?'block':'none'">📄 Fiche</button>
+							<form method="post" style="display:inline"><?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?>
+								<input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>">
+								<select name="hist_ch" style="font-size:12px;max-width:130px"><option>Email</option><option>SMS</option><option>WhatsApp</option><option>Telegram</option><option>Appel</option><option>Pas de réponse</option><option>Intéressé</option><option>Refusé</option></select>
+								<button type="submit" name="ag_hist_mark" value="1" class="button button-small">✓ Noté</button>
+							</form>
+							<form method="post" style="display:inline" onsubmit="return confirm('Supprimer cet audit ?')"><?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?><input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>"><button type="submit" name="ag_hist_del" value="1" class="button button-small" style="color:#b91c1c">🗑️</button></form>
+						</div>
+						<?php if ( $done ) : ?><div style="font-size:12px;margin-top:6px">✅ <strong>Contacté :</strong> <?php foreach ( $done as $ch => $dt ) { echo '<span style="background:#eef;border-radius:4px;padding:1px 6px;margin-right:4px">' . esc_html( $ch ) . ' (' . esc_html( $dt ) . ')</span>'; } ?></div><?php endif; ?>
+						<div id="aghf<?php echo esc_attr( $hid ); ?>" style="display:none;margin-top:8px">
+							<strong style="font-size:12px">Toutes les failles :</strong>
+							<ul style="font-size:12px;margin:4px 0 8px">
+								<?php foreach ( $e['checks'] as $c ) { $ic = ( 'fail' === $c['status'] && ! empty( $c['critical'] ) ) ? '🔴' : '🟠'; echo '<li>' . $ic . ' ' . esc_html( $c['name'] ) . '</li>'; } ?>
+							</ul>
+							<p style="font-size:12px;color:#666;margin:0 0 4px">Message (éditable) :</p>
+							<textarea rows="8" style="width:100%;max-width:660px;font-size:12px" onclick="this.select()"><?php echo esc_textarea( $emsg ); ?></textarea>
+						</div>
+					</div>
+				<?php endforeach; ?>
+				<script>
+				(function(){var c=[].slice.call(document.querySelectorAll('.agh-card'));document.querySelectorAll('.aghf').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghf').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');var f=b.getAttribute('data-f');c.forEach(function(k){var seg=k.getAttribute('data-seg'),todo=k.getAttribute('data-todo')==='1';var sh=(f==='all')||(f==='todo'?todo:seg===f);k.style.display=sh?'':'none';});});});})();
+				</script>
 			<?php endif; ?>
 		</div>
 		<?php
