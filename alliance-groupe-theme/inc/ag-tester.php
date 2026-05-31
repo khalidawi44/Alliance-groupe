@@ -756,6 +756,12 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 		if ( ! current_user_can( 'manage_options' ) ) return;
 		$results = array();
 		$notice  = '';
+		if ( isset( $_GET['agmsg'] ) ) {
+			$gm = sanitize_key( $_GET['agmsg'] );
+			if ( 'del1' === $gm )       $notice = '🗑️ Audit supprimé.';
+			elseif ( 'delnone' === $gm ) $notice = '⚠️ Audit introuvable (déjà supprimé ?).';
+			elseif ( 'cleared' === $gm ) $notice = '🗑️ Historique vidé : tous les audits ont été supprimés.';
+		}
 
 		// Ajout au CRM (action ligne par ligne) avec coordonnées extraites.
 		if ( isset( $_POST['ag_add_crm'], $_POST['_agp_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_agp_nonce'] ) ), 'ag_audit_prospect' ) ) {
@@ -1062,7 +1068,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 						<button type="button" class="button button-small aghs" data-s="score-asc">⬇️ Score faible (chaud)</button>
 						<button type="button" class="button button-small aghs" data-s="score-desc">⬆️ Score élevé</button>
 						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;margin-left:auto"><input type="hidden" name="action" value="ag_audit_hist_csv"><?php wp_nonce_field( 'ag_audit_hist_csv' ); ?><button type="submit" class="button button-small">📥 Exporter l'historique (CSV)</button></form>
-						<form method="post" style="display:inline" onsubmit="return confirm('Vider TOUT l\'historique des audits ? Action irreversible.')"><?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?><button type="submit" name="ag_hist_clear" value="1" class="button button-small" style="color:#b91c1c;margin-left:6px">🗑️ Tout effacer</button></form>
+						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline" onsubmit="return confirm('Vider TOUT l\'historique des audits ? Action irreversible.')"><input type="hidden" name="action" value="ag_audit_hist_clear"><?php wp_nonce_field( 'ag_audit_hist_clear' ); ?><button type="submit" class="button button-small" style="color:#b91c1c;margin-left:6px">🗑️ Tout effacer</button></form>
 					</div>
 					<div id="agh-list">
 				<?php foreach ( $AGH as $hid => $e ) :
@@ -1106,7 +1112,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 								<select name="hist_ch" style="font-size:12px;max-width:130px"><option>Email</option><option>SMS</option><option>WhatsApp</option><option>Telegram</option><option>Appel</option><option>Pas de réponse</option><option>Intéressé</option><option>Refusé</option></select>
 								<button type="submit" name="ag_hist_mark" value="1" class="button button-small">✓ Noté</button>
 							</form>
-							<form method="post" style="display:inline" onsubmit="return confirm('Supprimer cet audit ?')"><?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?><input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>"><button type="submit" name="ag_hist_del" value="1" class="button button-small" style="color:#b91c1c">🗑️ Suppr.</button></form>
+							<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline" onsubmit="return confirm('Supprimer cet audit ?')"><input type="hidden" name="action" value="ag_audit_hist_del"><?php wp_nonce_field( 'ag_audit_hist_del' ); ?><input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>"><button type="submit" class="button button-small" style="color:#b91c1c">🗑️ Suppr.</button></form>
 						</div>
 						<?php $crm = ag_audit_prospect_by_site( $url ); if ( $crm ) :
 							$ce = ! empty( $crm['email'] ) ? $crm['email'] : $email;
@@ -1368,6 +1374,31 @@ if ( ! function_exists( 'ag_audit_hist_csv' ) ) {
 			), ';' );
 		}
 		fclose( $out );
+		exit;
+	}
+}
+
+/* Suppression d'un audit de l'historique (admin-post, PRG fiable). */
+add_action( 'admin_post_ag_audit_hist_del', 'ag_audit_hist_del_handler' );
+if ( ! function_exists( 'ag_audit_hist_del_handler' ) ) {
+	function ag_audit_hist_del_handler() {
+		if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Accès refusé.' );
+		check_admin_referer( 'ag_audit_hist_del' );
+		$hid = isset( $_POST['hist_id'] ) ? sanitize_text_field( wp_unslash( $_POST['hist_id'] ) ) : '';
+		$H = ag_audit_hist_get();
+		if ( $hid && isset( $H[ $hid ] ) ) { unset( $H[ $hid ] ); ag_audit_hist_save( $H ); $msg = 'del1'; } else { $msg = 'delnone'; }
+		wp_safe_redirect( add_query_arg( array( 'page' => 'ag-espace-audit', 'agmsg' => $msg ), admin_url( 'admin.php' ) ) . '#agh-list' );
+		exit;
+	}
+}
+/* Vider TOUT l'historique des audits (admin-post). */
+add_action( 'admin_post_ag_audit_hist_clear', 'ag_audit_hist_clear_handler' );
+if ( ! function_exists( 'ag_audit_hist_clear_handler' ) ) {
+	function ag_audit_hist_clear_handler() {
+		if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Accès refusé.' );
+		check_admin_referer( 'ag_audit_hist_clear' );
+		ag_audit_hist_save( array() );
+		wp_safe_redirect( add_query_arg( array( 'page' => 'ag-espace-audit', 'agmsg' => 'cleared' ), admin_url( 'admin.php' ) ) );
 		exit;
 	}
 }
