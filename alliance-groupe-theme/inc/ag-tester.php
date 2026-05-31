@@ -1025,6 +1025,36 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 							</form>
 							<form method="post" style="display:inline" onsubmit="return confirm('Supprimer cet audit ?')"><?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?><input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>"><button type="submit" name="ag_hist_del" value="1" class="button button-small" style="color:#b91c1c">🗑️</button></form>
 						</div>
+						<?php $crm = ag_audit_prospect_by_site( $url ); if ( $crm ) :
+							$ce = ! empty( $crm['email'] ) ? $crm['email'] : $email;
+							$cp = ! empty( $crm['phone'] ) ? $crm['phone'] : $phone;
+							$cpn = preg_replace( '#\s#', '', (string) $cp ); $cwa = ag_wa_phone( $cp );
+							$sec_msg2 = ag_audit_msg_securite( $a, $ct, $ol ); $sec_sms2 = ag_audit_sms_securite( $a, $ol );
+							$crea_msg = ag_audit_msg_creation( $a, $ct );
+							$crea_sms = 'Bonjour, votre site ' . $host . ' gagnerait a etre modernise (design, vitesse, mobile). Je cree des sites pro securises des 490e. Fabrizio - Alliance Groupe. STOP pour stop.';
+							$sec_subj2 = '⚠️ Faille de sécurité détectée sur ' . $host; $crea_subj = 'Votre site ' . $host . ' — idées pour le moderniser';
+							?>
+							<div style="margin-top:8px;background:#fff7ed;border:1px solid #fdba74;border-radius:6px;padding:8px 10px">
+								<div style="font-size:12px;font-weight:700;color:#9a3412">🔗 Aussi dans tes prospects à démarcher<?php echo ! empty( $crm['name'] ) ? ' : ' . esc_html( $crm['name'] ) : ''; ?> — envoie <u>2 messages</u> (sécurité + site)</div>
+								<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px">
+									<span style="font-size:11px;color:#b91c1c;font-weight:700">🛡️ Sécu :</span>
+									<?php if ( $ce ) : ?><a class="button button-small" href="mailto:<?php echo esc_attr( $ce ); ?>?subject=<?php echo rawurlencode( $sec_subj2 ); ?>&body=<?php echo rawurlencode( $sec_msg2 ); ?>">✉️ Email</a><?php endif; ?>
+									<?php if ( $cpn ) : ?><a class="button button-small" href="sms:<?php echo esc_attr( $cpn ); ?>?&body=<?php echo rawurlencode( $sec_sms2 ); ?>">💬 SMS</a><?php if ( $cwa ) : ?><a class="button button-small" target="_blank" rel="noopener" href="https://wa.me/<?php echo esc_attr( $cwa ); ?>?text=<?php echo rawurlencode( $sec_sms2 ); ?>">🟢 WA</a><?php endif; endif; ?>
+								</div>
+								<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:4px">
+									<span style="font-size:11px;color:#1d4ed8;font-weight:700">✨ Site :</span>
+									<?php if ( $ce ) : ?><a class="button button-small" href="mailto:<?php echo esc_attr( $ce ); ?>?subject=<?php echo rawurlencode( $crea_subj ); ?>&body=<?php echo rawurlencode( $crea_msg ); ?>">✉️ Email</a><?php endif; ?>
+									<?php if ( $cpn ) : ?><a class="button button-small" href="sms:<?php echo esc_attr( $cpn ); ?>?&body=<?php echo rawurlencode( $crea_sms ); ?>">💬 SMS</a><?php if ( $cwa ) : ?><a class="button button-small" target="_blank" rel="noopener" href="https://wa.me/<?php echo esc_attr( $cwa ); ?>?text=<?php echo rawurlencode( $crea_sms ); ?>">🟢 WA</a><?php endif; endif; ?>
+									<button type="button" class="button button-small" onclick="var d=document.getElementById('aghd<?php echo esc_attr( $hid ); ?>');d.style.display=d.style.display==='none'?'block':'none'">✏️ Voir/éditer les 2</button>
+								</div>
+								<div id="aghd<?php echo esc_attr( $hid ); ?>" style="display:none;margin-top:6px">
+									<p style="font-size:11px;color:#b91c1c;font-weight:700;margin:4px 0 2px">🛡️ Message sécurité :</p>
+									<textarea readonly onclick="this.select()" style="width:100%;height:120px;font-size:11px"><?php echo esc_textarea( $sec_msg2 ); ?></textarea>
+									<p style="font-size:11px;color:#1d4ed8;font-weight:700;margin:6px 0 2px">✨ Message site/création :</p>
+									<textarea readonly onclick="this.select()" style="width:100%;height:120px;font-size:11px"><?php echo esc_textarea( $crea_msg ); ?></textarea>
+								</div>
+							</div>
+						<?php endif; ?>
 						<?php if ( $done ) : ?><div style="font-size:12px;margin-top:6px">✅ <strong>Contacté :</strong> <?php foreach ( $done as $ch => $dt ) { echo '<span style="background:#eef;border-radius:4px;padding:1px 6px;margin-right:4px">' . esc_html( $ch ) . ' (' . esc_html( $dt ) . ')</span>'; } ?></div><?php endif; ?>
 						<div id="aghf<?php echo esc_attr( $hid ); ?>" style="display:none;margin-top:8px">
 							<strong style="font-size:12px">Toutes les failles :</strong>
@@ -1163,5 +1193,22 @@ if ( ! function_exists( 'ag_audit_hist_csv' ) ) {
 		}
 		fclose( $out );
 		exit;
+	}
+}
+
+/* Lien audit ↔ CRM démarchage : retrouve un prospect (option ag_prospects) par domaine. */
+if ( ! function_exists( 'ag_audit_prospect_by_site' ) ) {
+	function ag_audit_prospect_by_site( $url ) {
+		$host = wp_parse_url( $url, PHP_URL_HOST );
+		if ( ! $host ) return null;
+		$host = preg_replace( '#^www\.#', '', strtolower( $host ) );
+		foreach ( (array) get_option( 'ag_prospects', array() ) as $p ) {
+			$w = $p['website'] ?? '';
+			if ( ! $w ) continue;
+			$wh = wp_parse_url( ( 0 === strpos( $w, 'http' ) ? $w : 'http://' . $w ), PHP_URL_HOST );
+			$wh = $wh ? preg_replace( '#^www\.#', '', strtolower( $wh ) ) : '';
+			if ( $wh && $wh === $host ) return $p;
+		}
+		return null;
 	}
 }
