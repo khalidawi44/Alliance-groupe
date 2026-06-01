@@ -1294,7 +1294,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 				<?php foreach ( $AGH as $hid => $e ) :
 					$score = (int) $e['score']; $col = $score >= 75 ? '#1a7f37' : ( $score >= 50 ? '#bf6a02' : '#b91c1c' ); $seg = $e['seg'];
 						$mode = ( 'deep' === ( $e['mode'] ?? 'passive' ) ) ? 'deep' : 'passive';
-						$mode_lbl = 'deep' === $mode ? '🔬 Approfondi (Kali)' : '🔍 Léger (passif)';
+						$mode_lbl = 'deep' === $mode ? '🔬 Diagnostic Expert' : '🔍 Léger (passif)';
 					$host = $e['host']; $url = $e['url']; $email = $e['email']; $phone = $e['phone']; $wa = ag_wa_phone( $phone );
 					$fails = array_map( function ( $c ) { return $c['name']; }, $e['checks'] );
 					$ncrit = 0; foreach ( $e['checks'] as $c ) { if ( ! empty( $c['critical'] ) && 'fail' === $c['status'] ) $ncrit++; }
@@ -1383,7 +1383,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 									</div>
 									<?php $ag_kali = ag_tester_kali_report_for( $url ); if ( $ag_kali ) : ?>
 									<details style="margin-top:8px;border:1px solid #0a6;border-radius:6px;background:#f3fff9;padding:6px 10px" open>
-										<summary style="cursor:pointer;font-size:11px;color:#093;font-weight:700">🛰️ Rapport Kali (audit approfondi) — synthèse FR</summary>
+										<summary style="cursor:pointer;font-size:11px;color:#093;font-weight:700">🛰️ Rapport Diagnostic Expert 24h — synthèse</summary>
 										<div style="font-size:12px;margin:6px 0 0"><?php echo function_exists( 'ag_pt_summary_fr_html' ) ? ag_pt_summary_fr_html( $ag_kali ) : ''; ?></div>
 										<details style="margin-top:6px"><summary style="cursor:pointer;font-size:10px;color:#888">Texte brut (technique, EN)</summary>
 											<pre style="white-space:pre-wrap;max-height:240px;overflow:auto;background:#0d1117;color:#c9d1d9;padding:10px;border-radius:6px;font-size:10px;margin:6px 0 0"><?php echo esc_html( $ag_kali ); ?></pre>
@@ -1470,7 +1470,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 				rr(x,60,pb,W-120,180,14);x.fillStyle='rgba(225,15,26,.12)';x.fill();x.strokeStyle='rgba(225,15,26,.5)';x.lineWidth=2;rr(x,60,pb,W-120,180,14);x.stroke();
 				x.fillStyle='#ff6b6b';x.font='bold 28px Arial';x.fillText('⚠️ Et ce n\'est que la surface visible',90,pb+48);
 				x.fillStyle='#fff';x.font='24px Arial';x.fillText('Score test léger',90,pb+100);
-				x.fillText(d.deep_real?'Audit approfondi (Kali — réel)':'Audit approfondi (projection)',90,pb+146);
+				x.fillText(d.deep_real?'Diagnostic Expert (réel)':'Diagnostic Expert (projection)',90,pb+146);
 				x.textAlign='right';
 				x.fillStyle=col(d.score);x.font='bold 40px Arial';x.fillText(d.score+' / 100',W-90,pb+100);
 				x.fillStyle=col(d.deep);x.fillText(d.deep+' / 100',W-90,pb+146);
