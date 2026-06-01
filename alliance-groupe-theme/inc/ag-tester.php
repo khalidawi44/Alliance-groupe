@@ -1334,9 +1334,12 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 										<?php if ( $ce ) : ?><a class="button button-small" href="mailto:<?php echo esc_attr( $ce ); ?>?subject=<?php echo rawurlencode( 'Votre site ' . $host . ' : securite + modernisation' ); ?>&body=<?php echo rawurlencode( $gmsg ); ?>">✉️ Email global</a><?php endif; ?>
 									</div>
 									<?php $ag_kali = ag_tester_kali_report_for( $url ); if ( $ag_kali ) : ?>
-									<details style="margin-top:8px;border:1px solid #0a6;border-radius:6px;background:#f3fff9;padding:6px 10px">
-										<summary style="cursor:pointer;font-size:11px;color:#093;font-weight:700">🛰️ Rapport Kali (audit approfondi) - voir la synthese</summary>
-										<pre style="white-space:pre-wrap;max-height:300px;overflow:auto;background:#0d1117;color:#c9d1d9;padding:10px;border-radius:6px;font-size:11px;margin:6px 0 0"><?php echo esc_html( $ag_kali ); ?></pre>
+									<details style="margin-top:8px;border:1px solid #0a6;border-radius:6px;background:#f3fff9;padding:6px 10px" open>
+										<summary style="cursor:pointer;font-size:11px;color:#093;font-weight:700">🛰️ Rapport Kali (audit approfondi) — synthèse FR</summary>
+										<div style="font-size:12px;margin:6px 0 0"><?php echo function_exists( 'ag_pt_summary_fr_html' ) ? ag_pt_summary_fr_html( $ag_kali ) : ''; ?></div>
+										<details style="margin-top:6px"><summary style="cursor:pointer;font-size:10px;color:#888">Texte brut (technique, EN)</summary>
+											<pre style="white-space:pre-wrap;max-height:240px;overflow:auto;background:#0d1117;color:#c9d1d9;padding:10px;border-radius:6px;font-size:10px;margin:6px 0 0"><?php echo esc_html( $ag_kali ); ?></pre>
+										</details>
 									</details>
 									<?php endif; ?>
 								</div>
