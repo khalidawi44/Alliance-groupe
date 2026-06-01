@@ -25,7 +25,7 @@ if ( ! function_exists( 'ag_tester_opt' ) ) {
 	function ag_tester_opt( $key ) {
 		$def = array(
 			'price'       => '49',
-			'deep_price'  => '290',   // Audit Sécurité Renforcé (scan Kali complet, sur mandat)
+			'deep_price'  => '290',   // Diagnostic Expert 24h (scan Kali complet, sur mandat)
 			'deep_pay_url'=> '',      // lien de paiement dédié (vide = renvoie /contact)
 			'pay_url'     => '',
 			'raison'      => 'Alliance Groupe',
@@ -55,8 +55,8 @@ if ( ! function_exists( 'ag_tester_settings_page' ) ) {
 		if ( ! current_user_can( 'manage_options' ) ) return;
 		$fields = array(
 			'price'        => 'Prix du rapport complet (€ TTC)',
-			'deep_price'   => '🔬 Prix Audit Sécurité Renforcé / pentest (€ TTC) — 0 = « sur devis »',
-			'deep_pay_url' => '🔬 Lien de paiement Audit Renforcé — vide = renvoie vers /contact',
+			'deep_price'   => '🔬 Prix Diagnostic Expert 24h (€ TTC) — 0 = « sur devis »',
+			'deep_pay_url' => '🔬 Lien de paiement Diagnostic Expert 24h — vide = renvoie vers /contact',
 			'pay_url' => 'Lien de paiement (Stripe/PayPal) — vide = renvoie vers /contact',
 			'raison'  => 'Raison sociale (mentions facture)',
 			'siret'   => 'SIRET',
@@ -339,11 +339,95 @@ if ( ! function_exists( 'ag_tester_render' ) ) {
 				echo '<section style="background:#0a0a0f;color:#fff;padding:80px 24px;text-align:center"><p>🔒 Ce rapport est verrouillé. Lancez un test ou débloquez votre rapport.</p></section>';
 			}
 		} elseif ( $aid && ( $data = get_transient( 'ag_tester_' . $aid ) ) && ! empty( $data['audit'] ) ) {
-			ag_tester_render_teaser( $aid, $data );
+			if ( isset( $_GET['expert'] ) ) { ag_tester_render_expert( $aid, $data ); }
+			else { ag_tester_render_teaser( $aid, $data ); }
 		} else {
 			ag_tester_render_form();
 		}
 		return ob_get_clean();
+	}
+}
+
+/* ---- Page commande « Diagnostic Expert 24h » (scan Kali, paiement avant) ---- */
+if ( ! function_exists( 'ag_tester_render_expert' ) ) {
+	function ag_tester_render_expert( $aid, $data ) {
+		$a     = $data['audit'] ?? array();
+		$url   = $a['url'] ?? '';
+		$host  = (string) wp_parse_url( $url, PHP_URL_HOST );
+		$price = (float) ag_tester_opt( 'deep_price' );
+		?>
+		<section style="background:linear-gradient(180deg,#0a0a0f,#14141c);color:#fff;padding:60px 24px;min-height:70vh">
+			<div style="max-width:640px;margin:0 auto">
+				<span style="display:inline-block;padding:6px 14px;background:rgba(225,15,26,.15);border:1px solid rgba(225,15,26,.5);border-radius:999px;color:#ff6b6b;font-size:.8rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px">🔬 Diagnostic Expert 24h</span>
+				<h1 style="font-family:Georgia,serif;font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.12;margin:0 0 12px">Audit approfondi de <em style="color:#F3D27A;font-style:italic"><?php echo esc_html( $host ); ?></em></h1>
+				<p style="color:rgba(255,255,255,.82);line-height:1.6;margin:0 0 24px">Scan en profondeur (simulation d'attaque réelle, ports, vulnérabilités connues, plugins, énumération, SSL/TLS). Vous recevez par email le <strong>rapport complet + un plan de correction chiffré</strong>, <strong style="color:#F3D27A">en moins de 24 h</strong>.</p>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:flex;flex-direction:column;gap:14px;background:rgba(255,255,255,.04);border:1px solid rgba(212,180,92,.3);border-radius:16px;padding:24px">
+					<input type="hidden" name="action" value="ag_tester_expert_order">
+					<input type="hidden" name="aid" value="<?php echo esc_attr( $aid ); ?>">
+					<?php wp_nonce_field( 'ag_tester_expert' ); ?>
+					<input type="email" name="email" required placeholder="Votre email (pour recevoir le rapport)" style="padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(212,180,92,.3);border-radius:10px;color:#fff;font-size:1rem">
+					<input type="text" name="nom" placeholder="Nom / société (optionnel)" style="padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(212,180,92,.3);border-radius:10px;color:#fff;font-size:1rem">
+					<label style="display:flex;gap:10px;align-items:flex-start;font-size:.85rem;color:rgba(255,255,255,.85);line-height:1.45">
+						<input type="checkbox" name="mandat_ok" value="1" required style="margin-top:3px">
+						<span>⚠️ Je certifie être <strong>propriétaire ou dûment mandaté</strong> pour <?php echo esc_html( $host ); ?> et j'<strong>autorise expressément Alliance Groupe</strong> à réaliser un audit de sécurité approfondi (test d'intrusion non-destructif). Sans cette autorisation, l'audit est illégal (art. 323-1 C. pénal).</span>
+					</label>
+					<label style="display:flex;gap:10px;align-items:flex-start;font-size:.82rem;color:rgba(255,255,255,.7);line-height:1.45">
+						<input type="checkbox" name="cgv_ok" value="1" required style="margin-top:3px">
+						<span>Je commande le <strong>Diagnostic Expert 24h</strong><?php echo $price > 0 ? ' au prix de <strong>' . esc_html( number_format_i18n( $price, 0 ) ) . ' € TTC</strong>' : ''; ?>, paiement à la commande. J'accepte les <a href="<?php echo esc_url( home_url( '/cgv' ) ); ?>" target="_blank" style="color:#D4B45C">CGV</a>.</span>
+					</label>
+					<button type="submit" style="margin-top:4px;padding:18px 30px;background:linear-gradient(135deg,#E10F1A,#F37A1F);color:#fff;font-weight:900;border:none;border-radius:999px;font-size:1.05rem;cursor:pointer;box-shadow:0 12px 32px rgba(225,15,26,.4)">🔬 Commander &amp; payer<?php echo $price > 0 ? ' — ' . esc_html( number_format_i18n( $price, 0 ) ) . ' €' : ''; ?> →</button>
+					<p style="color:rgba(255,255,255,.5);font-size:.76rem;text-align:center;margin:2px 0 0">Après paiement, l'audit est lancé et le rapport vous est envoyé sous 24 h. Autorisation horodatée (date + IP).</p>
+				</form>
+			</div>
+		</section>
+		<?php
+	}
+}
+
+/* Handler : commande Diagnostic Expert 24h -> crée le job pentest + redirige paiement */
+add_action( 'admin_post_nopriv_ag_tester_expert_order', 'ag_tester_expert_order' );
+add_action( 'admin_post_ag_tester_expert_order', 'ag_tester_expert_order' );
+if ( ! function_exists( 'ag_tester_expert_order' ) ) {
+	function ag_tester_expert_order() {
+		if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'ag_tester_expert' ) ) wp_die( 'Lien expiré.' );
+		if ( empty( $_POST['mandat_ok'] ) || empty( $_POST['cgv_ok'] ) ) wp_die( 'Vous devez cocher l\'autorisation et les CGV.' );
+		$aid   = sanitize_text_field( wp_unslash( $_POST['aid'] ?? '' ) );
+		$email = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
+		$nom   = sanitize_text_field( wp_unslash( $_POST['nom'] ?? '' ) );
+		$data  = get_transient( 'ag_tester_' . $aid );
+		$url   = $data['audit']['url'] ?? '';
+		if ( ! $url || ! is_email( $email ) ) wp_die( 'Données invalides.' );
+		$host  = (string) wp_parse_url( $url, PHP_URL_HOST );
+
+		// Crée le job pentest (file Kali). Mandat = référence en ligne horodatée.
+		$mandat = 'WEB-' . gmdate( 'Ymd-His' ) . '-' . substr( md5( $email . $url ), 0, 6 );
+		if ( function_exists( 'ag_pt_enqueue_job' ) ) {
+			ag_pt_enqueue_job( $url, ( $nom ?: $host ), $mandat, 'complet', $email, 'expert24' );
+		}
+
+		// Notif admin : nouvelle commande Expert.
+		if ( function_exists( 'ag_push' ) ) {
+			ag_push( '🔬 Commande Diagnostic Expert 24h', $host . ' — ' . $email . ' — mandat ' . $mandat . ' — LANCER LE RUNNER KALI' );
+		}
+
+		// Email de confirmation au client (paiement + délai 24h).
+		$pay = ag_tester_opt( 'deep_pay_url' ) ?: ( ag_tester_opt( 'pay_url' ) ?: home_url( '/contact' ) );
+		if ( $email && function_exists( 'ag_email_wrap' ) ) {
+			$price = (float) ag_tester_opt( 'deep_price' );
+			$inner  = '<p>Bonjour ' . esc_html( $nom ?: '' ) . ',</p>';
+			$inner .= '<p>Merci pour votre commande du <strong>Diagnostic Expert 24h</strong> pour <strong style="color:#D4B45C">' . esc_html( $host ) . '</strong>.</p>';
+			if ( $price > 0 ) {
+				$inner .= '<p>Pour lancer l\'audit, merci de finaliser le paiement (' . esc_html( number_format_i18n( $price, 0 ) ) . ' € TTC) :</p>';
+				$inner .= ag_email_button( 'Payer et lancer mon audit →', $pay );
+			}
+			$inner .= '<p>Dès réception du paiement, notre expert réalise l\'audit approfondi et vous envoie le <strong>rapport complet + plan de correction chiffré sous 24 h</strong>.</p>';
+			$inner .= '<p style="font-size:12px;color:#9a9aa5">Audit réalisé avec votre autorisation (référence ' . esc_html( $mandat ) . '), enregistrée le ' . esc_html( current_time( 'd/m/Y H:i' ) ) . '.</p>';
+			wp_mail( $email, 'Votre Diagnostic Expert 24h — ' . $host, ag_email_wrap( 'Commande reçue', $inner ), array( 'Content-Type: text/html; charset=UTF-8' ) );
+		}
+
+		// Redirige vers le paiement (ou /contact si pas de lien configuré).
+		wp_safe_redirect( $pay );
+		exit;
 	}
 }
 
@@ -426,8 +510,8 @@ if ( ! function_exists( 'ag_tester_render_form' ) ) {
 							<a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" style="display:inline-block;margin-top:12px;color:#F3D27A;font-weight:700;text-decoration:none">Demander un devis →</a>
 						</div>
 						<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:20px">
-							<div style="color:#fff;font-weight:800;letter-spacing:1px;font-size:.8rem;text-transform:uppercase">③ Audit Sécurité Renforcé · sur devis</div>
-							<p style="color:rgba(255,255,255,.8);font-size:.92rem;line-height:1.5;margin:10px 0 0">Simulation d'attaque réelle encadrée par un <strong style="color:#fff">contrat signé</strong> (périmètre, autorisation, confidentialité). Pour les sites sensibles.</p>
+							<div style="color:#fff;font-weight:800;letter-spacing:1px;font-size:.8rem;text-transform:uppercase">③ Diagnostic Expert 24h · sur mandat</div>
+							<p style="color:rgba(255,255,255,.8);font-size:.92rem;line-height:1.5;margin:10px 0 0">Scan en profondeur (simulation d'attaque réelle, ports, vulnérabilités, plugins) sous votre <strong style="color:#fff">autorisation</strong>. <strong style="color:#F3D27A">Rapport complet + plan de correction chiffré, livré en moins de 24 h.</strong></p>
 							<a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" style="display:inline-block;margin-top:12px;color:#F3D27A;font-weight:700;text-decoration:none">Nous contacter →</a>
 						</div>
 					</div>
@@ -496,6 +580,16 @@ if ( ! function_exists( 'ag_tester_render_teaser' ) ) {
 					<?php endforeach; ?>
 				</div>
 
+				<?php $deep_price = (float) ag_tester_opt( 'deep_price' ); $deep_pay = ag_tester_opt( 'deep_pay_url' ); if ( ! empty( $a['critical'] ) ) : ?>
+				<!-- ESCALADE : faille critique detectee -> Diagnostic Expert 24h prioritaire -->
+				<div style="background:linear-gradient(180deg,rgba(225,15,26,.18),rgba(225,15,26,.06));border:2px solid #E10F1A;border-radius:18px;padding:26px 22px;margin:0 0 20px;text-align:center">
+					<div style="font-size:2rem">🚨</div>
+					<h2 style="font-family:Georgia,serif;font-size:1.5rem;color:#fff;margin:6px 0 8px">Faille critique detectee : agissez maintenant</h2>
+					<p style="color:rgba(255,255,255,.9);margin:0 0 16px;line-height:1.55">Votre site presente <strong style="color:#ff6b6b"><?php echo (int) $a['critical']; ?> faille(s) critique(s)</strong>. Un attaquant peut en profiter <strong>maintenant</strong>. Notre <strong>Diagnostic Expert 24h</strong> simule une vraie attaque (sur votre autorisation), identifie tout, et vous livre le <strong>rapport complet + plan de correction chiffre en moins de 24 h</strong>.</p>
+					<a href="<?php echo esc_url( add_query_arg( array( 'aid' => $aid, 'expert' => '1' ), home_url( '/tester-mon-site' ) ) ); ?>" style="display:inline-block;background:linear-gradient(135deg,#E10F1A,#F37A1F);color:#fff;font-weight:900;text-decoration:none;padding:18px 34px;border-radius:999px;font-size:1.1rem;box-shadow:0 12px 36px rgba(225,15,26,.45)">🔬 Diagnostic Expert 24h<?php echo $deep_price > 0 ? ' — ' . esc_html( number_format_i18n( $deep_price, 0 ) ) . ' EUR' : ''; ?> →</a>
+					<p style="color:rgba(255,255,255,.55);font-size:.78rem;margin:12px 0 0">Rapport detaille envoye par email. Realise avec votre autorisation (mandat).</p>
+				</div>
+				<?php endif; ?>
 				<!-- Bloc commande : acceptation EXPLICITE -->
 				<div style="background:linear-gradient(180deg,rgba(212,180,92,.1),rgba(243,122,31,.05));border:1px solid rgba(212,180,92,.4);border-radius:18px;padding:28px 24px">
 					<h2 style="font-family:Georgia,serif;font-size:1.5rem;margin:0 0 10px">Débloquez votre rapport complet</h2>
