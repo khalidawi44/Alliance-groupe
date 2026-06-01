@@ -816,16 +816,25 @@ if ( ! function_exists( 'ag_audit_report_payload' ) ) {
 				'crit'  => ( ! empty( $c['critical'] ) && 'fail' === ( $c['status'] ?? '' ) ) ? 1 : 0,
 			);
 		}
+		// Note approfondie : si un VRAI scan Kali existe pour ce domaine, on prend SA note
+		// réelle (ag_pt_summary_fr). Sinon, projection estimée (le scan Kali n'a pas tourné).
+		$deep_real = null;
+		if ( function_exists( 'ag_tester_kali_report_for' ) && function_exists( 'ag_pt_summary_fr' ) ) {
+			$kali = ag_tester_kali_report_for( $audit['url'] ?? '' );
+			if ( $kali ) { $an = ag_pt_summary_fr( $kali ); $deep_real = (int) $an['score']; }
+		}
+		$deep = ( null !== $deep_real ) ? $deep_real : ag_audit_deep_projection( $score, $crit, count( $S ) );
 		return array(
-			'host'  => $host,
-			'score' => $score,
-			'crit'  => $crit,
-			'nb'    => count( $S ),
-			'deep'  => ag_audit_deep_projection( $score, $crit, count( $S ) ),
-			'fails' => $fails,
-			'phone' => ag_tester_opt( 'phone' ),
-			'order' => $order_link,
-			'brand' => 'Alliance Groupe — Sécurité & création web',
+			'host'    => $host,
+			'score'   => $score,
+			'crit'    => $crit,
+			'nb'      => count( $S ),
+			'deep'    => $deep,
+			'deep_real' => ( null !== $deep_real ) ? 1 : 0, // 1 = vraie note Kali, 0 = projection
+			'fails'   => $fails,
+			'phone'   => ag_tester_opt( 'phone' ),
+			'order'   => $order_link,
+			'brand'   => 'Alliance Groupe — Sécurité & création web',
 		);
 	}
 }
@@ -1432,8 +1441,8 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 				if(H>1600){x.textAlign='center';x.fillStyle='#cfd4de';x.font='italic 27px Arial';x.fillText('Un site piraté = clients perdus, données volées,',W/2,pb-118);x.fillText('réputation détruite. Ça arrive sans prévenir.',W/2,pb-82);x.textAlign='left';}
 				rr(x,60,pb,W-120,180,14);x.fillStyle='rgba(225,15,26,.12)';x.fill();x.strokeStyle='rgba(225,15,26,.5)';x.lineWidth=2;rr(x,60,pb,W-120,180,14);x.stroke();
 				x.fillStyle='#ff6b6b';x.font='bold 28px Arial';x.fillText('⚠️ Et ce n\'est que la surface visible',90,pb+48);
-				x.fillStyle='#fff';x.font='24px Arial';x.fillText('Score audit simple',90,pb+100);
-				x.fillText('Audit approfondi (projection)',90,pb+146);
+				x.fillStyle='#fff';x.font='24px Arial';x.fillText('Score test léger',90,pb+100);
+				x.fillText(d.deep_real?'Audit approfondi (Kali — réel)':'Audit approfondi (projection)',90,pb+146);
 				x.textAlign='right';
 				x.fillStyle=col(d.score);x.font='bold 40px Arial';x.fillText(d.score+' / 100',W-90,pb+100);
 				x.fillStyle=col(d.deep);x.fillText(d.deep+' / 100',W-90,pb+146);
