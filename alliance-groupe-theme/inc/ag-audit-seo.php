@@ -433,17 +433,23 @@ if ( ! function_exists( 'ag_audit_run_deep' ) ) {
 		$host   = wp_parse_url( $url, PHP_URL_SCHEME ) . '://' . wp_parse_url( $url, PHP_URL_HOST );
 		$probe  = array( 'timeout' => 7, 'user-agent' => 'Alliance-Groupe-Audit/1.0', 'reject_unsafe_urls' => true );
 
-		// D1. Énumération d'auteur via ?author=1 (révèle un identifiant).
-		$au  = wp_remote_get( $host . '/?author=1', array_merge( $probe, array( 'redirection' => 0 ) ) );
-		$loc = is_wp_error( $au ) ? '' : (string) wp_remote_retrieve_header( $au, 'location' );
-		$leak_user = preg_match( '#/author/([^/]+)/?#i', $loc, $am ) ? $am[1] : '';
-		$checks[] = array(
-			'name' => 'Énumération d\'auteur (?author=1)',
-			'status' => $leak_user ? 'fail' : 'ok',
-			'msg' => $leak_user ? 'Identifiant exposé : « ' . esc_html( $leak_user ) . ' ».' : 'Pas de fuite d\'identifiant.',
-			'advice' => $leak_user ? 'Bloquer la redirection ?author= : elle donne le login, moitié d\'un piratage.' : 'Bien.',
-			'weight' => 2, 'critical' => (bool) $leak_user,
-		);
+		// Techno détectée par l'audit de base (les sondes WordPress ci-dessous n'ont de
+		// sens que sur un site WordPress — sinon elles affichent du vide trompeur).
+		$is_wp = ( 'WordPress' === ( $base['tech'] ?? '' ) );
+
+		// D1. Énumération d'auteur via ?author=1 (révèle un identifiant). — WORDPRESS
+		if ( $is_wp ) {
+			$au  = wp_remote_get( $host . '/?author=1', array_merge( $probe, array( 'redirection' => 0 ) ) );
+			$loc = is_wp_error( $au ) ? '' : (string) wp_remote_retrieve_header( $au, 'location' );
+			$leak_user = preg_match( '#/author/([^/]+)/?#i', $loc, $am ) ? $am[1] : '';
+			$checks[] = array(
+				'name' => 'Énumération d\'auteur (?author=1)',
+				'status' => $leak_user ? 'fail' : 'ok',
+				'msg' => $leak_user ? 'Identifiant exposé : « ' . esc_html( $leak_user ) . ' ».' : 'Pas de fuite d\'identifiant.',
+				'advice' => $leak_user ? 'Bloquer la redirection ?author= : elle donne le login, moitié d\'un piratage.' : 'Bien.',
+				'weight' => 2, 'critical' => (bool) $leak_user,
+			);
+		}
 
 		// D2. Fichiers de sauvegarde / config exposés.
 		$bak_paths = array( '/wp-config.php.bak', '/wp-config.php~', '/wp-config.php.save', '/wp-config.php.txt', '/.wp-config.php.swp', '/backup.zip', '/backup.sql', '/database.sql', '/dump.sql', '/debug.log' );
@@ -466,59 +472,63 @@ if ( ! function_exists( 'ag_audit_run_deep' ) ) {
 			'weight' => 3, 'critical' => (bool) $found_bak,
 		);
 
-		// D3. Listing de répertoires sensibles.
-		$dir_open = array();
-		foreach ( array( '/wp-content/', '/wp-content/plugins/', '/wp-includes/' ) as $d ) {
-			$r = wp_remote_get( $host . $d, $probe );
-			if ( ! is_wp_error( $r ) && false !== stripos( wp_remote_retrieve_body( $r ), 'Index of /' ) ) $dir_open[] = $d;
-		}
-		$checks[] = array(
-			'name' => 'Listing de répertoires (système)',
-			'status' => $dir_open ? 'warn' : 'ok',
-			'msg' => $dir_open ? 'Listables : ' . implode( ', ', $dir_open ) : 'Répertoires système non listables.',
-			'advice' => $dir_open ? 'Désactiver l\'autoindex (Options -Indexes).' : 'Bien.',
-			'weight' => 1,
-		);
-
-		// D4. Versions de plugins exposées (readme.txt) → matching CVE facile.
-		$res  = ag_audit_fetch( $url );
-		$body = $res ? (string) $res['body'] : '';
-		$plugins = array();
-		if ( preg_match_all( '#/wp-content/plugins/([a-z0-9\-_]+)/#i', $body, $pm ) ) {
-			$plugins = array_slice( array_unique( $pm[1] ), 0, 4 );
-		}
-		$plug_vers = array();
-		foreach ( $plugins as $slug ) {
-			$r = wp_remote_get( $host . '/wp-content/plugins/' . $slug . '/readme.txt', $probe );
-			if ( ! is_wp_error( $r ) && 200 === (int) wp_remote_retrieve_response_code( $r ) && preg_match( '#Stable tag:\s*([0-9.]+)#i', wp_remote_retrieve_body( $r ), $vm ) ) {
-				$plug_vers[] = $slug . ' ' . $vm[1];
+		// D3/D4/D5 : sondes SPÉCIFIQUES WORDPRESS (listing wp-content, versions plugins,
+		// pingback xmlrpc). Ne s'exécutent que sur un site WordPress.
+		if ( $is_wp ) {
+			// D3. Listing de répertoires sensibles.
+			$dir_open = array();
+			foreach ( array( '/wp-content/', '/wp-content/plugins/', '/wp-includes/' ) as $d ) {
+				$r = wp_remote_get( $host . $d, $probe );
+				if ( ! is_wp_error( $r ) && false !== stripos( wp_remote_retrieve_body( $r ), 'Index of /' ) ) $dir_open[] = $d;
 			}
-		}
-		$checks[] = array(
-			'name' => 'Versions de plugins exposées',
-			'status' => $plug_vers ? 'warn' : 'ok',
-			'msg' => $plug_vers ? implode( ' · ', array_map( 'esc_html', $plug_vers ) ) : ( $plugins ? 'Plugins détectés, versions non exposées.' : 'Aucun plugin détecté.' ),
-			'advice' => $plug_vers ? 'Masquer les readme.txt : un attaquant compare la version aux failles connues (CVE).' : 'Bien.',
-			'weight' => 1,
-		);
+			$checks[] = array(
+				'name' => 'Listing de répertoires (système)',
+				'status' => $dir_open ? 'warn' : 'ok',
+				'msg' => $dir_open ? 'Listables : ' . implode( ', ', $dir_open ) : 'Répertoires système non listables.',
+				'advice' => $dir_open ? 'Désactiver l\'autoindex (Options -Indexes).' : 'Bien.',
+				'weight' => 1,
+			);
 
-		// D5. xmlrpc : pingback disponible (amplification réelle).
-		$pb = wp_remote_post( $host . '/xmlrpc.php', array_merge( $probe, array(
-			'headers' => array( 'Content-Type' => 'text/xml' ),
-			'body'    => '<?xml version="1.0"?><methodCall><methodName>system.listMethods</methodName><params></params></methodCall>',
-		) ) );
-		$pbb = is_wp_error( $pb ) ? '' : wp_remote_retrieve_body( $pb );
-		$ping = ( false !== stripos( $pbb, 'pingback.ping' ) );
-		$checks[] = array(
-			'name' => 'xmlrpc : pingback (amplification)',
-			'status' => $ping ? 'fail' : 'ok',
-			'msg' => $ping ? 'La méthode pingback.ping est active (DDoS par réflexion possible).' : 'Pingback non disponible.',
-			'advice' => $ping ? 'Désactiver pingback.ping / filtrer xmlrpc.' : 'Bien.',
-			'weight' => 2, 'critical' => $ping,
-		);
+			// D4. Versions de plugins exposées (readme.txt) → matching CVE facile.
+			$res  = ag_audit_fetch( $url );
+			$body = $res ? (string) $res['body'] : '';
+			$plugins = array();
+			if ( preg_match_all( '#/wp-content/plugins/([a-z0-9\-_]+)/#i', $body, $pm ) ) {
+				$plugins = array_slice( array_unique( $pm[1] ), 0, 4 );
+			}
+			$plug_vers = array();
+			foreach ( $plugins as $slug ) {
+				$r = wp_remote_get( $host . '/wp-content/plugins/' . $slug . '/readme.txt', $probe );
+				if ( ! is_wp_error( $r ) && 200 === (int) wp_remote_retrieve_response_code( $r ) && preg_match( '#Stable tag:\s*([0-9.]+)#i', wp_remote_retrieve_body( $r ), $vm ) ) {
+					$plug_vers[] = $slug . ' ' . $vm[1];
+				}
+			}
+			$checks[] = array(
+				'name' => 'Versions de plugins exposées',
+				'status' => $plug_vers ? 'warn' : 'ok',
+				'msg' => $plug_vers ? implode( ' · ', array_map( 'esc_html', $plug_vers ) ) : ( $plugins ? 'Plugins détectés, versions non exposées.' : 'Aucun plugin détecté.' ),
+				'advice' => $plug_vers ? 'Masquer les readme.txt : un attaquant compare la version aux failles connues (CVE).' : 'Bien.',
+				'weight' => 1,
+			);
+
+			// D5. xmlrpc : pingback disponible (amplification réelle).
+			$pb = wp_remote_post( $host . '/xmlrpc.php', array_merge( $probe, array(
+				'headers' => array( 'Content-Type' => 'text/xml' ),
+				'body'    => '<?xml version="1.0"?><methodCall><methodName>system.listMethods</methodName><params></params></methodCall>',
+			) ) );
+			$pbb = is_wp_error( $pb ) ? '' : wp_remote_retrieve_body( $pb );
+			$ping = ( false !== stripos( $pbb, 'pingback.ping' ) );
+			$checks[] = array(
+				'name' => 'xmlrpc : pingback (amplification)',
+				'status' => $ping ? 'fail' : 'ok',
+				'msg' => $ping ? 'La méthode pingback.ping est active (DDoS par réflexion possible).' : 'Pingback non disponible.',
+				'advice' => $ping ? 'Désactiver pingback.ping / filtrer xmlrpc.' : 'Bien.',
+				'weight' => 2, 'critical' => $ping,
+			);
+		}
 
 		list( $score_pct, $nb_crit ) = ag_audit_score( $checks );
-		return array( 'url' => $url, 'checks' => $checks, 'score' => $score_pct, 'critical' => $nb_crit, 'deep' => true, 'ts' => time() );
+		return array( 'url' => $url, 'checks' => $checks, 'score' => $score_pct, 'critical' => $nb_crit, 'deep' => true, 'ts' => time(), 'tech' => $base['tech'] ?? '' );
 	}
 }
 

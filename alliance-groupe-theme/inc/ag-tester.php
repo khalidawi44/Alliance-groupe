@@ -697,6 +697,7 @@ if ( ! function_exists( 'ag_audit_hist_upsert' ) ) {
 			'Sauvegardes / config exposées',
 			'Listing de répertoires (système)',
 			'Versions de plugins exposées',
+			'xmlrpc : pingback (amplification)',
 		);
 		$checks      = array();
 		$deep_checks = array();
