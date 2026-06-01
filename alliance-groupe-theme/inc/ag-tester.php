@@ -690,9 +690,20 @@ if ( ! function_exists( 'ag_audit_hist_upsert' ) ) {
 		$mode = ( 'deep' === $mode ) ? 'deep' : 'passive';
 		$id = ag_audit_hist_id( $url, $mode );
 		$h  = ag_audit_hist_get();
-		$checks = array();
+		// Contrôles SUPPLÉMENTAIRES de l'audit approfondi (4 sondes que le léger ne fait pas).
+		// On garde leur statut MÊME quand ils sont OK, pour PROUVER que l'approfondi a creusé plus.
+		$deep_names = array(
+			'Énumération d\'auteur (?author=1)',
+			'Sauvegardes / config exposées',
+			'Listing de répertoires (système)',
+			'Versions de plugins exposées',
+		);
+		$checks      = array();
+		$deep_checks = array();
 		foreach ( ( $a['checks'] ?? array() ) as $c ) {
-			if ( 'ok' !== ( $c['status'] ?? '' ) ) $checks[] = array( 'name' => $c['name'], 'status' => $c['status'], 'critical' => ! empty( $c['critical'] ) );
+			$nm = $c['name'] ?? '';
+			if ( 'ok' !== ( $c['status'] ?? '' ) ) $checks[] = array( 'name' => $nm, 'status' => $c['status'], 'critical' => ! empty( $c['critical'] ) );
+			if ( in_array( $nm, $deep_names, true ) ) $deep_checks[] = array( 'name' => $nm, 'status' => $c['status'] ?? 'ok' );
 		}
 		$prev = $h[ $id ] ?? array();
 		$h[ $id ] = array(
@@ -701,6 +712,7 @@ if ( ! function_exists( 'ag_audit_hist_upsert' ) ) {
 			'seg' => function_exists( 'ag_audit_segment' ) ? ag_audit_segment( $a ) : 'securite',
 			'mode' => $mode,
 			'checks' => $checks,
+			'deep_checks' => $deep_checks,
 			'company' => $ct['company'] ?? '', 'email' => $ct['emails'][0] ?? '', 'phone' => $ct['phones'][0] ?? '',
 			'address' => $ct['address'] ?? '', 'siret' => $ct['siret'] ?? '', 'socials' => array_values( $ct['socials'] ?? array() ),
 			'actions' => isset( $prev['actions'] ) && is_array( $prev['actions'] ) ? $prev['actions'] : array(),
@@ -1302,6 +1314,15 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 								<div style="font-size:11px;color:#666"><strong style="color:#b91c1c"><?php echo (int) $nb_sec_f; ?> sécurité</strong> + <?php echo (int) $nb_seo_f; ?> SEO<?php echo $ncrit ? ' · <span style="color:#b91c1c">' . (int) $ncrit . ' critique(s)</span>' : ''; ?> · <?php echo esc_html( wp_date( 'd/m/Y H:i', (int) $e['ts'] ) ); ?></div></div>
 						</div>
 						<div style="font-size:12px;color:#444;margin:6px 0"><strong>Failles :</strong> <?php echo esc_html( implode( ' · ', array_slice( $fails, 0, 8 ) ) ); ?></div>
+						<?php if ( 'deep' === $mode && ! empty( $e['deep_checks'] ) ) : ?>
+							<div style="font-size:12px;background:#f0f6ff;border:1px solid #bfdbfe;border-radius:6px;padding:6px 10px;margin:4px 0">
+								<strong style="color:#6d28d9">🔬 Vérifications approfondies en plus (que le test léger ne fait pas) :</strong>
+								<?php foreach ( $e['deep_checks'] as $dc ) :
+									$ok = ( 'ok' === ( $dc['status'] ?? '' ) ); ?>
+									<span style="display:inline-block;margin:2px 4px 0 0;padding:1px 7px;border-radius:10px;font-size:11px;background:<?php echo $ok ? '#dcfce7' : '#fee2e2'; ?>;color:<?php echo $ok ? '#166534' : '#b91c1c'; ?>"><?php echo $ok ? '✅' : '❌'; ?> <?php echo esc_html( $dc['name'] ); ?></span>
+								<?php endforeach; ?>
+							</div>
+						<?php endif; ?>
 						<div style="font-size:12px;background:#f6f7f7;border-radius:6px;padding:6px 10px;margin:4px 0">📇
 							<?php echo $email ? '✉️ ' . esc_html( $email ) . ' ' : ''; ?><?php echo $phone ? '· 📞 ' . esc_html( $phone ) . ' ' : ''; ?><?php echo $e['address'] ? '· 📍 ' . esc_html( $e['address'] ) . ' ' : ''; ?><?php echo $e['siret'] ? '· SIRET ' . esc_html( $e['siret'] ) . ' ' : ''; ?>
 							<?php foreach ( ( $e['socials'] ?? array() ) as $so ) { echo '· <a href="' . esc_url( $so ) . '" target="_blank" rel="noopener">' . esc_html( preg_replace( '#https?://(www\.)?#', '', $so ) ) . '</a> '; } ?>
