@@ -981,6 +981,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 			if ( 'del1' === $gm )       $notice = '🗑️ Audit supprimé.';
 			elseif ( 'delnone' === $gm ) $notice = '⚠️ Audit introuvable (déjà supprimé ?).';
 			elseif ( 'cleared' === $gm ) $notice = '🗑️ Historique vidé : tous les audits ont été supprimés.';
+			elseif ( 'rescanned' === $gm ) $notice = '🔄 ' . (int) ( $_GET['agn'] ?? 0 ) . ' site(s) réaudité(s) avec l\'algo à jour — notes, messages et images recalculés.';
 		}
 
 		// Ajout au CRM (action ligne par ligne) avec coordonnées extraites.
@@ -1287,7 +1288,8 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 						<button type="button" class="button button-small aghs" data-s="ts-asc">🕒 Anciens</button>
 						<button type="button" class="button button-small aghs" data-s="score-asc">⬇️ Score faible (chaud)</button>
 						<button type="button" class="button button-small aghs" data-s="score-desc">⬆️ Score élevé</button>
-						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;margin-left:auto"><input type="hidden" name="action" value="ag_audit_hist_csv"><?php wp_nonce_field( 'ag_audit_hist_csv' ); ?><button type="submit" class="button button-small">📥 Exporter l'historique (CSV)</button></form>
+						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;margin-left:auto" onsubmit="return confirm('Réauditer TOUS les sites de l\'historique avec l\'algo à jour ? (recalcule notes, messages et images. Peut prendre 1-2 min)')"><input type="hidden" name="action" value="ag_audit_hist_rescan"><?php wp_nonce_field( 'ag_audit_hist_rescan' ); ?><button type="submit" class="button button-small button-primary">🔄 Réauditer tout (recalcul notes)</button></form>
+						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline"><input type="hidden" name="action" value="ag_audit_hist_csv"><?php wp_nonce_field( 'ag_audit_hist_csv' ); ?><button type="submit" class="button button-small">📥 Exporter l'historique (CSV)</button></form>
 						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline" onsubmit="return confirm('Vider TOUT l\'historique des audits ? Action irreversible.')"><input type="hidden" name="action" value="ag_audit_hist_clear"><?php wp_nonce_field( 'ag_audit_hist_clear' ); ?><button type="submit" class="button button-small" style="color:#b91c1c;margin-left:6px">🗑️ Tout effacer</button></form>
 					</div>
 					<div id="agh-list">
@@ -1648,6 +1650,42 @@ if ( ! function_exists( 'ag_audit_hist_clear_handler' ) ) {
 		check_admin_referer( 'ag_audit_hist_clear' );
 		ag_audit_hist_save( array() );
 		wp_safe_redirect( add_query_arg( array( 'page' => 'ag-espace-audit', 'agmsg' => 'cleared' ), admin_url( 'admin.php' ) ) );
+		exit;
+	}
+}
+
+/* RÉAUDITER TOUT : re-scanne chaque site de l'historique avec l'algo À JOUR
+ * (utile après une évolution du scoring/des checks). Conserve le mode (léger/
+ * approfondi) et les contacts déjà notés. Messages + images se régénèrent
+ * automatiquement (ils dérivent des checks). Cap anti-timeout. */
+add_action( 'admin_post_ag_audit_hist_rescan', 'ag_audit_hist_rescan_handler' );
+if ( ! function_exists( 'ag_audit_hist_rescan_handler' ) ) {
+	function ag_audit_hist_rescan_handler() {
+		if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Accès refusé.' );
+		check_admin_referer( 'ag_audit_hist_rescan' );
+		$H = ag_audit_hist_get();
+		$done = 0;
+		foreach ( $H as $hid => $e ) {
+			$url  = $e['url'] ?? '';
+			if ( ! $url ) { continue; }
+			$mode = ( 'deep' === ( $e['mode'] ?? 'passive' ) ) ? 'deep' : 'passive';
+			// Re-scan avec l'algo courant (approfondi seulement si déjà fait + fonction dispo).
+			$au = ( 'deep' === $mode && function_exists( 'ag_audit_run_deep' ) )
+				? ag_audit_run_deep( $url )
+				: ( function_exists( 'ag_audit_run' ) ? ag_audit_run( $url ) : null );
+			if ( ! $au ) { continue; }
+			// On réutilise les coordonnées déjà extraites (évite de re-crawler) si présentes.
+			$ct = array(
+				'emails'  => ! empty( $e['email'] ) ? array( $e['email'] ) : array(),
+				'phones'  => ! empty( $e['phone'] ) ? array( $e['phone'] ) : array(),
+				'address' => $e['address'] ?? '', 'siret' => $e['siret'] ?? '',
+				'company' => $e['company'] ?? '', 'socials' => $e['socials'] ?? array(),
+			);
+			ag_audit_hist_upsert( $au, $ct, $mode );
+			$done++;
+			if ( $done >= 30 ) { break; } // cap anti-timeout (30 sites/ passe)
+		}
+		wp_safe_redirect( add_query_arg( array( 'page' => 'ag-espace-audit', 'agmsg' => 'rescanned', 'agn' => $done ), admin_url( 'admin.php' ) ) . '#agh-list' );
 		exit;
 	}
 }
