@@ -1266,10 +1266,14 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 				<?php foreach ( $AGH as $hid => $e ) :
 					$score = (int) $e['score']; $col = $score >= 75 ? '#1a7f37' : ( $score >= 50 ? '#bf6a02' : '#b91c1c' ); $seg = $e['seg'];
 						$mode = ( 'deep' === ( $e['mode'] ?? 'passive' ) ) ? 'deep' : 'passive';
-						$mode_lbl = 'deep' === $mode ? '🔬 Approfondi' : '🔍 Léger';
+						$mode_lbl = 'deep' === $mode ? '🔬 Approfondi (Kali)' : '🔍 Léger (passif)';
 					$host = $e['host']; $url = $e['url']; $email = $e['email']; $phone = $e['phone']; $wa = ag_wa_phone( $phone );
 					$fails = array_map( function ( $c ) { return $c['name']; }, $e['checks'] );
 					$ncrit = 0; foreach ( $e['checks'] as $c ) { if ( ! empty( $c['critical'] ) && 'fail' === $c['status'] ) $ncrit++; }
+					// Sépare sécurité / SEO pour un libellé clair (évite la confusion « 8 failles » vs image sécurité).
+					$a_split   = array( 'checks' => $e['checks'] );
+					list( $S_f, $O_f ) = function_exists( 'ag_audit_split_fails' ) ? ag_audit_split_fails( $a_split ) : array( $e['checks'], array() );
+					$nb_sec_f  = count( $S_f ); $nb_seo_f = count( $O_f );
 					$a = array( 'url' => $url, 'score' => $score, 'critical' => $e['critical'], 'checks' => $e['checks'] );
 					$ct = array( 'emails' => $email ? array( $email ) : array(), 'phones' => $phone ? array( $phone ) : array(), 'address' => $e['address'], 'siret' => $e['siret'], 'company' => $e['company'], 'socials' => $e['socials'] );
 					$aid = wp_hash( $url . '|prospect|' . gmdate( 'Y-m-d' ) ); set_transient( 'ag_tester_' . $aid, array( 'audit' => $a, 'email' => $email, 'prenom' => $e['company'], 'phone' => $phone, 'unlocked' => false ), 30 * DAY_IN_SECONDS );
@@ -1286,7 +1290,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 									<span style="background:<?php echo 'deep' === $mode ? '#6d28d9' : '#0e7490'; ?>;color:#fff;border-radius:4px;padding:1px 6px;font-size:11px"><?php echo esc_html( $mode_lbl ); ?></span>
 								<br><a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener" style="font-size:12px"><?php echo esc_html( $host ); ?></a></div>
 							<div style="text-align:right"><span style="color:<?php echo esc_attr( $col ); ?>;font-size:20px;font-weight:800"><?php echo $score; ?>/100</span>
-								<div style="font-size:11px;color:#666"><?php echo count( $fails ); ?> faille(s)<?php echo $ncrit ? ' · ' . $ncrit . ' critique(s)' : ''; ?> · <?php echo esc_html( wp_date( 'd/m/Y H:i', (int) $e['ts'] ) ); ?></div></div>
+								<div style="font-size:11px;color:#666"><strong style="color:#b91c1c"><?php echo (int) $nb_sec_f; ?> sécurité</strong> + <?php echo (int) $nb_seo_f; ?> SEO<?php echo $ncrit ? ' · <span style="color:#b91c1c">' . (int) $ncrit . ' critique(s)</span>' : ''; ?> · <?php echo esc_html( wp_date( 'd/m/Y H:i', (int) $e['ts'] ) ); ?></div></div>
 						</div>
 						<div style="font-size:12px;color:#444;margin:6px 0"><strong>Failles :</strong> <?php echo esc_html( implode( ' · ', array_slice( $fails, 0, 8 ) ) ); ?></div>
 						<div style="font-size:12px;background:#f6f7f7;border-radius:6px;padding:6px 10px;margin:4px 0">📇
@@ -1407,9 +1411,9 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 				x.fillStyle='#fff';x.textAlign='center';x.font='bold 78px Arial';x.fillText(d.score,cx,cy+18);
 				x.font='24px Arial';x.fillStyle='#aeb4c2';x.fillText('/ 100',cx,cy+54);
 				x.textAlign='left';
-				x.fillStyle='#fff';x.font='bold 34px Arial';x.fillText('Audit simple',360,280);
+				x.fillStyle='#fff';x.font='bold 34px Arial';x.fillText('Volet sécurité',360,280);
 				x.fillStyle=sc;x.font='bold 40px Arial';
-				x.fillText(d.nb+' faille'+(d.nb>1?'s':'')+' détectée'+(d.nb>1?'s':''),360,335);
+				x.fillText(d.nb+' faille'+(d.nb>1?'s':'')+' de sécurité',360,335);
 				if(d.crit>0){x.fillStyle='#E10F1A';x.font='bold 30px Arial';x.fillText('dont '+d.crit+' CRITIQUE'+(d.crit>1?'S':''),360,380);}
 				x.fillStyle='#8b93a4';x.font='22px Arial';x.fillText('Exposées publiquement, scannées 24h/24 par des robots.',360,422);
 				// Failles list (masquées)
