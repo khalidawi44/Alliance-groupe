@@ -170,6 +170,16 @@ if ( ! function_exists( 'ag_audit_run' ) ) {
 
 		$body = (string) $res['body'];
 
+		// Détection de la TECHNO : l'audit ne doit PAS partir du principe que c'est WordPress.
+		// On repère WordPress (wp-content, wp-includes, generator WordPress, wp-json).
+		$hdr_str = '';
+		if ( ! empty( $res['headers'] ) && ( is_array( $res['headers'] ) || is_object( $res['headers'] ) ) ) {
+			foreach ( $res['headers'] as $hk => $hv ) { $hdr_str .= $hk . ':' . ( is_array( $hv ) ? implode( ',', $hv ) : $hv ) . "\n"; }
+		}
+		$is_wp = (bool) ( preg_match( '#/wp-(content|includes|json)/#i', $body )
+			|| preg_match( '#<meta[^>]+name=[\'"]generator[\'"][^>]+WordPress#i', $body )
+			|| stripos( $hdr_str, 'wp-json' ) !== false );
+
 		// 2. HTTPS
 		$is_https = 0 === strpos( $url, 'https://' );
 		$checks[] = array(
@@ -295,18 +305,20 @@ if ( ! function_exists( 'ag_audit_run' ) ) {
 			foreach ( $hdrs as $hk => $hv ) { $hh[ strtolower( $hk ) ] = is_array( $hv ) ? implode( ', ', $hv ) : (string) $hv; }
 		}
 
-		// S1. xmlrpc.php exposé (force brute / DDoS pingback).
-		$xr   = wp_remote_get( $host . '/xmlrpc.php', $probe );
-		$xc   = is_wp_error( $xr ) ? 0 : (int) wp_remote_retrieve_response_code( $xr );
-		$xb   = is_wp_error( $xr ) ? '' : wp_remote_retrieve_body( $xr );
-		$xopen = ( 405 === $xc ) || ( false !== stripos( $xb, 'XML-RPC server accepts POST' ) );
-		$checks[] = array(
-			'name' => 'xmlrpc.php (force brute / DDoS)',
-			'status' => $xopen ? 'fail' : 'ok',
-			'msg' => $xopen ? 'xmlrpc.php est exposé et actif.' : 'Non exposé / désactivé.',
-			'advice' => $xopen ? 'Bloquer ou désactiver xmlrpc.php : amplificateur d\'attaques par force brute et de DDoS via pingback.' : 'Bien.',
-			'weight' => 3, 'critical' => $xopen,
-		);
+		// S1. xmlrpc.php exposé (force brute / DDoS pingback). — SPÉCIFIQUE WORDPRESS
+		if ( $is_wp ) {
+			$xr   = wp_remote_get( $host . '/xmlrpc.php', $probe );
+			$xc   = is_wp_error( $xr ) ? 0 : (int) wp_remote_retrieve_response_code( $xr );
+			$xb   = is_wp_error( $xr ) ? '' : wp_remote_retrieve_body( $xr );
+			$xopen = ( 405 === $xc ) || ( false !== stripos( $xb, 'XML-RPC server accepts POST' ) );
+			$checks[] = array(
+				'name' => 'xmlrpc.php (force brute / DDoS)',
+				'status' => $xopen ? 'fail' : 'ok',
+				'msg' => $xopen ? 'xmlrpc.php est exposé et actif.' : 'Non exposé / désactivé.',
+				'advice' => $xopen ? 'Bloquer ou désactiver xmlrpc.php : amplificateur d\'attaques par force brute et de DDoS via pingback.' : 'Bien.',
+				'weight' => 3, 'critical' => $xopen,
+			);
+		}
 
 		// S2. En-têtes de sécurité HTTP.
 		$want = array( 'strict-transport-security', 'content-security-policy', 'x-frame-options', 'x-content-type-options', 'referrer-policy' );
@@ -333,18 +345,20 @@ if ( ! function_exists( 'ag_audit_run' ) ) {
 			'weight' => 1,
 		);
 
-		// S4. Énumération des comptes WordPress (REST /wp-json/wp/v2/users).
-		$ur   = wp_remote_get( $host . '/wp-json/wp/v2/users', $probe );
-		$uc   = is_wp_error( $ur ) ? 0 : (int) wp_remote_retrieve_response_code( $ur );
-		$ub   = is_wp_error( $ur ) ? '' : wp_remote_retrieve_body( $ur );
-		$enum = ( 200 === $uc && false !== strpos( $ub, '"slug"' ) );
-		$checks[] = array(
-			'name' => 'Énumération des comptes (wp-json)',
-			'status' => $enum ? 'fail' : 'ok',
-			'msg' => $enum ? 'Les identifiants/auteurs sont publics via /wp-json/wp/v2/users.' : 'Non exposée.',
-			'advice' => $enum ? 'Bloquer l\'endpoint REST users : il livre les logins, la moitié d\'un piratage par force brute.' : 'Bien.',
-			'weight' => 2, 'critical' => $enum,
-		);
+		// S4. Énumération des comptes WordPress (REST /wp-json/wp/v2/users). — SPÉCIFIQUE WORDPRESS
+		if ( $is_wp ) {
+			$ur   = wp_remote_get( $host . '/wp-json/wp/v2/users', $probe );
+			$uc   = is_wp_error( $ur ) ? 0 : (int) wp_remote_retrieve_response_code( $ur );
+			$ub   = is_wp_error( $ur ) ? '' : wp_remote_retrieve_body( $ur );
+			$enum = ( 200 === $uc && false !== strpos( $ub, '"slug"' ) );
+			$checks[] = array(
+				'name' => 'Énumération des comptes (wp-json)',
+				'status' => $enum ? 'fail' : 'ok',
+				'msg' => $enum ? 'Les identifiants/auteurs sont publics via /wp-json/wp/v2/users.' : 'Non exposée.',
+				'advice' => $enum ? 'Bloquer l\'endpoint REST users : il livre les logins, la moitié d\'un piratage par force brute.' : 'Bien.',
+				'weight' => 2, 'critical' => $enum,
+			);
+		}
 
 		// S5. Fichiers sensibles exposés (.git / .env).
 		$exposed = array();
@@ -382,14 +396,18 @@ if ( ! function_exists( 'ag_audit_run' ) ) {
 			$checks[] = array( 'name' => 'Certificat SSL', 'status' => 'fail', 'msg' => 'Aucun HTTPS.', 'advice' => 'Activer un certificat SSL (Let\'s Encrypt gratuit).', 'weight' => 2, 'critical' => true );
 		}
 
-		// S7. Listing de répertoire (uploads).
-		$ulr = wp_remote_get( $host . '/wp-content/uploads/', $probe );
-		$ulb = is_wp_error( $ulr ) ? '' : wp_remote_retrieve_body( $ulr );
-		$listing = ( false !== stripos( $ulb, 'Index of /' ) );
+		// S7. Listing de répertoire — universel (uploads si WP, sinon dossiers génériques).
+		$dir_test = $is_wp ? array( '/wp-content/uploads/' ) : array( '/uploads/', '/images/', '/files/', '/assets/' );
+		$listing = false; $listing_path = '';
+		foreach ( $dir_test as $dp ) {
+			$dr = wp_remote_get( $host . $dp, $probe );
+			$db = is_wp_error( $dr ) ? '' : wp_remote_retrieve_body( $dr );
+			if ( false !== stripos( $db, 'Index of /' ) ) { $listing = true; $listing_path = $dp; break; }
+		}
 		$checks[] = array(
 			'name' => 'Listing de répertoire (uploads)',
 			'status' => $listing ? 'warn' : 'ok',
-			'msg' => $listing ? 'Le contenu de /wp-content/uploads/ est listable publiquement.' : 'Non listable.',
+			'msg' => $listing ? 'Le contenu de ' . $listing_path . ' est listable publiquement.' : 'Non listable.',
 			'advice' => $listing ? 'Désactiver l\'autoindex (Options -Indexes) : expose vos fichiers.' : 'Bien.',
 			'weight' => 1,
 		);
@@ -397,7 +415,7 @@ if ( ! function_exists( 'ag_audit_run' ) ) {
 		/* ====================== Score pondéré + plafond si faille critique ====================== */
 		list( $score_pct, $nb_crit ) = ag_audit_score( $checks );
 
-		return array( 'url' => $url, 'checks' => $checks, 'score' => $score_pct, 'critical' => $nb_crit, 'time_ms' => $elapsed, 'ts' => time() );
+		return array( 'url' => $url, 'checks' => $checks, 'score' => $score_pct, 'critical' => $nb_crit, 'time_ms' => $elapsed, 'ts' => time(), 'tech' => $is_wp ? 'WordPress' : 'autre/custom' );
 	}
 }
 
