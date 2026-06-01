@@ -94,6 +94,59 @@ if ( ! function_exists( 'ag_tester_settings_page' ) ) {
 	}
 }
 
+/* ===================================================== JOURNAL DES SCANS ===
+ * Chaque test gratuit (URL seule) = une ligne : URL + IP visiteur + score +
+ * nb failles + date. Option ag_scan_log (autoload=no). Ecran admin dedie.
+ * ========================================================================= */
+if ( ! function_exists( 'ag_tester_log_scan' ) ) {
+	function ag_tester_log_scan( $url, $audit ) {
+		$nb = 0;
+		foreach ( ( $audit['checks'] ?? array() ) as $c ) { if ( 'ok' !== ( $c['status'] ?? '' ) ) $nb++; }
+		$log   = (array) get_option( 'ag_scan_log', array() );
+		$log[] = array(
+			'time'  => time(),
+			'url'   => $url,
+			'host'  => (string) wp_parse_url( $url, PHP_URL_HOST ),
+			'ip'    => ag_tester_client_ip(),
+			'score' => (int) ( $audit['score'] ?? 0 ),
+			'nb'    => $nb,
+			'crit'  => (int) ( $audit['critical'] ?? 0 ),
+			'email' => (string) ( $audit['email'] ?? '' ),
+		);
+		update_option( 'ag_scan_log', array_slice( $log, -500 ), false );
+	}
+}
+add_action( 'admin_menu', function () {
+	add_submenu_page( 'ag-espace-audit', 'Sites scannes', '📋 Sites scannes', 'manage_options', 'ag-scan-log', 'ag_tester_scan_log_render' );
+}, 30 );
+if ( ! function_exists( 'ag_tester_scan_log_render' ) ) {
+	function ag_tester_scan_log_render() {
+		if ( ! current_user_can( 'manage_options' ) ) { return; }
+		if ( isset( $_POST['ag_scan_clear'] ) && check_admin_referer( 'ag_scan_log' ) ) {
+			delete_option( 'ag_scan_log' );
+			echo '<div class="notice notice-success"><p>Journal vide.</p></div>';
+		}
+		$log = array_reverse( (array) get_option( 'ag_scan_log', array() ) );
+		echo '<div class="wrap"><h1>📋 Sites scannes (test gratuit)</h1>';
+		echo '<p>Chaque visiteur ayant lance un test gratuit (URL seule). IP conservee pour le suivi.</p>';
+		if ( empty( $log ) ) { echo '<p><em>Aucun scan pour l\'instant.</em></p></div>'; return; }
+		echo '<table class="widefat striped"><thead><tr><th>Date</th><th>Site</th><th>IP</th><th>Score</th><th>Failles</th><th>Email</th></tr></thead><tbody>';
+		foreach ( $log as $r ) {
+			$col = ( (int) $r['score'] >= 80 ) ? '#093' : ( ( (int) $r['score'] >= 50 ) ? '#b58100' : '#c00' );
+			echo '<tr><td>' . esc_html( wp_date( 'd/m H:i', (int) $r['time'] ) ) . '</td>';
+			echo '<td><a href="' . esc_url( $r['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $r['host'] ) . '</a></td>';
+			echo '<td><code>' . esc_html( $r['ip'] ) . '</code></td>';
+			echo '<td style="color:' . esc_attr( $col ) . ';font-weight:700">' . (int) $r['score'] . '/100</td>';
+			echo '<td>' . (int) $r['nb'] . ( ! empty( $r['crit'] ) ? ' <span style="color:#c00">⚠ ' . (int) $r['crit'] . ' crit.</span>' : '' ) . '</td>';
+			echo '<td>' . esc_html( $r['email'] ?: '—' ) . '</td></tr>';
+		}
+		echo '</tbody></table>';
+		echo '<form method="post" style="margin-top:16px" onsubmit="return confirm(\'Vider tout le journal ?\');">';
+		wp_nonce_field( 'ag_scan_log' );
+		echo '<button name="ag_scan_clear" value="1" class="button">🗑️ Vider le journal</button></form></div>';
+	}
+}
+
 /* ----------------------------------------------------------------- Helpers */
 if ( ! function_exists( 'ag_tester_client_ip' ) ) {
 	function ag_tester_client_ip() {
@@ -113,16 +166,16 @@ if ( ! function_exists( 'ag_tester_run' ) ) {
 	function ag_tester_run() {
 		if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'ag_tester' ) ) wp_die( 'Lien expiré.' );
 		if ( ! empty( $_POST['hp_field'] ) ) wp_die( 'Spam détecté.' );
-		if ( empty( $_POST['authorize'] ) ) wp_die( 'Vous devez autoriser le diagnostic pour continuer.' );
 
+		// URL SEULE : l'email/le prénom ne sont plus demandés ici (optionnels, hérités si fournis).
 		$url    = esc_url_raw( wp_unslash( $_POST['site_url'] ?? '' ) );
 		$email  = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
 		$prenom = sanitize_text_field( wp_unslash( $_POST['prenom'] ?? '' ) );
 		$tel    = sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) );
-		if ( ! $url || ! is_email( $email ) ) wp_die( 'URL ou email invalide.' );
+		if ( ! $url ) wp_die( 'Merci d\'indiquer l\'adresse de votre site.' );
 
 		$audit = function_exists( 'ag_audit_run' ) ? ag_audit_run( $url ) : array( 'url' => $url, 'checks' => array(), 'score' => 0, 'ts' => time() );
-		$aid   = wp_hash( $url . '|' . $email . '|' . microtime() );
+		$aid   = wp_hash( $url . '|' . microtime() );
 		set_transient( 'ag_tester_' . $aid, array(
 			'audit'  => $audit,
 			'email'  => $email,
@@ -133,19 +186,24 @@ if ( ! function_exists( 'ag_tester_run' ) ) {
 			'unlocked' => false,
 		), 30 * DAY_IN_SECONDS );
 
-		if ( function_exists( 'ag_prospect_add_record' ) ) {
+		// Journal des sites scannés (URL + IP du visiteur + score) — pour suivi / relance.
+		if ( function_exists( 'ag_tester_log_scan' ) ) { ag_tester_log_scan( $url, $audit ); }
+
+		// CRM seulement si on a un email (URL seule = visiteur anonyme).
+		if ( $email && function_exists( 'ag_prospect_add_record' ) ) {
 			ag_prospect_add_record( array(
 				'name' => $prenom ?: $email, 'email' => $email, 'phone' => $tel, 'website' => $url,
 				'source' => 'tester-mon-site', 'status' => 'nouveau',
 				'notes' => 'A testé son site le ' . current_time( 'd/m/Y H:i' ) . ' — score ' . ( $audit['score'] ?? 0 ) . '/100',
 			) );
 		}
-		$tg_lead = '🔍 Nouveau test de site' . "\n" . ( $prenom ?: $email ) . ' — ' . $url . ' — score ' . ( $audit['score'] ?? 0 ) . '/100' . ( $tel ? "\n📞 " . $tel : '' );
+		$lead_lbl = $prenom ?: ( $email ?: ( wp_parse_url( $url, PHP_URL_HOST ) ?: $url ) );
+		$tg_lead = '🔍 Nouveau test de site' . "\n" . $lead_lbl . ' — ' . $url . ' — score ' . ( $audit['score'] ?? 0 ) . '/100' . ( $tel ? "\n📞 " . $tel : '' );
 		$tg_sec_chat = ag_tester_opt( 'tg_sec' );
 		if ( $tg_sec_chat && function_exists( 'ag_tg_send' ) ) {
 			ag_tg_send( $tg_sec_chat, $tg_lead ); // lead sécurité = canal sécurité dédié
 		} elseif ( function_exists( 'ag_push' ) ) {
-			ag_push( '🔍 Nouveau test de site', ( $prenom ?: $email ) . ' — ' . $url . ' — score ' . ( $audit['score'] ?? 0 ) . '/100' );
+			ag_push( '🔍 Nouveau test de site', $lead_lbl . ' — ' . $url . ' — score ' . ( $audit['score'] ?? 0 ) . '/100' );
 		}
 
 		$base       = wp_get_referer() ?: home_url( '/tester-mon-site' );
@@ -155,8 +213,8 @@ if ( ! function_exists( 'ag_tester_run' ) ) {
 		$score = (int) ( $audit['score'] ?? 0 );
 		$nb_pb = 0;
 		foreach ( ( $audit['checks'] ?? array() ) as $c ) { if ( 'ok' !== ( $c['status'] ?? '' ) ) $nb_pb++; }
-		if ( function_exists( 'ag_email_wrap' ) ) {
-			$inner  = '<p>Bonjour ' . esc_html( $prenom ) . ',</p>';
+		if ( $email && function_exists( 'ag_email_wrap' ) ) {
+			$inner  = '<p>Bonjour ' . esc_html( $prenom ?: '' ) . ',</p>';
 			$inner .= '<p>Voici le diagnostic de <strong style="color:#D4B45C">' . esc_html( $url ) . '</strong> :</p>';
 			$inner .= '<p style="font-size:30px;font-weight:bold;color:' . ( $score >= 75 ? '#28a745' : ( $score >= 50 ? '#F37A1F' : '#E10F1A' ) ) . '">' . $score . ' / 100</p>';
 			$inner .= '<p><strong>' . $nb_pb . ' point(s)</strong> à corriger ont été détectés. Le détail précis (lesquels, et comment les corriger) est dans votre <strong>rapport complet</strong>.</p>';
@@ -349,15 +407,9 @@ if ( ! function_exists( 'ag_tester_render_form' ) ) {
 					<input type="hidden" name="action" value="ag_tester_run">
 					<?php wp_nonce_field( 'ag_tester' ); ?>
 					<input type="text" name="hp_field" value="" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
-					<input type="url" name="site_url" required placeholder="https://monsite.fr" style="<?php echo $in; // phpcs:ignore ?>">
-					<input type="text" name="prenom" placeholder="Votre prénom" style="<?php echo $in; // phpcs:ignore ?>">
-					<input type="email" name="email" required placeholder="vous@email.fr" style="<?php echo $in; // phpcs:ignore ?>">
-					<input type="tel" name="phone" placeholder="Téléphone (optionnel)" style="<?php echo $in; // phpcs:ignore ?>">
-					<label style="display:flex;gap:10px;align-items:flex-start;font-size:.85rem;color:rgba(255,255,255,.72);line-height:1.45">
-						<input type="checkbox" name="authorize" value="1" required style="margin-top:3px">
-						<span>Je certifie être <strong>propriétaire ou mandaté</strong> pour ce site et j'autorise Alliance Groupe à réaliser un <strong>diagnostic non-intrusif</strong> (lecture des pages publiques).</span>
-					</label>
-					<button type="submit" style="margin-top:6px;padding:18px 36px;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:800;border:none;border-radius:999px;font-size:1.05rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;box-shadow:0 12px 32px rgba(243,122,31,.35)">🔍 Lancer mon test gratuit →</button>
+					<input type="url" name="site_url" required autofocus placeholder="https://monsite.fr" style="<?php echo $in; // phpcs:ignore ?>">
+					<button type="submit" style="margin-top:6px;padding:18px 36px;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:800;border:none;border-radius:999px;font-size:1.05rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;box-shadow:0 12px 32px rgba(243,122,31,.35)">🔍 Analyser mon site gratuitement →</button>
+					<p style="color:rgba(255,255,255,.5);font-size:.8rem;text-align:center;margin:12px 0 0">Diagnostic <strong style="color:rgba(255,255,255,.7)">non-intrusif</strong> : on lit uniquement vos pages publiques (comme un visiteur). Résultat immédiat, sans inscription.</p>
 				</form>
 
 				<!-- Les 3 niveaux d'audit (escalier) -->
