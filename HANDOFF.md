@@ -248,6 +248,22 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 ---
 
 ### ✅ Fait
+- **PERF accueil — vieux PC (01/06)** : page d'accueil trop lente sur machine ancienne, corrigé :
+  - **Blur coupés** (`menace-live.php`) : étoiles `--2/--3` + `backdrop-filter` des compteurs (animer du blur = très coûteux GPU).
+  - **Iframe Kaspersky SUPPRIMÉE** → remplacée par une **carte d'attaques 100% LOCALE en canvas** (`#ag-attackmap`) : silhouette planisphère dessinée par masque de points (grille 18×36) + nodes-villes + arcs d'attaque animés (orange/rouge) + badge ● LIVE. **0 requête externe** (avant : on chargeait le site Kaspersky entier + son WebGL + flux temps réel), anime **seulement si visible** (IntersectionObserver), respecte `prefers-reduced-motion`, `dpr` capé 1.5. Légende = « simulation en continu (sources Sucuri/Kaspersky/IBM) ».
+  - **Shader WebGL du hero remplacé** (`mesh-gradient-bg.php`) : l'ancien fragment shader fbm 4 octaves @60fps → **dégradé "mesh" CSS pur** (radial-gradients animés en background-position, vignette ::after statique, off en reduced-motion). Même look, coût quasi nul.
+  - **Packs `ag-cinema.js` + `ag-immersive.js`** : ajout d'un garde-fou **LOW-END** en tête (`AG_LOWEND` : `hardwareConcurrency<=4` OU `deviceMemory<=4` OU `saveData`) → `return` immédiat. Sur machine faible, tout le polish (Lenis, curseur, parallaxe, intro, sons) est coupé ; site 100% fonctionnel.
+  - **Google Fonts allégées** (`functions.php`) : requête Fraunces avait des axes variables monstrueux (`opsz,wght,SOFT,WONK@9..144,...`) → 4 poids fixes. 1 seule requête fonts par page (vérifié, pas de doublon).
+  - ⚠️ Reste possible si encore lent : `main.css` 120 Ko + `cinema-upgrades.css` 48 Ko (53 `backdrop-filter`/`blur`/`box-shadow`) chargés partout ; envisager `content-visibility:auto` sur sections sous la ligne de flottaison.
+- **Espace Audit — gros chantier (31/05)** :
+  - **Lien audit ↔ CRM démarchage** (`ag_audit_prospect_by_site`) : si un site audité existe aussi dans les prospects, badge + envoi des **2 messages** (sécurité + création/site) Email/SMS/WhatsApp, coordonnées CRM prioritaires + textareas éditables.
+  - **Prospects bloqués** (refus/ne plus contacter/ignore/client) : fiche **conservée et consultable** (tél/email/site/avis Google/notes) avec bandeau « à ne pas recontacter » (pas de bouton de relance, respect Bloctel/CNIL).
+  - **Image rapport teaser** (canvas PNG, bouton « 📸 Image rapport » sur chaque carte) : score audit simple + failles **masquées** (nature seule, emplacement/correctif cachés) + **projection audit approfondi** (note pire en référence) + CTA. **2 formats** : 📎 pièce jointe 1080×1400 + 📱 story WhatsApp 1080×1920 (toggle qui régénère). Helpers `ag_audit_public_label` / `ag_audit_deep_projection` / `ag_audit_report_payload`.
+  - **Tier intrusif renommé** « Audit Sécurité Renforcé » (au lieu de « Pentest ») sur /tester-mon-site.
+  - **Tests Léger vs Approfondi séparés** : clé historique = `ag_audit_hist_id(url, mode)` → les 2 tests d'un même site coexistent, chacun avec son score/failles/message éditable/image. Badge 🔍 Léger / 🔬 Approfondi + **filtre par type** (combinable avec segment) + colonne « Type test » dans le CSV.
+  - **Suppression de tests** : 🗑️ **Suppr.** par carte + 🗑️ **Tout effacer** l'historique (handler `ag_hist_clear` + bouton, avec confirmation).
+  - ⚠️ **Migration** : les audits faits AVANT le 31/05 (sans `mode`) s'affichent en **🔍 Léger** par défaut même si c'était un approfondi → supprimer l'ancienne entrée et relancer. Pour un VRAI léger : laisser la case mandat/approfondi **décochée**.
+  - 🔎 **À vérifier (prochaine session)** : après un vrai léger, si les failles == approfondi → inspecter `ag_audit_run_deep()` dans `inc/ag-audit-seo.php` (doit ajouter : versions plugins exposées, énumération auteur `?author=`, sauvegardes/config, listing répertoires, pingback xmlrpc).
 - **Outil pentest LOCAL (niveau 3, 31/05)** : `pentest-local/` (ag-pentest.sh + README + MANDAT-AUTORISATION-pentest.md) = orchestration de scanners OSS (nmap/nikto/whatweb/wafw00f/testssl/nuclei/wpscan) **non-destructive**, **gated par confirmation de mandat**, à lancer sur **WSL/Kali** (machine de Fabrice), **jamais sur le site**. ⚠️ **`pentest-local/` est en `.gitignore` (OPSEC, hors dépôt public)** — livré à Fabrice via le chat ; à conserver en privé / dépôt `ag-audit`. Workflow : prospect sécurité → mandat signé → ag-pentest.sh → rapport client → vente remédiation/maintenance.
 - **Durcissement du SITE (30/05)** : `inc/ag-hardening.php` → **60→93/100** sur notre propre audit. Corrigé : xmlrpc bloqué (403), pingback off, REST users bloqué aux non-connectés, **énumération d'auteur interceptée à `init` priorité 1 AVANT redirect_canonical** (c'était LE dernier critique qui plafonnait à 60), en-têtes sécurité (HSTS/X-Frame/X-Content-Type/Referrer/Permissions), generator+X-Powered-By+RSD retirés. SEO home raccourci (title 59c/desc 134c). **Reste pour viser 100 = appliquer `SECURITE-HTACCESS.txt`** (listing -Indexes + readme plugins) + purge cache (title) ; l'en-tête `Server` version = serveur (mineur). Libellé clarifié : message/SMS = « X failles **de sécurité** » (sous-ensemble) vs fiche = total (sécu+SEO).
 - **Cohérence visiteur finalisée (30/05)** : `about.php` = **1 section fusionnée** (head + 4 cases sécurité-first « Sécurité d'abord / Interlocuteur unique / Sans jargon / Dans la durée » à GAUCHE + carte photo/présentation Fabrizio à DROITE + bande stats 48h/1/6/24h pleine largeur dessous). **FAQ réécrite** audit/sécurité (prix 490/maint 49 alignés, non-intrusif/mandat) + schema FAQPage synchro. `page-fondateur`/`page-service-web`/`page-merci-achat` purgés (+340%/bureaux/équipe). `/sites-express` sécurité-first. Cartes parcours → `assets/images/parcours/{audit,creation,maintenance,templates}.jpg` (⚠️ **images à fournir par Fabrice** — fallback dégradé propre en attendant).
@@ -311,8 +327,16 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 
 ## 10. Premier reflexe pour une nouvelle session
 
+> ⚠️ **RÈGLE (Fabrice, 01/06) — 2 sessions Claude en parallèle** : ce `HANDOFF.md`
+> est le **fichier de liaison** entre les sessions. **Le (re)lire régulièrement**
+> pour savoir où en est l'autre session, **et y écrire son avancement** au fur et
+> à mesure (pas seulement en fin de session). Avant de pousser : `git fetch` +
+> comparer avec le remote ; si l'autre a poussé, `git pull --rebase` AVANT de
+> pousser pour ne rien écraser.
+
 1. Lire ce HANDOFF.md (`get_file_contents` sur `HANDOFF.md`)
-2. `list_commits` du repo pour voir si quelque chose a bouge depuis
+2. `list_commits` / `git fetch` du repo pour voir si l'autre session a bougé
 3. Demander a Khalid ce qu'il veut faire
 4. Editer via `create_or_update_file` ou en local + push
 5. **Rappeler le SYNC dans WP admin** apres chaque commit
+6. **Mettre à jour ce HANDOFF** (avancement + tâches restantes) pour l'autre session

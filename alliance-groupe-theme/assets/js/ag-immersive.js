@@ -16,6 +16,12 @@
 (function () {
 	'use strict';
 	if ( typeof window === 'undefined' ) return;
+	// Garde-fou LOW-END : couche immersive (intro, transitions, sons, grain)
+	// coupee sur machines faibles / economie de data. Site 100% fonctionnel.
+	var AG_LOWEND = ( navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4 )
+		|| ( navigator.deviceMemory && navigator.deviceMemory <= 4 )
+		|| ( navigator.connection && navigator.connection.saveData );
+	if ( AG_LOWEND ) return;
 	var REDUCED  = window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 	var FINE     = window.matchMedia && window.matchMedia( '(hover: hover) and (pointer: fine)' ).matches;
 	var IS_TOUCH = ( 'ontouchstart' in window ) || navigator.maxTouchPoints > 0;

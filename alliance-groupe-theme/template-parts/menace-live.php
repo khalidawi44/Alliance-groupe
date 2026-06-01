@@ -249,13 +249,45 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 	if(!cv || !cv.getContext) return;
 	var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	var ctx = cv.getContext('2d'), W=0, H=0, dpr=Math.min(window.devicePixelRatio||1, 1.5);
-	// Points "villes" (coords relatives 0..1) — densité réaliste Europe/US/Asie.
-	var NODES=[[.18,.40],[.22,.34],[.28,.30],[.30,.46],[.48,.28],[.50,.34],[.52,.42],[.54,.52],
-		[.62,.30],[.68,.38],[.72,.30],[.78,.44],[.80,.34],[.46,.60],[.40,.54],[.66,.56],[.74,.62],[.34,.66]];
+	// Masque "continents" : 1 = terre. Grille 36x18 (planisphère très simplifié,
+	// gauche=Amériques, centre=Europe/Afrique, droite=Asie/Océanie). Dessiné en
+	// pointillés -> silhouette du monde reconnaissable, coût quasi nul.
+	var MAP=[
+		"000000000000000000000000000000000000",
+		"000000011000000000000111111000000000",
+		"000001111100000001111111111110000000",
+		"000011111000000011111111111111100000",
+		"000011111000000011111111111111110000",
+		"000001111000000011011111111111000000",
+		"000000111000000001111111110110000000",
+		"000000011000000011111111000000110000",
+		"000000011100000011111110000000000000",
+		"000000001100000001111100000001100000",
+		"000000001100000001111000000011100000",
+		"000000001000000001110000000011100000",
+		"000000001000000000110000000001000000",
+		"000000000000000000110000000000000000",
+		"000000000000000000100000000011000000",
+		"000000000000000000000000000000000000",
+		"000000000000000000000000000110000000",
+		"000000000000000000000000000000000000"
+	];
+	var MR=MAP.length, MC=MAP[0].length;
+	// Points "villes" sur de vraies zones (col,row dans la grille).
+	var GNODES=[[8,4],[7,3],[9,5],[8,7],[18,3],[19,4],[20,5],[18,6],
+		[28,4],[30,5],[29,6],[26,3],[22,8],[24,10],[31,9],[20,11],[10,9],[9,11]];
+	var NODES = GNODES.map(function(g){ return [ (g[0]+0.5)/MC, (g[1]+0.5)/MR ]; });
 	function resize(){
 		var r=cv.getBoundingClientRect(); W=r.width; H=r.height;
 		cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
 		ctx.setTransform(dpr,0,0,dpr,0,0);
+	}
+	function drawWorld(){
+		var cw=W/MC, ch=H/MR, rad=Math.max(0.7, Math.min(cw,ch)*0.16);
+		ctx.fillStyle='rgba(120,150,210,.16)';
+		for(var y=0;y<MR;y++){ var row=MAP[y]; for(var x=0;x<MC;x++){ if(row.charAt(x)==='1'){
+			ctx.beginPath(); ctx.arc((x+0.5)*cw,(y+0.5)*ch,rad,0,6.2832); ctx.fill();
+		} } }
 	}
 	function px(n){ return [n[0]*W, n[1]*H]; }
 	var arcs=[];
@@ -270,8 +302,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 	function frame(ts){
 		if(!running) return;
 		ctx.clearRect(0,0,W,H);
-		// nodes
-		for(var i=0;i<NODES.length;i++){ var p=px(NODES[i]); dot(p,'rgba(255,255,255,.22)',1.4); }
+		drawWorld();
+		// nodes (villes)
+		for(var i=0;i<NODES.length;i++){ var p=px(NODES[i]); dot(p,'rgba(255,255,255,.45)',1.8); }
 		if(ts-lastSpawn>420){ spawn(); lastSpawn=ts; }
 		for(var k=0;k<arcs.length;k++){
 			var ar=arcs[k], A=px(ar.a), B=px(ar.b);
@@ -294,10 +327,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 	function start(){ if(running) return; running=true; lastSpawn=0; requestAnimationFrame(frame); }
 	function stop(){ running=false; }
 	resize(); window.addEventListener('resize', resize);
-	if(reduce){ // image figée : on dessine juste les nodes + qq arcs statiques
-		for(var n=0;n<8;n++) spawn();
+	if(reduce){ // image figée : planisphère + nodes (sans animation)
 		ctx.clearRect(0,0,W,H);
-		for(var i=0;i<NODES.length;i++){ var p=px(NODES[i]); dot(p,'rgba(255,255,255,.25)',1.6); }
+		drawWorld();
+		for(var i=0;i<NODES.length;i++){ var p=px(NODES[i]); dot(p,'rgba(255,255,255,.5)',1.8); }
 		return;
 	}
 	if('IntersectionObserver' in window){
