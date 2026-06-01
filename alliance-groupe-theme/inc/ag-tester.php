@@ -833,9 +833,16 @@ if ( ! function_exists( 'ag_audit_report_payload' ) ) {
 		$deep_real = null;
 		if ( function_exists( 'ag_tester_kali_report_for' ) && function_exists( 'ag_pt_summary_fr' ) ) {
 			$kali = ag_tester_kali_report_for( $audit['url'] ?? '' );
-			if ( $kali ) { $an = ag_pt_summary_fr( $kali ); $deep_real = (int) $an['score']; }
+			if ( $kali ) {
+				$an = ag_pt_summary_fr( $kali );
+				// REGLE : la note Kali ne peut JAMAIS etre meilleure que le leger. On part du
+				// score leger et on RETIRE les penalites des failles Kali supplementaires.
+				$malus     = $an['crit'] * 28 + $an['high'] * 14 + $an['med'] * 6 + $an['low'] * 2;
+				$deep_real = max( 3, min( $score, $score - $malus ) );
+			}
 		}
 		$deep = ( null !== $deep_real ) ? $deep_real : ag_audit_deep_projection( $score, $crit, count( $S ) );
+		if ( $deep > $score ) { $deep = $score; } // garde-fou : approfondi jamais meilleur que leger
 		return array(
 			'host'    => $host,
 			'score'   => $score,
