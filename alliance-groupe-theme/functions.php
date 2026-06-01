@@ -218,7 +218,7 @@ add_action( 'wp_enqueue_scripts', function () {
     }
     wp_enqueue_style(
         'ag-audit-fonts',
-        'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Manrope:wght@200..800&family=JetBrains+Mono:wght@400;500&display=swap',
+        'https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700;900&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap',
         array(),
         null
     );

@@ -83,9 +83,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 				<div class="ag-menace__map">
 					<div class="ag-menace__frame">
-						<iframe src="https://cybermap.kaspersky.com/fr/widget/dynamic/dark" loading="lazy" title="Carte mondiale des cyberattaques en temps réel" allowfullscreen></iframe>
+						<canvas id="ag-attackmap" class="ag-menace__canvas" aria-hidden="true"></canvas>
+						<div class="ag-menace__live">● LIVE</div>
 					</div>
-					<p class="ag-menace__cap">Carte mondiale des cyberattaques · flux <strong>live</strong> · source Kaspersky</p>
+					<p class="ag-menace__cap">Carte des cyberattaques · <strong>simulation</strong> en continu (sources Sucuri / Kaspersky / IBM)</p>
 				</div>
 			</div>
 
@@ -126,8 +127,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		180px 540px rgba(212,180,92,.6),-260px -540px #fff;
 	animation:ag-menace-spin linear infinite}
 .ag-menace__stars--1{animation-duration:120s;opacity:.9}
-.ag-menace__stars--2{animation-duration:200s;opacity:.6;filter:blur(.4px)}
-.ag-menace__stars--3{animation-duration:90s;opacity:.45;filter:blur(.8px)}
+.ag-menace__stars--2{animation-duration:200s;opacity:.6}
+.ag-menace__stars--3{animation-duration:90s;opacity:.45}
 @keyframes ag-menace-spin{from{transform:translate(-50%,-50%) rotateZ(0deg)}to{transform:translate(-50%,-50%) rotateZ(360deg)}}
 .ag-menace__glow{position:absolute;inset:0;background:radial-gradient(circle at 35% 45%,rgba(243,122,31,.10) 0%,transparent 55%);animation:ag-menace-pulse 6s ease-in-out infinite}
 @keyframes ag-menace-pulse{0%,100%{opacity:.5}50%{opacity:1}}
@@ -153,7 +154,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 /* Compteurs au-dessus du globe */
 .ag-menace__counters{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
-.ag-menace__counter{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:14px 10px;text-align:center;backdrop-filter:blur(4px)}
+.ag-menace__counter{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:14px 10px;text-align:center}
 .ag-menace__num{font-family:Georgia,serif;font-size:clamp(1.25rem,2.4vw,1.7rem);font-weight:700;line-height:1;color:#F3D27A;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
 .ag-menace__pct{font-size:.6em;margin-left:1px}
 .ag-menace__label{color:rgba(255,255,255,.74);font-size:.72rem;line-height:1.35;margin-top:7px}
@@ -163,7 +164,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /* Globe */
 .ag-menace__map{margin:0}
 .ag-menace__frame{position:relative;border:1px solid rgba(243,122,31,.28);border-radius:14px;overflow:hidden;background:transparent;box-shadow:0 30px 90px rgba(0,0,0,.6),0 0 70px rgba(243,122,31,.12);aspect-ratio:16/10}
-.ag-menace__frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent}
+.ag-menace__canvas{position:absolute;inset:0;width:100%;height:100%;display:block;background:radial-gradient(ellipse at 50% 50%,#0a1326 0%,#060a16 70%,#04060e 100%)}
+.ag-menace__live{position:absolute;top:10px;right:12px;color:#ff5252;font-family:"Courier New",monospace;font-size:.72rem;font-weight:700;letter-spacing:2px;background:rgba(0,0,0,.45);border:1px solid rgba(255,82,82,.4);border-radius:999px;padding:3px 10px;animation:ag-menace-pulse 2s ease-in-out infinite}
 .ag-menace__cap{text-align:center;margin:12px 0 0;color:rgba(255,255,255,.5);font-size:.78rem;letter-spacing:.04em}
 .ag-menace__cap strong{color:#ff6b6b}
 
@@ -239,6 +241,102 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 	} else {
 		requestAnimationFrame(tick);
 	}
+})();
+
+/* === Carte d'attaques LOCALE (canvas léger, 0 requête externe) === */
+(function(){
+	var cv = document.getElementById('ag-attackmap');
+	if(!cv || !cv.getContext) return;
+	var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	var ctx = cv.getContext('2d'), W=0, H=0, dpr=Math.min(window.devicePixelRatio||1, 1.5);
+	// Masque "continents" : 1 = terre. Grille 36x18 (planisphère très simplifié,
+	// gauche=Amériques, centre=Europe/Afrique, droite=Asie/Océanie). Dessiné en
+	// pointillés -> silhouette du monde reconnaissable, coût quasi nul.
+	var MAP=[
+		"000000000000000000000000000000000000",
+		"000000011000000000000111111000000000",
+		"000001111100000001111111111110000000",
+		"000011111000000011111111111111100000",
+		"000011111000000011111111111111110000",
+		"000001111000000011011111111111000000",
+		"000000111000000001111111110110000000",
+		"000000011000000011111111000000110000",
+		"000000011100000011111110000000000000",
+		"000000001100000001111100000001100000",
+		"000000001100000001111000000011100000",
+		"000000001000000001110000000011100000",
+		"000000001000000000110000000001000000",
+		"000000000000000000110000000000000000",
+		"000000000000000000100000000011000000",
+		"000000000000000000000000000000000000",
+		"000000000000000000000000000110000000",
+		"000000000000000000000000000000000000"
+	];
+	var MR=MAP.length, MC=MAP[0].length;
+	// Points "villes" sur de vraies zones (col,row dans la grille).
+	var GNODES=[[8,4],[7,3],[9,5],[8,7],[18,3],[19,4],[20,5],[18,6],
+		[28,4],[30,5],[29,6],[26,3],[22,8],[24,10],[31,9],[20,11],[10,9],[9,11]];
+	var NODES = GNODES.map(function(g){ return [ (g[0]+0.5)/MC, (g[1]+0.5)/MR ]; });
+	function resize(){
+		var r=cv.getBoundingClientRect(); W=r.width; H=r.height;
+		cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+		ctx.setTransform(dpr,0,0,dpr,0,0);
+	}
+	function drawWorld(){
+		var cw=W/MC, ch=H/MR, rad=Math.max(0.7, Math.min(cw,ch)*0.16);
+		ctx.fillStyle='rgba(120,150,210,.16)';
+		for(var y=0;y<MR;y++){ var row=MAP[y]; for(var x=0;x<MC;x++){ if(row.charAt(x)==='1'){
+			ctx.beginPath(); ctx.arc((x+0.5)*cw,(y+0.5)*ch,rad,0,6.2832); ctx.fill();
+		} } }
+	}
+	function px(n){ return [n[0]*W, n[1]*H]; }
+	var arcs=[];
+	function spawn(){
+		var a=NODES[(Math.random()*NODES.length)|0], b=NODES[(Math.random()*NODES.length)|0];
+		if(a===b) return;
+		arcs.push({a:a,b:b,t:0,sp:0.008+Math.random()*0.014,hue:Math.random()<0.5?'243,122,31':'225,15,26'});
+		if(arcs.length>26) arcs.shift();
+	}
+	function dot(p,c,r){ ctx.beginPath(); ctx.arc(p[0],p[1],r,0,6.2832); ctx.fillStyle=c; ctx.fill(); }
+	var running=false, lastSpawn=0;
+	function frame(ts){
+		if(!running) return;
+		ctx.clearRect(0,0,W,H);
+		drawWorld();
+		// nodes (villes)
+		for(var i=0;i<NODES.length;i++){ var p=px(NODES[i]); dot(p,'rgba(255,255,255,.45)',1.8); }
+		if(ts-lastSpawn>420){ spawn(); lastSpawn=ts; }
+		for(var k=0;k<arcs.length;k++){
+			var ar=arcs[k], A=px(ar.a), B=px(ar.b);
+			var mx=(A[0]+B[0])/2, my=(A[1]+B[1])/2 - Math.hypot(B[0]-A[0],B[1]-A[1])*0.28;
+			ar.t+=ar.sp; if(ar.t>1){ arcs.splice(k,1); k--; continue; }
+			// trail
+			ctx.beginPath();
+			for(var s=0;s<=ar.t;s+=0.05){
+				var u=1-s, x=u*u*A[0]+2*u*s*mx+s*s*B[0], y=u*u*A[1]+2*u*s*my+s*s*B[1];
+				if(s===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+			}
+			ctx.strokeStyle='rgba('+ar.hue+','+(0.5*(1-ar.t)+0.15).toFixed(2)+')'; ctx.lineWidth=1.4; ctx.stroke();
+			// head
+			var u2=1-ar.t, hx=u2*u2*A[0]+2*u2*ar.t*mx+ar.t*ar.t*B[0], hy=u2*u2*A[1]+2*u2*ar.t*my+ar.t*ar.t*B[1];
+			dot([hx,hy],'rgba('+ar.hue+',.95)',2.2);
+			if(ar.t>0.96) dot(B,'rgba('+ar.hue+',.5)',5);
+		}
+		requestAnimationFrame(frame);
+	}
+	function start(){ if(running) return; running=true; lastSpawn=0; requestAnimationFrame(frame); }
+	function stop(){ running=false; }
+	resize(); window.addEventListener('resize', resize);
+	if(reduce){ // image figée : planisphère + nodes (sans animation)
+		ctx.clearRect(0,0,W,H);
+		drawWorld();
+		for(var i=0;i<NODES.length;i++){ var p=px(NODES[i]); dot(p,'rgba(255,255,255,.5)',1.8); }
+		return;
+	}
+	if('IntersectionObserver' in window){
+		var io2=new IntersectionObserver(function(es){ es.forEach(function(e){ e.isIntersecting?start():stop(); }); }, {threshold:0.1});
+		io2.observe(cv);
+	} else { start(); }
 })();
 </script>
 

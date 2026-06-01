@@ -8,72 +8,41 @@ get_header();
 <!-- Hero -->
 <section class="ag-hero" id="ag-main-content">
     <?php
-    // Vidéo de fond SUPPRIMÉE (naples.mp4 = 8,4 Mo en autoplay → ralentissait le site).
-    // Remplacée par une IMAGE sécurité : option ag_tester_img_menace (Réglages → Tester/Audit) ;
-    // sinon assets/images/securite/menace.jpg ; sinon dégradé « cyber » CSS (zéro requête).
-    $ag_hero_bg = ( function_exists( 'ag_tester_opt' ) ? ag_tester_opt( 'img_menace' ) : '' );
+    // Fond du hero = dégradé « cyber sécurité » CSS par défaut (zéro requête, rapide).
+    // Pour mettre une image dédiée au hero : option ag_tester_img_hero (Réglages → Tester/Audit)
+    // OU déposer assets/images/securite/hero.jpg. (On n'utilise PLUS ag_tester_img_menace ici :
+    // cette option sert au « mur menace » et affichait une photo hors-sujet dans le hero.)
+    $ag_hero_bg = ( function_exists( 'ag_tester_opt' ) ? ag_tester_opt( 'img_hero' ) : '' );
     if ( ! $ag_hero_bg ) {
-        $ag_sec = get_stylesheet_directory() . '/assets/images/securite/menace.jpg';
-        if ( file_exists( $ag_sec ) ) { $ag_hero_bg = get_stylesheet_directory_uri() . '/assets/images/securite/menace.jpg'; }
+        $ag_sec = get_stylesheet_directory() . '/assets/images/securite/hero.jpg';
+        if ( file_exists( $ag_sec ) ) { $ag_hero_bg = get_stylesheet_directory_uri() . '/assets/images/securite/hero.jpg'; }
     }
     ?>
     <div class="ag-hero__video" style="<?php
         if ( $ag_hero_bg ) {
             echo "background:url('" . esc_url( $ag_hero_bg ) . "') center 35%/cover no-repeat";
         } else {
-            echo 'background:radial-gradient(circle at 25% 25%,rgba(243,122,31,.20),transparent 55%),radial-gradient(circle at 80% 70%,rgba(212,180,92,.16),transparent 55%),#0a0a0f';
+            // Fond « cyber sécurité » dégradé sombre (zéro requête, cohérent avec le positionnement sécurité).
+            echo 'background:radial-gradient(ellipse at 22% 18%,rgba(243,122,31,.16),transparent 55%),radial-gradient(ellipse at 82% 12%,rgba(212,180,92,.12),transparent 55%),radial-gradient(circle at 70% 88%,rgba(40,70,140,.18),transparent 60%),linear-gradient(180deg,#0b0d16 0%,#080a12 60%,#05060c 100%)';
         }
     ?>"></div>
+    <!-- Trame de points discrète (réseau / cyber) en CSS pur -->
+    <div class="ag-hero__grid" aria-hidden="true"></div>
     <div class="ag-hero__video-veil" aria-hidden="true"></div>
     <style>
     /* Home : hero plus court (on enchaîne vite sur la menace) */
     body.home .ag-hero{min-height:74vh;padding-top:140px;padding-bottom:60px}
     @media(max-width:900px){body.home .ag-hero{min-height:auto;padding-top:120px}}
-    .ag-hero__naples{display:none!important}
-    /* Vidéo Naples : remplit sans trop zoomer (cadrage haut = baie + Vésuve) */
+    /* Décors Naples (bateaux, particules, Vésuve, soleil) retirés : positionnement = sécurité */
+    .ag-hero__naples,.ag-hero__boats,.ag-hero__particles,.ag-hero__vesuvius,.ag-hero__sunglow{display:none!important}
     .ag-hero__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%;z-index:0}
-    .ag-hero__video-veil{position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,rgba(10,10,15,.5) 0%,rgba(10,10,15,.72) 100%)}
+    .ag-hero__grid{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;
+        background-image:radial-gradient(rgba(120,150,210,.18) 1px,transparent 1.4px);
+        background-size:34px 34px;
+        -webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 35%,#000 30%,transparent 75%);
+        mask-image:radial-gradient(ellipse 80% 70% at 50% 35%,#000 30%,transparent 75%);}
+    .ag-hero__video-veil{position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,rgba(8,10,18,.45) 0%,rgba(6,8,14,.78) 100%)}
     </style>
-    <!-- Photo Naples (fallback masqué) -->
-    <div class="ag-hero__naples" aria-hidden="true"></div>
-    <!-- Halo de soleil/Vésuve qui pulse champagne (visible partout) -->
-    <div class="ag-hero__sunglow" aria-hidden="true"></div>
-    <!-- Particules dorées montantes en CSS pur (visibles mobile + desktop) -->
-    <div class="ag-hero__particles" aria-hidden="true">
-        <span style="left:8%;  bottom:-10px; animation-duration:14s; animation-delay:0s;"></span>
-        <span style="left:18%; bottom:-10px; animation-duration:18s; animation-delay:3s;"></span>
-        <span style="left:27%; bottom:-10px; animation-duration:12s; animation-delay:6s;"></span>
-        <span style="left:36%; bottom:-10px; animation-duration:16s; animation-delay:1.5s;"></span>
-        <span style="left:44%; bottom:-10px; animation-duration:20s; animation-delay:4.5s;"></span>
-        <span style="left:52%; bottom:-10px; animation-duration:13s; animation-delay:7s;"></span>
-        <span style="left:60%; bottom:-10px; animation-duration:17s; animation-delay:2s;"></span>
-        <span style="left:68%; bottom:-10px; animation-duration:19s; animation-delay:5s;"></span>
-        <span style="left:76%; bottom:-10px; animation-duration:15s; animation-delay:8s;"></span>
-        <span style="left:84%; bottom:-10px; animation-duration:21s; animation-delay:0.8s;"></span>
-        <span style="left:92%; bottom:-10px; animation-duration:14s; animation-delay:3.6s;"></span>
-        <span style="left:12%; bottom:-10px; animation-duration:23s; animation-delay:10s;"></span>
-    </div>
-    <!-- 🌋 Vésuve en éruption : halo seulement (fumée retirée sur demande user) -->
-    <div class="ag-hero__vesuvius" aria-hidden="true"></div>
-    <!-- 🚢 Bateaux qui glissent sur la baie -->
-    <div class="ag-hero__boats" aria-hidden="true">
-        <svg viewBox="0 0 50 22" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M2 18 L48 18 L42 22 L8 22 Z" fill="currentColor"/>
-            <path d="M22 18 L22 4 L34 14 L22 14 Z" fill="currentColor" opacity=".7"/>
-            <line x1="22" y1="4" x2="22" y2="18" stroke="currentColor" stroke-width="1"/>
-        </svg>
-        <svg viewBox="0 0 50 22" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M4 19 L46 19 L41 22 L9 22 Z" fill="currentColor"/>
-            <path d="M25 19 L25 6 L36 16 L25 16 Z" fill="currentColor" opacity=".75"/>
-        </svg>
-        <svg viewBox="0 0 50 22" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M2 18 L48 18 L43 22 L7 22 Z" fill="currentColor"/>
-            <path d="M20 18 L20 3 L33 14 L20 14 Z" fill="currentColor" opacity=".7"/>
-            <line x1="20" y1="3" x2="20" y2="18" stroke="currentColor" stroke-width="1"/>
-            <path d="M33 14 L20 14 L20 18 L33 18" fill="none" stroke="currentColor" stroke-width=".6" opacity=".5"/>
-        </svg>
-    </div>
-    <!-- Téléphone CSS retiré sur demande user. -->
     <!-- Mesh gradient WebGL conservé en sur-couche très subtile (skippé sur mobile/<4 cores) -->
     <?php get_template_part('template-parts/mesh-gradient-bg'); ?>
     <!-- Grille tech high-tech parallax qui réagit à la souris -->

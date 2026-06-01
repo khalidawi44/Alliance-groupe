@@ -2962,8 +2962,9 @@ button:focus-visible{
 .ag-section--image-marble{
     background-color:#0a0a10;
     background-image:
-        linear-gradient(135deg,rgba(10,10,14,.88) 0%,rgba(16,16,22,.82) 50%,rgba(10,10,14,.92) 100%),
-        url("https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1920&q=80");
+        radial-gradient(ellipse at 18% 12%,rgba(243,122,31,.10) 0%,transparent 55%),
+        radial-gradient(ellipse at 82% 88%,rgba(40,70,140,.14) 0%,transparent 55%),
+        linear-gradient(135deg,#0b0d16 0%,#0a0a12 50%,#06070d 100%);
     background-size:cover;
     background-position:center;
     border-top:1px solid rgba(212,180,92,.2);
