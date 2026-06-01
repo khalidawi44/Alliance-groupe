@@ -189,6 +189,13 @@ if ( ! function_exists( 'ag_tester_run' ) ) {
 		// Journal des sites scannés (URL + IP du visiteur + score) — pour suivi / relance.
 		if ( function_exists( 'ag_tester_log_scan' ) ) { ag_tester_log_scan( $url, $audit ); }
 
+		// Verse aussi le scan dans l'HISTORIQUE de l'Espace Audit (mêmes fiches que
+		// mes audits manuels : coordonnées publiques extraites + boutons + image rapport).
+		if ( function_exists( 'ag_audit_hist_upsert' ) ) {
+			$ct_pub = function_exists( 'ag_audit_extract_contacts' ) ? ag_audit_extract_contacts( $url ) : array();
+			ag_audit_hist_upsert( $audit, $ct_pub, 'passive' );
+		}
+
 		// CRM seulement si on a un email (URL seule = visiteur anonyme).
 		if ( $email && function_exists( 'ag_prospect_add_record' ) ) {
 			ag_prospect_add_record( array(
