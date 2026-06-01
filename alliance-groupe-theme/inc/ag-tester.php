@@ -687,7 +687,8 @@ if ( ! function_exists( 'ag_audit_hist_save' ) ){ function ag_audit_hist_save( $
 if ( ! function_exists( 'ag_audit_hist_upsert' ) ) {
 	function ag_audit_hist_upsert( $a, $ct, $mode = 'passive' ) {
 		$url = $a['url'] ?? ''; if ( ! $url ) return '';
-		$mode = ( 'deep' === $mode ) ? 'deep' : 'passive';
+		// 3 niveaux : passive (léger) · deep (approfondi) · expert (Kali, scan réel).
+		$mode = in_array( $mode, array( 'deep', 'expert' ), true ) ? $mode : 'passive';
 		$id = ag_audit_hist_id( $url, $mode );
 		$h  = ag_audit_hist_get();
 		// Contrôles SUPPLÉMENTAIRES de l'audit approfondi (4 sondes que le léger ne fait pas).
@@ -1282,6 +1283,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 					<button type="button" class="button button-small button-primary aghft" data-m="all">Tous</button>
 					<button type="button" class="button button-small aghft" data-m="passive">🔍 Léger</button>
 					<button type="button" class="button button-small aghft" data-m="deep">🔬 Approfondi</button>
+					<button type="button" class="button button-small aghft" data-m="expert">🛰️ Expert (Kali)</button>
 				</p>
 					<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0 10px">
 						<strong style="font-size:12px;color:#666">Trier :</strong>
@@ -1297,7 +1299,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 				<?php foreach ( $AGH as $hid => $e ) :
 					$score = (int) $e['score']; $col = $score >= 75 ? '#1a7f37' : ( $score >= 50 ? '#bf6a02' : '#b91c1c' ); $seg = $e['seg'];
 						$mode = ( 'deep' === ( $e['mode'] ?? 'passive' ) ) ? 'deep' : 'passive';
-						$mode_lbl = 'deep' === $mode ? '🔬 Diagnostic Expert' : '🔍 Léger (passif)';
+						$mode_lbl = 'expert' === $mode ? '🛰️ Expert (Kali)' : ( 'deep' === $mode ? '🔬 Approfondi' : '🔍 Léger (passif)' );
 					$host = $e['host']; $url = $e['url']; $email = $e['email']; $phone = $e['phone']; $wa = ag_wa_phone( $phone );
 					$fails = array_map( function ( $c ) { return $c['name']; }, $e['checks'] );
 					$ncrit = 0; foreach ( $e['checks'] as $c ) { if ( ! empty( $c['critical'] ) && 'fail' === $c['status'] ) $ncrit++; }
@@ -1318,7 +1320,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 						<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px">
 							<div><strong><?php echo esc_html( $e['company'] ?: $host ); ?></strong>
 								<span style="background:<?php echo 'securite' === $seg ? '#b91c1c' : '#1d4ed8'; ?>;color:#fff;border-radius:4px;padding:1px 6px;font-size:11px"><?php echo 'securite' === $seg ? 'SÉCURITÉ' : 'CRÉATION'; ?></span>
-									<span style="background:<?php echo 'deep' === $mode ? '#6d28d9' : '#0e7490'; ?>;color:#fff;border-radius:4px;padding:1px 6px;font-size:11px"><?php echo esc_html( $mode_lbl ); ?></span>
+									<span style="background:<?php echo 'expert' === $mode ? '#0a6' : ( 'deep' === $mode ? '#6d28d9' : '#0e7490' ); ?>;color:#fff;border-radius:4px;padding:1px 6px;font-size:11px"><?php echo esc_html( $mode_lbl ); ?></span>
 								<br><a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener" style="font-size:12px"><?php echo esc_html( $host ); ?></a></div>
 							<div style="text-align:right"><span style="color:<?php echo esc_attr( $col ); ?>;font-size:20px;font-weight:800"><?php echo $score; ?>/100</span>
 								<div style="font-size:11px;color:#666"><strong style="color:#b91c1c"><?php echo (int) $nb_sec_f; ?> sécurité</strong> + <?php echo (int) $nb_seo_f; ?> SEO<?php echo $ncrit ? ' · <span style="color:#b91c1c">' . (int) $ncrit . ' critique(s)</span>' : ''; ?> · <?php echo esc_html( wp_date( 'd/m/Y H:i', (int) $e['ts'] ) ); ?></div></div>
@@ -1619,7 +1621,7 @@ if ( ! function_exists( 'ag_audit_hist_csv' ) ) {
 			foreach ( ( $e['actions'] ?? array() ) as $ac ) { $contacte[] = ( $ac['ch'] ?? '' ) . ' (' . ( $ac['date'] ?? '' ) . ')'; }
 			fputcsv( $out, array(
 				isset( $e['ts'] ) ? wp_date( 'd/m/Y H:i', (int) $e['ts'] ) : '',
-				$e['url'] ?? '', $e['company'] ?? '', ( 'deep' === ( $e['mode'] ?? 'passive' ) ? 'Approfondi' : 'Leger' ), (int) ( $e['score'] ?? 0 ),
+				$e['url'] ?? '', $e['company'] ?? '', ( 'expert' === ( $e['mode'] ?? '' ) ? 'Expert (Kali)' : ( 'deep' === ( $e['mode'] ?? 'passive' ) ? 'Approfondi' : 'Leger' ) ), (int) ( $e['score'] ?? 0 ),
 				$e['seg'] ?? '', count( $fails ), $ncrit, implode( ' | ', $fails ),
 				$e['email'] ?? '', $e['phone'] ?? '', $e['address'] ?? '', $e['siret'] ?? '',
 				implode( ' ', $e['socials'] ?? array() ), implode( ' · ', $contacte ),
@@ -1670,6 +1672,9 @@ if ( ! function_exists( 'ag_audit_hist_rescan_handler' ) ) {
 			$url  = $e['url'] ?? '';
 			if ( ! $url ) { continue; }
 			$mode = ( 'deep' === ( $e['mode'] ?? 'passive' ) ) ? 'deep' : 'passive';
+			// Les fiches Expert (Kali) viennent d'un scan externe : on ne peut pas les
+			// rejouer ici (ça se relance via 🛰️ Audits Kali). On les laisse intactes.
+			if ( 'expert' === ( $e['mode'] ?? '' ) ) { continue; }
 			// Re-scan avec l'algo courant (approfondi seulement si déjà fait + fonction dispo).
 			$au = ( 'deep' === $mode && function_exists( 'ag_audit_run_deep' ) )
 				? ag_audit_run_deep( $url )
