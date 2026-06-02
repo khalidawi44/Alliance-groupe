@@ -528,7 +528,24 @@ if ( ! function_exists( 'ag_audit_run_deep' ) ) {
 		}
 
 		list( $score_pct, $nb_crit ) = ag_audit_score( $checks );
-		return array( 'url' => $url, 'checks' => $checks, 'score' => $score_pct, 'critical' => $nb_crit, 'deep' => true, 'ts' => time(), 'tech' => $base['tech'] ?? '' );
+
+		// COHÉRENCE DES NIVEAUX : l'approfondi ne peut JAMAIS être meilleur que le
+		// léger. On part de la note du léger (base passive) et on RETIRE des points
+		// pour chaque sonde approfondie en défaut. Si les sondes en plus sont toutes
+		// OK → approfondi = léger (le score % brut, lui, gonflerait à tort car ajouter
+		// des contrôles « ok » remonte la moyenne — on l'ignore donc).
+		$base_score = (int) ( $base['score'] ?? 0 );
+		$deep_only  = array_slice( $checks, count( $base['checks'] ) );
+		$malus = 0;
+		foreach ( $deep_only as $dc ) {
+			$w = isset( $dc['weight'] ) ? (int) $dc['weight'] : 1;
+			$st = $dc['status'] ?? 'ok';
+			if ( 'fail' === $st )      $malus += 6 + 2 * $w;   // faille = grosse pénalité
+			elseif ( 'warn' === $st )  $malus += 2 + $w;       // alerte = petite pénalité
+		}
+		$deep_score = max( 3, min( $base_score, $base_score - $malus ) );
+
+		return array( 'url' => $url, 'checks' => $checks, 'score' => $deep_score, 'critical' => $nb_crit, 'deep' => true, 'ts' => time(), 'tech' => $base['tech'] ?? '' );
 	}
 }
 
