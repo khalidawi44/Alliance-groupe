@@ -249,33 +249,46 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 	if(!cv || !cv.getContext) return;
 	var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	var ctx = cv.getContext('2d'), W=0, H=0, dpr=Math.min(window.devicePixelRatio||1, 1.5);
-	// Masque "continents" : 1 = terre. Grille 36x18 (planisphère très simplifié,
-	// gauche=Amériques, centre=Europe/Afrique, droite=Asie/Océanie). Dessiné en
-	// pointillés -> silhouette du monde reconnaissable, coût quasi nul.
+	// Masque "continents" : 1 = terre. Grille 60x30 (planisphère plus fidèle :
+	// Amériques à gauche, Europe/Afrique au centre, Asie/Océanie à droite).
+	// Dessiné en pointillés -> silhouette du monde réaliste, coût quasi nul.
 	var MAP=[
-		"000000000000000000000000000000000000",
-		"000000011000000000000111111000000000",
-		"000001111100000001111111111110000000",
-		"000011111000000011111111111111100000",
-		"000011111000000011111111111111110000",
-		"000001111000000011011111111111000000",
-		"000000111000000001111111110110000000",
-		"000000011000000011111111000000110000",
-		"000000011100000011111110000000000000",
-		"000000001100000001111100000001100000",
-		"000000001100000001111000000011100000",
-		"000000001000000001110000000011100000",
-		"000000001000000000110000000001000000",
-		"000000000000000000110000000000000000",
-		"000000000000000000100000000011000000",
-		"000000000000000000000000000000000000",
-		"000000000000000000000000000110000000",
-		"000000000000000000000000000000000000"
+		"000000000000000000000000000000000000000000000000000000000000",
+		"000000000000000000000000000000000000000000000000000000000000",
+		"000000000111000000000000000001111111111110000000000000000000",
+		"000000011111110000000000011111111111111111111000000000000000",
+		"000000111111111000000000111111111111111111111110000000000000",
+		"000001111111111000000001111111111111111111111111000000000000",
+		"000011111111110000000011111111111111111111111111110000000000",
+		"000011111111000000000011111111111111111111111111111100000000",
+		"000001111111000000000001111111111111111111111111111110000000",
+		"000000111111000000000000011111111111111111111111111000000000",
+		"000000011111000000000000001111111111111111111100111000000000",
+		"000000001111000000000000000011111111111111111000000000000000",
+		"000000001111100000000000000011111111111111100000000000000000",
+		"000000000111100000000000000001111111111111000000000000000000",
+		"000000000111000000000000000000111111111110000000000110000000",
+		"000000000111000000000000000000111111111100000000011111000000",
+		"000000000011100000000000000000011111111000000000011111100000",
+		"000000000011100000000000000000011111111000000000001111000000",
+		"000000000011110000000000000000001111110000000000000110000000",
+		"000000000001110000000000000000001111100000000000000000000000",
+		"000000000001110000000000000000001111000000000000000000000000",
+		"000000000001100000000000000000000111000000000000011000000000",
+		"000000000011000000000000000000000110000000000000111100000000",
+		"000000000010000000000000000000000100000000000000011000000000",
+		"000000000000000000000000000000000000000000000000000000000000",
+		"000000000000000000000000000000000000000000000000000000000000",
+		"000000000000000000000000000000000000000000000000000000000000",
+		"000000000000000000000000000000000000000000000000000000000000",
+		"000000000000000000000000000000000000000000000000000000000000",
+		"000000000000000000000000000000000000000000000000000000000000"
 	];
 	var MR=MAP.length, MC=MAP[0].length;
-	// Points "villes" sur de vraies zones (col,row dans la grille).
-	var GNODES=[[8,4],[7,3],[9,5],[8,7],[18,3],[19,4],[20,5],[18,6],
-		[28,4],[30,5],[29,6],[26,3],[22,8],[24,10],[31,9],[20,11],[10,9],[9,11]];
+	// Points "villes" sur de vraies métropoles (col,row dans la grille 60x30).
+	var GNODES=[[12,6],[10,5],[14,8],[13,11],[11,16],[15,21],
+		[30,4],[31,5],[29,6],[33,6],[28,8],[34,9],[30,12],[33,16],[31,20],
+		[42,5],[45,7],[48,8],[44,10],[50,11],[46,14],[51,16]];
 	var NODES = GNODES.map(function(g){ return [ (g[0]+0.5)/MC, (g[1]+0.5)/MR ]; });
 	function resize(){
 		var r=cv.getBoundingClientRect(); W=r.width; H=r.height;
@@ -283,8 +296,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		ctx.setTransform(dpr,0,0,dpr,0,0);
 	}
 	function drawWorld(){
-		var cw=W/MC, ch=H/MR, rad=Math.max(0.7, Math.min(cw,ch)*0.16);
-		ctx.fillStyle='rgba(120,150,210,.16)';
+		var cw=W/MC, ch=H/MR, rad=Math.max(0.6, Math.min(cw,ch)*0.34);
+		ctx.fillStyle='rgba(120,150,210,.20)';
 		for(var y=0;y<MR;y++){ var row=MAP[y]; for(var x=0;x<MC;x++){ if(row.charAt(x)==='1'){
 			ctx.beginPath(); ctx.arc((x+0.5)*cw,(y+0.5)*ch,rad,0,6.2832); ctx.fill();
 		} } }
@@ -451,18 +464,35 @@ body.ag-hack-lock{overflow:hidden}
 	if(closeBtn) closeBtn.addEventListener('click', close);
 	document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
 
-	// Déclenche quand le BAS de la section entre dans l'écran (fin du globe).
-	var target = document.getElementById('ag-menace-end') || sec;
-	if('IntersectionObserver' in window){
-		var io = new IntersectionObserver(function(entries){
-			entries.forEach(function(en){ if(en.isIntersecting){ open(); io.disconnect(); } });
-		}, { threshold: 0, rootMargin: '0px 0px -10% 0px' });
-		io.observe(target);
-	} else {
-		window.addEventListener('scroll', function(){
-			var r = target.getBoundingClientRect();
-			if(r.top < window.innerHeight) open();
-		}, {passive:true});
-	}
+	// ── DÉCLENCHEMENT = INTENTION DE QUITTER (exit-intent) ──────────────
+	// La simulation n'apparaît PLUS au scroll. Elle se déclenche quand
+	// l'utilisateur s'apprête à PARTIR : souris qui sort par le haut (vers
+	// l'onglet/la croix) sur desktop, OU page masquée/quittée (changement
+	// d'onglet, fermeture). Dernière chance de le convaincre avant qu'il file.
+	var armed = false;
+	// On "arme" après 4 s sur la page (évite un déclenchement involontaire dès l'arrivée).
+	setTimeout(function(){ armed = true; }, 4000);
+
+	// Desktop : la souris quitte la fenêtre par le HAUT (barre d'onglets / croix).
+	document.addEventListener('mouseout', function(e){
+		if(!armed || shown) return;
+		if(e.relatedTarget || e.toElement) return;      // sortie réelle du document
+		if((e.clientY||0) > 60) return;                 // seulement vers le haut
+		open();
+	});
+
+	// Onglet masqué / app quittée (desktop + mobile) : on prépare le pop-up pour
+	// qu'il soit visible au retour, juste avant que la page ne soit cachée.
+	document.addEventListener('visibilitychange', function(){
+		if(document.visibilityState === 'hidden' && armed && !shown) open();
+	});
+
+	// Bouton "retour" navigateur (souvent = on s'en va) : intercepte une fois.
+	try{
+		history.pushState({agMenace:1}, '');
+		window.addEventListener('popstate', function(){
+			if(armed && !shown){ open(); history.pushState({agMenace:1}, ''); }
+		});
+	}catch(e){}
 })();
 </script>
