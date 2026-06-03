@@ -64,6 +64,17 @@ $ag_paths = array(
 		'glow'  => '#D4B45C',
 		'img'   => $ag_cardimg( 'templates' ),
 	),
+	array(
+		'emoji' => '🛡️',
+		'tag'   => 'Sécurité · résilience',
+		'title' => 'Test de résilience ransomware',
+		'desc'  => 'On simule une attaque ransomware sans toucher à vos vraies données : vos sauvegardes tiennent-elles, votre antivirus détecte-t-il ? Rapport clair + plan d\'action. Dès 490 €.',
+		'cta'   => 'Tester ma résilience',
+		'url'   => home_url( '/resilience-ransomware' ),
+		'tint'  => '#1c0f12',
+		'glow'  => '#E10F1A',
+		'img'   => $ag_cardimg( 'resilience' ),
+	),
 );
 ?>
 
@@ -148,6 +159,7 @@ $ag_paths = array(
 .ag-path:nth-child(2){animation-delay:.15s}
 .ag-path:nth-child(3){animation-delay:.25s}
 .ag-path:nth-child(4){animation-delay:.35s}
+.ag-path:nth-child(5){animation-delay:.45s}
 
 @media (prefers-reduced-motion:reduce){
 	.ag-path,.ag-path__bg,.ag-path__desc,.ag-path__cta{transition:none;animation:none}

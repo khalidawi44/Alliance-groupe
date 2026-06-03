@@ -255,7 +255,7 @@ add_filter( 'login_redirect', function ( $redirect, $requested, $user ) {
 
 /* ── 7. Auto-création des pages (une seule fois) ───────────────────── */
 add_action( 'init', function () {
-	if ( get_option( 'ag_espaces_pages_v5' ) ) return;
+	if ( get_option( 'ag_espaces_pages_v6' ) ) return;
 	$pages = array(
 		'connexion'             => array( 'Connexion',            'templates/page-connexion.php' ),
 		'espace-client'         => array( 'Espace Client',        'templates/page-espace-client.php' ),
@@ -264,6 +264,7 @@ add_action( 'init', function () {
 		'mot-de-passe'          => array( 'Mot de passe',         'templates/page-mot-de-passe.php' ),
 		'studio'                => array( 'Studio',               'templates/page-studio.php' ),
 		'programme-ambassadeur' => array( 'Programme Ambassadeur', 'templates/page-guide-ambassadeur.php' ),
+		'resilience-ransomware' => array( 'Test de résilience ransomware', 'templates/page-resilience-ransomware.php' ),
 	);
 	foreach ( $pages as $slug => $d ) {
 		if ( get_page_by_path( $slug ) ) continue;
@@ -276,7 +277,7 @@ add_action( 'init', function () {
 			'page_template'=> $d[1],
 		) );
 	}
-	update_option( 'ag_espaces_pages_v5', 1 );
+	update_option( 'ag_espaces_pages_v6', 1 );
 } );
 
 /* ── 8. Classement & récompenses (gamification commerciale) ────────── */

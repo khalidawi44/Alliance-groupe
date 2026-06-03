@@ -167,6 +167,13 @@
                                     <small>Audit & accompagnement</small>
                                 </span>
                             </a>
+                            <a href="<?php echo esc_url(home_url('/resilience-ransomware')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🛡️</span>
+                                <span>
+                                    <strong>Résilience Ransomware</strong>
+                                    <small>Attaque simulée &amp; test de sauvegardes · dès 490 €</small>
+                                </span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -377,6 +384,7 @@
                     <a href="<?php echo esc_url(home_url('/service-publicite')); ?>">📢 Publicité Digitale</a>
                     <a href="<?php echo esc_url(home_url('/service-branding')); ?>">🎨 Branding</a>
                     <a href="<?php echo esc_url(home_url('/service-conseil')); ?>">💡 Conseil Stratégique</a>
+                    <a href="<?php echo esc_url(home_url('/resilience-ransomware')); ?>">🛡️ Résilience Ransomware</a>
                 </div>
             </div>
 
