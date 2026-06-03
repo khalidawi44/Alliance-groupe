@@ -1,7 +1,7 @@
 # HANDOFF — Alliance Groupe (site `alliancegroupe-inc.com`)
 
 > Document de reprise pour toute nouvelle session Claude (PC ou mobile via GitHub MCP).
-> Dernière mise à jour : 2026-06-02 — branche de travail : `claude/pentest-local-security-offers-KNehV` (tampon auto à chaque commit).
+> Dernière mise à jour : 2026-06-03 — branche de travail : `claude/pentest-local-security-offers-KNehV` (tampon auto à chaque commit).
 > **🔒 RÈGLE PERMANENTE (demande Fabrice) — APRÈS CHAQUE SCAN, TOUJOURS LE RAPPELER** : (1) mettre le rapport dans le **coffre VeraCrypt** ; (2) **EFFACER les rapports de Kali** (aucune donnée client en clair ne doit rester dans la VM). Outil dédié : **`pentest-bridge/coffre.sh`** (à installer 1× dans `/root/pentest-local/`) → `sudo ./coffre.sh` zippe le dernier rapport vers le dossier partagé PUIS shred+rm la copie Kali, et rappelle les étapes Windows (Mount VeraCrypt → déplacer le zip dans le coffre → Dismount → vider la corbeille). À redire à Fabrice à la fin de chaque audit.
 > **⚙️ PRÉFÉRENCE FABRICE — SCANS KALI TOUJOURS EN PROFIL `max`** (le plus exhaustif) par défaut, sauf demande contraire.
 > **🆕 NOUVELLE CIBLE = Nantes Métropole Habitat (`nmh.fr`) — MANDAT SIGNÉ** (organisme public/bailleur social → données locataires sensibles, rester STRICTEMENT dans le périmètre écrit). Tests site (Espace Audit) faits : Léger 74 / Approfondi 77 (incohérence corrigée, cf. fix scoring). **À FAIRE PLUS TARD (pas maintenant)** : scan Kali `max` sur le périmètre du mandat → `sudo ./scan.sh nmh.fr max`. AVANT de lancer : confirmer le périmètre exact (domaines/sous-domaines + dates) écrit dans le mandat, et un contact technique NMH à prévenir.
