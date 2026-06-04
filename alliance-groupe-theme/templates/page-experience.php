@@ -15,7 +15,7 @@
 get_header();
 $base   = get_stylesheet_directory_uri() . '/assets/images/img_3d/';
 $imgb   = get_stylesheet_directory_uri() . '/assets/images/';
-$poster = get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg'; // Naples (pas le bureau) : visible avant le chargement de la vidéo
+$poster = get_stylesheet_directory_uri() . '/assets/images/cities/baie_naples_nuit.jpg'; // Naples (pas le bureau) : visible avant le chargement de la vidéo
 $logo   = get_stylesheet_directory_uri() . '/assets/images/logo.png';            // tête de lion, au centre de la constellation
 $vid    = get_stylesheet_directory_uri() . '/assets/images/video/naples.mp4';
 // Playlist : TOUS les fichiers audio déposés dans assets/images/son/ sont
@@ -154,7 +154,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__sky::after{background-size:520px 520px;opacity:.6;animation-duration:140s,6s;animation-direction:reverse,normal}
 @keyframes agx-drift{from{transform:translate(0,0)}to{transform:translate(-340px,-340px)}}
 @keyframes agx-tw{0%,100%{opacity:1}50%{opacity:.55}}
-.agx__veil{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 80% 75% at 50% 45%,transparent 0%,transparent 45%,rgba(5,6,10,.55) 82%,rgba(3,4,8,.95) 100%),linear-gradient(180deg,rgba(5,6,10,.35) 0%,transparent 30%,transparent 62%,rgba(4,4,8,.85) 100%)}
+.agx__veil{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 95% 85% at 50% 30%,rgba(4,5,9,.5) 0%,rgba(4,5,9,.32) 38%,rgba(3,4,8,.72) 80%,rgba(2,3,6,.96) 100%),linear-gradient(180deg,rgba(4,5,9,.6) 0%,rgba(4,5,9,.2) 32%,rgba(4,5,9,.42) 64%,rgba(3,4,8,.94) 100%)}
 .agx__canvas{position:absolute;inset:0;width:100%;height:100%;z-index:2}
 
 .agx__cap{position:absolute;left:0;right:0;top:10vh;text-align:center;padding:0 24px;z-index:8;pointer-events:none;transition:opacity .55s ease,transform .55s cubic-bezier(.22,1,.36,1)}
@@ -163,7 +163,7 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__cap .ttl{animation-delay:.08s}.agx__cap .line{animation-delay:.16s}
 @keyframes agx-rise{to{opacity:1;transform:translateY(0)}}
 .agx__cap .pre{font-size:clamp(.7rem,1.2vw,.9rem);letter-spacing:6px;color:#D4B45C;text-shadow:0 2px 14px #000;margin-bottom:12px}
-.agx__cap .ttl{font-family:Georgia,serif;font-size:clamp(2rem,6.5vw,4.6rem);line-height:1.05;margin:0;text-shadow:0 4px 40px rgba(0,0,0,.95);background:linear-gradient(180deg,#fff,#e8dcc0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.agx__cap .ttl{font-family:Georgia,serif;font-size:clamp(2rem,6.5vw,4.6rem);line-height:1.05;margin:0;text-shadow:0 3px 12px rgba(0,0,0,.95),0 6px 50px rgba(0,0,0,.85);background:linear-gradient(180deg,#fff,#f0e6cc);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .agx__cap .line{margin:14px auto 0;max-width:560px;font-family:Georgia,serif;font-style:italic;font-size:clamp(.95rem,1.5vw,1.2rem);color:rgba(255,255,255,.85);text-shadow:0 2px 16px #000}
 
 /* Station Univers : on réduit le gros titre pour laisser la place à la constellation */
@@ -424,9 +424,9 @@ const BASE = '<?php echo esc_js( $base ); ?>';
 const STATIONS = [
 	{ pre:'VOTRE SITE EST-IL UNE CIBLE ?', ttl:'Alliance Groupe', line:"La plupart des sites piratés l'étaient sur une faille connue. On va trouver la vôtre avant les autres.", media:'video' },
 	{ pre:'✦ LA MENACE — EN DIRECT', ttl:'Les attaques, maintenant', line:'Carte mondiale des cyberattaques en temps réel. La question n’est pas « si », mais « quand ».', media:'space', iframe:'https://cybermap.kaspersky.com/fr/widget/dynamic/dark' },
-	{ pre:'✦ LA FONDATION', ttl:'Naples', line:'Tout part de Naples : maison familiale, mes racines. C’est là qu’on apprend à protéger ce qui compte — et c’est exactement ce que je fais pour votre site. La sécurité n’est pas une option, c’est la fondation.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/naples-1.jpg' ); ?>', size:5.2, baseY:1.4 },
-	{ pre:'✦ ÉTAPE 1 — L’AUDIT', ttl:'Je révèle les failles', line:'En 48 h, un rapport clair de tout ce qui expose votre site. Sans jargon, sans engagement.', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/nantes-1.jpg' ); ?>' },
-	{ pre:'✦ ÉTAPE 2 — JE SÉCURISE', ttl:'Je reprends ou je recrée', line:'Je corrige votre site existant — ou j’en construis un neuf, sécurisé dès le départ. Puis je le maintiens.', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/nantes-2.jpg' ); ?>' },
+	{ pre:'✦ LA FONDATION', ttl:'Naples', line:'Tout part de Naples : maison familiale, mes racines. C’est là qu’on apprend à protéger ce qui compte — et c’est exactement ce que je fais pour votre site. La sécurité n’est pas une option, c’est la fondation.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/baie_naples_nuit.jpg' ); ?>', size:5.2, baseY:1.4 },
+	{ pre:'✦ ÉTAPE 1 — L’AUDIT', ttl:'Je révèle les failles', line:'En 48 h, un rapport clair de tout ce qui expose votre site. Sans jargon, sans engagement.', media:'photo', bg:'<?php echo esc_js( $imgb . 'securite/pexels-cookiecutter-37564547.jpg' ); ?>' },
+	{ pre:'✦ ÉTAPE 2 — JE SÉCURISE', ttl:'Je reprends ou je recrée', line:'Je corrige votre site existant — ou j’en construis un neuf, sécurisé dès le départ. Puis je le maintiens.', media:'photo', bg:'<?php echo esc_js( $imgb . 'team/1_bureau_naples.jpg' ); ?>' },
 	{ pre:'✦ ON COMMENCE ?', ttl:'Par où démarrer', line:'Touchez une étoile : audit, reprise, création sécurisée, maintenance.', media:'space', menu:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0.2&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_hint=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' }
 ];
 const GLOBE_MARKERS = [
