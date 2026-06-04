@@ -147,7 +147,7 @@ body:not(.home) main > .ag-hero::before,
 body:not(.home) .ag-hero[style*="60vh"]::before{
     content:'';
     position: absolute; inset:0;
-    background-image: var(--hero-photo, url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=85'));
+    background-image: var(--hero-photo, url('../images/cities/baie_naples_nuit.jpg'));
     background-size: cover;
     background-position: center;
     filter: brightness(.45) contrast(1.05) saturate(.9);
@@ -280,16 +280,16 @@ body.search main > .ag-section:first-child{
 }
 
 /* Variables CSS par slug de page — overridables si tu veux changer l'image */
-body.page-services .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=85'); }
-body.page-realisations .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1920&q=85'); }
+body.page-services .ag-hero{ --hero-photo: url('../images/cities/nantes-1.jpg'); }
+body.page-realisations .ag-hero{ --hero-photo: url('../images/parcours/creation.jpg'); }
 body.page-apropos .ag-hero,
-body.page-fondateur .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1920&q=85'); }
+body.page-fondateur .ag-hero{ --hero-photo: url('../images/team/1_bureau_naples.jpg'); }
 body.page-rdv .ag-hero,
-body.page-contact .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1920&q=85'); }
+body.page-contact .ag-hero{ --hero-photo: url('../images/cities/nantes-2.jpg'); }
 body.page-templates .ag-hero,
-body[class*="wordpress-"] .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1551434678-e076c223a692?w=1920&q=85'); }
+body[class*="wordpress-"] .ag-hero{ --hero-photo: url('../images/parcours/templates.jpg'); }
 body.page-blog .ag-hero,
-body.blog .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1920&q=85'); }
+body.blog .ag-hero{ --hero-photo: url('../images/cities/naples-2.jpg'); }
 
 /* Responsive */
 @media (max-width: 768px){
