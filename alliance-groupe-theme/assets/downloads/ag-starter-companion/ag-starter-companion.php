@@ -708,8 +708,9 @@ class AG_Starter_Companion {
 			return $log;
 		}
 
-		// Slugs a conserver (pages du theme actif).
-		$keep = array_keys( $map[ $slug ]['pages'] );
+		// Slugs a conserver (pages du theme actif) + pages partagees utiles.
+		$keep = array_map( 'sanitize_title', array_keys( $map[ $slug ]['pages'] ) );
+		$keep = array_merge( $keep, array( 'contact' ) );
 
 		// Slugs des autres themes, candidats a suppression.
 		$foreign = array();
@@ -718,18 +719,37 @@ class AG_Starter_Companion {
 				continue;
 			}
 			foreach ( array_keys( $other_data['pages'] ) as $page_slug ) {
-				$foreign[ $page_slug ] = true;
+				$foreign[ sanitize_title( $page_slug ) ] = true;
 			}
 		}
-		// Ne jamais supprimer une page qui appartient aussi au theme actif.
+		// Quelques orphelins connus (anciennes versions / pages manuelles).
+		foreach ( array( 'modes-de-seance', 'le-salon', 'tarifs', 'nos-tarifs' ) as $orphan ) {
+			$foreign[ $orphan ] = true;
+		}
+		// Ne jamais supprimer une page conservee.
 		foreach ( $keep as $page_slug ) {
 			unset( $foreign[ $page_slug ] );
 		}
 
-		// 1) Corbeille des pages d'autres themes.
-		foreach ( array_keys( $foreign ) as $page_slug ) {
-			$page = get_page_by_path( $page_slug );
-			if ( $page && 'page' === $page->post_type ) {
+		// Mots-cles de titres typiques des AUTRES themes (coach/barber).
+		// Assez specifiques pour ne pas toucher les pages business/legales.
+		$title_kw = '/(accompagnement|séance|seance|salon|barber|coiffeur|témoignage|temoignage)/iu';
+
+		// 1) Corbeille des pages d'autres themes (y compris les doublons
+		//    "slug-2", "slug-3" et les pages reperees par leur titre).
+		$pages = get_posts( array(
+			'post_type'   => 'page',
+			'numberposts' => -1,
+			'post_status' => 'any',
+			'suppress_filters' => true,
+		) );
+		foreach ( (array) $pages as $page ) {
+			$base = preg_replace( '/-\d+$/', '', $page->post_name );
+			if ( in_array( $base, $keep, true ) ) {
+				continue; // page du theme actif / partagee -> on garde.
+			}
+			$is_foreign = isset( $foreign[ $base ] ) || (bool) preg_match( $title_kw, $page->post_title );
+			if ( $is_foreign ) {
 				wp_trash_post( $page->ID );
 				/* translators: %s: page title. */
 				$log[] = sprintf( __( 'Page d\'un autre theme mise a la corbeille : %s', 'ag-starter-companion' ), $page->post_title );
@@ -749,6 +769,10 @@ class AG_Starter_Companion {
 
 		// 3) Reconstruit le menu propre du theme actif + reassignation.
 		$log = array_merge( $log, $this->run_import( $slug ) );
+
+		if ( empty( $log ) ) {
+			$log[] = __( 'Rien a nettoyer : aucune page/menu d\'un autre theme trouve.', 'ag-starter-companion' );
+		}
 
 		return $log;
 	}
