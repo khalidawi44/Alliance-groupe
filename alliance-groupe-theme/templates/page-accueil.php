@@ -218,6 +218,10 @@ get_header();
     </div>
 </section>
 
+<!-- Effet « remontée » : le HERO reste épinglé (sticky, images fixes), tout le
+     contenu suivant REMONTE par-dessus au scroll (au lieu que la page descende). -->
+<div class="ag-rise">
+
 <!-- ⚡ LA MENACE EN DIRECT — juste après le hero : on capte la peur, puis
        on donne la solution dans la même section (globe à gauche, audit à droite) -->
 <?php get_template_part('template-parts/menace-live'); ?>
@@ -302,5 +306,14 @@ get_header();
 	onScroll();
 })();
 </script>
+
+</div><!-- /.ag-rise -->
+<style>
+/* HERO ÉPINGLÉ : reste en place (images fixes) pendant que le contenu remonte au-dessus. */
+body.home .ag-hero{position:sticky;top:0;z-index:0}
+body.home .ag-rise{position:relative;z-index:1;background:var(--color-bg)}
+/* le footer doit aussi passer au-dessus du hero épinglé tout en bas */
+body.home .ag-footer{position:relative;z-index:1}
+</style>
 
 <?php get_footer(); ?>
