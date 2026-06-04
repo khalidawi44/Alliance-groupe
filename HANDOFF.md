@@ -1,7 +1,7 @@
 # HANDOFF — Alliance Groupe (site `alliancegroupe-inc.com`)
 
 > Document de reprise pour toute nouvelle session Claude (PC ou mobile via GitHub MCP).
-> Dernière mise à jour : 2026-06-03 — branche de travail : `claude/pentest-local-security-offers-KNehV` (tampon auto à chaque commit).
+> Dernière mise à jour : 2026-06-04 — branche de travail : `claude/conversation-linking-bug-O6HUR` (tampon auto à chaque commit).
 > **🔒 RÈGLE PERMANENTE (demande Fabrice) — APRÈS CHAQUE SCAN, TOUJOURS LE RAPPELER** : (1) mettre le rapport dans le **coffre VeraCrypt** ; (2) **EFFACER les rapports de Kali** (aucune donnée client en clair ne doit rester dans la VM). Outil dédié : **`pentest-bridge/coffre.sh`** (à installer 1× dans `/root/pentest-local/`) → `sudo ./coffre.sh` zippe le dernier rapport vers le dossier partagé PUIS shred+rm la copie Kali, et rappelle les étapes Windows (Mount VeraCrypt → déplacer le zip dans le coffre → Dismount → vider la corbeille). À redire à Fabrice à la fin de chaque audit.
 > **⚙️ PRÉFÉRENCE FABRICE — SCANS KALI TOUJOURS EN PROFIL `max`** (le plus exhaustif) par défaut, sauf demande contraire.
 > **🔧 À INSTALLER DANS KALI (rappel Fabrice)** : `sudo apt install -y testssl.sh` (sinon le module TLS/SSL affiche « testssl non installé — ignoré » ; le scan tourne quand même mais sans analyse TLS). Outils optionnels qui enrichissent `max` s'ils manquent : feroxbuster, gobuster, katana/hakrawler/gospider, gau/waybackurls, gowitness, theHarvester, sublist3r/subfinder, sslyze, dnsrecon, dig.

@@ -74,13 +74,47 @@ get_header();
         </h1>
 
         <p class="ag-hero__sub">
-            J'audite, je sécurise et je crée des sites qui inspirent confiance — et qui le restent. Chaque jour, <strong>30 000 sites sont piratés</strong>. On commence par révéler vos failles. Avant les autres.
+            Deux métiers, un seul interlocuteur : je <strong>sécurise</strong> votre site (audit + protection) et je <strong>crée des sites pro référencés</strong> (SEO). Chaque jour, <strong>30 000 sites sont piratés</strong> — on commence par révéler vos failles. Avant les autres.
         </p>
 
         <div class="ag-hero__buttons">
             <a href="<?php echo esc_url(home_url('/tester-mon-site')); ?>" class="ag-btn-gold">🔍 Tester mon site →</a>
             <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Parlons de votre projet</a>
         </div>
+
+        <!-- 2 PÔLES : ce que je fais concrètement (sécurité / création+SEO) -->
+        <div class="ag-hero__poles" aria-label="Mes deux expertises">
+            <a class="ag-pole" href="<?php echo esc_url(home_url('/tester-mon-site')); ?>">
+                <span class="ag-pole__ic" aria-hidden="true">🛡️</span>
+                <span class="ag-pole__txt">
+                    <span class="ag-pole__t">Sécurité &amp; audit</span>
+                    <span class="ag-pole__d">Je révèle vos failles, je corrige, je surveille. Dès le test gratuit.</span>
+                </span>
+                <span class="ag-pole__go" aria-hidden="true">→</span>
+            </a>
+            <a class="ag-pole" href="<?php echo esc_url(home_url('/sites-express')); ?>">
+                <span class="ag-pole__ic" aria-hidden="true">✨</span>
+                <span class="ag-pole__txt">
+                    <span class="ag-pole__t">Création de site &amp; SEO</span>
+                    <span class="ag-pole__d">Sites pro qui inspirent confiance et remontent sur Google. Dès 490 €.</span>
+                </span>
+                <span class="ag-pole__go" aria-hidden="true">→</span>
+            </a>
+        </div>
+        <style>
+        .ag-hero__poles{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:680px;margin:26px 0 0}
+        .ag-pole{display:flex;align-items:center;gap:12px;text-decoration:none;
+            background:rgba(255,255,255,.04);border:1px solid rgba(212,180,92,.28);border-radius:14px;
+            padding:14px 16px;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+        .ag-pole:hover{transform:translateY(-2px);border-color:rgba(243,122,31,.65);background:rgba(255,255,255,.07)}
+        .ag-pole__ic{font-size:1.7rem;line-height:1;flex:none}
+        .ag-pole__txt{display:flex;flex-direction:column;gap:3px;min-width:0}
+        .ag-pole__t{color:#fff;font-weight:800;font-size:1.02rem;line-height:1.15}
+        .ag-pole__d{color:rgba(255,255,255,.72);font-size:.84rem;line-height:1.4}
+        .ag-pole__go{margin-left:auto;color:#F3D27A;font-size:1.3rem;font-weight:800;flex:none;transition:transform .18s ease}
+        .ag-pole:hover .ag-pole__go{transform:translateX(4px)}
+        @media(max-width:680px){.ag-hero__poles{grid-template-columns:1fr;gap:10px;margin-top:20px}}
+        </style>
 
         <div class="ag-hero__metrics">
             <div class="ag-metric">

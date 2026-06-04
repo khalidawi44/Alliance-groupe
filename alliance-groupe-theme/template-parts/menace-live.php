@@ -447,7 +447,9 @@ body.ag-hack-lock{overflow:hidden}
 	if(!pop||!sec) return;
 	var closeBtn = document.getElementById('ag-hack-close');
 	var shown = false;
-	try{ if(sessionStorage.getItem('ag_menace_pop')==='1') shown = true; }catch(e){}
+	// Mode test : ajouter ?testpop=1 à l'URL force le re-déclenchement (ignore le "déjà vu").
+	var TEST = /[?&]testpop=1/.test(location.search);
+	try{ if(!TEST && sessionStorage.getItem('ag_menace_pop')==='1') shown = true; }catch(e){}
 
 	function open(){
 		if(shown) return; shown = true;
@@ -466,23 +468,26 @@ body.ag-hack-lock{overflow:hidden}
 
 	// ── DÉCLENCHEMENT = INTENTION DE QUITTER (exit-intent) ──────────────
 	// La simulation n'apparaît PLUS au scroll. Elle se déclenche quand
-	// l'utilisateur s'apprête à PARTIR : souris qui sort par le haut (vers
-	// l'onglet/la croix) sur desktop, OU page masquée/quittée (changement
+	// l'utilisateur s'apprête à PARTIR : souris qui remonte hors de la page
+	// (vers l'onglet/la croix) sur desktop, OU page masquée/quittée (changement
 	// d'onglet, fermeture). Dernière chance de le convaincre avant qu'il file.
 	var armed = false;
-	// On "arme" après 4 s sur la page (évite un déclenchement involontaire dès l'arrivée).
-	setTimeout(function(){ armed = true; }, 4000);
+	// On "arme" après 3 s sur la page (évite un déclenchement involontaire dès l'arrivée).
+	setTimeout(function(){ armed = true; }, 3000);
 
-	// Desktop : la souris quitte la fenêtre par le HAUT (barre d'onglets / croix).
+	// Desktop : la souris SORT du document par le haut. On écoute sur
+	// documentElement (mouseleave = quitte la zone visible) ET mouseout (filet
+	// pour les navigateurs où mouseleave ne porte pas la position).
+	function maybeExit(y){ if(armed && !shown && y <= 0) open(); }
+	document.documentElement.addEventListener('mouseleave', function(e){ maybeExit(e.clientY); });
 	document.addEventListener('mouseout', function(e){
-		if(!armed || shown) return;
-		if(e.relatedTarget || e.toElement) return;      // sortie réelle du document
-		if((e.clientY||0) > 60) return;                 // seulement vers le haut
-		open();
+		if(shown || !armed) return;
+		if(e.relatedTarget || e.toElement) return;   // sortie réelle (pas un survol interne)
+		if((e.clientY||0) <= 5) open();               // vers le haut = part du site
 	});
 
-	// Onglet masqué / app quittée (desktop + mobile) : on prépare le pop-up pour
-	// qu'il soit visible au retour, juste avant que la page ne soit cachée.
+	// Onglet masqué / app quittée (desktop + mobile) : on ouvre avant de cacher
+	// la page (visible au retour si l'utilisateur revient).
 	document.addEventListener('visibilitychange', function(){
 		if(document.visibilityState === 'hidden' && armed && !shown) open();
 	});
