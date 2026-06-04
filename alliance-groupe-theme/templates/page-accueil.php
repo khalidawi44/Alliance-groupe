@@ -24,11 +24,12 @@ get_header();
         $p = get_stylesheet_directory() . '/assets/images/team/1_bureau_naples.jpg';
         if ( file_exists( $p ) ) { $ag_crea_bg = get_stylesheet_directory_uri() . '/assets/images/team/1_bureau_naples.jpg'; }
     }
+    // Voile ROUGE-NOIR sombre sur le hacker (gauche) ; voile sombre neutre à droite.
     $ag_secu_style = $ag_secu_bg
-        ? "background-image:linear-gradient(0deg,rgba(5,7,14,.30),rgba(6,9,18,.18)),url('" . esc_url( $ag_secu_bg ) . "')"
-        : 'background-image:linear-gradient(160deg,#0a1024 0%,#070a14 70%,#05060c 100%)';
+        ? "background-image:linear-gradient(180deg,rgba(40,4,6,.45),rgba(8,4,6,.62)),linear-gradient(90deg,rgba(120,12,16,.28),rgba(5,5,8,.2)),url('" . esc_url( $ag_secu_bg ) . "')"
+        : 'background-image:linear-gradient(160deg,#240a0c 0%,#120608 70%,#080406 100%)';
     $ag_crea_style = $ag_crea_bg
-        ? "background-image:linear-gradient(0deg,rgba(10,8,4,.30),rgba(8,7,12,.18)),url('" . esc_url( $ag_crea_bg ) . "')"
+        ? "background-image:linear-gradient(180deg,rgba(8,8,12,.32),rgba(6,6,10,.5)),url('" . esc_url( $ag_crea_bg ) . "')"
         : 'background-image:linear-gradient(160deg,#1a130a 0%,#120c08 70%,#0a0a0f 100%)';
     ?>
     <div class="ag-hero__split" aria-hidden="true">
@@ -38,17 +39,23 @@ get_header();
         <div class="ag-hero__half ag-hero__half--crea" style="<?php echo $ag_crea_style; ?>">
             <span class="ag-hero__half-tag ag-hero__half-tag--r">Création &amp; SEO ✨</span>
         </div>
+        <!-- Ligne diagonale dorée (légère : SVG simple, AUCUN filtre ni animation) -->
+        <svg class="ag-hero__line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <line x1="58" y1="0" x2="42" y2="100" stroke="rgba(243,210,122,.35)" stroke-width="1.6"/>
+            <line x1="58" y1="0" x2="42" y2="100" stroke="#F6D77A" stroke-width="0.5"/>
+        </svg>
     </div>
     <div class="ag-hero__video-veil" aria-hidden="true"></div>
     <style>
     body.home .ag-hero{min-height:78vh;padding-top:140px;padding-bottom:60px}
     @media(max-width:900px){body.home .ag-hero{min-height:auto;padding-top:120px}}
     .ag-hero__naples,.ag-hero__boats,.ag-hero__particles,.ag-hero__vesuvius,.ag-hero__sunglow{display:none!important}
-    /* SPLIT DROIT : 2 moitiés 50/50, séparées par un trait doré net. Aucune animation. */
+    /* SPLIT DIAGONAL LÉGER : clip-path (pas cher) + ligne SVG, 0 filtre, 0 animation */
     .ag-hero__split{position:absolute;inset:0;z-index:0;overflow:hidden;background:#05060c}
-    .ag-hero__half{position:absolute;top:0;bottom:0;width:50%;background-size:cover;background-position:center}
-    .ag-hero__half--secu{left:0;border-right:2px solid rgba(243,210,122,.8);box-shadow:2px 0 18px rgba(243,210,122,.25)}
-    .ag-hero__half--crea{right:0}
+    .ag-hero__half{position:absolute;inset:0;background-size:cover;background-position:center}
+    .ag-hero__half--secu{clip-path:polygon(0 0, 58% 0, 42% 100%, 0 100%)}
+    .ag-hero__half--crea{clip-path:polygon(58% 0, 100% 0, 100% 100%, 42% 100%)}
+    .ag-hero__line{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
     .ag-hero__half-tag{position:absolute;top:20px;left:22px;font-size:.72rem;font-weight:800;letter-spacing:2px;
         text-transform:uppercase;color:#fff;background:rgba(0,0,0,.5);
         border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:6px 13px}
@@ -74,38 +81,22 @@ get_header();
             <span class="ag-heritage-dots" aria-hidden="true"><span></span><span></span><span></span></span>
         </div>
 
-        <h1 class="ag-hero__title ag-hero__title--cols">
-            <span class="ag-col ag-col--secu">
-                <span class="ag-col__k">🛡️ Sécurité</span>
-                <span class="ag-l--secu">Je le <em>sécurise</em>.</span>
-            </span>
-            <span class="ag-col ag-col--crea">
-                <span class="ag-col__k">✨ Création &amp; SEO</span>
-                <span class="ag-l--crea">Je <em>crée</em> votre site.</span>
-            </span>
+        <h1 class="ag-hero__title ag-hero__title--zen">
+            <span class="ag-tline ag-tl--crea">Je crée votre site.</span>
+            <span class="ag-tline ag-tl--secu">Je le sécurise.</span>
+            <span class="ag-tline ag-tl--gold">Vous, vous respirez.</span>
         </h1>
-        <p class="ag-hero__title-zen ag-l--zen">Vous, vous respirez.</p>
         <style>
-        /* Titre en 2 COLONNES : sécurité (gauche) / création (droite), de part et d'autre de l'éclair */
-        .ag-hero__title--cols{display:grid;grid-template-columns:1fr 1fr;gap:10px 56px;align-items:end;margin:0 auto 6px;max-width:880px}
-        .ag-hero__title--cols .ag-col{display:flex;flex-direction:column;gap:6px}
-        .ag-col--secu{text-align:right;align-items:flex-end}
-        .ag-col--crea{text-align:left;align-items:flex-start}
-        .ag-col__k{font-size:.74rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;opacity:.85}
-        .ag-col--secu .ag-col__k{color:#FF8A8A}
-        .ag-col--crea .ag-col__k{color:#9CCBFF}
-        .ag-hero__title--cols em{font-style:normal;font-family:inherit;font-weight:inherit}
-        .ag-l--crea{color:#5BA8FF;text-shadow:0 2px 18px rgba(40,110,220,.5)}
-        .ag-l--crea em{color:#9CCBFF}
-        .ag-l--secu{color:#FF5A5A;text-shadow:0 2px 18px rgba(225,15,26,.5)}
-        .ag-l--secu em{color:#FF8A8A}
-        .ag-hero__title-zen{text-align:center;font-family:Georgia,'Playfair Display',serif;
-            font-size:clamp(1.7rem,4.5vw,3rem);line-height:1.1;margin:4px auto 22px;
-            color:#F3D27A;text-shadow:0 2px 22px rgba(243,210,122,.45)}
-        @media(max-width:760px){
-            .ag-hero__title--cols{grid-template-columns:1fr;gap:14px;text-align:center}
-            .ag-col--secu,.ag-col--crea{text-align:center;align-items:center}
-        }
+        /* Titre centré, 3 lignes, chacune sur UNE ligne, couleur par pôle.
+           Police FORCÉE (Manrope) partout -> plus de mélange serif/sans ("police cassée"). */
+        .ag-hero__title--zen{font-family:var(--font-sans),'Manrope',system-ui,sans-serif;font-weight:800;
+            text-align:center;margin:0 auto 18px;max-width:900px;line-height:1.06}
+        .ag-hero__title--zen .ag-tline{display:block;white-space:nowrap;font-size:clamp(1.9rem,5vw,3.6rem)}
+        .ag-hero__title--zen em{font-style:normal;font-family:inherit}
+        .ag-tl--crea{color:#5BA8FF;text-shadow:0 2px 20px rgba(40,110,220,.45)}
+        .ag-tl--secu{color:#FF5A5A;text-shadow:0 2px 20px rgba(225,15,26,.45)}
+        .ag-tl--gold{color:#F3D27A;text-shadow:0 2px 22px rgba(243,210,122,.4)}
+        @media(max-width:560px){.ag-hero__title--zen .ag-tline{white-space:normal;font-size:clamp(1.6rem,8vw,2.4rem)}}
         </style>
 
         <p class="ag-hero__sub">
