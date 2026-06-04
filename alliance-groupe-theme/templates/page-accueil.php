@@ -8,40 +8,73 @@ get_header();
 <!-- Hero -->
 <section class="ag-hero" id="ag-main-content">
     <?php
-    // Fond du hero = dégradé « cyber sécurité » CSS par défaut (zéro requête, rapide).
-    // Pour mettre une image dédiée au hero : option ag_tester_img_hero (Réglages → Tester/Audit)
-    // OU déposer assets/images/securite/hero.jpg. (On n'utilise PLUS ag_tester_img_menace ici :
-    // cette option sert au « mur menace » et affichait une photo hors-sujet dans le hero.)
-    $ag_hero_bg = ( function_exists( 'ag_tester_opt' ) ? ag_tester_opt( 'img_hero' ) : '' );
-    if ( ! $ag_hero_bg ) {
-        $ag_sec = get_stylesheet_directory() . '/assets/images/securite/hero.jpg';
-        if ( file_exists( $ag_sec ) ) { $ag_hero_bg = get_stylesheet_directory_uri() . '/assets/images/securite/hero.jpg'; }
+    // HERO SPLIT DIAGONAL « ÉCLAIR » : 2 pôles côte à côte, séparés par un éclair.
+    //  - Gauche  = SÉCURITÉ  : option ag_tester_img_secu     OU assets/images/securite/secu.jpg     OU dégradé cyber.
+    //  - Droite  = CRÉATION  : option ag_tester_img_creation OU assets/images/securite/creation.jpg OU dégradé doré.
+    $ag_secu_bg = function_exists( 'ag_tester_opt' ) ? ag_tester_opt( 'img_secu' ) : '';
+    if ( ! $ag_secu_bg ) {
+        $p = get_stylesheet_directory() . '/assets/images/securite/secu.jpg';
+        if ( file_exists( $p ) ) { $ag_secu_bg = get_stylesheet_directory_uri() . '/assets/images/securite/secu.jpg'; }
     }
+    $ag_crea_bg = function_exists( 'ag_tester_opt' ) ? ag_tester_opt( 'img_creation' ) : '';
+    if ( ! $ag_crea_bg ) {
+        $p = get_stylesheet_directory() . '/assets/images/securite/creation.jpg';
+        if ( file_exists( $p ) ) { $ag_crea_bg = get_stylesheet_directory_uri() . '/assets/images/securite/creation.jpg'; }
+    }
+    $ag_secu_style = $ag_secu_bg
+        ? "background-image:linear-gradient(115deg,rgba(5,7,14,.74),rgba(8,12,26,.62)),url('" . esc_url( $ag_secu_bg ) . "')"
+        : 'background-image:radial-gradient(circle at 30% 30%,rgba(40,70,140,.30),transparent 60%),linear-gradient(160deg,#0a1024 0%,#070a14 70%,#05060c 100%)';
+    $ag_crea_style = $ag_crea_bg
+        ? "background-image:linear-gradient(115deg,rgba(20,12,4,.55),rgba(8,7,12,.62)),url('" . esc_url( $ag_crea_bg ) . "')"
+        : 'background-image:radial-gradient(circle at 70% 35%,rgba(243,122,31,.30),transparent 60%),linear-gradient(160deg,#1a130a 0%,#120c08 70%,#0a0a0f 100%)';
     ?>
-    <div class="ag-hero__video" style="<?php
-        if ( $ag_hero_bg ) {
-            echo "background:url('" . esc_url( $ag_hero_bg ) . "') center 35%/cover no-repeat";
-        } else {
-            // Fond « cyber sécurité » dégradé sombre (zéro requête, cohérent avec le positionnement sécurité).
-            echo 'background:radial-gradient(ellipse at 22% 18%,rgba(243,122,31,.16),transparent 55%),radial-gradient(ellipse at 82% 12%,rgba(212,180,92,.12),transparent 55%),radial-gradient(circle at 70% 88%,rgba(40,70,140,.18),transparent 60%),linear-gradient(180deg,#0b0d16 0%,#080a12 60%,#05060c 100%)';
-        }
-    ?>"></div>
-    <!-- Trame de points discrète (réseau / cyber) en CSS pur -->
-    <div class="ag-hero__grid" aria-hidden="true"></div>
+    <div class="ag-hero__split" aria-hidden="true">
+        <div class="ag-hero__half ag-hero__half--secu" style="<?php echo $ag_secu_style; ?>">
+            <span class="ag-hero__half-tag">🛡️ Sécurité</span>
+        </div>
+        <div class="ag-hero__half ag-hero__half--crea" style="<?php echo $ag_crea_style; ?>">
+            <span class="ag-hero__half-tag ag-hero__half-tag--r">Création &amp; SEO ✨</span>
+        </div>
+        <!-- Éclair lumineux sur la jointure diagonale -->
+        <svg class="ag-hero__bolt" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+                <linearGradient id="agBoltG" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#fff"/>
+                    <stop offset=".5" stop-color="#F3D27A"/>
+                    <stop offset="1" stop-color="#F37A1F"/>
+                </linearGradient>
+            </defs>
+            <polygon class="ag-hero__bolt-fill" points="62,-2 50,40 58,40 40,102 46,55 38,55 54,-2"
+                     fill="url(#agBoltG)"/>
+        </svg>
+    </div>
     <div class="ag-hero__video-veil" aria-hidden="true"></div>
     <style>
     /* Home : hero plus court (on enchaîne vite sur la menace) */
-    body.home .ag-hero{min-height:74vh;padding-top:140px;padding-bottom:60px}
+    body.home .ag-hero{min-height:78vh;padding-top:140px;padding-bottom:60px}
     @media(max-width:900px){body.home .ag-hero{min-height:auto;padding-top:120px}}
-    /* Décors Naples (bateaux, particules, Vésuve, soleil) retirés : positionnement = sécurité */
     .ag-hero__naples,.ag-hero__boats,.ag-hero__particles,.ag-hero__vesuvius,.ag-hero__sunglow{display:none!important}
-    .ag-hero__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%;z-index:0}
-    .ag-hero__grid{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;
-        background-image:radial-gradient(rgba(120,150,210,.18) 1px,transparent 1.4px);
-        background-size:34px 34px;
-        -webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 35%,#000 30%,transparent 75%);
-        mask-image:radial-gradient(ellipse 80% 70% at 50% 35%,#000 30%,transparent 75%);}
-    .ag-hero__video-veil{position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,rgba(8,10,18,.45) 0%,rgba(6,8,14,.78) 100%)}
+    /* ── SPLIT DIAGONAL ───────────────────────────────────────── */
+    .ag-hero__split{position:absolute;inset:0;z-index:0;overflow:hidden}
+    .ag-hero__half{position:absolute;inset:0;background-size:cover;background-position:center}
+    /* coupe diagonale (gauche large en haut, étroite en bas) */
+    .ag-hero__half--secu{clip-path:polygon(0 0, 57% 0, 43% 100%, 0 100%)}
+    .ag-hero__half--crea{clip-path:polygon(57% 0, 100% 0, 100% 100%, 43% 100%)}
+    .ag-hero__half-tag{position:absolute;top:18px;left:20px;font-size:.72rem;font-weight:800;letter-spacing:2px;
+        text-transform:uppercase;color:rgba(255,255,255,.78);background:rgba(0,0,0,.32);
+        border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:5px 12px}
+    .ag-hero__half-tag--r{left:auto;right:20px;color:#F3D27A}
+    /* éclair sur la jointure */
+    .ag-hero__bolt{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;
+        filter:drop-shadow(0 0 14px rgba(243,210,122,.65)) drop-shadow(0 0 40px rgba(243,122,31,.4))}
+    .ag-hero__bolt-fill{animation:agBoltPulse 3.4s ease-in-out infinite}
+    @keyframes agBoltPulse{0%,100%{opacity:.85}45%{opacity:1}50%{opacity:.6}55%{opacity:1}}
+    /* voile global pour lisibilité du texte */
+    .ag-hero__video-veil{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 70% 80% at 50% 42%,rgba(5,6,12,.35) 0%,rgba(5,6,12,.82) 100%)}
+    @media (prefers-reduced-motion: reduce){.ag-hero__bolt-fill{animation:none}}
+    @media(max-width:600px){
+        .ag-hero__half-tag{top:12px;font-size:.62rem;padding:4px 9px}
+    }
     </style>
     <!-- Mesh gradient WebGL conservé en sur-couche très subtile (skippé sur mobile/<4 cores) -->
     <?php get_template_part('template-parts/mesh-gradient-bg'); ?>
@@ -68,9 +101,9 @@ get_header();
         </div>
 
         <h1 class="ag-hero__title">
-            <span class="ag-line">Votre site web</span>
-            <span class="ag-line"><em>est une cible.</em></span>
-            <span class="ag-line">Mettons-le à l'abri.</span>
+            <span class="ag-line">Je <em>crée</em> votre site.</span>
+            <span class="ag-line">Je le <em>sécurise</em>.</span>
+            <span class="ag-line">Vous, vous respirez.</span>
         </h1>
 
         <p class="ag-hero__sub">

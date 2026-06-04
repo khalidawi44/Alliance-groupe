@@ -46,7 +46,7 @@ add_action( 'admin_menu', function () {
 	add_options_page( 'Tester / Audit', 'Tester / Audit', 'manage_options', 'ag-tester', 'ag_tester_settings_page' );
 } );
 add_action( 'admin_init', function () {
-	foreach ( array( 'price', 'deep_price', 'deep_pay_url', 'pay_url', 'raison', 'siret', 'adresse', 'tva', 'email', 'popup_img', 'phone', 'img_audit', 'img_creation', 'img_maintenance', 'img_templates', 'img_menace', 'tg_sec', 'tg_crea' ) as $k ) {
+	foreach ( array( 'price', 'deep_price', 'deep_pay_url', 'pay_url', 'raison', 'siret', 'adresse', 'tva', 'email', 'popup_img', 'phone', 'img_audit', 'img_secu', 'img_creation', 'img_maintenance', 'img_templates', 'img_menace', 'tg_sec', 'tg_crea' ) as $k ) {
 		register_setting( 'ag_tester_group', 'ag_tester_' . $k );
 	}
 } );
@@ -66,7 +66,8 @@ if ( ! function_exists( 'ag_tester_settings_page' ) ) {
 			'popup_img' => 'Image 3D du pop-up d\'accueil (URL complète) — vide = dégradé',
 			'phone'   => 'Téléphone pro (pour « rappelez-moi » dans les messages)',
 			'img_audit'       => '🖼️ URL image carte « Audit » (accueil)',
-			'img_creation'    => '🖼️ URL image carte « Création » (accueil)',
+			'img_secu'        => '🖼️ URL image HÉRO côté gauche « Sécurité » (split éclair)',
+			'img_creation'    => '🖼️ URL image carte « Création » (accueil) + côté droit du héro split',
 			'img_maintenance' => '🖼️ URL image carte « Maintenance » (accueil)',
 			'img_templates'   => '🖼️ URL image carte « Templates » (accueil)',
 			'img_menace'      => '🖼️ URL image fond du mur « Un piratage ressemble à ça »',
