@@ -102,12 +102,12 @@ get_header();
         .ag-2c__k{font-size:.7rem;font-weight:800;letter-spacing:2px;text-transform:uppercase}
         .ag-2c--secu .ag-2c__k{color:#FF8A8A}
         .ag-2c--crea .ag-2c__k{color:#9CCBFF}
-        .ag-2c__l{white-space:nowrap;font-size:clamp(1.35rem,3.1vw,2.4rem);line-height:1.05}
+        .ag-2c__l{white-space:nowrap;font-size:clamp(1.15rem,2.4vw,2rem);line-height:1.05;letter-spacing:-.01em}
         .ag-2c--secu .ag-2c__l{color:#FF5A5A;text-shadow:0 2px 18px rgba(225,15,26,.5)}
         .ag-2c--crea .ag-2c__l{color:#5BA8FF;text-shadow:0 2px 18px rgba(40,110,220,.5)}
         .ag-hero__zen{text-align:center;font-family:var(--font-sans),'Manrope',sans-serif;font-weight:800;
             color:#F3D27A;text-shadow:0 2px 20px rgba(243,210,122,.4);
-            font-size:clamp(1.35rem,3.2vw,2.4rem);line-height:1.1;white-space:nowrap;margin:6px auto 20px}
+            font-size:clamp(1.15rem,2.5vw,2rem);line-height:1.1;white-space:nowrap;margin:6px auto 20px}
         @media(max-width:700px){
             .ag-hero__title--2c{grid-template-columns:1fr;gap:12px;text-align:center}
             .ag-2c--secu,.ag-2c--crea{text-align:center;align-items:center}
