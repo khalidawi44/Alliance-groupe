@@ -4124,17 +4124,17 @@ button:focus-visible{
  * dans les paragraphes. Pris en charge par Chrome/Edge/Firefox récents,
  * ignoré proprement par les anciens (aucun risque).
  * ====================================================================== */
-h1, h2, h3, h4,
-.ag-hero__title, .ag-section__title, .ag-hero__zen,
-.ag-parallax__quote, blockquote, .ag-tpl-cta__title,
-.ag-home-offres__title, .ag-menace__title, .ag-menace__sol-title,
-.ag-faq h2, .ag-cta__title {
+/* TOUS les titres du site (peu importe la classe) + citations */
+h1, h2, h3, h4, h5, h6,
+.ag-hero__zen, .ag-parallax__quote, blockquote,
+.ag-card__title, .ag-scard__title, .ag-rcard__title, .ag-path__title,
+.ag-tier-card__title, .ag-pstep__title, .ag-footer__title {
     text-wrap: balance;
 }
-p, li,
-.ag-hero__sub, .ag-section__desc, .ag-menace__lead,
-.ag-menace__sol-text, .ag-faq-a p {
+/* Paragraphes & textes courants : pas de mot orphelin en fin de ligne */
+p, li, figcaption,
+.ag-hero__sub, .ag-section__desc, .ag-lead, .ag-card__text, .ag-scard__text {
     text-wrap: pretty;
 }
-/* Empêche la césure d'un mot au milieu (jamais "interlocu-teur") */
-h1, h2, h3, .ag-hero__title, .ag-section__title { overflow-wrap: normal; hyphens: none; }
+/* Jamais de césure au milieu d'un mot (pas de "interlocu-teur") sur les titres */
+h1, h2, h3, h4, h5, h6 { overflow-wrap: normal; hyphens: none; }
