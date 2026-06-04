@@ -180,15 +180,16 @@
 			if (el.dataset.revealed === '1') return;
 			el.dataset.revealed = '1';
 
-			// Split: garde les <span class="ag-line"> existants
-			var html = el.innerHTML;
-			// Si déjà splitté par le thème (ag-line), on split juste les mots dans chaque ag-line
+			// Si déjà splitté par le thème (ag-line), on split juste les mots dans chaque ag-line.
 			var lines = el.querySelectorAll('.ag-line');
 			if (lines.length) {
 				lines.forEach(function (line) { splitWordsInside(line); });
-			} else {
+			} else if (el.childElementCount === 0) {
+				// Titre en TEXTE SIMPLE uniquement : on peut le découper en mots.
 				splitWordsInside(el);
 			}
+			// Sinon (titre STRUCTURÉ sans .ag-line, ex. hero 2 colonnes) : on NE touche PAS,
+			// sinon on écrase la mise en page (c'était le bug "ça saute / police cassée").
 		});
 
 		function splitWordsInside(node) {
