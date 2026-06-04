@@ -459,6 +459,13 @@ body.ag-hack-lock{overflow:hidden}
 		// Effet choc d'abord, sortie possible après 5 s (jamais de piège).
 		setTimeout(function(){ if(closeBtn) closeBtn.classList.add('is-ready'); }, 5000);
 	}
+	// Déclencheur PUBLIC : un clic sur [data-ag-hack] (ex. CTA hero "voir un piratage")
+	// ouvre la simulation à la demande (force, ignore le "déjà vu").
+	document.addEventListener('click', function(e){
+		var t = e.target.closest('[data-ag-hack]');
+		if(!t) return;
+		e.preventDefault(); shown = false; open();
+	});
 	function close(){
 		pop.classList.remove('is-on'); pop.setAttribute('aria-hidden','true');
 		document.body.classList.remove('ag-hack-lock');

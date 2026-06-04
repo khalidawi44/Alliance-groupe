@@ -163,6 +163,59 @@ if ( ! function_exists( 'ag_tester_client_ip' ) ) {
 /* --------------------------------------------------- 1) Handler : lancer l'audit */
 add_action( 'admin_post_nopriv_ag_tester_run', 'ag_tester_run' );
 add_action( 'admin_post_ag_tester_run', 'ag_tester_run' );
+
+/* ── Test LÉGER INSTANTANÉ (AJAX) pour le hero : URL -> score + nb failles ──
+ * Public, sans login. Rate-limit par IP. Renvoie JSON {score, fails, secu, host}.
+ * Verse aussi dans l'historique + journal comme un scan normal (réutilisation). */
+add_action( 'wp_ajax_ag_quicktest', 'ag_quicktest' );
+add_action( 'wp_ajax_nopriv_ag_quicktest', 'ag_quicktest' );
+if ( ! function_exists( 'ag_quicktest' ) ) {
+	function ag_quicktest() {
+		check_ajax_referer( 'ag_quicktest', 'nonce' );
+		$url = isset( $_POST['url'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['url'] ) ) ) : '';
+		if ( '' === $url ) wp_send_json_error( array( 'msg' => 'Entrez l’adresse de votre site.' ), 400 );
+		if ( ! preg_match( '#^https?://#i', $url ) ) $url = 'https://' . $url;
+		$host = wp_parse_url( $url, PHP_URL_HOST );
+		if ( ! $host || ! preg_match( '#\.[a-z]{2,}$#i', $host ) ) wp_send_json_error( array( 'msg' => 'Adresse invalide. Ex : monsite.fr' ), 400 );
+
+		// Rate-limit : 6 tests / 10 min / IP.
+		$ip  = isset( $_SERVER['REMOTE_ADDR'] ) ? preg_replace( '#[^0-9a-f:.]#i', '', $_SERVER['REMOTE_ADDR'] ) : '0';
+		$key = 'ag_qt_' . md5( $ip );
+		$n   = (int) get_transient( $key );
+		if ( $n >= 6 ) wp_send_json_error( array( 'msg' => 'Trop de tests. Réessayez dans quelques minutes.' ), 429 );
+		set_transient( $key, $n + 1, 10 * MINUTE_IN_SECONDS );
+
+		if ( ! function_exists( 'ag_audit_run' ) ) wp_send_json_error( array( 'msg' => 'Service indisponible.' ), 500 );
+		$a = ag_audit_run( $url );
+		if ( empty( $a ) || ! isset( $a['score'] ) ) wp_send_json_error( array( 'msg' => 'Site inaccessible ou injoignable.' ), 200 );
+
+		$score = (int) $a['score'];
+		$fails = 0; $secu = 0;
+		$sec_names = function_exists( 'ag_audit_sec_names' ) ? ag_audit_sec_names() : array();
+		foreach ( (array) ( $a['checks'] ?? array() ) as $c ) {
+			if ( 'ok' === ( $c['status'] ?? '' ) ) continue;
+			$fails++;
+			if ( $sec_names && in_array( $c['name'], $sec_names, true ) ) $secu++;
+		}
+		// Verse dans l'historique + journal (comme un vrai scan) si dispo.
+		if ( function_exists( 'ag_audit_hist_upsert' ) ) {
+			$ct = function_exists( 'ag_audit_extract_contacts' ) ? ag_audit_extract_contacts( $url ) : array();
+			ag_audit_hist_upsert( $a, $ct, 'passive' );
+		}
+		$msg = $score >= 80 ? 'Plutôt bien protégé — mais un audit complet révèle ce qui ne se voit pas.'
+			: ( $score >= 50 ? 'Des failles exploitables sont visibles. À corriger vite.'
+			: 'Site exposé : des failles critiques sont à la portée d’un robot.' );
+		wp_send_json_success( array(
+			'host'  => $host,
+			'score' => $score,
+			'fails' => $fails,
+			'secu'  => $secu,
+			'crit'  => (int) ( $a['critical'] ?? 0 ),
+			'msg'   => $msg,
+			'order' => home_url( '/tester-mon-site?u=' . rawurlencode( $url ) ),
+		) );
+	}
+}
 if ( ! function_exists( 'ag_tester_run' ) ) {
 	function ag_tester_run() {
 		if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'ag_tester' ) ) wp_die( 'Lien expiré.' );

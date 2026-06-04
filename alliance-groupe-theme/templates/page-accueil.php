@@ -50,17 +50,17 @@ get_header();
                 </linearGradient>
             </defs>
             <g fill="none" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke">
-                <!-- halo large diffus -->
-                <polyline class="ag-bolt-halo" points="54,0 49,11 57,21 48,31 55,42 46,53 53,63 45,74 51,85 43,100" stroke="#F6D77A" stroke-width="9"/>
+                <!-- halo large diffus (diagonale qui TRAVERSE le hero : haut-gauche -> bas-droite) -->
+                <polyline class="ag-bolt-halo" points="20,0 35,15 24,29 46,43 34,56 58,69 47,81 74,93 64,100" stroke="#F6D77A" stroke-width="9"/>
                 <!-- lueur moyenne doré/orange -->
-                <polyline class="ag-bolt-glow" points="54,0 49,11 57,21 48,31 55,42 46,53 53,63 45,74 51,85 43,100" stroke="url(#agBoltG)" stroke-width="4"/>
+                <polyline class="ag-bolt-glow" points="20,0 35,15 24,29 46,43 34,56 58,69 47,81 74,93 64,100" stroke="url(#agBoltG)" stroke-width="4"/>
                 <!-- ramifications -->
-                <polyline class="ag-bolt-glow" points="55,42 62,49 59,57" stroke="url(#agBoltG)" stroke-width="2.4"/>
-                <polyline class="ag-bolt-glow" points="46,53 39,61 41,69" stroke="url(#agBoltG)" stroke-width="2.4"/>
+                <polyline class="ag-bolt-glow" points="46,43 56,40 60,47" stroke="url(#agBoltG)" stroke-width="2.4"/>
+                <polyline class="ag-bolt-glow" points="34,56 26,60 28,68" stroke="url(#agBoltG)" stroke-width="2.4"/>
                 <!-- coeur blanc éclatant -->
-                <polyline class="ag-bolt-core" points="54,0 49,11 57,21 48,31 55,42 46,53 53,63 45,74 51,85 43,100" stroke="#FFFFFF" stroke-width="1.4"/>
-                <polyline class="ag-bolt-core" points="55,42 62,49 59,57" stroke="#FFFFFF" stroke-width="1"/>
-                <polyline class="ag-bolt-core" points="46,53 39,61 41,69" stroke="#FFFFFF" stroke-width="1"/>
+                <polyline class="ag-bolt-core" points="20,0 35,15 24,29 46,43 34,56 58,69 47,81 74,93 64,100" stroke="#FFFFFF" stroke-width="1.4"/>
+                <polyline class="ag-bolt-core" points="46,43 56,40 60,47" stroke="#FFFFFF" stroke-width="1"/>
+                <polyline class="ag-bolt-core" points="34,56 26,60 28,68" stroke="#FFFFFF" stroke-width="1"/>
             </g>
         </svg>
     </div>
@@ -72,8 +72,9 @@ get_header();
     /* ── SPLIT ÉCLAIR : la frontière des 2 images suit la ligne déchiquetée ── */
     .ag-hero__split{position:absolute;inset:0;z-index:0;overflow:hidden;background:#05060c}
     .ag-hero__half{position:absolute;inset:0;background-size:cover;background-position:center}
-    .ag-hero__half--secu{clip-path:polygon(0 0, 54% 0, 49% 11%, 57% 21%, 48% 31%, 55% 42%, 46% 53%, 53% 63%, 45% 74%, 51% 85%, 43% 100%, 0 100%)}
-    .ag-hero__half--crea{clip-path:polygon(54% 0, 100% 0, 100% 100%, 43% 100%, 51% 85%, 45% 74%, 53% 63%, 46% 53%, 55% 42%, 48% 31%, 57% 21%, 49% 11%)}
+    /* la frontière des 2 images suit la diagonale-éclair (mêmes points que la polyline) */
+    .ag-hero__half--secu{clip-path:polygon(0 0, 20% 0, 35% 15%, 24% 29%, 46% 43%, 34% 56%, 58% 69%, 47% 81%, 74% 93%, 64% 100%, 0 100%)}
+    .ag-hero__half--crea{clip-path:polygon(20% 0, 100% 0, 100% 100%, 64% 100%, 74% 93%, 47% 81%, 58% 69%, 34% 56%, 46% 43%, 24% 29%, 35% 15%)}
     .ag-hero__half-tag{position:absolute;top:20px;left:22px;font-size:.72rem;font-weight:800;letter-spacing:2px;
         text-transform:uppercase;color:#fff;background:rgba(0,0,0,.45);
         border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:6px 13px}
@@ -113,65 +114,119 @@ get_header();
             <span class="ag-heritage-dots" aria-hidden="true"><span></span><span></span><span></span></span>
         </div>
 
-        <h1 class="ag-hero__title ag-hero__title--split">
-            <span class="ag-line ag-l--crea">Je <em>crée</em> votre site.</span>
-            <span class="ag-line ag-l--secu">Je le <em>sécurise</em>.</span>
-            <span class="ag-line ag-l--zen">Vous, vous respirez.</span>
+        <h1 class="ag-hero__title ag-hero__title--cols">
+            <span class="ag-col ag-col--secu">
+                <span class="ag-col__k">🛡️ Sécurité</span>
+                <span class="ag-l--secu">Je le <em>sécurise</em>.</span>
+            </span>
+            <span class="ag-col ag-col--crea">
+                <span class="ag-col__k">✨ Création &amp; SEO</span>
+                <span class="ag-l--crea">Je <em>crée</em> votre site.</span>
+            </span>
         </h1>
+        <p class="ag-hero__title-zen ag-l--zen">Vous, vous respirez.</p>
         <style>
-        /* Chaque pôle a sa couleur : création = bleu, sécurité = rouge, sérénité = doré */
-        .ag-hero__title--split .ag-line{display:block}
-        .ag-hero__title--split em{font-style:normal}
-        .ag-l--crea{color:#5BA8FF;text-shadow:0 2px 18px rgba(40,110,220,.45)}
+        /* Titre en 2 COLONNES : sécurité (gauche) / création (droite), de part et d'autre de l'éclair */
+        .ag-hero__title--cols{display:grid;grid-template-columns:1fr 1fr;gap:10px 56px;align-items:end;margin:0 auto 6px;max-width:880px}
+        .ag-hero__title--cols .ag-col{display:flex;flex-direction:column;gap:6px}
+        .ag-col--secu{text-align:right;align-items:flex-end}
+        .ag-col--crea{text-align:left;align-items:flex-start}
+        .ag-col__k{font-size:.74rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;opacity:.85}
+        .ag-col--secu .ag-col__k{color:#FF8A8A}
+        .ag-col--crea .ag-col__k{color:#9CCBFF}
+        .ag-hero__title--cols em{font-style:normal}
+        .ag-l--crea{color:#5BA8FF;text-shadow:0 2px 18px rgba(40,110,220,.5)}
         .ag-l--crea em{color:#9CCBFF}
-        .ag-l--secu{color:#FF5A5A;text-shadow:0 2px 18px rgba(225,15,26,.45)}
+        .ag-l--secu{color:#FF5A5A;text-shadow:0 2px 18px rgba(225,15,26,.5)}
         .ag-l--secu em{color:#FF8A8A}
-        .ag-l--zen{color:#F3D27A;text-shadow:0 2px 18px rgba(243,210,122,.4)}
-        .ag-l--zen em{color:#FFE9A8}
+        .ag-hero__title-zen{text-align:center;font-family:Georgia,'Playfair Display',serif;
+            font-size:clamp(1.7rem,4.5vw,3rem);line-height:1.1;margin:4px auto 22px;
+            color:#F3D27A;text-shadow:0 2px 22px rgba(243,210,122,.45)}
+        @media(max-width:760px){
+            .ag-hero__title--cols{grid-template-columns:1fr;gap:14px;text-align:center}
+            .ag-col--secu,.ag-col--crea{text-align:center;align-items:center}
+        }
         </style>
 
         <p class="ag-hero__sub">
             Deux métiers, un seul interlocuteur : je <strong>sécurise</strong> votre site (audit + protection) et je <strong>crée des sites pro référencés</strong> (SEO). Chaque jour, <strong>30 000 sites sont piratés</strong> — on commence par révéler vos failles. Avant les autres.
         </p>
 
-        <div class="ag-hero__buttons">
-            <a href="<?php echo esc_url(home_url('/tester-mon-site')); ?>" class="ag-btn-gold">🔍 Tester mon site →</a>
-            <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Parlons de votre projet</a>
-        </div>
+        <!-- TEST LÉGER INSTANTANÉ : URL -> score + nb failles, sans quitter la page -->
+        <form class="ag-qt" id="ag-qt" autocomplete="off">
+            <label class="ag-qt__lbl" for="ag-qt-url">🔍 Testez la sécurité de votre site — gratuit, instantané</label>
+            <div class="ag-qt__row">
+                <input type="text" id="ag-qt-url" name="url" inputmode="url" placeholder="monsite.fr" required>
+                <button type="submit" class="ag-btn-gold ag-qt__btn">Analyser →</button>
+            </div>
+            <div class="ag-qt__hint">Diagnostic non-intrusif (lecture publique). Aucun mot de passe demandé.</div>
+            <div class="ag-qt__result" id="ag-qt-result" hidden></div>
+        </form>
 
-        <!-- 2 PÔLES : ce que je fais concrètement (sécurité / création+SEO) -->
-        <div class="ag-hero__poles" aria-label="Mes deux expertises">
-            <a class="ag-pole" href="<?php echo esc_url(home_url('/tester-mon-site')); ?>">
-                <span class="ag-pole__ic" aria-hidden="true">🛡️</span>
-                <span class="ag-pole__txt">
-                    <span class="ag-pole__t">Sécurité &amp; audit</span>
-                    <span class="ag-pole__d">Je révèle vos failles, je corrige, je surveille. Dès le test gratuit.</span>
-                </span>
-                <span class="ag-pole__go" aria-hidden="true">→</span>
-            </a>
-            <a class="ag-pole" href="<?php echo esc_url(home_url('/sites-express')); ?>">
-                <span class="ag-pole__ic" aria-hidden="true">✨</span>
-                <span class="ag-pole__txt">
-                    <span class="ag-pole__t">Création de site &amp; SEO</span>
-                    <span class="ag-pole__d">Sites pro qui inspirent confiance et remontent sur Google. Dès 490 €.</span>
-                </span>
-                <span class="ag-pole__go" aria-hidden="true">→</span>
-            </a>
+        <div class="ag-hero__buttons">
+            <a href="<?php echo esc_url(home_url('/sites-express')); ?>" class="ag-btn-outline">✨ Je veux un site qui me ressemble →</a>
+            <a href="#" data-ag-hack class="ag-btn-ghost">👁️ Voir à quoi ressemble un piratage</a>
         </div>
         <style>
-        .ag-hero__poles{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:680px;margin:26px 0 0}
-        .ag-pole{display:flex;align-items:center;gap:12px;text-decoration:none;
-            background:rgba(255,255,255,.04);border:1px solid rgba(212,180,92,.28);border-radius:14px;
-            padding:14px 16px;transition:transform .18s ease,border-color .18s ease,background .18s ease}
-        .ag-pole:hover{transform:translateY(-2px);border-color:rgba(243,122,31,.65);background:rgba(255,255,255,.07)}
-        .ag-pole__ic{font-size:1.7rem;line-height:1;flex:none}
-        .ag-pole__txt{display:flex;flex-direction:column;gap:3px;min-width:0}
-        .ag-pole__t{color:#fff;font-weight:800;font-size:1.02rem;line-height:1.15}
-        .ag-pole__d{color:rgba(255,255,255,.72);font-size:.84rem;line-height:1.4}
-        .ag-pole__go{margin-left:auto;color:#F3D27A;font-size:1.3rem;font-weight:800;flex:none;transition:transform .18s ease}
-        .ag-pole:hover .ag-pole__go{transform:translateX(4px)}
-        @media(max-width:680px){.ag-hero__poles{grid-template-columns:1fr;gap:10px;margin-top:20px}}
+        .ag-qt{max-width:620px;margin:26px 0 0;background:rgba(255,255,255,.05);border:1px solid rgba(243,210,122,.35);
+            border-radius:16px;padding:16px 18px}
+        .ag-qt__lbl{display:block;color:#fff;font-weight:800;font-size:1.02rem;margin-bottom:10px}
+        .ag-qt__row{display:flex;gap:10px}
+        .ag-qt__row input{flex:1;min-width:0;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.22);
+            border-radius:10px;padding:13px 15px;color:#fff;font-size:1rem}
+        .ag-qt__row input::placeholder{color:rgba(255,255,255,.45)}
+        .ag-qt__btn{white-space:nowrap}
+        .ag-qt__hint{color:rgba(255,255,255,.55);font-size:.78rem;margin-top:8px}
+        .ag-qt__result{margin-top:14px;border-radius:12px;padding:14px 16px;display:none}
+        .ag-qt__result.is-show{display:block;animation:agQtIn .4s ease}
+        @keyframes agQtIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+        .ag-qt__score{display:flex;align-items:center;gap:14px}
+        .ag-qt__num{font-family:Georgia,serif;font-size:2.4rem;font-weight:800;line-height:1}
+        .ag-qt__bar{flex:1;height:10px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden}
+        .ag-qt__bar i{display:block;height:100%;border-radius:99px;transition:width .8s cubic-bezier(.23,1,.32,1)}
+        .ag-qt__txt{color:rgba(255,255,255,.85);font-size:.92rem;margin-top:10px;line-height:1.45}
+        .ag-qt__cta{display:inline-block;margin-top:12px;background:linear-gradient(135deg,#F37A1F,#D4B45C);
+            color:#0a0a0f;font-weight:800;text-decoration:none;padding:11px 20px;border-radius:99px;font-size:.95rem}
+        .ag-btn-ghost{display:inline-flex;align-items:center;gap:6px;color:#fff;text-decoration:none;
+            padding:14px 22px;border-radius:99px;border:1px dashed rgba(255,255,255,.35);font-weight:700;transition:.18s}
+        .ag-btn-ghost:hover{border-color:#F3D27A;color:#F3D27A}
+        @media(max-width:560px){.ag-qt__row{flex-direction:column}}
         </style>
+        <script>
+        (function(){
+            var f=document.getElementById('ag-qt'); if(!f) return;
+            var inp=document.getElementById('ag-qt-url'), out=document.getElementById('ag-qt-result');
+            var btn=f.querySelector('.ag-qt__btn');
+            var AJAX='<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>';
+            var NONCE='<?php echo esc_js( wp_create_nonce( 'ag_quicktest' ) ); ?>';
+            function col(s){return s>=75?'#28a745':(s>=50?'#F0A020':'#E10F1A');}
+            f.addEventListener('submit',function(e){
+                e.preventDefault();
+                var url=(inp.value||'').trim(); if(!url) return;
+                btn.disabled=true; var old=btn.textContent; btn.textContent='Analyse…';
+                out.hidden=false; out.className='ag-qt__result is-show';
+                out.style.background='rgba(255,255,255,.05)'; out.style.border='1px solid rgba(255,255,255,.15)';
+                out.innerHTML='<div class="ag-qt__txt">⏳ Analyse de <strong>'+url.replace(/[<>]/g,'')+'</strong> en cours…</div>';
+                var fd=new FormData(); fd.append('action','ag_quicktest'); fd.append('nonce',NONCE); fd.append('url',url);
+                fetch(AJAX,{method:'POST',body:fd,credentials:'same-origin'})
+                    .then(function(r){return r.json();})
+                    .then(function(j){
+                        btn.disabled=false; btn.textContent=old;
+                        if(!j||!j.success){ out.innerHTML='<div class="ag-qt__txt">⚠️ '+((j&&j.data&&j.data.msg)||'Analyse impossible.')+'</div>'; return; }
+                        var d=j.data, c=col(d.score);
+                        out.style.border='1px solid '+c;
+                        out.innerHTML=
+                            '<div class="ag-qt__score">'
+                            +'<span class="ag-qt__num" style="color:'+c+'">'+d.score+'<span style="font-size:1rem;color:rgba(255,255,255,.55)">/100</span></span>'
+                            +'<span class="ag-qt__bar"><i style="width:'+d.score+'%;background:'+c+'"></i></span>'
+                            +'</div>'
+                            +'<div class="ag-qt__txt"><strong>'+d.host+'</strong> — '+d.secu+' faille(s) de sécurité'+(d.crit?' dont <strong style="color:#ff6b6b">'+d.crit+' critique(s)</strong>':'')+'. '+d.msg+'</div>'
+                            +'<a class="ag-qt__cta" href="'+d.order+'">🔓 Voir le rapport complet + comment corriger →</a>';
+                    })
+                    .catch(function(){ btn.disabled=false; btn.textContent=old; out.innerHTML='<div class="ag-qt__txt">⚠️ Erreur réseau. Réessayez.</div>'; });
+            });
+        })();
+        </script>
 
         <div class="ag-hero__metrics">
             <div class="ag-metric">
