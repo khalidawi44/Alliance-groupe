@@ -257,6 +257,9 @@ get_header();
 <!-- P1/ VENDRE — offres création + maintenance (4x sans frais, sécurisé) -->
 <?php get_template_part('template-parts/home-offres'); ?>
 
+<!-- ON RECRUTE — programme ambassadeurs + outil vidéo Studio -->
+<?php get_template_part('template-parts/home-ambassadeurs'); ?>
+
 <!-- Templates métier — revenu passif, discret, plus bas -->
 <?php get_template_part('template-parts/templates-cta'); ?>
 

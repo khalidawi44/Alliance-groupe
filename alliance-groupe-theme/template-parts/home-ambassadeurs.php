@@ -4,7 +4,7 @@
  * Section immersive : fond ville Naples FIXE bien visible, la section
  * remonte sur la précédente. Lien vers /ambassadeurs.
  */
-$ag_amb_bg = get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg';
+$ag_amb_bg = get_stylesheet_directory_uri() . '/assets/images/cities/baie_naples_nuit.jpg';
 ?>
 <section class="ag-section ag-section--onyx ag-home-amb ag-rise" id="recrutement" style="--amb-bg:url('<?php echo esc_url( $ag_amb_bg ); ?>');">
 	<div class="ag-home-amb__bg" aria-hidden="true"></div>
@@ -22,7 +22,9 @@ $ag_amb_bg = get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jp
 
 		<div class="ag-home-amb__cta">
 			<a href="<?php echo esc_url( home_url( '/ambassadeurs' ) ); ?>" class="ag-btn-gold">Rejoindre le programme →</a>
+			<a href="<?php echo esc_url( home_url( '/studio' ) ); ?>" class="ag-btn-outline">🎬 Créer une vidéo de vente</a>
 		</div>
+		<p class="ag-home-amb__note">Outil <strong>Studio</strong> intégré : génère une vidéo ou une image promo à ta marque en 2 min, avec ton lien de parrainage — prête à poster sur TikTok, Insta, WhatsApp.</p>
 	</div>
 </section>
 
@@ -38,7 +40,9 @@ $ag_amb_bg = get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jp
 .ag-home-amb__step{padding:26px 20px;background:rgba(18,16,22,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(212,180,92,.22);border-radius:16px;text-align:center;}
 .ag-home-amb__step span{display:inline-block;font-family:var(--font-serif);font-size:1.7rem;font-weight:800;background:linear-gradient(135deg,#D4B45C,#F37A1F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;margin-bottom:8px;}
 .ag-home-amb__step p{margin:0;color:#fff;font-weight:600;font-size:.95rem;line-height:1.4;}
-.ag-home-amb__cta{text-align:center;margin-top:40px;}
+.ag-home-amb__cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:40px;}
+.ag-home-amb__note{text-align:center;color:rgba(255,255,255,.8);font-size:.86rem;max-width:620px;margin:16px auto 0;line-height:1.5;text-shadow:0 2px 10px rgba(0,0,0,.8);}
+.ag-home-amb__note strong{color:#F3D27A;}
 @media(max-width:760px){.ag-home-amb__steps{grid-template-columns:1fr 1fr;}.ag-home-amb{min-height:auto;}}
 @media(max-width:768px){.ag-home-amb__bg{background-attachment:scroll;}.ag-rise{margin-top:-38px;border-top-left-radius:30px;border-top-right-radius:30px;}}
 </style>
