@@ -39,10 +39,9 @@ get_header();
         <div class="ag-hero__half ag-hero__half--crea" style="<?php echo $ag_crea_style; ?>">
             <span class="ag-hero__half-tag ag-hero__half-tag--r">Création &amp; SEO ✨</span>
         </div>
-        <!-- Ligne diagonale dorée (légère : SVG simple, AUCUN filtre ni animation) -->
+        <!-- Ligne diagonale dorée FINE : 2px max (non-scaling), 0 filtre, 0 animation -->
         <svg class="ag-hero__line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <line x1="58" y1="0" x2="42" y2="100" stroke="rgba(243,210,122,.35)" stroke-width="1.6"/>
-            <line x1="58" y1="0" x2="42" y2="100" stroke="#F6D77A" stroke-width="0.5"/>
+            <line x1="58" y1="0" x2="42" y2="100" stroke="#F6D77A" stroke-width="2" vector-effect="non-scaling-stroke"/>
         </svg>
     </div>
     <div class="ag-hero__video-veil" aria-hidden="true"></div>
@@ -81,22 +80,39 @@ get_header();
             <span class="ag-heritage-dots" aria-hidden="true"><span></span><span></span><span></span></span>
         </div>
 
-        <h1 class="ag-hero__title ag-hero__title--zen">
-            <span class="ag-tline ag-tl--crea">Je crée votre site.</span>
-            <span class="ag-tline ag-tl--secu">Je le sécurise.</span>
-            <span class="ag-tline ag-tl--gold">Vous, vous respirez.</span>
+        <h1 class="ag-hero__title ag-hero__title--2c">
+            <span class="ag-2c ag-2c--secu">
+                <span class="ag-2c__k">🛡️ Sécurité</span>
+                <span class="ag-2c__l">Je le sécurise.</span>
+            </span>
+            <span class="ag-2c ag-2c--crea">
+                <span class="ag-2c__k">✨ Création &amp; SEO</span>
+                <span class="ag-2c__l">Je crée votre site.</span>
+            </span>
         </h1>
+        <p class="ag-hero__zen">Vous, vous respirez.</p>
         <style>
-        /* Titre centré, 3 lignes, chacune sur UNE ligne, couleur par pôle.
-           Police FORCÉE (Manrope) partout -> plus de mélange serif/sans ("police cassée"). */
-        .ag-hero__title--zen{font-family:var(--font-sans),'Manrope',system-ui,sans-serif;font-weight:800;
-            text-align:center;margin:0 auto 18px;max-width:900px;line-height:1.06}
-        .ag-hero__title--zen .ag-tline{display:block;white-space:nowrap;font-size:clamp(1.9rem,5vw,3.6rem)}
-        .ag-hero__title--zen em{font-style:normal;font-family:inherit}
-        .ag-tl--crea{color:#5BA8FF;text-shadow:0 2px 20px rgba(40,110,220,.45)}
-        .ag-tl--secu{color:#FF5A5A;text-shadow:0 2px 20px rgba(225,15,26,.45)}
-        .ag-tl--gold{color:#F3D27A;text-shadow:0 2px 22px rgba(243,210,122,.4)}
-        @media(max-width:560px){.ag-hero__title--zen .ag-tline{white-space:normal;font-size:clamp(1.6rem,8vw,2.4rem)}}
+        /* Titre 2 COLONNES : gauche SÉCU (rouge), droite CRÉA (bleu), chacune sur 1 LIGNE.
+           Police FORCÉE Manrope partout (plus aucun mélange serif). L'éclair passe entre. */
+        .ag-hero__title--2c{display:grid;grid-template-columns:1fr 1fr;gap:0 64px;align-items:center;
+            max-width:940px;margin:0 auto 4px;font-family:var(--font-sans),'Manrope',sans-serif;font-weight:800;line-height:1.08}
+        .ag-2c{display:flex;flex-direction:column;gap:4px}
+        .ag-2c--secu{text-align:right;align-items:flex-end}
+        .ag-2c--crea{text-align:left;align-items:flex-start}
+        .ag-2c__k{font-size:.7rem;font-weight:800;letter-spacing:2px;text-transform:uppercase}
+        .ag-2c--secu .ag-2c__k{color:#FF8A8A}
+        .ag-2c--crea .ag-2c__k{color:#9CCBFF}
+        .ag-2c__l{white-space:nowrap;font-size:clamp(1.35rem,3.1vw,2.4rem);line-height:1.05}
+        .ag-2c--secu .ag-2c__l{color:#FF5A5A;text-shadow:0 2px 18px rgba(225,15,26,.5)}
+        .ag-2c--crea .ag-2c__l{color:#5BA8FF;text-shadow:0 2px 18px rgba(40,110,220,.5)}
+        .ag-hero__zen{text-align:center;font-family:var(--font-sans),'Manrope',sans-serif;font-weight:800;
+            color:#F3D27A;text-shadow:0 2px 20px rgba(243,210,122,.4);
+            font-size:clamp(1.35rem,3.2vw,2.4rem);line-height:1.1;white-space:nowrap;margin:6px auto 20px}
+        @media(max-width:700px){
+            .ag-hero__title--2c{grid-template-columns:1fr;gap:12px;text-align:center}
+            .ag-2c--secu,.ag-2c--crea{text-align:center;align-items:center}
+            .ag-2c__l,.ag-hero__zen{white-space:normal}
+        }
         </style>
 
         <p class="ag-hero__sub">
