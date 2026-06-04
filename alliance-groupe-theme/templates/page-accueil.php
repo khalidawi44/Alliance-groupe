@@ -8,25 +8,26 @@ get_header();
 <!-- Hero -->
 <section class="ag-hero" id="ag-main-content">
     <?php
-    // HERO SPLIT DIAGONAL « ÉCLAIR » : 2 pôles côte à côte, séparés par un éclair.
-    //  - Gauche  = SÉCURITÉ  : option ag_tester_img_secu     OU assets/images/securite/secu.jpg     OU dégradé cyber.
-    //  - Droite  = CRÉATION  : option ag_tester_img_creation OU assets/images/securite/creation.jpg OU dégradé doré.
-    $ag_secu_bg = function_exists( 'ag_tester_opt' ) ? ag_tester_opt( 'img_secu' ) : '';
+    // HERO SPLIT « ÉCLAIR » : 2 images coupées NET par un éclair doré en zigzag.
+    //  - GAUCHE = SÉCURITÉ  : option img_secu  -> sinon img_menace -> sinon dégradé cyber.
+    //  - DROITE = CRÉATION  : option img_creation -> sinon photo bureau Naples (toi) -> dégradé doré.
+    $ag_secu_bg = function_exists( 'ag_tester_opt' ) ? ( ag_tester_opt( 'img_secu' ) ?: ag_tester_opt( 'img_menace' ) ) : '';
     if ( ! $ag_secu_bg ) {
         $p = get_stylesheet_directory() . '/assets/images/securite/secu.jpg';
         if ( file_exists( $p ) ) { $ag_secu_bg = get_stylesheet_directory_uri() . '/assets/images/securite/secu.jpg'; }
     }
     $ag_crea_bg = function_exists( 'ag_tester_opt' ) ? ag_tester_opt( 'img_creation' ) : '';
     if ( ! $ag_crea_bg ) {
-        $p = get_stylesheet_directory() . '/assets/images/securite/creation.jpg';
-        if ( file_exists( $p ) ) { $ag_crea_bg = get_stylesheet_directory_uri() . '/assets/images/securite/creation.jpg'; }
+        // Ta photo dans le bureau de Naples = visuel « création / l'humain derrière les sites ».
+        $p = get_stylesheet_directory() . '/assets/images/team/1_bureau_naples.jpg';
+        if ( file_exists( $p ) ) { $ag_crea_bg = get_stylesheet_directory_uri() . '/assets/images/team/1_bureau_naples.jpg'; }
     }
     $ag_secu_style = $ag_secu_bg
-        ? "background-image:linear-gradient(115deg,rgba(5,7,14,.74),rgba(8,12,26,.62)),url('" . esc_url( $ag_secu_bg ) . "')"
-        : 'background-image:radial-gradient(circle at 30% 30%,rgba(40,70,140,.30),transparent 60%),linear-gradient(160deg,#0a1024 0%,#070a14 70%,#05060c 100%)';
+        ? "background-image:linear-gradient(0deg,rgba(5,7,14,.45),rgba(6,9,18,.35)),url('" . esc_url( $ag_secu_bg ) . "')"
+        : 'background-image:radial-gradient(circle at 30% 35%,rgba(40,70,140,.32),transparent 60%),linear-gradient(160deg,#0a1024 0%,#070a14 70%,#05060c 100%)';
     $ag_crea_style = $ag_crea_bg
-        ? "background-image:linear-gradient(115deg,rgba(20,12,4,.55),rgba(8,7,12,.62)),url('" . esc_url( $ag_crea_bg ) . "')"
-        : 'background-image:radial-gradient(circle at 70% 35%,rgba(243,122,31,.30),transparent 60%),linear-gradient(160deg,#1a130a 0%,#120c08 70%,#0a0a0f 100%)';
+        ? "background-image:linear-gradient(0deg,rgba(10,8,4,.40),rgba(8,7,12,.32)),url('" . esc_url( $ag_crea_bg ) . "')"
+        : 'background-image:radial-gradient(circle at 70% 40%,rgba(243,122,31,.30),transparent 60%),linear-gradient(160deg,#1a130a 0%,#120c08 70%,#0a0a0f 100%)';
     ?>
     <div class="ag-hero__split" aria-hidden="true">
         <div class="ag-hero__half ag-hero__half--secu" style="<?php echo $ag_secu_style; ?>">
@@ -35,46 +36,45 @@ get_header();
         <div class="ag-hero__half ag-hero__half--crea" style="<?php echo $ag_crea_style; ?>">
             <span class="ag-hero__half-tag ag-hero__half-tag--r">Création &amp; SEO ✨</span>
         </div>
-        <!-- Éclair lumineux sur la jointure diagonale -->
+        <!-- Éclair DORÉ tranchant posé pile sur la jointure (bords nets) -->
         <svg class="ag-hero__bolt" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
             <defs>
-                <linearGradient id="agBoltG" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0" stop-color="#fff"/>
+                <linearGradient id="agBoltG" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#FFF3CF"/>
                     <stop offset=".5" stop-color="#F3D27A"/>
                     <stop offset="1" stop-color="#F37A1F"/>
                 </linearGradient>
             </defs>
-            <polygon class="ag-hero__bolt-fill" points="62,-2 50,40 58,40 40,102 46,55 38,55 54,-2"
-                     fill="url(#agBoltG)"/>
+            <!-- halo large -->
+            <polyline class="ag-bolt-glow" points="58,0 52,18 60,20 46,45 54,47 40,72 48,74 38,100"
+                      fill="none" stroke="#F3D27A" stroke-width="2.4" stroke-linejoin="miter"/>
+            <!-- trait net -->
+            <polyline class="ag-bolt-core" points="58,0 52,18 60,20 46,45 54,47 40,72 48,74 38,100"
+                      fill="none" stroke="url(#agBoltG)" stroke-width="0.7" stroke-linejoin="miter"/>
         </svg>
     </div>
     <div class="ag-hero__video-veil" aria-hidden="true"></div>
     <style>
-    /* Home : hero plus court (on enchaîne vite sur la menace) */
-    body.home .ag-hero{min-height:78vh;padding-top:140px;padding-bottom:60px}
+    body.home .ag-hero{min-height:80vh;padding-top:140px;padding-bottom:60px}
     @media(max-width:900px){body.home .ag-hero{min-height:auto;padding-top:120px}}
     .ag-hero__naples,.ag-hero__boats,.ag-hero__particles,.ag-hero__vesuvius,.ag-hero__sunglow{display:none!important}
-    /* ── SPLIT DIAGONAL ───────────────────────────────────────── */
-    .ag-hero__split{position:absolute;inset:0;z-index:0;overflow:hidden}
+    /* ── SPLIT ÉCLAIR : la frontière des 2 images EST le zigzag (coupe nette) ── */
+    .ag-hero__split{position:absolute;inset:0;z-index:0;overflow:hidden;background:#05060c}
     .ag-hero__half{position:absolute;inset:0;background-size:cover;background-position:center}
-    /* coupe diagonale (gauche large en haut, étroite en bas) */
-    .ag-hero__half--secu{clip-path:polygon(0 0, 57% 0, 43% 100%, 0 100%)}
-    .ag-hero__half--crea{clip-path:polygon(57% 0, 100% 0, 100% 100%, 43% 100%)}
-    .ag-hero__half-tag{position:absolute;top:18px;left:20px;font-size:.72rem;font-weight:800;letter-spacing:2px;
-        text-transform:uppercase;color:rgba(255,255,255,.78);background:rgba(0,0,0,.32);
-        border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:5px 12px}
-    .ag-hero__half-tag--r{left:auto;right:20px;color:#F3D27A}
-    /* éclair sur la jointure */
-    .ag-hero__bolt{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;
-        filter:drop-shadow(0 0 14px rgba(243,210,122,.65)) drop-shadow(0 0 40px rgba(243,122,31,.4))}
-    .ag-hero__bolt-fill{animation:agBoltPulse 3.4s ease-in-out infinite}
-    @keyframes agBoltPulse{0%,100%{opacity:.85}45%{opacity:1}50%{opacity:.6}55%{opacity:1}}
-    /* voile global pour lisibilité du texte */
-    .ag-hero__video-veil{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 70% 80% at 50% 42%,rgba(5,6,12,.35) 0%,rgba(5,6,12,.82) 100%)}
-    @media (prefers-reduced-motion: reduce){.ag-hero__bolt-fill{animation:none}}
-    @media(max-width:600px){
-        .ag-hero__half-tag{top:12px;font-size:.62rem;padding:4px 9px}
-    }
+    .ag-hero__half--secu{clip-path:polygon(0 0, 58% 0, 52% 18%, 60% 20%, 46% 45%, 54% 47%, 40% 72%, 48% 74%, 38% 100%, 0 100%)}
+    .ag-hero__half--crea{clip-path:polygon(58% 0, 100% 0, 100% 100%, 38% 100%, 48% 74%, 40% 72%, 54% 47%, 46% 45%, 60% 20%, 52% 18%)}
+    .ag-hero__half-tag{position:absolute;top:20px;left:22px;font-size:.72rem;font-weight:800;letter-spacing:2px;
+        text-transform:uppercase;color:#fff;background:rgba(0,0,0,.45);
+        border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:6px 13px}
+    .ag-hero__half-tag--r{left:auto;right:22px;color:#F3D27A;border-color:rgba(243,210,122,.4)}
+    .ag-hero__bolt{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+    .ag-bolt-glow{opacity:.5;filter:blur(2px)}
+    .ag-bolt-core{filter:drop-shadow(0 0 6px rgba(255,220,140,.95));animation:agBoltFlash 3.6s ease-in-out infinite}
+    @keyframes agBoltFlash{0%,100%{opacity:1}48%{opacity:1}50%{opacity:.55}52%{opacity:1}}
+    /* voile bas léger pour la lisibilité du texte (séparation reste nette en haut) */
+    .ag-hero__video-veil{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(5,6,12,.18) 0%,rgba(5,6,12,.30) 45%,rgba(5,6,12,.80) 100%)}
+    @media (prefers-reduced-motion: reduce){.ag-bolt-core{animation:none}}
+    @media(max-width:600px){.ag-hero__half-tag{top:12px;font-size:.6rem;padding:4px 9px}}
     </style>
     <!-- Mesh gradient WebGL conservé en sur-couche très subtile (skippé sur mobile/<4 cores) -->
     <?php get_template_part('template-parts/mesh-gradient-bg'); ?>
