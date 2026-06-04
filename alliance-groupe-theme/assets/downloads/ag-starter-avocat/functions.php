@@ -115,10 +115,27 @@ if ( ! function_exists( 'ag_starter_avocat_menu_fallback' ) ) :
 			'number'      => 5,
 			'exclude'     => implode( ',', $exclude_ids ),
 		) );
-		if ( ! $pages ) {
+		if ( $pages ) {
+			echo '<ul class="ag-primary-menu">' . $pages . '</ul>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			return;
 		}
-		echo '<ul class="ag-primary-menu">' . $pages . '</ul>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+		// Aucune Page reelle (import de contenu pas encore lance) : on affiche
+		// un menu par defaut pointant vers les sections standard du cabinet,
+		// pour que le menu ne soit JAMAIS vide.
+		$defaults = array(
+			''            => __( 'Accueil', 'ag-starter-avocat' ),
+			'expertise'   => __( "Domaines d'expertise", 'ag-starter-avocat' ),
+			'honoraires'  => __( 'Honoraires', 'ag-starter-avocat' ),
+			'cabinet'     => __( 'Le cabinet', 'ag-starter-avocat' ),
+			'rendez-vous' => __( 'Prendre rendez-vous', 'ag-starter-avocat' ),
+		);
+		echo '<ul class="ag-primary-menu">';
+		foreach ( $defaults as $slug => $label ) {
+			$url = $slug ? home_url( '/' . $slug . '/' ) : home_url( '/' );
+			echo '<li class="menu-item"><a href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a></li>';
+		}
+		echo '</ul>';
 	}
 endif;
 
