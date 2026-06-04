@@ -12,8 +12,9 @@ get_header();
         </div>
         <div class="ag-hero__content">
             <span class="ag-tag ag-anim" data-anim="tag">À propos</span>
-            <h1 class="ag-hero__title" data-noreveal style="font-size:clamp(1.7rem,4vw,2.8rem);line-height:1.15;max-width:880px;margin-left:auto;margin-right:auto;">
-                <span class="ag-line">Un <em>artisan du web</em>, basé à Naples &amp; Nantes</span>
+            <h1 class="ag-hero__title" data-noreveal style="font-size:clamp(1.6rem,3.6vw,2.6rem);line-height:1.18;max-width:760px;margin-left:auto;margin-right:auto;text-wrap:balance;">
+                <span class="ag-line" style="display:block;">Un <em>artisan du web</em>,</span>
+                <span class="ag-line" style="display:block;">basé à <span style="white-space:nowrap">Naples &amp; Nantes</span></span>
             </h1>
             <span class="ag-heritage-strip ag-heritage-strip--center" aria-hidden="true"></span>
             <p class="ag-hero__sub">Alliance Groupe, c'est <strong>un studio indépendant</strong> : un interlocuteur unique, du conseil à la livraison. Sécurité, création de sites et SEO — sans intermédiaire, sans jargon.</p>
