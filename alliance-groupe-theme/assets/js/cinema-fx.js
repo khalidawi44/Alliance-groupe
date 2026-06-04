@@ -172,8 +172,10 @@
 	// =====================================================================
 	function initTextReveal() {
 		if (REDUCED) return;
-		// Cible : tous les H1/H2 dans des sections + éléments avec data-reveal
-		var els = document.querySelectorAll('h1.ag-hero__title, .ag-section h2, [data-reveal]');
+		// Cible : tous les H1/H2 dans des sections + éléments avec data-reveal.
+		// On EXCLUT tout élément marqué data-noreveal (titres qui ne doivent pas
+		// être redécoupés/animés après chargement -> évite le "ça saute").
+		var els = document.querySelectorAll('h1.ag-hero__title:not([data-noreveal]), .ag-section h2:not([data-noreveal]), [data-reveal]:not([data-noreveal])');
 		if (!els.length || !('IntersectionObserver' in window)) return;
 
 		els.forEach(function (el) {

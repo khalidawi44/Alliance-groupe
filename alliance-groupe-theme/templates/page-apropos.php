@@ -12,7 +12,7 @@ get_header();
         </div>
         <div class="ag-hero__content">
             <span class="ag-tag ag-anim" data-anim="tag">À propos</span>
-            <h1 class="ag-hero__title" style="font-size:clamp(1.7rem,4vw,2.8rem);line-height:1.15;max-width:880px;margin-left:auto;margin-right:auto;">
+            <h1 class="ag-hero__title" data-noreveal style="font-size:clamp(1.7rem,4vw,2.8rem);line-height:1.15;max-width:880px;margin-left:auto;margin-right:auto;">
                 <span class="ag-line">Un <em>artisan du web</em>, basé à Naples &amp; Nantes</span>
             </h1>
             <span class="ag-heritage-strip ag-heritage-strip--center" aria-hidden="true"></span>
