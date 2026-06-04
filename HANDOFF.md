@@ -2,6 +2,7 @@
 
 > Document de reprise pour toute nouvelle session Claude (PC ou mobile via GitHub MCP).
 > Dernière mise à jour : 2026-06-04 — branche de travail : `claude/conversation-linking-bug-O6HUR` (tampon auto à chaque commit).
+> **📸 RAPPEL ACTIF (demande Fabrice 04/06) — CAPTURES TEMPLATES À INTÉGRER** : Fabrice a fait les captures **avocat** + **coach** (et prend les autres au fur et à mesure : restaurant, artisan, barber, association). Dès qu'il les envoie → les déposer dans **`alliance-groupe-theme/assets/images/templates/<slug>.jpg`** (slugs exacts : `avocat`, `restaurant`, `artisan`, `coach`, `barber`, `association`) — c'est l'aperçu réel utilisé par `templates/page-templates.php` (fallback image générique si absent). Idéalement format **16/10**, ~1200px, compressées (Pillow q72). Puis commit + push + SYNC. **LE RAPPELER tant que les 6 ne sont pas toutes en place.**
 > **🔒 RÈGLE PERMANENTE (demande Fabrice) — APRÈS CHAQUE SCAN, TOUJOURS LE RAPPELER** : (1) mettre le rapport dans le **coffre VeraCrypt** ; (2) **EFFACER les rapports de Kali** (aucune donnée client en clair ne doit rester dans la VM). Outil dédié : **`pentest-bridge/coffre.sh`** (à installer 1× dans `/root/pentest-local/`) → `sudo ./coffre.sh` zippe le dernier rapport vers le dossier partagé PUIS shred+rm la copie Kali, et rappelle les étapes Windows (Mount VeraCrypt → déplacer le zip dans le coffre → Dismount → vider la corbeille). À redire à Fabrice à la fin de chaque audit.
 > **⚙️ PRÉFÉRENCE FABRICE — SCANS KALI TOUJOURS EN PROFIL `max`** (le plus exhaustif) par défaut, sauf demande contraire.
 > **🔧 À INSTALLER DANS KALI (rappel Fabrice)** : `sudo apt install -y testssl.sh` (sinon le module TLS/SSL affiche « testssl non installé — ignoré » ; le scan tourne quand même mais sans analyse TLS). Outils optionnels qui enrichissent `max` s'ils manquent : feroxbuster, gobuster, katana/hakrawler/gospider, gau/waybackurls, gowitness, theHarvester, sublist3r/subfinder, sslyze, dnsrecon, dig.
@@ -241,7 +242,7 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 5. **Images** (2 façons) : soit **coller les URLs** dans Réglages → Tester/Audit (Médiathèque), soit **déposer les fichiers dans le repo** : `assets/images/parcours/{audit,creation,maintenance,templates}.jpg` + `assets/images/securite/{menace,hacker}.jpg`. ⚠️ Les images hacker = OK pour Audit + mur ; Création/Maintenance/Templates = visuels POSITIFS (pas de masque).
 6. **Photo HD de Fabrizio** → `assets/images/team/fabrizio.jpg` (l'actuelle est un peu petite).
 7. **SIRET + statut juridique** dans mentions-légales / confidentialité (placeholders à remplir).
-8. **6 captures templates** (avocat/resto/artisan/coach/barber/asso) + **images système-prospection** (`assets/images/systeme-prospection/`) + **vidéo ambassadeur**.
+8. **6 captures templates** (avocat/resto/artisan/coach/barber/asso) → déposer dans **`assets/images/templates/<slug>.jpg`** (slugs: avocat, restaurant, artisan, coach, barber, association). **EN COURS 04/06** : avocat + coach capturés par Fabrice (à envoyer) ; restaurant/artisan/barber/association à venir. + **images système-prospection** (`assets/images/systeme-prospection/`) + **vidéo ambassadeur**.
 9. **Vrais avis Google** (si profil Google Business) pour la section témoignages.
 
 **Business / décisions :**
