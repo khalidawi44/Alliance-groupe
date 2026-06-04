@@ -254,14 +254,14 @@ get_header();
 @media(max-width:600px){.ag-trust__sep{display:none}.ag-trust__item{font-size:.85rem}}
 </style>
 
+<!-- 2 FAÇONS de concevoir son site (sur-mesure / templates) — split, puis les packs juste dessous -->
+<?php get_template_part('template-parts/templates-cta'); ?>
+
 <!-- P1/ VENDRE — offres création + maintenance (4x sans frais, sécurisé) -->
 <?php get_template_part('template-parts/home-offres'); ?>
 
 <!-- ON RECRUTE — programme ambassadeurs + outil vidéo Studio -->
 <?php get_template_part('template-parts/home-ambassadeurs'); ?>
-
-<!-- Templates métier — revenu passif, discret, plus bas -->
-<?php get_template_part('template-parts/templates-cta'); ?>
 
 <!-- About : studio solo (Fabrizio) — confiance / artisan unique -->
 <?php get_template_part('template-parts/about'); ?>
