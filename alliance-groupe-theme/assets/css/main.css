@@ -4116,3 +4116,25 @@ button:focus-visible{
     .ag-compare__vs{justify-self:center;margin:2px 0;}
     .ag-compare__col{padding:24px 20px;}
 }
+
+/* =========================================================================
+ * TYPOGRAPHIE GLOBALE — mise en forme propre (anti-coupures moches)
+ * text-wrap:balance = équilibre les lignes des TITRES (plus de mot seul,
+ * plus de "de bout / en bout"). text-wrap:pretty = évite les orphelins
+ * dans les paragraphes. Pris en charge par Chrome/Edge/Firefox récents,
+ * ignoré proprement par les anciens (aucun risque).
+ * ====================================================================== */
+h1, h2, h3, h4,
+.ag-hero__title, .ag-section__title, .ag-hero__zen,
+.ag-parallax__quote, blockquote, .ag-tpl-cta__title,
+.ag-home-offres__title, .ag-menace__title, .ag-menace__sol-title,
+.ag-faq h2, .ag-cta__title {
+    text-wrap: balance;
+}
+p, li,
+.ag-hero__sub, .ag-section__desc, .ag-menace__lead,
+.ag-menace__sol-text, .ag-faq-a p {
+    text-wrap: pretty;
+}
+/* Empêche la césure d'un mot au milieu (jamais "interlocu-teur") */
+h1, h2, h3, .ag-hero__title, .ag-section__title { overflow-wrap: normal; hyphens: none; }
