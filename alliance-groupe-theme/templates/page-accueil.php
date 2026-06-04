@@ -27,10 +27,10 @@ get_header();
         if ( file_exists( $p ) ) { $ag_crea_bg = get_stylesheet_directory_uri() . '/assets/images/team/1_bureau_naples.jpg'; }
     }
     $ag_secu_style = $ag_secu_bg
-        ? "background-image:linear-gradient(0deg,rgba(5,7,14,.45),rgba(6,9,18,.35)),url('" . esc_url( $ag_secu_bg ) . "')"
+        ? "background-image:linear-gradient(0deg,rgba(5,7,14,.22),rgba(6,9,18,.12)),url('" . esc_url( $ag_secu_bg ) . "')"
         : 'background-image:radial-gradient(circle at 30% 35%,rgba(40,70,140,.32),transparent 60%),linear-gradient(160deg,#0a1024 0%,#070a14 70%,#05060c 100%)';
     $ag_crea_style = $ag_crea_bg
-        ? "background-image:linear-gradient(0deg,rgba(10,8,4,.40),rgba(8,7,12,.32)),url('" . esc_url( $ag_crea_bg ) . "')"
+        ? "background-image:linear-gradient(0deg,rgba(10,8,4,.20),rgba(8,7,12,.12)),url('" . esc_url( $ag_crea_bg ) . "')"
         : 'background-image:radial-gradient(circle at 70% 40%,rgba(243,122,31,.30),transparent 60%),linear-gradient(160deg,#1a130a 0%,#120c08 70%,#0a0a0f 100%)';
     ?>
     <div class="ag-hero__split" aria-hidden="true">
@@ -40,21 +40,28 @@ get_header();
         <div class="ag-hero__half ag-hero__half--crea" style="<?php echo $ag_crea_style; ?>">
             <span class="ag-hero__half-tag ag-hero__half-tag--r">Création &amp; SEO ✨</span>
         </div>
-        <!-- Éclair DORÉ tranchant posé pile sur la jointure (bords nets) -->
+        <!-- VRAI ÉCLAIR : ligne déchiquetée irrégulière + ramifications, halo lumineux -->
         <svg class="ag-hero__bolt" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
             <defs>
                 <linearGradient id="agBoltG" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#FFF3CF"/>
-                    <stop offset=".5" stop-color="#F3D27A"/>
+                    <stop offset="0" stop-color="#FFFDF5"/>
+                    <stop offset=".5" stop-color="#F6D77A"/>
                     <stop offset="1" stop-color="#F37A1F"/>
                 </linearGradient>
             </defs>
-            <!-- halo large -->
-            <polyline class="ag-bolt-glow" points="58,0 52,18 60,20 46,45 54,47 40,72 48,74 38,100"
-                      fill="none" stroke="#F3D27A" stroke-width="2.4" stroke-linejoin="miter"/>
-            <!-- trait net -->
-            <polyline class="ag-bolt-core" points="58,0 52,18 60,20 46,45 54,47 40,72 48,74 38,100"
-                      fill="none" stroke="url(#agBoltG)" stroke-width="0.7" stroke-linejoin="miter"/>
+            <g fill="none" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke">
+                <!-- halo large diffus -->
+                <polyline class="ag-bolt-halo" points="54,0 49,11 57,21 48,31 55,42 46,53 53,63 45,74 51,85 43,100" stroke="#F6D77A" stroke-width="9"/>
+                <!-- lueur moyenne doré/orange -->
+                <polyline class="ag-bolt-glow" points="54,0 49,11 57,21 48,31 55,42 46,53 53,63 45,74 51,85 43,100" stroke="url(#agBoltG)" stroke-width="4"/>
+                <!-- ramifications -->
+                <polyline class="ag-bolt-glow" points="55,42 62,49 59,57" stroke="url(#agBoltG)" stroke-width="2.4"/>
+                <polyline class="ag-bolt-glow" points="46,53 39,61 41,69" stroke="url(#agBoltG)" stroke-width="2.4"/>
+                <!-- coeur blanc éclatant -->
+                <polyline class="ag-bolt-core" points="54,0 49,11 57,21 48,31 55,42 46,53 53,63 45,74 51,85 43,100" stroke="#FFFFFF" stroke-width="1.4"/>
+                <polyline class="ag-bolt-core" points="55,42 62,49 59,57" stroke="#FFFFFF" stroke-width="1"/>
+                <polyline class="ag-bolt-core" points="46,53 39,61 41,69" stroke="#FFFFFF" stroke-width="1"/>
+            </g>
         </svg>
     </div>
     <div class="ag-hero__video-veil" aria-hidden="true"></div>
@@ -62,22 +69,24 @@ get_header();
     body.home .ag-hero{min-height:80vh;padding-top:140px;padding-bottom:60px}
     @media(max-width:900px){body.home .ag-hero{min-height:auto;padding-top:120px}}
     .ag-hero__naples,.ag-hero__boats,.ag-hero__particles,.ag-hero__vesuvius,.ag-hero__sunglow{display:none!important}
-    /* ── SPLIT ÉCLAIR : la frontière des 2 images EST le zigzag (coupe nette) ── */
+    /* ── SPLIT ÉCLAIR : la frontière des 2 images suit la ligne déchiquetée ── */
     .ag-hero__split{position:absolute;inset:0;z-index:0;overflow:hidden;background:#05060c}
     .ag-hero__half{position:absolute;inset:0;background-size:cover;background-position:center}
-    .ag-hero__half--secu{clip-path:polygon(0 0, 58% 0, 52% 18%, 60% 20%, 46% 45%, 54% 47%, 40% 72%, 48% 74%, 38% 100%, 0 100%)}
-    .ag-hero__half--crea{clip-path:polygon(58% 0, 100% 0, 100% 100%, 38% 100%, 48% 74%, 40% 72%, 54% 47%, 46% 45%, 60% 20%, 52% 18%)}
+    .ag-hero__half--secu{clip-path:polygon(0 0, 54% 0, 49% 11%, 57% 21%, 48% 31%, 55% 42%, 46% 53%, 53% 63%, 45% 74%, 51% 85%, 43% 100%, 0 100%)}
+    .ag-hero__half--crea{clip-path:polygon(54% 0, 100% 0, 100% 100%, 43% 100%, 51% 85%, 45% 74%, 53% 63%, 46% 53%, 55% 42%, 48% 31%, 57% 21%, 49% 11%)}
     .ag-hero__half-tag{position:absolute;top:20px;left:22px;font-size:.72rem;font-weight:800;letter-spacing:2px;
         text-transform:uppercase;color:#fff;background:rgba(0,0,0,.45);
         border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:6px 13px}
     .ag-hero__half-tag--r{left:auto;right:22px;color:#F3D27A;border-color:rgba(243,210,122,.4)}
     .ag-hero__bolt{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
-    .ag-bolt-glow{opacity:.5;filter:blur(2px)}
-    .ag-bolt-core{filter:drop-shadow(0 0 6px rgba(255,220,140,.95));animation:agBoltFlash 3.6s ease-in-out infinite}
-    @keyframes agBoltFlash{0%,100%{opacity:1}48%{opacity:1}50%{opacity:.55}52%{opacity:1}}
+    .ag-bolt-halo{opacity:.45;filter:blur(5px)}
+    .ag-bolt-glow{filter:drop-shadow(0 0 5px rgba(246,215,122,.9))}
+    .ag-bolt-core{filter:drop-shadow(0 0 5px rgba(255,255,255,1)) drop-shadow(0 0 14px rgba(246,215,122,.85))}
+    .ag-hero__bolt g{animation:agBoltFlash 5s ease-in-out infinite}
+    @keyframes agBoltFlash{0%,7%,100%{opacity:1}3%{opacity:.55}4%{opacity:1}40%{opacity:1}42%{opacity:.7}44%{opacity:1}}
     /* voile bas léger pour la lisibilité du texte (séparation reste nette en haut) */
-    .ag-hero__video-veil{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(5,6,12,.18) 0%,rgba(5,6,12,.30) 45%,rgba(5,6,12,.80) 100%)}
-    @media (prefers-reduced-motion: reduce){.ag-bolt-core{animation:none}}
+    .ag-hero__video-veil{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(5,6,12,.10) 0%,rgba(5,6,12,.22) 45%,rgba(5,6,12,.78) 100%)}
+    @media (prefers-reduced-motion: reduce){.ag-hero__bolt g{animation:none}}
     @media(max-width:600px){.ag-hero__half-tag{top:12px;font-size:.6rem;padding:4px 9px}}
     </style>
     <!-- Mesh gradient WebGL conservé en sur-couche très subtile (skippé sur mobile/<4 cores) -->
@@ -104,11 +113,22 @@ get_header();
             <span class="ag-heritage-dots" aria-hidden="true"><span></span><span></span><span></span></span>
         </div>
 
-        <h1 class="ag-hero__title">
-            <span class="ag-line">Je <em>crée</em> votre site.</span>
-            <span class="ag-line">Je le <em>sécurise</em>.</span>
-            <span class="ag-line">Vous, vous respirez.</span>
+        <h1 class="ag-hero__title ag-hero__title--split">
+            <span class="ag-line ag-l--crea">Je <em>crée</em> votre site.</span>
+            <span class="ag-line ag-l--secu">Je le <em>sécurise</em>.</span>
+            <span class="ag-line ag-l--zen">Vous, vous respirez.</span>
         </h1>
+        <style>
+        /* Chaque pôle a sa couleur : création = bleu, sécurité = rouge, sérénité = doré */
+        .ag-hero__title--split .ag-line{display:block}
+        .ag-hero__title--split em{font-style:normal}
+        .ag-l--crea{color:#5BA8FF;text-shadow:0 2px 18px rgba(40,110,220,.45)}
+        .ag-l--crea em{color:#9CCBFF}
+        .ag-l--secu{color:#FF5A5A;text-shadow:0 2px 18px rgba(225,15,26,.45)}
+        .ag-l--secu em{color:#FF8A8A}
+        .ag-l--zen{color:#F3D27A;text-shadow:0 2px 18px rgba(243,210,122,.4)}
+        .ag-l--zen em{color:#FFE9A8}
+        </style>
 
         <p class="ag-hero__sub">
             Deux métiers, un seul interlocuteur : je <strong>sécurise</strong> votre site (audit + protection) et je <strong>crée des sites pro référencés</strong> (SEO). Chaque jour, <strong>30 000 sites sont piratés</strong> — on commence par révéler vos failles. Avant les autres.
