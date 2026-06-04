@@ -215,14 +215,10 @@ body:not(.home) .ag-hero .ag-hero__title{
     max-width: 14ch;
 }
 body:not(.home) .ag-hero .ag-hero__title em{
-    color: #D4B45C !important;
+    color: #F3D27A !important;
+    -webkit-text-fill-color: #F3D27A !important;
     font-style: italic;
-    background: linear-gradient(135deg, #D4B45C 0%, #F37A1F 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-fill-color: transparent;
-    filter: drop-shadow(0 2px 12px rgba(212,180,92,.4));
+    text-shadow: 0 2px 14px rgba(0,0,0,.55), 0 0 18px rgba(243,210,122,.35);
 }
 body:not(.home) .ag-hero .ag-line{ display:block; }
 
