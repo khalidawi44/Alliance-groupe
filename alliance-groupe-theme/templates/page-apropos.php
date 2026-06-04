@@ -6,7 +6,7 @@ get_header();
 ?>
 
 <main>
-    <section class="ag-hero" style="min-height:60vh;background:linear-gradient(rgba(8,8,14,.62),rgba(8,8,14,.80)),url('<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jpg' ); ?>') center/cover no-repeat;">
+    <section class="ag-hero" style="min-height:60vh;background:linear-gradient(rgba(8,8,14,.38),rgba(8,8,14,.62)),url('<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/cities/baie_naples_nuit.jpg' ); ?>') center/cover no-repeat;">
         <div class="ag-hero__bg">
             <div class="ag-hero__orb ag-hero__orb--1"></div>
         </div>
