@@ -4138,3 +4138,10 @@ p, li, figcaption,
 }
 /* Jamais de césure au milieu d'un mot (pas de "interlocu-teur") sur les titres */
 h1, h2, h3, h4, h5, h6 { overflow-wrap: normal; hyphens: none; }
+/* Les accents dorés (em) des titres restent INSÉCABLES : plus jamais "de / bout en bout" */
+h1 em, h2 em, h3 em, h4 em,
+.ag-hero__title em, .ag-section__title em, .ag-hero__zen em { white-space: nowrap; }
+@media (max-width: 600px){
+    h1 em, h2 em, h3 em, h4 em,
+    .ag-hero__title em, .ag-section__title em, .ag-hero__zen em { white-space: normal; }
+}

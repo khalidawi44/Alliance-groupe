@@ -26,7 +26,7 @@ get_header();
         <div class="ag-container">
             <div style="text-align:center;max-width:760px;margin:0 auto 48px;">
                 <span class="ag-tag">Le studio</span>
-                <h2 class="ag-section__title">Un seul interlocuteur, <em>de bout en bout</em></h2>
+                <h2 class="ag-section__title">Un seul interlocuteur,<br><em>de bout en bout</em></h2>
                 <p class="ag-section__desc" style="margin:0 auto;">Né et basé à Naples, et aussi à Nantes, je conçois et sécurise des sites web pour des entreprises ambitieuses. Pas d'usine, pas de sous-traitance opaque : vous parlez directement à la personne qui fait le travail. Pour les projets plus larges, je m'appuie sur un réseau de <strong>partenaires freelances de confiance</strong>, choisis au cas par cas.</p>
                 <figure style="max-width:560px;margin:36px auto 0;">
                     <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/team/1_bureau_naples.jpg' ); ?>" alt="Fabrizio dans son bureau à Naples" loading="lazy" style="width:100%;height:auto;display:block;border-radius:20px;border:1px solid rgba(212,180,92,.4);box-shadow:0 22px 55px rgba(0,0,0,.5);">
