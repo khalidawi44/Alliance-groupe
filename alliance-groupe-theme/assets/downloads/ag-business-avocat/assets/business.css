@@ -37,8 +37,9 @@ body.ag-business-active .ag-primary-menu a::before {
     animation: none !important;
 }
 body.ag-business-active .ag-primary-menu a {
+    color: #F5ECD6 !important;
     background: transparent !important;
-    text-shadow: none !important;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, .7) !important;
     transform: none !important;
     transition: color .25s ease !important;
     /* Compactage pour que tous les items tiennent sur une ligne */
@@ -91,9 +92,9 @@ body.ag-business-active .site-header .ag-container {
     }
 }
 body.ag-business-active .ag-primary-menu a:hover {
-    color: inherit !important;
+    color: #FFE5A0 !important;
     background: transparent !important;
-    text-shadow: none !important;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, .7) !important;
     transform: none !important;
 }
 body.ag-business-active .ag-primary-menu a::after {
@@ -105,6 +106,33 @@ body.ag-business-active .ag-primary-menu a::after {
 body.ag-business-active.ag-light .ag-primary-menu a::after {
     background: linear-gradient(90deg, transparent, #7B2D3B 20%, #A03D4D 50%, #7B2D3B 80%, transparent) !important;
     box-shadow: 0 0 6px rgba(123, 45, 59, .35) !important;
+}
+
+/* ── Couleurs du menu selon mode + etat scroll (lisibilite garantie) ──
+   Defaut (mode sombre) : creme clair sur le hero/header transparent.
+   Mode jour : bordeaux fonce sur le fond creme.
+   Header "scrolled" : fond solide (sombre en nuit, creme en jour) -> on
+   retire l'ombre devenue inutile et on garde un texte contraste. */
+body.ag-business-active.ag-light .ag-primary-menu a {
+    color: #2A1A1E !important;
+    text-shadow: none !important;
+}
+body.ag-business-active.ag-light .ag-primary-menu a:hover {
+    color: #7B2D3B !important;
+    text-shadow: none !important;
+}
+body.ag-business-active .ag-site-header.scrolled .ag-primary-menu a {
+    color: #F5ECD6 !important;
+    text-shadow: none !important;
+}
+body.ag-business-active .ag-site-header.scrolled .ag-primary-menu a:hover {
+    color: #FFE5A0 !important;
+}
+body.ag-business-active.ag-light .ag-site-header.scrolled .ag-primary-menu a {
+    color: #2A1A1E !important;
+}
+body.ag-business-active.ag-light .ag-site-header.scrolled .ag-primary-menu a:hover {
+    color: #7B2D3B !important;
 }
 
 /* ── Boutons CTA : aucune phase d'invisibilite au hover ──
