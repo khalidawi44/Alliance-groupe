@@ -8,13 +8,12 @@ get_header();
 <!-- Hero -->
 <section class="ag-hero" id="ag-main-content">
     <?php
-    // HERO SPLIT « ÉCLAIR » : 2 images coupées NET par un éclair doré en zigzag.
-    //  - GAUCHE = SÉCURITÉ  : option img_secu  -> sinon img_menace -> sinon dégradé cyber.
-    //  - DROITE = CRÉATION  : option img_creation -> sinon photo bureau Naples (toi) -> dégradé doré.
+    // HERO SPLIT LÉGER : 2 images (compressées) côte à côte, séparées par un trait doré droit.
+    //  - GAUCHE = SÉCURITÉ  : option img_secu -> img_menace -> hero-secu.jpg (hacker, compressé).
+    //  - DROITE = CRÉATION  : option img_creation -> photo bureau Naples (compressée).
     $ag_secu_bg = function_exists( 'ag_tester_opt' ) ? ( ag_tester_opt( 'img_secu' ) ?: ag_tester_opt( 'img_menace' ) ) : '';
     if ( ! $ag_secu_bg ) {
-        // Visuels sécurité fournis (dossier securite/). Par défaut : hacker masqué + mur LED (fort, coloré).
-        foreach ( array( 'secu.jpg', 'max-bender-XIVDN9cxOVc-unsplash.jpg', 'kaptured-by-kasia-7Ss09bTO5Zo-unsplash.jpg' ) as $f ) {
+        foreach ( array( 'secu.jpg', 'hero-secu.jpg' ) as $f ) {
             if ( file_exists( get_stylesheet_directory() . '/assets/images/securite/' . $f ) ) {
                 $ag_secu_bg = get_stylesheet_directory_uri() . '/assets/images/securite/' . $f; break;
             }
@@ -22,16 +21,15 @@ get_header();
     }
     $ag_crea_bg = function_exists( 'ag_tester_opt' ) ? ag_tester_opt( 'img_creation' ) : '';
     if ( ! $ag_crea_bg ) {
-        // Ta photo dans le bureau de Naples = visuel « création / l'humain derrière les sites ».
         $p = get_stylesheet_directory() . '/assets/images/team/1_bureau_naples.jpg';
         if ( file_exists( $p ) ) { $ag_crea_bg = get_stylesheet_directory_uri() . '/assets/images/team/1_bureau_naples.jpg'; }
     }
     $ag_secu_style = $ag_secu_bg
-        ? "background-image:linear-gradient(0deg,rgba(5,7,14,.22),rgba(6,9,18,.12)),url('" . esc_url( $ag_secu_bg ) . "')"
-        : 'background-image:radial-gradient(circle at 30% 35%,rgba(40,70,140,.32),transparent 60%),linear-gradient(160deg,#0a1024 0%,#070a14 70%,#05060c 100%)';
+        ? "background-image:linear-gradient(0deg,rgba(5,7,14,.30),rgba(6,9,18,.18)),url('" . esc_url( $ag_secu_bg ) . "')"
+        : 'background-image:linear-gradient(160deg,#0a1024 0%,#070a14 70%,#05060c 100%)';
     $ag_crea_style = $ag_crea_bg
-        ? "background-image:linear-gradient(0deg,rgba(10,8,4,.20),rgba(8,7,12,.12)),url('" . esc_url( $ag_crea_bg ) . "')"
-        : 'background-image:radial-gradient(circle at 70% 40%,rgba(243,122,31,.30),transparent 60%),linear-gradient(160deg,#1a130a 0%,#120c08 70%,#0a0a0f 100%)';
+        ? "background-image:linear-gradient(0deg,rgba(10,8,4,.30),rgba(8,7,12,.18)),url('" . esc_url( $ag_crea_bg ) . "')"
+        : 'background-image:linear-gradient(160deg,#1a130a 0%,#120c08 70%,#0a0a0f 100%)';
     ?>
     <div class="ag-hero__split" aria-hidden="true">
         <div class="ag-hero__half ag-hero__half--secu" style="<?php echo $ag_secu_style; ?>">
@@ -40,62 +38,24 @@ get_header();
         <div class="ag-hero__half ag-hero__half--crea" style="<?php echo $ag_crea_style; ?>">
             <span class="ag-hero__half-tag ag-hero__half-tag--r">Création &amp; SEO ✨</span>
         </div>
-        <!-- VRAI ÉCLAIR : ligne déchiquetée irrégulière + ramifications, halo lumineux -->
-        <svg class="ag-hero__bolt" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <defs>
-                <linearGradient id="agBoltG" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#FFFDF5"/>
-                    <stop offset=".5" stop-color="#F6D77A"/>
-                    <stop offset="1" stop-color="#F37A1F"/>
-                </linearGradient>
-            </defs>
-            <g fill="none" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke">
-                <!-- halo large diffus (diagonale qui TRAVERSE le hero : haut-gauche -> bas-droite) -->
-                <polyline class="ag-bolt-halo" points="20,0 35,15 24,29 46,43 34,56 58,69 47,81 74,93 64,100" stroke="#F6D77A" stroke-width="9"/>
-                <!-- lueur moyenne doré/orange -->
-                <polyline class="ag-bolt-glow" points="20,0 35,15 24,29 46,43 34,56 58,69 47,81 74,93 64,100" stroke="url(#agBoltG)" stroke-width="4"/>
-                <!-- ramifications -->
-                <polyline class="ag-bolt-glow" points="46,43 56,40 60,47" stroke="url(#agBoltG)" stroke-width="2.4"/>
-                <polyline class="ag-bolt-glow" points="34,56 26,60 28,68" stroke="url(#agBoltG)" stroke-width="2.4"/>
-                <!-- coeur blanc éclatant -->
-                <polyline class="ag-bolt-core" points="20,0 35,15 24,29 46,43 34,56 58,69 47,81 74,93 64,100" stroke="#FFFFFF" stroke-width="1.4"/>
-                <polyline class="ag-bolt-core" points="46,43 56,40 60,47" stroke="#FFFFFF" stroke-width="1"/>
-                <polyline class="ag-bolt-core" points="34,56 26,60 28,68" stroke="#FFFFFF" stroke-width="1"/>
-            </g>
-        </svg>
     </div>
     <div class="ag-hero__video-veil" aria-hidden="true"></div>
     <style>
-    body.home .ag-hero{min-height:80vh;padding-top:140px;padding-bottom:60px}
+    body.home .ag-hero{min-height:78vh;padding-top:140px;padding-bottom:60px}
     @media(max-width:900px){body.home .ag-hero{min-height:auto;padding-top:120px}}
     .ag-hero__naples,.ag-hero__boats,.ag-hero__particles,.ag-hero__vesuvius,.ag-hero__sunglow{display:none!important}
-    /* ── SPLIT ÉCLAIR : la frontière des 2 images suit la ligne déchiquetée ── */
+    /* SPLIT DROIT : 2 moitiés 50/50, séparées par un trait doré net. Aucune animation. */
     .ag-hero__split{position:absolute;inset:0;z-index:0;overflow:hidden;background:#05060c}
-    .ag-hero__half{position:absolute;inset:0;background-size:cover;background-position:center}
-    /* la frontière des 2 images suit la diagonale-éclair (mêmes points que la polyline) */
-    .ag-hero__half--secu{clip-path:polygon(0 0, 20% 0, 35% 15%, 24% 29%, 46% 43%, 34% 56%, 58% 69%, 47% 81%, 74% 93%, 64% 100%, 0 100%)}
-    .ag-hero__half--crea{clip-path:polygon(20% 0, 100% 0, 100% 100%, 64% 100%, 74% 93%, 47% 81%, 58% 69%, 34% 56%, 46% 43%, 24% 29%, 35% 15%)}
+    .ag-hero__half{position:absolute;top:0;bottom:0;width:50%;background-size:cover;background-position:center}
+    .ag-hero__half--secu{left:0;border-right:2px solid rgba(243,210,122,.8);box-shadow:2px 0 18px rgba(243,210,122,.25)}
+    .ag-hero__half--crea{right:0}
     .ag-hero__half-tag{position:absolute;top:20px;left:22px;font-size:.72rem;font-weight:800;letter-spacing:2px;
-        text-transform:uppercase;color:#fff;background:rgba(0,0,0,.45);
+        text-transform:uppercase;color:#fff;background:rgba(0,0,0,.5);
         border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:6px 13px}
     .ag-hero__half-tag--r{left:auto;right:22px;color:#F3D27A;border-color:rgba(243,210,122,.4)}
-    .ag-hero__bolt{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
-    .ag-bolt-halo{opacity:.45;filter:blur(5px)}
-    .ag-bolt-glow{filter:drop-shadow(0 0 5px rgba(246,215,122,.9))}
-    .ag-bolt-core{filter:drop-shadow(0 0 5px rgba(255,255,255,1)) drop-shadow(0 0 14px rgba(246,215,122,.85))}
-    .ag-hero__bolt g{animation:agBoltFlash 5s ease-in-out infinite}
-    @keyframes agBoltFlash{0%,7%,100%{opacity:1}3%{opacity:.55}4%{opacity:1}40%{opacity:1}42%{opacity:.7}44%{opacity:1}}
-    /* voile bas léger pour la lisibilité du texte (séparation reste nette en haut) */
-    .ag-hero__video-veil{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(5,6,12,.10) 0%,rgba(5,6,12,.22) 45%,rgba(5,6,12,.78) 100%)}
-    @media (prefers-reduced-motion: reduce){.ag-hero__bolt g{animation:none}}
+    .ag-hero__video-veil{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(5,6,12,.12) 0%,rgba(5,6,12,.24) 45%,rgba(5,6,12,.80) 100%)}
     @media(max-width:600px){.ag-hero__half-tag{top:12px;font-size:.6rem;padding:4px 9px}}
     </style>
-    <!-- Mesh gradient WebGL conservé en sur-couche très subtile (skippé sur mobile/<4 cores) -->
-    <?php get_template_part('template-parts/mesh-gradient-bg'); ?>
-    <!-- Grille tech high-tech parallax qui réagit à la souris -->
-    <?php get_template_part('template-parts/hero-tech-grid'); ?>
-    <!-- Scène 3D Three.js temporairement désactivée — on garde le téléphone CSS qui marche partout. -->
-    <?php // get_template_part('template-parts/hero-3d-scene'); ?>
     <div class="ag-hero__bg">
         <div class="ag-hero__circles">
             <div class="ag-hero__circle"></div>
@@ -134,7 +94,7 @@ get_header();
         .ag-col__k{font-size:.74rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;opacity:.85}
         .ag-col--secu .ag-col__k{color:#FF8A8A}
         .ag-col--crea .ag-col__k{color:#9CCBFF}
-        .ag-hero__title--cols em{font-style:normal}
+        .ag-hero__title--cols em{font-style:normal;font-family:inherit;font-weight:inherit}
         .ag-l--crea{color:#5BA8FF;text-shadow:0 2px 18px rgba(40,110,220,.5)}
         .ag-l--crea em{color:#9CCBFF}
         .ag-l--secu{color:#FF5A5A;text-shadow:0 2px 18px rgba(225,15,26,.5)}
