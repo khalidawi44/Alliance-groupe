@@ -91,12 +91,29 @@ add_action( 'after_setup_theme', 'ag_starter_avocat_setup' );
  */
 if ( ! function_exists( 'ag_starter_avocat_menu_fallback' ) ) :
 	function ag_starter_avocat_menu_fallback() {
+		// On exclut les pages utilitaires (legal, e-commerce) qui n'ont rien
+		// a faire dans le menu principal, puis on limite a 5 onglets pour
+		// rester epure.
+		$exclude_slugs = array(
+			'mentions-legales', 'politique-de-confidentialite', 'confidentialite',
+			'politique-de-cookies', 'cookies', 'cgv', 'cgu', 'conditions-generales',
+			'plan-du-site', 'panier', 'commande', 'mon-compte', 'checkout', 'cart',
+			'my-account', 'livraison', 'retours', 'remboursement',
+		);
+		$exclude_ids = array();
+		foreach ( $exclude_slugs as $slug ) {
+			$p = get_page_by_path( $slug );
+			if ( $p ) {
+				$exclude_ids[] = $p->ID;
+			}
+		}
 		$pages = wp_list_pages( array(
 			'echo'        => false,
 			'title_li'    => '',
 			'depth'       => 1,
 			'sort_column' => 'menu_order, post_title',
-			'number'      => 7,
+			'number'      => 5,
+			'exclude'     => implode( ',', $exclude_ids ),
 		) );
 		if ( ! $pages ) {
 			return;
