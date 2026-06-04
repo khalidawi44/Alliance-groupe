@@ -83,6 +83,29 @@ endif;
 add_action( 'after_setup_theme', 'ag_starter_avocat_setup' );
 
 /**
+ * Menu de secours : si AUCUN menu n'est assigne a l'emplacement "primary"
+ * (ce qui arrive a chaque changement de theme, les emplacements etant lies
+ * au theme actif), on liste automatiquement les pages du site. Ainsi le
+ * menu n'est JAMAIS vide — il suffira ensuite, si on veut, de creer un menu
+ * sur-mesure dans Apparence > Menus.
+ */
+if ( ! function_exists( 'ag_starter_avocat_menu_fallback' ) ) :
+	function ag_starter_avocat_menu_fallback() {
+		$pages = wp_list_pages( array(
+			'echo'        => false,
+			'title_li'    => '',
+			'depth'       => 1,
+			'sort_column' => 'menu_order, post_title',
+			'number'      => 7,
+		) );
+		if ( ! $pages ) {
+			return;
+		}
+		echo '<ul class="ag-primary-menu">' . $pages . '</ul>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+endif;
+
+/**
  * Helper: read a Customizer option (alias for ag_starter_avocat_get_option
  * with a runtime fallback default for safety).
  */
