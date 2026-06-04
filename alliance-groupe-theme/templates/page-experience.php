@@ -63,7 +63,7 @@ $orbs = array(
 		),
 	),
 	array(
-		'label' => 'Créer sécurisé', 'x' => 84, 'y' => 30,
+		'label' => 'Créer mon site', 'x' => 84, 'y' => 30,
 		'sub'   => array(
 			array( 'l' => 'Sites Express',       'u' => home_url( '/sites-express' ),       'd' => 'Site pro livré, sécurisé dès le départ.', 'ico' => 'rocket' ),
 			array( 'l' => 'Sur-mesure',          'u' => home_url( '/sur-mesure' ),          'd' => 'Projet ambitieux, blindé.',              'ico' => 'gem' ),
@@ -240,9 +240,9 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 .agx__card-icon{display:flex;align-items:center;justify-content:center;height:118px;line-height:1;color:#F3D27A;background:linear-gradient(145deg,rgba(212,180,92,.22),rgba(243,122,31,.10) 45%,rgba(12,14,22,.55));border-bottom:1px solid rgba(212,180,92,.28)}
 .agx__card-icon svg{width:54px;height:54px;display:block;filter:drop-shadow(0 4px 14px rgba(243,122,31,.4))}
 .agx__card-body{display:flex;flex-direction:column;gap:7px;padding:18px}
-.agx__card-ttl{font-family:Georgia,serif;font-size:1.18rem;color:#fff}
-.agx__card-desc{font-size:.9rem;line-height:1.5;color:rgba(255,255,255,.72)}
-.agx__card-cta{margin-top:6px;color:#D4B45C;font-weight:800;letter-spacing:1px;text-transform:uppercase;font-size:.78rem}
+.agx__card-ttl{font-family:Georgia,serif;font-size:1.5rem;color:#fff;line-height:1.15;text-shadow:0 2px 10px rgba(0,0,0,.6)}
+.agx__card-desc{font-size:1.02rem;line-height:1.5;color:rgba(255,255,255,.9)}
+.agx__card-cta{margin-top:8px;color:#F3D27A;font-weight:800;letter-spacing:1px;text-transform:uppercase;font-size:.92rem}
 @media (max-width:720px){
 	.agx__orb-label{font-size:.72rem}
 	.agx__cards{gap:16px}
