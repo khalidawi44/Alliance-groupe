@@ -283,6 +283,15 @@ class AG_Starter_Companion {
 			delete_option( 'ag_starter_companion_done_' . $slug );
 			echo '<div class="notice notice-warning"><p><strong>' . esc_html__( 'Contenu demo supprime.', 'ag-starter-companion' ) . '</strong></p></div>';
 		}
+		if ( isset( $_POST['ag_do_cleanup'] ) && check_admin_referer( 'ag_starter_companion_cleanup' ) ) {
+			$report = $this->run_cleanup( $slug );
+			update_option( 'ag_starter_companion_done_' . $slug, time() );
+			echo '<div class="notice notice-success"><p><strong>' . esc_html__( 'Nettoyage termine.', 'ag-starter-companion' ) . '</strong></p><ul style="list-style:disc;padding-left:20px;">';
+			foreach ( $report as $line ) {
+				echo '<li>' . esc_html( $line ) . '</li>';
+			}
+			echo '</ul><p><a href="' . esc_url( home_url( '/' ) ) . '" class="button button-primary" target="_blank">' . esc_html__( 'Voir le site', 'ag-starter-companion' ) . ' &rarr;</a></p></div>';
+		}
 
 		$done = (int) get_option( 'ag_starter_companion_done_' . $slug, 0 );
 		?>
@@ -345,6 +354,16 @@ class AG_Starter_Companion {
 						</button>
 					</form>
 				<?php endif; ?>
+
+				<form method="post" style="display:inline-block;margin-left:12px;" onsubmit="return confirm('<?php echo esc_js( __( 'Mettre a la corbeille les pages des AUTRES themes et reconstruire un menu propre pour ce theme ?', 'ag-starter-companion' ) ); ?>');">
+					<?php wp_nonce_field( 'ag_starter_companion_cleanup' ); ?>
+					<button type="submit" name="ag_do_cleanup" class="button">
+						🧹 <?php esc_html_e( 'Nettoyer (pages/menus d\'autres themes)', 'ag-starter-companion' ); ?>
+					</button>
+				</form>
+				<p style="margin-top:10px;color:#777;font-size:.92em;max-width:780px;">
+					<?php esc_html_e( 'Utile si vous avez teste plusieurs templates sur ce site : met a la corbeille les pages des autres themes (Coach, Barber...), supprime les menus parasites et reconstruit le menu de CE theme avec ses propres pages.', 'ag-starter-companion' ); ?>
+				</p>
 			</div>
 
 			<div style="max-width:780px;margin-top:20px;padding:24px;background:#f8f9fa;border:1px solid #ddd;">
@@ -669,6 +688,69 @@ class AG_Starter_Companion {
 			}
 		}
 		return $created;
+	}
+
+	/**
+	 * Nettoyage multi-themes : met a la corbeille les pages appartenant aux
+	 * AUTRES themes (Coach, Barber...), supprime les menus parasites, puis
+	 * reconstruit un menu propre pour le theme actif via run_import().
+	 *
+	 * Sert quand on a teste plusieurs templates sur une meme install et que
+	 * pages/menus se sont melanges.
+	 *
+	 * @param string $slug Theme slug actif.
+	 * @return array Journal des operations.
+	 */
+	public function run_cleanup( $slug ) {
+		$log = array();
+		$map = $this->get_theme_data_map();
+		if ( ! isset( $map[ $slug ] ) ) {
+			return $log;
+		}
+
+		// Slugs a conserver (pages du theme actif).
+		$keep = array_keys( $map[ $slug ]['pages'] );
+
+		// Slugs des autres themes, candidats a suppression.
+		$foreign = array();
+		foreach ( $map as $other_slug => $other_data ) {
+			if ( $other_slug === $slug ) {
+				continue;
+			}
+			foreach ( array_keys( $other_data['pages'] ) as $page_slug ) {
+				$foreign[ $page_slug ] = true;
+			}
+		}
+		// Ne jamais supprimer une page qui appartient aussi au theme actif.
+		foreach ( $keep as $page_slug ) {
+			unset( $foreign[ $page_slug ] );
+		}
+
+		// 1) Corbeille des pages d'autres themes.
+		foreach ( array_keys( $foreign ) as $page_slug ) {
+			$page = get_page_by_path( $page_slug );
+			if ( $page && 'page' === $page->post_type ) {
+				wp_trash_post( $page->ID );
+				/* translators: %s: page title. */
+				$log[] = sprintf( __( 'Page d\'un autre theme mise a la corbeille : %s', 'ag-starter-companion' ), $page->post_title );
+			}
+		}
+
+		// 2) Supprime les menus parasites (tout sauf "Menu principal AG",
+		//    qui sera reconstruit juste apres pour le theme actif).
+		$menus = wp_get_nav_menus();
+		foreach ( (array) $menus as $menu ) {
+			if ( 'Menu principal AG' !== $menu->name ) {
+				wp_delete_nav_menu( $menu->term_id );
+				/* translators: %s: menu name. */
+				$log[] = sprintf( __( 'Menu parasite supprime : %s', 'ag-starter-companion' ), $menu->name );
+			}
+		}
+
+		// 3) Reconstruit le menu propre du theme actif + reassignation.
+		$log = array_merge( $log, $this->run_import( $slug ) );
+
+		return $log;
 	}
 
 	/**
