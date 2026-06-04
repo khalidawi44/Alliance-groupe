@@ -13,8 +13,12 @@ get_header();
     //  - DROITE = CRÉATION  : option img_creation -> sinon photo bureau Naples (toi) -> dégradé doré.
     $ag_secu_bg = function_exists( 'ag_tester_opt' ) ? ( ag_tester_opt( 'img_secu' ) ?: ag_tester_opt( 'img_menace' ) ) : '';
     if ( ! $ag_secu_bg ) {
-        $p = get_stylesheet_directory() . '/assets/images/securite/secu.jpg';
-        if ( file_exists( $p ) ) { $ag_secu_bg = get_stylesheet_directory_uri() . '/assets/images/securite/secu.jpg'; }
+        // Visuels sécurité fournis (dossier securite/). Par défaut : hacker masqué + mur LED (fort, coloré).
+        foreach ( array( 'secu.jpg', 'max-bender-XIVDN9cxOVc-unsplash.jpg', 'kaptured-by-kasia-7Ss09bTO5Zo-unsplash.jpg' ) as $f ) {
+            if ( file_exists( get_stylesheet_directory() . '/assets/images/securite/' . $f ) ) {
+                $ag_secu_bg = get_stylesheet_directory_uri() . '/assets/images/securite/' . $f; break;
+            }
+        }
     }
     $ag_crea_bg = function_exists( 'ag_tester_opt' ) ? ag_tester_opt( 'img_creation' ) : '';
     if ( ! $ag_crea_bg ) {
