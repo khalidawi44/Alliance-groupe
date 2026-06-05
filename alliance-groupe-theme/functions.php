@@ -145,6 +145,9 @@ if ( file_exists( $ag_licence_paypal_file ) ) {
 // ── 1c7. Pop-up d'incitation "devenir ambassadeur" (visiteurs non-membres)
 add_action( 'wp_footer', function () {
     if ( is_admin() ) return;
+    // Pop-up DESACTIVEE (demande Fabrice 05/06). Pour la reactiver :
+    // definir l'option ag_ambassador_popup_on = 1 (Reglages / base).
+    if ( ! get_option( 'ag_ambassador_popup_on', 0 ) ) return;
     $kind = function_exists( 'ag_espace_member_kind' ) ? ag_espace_member_kind() : '';
     if ( in_array( $kind, array( 'ambassadeur', 'admin' ), true ) ) return; // pas pour les vendeurs/admin
     $exclude = array(
