@@ -485,12 +485,19 @@ body.ag-hack-lock{overflow:hidden}
 	// Desktop : la souris SORT du document par le haut. On écoute sur
 	// documentElement (mouseleave = quitte la zone visible) ET mouseout (filet
 	// pour les navigateurs où mouseleave ne porte pas la position).
-	function maybeExit(y){ if(armed && !shown && y <= 0) open(); }
+	// NB : si l'admin WordPress est connecté, la barre #wpadminbar (≈32px)
+	// occupe le haut → la souris "sort" vers elle avant d'atteindre y=0.
+	// On calcule donc un seuil dynamique = hauteur de la barre admin (+4).
+	function topGuard(){ var ab=document.getElementById('wpadminbar'); return ab?ab.offsetHeight:0; }
+	function inAdminBar(node){ var ab=document.getElementById('wpadminbar'); return !!(ab && node && ab.contains(node)); }
+	function maybeExit(y){ if(armed && !shown && y <= topGuard()+4) open(); }
 	document.documentElement.addEventListener('mouseleave', function(e){ maybeExit(e.clientY); });
 	document.addEventListener('mouseout', function(e){
 		if(shown || !armed) return;
-		if(e.relatedTarget || e.toElement) return;   // sortie réelle (pas un survol interne)
-		if((e.clientY||0) <= 5) open();               // vers le haut = part du site
+		var rt = e.relatedTarget || e.toElement;
+		// Sortie réelle = pas de cible OU on entre dans la barre admin (cas admin connecté).
+		if(rt && !inAdminBar(rt)) return;
+		if((e.clientY||0) <= topGuard()+4) open();   // vers le haut = part du site
 	});
 
 	// Onglet masqué / app quittée (desktop + mobile) : on ouvre avant de cacher
