@@ -273,10 +273,14 @@ get_header();
 .ag-stickycta__txt strong{color:#F3D27A}
 .ag-stickycta__btn{flex-shrink:0;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:800;text-decoration:none;padding:13px 22px;border-radius:100px;font-size:.95rem;white-space:nowrap;transition:transform .2s}
 .ag-stickycta__btn:hover{transform:scale(1.03)}
+/* Quand la barre fixe est affichee, on remonte le bouton "retour en haut"
+   pour qu'il ne soit plus cache derriere la barre. */
+body.ag-stickycta-on .ag-totop{bottom:96px !important}
 @media(max-width:560px){
 	.ag-stickycta__inner{margin:0 10px 10px;padding:8px 8px 8px 16px;gap:10px}
 	.ag-stickycta__txt{display:none}
 	.ag-stickycta__btn{flex:1;text-align:center;padding:14px}
+	body.ag-stickycta-on .ag-totop{bottom:84px !important;left:14px !important}
 }
 </style>
 <script>
@@ -290,6 +294,7 @@ get_header();
 		var nearBottom = (window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 220);
 		if(past && !nearBottom){ el.classList.add('is-on'); }
 		else { el.classList.remove('is-on'); }
+		document.body.classList.toggle('ag-stickycta-on', el.classList.contains('is-on'));
 	}
 	window.addEventListener('scroll', onScroll, {passive:true});
 	onScroll();
