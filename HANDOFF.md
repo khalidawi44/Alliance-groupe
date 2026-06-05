@@ -1,7 +1,7 @@
 # HANDOFF — Alliance Groupe (site `alliancegroupe-inc.com`)
 
 > Document de reprise pour toute nouvelle session Claude (PC ou mobile via GitHub MCP).
-> Dernière mise à jour : 2026-06-04 — branche de travail : `claude/conversation-linking-bug-O6HUR` (tampon auto à chaque commit).
+> Dernière mise à jour : 2026-06-05 — branche de travail : `claude/conversation-linking-bug-O6HUR` (tampon auto à chaque commit).
 > **📸 RAPPEL ACTIF (demande Fabrice 04/06) — CAPTURES TEMPLATES À INTÉGRER** : Fabrice a fait les captures **avocat** + **coach** (et prend les autres au fur et à mesure : restaurant, artisan, barber, association). Dès qu'il les envoie → les déposer dans **`alliance-groupe-theme/assets/images/templates/<slug>.jpg`** (slugs exacts : `avocat`, `restaurant`, `artisan`, `coach`, `barber`, `association`) — c'est l'aperçu réel utilisé par `templates/page-templates.php` (fallback image générique si absent). Idéalement format **16/10**, ~1200px, compressées (Pillow q72). Puis commit + push + SYNC. **LE RAPPELER tant que les 6 ne sont pas toutes en place.**
 > **🔒 RÈGLE PERMANENTE (demande Fabrice) — APRÈS CHAQUE SCAN, TOUJOURS LE RAPPELER** : (1) mettre le rapport dans le **coffre VeraCrypt** ; (2) **EFFACER les rapports de Kali** (aucune donnée client en clair ne doit rester dans la VM). Outil dédié : **`pentest-bridge/coffre.sh`** (à installer 1× dans `/root/pentest-local/`) → `sudo ./coffre.sh` zippe le dernier rapport vers le dossier partagé PUIS shred+rm la copie Kali, et rappelle les étapes Windows (Mount VeraCrypt → déplacer le zip dans le coffre → Dismount → vider la corbeille). À redire à Fabrice à la fin de chaque audit.
 > **⚙️ PRÉFÉRENCE FABRICE — SCANS KALI TOUJOURS EN PROFIL `max`** (le plus exhaustif) par défaut, sauf demande contraire.
