@@ -46,8 +46,8 @@ get_header();
     </div>
     <div class="ag-hero__video-veil" aria-hidden="true"></div>
     <style>
-    body.home .ag-hero{min-height:78vh;padding-top:140px;padding-bottom:60px}
-    @media(max-width:900px){body.home .ag-hero{min-height:auto;padding-top:120px}}
+    body.home .ag-hero{min-height:auto;padding-top:96px;padding-bottom:36px}
+    @media(max-width:900px){body.home .ag-hero{padding-top:88px}}
     .ag-hero__naples,.ag-hero__boats,.ag-hero__particles,.ag-hero__vesuvius,.ag-hero__sunglow{display:none!important}
     /* SPLIT DIAGONAL LÉGER : clip-path (pas cher) + ligne SVG, 0 filtre, 0 animation */
     .ag-hero__split{position:absolute;inset:0;z-index:0;overflow:hidden;background:#05060c}
@@ -80,39 +80,22 @@ get_header();
             <span class="ag-heritage-dots" aria-hidden="true"><span></span><span></span><span></span></span>
         </div>
 
-        <h1 class="ag-hero__title ag-hero__title--2c">
-            <span class="ag-2c ag-2c--secu">
-                <span class="ag-2c__k">🛡️ Sécurité</span>
-                <span class="ag-2c__l">Je le sécurise.</span>
-            </span>
-            <span class="ag-2c ag-2c--crea">
-                <span class="ag-2c__k">✨ Création &amp; SEO</span>
-                <span class="ag-2c__l">Je crée votre site.</span>
-            </span>
+        <h1 class="ag-hero__title ag-hero__title--uni" data-noreveal>
+            Je <span class="ag-uni ag-uni--secu">sécurise</span> &amp; je <span class="ag-uni ag-uni--crea">crée</span> votre site.<br>
+            <span class="ag-hero__zen">Vous, vous respirez.</span>
         </h1>
-        <p class="ag-hero__zen">Vous, vous respirez.</p>
         <style>
-        /* Titre 2 COLONNES : gauche SÉCU (rouge), droite CRÉA (bleu), chacune sur 1 LIGNE.
-           Police FORCÉE Manrope partout (plus aucun mélange serif). L'éclair passe entre. */
-        .ag-hero__title--2c{display:grid;grid-template-columns:1fr 1fr;gap:0 64px;align-items:center;
-            max-width:940px;margin:0 auto 4px;font-family:var(--font-sans),'Manrope',sans-serif;font-weight:800;line-height:1.08}
-        .ag-2c{display:flex;flex-direction:column;gap:4px}
-        .ag-2c--secu{text-align:right;align-items:flex-end}
-        .ag-2c--crea{text-align:left;align-items:flex-start}
-        .ag-2c__k{font-size:.7rem;font-weight:800;letter-spacing:2px;text-transform:uppercase}
-        .ag-2c--secu .ag-2c__k{color:#FF8A8A}
-        .ag-2c--crea .ag-2c__k{color:#9CCBFF}
-        .ag-2c__l{white-space:nowrap;font-size:clamp(1.15rem,2.4vw,2rem);line-height:1.05;letter-spacing:-.01em}
-        .ag-2c--secu .ag-2c__l{color:#FF5A5A;text-shadow:0 2px 18px rgba(225,15,26,.5)}
-        .ag-2c--crea .ag-2c__l{color:#5BA8FF;text-shadow:0 2px 18px rgba(40,110,220,.5)}
-        .ag-hero__zen{text-align:center;font-family:var(--font-sans),'Manrope',sans-serif;font-weight:800;
-            color:#F3D27A;text-shadow:0 2px 20px rgba(243,210,122,.4);
-            font-size:clamp(1.15rem,2.5vw,2rem);line-height:1.1;white-space:nowrap;margin:6px auto 20px}
-        @media(max-width:700px){
-            .ag-hero__title--2c{grid-template-columns:1fr;gap:12px;text-align:center}
-            .ag-2c--secu,.ag-2c--crea{text-align:center;align-items:center}
-            .ag-2c__l,.ag-hero__zen{white-space:normal}
-        }
+        /* Titre UNIQUE : "sécurise" en ROUGE, "crée" en BLEU, "Vous, vous respirez." en DORÉ.
+           Police forcée Manrope. Compact pour laisser voir les boutons. */
+        .ag-hero__title--uni{max-width:920px;margin:0 auto 10px;text-align:center;
+            font-family:var(--font-sans),'Manrope',sans-serif;font-weight:800;
+            font-size:clamp(1.55rem,4.2vw,2.9rem);line-height:1.14;letter-spacing:-.01em;color:#fff}
+        .ag-uni{white-space:nowrap}
+        .ag-uni--secu{color:#FF5A5A;text-shadow:0 2px 18px rgba(225,15,26,.55)}
+        .ag-uni--crea{color:#5BA8FF;text-shadow:0 2px 18px rgba(40,110,220,.55)}
+        .ag-hero__zen{display:inline-block;margin-top:4px;color:#F3D27A;
+            text-shadow:0 2px 20px rgba(243,210,122,.4);font-weight:800;white-space:nowrap}
+        @media(max-width:600px){.ag-uni,.ag-hero__zen{white-space:normal}}
         </style>
 
         <p class="ag-hero__sub">
@@ -135,8 +118,11 @@ get_header();
             <a href="#" data-ag-hack class="ag-btn-ghost">👁️ Voir à quoi ressemble un piratage</a>
         </div>
         <style>
-        .ag-qt{max-width:620px;margin:26px 0 0;background:rgba(255,255,255,.05);border:1px solid rgba(243,210,122,.35);
-            border-radius:16px;padding:16px 18px}
+        /* Sous-texte resserre pour remonter le test + les boutons */
+        body.home .ag-hero__sub{max-width:760px;margin:8px auto 0!important;font-size:.98rem;line-height:1.5}
+        body.home .ag-hero__buttons{margin-top:14px!important}
+        .ag-qt{max-width:620px;margin:16px 0 0;background:rgba(255,255,255,.05);border:1px solid rgba(243,210,122,.35);
+            border-radius:16px;padding:14px 16px}
         .ag-qt__lbl{display:block;color:#fff;font-weight:800;font-size:1.02rem;margin-bottom:10px}
         .ag-qt__row{display:flex;gap:10px}
         .ag-qt__row input{flex:1;min-width:0;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.22);
