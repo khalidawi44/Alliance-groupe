@@ -124,6 +124,12 @@ if ( file_exists( $ag_pentest_bridge_file ) ) {
     require_once $ag_pentest_bridge_file;
 }
 
+// ── 1c5e-quater. Réseaux sociaux : publication auto Facebook Page + Instagram Pro
+$ag_social_file = get_stylesheet_directory() . '/inc/ag-social.php';
+if ( file_exists( $ag_social_file ) ) {
+    require_once $ag_social_file;
+}
+
 // ── 1c5f. Tirage au sort mensuel (1 site gratuit / mois)
 $ag_tirage_file = get_stylesheet_directory() . '/inc/ag-tirage-mensuel.php';
 if ( file_exists( $ag_tirage_file ) ) {
