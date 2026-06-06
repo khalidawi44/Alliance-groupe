@@ -215,6 +215,9 @@ get_header();
 <!-- "Choisissez votre parcours" — 4 panneaux priorisés (audit / création / maintenance / templates) -->
 <?php get_template_part('template-parts/paths-hero'); ?>
 
+<!-- Exemples d'audits anonymisés (preuve sociale sécurité) -->
+<?php get_template_part('template-parts/audit-examples'); ?>
+
 <!-- Preuve sociale REMONTÉE : avis Google (avant de demander d'acheter) -->
 <?php get_template_part('template-parts/temoignages'); ?>
 

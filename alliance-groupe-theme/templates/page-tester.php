@@ -10,4 +10,5 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 get_header();
 echo do_shortcode( '[ag_tester]' );
+get_template_part( 'template-parts/audit-examples' );
 get_footer();
