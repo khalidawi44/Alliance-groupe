@@ -9,20 +9,52 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$ag_sec_ex = array(
-	array( 'sec' => 'Cabinet d\'avocats', 'ville' => 'Bordeaux', 'score' => 38, 'type' => 'Approfondi',
-		'pts' => array( 'Versions de plugins exposées', 'xmlrpc ouvert (force brute)', 'En-têtes de sécurité absents' ) ),
-	array( 'sec' => 'E-commerce mode', 'ville' => 'Paris', 'score' => 29, 'type' => 'Expert',
-		'pts' => array( 'Sauvegarde téléchargeable', 'PHP en fin de vie', 'Listing de répertoires' ) ),
-	array( 'sec' => 'Restaurant', 'ville' => 'Lyon', 'score' => 54, 'type' => 'Léger',
-		'pts' => array( 'Pas de HTTPS strict', 'Version du CMS exposée' ) ),
-	array( 'sec' => 'Cabinet médical', 'ville' => 'Nantes', 'score' => 47, 'type' => 'Approfondi',
-		'pts' => array( 'Énumération du compte admin', 'Pingback actif (DDoS)', 'Certificat faible' ) ),
-	array( 'sec' => 'Artisan BTP', 'ville' => 'Marseille', 'score' => 61, 'type' => 'Léger',
-		'pts' => array( 'En-têtes de sécurité manquants', 'Données structurées absentes' ) ),
-	array( 'sec' => 'Agence immobilière', 'ville' => 'Toulouse', 'score' => 33, 'type' => 'Expert',
-		'pts' => array( 'Fichier de configuration accessible', 'Plugins obsolètes (CVE)', 'Pas de pare-feu applicatif' ) ),
-);
+/* ── SÉCURITÉ : on pioche dans les VRAIS audits (Espace Audit), noms masqués ── */
+$ag_sec_ex = array();
+if ( function_exists( 'ag_audit_hist_get' ) ) {
+	$H = ag_audit_hist_get();
+	if ( is_array( $H ) ) {
+		uasort( $H, function ( $a, $b ) { return (int) ( $b['ts'] ?? 0 ) <=> (int) ( $a['ts'] ?? 0 ); } );
+		foreach ( $H as $e ) {
+			$host = (string) ( $e['host'] ?? '' );
+			if ( ! $host || false !== stripos( $host, 'alliancegroupe' ) ) continue; // pas notre propre site
+			$pts = array();
+			foreach ( ( $e['checks'] ?? array() ) as $c ) {
+				if ( 'ok' !== ( $c['status'] ?? '' ) && ! empty( $c['name'] ) ) $pts[] = $c['name'];
+			}
+			if ( empty( $pts ) ) continue; // on ne montre que des cas avec des points trouvés
+			$tld    = ( false !== strpos( $host, '.' ) ) ? substr( strrchr( $host, '.' ), 1 ) : '';
+			$masked = '●●●●●●●' . ( $tld ? '.' . $tld : '' ); // nom de domaine MASQUÉ, extension gardée
+			$mode   = $e['mode'] ?? 'passive';
+			$type   = 'expert' === $mode ? 'Expert' : ( 'deep' === $mode ? 'Approfondi' : 'Léger' );
+			$ag_sec_ex[] = array(
+				'sec'   => $masked,
+				'ville' => 'audit ' . ( ! empty( $e['ts'] ) ? wp_date( 'd/m', (int) $e['ts'] ) : 'récent' ),
+				'score' => (int) ( $e['score'] ?? 0 ),
+				'type'  => $type,
+				'pts'   => array_slice( array_values( array_unique( $pts ) ), 0, 3 ),
+			);
+			if ( count( $ag_sec_ex ) >= 6 ) break;
+		}
+	}
+}
+// Repli sur des exemples illustratifs si l'historique est vide.
+if ( empty( $ag_sec_ex ) ) {
+	$ag_sec_ex = array(
+		array( 'sec' => 'Cabinet d\'avocats', 'ville' => 'Bordeaux', 'score' => 38, 'type' => 'Approfondi',
+			'pts' => array( 'Versions de plugins exposées', 'xmlrpc ouvert (force brute)', 'En-têtes de sécurité absents' ) ),
+		array( 'sec' => 'E-commerce mode', 'ville' => 'Paris', 'score' => 29, 'type' => 'Expert',
+			'pts' => array( 'Sauvegarde téléchargeable', 'PHP en fin de vie', 'Listing de répertoires' ) ),
+		array( 'sec' => 'Restaurant', 'ville' => 'Lyon', 'score' => 54, 'type' => 'Léger',
+			'pts' => array( 'Pas de HTTPS strict', 'Version du CMS exposée' ) ),
+		array( 'sec' => 'Cabinet médical', 'ville' => 'Nantes', 'score' => 47, 'type' => 'Approfondi',
+			'pts' => array( 'Énumération du compte admin', 'Pingback actif (DDoS)', 'Certificat faible' ) ),
+		array( 'sec' => 'Artisan BTP', 'ville' => 'Marseille', 'score' => 61, 'type' => 'Léger',
+			'pts' => array( 'En-têtes de sécurité manquants', 'Données structurées absentes' ) ),
+		array( 'sec' => 'Agence immobilière', 'ville' => 'Toulouse', 'score' => 33, 'type' => 'Expert',
+			'pts' => array( 'Fichier de configuration accessible', 'Plugins obsolètes (CVE)', 'Pas de pare-feu applicatif' ) ),
+	);
+}
 $ag_crea_ex = array(
 	array( 'sec' => 'Restaurant', 'ville' => 'Lille', 'type' => 'Site vitrine', 'res' => 'Livré en 4 jours · réservation en ligne' ),
 	array( 'sec' => 'Coach sportif', 'ville' => 'Nantes', 'type' => 'Landing + RDV', 'res' => '+60 % de prises de rendez-vous' ),
@@ -48,7 +80,7 @@ $ag_col = function ( $s ) { return $s >= 75 ? '#28a745' : ( $s >= 50 ? '#F37A1F'
 				<div class="ag-ex__top">
 					<div>
 						<div class="ag-ex__sec"><?php echo esc_html( $e['sec'] ); ?></div>
-						<div class="ag-ex__meta">🔒 <span class="ag-ex__masked">●●●●●●●●</span> · <?php echo esc_html( $e['ville'] ); ?></div>
+						<div class="ag-ex__meta">🔒 <?php echo esc_html( $e['ville'] ); ?></div>
 					</div>
 					<div class="ag-ex__score" style="color:<?php echo esc_attr( $c ); ?>;border-color:<?php echo esc_attr( $c ); ?>">
 						<?php echo (int) $e['score']; ?><small>/100</small>
