@@ -73,7 +73,11 @@ $ag_paths = array(
 		'url'   => home_url( '/resilience-ransomware' ),
 		'tint'  => '#1c0f12',
 		'glow'  => '#E10F1A',
-		'img'   => $ag_cardimg( 'resilience' ),
+		// Image : option dédiée sinon parcours/resilience.jpg sinon une image sécurité existante.
+		'img'   => get_option( 'ag_tester_img_resilience', '' )
+			?: ( file_exists( get_stylesheet_directory() . '/assets/images/parcours/resilience.jpg' )
+				? $ag_img . 'resilience.jpg'
+				: get_stylesheet_directory_uri() . '/assets/images/securite/max-bender-XIVDN9cxOVc-unsplash.jpg' ),
 	),
 );
 ?>

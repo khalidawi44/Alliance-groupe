@@ -16,7 +16,8 @@ $ag_contact = home_url( '/contact' );
 $or  = '#F37A1F';
 $rouge = '#E10F1A';
 ?>
-<main class="ag-ranso" style="max-width:1080px;margin:0 auto;padding:0 18px 60px;font-family:inherit;color:#1a1a1a">
+<main class="ag-ranso" style="max-width:1100px;margin:0 auto;padding:30px 18px 60px;font-family:inherit;color:#1a1a1a;background:#fff;border-radius:14px">
+	<style>.ag-ranso h1,.ag-ranso h2,.ag-ranso h3{color:#0f1115}</style>
 
 	<!-- HERO -->
 	<section style="text-align:center;padding:56px 0 28px">
