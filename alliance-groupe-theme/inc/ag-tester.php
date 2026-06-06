@@ -1101,6 +1101,20 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 			}
 		}
 
+		// Saisie manuelle d'un contact sur une fiche d'audit : on colle l'email/tél
+		// trouvé (Insta/Google) → les boutons d'envoi (message déjà personnalisé
+		// d'après le rapport) deviennent actifs, et le contact nourrit le CRM.
+		if ( isset( $_POST['ag_hist_setcontact'], $_POST['hist_id'], $_POST['_agp_nonce'] )
+			&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_agp_nonce'] ) ), 'ag_audit_prospect' ) ) {
+			$hh = ag_audit_hist_get(); $hid = sanitize_text_field( wp_unslash( $_POST['hist_id'] ) );
+			if ( isset( $hh[ $hid ] ) ) {
+				$hh[ $hid ]['email'] = sanitize_email( wp_unslash( $_POST['c_email'] ?? '' ) );
+				$hh[ $hid ]['phone'] = sanitize_text_field( wp_unslash( $_POST['c_phone'] ?? '' ) );
+				ag_audit_hist_save( $hh );
+				$notice = 'Contact enregistre pour ' . ( $hh[ $hid ]['host'] ?? '' ) . ' - les boutons d envoi sont prets.';
+			}
+		}
+
 		// Lancement des audits.
 		$deep_mode = false;
 		if ( isset( $_POST['ag_run_audits'], $_POST['_agp_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_agp_nonce'] ) ), 'ag_audit_prospect' ) ) {
@@ -1406,7 +1420,19 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 							</form>
 							<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline" onsubmit="return confirm('Supprimer cet audit ?')"><input type="hidden" name="action" value="ag_audit_hist_del"><?php wp_nonce_field( 'ag_audit_hist_del' ); ?><input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>"><button type="submit" class="button button-small" style="color:#b91c1c">🗑️ Suppr.</button></form>
 						</div>
-						<?php $crm = ag_audit_prospect_by_site( $url ); if ( $crm ) :
+						<?php if ( ! $email || ! $phone ) : ?>
+							<div style="margin-top:6px">
+								<button type="button" class="button button-small" onclick="var d=document.getElementById('agcc<?php echo esc_attr( $hid ); ?>');d.style.display=d.style.display==='none'?'flex':'none'">➕ Saisir / corriger le contact (pour pouvoir envoyer)</button>
+								<form method="post" id="agcc<?php echo esc_attr( $hid ); ?>" style="display:none;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px">
+									<?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?>
+									<input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>">
+									<input type="email" name="c_email" value="<?php echo esc_attr( $email ); ?>" placeholder="email@client.fr" style="font-size:12px">
+									<input type="text" name="c_phone" value="<?php echo esc_attr( $phone ); ?>" placeholder="06 12 34 56 78" style="font-size:12px">
+									<button type="submit" name="ag_hist_setcontact" value="1" class="button button-small button-primary">💾 Enregistrer → active SMS / WhatsApp / Email</button>
+								</form>
+							</div>
+							<?php endif; ?>
+							<?php $crm = ag_audit_prospect_by_site( $url ); if ( $crm ) :
 							$ce = ! empty( $crm['email'] ) ? $crm['email'] : $email;
 							$cp = ! empty( $crm['phone'] ) ? $crm['phone'] : $phone;
 							$cpn = preg_replace( '#\s#', '', (string) $cp ); $cwa = ag_wa_phone( $cp );
