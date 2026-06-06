@@ -15,12 +15,17 @@
 
 get_header();
 
-// Zone editable WP : contenu de la page "accueil" Gutenberg
+// Zone editable WP : contenu de la page "accueil" Gutenberg.
+// On ne rend ce bloc QUE s'il contient un vrai contenu. La page Accueil
+// ne contient en general que le placeholder "<!-- Rendu par front-page.php -->" :
+// on l'ignore (sinon ca cree un bandeau blanc vide au-dessus du hero, sur
+// lequel le menu dore devient illisible). Plus de fond blanc force non plus.
 if ( have_posts() ) : while ( have_posts() ) : the_post();
-    if ( trim( get_the_content() ) ) :
-        echo "<section class=\"ag-custom-content\" style=\"padding:50px 24px;background:#fff;\"><div style=\"max-width:1180px;margin:0 auto;\">";
+    $ag_raw = preg_replace( '/<!--.*?-->/s', '', (string) get_the_content() );
+    if ( '' !== trim( wp_strip_all_tags( $ag_raw ) ) ) :
+        echo '<section class="ag-custom-content"><div style="max-width:1180px;margin:0 auto;padding:50px 24px;">';
         the_content();
-        echo "</div></section>";
+        echo '</div></section>';
     endif;
 endwhile; rewind_posts(); endif; ?>
 

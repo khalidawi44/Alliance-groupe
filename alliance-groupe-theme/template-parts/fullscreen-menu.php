@@ -22,8 +22,9 @@ $ag_fsm_items = array(
 	array( 'url' => home_url( '/maintenance' ),    'label' => 'Maintenance',          'sub' => '04' ),
 	array( 'url' => home_url( '/realisations' ),   'label' => 'Réalisations',         'sub' => '05' ),
 	array( 'url' => home_url( '/le-voyage' ),      'label' => 'Le Voyage',            'sub' => '06' ),
-	array( 'url' => home_url( '/a-propos' ),       'label' => 'À propos',             'sub' => '07' ),
-	array( 'url' => home_url( '/contact' ),        'label' => 'Contact',              'sub' => '08' ),
+	array( 'url' => home_url( '/ambassadeurs' ),   'label' => 'On recrute 🚀',        'sub' => '07' ),
+	array( 'url' => home_url( '/a-propos' ),       'label' => 'À propos',             'sub' => '08' ),
+	array( 'url' => home_url( '/contact' ),        'label' => 'Contact',              'sub' => '09' ),
 );
 ?>
 

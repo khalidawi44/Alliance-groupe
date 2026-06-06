@@ -41,17 +41,18 @@
 
 		<nav class="ag-primary-nav" aria-label="<?php esc_attr_e( 'Menu principal', 'ag-starter-avocat' ); ?>">
 			<?php
-			if ( has_nav_menu( 'primary' ) ) {
-				wp_nav_menu(
-					array(
-						'theme_location' => 'primary',
-						'container'      => false,
-						'menu_class'     => 'ag-primary-menu',
-						'depth'          => 1,
-						'fallback_cb'    => false,
-					)
-				);
-			}
+			// Menu principal — avec menu de secours (liste des pages) quand
+			// aucun menu n'est assigne, pour que le menu ne soit jamais vide
+			// (ex. juste apres un changement de theme).
+			wp_nav_menu(
+				array(
+					'theme_location' => 'primary',
+					'container'      => false,
+					'menu_class'     => 'ag-primary-menu',
+					'depth'          => 1,
+					'fallback_cb'    => 'ag_starter_avocat_menu_fallback',
+				)
+			);
 			?>
 			<button class="ag-menu-toggle" aria-label="<?php esc_attr_e( 'Menu', 'ag-starter-avocat' ); ?>" aria-expanded="false">
 				<span></span><span></span><span></span>

@@ -373,6 +373,14 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
 .ag-xpress__note{display:block;margin-top:10px;color:var(--color-text-muted);font-size:.8rem;text-align:center;}
 @media(max-width:900px){.ag-xpress__grid{grid-template-columns:1fr;max-width:440px;margin-left:auto;margin-right:auto;}}
 
+/* ── Étapes "3 étapes" : styles de BASE (manquaient sur cette page) ── */
+.ag-amb__steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:32px;}
+.ag-amb__step{padding:28px 24px;border:1px solid rgba(212,180,92,.25);border-radius:18px;}
+.ag-amb__step h3{margin:8px 0;font-size:1.15rem;}
+.ag-amb__step p{margin:0;line-height:1.5;}
+.ag-amb__num{display:inline-block;font-family:var(--font-serif);font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,#D4B45C,#F37A1F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;}
+@media(max-width:900px){.ag-amb__steps{grid-template-columns:1fr;max-width:480px;margin-left:auto;margin-right:auto;}}
+
 /* ── Variantes CLAIRES (sections ivoire) : cartes blanches + texte foncé ── */
 .ag-section--light .ag-xpress__card,
 .ag-section--light .ag-xpress__guar-item,

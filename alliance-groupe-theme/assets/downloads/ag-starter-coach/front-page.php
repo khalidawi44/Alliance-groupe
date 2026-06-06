@@ -20,14 +20,20 @@ $ag_stats      = $ag_has_preset ? ag_coach_Presets::get_active_stats() : array()
 $ag_metier_nom = ag_coach_opt( 'ag_coach_metier_nom', '' );
 $ag_hero_image = ag_coach_opt( 'ag_coach_hero_image', '' );
 
-// Zone editable WP : contenu de la page "accueil" Gutenberg
-if ( have_posts() ) : while ( have_posts() ) : the_post();
-    if ( trim( get_the_content() ) ) :
-        echo "<section class=\"ag-custom-content\" style=\"padding:50px 24px;background:#fff;\"><div style=\"max-width:1180px;margin:0 auto;\">";
-        the_content();
-        echo "</div></section>";
-    endif;
-endwhile; rewind_posts(); endif; ?>
+// Zone editable WP : contenu de la page "accueil" Gutenberg.
+// En mode preset (rendu premium photo-hero), on ne sort PAS ce bloc :
+// il s'afficherait sur fond blanc AU-DESSUS du hero (la "barre blanche").
+// Le hero doit coller au menu transparent. On le garde uniquement pour
+// le rendu historique sans preset.
+if ( ! $ag_has_preset ) :
+	if ( have_posts() ) : while ( have_posts() ) : the_post();
+		if ( trim( get_the_content() ) ) :
+			echo "<section class=\"ag-custom-content\" style=\"padding:50px 24px;background:#fff;\"><div style=\"max-width:1180px;margin:0 auto;\">";
+			the_content();
+			echo "</div></section>";
+		endif;
+	endwhile; rewind_posts(); endif;
+endif; ?>
 
 <main id="ag-main" class="<?php echo $ag_has_preset ? 'ag-main ag-main--premium' : 'ag-main'; ?>" role="main">
 

@@ -1,11 +1,12 @@
-Images sécurité / hacking (zone peur du site).
-Déposez ici, EXACTEMENT avec ces noms :
+Images du HÉRO d'accueil (split diagonal « éclair »).
 
-  menace.jpg   -> fond du mur « Un piratage ressemble à ça » (encapuchonné/masque, sombre)
-  hacker.jpg   -> visuel sécurité secondaire (réserve / hero menace)
+Le hero d'accueil affiche 2 moitiés séparées par un éclair :
+  - GAUCHE = Sécurité  -> secu.jpg      (ou option Réglages → Tester/Audit → img_secu)
+  - DROITE = Création  -> creation.jpg  (ou option img_creation)
 
-Et pour la carte « Audit » du parcours, déposez la 3e dans :
-  assets/images/parcours/audit.jpg
+Déposer ici (facultatif — sinon dégradés CSS par défaut) :
+  - secu.jpg      : visuel sécurité (cadenas, code, datacenter, bouclier…)  ~1600x1000
+  - creation.jpg  : visuel création web (maquette, écran site, design…)      ~1600x1000
 
-Format : paysage, sombre, ~1600px de large, < 400 Ko.
-Si absentes : le mur reste en fond noir + terminal (aucune image cassée).
+Autres :
+  - hero.jpg / menace.jpg : anciens fonds (menace = mur « Un piratage ressemble à ça »).

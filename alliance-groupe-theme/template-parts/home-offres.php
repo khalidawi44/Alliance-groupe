@@ -61,7 +61,7 @@ $ag_offres_bg = get_stylesheet_directory_uri() . '/assets/images/cities/nantes-1
 .ag-home-offres{background:linear-gradient(160deg,#fbf8f1 0%,#f4eedf 100%);}
 .ag-home-offres__bg{display:none;}
 .ag-home-offres__inner{position:relative;z-index:2;}
-.ag-home-offres__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:46px;}
+.ag-home-offres__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:34px auto 0;max-width:720px;}
 .ag-home-offres__card{display:block;border-radius:18px;overflow:hidden;border:1px solid rgba(212,180,92,.4);box-shadow:0 16px 40px rgba(120,100,40,.18);transition:transform .4s ease,border-color .4s ease,box-shadow .4s ease;}
 .ag-home-offres__card:hover{transform:translateY(-8px);border-color:rgba(212,180,92,.8);box-shadow:0 28px 60px rgba(120,100,40,.28);}
 .ag-home-offres__card img{display:block;width:100%;height:auto;}

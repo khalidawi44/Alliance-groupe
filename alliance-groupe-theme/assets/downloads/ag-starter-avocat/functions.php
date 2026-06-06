@@ -83,6 +83,63 @@ endif;
 add_action( 'after_setup_theme', 'ag_starter_avocat_setup' );
 
 /**
+ * Menu de secours : si AUCUN menu n'est assigne a l'emplacement "primary"
+ * (ce qui arrive a chaque changement de theme, les emplacements etant lies
+ * au theme actif), on liste automatiquement les pages du site. Ainsi le
+ * menu n'est JAMAIS vide — il suffira ensuite, si on veut, de creer un menu
+ * sur-mesure dans Apparence > Menus.
+ */
+if ( ! function_exists( 'ag_starter_avocat_menu_fallback' ) ) :
+	function ag_starter_avocat_menu_fallback() {
+		// On exclut les pages utilitaires (legal, e-commerce) qui n'ont rien
+		// a faire dans le menu principal, puis on limite a 5 onglets pour
+		// rester epure.
+		$exclude_slugs = array(
+			'mentions-legales', 'politique-de-confidentialite', 'confidentialite',
+			'politique-de-cookies', 'cookies', 'cgv', 'cgu', 'conditions-generales',
+			'plan-du-site', 'panier', 'commande', 'mon-compte', 'checkout', 'cart',
+			'my-account', 'livraison', 'retours', 'remboursement',
+		);
+		$exclude_ids = array();
+		foreach ( $exclude_slugs as $slug ) {
+			$p = get_page_by_path( $slug );
+			if ( $p ) {
+				$exclude_ids[] = $p->ID;
+			}
+		}
+		$pages = wp_list_pages( array(
+			'echo'        => false,
+			'title_li'    => '',
+			'depth'       => 1,
+			'sort_column' => 'menu_order, post_title',
+			'number'      => 5,
+			'exclude'     => implode( ',', $exclude_ids ),
+		) );
+		if ( $pages ) {
+			echo '<ul class="ag-primary-menu">' . $pages . '</ul>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			return;
+		}
+
+		// Aucune Page reelle (import de contenu pas encore lance) : on affiche
+		// un menu par defaut pointant vers les sections standard du cabinet,
+		// pour que le menu ne soit JAMAIS vide.
+		$defaults = array(
+			''            => __( 'Accueil', 'ag-starter-avocat' ),
+			'expertise'   => __( "Domaines d'expertise", 'ag-starter-avocat' ),
+			'honoraires'  => __( 'Honoraires', 'ag-starter-avocat' ),
+			'cabinet'     => __( 'Le cabinet', 'ag-starter-avocat' ),
+			'rendez-vous' => __( 'Prendre rendez-vous', 'ag-starter-avocat' ),
+		);
+		echo '<ul class="ag-primary-menu">';
+		foreach ( $defaults as $slug => $label ) {
+			$url = $slug ? home_url( '/' . $slug . '/' ) : home_url( '/' );
+			echo '<li class="menu-item"><a href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a></li>';
+		}
+		echo '</ul>';
+	}
+endif;
+
+/**
  * Helper: read a Customizer option (alias for ag_starter_avocat_get_option
  * with a runtime fallback default for safety).
  */

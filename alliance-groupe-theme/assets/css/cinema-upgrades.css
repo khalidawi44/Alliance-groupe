@@ -147,7 +147,7 @@ body:not(.home) main > .ag-hero::before,
 body:not(.home) .ag-hero[style*="60vh"]::before{
     content:'';
     position: absolute; inset:0;
-    background-image: var(--hero-photo, url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=85'));
+    background-image: var(--hero-photo, url('../images/cities/baie_naples_nuit.jpg'));
     background-size: cover;
     background-position: center;
     filter: brightness(.45) contrast(1.05) saturate(.9);
@@ -215,14 +215,10 @@ body:not(.home) .ag-hero .ag-hero__title{
     max-width: 14ch;
 }
 body:not(.home) .ag-hero .ag-hero__title em{
-    color: #D4B45C !important;
+    color: #F3D27A !important;
+    -webkit-text-fill-color: #F3D27A !important;
     font-style: italic;
-    background: linear-gradient(135deg, #D4B45C 0%, #F37A1F 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-fill-color: transparent;
-    filter: drop-shadow(0 2px 12px rgba(212,180,92,.4));
+    text-shadow: 0 2px 14px rgba(0,0,0,.55), 0 0 18px rgba(243,210,122,.35);
 }
 body:not(.home) .ag-hero .ag-line{ display:block; }
 
@@ -280,16 +276,16 @@ body.search main > .ag-section:first-child{
 }
 
 /* Variables CSS par slug de page — overridables si tu veux changer l'image */
-body.page-services .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=85'); }
-body.page-realisations .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1920&q=85'); }
+body.page-services .ag-hero{ --hero-photo: url('../images/cities/nantes-1.jpg'); }
+body.page-realisations .ag-hero{ --hero-photo: url('../images/parcours/creation.jpg'); }
 body.page-apropos .ag-hero,
-body.page-fondateur .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1920&q=85'); }
+body.page-fondateur .ag-hero{ --hero-photo: url('../images/team/1_bureau_naples.jpg'); }
 body.page-rdv .ag-hero,
-body.page-contact .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1920&q=85'); }
+body.page-contact .ag-hero{ --hero-photo: url('../images/cities/nantes-2.jpg'); }
 body.page-templates .ag-hero,
-body[class*="wordpress-"] .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1551434678-e076c223a692?w=1920&q=85'); }
+body[class*="wordpress-"] .ag-hero{ --hero-photo: url('../images/parcours/templates.jpg'); }
 body.page-blog .ag-hero,
-body.blog .ag-hero{ --hero-photo: url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1920&q=85'); }
+body.blog .ag-hero{ --hero-photo: url('../images/cities/naples-2.jpg'); }
 
 /* Responsive */
 @media (max-width: 768px){
@@ -989,33 +985,11 @@ html.ag-has-custom-cursor [role=button] { cursor:auto !important; }
      haut à droite du nav (avant il était centré et écrasait le logo). */
 .ag-nav__inner{ position: relative !important; }
 @media (max-width: 1024px) {
-    .ag-nav__burger{
-        display:flex !important;
-        position:absolute !important;
-        right:14px !important;
-        top:50% !important;
-        transform:translateY(-50%) !important;
-        flex-direction:column !important;
-        justify-content:center !important;
-        align-items:center !important;
-        gap:5px !important;
-        width:48px !important;
-        height:48px !important;
-        padding:11px !important;
-        background:rgba(212,180,92,.14) !important;
-        border:1px solid rgba(212,180,92,.55) !important;
-        border-radius:12px !important;
-        z-index:1040 !important;
-        cursor:pointer !important;
-    }
-    .ag-nav__burger span{
-        display:block !important;
-        height:3px !important;
-        width:22px !important;
-        background:#D4B45C !important;
-        border-radius:2px !important;
-    }
-    .ag-nav__burger:hover{ background:rgba(212,180,92,.24) !important; }
+    /* Le burger legacy .ag-nav__burger reste MASQUE : on garde uniquement
+       le bouton rond .ag-fsm-toggle (qui ouvre le menu plein ecran).
+       Avant, ce burger etait reactive ici et se superposait au rond
+       -> "bouton derriere le burger". Supprime. */
+    .ag-nav__burger{ display:none !important; }
 }
 
 /* ── Hero : photo Naples (Vésuve coucher de soleil) en fond ──

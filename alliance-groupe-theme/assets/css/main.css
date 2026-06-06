@@ -4116,3 +4116,32 @@ button:focus-visible{
     .ag-compare__vs{justify-self:center;margin:2px 0;}
     .ag-compare__col{padding:24px 20px;}
 }
+
+/* =========================================================================
+ * TYPOGRAPHIE GLOBALE — mise en forme propre (anti-coupures moches)
+ * text-wrap:balance = équilibre les lignes des TITRES (plus de mot seul,
+ * plus de "de bout / en bout"). text-wrap:pretty = évite les orphelins
+ * dans les paragraphes. Pris en charge par Chrome/Edge/Firefox récents,
+ * ignoré proprement par les anciens (aucun risque).
+ * ====================================================================== */
+/* TOUS les titres du site (peu importe la classe) + citations */
+h1, h2, h3, h4, h5, h6,
+.ag-hero__zen, .ag-parallax__quote, blockquote,
+.ag-card__title, .ag-scard__title, .ag-rcard__title, .ag-path__title,
+.ag-tier-card__title, .ag-pstep__title, .ag-footer__title {
+    text-wrap: balance;
+}
+/* Paragraphes & textes courants : pas de mot orphelin en fin de ligne */
+p, li, figcaption,
+.ag-hero__sub, .ag-section__desc, .ag-lead, .ag-card__text, .ag-scard__text {
+    text-wrap: pretty;
+}
+/* Jamais de césure au milieu d'un mot (pas de "interlocu-teur") sur les titres */
+h1, h2, h3, h4, h5, h6 { overflow-wrap: normal; hyphens: none; }
+/* Les accents dorés (em) des titres restent INSÉCABLES : plus jamais "de / bout en bout" */
+h1 em, h2 em, h3 em, h4 em,
+.ag-hero__title em, .ag-section__title em, .ag-hero__zen em { white-space: nowrap; }
+@media (max-width: 600px){
+    h1 em, h2 em, h3 em, h4 em,
+    .ag-hero__title em, .ag-section__title em, .ag-hero__zen em { white-space: normal; }
+}

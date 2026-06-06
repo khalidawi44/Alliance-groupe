@@ -172,23 +172,26 @@
 	// =====================================================================
 	function initTextReveal() {
 		if (REDUCED) return;
-		// Cible : tous les H1/H2 dans des sections + éléments avec data-reveal
-		var els = document.querySelectorAll('h1.ag-hero__title, .ag-section h2, [data-reveal]');
+		// Cible : tous les H1/H2 dans des sections + éléments avec data-reveal.
+		// On EXCLUT tout élément marqué data-noreveal (titres qui ne doivent pas
+		// être redécoupés/animés après chargement -> évite le "ça saute").
+		var els = document.querySelectorAll('h1.ag-hero__title:not([data-noreveal]), .ag-section h2:not([data-noreveal]), [data-reveal]:not([data-noreveal])');
 		if (!els.length || !('IntersectionObserver' in window)) return;
 
 		els.forEach(function (el) {
 			if (el.dataset.revealed === '1') return;
 			el.dataset.revealed = '1';
 
-			// Split: garde les <span class="ag-line"> existants
-			var html = el.innerHTML;
-			// Si déjà splitté par le thème (ag-line), on split juste les mots dans chaque ag-line
+			// Si déjà splitté par le thème (ag-line), on split juste les mots dans chaque ag-line.
 			var lines = el.querySelectorAll('.ag-line');
 			if (lines.length) {
 				lines.forEach(function (line) { splitWordsInside(line); });
-			} else {
+			} else if (el.childElementCount === 0) {
+				// Titre en TEXTE SIMPLE uniquement : on peut le découper en mots.
 				splitWordsInside(el);
 			}
+			// Sinon (titre STRUCTURÉ sans .ag-line, ex. hero 2 colonnes) : on NE touche PAS,
+			// sinon on écrase la mise en page (c'était le bug "ça saute / police cassée").
 		});
 
 		function splitWordsInside(node) {
