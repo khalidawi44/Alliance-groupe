@@ -1381,6 +1381,12 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 					$ol = home_url( '/tester-mon-site?aid=' . $aid );
 					if ( 'securite' === $seg ) { $emsg = ag_audit_msg_securite( $a, $ct, $ol ); $smsg = ag_audit_sms_securite( $a, $ol ); $subj = '⚠️ Faille de sécurité détectée sur ' . $host; }
 					else { $emsg = ag_audit_msg_creation( $a, $ct ); $smsg = 'Bonjour, votre site ' . $host . ' gagnerait a etre modernise. Je cree des sites pro securises des 490e. Fabrizio-Alliance Groupe. STOP pour stop.'; $subj = 'Votre site ' . $host . ' — idées pour le moderniser'; }
+						$sec_emsg  = ag_audit_msg_securite( $a, $ct, $ol );
+						$sec_smsg  = ag_audit_sms_securite( $a, $ol );
+						$sec_subj  = 'Faille de securite detectee sur ' . $host;
+						$crea_emsg = ag_audit_msg_creation( $a, $ct );
+						$crea_smsg = 'Bonjour, votre site ' . $host . ' gagnerait a etre modernise (design, vitesse, mobile). Je cree des sites pro securises des 490e. Fabrizio - Alliance Groupe. STOP pour stop.';
+						$crea_subj = 'Votre site ' . $host . ' - idees pour le moderniser';
 					$done = array(); foreach ( ( $e['actions'] ?? array() ) as $ac ) { $done[ $ac['ch'] ] = $ac['date']; }
 					$todo = empty( $e['actions'] );
 					?>
@@ -1411,7 +1417,17 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 						<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px">
 							<?php if ( $email ) : ?><a class="button button-small" href="mailto:<?php echo esc_attr( $email ); ?>?subject=<?php echo rawurlencode( $subj ); ?>&body=<?php echo rawurlencode( $emsg ); ?>">✉️ Email</a><?php endif; ?>
 							<?php if ( $phone ) : ?><a class="button button-small" href="tel:<?php echo esc_attr( preg_replace( '#\s#', '', $phone ) ); ?>">📞</a><a class="button button-small" href="sms:<?php echo esc_attr( preg_replace( '#\s#', '', $phone ) ); ?>?&body=<?php echo rawurlencode( $smsg ); ?>">💬 SMS</a><?php if ( $wa ) : ?><a class="button button-small" target="_blank" rel="noopener" href="https://wa.me/<?php echo esc_attr( $wa ); ?>?text=<?php echo rawurlencode( $smsg ); ?>">🟢 WA</a><?php endif; endif; ?>
-							<button type="button" class="button button-small" onclick="var d=document.getElementById('aghf<?php echo esc_attr( $hid ); ?>');d.style.display=d.style.display==='none'?'block':'none'">📄 Fiche</button>
+							<?php if ( $email || $phone ) : $pn2 = preg_replace( '#\s#', '', (string) $phone );
+									$o_e = ( 'securite' === $seg ) ? $crea_emsg : $sec_emsg;
+									$o_s = ( 'securite' === $seg ) ? $crea_smsg : $sec_smsg;
+									$o_sub = ( 'securite' === $seg ) ? $crea_subj : $sec_subj;
+									$o_lbl = ( 'securite' === $seg ) ? '✨ Aussi Création' : '🛡️ Aussi Sécurité'; ?>
+									<span style="display:inline-flex;gap:5px;align-items:center;background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;padding:3px 7px"><b style="font-size:11px"><?php echo $o_lbl; // phpcs:ignore ?></b>
+										<?php if ( $email ) : ?><a class="button button-small" href="mailto:<?php echo esc_attr( $email ); ?>?subject=<?php echo rawurlencode( $o_sub ); ?>&body=<?php echo rawurlencode( $o_e ); ?>">✉️</a><?php endif; ?>
+										<?php if ( $phone ) : ?><a class="button button-small" href="sms:<?php echo esc_attr( $pn2 ); ?>?&body=<?php echo rawurlencode( $o_s ); ?>">💬</a><?php if ( $wa ) : ?><a class="button button-small" target="_blank" rel="noopener" href="https://wa.me/<?php echo esc_attr( $wa ); ?>?text=<?php echo rawurlencode( $o_s ); ?>">🟢</a><?php endif; endif; ?>
+									</span>
+								<?php endif; ?>
+								<button type="button" class="button button-small" onclick="var d=document.getElementById('aghf<?php echo esc_attr( $hid ); ?>');d.style.display=d.style.display==='none'?'block':'none'">📄 Fiche</button>
 								<button type="button" class="button button-small ag-report-btn" data-report="<?php echo esc_attr( wp_json_encode( ag_audit_report_payload( $a, $host, $ol ) ) ); ?>" title="Genere une image teaser (rapport leger, details masques) a joindre au message">📸 Image rapport</button>
 							<form method="post" style="display:inline"><?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?>
 								<input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>">
