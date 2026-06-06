@@ -1298,7 +1298,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 					<div id="agh-list">
 				<?php foreach ( $AGH as $hid => $e ) :
 					$score = (int) $e['score']; $col = $score >= 75 ? '#1a7f37' : ( $score >= 50 ? '#bf6a02' : '#b91c1c' ); $seg = $e['seg'];
-						$mode = ( 'deep' === ( $e['mode'] ?? 'passive' ) ) ? 'deep' : 'passive';
+						$mode = in_array( $e['mode'] ?? 'passive', array( 'deep', 'expert' ), true ) ? $e['mode'] : 'passive';
 						$mode_lbl = 'expert' === $mode ? '🛰️ Expert (Kali)' : ( 'deep' === $mode ? '🔬 Approfondi' : '🔍 Léger (passif)' );
 					$host = $e['host']; $url = $e['url']; $email = $e['email']; $phone = $e['phone']; $wa = ag_wa_phone( $phone );
 					$fails = array_map( function ( $c ) { return $c['name']; }, $e['checks'] );
