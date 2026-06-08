@@ -138,15 +138,11 @@ $has_screenshot = file_exists( $screenshot_file );
                         <strong class="ag-cfg__tile-name">Je démarre</strong>
                         <span class="ag-cfg__tile-price">Gratuit</span>
                     </button>
+                    <?php $ag_pp = function_exists( 'ag_creator_price' ) ? (int) ag_creator_price() : 69; ?>
                     <button type="button" class="ag-cfg__tile ag-cfg__tile--premium" data-tier="premium" role="tab" aria-selected="false">
-                        <span class="ag-cfg__tile-icon">⚡</span>
-                        <strong class="ag-cfg__tile-name">Je veux premium</strong>
-                        <span class="ag-cfg__tile-price">99€</span>
-                    </button>
-                    <button type="button" class="ag-cfg__tile ag-cfg__tile--business" data-tier="business" role="tab" aria-selected="false">
-                        <span class="ag-cfg__tile-icon">💼</span>
-                        <strong class="ag-cfg__tile-name">Je veux la tranquillité</strong>
-                        <span class="ag-cfg__tile-price">149€</span>
+                        <span class="ag-cfg__tile-icon">💎</span>
+                        <strong class="ag-cfg__tile-name">Je veux le Premium</strong>
+                        <span class="ag-cfg__tile-price"><?php echo (int) $ag_pp; ?>€</span>
                     </button>
                 </div>
 
@@ -174,37 +170,19 @@ $has_screenshot = file_exists( $screenshot_file );
                     <!-- Premium -->
                     <div class="ag-cfg__panel" data-tier="premium" role="tabpanel">
                         <div class="ag-cfg__panel-head">
-                            <h3>⚡ Pack Premium pour <?php echo esc_html( $ag_metier['name'] ); ?></h3>
-                            <span class="ag-cfg__panel-price">99€ une fois</span>
+                            <h3>💎 Pack Premium pour <?php echo esc_html( $ag_metier['name'] ); ?></h3>
+                            <span class="ag-cfg__panel-price"><?php echo (int) $ag_pp; ?>€ une fois</span>
                         </div>
-                        <p class="ag-cfg__panel-sub">Le plugin qui transforme le thème basique en thème professionnel finalisé.</p>
+                        <p class="ag-cfg__panel-sub">Notre design le plus abouti : le thème basique passe en site professionnel finalisé.</p>
                         <ul class="ag-cfg__features">
                             <?php foreach ( $ag_metier['premium_features'] as $feat ) : ?>
                             <li><?php echo wp_kses_post( $feat ); ?></li>
                             <?php endforeach; ?>
                         </ul>
-                        <a href="<?php echo esc_url( $premium_url ); ?>"<?php echo $premium_target; // phpcs:ignore ?> class="ag-btn-gold" style="width:100%;max-width:460px;display:block;margin:24px auto 0;text-align:center;justify-content:center;">
-                            <?php echo esc_html( $premium_label ); ?>
-                        </a>
-                        <p class="ag-cfg__panel-note">Paiement unique, pas d'abonnement. Compatible avec les 5 thèmes AG Starter.</p>
-                    </div>
-
-                    <!-- Business -->
-                    <div class="ag-cfg__panel" data-tier="business" role="tabpanel">
-                        <div class="ag-cfg__panel-head">
-                            <h3>💼 Pack Business pour <?php echo esc_html( $ag_metier['name'] ); ?></h3>
-                            <span class="ag-cfg__panel-price">149€ une fois</span>
-                        </div>
-                        <p class="ag-cfg__panel-sub">Tout le Premium + installation assistée, maintenance 1 an, audit SEO, white-label.</p>
-                        <ul class="ag-cfg__features">
-                            <?php foreach ( $ag_metier['business_features'] as $feat ) : ?>
-                            <li><?php echo wp_kses_post( $feat ); ?></li>
-                            <?php endforeach; ?>
-                        </ul>
                         <a href="<?php echo esc_url( $business_url ); ?>"<?php echo $business_target; // phpcs:ignore ?> class="ag-btn-gold" style="width:100%;max-width:460px;display:block;margin:24px auto 0;text-align:center;justify-content:center;">
-                            <?php echo esc_html( $business_label ); ?>
+                            Choisir le Premium — <?php echo (int) $ag_pp; ?>€ →
                         </a>
-                        <p class="ag-cfg__panel-note">Idéal pour les freelances & petites agences. Support 2h ouvrées + appel Fabrizio.</p>
+                        <p class="ag-cfg__panel-note">Paiement unique, pas d'abonnement. Compatible avec tous les thèmes AG Starter.</p>
                     </div>
                 </div>
             </div>
