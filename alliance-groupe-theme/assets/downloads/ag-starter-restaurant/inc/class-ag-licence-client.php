@@ -88,8 +88,11 @@ class AG_Licence_Client {
      */
     public static function get_tier() {
         if ( ! self::is_pro() ) return 'free';
-        $cache = get_transient( self::OPT_CACHE );
-        return isset( $cache['tier'] ) ? $cache['tier'] : 'premium';
+        // Modele 2 niveaux (Gratuit + Premium) : toute licence valide donne le
+        // niveau Premium unique (interne 'business' = design le plus abouti).
+        // On normalise donc tout tier paye (pro/premium/business) vers 'business'
+        // pour harmoniser cadenas, fonctionnalites et branding sur tous les themes.
+        return 'business';
     }
 
     /**

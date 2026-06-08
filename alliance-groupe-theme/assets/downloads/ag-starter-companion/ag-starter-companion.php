@@ -968,7 +968,10 @@ class AG_Starter_Companion {
 	}
 
 	private function has_higher_tier() {
-		return $this->get_current_tier() !== 'business';
+		// Modèle 2 niveaux : Gratuit + Premium. TOUTE licence payante (premium,
+		// pro ou business — anciennes clés incluses) = niveau Premium unique =
+		// tout débloqué. Les cadenas/upsells ne s'affichent QUE pour le gratuit.
+		return $this->is_free_tier();
 	}
 
 	/** Prix unique du Premium (modèle 2 niveaux : Gratuit + Premium). */
@@ -979,7 +982,9 @@ class AG_Starter_Companion {
 	private function get_upgrade_buttons() {
 		$buttons = array();
 		// Une seule offre payante : Premium (interne 'business' = design abouti).
-		if ( $this->get_current_tier() !== 'business' ) {
+		// On ne propose l'upgrade qu'aux utilisateurs gratuits ; toute licence
+		// payante est déjà au niveau Premium unique.
+		if ( $this->is_free_tier() ) {
 			$buttons['business'] = 'Premium — ' . $this->get_premium_price() . '€';
 		}
 		return $buttons;
