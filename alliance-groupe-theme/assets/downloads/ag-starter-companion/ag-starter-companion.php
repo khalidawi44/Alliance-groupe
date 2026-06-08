@@ -942,7 +942,7 @@ class AG_Starter_Companion {
 				. '<li>Un encart apparaît dans le tableau de bord pour importer le contenu demo en 1 clic</li>'
 				. '</ol>',
 			'faq'         => '<h4>Le plugin est-il gratuit ?</h4>'
-				. '<p>Oui, 100% gratuit. Les packs Premium/Business sont des options payantes facultatives.</p>'
+				. '<p>Oui, 100% gratuit. Le Premium est une option payante facultative.</p>'
 				. '<h4>Fonctionne-t-il avec tous les thèmes AG Starter ?</h4>'
 				. '<p>Oui : Restaurant, Artisan, Coach et Avocat.</p>'
 				. '<h4>Que fait le bouton "Importer le contenu demo" ?</h4>'
@@ -971,16 +971,16 @@ class AG_Starter_Companion {
 		return $this->get_current_tier() !== 'business';
 	}
 
+	/** Prix unique du Premium (modèle 2 niveaux : Gratuit + Premium). */
+	private function get_premium_price() {
+		return (int) apply_filters( 'ag_companion_premium_price', (int) get_option( 'ag_creator_price', 69 ) );
+	}
+
 	private function get_upgrade_buttons() {
-		$tier = $this->get_current_tier();
 		$buttons = array();
-		if ( in_array( $tier, array( 'free' ), true ) ) {
-			$buttons['premium'] = 'Premium — 99€';
-		}
-		if ( $tier === 'free' ) {
-		}
-		if ( $tier !== 'business' ) {
-			$buttons['business'] = 'Business — 149€';
+		// Une seule offre payante : Premium (interne 'business' = design abouti).
+		if ( $this->get_current_tier() !== 'business' ) {
+			$buttons['business'] = 'Premium — ' . $this->get_premium_price() . '€';
 		}
 		return $buttons;
 	}
@@ -1037,7 +1037,7 @@ class AG_Starter_Companion {
 		<div style="background:linear-gradient(135deg,#1a1a2e 0%,#0f0f18 100%);border:1px solid rgba(212,180,92,.35);border-radius:10px;padding:28px 32px;margin:20px 20px 10px 0;display:flex;align-items:center;gap:28px;flex-wrap:wrap;position:relative;">
 			<a href="<?php echo esc_url( $dismiss_url ); ?>" style="position:absolute;top:10px;right:14px;color:rgba(255,255,255,.3);font-size:1.2rem;text-decoration:none;" title="Masquer 7 jours">✕</a>
 			<div style="flex:1;min-width:260px;">
-				<h2 style="color:#D4B45C;font-size:1.3rem;margin:0 0 8px;font-weight:800;">⚡ <?php echo 'Passez a la version ' . esc_html( ($this->get_current_tier() === 'free') ? 'Premium' : 'Business' ); ?></h2>
+				<h2 style="color:#D4B45C;font-size:1.3rem;margin:0 0 8px;font-weight:800;">⚡ <?php echo 'Passez a la version Premium'; ?></h2>
 				<p style="color:rgba(255,255,255,.75);font-size:.95rem;line-height:1.6;margin:0;">
 					<?php esc_html_e( 'Header sticky, animations scroll, couleurs avancees, temoignages clients, galerie photos, boutique WooCommerce, grille de tarifs, pub minimale... Paiement unique, mises a jour a vie.', 'ag-starter-companion' ); ?>
 				</p>
@@ -1081,20 +1081,12 @@ class AG_Starter_Companion {
 			<h3 style="margin:0 0 10px;font-size:1.1rem;">Vous utilisez <?php echo esc_html( $current_label ); ?></h3>
 
 			<div style="background:#f8f5ec;border:1px solid #D4B45C;border-radius:8px;padding:18px;margin:0 0 16px;">
-				<?php if ( $tier === 'free' ) : ?>
-				<?php if ( $tier === 'free' ) : ?>
-				<div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(0,0,0,.08);">
-					<strong style="font-size:1rem;">⚡ Premium — 99€</strong>
-					<p style="font-size:.82rem;color:#555;margin:4px 0 0;line-height:1.4;">Header sticky, animations scroll, polices Playfair + Manrope, témoignages clients, téléphone cliquable dans le header, couleurs avancées.</p>
+					<div>
+						<strong style="font-size:1rem;">💎 Premium — <?php echo (int) $this->get_premium_price(); ?>€</strong>
+						<p style="font-size:.82rem;color:#555;margin:4px 0 0;line-height:1.4;">Notre design le plus abouti : header sticky, animations au scroll, blocs Gutenberg premium, polices Playfair + Manrope, témoignages, galerie, grille de tarifs, WooCommerce, couleurs avancées, support.</p>
+					</div>
+					<p style="font-size:.78rem;color:#888;margin:12px 0 0;text-align:center;">Paiement unique — mises à jour à vie — support inclus</p>
 				</div>
-				<?php endif; ?>
-				<div>
-					<strong style="font-size:1rem;">🏆 Business — 149€</strong>
-					<p style="font-size:.82rem;color:#555;margin:4px 0 0;line-height:1.4;">Tout Pro + WooCommerce (boutique en ligne), traductions 6 langues, pub réduite (simple copyright AG), session stratégique 30 min incluse.</p>
-				</div>
-				<?php endif; ?>
-				<p style="font-size:.78rem;color:#888;margin:12px 0 0;text-align:center;">Paiement unique — mises à jour à vie — support inclus</p>
-			</div>
 			<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
 				<?php foreach ( $this->get_upgrade_buttons() as $pack => $text ) : ?>
 				<a href="<?php echo esc_url( $this->get_upgrade_url( $pack ) ); ?>" target="_blank" rel="noopener" class="button button-primary" style="font-size:.85rem;padding:6px 14px;"><?php echo esc_html( $text ); ?></a>
@@ -1113,53 +1105,53 @@ class AG_Starter_Companion {
 		$wp_customize->add_section( 'ag_locked_pro', array(
 			'title'       => esc_html__( '🔒 Header Sticky + Couleurs (Premium)', 'ag-starter-companion' ),
 			'priority'    => 30,
-			'description' => esc_html__( 'Le header sticky au scroll, la couleur d\'accent secondaire et le fond de footer personnalisable sont disponibles avec le Pack Premium (99€).', 'ag-starter-companion' ),
+			'description' => esc_html__( 'Le header sticky au scroll, la couleur d\'accent secondaire et le fond de footer personnalisable sont disponibles avec le Premium (69€).', 'ag-starter-companion' ),
 		) );
 		$wp_customize->add_setting( 'ag_locked_pro_info', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
 		$wp_customize->add_control( 'ag_locked_pro_info', array(
-			'label'       => esc_html__( 'A partir de 99€', 'ag-starter-companion' ),
+			'label'       => esc_html__( 'A partir de 69€', 'ag-starter-companion' ),
 			'section'     => 'ag_locked_pro',
 			'type'        => 'hidden',
-			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'premium' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Premium — 99€ →</a>',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'business' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Passer au Premium — 69€ →</a>',
 		) );
 
 		$wp_customize->add_section( 'ag_locked_animations', array(
 			'title'       => esc_html__( '🔒 Animations au scroll (Premium)', 'ag-starter-companion' ),
 			'priority'    => 31,
-			'description' => esc_html__( 'Animations fade-in, slide-left, slide-right et scale-in au scroll. Vos sections apparaissent avec elegance quand le visiteur scrolle. Compatible prefers-reduced-motion. Pack Premium (99€).', 'ag-starter-companion' ),
+			'description' => esc_html__( 'Animations fade-in, slide-left, slide-right et scale-in au scroll. Vos sections apparaissent avec elegance quand le visiteur scrolle. Compatible prefers-reduced-motion. Premium (69€).', 'ag-starter-companion' ),
 		) );
 		$wp_customize->add_setting( 'ag_locked_anim_info', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
 		$wp_customize->add_control( 'ag_locked_anim_info', array(
-			'label'   => esc_html__( 'A partir de 99€', 'ag-starter-companion' ),
+			'label'   => esc_html__( 'A partir de 69€', 'ag-starter-companion' ),
 			'section' => 'ag_locked_animations',
 			'type'    => 'hidden',
-			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'premium' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Premium — 99€ →</a>',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'business' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Passer au Premium — 69€ →</a>',
 		) );
 
 		$wp_customize->add_section( 'ag_locked_testimonials', array(
 			'title'       => esc_html__( '🔒 Temoignages + Galerie (Premium)', 'ag-starter-companion' ),
 			'priority'    => 32,
-			'description' => esc_html__( 'Temoignages clients (jusqu\'a 6), galerie photos, grille de tarifs. Inclus dans le Pack Premium (99).', 'ag-starter-companion' ),
+			'description' => esc_html__( 'Temoignages clients (jusqu\'a 6), galerie photos, grille de tarifs. Inclus dans le Premium (69€).', 'ag-starter-companion' ),
 		) );
 		$wp_customize->add_setting( 'ag_locked_testi_info', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
 		$wp_customize->add_control( 'ag_locked_testi_info', array(
-			'label'   => esc_html__( 'A partir de 99€', 'ag-starter-companion' ),
+			'label'   => esc_html__( 'A partir de 69€', 'ag-starter-companion' ),
 			'section' => 'ag_locked_testimonials',
 			'type'    => 'hidden',
-			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'premium' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Premium — 99€ →</a>',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'business' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Passer au Premium — 69€ →</a>',
 		) );
 
 		$wp_customize->add_section( 'ag_locked_whitelabel', array(
-			'title'       => esc_html__( '🔒 Pub minimale + Session strategique (Business)', 'ag-starter-companion' ),
+			'title'       => esc_html__( '🔒 Pub minimale + Session strategique (Premium)', 'ag-starter-companion' ),
 			'priority'    => 33,
-			'description' => esc_html__( 'Reduisez la publicite Alliance Groupe a un simple copyright, personnalisez le footer, acces a des templates de pages supplementaires, et session strategique de 30 min offerte avec un expert pour optimiser votre site. Pack Business (149€).', 'ag-starter-companion' ),
+			'description' => esc_html__( 'Reduisez la publicite Alliance Groupe a un simple copyright, personnalisez le footer, acces a des templates de pages supplementaires, et session strategique de 30 min offerte avec un expert pour optimiser votre site. Premium (69€).', 'ag-starter-companion' ),
 		) );
 		$wp_customize->add_setting( 'ag_locked_wl_info', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
 		$wp_customize->add_control( 'ag_locked_wl_info', array(
-			'label'   => esc_html__( 'A partir de 149€', 'ag-starter-companion' ),
+			'label'   => esc_html__( 'A partir de 69€', 'ag-starter-companion' ),
 			'section' => 'ag_locked_whitelabel',
 			'type'    => 'hidden',
-			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'business' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Business — 149€ →</a>',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'business' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Passer au Premium — 69€ →</a>',
 		) );
 	}
 

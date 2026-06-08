@@ -191,13 +191,6 @@ endwhile; rewind_posts(); endif; ?>
 		</section>
 	<?php endif; endif; ?>
 
-	<?php
-	// Section "Alliance Groupe en vidéo" — visible en mode premium
-	if ( function_exists( 'ag_artisan_render_promo_video' ) ) {
-		ag_artisan_render_promo_video();
-	}
-	?>
-
 	<?php if ( ! empty( $ag_faq ) ) : ?>
 		<!-- FAQ accordéon -->
 		<section class="ag-faq-wrap">
