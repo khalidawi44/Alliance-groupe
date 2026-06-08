@@ -45,6 +45,27 @@ function ag_google_reviews_optin( $args = array() ) {
 	$email = isset( $_GET['email'] ) ? sanitize_email( wp_unslash( $_GET['email'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
 	$country = isset( $_GET['country'] ) ? strtoupper( substr( sanitize_text_field( wp_unslash( $_GET['country'] ) ), 0, 2 ) ) : 'FR'; // phpcs:ignore WordPress.Security.NonceVerification
 
+	// Pas d'email dans l'URL ? On récupère la commande la plus récente
+	// enregistrée par le webhook PayPal (file ag_gcr_pending) et on la
+	// « consomme » pour lancer l'enquête avec le vrai email de l'acheteur.
+	if ( '' === $email ) {
+		$list = get_option( 'ag_gcr_pending', array() );
+		if ( is_array( $list ) && ! empty( $list ) ) {
+			$now = time();
+			for ( $i = count( $list ) - 1; $i >= 0; $i-- ) {
+				$e = $list[ $i ];
+				if ( empty( $e['used'] ) && ( $now - (int) ( $e['time'] ?? 0 ) ) < 1800 && ! empty( $e['email'] ) ) {
+					$email   = sanitize_email( $e['email'] );
+					$order   = ! empty( $e['order'] ) ? $e['order'] : $order;
+					$country = ! empty( $e['country'] ) ? $e['country'] : $country;
+					$list[ $i ]['used'] = 1;
+					update_option( 'ag_gcr_pending', $list, false );
+					break;
+				}
+			}
+		}
+	}
+
 	// Produits numériques : livraison immédiate -> date du jour.
 	$delivery = gmdate( 'Y-m-d' );
 
@@ -102,3 +123,55 @@ function ag_google_reviews_badge() {
 	<?php
 }
 add_action( 'wp_footer', 'ag_google_reviews_badge', 99 );
+
+/**
+ * Enregistre chaque paiement PayPal vérifié (email + n° de transaction) dans
+ * une file courte. La page /merci-achat la consomme pour déclencher l'enquête
+ * Google Avis clients avec le vrai email de l'acheteur (que PayPal ne passe
+ * pas à la page de retour).
+ */
+function ag_gcr_record_order( $amount, $email, $txn, $type = '', $resource = array() ) {
+	// On ne compte que les paiements réellement encaissés.
+	if ( '' !== (string) $type && 'PAYMENT.CAPTURE.COMPLETED' !== $type ) {
+		return;
+	}
+	$email = sanitize_email( (string) $email );
+	if ( '' === $email ) {
+		return;
+	}
+
+	$country = 'FR';
+	if ( is_array( $resource ) ) {
+		$cc = '';
+		if ( ! empty( $resource['payer']['address']['country_code'] ) ) {
+			$cc = $resource['payer']['address']['country_code'];
+		} elseif ( ! empty( $resource['shipping']['address']['country_code'] ) ) {
+			$cc = $resource['shipping']['address']['country_code'];
+		}
+		if ( $cc ) {
+			$country = strtoupper( substr( (string) $cc, 0, 2 ) );
+		}
+	}
+
+	$list = get_option( 'ag_gcr_pending', array() );
+	if ( ! is_array( $list ) ) {
+		$list = array();
+	}
+	$now  = time();
+	// Purge les entrées de plus de 30 min.
+	$list = array_values( array_filter( $list, function ( $e ) use ( $now ) {
+		return ( $now - (int) ( $e['time'] ?? 0 ) ) < 1800;
+	} ) );
+	$list[] = array(
+		'order'   => (string) $txn !== '' ? (string) $txn : ( 'AG-' . gmdate( 'YmdHis' ) ),
+		'email'   => $email,
+		'country' => $country,
+		'time'    => $now,
+		'used'    => 0,
+	);
+	if ( count( $list ) > 30 ) {
+		$list = array_slice( $list, -30 );
+	}
+	update_option( 'ag_gcr_pending', $list, false );
+}
+add_action( 'ag_paypal_payment_verified', 'ag_gcr_record_order', 30, 5 );
