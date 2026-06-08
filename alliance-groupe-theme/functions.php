@@ -155,6 +155,12 @@ if ( file_exists( $ag_site_creator_file ) ) {
     require_once $ag_site_creator_file;
 }
 
+// ── 1c6d. Flux produits Google Merchant Center (templates Premium)
+$ag_merchant_feed_file = get_stylesheet_directory() . '/inc/ag-merchant-feed.php';
+if ( file_exists( $ag_merchant_feed_file ) ) {
+    require_once $ag_merchant_feed_file;
+}
+
 // ── 1c7. Pop-up d'incitation "devenir ambassadeur" (visiteurs non-membres)
 add_action( 'wp_footer', function () {
     if ( is_admin() ) return;
