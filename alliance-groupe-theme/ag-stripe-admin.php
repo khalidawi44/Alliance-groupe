@@ -34,14 +34,15 @@ add_action( 'admin_menu', function () {
  * Register the 2 options through the Settings API.
  */
 add_action( 'admin_init', function () {
+	$ag_pp = function_exists( 'ag_creator_price' ) ? (int) ag_creator_price() : 69;
 	$fields = array(
-		'ag_stripe_premium_url'  => array(
-			'label'       => 'Pack Premium — 99€',
-			'description' => 'URL du lien de paiement pour le Pack Premium. Ex : https://www.paypal.com/ncp/payment/xxxxxxx',
-		),
 		'ag_stripe_business_url' => array(
-			'label'       => 'Pack Business — 149€',
-			'description' => 'URL du lien de paiement pour le Pack Business.',
+			'label'       => 'Template Premium — ' . $ag_pp . '€',
+			'description' => 'Lien de paiement PayPal (' . $ag_pp . '€) de la licence Premium. C\'est CE lien qu\'utilisent le créateur de site et les fiches métier. Ex : https://www.paypal.com/ncp/payment/xxxxxxx',
+		),
+		'ag_stripe_premium_url'  => array(
+			'label'       => 'Ancien Pack Premium (inutilisé)',
+			'description' => 'Plus utilisé dans le modèle 2 niveaux (Gratuit + Premium). Tu peux laisser vide.',
 		),
 		'ag_stripe_question_single_url' => array(
 			'label'       => 'Question Flash — 45€ (1 question)',
@@ -184,23 +185,10 @@ function ag_stripe_admin_render() {
 			<?php settings_fields( 'ag_stripe_config' ); ?>
 
 			<table class="form-table" role="presentation">
+				<?php $ag_pp = function_exists( 'ag_creator_price' ) ? (int) ag_creator_price() : 69; ?>
 				<tr>
 					<th scope="row">
-						<label for="ag_stripe_premium_url">Pack Premium — 99€</label>
-					</th>
-					<td>
-						<input type="url" name="ag_stripe_premium_url" id="ag_stripe_premium_url"
-							value="<?php echo esc_attr( $premium ); ?>"
-							class="regular-text code"
-							placeholder="https://www.paypal.com/ncp/payment/...">
-						<p class="description">
-							<?php echo $state_badge( $premium ); // phpcs:ignore ?>
-						</p>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row">
-						<label for="ag_stripe_business_url">Pack Business — 149€</label>
+						<label for="ag_stripe_business_url">Template Premium — <?php echo (int) $ag_pp; ?>€</label>
 					</th>
 					<td>
 						<input type="url" name="ag_stripe_business_url" id="ag_stripe_business_url"
@@ -208,7 +196,22 @@ function ag_stripe_admin_render() {
 							class="regular-text code"
 							placeholder="https://www.paypal.com/ncp/payment/...">
 						<p class="description">
+							Lien PayPal de la licence <strong>Premium (<?php echo (int) $ag_pp; ?>€)</strong> — utilisé par le créateur de site et les fiches métier.<br>
 							<?php echo $state_badge( $business ); // phpcs:ignore ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="ag_stripe_premium_url">Ancien Premium <span style="color:#999;font-weight:400;">(inutilisé)</span></label>
+					</th>
+					<td>
+						<input type="url" name="ag_stripe_premium_url" id="ag_stripe_premium_url"
+							value="<?php echo esc_attr( $premium ); ?>"
+							class="regular-text code"
+							placeholder="(laisser vide)">
+						<p class="description">
+							Plus utilisé dans le modèle 2 niveaux (Gratuit + Premium). Tu peux laisser vide.
 						</p>
 					</td>
 				</tr>
@@ -305,18 +308,13 @@ function ag_stripe_admin_render() {
 		$contact_url      = home_url( '/contact' );
 		$tel              = '+33744829516';
 
+		$ag_pp = function_exists( 'ag_creator_price' ) ? (int) ag_creator_price() : 69;
 		$products = array(
 			'premium' => array(
-				'name'  => 'AG Starter Premium — 99€',
-				'price' => '99,00 €',
-				'desc'  => "Plugin WordPress AG Starter Premium : design travaille, animations, 10 blocs Gutenberg premium, customizer etendu (50+ reglages), sticky header, polices Google Fonts, support email 60 jours. Compatible 5 themes (Restaurant/Artisan/Coach/Avocat/Barber). Paiement unique. 💎 Besoin d'un site sur-mesure qui genere +340% de leads ? Appel gratuit : alliancegroupe-inc.com/contact",
-				'success' => "Merci pour votre achat ! Votre plugin Premium arrive par email sous 5 min. 💎 Site sur-mesure (+340% leads en 3 mois) : alliancegroupe-inc.com/contact",
-			),
-			'business' => array(
-				'name'  => 'AG Starter Business — 149€',
-				'price' => '149,00 €',
-				'desc'  => "Pack tout-en-un AG Starter : tout Premium + installation assistee en visio 1h, maintenance WP 1 an, audit SEO mensuel, rapport perf trimestriel, support 2h, white-label, integration CRM (HubSpot/Pipedrive/Brevo), appel strategique avec Fabrizio. Paiement unique. 💎 Site totalement sur-mesure (+340% leads en 3 mois) : alliancegroupe-inc.com/contact",
-				'success' => "Merci pour votre achat du Pack Business ! Notre equipe vous contacte sous 24h ouvrees pour planifier l'installation et l'appel strategique avec Fabrizio. Tel : 07.44.82.95.16",
+				'name'  => 'AG Starter Premium — ' . $ag_pp . '€',
+				'price' => number_format( $ag_pp, 2, ',', ' ' ) . ' €',
+				'desc'  => "Plugin WordPress AG Starter Premium : notre design le plus abouti — animations, blocs Gutenberg premium, customizer etendu, sticky header, polices Google Fonts, support email. Compatible avec tous les themes AG Starter. Paiement unique. 💎 Besoin d'un site totalement sur-mesure ? Appel gratuit : alliancegroupe-inc.com/contact",
+				'success' => "Merci pour votre achat ! Votre plugin Premium arrive par email sous 5 min. 💎 Site sur-mesure : alliancegroupe-inc.com/contact",
 			),
 		);
 		?>
@@ -326,7 +324,7 @@ function ag_stripe_admin_render() {
 			<code style="background:#fff;padding:4px 8px;border-radius:3px;display:inline-block;margin-top:6px;font-size:.95rem;">
 				<?php echo esc_html( $thank_you_url ); ?>?pack=premium
 			</code><br>
-			<small style="color:#665;">Remplacez <code>premium</code> par <code>business</code> selon le pack.</small>
+			<small style="color:#665;">Une seule licence payante : le Premium.</small>
 			<p style="margin:10px 0 0;color:#665;font-size:.92rem;">
 				Cette page affiche un message de confirmation + un gros call-to-action vers
 				votre offre de site sur-mesure. <strong>Important</strong> : créez d'abord la

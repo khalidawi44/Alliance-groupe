@@ -161,10 +161,11 @@ class AG_Licence_Admin {
                 <table class="form-table">
                     <tr><th><label>Email *</label></th><td><input type="email" name="email" class="regular-text" required></td></tr>
                     <tr><th><label>Pack</label></th><td>
+                        <?php $ag_pp = function_exists( 'ag_creator_price' ) ? (int) ag_creator_price() : 69; ?>
                         <select name="tier">
-                            <option value="premium">Premium (99€)</option>
-                            <option value="business">Business (149€)</option>
-                        </select></td></tr>
+                            <option value="business">Premium (<?php echo (int) $ag_pp; ?>€)</option>
+                        </select>
+                        <p class="description">Une seule licence payante : Premium (débloque le design le plus abouti).</p></td></tr>
                     <tr><th><label>Thème</label></th><td>
                         <select name="theme_slug">
                             <option value="">Tous</option>
@@ -225,7 +226,7 @@ class AG_Licence_Admin {
                         <tr>
                             <th><label>Pack / Tier</label></th>
                             <td><select name="tier">
-                                <?php foreach ( array( 'premium' => 'Premium', 'business' => 'Business' ) as $k => $v ) : ?>
+                                <?php foreach ( array( 'business' => 'Premium (design abouti)', 'premium' => 'Base (ancien Premium)' ) as $k => $v ) : ?>
                                     <option value="<?php echo $k; ?>" <?php selected( $l->tier, $k ); ?>><?php echo $v; ?></option>
                                 <?php endforeach; ?>
                             </select>

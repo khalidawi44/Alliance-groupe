@@ -30,9 +30,9 @@ $premium_target      = ( $ag_stripe_premium      !== $ag_stripe_placeholder ) ? 
 
 $business_target = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : '';
 
-$premium_label      = ( $ag_stripe_premium      !== $ag_stripe_placeholder ) ? 'Payer 99€ via PayPal →'  : 'Acheter — 99€ une fois';
+$premium_label      = ( $ag_stripe_premium      !== $ag_stripe_placeholder ) ? 'Payer le Premium via PayPal →'  : 'Acheter le Premium';
 
-$business_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'Payer 149€ via PayPal →' : 'Acheter — 149€ une fois';
+$business_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'Payer le Premium via PayPal →' : 'Acheter le Premium';
 
 $screenshot_url = get_stylesheet_directory_uri() . '/assets/downloads/' . $ag_metier['slug_full'] . '/screenshot.png';
 $screenshot_file = get_stylesheet_directory() . '/assets/downloads/' . $ag_metier['slug_full'] . '/screenshot.png';

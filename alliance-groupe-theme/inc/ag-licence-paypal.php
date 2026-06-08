@@ -1,31 +1,36 @@
 <?php
 /**
- * Alliance Groupe — Vente de licences de templates via PayPal.
+ * Alliance Groupe — Vente de la licence Premium via PayPal.
  *
- * Remplace Stripe : quand un paiement PayPal vérifié correspond à un tier de
- * licence (Premium / Business), on génère la clé et on l'envoie au client par
- * email, en réutilisant le plugin « Licences AG » (AG_Licence_DB / _Email).
+ * Modèle 2 niveaux : Gratuit + Premium. Le Premium = le design le plus
+ * abouti (ancien « Business »). Quand un paiement PayPal vérifié correspond
+ * au montant Premium, on génère la clé (tier interne « business », qui
+ * débloque le plugin élaboré) et on l'envoie au client par email.
+ *
+ * Prix unique : option `ag_creator_price` (par défaut 69 €) — partagée avec
+ * le créateur de site, les fiches métier et le flux Merchant.
  *
  * Dépendances : inc/ag-paypal.php (webhook + hook ag_paypal_payment_verified)
- * et le plugin ag-licence-manager actif (classes AG_Licence_DB / AG_Licence_Email).
+ * et le plugin ag-licence-manager actif (AG_Licence_DB / AG_Licence_Email).
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 if ( ! function_exists( 'ag_licence_prices' ) ) {
-	/** Montant PayPal exact -> tier de licence. */
+	/** Montant PayPal exact -> tier de licence. Un seul tier payant. */
 	function ag_licence_prices() {
+		$prix = function_exists( 'ag_creator_price' ) ? (float) ag_creator_price() : 69;
+		// Tier interne « business » = il débloque le plugin au design le plus
+		// abouti. Affiché « Premium » côté client.
 		return apply_filters( 'ag_licence_prices', array(
-			'premium'  => (float) get_option( 'ag_licence_price_premium', 99 ),
-			'business' => (float) get_option( 'ag_licence_price_business', 149 ),
+			'business' => $prix,
 		) );
 	}
 }
 
 /**
  * Génère + envoie la clé de licence sur paiement PayPal vérifié.
- * On agit UNIQUEMENT sur PAYMENT.CAPTURE.COMPLETED (paiement unique définitif)
- * pour ne jamais créer deux clés pour un même achat.
+ * Uniquement sur PAYMENT.CAPTURE.COMPLETED (paiement unique définitif).
  */
 add_action( 'ag_paypal_payment_verified', function ( $amount, $email, $txn, $type = '', $resource = array() ) {
 	if ( 'PAYMENT.CAPTURE.COMPLETED' !== $type ) return;
@@ -33,7 +38,7 @@ add_action( 'ag_paypal_payment_verified', function ( $amount, $email, $txn, $typ
 	$email = sanitize_email( (string) $email );
 	if ( '' === $email ) return;
 
-	// 1) Tier : via custom_id PayPal (ag_licence:premium) si présent, sinon via le montant.
+	// 1) Tier : via custom_id PayPal (ag_licence:business) si présent, sinon via le montant.
 	$tier = '';
 	$cid  = is_array( $resource ) ? (string) ( $resource['custom_id'] ?? ( $resource['invoice_id'] ?? '' ) ) : '';
 	if ( 0 === stripos( $cid, 'ag_licence:' ) ) {
@@ -60,8 +65,8 @@ add_action( 'ag_paypal_payment_verified', function ( $amount, $email, $txn, $typ
 
 	// 4) Notif interne.
 	$to = apply_filters( 'ag_calendar_notify_email', 'advise.alliance.group@gmail.com' );
-	wp_mail( $to, '🔑 Licence vendue (PayPal) — ' . $tier, "Une licence « {$tier} » a été générée et envoyée à {$email}.\nTransaction PayPal : {$txn}\nMontant : {$amount} €" );
-	if ( function_exists( 'ag_push' ) ) ag_push( '🔑 Licence vendue', "Licence {$tier} → {$email} ({$amount} €)" );
+	wp_mail( $to, '🔑 Licence Premium vendue (PayPal)', "Une licence Premium a été générée et envoyée à {$email}.\nTransaction PayPal : {$txn}\nMontant : {$amount} €" );
+	if ( function_exists( 'ag_push' ) ) ag_push( '🔑 Licence vendue', "Premium → {$email} ({$amount} €)" );
 }, 10, 5 );
 
 /* ── Réglages : Réglages > Licences PayPal ──────────────────────── */
@@ -69,18 +74,18 @@ add_action( 'admin_menu', function () {
 	add_options_page( 'Licences PayPal', 'Licences PayPal', 'manage_options', 'ag-licence-paypal', 'ag_licence_paypal_render' );
 } );
 add_action( 'admin_init', function () {
-	register_setting( 'ag_licence_paypal', 'ag_licence_price_premium', array( 'type' => 'number', 'sanitize_callback' => 'floatval', 'default' => 99 ) );
-	register_setting( 'ag_licence_paypal', 'ag_licence_price_business', array( 'type' => 'number', 'sanitize_callback' => 'floatval', 'default' => 149 ) );
+	register_setting( 'ag_licence_paypal', 'ag_creator_price', array( 'type' => 'number', 'sanitize_callback' => 'floatval', 'default' => 69 ) );
 } );
 if ( ! function_exists( 'ag_licence_paypal_render' ) ) {
 	function ag_licence_paypal_render() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
 		$plugin_ok = class_exists( 'AG_Licence_DB' );
 		$paypal_ok = function_exists( 'ag_paypal_cfg' ) && ag_paypal_cfg( 'client_id' ) && ag_paypal_cfg( 'webhook_id' );
+		$prix      = function_exists( 'ag_creator_price' ) ? (int) ag_creator_price() : 69;
 		?>
 		<div class="wrap">
-			<h1>🔑 Licences de templates (PayPal)</h1>
-			<p style="max-width:800px;color:#50575e;">Quand un client paie le <strong>montant exact</strong> d'une licence via PayPal, sa <strong>clé est générée et envoyée par email automatiquement</strong> — plus besoin de Stripe. Le paiement passe par ton <strong>webhook PayPal</strong> déjà configuré.</p>
+			<h1>🔑 Licence Premium (PayPal)</h1>
+			<p style="max-width:800px;color:#50575e;">Modèle <strong>Gratuit + Premium</strong>. Quand un client paie le <strong>montant exact</strong> de la licence Premium via PayPal, sa <strong>clé est générée et envoyée par email automatiquement</strong>. Le paiement passe par ton <strong>webhook PayPal</strong> déjà configuré.</p>
 
 			<div style="max-width:800px;margin:14px 0;padding:14px 18px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid <?php echo ( $plugin_ok && $paypal_ok ) ? '#46b450' : '#dba617'; ?>;">
 				<p style="margin:0 0 6px;"><strong>État :</strong></p>
@@ -93,21 +98,20 @@ if ( ! function_exists( 'ag_licence_paypal_render' ) ) {
 			<div style="max-width:800px;margin:14px 0;padding:14px 18px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #D4B45C;">
 				<strong>Comment ça marche (1 fois) :</strong>
 				<ol style="margin:8px 0 0 22px;line-height:1.8;">
-					<li>Dans <strong>PayPal</strong>, crée un <strong>lien de paiement</strong> par licence (Premium 99 €, Business 149 €).</li>
-					<li>Mets ces liens sur tes pages de templates (boutons « Acheter la licence »).</li>
-					<li>Renseigne ci-dessous le <strong>montant exact</strong> de chaque licence — il sert à reconnaître l'achat.</li>
+					<li>Dans <strong>PayPal</strong>, crée un <strong>lien de paiement</strong> pour la licence Premium (<strong><?php echo (int) $prix; ?> €</strong>).</li>
+					<li>Renseigne ce lien dans <strong>Réglages → Liens de paiement</strong> (champ Premium) — c'est lui qu'utilisent le créateur de site et les fiches.</li>
+					<li>Renseigne ci-dessous le <strong>montant exact</strong> (<?php echo (int) $prix; ?> €) — il sert à reconnaître l'achat.</li>
 					<li>C'est tout : à chaque paiement, la clé part toute seule par email. ✅</li>
 				</ol>
-				<p style="margin:8px 0 0;color:#50575e;">Astuce (optionnel, plus précis) : si ton bouton PayPal envoie un <code>custom_id</code> du type <code>ag_licence:premium</code>, le tier est reconnu même si deux produits ont le même prix.</p>
+				<p style="margin:8px 0 0;color:#50575e;">Ce montant Premium est <strong>partagé partout</strong> (créateur de site, fiches métier, flux Google Merchant) : tu ne le règles qu'ici.</p>
 			</div>
 
 			<form method="post" action="options.php" style="max-width:800px;">
 				<?php settings_fields( 'ag_licence_paypal' ); ?>
 				<table class="form-table">
-					<tr><th scope="row"><label for="ag_licence_price_premium">Montant licence Premium (€)</label></th><td><input type="number" step="0.01" name="ag_licence_price_premium" id="ag_licence_price_premium" value="<?php echo esc_attr( get_option( 'ag_licence_price_premium', 99 ) ); ?>" class="small-text"></td></tr>
-					<tr><th scope="row"><label for="ag_licence_price_business">Montant licence Business (€)</label></th><td><input type="number" step="0.01" name="ag_licence_price_business" id="ag_licence_price_business" value="<?php echo esc_attr( get_option( 'ag_licence_price_business', 149 ) ); ?>" class="small-text"></td></tr>
+					<tr><th scope="row"><label for="ag_creator_price">Montant licence Premium (€)</label></th><td><input type="number" step="1" min="1" name="ag_creator_price" id="ag_creator_price" value="<?php echo esc_attr( get_option( 'ag_creator_price', 69 ) ); ?>" class="small-text"></td></tr>
 				</table>
-				<p class="description" style="max-width:800px;">⚠️ Utilise des montants <strong>uniques</strong> (différents des packs de site 490/890/1490 et de la maintenance) pour éviter toute confusion.</p>
+				<p class="description" style="max-width:800px;">⚠️ Utilise un montant <strong>unique</strong> (différent des packs de site 490/890/1490 et de la maintenance) pour éviter toute confusion au moment de reconnaître le paiement.</p>
 				<?php submit_button(); ?>
 			</form>
 		</div>
