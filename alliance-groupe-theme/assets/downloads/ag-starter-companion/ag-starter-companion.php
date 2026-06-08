@@ -3,7 +3,7 @@
  * Plugin Name:       AG Starter Companion
  * Plugin URI:        https://alliancegroupe-inc.com/templates-wordpress
  * Description:       Importer un clic pour les themes AG Starter (Restaurant, Artisan, Coach, Avocat). Cree automatiquement les pages, le menu et les reglages pour un site pret a l'emploi.
- * Version:           1.10.0
+ * Version:           1.11.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            AGthèmes
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_STARTER_COMPANION_VERSION', '1.10.0' );
+define( 'AG_STARTER_COMPANION_VERSION', '1.11.0' );
 define( 'AG_STARTER_COMPANION_FILE', __FILE__ );
 
 /**
@@ -43,6 +43,12 @@ class AG_Starter_Companion {
 		add_action( 'wp_dashboard_setup', array( $this, 'upgrade_dashboard_widget' ) );
 		add_action( 'customize_register', array( $this, 'upgrade_customizer_section' ), 99 );
 		add_action( 'admin_footer', array( $this, 'upgrade_footer_nudge' ) );
+
+		// Personnalisation Premium (Alliance) : image de hero modifiable + effets
+		// visuels premium, communs a tous les themes AG Starter.
+		add_action( 'customize_register', array( $this, 'premium_personalization_register' ), 100 );
+		add_action( 'wp_head', array( $this, 'premium_personalization_css' ), 99 );
+		add_action( 'wp_footer', array( $this, 'premium_personalization_js' ), 99 );
 
 		// Self-updater: check for new versions of this plugin
 		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_self_update' ) );
@@ -1240,6 +1246,161 @@ class AG_Starter_Companion {
 				<a href="#" onclick="document.getElementById('ag-footer-nudge').style.display='none';return false;" style="color:rgba(255,255,255,.3);font-size:1rem;text-decoration:none;margin-left:6px;">✕</a>
 			</div>
 		</div>
+		<?php
+	}
+
+	// ═══════════════════════════════════════════════════════════════
+	// PERSONNALISATION PREMIUM (Alliance) — image de hero + effets,
+	// communs a TOUS les themes AG Starter. Perk reserve aux licences
+	// payantes (Premium) : un client Premium peut tout changer.
+	// ═══════════════════════════════════════════════════════════════
+
+	/** Cle d'image de hero native du theme actif (si elle existe). */
+	private function premium_hero_native_key() {
+		$map = array(
+			'ag-starter-artisan' => 'ag_artisan_hero_image',
+			'ag-starter-coach'   => 'ag_coach_hero_image',
+		);
+		return $map[ $this->get_active_theme_slug() ] ?? '';
+	}
+
+	/** Image de hero effective : override premium sinon image native du theme. */
+	private function premium_hero_image() {
+		$img = get_theme_mod( 'ag_premium_hero_image', '' );
+		if ( ! $img && ( $native = $this->premium_hero_native_key() ) ) {
+			$img = get_theme_mod( $native, '' );
+		}
+		return $img;
+	}
+
+	public function sanitize_hero_height( $v ) {
+		return in_array( $v, array( '', 'tall', 'full' ), true ) ? $v : '';
+	}
+
+	/**
+	 * Panneau Customizer « Personnalisation Premium ».
+	 */
+	public function premium_personalization_register( $wp_customize ) {
+		if ( ! $this->get_active_theme_slug() || $this->is_free_tier() ) return;
+
+		$wp_customize->add_panel( 'ag_premium_panel', array(
+			'title'       => '🎨 ' . esc_html__( 'Personnalisation Premium', 'ag-starter-companion' ),
+			'priority'    => 1,
+			'description' => esc_html__( 'Changez l\'image du hero et activez les effets visuels haut de gamme inspires du site Alliance Groupe. Inclus dans votre Premium.', 'ag-starter-companion' ),
+		) );
+
+		// --- Hero ---
+		$wp_customize->add_section( 'ag_premium_hero', array(
+			'title' => esc_html__( 'Image du hero', 'ag-starter-companion' ), 'panel' => 'ag_premium_panel', 'priority' => 1,
+		) );
+		$wp_customize->add_setting( 'ag_premium_hero_image', array( 'default' => '', 'sanitize_callback' => 'esc_url_raw', 'transport' => 'refresh' ) );
+		$wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, 'ag_premium_hero_image', array(
+			'label'       => esc_html__( 'Image de fond du hero', 'ag-starter-companion' ),
+			'section'     => 'ag_premium_hero',
+			'description' => esc_html__( 'Remplacez la grande photo en haut de page. Format paysage conseille (1600px de large minimum).', 'ag-starter-companion' ),
+		) ) );
+		$wp_customize->add_setting( 'ag_premium_hero_overlay', array( 'default' => 45, 'sanitize_callback' => 'absint', 'transport' => 'refresh' ) );
+		$wp_customize->add_control( 'ag_premium_hero_overlay', array(
+			'label'       => esc_html__( 'Assombrir l\'image (lisibilite du texte)', 'ag-starter-companion' ),
+			'section'     => 'ag_premium_hero', 'type' => 'range',
+			'input_attrs' => array( 'min' => 0, 'max' => 85, 'step' => 5 ),
+		) );
+		$wp_customize->add_setting( 'ag_premium_hero_height', array( 'default' => '', 'sanitize_callback' => array( $this, 'sanitize_hero_height' ), 'transport' => 'refresh' ) );
+		$wp_customize->add_control( 'ag_premium_hero_height', array(
+			'label'   => esc_html__( 'Hauteur du hero', 'ag-starter-companion' ),
+			'section' => 'ag_premium_hero', 'type' => 'select',
+			'choices' => array( '' => esc_html__( 'Par defaut du theme', 'ag-starter-companion' ), 'tall' => esc_html__( 'Grand', 'ag-starter-companion' ), 'full' => esc_html__( 'Plein ecran', 'ag-starter-companion' ) ),
+		) );
+
+		// --- Effets ---
+		$wp_customize->add_section( 'ag_premium_fx', array(
+			'title'       => esc_html__( 'Effets Premium', 'ag-starter-companion' ), 'panel' => 'ag_premium_panel', 'priority' => 2,
+			'description' => esc_html__( 'Touches visuelles haut de gamme. Compatibles « mouvement reduit » pour l\'accessibilite.', 'ag-starter-companion' ),
+		) );
+		$fx = array(
+			'ag_premium_fx_reveal'   => array( 'Apparition des sections au scroll', true ),
+			'ag_premium_fx_glass'    => array( 'Header verre depoli au defilement', true ),
+			'ag_premium_fx_hover'    => array( 'Cartes qui se soulevent au survol', true ),
+			'ag_premium_fx_smooth'   => array( 'Defilement fluide + barre de progression doree', true ),
+			'ag_premium_fx_gradient' => array( 'Halo dore anime sur le hero', true ),
+			'ag_premium_fx_grain'    => array( 'Grain cinematique subtil', false ),
+		);
+		foreach ( $fx as $key => $cfg ) {
+			$wp_customize->add_setting( $key, array( 'default' => $cfg[1], 'sanitize_callback' => 'wp_validate_boolean', 'transport' => 'refresh' ) );
+			$wp_customize->add_control( $key, array( 'label' => esc_html( $cfg[0] ), 'section' => 'ag_premium_fx', 'type' => 'checkbox' ) );
+		}
+	}
+
+	/**
+	 * CSS premium injecte sur le front (image de hero + effets).
+	 */
+	public function premium_personalization_css() {
+		if ( ! $this->get_active_theme_slug() || $this->is_free_tier() ) return;
+
+		$img     = $this->premium_hero_image();
+		$overlay = max( 0, min( 85, (int) get_theme_mod( 'ag_premium_hero_overlay', 45 ) ) ) / 100;
+		$height  = get_theme_mod( 'ag_premium_hero_height', '' );
+		$css     = '';
+
+		if ( $img ) {
+			$o1   = number_format( $overlay, 2, '.', '' );
+			$o2   = number_format( min( 0.92, $overlay + 0.12 ), 2, '.', '' );
+			$url  = esc_url( $img );
+			$css .= '.ag-hero,.ag-hero-pro{background-image:linear-gradient(rgba(8,8,12,' . $o1 . '),rgba(8,8,12,' . $o2 . ')),url("' . $url . '") !important;background-size:cover !important;background-position:center !important;background-repeat:no-repeat !important;}';
+			$css .= '.ag-hero__bg{background-image:url("' . $url . '") !important;background-size:cover !important;background-position:center !important;}';
+			// Lisibilite premium sur photo : texte clair + ombre douce.
+			$css .= '.ag-hero h1,.ag-hero h2,.ag-hero p,.ag-hero .ag-hero__title,.ag-hero .ag-hero__subtitle,.ag-hero-pro__title,.ag-hero-pro__subtitle{color:#fff !important;text-shadow:0 2px 20px rgba(0,0,0,.5);}';
+			if ( '' === $height ) $css .= '.ag-hero,.ag-hero-pro{min-height:62vh;}';
+		}
+		if ( 'tall' === $height ) $css .= '.ag-hero,.ag-hero-pro{min-height:78vh !important;}';
+		if ( 'full' === $height ) $css .= '.ag-hero,.ag-hero-pro{min-height:100vh !important;}';
+
+		if ( get_theme_mod( 'ag_premium_fx_gradient', true ) ) {
+			$css .= '.ag-hero,.ag-hero-pro{position:relative;overflow:hidden;}.ag-hero::after,.ag-hero-pro::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 72% 18%,rgba(212,180,92,.20),transparent 58%);pointer-events:none;z-index:1;animation:agSheen 7s ease-in-out infinite;}.ag-hero>*,.ag-hero-pro>*{position:relative;z-index:2;}@keyframes agSheen{0%,100%{opacity:.5}50%{opacity:1}}';
+		}
+		if ( get_theme_mod( 'ag_premium_fx_hover', true ) ) {
+			$css .= '[class*="-card"]{transition:transform .28s cubic-bezier(.2,.7,.2,1),box-shadow .28s;}[class*="-card"]:hover{transform:translateY(-6px);box-shadow:0 20px 44px rgba(0,0,0,.16);}';
+		}
+		if ( get_theme_mod( 'ag_premium_fx_glass', true ) ) {
+			$css .= '.ag-site-header,.ag-header,.site-header{transition:background .3s,backdrop-filter .3s,box-shadow .3s;}body.ag-scrolled .ag-site-header,body.ag-scrolled .ag-header,body.ag-scrolled .site-header{backdrop-filter:blur(12px) saturate(150%);-webkit-backdrop-filter:blur(12px) saturate(150%);background:rgba(12,12,18,.72) !important;box-shadow:0 6px 30px rgba(0,0,0,.25);}';
+		}
+		if ( get_theme_mod( 'ag_premium_fx_reveal', true ) ) {
+			$css .= '@media(prefers-reduced-motion:no-preference){.ag-reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1);}.ag-reveal.ag-in{opacity:1;transform:none;}}';
+		}
+		if ( get_theme_mod( 'ag_premium_fx_smooth', true ) ) {
+			$css .= 'html{scroll-behavior:smooth;}#ag-scroll-progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#D4B45C,#f1d98b);z-index:99999;transition:width .1s ease;}';
+		}
+		if ( get_theme_mod( 'ag_premium_fx_grain', false ) ) {
+			$css .= 'body::before{content:"";position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'120\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'.9\' numOctaves=\'2\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E");}';
+		}
+
+		if ( $css ) {
+			echo "\n<style id=\"ag-premium-personalization\">" . $css . "</style>\n"; // phpcs:ignore WordPress.Security.EscapeOutput
+		}
+	}
+
+	/**
+	 * JS premium (header glass, reveal au scroll, barre de progression).
+	 */
+	public function premium_personalization_js() {
+		if ( ! $this->get_active_theme_slug() || $this->is_free_tier() ) return;
+		$reveal = get_theme_mod( 'ag_premium_fx_reveal', true ) ? 1 : 0;
+		$glass  = get_theme_mod( 'ag_premium_fx_glass', true ) ? 1 : 0;
+		$smooth = get_theme_mod( 'ag_premium_fx_smooth', true ) ? 1 : 0;
+		if ( ! $reveal && ! $glass && ! $smooth ) return;
+		?>
+		<script id="ag-premium-personalization-js">
+		(function(){
+			var R=<?php echo (int) $reveal; ?>,G=<?php echo (int) $glass; ?>,S=<?php echo (int) $smooth; ?>;
+			var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+			if(G){var on=function(){document.body.classList.toggle('ag-scrolled',window.scrollY>40);};window.addEventListener('scroll',on,{passive:true});on();}
+			if(S){var bar=document.createElement('div');bar.id='ag-scroll-progress';document.body.appendChild(bar);var up=function(){var h=document.documentElement,sc=h.scrollHeight-h.clientHeight;bar.style.width=(sc>0?(h.scrollTop/sc*100):0)+'%';};window.addEventListener('scroll',up,{passive:true});window.addEventListener('resize',up);up();}
+			if(R&&!reduce&&'IntersectionObserver'in window){
+				var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('ag-in');io.unobserve(e.target);}});},{threshold:.12});
+				document.querySelectorAll('section:not(.ag-hero):not(.ag-hero-pro)').forEach(function(s){s.classList.add('ag-reveal');io.observe(s);});
+			}
+		})();
+		</script>
 		<?php
 	}
 
