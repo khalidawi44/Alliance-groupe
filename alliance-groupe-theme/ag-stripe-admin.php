@@ -3,7 +3,7 @@
  * Alliance Groupe — Liens de paiement (admin page)
  *
  * Provides a "Liens de paiement" screen under the Réglages menu so the
- * user can paste any HTTPS payment link (PayPal, bank, SumUp, Lydia…)
+ * user can paste any HTTPS payment link (Stripe, bank, SumUp, Lydia…)
  * for each offer without editing any code. The values are stored in
  * standard wp_options entries read by the front-end templates.
  */
@@ -38,7 +38,7 @@ add_action( 'admin_init', function () {
 	$fields = array(
 		'ag_stripe_business_url' => array(
 			'label'       => 'Template Premium — ' . $ag_pp . '€',
-			'description' => 'Lien de paiement PayPal (' . $ag_pp . '€) de la licence Premium. C\'est CE lien qu\'utilisent le créateur de site et les fiches métier. Ex : https://www.paypal.com/ncp/payment/xxxxxxx',
+			'description' => 'Lien de paiement Stripe (' . $ag_pp . '€) de la licence Premium. C\'est CE lien qu\'utilisent le créateur de site et les fiches métier. Ex : https://buy.stripe.com/xxxxxxx',
 		),
 		'ag_stripe_premium_url'  => array(
 			'label'       => 'Ancien Pack Premium (inutilisé)',
@@ -106,7 +106,7 @@ add_action( 'admin_init', function () {
 /**
  * Sanitize the payment link input : empty string or the placeholder
  * both map back to STRIPE_PLACEHOLDER so the front-end fallback
- * kicks in. Any valid HTTPS payment link is accepted (PayPal, bank,
+ * kicks in. Any valid HTTPS payment link is accepted (Stripe, bank,
  * SumUp, Lydia…) — only the https:// scheme is required.
  *
  * @param string $value Raw value.
@@ -122,7 +122,7 @@ function ag_stripe_sanitize_url( $value ) {
 		add_settings_error( 'ag_stripe_config', 'bad_url', 'URL invalide ignorée : ' . esc_html( $value ) );
 		return 'STRIPE_PLACEHOLDER';
 	}
-	// On accepte TOUT lien de paiement HTTPS valide : ta banque, PayPal,
+	// On accepte TOUT lien de paiement HTTPS valide : ta banque, Stripe,
 	// SumUp, Lydia... Securite : on exige juste le https://.
 	if ( 'https' !== wp_parse_url( $url, PHP_URL_SCHEME ) ) {
 		add_settings_error(
@@ -164,20 +164,20 @@ function ag_stripe_admin_render() {
 		<p style="font-size:.95rem;color:#50575e;max-width:760px;">
 			Collez ici vos <strong>liens de paiement</strong> pour chaque offre.
 			Vous pouvez utiliser <strong>n'importe quel service</strong> : votre banque,
-			PayPal, SumUp, Lydia… (un simple lien en <code>https://</code> suffit).
+			Stripe, SumUp, Lydia… (un simple lien en <code>https://</code> suffit).
 			Tant qu'un champ est vide, le bouton
 			correspondant retombe sur le formulaire <em>/contact</em> ou le brief (le
 			contact est quand même capturé).
 		</p>
 
 		<div style="max-width:760px;margin-top:16px;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #D4B45C;">
-			<strong>Comment créer un lien de paiement PayPal ?</strong>
+			<strong>Comment créer un lien de paiement Stripe ?</strong>
 			<ol style="margin:8px 0 0 22px;">
-				<li>Connectez-vous à votre <a href="https://www.paypal.com/" target="_blank" rel="noopener">compte PayPal Business</a>.</li>
-				<li>Pour un paiement unique : <em>Pay &amp; Get Paid</em> &gt; <em>Liens de paiement</em>. Pour un abonnement : <em>Boutons PayPal</em> &gt; <em>S'abonner</em>.</li>
+				<li>Connectez-vous à votre <a href="https://dashboard.stripe.com/" target="_blank" rel="noopener">dashboard Stripe</a>.</li>
+				<li><em>Paiements</em> &gt; <em>Liens de paiement</em> &gt; <em>Créer un lien</em> (Payment Links). Pour un abonnement : choisissez « Récurrent ».</li>
 				<li>Créez le produit (ex. « AG Starter Premium »), montant TTC en EUR.</li>
-				<li>Copiez le lien <code>https://www.paypal.com/ncp/payment/xxxxxxx</code> (ou le lien du bouton d'abonnement) puis collez-le ci-dessous.</li>
-				<li>Répétez pour chaque offre.</li>
+				<li>Copiez le lien <code>https://buy.stripe.com/xxxxxxx</code> puis collez-le ci-dessous.</li>
+				<li>Répétez pour chaque offre. ⚙️ Webhook : <code><?php echo esc_html( home_url( '/wp-json/ag/v1/stripe-webhook' ) ); ?></code> (évènement <code>checkout.session.completed</code>) → génère la clé automatiquement.</li>
 			</ol>
 		</div>
 
@@ -194,9 +194,9 @@ function ag_stripe_admin_render() {
 						<input type="url" name="ag_stripe_business_url" id="ag_stripe_business_url"
 							value="<?php echo esc_attr( $business ); ?>"
 							class="regular-text code"
-							placeholder="https://www.paypal.com/ncp/payment/...">
+							placeholder="https://buy.stripe.com/...">
 						<p class="description">
-							Lien PayPal de la licence <strong>Premium (<?php echo (int) $ag_pp; ?>€)</strong> — utilisé par le créateur de site et les fiches métier.<br>
+							Lien Stripe de la licence <strong>Premium (<?php echo (int) $ag_pp; ?>€)</strong> — utilisé par le créateur de site et les fiches métier.<br>
 							<?php echo $state_badge( $business ); // phpcs:ignore ?>
 						</p>
 					</td>
@@ -226,7 +226,7 @@ function ag_stripe_admin_render() {
 						<input type="url" name="ag_stripe_question_single_url" id="ag_stripe_question_single_url"
 							value="<?php echo esc_attr( $q_single ); ?>"
 							class="regular-text code"
-							placeholder="https://www.paypal.com/ncp/payment/...">
+							placeholder="https://buy.stripe.com/...">
 						<p class="description">
 							<?php echo $state_badge( $q_single ); // phpcs:ignore ?>
 						</p>
@@ -240,7 +240,7 @@ function ag_stripe_admin_render() {
 						<input type="url" name="ag_stripe_question_pack_url" id="ag_stripe_question_pack_url"
 							value="<?php echo esc_attr( $q_pack ); ?>"
 							class="regular-text code"
-							placeholder="https://www.paypal.com/ncp/payment/...">
+							placeholder="https://buy.stripe.com/...">
 						<p class="description">
 							<?php echo $state_badge( $q_pack ); // phpcs:ignore ?>
 						</p>
@@ -254,7 +254,7 @@ function ag_stripe_admin_render() {
 						<input type="url" name="ag_stripe_question_sub_url" id="ag_stripe_question_sub_url"
 							value="<?php echo esc_attr( $q_sub ); ?>"
 							class="regular-text code"
-							placeholder="https://www.paypal.com/ncp/payment/...">
+							placeholder="https://buy.stripe.com/...">
 						<p class="description">
 							<?php echo $state_badge( $q_sub ); // phpcs:ignore ?>
 							<br><em style="color:#666;">Doit être un Payment Link en mode « subscription » (abonnement mensuel).</em>
@@ -268,7 +268,7 @@ function ag_stripe_admin_render() {
 					<td>
 						<input type="url" name="ag_stripe_consult_express_url" id="ag_stripe_consult_express_url"
 							value="<?php echo esc_attr( $c_express ); ?>" class="regular-text code"
-							placeholder="https://www.paypal.com/ncp/payment/...">
+							placeholder="https://buy.stripe.com/...">
 						<p class="description"><?php echo $state_badge( $c_express ); // phpcs:ignore ?></p>
 					</td>
 				</tr>
@@ -277,7 +277,7 @@ function ag_stripe_admin_render() {
 					<td>
 						<input type="url" name="ag_stripe_consult_strategique_url" id="ag_stripe_consult_strategique_url"
 							value="<?php echo esc_attr( $c_strat ); ?>" class="regular-text code"
-							placeholder="https://www.paypal.com/ncp/payment/...">
+							placeholder="https://buy.stripe.com/...">
 						<p class="description"><?php echo $state_badge( $c_strat ); // phpcs:ignore ?></p>
 					</td>
 				</tr>
@@ -289,16 +289,16 @@ function ag_stripe_admin_render() {
 		<div style="max-width:760px;margin-top:24px;padding:18px 20px;background:#f0f6fc;border:1px solid #c3dffb;border-radius:6px;">
 			<strong>Astuce :</strong> pour vider une URL et revenir au fallback <em>/contact</em>,
 			laissez le champ vide et cliquez sur <em>Enregistrer</em>. Tout lien de paiement
-			valide en <code>https://</code> est accepté (PayPal, banque, SumUp, Lydia…) ;
+			valide en <code>https://</code> est accepté (Stripe, banque, SumUp, Lydia…) ;
 			une URL non sécurisée est rejetée avec un message d'erreur en haut de page.
 		</div>
 
 		<hr style="margin:40px 0 24px;border:none;border-top:1px solid #ddd;">
 
-		<h2 style="font-size:1.4rem;">📋 Descriptions produit prêtes à coller dans PayPal</h2>
+		<h2 style="font-size:1.4rem;">📋 Descriptions produit prêtes à coller dans Stripe</h2>
 		<p style="color:#50575e;max-width:780px;">
-			Pour chaque lien de paiement PayPal, copiez-collez la description correspondante
-			dans le champ <em>« Description du produit »</em> de PayPal lors de la création.
+			Pour chaque lien de paiement Stripe, copiez-collez la description correspondante
+			dans le champ <em>« Description du produit »</em> de Stripe lors de la création.
 			Chaque description rappelle votre offre de site sur-mesure pour faire remonter
 			les acheteurs vers le ticket le plus élevé.
 		</p>
@@ -320,7 +320,7 @@ function ag_stripe_admin_render() {
 		?>
 
 		<div style="background:#fff8e6;border:1px solid #f5c64d;border-left:4px solid #D4B45C;padding:18px 22px;border-radius:6px;margin-bottom:24px;max-width:780px;">
-			<strong>🎯 Page de remerciement à utiliser comme « URL de retour après paiement » dans PayPal :</strong><br>
+			<strong>🎯 Page de remerciement à utiliser comme « URL de retour après paiement » dans Stripe :</strong><br>
 			<code style="background:#fff;padding:4px 8px;border-radius:3px;display:inline-block;margin-top:6px;font-size:.95rem;">
 				<?php echo esc_html( $thank_you_url ); ?>?pack=premium
 			</code><br>
