@@ -32,26 +32,39 @@ add_filter( 'query_vars', function ( $vars ) {
 	return $vars;
 } );
 
-/* ── Données produits ────────────────────────────────────────────────── */
-function ag_merchant_products() {
-	$price = function_exists( 'ag_creator_price' ) ? (int) ag_creator_price() : 69;
+/* ── Résolution d'une image locale (1re existante, sinon bannière OG) ─── */
+function ag_merchant_img( $candidates ) {
+	$base = get_stylesheet_directory() . '/assets/images/';
+	$url  = get_stylesheet_directory_uri() . '/assets/images/';
+	foreach ( (array) $candidates as $rel ) {
+		if ( file_exists( $base . $rel ) ) {
+			return $url . $rel;
+		}
+	}
+	return get_stylesheet_directory_uri() . '/assets/images/og-banner.png';
+}
 
-	// slug => [ nom, description, image de repli (si pas de capture locale) ]
-	$metiers = array(
-		'avocat'      => array( 'Avocat', 'Site WordPress Premium clé en main pour cabinet d\'avocats, juriste ou notaire : design navy & champagne, domaines d\'expertise, prise de rendez-vous RGPD, honoraires transparents. Téléchargement immédiat, installation en 2 minutes.', 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1200&q=85' ),
-		'restaurant'  => array( 'Restaurant', 'Site WordPress Premium pour restaurant, bistrot, bar ou café : hero appétissant, carte, réservation, privatisation et horaires. Téléchargement immédiat, prêt à installer.', 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=85' ),
-		'artisan'     => array( 'Artisan', 'Site WordPress Premium pour artisan du bâtiment (plombier, électricien, menuisier, maçon) : prestations, zones d\'intervention, devis et réalisations. Téléchargement immédiat.', 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=85' ),
-		'coach'       => array( 'Coach', 'Site WordPress Premium pour coach, consultant, formateur ou thérapeute : présentation des accompagnements, séances, témoignages et prise de rendez-vous. Téléchargement immédiat.', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1200&q=85' ),
-		'barber'      => array( 'Barber Shop', 'Site WordPress Premium pour barbershop, coiffeur ou salon urbain : tarifs, prestations, file d\'attente et galerie. Téléchargement immédiat, prêt à installer.', 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=1200&q=85' ),
-		'association' => array( 'Association', 'Site WordPress Premium pour association, mouvement ou ONG : manifeste, événements, groupes locaux, dons et adhérents. Téléchargement immédiat.', 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1200&q=85' ),
-	);
+/* ── Catalogue produits (templates + personnalisé + sécurité) ────────── */
+function ag_merchant_products() {
+	$tpl = function_exists( 'ag_creator_price' ) ? (int) ag_creator_price() : 69;
+	$eur = function ( $n ) { return number_format( (float) $n, 2, '.', '' ) . ' EUR'; };
 
 	$items = array();
+
+	/* 1) TEMPLATES Premium (produits numériques téléchargeables) ───────── */
+	$metiers = array(
+		'avocat'      => array( 'Avocat', 'Site WordPress Premium clé en main pour cabinet d\'avocats, juriste ou notaire : domaines d\'expertise, prise de rendez-vous RGPD, honoraires transparents. Téléchargement immédiat.', 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1200&q=85' ),
+		'restaurant'  => array( 'Restaurant', 'Site WordPress Premium pour restaurant, bistrot, bar ou café : carte, réservation, privatisation, horaires. Téléchargement immédiat.', 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=85' ),
+		'artisan'     => array( 'Artisan', 'Site WordPress Premium pour artisan du bâtiment (plombier, électricien, menuisier, maçon) : prestations, zones, devis, réalisations. Téléchargement immédiat.', 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=85' ),
+		'coach'       => array( 'Coach', 'Site WordPress Premium pour coach, consultant ou thérapeute : accompagnements, séances, témoignages, prise de rendez-vous. Téléchargement immédiat.', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1200&q=85' ),
+		'barber'      => array( 'Barber Shop', 'Site WordPress Premium pour barbershop, coiffeur ou salon urbain : tarifs, prestations, file d\'attente, galerie. Téléchargement immédiat.', 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=1200&q=85' ),
+		'association' => array( 'Association', 'Site WordPress Premium pour association, mouvement ou ONG : manifeste, événements, groupes locaux, dons, adhérents. Téléchargement immédiat.', 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1200&q=85' ),
+	);
 	foreach ( $metiers as $slug => $d ) {
 		$img = $d[2];
 		$gal = function_exists( 'ag_template_gallery_images' ) ? ag_template_gallery_images( $slug ) : array();
 		if ( ! empty( $gal ) ) {
-			$img = $gal[0]['url']; // capture locale réelle si dispo.
+			$img = $gal[0]['url'];
 		}
 		$items[] = array(
 			'id'          => 'tpl-premium-' . $slug,
@@ -59,10 +72,65 @@ function ag_merchant_products() {
 			'description' => $d[1],
 			'link'        => home_url( '/wordpress-' . $slug ),
 			'image'       => $img,
-			'price'       => number_format( (float) $price, 2, '.', '' ) . ' EUR',
+			'price'       => $eur( $tpl ),
+			'category'    => 'Software &gt; Computer Software',
 		);
 	}
-	return $items;
+
+	/* 2) PERSONNALISÉ — création sur-mesure ───────────────────────────── */
+	// Site personnalisé à votre métier (généré + ZIP, produit numérique).
+	$items[] = array(
+		'id'          => 'site-personnalise',
+		'title'       => 'Site web personnalisé à votre métier',
+		'description' => 'Nous générons votre site sur notre plus beau design, personnalisé à votre nom, votre métier et vos couleurs. Vous repartez avec un site prêt à installer. Idéal si votre métier n\'a pas encore son template.',
+		'link'        => home_url( '/templates-wordpress#ag-creer-mon-site' ),
+		'image'       => ag_merchant_img( array( 'templates/avocat/accueil-jour.jpg', 'team/1_bureau_naples.jpg' ) ),
+		'price'       => $eur( $tpl ),
+		'category'    => 'Software &gt; Computer Software',
+	);
+	// Packs création « Sites Express » (prestation à prix fixe).
+	$express = array(
+		'essentiel' => array( 'Création de site — Pack Essentiel', 490, 'Site vitrine professionnel à prix fixe, livré en quelques jours, sans rendez-vous : design sur-mesure, mobile, référencé Google.' ),
+		'pro'       => array( 'Création de site — Pack Pro', 890, 'Site professionnel complet : plusieurs pages, SEO, formulaires, design sur-mesure. Livré clé en main, sans rendez-vous.' ),
+		'boutique'  => array( 'Création de site — Pack Boutique', 1490, 'Boutique en ligne / site avancé : catalogue, paiement, design sur-mesure, référencement. Livré clé en main.' ),
+	);
+	foreach ( $express as $k => $e ) {
+		$items[] = array(
+			'id'          => 'express-' . $k,
+			'title'       => $e[0],
+			'description' => $e[2],
+			'link'        => home_url( '/sites-express' ),
+			'image'       => ag_merchant_img( array( 'parcours/creation.jpg', 'team/1_bureau_naples.jpg' ) ),
+			'price'       => $eur( $e[1] ),
+			'category'    => 'Software &gt; Computer Software',
+		);
+	}
+
+	/* 3) SÉCURITÉ ─────────────────────────────────────────────────────── */
+	$items[] = array(
+		'id'          => 'securite-resilience',
+		'title'       => 'Test de résilience ransomware',
+		'description' => 'Simulation contrôlée et 100 % légale pour mesurer la résistance de votre système face à un ransomware, sans rien chiffrer. Rapport clair + plan d\'action. Sur mandat.',
+		'link'        => home_url( '/resilience-ransomware' ),
+		'image'       => ag_merchant_img( array( 'securite/hero-secu.jpg', 'parcours/audit.jpg', 'securite/menace.jpg' ) ),
+		'price'       => $eur( 490 ),
+		'category'    => 'Software &gt; Computer Software',
+	);
+	$items[] = array(
+		'id'          => 'securite-audit',
+		'title'       => 'Audit de sécurité de site web',
+		'description' => 'Diagnostic de sécurité de votre site : failles, configuration, exposition de données. Rapport détaillé et recommandations priorisées.',
+		'link'        => home_url( '/tester-mon-site' ),
+		'image'       => ag_merchant_img( array( 'securite/menace.jpg', 'securite/hero-secu.jpg', 'parcours/audit.jpg' ) ),
+		'price'       => $eur( 490 ),
+		'category'    => 'Software &gt; Computer Software',
+	);
+
+	/**
+	 * Permet d'ajuster le catalogue Merchant (ajouter/retirer/modifier
+	 * des produits) sans toucher au code : add_filter('ag_merchant_products', ...).
+	 */
+	return apply_filters( 'ag_merchant_products', $items );
 }
 
 /* ── Sortie du flux XML ──────────────────────────────────────────────── */
@@ -94,8 +162,9 @@ add_action( 'template_redirect', function () {
 		echo '<g:condition>new</g:condition>' . "\n";
 		echo '<g:brand>' . $x( get_bloginfo( 'name' ) ) . "</g:brand>\n";
 		echo '<g:identifier_exists>no</g:identifier_exists>' . "\n";
-		echo '<g:google_product_category>Software &gt; Computer Software</g:google_product_category>' . "\n";
-		echo '<g:product_type>Templates WordPress &gt; Premium</g:product_type>' . "\n";
+		$cat = ! empty( $p['category'] ) ? $p['category'] : 'Software &gt; Computer Software';
+		echo '<g:google_product_category>' . $cat . '</g:google_product_category>' . "\n";
+		echo '<g:product_type>Alliance Groupe</g:product_type>' . "\n";
 		echo "</item>\n";
 	}
 
