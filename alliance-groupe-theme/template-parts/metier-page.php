@@ -34,9 +34,14 @@ $premium_label      = ( $ag_stripe_premium      !== $ag_stripe_placeholder ) ? '
 
 $business_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'Payer le Premium via PayPal →' : 'Acheter le Premium';
 
-$screenshot_url = get_stylesheet_directory_uri() . '/assets/downloads/' . $ag_metier['slug_full'] . '/screenshot.png';
+// Image de présentation : on privilégie une VRAIE capture du métier
+// (assets/images/templates/<slug>/) ; sinon l'aperçu du thème (screenshot.png).
+$ag_cover_gal   = function_exists( 'ag_template_gallery_images' ) ? ag_template_gallery_images( $ag_metier['slug'] ) : array();
+$screenshot_url = ! empty( $ag_cover_gal )
+    ? $ag_cover_gal[0]['url']
+    : get_stylesheet_directory_uri() . '/assets/downloads/' . $ag_metier['slug_full'] . '/screenshot.png';
 $screenshot_file = get_stylesheet_directory() . '/assets/downloads/' . $ag_metier['slug_full'] . '/screenshot.png';
-$has_screenshot = file_exists( $screenshot_file );
+$has_screenshot  = ! empty( $ag_cover_gal ) || file_exists( $screenshot_file );
 ?>
 
 <main id="ag-main-content">
