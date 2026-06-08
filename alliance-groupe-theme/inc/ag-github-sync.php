@@ -64,6 +64,11 @@ class AG_GitHub_Sync {
 		// Garde admin-post pour le standalone si besoin futur
 		add_action( 'admin_post_ag_github_sync_run', array( __CLASS__, 'handle_run' ) );
 
+		// Auto-rattrapage : garde le plugin ag-licence-manager (wp-content/plugins)
+		// aligné sur la copie livrée dans le thème (sinon la sync thème ne met
+		// jamais à jour le plugin actif). Throttlé, vide l'OPcache si MAJ.
+		add_action( 'admin_init', array( __CLASS__, 'maybe_sync_plugin' ) );
+
 		// ── Cron auto-sync : toutes les 5 min, en arriere-plan, zero clic ──
 		// Declenche par n'importe quelle visite du site (WP cron classique).
 		add_filter( 'cron_schedules', array( __CLASS__, 'add_cron_interval' ) );
@@ -397,6 +402,13 @@ class AG_GitHub_Sync {
 		$log[] = sprintf( '%d mis à jour, %d créés, %d ignorés', $stats['updated'], $stats['created'], $stats['skipped'] );
 		$log[] = 'Backup : ' . str_replace( ABSPATH, '', $backup_dir );
 
+		// 5b. Redéploie le plugin ag-licence-manager (il tourne depuis
+		//     wp-content/plugins, pas depuis le thème) + vide l'OPcache.
+		if ( 'theme' === $slug ) {
+			$n = self::mirror_licence_plugin( true );
+			if ( $n > 0 ) $log[] = 'Plugin ag-licence-manager : ' . $n . ' fichier(s) mis à jour + OPcache vidé';
+		}
+
 		// 6. Cleanup
 		self::rm_recursive( $work );
 
@@ -420,6 +432,52 @@ class AG_GitHub_Sync {
 			: 'tools.php?page=ag-import&ag_err=' . rawurlencode( $result['error'] );
 		wp_safe_redirect( admin_url( $qs ) );
 		exit;
+	}
+
+	/**
+	 * Aligne le plugin actif wp-content/plugins/ag-licence-manager sur la copie
+	 * livrée dans le thème (get_template_directory()/ag-licence-manager).
+	 * Ne met à jour QUE si le plugin est déjà installé et qu'un fichier diffère.
+	 * Vide l'OPcache si au moins un fichier change.
+	 *
+	 * @return int nombre de fichiers mis à jour.
+	 */
+	public static function mirror_licence_plugin( $force = false ) {
+		if ( ! defined( 'WP_PLUGIN_DIR' ) ) return 0;
+		$src = get_template_directory() . '/ag-licence-manager';
+		$dst = WP_PLUGIN_DIR . '/ag-licence-manager';
+		if ( ! is_dir( $src ) || ! is_dir( $dst ) ) return 0; // plugin pas installé : on ne crée pas
+
+		$files = array(
+			'ag-licence-manager.php',
+			'includes/class-ag-licence-db.php',
+			'includes/class-ag-licence-api.php',
+			'includes/class-ag-licence-admin.php',
+			'includes/class-ag-licence-stripe.php',
+			'includes/class-ag-licence-email.php',
+		);
+		$changed = 0;
+		foreach ( $files as $f ) {
+			$s = $src . '/' . $f;
+			$d = $dst . '/' . $f;
+			if ( ! file_exists( $s ) ) continue;
+			if ( ! file_exists( $d ) || md5_file( $s ) !== md5_file( $d ) ) {
+				if ( ! is_dir( dirname( $d ) ) ) wp_mkdir_p( dirname( $d ) );
+				if ( @copy( $s, $d ) ) $changed++; // phpcs:ignore WordPress.PHP.NoSilencedErrors
+			}
+		}
+		if ( $changed > 0 && function_exists( 'opcache_reset' ) ) {
+			@opcache_reset(); // phpcs:ignore
+		}
+		return $changed;
+	}
+
+	/** admin_init : auto-rattrapage throttlé (1×/5 min) du plugin licence. */
+	public static function maybe_sync_plugin() {
+		if ( ! current_user_can( 'manage_options' ) ) return;
+		if ( get_transient( 'ag_lm_mirror_check' ) ) return;
+		set_transient( 'ag_lm_mirror_check', 1, 5 * MINUTE_IN_SECONDS );
+		self::mirror_licence_plugin();
 	}
 
 	/**
