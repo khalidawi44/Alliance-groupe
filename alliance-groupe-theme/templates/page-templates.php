@@ -177,7 +177,7 @@ if ( ! empty( $ag_templates_only ) ) {
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">Votre métier n'est pas dans la liste ?</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">Créez <em>votre site</em>, adapté à votre métier</h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc">Pas besoin d'un template dédié à votre métier. Remplissez quelques champs : on vous génère un site sur la base <strong style="color:#e8e6e0;">« Avocat Business »</strong> (notre design le plus élégant), personnalisé avec votre nom, votre métier et vos couleurs. Vous repartez avec un <strong style="color:#e8e6e0;">ZIP prêt à installer</strong>, déjà pré-rempli.</p>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Pas besoin d'un template dédié à votre métier. Remplissez quelques champs : on vous génère un site sur la base de <strong style="color:#e8e6e0;">notre design le plus élégant</strong>, personnalisé avec votre nom, votre métier et vos couleurs. Vous repartez avec un <strong style="color:#e8e6e0;">ZIP prêt à installer</strong>, déjà pré-rempli.</p>
             <div style="margin-top:36px;">
                 <?php echo do_shortcode( '[ag_site_creator]' ); ?>
             </div>
@@ -252,10 +252,10 @@ if ( ! empty( $ag_templates_only ) ) {
             <div class="ag-faq__list">
                 <?php
                 $tpl_faqs = [
-                    ['q' => 'Comment ça marche exactement ?', 'a' => 'Choisissez votre métier sur cette page, vous arrivez sur la fiche dédiée. Vous y trouvez la description complète du thème, le configurateur pour choisir votre niveau (Gratuit / Premium / Business), le bouton de téléchargement ou d\'achat, et les instructions d\'installation.'],
+                    ['q' => 'Comment ça marche exactement ?', 'a' => 'Choisissez votre métier sur cette page, vous arrivez sur la fiche dédiée. Vous y trouvez la description complète du thème, le choix de votre niveau (Gratuit ou Premium), le bouton de téléchargement ou d\'achat, et les instructions d\'installation.'],
                     ['q' => 'Les templates sont-ils vraiment en français ?', 'a' => '100% français natif. Tous les textes, titres, horaires, exemples et messages sont déjà rédigés en français — pas de Lorem ipsum, pas de strings anglaises à traduire. Vous remplacez juste les éléments entre crochets.'],
                     ['q' => 'Le plugin compagnon est-il obligatoire ?', 'a' => 'Non, mais il rend l\'installation 10x plus rapide. Sans le plugin, vous devez créer manuellement les 5 pages et le menu. Avec le plugin, un seul clic suffit. Il est gratuit et compatible avec les 5 thèmes.'],
-                    ['q' => 'Un pack Premium marche-t-il avec les 5 thèmes ?', 'a' => 'Oui. Vous achetez UN seul plugin (Premium ou Business) et il fonctionne avec n\'importe quel thème AG Starter que vous avez activé. Le plugin détecte automatiquement le thème actif et adapte ses features.'],
+                    ['q' => 'Le Premium marche-t-il avec tous les thèmes ?', 'a' => 'Oui. Vous achetez UN seul plugin Premium et il fonctionne avec n\'importe quel thème AG Starter que vous avez activé. Le plugin détecte automatiquement le thème actif et adapte ses features.'],
                     ['q' => 'Les templates sont-ils sur WordPress.org ?', 'a' => 'En cours de soumission. Nos 5 thèmes et le plugin compagnon respectent les standards WordPress.org (GPL v2+, translation-ready, escaping strict, Theme Check compatible). Une fois validés, ils seront installables directement depuis votre admin WordPress.'],
                     ['q' => 'Et si je veux un vrai site sur-mesure ?', 'a' => 'Contactez-nous au 07.44.82.95.16 ou via la page contact. Premier échange de 30 min gratuit avec Fabrizio, sans engagement. Un site sur-mesure, sécurisé dès le départ, va bien plus loin qu\'un template.'],
                 ];

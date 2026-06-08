@@ -21,13 +21,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/** Prix Business (par défaut 149 €) — aligné sur la licence. */
+/** Prix du Premium (créateur de site) — par défaut 69 €. */
 function ag_creator_price() {
-	$p = (int) get_option( 'ag_licence_price_business', 149 );
-	return $p > 0 ? $p : 149;
+	$p = (int) get_option( 'ag_creator_price', 69 );
+	return $p > 0 ? $p : 69;
 }
 
-/** Lien de paiement PayPal Business. */
+/** Lien de paiement PayPal Premium (réutilise le lien « Business » interne). */
 function ag_creator_pay_url() {
 	return (string) get_option( 'ag_stripe_business_url', '' );
 }
@@ -83,7 +83,7 @@ function ag_site_creator_shortcode() {
 			</div>
 			<input type="hidden" name="ag_creator_nonce" value="<?php echo esc_attr( wp_create_nonce( 'ag_site_creator' ) ); ?>">
 			<button type="submit" class="ag-btn-gold ag-creator__btn">✨ Créer mon site — <?php echo esc_html( $price ); ?>€</button>
-			<p class="ag-creator__hint">Design premium (base « Avocat Business », le plus élégant), personnalisé pour votre métier. Paiement unique, sans abonnement. Livraison du site (ZIP prêt à installer) par email après paiement.</p>
+			<p class="ag-creator__hint">Design Premium (notre plus beau modèle), personnalisé pour votre métier. Paiement unique, sans abonnement. Livraison du site (ZIP prêt à installer) par email après paiement.</p>
 			<div class="ag-creator__result" id="ag-creator-result" hidden></div>
 		</form>
 	</div>
@@ -296,7 +296,7 @@ add_action( 'ag_paypal_payment_verified', function ( $amount, $email, $txn = '',
 	$body = "Bonjour,\n\nMerci pour votre confiance ! Votre site personnalisé (" . $reqs[ $hit ]['metier'] . ") est prêt.\n\n";
 	$body .= "Téléchargez votre thème (ZIP) ici :\n" . $built['url'] . "\n\n";
 	$body .= "Installation : WordPress > Apparence > Thèmes > Ajouter > Téléverser un thème > choisissez le ZIP > Installer > Activer. Votre nom, votre métier et vos couleurs sont déjà pré-remplis.\n\n";
-	$body .= "Vous recevez aussi, séparément, votre clé de licence (pack Business activé).\n\nUne question ? Répondez à cet email.\n\nAlliance Groupe";
+	$body .= "Vous recevez aussi, séparément, votre clé de licence (pack Premium activé).\n\nUne question ? Répondez à cet email.\n\nAlliance Groupe";
 	if ( function_exists( 'ag_email_wrap' ) ) {
 		wp_mail( $to, $subj, $body, array( 'Content-Type: text/plain; charset=UTF-8' ) );
 	} else {
@@ -328,7 +328,7 @@ function ag_site_creator_admin() {
 	$reqs = ag_creator_reqs();
 	echo '<div class="wrap"><h1>Créateur de site — demandes</h1>';
 	if ( ! ag_creator_pay_url() ) {
-		echo '<div class="notice notice-warning"><p>⚠️ Aucun <strong>lien de paiement Business</strong> configuré (Réglages → Liens de paiement, option PayPal Business). Tant qu\'il est vide, le formulaire enregistre la demande mais ne propose pas le paiement.</p></div>';
+		echo '<div class="notice notice-warning"><p>⚠️ Aucun <strong>lien de paiement Premium</strong> configuré (Réglages → Liens de paiement, lien PayPal du pack Premium). Tant qu\'il est vide, le formulaire enregistre la demande mais ne propose pas le paiement.</p></div>';
 	}
 	if ( empty( $reqs ) ) {
 		echo '<p>Aucune demande pour l\'instant.</p></div>';
