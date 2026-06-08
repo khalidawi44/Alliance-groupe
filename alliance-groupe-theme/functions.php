@@ -148,6 +148,13 @@ if ( file_exists( $ag_licence_paypal_file ) ) {
     require_once $ag_licence_paypal_file;
 }
 
+// ── 1c6c. Créateur de site (« Mon métier n'est pas là ») : formulaire +
+//          paiement Business + génération ZIP personnalisé (base Avocat Business)
+$ag_site_creator_file = get_stylesheet_directory() . '/inc/ag-site-creator.php';
+if ( file_exists( $ag_site_creator_file ) ) {
+    require_once $ag_site_creator_file;
+}
+
 // ── 1c7. Pop-up d'incitation "devenir ambassadeur" (visiteurs non-membres)
 add_action( 'wp_footer', function () {
     if ( is_admin() ) return;

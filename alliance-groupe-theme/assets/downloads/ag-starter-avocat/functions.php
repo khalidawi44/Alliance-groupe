@@ -380,6 +380,9 @@ require_once get_template_directory() . '/inc/theme-updater.php';
 // Guide d'utilisation (admin)
 require_once get_template_directory() . '/inc/guide.php';
 
+// Pré-remplissage auto depuis ag-prefill.json (sites generes par le Createur AG)
+require_once get_template_directory() . '/inc/ag-prefill.php';
+
 /**
  * Credit footer — attribution Alliance Groupe (lien VISIBLE, conforme Google).
  * Retirable uniquement via le code (pas d'option admin), comme Astra/OceanWP.
