@@ -138,4 +138,10 @@ $current = $pack_data[ $pack ];
 
 </main>
 
-<?php get_footer(); ?>
+<?php
+// Google Avis clients : déclenche l'invitation à noter l'achat.
+if ( function_exists( 'ag_google_reviews_optin' ) ) {
+	ag_google_reviews_optin();
+}
+get_footer();
+?>

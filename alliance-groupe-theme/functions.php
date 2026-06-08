@@ -161,6 +161,12 @@ if ( file_exists( $ag_merchant_feed_file ) ) {
     require_once $ag_merchant_feed_file;
 }
 
+// ── 1c6e. Google Avis clients (badge + opt-in enquête sur /merci-achat)
+$ag_google_reviews_file = get_stylesheet_directory() . '/inc/ag-google-reviews.php';
+if ( file_exists( $ag_google_reviews_file ) ) {
+    require_once $ag_google_reviews_file;
+}
+
 // ── 1c7. Pop-up d'incitation "devenir ambassadeur" (visiteurs non-membres)
 add_action( 'wp_footer', function () {
     if ( is_admin() ) return;
