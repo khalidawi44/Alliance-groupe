@@ -1315,6 +1315,34 @@ if ( ! function_exists( 'ag_sur_mesure_submit' ) ) {
     }
 }
 
+// ── Galerie d'aperçus par template métier ─────────────────────────────
+//    Lit assets/images/templates/<slug>/*.{jpg,png,webp} (sous-dossier par
+//    métier). Retourne une liste [url,label] triée par nom de fichier.
+//    La 1re image sert d'aperçu sur la carte de la grille Templates.
+if ( ! function_exists( 'ag_template_gallery_images' ) ) {
+    function ag_template_gallery_images( $slug ) {
+        $slug = sanitize_key( $slug );
+        if ( '' === $slug ) return array();
+        $dir = get_stylesheet_directory() . '/assets/images/templates/' . $slug;
+        $url = get_stylesheet_directory_uri() . '/assets/images/templates/' . $slug;
+        if ( ! is_dir( $dir ) ) return array();
+        $files = glob( $dir . '/*.{jpg,jpeg,png,webp,JPG,PNG,WEBP}', GLOB_BRACE );
+        if ( ! $files ) return array();
+        sort( $files ); // ordre alphabétique stable (accueil-* d'abord)
+        $out = array();
+        foreach ( $files as $f ) {
+            $name  = basename( $f );
+            $label = preg_replace( '/\.[a-z]+$/i', '', $name );
+            $label = ucfirst( trim( str_replace( array( '-', '_' ), ' ', $label ) ) );
+            $out[] = array(
+                'url'   => $url . '/' . rawurlencode( $name ),
+                'label' => $label,
+            );
+        }
+        return $out;
+    }
+}
+
 // ── Blocage public optionnel de certaines fiches template.
 //    Par DÉFAUT : aucune fiche bloquée (les 6 fiches sont publiques).
 //    Pour re-bloquer temporairement une fiche en travaux, hook le filtre

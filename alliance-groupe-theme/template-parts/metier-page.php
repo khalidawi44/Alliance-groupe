@@ -97,6 +97,33 @@ $has_screenshot = file_exists( $screenshot_file );
         </div>
     </section>
 
+    <?php
+    // Galerie d'aperçus réels du template (captures dans assets/images/templates/<slug>/).
+    $ag_gallery = function_exists( 'ag_template_gallery_images' ) ? ag_template_gallery_images( $ag_metier['slug'] ) : array();
+    if ( ! empty( $ag_gallery ) ) : ?>
+    <section class="ag-section ag-section--graphite" id="ag-apercu">
+        <div class="ag-container">
+            <span class="ag-tag ag-anim" data-anim="tag">Aperçu réel</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">À quoi ressemble le thème <em><?php echo esc_html( $ag_metier['name'] ); ?></em></h2>
+            <div class="ag-tpl-gallery">
+                <?php foreach ( $ag_gallery as $img ) : ?>
+                    <a class="ag-tpl-gallery__item" href="<?php echo esc_url( $img['url'] ); ?>" target="_blank" rel="noopener">
+                        <img src="<?php echo esc_url( $img['url'] ); ?>" alt="<?php echo esc_attr( sprintf( 'Aperçu %s — %s', $ag_metier['name'], $img['label'] ) ); ?>" loading="lazy">
+                        <span class="ag-tpl-gallery__cap"><?php echo esc_html( $img['label'] ); ?></span>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+    <style>
+    .ag-tpl-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;max-width:1180px;margin:40px auto 0}
+    .ag-tpl-gallery__item{display:block;position:relative;border-radius:14px;overflow:hidden;border:1px solid rgba(212,180,92,.22);background:#0e0e14;text-decoration:none;transition:transform .35s cubic-bezier(.16,1,.3,1),border-color .3s,box-shadow .3s}
+    .ag-tpl-gallery__item:hover{transform:translateY(-4px);border-color:rgba(212,180,92,.55);box-shadow:0 18px 50px rgba(0,0,0,.45)}
+    .ag-tpl-gallery__item img{display:block;width:100%;height:auto}
+    .ag-tpl-gallery__cap{position:absolute;left:0;right:0;bottom:0;padding:10px 14px;font-size:.82rem;font-weight:700;color:#fff;background:linear-gradient(180deg,transparent,rgba(0,0,0,.8))}
+    </style>
+    <?php endif; ?>
+
     <!-- Configurateur "Je choisis mon pack" -->
     <section class="ag-section ag-section--marbre" id="ag-configurator">
         <div class="ag-container">

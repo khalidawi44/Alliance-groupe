@@ -127,11 +127,14 @@ if ( ! empty( $ag_templates_only ) ) {
 
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;max-width:1200px;margin:48px auto 0;">
                 <?php foreach ( $ag_hub_metiers as $m ) :
-                    // Aperçu RÉEL du template : si une capture locale existe
-                    // (assets/images/templates/<slug>.jpg|png|webp), on l'utilise ;
-                    // sinon on retombe sur l'image générique.
+                    // Aperçu RÉEL du template : 1) si des captures existent dans
+                    // assets/images/templates/<slug>/ on prend la 1re ; 2) sinon une
+                    // capture plate <slug>.jpg ; 3) sinon l'image générique.
                     $ag_tpl_img = $m['image'] ?? '';
-                    if ( ! empty( $m['slug'] ) ) {
+                    $ag_gal = function_exists( 'ag_template_gallery_images' ) ? ag_template_gallery_images( $m['slug'] ?? '' ) : array();
+                    if ( ! empty( $ag_gal ) ) {
+                        $ag_tpl_img = $ag_gal[0]['url'];
+                    } elseif ( ! empty( $m['slug'] ) ) {
                         foreach ( array( 'jpg', 'png', 'webp', 'jpeg' ) as $ag_ext ) {
                             $ag_rel = '/assets/images/templates/' . $m['slug'] . '.' . $ag_ext;
                             if ( file_exists( get_stylesheet_directory() . $ag_rel ) ) { $ag_tpl_img = get_stylesheet_directory_uri() . $ag_rel; break; }
