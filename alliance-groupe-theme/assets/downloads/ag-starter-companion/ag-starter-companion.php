@@ -990,6 +990,61 @@ class AG_Starter_Companion {
 		return $buttons;
 	}
 
+	/**
+	 * URL d'une offre de service Alliance Groupe (client deja Premium).
+	 * Pointe vers des pages reelles du site (sites-express / contact).
+	 */
+	private function get_service_url( $kind ) {
+		$utm  = '?utm_source=wp-admin&utm_medium=ag-companion&utm_campaign=' . $kind;
+		$urls = array(
+			'maintenance' => 'https://alliancegroupe-inc.com/sites-express' . $utm . '#maintenance',
+			'sur-mesure'  => 'https://alliancegroupe-inc.com/contact' . $utm . '&offre=sur-mesure',
+		);
+		$url = $urls[ $kind ] ?? 'https://alliancegroupe-inc.com/contact' . $utm;
+		return apply_filters( 'ag_companion_service_url', $url, $kind );
+	}
+
+	/**
+	 * Offre a proposer selon l'etat de la licence (modele 2 niveaux).
+	 * - Gratuit  -> upsell vers Premium 69€.
+	 * - Premium  -> services a plus forte valeur : maintenance + site sur-mesure.
+	 * Retourne array( heading, text, buttons[ array(label,url,primary) ] ).
+	 */
+	private function get_next_offer() {
+		if ( $this->is_free_tier() ) {
+			return array(
+				'heading' => 'Passez a la version Premium',
+				'text'    => 'Header sticky, animations scroll, couleurs avancees, temoignages clients, galerie photos, boutique WooCommerce, grille de tarifs, pub minimale... Paiement unique, mises a jour a vie.',
+				'buttons' => array(
+					array(
+						'label'   => 'Premium — ' . $this->get_premium_price() . '€',
+						'url'     => $this->get_upgrade_url( 'business' ),
+						'primary' => true,
+					),
+				),
+			);
+		}
+
+		// Client deja Premium : on ne reproppose plus le Premium, on propose
+		// des services complementaires a plus forte valeur.
+		return array(
+			'heading' => 'Allez plus loin avec Alliance Groupe',
+			'text'    => 'Votre Premium est actif, merci ! Gardez votre site rapide, securise et a jour avec la maintenance pro, ou passez a un site 100% sur-mesure concu pour convertir davantage de clients.',
+			'buttons' => array(
+				array(
+					'label'   => 'Maintenance — des 29€/mois',
+					'url'     => $this->get_service_url( 'maintenance' ),
+					'primary' => true,
+				),
+				array(
+					'label'   => 'Site sur-mesure',
+					'url'     => $this->get_service_url( 'sur-mesure' ),
+					'primary' => false,
+				),
+			),
+		);
+	}
+
 	private function get_upgrade_url( $pack = 'pro' ) {
 		$urls = $this->get_stripe_urls();
 		if ( ! empty( $urls[ $pack ] ) && 'STRIPE_PLACEHOLDER' !== $urls[ $pack ] ) {
@@ -1024,34 +1079,37 @@ class AG_Starter_Companion {
 	 * Big upgrade banner on all admin pages.
 	 */
 	public function upgrade_banner() {
-		if ( ! $this->get_active_theme_slug() || ! $this->has_higher_tier() ) return;
+		if ( ! $this->get_active_theme_slug() ) return;
 		if ( ! current_user_can( 'manage_options' ) ) return;
 		$done = get_option( 'ag_starter_companion_done_' . $this->get_active_theme_slug() );
 		if ( ! $done ) return; // Show companion install notice first
 
-		$dismissed = get_user_meta( get_current_user_id(), 'ag_upgrade_dismissed', true );
-		if ( $dismissed && ( time() - intval( $dismissed ) ) < 7 * DAY_IN_SECONDS ) return;
+		// Cle de masquage distincte selon l'offre, pour que le passage
+		// gratuit -> premium ne reste pas masque par un ancien rejet.
+		$dismiss_key = $this->is_free_tier() ? 'ag_upgrade_dismissed' : 'ag_services_dismissed';
 
 		if ( isset( $_GET['ag_dismiss_upgrade'] ) && '1' === $_GET['ag_dismiss_upgrade'] ) {
-			update_user_meta( get_current_user_id(), 'ag_upgrade_dismissed', time() );
+			update_user_meta( get_current_user_id(), $dismiss_key, time() );
 			return;
 		}
+		$dismissed = get_user_meta( get_current_user_id(), $dismiss_key, true );
+		if ( $dismissed && ( time() - intval( $dismissed ) ) < 7 * DAY_IN_SECONDS ) return;
 
+		$offer       = $this->get_next_offer();
 		$dismiss_url = add_query_arg( 'ag_dismiss_upgrade', '1' );
+		$icon        = $this->is_free_tier() ? '⚡' : '💎';
 		?>
 		<div style="background:linear-gradient(135deg,#1a1a2e 0%,#0f0f18 100%);border:1px solid rgba(212,180,92,.35);border-radius:10px;padding:28px 32px;margin:20px 20px 10px 0;display:flex;align-items:center;gap:28px;flex-wrap:wrap;position:relative;">
 			<a href="<?php echo esc_url( $dismiss_url ); ?>" style="position:absolute;top:10px;right:14px;color:rgba(255,255,255,.3);font-size:1.2rem;text-decoration:none;" title="Masquer 7 jours">✕</a>
 			<div style="flex:1;min-width:260px;">
-				<h2 style="color:#D4B45C;font-size:1.3rem;margin:0 0 8px;font-weight:800;">⚡ <?php echo 'Passez a la version Premium'; ?></h2>
+				<h2 style="color:#D4B45C;font-size:1.3rem;margin:0 0 8px;font-weight:800;"><?php echo esc_html( $icon . ' ' . $offer['heading'] ); ?></h2>
 				<p style="color:rgba(255,255,255,.75);font-size:.95rem;line-height:1.6;margin:0;">
-					<?php esc_html_e( 'Header sticky, animations scroll, couleurs avancees, temoignages clients, galerie photos, boutique WooCommerce, grille de tarifs, pub minimale... Paiement unique, mises a jour a vie.', 'ag-starter-companion' ); ?>
+					<?php echo esc_html( $offer['text'] ); ?>
 				</p>
 			</div>
 			<div style="display:flex;gap:10px;flex-wrap:wrap;">
-				<?php foreach ( $this->get_upgrade_buttons() as $pack => $text ) :
-					$is_first = ( $pack === array_key_first( $this->get_upgrade_buttons() ) );
-				?>
-				<a href="<?php echo esc_url( $this->get_upgrade_url( $pack ) ); ?>" target="_blank" rel="noopener" style="display:inline-block;<?php echo $is_first ? 'background:#D4B45C;color:#0a0a0f;' : 'background:rgba(212,180,92,.15);color:#D4B45C;border:1px solid rgba(212,180,92,.4);'; ?>font-weight:700;padding:14px 22px;border-radius:8px;text-decoration:none;font-size:.9rem;white-space:nowrap;"><?php echo esc_html( $text ); ?> →</a>
+				<?php foreach ( $offer['buttons'] as $btn ) : ?>
+				<a href="<?php echo esc_url( $btn['url'] ); ?>" target="_blank" rel="noopener" style="display:inline-block;<?php echo ! empty( $btn['primary'] ) ? 'background:#D4B45C;color:#0a0a0f;' : 'background:rgba(212,180,92,.15);color:#D4B45C;border:1px solid rgba(212,180,92,.4);'; ?>font-weight:700;padding:14px 22px;border-radius:8px;text-decoration:none;font-size:.9rem;white-space:nowrap;"><?php echo esc_html( $btn['label'] ); ?> →</a>
 				<?php endforeach; ?>
 			</div>
 		</div>
@@ -1062,10 +1120,13 @@ class AG_Starter_Companion {
 	 * Dashboard widget with upgrade CTA.
 	 */
 	public function upgrade_dashboard_widget() {
-		if ( ! $this->get_active_theme_slug() || ! $this->has_higher_tier() ) return;
+		if ( ! $this->get_active_theme_slug() ) return;
+		$title = $this->is_free_tier()
+			? '⭐ ' . esc_html__( 'Passer au niveau superieur', 'ag-starter-companion' )
+			: '💎 ' . esc_html__( 'Aller plus loin avec Alliance Groupe', 'ag-starter-companion' );
 		wp_add_dashboard_widget(
 			'ag_upgrade_widget',
-			'⭐ ' . esc_html__( 'Passer au niveau superieur', 'ag-starter-companion' ),
+			$title,
 			array( $this, 'render_upgrade_dashboard' )
 		);
 		global $wp_meta_boxes;
@@ -1077,24 +1138,20 @@ class AG_Starter_Companion {
 	}
 
 	public function render_upgrade_dashboard() {
-		$tier = $this->get_current_tier();
-		$tier_labels = array( 'free' => 'la version gratuite', 'pro' => 'le Pack Premium' );
-		$current_label = $tier_labels[ $tier ] ?? 'votre version actuelle';
+		$offer  = $this->get_next_offer();
+		$is_free = $this->is_free_tier();
 		?>
 		<div style="text-align:center;padding:16px 0;">
-			<div style="font-size:2.4rem;margin-bottom:12px;">🚀</div>
-			<h3 style="margin:0 0 10px;font-size:1.1rem;">Vous utilisez <?php echo esc_html( $current_label ); ?></h3>
+			<div style="font-size:2.4rem;margin-bottom:12px;"><?php echo $is_free ? '🚀' : '💎'; ?></div>
+			<h3 style="margin:0 0 10px;font-size:1.1rem;"><?php echo $is_free ? 'Vous utilisez la version gratuite' : 'Votre Premium est actif ✔'; ?></h3>
 
-			<div style="background:#f8f5ec;border:1px solid #D4B45C;border-radius:8px;padding:18px;margin:0 0 16px;">
-					<div>
-						<strong style="font-size:1rem;">💎 Premium — <?php echo (int) $this->get_premium_price(); ?>€</strong>
-						<p style="font-size:.82rem;color:#555;margin:4px 0 0;line-height:1.4;">Notre design le plus abouti : header sticky, animations au scroll, blocs Gutenberg premium, polices Playfair + Manrope, témoignages, galerie, grille de tarifs, WooCommerce, couleurs avancées, support.</p>
-					</div>
-					<p style="font-size:.78rem;color:#888;margin:12px 0 0;text-align:center;">Paiement unique — mises à jour à vie — support inclus</p>
-				</div>
+			<div style="background:#f8f5ec;border:1px solid #D4B45C;border-radius:8px;padding:18px;margin:0 0 16px;text-align:left;">
+				<strong style="font-size:1rem;display:block;text-align:center;margin-bottom:6px;"><?php echo esc_html( $offer['heading'] ); ?></strong>
+				<p style="font-size:.82rem;color:#555;margin:0;line-height:1.5;"><?php echo esc_html( $offer['text'] ); ?></p>
+			</div>
 			<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
-				<?php foreach ( $this->get_upgrade_buttons() as $pack => $text ) : ?>
-				<a href="<?php echo esc_url( $this->get_upgrade_url( $pack ) ); ?>" target="_blank" rel="noopener" class="button button-primary" style="font-size:.85rem;padding:6px 14px;"><?php echo esc_html( $text ); ?></a>
+				<?php foreach ( $offer['buttons'] as $btn ) : ?>
+				<a href="<?php echo esc_url( $btn['url'] ); ?>" target="_blank" rel="noopener" class="button <?php echo ! empty( $btn['primary'] ) ? 'button-primary' : ''; ?>" style="font-size:.85rem;padding:6px 14px;"><?php echo esc_html( $btn['label'] ); ?></a>
 				<?php endforeach; ?>
 			</div>
 		</div>
