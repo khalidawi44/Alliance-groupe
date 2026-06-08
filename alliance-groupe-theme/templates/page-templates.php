@@ -176,8 +176,8 @@ if ( ! empty( $ag_templates_only ) ) {
     <section class="ag-section ag-section--graphite" id="ag-creer-mon-site">
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">Votre métier n'est pas dans la liste ?</span>
-            <h2 class="ag-section__title ag-anim" data-anim="title">Créez <em>votre site</em>, à votre métier — ici</h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc">Pas besoin que votre métier ait son template. Remplissez 3 champs : on vous génère un site sur la base <strong style="color:#e8e6e0;">« Avocat Business »</strong> (notre design le plus élégant), personnalisé à votre nom, votre métier et vos couleurs. Vous repartez avec un <strong style="color:#e8e6e0;">ZIP prêt à installer</strong>, déjà pré-rempli.</p>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Créez <em>votre site</em>, adapté à votre métier</h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Pas besoin d'un template dédié à votre métier. Remplissez quelques champs : on vous génère un site sur la base <strong style="color:#e8e6e0;">« Avocat Business »</strong> (notre design le plus élégant), personnalisé avec votre nom, votre métier et vos couleurs. Vous repartez avec un <strong style="color:#e8e6e0;">ZIP prêt à installer</strong>, déjà pré-rempli.</p>
             <div style="margin-top:36px;">
                 <?php echo do_shortcode( '[ag_site_creator]' ); ?>
             </div>

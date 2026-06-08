@@ -83,7 +83,7 @@ function ag_site_creator_shortcode() {
 			</div>
 			<input type="hidden" name="ag_creator_nonce" value="<?php echo esc_attr( wp_create_nonce( 'ag_site_creator' ) ); ?>">
 			<button type="submit" class="ag-btn-gold ag-creator__btn">✨ Créer mon site — <?php echo esc_html( $price ); ?>€</button>
-			<p class="ag-creator__hint">Design premium (base « Avocat Business », le plus élégant), personnalisé à votre métier. Paiement unique, sans abonnement. Livraison du site (ZIP prêt à installer) par email après paiement.</p>
+			<p class="ag-creator__hint">Design premium (base « Avocat Business », le plus élégant), personnalisé pour votre métier. Paiement unique, sans abonnement. Livraison du site (ZIP prêt à installer) par email après paiement.</p>
 			<div class="ag-creator__result" id="ag-creator-result" hidden></div>
 		</form>
 	</div>
@@ -189,7 +189,7 @@ function ag_site_creator_submit() {
 		wp_send_json_success( array( 'html' => $html, 'pay' => $pay ) );
 	}
 	// Pas de lien de paiement configuré : on bascule en mode « on vous recontacte ».
-	$html = '<strong>Merci ' . esc_html( $business ) . ' !</strong><br>Votre demande est enregistrée. Fabrizio vous recontacte très vite pour finaliser votre site sur-mesure à votre métier.';
+	$html = '<strong>Merci ' . esc_html( $business ) . ' !</strong><br>Votre demande est enregistrée. Fabrizio vous recontacte très vite pour finaliser votre site sur-mesure, adapté à votre métier.';
 	wp_send_json_success( array( 'html' => $html, 'pay' => '' ) );
 }
 add_action( 'wp_ajax_ag_site_creator_submit', 'ag_site_creator_submit' );
@@ -296,7 +296,7 @@ add_action( 'ag_paypal_payment_verified', function ( $amount, $email, $txn = '',
 	$body = "Bonjour,\n\nMerci pour votre confiance ! Votre site personnalisé (" . $reqs[ $hit ]['metier'] . ") est prêt.\n\n";
 	$body .= "Téléchargez votre thème (ZIP) ici :\n" . $built['url'] . "\n\n";
 	$body .= "Installation : WordPress > Apparence > Thèmes > Ajouter > Téléverser un thème > choisissez le ZIP > Installer > Activer. Votre nom, votre métier et vos couleurs sont déjà pré-remplis.\n\n";
-	$body .= "Vous recevez aussi par ailleurs votre clé de licence Business (pack premium activé).\n\nUne question ? Répondez à cet email.\n\nAlliance Groupe";
+	$body .= "Vous recevez aussi, séparément, votre clé de licence (pack Business activé).\n\nUne question ? Répondez à cet email.\n\nAlliance Groupe";
 	if ( function_exists( 'ag_email_wrap' ) ) {
 		wp_mail( $to, $subj, $body, array( 'Content-Type: text/plain; charset=UTF-8' ) );
 	} else {
