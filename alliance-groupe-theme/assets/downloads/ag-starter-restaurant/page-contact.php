@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Template page Contact : coordonnees + carte Google Maps + lien direct
  * vers le formulaire devis.

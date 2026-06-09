@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Alliance Groupe — Liens de paiement (admin page)
  *

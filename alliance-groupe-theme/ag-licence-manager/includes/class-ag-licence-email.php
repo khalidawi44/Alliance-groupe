@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Email sender for licence delivery.
  */

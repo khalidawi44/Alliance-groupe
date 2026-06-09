@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * AG Starter Restaurant functions and definitions.
  *

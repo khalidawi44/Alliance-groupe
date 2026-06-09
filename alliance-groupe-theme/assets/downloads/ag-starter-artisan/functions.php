@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * AG Starter Artisan functions and definitions.
  *

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Template page "Zones d'intervention".
  *

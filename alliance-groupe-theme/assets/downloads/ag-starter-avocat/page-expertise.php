@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Template for the "Domaines d'expertise" page.
  * WordPress auto-loads this for the page with slug "expertise".

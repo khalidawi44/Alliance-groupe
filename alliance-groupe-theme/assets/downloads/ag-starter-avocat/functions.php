@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * AG Starter Avocat functions and definitions.
  *

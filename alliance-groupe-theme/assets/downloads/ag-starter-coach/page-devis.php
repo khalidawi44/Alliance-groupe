@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Template page Devis : hero photo + shortcode formulaire.
  *

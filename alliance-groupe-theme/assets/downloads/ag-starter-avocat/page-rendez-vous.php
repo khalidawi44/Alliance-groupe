@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Template for the "Prendre rendez-vous" page.
  * WordPress auto-loads this for the page with slug "rendez-vous".

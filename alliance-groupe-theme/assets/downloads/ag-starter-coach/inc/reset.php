@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Reinitialisation du theme — page admin avec bouton "TOUT RESET" qui nettoie
  * tous les residus d'autres templates Alliance Groupe (association/avocat/

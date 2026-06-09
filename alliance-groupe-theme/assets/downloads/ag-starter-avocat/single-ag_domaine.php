@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * @package AG_Starter_Avocat
  */
