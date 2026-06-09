@@ -317,19 +317,22 @@ body.ag-bb-active .ag-header__logo::before {
 body.ag-bb-active .ag-header__nav {
     display: flex !important;
     align-items: center;
-    gap: 36px !important;
+    gap: 24px !important;
     justify-self: center;
+    flex-wrap: nowrap;
 }
 body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta) {
     font-family: "Bebas Neue", Impact, sans-serif !important;
-    color: var(--bb-text) !important;
-    font-size: 1.15rem !important;
-    letter-spacing: 3px !important;
+    color: #fff !important;
+    font-size: 1.1rem !important;
+    letter-spacing: 2.5px !important;
     text-transform: uppercase;
     text-decoration: none !important;
     background: transparent !important;
     padding: 6px 0 !important;
     position: relative;
+    /* Menu transparent : ombre portee pour rester lisible sur la photo. */
+    text-shadow: 0 1px 4px rgba(0, 0, 0, .85), 0 0 14px rgba(0, 0, 0, .55);
     transition: color .25s ease;
 }
 body.ag-bb-active .ag-header__nav > a:not(.ag-header__cta):hover {
@@ -535,32 +538,30 @@ body.ag-bb-active .ag-header.ag-bb-header--hidden {
     transform: translateY(-100%);
 }
 
-/* Compense le header fixe : push hero vers le bas + place pour le logo
-   qui est positionne sous le header (absolute). */
+/* Compense le header fixe. La tete est maintenant DANS le flux (centree
+   au-dessus du titre), donc plus besoin d'un enorme padding-top : on garde
+   juste de quoi passer sous le header, et tout le contenu remonte. */
 body.ag-bb-active .ag-hero {
-    padding-top: 280px;
-    padding-bottom: 90px;
+    padding-top: 120px;
+    padding-bottom: 70px;
     position: relative;
 }
 @media (max-width: 768px) {
     body.ag-bb-active .ag-hero {
-        padding-top: 230px;
-        padding-bottom: 110px;
+        padding-top: 100px;
+        padding-bottom: 56px;
     }
 }
 
-/* Hero buttons : positionnes en bas de la section a 10px des bords. */
+/* Hero buttons : dans le flux, sous le sous-titre/prix (plus en absolute :
+   evite de masquer le compteur de la section suivante). */
 body.ag-bb-active .ag-hero__btns {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 14px;
     flex-wrap: wrap;
-    margin: 0 !important;
+    margin: 34px 0 0 !important;
     z-index: 5;
 }
 
