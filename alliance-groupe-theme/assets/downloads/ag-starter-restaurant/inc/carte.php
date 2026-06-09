@@ -113,27 +113,35 @@ class AG_Restaurant_Carte {
 		?>
 		<section class="ag-carte-menu" style="max-width:780px;margin:30px auto 60px;padding:0 20px;">
 			<style>
-			/* Anti-fondu : force toute la page (titre + carte) en pleine
-			   opacite, sans transform/filtre (certains effets premium peuvent
-			   l'attenuer sur les pages internes). */
-			body.ag-premium-mode .ag-plain-page,
-			body.ag-premium-mode .ag-plain-page *,
-			.ag-carte-menu, .ag-carte-menu *{opacity:1 !important;animation:none !important;transform:none !important;filter:none !important;}
+			/* Anti-fondu AGRESSIF : titres (h1/h2) et noms etaient attenues par
+			   une animation/opacite d'apparition. On force TOUT en pleine
+			   opacite, sans animation/transform/filtre, avec forte specificite. */
+			html body.ag-premium-mode .ag-plain-page,
+			html body.ag-premium-mode .ag-plain-page *,
+			html body.ag-premium-mode .ag-plain-page h1,
+			html body.ag-premium-mode .ag-plain-page h2,
+			html body.ag-premium-mode .ag-plain-page h3,
+			html body .ag-carte-menu, html body .ag-carte-menu *{
+				opacity:1 !important;animation:none !important;transform:none !important;filter:none !important;
+				-webkit-text-fill-color:currentColor !important;
+			}
 			.ag-carte-card{background:linear-gradient(180deg,rgba(227,187,79,.05),rgba(255,255,255,.02));border:1px solid rgba(227,187,79,.32);border-radius:16px;padding:44px 48px;box-shadow:0 20px 60px rgba(0,0,0,.45);}
 			@media(max-width:560px){.ag-carte-card{padding:32px 22px;}}
+			/* Titre de la page (Notre carte) bien visible aussi */
+			html body.ag-premium-mode .ag-plain-page .ag-entry-title{color:#ffd766 !important;-webkit-text-fill-color:#ffd766 !important;opacity:1 !important;}
 			.ag-carte-top{text-align:center;margin-bottom:40px;}
-			.ag-carte-top__sub{color:#f0c34e !important;letter-spacing:5px;text-transform:uppercase;font-size:.85rem;font-weight:700;margin:0;}
-			.ag-carte-top__rule{width:90px;height:2px;background:#f0c34e;margin:14px auto 0;}
+			.ag-carte-card .ag-carte-top__sub{color:#ffd766 !important;-webkit-text-fill-color:#ffd766 !important;letter-spacing:5px;text-transform:uppercase;font-size:.86rem;font-weight:700;margin:0;}
+			.ag-carte-top__rule{width:90px;height:2px;background:#ffd766;margin:14px auto 0;}
 			.ag-carte-section{margin-bottom:46px;}
 			.ag-carte-section:last-child{margin-bottom:0;}
-			.ag-carte-section__title{font-family:'Playfair Display',Georgia,serif;color:#ffd766 !important;font-size:2.1rem;text-align:center;margin:0 0 8px;letter-spacing:.4px;}
-			.ag-carte-section__rule{width:70px;height:2px;background:#f0c34e;margin:0 auto 28px;}
+			.ag-carte-card .ag-carte-section__title{font-family:'Playfair Display',Georgia,serif;color:#ffd766 !important;-webkit-text-fill-color:#ffd766 !important;font-size:2.1rem;text-align:center;margin:0 0 8px;letter-spacing:.4px;text-shadow:0 1px 3px rgba(0,0,0,.4);}
+			.ag-carte-section__rule{width:70px;height:2px;background:#ffd766;margin:0 auto 28px;}
 			.ag-carte-item{margin-bottom:22px;}
 			.ag-carte-line{display:flex;align-items:baseline;gap:10px;}
-			.ag-carte-name{color:#fffaf0 !important;font-weight:700;font-size:1.14rem;}
-			.ag-carte-dots{flex:1 1 auto;border-bottom:1px dotted rgba(240,195,78,.7);transform:none;align-self:center;min-width:18px;}
-			.ag-carte-price{color:#ffd766 !important;font-weight:800;white-space:nowrap;font-size:1.12rem;}
-			.ag-carte-desc{color:#e2d6b3 !important;font-style:italic;font-size:.96rem;margin-top:4px;line-height:1.5;}
+			.ag-carte-card .ag-carte-name{color:#ffffff !important;-webkit-text-fill-color:#ffffff !important;font-weight:700;font-size:1.15rem;text-shadow:0 1px 2px rgba(0,0,0,.45);}
+			.ag-carte-dots{flex:1 1 auto;border-bottom:1px dotted rgba(255,215,102,.7);transform:none;align-self:center;min-width:18px;}
+			.ag-carte-card .ag-carte-price{color:#ffd766 !important;-webkit-text-fill-color:#ffd766 !important;font-weight:800;white-space:nowrap;font-size:1.12rem;}
+			.ag-carte-card .ag-carte-desc{color:#e7dcbf !important;-webkit-text-fill-color:#e7dcbf !important;font-style:italic;font-size:.96rem;margin-top:4px;line-height:1.5;}
 			</style>
 			<div class="ag-carte-card">
 			<div class="ag-carte-top">
