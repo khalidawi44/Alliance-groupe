@@ -116,9 +116,12 @@ class AG_Licence_Client {
             return array( 'success' => false, 'message' => 'Impossible de contacter le serveur de licence.' );
         }
 
-        $body = json_decode( wp_remote_retrieve_body( $resp ), true );
-        if ( empty( $body ) ) {
-            return array( 'success' => false, 'message' => 'Réponse invalide du serveur.' );
+        $code = (int) wp_remote_retrieve_response_code( $resp );
+        $raw  = (string) wp_remote_retrieve_body( $resp );
+        $body = json_decode( $raw, true );
+        if ( empty( $body ) || ! is_array( $body ) ) {
+            $snippet = trim( wp_strip_all_tags( substr( $raw, 0, 140 ) ) );
+            return array( 'success' => false, 'message' => 'Réponse invalide du serveur (HTTP ' . $code . ') : ' . ( '' !== $snippet ? $snippet : 'réponse vide' ) );
         }
 
         if ( ! empty( $body['success'] ) ) {
