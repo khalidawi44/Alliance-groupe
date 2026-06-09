@@ -21,14 +21,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function ag_starter_restaurant_customizer_defaults() {
 	return array(
-		// Colors.
-		'ag_color_accent'       => '#b87333',
-		'ag_color_background'   => '#0e0d10',
-		'ag_color_panel'        => '#181519',
-		'ag_color_border'       => '#2a2428',
-		'ag_color_text'         => '#e0e0e0',
-		'ag_color_heading'      => '#ffffff',
-		'ag_color_muted'        => '#aaaaaa',
+		// Colors (palette claire chaleureuse restaurant).
+		'ag_color_accent'       => '#b8860b',
+		'ag_color_background'   => '#ffffff',
+		'ag_color_panel'        => '#faf7f1',
+		'ag_color_border'       => '#e7e2d8',
+		'ag_color_text'         => '#2b2b2b',
+		'ag_color_heading'      => '#1a1a1a',
+		'ag_color_muted'        => '#6b6b6b',
 		// Typography.
 		'ag_font_family'        => 'system',
 		'ag_font_base_size'     => 16,

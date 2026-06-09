@@ -8,6 +8,9 @@
  * - A la soumission : cree un lead (CPT ag_devis_lead, partage avec le devis),
  *   notifie l'admin par email, et affiche une confirmation.
  *
+ * Le formulaire est une "carte" blanche autonome avec couleurs explicites :
+ * il reste lisible quel que soit le fond du theme (clair ou sombre).
+ *
  * @package AG_Starter_Restaurant
  */
 
@@ -19,8 +22,6 @@ class AG_Restaurant_Reservation {
 		add_shortcode( 'ag_restaurant_reservation', array( __CLASS__, 'render_form' ) );
 		add_action( 'admin_post_nopriv_ag_restaurant_reservation_submit', array( __CLASS__, 'handle_submit' ) );
 		add_action( 'admin_post_ag_restaurant_reservation_submit', array( __CLASS__, 'handle_submit' ) );
-		// Injecte le formulaire sur la page "reservation" sans avoir a editer
-		// son contenu (fonctionne quel que soit le template de la page).
 		add_filter( 'the_content', array( __CLASS__, 'maybe_append_form' ) );
 	}
 
@@ -32,8 +33,7 @@ class AG_Restaurant_Reservation {
 		if ( ! $post || 'reservation' !== $post->post_name ) {
 			return $content;
 		}
-		// Evite le doublon si le shortcode est deja present dans la page.
-		if ( false !== strpos( $content, 'ag-resa-form' ) ) {
+		if ( false !== strpos( $content, 'ag-resa-card' ) ) {
 			return $content;
 		}
 		return $content . self::render_form();
@@ -47,46 +47,58 @@ class AG_Restaurant_Reservation {
 		ob_start();
 		?>
 		<section class="ag-resa-wrap" style="max-width:680px;margin:40px auto;padding:0 20px;">
+			<style>
+			.ag-resa-card{background:#ffffff;color:#1f2937;border:1px solid #e7e2d8;border-radius:16px;padding:32px;box-shadow:0 16px 44px rgba(0,0,0,.16);}
+			.ag-resa-card h2{color:#111827 !important;margin:0 0 6px;font-size:1.6rem;}
+			.ag-resa-lead{color:#6b7280 !important;margin:0 0 22px;}
+			.ag-resa-card label{display:block;color:#374151 !important;font-size:.9rem;font-weight:600;}
+			.ag-resa-card input,.ag-resa-card textarea{width:100%;padding:11px;margin-top:5px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#111827;font-size:1rem;box-sizing:border-box;}
+			.ag-resa-card input::placeholder,.ag-resa-card textarea::placeholder{color:#9ca3af;}
+			.ag-resa-card input:focus,.ag-resa-card textarea:focus{outline:none;border-color:<?php echo esc_attr( $accent ); ?>;box-shadow:0 0 0 3px <?php echo esc_attr( $accent ); ?>33;}
+			.ag-resa-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+			@media(max-width:560px){.ag-resa-grid{grid-template-columns:1fr;}}
+			.ag-resa-submit{margin-top:20px;width:100%;background:<?php echo esc_attr( $accent ); ?>;color:#fff !important;border:0;font-weight:700;font-size:1.05rem;padding:15px;border-radius:10px;cursor:pointer;}
+			.ag-resa-submit:hover{filter:brightness(1.08);}
+			.ag-resa-fine{margin:12px 0 0;text-align:center;font-size:.85rem;color:#9ca3af;}
+			</style>
 			<?php if ( $success ) : ?>
-				<div class="ag-resa-success" style="background:rgba(40,167,69,.12);border:1px solid #28a745;border-radius:12px;padding:28px;text-align:center;">
+				<div class="ag-resa-card" style="text-align:center;">
 					<div style="font-size:2.2rem;margin-bottom:8px;">✅</div>
-					<h2 style="margin:0 0 8px;">Demande de réservation envoyée !</h2>
-					<p style="margin:0;opacity:.85;">Nous revenons vers vous très vite pour confirmer votre table. Merci de votre confiance.</p>
+					<h2>Demande de réservation envoyée !</h2>
+					<p class="ag-resa-lead" style="margin:0;">Nous revenons vers vous très vite pour confirmer votre table. Merci de votre confiance.</p>
 				</div>
 			<?php else : ?>
-				<div class="ag-resa-card" style="background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.10);border-radius:16px;padding:32px;">
-					<h2 style="margin:0 0 6px;font-size:1.6rem;">Réserver une table<?php echo $name ? ' — ' . esc_html( $name ) : ''; ?></h2>
-					<p style="margin:0 0 22px;opacity:.75;">Indiquez vos préférences, nous vous confirmons votre réservation au plus vite.</p>
+				<div class="ag-resa-card">
+					<h2>Réserver une table<?php echo $name ? ' — ' . esc_html( $name ) : ''; ?></h2>
+					<p class="ag-resa-lead">Indiquez vos préférences, nous vous confirmons votre réservation au plus vite.</p>
 					<form class="ag-resa-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 						<input type="hidden" name="action" value="ag_restaurant_reservation_submit">
 						<?php wp_nonce_field( 'ag_restaurant_reservation' ); ?>
-						<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-							<label style="display:block;">Date *
-								<input type="date" name="resa_date" required style="width:100%;padding:11px;margin-top:5px;border:1px solid #bbb;border-radius:8px;">
+						<div class="ag-resa-grid">
+							<label>Date *
+								<input type="date" name="resa_date" required>
 							</label>
-							<label style="display:block;">Heure *
-								<input type="time" name="resa_time" required style="width:100%;padding:11px;margin-top:5px;border:1px solid #bbb;border-radius:8px;">
+							<label>Heure *
+								<input type="time" name="resa_time" required>
 							</label>
-							<label style="display:block;">Nombre de personnes *
-								<input type="number" name="resa_guests" min="1" max="50" value="2" required style="width:100%;padding:11px;margin-top:5px;border:1px solid #bbb;border-radius:8px;">
+							<label>Nombre de personnes *
+								<input type="number" name="resa_guests" min="1" max="50" value="2" required>
 							</label>
-							<label style="display:block;">Prénom / Nom *
-								<input type="text" name="resa_name" required placeholder="Ex : Karim B." style="width:100%;padding:11px;margin-top:5px;border:1px solid #bbb;border-radius:8px;">
+							<label>Prénom / Nom *
+								<input type="text" name="resa_name" required placeholder="Ex : Karim B.">
 							</label>
-							<label style="display:block;">Téléphone *
-								<input type="tel" name="resa_phone" required placeholder="06 12 34 56 78" style="width:100%;padding:11px;margin-top:5px;border:1px solid #bbb;border-radius:8px;">
+							<label>Téléphone *
+								<input type="tel" name="resa_phone" required placeholder="06 12 34 56 78">
 							</label>
-							<label style="display:block;">Email
-								<input type="email" name="resa_email" placeholder="vous@email.fr" style="width:100%;padding:11px;margin-top:5px;border:1px solid #bbb;border-radius:8px;">
+							<label>Email
+								<input type="email" name="resa_email" placeholder="vous@email.fr">
 							</label>
 						</div>
-						<label style="display:block;margin-top:14px;">Message (allergies, occasion, demande spéciale…)
-							<textarea name="resa_message" rows="3" style="width:100%;padding:11px;margin-top:5px;border:1px solid #bbb;border-radius:8px;"></textarea>
+						<label style="margin-top:14px;">Message (allergies, occasion, demande spéciale…)
+							<textarea name="resa_message" rows="3"></textarea>
 						</label>
-						<button type="submit" style="margin-top:20px;width:100%;background:<?php echo esc_attr( $accent ); ?>;color:#fff;border:0;font-weight:700;font-size:1.05rem;padding:15px;border-radius:10px;cursor:pointer;">
-							Envoyer ma demande de réservation
-						</button>
-						<p style="margin:12px 0 0;text-align:center;font-size:.85rem;opacity:.6;">Réponse rapide — sans engagement.</p>
+						<button type="submit" class="ag-resa-submit">Envoyer ma demande de réservation</button>
+						<p class="ag-resa-fine">Réponse rapide — sans engagement.</p>
 					</form>
 				</div>
 			<?php endif; ?>
@@ -111,7 +123,6 @@ class AG_Restaurant_Reservation {
 			$date, $time, $guests, $name, $phone, $email, $message
 		);
 
-		// Enregistre comme lead (CPT partage avec le devis si dispo, sinon page).
 		$cpt = post_type_exists( 'ag_devis_lead' ) ? 'ag_devis_lead' : 'page';
 		$lead_id = wp_insert_post( array(
 			'post_type'    => $cpt,
@@ -128,14 +139,12 @@ class AG_Restaurant_Reservation {
 			update_post_meta( $lead_id, '_ag_resa_email', $email );
 		}
 
-		// Notifie l'admin.
 		wp_mail(
 			get_option( 'admin_email' ),
 			'Nouvelle demande de réservation — ' . get_bloginfo( 'name' ),
 			$summary
 		);
 
-		// Push interne si l'infra Alliance est presente (site principal).
 		if ( function_exists( 'ag_push' ) ) {
 			ag_push( "🍽️ Nouvelle réservation\n" . $summary );
 		}

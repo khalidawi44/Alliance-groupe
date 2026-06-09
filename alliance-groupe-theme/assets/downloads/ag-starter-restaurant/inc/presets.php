@@ -339,6 +339,25 @@ class AG_Restaurant_Presets {
 	 * restaurant. N'ecrase pas les pages WP, seulement les reglages d'aspect.
 	 */
 	public static function maybe_apply_default() {
+		// Normalisation couleurs (une fois) : palette claire chaleureuse, pour
+		// corriger d'anciens reglages sombres herites d'une version precedente
+		// du theme restaurant (texte clair sur fond clair = illisible).
+		if ( ! get_option( 'ag_restaurant_light_v1' ) ) {
+			$colors = array(
+				'ag_color_accent'     => '#b8860b',
+				'ag_color_background' => '#ffffff',
+				'ag_color_panel'      => '#faf7f1',
+				'ag_color_border'     => '#e7e2d8',
+				'ag_color_text'       => '#2b2b2b',
+				'ag_color_heading'    => '#1a1a1a',
+				'ag_color_muted'      => '#6b6b6b',
+			);
+			foreach ( $colors as $k => $v ) {
+				set_theme_mod( $k, $v );
+			}
+			update_option( 'ag_restaurant_light_v1', 1 );
+		}
+
 		if ( get_theme_mod( 'ag_restaurant_metier_slug', '' ) ) return;
 		if ( get_option( 'ag_restaurant_default_applied' ) ) return;
 
