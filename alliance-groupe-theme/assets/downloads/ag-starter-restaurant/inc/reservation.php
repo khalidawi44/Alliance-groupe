@@ -52,10 +52,9 @@ class AG_Restaurant_Reservation {
 			.ag-resa-card h2{color:#f3ead4 !important;margin:0 0 6px;font-size:1.7rem;font-family:'Playfair Display',Georgia,serif;}
 			.ag-resa-lead{color:#b3a88c !important;margin:0 0 22px;}
 			.ag-resa-card label{display:block;color:#d8cdb0 !important;font-size:.9rem;font-weight:600;}
-			.ag-resa-card input,.ag-resa-card textarea{width:100%;padding:11px;margin-top:5px;border:1px solid rgba(201,162,75,.30);border-radius:8px;background:#2a241b;color:#f3ead4;font-size:1rem;box-sizing:border-box;}
-			.ag-resa-card input::placeholder,.ag-resa-card textarea::placeholder{color:#8c8268;}
-			.ag-resa-card input:focus,.ag-resa-card textarea:focus{outline:none;border-color:#c9a24b;box-shadow:0 0 0 3px rgba(201,162,75,.25);}
-			.ag-resa-card input[type="date"],.ag-resa-card input[type="time"]{color-scheme:dark;}
+			.ag-resa-card input,.ag-resa-card textarea{width:100%;padding:11px;margin-top:5px;border:1px solid rgba(201,162,75,.45);border-radius:8px;background:#f5efe1;color:#2a2017;font-size:1rem;box-sizing:border-box;}
+			.ag-resa-card input::placeholder,.ag-resa-card textarea::placeholder{color:#9a8e72;}
+			.ag-resa-card input:focus,.ag-resa-card textarea:focus{outline:none;border-color:#c9a24b;box-shadow:0 0 0 3px rgba(201,162,75,.30);}
 			.ag-resa-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 			@media(max-width:560px){.ag-resa-grid{grid-template-columns:1fr;}}
 			.ag-resa-submit{margin-top:20px;width:100%;background:#c9a24b;color:#13110c !important;border:0;font-weight:700;font-size:1.05rem;padding:15px;border-radius:10px;cursor:pointer;letter-spacing:.3px;}
