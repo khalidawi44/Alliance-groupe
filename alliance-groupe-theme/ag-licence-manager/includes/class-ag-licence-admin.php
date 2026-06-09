@@ -103,7 +103,8 @@ class AG_Licence_Admin {
                             <em style="color:#999;font-size:.82rem;">Ancienne clé</em>
                         <?php endif; ?>
                     </td>
-                    <td><strong><?php echo esc_html( ucfirst( $l->tier ) ); ?></strong></td>
+                    <?php $ag_tier_labels = array( 'business' => 'Premium', 'premium' => 'Base (ancien Premium)', 'pro' => 'Pro', 'free' => 'Gratuit' ); ?>
+                    <td><strong><?php echo esc_html( isset( $ag_tier_labels[ $l->tier ] ) ? $ag_tier_labels[ $l->tier ] : ucfirst( $l->tier ) ); ?></strong></td>
                     <td><?php echo esc_html( $l->email ); ?></td>
                     <td><?php echo $l->domain ? esc_html( $l->domain ) : '—'; ?></td>
                     <td><span style="color:<?php echo $color; ?>;font-weight:700;"><?php echo esc_html( ucfirst( $l->status ) ); ?></span></td>

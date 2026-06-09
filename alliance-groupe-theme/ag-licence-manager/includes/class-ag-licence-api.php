@@ -148,7 +148,7 @@ class AG_Licence_API {
             'requires'     => '6.0',
             'requires_php' => '7.4',
             'changelog'    => '<h4>v1.4.0</h4><ul>'
-                . '<li>Nouveau : liens d\'achat directs vers Stripe (Premium/Business)</li>'
+                . '<li>Nouveau : liens d\'achat directs vers Stripe (Premium)</li>'
                 . '<li>Nouveau : widget tableau de bord avec comparatif des 2 packs</li>'
                 . '<li>Nouveau : 4 sections verrouillées dans le Customizer (aperçu des fonctionnalités Premium)</li>'
                 . '<li>Nouveau : barre footer fixe "Passez à Premium" sur toutes les pages admin</li>'
