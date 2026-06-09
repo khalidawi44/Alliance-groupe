@@ -207,7 +207,11 @@ class AG_Barber_Queue {
         $progress = array_filter( $queue, function ( $t ) { return $t['status'] === 'in_progress'; } );
         $done     = array_filter( $queue, function ( $t ) { return $t['status'] === 'done'; } );
         $settings = self::get_settings();
-        $qr_url   = home_url( '/?ag_queue=join' );
+        // Le QR encode le nom du salon (slug) : des que le client renomme son
+        // salon dans Reglages, l'URL change -> le QR (genere a la volee) se met
+        // a jour automatiquement, sans rien regenerer a la main.
+        $qr_slug = sanitize_title( $settings['shop_name'] );
+        $qr_url  = home_url( '/?ag_queue=join' . ( $qr_slug ? '&salon=' . $qr_slug : '' ) );
         ?>
         <div class="wrap">
             <h1>💈 <?php esc_html_e( 'File d\'attente — Tableau de bord', 'ag-starter-barber' ); ?></h1>
@@ -235,8 +239,8 @@ class AG_Barber_Queue {
             <!-- QR Code -->
             <div style="background:#fff;padding:20px;border:1px solid #ddd;margin-bottom:20px;display:flex;align-items:center;gap:20px;">
                 <div>
-                    <h3 style="margin:0 0 8px;">QR Code à afficher en vitrine</h3>
-                    <p style="color:#666;margin:0 0 12px;">Les clients scannent ce code pour rejoindre la file d'attente depuis leur téléphone.</p>
+                    <h3 style="margin:0 0 8px;">QR Code à afficher en vitrine — <em><?php echo esc_html( $settings['shop_name'] ); ?></em></h3>
+                    <p style="color:#666;margin:0 0 12px;">Les clients scannent ce code pour rejoindre la file d'attente depuis leur téléphone.<br><strong>Le QR se met à jour tout seul</strong> dès que vous changez le nom du salon dans <em>Réglages</em>.</p>
                     <code style="font-size:.85rem;background:#f5f5f5;padding:6px 12px;border-radius:4px;"><?php echo esc_html( $qr_url ); ?></code>
                     <p style="margin-top:8px;">
                         <a href="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=<?php echo urlencode( $qr_url ); ?>" target="_blank" class="button">📥 Télécharger le QR Code (PNG)</a>
