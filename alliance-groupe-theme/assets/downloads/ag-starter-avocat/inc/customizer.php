@@ -718,19 +718,12 @@ function ag_starter_avocat_register_upgrade_control() {
 			$cur   = isset( $order[ $tier ] ) ? $order[ $tier ] : 0;
 
 			$all_packs = array(
-				'premium' => array(
-					'icon'  => '⭐',
-					'title' => 'Pack Premium',
-					'price' => '99€',
-					'desc'  => 'Design luxe, animations scroll, header sticky, 2 skins de couleur, temoignages clients, telephone header',
-					'url'   => $base . $utm . '&pack=premium#ag-pricing',
-				),
 				'business' => array(
-					'icon'  => '💼',
-					'title' => 'Pack Business',
-					'price' => '149€',
-					'desc'  => 'Tout Premium + 4 skins de couleur, pub minimale, session strategique 30 min, support prioritaire',
-					'url'   => $base . $utm . '&pack=business#ag-pricing',
+					'icon'  => '💎',
+					'title' => 'Premium',
+					'price' => '69€',
+					'desc'  => 'Notre design le plus abouti : luxe, animations scroll, header sticky, couleurs avancees, temoignages, telephone header, pub minimale, support. Paiement unique.',
+					'url'   => $base . $utm . '&pack=premium#ag-pricing',
 				),
 			);
 
@@ -740,9 +733,9 @@ function ag_starter_avocat_register_upgrade_control() {
 			}
 
 			$tier_labels = array(
-				'pro'      => '⚡ Pack Pro',
-				'premium'  => '⭐ Pack Premium',
-				'business' => '💼 Pack Business',
+				'pro'      => '💎 Premium',
+				'premium'  => '💎 Premium',
+				'business' => '💎 Premium',
 			);
 			?>
 			<div style="background:#fff;border:1px solid #d4b45c;border-radius:8px;padding:14px;margin-top:8px;">

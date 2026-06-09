@@ -111,22 +111,31 @@ class AG_Restaurant_Carte {
 
 		ob_start();
 		?>
-		<section class="ag-carte-menu" style="max-width:760px;margin:24px auto 56px;padding:0 20px;">
+		<section class="ag-carte-menu" style="max-width:780px;margin:30px auto 60px;padding:0 20px;">
 			<style>
-			.ag-carte-menu,.ag-carte-menu *{opacity:1 !important;animation:none !important;}
+			/* Anti-fondu : force toute la page (titre + carte) en pleine
+			   opacite, sans transform/filtre (certains effets premium peuvent
+			   l'attenuer sur les pages internes). */
+			body.ag-premium-mode .ag-plain-page,
+			body.ag-premium-mode .ag-plain-page *,
+			.ag-carte-menu, .ag-carte-menu *{opacity:1 !important;animation:none !important;transform:none !important;filter:none !important;}
+			.ag-carte-card{background:linear-gradient(180deg,rgba(227,187,79,.05),rgba(255,255,255,.02));border:1px solid rgba(227,187,79,.32);border-radius:16px;padding:44px 48px;box-shadow:0 20px 60px rgba(0,0,0,.45);}
+			@media(max-width:560px){.ag-carte-card{padding:32px 22px;}}
 			.ag-carte-top{text-align:center;margin-bottom:40px;}
-			.ag-carte-top__sub{color:#e3bb4f !important;letter-spacing:4px;text-transform:uppercase;font-size:.82rem;font-weight:700;margin:0;}
-			.ag-carte-top__rule{width:80px;height:1px;background:#e3bb4f;opacity:.85;margin:14px auto 0;}
-			.ag-carte-section{margin-bottom:44px;}
-			.ag-carte-section__title{font-family:'Playfair Display',Georgia,serif;color:#f2cc5f !important;font-size:2rem;text-align:center;margin:0 0 6px;letter-spacing:.4px;}
-			.ag-carte-section__rule{width:64px;height:2px;background:#e3bb4f;opacity:.95;margin:0 auto 26px;}
-			.ag-carte-item{margin-bottom:20px;}
+			.ag-carte-top__sub{color:#f0c34e !important;letter-spacing:5px;text-transform:uppercase;font-size:.85rem;font-weight:700;margin:0;}
+			.ag-carte-top__rule{width:90px;height:2px;background:#f0c34e;margin:14px auto 0;}
+			.ag-carte-section{margin-bottom:46px;}
+			.ag-carte-section:last-child{margin-bottom:0;}
+			.ag-carte-section__title{font-family:'Playfair Display',Georgia,serif;color:#ffd766 !important;font-size:2.1rem;text-align:center;margin:0 0 8px;letter-spacing:.4px;}
+			.ag-carte-section__rule{width:70px;height:2px;background:#f0c34e;margin:0 auto 28px;}
+			.ag-carte-item{margin-bottom:22px;}
 			.ag-carte-line{display:flex;align-items:baseline;gap:10px;}
-			.ag-carte-name{color:#fbf5e6 !important;font-weight:700;font-size:1.1rem;}
-			.ag-carte-dots{flex:1 1 auto;border-bottom:1px dotted rgba(227,187,79,.6);transform:translateY(-4px);min-width:18px;}
-			.ag-carte-price{color:#f2cc5f !important;font-weight:800;white-space:nowrap;font-size:1.08rem;}
-			.ag-carte-desc{color:#d8cba6 !important;font-style:italic;font-size:.95rem;margin-top:4px;line-height:1.5;}
+			.ag-carte-name{color:#fffaf0 !important;font-weight:700;font-size:1.14rem;}
+			.ag-carte-dots{flex:1 1 auto;border-bottom:1px dotted rgba(240,195,78,.7);transform:none;align-self:center;min-width:18px;}
+			.ag-carte-price{color:#ffd766 !important;font-weight:800;white-space:nowrap;font-size:1.12rem;}
+			.ag-carte-desc{color:#e2d6b3 !important;font-style:italic;font-size:.96rem;margin-top:4px;line-height:1.5;}
 			</style>
+			<div class="ag-carte-card">
 			<div class="ag-carte-top">
 				<p class="ag-carte-top__sub">La Carte</p>
 				<div class="ag-carte-top__rule"></div>
@@ -151,6 +160,7 @@ class AG_Restaurant_Carte {
 					<?php endforeach; ?>
 				</div>
 			<?php endforeach; ?>
+			</div>
 		</section>
 		<?php
 		return ob_get_clean();

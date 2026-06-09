@@ -218,7 +218,7 @@ class AG_Licence_Client {
             <div style="max-width:600px;margin-top:20px;padding:24px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid <?php echo $is_pro ? '#28a745' : '#D4B45C'; ?>;">
 
                 <?php if ( $is_pro ) : ?>
-                    <h2 style="margin-top:0;color:#28a745;">✅ Licence active — <?php echo esc_html( ucfirst( $tier ) ); ?></h2>
+                    <h2 style="margin-top:0;color:#28a745;">✅ Licence active — Premium</h2>
                     <p>Votre licence est activée pour <strong><?php echo esc_html( self::get_domain() ); ?></strong>.</p>
                     <p>WordPress vous proposera automatiquement les mises a jour Premium. Allez dans <strong>Apparence → Thèmes</strong> pour vérifier.</p>
 
