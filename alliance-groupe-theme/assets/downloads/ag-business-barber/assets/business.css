@@ -124,6 +124,12 @@ body.ag-bb-active {
     background: var(--bb-bg-1) !important;
     color: var(--bb-text) !important;
 }
+/* Neutralise la bande blanche de la zone de contenu Gutenberg (accueil). */
+body.ag-bb-active .ag-custom-content {
+    background: transparent !important;
+    padding: 0 !important;
+    color: var(--bb-text) !important;
+}
 body.ag-bb-active .ag-section--card,
 body.ag-bb-active .ag-section--dark {
     background: var(--bb-bg-1) !important;

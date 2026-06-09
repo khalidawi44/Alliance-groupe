@@ -152,6 +152,15 @@ body.ag-bb-active {
     background: var(--bb-bg-1) !important;
     color: var(--bb-text) !important;
 }
+
+/* Pas de bande blanche en haut : la zone de contenu Gutenberg de l'accueil
+   a un background:#fff en inline -> on le neutralise (transparent + collapse
+   si vide) pour que le hero remonte sous le menu, sans bande claire. */
+body.ag-bb-active .ag-custom-content {
+    background: transparent !important;
+    padding: 0 !important;
+    color: var(--bb-text) !important;
+}
 body.ag-bb-active .ag-section--card,
 body.ag-bb-active .ag-section--dark {
     background: var(--bb-bg-1) !important;
