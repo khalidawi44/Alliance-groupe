@@ -27,7 +27,7 @@ class AG_Restaurant_Presets {
 				'label' => 'Restaurant traditionnel',
 				'desc'  => 'Cuisine française maison, produits frais et de saison. Pour bistrot, auberge, table traditionnelle.',
 				'mods'  => array(
-					'ag_color_accent'           => '#c9a24b',
+					'ag_color_accent'           => '#e3bb4f',
 					'ag_hero_prefix'            => 'Bienvenue chez',
 					'ag_hero_brand'             => 'Votre Restaurant',
 					'ag_hero_subtitle'          => 'Cuisine authentique faite maison, produits frais et de saison, au cœur de votre ville. Réservez votre table dès maintenant.',
@@ -341,20 +341,20 @@ class AG_Restaurant_Presets {
 	public static function maybe_apply_default() {
 		// Normalisation couleurs (une fois) : palette sombre & or « Versailles »
 		// (fond sombre, texte creme, accent dore) — corrige tout reglage herite.
-		if ( ! get_option( 'ag_restaurant_versailles_v1' ) ) {
+		if ( ! get_option( 'ag_restaurant_versailles_v2' ) ) {
 			$colors = array(
-				'ag_color_accent'     => '#c9a24b',
+				'ag_color_accent'     => '#e3bb4f',
 				'ag_color_background' => '#13110c',
 				'ag_color_panel'      => '#1c1813',
 				'ag_color_border'     => '#3a2f1e',
-				'ag_color_text'       => '#ece4d2',
-				'ag_color_heading'    => '#f3ead4',
-				'ag_color_muted'      => '#b3a88c',
+				'ag_color_text'       => '#f4eedd',
+				'ag_color_heading'    => '#fbf5e6',
+				'ag_color_muted'      => '#d4c8a6',
 			);
 			foreach ( $colors as $k => $v ) {
 				set_theme_mod( $k, $v );
 			}
-			update_option( 'ag_restaurant_versailles_v1', 1 );
+			update_option( 'ag_restaurant_versailles_v2', 1 );
 		}
 
 		if ( get_theme_mod( 'ag_restaurant_metier_slug', '' ) ) return;

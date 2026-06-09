@@ -3,9 +3,9 @@
  * Notre carte (menu du restaurant) — affichage elegant + editable.
  *
  * - Shortcode [ag_restaurant_carte]
- * - Injecte automatiquement la carte sur la page de slug "carte".
+ * - Remplace le contenu de la page de slug "carte" par la vraie carte.
  * - Editable dans Apparence > Personnaliser > « Notre carte (menu) » :
- *   un format texte simple ("## Section" + "Nom | Description | Prix").
+ *   format texte simple ("## Section" + "Nom | Description | Prix").
  *
  * @package AG_Starter_Restaurant
  */
@@ -18,7 +18,7 @@ class AG_Restaurant_Carte {
 
 	public static function init() {
 		add_shortcode( 'ag_restaurant_carte', array( __CLASS__, 'render' ) );
-		add_filter( 'the_content', array( __CLASS__, 'maybe_append' ) );
+		add_filter( 'the_content', array( __CLASS__, 'maybe_replace' ) );
 		add_action( 'customize_register', array( __CLASS__, 'customize' ) );
 	}
 
@@ -45,16 +45,16 @@ class AG_Restaurant_Carte {
 		$wp->add_section( 'ag_restaurant_carte', array(
 			'title'       => '🍽️ ' . __( 'Notre carte (menu)', 'ag-starter-restaurant' ),
 			'priority'    => 27,
-			'description' => __( 'Une section par ligne « ## Titre ». Un plat par ligne : Nom | Description | Prix (laissez vide pour aucun prix).', 'ag-starter-restaurant' ),
+			'description' => __( 'Une ligne « ## Titre » par section. Un plat par ligne : Nom | Description | Prix (prix vide = aucun prix).', 'ag-starter-restaurant' ),
 		) );
 		$wp->add_setting( self::OPT, array(
 			'default'           => self::default_menu(),
 			'sanitize_callback' => array( __CLASS__, 'sanitize' ),
 		) );
 		$wp->add_control( self::OPT, array(
-			'label'   => __( 'Votre carte', 'ag-starter-restaurant' ),
-			'section' => 'ag_restaurant_carte',
-			'type'    => 'textarea',
+			'label'       => __( 'Votre carte', 'ag-starter-restaurant' ),
+			'section'     => 'ag_restaurant_carte',
+			'type'        => 'textarea',
 			'input_attrs' => array( 'rows' => 16 ),
 		) );
 	}
@@ -63,7 +63,7 @@ class AG_Restaurant_Carte {
 		return wp_kses_post( $v );
 	}
 
-	public static function maybe_append( $content ) {
+	public static function maybe_replace( $content ) {
 		if ( is_admin() || ! is_page() || ! in_the_loop() || ! is_main_query() ) {
 			return $content;
 		}
@@ -71,10 +71,8 @@ class AG_Restaurant_Carte {
 		if ( ! $post || 'carte' !== $post->post_name ) {
 			return $content;
 		}
-		if ( false !== strpos( $content, 'ag-carte-menu' ) ) {
-			return $content;
-		}
-		return $content . self::render();
+		// La carte EST le contenu : on remplace le texte placeholder.
+		return self::render();
 	}
 
 	private static function parse( $raw ) {
@@ -101,7 +99,6 @@ class AG_Restaurant_Carte {
 	private static function fmt_price( $p ) {
 		$p = trim( $p );
 		if ( '' === $p ) return '';
-		// Nombre seul -> ajoute " €".
 		if ( preg_match( '/^\d+([.,]\d+)?$/', $p ) ) {
 			return $p . ' €';
 		}
@@ -114,18 +111,26 @@ class AG_Restaurant_Carte {
 
 		ob_start();
 		?>
-		<section class="ag-carte-menu" style="max-width:760px;margin:30px auto 50px;padding:0 20px;">
+		<section class="ag-carte-menu" style="max-width:760px;margin:24px auto 56px;padding:0 20px;">
 			<style>
-			.ag-carte-section{margin-bottom:42px;}
-			.ag-carte-section__title{font-family:'Playfair Display',Georgia,serif;color:#c9a24b;font-size:1.9rem;text-align:center;margin:0 0 6px;letter-spacing:.4px;}
-			.ag-carte-section__rule{width:64px;height:2px;background:#c9a24b;opacity:.55;margin:0 auto 26px;}
-			.ag-carte-item{margin-bottom:18px;}
+			.ag-carte-menu,.ag-carte-menu *{opacity:1 !important;animation:none !important;}
+			.ag-carte-top{text-align:center;margin-bottom:40px;}
+			.ag-carte-top__sub{color:#e3bb4f !important;letter-spacing:4px;text-transform:uppercase;font-size:.82rem;font-weight:700;margin:0;}
+			.ag-carte-top__rule{width:80px;height:1px;background:#e3bb4f;opacity:.85;margin:14px auto 0;}
+			.ag-carte-section{margin-bottom:44px;}
+			.ag-carte-section__title{font-family:'Playfair Display',Georgia,serif;color:#f2cc5f !important;font-size:2rem;text-align:center;margin:0 0 6px;letter-spacing:.4px;}
+			.ag-carte-section__rule{width:64px;height:2px;background:#e3bb4f;opacity:.95;margin:0 auto 26px;}
+			.ag-carte-item{margin-bottom:20px;}
 			.ag-carte-line{display:flex;align-items:baseline;gap:10px;}
-			.ag-carte-name{color:#f3ead4;font-weight:600;font-size:1.06rem;}
-			.ag-carte-dots{flex:1 1 auto;border-bottom:1px dotted rgba(201,162,75,.45);transform:translateY(-4px);min-width:18px;}
-			.ag-carte-price{color:#c9a24b;font-weight:700;white-space:nowrap;font-size:1.04rem;}
-			.ag-carte-desc{color:#b3a88c;font-style:italic;font-size:.93rem;margin-top:3px;line-height:1.5;}
+			.ag-carte-name{color:#fbf5e6 !important;font-weight:700;font-size:1.1rem;}
+			.ag-carte-dots{flex:1 1 auto;border-bottom:1px dotted rgba(227,187,79,.6);transform:translateY(-4px);min-width:18px;}
+			.ag-carte-price{color:#f2cc5f !important;font-weight:800;white-space:nowrap;font-size:1.08rem;}
+			.ag-carte-desc{color:#d8cba6 !important;font-style:italic;font-size:.95rem;margin-top:4px;line-height:1.5;}
 			</style>
+			<div class="ag-carte-top">
+				<p class="ag-carte-top__sub">La Carte</p>
+				<div class="ag-carte-top__rule"></div>
+			</div>
 			<?php foreach ( $sections as $sec ) : ?>
 				<div class="ag-carte-section">
 					<h2 class="ag-carte-section__title"><?php echo esc_html( $sec['title'] ); ?></h2>

@@ -105,24 +105,20 @@ class AG_Licence_Client {
         $domain = self::get_domain();
 
         $resp = wp_remote_post( self::API_URL . '/licence/activate', array(
-            'timeout'    => 20,
-            'user-agent' => 'AG-Licence-Client/1.0 (+' . home_url() . ')',
-            'headers'    => array( 'Accept' => 'application/json' ),
-            'body'       => array(
+            'timeout' => 15,
+            'body'    => array(
                 'licence_key' => $key,
                 'domain'      => $domain,
             ),
         ) );
 
         if ( is_wp_error( $resp ) ) {
-            return array( 'success' => false, 'message' => 'Impossible de contacter le serveur de licence : ' . $resp->get_error_message() );
+            return array( 'success' => false, 'message' => 'Impossible de contacter le serveur de licence.' );
         }
 
-        $code = (int) wp_remote_retrieve_response_code( $resp );
         $body = json_decode( wp_remote_retrieve_body( $resp ), true );
-        if ( empty( $body ) || ! is_array( $body ) ) {
-            $hint = ( $code && 200 !== $code ) ? ' (HTTP ' . $code . ')' : '';
-            return array( 'success' => false, 'message' => 'Réponse invalide du serveur' . $hint . '. Le serveur de licence est peut-etre bloque par un pare-feu / une securite (Cloudflare, Wordfence...). Autorisez /wp-json/ag/v1/.' );
+        if ( empty( $body ) ) {
+            return array( 'success' => false, 'message' => 'Réponse invalide du serveur.' );
         }
 
         if ( ! empty( $body['success'] ) ) {
