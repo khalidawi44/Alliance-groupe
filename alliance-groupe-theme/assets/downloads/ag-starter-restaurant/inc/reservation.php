@@ -48,18 +48,19 @@ class AG_Restaurant_Reservation {
 		?>
 		<section class="ag-resa-wrap" style="max-width:680px;margin:40px auto;padding:0 20px;">
 			<style>
-			.ag-resa-card{background:#ffffff;color:#1f2937;border:1px solid #e7e2d8;border-radius:16px;padding:32px;box-shadow:0 16px 44px rgba(0,0,0,.16);}
-			.ag-resa-card h2{color:#111827 !important;margin:0 0 6px;font-size:1.6rem;}
-			.ag-resa-lead{color:#6b7280 !important;margin:0 0 22px;}
-			.ag-resa-card label{display:block;color:#374151 !important;font-size:.9rem;font-weight:600;}
-			.ag-resa-card input,.ag-resa-card textarea{width:100%;padding:11px;margin-top:5px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#111827;font-size:1rem;box-sizing:border-box;}
-			.ag-resa-card input::placeholder,.ag-resa-card textarea::placeholder{color:#9ca3af;}
-			.ag-resa-card input:focus,.ag-resa-card textarea:focus{outline:none;border-color:<?php echo esc_attr( $accent ); ?>;box-shadow:0 0 0 3px <?php echo esc_attr( $accent ); ?>33;}
+			.ag-resa-card{background:#1c1813;color:#ece4d2;border:1px solid rgba(201,162,75,.35);border-radius:16px;padding:32px;box-shadow:0 18px 50px rgba(0,0,0,.55);}
+			.ag-resa-card h2{color:#f3ead4 !important;margin:0 0 6px;font-size:1.7rem;font-family:'Playfair Display',Georgia,serif;}
+			.ag-resa-lead{color:#b3a88c !important;margin:0 0 22px;}
+			.ag-resa-card label{display:block;color:#d8cdb0 !important;font-size:.9rem;font-weight:600;}
+			.ag-resa-card input,.ag-resa-card textarea{width:100%;padding:11px;margin-top:5px;border:1px solid rgba(201,162,75,.30);border-radius:8px;background:#2a241b;color:#f3ead4;font-size:1rem;box-sizing:border-box;}
+			.ag-resa-card input::placeholder,.ag-resa-card textarea::placeholder{color:#8c8268;}
+			.ag-resa-card input:focus,.ag-resa-card textarea:focus{outline:none;border-color:#c9a24b;box-shadow:0 0 0 3px rgba(201,162,75,.25);}
+			.ag-resa-card input[type="date"],.ag-resa-card input[type="time"]{color-scheme:dark;}
 			.ag-resa-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 			@media(max-width:560px){.ag-resa-grid{grid-template-columns:1fr;}}
-			.ag-resa-submit{margin-top:20px;width:100%;background:<?php echo esc_attr( $accent ); ?>;color:#fff !important;border:0;font-weight:700;font-size:1.05rem;padding:15px;border-radius:10px;cursor:pointer;}
+			.ag-resa-submit{margin-top:20px;width:100%;background:#c9a24b;color:#13110c !important;border:0;font-weight:700;font-size:1.05rem;padding:15px;border-radius:10px;cursor:pointer;letter-spacing:.3px;}
 			.ag-resa-submit:hover{filter:brightness(1.08);}
-			.ag-resa-fine{margin:12px 0 0;text-align:center;font-size:.85rem;color:#9ca3af;}
+			.ag-resa-fine{margin:12px 0 0;text-align:center;font-size:.85rem;color:#8c8268;}
 			</style>
 			<?php if ( $success ) : ?>
 				<div class="ag-resa-card" style="text-align:center;">

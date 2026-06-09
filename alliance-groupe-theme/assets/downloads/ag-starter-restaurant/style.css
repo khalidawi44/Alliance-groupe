@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress 100% francais pour restaurants : traditionnel, pizzeria, bistrot, gastronomique, creperie, burger. Page d'accueil immersive (hero photo, grille de specialites, comment reserver, avis clients, FAQ), contenu pre-redige en francais natif, presets en 1 clic par type de restaurant. Reservation, carte, privatisation. Design chaleureux et responsive.
-Version: 1.16.3
+Version: 1.17.0
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -1327,3 +1327,83 @@ body.admin-bar.ag-premium-mode.page:not(.home) .ag-page-hero--full{
 .ag-restaurant-promo-vid{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#000}
 .ag-restaurant-promo-mute{position:absolute;bottom:18px;right:18px;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.2);color:#fff;width:50px;height:50px;border-radius:50%;font-size:1.4rem;cursor:pointer;backdrop-filter:blur(8px);transition:transform .2s,background .2s;line-height:1}
 .ag-restaurant-promo-mute:hover{transform:scale(1.1);background:rgba(243,122,31,.85)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   THÈME « VERSAILLES » — sombre & or. Override du premium-mode (clair).
+   Palette : fond #13110c · cartes #1c1813 · or #c9a24b · crème #ece4d2
+   ═══════════════════════════════════════════════════════════════════ */
+body.ag-premium-mode{background:#13110c !important;color:#ece4d2 !important;}
+
+/* Header sombre + or (accueil ET pages internes, état normal et scrollé) */
+body.ag-premium-mode .ag-site-header,
+body.ag-premium-mode.page:not(.home) .ag-site-header,
+body.ag-premium-mode.page:not(.home) .ag-site-header.scrolled{
+	background:rgba(15,13,9,.92) !important;
+	border-bottom:1px solid rgba(201,162,75,.28) !important;
+	box-shadow:0 2px 24px rgba(0,0,0,.45) !important;
+}
+body.ag-premium-mode .ag-site-brand,
+body.ag-premium-mode.page:not(.home) .ag-site-header .ag-site-brand,
+body.ag-premium-mode.page:not(.home) .ag-site-header.scrolled .ag-site-brand{
+	color:#c9a24b !important;text-shadow:none !important;font-family:'Playfair Display',Georgia,serif !important;
+}
+body.ag-premium-mode .ag-primary-menu a,
+body.ag-premium-mode.page:not(.home) .ag-site-header .ag-primary-menu a,
+body.ag-premium-mode.page:not(.home) .ag-site-header.scrolled .ag-primary-menu a{
+	color:#ece4d2 !important;text-shadow:none !important;
+}
+body.ag-premium-mode .ag-primary-menu a:hover{color:#c9a24b !important;}
+
+/* Zone principale + sections sombres */
+body.ag-premium-mode .ag-main--premium{background:#13110c !important;color:#ece4d2 !important;}
+body.ag-premium-mode .ag-main--premium h1,
+body.ag-premium-mode .ag-main--premium h2,
+body.ag-premium-mode .ag-main--premium h3,
+body.ag-premium-mode .ag-page-title,
+body.ag-premium-mode .ag-entry-title,
+body.ag-premium-mode .ag-entry-content h1,
+body.ag-premium-mode .ag-entry-content h2,
+body.ag-premium-mode .ag-entry-content h3{color:#f3ead4 !important;font-family:'Playfair Display',Georgia,serif !important;}
+body.ag-premium-mode .ag-services-grid-title span,
+body.ag-premium-mode .ag-services-grid-title em,
+body.ag-premium-mode .ag-page-title em{color:#c9a24b !important;}
+body.ag-premium-mode .ag-services-grid-lead,
+body.ag-premium-mode .ag-entry-content,
+body.ag-premium-mode .ag-entry-content p{color:#c9c0a8 !important;}
+
+/* Cartes / bandes sombres avec liseré or */
+body.ag-premium-mode .ag-service-card,
+body.ag-premium-mode .ag-howit-card,
+body.ag-premium-mode .ag-testi-card,
+body.ag-premium-mode .ag-faq-item,
+body.ag-premium-mode .ag-card{
+	background:#1c1813 !important;border:1px solid rgba(201,162,75,.22) !important;color:#ece4d2 !important;
+}
+body.ag-premium-mode .ag-service-card:hover{border-color:#c9a24b !important;box-shadow:0 16px 40px rgba(0,0,0,.5) !important;}
+body.ag-premium-mode .ag-howit-wrap,
+body.ag-premium-mode .ag-testi-wrap,
+body.ag-premium-mode .ag-faq-wrap{background:#16130d !important;}
+body.ag-premium-mode .ag-service-card__title,
+body.ag-premium-mode .ag-howit-card h3,
+body.ag-premium-mode .ag-testi-text{color:#ece4d2 !important;}
+body.ag-premium-mode .ag-service-card__icon,
+body.ag-premium-mode .ag-howit-emoji{filter:none;}
+
+/* Page-hero interne (prestations, etc.) sombre */
+body.ag-premium-mode .ag-page-hero{background:#16130d !important;}
+body.ag-premium-mode .ag-page-tag{background:#c9a24b !important;color:#13110c !important;}
+
+/* Boutons or */
+body.ag-premium-mode .ag-btn-pro,
+body.ag-premium-mode .ag-btn{background:#c9a24b !important;color:#13110c !important;border-color:#c9a24b !important;}
+body.ag-premium-mode .ag-btn-pro:hover,
+body.ag-premium-mode .ag-btn:hover{filter:brightness(1.08);}
+
+/* ── FIX : titre des pages simples (ex. Réservation) caché sous le header
+   fixe. Le premium-mode met padding-top:0 sur #ag-main ; on le rétablit
+   uniquement pour les pages "plates" (sans hero), via .ag-plain-page. ── */
+body.ag-premium-mode.page:not(.home) #ag-main.ag-plain-page{padding-top:120px !important;}
+body.admin-bar.ag-premium-mode.page:not(.home) #ag-main.ag-plain-page{padding-top:150px !important;}
+@media (max-width:782px){
+	body.admin-bar.ag-premium-mode.page:not(.home) #ag-main.ag-plain-page{padding-top:140px !important;}
+}

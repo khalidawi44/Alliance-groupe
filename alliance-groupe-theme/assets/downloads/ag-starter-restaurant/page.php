@@ -8,7 +8,7 @@
 get_header();
 ?>
 
-<main id="ag-main" class="ag-main" role="main">
+<main id="ag-main" class="ag-main ag-plain-page" role="main">
 	<div class="ag-container">
 
 		<?php

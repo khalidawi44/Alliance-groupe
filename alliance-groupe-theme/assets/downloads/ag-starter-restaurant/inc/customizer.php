@@ -21,14 +21,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function ag_starter_restaurant_customizer_defaults() {
 	return array(
-		// Colors (palette claire chaleureuse restaurant).
-		'ag_color_accent'       => '#b8860b',
-		'ag_color_background'   => '#ffffff',
-		'ag_color_panel'        => '#faf7f1',
-		'ag_color_border'       => '#e7e2d8',
-		'ag_color_text'         => '#2b2b2b',
-		'ag_color_heading'      => '#1a1a1a',
-		'ag_color_muted'        => '#6b6b6b',
+		// Colors (palette sombre & or — style Versailles).
+		'ag_color_accent'       => '#c9a24b',
+		'ag_color_background'   => '#13110c',
+		'ag_color_panel'        => '#1c1813',
+		'ag_color_border'       => '#3a2f1e',
+		'ag_color_text'         => '#ece4d2',
+		'ag_color_heading'      => '#f3ead4',
+		'ag_color_muted'        => '#b3a88c',
 		// Typography.
 		'ag_font_family'        => 'system',
 		'ag_font_base_size'     => 16,
