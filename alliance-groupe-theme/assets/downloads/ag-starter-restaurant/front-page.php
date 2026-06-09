@@ -23,7 +23,7 @@ $ag_hero_image = ag_restaurant_opt( 'ag_restaurant_hero_image', '' );
 // Zone editable WP : contenu de la page "accueil" Gutenberg
 if ( have_posts() ) : while ( have_posts() ) : the_post();
     if ( trim( get_the_content() ) ) :
-        echo "<section class=\"ag-custom-content\" style=\"padding:50px 24px;background:#fff;\"><div style=\"max-width:1180px;margin:0 auto;\">";
+        echo "<section class=\"ag-custom-content\" style=\"max-width:1180px;margin:0 auto;padding:0 24px;\"><div>";
         the_content();
         echo "</div></section>";
     endif;

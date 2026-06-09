@@ -328,6 +328,30 @@ class AG_Restaurant_Presets {
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ), 22 );
 		add_action( 'admin_post_ag_restaurant_apply_preset', array( __CLASS__, 'handle_apply' ) );
+		// Rend la home immersive des l'activation : applique le preset par
+		// defaut « traditionnel » si aucun type de restaurant n'est encore choisi.
+		add_action( 'after_setup_theme', array( __CLASS__, 'maybe_apply_default' ) );
+	}
+
+	/**
+	 * Applique une fois le preset par defaut (hero photo + grille de
+	 * specialites) si l'utilisateur n'a pas encore choisi de type de
+	 * restaurant. N'ecrase pas les pages WP, seulement les reglages d'aspect.
+	 */
+	public static function maybe_apply_default() {
+		if ( get_theme_mod( 'ag_restaurant_metier_slug', '' ) ) return;
+		if ( get_option( 'ag_restaurant_default_applied' ) ) return;
+
+		$presets = self::get_presets();
+		if ( empty( $presets['traditionnel'] ) ) return;
+		$preset = $presets['traditionnel'];
+
+		foreach ( $preset['mods'] as $key => $val ) {
+			set_theme_mod( $key, $val );
+		}
+		set_theme_mod( 'ag_restaurant_metier_slug', 'traditionnel' );
+		set_theme_mod( 'ag_restaurant_services_json', wp_json_encode( $preset['services'] ) );
+		update_option( 'ag_restaurant_default_applied', 1 );
 	}
 
 	public static function register_menu() {
