@@ -32,7 +32,7 @@ body.ag-bb-active .ag-hero {
     min-height: 92vh;
     background:
         linear-gradient(180deg, rgba(7, 9, 12, .55) 0%, rgba(7, 9, 12, .80) 60%, rgba(7, 9, 12, .96) 100%),
-        url('https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=2000&q=85') center/cover no-repeat fixed;
+        url('https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=2000&q=85') center/cover no-repeat scroll;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -94,22 +94,28 @@ body.ag-bb-active .ag-hero__sub {
 body.ag-bb-active .ag-hero__price {
     display: inline-flex;
     align-items: baseline;
-    gap: 14px;
-    border: 0 !important;
-    padding: 0 !important;
-    margin: 6px 0 30px !important;
+    gap: 18px;
+    border: 1px solid rgba(26, 139, 255, .40) !important;
+    background: rgba(7, 9, 12, .42) !important;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    border-radius: 14px;
+    padding: 22px 44px !important;
+    margin: 14px 0 36px !important;
+    box-shadow: 0 10px 34px rgba(0, 0, 0, .35), 0 0 28px rgba(26, 139, 255, .18);
 }
 body.ag-bb-active .ag-hero__price strong {
     font-family: "Bebas Neue", Impact, sans-serif !important;
     color: var(--bb-accent) !important;
-    font-size: 2.4rem !important;
+    font-size: 3.6rem !important;
     letter-spacing: 2px;
-    text-shadow: 0 0 10px var(--bb-accent-glow);
+    text-shadow: 0 0 14px var(--bb-accent-glow);
 }
 body.ag-bb-active .ag-hero__price span {
     font-family: "Cormorant Garamond", serif !important;
     font-style: italic;
     color: var(--bb-text) !important;
+    font-size: 1.35rem !important;
 }
 
 body.ag-bb-active .ag-hero .ag-btn {

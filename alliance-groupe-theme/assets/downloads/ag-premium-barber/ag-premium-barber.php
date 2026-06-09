@@ -3,7 +3,7 @@
  * Plugin Name:       AG Premium Barber
  * Plugin URI:        https://alliancegroupe-inc.com
  * Description:       Pack Premium pour le thème AG Starter Barber. Apporte les enrichissements design (typo industrielle, palette charbon/rouge sang/or laiton, hero plein image, service cards stylées) sans les sections supplémentaires Business. Active si tier === premium OU business.
- * Version:           0.5.1
+ * Version:           0.5.2
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Alliance Groupe
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_PREMIUM_BARBER_VERSION', '0.5.1' );
+define( 'AG_PREMIUM_BARBER_VERSION', '0.5.2' );
 define( 'AG_PREMIUM_BARBER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AG_PREMIUM_BARBER_URL', plugin_dir_url( __FILE__ ) );
 

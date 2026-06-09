@@ -31,7 +31,7 @@ body.ag-bb-active .ag-hero {
     min-height: 92vh;
     background:
         linear-gradient(180deg, rgba(7, 9, 12, .55) 0%, rgba(7, 9, 12, .80) 60%, rgba(7, 9, 12, .96) 100%),
-        url('https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=2000&q=85') center/cover no-repeat fixed;
+        url('https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=2000&q=85') center/cover no-repeat scroll;
     display: flex;
     align-items: center;
     justify-content: center;
