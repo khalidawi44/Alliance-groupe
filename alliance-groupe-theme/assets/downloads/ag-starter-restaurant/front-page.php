@@ -1,11 +1,24 @@
-<?php
+﻿<?php
 /**
- * Front page template — static landing page for the restaurant.
+ * Front page template — static landing page for the restaurant business.
+ *
+ * Si un preset metier est applique (Apparence > 🎯 Configuration metier),
+ * affiche le rendu "premium" style meilleur-restaurant.com : hero photo,
+ * grille services 4x2, comment ca marche, temoignages, FAQ.
+ * Sinon : fallback sur le rendu historique 3 cards + section about.
  *
  * @package AG_Starter_Restaurant
  */
 
 get_header();
+
+$ag_has_preset = class_exists( 'AG_Restaurant_Presets' ) && AG_Restaurant_Presets::get_active_preset();
+$ag_services   = $ag_has_preset ? AG_Restaurant_Presets::get_active_services() : array();
+$ag_how        = $ag_has_preset ? AG_Restaurant_Presets::get_active_how() : array();
+$ag_faq        = $ag_has_preset ? AG_Restaurant_Presets::get_active_faq() : array();
+$ag_stats      = $ag_has_preset ? AG_Restaurant_Presets::get_active_stats() : array();
+$ag_metier_nom = ag_restaurant_opt( 'ag_restaurant_metier_nom', '' );
+$ag_hero_image = ag_restaurant_opt( 'ag_restaurant_hero_image', '' );
 
 // Zone editable WP : contenu de la page "accueil" Gutenberg
 if ( have_posts() ) : while ( have_posts() ) : the_post();
@@ -16,110 +29,200 @@ if ( have_posts() ) : while ( have_posts() ) : the_post();
     endif;
 endwhile; rewind_posts(); endif; ?>
 
-<main id="ag-main" class="ag-main" role="main">
+<main id="ag-main" class="<?php echo $ag_has_preset ? 'ag-main ag-main--premium' : 'ag-main'; ?>" role="main">
 
 	<?php if ( ag_starter_restaurant_get_option( 'ag_hero_show' ) ) : ?>
-	<section class="ag-hero">
-		<div class="ag-container">
-			<h1 class="ag-hero__title">
-				<?php echo esc_html( ag_starter_restaurant_get_option( 'ag_hero_prefix' ) ); ?>
-				<span><?php echo esc_html( ag_starter_restaurant_get_option( 'ag_hero_brand' ) ); ?></span>
-			</h1>
-			<p class="ag-hero__subtitle">
-				<?php echo esc_html( ag_starter_restaurant_get_option( 'ag_hero_subtitle' ) ); ?>
-			</p>
-			<?php
-			$ag_btn_label = ag_starter_restaurant_get_option( 'ag_hero_button' );
-			$ag_btn_url   = ag_starter_restaurant_get_option( 'ag_hero_button_url' );
-			if ( $ag_btn_label ) :
-				?>
-				<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn"><?php echo esc_html( $ag_btn_label ); ?></a>
-			<?php endif; ?>
-		</div>
-	</section>
+	<?php if ( $ag_has_preset && $ag_hero_image ) : ?>
+		<!-- Hero photo lifestyle style meilleur-restaurant.com -->
+		<section class="ag-hero-pro" style="background-image:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.55)),url('<?php echo esc_url( $ag_hero_image ); ?>');">
+			<div class="ag-container">
+				<h1 class="ag-hero-pro__title">
+					<?php echo esc_html( ag_starter_restaurant_get_option( 'ag_hero_prefix' ) ); ?>
+					<em><?php echo esc_html( ag_starter_restaurant_get_option( 'ag_hero_brand' ) ); ?></em>
+				</h1>
+				<p class="ag-hero-pro__subtitle">
+					<?php echo esc_html( ag_starter_restaurant_get_option( 'ag_hero_subtitle' ) ); ?>
+				</p>
+				<?php
+				$ag_btn_label = ag_starter_restaurant_get_option( 'ag_hero_button' );
+				$ag_btn_url   = ag_starter_restaurant_get_option( 'ag_hero_button_url' );
+				if ( $ag_btn_label ) : ?>
+					<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn-pro"><?php echo esc_html( $ag_btn_label ); ?></a>
+				<?php endif; ?>
+
+				<?php if ( ! empty( $ag_stats ) ) : ?>
+					<div class="ag-hero-stats">
+						<?php foreach ( $ag_stats as $stat ) : ?>
+							<div class="ag-hero-stat">
+								<span class="ag-hero-stat__value"><?php echo esc_html( $stat['value'] ); ?></span>
+								<span class="ag-hero-stat__label"><?php echo esc_html( $stat['label'] ); ?></span>
+							</div>
+						<?php endforeach; ?>
+					</div>
+				<?php endif; ?>
+			</div>
+		</section>
+	<?php else : ?>
+		<!-- Hero historique (back-compat) -->
+		<section class="ag-hero">
+			<div class="ag-container">
+				<h1 class="ag-hero__title">
+					<?php echo esc_html( ag_starter_restaurant_get_option( 'ag_hero_prefix' ) ); ?>
+					<span><?php echo esc_html( ag_starter_restaurant_get_option( 'ag_hero_brand' ) ); ?></span>
+				</h1>
+				<p class="ag-hero__subtitle">
+					<?php echo esc_html( ag_starter_restaurant_get_option( 'ag_hero_subtitle' ) ); ?>
+				</p>
+				<?php
+				$ag_btn_label = ag_starter_restaurant_get_option( 'ag_hero_button' );
+				$ag_btn_url   = ag_starter_restaurant_get_option( 'ag_hero_button_url' );
+				if ( $ag_btn_label ) : ?>
+					<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn"><?php echo esc_html( $ag_btn_label ); ?></a>
+				<?php endif; ?>
+			</div>
+		</section>
+	<?php endif; ?>
 	<?php endif; ?>
 
-	<?php
-	// Fallback titres (concatenation pre + em du Customizer pour preserver
-	// le mot italique d'origine si la page n'existe pas).
-	$carte_fb_title = trim( ag_resto_opt( 'ag_resto_carte_title_pre', 'Notre' ) . ' ' . ag_resto_opt( 'ag_resto_carte_title_em', 'carte' ) );
-	list( $carte_title, $carte_lead ) = ag_resto_page_section_text( 'carte', $carte_fb_title, ag_resto_opt( 'ag_resto_carte_lead', 'Entrees, plats et desserts prepares chaque jour avec des produits locaux. Menu du midi a 18 euros, formule du soir a 32 euros.' ) );
-
-	$reserv_fb_title = trim( ag_resto_opt( 'ag_resto_reservation_title_pre', '' ) . ' ' . ag_resto_opt( 'ag_resto_reservation_title_em', 'Reservation' ) );
-	list( $reserv_title, $reserv_lead ) = ag_resto_page_section_text( 'reservation', $reserv_fb_title, ag_resto_opt( 'ag_resto_reservation_lead', 'Reservez votre table en ligne ou par telephone au 01 23 45 67 89. Groupes jusqu\'a 20 personnes.' ) );
-
-	$priv_fb_title = trim( ag_resto_opt( 'ag_resto_privatisation_title_pre', '' ) . ' ' . ag_resto_opt( 'ag_resto_privatisation_title_em', 'Privatisation' ) );
-	list( $priv_title, $priv_lead ) = ag_resto_page_section_text( 'privatisation', $priv_fb_title, ag_resto_opt( 'ag_resto_privatisation_lead', 'Organisez vos evenements professionnels ou familiaux dans un cadre elegant. Devis gratuit sur demande.' ) );
-	?>
-	<section class="ag-container" id="ag-carte">
-		<div class="ag-cards">
-			<div class="ag-card">
-				<h2><?php echo ag_resto_render_split_title( $carte_title ); ?></h2>
-				<p><?php echo esc_html( $carte_lead ); ?></p>
+	<?php if ( ! empty( $ag_services ) ) : ?>
+		<!-- Grille services 4x2 style meilleur-restaurant.com -->
+		<section class="ag-container ag-services-grid-wrap" id="ag-services">
+			<div class="ag-services-grid-header ag-anim">
+				<h2 class="ag-services-grid-title">Nos <span>spécialités</span></h2>
+				<p class="ag-services-grid-lead">
+					<?php if ( $ag_metier_nom ) : ?>
+						Tout ce que propose votre <?php echo esc_html( strtolower( $ag_metier_nom ) ); ?> en un coup d'œil.
+					<?php else : ?>
+						Une carte généreuse, des produits frais, et tout ce qu'il faut pour passer un bon moment.
+					<?php endif; ?>
+				</p>
 			</div>
-			<div class="ag-card">
-				<h2><?php echo ag_resto_render_split_title( $reserv_title ); ?></h2>
-				<p><?php echo esc_html( $reserv_lead ); ?></p>
-			</div>
-			<div class="ag-card">
-				<h2><?php echo ag_resto_render_split_title( $priv_title ); ?></h2>
-				<p><?php echo esc_html( $priv_lead ); ?></p>
-			</div>
-		</div>
-	</section>
-
-	<?php
-	$hist_fb_title = trim( ag_resto_opt( 'ag_resto_histoire_title_pre', 'Notre' ) . ' ' . ag_resto_opt( 'ag_resto_histoire_title_em', 'histoire' ) );
-	list( $hist_title, $hist_lead ) = ag_resto_page_section_text( 'histoire', $hist_fb_title, ag_resto_opt( 'ag_resto_histoire_p1', 'Depuis 2010, notre equipe passionnee vous accueille dans un cadre chaleureux pour vous faire decouvrir une cuisine authentique inspiree du terroir. Chaque plat est prepare avec soin, a partir de produits selectionnes aupres de producteurs locaux.' ) );
-	?>
-	<section class="ag-info">
-		<div class="ag-container">
-			<h2><?php echo ag_resto_render_split_title( $hist_title ); ?></h2>
-			<p><?php echo esc_html( $hist_lead ); ?></p>
-			<p><?php echo esc_html( ag_resto_opt( 'ag_resto_histoire_p2', 'Notre chef compose chaque semaine une carte renouvelee au rythme des saisons. Une cuisine genereuse, des saveurs franches et une ambiance conviviale : voila ce qui fait la difference depuis plus de dix ans.' ) ); ?></p>
-		</div>
-	</section>
-
-	<?php
-	// Show recent posts if there are any (e.g. news, events).
-	$recent_posts = new WP_Query(
-		array(
-			'post_type'      => 'post',
-			'posts_per_page' => 3,
-			'ignore_sticky_posts' => true,
-		)
-	);
-
-	if ( $recent_posts->have_posts() ) :
-		$actu_fb_title = trim( ag_resto_opt( 'ag_resto_actu_title_pre', 'Actualites' ) . ' ' . ag_resto_opt( 'ag_resto_actu_title_em', 'du restaurant' ) );
-		list( $actu_title, $actu_lead ) = ag_resto_page_section_text( 'actualites', $actu_fb_title );
-		?>
-		<section class="ag-container ag-main">
-			<h2 class="ag-entry-title"><?php echo ag_resto_render_split_title( $actu_title ); ?></h2>
-			<?php if ( $actu_lead ) : ?>
-				<p class="ag-section-lead"><?php echo esc_html( $actu_lead ); ?></p>
-			<?php endif; ?>
-			<?php
-			while ( $recent_posts->have_posts() ) :
-				$recent_posts->the_post();
+			<div class="ag-services-grid">
+				<?php foreach ( $ag_services as $svc ) :
+					// Chaque service est cliquable. URL : 'url' du service si defini,
+					// sinon page Devis avec le slug service pre-rempli en query string.
+					$svc_url = ! empty( $svc['url'] ) ? $svc['url'] : '';
+					if ( ! $svc_url ) {
+						$devis_page = get_page_by_path( 'devis' );
+						$svc_url    = $devis_page ? get_permalink( $devis_page ) : home_url( '/devis/' );
+						$svc_url    = add_query_arg( 'service', sanitize_title( $svc['title'] ), $svc_url );
+					}
 				?>
-				<article <?php post_class(); ?>>
-					<h3 class="ag-entry-title">
-						<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-					</h3>
-					<div class="ag-entry-meta">
-						<?php echo esc_html( get_the_date() ); ?>
-					</div>
-					<div class="ag-entry-content">
-						<?php the_excerpt(); ?>
-					</div>
-				</article>
-			<?php endwhile; ?>
+					<a class="ag-service-card ag-anim" href="<?php echo esc_url( $svc_url ); ?>">
+						<div class="ag-service-card__icon"><?php echo esc_html( isset( $svc['emoji'] ) ? $svc['emoji'] : '🔧' ); ?></div>
+						<h3 class="ag-service-card__title"><?php echo esc_html( isset( $svc['title'] ) ? $svc['title'] : '' ); ?></h3>
+						</a>
+				<?php endforeach; ?>
+			</div>
 		</section>
+	<?php else : ?>
 		<?php
-		wp_reset_postdata();
-	endif;
-	?>
+		// Fallback historique : 3 cards textes depuis les pages WP
+		$prest_fb_title = trim( ag_restaurant_opt( 'ag_restaurant_prestations_title_pre', 'Nos' ) . ' ' . ag_restaurant_opt( 'ag_restaurant_prestations_title_em', 'prestations' ) );
+		list( $prest_title, $prest_lead ) = ag_restaurant_page_section_text( 'prestations', $prest_fb_title, ag_restaurant_opt( 'ag_restaurant_prestations_lead', '' ) );
+		$zones_fb_title = trim( ag_restaurant_opt( 'ag_restaurant_zones_title_pre', 'Zones' ) . ' ' . ag_restaurant_opt( 'ag_restaurant_zones_title_em', 'd\'intervention' ) );
+		list( $zones_title, $zones_lead ) = ag_restaurant_page_section_text( 'zones-intervention', $zones_fb_title, ag_restaurant_opt( 'ag_restaurant_zones_lead', '' ) );
+		$real_fb_title = trim( ag_restaurant_opt( 'ag_restaurant_realisations_title_pre', 'Nos' ) . ' ' . ag_restaurant_opt( 'ag_restaurant_realisations_title_em', 'realisations' ) );
+		list( $real_title, $real_lead ) = ag_restaurant_page_section_text( 'realisations', $real_fb_title, ag_restaurant_opt( 'ag_restaurant_realisations_lead', '' ) );
+		?>
+		<section class="ag-container" id="ag-services">
+			<div class="ag-cards">
+				<div class="ag-card">
+					<h2><?php echo ag_restaurant_render_split_title( $prest_title ); ?></h2>
+					<p><?php echo esc_html( $prest_lead ); ?></p>
+				</div>
+				<div class="ag-card">
+					<h2><?php echo ag_restaurant_render_split_title( $zones_title ); ?></h2>
+					<p><?php echo esc_html( $zones_lead ); ?></p>
+				</div>
+				<div class="ag-card">
+					<h2><?php echo ag_restaurant_render_split_title( $real_title ); ?></h2>
+					<p><?php echo esc_html( $real_lead ); ?></p>
+				</div>
+			</div>
+		</section>
+	<?php endif; ?>
+
+	<?php if ( ! empty( $ag_how ) ) : ?>
+		<!-- Comment ça marche : 3 étapes -->
+		<section class="ag-howit-wrap">
+			<div class="ag-container">
+				<div class="ag-services-grid-header ag-anim">
+					<h2 class="ag-services-grid-title">Comment ça <span>marche</span> ?</h2>
+					<p class="ag-services-grid-lead">3 étapes pour réserver et vous régaler.</p>
+				</div>
+				<div class="ag-howit-grid">
+					<?php foreach ( $ag_how as $i => $step ) : ?>
+						<div class="ag-howit-card ag-anim">
+							<div class="ag-howit-num"><?php echo (int) ( $i + 1 ); ?></div>
+							<div class="ag-howit-emoji"><?php echo esc_html( $step['emoji'] ); ?></div>
+							<h3 class="ag-howit-title"><?php echo esc_html( $step['title'] ); ?></h3>
+							<p class="ag-howit-desc"><?php echo esc_html( $step['desc'] ); ?></p>
+						</div>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		</section>
+	<?php endif; ?>
+
+	<?php if ( $ag_has_preset ) :
+		$t1 = AG_Restaurant_Presets::get_testimonial( 1 );
+		$t2 = AG_Restaurant_Presets::get_testimonial( 2 );
+		$t3 = AG_Restaurant_Presets::get_testimonial( 3 );
+		if ( $t1 || $t2 || $t3 ) : ?>
+		<!-- Témoignages clients -->
+		<section class="ag-testi-wrap">
+			<div class="ag-container">
+				<div class="ag-services-grid-header ag-anim">
+					<h2 class="ag-services-grid-title">Ils nous font <span>confiance</span></h2>
+					<p class="ag-services-grid-lead">⭐⭐⭐⭐⭐ Plus de 200 avis clients vérifiés.</p>
+				</div>
+				<div class="ag-testi-grid">
+					<?php foreach ( array( $t1, $t2, $t3 ) as $t ) :
+						if ( ! $t ) continue; ?>
+						<div class="ag-testi-card ag-anim">
+							<div class="ag-testi-stars">★★★★★</div>
+							<p class="ag-testi-text">« <?php echo esc_html( $t['text'] ); ?> »</p>
+							<p class="ag-testi-author"><strong><?php echo esc_html( $t['name'] ); ?></strong><?php if ( $t['city'] ) : ?> · <?php echo esc_html( $t['city'] ); ?><?php endif; ?></p>
+						</div>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		</section>
+	<?php endif; endif; ?>
+
+	<?php if ( ! empty( $ag_faq ) ) : ?>
+		<!-- FAQ accordéon -->
+		<section class="ag-faq-wrap">
+			<div class="ag-container ag-faq-container">
+				<div class="ag-services-grid-header ag-anim">
+					<h2 class="ag-services-grid-title">Questions <span>fréquentes</span></h2>
+				</div>
+				<div class="ag-faq-list">
+					<?php foreach ( $ag_faq as $item ) : ?>
+						<details class="ag-faq-item ag-anim">
+							<summary class="ag-faq-q"><?php echo esc_html( $item['q'] ); ?></summary>
+							<div class="ag-faq-a"><?php echo esc_html( $item['a'] ); ?></div>
+						</details>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		</section>
+	<?php endif; ?>
+
+	<?php if ( ! $ag_has_preset ) :
+		// Section "à propos" historique conservée uniquement en mode legacy
+		$about_fb_title = trim( ag_restaurant_opt( 'ag_restaurant_about_title_pre', 'Qui' ) . ' ' . ag_restaurant_opt( 'ag_restaurant_about_title_em', 'sommes-nous' ) );
+		list( $about_title, $about_lead ) = ag_restaurant_page_section_text( 'qui-sommes-nous', $about_fb_title, ag_restaurant_opt( 'ag_restaurant_about_p1', '' ) );
+		?>
+		<section class="ag-info">
+			<div class="ag-container">
+				<h2><?php echo ag_restaurant_render_split_title( $about_title ); ?></h2>
+				<p><?php echo esc_html( $about_lead ); ?></p>
+				<p><?php echo esc_html( ag_restaurant_opt( 'ag_restaurant_about_p2', '' ) ); ?></p>
+			</div>
+		</section>
+	<?php endif; ?>
 
 </main>
 
