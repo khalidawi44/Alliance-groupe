@@ -167,26 +167,14 @@ h1,h2,h3,h4,.ag-hero__title,.ag-section-title,.ag-domaine-card h3,.ag-honoraires
             return;
         }
 
-        // FREE: big animated promo
+        // FREE: credit discret (plus de gros encart publicitaire).
         ?>
-        <div style="background:#060606;border-top:2px solid #D4B45C;padding:48px 24px;text-align:center;">
-            <div style="max-width:400px;margin:0 auto;padding:40px 28px;background:linear-gradient(180deg,rgba(212,180,92,.08) 0%,#0a0a0f 100%);border:1px solid rgba(212,180,92,.35);border-radius:20px;overflow:hidden;animation:agPromoGlow 3s ease-in-out infinite;">
-                <style>
-                @keyframes agPromoGlow{0%,100%{box-shadow:0 0 30px rgba(212,180,92,.1)}50%{box-shadow:0 0 50px rgba(212,180,92,.25)}}
-                @keyframes agFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-                .ag-premiummo-emoji{display:inline-block;animation:agFloat 2s ease-in-out infinite;font-size:1.6rem;}
-                .ag-premiummo-emoji:nth-child(2){animation-delay:.3s}
-                .ag-premiummo-emoji:nth-child(3){animation-delay:.6s}
-                </style>
-                <div style="margin-bottom:16px;"><span class="ag-premiummo-emoji">🚀</span> <span class="ag-premiummo-emoji">⭐</span> <span class="ag-premiummo-emoji">💎</span></div>
-                <img src="https://alliancegroupe-inc.com/wp-content/uploads/2026/04/logo_site_alliance.jpg" alt="Alliance Groupe" style="height:56px;border-radius:10px;margin-bottom:16px;">
-                <h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#fff;margin:0 0 8px;font-style:italic;">Alliance Groupe</h3>
-                <p style="color:#D4B45C;font-size:.88rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin:0 0 12px;">Agence Web & IA</p>
-                <p style="color:rgba(255,255,255,.7);font-size:.92rem;line-height:1.6;margin:0 0 24px;">Ce thème gratuit est offert par Alliance Groupe.<br>Créez votre site professionnel en 5 minutes.</p>
-                <a href="<?php echo esc_url( $url_templates ); ?>" target="_blank" rel="noopener" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-weight:700;padding:14px 32px;border-radius:10px;text-decoration:none;font-size:1rem;">Découvrir nos templates →</a>
-                <p style="color:rgba(255,255,255,.3);font-size:.72rem;margin:16px 0 0;">Passez au Pack Premium pour réduire cette publicité</p>
-            </div>
-            <p style="color:rgba(255,255,255,.25);font-size:.72rem;margin:20px 0 0;">&copy; <?php echo date('Y'); ?> <?php bloginfo('name'); ?> — <a href="<?php echo esc_url( $url_home ); ?>" target="_blank" rel="noopener nofollow" style="color:rgba(255,255,255,.25);">Alliance Groupe</a></p>
+        <div style="background:#060606;border-top:1px solid rgba(212,180,92,.25);padding:18px 24px;text-align:center;">
+            <p style="color:rgba(255,255,255,.45);font-size:.8rem;margin:0;line-height:1.6;">
+                &copy; <?php echo date( 'Y' ); ?> <?php bloginfo( 'name' ); ?>
+                · <a href="<?php echo esc_url( $url_home ); ?>" target="_blank" rel="noopener nofollow" style="color:#D4B45C;text-decoration:none;">Création du site : Alliance Groupe</a>
+                · <a href="<?php echo esc_url( $url_templates ); ?>" target="_blank" rel="noopener" style="color:rgba(255,255,255,.45);text-decoration:underline;">nos templates</a>
+            </p>
         </div>
         <?php
     }

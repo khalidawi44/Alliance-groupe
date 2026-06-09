@@ -277,6 +277,7 @@ require_once get_template_directory() . '/inc/reset.php';
 // macon, boulanger, multiservices, generaliste). Pilote la grille
 // services 4x2 affichee sur la page d'accueil.
 require_once get_template_directory() . '/inc/presets.php';
+require_once get_template_directory() . '/inc/reservation.php';
 
 // Systeme de devis : page /devis/ avec formulaire dynamique + fourchette
 // de prix par metier x service + multiplicateur regional. Demandes

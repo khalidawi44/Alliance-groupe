@@ -1,0 +1,149 @@
+<?php
+/**
+ * Reservation de table — formulaire + capture de lead.
+ *
+ * - Shortcode [ag_restaurant_reservation]
+ * - Injecte automatiquement le formulaire sur la page de slug "reservation"
+ *   (le bouton "Reserver une table" du hero pointe vers /reservation/).
+ * - A la soumission : cree un lead (CPT ag_devis_lead, partage avec le devis),
+ *   notifie l'admin par email, et affiche une confirmation.
+ *
+ * @package AG_Starter_Restaurant
+ */
+
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+class AG_Restaurant_Reservation {
+
+	public static function init() {
+		add_shortcode( 'ag_restaurant_reservation', array( __CLASS__, 'render_form' ) );
+		add_action( 'admin_post_nopriv_ag_restaurant_reservation_submit', array( __CLASS__, 'handle_submit' ) );
+		add_action( 'admin_post_ag_restaurant_reservation_submit', array( __CLASS__, 'handle_submit' ) );
+		// Injecte le formulaire sur la page "reservation" sans avoir a editer
+		// son contenu (fonctionne quel que soit le template de la page).
+		add_filter( 'the_content', array( __CLASS__, 'maybe_append_form' ) );
+	}
+
+	public static function maybe_append_form( $content ) {
+		if ( is_admin() || ! is_page() || ! in_the_loop() || ! is_main_query() ) {
+			return $content;
+		}
+		$post = get_post();
+		if ( ! $post || 'reservation' !== $post->post_name ) {
+			return $content;
+		}
+		// Evite le doublon si le shortcode est deja present dans la page.
+		if ( false !== strpos( $content, 'ag-resa-form' ) ) {
+			return $content;
+		}
+		return $content . self::render_form();
+	}
+
+	public static function render_form() {
+		$accent  = get_theme_mod( 'ag_color_accent', '#B8860B' );
+		$success = isset( $_GET['reserved'] ) && '1' === $_GET['reserved'];
+		$name    = get_theme_mod( 'ag_hero_brand', '' );
+
+		ob_start();
+		?>
+		<section class="ag-resa-wrap" style="max-width:680px;margin:40px auto;padding:0 20px;">
+			<?php if ( $success ) : ?>
+				<div class="ag-resa-success" style="background:rgba(40,167,69,.12);border:1px solid #28a745;border-radius:12px;padding:28px;text-align:center;">
+					<div style="font-size:2.2rem;margin-bottom:8px;">✅</div>
+					<h2 style="margin:0 0 8px;">Demande de réservation envoyée !</h2>
+					<p style="margin:0;opacity:.85;">Nous revenons vers vous très vite pour confirmer votre table. Merci de votre confiance.</p>
+				</div>
+			<?php else : ?>
+				<div class="ag-resa-card" style="background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.10);border-radius:16px;padding:32px;">
+					<h2 style="margin:0 0 6px;font-size:1.6rem;">Réserver une table<?php echo $name ? ' — ' . esc_html( $name ) : ''; ?></h2>
+					<p style="margin:0 0 22px;opacity:.75;">Indiquez vos préférences, nous vous confirmons votre réservation au plus vite.</p>
+					<form class="ag-resa-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+						<input type="hidden" name="action" value="ag_restaurant_reservation_submit">
+						<?php wp_nonce_field( 'ag_restaurant_reservation' ); ?>
+						<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+							<label style="display:block;">Date *
+								<input type="date" name="resa_date" required style="width:100%;padding:11px;margin-top:5px;border:1px solid #bbb;border-radius:8px;">
+							</label>
+							<label style="display:block;">Heure *
+								<input type="time" name="resa_time" required style="width:100%;padding:11px;margin-top:5px;border:1px solid #bbb;border-radius:8px;">
+							</label>
+							<label style="display:block;">Nombre de personnes *
+								<input type="number" name="resa_guests" min="1" max="50" value="2" required style="width:100%;padding:11px;margin-top:5px;border:1px solid #bbb;border-radius:8px;">
+							</label>
+							<label style="display:block;">Prénom / Nom *
+								<input type="text" name="resa_name" required placeholder="Ex : Karim B." style="width:100%;padding:11px;margin-top:5px;border:1px solid #bbb;border-radius:8px;">
+							</label>
+							<label style="display:block;">Téléphone *
+								<input type="tel" name="resa_phone" required placeholder="06 12 34 56 78" style="width:100%;padding:11px;margin-top:5px;border:1px solid #bbb;border-radius:8px;">
+							</label>
+							<label style="display:block;">Email
+								<input type="email" name="resa_email" placeholder="vous@email.fr" style="width:100%;padding:11px;margin-top:5px;border:1px solid #bbb;border-radius:8px;">
+							</label>
+						</div>
+						<label style="display:block;margin-top:14px;">Message (allergies, occasion, demande spéciale…)
+							<textarea name="resa_message" rows="3" style="width:100%;padding:11px;margin-top:5px;border:1px solid #bbb;border-radius:8px;"></textarea>
+						</label>
+						<button type="submit" style="margin-top:20px;width:100%;background:<?php echo esc_attr( $accent ); ?>;color:#fff;border:0;font-weight:700;font-size:1.05rem;padding:15px;border-radius:10px;cursor:pointer;">
+							Envoyer ma demande de réservation
+						</button>
+						<p style="margin:12px 0 0;text-align:center;font-size:.85rem;opacity:.6;">Réponse rapide — sans engagement.</p>
+					</form>
+				</div>
+			<?php endif; ?>
+		</section>
+		<?php
+		return ob_get_clean();
+	}
+
+	public static function handle_submit() {
+		check_admin_referer( 'ag_restaurant_reservation' );
+
+		$date    = sanitize_text_field( $_POST['resa_date'] ?? '' );
+		$time    = sanitize_text_field( $_POST['resa_time'] ?? '' );
+		$guests  = absint( $_POST['resa_guests'] ?? 0 );
+		$name    = sanitize_text_field( $_POST['resa_name'] ?? '' );
+		$phone   = sanitize_text_field( $_POST['resa_phone'] ?? '' );
+		$email   = sanitize_email( $_POST['resa_email'] ?? '' );
+		$message = sanitize_textarea_field( $_POST['resa_message'] ?? '' );
+
+		$summary = sprintf(
+			"Reservation : %s a %s — %d personne(s)\nNom : %s\nTel : %s\nEmail : %s\nMessage : %s",
+			$date, $time, $guests, $name, $phone, $email, $message
+		);
+
+		// Enregistre comme lead (CPT partage avec le devis si dispo, sinon page).
+		$cpt = post_type_exists( 'ag_devis_lead' ) ? 'ag_devis_lead' : 'page';
+		$lead_id = wp_insert_post( array(
+			'post_type'    => $cpt,
+			'post_status'  => 'private',
+			'post_title'   => 'Réservation — ' . ( $name ?: 'client' ) . ' (' . $date . ' ' . $time . ')',
+			'post_content' => $summary,
+		) );
+		if ( $lead_id && ! is_wp_error( $lead_id ) ) {
+			update_post_meta( $lead_id, '_ag_lead_type', 'reservation' );
+			update_post_meta( $lead_id, '_ag_resa_date', $date );
+			update_post_meta( $lead_id, '_ag_resa_time', $time );
+			update_post_meta( $lead_id, '_ag_resa_guests', $guests );
+			update_post_meta( $lead_id, '_ag_resa_phone', $phone );
+			update_post_meta( $lead_id, '_ag_resa_email', $email );
+		}
+
+		// Notifie l'admin.
+		wp_mail(
+			get_option( 'admin_email' ),
+			'Nouvelle demande de réservation — ' . get_bloginfo( 'name' ),
+			$summary
+		);
+
+		// Push interne si l'infra Alliance est presente (site principal).
+		if ( function_exists( 'ag_push' ) ) {
+			ag_push( "🍽️ Nouvelle réservation\n" . $summary );
+		}
+
+		$page = get_page_by_path( 'reservation' );
+		$url  = $page ? get_permalink( $page->ID ) : home_url( '/reservation/' );
+		wp_safe_redirect( add_query_arg( 'reserved', '1', $url ) );
+		exit;
+	}
+}
+AG_Restaurant_Reservation::init();
