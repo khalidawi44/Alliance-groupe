@@ -148,6 +148,25 @@ if ( file_exists( $ag_licence_paypal_file ) ) {
     require_once $ag_licence_paypal_file;
 }
 
+// ── 1c6c. Créateur de site (« Mon métier n'est pas là ») : formulaire +
+//          paiement Business + génération ZIP personnalisé (base Avocat Business)
+$ag_site_creator_file = get_stylesheet_directory() . '/inc/ag-site-creator.php';
+if ( file_exists( $ag_site_creator_file ) ) {
+    require_once $ag_site_creator_file;
+}
+
+// ── 1c6d. Flux produits Google Merchant Center (templates Premium)
+$ag_merchant_feed_file = get_stylesheet_directory() . '/inc/ag-merchant-feed.php';
+if ( file_exists( $ag_merchant_feed_file ) ) {
+    require_once $ag_merchant_feed_file;
+}
+
+// ── 1c6e. Google Avis clients (badge + opt-in enquête sur /merci-achat)
+$ag_google_reviews_file = get_stylesheet_directory() . '/inc/ag-google-reviews.php';
+if ( file_exists( $ag_google_reviews_file ) ) {
+    require_once $ag_google_reviews_file;
+}
+
 // ── 1c7. Pop-up d'incitation "devenir ambassadeur" (visiteurs non-membres)
 add_action( 'wp_footer', function () {
     if ( is_admin() ) return;
@@ -1308,14 +1327,42 @@ if ( ! function_exists( 'ag_sur_mesure_submit' ) ) {
     }
 }
 
-// ── FOCUS template association : bloque l'accès public aux autres templates
-//    (l'admin garde l'accès pour continuer à les travailler). Réversible :
-//    vider le filtre 'ag_templates_blocked' pour tout réautoriser.
+// ── Galerie d'aperçus par template métier ─────────────────────────────
+//    Lit assets/images/templates/<slug>/*.{jpg,png,webp} (sous-dossier par
+//    métier). Retourne une liste [url,label] triée par nom de fichier.
+//    La 1re image sert d'aperçu sur la carte de la grille Templates.
+if ( ! function_exists( 'ag_template_gallery_images' ) ) {
+    function ag_template_gallery_images( $slug ) {
+        $slug = sanitize_key( $slug );
+        if ( '' === $slug ) return array();
+        $dir = get_stylesheet_directory() . '/assets/images/templates/' . $slug;
+        $url = get_stylesheet_directory_uri() . '/assets/images/templates/' . $slug;
+        if ( ! is_dir( $dir ) ) return array();
+        $files = glob( $dir . '/*.{jpg,jpeg,png,webp,JPG,PNG,WEBP}', GLOB_BRACE );
+        if ( ! $files ) return array();
+        sort( $files ); // ordre alphabétique stable (accueil-* d'abord)
+        $out = array();
+        foreach ( $files as $f ) {
+            $name  = basename( $f );
+            $label = preg_replace( '/\.[a-z]+$/i', '', $name );
+            $label = ucfirst( trim( str_replace( array( '-', '_' ), ' ', $label ) ) );
+            $out[] = array(
+                'url'   => $url . '/' . rawurlencode( $name ),
+                'label' => $label,
+            );
+        }
+        return $out;
+    }
+}
+
+// ── Blocage public optionnel de certaines fiches template.
+//    Par DÉFAUT : aucune fiche bloquée (les 6 fiches sont publiques).
+//    Pour re-bloquer temporairement une fiche en travaux, hook le filtre
+//    'ag_templates_blocked' et retourne ses slugs (ex. 'wordpress-coach').
 add_action( 'template_redirect', function () {
     if ( current_user_can( 'manage_options' ) ) return; // toi (admin) vois tout
-    $blocked = apply_filters( 'ag_templates_blocked', array(
-        'wordpress-avocat', 'wordpress-restaurant', 'wordpress-artisan', 'wordpress-coach', 'wordpress-barber',
-    ) );
+    $blocked = apply_filters( 'ag_templates_blocked', array() );
+    if ( empty( $blocked ) ) return;
     foreach ( $blocked as $slug ) {
         if ( is_page( $slug ) ) { wp_safe_redirect( home_url( '/templates-wordpress' ), 302 ); exit; }
     }

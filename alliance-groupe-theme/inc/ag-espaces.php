@@ -255,7 +255,7 @@ add_filter( 'login_redirect', function ( $redirect, $requested, $user ) {
 
 /* ── 7. Auto-création des pages (une seule fois) ───────────────────── */
 add_action( 'init', function () {
-	if ( get_option( 'ag_espaces_pages_v6' ) ) return;
+	if ( get_option( 'ag_espaces_pages_v7' ) ) return;
 	$pages = array(
 		'connexion'             => array( 'Connexion',            'templates/page-connexion.php' ),
 		'espace-client'         => array( 'Espace Client',        'templates/page-espace-client.php' ),
@@ -265,6 +265,13 @@ add_action( 'init', function () {
 		'studio'                => array( 'Studio',               'templates/page-studio.php' ),
 		'programme-ambassadeur' => array( 'Programme Ambassadeur', 'templates/page-guide-ambassadeur.php' ),
 		'resilience-ransomware' => array( 'Test de résilience ransomware', 'templates/page-resilience-ransomware.php' ),
+		// Fiches détaillées des 6 templates métier (cibles des « Voir la fiche »).
+		'wordpress-avocat'      => array( 'Template WordPress — Avocat',      'templates/page-wordpress-avocat.php' ),
+		'wordpress-restaurant'  => array( 'Template WordPress — Restaurant',  'templates/page-wordpress-restaurant.php' ),
+		'wordpress-artisan'     => array( 'Template WordPress — Artisan',     'templates/page-wordpress-artisan.php' ),
+		'wordpress-coach'       => array( 'Template WordPress — Coach',       'templates/page-wordpress-coach.php' ),
+		'wordpress-barber'      => array( 'Template WordPress — Barber Shop', 'templates/page-wordpress-barber.php' ),
+		'wordpress-association' => array( 'Template WordPress — Association',  'templates/page-wordpress-association.php' ),
 	);
 	foreach ( $pages as $slug => $d ) {
 		if ( get_page_by_path( $slug ) ) continue;

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Front page template — static landing page for the artisan business.
  *
@@ -190,13 +190,6 @@ endwhile; rewind_posts(); endif; ?>
 			</div>
 		</section>
 	<?php endif; endif; ?>
-
-	<?php
-	// Section "Alliance Groupe en vidéo" — visible en mode premium
-	if ( function_exists( 'ag_artisan_render_promo_video' ) ) {
-		ag_artisan_render_promo_video();
-	}
-	?>
 
 	<?php if ( ! empty( $ag_faq ) ) : ?>
 		<!-- FAQ accordéon -->

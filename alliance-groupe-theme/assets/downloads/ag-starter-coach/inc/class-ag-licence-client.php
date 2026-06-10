@@ -88,8 +88,11 @@ class AG_Licence_Client {
      */
     public static function get_tier() {
         if ( ! self::is_pro() ) return 'free';
-        $cache = get_transient( self::OPT_CACHE );
-        return isset( $cache['tier'] ) ? $cache['tier'] : 'premium';
+        // Modele 2 niveaux (Gratuit + Premium) : toute licence valide donne le
+        // niveau Premium unique (interne 'business' = design le plus abouti).
+        // On normalise donc tout tier paye (pro/premium/business) vers 'business'
+        // pour harmoniser cadenas, fonctionnalites et branding sur tous les themes.
+        return 'business';
     }
 
     /**
@@ -113,9 +116,12 @@ class AG_Licence_Client {
             return array( 'success' => false, 'message' => 'Impossible de contacter le serveur de licence.' );
         }
 
-        $body = json_decode( wp_remote_retrieve_body( $resp ), true );
-        if ( empty( $body ) ) {
-            return array( 'success' => false, 'message' => 'Réponse invalide du serveur.' );
+        $code = (int) wp_remote_retrieve_response_code( $resp );
+        $raw  = (string) wp_remote_retrieve_body( $resp );
+        $body = json_decode( $raw, true );
+        if ( empty( $body ) || ! is_array( $body ) ) {
+            $snippet = trim( wp_strip_all_tags( substr( $raw, 0, 140 ) ) );
+            return array( 'success' => false, 'message' => 'Réponse invalide du serveur (HTTP ' . $code . ') : ' . ( '' !== $snippet ? $snippet : 'réponse vide' ) );
         }
 
         if ( ! empty( $body['success'] ) ) {
@@ -212,9 +218,9 @@ class AG_Licence_Client {
             <div style="max-width:600px;margin-top:20px;padding:24px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid <?php echo $is_pro ? '#28a745' : '#D4B45C'; ?>;">
 
                 <?php if ( $is_pro ) : ?>
-                    <h2 style="margin-top:0;color:#28a745;">✅ Licence active — <?php echo esc_html( ucfirst( $tier ) ); ?></h2>
+                    <h2 style="margin-top:0;color:#28a745;">✅ Licence active — Premium</h2>
                     <p>Votre licence est activée pour <strong><?php echo esc_html( self::get_domain() ); ?></strong>.</p>
-                    <p>WordPress vous proposera automatiquement les mises à jour Pro. Allez dans <strong>Apparence → Thèmes</strong> pour vérifier.</p>
+                    <p>WordPress vous proposera automatiquement les mises à jour Premium. Allez dans <strong>Apparence → Thèmes</strong> pour vérifier.</p>
 
                     <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                         <?php wp_nonce_field( 'ag_licence_deactivate' ); ?>
@@ -223,7 +229,7 @@ class AG_Licence_Client {
                     </form>
 
                 <?php else : ?>
-                    <h2 style="margin-top:0;">Activez votre licence Pro</h2>
+                    <h2 style="margin-top:0;">Activez votre licence Premium</h2>
                     <p>Collez votre clé de licence reçue par email après achat. Elle ressemble à : <code>AGPRO-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx</code></p>
 
                     <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -238,7 +244,7 @@ class AG_Licence_Client {
                     <hr>
                     <p>Vous n'avez pas de licence ?
                         <a href="https://alliancegroupe-inc.com/templates-wordpress" target="_blank" rel="noopener" style="color:#D4B45C;font-weight:700;">
-                            Voir les packs Pro →
+                            Voir les packs Premium →
                         </a>
                     </p>
                 <?php endif; ?>

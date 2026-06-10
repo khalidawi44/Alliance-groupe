@@ -134,13 +134,18 @@ body.scrolled-nav .ag-fsm-toggle{ top: 72px !important; }
 body:not(.home) main > .ag-hero,
 body:not(.home) .ag-hero[style*="60vh"]{
     position: relative;
-    min-height: 60vh;
+    min-height: 54vh;
     display: flex;
-    align-items: center;
+    align-items: flex-start;     /* titre EN HAUT (avant : centre -> trop bas) */
     justify-content: center;
     text-align: center;
     overflow: hidden;
     isolation: isolate;
+    padding-top: 118px;          /* passe juste sous le nav fixe */
+}
+@media (max-width: 768px){
+    body:not(.home) main > .ag-hero,
+    body:not(.home) .ag-hero[style*="60vh"]{ padding-top: 96px; min-height: auto; }
 }
 /* Background photo via ::before — chaque page peut override avec --hero-photo */
 body:not(.home) main > .ag-hero::before,
@@ -256,14 +261,14 @@ body:not(.home) main > .ag-section:first-child,
 body.blog main > .ag-section:first-child,
 body.archive main > .ag-section:first-child,
 body.search main > .ag-section:first-child{
-	padding-top: 200px !important;
+	padding-top: 120px !important;
 }
 @media (max-width: 768px){
 	body:not(.home) main > .ag-section:first-child,
 	body.blog main > .ag-section:first-child,
 	body.archive main > .ag-section:first-child,
 	body.search main > .ag-section:first-child{
-		padding-top: 150px !important;
+		padding-top: 96px !important;
 	}
 }
 @media (max-width: 480px){
@@ -271,7 +276,7 @@ body.search main > .ag-section:first-child{
 	body.blog main > .ag-section:first-child,
 	body.archive main > .ag-section:first-child,
 	body.search main > .ag-section:first-child{
-		padding-top: 135px !important;
+		padding-top: 88px !important;
 	}
 }
 

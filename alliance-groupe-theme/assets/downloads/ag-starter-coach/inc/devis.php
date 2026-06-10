@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Systeme de devis avec fourchette de prix par metier + localisation.
  *

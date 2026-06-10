@@ -3,7 +3,7 @@
  * Plugin Name:       AG Starter Companion
  * Plugin URI:        https://alliancegroupe-inc.com/templates-wordpress
  * Description:       Importer un clic pour les themes AG Starter (Restaurant, Artisan, Coach, Avocat). Cree automatiquement les pages, le menu et les reglages pour un site pret a l'emploi.
- * Version:           1.10.0
+ * Version:           1.11.1
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            AGthèmes
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_STARTER_COMPANION_VERSION', '1.10.0' );
+define( 'AG_STARTER_COMPANION_VERSION', '1.11.1' );
 define( 'AG_STARTER_COMPANION_FILE', __FILE__ );
 
 /**
@@ -43,6 +43,12 @@ class AG_Starter_Companion {
 		add_action( 'wp_dashboard_setup', array( $this, 'upgrade_dashboard_widget' ) );
 		add_action( 'customize_register', array( $this, 'upgrade_customizer_section' ), 99 );
 		add_action( 'admin_footer', array( $this, 'upgrade_footer_nudge' ) );
+
+		// Personnalisation Premium (Alliance) : image de hero modifiable + effets
+		// visuels premium, communs a tous les themes AG Starter.
+		add_action( 'customize_register', array( $this, 'premium_personalization_register' ), 100 );
+		add_action( 'wp_head', array( $this, 'premium_personalization_css' ), 99 );
+		add_action( 'wp_footer', array( $this, 'premium_personalization_js' ), 99 );
 
 		// Self-updater: check for new versions of this plugin
 		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_self_update' ) );
@@ -942,7 +948,7 @@ class AG_Starter_Companion {
 				. '<li>Un encart apparaît dans le tableau de bord pour importer le contenu demo en 1 clic</li>'
 				. '</ol>',
 			'faq'         => '<h4>Le plugin est-il gratuit ?</h4>'
-				. '<p>Oui, 100% gratuit. Les packs Premium/Business sont des options payantes facultatives.</p>'
+				. '<p>Oui, 100% gratuit. Le Premium est une option payante facultative.</p>'
 				. '<h4>Fonctionne-t-il avec tous les thèmes AG Starter ?</h4>'
 				. '<p>Oui : Restaurant, Artisan, Coach et Avocat.</p>'
 				. '<h4>Que fait le bouton "Importer le contenu demo" ?</h4>'
@@ -968,21 +974,81 @@ class AG_Starter_Companion {
 	}
 
 	private function has_higher_tier() {
-		return $this->get_current_tier() !== 'business';
+		// Modèle 2 niveaux : Gratuit + Premium. TOUTE licence payante (premium,
+		// pro ou business — anciennes clés incluses) = niveau Premium unique =
+		// tout débloqué. Les cadenas/upsells ne s'affichent QUE pour le gratuit.
+		return $this->is_free_tier();
+	}
+
+	/** Prix unique du Premium (modèle 2 niveaux : Gratuit + Premium). */
+	private function get_premium_price() {
+		return (int) apply_filters( 'ag_companion_premium_price', (int) get_option( 'ag_creator_price', 69 ) );
 	}
 
 	private function get_upgrade_buttons() {
-		$tier = $this->get_current_tier();
 		$buttons = array();
-		if ( in_array( $tier, array( 'free' ), true ) ) {
-			$buttons['premium'] = 'Premium — 99€';
-		}
-		if ( $tier === 'free' ) {
-		}
-		if ( $tier !== 'business' ) {
-			$buttons['business'] = 'Business — 149€';
+		// Une seule offre payante : Premium (interne 'business' = design abouti).
+		// On ne propose l'upgrade qu'aux utilisateurs gratuits ; toute licence
+		// payante est déjà au niveau Premium unique.
+		if ( $this->is_free_tier() ) {
+			$buttons['business'] = 'Premium — ' . $this->get_premium_price() . '€';
 		}
 		return $buttons;
+	}
+
+	/**
+	 * URL d'une offre de service Alliance Groupe (client deja Premium).
+	 * Pointe vers des pages reelles du site (sites-express / contact).
+	 */
+	private function get_service_url( $kind ) {
+		$utm  = '?utm_source=wp-admin&utm_medium=ag-companion&utm_campaign=' . $kind;
+		$urls = array(
+			'maintenance' => 'https://alliancegroupe-inc.com/sites-express' . $utm . '#maintenance',
+			'sur-mesure'  => 'https://alliancegroupe-inc.com/contact' . $utm . '&offre=sur-mesure',
+		);
+		$url = $urls[ $kind ] ?? 'https://alliancegroupe-inc.com/contact' . $utm;
+		return apply_filters( 'ag_companion_service_url', $url, $kind );
+	}
+
+	/**
+	 * Offre a proposer selon l'etat de la licence (modele 2 niveaux).
+	 * - Gratuit  -> upsell vers Premium 69€.
+	 * - Premium  -> services a plus forte valeur : maintenance + site sur-mesure.
+	 * Retourne array( heading, text, buttons[ array(label,url,primary) ] ).
+	 */
+	private function get_next_offer() {
+		if ( $this->is_free_tier() ) {
+			return array(
+				'heading' => 'Passez a la version Premium',
+				'text'    => 'Header sticky, animations scroll, couleurs avancees, temoignages clients, galerie photos, boutique WooCommerce, grille de tarifs, pub minimale... Paiement unique, mises a jour a vie.',
+				'buttons' => array(
+					array(
+						'label'   => 'Premium — ' . $this->get_premium_price() . '€',
+						'url'     => $this->get_upgrade_url( 'business' ),
+						'primary' => true,
+					),
+				),
+			);
+		}
+
+		// Client deja Premium : on ne reproppose plus le Premium, on propose
+		// des services complementaires a plus forte valeur.
+		return array(
+			'heading' => 'Allez plus loin avec Alliance Groupe',
+			'text'    => 'Votre Premium est actif, merci ! Gardez votre site rapide, securise et a jour avec la maintenance pro, ou passez a un site 100% sur-mesure concu pour convertir davantage de clients.',
+			'buttons' => array(
+				array(
+					'label'   => 'Maintenance — des 29€/mois',
+					'url'     => $this->get_service_url( 'maintenance' ),
+					'primary' => true,
+				),
+				array(
+					'label'   => 'Site sur-mesure',
+					'url'     => $this->get_service_url( 'sur-mesure' ),
+					'primary' => false,
+				),
+			),
+		);
 	}
 
 	private function get_upgrade_url( $pack = 'pro' ) {
@@ -1019,34 +1085,37 @@ class AG_Starter_Companion {
 	 * Big upgrade banner on all admin pages.
 	 */
 	public function upgrade_banner() {
-		if ( ! $this->get_active_theme_slug() || ! $this->has_higher_tier() ) return;
+		if ( ! $this->get_active_theme_slug() ) return;
 		if ( ! current_user_can( 'manage_options' ) ) return;
 		$done = get_option( 'ag_starter_companion_done_' . $this->get_active_theme_slug() );
 		if ( ! $done ) return; // Show companion install notice first
 
-		$dismissed = get_user_meta( get_current_user_id(), 'ag_upgrade_dismissed', true );
-		if ( $dismissed && ( time() - intval( $dismissed ) ) < 7 * DAY_IN_SECONDS ) return;
+		// Cle de masquage distincte selon l'offre, pour que le passage
+		// gratuit -> premium ne reste pas masque par un ancien rejet.
+		$dismiss_key = $this->is_free_tier() ? 'ag_upgrade_dismissed' : 'ag_services_dismissed';
 
 		if ( isset( $_GET['ag_dismiss_upgrade'] ) && '1' === $_GET['ag_dismiss_upgrade'] ) {
-			update_user_meta( get_current_user_id(), 'ag_upgrade_dismissed', time() );
+			update_user_meta( get_current_user_id(), $dismiss_key, time() );
 			return;
 		}
+		$dismissed = get_user_meta( get_current_user_id(), $dismiss_key, true );
+		if ( $dismissed && ( time() - intval( $dismissed ) ) < 7 * DAY_IN_SECONDS ) return;
 
+		$offer       = $this->get_next_offer();
 		$dismiss_url = add_query_arg( 'ag_dismiss_upgrade', '1' );
+		$icon        = $this->is_free_tier() ? '⚡' : '💎';
 		?>
 		<div style="background:linear-gradient(135deg,#1a1a2e 0%,#0f0f18 100%);border:1px solid rgba(212,180,92,.35);border-radius:10px;padding:28px 32px;margin:20px 20px 10px 0;display:flex;align-items:center;gap:28px;flex-wrap:wrap;position:relative;">
 			<a href="<?php echo esc_url( $dismiss_url ); ?>" style="position:absolute;top:10px;right:14px;color:rgba(255,255,255,.3);font-size:1.2rem;text-decoration:none;" title="Masquer 7 jours">✕</a>
 			<div style="flex:1;min-width:260px;">
-				<h2 style="color:#D4B45C;font-size:1.3rem;margin:0 0 8px;font-weight:800;">⚡ <?php echo 'Passez a la version ' . esc_html( ($this->get_current_tier() === 'free') ? 'Premium' : 'Business' ); ?></h2>
+				<h2 style="color:#D4B45C;font-size:1.3rem;margin:0 0 8px;font-weight:800;"><?php echo esc_html( $icon . ' ' . $offer['heading'] ); ?></h2>
 				<p style="color:rgba(255,255,255,.75);font-size:.95rem;line-height:1.6;margin:0;">
-					<?php esc_html_e( 'Header sticky, animations scroll, couleurs avancees, temoignages clients, galerie photos, boutique WooCommerce, grille de tarifs, pub minimale... Paiement unique, mises a jour a vie.', 'ag-starter-companion' ); ?>
+					<?php echo esc_html( $offer['text'] ); ?>
 				</p>
 			</div>
 			<div style="display:flex;gap:10px;flex-wrap:wrap;">
-				<?php foreach ( $this->get_upgrade_buttons() as $pack => $text ) :
-					$is_first = ( $pack === array_key_first( $this->get_upgrade_buttons() ) );
-				?>
-				<a href="<?php echo esc_url( $this->get_upgrade_url( $pack ) ); ?>" target="_blank" rel="noopener" style="display:inline-block;<?php echo $is_first ? 'background:#D4B45C;color:#0a0a0f;' : 'background:rgba(212,180,92,.15);color:#D4B45C;border:1px solid rgba(212,180,92,.4);'; ?>font-weight:700;padding:14px 22px;border-radius:8px;text-decoration:none;font-size:.9rem;white-space:nowrap;"><?php echo esc_html( $text ); ?> →</a>
+				<?php foreach ( $offer['buttons'] as $btn ) : ?>
+				<a href="<?php echo esc_url( $btn['url'] ); ?>" target="_blank" rel="noopener" style="display:inline-block;<?php echo ! empty( $btn['primary'] ) ? 'background:#D4B45C;color:#0a0a0f;' : 'background:rgba(212,180,92,.15);color:#D4B45C;border:1px solid rgba(212,180,92,.4);'; ?>font-weight:700;padding:14px 22px;border-radius:8px;text-decoration:none;font-size:.9rem;white-space:nowrap;"><?php echo esc_html( $btn['label'] ); ?> →</a>
 				<?php endforeach; ?>
 			</div>
 		</div>
@@ -1057,10 +1126,13 @@ class AG_Starter_Companion {
 	 * Dashboard widget with upgrade CTA.
 	 */
 	public function upgrade_dashboard_widget() {
-		if ( ! $this->get_active_theme_slug() || ! $this->has_higher_tier() ) return;
+		if ( ! $this->get_active_theme_slug() ) return;
+		$title = $this->is_free_tier()
+			? '⭐ ' . esc_html__( 'Passer au niveau superieur', 'ag-starter-companion' )
+			: '💎 ' . esc_html__( 'Aller plus loin avec Alliance Groupe', 'ag-starter-companion' );
 		wp_add_dashboard_widget(
 			'ag_upgrade_widget',
-			'⭐ ' . esc_html__( 'Passer au niveau superieur', 'ag-starter-companion' ),
+			$title,
 			array( $this, 'render_upgrade_dashboard' )
 		);
 		global $wp_meta_boxes;
@@ -1072,32 +1144,20 @@ class AG_Starter_Companion {
 	}
 
 	public function render_upgrade_dashboard() {
-		$tier = $this->get_current_tier();
-		$tier_labels = array( 'free' => 'la version gratuite', 'pro' => 'le Pack Premium' );
-		$current_label = $tier_labels[ $tier ] ?? 'votre version actuelle';
+		$offer  = $this->get_next_offer();
+		$is_free = $this->is_free_tier();
 		?>
 		<div style="text-align:center;padding:16px 0;">
-			<div style="font-size:2.4rem;margin-bottom:12px;">🚀</div>
-			<h3 style="margin:0 0 10px;font-size:1.1rem;">Vous utilisez <?php echo esc_html( $current_label ); ?></h3>
+			<div style="font-size:2.4rem;margin-bottom:12px;"><?php echo $is_free ? '🚀' : '💎'; ?></div>
+			<h3 style="margin:0 0 10px;font-size:1.1rem;"><?php echo $is_free ? 'Vous utilisez la version gratuite' : 'Votre Premium est actif ✔'; ?></h3>
 
-			<div style="background:#f8f5ec;border:1px solid #D4B45C;border-radius:8px;padding:18px;margin:0 0 16px;">
-				<?php if ( $tier === 'free' ) : ?>
-				<?php if ( $tier === 'free' ) : ?>
-				<div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(0,0,0,.08);">
-					<strong style="font-size:1rem;">⚡ Premium — 99€</strong>
-					<p style="font-size:.82rem;color:#555;margin:4px 0 0;line-height:1.4;">Header sticky, animations scroll, polices Playfair + Manrope, témoignages clients, téléphone cliquable dans le header, couleurs avancées.</p>
-				</div>
-				<?php endif; ?>
-				<div>
-					<strong style="font-size:1rem;">🏆 Business — 149€</strong>
-					<p style="font-size:.82rem;color:#555;margin:4px 0 0;line-height:1.4;">Tout Pro + WooCommerce (boutique en ligne), traductions 6 langues, pub réduite (simple copyright AG), session stratégique 30 min incluse.</p>
-				</div>
-				<?php endif; ?>
-				<p style="font-size:.78rem;color:#888;margin:12px 0 0;text-align:center;">Paiement unique — mises à jour à vie — support inclus</p>
+			<div style="background:#f8f5ec;border:1px solid #D4B45C;border-radius:8px;padding:18px;margin:0 0 16px;text-align:left;">
+				<strong style="font-size:1rem;display:block;text-align:center;margin-bottom:6px;"><?php echo esc_html( $offer['heading'] ); ?></strong>
+				<p style="font-size:.82rem;color:#555;margin:0;line-height:1.5;"><?php echo esc_html( $offer['text'] ); ?></p>
 			</div>
 			<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
-				<?php foreach ( $this->get_upgrade_buttons() as $pack => $text ) : ?>
-				<a href="<?php echo esc_url( $this->get_upgrade_url( $pack ) ); ?>" target="_blank" rel="noopener" class="button button-primary" style="font-size:.85rem;padding:6px 14px;"><?php echo esc_html( $text ); ?></a>
+				<?php foreach ( $offer['buttons'] as $btn ) : ?>
+				<a href="<?php echo esc_url( $btn['url'] ); ?>" target="_blank" rel="noopener" class="button <?php echo ! empty( $btn['primary'] ) ? 'button-primary' : ''; ?>" style="font-size:.85rem;padding:6px 14px;"><?php echo esc_html( $btn['label'] ); ?></a>
 				<?php endforeach; ?>
 			</div>
 		</div>
@@ -1113,53 +1173,53 @@ class AG_Starter_Companion {
 		$wp_customize->add_section( 'ag_locked_pro', array(
 			'title'       => esc_html__( '🔒 Header Sticky + Couleurs (Premium)', 'ag-starter-companion' ),
 			'priority'    => 30,
-			'description' => esc_html__( 'Le header sticky au scroll, la couleur d\'accent secondaire et le fond de footer personnalisable sont disponibles avec le Pack Premium (99€).', 'ag-starter-companion' ),
+			'description' => esc_html__( 'Le header sticky au scroll, la couleur d\'accent secondaire et le fond de footer personnalisable sont disponibles avec le Premium (69€).', 'ag-starter-companion' ),
 		) );
 		$wp_customize->add_setting( 'ag_locked_pro_info', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
 		$wp_customize->add_control( 'ag_locked_pro_info', array(
-			'label'       => esc_html__( 'A partir de 99€', 'ag-starter-companion' ),
+			'label'       => esc_html__( 'A partir de 69€', 'ag-starter-companion' ),
 			'section'     => 'ag_locked_pro',
 			'type'        => 'hidden',
-			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'premium' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Premium — 99€ →</a>',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'business' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Passer au Premium — 69€ →</a>',
 		) );
 
 		$wp_customize->add_section( 'ag_locked_animations', array(
 			'title'       => esc_html__( '🔒 Animations au scroll (Premium)', 'ag-starter-companion' ),
 			'priority'    => 31,
-			'description' => esc_html__( 'Animations fade-in, slide-left, slide-right et scale-in au scroll. Vos sections apparaissent avec elegance quand le visiteur scrolle. Compatible prefers-reduced-motion. Pack Premium (99€).', 'ag-starter-companion' ),
+			'description' => esc_html__( 'Animations fade-in, slide-left, slide-right et scale-in au scroll. Vos sections apparaissent avec elegance quand le visiteur scrolle. Compatible prefers-reduced-motion. Premium (69€).', 'ag-starter-companion' ),
 		) );
 		$wp_customize->add_setting( 'ag_locked_anim_info', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
 		$wp_customize->add_control( 'ag_locked_anim_info', array(
-			'label'   => esc_html__( 'A partir de 99€', 'ag-starter-companion' ),
+			'label'   => esc_html__( 'A partir de 69€', 'ag-starter-companion' ),
 			'section' => 'ag_locked_animations',
 			'type'    => 'hidden',
-			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'premium' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Premium — 99€ →</a>',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'business' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Passer au Premium — 69€ →</a>',
 		) );
 
 		$wp_customize->add_section( 'ag_locked_testimonials', array(
 			'title'       => esc_html__( '🔒 Temoignages + Galerie (Premium)', 'ag-starter-companion' ),
 			'priority'    => 32,
-			'description' => esc_html__( 'Temoignages clients (jusqu\'a 6), galerie photos, grille de tarifs. Inclus dans le Pack Premium (99).', 'ag-starter-companion' ),
+			'description' => esc_html__( 'Temoignages clients (jusqu\'a 6), galerie photos, grille de tarifs. Inclus dans le Premium (69€).', 'ag-starter-companion' ),
 		) );
 		$wp_customize->add_setting( 'ag_locked_testi_info', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
 		$wp_customize->add_control( 'ag_locked_testi_info', array(
-			'label'   => esc_html__( 'A partir de 99€', 'ag-starter-companion' ),
+			'label'   => esc_html__( 'A partir de 69€', 'ag-starter-companion' ),
 			'section' => 'ag_locked_testimonials',
 			'type'    => 'hidden',
-			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'premium' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Premium — 99€ →</a>',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'business' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Passer au Premium — 69€ →</a>',
 		) );
 
 		$wp_customize->add_section( 'ag_locked_whitelabel', array(
-			'title'       => esc_html__( '🔒 Pub minimale + Session strategique (Business)', 'ag-starter-companion' ),
+			'title'       => esc_html__( '🔒 Pub minimale + Session strategique (Premium)', 'ag-starter-companion' ),
 			'priority'    => 33,
-			'description' => esc_html__( 'Reduisez la publicite Alliance Groupe a un simple copyright, personnalisez le footer, acces a des templates de pages supplementaires, et session strategique de 30 min offerte avec un expert pour optimiser votre site. Pack Business (149€).', 'ag-starter-companion' ),
+			'description' => esc_html__( 'Reduisez la publicite Alliance Groupe a un simple copyright, personnalisez le footer, acces a des templates de pages supplementaires, et session strategique de 30 min offerte avec un expert pour optimiser votre site. Premium (69€).', 'ag-starter-companion' ),
 		) );
 		$wp_customize->add_setting( 'ag_locked_wl_info', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
 		$wp_customize->add_control( 'ag_locked_wl_info', array(
-			'label'   => esc_html__( 'A partir de 149€', 'ag-starter-companion' ),
+			'label'   => esc_html__( 'A partir de 69€', 'ag-starter-companion' ),
 			'section' => 'ag_locked_whitelabel',
 			'type'    => 'hidden',
-			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'business' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Acheter le Pack Business — 149€ →</a>',
+			'description' => '<a href="' . esc_url( $this->get_upgrade_url( 'business' ) ) . '" target="_blank" style="display:inline-block;background:#D4B45C;color:#000;font-weight:700;padding:10px 20px;border-radius:6px;text-decoration:none;margin-top:8px;">Passer au Premium — 69€ →</a>',
 		) );
 	}
 
@@ -1186,6 +1246,162 @@ class AG_Starter_Companion {
 				<a href="#" onclick="document.getElementById('ag-footer-nudge').style.display='none';return false;" style="color:rgba(255,255,255,.3);font-size:1rem;text-decoration:none;margin-left:6px;">✕</a>
 			</div>
 		</div>
+		<?php
+	}
+
+	// ═══════════════════════════════════════════════════════════════
+	// PERSONNALISATION PREMIUM (Alliance) — image de hero + effets,
+	// communs a TOUS les themes AG Starter. Perk reserve aux licences
+	// payantes (Premium) : un client Premium peut tout changer.
+	// ═══════════════════════════════════════════════════════════════
+
+	/** Cle d'image de hero native du theme actif (si elle existe). */
+	private function premium_hero_native_key() {
+		$map = array(
+			'ag-starter-artisan'    => 'ag_artisan_hero_image',
+			'ag-starter-coach'      => 'ag_coach_hero_image',
+			'ag-starter-restaurant' => 'ag_restaurant_hero_image',
+		);
+		return $map[ $this->get_active_theme_slug() ] ?? '';
+	}
+
+	/** Image de hero effective : override premium sinon image native du theme. */
+	private function premium_hero_image() {
+		$img = get_theme_mod( 'ag_premium_hero_image', '' );
+		if ( ! $img && ( $native = $this->premium_hero_native_key() ) ) {
+			$img = get_theme_mod( $native, '' );
+		}
+		return $img;
+	}
+
+	public function sanitize_hero_height( $v ) {
+		return in_array( $v, array( '', 'tall', 'full' ), true ) ? $v : '';
+	}
+
+	/**
+	 * Panneau Customizer « Personnalisation Premium ».
+	 */
+	public function premium_personalization_register( $wp_customize ) {
+		if ( ! $this->get_active_theme_slug() || $this->is_free_tier() ) return;
+
+		$wp_customize->add_panel( 'ag_premium_panel', array(
+			'title'       => '🎨 ' . esc_html__( 'Personnalisation Premium', 'ag-starter-companion' ),
+			'priority'    => 1,
+			'description' => esc_html__( 'Changez l\'image du hero et activez les effets visuels haut de gamme inspires du site Alliance Groupe. Inclus dans votre Premium.', 'ag-starter-companion' ),
+		) );
+
+		// --- Hero ---
+		$wp_customize->add_section( 'ag_premium_hero', array(
+			'title' => esc_html__( 'Image du hero', 'ag-starter-companion' ), 'panel' => 'ag_premium_panel', 'priority' => 1,
+		) );
+		$wp_customize->add_setting( 'ag_premium_hero_image', array( 'default' => '', 'sanitize_callback' => 'esc_url_raw', 'transport' => 'refresh' ) );
+		$wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, 'ag_premium_hero_image', array(
+			'label'       => esc_html__( 'Image de fond du hero', 'ag-starter-companion' ),
+			'section'     => 'ag_premium_hero',
+			'description' => esc_html__( 'Remplacez la grande photo en haut de page. Format paysage conseille (1600px de large minimum).', 'ag-starter-companion' ),
+		) ) );
+		$wp_customize->add_setting( 'ag_premium_hero_overlay', array( 'default' => 45, 'sanitize_callback' => 'absint', 'transport' => 'refresh' ) );
+		$wp_customize->add_control( 'ag_premium_hero_overlay', array(
+			'label'       => esc_html__( 'Assombrir l\'image (lisibilite du texte)', 'ag-starter-companion' ),
+			'section'     => 'ag_premium_hero', 'type' => 'range',
+			'input_attrs' => array( 'min' => 0, 'max' => 85, 'step' => 5 ),
+		) );
+		$wp_customize->add_setting( 'ag_premium_hero_height', array( 'default' => '', 'sanitize_callback' => array( $this, 'sanitize_hero_height' ), 'transport' => 'refresh' ) );
+		$wp_customize->add_control( 'ag_premium_hero_height', array(
+			'label'   => esc_html__( 'Hauteur du hero', 'ag-starter-companion' ),
+			'section' => 'ag_premium_hero', 'type' => 'select',
+			'choices' => array( '' => esc_html__( 'Par defaut du theme', 'ag-starter-companion' ), 'tall' => esc_html__( 'Grand', 'ag-starter-companion' ), 'full' => esc_html__( 'Plein ecran', 'ag-starter-companion' ) ),
+		) );
+
+		// --- Effets ---
+		$wp_customize->add_section( 'ag_premium_fx', array(
+			'title'       => esc_html__( 'Effets Premium', 'ag-starter-companion' ), 'panel' => 'ag_premium_panel', 'priority' => 2,
+			'description' => esc_html__( 'Touches visuelles haut de gamme. Compatibles « mouvement reduit » pour l\'accessibilite.', 'ag-starter-companion' ),
+		) );
+		$fx = array(
+			'ag_premium_fx_reveal'   => array( 'Apparition des sections au scroll', true ),
+			'ag_premium_fx_glass'    => array( 'Header verre depoli au defilement', true ),
+			'ag_premium_fx_hover'    => array( 'Cartes qui se soulevent au survol', true ),
+			'ag_premium_fx_smooth'   => array( 'Defilement fluide + barre de progression doree', true ),
+			'ag_premium_fx_gradient' => array( 'Halo dore anime sur le hero', true ),
+			'ag_premium_fx_grain'    => array( 'Grain cinematique subtil', false ),
+		);
+		foreach ( $fx as $key => $cfg ) {
+			$wp_customize->add_setting( $key, array( 'default' => $cfg[1], 'sanitize_callback' => 'wp_validate_boolean', 'transport' => 'refresh' ) );
+			$wp_customize->add_control( $key, array( 'label' => esc_html( $cfg[0] ), 'section' => 'ag_premium_fx', 'type' => 'checkbox' ) );
+		}
+	}
+
+	/**
+	 * CSS premium injecte sur le front (image de hero + effets).
+	 */
+	public function premium_personalization_css() {
+		if ( ! $this->get_active_theme_slug() || $this->is_free_tier() ) return;
+
+		$img     = $this->premium_hero_image();
+		$overlay = max( 0, min( 85, (int) get_theme_mod( 'ag_premium_hero_overlay', 45 ) ) ) / 100;
+		$height  = get_theme_mod( 'ag_premium_hero_height', '' );
+		$css     = '';
+
+		if ( $img ) {
+			$o1   = number_format( $overlay, 2, '.', '' );
+			$o2   = number_format( min( 0.92, $overlay + 0.12 ), 2, '.', '' );
+			$url  = esc_url( $img );
+			$css .= '.ag-hero,.ag-hero-pro{background-image:linear-gradient(rgba(8,8,12,' . $o1 . '),rgba(8,8,12,' . $o2 . ')),url("' . $url . '") !important;background-size:cover !important;background-position:center !important;background-repeat:no-repeat !important;}';
+			$css .= '.ag-hero__bg{background-image:url("' . $url . '") !important;background-size:cover !important;background-position:center !important;}';
+			// Lisibilite premium sur photo : texte clair + ombre douce.
+			$css .= '.ag-hero h1,.ag-hero h2,.ag-hero p,.ag-hero .ag-hero__title,.ag-hero .ag-hero__subtitle,.ag-hero-pro__title,.ag-hero-pro__subtitle{color:#fff !important;text-shadow:0 2px 20px rgba(0,0,0,.5);}';
+			if ( '' === $height ) $css .= '.ag-hero,.ag-hero-pro{min-height:62vh;}';
+		}
+		if ( 'tall' === $height ) $css .= '.ag-hero,.ag-hero-pro{min-height:78vh !important;}';
+		if ( 'full' === $height ) $css .= '.ag-hero,.ag-hero-pro{min-height:100vh !important;}';
+
+		if ( get_theme_mod( 'ag_premium_fx_gradient', true ) ) {
+			$css .= '.ag-hero,.ag-hero-pro{position:relative;overflow:hidden;}.ag-hero::after,.ag-hero-pro::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 72% 18%,rgba(212,180,92,.20),transparent 58%);pointer-events:none;z-index:1;animation:agSheen 7s ease-in-out infinite;}.ag-hero>*,.ag-hero-pro>*{position:relative;z-index:2;}@keyframes agSheen{0%,100%{opacity:.5}50%{opacity:1}}';
+		}
+		if ( get_theme_mod( 'ag_premium_fx_hover', true ) ) {
+			$css .= '[class*="-card"]{transition:transform .28s cubic-bezier(.2,.7,.2,1),box-shadow .28s;}[class*="-card"]:hover{transform:translateY(-6px);box-shadow:0 20px 44px rgba(0,0,0,.16);}';
+		}
+		if ( get_theme_mod( 'ag_premium_fx_glass', true ) ) {
+			$css .= '.ag-site-header,.ag-header,.site-header{transition:background .3s,backdrop-filter .3s,box-shadow .3s;}body.ag-scrolled .ag-site-header,body.ag-scrolled .ag-header,body.ag-scrolled .site-header{backdrop-filter:blur(12px) saturate(150%);-webkit-backdrop-filter:blur(12px) saturate(150%);background:rgba(12,12,18,.72) !important;box-shadow:0 6px 30px rgba(0,0,0,.25);}';
+		}
+		if ( get_theme_mod( 'ag_premium_fx_reveal', true ) ) {
+			$css .= '@media(prefers-reduced-motion:no-preference){.ag-reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1);}.ag-reveal.ag-in{opacity:1;transform:none;}}';
+		}
+		if ( get_theme_mod( 'ag_premium_fx_smooth', true ) ) {
+			$css .= 'html{scroll-behavior:smooth;}#ag-scroll-progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#D4B45C,#f1d98b);z-index:99999;transition:width .1s ease;}';
+		}
+		if ( get_theme_mod( 'ag_premium_fx_grain', false ) ) {
+			$css .= 'body::before{content:"";position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'120\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'.9\' numOctaves=\'2\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E");}';
+		}
+
+		if ( $css ) {
+			echo "\n<style id=\"ag-premium-personalization\">" . $css . "</style>\n"; // phpcs:ignore WordPress.Security.EscapeOutput
+		}
+	}
+
+	/**
+	 * JS premium (header glass, reveal au scroll, barre de progression).
+	 */
+	public function premium_personalization_js() {
+		if ( ! $this->get_active_theme_slug() || $this->is_free_tier() ) return;
+		$reveal = get_theme_mod( 'ag_premium_fx_reveal', true ) ? 1 : 0;
+		$glass  = get_theme_mod( 'ag_premium_fx_glass', true ) ? 1 : 0;
+		$smooth = get_theme_mod( 'ag_premium_fx_smooth', true ) ? 1 : 0;
+		if ( ! $reveal && ! $glass && ! $smooth ) return;
+		?>
+		<script id="ag-premium-personalization-js">
+		(function(){
+			var R=<?php echo (int) $reveal; ?>,G=<?php echo (int) $glass; ?>,S=<?php echo (int) $smooth; ?>;
+			var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+			if(G){var on=function(){document.body.classList.toggle('ag-scrolled',window.scrollY>40);};window.addEventListener('scroll',on,{passive:true});on();}
+			if(S){var bar=document.createElement('div');bar.id='ag-scroll-progress';document.body.appendChild(bar);var up=function(){var h=document.documentElement,sc=h.scrollHeight-h.clientHeight;bar.style.width=(sc>0?(h.scrollTop/sc*100):0)+'%';};window.addEventListener('scroll',up,{passive:true});window.addEventListener('resize',up);up();}
+			if(R&&!reduce&&'IntersectionObserver'in window){
+				var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('ag-in');io.unobserve(e.target);}});},{threshold:.12});
+				document.querySelectorAll('section:not(.ag-hero):not(.ag-hero-pro)').forEach(function(s){s.classList.add('ag-reveal');io.observe(s);});
+			}
+		})();
+		</script>
 		<?php
 	}
 

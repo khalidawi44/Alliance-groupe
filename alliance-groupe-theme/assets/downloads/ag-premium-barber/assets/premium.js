@@ -88,7 +88,9 @@
 		var hero = document.querySelector('.ag-hero');
 		if (!hero) return;
 		if (hero.querySelector('.ag-bb-hero-logo')) return;
-		var content = hero.querySelector('div'); // 1er div interne
+		// Le 1er div du hero est le calque de fond (.ag-hero__bg) : il faut viser
+		// le conteneur du contenu (titre/tag), sinon la tete reste cachee.
+		var content = hero.querySelector('div:not(.ag-hero__bg)');
 		if (!content) return;
 		var logo = document.createElement('div');
 		logo.className = 'ag-bb-hero-logo';

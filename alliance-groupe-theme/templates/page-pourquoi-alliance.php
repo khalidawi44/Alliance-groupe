@@ -52,15 +52,15 @@ get_header();
 			<?php
 			$rows = array(
 				array( 'Catalogue', '50 000+ thèmes génériques', '6 thèmes par métier (Coach, Artisan, Avocat, Barber, Resto, Asso)' ),
-				array( 'Prix d entrée', '30-60$ achat unique', '0€ gratuit + packs optionnels 49/99/149€' ),
+				array( 'Prix d entrée', '30-60$ achat unique', '0€ gratuit + Premium 69€ (optionnel)' ),
 				array( 'Adaptation au métier', 'Vous adaptez le thème', 'Déjà adapté à votre métier' ),
 				array( 'Contenu pré-rédigé', 'Lorem ipsum à remplacer', 'Textes français déjà écrits' ),
 				array( 'Support', 'Auteur (souvent absent)', 'Équipe FR 24h max' ),
-				array( 'Installation', 'Vous installez tout seul', 'Pack Business : install visio guidée' ),
-				array( 'Mise à jour 12 mois', 'Souvent payante', 'Inclus dès le Pack Premium' ),
+				array( 'Installation', 'Vous installez tout seul', 'Simple : ZIP prêt à installer (aide en option)' ),
+				array( 'Mise à jour 12 mois', 'Souvent payante', 'Incluse avec le Premium' ),
 				array( 'Langue', 'Anglais', 'Français natif' ),
 				array( 'Fuseau horaire', 'US/AU (réponse à J+1)', 'France (réponse même jour)' ),
-				array( 'Audit SEO', 'Non', 'Inclus Pack Business' ),
+				array( 'Audit SEO', 'Non', 'En option' ),
 				array( 'Possibilité sur-mesure', 'Non', 'Oui — 1 500 à 15 000€' ),
 				array( 'IA / Automatisations', 'Non', 'Oui (service dédié)' ),
 				array( 'Photos métier intégrées', 'Photos stock génériques', 'Photos Unsplash sélectionnées par métier' ),
@@ -120,7 +120,7 @@ get_header();
 				<div class="ag-pq-offre">
 					<span class="ag-pq-offre__ic">🎨</span>
 					<h3>Templates WordPress</h3>
-					<p>Coach, Artisan, Avocat, Barber, Resto, Asso. Gratuits, + packs Pro / Premium / Business (49 à 149€).</p>
+					<p>Coach, Artisan, Avocat, Barber, Resto, Asso. Gratuits, + version Premium (69€).</p>
 					<a href="<?php echo esc_url( home_url( '/templates-wordpress' ) ); ?>" class="ag-btn-gold">Voir les templates →</a>
 				</div>
 				<div class="ag-pq-offre">

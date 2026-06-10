@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Template pour la page Prestations.
  *

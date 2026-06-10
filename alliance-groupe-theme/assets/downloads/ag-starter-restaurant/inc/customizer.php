@@ -21,14 +21,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function ag_starter_restaurant_customizer_defaults() {
 	return array(
-		// Colors.
-		'ag_color_accent'       => '#d4b45c',
-		'ag_color_background'   => '#0a0a0a',
-		'ag_color_panel'        => '#141414',
-		'ag_color_border'       => '#222222',
-		'ag_color_text'         => '#e0e0e0',
-		'ag_color_heading'      => '#ffffff',
-		'ag_color_muted'        => '#aaaaaa',
+		// Colors (palette sombre & or — style Versailles).
+		'ag_color_accent'       => '#e3bb4f',
+		'ag_color_background'   => '#13110c',
+		'ag_color_panel'        => '#1c1813',
+		'ag_color_border'       => '#3a2f1e',
+		'ag_color_text'         => '#f4eedd',
+		'ag_color_heading'      => '#fbf5e6',
+		'ag_color_muted'        => '#d4c8a6',
 		// Typography.
 		'ag_font_family'        => 'system',
 		'ag_font_base_size'     => 16,
@@ -37,29 +37,27 @@ function ag_starter_restaurant_customizer_defaults() {
 		'ag_hero_show'          => true,
 		'ag_hero_prefix'        => 'Bienvenue chez',
 		'ag_hero_brand'         => '[Votre Restaurant]',
-		'ag_hero_subtitle'      => 'Cuisine authentique faite maison, produits frais et de saison, au coeur de votre ville.',
-		'ag_hero_button'        => 'Decouvrir la carte',
-		'ag_hero_button_url'    => '#ag-carte',
+		'ag_hero_subtitle'      => 'Cuisine maison, produits frais et de saison, accueil chaleureux. Reservez votre table des maintenant.',
+		'ag_hero_button'        => 'Reserver une table',
+		'ag_hero_button_url'    => '#ag-services',
 		// Footer.
 		'ag_footer_copyright'   => '',
 		'ag_footer_credits'     => true,
 		// Home section leads (phrases d'intro sous les titres H2).
-		'ag_resto_carte_lead'        => 'Entrees, plats et desserts prepares chaque jour avec des produits locaux. Menu du midi a 18 euros, formule du soir a 32 euros.',
-		'ag_resto_reservation_lead'  => 'Reservez votre table en ligne ou par telephone au 01 23 45 67 89. Groupes jusqu\'a 20 personnes.',
-		'ag_resto_privatisation_lead'=> 'Organisez vos evenements professionnels ou familiaux dans un cadre elegant. Devis gratuit sur demande.',
-		'ag_resto_histoire_p1'       => 'Depuis 2010, notre equipe passionnee vous accueille dans un cadre chaleureux pour vous faire decouvrir une cuisine authentique inspiree du terroir. Chaque plat est prepare avec soin, a partir de produits selectionnes aupres de producteurs locaux.',
-		'ag_resto_histoire_p2'       => 'Notre chef compose chaque semaine une carte renouvelee au rythme des saisons. Une cuisine genereuse, des saveurs franches et une ambiance conviviale : voila ce qui fait la difference depuis plus de dix ans.',
+		'ag_restaurant_prestations_lead' => 'Renovation, installation, entretien : nous intervenons pour tous vos travaux avec serieux et precision. Devis gratuit sous 24h.',
+		'ag_restaurant_zones_lead'       => 'Nous intervenons dans toute votre region, y compris en urgence. Appelez-nous au 06 00 00 00 00 pour toute demande rapide.',
+		'ag_restaurant_realisations_lead'=> 'Decouvrez nos chantiers recents : renovations de maison, installations techniques et travaux sur-mesure pour particuliers et professionnels.',
+		'ag_restaurant_about_p1'         => 'Depuis plus de dix ans, notre equipe d\'restaurants qualifies accompagne particuliers et professionnels dans tous leurs projets de travaux. Rigueur, transparence sur les prix et respect des delais : voila notre engagement.',
+		'ag_restaurant_about_p2'         => 'Nous mettons un point d\'honneur a livrer des chantiers propres et conformes aux normes. Chaque intervention est suivie personnellement du devis a la livraison finale.',
 		// Home section H2 titles (split pre + em for editorial flexibility).
-		'ag_resto_carte_title_pre'        => 'Notre',
-		'ag_resto_carte_title_em'         => 'carte',
-		'ag_resto_reservation_title_pre'  => '',
-		'ag_resto_reservation_title_em'   => 'Reservation',
-		'ag_resto_privatisation_title_pre'=> '',
-		'ag_resto_privatisation_title_em' => 'Privatisation',
-		'ag_resto_histoire_title_pre'     => 'Notre',
-		'ag_resto_histoire_title_em'      => 'histoire',
-		'ag_resto_actu_title_pre'         => 'Actualites',
-		'ag_resto_actu_title_em'          => 'du restaurant',
+		'ag_restaurant_prestations_title_pre'  => 'Nos',
+		'ag_restaurant_prestations_title_em'   => 'prestations',
+		'ag_restaurant_zones_title_pre'        => 'Zones',
+		'ag_restaurant_zones_title_em'         => 'd\'intervention',
+		'ag_restaurant_realisations_title_pre' => 'Nos',
+		'ag_restaurant_realisations_title_em'  => 'realisations',
+		'ag_restaurant_about_title_pre'        => 'Qui',
+		'ag_restaurant_about_title_em'         => 'sommes-nous',
 	);
 }
 
@@ -361,26 +359,23 @@ function ag_starter_restaurant_customize_register( $wp_customize ) {
 			'description' => esc_html__( 'Personnalisez les phrases d\'introduction (sous les titres) de chaque section de l\'accueil.', 'ag-starter-restaurant' ),
 		)
 	);
-	$ag_resto_home_fields = array(
-		// Section H2 titles (split en deux : "pre" + "em" pour souligner un mot).
-		'ag_resto_carte_title_pre'         => array( 'label' => esc_html__( 'Carte — debut du titre', 'ag-starter-restaurant' ),         'type' => 'text' ),
-		'ag_resto_carte_title_em'          => array( 'label' => esc_html__( 'Carte — mot accentue', 'ag-starter-restaurant' ),           'type' => 'text' ),
-		'ag_resto_carte_lead'              => array( 'label' => esc_html__( 'Carte — phrase d\'intro', 'ag-starter-restaurant' ),         'type' => 'textarea' ),
-		'ag_resto_reservation_title_pre'   => array( 'label' => esc_html__( 'Reservation — debut du titre', 'ag-starter-restaurant' ),    'type' => 'text' ),
-		'ag_resto_reservation_title_em'    => array( 'label' => esc_html__( 'Reservation — mot accentue', 'ag-starter-restaurant' ),      'type' => 'text' ),
-		'ag_resto_reservation_lead'        => array( 'label' => esc_html__( 'Reservation — phrase d\'intro', 'ag-starter-restaurant' ),   'type' => 'textarea' ),
-		'ag_resto_privatisation_title_pre' => array( 'label' => esc_html__( 'Privatisation — debut du titre', 'ag-starter-restaurant' ),  'type' => 'text' ),
-		'ag_resto_privatisation_title_em'  => array( 'label' => esc_html__( 'Privatisation — mot accentue', 'ag-starter-restaurant' ),    'type' => 'text' ),
-		'ag_resto_privatisation_lead'      => array( 'label' => esc_html__( 'Privatisation — phrase d\'intro', 'ag-starter-restaurant' ), 'type' => 'textarea' ),
-		'ag_resto_histoire_title_pre'      => array( 'label' => esc_html__( 'Notre histoire — debut du titre', 'ag-starter-restaurant' ), 'type' => 'text' ),
-		'ag_resto_histoire_title_em'       => array( 'label' => esc_html__( 'Notre histoire — mot accentue', 'ag-starter-restaurant' ),   'type' => 'text' ),
-		'ag_resto_histoire_p1'             => array( 'label' => esc_html__( 'Notre histoire — paragraphe 1', 'ag-starter-restaurant' ),   'type' => 'textarea' ),
-		'ag_resto_histoire_p2'             => array( 'label' => esc_html__( 'Notre histoire — paragraphe 2', 'ag-starter-restaurant' ),   'type' => 'textarea' ),
-		'ag_resto_actu_title_pre'          => array( 'label' => esc_html__( 'Actualites — debut du titre', 'ag-starter-restaurant' ),     'type' => 'text' ),
-		'ag_resto_actu_title_em'           => array( 'label' => esc_html__( 'Actualites — mot accentue', 'ag-starter-restaurant' ),       'type' => 'text' ),
+	$ag_restaurant_home_fields = array(
+		'ag_restaurant_prestations_title_pre'  => array( 'label' => esc_html__( 'Prestations — debut du titre', 'ag-starter-restaurant' ),         'type' => 'text' ),
+		'ag_restaurant_prestations_title_em'   => array( 'label' => esc_html__( 'Prestations — mot accentue', 'ag-starter-restaurant' ),           'type' => 'text' ),
+		'ag_restaurant_prestations_lead'       => array( 'label' => esc_html__( 'Prestations — phrase d\'intro', 'ag-starter-restaurant' ),        'type' => 'textarea' ),
+		'ag_restaurant_zones_title_pre'        => array( 'label' => esc_html__( 'Zones — debut du titre', 'ag-starter-restaurant' ),               'type' => 'text' ),
+		'ag_restaurant_zones_title_em'         => array( 'label' => esc_html__( 'Zones — mot accentue', 'ag-starter-restaurant' ),                 'type' => 'text' ),
+		'ag_restaurant_zones_lead'             => array( 'label' => esc_html__( 'Zones d\'intervention — phrase d\'intro', 'ag-starter-restaurant' ), 'type' => 'textarea' ),
+		'ag_restaurant_realisations_title_pre' => array( 'label' => esc_html__( 'Realisations — debut du titre', 'ag-starter-restaurant' ),        'type' => 'text' ),
+		'ag_restaurant_realisations_title_em'  => array( 'label' => esc_html__( 'Realisations — mot accentue', 'ag-starter-restaurant' ),          'type' => 'text' ),
+		'ag_restaurant_realisations_lead'      => array( 'label' => esc_html__( 'Realisations — phrase d\'intro', 'ag-starter-restaurant' ),       'type' => 'textarea' ),
+		'ag_restaurant_about_title_pre'        => array( 'label' => esc_html__( 'Qui sommes-nous — debut du titre', 'ag-starter-restaurant' ),     'type' => 'text' ),
+		'ag_restaurant_about_title_em'         => array( 'label' => esc_html__( 'Qui sommes-nous — mot accentue', 'ag-starter-restaurant' ),       'type' => 'text' ),
+		'ag_restaurant_about_p1'               => array( 'label' => esc_html__( 'Qui sommes-nous — paragraphe 1', 'ag-starter-restaurant' ),       'type' => 'textarea' ),
+		'ag_restaurant_about_p2'               => array( 'label' => esc_html__( 'Qui sommes-nous — paragraphe 2', 'ag-starter-restaurant' ),       'type' => 'textarea' ),
 	);
 	$ag_prio = 10;
-	foreach ( $ag_resto_home_fields as $ag_key => $ag_meta ) {
+	foreach ( $ag_restaurant_home_fields as $ag_key => $ag_meta ) {
 		$ag_type     = isset( $ag_meta['type'] ) ? $ag_meta['type'] : 'textarea';
 		$ag_sanitize = ( 'textarea' === $ag_type ) ? 'sanitize_textarea_field' : 'sanitize_text_field';
 		$wp_customize->add_setting(
@@ -462,26 +457,12 @@ function ag_starter_restaurant_register_upgrade_control() {
 			$cur   = isset( $order[ $tier ] ) ? $order[ $tier ] : 0;
 
 			$all_packs = array(
-				'pro' => array(
-					'icon'  => '⚡',
-					'title' => 'Pack Pro',
-					'price' => '49€',
-					'desc'  => 'Animations, blocs Gutenberg, customizer avance, sticky header, polices premium',
-					'url'   => $base . $utm . '&pack=pro#ag-pricing',
-				),
-				'premium' => array(
-					'icon'  => '🌍',
-					'title' => 'Pack Premium',
-					'price' => '99€',
-					'desc'  => 'Tout Pro + multi-langue 6 langues + WooCommerce + support 12 mois',
-					'url'   => $base . $utm . '&pack=premium#ag-pricing',
-				),
 				'business' => array(
-					'icon'  => '💼',
-					'title' => 'Pack Business',
-					'price' => '149€',
-					'desc'  => 'Tout Premium + installation visio + maintenance 1 an + audit SEO + white-label',
-					'url'   => $base . $utm . '&pack=business#ag-pricing',
+					'icon'  => '💎',
+					'title' => 'Premium',
+					'price' => '69€',
+					'desc'  => 'Notre design le plus abouti : animations, blocs premium, header sticky, polices, temoignages, galerie, WooCommerce, couleurs avancees, support. Paiement unique.',
+					'url'   => $base . $utm . '&pack=premium#ag-pricing',
 				),
 			);
 
@@ -491,9 +472,9 @@ function ag_starter_restaurant_register_upgrade_control() {
 			}
 
 			$tier_labels = array(
-				'pro'      => '⚡ Pack Pro',
-				'premium'  => '🌍 Pack Premium',
-				'business' => '💼 Pack Business',
+				'pro'      => '💎 Premium',
+				'premium'  => '💎 Premium',
+				'business' => '💎 Premium',
 			);
 			?>
 			<div style="background:#fff;border:1px solid #d4b45c;border-radius:8px;padding:14px;margin-top:8px;">

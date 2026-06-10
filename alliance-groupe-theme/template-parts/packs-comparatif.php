@@ -11,33 +11,33 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 $ag_packs = array(
 	array(
-		'slug'    => 'premium',
-		'name'    => 'Pack Premium',
-		'price'   => 99,
-		'tagline' => 'Le meilleur rapport qualité/prix',
-		'best'    => true,
+		'slug'    => 'gratuit',
+		'name'    => 'Gratuit',
+		'price'   => 0,
+		'tagline' => 'Pour démarrer et tester — design volontairement basique.',
+		'best'    => false,
 		'features'=> array(
 			'theme_base'      => true,
-			'fonts_premium'   => true,
-			'animations'      => true,
-			'sticky_header'   => true,
-			'gutenberg_blocks'=> true,
-			'testimonials'    => true,
-			'multilang'       => '6 langues',
-			'woocommerce'     => true,
-			'support_12m'     => true,
+			'fonts_premium'   => false,
+			'animations'      => false,
+			'sticky_header'   => false,
+			'gutenberg_blocks'=> false,
+			'testimonials'    => false,
+			'multilang'       => false,
+			'woocommerce'     => false,
+			'support_12m'     => false,
 			'install_visio'   => false,
 			'audit_seo'       => false,
 			'white_label'     => false,
 		),
-		'url'     => 'https://alliancegroupe-inc.com/contact?pack=premium',
+		'url'     => home_url( '/templates-wordpress#ag-metiers' ),
 	),
 	array(
-		'slug'    => 'business',
-		'name'    => 'Pack Business',
-		'price'   => 149,
-		'tagline' => 'Pour les pros qui veulent tout, livré clé en main',
-		'best'    => false,
+		'slug'    => 'premium',
+		'name'    => 'Premium',
+		'price'   => (int) get_option( 'ag_creator_price', 69 ),
+		'tagline' => 'Le design le plus abouti, livré clé en main.',
+		'best'    => true,
 		'features'=> array(
 			'theme_base'      => true,
 			'fonts_premium'   => true,
@@ -52,7 +52,7 @@ $ag_packs = array(
 			'audit_seo'       => true,
 			'white_label'     => true,
 		),
-		'url'     => 'https://alliancegroupe-inc.com/contact?pack=business',
+		'url'     => home_url( '/templates-wordpress#ag-creer-mon-site' ),
 	),
 );
 
@@ -75,8 +75,8 @@ $ag_pack_features = array(
 <section class="ag-packs-compare">
 	<div class="ag-container">
 		<span class="ag-tag">Comparatif</span>
-		<h2 class="ag-section__title">2 packs pour <em>booster</em> votre template</h2>
-		<p class="ag-section__desc">Le template gratuit fait déjà le job. Les packs ajoutent du carburant — choisissez selon votre niveau d'ambition.</p>
+		<h2 class="ag-section__title">Gratuit ou <em>Premium</em> ?</h2>
+		<p class="ag-section__desc">Le thème gratuit fait le job de base. Le <strong>Premium</strong>, c'est notre design le plus abouti, livré clé en main — pour un site qui inspire vraiment confiance.</p>
 
 		<div class="ag-packs-grid">
 			<?php foreach ( $ag_packs as $pack ) : ?>
@@ -87,9 +87,13 @@ $ag_pack_features = array(
 					<div class="ag-pack-head">
 						<h3 class="ag-pack-name"><?php echo esc_html( $pack['name'] ); ?></h3>
 						<div class="ag-pack-price">
-							<span class="ag-pack-price-num"><?php echo (int) $pack['price']; ?></span>
-							<span class="ag-pack-price-cur">€</span>
-							<span class="ag-pack-price-meta">unique</span>
+							<?php if ( (int) $pack['price'] <= 0 ) : ?>
+								<span class="ag-pack-price-num">Gratuit</span>
+							<?php else : ?>
+								<span class="ag-pack-price-num"><?php echo (int) $pack['price']; ?></span>
+								<span class="ag-pack-price-cur">€</span>
+								<span class="ag-pack-price-meta">unique</span>
+							<?php endif; ?>
 						</div>
 						<p class="ag-pack-tagline"><?php echo esc_html( $pack['tagline'] ); ?></p>
 					</div>
@@ -111,7 +115,7 @@ $ag_pack_features = array(
 					</ul>
 
 					<a href="<?php echo esc_url( $pack['url'] ); ?>" class="ag-pack-cta">
-						<?php echo $pack['best'] ? '🚀 Choisir ce pack' : 'Choisir ' . esc_html( $pack['name'] ); ?>
+						<?php echo $pack['best'] ? '🚀 Créer mon site Premium' : '⬇ Choisir un thème gratuit'; ?>
 					</a>
 				</div>
 			<?php endforeach; ?>

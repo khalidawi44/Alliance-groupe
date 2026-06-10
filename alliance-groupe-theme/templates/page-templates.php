@@ -127,11 +127,14 @@ if ( ! empty( $ag_templates_only ) ) {
 
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;max-width:1200px;margin:48px auto 0;">
                 <?php foreach ( $ag_hub_metiers as $m ) :
-                    // Aperçu RÉEL du template : si une capture locale existe
-                    // (assets/images/templates/<slug>.jpg|png|webp), on l'utilise ;
-                    // sinon on retombe sur l'image générique.
+                    // Aperçu RÉEL du template : 1) si des captures existent dans
+                    // assets/images/templates/<slug>/ on prend la 1re ; 2) sinon une
+                    // capture plate <slug>.jpg ; 3) sinon l'image générique.
                     $ag_tpl_img = $m['image'] ?? '';
-                    if ( ! empty( $m['slug'] ) ) {
+                    $ag_gal = function_exists( 'ag_template_gallery_images' ) ? ag_template_gallery_images( $m['slug'] ?? '' ) : array();
+                    if ( ! empty( $ag_gal ) ) {
+                        $ag_tpl_img = $ag_gal[0]['url'];
+                    } elseif ( ! empty( $m['slug'] ) ) {
                         foreach ( array( 'jpg', 'png', 'webp', 'jpeg' ) as $ag_ext ) {
                             $ag_rel = '/assets/images/templates/' . $m['slug'] . '.' . $ag_ext;
                             if ( file_exists( get_stylesheet_directory() . $ag_rel ) ) { $ag_tpl_img = get_stylesheet_directory_uri() . $ag_rel; break; }
@@ -172,42 +175,40 @@ if ( ! empty( $ag_templates_only ) ) {
         </div>
     </section>
 
+    <!-- 🆕 Mon métier n'est pas là ? → Créateur de site (base Avocat Business) -->
+    <section class="ag-section ag-section--graphite" id="ag-creer-mon-site">
+        <div class="ag-container">
+            <span class="ag-tag ag-anim" data-anim="tag">Votre métier n'est pas dans la liste ?</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Créez <em>votre site</em>, adapté à votre métier</h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Pas besoin d'un template dédié à votre métier. Remplissez quelques champs : on vous génère un site sur la base de <strong style="color:#e8e6e0;">notre design le plus élégant</strong>, personnalisé avec votre nom, votre métier et vos couleurs. Vous repartez avec un <strong style="color:#e8e6e0;">ZIP prêt à installer</strong>, déjà pré-rempli.</p>
+            <div style="margin-top:36px;">
+                <?php echo do_shortcode( '[ag_site_creator]' ); ?>
+            </div>
+        </div>
+    </section>
+
     <!-- 🆕 Comparatif détaillé des 3 packs (tableau ✓ par feature) -->
     <?php get_template_part( 'template-parts/packs-comparatif' ); ?>
 
     <!-- 🆕 CTA audit gratuit (lead capture sur-mesure) -->
     <?php get_template_part( 'template-parts/audit-cta' ); ?>
 
-    <!-- Vue d'ensemble des 3 packs payants (courte, le détail est dans les pages métier) -->
+    <!-- Offre spécifique associations (Premium/Business sont déjà couverts par le comparatif ci-dessus) -->
     <section class="ag-section ag-section--marbre">
         <div class="ag-container">
-            <span class="ag-tag ag-anim" data-anim="tag">3 niveaux d'amélioration</span>
-            <h2 class="ag-section__title ag-anim" data-anim="title">Passez au <em>niveau supérieur</em></h2>
-            <p class="ag-section__desc ag-anim" data-anim="desc">Les 6 templates métier sont volontairement basiques en version gratuite (Coach, Artisan, Avocat, Barber, Restaurant, Association). Deux packs payants viennent compléter <strong style="color:#e8e6e0;">n'importe lequel des 6 thèmes</strong> — un seul achat, il fonctionne avec le thème actif. Le détail de chaque pack vit sur la page métier correspondante.</p>
+            <span class="ag-tag ag-anim" data-anim="tag">Vous êtes une association ?</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Pack <em>Fidélité</em> — réservé aux associations</h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Un pack équivalent Premium, à prix associatif, pensé pour la vie de votre structure.</p>
 
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:760px;margin:40px auto 0;">
-                <div style="padding:24px;background:rgba(212,180,92,.08);border:2px solid rgba(212,180,92,.4);border-radius:12px;text-align:center;position:relative;">
-                    <span style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#D4B45C;color:#080808;font-size:.68rem;font-weight:700;padding:3px 12px;border-radius:100px;text-transform:uppercase;letter-spacing:1px;">Populaire</span>
-                    <div style="font-size:2rem;margin-bottom:6px;">⚡</div>
-                    <strong style="display:block;color:#D4B45C;font-size:1.1rem;margin-bottom:6px;">Pack Premium — 99€</strong>
-                    <p style="color:#b0b0bc;font-size:.88rem;line-height:1.55;margin:0;">Design travaillé, animations, blocs Gutenberg premium, customizer étendu, sticky header, polices Google Fonts, support 60j.</p>
-                </div>
-                <div style="padding:24px;background:rgba(212,180,92,.10);border:2px solid rgba(212,180,92,.5);border-radius:12px;text-align:center;">
-                    <div style="font-size:2rem;margin-bottom:6px;">💼</div>
-                    <strong style="display:block;color:#D4B45C;font-size:1.1rem;margin-bottom:6px;">Pack Business — 149€</strong>
-                    <p style="color:#b0b0bc;font-size:.88rem;line-height:1.55;margin:0;">Tout Premium + installation visio 1h + maintenance 1 an + audit SEO + white-label + intégration CRM + appel Fabrizio.</p>
-                </div>
-                <div style="padding:24px;background:rgba(225,15,26,.10);border:2px solid rgba(225,15,26,.5);border-radius:12px;text-align:center;position:relative;">
+            <div style="max-width:520px;margin:40px auto 0;">
+                <div style="padding:28px;background:rgba(225,15,26,.10);border:2px solid rgba(225,15,26,.5);border-radius:14px;text-align:center;position:relative;">
                     <span style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#E10F1A;color:#fff;font-size:.68rem;font-weight:700;padding:3px 12px;border-radius:100px;text-transform:uppercase;letter-spacing:1px;">🤝 Caritatif</span>
                     <div style="font-size:2rem;margin-bottom:6px;">💎</div>
-                    <strong style="display:block;color:#ffb1b6;font-size:1.1rem;margin-bottom:6px;">Pack Fidélité — 99€</strong>
-                    <p style="color:#b0b0bc;font-size:.88rem;line-height:1.55;margin:0;"><strong style="color:#FFD23F;">Réservé aux associations.</strong> Pack équivalent Premium avec en plus : 13 extensions WordPress installables en 1 clic, rôles utilisateurs, mentions/RGPD/statuts auto, espace adhérent. <a href="<?php echo esc_url( home_url( '/wordpress-association' ) ); ?>" style="color:#FFD23F;">Voir l'offre →</a></p>
+                    <strong style="display:block;color:#ffb1b6;font-size:1.2rem;margin-bottom:8px;">Pack Fidélité — 99€</strong>
+                    <p style="color:#b0b0bc;font-size:.92rem;line-height:1.6;margin:0 0 18px;"><strong style="color:#FFD23F;">Réservé aux associations.</strong> Équivalent Premium, avec en plus : 13 extensions WordPress installables en 1 clic, rôles utilisateurs, mentions/RGPD/statuts auto, espace adhérent.</p>
+                    <a href="<?php echo esc_url( home_url( '/wordpress-association' ) ); ?>" class="ag-btn-gold">Voir l'offre association →</a>
                 </div>
             </div>
-
-            <p style="text-align:center;color:#888;font-size:.88rem;margin-top:32px;font-style:italic;">
-                👆 Pour les features détaillées par métier et les boutons d'achat, cliquez sur la fiche métier qui vous correspond.
-            </p>
         </div>
     </section>
 
@@ -254,10 +255,10 @@ if ( ! empty( $ag_templates_only ) ) {
             <div class="ag-faq__list">
                 <?php
                 $tpl_faqs = [
-                    ['q' => 'Comment ça marche exactement ?', 'a' => 'Choisissez votre métier sur cette page, vous arrivez sur la fiche dédiée. Vous y trouvez la description complète du thème, le configurateur pour choisir votre niveau (Gratuit / Premium / Business), le bouton de téléchargement ou d\'achat, et les instructions d\'installation.'],
+                    ['q' => 'Comment ça marche exactement ?', 'a' => 'Choisissez votre métier sur cette page, vous arrivez sur la fiche dédiée. Vous y trouvez la description complète du thème, le choix de votre niveau (Gratuit ou Premium), le bouton de téléchargement ou d\'achat, et les instructions d\'installation.'],
                     ['q' => 'Les templates sont-ils vraiment en français ?', 'a' => '100% français natif. Tous les textes, titres, horaires, exemples et messages sont déjà rédigés en français — pas de Lorem ipsum, pas de strings anglaises à traduire. Vous remplacez juste les éléments entre crochets.'],
                     ['q' => 'Le plugin compagnon est-il obligatoire ?', 'a' => 'Non, mais il rend l\'installation 10x plus rapide. Sans le plugin, vous devez créer manuellement les 5 pages et le menu. Avec le plugin, un seul clic suffit. Il est gratuit et compatible avec les 5 thèmes.'],
-                    ['q' => 'Un pack Premium marche-t-il avec les 5 thèmes ?', 'a' => 'Oui. Vous achetez UN seul plugin (Premium ou Business) et il fonctionne avec n\'importe quel thème AG Starter que vous avez activé. Le plugin détecte automatiquement le thème actif et adapte ses features.'],
+                    ['q' => 'Le Premium marche-t-il avec tous les thèmes ?', 'a' => 'Oui. Vous achetez UN seul plugin Premium et il fonctionne avec n\'importe quel thème AG Starter que vous avez activé. Le plugin détecte automatiquement le thème actif et adapte ses features.'],
                     ['q' => 'Les templates sont-ils sur WordPress.org ?', 'a' => 'En cours de soumission. Nos 5 thèmes et le plugin compagnon respectent les standards WordPress.org (GPL v2+, translation-ready, escaping strict, Theme Check compatible). Une fois validés, ils seront installables directement depuis votre admin WordPress.'],
                     ['q' => 'Et si je veux un vrai site sur-mesure ?', 'a' => 'Contactez-nous au 07.44.82.95.16 ou via la page contact. Premier échange de 30 min gratuit avec Fabrizio, sans engagement. Un site sur-mesure, sécurisé dès le départ, va bien plus loin qu\'un template.'],
                 ];

@@ -350,12 +350,12 @@ add_action( 'wp_head', function () {
 		'@context' => 'https://schema.org',
 		'@type'    => 'AggregateOffer',
 		'name'     => 'Templates WordPress métier Alliance Groupe',
-		'description' => '6 templates WordPress métier gratuits + versions Premium et Business sur-mesure',
+		'description' => '6 templates WordPress métier gratuits + version Premium',
 		'url'         => get_permalink(),
 		'lowPrice'    => '0',
-		'highPrice'   => '149',
+		'highPrice'   => (string) ( function_exists( 'ag_creator_price' ) ? (int) ag_creator_price() : 69 ),
 		'priceCurrency' => 'EUR',
-		'offerCount'  => '12',
+		'offerCount'  => '2',
 		'offers'      => array(
 			array(
 				'@type'         => 'Offer',
@@ -368,15 +368,7 @@ add_action( 'wp_head', function () {
 			array(
 				'@type'         => 'Offer',
 				'name'          => 'Pack Premium',
-				'price'         => '99',
-				'priceCurrency' => 'EUR',
-				'availability'  => 'https://schema.org/InStock',
-				'url'           => get_permalink(),
-			),
-			array(
-				'@type'         => 'Offer',
-				'name'          => 'Pack Business',
-				'price'         => '149',
+				'price'         => (string) ( function_exists( 'ag_creator_price' ) ? (int) ag_creator_price() : 69 ),
 				'priceCurrency' => 'EUR',
 				'availability'  => 'https://schema.org/InStock',
 				'url'           => get_permalink(),

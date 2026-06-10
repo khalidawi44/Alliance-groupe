@@ -30,13 +30,18 @@ $premium_target      = ( $ag_stripe_premium      !== $ag_stripe_placeholder ) ? 
 
 $business_target = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? ' target="_blank" rel="noopener"' : '';
 
-$premium_label      = ( $ag_stripe_premium      !== $ag_stripe_placeholder ) ? 'Payer 99€ via PayPal →'  : 'Acheter — 99€ une fois';
+$premium_label      = ( $ag_stripe_premium      !== $ag_stripe_placeholder ) ? 'Payer le Premium via PayPal →'  : 'Acheter le Premium';
 
-$business_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'Payer 149€ via PayPal →' : 'Acheter — 149€ une fois';
+$business_label = ( $ag_stripe_business !== $ag_stripe_placeholder ) ? 'Payer le Premium via PayPal →' : 'Acheter le Premium';
 
-$screenshot_url = get_stylesheet_directory_uri() . '/assets/downloads/' . $ag_metier['slug_full'] . '/screenshot.png';
+// Image de présentation : on privilégie une VRAIE capture du métier
+// (assets/images/templates/<slug>/) ; sinon l'aperçu du thème (screenshot.png).
+$ag_cover_gal   = function_exists( 'ag_template_gallery_images' ) ? ag_template_gallery_images( $ag_metier['slug'] ) : array();
+$screenshot_url = ! empty( $ag_cover_gal )
+    ? $ag_cover_gal[0]['url']
+    : get_stylesheet_directory_uri() . '/assets/downloads/' . $ag_metier['slug_full'] . '/screenshot.png';
 $screenshot_file = get_stylesheet_directory() . '/assets/downloads/' . $ag_metier['slug_full'] . '/screenshot.png';
-$has_screenshot = file_exists( $screenshot_file );
+$has_screenshot  = ! empty( $ag_cover_gal ) || file_exists( $screenshot_file );
 ?>
 
 <main id="ag-main-content">
@@ -97,6 +102,84 @@ $has_screenshot = file_exists( $screenshot_file );
         </div>
     </section>
 
+    <?php
+    // Galerie d'aperçus réels du template (captures dans assets/images/templates/<slug>/).
+    $ag_gallery = function_exists( 'ag_template_gallery_images' ) ? ag_template_gallery_images( $ag_metier['slug'] ) : array();
+    if ( ! empty( $ag_gallery ) ) : ?>
+    <section class="ag-section ag-section--graphite" id="ag-apercu">
+        <div class="ag-container">
+            <span class="ag-tag ag-anim" data-anim="tag">Aperçu réel</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">À quoi ressemble le thème <em><?php echo esc_html( $ag_metier['name'] ); ?></em></h2>
+            <div class="ag-tpl-gallery" id="ag-gal">
+                <?php foreach ( $ag_gallery as $i => $img ) : ?>
+                    <a class="ag-tpl-gallery__item" data-i="<?php echo (int) $i; ?>" href="<?php echo esc_url( $img['url'] ); ?>">
+                        <img src="<?php echo esc_url( $img['url'] ); ?>" alt="<?php echo esc_attr( sprintf( 'Aperçu %s — %s', $ag_metier['name'], $img['label'] ) ); ?>" loading="lazy">
+                        <span class="ag-tpl-gallery__cap"><?php echo esc_html( $img['label'] ); ?></span>
+                        <span class="ag-tpl-gallery__zoom" aria-hidden="true">🔍</span>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visionneuse (lightbox) -->
+    <div class="ag-lb" id="ag-lb" aria-hidden="true" role="dialog" aria-label="Aperçu du thème">
+        <button class="ag-lb__btn ag-lb__close" type="button" aria-label="Fermer">&times;</button>
+        <button class="ag-lb__btn ag-lb__prev" type="button" aria-label="Image précédente">&lsaquo;</button>
+        <button class="ag-lb__btn ag-lb__next" type="button" aria-label="Image suivante">&rsaquo;</button>
+        <figure class="ag-lb__stage"><img class="ag-lb__img" src="" alt="" draggable="false"></figure>
+        <div class="ag-lb__bar"><span class="ag-lb__cap"></span> <span class="ag-lb__count"></span> <span class="ag-lb__hint">· cliquez l'image pour zoomer · ←/→ naviguer · Échap fermer</span></div>
+    </div>
+
+    <style>
+    .ag-tpl-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;max-width:1180px;margin:40px auto 0}
+    .ag-tpl-gallery__item{display:block;position:relative;border-radius:14px;overflow:hidden;border:1px solid rgba(212,180,92,.22);background:#0e0e14;text-decoration:none;cursor:zoom-in;transition:transform .35s cubic-bezier(.16,1,.3,1),border-color .3s,box-shadow .3s}
+    .ag-tpl-gallery__item:hover{transform:translateY(-4px);border-color:rgba(212,180,92,.55);box-shadow:0 18px 50px rgba(0,0,0,.45)}
+    .ag-tpl-gallery__item img{display:block;width:100%;height:auto}
+    .ag-tpl-gallery__cap{position:absolute;left:0;right:0;bottom:0;padding:10px 14px;font-size:.82rem;font-weight:700;color:#fff;background:linear-gradient(180deg,transparent,rgba(0,0,0,.8))}
+    .ag-tpl-gallery__zoom{position:absolute;top:10px;right:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);border-radius:50%;font-size:1rem;opacity:0;transition:opacity .25s}
+    .ag-tpl-gallery__item:hover .ag-tpl-gallery__zoom{opacity:1}
+    /* Lightbox */
+    .ag-lb{position:fixed;inset:0;z-index:100000;background:rgba(6,6,10,.94);display:none;align-items:center;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+    .ag-lb.is-open{display:flex}
+    .ag-lb__stage{margin:0;max-width:92vw;max-height:82vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .ag-lb__img{max-width:92vw;max-height:82vh;width:auto;height:auto;border-radius:8px;box-shadow:0 24px 80px rgba(0,0,0,.6);cursor:zoom-in;transform:scale(1);transition:transform .25s ease}
+    .ag-lb__img.is-zoom{cursor:move;transform:scale(2.1)}
+    .ag-lb__btn{position:fixed;background:rgba(20,20,28,.7);border:1px solid rgba(212,180,92,.5);color:#F3D27A;width:52px;height:52px;border-radius:50%;font-size:2rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,transform .2s;z-index:2}
+    .ag-lb__btn:hover{background:rgba(212,180,92,.25)}
+    .ag-lb__close{top:20px;right:24px}
+    .ag-lb__prev{left:24px;top:50%;transform:translateY(-50%)}
+    .ag-lb__next{right:24px;top:50%;transform:translateY(-50%)}
+    .ag-lb__prev:hover{transform:translateY(-50%) scale(1.08)}
+    .ag-lb__next:hover{transform:translateY(-50%) scale(1.08)}
+    .ag-lb__bar{position:fixed;bottom:16px;left:0;right:0;text-align:center;color:#e8e6e0;font-size:.9rem;padding:0 16px}
+    .ag-lb__count{color:#F3D27A;font-weight:700}
+    .ag-lb__hint{color:rgba(255,255,255,.45);font-size:.82rem}
+    @media(max-width:600px){.ag-lb__btn{width:44px;height:44px;font-size:1.6rem}.ag-lb__hint{display:none}.ag-lb__img.is-zoom{transform:scale(1.8)}}
+    </style>
+    <script>
+    (function(){
+        var gal=document.getElementById('ag-gal'), lb=document.getElementById('ag-lb');
+        if(!gal||!lb) return;
+        var items=[].slice.call(gal.querySelectorAll('.ag-tpl-gallery__item'));
+        var data=items.map(function(a){var c=a.querySelector('.ag-tpl-gallery__cap');return {url:a.getAttribute('href'),cap:c?c.textContent:''};});
+        var img=lb.querySelector('.ag-lb__img'), cap=lb.querySelector('.ag-lb__cap'), cnt=lb.querySelector('.ag-lb__count');
+        var idx=0;
+        function show(i){idx=(i+data.length)%data.length;img.classList.remove('is-zoom');img.style.transformOrigin='center';img.src=data[idx].url;img.alt=data[idx].cap;cap.textContent=data[idx].cap;cnt.textContent=(idx+1)+' / '+data.length;}
+        function open(i){show(i);lb.classList.add('is-open');lb.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';}
+        function close(){lb.classList.remove('is-open');lb.setAttribute('aria-hidden','true');document.body.style.overflow='';img.classList.remove('is-zoom');}
+        items.forEach(function(a,i){a.addEventListener('click',function(e){e.preventDefault();open(i);});});
+        lb.querySelector('.ag-lb__close').addEventListener('click',function(e){e.stopPropagation();close();});
+        lb.querySelector('.ag-lb__prev').addEventListener('click',function(e){e.stopPropagation();show(idx-1);});
+        lb.querySelector('.ag-lb__next').addEventListener('click',function(e){e.stopPropagation();show(idx+1);});
+        lb.addEventListener('click',function(e){if(e.target===lb||e.target.classList.contains('ag-lb__stage'))close();});
+        img.addEventListener('click',function(e){e.stopPropagation();img.classList.toggle('is-zoom');});
+        img.addEventListener('mousemove',function(e){if(!img.classList.contains('is-zoom'))return;var r=img.getBoundingClientRect();img.style.transformOrigin=((e.clientX-r.left)/r.width*100)+'% '+((e.clientY-r.top)/r.height*100)+'%';});
+        document.addEventListener('keydown',function(e){if(!lb.classList.contains('is-open'))return;if(e.key==='Escape')close();else if(e.key==='ArrowLeft')show(idx-1);else if(e.key==='ArrowRight')show(idx+1);});
+    })();
+    </script>
+    <?php endif; ?>
+
     <!-- Configurateur "Je choisis mon pack" -->
     <section class="ag-section ag-section--marbre" id="ag-configurator">
         <div class="ag-container">
@@ -111,15 +194,11 @@ $has_screenshot = file_exists( $screenshot_file );
                         <strong class="ag-cfg__tile-name">Je démarre</strong>
                         <span class="ag-cfg__tile-price">Gratuit</span>
                     </button>
+                    <?php $ag_pp = function_exists( 'ag_creator_price' ) ? (int) ag_creator_price() : 69; ?>
                     <button type="button" class="ag-cfg__tile ag-cfg__tile--premium" data-tier="premium" role="tab" aria-selected="false">
-                        <span class="ag-cfg__tile-icon">⚡</span>
-                        <strong class="ag-cfg__tile-name">Je veux premium</strong>
-                        <span class="ag-cfg__tile-price">99€</span>
-                    </button>
-                    <button type="button" class="ag-cfg__tile ag-cfg__tile--business" data-tier="business" role="tab" aria-selected="false">
-                        <span class="ag-cfg__tile-icon">💼</span>
-                        <strong class="ag-cfg__tile-name">Je veux la tranquillité</strong>
-                        <span class="ag-cfg__tile-price">149€</span>
+                        <span class="ag-cfg__tile-icon">💎</span>
+                        <strong class="ag-cfg__tile-name">Je veux le Premium</strong>
+                        <span class="ag-cfg__tile-price"><?php echo (int) $ag_pp; ?>€</span>
                     </button>
                 </div>
 
@@ -147,37 +226,19 @@ $has_screenshot = file_exists( $screenshot_file );
                     <!-- Premium -->
                     <div class="ag-cfg__panel" data-tier="premium" role="tabpanel">
                         <div class="ag-cfg__panel-head">
-                            <h3>⚡ Pack Premium pour <?php echo esc_html( $ag_metier['name'] ); ?></h3>
-                            <span class="ag-cfg__panel-price">99€ une fois</span>
+                            <h3>💎 Pack Premium pour <?php echo esc_html( $ag_metier['name'] ); ?></h3>
+                            <span class="ag-cfg__panel-price"><?php echo (int) $ag_pp; ?>€ une fois</span>
                         </div>
-                        <p class="ag-cfg__panel-sub">Le plugin qui transforme le thème basique en thème professionnel finalisé.</p>
+                        <p class="ag-cfg__panel-sub">Notre design le plus abouti : le thème basique passe en site professionnel finalisé.</p>
                         <ul class="ag-cfg__features">
                             <?php foreach ( $ag_metier['premium_features'] as $feat ) : ?>
                             <li><?php echo wp_kses_post( $feat ); ?></li>
                             <?php endforeach; ?>
                         </ul>
-                        <a href="<?php echo esc_url( $premium_url ); ?>"<?php echo $premium_target; // phpcs:ignore ?> class="ag-btn-gold" style="width:100%;max-width:460px;display:block;margin:24px auto 0;text-align:center;justify-content:center;">
-                            <?php echo esc_html( $premium_label ); ?>
-                        </a>
-                        <p class="ag-cfg__panel-note">Paiement unique, pas d'abonnement. Compatible avec les 5 thèmes AG Starter.</p>
-                    </div>
-
-                    <!-- Business -->
-                    <div class="ag-cfg__panel" data-tier="business" role="tabpanel">
-                        <div class="ag-cfg__panel-head">
-                            <h3>💼 Pack Business pour <?php echo esc_html( $ag_metier['name'] ); ?></h3>
-                            <span class="ag-cfg__panel-price">149€ une fois</span>
-                        </div>
-                        <p class="ag-cfg__panel-sub">Tout le Premium + installation assistée, maintenance 1 an, audit SEO, white-label.</p>
-                        <ul class="ag-cfg__features">
-                            <?php foreach ( $ag_metier['business_features'] as $feat ) : ?>
-                            <li><?php echo wp_kses_post( $feat ); ?></li>
-                            <?php endforeach; ?>
-                        </ul>
                         <a href="<?php echo esc_url( $business_url ); ?>"<?php echo $business_target; // phpcs:ignore ?> class="ag-btn-gold" style="width:100%;max-width:460px;display:block;margin:24px auto 0;text-align:center;justify-content:center;">
-                            <?php echo esc_html( $business_label ); ?>
+                            Choisir le Premium — <?php echo (int) $ag_pp; ?>€ →
                         </a>
-                        <p class="ag-cfg__panel-note">Idéal pour les freelances & petites agences. Support 2h ouvrées + appel Fabrizio.</p>
+                        <p class="ag-cfg__panel-note">Paiement unique, pas d'abonnement. Compatible avec tous les thèmes AG Starter.</p>
                     </div>
                 </div>
             </div>

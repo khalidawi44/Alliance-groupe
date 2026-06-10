@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * REST API endpoints for licence operations.
  *
@@ -11,8 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class AG_Licence_API {
 
-    /** Rate limit: max requests per minute per IP. */
-    const RATE_LIMIT = 15;
+    /** Rate limit: max requests per minute per identifier. */
+    const RATE_LIMIT = 40;
 
     public static function init() {
         add_action( 'rest_api_init', array( __CLASS__, 'register_routes' ) );
@@ -109,17 +109,23 @@ class AG_Licence_API {
     /**
      * Rate-limit check.
      */
-    private static function rate_limit() {
-        $ip  = self::client_ip();
-        $key = 'ag_rl_' . md5( $ip );
-        $hits = (int) get_transient( $key );
+    private static function rate_limit( $scope = '' ) {
+        $scope = trim( (string) $scope );
+        // Derriere un CDN (Cloudflare), REMOTE_ADDR est partage par TOUS les
+        // sites clients : un compteur par IP agrege tout le monde et bloque a
+        // tort (le theme appelle /verify a chaque page admin). On limite donc
+        // PAR CLE de licence quand elle est fournie (= par client), et seulement
+        // a defaut par IP.
+        $id   = '' !== $scope ? 'k' . md5( strtoupper( $scope ) ) : 'ip' . md5( self::client_ip() );
+        $tkey = 'ag_rl_' . $id;
+        $hits = (int) get_transient( $tkey );
         if ( $hits >= self::RATE_LIMIT ) {
             return new WP_REST_Response(
-                array( 'success' => false, 'error' => 'rate_limit', 'message' => 'Too many requests.' ),
+                array( 'success' => false, 'valid' => false, 'error' => 'rate_limit', 'message' => 'Too many requests.' ),
                 429
             );
         }
-        set_transient( $key, $hits + 1, 60 );
+        set_transient( $tkey, $hits + 1, 60 );
         return null;
     }
 
@@ -148,7 +154,7 @@ class AG_Licence_API {
             'requires'     => '6.0',
             'requires_php' => '7.4',
             'changelog'    => '<h4>v1.4.0</h4><ul>'
-                . '<li>Nouveau : liens d\'achat directs vers Stripe (Premium/Business)</li>'
+                . '<li>Nouveau : liens d\'achat directs vers Stripe (Premium)</li>'
                 . '<li>Nouveau : widget tableau de bord avec comparatif des 2 packs</li>'
                 . '<li>Nouveau : 4 sections verrouillées dans le Customizer (aperçu des fonctionnalités Premium)</li>'
                 . '<li>Nouveau : barre footer fixe "Passez à Premium" sur toutes les pages admin</li>'
@@ -177,10 +183,9 @@ class AG_Licence_API {
                 . '<li>✅ Mise à jour automatique depuis le serveur Alliance Groupe</li>'
                 . '<li>✅ 100% gratuit, aucune inscription requise</li>'
                 . '</ul>'
-                . '<h4>Packs payants disponibles</h4>'
-                . '<p>Débloquez des fonctionnalités avancées avec un paiement unique :</p><ul>'
-                . '<li><strong>Premium (99€)</strong> — Header sticky, animations, couleurs avancées, footer personnalisable</li>'
-                . '<li><strong>Business (149€)</strong> — Tout Premium + WooCommerce, multi-langue, pub reduite, session stratégique 30 min</li>'
+                . '<h4>Passez au Premium</h4>'
+                . '<p>Débloquez le design le plus abouti avec un paiement unique :</p><ul>'
+                . '<li><strong>Premium</strong> — Header sticky, animations, blocs Gutenberg premium, couleurs avancées, WooCommerce, multi-langue, support. Le rendu le plus pro.</li>'
                 . '</ul>',
             'banners'      => array(
                 'high' => home_url( '/wp-content/themes/alliance-groupe-theme/assets/images/promo-cards/ag-premium-card.png' ),
@@ -239,11 +244,11 @@ class AG_Licence_API {
     // ─── ACTIVATE ─────────────────────────────────────────────
 
     public static function activate( WP_REST_Request $req ) {
-        $rl = self::rate_limit();
-        if ( $rl ) return $rl;
-
         $key    = sanitize_text_field( $req->get_param( 'licence_key' ) );
         $domain = sanitize_text_field( $req->get_param( 'domain' ) );
+
+        $rl = self::rate_limit( $key );
+        if ( $rl ) return $rl;
 
         if ( empty( $key ) || empty( $domain ) ) {
             return self::signed_response( array(
@@ -307,11 +312,11 @@ class AG_Licence_API {
     // ─── VERIFY ───────────────────────────────────────────────
 
     public static function verify( WP_REST_Request $req ) {
-        $rl = self::rate_limit();
-        if ( $rl ) return $rl;
-
         $key    = sanitize_text_field( $req->get_param( 'licence_key' ) );
         $domain = sanitize_text_field( $req->get_param( 'domain' ) );
+
+        $rl = self::rate_limit( $key );
+        if ( $rl ) return $rl;
 
         if ( empty( $key ) ) {
             return self::signed_response( array( 'valid' => false, 'error' => 'missing_key' ), 400 );
@@ -346,11 +351,11 @@ class AG_Licence_API {
     // ─── DEACTIVATE ───────────────────────────────────────────
 
     public static function deactivate( WP_REST_Request $req ) {
-        $rl = self::rate_limit();
-        if ( $rl ) return $rl;
-
         $key    = sanitize_text_field( $req->get_param( 'licence_key' ) );
         $domain = sanitize_text_field( $req->get_param( 'domain' ) );
+
+        $rl = self::rate_limit( $key );
+        if ( $rl ) return $rl;
 
         $licence = AG_Licence_DB::find_by_key( $key );
         if ( ! $licence ) {

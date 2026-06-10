@@ -54,22 +54,14 @@ class AG_Licence_Stripe {
             return new WP_REST_Response( array( 'error' => 'No email in session' ), 400 );
         }
 
-        // Determine tier from metadata or amount
-        $tier = 'premium'; // default
+        // Tier : modèle 2 niveaux (Gratuit + Premium). Le seul tier payant est
+        // « Premium » = design le plus abouti (interne « business »).
+        $tier = 'business';
         $metadata = $session['metadata'] ?? array();
         if ( ! empty( $metadata['ag_tier'] ) ) {
             $tier = sanitize_key( $metadata['ag_tier'] );
-        } else {
-            // Fallback: determine from amount (in cents)
-            $amount = intval( $session['amount_total'] ?? 0 );
-            if ( $amount >= 14900 ) {
-                $tier = 'business';
-            
-                
-            } else {
-                $tier = 'premium';
-            }
         }
+        $amount_eur = round( intval( $session['amount_total'] ?? 0 ) / 100, 2 );
 
         // Check if a licence already exists for this session (idempotency)
         global $wpdb;
@@ -89,6 +81,13 @@ class AG_Licence_Stripe {
         if ( $id ) {
             AG_Licence_Email::send_licence( $email, $clear_key, $tier );
         }
+
+        // Évènement unifié « paiement vérifié » : déclenche les autres
+        // automatismes (créateur de site -> ZIP perso, Google Avis clients).
+        // La licence vient d'être insérée avec stripe_session = $sess_id, donc
+        // le listener licence (ag-licence-paypal) verra le doublon et n'en
+        // recréera pas -> pas de double clé.
+        do_action( 'ag_paypal_payment_verified', $amount_eur, $email, $sess_id, 'PAYMENT.CAPTURE.COMPLETED', $session );
 
         return new WP_REST_Response( array( 'received' => true, 'licence_created' => (bool) $id ) );
     }

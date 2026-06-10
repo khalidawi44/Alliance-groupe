@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Email sender for licence delivery.
  */
@@ -14,9 +14,10 @@ class AG_Licence_Email {
      * @param string $tier      premium|business
      */
     public static function send_licence( $email, $clear_key, $tier ) {
+        $ag_pp = function_exists( 'ag_creator_price' ) ? (int) ag_creator_price() : 69;
         $tier_labels = array(
-            'premium'  => 'Pack Premium (99 €)',
-            'business' => 'Pack Business (149 €)',
+            'premium'  => 'Pack Premium',
+            'business' => 'Pack Premium (' . $ag_pp . ' €)',
         );
         $label = isset( $tier_labels[ $tier ] ) ? $tier_labels[ $tier ] : ucfirst( $tier );
 

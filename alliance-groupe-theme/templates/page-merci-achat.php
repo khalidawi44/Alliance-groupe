@@ -11,19 +11,17 @@
 get_header();
 
 $pack = isset( $_GET['pack'] ) ? sanitize_key( $_GET['pack'] ) : 'premium';
+$ag_pp = function_exists( 'ag_creator_price' ) ? (int) ag_creator_price() : 69;
+$pack_premium = array(
+    'title'  => 'AG Starter Premium',
+    'price'  => $ag_pp . '€',
+    'icon'   => '💎',
+    'desc'   => 'Votre plugin AG Starter Premium est en cours de préparation. Vous le recevrez par email à l\'adresse utilisée pour le paiement, dans les prochaines minutes.',
+);
+// Modèle 2 niveaux : tout achat payant = Premium (l'ancien « business » aussi).
 $pack_data = array(
-    'premium' => array(
-        'title'  => 'AG Starter Premium',
-        'price'  => '99€',
-        'icon'   => '⚡',
-        'desc'   => 'Votre plugin AG Starter Premium est en cours de préparation. Vous le recevrez par email à l\'adresse utilisée pour le paiement, dans les prochaines minutes.',
-    ),
-    'business' => array(
-        'title'  => 'AG Starter Business',
-        'price'  => '149€',
-        'icon'   => '💼',
-        'desc'   => 'Votre Pack Business est confirmé. Je vous contacte sous 24h ouvrées pour planifier votre installation assistée et l\'appel stratégique de lancement avec Fabrizio.',
-    ),
+    'premium'  => $pack_premium,
+    'business' => $pack_premium,
 );
 if ( ! isset( $pack_data[ $pack ] ) ) {
     $pack = 'premium';
@@ -140,4 +138,10 @@ $current = $pack_data[ $pack ];
 
 </main>
 
-<?php get_footer(); ?>
+<?php
+// Google Avis clients : déclenche l'invitation à noter l'achat.
+if ( function_exists( 'ag_google_reviews_optin' ) ) {
+	ag_google_reviews_optin();
+}
+get_footer();
+?>

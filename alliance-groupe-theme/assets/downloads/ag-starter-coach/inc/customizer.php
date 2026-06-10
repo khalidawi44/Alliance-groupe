@@ -457,26 +457,12 @@ function ag_starter_coach_register_upgrade_control() {
 			$cur   = isset( $order[ $tier ] ) ? $order[ $tier ] : 0;
 
 			$all_packs = array(
-				'pro' => array(
-					'icon'  => '⚡',
-					'title' => 'Pack Pro',
-					'price' => '49€',
-					'desc'  => 'Animations, blocs Gutenberg, customizer avance, sticky header, polices premium',
-					'url'   => $base . $utm . '&pack=pro#ag-pricing',
-				),
-				'premium' => array(
-					'icon'  => '🌍',
-					'title' => 'Pack Premium',
-					'price' => '99€',
-					'desc'  => 'Tout Pro + multi-langue 6 langues + WooCommerce + support 12 mois',
-					'url'   => $base . $utm . '&pack=premium#ag-pricing',
-				),
 				'business' => array(
-					'icon'  => '💼',
-					'title' => 'Pack Business',
-					'price' => '149€',
-					'desc'  => 'Tout Premium + installation visio + maintenance 1 an + audit SEO + white-label',
-					'url'   => $base . $utm . '&pack=business#ag-pricing',
+					'icon'  => '💎',
+					'title' => 'Premium',
+					'price' => '69€',
+					'desc'  => 'Notre design le plus abouti : animations, blocs premium, header sticky, polices, temoignages, galerie, WooCommerce, couleurs avancees, support. Paiement unique.',
+					'url'   => $base . $utm . '&pack=premium#ag-pricing',
 				),
 			);
 
@@ -487,9 +473,9 @@ function ag_starter_coach_register_upgrade_control() {
 			}
 
 			$tier_labels = array(
-				'pro'      => '⚡ Pack Pro',
-				'premium'  => '🌍 Pack Premium',
-				'business' => '💼 Pack Business',
+				'pro'      => '💎 Premium',
+				'premium'  => '💎 Premium',
+				'business' => '💎 Premium',
 			);
 			?>
 			<div style="background:#fff;border:1px solid #d4b45c;border-radius:8px;padding:14px;margin-top:8px;">

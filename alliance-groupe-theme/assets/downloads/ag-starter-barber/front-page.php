@@ -4,7 +4,7 @@ get_header();
 // Zone editable WP : contenu de la page "accueil" Gutenberg
 if ( have_posts() ) : while ( have_posts() ) : the_post();
     if ( trim( get_the_content() ) ) :
-        echo "<section class=\"ag-custom-content\" style=\"padding:50px 24px;background:#fff;\"><div style=\"max-width:1180px;margin:0 auto;\">";
+        echo "<section class=\"ag-custom-content\"><div style=\"max-width:1180px;margin:0 auto;\">";
         the_content();
         echo "</div></section>";
     endif;

@@ -3,7 +3,7 @@
  * Plugin Name:       AG Licence Manager
  * Plugin URI:        https://alliancegroupe-inc.com
  * Description:       Système de licence pour les thèmes AG Starter (Premium/Business). Gère les clés, l'activation, la vérification, les webhooks Stripe et la distribution des mises à jour Premium.
- * Version:           1.0.0
+ * Version:           1.0.3
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Alliance Groupe

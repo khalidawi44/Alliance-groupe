@@ -4,10 +4,10 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class AG_Resto_Theme_Updater {
+class AG_Restaurant_Theme_Updater {
 	const JSON_URL  = 'https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/downloads/ag-starter-restaurant.json';
 	const SLUG      = 'ag-starter-restaurant';
-	const CACHE_KEY = 'ag_resto_theme_remote';
+	const CACHE_KEY = 'ag_restaurant_theme_remote';
 	const CACHE_TTL = HOUR_IN_SECONDS;
 
 	public static function init() {
@@ -16,10 +16,10 @@ class AG_Resto_Theme_Updater {
 	}
 
 	public static function maybe_force_check() {
-		if ( empty( $_GET['ag_resto_check_theme'] ) || ! current_user_can( 'manage_options' ) ) return;
+		if ( empty( $_GET['ag_restaurant_check_theme'] ) || ! current_user_can( 'manage_options' ) ) return;
 		delete_site_transient( 'update_themes' );
 		delete_transient( self::CACHE_KEY );
-		wp_safe_redirect( admin_url( 'themes.php?ag_resto_theme_checked=1' ) );
+		wp_safe_redirect( admin_url( 'themes.php?ag_restaurant_theme_checked=1' ) );
 		exit;
 	}
 
@@ -52,4 +52,4 @@ class AG_Resto_Theme_Updater {
 		return $transient;
 	}
 }
-AG_Resto_Theme_Updater::init();
+AG_Restaurant_Theme_Updater::init();

@@ -3,7 +3,7 @@
  * Plugin Name:       AG Business Barber
  * Plugin URI:        https://alliancegroupe-inc.com
  * Description:       Pack Business pour le thème AG Starter Barber. Ambiance vintage / industrielle inspirée des barbershops US (Back Alive vibe), en français. Section équipe, galerie, témoignages, réservation calendrier. Active uniquement si tier === business détecté via AG_Licence_Client.
- * Version:           0.4.0
+ * Version:           0.5.2
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Alliance Groupe
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_BUSINESS_BARBER_VERSION', '0.4.0' );
+define( 'AG_BUSINESS_BARBER_VERSION', '0.5.2' );
 define( 'AG_BUSINESS_BARBER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AG_BUSINESS_BARBER_URL', plugin_dir_url( __FILE__ ) );
 
