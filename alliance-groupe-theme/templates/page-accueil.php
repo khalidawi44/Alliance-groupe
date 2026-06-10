@@ -84,7 +84,7 @@ get_header();
         <h1 class="ag-hero__title ag-hero__title--uni" data-noreveal>
             <span class="ag-title-desk">Je <span class="ag-uni ag-uni--secu">sécurise</span> &amp; je <span class="ag-uni ag-uni--crea">crée</span> votre site.<br>
             <span class="ag-hero__zen">Vous, vous respirez.</span></span>
-            <span class="ag-title-mob">Création de site web<br>&amp; surtout <span class="ag-uni--secu">sécurité</span></span>
+            <span class="ag-title-mob"><span class="ag-uni--crea">Création</span> de site web<br>&amp; <span class="ag-uni--secu">sécurité</span></span>
         </h1>
         <style>
         /* Titre UNIQUE : "sécurise" en ROUGE, "crée" en BLEU, "Vous, vous respirez." en DORÉ.
@@ -110,6 +110,7 @@ get_header();
             .ag-sub-mob{display:block}
             .ag-hero__title--uni{font-size:clamp(1.7rem,7vw,2.2rem);line-height:1.18}
             .ag-title-mob .ag-uni--secu{color:#FF5A5A;text-shadow:0 2px 18px rgba(225,15,26,.55)}
+            .ag-title-mob .ag-uni--crea{color:#5BA8FF;text-shadow:0 2px 18px rgba(40,110,220,.55)}
         }
         </style>
 
