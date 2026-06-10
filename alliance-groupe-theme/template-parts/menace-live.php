@@ -356,6 +356,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 <!-- Mur PLEIN ÉCRAN « un piratage ressemble à ça » — seule issue : AUDITER -->
 <div id="ag-menace-pop" class="ag-hack" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Un piratage ressemble à ça">
 	<?php $ag_menace_bg = get_option( 'ag_tester_img_menace', '' ) ?: get_stylesheet_directory_uri() . '/assets/images/securite/menace.jpg'; ?>
+	<div class="ag-hack__card">
 	<div class="ag-hack__photo" aria-hidden="true" style="background-image:url('<?php echo esc_url( $ag_menace_bg ); ?>');"></div>
 	<div class="ag-hack__term" aria-hidden="true">
 		<div class="ag-hack__scroll">
@@ -400,45 +401,46 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		<p class="ag-hack__sub" style="margin-top:6px">Le seul moyen de savoir si vous êtes exposé : un audit.</p>
 		<a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-hack__btn" id="ag-hack-btn">🔍 AUDITER MON SITE →</a>
 	</div>
+	</div><!-- /.ag-hack__card -->
 </div>
 <style>
-.ag-hack{position:fixed;inset:0;z-index:100000;display:none;background:#000;overflow:hidden}
-.ag-hack.is-on{display:block;animation:agHackIn .3s ease}
-.ag-hack__close{position:absolute;top:18px;right:20px;z-index:3;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.75);font-size:.85rem;padding:9px 16px;border-radius:999px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .4s ease}
-.ag-hack__close.is-ready{opacity:1;pointer-events:auto}
-.ag-hack__close:hover{color:#fff;border-color:#fff}
+/* Petit pop-up centré (ne prend PAS tout l'écran) : voile sombre + carte compacte */
+.ag-hack{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(3,4,10,.72);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+.ag-hack.is-on{display:flex;animation:agHackIn .3s ease}
 @keyframes agHackIn{from{opacity:0}to{opacity:1}}
 body.ag-hack-lock{overflow:hidden}
-.ag-hack__photo{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.4;z-index:0;filter:grayscale(.2) contrast(1.05)}
-.ag-hack__term{position:absolute;inset:0;font-family:"Courier New",monospace;font-size:15px;line-height:1.9;color:#39ff14;text-shadow:0 0 6px rgba(57,255,20,.5);padding:24px 18px;opacity:.55}
+/* La carte = le pop-up lui-même */
+.ag-hack__card{position:relative;width:min(440px,94vw);max-height:90vh;overflow:hidden;border-radius:18px;background:#06070d;border:1px solid rgba(255,45,45,.4);box-shadow:0 30px 90px rgba(0,0,0,.7),0 0 60px rgba(255,45,45,.18);animation:agHackPop .35s cubic-bezier(.2,.9,.3,1.3)}
+@keyframes agHackPop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.ag-hack__close{position:absolute;top:10px;right:10px;z-index:4;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.8);font-size:.78rem;padding:7px 13px;border-radius:999px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .4s ease}
+.ag-hack__close.is-ready{opacity:1;pointer-events:auto}
+.ag-hack__close:hover{color:#fff;border-color:#fff}
+/* Fond animé (photo + terminal + voile) confiné DANS la carte */
+.ag-hack__photo{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.35;z-index:0;filter:grayscale(.2) contrast(1.05)}
+.ag-hack__term{position:absolute;inset:0;font-family:"Courier New",monospace;font-size:11px;line-height:1.8;color:#39ff14;text-shadow:0 0 6px rgba(57,255,20,.5);padding:14px 12px;opacity:.4;z-index:1}
 .ag-hack__scroll{animation:agHackScroll 22s linear infinite}
 .ag-hack__scroll p{margin:0;white-space:nowrap}
 .ag-hack__term .g{color:#39ff14}
 .ag-hack__term .r{color:#ff2d2d;text-shadow:0 0 8px rgba(255,45,45,.7)}
 @keyframes agHackScroll{from{transform:translateY(0)}to{transform:translateY(-50%)}}
-.ag-hack__veil{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,0,0,.55) 0%,rgba(0,0,0,.86) 70%);animation:agHackFlicker 4s steps(2) infinite}
-@keyframes agHackFlicker{0%,97%,100%{opacity:1}98%{opacity:.85}99%{opacity:.95}}
-.ag-hack__center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;color:#fff}
-.ag-hack__tag{display:inline-block;padding:5px 14px;border:1px solid rgba(255,45,45,.6);border-radius:999px;color:#ff6b6b;font-family:"Courier New",monospace;font-size:.78rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:22px}
-.ag-hack__title{font-family:Georgia,'Playfair Display',serif;font-size:clamp(2.1rem,7vw,4.4rem);line-height:1.05;margin:0 0 18px;color:#fff;position:relative;text-shadow:0 0 30px rgba(255,45,45,.45)}
+.ag-hack__veil{position:absolute;inset:0;z-index:2;background:radial-gradient(ellipse at center,rgba(3,4,10,.6) 0%,rgba(3,4,10,.9) 75%)}
+/* Contenu = dans le flux, scrollable si besoin */
+.ag-hack__center{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;text-align:center;padding:30px 22px 26px;color:#fff;max-height:90vh;overflow-y:auto}
+.ag-hack__tag{display:inline-block;padding:4px 12px;border:1px solid rgba(255,45,45,.6);border-radius:999px;color:#ff6b6b;font-family:"Courier New",monospace;font-size:.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
+.ag-hack__title{font-family:Georgia,'Playfair Display',serif;font-size:clamp(1.5rem,5vw,2rem);line-height:1.08;margin:0 0 12px;color:#fff;position:relative;text-shadow:0 0 24px rgba(255,45,45,.45)}
 .ag-hack__title::before,.ag-hack__title::after{content:attr(data-text);position:absolute;left:0;top:0;width:100%;overflow:hidden}
 .ag-hack__title::before{color:#ff2d2d;animation:agGlitch 2.6s infinite;clip-path:inset(0 0 55% 0);transform:translateX(-2px)}
 .ag-hack__title::after{color:#00e5ff;animation:agGlitch 3.4s infinite reverse;clip-path:inset(55% 0 0 0);transform:translateX(2px)}
 @keyframes agGlitch{0%,92%,100%{transform:translateX(0)}93%{transform:translateX(-3px)}95%{transform:translateX(3px)}97%{transform:translateX(-2px)}}
-.ag-hack__sub{max-width:560px;color:rgba(255,255,255,.85);font-size:1.08rem;line-height:1.6;margin:0 0 18px}
-.ag-hack__list{list-style:none;margin:0 0 24px;padding:0;max-width:560px;text-align:left}
-.ag-hack__list li{color:rgba(255,255,255,.9);font-size:1rem;line-height:1.5;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.ag-hack__sub{max-width:380px;color:rgba(255,255,255,.85);font-size:.92rem;line-height:1.5;margin:0 0 14px}
+.ag-hack__list{list-style:none;margin:0 0 18px;padding:0;max-width:380px;text-align:left}
+.ag-hack__list li{color:rgba(255,255,255,.9);font-size:.84rem;line-height:1.45;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08)}
 .ag-hack__list li:last-child{border-bottom:0}
 .ag-hack__list strong{color:#ff8a8a}
-.ag-hack__btn{display:inline-block;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:900;text-decoration:none;padding:28px 64px;border-radius:999px;font-size:clamp(1.3rem,3.4vw,1.9rem);letter-spacing:.5px;box-shadow:0 16px 50px rgba(243,122,31,.55);animation:agHackPulse 2s ease-in-out infinite}
-@media(max-width:600px){.ag-hack__btn{display:block;width:100%;padding:26px 20px}}
-.ag-hack__btn:hover{transform:translateY(-2px) scale(1.03)}
-@keyframes agHackPulse{0%,100%{box-shadow:0 16px 50px rgba(243,122,31,.45)}50%{box-shadow:0 16px 80px rgba(243,122,31,.9)}}
-.ag-hack__loading{display:none;margin:20px 0 0;color:#39ff14;font-family:"Courier New",monospace;font-size:1rem;letter-spacing:1px;text-shadow:0 0 8px rgba(57,255,20,.6)}
-.ag-hack.is-loading .ag-hack__loading{display:block;animation:agHackBlink 1s steps(2) infinite}
-.ag-hack.is-loading .ag-hack__btn{opacity:.4;pointer-events:none}
-@keyframes agHackBlink{0%,100%{opacity:1}50%{opacity:.35}}
-@media(prefers-reduced-motion:reduce){.ag-hack__scroll,.ag-hack__veil,.ag-hack__title::before,.ag-hack__title::after,.ag-hack__btn{animation:none}}
+.ag-hack__btn{display:block;width:100%;box-sizing:border-box;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:900;text-decoration:none;padding:16px 24px;border-radius:999px;font-size:clamp(1rem,3.4vw,1.2rem);letter-spacing:.3px;box-shadow:0 12px 36px rgba(243,122,31,.5);animation:agHackPulse 2s ease-in-out infinite}
+.ag-hack__btn:hover{transform:translateY(-2px) scale(1.02)}
+@keyframes agHackPulse{0%,100%{box-shadow:0 12px 36px rgba(243,122,31,.4)}50%{box-shadow:0 12px 56px rgba(243,122,31,.85)}}
+@media(prefers-reduced-motion:reduce){.ag-hack__scroll,.ag-hack__title::before,.ag-hack__title::after,.ag-hack__btn,.ag-hack__card{animation:none}}
 </style>
 <script>
 (function(){
@@ -456,8 +458,8 @@ body.ag-hack-lock{overflow:hidden}
 		try{ sessionStorage.setItem('ag_menace_pop','1'); }catch(e){}
 		pop.classList.add('is-on'); pop.setAttribute('aria-hidden','false');
 		document.body.classList.add('ag-hack-lock');
-		// Effet choc d'abord, sortie possible après 5 s (jamais de piège).
-		setTimeout(function(){ if(closeBtn) closeBtn.classList.add('is-ready'); }, 5000);
+		// Effet choc d'abord, sortie possible après 1,5 s (jamais de piège).
+		setTimeout(function(){ if(closeBtn) closeBtn.classList.add('is-ready'); }, 1500);
 	}
 	// Déclencheur PUBLIC : un clic sur [data-ag-hack] (ex. CTA hero "voir un piratage")
 	// ouvre la simulation à la demande (force, ignore le "déjà vu").
@@ -471,6 +473,10 @@ body.ag-hack-lock{overflow:hidden}
 		document.body.classList.remove('ag-hack-lock');
 	}
 	if(closeBtn) closeBtn.addEventListener('click', close);
+	// Clic sur le voile sombre (hors de la carte) = fermer, une fois la sortie permise.
+	pop.addEventListener('click', function(e){
+		if(e.target===pop && closeBtn && closeBtn.classList.contains('is-ready')) close();
+	});
 	document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
 
 	// ── DÉCLENCHEMENT = INTENTION DE QUITTER (exit-intent) ──────────────
