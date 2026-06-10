@@ -76,13 +76,15 @@ get_header();
     <div class="ag-hero__content">
         <div class="ag-hero__badge">
             <span class="ag-hero__dot"></span>
-            Audit · Création · Maintenance de sites web — Naples &amp; Nantes
+            <span class="ag-badge-desk">Audit · Création · Maintenance de sites web — Naples &amp; Nantes</span>
+            <span class="ag-badge-mob">Sites web &amp; sécurité · Naples &amp; Nantes</span>
             <span class="ag-heritage-dots" aria-hidden="true"><span></span><span></span><span></span></span>
         </div>
 
         <h1 class="ag-hero__title ag-hero__title--uni" data-noreveal>
-            Je <span class="ag-uni ag-uni--secu">sécurise</span> &amp; je <span class="ag-uni ag-uni--crea">crée</span> votre site.<br>
-            <span class="ag-hero__zen">Vous, vous respirez.</span>
+            <span class="ag-title-desk">Je <span class="ag-uni ag-uni--secu">sécurise</span> &amp; je <span class="ag-uni ag-uni--crea">crée</span> votre site.<br>
+            <span class="ag-hero__zen">Vous, vous respirez.</span></span>
+            <span class="ag-title-mob">Création de site web<br>&amp; surtout <span class="ag-uni--secu">sécurité</span></span>
         </h1>
         <style>
         /* Titre UNIQUE : "sécurise" en ROUGE, "crée" en BLEU, "Vous, vous respirez." en DORÉ.
@@ -96,10 +98,26 @@ get_header();
         .ag-hero__zen{display:inline-block;margin-top:4px;color:#F3D27A;
             text-shadow:0 2px 20px rgba(243,210,122,.4);font-weight:800;white-space:nowrap}
         @media(max-width:600px){.ag-uni,.ag-hero__zen{white-space:normal}}
+
+        /* ── MOBILE UNIQUEMENT (≤600px) : titre simple + clair, paragraphe
+              raccourci, badge Naples/Nantes abrégé. Tablette/PC inchangés. ── */
+        .ag-title-mob,.ag-badge-mob,.ag-sub-mob{display:none}
+        @media(max-width:600px){
+            .ag-title-desk,.ag-badge-desk{display:none!important}
+            .ag-sub-desk{display:none!important}
+            .ag-title-mob{display:block}
+            .ag-badge-mob{display:inline}
+            .ag-sub-mob{display:block}
+            .ag-hero__title--uni{font-size:clamp(1.7rem,7vw,2.2rem);line-height:1.18}
+            .ag-title-mob .ag-uni--secu{color:#FF5A5A;text-shadow:0 2px 18px rgba(225,15,26,.55)}
+        }
         </style>
 
-        <p class="ag-hero__sub">
+        <p class="ag-hero__sub ag-sub-desk">
             Deux métiers, un seul interlocuteur : je <strong>sécurise</strong> votre site (audit + protection) et je <strong>crée des sites pro référencés</strong> (SEO). Chaque jour, <strong>30 000 sites sont piratés</strong> — on commence par révéler vos failles. Avant les autres.
+        </p>
+        <p class="ag-hero__sub ag-sub-mob">
+            Je <strong>crée des sites pro référencés</strong> (SEO) et je les <strong>sécurise</strong>. On commence par révéler vos failles.
         </p>
 
         <!-- TEST LÉGER INSTANTANÉ : URL -> score + nb failles, sans quitter la page -->
