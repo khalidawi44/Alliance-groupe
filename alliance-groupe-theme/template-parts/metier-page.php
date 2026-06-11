@@ -103,6 +103,41 @@ $has_screenshot  = ! empty( $ag_cover_gal ) || file_exists( $screenshot_file );
     </section>
 
     <?php
+    // Bande « Exclusivités / Inédit » : fonctionnalités qu'on a développées
+    // et que les templates concurrents n'ont pas. Affichée si définie.
+    if ( ! empty( $ag_metier['unique_features'] ) && is_array( $ag_metier['unique_features'] ) ) : ?>
+    <section class="ag-section ag-section--graphite" id="ag-inedit">
+        <div class="ag-container">
+            <span class="ag-tag ag-anim" data-anim="tag">⭐ Inédit chez Alliance Groupe</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Ce que les autres templates <em>n'ont pas</em></h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc">On ne se contente pas d'un joli design : on intègre des outils que vos clients utilisent vraiment — et que vous ne trouverez nulle part ailleurs en gratuit.</p>
+            <div class="ag-inedit-grid">
+                <?php foreach ( $ag_metier['unique_features'] as $uf ) : ?>
+                    <div class="ag-inedit-card ag-anim" data-anim="card">
+                        <span class="ag-inedit-card__badge">INÉDIT</span>
+                        <div class="ag-inedit-card__icon"><?php echo isset( $uf['icon'] ) ? $uf['icon'] : '✨'; // phpcs:ignore ?></div>
+                        <h3 class="ag-inedit-card__title"><?php echo esc_html( isset( $uf['title'] ) ? $uf['title'] : '' ); ?></h3>
+                        <p class="ag-inedit-card__desc"><?php echo esc_html( isset( $uf['desc'] ) ? $uf['desc'] : '' ); ?></p>
+                        <?php if ( ! empty( $uf['vs'] ) ) : ?>
+                            <p class="ag-inedit-card__vs">🆚 <?php echo esc_html( $uf['vs'] ); ?></p>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+    <style>
+    .ag-inedit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:36px;}
+    .ag-inedit-card{position:relative;background:linear-gradient(180deg,rgba(212,180,92,.07),rgba(255,255,255,.02));border:1px solid rgba(212,180,92,.32);border-radius:16px;padding:28px 24px;}
+    .ag-inedit-card__badge{position:absolute;top:14px;right:14px;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#13110c;font-size:.66rem;font-weight:800;letter-spacing:1.5px;padding:4px 10px;border-radius:999px;}
+    .ag-inedit-card__icon{font-size:2.2rem;line-height:1;margin-bottom:12px;}
+    .ag-inedit-card__title{color:#fbf5e6;font-size:1.18rem;margin:0 0 8px;line-height:1.25;}
+    .ag-inedit-card__desc{color:#d6d2c8;font-size:.95rem;line-height:1.6;margin:0;}
+    .ag-inedit-card__vs{color:#9aa0a6;font-size:.84rem;line-height:1.5;margin:12px 0 0;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);}
+    </style>
+    <?php endif; ?>
+
+    <?php
     // Galerie d'aperçus réels du template (captures dans assets/images/templates/<slug>/).
     $ag_gallery = function_exists( 'ag_template_gallery_images' ) ? ag_template_gallery_images( $ag_metier['slug'] ) : array();
     if ( ! empty( $ag_gallery ) ) : ?>

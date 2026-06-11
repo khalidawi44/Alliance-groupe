@@ -20,15 +20,49 @@ set_query_var( 'ag_metier', array(
 
     'description_long' => 'AG Starter Restaurant est un thème WordPress gratuit pour bistrots, bars, cafés et restaurants gastronomiques francophones. La page d\'accueil arrive pré-remplie avec tout ce qu\'un client attend : sections carte, réservation, privatisation, histoire du restaurant et horaires d\'ouverture. Juste à remplacer les textes entre crochets.',
 
+    'unique_features' => array(
+        array(
+            'icon'  => '🛵',
+            'title' => 'Commande en ligne type Uber Eats — incluse',
+            'desc'  => 'Vos clients commandent directement sur votre site : carte avec bouton « Ajouter », panier, livraison ou à emporter, validation. Vous recevez la commande par email + notification. Zéro commission, contrairement aux plateformes.',
+            'vs'    => 'Les templates concurrents renvoient vers Uber Eats (30% de commission). Ici, c\'est chez vous, sans intermédiaire.',
+        ),
+        array(
+            'icon'  => '🎁',
+            'title' => 'Carte de fidélité digitale — incluse',
+            'desc'  => 'Programme à tampons ou à points, carte digitale pour le client, crédit automatique à chaque commande, récompense paramétrable. Vous fidélisez sans appli ni carton à tampons perdu.',
+            'vs'    => 'Aucun template restaurant gratuit du marché n\'intègre un vrai système de fidélité.',
+        ),
+        array(
+            'icon'  => '🍽️',
+            'title' => 'Vraie carte / menu élégante & éditable',
+            'desc'  => 'Une carte au design « Versailles » sombre et or, parfaitement lisible, que vous modifiez en texte simple (section + plat + prix), sans toucher au code.',
+            'vs'    => 'Chez les autres, la carte est une image figée ou un PDF à re-télécharger à chaque changement de prix.',
+        ),
+        array(
+            'icon'  => '🎚️',
+            'title' => 'Presets en 1 clic + tout éditable',
+            'desc'  => 'Bistrot, pizzeria, gastronomique, crêperie, burger… le thème s\'adapte en un clic (couleurs, spécialités, textes). Ensuite, le client change absolument tout lui-même depuis l\'admin.',
+            'vs'    => 'Les templates concurrents imposent un seul style et exigent du HTML/CSS pour le moindre changement.',
+        ),
+        array(
+            'icon'  => '📅',
+            'title' => 'Réservation + écran de choix intelligent',
+            'desc'  => 'À l\'arrivée sur la carte, le client choisit : réserver une table, se faire livrer, emporter, ou juste consulter (avec horaires). Formulaire de réservation intégré, sans plugin.',
+            'vs'    => 'Parcours pensé pour convertir, là où les autres se contentent d\'afficher un menu.',
+        ),
+    ),
+
     'free_features' => array(
-        '<strong>Page d\'accueil complète pré-remplie</strong> — hero, 3 cartes (carte, réservation, privatisation), section histoire, footer',
-        'Textes 100% français natifs, pas de Lorem ipsum à remplacer',
-        '<strong>Horaires d\'ouverture structurés</strong> dans le footer (lun-ven, sam, dim)',
-        'Adresse + téléphone cliquable + email — tout configurable',
-        'Palette or & noir élégante, responsive',
-        'Compatible Gutenberg (blog, commentaires, recherche)',
-        'Aucun plugin requis, installation en 2 minutes',
-        'Translation-ready (GPL v2+)',
+        '<strong>🛵 Commande en ligne type Uber Eats incluse</strong> — panier, livraison / à emporter, sans commission',
+        '<strong>🎁 Carte de fidélité digitale</strong> (tampons ou points) avec crédit auto à la commande',
+        '<strong>🍽️ Vraie carte / menu élégante</strong>, lisible et éditable en texte simple',
+        '<strong>Réservation de table intégrée</strong> + écran de choix (réserver / livrer / emporter / consulter)',
+        '<strong>Presets en 1 clic</strong> (bistrot, pizzeria, gastro, crêperie, burger) — puis tout éditable par vous',
+        'Page d\'accueil complète pré-remplie, textes 100% français natifs',
+        'Horaires structurés, adresse + téléphone cliquable + email configurables',
+        'Palette or & noir élégante, responsive, compatible Gutenberg',
+        'Aucun plugin requis, installation en 2 minutes — Translation-ready (GPL v2+)',
     ),
 
     'premium_features' => array(
@@ -45,12 +79,13 @@ set_query_var( 'ag_metier', array(
     'business_features' => array(
         '<strong>Tout Premium inclus</strong>',
         '<strong>Installation assistée en visio</strong> (1h)',
-        '<strong>Intégration Deliveroo / Uber Eats / TheFork</strong>',
+        '<strong>Connexion optionnelle Deliveroo / Uber Eats / TheFork</strong> — en plus de votre commande sans commission incluse',
+        '<strong>Paiement en ligne (Stripe)</strong> branché sur la commande du restaurant',
         '<strong>Maintenance WordPress 1 an incluse</strong>',
         'Audit SEO local (positionnement Google Maps, avis)',
         'Support prioritaire absolu (réponse sous 2h)',
         '<strong>Publicité réduite</strong> — simple mention copyright Alliance Groupe dans le footer',
-        'Intégration CRM (HubSpot, Brevo) pour la fidélisation',
+        'Carte de fidélité connectée à votre CRM (HubSpot, Brevo)',
         'Appel stratégique avec Fabrizio (CEO Alliance Group)',
     ),
 
