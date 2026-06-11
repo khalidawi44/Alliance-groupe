@@ -267,7 +267,7 @@ if ( ! function_exists( 'ag_tester_run' ) ) {
 			ag_push( '🔍 Nouveau test de site', $lead_lbl . ' — ' . $url . ' — score ' . ( $audit['score'] ?? 0 ) . '/100' );
 		}
 
-		$base       = wp_get_referer() ?: home_url( '/tester-mon-site' );
+		$base       = ! empty( $_POST['result_page'] ) ? esc_url_raw( wp_unslash( $_POST['result_page'] ) ) : ( wp_get_referer() ?: home_url( '/tester-mon-site' ) );
 		$result_url = add_query_arg( array( 'aid' => $aid ), $base );
 
 		// Email d'aperçu (flouté) — AUCUNE facture ici, simple diagnostic.

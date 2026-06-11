@@ -26,7 +26,7 @@ get_header();
     }
     // Voile ROUGE-NOIR sombre sur le hacker (gauche) ; voile sombre neutre à droite.
     $ag_secu_style = $ag_secu_bg
-        ? "background-image:linear-gradient(180deg,rgba(40,4,6,.45),rgba(8,4,6,.62)),linear-gradient(90deg,rgba(120,12,16,.28),rgba(5,5,8,.2)),url('" . esc_url( $ag_secu_bg ) . "')"
+        ? "background-image:linear-gradient(180deg,rgba(20,4,6,.22),rgba(8,4,6,.40)),linear-gradient(90deg,rgba(120,12,16,.18),rgba(5,5,8,.10)),url('" . esc_url( $ag_secu_bg ) . "')"
         : 'background-image:linear-gradient(160deg,#240a0c 0%,#120608 70%,#080406 100%)';
     $ag_crea_style = $ag_crea_bg
         ? "background-image:linear-gradient(180deg,rgba(8,8,12,.32),rgba(6,6,10,.5)),url('" . esc_url( $ag_crea_bg ) . "')"
@@ -144,25 +144,38 @@ get_header();
             Je <strong>crée des sites pro référencés</strong> (SEO) et je les <strong>sécurise</strong>. On commence par révéler vos failles.
         </p>
 
-        <!-- 2 boutons DISCRETS qui se fondent dans le décor : gauche sous
-             « Sécurité », droite sous « Création ». -->
+        <!-- Gauche (sous « Sécurité ») : champ URL -> test direct -> rapport léger.
+             Droite (sous « Création ») : bouton discret. Tout se fond dans le décor. -->
         <div class="ag-hero__cta2">
             <div class="ag-hero__cta2col">
-                <a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-cta-ghost ag-cta-ghost--secu">🔍 Tester mon site</a>
+                <form class="ag-herotest" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="var i=this.site_url; if(i.value && !/^https?:\/\//i.test(i.value)) i.value='https://'+i.value;">
+                    <input type="hidden" name="action" value="ag_tester_run">
+                    <?php wp_nonce_field( 'ag_tester' ); ?>
+                    <input type="text" name="hp_field" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
+                    <input type="hidden" name="result_page" value="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>">
+                    <input type="text" name="site_url" inputmode="url" placeholder="monsite.fr" required class="ag-herotest__in">
+                    <button type="submit" class="ag-herotest__btn">🔍 Tester mon site</button>
+                </form>
+                <span class="ag-herotest__hint">Diagnostic gratuit & non-intrusif — résultat immédiat.</span>
             </div>
-            <div class="ag-hero__cta2col">
+            <div class="ag-hero__cta2col ag-hero__cta2col--crea">
                 <a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>" class="ag-cta-ghost ag-cta-ghost--crea">✨ Je veux un site qui me ressemble</a>
             </div>
         </div>
         <style>
-        .ag-hero__cta2{display:flex;gap:clamp(20px,4vw,52px);justify-content:center;max-width:760px;margin:22px auto 0;flex-wrap:wrap}
-        .ag-hero__cta2col{flex:1 1 0;min-width:230px;max-width:430px;display:flex;justify-content:center}
+        .ag-hero__cta2{display:flex;gap:clamp(20px,4vw,52px);justify-content:center;align-items:center;max-width:760px;margin:22px auto 0;flex-wrap:wrap}
+        .ag-hero__cta2col{flex:1 1 0;min-width:230px;max-width:430px;display:flex;flex-direction:column;align-items:center;gap:6px}
+        /* Mini-test URL fondu dans le décor */
+        .ag-herotest{display:flex;width:100%;gap:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,90,90,.45);border-radius:999px;padding:6px 6px 6px 16px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+        .ag-herotest__in{flex:1;min-width:0;background:transparent;border:0;outline:none;color:#fff;font-size:1rem}
+        .ag-herotest__in::placeholder{color:rgba(255,255,255,.55)}
+        .ag-herotest__btn{white-space:nowrap;border:0;border-radius:999px;padding:11px 20px;font-weight:800;cursor:pointer;background:rgba(255,90,90,.85);color:#fff;transition:.18s}
+        .ag-herotest__btn:hover{background:#ff5a5a}
+        .ag-herotest__hint{font-size:.78rem;color:rgba(255,255,255,.6);text-shadow:0 1px 3px rgba(0,0,0,.5)}
+        /* Bouton création discret */
         .ag-cta-ghost{display:inline-flex;align-items:center;gap:8px;padding:14px 26px;border-radius:999px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.06);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);color:#fff!important;font-weight:700;text-decoration:none!important;text-shadow:0 1px 3px rgba(0,0,0,.45);transition:.18s;text-align:center}
-        .ag-cta-ghost:hover{background:rgba(255,255,255,.16);border-color:#fff;transform:translateY(-2px)}
-        .ag-cta-ghost--secu{border-color:rgba(255,90,90,.55)}
-        .ag-cta-ghost--secu:hover{background:rgba(255,90,90,.18);border-color:#ff8a8a}
         .ag-cta-ghost--crea{border-color:rgba(91,168,255,.55)}
-        .ag-cta-ghost--crea:hover{background:rgba(91,168,255,.18);border-color:#8ec3ff}
+        .ag-cta-ghost--crea:hover{background:rgba(91,168,255,.18);border-color:#8ec3ff;transform:translateY(-2px)}
         @media(max-width:600px){.ag-cta-ghost{width:100%;justify-content:center}}
         </style>
         <style>
