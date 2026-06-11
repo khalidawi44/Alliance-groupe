@@ -47,7 +47,7 @@ endwhile; rewind_posts(); endif; ?>
 				$ag_btn_label = ag_starter_restaurant_get_option( 'ag_hero_button' );
 				$ag_btn_url   = ag_starter_restaurant_get_option( 'ag_hero_button_url' );
 				if ( $ag_btn_label ) : ?>
-					<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn-pro"><?php echo esc_html( $ag_btn_label ); ?></a>
+					<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn-pro" data-ag-choice><?php echo esc_html( $ag_btn_label ); ?></a>
 				<?php endif; ?>
 
 				<?php if ( ! empty( $ag_stats ) ) : ?>
@@ -77,14 +77,16 @@ endwhile; rewind_posts(); endif; ?>
 				$ag_btn_label = ag_starter_restaurant_get_option( 'ag_hero_button' );
 				$ag_btn_url   = ag_starter_restaurant_get_option( 'ag_hero_button_url' );
 				if ( $ag_btn_label ) : ?>
-					<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn"><?php echo esc_html( $ag_btn_label ); ?></a>
+					<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn" data-ag-choice><?php echo esc_html( $ag_btn_label ); ?></a>
 				<?php endif; ?>
 			</div>
 		</section>
 	<?php endif; ?>
 	<?php endif; ?>
 
-	<?php if ( ! empty( $ag_services ) ) : ?>
+	<?php if ( class_exists( 'AG_Restaurant_Recettes' ) && AG_Restaurant_Recettes::enabled() && AG_Restaurant_Recettes::has_recipes() ) : ?>
+		<?php echo AG_Restaurant_Recettes::grid(); // phpcs:ignore ?>
+	<?php elseif ( ! empty( $ag_services ) ) : ?>
 		<!-- Grille services 4x2 style meilleur-restaurant.com -->
 		<section class="ag-container ag-services-grid-wrap" id="ag-services">
 			<div class="ag-services-grid-header ag-anim">

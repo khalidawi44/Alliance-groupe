@@ -149,6 +149,9 @@ class AG_Restaurant_Reservation {
 			ag_push( "🍽️ Nouvelle réservation\n" . $summary );
 		}
 
+		// Débloque les recettes secrètes (aimant à clients).
+		do_action( 'ag_restaurant_reservation_done', $email, $phone );
+
 		$page = get_page_by_path( 'reservation' );
 		$url  = $page ? get_permalink( $page->ID ) : home_url( '/reservation/' );
 		wp_safe_redirect( add_query_arg( 'reserved', '1', $url ) );

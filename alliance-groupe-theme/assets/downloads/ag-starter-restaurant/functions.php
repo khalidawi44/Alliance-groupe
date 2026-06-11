@@ -281,6 +281,7 @@ require_once get_template_directory() . '/inc/reservation.php';
 require_once get_template_directory() . '/inc/carte.php';
 require_once get_template_directory() . '/inc/commande.php';
 require_once get_template_directory() . '/inc/fidelite.php';
+require_once get_template_directory() . '/inc/recettes.php';
 
 /**
  * Destination d'une carte « spécialité » de l'accueil, choisie selon son

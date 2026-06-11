@@ -70,6 +70,12 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.23.0 =
+* Le bouton "Commander / Reserver" du hero ouvre un POP-UP DE CHOIX directement sur l'accueil (Reserver une table / Se faire livrer / A emporter / Voir la carte).
+* Nouveau : RECETTES (aimant a clients) — la grille "Nos specialites" peut etre remplacee par des cartes IMAGE menant a des articles/tutos recettes.
+* Ingredients SECRETS caches via [secret]...[/secret] : se debloquent en PAYANT (lien configurable) OU en RESERVANT / SE FAISANT LIVRER (debloque toutes les recettes, offert).
+* Reglages dans Personnaliser > Recettes (prix, lien de paiement, code, intro). 3 recettes de demo creees automatiquement.
+
 = 1.22.4 =
 * FIX Réinitialiser : le reset (hérité du template artisan) reconstruisait un menu générique (Prestations/Zones/Réalisations/Devis) et supprimait même les pages Carte et Réservation. Il recrée maintenant les bonnes pages restaurant (Notre carte, Réservation, Fidélité, Qui sommes-nous, Contact) et le bon menu, sans toucher aux réglages de fidélité.
 

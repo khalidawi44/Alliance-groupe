@@ -24,6 +24,92 @@ class AG_Restaurant_Commande {
 		add_action( 'customize_register', array( __CLASS__, 'customize' ) );
 		add_action( 'admin_post_nopriv_ag_restaurant_order', array( __CLASS__, 'handle_submit' ) );
 		add_action( 'admin_post_ag_restaurant_order', array( __CLASS__, 'handle_submit' ) );
+		// Pop-up de choix (Réserver / Livraison / À emporter / Voir la carte)
+		// affiché sur l'accueil, ouvert par le bouton hero [data-ag-choice].
+		add_action( 'wp_footer', array( __CLASS__, 'maybe_choice_modal' ) );
+	}
+
+	/** Affiche le pop-up de choix sur la page d'accueil. */
+	public static function maybe_choice_modal() {
+		if ( is_admin() ) return;
+		if ( ! ( is_front_page() || is_home() ) ) return;
+		echo self::choice_modal(); // phpcs:ignore
+	}
+
+	/**
+	 * Pop-up de choix du parcours (liens directs), réutilisable sur l'accueil.
+	 * Ouvert par n'importe quel élément portant l'attribut data-ag-choice.
+	 */
+	public static function choice_modal() {
+		$order_on = self::is_on();
+		$delivery = self::delivery_on();
+		$takeaway = self::takeaway_on();
+		$brand    = get_theme_mod( 'ag_hero_brand', get_bloginfo( 'name' ) );
+		$hours    = trim( (string) get_theme_mod( 'ag_order_hours', '' ) );
+
+		$carte_pg = get_page_by_path( 'carte' );
+		$carte    = $carte_pg ? get_permalink( $carte_pg ) : home_url( '/carte/' );
+		$resa_pg  = get_page_by_path( 'reservation' );
+		$resa     = $resa_pg ? get_permalink( $resa_pg ) : home_url( '/reservation/' );
+
+		$fee     = self::fee();
+		$fee_lbl = $fee > 0 ? number_format( $fee, 2, ',', ' ' ) . ' € de frais' : 'Frais offerts';
+
+		ob_start();
+		?>
+		<div class="ag-choice" id="ag-choice" hidden role="dialog" aria-modal="true" aria-label="Comment souhaitez-vous en profiter ?">
+			<div class="ag-choice__card">
+				<button type="button" class="ag-choice__x" id="ag-choice-x" aria-label="Fermer">✕</button>
+				<p class="ag-choice__hi">Bienvenue<?php echo $brand ? ' chez ' . esc_html( $brand ) : ''; ?></p>
+				<h3 class="ag-choice__h">Comment souhaitez-vous en profiter ?</h3>
+				<div class="ag-choice__opts">
+					<a class="ag-choice__opt" href="<?php echo esc_url( $resa ); ?>"><span>🍽️</span><b>Réserver une table</b><small>Manger sur place</small></a>
+					<?php if ( $order_on && $delivery ) : ?>
+						<a class="ag-choice__opt" href="<?php echo esc_url( add_query_arg( 'go', 'livraison', $carte ) ); ?>"><span>🛵</span><b>Se faire livrer</b><small>Livré chez vous · <?php echo esc_html( $fee_lbl ); ?></small></a>
+					<?php endif; ?>
+					<?php if ( $order_on && $takeaway ) : ?>
+						<a class="ag-choice__opt" href="<?php echo esc_url( add_query_arg( 'go', 'emporter', $carte ) ); ?>"><span>🥡</span><b>À emporter</b><small>Je viens le chercher</small></a>
+					<?php endif; ?>
+					<a class="ag-choice__opt" href="<?php echo esc_url( add_query_arg( 'go', 'consulter', $carte ) ); ?>"><span>📖</span><b>Voir la carte</b><small>Simplement consulter</small></a>
+				</div>
+				<?php if ( $hours ) : ?>
+					<div class="ag-choice__hours">🕒 <?php echo nl2br( esc_html( $hours ) ); ?></div>
+				<?php endif; ?>
+			</div>
+		</div>
+		<style>
+		.ag-choice[hidden]{display:none !important}
+		.ag-choice{position:fixed;inset:0;z-index:99996;display:flex;align-items:center;justify-content:center;background:rgba(5,4,2,.82);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);padding:18px}
+		.ag-choice__card{position:relative;background:var(--ag-color-panel,#17130d);border:1px solid color-mix(in srgb, var(--ag-color-accent,#c9a24b) 40%, transparent);border-radius:18px;padding:30px 26px 24px;max-width:460px;width:100%;text-align:center;color:var(--ag-color-text,#ece4d2);box-shadow:0 30px 80px rgba(0,0,0,.6);animation:agChoicePop .3s cubic-bezier(.2,.9,.3,1.3)}
+		@keyframes agChoicePop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+		.ag-choice__x{position:absolute;top:12px;right:14px;background:none;border:0;color:var(--ag-color-muted,#9a8e72);font-size:1.2rem;cursor:pointer;line-height:1}
+		.ag-choice__hi{margin:0;color:var(--ag-color-accent,#c9a24b);letter-spacing:2px;text-transform:uppercase;font-size:.74rem;font-weight:700}
+		.ag-choice__h{margin:6px 0 20px;font-family:'Playfair Display',Georgia,serif;font-size:1.5rem;color:var(--ag-color-heading,#f3ead4)}
+		.ag-choice__opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+		.ag-choice__opt{display:flex;flex-direction:column;align-items:center;gap:3px;padding:16px 10px;background:color-mix(in srgb, var(--ag-color-accent,#c9a24b) 6%, transparent);border:1px solid color-mix(in srgb, var(--ag-color-accent,#c9a24b) 35%, transparent);border-radius:14px;cursor:pointer;color:var(--ag-color-text,#ece4d2);text-decoration:none;transition:.15s}
+		.ag-choice__opt:hover{background:var(--ag-color-accent,#c9a24b);border-color:var(--ag-color-accent,#c9a24b);color:var(--ag-color-on-accent,#13110c)}
+		.ag-choice__opt span{font-size:1.7rem;line-height:1}
+		.ag-choice__opt b{font-size:.98rem;margin-top:4px}
+		.ag-choice__opt small{font-size:.76rem;opacity:.8;line-height:1.25}
+		.ag-choice__hours{margin:18px 0 0;color:var(--ag-color-muted,#b8ad8f);font-size:.85rem;line-height:1.6;border-top:1px solid rgba(255,255,255,.08);padding-top:14px}
+		@media(max-width:420px){.ag-choice__opts{grid-template-columns:1fr}}
+		</style>
+		<script>
+		(function(){
+			var m=document.getElementById('ag-choice'); if(!m) return;
+			function open(){ m.hidden=false; document.body.style.overflow='hidden'; }
+			function close(){ m.hidden=true; document.body.style.overflow=''; }
+			document.addEventListener('click', function(e){
+				var t=e.target.closest('[data-ag-choice]');
+				if(t){ e.preventDefault(); open(); }
+			});
+			var x=document.getElementById('ag-choice-x'); if(x) x.addEventListener('click', close);
+			m.addEventListener('click', function(e){ if(e.target===m) close(); });
+			document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
+		})();
+		</script>
+		<?php
+		return ob_get_clean();
 	}
 
 	/* ---------- Réglages ---------- */
