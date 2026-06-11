@@ -62,8 +62,10 @@ class AG_Restaurant_Commande {
 		</div>
 		<style>
 		.ag-hchoice{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin:6px auto 0;max-width:760px}
-		.ag-hchoice__opt{flex:1 1 150px;max-width:200px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:16px 12px;border-radius:16px;text-decoration:none;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.32);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:.18s;text-shadow:0 1px 3px rgba(0,0,0,.4)}
-		.ag-hchoice__opt:hover{background:var(--ag-color-accent,#c9a24b);border-color:var(--ag-color-accent,#c9a24b);color:var(--ag-color-on-accent,#fff);transform:translateY(-3px);text-shadow:none}
+		.ag-hchoice__opt,.ag-hchoice__opt b,.ag-hchoice__opt small{color:#fff !important}
+		.ag-hchoice__opt{flex:1 1 150px;max-width:200px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:16px 12px;border-radius:16px;text-decoration:none !important;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.32);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:.18s;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+		.ag-hchoice__opt:hover{background:var(--ag-color-accent,#c9a24b);border-color:var(--ag-color-accent,#c9a24b);transform:translateY(-3px)}
+		.ag-hchoice__opt:hover,.ag-hchoice__opt:hover b,.ag-hchoice__opt:hover small{color:var(--ag-color-on-accent,#fff) !important;text-shadow:none}
 		.ag-hchoice__opt span{font-size:1.9rem;line-height:1}
 		.ag-hchoice__opt b{font-size:1rem;margin-top:4px}
 		.ag-hchoice__opt small{font-size:.78rem;opacity:.85}

@@ -70,6 +70,9 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.23.4 =
+* FIX cartes de choix du hero : texte toujours blanc (une regle globale les rendait rouges) et lisible au survol (plus de texte invisible rouge-sur-rouge).
+
 = 1.23.3 =
 * FIX menu sur les articles : le texte du menu prend les couleurs du template (lisible), fini le menu "casse" (texte blanc invisible) au survol/onglet actif.
 * Articles recette = de VRAIS articles complets : intro, bandeau (temps/portions/difficulte), ingredients avec quantites, preparation numerotee detaillee, astuces du chef, puis le bloc secret. Les demos sont rafraichies.
