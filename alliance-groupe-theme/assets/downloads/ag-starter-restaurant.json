@@ -1,9 +1,9 @@
 {
-    "version": "1.18.5",
+    "version": "1.19.0",
     "download_url": "https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/downloads/ag-starter-restaurant.zip",
     "homepage": "https://alliancegroupe-inc.com/wordpress-restaurant",
     "requires": "6.0",
     "tested": "6.5",
-    "last_updated": "2026-06-09",
-    "description": "Theme restaurant immersif (hero photo, specialites, avis, FAQ) avec presets en 1 clic : traditionnel, pizzeria, bistrot, gastronomique, creperie, burger."
+    "last_updated": "2026-06-11",
+    "description": "Theme restaurant immersif (hero photo, specialites, avis, FAQ), carte elegante lisible + COMMANDE EN LIGNE type Uber Eats (panier, livraison/a emporter), presets en 1 clic."
 }

@@ -70,6 +70,12 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.19.0 =
+* Carte (Notre carte) : fond sombre Versailles -> titres, noms de plats et prix enfin parfaitement lisibles.
+* Nouveau : COMMANDE EN LIGNE type Uber Eats sur la page Notre carte (bouton "+ Ajouter", panier flottant, tiroir, validation).
+* Modes Livraison (frais + minimum) ou A emporter ; navigation par categories ; option "Commander sur WhatsApp".
+* Reception des commandes : email au restaurant + notification push (ag_push) + numero de commande, reglages dans Personnaliser > Commande en ligne.
+
 = 1.0.0 =
 * Version initiale.
 * Page d'accueil statique avec hero, cartes et section "a propos".

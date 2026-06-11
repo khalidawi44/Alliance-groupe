@@ -279,6 +279,7 @@ require_once get_template_directory() . '/inc/reset.php';
 require_once get_template_directory() . '/inc/presets.php';
 require_once get_template_directory() . '/inc/reservation.php';
 require_once get_template_directory() . '/inc/carte.php';
+require_once get_template_directory() . '/inc/commande.php';
 
 // Systeme de devis : page /devis/ avec formulaire dynamique + fourchette
 // de prix par metier x service + multiplicateur regional. Demandes

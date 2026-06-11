@@ -75,6 +75,11 @@ class AG_Restaurant_Carte {
 		return self::render();
 	}
 
+	/** Carte parsée (sections + items) — réutilisée par la commande en ligne. */
+	public static function get_sections() {
+		return self::parse( get_theme_mod( self::OPT, self::default_menu() ) );
+	}
+
 	private static function parse( $raw ) {
 		$sections = array();
 		$idx = -1;
@@ -125,7 +130,7 @@ class AG_Restaurant_Carte {
 				opacity:1 !important;animation:none !important;transform:none !important;filter:none !important;
 				-webkit-text-fill-color:currentColor !important;
 			}
-			.ag-carte-card{background:linear-gradient(180deg,rgba(227,187,79,.05),rgba(255,255,255,.02));border:1px solid rgba(227,187,79,.32);border-radius:16px;padding:44px 48px;box-shadow:0 20px 60px rgba(0,0,0,.45);}
+			.ag-carte-card{background:linear-gradient(180deg,#1c1813,#14110b);border:1px solid rgba(227,187,79,.32);border-radius:16px;padding:44px 48px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
 			@media(max-width:560px){.ag-carte-card{padding:32px 22px;}}
 			/* Titre de la page (Notre carte) bien visible aussi */
 			html body.ag-premium-mode .ag-plain-page .ag-entry-title{color:#ffd766 !important;-webkit-text-fill-color:#ffd766 !important;opacity:1 !important;}
@@ -142,17 +147,33 @@ class AG_Restaurant_Carte {
 			.ag-carte-dots{flex:1 1 auto;border-bottom:1px dotted rgba(255,215,102,.7);transform:none;align-self:center;min-width:18px;}
 			.ag-carte-card .ag-carte-price{color:#ffd766 !important;-webkit-text-fill-color:#ffd766 !important;font-weight:800;white-space:nowrap;font-size:1.12rem;}
 			.ag-carte-card .ag-carte-desc{color:#e7dcbf !important;-webkit-text-fill-color:#e7dcbf !important;font-style:italic;font-size:.96rem;margin-top:4px;line-height:1.5;}
+			/* Nav catégories (type Uber Eats) */
+			.ag-carte-nav{position:sticky;top:0;z-index:50;display:flex;gap:8px;overflow-x:auto;padding:12px 4px;margin:0 0 26px;background:linear-gradient(180deg,#1c1813,rgba(28,24,19,.95));border-bottom:1px solid rgba(227,187,79,.22);-webkit-overflow-scrolling:touch;}
+			.ag-carte-nav::-webkit-scrollbar{display:none}
+			.ag-carte-nav a{flex:0 0 auto;color:#e7dcbf;text-decoration:none;font-weight:600;font-size:.9rem;padding:7px 16px;border:1px solid rgba(227,187,79,.4);border-radius:999px;white-space:nowrap;transition:.15s;}
+			.ag-carte-nav a:hover{background:#c9a24b;color:#13110c}
 			</style>
 			<div class="ag-carte-card">
 			<div class="ag-carte-top">
 				<p class="ag-carte-top__sub">La Carte</p>
 				<div class="ag-carte-top__rule"></div>
 			</div>
+			<?php if ( count( $sections ) > 1 ) : ?>
+				<nav class="ag-carte-nav" aria-label="Sections de la carte">
+					<?php foreach ( $sections as $sec ) : ?>
+						<a href="#<?php echo esc_attr( 'sec-' . sanitize_title( $sec['title'] ) ); ?>"><?php echo esc_html( $sec['title'] ); ?></a>
+					<?php endforeach; ?>
+				</nav>
+			<?php endif; ?>
 			<?php foreach ( $sections as $sec ) : ?>
-				<div class="ag-carte-section">
+				<div class="ag-carte-section" id="<?php echo esc_attr( 'sec-' . sanitize_title( $sec['title'] ) ); ?>">
 					<h2 class="ag-carte-section__title"><?php echo esc_html( $sec['title'] ); ?></h2>
 					<div class="ag-carte-section__rule"></div>
-					<?php foreach ( $sec['items'] as $it ) : if ( '' === $it['name'] ) continue; ?>
+					<?php
+					$order_on = class_exists( 'AG_Restaurant_Commande' ) && AG_Restaurant_Commande::is_on();
+					foreach ( $sec['items'] as $it ) : if ( '' === $it['name'] ) continue;
+						$num = $order_on ? AG_Restaurant_Commande::num_price( $it['price'] ) : null;
+					?>
 						<div class="ag-carte-item">
 							<div class="ag-carte-line">
 								<span class="ag-carte-name"><?php echo esc_html( $it['name'] ); ?></span>
@@ -164,11 +185,15 @@ class AG_Restaurant_Carte {
 							<?php if ( '' !== $it['desc'] ) : ?>
 								<div class="ag-carte-desc"><?php echo esc_html( $it['desc'] ); ?></div>
 							<?php endif; ?>
+							<?php if ( null !== $num ) {
+								echo AG_Restaurant_Commande::add_button( AG_Restaurant_Commande::item_id( $sec['title'], $it['name'] ), $it['name'], $num );
+							} ?>
 						</div>
 					<?php endforeach; ?>
 				</div>
 			<?php endforeach; ?>
 			</div>
+		<?php if ( class_exists( 'AG_Restaurant_Commande' ) ) echo AG_Restaurant_Commande::cart_ui(); ?>
 		</section>
 		<?php
 		return ob_get_clean();
