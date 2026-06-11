@@ -82,8 +82,19 @@ get_header();
         </div>
 
         <h1 class="ag-hero__title ag-hero__title--uni" data-noreveal>
-            <span class="ag-title-desk">Je <span class="ag-uni ag-uni--secu">sécurise</span> &amp; je <span class="ag-uni ag-uni--crea">crée</span> votre site.<br>
-            <span class="ag-hero__zen">Vous, vous respirez.</span></span>
+            <span class="ag-title-desk">
+                <span class="ag-duo">
+                    <span class="ag-duo__col">
+                        <span class="ag-uni ag-uni--secu">Sécurité</span>
+                        <span class="ag-duo__txt">J'audite &amp; je protège votre site contre le piratage.</span>
+                    </span>
+                    <span class="ag-duo__sep" aria-hidden="true"></span>
+                    <span class="ag-duo__col">
+                        <span class="ag-uni ag-uni--crea">Création de site web IA&amp;SEO</span>
+                        <span class="ag-duo__txt">Un site pro, rapide et bien référencé sur Google.</span>
+                    </span>
+                </span>
+            </span>
             <span class="ag-title-mob"><span class="ag-uni--crea">Création</span> de site web<br>&amp; <span class="ag-uni--secu">sécurité</span></span>
         </h1>
         <style>
@@ -98,6 +109,18 @@ get_header();
         .ag-hero__zen{display:inline-block;margin-top:4px;color:#F3D27A;
             text-shadow:0 2px 20px rgba(243,210,122,.4);font-weight:800;white-space:nowrap}
         @media(max-width:600px){.ag-uni,.ag-hero__zen{white-space:normal}}
+
+        /* ── PC + TABLETTE (>600px) : titre en 2 colonnes —
+              gauche = Sécurité (rouge) + court texte ; droite = Création IA&SEO (bleu) + court texte. ── */
+        .ag-duo{display:flex;align-items:stretch;justify-content:center;gap:clamp(20px,4vw,52px);flex-wrap:wrap}
+        .ag-duo__col{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1 1 0;min-width:230px;max-width:430px;text-align:center}
+        .ag-duo__col .ag-uni{white-space:normal;font-size:clamp(1.5rem,3vw,2.5rem);line-height:1.08;display:block}
+        .ag-duo__txt{font-weight:600;font-size:clamp(.92rem,1.4vw,1.08rem);line-height:1.45;color:rgba(255,255,255,.82)}
+        .ag-duo__sep{flex:0 0 1px;align-self:stretch;background:linear-gradient(180deg,transparent,rgba(255,255,255,.28),transparent)}
+        /* Tablette portrait : si ça passe à la ligne, le séparateur devient horizontal. */
+        @media(max-width:780px) and (min-width:601px){
+            .ag-duo__sep{flex-basis:auto;width:55%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent)}
+        }
 
         /* ── MOBILE UNIQUEMENT (≤600px) : titre simple + clair, paragraphe
               raccourci, badge Naples/Nantes abrégé. Tablette/PC inchangés. ── */
