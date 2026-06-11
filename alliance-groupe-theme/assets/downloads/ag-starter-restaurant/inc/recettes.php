@@ -59,6 +59,8 @@ class AG_Restaurant_Recettes {
 		.ag-recipe-article ol{counter-reset:step;list-style:none;padding:0;margin:0 0 10px}
 		.ag-recipe-article ol li{counter-increment:step;position:relative;padding:6px 0 18px 56px;line-height:1.6}
 		.ag-recipe-article ol li::before{content:counter(step);position:absolute;left:0;top:2px;width:38px;height:38px;border-radius:50%;background:var(--ag-color-accent,#c9a24b);color:var(--ag-color-on-accent,#fff);display:flex;align-items:center;justify-content:center;font-weight:800;font-family:"Playfair Display",Georgia,serif}
+		.ag-recipe-meta{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 6px}
+		.ag-recipe-meta span{background:color-mix(in srgb,var(--ag-color-accent,#c9a24b) 12%,transparent);border:1px solid color-mix(in srgb,var(--ag-color-accent,#c9a24b) 35%,transparent);border-radius:999px;padding:7px 16px;font-weight:700;font-size:.92rem}
 		</style>';
 
 		return $css . '<div class="ag-recipe-article">' . $hero . $content . '</div>';
@@ -222,7 +224,7 @@ class AG_Restaurant_Recettes {
 	/* ---------------- Recettes de démo (1re activation) ---------------- */
 
 	public static function maybe_seed() {
-		if ( get_option( 'ag_recipe_seed_v2' ) ) return;
+		if ( get_option( 'ag_recipe_seed_v3' ) ) return;
 
 		$cat_id = 0;
 		$cat = get_category_by_slug( self::CAT );
@@ -253,16 +255,23 @@ class AG_Restaurant_Recettes {
 				update_post_meta( $pid, '_ag_recipe_img', $demo['img'] );
 			}
 		}
-		update_option( 'ag_recipe_seed_v2', 1 );
+		update_option( 'ag_recipe_seed_v3', 1 );
 	}
 
 	private static function demo_recipes() {
-		$mk = function( $intro, $ingredients, $steps, $secret ) {
-			$c  = '<!-- wp:paragraph --><p>' . $intro . '</p><!-- /wp:paragraph -->' . "\n";
+		// $intro = array de paragraphes ; $meta = array(temps, portions, difficulté)
+		$mk = function( $intro, $meta, $ingredients, $steps, $tips, $secret ) {
+			$c = '';
+			foreach ( (array) $intro as $par ) {
+				$c .= '<!-- wp:paragraph --><p>' . $par . '</p><!-- /wp:paragraph -->' . "\n";
+			}
+			$c .= '<!-- wp:html --><div class="ag-recipe-meta"><span>⏱️ ' . $meta[0] . '</span><span>👥 ' . $meta[1] . '</span><span>🔥 ' . $meta[2] . '</span></div><!-- /wp:html -->' . "\n";
 			$c .= '<!-- wp:heading --><h2>Ingrédients</h2><!-- /wp:heading -->' . "\n";
 			$c .= '<!-- wp:list --><ul><li>' . implode( '</li><li>', $ingredients ) . '</li></ul><!-- /wp:list -->' . "\n";
 			$c .= '<!-- wp:heading --><h2>Préparation</h2><!-- /wp:heading -->' . "\n";
 			$c .= '<!-- wp:list {"ordered":true} --><ol><li>' . implode( '</li><li>', $steps ) . '</li></ol><!-- /wp:list -->' . "\n";
+			$c .= '<!-- wp:heading --><h2>Les astuces du chef</h2><!-- /wp:heading -->' . "\n";
+			$c .= '<!-- wp:list --><ul><li>' . implode( '</li><li>', $tips ) . '</li></ul><!-- /wp:list -->' . "\n";
 			$c .= '[secret]' . "\n" . $secret . "\n" . '[/secret]';
 			return $c;
 		};
@@ -272,21 +281,62 @@ class AG_Restaurant_Recettes {
 				'title' => 'La vraie pâte à pizza napolitaine',
 				'img'   => 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200&q=80',
 				'content' => $mk(
-					"La base d'une bonne pizza, c'est la pâte : croustillante dehors, moelleuse dedans. Voici les ingrédients et les grandes étapes.",
-					array( 'Farine type 00', 'Eau', 'Sel fin', 'Levure de boulanger' ),
-					array( 'Mélangez la farine et l\'eau, laissez reposer 20 min (autolyse).', 'Ajoutez le sel puis la levure, pétrissez jusqu\'à une pâte lisse.', 'Façonnez des boules (pâtons) et laissez lever à couvert.', 'Étalez à la main, garnissez, puis enfournez très chaud.' ),
-					"Le secret du chef :\n- La proportion exacte d'eau (hydratation) et la pincée de sucre\n- Une maturation longue de 48 h à 4 °C\n- Le geste pour étaler sans rouleau, et la température de cuisson reproductible chez vous.\n\nRecette complète détaillée, gramme par gramme."
+					array(
+						"La pizza napolitaine, ce n'est pas qu'une garniture : c'est avant tout une <strong>pâte vivante</strong>, légère, à la fois croustillante sur les bords (le fameux <em>cornicione</em>) et fondante au centre. Chez nous, elle lève lentement, comme à Naples.",
+						"Dans cette recette, on vous donne <strong>la base que tout le monde peut réussir</strong> à la maison, même sans four à bois. Les proportions exactes et les tours de main du chef, eux, sont réservés (voir plus bas).",
+					),
+					array( '30 min + repos', '4 pizzas', 'Facile' ),
+					array(
+						'500 g de farine type 00 (à défaut, une T45 de qualité)',
+						'325 ml d\'eau à température ambiante',
+						'10 g de sel fin',
+						'2 g de levure de boulanger fraîche',
+						'Un filet d\'huile d\'olive vierge extra',
+					),
+					array(
+						'Dans un grand saladier, mélangez la farine et l\'eau jusqu\'à absorption, puis laissez reposer 20 minutes (autolyse) : la pâte se forme presque toute seule.',
+						'Ajoutez le sel puis la levure émiettée. Pétrissez 8 à 10 minutes, jusqu\'à obtenir une pâte lisse et élastique qui se décolle des parois.',
+						'Couvrez et laissez pointer 1 heure à température ambiante, puis divisez en 4 pâtons réguliers.',
+						'Boulez chaque pâton, déposez-les dans une boîte farinée et laissez maturer (idéalement au frais, voir astuces).',
+						'Étalez à la main du centre vers les bords pour garder l\'air dans le cornicione, garnissez, puis enfournez à la température la plus haute de votre four.',
+					),
+					array(
+						'Une pâte qui colle un peu = une pizza moelleuse : ne sur-farinez pas.',
+						'Préchauffez votre plaque (ou une pierre) à fond : c\'est ce qui remplace le four à bois.',
+						'Sortez les pâtons 1 h avant de les étaler pour qu\'ils soient à température.',
+					),
+					"🔓 Le secret du chef (réservé) :\n- L'hydratation EXACTE et la pincée de sucre qui change tout\n- La maturation longue de 48 h à 4 °C (le vrai goût napolitain)\n- Le geste précis pour étaler sans rouleau et la cuisson reproductible chez vous, minute par minute."
 				),
 			),
 			array(
 				'slug'  => 'sauce-tomate-maison',
-				'title' => 'Notre sauce tomate maison',
+				'title' => 'Notre sauce tomate maison (la vraie)',
 				'img'   => 'https://images.unsplash.com/photo-1606756790138-261d2b21cd75?w=1200&q=80',
 				'content' => $mk(
-					"Une sauce simple en apparence… mais tout est dans l'équilibre et la cuisson.",
-					array( 'Tomates San Marzano', 'Huile d\'olive vierge', 'Ail', 'Basilic frais', 'Sel' ),
-					array( 'Faites revenir l\'ail dans l\'huile d\'olive sans le brûler.', 'Ajoutez les tomates écrasées et le sel.', 'Laissez mijoter à feu doux.', 'Ajoutez le basilic en fin de cuisson.' ),
-					"Les ingrédients cachés : la touche de sucre, l'épice secrète et le temps de mijotage exact pour une sauce qui ne rend pas d'eau sur la pâte."
+					array(
+						"Une bonne pizza ou de bonnes pâtes commencent par une <strong>sauce tomate honnête</strong> : peu d'ingrédients, mais les bons, et surtout la bonne cuisson. Pas de concentré, pas de sucre à outrance.",
+						"Voici notre base. Le dosage précis qui fait notre signature est réservé (plus bas).",
+					),
+					array( '40 min', '6 personnes', 'Très facile' ),
+					array(
+						'800 g de tomates San Marzano (pelées, en boîte de qualité)',
+						'3 cuillères à soupe d\'huile d\'olive vierge extra',
+						'2 gousses d\'ail',
+						'Quelques feuilles de basilic frais',
+						'Sel, poivre',
+					),
+					array(
+						'Faites chauffer l\'huile d\'olive à feu doux et faites-y blondir l\'ail écrasé sans le brûler (sinon il devient amer).',
+						'Ajoutez les tomates écrasées à la main, salez légèrement.',
+						'Laissez mijoter à feu doux 25 à 30 minutes, en remuant de temps en temps, jusqu\'à ce que la sauce nappe la cuillère.',
+						'Ajoutez le basilic ciselé en fin de cuisson, rectifiez l\'assaisonnement.',
+					),
+					array(
+						'San Marzano = moins d\'acidité, plus de douceur naturelle.',
+						'Une sauce trop liquide détrempe la pâte : laissez-la bien réduire.',
+						'Le basilic se met à la fin pour garder son parfum.',
+					),
+					"🔓 Réservé : la touche de sucre dosée au gramme, l'épice secrète de la maison et le temps de mijotage exact pour une sauce qui ne rend jamais d'eau sur la pâte."
 				),
 			),
 			array(
@@ -294,10 +344,32 @@ class AG_Restaurant_Recettes {
 				'title' => 'Le tiramisu du chef',
 				'img'   => 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=1200&q=80',
 				'content' => $mk(
-					"Crémeux, léger, jamais trop sucré. Voici la base de notre tiramisu maison.",
-					array( 'Mascarpone', 'Œufs frais', 'Sucre', 'Café fort', 'Cacao amer', 'Biscuits' ),
-					array( 'Séparez les blancs des jaunes ; blanchissez les jaunes avec le sucre.', 'Incorporez le mascarpone, puis les blancs montés en neige.', 'Trempez les biscuits dans le café, dressez en couches.', 'Réfrigérez plusieurs heures, saupoudrez de cacao avant de servir.' ),
-					"Le secret : l'alcool utilisé, le ratio sucre/mascarpone exact et l'astuce pour une mousse qui tient sans gélatine."
+					array(
+						"Le tiramisu, c'est un dessert de <strong>partage</strong> : crémeux, aérien, à peine sucré, avec ce parfum de café qui réveille. Le nôtre tient parfaitement à la découpe… sans gélatine.",
+						"On vous livre la base ci-dessous. Le secret de la tenue et de l'équilibre est réservé (plus bas).",
+					),
+					array( '30 min + 4 h de repos', '6 personnes', 'Facile' ),
+					array(
+						'250 g de mascarpone',
+						'3 œufs frais (jaunes et blancs séparés)',
+						'80 g de sucre',
+						'1 tasse de café fort, refroidi',
+						'Cacao amer non sucré',
+						'Biscuits à la cuillère (boudoirs)',
+					),
+					array(
+						'Blanchissez les jaunes d\'œufs avec le sucre jusqu\'à ce que le mélange double de volume.',
+						'Incorporez délicatement le mascarpone pour obtenir une crème lisse.',
+						'Montez les blancs en neige ferme et incorporez-les en deux fois, sans casser la mousse.',
+						'Trempez rapidement les biscuits dans le café, dressez une couche de biscuits, une couche de crème, et répétez.',
+						'Réservez au frais au moins 4 heures. Saupoudrez de cacao juste avant de servir.',
+					),
+					array(
+						'Ne trempez pas trop les biscuits : un aller-retour suffit.',
+						'Le repos au frais est obligatoire : c\'est lui qui donne la tenue.',
+						'Cacao au dernier moment, sinon il s\'humidifie.',
+					),
+					"🔓 Réservé : l'alcool utilisé et son dosage, le ratio sucre/mascarpone exact et l'astuce pro pour une mousse qui se tient parfaitement, sans gélatine."
 				),
 			),
 		);

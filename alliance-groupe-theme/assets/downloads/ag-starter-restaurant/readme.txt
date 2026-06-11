@@ -70,6 +70,10 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.23.3 =
+* FIX menu sur les articles : le texte du menu prend les couleurs du template (lisible), fini le menu "casse" (texte blanc invisible) au survol/onglet actif.
+* Articles recette = de VRAIS articles complets : intro, bandeau (temps/portions/difficulte), ingredients avec quantites, preparation numerotee detaillee, astuces du chef, puis le bloc secret. Les demos sont rafraichies.
+
 = 1.23.2 =
 * Articles recette : grande PHOTO en haut + ETAPES claires (Ingredients en liste, Preparation numerotee), cadre lisible. Les 3 recettes de demo sont rafraichies automatiquement.
 * FIX affichage : le header transparent de l'accueil debordait sur les articles/archives/recherche/404 -> il est desormais plein et le contenu est decale dessous.
