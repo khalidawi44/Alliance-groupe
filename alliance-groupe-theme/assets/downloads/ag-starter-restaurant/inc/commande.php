@@ -437,6 +437,8 @@ class AG_Restaurant_Commande {
 		/* Overlay + tiroir (compact) */
 		.ag-ord-overlay{position:fixed;inset:0;background:rgba(5,4,2,.55);backdrop-filter:blur(2px);z-index:99985}
 		.ag-ord-drawer{position:fixed;top:0;right:0;height:100%;width:min(340px,88vw);max-width:88vw;background:var(--ag-color-panel);color:var(--ag-color-text);z-index:99990;transform:translateX(102%);transition:transform .28s cubic-bezier(.22,.9,.3,1);display:flex;flex-direction:column;box-shadow:-16px 0 46px rgba(0,0,0,.55);border-left:1px solid color-mix(in srgb, var(--ag-color-accent) 30%, transparent)}
+		body.admin-bar .ag-ord-drawer{top:32px;height:calc(100% - 32px)}
+		@media(max-width:782px){body.admin-bar .ag-ord-drawer{top:46px;height:calc(100% - 46px)}}
 		.ag-ord-drawer.is-open{transform:translateX(0)}
 		.ag-ord-drawer__head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid color-mix(in srgb, var(--ag-color-accent) 22%, transparent);font-size:1.02rem;color:var(--ag-color-heading)}
 		.ag-ord-x{background:none;border:0;color:var(--ag-color-muted);font-size:1.3rem;cursor:pointer;line-height:1}

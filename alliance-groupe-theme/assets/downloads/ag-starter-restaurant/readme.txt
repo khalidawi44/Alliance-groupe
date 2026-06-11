@@ -70,6 +70,10 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.23.5 =
+* Menu lisible (couleurs du template) sur toutes les pages internes : fini le survol/onglet blanc invisible sur la Carte, Reservation, etc.
+* Tiroir panier decale sous la barre d'admin WordPress (l'en-tete 'Votre commande' n'est plus cache quand on est connecte admin).
+
 = 1.23.4 =
 * FIX cartes de choix du hero : texte toujours blanc (une regle globale les rendait rouges) et lisible au survol (plus de texte invisible rouge-sur-rouge).
 

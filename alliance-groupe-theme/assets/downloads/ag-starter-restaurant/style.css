@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress 100% francais pour restaurants : traditionnel, pizzeria, bistrot, gastronomique, creperie, burger. Page d'accueil immersive (hero photo, grille de specialites, comment reserver, avis clients, FAQ), contenu pre-redige en francais natif, presets en 1 clic par type de restaurant. Reservation, carte, privatisation. Design chaleureux et responsive.
-Version: 1.23.4
+Version: 1.23.5
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -1482,4 +1482,15 @@ body.ag-premium-mode.archive .ag-site-header .ag-primary-menu .current-menu-item
 body.ag-premium-mode.blog .ag-site-header .ag-primary-menu .current-menu-item > a{
 	color:var(--ag-color-accent) !important;background:transparent !important;text-shadow:none !important;
 	text-decoration:none !important;
+}
+
+/* ═══ Menu lisible (couleurs du template) sur TOUTES les pages hors accueil ═══
+   (corrige le survol/onglet actif qui devenait blanc invisible sur la Carte, etc.) */
+body.ag-premium-mode:not(.home) .ag-site-header .ag-primary-menu a{
+	color:var(--ag-color-heading) !important;text-shadow:none !important;background:transparent !important;font-weight:600 !important;
+}
+body.ag-premium-mode:not(.home) .ag-site-header .ag-primary-menu a:hover,
+body.ag-premium-mode:not(.home) .ag-site-header .ag-primary-menu .current-menu-item > a,
+body.ag-premium-mode:not(.home) .ag-site-header .ag-primary-menu .current_page_item > a{
+	color:var(--ag-color-accent) !important;background:transparent !important;text-shadow:none !important;text-decoration:none !important;
 }
