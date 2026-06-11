@@ -70,6 +70,10 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.23.2 =
+* Articles recette : grande PHOTO en haut + ETAPES claires (Ingredients en liste, Preparation numerotee), cadre lisible. Les 3 recettes de demo sont rafraichies automatiquement.
+* FIX affichage : le header transparent de l'accueil debordait sur les articles/archives/recherche/404 -> il est desormais plein et le contenu est decale dessous.
+
 = 1.23.1 =
 * Le hero affiche directement les CARTES DE CHOIX sous le titre (Reserver / Se faire livrer / A emporter / Voir la carte) au lieu d'un bouton.
 * Reinitialiser : nouveau bouton NETTOYAGE EXHAUSTIF qui supprime aussi tous les articles (hors categorie Recettes) et toutes les pages non-restaurant laisses par d'autres templates.

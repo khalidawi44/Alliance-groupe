@@ -24,9 +24,44 @@ class AG_Restaurant_Recettes {
 		add_shortcode( 'secret', array( __CLASS__, 'shortcode_secret' ) );
 		add_action( 'customize_register', array( __CLASS__, 'customize' ) );
 		add_action( 'after_setup_theme', array( __CLASS__, 'maybe_seed' ) );
+		// Mise en page de l'article recette (photo en haut + cadre lisible).
+		add_filter( 'the_content', array( __CLASS__, 'recipe_content' ), 6 );
 		// Réserver / commander débloque les recettes.
 		add_action( 'ag_restaurant_order_placed', array( __CLASS__, 'unlock_cookie' ) );
 		add_action( 'ag_restaurant_reservation_done', array( __CLASS__, 'unlock_cookie' ) );
+	}
+
+	/** Le post appartient-il à la catégorie « recettes » ? */
+	public static function is_recipe( $id ) {
+		$cat = get_category_by_slug( self::CAT );
+		return $cat ? has_category( (int) $cat->term_id, $id ) : false;
+	}
+
+	/** Met en page l'article recette : grande photo + cadre + style étapes. */
+	public static function recipe_content( $content ) {
+		if ( is_admin() || ! is_singular( 'post' ) || ! in_the_loop() || ! is_main_query() ) return $content;
+		$id = get_the_ID();
+		if ( ! self::is_recipe( $id ) ) return $content;
+
+		$img = self::recipe_img( $id );
+		$hero = ( $img && ! has_post_thumbnail( $id ) )
+			? '<figure class="ag-recipe-hero"><img src="' . esc_url( $img ) . '" alt="' . esc_attr( get_the_title( $id ) ) . '" loading="lazy"></figure>'
+			: '';
+
+		$css = '<style>
+		.ag-recipe-article{max-width:760px;margin:0 auto}
+		.ag-recipe-hero{margin:0 0 26px;border-radius:18px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+		.ag-recipe-hero img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
+		.ag-recipe-article h2{font-family:"Playfair Display",Georgia,serif;color:var(--ag-color-accent,#c9a24b)!important;font-size:1.5rem;margin:30px 0 12px;padding-bottom:8px;border-bottom:2px solid color-mix(in srgb,var(--ag-color-accent,#c9a24b) 35%,transparent)}
+		.ag-recipe-article ul{list-style:none;padding:0;margin:0 0 10px}
+		.ag-recipe-article ul li{padding:9px 0 9px 30px;position:relative;border-bottom:1px solid rgba(255,255,255,.08)}
+		.ag-recipe-article ul li::before{content:"🍴";position:absolute;left:0;top:8px;font-size:.95rem}
+		.ag-recipe-article ol{counter-reset:step;list-style:none;padding:0;margin:0 0 10px}
+		.ag-recipe-article ol li{counter-increment:step;position:relative;padding:6px 0 18px 56px;line-height:1.6}
+		.ag-recipe-article ol li::before{content:counter(step);position:absolute;left:0;top:2px;width:38px;height:38px;border-radius:50%;background:var(--ag-color-accent,#c9a24b);color:var(--ag-color-on-accent,#fff);display:flex;align-items:center;justify-content:center;font-weight:800;font-family:"Playfair Display",Georgia,serif}
+		</style>';
+
+		return $css . '<div class="ag-recipe-article">' . $hero . $content . '</div>';
 	}
 
 	/* ---------------- Réglages ---------------- */
@@ -187,7 +222,7 @@ class AG_Restaurant_Recettes {
 	/* ---------------- Recettes de démo (1re activation) ---------------- */
 
 	public static function maybe_seed() {
-		if ( get_option( 'ag_recipe_seed_done' ) ) return;
+		if ( get_option( 'ag_recipe_seed_v2' ) ) return;
 
 		$cat_id = 0;
 		$cat = get_category_by_slug( self::CAT );
@@ -199,7 +234,13 @@ class AG_Restaurant_Recettes {
 		}
 
 		foreach ( self::demo_recipes() as $demo ) {
-			if ( get_page_by_path( $demo['slug'], OBJECT, 'post' ) ) continue;
+			$existing = get_page_by_path( $demo['slug'], OBJECT, 'post' );
+			if ( $existing ) {
+				// Rafraîchit le contenu de démo (mise en page photo + étapes).
+				wp_update_post( array( 'ID' => $existing->ID, 'post_content' => $demo['content'] ) );
+				if ( ! empty( $demo['img'] ) ) update_post_meta( $existing->ID, '_ag_recipe_img', $demo['img'] );
+				continue;
+			}
 			$pid = wp_insert_post( array(
 				'post_type'     => 'post',
 				'post_status'   => 'publish',
@@ -212,34 +253,52 @@ class AG_Restaurant_Recettes {
 				update_post_meta( $pid, '_ag_recipe_img', $demo['img'] );
 			}
 		}
-		update_option( 'ag_recipe_seed_done', 1 );
+		update_option( 'ag_recipe_seed_v2', 1 );
 	}
 
 	private static function demo_recipes() {
+		$mk = function( $intro, $ingredients, $steps, $secret ) {
+			$c  = '<!-- wp:paragraph --><p>' . $intro . '</p><!-- /wp:paragraph -->' . "\n";
+			$c .= '<!-- wp:heading --><h2>Ingrédients</h2><!-- /wp:heading -->' . "\n";
+			$c .= '<!-- wp:list --><ul><li>' . implode( '</li><li>', $ingredients ) . '</li></ul><!-- /wp:list -->' . "\n";
+			$c .= '<!-- wp:heading --><h2>Préparation</h2><!-- /wp:heading -->' . "\n";
+			$c .= '<!-- wp:list {"ordered":true} --><ol><li>' . implode( '</li><li>', $steps ) . '</li></ol><!-- /wp:list -->' . "\n";
+			$c .= '[secret]' . "\n" . $secret . "\n" . '[/secret]';
+			return $c;
+		};
 		return array(
 			array(
 				'slug'  => 'pate-a-pizza-napolitaine',
 				'title' => 'La vraie pâte à pizza napolitaine',
 				'img'   => 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200&q=80',
-				'content' => "<!-- wp:paragraph --><p>La base d'une bonne pizza, c'est la pâte. Voici nos ingrédients visibles et les grandes étapes.</p><!-- /wp:paragraph -->\n"
-					. "<!-- wp:list --><ul><li>Farine type 00</li><li>Eau</li><li>Sel</li><li>Levure</li></ul><!-- /wp:list -->\n"
-					. "[secret]\nLe secret du chef :\n- La proportion exacte d'eau (hydratation) et la pincée de sucre\n- Une maturation longue de 48h à 4°C\n- Le geste pour étaler sans rouleau\n\nRecette complète détaillée, gramme par gramme, et la cuisson au four à bois reproductible chez vous.\n[/secret]",
+				'content' => $mk(
+					"La base d'une bonne pizza, c'est la pâte : croustillante dehors, moelleuse dedans. Voici les ingrédients et les grandes étapes.",
+					array( 'Farine type 00', 'Eau', 'Sel fin', 'Levure de boulanger' ),
+					array( 'Mélangez la farine et l\'eau, laissez reposer 20 min (autolyse).', 'Ajoutez le sel puis la levure, pétrissez jusqu\'à une pâte lisse.', 'Façonnez des boules (pâtons) et laissez lever à couvert.', 'Étalez à la main, garnissez, puis enfournez très chaud.' ),
+					"Le secret du chef :\n- La proportion exacte d'eau (hydratation) et la pincée de sucre\n- Une maturation longue de 48 h à 4 °C\n- Le geste pour étaler sans rouleau, et la température de cuisson reproductible chez vous.\n\nRecette complète détaillée, gramme par gramme."
+				),
 			),
 			array(
 				'slug'  => 'sauce-tomate-maison',
 				'title' => 'Notre sauce tomate maison',
-				'img'   => 'https://images.unsplash.com/photo-1572441710534-91f1f5e7a8a0?w=1200&q=80',
-				'content' => "<!-- wp:paragraph --><p>Une sauce simple en apparence… mais tout est dans l'équilibre.</p><!-- /wp:paragraph -->\n"
-					. "<!-- wp:list --><ul><li>Tomates San Marzano</li><li>Huile d'olive</li><li>Ail, basilic</li></ul><!-- /wp:list -->\n"
-					. "[secret]\nLes ingrédients cachés : la touche de sucre, l'épice secrète et le temps de mijotage exact pour une sauce qui ne rend pas d'eau sur la pâte.\n[/secret]",
+				'img'   => 'https://images.unsplash.com/photo-1606756790138-261d2b21cd75?w=1200&q=80',
+				'content' => $mk(
+					"Une sauce simple en apparence… mais tout est dans l'équilibre et la cuisson.",
+					array( 'Tomates San Marzano', 'Huile d\'olive vierge', 'Ail', 'Basilic frais', 'Sel' ),
+					array( 'Faites revenir l\'ail dans l\'huile d\'olive sans le brûler.', 'Ajoutez les tomates écrasées et le sel.', 'Laissez mijoter à feu doux.', 'Ajoutez le basilic en fin de cuisson.' ),
+					"Les ingrédients cachés : la touche de sucre, l'épice secrète et le temps de mijotage exact pour une sauce qui ne rend pas d'eau sur la pâte."
+				),
 			),
 			array(
 				'slug'  => 'tiramisu-du-chef',
 				'title' => 'Le tiramisu du chef',
 				'img'   => 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=1200&q=80',
-				'content' => "<!-- wp:paragraph --><p>Crémeux, léger, jamais trop sucré. Voici la base.</p><!-- /wp:paragraph -->\n"
-					. "<!-- wp:list --><ul><li>Mascarpone</li><li>Œufs</li><li>Café, cacao</li><li>Biscuits</li></ul><!-- /wp:list -->\n"
-					. "[secret]\nLe secret : l'alcool utilisé, le ratio sucre/mascarpone et l'astuce pour une mousse qui tient sans gélatine.\n[/secret]",
+				'content' => $mk(
+					"Crémeux, léger, jamais trop sucré. Voici la base de notre tiramisu maison.",
+					array( 'Mascarpone', 'Œufs frais', 'Sucre', 'Café fort', 'Cacao amer', 'Biscuits' ),
+					array( 'Séparez les blancs des jaunes ; blanchissez les jaunes avec le sucre.', 'Incorporez le mascarpone, puis les blancs montés en neige.', 'Trempez les biscuits dans le café, dressez en couches.', 'Réfrigérez plusieurs heures, saupoudrez de cacao avant de servir.' ),
+					"Le secret : l'alcool utilisé, le ratio sucre/mascarpone exact et l'astuce pour une mousse qui tient sans gélatine."
+				),
 			),
 		);
 	}
