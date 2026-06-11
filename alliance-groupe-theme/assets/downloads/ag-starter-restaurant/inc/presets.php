@@ -77,7 +77,15 @@ class AG_Restaurant_Presets {
 				'label' => 'Pizzeria / Italien',
 				'desc'  => 'Pizzas au feu de bois, pâtes fraîches, cuisine italienne. Pour pizzeria, trattoria, restaurant italien.',
 				'mods'  => array(
-					'ag_color_accent'           => '#C0392B',
+					// Couleurs de l'Italie (tricolore) : fond creme clair, titres verts,
+					// accent rouge. Ambiance trattoria.
+					'ag_color_accent'           => '#CD212A',
+					'ag_color_background'       => '#fbf7ee',
+					'ag_color_panel'            => '#ffffff',
+					'ag_color_border'           => '#e7decb',
+					'ag_color_text'             => '#2b2a26',
+					'ag_color_heading'          => '#14843b',
+					'ag_color_muted'            => '#6e6a60',
 					'ag_hero_prefix'            => 'Bienvenue à la',
 					'ag_hero_brand'             => 'Pizzeria',
 					'ag_hero_subtitle'          => 'Pizzas au feu de bois, pâtes fraîches maison, vraie cuisine italienne. Sur place, à emporter ou en livraison.',

@@ -70,6 +70,9 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.21.1 =
+* Preset Pizzeria/Italien : couleurs de l'Italie (tricolore) — fond creme clair, titres verts, accent rouge, ambiance trattoria.
+
 = 1.21.0 =
 * Nouveau : CARTE DE FIDELITE sur la page /fidelite/ (creee automatiquement).
 * Le client regle tout (Personnaliser > Carte de fidelite) : tampons ou points, objectif, recompense, bonus de bienvenue, texte.
