@@ -70,6 +70,9 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.24.2 =
+* FIX menu definitif : sur les pages internes (Carte, etc.) l'onglet survole/actif n'est plus blanc invisible. Les regles 'menu blanc' sont desormais limitees au hero de l'accueil ; partout ailleurs le menu est aux couleurs du template.
+
 = 1.24.1 =
 * Photos par plat sur la carte : chaque plat des cartes par type (pizzas, burgers, galettes...) a sa vignette. 4e champ optionnel dans l'editeur : Nom | Description | Prix | Photo(URL). Toute image qui ne charge pas est masquee automatiquement (zero icone cassee).
 * La carte deja appliquee se rafraichit avec les photos (sans ecraser une carte personnalisee).
