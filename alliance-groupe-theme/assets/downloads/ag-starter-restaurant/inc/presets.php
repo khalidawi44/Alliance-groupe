@@ -385,6 +385,101 @@ class AG_Restaurant_Presets {
 	}
 
 	/**
+	 * Carte (menu) adaptée à chaque type de restaurant.
+	 * Format : « ## Section » puis « Nom | Description | Prix » par ligne.
+	 * @return array slug => texte de carte
+	 */
+	public static function default_cartes() {
+		$trad = class_exists( 'AG_Restaurant_Carte' ) ? AG_Restaurant_Carte::default_menu() : '';
+		return array(
+			'traditionnel' => $trad,
+			'pizzeria' =>
+				"## Pizzas\n"
+				. "Margherita | Tomate, mozzarella, basilic frais | 9\n"
+				. "Reine | Tomate, mozzarella, jambon, champignons | 11\n"
+				. "Diavola | Tomate, mozzarella, salami piquant | 12\n"
+				. "4 Fromages | Mozzarella, gorgonzola, parmesan, chèvre | 12\n"
+				. "Calzone | Chausson tomate, mozzarella, jambon | 12\n\n"
+				. "## Pâtes\n"
+				. "Spaghetti bolognese | Sauce bolognaise maison | 11\n"
+				. "Tagliatelle carbonara | Crème, lardons, parmesan | 12\n"
+				. "Lasagnes maison | Bœuf, béchamel, gratinées | 13\n\n"
+				. "## Antipasti\n"
+				. "Bruschetta | Pain grillé, tomate, basilic | 6\n"
+				. "Burrata | Crémeuse, huile d'olive, roquette | 9\n\n"
+				. "## Desserts\n"
+				. "Tiramisu maison | | 6\n"
+				. "Panna cotta | Coulis de fruits rouges | 6\n\n"
+				. "## Boissons\n"
+				. "Soda 33cl | | 3\n"
+				. "Vin rouge (au verre) | | 4",
+			'burger' =>
+				"## Burgers\n"
+				. "Le Classic | Steak, cheddar, salade, tomate, oignon | 9\n"
+				. "Le Bacon | Double steak, bacon, cheddar | 12\n"
+				. "Le Chicken | Poulet pané croustillant, sauce maison | 10\n"
+				. "Le Veggie | Galette de légumes, cheddar | 9\n\n"
+				. "## Frites & accompagnements\n"
+				. "Frites maison | | 3\n"
+				. "Frites cheddar-bacon | | 5\n"
+				. "Onion rings | | 4\n"
+				. "Nuggets (x6) | | 5\n\n"
+				. "## Menus\n"
+				. "Menu Classic | Burger + frites + boisson | 13\n"
+				. "Menu Bacon | Burger Bacon + frites + boisson | 15\n\n"
+				. "## Desserts\n"
+				. "Brownie | | 4\n"
+				. "Milkshake | Vanille, fraise ou chocolat | 5\n\n"
+				. "## Boissons\n"
+				. "Soda 33cl | | 2.5\n"
+				. "Eau | | 2",
+			'bistrot' =>
+				"## Entrées\n"
+				. "Œuf mayo | | 5\n"
+				. "Terrine maison | Cornichons, pain grillé | 7\n"
+				. "Soupe à l'oignon gratinée | | 7\n\n"
+				. "## Plats du jour\n"
+				. "Steak frites | Sauce au poivre | 15\n"
+				. "Confit de canard | Pommes sarladaises | 17\n"
+				. "Blanquette de veau | Riz pilaf | 16\n\n"
+				. "## Planches à partager\n"
+				. "Charcuterie | Sélection du marché | 14\n"
+				. "Fromages affinés | | 12\n\n"
+				. "## Desserts\n"
+				. "Crème brûlée | | 7\n"
+				. "Mousse au chocolat | | 6",
+			'gastronomique' =>
+				"## Entrées\n"
+				. "Foie gras maison | Chutney de figues, brioche | 18\n"
+				. "Saint-Jacques snackées | Purée de céleri, truffe | 22\n"
+				. "Velouté de saison | Émulsion, croûtons | 14\n\n"
+				. "## Plats\n"
+				. "Filet de bœuf | Sauce périgueux, légumes glacés | 32\n"
+				. "Ris de veau | Jus corsé, pomme fondante | 30\n"
+				. "Homard rôti | Beurre blanc, herbes fraîches | 38\n\n"
+				. "## Desserts\n"
+				. "Soufflé au chocolat | | 14\n"
+				. "Assiette de fromages affinés | | 16\n\n"
+				. "## Menu dégustation\n"
+				. "Menu en 5 services | Accord mets-vins en option | 89",
+			'creperie' =>
+				"## Galettes salées\n"
+				. "Complète | Jambon, œuf, fromage | 9\n"
+				. "Chèvre-miel | Chèvre, miel, noix | 9\n"
+				. "Forestière | Champignons, crème, lardons | 10\n"
+				. "Saumon | Saumon fumé, crème citronnée | 12\n\n"
+				. "## Crêpes sucrées\n"
+				. "Beurre-sucre | | 4\n"
+				. "Caramel beurre salé | | 6\n"
+				. "Chocolat-banane | | 7\n"
+				. "Pomme caramélisée | Chantilly | 7\n\n"
+				. "## Boissons\n"
+				. "Bolée de cidre | | 4\n"
+				. "Jus de pomme artisanal | | 3",
+		);
+	}
+
+	/**
 	 * Transforme une liste de services en texte editable (1 ligne par carte) :
 	 * « emoji | Titre | lien (optionnel) ».
 	 */
@@ -462,6 +557,19 @@ class AG_Restaurant_Presets {
 				}
 			}
 			update_option( 'ag_restaurant_palette_v', 3 );
+		}
+
+		// Carte (menu) adaptee au type : on l'applique une fois pour le preset
+		// actif, SANS ecraser une carte deja personnalisee par le client.
+		if ( $active_slug && ! get_option( 'ag_restaurant_carte_v' ) ) {
+			$cartes  = self::default_cartes();
+			$default = class_exists( 'AG_Restaurant_Carte' ) ? AG_Restaurant_Carte::default_menu() : '';
+			$current = (string) get_theme_mod( 'ag_restaurant_carte_menu', '' );
+			$is_custom = ( '' !== trim( $current ) && $current !== $default );
+			if ( ! empty( $cartes[ $active_slug ] ) && ! $is_custom ) {
+				set_theme_mod( 'ag_restaurant_carte_menu', $cartes[ $active_slug ] );
+			}
+			update_option( 'ag_restaurant_carte_v', 1 );
 		}
 
 		// Le bouton hero ouvre désormais la carte (= pop-up de choix : réserver /
@@ -592,6 +700,12 @@ class AG_Restaurant_Presets {
 		// 3b. Renseigne le champ editable du client avec ces services (il pourra
 		//     ensuite modifier emoji/titre/lien dans Personnaliser > Specialites).
 		set_theme_mod( 'ag_restaurant_services_edit', self::services_to_text( $preset['services'] ) );
+
+		// 3c. Carte (menu) adaptee au type de restaurant.
+		$cartes = self::default_cartes();
+		if ( ! empty( $cartes[ $slug ] ) ) {
+			set_theme_mod( 'ag_restaurant_carte_menu', $cartes[ $slug ] );
+		}
 
 		// 4. Update les pages WP avec le contenu metier-specifique
 		// (qui-sommes-nous, prestations, zones-intervention, realisations).

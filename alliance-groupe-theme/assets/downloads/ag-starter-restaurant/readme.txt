@@ -70,6 +70,9 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.24.0 =
+* Chaque type de restaurant a desormais SA carte : Pizzeria (pizzas/pates/antipasti), Burger (burgers/frites/menus facon fast-food), Bistrot, Gastronomique, Creperie (galettes/crepes), Traditionnel. Appliquee au changement de type, sans ecraser une carte deja personnalisee.
+
 = 1.23.7 =
 * FIX page Reservation : plus de formulaire en double (le shortcode + l'ajout auto faisaient doublon).
 * La reservation suit la palette du preset (fini le formulaire dore fige) + barre de changement de mode (Livraison / A emporter / Voir la carte), coherente avec la carte.
