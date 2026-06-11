@@ -99,13 +99,14 @@ endwhile; rewind_posts(); endif; ?>
 			</div>
 			<div class="ag-services-grid">
 				<?php foreach ( $ag_services as $svc ) :
-					// Chaque service est cliquable. URL : 'url' du service si defini,
-					// sinon page Devis avec le slug service pre-rempli en query string.
+					// Chaque spécialité est cliquable et mène vers une page utile :
+					// 'url' explicite si défini, sinon routage intelligent selon le
+					// titre (réservation / à emporter / carte).
 					$svc_url = ! empty( $svc['url'] ) ? $svc['url'] : '';
 					if ( ! $svc_url ) {
-						$devis_page = get_page_by_path( 'devis' );
-						$svc_url    = $devis_page ? get_permalink( $devis_page ) : home_url( '/devis/' );
-						$svc_url    = add_query_arg( 'service', sanitize_title( $svc['title'] ), $svc_url );
+						$svc_url = function_exists( 'ag_restaurant_service_url' )
+							? ag_restaurant_service_url( isset( $svc['title'] ) ? $svc['title'] : '' )
+							: home_url( '/carte/' );
 					}
 				?>
 					<a class="ag-service-card ag-anim" href="<?php echo esc_url( $svc_url ); ?>">

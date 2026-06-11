@@ -526,9 +526,13 @@ class AG_Restaurant_Commande {
 				try{ localStorage.removeItem(KEY); }catch(err){}
 			});
 
-			// Au chargement : on restaure le choix, sinon on propose l'écran d'accueil.
+			// Au chargement : un paramètre ?go=... (depuis une carte de l'accueil)
+			// applique directement le choix ; sinon on restaure le choix de la
+			// session ; sinon on propose l'écran d'accueil.
+			var go=null; try{ go=new URLSearchParams(location.search).get('go'); }catch(e){}
 			var saved=null; try{ saved=sessionStorage.getItem(IKEY); }catch(e){}
-			if(nItems()>0){ applyIntent((saved && saved!=='consulter')?saved:(HAS_DELIVERY?'livraison':'emporter'), false); }
+			if(go && /^(livraison|emporter|consulter)$/.test(go)){ applyIntent(go, true); }
+			else if(nItems()>0){ applyIntent((saved && saved!=='consulter')?saved:(HAS_DELIVERY?'livraison':'emporter'), false); }
 			else if(saved){ applyIntent(saved, false); }
 			else { showIntro(); }
 

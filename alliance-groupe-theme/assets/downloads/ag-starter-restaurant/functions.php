@@ -281,6 +281,38 @@ require_once get_template_directory() . '/inc/reservation.php';
 require_once get_template_directory() . '/inc/carte.php';
 require_once get_template_directory() . '/inc/commande.php';
 
+/**
+ * Destination d'une carte « spécialité » de l'accueil, choisie selon son
+ * titre : réservation/privatisation/terrasse -> page Réservation ;
+ * « à emporter » / livraison -> carte en mode commande ; sinon -> la carte
+ * (consultation). Les liens mènent ainsi toujours quelque part d'utile.
+ */
+if ( ! function_exists( 'ag_restaurant_service_url' ) ) {
+	function ag_restaurant_service_url( $title ) {
+		$t = function_exists( 'remove_accents' ) ? remove_accents( (string) $title ) : (string) $title;
+		$t = strtolower( $t );
+
+		$carte_pg = get_page_by_path( 'carte' );
+		$carte    = $carte_pg ? get_permalink( $carte_pg ) : home_url( '/carte/' );
+
+		// Réservation, privatisation, terrasse, groupes, événements.
+		if ( preg_match( '/reserv|table|privatis|groupe|evenement|terrasse|banquet|seminaire|anniversaire/', $t ) ) {
+			$resa = get_page_by_path( 'reservation' );
+			return $resa ? get_permalink( $resa ) : home_url( '/reservation/' );
+		}
+		// À emporter -> carte en mode commande à emporter.
+		if ( preg_match( '/emporter|take/', $t ) ) {
+			return add_query_arg( 'go', 'emporter', $carte );
+		}
+		// Livraison / commande -> carte en mode livraison.
+		if ( preg_match( '/livrais|command/', $t ) ) {
+			return add_query_arg( 'go', 'livraison', $carte );
+		}
+		// Menu, carte des vins, desserts, produits frais… -> consultation de la carte.
+		return add_query_arg( 'go', 'consulter', $carte );
+	}
+}
+
 // Systeme de devis : page /devis/ avec formulaire dynamique + fourchette
 // de prix par metier x service + multiplicateur regional. Demandes
 // stockees en CPT ag_devis_lead (admin > Devis demandes).

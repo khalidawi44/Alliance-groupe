@@ -70,6 +70,10 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.19.3 =
+* Les cartes "Nos spécialités" de l'accueil mènent enfin quelque part : Réservation/Privatisation/Terrasse -> page Réservation ; À emporter -> carte en mode commande ; Menu/Vins/Desserts/Produits -> la carte.
+* La page carte applique directement le choix via ?go=... (plus de pop-up redondant quand on vient d'une spécialité).
+
 = 1.19.2 =
 * Correctif : l'écran d'accueil se ferme bien après le choix (bug d'affichage [hidden]).
 * Le choix du client (Livraison / À emporter / Consulter) s'affiche dans une barre en haut de la carte, avec un bouton « Changer ».
