@@ -45,7 +45,7 @@ class AG_Restaurant_Carte {
 		$wp->add_section( 'ag_restaurant_carte', array(
 			'title'       => '🍽️ ' . __( 'Notre carte (menu)', 'ag-starter-restaurant' ),
 			'priority'    => 27,
-			'description' => __( 'Une ligne « ## Titre » par section. Un plat par ligne : Nom | Description | Prix (prix vide = aucun prix).', 'ag-starter-restaurant' ),
+			'description' => __( 'Une ligne « ## Titre » par section. Un plat par ligne : Nom | Description | Prix | Photo (URL). La photo est facultative (prix ou photo vide = ignoré).', 'ag-starter-restaurant' ),
 		) );
 		$wp->add_setting( self::OPT, array(
 			'default'           => self::default_menu(),
@@ -95,6 +95,7 @@ class AG_Restaurant_Carte {
 					'name'  => isset( $parts[0] ) ? $parts[0] : '',
 					'desc'  => isset( $parts[1] ) ? $parts[1] : '',
 					'price' => isset( $parts[2] ) ? $parts[2] : '',
+					'img'   => isset( $parts[3] ) ? $parts[3] : '',
 				);
 			}
 		}
@@ -142,6 +143,10 @@ class AG_Restaurant_Carte {
 			.ag-carte-card .ag-carte-section__title{font-family:'Playfair Display',Georgia,serif;color:var(--ag-color-accent) !important;-webkit-text-fill-color:var(--ag-color-accent) !important;font-size:2.1rem;text-align:center;margin:0 0 8px;letter-spacing:.4px;text-shadow:0 1px 3px rgba(0,0,0,.4);}
 			.ag-carte-section__rule{width:70px;height:2px;background:var(--ag-color-accent2);margin:0 auto 28px;}
 			.ag-carte-item{margin-bottom:22px;}
+			.ag-carte-item.has-img{display:flex;gap:16px;align-items:flex-start;}
+			.ag-carte-thumb{flex:0 0 auto;width:84px;height:84px;border-radius:12px;object-fit:cover;box-shadow:0 6px 18px rgba(0,0,0,.3);}
+			.ag-carte-item.has-img .ag-carte-body{flex:1;min-width:0;}
+			@media(max-width:480px){.ag-carte-thumb{width:64px;height:64px;}}
 			.ag-carte-line{display:flex;align-items:baseline;gap:10px;}
 			.ag-carte-card .ag-carte-name{color:var(--ag-color-text) !important;-webkit-text-fill-color:var(--ag-color-text) !important;font-weight:700;font-size:1.15rem;text-shadow:0 1px 2px rgba(0,0,0,.45);}
 			.ag-carte-dots{flex:1 1 auto;border-bottom:1px dotted color-mix(in srgb, var(--ag-color-accent) 70%, transparent);transform:none;align-self:center;min-width:18px;}
@@ -174,20 +179,25 @@ class AG_Restaurant_Carte {
 					foreach ( $sec['items'] as $it ) : if ( '' === $it['name'] ) continue;
 						$num = $order_on ? AG_Restaurant_Commande::num_price( $it['price'] ) : null;
 					?>
-						<div class="ag-carte-item">
-							<div class="ag-carte-line">
-								<span class="ag-carte-name"><?php echo esc_html( $it['name'] ); ?></span>
-								<span class="ag-carte-dots"></span>
-								<?php $price = self::fmt_price( $it['price'] ); if ( '' !== $price ) : ?>
-									<span class="ag-carte-price"><?php echo esc_html( $price ); ?></span>
-								<?php endif; ?>
-							</div>
-							<?php if ( '' !== $it['desc'] ) : ?>
-								<div class="ag-carte-desc"><?php echo esc_html( $it['desc'] ); ?></div>
+						<div class="ag-carte-item<?php echo '' !== $it['img'] ? ' has-img' : ''; ?>">
+							<?php if ( '' !== $it['img'] ) : ?>
+								<img class="ag-carte-thumb" src="<?php echo esc_url( $it['img'] ); ?>" alt="<?php echo esc_attr( $it['name'] ); ?>" loading="lazy" onerror="this.remove()">
 							<?php endif; ?>
-							<?php if ( null !== $num ) {
-								echo AG_Restaurant_Commande::add_button( AG_Restaurant_Commande::item_id( $sec['title'], $it['name'] ), $it['name'], $num );
-							} ?>
+							<div class="ag-carte-body">
+								<div class="ag-carte-line">
+									<span class="ag-carte-name"><?php echo esc_html( $it['name'] ); ?></span>
+									<span class="ag-carte-dots"></span>
+									<?php $price = self::fmt_price( $it['price'] ); if ( '' !== $price ) : ?>
+										<span class="ag-carte-price"><?php echo esc_html( $price ); ?></span>
+									<?php endif; ?>
+								</div>
+								<?php if ( '' !== $it['desc'] ) : ?>
+									<div class="ag-carte-desc"><?php echo esc_html( $it['desc'] ); ?></div>
+								<?php endif; ?>
+								<?php if ( null !== $num ) {
+									echo AG_Restaurant_Commande::add_button( AG_Restaurant_Commande::item_id( $sec['title'], $it['name'] ), $it['name'], $num );
+								} ?>
+							</div>
 						</div>
 					<?php endforeach; ?>
 				</div>

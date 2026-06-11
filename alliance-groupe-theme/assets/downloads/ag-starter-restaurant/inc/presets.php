@@ -393,90 +393,32 @@ class AG_Restaurant_Presets {
 		$trad = class_exists( 'AG_Restaurant_Carte' ) ? AG_Restaurant_Carte::default_menu() : '';
 		return array(
 			'traditionnel' => $trad,
-			'pizzeria' =>
-				"## Pizzas\n"
-				. "Margherita | Tomate, mozzarella, basilic frais | 9\n"
-				. "Reine | Tomate, mozzarella, jambon, champignons | 11\n"
-				. "Diavola | Tomate, mozzarella, salami piquant | 12\n"
-				. "4 Fromages | Mozzarella, gorgonzola, parmesan, chèvre | 12\n"
-				. "Calzone | Chausson tomate, mozzarella, jambon | 12\n\n"
-				. "## Pâtes\n"
-				. "Spaghetti bolognese | Sauce bolognaise maison | 11\n"
-				. "Tagliatelle carbonara | Crème, lardons, parmesan | 12\n"
-				. "Lasagnes maison | Bœuf, béchamel, gratinées | 13\n\n"
-				. "## Antipasti\n"
-				. "Bruschetta | Pain grillé, tomate, basilic | 6\n"
-				. "Burrata | Crémeuse, huile d'olive, roquette | 9\n\n"
-				. "## Desserts\n"
-				. "Tiramisu maison | | 6\n"
-				. "Panna cotta | Coulis de fruits rouges | 6\n\n"
-				. "## Boissons\n"
-				. "Soda 33cl | | 3\n"
-				. "Vin rouge (au verre) | | 4",
-			'burger' =>
-				"## Burgers\n"
-				. "Le Classic | Steak, cheddar, salade, tomate, oignon | 9\n"
-				. "Le Bacon | Double steak, bacon, cheddar | 12\n"
-				. "Le Chicken | Poulet pané croustillant, sauce maison | 10\n"
-				. "Le Veggie | Galette de légumes, cheddar | 9\n\n"
-				. "## Frites & accompagnements\n"
-				. "Frites maison | | 3\n"
-				. "Frites cheddar-bacon | | 5\n"
-				. "Onion rings | | 4\n"
-				. "Nuggets (x6) | | 5\n\n"
-				. "## Menus\n"
-				. "Menu Classic | Burger + frites + boisson | 13\n"
-				. "Menu Bacon | Burger Bacon + frites + boisson | 15\n\n"
-				. "## Desserts\n"
-				. "Brownie | | 4\n"
-				. "Milkshake | Vanille, fraise ou chocolat | 5\n\n"
-				. "## Boissons\n"
-				. "Soda 33cl | | 2.5\n"
-				. "Eau | | 2",
-			'bistrot' =>
-				"## Entrées\n"
-				. "Œuf mayo | | 5\n"
-				. "Terrine maison | Cornichons, pain grillé | 7\n"
-				. "Soupe à l'oignon gratinée | | 7\n\n"
-				. "## Plats du jour\n"
-				. "Steak frites | Sauce au poivre | 15\n"
-				. "Confit de canard | Pommes sarladaises | 17\n"
-				. "Blanquette de veau | Riz pilaf | 16\n\n"
-				. "## Planches à partager\n"
-				. "Charcuterie | Sélection du marché | 14\n"
-				. "Fromages affinés | | 12\n\n"
-				. "## Desserts\n"
-				. "Crème brûlée | | 7\n"
-				. "Mousse au chocolat | | 6",
-			'gastronomique' =>
-				"## Entrées\n"
-				. "Foie gras maison | Chutney de figues, brioche | 18\n"
-				. "Saint-Jacques snackées | Purée de céleri, truffe | 22\n"
-				. "Velouté de saison | Émulsion, croûtons | 14\n\n"
-				. "## Plats\n"
-				. "Filet de bœuf | Sauce périgueux, légumes glacés | 32\n"
-				. "Ris de veau | Jus corsé, pomme fondante | 30\n"
-				. "Homard rôti | Beurre blanc, herbes fraîches | 38\n\n"
-				. "## Desserts\n"
-				. "Soufflé au chocolat | | 14\n"
-				. "Assiette de fromages affinés | | 16\n\n"
-				. "## Menu dégustation\n"
-				. "Menu en 5 services | Accord mets-vins en option | 89",
-			'creperie' =>
-				"## Galettes salées\n"
-				. "Complète | Jambon, œuf, fromage | 9\n"
-				. "Chèvre-miel | Chèvre, miel, noix | 9\n"
-				. "Forestière | Champignons, crème, lardons | 10\n"
-				. "Saumon | Saumon fumé, crème citronnée | 12\n\n"
-				. "## Crêpes sucrées\n"
-				. "Beurre-sucre | | 4\n"
-				. "Caramel beurre salé | | 6\n"
-				. "Chocolat-banane | | 7\n"
-				. "Pomme caramélisée | Chantilly | 7\n\n"
-				. "## Boissons\n"
-				. "Bolée de cidre | | 4\n"
-				. "Jus de pomme artisanal | | 3",
+			'pizzeria' => "## Pizzas\nMargherita | Tomate, mozzarella, basilic frais | 9 | https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=300&q=70\nReine | Tomate, mozzarella, jambon, champignons | 11 | https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&q=70\nDiavola | Tomate, mozzarella, salami piquant | 12 | https://images.unsplash.com/photo-1628840042765-356cda07504e?w=300&q=70\n4 Fromages | Mozzarella, gorgonzola, parmesan, chèvre | 12 | https://images.unsplash.com/photo-1593504049359-74330189a345?w=300&q=70\nCalzone | Chausson tomate, mozzarella, jambon | 12 | https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=300&q=70\n\n## Pâtes\nSpaghetti bolognese | Sauce bolognaise maison | 11 | https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=300&q=70\nTagliatelle carbonara | Crème, lardons, parmesan | 12 | https://images.unsplash.com/photo-1612874742237-6526221588e3?w=300&q=70\nLasagnes maison | Bœuf, béchamel, gratinées | 13 | https://images.unsplash.com/photo-1619895092538-128341789043?w=300&q=70\n\n## Antipasti\nBruschetta | Pain grillé, tomate, basilic | 6 | https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=300&q=70\nBurrata | Crémeuse, huile d'olive, roquette | 9 | https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?w=300&q=70\n\n## Desserts\nTiramisu maison | | 6 | https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=300&q=70\nPanna cotta | Coulis de fruits rouges | 6 | https://images.unsplash.com/photo-1488477181946-6428a0291777?w=300&q=70\n\n## Boissons\nSoda 33cl | | 3 | https://images.unsplash.com/photo-1581636625402-29b2a704ef13?w=300&q=70\nVin rouge (au verre) | | 4 | https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=300&q=70",
+			'burger' => "## Burgers\nLe Classic | Steak, cheddar, salade, tomate, oignon | 9 | https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&q=70\nLe Bacon | Double steak, bacon, cheddar | 12 | https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=300&q=70\nLe Chicken | Poulet pané croustillant, sauce maison | 10 | https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=300&q=70\nLe Veggie | Galette de légumes, cheddar | 9 | https://images.unsplash.com/photo-1525059696034-4967a8e1dca2?w=300&q=70\n\n## Frites & accompagnements\nFrites maison | | 3 | https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=300&q=70\nFrites cheddar-bacon | | 5 | https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?w=300&q=70\nOnion rings | | 4 | https://images.unsplash.com/photo-1639024471283-03518883512d?w=300&q=70\nNuggets (x6) | | 5 | https://images.unsplash.com/photo-1562967914-608f82629710?w=300&q=70\n\n## Menus\nMenu Classic | Burger + frites + boisson | 13 | https://images.unsplash.com/photo-1550547660-d9450f859349?w=300&q=70\nMenu Bacon | Burger Bacon + frites + boisson | 15 | https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=300&q=70\n\n## Desserts\nBrownie | | 4 | https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=300&q=70\nMilkshake | Vanille, fraise ou chocolat | 5 | https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=300&q=70\n\n## Boissons\nSoda 33cl | | 2.5 | https://images.unsplash.com/photo-1581636625402-29b2a704ef13?w=300&q=70\nEau | | 2 | https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&q=70",
+			'bistrot' => "## Entrées\nŒuf mayo | | 5 | https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=300&q=70\nTerrine maison | Cornichons, pain grillé | 7 | https://images.unsplash.com/photo-1542528180-a1208c5169a5?w=300&q=70\nSoupe à l'oignon gratinée | | 7 | https://images.unsplash.com/photo-1547592180-85f173990554?w=300&q=70\n\n## Plats du jour\nSteak frites | Sauce au poivre | 15 | https://images.unsplash.com/photo-1546964124-0cce460f38ef?w=300&q=70\nConfit de canard | Pommes sarladaises | 17 | https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=300&q=70\nBlanquette de veau | Riz pilaf | 16 | https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=300&q=70\n\n## Planches à partager\nCharcuterie | Sélection du marché | 14 | https://images.unsplash.com/photo-1528607929212-2636ec44253e?w=300&q=70\nFromages affinés | | 12 | https://images.unsplash.com/photo-1452195100486-9cc805987862?w=300&q=70\n\n## Desserts\nCrème brûlée | | 7 | https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?w=300&q=70\nMousse au chocolat | | 6 | https://images.unsplash.com/photo-1541783245831-57d6fb0926d3?w=300&q=70",
+			'gastronomique' => "## Entrées\nFoie gras maison | Chutney de figues, brioche | 18 | https://images.unsplash.com/photo-1623595119708-26b1f7500ddd?w=300&q=70\nSaint-Jacques snackées | Purée de céleri, truffe | 22 | https://images.unsplash.com/photo-1559847844-d721426d6edc?w=300&q=70\nVelouté de saison | Émulsion, croûtons | 14 | https://images.unsplash.com/photo-1547592166-23ac45744acd?w=300&q=70\n\n## Plats\nFilet de bœuf | Sauce périgueux, légumes glacés | 32 | https://images.unsplash.com/photo-1558030006-450675393462?w=300&q=70\nRis de veau | Jus corsé, pomme fondante | 30 | https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=300&q=70\nHomard rôti | Beurre blanc, herbes fraîches | 38 | https://images.unsplash.com/photo-1559737558-2f5a35f4523b?w=300&q=70\n\n## Desserts\nSoufflé au chocolat | | 14 | https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=300&q=70\nAssiette de fromages affinés | | 16 | https://images.unsplash.com/photo-1452195100486-9cc805987862?w=300&q=70\n\n## Menu dégustation\nMenu en 5 services | Accord mets-vins en option | 89 | https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=300&q=70",
+			'creperie' => "## Galettes salées\nComplète | Jambon, œuf, fromage | 9 | https://images.unsplash.com/photo-1565299543923-37dd37887442?w=300&q=70\nChèvre-miel | Chèvre, miel, noix | 9 | https://images.unsplash.com/photo-1559561853-08451507cbdf?w=300&q=70\nForestière | Champignons, crème, lardons | 10 | https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=300&q=70\nSaumon | Saumon fumé, crème citronnée | 12 | https://images.unsplash.com/photo-1485921325833-c519f76c4927?w=300&q=70\n\n## Crêpes sucrées\nBeurre-sucre | | 4 | https://images.unsplash.com/photo-1519676867240-f03562e64548?w=300&q=70\nCaramel beurre salé | | 6 | https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=300&q=70\nChocolat-banane | | 7 | https://images.unsplash.com/photo-1607920591413-4ec007e70023?w=300&q=70\nPomme caramélisée | Chantilly | 7 | https://images.unsplash.com/photo-1551024601-bec78aea704b?w=300&q=70\n\n## Boissons\nBolée de cidre | | 4 | https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=300&q=70\nJus de pomme artisanal | | 3 | https://images.unsplash.com/photo-1576673442511-7e39b6545c87?w=300&q=70",
 		);
+	}
+
+	/**
+	 * Signature d'une carte = sections + couples « plat=prix » (ignore la
+	 * description, la photo et les espaces). Permet de reconnaître une carte
+	 * issue d'un preset (même version d'avant les photos) sans confondre avec
+	 * une carte réellement personnalisée par le client.
+	 */
+	public static function carte_signature( $raw ) {
+		$sig = array();
+		foreach ( preg_split( '/\r\n|\r|\n/', (string) $raw ) as $line ) {
+			$line = trim( $line );
+			if ( '' === $line ) continue;
+			if ( '##' === substr( $line, 0, 2 ) ) { $sig[] = '#' . trim( substr( $line, 2 ) ); continue; }
+			$p = array_map( 'trim', explode( '|', $line ) );
+			$name = isset( $p[0] ) ? $p[0] : '';
+			if ( '' === $name ) continue;
+			$sig[] = $name . '=' . ( isset( $p[2] ) ? $p[2] : '' );
+		}
+		return implode( '|', $sig );
 	}
 
 	/**
@@ -559,17 +501,23 @@ class AG_Restaurant_Presets {
 			update_option( 'ag_restaurant_palette_v', 3 );
 		}
 
-		// Carte (menu) adaptee au type : on l'applique une fois pour le preset
-		// actif, SANS ecraser une carte deja personnalisee par le client.
-		if ( $active_slug && ! get_option( 'ag_restaurant_carte_v' ) ) {
+		// Carte (menu) adaptee au type, AVEC photos. On l'applique pour le preset
+		// actif SANS ecraser une carte personnalisee. On reconnait une carte
+		// issue d'un preset (meme l'ancienne version sans photos) via sa
+		// signature plats=prix, pour la rafraichir avec les images.
+		if ( $active_slug && (int) get_option( 'ag_restaurant_carte_v', 0 ) < 2 ) {
 			$cartes  = self::default_cartes();
-			$default = class_exists( 'AG_Restaurant_Carte' ) ? AG_Restaurant_Carte::default_menu() : '';
-			$current = (string) get_theme_mod( 'ag_restaurant_carte_menu', '' );
-			$is_custom = ( '' !== trim( $current ) && $current !== $default );
-			if ( ! empty( $cartes[ $active_slug ] ) && ! $is_custom ) {
-				set_theme_mod( 'ag_restaurant_carte_menu', $cartes[ $active_slug ] );
+			if ( ! empty( $cartes[ $active_slug ] ) ) {
+				$default = class_exists( 'AG_Restaurant_Carte' ) ? AG_Restaurant_Carte::default_menu() : '';
+				$current = (string) get_theme_mod( 'ag_restaurant_carte_menu', '' );
+				$safe = ( '' === trim( $current ) )
+					|| ( $current === $default )
+					|| ( self::carte_signature( $current ) === self::carte_signature( $cartes[ $active_slug ] ) );
+				if ( $safe ) {
+					set_theme_mod( 'ag_restaurant_carte_menu', $cartes[ $active_slug ] );
+				}
 			}
-			update_option( 'ag_restaurant_carte_v', 1 );
+			update_option( 'ag_restaurant_carte_v', 2 );
 		}
 
 		// Le bouton hero ouvre désormais la carte (= pop-up de choix : réserver /
