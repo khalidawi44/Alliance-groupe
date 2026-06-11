@@ -70,6 +70,10 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.19.2 =
+* Correctif : l'écran d'accueil se ferme bien après le choix (bug d'affichage [hidden]).
+* Le choix du client (Livraison / À emporter / Consulter) s'affiche dans une barre en haut de la carte, avec un bouton « Changer ».
+
 = 1.19.1 =
 * Écran d'accueil à l'arrivée sur la carte : Réserver une table / Livraison / À emporter / Voir la carte (+ horaires).
 * Mode "Voir la carte" : consultation simple (boutons Ajouter masqués) ; barre "Changer" pour passer en commande à tout moment.

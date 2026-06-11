@@ -277,6 +277,8 @@ class AG_Restaurant_Commande {
 	private static function styles() {
 		?>
 		<style>
+		/* IMPORTANT : display:flex écrase l'attribut [hidden] -> on le rétablit. */
+		.ag-ord-intro[hidden],.ag-ord-modebar[hidden],.ag-ord-fab[hidden]{display:none !important}
 		/* Écran d'accueil (choix du parcours) */
 		.ag-ord-intro{position:fixed;inset:0;z-index:99994;display:flex;align-items:center;justify-content:center;background:rgba(5,4,2,.82);backdrop-filter:blur(5px);padding:18px}
 		.ag-ord-intro__card{position:relative;background:linear-gradient(180deg,#1c1813,#14110b);border:1px solid rgba(201,162,75,.4);border-radius:18px;padding:30px 26px 24px;max-width:440px;width:100%;text-align:center;color:#ece4d2;box-shadow:0 30px 80px rgba(0,0,0,.6)}
@@ -291,10 +293,12 @@ class AG_Restaurant_Commande {
 		.ag-ord-opt small{font-size:.76rem;opacity:.8;line-height:1.25}
 		.ag-ord-intro__hours{margin:18px 0 0;color:#b8ad8f;font-size:.85rem;line-height:1.6;border-top:1px solid rgba(255,255,255,.08);padding-top:14px}
 		@media(max-width:420px){.ag-ord-intro__opts{grid-template-columns:1fr}}
-		/* Barre de mode (sticky) */
-		.ag-ord-modebar{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:center;gap:12px;background:#1c1813;border-bottom:1px solid rgba(201,162,75,.3);padding:9px 14px;color:#e7dcbf;font-size:.9rem;font-weight:600}
-		.ag-ord-modebar__btn{background:none;border:1px solid rgba(201,162,75,.5);color:#f3d889;border-radius:999px;padding:4px 14px;font-size:.82rem;font-weight:700;cursor:pointer}
-		.ag-ord-modebar__btn:hover{background:#c9a24b;color:#13110c}
+		/* Barre de mode (sticky, au-dessus de la carte) */
+		.ag-ord-modebar{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(180deg,#241e15,#1a160f);border:1px solid rgba(201,162,75,.35);border-radius:12px;padding:10px 16px;margin:0 auto 14px;max-width:780px;color:#f3ead4;font-size:.95rem;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+		.ag-ord-modebar__txt{display:flex;align-items:center;gap:6px}
+		.ag-ord-modebar__btn{background:#c9a24b;border:0;color:#13110c;border-radius:999px;padding:6px 16px;font-size:.84rem;font-weight:800;cursor:pointer;white-space:nowrap}
+		.ag-ord-modebar__btn:hover{filter:brightness(1.08)}
+		body.ag-has-modebar .ag-carte-nav{top:54px}
 		/* Mode « consultation » : on masque les boutons Ajouter */
 		body.ag-ord-browse .ag-ord-add{display:none}
 		/* Panier flottant (compact) */
@@ -449,6 +453,11 @@ class AG_Restaurant_Commande {
 
 			// ── Parcours (écran d'accueil) ──────────────────────────────
 			function setRadio(v){ var r=form.querySelector('input[name=ag_mode][value="'+v+'"]'); if(r) r.checked=true; }
+			function placeModebar(){
+				if(!modebar || modebar.dataset.moved) return;
+				var menu=document.querySelector('.ag-carte-menu'), card=document.querySelector('.ag-carte-card');
+				if(menu && card){ menu.insertBefore(modebar, card); modebar.dataset.moved='1'; }
+			}
 			function applyIntent(intent, persist){
 				if(intent==='reserver'){ if(RESA) window.location.href=RESA; return; }
 				if(intro) intro.hidden=true;
@@ -458,9 +467,11 @@ class AG_Restaurant_Commande {
 				}else{
 					document.body.classList.remove('ag-ord-browse');
 					setRadio(intent);
-					if(modetxt) modetxt.textContent=(intent==='livraison'?'🛵 Mode livraison':'🥡 À emporter');
+					if(modetxt) modetxt.textContent=(intent==='livraison'?'🛵 Vous commandez en livraison':'🥡 Vous commandez à emporter');
 				}
+				placeModebar();
 				if(modebar) modebar.hidden=false;
+				document.body.classList.add('ag-has-modebar');
 				if(persist){ try{ sessionStorage.setItem(IKEY,intent); }catch(e){} }
 				render();
 			}
