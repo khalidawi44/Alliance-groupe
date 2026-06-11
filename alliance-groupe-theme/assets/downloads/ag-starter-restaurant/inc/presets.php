@@ -40,7 +40,7 @@ class AG_Restaurant_Presets {
 					'ag_hero_brand'             => 'Votre Restaurant',
 					'ag_hero_subtitle'          => 'Cuisine authentique faite maison, produits frais et de saison, au cœur de votre ville. Réservez votre table dès maintenant.',
 					'ag_hero_button'            => 'Réserver une table',
-					'ag_hero_button_url'        => '/reservation/',
+					'ag_hero_button_url'        => '/carte/',
 					'ag_restaurant_metier_nom'  => 'Restaurant',
 					'ag_restaurant_hero_image'  => 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=80',
 					'ag_restaurant_testi_1'     => 'Une cuisine généreuse et savoureuse, un accueil chaleureux. Notre table préférée du quartier.|Sophie M.|Lyon',
@@ -99,7 +99,7 @@ class AG_Restaurant_Presets {
 					'ag_hero_brand'             => 'Pizzeria',
 					'ag_hero_subtitle'          => 'Pizzas au feu de bois, pâtes fraîches maison, vraie cuisine italienne. Sur place, à emporter ou en livraison.',
 					'ag_hero_button'            => 'Commander / Réserver',
-					'ag_hero_button_url'        => '/reservation/',
+					'ag_hero_button_url'        => '/carte/',
 					'ag_restaurant_metier_nom'  => 'Pizzeria',
 					'ag_restaurant_hero_image'  => 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1600&q=80',
 					'ag_restaurant_testi_1'     => 'La meilleure pizza de la ville, pâte fine et croustillante, ingrédients top. Un régal !|Marco P.|Nice',
@@ -157,7 +157,7 @@ class AG_Restaurant_Presets {
 					'ag_hero_brand'             => 'Bistrot',
 					'ag_hero_subtitle'          => 'L\'ambiance d\'un vrai bistrot : plats du jour, planches à partager, vins de copains. Le bon endroit pour se retrouver.',
 					'ag_hero_button'            => 'Réserver une table',
-					'ag_hero_button_url'        => '/reservation/',
+					'ag_hero_button_url'        => '/carte/',
 					'ag_restaurant_metier_nom'  => 'Bistrot',
 					'ag_restaurant_hero_image'  => 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600&q=80',
 					'ag_restaurant_testi_1'     => 'L\'ambiance bistrot parfaite, des plats du jour qui changent, une belle carte de vins. Un coup de cœur.|Antoine D.|Bordeaux',
@@ -215,7 +215,7 @@ class AG_Restaurant_Presets {
 					'ag_hero_brand'             => 'Gastronomique',
 					'ag_hero_subtitle'          => 'Une cuisine d\'auteur, des produits d\'exception, un dressage soigné. Vivez une expérience culinaire mémorable.',
 					'ag_hero_button'            => 'Réserver',
-					'ag_hero_button_url'        => '/reservation/',
+					'ag_hero_button_url'        => '/carte/',
 					'ag_restaurant_metier_nom'  => 'Restaurant gastronomique',
 					'ag_restaurant_hero_image'  => 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=1600&q=80',
 					'ag_restaurant_testi_1'     => 'Une expérience d\'exception, chaque plat est une œuvre. Service irréprochable. À vivre absolument.|Claire F.|Paris',
@@ -273,7 +273,7 @@ class AG_Restaurant_Presets {
 					'ag_hero_brand'             => 'Crêperie',
 					'ag_hero_subtitle'          => 'Galettes de sarrasin garnies, crêpes sucrées gourmandes, bon cidre. La Bretagne dans votre assiette.',
 					'ag_hero_button'            => 'Réserver une table',
-					'ag_hero_button_url'        => '/reservation/',
+					'ag_hero_button_url'        => '/carte/',
 					'ag_restaurant_metier_nom'  => 'Crêperie',
 					'ag_restaurant_hero_image'  => 'https://images.unsplash.com/photo-1519676867240-f03562e64548?w=1600&q=80',
 					'ag_restaurant_testi_1'     => 'Galettes croustillantes, garnitures généreuses, cidre parfait. On se croirait en Bretagne !|Yann L.|Rennes',
@@ -331,7 +331,7 @@ class AG_Restaurant_Presets {
 					'ag_hero_brand'             => 'Le Burger',
 					'ag_hero_subtitle'          => 'Burgers maison, viande fraîche, frites coupées maison, pain artisanal. Sur place, à emporter ou en livraison.',
 					'ag_hero_button'            => 'Commander',
-					'ag_hero_button_url'        => '/reservation/',
+					'ag_hero_button_url'        => '/carte/',
 					'ag_restaurant_metier_nom'  => 'Burger / Street food',
 					'ag_restaurant_hero_image'  => 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=1600&q=80',
 					'ag_restaurant_testi_1'     => 'Le meilleur burger de la ville, viande juteuse, frites maison parfaites. Énorme !|Dylan G.|Lille',
@@ -446,6 +446,32 @@ class AG_Restaurant_Presets {
 				set_theme_mod( $k, $v );
 			}
 			update_option( 'ag_restaurant_versailles_v2', 1 );
+		}
+
+		// Re-synchronise la PALETTE du preset actif quand le template est mis à
+		// jour : sinon, après une mise à jour, les couleurs restent celles
+		// d'avant (le client n'a pas à ré-appliquer le preset à la main).
+		$active_slug = get_theme_mod( 'ag_restaurant_metier_slug', '' );
+		if ( $active_slug && (int) get_option( 'ag_restaurant_palette_v', 0 ) < 3 ) {
+			$presets = self::get_presets();
+			if ( ! empty( $presets[ $active_slug ]['mods'] ) ) {
+				foreach ( $presets[ $active_slug ]['mods'] as $k => $v ) {
+					if ( 0 === strpos( $k, 'ag_color_' ) ) {
+						set_theme_mod( $k, $v );
+					}
+				}
+			}
+			update_option( 'ag_restaurant_palette_v', 3 );
+		}
+
+		// Le bouton hero ouvre désormais la carte (= pop-up de choix : réserver /
+		// livraison / à emporter / consulter). On bascule l'ancien lien direct
+		// vers /reservation/ sans toucher à une URL personnalisée par le client.
+		if ( ! get_option( 'ag_restaurant_herobtn_v' ) ) {
+			if ( '/reservation/' === get_theme_mod( 'ag_hero_button_url', '' ) ) {
+				set_theme_mod( 'ag_hero_button_url', '/carte/' );
+			}
+			update_option( 'ag_restaurant_herobtn_v', 1 );
 		}
 
 		// Migration douce : pré-remplit le champ éditable à partir des services

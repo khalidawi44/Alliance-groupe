@@ -70,6 +70,10 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.22.1 =
+* Correctif palette : apres mise a jour, la palette du preset actif se ré-applique automatiquement (plus besoin de ré-appliquer le preset a la main).
+* Le bouton du hero ouvre desormais la carte avec le pop-up de choix (Reserver / Livraison / A emporter / Consulter) au lieu de mener a /reservation/.
+
 = 1.22.0 =
 * Themes par type de restaurant POUSSES A FOND : la carte, la commande et la fidelite suivent desormais la palette du preset (plus de doré figé).
 * Pizzeria 100% Italie (rouge + vert + blanc), Burger style fast-food (rouge + jaune facon McDo), Bistrot (bois/bordeaux), Gastronomique (noir + champagne), Creperie (bleu Bretagne + caramel), Traditionnel (Versailles or & noir).
