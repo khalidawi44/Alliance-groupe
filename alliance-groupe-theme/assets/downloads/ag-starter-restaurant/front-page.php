@@ -46,8 +46,10 @@ endwhile; rewind_posts(); endif; ?>
 				<?php
 				$ag_btn_label = ag_starter_restaurant_get_option( 'ag_hero_button' );
 				$ag_btn_url   = ag_starter_restaurant_get_option( 'ag_hero_button_url' );
-				if ( $ag_btn_label ) : ?>
-					<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn-pro" data-ag-choice><?php echo esc_html( $ag_btn_label ); ?></a>
+				if ( class_exists( 'AG_Restaurant_Commande' ) && AG_Restaurant_Commande::is_on() ) :
+					echo AG_Restaurant_Commande::choice_inline(); // phpcs:ignore
+				elseif ( $ag_btn_label ) : ?>
+					<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn-pro"><?php echo esc_html( $ag_btn_label ); ?></a>
 				<?php endif; ?>
 
 				<?php if ( ! empty( $ag_stats ) ) : ?>
@@ -76,8 +78,10 @@ endwhile; rewind_posts(); endif; ?>
 				<?php
 				$ag_btn_label = ag_starter_restaurant_get_option( 'ag_hero_button' );
 				$ag_btn_url   = ag_starter_restaurant_get_option( 'ag_hero_button_url' );
-				if ( $ag_btn_label ) : ?>
-					<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn" data-ag-choice><?php echo esc_html( $ag_btn_label ); ?></a>
+				if ( class_exists( 'AG_Restaurant_Commande' ) && AG_Restaurant_Commande::is_on() ) :
+					echo AG_Restaurant_Commande::choice_inline(); // phpcs:ignore
+				elseif ( $ag_btn_label ) : ?>
+					<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn"><?php echo esc_html( $ag_btn_label ); ?></a>
 				<?php endif; ?>
 			</div>
 		</section>

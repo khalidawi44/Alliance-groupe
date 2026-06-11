@@ -66,6 +66,7 @@ class AG_Restaurant_Reset {
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ), 30 );
 		add_action( 'admin_post_ag_restaurant_reset', array( __CLASS__, 'handle_reset' ) );
 		add_action( 'admin_post_ag_restaurant_sync_reset', array( __CLASS__, 'handle_sync_reset' ) );
+		add_action( 'admin_post_ag_restaurant_purge_all', array( __CLASS__, 'handle_purge_all' ) );
 	}
 
 	public static function register_menu() {
@@ -82,7 +83,8 @@ class AG_Restaurant_Reset {
 		if ( ! current_user_can( 'manage_options' ) ) return;
 		$done      = isset( $_GET['reset_done'] ) ? (int) $_GET['reset_done'] : 0;
 		$sync_done = isset( $_GET['sync_done'] ) ? (int) $_GET['sync_done'] : 0;
-		$stats     = ( $done || $sync_done ) ? get_transient( 'ag_restaurant_reset_stats' ) : null;
+		$purge_done = isset( $_GET['purge_done'] ) ? (int) $_GET['purge_done'] : 0;
+		$stats     = ( $done || $sync_done || $purge_done ) ? get_transient( 'ag_restaurant_reset_stats' ) : null;
 		?>
 		<div class="wrap">
 			<h1>🔄 <?php esc_html_e( 'Réinitialiser le thème — AG Starter Restaurant', 'ag-starter-restaurant' ); ?></h1>
@@ -102,9 +104,12 @@ class AG_Restaurant_Reset {
 			<hr style="margin:30px 0;border:none;border-top:1px solid #ddd;">
 			<h2><?php esc_html_e( 'Ou : reset seul (sans sync GitHub)', 'ag-starter-restaurant' ); ?></h2>
 
-			<?php if ( ( $done || $sync_done ) && $stats ) : ?>
+			<?php if ( ( $done || $sync_done || $purge_done ) && $stats ) : ?>
 				<div class="notice notice-success">
-					<p><strong>✅ <?php echo $sync_done ? esc_html__( 'Sync GitHub + reset complet effectués.', 'ag-starter-restaurant' ) : esc_html__( 'Réinitialisation effectuée.', 'ag-starter-restaurant' ); ?></strong></p>
+					<p><strong>✅ <?php echo $purge_done ? esc_html__( 'Nettoyage exhaustif effectué.', 'ag-starter-restaurant' ) : ( $sync_done ? esc_html__( 'Sync GitHub + reset complet effectués.', 'ag-starter-restaurant' ) : esc_html__( 'Réinitialisation effectuée.', 'ag-starter-restaurant' ) ); ?></strong></p>
+						<?php if ( isset( $stats['posts_deleted'] ) ) : ?>
+							<p>🔥 <?php printf( esc_html__( '%d articles et %d pages d\'autres templates supprimés.', 'ag-starter-restaurant' ), (int) $stats['posts_deleted'], (int) $stats['extra_pages_deleted'] ); ?></p>
+						<?php endif; ?>
 					<?php if ( $sync_done ) : ?>
 						<p>🔄 <?php esc_html_e( 'Caches mises à jour purgés (theme + companion + LiteSpeed). Si une nouvelle version est disponible, elle apparaîtra dans', 'ag-starter-restaurant' ); ?> <a href="<?php echo esc_url( admin_url( 'themes.php' ) ); ?>"><?php esc_html_e( 'Apparence > Thèmes', 'ag-starter-restaurant' ); ?></a>.</p>
 					<?php endif; ?>
@@ -146,6 +151,23 @@ class AG_Restaurant_Reset {
 					</button>
 				</p>
 			</form>
+
+			<hr style="margin:34px 0;border:none;border-top:1px solid #ddd;">
+			<div style="background:#fff;border:1px solid #ccd0d4;border-left:4px solid #8b0000;padding:20px 24px;margin:20px 0;max-width:820px;">
+				<h2 style="margin-top:0;color:#8b0000;">🔥 <?php esc_html_e( 'Nettoyage exhaustif', 'ag-starter-restaurant' ); ?></h2>
+				<p><?php esc_html_e( 'En plus du reset ci-dessus, supprime DÉFINITIVEMENT :', 'ag-starter-restaurant' ); ?></p>
+				<ul style="margin-left:24px;list-style:disc;">
+					<li><?php esc_html_e( 'TOUS les articles SAUF la catégorie « Recettes » (résidus de démo des autres templates inclus)', 'ag-starter-restaurant' ); ?></li>
+					<li><?php esc_html_e( 'TOUTES les pages SAUF les pages restaurant et votre page d\'accueil', 'ag-starter-restaurant' ); ?></li>
+				</ul>
+				<p style="color:#8b0000;"><strong><?php esc_html_e( 'À utiliser pour repartir 100% propre. Vos vrais articles de blog seront aussi supprimés — réservez-le à un site de test ou fraîchement repris.', 'ag-starter-restaurant' ); ?></strong></p>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="return confirm('NETTOYAGE EXHAUSTIF : tous les articles (hors Recettes) et toutes les pages non-restaurant seront supprimes definitivement. Continuer ?');">
+					<input type="hidden" name="action" value="ag_restaurant_purge_all" />
+					<?php wp_nonce_field( 'ag_restaurant_purge_all' ); ?>
+					<p><label><input type="checkbox" name="ag_purge_confirm" value="1" required /> <?php esc_html_e( 'J\'ai compris — supprimer aussi tous les articles et pages d\'autres templates.', 'ag-starter-restaurant' ); ?></label></p>
+					<button type="submit" class="button button-primary button-hero" style="background:#8b0000;border-color:#8b0000;">🔥 <?php esc_html_e( 'NETTOYAGE EXHAUSTIF', 'ag-starter-restaurant' ); ?></button>
+				</form>
+			</div>
 		</div>
 		<?php
 	}
@@ -189,6 +211,64 @@ class AG_Restaurant_Reset {
 		set_transient( 'ag_restaurant_reset_stats', $stats, 60 );
 		wp_safe_redirect( admin_url( 'themes.php?page=ag-restaurant-reset&sync_done=1' ) );
 		exit;
+	}
+
+	/**
+	 * NETTOYAGE EXHAUSTIF : reset classique + suppression de TOUTES les pages
+	 * et de TOUS les articles qui n'appartiennent pas au restaurant (résidus
+	 * d'autres templates). On conserve : les pages restaurant, la page d'accueil/
+	 * articles, et les articles de la catégorie « recettes ».
+	 */
+	public static function handle_purge_all() {
+		if ( ! current_user_can( 'manage_options' ) ) wp_die( 'forbidden' );
+		check_admin_referer( 'ag_restaurant_purge_all' );
+
+		$stats = self::do_reset_logic();
+		$stats = array_merge( $stats, self::purge_other_content() );
+
+		if ( has_action( 'litespeed_purge_all' ) ) do_action( 'litespeed_purge_all' );
+		wp_cache_flush();
+
+		set_transient( 'ag_restaurant_reset_stats', $stats, 60 );
+		wp_safe_redirect( admin_url( 'themes.php?page=ag-restaurant-reset&purge_done=1' ) );
+		exit;
+	}
+
+	/**
+	 * Supprime toutes les pages NON-restaurant et tous les articles HORS
+	 * catégorie « recettes ». Vide aussi la corbeille.
+	 * @return array stats supplémentaires
+	 */
+	private static function purge_other_content() {
+		$out = array( 'extra_pages_deleted' => 0, 'posts_deleted' => 0 );
+
+		// Pages à conserver : pages restaurant + accueil + page des articles.
+		$keep = array();
+		foreach ( array_keys( self::RESTAURANT_PAGES ) as $slug ) {
+			$p = get_page_by_path( $slug );
+			if ( $p ) $keep[] = (int) $p->ID;
+		}
+		$front = (int) get_option( 'page_on_front' );
+		$blog  = (int) get_option( 'page_for_posts' );
+		if ( $front ) $keep[] = $front;
+		if ( $blog ) $keep[] = $blog;
+
+		foreach ( (array) get_posts( array( 'post_type' => 'page', 'post_status' => 'any', 'numberposts' => -1, 'fields' => 'ids' ) ) as $pid ) {
+			if ( in_array( (int) $pid, $keep, true ) ) continue;
+			wp_delete_post( (int) $pid, true );
+			$out['extra_pages_deleted']++;
+		}
+
+		// Articles : on garde uniquement la catégorie « recettes ».
+		$cat     = get_category_by_slug( 'recettes' );
+		$keep_id = $cat ? (int) $cat->term_id : 0;
+		foreach ( (array) get_posts( array( 'post_type' => 'post', 'post_status' => 'any', 'numberposts' => -1, 'fields' => 'ids' ) ) as $pid ) {
+			if ( $keep_id && has_category( $keep_id, (int) $pid ) ) continue;
+			wp_delete_post( (int) $pid, true );
+			$out['posts_deleted']++;
+		}
+
+		return $out;
 	}
 
 	/**

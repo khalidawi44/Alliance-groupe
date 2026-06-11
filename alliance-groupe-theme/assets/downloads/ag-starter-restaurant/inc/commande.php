@@ -24,9 +24,6 @@ class AG_Restaurant_Commande {
 		add_action( 'customize_register', array( __CLASS__, 'customize' ) );
 		add_action( 'admin_post_nopriv_ag_restaurant_order', array( __CLASS__, 'handle_submit' ) );
 		add_action( 'admin_post_ag_restaurant_order', array( __CLASS__, 'handle_submit' ) );
-		// Pop-up de choix (Réserver / Livraison / À emporter / Voir la carte)
-		// affiché sur l'accueil, ouvert par le bouton hero [data-ag-choice].
-		add_action( 'wp_footer', array( __CLASS__, 'maybe_choice_modal' ) );
 	}
 
 	/** Affiche le pop-up de choix sur la page d'accueil. */
@@ -34,6 +31,46 @@ class AG_Restaurant_Commande {
 		if ( is_admin() ) return;
 		if ( ! ( is_front_page() || is_home() ) ) return;
 		echo self::choice_modal(); // phpcs:ignore
+	}
+
+	/**
+	 * Cartes de choix EN LIGNE (sous le titre du hero) : Réserver / Livraison /
+	 * À emporter / Voir la carte. Style « verre » lisible sur la photo du hero.
+	 */
+	public static function choice_inline() {
+		$order_on = self::is_on();
+		$delivery = self::delivery_on();
+		$takeaway = self::takeaway_on();
+		$carte_pg = get_page_by_path( 'carte' );
+		$carte    = $carte_pg ? get_permalink( $carte_pg ) : home_url( '/carte/' );
+		$resa_pg  = get_page_by_path( 'reservation' );
+		$resa     = $resa_pg ? get_permalink( $resa_pg ) : home_url( '/reservation/' );
+		$fee      = self::fee();
+		$fee_lbl  = $fee > 0 ? number_format( $fee, 2, ',', ' ' ) . ' €' : 'offert';
+
+		ob_start();
+		?>
+		<div class="ag-hchoice">
+			<a class="ag-hchoice__opt" href="<?php echo esc_url( $resa ); ?>"><span>🍽️</span><b>Réserver une table</b><small>Sur place</small></a>
+			<?php if ( $order_on && $delivery ) : ?>
+				<a class="ag-hchoice__opt" href="<?php echo esc_url( add_query_arg( 'go', 'livraison', $carte ) ); ?>"><span>🛵</span><b>Se faire livrer</b><small>Livraison · <?php echo esc_html( $fee_lbl ); ?></small></a>
+			<?php endif; ?>
+			<?php if ( $order_on && $takeaway ) : ?>
+				<a class="ag-hchoice__opt" href="<?php echo esc_url( add_query_arg( 'go', 'emporter', $carte ) ); ?>"><span>🥡</span><b>À emporter</b><small>À récupérer</small></a>
+			<?php endif; ?>
+			<a class="ag-hchoice__opt" href="<?php echo esc_url( add_query_arg( 'go', 'consulter', $carte ) ); ?>"><span>📖</span><b>Voir la carte</b><small>Consulter</small></a>
+		</div>
+		<style>
+		.ag-hchoice{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin:6px auto 0;max-width:760px}
+		.ag-hchoice__opt{flex:1 1 150px;max-width:200px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:16px 12px;border-radius:16px;text-decoration:none;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.32);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:.18s;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+		.ag-hchoice__opt:hover{background:var(--ag-color-accent,#c9a24b);border-color:var(--ag-color-accent,#c9a24b);color:var(--ag-color-on-accent,#fff);transform:translateY(-3px);text-shadow:none}
+		.ag-hchoice__opt span{font-size:1.9rem;line-height:1}
+		.ag-hchoice__opt b{font-size:1rem;margin-top:4px}
+		.ag-hchoice__opt small{font-size:.78rem;opacity:.85}
+		@media(max-width:560px){.ag-hchoice__opt{flex:1 1 130px;padding:13px 8px}.ag-hchoice__opt span{font-size:1.6rem}}
+		</style>
+		<?php
+		return ob_get_clean();
 	}
 
 	/**

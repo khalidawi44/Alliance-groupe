@@ -70,6 +70,10 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.23.1 =
+* Le hero affiche directement les CARTES DE CHOIX sous le titre (Reserver / Se faire livrer / A emporter / Voir la carte) au lieu d'un bouton.
+* Reinitialiser : nouveau bouton NETTOYAGE EXHAUSTIF qui supprime aussi tous les articles (hors categorie Recettes) et toutes les pages non-restaurant laisses par d'autres templates.
+
 = 1.23.0 =
 * Le bouton "Commander / Reserver" du hero ouvre un POP-UP DE CHOIX directement sur l'accueil (Reserver une table / Se faire livrer / A emporter / Voir la carte).
 * Nouveau : RECETTES (aimant a clients) — la grille "Nos specialites" peut etre remplacee par des cartes IMAGE menant a des articles/tutos recettes.
