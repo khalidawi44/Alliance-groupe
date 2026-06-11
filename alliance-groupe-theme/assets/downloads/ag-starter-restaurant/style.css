@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress 100% francais pour restaurants : traditionnel, pizzeria, bistrot, gastronomique, creperie, burger. Page d'accueil immersive (hero photo, grille de specialites, comment reserver, avis clients, FAQ), contenu pre-redige en francais natif, presets en 1 clic par type de restaurant. Reservation, carte, privatisation. Design chaleureux et responsive.
-Version: 1.22.2
+Version: 1.22.3
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -1334,25 +1334,24 @@ body.admin-bar.ag-premium-mode.page:not(.home) .ag-page-hero--full{
    ═══════════════════════════════════════════════════════════════════ */
 body.ag-premium-mode{background:var(--ag-color-background) !important;color:var(--ag-color-text) !important;}
 
-/* Header sombre + or (accueil ET pages internes, état normal et scrollé) */
-body.ag-premium-mode .ag-site-header,
-body.ag-premium-mode.page:not(.home) .ag-site-header,
-body.ag-premium-mode.page:not(.home) .ag-site-header.scrolled{
-	background:color-mix(in srgb, var(--ag-color-background) 92%, transparent) !important;
+/* Header : TRANSPARENT sur l'accueil au-dessus du hero ; plein (palette) au scroll + pages internes */
+body.ag-premium-mode .ag-site-header.scrolled,
+body.ag-premium-mode.page:not(.home) .ag-site-header{
+	background:color-mix(in srgb, var(--ag-color-background) 94%, transparent) !important;
 	border-bottom:1px solid color-mix(in srgb, var(--ag-color-accent) 28%, transparent) !important;
-	box-shadow:0 2px 24px rgba(0,0,0,.45) !important;
+	box-shadow:0 2px 24px rgba(0,0,0,.18) !important;
 }
-body.ag-premium-mode .ag-site-brand,
+body.ag-premium-mode .ag-site-header.scrolled .ag-site-brand,
 body.ag-premium-mode.page:not(.home) .ag-site-header .ag-site-brand,
 body.ag-premium-mode.page:not(.home) .ag-site-header.scrolled .ag-site-brand{
 	color:var(--ag-color-accent) !important;text-shadow:none !important;font-family:'Playfair Display',Georgia,serif !important;
 }
-body.ag-premium-mode .ag-primary-menu a,
+body.ag-premium-mode .ag-site-header.scrolled .ag-primary-menu a,
 body.ag-premium-mode.page:not(.home) .ag-site-header .ag-primary-menu a,
 body.ag-premium-mode.page:not(.home) .ag-site-header.scrolled .ag-primary-menu a{
 	color:var(--ag-color-text) !important;text-shadow:none !important;
 }
-body.ag-premium-mode .ag-primary-menu a:hover{color:var(--ag-color-accent) !important;}
+body.ag-premium-mode .ag-site-header.scrolled .ag-primary-menu a:hover{color:var(--ag-color-accent) !important;}
 
 /* Zone principale + sections sombres */
 body.ag-premium-mode .ag-main--premium{background:var(--ag-color-background) !important;color:var(--ag-color-text) !important;}

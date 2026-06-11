@@ -70,6 +70,9 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.22.3 =
+* Menu (header) transparent au-dessus du hero sur l'accueil (texte blanc lisible) ; il devient plein aux couleurs du theme au scroll et sur les pages internes.
+
 = 1.22.2 =
 * VRAI correctif palette : le skin "premium-mode" forcait les couleurs Versailles (or & noir) en !important sur toutes les pages, ecrasant le preset. Il suit maintenant la palette active -> Pizzeria devient bien rouge/vert/blanc, Burger rouge/jaune, etc.
 
