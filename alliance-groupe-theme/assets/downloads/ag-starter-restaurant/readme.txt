@@ -70,6 +70,11 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.20.0 =
+* Spécialités de l'accueil ENTIÈREMENT éditables par le client : Personnaliser > « Spécialités (accueil) » — 1 ligne par carte « emoji | Titre | lien ».
+* Le lien de chaque carte est libre (https://… ou interne /carte/) ; laissé vide, il mène automatiquement à la bonne page.
+* Pré-remplissage automatique du champ avec les spécialités du preset (le client part d'une base et modifie).
+
 = 1.19.3 =
 * Les cartes "Nos spécialités" de l'accueil mènent enfin quelque part : Réservation/Privatisation/Terrasse -> page Réservation ; À emporter -> carte en mode commande ; Menu/Vins/Desserts/Produits -> la carte.
 * La page carte applique directement le choix via ?go=... (plus de pop-up redondant quand on vient d'une spécialité).

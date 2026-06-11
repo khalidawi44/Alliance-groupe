@@ -331,6 +331,48 @@ class AG_Restaurant_Presets {
 		// Rend la home immersive des l'activation : applique le preset par
 		// defaut « traditionnel » si aucun type de restaurant n'est encore choisi.
 		add_action( 'after_setup_theme', array( __CLASS__, 'maybe_apply_default' ) );
+		// Le client edite lui-meme les 8 specialites (emoji, titre, lien).
+		add_action( 'customize_register', array( __CLASS__, 'customize_services' ) );
+	}
+
+	/**
+	 * Transforme une liste de services en texte editable (1 ligne par carte) :
+	 * « emoji | Titre | lien (optionnel) ».
+	 */
+	public static function services_to_text( $services ) {
+		$lines = array();
+		foreach ( (array) $services as $svc ) {
+			$emoji = isset( $svc['emoji'] ) ? $svc['emoji'] : '';
+			$title = isset( $svc['title'] ) ? $svc['title'] : '';
+			$url   = isset( $svc['url'] ) ? $svc['url'] : '';
+			$line  = trim( $emoji . ' | ' . $title );
+			if ( '' !== $url ) $line .= ' | ' . $url;
+			$lines[] = $line;
+		}
+		return implode( "\n", $lines );
+	}
+
+	/** Section Personnaliser : édition des spécialités de l'accueil. */
+	public static function customize_services( $wp ) {
+		$wp->add_section( 'ag_restaurant_services', array(
+			'title'       => '🍽️ ' . __( 'Spécialités (accueil)', 'ag-starter-restaurant' ),
+			'priority'    => 26,
+			'description' => __( 'Une carte par ligne : emoji | Titre | lien (le lien est facultatif). Sans lien, la carte mène automatiquement à la bonne page (réservation, carte, commande). Le lien peut être une adresse complète (https://…) ou interne (/carte/).', 'ag-starter-restaurant' ),
+		) );
+		$wp->add_setting( 'ag_restaurant_services_edit', array(
+			'default'           => '',
+			'sanitize_callback' => array( __CLASS__, 'sanitize_services_edit' ),
+		) );
+		$wp->add_control( 'ag_restaurant_services_edit', array(
+			'label'       => __( 'Vos spécialités (8 max)', 'ag-starter-restaurant' ),
+			'section'     => 'ag_restaurant_services',
+			'type'        => 'textarea',
+			'input_attrs' => array( 'rows' => 9 ),
+		) );
+	}
+
+	public static function sanitize_services_edit( $v ) {
+		return wp_kses_post( $v );
 	}
 
 	/**
@@ -357,6 +399,17 @@ class AG_Restaurant_Presets {
 			update_option( 'ag_restaurant_versailles_v2', 1 );
 		}
 
+		// Migration douce : pré-remplit le champ éditable à partir des services
+		// déjà en place, pour que le client voie et modifie ses 8 spécialités
+		// (emoji/titre/lien) même sur une install existante.
+		if ( '' === trim( (string) get_theme_mod( 'ag_restaurant_services_edit', '' ) ) ) {
+			$cur = get_theme_mod( 'ag_restaurant_services_json', '' );
+			$arr = $cur ? json_decode( $cur, true ) : array();
+			if ( is_array( $arr ) && ! empty( $arr ) ) {
+				set_theme_mod( 'ag_restaurant_services_edit', self::services_to_text( $arr ) );
+			}
+		}
+
 		if ( get_theme_mod( 'ag_restaurant_metier_slug', '' ) ) return;
 		if ( get_option( 'ag_restaurant_default_applied' ) ) return;
 
@@ -369,6 +422,9 @@ class AG_Restaurant_Presets {
 		}
 		set_theme_mod( 'ag_restaurant_metier_slug', 'traditionnel' );
 		set_theme_mod( 'ag_restaurant_services_json', wp_json_encode( $preset['services'] ) );
+		if ( '' === trim( (string) get_theme_mod( 'ag_restaurant_services_edit', '' ) ) ) {
+			set_theme_mod( 'ag_restaurant_services_edit', self::services_to_text( $preset['services'] ) );
+		}
 		update_option( 'ag_restaurant_default_applied', 1 );
 	}
 
@@ -458,6 +514,9 @@ class AG_Restaurant_Presets {
 
 		// 3. Stocke la liste des services en JSON (relu par front-page.php)
 		set_theme_mod( 'ag_restaurant_services_json', wp_json_encode( $preset['services'] ) );
+		// 3b. Renseigne le champ editable du client avec ces services (il pourra
+		//     ensuite modifier emoji/titre/lien dans Personnaliser > Specialites).
+		set_theme_mod( 'ag_restaurant_services_edit', self::services_to_text( $preset['services'] ) );
 
 		// 4. Update les pages WP avec le contenu metier-specifique
 		// (qui-sommes-nous, prestations, zones-intervention, realisations).
@@ -504,6 +563,24 @@ class AG_Restaurant_Presets {
 	 *               ou tableau vide si aucun preset applique.
 	 */
 	public static function get_active_services() {
+		// 1. Priorité à l'édition manuelle du client (Personnaliser > Spécialités).
+		//    Format par ligne : « emoji | Titre | lien (optionnel) ».
+		$edit = (string) get_theme_mod( 'ag_restaurant_services_edit', '' );
+		if ( '' !== trim( $edit ) ) {
+			$out = array();
+			foreach ( preg_split( '/\r\n|\r|\n/', $edit ) as $line ) {
+				$line = trim( $line );
+				if ( '' === $line ) continue;
+				$parts = array_map( 'trim', explode( '|', $line ) );
+				$emoji = isset( $parts[0] ) ? $parts[0] : '';
+				$title = isset( $parts[1] ) ? $parts[1] : '';
+				$url   = isset( $parts[2] ) ? $parts[2] : '';
+				if ( '' === $title && '' === $emoji ) continue;
+				$out[] = array( 'emoji' => $emoji, 'title' => $title, 'url' => $url );
+			}
+			if ( ! empty( $out ) ) return $out;
+		}
+		// 2. Sinon, la grille du preset (JSON).
 		$json = get_theme_mod( 'ag_restaurant_services_json', '' );
 		if ( ! $json ) return array();
 		$arr = json_decode( $json, true );
