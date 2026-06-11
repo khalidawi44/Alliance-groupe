@@ -21,12 +21,12 @@ $avis = array(
 		'url'    => 'https://annaphoto.eu/',
 	),
 	array(
-		'name'   => 'L.A Environnement',
-		'role'   => 'Paysagiste · Loire-Atlantique',
-		'init'   => 'L',
-		'quote'  => 'Site vitrine pensé pour générer des devis en local. On est passé de 1 à 15 demandes par mois, et je suis dans le top 3 sur Google.',
-		'did'    => 'Site vitrine, formulaires de devis, référencement local.',
-		'url'    => 'https://www.paysagiste-environnement.com/',
+		'name'   => 'Quartier Libre — LFI Nantes Sud',
+		'role'   => 'Collectif citoyen · Clos Toreau, Nantes',
+		'init'   => 'Q',
+		'quote'  => 'On a pris un de leurs templates « association » : adhésions, agenda d\'événements et mobilisation en ligne, prêts en quelques minutes. Idéal pour animer notre quartier.',
+		'did'    => 'Template association installé et personnalisé (adhésions, agenda, dons, mobilisation).',
+		'url'    => 'https://quartierlibre.org/',
 	),
 );
 ?>
