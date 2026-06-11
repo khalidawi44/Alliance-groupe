@@ -70,6 +70,9 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.22.2 =
+* VRAI correctif palette : le skin "premium-mode" forcait les couleurs Versailles (or & noir) en !important sur toutes les pages, ecrasant le preset. Il suit maintenant la palette active -> Pizzeria devient bien rouge/vert/blanc, Burger rouge/jaune, etc.
+
 = 1.22.1 =
 * Correctif palette : apres mise a jour, la palette du preset actif se ré-applique automatiquement (plus besoin de ré-appliquer le preset a la main).
 * Le bouton du hero ouvre desormais la carte avec le pop-up de choix (Reserver / Livraison / A emporter / Consulter) au lieu de mener a /reservation/.

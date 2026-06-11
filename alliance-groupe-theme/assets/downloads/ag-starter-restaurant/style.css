@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress 100% francais pour restaurants : traditionnel, pizzeria, bistrot, gastronomique, creperie, burger. Page d'accueil immersive (hero photo, grille de specialites, comment reserver, avis clients, FAQ), contenu pre-redige en francais natif, presets en 1 clic par type de restaurant. Reservation, carte, privatisation. Design chaleureux et responsive.
-Version: 1.22.1
+Version: 1.22.2
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -1330,32 +1330,32 @@ body.admin-bar.ag-premium-mode.page:not(.home) .ag-page-hero--full{
 
 /* ═══════════════════════════════════════════════════════════════════
    THÈME « VERSAILLES » — sombre & or. Override du premium-mode (clair).
-   Palette : fond #13110c · cartes #1c1813 · or #e3bb4f · crème #f4eedd
+   Palette : fond #13110c · cartes var(--ag-color-panel) · or var(--ag-color-accent) · crème var(--ag-color-text)
    ═══════════════════════════════════════════════════════════════════ */
-body.ag-premium-mode{background:#13110c !important;color:#f4eedd !important;}
+body.ag-premium-mode{background:var(--ag-color-background) !important;color:var(--ag-color-text) !important;}
 
 /* Header sombre + or (accueil ET pages internes, état normal et scrollé) */
 body.ag-premium-mode .ag-site-header,
 body.ag-premium-mode.page:not(.home) .ag-site-header,
 body.ag-premium-mode.page:not(.home) .ag-site-header.scrolled{
-	background:rgba(15,13,9,.92) !important;
-	border-bottom:1px solid rgba(201,162,75,.28) !important;
+	background:color-mix(in srgb, var(--ag-color-background) 92%, transparent) !important;
+	border-bottom:1px solid color-mix(in srgb, var(--ag-color-accent) 28%, transparent) !important;
 	box-shadow:0 2px 24px rgba(0,0,0,.45) !important;
 }
 body.ag-premium-mode .ag-site-brand,
 body.ag-premium-mode.page:not(.home) .ag-site-header .ag-site-brand,
 body.ag-premium-mode.page:not(.home) .ag-site-header.scrolled .ag-site-brand{
-	color:#e3bb4f !important;text-shadow:none !important;font-family:'Playfair Display',Georgia,serif !important;
+	color:var(--ag-color-accent) !important;text-shadow:none !important;font-family:'Playfair Display',Georgia,serif !important;
 }
 body.ag-premium-mode .ag-primary-menu a,
 body.ag-premium-mode.page:not(.home) .ag-site-header .ag-primary-menu a,
 body.ag-premium-mode.page:not(.home) .ag-site-header.scrolled .ag-primary-menu a{
-	color:#f4eedd !important;text-shadow:none !important;
+	color:var(--ag-color-text) !important;text-shadow:none !important;
 }
-body.ag-premium-mode .ag-primary-menu a:hover{color:#e3bb4f !important;}
+body.ag-premium-mode .ag-primary-menu a:hover{color:var(--ag-color-accent) !important;}
 
 /* Zone principale + sections sombres */
-body.ag-premium-mode .ag-main--premium{background:#13110c !important;color:#f4eedd !important;}
+body.ag-premium-mode .ag-main--premium{background:var(--ag-color-background) !important;color:var(--ag-color-text) !important;}
 body.ag-premium-mode .ag-main--premium h1,
 body.ag-premium-mode .ag-main--premium h2,
 body.ag-premium-mode .ag-main--premium h3,
@@ -1363,13 +1363,13 @@ body.ag-premium-mode .ag-page-title,
 body.ag-premium-mode .ag-entry-title,
 body.ag-premium-mode .ag-entry-content h1,
 body.ag-premium-mode .ag-entry-content h2,
-body.ag-premium-mode .ag-entry-content h3{color:#fbf5e6 !important;font-family:'Playfair Display',Georgia,serif !important;}
+body.ag-premium-mode .ag-entry-content h3{color:var(--ag-color-heading) !important;font-family:'Playfair Display',Georgia,serif !important;}
 body.ag-premium-mode .ag-services-grid-title span,
 body.ag-premium-mode .ag-services-grid-title em,
-body.ag-premium-mode .ag-page-title em{color:#e3bb4f !important;}
+body.ag-premium-mode .ag-page-title em{color:var(--ag-color-accent) !important;}
 body.ag-premium-mode .ag-services-grid-lead,
 body.ag-premium-mode .ag-entry-content,
-body.ag-premium-mode .ag-entry-content p{color:#d8cba6 !important;}
+body.ag-premium-mode .ag-entry-content p{color:var(--ag-color-muted) !important;}
 
 /* Cartes / bandes sombres avec liseré or */
 body.ag-premium-mode .ag-service-card,
@@ -1377,25 +1377,25 @@ body.ag-premium-mode .ag-howit-card,
 body.ag-premium-mode .ag-testi-card,
 body.ag-premium-mode .ag-faq-item,
 body.ag-premium-mode .ag-card{
-	background:#1c1813 !important;border:1px solid rgba(201,162,75,.22) !important;color:#f4eedd !important;
+	background:var(--ag-color-panel) !important;border:1px solid color-mix(in srgb, var(--ag-color-accent) 22%, transparent) !important;color:var(--ag-color-text) !important;
 }
-body.ag-premium-mode .ag-service-card:hover{border-color:#e3bb4f !important;box-shadow:0 16px 40px rgba(0,0,0,.5) !important;}
+body.ag-premium-mode .ag-service-card:hover{border-color:var(--ag-color-accent) !important;box-shadow:0 16px 40px rgba(0,0,0,.5) !important;}
 body.ag-premium-mode .ag-howit-wrap,
 body.ag-premium-mode .ag-testi-wrap,
-body.ag-premium-mode .ag-faq-wrap{background:#16130d !important;}
+body.ag-premium-mode .ag-faq-wrap{background:var(--ag-color-background) !important;}
 body.ag-premium-mode .ag-service-card__title,
 body.ag-premium-mode .ag-howit-card h3,
-body.ag-premium-mode .ag-testi-text{color:#f4eedd !important;}
+body.ag-premium-mode .ag-testi-text{color:var(--ag-color-text) !important;}
 body.ag-premium-mode .ag-service-card__icon,
 body.ag-premium-mode .ag-howit-emoji{filter:none;}
 
 /* Page-hero interne (prestations, etc.) sombre */
-body.ag-premium-mode .ag-page-hero{background:#16130d !important;}
-body.ag-premium-mode .ag-page-tag{background:#e3bb4f !important;color:#13110c !important;}
+body.ag-premium-mode .ag-page-hero{background:var(--ag-color-background) !important;}
+body.ag-premium-mode .ag-page-tag{background:var(--ag-color-accent) !important;color:var(--ag-color-on-accent) !important;}
 
 /* Boutons or */
 body.ag-premium-mode .ag-btn-pro,
-body.ag-premium-mode .ag-btn{background:#e3bb4f !important;color:#13110c !important;border-color:#e3bb4f !important;}
+body.ag-premium-mode .ag-btn{background:var(--ag-color-accent) !important;color:var(--ag-color-on-accent) !important;border-color:var(--ag-color-accent) !important;}
 body.ag-premium-mode .ag-btn-pro:hover,
 body.ag-premium-mode .ag-btn:hover{filter:brightness(1.08);}
 
@@ -1411,8 +1411,8 @@ body.admin-bar.ag-premium-mode.page:not(.home) #ag-main.ag-plain-page{padding-to
 /* Versailles — textes des sections (etaient sombres sur fond clair) */
 body.ag-premium-mode .ag-faq-q,
 body.ag-premium-mode .ag-howit-title,
-body.ag-premium-mode .ag-testi-text{color:#f4eedd !important;}
+body.ag-premium-mode .ag-testi-text{color:var(--ag-color-text) !important;}
 body.ag-premium-mode .ag-faq-a,
-body.ag-premium-mode .ag-howit-desc{color:#d4c8a6 !important;}
-body.ag-premium-mode .ag-testi-author{color:#e3bb4f !important;}
-body.ag-premium-mode .ag-faq-item[open]{border-color:#e3bb4f !important;}
+body.ag-premium-mode .ag-howit-desc{color:var(--ag-color-muted) !important;}
+body.ag-premium-mode .ag-testi-author{color:var(--ag-color-accent) !important;}
+body.ag-premium-mode .ag-faq-item[open]{border-color:var(--ag-color-accent) !important;}
