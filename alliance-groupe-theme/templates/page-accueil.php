@@ -144,21 +144,27 @@ get_header();
             Je <strong>crée des sites pro référencés</strong> (SEO) et je les <strong>sécurise</strong>. On commence par révéler vos failles.
         </p>
 
-        <!-- TEST LÉGER INSTANTANÉ : URL -> score + nb failles, sans quitter la page -->
-        <form class="ag-qt" id="ag-qt" autocomplete="off">
-            <label class="ag-qt__lbl" for="ag-qt-url">🔍 Testez la sécurité de votre site — gratuit, instantané</label>
-            <div class="ag-qt__row">
-                <input type="text" id="ag-qt-url" name="url" inputmode="url" placeholder="monsite.fr" required>
-                <button type="submit" class="ag-btn-gold ag-qt__btn">Analyser →</button>
+        <!-- 2 boutons DISCRETS qui se fondent dans le décor : gauche sous
+             « Sécurité », droite sous « Création ». -->
+        <div class="ag-hero__cta2">
+            <div class="ag-hero__cta2col">
+                <a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-cta-ghost ag-cta-ghost--secu">🔍 Tester mon site</a>
             </div>
-            <div class="ag-qt__hint">Diagnostic non-intrusif (lecture publique). Aucun mot de passe demandé.</div>
-            <div class="ag-qt__result" id="ag-qt-result" hidden></div>
-        </form>
-
-        <div class="ag-hero__buttons">
-            <a href="<?php echo esc_url(home_url('/sites-express')); ?>" class="ag-btn-outline">✨ Je veux un site qui me ressemble →</a>
-            <a href="#" data-ag-hack class="ag-btn-ghost">👁️ Voir à quoi ressemble un piratage</a>
+            <div class="ag-hero__cta2col">
+                <a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>" class="ag-cta-ghost ag-cta-ghost--crea">✨ Je veux un site qui me ressemble</a>
+            </div>
         </div>
+        <style>
+        .ag-hero__cta2{display:flex;gap:clamp(20px,4vw,52px);justify-content:center;max-width:760px;margin:22px auto 0;flex-wrap:wrap}
+        .ag-hero__cta2col{flex:1 1 0;min-width:230px;max-width:430px;display:flex;justify-content:center}
+        .ag-cta-ghost{display:inline-flex;align-items:center;gap:8px;padding:14px 26px;border-radius:999px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.06);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);color:#fff!important;font-weight:700;text-decoration:none!important;text-shadow:0 1px 3px rgba(0,0,0,.45);transition:.18s;text-align:center}
+        .ag-cta-ghost:hover{background:rgba(255,255,255,.16);border-color:#fff;transform:translateY(-2px)}
+        .ag-cta-ghost--secu{border-color:rgba(255,90,90,.55)}
+        .ag-cta-ghost--secu:hover{background:rgba(255,90,90,.18);border-color:#ff8a8a}
+        .ag-cta-ghost--crea{border-color:rgba(91,168,255,.55)}
+        .ag-cta-ghost--crea:hover{background:rgba(91,168,255,.18);border-color:#8ec3ff}
+        @media(max-width:600px){.ag-cta-ghost{width:100%;justify-content:center}}
+        </style>
         <style>
         /* Sous-texte resserre pour remonter le test + les boutons */
         body.home .ag-hero__sub{max-width:760px;margin:8px auto 0!important;font-size:.98rem;line-height:1.5}
