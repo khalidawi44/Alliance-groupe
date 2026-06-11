@@ -33,7 +33,10 @@ class AG_Restaurant_Reservation {
 		if ( ! $post || 'reservation' !== $post->post_name ) {
 			return $content;
 		}
-		if ( false !== strpos( $content, 'ag-resa-card' ) ) {
+		// Évite le DOUBLON : si le formulaire est déjà rendu (markup) ou si le
+		// shortcode [ag_restaurant_reservation] est présent dans la page, on
+		// laisse le shortcode faire le rendu et on n'ajoute rien.
+		if ( false !== strpos( $content, 'ag-resa-card' ) || has_shortcode( $content, 'ag_restaurant_reservation' ) ) {
 			return $content;
 		}
 		return $content . self::render_form();
@@ -48,18 +51,23 @@ class AG_Restaurant_Reservation {
 		?>
 		<section class="ag-resa-wrap" style="max-width:680px;margin:40px auto;padding:0 20px;">
 			<style>
-			.ag-resa-card{background:#1c1813;color:#ece4d2;border:1px solid rgba(201,162,75,.35);border-radius:16px;padding:32px;box-shadow:0 18px 50px rgba(0,0,0,.55);}
-			.ag-resa-card h2{color:#f3ead4 !important;margin:0 0 6px;font-size:1.7rem;font-family:'Playfair Display',Georgia,serif;}
-			.ag-resa-lead{color:#b3a88c !important;margin:0 0 22px;}
-			.ag-resa-card label{display:block;color:#d8cdb0 !important;font-size:.9rem;font-weight:600;}
-			.ag-resa-card input,.ag-resa-card textarea{width:100%;padding:11px;margin-top:5px;border:1px solid rgba(201,162,75,.45);border-radius:8px;background:#f5efe1;color:#2a2017;font-size:1rem;box-sizing:border-box;}
+			.ag-resa-card{background:var(--ag-color-panel,#1c1813);color:var(--ag-color-text,#ece4d2);border:1px solid color-mix(in srgb,var(--ag-color-accent,#c9a24b) 35%,transparent);border-radius:16px;padding:32px;box-shadow:0 18px 50px rgba(0,0,0,.45);}
+			.ag-resa-card h2{color:var(--ag-color-heading,#f3ead4) !important;margin:0 0 6px;font-size:1.7rem;font-family:'Playfair Display',Georgia,serif;}
+			.ag-resa-lead{color:var(--ag-color-muted,#b3a88c) !important;margin:0 0 22px;}
+			.ag-resa-card label{display:block;color:var(--ag-color-muted,#d8cdb0) !important;font-size:.9rem;font-weight:600;}
+			.ag-resa-card input,.ag-resa-card textarea{width:100%;padding:11px;margin-top:5px;border:1px solid color-mix(in srgb,var(--ag-color-accent,#c9a24b) 45%,transparent);border-radius:8px;background:#f5efe1;color:#2a2017;font-size:1rem;box-sizing:border-box;}
 			.ag-resa-card input::placeholder,.ag-resa-card textarea::placeholder{color:#9a8e72;}
-			.ag-resa-card input:focus,.ag-resa-card textarea:focus{outline:none;border-color:#c9a24b;box-shadow:0 0 0 3px rgba(201,162,75,.30);}
+			.ag-resa-card input:focus,.ag-resa-card textarea:focus{outline:none;border-color:var(--ag-color-accent,#c9a24b);box-shadow:0 0 0 3px color-mix(in srgb,var(--ag-color-accent,#c9a24b) 30%,transparent);}
 			.ag-resa-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 			@media(max-width:560px){.ag-resa-grid{grid-template-columns:1fr;}}
-			.ag-resa-submit{margin-top:20px;width:100%;background:#c9a24b;color:#13110c !important;border:0;font-weight:700;font-size:1.05rem;padding:15px;border-radius:10px;cursor:pointer;letter-spacing:.3px;}
+			.ag-resa-submit{margin-top:20px;width:100%;background:var(--ag-color-accent,#c9a24b);color:var(--ag-color-on-accent,#13110c) !important;border:0;font-weight:700;font-size:1.05rem;padding:15px;border-radius:10px;cursor:pointer;letter-spacing:.3px;}
 			.ag-resa-submit:hover{filter:brightness(1.08);}
-			.ag-resa-fine{margin:12px 0 0;text-align:center;font-size:.85rem;color:#8c8268;}
+			.ag-resa-fine{margin:12px 0 0;text-align:center;font-size:.85rem;color:var(--ag-color-muted,#8c8268);}
+			/* Barre de changement de mode (cohérente avec la carte) */
+			.ag-resa-switch{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:var(--ag-color-panel,#1c1813);border:1px solid color-mix(in srgb,var(--ag-color-accent,#c9a24b) 35%,transparent);border-radius:12px;padding:10px 16px;margin-bottom:14px;color:var(--ag-color-text,#ece4d2);font-weight:700}
+			.ag-resa-switch__alt{display:flex;flex-wrap:wrap;gap:8px}
+			.ag-resa-switch__alt a{text-decoration:none;font-size:.85rem;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid color-mix(in srgb,var(--ag-color-accent,#c9a24b) 45%,transparent);color:var(--ag-color-accent,#c9a24b) !important}
+			.ag-resa-switch__alt a:hover{background:var(--ag-color-accent,#c9a24b);color:var(--ag-color-on-accent,#fff) !important}
 			</style>
 			<?php if ( $success ) : ?>
 				<div class="ag-resa-card" style="text-align:center;">
@@ -67,7 +75,18 @@ class AG_Restaurant_Reservation {
 					<h2>Demande de réservation envoyée !</h2>
 					<p class="ag-resa-lead" style="margin:0;">Nous revenons vers vous très vite pour confirmer votre table. Merci de votre confiance.</p>
 				</div>
-			<?php else : ?>
+			<?php else :
+				$ag_carte_pg = get_page_by_path( 'carte' );
+				$ag_carte    = $ag_carte_pg ? get_permalink( $ag_carte_pg ) : home_url( '/carte/' );
+			?>
+				<div class="ag-resa-switch">
+					<span>🍽️ Vous réservez une table</span>
+					<span class="ag-resa-switch__alt">
+						<a href="<?php echo esc_url( add_query_arg( 'go', 'livraison', $ag_carte ) ); ?>">🛵 Livraison</a>
+						<a href="<?php echo esc_url( add_query_arg( 'go', 'emporter', $ag_carte ) ); ?>">🥡 À emporter</a>
+						<a href="<?php echo esc_url( add_query_arg( 'go', 'consulter', $ag_carte ) ); ?>">📖 Voir la carte</a>
+					</span>
+				</div>
 				<div class="ag-resa-card">
 					<h2>Réserver une table<?php echo $name ? ' — ' . esc_html( $name ) : ''; ?></h2>
 					<p class="ag-resa-lead">Indiquez vos préférences, nous vous confirmons votre réservation au plus vite.</p>

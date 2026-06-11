@@ -70,6 +70,10 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.23.7 =
+* FIX page Reservation : plus de formulaire en double (le shortcode + l'ajout auto faisaient doublon).
+* La reservation suit la palette du preset (fini le formulaire dore fige) + barre de changement de mode (Livraison / A emporter / Voir la carte), coherente avec la carte.
+
 = 1.23.6 =
 * Systeme de contraste UNIFIE sur tous les modules (carte/menu, commande/livraison, fidelite, recettes) : plus aucun bouton/onglet illisible (fini le rouge-sur-rouge). Onglets de la carte, boutons de deblocage, WhatsApp, cartes de choix : tous lisibles et coherents avec la palette du preset.
 
