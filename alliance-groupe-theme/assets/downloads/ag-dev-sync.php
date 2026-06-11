@@ -12,6 +12,9 @@ add_action( 'admin_menu', function () {
 } );
 
 function ag_dev_sync_download( $url ) {
+	// Cache-buster : le CDN de GitHub (Fastly) peut servir un zip PERIME
+	// quelques minutes apres un push. On force une version fraiche.
+	$url .= ( false === strpos( $url, '?' ) ? '?' : '&' ) . 'nocache=' . time();
 	$args = array( 'timeout' => 60, 'sslverify' => false );
 	$resp = wp_remote_get( $url, $args );
 	if ( is_wp_error( $resp ) ) return $resp;
@@ -25,7 +28,7 @@ function ag_dev_sync_download( $url ) {
 
 function ag_dev_sync_run() {
 	$results = array();
-	$base = 'https://github.com/khalidawi44/Alliance-groupe/raw/main/alliance-groupe-theme/assets/downloads/';
+	$base = 'https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/downloads/';
 
 	// Self-update : remplace le mu-plugin ag-dev-sync.php lui-meme
 	// par la version actuelle du repo. Ainsi pas besoin de copier
@@ -33,7 +36,7 @@ function ag_dev_sync_run() {
 	$self_url  = 'https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/downloads/ag-dev-sync.php';
 	$self_dest = WPMU_PLUGIN_DIR . '/ag-dev-sync.php';
 	$results[] = '--- Self-update ag-dev-sync.php ---';
-	$resp = wp_remote_get( $self_url, array( 'timeout' => 30 ) );
+	$resp = wp_remote_get( $self_url . '?nocache=' . time(), array( 'timeout' => 30, 'sslverify' => false ) );
 	if ( ! is_wp_error( $resp ) && 200 === wp_remote_retrieve_response_code( $resp ) ) {
 		$body = wp_remote_retrieve_body( $resp );
 		if ( $body && strpos( $body, 'ag_dev_sync_run' ) !== false ) {
