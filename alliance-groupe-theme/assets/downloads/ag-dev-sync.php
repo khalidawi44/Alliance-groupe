@@ -119,6 +119,9 @@ function ag_dev_sync_run() {
 	);
 
 	require_once ABSPATH . 'wp-admin/includes/file.php';
+	// Force l'acces disque DIRECT (XAMPP/local) : sinon WP peut basculer en
+	// FTP et copy_dir echoue silencieusement (« INSTALLE » mais rien n'est ecrit).
+	add_filter( 'filesystem_method', function () { return 'direct'; } );
 	WP_Filesystem();
 	global $wp_filesystem;
 
@@ -158,7 +161,14 @@ function ag_dev_sync_run() {
 		if ( is_wp_error( $copy ) ) {
 			$results[] = 'ERREUR copy: ' . $copy->get_error_message();
 		} else {
-			$results[] = 'INSTALLE';
+			// PREUVE : lit la version reellement ecrite sur le disque (style.css
+			// pour un theme, le .php principal pour un plugin).
+			$ver = '';
+			$style = $item['dest'] . '/style.css';
+			if ( file_exists( $style ) && preg_match( '/Version:\s*([0-9.]+)/i', (string) file_get_contents( $style ), $m ) ) {
+				$ver = $m[1];
+			}
+			$results[] = 'INSTALLE' . ( $ver ? ' — version sur le disque : ' . $ver : '' );
 		}
 	}
 
