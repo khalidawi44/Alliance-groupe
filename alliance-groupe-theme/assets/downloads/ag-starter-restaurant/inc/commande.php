@@ -79,6 +79,7 @@ class AG_Restaurant_Commande {
 		$add( 'ag_order_whatsapp', array( 'default' => '', 'type' => 'text', 'label' => __( 'WhatsApp (format international, ex : 33612345678)', 'ag-starter-restaurant' ), 'sanitize' => 'sanitize_text_field' ) );
 		$add( 'ag_order_email', array( 'default' => '', 'type' => 'text', 'label' => __( 'Email de réception des commandes (vide = admin)', 'ag-starter-restaurant' ), 'sanitize' => 'sanitize_email' ) );
 		$add( 'ag_order_pay_note', array( 'default' => 'Paiement à la livraison ou sur place (espèces / carte).', 'type' => 'text', 'label' => __( 'Note de paiement', 'ag-starter-restaurant' ), 'sanitize' => 'sanitize_text_field' ) );
+		$add( 'ag_order_hours', array( 'default' => "Lun – Ven : 12h–14h30 · 19h–22h30\nSam – Dim : 19h – 23h", 'type' => 'textarea', 'label' => __( 'Horaires d\'ouverture (affichés à l\'arrivée)', 'ag-starter-restaurant' ), 'sanitize' => 'sanitize_textarea_field' ) );
 	}
 
 	public static function sanitize_amount( $v ) {
@@ -141,10 +142,42 @@ class AG_Restaurant_Commande {
 		$pay_note = trim( (string) get_theme_mod( 'ag_order_pay_note', 'Paiement à la livraison ou sur place (espèces / carte).' ) );
 		$brand    = get_theme_mod( 'ag_hero_brand', get_bloginfo( 'name' ) );
 		$ordered  = isset( $_GET['ordered'] ) ? sanitize_text_field( wp_unslash( $_GET['ordered'] ) ) : '';
+		$hours    = trim( (string) get_theme_mod( 'ag_order_hours', '' ) );
+		$resa_pg  = get_page_by_path( 'reservation' );
+		$resa_url = $resa_pg ? get_permalink( $resa_pg->ID ) : home_url( '/reservation/' );
+		$fee_lbl  = $fee > 0 ? number_format( $fee, 2, ',', ' ' ) . ' € de frais' : 'Frais offerts';
 
 		ob_start();
 		?>
-		<div class="ag-ord" data-fee="<?php echo esc_attr( number_format( $fee, 2, '.', '' ) ); ?>" data-min="<?php echo esc_attr( number_format( $min, 2, '.', '' ) ); ?>" data-delivery="<?php echo $delivery ? '1' : '0'; ?>" data-takeaway="<?php echo $takeaway ? '1' : '0'; ?>" data-wa="<?php echo esc_attr( $wa ); ?>" data-brand="<?php echo esc_attr( $brand ); ?>">
+		<div class="ag-ord" data-fee="<?php echo esc_attr( number_format( $fee, 2, '.', '' ) ); ?>" data-min="<?php echo esc_attr( number_format( $min, 2, '.', '' ) ); ?>" data-delivery="<?php echo $delivery ? '1' : '0'; ?>" data-takeaway="<?php echo $takeaway ? '1' : '0'; ?>" data-wa="<?php echo esc_attr( $wa ); ?>" data-brand="<?php echo esc_attr( $brand ); ?>" data-resa="<?php echo esc_url( $resa_url ); ?>">
+
+			<!-- Écran d'accueil : choix du parcours -->
+			<div class="ag-ord-intro" id="ag-ord-intro" hidden>
+				<div class="ag-ord-intro__card">
+					<button type="button" class="ag-ord-intro__x" id="ag-ord-intro-x" aria-label="Fermer">✕</button>
+					<p class="ag-ord-intro__hi">Bienvenue<?php echo $brand ? ' chez ' . esc_html( $brand ) : ''; ?></p>
+					<h3 class="ag-ord-intro__h">Comment souhaitez-vous en profiter ?</h3>
+					<div class="ag-ord-intro__opts">
+						<button type="button" class="ag-ord-opt" data-intent="reserver"><span>🍽️</span><b>Réserver une table</b><small>Manger sur place</small></button>
+						<?php if ( $delivery ) : ?>
+							<button type="button" class="ag-ord-opt" data-intent="livraison"><span>🛵</span><b>Livraison</b><small>Livré chez vous · <?php echo esc_html( $fee_lbl ); ?></small></button>
+						<?php endif; ?>
+						<?php if ( $takeaway ) : ?>
+							<button type="button" class="ag-ord-opt" data-intent="emporter"><span>🥡</span><b>À emporter</b><small>Je viens le chercher</small></button>
+						<?php endif; ?>
+						<button type="button" class="ag-ord-opt" data-intent="consulter"><span>📖</span><b>Voir la carte</b><small>Simplement consulter</small></button>
+					</div>
+					<?php if ( $hours ) : ?>
+						<div class="ag-ord-intro__hours">🕒 <?php echo nl2br( esc_html( $hours ) ); ?></div>
+					<?php endif; ?>
+				</div>
+			</div>
+
+			<!-- Barre de mode (après le choix) -->
+			<div class="ag-ord-modebar" id="ag-ord-modebar" hidden>
+				<span class="ag-ord-modebar__txt" id="ag-ord-modetxt"></span>
+				<button type="button" class="ag-ord-modebar__btn" id="ag-ord-modechange">Changer</button>
+			</div>
 
 			<?php if ( '1' === $ordered ) : ?>
 				<div class="ag-ord-done" id="ag-ord-done">
@@ -244,20 +277,42 @@ class AG_Restaurant_Commande {
 	private static function styles() {
 		?>
 		<style>
-		/* Panier flottant */
-		.ag-ord-fab{position:fixed;right:18px;bottom:18px;z-index:99980;display:flex;align-items:center;gap:10px;background:#c9a24b;color:#13110c;border:0;border-radius:999px;padding:12px 20px;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:0 12px 34px rgba(0,0,0,.45);}
+		/* Écran d'accueil (choix du parcours) */
+		.ag-ord-intro{position:fixed;inset:0;z-index:99994;display:flex;align-items:center;justify-content:center;background:rgba(5,4,2,.82);backdrop-filter:blur(5px);padding:18px}
+		.ag-ord-intro__card{position:relative;background:linear-gradient(180deg,#1c1813,#14110b);border:1px solid rgba(201,162,75,.4);border-radius:18px;padding:30px 26px 24px;max-width:440px;width:100%;text-align:center;color:#ece4d2;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+		.ag-ord-intro__x{position:absolute;top:12px;right:14px;background:none;border:0;color:#9a8e72;font-size:1.2rem;cursor:pointer;line-height:1}
+		.ag-ord-intro__hi{margin:0;color:#c9a24b;letter-spacing:2px;text-transform:uppercase;font-size:.74rem;font-weight:700}
+		.ag-ord-intro__h{margin:6px 0 20px;font-family:'Playfair Display',Georgia,serif;font-size:1.5rem;color:#f3ead4}
+		.ag-ord-intro__opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+		.ag-ord-opt{display:flex;flex-direction:column;align-items:center;gap:3px;padding:16px 10px;background:rgba(255,255,255,.03);border:1px solid rgba(201,162,75,.35);border-radius:14px;cursor:pointer;color:#ece4d2;transition:.15s}
+		.ag-ord-opt:hover{background:#c9a24b;border-color:#c9a24b;color:#13110c}
+		.ag-ord-opt span{font-size:1.7rem;line-height:1}
+		.ag-ord-opt b{font-size:.98rem;margin-top:4px}
+		.ag-ord-opt small{font-size:.76rem;opacity:.8;line-height:1.25}
+		.ag-ord-intro__hours{margin:18px 0 0;color:#b8ad8f;font-size:.85rem;line-height:1.6;border-top:1px solid rgba(255,255,255,.08);padding-top:14px}
+		@media(max-width:420px){.ag-ord-intro__opts{grid-template-columns:1fr}}
+		/* Barre de mode (sticky) */
+		.ag-ord-modebar{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:center;gap:12px;background:#1c1813;border-bottom:1px solid rgba(201,162,75,.3);padding:9px 14px;color:#e7dcbf;font-size:.9rem;font-weight:600}
+		.ag-ord-modebar__btn{background:none;border:1px solid rgba(201,162,75,.5);color:#f3d889;border-radius:999px;padding:4px 14px;font-size:.82rem;font-weight:700;cursor:pointer}
+		.ag-ord-modebar__btn:hover{background:#c9a24b;color:#13110c}
+		/* Mode « consultation » : on masque les boutons Ajouter */
+		body.ag-ord-browse .ag-ord-add{display:none}
+		/* Panier flottant (compact) */
+		.ag-ord-fab{position:fixed;right:16px;bottom:16px;z-index:99980;display:flex;align-items:center;gap:8px;background:#c9a24b;color:#13110c;border:0;border-radius:999px;padding:9px 15px;font-weight:800;font-size:.9rem;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.4);}
 		.ag-ord-fab:hover{filter:brightness(1.06)}
-		.ag-ord-fab__ic{font-size:1.2rem}
-		.ag-ord-fab__count{background:#13110c;color:#f3d889;border-radius:999px;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:.82rem;padding:0 6px}
+		.ag-ord-fab.is-bump{animation:agFabBump .35s ease}
+		@keyframes agFabBump{0%,100%{transform:scale(1)}40%{transform:scale(1.12)}}
+		.ag-ord-fab__ic{font-size:1.05rem}
+		.ag-ord-fab__count{background:#13110c;color:#f3d889;border-radius:999px;min-width:19px;height:19px;display:inline-flex;align-items:center;justify-content:center;font-size:.76rem;padding:0 5px}
 		.ag-ord-fab__total{font-weight:800}
-		/* Overlay + tiroir */
-		.ag-ord-overlay{position:fixed;inset:0;background:rgba(5,4,2,.6);backdrop-filter:blur(2px);z-index:99985}
-		.ag-ord-drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,92vw);max-width:92vw;background:#17130d;color:#ece4d2;z-index:99990;transform:translateX(102%);transition:transform .3s cubic-bezier(.22,.9,.3,1);display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(0,0,0,.6);border-left:1px solid rgba(201,162,75,.3)}
+		/* Overlay + tiroir (compact) */
+		.ag-ord-overlay{position:fixed;inset:0;background:rgba(5,4,2,.55);backdrop-filter:blur(2px);z-index:99985}
+		.ag-ord-drawer{position:fixed;top:0;right:0;height:100%;width:min(340px,88vw);max-width:88vw;background:#17130d;color:#ece4d2;z-index:99990;transform:translateX(102%);transition:transform .28s cubic-bezier(.22,.9,.3,1);display:flex;flex-direction:column;box-shadow:-16px 0 46px rgba(0,0,0,.55);border-left:1px solid rgba(201,162,75,.3)}
 		.ag-ord-drawer.is-open{transform:translateX(0)}
-		.ag-ord-drawer__head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid rgba(201,162,75,.22);font-size:1.15rem;color:#f3ead4}
-		.ag-ord-x{background:none;border:0;color:#cbb98e;font-size:1.4rem;cursor:pointer;line-height:1}
-		.ag-ord-empty{padding:60px 24px;text-align:center;color:#a99e80}
-		.ag-ord-body{flex:1;overflow-y:auto;padding:14px 18px 24px}
+		.ag-ord-drawer__head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(201,162,75,.22);font-size:1.02rem;color:#f3ead4}
+		.ag-ord-x{background:none;border:0;color:#cbb98e;font-size:1.3rem;cursor:pointer;line-height:1}
+		.ag-ord-empty{padding:48px 22px;text-align:center;color:#a99e80;font-size:.92rem}
+		.ag-ord-body{flex:1;overflow-y:auto;padding:12px 14px 20px}
 		.ag-ord-lines{list-style:none;margin:0 0 16px;padding:0}
 		.ag-ord-line{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.07)}
 		.ag-ord-line__name{flex:1;font-weight:600;color:#f1e9d4;font-size:.96rem}
@@ -306,11 +361,17 @@ class AG_Restaurant_Commande {
 			var HAS_DELIVERY=root.getAttribute('data-delivery')==='1';
 			var WA=root.getAttribute('data-wa')||'';
 			var BRAND=root.getAttribute('data-brand')||'';
-			var KEY='ag_resto_cart';
+			var RESA=root.getAttribute('data-resa')||'';
+			var KEY='ag_resto_cart', IKEY='ag_resto_intent';
 			var cart={};
 			try{ cart=JSON.parse(localStorage.getItem(KEY))||{}; }catch(e){ cart={}; }
 
-			var fab=document.getElementById('ag-ord-fab'),
+			var intro=document.getElementById('ag-ord-intro'),
+				introX=document.getElementById('ag-ord-intro-x'),
+				modebar=document.getElementById('ag-ord-modebar'),
+				modetxt=document.getElementById('ag-ord-modetxt'),
+				modechange=document.getElementById('ag-ord-modechange'),
+				fab=document.getElementById('ag-ord-fab'),
 				count=document.getElementById('ag-ord-count'),
 				fabtotal=document.getElementById('ag-ord-fabtotal'),
 				drawer=document.getElementById('ag-ord-drawer'),
@@ -384,6 +445,29 @@ class AG_Restaurant_Commande {
 
 			function openDrawer(){ drawer.classList.add('is-open'); drawer.setAttribute('aria-hidden','false'); overlay.hidden=false; document.body.style.overflow='hidden'; }
 			function closeDrawer(){ drawer.classList.remove('is-open'); drawer.setAttribute('aria-hidden','true'); overlay.hidden=true; document.body.style.overflow=''; render(); }
+			function bumpFab(){ fab.classList.remove('is-bump'); void fab.offsetWidth; fab.classList.add('is-bump'); }
+
+			// ── Parcours (écran d'accueil) ──────────────────────────────
+			function setRadio(v){ var r=form.querySelector('input[name=ag_mode][value="'+v+'"]'); if(r) r.checked=true; }
+			function applyIntent(intent, persist){
+				if(intent==='reserver'){ if(RESA) window.location.href=RESA; return; }
+				if(intro) intro.hidden=true;
+				if(intent==='consulter'){
+					document.body.classList.add('ag-ord-browse');
+					if(modetxt) modetxt.textContent='📖 Vous consultez la carte';
+				}else{
+					document.body.classList.remove('ag-ord-browse');
+					setRadio(intent);
+					if(modetxt) modetxt.textContent=(intent==='livraison'?'🛵 Mode livraison':'🥡 À emporter');
+				}
+				if(modebar) modebar.hidden=false;
+				if(persist){ try{ sessionStorage.setItem(IKEY,intent); }catch(e){} }
+				render();
+			}
+			function showIntro(){ if(intro){ intro.hidden=false; } }
+			if(intro){ intro.querySelectorAll('.ag-ord-opt').forEach(function(b){ b.addEventListener('click', function(){ applyIntent(b.getAttribute('data-intent'), true); }); }); }
+			if(introX){ introX.addEventListener('click', function(){ applyIntent('consulter', true); }); }
+			if(modechange){ modechange.addEventListener('click', showIntro); }
 
 			// Ajouter depuis la carte
 			document.addEventListener('click', function(e){
@@ -392,7 +476,7 @@ class AG_Restaurant_Commande {
 					var id=add.getAttribute('data-id');
 					if(!cart[id]) cart[id]={n:add.getAttribute('data-name'),p:parseFloat(add.getAttribute('data-price'))||0,q:0};
 					cart[id].q++;
-					render(); openDrawer();
+					render(); bumpFab();
 					return;
 				}
 				var inc=e.target.closest('[data-inc]');
@@ -430,6 +514,12 @@ class AG_Restaurant_Commande {
 				cartJson.value=JSON.stringify(payload);
 				try{ localStorage.removeItem(KEY); }catch(err){}
 			});
+
+			// Au chargement : on restaure le choix, sinon on propose l'écran d'accueil.
+			var saved=null; try{ saved=sessionStorage.getItem(IKEY); }catch(e){}
+			if(nItems()>0){ applyIntent((saved && saved!=='consulter')?saved:(HAS_DELIVERY?'livraison':'emporter'), false); }
+			else if(saved){ applyIntent(saved, false); }
+			else { showIntro(); }
 
 			render();
 		})();

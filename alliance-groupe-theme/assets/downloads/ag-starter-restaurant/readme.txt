@@ -70,6 +70,12 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.19.1 =
+* Écran d'accueil à l'arrivée sur la carte : Réserver une table / Livraison / À emporter / Voir la carte (+ horaires).
+* Mode "Voir la carte" : consultation simple (boutons Ajouter masqués) ; barre "Changer" pour passer en commande à tout moment.
+* Panier réduit (tiroir plus étroit) et ne s'ouvre plus tout seul à chaque ajout (le panier flottant clignote, on l'ouvre quand on veut).
+* Nouveau réglage : Horaires d'ouverture (Personnaliser > Commande en ligne).
+
 = 1.19.0 =
 * Carte (Notre carte) : fond sombre Versailles -> titres, noms de plats et prix enfin parfaitement lisibles.
 * Nouveau : COMMANDE EN LIGNE type Uber Eats sur la page Notre carte (bouton "+ Ajouter", panier flottant, tiroir, validation).
