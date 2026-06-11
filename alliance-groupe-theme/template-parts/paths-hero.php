@@ -43,6 +43,17 @@ $ag_paths = array(
 		'img'   => $ag_cardimg( 'creation' ),
 	),
 	array(
+		'emoji' => '✦',
+		'tag'   => 'Premium · sur devis',
+		'title' => 'Site 100% sur-mesure',
+		'desc'  => 'Un site unique, pensé pour convertir : design, fonctionnalités et SEO conçus rien que pour vous — du niveau de notre propre site. Sur devis.',
+		'cta'   => 'Composer mon projet',
+		'url'   => home_url( '/sur-mesure' ),
+		'tint'  => '#14101c',
+		'glow'  => '#B47CFF',
+		'img'   => $ag_cardimg( 'sur-mesure' ),
+	),
+	array(
 		'emoji' => '🛡️',
 		'tag'   => 'Tranquillité',
 		'title' => 'Maintenance & sérénité',
