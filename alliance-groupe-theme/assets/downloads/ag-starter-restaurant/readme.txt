@@ -70,6 +70,9 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.23.6 =
+* Systeme de contraste UNIFIE sur tous les modules (carte/menu, commande/livraison, fidelite, recettes) : plus aucun bouton/onglet illisible (fini le rouge-sur-rouge). Onglets de la carte, boutons de deblocage, WhatsApp, cartes de choix : tous lisibles et coherents avec la palette du preset.
+
 = 1.23.5 =
 * Menu lisible (couleurs du template) sur toutes les pages internes : fini le survol/onglet blanc invisible sur la Carte, Reservation, etc.
 * Tiroir panier decale sous la barre d'admin WordPress (l'en-tete 'Votre commande' n'est plus cache quand on est connecte admin).

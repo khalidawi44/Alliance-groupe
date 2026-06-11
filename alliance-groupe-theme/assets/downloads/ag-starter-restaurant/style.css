@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress 100% francais pour restaurants : traditionnel, pizzeria, bistrot, gastronomique, creperie, burger. Page d'accueil immersive (hero photo, grille de specialites, comment reserver, avis clients, FAQ), contenu pre-redige en francais natif, presets en 1 clic par type de restaurant. Reservation, carte, privatisation. Design chaleureux et responsive.
-Version: 1.23.5
+Version: 1.23.6
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -1494,3 +1494,33 @@ body.ag-premium-mode:not(.home) .ag-site-header .ag-primary-menu .current-menu-i
 body.ag-premium-mode:not(.home) .ag-site-header .ag-primary-menu .current_page_item > a{
 	color:var(--ag-color-accent) !important;background:transparent !important;text-shadow:none !important;text-decoration:none !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   SYSTÈME DE CONTRASTE UNIFIÉ — boutons/onglets de TOUS les modules
+   restauration (carte/menu, commande/livraison, fidélité, recettes).
+   Le thème colore tous les <a> en accent : on rétablit le bon contraste
+   (jamais de texte rouge-sur-rouge, toujours lisible).
+   ═══════════════════════════════════════════════════════════════════ */
+/* Onglets catégories de la carte */
+body.ag-premium-mode .ag-carte-nav a{color:var(--ag-color-heading) !important;background:transparent !important}
+body.ag-premium-mode .ag-carte-nav a:hover{color:var(--ag-color-on-accent) !important;background:var(--ag-color-accent) !important}
+/* Boutons PLEINS (fond accent) -> texte auto-lisible */
+body.ag-premium-mode .ag-ord-done__btn,
+body.ag-premium-mode .ag-rec-btn--pay,
+body.ag-premium-mode .ag-rec-btn:hover,
+body.ag-premium-mode .ag-fid-btn{color:var(--ag-color-on-accent) !important}
+/* Boutons CONTOUR (texte accent sur fond clair) */
+body.ag-premium-mode .ag-rec-btn,
+body.ag-premium-mode .ag-fid-link{color:var(--ag-color-accent) !important}
+body.ag-premium-mode .ag-rec-btn:hover{background:var(--ag-color-accent) !important}
+/* WhatsApp : reste vert */
+body.ag-premium-mode .ag-ord-wa{color:#25D366 !important}
+/* Cartes de choix du hero (verre sur photo) : texte blanc, lisible au survol */
+body.ag-premium-mode .ag-hchoice__opt,
+body.ag-premium-mode .ag-hchoice__opt *{color:#fff !important}
+body.ag-premium-mode .ag-hchoice__opt:hover,
+body.ag-premium-mode .ag-hchoice__opt:hover *{color:var(--ag-color-on-accent) !important}
+/* Pop-up de choix (modal) : texte du thème, lisible au survol */
+body.ag-premium-mode .ag-choice__opt{color:var(--ag-color-text) !important}
+body.ag-premium-mode .ag-choice__opt:hover,
+body.ag-premium-mode .ag-choice__opt:hover *{color:var(--ag-color-on-accent) !important}
