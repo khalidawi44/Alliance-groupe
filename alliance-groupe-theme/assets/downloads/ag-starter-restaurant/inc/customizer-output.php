@@ -14,6 +14,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Renvoie une couleur de texte lisible (noir ou blanc) à poser sur une
+ * couleur de fond donnée, selon sa luminance perçue.
+ *
+ * @param string $hex Couleur de fond (#rrggbb).
+ * @return string '#1a1a1a' (texte foncé) ou '#ffffff' (texte clair).
+ */
+function ag_starter_restaurant_contrast_color( $hex ) {
+	$hex = ltrim( (string) $hex, '#' );
+	if ( 3 === strlen( $hex ) ) {
+		$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+	}
+	if ( 6 !== strlen( $hex ) || ! ctype_xdigit( $hex ) ) {
+		return '#ffffff';
+	}
+	$r = hexdec( substr( $hex, 0, 2 ) );
+	$g = hexdec( substr( $hex, 2, 2 ) );
+	$b = hexdec( substr( $hex, 4, 2 ) );
+	// Luminance perçue (0–255).
+	$lum = ( 0.299 * $r + 0.587 * $g + 0.114 * $b );
+	return $lum > 150 ? '#1a1a1a' : '#ffffff';
+}
+
+/**
  * Build the dynamic CSS string from the customizer settings.
  *
  * @return string
@@ -26,6 +49,13 @@ function ag_starter_restaurant_customizer_css() {
 	$text       = ag_starter_restaurant_get_option( 'ag_color_text' );
 	$heading    = ag_starter_restaurant_get_option( 'ag_color_heading' );
 	$muted      = ag_starter_restaurant_get_option( 'ag_color_muted' );
+	// Accent secondaire (2e couleur de marque : ex. vert pour l'Italie, jaune
+	// pour le burger). Vide -> on retombe sur l'accent principal.
+	$accent2    = ag_starter_restaurant_get_option( 'ag_color_accent2' );
+	if ( ! $accent2 ) { $accent2 = $accent; }
+	// Couleur de texte lisible POSÉE SUR l'accent (noir ou blanc selon la teinte).
+	$on_accent  = ag_starter_restaurant_contrast_color( $accent );
+	$on_accent2 = ag_starter_restaurant_contrast_color( $accent2 );
 
 	$family = ag_starter_restaurant_get_option( 'ag_font_family' );
 	$size   = absint( ag_starter_restaurant_get_option( 'ag_font_base_size' ) );
@@ -62,7 +92,12 @@ function ag_starter_restaurant_customizer_css() {
 	?>
 :root {
 	--ag-color-accent: <?php echo esc_html( $accent ); ?>;
+	--ag-color-accent2: <?php echo esc_html( $accent2 ); ?>;
+	--ag-color-on-accent: <?php echo esc_html( $on_accent ); ?>;
+	--ag-color-on-accent2: <?php echo esc_html( $on_accent2 ); ?>;
 	--ag-color-background: <?php echo esc_html( $background ); ?>;
+	--ag-color-panel: <?php echo esc_html( $panel ); ?>;
+	--ag-color-border: <?php echo esc_html( $border ); ?>;
 	--ag-color-heading: <?php echo esc_html( $heading ); ?>;
 	--ag-color-text: <?php echo esc_html( $text ); ?>;
 	--ag-color-muted: <?php echo esc_html( $muted ); ?>;

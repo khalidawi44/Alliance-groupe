@@ -70,6 +70,12 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.22.0 =
+* Themes par type de restaurant POUSSES A FOND : la carte, la commande et la fidelite suivent desormais la palette du preset (plus de doré figé).
+* Pizzeria 100% Italie (rouge + vert + blanc), Burger style fast-food (rouge + jaune facon McDo), Bistrot (bois/bordeaux), Gastronomique (noir + champagne), Creperie (bleu Bretagne + caramel), Traditionnel (Versailles or & noir).
+* Nouvelle 2e couleur de marque (accent secondaire) + couleur de texte auto-lisible sur les boutons (noir/blanc selon la teinte).
+* Grille des specialites de l'accueil alignee sur la palette.
+
 = 1.21.1 =
 * Preset Pizzeria/Italien : couleurs de l'Italie (tricolore) — fond creme clair, titres verts, accent rouge, ambiance trattoria.
 

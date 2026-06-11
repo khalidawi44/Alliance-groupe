@@ -23,6 +23,7 @@ function ag_starter_restaurant_customizer_defaults() {
 	return array(
 		// Colors (palette sombre & or — style Versailles).
 		'ag_color_accent'       => '#e3bb4f',
+		'ag_color_accent2'      => '',
 		'ag_color_background'   => '#13110c',
 		'ag_color_panel'        => '#1c1813',
 		'ag_color_border'       => '#3a2f1e',
