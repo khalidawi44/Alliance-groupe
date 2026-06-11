@@ -23,7 +23,8 @@ class AG_Restaurant_Reset {
 	 * Prefixes theme_mod d'autres templates Alliance Groupe — supprimes
 	 * lors du reset (laisse ag_restaurant_*, background_color, blogname, etc.).
 	 */
-	const FOREIGN_MOD_PREFIXES = array( 'ag_asso_', 'ag_avocat_', 'ag_barber_', 'ag_coach_', 'ag_resto_', 'ag_fid_' );
+	// NB : pas de 'ag_fid_' ici — c'est le prefixe de la carte de fidelite DU restaurant.
+	const FOREIGN_MOD_PREFIXES = array( 'ag_asso_', 'ag_avocat_', 'ag_barber_', 'ag_coach_', 'ag_resto_' );
 
 	/**
 	 * CPT d'autres templates a wipe completement (pas de raison d'avoir
@@ -40,8 +41,8 @@ class AG_Restaurant_Reset {
 		'manifeste', 'combats', 'evenements', 'groupes', 'actu', 'signer',
 		'don', 'adherer', 'mon-compte', 'petitions', 'reunion', 'rendez-vous',
 		'rejoindre-lfi',
-		// Avocat / Barber / Resto / Coach
-		'domaines', 'honoraires', 'cabinet', 'reservation', 'carte', 'menu',
+		// Avocat / Barber / Coach (PAS les pages restaurant carte/reservation/fidelite !)
+		'domaines', 'honoraires', 'cabinet',
 		'tarifs-coach', 'seances',
 	);
 
@@ -50,14 +51,16 @@ class AG_Restaurant_Reset {
 	 * slug => array( title, content_placeholder )
 	 */
 	const RESTAURANT_PAGES = array(
-		'prestations'        => array( 'title' => 'Prestations',          'content' => 'Nos prestations principales : rénovation, installation, entretien. Devis gratuit sous 24h.' ),
-		'zones-intervention' => array( 'title' => "Zones d'intervention", 'content' => 'Nous intervenons dans toute votre région, y compris en urgence.' ),
-		'realisations'       => array( 'title' => 'Réalisations',         'content' => 'Découvrez nos chantiers récents : rénovations, installations techniques, travaux sur-mesure.' ),
-		'qui-sommes-nous'    => array( 'title' => 'Qui sommes-nous',      'content' => "Depuis plus de dix ans, notre équipe d'restaurants qualifiés accompagne particuliers et professionnels." ),
-		'devis'              => array( 'title' => 'Devis en ligne',       'content' => '[ag_restaurant_devis]' ),
-		'mentions'           => array( 'title' => 'Mentions légales',     'content' => 'Mentions légales et informations sur l\'entreprise.' ),
-		'contact'            => array( 'title' => 'Contact',              'content' => 'Pour toute demande de devis ou de renseignement, contactez-nous.' ),
+		'carte'           => array( 'title' => 'Notre carte',      'content' => '[ag_restaurant_carte]' ),
+		'reservation'     => array( 'title' => 'Réservation',      'content' => '[ag_restaurant_reservation]' ),
+		'fidelite'        => array( 'title' => 'Fidélité',         'content' => '[ag_restaurant_fidelite]' ),
+		'qui-sommes-nous' => array( 'title' => 'Qui sommes-nous',  'content' => 'Notre histoire, notre cuisine et notre équipe. Des produits frais, faits maison, dans une ambiance chaleureuse.' ),
+		'contact'         => array( 'title' => 'Contact',          'content' => 'Pour réserver une table, commander ou nous joindre : retrouvez ici nos coordonnées et nos horaires.' ),
+		'mentions'        => array( 'title' => 'Mentions légales', 'content' => 'Mentions légales et informations sur le restaurant.' ),
 	);
+
+	/** Pages affichées dans le menu principal, dans l'ordre. */
+	const MENU_SLUGS = array( 'carte', 'reservation', 'fidelite', 'qui-sommes-nous', 'contact' );
 
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ), 30 );
@@ -110,7 +113,7 @@ class AG_Restaurant_Reset {
 						<li><?php printf( esc_html__( '%d entrées CPT (combats/événements/pétitions/etc.) supprimées', 'ag-starter-restaurant' ), (int) $stats['cpt_deleted'] ); ?></li>
 						<li><?php printf( esc_html__( '%d pages d\'autres templates supprimées', 'ag-starter-restaurant' ), (int) $stats['pages_deleted'] ); ?></li>
 						<li><?php printf( esc_html__( '%d pages restaurant créées/restaurées', 'ag-starter-restaurant' ), (int) $stats['pages_created'] ); ?></li>
-						<li><?php esc_html_e( 'Menu principal reconstruit (6 items restaurant)', 'ag-starter-restaurant' ); ?></li>
+						<li><?php esc_html_e( 'Menu principal reconstruit (Accueil + Notre carte, Réservation, Fidélité, Qui sommes-nous, Contact)', 'ag-starter-restaurant' ); ?></li>
 					</ul>
 				</div>
 			<?php endif; ?>
@@ -124,7 +127,7 @@ class AG_Restaurant_Reset {
 					<li><?php esc_html_e( 'Pages WP : Manifeste, Combats, Événements, Pétitions, Don, Adhérer, Domaines, Honoraires, Carte, Réservation, etc.', 'ag-starter-restaurant' ); ?></li>
 					<li><?php esc_html_e( 'Menu principal : reconstruit avec uniquement les items restaurant', 'ag-starter-restaurant' ); ?></li>
 				</ul>
-				<p><strong><?php esc_html_e( 'Ce qui est conservé :', 'ag-starter-restaurant' ); ?></strong> <?php esc_html_e( 'vos options ag_restaurant_*, vos pages restaurant (Prestations, Zones, Réalisations, Qui sommes-nous, Mentions, Contact), vos articles de blog, vos utilisateurs, vos plugins.', 'ag-starter-restaurant' ); ?></p>
+				<p><strong><?php esc_html_e( 'Ce qui est conservé :', 'ag-starter-restaurant' ); ?></strong> <?php esc_html_e( 'vos options ag_restaurant_*, vos pages restaurant (Notre carte, Réservation, Fidélité, Qui sommes-nous, Mentions, Contact), vos articles de blog, vos utilisateurs, vos plugins.', 'ag-starter-restaurant' ); ?></p>
 				<p><?php esc_html_e( 'Si une page restaurant manquait, elle est recréée avec un contenu placeholder.', 'ag-starter-restaurant' ); ?></p>
 			</div>
 
@@ -283,7 +286,7 @@ class AG_Restaurant_Reset {
 				'menu-item-type'   => 'custom',
 				'menu-item-status' => 'publish',
 			) );
-			foreach ( array( 'prestations', 'zones-intervention', 'realisations', 'qui-sommes-nous', 'devis', 'contact' ) as $slug ) {
+			foreach ( self::MENU_SLUGS as $slug ) {
 				if ( empty( $created_page_ids[ $slug ] ) ) continue;
 				wp_update_nav_menu_item( $menu_id, 0, array(
 					'menu-item-title'     => self::RESTAURANT_PAGES[ $slug ]['title'],
@@ -403,7 +406,7 @@ class AG_Restaurant_Reset {
 				'menu-item-status' => 'publish',
 			) );
 			// Items pages restaurant dans l'ordre
-			foreach ( array( 'prestations', 'zones-intervention', 'realisations', 'qui-sommes-nous', 'devis', 'contact' ) as $slug ) {
+			foreach ( self::MENU_SLUGS as $slug ) {
 				if ( empty( $created_page_ids[ $slug ] ) ) continue;
 				wp_update_nav_menu_item( $menu_id, 0, array(
 					'menu-item-title'     => self::RESTAURANT_PAGES[ $slug ]['title'],

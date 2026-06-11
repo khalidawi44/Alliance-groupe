@@ -70,6 +70,9 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.22.4 =
+* FIX Réinitialiser : le reset (hérité du template artisan) reconstruisait un menu générique (Prestations/Zones/Réalisations/Devis) et supprimait même les pages Carte et Réservation. Il recrée maintenant les bonnes pages restaurant (Notre carte, Réservation, Fidélité, Qui sommes-nous, Contact) et le bon menu, sans toucher aux réglages de fidélité.
+
 = 1.22.3 =
 * Menu (header) transparent au-dessus du hero sur l'accueil (texte blanc lisible) ; il devient plein aux couleurs du theme au scroll et sur les pages internes.
 
