@@ -70,6 +70,13 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 
 == Changelog ==
 
+= 1.21.0 =
+* Nouveau : CARTE DE FIDELITE sur la page /fidelite/ (creee automatiquement).
+* Le client regle tout (Personnaliser > Carte de fidelite) : tampons ou points, objectif, recompense, bonus de bienvenue, texte.
+* Visiteur : inscription en 30s, carte digitale a tampons, retrouve sa carte par email/telephone.
+* Restaurant : menu admin "Fidelite" pour ajouter un tampon/des points et valider une recompense ; recherche par nom/email/tel/carte.
+* Credit automatique a chaque commande en ligne ; email + notification push quand une recompense est debloquee.
+
 = 1.20.0 =
 * Spécialités de l'accueil ENTIÈREMENT éditables par le client : Personnaliser > « Spécialités (accueil) » — 1 ligne par carte « emoji | Titre | lien ».
 * Le lien de chaque carte est libre (https://… ou interne /carte/) ; laissé vide, il mène automatiquement à la bonne page.

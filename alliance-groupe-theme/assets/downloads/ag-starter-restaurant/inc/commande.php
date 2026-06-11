@@ -628,6 +628,9 @@ class AG_Restaurant_Commande {
 			ag_push( "🛒 Nouvelle commande\n" . $body );
 		}
 
+		// Crédit fidélité automatique (si le client est membre).
+		do_action( 'ag_restaurant_order_placed', $email, $phone, $total );
+
 		wp_safe_redirect( add_query_arg( array( 'ordered' => '1', 'ref' => $ref ), $back ) );
 		exit;
 	}
