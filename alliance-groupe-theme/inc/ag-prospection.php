@@ -624,9 +624,34 @@ if ( ! function_exists( 'ag_bodacc_sector_keywords' ) ) {
 	/** Mots-clés d'activité par secteur (post-filtre des résultats BODACC). */
 	function ag_bodacc_sector_keywords( $sector ) {
 		$map = array(
-			'juridique' => array( 'avocat', 'juridique', 'notaire', 'huissier', 'commissaire de justice', 'juriste', 'selarl', 'scp', 'selas', 'conseil juridique', 'droit' ),
+			'juridique'    => array( 'avocat', 'juridique', 'notaire', 'huissier', 'commissaire de justice', 'juriste', 'selarl', 'scp', 'selas', 'conseil juridique', 'droit' ),
+			'restauration' => array( 'restaurant', 'brasserie', 'pizzeria', 'pizza', 'traiteur', 'bar', 'café', 'cafe', 'restauration', 'crêperie', 'creperie', 'snack', 'kebab', 'food', 'glacier', 'salon de thé' ),
+			'batiment'     => array( 'maçon', 'macon', 'plomb', 'électric', 'electric', 'menuis', 'peinture', 'bâtiment', 'batiment', 'couvreur', 'couverture', 'charpent', 'artisan', 'rénovation', 'renovation', 'carrelage', 'isolation', 'serrur', 'chauffag', 'terrassement', 'btp' ),
+			'beaute'       => array( 'coiffure', 'coiffeur', 'esthétique', 'esthetique', 'beauté', 'beaute', 'salon', 'spa', 'institut', 'barber', 'ongler', 'manucure', 'tatouage' ),
+			'sante'        => array( 'kiné', 'kine', 'ostéo', 'osteo', 'dentaire', 'dentiste', 'pharmacie', 'opticien', 'infirmier', 'podologue', 'orthop', 'médical', 'medical', 'paramédical' ),
+			'commerce'     => array( 'boutique', 'magasin', 'commerce', 'prêt-à-porter', 'pret-a-porter', 'vente', 'épicerie', 'epicerie', 'fleuriste', 'bijouterie', 'librairie', 'boulang', 'patiss', 'boucher', 'primeur', 'mode' ),
+			'auto'         => array( 'garage', 'automobile', 'carrosserie', 'mécanique', 'mecanique', 'pneu', 'auto-école', 'auto ecole', 'auto-ecole', 'moto', 'véhicule', 'vehicule' ),
+			'immobilier'   => array( 'immobili', 'agence immobilière', 'agence immobiliere', 'syndic', 'transaction', 'gestion locative' ),
+			'tourisme'     => array( 'hôtel', 'hotel', 'camping', 'gîte', 'gite', 'tourisme', 'chambre d', 'hébergement', 'hebergement', 'location saisonnière' ),
 		);
 		return $map[ $sector ] ?? array();
+	}
+}
+if ( ! function_exists( 'ag_bodacc_sector_labels' ) ) {
+	/** Libellés affichés dans le menu déroulant secteur. */
+	function ag_bodacc_sector_labels() {
+		return array(
+			''             => 'Tous secteurs',
+			'juridique'    => '⚖️ Avocats / juridique',
+			'restauration' => '🍽️ Restauration',
+			'batiment'     => '🔨 Bâtiment / artisans',
+			'beaute'       => '💈 Beauté / coiffure',
+			'sante'        => '🩺 Santé / paramédical',
+			'commerce'     => '🛍️ Commerces',
+			'auto'         => '🚗 Auto / garages',
+			'immobilier'   => '🏠 Immobilier',
+			'tourisme'     => '🏨 Hôtel / tourisme',
+		);
 	}
 }
 if ( ! function_exists( 'ag_bodacc_search' ) ) {
@@ -833,12 +858,44 @@ if ( ! function_exists( 'ag_redr_analyse_render' ) ) {
 			foreach ( $a['todo'] as $t ) echo '<li style="color:#1d4f1d;">' . esc_html( $t ) . '</li>';
 			echo '</ul>';
 			echo '<p style="margin:8px 0 0;color:#1d4f8b;"><strong>' . esc_html( $a['angle'] ) . '</strong></p>';
-			$contact = array();
-			if ( ! empty( $p['email'] ) ) $contact[] = '✉️ <a href="mailto:' . esc_attr( $p['email'] ) . '">' . esc_html( $p['email'] ) . '</a>';
-			if ( ! empty( $p['phone'] ) ) $contact[] = '📞 ' . esc_html( $p['phone'] ) . ( $a['avocat'] ? ' <em style="color:#b32d2e;">(avocat : pas d’appel à froid — email/courrier)</em>' : '' );
-			if ( $contact ) echo '<p style="margin:8px 0 0;font-size:.9em;color:#50575e;">' . implode( ' · ', $contact ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+			// ── Suivi du contact (date/canal) + boutons d'action prêts à l'emploi ──
+			$pid    = $p['id'] ?? '';
+			$msg    = ag_bodacc_message( array( 'name' => $p['name'] ?? '', 'activite' => $p['type'] ?? '' ) );
+			$digits = function_exists( 'ag_wa_number' ) ? ag_wa_number( $p['phone'] ?? '', $p['phone_intl'] ?? '' ) : '';
+			$smsnum = preg_replace( '/[^0-9+]/', '', $p['phone_intl'] ?? '' ) ?: preg_replace( '/[^0-9+]/', '', $p['phone'] ?? '' );
+			$wa     = $digits ? 'https://wa.me/' . $digits . '?text=' . rawurlencode( $msg ) : '';
+			$sms    = $smsnum ? 'sms:' . $smsnum . '?body=' . rawurlencode( $msg ) : '';
+			$mailto = ! empty( $p['email'] ) ? 'mailto:' . rawurlencode( $p['email'] ) . '?subject=' . rawurlencode( 'Un coup de main pour rebondir' ) . '&body=' . rawurlencode( $msg ) : '';
+
+			echo '<div style="margin-top:10px;padding-top:10px;border-top:1px dashed #e0d7f3;">';
+			// Suivi.
+			if ( ! empty( $p['date_contact'] ) ) {
+				echo '<div style="font-size:.82em;color:#50575e;margin-bottom:6px;">📨 Contacté' . ( ! empty( $p['last_channel'] ) ? ' par <strong>' . esc_html( $p['last_channel'] ) . '</strong>' : '' ) . ' le <strong>' . esc_html( $p['date_contact'] ) . '</strong> (×' . (int) ( $p['contact_count'] ?? 1 ) . ')' . ( ! empty( $p['last_relance'] ) ? ' · 🔁 relancé le ' . esc_html( $p['last_relance'] ) : '' ) . '</div>';
+			} else {
+				echo '<div style="font-size:.82em;color:#b26a00;margin-bottom:6px;">⏳ Pas encore contacté</div>';
+			}
+			// Boutons. Avocat = email/courrier UNIQUEMENT (déontologie) : pas de SMS/WhatsApp/appel.
+			if ( $mailto ) echo '<a class="button button-small agr-touch" data-id="' . esc_attr( $pid ) . '" data-channel="Email" href="' . esc_url( $mailto ) . '">✉️ Email</a> ';
+			if ( ! $a['avocat'] ) {
+				if ( $wa ) echo '<a class="button button-small agr-touch" data-id="' . esc_attr( $pid ) . '" data-channel="WhatsApp" href="' . esc_url( $wa ) . '" target="_blank" rel="noopener">WhatsApp</a> ';
+				if ( $sms ) echo '<a class="button button-small agr-touch" data-id="' . esc_attr( $pid ) . '" data-channel="SMS" href="' . esc_attr( $sms ) . '">📱 SMS</a> ';
+				if ( ! empty( $p['phone'] ) ) echo '<a class="button button-small agr-touch" data-id="' . esc_attr( $pid ) . '" data-channel="Appel" href="tel:' . esc_attr( $p['phone'] ) . '">📞 ' . esc_html( $p['phone'] ) . '</a> ';
+			} elseif ( ! empty( $p['phone'] ) ) {
+				echo '<span style="font-size:.82em;color:#b32d2e;">📞 ' . esc_html( $p['phone'] ) . ' — <em>avocat : pas d’appel/SMS à froid, email ou courrier</em></span> ';
+			}
+			echo '<button type="button" class="button button-small agr-relance" data-id="' . esc_attr( $pid ) . '">🔁 Relancer</button> ';
+			// Message éditable prêt.
+			echo '<details style="display:inline-block;margin-top:6px;"><summary class="button button-small">✍️ Voir le message</summary><textarea readonly rows="8" style="width:520px;max-width:100%;margin-top:6px;">' . esc_textarea( $msg ) . '</textarea></details>';
+			echo '</div>';
 			echo '</div>';
 		}
+		// Nonce + JS de suivi (réutilise les AJAX ag_prospect_touch / ag_prospect_relance).
+		$rn = wp_create_nonce( 'ag_prospect' );
+		echo '<script>(function(){var nonce=' . wp_json_encode( $rn ) . ';';
+		echo 'document.querySelectorAll(".agr-touch").forEach(function(a){a.addEventListener("click",function(){var id=a.getAttribute("data-id");if(!id)return;var fd=new FormData();fd.append("action","ag_prospect_touch");fd.append("_n",nonce);fd.append("id",id);fd.append("channel",a.getAttribute("data-channel")||"");fetch(ajaxurl,{method:"POST",body:fd,credentials:"same-origin",keepalive:true}).catch(function(){});});});';
+		echo 'document.querySelectorAll(".agr-relance").forEach(function(b){b.addEventListener("click",function(){var id=b.getAttribute("data-id");if(!id)return;var fd=new FormData();fd.append("action","ag_prospect_relance");fd.append("_n",nonce);fd.append("id",id);var old=b.textContent;b.disabled=true;b.textContent="…";fetch(ajaxurl,{method:"POST",body:fd,credentials:"same-origin"}).then(function(r){return r.json();}).then(function(j){if(j&&j.success){b.textContent="✓ Relancé le "+j.data.date;b.style.color="#1e7e34";}else{b.textContent=old;b.disabled=false;}}).catch(function(){b.textContent=old;b.disabled=false;});});});';
+		echo '})();</script>';
 		echo '</div>';
 	}
 }
@@ -1277,8 +1334,9 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					<input type="hidden" name="page" value="ag-prospects">
 					<input type="text" name="tcity" value="<?php echo esc_attr( isset( $_GET['tcity'] ) ? sanitize_text_field( wp_unslash( $_GET['tcity'] ) ) : '' ); ?>" placeholder="Ville (ex : Nantes)" style="width:220px;">
 					<select name="tsector" style="margin:0 6px;">
-						<option value="" <?php selected( $tsector, '' ); ?>>Tous secteurs</option>
-						<option value="juridique" <?php selected( $tsector, 'juridique' ); ?>>⚖️ Avocats / juridique</option>
+						<?php foreach ( ag_bodacc_sector_labels() as $sk => $sl ) : ?>
+							<option value="<?php echo esc_attr( $sk ); ?>" <?php selected( $tsector, $sk ); ?>><?php echo esc_html( $sl ); ?></option>
+						<?php endforeach; ?>
 					</select>
 					<?php submit_button( '🏛️ Chercher au tribunal', 'secondary', 'submit', false ); ?>
 				</form>
