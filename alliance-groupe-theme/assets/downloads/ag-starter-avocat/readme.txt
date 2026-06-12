@@ -5,7 +5,7 @@ Tags: one-column, custom-menu, featured-images, translation-ready, theme-options
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.1.12
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,11 @@ Non. Le theme est entierement fonctionnel sans Elementor, Divi ou autre.
 Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-inc.com
 
 == Changelog ==
+
+= 1.1.12 =
+* Deontologie-ready : suppression des temoignages clients (interdits par le RIN art. 10 / vade-mecum CNB). La section "Temoignages" du Personnalisateur est remplacee par une note d'explication, sans champ de saisie.
+* Nouveau bandeau pied de page : liens Mentions legales / Politique de confidentialite (RGPD) / Cookies (affiches si les pages existent) + rappels secret professionnel, hebergement en Union Europeenne et absence de cookie de tracage.
+* Nouvelle section "Deontologie & RGPD" dans le Personnalisateur (notes hebergement et cookies editables ; le barreau d'inscription est repris de la fiche du Maitre).
 
 = 1.0.0 =
 * Version initiale.

@@ -1841,14 +1841,21 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
         $wp_customize->add_setting( 'ag_pro_header_phone', array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
         $wp_customize->add_control( 'ag_pro_header_phone', array( 'label' => 'Telephone header', 'section' => 'ag_pro_features', 'type' => 'text', 'description' => 'Bouton cliquable dans le header.' ) );
 
-        // Testimonials
-        $wp_customize->add_section( 'ag_pro_testimonials', array( 'title' => '⭐ Témoignages', 'priority' => 26 ) );
-        for ( $i = 1; $i <= 6; $i++ ) {
-            $wp_customize->add_setting( "ag_testimonial_{$i}_text", array( 'default' => '', 'sanitize_callback' => 'sanitize_textarea_field' ) );
-            $wp_customize->add_control( "ag_testimonial_{$i}_text", array( 'label' => "Témoignage {$i}", 'section' => 'ag_pro_testimonials', 'type' => 'textarea' ) );
-            $wp_customize->add_setting( "ag_testimonial_{$i}_author", array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ) );
-            $wp_customize->add_control( "ag_testimonial_{$i}_author", array( 'label' => "Auteur {$i}", 'section' => 'ag_pro_testimonials', 'type' => 'text' ) );
-        }
+        // Temoignages — DESACTIVES pour les avocats (deontologie).
+        // Le RIN (art. 10) et le vade-mecum CNB interdisent les temoignages
+        // clients sur le site d'un avocat. On garde la section uniquement pour
+        // EXPLIQUER pourquoi il n'y a pas de champ, et on n'enregistre AUCUN
+        // controle de saisie de temoignage. Les avis Google se travaillent sur
+        // la fiche Google Business (hors site), jamais en widget sur le site.
+        $wp_customize->add_section( 'ag_pro_testimonials', array(
+            'title'       => '⚖️ Avis & témoignages',
+            'priority'    => 26,
+            'description' => 'Déontologie avocat : le RIN (art. 10) et le vade-mecum du CNB '
+                . 'interdisent les témoignages de clients et les widgets d’avis Google '
+                . 'sur le site d’un cabinet d’avocats. Cette section est donc volontairement '
+                . 'sans champ de saisie. Vos avis Google se travaillent directement sur votre '
+                . 'fiche Google Business (hors du site), pas en encart sur le site.',
+        ) );
     }
 
     public function add_body_classes( $classes ) {
@@ -1877,6 +1884,13 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
     // ─── Render: testimonials ─────────────────────────────────
 
     public function render_testimonials() {
+        // DEONTOLOGIE AVOCAT : aucun temoignage client n'est affiche sur le
+        // site (RIN art. 10 + vade-mecum CNB). On retourne toujours sans rien
+        // rendre, meme si d'anciens temoignages avaient ete saisis avant le
+        // durcissement « deontologie-ready ». Les avis se travaillent sur la
+        // fiche Google Business, hors du site.
+        return;
+        // phpcs:disable -- code historique conserve mais jamais atteint.
         if ( ! $this->is_at_least( 'premium' ) ) return;
         $items = array();
         for ( $i = 1; $i <= 6; $i++ ) {
@@ -1894,6 +1908,7 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
             echo '<div class="ag-testimonial-card__author">' . esc_html( $t['author'] ) . '</div></div>';
         }
         echo '</div></div></section>';
+        // phpcs:enable
     }
 
     // ═══════════════════════════════════════════════════════════

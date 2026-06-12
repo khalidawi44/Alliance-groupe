@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Theme WordPress gratuit basique 100% francais pour cabinet d'avocats, juriste, notaire, conseil juridique. Structure minimaliste navy et champagne, responsive, sans fioritures. Contenu pre-redige en francais natif : domaines d'expertise, honoraires, prise de rendez-vous, contact. Version gratuite simple pour demarrer rapidement. Passez au Pack Premium pour un design plus travaille.
-Version: 1.1.11
+Version: 1.1.12
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -354,6 +354,41 @@ p {
     color: #888888;
     font-size: 0.88rem;
     line-height: 1.7;
+}
+
+/* Bandeau deontologie / RGPD (template « deontologie-ready ») */
+.ag-footer-deonto {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #1f2740;
+    text-align: center;
+}
+.ag-footer-legal {
+    font-size: 0.82rem;
+    line-height: 1.8;
+}
+.ag-footer-legal a {
+    color: #D4B45C;
+    text-decoration: none;
+}
+.ag-footer-legal a:hover {
+    text-decoration: underline;
+}
+.ag-footer-legal .ag-sep {
+    margin: 0 0.6rem;
+    color: #444b63;
+}
+.ag-footer-deonto__notes {
+    margin: 0.65rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem 1.4rem;
+    color: #8a90a3;
+    font-size: 0.76rem;
+}
+.ag-footer-deonto__notes .ag-deonto-item {
+    white-space: nowrap;
 }
 
 .ag-footer-bottom {

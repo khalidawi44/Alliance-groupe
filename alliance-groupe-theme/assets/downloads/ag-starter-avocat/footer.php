@@ -33,6 +33,46 @@
 				<a href="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" class="ag-footer-rdv"><?php esc_html_e( 'Prendre rendez-vous', 'ag-starter-avocat' ); ?></a>
 			</div>
 		</div>
+		<?php
+		// ─── Bandeau déontologie / RGPD (template « déontologie-ready ») ───
+		// Liens légaux obligatoires + rappels secret professionnel, hébergement
+		// UE et absence de cookie de traçage. Chaque mention est personnalisable
+		// via le Personnalisateur ; les liens ne s'affichent que si la page
+		// correspondante existe (mentions-legales, confidentialite, cookies).
+		$ag_legal_links = array(
+			'mentions-legales'  => __( 'Mentions légales', 'ag-starter-avocat' ),
+			'confidentialite'   => __( 'Politique de confidentialité (RGPD)', 'ag-starter-avocat' ),
+			'cookies'           => __( 'Cookies', 'ag-starter-avocat' ),
+		);
+		$ag_barreau   = ag_avocat_opt( 'ag_maitre_barreau', '' );
+		$ag_heberg    = ag_avocat_opt( 'ag_avocat_hebergement_note', __( 'Hébergement en Union Européenne — données protégées par le secret professionnel.', 'ag-starter-avocat' ) );
+		$ag_nocookie  = ag_avocat_opt( 'ag_avocat_nocookie_note', __( 'Ce site n’utilise aucun cookie de traçage publicitaire.', 'ag-starter-avocat' ) );
+		?>
+		<div class="ag-footer-deonto">
+			<nav class="ag-footer-legal" aria-label="<?php esc_attr_e( 'Informations légales', 'ag-starter-avocat' ); ?>">
+				<?php
+				$ag_legal_out = array();
+				foreach ( $ag_legal_links as $ag_slug => $ag_label ) {
+					$ag_p = get_page_by_path( $ag_slug );
+					if ( $ag_p ) {
+						$ag_legal_out[] = '<a href="' . esc_url( get_permalink( $ag_p ) ) . '">' . esc_html( $ag_label ) . '</a>';
+					}
+				}
+				echo wp_kses_post( implode( '<span class="ag-sep" aria-hidden="true">·</span>', $ag_legal_out ) );
+				?>
+			</nav>
+			<p class="ag-footer-deonto__notes">
+				<?php if ( $ag_barreau ) : ?>
+					<span class="ag-deonto-item">⚖️ <?php echo esc_html( sprintf( /* translators: %s = nom du barreau */ __( 'Avocat inscrit au %s', 'ag-starter-avocat' ), $ag_barreau ) ); ?></span>
+				<?php endif; ?>
+				<?php if ( $ag_heberg ) : ?>
+					<span class="ag-deonto-item">🇪🇺 <?php echo esc_html( $ag_heberg ); ?></span>
+				<?php endif; ?>
+				<?php if ( $ag_nocookie ) : ?>
+					<span class="ag-deonto-item">🔒 <?php echo esc_html( $ag_nocookie ); ?></span>
+				<?php endif; ?>
+			</p>
+		</div>
 		<div class="ag-footer-bottom">
 			<p>
 				&copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?>.

@@ -444,6 +444,50 @@ function ag_starter_avocat_customize_register( $wp_customize ) {
 		$prio += 5;
 	}
 
+	// ─── Section: Déontologie & RGPD (template « déontologie-ready ») ───
+	$wp_customize->add_section(
+		'ag_section_deonto',
+		array(
+			'title'       => esc_html__( 'Déontologie &amp; RGPD', 'ag-starter-avocat' ),
+			'panel'       => 'ag_starter_panel',
+			'priority'    => 55,
+			'description' => esc_html__( 'Mentions affichées dans le pied de page. Le template est « déontologie-ready » : pas de témoignages clients ni de widget d’avis Google (interdits par le RIN/CNB). Pensez à créer les pages « mentions-legales », « confidentialite » et « cookies » : leurs liens apparaîtront automatiquement.', 'ag-starter-avocat' ),
+		)
+	);
+	$deonto_fields = array(
+		'ag_avocat_hebergement_note' => array(
+			'label'   => 'Note hébergement / secret pro (pied de page)',
+			'type'    => 'text',
+			'default' => 'Hébergement en Union Européenne — données protégées par le secret professionnel.',
+		),
+		'ag_avocat_nocookie_note'    => array(
+			'label'   => 'Note cookies (pied de page)',
+			'type'    => 'text',
+			'default' => 'Ce site n’utilise aucun cookie de traçage publicitaire.',
+		),
+	);
+	$prio = 10;
+	foreach ( $deonto_fields as $key => $meta ) {
+		$wp_customize->add_setting(
+			$key,
+			array(
+				'default'           => $meta['default'],
+				'sanitize_callback' => 'sanitize_text_field',
+				'transport'         => 'refresh',
+			)
+		);
+		$wp_customize->add_control(
+			$key,
+			array(
+				'label'    => $meta['label'],
+				'section'  => 'ag_section_deonto',
+				'type'     => $meta['type'],
+				'priority' => $prio,
+			)
+		);
+		$prio += 5;
+	}
+
 	// ─── Section: Le Maître ───
 	$wp_customize->add_section(
 		'ag_section_maitre',
