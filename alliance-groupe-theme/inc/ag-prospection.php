@@ -844,6 +844,56 @@ if ( ! function_exists( 'ag_redr_analyze' ) ) {
 		);
 	}
 }
+/* ── LIENS ENTRE OUTILS : Prospection ↔ Analyse redressement ↔ Espace Audit ── */
+if ( ! function_exists( 'ag_prospect_host' ) ) {
+	function ag_prospect_host( $p ) {
+		$w = $p['website'] ?? '';
+		if ( '' === $w ) return '';
+		$h = wp_parse_url( $w, PHP_URL_HOST );
+		return strtolower( preg_replace( '/^www\./', '', (string) $h ) );
+	}
+}
+if ( ! function_exists( 'ag_audit_find_by_host' ) ) {
+	/** Cherche dans l'historique des audits une fiche pour ce host (lien Sécurité). */
+	function ag_audit_find_by_host( $host ) {
+		if ( '' === $host || ! function_exists( 'ag_audit_hist_get' ) ) return null;
+		$host = strtolower( preg_replace( '/^www\./', '', (string) $host ) );
+		foreach ( ag_audit_hist_get() as $id => $e ) {
+			$h = strtolower( preg_replace( '/^www\./', '', (string) ( $e['host'] ?? '' ) ) );
+			if ( $h && $h === $host ) { $e['id'] = $id; return $e; }
+		}
+		return null;
+	}
+}
+if ( ! function_exists( 'ag_prospect_links_block' ) ) {
+	/** Boutons/volets reliant un prospect à son analyse redressement + son audit sécurité. */
+	function ag_prospect_links_block( $p ) {
+		$out  = '';
+		$host = ag_prospect_host( $p );
+		// 1) Analyse redressement (si concerné) — résumé + lien vers la page dédiée.
+		if ( function_exists( 'ag_redr_is_target' ) && ag_redr_is_target( $p ) ) {
+			$a = ag_redr_analyze( $p );
+			$redr_url = admin_url( 'admin.php?page=ag-redr-analyse' );
+			$out .= '<details style="display:block;margin-top:6px;"><summary class="button button-small" style="border-color:#7a4ed4;color:#5a2ca0;">🔎 Analyse redressement (' . (int) $a['score'] . ')</summary>';
+			$out .= '<div style="font-size:.85em;color:#444;margin-top:6px;max-width:520px;"><strong>' . esc_html( $a['proc'] ) . '.</strong> ' . esc_html( $a['proc_def'] );
+			$out .= '<br><em>Quoi faire :</em> ' . esc_html( $a['todo'][0] );
+			$out .= '<br><strong style="color:#1d4f8b;">' . esc_html( $a['angle'] ) . '</strong>';
+			$out .= '<br><a href="' . esc_url( $redr_url ) . '">→ Ouvrir l’analyse complète</a></div></details>';
+		}
+		// 2) Sécurité (Espace Audit) : audit existant (score) ou lancer un audit.
+		if ( $host ) {
+			$audit_page = admin_url( 'admin.php?page=ag-espace-audit' );
+			$au = ag_audit_find_by_host( $host );
+			if ( $au ) {
+				$sc = (int) ( $au['score'] ?? 0 ); $seg = $au['seg'] ?? '';
+				$out .= ' <a class="button button-small" style="border-color:#0e7490;color:#0e7490;" href="' . esc_url( $audit_page . '#agh-list' ) . '" title="Audit de sécurité déjà réalisé pour ce site">🛡️ Audit ' . $sc . '/100' . ( $seg ? ' (' . esc_html( $seg ) . ')' : '' ) . '</a>';
+			} else {
+				$out .= ' <a class="button button-small" href="' . esc_url( add_query_arg( array( 'page' => 'ag-espace-audit', 'prefill' => $p['website'] ?? '' ), admin_url( 'admin.php' ) ) ) . '" title="Lancer un audit de sécurité de ce site">🛡️ Auditer ce site</a>';
+			}
+		}
+		return $out;
+	}
+}
 // Priorité 20 : on s'enregistre APRÈS le menu parent « ag-prospects » (déclaré
 // plus bas dans le fichier, priorité 10) — sinon le sous-menu n'a pas encore de
 // parent au moment de son ajout et la page renvoie un 404.
@@ -908,6 +958,18 @@ if ( ! function_exists( 'ag_redr_analyse_render' ) ) {
 			foreach ( $a['todo'] as $t ) echo '<li style="color:#1d4f1d;">' . esc_html( $t ) . '</li>';
 			echo '</ul>';
 			echo '<p style="margin:8px 0 0;color:#1d4f8b;"><strong>' . esc_html( $a['angle'] ) . '</strong></p>';
+
+			// Liens vers les autres outils (prospection + sécurité) pour CETTE entreprise.
+			$prosp_url = add_query_arg( array( 'page' => 'ag-prospects', 'fq' => $p['name'] ?? '' ), admin_url( 'admin.php' ) );
+			echo '<p style="margin:8px 0 0;">';
+			echo '<a class="button button-small" href="' . esc_url( $prosp_url ) . '" title="Voir cette fiche dans la prospection">👤 Ouvrir dans Prospection</a> ';
+			$rhost = ag_prospect_host( $p );
+			if ( $rhost ) {
+				$rau = ag_audit_find_by_host( $rhost );
+				if ( $rau ) echo '<a class="button button-small" style="border-color:#0e7490;color:#0e7490;" href="' . esc_url( admin_url( 'admin.php?page=ag-espace-audit#agh-list' ) ) . '">🛡️ Audit ' . (int) ( $rau['score'] ?? 0 ) . '/100</a>';
+				else echo '<a class="button button-small" href="' . esc_url( add_query_arg( array( 'page' => 'ag-espace-audit', 'prefill' => $p['website'] ?? '' ), admin_url( 'admin.php' ) ) ) . '">🛡️ Auditer ce site</a>';
+			}
+			echo '</p>';
 
 			// ── Suivi du contact (date/canal) + boutons d'action prêts à l'emploi ──
 			$pid    = $p['id'] ?? '';
@@ -1628,6 +1690,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 								<?php if ( ! empty( $p['email'] ) ) : ?><a class="button button-small" href="mailto:<?php echo esc_attr( $p['email'] ); ?>">✉️ <?php echo esc_html( $p['email'] ); ?></a> <?php endif; ?>
 								<?php if ( ! empty( $p['website'] ) ) : ?><a class="button button-small" href="<?php echo esc_url( $p['website'] ); ?>" target="_blank" rel="noopener">🔗 Voir le site</a> <?php endif; ?>
 								<?php $pg = ag_google_link( $p ); if ( $pg ) : ?><a class="button button-small" href="<?php echo esc_url( $pg ); ?>" target="_blank" rel="noopener" title="Fiche Google + avis">📍 Avis Google</a> <?php endif; ?>
+								<?php echo ag_prospect_links_block( $p ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 								<details style="display:block;margin-top:6px;"><summary class="button button-small">📝 Ma fiche (notes)</summary>
 									<textarea class="ag-note-field" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" rows="4" style="width:360px;margin-top:6px;" placeholder="Notes…"><?php echo esc_textarea( $p['notes'] ?? '' ); ?></textarea><br>
 									<button type="button" class="button button-small button-primary ag-note-save" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>">💾 Enregistrer</button>
@@ -1663,6 +1726,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 							</details>
 							<?php if ( ! empty( $p['website'] ) ) : ?><a class="button button-small" href="<?php echo esc_url( $p['website'] ); ?>" target="_blank" rel="noopener">🔗 Voir le site</a> <?php endif; ?>
 							<?php $pg = ag_google_link( $p ); if ( $pg ) : ?><a class="button button-small" href="<?php echo esc_url( $pg ); ?>" target="_blank" rel="noopener" title="Fiche Google + avis">📍 Avis Google</a> <?php endif; ?>
+							<?php echo ag_prospect_links_block( $p ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 							<details style="display:block;margin-top:6px;"><summary class="button button-small">📝 Ma fiche (notes)</summary>
 								<textarea class="ag-note-field" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" rows="4" style="width:360px;margin-top:6px;" placeholder="Ce que je peux faire pour eux, points à dire, idées…"><?php echo esc_textarea( $p['notes'] ?? '' ); ?></textarea><br>
 								<button type="button" class="button button-small button-primary ag-note-save" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>">💾 Enregistrer + régénérer le message</button>
