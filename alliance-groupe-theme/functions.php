@@ -100,6 +100,12 @@ if ( file_exists( $ag_recrut_robot_file ) ) {
     require_once $ag_recrut_robot_file;
 }
 
+// ── 1c5b-ter. Candidatures Ambassadeurs (formulaire + réponse auto + alerte SMS + gestion)
+$ag_candidatures_file = get_stylesheet_directory() . '/inc/ag-candidatures.php';
+if ( file_exists( $ag_candidatures_file ) ) {
+    require_once $ag_candidatures_file;
+}
+
 // ── 1c5c. Kit Print (cartes, flyers, autocollants, affiches A4 avec QR)
 $ag_kit_print_file = get_stylesheet_directory() . '/inc/ag-kit-print.php';
 if ( file_exists( $ag_kit_print_file ) ) {
