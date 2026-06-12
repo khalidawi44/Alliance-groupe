@@ -234,6 +234,23 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 
 ## 9. Taches restantes (état au 30 mai)
 
+### ⏸️ EN PAUSE — PASSERELLE SMS ANDROID (attente SIM PHYSIQUE) — 12/06
+**Le CODE est FAIT et déployé** (`inc/ag-sms-gateway.php` + `inc/ag-candidatures.php`) :
+- `ag_sms_send()` / `ag_sms_send_bulk()` + page **Prospection → 📲 Passerelle SMS** (modes httpSMS / sms-gate / webhook + test).
+- Boutons **« Envoyer SMS (sélection) »** dans 🎯 Candidatures ET Mes prospects.
+- **Webhook entrant** `/wp-json/ag/v1/inbound` (jeton + alias de champs tolérants) : un **SMS ou un appel reçu** sur le tél passerelle → **candidature auto dans 🎯 Candidatures + SMS d'inscription renvoyé**. Réglages : jeton, mot-clé déclencheur (`AMBASSADEUR`), appels on/off, anti-doublon, guide Macrodroid.
+- SMS auto au candidat (reçu/accepté/relancé) câblé sur la passerelle.
+
+**BLOQUÉ par le matériel** : il faut une **SIM PHYSIQUE dédiée** + un **petit Android dédié**. L'eSIM 07 ne convient pas (déjà sur le mobile perso).
+
+**👉 REPRENDRE QUAND LA SIM PHYSIQUE EST DISPO :**
+1. SIM physique dans l'Android dédié, vérifier SMS OK.
+2. Installer **httpSMS** → Réglages Passerelle SMS : mode **httpSMS**, **clé API**, numéro émetteur **+337…**, tester l'envoi.
+3. Activer la **Réception** : « Enregistrer la réception » (génère le jeton) + mot-clé `AMBASSADEUR` ; sur httpsms.com → Webhooks → `…/wp-json/ag/v1/inbound?token=JETON` (event message reçu).
+4. (Option appels) **Macrodroid** : macro « Appel manqué » → POST `token=…&from=[call_number]&type=call`.
+5. Préparer une annonce avec l'appel à l'action « Envoie AMBASSADEUR au 07… ».
+
+
 ### 🅰️ RESTE À FAIRE — point de reprise (pause 30/05)
 
 **Côté Fabrice (toi) — bloquant :**
