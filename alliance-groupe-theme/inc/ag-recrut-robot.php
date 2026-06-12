@@ -155,6 +155,72 @@ if ( ! function_exists( 'ag_ft_token' ) ) {
 		return '';
 	}
 }
+if ( ! function_exists( 'ag_ft_token_for' ) ) {
+	/** Jeton OAuth France Travail pour un SCOPE donné (autre API souscrite sur la
+	    même application). Cache séparé pour ne pas interférer avec les offres. */
+	function ag_ft_token_for( $scope, $cache_key ) {
+		$id     = trim( (string) get_option( 'ag_ft_client_id', '' ) );
+		$secret = trim( (string) get_option( 'ag_ft_client_secret', '' ) );
+		if ( '' === $id || '' === $secret || '' === trim( $scope ) ) return array( '', 'Identifiants ou scope manquant.' );
+		$cached = get_transient( $cache_key );
+		if ( $cached ) return array( $cached, '' );
+		$resp = wp_remote_post( 'https://entreprise.francetravail.fr/connexion/oauth2/access_token?realm=%2Fpartenaire', array(
+			'timeout' => 20,
+			'headers' => array( 'Content-Type' => 'application/x-www-form-urlencoded' ),
+			'body'    => array( 'grant_type' => 'client_credentials', 'client_id' => $id, 'client_secret' => $secret, 'scope' => trim( $scope ) ),
+		) );
+		if ( is_wp_error( $resp ) ) return array( '', 'Réseau : ' . $resp->get_error_message() );
+		$code = (int) wp_remote_retrieve_response_code( $resp );
+		$data = json_decode( wp_remote_retrieve_body( $resp ), true );
+		$tok  = $data['access_token'] ?? '';
+		if ( $tok ) { set_transient( $cache_key, $tok, max( 60, (int) ( $data['expires_in'] ?? 1400 ) - 60 ) ); return array( $tok, '' ); }
+		return array( '', 'OAuth ' . $code . ' : ' . ( $data['error_description'] ?? ( $data['error'] ?? 'erreur' ) ) );
+	}
+}
+/* ── Testeur générique d'API France Travail (pour brancher events / JCMO sans deviner) ── */
+add_action( 'admin_menu', function () {
+	add_submenu_page( 'ag-prospects', 'API France Travail (test)', '🧪 API France Travail', 'manage_options', 'ag-ft-test', 'ag_ft_test_render' );
+}, 26 );
+if ( ! function_exists( 'ag_ft_test_render' ) ) {
+	function ag_ft_test_render() {
+		if ( ! current_user_can( 'manage_options' ) ) return;
+		echo '<div class="wrap"><h1>🧪 Testeur API France Travail</h1>';
+		echo '<p style="max-width:820px;color:#50575e;">Réutilise ton application France Travail (Client ID/Secret déjà saisis dans le Robot). Mets le <strong>scope</strong> et l’<strong>URL</strong> de l’API (lus sur francetravail.io via l’icône 👁 « voir » de l’API) → tu vois la réponse brute. Ça sert à brancher « Mes évènements emploi » et « JCMO » sans deviner.</p>';
+		$scope  = isset( $_POST['ft_scope'] ) ? sanitize_text_field( wp_unslash( $_POST['ft_scope'] ) ) : 'api_mes-evenements-emploiv1';
+		$method = isset( $_POST['ft_method'] ) && 'POST' === $_POST['ft_method'] ? 'POST' : 'GET';
+		$url    = isset( $_POST['ft_url'] ) ? esc_url_raw( wp_unslash( $_POST['ft_url'] ) ) : 'https://api.francetravail.io/partenaire/mes-evenements-emploi/v1/evenements/recherche';
+		$body   = isset( $_POST['ft_body'] ) ? trim( wp_unslash( $_POST['ft_body'] ) ) : '';
+		echo '<form method="post"><table class="form-table"><tbody>';
+		echo '<tr><th>Scope</th><td><input type="text" name="ft_scope" value="' . esc_attr( $scope ) . '" style="width:480px"><p class="description">Sur francetravail.io → icône 👁 de l’API → champ « scope » (ex. <code>api_…v1</code>).</p></td></tr>';
+		echo '<tr><th>Méthode</th><td><select name="ft_method"><option ' . selected( $method, 'GET', false ) . '>GET</option><option ' . selected( $method, 'POST', false ) . '>POST</option></select></td></tr>';
+		echo '<tr><th>URL</th><td><input type="text" name="ft_url" value="' . esc_attr( $url ) . '" style="width:680px"><p class="description">URL d’accès complète (avec paramètres pour un GET, ex. <code>?codePostal=44000</code>).</p></td></tr>';
+		echo '<tr><th>Corps (POST/JSON)</th><td><textarea name="ft_body" rows="5" style="width:680px" placeholder=\'{"texte":"..."}\'>' . esc_textarea( $body ) . '</textarea></td></tr>';
+		echo '</tbody></table><button name="ft_go" value="1" class="button button-primary">Tester l’appel</button></form>';
+		if ( isset( $_POST['ft_go'] ) ) {
+			list( $tok, $terr ) = ag_ft_token_for( $scope, 'ag_ft_token_test_' . md5( $scope ) );
+			if ( '' === $tok ) {
+				echo '<p style="color:#b32d2e;">❌ Jeton : ' . esc_html( $terr ) . '</p>';
+			} else {
+				$args = array( 'method' => $method, 'timeout' => 25, 'headers' => array( 'Authorization' => 'Bearer ' . $tok, 'Accept' => 'application/json' ) );
+				if ( 'POST' === $method && '' !== $body ) { $args['headers']['Content-Type'] = 'application/json'; $args['body'] = $body; }
+				$r = wp_remote_request( $url, $args );
+				if ( is_wp_error( $r ) ) {
+					echo '<p style="color:#b32d2e;">❌ ' . esc_html( $r->get_error_message() ) . '</p>';
+				} else {
+					$rc  = (int) wp_remote_retrieve_response_code( $r );
+					$rb  = wp_remote_retrieve_body( $r );
+					$cr  = wp_remote_retrieve_header( $r, 'content-range' );
+					echo '<h3>Réponse — HTTP ' . $rc . ( $cr ? ' · Content-Range: ' . esc_html( $cr ) : '' ) . '</h3>';
+					$pretty = json_decode( $rb, true );
+					if ( null !== $pretty ) $rb = wp_json_encode( $pretty, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+					echo '<textarea rows="22" style="width:100%;font-family:monospace;font-size:12px" onclick="this.select()">' . esc_textarea( mb_substr( (string) $rb, 0, 12000 ) ) . '</textarea>';
+					echo '<p class="description">🟢 HTTP 200/206 = ça marche → colle-moi cette réponse, je construis l’écran propre. 401/403 = scope/URL à corriger.</p>';
+				}
+			}
+		}
+		echo '</div>';
+	}
+}
 if ( ! function_exists( 'ag_ft_offres' ) ) {
 	/** Cherche les offres (signal de vivier). Retourne [total, offres[]] ou ['error']. */
 	function ag_ft_offres( $departement, $mots = '' ) {
