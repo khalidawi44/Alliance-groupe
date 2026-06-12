@@ -132,32 +132,30 @@ add_shortcode( 'ag_candidature', function () {
 } );
 
 /* ---------------------------------------------------------------- Réception candidature */
-add_action( 'admin_post_nopriv_ag_candidature_submit', 'ag_candidature_submit' );
-add_action( 'admin_post_ag_candidature_submit', 'ag_candidature_submit' );
-if ( ! function_exists( 'ag_candidature_submit' ) ) {
-	function ag_candidature_submit() {
-		if ( ! isset( $_POST['_agc'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_agc'] ) ), 'ag_candidature' ) ) {
-			wp_safe_redirect( wp_get_referer() ?: home_url( '/' ) ); exit;
-		}
+if ( ! function_exists( 'ag_cand_add' ) ) {
+	/**
+	 * Crée une candidature + déclenche tout le pilote auto (réponse candidat,
+	 * SMS/Telegram admin, auto-acceptation). Source unique pour : formulaire
+	 * public, ajout manuel admin, ajout depuis le Robot. Retourne le record.
+	 */
+	function ag_cand_add( $fields ) {
 		$c = array(
 			'id'         => uniqid( 'c_' ),
-			'prenom'     => sanitize_text_field( wp_unslash( $_POST['prenom'] ?? '' ) ),
-			'email'      => sanitize_email( wp_unslash( $_POST['email'] ?? '' ) ),
-			'phone'      => sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) ),
-			'ville'      => sanitize_text_field( wp_unslash( $_POST['ville'] ?? '' ) ),
-			'motivation' => sanitize_textarea_field( wp_unslash( $_POST['motivation'] ?? '' ) ),
+			'prenom'     => sanitize_text_field( $fields['prenom'] ?? '' ),
+			'email'      => sanitize_email( $fields['email'] ?? '' ),
+			'phone'      => sanitize_text_field( $fields['phone'] ?? '' ),
+			'ville'      => sanitize_text_field( $fields['ville'] ?? '' ),
+			'motivation' => sanitize_textarea_field( $fields['motivation'] ?? '' ),
 			'status'     => 'nouveau',
 			'date'       => current_time( 'd/m/Y H:i' ),
 			'last'       => '',
-			'notes'      => '',
+			'notes'      => sanitize_text_field( $fields['notes'] ?? '' ),
+			'source'     => sanitize_text_field( $fields['source'] ?? 'formulaire' ),
 			'ts'         => time(),
 		);
-		if ( '' === $c['prenom'] || '' === $c['email'] ) {
-			wp_safe_redirect( wp_get_referer() ?: home_url( '/' ) ); exit;
-		}
-		// AUTO-ACCEPTATION (par défaut ON, pour te décharger) : le candidat est
-		// accepté tout de suite et reçoit le lien d'inscription. Sinon, simple
-		// accusé de réception et tu valides à la main.
+		if ( '' === $c['prenom'] && '' === $c['email'] && '' === $c['phone'] ) return null;
+		if ( '' === $c['prenom'] ) $c['prenom'] = $c['email'] ? explode( '@', $c['email'] )[0] : 'Candidat';
+
 		$auto = '1' === get_option( 'ag_cand_autoaccept', '1' );
 		if ( $auto ) { $c['status'] = 'accepte'; $c['last'] = current_time( 'd/m/Y' ); }
 
@@ -165,18 +163,52 @@ if ( ! function_exists( 'ag_candidature_submit' ) ) {
 		$list[] = $c;
 		ag_cand_save( $list );
 
-		// 1) Réponse automatique au candidat (email).
-		if ( $auto ) { ag_cand_email_accept( $c ); } else { ag_cand_email_recu( $c ); }
-		// 2) Alerte SMS à l'admin (ligne pro) + Telegram.
-		$tag    = $auto ? '✅ Candidature auto-acceptée' : '🆕 Candidature ambassadeur';
-		$resume = $tag . ' : ' . $c['prenom'] . ( $c['ville'] ? ' (' . $c['ville'] . ')' : '' ) . ( $c['phone'] ? ' — ' . $c['phone'] : '' ) . ' — ' . $c['email'];
-		if ( function_exists( 'ag_sms' ) ) ag_sms( $resume );
-		if ( function_exists( 'ag_push' ) ) ag_push( $tag, $c['prenom'] . ( $c['ville'] ? ' · ' . $c['ville'] : '' ) . "\n" . ( $c['phone'] ? '📞 ' . $c['phone'] . "\n" : '' ) . '✉️ ' . $c['email'] . ( $c['motivation'] ? "\n« " . $c['motivation'] . ' »' : '' ) );
+		// Réponse automatique au candidat (email — uniquement si email fourni).
+		if ( ! empty( $c['email'] ) ) { if ( $auto ) { ag_cand_email_accept( $c ); } else { ag_cand_email_recu( $c ); } }
+		elseif ( $auto ) { ag_cand_sms_candidate( $c, 'Felicitations ' . $c['prenom'] . ' ! Candidature ambassadeur Alliance Groupe acceptee. Inscris-toi : ' . ag_cand_inscription_link() . ' STOP pour stop.' ); }
 
+		// Alerte SMS admin + Telegram.
+		$tag    = $auto ? '✅ Candidature auto-acceptée' : '🆕 Candidature ambassadeur';
+		$resume = $tag . ' : ' . $c['prenom'] . ( $c['ville'] ? ' (' . $c['ville'] . ')' : '' ) . ( $c['phone'] ? ' — ' . $c['phone'] : '' ) . ( $c['email'] ? ' — ' . $c['email'] : '' );
+		if ( function_exists( 'ag_sms' ) ) ag_sms( $resume );
+		if ( function_exists( 'ag_push' ) ) ag_push( $tag, $c['prenom'] . ( $c['ville'] ? ' · ' . $c['ville'] : '' ) . "\n" . ( $c['phone'] ? '📞 ' . $c['phone'] . "\n" : '' ) . ( $c['email'] ? '✉️ ' . $c['email'] : '' ) );
+		return $c;
+	}
+}
+add_action( 'admin_post_nopriv_ag_candidature_submit', 'ag_candidature_submit' );
+add_action( 'admin_post_ag_candidature_submit', 'ag_candidature_submit' );
+if ( ! function_exists( 'ag_candidature_submit' ) ) {
+	function ag_candidature_submit() {
+		if ( ! isset( $_POST['_agc'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_agc'] ) ), 'ag_candidature' ) ) {
+			wp_safe_redirect( wp_get_referer() ?: home_url( '/' ) ); exit;
+		}
+		$r = ag_cand_add( array(
+			'prenom'     => wp_unslash( $_POST['prenom'] ?? '' ),
+			'email'      => wp_unslash( $_POST['email'] ?? '' ),
+			'phone'      => wp_unslash( $_POST['phone'] ?? '' ),
+			'ville'      => wp_unslash( $_POST['ville'] ?? '' ),
+			'motivation' => wp_unslash( $_POST['motivation'] ?? '' ),
+			'source'     => 'formulaire',
+		) );
 		$back = wp_get_referer() ?: home_url( '/' );
+		if ( ! $r ) { wp_safe_redirect( $back ); exit; }
 		wp_safe_redirect( add_query_arg( 'cand', 'ok', remove_query_arg( 'cand', $back ) ) . '#candidature' ); exit;
 	}
 }
+/* Ajout MANUEL d'un candidat (admin) : depuis 🎯 Candidatures ou le Robot. */
+add_action( 'admin_post_ag_cand_manual_add', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_n'] ) ), 'ag_cand_manual' ) ) wp_die( 'no' );
+	ag_cand_add( array(
+		'prenom'     => wp_unslash( $_POST['prenom'] ?? '' ),
+		'email'      => wp_unslash( $_POST['email'] ?? '' ),
+		'phone'      => wp_unslash( $_POST['phone'] ?? '' ),
+		'ville'      => wp_unslash( $_POST['ville'] ?? '' ),
+		'motivation' => wp_unslash( $_POST['motivation'] ?? '' ),
+		'source'     => sanitize_text_field( wp_unslash( $_POST['source'] ?? 'manuel' ) ),
+	) );
+	$back = isset( $_POST['_back'] ) ? esc_url_raw( wp_unslash( $_POST['_back'] ) ) : admin_url( 'admin.php?page=ag-candidatures' );
+	wp_safe_redirect( add_query_arg( 'candadd', 'ok', $back ) ); exit;
+} );
 
 /* ---------------------------------------------------------------- Actions admin (AJAX) */
 add_action( 'wp_ajax_ag_cand_action', function () {
@@ -334,6 +366,23 @@ if ( ! function_exists( 'ag_cand_render' ) ) {
 		echo '<label style="display:block;margin:6px 0;"><input type="checkbox" name="ag_cand_digest" ' . checked( $dig, true, false ) . '> <strong>Digest SMS quotidien</strong> : un résumé par jour (nombre de candidatures + acceptées).</label>';
 		echo '<button name="ag_cand_save_settings" value="1" class="button button-primary button-small">Enregistrer</button>';
 		echo '</form></div>';
+
+		// Ajout manuel d'un candidat (personne repérée ailleurs).
+		if ( isset( $_GET['candadd'] ) ) echo '<div class="notice notice-success"><p>✅ Candidat ajouté (réponse auto envoyée).</p></div>';
+		$mback = admin_url( 'admin.php?page=ag-candidatures' );
+		echo '<details style="max-width:840px;margin:10px 0;"><summary class="button button-small button-primary">➕ Ajouter un candidat (manuel)</summary>';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="background:#fff;border:1px solid #ccd0d4;border-radius:8px;padding:12px 16px;margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">';
+		echo '<input type="hidden" name="action" value="ag_cand_manual_add"><input type="hidden" name="source" value="manuel"><input type="hidden" name="_back" value="' . esc_attr( $mback ) . '">';
+		wp_nonce_field( 'ag_cand_manual', '_n' );
+		echo '<label>Prénom<br><input type="text" name="prenom" required style="width:140px;"></label>';
+		echo '<label>Email<br><input type="email" name="email" style="width:200px;"></label>';
+		echo '<label>Téléphone<br><input type="text" name="phone" style="width:140px;"></label>';
+		echo '<label>Ville<br><input type="text" name="ville" style="width:120px;"></label>';
+		echo '<label>Note<br><input type="text" name="motivation" style="width:200px;" placeholder="rencontré à…, profil…"></label>';
+		echo '<button class="button button-primary">Ajouter + répondre</button>';
+		echo '<span style="flex-basis:100%;font-size:.82em;color:#50575e;">Le candidat reçoit la réponse auto (email/SMS si dispo) et tu es notifié. Email OU téléphone suffit.</span>';
+		echo '</form></details>';
+
 		// Filtres statut.
 		$base = admin_url( 'admin.php?page=ag-candidatures' );
 		echo '<p>';

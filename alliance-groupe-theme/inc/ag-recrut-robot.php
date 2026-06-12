@@ -308,6 +308,20 @@ if ( ! function_exists( 'ag_rr_render' ) ) {
 				}
 			}
 		}
+		// Ajouter un candidat repéré (job board / France Travail) → 🎯 Candidatures.
+		echo '<hr style="margin:14px 0;border:none;border-top:1px solid #eee;">';
+		echo '<h3 style="margin:0 0 4px;">➕ Un candidat t\'a répondu ? Ajoute-le ici</h3>';
+		echo '<p style="font-size:.85em;color:#50575e;max-width:760px;">Quelqu\'un t\'a contacté via une annonce (France Travail, Indeed…) ? Saisis-le : il atterrit dans <strong>Ambassadeurs → 🎯 Candidatures</strong>, reçoit la réponse automatique, et tu es notifié.</p>';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">';
+		echo '<input type="hidden" name="action" value="ag_cand_manual_add"><input type="hidden" name="source" value="francetravail"><input type="hidden" name="_back" value="' . esc_attr( admin_url( 'admin.php?page=ag-recrut-robot' ) ) . '">';
+		wp_nonce_field( 'ag_cand_manual', '_n' );
+		echo '<label>Prénom<br><input type="text" name="prenom" required style="width:130px;"></label>';
+		echo '<label>Email<br><input type="email" name="email" style="width:190px;"></label>';
+		echo '<label>Téléphone<br><input type="text" name="phone" style="width:130px;"></label>';
+		echo '<label>Ville<br><input type="text" name="ville" value="' . esc_attr( $ville ) . '" style="width:110px;"></label>';
+		echo '<button class="button button-primary">→ Envoyer aux Candidatures</button>';
+		echo '</form>';
+		if ( isset( $_GET['candadd'] ) ) echo '<p style="color:#1e7e34;">✅ Candidat envoyé aux Candidatures (réponse auto faite).</p>';
 		echo '</div>';
 
 		// ── 3) Cibler des profils pro (Google Places) ────────────────────
