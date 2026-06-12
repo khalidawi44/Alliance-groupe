@@ -330,7 +330,7 @@ if ( ! function_exists( 'ag_prospect_add_record' ) ) {
 			'id' => uniqid( 'p_' ), 'name' => '', 'type' => '', 'city' => '', 'phone' => '', 'phone_intl' => '', 'email' => '',
 			'website' => '', 'address' => '', 'maps_uri' => '', 'rating' => 0, 'reviews' => 0, 'status' => 'nouveau',
 			'date_contact' => '', 'last_contact' => '', 'contact_count' => 0, 'replied' => 0, 'date_reply' => '',
-			'owner_email' => '', 'owner_name' => '', 'notes' => '', 'source' => 'manuel', 'ts' => time(),
+			'owner_email' => '', 'owner_name' => '', 'notes' => '', 'bodacc' => '', 'last_relance' => '', 'source' => 'manuel', 'ts' => time(),
 		), $data );
 		// Auto-assignation à l'ambassadeur propriétaire de la zone (département).
 		if ( '' === $rec['owner_email'] && function_exists( 'ag_zone_next_owner' ) ) {
@@ -365,6 +365,7 @@ add_action( 'wp_ajax_ag_prospect_add', function () {
 		'reviews' => (int) ( $_POST['reviews'] ?? 0 ),
 		'notes'   => sanitize_text_field( wp_unslash( $_POST['notes'] ?? '' ) ),
 		'source'  => sanitize_text_field( wp_unslash( $_POST['source'] ?? 'recherche' ) ),
+		'bodacc'  => sanitize_text_field( wp_unslash( $_POST['bodacc'] ?? '' ) ),
 	) );
 	wp_send_json_success( array( 'added' => $ok ) );
 } );
@@ -429,6 +430,30 @@ add_action( 'wp_ajax_ag_prospect_outcome', function () {
 			$nm = $p['name'] ?? 'Un prospect';
 			ag_activity_log( ( 'ne_pas_contacter' === $st ? '⛔ ' . $nm . ' a bloqué / refusé' : ( 'sans_reponse' === $st ? '🔇 ' . $nm . ' : sans réponse' : '🔥 ' . $nm . ' intéressé' ) ) );
 			wp_send_json_success( array( 'status' => $st ) );
+		}
+	}
+	wp_send_json_error();
+} );
+/* RELANCE en 1 clic : marque le prospect comme « relancé » aujourd'hui
+   (date + compteur de contacts), pour le suivi et les rappels 7j+. */
+add_action( 'wp_ajax_ag_prospect_relance', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
+	$id   = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+	$list = (array) get_option( 'ag_prospects', array() );
+	$today = current_time( 'd/m/Y' );
+	foreach ( $list as $k => $p ) {
+		if ( ( $p['id'] ?? '' ) === $id ) {
+			// Un prospect bloqué/refusé/client ne se relance pas.
+			if ( ag_prospect_blocked( $p['status'] ?? '' ) ) wp_send_json_error( array( 'msg' => 'bloqué' ) );
+			$list[ $k ]['status']        = 'relance';
+			$list[ $k ]['last_relance']  = $today;
+			$list[ $k ]['last_contact']  = $today;
+			$list[ $k ]['last_channel']  = 'Relance';
+			$list[ $k ]['contact_count'] = (int) ( $p['contact_count'] ?? 0 ) + 1;
+			if ( empty( $list[ $k ]['date_contact'] ) ) $list[ $k ]['date_contact'] = $today;
+			update_option( 'ag_prospects', array_values( $list ) );
+			if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '🔁 ' . ( $p['name'] ?? 'Un prospect' ) . ' relancé le ' . $today );
+			wp_send_json_success( array( 'date' => $today, 'count' => $list[ $k ]['contact_count'] ) );
 		}
 	}
 	wp_send_json_error();
@@ -1083,7 +1108,13 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 						<table class="widefat striped"><thead><tr><th>Entreprise</th><th>Activité</th><th>Procédure</th><th>Contact</th><th>Message</th><th></th></tr></thead><tbody>
 						<?php foreach ( $tres as $tc ) :
 							$tex = ag_prospect_find( $tc['name'], $tc['city'], '' );
-							$tnotes = 'BODACC : ' . $tc['nature'] . ( $tc['date'] ? ' (' . $tc['date'] . ')' : '' ) . ( $tc['siren'] ? ' · SIREN ' . $tc['siren'] : '' );
+							// Fiche de jugement COMPLÈTE — elle doit SUIVRE le prospect quand on l'ajoute.
+							$tjug = trim( (string) $tc['nature'] )
+								. ( ! empty( $tc['tribunal'] ) ? ' · ' . $tc['tribunal'] : '' )
+								. ( ! empty( $tc['date'] ) ? ' · paru le ' . $tc['date'] : '' )
+								. ( ! empty( $tc['siren'] ) ? ' · SIREN ' . $tc['siren'] : '' )
+								. ( ! empty( $tc['complement'] ) ? ' — ' . wp_strip_all_tags( (string) $tc['complement'] ) : '' );
+							$tnotes = '🏛️ BODACC (procédure collective) : ' . $tjug;
 							$tmsg = ag_bodacc_message( $tc );
 							$tsearch = add_query_arg( array( 'page' => 'ag-prospects', 'q' => $tc['name'], 'city' => $tc['city'] ), admin_url( 'admin.php' ) );
 						?>
@@ -1093,7 +1124,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 								<td style="font-size:.82em;color:#7a4ed4;font-weight:600;max-width:240px;"><?php echo esc_html( $tc['nature'] ); ?><?php echo $tc['date'] ? '<br><span style="color:#50575e;font-weight:400;">' . esc_html( $tc['date'] ) . '</span>' : ''; ?><?php if ( ! empty( $tc['complement'] ) ) : ?><br><span style="color:#50575e;font-weight:400;font-style:italic;">⚖️ <?php echo esc_html( wp_trim_words( $tc['complement'], 30 ) ); ?></span><?php endif; ?></td>
 								<td><a class="button button-small" href="<?php echo esc_url( $tsearch ); ?>" title="Trouver le téléphone via Google Places">🔎 Trouver le tel</a></td>
 								<td><details><summary class="button button-small">Message</summary><textarea readonly rows="9" style="width:340px;margin-top:6px;"><?php echo esc_textarea( $tmsg ); ?></textarea></details></td>
-								<td><?php if ( $tex ) : ?><span style="color:#50575e;font-size:.85em;">✓ suivi</span><?php else : ?><button type="button" class="button button-primary ag-add" data-name="<?php echo esc_attr( $tc['name'] ); ?>" data-type="<?php echo esc_attr( $tc['activite'] ); ?>" data-city="<?php echo esc_attr( $tc['city'] ); ?>" data-phone="" data-website="" data-address="" data-rating="0" data-reviews="0" data-notes="<?php echo esc_attr( $tnotes ); ?>" data-source="tribunal">+ Suivre</button><?php endif; ?></td>
+								<td><?php if ( $tex ) : ?><span style="color:#50575e;font-size:.85em;">✓ suivi</span><?php else : ?><button type="button" class="button button-primary ag-add" data-name="<?php echo esc_attr( $tc['name'] ); ?>" data-type="<?php echo esc_attr( $tc['activite'] ); ?>" data-city="<?php echo esc_attr( $tc['city'] ); ?>" data-phone="" data-website="" data-address="" data-rating="0" data-reviews="0" data-notes="<?php echo esc_attr( $tnotes ); ?>" data-bodacc="<?php echo esc_attr( $tjug ); ?>" data-source="tribunal">+ Suivre</button><?php endif; ?></td>
 							</tr>
 						<?php endforeach; ?>
 						</tbody></table>
@@ -1236,7 +1267,10 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					?>
 					<tr<?php echo $blocked ? ' style="opacity:.72;background:#fbf3f3;"' : ''; ?>>
 						<td><span style="display:inline-block;min-width:34px;text-align:center;font-weight:800;color:#fff;background:<?php echo esc_attr( $scol ); ?>;border-radius:6px;padding:2px 6px;"><?php echo (int) $score; ?></span></td>
-						<td><strong><?php echo esc_html( $p['name'] ?? '' ); ?></strong><?php $pk = ag_site_kind( $p['website'] ?? '' ); echo ( 'real' !== $pk[0] ) ? ' <span style="color:#b32d2e;" title="' . esc_attr( $pk[1] ) . '">❗</span>' : ''; ?><br><small><?php echo esc_html( ( $p['type'] ?? '' ) . ( ! empty( $p['city'] ) ? ' · ' . $p['city'] : '' ) ); ?></small></td>
+						<td><strong><?php echo esc_html( $p['name'] ?? '' ); ?></strong><?php $pk = ag_site_kind( $p['website'] ?? '' ); echo ( 'real' !== $pk[0] ) ? ' <span style="color:#b32d2e;" title="' . esc_attr( $pk[1] ) . '">❗</span>' : ''; ?><br><small><?php echo esc_html( ( $p['type'] ?? '' ) . ( ! empty( $p['city'] ) ? ' · ' . $p['city'] : '' ) ); ?></small>
+								<?php if ( ! empty( $p['bodacc'] ) ) : ?>
+									<div style="margin-top:5px;font-size:.78em;color:#5a2ca0;background:#f3eefc;border-left:3px solid #7a4ed4;border-radius:4px;padding:4px 7px;line-height:1.4;" title="Fiche de jugement BODACC conservée avec le prospect">🏛️ <strong>Tribunal</strong> — <?php echo esc_html( $p['bodacc'] ); ?></div>
+								<?php endif; ?></td>
 						<td style="font-size:.85em;white-space:nowrap;"><?php
 							$pdept = function_exists( 'ag_prospect_dept' ) ? ag_prospect_dept( $p ) : '';
 							if ( $pdept ) {
@@ -1300,6 +1334,12 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 									<button type="button" class="button button-small ag-outcome" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-outcome="sans_reponse" title="Pas de réponse">🔇 Sans réponse</button>
 								<?php else : ?>⏳ Pas encore contacté<?php endif; ?>
 							</div>
+							<?php
+							// Bouton RELANCE — présent sur TOUS les prospects (non bloqués).
+							$relance_due = ag_prospect_relance_due( $p );
+							$rlabel = ! empty( $p['last_relance'] ) ? '🔁 Relancé le ' . $p['last_relance'] : '🔁 Relancer';
+							?>
+							<button type="button" class="button button-small ag-relance" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" style="<?php echo $relance_due ? 'border-color:#c2410c;color:#c2410c;font-weight:700;' : ''; ?>" title="Marque ce prospect comme relancé aujourd'hui (date + suivi)"><?php echo esc_html( $rlabel ); ?></button>
 							<?php if ( $wa ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-channel="WhatsApp" href="<?php echo esc_url( $wa ); ?>" target="_blank" rel="noopener">WhatsApp</a> <?php endif; ?>
 							<?php if ( $sms ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-channel="SMS" href="<?php echo esc_attr( $sms ); ?>" title="Ouvre Messages sur ton ordi (lié à ton tél) -> envoi depuis ton numéro">📱 SMS</a> <?php endif; ?>
 							<?php if ( $mailto ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-channel="Email" href="<?php echo esc_url( $mailto ); ?>">Email</a> <?php endif; ?>
@@ -1356,7 +1396,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			// Ajout en AJAX (sans recharger -> la recherche reste).
 			document.querySelectorAll('.ag-add').forEach(function(b){ b.addEventListener('click',function(){
 				var fd=new FormData(); fd.append('action','ag_prospect_add'); fd.append('_n',nonce);
-				['name','type','city','phone','website','address','rating','reviews','notes','source','maps'].forEach(function(k){ fd.append(k, b.getAttribute('data-'+k)||''); });
+				['name','type','city','phone','website','address','rating','reviews','notes','source','maps','bodacc'].forEach(function(k){ fd.append(k, b.getAttribute('data-'+k)||''); });
 					var nt=b.closest('td')?b.closest('td').querySelector('.ag-add-note'):null; if(nt&&nt.value){ fd.set('notes', nt.value); }
 				b.disabled=true; b.textContent='…';
 				fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ b.textContent=(j&&j.success)?'✓ Ajouté':'Erreur'; }).catch(function(){ b.textContent='Erreur'; b.disabled=false; });
@@ -1367,6 +1407,16 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				['name','city','type','phone','website','address','rating','reviews'].forEach(function(k){ fd.append(k, b.getAttribute('data-'+k)||''); });
 				b.disabled=true; b.textContent='…';
 				fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ var tr=b.closest('tr'); if(j&&j.success&&tr){ tr.style.opacity='.4'; tr.style.display='none'; } else { b.textContent='Erreur'; b.disabled=false; } }).catch(function(){ b.textContent='Erreur'; b.disabled=false; });
+			}); });
+			// 🔁 Relancer : marque le prospect comme relancé aujourd'hui (date + suivi).
+			document.querySelectorAll('.ag-relance').forEach(function(b){ b.addEventListener('click',function(){
+				var id=b.getAttribute('data-id'); if(!id) return;
+				var fd=new FormData(); fd.append('action','ag_prospect_relance'); fd.append('_n',nonce); fd.append('id',id);
+				var old=b.textContent; b.disabled=true; b.textContent='…';
+				fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){
+					if(j&&j.success){ b.textContent='✓ Relancé le '+j.data.date; b.style.borderColor='#1e7e34'; b.style.color='#1e7e34'; b.style.fontWeight='700'; }
+					else { b.textContent=old; b.disabled=false; }
+				}).catch(function(){ b.textContent=old; b.disabled=false; });
 			}); });
 			// Clic WhatsApp/Email = enregistre le contact (date + compteur + statut auto). Le lien s'ouvre normalement.
 			document.querySelectorAll('.ag-touch').forEach(function(a){ a.addEventListener('click',function(){
