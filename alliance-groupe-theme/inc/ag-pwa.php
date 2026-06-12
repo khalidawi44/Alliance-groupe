@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_PWA_VER', '1.0.1' );
+define( 'AG_PWA_VER', '1.0.2' );
 
 /* ---------------------------------------------------------------- Helpers */
 if ( ! function_exists( 'ag_pwa_icon' ) ) {
@@ -80,11 +80,19 @@ add_action( 'template_redirect', function () {
 /* ---------------------------------------------------------------- Manifest */
 if ( ! function_exists( 'ag_pwa_manifest' ) ) {
 	function ag_pwa_manifest( $amb = false ) {
-		$icons = array(
-			array( 'src' => ag_pwa_icon( 'icon-192.png' ), 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any' ),
-			array( 'src' => ag_pwa_icon( 'icon-512.png' ), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any' ),
-			array( 'src' => ag_pwa_icon( 'maskable-512.png' ), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'maskable' ),
-		);
+		if ( $amb ) {
+			$icons = array(
+				array( 'src' => ag_pwa_icon( 'amb-192.png' ), 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any' ),
+				array( 'src' => ag_pwa_icon( 'amb-512.png' ), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any' ),
+				array( 'src' => ag_pwa_icon( 'amb-maskable-512.png' ), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'maskable' ),
+			);
+		} else {
+			$icons = array(
+				array( 'src' => ag_pwa_icon( 'icon-192.png' ), 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any' ),
+				array( 'src' => ag_pwa_icon( 'icon-512.png' ), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any' ),
+				array( 'src' => ag_pwa_icon( 'maskable-512.png' ), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'maskable' ),
+			);
+		}
 		if ( $amb ) {
 			$start = add_query_arg( 'app', '1', ag_pwa_amb_start() );
 			return array(
@@ -166,18 +174,19 @@ add_action( 'wp_head', function () {
 	echo '<meta name="apple-mobile-web-app-capable" content="yes">' . "\n";
 	echo '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">' . "\n";
 	echo '<meta name="apple-mobile-web-app-title" content="' . esc_attr( $name ) . '">' . "\n";
-	echo '<link rel="apple-touch-icon" href="' . esc_url( ag_pwa_icon( 'apple-touch.png' ) ) . '">' . "\n";
+	echo '<link rel="apple-touch-icon" href="' . esc_url( ag_pwa_icon( $amb ? 'amb-apple.png' : 'apple-touch.png' ) ) . '">' . "\n";
 }, 2 );
 
 /* ---------------------------------------------------------------- Bouton « Télécharger l'app » (shortcode) */
 if ( ! function_exists( 'ag_pwa_button' ) ) {
 	/** Beau bouton placeable n'importe où : [ag_install_app] / [telecharger_app]. */
 	function ag_pwa_button( $atts = array() ) {
+		$amb = function_exists( 'ag_pwa_is_amb_context' ) && ag_pwa_is_amb_context();
 		$a = shortcode_atts( array(
-			'texte'   => 'Télécharger l’application',
-			'sous'    => 'iPhone &amp; Android · gratuit, sans store',
+			'texte'   => $amb ? 'Installer l’app Ambassadeurs' : 'Télécharger l’application',
+			'sous'    => $amb ? 'Ton espace, en 1 tap · iPhone &amp; Android' : 'iPhone &amp; Android · gratuit, sans store',
 		), $atts );
-		$icon = esc_url( ag_pwa_icon( 'icon-192.png' ) );
+		$icon = esc_url( ag_pwa_icon( $amb ? 'amb-192.png' : 'icon-192.png' ) );
 		return '<button type="button" class="ag-appdl" onclick="agInstallApp()">'
 			. '<img src="' . $icon . '" alt="" width="40" height="40">'
 			. '<span class="ag-appdl__txt"><strong>' . esc_html( $a['texte'] ) . '</strong><small>' . wp_kses_post( $a['sous'] ) . '</small></span>'
@@ -187,6 +196,14 @@ if ( ! function_exists( 'ag_pwa_button' ) ) {
 add_shortcode( 'ag_install_app', 'ag_pwa_button' );
 add_shortcode( 'telecharger_app', 'ag_pwa_button' );
 
+/* Placement AUTO du bouton dans l'espace ambassadeur (en bas du contenu). */
+add_filter( 'the_content', function ( $content ) {
+	if ( is_admin() || ! is_main_query() || ! in_the_loop() || ! is_page() ) return $content;
+	if ( ! ag_pwa_is_amb_context() ) return $content;
+	if ( false !== strpos( $content, 'ag-appdl' ) ) return $content; // déjà présent (shortcode manuel)
+	return $content . '<div style="text-align:center;margin:26px 0;">' . ag_pwa_button() . '</div>';
+} );
+
 /* ---------------------------------------------------------------- SW + bannière + modale iOS */
 add_action( 'wp_footer', function () {
 	if ( is_admin() ) return;
@@ -194,7 +211,7 @@ add_action( 'wp_footer', function () {
 	$amb   = ag_pwa_is_amb_context();
 	$name  = $amb ? 'Alliance Ambassadeurs' : ( get_bloginfo( 'name' ) ?: 'Alliance Groupe' );
 	$sub   = $amb ? 'Ton espace ambassadeur, en 1 tap' : 'iPhone & Android · gratuit';
-	$icon  = esc_url( ag_pwa_icon( 'icon-192.png' ) );
+	$icon  = esc_url( ag_pwa_icon( $amb ? 'amb-192.png' : 'icon-192.png' ) );
 	?>
 	<style>
 	/* Bouton "Télécharger l'app" (shortcode) */
