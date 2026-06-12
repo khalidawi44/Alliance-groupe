@@ -2281,6 +2281,12 @@ Telephone : [telephone]</p>
 	}
 
 	private function render_domaine_testimonials_html( $items ) {
+		// DEONTOLOGIE AVOCAT : les temoignages clients sont interdits sur le
+		// site d'un avocat (RIN art. 10 + vade-mecum CNB). On ne rend donc
+		// JAMAIS cette section, quelles que soient les donnees fournies. Les
+		// avis se travaillent sur la fiche Google Business, hors du site.
+		return '';
+		// phpcs:disable -- code historique conserve mais jamais atteint.
 		if ( empty( $items ) ) {
 			return '';
 		}
@@ -2304,6 +2310,7 @@ Telephone : [telephone]</p>
 		</section>
 		<?php
 		return ob_get_clean();
+		// phpcs:enable
 	}
 
 	private function get_default_testimonials() {

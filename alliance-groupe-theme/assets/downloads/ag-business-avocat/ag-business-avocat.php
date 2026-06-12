@@ -3,7 +3,7 @@
  * Plugin Name:       AG Business Avocat
  * Plugin URI:        https://alliancegroupe-inc.com
  * Description:       Fonctionnalités Business pour le thème AG Starter Avocat. Active uniquement si tier === business détecté via AG_Licence_Client.
- * Version:           0.51.0
+ * Version:           0.51.1
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Alliance Groupe
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_BUSINESS_AVOCAT_VERSION', '0.51.0' );
+define( 'AG_BUSINESS_AVOCAT_VERSION', '0.51.1' );
 define( 'AG_BUSINESS_AVOCAT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AG_BUSINESS_AVOCAT_URL', plugin_dir_url( __FILE__ ) );
 
