@@ -458,6 +458,22 @@ add_action( 'wp_ajax_ag_prospect_relance', function () {
 	}
 	wp_send_json_error();
 } );
+/* SUPPRESSION EN LOT : efface plusieurs prospects sélectionnés (cases à cocher). */
+add_action( 'wp_ajax_ag_prospect_delete_bulk', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
+	$ids = isset( $_POST['ids'] ) ? (array) $_POST['ids'] : array();
+	$ids = array_filter( array_map( 'sanitize_text_field', array_map( 'wp_unslash', $ids ) ) );
+	if ( empty( $ids ) ) wp_send_json_error( array( 'msg' => 'aucune sélection' ) );
+	$list   = (array) get_option( 'ag_prospects', array() );
+	$before = count( $list );
+	$list   = array_values( array_filter( $list, function ( $p ) use ( $ids ) {
+		return ! in_array( $p['id'] ?? '', $ids, true );
+	} ) );
+	$removed = $before - count( $list );
+	update_option( 'ag_prospects', $list );
+	if ( $removed && function_exists( 'ag_activity_log' ) ) ag_activity_log( '🗑️ ' . $removed . ' prospect(s) supprimé(s) en lot' );
+	wp_send_json_success( array( 'removed' => $removed ) );
+} );
 add_action( 'wp_ajax_ag_prospect_note', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
 	$id   = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
@@ -1253,7 +1269,11 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			<?php if ( empty( $prospects ) ) : ?>
 				<p>Aucun prospect (avec ces filtres). Cherche des entreprises ci-dessus ou ajoute-en à la main.</p>
 			<?php else : ?>
-				<table class="widefat striped"><thead><tr><th>Priorité</th><th>Entreprise</th><th>Zone</th><th>Pourquoi (besoin)</th><th>Contact</th><th>Statut</th><th>Assigné à</th><th>Prospecter</th><th></th></tr></thead><tbody>
+				<div class="ag-bulkbar" style="margin:10px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+					<label style="font-size:.9em;"><input type="checkbox" id="ag-check-all"> Tout sélectionner</label>
+					<button type="button" id="ag-del-selected" class="button button-small button-link-delete" disabled>🗑️ Supprimer la sélection (<span id="ag-sel-count">0</span>)</button>
+				</div>
+				<table class="widefat striped"><thead><tr><th style="width:28px;"><input type="checkbox" id="ag-check-all2" title="Tout sélectionner"></th><th>Priorité</th><th>Entreprise</th><th>Zone</th><th>Pourquoi (besoin)</th><th>Contact</th><th>Statut</th><th>Assigné à</th><th>Prospecter</th><th></th></tr></thead><tbody>
 				<?php foreach ( $prospects as $p ) :
 					$digits = ag_wa_number( $p['phone'] ?? '', $p['phone_intl'] ?? '' );
 					$msg    = ag_prospect_message( $p );
@@ -1266,6 +1286,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					$blocked = ag_prospect_blocked( $p['status'] ?? '' );
 					?>
 					<tr<?php echo $blocked ? ' style="opacity:.72;background:#fbf3f3;"' : ''; ?>>
+						<td style="text-align:center;"><input type="checkbox" class="ag-check" value="<?php echo esc_attr( $p['id'] ?? '' ); ?>"></td>
 						<td><span style="display:inline-block;min-width:34px;text-align:center;font-weight:800;color:#fff;background:<?php echo esc_attr( $scol ); ?>;border-radius:6px;padding:2px 6px;"><?php echo (int) $score; ?></span></td>
 						<td><strong><?php echo esc_html( $p['name'] ?? '' ); ?></strong><?php $pk = ag_site_kind( $p['website'] ?? '' ); echo ( 'real' !== $pk[0] ) ? ' <span style="color:#b32d2e;" title="' . esc_attr( $pk[1] ) . '">❗</span>' : ''; ?><br><small><?php echo esc_html( ( $p['type'] ?? '' ) . ( ! empty( $p['city'] ) ? ' · ' . $p['city'] : '' ) ); ?></small>
 								<?php if ( ! empty( $p['bodacc'] ) ) : ?>
@@ -1408,6 +1429,29 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				b.disabled=true; b.textContent='…';
 				fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ var tr=b.closest('tr'); if(j&&j.success&&tr){ tr.style.opacity='.4'; tr.style.display='none'; } else { b.textContent='Erreur'; b.disabled=false; } }).catch(function(){ b.textContent='Erreur'; b.disabled=false; });
 			}); });
+			// ☑️ Sélection multiple + suppression en lot.
+			(function(){
+				var all=document.getElementById('ag-check-all'), all2=document.getElementById('ag-check-all2');
+				var delBtn=document.getElementById('ag-del-selected'), cntEl=document.getElementById('ag-sel-count');
+				function checks(){ return Array.prototype.slice.call(document.querySelectorAll('.ag-check')); }
+				function refresh(){ var n=checks().filter(function(c){return c.checked;}).length; if(cntEl)cntEl.textContent=n; if(delBtn)delBtn.disabled=(n===0); }
+				function setAll(v){ checks().forEach(function(c){ c.checked=v; }); if(all)all.checked=v; if(all2)all2.checked=v; refresh(); }
+				if(all) all.addEventListener('change',function(){ setAll(all.checked); });
+				if(all2) all2.addEventListener('change',function(){ setAll(all2.checked); });
+				checks().forEach(function(c){ c.addEventListener('change',refresh); });
+				if(delBtn) delBtn.addEventListener('click',function(){
+					var ids=checks().filter(function(c){return c.checked;}).map(function(c){return c.value;});
+					if(!ids.length) return;
+					if(!confirm('Supprimer définitivement '+ids.length+' prospect(s) ?')) return;
+					var fd=new FormData(); fd.append('action','ag_prospect_delete_bulk'); fd.append('_n',nonce);
+					ids.forEach(function(id){ fd.append('ids[]',id); });
+					delBtn.disabled=true; delBtn.textContent='…';
+					fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){
+						if(j&&j.success){ checks().forEach(function(c){ if(c.checked){ var tr=c.closest('tr'); if(tr) tr.parentNode.removeChild(tr); } }); if(all)all.checked=false; if(all2)all2.checked=false; refresh(); delBtn.innerHTML='🗑️ Supprimer la sélection (<span id="ag-sel-count">0</span>)'; }
+						else { delBtn.disabled=false; alert('Suppression impossible.'); }
+					}).catch(function(){ delBtn.disabled=false; });
+				});
+			})();
 			// 🔁 Relancer : marque le prospect comme relancé aujourd'hui (date + suivi).
 			document.querySelectorAll('.ag-relance').forEach(function(b){ b.addEventListener('click',function(){
 				var id=b.getAttribute('data-id'); if(!id) return;
