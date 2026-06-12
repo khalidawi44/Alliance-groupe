@@ -140,19 +140,43 @@ add_action( 'rest_api_init', function () {
 		'callback'            => 'ag_inbound_rest',
 	) );
 } );
+if ( ! function_exists( 'ag_inbound_pick' ) ) {
+	/** Récupère la 1re valeur non vide parmi plusieurs alias (params + JSON imbriqué). */
+	function ag_inbound_pick( $req, $keys ) {
+		$json = $req->get_json_params();
+		$pools = array();
+		if ( is_array( $json ) ) {
+			$pools[] = $json;
+			foreach ( array( 'data', 'message', 'payload', 'sms' ) as $nest ) {
+				if ( isset( $json[ $nest ] ) && is_array( $json[ $nest ] ) ) $pools[] = $json[ $nest ];
+			}
+		}
+		foreach ( $keys as $k ) {
+			$v = $req->get_param( $k );
+			if ( null !== $v && '' !== $v ) return $v;
+			foreach ( $pools as $pool ) {
+				if ( isset( $pool[ $k ] ) && '' !== $pool[ $k ] && ! is_array( $pool[ $k ] ) ) return $pool[ $k ];
+			}
+		}
+		return '';
+	}
+}
 if ( ! function_exists( 'ag_inbound_rest' ) ) {
 	function ag_inbound_rest( $req ) {
 		// Auth par jeton (query ?token= ou header X-AG-Token).
 		$token = get_option( 'ag_inbound_token', '' );
 		$given = $req->get_param( 'token' );
 		if ( '' === $given ) $given = $req->get_header( 'x-ag-token' );
+		if ( '' === $given ) $given = ag_inbound_pick( $req, array( 'token' ) );
 		if ( '' === $token || ! hash_equals( (string) $token, (string) $given ) ) {
 			return new WP_REST_Response( array( 'error' => 'unauthorized' ), 401 );
 		}
-		$from = sanitize_text_field( (string) $req->get_param( 'from' ) );
-		$text = sanitize_textarea_field( (string) $req->get_param( 'text' ) );
-		$name = sanitize_text_field( (string) $req->get_param( 'name' ) );
-		$type = sanitize_text_field( (string) $req->get_param( 'type' ) ); // 'sms' | 'call'
+		// Accepte les noms de champs des apps courantes (httpSMS, sms-gate, Macrodroid…).
+		$from = sanitize_text_field( (string) ag_inbound_pick( $req, array( 'from', 'contact', 'phone', 'sender', 'number', 'phoneNumber', 'address' ) ) );
+		$text = sanitize_textarea_field( (string) ag_inbound_pick( $req, array( 'text', 'content', 'message', 'body', 'msg' ) ) );
+		$name = sanitize_text_field( (string) ag_inbound_pick( $req, array( 'name', 'contactName' ) ) );
+		$type = strtolower( sanitize_text_field( (string) ag_inbound_pick( $req, array( 'type', 'event' ) ) ) ); // 'sms' | 'call'
+		if ( false !== strpos( $type, 'call' ) ) $type = 'call';
 		if ( '' === $from ) return new WP_REST_Response( array( 'error' => 'no_from' ), 400 );
 
 		// Appels : seulement si activé.
