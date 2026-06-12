@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_PWA_VER', '1.0.4' );
+define( 'AG_PWA_VER', '1.0.5' );
 
 /* ---------------------------------------------------------------- Helpers */
 if ( ! function_exists( 'ag_pwa_icon' ) ) {
@@ -291,7 +291,20 @@ add_action( 'wp_footer', function () {
 	<script>
 	(function(){
 		if ('serviceWorker' in navigator) {
-			window.addEventListener('load', function(){ navigator.serviceWorker.register('<?php echo $sw; // phpcs:ignore ?>', { scope: '/' }).catch(function(){}); });
+			// Auto-update : un nouveau service worker s'active tout seul et l'app se
+			// recharge → mise à jour SANS désinstaller/réinstaller.
+			var refreshing = false;
+			navigator.serviceWorker.addEventListener('controllerchange', function(){
+				if (refreshing) return; refreshing = true; location.reload();
+			});
+			window.addEventListener('load', function(){
+				navigator.serviceWorker.register('<?php echo $sw; // phpcs:ignore ?>', { scope: '/' }).then(function(reg){
+					if (!reg) return;
+					// Re-vérifie les mises à jour à chaque ouverture/retour sur l'app.
+					document.addEventListener('visibilitychange', function(){ if (!document.hidden) reg.update(); });
+					setInterval(function(){ reg.update(); }, 60*60*1000);
+				}).catch(function(){});
+			});
 		}
 		var AMB = <?php echo $amb ? 'true' : 'false'; ?>;
 		var AMB_URL = <?php echo wp_json_encode( $amb_url ); ?>;
