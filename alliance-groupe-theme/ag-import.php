@@ -580,6 +580,7 @@ function ag_do_github_sync() {
         'assets/recherche.js',
         'assets/front.css',
         'assets/front-dossiers.js',
+        'assets/pwa.js',
     );
     $jr_ok = 0;
     foreach ( $jr_files as $pf ) {

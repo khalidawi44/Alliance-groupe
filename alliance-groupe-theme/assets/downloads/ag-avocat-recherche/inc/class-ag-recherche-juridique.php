@@ -52,6 +52,10 @@ class AG_Recherche_Juridique {
 		add_action( 'wp_ajax_ag_jr_dossier_get', array( $this, 'ajax_dossier_get' ) );
 		add_action( 'wp_ajax_ag_jr_dossier_save_front', array( $this, 'ajax_dossier_save_front' ) );
 		add_action( 'wp_ajax_ag_jr_dossier_delete', array( $this, 'ajax_dossier_delete' ) );
+
+		// ----- PWA (appli installable iOS/Android, sans store) -----
+		add_action( 'init', array( $this, 'pwa_endpoints' ), 1 );
+		add_action( 'wp_head', array( $this, 'pwa_head' ) );
 	}
 
 	/* ============================================================
@@ -702,6 +706,13 @@ class AG_Recherche_Juridique {
 		wp_register_style( 'ag-jr-front', AG_JR_URL . 'assets/front.css', array( 'ag-jr' ), AG_JR_VERSION );
 		wp_register_script( 'ag-jr', AG_JR_URL . 'assets/recherche.js', array(), AG_JR_VERSION, true );
 		wp_register_script( 'ag-jr-dossiers', AG_JR_URL . 'assets/front-dossiers.js', array( 'ag-jr' ), AG_JR_VERSION, true );
+		wp_register_script( 'ag-jr-pwa', AG_JR_URL . 'assets/pwa.js', array( 'ag-jr' ), AG_JR_VERSION, true );
+	}
+
+	/** URL de démarrage de l'app (page Espace juridique). */
+	private function pwa_start_url() {
+		$page = get_page_by_path( 'espace-juridique' );
+		return $page ? get_permalink( $page ) : home_url( '/' );
 	}
 
 	/** Le shortcode [ag_juridique] : application complète en façade. */
@@ -717,11 +728,13 @@ class AG_Recherche_Juridique {
 
 		wp_enqueue_style( 'ag-jr-front' );
 		wp_enqueue_script( 'ag-jr-dossiers' );
+		wp_enqueue_script( 'ag-jr-pwa' );
 		$is_admin = current_user_can( 'manage_options' );
 		$fields   = array();
 		foreach ( $this->dossier_fields() as $k => $def ) {
 			$fields[ $k ] = array( 'label' => $def[0], 'type' => $def[1] );
 		}
+		$start = $this->pwa_start_url();
 		wp_localize_script( 'ag-jr', 'AGJR', array(
 			'ajax'      => admin_url( 'admin-ajax.php' ),
 			'print'     => admin_url( 'admin-post.php' ),
@@ -731,6 +744,10 @@ class AG_Recherche_Juridique {
 			'ai_on'     => (bool) trim( (string) get_option( 'ag_jr_ai_key', '' ) ),
 			'live_on'   => ( trim( (string) get_option( 'ag_jr_piste_id', '' ) ) && trim( (string) get_option( 'ag_jr_piste_secret', '' ) ) ),
 			'is_admin'  => $is_admin,
+			'pwa'       => array(
+				'sw'    => add_query_arg( 'ag_jr_sw', '1', home_url( '/' ) ),
+				'scope' => wp_parse_url( $start, PHP_URL_PATH ),
+			),
 		) );
 
 		$live_on = ( trim( (string) get_option( 'ag_jr_piste_id', '' ) ) && trim( (string) get_option( 'ag_jr_piste_secret', '' ) ) );
@@ -744,6 +761,7 @@ class AG_Recherche_Juridique {
 					<button class="ag-jr-navbtn is-active" data-section="recherche">🔎 Recherche</button>
 					<button class="ag-jr-navbtn" data-section="dossiers">📁 Mes dossiers</button>
 					<?php if ( $is_admin ) : ?><button class="ag-jr-navbtn" data-section="reglages">⚙️ Réglages</button><?php endif; ?>
+					<button class="ag-jr-navbtn ag-jr-install" id="ag-jr-install" hidden>📲 Installer l'app</button>
 				</nav>
 			</div>
 
@@ -926,5 +944,87 @@ class AG_Recherche_Juridique {
 		}
 		wp_trash_post( $id );
 		wp_send_json_success( array( 'id' => $id ) );
+	}
+
+	/* ============================================================
+	 *  PWA — application installable (iOS/Android, hors store)
+	 * ============================================================ */
+
+	/** Sert le manifeste et le service worker via ?ag_jr_manifest / ?ag_jr_sw. */
+	public function pwa_endpoints() {
+		if ( isset( $_GET['ag_jr_manifest'] ) ) {
+			$start = $this->pwa_start_url();
+			$ic    = AG_JR_URL . 'assets/icons/';
+			$m = array(
+				'name'             => 'Espace juridique',
+				'short_name'       => 'Juridique',
+				'description'      => 'Recherche et analyse juridique du cabinet.',
+				'lang'             => 'fr',
+				'start_url'        => $start,
+				'scope'            => wp_parse_url( $start, PHP_URL_PATH ),
+				'display'          => 'standalone',
+				'orientation'      => 'portrait',
+				'background_color' => '#131826',
+				'theme_color'      => '#131826',
+				'icons'            => array(
+					array( 'src' => $ic . 'icon-192.png', 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any' ),
+					array( 'src' => $ic . 'icon-512.png', 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any' ),
+					array( 'src' => $ic . 'icon-maskable-512.png', 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'maskable' ),
+				),
+			);
+			header( 'Content-Type: application/manifest+json; charset=utf-8' );
+			echo wp_json_encode( $m );
+			exit;
+		}
+		if ( isset( $_GET['ag_jr_sw'] ) ) {
+			$shell = wp_json_encode( array(
+				AG_JR_URL . 'assets/recherche.css',
+				AG_JR_URL . 'assets/front.css',
+				AG_JR_URL . 'assets/recherche.js',
+				AG_JR_URL . 'assets/front-dossiers.js',
+				AG_JR_URL . 'assets/pwa.js',
+				AG_JR_URL . 'assets/icons/icon-192.png',
+			) );
+			$start = wp_json_encode( $this->pwa_start_url() );
+			header( 'Content-Type: application/javascript; charset=utf-8' );
+			header( 'Service-Worker-Allowed: /' );
+			echo "var CACHE='ag-jr-pwa-" . AG_JR_VERSION . "';var SHELL=" . $shell . ";var START=" . $start . ";\n";
+			echo <<<'SW'
+self.addEventListener('install', function(e){ self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(function(c){ return c.addAll(SHELL).catch(function(){}); })); });
+self.addEventListener('activate', function(e){ self.clients.claim(); e.waitUntil(caches.keys().then(function(ks){ return Promise.all(ks.map(function(k){ return k!==CACHE ? caches.delete(k) : null; })); })); });
+self.addEventListener('fetch', function(e){
+	var req = e.request;
+	if (req.method !== 'GET') { return; }
+	var u = new URL(req.url);
+	if (u.pathname.indexOf('/wp-admin') >= 0 || u.pathname.indexOf('/wp-login') >= 0 || u.pathname.indexOf('admin-ajax') >= 0 || u.search.indexOf('ag_jr_sw') >= 0 || u.search.indexOf('ag_jr_manifest') >= 0) { return; }
+	if (req.mode === 'navigate') {
+		e.respondWith(fetch(req).then(function(r){ var cp = r.clone(); caches.open(CACHE).then(function(c){ c.put(req, cp); }); return r; }).catch(function(){ return caches.match(req).then(function(m){ return m || caches.match(START); }); }));
+		return;
+	}
+	if (u.origin === location.origin) {
+		e.respondWith(caches.match(req).then(function(m){ var f = fetch(req).then(function(r){ if (r && r.status === 200) { var cp = r.clone(); caches.open(CACHE).then(function(c){ c.put(req, cp); }); } return r; }).catch(function(){ return m; }); return m || f; }));
+	}
+});
+SW;
+			exit;
+		}
+	}
+
+	/** Balises PWA dans le <head> de la page Espace juridique. */
+	public function pwa_head() {
+		if ( ! is_singular() ) {
+			return;
+		}
+		$post = get_post();
+		if ( ! $post || ! has_shortcode( $post->post_content, 'ag_juridique' ) ) {
+			return;
+		}
+		echo "\n" . '<link rel="manifest" href="' . esc_url( add_query_arg( 'ag_jr_manifest', '1', home_url( '/' ) ) ) . '">' . "\n";
+		echo '<meta name="theme-color" content="#131826">' . "\n";
+		echo '<meta name="mobile-web-app-capable" content="yes">' . "\n";
+		echo '<meta name="apple-mobile-web-app-capable" content="yes">' . "\n";
+		echo '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">' . "\n";
+		echo '<meta name="apple-mobile-web-app-title" content="Juridique">' . "\n";
+		echo '<link rel="apple-touch-icon" href="' . esc_url( AG_JR_URL . 'assets/icons/apple-touch-180.png' ) . '">' . "\n";
 	}
 }
