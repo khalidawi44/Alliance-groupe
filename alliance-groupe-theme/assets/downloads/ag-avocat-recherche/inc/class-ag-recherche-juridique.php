@@ -350,21 +350,26 @@ class AG_Recherche_Juridique {
 			// Judilibre attend des jurisdiction[] répétés ; on ajoute proprement.
 			$url .= '&jurisdiction=' . rawurlencode( $jur );
 		}
-		$resp = wp_remote_get( $url, array(
-			'timeout' => 25,
-			'headers' => array(
-				'Authorization' => 'Bearer ' . $token,
-				'Accept'        => 'application/json',
-				'KeyId'         => get_option( 'ag_jr_piste_apikey', '' ),
-			),
-		) );
+		$headers = array(
+			'Authorization' => 'Bearer ' . $token,
+			'Accept'        => 'application/json',
+		);
+		$apikey = trim( (string) get_option( 'ag_jr_piste_apikey', '' ) );
+		if ( '' !== $apikey ) {
+			$headers['KeyId'] = $apikey;
+		}
+		$resp = wp_remote_get( $url, array( 'timeout' => 25, 'headers' => $headers ) );
 		if ( is_wp_error( $resp ) ) {
 			wp_send_json_error( array( 'message' => $resp->get_error_message() ) );
 		}
 		$code = wp_remote_retrieve_response_code( $resp );
 		$body = json_decode( wp_remote_retrieve_body( $resp ), true );
 		if ( $code >= 400 || ! is_array( $body ) ) {
-			wp_send_json_error( array( 'message' => 'API Judilibre (HTTP ' . $code . ') : ' . substr( wp_remote_retrieve_body( $resp ), 0, 300 ) ) );
+			$msg = 'API Judilibre (HTTP ' . $code . ') : ' . substr( wp_remote_retrieve_body( $resp ), 0, 300 );
+			if ( 403 === $code ) {
+				$msg = 'Accès Judilibre refusé (HTTP 403). Votre application PISTE n\'est pas autorisée à appeler cette API. À vérifier : (1) l\'abonnement à l\'API « Judilibre » est ACTIF sur votre application (pas « en attente » / « Demander l\'accès ») ; (2) le champ « KeyId / clé API » est renseigné dans les Réglages ; (3) Sandbox vs Production : vos clés et les URLs doivent être du même environnement.';
+			}
+			wp_send_json_error( array( 'message' => $msg ) );
 		}
 		$out = array();
 		$results = isset( $body['results'] ) ? $body['results'] : array();
