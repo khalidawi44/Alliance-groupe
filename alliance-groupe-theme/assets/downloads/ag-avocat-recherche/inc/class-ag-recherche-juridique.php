@@ -365,9 +365,12 @@ class AG_Recherche_Juridique {
 		$code = wp_remote_retrieve_response_code( $resp );
 		$body = json_decode( wp_remote_retrieve_body( $resp ), true );
 		if ( $code >= 400 || ! is_array( $body ) ) {
-			$msg = 'API Judilibre (HTTP ' . $code . ') : ' . substr( wp_remote_retrieve_body( $resp ), 0, 300 );
+			$raw = wp_remote_retrieve_body( $resp );
+			$msg = 'API Judilibre (HTTP ' . $code . ') : ' . substr( $raw, 0, 300 );
 			if ( 403 === $code ) {
 				$msg = 'Accès Judilibre refusé (HTTP 403). Votre application PISTE n\'est pas autorisée à appeler cette API. À vérifier : (1) l\'abonnement à l\'API « Judilibre » est ACTIF sur votre application (pas « en attente » / « Demander l\'accès ») ; (2) le champ « KeyId / clé API » est renseigné dans les Réglages ; (3) Sandbox vs Production : vos clés et les URLs doivent être du même environnement.';
+			} elseif ( $code >= 500 || strpos( $raw, 'no_shard_available' ) !== false || strpos( $raw, 'search_phase_execution' ) !== false ) {
+				$msg = 'Judilibre a renvoyé une erreur serveur (HTTP ' . $code . '). C\'est presque toujours l\'environnement SANDBOX : son index de test est vide/instable et ne contient pas les vraies décisions. Pour obtenir de vrais résultats, basculez en PRODUCTION (application + abonnement Judilibre de production sur piste.gouv.fr, puis URLs sans « sandbox- » dans les Réglages avancés). En attendant, utilisez l\'onglet « Toutes les sources ».';
 			}
 			wp_send_json_error( array( 'message' => $msg ) );
 		}
