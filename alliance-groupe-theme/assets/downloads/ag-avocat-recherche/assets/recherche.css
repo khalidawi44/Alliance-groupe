@@ -1,0 +1,57 @@
+/* AG Recherche Juridique — styles admin (navy/champagne du thème avocat). */
+.ag-jr { --gold: #D4B45C; --navy: #1f2740; --ink: #131826; }
+.ag-jr h1 { display: flex; align-items: center; gap: 8px; }
+.ag-jr-sub { color: #50575e; max-width: 760px; }
+
+.ag-jr-searchbar { display: flex; gap: 10px; margin: 18px 0; max-width: 900px; }
+.ag-jr-searchbar input { flex: 1; font-size: 18px; padding: 12px 16px; border: 2px solid var(--navy); border-radius: 8px; }
+.ag-jr-searchbar input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(212,180,92,.25); outline: none; }
+
+.ag-jr-tabs { display: flex; gap: 4px; border-bottom: 2px solid #e2e4e7; margin-bottom: 16px; flex-wrap: wrap; }
+.ag-jr-tab { background: none; border: none; padding: 10px 16px; cursor: pointer; font-size: 14px; color: #50575e; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+.ag-jr-tab.is-active { color: var(--navy); border-bottom-color: var(--gold); font-weight: 600; }
+
+.ag-jr-panel { display: none; }
+.ag-jr-panel.is-active { display: block; }
+
+.ag-jr-note { background: #fff8e5; border: 1px solid var(--gold); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; max-width: 820px; }
+.ag-jr-hint { color: #50575e; }
+.ag-jr-filters { display: flex; gap: 18px; margin-bottom: 14px; }
+.ag-jr-filters label { font-size: 13px; color: #50575e; }
+.ag-jr-filters select { display: block; margin-top: 4px; }
+
+/* Méta-moteur */
+.ag-jr-cat { margin-bottom: 18px; }
+.ag-jr-cat h3 { margin: 0 0 8px; color: var(--navy); font-size: 15px; }
+.ag-jr-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.ag-jr-src { display: inline-block; padding: 8px 14px; background: #fff; border: 1px solid #c9ccd1; border-radius: 20px; color: var(--navy); text-decoration: none; font-size: 13px; transition: .15s; }
+.ag-jr-src:hover { border-color: var(--gold); background: #fff8e5; }
+.ag-jr-src.is-ready { border-color: var(--navy); }
+.ag-jr-src.is-ready:hover { background: var(--navy); color: #fff; }
+
+/* Résultats live */
+.ag-jr-results { max-width: 900px; }
+.ag-jr-empty, .ag-jr-loading { color: #787c82; font-style: italic; }
+.ag-jr-err { color: #b32d2e; background: #fcf0f1; padding: 10px 14px; border-radius: 6px; }
+.ag-jr-count { color: #50575e; font-size: 13px; }
+.ag-jr-card { background: #fff; border: 1px solid #e2e4e7; border-left: 4px solid var(--gold); border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; }
+.ag-jr-card-meta { font-weight: 600; color: var(--navy); font-size: 14px; }
+.ag-jr-themes { margin: 6px 0; display: flex; flex-wrap: wrap; gap: 5px; }
+.ag-jr-themes span { background: #eef0f4; color: #50575e; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+.ag-jr-summary { margin: 8px 0; color: #2c3338; }
+.ag-jr-card-act { font-size: 13px; display: flex; gap: 14px; align-items: center; }
+.ag-jr-text { background: #fafafa; border: 1px solid #e2e4e7; border-radius: 6px; padding: 12px; margin-top: 10px; max-height: 400px; overflow: auto; font-size: 13px; line-height: 1.6; }
+
+/* IA */
+.ag-jr-ai-tasks { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.ag-jr-ai-task.is-active { background: var(--navy); color: #fff; border-color: var(--navy); }
+#ag-jr-ai-input { width: 100%; max-width: 900px; display: block; margin-bottom: 10px; }
+.ag-jr-ai-out { max-width: 900px; margin-top: 14px; }
+.ag-jr-disclaimer { color: #888; font-size: 12px; margin-top: 14px; max-width: 820px; }
+
+/* Réglages */
+.ag-jr-steps { max-width: 760px; }
+.ag-jr-steps li { margin-bottom: 6px; }
+
+/* Dossier */
+.ag-jr-dossier textarea, .ag-jr-dossier input { width: 100%; }
