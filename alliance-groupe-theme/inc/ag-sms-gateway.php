@@ -108,7 +108,77 @@ add_action( 'admin_init', function () {
 		$ok = ag_sms_send( $to, 'Test passerelle SMS Alliance Groupe ✅' );
 		add_settings_error( 'ag_smsgw', 'test', $ok ? 'SMS de test envoyé ✅' : 'Échec de l’envoi — vérifie la config et que le téléphone passerelle est en ligne.', $ok ? 'updated' : 'error' );
 	}
+	if ( isset( $_POST['ag_inbound_save'] ) && check_admin_referer( 'ag_smsgw' ) ) {
+		update_option( 'ag_inbound_keyword', sanitize_text_field( wp_unslash( $_POST['ag_inbound_keyword'] ?? '' ) ) );
+		update_option( 'ag_inbound_calls', isset( $_POST['ag_inbound_calls'] ) ? '1' : '0' );
+		if ( isset( $_POST['ag_inbound_regen'] ) || '' === get_option( 'ag_inbound_token', '' ) ) {
+			update_option( 'ag_inbound_token', wp_generate_password( 24, false ) );
+		}
+	}
 } );
+
+/* ---------------------------------------------------------------- Webhook d'ENTRÉE
+ * Le téléphone passerelle (httpSMS / Macrodroid / Tasker) appelle cette URL quand
+ * il reçoit un SMS ou un appel → on crée la candidature + on renvoie le SMS
+ * d'inscription automatiquement. Sécurisé par un jeton.
+ */
+if ( ! function_exists( 'ag_inbound_find_phone' ) ) {
+	function ag_inbound_find_phone( $phone ) {
+		if ( ! function_exists( 'ag_cand_get' ) ) return null;
+		$d = function_exists( 'ag_sms_to_e164' ) ? ag_sms_to_e164( $phone ) : preg_replace( '/[^0-9]/', '', $phone );
+		foreach ( ag_cand_get() as $c ) {
+			$cd = function_exists( 'ag_sms_to_e164' ) ? ag_sms_to_e164( $c['phone'] ?? '' ) : preg_replace( '/[^0-9]/', '', $c['phone'] ?? '' );
+			if ( $cd && $cd === $d ) return $c;
+		}
+		return null;
+	}
+}
+add_action( 'rest_api_init', function () {
+	register_rest_route( 'ag/v1', '/inbound', array(
+		'methods'             => 'POST',
+		'permission_callback' => '__return_true',
+		'callback'            => 'ag_inbound_rest',
+	) );
+} );
+if ( ! function_exists( 'ag_inbound_rest' ) ) {
+	function ag_inbound_rest( $req ) {
+		// Auth par jeton (query ?token= ou header X-AG-Token).
+		$token = get_option( 'ag_inbound_token', '' );
+		$given = $req->get_param( 'token' );
+		if ( '' === $given ) $given = $req->get_header( 'x-ag-token' );
+		if ( '' === $token || ! hash_equals( (string) $token, (string) $given ) ) {
+			return new WP_REST_Response( array( 'error' => 'unauthorized' ), 401 );
+		}
+		$from = sanitize_text_field( (string) $req->get_param( 'from' ) );
+		$text = sanitize_textarea_field( (string) $req->get_param( 'text' ) );
+		$name = sanitize_text_field( (string) $req->get_param( 'name' ) );
+		$type = sanitize_text_field( (string) $req->get_param( 'type' ) ); // 'sms' | 'call'
+		if ( '' === $from ) return new WP_REST_Response( array( 'error' => 'no_from' ), 400 );
+
+		// Appels : seulement si activé.
+		if ( 'call' === $type && '1' !== get_option( 'ag_inbound_calls', '1' ) ) {
+			return new WP_REST_Response( array( 'ignored' => 'calls_off' ), 200 );
+		}
+		// Filtre mot-clé (SMS) : si défini, le SMS doit le contenir.
+		$kw = trim( (string) get_option( 'ag_inbound_keyword', '' ) );
+		if ( 'call' !== $type && '' !== $kw && false === mb_stripos( $text, $kw ) ) {
+			return new WP_REST_Response( array( 'ignored' => 'no_keyword' ), 200 );
+		}
+		// Anti-doublon : déjà candidat → on ne recrée pas / ne re-spamme pas.
+		if ( ag_inbound_find_phone( $from ) ) {
+			return new WP_REST_Response( array( 'duplicate' => true ), 200 );
+		}
+		if ( ! function_exists( 'ag_cand_add' ) ) return new WP_REST_Response( array( 'error' => 'module' ), 500 );
+		$src = ( 'call' === $type ) ? 'appel-entrant' : 'sms-entrant';
+		$rec = ag_cand_add( array(
+			'prenom'     => $name,
+			'phone'      => $from,
+			'motivation' => trim( ( 'call' === $type ? 'Appel entrant' : 'SMS entrant' ) . ( $text ? ' : ' . $text : '' ) ),
+			'source'     => $src,
+		) );
+		return new WP_REST_Response( array( 'ok' => (bool) $rec ), 200 );
+	}
+}
 add_action( 'admin_menu', function () {
 	add_submenu_page( 'ag-prospects', 'Passerelle SMS', '📲 Passerelle SMS', 'manage_options', 'ag-sms-gateway', 'ag_smsgw_render' );
 }, 25 );
@@ -140,6 +210,23 @@ if ( ! function_exists( 'ag_smsgw_render' ) ) {
 		echo '<input type="text" name="ag_smsgw_test_to" placeholder="+336…" style="width:240px"> <button name="ag_smsgw_test" value="1" class="button">Envoyer un SMS de test</button>';
 		echo '<p class="description">État : ' . ( ag_sms_gateway_ready() ? '🟢 configurée' : '🔴 non configurée' ) . '.</p></form>';
 		echo '<hr><h3>Mise en place rapide (httpSMS)</h3><ol style="max-width:760px;color:#444;"><li>Installe l’appli <strong>httpSMS</strong> sur le téléphone Android (avec la SIM Free).</li><li>Connecte-toi, autorise l’envoi de SMS, récupère la <strong>clé API</strong> et le <strong>numéro</strong>.</li><li>Colle-les ci-dessus, mode « httpSMS », enregistre, puis « Envoyer un SMS de test ».</li><li>Laisse le téléphone allumé et connecté : il enverra les SMS demandés par le site.</li></ol>';
+
+		// ── Réception : SMS/appel entrant → candidature auto ──────────────
+		$tok = get_option( 'ag_inbound_token', '' );
+		$wh  = rest_url( 'ag/v1/inbound' );
+		echo '<hr><h2>📥 Réception : un SMS ou un appel = candidature auto</h2>';
+		echo '<p style="max-width:780px;color:#444;">Quand quelqu’un t’<strong>envoie un SMS</strong> ou t’<strong>appelle</strong> sur le téléphone passerelle, il est <strong>ajouté tout seul dans 🎯 Candidatures</strong> et reçoit un <strong>SMS automatique avec le lien d’inscription</strong>. (Nécessite la passerelle ci-dessus configurée + l’app du tél réglée pour transférer les SMS/appels entrants vers l’URL ci-dessous.)</p>';
+		echo '<form method="post">';
+		wp_nonce_field( 'ag_smsgw' );
+		echo '<table class="form-table"><tbody>';
+		echo '<tr><th>URL du webhook (à mettre dans l’app)</th><td><input type="text" readonly value="' . esc_attr( $wh ) . '" style="width:520px" onclick="this.select()"><p class="description">Méthode POST. Champs attendus : <code>token</code>, <code>from</code> (numéro), <code>text</code> (corps du SMS), <code>type</code> = <code>sms</code> ou <code>call</code>, <code>name</code> (optionnel).</p></td></tr>';
+		echo '<tr><th>Jeton de sécurité</th><td><code style="font-size:13px;">' . esc_html( $tok ?: '(génère-le en enregistrant)' ) . '</code> <label style="margin-left:10px;"><input type="checkbox" name="ag_inbound_regen" value="1"> régénérer</label><p class="description">À passer en <code>?token=…</code> ou header <code>X-AG-Token</code>.</p></td></tr>';
+		echo '<tr><th>Mot-clé déclencheur (SMS, optionnel)</th><td><input type="text" name="ag_inbound_keyword" value="' . esc_attr( get_option( 'ag_inbound_keyword', '' ) ) . '" style="width:200px" placeholder="ex : AMBASSADEUR"><p class="description">Si rempli, seuls les SMS contenant ce mot créent une candidature (évite que chaque SMS personnel déclenche). Mets-le dans ton annonce : « envoie AMBASSADEUR au 07… ».</p></td></tr>';
+		echo '<tr><th>Appels entrants</th><td><label><input type="checkbox" name="ag_inbound_calls" ' . checked( '1', get_option( 'ag_inbound_calls', '1' ), false ) . '> Créer une candidature aussi sur un appel/appel manqué</label></td></tr>';
+		echo '</tbody></table>';
+		echo '<button name="ag_inbound_save" value="1" class="button button-primary">Enregistrer la réception</button></form>';
+		echo '<details style="max-width:780px;margin-top:10px;"><summary class="button button-small">Comment régler le téléphone (Macrodroid)</summary><ol style="color:#444;"><li>Installe <strong>Macrodroid</strong> (gratuit) sur le tél passerelle.</li><li>Macro 1 — Déclencheur « SMS reçu » → Action « Requête HTTP POST » vers l’URL ci-dessus, corps : <code>token=' . esc_html( $tok ) . '&from=[sms_number]&text=[sms_message]&type=sms</code>.</li><li>Macro 2 — Déclencheur « Appel manqué » (ou entrant) → POST : <code>token=' . esc_html( $tok ) . '&from=[call_number]&type=call</code>.</li><li>Le reste est automatique : candidature créée + SMS d’inscription renvoyé.</li></ol></details>';
+		echo '<p style="color:#b26a00;font-size:.85em;max-width:780px;">⚠️ Idéalement, utilise une <strong>ligne dédiée au recrutement</strong> (pas ton mobile perso) — sinon mets un mot-clé déclencheur pour ne pas transformer chaque SMS reçu en candidature.</p>';
 		echo '</div>';
 	}
 }
