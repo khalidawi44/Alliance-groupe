@@ -4,7 +4,7 @@
  *
  * 3 moteurs, 100 % conformes (aucun scraping de données personnelles de
  * demandeurs d'emploi — interdit RGPD/CGU) :
- *   1. DIFFUSION + CAPTURE : annonce prête (texte + lien parrain UTM + QR) +
+ *   1. DIFFUSION + CAPTURE : annonce prête (texte + lien d'inscription + QR) +
  *      liste curée d'endroits où poster (France Travail dépôt d'offre, Indeed,
  *      HelloWork, groupes FB/Telegram emploi, missions locales, écoles…),
  *      avec marquage « posté ». Les candidats répondent → CRM.
@@ -25,25 +25,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 /* ---------------------------------------------------------------------------
  * Helpers communs.
  * ------------------------------------------------------------------------- */
-if ( ! function_exists( 'ag_rr_current_ref' ) ) {
-	/** Code parrain de l'utilisateur courant (admin inclus). */
-	function ag_rr_current_ref() {
-		$u = wp_get_current_user();
-		if ( ! $u || ! $u->exists() ) return '';
-		if ( function_exists( 'ag_ensure_ambassador_for_user' ) ) ag_ensure_ambassador_for_user( $u );
-		return function_exists( 'ag_ambassadeur_ref' ) ? ag_ambassadeur_ref( $u->user_email ) : '';
-	}
-}
-if ( ! function_exists( 'ag_rr_parrain_link' ) ) {
-	function ag_rr_parrain_link( $ref, $source = 'emploi', $term = 'generic' ) {
-		$base = function_exists( 'home_url' ) ? home_url( '/deviens-recruteur' ) : '/deviens-recruteur';
-		return add_query_arg( array_filter( array(
-			'parrain'      => $ref ?: null,
-			'utm_source'   => $source,
-			'utm_medium'   => 'recrut-robot',
-			'utm_campaign' => 'ambassadeurs',
-			'utm_term'     => $term,
-		) ), $base );
+if ( ! function_exists( 'ag_rr_link' ) ) {
+	/** Lien d'inscription ambassadeur (page réelle /ambassadeurs). Outil admin :
+	    aucun code parrain, juste l'URL propre vers la page d'inscription. */
+	function ag_rr_link() {
+		return function_exists( 'home_url' ) ? home_url( '/ambassadeurs' ) : '/ambassadeurs';
 	}
 }
 if ( ! function_exists( 'ag_rr_message' ) ) {
@@ -191,16 +177,14 @@ add_action( 'admin_menu', function () {
 if ( ! function_exists( 'ag_rr_render' ) ) {
 	function ag_rr_render() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
-		$ref   = ag_rr_current_ref();
 		$email = strtolower( wp_get_current_user()->user_email );
 		$ville = isset( $_GET['rv'] ) ? sanitize_text_field( wp_unslash( $_GET['rv'] ) ) : '';
-		$link  = ag_rr_parrain_link( $ref, 'emploi', 'generic' );
+		$link  = ag_rr_link();
 		$back  = esc_url_raw( add_query_arg( array_filter( array( 'page' => 'ag-recrut-robot', 'rv' => $ville ?: null ) ), admin_url( 'admin.php' ) ) );
 		$posts = ag_rr_posts_get();
 		$nonce = wp_create_nonce( 'ag_rr' );
 		echo '<div class="wrap"><h1>🤖 Robot Recrutement Ambassadeurs</h1>';
 		echo '<p style="max-width:880px;color:#50575e;">Trouve et recrute des ambassadeurs (gens qui cherchent un job / un complément de revenu) <strong>légalement</strong> : on diffuse l\'opportunité là où ils sont, on cible des profils pros, et on repère les bassins d\'emploi via l\'API officielle France Travail. <em>Aucune donnée personnelle de demandeur d\'emploi n\'est aspirée (interdit RGPD/CGU).</em></p>';
-		if ( ! $ref ) echo '<div class="notice notice-warning"><p>⚠ Pas de code parrain pour ton compte — le lien sera sans <code>?parrain=</code>. (Il se crée tout seul au 1er chargement, recharge la page.)</p></div>';
 
 		// Sélecteur de ville (commun aux sections).
 		echo '<form method="get" style="margin:6px 0 14px;"><input type="hidden" name="page" value="ag-recrut-robot"><label>Ville ciblée : <input type="text" name="rv" value="' . esc_attr( $ville ) . '" placeholder="ex : Nantes" style="width:200px;"></label> <button class="button">Cibler</button></form>';
@@ -208,9 +192,9 @@ if ( ! function_exists( 'ag_rr_render' ) ) {
 		// ── 1) Mon annonce + diffusion ───────────────────────────────────
 		echo '<div style="max-width:980px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #D4B45C;border-radius:8px;padding:16px 18px;margin:14px 0;">';
 		echo '<h2 style="margin-top:0;">📣 1. Mon annonce + où la diffuser</h2>';
-		echo '<p style="margin:0 0 6px;"><strong>Mon lien de parrainage :</strong> <a href="' . esc_url( $link ) . '" target="_blank" rel="noopener">' . esc_html( $link ) . '</a></p>';
+		echo '<p style="margin:0 0 6px;"><strong>Lien d\'inscription ambassadeur :</strong> <a href="' . esc_url( $link ) . '" target="_blank" rel="noopener">' . esc_html( $link ) . '</a></p>';
 		echo '<div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;">';
-		echo '<img src="' . esc_url( 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . rawurlencode( $link ) ) . '" alt="QR parrainage" width="160" height="160" style="background:#fff;border:1px solid #ddd;border-radius:8px;flex:none;">';
+		echo '<img src="' . esc_url( 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . rawurlencode( $link ) ) . '" alt="QR inscription ambassadeur" width="160" height="160" style="background:#fff;border:1px solid #ddd;border-radius:8px;flex:none;">';
 		echo '<div style="flex:1;min-width:280px;">';
 		for ( $i = 0; $i < 3; $i++ ) {
 			echo '<details ' . ( 0 === $i ? 'open' : '' ) . ' style="margin-bottom:6px;"><summary class="button button-small">✍️ Message ' . ( $i + 1 ) . '</summary>';
