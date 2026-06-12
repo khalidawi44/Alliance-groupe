@@ -676,6 +676,150 @@ if ( ! function_exists( 'ag_bodacc_message' ) ) {
 		return "Bonjour,\n\nJe sais que $name traverse une période difficile (redressement judiciaire). Je ne viens pas vous vendre quelque chose : je viens proposer mon aide.\n\nJe dirige Alliance Groupe, une agence web & IA. Je peux apporter gratuitement mon expertise pour vous aider à rebondir avec $acc : un site professionnel, de la visibilité sur Google et des outils qui ramènent des clients — sans coût pour votre trésorerie.\n\nPour les projets que je crois prometteurs, je m'engage dans la durée, en accompagnement (pas en simple prestation). Tout peut se mettre en place proprement, en coordination avec votre administrateur / mandataire judiciaire, dans le cadre du plan de redressement.\n\nSi vous êtes ouvert·e, on en parle 10 minutes, sans aucun engagement.\n\nBien à vous,\nAlliance Groupe — advise.alliance.group@gmail.com\n(Si vous préférez ne pas être recontacté·e, dites-le-moi, j'en prends note immédiatement.)";
 	}
 }
+
+/* ── AGENT D'ANALYSE « redressement judiciaire » ─────────────────────
+   Lit les prospects déjà enregistrés (option ag_prospects), repère ceux
+   en procédure collective (source 'tribunal' / champ bodacc / mention
+   redressement|sauvegarde dans les notes) et produit, pour chacun, une
+   analyse : type de procédure, POURQUOI il est probablement en difficulté,
+   QUOI FAIRE (approche solidaire + déontologie pour les avocats), priorité. */
+if ( ! function_exists( 'ag_redr_is_target' ) ) {
+	function ag_redr_is_target( $p ) {
+		$src  = strtolower( (string) ( $p['source'] ?? '' ) );
+		$txt  = strtolower( ( $p['bodacc'] ?? '' ) . ' ' . ( $p['notes'] ?? '' ) );
+		if ( 'tribunal' === $src ) return true;
+		if ( ! empty( $p['bodacc'] ) ) return true;
+		return ( false !== strpos( $txt, 'redressement' ) || false !== strpos( $txt, 'sauvegarde' ) || false !== strpos( $txt, 'bodacc' ) );
+	}
+}
+if ( ! function_exists( 'ag_redr_is_avocat' ) ) {
+	function ag_redr_is_avocat( $p ) {
+		$h = strtolower( ( $p['name'] ?? '' ) . ' ' . ( $p['type'] ?? '' ) . ' ' . ( $p['source'] ?? '' ) );
+		foreach ( array( 'avocat', 'avocats', 'cabinet', 'juridique', 'selarl', 'scp ', 'barreau', 'notaire', 'juriste', 'huissier', 'commissaire de justice' ) as $kw ) {
+			if ( false !== strpos( $h, $kw ) ) return true;
+		}
+		return false;
+	}
+}
+if ( ! function_exists( 'ag_redr_analyze' ) ) {
+	/** Analyse 1 prospect en difficulté → tableau structuré (français, prêt à lire). */
+	function ag_redr_analyze( $p ) {
+		$txt   = strtolower( ( $p['bodacc'] ?? '' ) . ' ' . ( $p['notes'] ?? '' ) );
+		$is_sauvegarde = ( false !== strpos( $txt, 'sauvegarde' ) );
+		$is_redr       = ( false !== strpos( $txt, 'redressement' ) );
+		$avocat        = ag_redr_is_avocat( $p );
+
+		// 1) Procédure détectée.
+		if ( $is_sauvegarde ) {
+			$proc = 'Sauvegarde';
+			$proc_def = 'Procédure préventive : l’entreprise n’est PAS encore en cessation des paiements mais anticipe des difficultés. C’est un dirigeant lucide qui agit tôt → cible la PLUS saine du lot.';
+		} elseif ( $is_redr ) {
+			$proc = 'Redressement judiciaire';
+			$proc_def = 'L’entreprise est en cessation des paiements (elle ne peut plus régler ses dettes exigibles avec sa trésorerie disponible) MAIS le tribunal la juge redressable → période d’observation, puis plan de continuation possible.';
+		} else {
+			$proc = 'Procédure collective';
+			$proc_def = 'Procédure collective en cours (détail dans la fiche BODACC). On vise le rebond, pas la liquidation.';
+		}
+
+		// 2) Pourquoi (causes probables) — adaptées au métier.
+		if ( $avocat ) {
+			$why = array(
+				'Baisse du nombre de dossiers / de la clientèle (départ d’un associé emportant sa clientèle, concurrence locale, moins de visibilité en ligne).',
+				'Charges fixes lourdes : loyer du cabinet, collaborateurs, secrétariat, assurances RCP, cotisations ordinales, outils (RPVA, doc juridique).',
+				'Trésorerie tendue : honoraires payés tard, dossiers à l’aide juridictionnelle peu/mal rémunérés, provisions non réglées.',
+				'Peu de génération de nouveaux clients : pas de site conforme/visible, absence de SEO local, déontologie mal maîtrisée (peur de “faire de la pub”).',
+			);
+		} else {
+			$why = array(
+				'Trésorerie insuffisante : impayés clients, délais de paiement, BFR mal financé.',
+				'Charges fixes trop lourdes vs chiffre d’affaires (loyers, salaires, emprunts).',
+				'Perte de marché / de clients : baisse d’activité, concurrence, manque de visibilité.',
+				'Coup dur ponctuel (gros impayé, litige, conjoncture) sur une structure déjà fragile.',
+			);
+		}
+
+		// 3) Quoi faire — approche solidaire + déontologie si avocat.
+		$todo = array(
+			'Approche SOLIDAIRE, pas de vente frontale : on propose de l’aide pour regagner des clients (site pro, visibilité Google, outils qui ramènent des demandes) — sans coût immédiat sur la trésorerie.',
+			'Coordonner avec l’administrateur / mandataire judiciaire : toute prestation s’inscrit dans le plan, proprement.',
+			'Proposer un montage compatible trésorerie : étalement, ou partenariat/accompagnement sur les projets prometteurs.',
+		);
+		if ( $avocat ) {
+			$todo[] = 'DÉONTOLOGIE avocat : contact par EMAIL ou COURRIER uniquement (jamais appel/SMS à froid), ton confraternel ; site SANS témoignages ni widget d’avis Google ; insister sur conformité RGPD + secret professionnel.';
+			$angle  = 'Angle : « regagner des clients en restant 100 % conforme au RIN ». L’audit sécurité/RGPD gratuit reste la porte d’entrée légitime.';
+		} else {
+			$angle  = 'Angle : « ramener des clients vite et sans alourdir la trésorerie » — visibilité + site qui convertit.';
+		}
+
+		// 4) Priorité (score 0-100).
+		$score = 40;
+		if ( $is_sauvegarde ) $score += 30;           // agit tôt = plus sain
+		elseif ( $is_redr )   $score += 20;           // redressable
+		if ( ! empty( $p['email'] ) ) $score += 12;   // joignable proprement (email)
+		if ( ! empty( $p['phone'] ) ) $score += 4;
+		$site_kind = function_exists( 'ag_site_kind' ) ? ag_site_kind( $p['website'] ?? '' ) : array( 'real' );
+		if ( 'real' !== ( $site_kind[0] ?? 'real' ) ) $score += 14; // pas de vrai site = gros levier
+		if ( $avocat ) $score += 6;                   // niche prioritaire
+		$score = max( 0, min( 100, $score ) );
+
+		return array(
+			'proc' => $proc, 'proc_def' => $proc_def, 'avocat' => $avocat,
+			'why' => $why, 'todo' => $todo, 'angle' => $angle, 'score' => $score,
+		);
+	}
+}
+add_action( 'admin_menu', function () {
+	add_submenu_page( 'ag-prospects', 'Analyse redressement', '🔎 Analyse redressement', 'manage_options', 'ag-redr-analyse', 'ag_redr_analyse_render' );
+} );
+if ( ! function_exists( 'ag_redr_analyse_render' ) ) {
+	function ag_redr_analyse_render() {
+		if ( ! current_user_can( 'manage_options' ) ) return;
+		$all     = (array) get_option( 'ag_prospects', array() );
+		$targets = array_values( array_filter( $all, 'ag_redr_is_target' ) );
+		// Tri par priorité décroissante (avocats remontent via leur score).
+		usort( $targets, function ( $a, $b ) {
+			$sa = ag_redr_analyze( $a )['score']; $sb = ag_redr_analyze( $b )['score'];
+			return $sb <=> $sa;
+		} );
+		$nb_av = count( array_filter( $targets, 'ag_redr_is_avocat' ) );
+		echo '<div class="wrap">';
+		echo '<h1>🔎 Analyse des cibles en redressement</h1>';
+		echo '<p style="max-width:840px;color:#50575e;">L’agent lit <strong>tes prospects enregistrés</strong> et isole ceux en <strong>procédure collective</strong> (tribunal / BODACC). Pour chacun : pourquoi il est probablement en difficulté, et quoi faire — dans une logique <strong>solidaire</strong> (on aide à rebondir) et <strong>déontologique</strong> pour les avocats. <em>Données publiques BODACC ; analyse indicative, à confirmer au contact.</em></p>';
+		echo '<p style="font-weight:600;">' . count( $targets ) . ' cible(s) en difficulté' . ( $nb_av ? ' · dont <span style="color:#5a2ca0;">' . $nb_av . ' avocat(s)/juridique</span>' : '' ) . '.</p>';
+		if ( empty( $targets ) ) {
+			echo '<div class="notice notice-info" style="padding:12px;"><p>Aucune cible en redressement dans tes prospects pour l’instant. Va dans <strong>Prospection → 🏛️ Entreprises au tribunal</strong>, cherche une ville, puis « + Suivre » les cabinets en redressement/sauvegarde : ils s’analyseront ici automatiquement.</p></div></div>';
+			return;
+		}
+		foreach ( $targets as $p ) {
+			$a    = ag_redr_analyze( $p );
+			$col  = $a['score'] >= 75 ? '#b32d2e' : ( $a['score'] >= 55 ? '#bd7b00' : '#50575e' );
+			$badge = $a['avocat'] ? '<span style="background:#f3eefc;color:#5a2ca0;border-radius:10px;padding:1px 9px;font-size:.8em;font-weight:700;">⚖️ Avocat / juridique</span> ' : '';
+			echo '<div style="max-width:880px;margin:14px 0;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #7a4ed4;border-radius:8px;padding:16px 18px;">';
+			echo '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">';
+			echo '<span style="display:inline-block;min-width:40px;text-align:center;font-weight:800;color:#fff;background:' . esc_attr( $col ) . ';border-radius:6px;padding:3px 9px;">' . (int) $a['score'] . '</span>';
+			echo '<strong style="font-size:1.08em;">' . esc_html( $p['name'] ?? '' ) . '</strong>';
+			echo '<span style="color:#646970;">' . esc_html( trim( ( $p['type'] ?? '' ) . ( ! empty( $p['city'] ) ? ' · ' . $p['city'] : '' ), ' ·' ) ) . '</span>';
+			echo $badge;
+			echo '<span style="margin-left:auto;background:#efe7fb;color:#5a2ca0;border-radius:6px;padding:2px 10px;font-weight:700;">' . esc_html( $a['proc'] ) . '</span>';
+			echo '</div>';
+			if ( ! empty( $p['bodacc'] ) ) echo '<p style="margin:8px 0 0;font-size:.85em;color:#5a2ca0;">🏛️ Fiche : ' . esc_html( $p['bodacc'] ) . '</p>';
+			echo '<p style="margin:10px 0 4px;"><strong>Ce que ça veut dire :</strong> ' . esc_html( $a['proc_def'] ) . '</p>';
+			echo '<p style="margin:8px 0 2px;"><strong>Pourquoi probablement en difficulté :</strong></p><ul style="margin:0 0 4px 18px;list-style:disc;">';
+			foreach ( $a['why'] as $w ) echo '<li style="color:#444;">' . esc_html( $w ) . '</li>';
+			echo '</ul>';
+			echo '<p style="margin:8px 0 2px;"><strong>Quoi faire :</strong></p><ul style="margin:0 0 4px 18px;list-style:disc;">';
+			foreach ( $a['todo'] as $t ) echo '<li style="color:#1d4f1d;">' . esc_html( $t ) . '</li>';
+			echo '</ul>';
+			echo '<p style="margin:8px 0 0;color:#1d4f8b;"><strong>' . esc_html( $a['angle'] ) . '</strong></p>';
+			$contact = array();
+			if ( ! empty( $p['email'] ) ) $contact[] = '✉️ <a href="mailto:' . esc_attr( $p['email'] ) . '">' . esc_html( $p['email'] ) . '</a>';
+			if ( ! empty( $p['phone'] ) ) $contact[] = '📞 ' . esc_html( $p['phone'] ) . ( $a['avocat'] ? ' <em style="color:#b32d2e;">(avocat : pas d’appel à froid — email/courrier)</em>' : '' );
+			if ( $contact ) echo '<p style="margin:8px 0 0;font-size:.9em;color:#50575e;">' . implode( ' · ', $contact ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '</div>';
+		}
+		echo '</div>';
+	}
+}
 if ( ! function_exists( 'ag_prospect_why' ) ) {
 	/** Pourquoi cette entreprise a besoin d'un site + ce que ça lui apporte. */
 	function ag_prospect_why( $p ) {
