@@ -768,9 +768,12 @@ if ( ! function_exists( 'ag_redr_analyze' ) ) {
 		);
 	}
 }
+// Priorité 20 : on s'enregistre APRÈS le menu parent « ag-prospects » (déclaré
+// plus bas dans le fichier, priorité 10) — sinon le sous-menu n'a pas encore de
+// parent au moment de son ajout et la page renvoie un 404.
 add_action( 'admin_menu', function () {
 	add_submenu_page( 'ag-prospects', 'Analyse redressement', '🔎 Analyse redressement', 'manage_options', 'ag-redr-analyse', 'ag_redr_analyse_render' );
-} );
+}, 20 );
 if ( ! function_exists( 'ag_redr_analyse_render' ) ) {
 	function ag_redr_analyse_render() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
