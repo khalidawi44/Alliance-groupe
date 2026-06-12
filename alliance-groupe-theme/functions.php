@@ -94,6 +94,12 @@ if ( file_exists( $ag_recrut_intl_file ) ) {
     require_once $ag_recrut_intl_file;
 }
 
+// ── 1c5b-bis. Robot Recrutement Ambassadeurs (diffusion + API France Travail + Places)
+$ag_recrut_robot_file = get_stylesheet_directory() . '/inc/ag-recrut-robot.php';
+if ( file_exists( $ag_recrut_robot_file ) ) {
+    require_once $ag_recrut_robot_file;
+}
+
 // ── 1c5c. Kit Print (cartes, flyers, autocollants, affiches A4 avec QR)
 $ag_kit_print_file = get_stylesheet_directory() . '/inc/ag-kit-print.php';
 if ( file_exists( $ag_kit_print_file ) ) {
