@@ -296,9 +296,12 @@ if ( ! function_exists( 'ag_rr_render' ) ) {
 				} else {
 					echo '<p style="font-size:1.1em;"><strong>' . number_format_i18n( $res['total'] ) . '</strong> offre(s) active(s) dans le département ' . esc_html( $dep ) . ( $mots ? ' pour « ' . esc_html( $mots ) . ' »' : '' ) . ' → ' . ( $res['total'] > 300 ? '🟢 gros vivier, diffuse ici en priorité.' : ( $res['total'] > 50 ? '🟠 vivier correct.' : '🔵 vivier plus faible.' ) ) . '</p>';
 					if ( ! empty( $res['offres'] ) ) {
-						echo '<p style="font-size:.85em;color:#50575e;">Exemples d\'employeurs qui recrutent (ce sont aussi des prospects potentiels) :</p><table class="widefat striped"><thead><tr><th>Poste</th><th>Entreprise</th><th>Lieu</th><th>Date</th></tr></thead><tbody>';
+						echo '<p style="font-size:.85em;color:#50575e;">Employeurs qui recrutent = entreprises actives, <strong>aussi d\'excellents prospects web/securite</strong>. Ajoute-les au CRM en 1 clic :</p><table class="widefat striped"><thead><tr><th>Poste</th><th>Entreprise</th><th>Lieu</th><th>Date</th><th>CRM</th></tr></thead><tbody>';
 						foreach ( $res['offres'] as $o ) {
-							echo '<tr><td>' . ( $o['url'] ? '<a href="' . esc_url( $o['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $o['intitule'] ) . '</a>' : esc_html( $o['intitule'] ) ) . '</td><td>' . esc_html( $o['entreprise'] ?: '—' ) . '</td><td>' . esc_html( $o['lieu'] ) . '</td><td>' . esc_html( $o['date'] ) . '</td></tr>';
+							$ent = $o['entreprise'] ?? '';
+							echo '<tr><td>' . ( $o['url'] ? '<a href="' . esc_url( $o['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $o['intitule'] ) . '</a>' : esc_html( $o['intitule'] ) ) . '</td><td>' . esc_html( $ent ?: '—' ) . '</td><td>' . esc_html( $o['lieu'] ) . '</td><td>' . esc_html( $o['date'] ) . '</td>';
+							if ( $ent ) { echo '<td><button type="button" class="button button-small agrr-add" data-name="' . esc_attr( $ent ) . '" data-type="entreprise qui recrute" data-city="' . esc_attr( $o['lieu'] ?? '' ) . '" data-phone="" data-website="" data-source="francetravail" data-notes="' . esc_attr( 'Recrute : ' . $o['intitule'] . ' (repere via France Travail). Entreprise active = bon prospect web.' ) . '">+ Prospect</button></td>'; } else { echo '<td>—</td>'; }
+							echo '</tr>';
 						}
 						echo '</tbody></table>';
 					}
@@ -353,7 +356,7 @@ if ( ! function_exists( 'ag_rr_render' ) ) {
 
 		// JS : ajout au CRM (futur ambassadeur).
 		$pn = wp_create_nonce( 'ag_prospect' );
-		echo '<script>(function(){var n=' . wp_json_encode( $pn ) . ';document.querySelectorAll(".agrr-add").forEach(function(b){b.addEventListener("click",function(){var fd=new FormData();fd.append("action","ag_prospect_add");fd.append("_n",n);["name","type","city","phone","website"].forEach(function(k){fd.append(k,b.getAttribute("data-"+k)||"");});fd.append("source","recrut-ambassadeur");fd.append("notes","Profil repéré pour recrutement ambassadeur.");b.disabled=true;b.textContent="…";fetch(ajaxurl,{method:"POST",body:fd,credentials:"same-origin"}).then(function(r){return r.json();}).then(function(j){b.textContent=(j&&j.success)?"✓ Ajouté":"Erreur";}).catch(function(){b.textContent="Erreur";b.disabled=false;});});});})();</script>';
+		echo '<script>(function(){var n=' . wp_json_encode( $pn ) . ';document.querySelectorAll(".agrr-add").forEach(function(b){b.addEventListener("click",function(){var fd=new FormData();fd.append("action","ag_prospect_add");fd.append("_n",n);["name","type","city","phone","website"].forEach(function(k){fd.append(k,b.getAttribute("data-"+k)||"");});fd.append("source",b.getAttribute("data-source")||"recrut-ambassadeur");fd.append("notes",b.getAttribute("data-notes")||"Profil repéré pour recrutement ambassadeur.");b.disabled=true;b.textContent="…";fetch(ajaxurl,{method:"POST",body:fd,credentials:"same-origin"}).then(function(r){return r.json();}).then(function(j){b.textContent=(j&&j.success)?"✓ Ajouté":"Erreur";}).catch(function(){b.textContent="Erreur";b.disabled=false;});});});})();</script>';
 		echo '</div>';
 	}
 }
