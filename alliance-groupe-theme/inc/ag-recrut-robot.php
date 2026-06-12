@@ -127,7 +127,7 @@ if ( ! function_exists( 'ag_ft_token' ) ) {
 	function ag_ft_token() {
 		$id     = trim( (string) get_option( 'ag_ft_client_id', '' ) );
 		$secret = trim( (string) get_option( 'ag_ft_client_secret', '' ) );
-		if ( '' === $id || '' === $secret ) return '';
+		if ( '' === $id || '' === $secret ) { update_option( 'ag_ft_last_error', 'Identifiants manquants (Client ID / Secret).' ); return ''; }
 		$cached = get_transient( 'ag_ft_token' );
 		if ( $cached ) return $cached;
 		$resp = wp_remote_post( 'https://entreprise.francetravail.fr/connexion/oauth2/access_token?realm=%2Fpartenaire', array(
@@ -140,12 +140,19 @@ if ( ! function_exists( 'ag_ft_token' ) ) {
 				'scope'         => 'api_offresdemploiv2 o2dsoffre',
 			),
 		) );
-		if ( is_wp_error( $resp ) ) return '';
+		if ( is_wp_error( $resp ) ) { update_option( 'ag_ft_last_error', 'Réseau : ' . $resp->get_error_message() ); return ''; }
+		$code = (int) wp_remote_retrieve_response_code( $resp );
 		$data = json_decode( wp_remote_retrieve_body( $resp ), true );
 		$tok  = $data['access_token'] ?? '';
-		$exp  = (int) ( $data['expires_in'] ?? 1400 );
-		if ( $tok ) set_transient( 'ag_ft_token', $tok, max( 60, $exp - 60 ) );
-		return $tok;
+		if ( $tok ) {
+			$exp = (int) ( $data['expires_in'] ?? 1400 );
+			set_transient( 'ag_ft_token', $tok, max( 60, $exp - 60 ) );
+			delete_option( 'ag_ft_last_error' );
+			return $tok;
+		}
+		$err = $data['error_description'] ?? ( $data['error'] ?? ( 'HTTP ' . $code ) );
+		update_option( 'ag_ft_last_error', 'OAuth ' . $code . ' : ' . $err . ' (vérifie Client ID/Secret et que l’API « Offres d’emploi v2 » est bien souscrite).' );
+		return '';
 	}
 }
 if ( ! function_exists( 'ag_ft_offres' ) ) {
@@ -267,11 +274,17 @@ if ( ! function_exists( 'ag_rr_render' ) ) {
 		if ( '' === ag_ft_token() ) {
 			echo '<form method="post">';
 			wp_nonce_field( 'ag_rr_ft' );
-			echo '<p><strong>Active l\'API (gratuit)</strong> : crée une appli sur <a href="https://francetravail.io" target="_blank" rel="noopener">francetravail.io</a> (scope « Offres d\'emploi v2 »), puis colle ici :</p>';
-			echo '<p><label>Client ID<br><input type="text" name="ag_ft_client_id" value="' . esc_attr( get_option( 'ag_ft_client_id', '' ) ) . '" style="width:420px;"></label></p>';
-			echo '<p><label>Client Secret<br><input type="password" name="ag_ft_client_secret" value="' . esc_attr( get_option( 'ag_ft_client_secret', '' ) ) . '" style="width:420px;"></label></p>';
-			echo '<button name="ag_rr_save_ft" value="1" class="button button-primary">Enregistrer la clé</button></form>';
+			echo '<p><strong>Active l\'API (gratuit)</strong> : crée une appli sur <a href="https://francetravail.io" target="_blank" rel="noopener">francetravail.io</a>, souscris à <strong>« Offres d\'emploi v2 »</strong>, puis colle ici :</p>';
+			echo '<p><label>Client ID (Identifiant client)<br><input type="text" name="ag_ft_client_id" value="' . esc_attr( get_option( 'ag_ft_client_id', '' ) ) . '" style="width:480px;"></label></p>';
+			echo '<p><label>Client Secret (Clé secrète)<br><input type="password" name="ag_ft_client_secret" value="' . esc_attr( get_option( 'ag_ft_client_secret', '' ) ) . '" style="width:480px;"></label></p>';
+			echo '<button name="ag_rr_save_ft" value="1" class="button button-primary">Enregistrer &amp; tester</button></form>';
+			$ft_err = get_option( 'ag_ft_last_error', '' );
+			if ( $ft_err && ( get_option( 'ag_ft_client_id', '' ) || get_option( 'ag_ft_client_secret', '' ) ) ) {
+				echo '<p style="color:#b32d2e;margin-top:8px;">❌ Connexion impossible — ' . esc_html( $ft_err ) . '</p>';
+			}
+			echo '<p style="font-size:.85em;color:#50575e;max-width:760px;margin-top:6px;">💡 Sur francetravail.io : « Mon espace » → crée une application → onglet <strong>« Souscrire à une API »</strong> → choisis <strong>« Offres d\'emploi v2 »</strong>. Récupère ensuite l\'<strong>Identifiant client</strong> et la <strong>Clé secrète</strong> dans les détails de l\'application.</p>';
 		} else {
+			echo '<p style="color:#1e7e34;margin:0 0 8px;">🟢 API France Travail connectée.</p>';
 			echo '<form method="get" style="margin-bottom:10px;"><input type="hidden" name="page" value="ag-recrut-robot"><input type="hidden" name="rv" value="' . esc_attr( $ville ) . '">';
 			echo '<label>Département <input type="text" name="rdep" value="' . esc_attr( $dep ) . '" style="width:60px;" placeholder="44"></label> ';
 			echo '<label>Mot-clé (optionnel) <input type="text" name="rmots" value="' . esc_attr( $mots ) . '" style="width:200px;" placeholder="commercial, vente…"></label> ';
