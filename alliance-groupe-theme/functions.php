@@ -118,6 +118,12 @@ if ( file_exists( $ag_ma_prospection_file ) ) {
     require_once $ag_ma_prospection_file;
 }
 
+// ── 1c5b-sexies. PWA : rend le site + l'espace ambassadeur installables en app (iOS/Android)
+$ag_pwa_file = get_stylesheet_directory() . '/inc/ag-pwa.php';
+if ( file_exists( $ag_pwa_file ) ) {
+    require_once $ag_pwa_file;
+}
+
 // ── 1c5c. Kit Print (cartes, flyers, autocollants, affiches A4 avec QR)
 $ag_kit_print_file = get_stylesheet_directory() . '/inc/ag-kit-print.php';
 if ( file_exists( $ag_kit_print_file ) ) {
