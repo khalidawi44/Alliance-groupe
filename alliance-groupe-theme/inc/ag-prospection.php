@@ -474,6 +474,38 @@ add_action( 'wp_ajax_ag_prospect_delete_bulk', function () {
 	if ( $removed && function_exists( 'ag_activity_log' ) ) ag_activity_log( '🗑️ ' . $removed . ' prospect(s) supprimé(s) en lot' );
 	wp_send_json_success( array( 'removed' => $removed ) );
 } );
+/** Signature stable d'un lead (pas d'id natif) : pour la suppression en lot. */
+if ( ! function_exists( 'ag_lead_sig' ) ) {
+	function ag_lead_sig( $l ) {
+		return sha1( ( $l['date'] ?? '' ) . '|' . ( $l['name'] ?? '' ) . '|' . ( $l['email'] ?? '' ) . '|' . ( $l['phone'] ?? '' ) . '|' . ( $l['message'] ?? '' ) );
+	}
+}
+/* Suppression en masse des LEADS (prospects entrants du chat). */
+add_action( 'wp_ajax_ag_leads_delete_bulk', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
+	$sigs = isset( $_POST['ids'] ) ? (array) $_POST['ids'] : array();
+	$sigs = array_filter( array_map( 'sanitize_text_field', array_map( 'wp_unslash', $sigs ) ) );
+	if ( empty( $sigs ) ) wp_send_json_error();
+	$list   = (array) get_option( 'ag_leads', array() );
+	$before = count( $list );
+	$list   = array_values( array_filter( $list, function ( $l ) use ( $sigs ) {
+		return ! in_array( ag_lead_sig( $l ), $sigs, true );
+	} ) );
+	update_option( 'ag_leads', $list );
+	wp_send_json_success( array( 'removed' => $before - count( $list ) ) );
+} );
+/* Suppression en masse de l'HISTORIQUE des recherches (clés q|city). */
+add_action( 'wp_ajax_ag_search_history_delete_bulk', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
+	$keys = isset( $_POST['ids'] ) ? (array) $_POST['ids'] : array();
+	$keys = array_filter( array_map( 'sanitize_text_field', array_map( 'wp_unslash', $keys ) ) );
+	if ( empty( $keys ) ) wp_send_json_error();
+	$hist   = (array) get_option( 'ag_search_history', array() );
+	$before = count( $hist );
+	foreach ( $keys as $k ) { unset( $hist[ $k ] ); }
+	update_option( 'ag_search_history', $hist, false );
+	wp_send_json_success( array( 'removed' => $before - count( $hist ) ) );
+} );
 add_action( 'wp_ajax_ag_prospect_note', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
 	$id   = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
@@ -1316,7 +1348,11 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					</select>
 					<noscript><button class="button button-small">OK</button></noscript>
 				</form>
-				<table class="widefat striped" style="margin-top:8px;"><thead><tr><th>Ville</th><th>Métier</th><th>Résultats</th><th>Dernière fois</th><th></th></tr></thead><tbody>
+				<div class="aghist-bulkbar" style="margin:8px 0 4px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+					<label style="font-size:.9em;"><input type="checkbox" id="aghist-check-all"> Tout sélectionner</label>
+					<button type="button" id="aghist-del-selected" class="button button-small button-link-delete" disabled>🗑️ Supprimer la sélection (<span id="aghist-sel-count">0</span>)</button>
+				</div>
+				<table class="widefat striped" style="margin-top:4px;"><thead><tr><th style="width:28px;"><input type="checkbox" id="aghist-check-all2"></th><th>Ville</th><th>Métier</th><th>Résultats</th><th>Dernière fois</th><th></th></tr></thead><tbody>
 				<?php foreach ( $ag_hist as $h ) :
 					$hq = $h['q'] ?? ''; $hc = $h['city'] ?? ''; $hall = ( '' === trim( $hq ) );
 					$url  = add_query_arg( array_filter( array( 'page' => 'ag-prospects', 'q' => $hq, 'city' => $hc ) ), admin_url( 'admin.php' ) );
@@ -1325,6 +1361,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					$hkey = ag_search_history_key( $hq, $hc );
 				?>
 					<tr>
+						<td style="text-align:center;"><input type="checkbox" class="aghist-check" value="<?php echo esc_attr( $hkey ); ?>"></td>
 						<td><strong><?php echo esc_html( $hc ?: '—' ); ?></strong></td>
 						<td><?php echo esc_html( $hq !== '' ? $hq : '🌍 Tous secteurs' ); ?></td>
 						<td><?php echo (int) ( $h['count'] ?? 0 ); ?><?php echo $has_cache ? ' <span title="Résultats en cache, revoir gratuit">💾</span>' : ''; ?></td>
@@ -1652,9 +1689,13 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			<?php if ( empty( $leads ) ) : ?>
 				<p>Aucun pour l'instant. Ils arrivent dès qu'un visiteur laisse ses coordonnées dans le chat.</p>
 			<?php else : ?>
-				<table class="widefat striped"><thead><tr><th>Date</th><th>Nom</th><th>Email</th><th>Tél</th><th>Intérêt</th><th>Message</th></tr></thead><tbody>
+				<div class="agld-bulkbar" style="margin:8px 0 4px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+					<label style="font-size:.9em;"><input type="checkbox" id="agld-check-all"> Tout sélectionner</label>
+					<button type="button" id="agld-del-selected" class="button button-small button-link-delete" disabled>🗑️ Supprimer la sélection (<span id="agld-sel-count">0</span>)</button>
+				</div>
+				<table class="widefat striped"><thead><tr><th style="width:28px;"><input type="checkbox" id="agld-check-all2"></th><th>Date</th><th>Nom</th><th>Email</th><th>Tél</th><th>Intérêt</th><th>Message</th></tr></thead><tbody>
 				<?php foreach ( $leads as $l ) : ?>
-					<tr><td><?php echo esc_html( $l['date'] ?? '' ); ?></td><td><?php echo esc_html( $l['name'] ?? '' ); ?></td>
+					<tr><td style="text-align:center;"><input type="checkbox" class="agld-check" value="<?php echo esc_attr( ag_lead_sig( $l ) ); ?>"></td><td><?php echo esc_html( $l['date'] ?? '' ); ?></td><td><?php echo esc_html( $l['name'] ?? '' ); ?></td>
 					<td><?php echo ! empty( $l['email'] ) ? '<a href="mailto:' . esc_attr( $l['email'] ) . '">' . esc_html( $l['email'] ) . '</a>' : ''; ?></td>
 					<td><?php echo ! empty( $l['phone'] ) ? '<a href="tel:' . esc_attr( $l['phone'] ) . '">' . esc_html( $l['phone'] ) . '</a>' : ''; ?></td>
 					<td><?php echo esc_html( $l['interest'] ?? '' ); ?></td><td><?php echo esc_html( $l['message'] ?? '' ); ?></td></tr>
@@ -1665,6 +1706,29 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 		<script>
 		(function(){
 			var nonce=<?php echo wp_json_encode( $nonce ); ?>;
+			// Helper générique : sélection multiple + suppression en masse pour une liste.
+			// prefix = base des id HTML (ex. 'aghist'), action = AJAX, checkClass = classe des cases.
+			function agBulk(prefix, action, checkClass){
+				var all=document.getElementById(prefix+'-check-all'), all2=document.getElementById(prefix+'-check-all2');
+				var del=document.getElementById(prefix+'-del-selected'), cnt=document.getElementById(prefix+'-sel-count');
+				function items(){ return Array.prototype.slice.call(document.querySelectorAll('.'+checkClass)); }
+				function ref(){ var n=items().filter(function(c){return c.checked;}).length; if(cnt)cnt.textContent=n; if(del)del.disabled=(n===0); }
+				function setAll(v){ items().forEach(function(c){ c.checked=v; }); if(all)all.checked=v; if(all2)all2.checked=v; ref(); }
+				if(all) all.addEventListener('change',function(){ setAll(all.checked); });
+				if(all2) all2.addEventListener('change',function(){ setAll(all2.checked); });
+				items().forEach(function(c){ c.addEventListener('change',ref); });
+				if(del) del.addEventListener('click',function(){
+					var ids=items().filter(function(c){return c.checked;}).map(function(c){return c.value;});
+					if(!ids.length) return;
+					if(!confirm('Supprimer définitivement '+ids.length+' élément(s) ?')) return;
+					var fd=new FormData(); fd.append('action',action); fd.append('_n',nonce);
+					ids.forEach(function(id){ fd.append('ids[]',id); });
+					del.disabled=true; del.textContent='…';
+					fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ if(j&&j.success){ location.reload(); } else { del.disabled=false; alert('Suppression impossible.'); } }).catch(function(){ del.disabled=false; });
+				});
+			}
+			agBulk('aghist','ag_search_history_delete_bulk','aghist-check');
+			agBulk('agld','ag_leads_delete_bulk','agld-check');
 			// Raccourcis métiers : remplit la recherche et lance.
 			document.querySelectorAll('.ag-chip').forEach(function(b){ b.addEventListener('click',function(){ var i=document.getElementById('ag-q'); if(i){ i.value=b.getAttribute('data-q'); document.getElementById('ag-search-form').submit(); } }); });
 			// Filtre "sans vrai site".

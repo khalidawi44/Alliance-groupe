@@ -127,14 +127,27 @@ if ( ! function_exists( 'ag_tester_scan_log_render' ) ) {
 			delete_option( 'ag_scan_log' );
 			echo '<div class="notice notice-success"><p>Journal vide.</p></div>';
 		}
-		$log = array_reverse( (array) get_option( 'ag_scan_log', array() ) );
+		// Tri sélectionnable : récent (def.) / score / failles.
+		$ssort = isset( $_GET['ssort'] ) ? sanitize_text_field( wp_unslash( $_GET['ssort'] ) ) : 'recent';
+		$log   = (array) get_option( 'ag_scan_log', array() );
+		if ( 'score' === $ssort )      usort( $log, function ( $a, $b ) { return (int) ( $b['score'] ?? 0 ) <=> (int) ( $a['score'] ?? 0 ); } );
+		elseif ( 'failles' === $ssort ) usort( $log, function ( $a, $b ) { return (int) ( $b['nb'] ?? 0 ) <=> (int) ( $a['nb'] ?? 0 ); } );
+		else $log = array_reverse( $log );
 		echo '<div class="wrap"><h1>📋 Sites scannes (test gratuit)</h1>';
 		echo '<p>Chaque visiteur ayant lance un test gratuit (URL seule). IP conservee pour le suivi.</p>';
 		if ( empty( $log ) ) { echo '<p><em>Aucun scan pour l\'instant.</em></p></div>'; return; }
-		echo '<table class="widefat striped"><thead><tr><th>Date</th><th>Site</th><th>IP</th><th>Score</th><th>Failles</th><th>Email</th></tr></thead><tbody>';
+		$snonce = wp_create_nonce( 'ag_scan_log_bulk' );
+		// Barre : tri + sélection/suppression en masse.
+		echo '<form method="get" style="display:inline-block;margin:0 8px 8px 0;"><input type="hidden" name="page" value="ag-scan-log"><label>Trier : <select name="ssort" onchange="this.form.submit()">';
+		foreach ( array( 'recent' => '🕒 Plus récents', 'score' => 'Score', 'failles' => 'Failles' ) as $sk => $sl ) echo '<option value="' . esc_attr( $sk ) . '" ' . selected( $ssort, $sk, false ) . '>' . esc_html( $sl ) . '</option>';
+		echo '</select></label></form>';
+		echo '<div style="margin:6px 0 10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><label><input type="checkbox" id="sl-all"> Tout sélectionner</label><button type="button" id="sl-del" class="button button-small button-link-delete" disabled>🗑️ Supprimer la sélection (<span id="sl-cnt">0</span>)</button></div>';
+		echo '<table class="widefat striped"><thead><tr><th style="width:28px;"><input type="checkbox" id="sl-all2"></th><th>Date</th><th>Site</th><th>IP</th><th>Score</th><th>Failles</th><th>Email</th></tr></thead><tbody>';
 		foreach ( $log as $r ) {
 			$col = ( (int) $r['score'] >= 80 ) ? '#093' : ( ( (int) $r['score'] >= 50 ) ? '#b58100' : '#c00' );
-			echo '<tr><td>' . esc_html( wp_date( 'd/m H:i', (int) $r['time'] ) ) . '</td>';
+			$sig = sha1( ( $r['time'] ?? '' ) . '|' . ( $r['url'] ?? '' ) . '|' . ( $r['ip'] ?? '' ) );
+			echo '<tr><td style="text-align:center;"><input type="checkbox" class="sl-chk" value="' . esc_attr( $sig ) . '"></td>';
+			echo '<td>' . esc_html( wp_date( 'd/m H:i', (int) $r['time'] ) ) . '</td>';
 			echo '<td><a href="' . esc_url( $r['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $r['host'] ) . '</a></td>';
 			echo '<td><code>' . esc_html( $r['ip'] ) . '</code></td>';
 			echo '<td style="color:' . esc_attr( $col ) . ';font-weight:700">' . (int) $r['score'] . '/100</td>';
@@ -144,9 +157,33 @@ if ( ! function_exists( 'ag_tester_scan_log_render' ) ) {
 		echo '</tbody></table>';
 		echo '<form method="post" style="margin-top:16px" onsubmit="return confirm(\'Vider tout le journal ?\');">';
 		wp_nonce_field( 'ag_scan_log' );
-		echo '<button name="ag_scan_clear" value="1" class="button">🗑️ Vider le journal</button></form></div>';
+		echo '<button name="ag_scan_clear" value="1" class="button">🗑️ Vider tout le journal</button></form>';
+		echo '<script>(function(){var n=' . wp_json_encode( $snonce ) . ';';
+		echo 'var all=document.getElementById("sl-all"),all2=document.getElementById("sl-all2"),del=document.getElementById("sl-del"),cnt=document.getElementById("sl-cnt");';
+		echo 'function it(){return Array.prototype.slice.call(document.querySelectorAll(".sl-chk"));}';
+		echo 'function rf(){var c=it().filter(function(x){return x.checked;}).length;if(cnt)cnt.textContent=c;if(del)del.disabled=(c===0);}';
+		echo 'function sa(v){it().forEach(function(x){x.checked=v;});if(all)all.checked=v;if(all2)all2.checked=v;rf();}';
+		echo 'if(all)all.addEventListener("change",function(){sa(all.checked);});if(all2)all2.addEventListener("change",function(){sa(all2.checked);});';
+		echo 'it().forEach(function(x){x.addEventListener("change",rf);});';
+		echo 'if(del)del.addEventListener("click",function(){var ids=it().filter(function(x){return x.checked;}).map(function(x){return x.value;});if(!ids.length)return;if(!confirm("Supprimer "+ids.length+" ligne(s) ?"))return;var fd=new FormData();fd.append("action","ag_scan_log_delete_bulk");fd.append("_n",n);ids.forEach(function(i){fd.append("ids[]",i);});del.disabled=true;del.textContent="…";fetch(ajaxurl,{method:"POST",body:fd,credentials:"same-origin"}).then(function(r){return r.json();}).then(function(j){if(j&&j.success){location.reload();}else{del.disabled=false;alert("Erreur");}}).catch(function(){del.disabled=false;});});';
+		echo '})();</script>';
+		echo '</div>';
 	}
 }
+/* Suppression en masse du journal des scans (signatures time|url|ip). */
+add_action( 'wp_ajax_ag_scan_log_delete_bulk', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_n'] ) ), 'ag_scan_log_bulk' ) ) wp_send_json_error();
+	$sigs = isset( $_POST['ids'] ) ? (array) $_POST['ids'] : array();
+	$sigs = array_filter( array_map( 'sanitize_text_field', array_map( 'wp_unslash', $sigs ) ) );
+	if ( empty( $sigs ) ) wp_send_json_error();
+	$log    = (array) get_option( 'ag_scan_log', array() );
+	$before = count( $log );
+	$log    = array_values( array_filter( $log, function ( $r ) use ( $sigs ) {
+		return ! in_array( sha1( ( $r['time'] ?? '' ) . '|' . ( $r['url'] ?? '' ) . '|' . ( $r['ip'] ?? '' ) ), $sigs, true );
+	} ) );
+	update_option( 'ag_scan_log', $log, false );
+	wp_send_json_success( array( 'removed' => $before - count( $log ) ) );
+} );
 
 /* ----------------------------------------------------------------- Helpers */
 if ( ! function_exists( 'ag_tester_client_ip' ) ) {
@@ -1395,6 +1432,11 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline"><input type="hidden" name="action" value="ag_audit_hist_csv"><?php wp_nonce_field( 'ag_audit_hist_csv' ); ?><button type="submit" class="button button-small">📥 Exporter l'historique (CSV)</button></form>
 						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline" onsubmit="return confirm('Vider TOUT l\'historique des audits ? Action irreversible.')"><input type="hidden" name="action" value="ag_audit_hist_clear"><?php wp_nonce_field( 'ag_audit_hist_clear' ); ?><button type="submit" class="button button-small" style="color:#b91c1c;margin-left:6px">🗑️ Tout effacer</button></form>
 					</div>
+					<?php $ahnonce = wp_create_nonce( 'ag_audit_hist_bulk' ); ?>
+					<div style="margin:0 0 10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+						<label style="font-size:12px;"><input type="checkbox" id="aghc-all"> Tout sélectionner</label>
+						<button type="button" id="aghc-del" class="button button-small button-link-delete" disabled>🗑️ Supprimer la sélection (<span id="aghc-cnt">0</span>)</button>
+					</div>
 					<div id="agh-list">
 				<?php foreach ( $AGH as $hid => $e ) :
 					$score = (int) $e['score']; $col = $score >= 75 ? '#1a7f37' : ( $score >= 50 ? '#bf6a02' : '#b91c1c' ); $seg = $e['seg'];
@@ -1424,7 +1466,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 					?>
 					<div class="agh-card" data-seg="<?php echo esc_attr( $seg ); ?>" data-mode="<?php echo esc_attr( $mode ); ?>" data-host="<?php echo esc_attr( $host ); ?>" data-todo="<?php echo $todo ? 1 : 0; ?>" data-score="<?php echo $score; ?>" data-ts="<?php echo (int) $e['ts']; ?>" style="background:#fff;border:1px solid #ccd0d4;border-left:5px solid <?php echo esc_attr( $col ); ?>;border-radius:8px;padding:14px 16px;margin:12px 0;max-width:1000px">
 						<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px">
-							<div><strong><?php echo esc_html( $e['company'] ?: $host ); ?></strong>
+							<div><label style="margin-right:8px;"><input type="checkbox" class="aghc-chk" value="<?php echo esc_attr( $hid ); ?>" title="Sélectionner"></label><strong><?php echo esc_html( $e['company'] ?: $host ); ?></strong>
 								<span style="background:<?php echo 'securite' === $seg ? '#b91c1c' : '#1d4ed8'; ?>;color:#fff;border-radius:4px;padding:1px 6px;font-size:11px"><?php echo 'securite' === $seg ? 'SÉCURITÉ' : 'CRÉATION'; ?></span>
 									<span style="background:<?php echo 'expert' === $mode ? '#0a6' : ( 'deep' === $mode ? '#6d28d9' : '#0e7490' ); ?>;color:#fff;border-radius:4px;padding:1px 6px;font-size:11px"><?php echo esc_html( $mode_lbl ); ?></span>
 								<br><a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener" style="font-size:12px"><?php echo esc_html( $host ); ?></a></div>
@@ -1540,6 +1582,16 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 				</div>
 				<script>
 				(function(){var list=document.getElementById('agh-list');if(!list)return;var curF='all',curM='all';function cards(){return [].slice.call(list.querySelectorAll('.agh-card'));}function apply(){cards().forEach(function(k){var seg=k.getAttribute('data-seg'),todo=k.getAttribute('data-todo')==='1',md=k.getAttribute('data-mode')||'passive';var okF=(curF==='all')||(curF==='todo'?todo:seg===curF);var okM=(curM==='all')||(md===curM);k.style.display=(okF&&okM)?'':'none';});}document.querySelectorAll('.aghf').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghf').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');curF=b.getAttribute('data-f');apply();});});document.querySelectorAll('.aghft').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghft').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');curM=b.getAttribute('data-m');apply();});});document.querySelectorAll('.aghs').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghs').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');var sp=b.getAttribute('data-s').split('-'),key=sp[0],dir=sp[1];var arr=cards();arr.sort(function(a,c){if(key==='host'){var ha=(a.getAttribute('data-host')||''),hc=(c.getAttribute('data-host')||'');if(ha!==hc)return ha<hc?-1:1;return (+c.getAttribute('data-score'))-(+a.getAttribute('data-score'));}var x=+a.getAttribute('data-'+key),y=+c.getAttribute('data-'+key);return dir==='asc'?x-y:y-x;});arr.forEach(function(k){list.appendChild(k);});});});})();
+				</script>
+				<script>
+				(function(){var n=<?php echo wp_json_encode( $ahnonce ); ?>;
+				var all=document.getElementById('aghc-all'),del=document.getElementById('aghc-del'),cnt=document.getElementById('aghc-cnt');
+				function it(){return [].slice.call(document.querySelectorAll('.aghc-chk'));}
+				function rf(){var c=it().filter(function(x){return x.checked;}).length;if(cnt)cnt.textContent=c;if(del)del.disabled=(c===0);}
+				if(all)all.addEventListener('change',function(){it().forEach(function(x){x.checked=all.checked;});rf();});
+				it().forEach(function(x){x.addEventListener('change',rf);});
+				if(del)del.addEventListener('click',function(){var ids=it().filter(function(x){return x.checked;}).map(function(x){return x.value;});if(!ids.length)return;if(!confirm('Supprimer définitivement '+ids.length+' audit(s) ?'))return;var fd=new FormData();fd.append('action','ag_audit_hist_delete_bulk');fd.append('_n',n);ids.forEach(function(i){fd.append('ids[]',i);});del.disabled=true;del.textContent='…';fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){if(j&&j.success){location.reload();}else{del.disabled=false;alert('Erreur');}}).catch(function(){del.disabled=false;});});
+				})();
 				</script>
 			<?php endif; ?>
 
@@ -1773,6 +1825,18 @@ if ( ! function_exists( 'ag_audit_hist_del_handler' ) ) {
 		exit;
 	}
 }
+/* Suppression en masse d'audits (cases à cocher, AJAX, clés = hist_id). */
+add_action( 'wp_ajax_ag_audit_hist_delete_bulk', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_n'] ) ), 'ag_audit_hist_bulk' ) ) wp_send_json_error();
+	$ids = isset( $_POST['ids'] ) ? (array) $_POST['ids'] : array();
+	$ids = array_filter( array_map( 'sanitize_text_field', array_map( 'wp_unslash', $ids ) ) );
+	if ( empty( $ids ) ) wp_send_json_error();
+	$H = ag_audit_hist_get();
+	$before = count( $H );
+	foreach ( $ids as $id ) { unset( $H[ $id ] ); }
+	ag_audit_hist_save( $H );
+	wp_send_json_success( array( 'removed' => $before - count( $H ) ) );
+} );
 /* Vider TOUT l'historique des audits (admin-post). */
 add_action( 'admin_post_ag_audit_hist_clear', 'ag_audit_hist_clear_handler' );
 if ( ! function_exists( 'ag_audit_hist_clear_handler' ) ) {
