@@ -58,6 +58,32 @@ if ( ! function_exists( 'ag_rr_posts_get' ) ) {
 if ( ! function_exists( 'ag_rr_post_key' ) ) {
 	function ag_rr_post_key( $email, $slug ) { return strtolower( (string) $email ) . '|' . $slug; }
 }
+if ( ! function_exists( 'ag_rr_job_ad' ) ) {
+	/** Annonce d'emploi FORMATÉE, prête à déposer (France Travail/Indeed/HelloWork). */
+	function ag_rr_job_ad( $link, $ville = '', $variant = 0 ) {
+		$lieu = $ville ? $ville . ' / Télétravail' : 'Télétravail (France entière)';
+		$ads  = array(
+			array(
+				'titre' => 'Conseiller(ère) commercial(e) indépendant(e) — Web & Sécurité (H/F)',
+				'corps' => "Alliance Groupe, studio web & cybersécurité, recherche des ambassadeurs / apporteurs d'affaires indépendants pour présenter ses services de création de sites internet aux professionnels.\n\n"
+					. "🧭 VOTRE MISSION\n• Faire connaître nos offres (sites web, sécurité) autour de vous et en ligne.\n• Mettre en relation des pros intéressés ; nous nous occupons de la vente et de la réalisation.\n\n"
+					. "💸 RÉMUNÉRATION\n• Commission de 10 % À VIE sur chaque vente réalisée grâce à vous, sans plafond.\n• Exemple : 1 site Pro (890 €) = 89 € ; régularité = plusieurs centaines d'€/mois.\n• Paiement sur PayPal. Aucune avance, aucun frais.\n\n"
+					. "👤 PROFIL\n• Motivé(e), à l'aise dans le contact (réseaux, entourage, terrain).\n• Aucun diplôme requis. Débutant accepté. Formation et outils fournis.\n• Statut indépendant (auto-entrepreneur recommandé) — 100 % en ligne, à votre rythme.\n\n"
+					. "📍 LIEU : " . $lieu . "\n📝 CONTRAT : indépendant / temps libre.\n\n"
+					. "➡️ POUR CANDIDATER : " . $link,
+			),
+			array(
+				'titre' => 'Apporteur d\'affaires / Ambassadeur web (H/F) — complément de revenu',
+				'corps' => "Vous cherchez un complément de revenu flexible ? Devenez ambassadeur Alliance Groupe (agence web).\n\n"
+					. "Votre rôle : parler de nos sites internet autour de vous. Dès qu'une de vos mises en relation devient client, vous touchez 10 % à vie sur les ventes — sans plafond, payé sur PayPal.\n\n"
+					. "✔ Gratuit, sans avance, 100 % en ligne, à votre rythme.\n✔ Débutants bienvenus, formation et supports fournis.\n✔ Idéal étudiants, personnes en recherche, indépendants.\n\n"
+					. "Lieu : " . $lieu . ". Statut indépendant.\n\n"
+					. "Candidature : " . $link,
+			),
+		);
+		return $ads[ $variant % count( $ads ) ];
+	}
+}
 add_action( 'admin_post_ag_rr_toggle', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_n'] ) ), 'ag_rr' ) ) wp_die( 'no' );
 	$slug  = sanitize_text_field( wp_unslash( $_POST['slug'] ?? '' ) );
@@ -217,7 +243,20 @@ if ( ! function_exists( 'ag_rr_render' ) ) {
 			echo $done ? '<button class="button button-small" style="color:#1e7e34;">✓ Posté le ' . esc_html( $posts[ ag_rr_post_key( $email, $pl['slug'] ) ]['date'] ) . '</button>' : '<button class="button button-small button-primary">Marquer posté</button>';
 			echo '</form></td></tr>';
 		}
-		echo '</tbody></table></div>';
+		echo '</tbody></table>';
+
+		// ── Annonce d'emploi prête à déposer ─────────────────────────────
+		echo '<h3 style="margin-top:18px;">📋 Annonce d\'emploi prête à déposer (Pôle emploi / Indeed / HelloWork)</h3>';
+		echo '<p style="font-size:.86em;color:#50575e;max-width:760px;">Copie-colle cette annonce dans l\'espace recruteur. <strong>Important</strong> : sur France Travail, comme c\'est un poste <strong>indépendant à la commission</strong> (pas un salaire), choisis le type « <strong>Profession commerciale / agent commercial indépendant</strong> » ou indique clairement « statut indépendant ». Indeed, HelloWork et Leboncoin acceptent ce format sans souci.</p>';
+		for ( $v = 0; $v < 2; $v++ ) {
+			$ad = ag_rr_job_ad( $link, $ville, $v );
+			echo '<details ' . ( 0 === $v ? 'open' : '' ) . ' style="margin:8px 0;">';
+			echo '<summary class="button button-small">📋 Annonce ' . ( $v + 1 ) . ' — ' . esc_html( $ad['titre'] ) . '</summary>';
+			echo '<p style="margin:6px 0 2px;font-weight:600;">Titre de l\'offre :</p><input type="text" readonly value="' . esc_attr( $ad['titre'] ) . '" style="width:100%;" onclick="this.select()">';
+			echo '<p style="margin:8px 0 2px;font-weight:600;">Description :</p><textarea readonly rows="16" style="width:100%;" onclick="this.select()">' . esc_textarea( $ad['corps'] ) . '</textarea>';
+			echo '</details>';
+		}
+		echo '</div>';
 
 		// ── 2) Bassins d'emploi (API France Travail) ─────────────────────
 		$dep  = isset( $_GET['rdep'] ) ? sanitize_text_field( wp_unslash( $_GET['rdep'] ) ) : '44';
