@@ -11,6 +11,9 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 - **Hook `SessionStart`** (`.claude/hooks/session-start.sh`, enregistré dans `.claude/settings.json`) : à chaque nouvelle session il injecte automatiquement l'état réel (branche, derniers commits, travail non commité, version active, focus templates, en-tête `HANDOFF.md`). C'est ce qui **relie les conversations** entre elles.
 - **Règle de fin de session** : avant de fermer, (1) mettre à jour les 3 premières lignes + §9 de `HANDOFF.md`, (2) commiter, (3) pousser. La conversation suivante reprendra exactement là.
 
+## Convention UX (RÈGLE pour tout nouvel outil/liste)
+- **Toute liste d'éléments** (prospects, cibles, fiches, résultats…) doit offrir par défaut : **TRI** (au moins priorité + nom + récent), **AJOUT** (bouton « + Suivre »/ajouter), et **SUPPRESSION EN MASSE** (cases à cocher + « tout sélectionner » + bouton « Supprimer la sélection » ; pour des prospects, AJAX `ag_prospect_delete_bulk`). Les actions de contact (Mail/SMS/WhatsApp/Appel) + **Relancer** sont présentes sur chaque élément, en respectant la déontologie (avocats = email/courrier uniquement).
+
 ## Déploiement (workflow)
 - Dév sur la branche de travail courante (ex. `claude/infrastructure-md-review-6R3D2` ; vérifier `git branch --show-current`), puis **merge ff-only dans `main`** + push.
 - Le site applique via **Apparence → SYNC GitHub** : « Vérifier MAJ » puis « SYNC FICHIERS DU THÈME », puis purge cache + Ctrl/recharge.

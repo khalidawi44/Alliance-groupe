@@ -823,16 +823,33 @@ if ( ! function_exists( 'ag_redr_analyse_render' ) ) {
 		if ( ! current_user_can( 'manage_options' ) ) return;
 		$all     = (array) get_option( 'ag_prospects', array() );
 		$targets = array_values( array_filter( $all, 'ag_redr_is_target' ) );
-		// Tri par priorité décroissante (avocats remontent via leur score).
-		usort( $targets, function ( $a, $b ) {
-			$sa = ag_redr_analyze( $a )['score']; $sb = ag_redr_analyze( $b )['score'];
-			return $sb <=> $sa;
+		// Tri (sélectionnable) : priorité (def.) / avocats d'abord / nom / récent.
+		$rsort = isset( $_GET['rsort'] ) ? sanitize_text_field( wp_unslash( $_GET['rsort'] ) ) : 'prio';
+		usort( $targets, function ( $a, $b ) use ( $rsort ) {
+			if ( 'nom' === $rsort )  return strcasecmp( $a['name'] ?? '', $b['name'] ?? '' );
+			if ( 'date' === $rsort ) return ( $b['ts'] ?? 0 ) <=> ( $a['ts'] ?? 0 );
+			if ( 'avocat' === $rsort ) {
+				$av = (int) ag_redr_is_avocat( $b ) <=> (int) ag_redr_is_avocat( $a );
+				if ( 0 !== $av ) return $av;
+			}
+			return ag_redr_analyze( $b )['score'] <=> ag_redr_analyze( $a )['score'];
 		} );
 		$nb_av = count( array_filter( $targets, 'ag_redr_is_avocat' ) );
 		echo '<div class="wrap">';
 		echo '<h1>🔎 Analyse des cibles en redressement</h1>';
 		echo '<p style="max-width:840px;color:#50575e;">L’agent lit <strong>tes prospects enregistrés</strong> et isole ceux en <strong>procédure collective</strong> (tribunal / BODACC). Pour chacun : pourquoi il est probablement en difficulté, et quoi faire — dans une logique <strong>solidaire</strong> (on aide à rebondir) et <strong>déontologique</strong> pour les avocats. <em>Données publiques BODACC ; analyse indicative, à confirmer au contact.</em></p>';
 		echo '<p style="font-weight:600;">' . count( $targets ) . ' cible(s) en difficulté' . ( $nb_av ? ' · dont <span style="color:#5a2ca0;">' . $nb_av . ' avocat(s)/juridique</span>' : '' ) . '.</p>';
+		if ( ! empty( $targets ) ) {
+			// Barre d'outils : tri + sélection/suppression en masse.
+			$sort_opts = array( 'prio' => '🔥 Priorité', 'avocat' => '⚖️ Avocats d’abord', 'nom' => 'A→Z (nom)', 'date' => '🕒 Plus récents' );
+			echo '<form method="get" style="display:inline-block;margin:0 0 6px;"><input type="hidden" name="page" value="ag-redr-analyse"><label style="font-size:.9em;">Trier : <select name="rsort" onchange="this.form.submit()">';
+			foreach ( $sort_opts as $sk => $sl ) echo '<option value="' . esc_attr( $sk ) . '" ' . selected( $rsort, $sk, false ) . '>' . esc_html( $sl ) . '</option>';
+			echo '</select></label></form>';
+			echo '<div class="agr-bulkbar" style="margin:6px 0 12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">';
+			echo '<label style="font-size:.9em;"><input type="checkbox" id="agr-check-all"> Tout sélectionner</label>';
+			echo '<button type="button" id="agr-del-selected" class="button button-small button-link-delete" disabled>🗑️ Supprimer la sélection (<span id="agr-sel-count">0</span>)</button>';
+			echo '</div>';
+		}
 		if ( empty( $targets ) ) {
 			echo '<div class="notice notice-info" style="padding:12px;"><p>Aucune cible en redressement dans tes prospects pour l’instant. Va dans <strong>Prospection → 🏛️ Entreprises au tribunal</strong>, cherche une ville, puis « + Suivre » les cabinets en redressement/sauvegarde : ils s’analyseront ici automatiquement.</p></div></div>';
 			return;
@@ -843,6 +860,7 @@ if ( ! function_exists( 'ag_redr_analyse_render' ) ) {
 			$badge = $a['avocat'] ? '<span style="background:#f3eefc;color:#5a2ca0;border-radius:10px;padding:1px 9px;font-size:.8em;font-weight:700;">⚖️ Avocat / juridique</span> ' : '';
 			echo '<div style="max-width:880px;margin:14px 0;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #7a4ed4;border-radius:8px;padding:16px 18px;">';
 			echo '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">';
+			echo '<input type="checkbox" class="agr-check" value="' . esc_attr( $p['id'] ?? '' ) . '" title="Sélectionner">';
 			echo '<span style="display:inline-block;min-width:40px;text-align:center;font-weight:800;color:#fff;background:' . esc_attr( $col ) . ';border-radius:6px;padding:3px 9px;">' . (int) $a['score'] . '</span>';
 			echo '<strong style="font-size:1.08em;">' . esc_html( $p['name'] ?? '' ) . '</strong>';
 			echo '<span style="color:#646970;">' . esc_html( trim( ( $p['type'] ?? '' ) . ( ! empty( $p['city'] ) ? ' · ' . $p['city'] : '' ), ' ·' ) ) . '</span>';
@@ -895,6 +913,13 @@ if ( ! function_exists( 'ag_redr_analyse_render' ) ) {
 		echo '<script>(function(){var nonce=' . wp_json_encode( $rn ) . ';';
 		echo 'document.querySelectorAll(".agr-touch").forEach(function(a){a.addEventListener("click",function(){var id=a.getAttribute("data-id");if(!id)return;var fd=new FormData();fd.append("action","ag_prospect_touch");fd.append("_n",nonce);fd.append("id",id);fd.append("channel",a.getAttribute("data-channel")||"");fetch(ajaxurl,{method:"POST",body:fd,credentials:"same-origin",keepalive:true}).catch(function(){});});});';
 		echo 'document.querySelectorAll(".agr-relance").forEach(function(b){b.addEventListener("click",function(){var id=b.getAttribute("data-id");if(!id)return;var fd=new FormData();fd.append("action","ag_prospect_relance");fd.append("_n",nonce);fd.append("id",id);var old=b.textContent;b.disabled=true;b.textContent="…";fetch(ajaxurl,{method:"POST",body:fd,credentials:"same-origin"}).then(function(r){return r.json();}).then(function(j){if(j&&j.success){b.textContent="✓ Relancé le "+j.data.date;b.style.color="#1e7e34";}else{b.textContent=old;b.disabled=false;}}).catch(function(){b.textContent=old;b.disabled=false;});});});';
+		// Sélection multiple + suppression en masse (réutilise ag_prospect_delete_bulk).
+		echo 'var allc=document.getElementById("agr-check-all"),delb=document.getElementById("agr-del-selected"),cnt=document.getElementById("agr-sel-count");';
+		echo 'function aChk(){return Array.prototype.slice.call(document.querySelectorAll(".agr-check"));}';
+		echo 'function aRef(){var n=aChk().filter(function(c){return c.checked;}).length;if(cnt)cnt.textContent=n;if(delb)delb.disabled=(n===0);}';
+		echo 'if(allc)allc.addEventListener("change",function(){aChk().forEach(function(c){c.checked=allc.checked;});aRef();});';
+		echo 'aChk().forEach(function(c){c.addEventListener("change",aRef);});';
+		echo 'if(delb)delb.addEventListener("click",function(){var ids=aChk().filter(function(c){return c.checked;}).map(function(c){return c.value;});if(!ids.length)return;if(!confirm("Supprimer définitivement "+ids.length+" prospect(s) ?"))return;var fd=new FormData();fd.append("action","ag_prospect_delete_bulk");fd.append("_n",nonce);ids.forEach(function(id){fd.append("ids[]",id);});delb.disabled=true;delb.textContent="…";fetch(ajaxurl,{method:"POST",body:fd,credentials:"same-origin"}).then(function(r){return r.json();}).then(function(j){if(j&&j.success){location.reload();}else{delb.disabled=false;alert("Suppression impossible.");}}).catch(function(){delb.disabled=false;});});';
 		echo '})();</script>';
 		echo '</div>';
 	}
