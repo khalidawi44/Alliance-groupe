@@ -205,6 +205,37 @@ if ( ! function_exists( 'ag_ft_test_render' ) ) {
 		}
 		echo '<form method="post" style="margin:6px 0 14px;"><button name="ft_discover" value="1" class="button button-secondary">🔍 Détecter le scope (Événements / JCMO)</button></form>';
 
+		// Détection automatique de l'ENDPOINT (avec le scope saisi).
+		if ( isset( $_POST['ft_probe'] ) ) {
+			$sc = sanitize_text_field( wp_unslash( $_POST['ft_scope'] ?? 'api_evenementsv1' ) );
+			list( $tk, $er ) = ag_ft_token_for( $sc, 'ag_ft_token_test_' . md5( $sc ) );
+			if ( '' === $tk ) {
+				echo '<p style="color:#b32d2e;">❌ Jeton ko pour ce scope : ' . esc_html( $er ) . '</p>';
+			} else {
+				$paths = array(
+					'https://api.francetravail.io/partenaire/evenements/v1/evenements',
+					'https://api.francetravail.io/partenaire/evenements/v1/evenements/recherche',
+					'https://api.francetravail.io/partenaire/evenements/v1/recherche',
+					'https://api.francetravail.io/partenaire/mes-evenements-emploi/v1/evenements',
+					'https://api.francetravail.io/partenaire/mes-evenements-emploi/v1/evenements/recherche',
+					'https://api.francetravail.io/partenaire/mesevenementsemploi/v1/evenements',
+					'https://api.francetravail.io/partenaire/evenementsemploi/v1/evenements',
+					'https://api.francetravail.io/partenaire/evenements/v1/evenements?codePostal=44000',
+				);
+				echo '<h3>Détection de l’endpoint (scope <code>' . esc_html( $sc ) . '</code>) :</h3><table class="widefat striped" style="max-width:920px"><thead><tr><th>URL</th><th>HTTP</th><th>Début de réponse</th></tr></thead><tbody>';
+				foreach ( $paths as $pu ) {
+					$r  = wp_remote_get( $pu, array( 'timeout' => 18, 'headers' => array( 'Authorization' => 'Bearer ' . $tk, 'Accept' => 'application/json' ) ) );
+					$rc = is_wp_error( $r ) ? 0 : (int) wp_remote_retrieve_response_code( $r );
+					$bd = is_wp_error( $r ) ? $r->get_error_message() : mb_substr( (string) wp_remote_retrieve_body( $r ), 0, 120 );
+					$mark = in_array( $rc, array( 200, 206 ), true ) ? '✅ ' : ( 400 === $rc ? '🟠 ' : '' );
+					echo '<tr><td style="font-size:11px"><code>' . esc_html( $pu ) . '</code></td><td>' . $mark . (int) $rc . '</td><td style="font-size:11px">' . esc_html( $bd ) . '</td></tr>';
+					usleep( 150000 );
+				}
+				echo '</tbody></table><p class="description">✅ 200/206 = bon endpoint. 🟠 400 = bon endpoint mais paramètres manquants (on ajustera). 403/404 partout = il me faut une capture de la fiche 👁.</p>';
+			}
+		}
+		echo '<form method="post" style="margin:0 0 14px;"><input type="hidden" name="ft_scope" value="' . esc_attr( isset( $_POST['ft_scope'] ) ? sanitize_text_field( wp_unslash( $_POST['ft_scope'] ) ) : 'api_evenementsv1' ) . '"><button name="ft_probe" value="1" class="button button-secondary">🔍 Détecter l’endpoint Événements (avec le scope ci-dessous)</button></form>';
+
 		$scope  = isset( $_POST['ft_scope'] ) ? sanitize_text_field( wp_unslash( $_POST['ft_scope'] ) ) : 'api_evenementsv1';
 		$method = isset( $_POST['ft_method'] ) && 'POST' === $_POST['ft_method'] ? 'POST' : 'GET';
 		$url    = isset( $_POST['ft_url'] ) ? esc_url_raw( wp_unslash( $_POST['ft_url'] ) ) : 'https://api.francetravail.io/partenaire/evenements/v1/evenements';
