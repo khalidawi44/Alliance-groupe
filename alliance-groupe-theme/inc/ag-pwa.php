@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_PWA_VER', '1.0.2' );
+define( 'AG_PWA_VER', '1.0.3' );
 
 /* ---------------------------------------------------------------- Helpers */
 if ( ! function_exists( 'ag_pwa_icon' ) ) {
@@ -204,17 +204,19 @@ add_filter( 'the_content', function ( $content ) {
 	return $content . '<div style="text-align:center;margin:26px 0;">' . ag_pwa_button() . '</div>';
 } );
 
-/* ---------------------------------------------------------------- SW + bannière + modale iOS */
+/* ---------------------------------------------------------------- SW + bannière + choix d'app + modale iOS */
 add_action( 'wp_footer', function () {
 	if ( is_admin() ) return;
-	$sw    = esc_url( home_url( '/ag-sw.js' ) );
-	$amb   = ag_pwa_is_amb_context();
-	$name  = $amb ? 'Alliance Ambassadeurs' : ( get_bloginfo( 'name' ) ?: 'Alliance Groupe' );
-	$sub   = $amb ? 'Ton espace ambassadeur, en 1 tap' : 'iPhone & Android · gratuit';
-	$icon  = esc_url( ag_pwa_icon( $amb ? 'amb-192.png' : 'icon-192.png' ) );
+	$sw      = esc_url( home_url( '/ag-sw.js' ) );
+	$amb     = ag_pwa_is_amb_context();
+	$name    = $amb ? 'Alliance Ambassadeurs' : ( get_bloginfo( 'name' ) ?: 'Alliance Groupe' );
+	$sub     = $amb ? 'Ton espace ambassadeur, en 1 tap' : 'iPhone & Android · gratuit';
+	$icon    = esc_url( ag_pwa_icon( $amb ? 'amb-192.png' : 'icon-192.png' ) );
+	$ico_site = esc_url( ag_pwa_icon( 'icon-192.png' ) );
+	$ico_amb  = esc_url( ag_pwa_icon( 'amb-192.png' ) );
+	$amb_url  = esc_url( add_query_arg( 'install', 'amb', ag_pwa_amb_start() ) );
 	?>
 	<style>
-	/* Bouton "Télécharger l'app" (shortcode) */
 	.ag-appdl{display:inline-flex;align-items:center;gap:12px;padding:12px 18px;border:0;border-radius:16px;cursor:pointer;
 		background:linear-gradient(135deg,#16161e,#0c0c12);color:#fff;font-family:inherit;box-shadow:0 10px 30px rgba(0,0,0,.35);border:1px solid rgba(212,180,92,.45);text-align:left;}
 	.ag-appdl:hover{transform:translateY(-1px);box-shadow:0 14px 34px rgba(0,0,0,.45)}
@@ -223,7 +225,6 @@ add_action( 'wp_footer', function () {
 	.ag-appdl__txt strong{font-size:15px;color:#fff}
 	.ag-appdl__txt small{font-size:11.5px;color:#D4B45C;margin-top:2px}
 	.ag-appdl__arrow{margin-left:6px;font-size:20px;color:#D4B45C}
-	/* Bannière flottante */
 	.ag-appbn{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:99998;display:none;
 		align-items:center;gap:12px;max-width:520px;margin:0 auto;padding:12px 14px;border-radius:18px;
 		background:rgba(16,16,22,.96);backdrop-filter:blur(8px);border:1px solid rgba(212,180,92,.4);box-shadow:0 16px 40px rgba(0,0,0,.5);font-family:-apple-system,Arial,sans-serif}
@@ -233,14 +234,20 @@ add_action( 'wp_footer', function () {
 	.ag-appbn__b small{display:block;font-size:11.5px;color:#b9b9c4}
 	.ag-appbn__go{flex:none;padding:9px 16px;border:0;border-radius:999px;background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;font-weight:800;font-size:13px;cursor:pointer}
 	.ag-appbn__x{flex:none;background:none;border:0;color:#8a8a96;font-size:20px;line-height:1;cursor:pointer;padding:0 2px}
-	/* Modale iOS */
-	.ag-appmodal{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);padding:20px}
-	.ag-appmodal__c{max-width:340px;width:100%;background:#14141c;border:1px solid rgba(212,180,92,.4);border-radius:20px;padding:22px;color:#eee;font-family:-apple-system,Arial,sans-serif;text-align:center}
-	.ag-appmodal__c img{width:64px;height:64px;border-radius:16px;margin-bottom:10px}
-	.ag-appmodal__c h3{margin:0 0 12px;color:#D4B45C;font-family:Georgia,serif}
+	.ag-ov{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.65);padding:20px}
+	.ag-ov__c{max-width:380px;width:100%;background:#14141c;border:1px solid rgba(212,180,92,.4);border-radius:20px;padding:22px;color:#eee;font-family:-apple-system,Arial,sans-serif;text-align:center}
+	.ag-ov__c h3{margin:0 0 4px;color:#D4B45C;font-family:Georgia,serif}
+	.ag-ov__c p.sub{margin:0 0 14px;color:#9a9aa5;font-size:13px}
+	.ag-choice{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#0e0e15;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0;cursor:pointer}
+	.ag-choice:hover{border-color:rgba(212,180,92,.6)}
+	.ag-choice img{width:46px;height:46px;border-radius:12px;flex:none}
+	.ag-choice b{display:block;font-size:14px;color:#fff}
+	.ag-choice small{display:block;font-size:11.5px;color:#9a9aa5}
+	.ag-choice .go{margin-left:auto;color:#D4B45C;font-weight:800;font-size:18px}
 	.ag-appmodal__step{display:flex;align-items:center;gap:10px;text-align:left;background:#0e0e15;border-radius:12px;padding:10px 12px;margin:8px 0;font-size:14px}
 	.ag-appmodal__step b{color:#D4B45C}
-	.ag-appmodal__close{margin-top:14px;width:100%;padding:12px;border:0;border-radius:999px;background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;font-weight:800;cursor:pointer}
+	.ag-ov__close{margin-top:8px;width:100%;padding:12px;border:0;border-radius:999px;background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;font-weight:800;cursor:pointer}
+	.ag-ov__x{background:none;border:0;color:#8a8a96;font-size:13px;margin-top:8px;cursor:pointer}
 	</style>
 
 	<div class="ag-appbn" id="ag-appbn">
@@ -250,14 +257,32 @@ add_action( 'wp_footer', function () {
 		<button class="ag-appbn__x" aria-label="Fermer" onclick="agDismissBanner()">×</button>
 	</div>
 
-	<div class="ag-appmodal" id="ag-appmodal" onclick="if(event.target===this)agCloseModal()">
-		<div class="ag-appmodal__c">
-			<img src="<?php echo $icon; // phpcs:ignore ?>" alt="">
+	<!-- Choix entre les 2 apps (site public) -->
+	<div class="ag-ov" id="ag-choice" onclick="if(event.target===this)agCloseChoice()">
+		<div class="ag-ov__c">
+			<h3>Quelle application ?</h3>
+			<p class="sub">Installe celle que tu veux (gratuit).</p>
+			<div class="ag-choice" onclick="agPickSite()">
+				<img src="<?php echo $ico_site; // phpcs:ignore ?>" alt="">
+				<span><b>Application du site</b><small>Alliance Groupe — web &amp; sécurité</small></span><span class="go">⤓</span>
+			</div>
+			<a class="ag-choice" href="<?php echo $amb_url; // phpcs:ignore ?>">
+				<img src="<?php echo $ico_amb; // phpcs:ignore ?>" alt="">
+				<span><b>Application Ambassadeurs</b><small>Gagner / prospecter avec nous</small></span><span class="go">⤓</span>
+			</a>
+			<button class="ag-ov__x" onclick="agCloseChoice()">Plus tard</button>
+		</div>
+	</div>
+
+	<!-- Étapes iOS (Ajouter à l'écran d'accueil) -->
+	<div class="ag-ov" id="ag-appmodal" onclick="if(event.target===this)agCloseModal()">
+		<div class="ag-ov__c">
+			<img src="<?php echo $icon; // phpcs:ignore ?>" alt="" style="width:64px;height:64px;border-radius:16px;margin-bottom:8px">
 			<h3>Installer <?php echo esc_html( $name ); ?></h3>
 			<div class="ag-appmodal__step">1️⃣ Touche <b>Partager</b> <span style="font-size:18px">􀈂</span> en bas de Safari</div>
 			<div class="ag-appmodal__step">2️⃣ Choisis <b>« Sur l’écran d’accueil »</b></div>
 			<div class="ag-appmodal__step">3️⃣ <b>Ajouter</b> → l’app apparaît sur ton écran 🎉</div>
-			<button class="ag-appmodal__close" onclick="agCloseModal()">J’ai compris</button>
+			<button class="ag-ov__close" onclick="agCloseModal()">J’ai compris</button>
 		</div>
 	</div>
 
@@ -266,29 +291,43 @@ add_action( 'wp_footer', function () {
 		if ('serviceWorker' in navigator) {
 			window.addEventListener('load', function(){ navigator.serviceWorker.register('<?php echo $sw; // phpcs:ignore ?>', { scope: '/' }).catch(function(){}); });
 		}
+		var AMB = <?php echo $amb ? 'true' : 'false'; ?>;
+		var AMB_URL = <?php echo wp_json_encode( $amb_url ); ?>;
 		var deferred = null;
 		var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 		var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 		var bn = document.getElementById('ag-appbn');
 		var modal = document.getElementById('ag-appmodal');
+		var choice = document.getElementById('ag-choice');
 
-		window.agInstallApp = function(){
+		function doInstall(){
 			if (deferred){ deferred.prompt(); deferred.userChoice.finally(function(){ deferred=null; agDismissBanner(true); }); return; }
-			// iOS ou navigateur sans prompt → on montre les étapes.
-			if (modal){ modal.style.display='flex'; }
-		};
+			if (modal){ modal.style.display='flex'; } // iOS / sans prompt → étapes (app du contexte courant)
+		}
+		// Sur le site public : proposer le CHOIX. Dans l'espace ambassadeur : installer direct l'app amb.
+		window.agInstallApp = function(){ if (AMB) { doInstall(); } else if (choice) { choice.style.display='flex'; } else { doInstall(); } };
+		window.agPickSite = function(){ agCloseChoice(); doInstall(); };
+		window.agCloseChoice = function(){ if(choice) choice.style.display='none'; };
 		window.agCloseModal = function(){ if(modal) modal.style.display='none'; };
 		window.agDismissBanner = function(perm){ if(bn) bn.style.display='none'; if(perm!==true) localStorage.setItem('ag_appbn_off', String(Date.now())); };
 
 		function showBanner(){
-			if (standalone) return;                         // déjà installée
+			if (standalone) return;
 			var off = parseInt(localStorage.getItem('ag_appbn_off')||'0',10);
-			if (off && (Date.now()-off) < 7*24*3600*1000) return; // masquée 7 jours après fermeture
+			if (off && (Date.now()-off) < 7*24*3600*1000) return;
 			if (bn) bn.style.display='flex';
 		}
-		window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferred = e; showBanner(); });
+		window.addEventListener('beforeinstallprompt', function(e){
+			e.preventDefault(); deferred = e; showBanner();
+			// Arrivé sur l'espace amb via "Application Ambassadeurs" → on lance l'install direct.
+			if (AMB && /[?&]install=amb/.test(location.search)) { doInstall(); }
+		});
 		window.addEventListener('appinstalled', function(){ agDismissBanner(true); });
-		if (isIOS && !standalone) { window.addEventListener('load', showBanner); }
+		window.addEventListener('load', function(){
+			if (isIOS && !standalone) showBanner();
+			// iOS arrivé sur l'espace amb avec ?install=amb → montrer les étapes (app amb).
+			if (AMB && isIOS && !standalone && /[?&]install=amb/.test(location.search) && modal) { setTimeout(function(){ modal.style.display='flex'; }, 400); }
+		});
 	})();
 	</script>
 	<?php
