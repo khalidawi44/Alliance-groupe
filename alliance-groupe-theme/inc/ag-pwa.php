@@ -169,37 +169,109 @@ add_action( 'wp_head', function () {
 	echo '<link rel="apple-touch-icon" href="' . esc_url( ag_pwa_icon( 'apple-touch.png' ) ) . '">' . "\n";
 }, 2 );
 
-/* ---------------------------------------------------------------- Enregistrement SW + bouton installer */
+/* ---------------------------------------------------------------- Bouton « Télécharger l'app » (shortcode) */
+if ( ! function_exists( 'ag_pwa_button' ) ) {
+	/** Beau bouton placeable n'importe où : [ag_install_app] / [telecharger_app]. */
+	function ag_pwa_button( $atts = array() ) {
+		$a = shortcode_atts( array(
+			'texte'   => 'Télécharger l’application',
+			'sous'    => 'iPhone &amp; Android · gratuit, sans store',
+		), $atts );
+		$icon = esc_url( ag_pwa_icon( 'icon-192.png' ) );
+		return '<button type="button" class="ag-appdl" onclick="agInstallApp()">'
+			. '<img src="' . $icon . '" alt="" width="40" height="40">'
+			. '<span class="ag-appdl__txt"><strong>' . esc_html( $a['texte'] ) . '</strong><small>' . wp_kses_post( $a['sous'] ) . '</small></span>'
+			. '<span class="ag-appdl__arrow">⤓</span></button>';
+	}
+}
+add_shortcode( 'ag_install_app', 'ag_pwa_button' );
+add_shortcode( 'telecharger_app', 'ag_pwa_button' );
+
+/* ---------------------------------------------------------------- SW + bannière + modale iOS */
 add_action( 'wp_footer', function () {
 	if ( is_admin() ) return;
-	$sw     = esc_url( home_url( '/ag-sw.js' ) );
-	$amb    = ag_pwa_is_amb_context();
-	$label  = $amb ? '📲 Installer l’app Ambassadeurs' : '📲 Installer l’application';
+	$sw    = esc_url( home_url( '/ag-sw.js' ) );
+	$amb   = ag_pwa_is_amb_context();
+	$name  = $amb ? 'Alliance Ambassadeurs' : ( get_bloginfo( 'name' ) ?: 'Alliance Groupe' );
+	$sub   = $amb ? 'Ton espace ambassadeur, en 1 tap' : 'iPhone & Android · gratuit';
+	$icon  = esc_url( ag_pwa_icon( 'icon-192.png' ) );
 	?>
+	<style>
+	/* Bouton "Télécharger l'app" (shortcode) */
+	.ag-appdl{display:inline-flex;align-items:center;gap:12px;padding:12px 18px;border:0;border-radius:16px;cursor:pointer;
+		background:linear-gradient(135deg,#16161e,#0c0c12);color:#fff;font-family:inherit;box-shadow:0 10px 30px rgba(0,0,0,.35);border:1px solid rgba(212,180,92,.45);text-align:left;}
+	.ag-appdl:hover{transform:translateY(-1px);box-shadow:0 14px 34px rgba(0,0,0,.45)}
+	.ag-appdl img{border-radius:10px;flex:none;background:#0a0a0f}
+	.ag-appdl__txt{display:flex;flex-direction:column;line-height:1.2}
+	.ag-appdl__txt strong{font-size:15px;color:#fff}
+	.ag-appdl__txt small{font-size:11.5px;color:#D4B45C;margin-top:2px}
+	.ag-appdl__arrow{margin-left:6px;font-size:20px;color:#D4B45C}
+	/* Bannière flottante */
+	.ag-appbn{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:99998;display:none;
+		align-items:center;gap:12px;max-width:520px;margin:0 auto;padding:12px 14px;border-radius:18px;
+		background:rgba(16,16,22,.96);backdrop-filter:blur(8px);border:1px solid rgba(212,180,92,.4);box-shadow:0 16px 40px rgba(0,0,0,.5);font-family:-apple-system,Arial,sans-serif}
+	.ag-appbn img{width:44px;height:44px;border-radius:11px;flex:none}
+	.ag-appbn__b{flex:1;min-width:0;color:#fff}
+	.ag-appbn__b strong{display:block;font-size:14px}
+	.ag-appbn__b small{display:block;font-size:11.5px;color:#b9b9c4}
+	.ag-appbn__go{flex:none;padding:9px 16px;border:0;border-radius:999px;background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;font-weight:800;font-size:13px;cursor:pointer}
+	.ag-appbn__x{flex:none;background:none;border:0;color:#8a8a96;font-size:20px;line-height:1;cursor:pointer;padding:0 2px}
+	/* Modale iOS */
+	.ag-appmodal{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);padding:20px}
+	.ag-appmodal__c{max-width:340px;width:100%;background:#14141c;border:1px solid rgba(212,180,92,.4);border-radius:20px;padding:22px;color:#eee;font-family:-apple-system,Arial,sans-serif;text-align:center}
+	.ag-appmodal__c img{width:64px;height:64px;border-radius:16px;margin-bottom:10px}
+	.ag-appmodal__c h3{margin:0 0 12px;color:#D4B45C;font-family:Georgia,serif}
+	.ag-appmodal__step{display:flex;align-items:center;gap:10px;text-align:left;background:#0e0e15;border-radius:12px;padding:10px 12px;margin:8px 0;font-size:14px}
+	.ag-appmodal__step b{color:#D4B45C}
+	.ag-appmodal__close{margin-top:14px;width:100%;padding:12px;border:0;border-radius:999px;background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;font-weight:800;cursor:pointer}
+	</style>
+
+	<div class="ag-appbn" id="ag-appbn">
+		<img src="<?php echo $icon; // phpcs:ignore ?>" alt="">
+		<div class="ag-appbn__b"><strong><?php echo esc_html( $name ); ?></strong><small><?php echo esc_html( $sub ); ?></small></div>
+		<button class="ag-appbn__go" onclick="agInstallApp()">Installer</button>
+		<button class="ag-appbn__x" aria-label="Fermer" onclick="agDismissBanner()">×</button>
+	</div>
+
+	<div class="ag-appmodal" id="ag-appmodal" onclick="if(event.target===this)agCloseModal()">
+		<div class="ag-appmodal__c">
+			<img src="<?php echo $icon; // phpcs:ignore ?>" alt="">
+			<h3>Installer <?php echo esc_html( $name ); ?></h3>
+			<div class="ag-appmodal__step">1️⃣ Touche <b>Partager</b> <span style="font-size:18px">􀈂</span> en bas de Safari</div>
+			<div class="ag-appmodal__step">2️⃣ Choisis <b>« Sur l’écran d’accueil »</b></div>
+			<div class="ag-appmodal__step">3️⃣ <b>Ajouter</b> → l’app apparaît sur ton écran 🎉</div>
+			<button class="ag-appmodal__close" onclick="agCloseModal()">J’ai compris</button>
+		</div>
+	</div>
+
 	<script>
 	(function(){
 		if ('serviceWorker' in navigator) {
 			window.addEventListener('load', function(){ navigator.serviceWorker.register('<?php echo $sw; // phpcs:ignore ?>', { scope: '/' }).catch(function(){}); });
 		}
-		// Bouton d'installation (Android/Chrome : beforeinstallprompt ; iOS : consigne).
 		var deferred = null;
-		var btn = document.createElement('button');
-		btn.textContent = <?php echo wp_json_encode( $label ); ?>;
-		btn.setAttribute('style','position:fixed;left:50%;transform:translateX(-50%);bottom:16px;z-index:99998;display:none;padding:12px 20px;border:0;border-radius:999px;background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;font-weight:700;font-family:Arial,sans-serif;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.35);cursor:pointer');
-		document.addEventListener('DOMContentLoaded', function(){ document.body.appendChild(btn); });
-		window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferred = e; btn.style.display='block'; });
-		btn.addEventListener('click', function(){
-			if (deferred){ deferred.prompt(); deferred.userChoice.finally(function(){ deferred=null; btn.style.display='none'; }); }
-		});
-		window.addEventListener('appinstalled', function(){ btn.style.display='none'; });
-		// iOS : pas de prompt natif → on affiche une consigne une seule fois.
 		var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 		var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-		if (isIOS && !standalone && !localStorage.getItem('ag_ios_pwa_seen')) {
-			btn.textContent = '📲 Ajouter à l’écran d’accueil : Partager → « Sur l’écran d’accueil »';
-			btn.style.display='block';
-			btn.addEventListener('click', function(){ localStorage.setItem('ag_ios_pwa_seen','1'); btn.style.display='none'; });
+		var bn = document.getElementById('ag-appbn');
+		var modal = document.getElementById('ag-appmodal');
+
+		window.agInstallApp = function(){
+			if (deferred){ deferred.prompt(); deferred.userChoice.finally(function(){ deferred=null; agDismissBanner(true); }); return; }
+			// iOS ou navigateur sans prompt → on montre les étapes.
+			if (modal){ modal.style.display='flex'; }
+		};
+		window.agCloseModal = function(){ if(modal) modal.style.display='none'; };
+		window.agDismissBanner = function(perm){ if(bn) bn.style.display='none'; if(perm!==true) localStorage.setItem('ag_appbn_off', String(Date.now())); };
+
+		function showBanner(){
+			if (standalone) return;                         // déjà installée
+			var off = parseInt(localStorage.getItem('ag_appbn_off')||'0',10);
+			if (off && (Date.now()-off) < 7*24*3600*1000) return; // masquée 7 jours après fermeture
+			if (bn) bn.style.display='flex';
 		}
+		window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferred = e; showBanner(); });
+		window.addEventListener('appinstalled', function(){ agDismissBanner(true); });
+		if (isIOS && !standalone) { window.addEventListener('load', showBanner); }
 	})();
 	</script>
 	<?php
