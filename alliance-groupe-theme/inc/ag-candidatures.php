@@ -126,16 +126,23 @@ if ( ! function_exists( 'ag_candidature_submit' ) ) {
 		if ( '' === $c['prenom'] || '' === $c['email'] ) {
 			wp_safe_redirect( wp_get_referer() ?: home_url( '/' ) ); exit;
 		}
+		// AUTO-ACCEPTATION (par défaut ON, pour te décharger) : le candidat est
+		// accepté tout de suite et reçoit le lien d'inscription. Sinon, simple
+		// accusé de réception et tu valides à la main.
+		$auto = '1' === get_option( 'ag_cand_autoaccept', '1' );
+		if ( $auto ) { $c['status'] = 'accepte'; $c['last'] = current_time( 'd/m/Y' ); }
+
 		$list   = ag_cand_get();
 		$list[] = $c;
 		ag_cand_save( $list );
 
 		// 1) Réponse automatique au candidat (email).
-		ag_cand_email_recu( $c );
+		if ( $auto ) { ag_cand_email_accept( $c ); } else { ag_cand_email_recu( $c ); }
 		// 2) Alerte SMS à l'admin (ligne pro) + Telegram.
-		$resume = '🆕 Candidature ambassadeur : ' . $c['prenom'] . ( $c['ville'] ? ' (' . $c['ville'] . ')' : '' ) . ( $c['phone'] ? ' — ' . $c['phone'] : '' ) . ' — ' . $c['email'];
+		$tag    = $auto ? '✅ Candidature auto-acceptée' : '🆕 Candidature ambassadeur';
+		$resume = $tag . ' : ' . $c['prenom'] . ( $c['ville'] ? ' (' . $c['ville'] . ')' : '' ) . ( $c['phone'] ? ' — ' . $c['phone'] : '' ) . ' — ' . $c['email'];
 		if ( function_exists( 'ag_sms' ) ) ag_sms( $resume );
-		if ( function_exists( 'ag_push' ) ) ag_push( '🆕 Candidature ambassadeur', $c['prenom'] . ( $c['ville'] ? ' · ' . $c['ville'] : '' ) . "\n" . ( $c['phone'] ? '📞 ' . $c['phone'] . "\n" : '' ) . '✉️ ' . $c['email'] . ( $c['motivation'] ? "\n« " . $c['motivation'] . ' »' : '' ) );
+		if ( function_exists( 'ag_push' ) ) ag_push( $tag, $c['prenom'] . ( $c['ville'] ? ' · ' . $c['ville'] : '' ) . "\n" . ( $c['phone'] ? '📞 ' . $c['phone'] . "\n" : '' ) . '✉️ ' . $c['email'] . ( $c['motivation'] ? "\n« " . $c['motivation'] . ' »' : '' ) );
 
 		$back = wp_get_referer() ?: home_url( '/' );
 		wp_safe_redirect( add_query_arg( 'cand', 'ok', remove_query_arg( 'cand', $back ) ) . '#candidature' ); exit;
@@ -190,6 +197,60 @@ add_action( 'wp_ajax_ag_cand_delete_bulk', function () {
 	wp_send_json_success( array( 'removed' => $before - count( $list ) ) );
 } );
 
+/* ---------------------------------------------------------------- Réglages auto */
+add_action( 'admin_init', function () {
+	if ( isset( $_POST['ag_cand_save_settings'] ) && check_admin_referer( 'ag_cand_settings' ) ) {
+		update_option( 'ag_cand_autoaccept', isset( $_POST['ag_cand_autoaccept'] ) ? '1' : '0' );
+		update_option( 'ag_cand_digest', isset( $_POST['ag_cand_digest'] ) ? '1' : '0' );
+		update_option( 'ag_cand_autorelance', isset( $_POST['ag_cand_autorelance'] ) ? '1' : '0' );
+	}
+} );
+
+/* ---------------------------------------------------------------- Crons (déchargement) */
+add_action( 'init', function () {
+	if ( ! wp_next_scheduled( 'ag_cand_daily_cron' ) ) {
+		wp_schedule_event( time() + 300, 'daily', 'ag_cand_daily_cron' );
+	}
+} );
+add_action( 'ag_cand_daily_cron', 'ag_cand_daily_tasks' );
+if ( ! function_exists( 'ag_cand_daily_tasks' ) ) {
+	function ag_cand_daily_tasks() {
+		$list   = ag_cand_get();
+		$now    = time();
+		$changed = false;
+
+		// 1) Relance automatique des candidats restés « nouveau » > 3 jours (1 seule fois).
+		if ( '1' === get_option( 'ag_cand_autorelance', '1' ) ) {
+			foreach ( $list as $k => $c ) {
+				if ( 'nouveau' !== ( $c['status'] ?? '' ) ) continue;
+				if ( ! empty( $c['auto_relanced'] ) ) continue;
+				if ( ( $now - (int) ( $c['ts'] ?? $now ) ) < 3 * DAY_IN_SECONDS ) continue;
+				$p = $c['prenom'] ?: '';
+				$inner  = '<p>Bonjour ' . esc_html( $p ) . ',</p><p>On n\'a pas encore eu de tes nouvelles ! Ta place d\'ambassadeur Alliance Groupe t\'attend toujours : <strong>10 % de commission à vie</strong>, gratuit, 100 % en ligne.</p>';
+				$inner .= ag_email_button( 'Rejoindre maintenant', ag_cand_inscription_link() );
+				ag_cand_mail( $c['email'] ?? '', 'Ta place d\'ambassadeur t\'attend 👋', 'Toujours partant, ' . $p . ' ?', $inner );
+				$list[ $k ]['status']        = 'relance';
+				$list[ $k ]['last']          = current_time( 'd/m/Y' );
+				$list[ $k ]['auto_relanced'] = 1;
+				$changed = true;
+			}
+		}
+		if ( $changed ) ag_cand_save( $list );
+
+		// 2) Digest SMS quotidien des candidatures des dernières 24 h.
+		if ( '1' === get_option( 'ag_cand_digest', '1' ) && function_exists( 'ag_sms' ) ) {
+			$since = $now - DAY_IN_SECONDS;
+			$today = array_filter( $list, function ( $c ) use ( $since ) { return (int) ( $c['ts'] ?? 0 ) >= $since; } );
+			$nb    = count( $today );
+			if ( $nb > 0 ) {
+				$acc = count( array_filter( $today, function ( $c ) { return 'accepte' === ( $c['status'] ?? '' ); } ) );
+				$noms = implode( ', ', array_slice( array_map( function ( $c ) { return $c['prenom'] ?: '?'; }, $today ), 0, 8 ) );
+				ag_sms( '🎯 Candidatures (24h) : ' . $nb . ' reçue(s), ' . $acc . ' acceptée(s). ' . $noms );
+			}
+		}
+	}
+}
+
 /* ---------------------------------------------------------------- Page admin */
 add_action( 'admin_menu', function () {
 	add_submenu_page( 'ag-ambassadeurs', 'Candidatures', '🎯 Candidatures', 'manage_options', 'ag-candidatures', 'ag_cand_render' );
@@ -214,7 +275,20 @@ if ( ! function_exists( 'ag_cand_render' ) ) {
 		$counts = array();
 		foreach ( $all as $c ) { $s = $c['status'] ?? 'nouveau'; $counts[ $s ] = ( $counts[ $s ] ?? 0 ) + 1; }
 		echo '<div class="wrap"><h1>🎯 Candidatures ambassadeurs (' . count( $all ) . ')</h1>';
-		echo '<p style="max-width:840px;color:#50575e;">Chaque candidature reçue déclenche un <strong>email automatique au candidat</strong> + un <strong>SMS d\'alerte sur ta ligne</strong>. Ici tu gères : Accepter (envoie l\'email d\'acceptation + lien d\'inscription), Refuser, Relancer, ou contacter le candidat en 1 clic. Mets le formulaire sur une page avec le shortcode <code>[ag_candidature]</code>.</p>';
+		echo '<p style="max-width:840px;color:#50575e;">Chaque candidature reçue déclenche un <strong>email automatique au candidat</strong> + un <strong>SMS d\'alerte sur ta ligne</strong>. Formulaire public : shortcode <code>[ag_candidature]</code> (page « Devenir ambassadeur » créée automatiquement).</p>';
+		// Réglages d'automatisation (déchargement).
+		$auto = '1' === get_option( 'ag_cand_autoaccept', '1' );
+		$dig  = '1' === get_option( 'ag_cand_digest', '1' );
+		$rel  = '1' === get_option( 'ag_cand_autorelance', '1' );
+		echo '<div style="max-width:840px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #1e7e34;border-radius:8px;padding:12px 16px;margin:10px 0;">';
+		echo '<form method="post" style="margin:0;">';
+		wp_nonce_field( 'ag_cand_settings' );
+		echo '<strong>🤖 Pilote automatique (te décharge) :</strong><br>';
+		echo '<label style="display:block;margin:6px 0;"><input type="checkbox" name="ag_cand_autoaccept" ' . checked( $auto, true, false ) . '> <strong>Auto-accepter</strong> : chaque candidat est accepté tout de suite et reçoit son lien d\'inscription (tu es juste informé par SMS).</label>';
+		echo '<label style="display:block;margin:6px 0;"><input type="checkbox" name="ag_cand_autorelance" ' . checked( $rel, true, false ) . '> <strong>Relance auto</strong> : email de relance aux candidats restés sans suite après 3 jours.</label>';
+		echo '<label style="display:block;margin:6px 0;"><input type="checkbox" name="ag_cand_digest" ' . checked( $dig, true, false ) . '> <strong>Digest SMS quotidien</strong> : un résumé par jour (nombre de candidatures + acceptées).</label>';
+		echo '<button name="ag_cand_save_settings" value="1" class="button button-primary button-small">Enregistrer</button>';
+		echo '</form></div>';
 		// Filtres statut.
 		$base = admin_url( 'admin.php?page=ag-candidatures' );
 		echo '<p>';

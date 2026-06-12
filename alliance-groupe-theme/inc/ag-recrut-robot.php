@@ -26,9 +26,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Helpers communs.
  * ------------------------------------------------------------------------- */
 if ( ! function_exists( 'ag_rr_link' ) ) {
-	/** Lien d'inscription ambassadeur (page réelle /ambassadeurs). Outil admin :
-	    aucun code parrain, juste l'URL propre vers la page d'inscription. */
+	/** Lien de candidature ambassadeur (funnel géré : email auto + alerte SMS +
+	    suivi). On envoie vers /candidature-ambassadeur si la page existe, sinon
+	    vers /ambassadeurs. Outil admin : aucun code parrain. */
 	function ag_rr_link() {
+		if ( function_exists( 'get_page_by_path' ) && get_page_by_path( 'candidature-ambassadeur' ) ) {
+			return home_url( '/candidature-ambassadeur' );
+		}
 		return function_exists( 'home_url' ) ? home_url( '/ambassadeurs' ) : '/ambassadeurs';
 	}
 }
