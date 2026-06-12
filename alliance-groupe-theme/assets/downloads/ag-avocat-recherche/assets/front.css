@@ -1,10 +1,16 @@
 /* AG Recherche Juridique — façade (espace cabinet). Navy & champagne. */
 .ag-jr-front {
 	--gold: #D4B45C; --navy: #1f2740; --ink: #131826; --bg: #f6f7f9;
-	max-width: 1040px; margin: 24px auto; padding: 0 16px;
+	max-width: 1040px; margin: 30px auto; padding: 28px 32px;
+	background: #ffffff; border: 1px solid #e6e8ec; border-radius: 16px;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, .16);
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
 	color: #2c3338;
 }
+/* Lisibilité garantie quel que soit le thème hôte (sombre ou clair). */
+.ag-jr-front, .ag-jr-front p, .ag-jr-front label, .ag-jr-front span,
+.ag-jr-front h2, .ag-jr-front h3, .ag-jr-front summary { color: #2c3338; }
+.ag-jr-front a { color: var(--navy); }
 
 /* En-tête + navigation */
 .ag-jr-front-head {
