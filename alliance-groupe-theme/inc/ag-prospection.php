@@ -620,8 +620,17 @@ if ( ! function_exists( 'ag_places_sweep' ) ) {
    Gratuit, sans clé. On vise le REDRESSEMENT / la SAUVEGARDE (l'entreprise
    se bat pour rebondir → elle a besoin de regagner des clients vite) et on
    EXCLUT la liquidation (l'entreprise ferme : inutile de la prospecter). */
+if ( ! function_exists( 'ag_bodacc_sector_keywords' ) ) {
+	/** Mots-clés d'activité par secteur (post-filtre des résultats BODACC). */
+	function ag_bodacc_sector_keywords( $sector ) {
+		$map = array(
+			'juridique' => array( 'avocat', 'juridique', 'notaire', 'huissier', 'commissaire de justice', 'juriste', 'selarl', 'scp', 'selas', 'conseil juridique', 'droit' ),
+		);
+		return $map[ $sector ] ?? array();
+	}
+}
 if ( ! function_exists( 'ag_bodacc_search' ) ) {
-	function ag_bodacc_search( $city ) {
+	function ag_bodacc_search( $city, $sector = '' ) {
 		$city = trim( (string) $city );
 		if ( '' === $city ) return array();
 		$where = rawurlencode( 'search(jugement, "redressement") and search("' . $city . '")' );
@@ -661,6 +670,16 @@ if ( ! function_exists( 'ag_bodacc_search' ) ) {
 				'nature' => $nature ?: 'Procédure collective', 'date' => $rec['dateparution'] ?? '', 'tribunal' => is_array( $rec['tribunal'] ?? '' ) ? '' : ( $rec['tribunal'] ?? '' ),
 				'complement' => is_string( $compl ) ? $compl : '',
 			);
+		}
+		// Filtre SECTEUR (ex. juridique/avocats) : on garde les fiches dont le nom
+		// OU l'activité contient un mot-clé du secteur. Évite de remonter tout le tribunal.
+		$kw = ag_bodacc_sector_keywords( $sector );
+		if ( ! empty( $kw ) ) {
+			$out = array_values( array_filter( $out, function ( $c ) use ( $kw ) {
+				$h = mb_strtolower( ( $c['name'] ?? '' ) . ' ' . ( $c['activite'] ?? '' ) );
+				foreach ( $kw as $k ) { if ( false !== mb_strpos( $h, $k ) ) return true; }
+				return false;
+			} ) );
 		}
 		return $out;
 	}
@@ -1253,15 +1272,21 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			<div style="max-width:980px;margin-top:18px;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #7a4ed4;border-radius:6px;">
 				<h2 style="margin-top:0;">🏛️ Entreprises au tribunal (redressement judiciaire)</h2>
 				<p style="color:#50575e;max-width:760px;">Données <strong>publiques BODACC</strong> (gratuit). On cible celles en <strong>redressement / sauvegarde</strong> (elles se battent pour rebondir → elles ont besoin de regagner des clients) et on <strong>exclut les liquidations</strong> (qui ferment). Le robot génère un <strong>message empathique adapté</strong>.</p>
+				<?php $tsector = isset( $_GET['tsector'] ) ? sanitize_text_field( wp_unslash( $_GET['tsector'] ) ) : ''; ?>
 				<form method="get" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>">
 					<input type="hidden" name="page" value="ag-prospects">
 					<input type="text" name="tcity" value="<?php echo esc_attr( isset( $_GET['tcity'] ) ? sanitize_text_field( wp_unslash( $_GET['tcity'] ) ) : '' ); ?>" placeholder="Ville (ex : Nantes)" style="width:220px;">
+					<select name="tsector" style="margin:0 6px;">
+						<option value="" <?php selected( $tsector, '' ); ?>>Tous secteurs</option>
+						<option value="juridique" <?php selected( $tsector, 'juridique' ); ?>>⚖️ Avocats / juridique</option>
+					</select>
 					<?php submit_button( '🏛️ Chercher au tribunal', 'secondary', 'submit', false ); ?>
 				</form>
+				<p style="color:#646970;font-size:.84em;margin:6px 0 0;">💡 Pour les cibles avocats : choisis « ⚖️ Avocats / juridique » + une grande ville (Nantes, Saint-Nazaire…). On filtre les fiches du tribunal sur le secteur. <strong>Attention</strong> : un « mandataire » ou « administrateur judiciaire » n'est PAS une cible (il gère les procédures des autres) — c'est un partenaire « coordination ».</p>
 				<?php
 				$tcity = isset( $_GET['tcity'] ) ? sanitize_text_field( wp_unslash( $_GET['tcity'] ) ) : '';
 				if ( '' !== $tcity ) :
-					$tres = ag_bodacc_search( $tcity );
+					$tres = ag_bodacc_search( $tcity, $tsector );
 					if ( is_array( $tres ) && isset( $tres['error'] ) ) : ?>
 						<p style="color:#b32d2e;">Erreur BODACC : <?php echo esc_html( $tres['error'] ); ?></p>
 					<?php elseif ( empty( $tres ) ) : ?>
