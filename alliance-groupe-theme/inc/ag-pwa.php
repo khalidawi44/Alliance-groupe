@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_PWA_VER', '1.0.3' );
+define( 'AG_PWA_VER', '1.0.4' );
 
 /* ---------------------------------------------------------------- Helpers */
 if ( ! function_exists( 'ag_pwa_icon' ) ) {
@@ -94,7 +94,7 @@ if ( ! function_exists( 'ag_pwa_manifest' ) ) {
 			);
 		}
 		if ( $amb ) {
-			$start = add_query_arg( 'app', '1', ag_pwa_amb_start() );
+			$start = add_query_arg( array( 'app' => '1', 'ag_app' => 'amb' ), ag_pwa_amb_start() );
 			return array(
 				'id'               => '/?ag-app=amb',
 				'name'             => 'Alliance Ambassadeurs',
@@ -115,7 +115,7 @@ if ( ! function_exists( 'ag_pwa_manifest' ) ) {
 			'name'             => get_bloginfo( 'name' ) ?: 'Alliance Groupe',
 			'short_name'       => 'Alliance',
 			'description'      => get_bloginfo( 'description' ) ?: 'Studio web & sécurité.',
-			'start_url'        => home_url( '/?app=1' ),
+			'start_url'        => add_query_arg( array( 'app' => '1', 'ag_app' => 'site' ), home_url( '/' ) ),
 			'scope'            => '/',
 			'display'          => 'standalone',
 			'background_color' => '#0a0a0f',
@@ -175,6 +175,8 @@ add_action( 'wp_head', function () {
 	echo '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">' . "\n";
 	echo '<meta name="apple-mobile-web-app-title" content="' . esc_attr( $name ) . '">' . "\n";
 	echo '<link rel="apple-touch-icon" href="' . esc_url( ag_pwa_icon( $amb ? 'amb-apple.png' : 'apple-touch.png' ) ) . '">' . "\n";
+	// Pose très tôt la classe « app ambassadeur » (évite le flash du menu site).
+	echo '<script>(function(){try{var sa=matchMedia("(display-mode: standalone)").matches||navigator.standalone;var p=new URLSearchParams(location.search).get("ag_app");if(p){sessionStorage.setItem("ag_app",p);}var w=p||sessionStorage.getItem("ag_app");if(sa&&w==="amb"){document.documentElement.classList.add("ag-amb-app");}}catch(e){}})();</script>' . "\n";
 }, 2 );
 
 /* ---------------------------------------------------------------- Bouton « Télécharger l'app » (shortcode) */
@@ -332,3 +334,80 @@ add_action( 'wp_footer', function () {
 	</script>
 	<?php
 } );
+
+/* ---------------------------------------------------------------- Menu DÉDIÉ de l'app Ambassadeurs (mode standalone) */
+if ( ! function_exists( 'ag_pwa_amb_nav_items' ) ) {
+	/** Onglets du menu de l'app Ambassadeurs (URL résolues sur les pages réelles). */
+	function ag_pwa_amb_nav_items() {
+		$find = function ( $slugs, $fallback ) {
+			foreach ( (array) $slugs as $s ) { $p = get_page_by_path( $s ); if ( $p && 'publish' === $p->post_status ) return get_permalink( $p ); }
+			return $fallback;
+		};
+		$home = ag_pwa_amb_start();
+		return array(
+			array( 'ic' => '🏠', 'lbl' => 'Accueil',    'url' => $home ),
+			array( 'ic' => '🎯', 'lbl' => 'Prospecter', 'url' => $find( array( 'ma-prospection' ), $home ) ),
+			array( 'ic' => '🏆', 'lbl' => 'Classement', 'url' => $find( array( 'classement' ), $home ) ),
+			array( 'ic' => '🤝', 'lbl' => 'Recruter',   'url' => $find( array( 'candidature-ambassadeur', 'devenir-ambassadeur', 'guide-ambassadeur' ), $home ) ),
+			array( 'ic' => '👤', 'lbl' => 'Compte',     'url' => $find( array( 'mon-compte', 'compte', 'connexion' ), $home ) ),
+		);
+	}
+}
+add_action( 'wp_footer', function () {
+	if ( is_admin() ) return;
+	$items = ag_pwa_amb_nav_items();
+	$cur   = trailingslashit( strtok( $_SERVER['REQUEST_URI'] ?? '/', '?' ) );
+	?>
+	<style>
+	/* Visible UNIQUEMENT dans l'app Ambassadeurs installée (body.ag-amb-app). */
+	.ag-ambnav{display:none}
+	html.ag-amb-app .ag-nav{display:none !important}                 /* masque le menu du site */
+	html.ag-amb-app body{padding-bottom:78px !important}
+	html.ag-amb-app .ag-ambnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:99996;
+		justify-content:space-around;align-items:stretch;gap:2px;padding:6px 6px calc(6px + env(safe-area-inset-bottom));
+		background:rgba(12,12,18,.98);backdrop-filter:blur(10px);border-top:1px solid rgba(212,180,92,.35);font-family:-apple-system,Arial,sans-serif}
+	html.ag-amb-app .ag-ambnav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+		padding:6px 2px;border-radius:12px;text-decoration:none;color:#9a9aa5;font-size:10.5px;font-weight:600}
+	html.ag-amb-app .ag-ambnav a .i{font-size:20px;line-height:1}
+	html.ag-amb-app .ag-ambnav a.on{color:#D4B45C;background:rgba(212,180,92,.12)}
+	/* petit en-tête d'app (nom) à la place du header masqué */
+	html.ag-amb-app .ag-ambtop{display:flex}
+	.ag-ambtop{display:none;align-items:center;gap:8px;position:sticky;top:0;z-index:99995;padding:10px 14px calc(10px);
+		background:#0c0c12;border-bottom:1px solid rgba(212,180,92,.25);color:#fff;font-family:Georgia,serif}
+	.ag-ambtop img{width:26px;height:26px;border-radius:7px}
+	.ag-ambtop b{font-size:15px;color:#D4B45C}
+	</style>
+
+	<div class="ag-ambtop"><img src="<?php echo esc_url( ag_pwa_icon( 'amb-192.png' ) ); ?>" alt=""><b>Alliance Ambassadeurs</b></div>
+
+	<nav class="ag-ambnav" aria-label="Menu ambassadeur">
+		<?php foreach ( $items as $it ) :
+			$active = ( '#' !== $it['url'] && false !== strpos( trailingslashit( wp_parse_url( $it['url'], PHP_URL_PATH ) ?: '/' ), $cur ) && '/' !== $cur ) ? ' on' : '';
+			?>
+			<a class="agn<?php echo esc_attr( $active ); ?>" href="<?php echo esc_url( $it['url'] ); ?>"><span class="i"><?php echo esc_html( $it['ic'] ); ?></span><?php echo esc_html( $it['lbl'] ); ?></a>
+		<?php endforeach; ?>
+	</nav>
+
+	<script>
+	(function(){
+		var sa = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+		var p = new URLSearchParams(location.search);
+		var tag = p.get('ag_app');
+		try { if (tag) sessionStorage.setItem('ag_app', tag); } catch(e){}
+		var which = tag; try { if (!which) which = sessionStorage.getItem('ag_app'); } catch(e){}
+		if (sa && which === 'amb') {
+			document.documentElement.classList.add('ag-amb-app');
+			document.addEventListener('DOMContentLoaded', function(){ document.body.classList.add('ag-amb-app'); });
+			if (document.body) document.body.classList.add('ag-amb-app');
+			// Met en surbrillance l'onglet correspondant à la page courante.
+			document.addEventListener('DOMContentLoaded', function(){
+				var here = location.pathname.replace(/\/+$/,'');
+				document.querySelectorAll('.ag-ambnav a').forEach(function(a){
+					try{ if (new URL(a.href).pathname.replace(/\/+$/,'') === here) a.classList.add('on'); }catch(e){}
+				});
+			});
+		}
+	})();
+	</script>
+	<?php
+}, 5 );
