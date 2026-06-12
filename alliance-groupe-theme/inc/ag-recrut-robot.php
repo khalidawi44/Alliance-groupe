@@ -30,9 +30,9 @@ if ( ! function_exists( 'ag_rr_link' ) ) {
 	    suivi). On envoie vers /candidature-ambassadeur si la page existe, sinon
 	    vers /ambassadeurs. Outil admin : aucun code parrain. */
 	function ag_rr_link() {
-		if ( function_exists( 'get_page_by_path' ) && get_page_by_path( 'candidature-ambassadeur' ) ) {
-			return home_url( '/candidature-ambassadeur' );
-		}
+		$pg = function_exists( 'get_page_by_path' ) ? get_page_by_path( 'candidature-ambassadeur' ) : null;
+		if ( $pg && 'publish' === $pg->post_status ) return get_permalink( $pg );
+		if ( function_exists( 'ag_cand_program_url' ) ) return ag_cand_program_url();
 		return function_exists( 'home_url' ) ? home_url( '/ambassadeurs' ) : '/ambassadeurs';
 	}
 }

@@ -482,6 +482,26 @@ add_action( 'wp_ajax_ag_prospect_delete_bulk', function () {
 	if ( $removed && function_exists( 'ag_activity_log' ) ) ag_activity_log( '🗑️ ' . $removed . ' prospect(s) supprimé(s) en lot' );
 	wp_send_json_success( array( 'removed' => $removed ) );
 } );
+/* Envoi SMS en masse aux prospects sélectionnés (via passerelle SMS). */
+add_action( 'wp_ajax_ag_prospect_sms_bulk', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
+	if ( ! function_exists( 'ag_sms_send_bulk' ) ) wp_send_json_error( array( 'msg' => 'passerelle absente' ) );
+	$ids = isset( $_POST['ids'] ) ? (array) $_POST['ids'] : array();
+	$ids = array_filter( array_map( 'sanitize_text_field', array_map( 'wp_unslash', $ids ) ) );
+	if ( empty( $ids ) ) wp_send_json_error();
+	$pairs = array();
+	foreach ( (array) get_option( 'ag_prospects', array() ) as $p ) {
+		if ( ! in_array( $p['id'] ?? '', $ids, true ) ) continue;
+		if ( ag_prospect_blocked( $p['status'] ?? '' ) ) continue; // jamais aux bloqués/refusés
+		$to = $p['phone_intl'] ?? '';
+		if ( '' === $to ) $to = $p['phone'] ?? '';
+		if ( '' === $to ) continue;
+		$pairs[] = array( 'to' => $to, 'msg' => ag_prospect_message( $p ) );
+	}
+	list( $ok, $ko ) = ag_sms_send_bulk( $pairs );
+	if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '📲 SMS groupé prospects : ' . $ok . ' envoyé(s), ' . $ko . ' échec(s)' );
+	wp_send_json_success( array( 'ok' => $ok, 'ko' => $ko ) );
+} );
 /** Signature stable d'un lead (pas d'id natif) : pour la suppression en lot. */
 if ( ! function_exists( 'ag_lead_sig' ) ) {
 	function ag_lead_sig( $l ) {
@@ -1677,9 +1697,12 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			<?php if ( empty( $prospects ) ) : ?>
 				<p>Aucun prospect (avec ces filtres). Cherche des entreprises ci-dessus ou ajoute-en à la main.</p>
 			<?php else : ?>
+				<?php $ag_gw = function_exists( 'ag_sms_gateway_ready' ) && ag_sms_gateway_ready(); ?>
 				<div class="ag-bulkbar" style="margin:10px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
 					<label style="font-size:.9em;"><input type="checkbox" id="ag-check-all"> Tout sélectionner</label>
+					<button type="button" id="ag-sms-selected" class="button button-small" disabled <?php echo $ag_gw ? '' : 'title="Configure la Passerelle SMS"'; ?>>📲 Envoyer SMS (sélection)</button>
 					<button type="button" id="ag-del-selected" class="button button-small button-link-delete" disabled>🗑️ Supprimer la sélection (<span id="ag-sel-count">0</span>)</button>
+					<?php if ( ! $ag_gw ) : ?><span style="font-size:.8em;color:#b26a00;">📲 <a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-sms-gateway' ) ); ?>">Passerelle SMS</a> à activer pour l'envoi groupé.</span><?php endif; ?>
 				</div>
 				<table class="widefat striped"><thead><tr><th style="width:28px;"><input type="checkbox" id="ag-check-all2" title="Tout sélectionner"></th><th>Priorité</th><th>Entreprise</th><th>Zone</th><th>Pourquoi (besoin)</th><th>Contact</th><th>Statut</th><th>Assigné à</th><th>Prospecter</th><th></th></tr></thead><tbody>
 				<?php foreach ( $prospects as $p ) :
@@ -1870,8 +1893,18 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			(function(){
 				var all=document.getElementById('ag-check-all'), all2=document.getElementById('ag-check-all2');
 				var delBtn=document.getElementById('ag-del-selected'), cntEl=document.getElementById('ag-sel-count');
+				var smsBtn=document.getElementById('ag-sms-selected'), gwReady=<?php echo ( function_exists( 'ag_sms_gateway_ready' ) && ag_sms_gateway_ready() ) ? 'true' : 'false'; ?>;
 				function checks(){ return Array.prototype.slice.call(document.querySelectorAll('.ag-check')); }
-				function refresh(){ var n=checks().filter(function(c){return c.checked;}).length; if(cntEl)cntEl.textContent=n; if(delBtn)delBtn.disabled=(n===0); }
+				function refresh(){ var n=checks().filter(function(c){return c.checked;}).length; if(cntEl)cntEl.textContent=n; if(delBtn)delBtn.disabled=(n===0); if(smsBtn)smsBtn.disabled=(n===0||!gwReady); }
+				if(smsBtn) smsBtn.addEventListener('click',function(){
+					var ids=checks().filter(function(c){return c.checked;}).map(function(c){return c.value;});
+					if(!ids.length) return;
+					if(!confirm('Envoyer un SMS aux '+ids.length+' prospect(s) sélectionné(s) ? (message personnalisé par fiche)')) return;
+					var fd=new FormData(); fd.append('action','ag_prospect_sms_bulk'); fd.append('_n',nonce);
+					ids.forEach(function(id){ fd.append('ids[]',id); });
+					smsBtn.disabled=true; smsBtn.textContent='…';
+					fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ smsBtn.textContent='📲 Envoyer SMS (sélection)'; smsBtn.disabled=false; alert(j&&j.success?('SMS envoyés : '+j.data.ok+' / échecs : '+j.data.ko):'Erreur'); }).catch(function(){ smsBtn.disabled=false; });
+				});
 				function setAll(v){ checks().forEach(function(c){ c.checked=v; }); if(all)all.checked=v; if(all2)all2.checked=v; refresh(); }
 				if(all) all.addEventListener('change',function(){ setAll(all.checked); });
 				if(all2) all2.addEventListener('change',function(){ setAll(all2.checked); });

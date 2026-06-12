@@ -35,8 +35,28 @@ if ( ! function_exists( 'ag_cand_statuses' ) ) {
 }
 
 /* ---------------------------------------------------------------- Emails */
+if ( ! function_exists( 'ag_cand_program_url' ) ) {
+	/** URL FIABLE de la page « Programme Ambassadeurs » : on la trouve par son
+	    MODÈLE (page-ambassadeurs.php) puis par slug, sinon /ambassadeurs. Évite
+	    qu'un lien tombe sur le blog si le slug a changé. */
+	function ag_cand_program_url() {
+		$q = new WP_Query( array(
+			'post_type'      => 'page',
+			'post_status'    => 'publish',
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
+			'meta_key'       => '_wp_page_template',
+			'meta_value'     => 'templates/page-ambassadeurs.php',
+		) );
+		if ( ! empty( $q->posts ) ) return get_permalink( (int) $q->posts[0] );
+		$p = get_page_by_path( 'ambassadeurs' );
+		if ( $p && 'publish' === $p->post_status ) return get_permalink( $p );
+		return home_url( '/ambassadeurs' );
+	}
+}
 if ( ! function_exists( 'ag_cand_inscription_link' ) ) {
-	function ag_cand_inscription_link() { return function_exists( 'home_url' ) ? home_url( '/ambassadeurs' ) : '/ambassadeurs'; }
+	function ag_cand_inscription_link() { return ag_cand_program_url(); }
 }
 if ( ! function_exists( 'ag_cand_mail' ) ) {
 	function ag_cand_mail( $to, $subject, $heading, $inner ) {
@@ -54,6 +74,14 @@ if ( ! function_exists( 'ag_cand_email_recu' ) ) {
 		$inner .= ag_email_button( 'Découvrir le programme', ag_cand_inscription_link() );
 		$inner .= '<p style="color:#9a9aa5;font-size:12px;">Tu reçois cet email car tu as candidaté sur notre site. Si ce n\'est pas toi, ignore ce message.</p>';
 		ag_cand_mail( $c['email'] ?? '', 'Ta candidature ambassadeur est bien reçue 🎉', 'Bienvenue, ' . $p . ' !', $inner );
+		ag_cand_sms_candidate( $c, 'Bonjour ' . $p . ', ta candidature ambassadeur Alliance Groupe est bien recue ! On revient vers toi vite. Infos : ' . ag_cand_inscription_link() . ' STOP pour stop.' );
+	}
+}
+if ( ! function_exists( 'ag_cand_sms_candidate' ) ) {
+	/** Envoie un SMS au candidat via la passerelle (si configurée et tél présent). */
+	function ag_cand_sms_candidate( $c, $msg ) {
+		if ( empty( $c['phone'] ) || ! function_exists( 'ag_sms_send' ) || ! function_exists( 'ag_sms_gateway_ready' ) || ! ag_sms_gateway_ready() ) return false;
+		return ag_sms_send( $c['phone'], $msg );
 	}
 }
 if ( ! function_exists( 'ag_cand_email_accept' ) ) {
@@ -65,6 +93,7 @@ if ( ! function_exists( 'ag_cand_email_accept' ) ) {
 		$inner .= ag_email_button( 'Finaliser mon inscription', ag_cand_inscription_link() );
 		$inner .= '<p>Une question ? Réponds simplement à cet email.</p>';
 		ag_cand_mail( $c['email'] ?? '', 'Ta candidature ambassadeur est acceptée ✅', 'Félicitations ' . $p . ' !', $inner );
+		ag_cand_sms_candidate( $c, 'Felicitations ' . $p . ' ! Ta candidature ambassadeur Alliance Groupe est ACCEPTEE. Finalise ton inscription : ' . ag_cand_inscription_link() . ' STOP pour stop.' );
 	}
 }
 if ( ! function_exists( 'ag_cand_email_refus' ) ) {
@@ -185,6 +214,21 @@ add_action( 'wp_ajax_ag_cand_action', function () {
 	}
 	wp_send_json_error();
 } );
+add_action( 'wp_ajax_ag_cand_sms_bulk', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_n'] ) ), 'ag_cand' ) ) wp_send_json_error();
+	if ( ! function_exists( 'ag_sms_send' ) ) wp_send_json_error( array( 'msg' => 'passerelle absente' ) );
+	$ids = isset( $_POST['ids'] ) ? (array) $_POST['ids'] : array();
+	$ids = array_filter( array_map( 'sanitize_text_field', array_map( 'wp_unslash', $ids ) ) );
+	if ( empty( $ids ) ) wp_send_json_error();
+	$link = ag_cand_inscription_link();
+	$pairs = array();
+	foreach ( ag_cand_get() as $c ) {
+		if ( ! in_array( $c['id'] ?? '', $ids, true ) || empty( $c['phone'] ) ) continue;
+		$pairs[] = array( 'to' => $c['phone'], 'msg' => 'Bonjour ' . ( $c['prenom'] ?: '' ) . ', Alliance Groupe : ta place d\'ambassadeur t\'attend (10% a vie). Rejoins : ' . $link . ' STOP pour stop.' );
+	}
+	list( $ok, $ko ) = ag_sms_send_bulk( $pairs );
+	wp_send_json_success( array( 'ok' => $ok, 'ko' => $ko ) );
+} );
 add_action( 'wp_ajax_ag_cand_delete_bulk', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_n'] ) ), 'ag_cand' ) ) wp_send_json_error();
 	$ids = isset( $_POST['ids'] ) ? (array) $_POST['ids'] : array();
@@ -229,6 +273,7 @@ if ( ! function_exists( 'ag_cand_daily_tasks' ) ) {
 				$inner  = '<p>Bonjour ' . esc_html( $p ) . ',</p><p>On n\'a pas encore eu de tes nouvelles ! Ta place d\'ambassadeur Alliance Groupe t\'attend toujours : <strong>10 % de commission à vie</strong>, gratuit, 100 % en ligne.</p>';
 				$inner .= ag_email_button( 'Rejoindre maintenant', ag_cand_inscription_link() );
 				ag_cand_mail( $c['email'] ?? '', 'Ta place d\'ambassadeur t\'attend 👋', 'Toujours partant, ' . $p . ' ?', $inner );
+				ag_cand_sms_candidate( $c, 'Bonjour ' . $p . ', ta place d\'ambassadeur Alliance Groupe t\'attend toujours (10% a vie). Rejoins : ' . ag_cand_inscription_link() . ' STOP pour stop.' );
 				$list[ $k ]['status']        = 'relance';
 				$list[ $k ]['last']          = current_time( 'd/m/Y' );
 				$list[ $k ]['auto_relanced'] = 1;
@@ -302,7 +347,12 @@ if ( ! function_exists( 'ag_cand_render' ) ) {
 		echo '<form method="get" style="display:inline-block;margin:0 8px 6px 0;"><input type="hidden" name="page" value="ag-candidatures"><input type="hidden" name="cstat" value="' . esc_attr( $fstat ) . '"><label>Trier : <select name="csort" onchange="this.form.submit()">';
 		foreach ( array( 'recent' => '🕒 Récents', 'nom' => 'A→Z (prénom)', 'statut' => 'Statut' ) as $sk => $sl ) echo '<option value="' . esc_attr( $sk ) . '" ' . selected( $sort, $sk, false ) . '>' . esc_html( $sl ) . '</option>';
 		echo '</select></label></form>';
-		echo '<div style="margin:6px 0 10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><label><input type="checkbox" id="cand-all"> Tout sélectionner</label><button type="button" id="cand-del" class="button button-small button-link-delete" disabled>🗑️ Supprimer la sélection (<span id="cand-cnt">0</span>)</button></div>';
+		$gw_ready = function_exists( 'ag_sms_gateway_ready' ) && ag_sms_gateway_ready();
+		echo '<div style="margin:6px 0 10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><label><input type="checkbox" id="cand-all"> Tout sélectionner</label>';
+		echo '<button type="button" id="cand-sms" class="button button-small" ' . ( $gw_ready ? '' : 'disabled title="Configure la Passerelle SMS"' ) . ' disabled>📲 Envoyer SMS (sélection)</button>';
+		echo '<button type="button" id="cand-del" class="button button-small button-link-delete" disabled>🗑️ Supprimer la sélection (<span id="cand-cnt">0</span>)</button>';
+		if ( ! $gw_ready ) echo '<span style="font-size:.82em;color:#b26a00;">📲 Active la <a href="' . esc_url( admin_url( 'admin.php?page=ag-sms-gateway' ) ) . '">Passerelle SMS</a> pour envoyer aux candidats.</span>';
+		echo '</div>';
 		echo '<table class="widefat striped"><thead><tr><th style="width:28px;"><input type="checkbox" id="cand-all2"></th><th>Date</th><th>Candidat</th><th>Contact</th><th>Motivation</th><th>Statut</th><th>Actions</th></tr></thead><tbody>';
 		foreach ( $list as $c ) {
 			$id    = $c['id'] ?? '';
@@ -339,8 +389,10 @@ if ( ! function_exists( 'ag_cand_render' ) ) {
 		echo 'document.querySelectorAll(".cand-status").forEach(function(s){s.addEventListener("change",function(){post(s.getAttribute("data-id"),"status",s.value,null);});});';
 		echo 'document.querySelectorAll(".cand-note-save").forEach(function(b){b.addEventListener("click",function(){var ta=document.querySelector(".cand-note[data-id=\'"+b.getAttribute("data-id")+"\']");post(b.getAttribute("data-id"),"note",ta?ta.value:"",function(){b.textContent="✓";});});});';
 		// bulk delete.
-		echo 'var all=document.getElementById("cand-all"),all2=document.getElementById("cand-all2"),del=document.getElementById("cand-del"),cnt=document.getElementById("cand-cnt");';
-		echo 'function it(){return [].slice.call(document.querySelectorAll(".cand-chk"));}function rf(){var c=it().filter(function(x){return x.checked;}).length;if(cnt)cnt.textContent=c;if(del)del.disabled=(c===0);}';
+		echo 'var gwReady=' . ( $gw_ready ? 'true' : 'false' ) . ';';
+		echo 'var all=document.getElementById("cand-all"),all2=document.getElementById("cand-all2"),del=document.getElementById("cand-del"),cnt=document.getElementById("cand-cnt"),smsb=document.getElementById("cand-sms");';
+		echo 'function it(){return [].slice.call(document.querySelectorAll(".cand-chk"));}function rf(){var c=it().filter(function(x){return x.checked;}).length;if(cnt)cnt.textContent=c;if(del)del.disabled=(c===0);if(smsb)smsb.disabled=(c===0||!gwReady);}';
+		echo 'if(smsb)smsb.addEventListener("click",function(){var ids=it().filter(function(x){return x.checked;}).map(function(x){return x.value;});if(!ids.length)return;if(!confirm("Envoyer un SMS aux "+ids.length+" candidat(s) sélectionné(s) ?"))return;var fd=new FormData();fd.append("action","ag_cand_sms_bulk");fd.append("_n",n);ids.forEach(function(i){fd.append("ids[]",i);});smsb.disabled=true;smsb.textContent="…";fetch(ajaxurl,{method:"POST",body:fd,credentials:"same-origin"}).then(function(r){return r.json();}).then(function(j){smsb.textContent="📲 Envoyer SMS (sélection)";smsb.disabled=false;alert(j&&j.success?("SMS envoyés : "+j.data.ok+" / échecs : "+j.data.ko):"Erreur");});});';
 		echo 'function sa(v){it().forEach(function(x){x.checked=v;});if(all)all.checked=v;if(all2)all2.checked=v;rf();}';
 		echo 'if(all)all.addEventListener("change",function(){sa(all.checked);});if(all2)all2.addEventListener("change",function(){sa(all2.checked);});it().forEach(function(x){x.addEventListener("change",rf);});';
 		echo 'if(del)del.addEventListener("click",function(){var ids=it().filter(function(x){return x.checked;}).map(function(x){return x.value;});if(!ids.length)return;if(!confirm("Supprimer "+ids.length+" candidature(s) ?"))return;var fd=new FormData();fd.append("action","ag_cand_delete_bulk");fd.append("_n",n);ids.forEach(function(i){fd.append("ids[]",i);});del.disabled=true;fetch(ajaxurl,{method:"POST",body:fd,credentials:"same-origin"}).then(function(r){return r.json();}).then(function(j){if(j&&j.success){location.reload();}else{del.disabled=false;}});});';

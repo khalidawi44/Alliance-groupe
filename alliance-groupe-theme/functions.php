@@ -106,6 +106,12 @@ if ( file_exists( $ag_candidatures_file ) ) {
     require_once $ag_candidatures_file;
 }
 
+// ── 1c5b-quater. Passerelle SMS (Android + SIM) : ag_sms_send() vers tout numéro
+$ag_sms_gateway_file = get_stylesheet_directory() . '/inc/ag-sms-gateway.php';
+if ( file_exists( $ag_sms_gateway_file ) ) {
+    require_once $ag_sms_gateway_file;
+}
+
 // ── 1c5c. Kit Print (cartes, flyers, autocollants, affiches A4 avec QR)
 $ag_kit_print_file = get_stylesheet_directory() . '/inc/ag-kit-print.php';
 if ( file_exists( $ag_kit_print_file ) ) {
