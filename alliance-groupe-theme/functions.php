@@ -124,6 +124,12 @@ if ( file_exists( $ag_pwa_file ) ) {
     require_once $ag_pwa_file;
 }
 
+// ── 1c5b-septies. Badge flottant discret « On recrute » → page candidature ambassadeur
+$ag_recrut_badge_file = get_stylesheet_directory() . '/inc/ag-recrut-badge.php';
+if ( file_exists( $ag_recrut_badge_file ) ) {
+    require_once $ag_recrut_badge_file;
+}
+
 // ── 1c5c. Kit Print (cartes, flyers, autocollants, affiches A4 avec QR)
 $ag_kit_print_file = get_stylesheet_directory() . '/inc/ag-kit-print.php';
 if ( file_exists( $ag_kit_print_file ) ) {
