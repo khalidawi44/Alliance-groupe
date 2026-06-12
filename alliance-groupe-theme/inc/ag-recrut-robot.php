@@ -185,13 +185,32 @@ if ( ! function_exists( 'ag_ft_test_render' ) ) {
 	function ag_ft_test_render() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
 		echo '<div class="wrap"><h1>🧪 Testeur API France Travail</h1>';
-		echo '<p style="max-width:820px;color:#50575e;">Réutilise ton application France Travail (Client ID/Secret déjà saisis dans le Robot). Mets le <strong>scope</strong> et l’<strong>URL</strong> de l’API (lus sur francetravail.io via l’icône 👁 « voir » de l’API) → tu vois la réponse brute. Ça sert à brancher « Mes évènements emploi » et « JCMO » sans deviner.</p>';
-		$scope  = isset( $_POST['ft_scope'] ) ? sanitize_text_field( wp_unslash( $_POST['ft_scope'] ) ) : 'api_mes-evenements-emploiv1';
+		echo '<p style="max-width:820px;color:#50575e;">Réutilise ton application France Travail (Client ID/Secret déjà saisis dans le Robot). Le scope n’est pas toujours affiché dans la doc → utilise d’abord <strong>« 🔍 Détecter le scope »</strong> : ça essaie les noms probables et te dit lesquels sont autorisés sur ton appli.</p>';
+
+		// Détection automatique du scope (essaie les candidats connus).
+		if ( isset( $_POST['ft_discover'] ) ) {
+			$cands = array(
+				'api_evenementsv1', 'api_evenementsemploiv1', 'api_mesevenementsemploiv1', 'api_mes-evenements-emploiv1', 'api_mes-evenements-emploi-v1', 'api_evenements-france-travailv1',
+				'api_jcmov1', 'api_jcmo-v1', 'api_je-controle-mon-offrev1', 'api_controle-offrev1', 'api_jcmo-controle-offrev1',
+			);
+			echo '<h3>Résultat de la détection :</h3><table class="widefat striped" style="max-width:680px"><thead><tr><th>Scope testé</th><th>Autorisé ?</th></tr></thead><tbody>';
+			foreach ( $cands as $cand ) {
+				delete_transient( 'ag_ft_token_test_' . md5( $cand ) );
+				list( $tk, $er ) = ag_ft_token_for( $cand, 'ag_ft_token_test_' . md5( $cand ) );
+				$ok = ( '' !== $tk );
+				echo '<tr><td><code>' . esc_html( $cand ) . '</code></td><td>' . ( $ok ? '<strong style="color:#1e7e34">✅ OUI — utilise ce scope</strong>' : '<span style="color:#b32d2e">non</span>' ) . '</td></tr>';
+				usleep( 150000 );
+			}
+			echo '</tbody></table><p class="description">Copie le scope ✅ dans le champ ci-dessous, puis teste l’URL. (Si aucun n’est ✅, envoie-moi une capture de la fiche 👁 de l’API.)</p>';
+		}
+		echo '<form method="post" style="margin:6px 0 14px;"><button name="ft_discover" value="1" class="button button-secondary">🔍 Détecter le scope (Événements / JCMO)</button></form>';
+
+		$scope  = isset( $_POST['ft_scope'] ) ? sanitize_text_field( wp_unslash( $_POST['ft_scope'] ) ) : 'api_evenementsv1';
 		$method = isset( $_POST['ft_method'] ) && 'POST' === $_POST['ft_method'] ? 'POST' : 'GET';
-		$url    = isset( $_POST['ft_url'] ) ? esc_url_raw( wp_unslash( $_POST['ft_url'] ) ) : 'https://api.francetravail.io/partenaire/mes-evenements-emploi/v1/evenements/recherche';
+		$url    = isset( $_POST['ft_url'] ) ? esc_url_raw( wp_unslash( $_POST['ft_url'] ) ) : 'https://api.francetravail.io/partenaire/evenements/v1/evenements';
 		$body   = isset( $_POST['ft_body'] ) ? trim( wp_unslash( $_POST['ft_body'] ) ) : '';
 		echo '<form method="post"><table class="form-table"><tbody>';
-		echo '<tr><th>Scope</th><td><input type="text" name="ft_scope" value="' . esc_attr( $scope ) . '" style="width:480px"><p class="description">Sur francetravail.io → icône 👁 de l’API → champ « scope » (ex. <code>api_…v1</code>).</p></td></tr>';
+		echo '<tr><th>Scope</th><td><input type="text" name="ft_scope" value="' . esc_attr( $scope ) . '" style="width:480px"><p class="description">Celui qui est ✅ dans la détection ci-dessus.</p></td></tr>';
 		echo '<tr><th>Méthode</th><td><select name="ft_method"><option ' . selected( $method, 'GET', false ) . '>GET</option><option ' . selected( $method, 'POST', false ) . '>POST</option></select></td></tr>';
 		echo '<tr><th>URL</th><td><input type="text" name="ft_url" value="' . esc_attr( $url ) . '" style="width:680px"><p class="description">URL d’accès complète (avec paramètres pour un GET, ex. <code>?codePostal=44000</code>).</p></td></tr>';
 		echo '<tr><th>Corps (POST/JSON)</th><td><textarea name="ft_body" rows="5" style="width:680px" placeholder=\'{"texte":"..."}\'>' . esc_textarea( $body ) . '</textarea></td></tr>';
