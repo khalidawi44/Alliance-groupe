@@ -198,9 +198,10 @@ if ( ! function_exists( 'ag_quicktest' ) ) {
 			if ( $sec_names && in_array( $c['name'], $sec_names, true ) ) $secu++;
 		}
 		// Verse dans l'historique + journal (comme un vrai scan) si dispo.
+		// push_crm = false : test public anonyme, pas d'ajout CRM automatique ici.
 		if ( function_exists( 'ag_audit_hist_upsert' ) ) {
 			$ct = function_exists( 'ag_audit_extract_contacts' ) ? ag_audit_extract_contacts( $url ) : array();
-			ag_audit_hist_upsert( $a, $ct, 'passive' );
+			ag_audit_hist_upsert( $a, $ct, 'passive', false );
 		}
 		$msg = $score >= 80 ? 'Plutôt bien protégé — mais un audit complet révèle ce qui ne se voit pas.'
 			: ( $score >= 50 ? 'Des failles exploitables sont visibles. À corriger vite.'
@@ -245,9 +246,11 @@ if ( ! function_exists( 'ag_tester_run' ) ) {
 
 		// Verse aussi le scan dans l'HISTORIQUE de l'Espace Audit (mêmes fiches que
 		// mes audits manuels : coordonnées publiques extraites + boutons + image rapport).
+		// push_crm = false : le visiteur (test public) a son propre ajout CRM
+		// plus bas, avec le prénom/email/téléphone qu'il a saisis.
 		if ( function_exists( 'ag_audit_hist_upsert' ) ) {
 			$ct_pub = function_exists( 'ag_audit_extract_contacts' ) ? ag_audit_extract_contacts( $url ) : array();
-			ag_audit_hist_upsert( $audit, $ct_pub, 'passive' );
+			ag_audit_hist_upsert( $audit, $ct_pub, 'passive', false );
 		}
 
 		// CRM seulement si on a un email (URL seule = visiteur anonyme).
@@ -739,7 +742,7 @@ if ( ! function_exists( 'ag_audit_hist_id' ) )  { function ag_audit_hist_id( $ur
 if ( ! function_exists( 'ag_audit_hist_get' ) ) { function ag_audit_hist_get() { $h = get_option( 'ag_audit_history', array() ); return is_array( $h ) ? $h : array(); } }
 if ( ! function_exists( 'ag_audit_hist_save' ) ){ function ag_audit_hist_save( $h ) { update_option( 'ag_audit_history', $h, false ); } }
 if ( ! function_exists( 'ag_audit_hist_upsert' ) ) {
-	function ag_audit_hist_upsert( $a, $ct, $mode = 'passive' ) {
+	function ag_audit_hist_upsert( $a, $ct, $mode = 'passive', $push_crm = true ) {
 		$url = $a['url'] ?? ''; if ( ! $url ) return '';
 		// 3 niveaux : passive (léger) · deep (approfondi) · expert (Kali, scan réel).
 		$mode = in_array( $mode, array( 'deep', 'expert' ), true ) ? $mode : 'passive';
@@ -775,6 +778,34 @@ if ( ! function_exists( 'ag_audit_hist_upsert' ) ) {
 		);
 		if ( count( $h ) > 150 ) { uasort( $h, function ( $x, $y ) { return (int) ( $y['ts'] ?? 0 ) <=> (int) ( $x['ts'] ?? 0 ); } ); $h = array_slice( $h, 0, 150, true ); }
 		ag_audit_hist_save( $h );
+
+		// Verse AUTOMATIQUEMENT le site scanné dans le CRM Prospection (option
+		// ag_prospects), comme un prospect "site". Ainsi un site prospecté via la
+		// SÉCURITÉ (Espace Audit, scan manuel/expert) apparaît AUSSI dans la
+		// Prospection, pas seulement dans l'historique des audits. L'anti-doublon
+		// de ag_prospect_add_record empêche les répétitions. On NE pousse PAS pour
+		// les tests publics anonymes ($push_crm = false) : ils ont leur propre
+		// ajout CRM (avec le prénom/email saisis) dans ag_tester_run().
+		if ( $push_crm && function_exists( 'ag_prospect_add_record' ) ) {
+			$seg   = $h[ $id ]['seg'];
+			$vnames = array();
+			foreach ( $checks as $c ) { if ( ! empty( $c['name'] ) ) { $vnames[] = $c['name']; } }
+			$vstr  = implode( ', ', array_slice( $vnames, 0, 6 ) );
+			ag_prospect_add_record( array(
+				'name'    => ( $ct['company'] ?? '' ) ?: ( wp_parse_url( $url, PHP_URL_HOST ) ?: $url ),
+				'website' => $url,
+				'email'   => $ct['emails'][0] ?? '',
+				'phone'   => $ct['phones'][0] ?? '',
+				'address' => $ct['address'] ?? '',
+				'source'  => 'audit-' . $seg,
+				'status'  => 'nouveau',
+				'notes'   => '[' . strtoupper( $seg ) . '] Scan ' . strtoupper( $mode ) . ' ' . current_time( 'd/m/Y H:i' )
+					. ' — score ' . (int) ( $a['score'] ?? 0 ) . '/100.'
+					. ( ! empty( $ct['address'] ) ? ' Adresse : ' . $ct['address'] . '.' : '' )
+					. ( $vstr ? ' Failles : ' . $vstr . '.' : '' ),
+			) );
+		}
+
 		return $id;
 	}
 }
