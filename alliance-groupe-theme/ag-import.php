@@ -578,6 +578,8 @@ function ag_do_github_sync() {
         'inc/class-ag-recherche-juridique.php',
         'assets/recherche.css',
         'assets/recherche.js',
+        'assets/front.css',
+        'assets/front-dossiers.js',
     );
     $jr_ok = 0;
     foreach ( $jr_files as $pf ) {

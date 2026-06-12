@@ -42,6 +42,16 @@ class AG_Recherche_Juridique {
 
 		// Vue imprimable d'un dossier.
 		add_action( 'admin_post_ag_jr_print', array( $this, 'print_dossier' ) );
+
+		// ----- FRONT-END (espace cabinet, hors wp-admin) -----
+		add_shortcode( 'ag_juridique', array( $this, 'shortcode_app' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'front_register' ) );
+		add_action( 'init', array( $this, 'ensure_front_page' ) );
+		// CRUD dossiers en façade.
+		add_action( 'wp_ajax_ag_jr_dossier_list', array( $this, 'ajax_dossier_list' ) );
+		add_action( 'wp_ajax_ag_jr_dossier_get', array( $this, 'ajax_dossier_get' ) );
+		add_action( 'wp_ajax_ag_jr_dossier_save_front', array( $this, 'ajax_dossier_save_front' ) );
+		add_action( 'wp_ajax_ag_jr_dossier_delete', array( $this, 'ajax_dossier_delete' ) );
 	}
 
 	/* ============================================================
@@ -287,7 +297,9 @@ class AG_Recherche_Juridique {
 		if ( $cached ) {
 			return $cached;
 		}
-		$oauth = get_option( 'ag_jr_piste_oauth', 'https://oauth.aife.economie.gouv.fr/api/oauth/token' );
+		$oauth = get_option( 'ag_jr_piste_oauth', 'https://oauth.piste.gouv.fr/api/oauth/token' );
+		// Auto-réparation : l'ancien host PISTE (aife.economie.gouv.fr) est mort.
+		$oauth = str_replace( 'aife.economie.gouv.fr', 'piste.gouv.fr', $oauth );
 		$scope = get_option( 'ag_jr_piste_scope', 'openid' );
 		$resp  = wp_remote_post( $oauth, array(
 			'timeout' => 20,
@@ -623,7 +635,7 @@ class AG_Recherche_Juridique {
 			<details>
 				<summary>Réglages avancés (URLs / scope)</summary>
 				<table class="form-table">
-					<tr><th>URL OAuth</th><td><input type="text" class="large-text" id="ag_jr_piste_oauth" value="<?php echo $g( 'ag_jr_piste_oauth', 'https://oauth.aife.economie.gouv.fr/api/oauth/token' ); ?>" /></td></tr>
+					<tr><th>URL OAuth</th><td><input type="text" class="large-text" id="ag_jr_piste_oauth" value="<?php echo $g( 'ag_jr_piste_oauth', 'https://oauth.piste.gouv.fr/api/oauth/token' ); ?>" /></td></tr>
 					<tr><th>Scope</th><td><input type="text" class="regular-text" id="ag_jr_piste_scope" value="<?php echo $g( 'ag_jr_piste_scope', 'openid' ); ?>" /></td></tr>
 					<tr><th>URL API Judilibre</th><td><input type="text" class="large-text" id="ag_jr_judilibre_url" value="<?php echo $g( 'ag_jr_judilibre_url', 'https://api.piste.gouv.fr/cassation/judilibre/v1.0/search' ); ?>" /></td></tr>
 				</table>
@@ -653,5 +665,258 @@ class AG_Recherche_Juridique {
 			<p class="ag-jr-disclaimer">🔒 Les clés sont stockées dans votre base WordPress et ne quittent jamais votre site (sauf appels directs aux API officielles). Déontologie : cet outil assiste la recherche, il ne remplace pas l'analyse de l'avocat.</p>
 		</div>
 		<?php
+	}
+
+	/* ============================================================
+	 *  FRONT-END — Espace cabinet (hors wp-admin)
+	 * ============================================================ */
+
+	/** Crée la page « Espace juridique » avec le shortcode, une seule fois. */
+	public function ensure_front_page() {
+		if ( get_option( 'ag_jr_front_page_done' ) ) {
+			return;
+		}
+		if ( ! get_page_by_path( 'espace-juridique' ) ) {
+			wp_insert_post( array(
+				'post_title'   => 'Espace juridique',
+				'post_name'    => 'espace-juridique',
+				'post_status'  => 'publish',
+				'post_type'    => 'page',
+				'post_content' => '[ag_juridique]',
+			) );
+		}
+		update_option( 'ag_jr_front_page_done', 1 );
+	}
+
+	/** Enregistre (sans charger) les assets front ; le shortcode les charge. */
+	public function front_register() {
+		wp_register_style( 'ag-jr', AG_JR_URL . 'assets/recherche.css', array(), AG_JR_VERSION );
+		wp_register_style( 'ag-jr-front', AG_JR_URL . 'assets/front.css', array( 'ag-jr' ), AG_JR_VERSION );
+		wp_register_script( 'ag-jr', AG_JR_URL . 'assets/recherche.js', array(), AG_JR_VERSION, true );
+		wp_register_script( 'ag-jr-dossiers', AG_JR_URL . 'assets/front-dossiers.js', array( 'ag-jr' ), AG_JR_VERSION, true );
+	}
+
+	/** Le shortcode [ag_juridique] : application complète en façade. */
+	public function shortcode_app( $atts ) {
+		if ( ! is_user_logged_in() || ! current_user_can( self::CAP ) ) {
+			$login = wp_login_url( get_permalink() );
+			return '<div class="ag-jr-front ag-jr-gate">'
+				. '<h2>⚖️ Espace juridique réservé au cabinet</h2>'
+				. '<p>Cet outil de recherche et d\'analyse est privé. Connectez-vous pour y accéder.</p>'
+				. '<p><a class="ag-jr-btn" href="' . esc_url( $login ) . '">Se connecter</a></p>'
+				. '</div>';
+		}
+
+		wp_enqueue_style( 'ag-jr-front' );
+		wp_enqueue_script( 'ag-jr-dossiers' );
+		$is_admin = current_user_can( 'manage_options' );
+		$fields   = array();
+		foreach ( $this->dossier_fields() as $k => $def ) {
+			$fields[ $k ] = array( 'label' => $def[0], 'type' => $def[1] );
+		}
+		wp_localize_script( 'ag-jr', 'AGJR', array(
+			'ajax'      => admin_url( 'admin-ajax.php' ),
+			'print'     => admin_url( 'admin-post.php' ),
+			'nonce'     => wp_create_nonce( 'ag_jr' ),
+			'sources'   => $this->sources(),
+			'fields'    => $fields,
+			'ai_on'     => (bool) trim( (string) get_option( 'ag_jr_ai_key', '' ) ),
+			'live_on'   => ( trim( (string) get_option( 'ag_jr_piste_id', '' ) ) && trim( (string) get_option( 'ag_jr_piste_secret', '' ) ) ),
+			'is_admin'  => $is_admin,
+		) );
+
+		$live_on = ( trim( (string) get_option( 'ag_jr_piste_id', '' ) ) && trim( (string) get_option( 'ag_jr_piste_secret', '' ) ) );
+
+		ob_start();
+		?>
+		<div class="ag-jr ag-jr-front">
+			<div class="ag-jr-front-head">
+				<div class="ag-jr-brand">⚖️ Espace juridique</div>
+				<nav class="ag-jr-nav">
+					<button class="ag-jr-navbtn is-active" data-section="recherche">🔎 Recherche</button>
+					<button class="ag-jr-navbtn" data-section="dossiers">📁 Mes dossiers</button>
+					<?php if ( $is_admin ) : ?><button class="ag-jr-navbtn" data-section="reglages">⚙️ Réglages</button><?php endif; ?>
+				</nav>
+			</div>
+
+			<!-- ===== RECHERCHE ===== -->
+			<section class="ag-jr-section is-active" data-section="recherche">
+				<div class="ag-jr-searchbar">
+					<input type="text" id="ag-jr-q" placeholder="Ex : punaises de lit logement décent, licenciement sans cause réelle, article 1240 du code civil…" />
+					<button class="ag-jr-btn ag-jr-btn-go" id="ag-jr-go">Rechercher</button>
+				</div>
+				<div class="ag-jr-tabs">
+					<button class="ag-jr-tab is-active" data-tab="live">🔴 Jurisprudence en direct</button>
+					<button class="ag-jr-tab" data-tab="meta">🌐 Toutes les sources</button>
+					<button class="ag-jr-tab" data-tab="ai">🤖 Aide à l'analyse</button>
+				</div>
+				<section class="ag-jr-panel is-active" data-panel="live">
+					<?php if ( ! $live_on ) : ?>
+						<div class="ag-jr-note">La recherche en direct n'est pas encore activée. En attendant, l'onglet <strong>« Toutes les sources »</strong> fonctionne déjà.<?php if ( $is_admin ) : ?> Activez-la dans <strong>Réglages</strong> (clés Judilibre).<?php endif; ?></div>
+					<?php endif; ?>
+					<div class="ag-jr-filters">
+						<label>Juridiction
+							<select id="ag-jr-jur">
+								<option value="">Toutes</option>
+								<option value="cc">Cour de cassation</option>
+								<option value="ca">Cours d'appel</option>
+								<option value="tj">Tribunaux judiciaires</option>
+							</select>
+						</label>
+						<label>Trier par
+							<select id="ag-jr-sort">
+								<option value="score">Pertinence</option>
+								<option value="date">Date (récent)</option>
+							</select>
+						</label>
+					</div>
+					<div id="ag-jr-results" class="ag-jr-results"><p class="ag-jr-empty">Vos résultats de jurisprudence apparaîtront ici.</p></div>
+				</section>
+				<section class="ag-jr-panel" data-panel="meta">
+					<p class="ag-jr-hint">Cliquez sur une source : elle ouvre la recherche déjà pré-remplie avec vos mots-clés.</p>
+					<div id="ag-jr-sources"></div>
+				</section>
+				<section class="ag-jr-panel" data-panel="ai">
+					<?php $this->render_ai_panel(); ?>
+				</section>
+			</section>
+
+			<!-- ===== DOSSIERS ===== -->
+			<section class="ag-jr-section" data-section="dossiers">
+				<div class="ag-jr-dossiers">
+					<div class="ag-jr-dossiers-bar">
+						<button class="ag-jr-btn" id="ag-jr-d-new">+ Nouveau dossier</button>
+						<input type="search" id="ag-jr-d-search" placeholder="Filtrer mes dossiers…" />
+					</div>
+					<div id="ag-jr-d-list" class="ag-jr-d-list"><p class="ag-jr-empty">Chargement…</p></div>
+					<div id="ag-jr-d-editor" class="ag-jr-d-editor" hidden></div>
+				</div>
+			</section>
+
+			<?php if ( $is_admin ) : ?>
+			<!-- ===== RÉGLAGES ===== -->
+			<section class="ag-jr-section" data-section="reglages">
+				<?php $this->render_settings_fields_front(); ?>
+			</section>
+			<?php endif; ?>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
+
+	/** Champs de réglages en façade (mêmes id que l'admin → recherche.js gère l'enregistrement). */
+	private function render_settings_fields_front() {
+		$g = function ( $k, $d = '' ) {
+			return esc_attr( get_option( $k, $d ) );
+		};
+		?>
+		<div class="ag-jr-reglages">
+			<h3>🔴 Recherche en direct (Judilibre — gratuit)</h3>
+			<p class="ag-jr-hint">Compte sur <a href="https://piste.gouv.fr" target="_blank" rel="noopener">piste.gouv.fr</a> → application abonnée à l'API Judilibre → copiez vos identifiants.</p>
+			<label>Client ID (PISTE)<input type="text" id="ag_jr_piste_id" value="<?php echo $g( 'ag_jr_piste_id' ); ?>" /></label>
+			<label>Client Secret (PISTE)<input type="password" id="ag_jr_piste_secret" value="<?php echo $g( 'ag_jr_piste_secret' ); ?>" /></label>
+			<label>KeyId / clé API <span class="ag-jr-opt">(si demandée)</span><input type="text" id="ag_jr_piste_apikey" value="<?php echo $g( 'ag_jr_piste_apikey' ); ?>" /></label>
+			<details>
+				<summary>Réglages avancés (Sandbox / URLs)</summary>
+				<label>URL OAuth<input type="text" id="ag_jr_piste_oauth" value="<?php echo $g( 'ag_jr_piste_oauth', 'https://oauth.piste.gouv.fr/api/oauth/token' ); ?>" /></label>
+				<label>Scope<input type="text" id="ag_jr_piste_scope" value="<?php echo $g( 'ag_jr_piste_scope', 'openid' ); ?>" /></label>
+				<label>URL API Judilibre<input type="text" id="ag_jr_judilibre_url" value="<?php echo $g( 'ag_jr_judilibre_url', 'https://api.piste.gouv.fr/cassation/judilibre/v1.0/search' ); ?>" /></label>
+				<p class="ag-jr-opt">En Sandbox, préfixez les domaines par <code>sandbox-</code> (oauth + api).</p>
+			</details>
+
+			<h3>🤖 Assistant IA (optionnel)</h3>
+			<p class="ag-jr-hint">Anthropic Claude recommandé. Clé sur <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>.</p>
+			<label>Clé API Anthropic<input type="password" id="ag_jr_ai_key" value="<?php echo $g( 'ag_jr_ai_key' ); ?>" /></label>
+			<label>Modèle
+				<select id="ag_jr_ai_model">
+					<?php
+					$cur = get_option( 'ag_jr_ai_model', 'claude-sonnet-4-6' );
+					foreach ( array(
+						'claude-sonnet-4-6' => 'Claude Sonnet 4.6 (rapide, économique)',
+						'claude-opus-4-8'   => 'Claude Opus 4.8 (le plus puissant)',
+						'claude-haiku-4-5-20251001' => 'Claude Haiku 4.5 (le moins cher)',
+					) as $val => $lbl ) {
+						echo '<option value="' . esc_attr( $val ) . '" ' . selected( $cur, $val, false ) . '>' . esc_html( $lbl ) . '</option>';
+					}
+					?>
+				</select>
+			</label>
+			<p><button class="ag-jr-btn ag-jr-btn-go" id="ag-jr-save">💾 Enregistrer</button> <span id="ag-jr-save-msg"></span></p>
+			<p class="ag-jr-disclaimer">🔒 Les clés restent sur votre site. Cet outil assiste la recherche ; l'avocat vérifie toujours les sources primaires.</p>
+		</div>
+		<?php
+	}
+
+	/* ----- CRUD dossiers en façade ----- */
+	public function ajax_dossier_list() {
+		$this->check_nonce();
+		$posts = get_posts( array(
+			'post_type'      => self::CPT_DOSSIER,
+			'post_status'    => array( 'publish', 'draft' ),
+			'posts_per_page' => 200,
+			'orderby'        => 'modified',
+			'order'          => 'DESC',
+		) );
+		$out = array();
+		foreach ( $posts as $p ) {
+			$out[] = array(
+				'id'      => $p->ID,
+				'title'   => $p->post_title,
+				'domaine' => get_post_meta( $p->ID, '_ag_jr_domaine', true ),
+				'date'    => get_the_modified_date( 'd/m/Y', $p ),
+			);
+		}
+		wp_send_json_success( $out );
+	}
+
+	public function ajax_dossier_get() {
+		$this->check_nonce();
+		$id = isset( $_POST['id'] ) ? intval( $_POST['id'] ) : 0;
+		$p  = get_post( $id );
+		if ( ! $p || $p->post_type !== self::CPT_DOSSIER ) {
+			wp_send_json_error( array( 'message' => 'Dossier introuvable.' ) );
+		}
+		$vals = array();
+		foreach ( array_keys( $this->dossier_fields() ) as $k ) {
+			$vals[ $k ] = get_post_meta( $id, '_ag_jr_' . $k, true );
+		}
+		wp_send_json_success( array( 'id' => $id, 'title' => $p->post_title, 'fields' => $vals ) );
+	}
+
+	public function ajax_dossier_save_front() {
+		$this->check_nonce();
+		$id    = isset( $_POST['id'] ) ? intval( $_POST['id'] ) : 0;
+		$title = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
+		if ( '' === $title ) {
+			$title = 'Dossier sans titre';
+		}
+		$data = array( 'post_type' => self::CPT_DOSSIER, 'post_status' => 'publish', 'post_title' => $title );
+		if ( $id ) {
+			$data['ID'] = $id;
+			$id = wp_update_post( $data, true );
+		} else {
+			$id = wp_insert_post( $data, true );
+		}
+		if ( is_wp_error( $id ) ) {
+			wp_send_json_error( array( 'message' => $id->get_error_message() ) );
+		}
+		foreach ( array_keys( $this->dossier_fields() ) as $k ) {
+			if ( isset( $_POST[ 'f_' . $k ] ) ) {
+				update_post_meta( $id, '_ag_jr_' . $k, sanitize_textarea_field( wp_unslash( $_POST[ 'f_' . $k ] ) ) );
+			}
+		}
+		$print = wp_nonce_url( admin_url( 'admin-post.php?action=ag_jr_print&id=' . $id ), 'ag_jr_print_' . $id );
+		wp_send_json_success( array( 'id' => $id, 'print' => $print ) );
+	}
+
+	public function ajax_dossier_delete() {
+		$this->check_nonce();
+		$id = isset( $_POST['id'] ) ? intval( $_POST['id'] ) : 0;
+		$p  = get_post( $id );
+		if ( ! $p || $p->post_type !== self::CPT_DOSSIER ) {
+			wp_send_json_error( array( 'message' => 'Dossier introuvable.' ) );
+		}
+		wp_trash_post( $id );
+		wp_send_json_success( array( 'id' => $id ) );
 	}
 }
