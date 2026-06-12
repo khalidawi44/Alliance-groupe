@@ -112,6 +112,12 @@ if ( file_exists( $ag_sms_gateway_file ) ) {
     require_once $ag_sms_gateway_file;
 }
 
+// ── 1c5b-quinquies. Ma prospection (page front-end simple pour un proche/ambassadeur)
+$ag_ma_prospection_file = get_stylesheet_directory() . '/inc/ag-ma-prospection.php';
+if ( file_exists( $ag_ma_prospection_file ) ) {
+    require_once $ag_ma_prospection_file;
+}
+
 // ── 1c5c. Kit Print (cartes, flyers, autocollants, affiches A4 avec QR)
 $ag_kit_print_file = get_stylesheet_directory() . '/inc/ag-kit-print.php';
 if ( file_exists( $ag_kit_print_file ) ) {
