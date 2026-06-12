@@ -353,21 +353,29 @@ if ( ! function_exists( 'ag_prospect_add_record' ) ) {
 /* ── 4c. Ajout d'un prospect en AJAX (depuis les résultats, sans recharger) ─ */
 add_action( 'wp_ajax_ag_prospect_add', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
+	$name    = sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) );
+	$city    = sanitize_text_field( wp_unslash( $_POST['city'] ?? '' ) );
+	$website = esc_url_raw( wp_unslash( $_POST['website'] ?? '' ) );
+	$source  = sanitize_text_field( wp_unslash( $_POST['source'] ?? 'recherche' ) );
 	$ok = ag_prospect_add_record( array(
-		'name'    => sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) ),
+		'name'    => $name,
 		'type'    => sanitize_text_field( wp_unslash( $_POST['type'] ?? '' ) ),
-		'city'    => sanitize_text_field( wp_unslash( $_POST['city'] ?? '' ) ),
+		'city'    => $city,
 		'phone'   => sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) ),
-		'website' => esc_url_raw( wp_unslash( $_POST['website'] ?? '' ) ),
+		'website' => $website,
 		'address' => sanitize_text_field( wp_unslash( $_POST['address'] ?? '' ) ),
 		'maps_uri' => esc_url_raw( wp_unslash( $_POST['maps'] ?? '' ) ),
 		'rating'  => (float) ( $_POST['rating'] ?? 0 ),
 		'reviews' => (int) ( $_POST['reviews'] ?? 0 ),
 		'notes'   => sanitize_text_field( wp_unslash( $_POST['notes'] ?? '' ) ),
-		'source'  => sanitize_text_field( wp_unslash( $_POST['source'] ?? 'recherche' ) ),
+		'source'  => $source,
 		'bodacc'  => sanitize_text_field( wp_unslash( $_POST['bodacc'] ?? '' ) ),
 	) );
-	wp_send_json_success( array( 'added' => $ok ) );
+	// Lien Prospection ↔ Sécurité : on tente de trouver le site (si manquant) et
+	// de lancer un audit passif tout de suite, pour que la fiche arrive complète.
+	$audit_score = null;
+	if ( $ok ) { $audit_score = ag_prospect_autolink_audit( $name, $city, $website, $source ); }
+	wp_send_json_success( array( 'added' => $ok, 'audit' => $audit_score ) );
 } );
 
 /* Enregistre un CONTACT (clic WhatsApp/Email/Tél) : date + compteur + statut auto. */
@@ -863,6 +871,52 @@ if ( ! function_exists( 'ag_audit_find_by_host' ) ) {
 			if ( $h && $h === $host ) { $e['id'] = $id; return $e; }
 		}
 		return null;
+	}
+}
+if ( ! function_exists( 'ag_prospect_enrich' ) ) {
+	/** Complète un prospect existant (site/tel) trouvés après coup — par nom+ville. */
+	function ag_prospect_enrich( $name, $city, $website = '', $phone = '', $phone_intl = '' ) {
+		$list = (array) get_option( 'ag_prospects', array() );
+		$sig  = ag_prospect_sig( $name, $city );
+		$ch   = false;
+		foreach ( $list as $k => $p ) {
+			if ( ag_prospect_sig( $p['name'] ?? '', $p['city'] ?? '' ) === $sig ) {
+				if ( $website && empty( $p['website'] ) )       { $list[ $k ]['website'] = $website; $ch = true; }
+				if ( $phone && empty( $p['phone'] ) )           { $list[ $k ]['phone'] = $phone; $ch = true; }
+				if ( $phone_intl && empty( $p['phone_intl'] ) ) { $list[ $k ]['phone_intl'] = $phone_intl; $ch = true; }
+				break;
+			}
+		}
+		if ( $ch ) update_option( 'ag_prospects', array_values( $list ) );
+	}
+}
+if ( ! function_exists( 'ag_prospect_autolink_audit' ) ) {
+	/**
+	 * Après un « + Suivre » : si le prospect n'a pas de site (cas tribunal/BODACC),
+	 * on le cherche via Google Places (1 appel), on enrichit la fiche, puis on
+	 * lance un AUDIT PASSIF (non-intrusif, gratuit) qui se relie tout seul à la
+	 * fiche par le nom de domaine. Retourne le score d'audit ou null.
+	 */
+	function ag_prospect_autolink_audit( $name, $city, $website = '', $source = '' ) {
+		// Pas de site fourni → on tente de le trouver (uniquement si clé Places).
+		if ( '' === $website && '' !== trim( (string) $name ) && function_exists( 'ag_places_search' ) && function_exists( 'ag_places_key' ) && '' !== ag_places_key() ) {
+			$r = ag_places_search( trim( $name . ' ' . $city ) );
+			if ( is_array( $r ) && empty( $r['error'] ) && ! empty( $r[0] ) && is_array( $r[0] ) ) {
+				$first   = $r[0];
+				$website = $first['website'] ?? '';
+				ag_prospect_enrich( $name, $city, $website, $first['phone'] ?? '', $first['phone_intl'] ?? '' );
+			}
+		}
+		if ( '' === $website ) return null;
+		// Réseau social ≠ vrai site → pas d'audit.
+		if ( function_exists( 'ag_site_kind' ) ) { $k = ag_site_kind( $website ); if ( 'real' !== ( $k[0] ?? 'real' ) ) return null; }
+		if ( ! function_exists( 'ag_audit_run' ) || ! function_exists( 'ag_audit_hist_upsert' ) ) return null;
+		$audit = ag_audit_run( $website );
+		if ( ! is_array( $audit ) ) return null;
+		$ct = function_exists( 'ag_audit_extract_contacts' ) ? ag_audit_extract_contacts( $website ) : array();
+		// push_crm=false : le prospect est déjà au CRM, on évite tout doublon.
+		ag_audit_hist_upsert( $audit, $ct, 'passive', false );
+		return (int) ( $audit['score'] ?? 0 );
 	}
 }
 if ( ! function_exists( 'ag_prospect_links_block' ) ) {
@@ -1452,7 +1506,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			<!-- Entreprises au tribunal (redressement judiciaire) -->
 			<div style="max-width:980px;margin-top:18px;padding:18px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #7a4ed4;border-radius:6px;">
 				<h2 style="margin-top:0;">🏛️ Entreprises au tribunal (redressement judiciaire)</h2>
-				<p style="color:#50575e;max-width:760px;">Données <strong>publiques BODACC</strong> (gratuit). On cible celles en <strong>redressement / sauvegarde</strong> (elles se battent pour rebondir → elles ont besoin de regagner des clients) et on <strong>exclut les liquidations</strong> (qui ferment). Le robot génère un <strong>message empathique adapté</strong>.</p>
+				<p style="color:#50575e;max-width:760px;">Données <strong>publiques BODACC</strong> (gratuit). On cible celles en <strong>redressement / sauvegarde</strong> (elles se battent pour rebondir → elles ont besoin de regagner des clients) et on <strong>exclut les liquidations</strong> (qui ferment). Le robot génère un <strong>message empathique adapté</strong>. ⚙️ <strong>« + Suivre » cherche automatiquement le site de l'entreprise (1 appel Google) puis lance un audit de sécurité passif</strong> : la fiche arrive complète (prospection + analyse + sécurité reliées).</p>
 				<?php $tsector = isset( $_GET['tsector'] ) ? sanitize_text_field( wp_unslash( $_GET['tsector'] ) ) : ''; ?>
 				<form method="get" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>">
 					<input type="hidden" name="page" value="ag-prospects">
@@ -1803,7 +1857,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				['name','type','city','phone','website','address','rating','reviews','notes','source','maps','bodacc'].forEach(function(k){ fd.append(k, b.getAttribute('data-'+k)||''); });
 					var nt=b.closest('td')?b.closest('td').querySelector('.ag-add-note'):null; if(nt&&nt.value){ fd.set('notes', nt.value); }
 				b.disabled=true; b.textContent='…';
-				fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ b.textContent=(j&&j.success)?'✓ Ajouté':'Erreur'; }).catch(function(){ b.textContent='Erreur'; b.disabled=false; });
+				fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ if(j&&j.success){ b.textContent='✓ Ajouté'+((j.data&&j.data.audit!=null)?(' · 🛡️ '+j.data.audit+'/100'):''); } else { b.textContent='Erreur'; } }).catch(function(){ b.textContent='Erreur'; b.disabled=false; });
 			}); });
 			// 🚫 Ignorer : ne plus réafficher cette entreprise dans les recherches.
 			document.querySelectorAll('.ag-ignore').forEach(function(b){ b.addEventListener('click',function(){
