@@ -567,6 +567,42 @@ function ag_do_github_sync() {
     }
 
     // ═══════════════════════════════════════════════════════════════
+    // 4c. INSTALL AG-AVOCAT-RECHERCHE PLUGIN (outil de recherche juridique)
+    //     Plugin autonome distribué dans assets/downloads/. On le copie
+    //     dans wp-content/plugins/ et on l'active, comme ag-licence-manager.
+    // ═══════════════════════════════════════════════════════════════
+    $jr_dir   = WP_PLUGIN_DIR . '/ag-avocat-recherche';
+    $jr_src   = $theme_base . '/assets/downloads/ag-avocat-recherche';
+    $jr_files = array(
+        'ag-avocat-recherche.php',
+        'inc/class-ag-recherche-juridique.php',
+        'assets/recherche.css',
+        'assets/recherche.js',
+    );
+    $jr_ok = 0;
+    foreach ( $jr_files as $pf ) {
+        $url   = $jr_src . '/' . $pf;
+        $local = $jr_dir . '/' . $pf;
+        $dir   = dirname( $local );
+        if ( ! is_dir( $dir ) ) {
+            wp_mkdir_p( $dir );
+        }
+        $content = ag_gh_raw( $url );
+        if ( $content !== false && strlen( $content ) > 50 ) {
+            file_put_contents( $local, $content );
+            $jr_ok++;
+        }
+    }
+    if ( $jr_ok > 0 ) {
+        $r[] = $jr_ok . ' fichiers plugin ag-avocat-recherche installés';
+        $jr_plugin_file = 'ag-avocat-recherche/ag-avocat-recherche.php';
+        if ( ! is_plugin_active( $jr_plugin_file ) ) {
+            activate_plugin( $jr_plugin_file );
+            $r[] = 'Plugin ag-avocat-recherche activé automatiquement (menu ⚖️ Recherche juridique)';
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
     // 5. SYNC CONTENU (catégories, pages, articles, menu, réglages)
     // ═══════════════════════════════════════════════════════════════
 
