@@ -72,6 +72,11 @@ function ag_dev_sync_run() {
 			'url'  => $base . 'ag-business-avocat.zip',
 			'dest' => WP_PLUGIN_DIR . '/ag-business-avocat',
 		),
+		array(
+			'name' => 'Plugin AG Recherche Juridique (Avocat)',
+			'url'  => $base . 'ag-avocat-recherche.zip',
+			'dest' => WP_PLUGIN_DIR . '/ag-avocat-recherche',
+		),
 		// === Theme BARBER + plugins Premium/Business ===
 		array(
 			'name' => 'Theme AG Starter Barber',
