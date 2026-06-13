@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_PWA_VER', '1.0.5' );
+define( 'AG_PWA_VER', '1.0.6' );
 
 /* ---------------------------------------------------------------- Helpers */
 if ( ! function_exists( 'ag_pwa_icon' ) ) {
@@ -132,9 +132,11 @@ if ( ! function_exists( 'ag_pwa_sw_js' ) ) {
 		$ver  = AG_PWA_VER;
 		$home = home_url( '/' );
 		$off  = esc_js( $home );
+		$icon = esc_js( ag_pwa_icon( 'icon-192.png' ) );
 		return <<<JS
-/* AG Service Worker v{$ver} — cache léger + fallback offline (n'altère pas le site). */
+/* AG Service Worker v{$ver} — cache léger + fallback offline + notifications push. */
 const AG_CACHE = 'ag-pwa-{$ver}';
+const AG_ICON  = '{$icon}';
 self.addEventListener('install', e => { self.skipWaiting(); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== AG_CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
@@ -144,9 +146,7 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;
-  // Ne pas mettre en cache l'admin / l'API / les requêtes authentifiées.
   if (url.pathname.startsWith('/wp-admin') || url.pathname.startsWith('/wp-json') || url.pathname.startsWith('/wp-login')) return;
-  // Réseau d'abord, repli cache (toujours du contenu frais quand en ligne).
   e.respondWith(
     fetch(req).then(res => {
       if (res && res.status === 200 && res.type === 'basic') {
@@ -156,6 +156,30 @@ self.addEventListener('fetch', e => {
       return res;
     }).catch(() => caches.match(req).then(r => r || caches.match('{$off}')))
   );
+});
+/* Notification reçue (même app fermée). */
+self.addEventListener('push', e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (err) { d = { title: 'Alliance Groupe', body: e.data ? e.data.text() : '' }; }
+  const title = d.title || 'Alliance Groupe';
+  const opts = {
+    body: d.body || '',
+    icon: d.icon || AG_ICON,
+    badge: AG_ICON,
+    image: d.image || undefined,
+    vibrate: [80, 40, 80],
+    data: { url: d.url || '/' },
+    tag: d.tag || 'ag-push'
+  };
+  e.waitUntil(self.registration.showNotification(title, opts));
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const url = (e.notification.data && e.notification.data.url) || '/';
+  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cl => {
+    for (let i = 0; i < cl.length; i++) { if (cl[i].url.indexOf(url) > -1 && 'focus' in cl[i]) return cl[i].focus(); }
+    if (clients.openWindow) return clients.openWindow(url);
+  }));
 });
 JS;
 	}
@@ -391,7 +415,7 @@ add_action( 'wp_footer', function () {
 	.ag-ambtop b{font-size:15px;color:#D4B45C}
 	</style>
 
-	<div class="ag-ambtop"><img src="<?php echo esc_url( ag_pwa_icon( 'amb-192.png' ) ); ?>" alt=""><b>Alliance Ambassadeurs</b></div>
+	<div class="ag-ambtop"><img src="<?php echo esc_url( ag_pwa_icon( 'amb-192.png' ) ); ?>" alt=""><b>Alliance Ambassadeurs</b><button type="button" onclick="if(window.agEnableNotifs)agEnableNotifs()" title="Activer les notifications" style="margin-left:auto;background:none;border:0;font-size:20px;cursor:pointer">🔔</button></div>
 
 	<nav class="ag-ambnav" aria-label="Menu ambassadeur">
 		<?php foreach ( $items as $it ) :

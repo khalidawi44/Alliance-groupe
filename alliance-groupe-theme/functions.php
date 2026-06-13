@@ -136,6 +136,12 @@ if ( file_exists( $ag_app_promo_file ) ) {
     require_once $ag_app_promo_file;
 }
 
+// ── 1c5b-nonies. Notifications push (Web Push VAPID — reçues même app fermée)
+$ag_push_file = get_stylesheet_directory() . '/inc/ag-push.php';
+if ( file_exists( $ag_push_file ) ) {
+    require_once $ag_push_file;
+}
+
 // ── 1c5c. Kit Print (cartes, flyers, autocollants, affiches A4 avec QR)
 $ag_kit_print_file = get_stylesheet_directory() . '/inc/ag-kit-print.php';
 if ( file_exists( $ag_kit_print_file ) ) {
