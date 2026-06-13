@@ -94,6 +94,12 @@ if ( file_exists( $ag_seo_autopub_file ) ) {
     require_once $ag_seo_autopub_file;
 }
 
+// ── 1c4e. Avis Google (QR + relance auto depuis le CRM, conforme — pas de faux avis)
+$ag_avis_file = get_stylesheet_directory() . '/inc/ag-avis.php';
+if ( file_exists( $ag_avis_file ) ) {
+    require_once $ag_avis_file;
+}
+
 // ── Durcissement sécurité de NOTRE site (xmlrpc, énumération, en-têtes, version)
 $ag_hardening_file = get_stylesheet_directory() . '/inc/ag-hardening.php';
 if ( file_exists( $ag_hardening_file ) ) {

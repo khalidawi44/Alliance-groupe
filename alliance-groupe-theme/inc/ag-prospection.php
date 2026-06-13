@@ -257,9 +257,12 @@ add_action( 'admin_post_ag_prospect_update', function () {
 	if ( $has_status && in_array( $st, array( 'interesse', 'client' ), true ) && function_exists( 'ag_push' ) ) {
 		ag_push( ( 'client' === $st ? '✅ Nouveau client : ' : '🔥 Prospect intéressé : ' ) . $pname, 'Mis à jour dans le tableau de prospection.' );
 	}
-	if ( $has_status && function_exists( 'ag_activity_log' ) ) {
-		$lab = ag_prospect_statuses()[ $st ] ?? $st;
-		ag_activity_log( $lab . ' : ' . $pname );
+	if ( $has_status ) {
+		if ( function_exists( 'ag_activity_log' ) ) {
+			$lab = ag_prospect_statuses()[ $st ] ?? $st;
+			ag_activity_log( $lab . ' : ' . $pname );
+		}
+		do_action( 'ag_prospect_status_changed', $id, $st );
 	}
 	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-prospects' ), admin_url( 'admin.php' ) ) ); exit;
 } );
