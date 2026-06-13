@@ -165,6 +165,13 @@ add_action( 'template_redirect', function () {
 		$cat = ! empty( $p['category'] ) ? $p['category'] : 'Software &gt; Computer Software';
 		echo '<g:google_product_category>' . $cat . '</g:google_product_category>' . "\n";
 		echo '<g:product_type>Alliance Groupe</g:product_type>' . "\n";
+		// Produits/services 100% EN LIGNE : on exclut la surface "magasin/local"
+		// (sinon Google réclame un inventaire en magasin → erreur « inventaire manquant »).
+		echo '<g:excluded_destination>local_inventory_ads</g:excluded_destination>' . "\n";
+		echo '<g:excluded_destination>free_local_listings</g:excluded_destination>' . "\n";
+		// On cible explicitement les surfaces en ligne.
+		echo '<g:included_destination>Shopping_ads</g:included_destination>' . "\n";
+		echo '<g:included_destination>Free_listings</g:included_destination>' . "\n";
 		echo "</item>\n";
 	}
 
