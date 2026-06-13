@@ -88,6 +88,12 @@ if ( file_exists( $ag_seo_blog_file ) ) {
     require_once $ag_seo_blog_file;
 }
 
+// ── 1c4d. SEO blog auto-pilote (1 article/semaine depuis une banque, cron)
+$ag_seo_autopub_file = get_stylesheet_directory() . '/inc/ag-seo-autopub.php';
+if ( file_exists( $ag_seo_autopub_file ) ) {
+    require_once $ag_seo_autopub_file;
+}
+
 // ── Durcissement sécurité de NOTRE site (xmlrpc, énumération, en-têtes, version)
 $ag_hardening_file = get_stylesheet_directory() . '/inc/ag-hardening.php';
 if ( file_exists( $ag_hardening_file ) ) {
