@@ -82,6 +82,12 @@ if ( file_exists( $ag_seo_pages_file ) ) {
     require_once $ag_seo_pages_file;
 }
 
+// ── 1c4c. SEO blog (articles NIS2 / prix site Nantes / site sécurisé) auto-publiés
+$ag_seo_blog_file = get_stylesheet_directory() . '/inc/ag-seo-blog.php';
+if ( file_exists( $ag_seo_blog_file ) ) {
+    require_once $ag_seo_blog_file;
+}
+
 // ── Durcissement sécurité de NOTRE site (xmlrpc, énumération, en-têtes, version)
 $ag_hardening_file = get_stylesheet_directory() . '/inc/ag-hardening.php';
 if ( file_exists( $ag_hardening_file ) ) {

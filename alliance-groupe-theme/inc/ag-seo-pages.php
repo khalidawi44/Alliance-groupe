@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_SEO_PAGES_VER', 1 );
+define( 'AG_SEO_PAGES_VER', 2 );
 
 if ( ! function_exists( 'ag_seo_pages_defs' ) ) {
 	function ag_seo_pages_defs() {
@@ -63,6 +63,24 @@ if ( ! function_exists( 'ag_seo_pages_defs' ) ) {
 					. "<h2>Commencez par le diagnostic gratuit</h2>\n"
 					. "<p><a href=\"" . esc_url( $audit ) . "\">🔍 Tester la sécurité de mon site (gratuit) &rarr;</a> &nbsp; <a href=\"" . esc_url( $ctc ) . "\">Parler à un expert &rarr;</a></p>\n",
 				'geo'     => array( 'Nantes', 'Pays de la Loire', 47.2184, -1.5536 ),
+			),
+			'creation-site-internet-saint-nazaire' => array(
+				'title'   => 'Création de site internet à Saint-Nazaire — Alliance Groupe',
+				'content' =>
+					"<h1>Création de site internet à Saint-Nazaire</h1>\n"
+					. "<p>De la zone industrialo-portuaire aux commerces du centre et aux PME du bassin nazairien, <strong>Alliance Groupe</strong> crée des sites internet professionnels et <strong>sécurisés</strong> pour les entreprises de Saint-Nazaire et de la presqu'île (Pornichet, La Baule, Trignac, Montoir-de-Bretagne).</p>\n"
+					. "<h2>Des sites adaptés au tissu local nazairien</h2>\n"
+					. "<p>Sous-traitants industriels (naval, aéronautique), artisans, restaurants et commerces touristiques : chaque secteur a ses besoins. Nous concevons un site clair, rapide et qui convertit vos visiteurs en clients — avec la sécurité intégrée dès le départ.</p>\n"
+					. "<h2>Nos offres</h2>\n<ul>"
+					. "<li><strong>Site Express — 490 €</strong> · <strong>Site Pro — 890 €</strong> · <strong>Sur-mesure — 1 490 €</strong></li>"
+					. "<li><strong>Maintenance 29–99 €/mois</strong> : sécurité, sauvegardes, mises à jour.</li></ul>\n"
+					. "<p><a href=\"" . esc_url( $expr ) . "\">Voir les offres &rarr;</a></p>\n"
+					. "<h2>Visible sur Google à Saint-Nazaire</h2>\n"
+					. "<p>SEO local (fiche Google Business Profile, contenu géolocalisé) pour ressortir quand un client de Saint-Nazaire cherche votre activité.</p>\n"
+					. "<h2>Diagnostic gratuit de votre site</h2>\n"
+					. "<p><a href=\"" . esc_url( $audit ) . "\">🔍 Tester mon site gratuitement &rarr;</a> &nbsp; <a href=\"" . esc_url( $ctc ) . "\">Demander un devis &rarr;</a></p>\n"
+					. "<p style=\"font-size:.9em\">Voir aussi : <a href=\"" . esc_url( home_url( '/creation-site-internet-nantes' ) ) . "\">création de site à Nantes</a>.</p>\n",
+				'geo'     => array( 'Saint-Nazaire', 'Pays de la Loire', 47.2735, -2.2135 ),
 			),
 		);
 	}
