@@ -424,7 +424,7 @@ add_action( 'wp_head', function () {
 		'email'    => 'contact@alliancegroupe-inc.com',
 		'telephone' => '+33744829516',
 		'description' => 'Studio web & cybersécurité à Nantes (Loire-Atlantique) : création de sites internet rapides et sécurisés, audit de sécurité, conformité NIS2 et maintenance. Un seul interlocuteur, du conseil à la livraison.',
-		'slogan'   => 'Des sites web qui inspirent confiance — création & sécurité.',
+		'slogan'   => 'La beauté d’un site, la solidité d’un coffre-fort.',
 		'areaServed' => array( 'Nantes', 'Saint-Nazaire', 'Loire-Atlantique', 'FR', 'IT' ),
 		'knowsAbout' => array(
 			'Création de site internet',
