@@ -200,7 +200,15 @@ function ag_seo_meta() {
 }
 
 // ── 1. Override du title (filter document_title_parts) ─────────────
+// Détecte un plugin SEO majeur : si présent, on le laisse gérer title/meta/OG
+// (sinon on aurait des balises EN DOUBLE, ce qui nuit au référencement).
+if ( ! function_exists( 'ag_seo_plugin_active' ) ) {
+	function ag_seo_plugin_active() {
+		return defined( 'WPSEO_VERSION' ) || class_exists( 'WPSEO_Frontend' ) || defined( 'RANK_MATH_VERSION' ) || defined( 'SEOPRESS_VERSION' ) || defined( 'AIOSEO_VERSION' ) || defined( 'AIOSEOP_VERSION' );
+	}
+}
 add_filter( 'document_title_parts', function ( $parts ) {
+	if ( ag_seo_plugin_active() ) return $parts;
 	$meta = ag_seo_meta();
 	if ( ! empty( $meta['title'] ) ) {
 		// Remplace tout pour avoir le pattern exact (sans " — Alliance Groupe" auto-ajoute)
@@ -209,14 +217,15 @@ add_filter( 'document_title_parts', function ( $parts ) {
 	return $parts;
 } );
 
-// Force separateur clean (le " — " standard)
-add_filter( 'document_title_separator', function () { return '—'; } );
+// Force separateur clean (le " — " standard) — sauf si un plugin SEO gère le titre.
+add_filter( 'document_title_separator', function ( $sep ) { return ag_seo_plugin_active() ? $sep : '—'; } );
 
 // ── 2. Override meta description, OG, Twitter (priority 1 = avant les anciens) ──
 // On retire les anciens hooks pour eviter doublons, puis on re-emet proprement.
 remove_action( 'wp_head', 'ag_seo_meta_description_legacy', 10 ); // au cas ou
 
 add_action( 'wp_head', function () {
+	if ( ag_seo_plugin_active() ) return; // Yoast & co. gèrent meta/OG/Twitter → pas de doublon.
 	$meta = ag_seo_meta();
 	if ( empty( $meta['desc'] ) ) return; // fallback : le hook legacy s'en charge
 
@@ -376,4 +385,63 @@ add_action( 'wp_head', function () {
 		),
 	);
 	echo '<script type="application/ld+json">' . wp_json_encode( $offers, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
+}, 6 );
+
+// ── 5. FAQPage (rich snippet) sur l'accueil — Yoast free ne le génère pas ──
+add_action( 'wp_head', function () {
+	if ( ! is_front_page() && ! is_home() ) return;
+	$faq = array(
+		array( 'Combien coûte un site internet chez Alliance Groupe ?', 'Nos sites web professionnels démarrent à 490 € (pack Site Express), 890 € (Pro) et 1490 € (sur-mesure), avec une maintenance optionnelle de 29 à 99 €/mois. Devis gratuit en ligne.' ),
+		array( 'Proposez-vous la sécurité informatique et l’audit de site ?', 'Oui. Alliance Groupe est un studio web ET cybersécurité : test de sécurité gratuit de votre site (score /100 + failles), audit approfondi et pentest sur mandat écrit, mise en conformité RGPD.' ),
+		array( 'Intervenez-vous à Nantes et en Loire-Atlantique ?', 'Oui, nous accompagnons les entreprises de Nantes et toute la Loire-Atlantique (Saint-Herblain, Rezé, Saint-Nazaire, Vertou, Carquefou…), à distance partout en France, avec une présence à Naples.' ),
+		array( 'Faites-vous le référencement naturel (SEO) ?', 'Oui : optimisation SEO technique, contenu, SEO local (Google Business Profile) et suivi, pour rendre votre site visible et durablement bien positionné sur Google.' ),
+		array( 'Le test de sécurité de mon site est-il vraiment gratuit ?', 'Oui, le test « Tester mon site » est gratuit et non-intrusif : vous obtenez un score sur 100 et la liste des points à corriger, sans engagement.' ),
+	);
+	$items = array();
+	foreach ( $faq as $qa ) {
+		$items[] = array(
+			'@type'          => 'Question',
+			'name'           => $qa[0],
+			'acceptedAnswer' => array( '@type' => 'Answer', 'text' => $qa[1] ),
+		);
+	}
+	$schema = array( '@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => $items );
+	echo '<script type="application/ld+json">' . wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
+}, 6 );
+
+// ── 6. Organization + WebSite (SearchAction) — uniquement si AUCUN plugin SEO ──
+//    (Yoast/Rank Math émettent déjà ce graphe → on évite le doublon.)
+add_action( 'wp_head', function () {
+	if ( ag_seo_plugin_active() || ! is_front_page() ) return;
+	$home = home_url( '/' );
+	$logo = get_stylesheet_directory_uri() . '/assets/images/pwa/icon-512.png';
+	$org = array(
+		'@context' => 'https://schema.org',
+		'@type'    => 'Organization',
+		'name'     => get_bloginfo( 'name' ) ?: 'Alliance Groupe',
+		'url'      => $home,
+		'logo'     => $logo,
+		'email'    => 'contact@alliancegroupe-inc.com',
+		'telephone' => '+33744829516',
+		'areaServed' => array( 'FR', 'IT' ),
+		'sameAs'   => array_values( array_filter( array(
+			get_option( 'ag_social_facebook', '' ),
+			get_option( 'ag_social_instagram', '' ),
+			get_option( 'ag_social_linkedin', '' ),
+		) ) ),
+	);
+	$site = array(
+		'@context'        => 'https://schema.org',
+		'@type'           => 'WebSite',
+		'name'            => get_bloginfo( 'name' ) ?: 'Alliance Groupe',
+		'url'             => $home,
+		'inLanguage'      => 'fr-FR',
+		'potentialAction' => array(
+			'@type'       => 'SearchAction',
+			'target'      => array( '@type' => 'EntryPoint', 'urlTemplate' => $home . '?s={search_term_string}' ),
+			'query-input' => 'required name=search_term_string',
+		),
+	);
+	echo '<script type="application/ld+json">' . wp_json_encode( $org, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
+	echo '<script type="application/ld+json">' . wp_json_encode( $site, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
 }, 6 );
