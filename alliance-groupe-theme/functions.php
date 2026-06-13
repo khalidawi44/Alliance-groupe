@@ -106,6 +106,12 @@ if ( file_exists( $ag_temoignages_file ) ) {
     require_once $ag_temoignages_file;
 }
 
+// ── 1c4g. GEO — être cité par les IA (llms.txt + page comparatif + FAQ + schema)
+$ag_geo_file = get_stylesheet_directory() . '/inc/ag-geo.php';
+if ( file_exists( $ag_geo_file ) ) {
+    require_once $ag_geo_file;
+}
+
 // ── Durcissement sécurité de NOTRE site (xmlrpc, énumération, en-têtes, version)
 $ag_hardening_file = get_stylesheet_directory() . '/inc/ag-hardening.php';
 if ( file_exists( $ag_hardening_file ) ) {
