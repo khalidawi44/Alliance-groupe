@@ -100,6 +100,12 @@ if ( file_exists( $ag_avis_file ) ) {
     require_once $ag_avis_file;
 }
 
+// ── 1c4f. Témoignages clients sur le site (formulaire + schema, en attendant la fiche Google)
+$ag_temoignages_file = get_stylesheet_directory() . '/inc/ag-temoignages.php';
+if ( file_exists( $ag_temoignages_file ) ) {
+    require_once $ag_temoignages_file;
+}
+
 // ── Durcissement sécurité de NOTRE site (xmlrpc, énumération, en-têtes, version)
 $ag_hardening_file = get_stylesheet_directory() . '/inc/ag-hardening.php';
 if ( file_exists( $ag_hardening_file ) ) {
