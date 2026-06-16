@@ -8,7 +8,7 @@ class AG_BA_Updater {
 	const JSON_URL  = 'https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/downloads/ag-business-avocat.json';
 	const SLUG      = 'ag-business-avocat';
 	const CACHE_KEY = 'ag_ba_remote_info';
-	const CACHE_TTL = HOUR_IN_SECONDS;
+	const CACHE_TTL = 10 * MINUTE_IN_SECONDS;
 
 	public static function init() {
 		add_filter( 'pre_set_site_transient_update_plugins', array( __CLASS__, 'check_update' ) );
@@ -18,11 +18,19 @@ class AG_BA_Updater {
 	}
 
 	public static function maybe_force_check() {
-		if ( empty( $_GET['ag_ba_check_update'] ) || ! current_user_can( 'manage_options' ) ) return;
-		delete_site_transient( 'update_plugins' );
-		delete_transient( self::CACHE_KEY );
-		wp_safe_redirect( admin_url( 'plugins.php?ag_ba_checked=1' ) );
-		exit;
+		if ( ! current_user_can( 'manage_options' ) ) return;
+		// Notre lien dédié : vide tout et recharge la liste des extensions.
+		if ( ! empty( $_GET['ag_ba_check_update'] ) ) {
+			delete_site_transient( 'update_plugins' );
+			delete_transient( self::CACHE_KEY );
+			wp_safe_redirect( admin_url( 'plugins.php?ag_ba_checked=1' ) );
+			exit;
+		}
+		// Bouton NATIF « Vérifier à nouveau » de WordPress (update-core.php?force-check=1)
+		// → on vide aussi NOTRE cache, sinon la nouvelle version n'apparaît pas.
+		if ( ! empty( $_GET['force-check'] ) ) {
+			delete_transient( self::CACHE_KEY );
+		}
 	}
 
 	public static function flush_cache( $upgrader, $hook_extra ) {
