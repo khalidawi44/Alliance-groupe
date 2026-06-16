@@ -52,9 +52,11 @@ if ( ! function_exists( 'ag_jrp_token' ) ) {
 			array( 'headers' => array( 'Content-Type' => 'application/x-www-form-urlencoded' ), 'body' => array( 'grant_type' => 'client_credentials', 'client_id' => $id, 'client_secret' => $secret, 'scope' => $scope ) ),
 			array( 'headers' => array( 'Content-Type' => 'application/x-www-form-urlencoded', 'Authorization' => 'Basic ' . base64_encode( $id . ':' . $secret ) ), 'body' => array( 'grant_type' => 'client_credentials', 'scope' => $scope ) ),
 		);
+		$last = '';
 		foreach ( $attempts as $a ) {
 			$r = wp_remote_post( $oauth, array( 'timeout' => 20, 'headers' => $a['headers'], 'body' => $a['body'] ) );
 			if ( is_wp_error( $r ) ) {
+				$last = $r->get_error_message();
 				continue;
 			}
 			$raw = wp_remote_retrieve_body( $r );
@@ -64,11 +66,34 @@ if ( ! function_exists( 'ag_jrp_token' ) ) {
 				set_transient( 'ag_jrp_token', $d['access_token'], $ttl );
 				return $d['access_token'];
 			}
+			$last = $raw;
 			if ( false === strpos( (string) $raw, 'invalid_client' ) ) {
 				break;
 			}
 		}
-		return new WP_Error( 'oauth', 'Relais : authentification PISTE refusée.' );
+		return new WP_Error( 'oauth', 'Relais : authentification PISTE refusée (OAuth ' . $oauth . '). Réponse : ' . substr( (string) $last, 0, 220 ) );
+	}
+}
+
+/* ── Diagnostic : GET /wp-json/ag/v1/judilibre-status ── */
+if ( ! function_exists( 'ag_jrp_rest_status' ) ) {
+	function ag_jrp_rest_status( WP_REST_Request $req ) {
+		$id     = ag_jrp_opt( 'id' );
+		$secret = ag_jrp_opt( 'secret' );
+		$out = array(
+			'relais'     => 'AG Judilibre',
+			'configure'  => ( $id && $secret ) ? true : false,
+			'client_id'  => $id ? ( substr( $id, 0, 6 ) . '…' ) : 'ABSENT',
+			'keyid'      => ag_jrp_opt( 'apikey' ) ? 'présent' : 'absent',
+			'oauth_url'  => ag_jrp_opt( 'oauth', 'https://oauth.piste.gouv.fr/api/oauth/token' ),
+		);
+		if ( ! $out['configure'] ) {
+			$out['token'] = '⛔ Clé PISTE manquante côté relais (Réglages → ⚖️ Relais Judilibre).';
+			return $out;
+		}
+		$t = ag_jrp_token();
+		$out['token'] = is_wp_error( $t ) ? ( '❌ ' . $t->get_error_message() ) : ( '✅ OK (' . substr( $t, 0, 6 ) . '…)' );
+		return $out;
 	}
 }
 
@@ -140,9 +165,10 @@ if ( ! function_exists( 'ag_jrp_rest_search' ) ) {
 			return new WP_REST_Response( array( 'error' => 'Judilibre momentanément indisponible.' ), 502 );
 		}
 		$code = wp_remote_retrieve_response_code( $resp );
-		$body = json_decode( wp_remote_retrieve_body( $resp ), true );
+		$raw  = wp_remote_retrieve_body( $resp );
+		$body = json_decode( $raw, true );
 		if ( $code >= 400 || ! is_array( $body ) ) {
-			return new WP_REST_Response( array( 'error' => 'Judilibre a renvoyé une erreur (HTTP ' . $code . ').' ), 502 );
+			return new WP_REST_Response( array( 'error' => 'Judilibre a renvoyé une erreur (HTTP ' . $code . ') : ' . substr( (string) $raw, 0, 200 ) ), 502 );
 		}
 		set_transient( $ck, $body, 6 * HOUR_IN_SECONDS );
 		return array( 'judilibre' => $body );
@@ -197,6 +223,11 @@ add_action( 'rest_api_init', function () {
 		'callback'            => 'ag_jrp_rest_decision',
 		'permission_callback' => '__return_true',
 	) );
+	register_rest_route( 'ag/v1', '/judilibre-status', array(
+		'methods'             => 'GET',
+		'callback'            => 'ag_jrp_rest_status',
+		'permission_callback' => '__return_true',
+	) );
 } );
 
 /* ── Réglages (site mère) : Réglages → ⚖️ Relais Judilibre ── */
@@ -231,7 +262,7 @@ if ( ! function_exists( 'ag_jrp_settings_page' ) ) {
 		echo '</tbody></table>';
 		wp_nonce_field( 'ag_jrp' );
 		echo '<button name="ag_jrp_save" value="1" class="button button-primary">Enregistrer</button>';
-		echo ' <a href="' . esc_url( rest_url( 'ag/v1/judilibre' ) ) . '" target="_blank" rel="noopener" class="button" style="margin-left:8px;">Voir l\'endpoint</a>';
+		echo ' <a href="' . esc_url( rest_url( 'ag/v1/judilibre-status' ) ) . '" target="_blank" rel="noopener" class="button" style="margin-left:8px;">🔎 Tester le relais (diagnostic)</a>';
 		echo '</form>';
 		echo '<p style="color:#50575e;font-size:.9em;margin-top:14px;">💡 Pour plus de sécurité, tu peux définir <code>AG_JRP_ID</code> / <code>AG_JRP_SECRET</code> / <code>AG_JRP_APIKEY</code> dans <code>wp-config.php</code> (les constantes priment sur ces champs).</p>';
 		echo '</div>';
