@@ -456,3 +456,20 @@ if ( ! function_exists( 'ag_coach_credit' ) ) :
 		echo '</small></div>';
 	}
 endif;
+
+/* ── AG : mises à jour AUTOMATIQUES de tous les composants Alliance Groupe ──
+ * Plus aucun update manuel : WordPress installe en arrière-plan toute MAJ d'un
+ * thème ou plugin dont le slug commence par « ag- ». (Nécessite FS_METHOD
+ * 'direct' sur l'hébergement pour écrire les fichiers sans demander de FTP.) */
+if ( ! function_exists( 'ag_force_auto_updates' ) ) {
+	function ag_force_auto_updates( $update, $item ) {
+		$slug = ( is_object( $item ) && ! empty( $item->slug ) ) ? (string) $item->slug : '';
+		return ( 0 === strpos( $slug, 'ag-' ) ) ? true : $update;
+	}
+	add_filter( 'auto_update_plugin', 'ag_force_auto_updates', 10, 2 );
+	add_filter( 'auto_update_theme',  'ag_force_auto_updates', 10, 2 );
+	add_action( 'admin_init', function () {
+		if ( ! wp_next_scheduled( 'wp_update_plugins' ) ) { wp_schedule_single_event( time() + 60, 'wp_update_plugins' ); }
+		if ( ! wp_next_scheduled( 'wp_update_themes' ) )  { wp_schedule_single_event( time() + 60, 'wp_update_themes' ); }
+	} );
+}
