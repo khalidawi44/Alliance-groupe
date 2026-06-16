@@ -17,6 +17,26 @@ class AG_JR_Updater {
 		add_filter( 'plugins_api', array( __CLASS__, 'plugin_info' ), 20, 3 );
 		add_action( 'upgrader_process_complete', array( __CLASS__, 'flush_cache' ), 10, 2 );
 		add_action( 'admin_init', array( __CLASS__, 'maybe_force_check' ) );
+		// MAJ AUTOMATIQUES : WordPress installe les nouvelles versions tout seul
+		// (WP-cron, en arrière-plan) → plus aucun upload manuel ni clic.
+		add_filter( 'auto_update_plugin', array( __CLASS__, 'auto_update' ), 10, 2 );
+		// Re-vérifie GitHub plus souvent pour que l'auto-MAJ parte vite.
+		add_action( 'admin_init', array( __CLASS__, 'kick_cron' ) );
+	}
+
+	/** Force l'auto-update WordPress pour CE plugin uniquement. */
+	public static function auto_update( $update, $item ) {
+		if ( is_object( $item ) && ! empty( $item->slug ) && self::SLUG === $item->slug ) {
+			return true;
+		}
+		return $update;
+	}
+
+	/** Planifie une vérification des MAJ si WP-cron ne l'a pas fait récemment. */
+	public static function kick_cron() {
+		if ( ! wp_next_scheduled( 'wp_update_plugins' ) ) {
+			wp_schedule_single_event( time() + 60, 'wp_update_plugins' );
+		}
 	}
 
 	public static function maybe_force_check() {
