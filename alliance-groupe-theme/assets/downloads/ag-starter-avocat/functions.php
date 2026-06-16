@@ -246,48 +246,12 @@ function ag_starter_avocat_scripts() {
 }
 add_action( 'wp_enqueue_scripts', 'ag_starter_avocat_scripts' );
 
-/**
- * Disable comments site-wide.
+/*
+ * (Retiré) On ne désactive plus les commentaires ni les widgets, et on ne
+ * retire plus de menu admin core — inutile, et interdit par WordPress.org.
+ * Un cabinet qui veut couper les commentaires le fait dans Réglages → Discussion.
  */
-add_filter( 'comments_open', '__return_false', 20, 2 );
-add_filter( 'pings_open', '__return_false', 20, 2 );
-add_filter( 'comments_array', '__return_empty_array', 10, 2 );
-add_action( 'admin_menu', function () {
-	remove_menu_page( 'edit-comments.php' );
-} );
-add_action( 'admin_bar_menu', function ( $wp_admin_bar ) {
-	$wp_admin_bar->remove_node( 'comments' );
-}, 999 );
 
-/**
- * Remove all default WordPress widgets, unregister all sidebars, hide widget admin.
- */
-add_action( 'widgets_init', function () {
-	global $wp_registered_sidebars;
-	$wp_registered_sidebars = array();
-	unregister_widget( 'WP_Widget_Pages' );
-	unregister_widget( 'WP_Widget_Calendar' );
-	unregister_widget( 'WP_Widget_Archives' );
-	unregister_widget( 'WP_Widget_Meta' );
-	unregister_widget( 'WP_Widget_Search' );
-	unregister_widget( 'WP_Widget_Categories' );
-	unregister_widget( 'WP_Widget_Recent_Posts' );
-	unregister_widget( 'WP_Widget_Recent_Comments' );
-	unregister_widget( 'WP_Widget_RSS' );
-	unregister_widget( 'WP_Widget_Tag_Cloud' );
-	unregister_widget( 'WP_Widget_Text' );
-	unregister_widget( 'WP_Widget_HTML' );
-	unregister_widget( 'WP_Widget_Custom_HTML' );
-	unregister_widget( 'WP_Widget_Block' );
-	unregister_widget( 'WP_Widget_Media_Audio' );
-	unregister_widget( 'WP_Widget_Media_Video' );
-	unregister_widget( 'WP_Widget_Media_Image' );
-	unregister_widget( 'WP_Widget_Media_Gallery' );
-	unregister_widget( 'WP_Nav_Menu_Widget' );
-}, 99 );
-add_action( 'admin_menu', function () {
-	remove_submenu_page( 'themes.php', 'widgets.php' );
-}, 99 );
 
 /**
  * Add a pingback url auto-discovery header for single posts, pages, or attachments.

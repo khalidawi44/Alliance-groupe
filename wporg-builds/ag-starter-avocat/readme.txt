@@ -9,11 +9,11 @@ Stable tag: 1.1.13
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Theme WordPress gratuit basique 100% francais pour cabinet d'avocats, juriste, notaire, conseil juridique. Structure minimaliste navy et champagne, responsive, sans fioritures. Contenu pre-redige en francais natif, pret a l'emploi.
+Theme gratuit basique 100% francais pour cabinet d'avocats, juriste, notaire, conseil juridique. Structure minimaliste navy et champagne, responsive, sans fioritures. Contenu pre-redige en francais natif, pret a l'emploi.
 
 == Description ==
 
-AG Starter Avocat est un theme WordPress pense pour les cabinets d'avocats, juristes, notaires et professions juridiques francophones qui veulent une vitrine en ligne immediatement exploitable, sans perdre des heures a traduire un theme anglais ou a tout reecrire.
+AG Starter Avocat est un theme pense pour les cabinets d'avocats, juristes, notaires et professions juridiques francophones qui veulent une vitrine en ligne immediatement exploitable, sans perdre des heures a traduire un theme anglais ou a tout reecrire.
 
 Caracteristiques principales :
 
