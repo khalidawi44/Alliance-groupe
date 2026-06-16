@@ -32,6 +32,7 @@ PLUGINS=(
     ag-premium-barber
     ag-business-barber
     ag-starter-companion
+    ag-avocat-recherche
 )
 
 bump_theme() {

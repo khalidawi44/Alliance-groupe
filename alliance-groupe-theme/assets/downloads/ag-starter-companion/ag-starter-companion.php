@@ -3,7 +3,7 @@
  * Plugin Name:       AG Starter Companion
  * Plugin URI:        https://alliancegroupe-inc.com/templates-wordpress
  * Description:       Importer un clic pour les themes AG Starter (Restaurant, Artisan, Coach, Avocat). Cree automatiquement les pages, le menu et les reglages pour un site pret a l'emploi.
- * Version:           1.11.2
+ * Version:           1.11.3
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            AGthèmes
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_STARTER_COMPANION_VERSION', '1.11.2' );
+define( 'AG_STARTER_COMPANION_VERSION', '1.11.3' );
 define( 'AG_STARTER_COMPANION_FILE', __FILE__ );
 
 /**
@@ -38,6 +38,7 @@ class AG_Starter_Companion {
 		add_action( 'admin_init', array( $this, 'maybe_patch_theme' ) );
 		add_action( 'admin_init', array( $this, 'maybe_auto_reimport' ) );
 		add_action( 'admin_init', array( $this, 'maybe_fix_theme_menu' ) );
+		add_action( 'admin_init', array( $this, 'maybe_install_research_plugin' ) );
 		add_action( 'admin_notices', array( $this, 'maybe_show_update_notice' ) );
 		add_action( 'admin_notices', array( $this, 'upgrade_banner' ) );
 		add_action( 'wp_dashboard_setup', array( $this, 'upgrade_dashboard_widget' ) );
@@ -85,6 +86,54 @@ class AG_Starter_Companion {
 			}
 		}
 		return '';
+	}
+
+	/**
+	 * Installe + active automatiquement le plugin « AG Recherche Juridique »
+	 * sur les sites du thème Avocat (inclus avec le template). Téléchargé depuis
+	 * GitHub, installé via le Plugin_Upgrader natif. Idempotent : ne tente
+	 * qu'une fois, et jamais si déjà installé. Réservé à l'avocat (l'outil est
+	 * lui-même réservé au cabinet connecté).
+	 */
+	public function maybe_install_research_plugin() {
+		if ( ! current_user_can( 'install_plugins' ) ) {
+			return;
+		}
+		if ( 'ag-starter-avocat' !== $this->get_active_theme_slug() ) {
+			return; // outil métier avocat uniquement
+		}
+		$plugin_file = 'ag-avocat-recherche/ag-avocat-recherche.php';
+		if ( ! function_exists( 'is_plugin_active' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		// Déjà présent → on s'assure juste qu'il est actif, et on s'arrête.
+		if ( file_exists( WP_PLUGIN_DIR . '/' . $plugin_file ) ) {
+			if ( ! is_plugin_active( $plugin_file ) ) {
+				activate_plugin( $plugin_file );
+			}
+			update_option( 'ag_companion_research_installed', AG_STARTER_COMPANION_VERSION );
+			return;
+		}
+		// On ne retente pas en boucle si une install a déjà été tentée.
+		if ( get_option( 'ag_companion_research_installed' ) ) {
+			return;
+		}
+
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/misc.php';
+		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+
+		$zip = 'https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/downloads/ag-avocat-recherche.zip';
+		$skin     = new Automatic_Upgrader_Skin();
+		$upgrader = new Plugin_Upgrader( $skin );
+		$result   = $upgrader->install( $zip );
+
+		// Marque la tentative (succès comme échec) pour ne pas boucler.
+		update_option( 'ag_companion_research_installed', AG_STARTER_COMPANION_VERSION );
+
+		if ( true === $result && file_exists( WP_PLUGIN_DIR . '/' . $plugin_file ) ) {
+			activate_plugin( $plugin_file );
+		}
 	}
 
 	/**

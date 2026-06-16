@@ -20,6 +20,7 @@ SLUGS=(
     ag-starter-companion ag-fidelite-association
     ag-premium-avocat ag-business-avocat
     ag-premium-barber ag-business-barber
+    ag-avocat-recherche
 )
 
 problems=0

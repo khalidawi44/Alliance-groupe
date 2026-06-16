@@ -47,6 +47,8 @@ class AG_Recherche_Juridique {
 		add_shortcode( 'ag_juridique', array( $this, 'shortcode_app' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'front_register' ) );
 		add_action( 'init', array( $this, 'ensure_front_page' ) );
+		// Lien menu « Espace juridique » — visible UNIQUEMENT pour le cabinet connecté.
+		add_filter( 'wp_nav_menu_items', array( $this, 'nav_menu_link' ), 20, 2 );
 		// CRUD dossiers en façade.
 		add_action( 'wp_ajax_ag_jr_dossier_list', array( $this, 'ajax_dossier_list' ) );
 		add_action( 'wp_ajax_ag_jr_dossier_get', array( $this, 'ajax_dossier_get' ) );
@@ -698,6 +700,26 @@ class AG_Recherche_Juridique {
 			) );
 		}
 		update_option( 'ag_jr_front_page_done', 1 );
+	}
+
+	/**
+	 * Ajoute « ⚖️ Espace juridique » au menu principal — réservé : le lien
+	 * n'apparaît QUE pour un membre du cabinet connecté (capacité CAP). Les
+	 * visiteurs ne le voient pas. Sur l'emplacement de menu principal seulement.
+	 */
+	public function nav_menu_link( $items, $args ) {
+		if ( ! is_user_logged_in() || ! current_user_can( self::CAP ) ) {
+			return $items;
+		}
+		$loc = isset( $args->theme_location ) ? $args->theme_location : '';
+		if ( 'primary' !== $loc && 'menu-1' !== $loc && 'main' !== $loc ) {
+			return $items;
+		}
+		$page = get_page_by_path( 'espace-juridique' );
+		$url  = $page ? get_permalink( $page ) : home_url( '/espace-juridique/' );
+		$current = ( $page && is_page( $page->ID ) ) ? ' current-menu-item' : '';
+		$items  .= '<li class="menu-item ag-jr-menu-item' . $current . '"><a href="' . esc_url( $url ) . '">⚖️ Espace juridique</a></li>';
+		return $items;
 	}
 
 	/** Enregistre (sans charger) les assets front ; le shortcode les charge. */
