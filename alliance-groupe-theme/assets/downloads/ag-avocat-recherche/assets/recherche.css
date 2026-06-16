@@ -16,9 +16,14 @@
 
 .ag-jr-note { background: #fff8e5; border: 1px solid var(--gold); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; max-width: 820px; }
 .ag-jr-hint { color: #50575e; }
-.ag-jr-filters { display: flex; gap: 18px; margin-bottom: 14px; }
+.ag-jr-filters { display: flex; gap: 14px 18px; margin-bottom: 14px; flex-wrap: wrap; align-items: flex-end; }
 .ag-jr-filters label { font-size: 13px; color: #50575e; }
-.ag-jr-filters select { display: block; margin-top: 4px; }
+.ag-jr-filters select, .ag-jr-filters input[type="number"], .ag-jr-filters input[type="text"] { display: block; margin-top: 4px; }
+.ag-jr-filters input[type="number"] { width: 92px; }
+.ag-jr-filters .ag-jr-check { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+.ag-jr-filters .ag-jr-check input { margin: 0; width: auto; }
+.ag-jr-badge { display: inline-block; background: linear-gradient(135deg,#D4B45C,#B8941F); color: #1a1205; font-weight: 800; font-size: 11px; padding: 2px 8px; border-radius: 999px; vertical-align: middle; }
+.ag-jr-card.is-pub { border-left: 3px solid #D4B45C; }
 
 /* Méta-moteur */
 .ag-jr-cat { margin-bottom: 18px; }

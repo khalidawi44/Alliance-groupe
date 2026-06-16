@@ -198,6 +198,53 @@ class AG_Recherche_Juridique {
 		return apply_filters( 'ag_jr_sources', $s );
 	}
 
+	/**
+	 * Contrôles de tri / filtres de la recherche Judilibre (partagés entre la
+	 * page admin et l'espace cabinet front — même IDs, même JS recherche.js).
+	 */
+	private function render_search_filters() {
+		$yr = (int) gmdate( 'Y' );
+		?>
+		<label>Juridiction
+			<select id="ag-jr-jur">
+				<option value="">Toutes</option>
+				<option value="cc">Cour de cassation</option>
+				<option value="ca">Cours d'appel</option>
+				<option value="tj">Tribunaux judiciaires</option>
+			</select>
+		</label>
+		<label>Trier par
+			<select id="ag-jr-sort">
+				<option value="score">Pertinence</option>
+				<option value="date">Date (récent → ancien)</option>
+				<option value="date_asc">Date (ancien → récent)</option>
+			</select>
+		</label>
+		<label>Année (de)
+			<input type="number" id="ag-jr-ymin" min="1900" max="<?php echo esc_attr( $yr ); ?>" placeholder="ex. 2015" inputmode="numeric">
+		</label>
+		<label>Année (à)
+			<input type="number" id="ag-jr-ymax" min="1900" max="<?php echo esc_attr( $yr ); ?>" placeholder="<?php echo esc_attr( $yr ); ?>" inputmode="numeric">
+		</label>
+		<label>Solution
+			<select id="ag-jr-solution">
+				<option value="">Toutes</option>
+				<option value="cassation">Cassation</option>
+				<option value="rejet">Rejet</option>
+				<option value="annulation">Annulation</option>
+				<option value="irrecevabilite">Irrecevabilité</option>
+				<option value="nonlieu">Non-lieu</option>
+				<option value="qpc">QPC</option>
+				<option value="avis">Avis</option>
+			</select>
+		</label>
+		<label>Matière / thème
+			<input type="text" id="ag-jr-theme" placeholder="ex. bail, divorce, licenciement">
+		</label>
+		<label class="ag-jr-check"><input type="checkbox" id="ag-jr-pub"> ⭐ Seulement celles qui <strong>font jurisprudence</strong> (publiées au Bulletin)</label>
+		<?php
+	}
+
 	/* ============================================================
 	 *  PAGE : RECHERCHE (méta-moteur + live Judilibre)
 	 * ============================================================ */
@@ -229,22 +276,7 @@ class AG_Recherche_Juridique {
 						En attendant, l'onglet « Toutes les sources » fonctionne déjà.
 					</div>
 				<?php endif; ?>
-				<div class="ag-jr-filters">
-					<label>Juridiction
-						<select id="ag-jr-jur">
-							<option value="">Toutes</option>
-							<option value="cc">Cour de cassation</option>
-							<option value="ca">Cours d'appel</option>
-							<option value="tj">Tribunaux judiciaires</option>
-						</select>
-					</label>
-					<label>Trier par
-						<select id="ag-jr-sort">
-							<option value="score">Pertinence</option>
-							<option value="date">Date (récent)</option>
-						</select>
-					</label>
-				</div>
+				<div class="ag-jr-filters"><?php $this->render_search_filters(); ?></div>
 				<div id="ag-jr-results" class="ag-jr-results"><p class="ag-jr-empty">Vos résultats de jurisprudence apparaîtront ici.</p></div>
 			</section>
 
@@ -382,19 +414,43 @@ class AG_Recherche_Juridique {
 		$base = str_replace( 'sandbox-api.piste.gouv.fr', 'api.piste.gouv.fr', $base ); // force production (sandbox = index vide)
 		$args = array(
 			'query'     => $q,
-			'page_size' => 12,
+			'page_size' => 20,
 			'resolve_references' => 'true',
 		);
 		$jur  = isset( $_POST['jur'] ) ? sanitize_text_field( wp_unslash( $_POST['jur'] ) ) : '';
 		$sort = isset( $_POST['sort'] ) ? sanitize_text_field( wp_unslash( $_POST['sort'] ) ) : 'score';
+		$order = isset( $_POST['order'] ) ? sanitize_text_field( wp_unslash( $_POST['order'] ) ) : '';
 		if ( 'date' === $sort ) {
 			$args['sort']  = 'date';
-			$args['order'] = 'desc';
+			$args['order'] = ( 'asc' === $order ) ? 'asc' : 'desc';
+		}
+		// Filtre par année (de / à) → date_start / date_end.
+		$ymin = isset( $_POST['ymin'] ) ? intval( $_POST['ymin'] ) : 0;
+		$ymax = isset( $_POST['ymax'] ) ? intval( $_POST['ymax'] ) : 0;
+		if ( $ymin >= 1900 && $ymin <= 2100 ) {
+			$args['date_start'] = sprintf( '%04d-01-01', $ymin );
+		}
+		if ( $ymax >= 1900 && $ymax <= 2100 ) {
+			$args['date_end'] = sprintf( '%04d-12-31', $ymax );
 		}
 		$url = add_query_arg( $args, $base );
 		if ( $jur ) {
 			// Judilibre attend des jurisdiction[] répétés ; on ajoute proprement.
 			$url .= '&jurisdiction=' . rawurlencode( $jur );
+		}
+		// « Décisions qui font jurisprudence » = publiées au Bulletin (b) + Rapport (r).
+		if ( ! empty( $_POST['pub'] ) ) {
+			$url .= '&publication=b&publication=r';
+		}
+		// Solution (cassation, rejet, irrecevabilité, QPC…).
+		$solution = isset( $_POST['solution'] ) ? sanitize_text_field( wp_unslash( $_POST['solution'] ) ) : '';
+		if ( $solution ) {
+			$url .= '&solution=' . rawurlencode( $solution );
+		}
+		// Matière / thème.
+		$theme = isset( $_POST['theme'] ) ? sanitize_text_field( wp_unslash( $_POST['theme'] ) ) : '';
+		if ( $theme ) {
+			$url .= '&theme=' . rawurlencode( $theme );
 		}
 		$headers = array(
 			'Authorization' => 'Bearer ' . $token,
@@ -441,6 +497,7 @@ class AG_Recherche_Juridique {
 				'type'      => isset( $r['type'] ) ? $r['type'] : '',
 				'themes'    => isset( $r['themes'] ) ? (array) $r['themes'] : array(),
 				'solution'  => isset( $r['solution'] ) ? $r['solution'] : '',
+				'publication' => isset( $r['publication'] ) ? (array) $r['publication'] : array(),
 				'summary'   => wp_strip_all_tags( (string) $summary ),
 			);
 		}
@@ -843,22 +900,7 @@ class AG_Recherche_Juridique {
 					<?php if ( ! $live_on ) : ?>
 						<div class="ag-jr-note">La recherche en direct n'est pas encore activée. En attendant, l'onglet <strong>« Toutes les sources »</strong> fonctionne déjà.<?php if ( $is_admin ) : ?> Activez-la dans <strong>Réglages</strong> (clés Judilibre).<?php endif; ?></div>
 					<?php endif; ?>
-					<div class="ag-jr-filters">
-						<label>Juridiction
-							<select id="ag-jr-jur">
-								<option value="">Toutes</option>
-								<option value="cc">Cour de cassation</option>
-								<option value="ca">Cours d'appel</option>
-								<option value="tj">Tribunaux judiciaires</option>
-							</select>
-						</label>
-						<label>Trier par
-							<select id="ag-jr-sort">
-								<option value="score">Pertinence</option>
-								<option value="date">Date (récent)</option>
-							</select>
-						</label>
-					</div>
+					<div class="ag-jr-filters"><?php $this->render_search_filters(); ?></div>
 					<div id="ag-jr-results" class="ag-jr-results"><p class="ag-jr-empty">Vos résultats de jurisprudence apparaîtront ici.</p></div>
 				</section>
 				<section class="ag-jr-panel" data-panel="meta">

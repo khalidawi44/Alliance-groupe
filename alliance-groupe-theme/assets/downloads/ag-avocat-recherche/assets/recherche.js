@@ -66,15 +66,30 @@
 			return;
 		}
 		box.innerHTML = '<p class="ag-jr-loading">Recherche en cours…</p>';
-		post('ag_jr_judilibre', { q: q, jur: $('#ag-jr-jur').value, sort: $('#ag-jr-sort').value }, function (res) {
+		function fval(id) { var el = $('#' + id); return el ? el.value : ''; }
+		function fchecked(id) { var el = $('#' + id); return (el && el.checked) ? '1' : ''; }
+		var sortSel = fval('ag-jr-sort'); // score | date | date_asc
+		var data = {
+			q: q,
+			jur: fval('ag-jr-jur'),
+			sort: (sortSel === 'score') ? 'score' : 'date',
+			order: (sortSel === 'date_asc') ? 'asc' : 'desc',
+			ymin: fval('ag-jr-ymin'),
+			ymax: fval('ag-jr-ymax'),
+			solution: fval('ag-jr-solution'),
+			theme: fval('ag-jr-theme'),
+			pub: fchecked('ag-jr-pub')
+		};
+		post('ag_jr_judilibre', data, function (res) {
 			if (!res.success) { box.innerHTML = '<p class="ag-jr-err">' + (res.data && res.data.message || 'Erreur') + '</p>'; return; }
 			var d = res.data;
 			if (!d.results.length) { box.innerHTML = '<p class="ag-jr-empty">Aucune décision trouvée. Essayez d\'autres mots-clés ou les autres sources.</p>'; return; }
 			var html = '<p class="ag-jr-count">' + d.total + ' décision(s) — ' + d.results.length + ' affichée(s)</p>';
 			d.results.forEach(function (r) {
 				var meta = [juriLabel(r.jurisdiction), r.chamber, r.number, r.date].filter(Boolean).join(' · ');
-				html += '<div class="ag-jr-card">'
-					+ '<div class="ag-jr-card-meta">' + meta + (r.solution ? ' · <em>' + r.solution + '</em>' : '') + '</div>'
+				var badge = (r.publication && r.publication.length) ? '<span class="ag-jr-badge" title="Publiée au Bulletin — fait jurisprudence">⭐ Fait jurisprudence</span> ' : '';
+				html += '<div class="ag-jr-card' + (badge ? ' is-pub' : '') + '">'
+					+ '<div class="ag-jr-card-meta">' + badge + meta + (r.solution ? ' · <em>' + r.solution + '</em>' : '') + '</div>'
 					+ (r.themes && r.themes.length ? '<div class="ag-jr-themes">' + r.themes.slice(0, 4).map(function (t) { return '<span>' + t + '</span>'; }).join('') + '</div>' : '')
 					+ '<p class="ag-jr-summary">' + (r.summary || '—') + '</p>'
 					+ '<div class="ag-jr-card-act">'
@@ -108,8 +123,10 @@
 		$('#ag-jr-q').addEventListener('keydown', function (e) { if (e.key === 'Enter') { go(); } });
 		$('#ag-jr-q').addEventListener('input', refreshSourceLinks);
 	}
-	if ($('#ag-jr-jur')) { $('#ag-jr-jur').addEventListener('change', liveSearch); }
-	if ($('#ag-jr-sort')) { $('#ag-jr-sort').addEventListener('change', liveSearch); }
+	['ag-jr-jur', 'ag-jr-sort', 'ag-jr-ymin', 'ag-jr-ymax', 'ag-jr-solution', 'ag-jr-theme', 'ag-jr-pub'].forEach(function (id) {
+		var el = $('#' + id);
+		if (el) { el.addEventListener('change', liveSearch); }
+	});
 
 	/* ---------- Assistant IA ---------- */
 	var aiTask = 'probleme';
