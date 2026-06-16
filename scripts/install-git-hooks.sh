@@ -43,6 +43,12 @@ if [[ -n "${COMMIT_MSG_FILE:-}" && -f "${COMMIT_MSG_FILE}" ]]; then
 fi
 
 bash scripts/check-all-locks.sh
+
+# --- Rappel release : code d'un template modifie sans rebuild du .zip ---
+# (non bloquant : sinon les acheteurs ne recoivent pas la MAJ)
+if [[ -f scripts/check-staged-releases.sh ]]; then
+    bash scripts/check-staged-releases.sh || true
+fi
 HOOK
 
 chmod +x "${HOOK_PATH}"

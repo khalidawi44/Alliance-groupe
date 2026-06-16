@@ -19,6 +19,7 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 - Le site applique via **Apparence → SYNC GitHub** : « Vérifier MAJ » puis « SYNC FICHIERS DU THÈME », puis purge cache + Ctrl/recharge.
 - Thème autonome (pas d'Elementor). Templates = `alliance-groupe-theme/templates/page-*.php` (Template Name). Logique = `alliance-groupe-theme/inc/*.php`, chargés depuis `functions.php`.
 - Toujours `php -l` avant commit. Indentation = tabulations.
+- **MAJ des templates vendus (RÈGLE) : tout changement dans le code d'un template (`assets/downloads/<slug>/`) DOIT être publié via `bash scripts/release.sh <slug> <version>`** (bump version header+constante + `.json` + rebuild du `.zip` + push + merge main). Sinon l'acheteur ne reçoit JAMAIS la MAJ (auto-update = compare la version du `.json` sur `main` et télécharge le `.zip`). Vérifier à tout moment : `bash scripts/check-releases.sh` (versions cohérentes + zips = source). Le hook pre-commit alerte si on édite un template sans rebuild son zip.
 
 ## Briques d'infrastructure (réutilisables)
 
