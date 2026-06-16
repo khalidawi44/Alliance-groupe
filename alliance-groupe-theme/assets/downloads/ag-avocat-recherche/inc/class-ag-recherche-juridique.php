@@ -303,30 +303,66 @@ class AG_Recherche_Juridique {
 		if ( $cached ) {
 			return $cached;
 		}
-		$oauth = get_option( 'ag_jr_piste_oauth', 'https://oauth.piste.gouv.fr/api/oauth/token' );
+		$oauth = trim( (string) get_option( 'ag_jr_piste_oauth', 'https://oauth.piste.gouv.fr/api/oauth/token' ) );
 		// Auto-réparation : l'ancien host PISTE (aife.economie.gouv.fr) est mort.
 		$oauth = str_replace( 'aife.economie.gouv.fr', 'piste.gouv.fr', $oauth );
-		$scope = get_option( 'ag_jr_piste_scope', 'openid' );
-		$resp  = wp_remote_post( $oauth, array(
-			'timeout' => 20,
-			'headers' => array( 'Content-Type' => 'application/x-www-form-urlencoded' ),
-			'body'    => array(
-				'grant_type'    => 'client_credentials',
-				'client_id'     => $id,
-				'client_secret' => $secret,
-				'scope'         => $scope,
+		if ( '' === $oauth ) {
+			$oauth = 'https://oauth.piste.gouv.fr/api/oauth/token';
+		}
+		$scope = trim( (string) get_option( 'ag_jr_piste_scope', 'openid' ) );
+
+		// PISTE accepte l'authentification client dans le CORPS, mais l'environnement
+		// de PRODUCTION exige souvent l'en-tête HTTP Basic. On tente le corps, puis on
+		// bascule automatiquement en Basic si « invalid_client » → robuste partout.
+		$attempts = array(
+			array(
+				'headers' => array( 'Content-Type' => 'application/x-www-form-urlencoded' ),
+				'body'    => array(
+					'grant_type'    => 'client_credentials',
+					'client_id'     => $id,
+					'client_secret' => $secret,
+					'scope'         => $scope,
+				),
 			),
-		) );
-		if ( is_wp_error( $resp ) ) {
-			return $resp;
+			array(
+				'headers' => array(
+					'Content-Type'  => 'application/x-www-form-urlencoded',
+					'Authorization' => 'Basic ' . base64_encode( $id . ':' . $secret ),
+				),
+				'body'    => array(
+					'grant_type' => 'client_credentials',
+					'scope'      => $scope,
+				),
+			),
+		);
+
+		$last = '';
+		foreach ( $attempts as $a ) {
+			$resp = wp_remote_post( $oauth, array( 'timeout' => 20, 'headers' => $a['headers'], 'body' => $a['body'] ) );
+			if ( is_wp_error( $resp ) ) {
+				$last = $resp->get_error_message();
+				continue;
+			}
+			$raw  = wp_remote_retrieve_body( $resp );
+			$data = json_decode( $raw, true );
+			if ( ! empty( $data['access_token'] ) ) {
+				$ttl = isset( $data['expires_in'] ) ? max( 60, intval( $data['expires_in'] ) - 60 ) : 1800;
+				set_transient( 'ag_jr_piste_token', $data['access_token'], $ttl );
+				return $data['access_token'];
+			}
+			$last = $raw;
+			// Si ce n'est PAS un souci d'authentification client, inutile de réessayer en Basic.
+			if ( false === strpos( (string) $raw, 'invalid_client' ) ) {
+				break;
+			}
 		}
-		$data = json_decode( wp_remote_retrieve_body( $resp ), true );
-		if ( empty( $data['access_token'] ) ) {
-			return new WP_Error( 'oauth', 'OAuth refusé : ' . wp_remote_retrieve_body( $resp ) );
-		}
-		$ttl = isset( $data['expires_in'] ) ? max( 60, intval( $data['expires_in'] ) - 60 ) : 1800;
-		set_transient( 'ag_jr_piste_token', $data['access_token'], $ttl );
-		return $data['access_token'];
+		$idmask = strlen( $id ) > 8 ? substr( $id, 0, 6 ) . '…' : $id;
+		return new WP_Error(
+			'oauth',
+			'OAuth refusé. Vérifiez : (1) le Client ID utilisé = « ' . $idmask . ' » (ce doit être l\'« Identifiants OAuth → Client ID », PAS l\'API Key) ; '
+			. '(2) le Secret = bouton « Consulter le secret » de la section « Identifiants OAuth » (pas celui des « API Keys ») ; '
+			. '(3) l\'URL OAuth = « ' . $oauth .' » (production, sans « sandbox- »). Réponse PISTE : ' . substr( (string) $last, 0, 240 )
+		);
 	}
 
 	public function ajax_judilibre() {
