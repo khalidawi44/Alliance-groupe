@@ -146,8 +146,19 @@ class AG_Licence_API {
         $rl = self::rate_limit();
         if ( $rl ) return $rl;
 
+        // Version réelle lue depuis le .json livré (tenu à jour par le pipeline
+        // de release) → l'endpoint reflète toujours la version réellement
+        // distribuée, sans réglage manuel ni valeur codée en dur périmée.
+        $ag_comp_json = get_stylesheet_directory() . '/assets/downloads/ag-starter-companion.json';
+        $ag_comp_ver  = '1.9.0';
+        if ( file_exists( $ag_comp_json ) ) {
+            $ag_comp_data = json_decode( (string) file_get_contents( $ag_comp_json ), true );
+            if ( ! empty( $ag_comp_data['version'] ) ) {
+                $ag_comp_ver = $ag_comp_data['version'];
+            }
+        }
         $info = get_option( 'ag_lm_companion_version', array(
-            'version'      => '1.9.0',
+            'version'      => $ag_comp_ver,
             'download_url' => home_url( '/wp-content/themes/alliance-groupe-theme/assets/downloads/ag-starter-companion.zip' ),
             'url'          => home_url( '/templates-wordpress' ),
             'tested'       => '6.5',

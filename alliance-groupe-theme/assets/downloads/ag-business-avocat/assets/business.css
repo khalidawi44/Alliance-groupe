@@ -257,20 +257,31 @@ body.ag-light .ag-business-boutique-page__search-info a {
     justify-content: space-between;
     align-items: center;
     gap: 16px;
-    padding: 0 0 18px;
-    border-bottom: 1px solid rgba(212, 180, 92, .2);
+    /* Panneau de fond opaque : la barre flotte au-dessus de la photo hero
+       (bibliothèque), donc on lui donne une vraie surface lisible — sinon le
+       texte/les pills sont noyés dans l'image. Robuste en clair ET sombre. */
+    padding: 14px 18px;
+    background: rgba(10, 14, 26, .74);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(212, 180, 92, .35);
+    border-radius: 14px;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, .28);
     margin-bottom: 24px;
     flex-wrap: wrap;
+}
+body.ag-light .ag-business-boutique-page__toolbar {
+    background: rgba(255, 255, 255, .94);
+    border-color: rgba(123, 45, 59, .28);
+    box-shadow: 0 6px 22px rgba(0, 0, 0, .12);
 }
 .ag-business-boutique-page__count {
     color: #ffffff;
     font-size: .95rem;
     font-weight: 700;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, .35);
 }
 body.ag-light .ag-business-boutique-page__count {
     color: #1A1014;
-    text-shadow: none;
 }
 /* ── Toolbar : tri sous forme de pills (vs select HTML moche) ── */
 .ag-business-boutique-page__sort-pills {
@@ -301,8 +312,8 @@ body.ag-light .ag-business-boutique-page__sort-label {
     font-size: .82rem;
     font-weight: 600;
     text-decoration: none;
-    background: rgba(10, 14, 26, .55);
-    border: 1px solid rgba(212, 180, 92, .45);
+    background: rgba(43, 52, 78, .85);
+    border: 1px solid rgba(212, 180, 92, .55);
     border-radius: 999px;
     letter-spacing: .3px;
     transition: color .25s ease, border-color .25s ease, background .25s ease, box-shadow .25s ease;
@@ -327,8 +338,8 @@ body.ag-light .ag-business-boutique-page__sort-label {
 }
 body.ag-light .ag-business-boutique-pill {
     color: #2A1A1E;
-    background: rgba(255, 255, 255, .92);
-    border-color: rgba(123, 45, 59, .35);
+    background: #f3e9da;
+    border-color: rgba(123, 45, 59, .5);
 }
 body.ag-light .ag-business-boutique-pill:hover {
     color: #ffffff;
