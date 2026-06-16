@@ -3,7 +3,7 @@
  * Plugin Name:       AG Premium Avocat — Boutique & Cabinet
  * Plugin URI:        https://alliancegroupe-inc.com
  * Description:       Fonctionnalités Premium (boutique, équipe, comptes clients) pour le thème AG Starter Avocat. Active sur toute licence Premium via AG_Licence_Client.
- * Version:           0.52.0
+ * Version:           0.53.0
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Alliance Groupe
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_BUSINESS_AVOCAT_VERSION', '0.52.0' );
+define( 'AG_BUSINESS_AVOCAT_VERSION', '0.53.0' );
 define( 'AG_BUSINESS_AVOCAT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AG_BUSINESS_AVOCAT_URL', plugin_dir_url( __FILE__ ) );
 
@@ -39,6 +39,22 @@ if ( get_option( 'stylesheet' ) !== 'ag-starter-avocat' && get_option( 'template
 require_once AG_BUSINESS_AVOCAT_DIR . 'inc/class-ag-business-avocat.php';
 require_once AG_BUSINESS_AVOCAT_DIR . 'inc/class-ag-ba-updater.php';
 
+// === FUSION (v0.53.0) === Base design Premium intégrée ici (ex-plugin
+// AG Premium Avocat). On expose les constantes attendues par la classe
+// Premium en les pointant sur CE plugin (où premium.css/js ont été copiés),
+// puis on charge et boote la classe. Garde class_exists : si l'ancien
+// plugin tourne encore, il se désactive de lui-même (voir son guard), donc
+// pas de double déclaration.
+if ( ! defined( 'AG_PREMIUM_AVOCAT_VERSION' ) ) {
+	define( 'AG_PREMIUM_AVOCAT_VERSION', AG_BUSINESS_AVOCAT_VERSION );
+	define( 'AG_PREMIUM_AVOCAT_DIR', AG_BUSINESS_AVOCAT_DIR );
+	define( 'AG_PREMIUM_AVOCAT_URL', AG_BUSINESS_AVOCAT_URL );
+}
+if ( ! class_exists( 'AG_Premium_Avocat' ) ) {
+	require_once AG_BUSINESS_AVOCAT_DIR . 'inc/class-ag-premium-avocat.php';
+}
+
 // Boot after the theme has loaded, so AG_Licence_Client (defined in the
 // Free theme) is available for tier detection.
 add_action( 'after_setup_theme', array( 'AG_Business_Avocat', 'instance' ), 20 );
+add_action( 'after_setup_theme', array( 'AG_Premium_Avocat', 'instance' ), 20 );

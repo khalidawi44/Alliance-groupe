@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       AG Premium Avocat
  * Plugin URI:        https://alliancegroupe-inc.com
- * Description:       Fonctionnalités Premium pour le thème AG Starter Avocat. Active uniquement si tier >= premium détecté via AG_Licence_Client.
- * Version:           0.5.0
+ * Description:       FUSIONNÉ dans « AG Premium Avocat — Boutique & Cabinet ». Ce plugin se désactive automatiquement si l'unifié est présent — vous pouvez le supprimer en toute sécurité.
+ * Version:           0.6.0
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Alliance Groupe
@@ -20,7 +20,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_PREMIUM_AVOCAT_VERSION', '0.5.0' );
+// === FUSION === Depuis la v0.6.0, la base design Premium est intégrée au
+// plugin unifié « AG Premium Avocat — Boutique & Cabinet » (ag-business-avocat).
+// Si ce plugin unifié est présent, on se désactive entièrement pour éviter
+// tout doublon (double logo / double FAQ). Ce plugin peut alors être supprimé.
+// (Chargé avant ce fichier dans l'ordre alphabétique des dossiers de plugins.)
+if ( defined( 'AG_BUSINESS_AVOCAT_VERSION' ) ) {
+	return;
+}
+
+define( 'AG_PREMIUM_AVOCAT_VERSION', '0.6.0' );
 define( 'AG_PREMIUM_AVOCAT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AG_PREMIUM_AVOCAT_URL', plugin_dir_url( __FILE__ ) );
 
