@@ -70,14 +70,17 @@ get_template_part( 'template-parts/metier-page' );
     <div class="ag-container" style="max-width:1080px;margin:0 auto;padding:0 22px;">
         <p style="text-align:center;letter-spacing:3px;text-transform:uppercase;color:#D4B45C;font-size:.8rem;font-weight:700;margin:0 0 10px;">Exclusivité Alliance Groupe</p>
         <h2 style="text-align:center;font-size:clamp(1.7rem,4vw,2.6rem);margin:0 0 14px;line-height:1.15;">⚖️ Un cabinet de <span style="color:#D4B45C;">recherche juridique</span> intégré à votre site</h2>
-        <p style="text-align:center;max-width:760px;margin:0 auto 40px;color:rgba(255,255,255,.78);font-size:1.05rem;">
+        <p style="text-align:center;max-width:760px;margin:0 auto 16px;color:rgba(255,255,255,.78);font-size:1.05rem;">
             Bien plus qu'une vitrine : un véritable outil de travail privé pour le cabinet, accessible depuis votre propre site (espace réservé, connexion sécurisée). Aucun autre thème avocat ne le propose.
+        </p>
+        <p style="text-align:center;margin:0 auto 40px;">
+            <span style="display:inline-block;background:rgba(212,180,92,.14);border:1px solid rgba(212,180,92,.5);color:#F1D98B;font-weight:700;padding:10px 20px;border-radius:999px;">✅ Recherche jurisprudence <strong>incluse</strong> — <strong>zéro configuration</strong>, aucun compte ni clé à créer</span>
         </p>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;">
             <div style="background:rgba(255,255,255,.04);border:1px solid rgba(212,180,92,.25);border-radius:16px;padding:22px;">
                 <div style="font-size:1.6rem;margin-bottom:8px;">🔎</div>
                 <h3 style="margin:0 0 6px;font-size:1.1rem;color:#D4B45C;">Jurisprudence en direct</h3>
-                <p style="margin:0;color:rgba(255,255,255,.72);font-size:.95rem;">Recherche LIVE dans l'open data officiel <strong>Judilibre</strong> (Cour de cassation + cours d'appel) : juridiction, chambre, date, sommaire, texte intégral. Gratuit.</p>
+                <p style="margin:0;color:rgba(255,255,255,.72);font-size:.95rem;">Recherche LIVE dans l'open data officiel <strong>Judilibre</strong> (Cour de cassation + cours d'appel) : juridiction, chambre, date, sommaire, texte intégral. <strong>Incluse, sans compte ni clé à créer</strong> — filtres « font jurisprudence », année, matière.</p>
             </div>
             <div style="background:rgba(255,255,255,.04);border:1px solid rgba(212,180,92,.25);border-radius:16px;padding:22px;">
                 <div style="font-size:1.6rem;margin-bottom:8px;">🌐</div>
