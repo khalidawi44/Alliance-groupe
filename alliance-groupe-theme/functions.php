@@ -1434,8 +1434,15 @@ if ( ! function_exists( 'ag_template_gallery_images' ) ) {
         $out = array();
         foreach ( $files as $f ) {
             $name  = basename( $f );
-            $label = preg_replace( '/\.[a-z]+$/i', '', $name );
-            $label = ucfirst( trim( str_replace( array( '-', '_' ), ' ', $label ) ) );
+            $label = preg_replace( '/\.[a-z]+$/i', '', $name );           // retire l'extension
+            $label = preg_replace( '/^\d+[\s\-_]*/', '', $label );        // retire un préfixe d'ordre éventuel (1-, 02_, …)
+            $label = trim( str_replace( array( '-', '_' ), ' ', $label ) );
+            // Suffixe « jour »/« nuit » (mode clair/sombre des maquettes) → présentation soignée.
+            if ( preg_match( '/^(.*?)\s+(jour|nuit)$/i', $label, $m ) ) {
+                $label = ucfirst( trim( $m[1] ) ) . ' — ' . strtolower( $m[2] );
+            } else {
+                $label = ucfirst( $label );
+            }
             $out[] = array(
                 'url'   => $url . '/' . rawurlencode( $name ),
                 'label' => $label,
