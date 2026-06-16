@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name:       AG Business Avocat
+ * Plugin Name:       AG Premium Avocat — Boutique & Cabinet
  * Plugin URI:        https://alliancegroupe-inc.com
- * Description:       Fonctionnalités Business pour le thème AG Starter Avocat. Active uniquement si tier === business détecté via AG_Licence_Client.
+ * Description:       Fonctionnalités Premium (boutique, équipe, comptes clients) pour le thème AG Starter Avocat. Active sur toute licence Premium via AG_Licence_Client.
  * Version:           0.51.1
  * Requires at least: 5.8
  * Requires PHP:      7.4

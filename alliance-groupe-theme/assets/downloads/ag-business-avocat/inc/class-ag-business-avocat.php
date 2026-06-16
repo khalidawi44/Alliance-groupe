@@ -961,7 +961,7 @@ class AG_Business_Avocat {
 		?>
 		<div class="notice notice-info" style="border-left-color:#D4B45C;">
 			<p style="font-size:14px;">
-				<strong><?php esc_html_e( 'AG Business :', 'ag-business-avocat' ); ?></strong>
+				<strong><?php esc_html_e( 'AG Premium :', 'ag-business-avocat' ); ?></strong>
 				<?php esc_html_e( 'pour activer la page Boutique, installez WooCommerce.', 'ag-business-avocat' ); ?>
 				&nbsp;
 				<a href="<?php echo esc_url( $install_url ); ?>" class="button button-primary"><?php esc_html_e( 'Installer WooCommerce', 'ag-business-avocat' ); ?></a>
@@ -1254,7 +1254,7 @@ class AG_Business_Avocat {
 	 */
 	public function register_customizer( $wp_customize ) {
 		$wp_customize->add_panel( 'ag_business_panel', array(
-			'title'    => __( 'AG Business — Options', 'ag-business-avocat' ),
+			'title'    => __( 'AG Premium — Options', 'ag-business-avocat' ),
 			'priority' => 220,
 		) );
 
@@ -1414,7 +1414,7 @@ class AG_Business_Avocat {
 		?>
 		<div class="notice notice-info" style="border-left-color:#635BFF;">
 			<p style="font-size:14px;">
-				<strong><?php esc_html_e( 'AG Business :', 'ag-business-avocat' ); ?></strong>
+				<strong><?php esc_html_e( 'AG Premium :', 'ag-business-avocat' ); ?></strong>
 				<?php esc_html_e( 'pour accepter les paiements Stripe directement sur le site, installez WP Simple Pay (gratuit).', 'ag-business-avocat' ); ?>
 				&nbsp;
 				<a href="<?php echo esc_url( $install_url ); ?>" class="button button-primary"><?php esc_html_e( 'Installer WP Simple Pay', 'ag-business-avocat' ); ?></a>

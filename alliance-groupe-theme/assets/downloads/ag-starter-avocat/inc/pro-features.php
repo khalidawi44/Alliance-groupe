@@ -1825,7 +1825,7 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
         $wp_customize->add_setting( 'ag_pro_skin', array( 'default' => 'navy-or', 'sanitize_callback' => 'sanitize_key' ) );
         $wp_customize->add_control( 'ag_pro_skin', array(
             'label'       => 'Apparence du site',
-            'description' => 'Changez le design en un clic. Premium : 2 styles. Business : 4 styles.',
+            'description' => 'Changez le design en un clic. 4 styles au choix.',
             'section'     => 'ag_pro_features',
             'type'        => 'select',
             'choices'     => self::get_available_skins( $this->tier ),
@@ -2285,7 +2285,7 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
 
         // Section Équipe
         $wp_customize->add_section( 'ag_business_team', array(
-            'title'    => '👥 Équipe (Business)',
+            'title'    => '👥 Équipe (Premium)',
             'priority' => 27,
         ) );
         $wp_customize->add_setting( 'ag_business_team_show', array( 'default' => true, 'sanitize_callback' => 'wp_validate_boolean' ) );
@@ -2307,7 +2307,7 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
 
         // Section Signature Maître (Business uniquement)
         $wp_customize->add_section( 'ag_business_maitre', array(
-            'title'    => '✒️ Signature Maître (Business)',
+            'title'    => '✒️ Signature Maître (Premium)',
             'priority' => 26,
         ) );
         $wp_customize->add_setting( 'ag_business_maitre_signature', array(
@@ -2322,7 +2322,7 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
 
         // Section Boutique
         $wp_customize->add_section( 'ag_business_shop', array(
-            'title'       => '🛍 Boutique (Business)',
+            'title'       => '🛍 Boutique (Premium)',
             'priority'    => 28,
             'description' => 'Si WooCommerce est installé et activé, les 3 derniers produits publiés s\'affichent automatiquement (image, prix, description courte). Les champs ci-dessous ne servent que de fallback statique si WooCommerce n\'est pas installé.',
         ) );
