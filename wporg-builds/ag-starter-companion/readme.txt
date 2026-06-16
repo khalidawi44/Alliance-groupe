@@ -3,7 +3,7 @@
 Contributors: adminag
 Tags: starter sites, demo content, one click import, theme setup, french
 Requires at least: 6.0
-Tested up to: 6.5
+Tested up to: 7.0
 Requires PHP: 7.4
 Stable tag: 1.12.0
 License: GNU General Public License v2 or later
