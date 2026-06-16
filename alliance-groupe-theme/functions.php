@@ -112,6 +112,12 @@ if ( file_exists( $ag_geo_file ) ) {
     require_once $ag_geo_file;
 }
 
+// ── 1c4h. Relais Judilibre mutualisé (clé PISTE unique → clients sans config)
+$ag_jrp_file = get_stylesheet_directory() . '/inc/ag-judilibre-proxy.php';
+if ( file_exists( $ag_jrp_file ) ) {
+    require_once $ag_jrp_file;
+}
+
 // ── Durcissement sécurité de NOTRE site (xmlrpc, énumération, en-têtes, version)
 $ag_hardening_file = get_stylesheet_directory() . '/inc/ag-hardening.php';
 if ( file_exists( $ag_hardening_file ) ) {

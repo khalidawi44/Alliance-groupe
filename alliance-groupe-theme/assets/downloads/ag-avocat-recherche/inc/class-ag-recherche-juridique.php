@@ -147,7 +147,7 @@ class AG_Recherche_Juridique {
 			'nonce'   => wp_create_nonce( 'ag_jr' ),
 			'sources' => $this->sources(),
 			'ai_on'   => (bool) trim( (string) get_option( 'ag_jr_ai_key', '' ) ),
-			'live_on' => ( trim( (string) get_option( 'ag_jr_piste_id', '' ) ) && trim( (string) get_option( 'ag_jr_piste_secret', '' ) ) ),
+			'live_on' => true, // recherche LIVE toujours dispo : clé locale OU relais mutualisé Alliance Groupe
 		) );
 	}
 
@@ -400,69 +400,57 @@ class AG_Recherche_Juridique {
 		);
 	}
 
-	public function ajax_judilibre() {
-		$this->check_nonce();
-		$q = isset( $_POST['q'] ) ? sanitize_text_field( wp_unslash( $_POST['q'] ) ) : '';
-		if ( '' === $q ) {
-			wp_send_json_error( array( 'message' => 'Tapez une recherche.' ) );
+	/** Le cabinet a-t-il saisi SA propre clé PISTE ? Sinon → relais mutualisé Alliance Groupe. */
+	private function uses_own_key() {
+		return '' !== trim( (string) get_option( 'ag_jr_piste_id', '' ) ) && '' !== trim( (string) get_option( 'ag_jr_piste_secret', '' ) );
+	}
+
+	/** Appelle le relais mutualisé (site mère AG). Retourne le corps Judilibre brut ou WP_Error. */
+	private function proxy_call( $endpoint, $params ) {
+		$base = defined( 'AG_JR_PROXY_BASE' ) ? AG_JR_PROXY_BASE : 'https://alliancegroupe-inc.com/wp-json/ag/v1';
+		$resp = wp_remote_post( trailingslashit( $base ) . $endpoint, array( 'timeout' => 25, 'body' => $params ) );
+		if ( is_wp_error( $resp ) ) {
+			return new WP_Error( 'proxy', 'Recherche LIVE momentanément indisponible. Réessayez dans un instant.' );
+		}
+		$data = json_decode( wp_remote_retrieve_body( $resp ), true );
+		if ( ! is_array( $data ) ) {
+			return new WP_Error( 'proxy', 'Réponse du relais invalide.' );
+		}
+		if ( ! empty( $data['error'] ) ) {
+			return new WP_Error( 'proxy', $data['error'] );
+		}
+		return ( isset( $data['judilibre'] ) && is_array( $data['judilibre'] ) ) ? $data['judilibre'] : array( 'results' => array(), 'total' => 0 );
+	}
+
+	/** Récupère le corps Judilibre brut : clé locale du cabinet OU relais mutualisé. */
+	private function fetch_judilibre_search( $p ) {
+		if ( ! $this->uses_own_key() ) {
+			return $this->proxy_call( 'judilibre', $p );
 		}
 		$token = $this->piste_token();
 		if ( is_wp_error( $token ) ) {
-			wp_send_json_error( array( 'message' => $token->get_error_message() ) );
+			return $token;
 		}
 		$base = get_option( 'ag_jr_judilibre_url', 'https://api.piste.gouv.fr/cassation/judilibre/v1.0/search' );
-		$base = str_replace( 'sandbox-api.piste.gouv.fr', 'api.piste.gouv.fr', $base ); // force production (sandbox = index vide)
-		$args = array(
-			'query'     => $q,
-			'page_size' => 20,
-			'resolve_references' => 'true',
-		);
-		$jur  = isset( $_POST['jur'] ) ? sanitize_text_field( wp_unslash( $_POST['jur'] ) ) : '';
-		$sort = isset( $_POST['sort'] ) ? sanitize_text_field( wp_unslash( $_POST['sort'] ) ) : 'score';
-		$order = isset( $_POST['order'] ) ? sanitize_text_field( wp_unslash( $_POST['order'] ) ) : '';
-		if ( 'date' === $sort ) {
+		$base = str_replace( 'sandbox-api.piste.gouv.fr', 'api.piste.gouv.fr', $base );
+		$args = array( 'query' => $p['q'], 'page_size' => 20, 'resolve_references' => 'true' );
+		if ( 'date' === $p['sort'] ) {
 			$args['sort']  = 'date';
-			$args['order'] = ( 'asc' === $order ) ? 'asc' : 'desc';
+			$args['order'] = ( 'asc' === $p['order'] ) ? 'asc' : 'desc';
 		}
-		// Filtre par année (de / à) → date_start / date_end.
-		$ymin = isset( $_POST['ymin'] ) ? intval( $_POST['ymin'] ) : 0;
-		$ymax = isset( $_POST['ymax'] ) ? intval( $_POST['ymax'] ) : 0;
-		if ( $ymin >= 1900 && $ymin <= 2100 ) {
-			$args['date_start'] = sprintf( '%04d-01-01', $ymin );
-		}
-		if ( $ymax >= 1900 && $ymax <= 2100 ) {
-			$args['date_end'] = sprintf( '%04d-12-31', $ymax );
-		}
+		if ( $p['ymin'] >= 1900 && $p['ymin'] <= 2100 ) { $args['date_start'] = sprintf( '%04d-01-01', $p['ymin'] ); }
+		if ( $p['ymax'] >= 1900 && $p['ymax'] <= 2100 ) { $args['date_end'] = sprintf( '%04d-12-31', $p['ymax'] ); }
 		$url = add_query_arg( $args, $base );
-		if ( $jur ) {
-			// Judilibre attend des jurisdiction[] répétés ; on ajoute proprement.
-			$url .= '&jurisdiction=' . rawurlencode( $jur );
-		}
-		// « Décisions qui font jurisprudence » = publiées au Bulletin (b) + Rapport (r).
-		if ( ! empty( $_POST['pub'] ) ) {
-			$url .= '&publication=b&publication=r';
-		}
-		// Solution (cassation, rejet, irrecevabilité, QPC…).
-		$solution = isset( $_POST['solution'] ) ? sanitize_text_field( wp_unslash( $_POST['solution'] ) ) : '';
-		if ( $solution ) {
-			$url .= '&solution=' . rawurlencode( $solution );
-		}
-		// Matière / thème.
-		$theme = isset( $_POST['theme'] ) ? sanitize_text_field( wp_unslash( $_POST['theme'] ) ) : '';
-		if ( $theme ) {
-			$url .= '&theme=' . rawurlencode( $theme );
-		}
-		$headers = array(
-			'Authorization' => 'Bearer ' . $token,
-			'Accept'        => 'application/json',
-		);
-		$apikey = trim( (string) get_option( 'ag_jr_piste_apikey', '' ) );
-		if ( '' !== $apikey ) {
-			$headers['KeyId'] = $apikey;
-		}
+		if ( $p['jur'] )      { $url .= '&jurisdiction=' . rawurlencode( $p['jur'] ); }
+		if ( $p['pub'] )      { $url .= '&publication=b&publication=r'; }
+		if ( $p['solution'] ) { $url .= '&solution=' . rawurlencode( $p['solution'] ); }
+		if ( $p['theme'] )    { $url .= '&theme=' . rawurlencode( $p['theme'] ); }
+		$headers = array( 'Authorization' => 'Bearer ' . $token, 'Accept' => 'application/json' );
+		$apikey  = trim( (string) get_option( 'ag_jr_piste_apikey', '' ) );
+		if ( '' !== $apikey ) { $headers['KeyId'] = $apikey; }
 		$resp = wp_remote_get( $url, array( 'timeout' => 25, 'headers' => $headers ) );
 		if ( is_wp_error( $resp ) ) {
-			wp_send_json_error( array( 'message' => $resp->get_error_message() ) );
+			return $resp;
 		}
 		$code = wp_remote_retrieve_response_code( $resp );
 		$body = json_decode( wp_remote_retrieve_body( $resp ), true );
@@ -470,13 +458,18 @@ class AG_Recherche_Juridique {
 			$raw = wp_remote_retrieve_body( $resp );
 			$msg = 'API Judilibre (HTTP ' . $code . ') : ' . substr( $raw, 0, 300 );
 			if ( 403 === $code ) {
-				$msg = 'Accès Judilibre refusé (HTTP 403). Votre application PISTE n\'est pas autorisée à appeler cette API. À vérifier : (1) l\'abonnement à l\'API « Judilibre » est ACTIF sur votre application (pas « en attente » / « Demander l\'accès ») ; (2) le champ « KeyId / clé API » est renseigné dans les Réglages ; (3) Sandbox vs Production : vos clés et les URLs doivent être du même environnement.';
+				$msg = 'Accès Judilibre refusé (HTTP 403). Votre application PISTE n\'est pas autorisée à appeler cette API. À vérifier : (1) l\'abonnement à l\'API « Judilibre » est ACTIF ; (2) le champ « KeyId / clé API » est renseigné ; (3) Sandbox vs Production cohérents.';
 			} elseif ( $code >= 500 || strpos( $raw, 'no_shard_available' ) !== false || strpos( $raw, 'search_phase_execution' ) !== false ) {
-				$msg = 'Judilibre a renvoyé une erreur serveur (HTTP ' . $code . '). C\'est presque toujours l\'environnement SANDBOX : son index de test est vide/instable et ne contient pas les vraies décisions. Pour obtenir de vrais résultats, basculez en PRODUCTION (application + abonnement Judilibre de production sur piste.gouv.fr, puis URLs sans « sandbox- » dans les Réglages avancés). En attendant, utilisez l\'onglet « Toutes les sources ».';
+				$msg = 'Judilibre a renvoyé une erreur serveur (HTTP ' . $code . '). C\'est presque toujours l\'environnement SANDBOX (index de test vide). Basculez en PRODUCTION (URLs sans « sandbox- »).';
 			}
-			wp_send_json_error( array( 'message' => $msg ) );
+			return new WP_Error( 'judilibre', $msg );
 		}
-		$out = array();
+		return $body;
+	}
+
+	/** Reformate le corps Judilibre brut pour l'UI (mêmes champs quelle que soit la source). */
+	private function format_search_results( $body ) {
+		$out     = array();
 		$results = isset( $body['results'] ) ? $body['results'] : array();
 		foreach ( $results as $r ) {
 			$summary = '';
@@ -501,10 +494,34 @@ class AG_Recherche_Juridique {
 				'summary'   => wp_strip_all_tags( (string) $summary ),
 			);
 		}
-		wp_send_json_success( array(
+		return array(
 			'total'   => isset( $body['total'] ) ? intval( $body['total'] ) : count( $out ),
 			'results' => $out,
-		) );
+		);
+	}
+
+	public function ajax_judilibre() {
+		$this->check_nonce();
+		$q = isset( $_POST['q'] ) ? sanitize_text_field( wp_unslash( $_POST['q'] ) ) : '';
+		if ( '' === $q ) {
+			wp_send_json_error( array( 'message' => 'Tapez une recherche.' ) );
+		}
+		$p = array(
+			'q'        => $q,
+			'jur'      => isset( $_POST['jur'] ) ? sanitize_text_field( wp_unslash( $_POST['jur'] ) ) : '',
+			'sort'     => isset( $_POST['sort'] ) ? sanitize_text_field( wp_unslash( $_POST['sort'] ) ) : 'score',
+			'order'    => isset( $_POST['order'] ) ? sanitize_text_field( wp_unslash( $_POST['order'] ) ) : '',
+			'ymin'     => isset( $_POST['ymin'] ) ? intval( $_POST['ymin'] ) : 0,
+			'ymax'     => isset( $_POST['ymax'] ) ? intval( $_POST['ymax'] ) : 0,
+			'solution' => isset( $_POST['solution'] ) ? sanitize_text_field( wp_unslash( $_POST['solution'] ) ) : '',
+			'theme'    => isset( $_POST['theme'] ) ? sanitize_text_field( wp_unslash( $_POST['theme'] ) ) : '',
+			'pub'      => ! empty( $_POST['pub'] ) ? '1' : '',
+		);
+		$body = $this->fetch_judilibre_search( $p );
+		if ( is_wp_error( $body ) ) {
+			wp_send_json_error( array( 'message' => $body->get_error_message() ) );
+		}
+		wp_send_json_success( $this->format_search_results( $body ) );
 	}
 
 	public function ajax_decision() {
@@ -513,21 +530,28 @@ class AG_Recherche_Juridique {
 		if ( ! $id ) {
 			wp_send_json_error( array( 'message' => 'Identifiant manquant.' ) );
 		}
-		$token = $this->piste_token();
-		if ( is_wp_error( $token ) ) {
-			wp_send_json_error( array( 'message' => $token->get_error_message() ) );
+		if ( ! $this->uses_own_key() ) {
+			$body = $this->proxy_call( 'judilibre-decision', array( 'id' => $id ) );
+		} else {
+			$token = $this->piste_token();
+			if ( is_wp_error( $token ) ) {
+				wp_send_json_error( array( 'message' => $token->get_error_message() ) );
+			}
+			$base = get_option( 'ag_jr_judilibre_url', 'https://api.piste.gouv.fr/cassation/judilibre/v1.0/search' );
+			$base = str_replace( 'sandbox-api.piste.gouv.fr', 'api.piste.gouv.fr', $base );
+			$base = str_replace( '/search', '/decision', $base );
+			$headers = array( 'Authorization' => 'Bearer ' . $token, 'Accept' => 'application/json' );
+			$apikey  = trim( (string) get_option( 'ag_jr_piste_apikey', '' ) );
+			if ( '' !== $apikey ) { $headers['KeyId'] = $apikey; }
+			$resp = wp_remote_get( add_query_arg( array( 'id' => $id ), $base ), array( 'timeout' => 25, 'headers' => $headers ) );
+			if ( is_wp_error( $resp ) ) {
+				wp_send_json_error( array( 'message' => $resp->get_error_message() ) );
+			}
+			$body = json_decode( wp_remote_retrieve_body( $resp ), true );
 		}
-		$base = get_option( 'ag_jr_judilibre_url', 'https://api.piste.gouv.fr/cassation/judilibre/v1.0/search' );
-		$base = str_replace( 'sandbox-api.piste.gouv.fr', 'api.piste.gouv.fr', $base ); // force production (sandbox = index vide)
-		$base = str_replace( '/search', '/decision', $base );
-		$resp = wp_remote_get( add_query_arg( array( 'id' => $id ), $base ), array(
-			'timeout' => 25,
-			'headers' => array( 'Authorization' => 'Bearer ' . $token, 'Accept' => 'application/json', 'KeyId' => get_option( 'ag_jr_piste_apikey', '' ) ),
-		) );
-		if ( is_wp_error( $resp ) ) {
-			wp_send_json_error( array( 'message' => $resp->get_error_message() ) );
+		if ( is_wp_error( $body ) ) {
+			wp_send_json_error( array( 'message' => $body->get_error_message() ) );
 		}
-		$body = json_decode( wp_remote_retrieve_body( $resp ), true );
 		if ( ! is_array( $body ) ) {
 			wp_send_json_error( array( 'message' => 'Réponse invalide.' ) );
 		}
@@ -862,7 +886,7 @@ class AG_Recherche_Juridique {
 			'sources'   => $this->sources(),
 			'fields'    => $fields,
 			'ai_on'     => (bool) trim( (string) get_option( 'ag_jr_ai_key', '' ) ),
-			'live_on'   => ( trim( (string) get_option( 'ag_jr_piste_id', '' ) ) && trim( (string) get_option( 'ag_jr_piste_secret', '' ) ) ),
+			'live_on'   => true, // recherche LIVE toujours dispo : clé locale OU relais mutualisé Alliance Groupe
 			'is_admin'  => $is_admin,
 			'pwa'       => array(
 				'sw'    => add_query_arg( 'ag_jr_sw', '1', home_url( '/' ) ),

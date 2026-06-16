@@ -3,7 +3,7 @@
  * Plugin Name:       AG Recherche Juridique (Avocat)
  * Plugin URI:        https://alliancegroupe-inc.com
  * Description:       Cabinet de recherche juridique pour l'avocat : méta-moteur vers toutes les sources officielles (Légifrance, Cour de cassation/Judilibre, Conseil d'État, Conseil constitutionnel, CEDH, CJUE, EUR-Lex, doctrine, fiscal…), recherche LIVE de jurisprudence via l'API Judilibre (open data, gratuite), salle d'analyse de dossiers (faits / problème de droit / textes / jurisprudence / arguments adverses / parade / stratégie), banque d'arguments réutilisables et assistant IA optionnel. Outil privé (réservé au cabinet, dans le tableau de bord WordPress).
- * Version:           1.4.1
+ * Version:           1.5.0
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Alliance Groupe
@@ -23,9 +23,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_JR_VERSION', '1.4.1' );
+define( 'AG_JR_VERSION', '1.5.0' );
 define( 'AG_JR_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AG_JR_URL', plugin_dir_url( __FILE__ ) );
+
+// Relais Judilibre mutualisé (clé PISTE hébergée par Alliance Groupe) : utilisé
+// AUTOMATIQUEMENT quand le cabinet n'a pas saisi sa propre clé → recherche
+// jurisprudence incluse, sans aucune configuration côté client.
+if ( ! defined( 'AG_JR_PROXY_BASE' ) ) {
+	define( 'AG_JR_PROXY_BASE', 'https://alliancegroupe-inc.com/wp-json/ag/v1' );
+}
 
 require_once AG_JR_DIR . 'inc/class-ag-recherche-juridique.php';
 require_once AG_JR_DIR . 'inc/class-ag-jr-updater.php';
