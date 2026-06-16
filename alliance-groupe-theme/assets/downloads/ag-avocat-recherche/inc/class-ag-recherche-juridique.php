@@ -306,6 +306,9 @@ class AG_Recherche_Juridique {
 		$oauth = trim( (string) get_option( 'ag_jr_piste_oauth', 'https://oauth.piste.gouv.fr/api/oauth/token' ) );
 		// Auto-réparation : l'ancien host PISTE (aife.economie.gouv.fr) est mort.
 		$oauth = str_replace( 'aife.economie.gouv.fr', 'piste.gouv.fr', $oauth );
+		// Auto-réparation : le SANDBOX PISTE n'a aucune vraie décision (index vide) et
+		// rejette les clients de production → on force toujours la PRODUCTION.
+		$oauth = str_replace( array( 'sandbox-oauth.piste.gouv.fr', 'sandbox-api.piste.gouv.fr' ), array( 'oauth.piste.gouv.fr', 'api.piste.gouv.fr' ), $oauth );
 		if ( '' === $oauth ) {
 			$oauth = 'https://oauth.piste.gouv.fr/api/oauth/token';
 		}
@@ -376,6 +379,7 @@ class AG_Recherche_Juridique {
 			wp_send_json_error( array( 'message' => $token->get_error_message() ) );
 		}
 		$base = get_option( 'ag_jr_judilibre_url', 'https://api.piste.gouv.fr/cassation/judilibre/v1.0/search' );
+		$base = str_replace( 'sandbox-api.piste.gouv.fr', 'api.piste.gouv.fr', $base ); // force production (sandbox = index vide)
 		$args = array(
 			'query'     => $q,
 			'page_size' => 12,
@@ -457,6 +461,7 @@ class AG_Recherche_Juridique {
 			wp_send_json_error( array( 'message' => $token->get_error_message() ) );
 		}
 		$base = get_option( 'ag_jr_judilibre_url', 'https://api.piste.gouv.fr/cassation/judilibre/v1.0/search' );
+		$base = str_replace( 'sandbox-api.piste.gouv.fr', 'api.piste.gouv.fr', $base ); // force production (sandbox = index vide)
 		$base = str_replace( '/search', '/decision', $base );
 		$resp = wp_remote_get( add_query_arg( array( 'id' => $id ), $base ), array(
 			'timeout' => 25,
