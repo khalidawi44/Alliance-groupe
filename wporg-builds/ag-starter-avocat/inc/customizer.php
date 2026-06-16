@@ -58,7 +58,7 @@ function ag_starter_avocat_customizer_defaults() {
 		'ag_maitre_year'        => '2010',
 		'ag_maitre_bio'         => "Avocat au barreau depuis plus de quinze ans, j'accompagne particuliers et entreprises avec rigueur, ecoute et discretion. Mon approche : analyser chaque dossier en profondeur, vous expliquer clairement vos options, et batir avec vous la strategie la plus efficace.",
 		'ag_maitre_specialties' => 'Droit des affaires · Droit du travail · Droit de la famille',
-		'ag_maitre_photo'       => 'https://images.unsplash.com/photo-1556157382-97eda2d62296?w=400&q=80',
+		'ag_maitre_photo'       => '',
 		// Honoraires.
 		'ag_honoraires_show'        => true,
 		'ag_honoraires_first_label' => 'Premier rendez-vous',

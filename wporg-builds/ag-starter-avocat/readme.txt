@@ -85,8 +85,23 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 * Prepare pour la traduction.
 * Compatible WordPress 6.0+.
 
+== Copyright ==
+
+AG Starter Avocat WordPress Theme, Copyright 2026 AGthemes.
+AG Starter Avocat is distributed under the terms of the GNU GPL v2 or later.
+
+This theme, like WordPress itself, is licensed under the GPL.
+Use it to make something cool, have fun, and share what you've learned with others.
+
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+
+== Resources / Bundled assets ==
+
+* screenshot.png — original work by AGthemes, licensed GPL v2 or later (same as the theme).
+* No third-party images are bundled or referenced by the theme.
+* Fonts: system fonts only (no Google Fonts dependency).
+
 == Credits ==
 
-Theme cree par Alliance Group (https://alliancegroupe-inc.com).
-Polices systeme uniquement (pas de dependance Google Fonts).
-Licence : GPL v2 ou ulterieure.
+Theme created by AGthemes (https://alliancegroupe-inc.com).

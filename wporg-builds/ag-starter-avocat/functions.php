@@ -72,6 +72,10 @@ if ( ! function_exists( 'ag_starter_avocat_setup' ) ) :
 		// Add support for wide and full alignment.
 		add_theme_support( 'align-wide' );
 
+		// Styles par défaut des blocs Gutenberg + styles de l'éditeur.
+		add_theme_support( 'wp-block-styles' );
+		add_editor_style( 'style.css' );
+
 		// This theme uses wp_nav_menu() in one location.
 		register_nav_menus(
 			array(
@@ -243,8 +247,38 @@ function ag_starter_avocat_scripts() {
 		array(),
 		wp_get_theme()->get( 'Version' )
 	);
+	// Script de réponse imbriquée aux commentaires.
+	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
+		wp_enqueue_script( 'comment-reply' );
+	}
+	// Petit script (corrige la classe current-menu-item du menu de secours).
+	wp_enqueue_script(
+		'ag-starter-avocat-menu',
+		get_template_directory_uri() . '/assets/menu-fix.js',
+		array(),
+		wp_get_theme()->get( 'Version' ),
+		true
+	);
 }
 add_action( 'wp_enqueue_scripts', 'ag_starter_avocat_scripts' );
+
+/**
+ * Zone de widgets (pied de page).
+ */
+function ag_starter_avocat_widgets_init() {
+	register_sidebar(
+		array(
+			'name'          => esc_html__( 'Pied de page', 'ag-starter-avocat' ),
+			'id'            => 'footer-1',
+			'description'   => esc_html__( 'Widgets affichés dans le pied de page.', 'ag-starter-avocat' ),
+			'before_widget' => '<section id="%1$s" class="widget %2$s">',
+			'after_widget'  => '</section>',
+			'before_title'  => '<h2 class="widget-title">',
+			'after_title'   => '</h2>',
+		)
+	);
+}
+add_action( 'widgets_init', 'ag_starter_avocat_widgets_init' );
 
 /**
  * (Build WordPress.org) : on NE désactive PAS les commentaires ni les widgets,

@@ -46,18 +46,18 @@ function ag_starter_avocat_get_domaines( $limit = 6 ) {
 function ag_starter_avocat_get_domaine_bg_url( $icon ) {
 	$icon = strtolower( trim( (string) $icon ) );
 	$map  = array(
-		'scales'    => 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1200&q=80',
-		'gavel'     => 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1200&q=80',
-		'shield'    => 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1200&q=80',
-		'briefcase' => 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1200&q=80',
-		'house'     => 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&q=80',
-		'family'    => 'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=1200&q=80',
-		'document'  => 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1200&q=80',
-		'heart'     => 'https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?w=1200&q=80',
-		'lock'      => 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1200&q=80',
-		'bank'      => 'https://images.unsplash.com/photo-1601597111158-2fceff292cdc?w=1200&q=80',
+		'scales'    => '',
+		'gavel'     => '',
+		'shield'    => '',
+		'briefcase' => '',
+		'house'     => '',
+		'family'    => '',
+		'document'  => '',
+		'heart'     => '',
+		'lock'      => '',
+		'bank'      => '',
 	);
-	return isset( $map[ $icon ] ) ? $map[ $icon ] : 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1200&q=80';
+	return isset( $map[ $icon ] ) ? $map[ $icon ] : '';
 }
 
 /**

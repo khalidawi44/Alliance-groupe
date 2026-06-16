@@ -153,7 +153,7 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
     display:flex !important;align-items:center !important;justify-content:center !important;
     text-align:center !important;position:relative !important;overflow:hidden !important;
     background:linear-gradient(180deg,rgba(8,8,8,.2) 0%,rgba(8,8,8,.92) 100%),
-               url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center 20%/cover no-repeat !important;
+               url("") center 20%/cover no-repeat !important;
     background-attachment:fixed !important;
 }
 .ag-hero::before{
@@ -329,7 +329,7 @@ em,.ag-gold{font-family:"Playfair Display",serif !important;font-style:italic !i
 /* ── Cabinet section avec background ── */
 .ag-cabinet{
     background:linear-gradient(180deg,rgba(10,14,26,.95) 0%,rgba(10,14,26,.8) 100%),
-               url("https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=80") center/cover !important;
+               url("") center/cover !important;
 }
 .ag-cabinet__cards{
     display:grid !important;
@@ -433,7 +433,7 @@ a.ag-footer-rdv,a.ag-footer-rdv:visited,a.ag-footer-rdv:hover{color:' . $bg . ' 
 }
 .ag-rdv{
     background:linear-gradient(180deg,rgba(10,14,26,.95) 0%,rgba(10,14,26,.8) 100%),
-               url("https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=80") center/cover !important;
+               url("") center/cover !important;
 }
 
 /* ── Footer RDV link ── */
@@ -562,33 +562,33 @@ html{scroll-behavior:smooth;}
     padding:160px 0 80px !important;
     text-align:center !important;
     background:linear-gradient(180deg,rgba(10,14,26,.3) 0%,rgba(10,14,26,.95) 100%),
-               url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center/cover !important;
+               url("") center/cover !important;
     border-bottom:1px solid rgba(' . $gold_rgb . ',.15) !important;
 }
 /* Page hero — images par page */
 .page-expertise .ag-page-hero,body.page-template-page-expertise .ag-page-hero{
     background:linear-gradient(180deg,rgba(10,14,26,.25) 0%,rgba(10,14,26,.95) 100%),
-               url("https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1920&q=80") center/cover !important;
+               url("") center/cover !important;
 }
 .page-honoraires .ag-page-hero,body.page-template-page-honoraires .ag-page-hero{
     background:linear-gradient(180deg,rgba(10,14,26,.3) 0%,rgba(10,14,26,.95) 100%),
-               url("https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1920&q=80") center/cover !important;
+               url("") center/cover !important;
 }
 .page-cabinet .ag-page-hero,body.page-template-page-cabinet .ag-page-hero{
     background:linear-gradient(180deg,rgba(10,14,26,.25) 0%,rgba(10,14,26,.95) 100%),
-               url("https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=80") center/cover !important;
+               url("") center/cover !important;
 }
 .page-rendez-vous .ag-page-hero,body.page-template-page-rendez-vous .ag-page-hero{
     background:linear-gradient(180deg,rgba(10,14,26,.3) 0%,rgba(10,14,26,.95) 100%),
-               url("https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=80") center/cover !important;
+               url("") center/cover !important;
 }
 .single-ag_domaine .ag-page-hero{
     background:linear-gradient(180deg,rgba(10,14,26,.3) 0%,rgba(10,14,26,.95) 100%),
-               url("https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1920&q=80") center/cover !important;
+               url("") center/cover !important;
 }
 .blog .ag-page-hero,.archive .ag-page-hero,.search .ag-page-hero{
     background:linear-gradient(180deg,rgba(10,14,26,.3) 0%,rgba(10,14,26,.95) 100%),
-               url("https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=1920&q=80") center/cover !important;
+               url("") center/cover !important;
 }
 .ag-page-hero__title{
     font-family:"Playfair Display",serif !important;
@@ -733,9 +733,9 @@ html{scroll-behavior:smooth;}
     font-size:1rem !important;transition:border-color .3s,transform .3s !important;padding:0 !important;
 }
 .ag-theme-toggle:hover{border-color:' . $gold . ' !important;transform:scale(1.1) !important;}
-body.ag-light .ag-hero{background:linear-gradient(180deg,rgba(245,240,235,.15) 0%,rgba(245,240,235,.93) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center 20%/cover no-repeat !important;background-attachment:fixed !important;}
+body.ag-light .ag-hero{background:linear-gradient(180deg,rgba(245,240,235,.15) 0%,rgba(245,240,235,.93) 100%),url("") center 20%/cover no-repeat !important;background-attachment:fixed !important;}
 body.ag-light .ag-hero::before{background:none !important;}
-body.ag-light .ag-page-hero{background:linear-gradient(180deg,rgba(245,240,235,.2) 0%,rgba(245,240,235,.95) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center 20%/cover !important;background-attachment:fixed !important;}
+body.ag-light .ag-page-hero{background:linear-gradient(180deg,rgba(245,240,235,.2) 0%,rgba(245,240,235,.95) 100%),url("") center 20%/cover !important;background-attachment:fixed !important;}
 body.ag-light .ag-rdv__field input,body.ag-light .ag-rdv__field select,body.ag-light .ag-rdv__field textarea{background:#fff !important;border-color:rgba(0,0,0,.12) !important;color:#2A1A1E !important;}
 body.ag-light .ag-footer-bottom{color:#8A7478 !important;}
 body.ag-light .ag-pagination .page-numbers{background:rgba(0,0,0,.03) !important;border-color:rgba(0,0,0,.08) !important;color:#5A4549 !important;}
@@ -779,7 +779,7 @@ body.ag-light .ag-trust-badge{color:#5A4549 !important;}
 /* ── RDV contact section : 2 colonnes + bg fixe ── */
 .ag-rdv-contact{
     background:linear-gradient(180deg,rgba(8,8,8,.85) 0%,rgba(8,8,8,.9) 100%),
-               url("https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=80") center/cover no-repeat !important;
+               url("") center/cover no-repeat !important;
     background-attachment:fixed !important;
     padding:80px 0 !important;
 }
@@ -913,12 +913,12 @@ body.ag-light .ag-section.ag-honoraires{background:#F5F0EB !important;background
 body.ag-light .ag-section.ag-cabinet-map-section{background:#F5F0EB !important;background-image:none !important;}
 body.ag-light .ag-site-footer{background:#EDE6DF !important;}
 body.ag-light .ag-cabinet,body.ag-light .ag-cabinet-map-section{background:#F5F0EB !important;background-image:none !important;}
-body.ag-light .ag-rdv-contact{background:linear-gradient(180deg,rgba(237,230,223,.9) 0%,rgba(237,230,223,.95) 100%),url("https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=80") center/cover no-repeat !important;background-attachment:fixed !important;}
+body.ag-light .ag-rdv-contact{background:linear-gradient(180deg,rgba(237,230,223,.9) 0%,rgba(237,230,223,.95) 100%),url("") center/cover no-repeat !important;background-attachment:fixed !important;}
 body.ag-light .ag-site-header.scrolled{background:rgba(245,240,235,.97) !important;}
 body.ag-light .ag-menu-toggle span{background:#2A1A1E !important;}
-body.ag-light .ag-hero{background:linear-gradient(180deg,rgba(245,240,235,.15) 0%,rgba(245,240,235,.93) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center 20%/cover no-repeat !important;background-attachment:fixed !important;}
+body.ag-light .ag-hero{background:linear-gradient(180deg,rgba(245,240,235,.15) 0%,rgba(245,240,235,.93) 100%),url("") center 20%/cover no-repeat !important;background-attachment:fixed !important;}
 body.ag-light .ag-hero::before{background:none !important;}
-body.ag-light .ag-page-hero{background:linear-gradient(180deg,rgba(245,240,235,.2) 0%,rgba(245,240,235,.95) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center 20%/cover !important;background-attachment:fixed !important;}
+body.ag-light .ag-page-hero{background:linear-gradient(180deg,rgba(245,240,235,.2) 0%,rgba(245,240,235,.95) 100%),url("") center 20%/cover !important;background-attachment:fixed !important;}
 body.ag-light .ag-rdv__field input,body.ag-light .ag-rdv__field select,body.ag-light .ag-rdv__field textarea{background:#fff !important;border-color:rgba(0,0,0,.12) !important;color:#2A1A1E !important;}
 body.ag-light .ag-footer-bottom{color:#8A7478 !important;}
 body.ag-light .ag-primary-menu.open{background:rgba(245,240,235,.98) !important;}
@@ -968,7 +968,7 @@ body:not(.ag-light) a.ag-footer-rdv{background:#D4B45C !important;color:#080808 
 body:not(.ag-light) .ag-totop{background:#D4B45C !important;color:#080808 !important;}
 body:not(.ag-light){background:#080808 !important;color:#e8e6e0 !important;}
 body:not(.ag-light) .ag-site-header.scrolled{background:rgba(8,8,8,.97) !important;}
-body:not(.ag-light) .ag-hero{background:linear-gradient(180deg,rgba(8,8,8,.2) 0%,rgba(8,8,8,.92) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center 20%/cover no-repeat !important;background-attachment:fixed !important;}
+body:not(.ag-light) .ag-hero{background:linear-gradient(180deg,rgba(8,8,8,.2) 0%,rgba(8,8,8,.92) 100%),url("") center 20%/cover no-repeat !important;background-attachment:fixed !important;}
 body:not(.ag-light) .ag-site-footer{background:#060606 !important;}
 body:not(.ag-light) .ag-section{background:#080808 !important;}
 body:not(.ag-light) .ag-section:nth-of-type(odd){background:radial-gradient(ellipse 900px 600px at 85% 10%,rgba(212,180,92,.06),transparent 60%),#080808 !important;}
@@ -977,11 +977,11 @@ body:not(.ag-light) .ag-maitre{background:linear-gradient(135deg,rgba(212,180,92
 body:not(.ag-light) .ag-cabinet{background:#080808 !important;}
 body:not(.ag-light) .ag-cabinet-map-section{background:#080808 !important;}
 body:not(.ag-light) .ag-rdv{background:linear-gradient(135deg,rgba(212,180,92,.04) 0%,rgba(8,8,8,.9) 100%) !important;}
-body:not(.ag-light) .ag-rdv-contact{background:linear-gradient(180deg,rgba(8,8,8,.85) 0%,rgba(8,8,8,.9) 100%),url("https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=80") center/cover no-repeat !important;background-attachment:fixed !important;}
+body:not(.ag-light) .ag-rdv-contact{background:linear-gradient(180deg,rgba(8,8,8,.85) 0%,rgba(8,8,8,.9) 100%),url("") center/cover no-repeat !important;background-attachment:fixed !important;}
 body:not(.ag-light) .ag-rdv__form{background:rgba(255,255,255,.03) !important;border-color:rgba(212,180,92,.2) !important;}
 body:not(.ag-light) .ag-rdv__field input,body:not(.ag-light) .ag-rdv__field select,body:not(.ag-light) .ag-rdv__field textarea{background:rgba(10,14,26,.8) !important;border-color:rgba(212,180,92,.2) !important;color:#fff !important;}
 body:not(.ag-light) .ag-domaine-card,body:not(.ag-light) .ag-honoraires__card,body:not(.ag-light) .ag-cabinet__block,body:not(.ag-light) .ag-testimonial-card,body:not(.ag-light) .ag-post-card,body:not(.ag-light) .ag-page-article{background:rgba(255,255,255,.025) !important;border-color:rgba(255,255,255,.06) !important;}
-body:not(.ag-light) .ag-page-hero{background:linear-gradient(180deg,rgba(8,8,8,.3) 0%,rgba(8,8,8,.95) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center 20%/cover !important;background-attachment:fixed !important;}
+body:not(.ag-light) .ag-page-hero{background:linear-gradient(180deg,rgba(8,8,8,.3) 0%,rgba(8,8,8,.95) 100%),url("") center 20%/cover !important;background-attachment:fixed !important;}
 body:not(.ag-light) .ag-primary-menu a{color:rgba(255,255,255,.7) !important;}
 body:not(.ag-light) .ag-primary-menu a:hover{color:#D4B45C !important;}
 body:not(.ag-light) .ag-menu-toggle span{background:#fff !important;}
@@ -1076,9 +1076,9 @@ body.ag-light .ag-rdv{background:#EDE6DF !important;background-image:none !impor
 body.ag-light .ag-rdv__form{background:#fff !important;border-color:rgba(0,0,0,.08) !important;}
 body.ag-light .ag-rdv__rgpd{background:rgba(0,0,0,.03) !important;}
 body.ag-light .ag-domaine-card,body.ag-light .ag-honoraires__card,body.ag-light .ag-cabinet__block,body.ag-light .ag-testimonial-card,body.ag-light .ag-post-card,body.ag-light .ag-page-article,body.ag-light .ag-domaine-examples{background:#fff !important;border-color:rgba(0,0,0,.08) !important;box-shadow:0 4px 20px rgba(0,0,0,.06) !important;}
-body.ag-light .ag-hero{background:linear-gradient(180deg,rgba(245,240,235,.15) 0%,rgba(245,240,235,.93) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center 20%/cover no-repeat !important;background-attachment:fixed !important;}
+body.ag-light .ag-hero{background:linear-gradient(180deg,rgba(245,240,235,.15) 0%,rgba(245,240,235,.93) 100%),url("") center 20%/cover no-repeat !important;background-attachment:fixed !important;}
 body.ag-light .ag-hero::before{background:none !important;}
-body.ag-light .ag-page-hero{background:linear-gradient(180deg,rgba(245,240,235,.2) 0%,rgba(245,240,235,.95) 100%),url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1920&q=80") center 20%/cover !important;background-attachment:fixed !important;}
+body.ag-light .ag-page-hero{background:linear-gradient(180deg,rgba(245,240,235,.2) 0%,rgba(245,240,235,.95) 100%),url("") center 20%/cover !important;background-attachment:fixed !important;}
 body.ag-light .ag-site-header.scrolled{background:rgba(245,240,235,.97) !important;}
 body.ag-light .ag-section::before{background:linear-gradient(90deg,transparent,rgba(123,45,59,.2),transparent) !important;}
 
@@ -2019,7 +2019,7 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
 
     public function render_parallax_quote_1() {
         $this->render_parallax_quote(
-            'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1920&q=80',
+            '',
             'La justice sans la force est impuissante. La force sans la justice est tyrannique.',
             'Blaise Pascal'
         );
@@ -2027,7 +2027,7 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
 
     public function render_parallax_quote_2() {
         $this->render_parallax_quote(
-            'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1920&q=80',
+            '',
             'Le droit est l\'art du bon et de l\'équitable.',
             'Celse, jurisconsulte romain'
         );
@@ -2035,7 +2035,7 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
 
     public function render_parallax_quote_3() {
         $this->render_parallax_quote(
-            'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1920&q=80',
+            '',
             'L\'avocat est la dernière conscience de la liberté.',
             'Robert Badinter'
         );
@@ -2066,10 +2066,10 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
         // Defaults si rien configuré
         if ( empty( $members ) ) {
             $members = array(
-                array( 'name' => '[Maître Dupont]', 'role' => 'Associée fondatrice', 'photo' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80', 'bio' => 'Spécialiste droit des affaires. 15 ans au Barreau de Paris.' ),
-                array( 'name' => '[Maître Martin]', 'role' => 'Associé', 'photo' => 'https://images.unsplash.com/photo-1556157382-97eda2d62296?w=400&q=80', 'bio' => 'Droit du travail et contentieux social. Ancien magistrat.' ),
-                array( 'name' => '[Me Lefebvre]', 'role' => 'Collaboratrice', 'photo' => 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80', 'bio' => 'Droit de la famille et droit pénal. Médiatrice agréée.' ),
-                array( 'name' => '[Me Bernard]', 'role' => 'Collaborateur', 'photo' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80', 'bio' => 'Droit immobilier et fiscalité. Maîtrise patrimoniale.' ),
+                array( 'name' => '[Maître Dupont]', 'role' => 'Associée fondatrice', 'photo' => '', 'bio' => 'Spécialiste droit des affaires. 15 ans au Barreau de Paris.' ),
+                array( 'name' => '[Maître Martin]', 'role' => 'Associé', 'photo' => '', 'bio' => 'Droit du travail et contentieux social. Ancien magistrat.' ),
+                array( 'name' => '[Me Lefebvre]', 'role' => 'Collaboratrice', 'photo' => '', 'bio' => 'Droit de la famille et droit pénal. Médiatrice agréée.' ),
+                array( 'name' => '[Me Bernard]', 'role' => 'Collaborateur', 'photo' => '', 'bio' => 'Droit immobilier et fiscalité. Maîtrise patrimoniale.' ),
             );
         }
         $title    = get_theme_mod( 'ag_business_team_title', __( 'Notre équipe', 'ag-starter-avocat' ) );

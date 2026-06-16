@@ -22,9 +22,18 @@ get_header();
 					<div class="ag-entry-thumb"><?php the_post_thumbnail( 'large' ); ?></div>
 				<?php endif; ?>
 				<div class="ag-entry-content">
-					<?php the_content(); ?>
+					<?php
+					the_content();
+					wp_link_pages( array(
+						'before' => '<div class="ag-page-links">' . esc_html__( 'Pages :', 'ag-starter-avocat' ) . ' ',
+						'after'  => '</div>',
+					) );
+					?>
 				</div>
 			</article>
+			<div class="ag-comments-wrap">
+				<?php comments_template(); ?>
+			</div>
 		<?php endwhile; ?>
 	</div>
 
