@@ -3,7 +3,7 @@
  * Plugin Name:       AG Starter Companion
  * Plugin URI:        https://alliancegroupe-inc.com/templates-wordpress
  * Description:       Importer un clic pour les themes AG Starter (Restaurant, Artisan, Coach, Avocat). Cree automatiquement les pages, le menu et les reglages pour un site pret a l'emploi.
- * Version:           1.11.3
+ * Version:           1.12.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            AGthèmes
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_STARTER_COMPANION_VERSION', '1.11.3' );
+define( 'AG_STARTER_COMPANION_VERSION', '1.12.0' );
 define( 'AG_STARTER_COMPANION_FILE', __FILE__ );
 
 /**
@@ -45,6 +45,13 @@ class AG_Starter_Companion {
 		add_action( 'customize_register', array( $this, 'upgrade_customizer_section' ), 99 );
 		add_action( 'admin_footer', array( $this, 'upgrade_footer_nudge' ) );
 
+		// CPT « Domaine d'expertise » (Avocat) — fourni par le PLUGIN (conformité
+		// WordPress.org : un thème ne doit pas enregistrer de CPT). Gardé par
+		// post_type_exists() → pas de double si le thème l'enregistre déjà.
+		add_action( 'init', array( $this, 'register_avocat_domaine_cpt' ), 9 );
+		add_action( 'add_meta_boxes', array( $this, 'avocat_domaine_metabox' ) );
+		add_action( 'save_post_ag_domaine', array( $this, 'avocat_domaine_save_meta' ) );
+
 		// Personnalisation Premium (Alliance) : image de hero modifiable + effets
 		// visuels premium, communs a tous les themes AG Starter.
 		add_action( 'customize_register', array( $this, 'premium_personalization_register' ), 100 );
@@ -67,6 +74,77 @@ class AG_Starter_Companion {
 	 */
 	public function load_textdomain() {
 		load_plugin_textdomain( 'ag-starter-companion', false, dirname( plugin_basename( AG_STARTER_COMPANION_FILE ) ) . '/languages' );
+	}
+
+	/**
+	 * CPT « Domaine d'expertise » (Avocat). Enregistré par le plugin pour la
+	 * conformité WordPress.org. N'agit que si le thème Avocat est actif et que
+	 * le CPT n'est pas déjà enregistré (évite le double avec la version premium).
+	 */
+	public function register_avocat_domaine_cpt() {
+		if ( 'ag-starter-avocat' !== $this->get_active_theme_slug() ) {
+			return;
+		}
+		if ( post_type_exists( 'ag_domaine' ) ) {
+			return;
+		}
+		register_post_type( 'ag_domaine', array(
+			'labels' => array(
+				'name'          => __( 'Domaines d\'expertise', 'ag-starter-companion' ),
+				'singular_name' => __( 'Domaine d\'expertise', 'ag-starter-companion' ),
+				'menu_name'     => __( 'Domaines', 'ag-starter-companion' ),
+				'add_new_item'  => __( 'Ajouter un domaine', 'ag-starter-companion' ),
+				'edit_item'     => __( 'Modifier le domaine', 'ag-starter-companion' ),
+				'all_items'     => __( 'Tous les domaines', 'ag-starter-companion' ),
+				'not_found'     => __( 'Aucun domaine trouve.', 'ag-starter-companion' ),
+			),
+			'public'        => true,
+			'show_ui'       => true,
+			'show_in_menu'  => true,
+			'menu_icon'     => 'dashicons-portfolio',
+			'menu_position' => 22,
+			'rewrite'       => array( 'slug' => 'domaine' ),
+			'has_archive'   => true,
+			'supports'      => array( 'title', 'editor', 'excerpt', 'thumbnail', 'page-attributes', 'custom-fields' ),
+			'show_in_rest'  => true,
+		) );
+	}
+
+	public function avocat_domaine_metabox() {
+		if ( 'ag-starter-avocat' !== $this->get_active_theme_slug() ) {
+			return;
+		}
+		add_meta_box( 'ag_domaine_meta', __( 'Détails du domaine', 'ag-starter-companion' ), array( $this, 'avocat_domaine_metabox_render' ), 'ag_domaine', 'side', 'default' );
+	}
+
+	public function avocat_domaine_metabox_render( $post ) {
+		wp_nonce_field( 'ag_domaine_meta_save', 'ag_domaine_meta_nonce' );
+		$icon     = get_post_meta( $post->ID, '_ag_domaine_icon', true );
+		$examples = get_post_meta( $post->ID, '_ag_domaine_examples', true );
+		echo '<p><label for="ag_domaine_icon"><strong>' . esc_html__( 'Icône', 'ag-starter-companion' ) . '</strong></label><br>';
+		echo '<input type="text" id="ag_domaine_icon" name="ag_domaine_icon" value="' . esc_attr( $icon ) . '" maxlength="20" style="width:160px;text-align:center;" placeholder="scales"><br>';
+		echo '<small>' . esc_html__( 'Mots-clés : scales, gavel, shield, briefcase, house, family, document, heart, lock, bank. Sinon emoji.', 'ag-starter-companion' ) . '</small></p>';
+		echo '<p><label for="ag_domaine_examples"><strong>' . esc_html__( 'Exemples de cas traités', 'ag-starter-companion' ) . '</strong></label><br>';
+		echo '<textarea id="ag_domaine_examples" name="ag_domaine_examples" rows="4" style="width:100%;">' . esc_textarea( $examples ) . '</textarea><br>';
+		echo '<small>' . esc_html__( '1 ligne par exemple.', 'ag-starter-companion' ) . '</small></p>';
+	}
+
+	public function avocat_domaine_save_meta( $post_id ) {
+		if ( ! isset( $_POST['ag_domaine_meta_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['ag_domaine_meta_nonce'] ) ), 'ag_domaine_meta_save' ) ) {
+			return;
+		}
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+		if ( isset( $_POST['ag_domaine_icon'] ) ) {
+			update_post_meta( $post_id, '_ag_domaine_icon', sanitize_text_field( wp_unslash( $_POST['ag_domaine_icon'] ) ) );
+		}
+		if ( isset( $_POST['ag_domaine_examples'] ) ) {
+			update_post_meta( $post_id, '_ag_domaine_examples', sanitize_textarea_field( wp_unslash( $_POST['ag_domaine_examples'] ) ) );
+		}
 	}
 
 	/**
