@@ -76,6 +76,19 @@ if ( ! function_exists( 'ag_starter_avocat_setup' ) ) :
 		add_theme_support( 'wp-block-styles' );
 		add_editor_style( 'style.css' );
 
+		// Image d'en-tête personnalisable.
+		add_theme_support(
+			'custom-header',
+			array(
+				'default-image' => '',
+				'width'         => 1920,
+				'height'        => 600,
+				'flex-width'    => true,
+				'flex-height'   => true,
+				'header-text'   => false,
+			)
+		);
+
 		// This theme uses wp_nav_menu() in one location.
 		register_nav_menus(
 			array(
@@ -261,6 +274,29 @@ function ag_starter_avocat_scripts() {
 	);
 }
 add_action( 'wp_enqueue_scripts', 'ag_starter_avocat_scripts' );
+
+/**
+ * Style de bloc + composition (transition vers les thèmes de blocs).
+ */
+function ag_starter_avocat_block_assets() {
+	register_block_style(
+		'core/button',
+		array(
+			'name'  => 'ag-gold',
+			'label' => esc_html__( 'Or Alliance', 'ag-starter-avocat' ),
+		)
+	);
+	if ( function_exists( 'register_block_pattern' ) ) {
+		register_block_pattern(
+			'ag-starter-avocat/cta-cabinet',
+			array(
+				'title'   => esc_html__( 'Appel à action — Cabinet', 'ag-starter-avocat' ),
+				'content' => '<!-- wp:paragraph {"align":"center"} --><p class="has-text-align-center">' . esc_html__( 'Besoin de conseils ? Prenez rendez-vous avec le cabinet.', 'ag-starter-avocat' ) . '</p><!-- /wp:paragraph -->',
+			)
+		);
+	}
+}
+add_action( 'init', 'ag_starter_avocat_block_assets' );
 
 /**
  * Zone de widgets (pied de page).
