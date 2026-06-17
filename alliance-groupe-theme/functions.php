@@ -1430,6 +1430,14 @@ if ( ! function_exists( 'ag_template_gallery_images' ) ) {
         if ( ! is_dir( $dir ) ) return array();
         $files = glob( $dir . '/*.{jpg,jpeg,png,webp,JPG,PNG,WEBP}', GLOB_BRACE );
         if ( ! $files ) return array();
+        // On n'affiche QUE les fichiers aux noms propres (minuscules + chiffres + tirets).
+        // Tout fichier contenant majuscules / underscores / espaces / apostrophes est
+        // ignoré : ce sont typiquement des restes d'upload non nettoyés (le SYNC GitHub
+        // ne supprime pas les orphelins), ce qui évite les doublons dans la galerie.
+        $files = array_filter( $files, function ( $f ) {
+            return (bool) preg_match( '/^[a-z0-9]+(?:-[a-z0-9]+)*\.[A-Za-z]+$/', basename( $f ) );
+        } );
+        if ( ! $files ) return array();
         sort( $files ); // ordre alphabétique stable (accueil-* d'abord)
         $out = array();
         foreach ( $files as $f ) {
