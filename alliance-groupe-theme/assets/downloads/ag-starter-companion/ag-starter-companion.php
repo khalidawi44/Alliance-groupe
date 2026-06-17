@@ -996,9 +996,38 @@ class AG_Starter_Companion {
 	 */
 	public function enable_auto_update( $update, $item ) {
 		if ( isset( $item->slug ) && 'ag-starter-companion' === $item->slug ) {
-			return true;
+			// Jamais d'auto-MAJ sur un site local/dev : le HTTPS y échoue souvent
+			// (ex. XAMPP sans bundle CA) → WordPress annule et restaure l'ancienne
+			// version (« ça revient »), en boucle. Les vrais sites clients, eux,
+			// continuent de s'auto-mettre à jour normalement.
+			return $this->is_local_env() ? false : true;
 		}
 		return $update;
+	}
+
+	/**
+	 * Détecte un environnement local / de développement (où les MAJ HTTPS
+	 * échouent souvent). On y désactive l'auto-MAJ pour éviter la boucle de
+	 * rollback. Les vrais domaines clients ne sont pas concernés.
+	 */
+	private function is_local_env() {
+		if ( function_exists( 'wp_get_environment_type' ) && in_array( wp_get_environment_type(), array( 'local', 'development' ), true ) ) {
+			return true;
+		}
+		$host = isset( $_SERVER['HTTP_HOST'] ) ? strtolower( (string) $_SERVER['HTTP_HOST'] ) : '';
+		if ( '' === $host && defined( 'WP_HOME' ) ) {
+			$host = strtolower( (string) wp_parse_url( WP_HOME, PHP_URL_HOST ) );
+		}
+		$host = preg_replace( '/:\d+$/', '', $host ); // retire le port (localhost:8080)
+		if ( in_array( $host, array( 'localhost', '127.0.0.1', '::1' ), true ) ) {
+			return true;
+		}
+		foreach ( array( '.local', '.test', '.localhost', '.dev' ) as $suffix ) {
+			if ( substr( $host, -strlen( $suffix ) ) === $suffix ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -1041,6 +1070,9 @@ class AG_Starter_Companion {
 
 	public function check_self_update( $transient ) {
 		if ( empty( $transient->checked ) ) return $transient;
+		// Sur un site local/dev, on ne propose pas la MAJ (HTTPS souvent KO →
+		// téléchargement/rollback en boucle). Test des MAJ = sur un vrai domaine.
+		if ( $this->is_local_env() ) return $transient;
 
 		$cache_key = 'ag_companion_update_check';
 		$remote    = get_transient( $cache_key );

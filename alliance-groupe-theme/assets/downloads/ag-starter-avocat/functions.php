@@ -370,7 +370,18 @@ endif;
 if ( ! function_exists( 'ag_force_auto_updates' ) ) {
 	function ag_force_auto_updates( $update, $item ) {
 		$slug = ( is_object( $item ) && ! empty( $item->slug ) ) ? (string) $item->slug : '';
-		return ( 0 === strpos( $slug, 'ag-' ) ) ? true : $update;
+		if ( 0 !== strpos( $slug, 'ag-' ) ) {
+			return $update;
+		}
+		// Pas d'auto-MAJ sur un site local/dev : le HTTPS y échoue souvent
+		// (XAMPP sans bundle CA) → WordPress annule et restaure l'ancienne
+		// version (« ça revient »), en boucle. Les vrais domaines clients OK.
+		$host = isset( $_SERVER['HTTP_HOST'] ) ? strtolower( preg_replace( '/:\d+$/', '', (string) $_SERVER['HTTP_HOST'] ) ) : '';
+		if ( in_array( $host, array( 'localhost', '127.0.0.1', '::1' ), true )
+			|| ( function_exists( 'wp_get_environment_type' ) && in_array( wp_get_environment_type(), array( 'local', 'development' ), true ) ) ) {
+			return false;
+		}
+		return true;
 	}
 	add_filter( 'auto_update_plugin', 'ag_force_auto_updates', 10, 2 );
 	add_filter( 'auto_update_theme',  'ag_force_auto_updates', 10, 2 );
