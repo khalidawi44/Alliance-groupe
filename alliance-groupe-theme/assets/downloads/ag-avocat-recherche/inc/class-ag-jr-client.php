@@ -5,17 +5,19 @@
  * Deux espaces complémentaires :
  *   - Espace JURIDIQUE  → réservé au cabinet (avocat) : recherche, dossiers,
  *     arguments. (Géré par AG_Recherche_Juridique.)
- *   - Espace CLIENT     → ce module : les clients du cabinet s'inscrivent, se
- *     connectent à leur espace perso et versent leurs pièces (documents), en
- *     toute confidentialité. L'avocat les retrouve dans son wp-admin.
+ *   - Espace CLIENT     → ce module : le cabinet INVITE ses clients (création
+ *     du compte + email avec lien de mot de passe). Le client se connecte à son
+ *     espace perso et verse ses pièces (documents), en toute confidentialité.
+ *     L'avocat les retrouve dans son wp-admin. Pas d'inscription publique.
  *
  * Sécurité / déontologie :
+ *   - Comptes créés UNIQUEMENT sur invitation du cabinet (pas d'auto-inscription).
  *   - Fichiers stockés dans un dossier PRIVÉ (uploads/ag-cabinet-prive/),
  *     interdit d'accès direct (.htaccess) ; téléchargement uniquement via un
  *     point d'accès authentifié qui vérifie le propriétaire (client) ou le
  *     cabinet. Aucune URL publique.
  *   - Rôle dédié « ag_cabinet_client » : lecture seule, PAS d'accès wp-admin.
- *   - Consentement RGPD obligatoire à l'inscription ; rappel secret pro.
+ *   - Rappel secret professionnel ; hébergement en Union européenne.
  *
  * @package ag-avocat-recherche
  */
@@ -228,22 +230,42 @@ class AG_JR_Client {
 		update_user_meta( $uid, 'ag_jr_client_approved', 1 );
 		update_user_meta( $uid, 'ag_jr_client_invited_by', get_current_user_id() );
 
-		$this->send_invitation( $uid, $prenom, $email );
+		// Lien « définir le mot de passe » (généré une fois, réutilisé pour
+		// l'email ET le secours affiché dans l'admin si l'email ne part pas).
+		$set_url = $this->build_set_password_url( $uid );
+		$sent    = $this->send_invitation( $uid, $prenom, $email, $set_url );
 		$this->notify_cabinet( sprintf( '👤 Client invité : %s (%s)', trim( $prenom . ' ' . $nom ), $email ) );
+
+		// On mémorise le lien de secours pour l'afficher une fois au retour.
+		set_transient( 'ag_jr_invite_' . get_current_user_id(), array(
+			'email' => $email,
+			'url'   => $set_url,
+			'sent'  => $sent ? 1 : 0,
+		), 600 );
 
 		wp_safe_redirect( add_query_arg( 'ag_inv', 'ok', $back ) );
 		exit;
 	}
 
-	/** Envoie l'email d'invitation avec un lien « définir mon mot de passe ». */
-	private function send_invitation( $uid, $prenom, $email ) {
+	/** Construit le lien standard WordPress de définition du mot de passe. */
+	private function build_set_password_url( $uid ) {
 		$user = get_userdata( $uid );
-		$key  = get_password_reset_key( $user );
+		if ( ! $user ) {
+			return '';
+		}
+		$key = get_password_reset_key( $user );
 		if ( is_wp_error( $key ) ) {
+			return '';
+		}
+		return network_site_url( 'wp-login.php?action=rp&key=' . rawurlencode( $key ) . '&login=' . rawurlencode( $user->user_login ), 'login' );
+	}
+
+	/** Envoie l'email d'invitation avec le lien « définir mon mot de passe ». */
+	private function send_invitation( $uid, $prenom, $email, $set_url ) {
+		if ( ! $set_url ) {
 			return false;
 		}
-		$set_url = network_site_url( 'wp-login.php?action=rp&key=' . rawurlencode( $key ) . '&login=' . rawurlencode( $user->user_login ), 'login' );
-		$blog    = wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES );
+		$blog = wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES );
 		$msg  = "Bonjour {$prenom},\n\n";
 		$msg .= "Votre cabinet vous a ouvert un espace client confidentiel pour suivre votre dossier et déposer vos pièces en toute sécurité.\n\n";
 		$msg .= "1. Définissez votre mot de passe :\n{$set_url}\n\n";
@@ -599,6 +621,22 @@ class AG_JR_Client {
 		if ( isset( $_GET['ag_inv'] ) && isset( $msgs[ $_GET['ag_inv'] ] ) ) {
 			$m = $msgs[ $_GET['ag_inv'] ];
 			echo '<div class="notice notice-' . esc_attr( $m[0] ) . ' is-dismissible"><p>' . esc_html( $m[1] ) . '</p></div>';
+		}
+		// Lien de secours : affiché une fois après une invitation, surtout utile
+		// si l'email n'est pas parti (hébergeur sans SMTP). À transmettre au
+		// client par un canal sûr (en main propre, SMS…).
+		$tkey = 'ag_jr_invite_' . get_current_user_id();
+		$inv  = get_transient( $tkey );
+		if ( is_array( $inv ) && ! empty( $inv['url'] ) ) {
+			delete_transient( $tkey );
+			$warn = empty( $inv['sent'] );
+			echo '<div class="notice notice-' . ( $warn ? 'warning' : 'info' ) . '"><p>'
+				. ( $warn
+					? '⚠️ L\'email n\'a peut-être pas pu partir (hébergement sans SMTP). '
+					: '✉️ Email d\'invitation envoyé à <strong>' . esc_html( $inv['email'] ) . '</strong>. ' )
+				. 'Lien de secours « définir le mot de passe » à transmettre au client si besoin (valable ~24 h) :</p>'
+				. '<p><input type="text" class="large-text code" readonly onclick="this.select()" value="' . esc_attr( $inv['url'] ) . '"></p>'
+				. '<p class="description">À envoyer par un canal sûr. Ce lien ne sera plus affiché ensuite.</p></div>';
 		}
 		echo '<p>Créez l\'accès d\'un client à son espace confidentiel. Il recevra un email pour choisir son mot de passe, puis pourra déposer ses pièces.</p>';
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="max-width:480px">';
