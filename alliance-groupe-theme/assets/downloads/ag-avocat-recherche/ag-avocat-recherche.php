@@ -35,9 +35,12 @@ if ( ! defined( 'AG_JR_PROXY_BASE' ) ) {
 }
 
 require_once AG_JR_DIR . 'inc/class-ag-recherche-juridique.php';
+require_once AG_JR_DIR . 'inc/class-ag-jr-client.php';
 require_once AG_JR_DIR . 'inc/class-ag-jr-updater.php';
 
 add_action( 'plugins_loaded', array( 'AG_Recherche_Juridique', 'instance' ) );
+add_action( 'plugins_loaded', array( 'AG_JR_Client', 'instance' ) );
 
 // Création des pages / rôles à l'activation (rien de destructif).
 register_activation_hook( __FILE__, array( 'AG_Recherche_Juridique', 'on_activate' ) );
+register_activation_hook( __FILE__, array( 'AG_JR_Client', 'on_activate' ) );
