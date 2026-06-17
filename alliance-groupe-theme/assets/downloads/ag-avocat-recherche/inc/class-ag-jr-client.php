@@ -51,13 +51,15 @@ class AG_JR_Client {
 		add_filter( 'wp_nav_menu_items', array( $this, 'nav_menu_link' ), 21, 2 );
 
 		// Traitements (formulaires classiques, robustes, sans dépendance JS).
-		add_action( 'admin_post_nopriv_ag_jr_client_register', array( $this, 'handle_register' ) );
-		add_action( 'admin_post_ag_jr_client_register',        array( $this, 'handle_register' ) );
+		// Pas d'inscription publique : les comptes sont créés sur INVITATION du
+		// cabinet. Les clients ne font que se connecter.
 		add_action( 'admin_post_nopriv_ag_jr_client_login',    array( $this, 'handle_login' ) );
 		add_action( 'admin_post_ag_jr_client_login',           array( $this, 'handle_login' ) );
 		add_action( 'admin_post_ag_jr_client_logout',          array( $this, 'handle_logout' ) );
 		add_action( 'admin_post_ag_jr_client_upload',          array( $this, 'handle_upload' ) );
 		add_action( 'admin_post_ag_jr_piece_dl',               array( $this, 'handle_download' ) );
+		// Côté cabinet : invitation d'un nouveau client.
+		add_action( 'admin_post_ag_jr_client_invite',          array( $this, 'handle_invite' ) );
 
 		// Côté cabinet (wp-admin) : sous-menus + colonnes + métabox pièce.
 		add_action( 'admin_menu', array( $this, 'admin_menu' ), 20 );
@@ -179,57 +181,76 @@ class AG_JR_Client {
 	}
 
 	/* ============================================================
-	 *  TRAITEMENTS — INSCRIPTION / CONNEXION / DÉCONNEXION
+	 *  TRAITEMENTS — INVITATION (cabinet) / CONNEXION / DÉCONNEXION
 	 * ============================================================ */
-	public function handle_register() {
-		if ( ! isset( $_POST['ag_jr_client_nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['ag_jr_client_nonce'] ), 'ag_jr_client_register' ) ) {
-			$this->redirect_notice( 'err', 'nonce' );
+
+	/**
+	 * Le cabinet invite un client : création du compte (rôle client, pré-validé)
+	 * + envoi d'un email d'invitation avec lien pour définir son mot de passe.
+	 */
+	public function handle_invite() {
+		if ( ! current_user_can( AG_Recherche_Juridique::CAP ) ) {
+			wp_die( 'Accès refusé.', 403 );
 		}
+		check_admin_referer( 'ag_jr_client_invite' );
 		$prenom = sanitize_text_field( wp_unslash( $_POST['prenom'] ?? '' ) );
 		$nom    = sanitize_text_field( wp_unslash( $_POST['nom'] ?? '' ) );
 		$email  = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
 		$tel    = sanitize_text_field( wp_unslash( $_POST['tel'] ?? '' ) );
-		$pass   = (string) ( $_POST['password'] ?? '' );
-		$rgpd   = ! empty( $_POST['rgpd'] );
+		$back   = admin_url( 'admin.php?page=ag-jr-invite' );
 
-		if ( ! $prenom || ! $nom || ! is_email( $email ) || strlen( $pass ) < 8 || ! $rgpd ) {
-			$this->redirect_notice( 'err', 'champs' );
+		if ( ! $prenom || ! $nom || ! is_email( $email ) ) {
+			wp_safe_redirect( add_query_arg( 'ag_inv', 'champs', $back ) );
+			exit;
 		}
 		if ( email_exists( $email ) || username_exists( $email ) ) {
-			$this->redirect_notice( 'err', 'existe' );
+			wp_safe_redirect( add_query_arg( 'ag_inv', 'existe', $back ) );
+			exit;
 		}
 
 		$uid = wp_insert_user( array(
 			'user_login'   => $email,
 			'user_email'   => $email,
-			'user_pass'    => $pass,
+			'user_pass'    => wp_generate_password( 24, true, true ),
 			'first_name'   => $prenom,
 			'last_name'    => $nom,
 			'display_name' => trim( $prenom . ' ' . $nom ),
 			'role'         => self::ROLE,
 		) );
 		if ( is_wp_error( $uid ) ) {
-			$this->redirect_notice( 'err', 'creation' );
+			wp_safe_redirect( add_query_arg( 'ag_inv', 'creation', $back ) );
+			exit;
 		}
 		if ( $tel ) {
 			update_user_meta( $uid, 'ag_jr_client_tel', $tel );
 		}
-		update_user_meta( $uid, 'ag_jr_client_rgpd', current_time( 'mysql' ) );
+		// Compte créé par le cabinet → de confiance, immédiatement actif.
+		update_user_meta( $uid, 'ag_jr_client_approved', 1 );
+		update_user_meta( $uid, 'ag_jr_client_invited_by', get_current_user_id() );
 
-		// Validation par le cabinet : en option (défaut = accès immédiat).
-		$need_valid = (int) get_option( 'ag_jr_client_validation', 0 );
-		update_user_meta( $uid, 'ag_jr_client_approved', $need_valid ? 0 : 1 );
+		$this->send_invitation( $uid, $prenom, $email );
+		$this->notify_cabinet( sprintf( '👤 Client invité : %s (%s)', trim( $prenom . ' ' . $nom ), $email ) );
 
-		$this->notify_cabinet( sprintf( '👤 Nouveau client inscrit : %s (%s)%s', trim( $prenom . ' ' . $nom ), $email, $need_valid ? ' — à valider' : '' ) );
+		wp_safe_redirect( add_query_arg( 'ag_inv', 'ok', $back ) );
+		exit;
+	}
 
-		// Email de bienvenue.
-		wp_mail( $email, 'Bienvenue dans votre espace client',
-			"Bonjour {$prenom},\n\nVotre espace client est créé. Vous pouvez vous connecter et déposer vos pièces en toute confidentialité.\n\n" . $this->page_url() . "\n\nLe cabinet." );
-
-		// Connexion automatique.
-		wp_set_current_user( $uid );
-		wp_set_auth_cookie( $uid, true );
-		$this->redirect_notice( 'ok', $need_valid ? 'inscrit_valid' : 'inscrit' );
+	/** Envoie l'email d'invitation avec un lien « définir mon mot de passe ». */
+	private function send_invitation( $uid, $prenom, $email ) {
+		$user = get_userdata( $uid );
+		$key  = get_password_reset_key( $user );
+		if ( is_wp_error( $key ) ) {
+			return false;
+		}
+		$set_url = network_site_url( 'wp-login.php?action=rp&key=' . rawurlencode( $key ) . '&login=' . rawurlencode( $user->user_login ), 'login' );
+		$blog    = wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES );
+		$msg  = "Bonjour {$prenom},\n\n";
+		$msg .= "Votre cabinet vous a ouvert un espace client confidentiel pour suivre votre dossier et déposer vos pièces en toute sécurité.\n\n";
+		$msg .= "1. Définissez votre mot de passe :\n{$set_url}\n\n";
+		$msg .= "2. Connectez-vous ensuite à votre espace :\n" . $this->page_url() . "\n\n";
+		$msg .= "Vos documents sont stockés de façon privée — secret professionnel garanti.\n\n";
+		$msg .= "Le cabinet {$blog}.";
+		return wp_mail( $email, "Votre espace client — {$blog}", $msg );
 	}
 
 	public function handle_login() {
@@ -463,12 +484,10 @@ class AG_JR_Client {
 	private function auth_forms() {
 		$action = esc_url( admin_url( 'admin-post.php' ) );
 		$h  = '<div class="ag-jr-card"><h2>Espace client du cabinet</h2>'
-			. '<p class="ag-jr-muted">Connectez-vous ou créez votre compte pour suivre votre dossier et déposer vos pièces en toute confidentialité.</p></div>';
+			. '<p class="ag-jr-muted">Accès réservé aux clients du cabinet. Connectez-vous avec l\'email et le mot de passe liés à l\'invitation reçue par courriel.</p></div>';
 
-		$h .= '<div class="ag-jr-grid">';
-
-		// Connexion.
-		$h .= '<div class="ag-jr-card"><h3>Se connecter</h3>'
+		// Connexion (les comptes sont créés sur invitation du cabinet).
+		$h .= '<div class="ag-jr-card" style="max-width:460px;margin:0 auto"><h3>Se connecter</h3>'
 			. '<form method="post" action="' . $action . '">'
 			. '<input type="hidden" name="action" value="ag_jr_client_login">'
 			. wp_nonce_field( 'ag_jr_client_login', 'ag_jr_client_nonce', true, false )
@@ -476,38 +495,19 @@ class AG_JR_Client {
 			. '<label>Mot de passe<input type="password" name="password" required></label>'
 			. '<button class="ag-jr-cbtn" type="submit">Connexion</button>'
 			. '<p class="ag-jr-muted"><a href="' . esc_url( wp_lostpassword_url( $this->page_url() ) ) . '">Mot de passe oublié ?</a></p>'
+			. '<p class="ag-jr-muted">Pas encore d\'accès ? Votre cabinet vous enverra une invitation par email.</p>'
 			. '</form></div>';
 
-		// Inscription.
-		$h .= '<div class="ag-jr-card"><h3>Créer mon compte</h3>'
-			. '<form method="post" action="' . $action . '">'
-			. '<input type="hidden" name="action" value="ag_jr_client_register">'
-			. wp_nonce_field( 'ag_jr_client_register', 'ag_jr_client_nonce', true, false )
-			. '<div class="ag-jr-row"><label>Prénom<input type="text" name="prenom" required></label>'
-			. '<label>Nom<input type="text" name="nom" required></label></div>'
-			. '<label>Email<input type="email" name="email" required></label>'
-			. '<label>Téléphone (facultatif)<input type="tel" name="tel"></label>'
-			. '<label>Mot de passe (8 caractères min.)<input type="password" name="password" minlength="8" required></label>'
-			. '<label class="ag-jr-check"><input type="checkbox" name="rgpd" value="1" required> J\'accepte que mes informations soient utilisées par le cabinet pour le suivi de mon dossier (RGPD). Hébergement en Union européenne, secret professionnel garanti.</label>'
-			. '<button class="ag-jr-cbtn" type="submit">Créer mon espace</button>'
-			. '</form></div>';
-
-		$h .= '</div>';
 		return $h;
 	}
 
 	private function notices() {
 		$map_ok = array(
-			'inscrit'       => 'Votre espace est créé, bienvenue !',
-			'inscrit_valid' => 'Votre compte est créé. Il sera actif dès validation par le cabinet.',
-			'connecte'      => 'Vous êtes connecté.',
-			'verse'         => 'Votre pièce a bien été versée. Le cabinet en est informé.',
+			'connecte' => 'Vous êtes connecté.',
+			'verse'    => 'Votre pièce a bien été versée. Le cabinet en est informé.',
 		);
 		$map_err = array(
 			'nonce'    => 'Session expirée, merci de réessayer.',
-			'champs'   => 'Merci de remplir tous les champs (mot de passe 8 caractères, consentement RGPD).',
-			'existe'   => 'Un compte existe déjà avec cet email. Connectez-vous.',
-			'creation' => 'Impossible de créer le compte, réessayez.',
 			'login'    => 'Email ou mot de passe incorrect.',
 			'auth'     => 'Veuillez vous connecter.',
 			'attente'  => 'Votre compte attend la validation du cabinet.',
@@ -580,7 +580,38 @@ class AG_JR_Client {
 	 * ============================================================ */
 	public function admin_menu() {
 		add_submenu_page( 'ag-jr', 'Pièces clients', '📎 Pièces clients', AG_Recherche_Juridique::CAP, 'edit.php?post_type=' . self::CPT_PIECE );
+		add_submenu_page( 'ag-jr', 'Inviter un client', '➕ Inviter un client', AG_Recherche_Juridique::CAP, 'ag-jr-invite', array( $this, 'page_invite' ) );
 		add_submenu_page( 'ag-jr', 'Clients', '👤 Clients', AG_Recherche_Juridique::CAP, 'users.php?role=' . self::ROLE );
+	}
+
+	/** Page admin : inviter un nouveau client (création + email d'invitation). */
+	public function page_invite() {
+		if ( ! current_user_can( AG_Recherche_Juridique::CAP ) ) {
+			return;
+		}
+		$msgs = array(
+			'ok'       => array( 'updated', 'Invitation envoyée. Le client va recevoir un email pour définir son mot de passe.' ),
+			'champs'   => array( 'error', 'Merci d\'indiquer le prénom, le nom et un email valide.' ),
+			'existe'   => array( 'error', 'Un compte existe déjà avec cet email.' ),
+			'creation' => array( 'error', 'Impossible de créer le compte, réessayez.' ),
+		);
+		echo '<div class="wrap"><h1>➕ Inviter un client</h1>';
+		if ( isset( $_GET['ag_inv'] ) && isset( $msgs[ $_GET['ag_inv'] ] ) ) {
+			$m = $msgs[ $_GET['ag_inv'] ];
+			echo '<div class="notice notice-' . esc_attr( $m[0] ) . ' is-dismissible"><p>' . esc_html( $m[1] ) . '</p></div>';
+		}
+		echo '<p>Créez l\'accès d\'un client à son espace confidentiel. Il recevra un email pour choisir son mot de passe, puis pourra déposer ses pièces.</p>';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="max-width:480px">';
+		echo '<input type="hidden" name="action" value="ag_jr_client_invite">';
+		wp_nonce_field( 'ag_jr_client_invite' );
+		echo '<table class="form-table"><tbody>';
+		echo '<tr><th><label for="ag-inv-prenom">Prénom</label></th><td><input name="prenom" id="ag-inv-prenom" type="text" class="regular-text" required></td></tr>';
+		echo '<tr><th><label for="ag-inv-nom">Nom</label></th><td><input name="nom" id="ag-inv-nom" type="text" class="regular-text" required></td></tr>';
+		echo '<tr><th><label for="ag-inv-email">Email</label></th><td><input name="email" id="ag-inv-email" type="email" class="regular-text" required></td></tr>';
+		echo '<tr><th><label for="ag-inv-tel">Téléphone (facultatif)</label></th><td><input name="tel" id="ag-inv-tel" type="tel" class="regular-text"></td></tr>';
+		echo '</tbody></table>';
+		submit_button( 'Envoyer l\'invitation' );
+		echo '</form></div>';
 	}
 
 	public function piece_columns( $cols ) {
