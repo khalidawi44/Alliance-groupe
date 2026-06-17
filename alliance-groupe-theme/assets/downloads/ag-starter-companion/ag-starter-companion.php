@@ -173,7 +173,35 @@ class AG_Starter_Companion {
 	 * qu'une fois, et jamais si déjà installé. Réservé à l'avocat (l'outil est
 	 * lui-même réservé au cabinet connecté).
 	 */
+	/**
+	 * Contexte « maintenance » : MAJ de plugin/thème en cours, requête AJAX ou
+	 * cron, installation WP. Les routines lourdes (téléchargements GitHub,
+	 * Plugin_Upgrader, écriture de functions.php) NE DOIVENT PAS s'exécuter dans
+	 * ces contextes : sur certains hébergements (XAMPP sans bundle CA, etc.) un
+	 * wp_remote_get HTTPS qui traîne bloque l'updater → la MAJ reste « en cours »
+	 * et le plugin paraît ne pas s'activer.
+	 */
+	private function is_maintenance_context() {
+		if ( function_exists( 'wp_doing_ajax' ) && wp_doing_ajax() ) {
+			return true;
+		}
+		if ( function_exists( 'wp_doing_cron' ) && wp_doing_cron() ) {
+			return true;
+		}
+		if ( defined( 'WP_INSTALLING' ) && WP_INSTALLING ) {
+			return true;
+		}
+		global $pagenow;
+		if ( isset( $pagenow ) && in_array( $pagenow, array( 'update.php', 'update-core.php' ), true ) ) {
+			return true;
+		}
+		return false;
+	}
+
 	public function maybe_install_research_plugin() {
+		if ( $this->is_maintenance_context() ) {
+			return; // jamais pendant une MAJ/AJAX/cron : éviterait de bloquer l'updater
+		}
 		if ( ! current_user_can( 'install_plugins' ) ) {
 			return;
 		}
@@ -535,6 +563,7 @@ class AG_Starter_Companion {
 	 * barber) et relance run_import si la version stockee differe.
 	 */
 	public function maybe_auto_reimport() {
+		if ( $this->is_maintenance_context() ) return;
 		if ( ! current_user_can( 'manage_options' ) ) return;
 		$theme = wp_get_theme();
 		$slug  = $theme->get_template();
@@ -573,6 +602,9 @@ class AG_Starter_Companion {
 	 * client tant qu'il contient au moins une page du theme.
 	 */
 	public function maybe_fix_theme_menu() {
+		if ( $this->is_maintenance_context() ) {
+			return;
+		}
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
@@ -1537,6 +1569,9 @@ class AG_Starter_Companion {
 	 * Runs once per companion version bump. Downloads files from GitHub if missing locally.
 	 */
 	public function maybe_patch_theme() {
+		if ( $this->is_maintenance_context() ) {
+			return; // ne JAMAIS télécharger/patcher pendant une MAJ : bloquerait l'updater
+		}
 		$slug = $this->get_active_theme_slug();
 		if ( ! $slug || ! current_user_can( 'manage_options' ) ) {
 			return;
