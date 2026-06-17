@@ -1070,9 +1070,10 @@ class AG_Starter_Companion {
 
 	public function check_self_update( $transient ) {
 		if ( empty( $transient->checked ) ) return $transient;
-		// Sur un site local/dev, on ne propose pas la MAJ (HTTPS souvent KO →
-		// téléchargement/rollback en boucle). Test des MAJ = sur un vrai domaine.
-		if ( $this->is_local_env() ) return $transient;
+		// NB : on continue de PROPOSER la MAJ même en local (utile pour la tester
+		// à la main). Seule l'auto-MAJ en arrière-plan est coupée en local
+		// (enable_auto_update) pour éviter la boucle de rollback quand le HTTPS
+		// échoue. Sur un vrai domaine, tout fonctionne normalement.
 
 		$cache_key = 'ag_companion_update_check';
 		$remote    = get_transient( $cache_key );
