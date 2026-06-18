@@ -5,36 +5,36 @@ Tags: one-column, custom-menu, featured-images, translation-ready, theme-options
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 1.1.18
+Stable tag: 1.1.19
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Theme gratuit basique 100% francais pour cabinet d'avocats, juriste, notaire, conseil juridique. Structure minimaliste navy et champagne, responsive, sans fioritures. Contenu pre-redige en francais natif, pret a l'emploi.
+Thème gratuit 100 % français pour cabinets d'avocats, juristes et notaires. Design sobre navy et champagne, responsive, prêt à l'emploi.
 
 == Description ==
 
-AG Starter Avocat est un theme pense pour les cabinets d'avocats, juristes, notaires et professions juridiques francophones qui veulent une vitrine en ligne immediatement exploitable, sans perdre des heures a traduire un theme anglais ou a tout reecrire.
+AG Starter Avocat est un thème pensé pour les cabinets d'avocats, juristes, notaires et professions juridiques francophones qui veulent une vitrine en ligne immédiatement exploitable, sans perdre des heures à traduire un thème anglais ou à tout réécrire.
 
-Caracteristiques principales :
+Caractéristiques principales :
 
-* 100% francais natif : tous les textes, sections et exemples sont deja en francais.
-* Design sombre serieux : palette navy et champagne qui inspire confiance et professionnalisme.
-* Pret a l'emploi : remplacez simplement le nom du cabinet, l'adresse, les horaires et les domaines d'expertise. Le reste est deja en place.
-* Responsive : adapte mobile, tablette et desktop.
-* Leger et rapide : aucune dependance JavaScript, chargement instantane.
-* Compatible editeur de blocs (Gutenberg), support des alignements large et full width.
-* Prepare pour la traduction (translation-ready) avec text-domain dedie.
-* Support custom logo, custom background, menu principal, widgets et commentaires threades.
+* 100 % français natif : tous les textes, sections et exemples sont déjà en français.
+* Design sobre et sérieux : palette navy et champagne qui inspire confiance et professionnalisme.
+* Prêt à l'emploi : remplacez simplement le nom du cabinet, l'adresse, les horaires et les domaines d'expertise. Le reste est déjà en place.
+* Responsive : adapté mobile, tablette et ordinateur.
+* Léger et rapide : aucune dépendance JavaScript, chargement instantané.
+* Compatible éditeur de blocs (Gutenberg), avec prise en charge des alignements large et pleine largeur.
+* Préparé pour la traduction (translation-ready) avec un text-domain dédié.
+* Prise en charge du logo personnalisé, de l'arrière-plan personnalisé, du menu principal, des widgets et des commentaires imbriqués.
 * Aucun plugin requis.
 
-Contenu pre-rempli inclus :
+Contenu pré-rempli inclus :
 
-* Hero d'accueil avec sous-titre et bouton "Prendre rendez-vous".
+* Section d'accueil avec sous-titre et bouton « Prendre rendez-vous ».
 * Trois cartes : Domaines d'expertise, Honoraires, Prendre rendez-vous.
-* Section "Notre cabinet".
-* Footer avec cabinet, horaires (visio incluse) et contact.
+* Section « Notre cabinet ».
+* Pied de page avec cabinet, horaires (visio incluse) et contact.
 
-Vous n'avez qu'a ouvrir le customizer (Apparence > Personnaliser > AG Starter — Personnalisation) et remplacer les textes entre crochets par vos informations reelles.
+Il vous suffit d'ouvrir le personnalisateur (Apparence > Personnaliser > AG Starter — Personnalisation) et de remplacer les textes entre crochets par vos informations réelles.
 
 == Installation ==
 
@@ -67,6 +67,10 @@ Non. Le theme est entierement fonctionnel sans Elementor, Divi ou autre.
 Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-inc.com
 
 == Changelog ==
+
+= 1.1.19 =
+* Description et readme corrigés : orthographe et accents français rétablis, formulation plus professionnelle.
+* Nouvelle capture d'écran de présentation.
 
 = 1.1.18 =
 * Ecran de bienvenue : ajout d'un lien optionnel vers un guide gratuit (7 pages qui attirent des clients) heberge sur le site de l'auteur. Lien non bloquant, aucune collecte de donnees dans le theme.
