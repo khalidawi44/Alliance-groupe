@@ -21,8 +21,10 @@ get_header();
     }
     $ag_crea_bg = function_exists( 'ag_tester_opt' ) ? ag_tester_opt( 'img_creation' ) : '';
     if ( ! $ag_crea_bg ) {
-        $p = get_stylesheet_directory() . '/assets/images/team/1_bureau_naples.jpg';
-        if ( file_exists( $p ) ) { $ag_crea_bg = get_stylesheet_directory_uri() . '/assets/images/team/1_bureau_naples.jpg'; }
+        foreach ( array( 'naples-1.jpg', '1_bureau_naples.jpg' ) as $f ) {
+            $p = get_stylesheet_directory() . '/assets/images/team/' . $f;
+            if ( file_exists( $p ) ) { $ag_crea_bg = get_stylesheet_directory_uri() . '/assets/images/team/' . $f; break; }
+        }
     }
     // Voile ROUGE-NOIR sombre sur le hacker (gauche) ; voile sombre neutre à droite.
     $ag_secu_style = $ag_secu_bg
