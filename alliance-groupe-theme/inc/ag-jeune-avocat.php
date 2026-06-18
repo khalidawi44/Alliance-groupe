@@ -288,31 +288,108 @@ function ag_ja_build_email_html( $label, $code ) {
 	return ag_email_wrap( 'Un site offert 3 mois à vos jeunes avocats', $inner );
 }
 
-/** Envoi GROUPÉ à tous les partenaires ayant un email de contact. */
+/** En-têtes d'envoi : From sur le domaine + Reply-To vers Gmail (réponses). */
+function ag_ja_mail_headers() {
+	return array(
+		'Content-Type: text/html; charset=UTF-8',
+		'From: Alliance Groupe <contact@alliancegroupe-inc.com>',
+		'Reply-To: Fabrizio <advise.alliance.group@gmail.com>',
+	);
+}
+
+/** Envoie l'email à UN partenaire (par code) et le marque envoyé. */
+function ag_ja_send_one( $code ) {
+	$partners = ag_ja_partners();
+	if ( empty( $partners[ $code ] ) || ! is_array( $partners[ $code ] ) ) {
+		return false;
+	}
+	$email = trim( (string) ( $partners[ $code ]['contact'] ?? '' ) );
+	if ( ! is_email( $email ) ) {
+		return false;
+	}
+	$label = $partners[ $code ]['label'] ?? $code;
+	list( $subject ) = ag_ja_build_email( $label, $code );
+	$ok = wp_mail( $email, $subject, ag_ja_build_email_html( $label, $code ), ag_ja_mail_headers() );
+	if ( $ok ) {
+		$partners[ $code ]['sent'] = time();
+		update_option( 'ag_ja_partners', $partners );
+	}
+	return $ok;
+}
+
+/** Planning cron « chaque minute » pour le goutte-à-goutte. */
+add_filter( 'cron_schedules', function ( $s ) {
+	if ( ! isset( $s['ag_minute'] ) ) {
+		$s['ag_minute'] = array( 'interval' => 60, 'display' => 'AG — chaque minute' );
+	}
+	return $s;
+} );
+
+/** Goutte-à-goutte : envoie 1 email de la file par exécution (délai = 1/min). */
+function ag_ja_drip_unschedule() {
+	$ts = wp_next_scheduled( 'ag_ja_drip' );
+	if ( $ts ) {
+		wp_unschedule_event( $ts, 'ag_ja_drip' );
+	}
+}
+add_action( 'ag_ja_drip', function () {
+	$queue = array_values( (array) get_option( 'ag_ja_queue', array() ) );
+	if ( empty( $queue ) ) {
+		ag_ja_drip_unschedule();
+		return;
+	}
+	$code = array_shift( $queue );
+	update_option( 'ag_ja_queue', $queue );
+	ag_ja_send_one( $code );
+	if ( empty( $queue ) ) {
+		ag_ja_drip_unschedule();
+	}
+} );
+
+/** « Envoyer à tous » : file d'attente + 1er envoi immédiat + goutte-à-goutte. */
 add_action( 'admin_post_ag_ja_sendall', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! check_admin_referer( 'ag_ja_sendall' ) ) {
 		wp_die( 'Accès refusé.' );
 	}
+	$resend   = ! empty( $_POST['resend'] );
 	$partners = ag_ja_partners();
-	$headers  = array( 'Content-Type: text/html; charset=UTF-8', 'Reply-To: Fabrizio <advise.alliance.group@gmail.com>' );
-	$sent = 0;
-	$skip = 0;
+	$queue    = array();
+	$skip     = 0;
 	foreach ( $partners as $code => $info ) {
 		$email = is_array( $info ) ? trim( (string) ( $info['contact'] ?? '' ) ) : '';
 		if ( ! is_email( $email ) ) {
 			$skip++;
 			continue;
 		}
-		$label = is_array( $info ) ? ( $info['label'] ?? $code ) : (string) $info;
-		list( $subject ) = ag_ja_build_email( $label, $code );
-		$html = ag_ja_build_email_html( $label, $code );
-		if ( wp_mail( $email, $subject, $html, $headers ) ) {
-			$partners[ $code ]['sent'] = time();
-			$sent++;
+		if ( ! $resend && ! empty( $info['sent'] ) ) {
+			continue; // déjà envoyé → on ne renvoie pas (sauf option "tout renvoyer")
+		}
+		$queue[] = $code;
+	}
+	$total = count( $queue );
+	$first = 0;
+	if ( $queue ) {
+		$c = array_shift( $queue ); // le 1er part tout de suite (retour immédiat)
+		if ( ag_ja_send_one( $c ) ) {
+			$first = 1;
 		}
 	}
-	update_option( 'ag_ja_partners', $partners );
-	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-jeune-avocat', 'sent' => $sent, 'skip' => $skip ), admin_url( 'options-general.php' ) ) );
+	update_option( 'ag_ja_queue', $queue );
+	if ( $queue && ! wp_next_scheduled( 'ag_ja_drip' ) ) {
+		wp_schedule_event( time() + 60, 'ag_minute', 'ag_ja_drip' );
+	}
+	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-jeune-avocat', 'queued' => $total, 'first' => $first ), admin_url( 'options-general.php' ) ) );
+	exit;
+} );
+
+/** Vider la file d'attente d'envoi. */
+add_action( 'admin_post_ag_ja_clearqueue', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! check_admin_referer( 'ag_ja_clearqueue' ) ) {
+		wp_die( 'Accès refusé.' );
+	}
+	delete_option( 'ag_ja_queue' );
+	ag_ja_drip_unschedule();
+	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-jeune-avocat', 'cleared' => 1 ), admin_url( 'options-general.php' ) ) );
 	exit;
 } );
 
@@ -414,8 +491,13 @@ function ag_ja_settings_page() {
 		echo '<div class="notice notice-success is-dismissible"><p>Partenaire supprimé.</p></div>';
 	}
 
-	if ( isset( $_GET['sent'] ) ) {
-		echo '<div class="notice notice-success is-dismissible"><p>📨 ' . (int) $_GET['sent'] . ' email(s) envoyé(s) aux partenaires. ' . ( isset( $_GET['skip'] ) ? (int) $_GET['skip'] . ' ignoré(s) (pas d\'email de contact).' : '' ) . '</p></div>';
+	if ( isset( $_GET['queued'] ) ) {
+		$q = (int) $_GET['queued'];
+		$f = isset( $_GET['first'] ) ? (int) $_GET['first'] : 0;
+		echo '<div class="notice notice-success is-dismissible"><p>📨 ' . $f . ' email envoyé immédiatement · <strong>' . max( 0, $q - $f ) . ' en file d\'attente</strong> (envoi automatique à raison d\'<strong>1 email/minute</strong> pour ne pas être pris pour du spam).</p></div>';
+	}
+	if ( isset( $_GET['cleared'] ) ) {
+		echo '<div class="notice notice-warning is-dismissible"><p>File d\'attente vidée — envoi stoppé.</p></div>';
 	}
 
 	$partners = ag_ja_partners();
@@ -464,18 +546,38 @@ function ag_ja_settings_page() {
 	echo '</div>';
 
 	// Table partenaires.
+	$queue_remaining = count( (array) get_option( 'ag_ja_queue', array() ) );
+	$not_sent = 0;
+	foreach ( $partners as $pi ) {
+		if ( is_array( $pi ) && is_email( (string) ( $pi['contact'] ?? '' ) ) && empty( $pi['sent'] ) ) {
+			$not_sent++;
+		}
+	}
 	echo '<h2 style="margin-top:30px;">Partenaires &amp; codes (' . count( $partners ) . ')</h2>';
-	echo '<div style="background:#fff;border:1px solid #dcdcde;border-radius:10px;padding:14px 18px;margin:0 0 14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">';
-	echo '<strong>📨 Démarchage en 1 clic</strong> <span class="description">' . (int) $with_mail . ' partenaire(s) avec un email de contact renseigné.</span>';
+	echo '<div style="background:#fff;border:1px solid #dcdcde;border-radius:10px;padding:14px 18px;margin:0 0 14px;">';
+	echo '<p style="margin:0 0 10px;"><strong>📨 Démarchage automatique</strong> — ' . (int) $with_mail . ' partenaire(s) avec email · ' . (int) $not_sent . ' pas encore contacté(s).';
+	if ( $queue_remaining > 0 ) {
+		echo ' <span style="color:#2271b1;font-weight:600;">⏳ ' . (int) $queue_remaining . ' en cours d\'envoi (1/min)…</span>';
+	}
+	echo '</p>';
 	if ( $with_mail > 0 ) {
-		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin:0;">';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="display:inline-block;margin:0 8px 0 0;">';
 		echo '<input type="hidden" name="action" value="ag_ja_sendall">';
 		wp_nonce_field( 'ag_ja_sendall' );
-		echo '<button class="button button-primary" onclick="return confirm(\'Envoyer l\\\'email personnalisé à tous les partenaires ayant un email de contact ?\');">Envoyer à tous (' . (int) $with_mail . ')</button>';
+		echo '<button class="button button-primary" onclick="return confirm(\'Lancer l\\\'envoi (1 email par minute) ?\');">Envoyer aux non-contactés (' . (int) $not_sent . ')</button>';
+		echo ' <label style="margin-left:10px;font-size:.9em;"><input type="checkbox" name="resend" value="1"> tout renvoyer (' . (int) $with_mail . ')</label>';
 		echo '</form>';
 	} else {
-		echo '<span class="description" style="color:#b32d2e;">Renseigne les emails de contact (colonne Partenaire) pour activer l\'envoi groupé.</span>';
+		echo '<span class="description" style="color:#b32d2e;">Renseigne les emails de contact pour activer l\'envoi.</span>';
 	}
+	if ( $queue_remaining > 0 ) {
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="display:inline-block;margin:0;">';
+		echo '<input type="hidden" name="action" value="ag_ja_clearqueue">';
+		wp_nonce_field( 'ag_ja_clearqueue' );
+		echo '<button class="button">⏹ Arrêter / vider la file</button>';
+		echo '</form>';
+	}
+	echo '<p class="description" style="margin:8px 0 0;">Envoi en <strong>goutte-à-goutte : 1 email/minute</strong> (anti-spam). Le 1er part tout de suite, le reste suit automatiquement (via le cron WordPress — dépend du trafic du site).</p>';
 	echo '</div>';
 	if ( $partners ) {
 		echo '<form method="post">';
