@@ -342,8 +342,9 @@ function ag_ja_settings_page() {
 	// Table partenaires.
 	echo '<h2 style="margin-top:30px;">Partenaires &amp; codes (' . count( $partners ) . ')</h2>';
 	if ( $partners ) {
-		echo '<table class="widefat striped"><thead><tr><th>Code</th><th>Partenaire</th><th>Type</th><th>Contact</th><th>Inscrits</th><th>Lien à partager</th><th></th></tr></thead><tbody>';
+		echo '<table class="widefat striped"><thead><tr><th>Code</th><th>Partenaire</th><th>Type</th><th>Inscrits</th><th>Lien à partager</th><th>Email</th><th></th></tr></thead><tbody>';
 		$page_url = ag_ja_url();
+		$i = 0;
 		foreach ( $partners as $code => $info ) {
 			$label = is_array( $info ) ? ( $info['label'] ?? $code ) : (string) $info;
 			$type  = is_array( $info ) ? ( $info['type'] ?? '' ) : '';
@@ -351,15 +352,43 @@ function ag_ja_settings_page() {
 			$cnt   = (int) ( $by_ecole[ $label ] ?? 0 );
 			$share = add_query_arg( 'code', $code, $page_url );
 			$del   = wp_nonce_url( add_query_arg( 'ag_ja_del', $code ), 'ag_ja_del' );
+
+			$subject = 'Un site professionnel offert 3 mois à vos jeunes avocats — ' . $label;
+			$body  = "Madame, Monsieur,\n\n";
+			$body .= "Je dirige Alliance Groupe, studio web independant specialise dans les sites de professions juridiques (conformes RGPD et deontologie).\n\n";
+			$body .= "Nous souhaitons offrir aux jeunes avocats de " . $label . " 3 mois de site professionnel gratuits pour les aider a lancer leur cabinet : site pret a l'emploi, recherche Judilibre integree, espace client securise. Sans aucun cout ni engagement pour votre etablissement.\n\n";
+			$body .= "Le principe est simple : un code dedie a " . $label . " que vous transmettez a vos diplomes. Ils l'activent ici :\n" . $share . "\n\n";
+			$body .= "Je peux vous adresser une presentation d'une page. Seriez-vous disponible 15 minutes pour en discuter ?\n\n";
+			$body .= "Bien confraternellement,\nFabrizio - Alliance Groupe - 07 44 82 95 16 - advise.alliance.group@gmail.com";
+			$full   = 'Objet : ' . $subject . "\n\n" . $body;
+			$mailto = 'mailto:' . rawurlencode( $cont ) . '?subject=' . rawurlencode( $subject ) . '&body=' . rawurlencode( $body );
+			$rid    = 'agjm' . $i;
+
 			echo '<tr>';
 			echo '<td><input type="text" readonly onclick="this.select()" value="' . esc_attr( $code ) . '" style="width:130px;font-family:monospace;font-weight:700;"></td>';
-			echo '<td>' . esc_html( $label ) . '</td><td>' . esc_html( $type ) . '</td><td>' . esc_html( $cont ) . '</td>';
+			echo '<td>' . esc_html( $label ) . ( $cont ? '<br><span style="color:#888;font-size:.85em;">' . esc_html( $cont ) . '</span>' : '' ) . '</td><td>' . esc_html( $type ) . '</td>';
 			echo '<td><strong>' . $cnt . '</strong></td>';
-			echo '<td><input type="text" readonly onclick="this.select()" value="' . esc_attr( $share ) . '" class="code" style="width:100%;min-width:240px;"></td>';
+			echo '<td><input type="text" readonly onclick="this.select()" value="' . esc_attr( $share ) . '" class="code" style="width:100%;min-width:220px;"></td>';
+			echo '<td><button type="button" class="button" onclick="agJaMail(\'' . esc_js( $rid ) . '\')">✉️ Email</button></td>';
 			echo '<td><a href="' . esc_url( $del ) . '" onclick="return confirm(\'Supprimer ce partenaire ?\');" style="color:#b32d2e;">Suppr.</a></td>';
 			echo '</tr>';
+			echo '<tr id="' . esc_attr( $rid ) . '" style="display:none;background:#f6f7f7;"><td colspan="7" style="padding:14px 18px;">';
+			echo '<textarea readonly class="large-text code" rows="12" onclick="this.select()" style="font-family:inherit;">' . esc_textarea( $full ) . '</textarea>';
+			echo '<p style="margin:8px 0 0;"><button type="button" class="button button-primary" onclick="agJaCopy(\'' . esc_js( $rid ) . '\')">Copier l\'email</button> ';
+			if ( $cont ) {
+				echo '<a class="button" href="' . esc_url( $mailto ) . '">Ouvrir dans ma messagerie</a> ';
+			}
+			echo '<span class="description">Personnalisé pour « ' . esc_html( $label ) .' » (nom + lien déjà insérés).</span></p>';
+			echo '</td></tr>';
+			$i++;
 		}
 		echo '</tbody></table>';
+		?>
+		<script>
+		function agJaMail(id){var r=document.getElementById(id);if(r)r.style.display=(r.style.display==='none'?'table-row':'none');}
+		function agJaCopy(id){var r=document.getElementById(id);if(!r)return;var t=r.querySelector('textarea');t.select();document.execCommand('copy');var b=event.target;var o=b.textContent;b.textContent='✓ Copié';setTimeout(function(){b.textContent=o;},1500);}
+		</script>
+		<?php
 	} else {
 		echo '<p>Aucun partenaire. Ajoute-en un ou clique « Générer tous les codes EDA + UJA ».</p>';
 	}
