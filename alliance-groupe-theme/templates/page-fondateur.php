@@ -96,6 +96,11 @@ foreach (array('jpg','jpeg','png','webp') as $ext) {
 
                 <p>Parce que chaque semaine, il voyait un visage s'illuminer. Un père de famille qui décrochait son premier contrat en freelance. Une grand-mère qui envoyait un message à son petit-fils émigré en Allemagne. <strong>Un gamin de 16 ans qui créait son premier site web et disait : "Je veux faire ça toute ma vie."</strong></p>
 
+                <figure style="max-width:520px;margin:26px auto;">
+                    <img src="<?php echo esc_url( $img_base . 'main-pere.jpg' ); ?>" alt="La transmission — d'une génération à l'autre, à Naples" loading="lazy" style="width:100%;height:auto;display:block;border-radius:14px;">
+                    <figcaption style="text-align:center;color:#888;font-size:.82rem;margin-top:8px;font-style:italic;">La transmission, de main en main.</figcaption>
+                </figure>
+
                 <h2>La naissance d'Alliance Groupe</h2>
 
                 <p>C'est de là qu'est née Alliance Groupe. Pas dans un incubateur de startups. Pas avec des millions d'euros de levée de fonds. <strong>Dans les quartiers pauvres de Naples, avec des gens qui n'avaient rien — sauf la volonté de s'en sortir.</strong></p>

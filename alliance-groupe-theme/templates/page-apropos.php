@@ -29,7 +29,7 @@ get_header();
                 <h2 class="ag-section__title">Un seul interlocuteur,<br><em>de bout en bout</em></h2>
                 <p class="ag-section__desc" style="margin:0 auto;">Né et basé à Naples, et aussi à Nantes, je conçois et sécurise des sites web pour des entreprises ambitieuses. Pas d'usine, pas de sous-traitance opaque : vous parlez directement à la personne qui fait le travail. Pour les projets plus larges, je m'appuie sur un réseau de <strong>partenaires freelances de confiance</strong>, choisis au cas par cas.</p>
                 <figure style="max-width:560px;margin:36px auto 0;">
-                    <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/team/1_bureau_naples.jpg' ); ?>" alt="Fabrizio dans son bureau à Naples" loading="lazy" style="width:100%;height:auto;display:block;border-radius:20px;border:1px solid rgba(212,180,92,.4);box-shadow:0 22px 55px rgba(0,0,0,.5);">
+                    <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/team/siege-naples.jpg' ); ?>" alt="Fabrizio dans son bureau à Naples" loading="lazy" style="width:100%;height:auto;display:block;border-radius:20px;border:1px solid rgba(212,180,92,.4);box-shadow:0 22px 55px rgba(0,0,0,.5);">
                     <figcaption style="text-align:center;color:var(--color-text-secondary);font-size:.85rem;letter-spacing:.5px;margin-top:12px;">Mon bureau, à Naples.</figcaption>
                 </figure>
             </div>
@@ -49,6 +49,19 @@ get_header();
                     <h3>Partenaires au besoin</h3>
                     <p>Pour un projet ambitieux, un réseau de freelances vérifiables (design, rédaction) — assemblé sur-mesure, jamais inventé.</p>
                 </div>
+            </div>
+
+            <!-- Bande "en situation" : vraies personnes pro (confiance, diversité) -->
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;max-width:1040px;margin:48px auto 0;">
+                <figure style="margin:0;">
+                    <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/team/reunion-naples.jpg' ); ?>" alt="Réunion de travail — Alliance Groupe, Naples" loading="lazy" style="width:100%;height:220px;object-fit:cover;border-radius:16px;border:1px solid rgba(212,180,92,.25);">
+                </figure>
+                <figure style="margin:0;">
+                    <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/team/equipe-1.jpg' ); ?>" alt="Accompagnement client — Alliance Groupe, Nantes" loading="lazy" style="width:100%;height:220px;object-fit:cover;border-radius:16px;border:1px solid rgba(212,180,92,.25);">
+                </figure>
+                <figure style="margin:0;">
+                    <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/team/fabrizio-nantes.jpg' ); ?>" alt="Fabrizio à Nantes — votre interlocuteur unique" loading="lazy" style="width:100%;height:220px;object-fit:cover;border-radius:16px;border:1px solid rgba(212,180,92,.25);">
+                </figure>
             </div>
         </div>
     </section>
