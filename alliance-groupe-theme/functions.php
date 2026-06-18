@@ -840,7 +840,7 @@ add_action( 'wp_head', function () {
 // ── 8b. Google Analytics (GA4) + Google Ads, avec Consent Mode (RGPD) ──
 add_action( 'wp_head', function () {
     $ga  = trim( (string) apply_filters( 'ag_ga4_id', get_option( 'ag_ga4_id', 'G-RSQ6Y8DHK4' ) ) );
-    $ads = trim( (string) apply_filters( 'ag_ads_id', get_option( 'ag_ads_id', '' ) ) );
+    $ads = trim( (string) apply_filters( 'ag_ads_id', get_option( 'ag_ads_id', 'AW-18188842206' ) ) );
     if ( '' === $ga && '' === $ads ) return;
     $primary = $ga ?: $ads;
     ?>
