@@ -88,7 +88,7 @@ $ag_paths = array(
 		'img'   => get_option( 'ag_tester_img_resilience', '' )
 			?: ( file_exists( get_stylesheet_directory() . '/assets/images/parcours/resilience.jpg' )
 				? $ag_img . 'resilience.jpg'
-				: get_stylesheet_directory_uri() . '/assets/images/securite/max-bender-XIVDN9cxOVc-unsplash.jpg' ),
+				: get_stylesheet_directory_uri() . '/assets/images/securite/nantes-cyber.jpg' ),
 	),
 );
 ?>

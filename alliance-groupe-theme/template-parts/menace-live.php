@@ -356,7 +356,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 <?php if ( ! get_option( 'ag_menace_pop_off', 0 ) ) : ?>
 <!-- Mur PLEIN ÉCRAN « un piratage ressemble à ça » — seule issue : AUDITER -->
 <div id="ag-menace-pop" class="ag-hack" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Un piratage ressemble à ça">
-	<?php $ag_menace_bg = get_option( 'ag_tester_img_menace', '' ) ?: get_stylesheet_directory_uri() . '/assets/images/securite/menace.jpg'; ?>
+	<?php $ag_menace_bg = get_option( 'ag_tester_img_menace', '' ) ?: get_stylesheet_directory_uri() . '/assets/images/securite/nantes-cyber.jpg'; ?>
 	<div class="ag-hack__card">
 	<div class="ag-hack__photo" aria-hidden="true" style="background-image:url('<?php echo esc_url( $ag_menace_bg ); ?>');"></div>
 	<div class="ag-hack__term" aria-hidden="true">

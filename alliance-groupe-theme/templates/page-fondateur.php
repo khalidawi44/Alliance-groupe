@@ -51,6 +51,15 @@ foreach (array('jpg','jpeg','png','webp') as $ext) {
 
                 <p>Fabrizio avait 19 ans quand il a compris quelque chose qui allait changer sa vie : <strong>le numérique pouvait sortir les gens de la pauvreté</strong>. Pas avec de grands discours. Pas avec de l'argent qu'il n'avait pas. Mais avec un vieil ordinateur, une connexion internet instable, et une patience infinie.</p>
 
+                <figure class="ag-fondateur-gallery" style="margin:28px 0;">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+                        <img src="<?php echo esc_url( $img_base . 'naples-1.jpg' ); ?>" alt="Fabrizio à Naples, dans les Quartieri Spagnoli" loading="lazy" style="width:100%;height:200px;object-fit:cover;border-radius:12px;">
+                        <img src="<?php echo esc_url( $img_base . 'naples-2.jpg' ); ?>" alt="Fabrizio enseignant le numérique à Naples" loading="lazy" style="width:100%;height:200px;object-fit:cover;border-radius:12px;">
+                        <img src="<?php echo esc_url( $img_base . 'naples-3.jpg' ); ?>" alt="Naples, ville natale de Fabrizio — Alliance Groupe" loading="lazy" style="width:100%;height:200px;object-fit:cover;border-radius:12px;">
+                    </div>
+                    <figcaption style="text-align:center;color:#888;font-size:.82rem;margin-top:8px;font-style:italic;">Naples, les Quartieri Spagnoli — là où tout a commencé.</figcaption>
+                </figure>
+
                 <h2>Un ordinateur pour dix familles</h2>
 
                 <p>Tout a commencé dans l'arrière-salle d'une église de quartier. Un curé qui voulait bien prêter l'espace. Un ordinateur récupéré. Et Fabrizio, qui passait ses soirées à apprendre aux gens ce que personne ne leur avait jamais appris.</p>
