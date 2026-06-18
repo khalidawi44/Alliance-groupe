@@ -13,7 +13,7 @@ get_header();
     //  - DROITE = CRÉATION  : option img_creation -> photo bureau Naples (compressée).
     $ag_secu_bg = function_exists( 'ag_tester_opt' ) ? ( ag_tester_opt( 'img_secu' ) ?: ag_tester_opt( 'img_menace' ) ) : '';
     if ( ! $ag_secu_bg ) {
-        foreach ( array( 'secu.jpg', 'hero-secu.jpg' ) as $f ) {
+        foreach ( array( 'nantes-cyber.jpg', 'secu.jpg', 'hero-secu.jpg' ) as $f ) {
             if ( file_exists( get_stylesheet_directory() . '/assets/images/securite/' . $f ) ) {
                 $ag_secu_bg = get_stylesheet_directory_uri() . '/assets/images/securite/' . $f; break;
             }
@@ -48,20 +48,20 @@ get_header();
     </div>
     <div class="ag-hero__video-veil" aria-hidden="true"></div>
     <style>
-    body.home .ag-hero{min-height:auto;padding-top:96px;padding-bottom:36px}
-    @media(max-width:900px){body.home .ag-hero{padding-top:88px}}
+    body.home .ag-hero{min-height:auto;padding-top:120px;padding-bottom:88px}
+    @media(max-width:900px){body.home .ag-hero{padding-top:96px;padding-bottom:64px}}
     .ag-hero__naples,.ag-hero__boats,.ag-hero__particles,.ag-hero__vesuvius,.ag-hero__sunglow{display:none!important}
     /* SPLIT DIAGONAL LÉGER : clip-path (pas cher) + ligne SVG, 0 filtre, 0 animation */
     .ag-hero__split{position:absolute;inset:0;z-index:0;overflow:hidden;background:#05060c}
     .ag-hero__half{position:absolute;inset:0;background-size:cover;background-position:center}
-    .ag-hero__half--secu{clip-path:polygon(0 0, 58% 0, 42% 100%, 0 100%)}
-    .ag-hero__half--crea{clip-path:polygon(58% 0, 100% 0, 100% 100%, 42% 100%)}
+    .ag-hero__half--secu{clip-path:polygon(0 0, 58% 0, 42% 100%, 0 100%);background-position:center}
+    .ag-hero__half--crea{clip-path:polygon(58% 0, 100% 0, 100% 100%, 42% 100%);background-position:60% center}
     .ag-hero__line{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
     .ag-hero__half-tag{position:absolute;top:20px;left:22px;font-size:.72rem;font-weight:800;letter-spacing:2px;
         text-transform:uppercase;color:#fff;background:rgba(0,0,0,.5);
         border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:6px 13px}
     .ag-hero__half-tag--r{left:auto;right:22px;color:#F3D27A;border-color:rgba(243,210,122,.4)}
-    .ag-hero__video-veil{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(5,6,12,.12) 0%,rgba(5,6,12,.24) 45%,rgba(5,6,12,.80) 100%)}
+    .ag-hero__video-veil{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 78% 62% at 50% 44%,rgba(5,6,12,.62) 0%,rgba(5,6,12,.34) 58%,rgba(5,6,12,.06) 100%),linear-gradient(180deg,rgba(5,6,12,.30) 0%,rgba(5,6,12,.42) 45%,rgba(5,6,12,.86) 100%)}
     @media(max-width:600px){.ag-hero__half-tag{top:12px;font-size:.6rem;padding:4px 9px}}
     </style>
     <div class="ag-hero__bg">
@@ -117,7 +117,9 @@ get_header();
         .ag-duo{display:flex;align-items:stretch;justify-content:center;gap:clamp(20px,4vw,52px);flex-wrap:wrap}
         .ag-duo__col{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1 1 0;min-width:230px;max-width:430px;text-align:center}
         .ag-duo__col .ag-uni{white-space:normal;font-size:clamp(1.5rem,3vw,2.5rem);line-height:1.08;display:block}
-        .ag-duo__txt{font-weight:600;font-size:clamp(.92rem,1.4vw,1.08rem);line-height:1.45;color:rgba(255,255,255,.82)}
+        .ag-duo__txt{font-weight:600;font-size:clamp(.92rem,1.4vw,1.08rem);line-height:1.5;color:rgba(255,255,255,.95);text-shadow:0 2px 14px rgba(0,0,0,.75)}
+        .ag-hero__title--uni{margin-bottom:22px}
+        .ag-duo{margin-bottom:6px}
         .ag-duo__sep{flex:0 0 1px;align-self:stretch;background:linear-gradient(180deg,transparent,rgba(255,255,255,.28),transparent)}
         /* Tablette portrait : si ça passe à la ligne, le séparateur devient horizontal. */
         @media(max-width:780px) and (min-width:601px){
