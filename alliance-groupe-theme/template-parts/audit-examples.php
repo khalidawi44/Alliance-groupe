@@ -65,11 +65,11 @@ $ag_crea_ex = array(
 );
 $ag_col = function ( $s ) { return $s >= 75 ? '#28a745' : ( $s >= 50 ? '#F37A1F' : '#E10F1A' ); };
 ?>
-<section class="ag-ex" aria-label="Exemples récents (noms masqués)">
+<section class="ag-ex" aria-label="Exemples récents">
 	<div class="ag-ex__head">
 		<span class="ag-ex__tag">⟶ Exemples récents</span>
-		<h2 class="ag-ex__title">Nos <em>résultats</em>, noms masqués</h2>
-		<p class="ag-ex__lead">Des cas réels — <strong>noms d'entreprise cachés</strong> — côté <strong>sécurité</strong> (ce qu'on trouve) et <strong>création</strong> (ce qu'on livre).</p>
+		<h2 class="ag-ex__title">Nos <em>résultats</em> récents</h2>
+		<p class="ag-ex__lead">Des cas réels, présentés de façon <strong>anonyme</strong> par respect de la confidentialité de nos clients — côté <strong>sécurité</strong> (ce qu'on trouve) et <strong>création</strong> (ce qu'on livre).</p>
 	</div>
 
 	<!-- ───────── SÉCURITÉ ───────── -->
