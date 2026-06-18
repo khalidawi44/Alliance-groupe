@@ -235,17 +235,47 @@ add_action( 'admin_menu', function () {
 	add_submenu_page( 'options-general.php', 'Jeunes avocats', '🎓 Jeunes avocats', 'manage_options', 'ag-jeune-avocat', 'ag_ja_settings_page' );
 } );
 
-/** Construit l'email personnalisé d'un partenaire : array(subject, body, share). */
+/** Objet + version TEXTE (pour copier/coller manuel) : array(subject, body, share). */
 function ag_ja_build_email( $label, $code ) {
-	$share = add_query_arg( 'code', $code, ag_ja_url() );
-	$subject = 'Un site professionnel offert 3 mois a vos jeunes avocats — ' . $label;
+	$share   = add_query_arg( 'code', $code, ag_ja_url() );
+	$subject = 'Un site professionnel offert 3 mois à vos jeunes avocats — ' . $label;
 	$body  = "Madame, Monsieur,\n\n";
-	$body .= "Je dirige Alliance Groupe, studio web independant specialise dans les sites de professions juridiques (conformes RGPD et deontologie).\n\n";
-	$body .= "Nous souhaitons offrir aux jeunes avocats de " . $label . " 3 mois de site professionnel gratuits pour les aider a lancer leur cabinet : site pret a l'emploi, recherche Judilibre integree, espace client securise. Sans aucun cout ni engagement pour votre etablissement.\n\n";
-	$body .= "Le principe est simple : un code dedie a " . $label . " que vous transmettez a vos diplomes. Ils l'activent ici :\n" . $share . "\n\n";
-	$body .= "Je peux vous adresser une presentation d'une page. Seriez-vous disponible 15 minutes pour en discuter ?\n\n";
-	$body .= "Bien confraternellement,\nFabrizio - Alliance Groupe - 07 44 82 95 16 - advise.alliance.group@gmail.com";
+	$body .= "Je dirige Alliance Groupe, studio web indépendant spécialisé dans les sites des professions juridiques (conformes RGPD et déontologie RIN/CNB).\n\n";
+	$body .= "Nous souhaitons offrir aux jeunes avocats de " . $label . " 3 mois de site professionnel gratuits pour les aider à lancer leur cabinet : site prêt à l'emploi, recherche Judilibre intégrée, espace client sécurisé. Sans aucun coût ni engagement pour votre établissement.\n\n";
+	$body .= "Le principe est simple : un code dédié à " . $label . " que vous transmettez à vos diplômés. Ils l'activent ici :\n" . $share . "\n\n";
+	$body .= "Je peux vous adresser une présentation d'une page. Seriez-vous disponible 15 minutes pour en échanger ?\n\n";
+	$body .= "Bien confraternellement,\nFabrizio — Alliance Groupe — 07 44 82 95 16 — advise.alliance.group@gmail.com";
 	return array( $subject, $body, $share );
+}
+
+/** Version HTML brandée (logo + bouton + signature) pour l'envoi automatique. */
+function ag_ja_build_email_html( $label, $code ) {
+	$share = add_query_arg( 'code', $code, ag_ja_url() );
+	$logo  = get_stylesheet_directory_uri() . '/assets/images/ag-logo.png';
+	$L     = esc_html( $label );
+
+	$inner  = '<p>Madame, Monsieur,</p>';
+	$inner .= '<p>Je dirige <strong style="color:#D4B45C;">Alliance Groupe</strong>, studio web indépendant spécialisé dans les sites des professions juridiques — conformes RGPD et déontologie (RIN / vade-mecum CNB).</p>';
+	$inner .= '<p>Nous souhaitons offrir aux jeunes avocats de <strong>' . $L . '</strong> <strong style="color:#fff;">3 mois de site professionnel gratuits</strong> pour les aider à lancer leur cabinet :</p>';
+	$inner .= '<ul style="padding-left:18px;margin:14px 0;color:#cfcfd6;">'
+		. '<li>Site prêt à l\'emploi, 100&nbsp;% français</li>'
+		. '<li>Recherche de jurisprudence <strong>Judilibre</strong> intégrée au back-office</li>'
+		. '<li><strong>Espace client sécurisé</strong> (dépôt de pièces confidentiel)</li>'
+		. '<li>Conforme <strong>RGPD &amp; secret professionnel</strong></li>'
+		. '</ul>';
+	$inner .= '<p><strong style="color:#fff;">Sans aucun coût ni engagement</strong> pour votre établissement : un simple code dédié à ' . $L . ', que vous transmettez à vos diplômés.</p>';
+	$inner .= ag_email_button( 'Voir l\'offre pour vos diplômés', $share );
+	$inner .= '<p style="color:#9a9aa5;font-size:13px;">Je peux vous adresser une présentation d\'une page. Seriez-vous disponible 15 minutes pour en échanger&nbsp;?</p>';
+	$inner .= '<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:24px;border-top:1px solid rgba(255,255,255,.12);padding-top:18px;"><tr>'
+		. '<td style="padding-right:14px;vertical-align:top;"><img src="' . esc_url( $logo ) . '" alt="Alliance Groupe" width="52" height="52" style="display:block;border-radius:10px;border:1px solid rgba(212,180,92,.4);"></td>'
+		. '<td style="vertical-align:middle;font-family:Arial,sans-serif;color:#e8e8ee;font-size:13px;line-height:1.55;">'
+		. '<strong style="color:#fff;font-size:15px;">Fabrizio</strong><br>'
+		. '<span style="color:#D4B45C;">Fondateur — Alliance Groupe</span><br>'
+		. '07 44 82 95 16 &nbsp;·&nbsp; advise.alliance.group@gmail.com<br>'
+		. '<a href="https://alliancegroupe-inc.com" style="color:#D4B45C;text-decoration:none;">alliancegroupe-inc.com</a> &nbsp;·&nbsp; Nantes &amp; Naples'
+		. '</td></tr></table>';
+
+	return ag_email_wrap( 'Un site offert 3 mois à vos jeunes avocats', $inner );
 }
 
 /** Envoi GROUPÉ à tous les partenaires ayant un email de contact. */
@@ -254,8 +284,7 @@ add_action( 'admin_post_ag_ja_sendall', function () {
 		wp_die( 'Accès refusé.' );
 	}
 	$partners = ag_ja_partners();
-	$from     = get_option( 'admin_email' );
-	$headers  = array( 'Content-Type: text/plain; charset=UTF-8', 'Reply-To: advise.alliance.group@gmail.com' );
+	$headers  = array( 'Content-Type: text/html; charset=UTF-8', 'Reply-To: Fabrizio <advise.alliance.group@gmail.com>' );
 	$sent = 0;
 	$skip = 0;
 	foreach ( $partners as $code => $info ) {
@@ -265,14 +294,27 @@ add_action( 'admin_post_ag_ja_sendall', function () {
 			continue;
 		}
 		$label = is_array( $info ) ? ( $info['label'] ?? $code ) : (string) $info;
-		list( $subject, $body ) = ag_ja_build_email( $label, $code );
-		if ( wp_mail( $email, $subject, $body, $headers ) ) {
+		list( $subject ) = ag_ja_build_email( $label, $code );
+		$html = ag_ja_build_email_html( $label, $code );
+		if ( wp_mail( $email, $subject, $html, $headers ) ) {
 			$partners[ $code ]['sent'] = time();
 			$sent++;
 		}
 	}
 	update_option( 'ag_ja_partners', $partners );
 	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-jeune-avocat', 'sent' => $sent, 'skip' => $skip ), admin_url( 'options-general.php' ) ) );
+	exit;
+} );
+
+/** Aperçu (navigateur) de l'email HTML stylé d'un partenaire. */
+add_action( 'admin_post_ag_ja_preview', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! check_admin_referer( 'ag_ja_preview' ) ) {
+		wp_die( 'Accès refusé.' );
+	}
+	$code     = strtoupper( sanitize_text_field( wp_unslash( $_GET['code'] ?? '' ) ) );
+	$partners = ag_ja_partners();
+	$label    = ( isset( $partners[ $code ] ) && is_array( $partners[ $code ] ) ) ? ( $partners[ $code ]['label'] ?? $code ) : $code;
+	echo ag_ja_build_email_html( $label, $code ); // phpcs:ignore WordPress.Security.EscapeOutput
 	exit;
 } );
 
@@ -457,11 +499,13 @@ function ag_ja_settings_page() {
 			echo '</tr>';
 			echo '<tr id="' . esc_attr( $rid ) . '" style="display:none;background:#f6f7f7;"><td colspan="7" style="padding:14px 18px;">';
 			echo '<textarea readonly class="large-text code" rows="12" onclick="this.select()" style="font-family:inherit;">' . esc_textarea( $full ) . '</textarea>';
-			echo '<p style="margin:8px 0 0;"><button type="button" class="button button-primary" onclick="agJaCopy(\'' . esc_js( $rid ) . '\')">Copier l\'email</button> ';
+			$preview = wp_nonce_url( admin_url( 'admin-post.php?action=ag_ja_preview&code=' . rawurlencode( $code ) ), 'ag_ja_preview' );
+			echo '<p style="margin:8px 0 0;"><a class="button button-primary" href="' . esc_url( $preview ) . '" target="_blank">👁 Aperçu de l\'email stylé</a> ';
+			echo '<button type="button" class="button" onclick="agJaCopy(\'' . esc_js( $rid ) . '\')">Copier (version texte)</button> ';
 			if ( $cont ) {
 				echo '<a class="button" href="' . esc_url( $mailto ) . '">Ouvrir dans ma messagerie</a> ';
 			}
-			echo '<span class="description">Personnalisé pour « ' . esc_html( $label ) .' » (nom + lien déjà insérés).</span></p>';
+			echo '<br><span class="description">L\'envoi automatique « Envoyer à tous » utilise la version <strong>HTML stylée</strong> (logo + signature). La version texte ci-dessus sert au copier/coller manuel.</span></p>';
 			echo '</td></tr>';
 			$i++;
 		}
