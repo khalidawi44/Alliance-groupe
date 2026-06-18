@@ -293,6 +293,12 @@ if ( file_exists( $ag_google_lead_file ) ) {
     require_once $ag_google_lead_file;
 }
 
+// ── Réglage des images « sécurité » (pop-up piratage + hero) sans code
+$ag_images_secu_file = get_stylesheet_directory() . '/inc/ag-images-secu.php';
+if ( is_admin() && file_exists( $ag_images_secu_file ) ) {
+    require_once $ag_images_secu_file;
+}
+
 // ── 1c9. Centre de contrôle admin (un seul écran pour tout piloter)
 $ag_admin_hub_file = get_stylesheet_directory() . '/inc/ag-admin-hub.php';
 if ( is_admin() && file_exists( $ag_admin_hub_file ) ) {

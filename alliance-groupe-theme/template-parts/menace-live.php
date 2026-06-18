@@ -353,6 +353,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 })();
 </script>
 
+<?php if ( ! get_option( 'ag_menace_pop_off', 0 ) ) : ?>
 <!-- Mur PLEIN ÉCRAN « un piratage ressemble à ça » — seule issue : AUDITER -->
 <div id="ag-menace-pop" class="ag-hack" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Un piratage ressemble à ça">
 	<?php $ag_menace_bg = get_option( 'ag_tester_img_menace', '' ) ?: get_stylesheet_directory_uri() . '/assets/images/securite/menace.jpg'; ?>
@@ -403,6 +404,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 	</div>
 	</div><!-- /.ag-hack__card -->
 </div>
+<?php endif; ?>
 <style>
 /* Petit pop-up centré (ne prend PAS tout l'écran) : voile sombre + carte compacte */
 .ag-hack{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(3,4,10,.72);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
