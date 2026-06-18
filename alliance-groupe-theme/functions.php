@@ -314,6 +314,12 @@ if ( is_admin() && file_exists( $ag_images_secu_file ) ) {
     require_once $ag_images_secu_file;
 }
 
+// ── Offre « Jeune avocat » : 3 mois de Premium offerts (codes école)
+$ag_jeune_avocat_file = get_stylesheet_directory() . '/inc/ag-jeune-avocat.php';
+if ( file_exists( $ag_jeune_avocat_file ) ) {
+    require_once $ag_jeune_avocat_file;
+}
+
 // ── 1c9. Centre de contrôle admin (un seul écran pour tout piloter)
 $ag_admin_hub_file = get_stylesheet_directory() . '/inc/ag-admin-hub.php';
 if ( is_admin() && file_exists( $ag_admin_hub_file ) ) {
