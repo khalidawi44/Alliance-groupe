@@ -287,6 +287,12 @@ if ( file_exists( $ag_lead_avocat_file ) ) {
     require_once $ag_lead_avocat_file;
 }
 
+// ── Réception des leads Google Ads (Lead Form webhook) → CRM
+$ag_google_lead_file = get_stylesheet_directory() . '/inc/ag-google-lead.php';
+if ( file_exists( $ag_google_lead_file ) ) {
+    require_once $ag_google_lead_file;
+}
+
 // ── 1c9. Centre de contrôle admin (un seul écran pour tout piloter)
 $ag_admin_hub_file = get_stylesheet_directory() . '/inc/ag-admin-hub.php';
 if ( is_admin() && file_exists( $ag_admin_hub_file ) ) {
