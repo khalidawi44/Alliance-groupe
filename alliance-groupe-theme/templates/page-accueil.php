@@ -21,7 +21,7 @@ get_header();
     }
     $ag_crea_bg = function_exists( 'ag_tester_opt' ) ? ag_tester_opt( 'img_creation' ) : '';
     if ( ! $ag_crea_bg ) {
-        foreach ( array( 'fabrizio-nantes.jpg', 'naples-1.jpg', '1_bureau_naples.jpg' ) as $f ) {
+        foreach ( array( 'naples-1.jpg', 'fabrizio-nantes.jpg', '1_bureau_naples.jpg' ) as $f ) {
             $p = get_stylesheet_directory() . '/assets/images/team/' . $f;
             if ( file_exists( $p ) ) { $ag_crea_bg = get_stylesheet_directory_uri() . '/assets/images/team/' . $f; break; }
         }
@@ -55,7 +55,8 @@ get_header();
     .ag-hero__split{position:absolute;inset:0;z-index:0;overflow:hidden;background:#05060c}
     .ag-hero__half{position:absolute;inset:0;background-size:cover;background-position:center}
     .ag-hero__half--secu{clip-path:polygon(0 0, 58% 0, 42% 100%, 0 100%);background-position:center}
-    .ag-hero__half--crea{clip-path:polygon(58% 0, 100% 0, 100% 100%, 42% 100%);background-position:60% center}
+    .ag-hero__half--crea{clip-path:polygon(58% 0, 100% 0, 100% 100%, 42% 100%);background-size:contain;background-repeat:no-repeat;background-position:center right}
+    @media(max-width:760px){.ag-hero__half--crea{background-size:cover}}
     .ag-hero__line{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
     .ag-hero__half-tag{position:absolute;top:20px;left:22px;font-size:.72rem;font-weight:800;letter-spacing:2px;
         text-transform:uppercase;color:#fff;background:rgba(0,0,0,.5);
