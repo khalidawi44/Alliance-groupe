@@ -71,25 +71,25 @@ function ag_ja_codes_map() {
 	return $map;
 }
 
-/** Liste par défaut des écoles d'avocats (EDA) + grandes UJA, pour pré-remplir. */
+/** Liste par défaut EDA + UJA, avec emails de contact officiels (vérifiés). */
 function ag_ja_default_partners() {
 	return array(
-		array( 'EFB Paris', 'EDA' ),
-		array( 'HEDAC Versailles', 'EDA' ),
-		array( 'IXAD Lille', 'EDA' ),
-		array( 'ERAGE Grand Est', 'EDA' ),
-		array( 'EDARA Lyon', 'EDA' ),
-		array( 'EDASE Sud-Est', 'EDA' ),
-		array( 'EDAGO Grand Ouest', 'EDA' ),
-		array( 'EDA Centre-Sud', 'EDA' ),
-		array( 'EDA Aliénor Bordeaux', 'EDA' ),
-		array( 'EDA Sud-Ouest Pyrénées', 'EDA' ),
-		array( 'CRFPA Montpellier', 'EDA' ),
-		array( 'UJA Nantes', 'UJA' ),
-		array( 'UJA Paris', 'UJA' ),
-		array( 'UJA Lyon', 'UJA' ),
-		array( 'UJA Marseille', 'UJA' ),
-		array( 'FNUJA (national)', 'UJA' ),
+		array( 'EFB Paris', 'EDA', 'direction@efb.fr' ),
+		array( 'HEDAC Versailles', 'EDA', 'contact@hedac.fr' ),
+		array( 'IXAD Lille', 'EDA', 'ixadecole@ixad.fr' ),
+		array( 'ERAGE Grand Est', 'EDA', 'contact@erage.eu' ),
+		array( 'EDARA Lyon', 'EDA', '' ), // non publié → formulaire edara.fr/contact
+		array( 'EDASE Sud-Est', 'EDA', 'communication@edase.fr' ),
+		array( 'EDAGO Grand Ouest', 'EDA', 'contact@edago.fr' ),
+		array( 'EDA Centre-Sud Clermont', 'EDA', 'clermontferrand@edacentresud.com' ),
+		array( 'EDA Aliénor Bordeaux', 'EDA', 'info@crfpa-alienor.com' ),
+		array( 'EFA Toulouse', 'EDA', 'contact@efa-toulouse.fr' ),
+		array( 'EDA Montpellier', 'EDA', 'montpellier@avocats-efacs.com' ),
+		array( 'UJA Nantes', 'UJA', 'ujadenantes@gmail.com' ),
+		array( 'UJA Paris', 'UJA', 'info@uja.fr' ),
+		array( 'UJA Lyon', 'UJA', 'uja@ujalyon.fr' ),
+		array( 'UJA Marseille', 'UJA', 'contact@ujamarseille.org' ),
+		array( 'FNUJA (national)', 'UJA', 'president@fnuja.com' ),
 	);
 }
 
@@ -318,17 +318,30 @@ function ag_ja_settings_page() {
 	if ( isset( $_POST['ag_ja_seed'] ) && check_admin_referer( 'ag_ja_admin' ) ) {
 		$partners = ag_ja_partners();
 		$added    = 0;
-		$existing_labels = array_map( function ( $p ) { return is_array( $p ) ? ( $p['label'] ?? '' ) : ''; }, $partners );
+		$filled   = 0;
+		$by_label = array();
+		foreach ( $partners as $c => $p ) {
+			if ( is_array( $p ) ) {
+				$by_label[ $p['label'] ?? '' ] = $c;
+			}
+		}
 		foreach ( ag_ja_default_partners() as $d ) {
-			if ( in_array( $d[0], $existing_labels, true ) ) {
+			$label = $d[0];
+			$email = isset( $d[2] ) ? $d[2] : '';
+			if ( isset( $by_label[ $label ] ) ) {
+				$c = $by_label[ $label ];
+				if ( '' === (string) ( $partners[ $c ]['contact'] ?? '' ) && $email ) {
+					$partners[ $c ]['contact'] = $email;
+					$filled++;
+				}
 				continue;
 			}
-			$code = ag_ja_make_code( $d[0] );
-			$partners[ $code ] = array( 'label' => $d[0], 'type' => $d[1], 'contact' => '', 'created' => time() );
+			$code = ag_ja_make_code( $label );
+			$partners[ $code ] = array( 'label' => $label, 'type' => $d[1], 'contact' => $email, 'created' => time() );
 			$added++;
 		}
 		update_option( 'ag_ja_partners', $partners );
-		echo '<div class="notice notice-success is-dismissible"><p>' . (int) $added . ' partenaires pré-remplis (EDA + UJA) avec un code généré chacun.</p></div>';
+		echo '<div class="notice notice-success is-dismissible"><p>' . (int) $added . ' partenaire(s) créé(s) · ' . (int) $filled . ' email(s) complété(s) — codes + emails EDA &amp; UJA prêts.</p></div>';
 	}
 	if ( isset( $_POST['ag_ja_contacts'] ) && check_admin_referer( 'ag_ja_admin' ) ) {
 		$partners = ag_ja_partners();
