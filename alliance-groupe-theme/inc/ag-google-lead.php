@@ -140,18 +140,32 @@ function ag_glead_settings_page() {
 		update_option( 'ag_google_lead_key', wp_generate_password( 24, false, false ) );
 		echo '<div class="notice notice-success"><p>Nouvelle clé générée. Mets-la à jour dans Google Ads.</p></div>';
 	}
+	if ( isset( $_POST['ag_glead_save'] ) && check_admin_referer( 'ag_glead' ) ) {
+		$new = preg_replace( '/[^A-Za-z0-9_\-]/', '', (string) wp_unslash( $_POST['ag_glead_key'] ?? '' ) );
+		if ( strlen( $new ) >= 8 ) {
+			update_option( 'ag_google_lead_key', $new );
+			echo '<div class="notice notice-success"><p>Clé enregistrée. Elle doit être identique à celle saisie dans Google Ads.</p></div>';
+		} else {
+			echo '<div class="notice notice-error"><p>Clé trop courte (8 caractères minimum, lettres/chiffres/-/_).</p></div>';
+		}
+	}
 	$key = ag_glead_key();
 	$url = ag_glead_webhook_url();
 	echo '<div class="wrap"><h1>Leads Google Ads → CRM</h1>';
-	echo '<p>Dans Google Ads, sur ton <strong>formulaire de lead</strong> → option <strong>« Webhook »</strong>, colle ces 2 valeurs. Chaque lead arrivera automatiquement dans <strong>Prospection</strong> (+ notification).</p>';
+	echo '<p>Dans Google Ads, sur ton <strong>formulaire de lead</strong> → <strong>« Intégration du webhook »</strong>, colle ces 2 valeurs. Chaque lead arrivera automatiquement dans <strong>Prospection</strong> (+ notification).</p>';
 	echo '<table class="form-table"><tbody>';
 	echo '<tr><th>URL du webhook</th><td><input type="text" class="large-text code" readonly onclick="this.select()" value="' . esc_attr( $url ) . '"></td></tr>';
-	echo '<tr><th>Clé (Key)</th><td><input type="text" class="regular-text code" readonly onclick="this.select()" value="' . esc_attr( $key ) . '"></td></tr>';
 	echo '</tbody></table>';
 	echo '<form method="post">';
 	wp_nonce_field( 'ag_glead' );
-	echo '<p><button class="button" name="ag_glead_regen" value="1" onclick="return confirm(\'Régénérer la clé ? Il faudra la recoller dans Google Ads.\');">Régénérer la clé</button></p>';
+	echo '<table class="form-table"><tbody>';
+	echo '<tr><th><label for="ag-glead-key">Clé (Key)</label></th><td><input type="text" id="ag-glead-key" name="ag_glead_key" class="regular-text code" value="' . esc_attr( $key ) . '"> <button class="button button-primary" name="ag_glead_save" value="1">Enregistrer la clé</button><p class="description">Doit être <strong>identique</strong> à la clé saisie dans Google Ads (lettres, chiffres, - et _ ; 8 car. min).</p></td></tr>';
+	echo '</tbody></table>';
 	echo '</form>';
-	echo '<p class="description">Astuce : utilise le bouton « Envoyer les données de test » de Google Ads pour vérifier que le webhook répond (il renverra un statut OK sans créer de prospect).</p>';
+	echo '<form method="post">';
+	wp_nonce_field( 'ag_glead' );
+	echo '<p><button class="button" name="ag_glead_regen" value="1" onclick="return confirm(\'Régénérer une clé aléatoire ? Il faudra la recoller dans Google Ads.\');">Générer une clé aléatoire</button></p>';
+	echo '</form>';
+	echo '<p class="description">Astuce : utilise le bouton « Envoyer les données de test » de Google Ads pour vérifier que le webhook répond (statut OK, sans créer de prospect). Pense à enregistrer les permaliens après la SYNC.</p>';
 	echo '</div>';
 }
