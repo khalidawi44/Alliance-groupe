@@ -281,6 +281,12 @@ if ( file_exists( $ag_prospection_file ) ) {
     require_once $ag_prospection_file;
 }
 
+// ── Capture lead « Guide gratuit avocat » (entonnoir freemium .org → site mère)
+$ag_lead_avocat_file = get_stylesheet_directory() . '/inc/ag-lead-avocat.php';
+if ( file_exists( $ag_lead_avocat_file ) ) {
+    require_once $ag_lead_avocat_file;
+}
+
 // ── 1c9. Centre de contrôle admin (un seul écran pour tout piloter)
 $ag_admin_hub_file = get_stylesheet_directory() . '/inc/ag-admin-hub.php';
 if ( is_admin() && file_exists( $ag_admin_hub_file ) ) {

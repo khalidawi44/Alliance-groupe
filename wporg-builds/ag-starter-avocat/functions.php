@@ -376,6 +376,7 @@ function ag_starter_avocat_companion_notice() {
 		<div style="text-align:center;">
 			<a href="<?php echo esc_url( $search_url ); ?>" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-size:1.05rem;font-weight:700;padding:16px 32px;border-radius:8px;text-decoration:none;box-shadow:0 4px 16px rgba(212,180,92,.3);"><?php esc_html_e( 'Télécharger AG Starter Companion', 'ag-starter-avocat' ); ?></a>
 			<p style="color:rgba(255,255,255,.4);font-size:.8rem;margin-top:10px;"><?php esc_html_e( 'Téléchargez le ZIP, puis Extensions → Ajouter → Téléverser', 'ag-starter-avocat' ); ?></p>
+			<p style="margin-top:14px;"><a href="https://alliancegroupe-inc.com/guide-avocat?utm_source=wp-admin&amp;utm_medium=ag-starter-avocat&amp;utm_campaign=guide" target="_blank" rel="nofollow noopener" style="color:#D4B45C;font-size:.92rem;text-decoration:underline;">🎁 <?php esc_html_e( 'Recevoir le guide gratuit : 7 pages qui attirent des clients', 'ag-starter-avocat' ); ?></a></p>
 		</div>
 	</div>
 	<?php
@@ -398,6 +399,7 @@ function ag_starter_avocat_dashboard_widget_render() {
 		<p style="color:#666;margin:0 0 20px;"><?php esc_html_e( 'Installez le plugin gratuit AG Starter Companion pour creer automatiquement vos pages, votre menu et configurer votre site en 1 clic.', 'ag-starter-avocat' ); ?></p>
 		<a href="<?php echo esc_url( $search_url ); ?>" class="button button-primary button-hero"><?php esc_html_e( 'Télécharger AG Starter Companion', 'ag-starter-avocat' ); ?></a>
 		<p style="color:#999;font-size:.85rem;margin-top:12px;"><?php esc_html_e( 'Gratuit — 10 secondes — aucune inscription', 'ag-starter-avocat' ); ?></p>
+		<p style="margin-top:14px;"><a href="https://alliancegroupe-inc.com/guide-avocat?utm_source=wp-admin&amp;utm_medium=ag-starter-avocat&amp;utm_campaign=guide" target="_blank" rel="nofollow noopener"><?php esc_html_e( '🎁 Recevoir le guide gratuit : 7 pages qui attirent des clients', 'ag-starter-avocat' ); ?></a></p>
 	</div>
 	<?php
 }
