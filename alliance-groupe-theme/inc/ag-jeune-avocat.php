@@ -90,6 +90,25 @@ function ag_ja_default_partners() {
 		array( 'UJA Lyon', 'UJA', 'uja@ujalyon.fr' ),
 		array( 'UJA Marseille', 'UJA', 'contact@ujamarseille.org' ),
 		array( 'FNUJA (national)', 'UJA', 'president@fnuja.com' ),
+		// ── Ajouts (recherche web, à reconfirmer avant envoi de masse) ──
+		array( 'UJA Bordeaux', 'UJA', 'contact@uja-bordeaux.fr' ),
+		array( 'UJA Rennes', 'UJA', 'contact@uja-rennes.fr' ),
+		array( 'UJA Nice', 'UJA', 'contact@ujadenice.fr' ),
+		array( 'UJA Montpellier', 'UJA', 'ujamtp@gmail.com' ),
+		array( 'CNA (national)', 'CNA', 'cna@cna-avocats.fr' ),
+		array( 'Incubateur Barreau de Paris', 'Incubateur', 'incubateur@avocatparis.org' ),
+		array( 'Incubateur Barreau de Lyon', 'Incubateur', 'incubateur@barreaulyon.com' ),
+		array( 'AEA Élèves-Avocats (EFB)', 'Asso', 'aea@efb.fr' ),
+		array( 'École de Droit Sorbonne (Paris 1)', 'Université', 'info.eds@univ-paris1.fr' ),
+		array( 'BAIP Lyon 3', 'Université', 'baip@univ-lyon3.fr' ),
+		array( 'Fac Droit Bordeaux (Master)', 'Université', 'master.droit.eco@u-bordeaux.fr' ),
+		array( 'SUIO-IP Toulouse Capitole', 'Université', 'suio-ip@ut-capitole.fr' ),
+		array( 'Relais stages-emplois Lille', 'Université', 'relais-stagesemplois@univ-lille.fr' ),
+		array( 'Fac Droit Strasbourg', 'Université', 'droit-scolarite@unistra.fr' ),
+		array( 'Barreau de Lyon', 'Barreau', 'contact@barreaulyon.com' ),
+		array( 'Barreau de Nantes', 'Barreau', 'accueil@barreaunantes.fr' ),
+		array( 'Barreau de Bordeaux', 'Barreau', 'contact@barreau-bordeaux.com' ),
+		array( 'Barreau de Toulouse', 'Barreau', 'ordre@ordre-avocats-toulouse.fr' ),
 	);
 }
 
