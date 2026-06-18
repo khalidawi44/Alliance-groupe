@@ -74,6 +74,14 @@ foreach (array('jpg','jpeg','png','webp') as $ext) {
 
                 <p>Le bouche-à-oreille a fait le reste. En un an, ce n'était plus un ordinateur dans une église — c'étaient <strong>trois salles, douze ordinateurs, et des files d'attente dans le couloir</strong>. Des mères de famille, des jeunes décrocheurs, des retraités, des immigrés qui ne parlaient pas encore italien. Tous venaient avec la même chose dans les yeux : <strong>l'espoir.</strong></p>
 
+                <figure class="ag-fondateur-gallery" style="margin:28px 0;">
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+                        <img src="<?php echo esc_url( $img_base . 'naples-4.jpg' ); ?>" alt="Les cours du soir à Naples, Quartieri Spagnoli" loading="lazy" style="width:100%;height:230px;object-fit:cover;border-radius:12px;">
+                        <img src="<?php echo esc_url( $img_base . 'naples-5.jpg' ); ?>" alt="Apprendre le numérique à Naples avec Fabrizio" loading="lazy" style="width:100%;height:230px;object-fit:cover;border-radius:12px;">
+                    </div>
+                    <figcaption style="text-align:center;color:#888;font-size:.82rem;margin-top:8px;font-style:italic;">Les cours du soir — chaque mardi et jeudi, encore aujourd'hui.</figcaption>
+                </figure>
+
                 <p>Fabrizio ne comptait pas ses heures. Il apprenait le jour pour enseigner le soir. Le design, le code, le marketing digital, le référencement — tout ce qu'il pouvait transformer en outil de survie pour ces familles.</p>
 
                 <blockquote>"Je n'ai jamais voulu faire de la charité. La charité, ça maintient les gens dans la dépendance. Moi je voulais leur donner un <strong>métier</strong>. Une compétence que personne ne pourrait jamais leur reprendre."</blockquote>
