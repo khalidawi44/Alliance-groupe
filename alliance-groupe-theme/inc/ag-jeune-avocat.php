@@ -235,6 +235,47 @@ add_action( 'admin_menu', function () {
 	add_submenu_page( 'options-general.php', 'Jeunes avocats', '🎓 Jeunes avocats', 'manage_options', 'ag-jeune-avocat', 'ag_ja_settings_page' );
 } );
 
+/** Construit l'email personnalisé d'un partenaire : array(subject, body, share). */
+function ag_ja_build_email( $label, $code ) {
+	$share = add_query_arg( 'code', $code, ag_ja_url() );
+	$subject = 'Un site professionnel offert 3 mois a vos jeunes avocats — ' . $label;
+	$body  = "Madame, Monsieur,\n\n";
+	$body .= "Je dirige Alliance Groupe, studio web independant specialise dans les sites de professions juridiques (conformes RGPD et deontologie).\n\n";
+	$body .= "Nous souhaitons offrir aux jeunes avocats de " . $label . " 3 mois de site professionnel gratuits pour les aider a lancer leur cabinet : site pret a l'emploi, recherche Judilibre integree, espace client securise. Sans aucun cout ni engagement pour votre etablissement.\n\n";
+	$body .= "Le principe est simple : un code dedie a " . $label . " que vous transmettez a vos diplomes. Ils l'activent ici :\n" . $share . "\n\n";
+	$body .= "Je peux vous adresser une presentation d'une page. Seriez-vous disponible 15 minutes pour en discuter ?\n\n";
+	$body .= "Bien confraternellement,\nFabrizio - Alliance Groupe - 07 44 82 95 16 - advise.alliance.group@gmail.com";
+	return array( $subject, $body, $share );
+}
+
+/** Envoi GROUPÉ à tous les partenaires ayant un email de contact. */
+add_action( 'admin_post_ag_ja_sendall', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! check_admin_referer( 'ag_ja_sendall' ) ) {
+		wp_die( 'Accès refusé.' );
+	}
+	$partners = ag_ja_partners();
+	$from     = get_option( 'admin_email' );
+	$headers  = array( 'Content-Type: text/plain; charset=UTF-8', 'Reply-To: advise.alliance.group@gmail.com' );
+	$sent = 0;
+	$skip = 0;
+	foreach ( $partners as $code => $info ) {
+		$email = is_array( $info ) ? trim( (string) ( $info['contact'] ?? '' ) ) : '';
+		if ( ! is_email( $email ) ) {
+			$skip++;
+			continue;
+		}
+		$label = is_array( $info ) ? ( $info['label'] ?? $code ) : (string) $info;
+		list( $subject, $body ) = ag_ja_build_email( $label, $code );
+		if ( wp_mail( $email, $subject, $body, $headers ) ) {
+			$partners[ $code ]['sent'] = time();
+			$sent++;
+		}
+	}
+	update_option( 'ag_ja_partners', $partners );
+	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-jeune-avocat', 'sent' => $sent, 'skip' => $skip ), admin_url( 'options-general.php' ) ) );
+	exit;
+} );
+
 /** Export CSV des inscrits. */
 add_action( 'admin_post_ag_ja_export', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! check_admin_referer( 'ag_ja_export' ) ) {
@@ -289,6 +330,18 @@ function ag_ja_settings_page() {
 		update_option( 'ag_ja_partners', $partners );
 		echo '<div class="notice notice-success is-dismissible"><p>' . (int) $added . ' partenaires pré-remplis (EDA + UJA) avec un code généré chacun.</p></div>';
 	}
+	if ( isset( $_POST['ag_ja_contacts'] ) && check_admin_referer( 'ag_ja_admin' ) ) {
+		$partners = ag_ja_partners();
+		$emails   = isset( $_POST['contact'] ) && is_array( $_POST['contact'] ) ? wp_unslash( $_POST['contact'] ) : array();
+		foreach ( $emails as $code => $mail ) {
+			$code = strtoupper( sanitize_text_field( $code ) );
+			if ( isset( $partners[ $code ] ) && is_array( $partners[ $code ] ) ) {
+				$partners[ $code ]['contact'] = sanitize_email( $mail );
+			}
+		}
+		update_option( 'ag_ja_partners', $partners );
+		echo '<div class="notice notice-success is-dismissible"><p>Emails de contact enregistrés.</p></div>';
+	}
 	if ( isset( $_GET['ag_ja_del'] ) && check_admin_referer( 'ag_ja_del' ) ) {
 		$partners = ag_ja_partners();
 		unset( $partners[ strtoupper( sanitize_text_field( wp_unslash( $_GET['ag_ja_del'] ) ) ) ] );
@@ -296,8 +349,14 @@ function ag_ja_settings_page() {
 		echo '<div class="notice notice-success is-dismissible"><p>Partenaire supprimé.</p></div>';
 	}
 
+	if ( isset( $_GET['sent'] ) ) {
+		echo '<div class="notice notice-success is-dismissible"><p>📨 ' . (int) $_GET['sent'] . ' email(s) envoyé(s) aux partenaires. ' . ( isset( $_GET['skip'] ) ? (int) $_GET['skip'] . ' ignoré(s) (pas d\'email de contact).' : '' ) . '</p></div>';
+	}
+
 	$partners = ag_ja_partners();
 	$signups  = (array) get_option( 'ag_ja_signups', array() );
+	$with_mail = 0;
+	foreach ( $partners as $pi ) { if ( is_array( $pi ) && is_email( (string) ( $pi['contact'] ?? '' ) ) ) { $with_mail++; } }
 
 	// Comptage par école.
 	$by_ecole = array();
@@ -341,8 +400,22 @@ function ag_ja_settings_page() {
 
 	// Table partenaires.
 	echo '<h2 style="margin-top:30px;">Partenaires &amp; codes (' . count( $partners ) . ')</h2>';
+	echo '<div style="background:#fff;border:1px solid #dcdcde;border-radius:10px;padding:14px 18px;margin:0 0 14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">';
+	echo '<strong>📨 Démarchage en 1 clic</strong> <span class="description">' . (int) $with_mail . ' partenaire(s) avec un email de contact renseigné.</span>';
+	if ( $with_mail > 0 ) {
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin:0;">';
+		echo '<input type="hidden" name="action" value="ag_ja_sendall">';
+		wp_nonce_field( 'ag_ja_sendall' );
+		echo '<button class="button button-primary" onclick="return confirm(\'Envoyer l\\\'email personnalisé à tous les partenaires ayant un email de contact ?\');">Envoyer à tous (' . (int) $with_mail . ')</button>';
+		echo '</form>';
+	} else {
+		echo '<span class="description" style="color:#b32d2e;">Renseigne les emails de contact (colonne Partenaire) pour activer l\'envoi groupé.</span>';
+	}
+	echo '</div>';
 	if ( $partners ) {
-		echo '<table class="widefat striped"><thead><tr><th>Code</th><th>Partenaire</th><th>Type</th><th>Inscrits</th><th>Lien à partager</th><th>Email</th><th></th></tr></thead><tbody>';
+		echo '<form method="post">';
+		wp_nonce_field( 'ag_ja_admin' );
+		echo '<table class="widefat striped"><thead><tr><th>Code</th><th>Partenaire</th><th>Email de contact</th><th>Insc.</th><th>Lien à partager</th><th>Email</th><th></th></tr></thead><tbody>';
 		$page_url = ag_ja_url();
 		$i = 0;
 		foreach ( $partners as $code => $info ) {
@@ -353,20 +426,17 @@ function ag_ja_settings_page() {
 			$share = add_query_arg( 'code', $code, $page_url );
 			$del   = wp_nonce_url( add_query_arg( 'ag_ja_del', $code ), 'ag_ja_del' );
 
-			$subject = 'Un site professionnel offert 3 mois à vos jeunes avocats — ' . $label;
-			$body  = "Madame, Monsieur,\n\n";
-			$body .= "Je dirige Alliance Groupe, studio web independant specialise dans les sites de professions juridiques (conformes RGPD et deontologie).\n\n";
-			$body .= "Nous souhaitons offrir aux jeunes avocats de " . $label . " 3 mois de site professionnel gratuits pour les aider a lancer leur cabinet : site pret a l'emploi, recherche Judilibre integree, espace client securise. Sans aucun cout ni engagement pour votre etablissement.\n\n";
-			$body .= "Le principe est simple : un code dedie a " . $label . " que vous transmettez a vos diplomes. Ils l'activent ici :\n" . $share . "\n\n";
-			$body .= "Je peux vous adresser une presentation d'une page. Seriez-vous disponible 15 minutes pour en discuter ?\n\n";
-			$body .= "Bien confraternellement,\nFabrizio - Alliance Groupe - 07 44 82 95 16 - advise.alliance.group@gmail.com";
-			$full   = 'Objet : ' . $subject . "\n\n" . $body;
-			$mailto = 'mailto:' . rawurlencode( $cont ) . '?subject=' . rawurlencode( $subject ) . '&body=' . rawurlencode( $body );
-			$rid    = 'agjm' . $i;
+			list( $subject, $body ) = ag_ja_build_email( $label, $code );
+			$full    = 'Objet : ' . $subject . "\n\n" . $body;
+			$mailto  = 'mailto:' . rawurlencode( $cont ) . '?subject=' . rawurlencode( $subject ) . '&body=' . rawurlencode( $body );
+			$rid     = 'agjm' . $i;
+			$sent_ts = is_array( $info ) ? (int) ( $info['sent'] ?? 0 ) : 0;
+			$sent_badge = $sent_ts ? '<br><span style="color:#2a7d2a;font-size:.82em;">✓ envoyé le ' . esc_html( wp_date( 'd/m/Y', $sent_ts ) ) . '</span>' : '';
 
 			echo '<tr>';
 			echo '<td><input type="text" readonly onclick="this.select()" value="' . esc_attr( $code ) . '" style="width:130px;font-family:monospace;font-weight:700;"></td>';
-			echo '<td>' . esc_html( $label ) . ( $cont ? '<br><span style="color:#888;font-size:.85em;">' . esc_html( $cont ) . '</span>' : '' ) . '</td><td>' . esc_html( $type ) . '</td>';
+			echo '<td>' . esc_html( $label ) . ' <span style="color:#aaa;font-size:.82em;">(' . esc_html( $type ) . ')</span>' . $sent_badge . '</td>';
+			echo '<td><input type="email" name="contact[' . esc_attr( $code ) . ']" value="' . esc_attr( $cont ) . '" placeholder="contact@…" style="width:100%;min-width:190px;"></td>';
 			echo '<td><strong>' . $cnt . '</strong></td>';
 			echo '<td><input type="text" readonly onclick="this.select()" value="' . esc_attr( $share ) . '" class="code" style="width:100%;min-width:220px;"></td>';
 			echo '<td><button type="button" class="button" onclick="agJaMail(\'' . esc_js( $rid ) . '\')">✉️ Email</button></td>';
@@ -383,6 +453,8 @@ function ag_ja_settings_page() {
 			$i++;
 		}
 		echo '</tbody></table>';
+		submit_button( '💾 Enregistrer les emails de contact', 'primary', 'ag_ja_contacts' );
+		echo '</form>';
 		?>
 		<script>
 		function agJaMail(id){var r=document.getElementById(id);if(r)r.style.display=(r.style.display==='none'?'table-row':'none');}
