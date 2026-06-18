@@ -252,7 +252,57 @@ add_action( 'init', 'ag_ja_ensure_page' );
 /* ── Réglages admin : codes école + inscrits ─────────────────────── */
 add_action( 'admin_menu', function () {
 	add_submenu_page( 'options-general.php', 'Jeunes avocats', '🎓 Jeunes avocats', 'manage_options', 'ag-jeune-avocat', 'ag_ja_settings_page' );
+	add_submenu_page( 'options-general.php', 'Réseaux avocats', '🔎 Réseaux avocats', 'manage_options', 'ag-ja-social', 'ag_ja_social_page' );
 } );
+
+/** Construit les liens de recherche publique pour une requête, par réseau. */
+function ag_ja_social_links( $q ) {
+	$e   = rawurlencode( $q );
+	$tag = preg_replace( '/[^a-z0-9]/', '', strtolower( remove_accents( $q ) ) );
+	return array(
+		'TikTok'      => 'https://www.tiktok.com/search?q=' . $e,
+		'TikTok #'    => 'https://www.tiktok.com/tag/' . $tag,
+		'Instagram'   => 'https://www.instagram.com/explore/search/keyword/?q=' . $e,
+		'Insta #'     => 'https://www.instagram.com/explore/tags/' . $tag . '/',
+		'Facebook'    => 'https://www.facebook.com/search/top?q=' . $e,
+		'FB groupes'  => 'https://www.facebook.com/search/groups/?q=' . $e,
+		'LinkedIn'    => 'https://www.linkedin.com/search/results/content/?keywords=' . $e,
+		'LinkedIn 👤' => 'https://www.linkedin.com/search/results/people/?keywords=' . $e,
+		'X'           => 'https://x.com/search?q=' . $e,
+		'YouTube'     => 'https://www.youtube.com/results?search_query=' . $e,
+		'Reddit'      => 'https://www.reddit.com/search/?q=' . $e,
+	);
+}
+
+/** Page : recherche publique des (futurs) avocats sur les réseaux. */
+function ag_ja_social_page() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	$queries = array(
+		'élève avocat', 'CRFPA', 'jeune avocat', 'prestation de serment avocat',
+		'examen avocat 2026', 'EFB avocat', 'installation cabinet avocat', 'avocat collaboration',
+	);
+	$custom = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : '';
+	echo '<div class="wrap"><h1>🔎 Trouver les (futurs) avocats sur les réseaux</h1>';
+	echo '<p>Recherches publiques pré-construites : clique pour ouvrir le réseau dans un nouvel onglet. Objectif = repérer les <strong>communautés d\'élèves-avocats</strong> (TikTok, Insta, groupes Facebook, LinkedIn…) pour y partager ton offre / ton lien — par du <strong>contenu</strong>, pas du spam en DM.</p>';
+	echo '<form method="get" style="margin:14px 0;"><input type="hidden" name="page" value="ag-ja-social"><input type="text" name="q" value="' . esc_attr( $custom ) . '" class="regular-text" placeholder="ta recherche (ex. avocat divorce, barreau Nantes…)"> <button class="button button-primary">Chercher partout</button></form>';
+	$rows = $queries;
+	if ( $custom ) {
+		array_unshift( $rows, $custom );
+	}
+	echo '<table class="widefat striped"><thead><tr><th style="width:230px;">Recherche</th><th>Ouvrir sur…</th></tr></thead><tbody>';
+	foreach ( $rows as $q ) {
+		echo '<tr><td><strong>' . esc_html( $q ) . '</strong></td><td>';
+		foreach ( ag_ja_social_links( $q ) as $net => $url ) {
+			echo '<a class="button button-small" target="_blank" rel="noopener" href="' . esc_url( $url ) . '" style="margin:2px;">' . esc_html( $net ) . '</a> ';
+		}
+		echo '</td></tr>';
+	}
+	echo '</tbody></table>';
+	echo '<p class="description" style="margin-top:14px;">⚠️ <strong>Snapchat</strong> n\'a pas de recherche publique par mot-clé sur le web (passe par l\'app / Spotlight). Bonnes pratiques : rejoins les <strong>groupes Facebook</strong> d\'élèves-avocats/CRFPA, commente, poste ton offre là où c\'est autorisé ; sur TikTok/Insta crée du contenu avec les hashtags ; ne fais pas de DM de masse.</p>';
+	echo '</div>';
+}
 
 /** Objet + version TEXTE (pour copier/coller manuel) : array(subject, body, share). */
 function ag_ja_build_email( $label, $code ) {
