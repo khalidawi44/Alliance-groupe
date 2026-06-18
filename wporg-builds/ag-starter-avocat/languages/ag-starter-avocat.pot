@@ -1,0 +1,627 @@
+# Copyright (C) 2026 AGthemes
+# This file is distributed under the GNU General Public License v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: AG Starter Avocat 1.1.19\n"
+"Report-Msgid-Bugs-To: https://alliancegroupe-inc.com\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language-Team: AGthemes <advise.alliance.group@gmail.com>\n"
+"X-Domain: ag-starter-avocat\n"
+
+msgid "%s commentaire"
+msgstr ""
+
+msgid "100% gratuit, aucune connexion internet requise"
+msgstr ""
+
+msgid "AG Starter — Personnalisation"
+msgstr ""
+
+msgid "Accueil"
+msgstr ""
+
+msgid "Acheter →"
+msgstr ""
+
+msgid "Achetez directement en ligne. Paiement sécurisé, livraison immédiate par email."
+msgstr ""
+
+msgid "Actualites"
+msgstr ""
+
+msgid "Adresse"
+msgstr ""
+
+msgid "Afficher le credit \"Theme gratuit par Alliance Group\""
+msgstr ""
+
+msgid "Afficher le hero"
+msgstr ""
+
+msgid "Ajouter un premier domaine"
+msgstr ""
+
+msgid "Aller au contenu principal"
+msgstr ""
+
+msgid "Annees d'experience"
+msgstr ""
+
+msgid "Appel à action — Cabinet"
+msgstr ""
+
+msgid "Appeler"
+msgstr ""
+
+msgid "Arriere-plan des cartes"
+msgstr ""
+
+msgid "Arriere-plan principal"
+msgstr ""
+
+msgid "Au cabinet"
+msgstr ""
+
+msgid "Au temps passe : facturation horaire avec releve detaille"
+msgstr ""
+
+msgid "Aucun article dans cette categorie."
+msgstr ""
+
+msgid "Aucun article pour le moment."
+msgstr ""
+
+msgid "Aucun domaine d'expertise n'est encore publie."
+msgstr ""
+
+msgid "Aucun resultat. Essayez avec d'autres mots-cles."
+msgstr ""
+
+msgid "Autre / a determiner"
+msgstr ""
+
+msgid "Avant toute intervention, une convention d'honoraires ecrite vous est remise. Elle precise le mode de facturation choisi, le montant ou le taux horaire applicable, ainsi que les eventuels frais annexes."
+msgstr ""
+
+msgid "Avocat inscrit au %s"
+msgstr ""
+
+msgid "Barreau inscrit"
+msgstr ""
+
+msgid "Besoin d'un conseil ?"
+msgstr ""
+
+msgid "Besoin de conseils ? Prenez rendez-vous avec le cabinet."
+msgstr ""
+
+msgid "Bienvenue dans AG Starter Avocat !"
+msgstr ""
+
+msgid "Cabinet"
+msgstr ""
+
+msgid "Cabinet (contact &amp; horaires)"
+msgstr ""
+
+msgid "Cabinet — libellé garde à vue"
+msgstr ""
+
+msgid "Cabinet — phrase d'intro"
+msgstr ""
+
+msgid "Cabinet — titre H2"
+msgstr ""
+
+msgid "Cabinet — titre bloc Adresse"
+msgstr ""
+
+msgid "Cabinet — titre bloc Contact"
+msgstr ""
+
+msgid "Cabinet — titre bloc Horaires"
+msgstr ""
+
+msgid "Categories :"
+msgstr ""
+
+msgid "Ce site n’utilise aucun cookie de traçage publicitaire."
+msgstr ""
+
+msgid "Changer de theme"
+msgstr ""
+
+msgid "Clients satisfaits"
+msgstr ""
+
+msgid "Comment sont calcules nos honoraires ?"
+msgstr ""
+
+msgid "Commentaires precedents"
+msgstr ""
+
+msgid "Commentaires suivants"
+msgstr ""
+
+msgid "Compact"
+msgstr ""
+
+msgid "Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit."
+msgstr ""
+
+msgid "Conseil general"
+msgstr ""
+
+msgid "Consultation au cabinet, en visio ou par telephone."
+msgstr ""
+
+msgid "Consultation initiale : premier rendez-vous pour analyser votre situation"
+msgstr ""
+
+msgid "Contact"
+msgstr ""
+
+msgid "Contenu accueil — textes"
+msgstr ""
+
+msgid "Convention d'honoraires"
+msgstr ""
+
+msgid "Cookies"
+msgstr ""
+
+msgid "Couleur d'accent"
+msgstr ""
+
+msgid "Couleur des bordures"
+msgstr ""
+
+msgid "Couleur des titres"
+msgstr ""
+
+msgid "Couleur du texte"
+msgstr ""
+
+msgid "Couleurs du theme"
+msgstr ""
+
+msgid "Demande confidentielle protegee par le secret professionnel. Reponse sous 48h ouvrees."
+msgstr ""
+
+msgid "Demander un devis gratuit"
+msgstr ""
+
+msgid "Description du dossier (en quelques lignes)"
+msgstr ""
+
+msgid "Domaine concerne"
+msgstr ""
+
+msgid "Domaine d'expertise"
+msgstr ""
+
+msgid "Domaines d'expertise"
+msgstr ""
+
+msgid "Domaines — astuce admin"
+msgstr ""
+
+msgid "Domaines — bouton ajout (admin)"
+msgstr ""
+
+msgid "Domaines — message si vide"
+msgstr ""
+
+msgid "Domaines — phrase d'intro"
+msgstr ""
+
+msgid "Domaines — titre H2"
+msgstr ""
+
+msgid "Dossiers traites"
+msgstr ""
+
+msgid "Déontologie &amp; RGPD"
+msgstr ""
+
+msgid "Email"
+msgstr ""
+
+msgid "En savoir plus sur %s — Le cabinet"
+msgstr ""
+
+msgid "En visio"
+msgstr ""
+
+msgid "Entre 14 et 20."
+msgstr ""
+
+msgid "Envoyer ma demande"
+msgstr ""
+
+msgid "Erreur de securite. Veuillez recharger la page et reessayer."
+msgstr ""
+
+msgid "Etiquettes :"
+msgstr ""
+
+msgid "Exemples de cas traites"
+msgstr ""
+
+msgid "Famille de police"
+msgstr ""
+
+msgid "Forfait : prix fixe convenu a l'avance pour un dossier defini"
+msgstr ""
+
+msgid "Format souhaite"
+msgstr ""
+
+msgid "Formulaire de rendez-vous &amp; RGPD"
+msgstr ""
+
+msgid "Garde a vue"
+msgstr ""
+
+msgid "Garde a vue 24/7 :"
+msgstr ""
+
+msgid "Grand"
+msgstr ""
+
+msgid "Gratuit — 10 secondes — aucune inscription"
+msgstr ""
+
+msgid "Guide d'utilisation"
+msgstr ""
+
+msgid "Hero (accueil)"
+msgstr ""
+
+msgid "Honoraires"
+msgstr ""
+
+msgid "Honoraires (transparence tarifaire)"
+msgstr ""
+
+msgid "Honoraires de resultat : complement lie a l'issue favorable du dossier"
+msgstr ""
+
+msgid "Honoraires — phrase d'intro"
+msgstr ""
+
+msgid "Honoraires — titre H2"
+msgstr ""
+
+msgid "Horaires"
+msgstr ""
+
+msgid "Hébergement en Union Européenne — données protégées par le secret professionnel."
+msgstr ""
+
+msgid "Informations légales"
+msgstr ""
+
+msgid "Inscrit depuis %s"
+msgstr ""
+
+msgid "Installez le plugin gratuit AG Starter Companion pour creer automatiquement vos pages, votre menu et configurer votre site en 1 clic."
+msgstr ""
+
+msgid "L'aide juridictionnelle est acceptee pour les dossiers eligibles."
+msgstr ""
+
+msgid "La page que vous cherchez n'existe pas ou a ete deplacee."
+msgstr ""
+
+msgid "Laissez vide pour le texte par defaut."
+msgstr ""
+
+msgid "Le Maître"
+msgstr ""
+
+msgid "Le Maître (présentation)"
+msgstr ""
+
+msgid "Le cabinet"
+msgstr ""
+
+msgid "Les commentaires sont fermes."
+msgstr ""
+
+msgid "Lien du bouton (URL ou #ancre)"
+msgstr ""
+
+msgid "Lire la suite"
+msgstr ""
+
+msgid "Maître — libellé Specialités"
+msgstr ""
+
+msgid "Maître — préfixe année (Inscrit depuis…)"
+msgstr ""
+
+msgid "Maître — étiquette"
+msgstr ""
+
+msgid "Mentions affichées dans le pied de page. Le template est « déontologie-ready » : pas de témoignages clients ni de widget d’avis Google (interdits par le RIN/CNB). Pensez à créer les pages « mentions-legales », « confidentialite » et « cookies » : leurs liens apparaîtront automatiquement."
+msgstr ""
+
+msgid "Mentions légales"
+msgstr ""
+
+msgid "Menu"
+msgstr ""
+
+msgid "Menu principal"
+msgstr ""
+
+msgid "Menu principal configure et assigne"
+msgstr ""
+
+msgid "Merci de remplir au moins le nom, un email valide et une description du dossier."
+msgstr ""
+
+msgid "Mode clair / sombre"
+msgstr ""
+
+msgid "Modifiez les couleurs, la typographie et les textes cles de votre theme directement ici. Aucun code requis."
+msgstr ""
+
+msgid "Monospace"
+msgstr ""
+
+msgid "Nom"
+msgstr ""
+
+msgid "Nom de l'etablissement"
+msgstr ""
+
+msgid "Nos services à la carte"
+msgstr ""
+
+msgid "Notre engagement : rigueur, ecoute et confidentialite au service de vos interets."
+msgstr ""
+
+msgid "Notre équipe"
+msgstr ""
+
+msgid "Nous trouver"
+msgstr ""
+
+msgid "OK"
+msgstr ""
+
+msgid "Or Alliance"
+msgstr ""
+
+msgid "Page d'accueil et permaliens actives"
+msgstr ""
+
+msgid "Page introuvable"
+msgstr ""
+
+msgid "Pages :"
+msgstr ""
+
+msgid "Pages creees automatiquement (Accueil, Expertise, Honoraires, Cabinet, Rendez-vous)"
+msgstr ""
+
+msgid "Par defaut"
+msgstr ""
+
+msgid "Par email"
+msgstr ""
+
+msgid "Par telephone"
+msgstr ""
+
+msgid "Personnalisez les phrases d'introduction (sous les titres) de chaque section de l'accueil."
+msgstr ""
+
+msgid "Photo du Maître (optionnel)"
+msgstr ""
+
+msgid "Pied de page"
+msgstr ""
+
+msgid "Politique de confidentialité (RGPD)"
+msgstr ""
+
+msgid "Prefixe du titre"
+msgstr ""
+
+msgid "Premier appel gratuit, sans engagement"
+msgstr ""
+
+msgid "Prendre rendez-vous"
+msgstr ""
+
+msgid "Prenez rendez-vous pour une premiere consultation confidentielle."
+msgstr ""
+
+msgid "Prenom"
+msgstr ""
+
+msgid "RDV — bouton submit"
+msgstr ""
+
+msgid "RDV — format Au cabinet"
+msgstr ""
+
+msgid "RDV — format En visio"
+msgstr ""
+
+msgid "RDV — format Par téléphone"
+msgstr ""
+
+msgid "RDV — label Description"
+msgstr ""
+
+msgid "RDV — label Domaine"
+msgstr ""
+
+msgid "RDV — label Email"
+msgstr ""
+
+msgid "RDV — label Format"
+msgstr ""
+
+msgid "RDV — label Nom"
+msgstr ""
+
+msgid "RDV — label Prénom"
+msgstr ""
+
+msgid "RDV — label Téléphone"
+msgstr ""
+
+msgid "RDV — note légale (sous bouton)"
+msgstr ""
+
+msgid "RDV — option « Autre »"
+msgstr ""
+
+msgid "RDV — placeholder domaine"
+msgstr ""
+
+msgid "Recevoir le guide gratuit : 7 pages qui attirent des clients"
+msgstr ""
+
+msgid "Rechercher :"
+msgstr ""
+
+msgid "Rechercher..."
+msgstr ""
+
+msgid "Resultats pour : %s"
+msgstr ""
+
+msgid "Retour a l'accueil"
+msgstr ""
+
+msgid "Sans-serif classique"
+msgstr ""
+
+msgid "Secret professionnel"
+msgstr ""
+
+msgid "Serif (elegant)"
+msgstr ""
+
+msgid "Signature"
+msgstr ""
+
+msgid "Site sur-mesure (+340% leads) →"
+msgstr ""
+
+msgid "Sous-titre"
+msgstr ""
+
+msgid "Spam detecte."
+msgstr ""
+
+msgid "Specialites :"
+msgstr ""
+
+msgid "Systeme (defaut, rapide)"
+msgstr ""
+
+msgid "Taille de base du texte (px)"
+msgstr ""
+
+msgid "Taille des titres"
+msgstr ""
+
+msgid "Telephone"
+msgstr ""
+
+msgid "Texte de copyright personnalise"
+msgstr ""
+
+msgid "Texte du bouton"
+msgstr ""
+
+msgid "Texte secondaire"
+msgstr ""
+
+msgid "Theme : %s"
+msgstr ""
+
+msgid "Tous droits reserves."
+msgstr ""
+
+msgid "Tous les domaines d'expertise"
+msgstr ""
+
+msgid "Transparence totale sur les tarifs : pas de mauvaise surprise, devis ecrit avant tout engagement."
+msgstr ""
+
+msgid "Typographie"
+msgstr ""
+
+msgid "Télécharger AG Starter Companion"
+msgstr ""
+
+msgid "Téléchargez le ZIP, puis Extensions → Ajouter → Téléverser"
+msgstr ""
+
+msgid "Une erreur est survenue lors de l'envoi. Vous pouvez nous joindre directement par email ou telephone."
+msgstr ""
+
+msgid "Une équipe d'avocats expérimentés à votre service. Chaque dossier traité avec rigueur, écoute et discrétion."
+msgstr ""
+
+msgid "Upgrader vers le niveau supérieur :"
+msgstr ""
+
+msgid "Voir le cabinet →"
+msgstr ""
+
+msgid "Voir tous les produits de la boutique →"
+msgstr ""
+
+msgid "Votre avocat"
+msgstr ""
+
+msgid "Votre demande a bien ete envoyee. Le cabinet vous recontactera sous 48h ouvrees, en toute confidentialite."
+msgstr ""
+
+msgid "Votre theme est installe. Pour un site pret a l'emploi en 1 clic (pages, menu, reglages), installez le plugin gratuit AG Starter Companion."
+msgstr ""
+
+msgid "Votre theme est pret !"
+msgstr ""
+
+msgid "Vous avez un dossier dans ce domaine ?"
+msgstr ""
+
+msgid "Vous devez accepter le traitement de vos donnees pour soumettre une demande."
+msgstr ""
+
+msgid "Vous utilisez la version gratuite. Passez au Premium ou Business :"
+msgstr ""
+
+msgid "Widgets affichés dans le pied de page."
+msgstr ""
+
+msgid "— Selectionnez —"
+msgstr ""
+
+msgid "🎁 Recevoir le guide gratuit : 7 pages qui attirent des clients"
+msgstr ""
+
+msgid "💎 Ameliorer mon theme"
+msgstr ""
+
+msgid "🔒 Installez WooCommerce pour activer la boutique automatique"
+msgstr ""
+
+msgid "🔒 Paiement sécurisé · Boutique WooCommerce"
+msgstr ""
+
+msgid "🚀 AG Starter Avocat — Configuration"
+msgstr ""
+

@@ -1,7 +1,7 @@
 # STRATÉGIE VENTE — Premium « AG Avocat » (freemium .org → site mère)
 
 > Mémoire de la stratégie de vente du thème avocat. Lu/réutilisable entre sessions.
-> Modèle : gratuit sur wordpress.org = aimant ; Premium (69 €) / Business (149 €) vendus sur `alliancegroupe-inc.com`.
+> Modèle : gratuit sur wordpress.org = aimant ; **Premium 69 € (paiement unique)** vendu sur `alliancegroupe-inc.com`. **2 paliers seulement : Gratuit + Premium** (PAS de Business). Tout — Judilibre, espace client, etc. — est dans le Premium.
 > Entonnoir technique déjà en place : thème .org → lien « 🎁 guide gratuit » → page **`/guide-avocat`** (site mère, `inc/ag-lead-avocat.php`) → lead CRM + email du guide.
 
 ## Cap (positionnement)
@@ -17,7 +17,7 @@ Devenir LE thème WordPress du cabinet d'avocat **francophone**. Vendre le Premi
 | Ventes cumulées | 2-4 | 8-14 | 20-30 |
 | CA cumulé | 140-280 € | 600-1 400 € | 2 000-3 500 € |
 
-Le vrai jackpot = **Business 149 €** (espace client + Judilibre + maintenance an 1) → porte vers le sur-mesure et le récurrent (MRR).
+Le Premium 69 € embarque déjà la grosse valeur (espace client + Judilibre) → c'est l'argument qui justifie l'achat, et la porte d'entrée vers le sur-mesure (vrai récurrent à proposer ensuite, hors entonnoir thème).
 
 ## 3 leviers prioritaires
 1. **Amorcer le flywheel à la main** : pousser les 1ères installs (toi + ambassadeurs), puis **notice d'avis à J+7 dans l'admin** (discrète, dismissible, JAMAIS bloquante — .org interdit de bloquer une fonction contre un avis).
@@ -25,7 +25,7 @@ Le vrai jackpot = **Business 149 €** (espace client + Judilibre + maintenance 
 3. **SEO sur `/wordpress-avocat`** + 6 articles (RGPD avocat 2026, espace client sécurisé, recherche jurisprudence depuis son site, RIN/CNB & site, cyber cabinets, comparatif gratuit vs premium).
 
 ## Rôle des ambassadeurs
-Commission 10 % via `?ref=` (6,90 € / Premium, 14,90 € / Business). Mission : installer le free en vitrine, diffuser les vidéos studio (LinkedIn = canal n°1 avocats), déposer des avis HONNÊTES après usage réel, approcher leur réseau avocat **par email/courrier UNIQUEMENT**. Prime 25 € (déjà codée) pour la 1ʳᵉ vente Business d'un filleul.
+Commission 10 % via `?ref=` (6,90 € / Premium). Mission : installer le free en vitrine, diffuser les vidéos studio (LinkedIn = canal n°1 avocats), déposer des avis HONNÊTES après usage réel, approcher leur réseau avocat **par email/courrier UNIQUEMENT**. Prime 25 € (déjà codée) pour la 1ʳᵉ vente d'un filleul.
 
 ## Pièges à éviter (NON négociable)
 **Déonto avocat (RIN/CNB)** : ❌ jamais SMS/appel/démarchage physique d'un avocat (email/courrier only) → **l'API SMS Free ne sert QUE pour les clients déjà engagés, jamais en prospection avocat** ; ❌ pas de témoignages de cabinets (interdit RIN) ; ❌ pas de pub comparative entre confrères (le comparatif free vs premium de NOTRE produit est OK).
@@ -62,12 +62,12 @@ Déclenchée à l'opt-in sur `/guide-avocat`. Destinataire = avocat qui a **dema
 > Le Pack Premium intègre un **cabinet de recherche juridique** dans votre site : recherche en direct dans **Judilibre** (Cour de cassation + cours d'appel), filtres « font jurisprudence », année, matière — plus une salle d'analyse de dossiers et une banque d'arguments. Outil privé, réservé à vous, depuis votre back-office.
 > Voir la démo : {{lien_premium}} — [Se désinscrire]
 
-### Message 4 — J+9 — LEAD MAGNET + soft Business
+### Message 4 — J+9 — LEAD MAGNET
 **Objet : La checklist RGPD + secret professionnel de votre site**
 > Bonjour {{prenom}},
 > Pour être tranquille côté conformité, voici la **checklist du site d'avocat** (RGPD + art. 66-5) : {{lien_guide}}
 > Au programme : hébergement en UE, mentions obligatoires, formulaire conforme, cookies, sécurisation des échanges de pièces.
-> Si vous préférez qu'on s'en occupe (audit + mise en conformité + installation en visio), c'est inclus dans le **Pack Business**.
+> Si vous préférez qu'on s'en occupe (mise en place + sécurisation des pièces), tout est inclus dans le **Pack Premium** — sans abonnement.
 > [Se désinscrire]
 
 ### Message 5 — J+14 — COMPARATIF HONNÊTE + CTA achat

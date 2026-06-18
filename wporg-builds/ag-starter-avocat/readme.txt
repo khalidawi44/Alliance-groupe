@@ -3,7 +3,7 @@
 Contributors: adminag
 Tags: one-column, custom-menu, featured-images, translation-ready, theme-options, custom-colors, custom-logo, threaded-comments, right-sidebar, block-styles, wide-blocks
 Requires at least: 6.0
-Tested up to: 6.5
+Tested up to: 7.0
 Requires PHP: 7.4
 Stable tag: 1.1.19
 License: GNU General Public License v2 or later
@@ -71,6 +71,10 @@ Alliance Group, une agence web et IA. Plus d'infos sur https://alliancegroupe-in
 = 1.1.19 =
 * Description et readme corrigés : orthographe et accents français rétablis, formulation plus professionnelle.
 * Nouvelle capture d'écran de présentation.
+* Compatibilité testée jusqu'à WordPress 7.0.
+* Ajout du fichier de traduction languages/ag-starter-avocat.pot (thème réellement traduisible).
+* Pied de page allégé : suppression d'un bloc de marque chargeant une image distante ; une seule attribution discrète conservée.
+* Invitation à laisser un avis (7 jours après activation), discrète et désactivable.
 
 = 1.1.18 =
 * Ecran de bienvenue : ajout d'un lien optionnel vers un guide gratuit (7 pages qui attirent des clients) heberge sur le site de l'auteur. Lien non bloquant, aucune collecte de donnees dans le theme.

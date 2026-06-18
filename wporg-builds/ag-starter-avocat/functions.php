@@ -405,6 +405,61 @@ function ag_starter_avocat_dashboard_widget_render() {
 }
 add_action( 'wp_dashboard_setup', 'ag_starter_avocat_dashboard_widget' );
 
+/**
+ * Invitation discrète à laisser un avis, 7 jours après activation du thème.
+ * Dismissible et non bloquante (conforme WordPress.org : aucune fonctionnalité
+ * n'est conditionnée à un avis).
+ */
+function ag_starter_avocat_record_activation() {
+	if ( ! get_option( 'ag_starter_avocat_activated_at' ) ) {
+		update_option( 'ag_starter_avocat_activated_at', time() );
+	}
+}
+add_action( 'after_switch_theme', 'ag_starter_avocat_record_activation' );
+
+function ag_starter_avocat_review_dismiss() {
+	if ( isset( $_GET['ag_avocat_review_off'] ) && check_admin_referer( 'ag_avocat_review_off' ) ) {
+		update_user_meta( get_current_user_id(), 'ag_starter_avocat_review_off', 1 );
+		wp_safe_redirect( remove_query_arg( array( 'ag_avocat_review_off', '_wpnonce' ) ) );
+		exit;
+	}
+}
+add_action( 'admin_init', 'ag_starter_avocat_review_dismiss' );
+
+function ag_starter_avocat_review_notice() {
+	if ( ! current_user_can( 'edit_theme_options' ) ) {
+		return;
+	}
+	$screen = get_current_screen();
+	if ( ! $screen || ! in_array( $screen->id, array( 'dashboard', 'themes' ), true ) ) {
+		return;
+	}
+	if ( get_user_meta( get_current_user_id(), 'ag_starter_avocat_review_off', true ) ) {
+		return;
+	}
+	$since = (int) get_option( 'ag_starter_avocat_activated_at', 0 );
+	if ( ! $since ) {
+		update_option( 'ag_starter_avocat_activated_at', time() );
+		return;
+	}
+	if ( ( time() - $since ) < 7 * DAY_IN_SECONDS ) {
+		return;
+	}
+	$dismiss = wp_nonce_url( add_query_arg( 'ag_avocat_review_off', '1' ), 'ag_avocat_review_off' );
+	echo '<div class="notice notice-info is-dismissible"><p>';
+	printf(
+		wp_kses(
+			/* translators: 1: review link, 2: dismiss link */
+			__( 'Le th&egrave;me <strong>AG Starter Avocat</strong> vous est utile&nbsp;? Un avis honn&ecirc;te (30&nbsp;secondes) aide d\'autres cabinets &agrave; le d&eacute;couvrir. <a href="%1$s" target="_blank" rel="noopener">Laisser un avis</a> &middot; <a href="%2$s">Ne plus afficher</a>', 'ag-starter-avocat' ),
+			array( 'strong' => array(), 'a' => array( 'href' => array(), 'target' => array(), 'rel' => array() ) )
+		),
+		'https://wordpress.org/support/theme/ag-starter-avocat/reviews/#new-post',
+		esc_url( $dismiss )
+	);
+	echo '</p></div>';
+}
+add_action( 'admin_notices', 'ag_starter_avocat_review_notice' );
+
 // Guide d'utilisation (admin)
 require_once get_template_directory() . '/inc/guide.php';
 
