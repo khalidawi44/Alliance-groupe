@@ -251,7 +251,7 @@ function ag_ja_build_email( $label, $code ) {
 /** Version HTML brandée (logo + bouton + signature) pour l'envoi automatique. */
 function ag_ja_build_email_html( $label, $code ) {
 	$share = add_query_arg( 'code', $code, ag_ja_url() );
-	$logo  = get_stylesheet_directory_uri() . '/assets/images/ag-logo.png';
+	$logo  = get_stylesheet_directory_uri() . '/assets/images/logo-carte.jpg';
 	$L     = esc_html( $label );
 
 	$inner  = '<p>Madame, Monsieur,</p>';
@@ -267,7 +267,7 @@ function ag_ja_build_email_html( $label, $code ) {
 	$inner .= ag_email_button( 'Voir l\'offre pour vos diplômés', $share );
 	$inner .= '<p style="color:#9a9aa5;font-size:13px;">Je peux vous adresser une présentation d\'une page. Seriez-vous disponible 15 minutes pour en échanger&nbsp;?</p>';
 	$inner .= '<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:24px;border-top:1px solid rgba(255,255,255,.12);padding-top:18px;"><tr>'
-		. '<td style="padding-right:14px;vertical-align:top;"><img src="' . esc_url( $logo ) . '" alt="Alliance Groupe" width="52" height="52" style="display:block;border-radius:10px;border:1px solid rgba(212,180,92,.4);"></td>'
+		. '<td style="padding-right:16px;vertical-align:middle;"><img src="' . esc_url( $logo ) . '" alt="Alliance Groupe" width="150" style="display:block;width:150px;height:auto;border-radius:10px;"></td>'
 		. '<td style="vertical-align:middle;font-family:Arial,sans-serif;color:#e8e8ee;font-size:13px;line-height:1.55;">'
 		. '<strong style="color:#fff;font-size:15px;">Fabrizio</strong><br>'
 		. '<span style="color:#D4B45C;">Fondateur — Alliance Groupe</span><br>'
