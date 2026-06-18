@@ -24,8 +24,8 @@
             $logo_url = '';
             $img_dir = get_stylesheet_directory() . '/assets/images/';
             $img_uri = get_stylesheet_directory_uri() . '/assets/images/';
-            // Préfère la version d'en-tête (lion + AG, fond transparent) si présente.
-            foreach ( array('logo-header','logo') as $base ) {
+            // Préfère logo-carte (logo officiel) puis la version d'en-tête transparente.
+            foreach ( array('logo-carte','logo-header','logo') as $base ) {
                 foreach ( array('png','webp','svg','jpg','jpeg') as $ext ) {
                     if ( file_exists( $img_dir . $base . '.' . $ext ) ) { $logo_url = $img_uri . $base . '.' . $ext; break 2; }
                 }

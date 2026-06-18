@@ -263,6 +263,16 @@ function ag_ja_build_email_html( $label, $code ) {
 		. '<li><strong>Espace client sécurisé</strong> (dépôt de pièces confidentiel)</li>'
 		. '<li>Conforme <strong>RGPD &amp; secret professionnel</strong></li>'
 		. '</ul>';
+
+	$av = get_stylesheet_directory_uri() . '/assets/images/templates/avocat/';
+	$inner .= '<p style="margin:18px 0 8px;color:#D4B45C;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Aperçu du site Premium</p>';
+	$inner .= '<img src="' . esc_url( $av . 'email-apercu.jpg' ) . '" alt="Aperçu du site d\'avocat Premium" width="520" style="display:block;width:100%;max-width:520px;height:auto;border-radius:12px;border:1px solid rgba(212,180,92,.25);margin:0 0 18px;">';
+	$inner .= '<div style="background:rgba(212,180,92,.07);border:1px solid rgba(212,180,92,.30);border-radius:12px;padding:16px;margin:0 0 20px;">'
+		. '<p style="margin:0 0 10px;color:#fff;font-weight:bold;">⚖️ La recherche Judilibre, intégrée à leur site</p>'
+		. '<img src="' . esc_url( $av . 'email-judilibre.jpg' ) . '" alt="Recherche de jurisprudence Judilibre intégrée au site" width="488" style="display:block;width:100%;max-width:488px;height:auto;border-radius:10px;">'
+		. '<p style="margin:10px 0 0;color:#cfcfd6;font-size:13px;">Jurisprudence en direct (Cour de cassation + cours d\'appel), filtres « font jurisprudence », année, matière — sans quitter leur back-office.</p>'
+		. '</div>';
+
 	$inner .= '<p><strong style="color:#fff;">Sans aucun coût ni engagement</strong> pour votre établissement : un simple code dédié à ' . $L . ', que vous transmettez à vos diplômés.</p>';
 	$inner .= ag_email_button( 'Voir l\'offre pour vos diplômés', $share );
 	$inner .= '<p style="color:#9a9aa5;font-size:13px;">Je peux vous adresser une présentation d\'une page. Seriez-vous disponible 15 minutes pour en échanger&nbsp;?</p>';
