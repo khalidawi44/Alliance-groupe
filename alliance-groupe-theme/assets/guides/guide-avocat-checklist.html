@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide — Le site qui attire des clients à votre cabinet</title>
+<style>
+  :root{ --navy:#0f1830; --navy2:#16213f; --gold:#c8a85a; --ink:#1b1b1b; --muted:#5a5f6b; }
+  *{ box-sizing:border-box; }
+  body{ font-family:Georgia,"Times New Roman",serif; color:var(--ink); margin:0; background:#f4f2ec; line-height:1.55; }
+  .page{ max-width:820px; margin:0 auto; background:#fff; }
+  .cover{ background:linear-gradient(160deg,var(--navy) 0%,var(--navy2) 70%,var(--navy) 100%); color:#fff; padding:54px 56px 46px; }
+  .brand{ letter-spacing:3px; text-transform:uppercase; font-size:12px; color:var(--gold); font-family:Arial,Helvetica,sans-serif; font-weight:700; }
+  .cover h1{ font-size:34px; line-height:1.15; margin:14px 0 10px; }
+  .cover h1 em{ color:var(--gold); font-style:italic; }
+  .cover p{ color:rgba(255,255,255,.82); font-size:16px; margin:0; max-width:640px; }
+  .body{ padding:40px 56px 30px; }
+  h2{ font-size:21px; color:var(--navy); border-bottom:2px solid var(--gold); padding-bottom:8px; margin:34px 0 16px; }
+  h2 .n{ color:var(--gold); }
+  ol{ counter-reset:item; list-style:none; padding:0; margin:0; }
+  ol li{ counter-increment:item; position:relative; padding:12px 0 12px 46px; border-bottom:1px solid #eee; }
+  ol li::before{ content:counter(item); position:absolute; left:0; top:11px; width:30px; height:30px; background:var(--navy); color:var(--gold); border-radius:50%; font-family:Arial,Helvetica,sans-serif; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center; }
+  ol li strong{ color:var(--navy); }
+  .check{ list-style:none; padding:0; margin:0; }
+  .check li{ position:relative; padding:9px 0 9px 30px; border-bottom:1px solid #f0f0f0; font-family:Arial,Helvetica,sans-serif; font-size:14.5px; }
+  .check li::before{ content:"\2713"; position:absolute; left:0; top:9px; color:var(--gold); font-weight:700; }
+  .note{ background:#faf7ee; border:1px solid #e6dcc0; border-left:4px solid var(--gold); padding:14px 18px; margin:22px 0; font-size:14px; color:var(--muted); font-family:Arial,Helvetica,sans-serif; }
+  .cta{ background:var(--navy); color:#fff; padding:26px 56px; text-align:center; }
+  .cta a{ color:var(--gold); text-decoration:none; font-weight:700; }
+  .cta .small{ color:rgba(255,255,255,.6); font-size:12px; font-family:Arial,Helvetica,sans-serif; margin-top:8px; }
+  .foot{ padding:18px 56px 40px; font-size:11.5px; color:var(--muted); font-family:Arial,Helvetica,sans-serif; }
+  @media print{
+    body{ background:#fff; }
+    .page{ max-width:none; }
+    .cta a{ color:var(--navy); }
+    @page{ margin:14mm; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="cover">
+    <div class="brand">Alliance Groupe — Studio web &amp; cybersécurité</div>
+    <h1>Le site qui <em>attire des clients</em><br>à votre cabinet</h1>
+    <p>Le guide express pour les avocats, juristes et notaires : les 7 pages qui transforment une vitrine en machine à rendez-vous, et la checklist RGPD + secret professionnel à ne pas rater.</p>
+  </div>
+
+  <div class="body">
+
+    <h2><span class="n">I.</span> Les 7 pages qui font venir des clients</h2>
+    <ol>
+      <li><strong>Une page d'accueil claire</strong> — nom du cabinet, barreau d'inscription, domaines, et un bouton « Prendre rendez-vous » visible sans avoir à descendre.</li>
+      <li><strong>Une page par domaine d'expertise</strong> (divorce, pénal, affaires, travail…) — chaque page est une porte d'entrée supplémentaire sur Google.</li>
+      <li><strong>Une page « Honoraires » transparente</strong> — 1er rendez-vous, forfait, temps passé. Elle rassure et filtre les bons dossiers.</li>
+      <li><strong>Une page « Le cabinet »</strong> — photo, parcours, barreau, langues parlées. L'humain crée la confiance.</li>
+      <li><strong>Un formulaire de prise de rendez-vous confidentiel</strong> (RGPD, secret professionnel) plutôt qu'un simple numéro de téléphone.</li>
+      <li><strong>Les mentions obligatoires</strong> — mentions légales, politique de confidentialité (RGPD), cookies, barreau : exigées et rassurantes.</li>
+      <li><strong>Une fiche Google Business à jour</strong>, reliée au site (sans solliciter d'avis, conformément au RIN).</li>
+    </ol>
+
+    <h2><span class="n">II.</span> Checklist RGPD + secret professionnel (art. 66-5)</h2>
+    <ul class="check">
+      <li>Hébergement des données dans l'Union européenne.</li>
+      <li>Pages Mentions légales, Politique de confidentialité et Cookies présentes et à jour.</li>
+      <li>Formulaire de contact avec consentement explicite et finalité indiquée.</li>
+      <li>Bandeau cookies si vous utilisez des outils de mesure d'audience.</li>
+      <li>Échanges de pièces clients sécurisés (espace privé) plutôt que par email simple.</li>
+      <li>Aucun cookie publicitaire tiers sans consentement préalable.</li>
+      <li>Procédure prête en cas de fuite de données (notification CNIL sous 72 h).</li>
+      <li>Rappel du secret professionnel visible et respecté dans tous les formulaires.</li>
+    </ul>
+
+    <div class="note">
+      Ce document est une aide à la mise en ligne. L'avocat reste seul responsable du contenu de son site et du respect de sa déontologie (RIN / vade-mecum CNB). Aucune sollicitation de témoignages clients : elle est proscrite par le RIN.
+    </div>
+
+  </div>
+
+  <div class="cta">
+    <p>Toutes ces pages sont déjà prêtes dans le thème gratuit <strong>AG Starter Avocat</strong>.<br>
+    Pour aller plus loin (recherche de jurisprudence Judilibre intégrée, espace client sécurisé où vos clients déposent leurs pièces) :<br>
+    <a href="https://alliancegroupe-inc.com/wordpress-avocat">Découvrir le Pack Premium — 69 € (paiement unique) →</a></p>
+    <div class="small">alliancegroupe-inc.com · Nantes · Naples</div>
+  </div>
+
+  <div class="foot">
+    © 2026 Alliance Groupe — Guide offert, librement partageable. Les informations réglementaires (RGPD, RIN, art. 66-5) sont données à titre indicatif et ne constituent pas un conseil juridique.
+  </div>
+
+</div>
+</body>
+</html>
