@@ -62,8 +62,8 @@ $ag_about_is_home = is_front_page() || is_home() || is_page( 'accueil' );
         <div class="ag-about-refondu__studio">
             <?php
             $ag_fab_img = '';
-            foreach ( array( 'jpg', 'jpeg', 'png', 'webp' ) as $ext ) {
-                if ( file_exists( get_stylesheet_directory() . '/assets/images/team/fabrizio.' . $ext ) ) { $ag_fab_img = $img_base . 'fabrizio.' . $ext; break; }
+            foreach ( array( 'fabrizio-about.jpg', 'fabrizio.jpg', 'fabrizio.jpeg', 'fabrizio.png', 'fabrizio.webp' ) as $f ) {
+                if ( file_exists( get_stylesheet_directory() . '/assets/images/team/' . $f ) ) { $ag_fab_img = $img_base . $f; break; }
             }
             ?>
             <article class="ag-team-card ag-team-card--solo">

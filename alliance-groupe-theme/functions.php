@@ -50,6 +50,21 @@ add_action( 'admin_init', function () {
     update_option( 'ag_auto_pages_v9', 1 );
 } );
 
+// Retire « Le Voyage » de TOUS les menus (page conservée « en réserve » :
+// elle existe toujours et reste accessible par URL, mais n'apparaît plus
+// dans la navigation). Pas besoin de toucher au menu en base.
+add_filter( 'wp_nav_menu_objects', function ( $items ) {
+    if ( ! is_array( $items ) ) return $items;
+    foreach ( $items as $k => $it ) {
+        $url   = isset( $it->url ) ? (string) $it->url : '';
+        $title = isset( $it->title ) ? trim( wp_strip_all_tags( (string) $it->title ) ) : '';
+        if ( false !== strpos( $url, '/le-voyage' ) || 'Le Voyage' === $title ) {
+            unset( $items[ $k ] );
+        }
+    }
+    return $items;
+}, 20 );
+
 // L'ancienne page de prise de RDV (Cal.com) redirige vers l'offre sur-mesure.
 add_action( 'template_redirect', function () {
     if ( is_page( 'rendez-vous' ) || is_page_template( 'templates/page-rdv.php' ) ) {
