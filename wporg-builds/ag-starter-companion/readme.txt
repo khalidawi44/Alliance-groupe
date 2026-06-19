@@ -1,131 +1,135 @@
 === AG Starter Companion ===
 
 Contributors: adminag
-Tags: starter sites, demo content, one click import, theme setup, french
+Tags: starter sites, demo content, one click import, theme setup
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.12.0
+Stable tag: 1.13.0
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Plugin compagnon pour les themes AG Starter (Restaurant, Artisan, Coach, Avocat). Importe en un clic les pages, le menu et les reglages pour un site pret a l'emploi, 100% en francais.
+Companion plugin for the AG Starter themes (Restaurant, Artisan, Coach, Avocat). One-click import of the pages, menu and settings for a ready-to-use website.
 
 == Description ==
 
-AG Starter Companion est le plugin compagnon officiel des themes gratuits AG Starter publies par AGthèmes (Alliance Group). Il apporte une fonctionnalite que les themes seuls ne peuvent pas offrir selon les regles WordPress.org : l'import automatise de contenu demo.
+AG Starter Companion is the official companion plugin for the free AG Starter themes published by AGthemes (Alliance Group). It provides a feature that themes alone are not allowed to offer under the WordPress.org guidelines: automated demo content import.
 
-En un clic, le plugin cree pour vous :
+In one click, the plugin creates for you:
 
-* Les pages essentielles du theme actif (Accueil + 4 pages sectorielles adaptees : carte/reservation pour un restaurant, prestations/realisations pour un artisan, accompagnements/temoignages pour un coach).
-* Un menu principal contenant toutes ces pages, automatiquement assigne a l'emplacement "primary" du theme.
-* Le reglage "page d'accueil statique" utilisant la page "Accueil" (ce qui declenche le rendu du template front-page.php du theme).
-* L'activation des permaliens au format /%postname%/ si ce n'etait pas deja le cas.
+* The essential pages of the active theme (Home + 4 sector pages tailored to the theme: menu/booking for a restaurant, services/portfolio for an artisan, programs/testimonials for a coach).
+* A primary menu containing all of these pages, automatically assigned to the theme "primary" location.
+* The "static front page" setting using the "Home" page (which triggers the rendering of the theme front-page.php template).
+* Pretty permalinks in the /%postname%/ format if they were not already enabled.
 
-Tout est 100% local : aucune connexion internet n'est necessaire, aucun appel API externe, aucune donnee envoyee nulle part.
+Everything runs 100% locally: no internet connection is required, no external API call, no data sent anywhere.
 
-= Themes supportes =
+= Supported themes =
 
 * AG Starter Restaurant (https://wordpress.org/themes/ag-starter-restaurant/)
 * AG Starter Artisan (https://wordpress.org/themes/ag-starter-artisan/)
 * AG Starter Coach (https://wordpress.org/themes/ag-starter-coach/)
-* AG Starter Avocat (https://wordpress.org/themes/ag-starter-avocat/) — cree aussi 6 Domaines d'expertise via le CPT ag_domaine
+* AG Starter Avocat (https://wordpress.org/themes/ag-starter-avocat/) — also creates 6 areas of expertise through the ag_domaine custom post type
 
-Le plugin detecte automatiquement quel theme AG Starter est actif et adapte le contenu importe en consequence. Si aucun theme AG Starter n'est actif, le plugin se met en veille et n'affiche rien.
+The plugin automatically detects which AG Starter theme is active and adapts the imported content accordingly. If no AG Starter theme is active, the plugin stays dormant and displays nothing.
 
-= Pour qui ? =
+= Who is it for? =
 
-Ce plugin est pense pour les personnes qui ne codent pas et qui veulent un site pret a l'emploi en quelques minutes apres l'installation de leur theme. Parfait pour :
+This plugin is designed for people who do not code and who want a ready-to-use website a few minutes after installing their theme. Perfect for:
 
-* Un restaurateur qui veut lancer une vitrine en ligne sans agence
-* Un artisan qui veut afficher ses prestations et zones d'intervention
-* Un coach ou consultant qui veut presenter ses offres et prendre des rendez-vous
+* A restaurant owner who wants to launch an online storefront without an agency
+* An artisan who wants to display their services and service areas
+* A coach or consultant who wants to present their offers and take appointments
 
-= Fonctionnalites =
+= Features =
 
-* Import en un clic (un seul bouton dans Apparence > Configuration AG)
-* Detection automatique du theme AG Starter actif
-* Reinitialisation possible a tout moment
-* Aucune creation de table SQL
-* Conforme aux standards GPL v2+
-* Prepare pour la traduction (text-domain ag-starter-companion)
-* Aucune dependance a un autre plugin
-* Aucun tracking, aucune publicite, aucun email collecte
+* One-click import (a single button under Appearance > AG Setup)
+* Automatic detection of the active AG Starter theme
+* Reset available at any time
+* No SQL table creation
+* GPL v2+ compliant
+* Translation ready (text domain ag-starter-companion)
+* No dependency on any other plugin
+* No tracking, no advertising, no email collection
 
 == Installation ==
 
-1. Installez l'un des themes AG Starter (Restaurant, Artisan, Coach ou Avocat) et activez-le.
-2. Dans WordPress, allez dans Extensions > Ajouter et cherchez "AG Starter Companion".
-3. Cliquez sur "Installer maintenant", puis "Activer".
-4. Une notice apparait vous invitant a lancer la configuration. Cliquez dessus, ou allez directement dans Apparence > Configuration AG.
-5. Cliquez sur le bouton "Importer le contenu demo". C'est tout.
+1. Install one of the AG Starter themes (Restaurant, Artisan, Coach or Avocat) and activate it.
+2. In WordPress, go to Plugins > Add New and search for "AG Starter Companion".
+3. Click "Install Now", then "Activate".
+4. A notice invites you to launch the setup. Click it, or go directly to Appearance > AG Setup.
+5. Click the "Import demo content" button. That's all.
 
-Vous pouvez relancer l'import ou reinitialiser le contenu a tout moment depuis la meme page.
+You can re-run the import or reset the content at any time from the same page.
 
 == Frequently Asked Questions ==
 
-= Le plugin modifie-t-il mes donnees existantes ? =
+= Does the plugin modify my existing data? =
 
-Non. Si une page existe deja avec le meme slug (ex: "contact"), elle est conservee. Le plugin ne supprime rien sans confirmation explicite.
+No. If a page already exists with the same slug (e.g. "contact"), it is kept. The plugin does not delete anything without explicit confirmation.
 
-= Puis-je utiliser le plugin sans theme AG Starter ? =
+= Can I use the plugin without an AG Starter theme? =
 
-Non. Le plugin ne s'active que si l'un des themes AG Starter est en cours d'utilisation. Sinon il n'affiche rien et reste dormant.
+No. The plugin only runs if one of the AG Starter themes is in use. Otherwise it displays nothing and stays dormant.
 
-= L'import cree-t-il des articles de blog de demo ? =
+= Does the import create demo blog posts? =
 
-Non. Uniquement les pages statiques necessaires + le menu. Vos articles existants sont preserves.
+No. Only the necessary static pages + the menu. Your existing posts are preserved.
 
-= Est-ce que le plugin se connecte a internet ? =
+= Does the plugin connect to the internet? =
 
-Non. Tout est 100% local. Aucun appel API, aucun fichier telecharge.
+No. Everything is 100% local. No API call, no downloaded file.
 
-= Puis-je reinitialiser le contenu demo ? =
+= Can I reset the demo content? =
 
-Oui. Un bouton "Reinitialiser" apparait apres le premier import. Il supprime les pages creees et le menu, et remet "Afficher les articles" comme page d'accueil.
+Yes. A "Reset" button appears after the first import. It deletes the created pages and menu, and sets "Show latest posts" back as the front page.
 
-= Le plugin collecte-t-il des donnees ? =
+= Does the plugin collect any data? =
 
-Non. Aucun tracking, aucun telemetry, aucun email. Le plugin est totalement statique.
+No. No tracking, no telemetry, no email. The plugin is entirely static.
 
-= Sous quelle licence est-il publie ? =
+= Under which license is it published? =
 
-GPL v2 ou ulterieure. Vous pouvez l'utiliser, le modifier et le redistribuer librement.
+GPL v2 or later. You are free to use, modify and redistribute it.
 
-= Qui a cree ce plugin ? =
+= Who created this plugin? =
 
-AGthèmes, la division theme d'Alliance Group (agence web et IA basee a Nantes, Naples et Marrakech). Plus d'infos sur https://alliancegroupe-inc.com
+AGthemes, the theme division of Alliance Group (a web and AI agency based in Nantes, Naples and Marrakech). More info at https://alliancegroupe-inc.com
 
 == Screenshots ==
 
-1. La page d'administration Apparence > Configuration AG, avec le bouton d'import en un clic.
-2. La notice d'accueil qui apparait apres l'activation du plugin.
+1. The Appearance > AG Setup admin page, with the one-click import button.
+2. The welcome notice that appears after activating the plugin.
 
 == Changelog ==
 
+= 1.13.0 =
+* Description and readme translated to English for the WordPress.org Plugin Directory.
+* Removed the manual load_plugin_textdomain call (translations are loaded automatically since WordPress 4.6).
+
 = 1.2.0 =
-* Ajout du support du theme AG Starter Avocat.
-* Quand AG Starter Avocat est actif, l'importer cree automatiquement 6 Domaines d'expertise (Droit des affaires, Droit du travail, Droit de la famille, Droit immobilier, Droit penal, Droit fiscal) via le CPT ag_domaine, avec icones et exemples de cas.
-* La reinitialisation supprime aussi les domaines de demo pour permettre une re-importation propre.
+* Added support for the AG Starter Avocat theme.
+* When AG Starter Avocat is active, importing automatically creates 6 areas of expertise (Business law, Labor law, Family law, Real estate law, Criminal law, Tax law) through the ag_domaine custom post type, with icons and sample cases.
+* The reset also removes the demo areas of expertise to allow a clean re-import.
 
 = 1.1.0 =
-* Premier support du theme AG Starter Avocat (sans CPT au depart).
-* Description du plugin mise a jour pour mentionner les 4 themes.
+* First support for the AG Starter Avocat theme (without the CPT at first).
+* Plugin description updated to mention the 4 themes.
 
 = 1.0.0 =
-* Version initiale.
-* Support des themes AG Starter Restaurant, Artisan et Coach.
-* Import en un clic : 5 pages + menu + page d'accueil statique + permaliens.
-* Reinitialisation possible.
-* Detection automatique du theme actif.
-* Prepare pour la traduction.
+* Initial version.
+* Support for the AG Starter Restaurant, Artisan and Coach themes.
+* One-click import: 5 pages + menu + static front page + permalinks.
+* Reset available.
+* Automatic detection of the active theme.
+* Translation ready.
 
 == Upgrade Notice ==
 
 = 1.0.0 =
-Premiere version publique. Installez et profitez de vos themes AG Starter en un clic.
+First public release. Install and enjoy your AG Starter themes in one click.
 
 == Credits ==
 
-Plugin cree par AGthèmes (Alliance Group — https://alliancegroupe-inc.com).
-Aucune dependance externe. Licence GPL v2 ou ulterieure.
+Plugin created by AGthemes (Alliance Group — https://alliancegroupe-inc.com).
+No external dependency. GPL v2 or later license.

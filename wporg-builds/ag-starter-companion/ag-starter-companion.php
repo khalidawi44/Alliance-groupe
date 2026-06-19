@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       AG Starter Companion
  * Plugin URI:        https://alliancegroupe-inc.com/templates-wordpress
- * Description:       Importer un clic pour les themes AG Starter (Restaurant, Artisan, Coach, Avocat). Cree automatiquement les pages, le menu et les reglages pour un site pret a l'emploi.
- * Version:           1.12.0
+ * Description:       One-click starter content for AG Starter themes (Restaurant, Artisan, Coach, Avocat). Automatically creates the pages, menu and settings for a ready-to-use website.
+ * Version:           1.13.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            AGthèmes
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_STARTER_COMPANION_VERSION', '1.12.0' );
+define( 'AG_STARTER_COMPANION_VERSION', '1.13.0' );
 define( 'AG_STARTER_COMPANION_FILE', __FILE__ );
 
 /**
@@ -31,7 +31,6 @@ class AG_Starter_Companion {
 	 * Constructor : wire WordPress hooks.
 	 */
 	public function __construct() {
-		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 		add_action( 'admin_menu', array( $this, 'register_admin_page' ) );
 		add_action( 'admin_notices', array( $this, 'admin_notice' ) );
 		add_action( 'admin_init', array( $this, 'maybe_auto_reimport' ) );
@@ -52,13 +51,6 @@ class AG_Starter_Companion {
 		// Enable auto-updates by default for this plugin
 
 		// Admin notice when update is available
-	}
-
-	/**
-	 * Load translations.
-	 */
-	public function load_textdomain() {
-		load_plugin_textdomain( 'ag-starter-companion', false, dirname( plugin_basename( AG_STARTER_COMPANION_FILE ) ) . '/languages' );
 	}
 
 	/**
