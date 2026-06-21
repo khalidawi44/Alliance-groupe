@@ -139,22 +139,30 @@ get_header();
                     <?php endwhile;
                     wp_reset_postdata();
                 else :
-                    $combats_fb = array(
-                        array( '🌍', 'Justice climatique',     '#1F8A3D', 'Pour une transition écologique qui ne pèse pas sur les plus modestes.' ),
-                        array( '🏠', 'Logement digne',         '#3B5998', 'Plafonnement effectif des loyers, réquisition des vacants.' ),
-                        array( '🏥', 'Service public fort',    '#E10F1A', 'Refonder l\'hôpital, l\'école, les transports publics.' ),
-                        array( '🗳️', 'Démocratie réelle',      '#8B1A8B', 'RIC, assemblées tirées au sort, reconnaissance du vote blanc.' ),
-                        array( '🔍', 'Transparence publique', '#0A0A0D', 'Open data, traçabilité des marchés publics, registre des lobbies.' ),
-                        array( '⚖️', 'Égalité réelle',         '#FFD23F', 'Lutte contre toutes les discriminations.' ),
-                    );
-                    foreach ( $combats_fb as $c ) : ?>
+                    // Pas de CPT : on lit les 6 creneaux editables du Customizer
+                    // (Personnaliser > Combats (accueil)). Toggle "Afficher" par
+                    // combat : decocher = retirer (y compris les combats de demo).
+                    // Si aucun affiche, la grille reste vide (rien code en dur).
+                    for ( $i = 1; $i <= 6; $i++ ) :
+                        if ( ! ag_asso_opt( "ag_asso_combat_on_$i", 1 ) ) {
+                            continue;
+                        }
+                        $c_title = ag_asso_opt( "ag_asso_combat_title_$i", '' );
+                        if ( ! $c_title ) {
+                            continue;
+                        }
+                        $c_emoji = ag_asso_opt( "ag_asso_combat_emoji_$i", '' );
+                        $c_color = ag_asso_opt( "ag_asso_combat_color_$i", '#1F8A3D' );
+                        $c_desc  = ag_asso_opt( "ag_asso_combat_desc_$i", '' );
+                        $c_url   = ag_asso_opt( "ag_asso_combat_url_$i", '' ) ?: home_url( '/combats/' );
+                        ?>
                         <article class="ag-asso-combat">
-                            <div class="ag-asso-combat__icon" style="background:<?php echo esc_attr( $c[2] ); ?>;"><?php echo $c[0]; ?></div>
-                            <h3><?php echo esc_html( $c[1] ); ?></h3>
-                            <p><?php echo esc_html( $c[3] ); ?></p>
-                            <a href="<?php echo esc_url( home_url( '/combats/' ) ); ?>"><?php echo esc_html( ag_asso_opt( 'ag_asso_combats_btn_label', 'En savoir plus →' ) ); ?></a>
+                            <div class="ag-asso-combat__icon" style="background:<?php echo esc_attr( $c_color ); ?>;"><?php echo esc_html( $c_emoji ); ?></div>
+                            <h3><?php echo esc_html( $c_title ); ?></h3>
+                            <?php if ( $c_desc ) : ?><p><?php echo esc_html( $c_desc ); ?></p><?php endif; ?>
+                            <a href="<?php echo esc_url( $c_url ); ?>"><?php echo esc_html( ag_asso_opt( 'ag_asso_combats_btn_label', 'En savoir plus →' ) ); ?></a>
                         </article>
-                    <?php endforeach;
+                    <?php endfor;
                 endif; ?>
             </div>
         </div>

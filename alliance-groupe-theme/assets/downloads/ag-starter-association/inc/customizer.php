@@ -266,6 +266,71 @@ function ag_asso_customize( $wp_customize ) {
 	}
 
 	// =====================================================================
+	// Combats (accueil) — 6 créneaux éditables sans coder
+	// Servent SI le menu "Combats" (admin) est vide. Décochez "Afficher"
+	// pour retirer un combat de démonstration.
+	// =====================================================================
+	$wp_customize->add_section( 'ag_asso_combats_edit', array(
+		'title'       => __( 'Combats (accueil)', 'ag-starter-association' ),
+		'panel'       => 'ag_asso_panel',
+		'priority'    => 25,
+		'description' => 'Les combats affichés sur l\'accueil. <strong>Décochez "Afficher"</strong> pour retirer un combat (y compris ceux de démonstration). <br><br>Astuce : pour des combats avec pages dédiées, créez-les dans <strong>Combats &gt; admin</strong> — ils remplaceront automatiquement ceux-ci.',
+	) );
+	$combats_defaults = array(
+		1 => array( 'on' => 1, 'emoji' => '🌍', 'color' => '#1F8A3D', 'title' => 'Justice climatique', 'desc' => 'Pour une transition écologique qui ne pèse pas sur les plus modestes.', 'url' => '' ),
+		2 => array( 'on' => 1, 'emoji' => '🏠', 'color' => '#3B5998', 'title' => 'Logement digne',     'desc' => 'Plafonnement effectif des loyers, réquisition des vacants.', 'url' => '' ),
+		3 => array( 'on' => 1, 'emoji' => '🏥', 'color' => '#E10F1A', 'title' => 'Service public fort','desc' => 'Refonder l\'hôpital, l\'école, les transports publics.', 'url' => '' ),
+		4 => array( 'on' => 1, 'emoji' => '🗳️', 'color' => '#8B1A8B', 'title' => 'Démocratie réelle',  'desc' => 'RIC, assemblées tirées au sort, reconnaissance du vote blanc.', 'url' => '' ),
+		5 => array( 'on' => 1, 'emoji' => '🔍', 'color' => '#0A0A0D', 'title' => 'Transparence publique','desc' => 'Open data, traçabilité des marchés publics, registre des lobbies.', 'url' => '' ),
+		6 => array( 'on' => 1, 'emoji' => '⚖️', 'color' => '#FFD23F', 'title' => 'Égalité réelle',     'desc' => 'Lutte contre toutes les discriminations.', 'url' => '' ),
+	);
+	for ( $i = 1; $i <= 6; $i++ ) {
+		$d = $combats_defaults[ $i ];
+		$wp_customize->add_setting( "ag_asso_combat_on_$i", array(
+			'default' => $d['on'], 'sanitize_callback' => 'absint',
+		) );
+		$wp_customize->add_control( "ag_asso_combat_on_$i", array(
+			'label'   => sprintf( '✓ Afficher le combat %d', $i ),
+			'section' => 'ag_asso_combats_edit', 'type' => 'checkbox',
+		) );
+		$wp_customize->add_setting( "ag_asso_combat_emoji_$i", array(
+			'default' => $d['emoji'], 'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( "ag_asso_combat_emoji_$i", array(
+			'label' => sprintf( 'Combat %d — emoji/icône', $i ),
+			'section' => 'ag_asso_combats_edit', 'type' => 'text',
+		) );
+		$wp_customize->add_setting( "ag_asso_combat_color_$i", array(
+			'default' => $d['color'], 'sanitize_callback' => 'sanitize_hex_color',
+		) );
+		$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, "ag_asso_combat_color_$i", array(
+			'label' => sprintf( 'Combat %d — couleur', $i ),
+			'section' => 'ag_asso_combats_edit',
+		) ) );
+		$wp_customize->add_setting( "ag_asso_combat_title_$i", array(
+			'default' => $d['title'], 'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( "ag_asso_combat_title_$i", array(
+			'label' => sprintf( 'Combat %d — titre', $i ),
+			'section' => 'ag_asso_combats_edit', 'type' => 'text',
+		) );
+		$wp_customize->add_setting( "ag_asso_combat_desc_$i", array(
+			'default' => $d['desc'], 'sanitize_callback' => 'sanitize_textarea_field',
+		) );
+		$wp_customize->add_control( "ag_asso_combat_desc_$i", array(
+			'label' => sprintf( 'Combat %d — description', $i ),
+			'section' => 'ag_asso_combats_edit', 'type' => 'textarea',
+		) );
+		$wp_customize->add_setting( "ag_asso_combat_url_$i", array(
+			'default' => $d['url'], 'sanitize_callback' => 'esc_url_raw',
+		) );
+		$wp_customize->add_control( "ag_asso_combat_url_$i", array(
+			'label' => sprintf( 'Combat %d — lien (optionnel)', $i ),
+			'section' => 'ag_asso_combats_edit', 'type' => 'url',
+		) );
+	}
+
+	// =====================================================================
 	// Identite
 	// =====================================================================
 	$wp_customize->add_section( 'ag_asso_identity', array(
