@@ -192,6 +192,80 @@ function ag_asso_customize( $wp_customize ) {
 	}
 
 	// =====================================================================
+	// Événements (accueil) — 6 créneaux éditables sans coder
+	// Servent SI le menu "Événements" (admin) est vide. Dès qu'un vrai
+	// événement est créé dans Événements > admin, ces créneaux sont
+	// ignorés (les vrais événements priment). Décochez "Afficher" pour
+	// retirer un événement de démo.
+	// =====================================================================
+	$wp_customize->add_section( 'ag_asso_events', array(
+		'title'       => __( 'Événements (accueil)', 'ag-starter-association' ),
+		'panel'       => 'ag_asso_panel',
+		'priority'    => 24,
+		'description' => 'Les événements affichés sur l\'accueil. <strong>Décochez "Afficher"</strong> pour retirer un événement (y compris ceux de démonstration). <br><br>Astuce : pour un agenda complet avec pages dédiées, créez vos événements dans <strong>Événements &gt; admin</strong> — ils remplaceront automatiquement ceux-ci.',
+	) );
+	$events_defaults = array(
+		1 => array( 'on' => 1, 'day' => '15', 'month' => 'JUIN',  'title' => 'Marche pour la justice climatique', 'place' => 'Paris — République → Bastille', 'desc' => 'Grande mobilisation nationale. Départ 14h, République. Plus de 50 organisations partenaires.', 'url' => '' ),
+		2 => array( 'on' => 1, 'day' => '22', 'month' => 'JUIN',  'title' => 'Assemblée générale annuelle',       'place' => 'Lyon — Bourse du Travail',      'desc' => 'AG ouverte aux adhérent·es : bilan moral, financier, vote du programme 2027.', 'url' => '' ),
+		3 => array( 'on' => 1, 'day' => '06', 'month' => 'JUIL.', 'title' => 'Université d\'été du mouvement',     'place' => 'Marseille — Friche Belle de Mai', 'desc' => 'Trois jours de formations, ateliers, débats. Inscription obligatoire (gratuit pour adhérents).', 'url' => '' ),
+		4 => array( 'on' => 0, 'day' => '', 'month' => '', 'title' => '', 'place' => '', 'desc' => '', 'url' => '' ),
+		5 => array( 'on' => 0, 'day' => '', 'month' => '', 'title' => '', 'place' => '', 'desc' => '', 'url' => '' ),
+		6 => array( 'on' => 0, 'day' => '', 'month' => '', 'title' => '', 'place' => '', 'desc' => '', 'url' => '' ),
+	);
+	for ( $i = 1; $i <= 6; $i++ ) {
+		$d = $events_defaults[ $i ];
+		$wp_customize->add_setting( "ag_asso_event_on_$i", array(
+			'default' => $d['on'], 'sanitize_callback' => 'absint',
+		) );
+		$wp_customize->add_control( "ag_asso_event_on_$i", array(
+			'label'   => sprintf( '✓ Afficher l\'événement %d', $i ),
+			'section' => 'ag_asso_events', 'type' => 'checkbox',
+		) );
+		$wp_customize->add_setting( "ag_asso_event_day_$i", array(
+			'default' => $d['day'], 'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( "ag_asso_event_day_$i", array(
+			'label' => sprintf( 'Événement %d — jour (ex: 15)', $i ),
+			'section' => 'ag_asso_events', 'type' => 'text',
+		) );
+		$wp_customize->add_setting( "ag_asso_event_month_$i", array(
+			'default' => $d['month'], 'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( "ag_asso_event_month_$i", array(
+			'label' => sprintf( 'Événement %d — mois (ex: JUIN)', $i ),
+			'section' => 'ag_asso_events', 'type' => 'text',
+		) );
+		$wp_customize->add_setting( "ag_asso_event_title_$i", array(
+			'default' => $d['title'], 'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( "ag_asso_event_title_$i", array(
+			'label' => sprintf( 'Événement %d — titre', $i ),
+			'section' => 'ag_asso_events', 'type' => 'text',
+		) );
+		$wp_customize->add_setting( "ag_asso_event_place_$i", array(
+			'default' => $d['place'], 'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp_customize->add_control( "ag_asso_event_place_$i", array(
+			'label' => sprintf( 'Événement %d — lieu', $i ),
+			'section' => 'ag_asso_events', 'type' => 'text',
+		) );
+		$wp_customize->add_setting( "ag_asso_event_desc_$i", array(
+			'default' => $d['desc'], 'sanitize_callback' => 'sanitize_textarea_field',
+		) );
+		$wp_customize->add_control( "ag_asso_event_desc_$i", array(
+			'label' => sprintf( 'Événement %d — description', $i ),
+			'section' => 'ag_asso_events', 'type' => 'textarea',
+		) );
+		$wp_customize->add_setting( "ag_asso_event_url_$i", array(
+			'default' => $d['url'], 'sanitize_callback' => 'esc_url_raw',
+		) );
+		$wp_customize->add_control( "ag_asso_event_url_$i", array(
+			'label' => sprintf( 'Événement %d — lien d\'inscription (optionnel)', $i ),
+			'section' => 'ag_asso_events', 'type' => 'url',
+		) );
+	}
+
+	// =====================================================================
 	// Identite
 	// =====================================================================
 	$wp_customize->add_section( 'ag_asso_identity', array(

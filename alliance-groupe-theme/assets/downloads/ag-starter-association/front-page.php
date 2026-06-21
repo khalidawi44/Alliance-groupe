@@ -216,25 +216,38 @@ get_header();
                     <?php endwhile;
                     wp_reset_postdata();
                 else :
-                    $events_fb = array(
-                        array( '15', 'JUIN',  'Marche pour la justice climatique', 'Paris — République → Bastille', 'Grande mobilisation nationale. Départ 14h, République. Plus de 50 organisations partenaires.' ),
-                        array( '22', 'JUIN',  'Assemblée générale annuelle',       'Lyon — Bourse du Travail',     'AG ouverte aux adhérent·es : bilan moral, financier, vote du programme 2027.' ),
-                        array( '06', 'JUIL.', 'Université d\'été du mouvement',    'Marseille — Friche Belle de Mai', 'Trois jours de formations, ateliers, débats. Inscription obligatoire (gratuit pour adhérents).' ),
-                    );
-                    foreach ( $events_fb as $ev ) : ?>
-                        <a class="ag-asso-event ag-asso-event--link" href="<?php echo esc_url( home_url( '/evenements/' ) ); ?>">
+                    // Pas de CPT : on lit les 6 creneaux editables du Customizer
+                    // (Personnaliser > Evenements (accueil)). Chaque creneau a un
+                    // toggle "Afficher" : decocher = retirer l'evenement (y compris
+                    // les evenements de demonstration). Si aucun n'est affiche, la
+                    // grille reste vide (aucun evenement code en dur).
+                    for ( $i = 1; $i <= 6; $i++ ) :
+                        if ( ! ag_asso_opt( "ag_asso_event_on_$i", $i <= 3 ? 1 : 0 ) ) {
+                            continue;
+                        }
+                        $ev_title = ag_asso_opt( "ag_asso_event_title_$i", '' );
+                        if ( ! $ev_title ) {
+                            continue;
+                        }
+                        $ev_day   = ag_asso_opt( "ag_asso_event_day_$i", '' );
+                        $ev_month = ag_asso_opt( "ag_asso_event_month_$i", '' );
+                        $ev_place = ag_asso_opt( "ag_asso_event_place_$i", '' );
+                        $ev_desc  = ag_asso_opt( "ag_asso_event_desc_$i", '' );
+                        $ev_url   = ag_asso_opt( "ag_asso_event_url_$i", '' ) ?: home_url( '/evenements/' );
+                        ?>
+                        <a class="ag-asso-event ag-asso-event--link" href="<?php echo esc_url( $ev_url ); ?>">
                             <div class="ag-asso-event__date">
-                                <span class="ag-asso-event__day"><?php echo esc_html( $ev[0] ); ?></span>
-                                <span class="ag-asso-event__month"><?php echo esc_html( $ev[1] ); ?></span>
+                                <span class="ag-asso-event__day"><?php echo esc_html( $ev_day ?: '—' ); ?></span>
+                                <span class="ag-asso-event__month"><?php echo esc_html( $ev_month ); ?></span>
                             </div>
                             <div class="ag-asso-event__body">
-                                <h3><?php echo esc_html( $ev[2] ); ?></h3>
-                                <p class="ag-asso-event__where"><?php echo esc_html( $ev[3] ); ?></p>
-                                <p><?php echo esc_html( $ev[4] ); ?></p>
+                                <h3><?php echo esc_html( $ev_title ); ?></h3>
+                                <?php if ( $ev_place ) : ?><p class="ag-asso-event__where"><?php echo esc_html( $ev_place ); ?></p><?php endif; ?>
+                                <?php if ( $ev_desc ) : ?><p><?php echo esc_html( $ev_desc ); ?></p><?php endif; ?>
                                 <span class="ag-asso-event__cta"><?php esc_html_e( "M'inscrire →", 'ag-starter-association' ); ?></span>
                             </div>
                         </a>
-                    <?php endforeach;
+                    <?php endfor;
                 endif; ?>
             </div>
             <p style="text-align:center;margin-top:32px;">
