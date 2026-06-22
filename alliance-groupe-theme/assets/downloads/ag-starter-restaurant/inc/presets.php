@@ -455,6 +455,59 @@ class AG_Restaurant_Presets {
 			'type'        => 'textarea',
 			'input_attrs' => array( 'rows' => 9 ),
 		) );
+
+		// ── Chiffres clés (hero) — remplace les stats du preset ──
+		$wp->add_section( 'ag_restaurant_stats', array(
+			'title'       => '📊 ' . __( 'Chiffres clés (accueil)', 'ag-starter-restaurant' ),
+			'priority'    => 27,
+			'description' => __( 'Une statistique par ligne : valeur | libellé (ex : 120 | Couverts par jour). Laissez vide pour garder les chiffres du preset choisi. Effacez le contenu d\'une ligne pour retirer la stat.', 'ag-starter-restaurant' ),
+		) );
+		$wp->add_setting( 'ag_restaurant_stats_edit', array(
+			'default'           => '',
+			'sanitize_callback' => array( __CLASS__, 'sanitize_services_edit' ),
+		) );
+		$wp->add_control( 'ag_restaurant_stats_edit', array(
+			'label'       => __( 'Vos chiffres clés (3 recommandés)', 'ag-starter-restaurant' ),
+			'section'     => 'ag_restaurant_stats',
+			'type'        => 'textarea',
+			'input_attrs' => array( 'rows' => 4 ),
+		) );
+
+		// ── Témoignages — éditables (étaient liés au preset) ──
+		$wp->add_section( 'ag_restaurant_testi', array(
+			'title'       => '💬 ' . __( 'Témoignages (accueil)', 'ag-starter-restaurant' ),
+			'priority'    => 28,
+			'description' => __( 'Trois avis clients. Format : texte | nom | ville. Videz un champ pour retirer le témoignage. N\'inventez pas de faux avis : mettez de vrais retours clients.', 'ag-starter-restaurant' ),
+		) );
+		for ( $i = 1; $i <= 3; $i++ ) {
+			$wp->add_setting( 'ag_restaurant_testi_' . $i, array(
+				'default'           => '',
+				'sanitize_callback' => array( __CLASS__, 'sanitize_services_edit' ),
+			) );
+			$wp->add_control( 'ag_restaurant_testi_' . $i, array(
+				'label'       => sprintf( __( 'Témoignage %d (texte | nom | ville)', 'ag-starter-restaurant' ), $i ),
+				'section'     => 'ag_restaurant_testi',
+				'type'        => 'textarea',
+				'input_attrs' => array( 'rows' => 2 ),
+			) );
+		}
+
+		// ── FAQ — remplace la FAQ du preset ──
+		$wp->add_section( 'ag_restaurant_faq', array(
+			'title'       => '❓ ' . __( 'FAQ (accueil)', 'ag-starter-restaurant' ),
+			'priority'    => 29,
+			'description' => __( 'Une question par ligne : Question | Réponse. Laissez vide pour garder la FAQ du preset choisi.', 'ag-starter-restaurant' ),
+		) );
+		$wp->add_setting( 'ag_restaurant_faq_edit', array(
+			'default'           => '',
+			'sanitize_callback' => array( __CLASS__, 'sanitize_services_edit' ),
+		) );
+		$wp->add_control( 'ag_restaurant_faq_edit', array(
+			'label'       => __( 'Votre FAQ', 'ag-starter-restaurant' ),
+			'section'     => 'ag_restaurant_faq',
+			'type'        => 'textarea',
+			'input_attrs' => array( 'rows' => 6 ),
+		) );
 	}
 
 	public static function sanitize_services_edit( $v ) {
@@ -738,6 +791,23 @@ class AG_Restaurant_Presets {
 
 	/** @return array [['value', 'label'], ...] */
 	public static function get_active_stats() {
+		// 1. Priorité à l'édition manuelle (Personnaliser > Chiffres clés).
+		//    Format par ligne : « valeur | libellé ».
+		$edit = (string) get_theme_mod( 'ag_restaurant_stats_edit', '' );
+		if ( '' !== trim( $edit ) ) {
+			$out = array();
+			foreach ( preg_split( '/\r\n|\r|\n/', $edit ) as $line ) {
+				$line = trim( $line );
+				if ( '' === $line ) continue;
+				$parts = array_map( 'trim', explode( '|', $line ) );
+				$value = isset( $parts[0] ) ? $parts[0] : '';
+				$label = isset( $parts[1] ) ? $parts[1] : '';
+				if ( '' === $value && '' === $label ) continue;
+				$out[] = array( 'value' => $value, 'label' => $label );
+			}
+			return $out; // peut être vide volontairement (= masquer les stats)
+		}
+		// 2. Sinon, les stats du preset.
 		$p = self::get_active_preset();
 		return ( $p && isset( $p['stats'] ) ) ? $p['stats'] : array();
 	}
@@ -750,6 +820,23 @@ class AG_Restaurant_Presets {
 
 	/** @return array [['q', 'a'], ...] */
 	public static function get_active_faq() {
+		// 1. Priorité à l'édition manuelle (Personnaliser > FAQ).
+		//    Format par ligne : « Question | Réponse ».
+		$edit = (string) get_theme_mod( 'ag_restaurant_faq_edit', '' );
+		if ( '' !== trim( $edit ) ) {
+			$out = array();
+			foreach ( preg_split( '/\r\n|\r|\n/', $edit ) as $line ) {
+				$line = trim( $line );
+				if ( '' === $line ) continue;
+				$parts = array_map( 'trim', explode( '|', $line ) );
+				$q = isset( $parts[0] ) ? $parts[0] : '';
+				$a = isset( $parts[1] ) ? $parts[1] : '';
+				if ( '' === $q ) continue;
+				$out[] = array( 'q' => $q, 'a' => $a );
+			}
+			return $out;
+		}
+		// 2. Sinon, la FAQ du preset.
 		$p = self::get_active_preset();
 		return ( $p && isset( $p['faq'] ) ) ? $p['faq'] : array();
 	}
