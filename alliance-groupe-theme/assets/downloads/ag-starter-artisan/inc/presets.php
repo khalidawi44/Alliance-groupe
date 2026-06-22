@@ -278,6 +278,123 @@ class AG_Artisan_Presets {
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ), 22 );
 		add_action( 'admin_post_ag_artisan_apply_preset', array( __CLASS__, 'handle_apply' ) );
+		add_action( 'customize_register', array( __CLASS__, 'customize_content' ) );
+	}
+
+	/** Sanitize commun aux champs texte multi-lignes éditables. */
+	public static function sanitize_edit( $v ) {
+		return wp_kses_post( $v );
+	}
+
+	/**
+	 * Réglages Personnaliser pour rendre éditables (modifiables après
+	 * application d'un preset) les chiffres clés, les témoignages et la
+	 * FAQ. Override manuel : prime sur le contenu du preset.
+	 */
+	public static function customize_content( $wp ) {
+		// ── Chiffres clés (hero) ──
+		$wp->add_section( 'ag_artisan_stats', array(
+			'title'       => '📊 ' . __( 'Chiffres clés (accueil)', 'ag-starter-artisan' ),
+			'priority'    => 27,
+			'description' => __( 'Une statistique par ligne : valeur | libellé (ex : 600+ | Chantiers terminés). Laissez vide pour garder les chiffres du preset choisi.', 'ag-starter-artisan' ),
+		) );
+		$wp->add_setting( 'ag_artisan_stats_edit', array(
+			'default'           => '',
+			'sanitize_callback' => array( __CLASS__, 'sanitize_edit' ),
+		) );
+		$wp->add_control( 'ag_artisan_stats_edit', array(
+			'label'       => __( 'Vos chiffres clés (3 recommandés)', 'ag-starter-artisan' ),
+			'section'     => 'ag_artisan_stats',
+			'type'        => 'textarea',
+			'input_attrs' => array( 'rows' => 4 ),
+		) );
+
+		// ── Témoignages ──
+		$wp->add_section( 'ag_artisan_testi', array(
+			'title'       => '💬 ' . __( 'Témoignages (accueil)', 'ag-starter-artisan' ),
+			'priority'    => 28,
+			'description' => __( 'Trois avis clients. Format : texte | nom | ville. Videz un champ pour retirer le témoignage. N\'inventez pas de faux avis.', 'ag-starter-artisan' ),
+		) );
+		for ( $i = 1; $i <= 3; $i++ ) {
+			$wp->add_setting( 'ag_artisan_testi_' . $i, array(
+				'default'           => '',
+				'sanitize_callback' => array( __CLASS__, 'sanitize_edit' ),
+			) );
+			$wp->add_control( 'ag_artisan_testi_' . $i, array(
+				'label'       => sprintf( __( 'Témoignage %d (texte | nom | ville)', 'ag-starter-artisan' ), $i ),
+				'section'     => 'ag_artisan_testi',
+				'type'        => 'textarea',
+				'input_attrs' => array( 'rows' => 2 ),
+			) );
+		}
+
+		// ── FAQ ──
+		$wp->add_section( 'ag_artisan_faq', array(
+			'title'       => '❓ ' . __( 'FAQ (accueil)', 'ag-starter-artisan' ),
+			'priority'    => 29,
+			'description' => __( 'Une question par ligne : Question | Réponse. Laissez vide pour garder la FAQ du preset choisi.', 'ag-starter-artisan' ),
+		) );
+		$wp->add_setting( 'ag_artisan_faq_edit', array(
+			'default'           => '',
+			'sanitize_callback' => array( __CLASS__, 'sanitize_edit' ),
+		) );
+		$wp->add_control( 'ag_artisan_faq_edit', array(
+			'label'       => __( 'Votre FAQ', 'ag-starter-artisan' ),
+			'section'     => 'ag_artisan_faq',
+			'type'        => 'textarea',
+			'input_attrs' => array( 'rows' => 6 ),
+		) );
+
+		// ── Galerie « Réalisations » (page Réalisations) ──
+		$wp->add_section( 'ag_artisan_gallery', array(
+			'title'       => '🖼️ ' . __( 'Galerie réalisations', 'ag-starter-artisan' ),
+			'priority'    => 30,
+			'description' => __( 'Vos vraies photos de chantier (6 max). Dès qu\'une image est ajoutée ici, elle remplace les photos d\'illustration du métier. Ajoutez une légende sous chaque photo.', 'ag-starter-artisan' ),
+		) );
+		for ( $i = 1; $i <= 6; $i++ ) {
+			$wp->add_setting( 'ag_artisan_gallery_img_' . $i, array(
+				'default'           => '',
+				'sanitize_callback' => 'esc_url_raw',
+			) );
+			$wp->add_control( new WP_Customize_Image_Control( $wp, 'ag_artisan_gallery_img_' . $i, array(
+				'label'   => sprintf( __( 'Réalisation %d — photo', 'ag-starter-artisan' ), $i ),
+				'section' => 'ag_artisan_gallery',
+			) ) );
+			$wp->add_setting( 'ag_artisan_gallery_cap_' . $i, array(
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_text_field',
+			) );
+			$wp->add_control( 'ag_artisan_gallery_cap_' . $i, array(
+				'label'   => sprintf( __( 'Réalisation %d — légende', 'ag-starter-artisan' ), $i ),
+				'section' => 'ag_artisan_gallery',
+				'type'    => 'text',
+			) );
+		}
+
+		// ── Qui sommes-nous : photo équipe + timeline ──
+		$wp->add_section( 'ag_artisan_about', array(
+			'title'       => '🏛️ ' . __( 'Qui sommes-nous', 'ag-starter-artisan' ),
+			'priority'    => 31,
+			'description' => __( 'Votre photo d\'équipe/atelier et votre histoire. Pour la timeline : une étape par ligne au format « Année | Texte ». Laissez vide pour garder le contenu du preset.', 'ag-starter-artisan' ),
+		) );
+		$wp->add_setting( 'ag_artisan_about_photo', array(
+			'default'           => '',
+			'sanitize_callback' => 'esc_url_raw',
+		) );
+		$wp->add_control( new WP_Customize_Image_Control( $wp, 'ag_artisan_about_photo', array(
+			'label'   => __( 'Photo équipe / atelier', 'ag-starter-artisan' ),
+			'section' => 'ag_artisan_about',
+		) ) );
+		$wp->add_setting( 'ag_artisan_timeline_edit', array(
+			'default'           => '',
+			'sanitize_callback' => array( __CLASS__, 'sanitize_edit' ),
+		) );
+		$wp->add_control( 'ag_artisan_timeline_edit', array(
+			'label'       => __( 'Notre histoire (Année | Texte)', 'ag-starter-artisan' ),
+			'section'     => 'ag_artisan_about',
+			'type'        => 'textarea',
+			'input_attrs' => array( 'rows' => 6 ),
+		) );
 	}
 
 	public static function register_menu() {
@@ -432,6 +549,20 @@ class AG_Artisan_Presets {
 
 	/** @return array [['value', 'label'], ...] */
 	public static function get_active_stats() {
+		$edit = (string) get_theme_mod( 'ag_artisan_stats_edit', '' );
+		if ( '' !== trim( $edit ) ) {
+			$out = array();
+			foreach ( preg_split( '/\r\n|\r|\n/', $edit ) as $line ) {
+				$line = trim( $line );
+				if ( '' === $line ) continue;
+				$parts = array_map( 'trim', explode( '|', $line ) );
+				$value = isset( $parts[0] ) ? $parts[0] : '';
+				$label = isset( $parts[1] ) ? $parts[1] : '';
+				if ( '' === $value && '' === $label ) continue;
+				$out[] = array( 'value' => $value, 'label' => $label );
+			}
+			return $out;
+		}
 		$p = self::get_active_preset();
 		return ( $p && isset( $p['stats'] ) ) ? $p['stats'] : array();
 	}
@@ -444,6 +575,20 @@ class AG_Artisan_Presets {
 
 	/** @return array [['q', 'a'], ...] */
 	public static function get_active_faq() {
+		$edit = (string) get_theme_mod( 'ag_artisan_faq_edit', '' );
+		if ( '' !== trim( $edit ) ) {
+			$out = array();
+			foreach ( preg_split( '/\r\n|\r|\n/', $edit ) as $line ) {
+				$line = trim( $line );
+				if ( '' === $line ) continue;
+				$parts = array_map( 'trim', explode( '|', $line ) );
+				$q = isset( $parts[0] ) ? $parts[0] : '';
+				$a = isset( $parts[1] ) ? $parts[1] : '';
+				if ( '' === $q ) continue;
+				$out[] = array( 'q' => $q, 'a' => $a );
+			}
+			return $out;
+		}
 		$p = self::get_active_preset();
 		return ( $p && isset( $p['faq'] ) ) ? $p['faq'] : array();
 	}

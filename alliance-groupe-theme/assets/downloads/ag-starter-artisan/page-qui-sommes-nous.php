@@ -24,6 +24,12 @@ $about_photos = array(
 );
 $about_photo = isset( $about_photos[ $metier_slug ] ) ? $about_photos[ $metier_slug ] : $about_photos['generaliste'];
 
+// Override Personnaliser : votre vraie photo d'équipe / d'atelier.
+$custom_about_photo = get_theme_mod( 'ag_artisan_about_photo', '' );
+if ( $custom_about_photo ) {
+	$about_photo = $custom_about_photo;
+}
+
 // Timeline historique par metier (4-5 etapes)
 $timelines = array(
 	'macon' => array(
@@ -62,6 +68,25 @@ $timelines = array(
 	),
 );
 $timeline = isset( $timelines[ $metier_slug ] ) ? $timelines[ $metier_slug ] : $timelines['generaliste'];
+
+// Override Personnaliser → « Notre histoire (timeline) » : une étape par
+// ligne au format « Année | Texte ». Remplace la timeline de démo.
+$timeline_edit = (string) get_theme_mod( 'ag_artisan_timeline_edit', '' );
+if ( '' !== trim( $timeline_edit ) ) {
+	$custom_timeline = array();
+	foreach ( preg_split( '/\r\n|\r|\n/', $timeline_edit ) as $line ) {
+		$line = trim( $line );
+		if ( '' === $line ) continue;
+		$parts = array_map( 'trim', explode( '|', $line ) );
+		$year = isset( $parts[0] ) ? $parts[0] : '';
+		$text = isset( $parts[1] ) ? $parts[1] : '';
+		if ( '' === $year && '' === $text ) continue;
+		$custom_timeline[] = array( 'year' => $year, 'text' => $text );
+	}
+	if ( ! empty( $custom_timeline ) ) {
+		$timeline = $custom_timeline;
+	}
+}
 ?>
 
 <main id="ag-main" class="ag-main ag-main--premium" role="main">

@@ -61,6 +61,22 @@ $gallery_by_metier = array(
 );
 $gallery = isset( $gallery_by_metier[ $metier_slug ] ) ? $gallery_by_metier[ $metier_slug ] : $gallery_by_metier['generaliste'];
 
+// Override Personnaliser → « Galerie réalisations » : si l'utilisateur a
+// uploadé au moins une image, on remplace la galerie de démo par la sienne
+// (vos vraies photos de chantier > photos d'illustration).
+$custom_gallery = array();
+for ( $g = 1; $g <= 6; $g++ ) {
+	$img = get_theme_mod( 'ag_artisan_gallery_img_' . $g, '' );
+	if ( ! $img ) continue;
+	$custom_gallery[] = array(
+		'src'     => $img,
+		'caption' => get_theme_mod( 'ag_artisan_gallery_cap_' . $g, '' ),
+	);
+}
+if ( ! empty( $custom_gallery ) ) {
+	$gallery = $custom_gallery;
+}
+
 // Temoignages
 $testimonials = array();
 if ( class_exists( 'AG_Artisan_Presets' ) ) {
