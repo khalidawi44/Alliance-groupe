@@ -278,6 +278,36 @@ get_header();
        on donne la solution dans la même section (globe à gauche, audit à droite) -->
 <?php get_template_part('template-parts/menace-live'); ?>
 
+<!-- 🎬 Vidéo de présentation Alliance Groupe (Naples · Nantes) -->
+<section class="ag-promo" aria-label="Vidéo de présentation Alliance Groupe">
+	<div class="ag-promo__in">
+		<span class="ag-promo__eyebrow">ALLIANCE GROUPE EN VIDÉO</span>
+		<h2 class="ag-promo__title">De Naples à Nantes</h2>
+		<p class="ag-promo__sub">Création de site web premium &amp; cybersécurité — découvrez notre univers.</p>
+		<div class="ag-promo__frame">
+			<video class="ag-promo__video" controls preload="none" playsinline
+			       poster="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/videos/ads/promo-poster.jpg' ); ?>">
+				<source src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/videos/ads/alliance-promo-anim-horizontale-1920x1080.mp4' ); ?>" type="video/mp4">
+			</video>
+		</div>
+		<div class="ag-promo__cta">
+			<a class="ag-promo__btn" href="<?php echo esc_url( home_url( '/contact' ) ); ?>">Demander un devis gratuit</a>
+		</div>
+	</div>
+</section>
+<style>
+.ag-promo{padding:64px 18px;text-align:center;background:radial-gradient(circle at 50% 0%,#14141f,#0a0a0f)}
+.ag-promo__in{max-width:920px;margin:0 auto}
+.ag-promo__eyebrow{letter-spacing:.28em;font-size:.8rem;color:#D4B45C;font-weight:700}
+.ag-promo__title{font-size:clamp(1.8rem,4vw,2.6rem);color:#fff;margin:.3em 0 .15em}
+.ag-promo__sub{color:#cdc6b8;margin:0 0 1.6em}
+.ag-promo__frame{position:relative;border-radius:18px;overflow:hidden;border:2px solid rgba(212,180,92,.5);box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.ag-promo__video{display:block;width:100%;height:auto;background:#000}
+.ag-promo__cta{margin-top:1.4em}
+.ag-promo__btn{display:inline-block;padding:14px 30px;border-radius:999px;font-weight:700;text-decoration:none;color:#0a0a0f;background:linear-gradient(90deg,#D4B45C,#F37A1F);box-shadow:0 10px 24px rgba(243,122,31,.28)}
+.ag-promo__btn:hover{filter:brightness(1.07)}
+</style>
+
 <!-- "Choisissez votre parcours" — 4 panneaux priorisés (audit / création / maintenance / templates) -->
 <?php get_template_part('template-parts/paths-hero'); ?>
 
