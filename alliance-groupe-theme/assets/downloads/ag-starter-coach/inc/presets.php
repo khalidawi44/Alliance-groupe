@@ -271,6 +271,72 @@ class AG_Coach_Presets {
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ), 22 );
 		add_action( 'admin_post_ag_coach_apply_preset', array( __CLASS__, 'handle_apply' ) );
+		add_action( 'customize_register', array( __CLASS__, 'customize_content' ) );
+	}
+
+	/** Sanitize commun aux champs texte multi-lignes éditables. */
+	public static function sanitize_edit( $v ) {
+		return wp_kses_post( $v );
+	}
+
+	/**
+	 * Réglages Personnaliser pour rendre éditables (et donc modifiables
+	 * après application d'un preset) les chiffres clés, les témoignages
+	 * et la FAQ. Override manuel : prime sur le contenu du preset.
+	 */
+	public static function customize_content( $wp ) {
+		// ── Chiffres clés (hero) ──
+		$wp->add_section( 'ag_coach_stats', array(
+			'title'       => '📊 ' . __( 'Chiffres clés (accueil)', 'ag-starter-coach' ),
+			'priority'    => 27,
+			'description' => __( 'Une statistique par ligne : valeur | libellé (ex : 200+ | Personnes accompagnées). Laissez vide pour garder les chiffres du preset choisi.', 'ag-starter-coach' ),
+		) );
+		$wp->add_setting( 'ag_coach_stats_edit', array(
+			'default'           => '',
+			'sanitize_callback' => array( __CLASS__, 'sanitize_edit' ),
+		) );
+		$wp->add_control( 'ag_coach_stats_edit', array(
+			'label'       => __( 'Vos chiffres clés (3 recommandés)', 'ag-starter-coach' ),
+			'section'     => 'ag_coach_stats',
+			'type'        => 'textarea',
+			'input_attrs' => array( 'rows' => 4 ),
+		) );
+
+		// ── Témoignages ──
+		$wp->add_section( 'ag_coach_testi', array(
+			'title'       => '💬 ' . __( 'Témoignages (accueil)', 'ag-starter-coach' ),
+			'priority'    => 28,
+			'description' => __( 'Trois avis clients. Format : texte | nom | ville. Videz un champ pour retirer le témoignage. N\'inventez pas de faux avis.', 'ag-starter-coach' ),
+		) );
+		for ( $i = 1; $i <= 3; $i++ ) {
+			$wp->add_setting( 'ag_coach_testi_' . $i, array(
+				'default'           => '',
+				'sanitize_callback' => array( __CLASS__, 'sanitize_edit' ),
+			) );
+			$wp->add_control( 'ag_coach_testi_' . $i, array(
+				'label'       => sprintf( __( 'Témoignage %d (texte | nom | ville)', 'ag-starter-coach' ), $i ),
+				'section'     => 'ag_coach_testi',
+				'type'        => 'textarea',
+				'input_attrs' => array( 'rows' => 2 ),
+			) );
+		}
+
+		// ── FAQ ──
+		$wp->add_section( 'ag_coach_faq', array(
+			'title'       => '❓ ' . __( 'FAQ (accueil)', 'ag-starter-coach' ),
+			'priority'    => 29,
+			'description' => __( 'Une question par ligne : Question | Réponse. Laissez vide pour garder la FAQ du preset choisi.', 'ag-starter-coach' ),
+		) );
+		$wp->add_setting( 'ag_coach_faq_edit', array(
+			'default'           => '',
+			'sanitize_callback' => array( __CLASS__, 'sanitize_edit' ),
+		) );
+		$wp->add_control( 'ag_coach_faq_edit', array(
+			'label'       => __( 'Votre FAQ', 'ag-starter-coach' ),
+			'section'     => 'ag_coach_faq',
+			'type'        => 'textarea',
+			'input_attrs' => array( 'rows' => 6 ),
+		) );
 	}
 
 	public static function register_menu() {
@@ -398,6 +464,20 @@ class AG_Coach_Presets {
 	}
 
 	public static function get_active_stats() {
+		$edit = (string) get_theme_mod( 'ag_coach_stats_edit', '' );
+		if ( '' !== trim( $edit ) ) {
+			$out = array();
+			foreach ( preg_split( '/\r\n|\r|\n/', $edit ) as $line ) {
+				$line = trim( $line );
+				if ( '' === $line ) continue;
+				$parts = array_map( 'trim', explode( '|', $line ) );
+				$value = isset( $parts[0] ) ? $parts[0] : '';
+				$label = isset( $parts[1] ) ? $parts[1] : '';
+				if ( '' === $value && '' === $label ) continue;
+				$out[] = array( 'value' => $value, 'label' => $label );
+			}
+			return $out;
+		}
 		$p = self::get_active_preset();
 		return ( $p && isset( $p['stats'] ) ) ? $p['stats'] : array();
 	}
@@ -408,6 +488,20 @@ class AG_Coach_Presets {
 	}
 
 	public static function get_active_faq() {
+		$edit = (string) get_theme_mod( 'ag_coach_faq_edit', '' );
+		if ( '' !== trim( $edit ) ) {
+			$out = array();
+			foreach ( preg_split( '/\r\n|\r|\n/', $edit ) as $line ) {
+				$line = trim( $line );
+				if ( '' === $line ) continue;
+				$parts = array_map( 'trim', explode( '|', $line ) );
+				$q = isset( $parts[0] ) ? $parts[0] : '';
+				$a = isset( $parts[1] ) ? $parts[1] : '';
+				if ( '' === $q ) continue;
+				$out[] = array( 'q' => $q, 'a' => $a );
+			}
+			return $out;
+		}
 		$p = self::get_active_preset();
 		return ( $p && isset( $p['faq'] ) ) ? $p['faq'] : array();
 	}

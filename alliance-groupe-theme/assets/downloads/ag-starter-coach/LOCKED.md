@@ -1,5 +1,7 @@
 # 🔒 LOCKED — ag-starter-coach
 
+> **Déblocage ponctuel autorisé le `2026-06-22`** (autorisation écrite explicite de l'utilisateur) : rendre éditables via le Customizer les **chiffres clés (stats hero)**, les **3 témoignages** et la **FAQ**, qui étaient figés par le preset. Override manuel qui prime sur le preset. Périmètre limité à ces sections.
+
 **Verrouille le 2026-05-01.** Pas en developpement actif.
 
 Le focus actuel est sur **Barber** (cf `.AG_FOCUS` a la racine du repo).
