@@ -77,12 +77,13 @@ def qr_with_logo(url, box):
     qr = qrcode.QRCode(error_correction=ERROR_CORRECT_H, box_size=10, border=2)
     qr.add_data(url); qr.make(fit=True)
     img = qr.make_image(fill_color=INK, back_color="white").convert("RGB").resize((box, box), Image.NEAREST)
-    # logo au centre, sur pastille blanche arrondie
-    lsz = int(box*0.26); pad = int(lsz*0.16)
-    pl = lsz+pad*2
+    # logo AG au centre (plus gros), sur pastille blanche ronde + anneau or
+    lsz = int(box*0.40); pad = int(lsz*0.14)
+    pl = lsz + pad*2
     d = ImageDraw.Draw(img)
     px = (box-pl)//2; py = (box-pl)//2
-    d.rounded_rectangle([px, py, px+pl, py+pl], radius=int(pl*0.18), fill="white")
+    d.ellipse([px, py, px+pl, py+pl], fill="white")
+    d.ellipse([px, py, px+pl, py+pl], outline=GOLD, width=max(2, int(pl*0.02)))
     logo = LOGO.resize((lsz, lsz), Image.LANCZOS)
     img.paste(logo, (px+pad, py+pad), logo)
     return img
@@ -91,28 +92,30 @@ def build(slug, title):
     img = BASE.copy()
     d = ImageDraw.Draw(img)
 
-    # --- ALLIANCE GROUPE (au-dessus du lion) ---
-    tracked(d, CX, 632, "ALLIANCE GROUPE", F("playfair-700.ttf", 30), GOLD, 11)
-    d.line([(CX-70, 678), (CX+70, 678)], fill=GOLD_DIM, width=1)
-    d.polygon([(CX, 671), (CX+7, 678), (CX, 685), (CX-7, 678)], fill=GOLD)
+    # --- ALLIANCE GROUPE (centré, au-dessus du lion) ---
+    tracked(d, CX, 620, "ALLIANCE GROUPE", F("playfair-700.ttf", 26), GOLD, 11)
+    d.line([(CX-60, 660), (CX+60, 660)], fill=GOLD_DIM, width=1)
+    d.polygon([(CX, 653), (CX+7, 660), (CX, 667), (CX-7, 660)], fill=GOLD)
 
-    # --- TITRE (dégradé doré) ---
-    tf = fit(d, title, "playfair-900.ttf", 720, 84, 48)
+    # --- TITRE (dégradé doré, centré, marge confortable / bordures) ---
+    tf = fit(d, title, "playfair-900.ttf", 600, 56, 38)
     asc, desc = tf.getmetrics()
-    grad_text(img, d, CX, 706, title, tf)
+    grad_text(img, d, CX, 712 - (asc+desc)/2, title, tf)
 
-    # --- QR avec logo au centre (zone basse, sous le lion) ---
-    qbox = 250
-    qx = CX - qbox//2; qy = 962
-    pad = 18
-    d.rounded_rectangle([qx-pad, qy-pad, qx+qbox+pad, qy+qbox+pad], radius=18, fill=WHITE)
+    # --- QR avec logo AG au centre (parfaitement centré dans la zone basse) ---
+    qbox = 220
+    qx = CX - qbox//2                 # centré horizontalement sur CX
+    qcenter_y = 1092                   # posé sur le noir propre sous le lion
+    qy = qcenter_y - qbox//2
+    pad = 20
+    d.rounded_rectangle([qx-pad, qy-pad, qx+qbox+pad, qy+qbox+pad], radius=20, fill=WHITE)
     img.paste(qr_with_logo(CONTACT_URL, qbox), (qx, qy))
-    d.rounded_rectangle([qx-pad, qy-pad, qx+qbox+pad, qy+qbox+pad], radius=18, outline=GOLD, width=3)
+    d.rounded_rectangle([qx-pad, qy-pad, qx+qbox+pad, qy+qbox+pad], radius=20, outline=GOLD, width=3)
 
-    # --- TÉLÉPHONE en dessous (or vif + contour foncé pour rester lisible) ---
-    pf = F("playfair-900.ttf", 50)
+    # --- TÉLÉPHONE en dessous (centré, or vif + contour foncé) ---
+    pf = F("playfair-900.ttf", 46)
     pw = d.textlength(PHONE, font=pf)
-    d.text((CX-pw/2, qy+qbox+pad+30), PHONE, font=pf, fill=GOLD_HI,
+    d.text((CX-pw/2, qy+qbox+pad+24), PHONE, font=pf, fill=GOLD_HI,
            stroke_width=3, stroke_fill=(0, 0, 0))
 
     path = os.path.join(OUTDIR, f"post-{slug}.png")
