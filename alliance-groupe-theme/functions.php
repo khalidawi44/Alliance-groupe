@@ -884,6 +884,11 @@ document.addEventListener('ag:consent',function(e){var c=e.detail||{};gtag('cons
 gtag('js',new Date());
 <?php if ( $ga ) : ?>gtag('config','<?php echo esc_js( $ga ); ?>');<?php endif; ?>
 <?php if ( $ads ) : ?>gtag('config','<?php echo esc_js( $ads ); ?>');<?php endif; ?>
+<?php
+// Action de conversion Google Ads (ex. « Page vue ») — événement dédié, sinon Google ne la détecte pas.
+$conv     = trim( (string) apply_filters( 'ag_ads_conversion_label', get_option( 'ag_ads_conversion_label', 'ZCMWCPfQvcEcEN7pjuFD' ) ) );
+$is_login = ( isset( $GLOBALS['pagenow'] ) && 'wp-login.php' === $GLOBALS['pagenow'] );
+if ( $ads && $conv && ! $is_login ) : ?>gtag('event','conversion',{'send_to':'<?php echo esc_js( $ads ); ?>/<?php echo esc_js( $conv ); ?>'});<?php endif; ?>
 </script>
         <?php
     }
