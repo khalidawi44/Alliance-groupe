@@ -1,5 +1,7 @@
 # 🔒 LOCKED — ag-starter-avocat (Free)
 
+> **Déblocage ponctuel autorisé le `2026-06-22`** (autorisation écrite explicite de l'utilisateur) : rendre éditables/masquables via le Customizer les **compteurs (chiffres clés)** et les **3 citations parallax** Business de `inc/pro-features.php`, qui étaient codés en dur. Périmètre limité à ces 2 sections. Le reste du dossier reste verrouillé.
+
 **This directory is the FREE version of the AG Starter Avocat theme. It is locked from `2026-04-27`.**
 
 Aucun fichier de ce dossier ne doit être modifié — c'est la version stable validée par l'utilisateur (commit `698f3c9`).

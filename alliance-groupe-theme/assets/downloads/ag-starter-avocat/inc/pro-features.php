@@ -2007,7 +2007,8 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
 
     private function render_parallax_quote( $bg_url, $quote, $author ) {
         if ( ! $this->is_at_least( 'business' ) ) return;
-        echo '<section class="ag-parallax ag-parallax-business" style="background-image:url(\'' . esc_url( $bg_url ) . '\');">';
+        if ( '' === trim( $quote ) ) return; // citation vidée = masquée
+        echo '<section class="ag-parallax ag-parallax-business"' . ( $bg_url ? ' style="background-image:url(\'' . esc_url( $bg_url ) . '\');"' : '' ) . '>';
         echo '<div class="ag-parallax__overlay"></div>';
         echo '<div class="ag-parallax__content">';
         echo '<p class="ag-parallax__quote">' . esc_html( $quote ) . '</p>';
@@ -2017,29 +2018,29 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
         echo '</div></section>';
     }
 
-    public function render_parallax_quote_1() {
+    // Valeurs par defaut des 3 citations (modifiables dans le Customizer :
+    // Personnaliser > Citations (Premium) ; vider le texte = masquer).
+    private function quote_default( $i ) {
+        $d = array(
+            1 => array( 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1920&q=80', 'La justice sans la force est impuissante. La force sans la justice est tyrannique.', 'Blaise Pascal' ),
+            2 => array( 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1920&q=80', 'Le droit est l\'art du bon et de l\'équitable.', 'Celse, jurisconsulte romain' ),
+            3 => array( 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1920&q=80', 'L\'avocat est la dernière conscience de la liberté.', 'Robert Badinter' ),
+        );
+        return isset( $d[ $i ] ) ? $d[ $i ] : array( '', '', '' );
+    }
+
+    private function render_parallax_quote_n( $i ) {
+        $def = $this->quote_default( $i );
         $this->render_parallax_quote(
-            'https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1920&q=80',
-            'La justice sans la force est impuissante. La force sans la justice est tyrannique.',
-            'Blaise Pascal'
+            get_theme_mod( "ag_business_quote_{$i}_image", $def[0] ),
+            get_theme_mod( "ag_business_quote_{$i}_text",  $def[1] ),
+            get_theme_mod( "ag_business_quote_{$i}_author", $def[2] )
         );
     }
 
-    public function render_parallax_quote_2() {
-        $this->render_parallax_quote(
-            'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1920&q=80',
-            'Le droit est l\'art du bon et de l\'équitable.',
-            'Celse, jurisconsulte romain'
-        );
-    }
-
-    public function render_parallax_quote_3() {
-        $this->render_parallax_quote(
-            'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1920&q=80',
-            'L\'avocat est la dernière conscience de la liberté.',
-            'Robert Badinter'
-        );
-    }
+    public function render_parallax_quote_1() { $this->render_parallax_quote_n( 1 ); }
+    public function render_parallax_quote_2() { $this->render_parallax_quote_n( 2 ); }
+    public function render_parallax_quote_3() { $this->render_parallax_quote_n( 3 ); }
 
     // ─── Section Équipe (collaborateurs) ────────────────────────
 
@@ -2342,6 +2343,47 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
             $wp_customize->add_setting( "ag_business_shop_{$i}_url", array( 'default' => '#', 'sanitize_callback' => 'esc_url_raw' ) );
             $wp_customize->add_control( "ag_business_shop_{$i}_url", array( 'type' => 'url', 'label' => "Produit {$i} — Lien Stripe / WooCommerce", 'section' => 'ag_business_shop' ) );
         }
+
+        // Section Compteurs (chiffres cles) — etaient codes en dur
+        $wp_customize->add_section( 'ag_business_counters', array(
+            'title'       => '🔢 Chiffres clés (Premium)',
+            'priority'    => 29,
+            'description' => 'Les compteurs affichés sur l\'accueil. Videz un champ (nombre + libellé) pour retirer le compteur. Décochez "Afficher" pour masquer toute la bande.',
+        ) );
+        $wp_customize->add_setting( 'ag_business_counters_show', array( 'default' => true, 'sanitize_callback' => 'wp_validate_boolean' ) );
+        $wp_customize->add_control( 'ag_business_counters_show', array( 'type' => 'checkbox', 'label' => 'Afficher les chiffres clés', 'section' => 'ag_business_counters' ) );
+        $counter_def = array(
+            1 => array( '15+',  "Années d'expérience" ),
+            2 => array( '500+', 'Dossiers traités' ),
+            3 => array( '98%',  'Clients satisfaits' ),
+            4 => array( '24/7', 'Garde à vue' ),
+        );
+        for ( $i = 1; $i <= 4; $i++ ) {
+            $wp_customize->add_setting( "ag_business_counter_{$i}_number", array( 'default' => $counter_def[ $i ][0], 'sanitize_callback' => 'sanitize_text_field' ) );
+            $wp_customize->add_control( "ag_business_counter_{$i}_number", array( 'type' => 'text', 'label' => "Compteur {$i} — Nombre (ex : 15+)", 'section' => 'ag_business_counters' ) );
+            $wp_customize->add_setting( "ag_business_counter_{$i}_label", array( 'default' => $counter_def[ $i ][1], 'sanitize_callback' => 'sanitize_text_field' ) );
+            $wp_customize->add_control( "ag_business_counter_{$i}_label", array( 'type' => 'text', 'label' => "Compteur {$i} — Libellé", 'section' => 'ag_business_counters' ) );
+        }
+
+        // Section Citations parallax — etaient codees en dur
+        $wp_customize->add_section( 'ag_business_quotes', array(
+            'title'       => '❝ Citations (Premium)',
+            'priority'    => 30,
+            'description' => 'Les 3 citations en bandeau entre les sections. Videz le texte d\'une citation pour la masquer.',
+        ) );
+        $quote_def = array(
+            1 => array( 'La justice sans la force est impuissante. La force sans la justice est tyrannique.', 'Blaise Pascal' ),
+            2 => array( 'Le droit est l\'art du bon et de l\'équitable.', 'Celse, jurisconsulte romain' ),
+            3 => array( 'L\'avocat est la dernière conscience de la liberté.', 'Robert Badinter' ),
+        );
+        for ( $i = 1; $i <= 3; $i++ ) {
+            $wp_customize->add_setting( "ag_business_quote_{$i}_text", array( 'default' => $quote_def[ $i ][0], 'sanitize_callback' => 'sanitize_text_field' ) );
+            $wp_customize->add_control( "ag_business_quote_{$i}_text", array( 'type' => 'textarea', 'label' => "Citation {$i} — Texte (vide = masquée)", 'section' => 'ag_business_quotes' ) );
+            $wp_customize->add_setting( "ag_business_quote_{$i}_author", array( 'default' => $quote_def[ $i ][1], 'sanitize_callback' => 'sanitize_text_field' ) );
+            $wp_customize->add_control( "ag_business_quote_{$i}_author", array( 'type' => 'text', 'label' => "Citation {$i} — Auteur", 'section' => 'ag_business_quotes' ) );
+            $wp_customize->add_setting( "ag_business_quote_{$i}_image", array( 'default' => '', 'sanitize_callback' => 'esc_url_raw' ) );
+            $wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, "ag_business_quote_{$i}_image", array( 'label' => "Citation {$i} — Image de fond", 'section' => 'ag_business_quotes' ) ) );
+        }
     }
 
     public function render_mobile_call_button() {
@@ -2373,12 +2415,21 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
 
     public function render_counters() {
         if ( ! $this->is_at_least( 'business' ) ) return;
-        $counters = array(
-            array( 'number' => '15+', 'label' => __( "Annees d'experience", 'ag-starter-avocat' ) ),
-            array( 'number' => '500+', 'label' => __( 'Dossiers traites', 'ag-starter-avocat' ) ),
-            array( 'number' => '98%', 'label' => __( 'Clients satisfaits', 'ag-starter-avocat' ) ),
-            array( 'number' => '24/7', 'label' => __( 'Garde a vue', 'ag-starter-avocat' ) ),
+        if ( ! get_theme_mod( 'ag_business_counters_show', true ) ) return;
+        $defaults = array(
+            1 => array( '15+',  __( "Annees d'experience", 'ag-starter-avocat' ) ),
+            2 => array( '500+', __( 'Dossiers traites', 'ag-starter-avocat' ) ),
+            3 => array( '98%',  __( 'Clients satisfaits', 'ag-starter-avocat' ) ),
+            4 => array( '24/7', __( 'Garde a vue', 'ag-starter-avocat' ) ),
         );
+        $counters = array();
+        for ( $i = 1; $i <= 4; $i++ ) {
+            $number = get_theme_mod( "ag_business_counter_{$i}_number", $defaults[ $i ][0] );
+            $label  = get_theme_mod( "ag_business_counter_{$i}_label", $defaults[ $i ][1] );
+            if ( '' === trim( $number ) && '' === trim( $label ) ) continue;
+            $counters[] = array( 'number' => $number, 'label' => $label );
+        }
+        if ( empty( $counters ) ) return;
         echo '<section class="ag-section ag-counters"><div class="ag-container"><div class="ag-counters__grid">';
         foreach ( $counters as $c ) {
             echo '<div class="ag-counter"><span class="ag-counter__number">' . esc_html( $c['number'] ) . '</span>';
