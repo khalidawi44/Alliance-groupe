@@ -135,14 +135,27 @@ def slide_end(W,H,base,bg):
     im.alpha_composite(frame_border(W,H))
     return im.convert("RGB")
 
+def slide_card(W,H,base,bg, cardpath):
+    im=bg.copy().convert("RGBA")
+    card=Image.open(img(cardpath)).convert("RGB")
+    ch=int(H*0.88); cw=int(card.width*ch/card.height)
+    if cw>int(W*0.92): cw=int(W*0.92); ch=int(card.height*cw/card.width)
+    card=card.resize((cw,ch),Image.LANCZOS)
+    x=(W-cw)//2; y=(H-ch)//2
+    d=ImageDraw.Draw(im)
+    d.rectangle([x-4,y-4,x+cw+4,y+ch+4],outline=GOLD,width=3)
+    im.paste(card,(x,y))
+    im.alpha_composite(frame_border(W,H))
+    return im.convert("RGB")
+
 # ---------- séquence ----------
 SEQ = [
     ('logo',),
     ('title','NAPLES','cities/baie_naples_nuit.jpg','Notre berceau'),
-    ('photo','cities/naples-1.jpg','Naples'),
+    ('photo','cities/naples-1.jpg','La baie de Naples'),
     ('photo','team/naples-1.jpg',"L'esprit de famille"),
     ('photo','team/reunion-naples.jpg','Une équipe engagée'),
-    ('photo','cities/naples-2.jpg','La baie de Naples'),
+    ('photo','cities/naples-2.jpg','Les ruelles napolitaines'),
     ('photo','team/siege-naples.jpg','Notre siège'),
     ('title','NANTES','cities/nantes-1.jpg','Votre agence locale'),
     ('photo','cities/nantes-2.jpg','Nantes'),
@@ -150,10 +163,10 @@ SEQ = [
     ('photo','securite/nantes-cyber.jpg','Cybersécurité à Nantes'),
     ('photo','cities/nantes-3.jpg','Au cœur de la ville'),
     ('title','NOS OFFRES','cities/naples-3.jpg',None),
-    ('offer','Devis gratuit','Estimé sous 24 h'),
-    ('offer','Conseil offert','30 min avec un expert'),
-    ('offer','Site dès 490 €','Design premium, clé en main'),
-    ('offer','Nos réalisations','Des sites qui convertissent'),
+    ('card','gbp/post-devis.png'),
+    ('card','gbp/post-conseil.png'),
+    ('card','gbp/post-sites-490.png'),
+    ('card','gbp/post-realisation.png'),
     ('end',),
 ]
 
@@ -167,6 +180,7 @@ def render(fmt, W, H):
         elif s[0]=='title':slides.append(slide_title(W,H,base,s[1],s[2],s[3]))
         elif s[0]=='photo':slides.append(slide_photo(W,H,base,s[1],s[2]))
         elif s[0]=='offer':slides.append(slide_offer(W,H,base,bg,s[1],s[2]))
+        elif s[0]=='card': slides.append(slide_card(W,H,base,bg,s[1]))
     n=len(slides)
     dur=DURATION/n   # durée égale par diapo
     # pré-agrandir pour Ken Burns
