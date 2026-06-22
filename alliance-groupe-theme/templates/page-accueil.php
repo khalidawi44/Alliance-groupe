@@ -5,6 +5,39 @@
 get_header();
 ?>
 
+<!-- 🎬 Bandeau vidéo (header) — autoplay muet en boucle + bouton son -->
+<section class="ag-headvid" aria-label="Vidéo de présentation Alliance Groupe">
+	<video class="ag-headvid__v" autoplay muted loop playsinline preload="auto"
+	       poster="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/videos/ads/promo-poster.jpg' ); ?>">
+		<source src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/videos/ads/alliance-promo-web.mp4' ); ?>" type="video/mp4">
+	</video>
+	<div class="ag-headvid__veil"></div>
+	<div class="ag-headvid__in">
+		<span class="ag-headvid__eyebrow">DE NAPLES À NANTES</span>
+		<h2 class="ag-headvid__title"><span class="ag-uni--crea">Création de site web</span> &amp; <span class="ag-uni--secu">cybersécurité</span></h2>
+		<div class="ag-headvid__cta">
+			<a class="ag-btn-gold" href="<?php echo esc_url( home_url( '/contact' ) ); ?>">Demander un devis gratuit</a>
+			<button type="button" class="ag-headvid__sound" aria-label="Activer le son">🔇 Activer le son</button>
+		</div>
+	</div>
+</section>
+<style>
+.ag-headvid{position:relative;width:100%;height:clamp(320px,62vh,640px);overflow:hidden;background:#0a0a0f}
+.ag-headvid__v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.ag-headvid__veil{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(10,10,15,.35) 0%,rgba(10,10,15,.78) 100%)}
+.ag-headvid__in{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
+.ag-headvid__eyebrow{letter-spacing:.3em;font-size:.82rem;color:#D4B45C;font-weight:700}
+.ag-headvid__title{font-size:clamp(1.6rem,4.2vw,3rem);color:#fff;margin:.25em 0 .9em;line-height:1.15;max-width:14ch}
+.ag-headvid__cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center}
+.ag-headvid__sound{cursor:pointer;border:2px solid rgba(212,180,92,.8);background:rgba(0,0,0,.35);color:#D4B45C;font-weight:700;padding:11px 18px;border-radius:999px}
+.ag-headvid__sound:hover{background:rgba(212,180,92,.15)}
+</style>
+<script>
+(function(){var s=document.querySelector('.ag-headvid');if(!s)return;var v=s.querySelector('.ag-headvid__v'),b=s.querySelector('.ag-headvid__sound');
+v&&v.play&&v.play().catch(function(){});
+b&&b.addEventListener('click',function(){if(!v)return;v.muted=!v.muted;if(!v.muted){v.play().catch(function(){});b.textContent='🔊 Couper le son';}else{b.textContent='🔇 Activer le son';}});})();
+</script>
+
 <!-- Hero -->
 <section class="ag-hero" id="ag-main-content">
     <?php
@@ -277,36 +310,6 @@ get_header();
 <!-- ⚡ LA MENACE EN DIRECT — juste après le hero : on capte la peur, puis
        on donne la solution dans la même section (globe à gauche, audit à droite) -->
 <?php get_template_part('template-parts/menace-live'); ?>
-
-<!-- 🎬 Vidéo de présentation Alliance Groupe (Naples · Nantes) -->
-<section class="ag-promo" aria-label="Vidéo de présentation Alliance Groupe">
-	<div class="ag-promo__in">
-		<span class="ag-promo__eyebrow">ALLIANCE GROUPE EN VIDÉO</span>
-		<h2 class="ag-promo__title">De Naples à Nantes</h2>
-		<p class="ag-promo__sub">Création de site web premium &amp; cybersécurité — découvrez notre univers.</p>
-		<div class="ag-promo__frame">
-			<video class="ag-promo__video" controls preload="none" playsinline
-			       poster="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/videos/ads/promo-poster.jpg' ); ?>">
-				<source src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/videos/ads/alliance-promo-anim-horizontale-1920x1080.mp4' ); ?>" type="video/mp4">
-			</video>
-		</div>
-		<div class="ag-promo__cta">
-			<a class="ag-promo__btn" href="<?php echo esc_url( home_url( '/contact' ) ); ?>">Demander un devis gratuit</a>
-		</div>
-	</div>
-</section>
-<style>
-.ag-promo{padding:64px 18px;text-align:center;background:radial-gradient(circle at 50% 0%,#14141f,#0a0a0f)}
-.ag-promo__in{max-width:920px;margin:0 auto}
-.ag-promo__eyebrow{letter-spacing:.28em;font-size:.8rem;color:#D4B45C;font-weight:700}
-.ag-promo__title{font-size:clamp(1.8rem,4vw,2.6rem);color:#fff;margin:.3em 0 .15em}
-.ag-promo__sub{color:#cdc6b8;margin:0 0 1.6em}
-.ag-promo__frame{position:relative;border-radius:18px;overflow:hidden;border:2px solid rgba(212,180,92,.5);box-shadow:0 24px 60px rgba(0,0,0,.5)}
-.ag-promo__video{display:block;width:100%;height:auto;background:#000}
-.ag-promo__cta{margin-top:1.4em}
-.ag-promo__btn{display:inline-block;padding:14px 30px;border-radius:999px;font-weight:700;text-decoration:none;color:#0a0a0f;background:linear-gradient(90deg,#D4B45C,#F37A1F);box-shadow:0 10px 24px rgba(243,122,31,.28)}
-.ag-promo__btn:hover{filter:brightness(1.07)}
-</style>
 
 <!-- "Choisissez votre parcours" — 4 panneaux priorisés (audit / création / maintenance / templates) -->
 <?php get_template_part('template-parts/paths-hero'); ?>

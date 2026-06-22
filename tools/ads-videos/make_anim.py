@@ -75,11 +75,22 @@ def build_segment(i, s, W, H, base, bg, d):
     if s[0]=='anim':
         clip=os.path.join(CLIPDIR,f"{s[1]}.mp4")
         ov=os.path.join(SEG,f"ov{i:02d}.png"); overlay_anim(W,H,base,ANIM[s[1]]).save(ov)
-        # léger zoom (crop dynamique) + cover + overlay
-        vf=(f"[0:v]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},setsar=1,fps={FPS}[bg];"
-            f"[bg][1:v]overlay=0:0,format=yuv420p[v]")
-        cmd=[FF,"-y","-stream_loop","2","-i",clip,"-i",ov,"-filter_complex",vf,"-map","[v]","-an","-t",df,
-             "-r",str(FPS),"-c:v","libx264","-pix_fmt","yuv420p","-profile:v","high","-crf","20","-preset","medium",seg]
+        if H>W:
+            # VERTICAL : clip posé (non rogné) sur le fond or, centré + marque/légende dans les marges
+            bgp=os.path.join(SEG,"bgv.png")
+            if not os.path.exists(bgp): bg.save(bgp)
+            vf=(f"[1:v]scale={W}:-2,fps={FPS}[fg];"
+                f"[0:v][fg]overlay=(W-w)/2:(H-h)/2[b];"
+                f"[b][2:v]overlay=0:0,format=yuv420p[v]")
+            cmd=[FF,"-y","-loop","1","-i",bgp,"-stream_loop","3","-i",clip,"-i",ov,
+                 "-filter_complex",vf,"-map","[v]","-an","-t",df,
+                 "-r",str(FPS),"-c:v","libx264","-pix_fmt","yuv420p","-profile:v","high","-crf","20","-preset","medium",seg]
+        else:
+            # horizontal/carré : cover + overlay
+            vf=(f"[0:v]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},setsar=1,fps={FPS}[bg];"
+                f"[bg][1:v]overlay=0:0,format=yuv420p[v]")
+            cmd=[FF,"-y","-stream_loop","2","-i",clip,"-i",ov,"-filter_complex",vf,"-map","[v]","-an","-t",df,
+                 "-r",str(FPS),"-c:v","libx264","-pix_fmt","yuv420p","-profile:v","high","-crf","20","-preset","medium",seg]
     else:
         # Ken Burns par Pillow (rapide, fiable) -> pipe vers ffmpeg
         im=still_png(W,H,base,bg,s)
