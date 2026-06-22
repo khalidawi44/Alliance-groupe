@@ -113,3 +113,7 @@ auto-pull.log
 # Outil pentest LOCAL (sur mandat) - NE PAS publier (OPSEC) : garder en prive
 pentest-local/
 pack-securite-alliance.zip
+
+# Python cache
+__pycache__/
+*.pyc
