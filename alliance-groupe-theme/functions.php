@@ -865,12 +865,13 @@ add_action( 'wp_head', function () {
 }, 2 );
 
 // ── 8b. Google Analytics (GA4) + Google Ads, avec Consent Mode (RGPD) ──
-add_action( 'wp_head', function () {
-    $ga  = trim( (string) apply_filters( 'ag_ga4_id', get_option( 'ag_ga4_id', 'G-RSQ6Y8DHK4' ) ) );
-    $ads = trim( (string) apply_filters( 'ag_ads_id', get_option( 'ag_ads_id', 'AW-18188842206' ) ) );
-    if ( '' === $ga && '' === $ads ) return;
-    $primary = $ga ?: $ads;
-    ?>
+if ( ! function_exists( 'ag_output_gtag' ) ) {
+    function ag_output_gtag() {
+        $ga  = trim( (string) apply_filters( 'ag_ga4_id', get_option( 'ag_ga4_id', 'G-RSQ6Y8DHK4' ) ) );
+        $ads = trim( (string) apply_filters( 'ag_ads_id', get_option( 'ag_ads_id', 'AW-18188842206' ) ) );
+        if ( '' === $ga && '' === $ads ) return;
+        $primary = $ga ?: $ads;
+        ?>
 <!-- Google tag (gtag.js) — Alliance Groupe, déclenché après consentement -->
 <script>
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
@@ -884,8 +885,11 @@ gtag('js',new Date());
 <?php if ( $ga ) : ?>gtag('config','<?php echo esc_js( $ga ); ?>');<?php endif; ?>
 <?php if ( $ads ) : ?>gtag('config','<?php echo esc_js( $ads ); ?>');<?php endif; ?>
 </script>
-    <?php
-}, 1 );
+        <?php
+    }
+}
+add_action( 'wp_head', 'ag_output_gtag', 1 );      // pages publiques
+add_action( 'login_head', 'ag_output_gtag', 1 );   // wp-login.php (couverture balise « propre »)
 
 // ── 8c. Google AdSense (balise de validation + pubs) ───────────────
 add_action( 'wp_head', function () {

@@ -124,10 +124,10 @@ add_action( 'wp_head', function () {
 
 /* ── AVIS GOOGLE + mise en beauté de la page ───────────────────────────── */
 
-/** Lien public de la fiche (pour « laisser / voir les avis »). */
+/** Lien public de la fiche (pour « laisser / voir les avis »). Vide par défaut → résolu via l'API Places. */
 if ( ! function_exists( 'ag_geo_review_url' ) ) {
 	function ag_geo_review_url() {
-		return get_option( 'ag_google_review_url', 'https://share.google/RkbbmVbD9WirEFPYk' );
+		return (string) get_option( 'ag_google_review_url', '' );
 	}
 }
 
@@ -217,9 +217,8 @@ if ( ! function_exists( 'ag_geo_google_g' ) ) {
 /** Section « Avis Google » complète. */
 if ( ! function_exists( 'ag_geo_reviews_section' ) ) {
 	function ag_geo_reviews_section() {
-		$d   = ag_geo_google_data();
-		$rev = ag_geo_review_url();
-		$see = $d['url'] ? $d['url'] : $rev;
+		$d    = ag_geo_google_data();
+		$link = ag_geo_review_url() ?: ( $d['url'] ?? '' ); // option, sinon URL réelle Google (Places)
 
 		$rating = $d['rating'] ? number_format_i18n( $d['rating'], 1 ) : '';
 		$badge  = '<div class="ag-rev-head">' . ag_geo_google_g()
@@ -251,14 +250,17 @@ if ( ! function_exists( 'ag_geo_reviews_section' ) ) {
 			$cards .= '<p class="ag-rev-empty">Soyez le premier à partager votre expérience — ça nous aide énormément. 🙏</p>';
 		}
 
+		$cta = '';
+		if ( $link ) {
+			$cta = '<div class="ag-rev-cta">'
+				. '<a class="ag-btn-gold" href="' . esc_url( $link ) . '" target="_blank" rel="noopener">★ Laisser un avis sur Google</a>'
+				. '<a class="ag-btn-ghost" href="' . esc_url( $link ) . '" target="_blank" rel="noopener">Voir nos avis Google</a>'
+				. '</div>';
+		}
 		return '<section class="ag-reviews">'
 			. '<h2>Ils nous recommandent</h2>'
-			. $badge . $cards
-			. '<div class="ag-rev-cta">'
-			. '<a class="ag-btn-gold" href="' . esc_url( $rev ) . '" target="_blank" rel="noopener">★ Laisser un avis sur Google</a>'
-			. '<a class="ag-btn-ghost" href="' . esc_url( $see ) . '" target="_blank" rel="noopener">Voir nos avis Google</a>'
-			. '</div>'
-			. '<p class="ag-rev-sub">Avis vérifiés publiés sur notre fiche Google. Un projet ? <a href="' . esc_url( home_url( '/contact' ) ) . '">Demandez votre devis gratuit</a>.</p>'
+			. $badge . $cards . $cta
+			. '<p class="ag-rev-sub">Un projet ? <a href="' . esc_url( home_url( '/contact' ) ) . '">Demandez votre devis gratuit</a>.</p>'
 			. '</section>';
 	}
 }
@@ -318,8 +320,9 @@ add_action( 'wp_head', function () {
 		'email'     => 'contact@alliancegroupe-inc.com',
 		'image'     => get_template_directory_uri() . '/assets/images/logo-carte.jpg',
 		'areaServed'=> 'Nantes, Loire-Atlantique',
-		'sameAs'    => array( ag_geo_review_url() ),
 	);
+	$fiche = ag_geo_review_url() ?: ( $d['url'] ?? '' );
+	if ( $fiche ) $ld['sameAs'] = array( $fiche );
 	if ( ! empty( $d['total'] ) && ! empty( $d['rating'] ) ) {
 		$ld['aggregateRating'] = array(
 			'@type'       => 'AggregateRating',
