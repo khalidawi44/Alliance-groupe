@@ -180,9 +180,13 @@ endif; ?>
 		<!-- Témoignages clients -->
 		<section class="ag-testi-wrap">
 			<div class="ag-container">
+				<?php
+				$ag_testi_title = ag_coach_opt( 'ag_coach_testi_title', 'Ils nous font confiance' );
+				$ag_testi_sub   = ag_coach_opt( 'ag_coach_testi_subtitle', '' );
+				?>
 				<div class="ag-services-grid-header ag-anim">
-					<h2 class="ag-services-grid-title">Ils nous font <span>confiance</span></h2>
-					<p class="ag-services-grid-lead">⭐⭐⭐⭐⭐ Plus de 200 avis clients vérifiés.</p>
+					<?php if ( $ag_testi_title ) : ?><h2 class="ag-services-grid-title"><?php echo esc_html( $ag_testi_title ); ?></h2><?php endif; ?>
+					<?php if ( $ag_testi_sub ) : ?><p class="ag-services-grid-lead"><?php echo esc_html( $ag_testi_sub ); ?></p><?php endif; ?>
 				</div>
 				<div class="ag-testi-grid">
 					<?php foreach ( array( $t1, $t2, $t3 ) as $t ) :

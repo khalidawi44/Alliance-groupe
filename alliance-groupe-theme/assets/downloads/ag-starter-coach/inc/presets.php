@@ -308,6 +308,25 @@ class AG_Coach_Presets {
 			'priority'    => 28,
 			'description' => __( 'Trois avis clients. Format : texte | nom | ville. Videz un champ pour retirer le témoignage. N\'inventez pas de faux avis.', 'ag-starter-coach' ),
 		) );
+		$wp->add_setting( 'ag_coach_testi_title', array(
+			'default'           => 'Ils nous font confiance',
+			'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp->add_control( 'ag_coach_testi_title', array(
+			'label'   => __( 'Titre de la section', 'ag-starter-coach' ),
+			'section' => 'ag_coach_testi',
+			'type'    => 'text',
+		) );
+		$wp->add_setting( 'ag_coach_testi_subtitle', array(
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp->add_control( 'ag_coach_testi_subtitle', array(
+			'label'       => __( 'Sous-titre (laisser vide = aucun)', 'ag-starter-coach' ),
+			'description' => __( 'N\'affichez un nombre d\'avis que s\'il est réel. Ex : « Les retours de nos clients ».', 'ag-starter-coach' ),
+			'section'     => 'ag_coach_testi',
+			'type'        => 'text',
+		) );
 		for ( $i = 1; $i <= 3; $i++ ) {
 			$wp->add_setting( 'ag_coach_testi_' . $i, array(
 				'default'           => '',

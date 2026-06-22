@@ -479,6 +479,25 @@ class AG_Restaurant_Presets {
 			'priority'    => 28,
 			'description' => __( 'Trois avis clients. Format : texte | nom | ville. Videz un champ pour retirer le témoignage. N\'inventez pas de faux avis : mettez de vrais retours clients.', 'ag-starter-restaurant' ),
 		) );
+		$wp->add_setting( 'ag_restaurant_testi_title', array(
+			'default'           => 'Ils nous font confiance',
+			'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp->add_control( 'ag_restaurant_testi_title', array(
+			'label'   => __( 'Titre de la section', 'ag-starter-restaurant' ),
+			'section' => 'ag_restaurant_testi',
+			'type'    => 'text',
+		) );
+		$wp->add_setting( 'ag_restaurant_testi_subtitle', array(
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_text_field',
+		) );
+		$wp->add_control( 'ag_restaurant_testi_subtitle', array(
+			'label'       => __( 'Sous-titre (laisser vide = aucun)', 'ag-starter-restaurant' ),
+			'description' => __( 'N\'affichez un nombre d\'avis que s\'il est réel. Ex : « Les retours de nos clients ».', 'ag-starter-restaurant' ),
+			'section'     => 'ag_restaurant_testi',
+			'type'        => 'text',
+		) );
 		for ( $i = 1; $i <= 3; $i++ ) {
 			$wp->add_setting( 'ag_restaurant_testi_' . $i, array(
 				'default'           => '',
