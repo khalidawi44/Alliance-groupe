@@ -117,3 +117,6 @@ pack-securite-alliance.zip
 # Python cache
 __pycache__/
 *.pyc
+
+# Rendu vidéo temporaire
+tools/ads-videos/_seg/
