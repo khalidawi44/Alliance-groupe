@@ -121,3 +121,212 @@ add_action( 'wp_head', function () {
 	$schema = array( '@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => $items );
 	echo '<script type="application/ld+json">' . wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
 }, 12 );
+
+/* ── AVIS GOOGLE + mise en beauté de la page ───────────────────────────── */
+
+/** Lien public de la fiche (pour « laisser / voir les avis »). */
+if ( ! function_exists( 'ag_geo_review_url' ) ) {
+	function ag_geo_review_url() {
+		return get_option( 'ag_google_review_url', 'https://share.google/RkbbmVbD9WirEFPYk' );
+	}
+}
+
+/** place_id de la fiche (résolu une fois via l'API Places puis mémorisé). */
+if ( ! function_exists( 'ag_geo_place_id' ) ) {
+	function ag_geo_place_id() {
+		$pid = (string) get_option( 'ag_geo_place_id', '' );
+		if ( $pid ) return $pid;
+		$key = (string) get_option( 'ag_places_key', '' );
+		if ( ! $key ) return '';
+		$q   = rawurlencode( (string) get_option( 'ag_geo_place_query', 'Alliance Groupe Nantes' ) );
+		$url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input={$q}&inputtype=textquery&fields=place_id&key={$key}";
+		$r   = wp_remote_get( $url, array( 'timeout' => 8 ) );
+		if ( is_wp_error( $r ) ) return '';
+		$j = json_decode( wp_remote_retrieve_body( $r ), true );
+		if ( ! empty( $j['candidates'][0]['place_id'] ) ) {
+			$pid = sanitize_text_field( $j['candidates'][0]['place_id'] );
+			update_option( 'ag_geo_place_id', $pid );
+			return $pid;
+		}
+		return '';
+	}
+}
+
+/** Données Google (note + nb d'avis + jusqu'à 5 avis), cache 6 h. Avis RÉELS uniquement. */
+if ( ! function_exists( 'ag_geo_google_data' ) ) {
+	function ag_geo_google_data() {
+		$cache = get_transient( 'ag_geo_gdata' );
+		if ( is_array( $cache ) ) return $cache;
+		$data = array( 'rating' => 0, 'total' => 0, 'reviews' => array(), 'url' => ag_geo_review_url() );
+		$key  = (string) get_option( 'ag_places_key', '' );
+		$pid  = ag_geo_place_id();
+		if ( $key && $pid ) {
+			$url = "https://maps.googleapis.com/maps/api/place/details/json?place_id={$pid}&language=fr&reviews_sort=newest&fields=rating,user_ratings_total,reviews,url&key={$key}";
+			$r   = wp_remote_get( $url, array( 'timeout' => 8 ) );
+			if ( ! is_wp_error( $r ) ) {
+				$j = json_decode( wp_remote_retrieve_body( $r ), true );
+				if ( ! empty( $j['result'] ) ) {
+					$res            = $j['result'];
+					$data['rating'] = (float) ( $res['rating'] ?? 0 );
+					$data['total']  = (int) ( $res['user_ratings_total'] ?? 0 );
+					if ( ! empty( $res['url'] ) ) $data['url'] = $res['url'];
+					if ( ! empty( $res['reviews'] ) && is_array( $res['reviews'] ) ) {
+						foreach ( array_slice( $res['reviews'], 0, 6 ) as $rv ) {
+							$data['reviews'][] = array(
+								'author' => $rv['author_name'] ?? '',
+								'rating' => (int) ( $rv['rating'] ?? 5 ),
+								'text'   => $rv['text'] ?? '',
+								'time'   => $rv['relative_time_description'] ?? '',
+								'photo'  => $rv['profile_photo_url'] ?? '',
+							);
+						}
+					}
+				}
+			}
+		}
+		/* Repli : avis réels saisis à la main (option JSON ag_geo_reviews). */
+		if ( empty( $data['reviews'] ) ) {
+			$man = get_option( 'ag_geo_reviews', '' );
+			$arr = is_string( $man ) ? json_decode( $man, true ) : ( is_array( $man ) ? $man : array() );
+			if ( is_array( $arr ) && $arr ) {
+				$data['reviews'] = $arr;
+				$sum = 0; $n = 0;
+				foreach ( $arr as $a ) { $sum += (int) ( $a['rating'] ?? 5 ); $n++; }
+				if ( $n ) { $data['rating'] = round( $sum / $n, 1 ); $data['total'] = $n; }
+			}
+		}
+		set_transient( 'ag_geo_gdata', $data, 6 * HOUR_IN_SECONDS );
+		return $data;
+	}
+}
+
+if ( ! function_exists( 'ag_geo_stars' ) ) {
+	function ag_geo_stars( $n ) {
+		$n = max( 0, min( 5, (int) round( $n ) ) );
+		return str_repeat( '★', $n ) . str_repeat( '☆', 5 - $n );
+	}
+}
+
+/** Petit logo Google « G » (SVG inline). */
+if ( ! function_exists( 'ag_geo_google_g' ) ) {
+	function ag_geo_google_g() {
+		return '<svg viewBox="0 0 48 48" width="22" height="22" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6.1C12.3 13.2 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-2.8-.4-4.1H24v7.8h12.4c-.3 2.1-1.6 5.2-4.6 7.3l7.1 5.5c4.3-3.9 6.8-9.7 6.8-16.5z"/><path fill="#FBBC05" d="M10.4 28.3c-.5-1.4-.8-2.9-.8-4.3s.3-2.9.8-4.3l-7.8-6.1C1 16.8 0 20.3 0 24s1 7.2 2.6 10.4l7.8-6.1z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.1-5.5c-2 1.3-4.6 2.2-8.1 2.2-6.4 0-11.7-3.7-13.6-8.8l-7.8 6.1C6.5 42.6 14.6 48 24 48z"/></svg>';
+	}
+}
+
+/** Section « Avis Google » complète. */
+if ( ! function_exists( 'ag_geo_reviews_section' ) ) {
+	function ag_geo_reviews_section() {
+		$d   = ag_geo_google_data();
+		$rev = ag_geo_review_url();
+		$see = $d['url'] ? $d['url'] : $rev;
+
+		$rating = $d['rating'] ? number_format_i18n( $d['rating'], 1 ) : '';
+		$badge  = '<div class="ag-rev-head">' . ag_geo_google_g()
+			. '<span class="ag-rev-g">Avis Google</span>'
+			. ( $rating ? '<span class="ag-rev-note">' . esc_html( $rating ) . '</span>' : '' )
+			. '<span class="ag-stars">' . esc_html( ag_geo_stars( $d['rating'] ?: 5 ) ) . '</span>'
+			. ( $d['total'] ? '<span class="ag-rev-count">(' . (int) $d['total'] . ' avis)</span>' : '' )
+			. '</div>';
+
+		$cards = '';
+		if ( ! empty( $d['reviews'] ) ) {
+			$cards .= '<div class="ag-rev-grid">';
+			foreach ( $d['reviews'] as $r ) {
+				$author = $r['author'] ?: 'Client';
+				$ini    = mb_strtoupper( mb_substr( $author, 0, 1 ) );
+				$av     = ! empty( $r['photo'] )
+					? '<span class="ag-av" style="background-image:url(' . esc_url( $r['photo'] ) . ')"></span>'
+					: '<span class="ag-av">' . esc_html( $ini ) . '</span>';
+				$txt    = wp_trim_words( (string) $r['text'], 45, '…' );
+				$cards .= '<div class="ag-rev-card"><div class="top">' . $av
+					. '<div><div class="name">' . esc_html( $author ) . '</div>'
+					. '<div class="st">' . esc_html( ag_geo_stars( $r['rating'] ) ) . '</div></div></div>'
+					. '<p class="bd">' . esc_html( $txt ) . '</p>'
+					. ( ! empty( $r['time'] ) ? '<div class="tm">' . esc_html( $r['time'] ) . '</div>' : '' )
+					. '</div>';
+			}
+			$cards .= '</div>';
+		} else {
+			$cards .= '<p class="ag-rev-empty">Soyez le premier à partager votre expérience — ça nous aide énormément. 🙏</p>';
+		}
+
+		return '<section class="ag-reviews">'
+			. '<h2>Ils nous recommandent</h2>'
+			. $badge . $cards
+			. '<div class="ag-rev-cta">'
+			. '<a class="ag-btn-gold" href="' . esc_url( $rev ) . '" target="_blank" rel="noopener">★ Laisser un avis sur Google</a>'
+			. '<a class="ag-btn-ghost" href="' . esc_url( $see ) . '" target="_blank" rel="noopener">Voir nos avis Google</a>'
+			. '</div>'
+			. '<p class="ag-rev-sub">Avis vérifiés publiés sur notre fiche Google. Un projet ? <a href="' . esc_url( home_url( '/contact' ) ) . '">Demandez votre devis gratuit</a>.</p>'
+			. '</section>';
+	}
+}
+
+/** Cible la page comparatif. */
+if ( ! function_exists( 'ag_geo_is_target' ) ) {
+	function ag_geo_is_target() {
+		return is_page() && 'meilleure-agence-web-nantes' === get_post_field( 'post_name' );
+	}
+}
+
+/* Injection de la section avis + wrapper de mise en beauté. */
+add_filter( 'the_content', function ( $c ) {
+	if ( ! ag_geo_is_target() || ! in_the_loop() || ! is_main_query() ) return $c;
+	return '<div class="ag-geo-page">' . $c . ag_geo_reviews_section() . '</div>';
+}, 20 );
+
+/* CSS d'embellissement + schema LocalBusiness (note réelle uniquement). */
+add_action( 'wp_head', function () {
+	if ( ! ag_geo_is_target() ) return;
+	?>
+<style>
+.ag-geo-page{max-width:1000px;margin:0 auto;font-size:1.04rem;line-height:1.7}
+.ag-geo-page h2{color:#D4B45C;font-size:clamp(1.5rem,3vw,2.1rem);margin:2.2em 0 .6em}
+.ag-geo-page h2:after{content:"";display:block;width:64px;height:3px;margin-top:.45em;border-radius:2px;background:linear-gradient(90deg,#D4B45C,#F37A1F)}
+.ag-geo-page h3{color:#fff;margin:1.6em 0 .3em;font-size:1.12rem}
+.ag-geo-page>ul{list-style:none;padding:0;margin:1.2em 0;display:grid;gap:12px}
+.ag-geo-page>ul>li{position:relative;padding:14px 18px 14px 52px;background:rgba(212,180,92,.06);border:1px solid rgba(212,180,92,.22);border-radius:14px}
+.ag-geo-page>ul>li:before{content:"✓";position:absolute;left:16px;top:14px;width:24px;height:24px;border-radius:50%;background:#D4B45C;color:#0a0a0f;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center}
+.ag-reviews{margin:3em 0;padding:2.2em 1.6em;text-align:center;border-radius:22px;border:1px solid rgba(212,180,92,.3);background:linear-gradient(160deg,#14141f,#0b0b13)}
+.ag-reviews h2{color:#D4B45C}.ag-reviews h2:after{margin-left:auto;margin-right:auto}
+.ag-rev-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;margin:.4em 0 1.2em;font-size:1.1rem}
+.ag-rev-g{font-weight:700;color:#fff}.ag-rev-note{font-weight:800;color:#D4B45C;font-size:1.3rem}
+.ag-stars{color:#FBBC05;letter-spacing:2px;font-size:1.25rem}
+.ag-rev-count{color:#cdc6b8;opacity:.85}
+.ag-rev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:1.4em 0}
+.ag-rev-card{background:#fff;color:#1a1a2e;border-radius:16px;padding:18px;text-align:left;box-shadow:0 10px 28px rgba(0,0,0,.32)}
+.ag-rev-card .top{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.ag-rev-card .av{width:44px;height:44px;border-radius:50%;background:#D4B45C;color:#0a0a0f;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;background-size:cover;background-position:center;flex:0 0 auto}
+.ag-rev-card .name{font-weight:700}.ag-rev-card .st{color:#FBBC05;letter-spacing:1px}
+.ag-rev-card .bd{margin:.2em 0 .4em;color:#33334d}.ag-rev-card .tm{font-size:.82rem;color:#8a8aa0}
+.ag-rev-empty{color:#e7dcc2;font-style:italic;margin:1.4em 0}
+.ag-rev-cta{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:1.2em 0 .4em}
+.ag-btn-gold{display:inline-block;padding:14px 26px;border-radius:999px;font-weight:700;text-decoration:none;color:#0a0a0f;background:linear-gradient(90deg,#D4B45C,#F37A1F);box-shadow:0 8px 20px rgba(243,122,31,.25)}
+.ag-btn-ghost{display:inline-block;padding:12px 24px;border-radius:999px;font-weight:700;text-decoration:none;color:#D4B45C;border:2px solid #D4B45C}
+.ag-btn-gold:hover{filter:brightness(1.07)}.ag-btn-ghost:hover{background:rgba(212,180,92,.12)}
+.ag-rev-sub{margin-top:1em;color:#cdc6b8;font-size:.95rem}.ag-rev-sub a{color:#D4B45C}
+</style>
+<?php
+	$d = ag_geo_google_data();
+	$ld = array(
+		'@context'  => 'https://schema.org',
+		'@type'     => 'LocalBusiness',
+		'name'      => 'Alliance Groupe',
+		'url'       => home_url( '/' ),
+		'telephone' => '+33744829516',
+		'email'     => 'contact@alliancegroupe-inc.com',
+		'image'     => get_template_directory_uri() . '/assets/images/logo-carte.jpg',
+		'areaServed'=> 'Nantes, Loire-Atlantique',
+		'sameAs'    => array( ag_geo_review_url() ),
+	);
+	if ( ! empty( $d['total'] ) && ! empty( $d['rating'] ) ) {
+		$ld['aggregateRating'] = array(
+			'@type'       => 'AggregateRating',
+			'ratingValue' => (string) $d['rating'],
+			'reviewCount' => (string) $d['total'],
+		);
+	}
+	echo '<script type="application/ld+json">' . wp_json_encode( $ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
+}, 13 );
+
