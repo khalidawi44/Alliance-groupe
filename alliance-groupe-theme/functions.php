@@ -308,6 +308,12 @@ if ( file_exists( $ag_google_lead_file ) ) {
     require_once $ag_google_lead_file;
 }
 
+// ── Formulaire de contact (handler + conversion Google Ads sur succès)
+$ag_contact_file = get_stylesheet_directory() . '/inc/ag-contact.php';
+if ( file_exists( $ag_contact_file ) ) {
+    require_once $ag_contact_file;
+}
+
 // ── Réglage des images « sécurité » (pop-up piratage + hero) sans code
 $ag_images_secu_file = get_stylesheet_directory() . '/inc/ag-images-secu.php';
 if ( is_admin() && file_exists( $ag_images_secu_file ) ) {

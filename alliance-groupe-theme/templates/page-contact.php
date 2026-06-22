@@ -49,12 +49,24 @@ get_header();
 
                 <!-- Right: contact form -->
                 <div>
-                    <?php if (shortcode_exists('wpforms')) : ?>
+                    <?php if ( isset( $_GET['envoye'] ) && '1' === $_GET['envoye'] ) : ?>
+                        <div class="ag-form-success" id="ag-contact-form" style="background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.4);border-radius:14px;padding:28px;text-align:center;">
+                            <div style="font-size:2.4rem;line-height:1;margin-bottom:10px;">✅</div>
+                            <h3 style="margin:0 0 8px;">Message bien reçu&nbsp;!</h3>
+                            <p style="margin:0;opacity:.85;">Merci, nous revenons vers vous très vite (en général sous 24&nbsp;h ouvrées).</p>
+                        </div>
+                    <?php elseif (shortcode_exists('wpforms')) : ?>
                         <?php echo do_shortcode('[wpforms id="123"]'); ?>
                     <?php else : ?>
-                    <form class="ag-form" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="POST">
+                    <?php if ( isset( $_GET['envoye'] ) && 'err' === $_GET['envoye'] ) : ?>
+                        <p class="ag-form-error" style="background:rgba(220,80,80,.12);border:1px solid rgba(220,80,80,.4);border-radius:10px;padding:14px 16px;margin-bottom:16px;">⚠️ Une erreur est survenue. Vérifiez votre email et votre message, puis réessayez.</p>
+                    <?php endif; ?>
+                    <form class="ag-form" id="ag-contact-form" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="POST">
                         <input type="hidden" name="action" value="ag_contact_form">
                         <?php wp_nonce_field('ag_contact_nonce', 'ag_nonce'); ?>
+                        <div style="position:absolute;left:-9999px;" aria-hidden="true">
+                            <label>Ne pas remplir<input type="text" name="ag_site" tabindex="-1" autocomplete="off"></label>
+                        </div>
 
                         <div class="ag-form__row">
                             <div class="ag-form__group">
