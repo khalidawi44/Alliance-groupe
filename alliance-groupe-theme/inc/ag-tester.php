@@ -776,7 +776,36 @@ if ( ! function_exists( 'ag_audit_segment' ) ) {
 
 /* ---- Historique PERSISTANT des audits (option ag_audit_history) ---- */
 if ( ! function_exists( 'ag_audit_hist_id' ) )  { function ag_audit_hist_id( $url, $mode = 'passive' ) { return substr( md5( strtolower( trim( $url ) ) . '|' . $mode ), 0, 12 ); } }
-if ( ! function_exists( 'ag_audit_hist_get' ) ) { function ag_audit_hist_get() { $h = get_option( 'ag_audit_history', array() ); return is_array( $h ) ? $h : array(); } }
+if ( ! function_exists( 'ag_audit_hist_normalize' ) ) {
+	/**
+	 * COHÉRENCE DES NOTES ENTRE NIVEAUX (par site) : un scan plus PROFOND creuse
+	 * davantage → il trouve au moins autant de failles → sa note ne peut JAMAIS
+	 * être meilleure qu'un scan plus léger du même site. On force, par host :
+	 *   léger (passive) ≥ approfondi (deep) ≥ expert (Kali).
+	 */
+	function ag_audit_hist_normalize( $h ) {
+		if ( ! is_array( $h ) || ! $h ) { return $h; }
+		$hosts = array();
+		foreach ( $h as $k => $rec ) {
+			$ho = $rec['host'] ?? '';
+			if ( $ho && isset( $rec['score'] ) ) { $hosts[ $ho ][ $rec['mode'] ?? 'passive' ][] = $k; }
+		}
+		foreach ( $hosts as $levels ) {
+			$cap = 100;
+			foreach ( array( 'passive', 'deep', 'expert' ) as $m ) {
+				if ( empty( $levels[ $m ] ) ) { continue; }
+				$lvlmax = 0;
+				foreach ( $levels[ $m ] as $k ) {
+					$h[ $k ]['score'] = min( (int) $h[ $k ]['score'], $cap );
+					$lvlmax = max( $lvlmax, (int) $h[ $k ]['score'] );
+				}
+				$cap = $lvlmax;
+			}
+		}
+		return $h;
+	}
+}
+if ( ! function_exists( 'ag_audit_hist_get' ) ) { function ag_audit_hist_get() { $h = get_option( 'ag_audit_history', array() ); $h = is_array( $h ) ? $h : array(); return ag_audit_hist_normalize( $h ); } }
 if ( ! function_exists( 'ag_audit_hist_save' ) ){ function ag_audit_hist_save( $h ) { update_option( 'ag_audit_history', $h, false ); } }
 if ( ! function_exists( 'ag_audit_hist_upsert' ) ) {
 	function ag_audit_hist_upsert( $a, $ct, $mode = 'passive', $push_crm = true ) {
@@ -814,6 +843,10 @@ if ( ! function_exists( 'ag_audit_hist_upsert' ) ) {
 			'actions' => isset( $prev['actions'] ) && is_array( $prev['actions'] ) ? $prev['actions'] : array(),
 		);
 		if ( count( $h ) > 150 ) { uasort( $h, function ( $x, $y ) { return (int) ( $y['ts'] ?? 0 ) <=> (int) ( $x['ts'] ?? 0 ); } ); $h = array_slice( $h, 0, 150, true ); }
+
+		// Cohérence des notes entre niveaux (léger ≥ approfondi ≥ expert) pour le même site.
+		$h = ag_audit_hist_normalize( $h );
+
 		ag_audit_hist_save( $h );
 
 		// Verse AUTOMATIQUEMENT le site scanné dans le CRM Prospection (option
