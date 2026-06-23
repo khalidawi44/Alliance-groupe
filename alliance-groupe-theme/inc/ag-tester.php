@@ -738,6 +738,20 @@ if ( ! function_exists( 'ag_audit_segment' ) ) {
 if ( ! function_exists( 'ag_audit_hist_id' ) )  { function ag_audit_hist_id( $url, $mode = 'passive' ) { return substr( md5( strtolower( trim( $url ) ) . '|' . $mode ), 0, 12 ); } }
 if ( ! function_exists( 'ag_audit_hist_get' ) ) { function ag_audit_hist_get() { $h = get_option( 'ag_audit_history', array() ); return is_array( $h ) ? $h : array(); } }
 if ( ! function_exists( 'ag_audit_hist_save' ) ){ function ag_audit_hist_save( $h ) { update_option( 'ag_audit_history', $h, false ); } }
+// Note du test LÉGER (passive) déjà enregistrée pour ce site (par hôte, www ignoré), ou 0.
+if ( ! function_exists( 'ag_audit_leger_score_for' ) ) {
+	function ag_audit_leger_score_for( $url ) {
+		$host = preg_replace( '/^www\./', '', strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) ) );
+		if ( '' === $host ) { return 0; }
+		$best = 0;
+		foreach ( ag_audit_hist_get() as $e ) {
+			if ( 'passive' !== ( $e['mode'] ?? 'passive' ) ) { continue; }
+			$eh = preg_replace( '/^www\./', '', strtolower( (string) ( $e['host'] ?? wp_parse_url( $e['url'] ?? '', PHP_URL_HOST ) ) ) );
+			if ( $eh === $host && (int) ( $e['score'] ?? 0 ) > $best ) { $best = (int) ( $e['score'] ?? 0 ); }
+		}
+		return $best;
+	}
+}
 if ( ! function_exists( 'ag_audit_hist_upsert' ) ) {
 	function ag_audit_hist_upsert( $a, $ct, $mode = 'passive' ) {
 		$url = $a['url'] ?? ''; if ( ! $url ) return '';
