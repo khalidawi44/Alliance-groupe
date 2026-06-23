@@ -778,28 +778,59 @@ if ( ! function_exists( 'ag_audit_segment' ) ) {
 if ( ! function_exists( 'ag_audit_hist_id' ) )  { function ag_audit_hist_id( $url, $mode = 'passive' ) { return substr( md5( strtolower( trim( $url ) ) . '|' . $mode ), 0, 12 ); } }
 if ( ! function_exists( 'ag_audit_hist_normalize' ) ) {
 	/**
-	 * COHÉRENCE DES NOTES ENTRE NIVEAUX (par site) : un scan plus PROFOND creuse
-	 * davantage → il trouve au moins autant de failles → sa note ne peut JAMAIS
-	 * être meilleure qu'un scan plus léger du même site. On force, par host :
-	 *   léger (passive) ≥ approfondi (deep) ≥ expert (Kali).
+	 * COHÉRENCE ENTRE NIVEAUX (par site). Un scan plus PROFOND creuse davantage : il
+	 * trouve AU MOINS autant de failles qu'un scan plus léger du même site. On impose
+	 * donc, par host et par ordre de profondeur (léger → approfondi → expert Kali) :
+	 *   1) NOTE : un scan plus profond ne peut JAMAIS afficher une meilleure note qu'un
+	 *      scan plus léger (léger ≥ approfondi ≥ expert) — il prend en compte la note
+	 *      des autres scans (plafonnée à la plus basse des scans plus légers).
+	 *   2) FAILLES : un scan plus profond hérite AU MOINS des failles des scans plus
+	 *      légers (union par nom) + son nombre de critiques ≥ celui des plus légers.
+	 * Idempotent : on conserve les failles PROPRES du scan dans `own_checks`, et on
+	 * recompose `checks` (= cumul) à chaque passage, sans jamais accumuler de doublon
+	 * ni de faille périmée.
 	 */
 	function ag_audit_hist_normalize( $h ) {
 		if ( ! is_array( $h ) || ! $h ) { return $h; }
+		$rank  = array( 'passive' => 0, 'deep' => 1, 'expert' => 2 );
 		$hosts = array();
 		foreach ( $h as $k => $rec ) {
 			$ho = $rec['host'] ?? '';
-			if ( $ho && isset( $rec['score'] ) ) { $hosts[ $ho ][ $rec['mode'] ?? 'passive' ][] = $k; }
+			if ( '' !== $ho ) { $hosts[ $ho ][] = $k; }
 		}
-		foreach ( $hosts as $levels ) {
-			$cap = 100;
-			foreach ( array( 'passive', 'deep', 'expert' ) as $m ) {
-				if ( empty( $levels[ $m ] ) ) { continue; }
-				$lvlmax = 0;
-				foreach ( $levels[ $m ] as $k ) {
-					$h[ $k ]['score'] = min( (int) $h[ $k ]['score'], $cap );
-					$lvlmax = max( $lvlmax, (int) $h[ $k ]['score'] );
+		foreach ( $hosts as $keys ) {
+			usort( $keys, function ( $x, $y ) use ( $h, $rank ) {
+				$rx = $rank[ $h[ $x ]['mode'] ?? 'passive' ] ?? 0;
+				$ry = $rank[ $h[ $y ]['mode'] ?? 'passive' ] ?? 0;
+				if ( $rx === $ry ) { return (int) ( $h[ $x ]['ts'] ?? 0 ) <=> (int) ( $h[ $y ]['ts'] ?? 0 ); }
+				return $rx <=> $ry;
+			} );
+			$cap      = 100;     // la note ne peut que baisser quand on creuse plus
+			$acc      = array(); // failles cumulées (clé = nom) des scans plus légers
+			$acc_crit = 0;
+			foreach ( $keys as $k ) {
+				// --- 2) Failles : on part des failles PROPRES + on hérite des plus légers ---
+				$own = $h[ $k ]['own_checks'] ?? ( is_array( $h[ $k ]['checks'] ?? null ) ? $h[ $k ]['checks'] : array() );
+				$h[ $k ]['own_checks'] = $own; // mémorise les failles propres (idempotence)
+				$merged = $acc;
+				foreach ( $own as $c ) {
+					$nm = $c['name'] ?? '';
+					if ( '' === $nm ) { continue; }
+					$merged[ $nm ] = $c;
 				}
-				$cap = $lvlmax;
+				$list = array_values( $merged );
+				$crit = 0;
+				foreach ( $list as $c ) { if ( ! empty( $c['critical'] ) && 'fail' === ( $c['status'] ?? '' ) ) { $crit++; } }
+				$crit = max( $crit, $acc_crit, (int) ( $h[ $k ]['critical'] ?? 0 ) );
+				$h[ $k ]['checks']   = $list;
+				$h[ $k ]['critical'] = $crit;
+				// --- 1) Note : jamais meilleure qu'un scan plus léger du même site ---
+				if ( isset( $h[ $k ]['score'] ) ) {
+					$h[ $k ]['score'] = min( (int) $h[ $k ]['score'], $cap );
+					$cap = (int) $h[ $k ]['score'];
+				}
+				$acc      = $merged;
+				$acc_crit = $crit;
 			}
 		}
 		return $h;
