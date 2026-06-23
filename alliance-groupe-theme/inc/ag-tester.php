@@ -1390,13 +1390,60 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 						<button type="button" class="button button-small aghs" data-s="ts-asc">🕒 Anciens</button>
 						<button type="button" class="button button-small aghs" data-s="score-asc">⬇️ Score faible (chaud)</button>
 						<button type="button" class="button button-small aghs" data-s="score-desc">⬆️ Score élevé</button>
-							<button type="button" class="button button-small aghs" data-s="host">🏢 Par site (regroupe sécurité + création)</button>
+							<button type="button" class="button button-small aghs" data-s="host">🏢 A→Z (par site)</button>
+							<button type="button" class="button button-small" id="agh-toggle-all" data-open="0">▼ Tout déplier</button>
 						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;margin-left:auto" onsubmit="return confirm('Réauditer TOUS les sites de l\'historique avec l\'algo à jour ? (recalcule notes, messages et images. Peut prendre 1-2 min)')"><input type="hidden" name="action" value="ag_audit_hist_rescan"><?php wp_nonce_field( 'ag_audit_hist_rescan' ); ?><button type="submit" class="button button-small button-primary">🔄 Réauditer tout (recalcul notes)</button></form>
 						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline"><input type="hidden" name="action" value="ag_audit_hist_csv"><?php wp_nonce_field( 'ag_audit_hist_csv' ); ?><button type="submit" class="button button-small">📥 Exporter l'historique (CSV)</button></form>
 						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline" onsubmit="return confirm('Vider TOUT l\'historique des audits ? Action irreversible.')"><input type="hidden" name="action" value="ag_audit_hist_clear"><?php wp_nonce_field( 'ag_audit_hist_clear' ); ?><button type="submit" class="button button-small" style="color:#b91c1c;margin-left:6px">🗑️ Tout effacer</button></form>
 					</div>
 					<div id="agh-list">
-				<?php foreach ( $AGH as $hid => $e ) :
+				<?php
+					// REGROUPEMENT PAR SITE (demande Fabrice) : 1 prospect = 1 site. Tous ses audits
+					// (léger / approfondi / Kali, sécurité + création) sont réunis dans un bloc
+					// dépliable (hamburger). Tri = réordonne les blocs.
+					$AGH_groups = array();
+					foreach ( $AGH as $hid => $e ) {
+						$hk = preg_replace( '/^www\./', '', strtolower( (string) ( ( $e['host'] ?? '' ) ?: wp_parse_url( $e['url'] ?? '', PHP_URL_HOST ) ) ) );
+						if ( '' === $hk ) { $hk = 'inconnu'; }
+						if ( ! isset( $AGH_groups[ $hk ] ) ) {
+							$AGH_groups[ $hk ] = array( 'entries' => array(), 'best' => 0, 'worst' => 100, 'latest' => 0, 'company' => '', 'host' => $e['host'] ?? $hk, 'segs' => array(), 'modes' => array(), 'todo' => false );
+						}
+						$AGH_groups[ $hk ]['entries'][ $hid ] = $e;
+						$sc = (int) ( $e['score'] ?? 0 );
+						if ( $sc > $AGH_groups[ $hk ]['best'] )   { $AGH_groups[ $hk ]['best'] = $sc; }
+						if ( $sc < $AGH_groups[ $hk ]['worst'] )  { $AGH_groups[ $hk ]['worst'] = $sc; }
+						if ( (int) ( $e['ts'] ?? 0 ) > $AGH_groups[ $hk ]['latest'] ) { $AGH_groups[ $hk ]['latest'] = (int) $e['ts']; }
+						if ( ! $AGH_groups[ $hk ]['company'] && ! empty( $e['company'] ) ) { $AGH_groups[ $hk ]['company'] = $e['company']; }
+						if ( ! $AGH_groups[ $hk ]['host'] ) { $AGH_groups[ $hk ]['host'] = $e['host'] ?? $hk; }
+						$AGH_groups[ $hk ]['segs'][ $e['seg'] ?? 'securite' ] = 1;
+						$em = in_array( $e['mode'] ?? 'passive', array( 'deep', 'expert' ), true ) ? $e['mode'] : 'passive';
+						$AGH_groups[ $hk ]['modes'][ $em ] = 1;
+						if ( empty( $e['actions'] ) ) { $AGH_groups[ $hk ]['todo'] = true; }
+					}
+					uasort( $AGH_groups, function ( $a, $b ) { return (int) $b['latest'] <=> (int) $a['latest']; } );
+					foreach ( $AGH_groups as $g_hk => $grp ) :
+						$g_best = (int) $grp['best'];
+						$g_col  = $g_best >= 75 ? '#1a7f37' : ( $g_best >= 50 ? '#bf6a02' : '#b91c1c' );
+						$g_cnt  = count( $grp['entries'] );
+						$g_first = $grp['entries'] ? reset( $grp['entries'] ) : array();
+						$g_host = $grp['host']; $g_comp = $grp['company'] ?: $g_host;
+						$g_seg  = isset( $grp['segs']['securite'] ) ? 'securite' : 'creation';
+					?>
+					<details class="agh-site" data-host="<?php echo esc_attr( $g_hk ); ?>" data-score="<?php echo $g_best; ?>" data-ts="<?php echo (int) $grp['latest']; ?>" data-todo="<?php echo $grp['todo'] ? 1 : 0; ?>" data-seg="<?php echo esc_attr( $g_seg ); ?>" style="margin:12px 0;max-width:1000px;border:1px solid #c3c4c7;border-radius:10px;background:#f6f7f7">
+						<summary style="cursor:pointer;padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px">
+							<span style="font-size:18px">☰</span>
+							<strong style="font-size:15px"><?php echo esc_html( $g_comp ); ?></strong>
+							<span style="font-size:12px;color:#2271b1"><?php echo esc_html( $g_host ); ?></span>
+							<span style="background:#1f2937;color:#fff;border-radius:999px;padding:2px 9px;font-size:11px"><?php echo (int) $g_cnt; ?> audit<?php echo $g_cnt > 1 ? 's' : ''; ?></span>
+							<?php foreach ( array_keys( $grp['modes'] ) as $mk ) { $ml = 'expert' === $mk ? '🛰️ Kali' : ( 'deep' === $mk ? '🔬 Approf.' : '🔍 Léger' ); $mc = 'expert' === $mk ? '#0a6' : ( 'deep' === $mk ? '#6d28d9' : '#0e7490' ); echo '<span style="background:' . esc_attr( $mc ) . ';color:#fff;border-radius:4px;padding:1px 6px;font-size:10px">' . esc_html( $ml ) . '</span>'; } ?>
+							<?php if ( isset( $grp['segs']['securite'] ) ) { echo '<span style="background:#b91c1c;color:#fff;border-radius:4px;padding:1px 6px;font-size:10px">SÉCURITÉ</span>'; } ?>
+							<?php if ( isset( $grp['segs']['creation'] ) ) { echo '<span style="background:#1d4ed8;color:#fff;border-radius:4px;padding:1px 6px;font-size:10px">CRÉATION</span>'; } ?>
+							<?php if ( $grp['todo'] ) { echo '<span style="background:#fde68a;color:#92400e;border-radius:4px;padding:1px 6px;font-size:10px">⏳ à contacter</span>'; } ?>
+							<span style="margin-left:auto;color:<?php echo esc_attr( $g_col ); ?>;font-weight:800;font-size:18px"><?php echo $g_best; ?>/100</span>
+							<span style="color:#888;font-size:11px">· <?php echo esc_html( wp_date( 'd/m/Y', (int) $grp['latest'] ) ); ?></span>
+						</summary>
+						<div class="agh-site-body" style="padding:4px 12px 12px">
+					<?php foreach ( $grp['entries'] as $hid => $e ) :
 					$score = (int) $e['score']; $col = $score >= 75 ? '#1a7f37' : ( $score >= 50 ? '#bf6a02' : '#b91c1c' ); $seg = $e['seg'];
 						$mode = in_array( $e['mode'] ?? 'passive', array( 'deep', 'expert' ), true ) ? $e['mode'] : 'passive';
 						$mode_lbl = 'expert' === $mode ? '🛰️ Expert (Kali)' : ( 'deep' === $mode ? '🔬 Approfondi' : '🔍 Léger (passif)' );
@@ -1536,10 +1583,24 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 							<textarea rows="8" style="width:100%;max-width:660px;font-size:12px" onclick="this.select()"><?php echo esc_textarea( $emsg ); ?></textarea>
 						</div>
 					</div>
-				<?php endforeach; ?>
+				<?php endforeach; // audits d'un même site ?>
+						</div>
+					</details>
+					<?php endforeach; // groupes (un par site) ?>
 				</div>
 				<script>
-				(function(){var list=document.getElementById('agh-list');if(!list)return;var curF='all',curM='all';function cards(){return [].slice.call(list.querySelectorAll('.agh-card'));}function apply(){cards().forEach(function(k){var seg=k.getAttribute('data-seg'),todo=k.getAttribute('data-todo')==='1',md=k.getAttribute('data-mode')||'passive';var okF=(curF==='all')||(curF==='todo'?todo:seg===curF);var okM=(curM==='all')||(md===curM);k.style.display=(okF&&okM)?'':'none';});}document.querySelectorAll('.aghf').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghf').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');curF=b.getAttribute('data-f');apply();});});document.querySelectorAll('.aghft').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghft').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');curM=b.getAttribute('data-m');apply();});});document.querySelectorAll('.aghs').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghs').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');var sp=b.getAttribute('data-s').split('-'),key=sp[0],dir=sp[1];var arr=cards();arr.sort(function(a,c){if(key==='host'){var ha=(a.getAttribute('data-host')||''),hc=(c.getAttribute('data-host')||'');if(ha!==hc)return ha<hc?-1:1;return (+c.getAttribute('data-score'))-(+a.getAttribute('data-score'));}var x=+a.getAttribute('data-'+key),y=+c.getAttribute('data-'+key);return dir==='asc'?x-y:y-x;});arr.forEach(function(k){list.appendChild(k);});});});})();
+				(function(){var list=document.getElementById('agh-list');if(!list)return;var curF='all',curM='all';
+function cards(){return [].slice.call(list.querySelectorAll('.agh-card'));}
+function sites(){return [].slice.call(list.querySelectorAll('.agh-site'));}
+function apply(){
+ cards().forEach(function(k){var seg=k.getAttribute('data-seg'),todo=k.getAttribute('data-todo')==='1',md=k.getAttribute('data-mode')||'passive';var okF=(curF==='all')||(curF==='todo'?todo:seg===curF);var okM=(curM==='all')||(md===curM);k.style.display=(okF&&okM)?'':'none';});
+ sites().forEach(function(s){var any=false;[].forEach.call(s.querySelectorAll('.agh-card'),function(k){if(k.style.display!=='none')any=true;});s.style.display=any?'':'none';if(any&&(curF!=='all'||curM!=='all'))s.open=true;});
+}
+document.querySelectorAll('.aghf').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghf').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');curF=b.getAttribute('data-f');apply();});});
+document.querySelectorAll('.aghft').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghft').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');curM=b.getAttribute('data-m');apply();});});
+document.querySelectorAll('.aghs').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghs').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');var sp=b.getAttribute('data-s').split('-'),key=sp[0],dir=sp[1];var arr=sites();arr.sort(function(a,c){if(key==='host'){var ha=(a.getAttribute('data-host')||''),hc=(c.getAttribute('data-host')||'');if(ha!==hc)return ha<hc?-1:1;return (+c.getAttribute('data-score'))-(+a.getAttribute('data-score'));}var x=+a.getAttribute('data-'+key),y=+c.getAttribute('data-'+key);return dir==='asc'?x-y:y-x;});arr.forEach(function(s){list.appendChild(s);});});});
+var tg=document.getElementById('agh-toggle-all');if(tg){tg.addEventListener('click',function(){var op=tg.getAttribute('data-open')==='1';sites().forEach(function(s){if(s.style.display!=='none')s.open=!op;});tg.setAttribute('data-open',op?'0':'1');tg.textContent=op?'▼ Tout déplier':'▶ Tout replier';});}
+})();
 				</script>
 			<?php endif; ?>
 
