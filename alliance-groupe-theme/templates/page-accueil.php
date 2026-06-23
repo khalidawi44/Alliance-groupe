@@ -448,11 +448,19 @@ body.home .ag-footer{position:relative;z-index:1}
 			if(transparent(cs.backgroundColor)&&cs.backgroundImage==='none'){
 				s.style.backgroundColor='var(--color-bg,#0a0a0f)';
 			}
-			// On n'épingle que les sections ~plein écran : plus haute qu'un écran =>
-			// son bas serait masqué ; plus courte que 60% d'écran => barre flottante.
 			var h=s.offsetHeight;
-			if(h>vh+4||h<vh*0.6){ s.style.position='relative'; s.style.top='auto'; }
-			else { s.style.position='sticky'; s.style.top='0'; }
+			if(h<vh*0.5){
+				// Trop courte (barre de réassurance) : pas d'épinglage (sinon fine barre flottante).
+				s.style.position='relative'; s.style.top='auto';
+			} else if(h<=vh+4){
+				// Tient dans l'écran : s'épingle en haut quand elle y arrive.
+				s.style.position='sticky'; s.style.top='0';
+			} else {
+				// Plus haute qu'un écran : on la laisse défiler entièrement, puis elle
+				// s'épingle quand son BAS atteint le bas de l'écran (top négatif), donc
+				// tout son contenu a été vu — et la suivante remonte par-dessus.
+				s.style.position='sticky'; s.style.top=(vh-h)+'px';
+			}
 		});
 	}
 	apply();
