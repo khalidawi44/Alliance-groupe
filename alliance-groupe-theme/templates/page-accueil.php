@@ -375,17 +375,19 @@ b&&b.addEventListener('click',function(){if(!v)return;v.muted=!v.muted;if(!v.mut
 .ag-stickycta__txt strong{color:#F3D27A}
 .ag-stickycta__btn{flex-shrink:0;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:800;text-decoration:none;padding:13px 22px;border-radius:100px;font-size:.95rem;white-space:nowrap;transition:transform .2s}
 .ag-stickycta__btn:hover{transform:scale(1.03)}
-/* Si le bandeau « Installer l'app » est affiché : barre CTA à GAUCHE, bandeau à DROITE (côte à côte). */
-body.ag-appbn-on .ag-stickycta__inner{margin-left:16px;margin-right:auto;max-width:calc(100vw - 560px)}
-@media(max-width:760px){body.ag-appbn-on .ag-stickycta__inner{margin:0 10px 92px;max-width:none}}
-/* Quand la barre fixe est affichee, on remonte le bouton "retour en haut"
-   pour qu'il ne soit plus cache derriere la barre. */
-body.ag-stickycta-on .ag-totop{bottom:96px !important}
+/* Bandeau « Installer l'app » affiché → on MASQUE la barre CTA (jamais les deux barres en même temps). */
+body.ag-appbn-on .ag-stickycta{opacity:0 !important;visibility:hidden !important;pointer-events:none !important;transform:translateY(120%) !important}
+/* Barre CTA visible : sur écrans étroits (≤1100px) elle atteindrait les boutons flottants du bas-gauche
+   (On recrute / musique / retour-haut) → on les remonte AU-DESSUS d'elle. Au-delà, la CTA est centrée = aucun contact. */
+@media(max-width:1100px){
+	body.ag-stickycta-on .ag-recrute{bottom:90px}
+	body.ag-stickycta-on .agm{bottom:138px}
+	body.ag-stickycta-on .ag-totop{bottom:196px !important;left:18px !important}
+}
 @media(max-width:560px){
 	.ag-stickycta__inner{margin:0 10px 10px;padding:8px 8px 8px 16px;gap:10px}
 	.ag-stickycta__txt{display:none}
 	.ag-stickycta__btn{flex:1;text-align:center;padding:14px}
-	body.ag-stickycta-on .ag-totop{bottom:84px !important;left:14px !important}
 }
 </style>
 <script>

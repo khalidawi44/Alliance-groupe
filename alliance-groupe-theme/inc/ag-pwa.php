@@ -251,11 +251,9 @@ add_action( 'wp_footer', function () {
 	.ag-appdl__txt strong{font-size:15px;color:#fff}
 	.ag-appdl__txt small{font-size:11.5px;color:#D4B45C;margin-top:2px}
 	.ag-appdl__arrow{margin-left:6px;font-size:20px;color:#D4B45C}
-	/* desktop : bandeau ancré en bas à DROITE (la barre CTA reste à gauche -> côte à côte) */
-	.ag-appbn{position:fixed;left:auto;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:99998;display:none;
-		align-items:center;gap:12px;max-width:520px;margin:0;padding:12px 14px;border-radius:18px;
+	.ag-appbn{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:99998;display:none;
+		align-items:center;gap:12px;max-width:520px;margin:0 auto;padding:12px 14px;border-radius:18px;
 		background:rgba(16,16,22,.96);backdrop-filter:blur(8px);border:1px solid rgba(212,180,92,.4);box-shadow:0 16px 40px rgba(0,0,0,.5);font-family:-apple-system,Arial,sans-serif}
-	@media(max-width:760px){.ag-appbn{left:12px;right:12px;margin:0 auto}} /* mobile : centré pleine largeur */
 	.ag-appbn img{width:44px;height:44px;border-radius:11px;flex:none}
 	.ag-appbn__b{flex:1;min-width:0;color:#fff}
 	.ag-appbn__b strong{display:block;font-size:14px}
