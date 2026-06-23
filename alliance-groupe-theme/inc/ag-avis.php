@@ -18,7 +18,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! function_exists( 'ag_avis_link' ) ) {
-	function ag_avis_link() { return trim( (string) get_option( 'ag_avis_link', '' ) ); }
+	function ag_avis_link() {
+		$l = trim( (string) get_option( 'ag_avis_link', '' ) );
+		if ( $l ) return $l;
+		// Repli : si le Place ID est renseigné, on construit le lien « laisser un avis » automatiquement.
+		$pid = trim( (string) get_option( 'ag_geo_place_id', '' ) );
+		return $pid ? 'https://search.google.com/local/writereview?placeid=' . rawurlencode( $pid ) : '';
+	}
 }
 if ( ! function_exists( 'ag_avis_qr_src' ) ) {
 	function ag_avis_qr_src( $size = 240 ) {
@@ -72,6 +78,13 @@ add_action( 'admin_init', function () {
 	if ( isset( $_POST['ag_avis_save'] ) && check_admin_referer( 'ag_avis' ) ) {
 		update_option( 'ag_avis_link', esc_url_raw( wp_unslash( $_POST['ag_avis_link'] ?? '' ) ) );
 		update_option( 'ag_avis_auto', isset( $_POST['ag_avis_auto'] ) ? '1' : '0' );
+		update_option( 'ag_geo_place_id', sanitize_text_field( wp_unslash( $_POST['ag_geo_place_id'] ?? '' ) ) );
+		update_option( 'ag_geo_reviews', wp_kses_post( wp_unslash( $_POST['ag_geo_reviews'] ?? '' ) ) );
+		delete_transient( 'ag_geo_gdata' ); // affiche les bons avis tout de suite
+	}
+	if ( isset( $_POST['ag_avis_flush'] ) && check_admin_referer( 'ag_avis' ) ) {
+		delete_transient( 'ag_geo_gdata' );
+		add_settings_error( 'ag_avis', 'f', '✅ Cache des avis vidé.', 'updated' );
 	}
 	if ( isset( $_POST['ag_avis_test'] ) && check_admin_referer( 'ag_avis' ) ) {
 		$to = sanitize_email( wp_unslash( $_POST['ag_avis_test_to'] ?? '' ) );
@@ -98,12 +111,26 @@ if ( ! function_exists( 'ag_avis_render' ) ) {
 		$qr   = ag_avis_qr_src( 220 );
 		echo '<div class="wrap"><h1>⭐ Avis Google (100 % réels & conformes)</h1>';
 		echo '<p style="max-width:820px;color:#50575e;">Récolte de VRAIS avis automatiquement. <strong>Pas de faux avis</strong> (interdit par Google + la loi, et ça fait bannir la fiche). Renseigne ton lien d’avis Google ci-dessous.</p>';
+		$pid     = trim( (string) get_option( 'ag_geo_place_id', '' ) );
+		$reviews = (string) get_option( 'ag_geo_reviews', '' );
+		// État API (si le module d'affichage est dispo)
+		if ( function_exists( 'ag_geo_google_data' ) ) {
+			$d = ag_geo_google_data();
+			if ( ! empty( $d['total'] ) ) {
+				echo '<div class="notice notice-success inline"><p>✅ Avis détectés : note <strong>' . esc_html( number_format_i18n( $d['rating'], 1 ) ) . '/5</strong> · <strong>' . (int) $d['total'] . '</strong> avis · ' . count( $d['reviews'] ) . ' affichés sur le site.</p></div>';
+			} else {
+				echo '<div class="notice notice-warning inline"><p>Aucun avis affiché pour l’instant — renseigne le <strong>Place ID</strong> ci-dessous (sinon, risque d’afficher les avis d’un <strong>homonyme</strong>). Puis « Vider le cache ».</p></div>';
+			}
+		}
 		echo '<form method="post"><table class="form-table"><tbody>';
-		echo '<tr><th>Lien d’avis Google</th><td><input type="text" name="ag_avis_link" value="' . esc_attr( $link ) . '" style="width:520px" placeholder="https://g.page/r/...  ou  https://search.google.com/local/writereview?placeid=..."><p class="description">Fiche Google Business → « Demander des avis » → copier le lien.</p></td></tr>';
+		echo '<tr><th>Place ID de ta fiche</th><td><input type="text" name="ag_geo_place_id" value="' . esc_attr( $pid ) . '" style="width:420px" placeholder="ChIJ…"><p class="description"><strong>Identifie ta fiche</strong> (affiche tes vrais avis + génère le lien d’avis tout seul). Ex. Alliance Groupe : <code>ChIJ4zk2LCCNZqgRHQWZK660blw</code></p></td></tr>';
+		echo '<tr><th>Lien d’avis Google</th><td><input type="text" name="ag_avis_link" value="' . esc_attr( trim( (string) get_option( 'ag_avis_link', '' ) ) ) . '" style="width:520px" placeholder="laisser vide = généré depuis le Place ID"><p class="description">Optionnel. Si vide, on utilise <code>writereview?placeid=…</code>. Ou colle le lien « Demander des avis » de ta fiche.</p></td></tr>';
 		echo '<tr><th>Relance automatique</th><td><label><input type="checkbox" name="ag_avis_auto" ' . checked( $auto, true, false ) . '> Demander un avis automatiquement quand un prospect passe « Client » dans le CRM (email + SMS si passerelle)</label></td></tr>';
+		echo '<tr><th>Avis à la main (secours)</th><td><textarea name="ag_geo_reviews" rows="3" style="width:560px" class="code" placeholder=\'[{"author":"Prénom N.","rating":5,"text":"Super travail !","time":"juin 2026"}]\'>' . esc_textarea( $reviews ) . '</textarea><p class="description">Uniquement de VRAIS avis (JSON) si l’API ne les renvoie pas.</p></td></tr>';
 		echo '</tbody></table>';
 		wp_nonce_field( 'ag_avis' );
-		echo '<button name="ag_avis_save" value="1" class="button button-primary">Enregistrer</button></form>';
+		echo '<button name="ag_avis_save" value="1" class="button button-primary">Enregistrer</button> ';
+		echo '<button name="ag_avis_flush" value="1" class="button">Vider le cache des avis</button></form>';
 
 		if ( $qr ) {
 			echo '<hr><h2>QR code « Laissez un avis »</h2>';
