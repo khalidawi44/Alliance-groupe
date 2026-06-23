@@ -31,6 +31,15 @@ get_header();
 .ag-headvid__cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center}
 .ag-headvid__sound{cursor:pointer;border:2px solid rgba(212,180,92,.8);background:rgba(0,0,0,.35);color:#D4B45C;font-weight:700;padding:11px 18px;border-radius:999px}
 .ag-headvid__sound:hover{background:rgba(212,180,92,.15)}
+/* MOBILE : on N'épingle PAS et on N'agrandit PAS la vidéo en plein écran (sinon elle est rognée).
+   Elle s'affiche ENTIÈRE en 16:9 (toute l'image), le titre + CTA passent EN DESSOUS. */
+@media(max-width:768px){
+	.ag-headvid{position:relative;top:auto;height:auto;overflow:visible}
+	.ag-headvid__v{position:relative;inset:auto;width:100%;height:auto;object-fit:contain;display:block;background:#0a0a0f}
+	.ag-headvid__veil{display:none}
+	.ag-headvid__in{position:relative;z-index:2;height:auto;justify-content:flex-start;padding:18px 16px 24px}
+	.ag-headvid__title{font-size:1.5rem;margin:.2em 0 .7em;max-width:none}
+}
 </style>
 <script>
 (function(){var s=document.querySelector('.ag-headvid');if(!s)return;var v=s.querySelector('.ag-headvid__v'),b=s.querySelector('.ag-headvid__sound');
