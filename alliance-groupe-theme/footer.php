@@ -20,7 +20,6 @@
             <ul>
                 <li><a href="<?php echo esc_url(home_url('/realisations')); ?>">Réalisations</a></li>
                 <li><a href="<?php echo esc_url(home_url('/a-propos')); ?>">À propos</a></li>
-                <li><a href="<?php echo esc_url(home_url('/le-voyage')); ?>">Le Voyage</a></li>
                 <li><a href="<?php echo esc_url(home_url('/avis-clients')); ?>">Donnez votre avis ⭐</a></li>
                 <li><a href="<?php echo esc_url(home_url('/contact')); ?>">Contact</a></li>
             </ul>

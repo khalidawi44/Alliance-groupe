@@ -21,11 +21,10 @@ $ag_fsm_items = array(
 	array( 'url' => home_url( '/sites-express' ),  'label' => 'Création de sites',    'sub' => '03' ),
 	array( 'url' => home_url( '/maintenance' ),    'label' => 'Maintenance',          'sub' => '04' ),
 	array( 'url' => home_url( '/realisations' ),   'label' => 'Réalisations',         'sub' => '05' ),
-	array( 'url' => home_url( '/le-voyage' ),      'label' => 'Le Voyage',            'sub' => '06' ),
-	array( 'url' => home_url( '/ambassadeurs' ),   'label' => 'On recrute 🚀',        'sub' => '07' ),
-	array( 'url' => home_url( '/a-propos' ),       'label' => 'À propos',             'sub' => '08' ),
-	array( 'url' => home_url( '/avis-clients' ),   'label' => 'Donnez votre avis ⭐',  'sub' => '09' ),
-	array( 'url' => home_url( '/contact' ),        'label' => 'Contact',              'sub' => '10' ),
+	array( 'url' => home_url( '/ambassadeurs' ),   'label' => 'On recrute 🚀',        'sub' => '06' ),
+	array( 'url' => home_url( '/a-propos' ),       'label' => 'À propos',             'sub' => '07' ),
+	array( 'url' => home_url( '/avis-clients' ),   'label' => 'Donnez votre avis ⭐',  'sub' => '08' ),
+	array( 'url' => home_url( '/contact' ),        'label' => 'Contact',              'sub' => '09' ),
 );
 ?>
 
