@@ -348,13 +348,14 @@ add_action( 'wp_footer', function () {
 		window.agPickSite = function(){ agCloseChoice(); doInstall(); };
 		window.agCloseChoice = function(){ if(choice) choice.style.display='none'; };
 		window.agCloseModal = function(){ if(modal) modal.style.display='none'; };
-		window.agDismissBanner = function(perm){ if(bn) bn.style.display='none'; if(perm!==true) localStorage.setItem('ag_appbn_off', String(Date.now())); };
+		window.agDismissBanner = function(perm){ if(bn) bn.style.display='none'; try{document.body.classList.remove('ag-appbn-on');}catch(e){} if(perm!==true) localStorage.setItem('ag_appbn_off', String(Date.now())); };
 
 		function showBanner(){
 			if (standalone) return;
 			var off = parseInt(localStorage.getItem('ag_appbn_off')||'0',10);
 			if (off && (Date.now()-off) < 7*24*3600*1000) return;
 			if (bn) bn.style.display='flex';
+			try{document.body.classList.add('ag-appbn-on');}catch(e){} // la barre collante CTA remonte au-dessus
 		}
 		window.addEventListener('beforeinstallprompt', function(e){
 			e.preventDefault(); deferred = e; showBanner();

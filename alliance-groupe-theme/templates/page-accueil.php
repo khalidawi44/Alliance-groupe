@@ -375,6 +375,8 @@ b&&b.addEventListener('click',function(){if(!v)return;v.muted=!v.muted;if(!v.mut
 .ag-stickycta__txt strong{color:#F3D27A}
 .ag-stickycta__btn{flex-shrink:0;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:800;text-decoration:none;padding:13px 22px;border-radius:100px;font-size:.95rem;white-space:nowrap;transition:transform .2s}
 .ag-stickycta__btn:hover{transform:scale(1.03)}
+/* Si le bandeau « Installer l'app » est affiché, la barre collante remonte AU-DESSUS (plus de chevauchement). */
+body.ag-appbn-on .ag-stickycta__inner{margin-bottom:92px}
 /* Quand la barre fixe est affichee, on remonte le bouton "retour en haut"
    pour qu'il ne soit plus cache derriere la barre. */
 body.ag-stickycta-on .ag-totop{bottom:96px !important}
