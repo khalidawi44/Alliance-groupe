@@ -131,11 +131,14 @@ if ( ! function_exists( 'ag_geo_review_url' ) ) {
 	}
 }
 
-/** place_id de la fiche (résolu une fois via l'API Places puis mémorisé). */
+/** place_id de la fiche. Par défaut : UNIQUEMENT le Place ID explicite (évite les homonymes,
+ *  ex. « Alliance Group » constructeur). La recherche auto par nom n'est tentée que si elle est
+ *  activée explicitement (option ag_geo_autoresolve = '1'). */
 if ( ! function_exists( 'ag_geo_place_id' ) ) {
 	function ag_geo_place_id() {
 		$pid = (string) get_option( 'ag_geo_place_id', '' );
 		if ( $pid ) return $pid;
+		if ( '1' !== (string) get_option( 'ag_geo_autoresolve', '' ) ) return ''; // pas de recherche floue par défaut
 		$key = (string) get_option( 'ag_places_key', '' );
 		if ( ! $key ) return '';
 		$q   = rawurlencode( (string) get_option( 'ag_geo_place_query', 'Alliance Groupe Nantes' ) );
@@ -341,8 +344,9 @@ add_action( 'admin_init', function () {
 	register_setting( 'ag_geo_avis', 'ag_geo_place_id',       array( 'sanitize_callback' => 'sanitize_text_field' ) );
 	register_setting( 'ag_geo_avis', 'ag_google_review_url',  array( 'sanitize_callback' => 'esc_url_raw' ) );
 	register_setting( 'ag_geo_avis', 'ag_geo_place_query',    array( 'sanitize_callback' => 'sanitize_text_field' ) );
+	register_setting( 'ag_geo_avis', 'ag_geo_autoresolve',    array( 'sanitize_callback' => 'sanitize_text_field' ) );
 	register_setting( 'ag_geo_avis', 'ag_geo_reviews',        array( 'sanitize_callback' => function ( $v ) { return wp_kses_post( (string) $v ); } ) );
-	foreach ( array( 'ag_geo_place_id', 'ag_google_review_url', 'ag_geo_place_query', 'ag_geo_reviews' ) as $o ) {
+	foreach ( array( 'ag_geo_place_id', 'ag_google_review_url', 'ag_geo_place_query', 'ag_geo_autoresolve', 'ag_geo_reviews' ) as $o ) {
 		add_action( "update_option_{$o}", function () { delete_transient( 'ag_geo_gdata' ); } );
 	}
 } );
@@ -360,6 +364,8 @@ if ( ! function_exists( 'ag_geo_settings_page' ) ) {
 			<p>Affiche tes <strong>vrais</strong> avis Google sur la page « meilleure agence web Nantes » (et où la section est utilisée).
 			   Les avis sont récupérés en direct via l'<strong>API Google Places</strong> (clé <code>ag_places_key</code> dans Prospection),
 			   puis mis en cache 6 h. Jamais de faux avis.</p>
+			<div class="notice notice-warning inline"><p><strong>Important :</strong> renseigne le <strong>Place ID EXACT</strong> de ta fiche.
+			   Sinon (recherche par nom), le site peut tomber sur un <strong>homonyme</strong> (ex. « Alliance Group » constructeur de maisons) et afficher SES avis. Ta fiche : <code>?cid=10118661122943419677</code>.</p></div>
 			<p><strong>État actuel :</strong>
 				<?php if ( ! empty( $d['total'] ) ) : ?>
 					note <strong><?php echo esc_html( number_format_i18n( $d['rating'], 1 ) ); ?>/5</strong>
@@ -378,9 +384,10 @@ if ( ! function_exists( 'ag_geo_settings_page' ) ) {
 					<tr><th scope="row"><label for="ag_google_review_url">Lien de la fiche / avis</label></th>
 						<td><input type="url" id="ag_google_review_url" name="ag_google_review_url" class="regular-text" value="<?php echo esc_attr( get_option( 'ag_google_review_url', '' ) ); ?>" placeholder="https://g.page/r/…">
 							<p class="description">Bouton « Laisser un avis » / « Voir nos avis ». Sur ta fiche : « Demander des avis » → copier le lien.</p></td></tr>
-					<tr><th scope="row"><label for="ag_geo_place_query">Recherche auto (secours)</label></th>
-						<td><input type="text" id="ag_geo_place_query" name="ag_geo_place_query" class="regular-text" value="<?php echo esc_attr( get_option( 'ag_geo_place_query', 'Alliance Groupe Nantes' ) ); ?>">
-							<p class="description">Utilisé pour retrouver le Place ID automatiquement si le champ ci-dessus est vide.</p></td></tr>
+					<tr><th scope="row">Recherche auto par nom</th>
+						<td><label><input type="checkbox" name="ag_geo_autoresolve" value="1" <?php checked( '1', get_option( 'ag_geo_autoresolve', '' ) ); ?>> Activer (⚠️ risque d'homonyme)</label>
+							<input type="text" id="ag_geo_place_query" name="ag_geo_place_query" class="regular-text" style="margin-left:10px" value="<?php echo esc_attr( get_option( 'ag_geo_place_query', 'Alliance Groupe Nantes' ) ); ?>">
+							<p class="description"><strong>Déconseillé</strong> : peut tomber sur un homonyme. À n'utiliser que si le Place ID est vide.</p></td></tr>
 					<tr><th scope="row"><label for="ag_geo_reviews">Avis à la main (secours, JSON)</label></th>
 						<td><textarea id="ag_geo_reviews" name="ag_geo_reviews" rows="5" class="large-text code" placeholder='[{"author":"Prénom N.","rating":5,"text":"Super travail !","time":"juin 2026"}]'><?php echo esc_textarea( get_option( 'ag_geo_reviews', '' ) ); ?></textarea>
 							<p class="description">Uniquement de <strong>vrais</strong> avis (ex. recopiés de Google) si l'API ne les renvoie pas. Format JSON : author, rating (1-5), text, time.</p></td></tr>
