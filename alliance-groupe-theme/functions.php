@@ -884,15 +884,43 @@ document.addEventListener('ag:consent',function(e){var c=e.detail||{};gtag('cons
 gtag('js',new Date());
 <?php if ( $ga ) : ?>gtag('config','<?php echo esc_js( $ga ); ?>');<?php endif; ?>
 <?php if ( $ads ) : ?>gtag('config','<?php echo esc_js( $ads ); ?>');<?php endif; ?>
-<?php
-// Action de conversion Google Ads (ex. « Page vue ») — événement dédié, sinon Google ne la détecte pas.
-$conv     = trim( (string) apply_filters( 'ag_ads_conversion_label', get_option( 'ag_ads_conversion_label', 'ZCMWCPfQvcEcEN7pjuFD' ) ) );
-$is_login = ( isset( $GLOBALS['pagenow'] ) && 'wp-login.php' === $GLOBALS['pagenow'] );
-if ( $ads && $conv && ! $is_login ) : ?>gtag('event','conversion',{'send_to':'<?php echo esc_js( $ads ); ?>/<?php echo esc_js( $conv ); ?>'});<?php endif; ?>
 </script>
         <?php
     }
 }
+
+/**
+ * Conversion Google Ads sur les VRAIS leads (best practice) plutôt que sur chaque page vue :
+ *  - envoi d'un formulaire de contact (Contact Form 7, form .ag-form, ou form sur la page /contact)
+ *  - clic sur un lien téléphone (tel:) ou email (mailto:)
+ * Envoie aussi l'événement GA4 « generate_lead ». Respecte le Consent Mode (gtag ne déclenche
+ * réellement qu'après consentement marketing).
+ */
+add_action( 'wp_footer', function () {
+	$ads  = trim( (string) apply_filters( 'ag_ads_id', get_option( 'ag_ads_id', 'AW-18188842206' ) ) );
+	$conv = trim( (string) apply_filters( 'ag_ads_conversion_label', get_option( 'ag_ads_conversion_label', 'ZCMWCPfQvcEcEN7pjuFD' ) ) );
+	if ( '' === $ads || '' === $conv ) return;
+	$send = $ads . '/' . $conv;
+	?>
+<script>
+(function(){
+  var fired=false;
+  function agLead(){ if(typeof gtag!=='function')return; try{gtag('event','conversion',{'send_to':'<?php echo esc_js( $send ); ?>'});gtag('event','generate_lead',{'currency':'EUR','value':1});}catch(e){} }
+  // Envoi de formulaire de contact
+  document.addEventListener('submit',function(e){
+    var f=e.target; if(!f||!f.matches)return;
+    var path=(location.pathname||'').toLowerCase();
+    if(f.matches('.wpcf7-form, form.ag-form, #ag-contact-form, form[action*="contact"]') || path.indexOf('contact')>-1){ agLead(); }
+  },true);
+  // Clic téléphone / email
+  document.addEventListener('click',function(e){
+    var a=e.target.closest?e.target.closest('a[href^="tel:"],a[href^="mailto:"]'):null;
+    if(a){ agLead(); }
+  },true);
+})();
+</script>
+	<?php
+}, 99 );
 add_action( 'wp_head', 'ag_output_gtag', 1 );      // pages publiques
 add_action( 'login_head', 'ag_output_gtag', 1 );   // wp-login.php (couverture balise « propre »)
 

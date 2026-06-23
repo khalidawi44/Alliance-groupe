@@ -22,7 +22,7 @@ get_header();
 	</div>
 </section>
 <style>
-.ag-headvid{position:relative;width:100%;height:clamp(320px,62vh,640px);overflow:hidden;background:#0a0a0f}
+.ag-headvid{position:sticky;top:0;z-index:0;width:100%;height:100vh;height:100svh;overflow:hidden;background:#0a0a0f}
 .ag-headvid__v{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
 .ag-headvid__veil{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(10,10,15,.35) 0%,rgba(10,10,15,.78) 100%)}
 .ag-headvid__in{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
@@ -405,8 +405,8 @@ body.ag-stickycta-on .ag-totop{bottom:96px !important}
 
 </div><!-- /.ag-pinwrap -->
 <style>
-/* HERO ÉPINGLÉ : reste en place (images fixes) pendant que le contenu remonte au-dessus. */
-body.home .ag-hero{position:sticky;top:0;z-index:0}
+/* VIDÉO ÉPINGLÉE en header : reste fixe pendant que TOUT le contenu remonte par-dessus. */
+body.home .ag-hero{position:relative;z-index:1;background:var(--color-bg)}
 body.home .ag-pinwrap{position:relative;z-index:1;background:var(--color-bg)}
 /* le footer doit aussi passer au-dessus du hero épinglé tout en bas */
 body.home .ag-footer{position:relative;z-index:1}
