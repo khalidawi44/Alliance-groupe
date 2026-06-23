@@ -333,3 +333,69 @@ add_action( 'wp_head', function () {
 	echo '<script type="application/ld+json">' . wp_json_encode( $ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
 }, 13 );
 
+/* ── Réglages → ⭐ Avis Google ──────────────────────────────────────────── */
+add_action( 'admin_menu', function () {
+	add_options_page( 'Avis Google', '⭐ Avis Google', 'manage_options', 'ag-avis-google', 'ag_geo_settings_page' );
+} );
+add_action( 'admin_init', function () {
+	register_setting( 'ag_geo_avis', 'ag_geo_place_id',       array( 'sanitize_callback' => 'sanitize_text_field' ) );
+	register_setting( 'ag_geo_avis', 'ag_google_review_url',  array( 'sanitize_callback' => 'esc_url_raw' ) );
+	register_setting( 'ag_geo_avis', 'ag_geo_place_query',    array( 'sanitize_callback' => 'sanitize_text_field' ) );
+	register_setting( 'ag_geo_avis', 'ag_geo_reviews',        array( 'sanitize_callback' => function ( $v ) { return wp_kses_post( (string) $v ); } ) );
+	foreach ( array( 'ag_geo_place_id', 'ag_google_review_url', 'ag_geo_place_query', 'ag_geo_reviews' ) as $o ) {
+		add_action( "update_option_{$o}", function () { delete_transient( 'ag_geo_gdata' ); } );
+	}
+} );
+if ( ! function_exists( 'ag_geo_settings_page' ) ) {
+	function ag_geo_settings_page() {
+		if ( isset( $_POST['ag_geo_flush'] ) && check_admin_referer( 'ag_geo_flush' ) ) {
+			delete_transient( 'ag_geo_gdata' );
+			delete_option( 'ag_geo_place_id' ); // force la re-résolution
+			echo '<div class="notice notice-success"><p>Cache des avis vidé. Place ID auto réinitialisé.</p></div>';
+		}
+		$d = ag_geo_google_data();
+		?>
+		<div class="wrap">
+			<h1>⭐ Avis Google — Alliance Groupe</h1>
+			<p>Affiche tes <strong>vrais</strong> avis Google sur la page « meilleure agence web Nantes » (et où la section est utilisée).
+			   Les avis sont récupérés en direct via l'<strong>API Google Places</strong> (clé <code>ag_places_key</code> dans Prospection),
+			   puis mis en cache 6 h. Jamais de faux avis.</p>
+			<p><strong>État actuel :</strong>
+				<?php if ( ! empty( $d['total'] ) ) : ?>
+					note <strong><?php echo esc_html( number_format_i18n( $d['rating'], 1 ) ); ?>/5</strong>
+					· <strong><?php echo (int) $d['total']; ?></strong> avis · <strong><?php echo count( $d['reviews'] ); ?></strong> affichés.
+				<?php else : ?>
+					<span style="color:#b32d2e">aucun avis récupéré</span> — renseigne le <strong>Place ID</strong> ci-dessous (le repérage auto par nom peut échouer).
+				<?php endif; ?>
+			</p>
+
+			<form method="post" action="options.php">
+				<?php settings_fields( 'ag_geo_avis' ); ?>
+				<table class="form-table" role="presentation">
+					<tr><th scope="row"><label for="ag_geo_place_id">Place ID de la fiche</label></th>
+						<td><input type="text" id="ag_geo_place_id" name="ag_geo_place_id" class="regular-text" value="<?php echo esc_attr( get_option( 'ag_geo_place_id', '' ) ); ?>" placeholder="ChIJ…">
+							<p class="description">Trouve-le ici : <a href="https://developers.google.com/maps/documentation/places/web-service/place-id" target="_blank" rel="noopener">Place ID Finder</a> (cherche « Alliance Groupe »). Le plus fiable.</p></td></tr>
+					<tr><th scope="row"><label for="ag_google_review_url">Lien de la fiche / avis</label></th>
+						<td><input type="url" id="ag_google_review_url" name="ag_google_review_url" class="regular-text" value="<?php echo esc_attr( get_option( 'ag_google_review_url', '' ) ); ?>" placeholder="https://g.page/r/…">
+							<p class="description">Bouton « Laisser un avis » / « Voir nos avis ». Sur ta fiche : « Demander des avis » → copier le lien.</p></td></tr>
+					<tr><th scope="row"><label for="ag_geo_place_query">Recherche auto (secours)</label></th>
+						<td><input type="text" id="ag_geo_place_query" name="ag_geo_place_query" class="regular-text" value="<?php echo esc_attr( get_option( 'ag_geo_place_query', 'Alliance Groupe Nantes' ) ); ?>">
+							<p class="description">Utilisé pour retrouver le Place ID automatiquement si le champ ci-dessus est vide.</p></td></tr>
+					<tr><th scope="row"><label for="ag_geo_reviews">Avis à la main (secours, JSON)</label></th>
+						<td><textarea id="ag_geo_reviews" name="ag_geo_reviews" rows="5" class="large-text code" placeholder='[{"author":"Prénom N.","rating":5,"text":"Super travail !","time":"juin 2026"}]'><?php echo esc_textarea( get_option( 'ag_geo_reviews', '' ) ); ?></textarea>
+							<p class="description">Uniquement de <strong>vrais</strong> avis (ex. recopiés de Google) si l'API ne les renvoie pas. Format JSON : author, rating (1-5), text, time.</p></td></tr>
+				</table>
+				<?php submit_button( 'Enregistrer' ); ?>
+			</form>
+
+			<form method="post" style="margin-top:-10px">
+				<?php wp_nonce_field( 'ag_geo_flush' ); ?>
+				<input type="hidden" name="ag_geo_flush" value="1">
+				<?php submit_button( 'Vider le cache des avis (re-synchroniser maintenant)', 'secondary' ); ?>
+			</form>
+		</div>
+		<?php
+	}
+}
+
+
