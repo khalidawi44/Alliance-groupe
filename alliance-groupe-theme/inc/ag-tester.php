@@ -762,9 +762,26 @@ if ( ! function_exists( 'ag_audit_hist_upsert' ) ) {
 			if ( in_array( $nm, $deep_names, true ) ) $deep_checks[] = array( 'name' => $nm, 'status' => $c['status'] ?? 'ok' );
 		}
 		$prev = $h[ $id ] ?? array();
+			// RÈGLE (demande Fabrice) : un test PLUS POUSSÉ ne peut jamais afficher une
+			// note SUPÉRIEURE à un test plus léger (il trouve au moins autant de
+			// problèmes). On plafonne au MINIMUM des notes des modes plus légers déjà
+			// enregistrés pour le même site (même hôte). Il ne peut que dévaluer.
+			$ag_rank   = array( 'passive' => 0, 'deep' => 1, 'expert' => 2 );
+			$ag_myRank = $ag_rank[ $mode ] ?? 0;
+			$ag_myHost = preg_replace( '/^www\./', '', strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) ) );
+			$ag_score  = (int) ( $a['score'] ?? 0 );
+			$ag_cap    = null;
+			foreach ( $h as $ag_e ) {
+				$ag_eHost = preg_replace( '/^www\./', '', strtolower( (string) ( $ag_e['host'] ?? wp_parse_url( $ag_e['url'] ?? '', PHP_URL_HOST ) ) ) );
+				if ( $ag_eHost !== $ag_myHost ) { continue; }
+				$ag_eRank  = $ag_rank[ $ag_e['mode'] ?? 'passive' ] ?? 0;
+				$ag_eScore = (int) ( $ag_e['score'] ?? 0 );
+				if ( $ag_eRank < $ag_myRank && $ag_eScore > 0 ) { $ag_cap = ( null === $ag_cap ) ? $ag_eScore : min( $ag_cap, $ag_eScore ); }
+			}
+			if ( null !== $ag_cap && $ag_score > $ag_cap ) { $ag_score = $ag_cap; }
 		$h[ $id ] = array(
 			'url' => $url, 'host' => wp_parse_url( $url, PHP_URL_HOST ),
-			'ts' => time(), 'score' => (int) ( $a['score'] ?? 0 ), 'critical' => (int) ( $a['critical'] ?? 0 ),
+			'ts' => time(), 'score' => $ag_score, 'critical' => (int) ( $a['critical'] ?? 0 ),
 			'seg' => function_exists( 'ag_audit_segment' ) ? ag_audit_segment( $a ) : 'securite',
 			'mode' => $mode,
 			'checks' => $checks,
