@@ -424,6 +424,41 @@ body.home .ag-hero{position:relative;z-index:1;background:var(--color-bg)}
 body.home .ag-pinwrap{position:relative;z-index:1;background:var(--color-bg)}
 /* le footer doit aussi passer au-dessus du hero épinglé tout en bas */
 body.home .ag-footer{position:relative;z-index:1}
+/* ── EMPILEMENT AU SCROLL (desktop) : chaque section s'ÉPINGLE en haut quand elle y
+   arrive, et la suivante REMONTE par-dessus (la précédente reste fixe derrière).
+   Désactivé sur mobile (≤768px) : on garde la vidéo entière + la lecture normale.
+   Les sections trop hautes (> 1 écran, ex. FAQ/offres) ou trop courtes (barre de
+   réassurance) NE s'épinglent PAS — géré en JS — pour ne jamais masquer de contenu
+   ni laisser une barre flottante disgracieuse. */
+@media(min-width:769px){
+	body.home .ag-pinwrap > section{position:sticky;top:0}
+}
 </style>
+<script>
+(function(){
+	if(window.matchMedia('(max-width:768px)').matches) return;
+	var secs=[].slice.call(document.querySelectorAll('body.home .ag-pinwrap > section'));
+	if(!secs.length) return;
+	function transparent(c){return !c||c==='transparent'||c==='rgba(0, 0, 0, 0)';}
+	function apply(){
+		var vh=window.innerHeight;
+		secs.forEach(function(s){
+			// Fond opaque de secours : on ne doit jamais voir au travers d'une section épinglée.
+			var cs=getComputedStyle(s);
+			if(transparent(cs.backgroundColor)&&cs.backgroundImage==='none'){
+				s.style.backgroundColor='var(--color-bg,#0a0a0f)';
+			}
+			// On n'épingle que les sections ~plein écran : plus haute qu'un écran =>
+			// son bas serait masqué ; plus courte que 60% d'écran => barre flottante.
+			var h=s.offsetHeight;
+			if(h>vh+4||h<vh*0.6){ s.style.position='relative'; s.style.top='auto'; }
+			else { s.style.position='sticky'; s.style.top='0'; }
+		});
+	}
+	apply();
+	var t;window.addEventListener('resize',function(){clearTimeout(t);t=setTimeout(apply,150);},{passive:true});
+	window.addEventListener('load',apply);
+})();
+</script>
 
 <?php get_footer(); ?>
