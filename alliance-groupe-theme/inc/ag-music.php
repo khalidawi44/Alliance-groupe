@@ -60,13 +60,13 @@ function ag_music_render() {
 		<audio id="agm-audio" preload="none" src="<?php echo esc_url( $first ); ?>"></audio>
 	</div>
 	<style>
-	.agm{position:fixed;left:16px;bottom:16px;z-index:9990;display:flex;align-items:center;gap:8px}
+	.agm{position:fixed;left:16px;bottom:60px;z-index:9990;display:flex;align-items:center;gap:8px}
 	.agm-btn{width:44px;height:44px;border-radius:50%;background:rgba(10,10,15,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1.5px solid rgba(212,180,92,.55);color:#D4B45C;font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
 	.agm-btn:hover{background:#D4B45C;color:#0a0a0f}
 	.agm-mini{width:34px;height:34px;font-size:18px;opacity:.85}
 	.agm.is-off .agm-mini{display:none}
 	.agm.is-off #agm-sound{opacity:.6}
-	@media(max-width:640px){.agm{left:12px;bottom:12px;gap:6px}.agm-btn{width:40px;height:40px}.agm-mini{width:30px;height:30px}}
+	@media(max-width:640px){.agm{left:12px;bottom:56px;gap:6px}.agm-btn{width:40px;height:40px}.agm-mini{width:30px;height:30px}}
 	</style>
 	<script>
 	(function(){
