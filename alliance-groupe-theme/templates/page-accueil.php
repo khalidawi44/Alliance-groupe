@@ -38,7 +38,9 @@ get_header();
 	.ag-headvid__v{position:relative;inset:auto;width:100%;height:auto;object-fit:contain;display:block;background:#0a0a0f}
 	.ag-headvid__veil{display:none}
 	.ag-headvid__in{position:relative;z-index:2;height:auto;justify-content:flex-start;padding:18px 16px 24px}
-	.ag-headvid__title{font-size:1.5rem;margin:.2em 0 .7em;max-width:none}
+	/* Le titre de la vidéo header fait doublon avec le H1 du hero juste en dessous
+	   → on le masque sur mobile (on garde le H1 du hero pour le SEO). */
+	.ag-headvid__title{display:none}
 }
 </style>
 <script>
