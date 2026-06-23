@@ -867,7 +867,9 @@ add_action( 'wp_head', function () {
 // ── 8b. Google Analytics (GA4) + Google Ads, avec Consent Mode (RGPD) ──
 if ( ! function_exists( 'ag_output_gtag' ) ) {
     function ag_output_gtag() {
-        $ga  = trim( (string) apply_filters( 'ag_ga4_id', get_option( 'ag_ga4_id', 'G-RSQ6Y8DHK4' ) ) );
+        // GA4 géré par le Google tag externe (G-49BX81NSZ0, via GTM) → on n'émet PAS de 2e GA4 ici
+        // pour éviter le double comptage. Renseigner l'option/filtre 'ag_ga4_id' pour réactiver le GA4 du thème.
+        $ga  = trim( (string) apply_filters( 'ag_ga4_id', get_option( 'ag_ga4_id', '' ) ) );
         $ads = trim( (string) apply_filters( 'ag_ads_id', get_option( 'ag_ads_id', 'AW-18188842206' ) ) );
         if ( '' === $ga && '' === $ads ) return;
         $primary = $ga ?: $ads;
