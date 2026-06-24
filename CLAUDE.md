@@ -6,6 +6,9 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 
 > 📚 Détail complet (raccourcis, création vidéo, agents, meilleur système par type de site, config, limites) : **`INFRASTRUCTURE.md`**.
 
+## Dialogue pas-à-pas (RÈGLE Fabrice, 24/06)
+- **Procédures techniques (dépannage, install, étapes terminal) : UNE seule instruction à la fois**, puis **attendre la réponse de Fabrice** avant de donner l'étape suivante. Ne jamais empiler plusieurs étapes dans un même message.
+
 ## Continuité entre conversations (IMPORTANT)
 - Sur Claude Code web, **chaque conversation démarre dans un conteneur neuf** : seul ce qui est **commité + poussé** survit.
 - **Hook `SessionStart`** (`.claude/hooks/session-start.sh`, enregistré dans `.claude/settings.json`) : à chaque nouvelle session il injecte automatiquement l'état réel (branche, derniers commits, travail non commité, version active, focus templates, en-tête `HANDOFF.md`). C'est ce qui **relie les conversations** entre elles.
