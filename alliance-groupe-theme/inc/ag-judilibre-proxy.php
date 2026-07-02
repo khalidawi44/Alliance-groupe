@@ -7,7 +7,7 @@
  * interrogent ce relais → recherche jurisprudence incluse, AUCUNE config client.
  *
  * Endpoints (POST) :
- *   /wp-json/ag/v1/judilibre            { q, jur, sort, order, ymin, ymax, solution, theme, pub }
+ *   /wp-json/ag/v1/judilibre            { q, jur, sort, order, ymin, ymax, solution, theme, pub, page, page_size, chamber, formation }
  *   /wp-json/ag/v1/judilibre-decision   { id }
  * Réponse : { "judilibre": <corps brut Judilibre> }  ou  { "error": "…" }.
  *
@@ -124,15 +124,21 @@ if ( ! function_exists( 'ag_jrp_rest_search' ) ) {
 			return array( 'judilibre' => array( 'results' => array(), 'total' => 0 ) );
 		}
 		$p = array(
-			'q'        => $q,
-			'jur'      => sanitize_text_field( (string) $req->get_param( 'jur' ) ),
-			'sort'     => sanitize_text_field( (string) $req->get_param( 'sort' ) ),
-			'order'    => sanitize_text_field( (string) $req->get_param( 'order' ) ),
-			'ymin'     => intval( $req->get_param( 'ymin' ) ),
-			'ymax'     => intval( $req->get_param( 'ymax' ) ),
-			'solution' => sanitize_text_field( (string) $req->get_param( 'solution' ) ),
-			'theme'    => sanitize_text_field( (string) $req->get_param( 'theme' ) ),
-			'pub'      => $req->get_param( 'pub' ) ? '1' : '',
+			'q'         => $q,
+			'jur'       => sanitize_text_field( (string) $req->get_param( 'jur' ) ),
+			'sort'      => sanitize_text_field( (string) $req->get_param( 'sort' ) ),
+			'order'     => sanitize_text_field( (string) $req->get_param( 'order' ) ),
+			'ymin'      => intval( $req->get_param( 'ymin' ) ),
+			'ymax'      => intval( $req->get_param( 'ymax' ) ),
+			'solution'  => sanitize_text_field( (string) $req->get_param( 'solution' ) ),
+			'theme'     => sanitize_text_field( (string) $req->get_param( 'theme' ) ),
+			'pub'       => $req->get_param( 'pub' ) ? '1' : '',
+			// Pagination : page 0-indexée ; taille de page 1..50 (limite Judilibre), défaut 20.
+			'page'      => max( 0, intval( $req->get_param( 'page' ) ) ),
+			'page_size' => min( 50, max( 1, $req->get_param( 'page_size' ) ? intval( $req->get_param( 'page_size' ) ) : 20 ) ),
+			// Filtres supplémentaires Judilibre (valeurs multiples possibles, séparées par des virgules).
+			'chamber'   => sanitize_text_field( (string) $req->get_param( 'chamber' ) ),
+			'formation' => sanitize_text_field( (string) $req->get_param( 'formation' ) ),
 		);
 		$ck     = 'ag_jrp_s_' . md5( wp_json_encode( $p ) );
 		$cached = get_transient( $ck );
@@ -145,7 +151,8 @@ if ( ! function_exists( 'ag_jrp_rest_search' ) ) {
 		}
 		$base = ag_jrp_opt( 'search_url', 'https://api.piste.gouv.fr/cassation/judilibre/v1.0/search' );
 		$base = str_replace( 'sandbox-api.piste.gouv.fr', 'api.piste.gouv.fr', $base );
-		$args = array( 'query' => $p['q'], 'page_size' => 20, 'resolve_references' => 'true' );
+		$args = array( 'query' => $p['q'], 'page_size' => $p['page_size'], 'resolve_references' => 'true' );
+		if ( $p['page'] > 0 ) { $args['page'] = $p['page']; }
 		if ( 'date' === $p['sort'] ) {
 			$args['sort']  = 'date';
 			$args['order'] = ( 'asc' === $p['order'] ) ? 'asc' : 'desc';
@@ -157,6 +164,13 @@ if ( ! function_exists( 'ag_jrp_rest_search' ) ) {
 		if ( $p['pub'] )      { $url .= '&publication=b&publication=r'; }
 		if ( $p['solution'] ) { $url .= '&solution=' . rawurlencode( $p['solution'] ); }
 		if ( $p['theme'] )    { $url .= '&theme=' . rawurlencode( $p['theme'] ); }
+		// chamber / formation : on accepte plusieurs valeurs séparées par des virgules.
+		foreach ( array( 'chamber', 'formation' ) as $mkey ) {
+			if ( '' === $p[ $mkey ] ) { continue; }
+			foreach ( array_filter( array_map( 'trim', explode( ',', $p[ $mkey ] ) ) ) as $val ) {
+				$url .= '&' . $mkey . '=' . rawurlencode( $val );
+			}
+		}
 		$headers = array( 'Authorization' => 'Bearer ' . $token, 'Accept' => 'application/json' );
 		$apikey  = ag_jrp_opt( 'apikey' );
 		if ( $apikey ) { $headers['KeyId'] = $apikey; }
