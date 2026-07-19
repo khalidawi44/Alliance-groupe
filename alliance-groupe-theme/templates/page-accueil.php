@@ -49,7 +49,8 @@ v&&v.play&&v.play().catch(function(){});
 b&&b.addEventListener('click',function(){if(!v)return;v.muted=!v.muted;if(!v.muted){v.play().catch(function(){});b.textContent='🔊 Couper le son';}else{b.textContent='🔇 Activer le son';}});})();
 </script>
 
-<!-- Hero -->
+<?php /* HÉROS SPLIT DÉSACTIVÉ (désencombrement) : la VIDÉO est désormais le héros unique. Pour le réactiver, repasser if ( false ) → if ( true ). */ if ( false ) : ?>
+<!-- Hero (désactivé — réactivable) -->
 <section class="ag-hero" id="ag-main-content">
     <?php
     // HERO SPLIT LÉGER : 2 images (compressées) côte à côte, séparées par un trait doré droit.
@@ -313,17 +314,17 @@ b&&b.addEventListener('click',function(){if(!v)return;v.muted=!v.muted;if(!v.mut
         </div>
     </div>
 </section>
+<?php endif; // fin héros split désactivé ?>
 
-<!-- Effet « remontée » : le HERO reste épinglé (sticky, images fixes), tout le
-     contenu suivant REMONTE par-dessus au scroll (au lieu que la page descende). -->
-<div class="ag-pinwrap">
+<!-- La VIDÉO (ag-headvid) est le héros épinglé. Le contenu remonte par-dessus au scroll. -->
+<div class="ag-pinwrap" id="ag-main-content">
 
 <!-- ⚡ LA MENACE EN DIRECT — juste après le hero : on capte la peur, puis
        on donne la solution dans la même section (globe à gauche, audit à droite) -->
 <?php get_template_part('template-parts/menace-live'); ?>
 
-<!-- "Choisissez votre parcours" — 4 panneaux priorisés (audit / création / maintenance / templates) -->
-<?php get_template_part('template-parts/paths-hero'); ?>
+<!-- "Choisissez votre parcours" — RETIRÉ de l'accueil (désencombrement). Réactivable en décommentant. -->
+<?php /* get_template_part('template-parts/paths-hero'); */ ?>
 
 <!-- Exemples d'audits anonymisés (preuve sociale sécurité) -->
 <?php get_template_part('template-parts/audit-examples'); ?>
@@ -359,8 +360,8 @@ b&&b.addEventListener('click',function(){if(!v)return;v.muted=!v.muted;if(!v.mut
 <!-- P1/ VENDRE — offres création + maintenance (4x sans frais, sécurisé) -->
 <?php get_template_part('template-parts/home-offres'); ?>
 
-<!-- ON RECRUTE — programme ambassadeurs + outil vidéo Studio -->
-<?php get_template_part('template-parts/home-ambassadeurs'); ?>
+<!-- ON RECRUTE — RETIRÉ de l'accueil (public différent). Vit sur sa page dédiée (menu « 🚀 Gagner »). Réactivable en décommentant. -->
+<?php /* get_template_part('template-parts/home-ambassadeurs'); */ ?>
 
 <!-- About : studio solo (Fabrizio) — confiance / artisan unique -->
 <?php get_template_part('template-parts/about'); ?>
@@ -426,6 +427,14 @@ body.home .ag-hero{position:relative;z-index:1;background:var(--color-bg)}
 body.home .ag-pinwrap{position:relative;z-index:1;background:var(--color-bg)}
 /* le footer doit aussi passer au-dessus du hero épinglé tout en bas */
 body.home .ag-footer{position:relative;z-index:1}
+/* DÉSENCOMBREMENT MOBILE (accueil) : on ne garde que le chat + la barre CTA.
+   On masque musique / bandeau "Installer l'app" / pastille "On recrute" / retour-haut. */
+@media(max-width:768px){
+	body.home .agm,
+	body.home .ag-appbn,
+	body.home .ag-recrute,
+	body.home .ag-totop{display:none !important}
+}
 /* ── EMPILEMENT AU SCROLL (desktop) : chaque section s'ÉPINGLE en haut quand elle y
    arrive, et la suivante REMONTE par-dessus (la précédente reste fixe derrière).
    Désactivé sur mobile (≤768px) : on garde la vidéo entière + la lecture normale.
