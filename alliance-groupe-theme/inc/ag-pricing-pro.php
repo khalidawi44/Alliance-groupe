@@ -32,7 +32,7 @@ if ( ! function_exists( 'ag_pricing_pro_data' ) ) {
 				'nom'   => 'Pro',
 				'prix'  => '890 €',
 				'desc'  => 'Le choix des pros qui veulent convertir.',
-				'url'   => get_option( 'ag_stripe_express_pro_url', 'https://www.paypal.com/ncp/payment/G6EXAMPLE' ),
+				'url'   => get_option( 'ag_stripe_express_pro_url', 'https://www.paypal.com/ncp/payment/EHEAJGG96G7SY' ),
 				'star'  => true,
 				'feats' => array( 'Jusqu\'à 6 pages', 'Design sur-mesure premium', 'SEO optimisé (Google)', 'Blog / actualités', 'Prise de RDV en ligne', 'Connexion réseaux sociaux', 'Livré en 8 jours' ),
 			),
