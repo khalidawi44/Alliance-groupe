@@ -14,11 +14,21 @@ get_header();
 	<div class="ag-headvid__veil"></div>
 	<div class="ag-headvid__in">
 		<span class="ag-headvid__eyebrow">DE NAPLES À NANTES</span>
-		<h2 class="ag-headvid__title"><span class="ag-uni--crea">Création de site web</span> &amp; <span class="ag-uni--secu">cybersécurité</span></h2>
+		<h1 class="ag-headvid__title">Je <span class="ag-uni--secu">sécurise</span> &amp; <span class="ag-uni--crea">je crée</span> votre site web</h1>
+		<form class="ag-headvid__scan" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="var i=this.site_url; if(i.value && !/^https?:\/\//i.test(i.value)) i.value='https://'+i.value;">
+			<input type="hidden" name="action" value="ag_tester_run">
+			<?php wp_nonce_field( 'ag_tester' ); ?>
+			<input type="text" name="hp_field" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
+			<input type="hidden" name="result_page" value="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>">
+			<input type="text" name="site_url" inputmode="url" placeholder="monsite.fr" required class="ag-headvid__scanin" aria-label="Adresse de votre site">
+			<button type="submit" class="ag-headvid__scanbtn">🔍 Tester mon site</button>
+		</form>
+		<div class="ag-headvid__ticker"><span class="ag-headvid__live"><i></i> En direct</span> <b id="ag-hv-count">30&nbsp;000</b> sites piratés aujourd'hui</div>
 		<div class="ag-headvid__cta">
-			<a class="ag-btn-gold" href="<?php echo esc_url( home_url( '/contact' ) ); ?>">Demander un devis gratuit</a>
+			<a class="ag-btn-gold" href="<?php echo esc_url( home_url( '/contact' ) ); ?>">Devis gratuit</a>
 			<button type="button" class="ag-headvid__sound" aria-label="Activer le son">🔇 Activer le son</button>
 		</div>
+		<div class="ag-headvid__metrics"><span><b>48 h</b> Audit</span><span><b>24/7</b> Surveillance</span><span><b>1</b> Interlocuteur</span></div>
 	</div>
 </section>
 <style>
@@ -27,26 +37,53 @@ get_header();
 .ag-headvid__veil{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(10,10,15,.35) 0%,rgba(10,10,15,.78) 100%)}
 .ag-headvid__in{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
 .ag-headvid__eyebrow{letter-spacing:.3em;font-size:.82rem;color:#D4B45C;font-weight:700}
-.ag-headvid__title{font-size:clamp(1.6rem,4.2vw,3rem);color:#fff;margin:.25em 0 .9em;line-height:1.15;max-width:14ch}
-.ag-headvid__cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center}
+.ag-headvid__title{font-size:clamp(1.7rem,4.4vw,3rem);color:#fff;margin:.25em 0 .55em;line-height:1.12;max-width:16ch;font-weight:800}
+.ag-headvid .ag-uni--secu{color:#ff5c5c;text-shadow:0 2px 18px rgba(225,15,26,.5)}
+.ag-headvid .ag-uni--crea{color:#5ba8ff;text-shadow:0 2px 18px rgba(40,110,220,.5)}
+/* mini-test "Tester mon site" fondu sur la vidéo */
+.ag-headvid__scan{display:flex;gap:8px;width:100%;max-width:440px;margin:0 auto;background:rgba(255,255,255,.08);border:1px solid rgba(255,90,90,.45);border-radius:999px;padding:6px 6px 6px 16px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.ag-headvid__scanin{flex:1;min-width:0;background:transparent;border:0;outline:none;color:#fff;font-size:1rem}
+.ag-headvid__scanin::placeholder{color:rgba(255,255,255,.6)}
+.ag-headvid__scanbtn{white-space:nowrap;border:0;border-radius:999px;padding:11px 18px;font-weight:800;cursor:pointer;background:rgba(255,90,90,.9);color:#fff;transition:.18s}
+.ag-headvid__scanbtn:hover{background:#ff5a5a}
+/* compteur de menaces "en direct" */
+.ag-headvid__ticker{margin:14px auto 0;display:inline-flex;align-items:center;gap:10px;padding:7px 14px;border-radius:12px;background:rgba(255,60,60,.1);border:1px solid rgba(255,92,92,.3);color:rgba(255,255,255,.9);font-size:.9rem}
+.ag-headvid__ticker b{color:#fff;font-weight:800;font-variant-numeric:tabular-nums}
+.ag-headvid__live{display:inline-flex;align-items:center;gap:6px;font-size:.66rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#ff5c5c}
+.ag-headvid__live i{width:8px;height:8px;border-radius:50%;background:#ff5c5c;animation:agHvPulse 1.8s infinite}
+@keyframes agHvPulse{0%{box-shadow:0 0 0 0 rgba(255,92,92,.5)}70%{box-shadow:0 0 0 9px rgba(255,92,92,0)}100%{box-shadow:0 0 0 0 rgba(255,92,92,0)}}
+.ag-headvid__cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:center;margin-top:16px}
 .ag-headvid__sound{cursor:pointer;border:2px solid rgba(212,180,92,.8);background:rgba(0,0,0,.35);color:#D4B45C;font-weight:700;padding:11px 18px;border-radius:999px}
 .ag-headvid__sound:hover{background:rgba(212,180,92,.15)}
+.ag-headvid__metrics{display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:center;margin-top:18px;color:rgba(255,255,255,.72);font-size:.82rem}
+.ag-headvid__metrics b{color:#f4d98b;font-weight:800}
+@media(prefers-reduced-motion:reduce){.ag-headvid__live i{animation:none}}
 /* MOBILE : on N'épingle PAS et on N'agrandit PAS la vidéo en plein écran (sinon elle est rognée).
    Elle s'affiche ENTIÈRE en 16:9 (toute l'image), le titre + CTA passent EN DESSOUS. */
 @media(max-width:768px){
 	.ag-headvid{position:relative;top:auto;height:auto;overflow:visible}
 	.ag-headvid__v{position:relative;inset:auto;width:100%;height:auto;object-fit:contain;display:block;background:#0a0a0f}
 	.ag-headvid__veil{display:none}
-	.ag-headvid__in{position:relative;z-index:2;height:auto;justify-content:flex-start;padding:18px 16px 24px}
-	/* Le titre de la vidéo header fait doublon avec le H1 du hero juste en dessous
-	   → on le masque sur mobile (on garde le H1 du hero pour le SEO). */
-	.ag-headvid__title{display:none}
+	.ag-headvid__in{position:relative;z-index:2;height:auto;justify-content:flex-start;padding:18px 16px 26px}
+	/* Le titre vidéo est désormais le H1 unique de l'accueil (2e héros retiré) : on l'affiche, compact. */
+	.ag-headvid__title{font-size:1.5rem;margin:.15em 0 .6em;max-width:none}
+	.ag-headvid__scanbtn{padding:11px 14px;font-size:.9rem}
+	.ag-headvid__metrics{font-size:.78rem;gap:6px 16px}
 }
 </style>
 <script>
 (function(){var s=document.querySelector('.ag-headvid');if(!s)return;var v=s.querySelector('.ag-headvid__v'),b=s.querySelector('.ag-headvid__sound');
 v&&v.play&&v.play().catch(function(){});
-b&&b.addEventListener('click',function(){if(!v)return;v.muted=!v.muted;if(!v.muted){v.play().catch(function(){});b.textContent='🔊 Couper le son';}else{b.textContent='🔇 Activer le son';}});})();
+b&&b.addEventListener('click',function(){if(!v)return;v.muted=!v.muted;if(!v.muted){v.play().catch(function(){});b.textContent='🔊 Couper le son';}else{b.textContent='🔇 Activer le son';}});
+/* Compteur de menaces "en direct" : monte vers 30 000 (chiffre réel cité sur le site). */
+var cnt=document.getElementById('ag-hv-count');
+if(cnt){
+	var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	var goal=30000;
+	function f(n){return Math.round(n).toLocaleString('fr-FR');}
+	if(reduce){cnt.textContent=f(goal);}
+	else{var t0=null;requestAnimationFrame(function step(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/1600,1);cnt.textContent=f(goal*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(step);});}
+}})();
 </script>
 
 <?php /* HÉROS SPLIT DÉSACTIVÉ (désencombrement) : la VIDÉO est désormais le héros unique. Pour le réactiver, repasser if ( false ) → if ( true ). */ if ( false ) : ?>

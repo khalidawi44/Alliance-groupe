@@ -72,6 +72,21 @@ export const videoNaplesComplet: AGShortProps = {
 	scenes: [...videoRecrutement.scenes.slice(0, -1), ...videoNaplesSuite.scenes],
 };
 
+/* HEADER / HÉROS — court (~10 s), à afficher en en-tête du site OU en réseaux.
+ * Message double : Naples→Nantes, Sécurité + Création. Fonds = images que tu as
+ * déjà dans public/ (naples-1.jpg, nantes-3.jpg). 80+80+80+60 = 300 images (10 s).
+ * Rendu :  npx remotion render AG-Header out/header.mp4
+ * (pour un fond de site en boucle : version muette, MP4 léger.) */
+export const videoHeader: AGShortProps = {
+	brand: 'ALLIANCE GROUPE',
+	scenes: [
+		{kind: 'hook',  bg: 'naples-1.jpg', caption: 'De Naples à Nantes', headline: 'Deux métiers, un seul interlocuteur.', durationInFrames: 80},
+		{kind: 'point', bg: 'naples-1.jpg', caption: '🛡️ Sécurité', headline: 'Je sécurise votre site contre le piratage.', durationInFrames: 80},
+		{kind: 'point', bg: 'nantes-3.jpg', caption: '✨ Création & SEO', headline: 'Je crée des sites pros, référencés sur Google.', durationInFrames: 80},
+		{kind: 'cta',   headline: 'Testez votre site — gratuit.', ctaLabel: 'alliancegroupe-inc.com', durationInFrames: 60},
+	],
+};
+
 /* VIDÉO LONGUE — Naples 1 + Naples 2 enchaînées, avec musique (fond naples.mp4
  * uniquement, qui existe). CTA de la Partie 1 retiré -> un seul CTA final. ~31 s. */
 export const videoLongue: AGShortProps = {
