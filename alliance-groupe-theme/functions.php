@@ -133,6 +133,12 @@ if ( file_exists( $ag_jrp_file ) ) {
     require_once $ag_jrp_file;
 }
 
+// ── Section TARIFS PREMIUM (shortcode [ag_pricing_pro]) — design ui-ux-pro-max
+$ag_pricing_file = get_stylesheet_directory() . '/inc/ag-pricing-pro.php';
+if ( file_exists( $ag_pricing_file ) ) {
+    require_once $ag_pricing_file;
+}
+
 // ── Durcissement sécurité de NOTRE site (xmlrpc, énumération, en-têtes, version)
 $ag_hardening_file = get_stylesheet_directory() . '/inc/ag-hardening.php';
 if ( file_exists( $ag_hardening_file ) ) {
