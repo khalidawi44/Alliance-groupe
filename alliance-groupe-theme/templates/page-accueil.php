@@ -471,4 +471,89 @@ body.home .ag-footer{position:relative;z-index:1}
 })();
 </script>
 
+<!-- ══ EFFETS D'ENTRÉE PAR SECTION (éclair / onde de choc / tornade / glitch) ══
+     AJOUT VISUEL UNIQUEMENT — aucun texte/contenu n'est modifié. Amélioration
+     progressive : l'état "caché" n'est posé QUE par le JS ; sans JS (ou si
+     "animations réduites"), tout reste visible. Filet de sécurité : au pire, tout
+     est ré-affiché après 4 s. 100 % transform/opacité (carte graphique) → fluide. -->
+<style>
+/* état armé (posé par JS) : la section est prête à apparaître */
+body.home .ag-pinwrap > section.agfx-armed{opacity:0}
+body.home .ag-pinwrap > section.agfx-in{opacity:1}
+/* overlays décoratifs (injectés par JS) — n'affectent JAMAIS la mise en page */
+.agfx-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:60;mix-blend-mode:screen}
+.agfx-flash.go{animation:agfxFlash .5s ease-out both}
+@keyframes agfxFlash{0%{opacity:0}8%{opacity:.8}16%{opacity:.1}24%{opacity:.55}100%{opacity:0}}
+.agfx-bolt{position:absolute;top:0;left:50%;height:56%;transform:translateX(-50%);z-index:59;opacity:0;pointer-events:none}
+.agfx-bolt path{stroke:#f4d98b;stroke-width:3;fill:none;filter:drop-shadow(0 0 8px #e8c66a);stroke-dasharray:600;stroke-dashoffset:600}
+.agfx-bolt.go{opacity:1;animation:agfxBoltFade .6s ease-out both}
+.agfx-bolt.go path{animation:agfxDraw .35s ease-out both}
+@keyframes agfxDraw{to{stroke-dashoffset:0}}
+@keyframes agfxBoltFade{0%,60%{opacity:1}100%{opacity:0}}
+.agfx-ring{position:absolute;top:50%;left:50%;width:38px;height:38px;border:2px solid #e8c66a;border-radius:50%;
+	transform:translate(-50%,-50%) scale(0);opacity:0;z-index:1;pointer-events:none}
+.agfx-ring.go{animation:agfxRing .7s ease-out both}
+@keyframes agfxRing{0%{opacity:.6;transform:translate(-50%,-50%) scale(0)}100%{opacity:0;transform:translate(-50%,-50%) scale(28)}}
+/* les 4 effets — uniquement transform/opacité, retour à transform:none à la fin */
+body.home .agfx--bolt.agfx-in{animation:agfxShake .55s cubic-bezier(.36,.07,.19,.97) both}
+@keyframes agfxShake{0%{opacity:0;transform:translateY(16px)}20%{opacity:1}32%{transform:translateX(-6px)}48%{transform:translateX(6px)}64%{transform:translateX(-4px)}80%{transform:translateX(2px)}100%{transform:none;opacity:1}}
+body.home .agfx--shock.agfx-in{animation:agfxPop .55s cubic-bezier(.16,1,.3,1) both}
+@keyframes agfxPop{0%{opacity:0;transform:scale(.92)}60%{opacity:1;transform:scale(1.015)}100%{transform:none;opacity:1}}
+body.home .agfx--twist.agfx-in{animation:agfxTwist .7s cubic-bezier(.16,1,.3,1) both}
+@keyframes agfxTwist{0%{opacity:0;transform:rotate(-4deg) scale(.9) skewX(4deg)}70%{opacity:1;transform:rotate(1deg) scale(1.01) skewX(-1deg)}100%{transform:none;opacity:1}}
+body.home .agfx--glitch.agfx-in{animation:agfxGlitch .5s steps(2) both}
+@keyframes agfxGlitch{0%{opacity:0;transform:translateX(-7px);text-shadow:3px 0 #ff5c5c,-3px 0 #5ba8ff}
+	45%{opacity:1;transform:translateX(6px);text-shadow:-3px 0 #ff5c5c,3px 0 #5ba8ff}
+	72%{transform:translateX(-2px);text-shadow:2px 0 #ff5c5c,-2px 0 #5ba8ff}
+	100%{transform:none;opacity:1;text-shadow:none}}
+@media(prefers-reduced-motion:reduce){
+	body.home .ag-pinwrap > section.agfx-armed{opacity:1 !important}
+	.agfx-flash,.agfx-bolt,.agfx-ring{display:none !important}
+}
+</style>
+<script>
+(function(){
+	if(!('IntersectionObserver' in window)) return;
+	if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+	var secs=[].slice.call(document.querySelectorAll('body.home .ag-pinwrap > section'));
+	if(!secs.length) return;
+	var TYPES=['bolt','shock','twist','glitch'];
+
+	function replay(sel){ if(!sel) return; sel.classList.remove('go'); void sel.offsetWidth; sel.classList.add('go'); }
+	function reveal(s){
+		if(s.classList.contains('agfx-in')) return;
+		s.classList.remove('agfx-armed'); s.classList.add('agfx-in');
+		var fx=s.dataset.agfx;
+		if(fx==='bolt'){ replay(s.querySelector('.agfx-flash')); replay(s.querySelector('.agfx-bolt')); }
+		else if(fx==='shock'){ replay(s.querySelector('.agfx-ring')); }
+	}
+	// FILET DE SÉCURITÉ armé EN PREMIER : quoi qu'il arrive, rien ne reste caché.
+	setTimeout(function(){ secs.forEach(function(s){ if(s.classList.contains('agfx-armed')) reveal(s); }); }, 4000);
+
+	secs.forEach(function(s,i){
+		var fx=TYPES[i % TYPES.length];
+		s.dataset.agfx=fx;
+		s.classList.add('agfx','agfx--'+fx,'agfx-armed');
+		if(getComputedStyle(s).position==='static'){ s.style.position='relative'; } // ancre les overlays
+		if(fx==='bolt'){
+			var fl=document.createElement('div'); fl.className='agfx-flash'; s.appendChild(fl);
+			var b=document.createElementNS('http://www.w3.org/2000/svg','svg');
+			b.setAttribute('class','agfx-bolt'); b.setAttribute('viewBox','0 0 100 300'); b.setAttribute('preserveAspectRatio','none');
+			var p=document.createElementNS('http://www.w3.org/2000/svg','path'); p.setAttribute('d','M55 0 L40 120 L60 120 L35 300');
+			b.appendChild(p); s.appendChild(b);
+		} else if(fx==='shock'){
+			var r=document.createElement('div'); r.className='agfx-ring'; s.appendChild(r);
+		}
+	});
+
+	var io=new IntersectionObserver(function(entries){
+		entries.forEach(function(e){
+			if(e.isIntersecting){ reveal(e.target); }
+			else { e.target.classList.remove('agfx-in'); e.target.classList.add('agfx-armed'); } // se rejoue au retour
+		});
+	},{threshold:0.12,rootMargin:'0px 0px -8% 0px'});
+	secs.forEach(function(s){ io.observe(s); });
+})();
+</script>
+
 <?php get_footer(); ?>
