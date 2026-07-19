@@ -478,19 +478,16 @@ body.home .ag-pinwrap,body.home .ag-pinwrap > section,body.home .ag-headvid{max-
 	body.home .ag-recrute,
 	body.home .ag-totop{display:none !important}
 }
-/* ── EMPILEMENT AU SCROLL (desktop) : chaque section s'ÉPINGLE en haut quand elle y
-   arrive, et la suivante REMONTE par-dessus (la précédente reste fixe derrière).
-   Désactivé sur mobile (≤768px) : on garde la vidéo entière + la lecture normale.
-   Les sections trop hautes (> 1 écran, ex. FAQ/offres) ou trop courtes (barre de
-   réassurance) NE s'épinglent PAS — géré en JS — pour ne jamais masquer de contenu
-   ni laisser une barre flottante disgracieuse. */
-@media(min-width:769px){
-	body.home .ag-pinwrap > section{position:sticky;top:0}
-}
+/* ── EMPILEMENT AU SCROLL (PC + MOBILE) : chaque section s'ÉPINGLE en haut quand elle
+   y arrive, et la suivante REMONTE par-dessus (la précédente reste fixe derrière).
+   Sur mobile, la VIDÉO du héros reste ENTIÈRE et défile normalement ; l'empilement
+   commence aux sections de contenu (sous la vidéo). Les sections trop hautes ou trop
+   courtes NE s'épinglent PAS — géré en JS — pour ne jamais masquer de contenu. */
+body.home .ag-pinwrap > section{position:sticky;top:0}
 </style>
 <script>
 (function(){
-	if(window.matchMedia('(max-width:768px)').matches) return;
+	// Empilement actif sur PC ET mobile (la vidéo héros reste entière au-dessus).
 	var secs=[].slice.call(document.querySelectorAll('body.home .ag-pinwrap > section'));
 	if(!secs.length) return;
 	function transparent(c){return !c||c==='transparent'||c==='rgba(0, 0, 0, 0)';}
