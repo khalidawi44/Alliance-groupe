@@ -470,13 +470,14 @@ body.home .ag-footer{position:relative;z-index:1}
 html{overflow-x:clip}
 body.home{overflow-x:clip;max-width:100%}
 body.home .ag-pinwrap,body.home .ag-pinwrap > section,body.home .ag-headvid{max-width:100vw}
-/* DÉSENCOMBREMENT MOBILE (accueil) : on ne garde que le chat + la barre CTA.
-   On masque musique / bandeau "Installer l'app" / pastille "On recrute" / retour-haut. */
+/* DÉSENCOMBREMENT MOBILE (accueil) : on masque musique / bandeau "Installer l'app" /
+   pastille "On recrute". On GARDE la flèche "remonter en haut" (.ag-totop, bas-droite). */
 @media(max-width:768px){
 	body.home .agm,
 	body.home .ag-appbn,
-	body.home .ag-recrute,
-	body.home .ag-totop{display:none !important}
+	body.home .ag-recrute{display:none !important}
+	/* flèche remonter en haut : bien visible en bas à droite */
+	body.home .ag-totop{display:flex !important;bottom:20px !important;right:20px !important;left:auto !important;z-index:99997 !important}
 }
 /* ── EMPILEMENT AU SCROLL (PC + MOBILE) : chaque section s'ÉPINGLE en haut quand elle
    y arrive, et la suivante REMONTE par-dessus (la précédente reste fixe derrière).
