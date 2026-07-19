@@ -75,7 +75,7 @@ $ag_col = function ( $s ) { return $s >= 75 ? '#28a745' : ( $s >= 50 ? '#F37A1F'
 	<!-- ───────── SÉCURITÉ ───────── -->
 	<div class="ag-ex__cat">🛡️ Sécurité — audits récents</div>
 	<div class="ag-ex__grid">
-		<?php foreach ( $ag_sec_ex as $e ) : $c = $ag_col( $e['score'] ); ?>
+		<?php foreach ( array_slice( $ag_sec_ex, 0, 3 ) as $e ) : $c = $ag_col( $e['score'] ); ?>
 			<div class="ag-ex__card">
 				<div class="ag-ex__top">
 					<div>
@@ -98,7 +98,7 @@ $ag_col = function ( $s ) { return $s >= 75 ? '#28a745' : ( $s >= 50 ? '#F37A1F'
 	<!-- ───────── CRÉATION ───────── -->
 	<div class="ag-ex__cat" style="margin-top:48px">✨ Création — sites livrés</div>
 	<div class="ag-ex__grid">
-		<?php foreach ( $ag_crea_ex as $e ) : ?>
+		<?php foreach ( array_slice( $ag_crea_ex, 0, 3 ) as $e ) : ?>
 			<div class="ag-ex__card ag-ex__card--crea">
 				<div class="ag-ex__top">
 					<div>

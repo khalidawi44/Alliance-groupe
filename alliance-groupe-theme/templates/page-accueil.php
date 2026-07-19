@@ -464,6 +464,12 @@ body.home .ag-hero{position:relative;z-index:1;background:var(--color-bg)}
 body.home .ag-pinwrap{position:relative;z-index:1;background:var(--color-bg)}
 /* le footer doit aussi passer au-dessus du hero épinglé tout en bas */
 body.home .ag-footer{position:relative;z-index:1}
+/* ANTI-DÉBORDEMENT LATÉRAL : aucune animation/section ne doit créer de scroll
+   horizontal. 'clip' coupe le débordement SANS créer de conteneur de défilement
+   (donc n'empêche PAS position:sticky des sections, contrairement à 'hidden'). */
+html{overflow-x:clip}
+body.home{overflow-x:clip;max-width:100%}
+body.home .ag-pinwrap,body.home .ag-pinwrap > section,body.home .ag-headvid{max-width:100vw}
 /* DÉSENCOMBREMENT MOBILE (accueil) : on ne garde que le chat + la barre CTA.
    On masque musique / bandeau "Installer l'app" / pastille "On recrute" / retour-haut. */
 @media(max-width:768px){
@@ -544,9 +550,11 @@ body.home .ag-pinwrap > section.agfx-in{opacity:1}
 body.home .agfx--bolt.agfx-in{animation:agfxShake .55s cubic-bezier(.36,.07,.19,.97) both}
 @keyframes agfxShake{0%{opacity:0;transform:translateY(16px)}20%{opacity:1}32%{transform:translateX(-6px)}48%{transform:translateX(6px)}64%{transform:translateX(-4px)}80%{transform:translateX(2px)}100%{transform:none;opacity:1}}
 body.home .agfx--shock.agfx-in{animation:agfxPop .55s cubic-bezier(.16,1,.3,1) both}
-@keyframes agfxPop{0%{opacity:0;transform:scale(.92)}60%{opacity:1;transform:scale(1.015)}100%{transform:none;opacity:1}}
-body.home .agfx--twist.agfx-in{animation:agfxTwist .7s cubic-bezier(.16,1,.3,1) both}
-@keyframes agfxTwist{0%{opacity:0;transform:rotate(-4deg) scale(.9) skewX(4deg)}70%{opacity:1;transform:rotate(1deg) scale(1.01) skewX(-1deg)}100%{transform:none;opacity:1}}
+@keyframes agfxPop{0%{opacity:0;transform:scale(.92)}60%{opacity:1;transform:scale(1)}100%{transform:none;opacity:1}}
+body.home .agfx--twist.agfx-in{animation:agfxTwist .65s cubic-bezier(.16,1,.3,1) both}
+/* "déploiement" vertical (remplace la tornade qui débordait horizontalement : une
+   rotation sur une section pleine largeur élargit sa boîte → scroll latéral). scaleY = 0 débordement horizontal. */
+@keyframes agfxTwist{0%{opacity:0;transform:scaleY(.62)}70%{opacity:1;transform:scaleY(1)}100%{transform:none;opacity:1}}
 body.home .agfx--glitch.agfx-in{animation:agfxGlitch .5s steps(2) both}
 @keyframes agfxGlitch{0%{opacity:0;transform:translateX(-7px);text-shadow:3px 0 #ff5c5c,-3px 0 #5ba8ff}
 	45%{opacity:1;transform:translateX(6px);text-shadow:-3px 0 #ff5c5c,3px 0 #5ba8ff}
