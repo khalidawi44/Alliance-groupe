@@ -30,8 +30,23 @@
                 <li><a href="tel:+33744829516">07.44.82.95.16</a></li>
                 <li><a href="mailto:contact@alliancegroupe-inc.com">contact@alliancegroupe-inc.com</a></li>
             </ul>
+            <h4 class="ag-footer__title" style="margin-top:1.2em;">Suivez-nous</h4>
+            <div class="ag-footer__social">
+                <a href="https://www.youtube.com/@advisealliance2078" target="_blank" rel="noopener" aria-label="YouTube Alliance Groupe" class="ag-footer__soc ag-footer__soc--yt">
+                    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.2 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.8 3.02 3.02 0 0 0 2.12 2.14C4.5 20.45 12 20.45 12 20.45s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.8ZM9.6 15.6V8.4l6.2 3.6-6.2 3.6Z"/></svg>
+                    <span>YouTube</span>
+                </a>
+            </div>
         </div>
     </div>
+    <style>
+    .ag-footer__social{display:flex;flex-wrap:wrap;gap:10px;margin-top:.3em}
+    .ag-footer__soc{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;
+        border:1px solid rgba(212,180,92,.35);color:#e8e8ee;text-decoration:none;font-weight:700;font-size:.9rem;transition:.2s}
+    .ag-footer__soc:hover{border-color:#D4B45C;color:#fff;transform:translateY(-2px)}
+    .ag-footer__soc--yt:hover{background:rgba(255,0,0,.14);border-color:#ff3d3d}
+    .ag-footer__soc svg{flex:none}
+    </style>
     <div class="ag-footer__bottom">
         <p>&copy; <?php echo date('Y'); ?> Alliance Groupe — Studio web &amp; sécurité, Nantes. Tous droits réservés.</p>
         <p class="ag-footer__legal">

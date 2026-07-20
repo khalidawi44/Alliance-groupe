@@ -334,7 +334,8 @@ add_action( 'wp_head', function () {
 		'areaServed'=> 'Nantes, Loire-Atlantique',
 	);
 	$fiche = ag_geo_review_url() ?: ( $d['url'] ?? '' );
-	if ( $fiche ) $ld['sameAs'] = array( $fiche );
+	// sameAs : fiche Google + chaîne YouTube (aide Google à relier la marque à ses profils).
+	$ld['sameAs'] = array_values( array_filter( array( $fiche, 'https://www.youtube.com/@advisealliance2078' ) ) );
 	if ( ! empty( $d['total'] ) && ! empty( $d['rating'] ) ) {
 		$ld['aggregateRating'] = array(
 			'@type'       => 'AggregateRating',
