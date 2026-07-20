@@ -141,6 +141,9 @@ if ( ! function_exists( 'ag_geo_place_id' ) ) {
 	function ag_geo_place_id() {
 		$pid = (string) get_option( 'ag_geo_place_id', '' );
 		if ( $pid ) return $pid;
+		// Défaut : Place ID EXACT de la fiche Alliance Groupe (CID 10118661122943419677),
+		// confirmé par le lien d'avis fourni (g.page/r/CR0FmSuutGyMEAE). Plus besoin de le saisir.
+		return 'ChIJ4zk2LCCNZqgRHQWZK660blw';
 		if ( '1' !== (string) get_option( 'ag_geo_autoresolve', '' ) ) return ''; // pas de recherche floue par défaut
 		$key = (string) get_option( 'ag_places_key', '' );
 		if ( ! $key ) return '';

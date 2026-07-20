@@ -23,7 +23,9 @@ if ( ! function_exists( 'ag_avis_link' ) ) {
 		if ( $l ) return $l;
 		// Repli : si le Place ID est renseigné, on construit le lien « laisser un avis » automatiquement.
 		$pid = trim( (string) get_option( 'ag_geo_place_id', '' ) );
-		return $pid ? 'https://search.google.com/local/writereview?placeid=' . rawurlencode( $pid ) : '';
+		if ( $pid ) { return 'https://search.google.com/local/writereview?placeid=' . rawurlencode( $pid ); }
+		// Défaut : lien court « laisser un avis » officiel de la fiche Alliance Groupe.
+		return 'https://g.page/r/CR0FmSuutGyMEAE/review';
 	}
 }
 if ( ! function_exists( 'ag_avis_qr_src' ) ) {
