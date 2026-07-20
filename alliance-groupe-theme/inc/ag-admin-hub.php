@@ -104,6 +104,21 @@ if ( ! function_exists( 'ag_hub_render' ) ) {
 
 		$opt = admin_url( 'options-general.php?page=' );
 		$adm = admin_url( 'admin.php?page=' );
+		// Audits DEMANDÉS par des clients (formulaire public « Tester mon site »).
+		$nb_inbound_audit = 0;
+		if ( function_exists( 'ag_audit_hist_get' ) ) {
+			$inbound_hosts_dash = array();
+			foreach ( $prospects as $pp ) {
+				if ( false !== strpos( (string) ( $pp['source'] ?? '' ), 'tester-mon-site' ) ) {
+					$ph2 = wp_parse_url( (string) ( $pp['website'] ?? '' ), PHP_URL_HOST );
+					if ( $ph2 ) { $inbound_hosts_dash[ strtolower( $ph2 ) ] = 1; }
+				}
+			}
+			foreach ( (array) ag_audit_hist_get() as $he ) {
+				$isrc = ( 'inbound' === ( $he['src'] ?? '' ) ) ? 'inbound' : ( isset( $inbound_hosts_dash[ strtolower( (string) ( $he['host'] ?? '' ) ) ] ) ? 'inbound' : 'self' );
+				if ( 'inbound' === $isrc ) { $nb_inbound_audit++; }
+			}
+		}
 
 		$stat = function ( $emoji, $value, $label, $url, $hot = false ) {
 			printf(
@@ -433,6 +448,7 @@ if ( ! function_exists( 'ag_dashboard_news_render' ) ) {
 		echo $tile( '💬', $nb_leads, 'Leads du chat', $adm . 'ag-prospects', true );
 		echo $tile( '✦', $nb_devis, 'Devis sur-mesure', $adm . 'ag-sur-mesure', false );
 		echo $tile( '💰', $nb_valider, 'Ventes à valider', $adm . 'ag-ambassadeurs', true );
+		echo $tile( '🔥', $nb_inbound_audit, 'Audits demandés (client)', $adm . 'ag-espace-audit', true );
 		echo '</div>';
 
 		// Le fil.

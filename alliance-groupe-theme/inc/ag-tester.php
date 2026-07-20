@@ -238,7 +238,7 @@ if ( ! function_exists( 'ag_quicktest' ) ) {
 		// push_crm = false : test public anonyme, pas d'ajout CRM automatique ici.
 		if ( function_exists( 'ag_audit_hist_upsert' ) ) {
 			$ct = function_exists( 'ag_audit_extract_contacts' ) ? ag_audit_extract_contacts( $url ) : array();
-			ag_audit_hist_upsert( $a, $ct, 'passive', false );
+			ag_audit_hist_upsert( $a, $ct, 'passive', false, 'inbound' );
 		}
 		$msg = $score >= 80 ? 'Plutôt bien protégé — mais un audit complet révèle ce qui ne se voit pas.'
 			: ( $score >= 50 ? 'Des failles exploitables sont visibles. À corriger vite.'
@@ -287,7 +287,7 @@ if ( ! function_exists( 'ag_tester_run' ) ) {
 		// plus bas, avec le prénom/email/téléphone qu'il a saisis.
 		if ( function_exists( 'ag_audit_hist_upsert' ) ) {
 			$ct_pub = function_exists( 'ag_audit_extract_contacts' ) ? ag_audit_extract_contacts( $url ) : array();
-			ag_audit_hist_upsert( $audit, $ct_pub, 'passive', false );
+			ag_audit_hist_upsert( $audit, $ct_pub, 'passive', false, 'inbound' );
 		}
 
 		// CRM seulement si on a un email (URL seule = visiteur anonyme).
@@ -866,8 +866,11 @@ if ( ! function_exists( 'ag_audit_hist_normalize' ) ) {
 if ( ! function_exists( 'ag_audit_hist_get' ) ) { function ag_audit_hist_get() { $h = get_option( 'ag_audit_history', array() ); $h = is_array( $h ) ? $h : array(); return ag_audit_hist_normalize( $h ); } }
 if ( ! function_exists( 'ag_audit_hist_save' ) ){ function ag_audit_hist_save( $h ) { update_option( 'ag_audit_history', $h, false ); } }
 if ( ! function_exists( 'ag_audit_hist_upsert' ) ) {
-	function ag_audit_hist_upsert( $a, $ct, $mode = 'passive', $push_crm = true ) {
+	function ag_audit_hist_upsert( $a, $ct, $mode = 'passive', $push_crm = true, $src = 'self' ) {
 		$url = $a['url'] ?? ''; if ( ! $url ) return '';
+		// src = qui a lancé l'audit : 'inbound' (un visiteur via « Tester mon site » = demande client)
+		// ou 'self' (moi, en prospection / scan Kali). Une demande client reste « inbound » même re-scannée.
+		$src = ( 'inbound' === $src ) ? 'inbound' : 'self';
 		// 3 niveaux : passive (léger) · deep (approfondi) · expert (Kali, scan réel).
 		$mode = in_array( $mode, array( 'deep', 'expert' ), true ) ? $mode : 'passive';
 		$id = ag_audit_hist_id( $url, $mode );
@@ -899,6 +902,8 @@ if ( ! function_exists( 'ag_audit_hist_upsert' ) ) {
 			'company' => $ct['company'] ?? '', 'email' => $ct['emails'][0] ?? '', 'phone' => $ct['phones'][0] ?? '',
 			'address' => $ct['address'] ?? '', 'siret' => $ct['siret'] ?? '', 'socials' => array_values( $ct['socials'] ?? array() ),
 			'actions' => isset( $prev['actions'] ) && is_array( $prev['actions'] ) ? $prev['actions'] : array(),
+			// Source : une demande client déjà enregistrée le reste (ne pas rétrograder en « self »).
+			'src' => ( 'inbound' === ( $prev['src'] ?? '' ) ) ? 'inbound' : $src,
 		);
 		if ( count( $h ) > 150 ) { uasort( $h, function ( $x, $y ) { return (int) ( $y['ts'] ?? 0 ) <=> (int) ( $x['ts'] ?? 0 ); } ); $h = array_slice( $h, 0, 150, true ); }
 
@@ -1497,9 +1502,28 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 			<?php $AGH = ag_audit_hist_get();
 			if ( $AGH ) :
 				uasort( $AGH, function ( $x, $y ) { return (int) ( $y['ts'] ?? 0 ) <=> (int) ( $x['ts'] ?? 0 ); } );
+				// Hôtes venus via le formulaire public « Tester mon site » (= demande client),
+				// pour marquer rétroactivement les anciens audits sans champ src.
+				$ag_inbound_hosts = array();
+				foreach ( (array) get_option( 'ag_prospects', array() ) as $ag_p ) {
+					if ( false !== strpos( (string) ( $ag_p['source'] ?? '' ), 'tester-mon-site' ) ) {
+						$ag_ph = wp_parse_url( (string) ( $ag_p['website'] ?? '' ), PHP_URL_HOST );
+						if ( $ag_ph ) { $ag_inbound_hosts[ strtolower( $ag_ph ) ] = 1; }
+					}
+				}
+				$ag_src_of = function ( $e ) use ( $ag_inbound_hosts ) {
+					if ( 'inbound' === ( $e['src'] ?? '' ) ) { return 'inbound'; }
+					return isset( $ag_inbound_hosts[ strtolower( (string) ( $e['host'] ?? '' ) ) ] ) ? 'inbound' : 'self';
+				};
+				$ag_seen_ts = (int) get_option( 'ag_audit_seen_ts', 0 );
+				$ag_new_count = 0; $ag_inbound_count = 0;
+				foreach ( $AGH as $ag_e ) {
+					if ( (int) ( $ag_e['ts'] ?? 0 ) > $ag_seen_ts ) { $ag_new_count++; }
+					if ( 'inbound' === $ag_src_of( $ag_e ) ) { $ag_inbound_count++; }
+				}
 				?>
 				<hr style="margin:30px 0">
-				<h2>📋 Historique des audits (<?php echo count( $AGH ); ?>) — sauvegardés</h2>
+				<h2>📋 Historique des audits (<?php echo count( $AGH ); ?>) — sauvegardés<?php if ( $ag_new_count ) : ?> <span style="background:#f59e0b;color:#111;border-radius:6px;padding:2px 10px;font-size:14px;vertical-align:middle">🆕 <?php echo (int) $ag_new_count; ?> nouveau<?php echo $ag_new_count > 1 ? 'x' : ''; ?></span><?php endif; ?><?php if ( $ag_inbound_count ) : ?> <span style="background:#0a7d3c;color:#fff;border-radius:6px;padding:2px 10px;font-size:14px;vertical-align:middle">🔥 <?php echo (int) $ag_inbound_count; ?> demande<?php echo $ag_inbound_count > 1 ? 's' : ''; ?> client<?php echo $ag_inbound_count > 1 ? 's' : ''; ?></span><?php endif; ?></h2>
 				<p style="color:#666;font-size:12px;margin:0 0 8px">Chaque audit est conservé : fiche (failles + score), coordonnées, et suivi des contacts. Filtre :
 					<button type="button" class="button button-small button-primary aghf" data-f="all">Tous</button>
 					<button type="button" class="button button-small aghf" data-f="securite">🛡️ Sécurité</button>
@@ -1511,6 +1535,11 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 					<button type="button" class="button button-small aghft" data-m="passive">🔍 Léger</button>
 					<button type="button" class="button button-small aghft" data-m="deep">🔬 Approfondi</button>
 					<button type="button" class="button button-small aghft" data-m="expert">🛰️ Expert (Kali)</button>
+					<span style="margin:0 4px;color:#ccc">|</span>
+					<strong style="font-size:12px;color:#666">Origine :</strong>
+					<button type="button" class="button button-small button-primary aghsrc" data-o="all">Tous</button>
+					<button type="button" class="button button-small aghsrc" data-o="inbound">🔥 Demandes clients</button>
+					<button type="button" class="button button-small aghsrc" data-o="self">🔍 Mes audits</button>
 				</p>
 					<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0 10px">
 						<strong style="font-size:12px;color:#666">Trier :</strong>
@@ -1554,11 +1583,13 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 						$crea_subj = 'Votre site ' . $host . ' - idees pour le moderniser';
 					$done = array(); foreach ( ( $e['actions'] ?? array() ) as $ac ) { $done[ $ac['ch'] ] = $ac['date']; }
 					$todo = empty( $e['actions'] );
+					$src = $ag_src_of( $e );
+					$is_new = ( (int) ( $e['ts'] ?? 0 ) > $ag_seen_ts );
 					?>
-					<div class="agh-card" data-seg="<?php echo esc_attr( $seg ); ?>" data-mode="<?php echo esc_attr( $mode ); ?>" data-host="<?php echo esc_attr( $host ); ?>" data-todo="<?php echo $todo ? 1 : 0; ?>" data-score="<?php echo $score; ?>" data-ts="<?php echo (int) $e['ts']; ?>" style="background:#fff;border:1px solid #ccd0d4;border-left:5px solid <?php echo esc_attr( $col ); ?>;border-radius:8px;padding:14px 16px;margin:12px 0;max-width:1000px">
+					<div class="agh-card" data-seg="<?php echo esc_attr( $seg ); ?>" data-mode="<?php echo esc_attr( $mode ); ?>" data-host="<?php echo esc_attr( $host ); ?>" data-todo="<?php echo $todo ? 1 : 0; ?>" data-src="<?php echo esc_attr( $src ); ?>" data-new="<?php echo $is_new ? 1 : 0; ?>" data-score="<?php echo $score; ?>" data-ts="<?php echo (int) $e['ts']; ?>" style="background:#fff;border:1px solid #ccd0d4;border-left:5px solid <?php echo esc_attr( $col ); ?>;border-radius:8px;padding:14px 16px;margin:12px 0;max-width:1000px">
 						<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px">
 							<div><label style="margin-right:8px;"><input type="checkbox" class="aghc-chk" value="<?php echo esc_attr( $hid ); ?>" title="Sélectionner"></label><strong><?php echo esc_html( $e['company'] ?: $host ); ?></strong>
-								<span style="background:<?php echo 'securite' === $seg ? '#b91c1c' : '#1d4ed8'; ?>;color:#fff;border-radius:4px;padding:1px 6px;font-size:11px"><?php echo 'securite' === $seg ? 'SÉCURITÉ' : 'CRÉATION'; ?></span>
+								<span style="background:<?php echo 'securite' === $seg ? '#b91c1c' : '#1d4ed8'; ?>;color:#fff;border-radius:4px;padding:1px 6px;font-size:11px"><?php echo 'securite' === $seg ? 'SÉCURITÉ' : 'CRÉATION'; ?></span><?php if ( 'inbound' === $src ) : ?> <span style="background:#0a7d3c;color:#fff;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:700">🔥 DEMANDE CLIENT</span><?php else : ?> <span style="background:#6b7280;color:#fff;border-radius:4px;padding:1px 7px;font-size:11px">🔍 Mon audit</span><?php endif; ?><?php if ( $is_new ) : ?> <span style="background:#f59e0b;color:#111;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:800">🆕 NOUVEAU</span><?php endif; ?>
 									<span style="background:<?php echo 'expert' === $mode ? '#0a6' : ( 'deep' === $mode ? '#6d28d9' : '#0e7490' ); ?>;color:#fff;border-radius:4px;padding:1px 6px;font-size:11px"><?php echo esc_html( $mode_lbl ); ?></span>
 								<br><a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener" style="font-size:12px"><?php echo esc_html( $host ); ?></a></div>
 							<div style="text-align:right"><span style="color:<?php echo esc_attr( $col ); ?>;font-size:20px;font-weight:800"><?php echo $score; ?>/100</span>
@@ -1669,10 +1700,10 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 							<textarea rows="8" style="width:100%;max-width:660px;font-size:12px" onclick="this.select()"><?php echo esc_textarea( $emsg ); ?></textarea>
 						</div>
 					</div>
-				<?php endforeach; ?>
+				<?php endforeach; update_option( 'ag_audit_seen_ts', time(), false ); ?>
 				</div>
 				<script>
-				(function(){var list=document.getElementById('agh-list');if(!list)return;var curF='all',curM='all';function cards(){return [].slice.call(list.querySelectorAll('.agh-card'));}function apply(){cards().forEach(function(k){var seg=k.getAttribute('data-seg'),todo=k.getAttribute('data-todo')==='1',md=k.getAttribute('data-mode')||'passive';var okF=(curF==='all')||(curF==='todo'?todo:seg===curF);var okM=(curM==='all')||(md===curM);k.style.display=(okF&&okM)?'':'none';});}document.querySelectorAll('.aghf').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghf').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');curF=b.getAttribute('data-f');apply();});});document.querySelectorAll('.aghft').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghft').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');curM=b.getAttribute('data-m');apply();});});document.querySelectorAll('.aghs').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghs').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');var sp=b.getAttribute('data-s').split('-'),key=sp[0],dir=sp[1];var arr=cards();arr.sort(function(a,c){if(key==='host'){var ha=(a.getAttribute('data-host')||''),hc=(c.getAttribute('data-host')||'');if(ha!==hc)return ha<hc?-1:1;return (+c.getAttribute('data-score'))-(+a.getAttribute('data-score'));}var x=+a.getAttribute('data-'+key),y=+c.getAttribute('data-'+key);return dir==='asc'?x-y:y-x;});arr.forEach(function(k){list.appendChild(k);});});});})();
+				(function(){var list=document.getElementById('agh-list');if(!list)return;var curF='all',curM='all',curO='all';function cards(){return [].slice.call(list.querySelectorAll('.agh-card'));}function apply(){cards().forEach(function(k){var seg=k.getAttribute('data-seg'),todo=k.getAttribute('data-todo')==='1',md=k.getAttribute('data-mode')||'passive';var okF=(curF==='all')||(curF==='todo'?todo:seg===curF);var okM=(curM==='all')||(md===curM);var src=k.getAttribute('data-src')||'self';var okO=(curO==='all')||(src===curO);k.style.display=(okF&&okM&&okO)?'':'none';});}document.querySelectorAll('.aghf').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghf').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');curF=b.getAttribute('data-f');apply();});});document.querySelectorAll('.aghft').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghft').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');curM=b.getAttribute('data-m');apply();});});document.querySelectorAll('.aghsrc').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghsrc').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');curO=b.getAttribute('data-o');apply();});});document.querySelectorAll('.aghs').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('.aghs').forEach(function(x){x.classList.remove('button-primary')});b.classList.add('button-primary');var sp=b.getAttribute('data-s').split('-'),key=sp[0],dir=sp[1];var arr=cards();arr.sort(function(a,c){if(key==='host'){var ha=(a.getAttribute('data-host')||''),hc=(c.getAttribute('data-host')||'');if(ha!==hc)return ha<hc?-1:1;return (+c.getAttribute('data-score'))-(+a.getAttribute('data-score'));}var x=+a.getAttribute('data-'+key),y=+c.getAttribute('data-'+key);return dir==='asc'?x-y:y-x;});arr.forEach(function(k){list.appendChild(k);});});});})();
 				</script>
 				<script>
 				(function(){var n=<?php echo wp_json_encode( $ahnonce ); ?>;
