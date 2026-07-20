@@ -868,9 +868,12 @@ if ( ! function_exists( 'ag_audit_hist_save' ) ){ function ag_audit_hist_save( $
 if ( ! function_exists( 'ag_audit_hist_upsert' ) ) {
 	function ag_audit_hist_upsert( $a, $ct, $mode = 'passive', $push_crm = true, $src = 'self' ) {
 		$url = $a['url'] ?? ''; if ( ! $url ) return '';
-		// src = qui a lancé l'audit : 'inbound' (un visiteur via « Tester mon site » = demande client)
-		// ou 'self' (moi, en prospection / scan Kali). Une demande client reste « inbound » même re-scannée.
-		$src = ( 'inbound' === $src ) ? 'inbound' : 'self';
+		// src = qui a lancé l'audit :
+		//   'inbound' = un visiteur via « Tester mon site » (= demande client)
+		//   'auto'    = l'agent de prospection automatique (cron), pas moi
+		//   'self'    = moi, manuellement (prospection / scan Kali)
+		// Une demande client reste « inbound » même re-scannée ensuite.
+		$src = in_array( $src, array( 'inbound', 'auto' ), true ) ? $src : 'self';
 		// 3 niveaux : passive (léger) · deep (approfondi) · expert (Kali, scan réel).
 		$mode = in_array( $mode, array( 'deep', 'expert' ), true ) ? $mode : 'passive';
 		$id = ag_audit_hist_id( $url, $mode );
@@ -1512,7 +1515,8 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 					}
 				}
 				$ag_src_of = function ( $e ) use ( $ag_inbound_hosts ) {
-					if ( 'inbound' === ( $e['src'] ?? '' ) ) { return 'inbound'; }
+					$st = $e['src'] ?? '';
+					if ( 'inbound' === $st || 'auto' === $st ) { return $st; }
 					return isset( $ag_inbound_hosts[ strtolower( (string) ( $e['host'] ?? '' ) ) ] ) ? 'inbound' : 'self';
 				};
 				$ag_seen_ts = (int) get_option( 'ag_audit_seen_ts', 0 );
@@ -1539,7 +1543,8 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 					<strong style="font-size:12px;color:#666">Origine :</strong>
 					<button type="button" class="button button-small button-primary aghsrc" data-o="all">Tous</button>
 					<button type="button" class="button button-small aghsrc" data-o="inbound">🔥 Demandes clients</button>
-					<button type="button" class="button button-small aghsrc" data-o="self">🔍 Mes audits</button>
+					<button type="button" class="button button-small aghsrc" data-o="auto">🤖 Agent auto</button>
+					<button type="button" class="button button-small aghsrc" data-o="self">🔍 Mes audits (manuel)</button>
 				</p>
 					<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0 10px">
 						<strong style="font-size:12px;color:#666">Trier :</strong>
@@ -1589,7 +1594,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 					<div class="agh-card" data-seg="<?php echo esc_attr( $seg ); ?>" data-mode="<?php echo esc_attr( $mode ); ?>" data-host="<?php echo esc_attr( $host ); ?>" data-todo="<?php echo $todo ? 1 : 0; ?>" data-src="<?php echo esc_attr( $src ); ?>" data-new="<?php echo $is_new ? 1 : 0; ?>" data-score="<?php echo $score; ?>" data-ts="<?php echo (int) $e['ts']; ?>" style="background:#fff;border:1px solid #ccd0d4;border-left:5px solid <?php echo esc_attr( $col ); ?>;border-radius:8px;padding:14px 16px;margin:12px 0;max-width:1000px">
 						<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px">
 							<div><label style="margin-right:8px;"><input type="checkbox" class="aghc-chk" value="<?php echo esc_attr( $hid ); ?>" title="Sélectionner"></label><strong><?php echo esc_html( $e['company'] ?: $host ); ?></strong>
-								<span style="background:<?php echo 'securite' === $seg ? '#b91c1c' : '#1d4ed8'; ?>;color:#fff;border-radius:4px;padding:1px 6px;font-size:11px"><?php echo 'securite' === $seg ? 'SÉCURITÉ' : 'CRÉATION'; ?></span><?php if ( 'inbound' === $src ) : ?> <span style="background:#0a7d3c;color:#fff;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:700">🔥 DEMANDE CLIENT</span><?php else : ?> <span style="background:#6b7280;color:#fff;border-radius:4px;padding:1px 7px;font-size:11px">🔍 Mon audit</span><?php endif; ?><?php if ( $is_new ) : ?> <span style="background:#f59e0b;color:#111;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:800">🆕 NOUVEAU</span><?php endif; ?>
+								<span style="background:<?php echo 'securite' === $seg ? '#b91c1c' : '#1d4ed8'; ?>;color:#fff;border-radius:4px;padding:1px 6px;font-size:11px"><?php echo 'securite' === $seg ? 'SÉCURITÉ' : 'CRÉATION'; ?></span><?php if ( 'inbound' === $src ) : ?> <span style="background:#0a7d3c;color:#fff;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:700">🔥 DEMANDE CLIENT</span><?php elseif ( 'auto' === $src ) : ?> <span style="background:#2563eb;color:#fff;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:700">🤖 AGENT AUTO</span><?php else : ?> <span style="background:#6b7280;color:#fff;border-radius:4px;padding:1px 7px;font-size:11px">🔍 Mon audit (manuel)</span><?php endif; ?><?php if ( $is_new ) : ?> <span style="background:#f59e0b;color:#111;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:800">🆕 NOUVEAU</span><?php endif; ?>
 									<span style="background:<?php echo 'expert' === $mode ? '#0a6' : ( 'deep' === $mode ? '#6d28d9' : '#0e7490' ); ?>;color:#fff;border-radius:4px;padding:1px 6px;font-size:11px"><?php echo esc_html( $mode_lbl ); ?></span>
 								<br><a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener" style="font-size:12px"><?php echo esc_html( $host ); ?></a></div>
 							<div style="text-align:right"><span style="color:<?php echo esc_attr( $col ); ?>;font-size:20px;font-weight:800"><?php echo $score; ?>/100</span>
