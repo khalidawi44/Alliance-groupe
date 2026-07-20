@@ -23,7 +23,9 @@ if ( ! function_exists( 'ag_avis_link' ) ) {
 		if ( $l ) return $l;
 		// Repli : si le Place ID est renseigné, on construit le lien « laisser un avis » automatiquement.
 		$pid = trim( (string) get_option( 'ag_geo_place_id', '' ) );
-		return $pid ? 'https://search.google.com/local/writereview?placeid=' . rawurlencode( $pid ) : '';
+		if ( $pid ) { return 'https://search.google.com/local/writereview?placeid=' . rawurlencode( $pid ); }
+		// Défaut : lien court « laisser un avis » officiel de la fiche Alliance Groupe.
+		return 'https://g.page/r/CR0FmSuutGyMEAE/review';
 	}
 }
 if ( ! function_exists( 'ag_avis_qr_src' ) ) {
@@ -80,6 +82,11 @@ add_action( 'admin_init', function () {
 		update_option( 'ag_avis_auto', isset( $_POST['ag_avis_auto'] ) ? '1' : '0' );
 		update_option( 'ag_geo_place_id', sanitize_text_field( wp_unslash( $_POST['ag_geo_place_id'] ?? '' ) ) );
 		update_option( 'ag_geo_reviews', wp_kses_post( wp_unslash( $_POST['ag_geo_reviews'] ?? '' ) ) );
+		// Clé API Google Places (partagée avec la Prospection). On n'écrase PAS si le champ est laissé vide.
+		if ( isset( $_POST['ag_places_key'] ) ) {
+			$k = sanitize_text_field( wp_unslash( $_POST['ag_places_key'] ) );
+			if ( '' !== $k ) { update_option( 'ag_places_key', $k ); }
+		}
 		delete_transient( 'ag_geo_gdata' ); // affiche les bons avis tout de suite
 	}
 	if ( isset( $_POST['ag_avis_flush'] ) && check_admin_referer( 'ag_avis' ) ) {
@@ -122,15 +129,51 @@ if ( ! function_exists( 'ag_avis_render' ) ) {
 				echo '<div class="notice notice-warning inline"><p>Aucun avis affiché pour l’instant — renseigne le <strong>Place ID</strong> ci-dessous (sinon, risque d’afficher les avis d’un <strong>homonyme</strong>). Puis « Vider le cache ».</p></div>';
 			}
 		}
+		// DIAGNOSTIC : appel brut de l'API (ancienne Place Details) → montre l'erreur exacte de Google.
+		if ( isset( $_POST['ag_avis_diag'] ) && check_admin_referer( 'ag_avis' ) ) {
+			$dk  = trim( (string) get_option( 'ag_places_key', '' ) );
+			$dpid = function_exists( 'ag_geo_place_id' ) ? ag_geo_place_id() : $pid;
+			echo '<div class="notice notice-info"><p><strong>🔎 Diagnostic avis Google</strong></p>';
+			if ( '' === $dk ) {
+				echo '<p>⛔ <strong>Aucune clé API Places enregistrée.</strong> Colle ta clé ci-dessous → Enregistrer → re-teste.</p>';
+			} else {
+				$durl = 'https://maps.googleapis.com/maps/api/place/details/json?place_id=' . rawurlencode( $dpid ) . '&language=fr&reviews_sort=newest&fields=rating,user_ratings_total,reviews,url&key=' . rawurlencode( $dk );
+				$dr   = wp_remote_get( $durl, array( 'timeout' => 12 ) );
+				if ( is_wp_error( $dr ) ) {
+					echo '<p>❌ Erreur réseau : ' . esc_html( $dr->get_error_message() ) . '</p>';
+				} else {
+					$dj = json_decode( wp_remote_retrieve_body( $dr ), true );
+					$st = $dj['status'] ?? ( 'HTTP ' . wp_remote_retrieve_response_code( $dr ) );
+					echo '<p>Clé : <code>' . esc_html( substr( $dk, 0, 8 ) ) . '…</code> · Place ID : <code>' . esc_html( $dpid ) . '</code></p>';
+					echo '<p>Réponse Google : <strong>' . esc_html( $st ) . '</strong>';
+					if ( ! empty( $dj['error_message'] ) ) { echo ' — <span style="color:#b91c1c">' . esc_html( $dj['error_message'] ) . '</span>'; }
+					echo '</p>';
+					if ( 'OK' === $st ) {
+						$nb = isset( $dj['result']['reviews'] ) ? count( $dj['result']['reviews'] ) : 0;
+						echo '<p>✅ Fiche trouvée : note <strong>' . esc_html( $dj['result']['rating'] ?? '—' ) . '/5</strong> · <strong>' . (int) ( $dj['result']['user_ratings_total'] ?? 0 ) . '</strong> avis au total · <strong>' . (int) $nb . '</strong> avis renvoyés par l’API (Google en donne 5 max). Clique « Vider le cache des avis » pour les afficher.</p>';
+						if ( 0 === $nb ) { echo '<p>ℹ️ 0 avis renvoyé : soit la fiche a peu/pas d’avis, soit ils sont trop récents. Récolte-en via ton lien d’avis.</p>'; }
+					} elseif ( 'REQUEST_DENIED' === $st ) {
+						echo '<p>👉 En général : l’<strong>ancienne « Places API »</strong> n’est pas activée sur ce projet (tu as peut-être activé « Places API <em>New</em> », qui ne suffit pas ici), OU la <strong>facturation</strong> n’est pas activée, OU la clé est <strong>restreinte</strong> (mets « Aucune restriction » ou restreins par API en incluant « Places API »).</p>';
+					} elseif ( 'INVALID_REQUEST' === $st || 'NOT_FOUND' === $st ) {
+						echo '<p>👉 Place ID probablement incorrect. Vérifie-le.</p>';
+					} elseif ( 'OVER_QUERY_LIMIT' === $st ) {
+						echo '<p>👉 Quota/facturation dépassé côté Google Cloud.</p>';
+					}
+				}
+			}
+			echo '</div>';
+		}
 		echo '<form method="post"><table class="form-table"><tbody>';
-		echo '<tr><th>Place ID de ta fiche</th><td><input type="text" name="ag_geo_place_id" value="' . esc_attr( $pid ) . '" style="width:420px" placeholder="ChIJ…"><p class="description"><strong>Identifie ta fiche</strong> (affiche tes vrais avis + génère le lien d’avis tout seul). Ex. Alliance Groupe : <code>ChIJ4zk2LCCNZqgRHQWZK660blw</code></p></td></tr>';
+		echo '<tr><th>Clé API Google Places</th><td><input type="text" name="ag_places_key" value="' . esc_attr( trim( (string) get_option( 'ag_places_key', '' ) ) ) . '" style="width:520px" placeholder="AIza… (clé Google Cloud)"><p class="description">Pour afficher tes <strong>vrais</strong> avis automatiquement. ⚠️ Active l’<strong>ancienne « Places API »</strong> (pas seulement « Places API New ») + la <strong>facturation</strong> dans Google Cloud. Même clé que la Prospection.</p></td></tr>';
+		echo '<tr><th>Place ID de ta fiche</th><td><input type="text" name="ag_geo_place_id" value="' . esc_attr( $pid ) . '" style="width:420px" placeholder="ChIJ…"><p class="description"><strong>Identifie ta fiche</strong> (affiche tes vrais avis + génère le lien d’avis tout seul). Ex. Alliance Groupe : <code>ChIJ4zk2LCCNZqgRHQWZK660bIw</code></p></td></tr>';
 		echo '<tr><th>Lien d’avis Google</th><td><input type="text" name="ag_avis_link" value="' . esc_attr( trim( (string) get_option( 'ag_avis_link', '' ) ) ) . '" style="width:520px" placeholder="laisser vide = généré depuis le Place ID"><p class="description">Optionnel. Si vide, on utilise <code>writereview?placeid=…</code>. Ou colle le lien « Demander des avis » de ta fiche.</p></td></tr>';
 		echo '<tr><th>Relance automatique</th><td><label><input type="checkbox" name="ag_avis_auto" ' . checked( $auto, true, false ) . '> Demander un avis automatiquement quand un prospect passe « Client » dans le CRM (email + SMS si passerelle)</label></td></tr>';
 		echo '<tr><th>Avis à la main (secours)</th><td><textarea name="ag_geo_reviews" rows="3" style="width:560px" class="code" placeholder=\'[{"author":"Prénom N.","rating":5,"text":"Super travail !","time":"juin 2026"}]\'>' . esc_textarea( $reviews ) . '</textarea><p class="description">Uniquement de VRAIS avis (JSON) si l’API ne les renvoie pas.</p></td></tr>';
 		echo '</tbody></table>';
 		wp_nonce_field( 'ag_avis' );
 		echo '<button name="ag_avis_save" value="1" class="button button-primary">Enregistrer</button> ';
-		echo '<button name="ag_avis_flush" value="1" class="button">Vider le cache des avis</button></form>';
+		echo '<button name="ag_avis_flush" value="1" class="button">Vider le cache des avis</button> ';
+		echo '<button name="ag_avis_diag" value="1" class="button">🔎 Diagnostiquer (voir l’erreur Google)</button></form>';
 
 		if ( $qr ) {
 			echo '<hr><h2>QR code « Laissez un avis »</h2>';

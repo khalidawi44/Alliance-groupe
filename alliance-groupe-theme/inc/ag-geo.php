@@ -140,7 +140,13 @@ if ( ! function_exists( 'ag_geo_review_url' ) ) {
 if ( ! function_exists( 'ag_geo_place_id' ) ) {
 	function ag_geo_place_id() {
 		$pid = (string) get_option( 'ag_geo_place_id', '' );
-		if ( $pid ) return $pid;
+		// Place ID RÉEL de la fiche « Alliance groupe » (14 rue de Saint-Jean de Luz, 44200 Nantes),
+		// résolu via l'API Places par n° de téléphone. L'ancien déduit du CID (…660blw) était invalide
+		// (Google : NOT_FOUND) → on l'ignore et on auto-corrige, même s'il est encore enregistré en option.
+		$bad  = 'ChIJ4zk2LCCNZqgRHQWZK660blw';
+		$good = 'ChIJ4zk2LCCNZqgRHQWZK660bIw';
+		if ( $pid && $pid !== $bad ) { return $pid; } // valeur saisie valide → on la respecte
+		return $good;                                  // vide OU ancien Place ID invalide → le bon
 		if ( '1' !== (string) get_option( 'ag_geo_autoresolve', '' ) ) return ''; // pas de recherche floue par défaut
 		$key = (string) get_option( 'ag_places_key', '' );
 		if ( ! $key ) return '';
@@ -328,7 +334,8 @@ add_action( 'wp_head', function () {
 		'areaServed'=> 'Nantes, Loire-Atlantique',
 	);
 	$fiche = ag_geo_review_url() ?: ( $d['url'] ?? '' );
-	if ( $fiche ) $ld['sameAs'] = array( $fiche );
+	// sameAs : fiche Google + chaîne YouTube (aide Google à relier la marque à ses profils).
+	$ld['sameAs'] = array_values( array_filter( array( $fiche, 'https://www.youtube.com/@advisealliance2078' ) ) );
 	if ( ! empty( $d['total'] ) && ! empty( $d['rating'] ) ) {
 		$ld['aggregateRating'] = array(
 			'@type'       => 'AggregateRating',

@@ -139,6 +139,12 @@ if ( file_exists( $ag_pricing_file ) ) {
     require_once $ag_pricing_file;
 }
 
+// ── Tableau de bord Bug Bounty (perso, admin) : programmes rémunérés + suivi
+$ag_bb_file = get_stylesheet_directory() . '/inc/ag-bugbounty.php';
+if ( file_exists( $ag_bb_file ) ) {
+    require_once $ag_bb_file;
+}
+
 // ── Durcissement sécurité de NOTRE site (xmlrpc, énumération, en-têtes, version)
 $ag_hardening_file = get_stylesheet_directory() . '/inc/ag-hardening.php';
 if ( file_exists( $ag_hardening_file ) ) {

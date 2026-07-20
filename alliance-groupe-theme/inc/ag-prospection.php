@@ -938,7 +938,9 @@ if ( ! function_exists( 'ag_prospect_autolink_audit' ) ) {
 		if ( ! is_array( $audit ) ) return null;
 		$ct = function_exists( 'ag_audit_extract_contacts' ) ? ag_audit_extract_contacts( $website ) : array();
 		// push_crm=false : le prospect est déjà au CRM, on évite tout doublon.
-		ag_audit_hist_upsert( $audit, $ct, 'passive', false );
+		// Origine : si c'est le CRON (agent auto) qui scanne, on marque 'auto' ; sinon 'self' (moi, manuel).
+		$ag_src_scan = ( function_exists( 'wp_doing_cron' ) && wp_doing_cron() ) ? 'auto' : 'self';
+		ag_audit_hist_upsert( $audit, $ct, 'passive', false, $ag_src_scan );
 		return (int) ( $audit['score'] ?? 0 );
 	}
 }

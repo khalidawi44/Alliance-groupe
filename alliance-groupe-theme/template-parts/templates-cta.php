@@ -43,7 +43,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 </section>
 
 <style>
-.ag-2ways{background:#0a0a0f;padding:72px 0 0;position:relative;overflow:hidden}
+/* padding-bas généreux : les boutons ne sont plus collés au bord bas. La section
+   suivante (.ag-rise, remonte de -58px) recouvre d'abord cet espace vide → les
+   boutons restent visibles et cliquables plus longtemps. */
+.ag-2ways{background:#0a0a0f;padding:72px 0 120px;position:relative;overflow:hidden}
 .ag-2ways__head{max-width:820px;margin:0 auto 36px;text-align:center;padding:0 22px}
 .ag-2ways__tag{display:inline-block;color:#F3D27A;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;font-weight:800;margin-bottom:12px}
 .ag-2ways__title{font-family:Georgia,'Playfair Display',serif;font-size:clamp(1.7rem,3.6vw,2.6rem);line-height:1.18;color:#fff;margin:0}
