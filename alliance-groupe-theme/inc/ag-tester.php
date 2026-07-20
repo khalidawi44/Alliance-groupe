@@ -725,7 +725,34 @@ if ( ! function_exists( 'ag_tester_render_teaser' ) ) {
  * ====================================================================== */
 add_action( 'admin_menu', function () {
 	add_menu_page( 'Espace Audit', '🔍 Espace Audit', 'manage_options', 'ag-espace-audit', 'ag_audit_prospect_page', 'dashicons-shield', 58 );
+	add_submenu_page( 'ag-espace-audit', 'Générateur d\'audit', '🧰 Générateur d\'audit', 'manage_options', 'ag-audit-gen', 'ag_audit_gen_render' );
 } );
+
+if ( ! function_exists( 'ag_audit_gen_render' ) ) {
+	/** Outil « Générateur & analyseur d'audit » (mono-fichier hors ligne) rendu en iframe. */
+	function ag_audit_gen_render() {
+		if ( ! current_user_can( 'manage_options' ) ) { return; }
+		$base = get_template_directory_uri() . '/assets/tools/';
+		$gen  = esc_url( $base . 'audit-generateur.html' );
+		$ass  = esc_url( $base . 'assistant-pentest.html' );
+		$tab  = ( isset( $_GET['outil'] ) && 'assistant' === $_GET['outil'] ) ? 'assistant' : 'generateur';
+		$src  = 'assistant' === $tab ? $ass : $gen;
+		?>
+		<div class="wrap">
+			<h1>🧰 Générateur d'audit sécurité</h1>
+			<p style="max-width:820px;color:#444">Saisis le site à auditer → l'outil sort <b>toutes les commandes pré-remplies</b>, puis analyse tes résultats et produit la <b>note honnête</b> + le <b>rapport</b> + la <b>synthèse à coller</b>. Tout est <b>hors ligne</b> (aucune donnée envoyée). Usage sous <b>mandat écrit</b> uniquement.</p>
+			<h2 class="nav-tab-wrapper" style="margin-bottom:0">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-audit-gen&outil=generateur' ) ); ?>" class="nav-tab <?php echo 'generateur' === $tab ? 'nav-tab-active' : ''; ?>">🧰 Générateur</a>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-audit-gen&outil=assistant' ) ); ?>" class="nav-tab <?php echo 'assistant' === $tab ? 'nav-tab-active' : ''; ?>">🛰️ Assistant guidé</a>
+				<a href="<?php echo $gen; ?>" target="_blank" rel="noopener" class="nav-tab" style="float:right">↗ Ouvrir en plein écran</a>
+			</h2>
+			<iframe src="<?php echo esc_url( $src ); ?>" style="width:100%;height:82vh;border:1px solid #c3c4c7;border-top:0;background:#0e1016" title="Générateur d'audit"></iframe>
+			<p style="font-size:12px;color:#777;margin-top:8px">💡 Le bouton « Copier » fonctionne ici (page sécurisée). Version fichier local : <code>pentest-bridge/audit-generateur.html</code> (double-clic hors ligne — mais « Copier » peut être bloqué en <code>file://</code>, d'où cette page).</p>
+		</div>
+		<?php
+	}
+}
+
 
 if ( ! function_exists( 'ag_audit_fail_list' ) ) {
 	/** Liste des intitulés de checks non-OK, critiques en tête. */
