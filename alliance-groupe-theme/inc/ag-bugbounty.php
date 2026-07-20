@@ -37,6 +37,21 @@ if ( ! function_exists( 'ag_bb_statuses' ) ) {
 			'rejected'  => array( '🚫 Refusé / doublon', '#b91c1c' ),
 		);
 	}
+	/** Programmes préconfigurés (ajout en 1 clic). Uniquement des programmes PUBLICS autorisés. */
+	function ag_bb_presets() {
+		return array(
+			'doctolib' => array(
+				'name'     => 'Doctolib — Public Bug Bounty',
+				'platform' => 'YesWeHack',
+				'url'      => 'https://yeswehack.com/programs/doctolib-public-bug-bounty-program',
+				'scope'    => 'DANS LE SCOPE : www.doctolib.fr|de|it · pro.doctolib.fr|de|it · *.doctolib.fr|de|it|com|net · app iOS + Android Doctolib · *.siilo.com + apps Siilo. HORS SCOPE : community/info/status/store/media.doctolib, *.atlassian.net, *.zendesk.com, api.tanker.io, sous-domaines dangling, hôtes tiers (login.decathlon.net…), IP brutes, domaines typo.',
+				'reward'   => 'Low 100€ · Medium 500€ · High 1 500–4 000€ · Critical 5 000–50 000€ (scénario Game Over / One Shot = 50 000€). Fuite account_id = 200€.',
+				'status'   => 'todo',
+				'gain'     => 0,
+				'notes'    => 'RÈGLES : compte de TEST uniquement (créer sur /sessions/new, alias @yeswehack.ninja) — JAMAIS ton vrai compte. User-Agent obligatoire : "BugBounty/42 YWH". Max 10 req/s, outils auto en douceur. Ne jamais toucher/détruire de vraies données patients. Interdits : DoS, brute force, phishing, ingénierie sociale. Vérif d\'identité requise pour soumettre. Qualifiant : IDOR, XSS stocké/réfléchi, SQLi, RCE, SSRF/XXE/LFI, contournement auth/authz, fuite PII/santé. Contact : security@doctolib.com',
+			),
+		);
+	}
 	/** Plateformes de départ (liens officiels vers les programmes publics). */
 	function ag_bb_platforms() {
 		return array(
@@ -101,6 +116,27 @@ add_action( 'admin_init', function () {
 		add_settings_error( 'ag_bb', 'u', '✅ Mis à jour.', 'updated' );
 	}
 
+	// Ajouter un programme préconfiguré (1 clic).
+	if ( isset( $_POST['ag_bb_preset'] ) && check_admin_referer( 'ag_bb' ) ) {
+		$key     = sanitize_text_field( wp_unslash( $_POST['ag_bb_preset'] ) );
+		$presets = ag_bb_presets();
+		if ( isset( $presets[ $key ] ) ) {
+			$items = ag_bb_get();
+			$exists = false;
+			foreach ( $items as $it ) { if ( ( $it['url'] ?? '' ) === $presets[ $key ]['url'] ) { $exists = true; break; } }
+			if ( $exists ) {
+				add_settings_error( 'ag_bb', 'p', 'ℹ️ Ce programme est déjà dans ton suivi.', 'updated' );
+			} else {
+				$row = $presets[ $key ];
+				$row['id'] = substr( md5( uniqid( 'bb', true ) ), 0, 10 );
+				$row['ts'] = time();
+				$items[] = $row;
+				ag_bb_save( $items );
+				add_settings_error( 'ag_bb', 'p', '✅ « ' . esc_html( $row['name'] ) . ' » ajouté à ton suivi.', 'updated' );
+			}
+		}
+	}
+
 	// Supprimer.
 	if ( isset( $_POST['ag_bb_del'] ) && check_admin_referer( 'ag_bb' ) ) {
 		$id    = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
@@ -144,6 +180,18 @@ if ( ! function_exists( 'ag_bb_render' ) ) {
 			echo '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener" class="button" style="margin:0 6px 6px 0">' . esc_html( $name ) . ' ↗</a>';
 		}
 		echo '</p>';
+
+		// Programmes préconfigurés (ajout 1 clic).
+		$presets = ag_bb_presets();
+		if ( $presets ) {
+			echo '<p style="margin-top:4px"><strong style="color:#50575e;font-size:12px">Ajout rapide (préconfiguré) :</strong> ';
+			foreach ( $presets as $pk => $pv ) {
+				echo '<form method="post" style="display:inline;margin:0 6px 6px 0"><input type="hidden" name="ag_bb_preset" value="' . esc_attr( $pk ) . '">';
+				wp_nonce_field( 'ag_bb' );
+				echo '<button class="button button-secondary">➕ ' . esc_html( $pv['name'] ) . '</button></form>';
+			}
+			echo '</p>';
+		}
 
 		// Formulaire d'ajout.
 		$edit = null;
