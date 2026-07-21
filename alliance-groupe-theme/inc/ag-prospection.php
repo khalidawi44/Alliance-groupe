@@ -1082,12 +1082,13 @@ if ( ! function_exists( 'ag_prospect_links_block' ) ) {
 				$out .= ' <a class="button button-small" href="' . esc_url( add_query_arg( array( 'page' => 'ag-espace-audit', 'prefill' => $p['website'] ?? '' ), admin_url( 'admin.php' ) ) ) . '" title="Lancer un audit de sécurité de ce site">🛡️ Auditer ce site</a>';
 			}
 		}
-		// 3) Robot vocal : appeler ce prospect (angle AUTO selon le site). Jamais un avocat (deonto).
+		// 3) Robot vocal : DEUX boutons distincts (création web / sécurité), 1er message différent
+		//    selon le choix (variable {{accroche}}). Jamais un avocat (déonto).
 		$is_avocat = false !== stripos( ( $p['type'] ?? '' ) . ' ' . ( $p['name'] ?? '' ), 'avocat' );
 		if ( ! empty( $p['phone'] ) && ! $is_avocat && function_exists( 'ag_voice_ready' ) && ag_voice_ready() ) {
-			$has_site  = function_exists( 'ag_site_kind' ) && 'real' === ag_site_kind( $p['website'] ?? '' )[0];
-			$angle_lbl = $has_site ? 'securite' : 'creation';
-			$out .= ' <button type="button" class="button button-small agr-robot" data-id="' . esc_attr( $p['id'] ?? '' ) . '" style="border-color:#7c3aed;color:#7c3aed;" title="Lancer un appel du robot vocal (angle ' . $angle_lbl . ', selon la fiche)">📞 Robot (' . $angle_lbl . ')</button>';
+			$pid = esc_attr( $p['id'] ?? '' );
+			$out .= ' <button type="button" class="button button-small agr-robot" data-id="' . $pid . '" data-angle="creation" style="border-color:#2563eb;color:#2563eb;" title="Appel robot — angle création de site (1er message dédié)">📞 Appel site</button>';
+			$out .= ' <button type="button" class="button button-small agr-robot" data-id="' . $pid . '" data-angle="securite" style="border-color:#7c3aed;color:#7c3aed;" title="Appel robot — angle audit sécurité (1er message dédié)">🔒 Appel sécu</button>';
 		}
 		return $out;
 	}
@@ -2052,7 +2053,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				function pickBy(mob){ checks().forEach(function(c){ c.checked=(rowVisible(c) && c.getAttribute('data-mob')===(mob?'1':'0')); }); if(all)all.checked=false; if(all2)all2.checked=false; refresh(); }
 				var pm=document.getElementById('ag-pick-mob'); if(pm) pm.addEventListener('click',function(){ pickBy(true); });
 				var pf=document.getElementById('ag-pick-fix'); if(pf) pf.addEventListener('click',function(){ pickBy(false); });
-				document.addEventListener('click',function(e){ var b=e.target.closest?e.target.closest('.agr-robot'):null; if(!b) return; var id=b.getAttribute('data-id'); if(!id) return; if(!confirm('Lancer un appel du robot vocal vers ce prospect ? (angle auto selon sa fiche)')) return; var fd=new FormData(); fd.append('action','ag_prospect_voice_bulk'); fd.append('_n',nonce); fd.append('ids[]',id); var old=b.textContent; b.disabled=true; b.textContent='…'; fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ b.disabled=false; b.textContent=old; alert(j&&j.success?('Appel lance : '+j.data.ok+' / echec : '+j.data.ko):(j&&j.data&&j.data.msg?j.data.msg:'Erreur')); }).catch(function(){ b.disabled=false; b.textContent=old; }); });
+				document.addEventListener('click',function(e){ var b=e.target.closest?e.target.closest('.agr-robot'):null; if(!b) return; var id=b.getAttribute('data-id'); if(!id) return; var ang=b.getAttribute('data-angle')||'auto'; if(!confirm('Lancer un appel du robot vocal ('+(ang==='securite'?'sécurité':'création de site')+') vers ce prospect ?')) return; var fd=new FormData(); fd.append('action','ag_prospect_voice_bulk'); fd.append('_n',nonce); fd.append('angle',ang); fd.append('ids[]',id); var old=b.textContent; b.disabled=true; b.textContent='…'; fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ b.disabled=false; b.textContent=old; alert(j&&j.success?('Appel lance : '+j.data.ok+' / echec : '+j.data.ko):(j&&j.data&&j.data.msg?j.data.msg:'Erreur')); }).catch(function(){ b.disabled=false; b.textContent=old; }); });
 				var curSite='all', curMob='all';
 				function applyFilters(){
 					document.querySelectorAll('tr.ag-prow').forEach(function(tr){ var okS=(curSite==='all'||tr.getAttribute('data-site')===curSite); var okM=(curMob==='all'||tr.getAttribute('data-mob')===curMob); tr.style.display=(okS&&okM)?'':'none'; });

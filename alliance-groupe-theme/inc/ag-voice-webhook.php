@@ -161,6 +161,15 @@ if ( ! function_exists( 'ag_voice_call' ) ) {
 		$to   = function_exists( 'ag_sms_to_e164' ) ? ag_sms_to_e164( $to ) : $to;
 		if ( '' === $key || '' === $from || '' === $to ) return false;
 		if ( function_exists( 'ag_sms_is_optout' ) && ag_sms_is_optout( $to ) ) return false; // jamais un opt-out
+		// Accroche = TOUT PREMIER message d'Emma, différent selon l'angle choisi (bouton « Appel site » vs « Appel sécu »).
+		if ( empty( $vars['accroche'] ) ) {
+			$angle = $vars['angle'] ?? '';
+			if ( 'securite' === $angle ) {
+				$vars['accroche'] = "Bonjour, c'est Emma d'Alliance Groupe, un assistant automatique. Je vous appelle au sujet de la sécurité de votre site internet, j'ai une bonne nouvelle à vous annoncer. Vous avez trente secondes ?";
+			} else {
+				$vars['accroche'] = "Bonjour, c'est Emma d'Alliance Groupe, un assistant automatique. J'ai une belle surprise à vous faire découvrir pour votre établissement. Vous avez trente secondes ?";
+			}
+		}
 		$body = array( 'from_number' => $from, 'to_number' => $to );
 		if ( ! empty( $vars ) ) $body['retell_llm_dynamic_variables'] = array_map( 'strval', $vars );
 		$r = wp_remote_post( 'https://api.retellai.com/v2/create-phone-call', array(
