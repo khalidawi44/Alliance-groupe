@@ -215,6 +215,8 @@ add_action( 'admin_init', function () {
 		if ( isset( $_POST['ag_voice_api_key'] ) ) update_option( 'ag_voice_api_key', sanitize_text_field( wp_unslash( $_POST['ag_voice_api_key'] ) ) );
 		if ( isset( $_POST['ag_voice_from'] ) )    update_option( 'ag_voice_from', sanitize_text_field( wp_unslash( $_POST['ag_voice_from'] ) ) );
 		if ( isset( $_POST['ag_calendar_email'] ) ) { $ce = sanitize_email( wp_unslash( $_POST['ag_calendar_email'] ) ); if ( '' === $ce || is_email( $ce ) ) update_option( 'ag_calendar_email', $ce ); }
+			if ( isset( $_POST['ag_calendar_webhook'] ) ) { $wh = esc_url_raw( trim( wp_unslash( $_POST['ag_calendar_webhook'] ) ) ); update_option( 'ag_calendar_webhook', $wh ); }
+			if ( '' === get_option( 'ag_calendar_secret', '' ) ) update_option( 'ag_calendar_secret', wp_generate_password( 20, false ) );
 		if ( isset( $_POST['ag_voice_regen'] ) || '' === get_option( 'ag_voice_token', '' ) ) {
 			update_option( 'ag_voice_token', wp_generate_password( 24, false ) );
 		}
@@ -262,7 +264,14 @@ if ( ! function_exists( 'ag_voice_render' ) ) {
 		echo '<tr><th>Clé API Retell</th><td><input type="text" name="ag_voice_api_key" value="' . esc_attr( $api ) . '" style="width:420px" placeholder="key_..."><p class="description">Retell → Paramètres → API Keys.</p></td></tr>';
 		echo '<tr><th>Numéro émetteur (le numéro Retell)</th><td><input type="text" name="ag_voice_from" value="' . esc_attr( $from ) . '" style="width:240px" placeholder="+14632982363"><p class="description">Le numéro acheté dans Retell, attaché à l\'agent Emma.</p></td></tr>';
 		$cal_email = get_option( 'ag_calendar_email', 'advise.alliance.group@gmail.com' );
-		echo '<tr><th>📅 Email de l\'agenda Google (RDV)</th><td><input type="email" name="ag_calendar_email" value="' . esc_attr( $cal_email ) . '" style="width:320px" placeholder="ton.email@gmail.com"><p class="description">Adresse Gmail dont tu regardes l\'agenda. Les RDV de rappel et alertes « intéressé/ambassadeur » y sont envoyés (invitation .ics). ⚠️ Doit être le compte que tu <strong>consultes vraiment</strong>.</p></td></tr>';
+		echo '<tr><th>📅 Email de l\'agenda Google (RDV)</th><td><input type="email" name="ag_calendar_email" value="' . esc_attr( $cal_email ) . '" style="width:320px" placeholder="ton.email@gmail.com"><p class="description">Utilisé <strong>seulement</strong> si le pont ci-dessous est vide (repli par invitation .ics). ⚠️ Doit être le compte que tu <strong>consultes vraiment</strong>.</p></td></tr>';
+		$cal_hook   = get_option( 'ag_calendar_webhook', '' );
+		$cal_secret = get_option( 'ag_calendar_secret', '' );
+		echo '<tr><th>🗓️ Pont agenda direct (Google Script)</th><td>';
+		echo '<input type="url" name="ag_calendar_webhook" value="' . esc_attr( $cal_hook ) . '" style="width:100%;max-width:560px" placeholder="https://script.google.com/macros/s/…/exec">';
+		echo '<p class="description"><strong>Recommandé (fiable + gratuit).</strong> Colle ici l\'URL de ton script Google (déploiement « application web »). Les RDV s\'écrivent alors <strong>directement</strong> dans ton agenda, sans e-mail ni spam. ' . ( $cal_hook ? '<span style="color:#16a34a;font-weight:600">🟢 Pont actif</span>' : '<span style="color:#b91c1c;font-weight:600">🔴 Pont non configuré (repli e-mail)</span>' ) . '</p>';
+		echo '<p class="description">🔑 Secret à recopier dans le script (variable <code>SECRET</code>) : <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;user-select:all">' . esc_html( $cal_secret ) . '</code></p>';
+		echo '</td></tr>';
 		echo '</tbody></table><button name="ag_voice_save" value="1" class="button button-primary">Enregistrer</button> ';
 		echo '<span style="margin-left:10px;">État : ' . ( ag_voice_ready() ? '🟢 prêt à appeler' : '🔴 à configurer' ) . '</span></form>';
 		// Appel de test vers un numéro libre (mobile perso).

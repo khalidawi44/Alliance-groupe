@@ -829,12 +829,32 @@ add_action( 'template_redirect', function () {
    avec un rappel (pop-up + sonnerie selon tes réglages Google Agenda). */
 if ( ! function_exists( 'ag_calendar_notify' ) ) {
 	function ag_calendar_notify( $summary, $description, $location = '', $start_ts = 0 ) {
-		$to = apply_filters( 'ag_calendar_notify_email', get_option( 'ag_calendar_email', 'advise.alliance.group@gmail.com' ) );
-		if ( ! is_email( $to ) ) return;
 		$now   = time();
 		// $start_ts fourni (ex. RDV de rappel à une date précise) → on l'utilise ; sinon dans 2 min.
 		$start = ( (int) $start_ts > $now ) ? (int) $start_ts : $now + 120;
 		$end   = $start + 1800;       // 30 min
+		// PONT DIRECT Google Agenda (script Apps Script) : prioritaire, fiable, sans e-mail ni spam.
+		$hook = trim( (string) get_option( 'ag_calendar_webhook', '' ) );
+		if ( '' !== $hook && filter_var( $hook, FILTER_VALIDATE_URL ) ) {
+			wp_remote_post( $hook, array(
+				'timeout'  => 15,
+				'blocking' => false,
+				'headers'  => array( 'Content-Type' => 'application/json' ),
+				'body'     => wp_json_encode( array(
+					'secret'      => (string) get_option( 'ag_calendar_secret', '' ),
+					'title'       => (string) $summary,
+					'start'       => gmdate( 'c', $start ),
+					'end'         => gmdate( 'c', $end ),
+					'description' => (string) $description,
+					'location'    => (string) $location,
+				) ),
+			) );
+			if ( function_exists( 'ag_push' ) ) ag_push( $summary, $description ); // notif téléphone (Telegram)
+			return;
+		}
+		// Repli : invitation .ics par e-mail (dépend des réglages Gmail).
+		$to = apply_filters( 'ag_calendar_notify_email', get_option( 'ag_calendar_email', 'advise.alliance.group@gmail.com' ) );
+		if ( ! is_email( $to ) ) return;
 		$uid   = uniqid( 'ag_' ) . '@alliancegroupe-inc.com';
 		$z     = function ( $t ) { return gmdate( 'Ymd\THis\Z', $t ); };
 		$esc   = function ( $s ) { return preg_replace( '/([,;\\\\])/', '\\\\$1', str_replace( array( "\r\n", "\n" ), '\\n', (string) $s ) ); };
