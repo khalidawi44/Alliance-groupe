@@ -65,6 +65,10 @@ if ( ! function_exists( 'ag_voice_map_outcome' ) ) {
 	function ag_voice_map_outcome( $raw, $summary ) {
 		$s = ' ' . strtolower( (string) $raw . ' ' . (string) $summary ) . ' ';
 		if ( preg_match( '/(do.?not.?call|ne plus (l\')?(appel|rappel|contact)|listes? rouge|opt.?out|retire|desinscri|stop demarchage)/u', $s ) ) return array( 'ne_pas_contacter', true );
+		// Répondeur / messagerie vocale (PRIORITAIRE : sinon le « rappeler » du message vocal = faux « intéressé »).
+		if ( preg_match( '/(apr[eè]s le bip|bip sonore|laisser (un )?message|laisser votre message|messagerie( vocale)?|bo[iî]te vocale|r[eé]pondeur|voicemail|answering machine|taper di[eè]se|apr[eè]s la tonalit|votre correspondant|je vais laisser un message)/u', $s ) ) return array( 'repondeur', false );
+		// Refus AVANT intéressé (sinon « pas intéressé » matche « intéress »).
+		if ( preg_match( '/(pas (du tout )?int[eé]ress|pas interes|not.?interes|aucun int[eé]r[êe]t|ne (m\'|nous )?int[eé]resse pas|\brefus|d[eé]clin|not_interested|rejected|pas besoin|d[eé]j[àa] (un|une|quelqu|notre))/u', $s ) ) return array( 'refus', false );
 		if ( preg_match( '/(interes|intéress|rappel|call.?back|rendez|\brdv\b|devis|\boui\b|positif|positive|chaud|\bhot\b|interested)/u', $s ) ) return array( 'interesse', false );
 		if ( preg_match( '/(voicemail|repondeur|répondeur|no.?answer|pas de repon|sans repon|occup|\bbusy\b|failed|echec|échec|non abouti|injoign)/u', $s ) ) return array( 'sans_reponse', false );
 		if ( preg_match( '/(not.?interes|pas interes|refus|declin|déclin|negative|négatif|not_interested|rejected)/u', $s ) ) return array( 'refus', false );
@@ -73,7 +77,7 @@ if ( ! function_exists( 'ag_voice_map_outcome' ) ) {
 }
 if ( ! function_exists( 'ag_voice_status_label' ) ) {
 	function ag_voice_status_label( $st ) {
-		$m = array( 'interesse' => '🔥 Intéressé', 'ne_pas_contacter' => '⛔ Ne plus contacter', 'refus' => '🚫 Pas intéressé', 'sans_reponse' => '🔇 Sans réponse', 'contacte' => '📞 Contacté' );
+		$m = array( 'interesse' => '🔥 Intéressé', 'ne_pas_contacter' => '⛔ Ne plus contacter', 'refus' => '🚫 Pas intéressé', 'sans_reponse' => '🔇 Sans réponse', 'repondeur' => '📵 Répondeur (à rappeler)', 'contacte' => '📞 Contacté' );
 		return $m[ $st ] ?? $st;
 	}
 }

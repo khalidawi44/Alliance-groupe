@@ -312,6 +312,7 @@ if ( ! function_exists( 'ag_prospect_statuses' ) ) {
 			'contacte'         => '📞 Contacté',
 			'relance'          => '🔁 Relancé',
 			'sans_reponse'     => '🔇 Sans réponse',
+			'repondeur'        => '📵 Répondeur (à rappeler)',
 			'interesse'        => '🔥 Intéressé',
 			'client'           => '✅ Client',
 			'refus'            => '✋ Refusé',
