@@ -255,6 +255,8 @@ if ( ! function_exists( 'ag_voice_render' ) ) {
 		echo '<div style="max-width:900px;padding:16px 20px;background:#fff;border:1px solid #ccd0d4;border-radius:8px;margin:12px 0;">';
 		echo '<h2 style="margin-top:0;">📵 Liste « ne plus contacter » (opt-out)</h2>';
 		echo '<p style="color:#50575e;">Numéros qui ont dit STOP (ou marqués « ne plus appeler ») : ils ne reçoivent <strong>plus aucun SMS ni appel</strong>. Tu peux en <strong>retirer un</strong> (ex. ton propre numéro ajouté pendant les tests).</p>';
+		if ( isset( $_GET['optsync'] ) ) echo '<div class="notice notice-success inline"><p>✅ ' . (int) $_GET['optsync'] . ' prospect(s) bloqué(s) ajouté(s) à la liste opt-out.</p></div>';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin:0 0 12px;"><input type="hidden" name="action" value="ag_optout_sync"><input type="hidden" name="_n" value="' . esc_attr( wp_create_nonce( 'ag_optout' ) ) . '"><button class="button">🔄 Rapatrier ici les prospects déjà « ne plus contacter »</button></form>';
 		if ( empty( $optout ) ) {
 			echo '<p style="color:#50575e;"><em>Aucun numéro en opt-out pour l\'instant.</em></p>';
 		} else {

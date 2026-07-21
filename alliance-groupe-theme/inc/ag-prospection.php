@@ -245,6 +245,11 @@ add_action( 'admin_post_ag_prospect_update', function () {
 			$pname = $p['name'] ?? '';
 			if ( $del ) { unset( $list[ $k ] ); break; }
 			if ( $has_status ) $list[ $k ]['status'] = $st;
+			// « Ne plus contacter » = opt-out global (SMS + robot) → apparait dans la liste opt-out.
+			if ( $has_status && 'ne_pas_contacter' === $st && function_exists( 'ag_sms_add_optout' ) ) {
+				$pph = $list[ $k ]['phone_intl'] ?? ''; if ( '' === $pph ) $pph = $list[ $k ]['phone'] ?? '';
+				if ( '' !== $pph ) ag_sms_add_optout( $pph );
+			}
 			if ( $has_owner ) {
 				$list[ $k ]['owner_email'] = $owner;
 				$rec = ( $owner && function_exists( 'ag_ambassadeur_record' ) ) ? ag_ambassadeur_record( $owner ) : null;
@@ -1082,7 +1087,7 @@ if ( ! function_exists( 'ag_prospect_links_block' ) ) {
 		if ( ! empty( $p['phone'] ) && ! $is_avocat && function_exists( 'ag_voice_ready' ) && ag_voice_ready() ) {
 			$has_site  = function_exists( 'ag_site_kind' ) && 'real' === ag_site_kind( $p['website'] ?? '' )[0];
 			$angle_lbl = $has_site ? 'securite' : 'creation';
-			$out .= ' <button type="button" class="button button-small agr-robot" data-id="' . esc_attr( $p['id'] ?? '' ) . '" style="border-color:#7c3aed;color:#7c3aed;" title="Lancer un appel du robot vocal (angle ' . $angle_lbl . ', selon la fiche)">\xf0\x9f\x93\x9e Robot (' . $angle_lbl . ')</button>';
+			$out .= ' <button type="button" class="button button-small agr-robot" data-id="' . esc_attr( $p['id'] ?? '' ) . '" style="border-color:#7c3aed;color:#7c3aed;" title="Lancer un appel du robot vocal (angle ' . $angle_lbl . ', selon la fiche)">📞 Robot (' . $angle_lbl . ')</button>';
 		}
 		return $out;
 	}

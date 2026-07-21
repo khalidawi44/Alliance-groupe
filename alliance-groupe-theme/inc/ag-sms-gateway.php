@@ -73,6 +73,17 @@ if ( ! function_exists( 'ag_sms_remove_optout' ) ) {
 		if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '✅ ' . $num . ' retiré de la liste opt-out (recontact autorisé).' );
 	}
 }
+// Rapatrie tous les prospects déjà marqués « ne plus contacter » dans la liste opt-out.
+add_action( 'admin_post_ag_optout_sync', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( wp_unslash( $_POST['_n'] ), 'ag_optout' ) ) wp_die( 'no' );
+	$n = 0;
+	foreach ( (array) get_option( 'ag_prospects', array() ) as $p ) {
+		if ( 'ne_pas_contacter' !== ( $p['status'] ?? '' ) ) continue;
+		$ph = $p['phone_intl'] ?? ''; if ( '' === $ph ) $ph = $p['phone'] ?? '';
+		if ( '' !== $ph && function_exists( 'ag_sms_add_optout' ) && ! ag_sms_is_optout( $ph ) ) { ag_sms_add_optout( $ph ); $n++; }
+	}
+	wp_safe_redirect( add_query_arg( 'optsync', $n, wp_get_referer() ?: admin_url( 'admin.php?page=ag-voice' ) ) ); exit;
+} );
 // Gestion de la liste opt-out depuis l'admin (retrait manuel).
 add_action( 'admin_post_ag_optout_remove', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( wp_unslash( $_POST['_n'] ), 'ag_optout' ) ) wp_die( 'no' );
