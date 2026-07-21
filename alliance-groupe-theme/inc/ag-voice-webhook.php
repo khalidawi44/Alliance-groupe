@@ -105,6 +105,9 @@ if ( ! function_exists( 'ag_voice_rest' ) ) {
 		$phone   = sanitize_text_field( (string) ag_voice_pick( $req, array( 'phone', 'to', 'from', 'number', 'customer_number', 'to_number', 'called', 'contact' ) ) );
 		$outcome = sanitize_text_field( (string) ag_voice_pick( $req, array( 'outcome', 'result', 'disposition', 'call_status', 'user_sentiment', 'call_successful' ) ) );
 		$summary = sanitize_textarea_field( (string) ag_voice_pick( $req, array( 'summary', 'call_summary', 'transcript', 'analysis', 'notes', 'reason' ) ) );
+		// Date/heure de rappel demandée par le client (Emma la renvoie en ISO "AAAA-MM-JJ HH:MM").
+		$rappel    = sanitize_text_field( (string) ag_voice_pick( $req, array( 'rappel', 'rappel_iso', 'callback', 'callback_time', 'date_rappel', 'rendez_vous', 'best_time' ) ) );
+		$rappel_ts = ( '' !== $rappel ) ? (int) strtotime( str_replace( '/', '-', $rappel ) ) : 0;
 		if ( '' === $phone ) return new WP_REST_Response( array( 'error' => 'no_phone' ), 400 );
 		// Aucun signal exploitable (ni résultat ni résumé) → on n'invente pas de statut.
 		if ( '' === $outcome && '' === $summary ) return new WP_REST_Response( array( 'ignored' => 'no_signal' ), 200 );
@@ -123,9 +126,15 @@ if ( ! function_exists( 'ag_voice_rest' ) ) {
 			if ( function_exists( 'ag_sms' ) )  ag_sms( $tag . ' : ' . $who . ' — ' . $phone );
 			if ( function_exists( 'ag_push' ) ) ag_push( $tag, $who . "\n📞 " . $phone . ( '' !== $summary ? "\n💬 " . $summary : '' ) );
 		}
-		// Prospect INTÉRESSÉ → évènement Google Agenda + rappel pop-up (à rappeler).
+		// Prospect INTÉRESSÉ → RDV dans Google Agenda À LA DATE demandée (+ numéro du client),
+		// avec rappel pop-up. Si aucune date captée, rappel immédiat "à rappeler vite".
 		if ( 'interesse' === $status && function_exists( 'ag_calendar_notify' ) ) {
-			ag_calendar_notify( '🔥 Rappeler (robot) : ' . $who, "Prospect intéressé suite à l'appel du robot vocal.\n📞 " . $phone . ( '' !== $summary ? "\n💬 " . $summary : '' ) . "\nÀ rappeler vite." );
+			$when  = ( $rappel_ts > time() ) ? ' — ' . date_i18n( 'd/m à H\hi', $rappel_ts ) : '';
+			$descr = "Prospect intéressé (robot vocal).\n📞 " . $phone
+				. ( '' !== $rappel ? "\n🗓️ Rappel souhaité : " . $rappel : '' )
+				. ( '' !== $summary ? "\n💬 " . $summary : '' )
+				. ( $rappel_ts > time() ? '' : "\nÀ rappeler vite." );
+			ag_calendar_notify( '🔥 Rappeler : ' . $who . $when, $descr, '', $rappel_ts );
 		}
 		if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( $tag . ' : ' . $who );
 

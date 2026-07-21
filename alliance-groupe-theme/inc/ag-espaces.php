@@ -828,11 +828,12 @@ add_action( 'template_redirect', function () {
    invitation d'agenda à ton adresse Gmail → Google l'ajoute à ton agenda
    avec un rappel (pop-up + sonnerie selon tes réglages Google Agenda). */
 if ( ! function_exists( 'ag_calendar_notify' ) ) {
-	function ag_calendar_notify( $summary, $description, $location = '' ) {
+	function ag_calendar_notify( $summary, $description, $location = '', $start_ts = 0 ) {
 		$to = apply_filters( 'ag_calendar_notify_email', 'advise.alliance.group@gmail.com' );
 		if ( ! is_email( $to ) ) return;
 		$now   = time();
-		$start = $now + 120;          // 2 min plus tard : garantit le déclenchement du pop-up
+		// $start_ts fourni (ex. RDV de rappel à une date précise) → on l'utilise ; sinon dans 2 min.
+		$start = ( (int) $start_ts > $now ) ? (int) $start_ts : $now + 120;
 		$end   = $start + 1800;       // 30 min
 		$uid   = uniqid( 'ag_' ) . '@alliancegroupe-inc.com';
 		$z     = function ( $t ) { return gmdate( 'Ymd\THis\Z', $t ); };
