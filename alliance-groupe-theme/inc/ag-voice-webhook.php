@@ -168,6 +168,13 @@ if ( ! function_exists( 'ag_voice_rest' ) ) {
 			return new WP_REST_Response( array( 'ignored' => $event ), 200 );
 		}
 		$phone   = sanitize_text_field( (string) ag_voice_pick( $req, array( 'phone', 'to', 'from', 'number', 'customer_number', 'to_number', 'called', 'contact' ) ) );
+		// Appel ENTRANT (quelqu'un appelle → Emma répond) : l'interlocuteur = l'APPELANT.
+		$direction  = strtolower( (string) ag_voice_pick( $req, array( 'direction', 'call_direction', 'call_type' ) ) );
+		$is_inbound = ( false !== strpos( $direction, 'inbound' ) || false !== strpos( $direction, 'entrant' ) );
+		if ( $is_inbound ) {
+			$caller = sanitize_text_field( (string) ag_voice_pick( $req, array( 'from', 'from_number', 'caller', 'caller_number', 'customer_number' ) ) );
+			if ( '' !== $caller ) $phone = $caller;
+		}
 		$outcome = sanitize_text_field( (string) ag_voice_pick( $req, array( 'outcome', 'result', 'disposition', 'call_status', 'user_sentiment', 'call_successful' ) ) );
 		$summary = sanitize_textarea_field( (string) ag_voice_pick( $req, array( 'summary', 'call_summary', 'analysis', 'notes', 'reason' ) ) );
 		$transcript = sanitize_textarea_field( (string) ag_voice_pick( $req, array( 'transcript', 'call_transcript', 'full_transcript', 'transcription' ) ) );
@@ -215,12 +222,25 @@ if ( ! function_exists( 'ag_voice_rest' ) ) {
 			update_option( 'ag_voice_log', $log, false );
 		}
 
-		// Alerte (surtout si intéressé).
+		// Alerte. Pour un appel ENTRANT : on prévient TOUJOURS (comme une standardiste).
 		$who = ( '' !== $nm ) ? $nm : $phone;
-		$tag = ( 'interesse' === $status ) ? '🔥 Robot vocal : prospect INTÉRESSÉ' : '📞 Robot vocal : ' . ag_voice_status_label( $status );
-		if ( ! $already && ( 'interesse' === $status || $optout ) ) {
-			if ( function_exists( 'ag_sms' ) )  ag_sms( $tag . ' : ' . $who . ' — ' . $phone );
+		$tag = $is_inbound
+			? '📞 Robot : APPEL ENTRANT (' . ag_voice_status_label( $status ) . ')'
+			: ( ( 'interesse' === $status ) ? '🔥 Robot vocal : prospect INTÉRESSÉ' : '📞 Robot vocal : ' . ag_voice_status_label( $status ) );
+		if ( ! $already && ( $is_inbound || 'interesse' === $status || $optout ) ) {
+			if ( function_exists( 'ag_sms' ) )  ag_sms( $tag . ' : ' . $who . ' — ' . $phone . ( '' !== $summary ? ' — ' . $summary : '' ) );
 			if ( function_exists( 'ag_push' ) ) ag_push( $tag, $who . "\n📞 " . $phone . ( '' !== $summary ? "\n💬 " . $summary : '' ) );
+		}
+		// Appel entrant d'un inconnu → on crée un lead (source « appel entrant »).
+		if ( $is_inbound && ! $already && '' === $nm && ! $optout && function_exists( 'ag_prospect_add_record' ) ) {
+			ag_prospect_add_record( array(
+				'name'   => ( '' !== $who && $who !== $phone ) ? $who : 'Appel entrant ' . $phone,
+				'phone'  => $phone,
+				'type'   => 'Appel entrant',
+				'status' => ( 'interesse' === $status ) ? 'interesse' : 'contacte',
+				'source' => 'appel_entrant',
+				'notes'  => $note,
+			) );
 		}
 		// Prospect INTÉRESSÉ → RDV dans Google Agenda À LA DATE demandée (+ numéro du client),
 		// avec rappel pop-up. Si aucune date captée, rappel immédiat "à rappeler vite".
