@@ -9,6 +9,24 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
+/* ── 0. Page-app « Prospection Mobile » (créée automatiquement) ──── */
+add_action( 'after_setup_theme', function () {
+	if ( get_option( 'ag_prospection_mobile_page' ) ) { return; }
+	if ( ! get_page_by_path( 'prospection-mobile' ) ) {
+		$id = wp_insert_post( array(
+			'post_title'   => 'Prospection',
+			'post_name'    => 'prospection-mobile',
+			'post_status'  => 'publish',
+			'post_type'    => 'page',
+			'post_content' => '',
+		) );
+		if ( $id && ! is_wp_error( $id ) ) {
+			update_post_meta( $id, '_wp_page_template', 'templates/page-prospection-mobile.php' );
+		}
+	}
+	update_option( 'ag_prospection_mobile_page', 1 );
+} );
+
 /* ── 1. Prospects entrants (chat du site) ───────────────────────── */
 if ( ! function_exists( 'ag_lead_handler' ) ) {
 	function ag_lead_handler() {
