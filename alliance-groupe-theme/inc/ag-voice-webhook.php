@@ -302,6 +302,18 @@ if ( ! function_exists( 'ag_voice_call' ) ) {
 	}
 }
 /* Appels groupés depuis la liste des prospects (sélection). */
+/* Appel robot depuis l'APP (membre connecté) : un seul numéro, angle site/sécu. */
+add_action( 'wp_ajax_ag_app_voice_call', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error( array( 'm' => 'Session expirée.' ) );
+	if ( ! function_exists( 'ag_voice_call' ) || ! ag_voice_ready() ) wp_send_json_error( array( 'm' => 'Robot vocal pas encore configuré.' ) );
+	$to = sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) );
+	if ( '' === $to ) wp_send_json_error( array( 'm' => 'Numéro manquant.' ) );
+	$angle = sanitize_text_field( wp_unslash( $_POST['angle'] ?? '' ) );
+	$angle = in_array( $angle, array( 'creation', 'securite' ), true ) ? $angle : 'creation';
+	$name  = sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) );
+	$ok = ag_voice_call( $to, array( 'angle' => $angle, 'entreprise' => ( '' !== $name ? $name : 'votre établissement' ) ) );
+	$ok ? wp_send_json_success() : wp_send_json_error( array( 'm' => 'Appel refusé (numéro invalide ou en opt-out).' ) );
+} );
 add_action( 'wp_ajax_ag_prospect_voice_bulk', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
 	if ( ! function_exists( 'ag_voice_call' ) || ! ag_voice_ready() ) wp_send_json_error( array( 'msg' => 'robot vocal non configuré' ) );
