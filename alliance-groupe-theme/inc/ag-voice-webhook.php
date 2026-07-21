@@ -266,6 +266,7 @@ if ( ! function_exists( 'ag_voice_render' ) ) {
 		$cal_email = get_option( 'ag_calendar_email', 'advise.alliance.group@gmail.com' );
 		echo '<tr><th>📅 Email de l\'agenda Google (RDV)</th><td><input type="email" name="ag_calendar_email" value="' . esc_attr( $cal_email ) . '" style="width:320px" placeholder="ton.email@gmail.com"><p class="description">Utilisé <strong>seulement</strong> si le pont ci-dessous est vide (repli par invitation .ics). ⚠️ Doit être le compte que tu <strong>consultes vraiment</strong>.</p></td></tr>';
 		$cal_hook   = get_option( 'ag_calendar_webhook', '' );
+		if ( '' === get_option( 'ag_calendar_secret', '' ) ) update_option( 'ag_calendar_secret', wp_generate_password( 20, false ) );
 		$cal_secret = get_option( 'ag_calendar_secret', '' );
 		echo '<tr><th>🗓️ Pont agenda direct (Google Script)</th><td>';
 		echo '<input type="url" name="ag_calendar_webhook" value="' . esc_attr( $cal_hook ) . '" style="width:100%;max-width:560px" placeholder="https://script.google.com/macros/s/…/exec">';
