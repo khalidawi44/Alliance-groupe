@@ -40,12 +40,36 @@ if ( ! function_exists( 'ag_sms_gateway_ready' ) ) {
 		return false;
 	}
 }
+if ( ! function_exists( 'ag_sms_optout_key' ) ) {
+	/** Clé de comparaison d'un numéro (chiffres du format international). */
+	function ag_sms_optout_key( $num ) { return preg_replace( '/[^0-9]/', '', (string) ag_sms_to_e164( $num ) ); }
+}
+if ( ! function_exists( 'ag_sms_is_optout' ) ) {
+	/** Ce numéro a-t-il demandé STOP ? (liste globale `ag_sms_optout`). */
+	function ag_sms_is_optout( $num ) {
+		$k = ag_sms_optout_key( $num );
+		return '' !== $k && in_array( $k, (array) get_option( 'ag_sms_optout', array() ), true );
+	}
+}
+if ( ! function_exists( 'ag_sms_add_optout' ) ) {
+	/** Enregistre un numéro en opt-out (STOP) : plus aucun SMS ne lui sera envoyé,
+	 *  et le prospect correspondant passe en « ne plus contacter ». */
+	function ag_sms_add_optout( $num ) {
+		$k = ag_sms_optout_key( $num );
+		if ( '' === $k ) return;
+		$l = (array) get_option( 'ag_sms_optout', array() );
+		if ( ! in_array( $k, $l, true ) ) { $l[] = $k; update_option( 'ag_sms_optout', $l, false ); }
+		if ( function_exists( 'ag_prospect_mark_optout_by_phone' ) ) ag_prospect_mark_optout_by_phone( $num );
+		if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '⛔ STOP reçu : ' . $num . ' ajouté à la liste opt-out (ne plus contacter).' );
+	}
+}
 if ( ! function_exists( 'ag_sms_send' ) ) {
 	/** Envoie un SMS à $to. Retourne true/false. */
 	function ag_sms_send( $to, $msg ) {
 		$to  = ag_sms_to_e164( $to );
 		$msg = trim( wp_strip_all_tags( (string) $msg ) );
 		if ( '' === $to || '' === $msg ) return false;
+		if ( ag_sms_is_optout( $to ) ) return false; // respecte le STOP : on ne renvoie JAMAIS à un opt-out.
 		$mode = get_option( 'ag_smsgw_mode', '' );
 
 		if ( 'httpsms' === $mode ) {
@@ -203,6 +227,12 @@ if ( ! function_exists( 'ag_inbound_rest' ) ) {
 		// Appels : seulement si activé.
 		if ( 'call' === $type && '1' !== get_option( 'ag_inbound_calls', '1' ) ) {
 			return new WP_REST_Response( array( 'ignored' => 'calls_off' ), 200 );
+		}
+		// STOP / opt-out (SMS) : la personne demande à ne plus être contactée → on l'enregistre
+		// (liste globale + prospect en « ne plus contacter ») et on s'arrête. Conformité RGPD.
+		if ( 'call' !== $type && preg_match( '/(^|\W)(STOP|ARRET|ARRÊT|DESABO|DÉSABO|UNSUB)(\W|$)/iu', $text ) ) {
+			if ( function_exists( 'ag_sms_add_optout' ) ) ag_sms_add_optout( $from );
+			return new WP_REST_Response( array( 'optout' => true ), 200 );
 		}
 		// Filtre mot-clé (SMS) : si défini, le SMS doit le contenir.
 		$kw = trim( (string) get_option( 'ag_inbound_keyword', '' ) );

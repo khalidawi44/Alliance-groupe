@@ -301,6 +301,26 @@ if ( ! function_exists( 'ag_prospect_blocked' ) ) {
 	/** Statuts qui sortent le prospect du circuit (personne ne le recontacte). */
 	function ag_prospect_blocked( $status ) { return in_array( $status, array( 'refus', 'ne_pas_contacter', 'client', 'ignore' ), true ); }
 }
+if ( ! function_exists( 'ag_prospect_mark_optout_by_phone' ) ) {
+	/** Passe en « ne plus contacter » le(s) prospect(s) dont le numéro correspond (STOP reçu). */
+	function ag_prospect_mark_optout_by_phone( $phone ) {
+		$k = preg_replace( '/[^0-9]/', '', (string) $phone );
+		if ( strlen( $k ) < 6 ) return 0;
+		$list = (array) get_option( 'ag_prospects', array() ); $n = 0;
+		foreach ( $list as $i => $p ) {
+			foreach ( array( 'phone', 'phone_intl' ) as $f ) {
+				$pk = preg_replace( '/[^0-9]/', '', (string) ( $p[ $f ] ?? '' ) );
+				if ( '' === $pk ) continue;
+				if ( $pk === $k || substr( $pk, -9 ) === substr( $k, -9 ) ) { // tolère +33 vs 0
+					if ( ( $list[ $i ]['status'] ?? '' ) !== 'ne_pas_contacter' ) { $list[ $i ]['status'] = 'ne_pas_contacter'; $n++; }
+					break;
+				}
+			}
+		}
+		if ( $n ) update_option( 'ag_prospects', $list );
+		return $n;
+	}
+}
 if ( ! function_exists( 'ag_prospect_sig' ) ) {
 	function ag_prospect_sig( $name, $city ) { return strtolower( trim( preg_replace( '/\s+/', ' ', (string) $name ) ) ) . '|' . strtolower( trim( (string) $city ) ); }
 }
