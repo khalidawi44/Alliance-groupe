@@ -781,8 +781,8 @@ if ( ! function_exists( 'ag_amb_guide_video_embed' ) ) {
 	}
 }
 add_action( 'admin_menu', function () {
-	add_options_page( 'Programme ambassadeur', 'Programme ambassadeur', 'manage_options', 'ag-amb-programme', 'ag_amb_programme_render' );
-} );
+	add_submenu_page( 'ag-ambassadeurs', 'Programme ambassadeur', '⚙️ Programme', 'manage_options', 'ag-amb-programme', 'ag_amb_programme_render' );
+}, 20 );
 add_action( 'admin_init', function () {
 	register_setting( 'ag_amb_programme', 'ag_amb_guide_video', array(
 		'type' => 'string', 'sanitize_callback' => 'esc_url_raw', 'default' => '',

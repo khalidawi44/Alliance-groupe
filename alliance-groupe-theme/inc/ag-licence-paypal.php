@@ -71,8 +71,8 @@ add_action( 'ag_paypal_payment_verified', function ( $amount, $email, $txn, $typ
 
 /* ── Réglages : Réglages > Licences PayPal ──────────────────────── */
 add_action( 'admin_menu', function () {
-	add_options_page( 'Licences PayPal', 'Licences PayPal', 'manage_options', 'ag-licence-paypal', 'ag_licence_paypal_render' );
-} );
+	add_submenu_page( 'ag-hub', 'Licences PayPal', '🔑 Licences PayPal', 'manage_options', 'ag-licence-paypal', 'ag_licence_paypal_render' );
+}, 20 );
 add_action( 'admin_init', function () {
 	register_setting( 'ag_licence_paypal', 'ag_creator_price', array( 'type' => 'number', 'sanitize_callback' => 'floatval', 'default' => 69 ) );
 } );

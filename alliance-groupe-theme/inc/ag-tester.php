@@ -43,8 +43,8 @@ if ( ! function_exists( 'ag_tester_opt' ) ) {
 
 /* --------------------------------------------------- Réglages (Settings API) */
 add_action( 'admin_menu', function () {
-	add_options_page( 'Tester / Audit', 'Tester / Audit', 'manage_options', 'ag-tester', 'ag_tester_settings_page' );
-} );
+	add_submenu_page( 'ag-espace-audit', 'Réglages Audit', '⚙️ Réglages Audit', 'manage_options', 'ag-tester', 'ag_tester_settings_page' );
+}, 20 );
 add_action( 'admin_init', function () {
 	foreach ( array( 'price', 'deep_price', 'deep_pay_url', 'pay_url', 'raison', 'siret', 'adresse', 'tva', 'email', 'popup_img', 'phone', 'img_audit', 'img_secu', 'img_creation', 'img_maintenance', 'img_templates', 'img_menace', 'tg_sec', 'tg_crea' ) as $k ) {
 		register_setting( 'ag_tester_group', 'ag_tester_' . $k );

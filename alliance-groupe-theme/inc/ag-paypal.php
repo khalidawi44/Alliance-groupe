@@ -43,8 +43,8 @@ if ( ! function_exists( 'ag_paypal_token' ) ) {
 
 /* ── Page de réglages ───────────────────────────────────────────── */
 add_action( 'admin_menu', function () {
-	add_options_page( 'PayPal automatique', 'PayPal automatique', 'manage_options', 'ag-paypal-cfg', 'ag_paypal_cfg_render' );
-} );
+	add_submenu_page( 'ag-hub', 'PayPal automatique', '💳 PayPal auto', 'manage_options', 'ag-paypal-cfg', 'ag_paypal_cfg_render' );
+}, 20 );
 add_action( 'admin_init', function () {
 	foreach ( array( 'mode', 'client_id', 'secret', 'webhook_id', 'email' ) as $k ) {
 		register_setting( 'ag_paypal_cfg', 'ag_paypal_' . $k, array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => ( 'mode' === $k ? 'live' : '' ) ) );

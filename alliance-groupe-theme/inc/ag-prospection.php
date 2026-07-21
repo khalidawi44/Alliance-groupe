@@ -2412,8 +2412,8 @@ add_action( 'admin_init', function () {
 	}
 } );
 add_action( 'admin_menu', function () {
-	add_options_page( 'Notifications téléphone', 'Notifications téléphone', 'manage_options', 'ag-notify', 'ag_notify_render' );
-} );
+	add_submenu_page( 'ag-push', 'Notifications téléphone', '📞 Notifs téléphone', 'manage_options', 'ag-notify', 'ag_notify_render' );
+}, 20 );
 add_action( 'admin_post_ag_push_test', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_push_test' ) ) wp_die( 'no' );
 	$ok = ag_push( '✅ Test Alliance Groupe', 'Si tu lis ça, les alertes (SMS + groupe Telegram) marchent !', true );
