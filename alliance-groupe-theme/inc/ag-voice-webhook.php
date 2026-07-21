@@ -165,7 +165,9 @@ if ( ! function_exists( 'ag_voice_rest' ) ) {
 		}
 		$phone   = sanitize_text_field( (string) ag_voice_pick( $req, array( 'phone', 'to', 'from', 'number', 'customer_number', 'to_number', 'called', 'contact' ) ) );
 		$outcome = sanitize_text_field( (string) ag_voice_pick( $req, array( 'outcome', 'result', 'disposition', 'call_status', 'user_sentiment', 'call_successful' ) ) );
-		$summary = sanitize_textarea_field( (string) ag_voice_pick( $req, array( 'summary', 'call_summary', 'transcript', 'analysis', 'notes', 'reason' ) ) );
+		$summary = sanitize_textarea_field( (string) ag_voice_pick( $req, array( 'summary', 'call_summary', 'analysis', 'notes', 'reason' ) ) );
+		$transcript = sanitize_textarea_field( (string) ag_voice_pick( $req, array( 'transcript', 'call_transcript', 'full_transcript', 'transcription' ) ) );
+		if ( '' === $summary ) $summary = $transcript; // repli : si pas de résumé, on garde le transcript comme résumé
 		// Date/heure de rappel demandée par le client (Emma la renvoie en ISO "AAAA-MM-JJ HH:MM").
 		$rappel    = sanitize_text_field( (string) ag_voice_pick( $req, array( 'rappel', 'rappel_iso', 'callback', 'callback_time', 'date_rappel', 'rendez_vous', 'best_time' ) ) );
 		$rappel_ts = ( '' !== $rappel && function_exists( 'ag_voice_parse_rappel' ) ) ? ag_voice_parse_rappel( $rappel ) : ( '' !== $rappel ? (int) strtotime( str_replace( '/', '-', $rappel ) ) : 0 );
@@ -190,6 +192,25 @@ if ( ! function_exists( 'ag_voice_rest' ) ) {
 		if ( $optout && function_exists( 'ag_sms_add_optout' ) ) ag_sms_add_optout( $phone ); // opt-out global (SMS + prospect)
 		$nm = function_exists( 'ag_prospect_set_status_by_phone' ) ? ag_prospect_set_status_by_phone( $phone, $status, $note, $optout ) : '';
 
+		// Journal de TOUS les appels (intéressés, refus, sans réponse…) avec le transcript complet.
+		if ( ! $already ) {
+			$log = get_option( 'ag_voice_log', array() );
+			if ( ! is_array( $log ) ) $log = array();
+			array_unshift( $log, array(
+				'ts'         => time(),
+				'phone'      => $phone,
+				'name'       => $nm,
+				'status'     => $status,
+				'outcome'    => $outcome,
+				'summary'    => $summary,
+				'transcript' => $transcript,
+				'rappel'     => $rappel,
+				'call_id'    => $call_id,
+			) );
+			if ( count( $log ) > 300 ) $log = array_slice( $log, 0, 300 ); // garde les 300 derniers
+			update_option( 'ag_voice_log', $log, false );
+		}
+
 		// Alerte (surtout si intéressé).
 		$who = ( '' !== $nm ) ? $nm : $phone;
 		$tag = ( 'interesse' === $status ) ? '🔥 Robot vocal : prospect INTÉRESSÉ' : '📞 Robot vocal : ' . ag_voice_status_label( $status );
@@ -204,6 +225,7 @@ if ( ! function_exists( 'ag_voice_rest' ) ) {
 			$descr = "Prospect intéressé (robot vocal).\n📞 " . $phone
 				. ( '' !== $rappel ? "\n🗓️ Rappel souhaité : " . $rappel : '' )
 				. ( '' !== $summary ? "\n💬 " . $summary : '' )
+				. ( '' !== $transcript && $transcript !== $summary ? "\n\n📝 Retranscription :\n" . $transcript : '' )
 				. ( $rappel_ts > time() ? '' : "\nÀ rappeler vite." );
 			ag_calendar_notify( '🔥 Rappeler : ' . $who . $when, $descr, '', $rappel_ts );
 		}
@@ -307,7 +329,51 @@ add_action( 'admin_init', function () {
 /* ------------------------------------------------------------- Page d'admin */
 add_action( 'admin_menu', function () {
 	add_submenu_page( 'ag-prospects', 'Robot vocal IA', '🤖 Robot vocal', 'manage_options', 'ag-voice', 'ag_voice_render' );
+	add_submenu_page( 'ag-prospects', 'Journal des appels', '📞 Journal des appels', 'manage_options', 'ag-voice-log', 'ag_voice_log_render' );
 }, 20 );
+
+/* Journal de tous les appels du robot (avec transcript complet). */
+if ( ! function_exists( 'ag_voice_log_render' ) ) {
+	function ag_voice_log_render() {
+		if ( ! current_user_can( 'manage_options' ) ) return;
+		// Vider le journal.
+		if ( isset( $_POST['ag_voice_log_clear'] ) && check_admin_referer( 'ag_voice_log' ) ) {
+			delete_option( 'ag_voice_log' );
+			echo '<div class="notice notice-success is-dismissible"><p>Journal vidé.</p></div>';
+		}
+		$log = get_option( 'ag_voice_log', array() );
+		if ( ! is_array( $log ) ) $log = array();
+		echo '<div class="wrap"><h1>📞 Journal des appels du robot</h1>';
+		echo '<p class="description">Tous les appels d\'Emma (intéressés, refus, sans réponse…) avec la retranscription complète. Les 300 derniers.</p>';
+		if ( empty( $log ) ) {
+			echo '<p style="margin-top:20px;font-size:15px;">Aucun appel enregistré pour l\'instant. Dès qu\'Emma passe un appel (et que Retell envoie l\'analyse au webhook), il apparaîtra ici.</p></div>';
+			return;
+		}
+		echo '<form method="post" style="margin:10px 0 18px;">' . wp_nonce_field( 'ag_voice_log', '_wpnonce', true, false );
+		echo '<button class="button" name="ag_voice_log_clear" value="1" onclick="return confirm(\'Vider tout le journal des appels ?\');">🗑️ Vider le journal</button> <span style="color:#50575e;">' . count( $log ) . ' appel(s)</span></form>';
+		foreach ( $log as $e ) {
+			$lbl   = function_exists( 'ag_voice_status_label' ) ? ag_voice_status_label( $e['status'] ?? '' ) : ( $e['status'] ?? '' );
+			$when  = ! empty( $e['ts'] ) ? date_i18n( 'd/m/Y à H\hi', (int) $e['ts'] ) : '';
+			$who   = ! empty( $e['name'] ) ? $e['name'] : ( $e['phone'] ?? '' );
+			$trans = trim( (string) ( $e['transcript'] ?? '' ) );
+			if ( '' === $trans ) $trans = trim( (string) ( $e['summary'] ?? '' ) );
+			echo '<div style="background:#fff;border:1px solid #dcdcde;border-left:4px solid #2271b1;border-radius:8px;padding:12px 14px;margin-bottom:12px;max-width:900px;">';
+			echo '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;">';
+			echo '<strong style="font-size:15px;">' . esc_html( $who ) . '</strong>';
+			echo '<span style="color:#50575e;font-size:12px;">' . esc_html( $when ) . '</span></div>';
+			echo '<div style="margin:4px 0 8px;"><span style="display:inline-block;background:#f0f0f1;border-radius:100px;padding:2px 10px;font-size:12px;font-weight:600;">' . esc_html( $lbl ) . '</span> ';
+			echo '<span style="color:#50575e;font-size:12px;">📞 ' . esc_html( $e['phone'] ?? '' ) . ( ! empty( $e['rappel'] ) ? ' · 🗓️ rappel : ' . esc_html( $e['rappel'] ) : '' ) . '</span></div>';
+			if ( '' !== $trans ) {
+				echo '<details><summary style="cursor:pointer;color:#2271b1;font-weight:600;">📝 Voir la retranscription</summary>';
+				echo '<pre style="white-space:pre-wrap;background:#f6f7f7;border-radius:6px;padding:10px;margin-top:8px;font-size:13px;line-height:1.5;">' . esc_html( $trans ) . '</pre></details>';
+			} else {
+				echo '<em style="color:#787c82;font-size:13px;">(pas de retranscription pour cet appel)</em>';
+			}
+			echo '</div>';
+		}
+		echo '</div>';
+	}
+}
 if ( ! function_exists( 'ag_voice_render' ) ) {
 	function ag_voice_render() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
