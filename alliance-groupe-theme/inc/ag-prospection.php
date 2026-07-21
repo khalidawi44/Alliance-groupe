@@ -1783,6 +1783,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 			<?php else : ?>
 				<?php $ag_gw = function_exists( 'ag_sms_gateway_ready' ) && ag_sms_gateway_ready(); ?>
 				<div class="ag-bulkbar" style="margin:10px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+					<span style="display:inline-flex;gap:4px;align-items:center;border-right:1px solid #dcdcde;padding-right:10px;"><strong style="font-size:.82em;color:#50575e;">Afficher :</strong> <button type="button" class="button button-small button-primary ag-fltr" data-f="all">Tous</button> <button type="button" class="button button-small ag-fltr" data-f="0" title="Entreprises sans vrai site — angle CREATION de site">🆕 Sans site</button> <button type="button" class="button button-small ag-fltr" data-f="1" title="Entreprises avec un site — angle AUDIT securite / refonte">🔒 Avec site</button></span>
 					<label style="font-size:.9em;"><input type="checkbox" id="ag-check-all"> Tout sélectionner</label>
 					<button type="button" id="ag-pick-mob" class="button button-small" title="Cocher tous les mobiles 06/07 (envoi SMS)">📱 Cocher les mobiles</button>
 					<button type="button" id="ag-pick-fix" class="button button-small" title="Cocher tous les fixes (pas de SMS — appel/robot vocal)">☎️ Cocher les fixes</button>
@@ -1808,7 +1809,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					$scol   = $score >= 80 ? '#b32d2e' : ( $score >= 60 ? '#bd7b00' : '#50575e' );
 					$blocked = ag_prospect_blocked( $p['status'] ?? '' );
 					?>
-					<tr<?php echo $blocked ? ' style="opacity:.72;background:#fbf3f3;"' : ''; ?>>
+					<tr class="ag-prow" data-site="<?php echo ( 'real' === ag_site_kind( $p['website'] ?? '' )[0] ) ? '1' : '0'; ?>"<?php echo $blocked ? ' style="opacity:.72;background:#fbf3f3;"' : ''; ?>>
 						<td style="text-align:center;"><input type="checkbox" class="ag-check" data-mob="<?php echo ag_phone_is_mobile( $p['phone'] ?? '', $p['phone_intl'] ?? '' ) ? '1' : '0'; ?>" value="<?php echo esc_attr( $p['id'] ?? '' ); ?>"></td>
 						<td><span style="display:inline-block;min-width:34px;text-align:center;font-weight:800;color:#fff;background:<?php echo esc_attr( $scol ); ?>;border-radius:6px;padding:2px 6px;"><?php echo (int) $score; ?></span></td>
 						<td><strong><?php echo esc_html( $p['name'] ?? '' ); ?></strong><?php $pk = ag_site_kind( $p['website'] ?? '' ); echo ( 'real' !== $pk[0] ) ? ' <span style="color:#b32d2e;" title="' . esc_attr( $pk[1] ) . '">❗</span>' : ''; ?><br><small><?php echo esc_html( ( $p['type'] ?? '' ) . ( ! empty( $p['city'] ) ? ' · ' . $p['city'] : '' ) ); ?></small>
@@ -1997,13 +1998,21 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					smsBtn.disabled=true; smsBtn.textContent='…';
 					fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ smsBtn.textContent='📲 Envoyer SMS (sélection)'; smsBtn.disabled=false; alert(j&&j.success?('SMS envoyés : '+j.data.ok+' / échecs : '+j.data.ko):'Erreur'); }).catch(function(){ smsBtn.disabled=false; });
 				});
-				function setAll(v){ checks().forEach(function(c){ c.checked=v; }); if(all)all.checked=v; if(all2)all2.checked=v; refresh(); }
+				function setAll(v){ checks().forEach(function(c){ c.checked = v && rowVisible(c); }); if(all)all.checked=v; if(all2)all2.checked=v; refresh(); }
 				if(all) all.addEventListener('change',function(){ setAll(all.checked); });
 				if(all2) all2.addEventListener('change',function(){ setAll(all2.checked); });
 				checks().forEach(function(c){ c.addEventListener('change',refresh); });
-				function pickBy(mob){ checks().forEach(function(c){ c.checked=(c.getAttribute('data-mob')===(mob?'1':'0')); }); if(all)all.checked=false; if(all2)all2.checked=false; refresh(); }
+				function rowVisible(c){ var tr=c.closest('tr'); return tr && tr.style.display!=='none'; }
+				function pickBy(mob){ checks().forEach(function(c){ c.checked=(rowVisible(c) && c.getAttribute('data-mob')===(mob?'1':'0')); }); if(all)all.checked=false; if(all2)all2.checked=false; refresh(); }
 				var pm=document.getElementById('ag-pick-mob'); if(pm) pm.addEventListener('click',function(){ pickBy(true); });
 				var pf=document.getElementById('ag-pick-fix'); if(pf) pf.addEventListener('click',function(){ pickBy(false); });
+				document.querySelectorAll('.ag-fltr').forEach(function(b){ b.addEventListener('click',function(){
+					var fv=b.getAttribute('data-f');
+					document.querySelectorAll('.ag-fltr').forEach(function(x){ x.classList.toggle('button-primary', x===b); });
+					document.querySelectorAll('tr.ag-prow').forEach(function(tr){ tr.style.display=(fv==='all'||tr.getAttribute('data-site')===fv)?'':'none'; });
+					// décoche ce qui est masqué pour ne pas l'envoyer par erreur
+					checks().forEach(function(c){ if(!rowVisible(c)) c.checked=false; }); if(all)all.checked=false; if(all2)all2.checked=false; refresh();
+				}); });
 				if(delBtn) delBtn.addEventListener('click',function(){
 					var ids=checks().filter(function(c){return c.checked;}).map(function(c){return c.value;});
 					if(!ids.length) return;
