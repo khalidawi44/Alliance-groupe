@@ -123,7 +123,7 @@ add_action( 'admin_init', function () {
 	}
 } );
 add_action( 'admin_menu', function () {
-	add_submenu_page( 'ag-app-promo', 'Blog auto', '✍️ Blog auto', 'manage_options', 'ag-blog-auto', 'ag_autopub_render' );
+	add_submenu_page( 'ag-social', 'Blog auto', '✍️ Blog auto', 'manage_options', 'ag-blog-auto', 'ag_autopub_render' );
 }, 20 );
 if ( ! function_exists( 'ag_autopub_render' ) ) {
 	function ag_autopub_render() {

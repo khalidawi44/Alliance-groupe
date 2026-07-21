@@ -724,7 +724,8 @@ if ( ! function_exists( 'ag_tester_render_teaser' ) ) {
  * scanne/attaque jamais : on lit ce qui est public et on en tire un argumentaire.
  * ====================================================================== */
 add_action( 'admin_menu', function () {
-	add_menu_page( 'Espace Audit', '🔍 Espace Audit', 'manage_options', 'ag-espace-audit', 'ag_audit_prospect_page', 'dashicons-shield', 58 );
+	add_menu_page( 'Sécurité', '🛡️ Sécurité', 'manage_options', 'ag-espace-audit', 'ag_audit_prospect_page', 'dashicons-shield', 56 );
+	add_submenu_page( 'ag-espace-audit', 'Espace Audit', '🔍 Espace Audit', 'manage_options', 'ag-espace-audit', 'ag_audit_prospect_page' );
 	add_submenu_page( 'ag-espace-audit', 'Générateur d\'audit', '🧰 Générateur d\'audit', 'manage_options', 'ag-audit-gen', 'ag_audit_gen_render' );
 } );
 

@@ -67,8 +67,8 @@ if ( ! function_exists( 'ag_bb_statuses' ) ) {
 
 /* ── Menu ── */
 add_action( 'admin_menu', function () {
-	add_menu_page( 'Bug Bounty', '🎯 Bug Bounty', 'manage_options', 'ag-bugbounty', 'ag_bb_render', 'dashicons-shield-alt', 4 );
-} );
+	add_submenu_page( 'ag-espace-audit', 'Bug Bounty', '🎯 Bug Bounty', 'manage_options', 'ag-bugbounty', 'ag_bb_render' );
+}, 20 );
 
 /* ── Actions (POST) ── */
 add_action( 'admin_init', function () {

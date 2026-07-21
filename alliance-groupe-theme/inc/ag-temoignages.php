@@ -203,8 +203,8 @@ add_action( 'admin_init', function () {
 	add_settings_error( 'ag_tm', 'd', 'approve' === $act ? '✅ Avis publié.' : '🗑 Avis supprimé.', 'updated' );
 } );
 add_action( 'admin_menu', function () {
-	add_menu_page( 'Témoignages', '⭐ Témoignages', 'manage_options', 'ag-temoignages', 'ag_temoignages_render', 'dashicons-format-status', 34 );
-} );
+	add_submenu_page( 'ag-social', 'Témoignages', '⭐ Témoignages', 'manage_options', 'ag-temoignages', 'ag_temoignages_render' );
+}, 20 );
 if ( ! function_exists( 'ag_temoignages_render' ) ) {
 	function ag_temoignages_render() {
 		if ( ! current_user_can( 'manage_options' ) ) return;

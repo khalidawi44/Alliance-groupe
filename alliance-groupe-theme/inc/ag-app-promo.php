@@ -34,8 +34,8 @@ add_action( 'admin_init', function () {
 	}
 } );
 add_action( 'admin_menu', function () {
-	add_menu_page( 'Annonce / Promo', '📢 Promo app', 'manage_options', 'ag-app-promo', 'ag_promo_render', 'dashicons-megaphone', 31 );
-} );
+	add_submenu_page( 'ag-social', 'Annonce / Promo', '📢 Promo app', 'manage_options', 'ag-app-promo', 'ag_promo_render' );
+}, 20 );
 if ( ! function_exists( 'ag_promo_render' ) ) {
 	function ag_promo_render() {
 		if ( ! current_user_can( 'manage_options' ) ) return;

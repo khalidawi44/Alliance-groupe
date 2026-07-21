@@ -131,7 +131,8 @@ add_action( 'transition_post_status', function ( $new, $old, $post ) {
 
 /* ── Menu admin ──────────────────────────────────────────────────────────── */
 add_action( 'admin_menu', function () {
-	add_menu_page( 'Réseaux sociaux', '📣 Réseaux', 'manage_options', 'ag-social', 'ag_social_admin_render', 'dashicons-share', 58 );
+	add_menu_page( 'Marketing', '📣 Marketing', 'manage_options', 'ag-social', 'ag_social_admin_render', 'dashicons-megaphone', 32 );
+	add_submenu_page( 'ag-social', 'Réseaux sociaux', '📣 Réseaux sociaux', 'manage_options', 'ag-social', 'ag_social_admin_render' );
 } );
 
 /* ── Enregistrement des réglages + composer ──────────────────────────────── */

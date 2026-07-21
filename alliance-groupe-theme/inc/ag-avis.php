@@ -107,8 +107,8 @@ add_action( 'admin_init', function () {
 	}
 } );
 add_action( 'admin_menu', function () {
-	add_menu_page( 'Avis Google', '⭐ Avis Google', 'manage_options', 'ag-avis', 'ag_avis_render', 'dashicons-star-filled', 33 );
-} );
+	add_submenu_page( 'ag-social', 'Avis Google', '⭐ Avis Google', 'manage_options', 'ag-avis', 'ag_avis_render' );
+}, 20 );
 if ( ! function_exists( 'ag_avis_render' ) ) {
 	function ag_avis_render() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
