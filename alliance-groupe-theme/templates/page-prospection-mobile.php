@@ -12,7 +12,9 @@
  */
 
 if ( ! is_user_logged_in() ) {
-	wp_safe_redirect( home_url( '/connexion' ) );
+	// Après connexion, on revient direct sur l'app (le formulaire /connexion honore redirect_to).
+	$ag_back = add_query_arg( 'redirect_to', rawurlencode( home_url( '/prospection-mobile' ) ), home_url( '/connexion' ) );
+	wp_safe_redirect( $ag_back );
 	exit;
 }
 $ag_u = wp_get_current_user();
