@@ -181,6 +181,12 @@ if ( file_exists( $ag_sms_gateway_file ) ) {
     require_once $ag_sms_gateway_file;
 }
 
+// ── 1c5b-quater-2. Robot vocal IA : webhook de compte-rendu d'appel → CRM
+$ag_voice_file = get_stylesheet_directory() . '/inc/ag-voice-webhook.php';
+if ( file_exists( $ag_voice_file ) ) {
+    require_once $ag_voice_file;
+}
+
 // ── 1c5b-quinquies. Ma prospection (page front-end simple pour un proche/ambassadeur)
 $ag_ma_prospection_file = get_stylesheet_directory() . '/inc/ag-ma-prospection.php';
 if ( file_exists( $ag_ma_prospection_file ) ) {

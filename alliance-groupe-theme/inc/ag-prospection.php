@@ -332,6 +332,33 @@ if ( ! function_exists( 'ag_prospect_mark_optout_by_phone' ) ) {
 		return $n;
 	}
 }
+if ( ! function_exists( 'ag_prospect_set_status_by_phone' ) ) {
+	/** Met a jour le statut + note d'un prospect trouve par telephone (robot vocal, etc.).
+	 *  N'ecrase jamais 'client' ; n'ecrase 'refus/ne_pas_contacter/ignore' QUE pour un opt-out.
+	 *  Retourne le nom du prospect (ou '' si aucun match). Match sur les 9 derniers chiffres. */
+	function ag_prospect_set_status_by_phone( $phone, $status, $note = '', $force = false ) {
+		$k = preg_replace( '/[^0-9]/', '', (string) $phone );
+		if ( strlen( $k ) < 6 ) return '';
+		$list = (array) get_option( 'ag_prospects', array() ); $nm = '';
+		foreach ( $list as $i => $p ) {
+			foreach ( array( 'phone', 'phone_intl' ) as $ff ) {
+				$pk = preg_replace( '/[^0-9]/', '', (string) ( $p[ $ff ] ?? '' ) );
+				if ( '' === $pk ) continue;
+				if ( $pk === $k || substr( $pk, -9 ) === substr( $k, -9 ) ) {
+					$cur = $p['status'] ?? '';
+					$is_final = in_array( $cur, array( 'client', 'refus', 'ne_pas_contacter', 'ignore' ), true );
+					if ( $force || 'client' !== $cur && ! $is_final ) { $list[ $i ]['status'] = $status; }
+					if ( $note ) $list[ $i ]['notes'] = trim( $note . "\n" . (string) ( $p['notes'] ?? '' ) );
+					$list[ $i ]['last'] = current_time( 'd/m/Y H:i' );
+					$nm = $p['name'] ?? (string) $phone;
+					break 2;
+				}
+			}
+		}
+		if ( $nm ) update_option( 'ag_prospects', $list );
+		return $nm;
+	}
+}
 if ( ! function_exists( 'ag_prospect_register_reply' ) ) {
 	/**
 	 * Une réponse ENTRANTE (SMS ou rappel) d'un prospect connu : met à jour le CRM.
