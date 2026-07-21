@@ -34,6 +34,9 @@ $ag_pnonce       = wp_nonce_field( 'ag_amb_prospect', '_n', true, false );
 $ag_ajax_url     = admin_url( 'admin-ajax.php' );
 $ag_ajax_nonce   = wp_create_nonce( 'ag_amb_prospect' );
 
+$ag_is_admin = current_user_can( 'manage_options' );
+$ag_calls    = $ag_is_admin ? array_slice( (array) get_option( 'ag_voice_log', array() ), 0, 40 ) : array();
+
 $ag_cnt = array( 'total' => 0, 'a_contacter' => 0, 'contacte' => 0, 'repondeur' => 0, 'interesse' => 0, 'client' => 0 );
 foreach ( $ag_my_prospects as $ppc ) {
 	$sc = $ppc['status'] ?? 'nouveau';
@@ -215,6 +218,34 @@ foreach ( $ag_my_prospects as $ppc ) {
 		<div id="ag-results"></div>
 	</section>
 
+	<?php if ( $ag_is_admin ) : ?>
+	<!-- APPELS (journal du robot) -->
+	<section class="view" id="view-appels">
+		<h2 class="sec">📞 Appels du robot</h2>
+		<p class="sub">Tous les appels d'Emma (intéressés, répondeur, refus…) avec la retranscription.</p>
+		<?php if ( empty( $ag_calls ) ) : ?>
+			<div class="card"><p class="sub" style="margin:0;">Aucun appel enregistré pour l'instant. Dès qu'Emma appelle (et que Retell renvoie l'analyse), ça s'affiche ici.</p></div>
+		<?php else : ?>
+			<?php foreach ( $ag_calls as $e ) :
+				$lbl   = function_exists( 'ag_voice_status_label' ) ? ag_voice_status_label( $e['status'] ?? '' ) : ( $e['status'] ?? '' );
+				$when  = ! empty( $e['ts'] ) ? date_i18n( 'd/m à H\hi', (int) $e['ts'] ) : '';
+				$who   = ! empty( $e['name'] ) ? $e['name'] : ( $e['phone'] ?? '' );
+				$trans = trim( (string) ( $e['transcript'] ?? '' ) ); if ( '' === $trans ) { $trans = trim( (string) ( $e['summary'] ?? '' ) ); }
+			?>
+				<div class="card" style="padding:13px;">
+					<div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline;">
+						<strong><?php echo esc_html( $who ); ?></strong><span class="sub" style="margin:0;font-size:.78rem;"><?php echo esc_html( $when ); ?></span>
+					</div>
+					<div style="margin:5px 0 2px;"><span style="display:inline-block;background:rgba(212,180,92,.15);border:1px solid rgba(212,180,92,.35);border-radius:100px;padding:2px 10px;font-size:.78rem;font-weight:700;"><?php echo esc_html( $lbl ); ?></span> <span class="sub" style="font-size:.76rem;">📞 <?php echo esc_html( $e['phone'] ?? '' ); ?><?php echo ! empty( $e['rappel'] ) ? ' · 🗓️ ' . esc_html( $e['rappel'] ) : ''; ?></span></div>
+					<?php if ( '' !== $trans ) : ?>
+						<details style="margin-top:6px;"><summary style="cursor:pointer;color:var(--gold);font-size:.85rem;font-weight:600;">📝 Retranscription</summary><div style="white-space:pre-wrap;background:rgba(0,0,0,.25);border-radius:9px;padding:9px;margin-top:6px;font-size:.82rem;line-height:1.5;color:#d6d6db;"><?php echo esc_html( $trans ); ?></div></details>
+					<?php endif; ?>
+				</div>
+			<?php endforeach; ?>
+		<?php endif; ?>
+	</section>
+	<?php endif; ?>
+
 	<!-- AUDIT -->
 	<section class="view" id="view-audit">
 		<h2 class="sec">🛡️ Audits</h2>
@@ -238,6 +269,7 @@ foreach ( $ag_my_prospects as $ppc ) {
 	<a href="#" data-t="accueil" class="active" onclick="AG.tab('accueil');return false"><i>🏠</i>Accueil</a>
 	<a href="#" data-t="prospecter" onclick="AG.tab('prospecter');return false"><i>🎯</i>Prospecter</a>
 	<a href="#" data-t="chercher" onclick="AG.tab('chercher');return false"><i>🔎</i>Chercher</a>
+	<?php if ( $ag_is_admin ) : ?><a href="#" data-t="appels" onclick="AG.tab('appels');return false"><i>📞</i>Appels</a><?php endif; ?>
 	<a href="#" data-t="audit" onclick="AG.tab('audit');return false"><i>🛡️</i>Audit</a>
 </nav>
 
