@@ -178,6 +178,9 @@ add_action( 'wp_ajax_ag_prospect_voice_bulk', function () {
 	$ids = isset( $_POST['ids'] ) ? (array) $_POST['ids'] : array();
 	$ids = array_filter( array_map( 'sanitize_text_field', array_map( 'wp_unslash', $ids ) ) );
 	if ( empty( $ids ) ) wp_send_json_error();
+	// Angle forcé (creation|securite) ou 'auto' (déduit du site).
+	$forced = sanitize_text_field( wp_unslash( $_POST['angle'] ?? '' ) );
+	$forced = in_array( $forced, array( 'creation', 'securite' ), true ) ? $forced : '';
 	$ok = 0; $ko = 0;
 	foreach ( (array) get_option( 'ag_prospects', array() ) as $p ) {
 		if ( ! in_array( $p['id'] ?? '', $ids, true ) ) continue;
@@ -188,7 +191,7 @@ add_action( 'wp_ajax_ag_prospect_voice_bulk', function () {
 		$vars = array(
 			'entreprise' => $p['name'] ?? '',
 			'ville'      => $p['city'] ?? '',
-			'angle'      => $has_site ? 'securite' : 'creation',
+			'angle'      => '' !== $forced ? $forced : ( $has_site ? 'securite' : 'creation' ),
 		);
 		if ( ag_voice_call( $to, $vars ) ) $ok++; else $ko++;
 		usleep( 300000 ); // 0,3 s entre 2 lancements
