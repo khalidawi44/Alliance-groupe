@@ -63,6 +63,23 @@ if ( ! function_exists( 'ag_sms_add_optout' ) ) {
 		if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '⛔ STOP reçu : ' . $num . ' ajouté à la liste opt-out (ne plus contacter).' );
 	}
 }
+if ( ! function_exists( 'ag_sms_remove_optout' ) ) {
+	/** Retire un numéro de la liste opt-out (ex. ton propre numéro ajouté par erreur). */
+	function ag_sms_remove_optout( $num ) {
+		$k = ag_sms_optout_key( $num );
+		if ( '' === $k ) return;
+		$l = array_values( array_filter( (array) get_option( 'ag_sms_optout', array() ), function ( $x ) use ( $k ) { return $x !== $k; } ) );
+		update_option( 'ag_sms_optout', $l, false );
+		if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '✅ ' . $num . ' retiré de la liste opt-out (recontact autorisé).' );
+	}
+}
+// Gestion de la liste opt-out depuis l'admin (retrait manuel).
+add_action( 'admin_post_ag_optout_remove', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( wp_unslash( $_POST['_n'] ), 'ag_optout' ) ) wp_die( 'no' );
+	$num = sanitize_text_field( wp_unslash( $_POST['num'] ?? '' ) );
+	if ( '' !== $num && function_exists( 'ag_sms_remove_optout' ) ) ag_sms_remove_optout( $num );
+	wp_safe_redirect( wp_get_referer() ?: admin_url( 'admin.php?page=ag-voice' ) ); exit;
+} );
 if ( ! function_exists( 'ag_sms_send' ) ) {
 	/** Envoie un SMS à $to. Retourne true/false. */
 	function ag_sms_send( $to, $msg ) {

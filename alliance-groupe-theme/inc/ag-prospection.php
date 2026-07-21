@@ -397,6 +397,7 @@ if ( ! function_exists( 'ag_prospect_register_reply' ) ) {
 		$body = $nm . ' — ' . $phone . ( '' !== $rtxt ? ' : ' . mb_substr( $rtxt, 0, 140 ) : '' );
 		if ( function_exists( 'ag_sms' ) ) ag_sms( $tag . ' : ' . $body );
 		if ( function_exists( 'ag_push' ) ) ag_push( $tag, $nm . "\n📞 " . $phone . "\n💬 " . $rtxt );
+		if ( $positive && function_exists( 'ag_calendar_notify' ) ) ag_calendar_notify( '🔥 Rappeler : ' . $nm, "Prospect intéressé (réponse SMS).\n📞 " . $phone . "\n💬 " . $rtxt . "\nÀ rappeler vite." );
 		if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( $tag . ' : ' . $nm );
 		// Notifie aussi l'ambassadeur propriétaire du prospect (si assigné).
 		$oe = strtolower( (string) ( $p['owner_email'] ?? '' ) );

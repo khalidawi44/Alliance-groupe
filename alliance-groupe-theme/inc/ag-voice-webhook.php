@@ -123,6 +123,10 @@ if ( ! function_exists( 'ag_voice_rest' ) ) {
 			if ( function_exists( 'ag_sms' ) )  ag_sms( $tag . ' : ' . $who . ' — ' . $phone );
 			if ( function_exists( 'ag_push' ) ) ag_push( $tag, $who . "\n📞 " . $phone . ( '' !== $summary ? "\n💬 " . $summary : '' ) );
 		}
+		// Prospect INTÉRESSÉ → évènement Google Agenda + rappel pop-up (à rappeler).
+		if ( 'interesse' === $status && function_exists( 'ag_calendar_notify' ) ) {
+			ag_calendar_notify( '🔥 Rappeler (robot) : ' . $who, "Prospect intéressé suite à l'appel du robot vocal.\n📞 " . $phone . ( '' !== $summary ? "\n💬 " . $summary : '' ) . "\nÀ rappeler vite." );
+		}
 		if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( $tag . ' : ' . $who );
 
 		return new WP_REST_Response( array( 'ok' => true, 'matched' => ( '' !== $nm ), 'status' => $status ), 200 );
@@ -244,6 +248,28 @@ if ( ! function_exists( 'ag_voice_render' ) ) {
 		echo '<input type="text" name="ag_voice_test_to" placeholder="+33612345678" style="width:220px"' . ( ag_voice_ready() ? '' : ' disabled' ) . '>';
 		echo '<button name="ag_voice_test" value="1" class="button"' . ( ag_voice_ready() ? '' : ' disabled title="Configure d\'abord la clé API + le numéro"' ) . '>Lancer l\'appel de test</button>';
 		echo '<span class="description">Format international : <code>+33…</code> (remplace le 0 par +33).</span></form>';
+		echo '</div>';
+
+		// ── Liste opt-out (STOP / ne plus contacter) : voir + retirer ──
+		$optout = (array) get_option( 'ag_sms_optout', array() );
+		echo '<div style="max-width:900px;padding:16px 20px;background:#fff;border:1px solid #ccd0d4;border-radius:8px;margin:12px 0;">';
+		echo '<h2 style="margin-top:0;">📵 Liste « ne plus contacter » (opt-out)</h2>';
+		echo '<p style="color:#50575e;">Numéros qui ont dit STOP (ou marqués « ne plus appeler ») : ils ne reçoivent <strong>plus aucun SMS ni appel</strong>. Tu peux en <strong>retirer un</strong> (ex. ton propre numéro ajouté pendant les tests).</p>';
+		if ( empty( $optout ) ) {
+			echo '<p style="color:#50575e;"><em>Aucun numéro en opt-out pour l\'instant.</em></p>';
+		} else {
+			echo '<table class="widefat striped" style="max-width:520px;"><thead><tr><th>Numéro</th><th style="width:120px;"></th></tr></thead><tbody>';
+			foreach ( $optout as $k ) {
+				$disp = ( 0 === strpos( $k, '33' ) ) ? '+' . $k : $k;
+				echo '<tr><td><code>' . esc_html( $disp ) . '</code></td><td>';
+				echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin:0;">';
+				echo '<input type="hidden" name="action" value="ag_optout_remove"><input type="hidden" name="_n" value="' . esc_attr( wp_create_nonce( 'ag_optout' ) ) . '"><input type="hidden" name="num" value="' . esc_attr( $disp ) . '">';
+				echo '<button class="button button-small" onclick="return confirm(\'Autoriser à nouveau le contact de ' . esc_attr( $disp ) . ' ?\')">✅ Retirer</button></form>';
+				echo '</td></tr>';
+			}
+			echo '</tbody></table>';
+		}
+		echo '<p class="description" style="margin-top:8px;">💡 Retirer d\'ici n\'annule pas le statut « ne plus contacter » d\'un prospect dans la liste : pour le réactiver, change aussi son statut dans <strong>Prospection</strong>.</p>';
 		echo '</div>';
 
 		echo '<div style="max-width:900px;padding:16px 20px;background:#fff;border:1px solid #ccd0d4;border-radius:8px;margin:12px 0;">';

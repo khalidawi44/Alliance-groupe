@@ -192,6 +192,8 @@ if ( ! function_exists( 'ag_cand_add' ) ) {
 		$resume = $tag . ' : ' . $c['prenom'] . ( $c['ville'] ? ' (' . $c['ville'] . ')' : '' ) . ( $c['phone'] ? ' — ' . $c['phone'] : '' ) . ( $c['email'] ? ' — ' . $c['email'] : '' );
 		if ( function_exists( 'ag_sms' ) ) ag_sms( $resume );
 		if ( function_exists( 'ag_push' ) ) ag_push( $tag, $c['prenom'] . ( $c['ville'] ? ' · ' . $c['ville'] : '' ) . "\n" . ( $c['phone'] ? '📞 ' . $c['phone'] . "\n" : '' ) . ( $c['email'] ? '✉️ ' . $c['email'] : '' ) );
+		// Évènement Google Agenda + rappel pop-up (nouvel ambassadeur à suivre).
+		if ( function_exists( 'ag_calendar_notify' ) ) ag_calendar_notify( '🤝 Ambassadeur : ' . $c['prenom'], "Nouvelle candidature ambassadeur." . ( $c['phone'] ? "\n📞 " . $c['phone'] : '' ) . ( $c['email'] ? "\n✉️ " . $c['email'] : '' ) . ( $c['ville'] ? "\n📍 " . $c['ville'] : '' ) . "\nAccueille-le / valide dans l'admin." );
 		return $c;
 	}
 }
