@@ -2424,6 +2424,94 @@ add_action( 'wp_ajax_ag_amb_add', function () {
 	wp_send_json_success( array( 'added' => ag_prospect_add_record( $data ) ) );
 } );
 
+/* RAPPORT CLIENT (teaser) — rendu autonome via ?ag_rapport=1 (aucune page WP requise → jamais de 404). */
+add_action( 'template_redirect', function () {
+	if ( ! isset( $_GET['ag_rapport'] ) ) { return; }
+	$site = isset( $_GET['site'] ) ? esc_url_raw( rawurldecode( wp_unslash( $_GET['site'] ) ) ) : '';
+	$name = isset( $_GET['name'] ) ? sanitize_text_field( rawurldecode( wp_unslash( $_GET['name'] ) ) ) : '';
+	ag_render_client_report( $site, $name );
+	exit;
+} );
+if ( ! function_exists( 'ag_render_client_report' ) ) {
+	function ag_render_client_report( $site, $name = '' ) {
+		nocache_headers();
+		header( 'Content-Type: text/html; charset=utf-8' );
+		$ok = ( '' !== $site && preg_match( '#^https?://#i', $site ) && function_exists( 'ag_audit_run' ) );
+		$a = $ok ? ag_audit_run( $site ) : array();
+		$score  = (int) ( $a['score'] ?? 0 );
+		$tech   = (string) ( $a['tech'] ?? '' );
+		$fails  = array();
+		foreach ( (array) ( $a['checks'] ?? array() ) as $c ) {
+			if ( in_array( $c['status'] ?? '', array( 'fail', 'warn' ), true ) ) { $fails[] = $c; }
+		}
+		$vis   = array_slice( $fails, 0, 2 );
+		$hid   = array_slice( $fails, 2 );
+		$host  = $ok ? wp_parse_url( $site, PHP_URL_HOST ) : '';
+		$who   = '' !== $name ? $name : $host;
+		$col   = $score < 50 ? '#e5484d' : ( $score < 75 ? '#e6a817' : '#2ecc71' );
+		$shot  = 'https://s.wordpress.com/mshots/v1/' . rawurlencode( (string) $site ) . '?w=680';
+		$cta   = home_url( '/audit-securite' );
+		$logo  = get_stylesheet_directory_uri() . '/assets/images/logo-carte-square.jpg';
+		?><!DOCTYPE html><html lang="fr"><head>
+		<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+		<title>Rapport de sécurité<?php echo $who ? ' — ' . esc_html( $who ) : ''; ?></title>
+		<style>
+			*{box-sizing:border-box}body{margin:0;background:#0b0b0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
+			.wrap{max-width:640px;margin:0 auto;padding:22px 16px 60px;}
+			.top{display:flex;align-items:center;gap:10px;margin-bottom:14px;}.top img{width:34px;height:34px;border-radius:8px;}.top b{font-size:1.05rem;}.top b span{color:#d4b45c;}
+			.tag{display:inline-block;background:#15151b;color:#e6b35a;border:1px solid #e6b35a;border-radius:100px;padding:4px 13px;font-size:.75rem;font-weight:700;}
+			h1{font-size:1.5rem;margin:10px 0 3px;}.url{color:#8a8a92;font-size:.85rem;word-break:break-all;margin:0 0 16px;}
+			.hero{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:center;background:#14141a;border:1px solid #26262f;border-radius:16px;padding:18px;}
+			.hero img{width:240px;max-width:100%;border-radius:10px;border:1px solid #333;background:#0e0e13;min-height:120px;}
+			.sc{font-size:2.8rem;font-weight:800;line-height:1;}.scl{color:#9a9aa2;font-size:.85rem;margin-top:4px;}
+			h2{font-size:1.15rem;margin:24px 0 10px;}
+			.f{background:#1b1113;border:1px solid #4a2327;border-left:4px solid #e5484d;border-radius:10px;padding:11px 13px;margin-bottom:9px;}
+			.f .m{color:#c9b0b2;font-size:.85rem;margin-top:3px;}
+			.lock{position:relative;background:#14141a;border:1px solid #26262f;border-radius:12px;padding:16px;overflow:hidden;margin-bottom:10px;}
+			.lock .bl{filter:blur(5px);opacity:.5;user-select:none;}
+			.lock .ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px;}
+			.warn{background:#241f0e;border:1px solid #6a5a1f;border-radius:12px;padding:15px;margin:16px 0;color:#e6d9a8;}
+			.warn ul{margin:8px 0 0;padding-left:18px;line-height:1.6;}
+			.cta{display:block;text-align:center;background:linear-gradient(135deg,#d4b45c,#b98f2f);color:#0b0b0f;font-weight:800;padding:16px;border-radius:14px;text-decoration:none;font-size:1.05rem;margin-top:20px;}
+		</style></head><body><div class="wrap">
+		<div class="top"><img src="<?php echo esc_url( $logo ); ?>" alt=""><b>Alliance <span>Groupe</span></b></div>
+		<?php if ( ! $ok ) : ?>
+			<h1>Rapport de sécurité</h1><p class="url">Lien invalide. Contactez Alliance Groupe.</p>
+		<?php else : ?>
+			<span class="tag">🛡️ AUDIT SÉCURITÉ &amp; PERFORMANCE</span>
+			<h1>Rapport pour <?php echo esc_html( $who ); ?></h1>
+			<p class="url"><?php echo esc_html( $site ); ?></p>
+			<div class="hero">
+				<img id="shot" src="<?php echo esc_url( $shot ); ?>" data-base="<?php echo esc_url( $shot ); ?>" data-try="0" onload="agShot(this)" alt="aperçu du site">
+				<div style="text-align:center;">
+					<div class="sc" style="color:<?php echo esc_attr( $col ); ?>;"><?php echo (int) $score; ?><span style="font-size:1rem;color:#8a8a92;">/100</span></div>
+					<div class="scl">Note globale<?php echo $tech ? ' · ' . esc_html( $tech ) : ''; ?></div>
+					<div style="color:<?php echo esc_attr( $col ); ?>;font-weight:700;margin-top:6px;"><?php echo $score < 50 ? '⚠️ Site à risque' : ( $score < 75 ? 'À améliorer' : 'Perfectible' ); ?></div>
+				</div>
+			</div>
+			<h2>Ce qu'on a détecté (<?php echo count( $fails ); ?>)</h2>
+			<?php foreach ( $vis as $c ) : ?>
+				<div class="f"><strong><?php echo ( 'fail' === $c['status'] ? '❌ ' : '⚠️ ' ) . esc_html( $c['name'] ?? '' ); ?></strong><?php echo ! empty( $c['msg'] ) ? '<div class="m">' . esc_html( $c['msg'] ) . '</div>' : ''; ?></div>
+			<?php endforeach; ?>
+			<?php if ( $hid ) : ?>
+			<div class="lock"><div class="bl"><?php foreach ( $hid as $c ) : ?><div style="padding:6px 0;border-bottom:1px solid #222;">❌ <?php echo esc_html( $c['name'] ?? 'Faille' ); ?></div><?php endforeach; ?></div>
+				<div class="ov"><div style="font-size:1.6rem;">🔒</div><strong><?php echo count( $hid ); ?> autre<?php echo count( $hid ) > 1 ? 's' : ''; ?> point<?php echo count( $hid ) > 1 ? 's' : ''; ?> à corriger</strong><span style="color:#9a9aa2;font-size:.85rem;">Débloquez le rapport complet ci-dessous.</span></div>
+			</div>
+			<?php endif; ?>
+			<div class="warn"><strong>⚠️ Pourquoi c'est important&nbsp;:</strong><ul>
+				<li>Un site vulnérable peut être <strong>piraté</strong> (défiguration, spam, redirection).</li>
+				<li>Risque de <strong>fuite des données clients</strong> → responsabilité <strong>RGPD</strong>.</li>
+				<li>Un site lent/mal sécurisé <strong>perd des clients</strong> et <strong>descend sur Google</strong>.</li>
+			</ul></div>
+			<a class="cta" href="<?php echo esc_url( $cta ); ?>">🔒 Débloquer le rapport complet &amp; faire corriger mon site</a>
+			<p style="text-align:center;color:#8a8a92;font-size:.82rem;margin-top:12px;">Correction par Alliance Groupe · réponse rapide.</p>
+		<?php endif; ?>
+		</div>
+		<script>window.agShot=function(i){var n=+(i.getAttribute('data-try')||0);if(n>=5)return;i.setAttribute('data-try',n+1);setTimeout(function(){i.src=i.getAttribute('data-base')+'&r='+Date.now();},3500);};</script>
+		</body></html><?php
+	}
+}
+
 /* Métier → lien du template démo correspondant (pour illustrer une création/refonte). */
 if ( ! function_exists( 'ag_demo_link_for' ) ) {
 	function ag_demo_link_for( $txt ) {
@@ -2473,7 +2561,7 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 	);
 	$phone = sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) );
 	// Lien du RAPPORT CLIENT (page teaser à envoyer au prospect).
-	$report = add_query_arg( array( 'site' => rawurlencode( $url ), 'name' => rawurlencode( $name ) ), home_url( '/rapport' ) );
+	$report = add_query_arg( array( 'ag_rapport' => 1, 'site' => rawurlencode( $url ), 'name' => rawurlencode( $name ) ), home_url( '/' ) );
 	// SMS « rapport » : phrase + lien du rapport.
 	$msg['rapport'] = "Bonjour, j'ai fait un audit du site de " . $who . " (note " . $score . "/100). Voici le rapport avec ce qu'il faut corriger : " . $report;
 	// Persiste la note sur la fiche prospect (si id fourni).
