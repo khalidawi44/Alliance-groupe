@@ -234,6 +234,11 @@ if ( ! function_exists( 'ag_inbound_rest' ) ) {
 			if ( function_exists( 'ag_sms_add_optout' ) ) ag_sms_add_optout( $from );
 			return new WP_REST_Response( array( 'optout' => true ), 200 );
 		}
+		// Réponse d'un PROSPECT connu (SMS OU rappel) : ce n'est pas une candidature ambassadeur
+		// → on met à jour le CRM (intéressé si positif), on journalise la réponse et on alerte.
+		if ( function_exists( 'ag_prospect_register_reply' ) && ag_prospect_register_reply( $from, ( 'call' === $type ? '' : $text ), $type ) ) {
+			return new WP_REST_Response( array( 'prospect_reply' => true ), 200 );
+		}
 		// Filtre mot-clé (SMS) : si défini, le SMS doit le contenir.
 		$kw = trim( (string) get_option( 'ag_inbound_keyword', '' ) );
 		if ( 'call' !== $type && '' !== $kw && false === mb_stripos( $text, $kw ) ) {

@@ -321,6 +321,54 @@ if ( ! function_exists( 'ag_prospect_mark_optout_by_phone' ) ) {
 		return $n;
 	}
 }
+if ( ! function_exists( 'ag_prospect_register_reply' ) ) {
+	/**
+	 * Une réponse ENTRANTE (SMS ou rappel) d'un prospect connu : met à jour le CRM.
+	 *  - intention positive (oui / intéressé / infos / prix / rappel…) → statut « intéressé »
+	 *  - sinon (autre réponse, ou rappel) → au moins « contacté » (a répondu)
+	 * Journalise le texte dans les notes + alerte Fabrice (SMS/Telegram) et l'ambassadeur.
+	 * Ne touche pas un statut final (client/refus/ne_pas_contacter/ignore).
+	 * Retourne true si le numéro correspondait bien à un prospect (⇒ ce n'est PAS une candidature).
+	 */
+	function ag_prospect_register_reply( $phone, $text, $type = 'sms' ) {
+		$k = preg_replace( '/[^0-9]/', '', (string) $phone );
+		if ( strlen( $k ) < 6 ) return false;
+		$list = (array) get_option( 'ag_prospects', array() ); $hit = -1;
+		foreach ( $list as $i => $p ) {
+			foreach ( array( 'phone', 'phone_intl' ) as $f ) {
+				$pk = preg_replace( '/[^0-9]/', '', (string) ( $p[ $f ] ?? '' ) );
+				if ( '' !== $pk && ( $pk === $k || substr( $pk, -9 ) === substr( $k, -9 ) ) ) { $hit = $i; break 2; }
+			}
+		}
+		if ( $hit < 0 ) return false;
+		$p        = $list[ $hit ];
+		$positive = ( 'call' === $type ) || (bool) preg_match( '/(oui|interes|intéress|d.accord|\bok\b|\binfo|rappel|rappelez|quand|combien|prix|tarif|devis|\brdv\b|rendez)/iu', (string) $text );
+		$blocked  = in_array( $p['status'] ?? '', array( 'client', 'refus', 'ne_pas_contacter', 'ignore' ), true );
+		if ( ! $blocked ) {
+			if ( $positive ) { $list[ $hit ]['status'] = 'interesse'; }
+			elseif ( in_array( $p['status'] ?? '', array( '', 'nouveau', 'sans_reponse' ), true ) ) { $list[ $hit ]['status'] = 'contacte'; }
+		}
+		$stamp = current_time( 'd/m/Y H:i' );
+		$rtxt  = ( 'call' === $type ) ? '(rappel téléphonique)' : trim( wp_strip_all_tags( (string) $text ) );
+		$list[ $hit ]['notes'] = trim( '📩 ' . $stamp . ' — Réponse : ' . $rtxt . "\n" . (string) ( $p['notes'] ?? '' ) );
+		$list[ $hit ]['last']  = $stamp;
+		update_option( 'ag_prospects', $list );
+
+		$nm  = $p['name'] ?? (string) $phone;
+		$tag = $positive ? '🔥 Prospect INTÉRESSÉ (réponse SMS)' : '📩 Réponse d\'un prospect';
+		$body = $nm . ' — ' . $phone . ( '' !== $rtxt ? ' : ' . mb_substr( $rtxt, 0, 140 ) : '' );
+		if ( function_exists( 'ag_sms' ) ) ag_sms( $tag . ' : ' . $body );
+		if ( function_exists( 'ag_push' ) ) ag_push( $tag, $nm . "\n📞 " . $phone . "\n💬 " . $rtxt );
+		if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( $tag . ' : ' . $nm );
+		// Notifie aussi l'ambassadeur propriétaire du prospect (si assigné).
+		$oe = strtolower( (string) ( $p['owner_email'] ?? '' ) );
+		if ( $oe && is_email( $oe ) ) {
+			wp_mail( $oe, ( $positive ? '🔥 Un prospect intéressé te répond' : '📩 Un prospect te répond' ),
+				"Bonne nouvelle !\n\n" . $nm . " (" . $phone . ") vient de répondre :\n« " . $rtxt . " »\n\nContacte-le vite : " . admin_url( 'admin.php?page=ag-prospects' ) );
+		}
+		return true;
+	}
+}
 if ( ! function_exists( 'ag_prospect_sig' ) ) {
 	function ag_prospect_sig( $name, $city ) { return strtolower( trim( preg_replace( '/\s+/', ' ', (string) $name ) ) ) . '|' . strtolower( trim( (string) $city ) ); }
 }
