@@ -829,7 +829,7 @@ add_action( 'template_redirect', function () {
    avec un rappel (pop-up + sonnerie selon tes réglages Google Agenda). */
 if ( ! function_exists( 'ag_calendar_notify' ) ) {
 	function ag_calendar_notify( $summary, $description, $location = '', $start_ts = 0 ) {
-		$to = apply_filters( 'ag_calendar_notify_email', 'advise.alliance.group@gmail.com' );
+		$to = apply_filters( 'ag_calendar_notify_email', get_option( 'ag_calendar_email', 'advise.alliance.group@gmail.com' ) );
 		if ( ! is_email( $to ) ) return;
 		$now   = time();
 		// $start_ts fourni (ex. RDV de rappel à une date précise) → on l'utilise ; sinon dans 2 min.
