@@ -154,11 +154,14 @@ if ( ! function_exists( 'ag_voice_rest' ) ) {
 		if ( '' === $token || ! hash_equals( (string) $token, (string) $given ) ) {
 			return new WP_REST_Response( array( 'error' => 'unauthorized' ), 401 );
 		}
-		// Ne traiter QUE l'événement final (analyse dispo). Retell/Vapi envoient aussi
-		// « call_started » / « call_ended » sans résultat → on les ignore (pas de fausse alerte).
+		// Ne traiter QUE l'événement d'ANALYSE finale. Retell/Vapi envoient aussi
+		// « call_started » et « call_ended » (souvent AVEC le transcript) → si on les traitait
+		// on créait 2 RDV pour le même appel. On ignore start + ended ; on garde « analyzed »
+		// (et le cas sans champ event = envoi unique).
 		$event = strtolower( (string) ag_voice_pick( $req, array( 'event', 'event_type', 'type' ) ) );
-		if ( '' !== $event && false !== strpos( $event, 'start' ) ) {
-			return new WP_REST_Response( array( 'ignored' => 'call_started' ), 200 );
+		if ( '' !== $event && false === strpos( $event, 'analy' )
+			&& ( false !== strpos( $event, 'start' ) || false !== strpos( $event, 'end' ) ) ) {
+			return new WP_REST_Response( array( 'ignored' => $event ), 200 );
 		}
 		$phone   = sanitize_text_field( (string) ag_voice_pick( $req, array( 'phone', 'to', 'from', 'number', 'customer_number', 'to_number', 'called', 'contact' ) ) );
 		$outcome = sanitize_text_field( (string) ag_voice_pick( $req, array( 'outcome', 'result', 'disposition', 'call_status', 'user_sentiment', 'call_successful' ) ) );
@@ -174,19 +177,29 @@ if ( ! function_exists( 'ag_voice_rest' ) ) {
 		$stamp = current_time( 'd/m/Y H:i' );
 		$note  = '📞 Robot vocal (' . $stamp . ') → ' . ag_voice_status_label( $status ) . ( '' !== $outcome ? ' [' . $outcome . ']' : '' ) . ( '' !== $summary ? ' : ' . $summary : '' );
 
+		// Anti-doublon : un même appel (call_id) ne crée qu'UN RDV / une alerte.
+		$call_id    = sanitize_text_field( (string) ag_voice_pick( $req, array( 'call_id', 'callId', 'conversation_id', 'conversationId', 'id' ) ) );
+		$dedupe_key = '' !== $call_id ? $call_id : md5( $phone . '|' . gmdate( 'Y-m-d' ) . '|' . $status );
+		$seen = get_option( 'ag_voice_seen', array() );
+		if ( ! is_array( $seen ) ) $seen = array();
+		foreach ( $seen as $k => $t ) { if ( ( time() - (int) $t ) > 2 * DAY_IN_SECONDS ) unset( $seen[ $k ] ); }
+		$already = isset( $seen[ $dedupe_key ] );
+		$seen[ $dedupe_key ] = time();
+		update_option( 'ag_voice_seen', $seen, false );
+
 		if ( $optout && function_exists( 'ag_sms_add_optout' ) ) ag_sms_add_optout( $phone ); // opt-out global (SMS + prospect)
 		$nm = function_exists( 'ag_prospect_set_status_by_phone' ) ? ag_prospect_set_status_by_phone( $phone, $status, $note, $optout ) : '';
 
 		// Alerte (surtout si intéressé).
 		$who = ( '' !== $nm ) ? $nm : $phone;
 		$tag = ( 'interesse' === $status ) ? '🔥 Robot vocal : prospect INTÉRESSÉ' : '📞 Robot vocal : ' . ag_voice_status_label( $status );
-		if ( 'interesse' === $status || $optout ) {
+		if ( ! $already && ( 'interesse' === $status || $optout ) ) {
 			if ( function_exists( 'ag_sms' ) )  ag_sms( $tag . ' : ' . $who . ' — ' . $phone );
 			if ( function_exists( 'ag_push' ) ) ag_push( $tag, $who . "\n📞 " . $phone . ( '' !== $summary ? "\n💬 " . $summary : '' ) );
 		}
 		// Prospect INTÉRESSÉ → RDV dans Google Agenda À LA DATE demandée (+ numéro du client),
 		// avec rappel pop-up. Si aucune date captée, rappel immédiat "à rappeler vite".
-		if ( 'interesse' === $status && function_exists( 'ag_calendar_notify' ) ) {
+		if ( ! $already && 'interesse' === $status && function_exists( 'ag_calendar_notify' ) ) {
 			$when  = ( $rappel_ts > time() ) ? ' — ' . date_i18n( 'd/m à H\hi', $rappel_ts ) : '';
 			$descr = "Prospect intéressé (robot vocal).\n📞 " . $phone
 				. ( '' !== $rappel ? "\n🗓️ Rappel souhaité : " . $rappel : '' )

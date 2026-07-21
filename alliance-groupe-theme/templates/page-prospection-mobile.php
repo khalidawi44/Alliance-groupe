@@ -67,6 +67,15 @@ $ag_ajax_nonce   = wp_create_nonce( 'ag_amb_prospect' );
 	#agpm .agpm-p select { background:#15151b; }
 	#agpm .agpm-hint { text-align:center; font-size:.82rem; color:var(--color-text-soft,#9a9aa2); background:rgba(58,163,255,.1); border:1px solid rgba(58,163,255,.3); border-radius:12px; padding:11px; }
 	#agpm .agpm-big { display:block; text-align:center; background:linear-gradient(135deg,#d4b45c,#b98f2f); color:#0b0b0f; font-weight:800; padding:15px; border-radius:14px; text-decoration:none; }
+	#agpm .agpm-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:14px; }
+	#agpm .agpm-stat { text-decoration:none; color:#fff; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:12px 4px; text-align:center; display:flex; flex-direction:column; gap:2px; }
+	#agpm .agpm-stat b { font-size:1.5rem; line-height:1; }
+	#agpm .agpm-stat span { font-size:.66rem; color:var(--color-text-soft,#9a9aa2); }
+	#agpm .agpm-stat.s-todo b { color:#ff6b6b; } #agpm .agpm-stat.s-done b { color:#3aa3ff; }
+	#agpm .agpm-stat.s-hot b { color:#e6b35a; } #agpm .agpm-stat.s-cli b { color:#2ecc71; }
+	#agpm .agpm-launch { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin-bottom:18px; }
+	#agpm .agpm-launch a { text-decoration:none; color:#fff; background:rgba(212,180,92,.1); border:1px solid rgba(212,180,92,.32); border-radius:15px; padding:14px 4px; text-align:center; font-weight:700; font-size:.8rem; display:flex; flex-direction:column; align-items:center; gap:6px; }
+	#agpm .agpm-launch a span { font-size:1.6rem; line-height:1; }
 </style>
 
 <main id="agpm">
@@ -74,8 +83,36 @@ $ag_ajax_nonce   = wp_create_nonce( 'ag_amb_prospect' );
 	<h1>🎯 Prospection</h1>
 	<p class="agpm-sub">Appelle, envoie un SMS prêt, ou cherche des clients — direct depuis ton téléphone.</p>
 
+	<!-- Tableau de bord -->
+	<?php
+	$ag_cnt = array( 'total' => 0, 'a_contacter' => 0, 'contacte' => 0, 'interesse' => 0, 'client' => 0 );
+	foreach ( $ag_my_prospects as $ppc ) {
+		$sc = $ppc['status'] ?? 'nouveau';
+		if ( in_array( $sc, array( 'refus', 'ne_pas_contacter' ), true ) ) { continue; }
+		$ag_cnt['total']++;
+		if ( 'nouveau' === $sc ) { $ag_cnt['a_contacter']++; }
+		elseif ( in_array( $sc, array( 'contacte', 'relance' ), true ) ) { $ag_cnt['contacte']++; }
+		elseif ( 'interesse' === $sc ) { $ag_cnt['interesse']++; }
+		elseif ( 'client' === $sc ) { $ag_cnt['client']++; }
+	}
+	?>
+	<div class="agpm-stats">
+		<a class="agpm-stat s-todo" href="#prospects"><b><?php echo (int) $ag_cnt['a_contacter']; ?></b><span>À contacter</span></a>
+		<a class="agpm-stat s-done" href="#prospects"><b><?php echo (int) $ag_cnt['contacte']; ?></b><span>Contactés</span></a>
+		<a class="agpm-stat s-hot"  href="#prospects"><b><?php echo (int) $ag_cnt['interesse']; ?></b><span>🔥 Intéressés</span></a>
+		<a class="agpm-stat s-cli"  href="#prospects"><b><?php echo (int) $ag_cnt['client']; ?></b><span>✅ Clients</span></a>
+	</div>
+	<div class="agpm-launch">
+		<a href="#numero"><span>📞</span>Numéro rapide</a>
+		<a href="#prospects"><span>🎯</span>Mes prospects</a>
+		<a href="<?php echo esc_url( home_url( '/espace-ambassadeur' ) ); ?>#chercher"><span>🔎</span>Chercher</a>
+		<a href="https://calendar.google.com/" target="_blank" rel="noopener"><span>📅</span>Mon agenda</a>
+		<a href="<?php echo esc_url( home_url( '/classement' ) ); ?>"><span>🏆</span>Classement</a>
+		<a href="<?php echo esc_url( home_url( '/espace-ambassadeur' ) ); ?>"><span>🏠</span>Mon espace</a>
+	</div>
+
 	<!-- Pavé numéro rapide -->
-	<div class="agpm-card">
+	<div class="agpm-card" id="numero">
 		<h2>📱 Numéro rapide</h2>
 		<input type="tel" id="agpm-num" inputmode="tel" placeholder="Ex : 06 12 34 56 78" autocomplete="off">
 		<textarea id="agpm-msg" placeholder="Message SMS / WhatsApp"><?php echo esc_textarea( $ag_default_msg ); ?></textarea>
@@ -87,8 +124,8 @@ $ag_ajax_nonce   = wp_create_nonce( 'ag_amb_prospect' );
 	</div>
 
 	<!-- Mes prospects -->
-	<div class="agpm-card">
-		<h2>Mes prospects à contacter (<?php echo count( $ag_my_prospects ); ?>)</h2>
+	<div class="agpm-card" id="prospects">
+		<h2>Mes prospects à contacter (<?php echo (int) $ag_cnt['total']; ?>)</h2>
 		<?php if ( ! $ag_my_prospects ) : ?>
 			<p class="agpm-sub" style="margin:0;">Aucun prospect pour l'instant. Utilise la recherche dans l'Espace, ou tes prospects de zone arriveront automatiquement.</p>
 		<?php else : ?>
