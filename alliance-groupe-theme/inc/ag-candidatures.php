@@ -84,6 +84,26 @@ if ( ! function_exists( 'ag_cand_sms_candidate' ) ) {
 		return ag_sms_send( $c['phone'], $msg );
 	}
 }
+if ( ! function_exists( 'ag_cand_welcome_sms_text' ) ) {
+	/**
+	 * Message SMS de bienvenue ambassadeur = LE PARCOURS complet en 1 SMS :
+	 *   1) activer son compte + mettre son PayPal (pour ETRE PAYE 10% a vie)
+	 *   2) rejoindre le groupe Telegram (si le lien d'invitation est configuré).
+	 * Texte volontairement sans accents (encodage GSM-7 → SMS plus court / moins de segments).
+	 */
+	function ag_cand_welcome_sms_text( $c ) {
+		$p    = $c['prenom'] ?: 'et bienvenue';
+		$link = ag_cand_inscription_link();
+		$tg   = ( function_exists( 'ag_tg_cfg' ) ? trim( (string) ag_tg_cfg( 'group_link' ) ) : '' );
+		$msg  = 'Felicitations ' . $p . ' ! Tu es ambassadeur Alliance Groupe : 10% a vie sur chaque vente, paye sur PayPal.';
+		$msg .= ' 1) Active ton compte + ajoute ton PayPal (pour etre paye) : ' . $link;
+		if ( '' !== $tg ) {
+			$msg .= ' 2) Rejoins le groupe Telegram (annonces, entraide, prospects) : ' . $tg;
+		}
+		$msg .= ' STOP pour stop.';
+		return $msg;
+	}
+}
 if ( ! function_exists( 'ag_cand_email_accept' ) ) {
 	function ag_cand_email_accept( $c ) {
 		$p = $c['prenom'] ?: '';
@@ -93,7 +113,7 @@ if ( ! function_exists( 'ag_cand_email_accept' ) ) {
 		$inner .= ag_email_button( 'Finaliser mon inscription', ag_cand_inscription_link() );
 		$inner .= '<p>Une question ? Réponds simplement à cet email.</p>';
 		ag_cand_mail( $c['email'] ?? '', 'Ta candidature ambassadeur est acceptée ✅', 'Félicitations ' . $p . ' !', $inner );
-		ag_cand_sms_candidate( $c, 'Felicitations ' . $p . ' ! Ta candidature ambassadeur Alliance Groupe est ACCEPTEE. Finalise ton inscription : ' . ag_cand_inscription_link() . ' STOP pour stop.' );
+		ag_cand_sms_candidate( $c, ag_cand_welcome_sms_text( $c ) );
 	}
 }
 if ( ! function_exists( 'ag_cand_email_refus' ) ) {
@@ -165,7 +185,7 @@ if ( ! function_exists( 'ag_cand_add' ) ) {
 
 		// Réponse automatique au candidat (email — uniquement si email fourni).
 		if ( ! empty( $c['email'] ) ) { if ( $auto ) { ag_cand_email_accept( $c ); } else { ag_cand_email_recu( $c ); } }
-		elseif ( $auto ) { ag_cand_sms_candidate( $c, 'Felicitations ' . $c['prenom'] . ' ! Candidature ambassadeur Alliance Groupe acceptee. Inscris-toi : ' . ag_cand_inscription_link() . ' STOP pour stop.' ); }
+		elseif ( $auto ) { ag_cand_sms_candidate( $c, ag_cand_welcome_sms_text( $c ) ); }
 
 		// Alerte SMS admin + Telegram.
 		$tag    = $auto ? '✅ Candidature auto-acceptée' : '🆕 Candidature ambassadeur';
