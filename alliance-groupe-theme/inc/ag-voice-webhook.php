@@ -129,9 +129,66 @@ if ( ! function_exists( 'ag_voice_rest' ) ) {
 	}
 }
 
-/* ----------------------------------------------------- Réglages (jeton) POST */
+/* ------------------------------------------------- Lancer un appel via Retell */
+if ( ! function_exists( 'ag_voice_ready' ) ) {
+	/** L'appel sortant est-il configurable ? (clé API Retell + numéro émetteur). */
+	function ag_voice_ready() {
+		return '' !== trim( (string) get_option( 'ag_voice_api_key', '' ) ) && '' !== trim( (string) get_option( 'ag_voice_from', '' ) );
+	}
+}
+if ( ! function_exists( 'ag_voice_call' ) ) {
+	/**
+	 * Déclenche un appel sortant du robot vocal (Retell) vers $to, en injectant des
+	 * variables dynamiques ({{entreprise}}, {{ville}}, {{angle}}=creation|securite) pour
+	 * qu'Emma adapte son discours. Respecte l'opt-out. Retourne true si l'appel est lancé.
+	 */
+	function ag_voice_call( $to, $vars = array() ) {
+		$key  = trim( (string) get_option( 'ag_voice_api_key', '' ) );
+		$from = trim( (string) get_option( 'ag_voice_from', '' ) );
+		$to   = function_exists( 'ag_sms_to_e164' ) ? ag_sms_to_e164( $to ) : $to;
+		if ( '' === $key || '' === $from || '' === $to ) return false;
+		if ( function_exists( 'ag_sms_is_optout' ) && ag_sms_is_optout( $to ) ) return false; // jamais un opt-out
+		$body = array( 'from_number' => $from, 'to_number' => $to );
+		if ( ! empty( $vars ) ) $body['retell_llm_dynamic_variables'] = array_map( 'strval', $vars );
+		$r = wp_remote_post( 'https://api.retellai.com/v2/create-phone-call', array(
+			'timeout' => 20,
+			'headers' => array( 'Authorization' => 'Bearer ' . $key, 'Content-Type' => 'application/json' ),
+			'body'    => wp_json_encode( $body ),
+		) );
+		return ! is_wp_error( $r ) && in_array( (int) wp_remote_retrieve_response_code( $r ), array( 200, 201 ), true );
+	}
+}
+/* Appels groupés depuis la liste des prospects (sélection). */
+add_action( 'wp_ajax_ag_prospect_voice_bulk', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_prospect' ) ) wp_send_json_error();
+	if ( ! function_exists( 'ag_voice_call' ) || ! ag_voice_ready() ) wp_send_json_error( array( 'msg' => 'robot vocal non configuré' ) );
+	$ids = isset( $_POST['ids'] ) ? (array) $_POST['ids'] : array();
+	$ids = array_filter( array_map( 'sanitize_text_field', array_map( 'wp_unslash', $ids ) ) );
+	if ( empty( $ids ) ) wp_send_json_error();
+	$ok = 0; $ko = 0;
+	foreach ( (array) get_option( 'ag_prospects', array() ) as $p ) {
+		if ( ! in_array( $p['id'] ?? '', $ids, true ) ) continue;
+		if ( function_exists( 'ag_prospect_blocked' ) && ag_prospect_blocked( $p['status'] ?? '' ) ) continue; // jamais aux bloqués
+		$to = $p['phone_intl'] ?? ''; if ( '' === $to ) $to = $p['phone'] ?? '';
+		if ( '' === $to ) continue;
+		$has_site = function_exists( 'ag_site_kind' ) && 'real' === ag_site_kind( $p['website'] ?? '' )[0];
+		$vars = array(
+			'entreprise' => $p['name'] ?? '',
+			'ville'      => $p['city'] ?? '',
+			'angle'      => $has_site ? 'securite' : 'creation',
+		);
+		if ( ag_voice_call( $to, $vars ) ) $ok++; else $ko++;
+		usleep( 300000 ); // 0,3 s entre 2 lancements
+	}
+	if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '🤖 Robot vocal : ' . $ok . ' appel(s) lancé(s), ' . $ko . ' échec(s)' );
+	wp_send_json_success( array( 'ok' => $ok, 'ko' => $ko ) );
+} );
+
+/* ----------------------------------------------------- Réglages POST */
 add_action( 'admin_init', function () {
 	if ( isset( $_POST['ag_voice_save'] ) && check_admin_referer( 'ag_voice' ) ) {
+		if ( isset( $_POST['ag_voice_api_key'] ) ) update_option( 'ag_voice_api_key', sanitize_text_field( wp_unslash( $_POST['ag_voice_api_key'] ) ) );
+		if ( isset( $_POST['ag_voice_from'] ) )    update_option( 'ag_voice_from', sanitize_text_field( wp_unslash( $_POST['ag_voice_from'] ) ) );
 		if ( isset( $_POST['ag_voice_regen'] ) || '' === get_option( 'ag_voice_token', '' ) ) {
 			update_option( 'ag_voice_token', wp_generate_password( 24, false ) );
 		}
@@ -160,6 +217,20 @@ if ( ! function_exists( 'ag_voice_render' ) ) {
 		echo '<label><input type="checkbox" name="ag_voice_regen" value="1"> régénérer</label> <button name="ag_voice_save" value="1" class="button button-small">Enregistrer</button></form></td></tr>';
 		echo '</tbody></table>';
 		echo '<p class="description">Champs attendus (souples) : <code>phone</code> (numéro appelé), <code>outcome</code> (résultat), <code>summary</code> (résumé/transcript). Le jeton passe en <code>?token=…</code> ou header <code>X-AG-Token</code>.</p>';
+		echo '</div>';
+
+		// ── Lancer des appels depuis WordPress (API Retell) ──
+		$api  = get_option( 'ag_voice_api_key', '' );
+		$from = get_option( 'ag_voice_from', '' );
+		echo '<div style="max-width:900px;padding:16px 20px;background:#fff;border:1px solid #ccd0d4;border-radius:8px;margin:12px 0;">';
+		echo '<h2 style="margin-top:0;">1 bis. Lancer les appels depuis la liste des prospects</h2>';
+		echo '<p style="color:#50575e;">Renseigne ta <strong>clé API Retell</strong> et ton <strong>numéro émetteur</strong> → le bouton « 📞 Appeler au robot (sélection) » apparaît dans <strong>Prospection</strong>. Emma <strong>adapte son discours</strong> : prospect sans site → <em>création</em> ; avec site → <em>audit sécurité</em> (variable <code>{{angle}}</code>).</p>';
+		echo '<form method="post"><table class="form-table"><tbody>';
+		echo wp_nonce_field( 'ag_voice', '_wpnonce', true, false );
+		echo '<tr><th>Clé API Retell</th><td><input type="text" name="ag_voice_api_key" value="' . esc_attr( $api ) . '" style="width:420px" placeholder="key_..."><p class="description">Retell → Paramètres → API Keys.</p></td></tr>';
+		echo '<tr><th>Numéro émetteur (le numéro Retell)</th><td><input type="text" name="ag_voice_from" value="' . esc_attr( $from ) . '" style="width:240px" placeholder="+14632982363"><p class="description">Le numéro acheté dans Retell, attaché à l\'agent Emma.</p></td></tr>';
+		echo '</tbody></table><button name="ag_voice_save" value="1" class="button button-primary">Enregistrer</button> ';
+		echo '<span style="margin-left:10px;">État : ' . ( ag_voice_ready() ? '🟢 prêt à appeler' : '🔴 à configurer' ) . '</span></form>';
 		echo '</div>';
 
 		echo '<div style="max-width:900px;padding:16px 20px;background:#fff;border:1px solid #ccd0d4;border-radius:8px;margin:12px 0;">';

@@ -1815,6 +1815,8 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					<button type="button" id="ag-pick-mob" class="button button-small" title="Cocher tous les mobiles 06/07 (envoi SMS)">📱 Cocher les mobiles</button>
 					<button type="button" id="ag-pick-fix" class="button button-small" title="Cocher tous les fixes (pas de SMS — appel/robot vocal)">☎️ Cocher les fixes</button>
 					<button type="button" id="ag-sms-selected" class="button button-small" disabled <?php echo $ag_gw ? '' : 'title="Configure la Passerelle SMS"'; ?>>📲 Envoyer SMS (sélection)</button>
+					<?php $ag_voice_ok = function_exists( 'ag_voice_ready' ) && ag_voice_ready(); ?>
+					<button type="button" id="ag-voice-selected" class="button button-small" disabled <?php echo $ag_voice_ok ? '' : 'title="Configure le Robot vocal (Prospection → 🤖 Robot vocal)"'; ?>>📞 Appeler au robot (sélection)</button>
 					<button type="button" id="ag-del-selected" class="button button-small button-link-delete" disabled>🗑️ Supprimer la sélection (<span id="ag-sel-count">0</span>)</button>
 					<?php if ( ! $ag_gw ) : ?><span style="font-size:.8em;color:#b26a00;">📲 <a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-sms-gateway' ) ); ?>">Passerelle SMS</a> à activer pour l'envoi groupé.</span><?php endif; ?>
 				</div>
@@ -2014,8 +2016,9 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				var all=document.getElementById('ag-check-all'), all2=document.getElementById('ag-check-all2');
 				var delBtn=document.getElementById('ag-del-selected'), cntEl=document.getElementById('ag-sel-count');
 				var smsBtn=document.getElementById('ag-sms-selected'), gwReady=<?php echo ( function_exists( 'ag_sms_gateway_ready' ) && ag_sms_gateway_ready() ) ? 'true' : 'false'; ?>;
+				var voiceBtn=document.getElementById('ag-voice-selected'), voiceReady=<?php echo ( function_exists( 'ag_voice_ready' ) && ag_voice_ready() ) ? 'true' : 'false'; ?>;
 				function checks(){ return Array.prototype.slice.call(document.querySelectorAll('.ag-check')); }
-				function refresh(){ var n=checks().filter(function(c){return c.checked;}).length; if(cntEl)cntEl.textContent=n; if(delBtn)delBtn.disabled=(n===0); if(smsBtn)smsBtn.disabled=(n===0||!gwReady); }
+				function refresh(){ var n=checks().filter(function(c){return c.checked;}).length; if(cntEl)cntEl.textContent=n; if(delBtn)delBtn.disabled=(n===0); if(smsBtn)smsBtn.disabled=(n===0||!gwReady); if(voiceBtn)voiceBtn.disabled=(n===0||!voiceReady); }
 				if(smsBtn) smsBtn.addEventListener('click',function(){
 					var ids=checks().filter(function(c){return c.checked;}).map(function(c){return c.value;});
 					if(!ids.length) return;
@@ -2040,6 +2043,15 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					// décoche ce qui est masqué pour ne pas l'envoyer par erreur
 					checks().forEach(function(c){ if(!rowVisible(c)) c.checked=false; }); if(all)all.checked=false; if(all2)all2.checked=false; refresh();
 				}); });
+				if(voiceBtn) voiceBtn.addEventListener('click',function(){
+					var ids=checks().filter(function(c){return c.checked;}).map(function(c){return c.value;});
+					if(!ids.length) return;
+					if(!confirm('Lancer un appel du robot vocal vers les '+ids.length+' prospect(s) sélectionné(s) ? (Emma adapte création/sécurité selon le site)')) return;
+					var fd=new FormData(); fd.append('action','ag_prospect_voice_bulk'); fd.append('_n',nonce);
+					ids.forEach(function(id){ fd.append('ids[]',id); });
+					voiceBtn.disabled=true; voiceBtn.textContent='…';
+					fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ voiceBtn.textContent='📞 Appeler au robot (sélection)'; voiceBtn.disabled=false; alert(j&&j.success?('Appels lancés : '+j.data.ok+' / échecs : '+j.data.ko):(j&&j.data&&j.data.msg?j.data.msg:'Erreur')); }).catch(function(){ voiceBtn.disabled=false; });
+				});
 				if(delBtn) delBtn.addEventListener('click',function(){
 					var ids=checks().filter(function(c){return c.checked;}).map(function(c){return c.value;});
 					if(!ids.length) return;
