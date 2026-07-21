@@ -2,13 +2,13 @@
 /**
  * Template Name: Prospection Mobile (app)
  *
- * Outil de prospection pensé pour le téléphone (iPhone/Android), installable
- * en icône « app » sur l'écran d'accueil (PWA). Réutilise le moteur CRM :
- *  - Pavé « Numéro rapide » : coller un numéro → 📞 Appel direct / 💬 SMS prêt / 🟢 WhatsApp.
- *  - Mes prospects : liste attribuée (ag_prospects_for_owner) avec Appel/SMS/WhatsApp + statut.
- *  - Raccourci vers l'Espace Ambassadeur (recherche Google, zones, classement).
+ * VRAIE interface d'application (indépendante du thème WordPress) : barre d'onglets
+ * en bas, look natif, installable en icône iPhone (PWA). Outils : prospecter
+ * (numéro rapide + mes prospects), audits (SEO / sécurité), raccourcis.
+ * Tirer-pour-rafraîchir + bouton « remonter ».
  *
- * Réservé aux membres connectés (ambassadeur / admin).
+ * Réservé aux membres connectés (ambassadeur / admin). N'appelle PAS get_header()/get_footer()
+ * → aucune entête / menu / pied de page WordPress.
  */
 
 if ( ! is_user_logged_in() ) {
@@ -19,22 +19,12 @@ $ag_u = wp_get_current_user();
 if ( function_exists( 'ag_ensure_ambassador_for_user' ) ) {
 	ag_ensure_ambassador_for_user( $ag_u );
 }
-$ag_email = $ag_u->user_email;
+$ag_email    = $ag_u->user_email;
+$ag_prenom   = $ag_u->first_name ? $ag_u->first_name : ( $ag_u->display_name ? $ag_u->display_name : 'toi' );
+$ag_is_admin = current_user_can( 'manage_options' );
+$ag_icon     = get_stylesheet_directory_uri() . '/assets/images/logo-carte-square.jpg';
 
-/* En-tête « app » (icône écran d'accueil iOS + plein écran). */
-add_action( 'wp_head', function () {
-	$icon = get_stylesheet_directory_uri() . '/assets/images/logo-carte-square.jpg';
-	echo '<meta name="apple-mobile-web-app-capable" content="yes">' . "\n";
-	echo '<meta name="mobile-web-app-capable" content="yes">' . "\n";
-	echo '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">' . "\n";
-	echo '<meta name="apple-mobile-web-app-title" content="Prospection">' . "\n";
-	echo '<meta name="theme-color" content="#0b0b0f">' . "\n";
-	echo '<link rel="apple-touch-icon" href="' . esc_url( $icon ) . '">' . "\n";
-}, 5 );
-
-get_header();
-
-$ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_sale_link( $ag_email ) : home_url( '/sites-express' );
+$ag_sale_link   = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_sale_link( $ag_email ) : home_url( '/sites-express' );
 $ag_default_msg = "Bonjour, je suis de l'agence Alliance Groupe. On aide les entreprises à avoir un site web pro (et on en offre un chaque mois). Est-ce que je peux vous en dire plus ? " . $ag_sale_link;
 
 $ag_my_prospects = function_exists( 'ag_prospects_for_owner' ) ? ag_prospects_for_owner( $ag_email ) : array();
@@ -43,171 +33,274 @@ $ag_ppost        = admin_url( 'admin-post.php' );
 $ag_pnonce       = wp_nonce_field( 'ag_amb_prospect', '_n', true, false );
 $ag_ajax_url     = admin_url( 'admin-ajax.php' );
 $ag_ajax_nonce   = wp_create_nonce( 'ag_amb_prospect' );
-?>
-<style>
-	#agpm { max-width:640px; margin:0 auto; padding:14px 12px 90px; }
-	#agpm h1 { font-size:1.5rem; margin:6px 0 2px; text-align:center; }
-	#agpm .agpm-sub { text-align:center; color:var(--color-text-soft,#9a9aa2); font-size:.9rem; margin-bottom:16px; }
-	#agpm .agpm-card { background:rgba(255,255,255,.05); border:1px solid rgba(212,180,92,.28); border-radius:16px; padding:16px; margin-bottom:16px; }
-	#agpm .agpm-card h2 { font-size:1.05rem; margin:0 0 12px; }
-	#agpm input[type=tel], #agpm textarea { width:100%; box-sizing:border-box; background:rgba(0,0,0,.25); color:#fff; border:1px solid rgba(212,180,92,.35); border-radius:12px; padding:13px; font-size:1.05rem; }
-	#agpm textarea { margin-top:10px; min-height:92px; resize:vertical; font-size:.95rem; }
-	#agpm .agpm-actions { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:12px; }
-	#agpm .agpm-btn { display:flex; align-items:center; justify-content:center; gap:6px; padding:15px 6px; border-radius:14px; font-weight:800; font-size:1rem; text-decoration:none; border:none; cursor:pointer; color:#0b0b0f; }
-	#agpm .agpm-btn.call { background:#2ecc71; color:#062814; }
-	#agpm .agpm-btn.sms  { background:#3aa3ff; color:#04203f; }
-	#agpm .agpm-btn.wa   { background:#25d366; color:#062814; }
-	#agpm .agpm-btn[disabled]{ opacity:.4; pointer-events:none; }
-	#agpm .agpm-plist { list-style:none; margin:0; padding:0; }
-	#agpm .agpm-p { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:12px; margin-bottom:10px; }
-	#agpm .agpm-p .nm { font-weight:800; }
-	#agpm .agpm-p .why { font-size:.82rem; color:var(--color-text-soft,#9a9aa2); margin:3px 0 9px; }
-	#agpm .agpm-p .row { display:flex; flex-wrap:wrap; gap:7px; align-items:center; }
-	#agpm .agpm-p a.mini, #agpm .agpm-p select { padding:9px 12px; border-radius:11px; font-weight:700; font-size:.9rem; text-decoration:none; border:1px solid rgba(212,180,92,.4); color:#fff; background:rgba(212,180,92,.12); }
-	#agpm .agpm-p select { background:#15151b; }
-	#agpm .agpm-hint { text-align:center; font-size:.82rem; color:var(--color-text-soft,#9a9aa2); background:rgba(58,163,255,.1); border:1px solid rgba(58,163,255,.3); border-radius:12px; padding:11px; }
-	#agpm .agpm-big { display:block; text-align:center; background:linear-gradient(135deg,#d4b45c,#b98f2f); color:#0b0b0f; font-weight:800; padding:15px; border-radius:14px; text-decoration:none; }
-	#agpm .agpm-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:14px; }
-	#agpm .agpm-stat { text-decoration:none; color:#fff; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:12px 4px; text-align:center; display:flex; flex-direction:column; gap:2px; }
-	#agpm .agpm-stat b { font-size:1.5rem; line-height:1; }
-	#agpm .agpm-stat span { font-size:.66rem; color:var(--color-text-soft,#9a9aa2); }
-	#agpm .agpm-stat.s-todo b { color:#ff6b6b; } #agpm .agpm-stat.s-done b { color:#3aa3ff; }
-	#agpm .agpm-stat.s-hot b { color:#e6b35a; } #agpm .agpm-stat.s-cli b { color:#2ecc71; }
-	#agpm .agpm-launch { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin-bottom:18px; }
-	#agpm .agpm-launch a { text-decoration:none; color:#fff; background:rgba(212,180,92,.1); border:1px solid rgba(212,180,92,.32); border-radius:15px; padding:14px 4px; text-align:center; font-weight:700; font-size:.8rem; display:flex; flex-direction:column; align-items:center; gap:6px; }
-	#agpm .agpm-launch a span { font-size:1.6rem; line-height:1; }
-</style>
 
-<main id="agpm">
+$ag_cnt = array( 'total' => 0, 'a_contacter' => 0, 'contacte' => 0, 'repondeur' => 0, 'interesse' => 0, 'client' => 0 );
+foreach ( $ag_my_prospects as $ppc ) {
+	$sc = $ppc['status'] ?? 'nouveau';
+	if ( in_array( $sc, array( 'refus', 'ne_pas_contacter' ), true ) ) { continue; }
+	$ag_cnt['total']++;
+	if ( 'nouveau' === $sc ) { $ag_cnt['a_contacter']++; }
+	elseif ( in_array( $sc, array( 'contacte', 'relance' ), true ) ) { $ag_cnt['contacte']++; }
+	elseif ( 'repondeur' === $sc ) { $ag_cnt['repondeur']++; }
+	elseif ( 'interesse' === $sc ) { $ag_cnt['interesse']++; }
+	elseif ( 'client' === $sc ) { $ag_cnt['client']++; }
+}
+?><!DOCTYPE html>
+<html <?php language_attributes(); ?>>
+<head>
+	<meta charset="<?php bloginfo( 'charset' ); ?>">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="apple-mobile-web-app-title" content="Alliance Pro">
+	<meta name="theme-color" content="#0b0b0f">
+	<link rel="apple-touch-icon" href="<?php echo esc_url( $ag_icon ); ?>">
+	<title>Alliance Pro — Prospection</title>
+	<style>
+		:root{ --gold:#d4b45c; --bg:#0b0b0f; --card:#16161d; --line:rgba(255,255,255,.09); --soft:#9a9aa2; --hot:#e6b35a; }
+		*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+		html,body{ margin:0; padding:0; background:var(--bg); color:#fff; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+		a{ color:inherit; text-decoration:none; }
+		#ptr{ height:0; overflow:hidden; display:flex; align-items:flex-end; justify-content:center; color:var(--soft); font-size:.85rem; transition:height .15s,opacity .15s; opacity:0; padding-bottom:6px; }
+		#ptr.ready{ color:var(--gold); }
+		.appbar{ position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:10px; padding:calc(env(safe-area-inset-top) + 10px) 16px 10px; background:rgba(11,11,15,.86); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
+		.appbar img{ width:30px; height:30px; border-radius:8px; }
+		.appbar b{ font-size:1.05rem; letter-spacing:.3px; }
+		.appbar b span{ color:var(--gold); }
+		.wrap{ max-width:680px; margin:0 auto; padding:16px 14px 100px; }
+		.view{ display:none; }
+		.view.on{ display:block; animation:fade .25s ease; }
+		@keyframes fade{ from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+		h2.sec{ font-size:1.15rem; margin:2px 0 12px; }
+		.hi{ font-size:1.35rem; font-weight:800; margin:4px 0 2px; }
+		.hi span{ color:var(--gold); }
+		.sub{ color:var(--soft); font-size:.9rem; margin:0 0 16px; }
+		.stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin-bottom:16px; }
+		.stat{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:13px 6px; text-align:center; }
+		.stat b{ display:block; font-size:1.6rem; line-height:1; }
+		.stat span{ font-size:.68rem; color:var(--soft); }
+		.stat.todo b{color:#ff6b6b} .stat.done b{color:#3aa3ff} .stat.rep b{color:#c58bff} .stat.hot b{color:var(--hot)} .stat.cli b{color:#2ecc71}
+		.launch{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+		.launch a{ background:rgba(212,180,92,.09); border:1px solid rgba(212,180,92,.28); border-radius:16px; padding:15px 5px; text-align:center; font-weight:700; font-size:.78rem; display:flex; flex-direction:column; align-items:center; gap:7px; }
+		.launch a i{ font-size:1.7rem; font-style:normal; }
+		.card{ background:var(--card); border:1px solid var(--line); border-radius:18px; padding:16px; margin-bottom:14px; }
+		.card h3{ margin:0 0 12px; font-size:1.02rem; }
+		input[type=tel],input[type=url],textarea{ width:100%; background:rgba(0,0,0,.3); color:#fff; border:1px solid rgba(212,180,92,.32); border-radius:13px; padding:14px; font-size:1.05rem; }
+		textarea{ margin-top:10px; min-height:90px; resize:vertical; font-size:.95rem; }
+		.acts{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:12px; }
+		.b{ display:flex; align-items:center; justify-content:center; gap:5px; padding:15px 4px; border-radius:14px; font-weight:800; font-size:.98rem; border:none; cursor:pointer; }
+		.b.call{ background:#2ecc71; color:#062814; } .b.sms{ background:#3aa3ff; color:#04203f; } .b.wa{ background:#25d366; color:#062814; }
+		.b[disabled]{ opacity:.38; pointer-events:none; }
+		.b.gold{ background:linear-gradient(135deg,#d4b45c,#b98f2f); color:#0b0b0f; width:100%; }
+		.p{ background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:14px; padding:12px; margin-bottom:10px; }
+		.p .nm{ font-weight:800; }
+		.p .why{ font-size:.8rem; color:var(--soft); margin:3px 0 9px; }
+		.p .row{ display:flex; flex-wrap:wrap; gap:7px; align-items:center; }
+		.p a.mini,.p select{ padding:9px 12px; border-radius:11px; font-weight:700; font-size:.88rem; border:1px solid rgba(212,180,92,.4); color:#fff; background:rgba(212,180,92,.12); }
+		.p select{ background:#15151b; }
+		.link{ display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:15px; margin-bottom:10px; font-weight:600; }
+		.link i{ font-style:normal; font-size:1.4rem; } .link b{ display:block; } .link span{ color:var(--soft); font-size:.8rem; font-weight:400; }
+		.link .arr{ margin-left:auto; color:var(--soft); }
+		.hint{ text-align:center; font-size:.8rem; color:var(--soft); background:rgba(58,163,255,.09); border:1px solid rgba(58,163,255,.28); border-radius:13px; padding:12px; margin-top:6px; }
+		.tabbar{ position:fixed; left:0; right:0; bottom:0; z-index:30; display:flex; background:rgba(16,16,22,.94); backdrop-filter:blur(12px); border-top:1px solid var(--line); padding-bottom:env(safe-area-inset-bottom); }
+		.tabbar a{ flex:1; text-align:center; padding:9px 2px 8px; color:var(--soft); font-size:.66rem; font-weight:600; }
+		.tabbar a i{ display:block; font-size:1.35rem; font-style:normal; margin-bottom:2px; filter:grayscale(1) opacity(.7); }
+		.tabbar a.active{ color:var(--gold); } .tabbar a.active i{ filter:none; }
+		#toTop{ position:fixed; right:16px; bottom:calc(70px + env(safe-area-inset-bottom)); z-index:25; width:46px; height:46px; border-radius:50%; background:var(--gold); color:#0b0b0f; border:none; font-size:1.3rem; display:none; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,.4); cursor:pointer; }
+	</style>
+</head>
+<body>
+<div id="ptr">↓ Tire pour rafraîchir</div>
 
-	<h1>🎯 Prospection</h1>
-	<p class="agpm-sub">Appelle, envoie un SMS prêt, ou cherche des clients — direct depuis ton téléphone.</p>
+<header class="appbar">
+	<img src="<?php echo esc_url( $ag_icon ); ?>" alt="">
+	<b>Alliance <span>Pro</span></b>
+</header>
 
-	<!-- Tableau de bord -->
-	<?php
-	$ag_cnt = array( 'total' => 0, 'a_contacter' => 0, 'contacte' => 0, 'interesse' => 0, 'client' => 0 );
-	foreach ( $ag_my_prospects as $ppc ) {
-		$sc = $ppc['status'] ?? 'nouveau';
-		if ( in_array( $sc, array( 'refus', 'ne_pas_contacter' ), true ) ) { continue; }
-		$ag_cnt['total']++;
-		if ( 'nouveau' === $sc ) { $ag_cnt['a_contacter']++; }
-		elseif ( in_array( $sc, array( 'contacte', 'relance' ), true ) ) { $ag_cnt['contacte']++; }
-		elseif ( 'interesse' === $sc ) { $ag_cnt['interesse']++; }
-		elseif ( 'client' === $sc ) { $ag_cnt['client']++; }
-	}
-	?>
-	<div class="agpm-stats">
-		<a class="agpm-stat s-todo" href="#prospects"><b><?php echo (int) $ag_cnt['a_contacter']; ?></b><span>À contacter</span></a>
-		<a class="agpm-stat s-done" href="#prospects"><b><?php echo (int) $ag_cnt['contacte']; ?></b><span>Contactés</span></a>
-		<a class="agpm-stat s-hot"  href="#prospects"><b><?php echo (int) $ag_cnt['interesse']; ?></b><span>🔥 Intéressés</span></a>
-		<a class="agpm-stat s-cli"  href="#prospects"><b><?php echo (int) $ag_cnt['client']; ?></b><span>✅ Clients</span></a>
-	</div>
-	<div class="agpm-launch">
-		<a href="#numero"><span>📞</span>Numéro rapide</a>
-		<a href="#prospects"><span>🎯</span>Mes prospects</a>
-		<a href="<?php echo esc_url( home_url( '/espace-ambassadeur' ) ); ?>#chercher"><span>🔎</span>Chercher</a>
-		<a href="https://calendar.google.com/" target="_blank" rel="noopener"><span>📅</span>Mon agenda</a>
-		<a href="<?php echo esc_url( home_url( '/classement' ) ); ?>"><span>🏆</span>Classement</a>
-		<a href="<?php echo esc_url( home_url( '/espace-ambassadeur' ) ); ?>"><span>🏠</span>Mon espace</a>
-	</div>
+<div class="wrap">
 
-	<!-- Pavé numéro rapide -->
-	<div class="agpm-card" id="numero">
-		<h2>📱 Numéro rapide</h2>
-		<input type="tel" id="agpm-num" inputmode="tel" placeholder="Ex : 06 12 34 56 78" autocomplete="off">
-		<textarea id="agpm-msg" placeholder="Message SMS / WhatsApp"><?php echo esc_textarea( $ag_default_msg ); ?></textarea>
-		<div class="agpm-actions">
-			<a href="#" id="agpm-call" class="agpm-btn call" disabled>📞 Appeler</a>
-			<a href="#" id="agpm-sms"  class="agpm-btn sms"  disabled>💬 SMS</a>
-			<a href="#" id="agpm-wa"   class="agpm-btn wa"   disabled>🟢 WhatsApp</a>
+	<!-- ACCUEIL -->
+	<section class="view on" id="view-accueil">
+		<p class="hi">Salut <span><?php echo esc_html( $ag_prenom ); ?></span> 👋</p>
+		<p class="sub">Ton tableau de bord de prospection.</p>
+		<div class="stats">
+			<a class="stat todo" href="#" onclick="AG.tab('prospecter');return false"><b><?php echo (int) $ag_cnt['a_contacter']; ?></b><span>À contacter</span></a>
+			<a class="stat done" href="#" onclick="AG.tab('prospecter');return false"><b><?php echo (int) $ag_cnt['contacte']; ?></b><span>Contactés</span></a>
+			<a class="stat rep" href="#" onclick="AG.tab('prospecter');return false"><b><?php echo (int) $ag_cnt['repondeur']; ?></b><span>📵 Répondeur</span></a>
+			<a class="stat hot" href="#" onclick="AG.tab('prospecter');return false"><b><?php echo (int) $ag_cnt['interesse']; ?></b><span>🔥 Intéressés</span></a>
+			<a class="stat cli" href="#" onclick="AG.tab('prospecter');return false"><b><?php echo (int) $ag_cnt['client']; ?></b><span>✅ Clients</span></a>
+			<a class="stat" href="#" onclick="AG.tab('prospecter');return false"><b><?php echo (int) $ag_cnt['total']; ?></b><span>Total actifs</span></a>
 		</div>
-	</div>
+		<div class="launch">
+			<a href="#" onclick="AG.tab('prospecter');return false"><i>📞</i>Numéro rapide</a>
+			<a href="#" onclick="AG.tab('prospecter');return false"><i>🎯</i>Mes prospects</a>
+			<a href="#" onclick="AG.tab('audit');return false"><i>🛡️</i>Audit</a>
+			<a href="<?php echo esc_url( home_url( '/espace-ambassadeur' ) ); ?>#chercher"><i>🔎</i>Chercher</a>
+			<a href="<?php echo esc_url( home_url( '/classement' ) ); ?>"><i>🏆</i>Classement</a>
+			<a href="#" onclick="AG.tab('outils');return false"><i>🧰</i>Outils</a>
+		</div>
+	</section>
 
-	<!-- Mes prospects -->
-	<div class="agpm-card" id="prospects">
-		<h2>Mes prospects à contacter (<?php echo (int) $ag_cnt['total']; ?>)</h2>
-		<?php if ( ! $ag_my_prospects ) : ?>
-			<p class="agpm-sub" style="margin:0;">Aucun prospect pour l'instant. Utilise la recherche dans l'Espace, ou tes prospects de zone arriveront automatiquement.</p>
-		<?php else : ?>
-			<ul class="agpm-plist">
-			<?php foreach ( $ag_my_prospects as $pp ) :
-				$pstatus = $pp['status'] ?? 'nouveau';
-				if ( in_array( $pstatus, array( 'refus', 'ne_pas_contacter' ), true ) ) { continue; }
-				$pid   = $pp['id'] ?? '';
-				$pmsg  = function_exists( 'ag_prospect_message' ) ? ag_prospect_message( $pp, $ag_sale_link ) : $ag_default_msg;
-				$pdig  = function_exists( 'ag_wa_number' ) ? ag_wa_number( $pp['phone'] ?? '', $pp['phone_intl'] ?? '' ) : preg_replace( '/[^0-9]/', '', $pp['phone'] ?? '' );
-				$pwa   = $pdig ? 'https://wa.me/' . $pdig . '?text=' . rawurlencode( $pmsg ) : '';
-				$psnum = preg_replace( '/[^0-9+]/', '', $pp['phone_intl'] ?? '' ) ?: preg_replace( '/[^0-9+]/', '', $pp['phone'] ?? '' );
-				$psms  = $psnum ? 'sms:' . $psnum . '?body=' . rawurlencode( $pmsg ) : '';
-				$ptel  = ! empty( $pp['phone'] ) ? 'tel:' . preg_replace( '/[^0-9+]/', '', $pp['phone'] ) : '';
-			?>
-				<li class="agpm-p">
-					<div class="nm"><?php echo esc_html( $pp['name'] ?? '' ); ?></div>
-					<div class="why"><?php echo esc_html( ( ! empty( $pp['city'] ) ? $pp['city'] . ' · ' : '' ) . ( function_exists( 'ag_prospect_why' ) ? ag_prospect_why( $pp ) : '' ) ); ?></div>
-					<div class="row">
-						<?php if ( $ptel ) : ?><a class="mini ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="Appel" href="<?php echo esc_attr( $ptel ); ?>">📞 Appeler</a><?php endif; ?>
-						<?php if ( $psms ) : ?><a class="mini ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="SMS" href="<?php echo esc_attr( $psms ); ?>">💬 SMS</a><?php endif; ?>
-						<?php if ( $pwa ) : ?><a class="mini ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="WhatsApp" href="<?php echo esc_url( $pwa ); ?>" target="_blank" rel="noopener">🟢 WhatsApp</a><?php endif; ?>
-						<form method="post" action="<?php echo esc_url( $ag_ppost ); ?>" style="margin:0;">
-							<input type="hidden" name="action" value="ag_amb_prospect_status">
-							<?php echo $ag_pnonce; // phpcs:ignore ?>
-							<input type="hidden" name="id" value="<?php echo esc_attr( $pid ); ?>">
-							<select name="status" onchange="this.form.submit()">
-								<?php foreach ( $ag_pstat as $sk => $sl ) : ?><option value="<?php echo esc_attr( $sk ); ?>" <?php selected( $pstatus, $sk ); ?>><?php echo esc_html( $sl ); ?></option><?php endforeach; ?>
-							</select>
-						</form>
+	<!-- PROSPECTER -->
+	<section class="view" id="view-prospecter">
+		<h2 class="sec">🎯 Prospecter</h2>
+		<div class="card">
+			<h3>📱 Numéro rapide</h3>
+			<input type="tel" id="ag-num" inputmode="tel" placeholder="Ex : 06 12 34 56 78" autocomplete="off">
+			<textarea id="ag-msg"><?php echo esc_textarea( $ag_default_msg ); ?></textarea>
+			<div class="acts">
+				<a href="#" id="ag-call" class="b call" disabled>📞 Appeler</a>
+				<a href="#" id="ag-sms" class="b sms" disabled>💬 SMS</a>
+				<a href="#" id="ag-wa" class="b wa" disabled>🟢 WA</a>
+			</div>
+		</div>
+		<div class="card">
+			<h3>Mes prospects (<?php echo (int) $ag_cnt['total']; ?>)</h3>
+			<?php if ( ! $ag_my_prospects ) : ?>
+				<p class="sub" style="margin:0;">Aucun prospect pour l'instant. Cherche des entreprises ou attends tes prospects de zone (auto).</p>
+			<?php else : ?>
+				<?php foreach ( $ag_my_prospects as $pp ) :
+					$pstatus = $pp['status'] ?? 'nouveau';
+					if ( in_array( $pstatus, array( 'refus', 'ne_pas_contacter' ), true ) ) { continue; }
+					$pid   = $pp['id'] ?? '';
+					$pmsg  = function_exists( 'ag_prospect_message' ) ? ag_prospect_message( $pp, $ag_sale_link ) : $ag_default_msg;
+					$pdig  = function_exists( 'ag_wa_number' ) ? ag_wa_number( $pp['phone'] ?? '', $pp['phone_intl'] ?? '' ) : preg_replace( '/[^0-9]/', '', $pp['phone'] ?? '' );
+					$pwa   = $pdig ? 'https://wa.me/' . $pdig . '?text=' . rawurlencode( $pmsg ) : '';
+					$psnum = preg_replace( '/[^0-9+]/', '', $pp['phone_intl'] ?? '' ) ?: preg_replace( '/[^0-9+]/', '', $pp['phone'] ?? '' );
+					$psms  = $psnum ? 'sms:' . $psnum . '?body=' . rawurlencode( $pmsg ) : '';
+					$ptel  = ! empty( $pp['phone'] ) ? 'tel:' . preg_replace( '/[^0-9+]/', '', $pp['phone'] ) : '';
+				?>
+					<div class="p">
+						<div class="nm"><?php echo esc_html( $pp['name'] ?? '' ); ?></div>
+						<div class="why"><?php echo esc_html( ( ! empty( $pp['city'] ) ? $pp['city'] . ' · ' : '' ) . ( function_exists( 'ag_prospect_why' ) ? ag_prospect_why( $pp ) : '' ) ); ?></div>
+						<div class="row">
+							<?php if ( $ptel ) : ?><a class="mini ag-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="Appel" href="<?php echo esc_attr( $ptel ); ?>">📞</a><?php endif; ?>
+							<?php if ( $psms ) : ?><a class="mini ag-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="SMS" href="<?php echo esc_attr( $psms ); ?>">💬</a><?php endif; ?>
+							<?php if ( $pwa ) : ?><a class="mini ag-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="WhatsApp" href="<?php echo esc_url( $pwa ); ?>" target="_blank" rel="noopener">🟢</a><?php endif; ?>
+							<form method="post" action="<?php echo esc_url( $ag_ppost ); ?>" style="margin:0;">
+								<input type="hidden" name="action" value="ag_amb_prospect_status">
+								<?php echo $ag_pnonce; // phpcs:ignore ?>
+								<input type="hidden" name="id" value="<?php echo esc_attr( $pid ); ?>">
+								<select name="status" onchange="this.form.submit()">
+									<?php foreach ( $ag_pstat as $sk => $sl ) : ?><option value="<?php echo esc_attr( $sk ); ?>" <?php selected( $pstatus, $sk ); ?>><?php echo esc_html( $sl ); ?></option><?php endforeach; ?>
+								</select>
+							</form>
+						</div>
 					</div>
-				</li>
-			<?php endforeach; ?>
-			</ul>
+				<?php endforeach; ?>
+			<?php endif; ?>
+		</div>
+		<a class="b gold" href="<?php echo esc_url( home_url( '/espace-ambassadeur' ) ); ?>#chercher" style="text-align:center;">🔎 Chercher de nouveaux prospects</a>
+	</section>
+
+	<!-- AUDIT -->
+	<section class="view" id="view-audit">
+		<h2 class="sec">🛡️ Audits</h2>
+		<div class="card">
+			<h3>Auditer un site</h3>
+			<p class="sub" style="margin:-4px 0 10px;">Un argument en or pour vendre : montre au prospect ce qui ne va pas sur son site.</p>
+			<input type="url" id="ag-audit-url" inputmode="url" placeholder="https://site-du-prospect.fr" autocomplete="off">
+			<div style="display:grid;gap:9px;margin-top:12px;">
+				<a class="b gold" id="ag-audit-secu" href="<?php echo esc_url( home_url( '/audit-securite' ) ); ?>" target="_blank" rel="noopener">🛡️ Audit sécurité</a>
+				<a class="b gold" id="ag-audit-seo" href="<?php echo esc_url( home_url( '/audit-seo' ) ); ?>" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#3aa3ff,#1f6fd0);color:#fff;">🔎 Audit SEO</a>
+			</div>
+		</div>
+		<?php if ( $ag_is_admin ) : ?>
+		<a class="link" href="<?php echo esc_url( admin_url( 'admin.php?page=ag-espace-audit' ) ); ?>"><i>🧰</i><span><b>Générateur d'audit (pro)</b><span>Commandes + rapport détaillé — admin</span></span><span class="arr">→</span></a>
 		<?php endif; ?>
-	</div>
+	</section>
 
-	<!-- Recherche : renvoi vers l'espace complet -->
-	<div class="agpm-card">
-		<h2>🔎 Chercher de nouveaux prospects</h2>
-		<p class="agpm-sub" style="margin:0 0 12px;">Recherche Google par métier + ville, zones, classement et outils complets dans ton Espace.</p>
-		<a class="agpm-big" href="<?php echo esc_url( home_url( '/espace-ambassadeur' ) ); ?>#chercher">Ouvrir l'Espace Ambassadeur →</a>
-	</div>
+	<!-- OUTILS -->
+	<section class="view" id="view-outils">
+		<h2 class="sec">🧰 Outils</h2>
+		<a class="link" href="<?php echo esc_url( home_url( '/espace-ambassadeur' ) ); ?>"><i>🏠</i><span><b>Mon espace complet</b><span>Zones, recherche, programme, gains</span></span><span class="arr">→</span></a>
+		<a class="link" href="<?php echo esc_url( home_url( '/classement' ) ); ?>"><i>🏆</i><span><b>Classement</b><span>Ta place dans l'équipe</span></span><span class="arr">→</span></a>
+		<?php if ( $ag_is_admin ) : ?>
+		<a class="link" href="<?php echo esc_url( admin_url( 'admin.php?page=ag-voice-log' ) ); ?>"><i>📞</i><span><b>Journal des appels</b><span>Tous les appels du robot + retranscription</span></span><span class="arr">→</span></a>
+		<a class="link" href="<?php echo esc_url( admin_url( 'admin.php?page=ag-voice' ) ); ?>"><i>🤖</i><span><b>Robot vocal</b><span>Réglages Emma + pont agenda</span></span><span class="arr">→</span></a>
+		<a class="link" href="<?php echo esc_url( admin_url( 'admin.php?page=ag-prospects' ) ); ?>"><i>📇</i><span><b>CRM Prospection (complet)</b><span>Recherche, filtres, agent auto</span></span><span class="arr">→</span></a>
+		<?php endif; ?>
+		<a class="link" href="<?php echo esc_url( wp_logout_url( home_url( '/connexion' ) ) ); ?>"><i>🚪</i><span><b>Déconnexion</b></span><span class="arr">→</span></a>
+		<p class="hint">💡 <strong>Installer l'app :</strong> Safari → bouton Partager ↑ → « Sur l'écran d'accueil ». Icône « Alliance Pro » en plein écran.</p>
+	</section>
 
-	<p class="agpm-hint">💡 <strong>Installer en app sur ton iPhone :</strong> ouvre cette page dans <strong>Safari</strong> → bouton <strong>Partager</strong> (carré avec flèche ↑) → <strong>« Sur l'écran d'accueil »</strong>. Une icône « Prospection » apparaît, en plein écran comme une vraie app.</p>
+</div>
 
-</main>
+<button id="toTop" aria-label="Remonter">↑</button>
+
+<nav class="tabbar">
+	<a href="#" data-t="accueil" class="active" onclick="AG.tab('accueil');return false"><i>🏠</i>Accueil</a>
+	<a href="#" data-t="prospecter" onclick="AG.tab('prospecter');return false"><i>🎯</i>Prospecter</a>
+	<a href="#" data-t="audit" onclick="AG.tab('audit');return false"><i>🛡️</i>Audit</a>
+	<a href="#" data-t="outils" onclick="AG.tab('outils');return false"><i>🧰</i>Outils</a>
+</nav>
 
 <script>
-(function(){
-	var num = document.getElementById('agpm-num'),
-	    msg = document.getElementById('agpm-msg'),
-	    bCall = document.getElementById('agpm-call'),
-	    bSms  = document.getElementById('agpm-sms'),
-	    bWa   = document.getElementById('agpm-wa');
-
-	function telNum(v){ return (v||'').replace(/[^0-9+]/g,''); }
-	function waNum(v){ var n=(v||'').replace(/[^0-9]/g,''); if(n.charAt(0)==='0'){ n='33'+n.substring(1); } return n; }
-	function refresh(){
-		var t=telNum(num.value), ok=t.replace(/\D/g,'').length>=6, m=encodeURIComponent(msg.value||'');
-		[bCall,bSms,bWa].forEach(function(b){ if(ok){ b.removeAttribute('disabled'); } else { b.setAttribute('disabled','disabled'); } });
-		if(!ok){ return; }
-		bCall.setAttribute('href','tel:'+t);
-		bSms.setAttribute('href','sms:'+t+'?body='+m);
-		bWa.setAttribute('href','https://wa.me/'+waNum(num.value)+'?text='+m);
+var AG = (function(){
+	function tab(id){
+		document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); });
+		var el=document.getElementById('view-'+id); if(el){ el.classList.add('on'); }
+		document.querySelectorAll('.tabbar a').forEach(function(a){ a.classList.toggle('active', a.getAttribute('data-t')===id); });
+		window.scrollTo(0,0);
 	}
-	num.addEventListener('input', refresh);
-	msg.addEventListener('input', refresh);
-	refresh();
+	return { tab: tab };
+})();
 
-	// Note automatique du contact (réutilise l'AJAX de l'espace).
+(function(){
+	// Numéro rapide
+	var num=document.getElementById('ag-num'), msg=document.getElementById('ag-msg'),
+	    bC=document.getElementById('ag-call'), bS=document.getElementById('ag-sms'), bW=document.getElementById('ag-wa');
+	function telN(v){ return (v||'').replace(/[^0-9+]/g,''); }
+	function waN(v){ var n=(v||'').replace(/[^0-9]/g,''); if(n.charAt(0)==='0'){ n='33'+n.substring(1); } return n; }
+	function refresh(){
+		var t=telN(num.value), ok=t.replace(/\D/g,'').length>=6, m=encodeURIComponent(msg.value||'');
+		[bC,bS,bW].forEach(function(b){ ok?b.removeAttribute('disabled'):b.setAttribute('disabled','disabled'); });
+		if(!ok) return;
+		bC.setAttribute('href','tel:'+t);
+		bS.setAttribute('href','sms:'+t+'?body='+m);
+		bW.setAttribute('href','https://wa.me/'+waN(num.value)+'?text='+m);
+	}
+	if(num){ num.addEventListener('input',refresh); msg.addEventListener('input',refresh); refresh(); }
+
+	// Audit : ouvre la page d'audit (le prospect y saisit / on garde l'URL en presse-papier)
+	var au=document.getElementById('ag-audit-url');
+	if(au){
+		document.getElementById('ag-audit-secu').addEventListener('click',function(){ if(au.value){ try{navigator.clipboard.writeText(au.value);}catch(e){} } });
+		document.getElementById('ag-audit-seo').addEventListener('click',function(){ if(au.value){ try{navigator.clipboard.writeText(au.value);}catch(e){} } });
+	}
+
+	// Note auto du contact
 	var AJAX='<?php echo esc_js( $ag_ajax_url ); ?>', N='<?php echo esc_js( $ag_ajax_nonce ); ?>';
-	document.querySelectorAll('.ag-amb-touch').forEach(function(a){
-		a.addEventListener('click', function(){
-			var id=a.getAttribute('data-id'), ch=a.getAttribute('data-channel');
-			if(!id){ return; }
+	document.querySelectorAll('.ag-touch').forEach(function(a){
+		a.addEventListener('click',function(){
+			var id=a.getAttribute('data-id'), ch=a.getAttribute('data-channel'); if(!id) return;
 			var fd=new FormData(); fd.append('action','ag_amb_touch'); fd.append('_n',N); fd.append('id',id); fd.append('channel',ch);
 			fetch(AJAX,{method:'POST',body:fd,credentials:'same-origin'}).catch(function(){});
 		});
 	});
+
+	// Bouton remonter
+	var top=document.getElementById('toTop');
+	window.addEventListener('scroll',function(){ top.style.display = window.scrollY>320?'flex':'none'; },{passive:true});
+	top.addEventListener('click',function(){ window.scrollTo({top:0,behavior:'smooth'}); });
+
+	// Tirer-pour-rafraîchir
+	var ptr=document.getElementById('ptr'), sy=0, pulling=false;
+	window.addEventListener('touchstart',function(e){ if(window.scrollY<=0){ sy=e.touches[0].clientY; pulling=true; } },{passive:true});
+	window.addEventListener('touchmove',function(e){
+		if(!pulling) return;
+		var dy=e.touches[0].clientY - sy;
+		if(dy>0 && window.scrollY<=0){ var h=Math.min(dy,80); ptr.style.height=h+'px'; ptr.style.opacity=Math.min(dy/80,1); ptr.classList.toggle('ready',dy>65); ptr.textContent = dy>65 ? '↻ Relâche pour rafraîchir' : '↓ Tire pour rafraîchir'; }
+	},{passive:true});
+	window.addEventListener('touchend',function(){
+		if(pulling && ptr.classList.contains('ready')){ ptr.textContent='↻ Actualisation…'; location.reload(); }
+		else { ptr.style.height='0'; ptr.style.opacity='0'; }
+		pulling=false;
+	});
 })();
 </script>
-
+</body>
+</html>
 <?php
-get_footer();
+exit;

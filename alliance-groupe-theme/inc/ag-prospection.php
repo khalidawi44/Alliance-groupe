@@ -2288,7 +2288,7 @@ add_action( 'admin_post_ag_amb_prospect_status', function () {
 	if ( in_array( $st, array( 'interesse', 'client' ), true ) && function_exists( 'ag_push' ) ) {
 		ag_push( ( 'client' === $st ? '✅ Vente : ' : '🔥 Intéressé : ' ) . $pname, 'Mis à jour par ' . ( wp_get_current_user()->display_name ?: $email ) . '.' );
 	}
-	wp_safe_redirect( home_url( '/espace-ambassadeur#prospects' ) ); exit;
+	$ref = wp_get_referer(); wp_safe_redirect( $ref ? $ref : home_url( '/espace-ambassadeur#prospects' ) ); exit;
 } );
 
 /* Ambassadeur : enregistre un contact (AJAX, sur SES prospects uniquement). */
