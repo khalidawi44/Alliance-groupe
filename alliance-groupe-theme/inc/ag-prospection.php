@@ -2421,7 +2421,8 @@ if ( ! function_exists( 'ag_notify_render' ) ) {
 
 				<h2 style="margin-top:20px;">🤝 Message quotidien automatique aux AMBASSADEURS</h2>
 				<p class="description" style="max-width:780px;">Un message <strong>motivant</strong> (objectif du jour, rappel des gains, astuce de vente) part <strong>chaque jour à 8h30</strong> dans le <strong>groupe interne équipe</strong>. Tu peux ajouter les tiens (séparés par une ligne <code>---</code>).</p>
-				<label style="display:block;margin:8px 0;"><input type="checkbox" name="ag_amb_daily_on" value="1" <?php checked( get_option( 'ag_amb_daily_on' ), '1' ); ?>> <strong>Activer le message quotidien automatique aux ambassadeurs</strong></label>
+				<label style="display:block;margin:8px 0;"><input type="checkbox" name="ag_amb_daily_on" value="1" <?php checked( get_option( 'ag_amb_daily_on' ), '1' ); ?>> <strong>Activer le message quotidien automatique aux ambassadeurs</strong> (Telegram groupe)</label>
+				<label style="display:block;margin:8px 0;"><input type="checkbox" name="ag_amb_sms_daily_on" value="1" <?php checked( get_option( 'ag_amb_sms_daily_on' ), '1' ); ?>> <strong>Envoyer aussi ce message par SMS</strong> (via la passerelle, à chaque ambassadeur qui a un numéro — motivation directe même sans Telegram)</label>
 				<textarea name="ag_amb_msgs_custom" rows="6" style="width:100%;max-width:780px;" placeholder="Tes propres messages d'équipe (optionnel). Sépare-les par une ligne contenant seulement : ---"><?php echo esc_textarea( get_option( 'ag_amb_msgs_custom', '' ) ); ?></textarea>
 				<?php submit_button(); ?>
 			</form>
@@ -2514,6 +2515,7 @@ add_action( 'admin_init', function () {
 	register_setting( 'ag_tg_cfg', 'ag_client_daily_on', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
 	register_setting( 'ag_tg_cfg', 'ag_client_msgs_custom', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_textarea_field', 'default' => '' ) );
 	register_setting( 'ag_tg_cfg', 'ag_amb_daily_on', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
+	register_setting( 'ag_tg_cfg', 'ag_amb_sms_daily_on', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
 	register_setting( 'ag_tg_cfg', 'ag_amb_msgs_custom', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_textarea_field', 'default' => '' ) );
 } );
 if ( ! function_exists( 'ag_client_messages' ) ) {
@@ -2592,7 +2594,22 @@ add_action( 'init', function () {
 	if ( ! wp_next_scheduled( 'ag_amb_daily' ) ) wp_schedule_event( strtotime( 'tomorrow 8:30' ), 'daily', 'ag_amb_daily' );
 } );
 add_action( 'ag_amb_daily', function () {
-	if ( get_option( 'ag_amb_daily_on' ) && ag_tg_cfg( 'chat' ) ) ag_tg_send( ag_tg_cfg( 'chat' ), ag_amb_message_today() );
+	$msg_today = ag_amb_message_today();
+	if ( get_option( 'ag_amb_daily_on' ) && ag_tg_cfg( 'chat' ) ) ag_tg_send( ag_tg_cfg( 'chat' ), $msg_today );
+	// Motivation quotidienne AUSSI par SMS (via la passerelle) à chaque ambassadeur qui a un numéro.
+	if ( '' !== trim( (string) $msg_today ) && get_option( 'ag_amb_sms_daily_on' )
+		&& function_exists( 'ag_sms_send_bulk' ) && function_exists( 'ag_sms_gateway_ready' ) && ag_sms_gateway_ready() ) {
+		$pairs = array(); $seen = array();
+		foreach ( (array) get_option( 'ag_ambassadeurs', array() ) as $a ) {
+			$ph = trim( (string) ( $a['phone'] ?? '' ) );
+			if ( '' === $ph ) continue;
+			$k = preg_replace( '/[^0-9]/', '', $ph );
+			if ( '' === $k || isset( $seen[ $k ] ) ) continue; // anti-doublon numéro
+			$seen[ $k ] = 1;
+			$pairs[] = array( 'to' => $ph, 'msg' => $msg_today . ' STOP pour stop.' );
+		}
+		if ( $pairs ) ag_sms_send_bulk( $pairs );
+	}
 } );
 add_action( 'admin_post_ag_amb_send_now', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_now' ) ) wp_die( 'no' );

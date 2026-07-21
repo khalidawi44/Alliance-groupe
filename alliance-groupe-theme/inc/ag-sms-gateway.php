@@ -122,6 +122,27 @@ add_action( 'admin_init', function () {
  * il reçoit un SMS ou un appel → on crée la candidature + on renvoie le SMS
  * d'inscription automatiquement. Sécurisé par un jeton.
  */
+if ( ! function_exists( 'ag_inbound_throttle_ok' ) ) {
+	/**
+	 * Garde-fou anti-spam : autorise au plus N nouvelles candidatures par heure
+	 * (glissante). Empêche un flood depuis plein de numéros différents de créer des
+	 * dizaines de candidatures + autant de SMS de bienvenue (coût + risque de ban SIM).
+	 * Plafond ajustable via le filtre `ag_inbound_hourly_cap` (0 = illimité).
+	 */
+	function ag_inbound_throttle_ok() {
+		$cap = (int) apply_filters( 'ag_inbound_hourly_cap', 15 );
+		if ( $cap <= 0 ) return true;
+		$now  = time();
+		$hits = array_values( array_filter(
+			array_map( 'intval', (array) get_option( 'ag_inbound_hits', array() ) ),
+			function ( $ts ) use ( $now ) { return ( $now - $ts ) < HOUR_IN_SECONDS; }
+		) );
+		if ( count( $hits ) >= $cap ) { update_option( 'ag_inbound_hits', $hits, false ); return false; }
+		$hits[] = $now;
+		update_option( 'ag_inbound_hits', $hits, false );
+		return true;
+	}
+}
 if ( ! function_exists( 'ag_inbound_find_phone' ) ) {
 	function ag_inbound_find_phone( $phone ) {
 		if ( ! function_exists( 'ag_cand_get' ) ) return null;
@@ -191,6 +212,11 @@ if ( ! function_exists( 'ag_inbound_rest' ) ) {
 		// Anti-doublon : déjà candidat → on ne recrée pas / ne re-spamme pas.
 		if ( ag_inbound_find_phone( $from ) ) {
 			return new WP_REST_Response( array( 'duplicate' => true ), 200 );
+		}
+		// Anti-spam : plafond de NOUVELLES candidatures par heure (flood depuis plein de
+		// numéros différents → coûts d'envoi + risque de blocage de la SIM). Au-delà, on ignore.
+		if ( function_exists( 'ag_inbound_throttle_ok' ) && ! ag_inbound_throttle_ok() ) {
+			return new WP_REST_Response( array( 'throttled' => true ), 429 );
 		}
 		if ( ! function_exists( 'ag_cand_add' ) ) return new WP_REST_Response( array( 'error' => 'module' ), 500 );
 		$src = ( 'call' === $type ) ? 'appel-entrant' : 'sms-entrant';
