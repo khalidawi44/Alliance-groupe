@@ -2430,6 +2430,12 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 	$score = (int) ( $a['score'] ?? 0 );
 	$crit  = (int) ( $a['critical'] ?? 0 );
 	$tech  = (string) ( $a['tech'] ?? '' );
+	$fails = array();
+	foreach ( (array) ( $a['checks'] ?? array() ) as $c ) {
+		$st = $c['status'] ?? '';
+		if ( 'fail' === $st || 'warn' === $st ) { $fails[] = ( 'fail' === $st ? '❌ ' : '⚠️ ' ) . ( $c['name'] ?? '' ); }
+	}
+	$fails = array_slice( $fails, 0, 8 );
 	$name  = sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) );
 	$who   = '' !== $name ? $name : 'votre établissement';
 	$link  = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_sale_link( strtolower( wp_get_current_user()->user_email ) ) : home_url( '/sites-express' );
@@ -2454,7 +2460,7 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 			}
 		}
 	}
-	wp_send_json_success( array( 'score' => $score, 'critical' => $crit, 'tech' => $tech, 'mode' => $mode, 'reco' => $reco, 'msg' => $msg ) );
+	wp_send_json_success( array( 'score' => $score, 'critical' => $crit, 'tech' => $tech, 'mode' => $mode, 'reco' => $reco, 'fails' => $fails, 'msg' => $msg ) );
 } );
 
 /* ── 9. Notifications téléphone (Telegram, gratuit & instantané) ──── */

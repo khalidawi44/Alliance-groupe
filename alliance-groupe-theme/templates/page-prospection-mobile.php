@@ -314,6 +314,24 @@ var AG = (function(){
 })();
 
 (function(){
+	// Rapport d'audit partagé (capture du site + note + problèmes + SMS de résultat)
+	function agAuditHTML(url, d, num){
+		var color = d.score<50 ? '#ff6b6b' : (d.score<75 ? '#e6b35a' : '#2ecc71');
+		var reco  = (d.reco==='securite') ? '🛡️ Sécurité conseillée' : '🔧 Refonte conseillée';
+		var shot  = 'https://s.wordpress.com/mshots/v1/'+encodeURIComponent(url)+'?w=520';
+		var h='<img src="'+shot+'" alt="aperçu du site" loading="lazy" style="width:100%;border-radius:10px;border:1px solid rgba(255,255,255,.12);margin:6px 0;background:#0e0e13;">';
+		h+='<div style="margin:4px 0 6px;"><span class="sc" style="color:'+color+';font-size:1.05rem;">Note '+d.score+'/100</span>'+(d.critical>0?' · '+d.critical+' faille(s)':'')+(d.tech?' · '+d.tech:'')+' · <b>'+reco+'</b></div>';
+		if(d.fails && d.fails.length){ h+='<ul style="margin:0 0 8px;padding:0;list-style:none;font-size:.82rem;color:#cfcfd6;line-height:1.6;">'; d.fails.forEach(function(f){ h+='<li>'+f+'</li>'; }); h+='</ul>'; }
+		if(num){
+			h+='<div class="row">'
+			 +'<a class="mini" style="border-color:#d4b45c;color:#e6b35a;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.refonte)+'">✉️ Refonte</a>'
+			 +'<a class="mini" style="border-color:#a855f7;color:#c58bff;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.securite)+'">✉️ Sécurité</a>'
+			 +'<a class="mini" style="border-color:#3aa3ff;color:#8fc7ff;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.mixte)+'">✉️ Mixte</a>'
+			 +'</div>';
+		} else { h+='<span class="sub">Pas de mobile pour SMS (fixe → utilise le robot).</span>'; }
+		return h;
+	}
+
 	// Numéro rapide
 	var num=document.getElementById('ag-num'), msg=document.getElementById('ag-msg'),
 	    bC=document.getElementById('ag-call'), bS=document.getElementById('ag-sms'), bW=document.getElementById('ag-wa'), bR=document.getElementById('ag-robot');
@@ -362,17 +380,7 @@ var AG = (function(){
 			res.innerHTML='<span class="sub">🔍 Audit en cours…</span>';
 			AG.post('ag_app_audit',{url:url,mode:mode,id:id,name:nm}).then(function(j){
 				if(!j||!j.success){ res.innerHTML='<span class="sub">❌ '+((j&&j.data&&j.data.m)||'Erreur')+'</span>'; return; }
-				var d=j.data, color=d.score<50?'#ff6b6b':(d.score<75?'#e6b35a':'#2ecc71');
-				var reco=(d.reco==='securite')?'🛡️ Sécurité conseillée':'🔧 Refonte conseillée';
-				var h='<div style="margin:4px 0 8px;"><span class="sc" style="color:'+color+';font-size:1.05rem;">Note '+d.score+'/100</span>'+(d.critical>0?' · '+d.critical+' faille(s)':'')+(d.tech?' · '+d.tech:'')+' · <b>'+reco+'</b></div>';
-				if(num){
-					h+='<div class="row">'
-					 +'<a class="mini" style="border-color:#d4b45c;color:#e6b35a;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.refonte)+'">✉️ Refonte</a>'
-					 +'<a class="mini" style="border-color:#a855f7;color:#c58bff;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.securite)+'">✉️ Sécurité</a>'
-					 +'<a class="mini" style="border-color:#3aa3ff;color:#8fc7ff;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.mixte)+'">✉️ Mixte</a>'
-					 +'</div>';
-				} else { h+='<span class="sub">Pas de mobile pour SMS (fixe → utilise le robot).</span>'; }
-				res.innerHTML=h;
+				res.innerHTML=agAuditHTML(url, j.data, num);
 			}).catch(function(){ res.innerHTML='<span class="sub">❌ Erreur réseau</span>'; });
 		});
 	});
@@ -402,7 +410,21 @@ var AG = (function(){
 						add.textContent=(r&&r.success)?'✓ Ajouté':'Erreur'; AG.toast((r&&r.success)?'✅ Ajouté à tes prospects':'❌ Erreur');
 					}).catch(function(){ add.textContent='Erreur'; });
 				});
-				row.appendChild(add); d.appendChild(row); box.appendChild(d);
+				row.appendChild(add);
+				// Site présent → bouton d'audit + rapport (capture + note + SMS) dans le résultat.
+				var rep=document.createElement('div'); rep.style.marginTop='8px';
+				if(it.website){
+					var aud=document.createElement('button'); aud.className='mini'; aud.style.cursor='pointer'; aud.style.borderColor='#7c3aed'; aud.style.color='#c58bff'; aud.textContent='🛡️ Auditer le site';
+					aud.addEventListener('click',function(){
+						rep.innerHTML='<span class="sub">🔍 Audit en cours…</span>';
+						AG.post('ag_app_audit',{url:it.website,mode:'light',name:it.name}).then(function(r){
+							if(!r||!r.success){ rep.innerHTML='<span class="sub">❌ '+((r&&r.data&&r.data.m)||'Erreur')+'</span>'; return; }
+							rep.innerHTML=agAuditHTML(it.website, r.data, tel);
+						}).catch(function(){ rep.innerHTML='<span class="sub">❌ Erreur réseau</span>'; });
+					});
+					row.appendChild(aud);
+				}
+				d.appendChild(row); d.appendChild(rep); box.appendChild(d);
 			});
 			if(typeof j.data.left!=='undefined'){ AG.toast('Recherches restantes ce mois : '+j.data.left); }
 		}).catch(function(){ sb.textContent='🔎 Lancer la recherche'; sb.removeAttribute('disabled'); AG.toast('❌ Erreur réseau'); });
