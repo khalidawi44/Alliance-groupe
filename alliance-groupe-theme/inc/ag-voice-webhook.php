@@ -24,25 +24,40 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /* --------------------------------------------------------------- Utilitaires */
-if ( ! function_exists( 'ag_voice_pick' ) ) {
-	/** 1re valeur non vide parmi des alias (params + JSON imbriqué). */
-	function ag_voice_pick( $req, $keys ) {
-		$json  = $req->get_json_params();
-		$pools = array();
-		if ( is_array( $json ) ) {
-			$pools[] = $json;
-			foreach ( array( 'data', 'call', 'message', 'payload', 'result', 'analysis', 'call_analysis' ) as $nest ) {
-				if ( isset( $json[ $nest ] ) && is_array( $json[ $nest ] ) ) $pools[] = $json[ $nest ];
+if ( ! function_exists( 'ag_voice_deep_find' ) ) {
+	/** Cherche RÉCURSIVEMENT la 1re valeur scalaire non vide pour l'une des clés (insensible à la casse),
+	 *  quel que soit le niveau d'imbrication (Retell niche outcome dans call.call_analysis.custom_analysis_data…). */
+	function ag_voice_deep_find( $node, $keys_lc, $depth = 0 ) {
+		if ( $depth > 8 || ! is_array( $node ) ) return null;
+		// 1) clés directes de ce niveau
+		foreach ( $node as $key => $val ) {
+			if ( is_array( $val ) ) continue;
+			if ( '' === (string) $val ) continue;
+			if ( in_array( strtolower( (string) $key ), $keys_lc, true ) ) return (string) $val;
+		}
+		// 2) descente récursive
+		foreach ( $node as $val ) {
+			if ( is_array( $val ) ) {
+				$found = ag_voice_deep_find( $val, $keys_lc, $depth + 1 );
+				if ( null !== $found && '' !== $found ) return $found;
 			}
 		}
+		return null;
+	}
+}
+if ( ! function_exists( 'ag_voice_pick' ) ) {
+	/** 1re valeur non vide parmi des alias : params de requête d'abord, puis recherche profonde dans le JSON. */
+	function ag_voice_pick( $req, $keys ) {
+		// a) query string / form params (au 1er niveau).
 		foreach ( $keys as $k ) {
 			$v = $req->get_param( $k );
 			if ( null !== $v && '' !== $v && ! is_array( $v ) ) return $v;
-			foreach ( $pools as $pool ) {
-				if ( isset( $pool[ $k ] ) && '' !== $pool[ $k ] && ! is_array( $pool[ $k ] ) ) return $pool[ $k ];
-			}
 		}
-		return '';
+		// b) recherche récursive dans le corps JSON (gère l'imbrication profonde de Retell/Vapi/Bland).
+		$json    = $req->get_json_params();
+		$keys_lc = array_map( 'strtolower', $keys );
+		$found   = ag_voice_deep_find( is_array( $json ) ? $json : array(), $keys_lc );
+		return ( null !== $found ) ? $found : '';
 	}
 }
 if ( ! function_exists( 'ag_voice_map_outcome' ) ) {
@@ -81,10 +96,18 @@ if ( ! function_exists( 'ag_voice_rest' ) ) {
 		if ( '' === $token || ! hash_equals( (string) $token, (string) $given ) ) {
 			return new WP_REST_Response( array( 'error' => 'unauthorized' ), 401 );
 		}
+		// Ne traiter QUE l'événement final (analyse dispo). Retell/Vapi envoient aussi
+		// « call_started » / « call_ended » sans résultat → on les ignore (pas de fausse alerte).
+		$event = strtolower( (string) ag_voice_pick( $req, array( 'event', 'event_type', 'type' ) ) );
+		if ( '' !== $event && false !== strpos( $event, 'start' ) ) {
+			return new WP_REST_Response( array( 'ignored' => 'call_started' ), 200 );
+		}
 		$phone   = sanitize_text_field( (string) ag_voice_pick( $req, array( 'phone', 'to', 'from', 'number', 'customer_number', 'to_number', 'called', 'contact' ) ) );
-		$outcome = sanitize_text_field( (string) ag_voice_pick( $req, array( 'outcome', 'result', 'disposition', 'status', 'call_status', 'user_sentiment', 'call_successful' ) ) );
+		$outcome = sanitize_text_field( (string) ag_voice_pick( $req, array( 'outcome', 'result', 'disposition', 'call_status', 'user_sentiment', 'call_successful' ) ) );
 		$summary = sanitize_textarea_field( (string) ag_voice_pick( $req, array( 'summary', 'call_summary', 'transcript', 'analysis', 'notes', 'reason' ) ) );
 		if ( '' === $phone ) return new WP_REST_Response( array( 'error' => 'no_phone' ), 400 );
+		// Aucun signal exploitable (ni résultat ni résumé) → on n'invente pas de statut.
+		if ( '' === $outcome && '' === $summary ) return new WP_REST_Response( array( 'ignored' => 'no_signal' ), 200 );
 
 		list( $status, $optout ) = ag_voice_map_outcome( $outcome, $summary );
 		$stamp = current_time( 'd/m/Y H:i' );
