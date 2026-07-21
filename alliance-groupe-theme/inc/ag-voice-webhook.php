@@ -193,6 +193,12 @@ add_action( 'admin_init', function () {
 			update_option( 'ag_voice_token', wp_generate_password( 24, false ) );
 		}
 	}
+	// Appel de test vers un numéro libre (ex. ton mobile perso).
+	if ( isset( $_POST['ag_voice_test'] ) && check_admin_referer( 'ag_voice' ) ) {
+		$to = sanitize_text_field( wp_unslash( $_POST['ag_voice_test_to'] ?? '' ) );
+		$ok = function_exists( 'ag_voice_call' ) && ag_voice_ready() && ag_voice_call( $to, array( 'entreprise' => 'votre établissement', 'angle' => 'creation' ) );
+		add_settings_error( 'ag_voice', 'test', $ok ? '📞 Appel lancé vers ' . esc_html( $to ) . ' — décroche !' : 'Échec : vérifie la clé API + le numéro émetteur, et le format du numéro (+33…).', $ok ? 'updated' : 'error' );
+	}
 } );
 
 /* ------------------------------------------------------------- Page d'admin */
@@ -231,6 +237,13 @@ if ( ! function_exists( 'ag_voice_render' ) ) {
 		echo '<tr><th>Numéro émetteur (le numéro Retell)</th><td><input type="text" name="ag_voice_from" value="' . esc_attr( $from ) . '" style="width:240px" placeholder="+14632982363"><p class="description">Le numéro acheté dans Retell, attaché à l\'agent Emma.</p></td></tr>';
 		echo '</tbody></table><button name="ag_voice_save" value="1" class="button button-primary">Enregistrer</button> ';
 		echo '<span style="margin-left:10px;">État : ' . ( ag_voice_ready() ? '🟢 prêt à appeler' : '🔴 à configurer' ) . '</span></form>';
+		// Appel de test vers un numéro libre (mobile perso).
+		echo '<hr style="margin:16px 0;"><h3 style="margin:0 0 6px;">📞 Tester un appel</h3>';
+		echo '<p class="description" style="margin:0 0 8px;">Emma appelle le numéro que tu indiques (ton mobile perso par ex.) — pour tester la voix en conditions réelles.</p>';
+		echo '<form method="post" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' . wp_nonce_field( 'ag_voice', '_wpnonce', true, false );
+		echo '<input type="text" name="ag_voice_test_to" placeholder="+33612345678" style="width:220px"' . ( ag_voice_ready() ? '' : ' disabled' ) . '>';
+		echo '<button name="ag_voice_test" value="1" class="button"' . ( ag_voice_ready() ? '' : ' disabled title="Configure d\'abord la clé API + le numéro"' ) . '>Lancer l\'appel de test</button>';
+		echo '<span class="description">Format international : <code>+33…</code> (remplace le 0 par +33).</span></form>';
 		echo '</div>';
 
 		echo '<div style="max-width:900px;padding:16px 20px;background:#fff;border:1px solid #ccd0d4;border-radius:8px;margin:12px 0;">';
