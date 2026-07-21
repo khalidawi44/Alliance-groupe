@@ -77,6 +77,64 @@ if ( ! function_exists( 'ag_voice_status_label' ) ) {
 		return $m[ $st ] ?? $st;
 	}
 }
+if ( ! function_exists( 'ag_voice_parse_rappel' ) ) {
+	/**
+	 * Convertit la date de rappel dite au robot en timestamp Unix, en fuseau
+	 * Europe/Paris, TOUJOURS dans le futur. Accepte l'ISO propre d'Emma
+	 * ("AAAA-MM-JJ HH:MM") OU du texte FR relatif ("demain 11h", "après-demain
+	 * matin", "lundi 15h", "midi"). Retourne 0 si rien d'exploitable.
+	 */
+	function ag_voice_parse_rappel( $str ) {
+		$str = trim( function_exists( 'mb_strtolower' ) ? mb_strtolower( (string) $str ) : strtolower( (string) $str ) );
+		if ( '' === $str ) return 0;
+		// Enlève les accents → regex fiables (après-demain, après-midi…).
+		$str = strtr( $str, array( 'à' => 'a', 'â' => 'a', 'ä' => 'a', 'é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e', 'î' => 'i', 'ï' => 'i', 'ô' => 'o', 'ö' => 'o', 'ù' => 'u', 'û' => 'u', 'ü' => 'u', 'ç' => 'c' ) );
+		try {
+			$tz  = new DateTimeZone( 'Europe/Paris' );
+			$now = new DateTime( 'now', $tz );
+		} catch ( Exception $e ) {
+			return (int) strtotime( str_replace( '/', '-', $str ) );
+		}
+		// 1) ISO "AAAA-MM-JJ[ T]HH:MM" → interprété en heure de Paris.
+		if ( preg_match( '#(\d{4})[-/](\d{1,2})[-/](\d{1,2})(?:[ t]+(\d{1,2})[:h](\d{2}))?#', $str, $m ) ) {
+			$d = DateTime::createFromFormat( 'Y-n-j', $m[1] . '-' . $m[2] . '-' . $m[3], $tz );
+			if ( $d ) {
+				$d->setTime( isset( $m[4] ) ? (int) $m[4] : 10, isset( $m[5] ) ? (int) $m[5] : 0 );
+				if ( $d->getTimestamp() > $now->getTimestamp() ) return $d->getTimestamp();
+			}
+		}
+		// 2) Texte FR relatif : jour.
+		$base = clone $now;
+		if ( preg_match( '/apres.?demain/', $str ) )         $base->modify( '+2 days' );
+		elseif ( preg_match( '/\bdemain\b/', $str ) )        $base->modify( '+1 day' );
+		elseif ( preg_match( '/aujourd|ce soir|cet? apr/', $str ) ) { /* aujourd'hui : on garde */ }
+		else {
+			$jours = array( 'lundi' => 1, 'mardi' => 2, 'mercredi' => 3, 'jeudi' => 4, 'vendredi' => 5, 'samedi' => 6, 'dimanche' => 0 );
+			foreach ( $jours as $nom => $dow ) {
+				if ( false !== strpos( $str, $nom ) ) {
+					do { $base->modify( '+1 day' ); } while ( (int) $base->format( 'w' ) !== $dow );
+					break;
+				}
+			}
+		}
+		// Heure : "11h", "11h30", "11:00", "midi", "minuit", ou en lettres "onze heures".
+		$hour = null; $min = 0;
+		if ( preg_match( '/(\d{1,2})\s*[h:]\s*(\d{2})?/', $str, $mh ) ) {
+			$hour = (int) $mh[1]; $min = ( isset( $mh[2] ) && '' !== $mh[2] ) ? (int) $mh[2] : 0;
+		} elseif ( preg_match( '/\bmidi\b/', $str ) ) { $hour = 12; }
+		elseif ( preg_match( '/\bminuit\b/', $str ) ) { $hour = 0; }
+		else {
+			$mots = array( 'une' => 1, 'deux' => 2, 'trois' => 3, 'quatre' => 4, 'cinq' => 5, 'six' => 6, 'sept' => 7, 'huit' => 8, 'neuf' => 9, 'dix' => 10, 'onze' => 11, 'douze' => 12 );
+			foreach ( $mots as $mot => $val ) { if ( preg_match( '/\b' . $mot . '\b\s*heures?/u', $str ) ) { $hour = $val; break; } }
+		}
+		// matin / après-midi / soir → ajuste sur 24h.
+		if ( null !== $hour && preg_match( '/(apres.?midi|\bsoir)/', $str ) && $hour < 12 ) $hour += 12;
+		if ( null === $hour ) $hour = 10; // défaut si l'heure n'est pas précisée
+		$base->setTime( $hour, $min );
+		if ( $base->getTimestamp() <= $now->getTimestamp() ) $base->modify( '+1 day' ); // jamais dans le passé
+		return $base->getTimestamp();
+	}
+}
 
 /* -------------------------------------------------------- Route REST /voice */
 add_action( 'rest_api_init', function () {
@@ -107,7 +165,7 @@ if ( ! function_exists( 'ag_voice_rest' ) ) {
 		$summary = sanitize_textarea_field( (string) ag_voice_pick( $req, array( 'summary', 'call_summary', 'transcript', 'analysis', 'notes', 'reason' ) ) );
 		// Date/heure de rappel demandée par le client (Emma la renvoie en ISO "AAAA-MM-JJ HH:MM").
 		$rappel    = sanitize_text_field( (string) ag_voice_pick( $req, array( 'rappel', 'rappel_iso', 'callback', 'callback_time', 'date_rappel', 'rendez_vous', 'best_time' ) ) );
-		$rappel_ts = ( '' !== $rappel ) ? (int) strtotime( str_replace( '/', '-', $rappel ) ) : 0;
+		$rappel_ts = ( '' !== $rappel && function_exists( 'ag_voice_parse_rappel' ) ) ? ag_voice_parse_rappel( $rappel ) : ( '' !== $rappel ? (int) strtotime( str_replace( '/', '-', $rappel ) ) : 0 );
 		if ( '' === $phone ) return new WP_REST_Response( array( 'error' => 'no_phone' ), 400 );
 		// Aucun signal exploitable (ni résultat ni résumé) → on n'invente pas de statut.
 		if ( '' === $outcome && '' === $summary ) return new WP_REST_Response( array( 'ignored' => 'no_signal' ), 200 );
@@ -161,6 +219,10 @@ if ( ! function_exists( 'ag_voice_call' ) ) {
 		$to   = function_exists( 'ag_sms_to_e164' ) ? ag_sms_to_e164( $to ) : $to;
 		if ( '' === $key || '' === $from || '' === $to ) return false;
 		if ( function_exists( 'ag_sms_is_optout' ) && ag_sms_is_optout( $to ) ) return false; // jamais un opt-out
+		// Date/heure du jour (Paris) → permet à Emma de calculer « demain 11h » correctement.
+		if ( empty( $vars['now'] ) ) {
+			$vars['now'] = function_exists( 'wp_date' ) ? wp_date( 'l j F Y, H\hi' ) : date_i18n( 'l j F Y, H\hi' );
+		}
 		// Accroche = TOUT PREMIER message d'Emma, différent selon l'angle choisi (bouton « Appel site » vs « Appel sécu »).
 		if ( empty( $vars['accroche'] ) ) {
 			$angle = $vars['angle'] ?? '';
