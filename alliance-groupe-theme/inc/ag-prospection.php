@@ -301,6 +301,17 @@ if ( ! function_exists( 'ag_prospect_blocked' ) ) {
 	/** Statuts qui sortent le prospect du circuit (personne ne le recontacte). */
 	function ag_prospect_blocked( $status ) { return in_array( $status, array( 'refus', 'ne_pas_contacter', 'client', 'ignore' ), true ); }
 }
+if ( ! function_exists( 'ag_phone_is_mobile' ) ) {
+	/** Vrai si le numéro est un MOBILE français (06/07 / +336 / +337) — seuls les mobiles reçoivent des SMS. */
+	function ag_phone_is_mobile( $phone, $intl = '' ) {
+		$d = preg_replace( '/[^0-9]/', '', (string) ( $intl ?: $phone ) );
+		if ( '' === $d ) return false;
+		if ( '0033' === substr( $d, 0, 4 ) ) $d = '0' . substr( $d, 4 );
+		elseif ( '33' === substr( $d, 0, 2 ) && 11 === strlen( $d ) ) $d = '0' . substr( $d, 2 );
+		$p2 = substr( $d, 0, 2 );
+		return ( '06' === $p2 || '07' === $p2 );
+	}
+}
 if ( ! function_exists( 'ag_prospect_mark_optout_by_phone' ) ) {
 	/** Passe en « ne plus contacter » le(s) prospect(s) dont le numéro correspond (STOP reçu). */
 	function ag_prospect_mark_optout_by_phone( $phone ) {
@@ -1773,11 +1784,19 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				<?php $ag_gw = function_exists( 'ag_sms_gateway_ready' ) && ag_sms_gateway_ready(); ?>
 				<div class="ag-bulkbar" style="margin:10px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
 					<label style="font-size:.9em;"><input type="checkbox" id="ag-check-all"> Tout sélectionner</label>
+					<button type="button" id="ag-pick-mob" class="button button-small" title="Cocher tous les mobiles 06/07 (envoi SMS)">📱 Cocher les mobiles</button>
+					<button type="button" id="ag-pick-fix" class="button button-small" title="Cocher tous les fixes (pas de SMS — appel/robot vocal)">☎️ Cocher les fixes</button>
 					<button type="button" id="ag-sms-selected" class="button button-small" disabled <?php echo $ag_gw ? '' : 'title="Configure la Passerelle SMS"'; ?>>📲 Envoyer SMS (sélection)</button>
 					<button type="button" id="ag-del-selected" class="button button-small button-link-delete" disabled>🗑️ Supprimer la sélection (<span id="ag-sel-count">0</span>)</button>
 					<?php if ( ! $ag_gw ) : ?><span style="font-size:.8em;color:#b26a00;">📲 <a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-sms-gateway' ) ); ?>">Passerelle SMS</a> à activer pour l'envoi groupé.</span><?php endif; ?>
 				</div>
 				<table class="widefat striped"><thead><tr><th style="width:28px;"><input type="checkbox" id="ag-check-all2" title="Tout sélectionner"></th><th>Priorité</th><th>Entreprise</th><th>Zone</th><th>Pourquoi (besoin)</th><th>Contact</th><th>Statut</th><th>Assigné à</th><th>Prospecter</th><th></th></tr></thead><tbody>
+				<?php
+				// Regroupe les MOBILES (06/07) en haut (SMS = mobile only), ordre 'par besoin' conservé dans chaque groupe.
+				$ag_mob = array(); $ag_fix = array();
+				foreach ( $prospects as $ppz ) { if ( ag_phone_is_mobile( $ppz['phone'] ?? '', $ppz['phone_intl'] ?? '' ) ) $ag_mob[] = $ppz; else $ag_fix[] = $ppz; }
+				$prospects = array_merge( $ag_mob, $ag_fix );
+				?>
 				<?php foreach ( $prospects as $p ) :
 					$digits = ag_wa_number( $p['phone'] ?? '', $p['phone_intl'] ?? '' );
 					$msg    = ag_prospect_message( $p );
@@ -1790,7 +1809,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					$blocked = ag_prospect_blocked( $p['status'] ?? '' );
 					?>
 					<tr<?php echo $blocked ? ' style="opacity:.72;background:#fbf3f3;"' : ''; ?>>
-						<td style="text-align:center;"><input type="checkbox" class="ag-check" value="<?php echo esc_attr( $p['id'] ?? '' ); ?>"></td>
+						<td style="text-align:center;"><input type="checkbox" class="ag-check" data-mob="<?php echo ag_phone_is_mobile( $p['phone'] ?? '', $p['phone_intl'] ?? '' ) ? '1' : '0'; ?>" value="<?php echo esc_attr( $p['id'] ?? '' ); ?>"></td>
 						<td><span style="display:inline-block;min-width:34px;text-align:center;font-weight:800;color:#fff;background:<?php echo esc_attr( $scol ); ?>;border-radius:6px;padding:2px 6px;"><?php echo (int) $score; ?></span></td>
 						<td><strong><?php echo esc_html( $p['name'] ?? '' ); ?></strong><?php $pk = ag_site_kind( $p['website'] ?? '' ); echo ( 'real' !== $pk[0] ) ? ' <span style="color:#b32d2e;" title="' . esc_attr( $pk[1] ) . '">❗</span>' : ''; ?><br><small><?php echo esc_html( ( $p['type'] ?? '' ) . ( ! empty( $p['city'] ) ? ' · ' . $p['city'] : '' ) ); ?></small>
 								<?php if ( ! empty( $p['bodacc'] ) ) : ?>
@@ -1807,7 +1826,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 						?></td>
 						<td style="max-width:280px;font-size:.85em;color:#50575e;"><?php echo esc_html( ag_prospect_why( $p ) ); ?><br><span style="color:#1d4f8b;"><?php echo esc_html( ag_prospect_diagnostic( $p ) ); ?></span></td>
 						<td>
-							<?php if ( ! empty( $p['phone'] ) ) : ?><a href="tel:<?php echo esc_attr( $p['phone'] ); ?>">📞 <?php echo esc_html( $p['phone'] ); ?></a><br><?php endif; ?>
+							<?php if ( ! empty( $p['phone'] ) ) : $ag_ismob = ag_phone_is_mobile( $p['phone'], $p['phone_intl'] ?? '' ); ?><a href="tel:<?php echo esc_attr( $p['phone'] ); ?>" title="<?php echo $ag_ismob ? 'Mobile (SMS OK)' : 'Fixe (pas de SMS)'; ?>"><?php echo $ag_ismob ? '📱' : '☎️'; ?> <?php echo esc_html( $p['phone'] ); ?></a><br><?php endif; ?>
 							<?php if ( ! empty( $p['email'] ) ) : ?><a href="mailto:<?php echo esc_attr( $p['email'] ); ?>"><?php echo esc_html( $p['email'] ); ?></a><?php endif; ?>
 						</td>
 						<td>
@@ -1982,6 +2001,9 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 				if(all) all.addEventListener('change',function(){ setAll(all.checked); });
 				if(all2) all2.addEventListener('change',function(){ setAll(all2.checked); });
 				checks().forEach(function(c){ c.addEventListener('change',refresh); });
+				function pickBy(mob){ checks().forEach(function(c){ c.checked=(c.getAttribute('data-mob')===(mob?'1':'0')); }); if(all)all.checked=false; if(all2)all2.checked=false; refresh(); }
+				var pm=document.getElementById('ag-pick-mob'); if(pm) pm.addEventListener('click',function(){ pickBy(true); });
+				var pf=document.getElementById('ag-pick-fix'); if(pf) pf.addEventListener('click',function(){ pickBy(false); });
 				if(delBtn) delBtn.addEventListener('click',function(){
 					var ids=checks().filter(function(c){return c.checked;}).map(function(c){return c.value;});
 					if(!ids.length) return;
