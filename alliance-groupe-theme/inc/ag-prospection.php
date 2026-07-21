@@ -2418,6 +2418,45 @@ add_action( 'wp_ajax_ag_amb_add', function () {
 	wp_send_json_success( array( 'added' => ag_prospect_add_record( $data ) ) );
 } );
 
+/* Audit d'un site depuis l'APP (léger = passif, avancé = approfondi ; JAMAIS Kali/local).
+ * Rend une note /100 + le nombre de failles + des SMS prêts (refonte / sécurité / mixte). */
+add_action( 'wp_ajax_ag_app_audit', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error( array( 'm' => 'Session expirée.' ) );
+	$url = esc_url_raw( wp_unslash( $_POST['url'] ?? '' ) );
+	if ( '' === $url ) wp_send_json_error( array( 'm' => 'Ce prospect n\'a pas de site.' ) );
+	$mode = ( 'deep' === ( $_POST['mode'] ?? '' ) ) ? 'deep' : 'light';
+	if ( ! function_exists( 'ag_audit_run' ) ) wp_send_json_error( array( 'm' => 'Module audit indisponible.' ) );
+	$a = ( 'deep' === $mode && function_exists( 'ag_audit_run_deep' ) ) ? ag_audit_run_deep( $url ) : ag_audit_run( $url );
+	$score = (int) ( $a['score'] ?? 0 );
+	$crit  = (int) ( $a['critical'] ?? 0 );
+	$tech  = (string) ( $a['tech'] ?? '' );
+	$name  = sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) );
+	$who   = '' !== $name ? $name : 'votre établissement';
+	$link  = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_sale_link( strtolower( wp_get_current_user()->user_email ) ) : home_url( '/sites-express' );
+	// Reco : site pourri (note basse) → refonte ; sinon failles → sécurité ; sinon refonte douce.
+	$reco = ( $score < 50 ) ? 'refonte' : ( $crit > 0 ? 'securite' : 'refonte' );
+	$msg  = array(
+		'refonte'  => "Bonjour, j'ai analysé le site de " . $who . " : note " . $score . "/100. Il gagnerait beaucoup à être refait (rapidité, mobile, référencement Google). On offre justement un site chaque mois — je vous montre ? " . $link,
+		'securite' => "Bonjour, audit du site de " . $who . " : " . ( $crit > 0 ? $crit . " point(s) de sécurité à corriger" : "quelques points à sécuriser" ) . " (données clients, mises à jour). On peut le sécuriser rapidement. Audit détaillé offert : " . $link,
+		'mixte'    => "Bonjour, j'ai audité le site de " . $who . " : note " . $score . "/100" . ( $crit > 0 ? " et " . $crit . " faille(s) de sécurité" : "" ) . ". Entre une refonte moderne et une sécurisation, je peux vous conseiller — on offre un site ce mois-ci : " . $link,
+	);
+	// Persiste la note sur la fiche prospect (si id fourni).
+	$pid = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+	if ( '' !== $pid ) {
+		$list = (array) get_option( 'ag_prospects', array() );
+		foreach ( $list as $i => $p ) {
+			if ( ( $p['id'] ?? '' ) === $pid ) {
+				$list[ $i ]['audit_score'] = $score;
+				$list[ $i ]['audit_crit']  = $crit;
+				$list[ $i ]['audit_ts']    = time();
+				update_option( 'ag_prospects', $list );
+				break;
+			}
+		}
+	}
+	wp_send_json_success( array( 'score' => $score, 'critical' => $crit, 'tech' => $tech, 'mode' => $mode, 'reco' => $reco, 'msg' => $msg ) );
+} );
+
 /* ── 9. Notifications téléphone (Telegram, gratuit & instantané) ──── */
 if ( ! function_exists( 'ag_tg_cfg' ) ) {
 	function ag_tg_cfg( $k ) { return trim( (string) get_option( 'ag_tg_' . $k, '' ) ); }

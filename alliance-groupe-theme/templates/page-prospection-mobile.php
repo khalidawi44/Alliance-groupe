@@ -102,6 +102,10 @@ foreach ( $ag_my_prospects as $ppc ) {
 		.link{ display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:15px; margin-bottom:10px; font-weight:600; }
 		.link i{ font-style:normal; font-size:1.4rem; } .link b{ display:block; } .link .arr{ margin-left:auto; color:var(--soft); }
 		.hint{ text-align:center; font-size:.8rem; color:var(--soft); background:rgba(58,163,255,.09); border:1px solid rgba(58,163,255,.28); border-radius:13px; padding:12px; margin-top:6px; }
+		.grev{ font-size:.8rem; color:var(--soft); margin-top:9px; } .grev span{ font-size:.74rem; } .grev a{ color:var(--gold); font-weight:600; }
+		.audit-wrap{ margin-top:8px; border-top:1px dashed var(--line); padding-top:9px; }
+		.audit-res{ margin-top:2px; } .audit-res .sc{ font-weight:800; }
+		.ag-audit{ cursor:pointer; }
 		.res{ background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:13px; padding:11px; margin-bottom:9px; }
 		.res .rn{ font-weight:700; } .res .rk{ font-size:.78rem; color:var(--soft); margin:2px 0 8px; }
 		.tabbar{ position:fixed; left:0; right:0; bottom:0; z-index:30; display:flex; background:rgba(16,16,22,.94); backdrop-filter:blur(12px); border-top:1px solid var(--line); padding-bottom:env(safe-area-inset-bottom); }
@@ -200,6 +204,27 @@ foreach ( $ag_my_prospects as $ppc ) {
 								</select>
 							</form>
 						</div>
+						<?php
+						$pweb  = $pp['website'] ?? '';
+						$pmaps = ! empty( $pp['maps_uri'] ) ? $pp['maps_uri'] : 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( trim( ( $pp['name'] ?? '' ) . ' ' . ( $pp['city'] ?? '' ) ) );
+						$prat  = (float) ( $pp['rating'] ?? 0 );
+						$prev  = (int) ( $pp['reviews'] ?? 0 );
+						$pas   = isset( $pp['audit_score'] ) ? (int) $pp['audit_score'] : -1;
+						?>
+						<div class="grev">
+							<?php if ( $prat > 0 ) : ?>⭐ <?php echo esc_html( number_format_i18n( $prat, 1 ) ); ?> <span>(<?php echo (int) $prev; ?> avis)</span> · <?php endif; ?>
+							<a href="<?php echo esc_url( $pmaps ); ?>" target="_blank" rel="noopener">📍 Voir sur Google</a>
+						</div>
+						<?php if ( $pweb ) : ?>
+						<div class="audit-wrap" data-url="<?php echo esc_attr( $pweb ); ?>" data-id="<?php echo esc_attr( $pid ); ?>" data-name="<?php echo esc_attr( $pp['name'] ?? '' ); ?>" data-num="<?php echo esc_attr( $psnum ); ?>">
+							<div class="row" style="margin-top:2px;">
+								<button type="button" class="mini ag-audit" data-mode="light">🔍 Audit léger</button>
+								<button type="button" class="mini ag-audit" data-mode="deep">🔬 Audit avancé</button>
+								<?php if ( $pas >= 0 ) : ?><span class="sub" style="font-size:.76rem;margin:0;">Note : <?php echo (int) $pas; ?>/100</span><?php endif; ?>
+							</div>
+							<div class="audit-res"></div>
+						</div>
+						<?php endif; ?>
 					</div>
 				<?php endforeach; ?>
 			<?php endif; ?>
@@ -326,6 +351,30 @@ var AG = (function(){
 	// Note auto du contact
 	document.querySelectorAll('.ag-touch').forEach(function(a){
 		a.addEventListener('click',function(){ var id=a.getAttribute('data-id'), ch=a.getAttribute('data-channel'); if(id){ AG.post('ag_amb_touch',{id:id,channel:ch}).catch(function(){}); } });
+	});
+
+	// Audit d'un site (léger / avancé) → note + SMS auto selon la note
+	document.querySelectorAll('.ag-audit').forEach(function(btn){
+		btn.addEventListener('click',function(){
+			var w=btn.closest('.audit-wrap'); if(!w) return;
+			var url=w.getAttribute('data-url'), id=w.getAttribute('data-id'), nm=w.getAttribute('data-name'), num=w.getAttribute('data-num');
+			var res=w.querySelector('.audit-res'), mode=btn.getAttribute('data-mode');
+			res.innerHTML='<span class="sub">🔍 Audit en cours…</span>';
+			AG.post('ag_app_audit',{url:url,mode:mode,id:id,name:nm}).then(function(j){
+				if(!j||!j.success){ res.innerHTML='<span class="sub">❌ '+((j&&j.data&&j.data.m)||'Erreur')+'</span>'; return; }
+				var d=j.data, color=d.score<50?'#ff6b6b':(d.score<75?'#e6b35a':'#2ecc71');
+				var reco=(d.reco==='securite')?'🛡️ Sécurité conseillée':'🔧 Refonte conseillée';
+				var h='<div style="margin:4px 0 8px;"><span class="sc" style="color:'+color+';font-size:1.05rem;">Note '+d.score+'/100</span>'+(d.critical>0?' · '+d.critical+' faille(s)':'')+(d.tech?' · '+d.tech:'')+' · <b>'+reco+'</b></div>';
+				if(num){
+					h+='<div class="row">'
+					 +'<a class="mini" style="border-color:#d4b45c;color:#e6b35a;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.refonte)+'">✉️ Refonte</a>'
+					 +'<a class="mini" style="border-color:#a855f7;color:#c58bff;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.securite)+'">✉️ Sécurité</a>'
+					 +'<a class="mini" style="border-color:#3aa3ff;color:#8fc7ff;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.mixte)+'">✉️ Mixte</a>'
+					 +'</div>';
+				} else { h+='<span class="sub">Pas de mobile pour SMS (fixe → utilise le robot).</span>'; }
+				res.innerHTML=h;
+			}).catch(function(){ res.innerHTML='<span class="sub">❌ Erreur réseau</span>'; });
+		});
 	});
 
 	// Recherche intégrée
