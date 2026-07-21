@@ -36,6 +36,7 @@ $ag_ajax_nonce   = wp_create_nonce( 'ag_amb_prospect' );
 
 $ag_is_admin = current_user_can( 'manage_options' );
 $ag_calls    = $ag_is_admin ? array_slice( (array) get_option( 'ag_voice_log', array() ), 0, 40 ) : array();
+$ag_audits   = array_slice( (array) get_option( 'ag_app_audits', array() ), 0, 40, true );
 
 $ag_cnt = array( 'total' => 0, 'a_contacter' => 0, 'contacte' => 0, 'repondeur' => 0, 'interesse' => 0, 'client' => 0 );
 foreach ( $ag_my_prospects as $ppc ) {
@@ -276,13 +277,34 @@ foreach ( $ag_my_prospects as $ppc ) {
 		<h2 class="sec">🛡️ Audits</h2>
 		<div class="card">
 			<h3>Auditer un site</h3>
-			<p class="sub" style="margin:-4px 0 10px;">Un argument en or : montre au prospect ce qui cloche sur son site.</p>
-			<input type="url" id="ag-audit-url" inputmode="url" placeholder="https://site-du-prospect.fr" autocomplete="off">
-			<div style="display:grid;gap:9px;margin-top:12px;">
-				<a class="b gold" id="ag-audit-secu" href="<?php echo esc_url( home_url( '/audit-securite' ) ); ?>" target="_blank" rel="noopener">🛡️ Audit sécurité</a>
-				<a class="b gold" id="ag-audit-seo" href="<?php echo esc_url( home_url( '/audit-seo' ) ); ?>" target="_blank" rel="noopener" style="background:linear-gradient(135deg,#3aa3ff,#1f6fd0);color:#fff;">🔎 Audit SEO</a>
+			<p class="sub" style="margin:-4px 0 10px;">Colle une adresse → note, problèmes, capture, et rapport client à envoyer.</p>
+			<div class="audit-wrap" id="ag-audit-manual" data-num="">
+				<input type="url" id="ag-audit-url" inputmode="url" placeholder="https://site-du-prospect.fr" autocomplete="off">
+				<button type="button" id="ag-audit-run" class="b gold" style="margin-top:12px;">🛡️ Lancer l'audit</button>
+				<div class="audit-res" style="margin-top:10px;"></div>
 			</div>
 		</div>
+
+		<h3 style="margin:6px 2px 10px;font-size:1.02rem;">Sites déjà audités (<?php echo count( $ag_audits ); ?>)</h3>
+		<?php if ( empty( $ag_audits ) ) : ?>
+			<div class="card"><p class="sub" style="margin:0;">Aucun site audité pour l'instant. Lance un audit ci-dessus, ou depuis un prospect / la recherche.</p></div>
+		<?php else : ?>
+			<?php foreach ( $ag_audits as $au ) :
+				$acol = ( (int) $au['score'] < 50 ) ? '#ff6b6b' : ( (int) $au['score'] < 75 ? '#e6b35a' : '#2ecc71' );
+			?>
+				<div class="card" style="padding:13px;">
+					<div class="audit-wrap" data-url="<?php echo esc_attr( $au['url'] ); ?>" data-name="<?php echo esc_attr( $au['name'] ?? '' ); ?>" data-num="<?php echo esc_attr( $au['phone'] ?? '' ); ?>">
+						<div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline;">
+							<strong><?php echo esc_html( $au['name'] ?? $au['url'] ); ?></strong>
+							<span style="color:<?php echo esc_attr( $acol ); ?>;font-weight:800;"><?php echo (int) $au['score']; ?>/100</span>
+						</div>
+						<div class="sub" style="font-size:.76rem;word-break:break-all;margin:2px 0 8px;"><?php echo esc_html( $au['url'] ); ?><?php echo ! empty( $au['crit'] ) ? ' · ' . (int) $au['crit'] . ' faille(s)' : ''; ?></div>
+						<button type="button" class="mini ag-audit" data-mode="light" style="cursor:pointer;">🛡️ Voir le rapport</button>
+						<div class="audit-res" style="margin-top:8px;"></div>
+					</div>
+				</div>
+			<?php endforeach; ?>
+		<?php endif; ?>
 	</section>
 
 </div>
@@ -314,16 +336,25 @@ var AG = (function(){
 })();
 
 (function(){
-	// Rapport d'audit partagé (capture du site + note + problèmes + SMS de résultat)
+	// Capture d'écran : mShots met parfois quelques secondes → on recharge l'image auto.
+	window.agShot = function(img){
+		var n = +(img.getAttribute('data-try')||0);
+		if(n>=4) return;
+		img.setAttribute('data-try', n+1);
+		setTimeout(function(){ img.src = img.getAttribute('data-base')+'&r='+Date.now(); }, 3500);
+	};
+	// Rapport d'audit partagé (capture du site + note + problèmes + SMS + lien rapport client)
 	function agAuditHTML(url, d, num){
 		var color = d.score<50 ? '#ff6b6b' : (d.score<75 ? '#e6b35a' : '#2ecc71');
 		var reco  = (d.reco==='securite') ? '🛡️ Sécurité conseillée' : '🔧 Refonte conseillée';
 		var shot  = 'https://s.wordpress.com/mshots/v1/'+encodeURIComponent(url)+'?w=520';
-		var h='<img src="'+shot+'" alt="aperçu du site" loading="lazy" style="width:100%;border-radius:10px;border:1px solid rgba(255,255,255,.12);margin:6px 0;background:#0e0e13;">';
+		var h='<img src="'+shot+'" data-base="'+shot+'" data-try="0" onload="agShot(this)" alt="aperçu du site" style="width:100%;border-radius:10px;border:1px solid rgba(255,255,255,.12);margin:6px 0;background:#0e0e13;min-height:120px;">';
 		h+='<div style="margin:4px 0 6px;"><span class="sc" style="color:'+color+';font-size:1.05rem;">Note '+d.score+'/100</span>'+(d.critical>0?' · '+d.critical+' faille(s)':'')+(d.tech?' · '+d.tech:'')+' · <b>'+reco+'</b></div>';
 		if(d.fails && d.fails.length){ h+='<ul style="margin:0 0 8px;padding:0;list-style:none;font-size:.82rem;color:#cfcfd6;line-height:1.6;">'; d.fails.forEach(function(f){ h+='<li>'+f+'</li>'; }); h+='</ul>'; }
+		if(d.report){ h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:8px;border-color:#22c55e;color:#7ee2a8;" href="'+d.report+'">👁️ Voir le rapport client</a>'; }
 		if(num){
 			h+='<div class="row">'
+			 +'<a class="mini" style="border-color:#22c55e;color:#7ee2a8;" href="sms:'+num+'?body='+encodeURIComponent((d.msg&&d.msg.rapport)||'')+'">📤 Envoyer le rapport</a>'
 			 +'<a class="mini" style="border-color:#d4b45c;color:#e6b35a;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.refonte)+'">✉️ Refonte</a>'
 			 +'<a class="mini" style="border-color:#a855f7;color:#c58bff;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.securite)+'">✉️ Sécurité</a>'
 			 +'<a class="mini" style="border-color:#3aa3ff;color:#8fc7ff;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.mixte)+'">✉️ Mixte</a>'
@@ -378,7 +409,7 @@ var AG = (function(){
 			var url=w.getAttribute('data-url'), id=w.getAttribute('data-id'), nm=w.getAttribute('data-name'), num=w.getAttribute('data-num');
 			var res=w.querySelector('.audit-res'), mode=btn.getAttribute('data-mode');
 			res.innerHTML='<span class="sub">🔍 Audit en cours…</span>';
-			AG.post('ag_app_audit',{url:url,mode:mode,id:id,name:nm}).then(function(j){
+			AG.post('ag_app_audit',{url:url,mode:mode,id:id,name:nm,phone:num}).then(function(j){
 				if(!j||!j.success){ res.innerHTML='<span class="sub">❌ '+((j&&j.data&&j.data.m)||'Erreur')+'</span>'; return; }
 				res.innerHTML=agAuditHTML(url, j.data, num);
 			}).catch(function(){ res.innerHTML='<span class="sub">❌ Erreur réseau</span>'; });
@@ -417,7 +448,7 @@ var AG = (function(){
 					var aud=document.createElement('button'); aud.className='mini'; aud.style.cursor='pointer'; aud.style.borderColor='#7c3aed'; aud.style.color='#c58bff'; aud.textContent='🛡️ Auditer le site';
 					aud.addEventListener('click',function(){
 						rep.innerHTML='<span class="sub">🔍 Audit en cours…</span>';
-						AG.post('ag_app_audit',{url:it.website,mode:'light',name:it.name}).then(function(r){
+						AG.post('ag_app_audit',{url:it.website,mode:'light',name:it.name,phone:tel}).then(function(r){
 							if(!r||!r.success){ rep.innerHTML='<span class="sub">❌ '+((r&&r.data&&r.data.m)||'Erreur')+'</span>'; return; }
 							rep.innerHTML=agAuditHTML(it.website, r.data, tel);
 						}).catch(function(){ rep.innerHTML='<span class="sub">❌ Erreur réseau</span>'; });
@@ -430,9 +461,19 @@ var AG = (function(){
 		}).catch(function(){ sb.textContent='🔎 Lancer la recherche'; sb.removeAttribute('disabled'); AG.toast('❌ Erreur réseau'); });
 	}); }
 
-	// Audit : copie l'URL pour la coller sur la page d'audit
-	var au=document.getElementById('ag-audit-url');
-	if(au){ ['ag-audit-secu','ag-audit-seo'].forEach(function(id){ var b=document.getElementById(id); if(b){ b.addEventListener('click',function(){ if(au.value){ try{navigator.clipboard.writeText(au.value);}catch(e){} } }); } }); }
+	// Audit manuel (onglet Audit) : lance l'audit sur l'URL saisie et affiche le rapport dans l'app
+	var arun=document.getElementById('ag-audit-run'), aurl=document.getElementById('ag-audit-url');
+	if(arun){ arun.addEventListener('click',function(){
+		var u=(aurl.value||'').trim(); if(!u){ AG.toast('Colle une adresse de site'); return; }
+		if(!/^https?:\/\//i.test(u)){ u='https://'+u; }
+		var res=document.getElementById('ag-audit-manual').querySelector('.audit-res');
+		res.innerHTML='<span class="sub">🔍 Audit en cours…</span>'; arun.setAttribute('disabled','disabled'); arun.textContent='🔍 Audit…';
+		AG.post('ag_app_audit',{url:u,mode:'light'}).then(function(j){
+			arun.removeAttribute('disabled'); arun.textContent='🛡️ Lancer l\'audit';
+			if(!j||!j.success){ res.innerHTML='<span class="sub">❌ '+((j&&j.data&&j.data.m)||'Erreur')+'</span>'; return; }
+			res.innerHTML=agAuditHTML(u, j.data, '');
+		}).catch(function(){ arun.removeAttribute('disabled'); arun.textContent='🛡️ Lancer l\'audit'; res.innerHTML='<span class="sub">❌ Erreur réseau</span>'; });
+	}); }
 
 	// Bouton remonter
 	var top=document.getElementById('toTop');

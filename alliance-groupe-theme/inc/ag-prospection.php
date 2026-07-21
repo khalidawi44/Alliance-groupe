@@ -9,22 +9,28 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-/* ── 0. Page-app « Prospection Mobile » (créée automatiquement) ──── */
+/* ── 0. Pages auto-créées : app mobile + rapport client ───────────── */
 add_action( 'after_setup_theme', function () {
-	if ( get_option( 'ag_prospection_mobile_page' ) ) { return; }
-	if ( ! get_page_by_path( 'prospection-mobile' ) ) {
-		$id = wp_insert_post( array(
-			'post_title'   => 'Prospection',
-			'post_name'    => 'prospection-mobile',
-			'post_status'  => 'publish',
-			'post_type'    => 'page',
-			'post_content' => '',
-		) );
-		if ( $id && ! is_wp_error( $id ) ) {
-			update_post_meta( $id, '_wp_page_template', 'templates/page-prospection-mobile.php' );
+	$pages = array(
+		'prospection-mobile' => array( 'Prospection', 'templates/page-prospection-mobile.php' ),
+		'rapport'            => array( 'Rapport', 'templates/page-rapport.php' ),
+	);
+	if ( 2 === (int) get_option( 'ag_prospection_mobile_page' ) ) { return; }
+	foreach ( $pages as $slug => $def ) {
+		if ( ! get_page_by_path( $slug ) ) {
+			$id = wp_insert_post( array(
+				'post_title'   => $def[0],
+				'post_name'    => $slug,
+				'post_status'  => 'publish',
+				'post_type'    => 'page',
+				'post_content' => '',
+			) );
+			if ( $id && ! is_wp_error( $id ) ) {
+				update_post_meta( $id, '_wp_page_template', $def[1] );
+			}
 		}
 	}
-	update_option( 'ag_prospection_mobile_page', 1 );
+	update_option( 'ag_prospection_mobile_page', 2 );
 } );
 
 /* ── 1. Prospects entrants (chat du site) ───────────────────────── */
@@ -2446,6 +2452,11 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 		'securite' => "Bonjour, audit du site de " . $who . " : " . ( $crit > 0 ? $crit . " point(s) de sécurité à corriger" : "quelques points à sécuriser" ) . " (données clients, mises à jour). On peut le sécuriser rapidement. Audit détaillé offert : " . $link,
 		'mixte'    => "Bonjour, j'ai audité le site de " . $who . " : note " . $score . "/100" . ( $crit > 0 ? " et " . $crit . " faille(s) de sécurité" : "" ) . ". Entre une refonte moderne et une sécurisation, je peux vous conseiller — on offre un site ce mois-ci : " . $link,
 	);
+	$phone = sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) );
+	// Lien du RAPPORT CLIENT (page teaser à envoyer au prospect).
+	$report = add_query_arg( array( 'site' => rawurlencode( $url ), 'name' => rawurlencode( $name ) ), home_url( '/rapport' ) );
+	// SMS « rapport » : phrase + lien du rapport.
+	$msg['rapport'] = "Bonjour, j'ai fait un audit du site de " . $who . " (note " . $score . "/100). Voici le rapport avec ce qu'il faut corriger : " . $report;
 	// Persiste la note sur la fiche prospect (si id fourni).
 	$pid = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
 	if ( '' !== $pid ) {
@@ -2460,7 +2471,14 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 			}
 		}
 	}
-	wp_send_json_success( array( 'score' => $score, 'critical' => $crit, 'tech' => $tech, 'mode' => $mode, 'reco' => $reco, 'fails' => $fails, 'msg' => $msg ) );
+	// Historique des sites audités (pour l'onglet Audit de l'app).
+	$audits = get_option( 'ag_app_audits', array() ); if ( ! is_array( $audits ) ) { $audits = array(); }
+	$audits[ md5( strtolower( trim( $url ) ) ) ] = array( 'url' => $url, 'name' => $who, 'phone' => $phone, 'score' => $score, 'crit' => $crit, 'fails' => $fails, 'ts' => time() );
+	uasort( $audits, function ( $x, $y ) { return (int) ( $y['ts'] ?? 0 ) <=> (int) ( $x['ts'] ?? 0 ); } );
+	if ( count( $audits ) > 60 ) { $audits = array_slice( $audits, 0, 60, true ); }
+	update_option( 'ag_app_audits', $audits, false );
+
+	wp_send_json_success( array( 'score' => $score, 'critical' => $crit, 'tech' => $tech, 'mode' => $mode, 'reco' => $reco, 'fails' => $fails, 'report' => $report, 'msg' => $msg ) );
 } );
 
 /* ── 9. Notifications téléphone (Telegram, gratuit & instantané) ──── */
