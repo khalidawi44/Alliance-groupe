@@ -1922,8 +1922,10 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 							$rlabel = ! empty( $p['last_relance'] ) ? '🔁 Relancé le ' . $p['last_relance'] : '🔁 Relancer';
 							?>
 							<button type="button" class="button button-small ag-relance" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" style="<?php echo $relance_due ? 'border-color:#c2410c;color:#c2410c;font-weight:700;' : ''; ?>" title="Marque ce prospect comme relancé aujourd'hui (date + suivi)"><?php echo esc_html( $rlabel ); ?></button>
-							<?php if ( $wa ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-channel="WhatsApp" href="<?php echo esc_url( $wa ); ?>" target="_blank" rel="noopener">WhatsApp</a> <?php endif; ?>
-							<?php if ( $sms ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-channel="SMS" href="<?php echo esc_attr( $sms ); ?>" title="Ouvre Messages sur ton ordi (lié à ton tél) -> envoi depuis ton numéro">📱 SMS</a> <?php endif; ?>
+							<?php $ag_row_mob = ag_phone_is_mobile( $p['phone'] ?? '', $p['phone_intl'] ?? '' ); ?>
+							<?php if ( $wa && $ag_row_mob ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-channel="WhatsApp" href="<?php echo esc_url( $wa ); ?>" target="_blank" rel="noopener">WhatsApp</a> <?php endif; ?>
+							<?php if ( $sms && $ag_row_mob ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-channel="SMS" href="<?php echo esc_attr( $sms ); ?>" title="Ouvre Messages sur ton ordi (lié à ton tél) -> envoi depuis ton numéro">📱 SMS</a> <?php endif; ?>
+							<?php if ( ! $ag_row_mob && ! empty( $p['phone'] ) ) : ?><span class="dashicons dashicons-phone" style="color:#7c3aed;font-size:16px;width:16px;height:16px;vertical-align:text-bottom;" title="Numéro fixe : pas de SMS → utilise le Robot vocal"></span><span style="font-size:.78em;color:#7c3aed;">fixe → Robot</span> <?php endif; ?>
 							<?php if ( $mailto ) : ?><a class="button button-small ag-touch" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" data-channel="Email" href="<?php echo esc_url( $mailto ); ?>">Email</a> <?php endif; ?>
 							<details style="display:inline-block;margin-top:4px;"><summary class="button button-small">✍️ Message (éditable)</summary>
 								<textarea class="ag-msg-field" data-id="<?php echo esc_attr( $p['id'] ?? '' ); ?>" rows="10" style="width:360px;margin-top:6px;"><?php echo esc_textarea( $msg ); ?></textarea><br>
