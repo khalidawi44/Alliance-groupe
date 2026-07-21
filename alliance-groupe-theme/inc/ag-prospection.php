@@ -2424,6 +2424,23 @@ add_action( 'wp_ajax_ag_amb_add', function () {
 	wp_send_json_success( array( 'added' => ag_prospect_add_record( $data ) ) );
 } );
 
+/* Métier → lien du template démo correspondant (pour illustrer une création/refonte). */
+if ( ! function_exists( 'ag_demo_link_for' ) ) {
+	function ag_demo_link_for( $txt ) {
+		$t = ' ' . strtolower( (string) $txt ) . ' ';
+		$map = array(
+			'restaurant' => 'wordpress-restaurant', 'resto' => 'wordpress-restaurant', 'pizz' => 'wordpress-restaurant', 'brasserie' => 'wordpress-restaurant', 'traiteur' => 'wordpress-restaurant', 'creperie' => 'wordpress-restaurant', 'bistro' => 'wordpress-restaurant',
+			'avocat' => 'wordpress-avocat', 'juri' => 'wordpress-avocat', 'notaire' => 'wordpress-avocat', 'huissier' => 'wordpress-avocat', 'cabinet' => 'wordpress-avocat', 'expert-comptable' => 'wordpress-avocat', 'comptable' => 'wordpress-avocat',
+			'association' => 'wordpress-association', 'asso' => 'wordpress-association', 'club ' => 'wordpress-association',
+			'barber' => 'wordpress-barber', 'coiff' => 'wordpress-barber', 'salon' => 'wordpress-barber', 'esthe' => 'wordpress-barber', 'beaute' => 'wordpress-barber', 'ongle' => 'wordpress-barber',
+			'coach' => 'wordpress-coach', 'sport' => 'wordpress-coach', 'fitness' => 'wordpress-coach', 'yoga' => 'wordpress-coach', 'pilates' => 'wordpress-coach',
+			'artisan' => 'wordpress-artisan', 'plomb' => 'wordpress-artisan', 'menuis' => 'wordpress-artisan', 'electric' => 'wordpress-artisan', 'macon' => 'wordpress-artisan', 'maçon' => 'wordpress-artisan', 'peintre' => 'wordpress-artisan', 'btp' => 'wordpress-artisan', 'chauffag' => 'wordpress-artisan', 'serrur' => 'wordpress-artisan', 'couvreur' => 'wordpress-artisan', 'garage' => 'wordpress-artisan',
+		);
+		foreach ( $map as $kw => $slug ) { if ( false !== strpos( $t, $kw ) ) return home_url( '/' . $slug ); }
+		return '';
+	}
+}
+
 /* Audit d'un site depuis l'APP (léger = passif, avancé = approfondi ; JAMAIS Kali/local).
  * Rend une note /100 + le nombre de failles + des SMS prêts (refonte / sécurité / mixte). */
 add_action( 'wp_ajax_ag_app_audit', function () {
@@ -2447,10 +2464,12 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 	$link  = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_sale_link( strtolower( wp_get_current_user()->user_email ) ) : home_url( '/sites-express' );
 	// Reco : site pourri (note basse) → refonte ; sinon failles → sécurité ; sinon refonte douce.
 	$reco = ( $score < 50 ) ? 'refonte' : ( $crit > 0 ? 'securite' : 'refonte' );
+	$demo = function_exists( 'ag_demo_link_for' ) ? ag_demo_link_for( $name . ' ' . ( $_POST['type'] ?? '' ) ) : '';
+	$ex   = '' !== $demo ? " Exemple d'un site moderne pour votre activité : " . $demo : '';
 	$msg  = array(
-		'refonte'  => "Bonjour, j'ai analysé le site de " . $who . " : note " . $score . "/100. Il gagnerait beaucoup à être refait (rapidité, mobile, référencement Google). On offre justement un site chaque mois — je vous montre ? " . $link,
+		'refonte'  => "Bonjour, j'ai analysé le site de " . $who . " : note " . $score . "/100. Il gagnerait beaucoup à être refait (rapidité, mobile, référencement Google)." . $ex . " On offre justement un site chaque mois — je vous montre ? " . $link,
 		'securite' => "Bonjour, audit du site de " . $who . " : " . ( $crit > 0 ? $crit . " point(s) de sécurité à corriger" : "quelques points à sécuriser" ) . " (données clients, mises à jour). On peut le sécuriser rapidement. Audit détaillé offert : " . $link,
-		'mixte'    => "Bonjour, j'ai audité le site de " . $who . " : note " . $score . "/100" . ( $crit > 0 ? " et " . $crit . " faille(s) de sécurité" : "" ) . ". Entre une refonte moderne et une sécurisation, je peux vous conseiller — on offre un site ce mois-ci : " . $link,
+		'mixte'    => "Bonjour, j'ai audité le site de " . $who . " : note " . $score . "/100" . ( $crit > 0 ? " et " . $crit . " faille(s) de sécurité" : "" ) . "." . $ex . " Refonte ou sécurisation, je vous conseille — on offre un site ce mois-ci : " . $link,
 	);
 	$phone = sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) );
 	// Lien du RAPPORT CLIENT (page teaser à envoyer au prospect).
@@ -2479,6 +2498,36 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 	update_option( 'ag_app_audits', $audits, false );
 
 	wp_send_json_success( array( 'score' => $score, 'critical' => $crit, 'tech' => $tech, 'mode' => $mode, 'reco' => $reco, 'fails' => $fails, 'report' => $report, 'msg' => $msg ) );
+} );
+
+/* Envoi SMS EN MASSE aux ambassadeurs depuis l'app (admin) + journal de suivi. */
+add_action( 'wp_ajax_ag_app_bulk_sms', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error( array( 'm' => 'Refusé.' ) );
+	$msg = trim( wp_strip_all_tags( (string) wp_unslash( $_POST['msg'] ?? '' ) ) );
+	$raw = (string) wp_unslash( $_POST['numbers'] ?? '' );
+	if ( '' === $msg ) wp_send_json_error( array( 'm' => 'Message vide.' ) );
+	$nums = array();
+	foreach ( preg_split( '/[\s,;]+/', $raw ) as $p ) {
+		$e = function_exists( 'ag_sms_to_e164' ) ? ag_sms_to_e164( $p ) : preg_replace( '/[^0-9+]/', '', $p );
+		if ( '' !== $e && strlen( preg_replace( '/[^0-9]/', '', $e ) ) >= 9 && ! in_array( $e, $nums, true ) ) { $nums[] = $e; }
+	}
+	$nums = array_slice( $nums, 0, 100 );
+	if ( empty( $nums ) ) wp_send_json_error( array( 'm' => 'Aucun numéro valide.' ) );
+	if ( ! function_exists( 'ag_sms_send' ) || '' === (string) get_option( 'ag_smsgw_mode', '' ) ) {
+		wp_send_json_error( array( 'm' => 'Passerelle SMS pas encore active (Android + SIM à brancher). ' . count( $nums ) . ' numéro(s) prêts.' ) );
+	}
+	$detail = array(); $ok = 0; $ko = 0;
+	foreach ( $nums as $to ) {
+		$sent = ag_sms_send( $to, $msg );
+		$detail[] = array( 'to' => $to, 'st' => $sent ? 'envoyé' : 'échec' );
+		$sent ? $ok++ : $ko++;
+		usleep( 150000 );
+	}
+	$log = get_option( 'ag_bulk_sms_log', array() ); if ( ! is_array( $log ) ) { $log = array(); }
+	array_unshift( $log, array( 'ts' => time(), 'msg' => $msg, 'total' => count( $nums ), 'ok' => $ok, 'ko' => $ko, 'detail' => $detail ) );
+	if ( count( $log ) > 40 ) { $log = array_slice( $log, 0, 40 ); }
+	update_option( 'ag_bulk_sms_log', $log, false );
+	wp_send_json_success( array( 'ok' => $ok, 'ko' => $ko, 'total' => count( $nums ) ) );
 } );
 
 /* ── 9. Notifications téléphone (Telegram, gratuit & instantané) ──── */

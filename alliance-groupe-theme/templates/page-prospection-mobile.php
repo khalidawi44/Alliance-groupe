@@ -37,6 +37,15 @@ $ag_ajax_nonce   = wp_create_nonce( 'ag_amb_prospect' );
 $ag_is_admin = current_user_can( 'manage_options' );
 $ag_calls    = $ag_is_admin ? array_slice( (array) get_option( 'ag_voice_log', array() ), 0, 40 ) : array();
 $ag_audits   = array_slice( (array) get_option( 'ag_app_audits', array() ), 0, 40, true );
+$ag_ambs     = array();
+$ag_bulklog  = array();
+if ( $ag_is_admin ) {
+	foreach ( get_users( array( 'meta_key' => 'ag_amb_phone', 'number' => 300 ) ) as $uu ) {
+		$ph = get_user_meta( $uu->ID, 'ag_amb_phone', true );
+		if ( $ph ) { $ag_ambs[] = array( 'name' => $uu->display_name, 'phone' => (string) $ph ); }
+	}
+	$ag_bulklog = array_slice( (array) get_option( 'ag_bulk_sms_log', array() ), 0, 20 );
+}
 
 $ag_cnt = array( 'total' => 0, 'a_contacter' => 0, 'contacte' => 0, 'repondeur' => 0, 'interesse' => 0, 'client' => 0 );
 foreach ( $ag_my_prospects as $ppc ) {
@@ -272,6 +281,33 @@ foreach ( $ag_my_prospects as $ppc ) {
 	</section>
 	<?php endif; ?>
 
+	<?php if ( $ag_is_admin ) : ?>
+	<!-- AMBASSADEURS (SMS en masse + suivi) -->
+	<section class="view" id="view-ambass">
+		<h2 class="sec">🤝 Ambassadeurs — SMS en masse</h2>
+		<div class="card">
+			<h3>Nouvel envoi</h3>
+			<p class="sub" style="margin:-4px 0 10px;">Colle jusqu'à 100 numéros (un par ligne, ou séparés par virgule/espace).</p>
+			<?php if ( $ag_ambs ) : ?><button type="button" id="ag-fill-ambs" class="mini" style="cursor:pointer;margin-bottom:9px;">➕ Remplir avec mes ambassadeurs (<?php echo count( $ag_ambs ); ?>)</button><?php endif; ?>
+			<textarea id="ag-bulk-nums" placeholder="0612345678&#10;0798765432&#10;..." style="min-height:110px;"></textarea>
+			<textarea id="ag-bulk-msg" placeholder="Ton message aux ambassadeurs..." style="min-height:82px;">Salut ! Nouvelle campagne Alliance Groupe : de nouveaux prospects à contacter t'attendent dans ton espace. On compte sur toi 💪</textarea>
+			<button type="button" id="ag-bulk-send" class="b gold" style="margin-top:10px;">📨 Envoyer en masse</button>
+			<div id="ag-bulk-res" class="sub" style="margin-top:8px;"></div>
+		</div>
+		<h3 style="margin:6px 2px 10px;font-size:1.02rem;">Suivi des envois</h3>
+		<?php if ( empty( $ag_bulklog ) ) : ?>
+			<div class="card"><p class="sub" style="margin:0;">Aucun envoi pour l'instant.</p></div>
+		<?php else : foreach ( $ag_bulklog as $c ) : ?>
+			<div class="card" style="padding:13px;">
+				<div style="display:flex;justify-content:space-between;align-items:baseline;"><strong><?php echo (int) $c['total']; ?> SMS</strong><span class="sub" style="margin:0;font-size:.76rem;"><?php echo esc_html( date_i18n( 'd/m à H\hi', (int) ( $c['ts'] ?? 0 ) ) ); ?></span></div>
+				<div style="margin:4px 0;font-size:.85rem;"><span style="color:#2ecc71;">✅ <?php echo (int) $c['ok']; ?> envoyés</span> · <span style="color:#ff6b6b;">❌ <?php echo (int) $c['ko']; ?> échecs</span></div>
+				<div class="sub" style="font-size:.78rem;"><?php echo esc_html( mb_substr( (string) ( $c['msg'] ?? '' ), 0, 90 ) ); ?></div>
+				<details style="margin-top:6px;"><summary style="cursor:pointer;color:var(--gold);font-size:.82rem;">Voir les numéros</summary><div style="font-size:.78rem;color:#cfcfd6;margin-top:5px;line-height:1.7;"><?php foreach ( (array) ( $c['detail'] ?? array() ) as $dd ) { echo esc_html( ( 'envoyé' === ( $dd['st'] ?? '' ) ? '✅ ' : '❌ ' ) . ( $dd['to'] ?? '' ) ) . '<br>'; } ?></div></details>
+			</div>
+		<?php endforeach; endif; ?>
+	</section>
+	<?php endif; ?>
+
 	<!-- AUDIT -->
 	<section class="view" id="view-audit">
 		<h2 class="sec">🛡️ Audits</h2>
@@ -317,6 +353,7 @@ foreach ( $ag_my_prospects as $ppc ) {
 	<a href="#" data-t="prospecter" onclick="AG.tab('prospecter');return false"><i>🎯</i>Prospecter</a>
 	<a href="#" data-t="chercher" onclick="AG.tab('chercher');return false"><i>🔎</i>Chercher</a>
 	<?php if ( $ag_is_admin ) : ?><a href="#" data-t="appels" onclick="AG.tab('appels');return false"><i>📞</i>Appels</a><?php endif; ?>
+	<?php if ( $ag_is_admin ) : ?><a href="#" data-t="ambass" onclick="AG.tab('ambass');return false"><i>🤝</i>Ambass.</a><?php endif; ?>
 	<a href="#" data-t="audit" onclick="AG.tab('audit');return false"><i>🛡️</i>Audit</a>
 </nav>
 
@@ -473,6 +510,23 @@ var AG = (function(){
 			if(!j||!j.success){ res.innerHTML='<span class="sub">❌ '+((j&&j.data&&j.data.m)||'Erreur')+'</span>'; return; }
 			res.innerHTML=agAuditHTML(u, j.data, '');
 		}).catch(function(){ arun.removeAttribute('disabled'); arun.textContent='🛡️ Lancer l\'audit'; res.innerHTML='<span class="sub">❌ Erreur réseau</span>'; });
+	}); }
+
+	// Ambassadeurs — SMS en masse + suivi
+	var ambPhones = <?php echo wp_json_encode( array_values( array_map( function ( $a ) { return $a['phone']; }, $ag_ambs ) ) ); ?>;
+	var fillA=document.getElementById('ag-fill-ambs');
+	if(fillA){ fillA.addEventListener('click',function(){ document.getElementById('ag-bulk-nums').value=ambPhones.join('\n'); AG.toast(ambPhones.length+' numéros ajoutés'); }); }
+	var bulkSend=document.getElementById('ag-bulk-send');
+	if(bulkSend){ bulkSend.addEventListener('click',function(){
+		var nums=document.getElementById('ag-bulk-nums').value, m=document.getElementById('ag-bulk-msg').value;
+		if(!nums.trim()){ AG.toast('Colle des numéros'); return; }
+		if(!confirm('Envoyer ce SMS à tous ces numéros ?')) return;
+		var r=document.getElementById('ag-bulk-res'); r.textContent='📨 Envoi en cours…'; bulkSend.setAttribute('disabled','disabled'); bulkSend.textContent='📨 Envoi…';
+		AG.post('ag_app_bulk_sms',{numbers:nums,msg:m}).then(function(j){
+			bulkSend.removeAttribute('disabled'); bulkSend.textContent='📨 Envoyer en masse';
+			if(j&&j.success){ r.innerHTML='✅ '+j.data.ok+' envoyés · ❌ '+j.data.ko+' échecs (sur '+j.data.total+'). Recharge la page pour voir le suivi.'; }
+			else { r.textContent='⚠️ '+((j&&j.data&&j.data.m)||'Erreur'); }
+		}).catch(function(){ bulkSend.removeAttribute('disabled'); bulkSend.textContent='📨 Envoyer en masse'; r.textContent='❌ Erreur réseau'; });
 	}); }
 
 	// Bouton remonter
