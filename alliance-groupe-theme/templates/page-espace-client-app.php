@@ -21,7 +21,7 @@ $wapro    = preg_replace( '/[^0-9]/', '', (string) get_option( 'ag_wa_pro', '' )
 $tel_pro  = preg_replace( '/[^0-9+]/', '', (string) ( get_option( 'ag_tester_phone', '0744829516' ) ) );
 $ajax     = admin_url( 'admin-ajax.php' );
 $nonce    = wp_create_nonce( 'ag_client' );
-$rapport  = $site ? add_query_arg( array( 'ag_rapport' => 1, 'site' => rawurlencode( $site ), 'name' => rawurlencode( $u->display_name ?: $email ) ), home_url( '/' ) ) : '';
+$rapport  = $site ? ( function_exists( 'ag_rapport_full_url' ) ? ag_rapport_full_url( $site, $u->display_name ?: $email ) : add_query_arg( array( 'ag_rapport' => 1, 'site' => rawurlencode( $site ), 'name' => rawurlencode( $u->display_name ?: $email ) ), home_url( '/' ) ) ) : '';
 $reco_msg = rawurlencode( "Je te recommande Alliance Groupe pour ton site web / ta sécurité : " . home_url( '/' ) );
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>

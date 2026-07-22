@@ -2456,6 +2456,8 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 		$shot  = 'https://s.wordpress.com/mshots/v1/' . rawurlencode( (string) $site ) . '?w=680';
 		$price = function_exists( 'ag_tester_opt' ) ? (float) ag_tester_opt( 'price' ) : 49;
 		$payurl = function_exists( 'ag_tester_opt' ) ? trim( (string) ag_tester_opt( 'pay_url' ) ) : '';
+		$token    = isset( $_GET['k'] ) ? sanitize_text_field( wp_unslash( $_GET['k'] ) ) : '';
+		$unlocked = function_exists( 'ag_rapport_is_unlocked' ) ? ag_rapport_is_unlocked( $site, $token ) : false;
 		$cta   = '' !== $payurl ? $payurl : home_url( '/audit-securite?site=' . rawurlencode( (string) $site ) );
 		$ctalabel = '🔓 Débloquer mon rapport complet' . ( $price > 0 ? ' — ' . number_format_i18n( $price, 0 ) . ' €' : '' );
 		$logo  = get_stylesheet_directory_uri() . '/assets/images/logo-carte-square.jpg';
@@ -2544,11 +2546,17 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 					<div style="color:<?php echo esc_attr( $col ); ?>;font-weight:700;margin-top:6px;"><?php echo $score < 50 ? '⚠️ Site à risque' : ( $score < 75 ? 'À améliorer' : 'Perfectible' ); ?></div>
 				</div>
 			</div>
+			<?php if ( $unlocked ) : ?>
+			<div style="background:#0e1f13;border:1px solid #2e6a3f;border-radius:12px;padding:13px 15px;margin:16px 0;color:#bfe6c9;">
+				<strong style="color:#4ade80;">✅ Rapport complet débloqué</strong>
+				<div style="font-size:.86rem;margin-top:3px;">Merci pour votre confiance. Voici l'intégralité des points détectés et notre plan de correction.</div>
+			</div>
+			<?php endif; ?>
 			<h2>Ce qu'on a détecté (<?php echo count( $fails ); ?>)</h2>
-			<?php foreach ( $vis as $c ) : ?>
+			<?php foreach ( ( $unlocked ? $fails : $vis ) as $c ) : ?>
 				<div class="f"><strong><?php echo ( 'fail' === $c['status'] ? '❌ ' : '⚠️ ' ) . esc_html( $c['name'] ?? '' ); ?></strong><?php echo ! empty( $c['msg'] ) ? '<div class="m">' . esc_html( $c['msg'] ) . '</div>' : ''; ?></div>
 			<?php endforeach; ?>
-			<?php if ( $hid ) : ?>
+			<?php if ( $hid && ! $unlocked ) : ?>
 			<div class="lock"><div class="bl"><?php foreach ( $hid as $c ) : ?><div style="padding:6px 0;border-bottom:1px solid #222;">❌ <?php echo esc_html( $c['name'] ?? 'Faille' ); ?></div><?php endforeach; ?></div>
 				<div class="ov"><div style="font-size:1.6rem;">🔒</div><strong><?php echo count( $hid ); ?> autre<?php echo count( $hid ) > 1 ? 's' : ''; ?> faille<?php echo count( $hid ) > 1 ? 's' : ''; ?> détectée<?php echo count( $hid ) > 1 ? 's' : ''; ?></strong><span style="color:#9a9aa2;font-size:.85rem;">À découvrir dans le rapport complet<?php echo $price > 0 ? ' — ' . esc_html( number_format_i18n( $price, 0 ) ) . ' €' : ''; ?></span></div>
 			</div>
@@ -2556,7 +2564,11 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 			<?php if ( $kali ) : ?>
 			<div style="background:#101826;border:1px solid #24405f;border-radius:12px;padding:14px;margin-bottom:10px;">
 				<strong style="color:#7fb4ff;">🔬 Scan de sécurité approfondi réalisé</strong>
+				<?php if ( $unlocked ) : ?>
+				<div style="color:#cfe0f5;font-size:.86rem;margin-top:6px;white-space:pre-wrap;word-break:break-word;line-height:1.5;"><?php echo esc_html( $kali ); ?></div>
+				<?php else : ?>
 				<div style="color:#aac4e6;font-size:.86rem;margin-top:4px;"><?php echo (int) $kali_n; ?> anomalie(s) technique(s) supplémentaire(s) détectée(s) par notre expert. Détail complet dans le rapport débloqué.</div>
+				<?php endif; ?>
 			</div>
 			<?php endif; ?>
 			<div class="warn"><strong>⚠️ Ce qui peut arriver si ce n'est pas corrigé&nbsp;:</strong><ul>
@@ -2565,15 +2577,256 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 				<li><strong>Rançongiciel</strong> : votre site est bloqué et on vous demande de payer pour le récupérer.</li>
 				<li><strong>Déréférencement Google</strong> : un site signalé « dangereux » disparaît des résultats → <strong>perte directe de clients</strong>.</li>
 			</ul></div>
-			<a class="cta" href="<?php echo esc_url( $cta ); ?>"><?php echo esc_html( $ctalabel ); ?></a>
+			<?php if ( $unlocked ) : ?>
+				<a class="cta" href="<?php echo esc_url( home_url( '/mon-espace-client' ) ); ?>">🔧 Faire corriger mon site par Alliance Groupe</a>
+			<?php else : ?>
+				<?php if ( isset( $_GET['err'] ) ) : ?><p style="text-align:center;color:#e5484d;font-size:.85rem;margin-top:14px;"><?php echo 'email' === $_GET['err'] ? 'Merci de saisir un email valide.' : 'Session expirée, réessayez.'; ?></p><?php endif; ?>
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-top:20px;background:#14141a;border:1px solid #26262f;border-radius:14px;padding:16px;">
+					<input type="hidden" name="action" value="ag_rapport_checkout">
+					<input type="hidden" name="_n" value="<?php echo esc_attr( wp_create_nonce( 'ag_rapport_pay' ) ); ?>">
+					<input type="hidden" name="site" value="<?php echo esc_attr( $site ); ?>">
+					<input type="hidden" name="name" value="<?php echo esc_attr( $name ); ?>">
+					<label style="display:block;color:#cfcfd6;font-size:.9rem;font-weight:600;margin-bottom:8px;">Votre email pour recevoir le rapport complet :</label>
+					<input type="email" name="email" required placeholder="vous@exemple.com" value="<?php echo esc_attr( is_user_logged_in() ? wp_get_current_user()->user_email : '' ); ?>" style="width:100%;padding:13px;border-radius:10px;border:1px solid #333;background:#0e0e13;color:#fff;font-size:1rem;margin-bottom:12px;">
+					<button type="submit" class="cta" style="width:100%;border:0;cursor:pointer;"><?php echo esc_html( $ctalabel ); ?></button>
+				</form>
+			<?php endif; ?>
 			<?php $wapro = preg_replace( '/[^0-9]/', '', (string) get_option( 'ag_wa_pro', '' ) ); if ( $wapro ) : ?>
 			<a class="cta" style="background:#25d366;color:#04210f;margin-top:10px;" href="https://wa.me/<?php echo esc_attr( $wapro ); ?>?text=<?php echo rawurlencode( 'Bonjour, j\'ai vu le rapport de sécurité de mon site ' . $host . '. J\'aimerais en savoir plus.' ); ?>">💬 Poser une question sur WhatsApp</a>
 			<?php endif; ?>
-			<p style="text-align:center;color:#8a8a92;font-size:.82rem;margin-top:12px;">Rapport complet + plan de correction par Alliance Groupe. Paiement sécurisé.</p>
+			<p style="text-align:center;color:#8a8a92;font-size:.82rem;margin-top:12px;"><?php echo $unlocked ? 'Rapport complet Alliance Groupe. On vous accompagne pour tout corriger.' : 'Rapport complet + plan de correction par Alliance Groupe. Paiement sécurisé, déblocage immédiat.'; ?></p>
 		<?php endif; ?>
 		</div>
 		<script>window.agShot=function(i){if(i.naturalWidth>50&&!i.getAttribute('data-fail'))return;var n=+(i.getAttribute('data-try')||0);if(n>=5){i.style.display='none';return;}i.setAttribute('data-try',n+1);i.removeAttribute('data-fail');setTimeout(function(){i.src=i.getAttribute('data-base')+'&r='+Date.now();},3200);};window.agShotErr=function(i){i.setAttribute('data-fail','1');window.agShot(i);};</script>
 		</body></html><?php
+	}
+}
+
+/* ============================================================
+   PAYWALL DU RAPPORT CLIENT
+   checkout email → paiement PayPal vérifié → déblocage AUTO :
+   compte ag_client créé + rapport complet débloqué + email d'accès.
+   Décidé avec Fabrice : compte créé APRÈS paiement ; le montant du
+   rapport (ag_tester_opt 'price', 49 €) ne doit PAS égaler un tier
+   de licence (99/149) pour éviter tout conflit de hook.
+   ============================================================ */
+
+/* Clé d'unlock d'un site (indépendante du protocole/casse). */
+if ( ! function_exists( 'ag_rapport_key' ) ) {
+	function ag_rapport_key( $site ) { return md5( strtolower( trim( (string) $site ) ) ); }
+}
+
+/* Le rapport de ce site est-il débloqué pour ce visiteur ?
+ * - jeton d'accès valide (?k=) reçu par email après paiement, OU
+ * - admin connecté (aperçu), OU
+ * - client connecté dont l'email correspond à l'achat. */
+if ( ! function_exists( 'ag_rapport_is_unlocked' ) ) {
+	function ag_rapport_is_unlocked( $site, $token = '' ) {
+		if ( '' === (string) $site ) return false;
+		if ( current_user_can( 'manage_options' ) ) return true;
+		$all = get_option( 'ag_audit_unlocked', array() );
+		$rec = is_array( $all ) ? ( $all[ ag_rapport_key( $site ) ] ?? null ) : null;
+		if ( ! is_array( $rec ) ) return false;
+		if ( '' !== $token && hash_equals( (string) ( $rec['token'] ?? '' ), (string) $token ) ) return true;
+		if ( is_user_logged_in() ) {
+			$u = wp_get_current_user();
+			if ( $u && strtolower( $u->user_email ) === strtolower( (string) ( $rec['email'] ?? '' ) ) ) return true;
+		}
+		return false;
+	}
+}
+
+/* Lien du rapport COMPLET débloqué (avec jeton d'accès). */
+if ( ! function_exists( 'ag_rapport_full_url' ) ) {
+	function ag_rapport_full_url( $site, $name = '' ) {
+		$all = get_option( 'ag_audit_unlocked', array() );
+		$rec = is_array( $all ) ? ( $all[ ag_rapport_key( $site ) ] ?? array() ) : array();
+		$tok = (string) ( $rec['token'] ?? '' );
+		return add_query_arg( array_filter( array(
+			'ag_rapport' => 1,
+			'site'       => rawurlencode( (string) $site ),
+			'name'       => '' !== (string) $name ? rawurlencode( (string) $name ) : null,
+			'k'          => '' !== $tok ? $tok : null,
+		) ), home_url( '/' ) );
+	}
+}
+
+/* Checkout : le client saisit son email sur le rapport → commande en attente
+ * → on l'envoie payer (lien PayPal). Le déblocage se fait au paiement vérifié. */
+add_action( 'admin_post_nopriv_ag_rapport_checkout', 'ag_rapport_checkout' );
+add_action( 'admin_post_ag_rapport_checkout', 'ag_rapport_checkout' );
+if ( ! function_exists( 'ag_rapport_checkout' ) ) {
+	function ag_rapport_checkout() {
+		$site = isset( $_POST['site'] ) ? esc_url_raw( wp_unslash( $_POST['site'] ) ) : '';
+		$name = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
+		$back = add_query_arg( array( 'ag_rapport' => 1, 'site' => rawurlencode( $site ), 'name' => rawurlencode( $name ) ), home_url( '/' ) );
+		if ( ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_rapport_pay' ) ) {
+			wp_safe_redirect( add_query_arg( 'err', 'nonce', $back ) ); exit;
+		}
+		$email = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
+		if ( '' === $site || ! is_email( $email ) ) {
+			wp_safe_redirect( add_query_arg( 'err', 'email', $back ) ); exit;
+		}
+		$price = function_exists( 'ag_tester_opt' ) ? (float) ag_tester_opt( 'price' ) : 49;
+		$pend  = get_option( 'ag_audit_pending', array() );
+		if ( ! is_array( $pend ) ) $pend = array();
+		// Dé-doublonne : une seule commande en attente par (site + email).
+		$exists = false;
+		foreach ( $pend as $p ) {
+			if ( empty( $p['paid'] ) && ag_rapport_key( $p['site'] ?? '' ) === ag_rapport_key( $site ) && strtolower( (string) ( $p['email'] ?? '' ) ) === strtolower( $email ) ) { $exists = true; break; }
+		}
+		if ( ! $exists ) {
+			$pend[] = array( 'site' => $site, 'name' => $name, 'email' => $email, 'price' => $price, 'ts' => time(), 'paid' => 0, 'txn' => '' );
+			if ( count( $pend ) > 300 ) $pend = array_slice( $pend, -300 );
+			update_option( 'ag_audit_pending', $pend, false );
+		}
+		if ( function_exists( 'ag_push' ) ) {
+			ag_push( '🛒 Rapport : commande en attente', $email . ' — ' . $site . ' (' . number_format_i18n( $price, 0 ) . ' €)' );
+		}
+		$payurl = function_exists( 'ag_tester_opt' ) ? trim( (string) ag_tester_opt( 'pay_url' ) ) : '';
+		if ( '' !== $payurl ) { wp_redirect( $payurl ); exit; }
+		// Pas de lien de paiement configuré : on confirme l'enregistrement de la demande.
+		wp_safe_redirect( add_query_arg( 'ok', 'pending', $back ) ); exit;
+	}
+}
+
+/* Paiement vérifié → si une commande de rapport correspond (montant + email) :
+ * crée le compte client, débloque le rapport, envoie l'accès par email. */
+add_action( 'ag_paypal_payment_verified', function ( $amount, $email, $txn = '', $type = '', $resource = array() ) {
+	$amount = (float) $amount;
+	$price  = function_exists( 'ag_tester_opt' ) ? (float) ag_tester_opt( 'price' ) : 49;
+	if ( $price <= 0 || abs( $amount - $price ) > 0.5 ) return; // pas le montant d'un rapport
+	$email = sanitize_email( (string) $email );
+	$pend  = get_option( 'ag_audit_pending', array() );
+	if ( ! is_array( $pend ) ) return;
+	$hit = -1;
+	// 1) correspondance email exacte
+	foreach ( $pend as $i => $p ) {
+		if ( empty( $p['paid'] ) && strtolower( (string) ( $p['email'] ?? '' ) ) === strtolower( $email ) ) { $hit = $i; break; }
+	}
+	// 2) sinon : une seule commande en attente à ce montant → on l'attribue
+	if ( $hit < 0 ) {
+		$cands = array();
+		foreach ( $pend as $i => $p ) { if ( empty( $p['paid'] ) ) $cands[] = $i; }
+		if ( 1 === count( $cands ) ) $hit = $cands[0];
+	}
+	if ( $hit < 0 ) return; // aucune commande de rapport → laisse les autres hooks agir
+
+	$order = $pend[ $hit ];
+	$site  = (string) $order['site'];
+	$name  = (string) ( $order['name'] ?? '' );
+	$to    = is_email( $email ) ? $email : (string) $order['email'];
+
+	// Idempotence : déjà débloqué pour cette transaction ? on ne refait rien.
+	$unl = get_option( 'ag_audit_unlocked', array() );
+	if ( ! is_array( $unl ) ) $unl = array();
+	$key = ag_rapport_key( $site );
+	if ( isset( $unl[ $key ]['txn'] ) && '' !== (string) $txn && (string) $unl[ $key ]['txn'] === (string) $txn ) return;
+
+	// Débloque (conserve le jeton s'il existe déjà).
+	$token = isset( $unl[ $key ]['token'] ) && '' !== $unl[ $key ]['token'] ? $unl[ $key ]['token'] : wp_generate_password( 20, false );
+	$unl[ $key ] = array( 'email' => $to, 'token' => $token, 'ts' => time(), 'txn' => (string) $txn, 'site' => $site, 'name' => $name );
+	update_option( 'ag_audit_unlocked', $unl, false );
+
+	$pend[ $hit ]['paid'] = 1;
+	$pend[ $hit ]['txn']  = (string) $txn;
+	update_option( 'ag_audit_pending', $pend, false );
+
+	// Crée le compte client (envoie l'email « définis ton mot de passe »).
+	if ( function_exists( 'ag_create_member' ) ) {
+		$uid = (int) ag_create_member( $to, $name, 'ag_client' );
+		if ( $uid ) {
+			if ( '' === (string) get_user_meta( $uid, 'ag_client_site', true ) && '' !== $site ) update_user_meta( $uid, 'ag_client_site', $site );
+			$reps = (array) get_user_meta( $uid, 'ag_client_reports', true );
+			$reps[ $key ] = array( 'site' => $site, 'name' => $name, 'ts' => time() );
+			update_user_meta( $uid, 'ag_client_reports', $reps );
+		}
+	}
+
+	// Email : accès direct au rapport complet.
+	$full = ag_rapport_full_url( $site, $name );
+	if ( function_exists( 'ag_email_wrap' ) && function_exists( 'ag_email_button' ) ) {
+		$inner = '<p>Bonjour' . ( '' !== $name ? ' ' . esc_html( $name ) : '' ) . ',</p>'
+			. '<p>Merci pour votre confiance 🙏 Votre <strong>rapport de sécurité complet</strong> est débloqué.</p>'
+			. ag_email_button( 'Voir mon rapport complet', $full )
+			. '<p style="color:#9a9aa5;font-size:13px;">Ou copiez ce lien :<br><span style="color:#cfc7b8;word-break:break-all;">' . esc_url( $full ) . '</span></p>'
+			. '<p>Un <strong>compte client</strong> a aussi été créé pour vous : vous recevez un second email pour définir votre mot de passe et accéder à votre espace.</p>'
+			. '<p>On vous accompagne pour tout corriger — répondez simplement à cet email pour lancer la mise en sécurité.</p>';
+		wp_mail( $to, 'Votre rapport de sécurité complet 🛡️', ag_email_wrap( 'Rapport débloqué', $inner ), array( 'Content-Type: text/html; charset=UTF-8', 'From: Alliance Groupe <contact@alliancegroupe-inc.com>' ) );
+	} else {
+		wp_mail( $to, 'Votre rapport de sécurité complet', "Bonjour,\n\nVotre rapport complet est débloqué :\n" . $full . "\n\nAlliance Groupe" );
+	}
+	if ( function_exists( 'ag_push' ) ) ag_push( '✅ Rapport payé + débloqué', $to . ' — ' . $site . ' (' . number_format_i18n( $amount, 0 ) . ' €)' );
+}, 15, 5 );
+
+/* ADMIN : réconciliation des rapports (commandes en attente + débloqués),
+ * avec déblocage MANUEL (au cas où l'email PayPal du payeur diffère). */
+add_action( 'admin_menu', function () {
+	add_submenu_page( 'ag-espace-audit', 'Rapports payés', '🔓 Rapports (paiements)', 'manage_options', 'ag-rapports-pay', 'ag_rapports_pay_render' );
+}, 25 );
+
+/* Déblocage / relance manuels depuis l'admin. */
+add_action( 'admin_post_ag_rapport_unlock_manual', function () {
+	if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Non autorisé.' );
+	check_admin_referer( 'ag_rapport_unlock_manual' );
+	$site  = esc_url_raw( wp_unslash( $_POST['site'] ?? '' ) );
+	$email = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
+	$name  = sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) );
+	$price = function_exists( 'ag_tester_opt' ) ? (float) ag_tester_opt( 'price' ) : 49;
+	if ( '' !== $site && is_email( $email ) ) {
+		// Réutilise exactement le même flux que le webhook (idempotent).
+		do_action( 'ag_paypal_payment_verified', $price, $email, 'MANUAL-' . time(), 'PAYMENT.CAPTURE.COMPLETED', array() );
+	}
+	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-rapports-pay', 'done' => 1 ), admin_url( 'admin.php' ) ) );
+	exit;
+} );
+
+if ( ! function_exists( 'ag_rapports_pay_render' ) ) {
+	function ag_rapports_pay_render() {
+		if ( ! current_user_can( 'manage_options' ) ) return;
+		$pend  = (array) get_option( 'ag_audit_pending', array() );
+		$unl   = (array) get_option( 'ag_audit_unlocked', array() );
+		$price = function_exists( 'ag_tester_opt' ) ? (float) ag_tester_opt( 'price' ) : 49;
+		echo '<div class="wrap"><h1>🔓 Rapports — paiements &amp; déblocages</h1>';
+		if ( isset( $_GET['done'] ) ) echo '<div class="notice notice-success is-dismissible"><p>Déblocage effectué + email envoyé au client.</p></div>';
+		echo '<p style="max-width:820px;color:#50575e;">Quand un client paie le <strong>' . esc_html( number_format_i18n( $price, 0 ) ) . ' €</strong> du rapport (lien PayPal), son <strong>compte est créé</strong> et le <strong>rapport se débloque automatiquement</strong>. Si l\'email PayPal du payeur diffère de celui saisi, débloque ici à la main.</p>';
+
+		// Commandes en attente.
+		echo '<h2>⏳ Commandes en attente</h2>';
+		$open = array_reverse( array_filter( $pend, function ( $p ) { return empty( $p['paid'] ); } ) );
+		if ( ! $open ) {
+			echo '<p><em>Aucune commande en attente.</em></p>';
+		} else {
+			echo '<table class="widefat striped"><thead><tr><th>Site</th><th>Nom</th><th>Email</th><th>Montant</th><th>Date</th><th>Débloquer</th></tr></thead><tbody>';
+			foreach ( $open as $p ) {
+				echo '<tr><td>' . esc_html( $p['site'] ?? '' ) . '</td><td>' . esc_html( $p['name'] ?? '' ) . '</td><td>' . esc_html( $p['email'] ?? '' ) . '</td><td>' . esc_html( number_format_i18n( (float) ( $p['price'] ?? $price ), 0 ) ) . ' €</td><td>' . esc_html( ! empty( $p['ts'] ) ? wp_date( 'd/m/Y H\hi', (int) $p['ts'] ) : '' ) . '</td><td>';
+				echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" onsubmit="return confirm(\'Confirmer le paiement de ce client et débloquer son rapport ?\');" style="margin:0;">';
+				wp_nonce_field( 'ag_rapport_unlock_manual' );
+				echo '<input type="hidden" name="action" value="ag_rapport_unlock_manual">';
+				echo '<input type="hidden" name="site" value="' . esc_attr( $p['site'] ?? '' ) . '">';
+				echo '<input type="hidden" name="email" value="' . esc_attr( $p['email'] ?? '' ) . '">';
+				echo '<input type="hidden" name="name" value="' . esc_attr( $p['name'] ?? '' ) . '">';
+				echo '<button class="button button-primary button-small">✅ Payé → débloquer</button></form></td></tr>';
+			}
+			echo '</tbody></table>';
+		}
+
+		// Rapports débloqués.
+		echo '<h2 style="margin-top:24px;">✅ Rapports débloqués</h2>';
+		if ( ! $unl ) {
+			echo '<p><em>Aucun rapport débloqué pour l\'instant.</em></p>';
+		} else {
+			$rows = array();
+			foreach ( $unl as $r ) { if ( is_array( $r ) ) $rows[] = $r; }
+			usort( $rows, function ( $a, $b ) { return (int) ( $b['ts'] ?? 0 ) - (int) ( $a['ts'] ?? 0 ); } );
+			echo '<table class="widefat striped"><thead><tr><th>Site</th><th>Client (email)</th><th>Date</th><th>Transaction</th><th>Lien</th></tr></thead><tbody>';
+			foreach ( $rows as $r ) {
+				$full = function_exists( 'ag_rapport_full_url' ) ? ag_rapport_full_url( $r['site'] ?? '', $r['name'] ?? '' ) : '';
+				echo '<tr><td>' . esc_html( $r['site'] ?? '' ) . '</td><td>' . esc_html( $r['email'] ?? '' ) . '</td><td>' . esc_html( ! empty( $r['ts'] ) ? wp_date( 'd/m/Y H\hi', (int) $r['ts'] ) : '' ) . '</td><td>' . esc_html( $r['txn'] ?? '' ) . '</td><td>' . ( $full ? '<a href="' . esc_url( $full ) . '" target="_blank">Ouvrir</a>' : '' ) . '</td></tr>';
+			}
+			echo '</tbody></table>';
+		}
+		echo '</div>';
 	}
 }
 
