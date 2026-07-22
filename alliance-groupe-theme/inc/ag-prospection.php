@@ -2450,7 +2450,10 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 		$who   = '' !== $name ? $name : $host;
 		$col   = $score < 50 ? '#e5484d' : ( $score < 75 ? '#e6a817' : '#2ecc71' );
 		$shot  = 'https://s.wordpress.com/mshots/v1/' . rawurlencode( (string) $site ) . '?w=680';
-		$cta   = home_url( '/audit-securite' );
+		$price = function_exists( 'ag_tester_opt' ) ? (float) ag_tester_opt( 'price' ) : 49;
+		$payurl = function_exists( 'ag_tester_opt' ) ? trim( (string) ag_tester_opt( 'pay_url' ) ) : '';
+		$cta   = '' !== $payurl ? $payurl : home_url( '/audit-securite?site=' . rawurlencode( (string) $site ) );
+		$ctalabel = '🔓 Débloquer mon rapport complet' . ( $price > 0 ? ' — ' . number_format_i18n( $price, 0 ) . ' €' : '' );
 		$logo  = get_stylesheet_directory_uri() . '/assets/images/logo-carte-square.jpg';
 		?><!DOCTYPE html><html lang="fr"><head>
 		<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -2495,16 +2498,17 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 			<?php endforeach; ?>
 			<?php if ( $hid ) : ?>
 			<div class="lock"><div class="bl"><?php foreach ( $hid as $c ) : ?><div style="padding:6px 0;border-bottom:1px solid #222;">❌ <?php echo esc_html( $c['name'] ?? 'Faille' ); ?></div><?php endforeach; ?></div>
-				<div class="ov"><div style="font-size:1.6rem;">🔒</div><strong><?php echo count( $hid ); ?> autre<?php echo count( $hid ) > 1 ? 's' : ''; ?> point<?php echo count( $hid ) > 1 ? 's' : ''; ?> à corriger</strong><span style="color:#9a9aa2;font-size:.85rem;">Débloquez le rapport complet ci-dessous.</span></div>
+				<div class="ov"><div style="font-size:1.6rem;">🔒</div><strong><?php echo count( $hid ); ?> autre<?php echo count( $hid ) > 1 ? 's' : ''; ?> faille<?php echo count( $hid ) > 1 ? 's' : ''; ?> détectée<?php echo count( $hid ) > 1 ? 's' : ''; ?></strong><span style="color:#9a9aa2;font-size:.85rem;">À découvrir dans le rapport complet<?php echo $price > 0 ? ' — ' . esc_html( number_format_i18n( $price, 0 ) ) . ' €' : ''; ?></span></div>
 			</div>
 			<?php endif; ?>
-			<div class="warn"><strong>⚠️ Pourquoi c'est important&nbsp;:</strong><ul>
-				<li>Un site vulnérable peut être <strong>piraté</strong> (défiguration, spam, redirection).</li>
-				<li>Risque de <strong>fuite des données clients</strong> → responsabilité <strong>RGPD</strong>.</li>
-				<li>Un site lent/mal sécurisé <strong>perd des clients</strong> et <strong>descend sur Google</strong>.</li>
+			<div class="warn"><strong>⚠️ Ce qui peut arriver si ce n'est pas corrigé&nbsp;:</strong><ul>
+				<li><strong>Piratage &amp; défiguration</strong> : votre site affiche du spam ou redirige vos clients vers un autre site (arrivé à des milliers de PME en 2024).</li>
+				<li><strong>Vol des données clients</strong> (noms, emails, réservations) → vous êtes responsable devant la <strong>CNIL / RGPD</strong> : jusqu'à <strong>4 % du chiffre d'affaires</strong> d'amende.</li>
+				<li><strong>Rançongiciel</strong> : votre site est bloqué et on vous demande de payer pour le récupérer.</li>
+				<li><strong>Déréférencement Google</strong> : un site signalé « dangereux » disparaît des résultats → <strong>perte directe de clients</strong>.</li>
 			</ul></div>
-			<a class="cta" href="<?php echo esc_url( $cta ); ?>">🔒 Débloquer le rapport complet &amp; faire corriger mon site</a>
-			<p style="text-align:center;color:#8a8a92;font-size:.82rem;margin-top:12px;">Correction par Alliance Groupe · réponse rapide.</p>
+			<a class="cta" href="<?php echo esc_url( $cta ); ?>"><?php echo esc_html( $ctalabel ); ?></a>
+			<p style="text-align:center;color:#8a8a92;font-size:.82rem;margin-top:12px;">Rapport complet + plan de correction par Alliance Groupe. Paiement sécurisé.</p>
 		<?php endif; ?>
 		</div>
 		<script>window.agShot=function(i){if(i.naturalWidth>50&&!i.getAttribute('data-fail'))return;var n=+(i.getAttribute('data-try')||0);if(n>=5){i.style.display='none';return;}i.setAttribute('data-try',n+1);i.removeAttribute('data-fail');setTimeout(function(){i.src=i.getAttribute('data-base')+'&r='+Date.now();},3200);};window.agShotErr=function(i){i.setAttribute('data-fail','1');window.agShot(i);};</script>
