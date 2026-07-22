@@ -392,8 +392,10 @@ var AG = (function(){
 		if(d.fails && d.fails.length){ h+='<ul style="margin:0 0 8px;padding:0;list-style:none;font-size:.82rem;color:#cfcfd6;line-height:1.6;">'; d.fails.forEach(function(f){ h+='<li>'+f+'</li>'; }); h+='</ul>'; }
 		if(d.report){ h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:8px;border-color:#22c55e;color:#7ee2a8;" href="'+d.report+'">👁️ Voir le rapport client</a>'; }
 		if(num){
+			var waN=(num||'').replace(/[^0-9]/g,''); if(waN.charAt(0)==='0'){ waN='33'+waN.substring(1); }
 			h+='<div class="row">'
-			 +'<a class="mini" style="border-color:#22c55e;color:#7ee2a8;" href="sms:'+num+'?body='+encodeURIComponent((d.msg&&d.msg.rapport)||'')+'">📤 Envoyer le rapport</a>'
+			 +'<a class="mini" target="_blank" rel="noopener" style="border-color:#25d366;color:#7ee2a8;background:rgba(37,211,102,.14);" href="https://wa.me/'+waN+'?text='+encodeURIComponent((d.msg&&d.msg.rapport)||'')+'">🟢 Rapport WhatsApp (avec image)</a>'
+			 +'<a class="mini" style="border-color:#22c55e;color:#7ee2a8;" href="sms:'+num+'?body='+encodeURIComponent((d.msg&&d.msg.rapport)||'')+'">📤 Rapport SMS</a>'
 			 +'<a class="mini" style="border-color:#d4b45c;color:#e6b35a;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.refonte)+'">✉️ Refonte</a>'
 			 +'<a class="mini" style="border-color:#a855f7;color:#c58bff;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.securite)+'">✉️ Sécurité</a>'
 			 +'<a class="mini" style="border-color:#3aa3ff;color:#8fc7ff;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.mixte)+'">✉️ Mixte</a>'

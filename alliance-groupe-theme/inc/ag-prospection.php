@@ -2458,6 +2458,21 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 		?><!DOCTYPE html><html lang="fr"><head>
 		<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 		<title>Rapport de sécurité<?php echo $who ? ' — ' . esc_html( $who ) : ''; ?></title>
+		<?php
+		$og_title = $ok ? ( '🛡️ Audit sécurité de ' . $who . ' — Note ' . $score . '/100' ) : 'Rapport de sécurité — Alliance Groupe';
+		$og_desc  = $ok ? ( count( $fails ) . ' point(s) à corriger détecté(s). Découvrez ce qu\'il faut réparer avant qu\'il ne soit trop tard (piratage, données clients, Google).' ) : 'Audit de sécurité de votre site.';
+		$og_img   = $ok ? $shot : ( get_stylesheet_directory_uri() . '/assets/images/og-banner.png' );
+		$og_url   = ( is_ssl() ? 'https://' : 'http://' ) . ( $_SERVER['HTTP_HOST'] ?? '' ) . ( $_SERVER['REQUEST_URI'] ?? '' );
+		?>
+		<meta property="og:type" content="website">
+		<meta property="og:title" content="<?php echo esc_attr( $og_title ); ?>">
+		<meta property="og:description" content="<?php echo esc_attr( $og_desc ); ?>">
+		<meta property="og:image" content="<?php echo esc_url( $og_img ); ?>">
+		<meta property="og:url" content="<?php echo esc_url( $og_url ); ?>">
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:title" content="<?php echo esc_attr( $og_title ); ?>">
+		<meta name="twitter:description" content="<?php echo esc_attr( $og_desc ); ?>">
+		<meta name="twitter:image" content="<?php echo esc_url( $og_img ); ?>">
 		<style>
 			*{box-sizing:border-box}body{margin:0;background:#0b0b0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
 			.wrap{max-width:640px;margin:0 auto;padding:22px 16px 60px;}
