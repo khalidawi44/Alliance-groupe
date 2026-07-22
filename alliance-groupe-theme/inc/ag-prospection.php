@@ -14,8 +14,9 @@ add_action( 'after_setup_theme', function () {
 	$pages = array(
 		'prospection-mobile' => array( 'Prospection', 'templates/page-prospection-mobile.php' ),
 		'rapport'            => array( 'Rapport', 'templates/page-rapport.php' ),
+		'mon-espace-client'  => array( 'Mon espace', 'templates/page-espace-client-app.php' ),
 	);
-	if ( 2 === (int) get_option( 'ag_prospection_mobile_page' ) ) { return; }
+	if ( 3 === (int) get_option( 'ag_prospection_mobile_page' ) ) { return; }
 	foreach ( $pages as $slug => $def ) {
 		if ( ! get_page_by_path( $slug ) ) {
 			$id = wp_insert_post( array(
@@ -30,7 +31,7 @@ add_action( 'after_setup_theme', function () {
 			}
 		}
 	}
-	update_option( 'ag_prospection_mobile_page', 2 );
+	update_option( 'ag_prospection_mobile_page', 3 );
 } );
 
 /* ── 1. Prospects entrants (chat du site) ───────────────────────── */
@@ -2695,6 +2696,35 @@ add_action( 'wp_ajax_ag_app_bulk_sms', function () {
 	if ( count( $log ) > 40 ) { $log = array_slice( $log, 0, 40 ); }
 	update_option( 'ag_bulk_sms_log', $log, false );
 	wp_send_json_success( array( 'ok' => $ok, 'ko' => $ko, 'total' => count( $nums ) ) );
+} );
+
+/* App CLIENT : enregistrer son site. */
+add_action( 'wp_ajax_ag_client_save_site', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_client' ) ) wp_send_json_error();
+	$site = esc_url_raw( wp_unslash( $_POST['site'] ?? '' ) );
+	update_user_meta( get_current_user_id(), 'ag_client_site', $site );
+	wp_send_json_success();
+} );
+/* App CLIENT : demande (modif site / support / sécurité) → notifie Fabrice + journalise. */
+add_action( 'wp_ajax_ag_client_request', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_client' ) ) wp_send_json_error();
+	$u    = wp_get_current_user();
+	$type = sanitize_key( wp_unslash( $_POST['type'] ?? 'demande' ) );
+	$msg  = sanitize_textarea_field( wp_unslash( $_POST['msg'] ?? '' ) );
+	if ( '' === $msg ) wp_send_json_error( array( 'm' => 'Message vide.' ) );
+	$labels = array( 'modif' => '🌐 Modif site', 'support' => '💬 Support', 'securite' => '🛡️ Sécurité' );
+	$tag  = ( $labels[ $type ] ?? '📩 Demande client' );
+	$who  = $u->display_name ?: $u->user_email;
+	$full = $tag . ' — ' . $who . ' (' . $u->user_email . ')' . "\n" . $msg;
+	// Journal
+	$log = get_option( 'ag_client_requests', array() ); if ( ! is_array( $log ) ) { $log = array(); }
+	array_unshift( $log, array( 'ts' => time(), 'type' => $type, 'name' => $who, 'email' => $u->user_email, 'msg' => $msg ) );
+	if ( count( $log ) > 200 ) { $log = array_slice( $log, 0, 200 ); }
+	update_option( 'ag_client_requests', $log, false );
+	if ( function_exists( 'ag_sms' ) )  ag_sms( $tag . ' : ' . $who . ' — ' . $msg );
+	if ( function_exists( 'ag_push' ) ) ag_push( $tag . ' (client)', $full );
+	if ( function_exists( 'ag_calendar_notify' ) && 'support' !== $type ) ag_calendar_notify( $tag . ' : ' . $who, $full );
+	wp_send_json_success();
 } );
 
 /* Résultats du scan Kali (PC) attachés à une URL → enrichissent le rapport client (admin). */
