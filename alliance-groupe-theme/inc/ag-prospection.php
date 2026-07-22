@@ -2455,6 +2455,35 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 		$cta   = '' !== $payurl ? $payurl : home_url( '/audit-securite?site=' . rawurlencode( (string) $site ) );
 		$ctalabel = '🔓 Débloquer mon rapport complet' . ( $price > 0 ? ' — ' . number_format_i18n( $price, 0 ) . ' €' : '' );
 		$logo  = get_stylesheet_directory_uri() . '/assets/images/logo-carte-square.jpg';
+
+		// MODE CARTE (?card=1) : tout sur UN écran, à screenshoter et envoyer en image (MMS).
+		if ( isset( $_GET['card'] ) && $ok ) {
+			?><!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Audit <?php echo esc_html( $who ); ?></title>
+			<style>
+				*{box-sizing:border-box;margin:0}body{background:#0b0b0f;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
+				.card{max-width:430px;margin:0 auto;padding:16px 16px 20px;}
+				.hd{display:flex;align-items:center;gap:8px;margin-bottom:8px;}.hd img{width:26px;height:26px;border-radius:6px}.hd b{font-size:.92rem}.hd b span{color:#d4b45c}
+				.tag{float:right;background:#e5484d;color:#fff;border-radius:100px;padding:2px 9px;font-size:.62rem;font-weight:800;letter-spacing:.5px}
+				h1{font-size:1.05rem;margin:2px 0 1px}.u{color:#8a8a92;font-size:.72rem;word-break:break-all;margin-bottom:8px}
+				.row{display:flex;align-items:center;gap:12px;background:#14141a;border:1px solid #26262f;border-radius:12px;padding:11px 13px;margin-bottom:9px}
+				.big{font-size:2.3rem;font-weight:800;line-height:1;color:<?php echo esc_attr( $col ); ?>}.big small{font-size:.85rem;color:#8a8a92}
+				.rl{font-size:.82rem;color:#cfcfd6;line-height:1.35}
+				.fl{background:#1b1113;border-left:3px solid #e5484d;border-radius:8px;padding:6px 10px;margin-bottom:5px;font-size:.8rem}
+				.lock{background:#14141a;border:1px dashed #4a4a55;border-radius:9px;padding:8px 10px;margin:5px 0 9px;text-align:center;font-size:.8rem;color:#c9a24a;font-weight:700}
+				.warn{background:#241f0e;border:1px solid #6a5a1f;border-radius:10px;padding:10px 12px;color:#e6d9a8;font-size:.78rem;line-height:1.45}
+				.warn b{color:#ffd873}.warn div{margin-top:4px}
+				.ft{margin-top:10px;text-align:center;background:linear-gradient(135deg,#d4b45c,#b98f2f);color:#0b0b0f;font-weight:800;border-radius:11px;padding:11px;font-size:.9rem}
+			</style></head><body><div class="card">
+				<div class="hd"><img src="<?php echo esc_url( $logo ); ?>" alt=""><b>Alliance <span>Groupe</span></b><span class="tag">AUDIT SÉCURITÉ</span></div>
+				<h1><?php echo esc_html( $who ); ?></h1><div class="u"><?php echo esc_html( $host ); ?></div>
+				<div class="row"><div class="big"><?php echo (int) $score; ?><small>/100</small></div><div class="rl"><strong style="color:<?php echo esc_attr( $col ); ?>"><?php echo $score < 50 ? '⚠️ Site à risque' : 'À améliorer'; ?></strong><br><?php echo count( $fails ); ?> problème(s) détecté(s)<?php echo $tech ? ' · ' . esc_html( $tech ) : ''; ?></div></div>
+				<?php foreach ( array_slice( $fails, 0, 3 ) as $c ) : ?><div class="fl"><?php echo ( 'fail' === $c['status'] ? '❌ ' : '⚠️ ' ) . esc_html( $c['name'] ?? '' ); ?></div><?php endforeach; ?>
+				<?php if ( count( $fails ) > 3 ) : ?><div class="lock">🔒 + <?php echo count( $fails ) - 3; ?> autres failles dans le rapport complet</div><?php endif; ?>
+				<div class="warn"><b>⚠️ Si ce n'est pas corrigé :</b><div>• Piratage / site défiguré ou bloqué (rançongiciel)</div><div>• Vol des données clients → amende CNIL possible</div><div>• Site signalé « dangereux » → chute sur Google</div></div>
+				<div class="ft">Rapport complet + correction<?php echo $price > 0 ? ' — ' . esc_html( number_format_i18n( $price, 0 ) ) . ' €' : ''; ?> · Alliance Groupe</div>
+			</div></body></html><?php
+			return;
+		}
 		?><!DOCTYPE html><html lang="fr"><head>
 		<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 		<title>Rapport de sécurité<?php echo $who ? ' — ' . esc_html( $who ) : ''; ?></title>
@@ -2604,7 +2633,7 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 	if ( count( $audits ) > 60 ) { $audits = array_slice( $audits, 0, 60, true ); }
 	update_option( 'ag_app_audits', $audits, false );
 
-	wp_send_json_success( array( 'score' => $score, 'critical' => $crit, 'tech' => $tech, 'mode' => $mode, 'reco' => $reco, 'fails' => $fails, 'report' => $report, 'msg' => $msg ) );
+	wp_send_json_success( array( 'score' => $score, 'critical' => $crit, 'tech' => $tech, 'mode' => $mode, 'reco' => $reco, 'fails' => $fails, 'report' => $report, 'report_card' => add_query_arg( 'card', 1, $report ), 'msg' => $msg ) );
 } );
 
 /* Envoi SMS EN MASSE aux ambassadeurs depuis l'app (admin) + journal de suivi. */

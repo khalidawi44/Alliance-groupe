@@ -390,7 +390,8 @@ var AG = (function(){
 		var h='<img src="'+shot+'" data-base="'+shot+'" data-try="0" onload="agShot(this)" onerror="agShotErr(this)" alt="" style="width:100%;height:170px;object-fit:cover;object-position:top;border-radius:10px;border:1px solid rgba(255,255,255,.12);margin:6px 0;background:#0e0e13;">';
 		h+='<div style="margin:4px 0 6px;"><span class="sc" style="color:'+color+';font-size:1.05rem;">Note '+d.score+'/100</span>'+(d.critical>0?' · '+d.critical+' faille(s)':'')+(d.tech?' · '+d.tech:'')+' · <b>'+reco+'</b></div>';
 		if(d.fails && d.fails.length){ h+='<ul style="margin:0 0 8px;padding:0;list-style:none;font-size:.82rem;color:#cfcfd6;line-height:1.6;">'; d.fails.forEach(function(f){ h+='<li>'+f+'</li>'; }); h+='</ul>'; }
-		if(d.report){ h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:8px;border-color:#22c55e;color:#7ee2a8;" href="'+d.report+'">👁️ Voir le rapport client</a>'; }
+		if(d.report){ h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:6px;border-color:#22c55e;color:#7ee2a8;" href="'+d.report+'">👁️ Voir le rapport client</a> '; }
+		if(d.report_card){ h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:8px;border-color:#e6b35a;color:#e6b35a;" href="'+d.report_card+'">🖼️ Image à envoyer (screenshot)</a>'; }
 		if(num){
 			var waN=(num||'').replace(/[^0-9]/g,''); if(waN.charAt(0)==='0'){ waN='33'+waN.substring(1); }
 			h+='<div class="row">'
