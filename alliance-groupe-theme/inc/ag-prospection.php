@@ -2462,7 +2462,7 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 			.tag{display:inline-block;background:#15151b;color:#e6b35a;border:1px solid #e6b35a;border-radius:100px;padding:4px 13px;font-size:.75rem;font-weight:700;}
 			h1{font-size:1.5rem;margin:10px 0 3px;}.url{color:#8a8a92;font-size:.85rem;word-break:break-all;margin:0 0 16px;}
 			.hero{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:center;background:#14141a;border:1px solid #26262f;border-radius:16px;padding:18px;}
-			.hero img{width:240px;max-width:100%;border-radius:10px;border:1px solid #333;background:#0e0e13;min-height:120px;}
+			.hero img{width:240px;max-width:100%;height:160px;object-fit:cover;object-position:top;border-radius:10px;border:1px solid #333;background:#0e0e13;}
 			.sc{font-size:2.8rem;font-weight:800;line-height:1;}.scl{color:#9a9aa2;font-size:.85rem;margin-top:4px;}
 			h2{font-size:1.15rem;margin:24px 0 10px;}
 			.f{background:#1b1113;border:1px solid #4a2327;border-left:4px solid #e5484d;border-radius:10px;padding:11px 13px;margin-bottom:9px;}
@@ -2482,7 +2482,7 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 			<h1>Rapport pour <?php echo esc_html( $who ); ?></h1>
 			<p class="url"><?php echo esc_html( $site ); ?></p>
 			<div class="hero">
-				<img id="shot" src="<?php echo esc_url( $shot ); ?>" data-base="<?php echo esc_url( $shot ); ?>" data-try="0" onload="agShot(this)" alt="aperçu du site">
+				<img id="shot" src="<?php echo esc_url( $shot ); ?>" data-base="<?php echo esc_url( $shot ); ?>" data-try="0" onload="agShot(this)" onerror="agShotErr(this)" alt="">
 				<div style="text-align:center;">
 					<div class="sc" style="color:<?php echo esc_attr( $col ); ?>;"><?php echo (int) $score; ?><span style="font-size:1rem;color:#8a8a92;">/100</span></div>
 					<div class="scl">Note globale<?php echo $tech ? ' · ' . esc_html( $tech ) : ''; ?></div>
@@ -2507,7 +2507,7 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 			<p style="text-align:center;color:#8a8a92;font-size:.82rem;margin-top:12px;">Correction par Alliance Groupe · réponse rapide.</p>
 		<?php endif; ?>
 		</div>
-		<script>window.agShot=function(i){var n=+(i.getAttribute('data-try')||0);if(n>=5)return;i.setAttribute('data-try',n+1);setTimeout(function(){i.src=i.getAttribute('data-base')+'&r='+Date.now();},3500);};</script>
+		<script>window.agShot=function(i){if(i.naturalWidth>50&&!i.getAttribute('data-fail'))return;var n=+(i.getAttribute('data-try')||0);if(n>=5){i.style.display='none';return;}i.setAttribute('data-try',n+1);i.removeAttribute('data-fail');setTimeout(function(){i.src=i.getAttribute('data-base')+'&r='+Date.now();},3200);};window.agShotErr=function(i){i.setAttribute('data-fail','1');window.agShot(i);};</script>
 		</body></html><?php
 	}
 }

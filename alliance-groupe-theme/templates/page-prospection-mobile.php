@@ -373,19 +373,21 @@ var AG = (function(){
 })();
 
 (function(){
-	// Capture d'écran : mShots met parfois quelques secondes → on recharge l'image auto.
+	// Capture d'écran : mShots met parfois du temps ou échoue → on recharge, sinon on masque (pas de cadre cassé).
 	window.agShot = function(img){
+		if(img.naturalWidth>50 && !img.getAttribute('data-fail')){ return; } // vraie image chargée → stop
 		var n = +(img.getAttribute('data-try')||0);
-		if(n>=4) return;
-		img.setAttribute('data-try', n+1);
-		setTimeout(function(){ img.src = img.getAttribute('data-base')+'&r='+Date.now(); }, 3500);
+		if(n>=5){ img.style.display='none'; return; } // abandon propre : on cache l'image
+		img.setAttribute('data-try', n+1); img.removeAttribute('data-fail');
+		setTimeout(function(){ img.src = img.getAttribute('data-base')+'&r='+Date.now(); }, 3200);
 	};
+	window.agShotErr = function(img){ img.setAttribute('data-fail','1'); window.agShot(img); };
 	// Rapport d'audit partagé (capture du site + note + problèmes + SMS + lien rapport client)
 	function agAuditHTML(url, d, num){
 		var color = d.score<50 ? '#ff6b6b' : (d.score<75 ? '#e6b35a' : '#2ecc71');
 		var reco  = (d.reco==='securite') ? '🛡️ Sécurité conseillée' : '🔧 Refonte conseillée';
 		var shot  = 'https://s.wordpress.com/mshots/v1/'+encodeURIComponent(url)+'?w=520';
-		var h='<img src="'+shot+'" data-base="'+shot+'" data-try="0" onload="agShot(this)" alt="aperçu du site" style="width:100%;border-radius:10px;border:1px solid rgba(255,255,255,.12);margin:6px 0;background:#0e0e13;min-height:120px;">';
+		var h='<img src="'+shot+'" data-base="'+shot+'" data-try="0" onload="agShot(this)" onerror="agShotErr(this)" alt="" style="width:100%;height:170px;object-fit:cover;object-position:top;border-radius:10px;border:1px solid rgba(255,255,255,.12);margin:6px 0;background:#0e0e13;">';
 		h+='<div style="margin:4px 0 6px;"><span class="sc" style="color:'+color+';font-size:1.05rem;">Note '+d.score+'/100</span>'+(d.critical>0?' · '+d.critical+' faille(s)':'')+(d.tech?' · '+d.tech:'')+' · <b>'+reco+'</b></div>';
 		if(d.fails && d.fails.length){ h+='<ul style="margin:0 0 8px;padding:0;list-style:none;font-size:.82rem;color:#cfcfd6;line-height:1.6;">'; d.fails.forEach(function(f){ h+='<li>'+f+'</li>'; }); h+='</ul>'; }
 		if(d.report){ h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:8px;border-color:#22c55e;color:#7ee2a8;" href="'+d.report+'">👁️ Voir le rapport client</a>'; }
