@@ -369,37 +369,52 @@ if ( ! function_exists( 'ag_tester_order' ) ) {
 		update_option( 'ag_tester_invoice_seq', $seq, false );
 		$invoice_no = 'AG-' . wp_date( 'Y' ) . '-' . str_pad( (string) $seq, 4, '0', STR_PAD_LEFT );
 
-		// Débloque le rapport.
-		$data['unlocked']   = true;
+		// PAIEMENT D'ABORD : on NE débloque PAS ici. Commande en attente
+		// PARTAGÉE avec le webhook PayPal (déblocage auto au paiement, même
+		// mécanique que le rapport ?ag_rapport=1) puis on envoie payer.
+		if ( function_exists( 'ag_rapport_key' ) ) {
+			$pend = get_option( 'ag_audit_pending', array() );
+			if ( ! is_array( $pend ) ) $pend = array();
+			$dup = false;
+			foreach ( $pend as $p ) {
+				if ( empty( $p['paid'] ) && ag_rapport_key( $p['site'] ?? '' ) === ag_rapport_key( $url ) && strtolower( (string) ( $p['email'] ?? '' ) ) === strtolower( $email ) ) { $dup = true; break; }
+			}
+			if ( ! $dup ) {
+				$pend[] = array( 'site' => $url, 'name' => $nom, 'email' => $email, 'price' => $price, 'ts' => time(), 'paid' => 0, 'txn' => '' );
+				if ( count( $pend ) > 300 ) $pend = array_slice( $pend, -300 );
+				update_option( 'ag_audit_pending', $pend, false );
+			}
+		}
+		$data['unlocked']   = false; // reste verrouillé jusqu'au paiement
+		$data['pending']    = true;
 		$data['invoice_no'] = $invoice_no;
 		$data['consent']    = $consent;
 		set_transient( 'ag_tester_' . $aid, $data, 60 * DAY_IN_SECONDS );
 
-		$base       = wp_get_referer() ?: home_url( '/tester-mon-site' );
-		$report_url = add_query_arg( array( 'rapport' => $aid ), $base );
-		$pay_url    = ag_tester_opt( 'pay_url' ) ?: home_url( '/contact' );
+		$base    = wp_get_referer() ?: home_url( '/tester-mon-site' );
+		$pay_url = ag_tester_opt( 'pay_url' ) ?: home_url( '/contact' );
 
-		// Email : FACTURE + lien rapport complet + paiement.
+		// Email : FACTURE + bouton PAYER (le rapport se débloque APRÈS paiement).
 		if ( function_exists( 'ag_email_wrap' ) ) {
 			$inner  = '<p>Bonjour ' . esc_html( $nom ) . ',</p>';
-			$inner .= '<p>Merci pour votre commande. Votre <strong>rapport d\'audit complet</strong> de ' . esc_html( $url ) . ' est débloqué :</p>';
-			$inner .= ag_email_button( 'Voir mon rapport complet →', $report_url );
+			$inner .= '<p>Votre commande du <strong>rapport d\'audit complet</strong> de ' . esc_html( $url ) . ' est enregistrée. Réglez pour le <strong>débloquer immédiatement</strong> :</p>';
+			$inner .= ag_email_button( 'Payer et débloquer mon rapport (' . number_format_i18n( $price, 0 ) . ' €) →', $pay_url );
 			$inner .= ag_tester_facture_html( $invoice_no, $nom, $email, $url, $price );
-			$inner .= '<p>Règlement :</p>' . ag_email_button( 'Payer ma facture (' . number_format_i18n( $price, 0 ) . ' €) →', $pay_url );
 			$inner .= '<p style="font-size:12px;color:#9a9aa5">Commande acceptée électroniquement le ' . esc_html( $consent['accepted_at'] ) . ' (IP ' . esc_html( $consent['ip'] ) . ').'
-				. ( $waive ? ' Vous avez demandé la fourniture immédiate et renoncé au délai de rétractation de 14 jours.' : '' ) . '</p>';
+				. ( $waive ? ' Vous avez demandé la fourniture immédiate après paiement et renoncé au délai de rétractation de 14 jours.' : '' ) . '</p>';
 			wp_mail(
 				$email,
-				'Facture ' . $invoice_no . ' + votre rapport d\'audit complet',
-				ag_email_wrap( 'Votre facture et votre rapport', $inner ),
+				'Facture ' . $invoice_no . ' — réglez pour débloquer votre rapport',
+				ag_email_wrap( 'Votre facture', $inner ),
 				array( 'Content-Type: text/html; charset=UTF-8' )
 			);
 		}
 		if ( function_exists( 'ag_push' ) ) {
-			ag_push( '🧾 Commande rapport audit', $nom . ' (' . $email . ') — ' . $url . ' — facture ' . $invoice_no . ' — ' . $price . ' €' );
+			ag_push( '🧾 Commande rapport (à payer)', $nom . ' (' . $email . ') — ' . $url . ' — facture ' . $invoice_no . ' — ' . $price . ' €' );
 		}
 
-		wp_safe_redirect( add_query_arg( array( 'rapport' => $aid, 'ok' => '1' ), $base ) );
+		// On envoie payer tout de suite ; le déblocage se fait au paiement vérifié.
+		wp_redirect( $pay_url );
 		exit;
 	}
 }
@@ -434,9 +449,13 @@ if ( ! function_exists( 'ag_tester_render' ) ) {
 		ob_start();
 		if ( $rapport ) {
 			$data = get_transient( 'ag_tester_' . $rapport );
-			if ( $data && ! empty( $data['unlocked'] ) && function_exists( 'ag_audit_render_report' ) ) {
-				if ( isset( $_GET['ok'] ) ) echo '<p style="max-width:920px;margin:18px auto;color:#28a745;text-align:center;font-weight:700">✅ Commande enregistrée — votre facture vient de vous être envoyée par email.</p>';
+			$rurl = $data['audit']['url'] ?? '';
+			$is_unlocked = $data && ( ! empty( $data['unlocked'] ) || ( function_exists( 'ag_rapport_is_unlocked' ) && ag_rapport_is_unlocked( $rurl ) ) );
+			if ( $is_unlocked && function_exists( 'ag_audit_render_report' ) ) {
 				ag_audit_render_report( $data['audit'], $data['prenom'] ?? '' );
+			} elseif ( $data && ! empty( $data['pending'] ) ) {
+				$payu = ag_tester_opt( 'pay_url' ) ?: home_url( '/contact' );
+				echo '<section style="background:#0a0a0f;color:#fff;padding:70px 24px;text-align:center"><div style="max-width:560px;margin:0 auto"><div style="font-size:2.4rem">⏳</div><h2 style="color:#D4B45C;font-family:Georgia,serif;margin:10px 0">Votre rapport est réservé</h2><p style="color:rgba(255,255,255,.8)">Il se débloque dès réception de votre paiement. Une facture vient de vous être envoyée par email.</p><a href="' . esc_url( $payu ) . '" style="display:inline-block;margin-top:18px;padding:14px 32px;background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#0a0a0f;font-weight:800;border-radius:999px;text-decoration:none">Payer et débloquer →</a></div></section>';
 			} else {
 				echo '<section style="background:#0a0a0f;color:#fff;padding:80px 24px;text-align:center"><p>🔒 Ce rapport est verrouillé. Lancez un test ou débloquez votre rapport.</p></section>';
 			}

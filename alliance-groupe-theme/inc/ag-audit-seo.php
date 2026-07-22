@@ -686,7 +686,8 @@ if ( ! function_exists( 'ag_audit_render_report' ) ) {
 					<p style="margin:18px 0 0;color:#fff;font-size:1.1rem"><?php echo esc_html( $verdict ); ?></p>
 				</div>
 
-				<h2 style="font-family:Georgia,serif;font-size:1.5rem;margin:0 0 18px;color:#D4B45C">Détail des 12 points</h2>
+				<?php $nb_points = count( (array) ( $a['checks'] ?? array() ) ); ?>
+				<h2 style="font-family:Georgia,serif;font-size:1.5rem;margin:0 0 18px;color:#D4B45C">Détail des <?php echo (int) $nb_points; ?> point<?php echo $nb_points > 1 ? 's' : ''; ?> vérifié<?php echo $nb_points > 1 ? 's' : ''; ?></h2>
 				<div style="display:flex;flex-direction:column;gap:10px">
 					<?php foreach ( ( $a['checks'] ?? array() ) as $c ) :
 						$ico = 'ok' === $c['status'] ? '✅' : ( 'warn' === $c['status'] ? '⚠️' : '❌' );
