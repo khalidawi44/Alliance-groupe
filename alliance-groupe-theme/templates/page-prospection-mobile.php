@@ -448,7 +448,8 @@ var AG = (function(){
 			 +'<a class="mini" style="border-color:#3aa3ff;color:#8fc7ff;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.mixte)+'">✉️ Mixte</a>'
 			 +'</div>';
 		} else if(num){
-			h+='<div class="row"><a class="mini robot" href="#" onclick="agRobotNum(this,\''+num+'\',\''+(d.reco===\'securite\'?\'securite\':\'creation\')+'\');return false;">🤖 Appel robot (fixe → SMS/WhatsApp impossibles)</a></div>';
+			var angFixe=(d.reco==='securite')?'securite':'creation';
+			h+='<div class="row"><a class="mini robot ag-robot-num" href="#" data-phone="'+num+'" data-angle="'+angFixe+'">🤖 Appel robot (fixe → SMS/WhatsApp impossibles)</a></div>';
 		} else { h+='<span class="sub">📵 Numéro fixe : SMS/WhatsApp impossibles → utilise l’appel robot.</span>'; }
 		if(AG.admin){
 			h+='<details style="margin-top:9px;"><summary style="cursor:pointer;color:#7fb4ff;font-size:.82rem;font-weight:600;">🔬 Résultats scan Kali (PC) — enrichir le rapport</summary>'
@@ -492,6 +493,11 @@ var AG = (function(){
 			el.innerHTML=lbl; AG.toast(j&&j.success ? '🤖 Le robot appelle '+ph+' !' : ('❌ '+((j&&j.data&&j.data.m)||'Échec')));
 		}).catch(function(){ el.innerHTML=lbl; AG.toast('❌ Erreur réseau'); });
 	};
+	// Robot sur les boutons injectés dynamiquement (résultat d'audit d'un fixe).
+	document.addEventListener('click',function(e){
+		var a=e.target.closest?e.target.closest('.ag-robot-num'):null; if(!a) return;
+		e.preventDefault(); agRobotNum(a, a.getAttribute('data-phone'), a.getAttribute('data-angle')||'creation');
+	});
 	// Appel robot par prospect (angle intelligent : sécurité si site, création sinon)
 	document.querySelectorAll('.ag-robot-one').forEach(function(a){
 		a.addEventListener('click',function(e){ e.preventDefault();
