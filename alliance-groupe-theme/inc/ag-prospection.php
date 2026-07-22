@@ -2980,6 +2980,71 @@ add_action( 'wp_ajax_ag_client_request', function () {
 	wp_send_json_success();
 } );
 
+/* ADMIN : demandes des clients (app CLIENT) — liste + « traité » + réponse rapide. */
+add_action( 'admin_menu', function () {
+	$open = 0;
+	foreach ( (array) get_option( 'ag_client_requests', array() ) as $r ) { if ( empty( $r['done'] ) ) $open++; }
+	$badge = $open ? ' <span class="update-plugins count-' . $open . '"><span class="update-count">' . $open . '</span></span>' : '';
+	$parent = menu_page_url( 'ag-hub', false ) ? 'ag-hub' : 'ag-prospects';
+	add_submenu_page( $parent, 'Demandes clients', '📩 Demandes clients' . $badge, 'manage_options', 'ag-client-requests', 'ag_client_requests_render' );
+}, 21 );
+
+add_action( 'admin_post_ag_client_req_done', function () {
+	if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Non autorisé.' );
+	check_admin_referer( 'ag_client_req_done' );
+	$ts   = (int) ( $_POST['ts'] ?? 0 );
+	$mode = sanitize_key( $_POST['mode'] ?? 'done' );
+	$log  = (array) get_option( 'ag_client_requests', array() );
+	foreach ( $log as $i => $r ) {
+		if ( (int) ( $r['ts'] ?? 0 ) === $ts ) {
+			if ( 'delete' === $mode ) { unset( $log[ $i ] ); }
+			else { $log[ $i ]['done'] = empty( $r['done'] ) ? 1 : 0; }
+			break;
+		}
+	}
+	update_option( 'ag_client_requests', array_values( $log ), false );
+	wp_safe_redirect( add_query_arg( array( 'page' => 'ag-client-requests' ), admin_url( 'admin.php' ) ) );
+	exit;
+} );
+
+if ( ! function_exists( 'ag_client_requests_render' ) ) {
+	function ag_client_requests_render() {
+		if ( ! current_user_can( 'manage_options' ) ) return;
+		$log    = (array) get_option( 'ag_client_requests', array() );
+		$labels = array( 'modif' => '🌐 Modif site', 'support' => '💬 Support', 'securite' => '🛡️ Sécurité', 'demande' => '📩 Demande' );
+		$show   = isset( $_GET['show'] ) ? sanitize_key( $_GET['show'] ) : 'open';
+		$open   = 0; foreach ( $log as $r ) { if ( empty( $r['done'] ) ) $open++; }
+		echo '<div class="wrap"><h1>📩 Demandes des clients</h1>';
+		echo '<p style="max-width:820px;color:#50575e;">Les demandes envoyées depuis l\'<strong>app client</strong> (modif de site, support, sécurité). Tu es aussi notifié par SMS/Telegram à chaque envoi.</p>';
+		echo '<ul class="subsubsub"><li><a href="' . esc_url( add_query_arg( array( 'page' => 'ag-client-requests', 'show' => 'open' ), admin_url( 'admin.php' ) ) ) . '" class="' . ( 'open' === $show ? 'current' : '' ) . '">À traiter <span class="count">(' . (int) $open . ')</span></a> | </li>';
+		echo '<li><a href="' . esc_url( add_query_arg( array( 'page' => 'ag-client-requests', 'show' => 'all' ), admin_url( 'admin.php' ) ) ) . '" class="' . ( 'all' === $show ? 'current' : '' ) . '">Toutes <span class="count">(' . count( $log ) . ')</span></a></li></ul>';
+
+		$rows = array_filter( $log, function ( $r ) use ( $show ) { return 'all' === $show || empty( $r['done'] ); } );
+		if ( ! $rows ) { echo '<p style="margin-top:20px;"><em>Aucune demande ' . ( 'open' === $show ? 'à traiter' : '' ) . '.</em></p></div>'; return; }
+		echo '<table class="widefat striped" style="margin-top:12px;"><thead><tr><th style="width:150px;">Date</th><th style="width:120px;">Type</th><th>Client</th><th>Message</th><th style="width:210px;">Actions</th></tr></thead><tbody>';
+		foreach ( $rows as $r ) {
+			$ts   = (int) ( $r['ts'] ?? 0 );
+			$done = ! empty( $r['done'] );
+			$type = $labels[ $r['type'] ?? 'demande' ] ?? '📩 Demande';
+			$mail = sanitize_email( $r['email'] ?? '' );
+			echo '<tr' . ( $done ? ' style="opacity:.55;"' : '' ) . '>';
+			echo '<td>' . esc_html( $ts ? wp_date( 'd/m/Y H\hi', $ts ) : '' ) . '</td>';
+			echo '<td>' . esc_html( $type ) . ( $done ? '<br><span style="color:#1e7e34;font-size:.82em;">✓ traité</span>' : '' ) . '</td>';
+			echo '<td><strong>' . esc_html( $r['name'] ?? '' ) . '</strong><br><a href="mailto:' . esc_attr( $mail ) . '">' . esc_html( $mail ) . '</a></td>';
+			echo '<td style="white-space:pre-wrap;">' . esc_html( $r['msg'] ?? '' ) . '</td>';
+			echo '<td>';
+			echo '<a class="button button-small button-primary" href="mailto:' . esc_attr( $mail ) . '?subject=' . rawurlencode( 'Votre demande — Alliance Groupe' ) . '">✉️ Répondre</a> ';
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="display:inline;margin:4px 0 0;">';
+			wp_nonce_field( 'ag_client_req_done' );
+			echo '<input type="hidden" name="action" value="ag_client_req_done"><input type="hidden" name="ts" value="' . $ts . '">';
+			echo '<button class="button button-small" name="mode" value="done">' . ( $done ? '↩︎ Rouvrir' : '✅ Traité' ) . '</button> ';
+			echo '<button class="button button-small button-link-delete" name="mode" value="delete" onclick="return confirm(\'Supprimer cette demande ?\');">🗑️</button>';
+			echo '</form></td></tr>';
+		}
+		echo '</tbody></table></div>';
+	}
+}
+
 /* Résultats du scan Kali (PC) attachés à une URL → enrichissent le rapport client (admin). */
 add_action( 'wp_ajax_ag_app_kali_save', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error( array( 'm' => 'Refusé.' ) );
