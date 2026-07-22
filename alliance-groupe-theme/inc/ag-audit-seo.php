@@ -527,6 +527,139 @@ if ( ! function_exists( 'ag_audit_run_deep' ) ) {
 			);
 		}
 
+
+		// ── SONDES PASSIVES SUPPLÉMENTAIRES (lecture publique, non-intrusives, 100% légales) ──
+		$res0  = ag_audit_fetch( $url );
+		$body0 = $res0 ? (string) $res0['body'] : '';
+		$Hh = array();
+		if ( $res0 && ! empty( $res0['headers'] ) ) {
+			foreach ( $res0['headers'] as $hk => $hv ) { $Hh[ strtolower( (string) $hk ) ] = is_array( $hv ) ? implode( ', ', $hv ) : (string) $hv; }
+		}
+		$is_https = 0 === strpos( $url, 'https://' );
+
+		// P1. En-têtes de sécurité HTTP.
+		$sec_headers = array(
+			'strict-transport-security' => 'HSTS', 'content-security-policy' => 'CSP',
+			'x-frame-options' => 'X-Frame-Options (anti-clickjacking)', 'x-content-type-options' => 'X-Content-Type-Options',
+			'referrer-policy' => 'Referrer-Policy', 'permissions-policy' => 'Permissions-Policy',
+		);
+		$missing = array();
+		foreach ( $sec_headers as $hk => $hlabel ) { if ( empty( $Hh[ $hk ] ) ) $missing[] = $hlabel; }
+		$checks[] = array(
+			'name' => 'En-têtes de sécurité HTTP',
+			'status' => count( $missing ) >= 4 ? 'fail' : ( $missing ? 'warn' : 'ok' ),
+			'msg' => $missing ? 'Manquants : ' . implode( ', ', $missing ) : 'Tous les en-têtes de sécurité clés sont présents.',
+			'advice' => $missing ? 'Protègent contre le clickjacking, le vol de session et l\'injection de contenu.' : 'Bien.',
+			'weight' => 2,
+		);
+
+		// P2. Divulgation de version (facilite le ciblage des failles connues).
+		$disc = array();
+		if ( ! empty( $Hh['server'] ) && preg_match( '#[0-9]+\.[0-9]#', $Hh['server'] ) ) $disc[] = 'Server: ' . $Hh['server'];
+		if ( ! empty( $Hh['x-powered-by'] ) ) $disc[] = 'X-Powered-By: ' . $Hh['x-powered-by'];
+		if ( preg_match( '#<meta[^>]+name=["\']generator["\'][^>]+content=["\']([^"\']+)#i', $body0, $gm ) ) $disc[] = 'Generator: ' . $gm[1];
+		$checks[] = array(
+			'name' => 'Divulgation de version (logiciels)',
+			'status' => $disc ? 'warn' : 'ok',
+			'msg' => $disc ? implode( ' · ', array_map( 'esc_html', $disc ) ) : 'Versions non divulguées.',
+			'advice' => $disc ? 'Masquer les versions : un attaquant les compare directement aux failles connues (CVE).' : 'Bien.',
+			'weight' => 1,
+		);
+
+		// P3. Cookies sans Secure / HttpOnly (vol de session).
+		if ( ! empty( $Hh['set-cookie'] ) ) {
+			$flaws = array();
+			if ( $is_https && false === stripos( $Hh['set-cookie'], 'secure' ) ) $flaws[] = 'Secure';
+			if ( false === stripos( $Hh['set-cookie'], 'httponly' ) )            $flaws[] = 'HttpOnly';
+			$checks[] = array(
+				'name' => 'Sécurité des cookies',
+				'status' => $flaws ? 'warn' : 'ok',
+				'msg' => $flaws ? 'Attribut(s) manquant(s) : ' . implode( ', ', $flaws ) : 'Cookies correctement protégés.',
+				'advice' => $flaws ? 'Ajouter Secure + HttpOnly : sinon un cookie de session peut être volé.' : 'Bien.',
+				'weight' => 1,
+			);
+		}
+
+		// P4. Contenu mixte (ressources http:// sur une page https).
+		if ( $is_https ) {
+			$mixed = preg_match_all( '#(?:src|href)=["\']http://[^"\']+#i', $body0, $mm );
+			$checks[] = array(
+				'name' => 'Contenu mixte (HTTP sur HTTPS)',
+				'status' => $mixed > 0 ? 'warn' : 'ok',
+				'msg' => $mixed > 0 ? $mixed . ' ressource(s) chargée(s) en HTTP non sécurisé.' : 'Aucun contenu mixte.',
+				'advice' => $mixed > 0 ? 'Passer toutes les ressources en https:// (cadenas cassé + risque d\'interception).' : 'Bien.',
+				'weight' => 1,
+			);
+		}
+
+		// P5. Erreurs PHP visibles (fuite de chemins / configuration).
+		$php_err = preg_match( '#(Fatal error|Warning:|Notice:|Deprecated:)\s#', $body0 ) && preg_match( '#(on line \d+|/(var|home|www)/)#', $body0 );
+		$checks[] = array(
+			'name' => 'Erreurs techniques visibles',
+			'status' => $php_err ? 'warn' : 'ok',
+			'msg' => $php_err ? 'Des messages d\'erreur PHP sont affichés publiquement.' : 'Aucune erreur technique exposée.',
+			'advice' => $php_err ? 'Désactiver display_errors : ces messages révèlent chemins et configuration.' : 'Bien.',
+			'weight' => 1,
+		);
+
+		// P6. Fichiers de développement exposés (.git / .env) — lecture publique.
+		$dev_found = array();
+		foreach ( array( '/.git/config' => 'dépôt Git (.git)', '/.env' => 'variables d\'environnement (.env)' ) as $dp => $dlabel ) {
+			$r = wp_remote_get( $host . $dp, array_merge( $probe, array( 'redirection' => 0 ) ) );
+			if ( ! is_wp_error( $r ) && 200 === (int) wp_remote_retrieve_response_code( $r ) ) {
+				$rb = substr( (string) wp_remote_retrieve_body( $r ), 0, 300 );
+				$hit = ( '/.git/config' === $dp ) ? ( false !== stripos( $rb, '[core]' ) || false !== stripos( $rb, 'repositoryformatversion' ) ) : (bool) preg_match( '#[A-Z_]{3,}\s*=#', $rb );
+				if ( $hit ) $dev_found[] = $dlabel;
+			}
+		}
+		$checks[] = array(
+			'name' => 'Fichiers de développement exposés',
+			'status' => $dev_found ? 'fail' : 'ok',
+			'msg' => $dev_found ? 'Accessibles publiquement : ' . implode( ', ', $dev_found ) : 'Aucun fichier .git/.env exposé.',
+			'advice' => $dev_found ? 'CRITIQUE : bloquer ces fichiers — ils révèlent le code source et souvent des mots de passe/API.' : 'Bien.',
+			'weight' => 3, 'critical' => (bool) $dev_found,
+		);
+
+		// P7. Redirection HTTP -> HTTPS.
+		$rr = wp_remote_get( preg_replace( '#^https?://#i', 'http://', $url ), array_merge( $probe, array( 'redirection' => 0 ) ) );
+		if ( ! is_wp_error( $rr ) ) {
+			$rc = (int) wp_remote_retrieve_response_code( $rr );
+			$rl = (string) wp_remote_retrieve_header( $rr, 'location' );
+			$redir_https = ( $rc >= 300 && $rc < 400 && 0 === stripos( $rl, 'https://' ) );
+			$checks[] = array(
+				'name' => 'Redirection vers HTTPS',
+				'status' => ( $redir_https || ! $is_https ) ? ( $redir_https ? 'ok' : 'warn' ) : 'ok',
+				'msg' => $redir_https ? 'Le HTTP redirige vers HTTPS.' : 'Le site reste accessible en HTTP non sécurisé.',
+				'advice' => $redir_https ? 'Bien.' : 'Forcer une redirection 301 HTTP -> HTTPS.',
+				'weight' => 1,
+			);
+		}
+
+		// WordPress : fuite de version (readme.html) + énumération via l'API REST.
+		if ( $is_wp ) {
+			$rm = wp_remote_get( $host . '/readme.html', $probe );
+			$wpver = ( ! is_wp_error( $rm ) && 200 === (int) wp_remote_retrieve_response_code( $rm ) && preg_match( '#Version\s+([0-9.]+)#i', wp_remote_retrieve_body( $rm ), $vm ) ) ? $vm[1] : '';
+			$checks[] = array(
+				'name' => 'Version WordPress exposée',
+				'status' => $wpver ? 'warn' : 'ok',
+				'msg' => $wpver ? 'WordPress ' . esc_html( $wpver ) . ' (via /readme.html).' : 'Version non exposée via readme.html.',
+				'advice' => $wpver ? 'Supprimer readme.html : la version permet de cibler les failles connues.' : 'Bien.',
+				'weight' => 1,
+			);
+			$ru  = wp_remote_get( $host . '/wp-json/wp/v2/users', $probe );
+			$rub = is_wp_error( $ru ) ? '' : (string) wp_remote_retrieve_body( $ru );
+			$ruc = is_wp_error( $ru ) ? 0 : (int) wp_remote_retrieve_response_code( $ru );
+			$users = ( 200 === $ruc && preg_match_all( '#"slug":"([^"]+)"#', $rub, $um ) ) ? array_slice( array_unique( $um[1] ), 0, 5 ) : array();
+			$checks[] = array(
+				'name' => 'Énumération des comptes (API REST)',
+				'status' => $users ? 'fail' : 'ok',
+				'msg' => $users ? 'Identifiants exposés : ' . esc_html( implode( ', ', $users ) ) : 'Liste des comptes non exposée.',
+				'advice' => $users ? 'Bloquer /wp-json/wp/v2/users : donne les logins, moitié d\'un piratage par force brute.' : 'Bien.',
+				'weight' => 2, 'critical' => (bool) $users,
+			);
+		}
+		// ── FIN sondes passives supplémentaires ──
+
 		list( $score_pct, $nb_crit ) = ag_audit_score( $checks );
 
 		// COHÉRENCE DES NIVEAUX : l'approfondi ne peut JAMAIS être meilleur que le
