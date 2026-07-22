@@ -24,6 +24,19 @@ $ag_prenom = $ag_u->first_name ? $ag_u->first_name : ( $ag_u->display_name ? $ag
 $ag_icon   = get_stylesheet_directory_uri() . '/assets/images/logo-carte-square.jpg';
 $ag_robot_ok = function_exists( 'ag_voice_ready' ) && ag_voice_ready();
 
+/* Numéro FR mobile (06/07) ? → SMS/WhatsApp possibles. Sinon fixe (01-05/09) → appel + robot uniquement. */
+if ( ! function_exists( 'ag_is_mobile_fr' ) ) {
+	function ag_is_mobile_fr( $raw ) {
+		$d = preg_replace( '/[^0-9]/', '', (string) $raw );
+		if ( '' === $d ) return true; // inconnu → on ne masque rien
+		if ( 0 === strpos( $d, '0033' ) ) $d = substr( $d, 4 );
+		elseif ( 0 === strpos( $d, '33' ) && strlen( $d ) >= 11 ) $d = substr( $d, 2 );
+		if ( 0 === strpos( $d, '0' ) ) $d = substr( $d, 1 );
+		$first = substr( $d, 0, 1 );
+		return in_array( $first, array( '6', '7' ), true );
+	}
+}
+
 $ag_sale_link   = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_sale_link( $ag_email ) : home_url( '/sites-express' );
 $ag_default_msg = "Bonjour, je suis de l'agence Alliance Groupe. On aide les entreprises à avoir un site web pro (et on en offre un chaque mois). Est-ce que je peux vous en dire plus ? " . $ag_sale_link;
 
@@ -223,6 +236,7 @@ foreach ( $ag_my_prospects as $ppc ) {
 					$psms  = $psnum ? 'sms:' . $psnum . '?body=' . rawurlencode( $pmsg ) : '';
 					$ptel  = ! empty( $pp['phone'] ) ? 'tel:' . preg_replace( '/[^0-9+]/', '', $pp['phone'] ) : '';
 					$pnum  = preg_replace( '/[^0-9+]/', '', $pp['phone_intl'] ?? ( $pp['phone'] ?? '' ) );
+					$pmobile = ag_is_mobile_fr( $pp['phone_intl'] ?? ( $pp['phone'] ?? '' ) ); // fixe → pas de SMS/WhatsApp
 					$has_site = '' !== trim( (string) ( $pp['website'] ?? '' ) );
 					$pangle   = $has_site ? 'securite' : 'creation';
 					$fgrp     = ( 'nouveau' === $pstatus ) ? 'todo' : ( in_array( $pstatus, array( 'contacte', 'relance' ), true ) ? 'done' : ( 'repondeur' === $pstatus ? 'rappel' : ( 'interesse' === $pstatus ? 'hot' : 'done' ) ) );
@@ -233,9 +247,10 @@ foreach ( $ag_my_prospects as $ppc ) {
 						<div class="why"><?php echo esc_html( ( ! empty( $pp['city'] ) ? $pp['city'] . ' · ' : '' ) . ( function_exists( 'ag_prospect_why' ) ? ag_prospect_why( $pp ) : '' ) ); ?></div>
 						<div class="row">
 							<?php if ( $ptel ) : ?><a class="mini ag-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="Appel" href="<?php echo esc_attr( $ptel ); ?>">📞</a><?php endif; ?>
-							<?php if ( $psms ) : ?><a class="mini ag-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="SMS" href="<?php echo esc_attr( $psms ); ?>">💬</a><?php endif; ?>
-							<?php if ( $pwa ) : ?><a class="mini ag-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="WhatsApp" href="<?php echo esc_url( $pwa ); ?>" target="_blank" rel="noopener">🟢</a><?php endif; ?>
+							<?php if ( $pmobile && $psms ) : ?><a class="mini ag-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="SMS" href="<?php echo esc_attr( $psms ); ?>">💬</a><?php endif; ?>
+							<?php if ( $pmobile && $pwa ) : ?><a class="mini ag-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="WhatsApp" href="<?php echo esc_url( $pwa ); ?>" target="_blank" rel="noopener">🟢</a><?php endif; ?>
 							<?php if ( $ag_robot_ok && $pnum ) : ?><a class="mini robot ag-robot-one" href="#" data-phone="<?php echo esc_attr( $pnum ); ?>" data-name="<?php echo esc_attr( $pp['name'] ?? '' ); ?>" data-angle="<?php echo esc_attr( $pangle ); ?>">🤖 Robot <?php echo 'securite' === $pangle ? '🔒' : '🌐'; ?></a><?php endif; ?>
+							<?php if ( ! $pmobile && $pnum ) : ?><span class="mini" style="border-color:#3a3a44;color:#8a8a92;pointer-events:none;">📵 fixe</span><?php endif; ?>
 							<form method="post" action="<?php echo esc_url( $ag_ppost ); ?>" style="margin:0;">
 								<input type="hidden" name="action" value="ag_amb_prospect_status">
 								<?php echo $ag_pnonce; // phpcs:ignore ?>
@@ -423,7 +438,7 @@ var AG = (function(){
 		if(d.fails && d.fails.length){ h+='<ul style="margin:0 0 8px;padding:0;list-style:none;font-size:.82rem;color:#cfcfd6;line-height:1.6;">'; d.fails.forEach(function(f){ h+='<li>'+f+'</li>'; }); h+='</ul>'; }
 		if(d.report){ h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:6px;border-color:#22c55e;color:#7ee2a8;" href="'+d.report+'">👁️ Voir le rapport client</a> '; }
 		if(d.report_card){ h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:8px;border-color:#e6b35a;color:#e6b35a;" href="'+d.report_card+'">🖼️ Image à envoyer (screenshot)</a>'; }
-		if(num){
+		if(num && agIsMobileFr(num)){
 			var waN=(num||'').replace(/[^0-9]/g,''); if(waN.charAt(0)==='0'){ waN='33'+waN.substring(1); }
 			h+='<div class="row">'
 			 +'<a class="mini" target="_blank" rel="noopener" style="border-color:#25d366;color:#7ee2a8;background:rgba(37,211,102,.14);" href="https://wa.me/'+waN+'?text='+encodeURIComponent((d.msg&&d.msg.rapport)||'')+'">🟢 Rapport WhatsApp (avec image)</a>'
@@ -432,7 +447,9 @@ var AG = (function(){
 			 +'<a class="mini" style="border-color:#a855f7;color:#c58bff;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.securite)+'">✉️ Sécurité</a>'
 			 +'<a class="mini" style="border-color:#3aa3ff;color:#8fc7ff;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.mixte)+'">✉️ Mixte</a>'
 			 +'</div>';
-		} else { h+='<span class="sub">Pas de mobile pour SMS (fixe → utilise le robot).</span>'; }
+		} else if(num){
+			h+='<div class="row"><a class="mini robot" href="#" onclick="agRobotNum(this,\''+num+'\',\''+(d.reco===\'securite\'?\'securite\':\'creation\')+'\');return false;">🤖 Appel robot (fixe → SMS/WhatsApp impossibles)</a></div>';
+		} else { h+='<span class="sub">📵 Numéro fixe : SMS/WhatsApp impossibles → utilise l’appel robot.</span>'; }
 		if(AG.admin){
 			h+='<details style="margin-top:9px;"><summary style="cursor:pointer;color:#7fb4ff;font-size:.82rem;font-weight:600;">🔬 Résultats scan Kali (PC) — enrichir le rapport</summary>'
 			 +'<textarea class="agk-txt" style="width:100%;min-height:80px;margin-top:6px;" placeholder="Colle ici le résultat de ton scan Kali pour ce site…"></textarea>'
@@ -446,9 +463,13 @@ var AG = (function(){
 	    bC=document.getElementById('ag-call'), bS=document.getElementById('ag-sms'), bW=document.getElementById('ag-wa'), bR=document.getElementById('ag-robot');
 	function telN(v){ return (v||'').replace(/[^0-9+]/g,''); }
 	function waN(v){ var n=(v||'').replace(/[^0-9]/g,''); if(n.charAt(0)==='0'){ n='33'+n.substring(1); } return n; }
+	// Mobile FR (06/07) → SMS/WhatsApp possibles. Fixe (01-05/09) → appel + robot seulement.
+	function agIsMobileFr(v){ var d=(v||'').replace(/[^0-9]/g,''); if(!d) return true; if(d.indexOf('0033')===0)d=d.slice(4); else if(d.indexOf('33')===0&&d.length>=11)d=d.slice(2); if(d.charAt(0)==='0')d=d.slice(1); return d.charAt(0)==='6'||d.charAt(0)==='7'; }
 	function refresh(){
-		var t=telN(num.value), ok=t.replace(/\D/g,'').length>=6, m=encodeURIComponent(msg.value||'');
-		[bC,bS,bW].forEach(function(b){ ok?b.removeAttribute('disabled'):b.setAttribute('disabled','disabled'); });
+		var t=telN(num.value), ok=t.replace(/\D/g,'').length>=6, m=encodeURIComponent(msg.value||''), mob=agIsMobileFr(num.value);
+		// Appel + robot : toujours si numéro valide. SMS/WhatsApp : mobile uniquement.
+		[bC].forEach(function(b){ ok?b.removeAttribute('disabled'):b.setAttribute('disabled','disabled'); });
+		[bS,bW].forEach(function(b){ (ok&&mob)?b.removeAttribute('disabled'):b.setAttribute('disabled','disabled'); b.style.display=(ok&&!mob)?'none':''; });
 		if(bR){ ok?bR.removeAttribute('disabled'):bR.setAttribute('disabled','disabled'); }
 		if(!ok) return;
 		bC.setAttribute('href','tel:'+t); bS.setAttribute('href','sms:'+t+'?body='+m); bW.setAttribute('href','https://wa.me/'+waN(num.value)+'?text='+m);
@@ -463,6 +484,14 @@ var AG = (function(){
 		}).catch(function(){ bR.textContent='🤖 Appel robot'; refresh(); AG.toast('❌ Erreur réseau'); });
 	}); }
 
+	// Appel robot sur un numéro donné (utilisé dans le résultat d'audit pour les fixes).
+	window.agRobotNum = function(el, ph, ang){
+		if(!confirm('Le robot Emma va appeler '+ph+' (angle '+(ang==='securite'?'sécurité':'création de site')+'). Lancer ?')) return;
+		var lbl=el.innerHTML; el.textContent='📞…';
+		AG.post('ag_app_voice_call',{phone:ph,angle:ang}).then(function(j){
+			el.innerHTML=lbl; AG.toast(j&&j.success ? '🤖 Le robot appelle '+ph+' !' : ('❌ '+((j&&j.data&&j.data.m)||'Échec')));
+		}).catch(function(){ el.innerHTML=lbl; AG.toast('❌ Erreur réseau'); });
+	};
 	// Appel robot par prospect (angle intelligent : sécurité si site, création sinon)
 	document.querySelectorAll('.ag-robot-one').forEach(function(a){
 		a.addEventListener('click',function(e){ e.preventDefault();
