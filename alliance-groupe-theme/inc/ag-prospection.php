@@ -2552,6 +2552,9 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 				<li><strong>Déréférencement Google</strong> : un site signalé « dangereux » disparaît des résultats → <strong>perte directe de clients</strong>.</li>
 			</ul></div>
 			<a class="cta" href="<?php echo esc_url( $cta ); ?>"><?php echo esc_html( $ctalabel ); ?></a>
+			<?php $wapro = preg_replace( '/[^0-9]/', '', (string) get_option( 'ag_wa_pro', '' ) ); if ( $wapro ) : ?>
+			<a class="cta" style="background:#25d366;color:#04210f;margin-top:10px;" href="https://wa.me/<?php echo esc_attr( $wapro ); ?>?text=<?php echo rawurlencode( 'Bonjour, j\'ai vu le rapport de sécurité de mon site ' . $host . '. J\'aimerais en savoir plus.' ); ?>">💬 Poser une question sur WhatsApp</a>
+			<?php endif; ?>
 			<p style="text-align:center;color:#8a8a92;font-size:.82rem;margin-top:12px;">Rapport complet + plan de correction par Alliance Groupe. Paiement sécurisé.</p>
 		<?php endif; ?>
 		</div>
@@ -2749,7 +2752,7 @@ if ( ! function_exists( 'ag_push_clients' ) ) {
 	}
 }
 add_action( 'admin_init', function () {
-	foreach ( array( 'ag_tg_token', 'ag_tg_chat', 'ag_tg_chan', 'ag_tg_chan_link', 'ag_tg_group_link', 'ag_wa_phone', 'ag_wa_apikey', 'ag_sms_free_user', 'ag_sms_free_key', 'ag_sms_webhook' ) as $opt ) {
+	foreach ( array( 'ag_tg_token', 'ag_tg_chat', 'ag_tg_chan', 'ag_tg_chan_link', 'ag_tg_group_link', 'ag_wa_phone', 'ag_wa_apikey', 'ag_wa_pro', 'ag_sms_free_user', 'ag_sms_free_key', 'ag_sms_webhook' ) as $opt ) {
 		register_setting( 'ag_tg_cfg', $opt, array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
 	}
 } );
@@ -2848,6 +2851,7 @@ if ( ! function_exists( 'ag_notify_render' ) ) {
 					<tr><th colspan="2" style="padding-bottom:0;"><span style="color:#25D366;">WhatsApp (CallMeBot)</span></th></tr>
 					<tr><th scope="row"><label for="ag_wa_phone">Mon numéro WhatsApp</label></th><td><input type="text" name="ag_wa_phone" id="ag_wa_phone" value="<?php echo esc_attr( get_option( 'ag_wa_phone', '' ) ); ?>" class="regular-text" style="width:260px;" placeholder="33612345678 (format international)"></td></tr>
 					<tr><th scope="row"><label for="ag_wa_apikey">API key CallMeBot</label></th><td><input type="text" name="ag_wa_apikey" id="ag_wa_apikey" value="<?php echo esc_attr( get_option( 'ag_wa_apikey', '' ) ); ?>" class="regular-text" style="width:260px;"></td></tr>
+					<tr><th scope="row"><label for="ag_wa_pro">📱 Numéro WhatsApp Business (pro)</label></th><td><input type="text" name="ag_wa_pro" id="ag_wa_pro" value="<?php echo esc_attr( get_option( 'ag_wa_pro', '' ) ); ?>" class="regular-text" style="width:260px;" placeholder="33744829516 (format international, sans +)"><p class="description">Ton numéro WhatsApp Business (ex. ton 07 → <code>337…</code>). Sert au bouton « 💬 WhatsApp » du <strong>rapport client</strong> pour que le prospect te contacte directement.</p></td></tr>
 					<tr><th colspan="2" style="padding-bottom:0;"><span style="color:#D4B45C;">Telegram</span></th></tr>
 					<tr><th scope="row"><label for="ag_tg_token">Token du bot</label></th><td><input type="text" name="ag_tg_token" id="ag_tg_token" value="<?php echo esc_attr( ag_tg_cfg( 'token' ) ); ?>" class="regular-text" style="width:100%;max-width:520px;"></td></tr>
 					<tr><th scope="row"><label for="ag_tg_chat">🔒 Canal INTERNE (équipe) — Chat ID</label></th><td><input type="text" name="ag_tg_chat" id="ag_tg_chat" value="<?php echo esc_attr( ag_tg_cfg( 'chat' ) ); ?>" class="regular-text" style="width:260px;"><p class="description">Reçoit les alertes prospects / ventes / leads. Groupe d'équipe (ID négatif).</p></td></tr>
