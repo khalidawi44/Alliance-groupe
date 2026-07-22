@@ -2437,7 +2437,7 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 		nocache_headers();
 		header( 'Content-Type: text/html; charset=utf-8' );
 		$ok = ( '' !== $site && preg_match( '#^https?://#i', $site ) && function_exists( 'ag_audit_run' ) );
-		$a = $ok ? ag_audit_run( $site ) : array();
+		$a = $ok ? ag_audit_get( $site ) : array();
 		$score  = (int) ( $a['score'] ?? 0 );
 		$tech   = (string) ( $a['tech'] ?? '' );
 		$fails  = array();
@@ -2473,7 +2473,9 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 				.warn{background:#241f0e;border:1px solid #6a5a1f;border-radius:10px;padding:10px 12px;color:#e6d9a8;font-size:.78rem;line-height:1.45}
 				.warn b{color:#ffd873}.warn div{margin-top:4px}
 				.ft{margin-top:10px;text-align:center;background:linear-gradient(135deg,#d4b45c,#b98f2f);color:#0b0b0f;font-weight:800;border-radius:11px;padding:11px;font-size:.9rem}
-			</style></head><body><div class="card">
+			</style></head><body>
+			<div style="max-width:430px;margin:0 auto;padding:8px 16px 0;"><a href="#" onclick="if(history.length>1){history.back();return false}location.href='<?php echo esc_url( home_url( '/prospection-mobile' ) ); ?>';return false" style="color:#d4b45c;font-weight:700;text-decoration:none;font-size:.9rem;">← Retour à l'app</a> <span style="color:#666;font-size:.72rem;">(ne pas inclure dans la capture)</span></div>
+			<div class="card">
 				<div class="hd"><img src="<?php echo esc_url( $logo ); ?>" alt=""><b>Alliance <span>Groupe</span></b><span class="tag">AUDIT SÉCURITÉ</span></div>
 				<h1><?php echo esc_html( $who ); ?></h1><div class="u"><?php echo esc_html( $host ); ?></div>
 				<div class="row"><div class="big"><?php echo (int) $score; ?><small>/100</small></div><div class="rl"><strong style="color:<?php echo esc_attr( $col ); ?>"><?php echo $score < 50 ? '⚠️ Site à risque' : 'À améliorer'; ?></strong><br><?php echo count( $fails ); ?> problème(s) détecté(s)<?php echo $tech ? ' · ' . esc_html( $tech ) : ''; ?></div></div>
@@ -2520,7 +2522,9 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 			.warn{background:#241f0e;border:1px solid #6a5a1f;border-radius:12px;padding:15px;margin:16px 0;color:#e6d9a8;}
 			.warn ul{margin:8px 0 0;padding-left:18px;line-height:1.6;}
 			.cta{display:block;text-align:center;background:linear-gradient(135deg,#d4b45c,#b98f2f);color:#0b0b0f;font-weight:800;padding:16px;border-radius:14px;text-decoration:none;font-size:1.05rem;margin-top:20px;}
-		</style></head><body><div class="wrap">
+		</style></head><body>
+		<a href="#" onclick="if(history.length>1){history.back();return false}location.href='<?php echo esc_url( home_url( '/prospection-mobile' ) ); ?>';return false" style="display:inline-block;margin:12px 0 0 14px;color:#d4b45c;font-weight:700;text-decoration:none;">← Retour</a>
+		<div class="wrap">
 		<div class="top"><img src="<?php echo esc_url( $logo ); ?>" alt=""><b>Alliance <span>Groupe</span></b></div>
 		<?php if ( ! $ok ) : ?>
 			<h1>Rapport de sécurité</h1><p class="url">Lien invalide. Contactez Alliance Groupe.</p>
@@ -2580,15 +2584,30 @@ if ( ! function_exists( 'ag_demo_link_for' ) ) {
 	}
 }
 
+/* Audit UNIFIÉ : le "vrai" audit complet (approfondi passif), mis en CACHE 1h par URL
+ * → même site = MÊME note partout (app, rapport, carte). Fini les 47 puis 60. */
+if ( ! function_exists( 'ag_audit_get' ) ) {
+	function ag_audit_get( $url ) {
+		$url = trim( (string) $url );
+		if ( '' === $url || ! function_exists( 'ag_audit_run' ) ) return array();
+		$key = 'ag_auditc_' . md5( strtolower( $url ) );
+		$c = get_transient( $key );
+		if ( is_array( $c ) && isset( $c['score'] ) ) return $c;
+		$a = function_exists( 'ag_audit_run_deep' ) ? ag_audit_run_deep( $url ) : ag_audit_run( $url );
+		if ( is_array( $a ) && isset( $a['score'] ) ) set_transient( $key, $a, HOUR_IN_SECONDS );
+		return is_array( $a ) ? $a : array();
+	}
+}
+
 /* Audit d'un site depuis l'APP (léger = passif, avancé = approfondi ; JAMAIS Kali/local).
  * Rend une note /100 + le nombre de failles + des SMS prêts (refonte / sécurité / mixte). */
 add_action( 'wp_ajax_ag_app_audit', function () {
 	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error( array( 'm' => 'Session expirée.' ) );
 	$url = esc_url_raw( wp_unslash( $_POST['url'] ?? '' ) );
 	if ( '' === $url ) wp_send_json_error( array( 'm' => 'Ce prospect n\'a pas de site.' ) );
-	$mode = ( 'deep' === ( $_POST['mode'] ?? '' ) ) ? 'deep' : 'light';
+	$mode = 'complet';
 	if ( ! function_exists( 'ag_audit_run' ) ) wp_send_json_error( array( 'm' => 'Module audit indisponible.' ) );
-	$a = ( 'deep' === $mode && function_exists( 'ag_audit_run_deep' ) ) ? ag_audit_run_deep( $url ) : ag_audit_run( $url );
+	$a = ag_audit_get( $url ); // audit complet unifié + caché → note homogène partout
 	$score = (int) ( $a['score'] ?? 0 );
 	$crit  = (int) ( $a['critical'] ?? 0 );
 	$tech  = (string) ( $a['tech'] ?? '' );

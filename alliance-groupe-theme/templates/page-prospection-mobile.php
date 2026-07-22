@@ -245,8 +245,7 @@ foreach ( $ag_my_prospects as $ppc ) {
 						<?php if ( $pweb ) : ?>
 						<div class="audit-wrap" data-url="<?php echo esc_attr( $pweb ); ?>" data-id="<?php echo esc_attr( $pid ); ?>" data-name="<?php echo esc_attr( $pp['name'] ?? '' ); ?>" data-num="<?php echo esc_attr( $psnum ); ?>">
 							<div class="row" style="margin-top:2px;">
-								<button type="button" class="mini ag-audit" data-mode="light">🔍 Audit léger</button>
-								<button type="button" class="mini ag-audit" data-mode="deep">🔬 Audit avancé</button>
+								<button type="button" class="mini ag-audit" data-mode="complet">🛡️ Auditer le site</button>
 								<?php if ( $pas >= 0 ) : ?><span class="sub" style="font-size:.76rem;margin:0;">Note : <?php echo (int) $pas; ?>/100</span><?php endif; ?>
 							</div>
 							<div class="audit-res"></div>
