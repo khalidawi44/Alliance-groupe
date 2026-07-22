@@ -66,10 +66,10 @@ foreach ( $ag_my_prospects as $ppc ) {
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-	<meta name="apple-mobile-web-app-title" content="Alliance Pro">
+	<meta name="apple-mobile-web-app-title" content="Alliance Amb">
 	<meta name="theme-color" content="#0b0b0f">
 	<link rel="apple-touch-icon" href="<?php echo esc_url( $ag_icon ); ?>">
-	<title>Alliance Pro</title>
+	<title>Alliance Groupe — Ambassadeur</title>
 	<style>
 		:root{ --gold:#d4b45c; --bg:#0b0b0f; --card:#16161d; --line:rgba(255,255,255,.09); --soft:#9a9aa2; }
 		*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -136,7 +136,7 @@ foreach ( $ag_my_prospects as $ppc ) {
 
 <header class="appbar">
 	<img src="<?php echo esc_url( $ag_icon ); ?>" alt="">
-	<b>Alliance <span>Pro</span></b>
+	<b>Alliance <span>Ambassadeur</span></b>
 </header>
 
 <div class="wrap">
@@ -161,7 +161,14 @@ foreach ( $ag_my_prospects as $ppc ) {
 		</div>
 		<div class="card" style="margin-top:14px;">
 			<h3>🔳 Générateur de QR code</h3>
-			<p class="sub" style="margin:-4px 0 10px;">Ton lien de vente, un site, un numéro… → QR à imprimer/partager (flyer, carte, vitrine).</p>
+			<p class="sub" style="margin:-4px 0 10px;">Ton lien de vente, un réseau, un numéro… → QR à imprimer/partager (flyer, carte, vitrine).</p>
+			<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px;">
+				<button type="button" class="mini qr-preset" data-v="<?php echo esc_attr( $ag_sale_link ); ?>" style="cursor:pointer;">🔗 Mon lien</button>
+				<button type="button" class="mini qr-preset" data-v="https://wa.me/33744829516" style="cursor:pointer;">🟢 WhatsApp</button>
+				<button type="button" class="mini qr-preset" data-v="https://www.instagram.com/" style="cursor:pointer;">📸 Insta</button>
+				<button type="button" class="mini qr-preset" data-v="https://www.snapchat.com/add/" style="cursor:pointer;">👻 Snap</button>
+				<button type="button" class="mini qr-preset" data-v="https://www.tiktok.com/@" style="cursor:pointer;">🎵 TikTok</button>
+			</div>
 			<input type="text" id="ag-qr-in" value="<?php echo esc_attr( $ag_sale_link ); ?>" placeholder="Lien ou texte">
 			<div style="text-align:center;margin-top:12px;"><img id="ag-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=10&data=<?php echo rawurlencode( $ag_sale_link ); ?>" alt="QR" style="width:200px;height:200px;background:#fff;border-radius:14px;padding:8px;"></div>
 			<a id="ag-qr-open" class="b gold" style="margin-top:12px;" target="_blank" rel="noopener" href="https://api.qrserver.com/v1/create-qr-code/?size=800x800&margin=20&data=<?php echo rawurlencode( $ag_sale_link ); ?>">⬇️ Ouvrir en grand (appui long → Enregistrer l'image)</a>
@@ -611,11 +618,10 @@ var AG = (function(){
 
 	// Générateur QR code
 	var qin=document.getElementById('ag-qr-in'), qimg=document.getElementById('ag-qr-img'), qopen=document.getElementById('ag-qr-open');
-	if(qin){ qin.addEventListener('input',function(){
-		var d=encodeURIComponent(qin.value||'');
-		qimg.src='https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=10&data='+d;
-		qopen.href='https://api.qrserver.com/v1/create-qr-code/?size=800x800&margin=20&data='+d;
-	}); }
+	function qrUpd(){ var d=encodeURIComponent(qin.value||''); qimg.src='https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=10&data='+d; qopen.href='https://api.qrserver.com/v1/create-qr-code/?size=800x800&margin=20&data='+d; }
+	if(qin){ qin.addEventListener('input',qrUpd);
+		document.querySelectorAll('.qr-preset').forEach(function(b){ b.addEventListener('click',function(){ qin.value=b.getAttribute('data-v'); qrUpd(); qin.focus(); }); });
+	}
 
 	// Bouton remonter
 	var top=document.getElementById('toTop');
