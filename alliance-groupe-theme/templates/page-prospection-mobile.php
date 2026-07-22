@@ -159,6 +159,14 @@ foreach ( $ag_my_prospects as $ppc ) {
 			<a href="#" onclick="AG.tab('chercher');return false"><i>🔎</i>Chercher</a>
 			<a href="#" onclick="AG.tab('audit');return false"><i>🛡️</i>Audit</a>
 		</div>
+		<div class="card" style="margin-top:14px;">
+			<h3>🔳 Générateur de QR code</h3>
+			<p class="sub" style="margin:-4px 0 10px;">Ton lien de vente, un site, un numéro… → QR à imprimer/partager (flyer, carte, vitrine).</p>
+			<input type="text" id="ag-qr-in" value="<?php echo esc_attr( $ag_sale_link ); ?>" placeholder="Lien ou texte">
+			<div style="text-align:center;margin-top:12px;"><img id="ag-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=10&data=<?php echo rawurlencode( $ag_sale_link ); ?>" alt="QR" style="width:200px;height:200px;background:#fff;border-radius:14px;padding:8px;"></div>
+			<a id="ag-qr-open" class="b gold" style="margin-top:12px;" target="_blank" rel="noopener" href="https://api.qrserver.com/v1/create-qr-code/?size=800x800&margin=20&data=<?php echo rawurlencode( $ag_sale_link ); ?>">⬇️ Ouvrir en grand (appui long → Enregistrer l'image)</a>
+			<a class="link" style="margin-top:10px;" href="<?php echo esc_url( home_url( '/studio' ) ); ?>"><i>🎨</i><span><b>Studio créatif</b><span>Vidéos &amp; visuels de pub</span></span><span class="arr">→</span></a>
+		</div>
 		<p class="logout"><a href="<?php echo esc_url( wp_logout_url( home_url( '/connexion' ) ) ); ?>">🚪 Se déconnecter</a></p>
 		<p class="hint">💡 Installer l'app : Safari → Partager ↑ → « Sur l'écran d'accueil ».</p>
 	</section>
@@ -385,7 +393,7 @@ var AG = (function(){
 	var toastT;
 	function toast(m){ var t=document.getElementById('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(function(){ t.classList.remove('on'); },3200); }
 	function post(action, data){ var fd=new FormData(); fd.append('action',action); fd.append('_n',N); Object.keys(data||{}).forEach(function(k){ fd.append(k,data[k]); }); return fetch(AJAX,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}); }
-	return { tab:tab, toast:toast, post:post, AJAX:AJAX, N:N };
+	return { tab:tab, toast:toast, post:post, AJAX:AJAX, N:N, admin:<?php echo $ag_is_admin ? 'true' : 'false'; ?> };
 })();
 
 (function(){
@@ -418,6 +426,11 @@ var AG = (function(){
 			 +'<a class="mini" style="border-color:#3aa3ff;color:#8fc7ff;" href="sms:'+num+'?body='+encodeURIComponent(d.msg.mixte)+'">✉️ Mixte</a>'
 			 +'</div>';
 		} else { h+='<span class="sub">Pas de mobile pour SMS (fixe → utilise le robot).</span>'; }
+		if(AG.admin){
+			h+='<details style="margin-top:9px;"><summary style="cursor:pointer;color:#7fb4ff;font-size:.82rem;font-weight:600;">🔬 Résultats scan Kali (PC) — enrichir le rapport</summary>'
+			 +'<textarea class="agk-txt" style="width:100%;min-height:80px;margin-top:6px;" placeholder="Colle ici le résultat de ton scan Kali pour ce site…"></textarea>'
+			 +'<button type="button" class="mini agk-save" data-url="'+url+'" style="cursor:pointer;margin-top:6px;">💾 Enregistrer pour ce site</button></details>';
+		}
 		return h;
 	}
 
@@ -584,6 +597,24 @@ var AG = (function(){
 			if(j&&j.success){ r.innerHTML='✅ '+j.data.ok+' envoyés · ❌ '+j.data.ko+' échecs (sur '+j.data.total+'). Recharge la page pour voir le suivi.'; }
 			else { r.textContent='⚠️ '+((j&&j.data&&j.data.m)||'Erreur'); }
 		}).catch(function(){ bulkSend.removeAttribute('disabled'); bulkSend.textContent='📨 Envoyer en masse'; r.textContent='❌ Erreur réseau'; });
+	}); }
+
+	// Enregistrer un résultat Kali (délégué car injecté dynamiquement)
+	document.addEventListener('click',function(e){
+		var b=e.target && e.target.closest ? e.target.closest('.agk-save') : null; if(!b) return;
+		var det=b.closest('details'), txt=det?det.querySelector('.agk-txt'):null, url=b.getAttribute('data-url');
+		b.textContent='…';
+		AG.post('ag_app_kali_save',{url:url,kali:txt?txt.value:''}).then(function(j){
+			b.textContent=(j&&j.success)?'✅ Enregistré':'Erreur'; AG.toast((j&&j.success)?'🔬 Résultat Kali enregistré (rapport enrichi)':'❌ Erreur');
+		}).catch(function(){ b.textContent='💾 Enregistrer pour ce site'; AG.toast('❌ Erreur réseau'); });
+	});
+
+	// Générateur QR code
+	var qin=document.getElementById('ag-qr-in'), qimg=document.getElementById('ag-qr-img'), qopen=document.getElementById('ag-qr-open');
+	if(qin){ qin.addEventListener('input',function(){
+		var d=encodeURIComponent(qin.value||'');
+		qimg.src='https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=10&data='+d;
+		qopen.href='https://api.qrserver.com/v1/create-qr-code/?size=800x800&margin=20&data='+d;
 	}); }
 
 	// Bouton remonter

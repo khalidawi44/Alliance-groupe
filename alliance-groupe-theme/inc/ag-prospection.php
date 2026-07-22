@@ -2446,6 +2446,9 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 		}
 		$vis   = array_slice( $fails, 0, 2 );
 		$hid   = array_slice( $fails, 2 );
+		$kali_all = get_option( 'ag_kali', array() );
+		$kali  = ( is_array( $kali_all ) ) ? trim( (string) ( $kali_all[ md5( strtolower( (string) $site ) ) ] ?? '' ) ) : '';
+		$kali_n = $kali ? max( 1, substr_count( $kali, "\n" ) + 1 ) : 0;
 		$host  = $ok ? wp_parse_url( $site, PHP_URL_HOST ) : '';
 		$who   = '' !== $name ? $name : $host;
 		$col   = $score < 50 ? '#e5484d' : ( $score < 75 ? '#e6a817' : '#2ecc71' );
@@ -2547,6 +2550,12 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 			<?php if ( $hid ) : ?>
 			<div class="lock"><div class="bl"><?php foreach ( $hid as $c ) : ?><div style="padding:6px 0;border-bottom:1px solid #222;">❌ <?php echo esc_html( $c['name'] ?? 'Faille' ); ?></div><?php endforeach; ?></div>
 				<div class="ov"><div style="font-size:1.6rem;">🔒</div><strong><?php echo count( $hid ); ?> autre<?php echo count( $hid ) > 1 ? 's' : ''; ?> faille<?php echo count( $hid ) > 1 ? 's' : ''; ?> détectée<?php echo count( $hid ) > 1 ? 's' : ''; ?></strong><span style="color:#9a9aa2;font-size:.85rem;">À découvrir dans le rapport complet<?php echo $price > 0 ? ' — ' . esc_html( number_format_i18n( $price, 0 ) ) . ' €' : ''; ?></span></div>
+			</div>
+			<?php endif; ?>
+			<?php if ( $kali ) : ?>
+			<div style="background:#101826;border:1px solid #24405f;border-radius:12px;padding:14px;margin-bottom:10px;">
+				<strong style="color:#7fb4ff;">🔬 Scan de sécurité approfondi réalisé</strong>
+				<div style="color:#aac4e6;font-size:.86rem;margin-top:4px;"><?php echo (int) $kali_n; ?> anomalie(s) technique(s) supplémentaire(s) détectée(s) par notre expert. Détail complet dans le rapport débloqué.</div>
 			</div>
 			<?php endif; ?>
 			<div class="warn"><strong>⚠️ Ce qui peut arriver si ce n'est pas corrigé&nbsp;:</strong><ul>
@@ -2686,6 +2695,19 @@ add_action( 'wp_ajax_ag_app_bulk_sms', function () {
 	if ( count( $log ) > 40 ) { $log = array_slice( $log, 0, 40 ); }
 	update_option( 'ag_bulk_sms_log', $log, false );
 	wp_send_json_success( array( 'ok' => $ok, 'ko' => $ko, 'total' => count( $nums ) ) );
+} );
+
+/* Résultats du scan Kali (PC) attachés à une URL → enrichissent le rapport client (admin). */
+add_action( 'wp_ajax_ag_app_kali_save', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error( array( 'm' => 'Refusé.' ) );
+	$url = esc_url_raw( wp_unslash( $_POST['url'] ?? '' ) );
+	if ( '' === $url ) wp_send_json_error( array( 'm' => 'URL manquante.' ) );
+	$txt = sanitize_textarea_field( wp_unslash( $_POST['kali'] ?? '' ) );
+	$all = get_option( 'ag_kali', array() ); if ( ! is_array( $all ) ) { $all = array(); }
+	$k = md5( strtolower( $url ) );
+	if ( '' === $txt ) { unset( $all[ $k ] ); } else { $all[ $k ] = $txt; }
+	update_option( 'ag_kali', $all, false );
+	wp_send_json_success();
 } );
 
 /* Suppression d'un prospect depuis l'app (propriétaire ou admin). */
