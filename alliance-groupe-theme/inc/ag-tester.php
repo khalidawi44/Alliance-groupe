@@ -27,7 +27,8 @@ if ( ! function_exists( 'ag_tester_opt' ) ) {
 			'price'       => '49',
 			'deep_price'  => '290',   // Diagnostic Expert 24h (scan Kali complet, sur mandat)
 			'deep_pay_url'=> '',      // lien de paiement dédié (vide = renvoie /contact)
-			'pay_url'     => '',
+			'pay_url'     => 'https://www.paypal.com/ncp/payment/EMDGXFFJS4NZ8', // lien PayPal du rapport (49 €) — défaut auto
+
 			'raison'      => 'Alliance Groupe',
 			'siret'       => '[SIRET à compléter dans Réglages → Tester / Audit]',
 			'adresse'     => 'Nantes, France',
