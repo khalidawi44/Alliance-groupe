@@ -2909,7 +2909,9 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 	$fails = array();
 	foreach ( (array) ( $a['checks'] ?? array() ) as $c ) {
 		$st = $c['status'] ?? '';
-		if ( 'fail' === $st || 'warn' === $st ) { $fails[] = ( 'fail' === $st ? '❌ ' : '⚠️ ' ) . ( $c['name'] ?? '' ); }
+		// Libellé en clair + SANS balises <...> (sinon l'app les avale via innerHTML → « Balise » tronqué).
+		$lbl = function_exists( 'ag_report_label' ) ? ag_report_label( $c['name'] ?? '' ) : preg_replace( '/<[^>]+>/', '', (string) ( $c['name'] ?? '' ) );
+		if ( 'fail' === $st || 'warn' === $st ) { $fails[] = ( 'fail' === $st ? '❌ ' : '⚠️ ' ) . $lbl; }
 	}
 	$fails = array_slice( $fails, 0, 8 );
 	$name  = sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) );
