@@ -2434,6 +2434,22 @@ add_action( 'template_redirect', function () {
 	exit;
 } );
 if ( ! function_exists( 'ag_render_client_report' ) ) {
+	/* Traduit les libellés techniques d'audit en clair pour le client (fini « Balise <title> »). */
+	function ag_report_label( $name ) {
+		$name = (string) $name;
+		$map = array(
+			'Balise <title>'              => 'Titre de la page (référencement Google)',
+			'Meta description'            => 'Description Google (le résumé sous le titre)',
+			'Balise H1'                   => 'Titre principal de la page',
+			'Images avec attribut alt'    => 'Descriptions des images (SEO + accessibilité)',
+			'Connexion sécurisée (HTTPS)' => 'Connexion sécurisée (cadenas HTTPS)',
+			'Site accessible'             => 'Accès au site',
+		);
+		if ( isset( $map[ $name ] ) ) return $map[ $name ];
+		$n = preg_replace( '/<[^>]+>/', '', $name );          // retire les <...> techniques
+		$n = trim( str_ireplace( 'Balise', 'Élément', $n ) ); // « Balise » → « Élément »
+		return '' !== $n ? $n : $name;
+	}
 	function ag_render_client_report( $site, $name = '' ) {
 		nocache_headers();
 		header( 'Content-Type: text/html; charset=utf-8' );
@@ -2447,6 +2463,9 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 		}
 		$vis   = array_slice( $fails, 0, 2 );
 		$hid   = array_slice( $fails, 2 );
+		// Cas « site non analysable » (fetch échoué) : score 0, ou seul « Accès au site » en échec.
+		$fetch_failed = $ok && ( 0 === $score || ( 1 === count( (array) ( $a['checks'] ?? array() ) ) && ! empty( $a['checks'] ) && false !== stripos( (string) ( $a['checks'][0]['name'] ?? '' ), 'accessible' ) ) );
+		$no_issues    = $ok && ! $fetch_failed && 0 === count( $fails );
 		$kali_all = get_option( 'ag_kali', array() );
 		$kali  = ( is_array( $kali_all ) ) ? trim( (string) ( $kali_all[ md5( strtolower( (string) $site ) ) ] ?? '' ) ) : '';
 		$kali_n = $kali ? max( 1, substr_count( $kali, "\n" ) + 1 ) : 0;
@@ -2485,7 +2504,7 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 				<div class="hd"><img src="<?php echo esc_url( $logo ); ?>" alt=""><b>Alliance <span>Groupe</span></b><span class="tag">AUDIT SÉCURITÉ</span></div>
 				<h1><?php echo esc_html( $who ); ?></h1><div class="u"><?php echo esc_html( $host ); ?></div>
 				<div class="row"><div class="big"><?php echo (int) $score; ?><small>/100</small></div><div class="rl"><strong style="color:<?php echo esc_attr( $col ); ?>"><?php echo $score < 50 ? '⚠️ Site à risque' : 'À améliorer'; ?></strong><br><?php echo count( $fails ); ?> problème(s) détecté(s)<?php echo $tech ? ' · ' . esc_html( $tech ) : ''; ?></div></div>
-				<?php foreach ( array_slice( $fails, 0, 3 ) as $c ) : ?><div class="fl"><?php echo ( 'fail' === $c['status'] ? '❌ ' : '⚠️ ' ) . esc_html( $c['name'] ?? '' ); ?></div><?php endforeach; ?>
+				<?php foreach ( array_slice( $fails, 0, 3 ) as $c ) : ?><div class="fl"><?php echo ( 'fail' === $c['status'] ? '❌ ' : '⚠️ ' ) . esc_html( ag_report_label( $c['name'] ?? '' ) ); ?></div><?php endforeach; ?>
 				<?php if ( count( $fails ) > 3 ) : ?><div class="lock">🔒 + <?php echo count( $fails ) - 3; ?> autres failles dans le rapport complet</div><?php endif; ?>
 				<div class="warn"><b>⚠️ Si ce n'est pas corrigé :</b><div>• Piratage / site défiguré ou bloqué (rançongiciel)</div><div>• Vol des données clients → amende CNIL possible</div><div>• Site signalé « dangereux » → chute sur Google</div></div>
 				<div class="ft">Rapport complet + correction<?php echo $price > 0 ? ' — ' . esc_html( number_format_i18n( $price, 0 ) ) . ' €' : ''; ?> · Alliance Groupe</div>
@@ -2496,9 +2515,12 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 		<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 		<title>Rapport de sécurité<?php echo $who ? ' — ' . esc_html( $who ) : ''; ?></title>
 		<?php
-		$og_title = $ok ? ( '🛡️ Audit sécurité de ' . $who . ' — Note ' . $score . '/100' ) : 'Rapport de sécurité — Alliance Groupe';
-		$og_desc  = $ok ? ( count( $fails ) . ' point(s) à corriger détecté(s). Découvrez ce qu\'il faut réparer avant qu\'il ne soit trop tard (piratage, données clients, Google).' ) : 'Audit de sécurité de votre site.';
-		$og_img   = $ok ? $shot : ( get_stylesheet_directory_uri() . '/assets/images/og-banner.png' );
+		$og_title = $ok ? ( '🛡️ ' . $who . ' — votre audit sécurité est prêt (ne tardez pas)' ) : 'Votre audit de sécurité — Alliance Groupe';
+		$og_desc  = $ok
+			? ( ( count( $fails ) > 0 ? count( $fails ) . ' point(s) à corriger sur votre site. ' : '' ) . '👉 Découvrez votre rapport avant qu\'un pirate ne trouve la faille avant vous. Analyse offerte par Alliance Groupe.' )
+			: 'Découvrez l\'audit de sécurité de votre site.';
+		// Image de l'aperçu : bannière brandée FIABLE (le screenshot mShots échoue souvent → pas d'image).
+		$og_img   = get_stylesheet_directory_uri() . '/assets/images/og-banner.png';
 		$og_url   = ( is_ssl() ? 'https://' : 'http://' ) . ( $_SERVER['HTTP_HOST'] ?? '' ) . ( $_SERVER['REQUEST_URI'] ?? '' );
 		?>
 		<meta property="og:type" content="website">
@@ -2552,15 +2574,25 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 				<div style="font-size:.86rem;margin-top:3px;">Merci pour votre confiance. Voici l'intégralité des points détectés et notre plan de correction.</div>
 			</div>
 			<?php endif; ?>
+			<?php if ( $fetch_failed ) : ?>
+			<div style="background:#241f0e;border:1px solid #6a5a1f;border-radius:12px;padding:15px;margin:16px 0;color:#e6d9a8;">
+				<strong style="color:#ffd873;">🔎 Analyse automatique impossible pour l'instant</strong>
+				<div style="font-size:.9rem;margin-top:6px;line-height:1.5;">Votre site protège son accès aux outils automatiques (ou il était momentanément indisponible). C'est justement un point à vérifier : nous pouvons faire un <strong>audit manuel approfondi</strong> et vous dire précisément ce qui va et ce qui ne va pas.</div>
+			</div>
+			<?php else : ?>
 			<h2>Ce qu'on a détecté (<?php echo count( $fails ); ?>)</h2>
+			<?php if ( $no_issues ) : ?>
+			<div class="f" style="background:#0e1f13;border-color:#2e6a3f;border-left-color:#2ecc71;"><strong>✅ Les points de base sont en ordre.</strong><div class="m">Bonne nouvelle sur les vérifications rapides. Mais un audit de surface ne voit pas tout : failles de sécurité en profondeur, mises à jour, sauvegardes, RGPD… c'est ce que couvre le rapport complet.</div></div>
+			<?php endif; ?>
 			<?php foreach ( ( $unlocked ? $fails : $vis ) as $c ) : ?>
-				<div class="f"><strong><?php echo ( 'fail' === $c['status'] ? '❌ ' : '⚠️ ' ) . esc_html( $c['name'] ?? '' ); ?></strong><?php echo ! empty( $c['msg'] ) ? '<div class="m">' . esc_html( $c['msg'] ) . '</div>' : ''; ?></div>
+				<div class="f"><strong><?php echo ( 'fail' === $c['status'] ? '❌ ' : '⚠️ ' ) . esc_html( ag_report_label( $c['name'] ?? '' ) ); ?></strong><?php echo ! empty( $c['msg'] ) ? '<div class="m">' . esc_html( $c['msg'] ) . '</div>' : ''; ?></div>
 			<?php endforeach; ?>
 			<?php if ( $hid && ! $unlocked ) : ?>
-			<div class="lock"><div class="bl"><?php foreach ( $hid as $c ) : ?><div style="padding:6px 0;border-bottom:1px solid #222;">❌ <?php echo esc_html( $c['name'] ?? 'Faille' ); ?></div><?php endforeach; ?></div>
+			<div class="lock"><div class="bl"><?php foreach ( $hid as $c ) : ?><div style="padding:6px 0;border-bottom:1px solid #222;">❌ <?php echo esc_html( ag_report_label( $c['name'] ?? 'Faille' ) ); ?></div><?php endforeach; ?></div>
 				<div class="ov"><div style="font-size:1.6rem;">🔒</div><strong><?php echo count( $hid ); ?> autre<?php echo count( $hid ) > 1 ? 's' : ''; ?> faille<?php echo count( $hid ) > 1 ? 's' : ''; ?> détectée<?php echo count( $hid ) > 1 ? 's' : ''; ?></strong><span style="color:#9a9aa2;font-size:.85rem;">À découvrir dans le rapport complet<?php echo $price > 0 ? ' — ' . esc_html( number_format_i18n( $price, 0 ) ) . ' €' : ''; ?></span></div>
 			</div>
 			<?php endif; ?>
+			<?php endif; // fetch_failed ?>
 			<?php if ( $kali ) : ?>
 			<div style="background:#101826;border:1px solid #24405f;border-radius:12px;padding:14px;margin-bottom:10px;">
 				<strong style="color:#7fb4ff;">🔬 Scan de sécurité approfondi réalisé</strong>
@@ -2895,8 +2927,10 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 	$phone = sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) );
 	// Lien du RAPPORT CLIENT (page teaser à envoyer au prospect).
 	$report = add_query_arg( array( 'ag_rapport' => 1, 'site' => rawurlencode( $url ), 'name' => rawurlencode( $name ) ), home_url( '/' ) );
-	// SMS « rapport » : phrase + lien du rapport.
-	$msg['rapport'] = "Bonjour, j'ai fait un audit du site de " . $who . " (note " . $score . "/100). Voici le rapport avec ce qu'il faut corriger : " . $report;
+	// SMS « rapport » : accroche + lien (l'aperçu du lien montre déjà titre + image brandée).
+	$msg['rapport'] = ( $score > 0 )
+		? "🔒 " . $who . ", votre audit de sécurité est prêt (note " . $score . "/100). Ne tardez pas : découvrez ce qu'il faut corriger avant qu'une faille ne soit exploitée 👉 " . $report
+		: "🔒 " . $who . ", votre audit de sécurité est prêt. Découvrez les points à surveiller sur votre site 👉 " . $report;
 	// Persiste la note sur la fiche prospect (si id fourni).
 	$pid = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
 	if ( '' !== $pid ) {
