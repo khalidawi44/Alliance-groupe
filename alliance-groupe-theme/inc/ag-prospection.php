@@ -1113,8 +1113,8 @@ if ( ! function_exists( 'ag_prospect_links_block' ) ) {
 		$is_avocat = false !== stripos( ( $p['type'] ?? '' ) . ' ' . ( $p['name'] ?? '' ), 'avocat' );
 		if ( ! empty( $p['phone'] ) && ! $is_avocat && function_exists( 'ag_voice_ready' ) && ag_voice_ready() ) {
 			$pid = esc_attr( $p['id'] ?? '' );
-			$out .= ' <button type="button" class="button button-small agr-robot" data-id="' . $pid . '" data-angle="creation" style="border-color:#2563eb;color:#2563eb;" title="Appel robot — angle création de site (1er message dédié)">📞 Appel site</button>';
-			$out .= ' <button type="button" class="button button-small agr-robot" data-id="' . $pid . '" data-angle="securite" style="border-color:#7c3aed;color:#7c3aed;" title="Appel robot — angle audit sécurité (1er message dédié)">🔒 Appel sécu</button>';
+			$out .= ' <button type="button" class="button button-small agr-robot" data-id="' . $pid . '" data-angle="creation" style="border-color:#7c3aed;color:#7c3aed;background:#f5f0ff;font-weight:600;" title="C\'est le ROBOT Emma qui appelle (pas toi) — angle création de site">🤖 Robot · site 🌐</button>';
+			$out .= ' <button type="button" class="button button-small agr-robot" data-id="' . $pid . '" data-angle="securite" style="border-color:#7c3aed;color:#7c3aed;background:#f5f0ff;font-weight:600;" title="C\'est le ROBOT Emma qui appelle (pas toi) — angle audit sécurité">🤖 Robot · sécu 🔒</button>';
 		}
 		return $out;
 	}
@@ -1857,7 +1857,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					<button type="button" id="ag-sms-selected" class="button button-small" disabled <?php echo $ag_gw ? '' : 'title="Configure la Passerelle SMS"'; ?>>📲 Envoyer SMS (sélection)</button>
 					<?php $ag_voice_ok = function_exists( 'ag_voice_ready' ) && ag_voice_ready(); ?>
 					<label style="font-size:.82em;color:#50575e;">Angle : <select id="ag-voice-angle" style="font-size:.85em;padding:1px 4px;"><option value="auto">Auto (selon site)</option><option value="creation">🆕 Création web</option><option value="securite">🔒 Sécurité</option></select></label>
-					<button type="button" id="ag-voice-selected" class="button button-small" disabled <?php echo $ag_voice_ok ? '' : 'title="Configure le Robot vocal (Prospection → 🤖 Robot vocal)"'; ?>>📞 Appeler au robot (sélection)</button>
+					<button type="button" id="ag-voice-selected" class="button button-small" style="background:#f5f0ff;border-color:#7c3aed;color:#7c3aed;font-weight:600;" disabled <?php echo $ag_voice_ok ? '' : 'title="Configure le Robot vocal (Prospection → 🤖 Robot vocal)"'; ?>>🤖 Robot : appeler la sélection</button>
 					<button type="button" id="ag-del-selected" class="button button-small button-link-delete" disabled>🗑️ Supprimer la sélection (<span id="ag-sel-count">0</span>)</button>
 					<?php if ( ! $ag_gw ) : ?><span style="font-size:.8em;color:#b26a00;">📲 <a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-sms-gateway' ) ); ?>">Passerelle SMS</a> à activer pour l'envoi groupé.</span><?php endif; ?>
 				</div>
@@ -2095,7 +2095,7 @@ if ( ! function_exists( 'ag_prospects_render' ) ) {
 					var angSel=document.getElementById('ag-voice-angle'); fd.append('angle', angSel?angSel.value:'auto');
 					ids.forEach(function(id){ fd.append('ids[]',id); });
 					voiceBtn.disabled=true; voiceBtn.textContent='…';
-					fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ voiceBtn.textContent='📞 Appeler au robot (sélection)'; voiceBtn.disabled=false; alert(j&&j.success?('Appels lancés : '+j.data.ok+' / échecs : '+j.data.ko):(j&&j.data&&j.data.msg?j.data.msg:'Erreur')); }).catch(function(){ voiceBtn.disabled=false; });
+					fetch(ajaxurl,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ voiceBtn.textContent='🤖 Robot : appeler la sélection'; voiceBtn.disabled=false; alert(j&&j.success?('Appels lancés : '+j.data.ok+' / échecs : '+j.data.ko):(j&&j.data&&j.data.msg?j.data.msg:'Erreur')); }).catch(function(){ voiceBtn.disabled=false; });
 				});
 				if(delBtn) delBtn.addEventListener('click',function(){
 					var ids=checks().filter(function(c){return c.checked;}).map(function(c){return c.value;});
