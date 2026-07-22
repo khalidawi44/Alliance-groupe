@@ -2666,6 +2666,23 @@ add_action( 'wp_ajax_ag_app_bulk_sms', function () {
 	wp_send_json_success( array( 'ok' => $ok, 'ko' => $ko, 'total' => count( $nums ) ) );
 } );
 
+/* Suppression d'un prospect depuis l'app (propriétaire ou admin). */
+add_action( 'wp_ajax_ag_app_prospect_delete', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error( array( 'm' => 'Refusé.' ) );
+	$id = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+	if ( '' === $id ) wp_send_json_error();
+	$email = strtolower( wp_get_current_user()->user_email );
+	$admin = current_user_can( 'manage_options' );
+	$list  = (array) get_option( 'ag_prospects', array() );
+	$new   = array(); $done = false;
+	foreach ( $list as $p ) {
+		if ( ( $p['id'] ?? '' ) === $id && ( $admin || strtolower( (string) ( $p['owner_email'] ?? '' ) ) === $email ) ) { $done = true; continue; }
+		$new[] = $p;
+	}
+	if ( $done ) { update_option( 'ag_prospects', $new ); wp_send_json_success(); }
+	wp_send_json_error( array( 'm' => 'Introuvable ou non autorisé.' ) );
+} );
+
 /* ── 9. Notifications téléphone (Telegram, gratuit & instantané) ──── */
 if ( ! function_exists( 'ag_tg_cfg' ) ) {
 	function ag_tg_cfg( $k ) { return trim( (string) get_option( 'ag_tg_' . $k, '' ) ); }

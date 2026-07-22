@@ -109,6 +109,9 @@ foreach ( $ag_my_prospects as $ppc ) {
 		.p a.mini,.p select{ padding:9px 11px; border-radius:11px; font-weight:700; font-size:.88rem; border:1px solid rgba(212,180,92,.4); color:#fff; background:rgba(212,180,92,.12); width:auto; }
 		.p select{ background:#15151b; }
 		.mini.robot{ border-color:#a855f7; color:#c58bff; background:rgba(124,58,237,.14); }
+		.chips{ display:flex; flex-wrap:wrap; gap:7px; margin:0 0 14px; }
+		.chips .chip{ border:1px solid var(--line); background:rgba(255,255,255,.04); color:var(--soft); border-radius:100px; padding:7px 13px; font-size:.8rem; font-weight:700; cursor:pointer; }
+		.chips .chip.on{ background:var(--gold); color:#0b0b0f; border-color:var(--gold); }
 		.link{ display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:15px; margin-bottom:10px; font-weight:600; }
 		.link i{ font-style:normal; font-size:1.4rem; } .link b{ display:block; } .link .arr{ margin-left:auto; color:var(--soft); }
 		.hint{ text-align:center; font-size:.8rem; color:var(--soft); background:rgba(58,163,255,.09); border:1px solid rgba(58,163,255,.28); border-radius:13px; padding:12px; margin-top:6px; }
@@ -185,6 +188,15 @@ foreach ( $ag_my_prospects as $ppc ) {
 			<?php if ( ! $ag_my_prospects ) : ?>
 				<p class="sub" style="margin:0;">Aucun prospect. Va dans « Chercher » ou attends tes prospects de zone.</p>
 			<?php else : ?>
+				<div class="chips" id="ag-chips">
+					<button class="chip on" data-f="grp" data-v="all">Tous</button>
+					<button class="chip" data-f="grp" data-v="todo">🆕 À contacter</button>
+					<button class="chip" data-f="grp" data-v="done">📞 Contactés</button>
+					<button class="chip" data-f="grp" data-v="rappel">📵 À rappeler</button>
+					<button class="chip" data-f="grp" data-v="hot">🔥 Intéressés</button>
+					<button class="chip" data-f="kind" data-v="site">🔒 Sécurité (site)</button>
+					<button class="chip" data-f="kind" data-v="crea">🌐 Site web</button>
+				</div>
 				<?php foreach ( $ag_my_prospects as $pp ) :
 					$pstatus = $pp['status'] ?? 'nouveau';
 					if ( in_array( $pstatus, array( 'refus', 'ne_pas_contacter' ), true ) ) { continue; }
@@ -196,15 +208,19 @@ foreach ( $ag_my_prospects as $ppc ) {
 					$psms  = $psnum ? 'sms:' . $psnum . '?body=' . rawurlencode( $pmsg ) : '';
 					$ptel  = ! empty( $pp['phone'] ) ? 'tel:' . preg_replace( '/[^0-9+]/', '', $pp['phone'] ) : '';
 					$pnum  = preg_replace( '/[^0-9+]/', '', $pp['phone_intl'] ?? ( $pp['phone'] ?? '' ) );
+					$has_site = '' !== trim( (string) ( $pp['website'] ?? '' ) );
+					$pangle   = $has_site ? 'securite' : 'creation';
+					$fgrp     = ( 'nouveau' === $pstatus ) ? 'todo' : ( in_array( $pstatus, array( 'contacte', 'relance' ), true ) ? 'done' : ( 'repondeur' === $pstatus ? 'rappel' : ( 'interesse' === $pstatus ? 'hot' : 'done' ) ) );
+					$fkind    = $has_site ? 'site' : 'crea';
 				?>
-					<div class="p">
+					<div class="p" data-grp="<?php echo esc_attr( $fgrp ); ?>" data-kind="<?php echo esc_attr( $fkind ); ?>">
 						<div class="nm"><?php echo esc_html( $pp['name'] ?? '' ); ?></div>
 						<div class="why"><?php echo esc_html( ( ! empty( $pp['city'] ) ? $pp['city'] . ' · ' : '' ) . ( function_exists( 'ag_prospect_why' ) ? ag_prospect_why( $pp ) : '' ) ); ?></div>
 						<div class="row">
 							<?php if ( $ptel ) : ?><a class="mini ag-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="Appel" href="<?php echo esc_attr( $ptel ); ?>">📞</a><?php endif; ?>
 							<?php if ( $psms ) : ?><a class="mini ag-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="SMS" href="<?php echo esc_attr( $psms ); ?>">💬</a><?php endif; ?>
 							<?php if ( $pwa ) : ?><a class="mini ag-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="WhatsApp" href="<?php echo esc_url( $pwa ); ?>" target="_blank" rel="noopener">🟢</a><?php endif; ?>
-							<?php if ( $ag_robot_ok && $pnum ) : ?><a class="mini robot ag-robot-one" href="#" data-phone="<?php echo esc_attr( $pnum ); ?>" data-name="<?php echo esc_attr( $pp['name'] ?? '' ); ?>">🤖 Robot</a><?php endif; ?>
+							<?php if ( $ag_robot_ok && $pnum ) : ?><a class="mini robot ag-robot-one" href="#" data-phone="<?php echo esc_attr( $pnum ); ?>" data-name="<?php echo esc_attr( $pp['name'] ?? '' ); ?>" data-angle="<?php echo esc_attr( $pangle ); ?>">🤖 Robot <?php echo 'securite' === $pangle ? '🔒' : '🌐'; ?></a><?php endif; ?>
 							<form method="post" action="<?php echo esc_url( $ag_ppost ); ?>" style="margin:0;">
 								<input type="hidden" name="action" value="ag_amb_prospect_status">
 								<?php echo $ag_pnonce; // phpcs:ignore ?>
@@ -213,6 +229,7 @@ foreach ( $ag_my_prospects as $ppc ) {
 									<?php foreach ( $ag_pstat as $sk => $sl ) : ?><option value="<?php echo esc_attr( $sk ); ?>" <?php selected( $pstatus, $sk ); ?>><?php echo esc_html( $sl ); ?></option><?php endforeach; ?>
 								</select>
 							</form>
+							<button type="button" class="mini ag-del" data-id="<?php echo esc_attr( $pid ); ?>" data-name="<?php echo esc_attr( $pp['name'] ?? '' ); ?>" style="cursor:pointer;border-color:#e5484d;color:#ff8a8a;">🗑️</button>
 						</div>
 						<?php
 						$pweb  = $pp['website'] ?? '';
@@ -427,15 +444,51 @@ var AG = (function(){
 		}).catch(function(){ bR.textContent='🤖 Appel robot'; refresh(); AG.toast('❌ Erreur réseau'); });
 	}); }
 
-	// Appel robot par prospect
+	// Appel robot par prospect (angle intelligent : sécurité si site, création sinon)
 	document.querySelectorAll('.ag-robot-one').forEach(function(a){
 		a.addEventListener('click',function(e){ e.preventDefault();
-			var ph=a.getAttribute('data-phone'), nm=a.getAttribute('data-name');
-			if(!confirm('Le robot Emma va appeler '+(nm||ph)+'. Lancer ?')) return;
-			a.textContent='📞…';
-			AG.post('ag_app_voice_call',{phone:ph,name:nm,angle:'creation'}).then(function(j){
-				a.textContent='🤖 Robot'; AG.toast(j&&j.success ? '🤖 Le robot appelle '+(nm||ph)+' !' : ('❌ '+((j&&j.data&&j.data.m)||'Échec')));
-			}).catch(function(){ a.textContent='🤖 Robot'; AG.toast('❌ Erreur réseau'); });
+			var ph=a.getAttribute('data-phone'), nm=a.getAttribute('data-name'), ang=a.getAttribute('data-angle')||'creation';
+			if(!confirm('Le robot Emma va appeler '+(nm||ph)+' (angle '+(ang==='securite'?'sécurité':'création de site')+'). Lancer ?')) return;
+			var lbl=a.innerHTML; a.textContent='📞…';
+			AG.post('ag_app_voice_call',{phone:ph,name:nm,angle:ang}).then(function(j){
+				a.innerHTML=lbl; AG.toast(j&&j.success ? '🤖 Le robot appelle '+(nm||ph)+' !' : ('❌ '+((j&&j.data&&j.data.m)||'Échec')));
+			}).catch(function(){ a.innerHTML=lbl; AG.toast('❌ Erreur réseau'); });
+		});
+	});
+
+	// Filtres (chips) des prospects
+	var chips=document.getElementById('ag-chips');
+	if(chips){
+		var flt={grp:'all',kind:'all'};
+		function applyFlt(){
+			document.querySelectorAll('#view-prospecter .p').forEach(function(p){
+				var okg=(flt.grp==='all'||p.getAttribute('data-grp')===flt.grp);
+				var okk=(flt.kind==='all'||p.getAttribute('data-kind')===flt.kind);
+				p.style.display=(okg&&okk)?'':'none';
+			});
+		}
+		chips.querySelectorAll('.chip').forEach(function(c){
+			c.addEventListener('click',function(){
+				var f=c.getAttribute('data-f'), v=c.getAttribute('data-v');
+				flt[f]=(flt[f]===v)?'all':v; // re-clic = enlève le filtre
+				chips.querySelectorAll('.chip[data-f="'+f+'"]').forEach(function(x){ x.classList.toggle('on', x.getAttribute('data-v')===flt[f]); });
+				// "Tous" gère le groupe
+				if(f==='grp'){ chips.querySelector('.chip[data-v="all"]').classList.toggle('on', flt.grp==='all'); }
+				applyFlt();
+			});
+		});
+	}
+
+	// Suppression d'un prospect
+	document.querySelectorAll('.ag-del').forEach(function(b){
+		b.addEventListener('click',function(){
+			var id=b.getAttribute('data-id'), nm=b.getAttribute('data-name')||'ce prospect';
+			if(!confirm('Supprimer '+nm+' de tes prospects ?')) return;
+			b.textContent='…';
+			AG.post('ag_app_prospect_delete',{id:id}).then(function(j){
+				if(j&&j.success){ var card=b.closest('.p'); if(card){ card.style.display='none'; } AG.toast('🗑️ Supprimé'); }
+				else { b.textContent='🗑️'; AG.toast('❌ '+((j&&j.data&&j.data.m)||'Erreur')); }
+			}).catch(function(){ b.textContent='🗑️'; AG.toast('❌ Erreur réseau'); });
 		});
 	});
 
