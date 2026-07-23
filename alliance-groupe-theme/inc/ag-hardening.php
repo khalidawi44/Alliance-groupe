@@ -63,6 +63,8 @@ add_action( 'send_headers', function () {
 	header( 'X-Frame-Options: SAMEORIGIN' );
 	header( 'Referrer-Policy: strict-origin-when-cross-origin' );
 	header( 'Permissions-Policy: geolocation=(), microphone=(), camera=()' );
+	// CSP « douce » : force les ressources en HTTPS sans rien bloquer (0 risque de casse).
+	header( 'Content-Security-Policy: upgrade-insecure-requests' );
 	if ( function_exists( 'is_ssl' ) && is_ssl() ) {
 		header( 'Strict-Transport-Security: max-age=31536000; includeSubDomains' );
 	}
@@ -77,3 +79,44 @@ add_filter( 'the_generator', '__return_empty_string' );
 /* ---- 6. Retire les liens de découverte inutiles (RSD/xmlrpc, manifest) ---- */
 remove_action( 'wp_head', 'rsd_link' );
 remove_action( 'wp_head', 'wlwmanifest_link' );
+
+/* ---- 7. Durcissement .htaccess (niveau serveur, ce que PHP ne peut pas faire) :
+ *        désactive le LISTING de répertoires (uploads, wp-content, wp-includes)
+ *        et bloque readme.txt / license.txt / wp-config / .env / .git (fuite de version).
+ *        Écrit UNE fois, dans un bloc balisé (réversible), seulement si le .htaccess
+ *        est accessible en écriture. Gardes IfModule → jamais de 500 (Apache 2.2/2.4). */
+add_action( 'admin_init', function () {
+	if ( '3' === (string) get_option( 'ag_htaccess_hard', '' ) ) return; // déjà appliqué
+	if ( ! function_exists( 'get_home_path' ) )       require_once ABSPATH . 'wp-admin/includes/file.php';
+	if ( ! function_exists( 'insert_with_markers' ) ) require_once ABSPATH . 'wp-admin/includes/misc.php';
+	$home = function_exists( 'get_home_path' ) ? get_home_path() : ABSPATH;
+	$file = rtrim( $home, '/\\' ) . '/.htaccess';
+	if ( ! file_exists( $file ) || ! is_writable( $file ) ) {
+		update_option( 'ag_htaccess_hard_note', 'manuel', false ); // à ajouter à la main (voir Sécurité)
+		return;
+	}
+	$rules = array(
+		'Options -Indexes',
+		'<FilesMatch "(?i)^(readme\.html|readme\.txt|license\.txt|licence\.txt|wp-config\.php|\.env|\.git.*)$">',
+		'<IfModule mod_authz_core.c>',
+		'Require all denied',
+		'</IfModule>',
+		'<IfModule !mod_authz_core.c>',
+		'Order allow,deny',
+		'Deny from all',
+		'</IfModule>',
+		'</FilesMatch>',
+	);
+	if ( function_exists( 'insert_with_markers' ) && insert_with_markers( $file, 'AG Hardening', $rules ) ) {
+		update_option( 'ag_htaccess_hard', '3', false );
+		delete_option( 'ag_htaccess_hard_note' );
+	}
+} );
+
+/* Petit rappel admin si le .htaccess n'était pas modifiable (à coller à la main). */
+add_action( 'admin_notices', function () {
+	if ( ! current_user_can( 'manage_options' ) ) return;
+	if ( 'manuel' !== (string) get_option( 'ag_htaccess_hard_note', '' ) ) return;
+	echo '<div class="notice notice-warning"><p><strong>Sécurité :</strong> le fichier <code>.htaccess</code> n\'a pas pu être durci automatiquement (droits en écriture). Ajoute ces lignes en haut de ton <code>.htaccess</code> pour bloquer le listing de répertoires et la fuite de version :</p>'
+		. '<pre style="background:#fff;padding:10px;border:1px solid #ccd0d4;">Options -Indexes' . "\n" . '&lt;FilesMatch "(?i)^(readme\.html|readme\.txt|license\.txt|wp-config\.php|\.env)$"&gt;' . "\n" . '  Require all denied' . "\n" . '&lt;/FilesMatch&gt;</pre></div>';
+} );
