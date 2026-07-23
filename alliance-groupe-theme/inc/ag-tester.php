@@ -627,13 +627,15 @@ if ( ! function_exists( 'ag_tester_render_form' ) ) {
 						</div>
 						<div style="background:rgba(243,122,31,.08);border:1px solid rgba(243,122,31,.4);border-radius:14px;padding:20px">
 							<div style="color:#F37A1F;font-weight:800;letter-spacing:1px;font-size:.8rem;text-transform:uppercase">② Audit approfondi · client</div>
-							<p style="color:rgba(255,255,255,.8);font-size:.92rem;line-height:1.5;margin:10px 0 0">Analyse complète (sauvegardes exposées, versions de plugins, énumération…). Réalisée <strong style="color:#fff">avec votre autorisation écrite</strong>, dans le cadre d'une prestation.</p>
-							<a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" style="display:inline-block;margin-top:12px;color:#F3D27A;font-weight:700;text-decoration:none">Demander un devis →</a>
+							<p style="color:rgba(255,255,255,.8);font-size:.92rem;line-height:1.5;margin:10px 0 0">Analyse complète (sauvegardes exposées, versions de plugins, énumération…). Réalisée <strong style="color:#fff">avec votre autorisation écrite</strong> (mandat signé en ligne), sans rendez-vous.</p>
+							<p style="color:#F37A1F;font-weight:800;font-size:1.3rem;margin:12px 0 0"><?php echo esc_html( number_format_i18n( (float) ag_tester_opt( 'price' ), 0 ) ); ?> €</p>
+							<a href="<?php echo esc_url( add_query_arg( array( 'ag_mandat' => 1, 'tier' => 'deep' ), home_url( '/' ) ) ); ?>" style="display:inline-block;margin-top:8px;background:linear-gradient(135deg,#F37A1F,#d4b45c);color:#0b0b0f;font-weight:800;padding:10px 18px;border-radius:10px;text-decoration:none">Commander &amp; payer →</a>
 						</div>
 						<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:20px">
 							<div style="color:#fff;font-weight:800;letter-spacing:1px;font-size:.8rem;text-transform:uppercase">③ Diagnostic Expert 24h · sur mandat</div>
-							<p style="color:rgba(255,255,255,.8);font-size:.92rem;line-height:1.5;margin:10px 0 0">Scan en profondeur (simulation d'attaque réelle, ports, vulnérabilités, plugins) sous votre <strong style="color:#fff">autorisation</strong>. <strong style="color:#F3D27A">Rapport complet + plan de correction chiffré, livré en moins de 24 h.</strong></p>
-							<a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" style="display:inline-block;margin-top:12px;color:#F3D27A;font-weight:700;text-decoration:none">Nous contacter →</a>
+							<p style="color:rgba(255,255,255,.8);font-size:.92rem;line-height:1.5;margin:10px 0 0">Scan en profondeur (simulation d'attaque réelle, ports, vulnérabilités, plugins) sous votre <strong style="color:#fff">mandat signé en ligne</strong>. <strong style="color:#F3D27A">Rapport complet + plan de correction chiffré, livré en moins de 24 h.</strong></p>
+							<?php $dp = (float) ag_tester_opt( 'deep_price' ); if ( $dp > 0 ) : ?><p style="color:#F3D27A;font-weight:800;font-size:1.3rem;margin:12px 0 0"><?php echo esc_html( number_format_i18n( $dp, 0 ) ); ?> €</p><?php endif; ?>
+							<a href="<?php echo esc_url( add_query_arg( array( 'ag_mandat' => 1, 'tier' => 'expert' ), home_url( '/' ) ) ); ?>" style="display:inline-block;margin-top:8px;background:linear-gradient(135deg,#d4b45c,#b98f2f);color:#0b0b0f;font-weight:800;padding:10px 18px;border-radius:10px;text-decoration:none">Commander &amp; payer →</a>
 						</div>
 					</div>
 					<p style="text-align:center;color:rgba(255,255,255,.45);font-size:.78rem;margin:14px 0 0">L'audit approfondi et le pentest ne sont jamais réalisés sans autorisation écrite du propriétaire (art. 323-1 C. pénal).</p>

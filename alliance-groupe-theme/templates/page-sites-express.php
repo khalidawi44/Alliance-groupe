@@ -215,6 +215,14 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
                 </div>
                 <?php endforeach; ?>
             </div>
+
+            <!-- Site 100% personnalisé → prise de RDV (le SEUL cas qui passe par un échange) -->
+            <div style="max-width:760px;margin:34px auto 0;background:linear-gradient(135deg,rgba(212,180,92,.12),rgba(20,20,26,.6));border:1px solid rgba(212,180,92,.4);border-radius:18px;padding:26px 22px;text-align:center;">
+                <div style="font-size:1.7rem;">🎨</div>
+                <h3 style="font-family:Georgia,serif;font-size:1.5rem;margin:6px 0 8px;color:#fff;">Un projet 100% sur-mesure ?</h3>
+                <p style="color:var(--color-text-secondary);margin:0 auto 18px;max-width:520px;">Les packs ci-dessus se commandent et se paient <strong>directement en ligne</strong>. Pour un site <strong>entièrement personnalisé</strong>, prenez rendez-vous : dites-nous ce que vous voulez, on vous rappelle.</p>
+                <a href="<?php echo esc_url( add_query_arg( 'ag_rdv', 1, home_url( '/' ) ) ); ?>" class="ag-btn-gold" style="display:inline-block;">📅 Prendre rendez-vous pour un site personnalisé →</a>
+            </div>
         </div>
     </section>
 
