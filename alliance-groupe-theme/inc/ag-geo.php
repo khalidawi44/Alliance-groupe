@@ -127,10 +127,20 @@ add_action( 'wp_head', function () {
 /** Lien public de la fiche (pour « laisser / voir les avis »). */
 if ( ! function_exists( 'ag_geo_review_url' ) ) {
 	function ag_geo_review_url() {
-		$u = (string) get_option( 'ag_google_review_url', '' );
-		if ( $u ) return $u;
-		if ( function_exists( 'ag_avis_link' ) ) { $l = ag_avis_link(); if ( $l ) return $l; } // page ⭐ Avis Google
-		return '';
+		// 1) Liens explicites (les plus fiables) : option dédiée, puis fiche/Maps saisies en Réglages SEO.
+		foreach ( array(
+			(string) get_option( 'ag_google_review_url', '' ),
+			function_exists( 'ag_nap_opt' ) ? (string) ag_nap_opt( 'gbp' ) : '',
+			function_exists( 'ag_nap_opt' ) ? (string) ag_nap_opt( 'maps' ) : '',
+		) as $u ) {
+			$u = trim( $u );
+			if ( '' !== $u && preg_match( '#^https?://#i', $u ) ) return $u;
+		}
+		// 2) Sinon : lien Google Maps par NOM + VILLE — ne renvoie JAMAIS un 404 (contrairement au
+		//    deep-link writereview?placeid=… qui échoue si le Place ID n'est pas exact).
+		$name = function_exists( 'ag_nap_opt' ) ? (string) ag_nap_opt( 'name' ) : 'Alliance Groupe';
+		$city = function_exists( 'ag_nap_opt' ) ? (string) ag_nap_opt( 'city' ) : 'Nantes';
+		return 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( trim( $name . ' ' . $city ) );
 	}
 }
 

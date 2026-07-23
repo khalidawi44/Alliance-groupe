@@ -631,6 +631,8 @@ var AG = (function(){
 	var box=document.getElementById('ag-results'), saved=document.getElementById('ag-saved');
 	var sb=document.getElementById('ag-search'), city=document.getElementById('ag-city');
 	var savedData=[], savedSort='recent';
+	var AG_SALE=<?php echo wp_json_encode( $ag_sale_link ); ?>;
+	var AG_TEL=<?php echo wp_json_encode( preg_replace( '/[^0-9+]/', '', (string) get_option( 'ag_tester_phone', '0744829516' ) ) ); ?>;
 
 	// Une ligne « entreprise » réutilisée dans la recherche live ET les recherches sauvegardées.
 	function agItemRow(it){
@@ -659,6 +661,16 @@ var AG = (function(){
 					rep.innerHTML=agAuditHTML(it.website, r.data, tel);
 				}).catch(function(){ rep.innerHTML='<span class="sub">❌ Erreur réseau</span>'; }); });
 			row.appendChild(aud);
+		}
+		// Un template existe pour ce métier → propose-le (voir/télécharger) + message « site personnalisé ».
+		if(it.demo){
+			var trow=document.createElement('div'); trow.className='row'; trow.style.cssText='display:flex;gap:7px;flex-wrap:wrap;margin-top:7px;';
+			var slug=String(it.demo).split('/wordpress-')[1]||''; var met=slug?(slug.charAt(0).toUpperCase()+slug.slice(1)):'';
+			var tv=document.createElement('a'); tv.className='mini'; tv.href=it.demo; tv.target='_blank'; tv.rel='noopener'; tv.style.cssText='border-color:#d4b45c;color:#e6b35a;'; tv.textContent='🎨 Modèle '+met+' (voir / télécharger)'; trow.appendChild(tv);
+			if(tel){ var prop=document.createElement('a'); prop.className='mini'; prop.style.cssText='border-color:#25d366;color:#7ee2a8;';
+				var m='Bonjour, j\'ai vu '+(it.name||'votre établissement')+'. Je peux vous créer un site web pro comme ce modèle : '+it.demo+' — clé en main ou 100% personnalisé. On en parle ? '+(AG_SALE||('Tel : '+AG_TEL));
+				prop.href='sms:'+tel+'?body='+encodeURIComponent(m); prop.textContent='✉️ Proposer un site'; trow.appendChild(prop); }
+			d.appendChild(trow);
 		}
 		d.appendChild(row); d.appendChild(rep); return d;
 	}
