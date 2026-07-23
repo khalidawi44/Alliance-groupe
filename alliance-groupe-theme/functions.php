@@ -115,6 +115,12 @@ if ( file_exists( $ag_agences_file ) ) {
     require_once $ag_agences_file;
 }
 
+// ── 1c4a-sexies. Veille « Appels d'offres publics » (BOAMP open data) : leads chauds à budget voté
+$ag_appels_offres_file = get_stylesheet_directory() . '/inc/ag-appels-offres.php';
+if ( file_exists( $ag_appels_offres_file ) ) {
+    require_once $ag_appels_offres_file;
+}
+
 // ── 1c4b. SEO pages piliers (création site Nantes + cybersécurité/NIS2) + LocalBusiness/Breadcrumb/Service
 $ag_seo_pages_file = get_stylesheet_directory() . '/inc/ag-seo-pages.php';
 if ( file_exists( $ag_seo_pages_file ) ) {
