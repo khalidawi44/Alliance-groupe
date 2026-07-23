@@ -134,6 +134,19 @@ foreach ( $ag_my_prospects as $ppc ) {
 		.ag-audit{ cursor:pointer; }
 		.res{ background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:13px; padding:11px; margin-bottom:9px; }
 		.res .rn{ font-weight:700; } .res .rk{ font-size:.78rem; color:var(--soft); margin:2px 0 8px; }
+		.res .rlink{ font-size:.78rem; color:#7fb4ff; text-decoration:none; word-break:break-all; }
+		/* Accordéon des recherches sauvegardées (jamais de longue liste) */
+		.acc{ border:1px solid var(--line); border-radius:14px; margin-bottom:10px; overflow:hidden; background:rgba(255,255,255,.02); }
+		.acc>summary{ list-style:none; cursor:pointer; padding:13px 14px; display:flex; align-items:center; gap:9px; font-weight:700; }
+		.acc>summary::-webkit-details-marker{ display:none; }
+		.acc>summary .chev{ margin-left:auto; transition:transform .2s; color:var(--soft); }
+		.acc[open]>summary .chev{ transform:rotate(90deg); }
+		.acc>summary .cnt{ background:rgba(212,180,92,.16); color:var(--gold); border-radius:100px; padding:1px 9px; font-size:.74rem; }
+		.acc .accb{ padding:6px 12px 12px; }
+		.acc .adel{ border:none; background:transparent; color:#e5484d; cursor:pointer; font-size:1rem; padding:2px 4px; }
+		.sortbar{ display:flex; gap:6px; flex-wrap:wrap; margin:2px 0 12px; }
+		.sortbar button{ background:rgba(255,255,255,.05); border:1px solid var(--line); color:var(--soft); border-radius:100px; padding:6px 12px; font-size:.78rem; font-weight:600; cursor:pointer; }
+		.sortbar button.on{ background:rgba(212,180,92,.16); border-color:var(--gold); color:var(--gold); }
 		.tabbar{ position:fixed; left:0; right:0; bottom:0; z-index:30; display:flex; background:rgba(16,16,22,.94); backdrop-filter:blur(12px); border-top:1px solid var(--line); padding-bottom:env(safe-area-inset-bottom); }
 		.tabbar a{ flex:1; text-align:center; padding:9px 2px 8px; color:var(--soft); font-size:.66rem; font-weight:600; }
 		.tabbar a i{ display:block; font-size:1.35rem; font-style:normal; margin-bottom:2px; filter:grayscale(1) opacity(.7); }
@@ -294,9 +307,16 @@ foreach ( $ag_my_prospects as $ppc ) {
 			<h3>Recherche par ville</h3>
 			<input type="text" id="ag-city" placeholder="Ex : Nantes, ou 'restaurant Nantes'" autocomplete="off">
 			<button type="button" id="ag-search" class="b gold" style="margin-top:12px;">🔎 Lancer la recherche</button>
-			<p class="sub" style="margin:8px 0 0; font-size:.78rem;">Trouve les entreprises du secteur et ajoute-les à tes prospects.</p>
+			<p class="sub" style="margin:8px 0 0; font-size:.78rem;">Ex : « massage Nantes ». Les résultats sont <strong>sauvegardés</strong> et classés par catégorie/ville ci-dessous.</p>
 		</div>
 		<div id="ag-results"></div>
+		<h3 style="margin:18px 0 6px;">🗂️ Mes recherches sauvegardées</h3>
+		<div class="sortbar" id="ag-sort">
+			<button type="button" data-s="recent" class="on">🕐 Récentes</button>
+			<button type="button" data-s="az">🔤 A → Z</button>
+			<button type="button" data-s="big">🔢 Plus de résultats</button>
+		</div>
+		<div id="ag-saved"><p class="sub">Chargement…</p></div>
 	</section>
 
 	<?php if ( $ag_is_admin ) : ?>
@@ -565,8 +585,71 @@ var AG = (function(){
 		});
 	});
 
-	// Recherche intégrée
-	var sb=document.getElementById('ag-search'), city=document.getElementById('ag-city'), box=document.getElementById('ag-results');
+	// ── Recherche + recherches SAUVEGARDÉES (accordéon, jamais de longue liste) ──
+	var box=document.getElementById('ag-results'), saved=document.getElementById('ag-saved');
+	var sb=document.getElementById('ag-search'), city=document.getElementById('ag-city');
+	var savedData=[], savedSort='recent';
+
+	// Une ligne « entreprise » réutilisée dans la recherche live ET les recherches sauvegardées.
+	function agItemRow(it){
+		var tel=(it.phone_intl||it.phone||'').replace(/[^0-9+]/g,'');
+		var d=document.createElement('div'); d.className='res';
+		var stars=(it.rating>0)?(' · ⭐'+it.rating+(it.reviews?(' ('+it.reviews+')'):'')):'';
+		var cat=it.type||it.kind||'';
+		d.innerHTML='<div class="rn">'+(it.name||'')+'</div><div class="rk">'+(it.city||'')+(cat?(' · '+cat):'')+stars+(it.exists?' · déjà en base':'')+'</div>';
+		if(it.website){ var lk=document.createElement('a'); lk.className='rlink'; lk.href=it.website; lk.target='_blank'; lk.rel='noopener'; lk.textContent='🌐 '+String(it.website).replace(/^https?:\/\//,'').replace(/\/$/,''); d.appendChild(lk); }
+		var row=document.createElement('div'); row.className='row'; row.style.cssText='display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;';
+		if(tel){ var ta=document.createElement('a'); ta.className='mini'; ta.href='tel:'+tel; ta.textContent='📞'; row.appendChild(ta); }
+		if(it.website){ var vs=document.createElement('a'); vs.className='mini'; vs.href=it.website; vs.target='_blank'; vs.rel='noopener'; vs.textContent='🌐 Voir le site'; row.appendChild(vs); }
+		var add=document.createElement('button'); add.className='mini'; add.style.cursor='pointer'; add.textContent=it.exists?'✓ En base':'+ Ajouter';
+		if(it.exists){ add.setAttribute('disabled','disabled'); }
+		add.addEventListener('click',function(){ add.textContent='…';
+			AG.post('ag_amb_add',{name:it.name,type:it.type,city:it.city,phone:it.phone,phone_intl:it.phone_intl,website:it.website}).then(function(r){
+				add.textContent=(r&&r.success)?'✓ Ajouté':'Erreur'; if(r&&r.success){ add.setAttribute('disabled','disabled'); } AG.toast((r&&r.success)?'✅ Ajouté à tes prospects':'❌ Erreur');
+			}).catch(function(){ add.textContent='Erreur'; }); });
+		row.appendChild(add);
+		var rep=document.createElement('div'); rep.style.marginTop='8px';
+		if(it.website){
+			var aud=document.createElement('button'); aud.className='mini'; aud.style.cssText='cursor:pointer;border-color:#7c3aed;color:#c58bff;'; aud.textContent='🛡️ Auditer le site';
+			aud.addEventListener('click',function(){ rep.innerHTML='<span class="sub">🔍 Audit en cours…</span>';
+				AG.post('ag_app_audit',{url:it.website,mode:'light',name:it.name,phone:tel}).then(function(r){
+					if(!r||!r.success){ rep.innerHTML='<span class="sub">❌ '+((r&&r.data&&r.data.m)||'Erreur')+'</span>'; return; }
+					rep.innerHTML=agAuditHTML(it.website, r.data, tel);
+				}).catch(function(){ rep.innerHTML='<span class="sub">❌ Erreur réseau</span>'; }); });
+			row.appendChild(aud);
+		}
+		d.appendChild(row); d.appendChild(rep); return d;
+	}
+
+	function renderSaved(){
+		if(!saved) return;
+		var arr=savedData.slice();
+		if(savedSort==='az') arr.sort(function(a,b){ return String(a.q||a.city||'').localeCompare(String(b.q||b.city||'')); });
+		else if(savedSort==='big') arr.sort(function(a,b){ return (b.count||0)-(a.count||0); });
+		else arr.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+		if(!arr.length){ saved.innerHTML='<p class="sub">Aucune recherche sauvegardée. Lance une recherche ci-dessus (ex : « massage Nantes »).</p>'; return; }
+		saved.innerHTML='';
+		arr.forEach(function(s){
+			var det=document.createElement('details'); det.className='acc';
+			var sum=document.createElement('summary');
+			var title=String(s.q||s.city||'Recherche'); title=title.charAt(0).toUpperCase()+title.slice(1);
+			sum.innerHTML='<span>🗂️ '+title+'</span><span class="cnt">'+(s.count||s.items.length)+'</span>';
+			var del=document.createElement('button'); del.className='adel'; del.title='Supprimer cette recherche'; del.textContent='🗑️';
+			del.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); if(!confirm('Supprimer la recherche « '+title+' » ?')) return;
+				AG.post('ag_app_search_del',{key:s.key}).then(function(){ savedData=savedData.filter(function(x){return x.key!==s.key;}); renderSaved(); AG.toast('Recherche supprimée'); }); });
+			var chev=document.createElement('span'); chev.className='chev'; chev.textContent='▸';
+			sum.appendChild(del); sum.appendChild(chev); det.appendChild(sum);
+			var body=document.createElement('div'); body.className='accb';
+			det.addEventListener('toggle',function(){ if(det.open && !body.getAttribute('data-filled')){ body.setAttribute('data-filled','1'); (s.items||[]).forEach(function(it){ body.appendChild(agItemRow(it)); }); } });
+			det.appendChild(body); saved.appendChild(det);
+		});
+	}
+
+	function agLoadSaved(){ if(!saved) return; AG.post('ag_app_searches',{}).then(function(j){ savedData=(j&&j.success&&j.data.searches)||[]; renderSaved(); }).catch(function(){ saved.innerHTML='<p class="sub">Erreur de chargement.</p>'; }); }
+
+	var sortbar=document.getElementById('ag-sort');
+	if(sortbar){ sortbar.querySelectorAll('button').forEach(function(b){ b.addEventListener('click',function(){ sortbar.querySelectorAll('button').forEach(function(x){ x.classList.remove('on'); }); b.classList.add('on'); savedSort=b.getAttribute('data-s'); renderSaved(); }); }); }
+
 	if(sb){ sb.addEventListener('click',function(){
 		var c=(city.value||'').trim(); if(!c){ AG.toast('Indique une ville'); return; }
 		sb.textContent='🔎 Recherche…'; sb.setAttribute('disabled','disabled'); box.innerHTML='';
@@ -575,40 +658,12 @@ var AG = (function(){
 			if(!j||!j.success){ AG.toast('❌ '+((j&&j.data&&j.data.m)||'Erreur')); return; }
 			var items=j.data.items||[];
 			if(!items.length){ box.innerHTML='<p class="sub">Aucun résultat.</p>'; return; }
-			box.innerHTML='';
-			items.forEach(function(it,i){
-				var d=document.createElement('div'); d.className='res';
-				var tel=(it.phone_intl||it.phone||'').replace(/[^0-9+]/g,'');
-				d.innerHTML='<div class="rn">'+(it.name||'')+'</div><div class="rk">'+(it.city||'')+' · '+(it.kind||'')+(it.exists?' · déjà en base':'')+'</div>';
-				var row=document.createElement('div'); row.className='row'; row.style.display='flex'; row.style.gap='7px'; row.style.flexWrap='wrap';
-				if(tel){ var ta=document.createElement('a'); ta.className='mini'; ta.href='tel:'+tel; ta.textContent='📞'; row.appendChild(ta); }
-				var add=document.createElement('button'); add.className='mini'; add.style.cursor='pointer'; add.textContent=it.exists?'✓ En base':'+ Ajouter';
-				if(it.exists){ add.setAttribute('disabled','disabled'); }
-				add.addEventListener('click',function(){
-					add.textContent='…';
-					AG.post('ag_amb_add',{name:it.name,type:it.type,city:it.city,phone:it.phone,phone_intl:it.phone_intl,website:it.website}).then(function(r){
-						add.textContent=(r&&r.success)?'✓ Ajouté':'Erreur'; AG.toast((r&&r.success)?'✅ Ajouté à tes prospects':'❌ Erreur');
-					}).catch(function(){ add.textContent='Erreur'; });
-				});
-				row.appendChild(add);
-				// Site présent → bouton d'audit + rapport (capture + note + SMS) dans le résultat.
-				var rep=document.createElement('div'); rep.style.marginTop='8px';
-				if(it.website){
-					var aud=document.createElement('button'); aud.className='mini'; aud.style.cursor='pointer'; aud.style.borderColor='#7c3aed'; aud.style.color='#c58bff'; aud.textContent='🛡️ Auditer le site';
-					aud.addEventListener('click',function(){
-						rep.innerHTML='<span class="sub">🔍 Audit en cours…</span>';
-						AG.post('ag_app_audit',{url:it.website,mode:'light',name:it.name,phone:tel}).then(function(r){
-							if(!r||!r.success){ rep.innerHTML='<span class="sub">❌ '+((r&&r.data&&r.data.m)||'Erreur')+'</span>'; return; }
-							rep.innerHTML=agAuditHTML(it.website, r.data, tel);
-						}).catch(function(){ rep.innerHTML='<span class="sub">❌ Erreur réseau</span>'; });
-					});
-					row.appendChild(aud);
-				}
-				d.appendChild(row); d.appendChild(rep); box.appendChild(d);
-			});
+			box.innerHTML=''; items.forEach(function(it){ box.appendChild(agItemRow(it)); });
 			if(typeof j.data.left!=='undefined'){ AG.toast('Recherches restantes ce mois : '+j.data.left); }
+			agLoadSaved(); // la recherche vient d'être sauvegardée → recharge l'accordéon
 		}).catch(function(){ sb.textContent='🔎 Lancer la recherche'; sb.removeAttribute('disabled'); AG.toast('❌ Erreur réseau'); });
 	}); }
+	agLoadSaved();
 
 	// Audit manuel (onglet Audit) : lance l'audit sur l'URL saisie et affiche le rapport dans l'app
 	var arun=document.getElementById('ag-audit-run'), aurl=document.getElementById('ag-audit-url');

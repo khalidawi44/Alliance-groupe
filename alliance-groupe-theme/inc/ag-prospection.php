@@ -2401,7 +2401,39 @@ add_action( 'wp_ajax_ag_amb_search', function () {
 		);
 	}
 	usort( $out, function ( $a, $b ) { return $b['score'] <=> $a['score']; } );
+	// Sauvegarde la recherche + ses résultats (revoir gratuitement, sans nouvel appel Google).
+	if ( function_exists( 'ag_search_history_add' ) && $out ) { ag_search_history_add( $city, $city, count( $out ), $out ); }
 	wp_send_json_success( array( 'items' => $out, 'left' => ag_chasseur_quota_left( $uid ) ) );
+} );
+
+/* App : liste des recherches SAUVEGARDÉES (accordéon par catégorie/ville). */
+add_action( 'wp_ajax_ag_app_searches', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error();
+	$hist = (array) get_option( 'ag_search_history', array() );
+	$rows = array();
+	foreach ( $hist as $key => $h ) {
+		$items = array();
+		foreach ( (array) ( $h['results'] ?? array() ) as $r ) {
+			$ex = function_exists( 'ag_prospect_find' ) ? ag_prospect_find( $r['name'] ?? '', $r['city'] ?? '', $r['phone'] ?? '' ) : null;
+			$items[] = array(
+				'name' => $r['name'] ?? '', 'type' => $r['type'] ?? '', 'city' => $r['city'] ?? '',
+				'phone' => $r['phone'] ?? '', 'phone_intl' => $r['phone_intl'] ?? '', 'website' => $r['website'] ?? '',
+				'address' => $r['address'] ?? '', 'maps_uri' => $r['maps_uri'] ?? '',
+				'rating' => (float) ( $r['rating'] ?? 0 ), 'reviews' => (int) ( $r['reviews'] ?? 0 ), 'exists' => (bool) $ex,
+			);
+		}
+		if ( ! $items ) continue;
+		$rows[] = array( 'key' => (string) $key, 'q' => (string) ( $h['q'] ?? '' ), 'city' => (string) ( $h['city'] ?? '' ), 'count' => count( $items ), 'ts' => (int) ( $h['ts'] ?? 0 ), 'items' => $items );
+	}
+	usort( $rows, function ( $a, $b ) { return $b['ts'] <=> $a['ts']; } );
+	wp_send_json_success( array( 'searches' => array_slice( $rows, 0, 40 ) ) );
+} );
+add_action( 'wp_ajax_ag_app_search_del', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error();
+	$key  = (string) wp_unslash( $_POST['key'] ?? '' );
+	$hist = (array) get_option( 'ag_search_history', array() );
+	if ( isset( $hist[ $key ] ) ) { unset( $hist[ $key ] ); update_option( 'ag_search_history', $hist, false ); }
+	wp_send_json_success();
 } );
 add_action( 'wp_ajax_ag_amb_add', function () {
 	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error();
@@ -2480,6 +2512,7 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 		$cta   = '' !== $payurl ? $payurl : home_url( '/audit-securite?site=' . rawurlencode( (string) $site ) );
 		$ctalabel = '🔓 Débloquer mon rapport complet' . ( $price > 0 ? ' — ' . number_format_i18n( $price, 0 ) . ' €' : '' );
 		$logo  = get_stylesheet_directory_uri() . '/assets/images/logo-carte-square.jpg';
+		$tel_pro = preg_replace( '/[^0-9+]/', '', (string) get_option( 'ag_tester_phone', '0744829516' ) );
 
 		// MODE CARTE (?card=1) : tout sur UN écran, à screenshoter et envoyer en image (MMS).
 		if ( isset( $_GET['card'] ) && $ok ) {
@@ -2568,6 +2601,13 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 					<div style="color:<?php echo esc_attr( $col ); ?>;font-weight:700;margin-top:6px;"><?php echo $score < 50 ? '⚠️ Site à risque' : ( $score < 75 ? 'À améliorer' : 'Perfectible' ); ?></div>
 				</div>
 			</div>
+			<?php if ( ! $unlocked && ! $fetch_failed && count( $fails ) > 0 ) : ?>
+			<div style="background:linear-gradient(135deg,#3a0d12,#1b0b0f);border:1px solid #e5484d;border-radius:14px;padding:16px 18px;margin:16px 0;text-align:center;box-shadow:0 0 22px rgba(229,72,77,.25);">
+				<div style="font-size:1.15rem;font-weight:800;color:#ff6b6b;">🚨 Votre site est vulnérable</div>
+				<div style="color:#f0cccc;font-size:.92rem;margin-top:5px;line-height:1.5;"><strong><?php echo count( $fails ); ?> faille(s)</strong> exploitables ont été détectées. Chaque jour d'attente, c'est un risque de <strong>piratage, de vol de données clients</strong> et de <strong>chute sur Google</strong>.</div>
+				<?php if ( $tel_pro ) : ?><a href="tel:<?php echo esc_attr( $tel_pro ); ?>" style="display:inline-block;margin-top:12px;background:#e5484d;color:#fff;font-weight:800;padding:12px 22px;border-radius:999px;text-decoration:none;">📞 Appelez un expert maintenant</a><?php endif; ?>
+			</div>
+			<?php endif; ?>
 			<?php if ( $unlocked ) : ?>
 			<div style="background:#0e1f13;border:1px solid #2e6a3f;border-radius:12px;padding:13px 15px;margin:16px 0;color:#bfe6c9;">
 				<strong style="color:#4ade80;">✅ Rapport complet débloqué</strong>
@@ -2622,6 +2662,9 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 					<input type="email" name="email" required placeholder="vous@exemple.com" value="<?php echo esc_attr( is_user_logged_in() ? wp_get_current_user()->user_email : '' ); ?>" style="width:100%;padding:13px;border-radius:10px;border:1px solid #333;background:#0e0e13;color:#fff;font-size:1rem;margin-bottom:12px;">
 					<button type="submit" class="cta" style="width:100%;border:0;cursor:pointer;"><?php echo esc_html( $ctalabel ); ?></button>
 				</form>
+			<?php endif; ?>
+			<?php if ( $tel_pro ) : ?>
+			<a class="cta" style="background:#e5484d;color:#fff;margin-top:10px;" href="tel:<?php echo esc_attr( $tel_pro ); ?>">📞 Parler à un expert tout de suite — <?php echo esc_html( chunk_split( preg_replace( '/^\+?33/', '0', $tel_pro ), 2, ' ' ) ); ?></a>
 			<?php endif; ?>
 			<?php $wapro = preg_replace( '/[^0-9]/', '', (string) get_option( 'ag_wa_pro', '' ) ); if ( $wapro ) : ?>
 			<a class="cta" style="background:#25d366;color:#04210f;margin-top:10px;" href="https://wa.me/<?php echo esc_attr( $wapro ); ?>?text=<?php echo rawurlencode( 'Bonjour, j\'ai vu le rapport de sécurité de mon site ' . $host . '. J\'aimerais en savoir plus.' ); ?>">💬 Poser une question sur WhatsApp</a>
