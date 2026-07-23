@@ -331,6 +331,10 @@ foreach ( $ag_my_prospects as $ppc ) {
 			<button type="button" data-s="big">🔢 Plus de résultats</button>
 		</div>
 		<div id="ag-saved"><p class="sub">Chargement…</p></div>
+
+		<h3 style="margin:20px 0 4px;">🕸️ Agences web cartographiées</h3>
+		<p class="sub" style="margin:0 0 10px;font-size:.78rem;">Classées du <strong>pire au meilleur</strong>. Audite le site d'une agence web puis clique « Cartographier ses créations » : tu vois tous les sites qu'elle a faits (et tu peux démarcher ses clients).</p>
+		<div id="ag-agencies"><p class="sub">Aucune agence cartographiée pour l'instant.</p></div>
 	</section>
 
 	<?php if ( $ag_is_admin ) : ?>
@@ -478,6 +482,7 @@ var AG = (function(){
 		if(d.report_card){ h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:8px;border-color:#e6b35a;color:#e6b35a;" href="'+d.report_card+'">🖼️ Image à envoyer (screenshot)</a>'; }
 		if(d.msg && d.msg.perso){ h+='<div><button type="button" class="mini agmsg-copy" data-m="'+encodeURIComponent(d.msg.perso)+'" style="cursor:pointer;border-color:#d4b45c;color:#e6b35a;margin-bottom:8px;">📋 Copier — message au PROPRIÉTAIRE</button></div>'; }
 		if(d.msg && d.msg.partenaire){ h+='<div><button type="button" class="mini agmsg-copy" data-m="'+encodeURIComponent(d.msg.partenaire)+'" style="cursor:pointer;border-color:#7c3aed;color:#c58bff;margin-bottom:8px;">🤝 Copier — message à l\'AGENCE (partenaire %)</button></div>'; }
+		if(d.is_agency){ h+='<div><button type="button" class="mini ag-agency-scan" data-url="'+(d.url||url)+'" style="cursor:pointer;border-color:#3aa3ff;color:#8fc7ff;margin-bottom:8px;">🕸️ Cartographier ses créations (agence web détectée)</button></div>'; }
 		if(num && agIsMobileFr(num)){
 			var waN=(num||'').replace(/[^0-9]/g,''); if(waN.charAt(0)==='0'){ waN='33'+waN.substring(1); }
 			h+='<div class="row">'
@@ -742,6 +747,48 @@ var AG = (function(){
 		}).catch(function(){ sb.textContent='🔎 Lancer la recherche'; sb.removeAttribute('disabled'); AG.toast('❌ Erreur réseau'); });
 	}); }
 	agLoadSaved();
+
+	// ── Cartographie des AGENCES web (agence → ses créations, pire → meilleur) ──
+	var agencies=document.getElementById('ag-agencies');
+	function agScoreCol(s){ return s<50?'#ff6b6b':(s<75?'#e6b35a':'#2ecc71'); }
+	function agLoadAgencies(){ if(!agencies) return; AG.post('ag_app_agencies',{}).then(function(j){
+		var arr=(j&&j.success&&j.data.agencies)||[];
+		if(!arr.length){ agencies.innerHTML='<p class="sub">Aucune agence cartographiée. Audite le site d\'une agence web puis clique « Cartographier ses créations ».</p>'; return; }
+		agencies.innerHTML='';
+		arr.forEach(function(ag){
+			var det=document.createElement('details'); det.className='acc';
+			var sum=document.createElement('summary'); var col=agScoreCol(ag.score||0);
+			sum.innerHTML='<span>🕸️ '+(ag.host||'')+' <span style="color:'+col+';font-weight:800;">'+(ag.score||0)+'/100</span></span><span class="cnt">'+(ag.n||0)+' site'+((ag.n||0)>1?'s':'')+((ag.n)?(' · moy '+ag.avg):'')+'</span>';
+			var del=document.createElement('button'); del.className='adel'; del.title='Retirer'; del.textContent='🗑️';
+			del.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); if(!confirm('Retirer cette agence de la carte ?')) return; AG.post('ag_app_agency_del',{key:ag.key||''}).then(function(){ agLoadAgencies(); AG.toast('Retiré'); }); });
+			var chev=document.createElement('span'); chev.className='chev'; chev.textContent='▸'; sum.appendChild(del); sum.appendChild(chev); det.appendChild(sum);
+			var body=document.createElement('div'); body.className='accb';
+			det.addEventListener('toggle',function(){ if(det.open && !body.getAttribute('data-filled')){ body.setAttribute('data-filled','1');
+				var av=document.createElement('a'); av.className='mini'; av.href=ag.url; av.target='_blank'; av.rel='noopener'; av.style.cssText='border-color:#3aa3ff;color:#8fc7ff;margin:0 0 10px;display:inline-block;'; av.textContent='🌐 Voir le site de l\'agence'; body.appendChild(av);
+				(ag.creations||[]).forEach(function(c){
+					var head=document.createElement('div'); head.className='rk'; head.style.margin='8px 0 -2px';
+					head.innerHTML='<span style="color:'+agScoreCol(c.score||0)+';font-weight:800;">'+(c.score||0)+'/100</span>'+((c.crit||0)>0?(' · '+c.crit+' faille(s)'):'')+' — création de l\'agence';
+					body.appendChild(head);
+					body.appendChild(agItemRow({name:c.host, website:c.url, city:'', type:'client de l\'agence'}));
+				});
+				if(!(ag.creations||[]).length){ var em=document.createElement('p'); em.className='sub'; em.textContent='Aucune création détectée automatiquement (portfolio non public ou liens absents).'; body.appendChild(em); }
+			} });
+			det.appendChild(body); agencies.appendChild(det);
+		});
+	}).catch(function(){}); }
+
+	// Bouton « Cartographier ses créations » (injecté dans le résultat d'audit d'une agence).
+	document.addEventListener('click',function(e){
+		var b=e.target.closest?e.target.closest('.ag-agency-scan'):null; if(!b) return; e.preventDefault();
+		var u=b.getAttribute('data-url'); if(!u) return;
+		if(!confirm('Cartographier les créations de cette agence ? On analyse plusieurs sites, ça peut prendre 20 à 40 secondes.')) return;
+		var old=b.textContent; b.textContent='🕸️ Analyse en cours… patiente'; b.setAttribute('disabled','disabled');
+		AG.post('ag_app_agency_scan',{url:u}).then(function(j){ b.textContent=old; b.removeAttribute('disabled');
+			if(j&&j.success){ AG.toast('🕸️ '+(((j.data.agency)&&j.data.agency.n)||0)+' création(s) trouvée(s) — voir « Agences web » (onglet Chercher)'); agLoadAgencies(); }
+			else { AG.toast('❌ '+((j&&j.data&&j.data.m)||'Erreur')); }
+		}).catch(function(){ b.textContent=old; b.removeAttribute('disabled'); AG.toast('❌ Erreur réseau (scan peut-être trop long)'); });
+	});
+	agLoadAgencies();
 
 	// Audit manuel (onglet Audit) : lance l'audit sur l'URL saisie et affiche le rapport dans l'app
 	var arun=document.getElementById('ag-audit-run'), aurl=document.getElementById('ag-audit-url');

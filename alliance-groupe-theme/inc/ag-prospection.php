@@ -3088,7 +3088,18 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 	if ( count( $audits ) > 60 ) { $audits = array_slice( $audits, 0, 60, true ); }
 	update_option( 'ag_app_audits', $audits, false );
 
-	wp_send_json_success( array( 'score' => $score, 'critical' => $crit, 'tech' => $tech, 'mode' => $mode, 'reco' => $reco, 'fails' => $fails, 'report' => $report, 'report_card' => add_query_arg( 'card', 1, $report ), 'msg' => $msg ) );
+	// Détection « agence web » (pour proposer la cartographie de ses créations) — mise en cache 1 h.
+	$is_agency = get_transient( 'ag_isag_' . md5( strtolower( $url ) ) );
+	if ( false === $is_agency ) {
+		$is_agency = 0;
+		if ( function_exists( 'ag_audit_fetch' ) && function_exists( 'ag_is_web_agency' ) ) {
+			$rf = ag_audit_fetch( $url );
+			if ( $rf ) $is_agency = ag_is_web_agency( $rf['body'] ) ? 1 : 0;
+		}
+		set_transient( 'ag_isag_' . md5( strtolower( $url ) ), $is_agency, HOUR_IN_SECONDS );
+	}
+
+	wp_send_json_success( array( 'score' => $score, 'critical' => $crit, 'tech' => $tech, 'mode' => $mode, 'reco' => $reco, 'fails' => $fails, 'report' => $report, 'report_card' => add_query_arg( 'card', 1, $report ), 'msg' => $msg, 'is_agency' => (bool) $is_agency, 'url' => $url ) );
 } );
 
 /* Envoi SMS EN MASSE aux ambassadeurs depuis l'app (admin) + journal de suivi. */
