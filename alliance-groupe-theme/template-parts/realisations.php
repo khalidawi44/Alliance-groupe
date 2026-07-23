@@ -25,13 +25,20 @@
                     'tags'  => ['Paysagiste', 'Site Vitrine', 'SEO Local'],
                     'desc'  => 'Site vitrine pour un paysagiste en Loire-Atlantique. Génération de leads automatisée avec formulaires optimisés et référencement local dominant.',
                     'stats' => ['+320% devis', 'Top 3 Google', '15 devis/mois'],
+                    'google'=> 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( 'L.A Environnement paysagiste Nantes' ),
                 ],
             ];
+            // Projets ajoutés par l'admin (⚙️ Réalisations) — tous les sites créés + fiche Google.
+            if ( function_exists( 'ag_portfolio_projects' ) ) {
+                $projets = array_merge( $projets, ag_portfolio_projects() );
+            }
 
             foreach ( $projets as $p ) :
                 // Check if local image exists, otherwise use placeholder
-                $img_path = get_stylesheet_directory() . '/assets/images/realisations/' . basename( $p['img'] );
-                $has_img = file_exists( $img_path );
+                $img_path = ! empty( $p['img'] ) ? get_stylesheet_directory() . '/assets/images/realisations/' . basename( $p['img'] ) : '';
+                $has_img = ( $img_path && file_exists( $img_path ) ) || ( ! empty( $p['img'] ) && preg_match( '#^https?://#i', $p['img'] ) );
+                // Lien « fiche Google » : fourni, sinon généré depuis le nom du projet.
+                $p_google = ! empty( $p['google'] ) ? $p['google'] : 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( (string) ( $p['title'] ?? '' ) );
             ?>
             <div class="ag-rcard ag-anim" data-anim="real" id="<?php echo esc_attr( $p['id'] ); ?>">
                 <div class="ag-rcard__img">
@@ -59,11 +66,16 @@
                         <span class="ag-rcard__stat"><?php echo esc_html( $stat ); ?></span>
                         <?php endforeach; ?>
                     </div>
-                    <?php if ( $p['url'] !== '#' ) : ?>
-                    <a href="<?php echo esc_url( $p['url'] ); ?>" target="_blank" rel="noopener noreferrer" class="ag-rcard__link">Voir le projet →</a>
-                    <?php else : ?>
-                    <span class="ag-rcard__link">Projet client confidentiel</span>
-                    <?php endif; ?>
+                    <div class="ag-rcard__links" style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;">
+                        <?php if ( $p['url'] !== '#' ) : ?>
+                        <a href="<?php echo esc_url( $p['url'] ); ?>" target="_blank" rel="noopener noreferrer" class="ag-rcard__link">Voir le projet →</a>
+                        <?php else : ?>
+                        <span class="ag-rcard__link">Projet client confidentiel</span>
+                        <?php endif; ?>
+                        <?php if ( $p_google ) : ?>
+                        <a href="<?php echo esc_url( $p_google ); ?>" target="_blank" rel="noopener noreferrer" class="ag-rcard__link" style="opacity:.9;">⭐ Voir sur Google →</a>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
             <?php endforeach; ?>

@@ -97,6 +97,12 @@ if ( file_exists( $ag_seo_localbiz_file ) ) {
     require_once $ag_seo_localbiz_file;
 }
 
+// ── 1c4a-ter. Réalisations (portfolio éditable) : « Nos projets récents » + liens fiche Google
+$ag_portfolio_file = get_stylesheet_directory() . '/inc/ag-portfolio.php';
+if ( file_exists( $ag_portfolio_file ) ) {
+    require_once $ag_portfolio_file;
+}
+
 // ── 1c4b. SEO pages piliers (création site Nantes + cybersécurité/NIS2) + LocalBusiness/Breadcrumb/Service
 $ag_seo_pages_file = get_stylesheet_directory() . '/inc/ag-seo-pages.php';
 if ( file_exists( $ag_seo_pages_file ) ) {

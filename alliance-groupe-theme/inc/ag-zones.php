@@ -129,30 +129,42 @@ if ( ! function_exists( 'ag_prospect_dept' ) ) {
 	}
 }
 if ( ! function_exists( 'ag_zone_owners' ) ) {
-	/** Liste des co-propriétaires d'un département (tolère l'ancien format mono-owner). */
+	/** Liste des propriétaires d'un département. Un propriétaire dont l'exclusivité PAYÉE
+	 *  est expirée (`until` dépassé) est ignoré → la zone redevient libre automatiquement. */
 	function ag_zone_owners( $dept ) {
 		$z = ag_zones_get(); $d = ag_dept_norm( $dept );
 		if ( empty( $z[ $d ] ) ) return array();
 		$e = $z[ $d ];
-		if ( isset( $e['owners'] ) && is_array( $e['owners'] ) ) return $e['owners'];
-		if ( ! empty( $e['owner_email'] ) ) return array( array( 'email' => $e['owner_email'], 'name' => $e['owner_name'] ?? '', 'ts' => $e['ts'] ?? time() ) );
-		return array();
+		if ( isset( $e['owners'] ) && is_array( $e['owners'] ) ) { $owners = $e['owners']; }
+		elseif ( ! empty( $e['owner_email'] ) ) { $owners = array( array( 'email' => $e['owner_email'], 'name' => $e['owner_name'] ?? '', 'ts' => $e['ts'] ?? time() ) ); }
+		else { return array(); }
+		$now = time();
+		return array_values( array_filter( $owners, function ( $o ) use ( $now ) {
+			$until = (int) ( $o['until'] ?? 0 );      // 0 = jamais d'expiration (gratuit/admin)
+			return ! $until || $until > $now;         // exclusivité payée expirée → retirée
+		} ) );
 	}
 }
 if ( ! function_exists( 'ag_zone_emails' ) ) {
 	function ag_zone_emails( $dept ) { return array_map( function ( $o ) { return strtolower( $o['email'] ?? '' ); }, ag_zone_owners( $dept ) ); }
 }
 if ( ! function_exists( 'ag_zone_add_owner' ) ) {
-	/** Ajoute un ambassadeur à une zone (co-propriété). Retourne 'claimed' (zone vide), 'joined' (partage) ou 'mine'. */
-	function ag_zone_add_owner( $dept, $email, $name ) {
+	/** Réserve une zone en EXCLUSIVITÉ pour un ambassadeur. $days > 0 = exclusivité limitée
+	 *  (durée du paiement, ex. 35 j) ; $days = 0 = permanent (admin). Retourne 'claimed', 'taken' ou 'mine'. */
+	function ag_zone_add_owner( $dept, $email, $name, $days = 0 ) {
 		$z = ag_zones_get(); $d = ag_dept_norm( $dept ); $email = strtolower( $email );
-		$owners = ag_zone_owners( $d );
+		$owners = ag_zone_owners( $d ); // exclut déjà les exclusivités expirées
 		foreach ( $owners as $o ) { if ( strtolower( $o['email'] ?? '' ) === $email ) return 'mine'; }
-		if ( $owners ) return 'taken'; // EXCLUSIF : déjà prise par un autre ambassadeur → blacklist
-		$z[ $d ] = array( 'owners' => array( array( 'email' => $email, 'name' => $name, 'ts' => time() ) ), 'rr' => 0 );
+		if ( $owners ) return 'taken'; // EXCLUSIF : déjà prise par un autre (non expirée) → blacklist
+		$until = ( (int) $days > 0 ) ? time() + (int) $days * DAY_IN_SECONDS : 0;
+		$z[ $d ] = array( 'owners' => array( array( 'email' => $email, 'name' => $name, 'ts' => time(), 'until' => $until ) ), 'rr' => 0 );
 		update_option( 'ag_zones', $z );
 		return 'claimed';
 	}
+}
+/** Durée d'exclusivité d'une zone payée (jours). Défaut 35 (renouvelable au paiement suivant). */
+if ( ! function_exists( 'ag_zone_days' ) ) {
+	function ag_zone_days() { return max( 1, (int) get_option( 'ag_zone_days', 35 ) ); }
 }
 /* EXCLUSIVITÉ : une région appartient à UN seul ambassadeur.
  * Retourne '' si la région est LIBRE ou est la mienne ; sinon l'email du propriétaire (accès interdit). */
@@ -234,27 +246,10 @@ if ( ! function_exists( 'ag_amb_mark_active' ) ) {
 add_action( 'init', function () {
 	if ( ! wp_next_scheduled( 'ag_amb_inactivity_cron' ) ) wp_schedule_event( strtotime( 'tomorrow 8:00' ), 'daily', 'ag_amb_inactivity_cron' );
 } );
-add_action( 'ag_amb_inactivity_cron', function () {
-	$limit = 7 * DAY_IN_SECONDS;
-	$now   = time();
-	foreach ( get_users( array( 'role' => 'ag_ambassadeur' ) ) as $u ) {
-		$zones = ag_zone_of_owner( $u->user_email );
-		if ( empty( $zones ) ) continue; // pas de zone = rien à retirer
-		$last = (int) get_user_meta( $u->ID, 'ag_amb_last_active', true );
-		if ( ! $last ) { $last = strtotime( $u->user_registered ) ?: $now; }
-		if ( ( $now - $last ) < $limit ) continue; // actif récemment : il garde sa zone
-		foreach ( $zones as $d ) ag_zone_remove_owner( $d, $u->user_email );
-		update_user_meta( $u->ID, 'ag_amb_zone_paused', $now );
-		$nm = $u->display_name ?: $u->user_email;
-		wp_mail(
-			$u->user_email,
-			'⏸️ Ta zone est en pause (inactivité) — reprends-la !',
-			"Salut $nm,\n\nTu n'as pas été actif depuis 7 jours, alors ta zone (" . implode( ', ', $zones ) . ") a été libérée pour laisser la place à l'équipe.\nAucun souci : reconnecte-toi et reprends une zone en 1 clic depuis ton espace.\n\n👉 " . home_url( '/espace-ambassadeur#demarrage' ) . "\n\nOn t'attend 💪\nAlliance Groupe"
-		);
-		if ( function_exists( 'ag_push' ) ) ag_push( '⏸️ Zone libérée (inactivité)', $nm . ' retiré de sa zone (' . implode( ', ', $zones ) . ') après 7 j sans activité. Rappel envoyé.' ); // alerte perso admin, pas le groupe
-		if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '⏸️ ' . $nm . ' retiré de sa zone pour inactivité (7 j)' );
-	}
-} );
+// RÈGLE (Fabrice) : les comptes ambassadeurs et leurs zones N'EXPIRENT JAMAIS pour inactivité.
+// Seule une zone PAYÉE en exclusivité a une durée (limite de temps du paiement) — gérée par `until`
+// dans ag_zone_owners() (expiration paresseuse). Le cron ne retire donc plus rien pour inactivité.
+add_action( 'ag_amb_inactivity_cron', '__return_false' );
 if ( ! function_exists( 'ag_dept_names' ) ) {
 	function ag_dept_names() {
 		return array(
@@ -960,9 +955,11 @@ add_action( 'admin_post_ag_zone_request', function () {
 		} elseif ( count( $mine ) >= ag_zone_quota( $email ) ) {
 			$res = 'quota'; // quota atteint : doit libérer une zone ou en acheter une de plus
 		} else {
-			$add = ag_zone_add_owner( $dept, $email, $name ); // claimed | taken (exclusif) | mine
-			$res = $add;
-			if ( 'claimed' === $add && function_exists( 'ag_push' ) ) ag_push( '🗺️ Zone ' . $dept, $name . ' a réservé le ' . $dept . ' en EXCLUSIVITÉ.' );
+			// Exclusivité à DURÉE LIMITÉE (durée du paiement) ; admin = permanent.
+			$days = user_can( wp_get_current_user(), 'manage_options' ) ? 0 : ag_zone_days();
+			$add  = ag_zone_add_owner( $dept, $email, $name, $days ); // claimed | taken | mine
+			$res  = $add;
+			if ( 'claimed' === $add && function_exists( 'ag_push' ) ) ag_push( '🗺️ Zone ' . $dept, $name . ' a réservé le ' . $dept . ' en EXCLUSIVITÉ' . ( $days ? ' (' . $days . ' j)' : '' ) . '.' );
 		}
 	}
 	wp_safe_redirect( home_url( '/espace-ambassadeur?zone=' . $res . '#demarrage' ) ); exit;

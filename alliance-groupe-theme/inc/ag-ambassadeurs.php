@@ -212,13 +212,9 @@ if ( ! function_exists( 'ag_ambassadeur_signup' ) ) {
 		);
 		update_option( 'ag_ambassadeurs', $list );
 
-		// Zone de prospection auto-attribuée selon la ville / le code postal déclaré.
-		$assigned_dept = function_exists( 'ag_dept_from_location' ) ? ag_dept_from_location( $city, $cp, $address ) : '';
-		if ( $assigned_dept && function_exists( 'ag_dept_names' ) && isset( ag_dept_names()[ $assigned_dept ] )
-			&& function_exists( 'ag_zone_add_owner' ) && function_exists( 'ag_zone_of_owner' )
-			&& empty( ag_zone_of_owner( $email ) ) ) {
-			ag_zone_add_owner( $assigned_dept, $email, $name );
-		}
+		// RÈGLE (Fabrice) : plus d'attribution automatique de zone à l'inscription.
+		// Tout ambassadeur peut prospecter PARTOUT (toutes les zones libres). L'exclusivité d'une
+		// région est un achat séparé, à durée limitée (voir ag_zone_add_owner + ag_zone_days).
 
 		// Crée le compte ambassadeur pour son espace réservé (connexion possible,
 		// déclaration de ventes seulement une fois validé par l'admin).
