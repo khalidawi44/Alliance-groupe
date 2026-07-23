@@ -119,6 +119,69 @@ if ( ! function_exists( 'ag_boamp_fetch' ) ) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
+ *  ALERTE QUOTIDIENNE — chaque matin, pousse les NOUVEAUX appels d'offres
+ *  (jamais vus) sur Telegram + SMS + email. Objectif : ne JAMAIS rater un
+ *  marché à budget voté. Passif = argent facile.
+ * ───────────────────────────────────────────────────────────────────────── */
+add_action( 'init', function () {
+	if ( '1' !== (string) get_option( 'ag_boamp_alert_on', '1' ) ) {
+		$ts = wp_next_scheduled( 'ag_boamp_daily' );
+		if ( $ts ) wp_unschedule_event( $ts, 'ag_boamp_daily' );
+		return;
+	}
+	if ( ! wp_next_scheduled( 'ag_boamp_daily' ) ) {
+		wp_schedule_event( strtotime( 'tomorrow 8:15' ), 'daily', 'ag_boamp_daily' );
+	}
+} );
+
+add_action( 'ag_boamp_daily', 'ag_boamp_daily_run' );
+if ( ! function_exists( 'ag_boamp_daily_run' ) ) {
+	function ag_boamp_daily_run() {
+		// On force un appel frais (le cache pourrait masquer les nouveautés).
+		$where = ag_boamp_where( array(), '' );
+		delete_transient( 'ag_boamp_' . md5( $where . '|60' ) );
+		$data = ag_boamp_fetch( array(), '', 60 );
+		if ( empty( $data['ok'] ) ) return;
+		$seen = (array) get_option( 'ag_boamp_seen', array() );
+		$new  = array();
+		foreach ( $data['items'] as $it ) {
+			if ( '' === $it['id'] || isset( $seen[ $it['id'] ] ) ) continue;
+			$seen[ $it['id'] ] = time();
+			$new[] = $it;
+		}
+		// Purge : garde les 800 derniers ids vus.
+		if ( count( $seen ) > 800 ) { $seen = array_slice( $seen, -800, null, true ); }
+		update_option( 'ag_boamp_seen', $seen, false );
+		if ( ! $new ) return;
+
+		$adminurl = admin_url( 'admin.php?page=ag-appels-offres' );
+		$lines = array();
+		foreach ( array_slice( $new, 0, 12 ) as $it ) {
+			$j = ( null !== $it['jours'] ) ? ' — ⏳ ' . $it['jours'] . ' j' : '';
+			$lines[] = '• ' . wp_trim_words( $it['objet'], 12, '…' ) . ' (' . $it['acheteur'] . ')' . $j;
+		}
+		$more  = count( $new ) > 12 ? "\n… +" . ( count( $new ) - 12 ) . ' autre(s).' : '';
+		$title = '📢 ' . count( $new ) . ' nouvel(s) appel(s) d\'offres pour toi';
+		$body  = implode( "\n", $lines ) . $more . "\n\n👉 " . $adminurl;
+		if ( function_exists( 'ag_push' ) ) ag_push( $title, $body, true );
+
+		$to = apply_filters( 'ag_calendar_notify_email', get_option( 'ag_calendar_email', 'advise.alliance.group@gmail.com' ) );
+		if ( $to ) {
+			$html = '<h2>' . esc_html( $title ) . '</h2><ul>';
+			foreach ( array_slice( $new, 0, 20 ) as $it ) {
+				$j = ( null !== $it['jours'] ) ? ' — <strong style="color:#b32d2e;">' . (int) $it['jours'] . ' j restants</strong>' : '';
+				$html .= '<li><strong>' . esc_html( $it['acheteur'] ) . '</strong> — ' . esc_html( wp_trim_words( $it['objet'], 18, '…' ) ) . $j
+					. '<br><a href="' . esc_url( home_url( '/?ag_candidature=1&id=' . rawurlencode( $it['id'] ) ) ) . '">🗂️ Préparer le dossier</a>'
+					. ( $it['url'] ? ' · <a href="' . esc_url( $it['url'] ) . '">Voir l\'avis</a>' : '' ) . '</li>';
+			}
+			$html .= '</ul><p><a href="' . esc_url( $adminurl ) . '">Voir tous les appels d\'offres</a></p>';
+			$msg = function_exists( 'ag_email_wrap' ) ? ag_email_wrap( $html ) : $html;
+			wp_mail( $to, $title, $msg, array( 'Content-Type: text/html; charset=UTF-8' ) );
+		}
+	}
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
  *  DÉTAIL D'UN MARCHÉ (fiche complète) — parse le blob `donnees` du BOAMP
  *  pour en extraire : contact acheteur, URL du profil d'acheteur (là où on
  *  DÉPOSE l'offre), référence du marché, délai de validité, forme juridique.
@@ -265,12 +328,48 @@ add_action( 'admin_menu', function () {
 	add_submenu_page( 'ag-prospects', 'Mes candidatures', '🗂️ Mes candidatures', 'manage_options', 'ag-candidatures', 'ag_candidatures_render' );
 } );
 
-/* Enregistre les réglages « identité candidat ». */
+/* Enregistre les réglages « identité candidat » + bordereau de prix + alerte. */
 add_action( 'admin_init', function () {
 	foreach ( array( 'raison', 'enseigne', 'forme', 'siren', 'siret', 'ape', 'tva', 'repr', 'repr_qual', 'street', 'zip', 'city', 'phone', 'email' ) as $k ) {
 		register_setting( 'ag_cand_group', 'ag_cand_' . $k );
 	}
+	register_setting( 'ag_cand_group', 'ag_cand_bpu', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_textarea_field' ) );
+	register_setting( 'ag_cand_group', 'ag_boamp_alert_on', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '1' ) );
 } );
+
+/* Bordereau de prix (catalogue) : lignes « Désignation | Prix unitaire € | Unité ». */
+if ( ! function_exists( 'ag_cand_bpu_default' ) ) {
+	function ag_cand_bpu_default() {
+		return "Création site vitrine (Starter) | 490 | forfait\n"
+			. "Création site Business (multi-pages, réservation, espace membre) | 890 | forfait\n"
+			. "Création site Premium / sur-mesure | 1490 | forfait\n"
+			. "Refonte d'un site existant | 890 | forfait\n"
+			. "Hébergement + maintenance — formule Essentiel | 29 | / mois\n"
+			. "Hébergement + maintenance — formule Pro | 59 | / mois\n"
+			. "Hébergement + maintenance — formule Sérénité (24/7) | 99 | / mois\n"
+			. "Audit de sécurité complet | 290 | forfait\n"
+			. "Formation à l'administration du site | 250 | / demi-journée\n"
+			. "Rédaction / intégration de contenu | 60 | / page";
+	}
+}
+if ( ! function_exists( 'ag_cand_bpu_rows' ) ) {
+	function ag_cand_bpu_rows() {
+		$raw = (string) get_option( 'ag_cand_bpu', '' );
+		if ( '' === trim( $raw ) ) $raw = ag_cand_bpu_default();
+		$rows = array();
+		foreach ( preg_split( '/\r\n|\r|\n/', $raw ) as $line ) {
+			$line = trim( $line );
+			if ( '' === $line ) continue;
+			$p = array_map( 'trim', explode( '|', $line ) );
+			$rows[] = array(
+				'label' => $p[0] ?? '',
+				'prix'  => isset( $p[1] ) ? preg_replace( '/[^0-9.,]/', '', $p[1] ) : '',
+				'unite' => $p[2] ?? 'forfait',
+			);
+		}
+		return $rows;
+	}
+}
 
 /* ── Bouton « + Suivre » : ajoute l'acheteur public au CRM Prospection ── */
 add_action( 'wp_ajax_ag_boamp_follow', function () {
@@ -418,7 +517,18 @@ if ( ! function_exists( 'ag_appels_offres_render' ) ) {
 						</tr>
 					<?php endforeach; ?>
 					</tbody></table>
-					<?php submit_button( 'Enregistrer l\'identité' ); ?>
+
+					<h3 style="margin-top:18px;">💶 Bordereau de prix (ton catalogue)</h3>
+					<p style="color:#666;max-width:760px;">Une ligne par prestation, format <code>Désignation | Prix € | Unité</code>. Ce bordereau apparaît dans chaque dossier (prêt à chiffrer). Ajuste les prix avant de déposer une offre.</p>
+					<textarea name="ag_cand_bpu" rows="10" style="width:100%;font-family:monospace;font-size:.9rem;"><?php echo esc_textarea( '' !== trim( (string) get_option( 'ag_cand_bpu', '' ) ) ? get_option( 'ag_cand_bpu' ) : ag_cand_bpu_default() ); ?></textarea>
+
+					<h3 style="margin-top:18px;">🔔 Alerte quotidienne</h3>
+					<label style="display:inline-block;margin:6px 0;">
+						<input type="checkbox" name="ag_boamp_alert_on" value="1" <?php checked( '1', (string) get_option( 'ag_boamp_alert_on', '1' ) ); ?>>
+						Chaque matin (8h15), m'envoyer les <strong>nouveaux</strong> appels d'offres par Telegram + SMS + email (pour ne jamais rater une date limite).
+					</label>
+
+					<?php submit_button( 'Enregistrer' ); ?>
 				</form>
 			</details>
 		</div>
@@ -619,8 +729,32 @@ if ( ! function_exists( 'ag_candidature_render' ) ) {
 			<p class="callout small">✏️ Personnalise ce mémoire selon le <strong>règlement de la consultation</strong> (critères de jugement, exigences techniques précises) avant de déposer. C'est une trame solide, pas un document figé.</p>
 		</div>
 
+		<div class="doc page">
+			<h2>4. Bordereau de prix</h2>
+			<p class="small muted">Prix unitaires <strong>HT</strong> indicatifs. À ajuster et compléter (quantités / total) selon le cadre financier (DPGF / BPU) fourni dans le règlement de la consultation.</p>
+			<table class="id"><thead><tr>
+				<td style="width:52%;background:#f7f7f9;font-weight:600;">Désignation</td>
+				<td style="background:#f7f7f9;font-weight:600;">Prix unitaire HT</td>
+				<td style="background:#f7f7f9;font-weight:600;">Unité</td>
+				<td style="background:#f7f7f9;font-weight:600;">Qté</td>
+				<td style="background:#f7f7f9;font-weight:600;">Total HT</td>
+			</tr></thead><tbody>
+			<?php foreach ( ag_cand_bpu_rows() as $row ) : if ( '' === $row['label'] ) continue; ?>
+				<tr>
+					<td><?php echo esc_html( $row['label'] ); ?></td>
+					<td><?php echo esc_html( $row['prix'] ); ?> €</td>
+					<td><?php echo esc_html( $row['unite'] ); ?></td>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+				</tr>
+			<?php endforeach; ?>
+				<tr><td colspan="4" style="text-align:right;font-weight:700;">TOTAL HT</td><td>&nbsp;</td></tr>
+			</tbody></table>
+			<p class="small muted">TVA non applicable ou applicable selon le régime du candidat (à préciser). Ce bordereau se modifie dans <em>Appels d'offres → 🏢 Identité candidat → 💶 Bordereau de prix</em>.</p>
+		</div>
+
 		<div class="doc">
-			<h2>4. Pièces à joindre au dépôt</h2>
+			<h2>5. Pièces à joindre au dépôt</h2>
 			<ul class="check">
 				<li>Lettre de candidature (DC1) signée</li>
 				<li>Déclaration du candidat (DC2) signée</li>
