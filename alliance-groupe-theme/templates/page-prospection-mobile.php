@@ -431,6 +431,18 @@ foreach ( $ag_my_prospects as $ppc ) {
 		<?php endif; ?>
 	</section>
 
+	<section class="view" id="view-ao">
+		<h2 class="sec">📢 Appels d'offres publics</h2>
+		<div class="card">
+			<p class="sub" style="margin:0 0 8px;">Marchés publics <strong>ouverts</strong> qui collent à nos métiers (site web, cybersécurité, maintenance). L'acheteur a déjà un budget voté : c'est un lead chaud. Ouvre « 🗂️ Préparer mon dossier » → l'appli construit ton dossier de candidature tout prêt à déposer.</p>
+			<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+				<input type="text" id="ao-dept" inputmode="text" placeholder="Département (44, 75, 2A…)" style="flex:1;min-width:150px;">
+				<button type="button" id="ao-filter" class="mini" style="cursor:pointer;border-color:#3aa3ff;color:#fff;background:rgba(58,163,255,.42);font-weight:700;">Filtrer</button>
+			</div>
+		</div>
+		<div id="ao-list"><p class="sub" style="padding:6px 2px;">Chargement…</p></div>
+	</section>
+
 </div>
 
 <button id="toTop" aria-label="Remonter">↑</button>
@@ -443,6 +455,7 @@ foreach ( $ag_my_prospects as $ppc ) {
 	<?php if ( $ag_is_admin ) : ?><a href="#" data-t="appels" onclick="AG.tab('appels');return false"><i>📞</i>Appels</a><?php endif; ?>
 	<?php if ( $ag_is_admin ) : ?><a href="#" data-t="ambass" onclick="AG.tab('ambass');return false"><i>🤝</i>Ambass.</a><?php endif; ?>
 	<a href="#" data-t="audit" onclick="AG.tab('audit');return false"><i>🛡️</i>Audit</a>
+	<a href="#" data-t="ao" onclick="AG.tab('ao');AG.loadAO();return false"><i>📢</i>Marchés</a>
 </nav>
 
 <script>
@@ -888,6 +901,38 @@ var AG = (function(){
 		else { ptr.style.height='0'; ptr.style.opacity='0'; }
 		pulling=false;
 	});
+
+	// ── Appels d'offres publics (marchés) ──
+	var aoLoaded=false;
+	function aoEsc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+	function aoRender(items,total){
+		var box=document.getElementById('ao-list'); if(!box) return;
+		if(!items || !items.length){ box.innerHTML='<div class="card"><p class="sub" style="margin:0;">Aucun marché ouvert pour ces critères. Vide le département ou reviens plus tard.</p></div>'; return; }
+		var h='<p class="sub" style="padding:4px 2px;">'+total+' marché(s) ouvert(s) — les plus urgents en premier.</p>';
+		items.forEach(function(it){
+			var j=it.jours, col=(j!=null&&j<=7)?'#ff6b6b':((j!=null&&j<=15)?'#e6b35a':'#2ecc71');
+			h+='<div class="card" style="padding:13px;">';
+			h+='<strong>'+aoEsc(it.acheteur)+'</strong>';
+			h+='<div class="sub" style="font-size:.82rem;margin:4px 0 8px;">'+aoEsc(it.objet).slice(0,160)+'</div>';
+			h+='<div class="sub" style="font-size:.78rem;margin-bottom:8px;">'+(it.dept?('📍 '+aoEsc(it.dept)+' · '):'')+'⏳ <span style="color:'+col+';font-weight:700;">'+aoEsc(it.limite)+(j!=null?(' ('+j+' j)'):'')+'</span></div>';
+			h+='<a href="'+aoEsc(it.cand)+'" target="_blank" rel="noopener" class="b gold" style="display:block;text-align:center;text-decoration:none;margin-bottom:6px;">🗂️ Préparer mon dossier</a>';
+			if(it.url){ h+='<a href="'+aoEsc(it.url)+'" target="_blank" rel="noopener" class="mini" style="display:inline-block;text-decoration:none;cursor:pointer;">Voir l\'avis officiel</a>'; }
+			h+='</div>';
+		});
+		box.innerHTML=h;
+	}
+	AG.loadAO=function(force){
+		if(aoLoaded && !force) return;
+		var box=document.getElementById('ao-list'); if(box) box.innerHTML='<p class="sub" style="padding:6px 2px;">Chargement…</p>';
+		var dept=(document.getElementById('ao-dept')||{}).value||'';
+		AG.post('ag_app_boamp',{dept:dept}).then(function(j){
+			aoLoaded=true;
+			if(j&&j.success){ aoRender(j.data.items, j.data.total); }
+			else if(box){ box.innerHTML='<div class="card"><p class="sub" style="margin:0;">Impossible de charger les marchés. Réessaie dans un instant.</p></div>'; }
+		}).catch(function(){ if(box){ box.innerHTML='<div class="card"><p class="sub" style="margin:0;">Erreur réseau.</p></div>'; } });
+	};
+	var aoBtn=document.getElementById('ao-filter');
+	if(aoBtn){ aoBtn.addEventListener('click',function(){ AG.loadAO(true); }); }
 })();
 </script>
 </body>
