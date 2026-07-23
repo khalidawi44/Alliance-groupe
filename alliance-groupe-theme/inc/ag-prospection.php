@@ -2406,6 +2406,67 @@ add_action( 'wp_ajax_ag_amb_search', function () {
 	wp_send_json_success( array( 'items' => $out, 'left' => ag_chasseur_quota_left( $uid ) ) );
 } );
 
+/* App : marque « a répondu » (ou annule) — propriétaire ou admin. */
+add_action( 'wp_ajax_ag_app_prospect_reply', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error();
+	$email = strtolower( wp_get_current_user()->user_email );
+	$id    = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+	$val   = ! empty( $_POST['replied'] );
+	$list  = (array) get_option( 'ag_prospects', array() );
+	foreach ( $list as $k => $p ) {
+		if ( ( $p['id'] ?? '' ) === $id && ( current_user_can( 'manage_options' ) || strtolower( $p['owner_email'] ?? '' ) === $email ) ) {
+			$list[ $k ]['replied']    = $val ? 1 : 0;
+			$list[ $k ]['date_reply'] = $val ? current_time( 'd/m/Y' ) : '';
+			update_option( 'ag_prospects', array_values( $list ) );
+			wp_send_json_success( array( 'replied' => $val ? 1 : 0 ) );
+		}
+	}
+	wp_send_json_error();
+} );
+
+/* App : APPEL ROBOT EN MASSE — par ids de prospects OU par numéros bruts
+ * (recherche). Fonctionne pour TOUS les numéros (06/02/08/09…). */
+add_action( 'wp_ajax_ag_app_voice_bulk', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error( array( 'm' => 'Session expirée.' ) );
+	if ( ! function_exists( 'ag_voice_call' ) || ! ag_voice_ready() ) wp_send_json_error( array( 'm' => 'Robot vocal non configuré.' ) );
+	$email  = strtolower( wp_get_current_user()->user_email );
+	$admin  = current_user_can( 'manage_options' );
+	$forced = sanitize_text_field( wp_unslash( $_POST['angle'] ?? '' ) );
+	$forced = in_array( $forced, array( 'creation', 'securite' ), true ) ? $forced : '';
+	$ok = 0; $ko = 0; $done = 0; $CAP = 60;
+
+	$ids    = isset( $_POST['ids'] ) ? array_filter( array_map( 'sanitize_text_field', array_map( 'wp_unslash', (array) $_POST['ids'] ) ) ) : array();
+	$phones = isset( $_POST['phones'] ) ? array_filter( array_map( 'sanitize_text_field', array_map( 'wp_unslash', (array) $_POST['phones'] ) ) ) : array();
+
+	if ( $ids ) {
+		foreach ( (array) get_option( 'ag_prospects', array() ) as $p ) {
+			if ( $done >= $CAP ) break;
+			if ( ! in_array( $p['id'] ?? '', $ids, true ) ) continue;
+			if ( ! $admin && strtolower( $p['owner_email'] ?? '' ) !== $email ) continue;      // que ses prospects
+			if ( function_exists( 'ag_prospect_blocked' ) && ag_prospect_blocked( $p['status'] ?? '' ) ) continue;
+			$to = $p['phone_intl'] ?? ''; if ( '' === $to ) $to = $p['phone'] ?? '';
+			if ( '' === $to ) continue;
+			$has_site = function_exists( 'ag_site_kind' ) && 'real' === ag_site_kind( $p['website'] ?? '' )[0];
+			$vars = array( 'entreprise' => $p['name'] ?? '', 'ville' => $p['city'] ?? '', 'angle' => '' !== $forced ? $forced : ( $has_site ? 'securite' : 'creation' ) );
+			$done++;
+			if ( ag_voice_call( $to, $vars ) ) $ok++; else $ko++;
+			usleep( 300000 );
+		}
+	}
+	if ( $phones ) {
+		foreach ( $phones as $to ) {
+			if ( $done >= $CAP ) break;
+			$to = preg_replace( '/[^0-9+]/', '', $to );
+			if ( strlen( preg_replace( '/\D/', '', $to ) ) < 6 ) continue;
+			$done++;
+			if ( ag_voice_call( $to, array( 'angle' => '' !== $forced ? $forced : 'creation' ) ) ) $ok++; else $ko++;
+			usleep( 300000 );
+		}
+	}
+	if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '🤖 Robot (app) : ' . $ok . ' appel(s) lancé(s), ' . $ko . ' échec(s)' );
+	wp_send_json_success( array( 'ok' => $ok, 'ko' => $ko, 'capped' => ( $done >= $CAP ) ) );
+} );
+
 /* App : liste des recherches SAUVEGARDÉES (accordéon par catégorie/ville). */
 add_action( 'wp_ajax_ag_app_searches', function () {
 	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error();

@@ -234,10 +234,15 @@ foreach ( $ag_my_prospects as $ppc ) {
 					<button class="chip" data-f="grp" data-v="todo">🆕 À contacter</button>
 					<button class="chip" data-f="grp" data-v="done">📞 Contactés</button>
 					<button class="chip" data-f="grp" data-v="rappel">📵 À rappeler</button>
+					<button class="chip" data-f="rep" data-v="1">✅ Ont répondu</button>
 					<button class="chip" data-f="grp" data-v="hot">🔥 Intéressés</button>
 					<button class="chip" data-f="kind" data-v="site">🔒 Sécurité (site)</button>
 					<button class="chip" data-f="kind" data-v="crea">🌐 Site web</button>
 				</div>
+				<?php if ( $ag_robot_ok ) : ?>
+				<button type="button" id="ag-robot-all" class="b" style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;margin:0 0 12px;">🤖 Appeler tout le monde au robot (visibles)</button>
+				<p class="sub" style="margin:-6px 0 12px;font-size:.74rem;">Le robot Emma appelle tous les prospects affichés, quel que soit le numéro (06, 02, 08, 09…).</p>
+				<?php endif; ?>
 				<?php foreach ( $ag_my_prospects as $pp ) :
 					$pstatus = $pp['status'] ?? 'nouveau';
 					if ( in_array( $pstatus, array( 'refus', 'ne_pas_contacter' ), true ) ) { continue; }
@@ -254,16 +259,25 @@ foreach ( $ag_my_prospects as $ppc ) {
 					$pangle   = $has_site ? 'securite' : 'creation';
 					$fgrp     = ( 'nouveau' === $pstatus ) ? 'todo' : ( in_array( $pstatus, array( 'contacte', 'relance' ), true ) ? 'done' : ( 'repondeur' === $pstatus ? 'rappel' : ( 'interesse' === $pstatus ? 'hot' : 'done' ) ) );
 					$fkind    = $has_site ? 'site' : 'crea';
+					$preplied = ( ! empty( $pp['replied'] ) || 'interesse' === $pstatus ) ? 1 : 0;
+					$plabel   = $ag_pstat[ $pstatus ] ?? '';
 				?>
-					<div class="p" data-grp="<?php echo esc_attr( $fgrp ); ?>" data-kind="<?php echo esc_attr( $fkind ); ?>">
+					<div class="p" data-grp="<?php echo esc_attr( $fgrp ); ?>" data-kind="<?php echo esc_attr( $fkind ); ?>" data-rep="<?php echo (int) $preplied; ?>" data-id="<?php echo esc_attr( $pid ); ?>">
 						<div class="nm"><?php echo esc_html( $pp['name'] ?? '' ); ?></div>
 						<div class="why"><?php echo esc_html( ( ! empty( $pp['city'] ) ? $pp['city'] . ' · ' : '' ) . ( function_exists( 'ag_prospect_why' ) ? ag_prospect_why( $pp ) : '' ) ); ?></div>
+						<div class="why" style="font-size:.76rem;margin-top:-2px;">
+							<?php echo esc_html( $plabel ); ?>
+							<?php if ( ! empty( $pp['date_contact'] ) ) : ?> · 📨 <?php echo esc_html( ! empty( $pp['last_channel'] ) ? $pp['last_channel'] : 'contacté' ); ?> le <?php echo esc_html( $pp['date_contact'] ); ?><?php endif; ?>
+							<?php if ( $preplied ) : ?> · <span style="color:#4ade80;font-weight:700;">✅ a répondu</span><?php endif; ?>
+						</div>
 						<div class="row">
 							<?php if ( $ptel ) : ?><a class="mini ag-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="Appel" href="<?php echo esc_attr( $ptel ); ?>">📞</a><?php endif; ?>
 							<?php if ( $pmobile && $psms ) : ?><a class="mini ag-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="SMS" href="<?php echo esc_attr( $psms ); ?>">💬</a><?php endif; ?>
 							<?php if ( $pmobile && $pwa ) : ?><a class="mini ag-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="WhatsApp" href="<?php echo esc_url( $pwa ); ?>" target="_blank" rel="noopener">🟢</a><?php endif; ?>
 							<?php if ( $ag_robot_ok && $pnum ) : ?><a class="mini robot ag-robot-one" href="#" data-phone="<?php echo esc_attr( $pnum ); ?>" data-name="<?php echo esc_attr( $pp['name'] ?? '' ); ?>" data-angle="<?php echo esc_attr( $pangle ); ?>">🤖 Robot <?php echo 'securite' === $pangle ? '🔒' : '🌐'; ?></a><?php endif; ?>
 							<?php if ( ! $pmobile && $pnum ) : ?><span class="mini" style="border-color:#3a3a44;color:#8a8a92;pointer-events:none;">📵 fixe</span><?php endif; ?>
+							<?php if ( 'repondeur' === $pstatus && $ptel ) : ?><a class="mini ag-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="Rappel" href="<?php echo esc_attr( $ptel ); ?>" style="border-color:#e6a817;color:#f0c96b;">🔁 Rappeler</a><?php endif; ?>
+							<button type="button" class="mini ag-reply" data-id="<?php echo esc_attr( $pid ); ?>" data-rep="<?php echo (int) $preplied; ?>" style="cursor:pointer;border-color:#2e6a3f;color:#7ee2a8;"><?php echo $preplied ? '✅ A répondu' : '☐ A répondu ?'; ?></button>
 							<form method="post" action="<?php echo esc_url( $ag_ppost ); ?>" style="margin:0;">
 								<input type="hidden" name="action" value="ag_amb_prospect_status">
 								<?php echo $ag_pnonce; // phpcs:ignore ?>
@@ -533,12 +547,13 @@ var AG = (function(){
 	// Filtres (chips) des prospects
 	var chips=document.getElementById('ag-chips');
 	if(chips){
-		var flt={grp:'all',kind:'all'};
+		var flt={grp:'all',kind:'all',rep:'all'};
 		function applyFlt(){
 			document.querySelectorAll('#view-prospecter .p').forEach(function(p){
 				var okg=(flt.grp==='all'||p.getAttribute('data-grp')===flt.grp);
 				var okk=(flt.kind==='all'||p.getAttribute('data-kind')===flt.kind);
-				p.style.display=(okg&&okk)?'':'none';
+				var okr=(flt.rep==='all'||p.getAttribute('data-rep')===flt.rep);
+				p.style.display=(okg&&okk&&okr)?'':'none';
 			});
 		}
 		chips.querySelectorAll('.chip').forEach(function(c){
@@ -570,6 +585,33 @@ var AG = (function(){
 	document.querySelectorAll('.ag-touch').forEach(function(a){
 		a.addEventListener('click',function(){ var id=a.getAttribute('data-id'), ch=a.getAttribute('data-channel'); if(id){ AG.post('ag_amb_touch',{id:id,channel:ch}).catch(function(){}); } });
 	});
+
+	// « A répondu » : bascule le statut réponse (suivi lié au message)
+	document.querySelectorAll('.ag-reply').forEach(function(b){
+		b.addEventListener('click',function(){
+			var id=b.getAttribute('data-id'), cur=b.getAttribute('data-rep')==='1', nv=cur?0:1;
+			b.textContent='…';
+			AG.post('ag_app_prospect_reply',{id:id,replied:nv}).then(function(j){
+				if(j&&j.success){ b.setAttribute('data-rep',nv); b.textContent=nv?'✅ A répondu':'☐ A répondu ?';
+					var card=b.closest('.p'); if(card){ card.setAttribute('data-rep',nv); } AG.toast(nv?'✅ Marqué : a répondu':'Réponse annulée'); }
+				else { b.textContent=cur?'✅ A répondu':'☐ A répondu ?'; AG.toast('❌ Erreur'); }
+			}).catch(function(){ b.textContent=cur?'✅ A répondu':'☐ A répondu ?'; });
+		});
+	});
+
+	// 🤖 Appeler TOUS les prospects visibles au robot (tout numéro : 06/02/08/09)
+	var robotAll=document.getElementById('ag-robot-all');
+	if(robotAll){ robotAll.addEventListener('click',function(){
+		var ids=[]; document.querySelectorAll('#view-prospecter .p').forEach(function(p){ if(p.style.display!=='none'){ var id=p.getAttribute('data-id'); if(id) ids.push(id); } });
+		if(!ids.length){ AG.toast('Aucun prospect affiché.'); return; }
+		if(!confirm('Le robot Emma va appeler '+ids.length+' prospect(s) affiché(s), un par un. Lancer ?')) return;
+		robotAll.textContent='🤖 Lancement…'; robotAll.setAttribute('disabled','disabled');
+		var fd={}; ids.forEach(function(id,i){ fd['ids['+i+']']=id; });
+		AG.post('ag_app_voice_bulk',fd).then(function(j){
+			robotAll.removeAttribute('disabled'); robotAll.textContent='🤖 Appeler tout le monde au robot (visibles)';
+			AG.toast(j&&j.success?('🤖 '+j.data.ok+' appel(s) lancé(s)'+(j.data.ko?(' · '+j.data.ko+' échec(s)'):'')+(j.data.capped?' (limité à 60)':'')):('❌ '+((j&&j.data&&j.data.m)||'Erreur')));
+		}).catch(function(){ robotAll.removeAttribute('disabled'); robotAll.textContent='🤖 Appeler tout le monde au robot (visibles)'; AG.toast('❌ Erreur réseau'); });
+	}); }
 
 	// Audit d'un site (léger / avancé) → note + SMS auto selon la note
 	document.querySelectorAll('.ag-audit').forEach(function(btn){
@@ -640,7 +682,16 @@ var AG = (function(){
 			var chev=document.createElement('span'); chev.className='chev'; chev.textContent='▸';
 			sum.appendChild(del); sum.appendChild(chev); det.appendChild(sum);
 			var body=document.createElement('div'); body.className='accb';
-			det.addEventListener('toggle',function(){ if(det.open && !body.getAttribute('data-filled')){ body.setAttribute('data-filled','1'); (s.items||[]).forEach(function(it){ body.appendChild(agItemRow(it)); }); } });
+			det.addEventListener('toggle',function(){ if(det.open && !body.getAttribute('data-filled')){ body.setAttribute('data-filled','1');
+				<?php if ( $ag_robot_ok ) : ?>
+				var phones=(s.items||[]).map(function(it){ return (it.phone_intl||it.phone||''); }).filter(function(x){ return x && x.replace(/\D/g,'').length>=6; });
+				if(phones.length){ var rb=document.createElement('button'); rb.className='b'; rb.style.cssText='background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;margin:2px 0 10px;'; rb.textContent='🤖 Appeler tous au robot ('+phones.length+')';
+					rb.addEventListener('click',function(){ if(!confirm('Le robot va appeler les '+phones.length+' entreprise(s) de cette recherche. Lancer ?')) return; rb.textContent='🤖 Lancement…'; rb.setAttribute('disabled','disabled');
+						var fd={}; phones.forEach(function(p,i){ fd['phones['+i+']']=p; });
+						AG.post('ag_app_voice_bulk',fd).then(function(j){ rb.removeAttribute('disabled'); rb.textContent='🤖 Appeler tous au robot ('+phones.length+')'; AG.toast(j&&j.success?('🤖 '+j.data.ok+' appel(s) lancé(s)'+(j.data.capped?' (limité à 60)':'')):('❌ '+((j&&j.data&&j.data.m)||'Erreur'))); }).catch(function(){ rb.removeAttribute('disabled'); AG.toast('❌ Erreur réseau'); }); });
+					body.appendChild(rb); }
+				<?php endif; ?>
+				(s.items||[]).forEach(function(it){ body.appendChild(agItemRow(it)); }); } });
 			det.appendChild(body); saved.appendChild(det);
 		});
 	}
