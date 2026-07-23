@@ -21,7 +21,8 @@ if ( ! function_exists( 'ag_mandat_tier' ) ) {
 				'kind'  => 'expert',
 				'label' => 'Diagnostic Expert 24h',
 				'price' => $opt ? (float) ag_tester_opt( 'deep_price' ) : 290,
-				'pay'   => $opt ? ( ag_tester_opt( 'deep_pay_url' ) ?: ag_tester_opt( 'pay_url' ) ) : '',
+				// UNIQUEMENT le lien 290 € dédié — jamais le lien 49 € (sinon mauvais montant).
+				'pay'   => $opt ? (string) ag_tester_opt( 'deep_pay_url' ) : '',
 				'desc'  => 'Scan de sécurité en profondeur (simulation d\'attaque réelle, ports, vulnérabilités connues, plugins). Rapport complet + plan de correction chiffré, livré en moins de 24 h.',
 			);
 		}
@@ -48,10 +49,12 @@ if ( ! function_exists( 'ag_mandat_render' ) ) {
 	function ag_mandat_render( $tier, $site = '' ) {
 		nocache_headers();
 		header( 'Content-Type: text/html; charset=utf-8' );
-		$T     = ag_mandat_tier( $tier );
-		$price = (float) $T['price'];
-		$logo  = get_stylesheet_directory_uri() . '/assets/images/logo-carte-square.jpg';
-		$err   = isset( $_GET['err'] ) ? sanitize_key( $_GET['err'] ) : '';
+		$T      = ag_mandat_tier( $tier );
+		$price  = (float) $T['price'];
+		$haspay = '' !== trim( (string) $T['pay'] );
+		$logo   = get_stylesheet_directory_uri() . '/assets/images/logo-carte-square.jpg';
+		$err    = isset( $_GET['err'] ) ? sanitize_key( $_GET['err'] ) : '';
+		$okp    = isset( $_GET['ok'] );
 		?><!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 		<title>Commander — <?php echo esc_html( $T['label'] ); ?> · Alliance Groupe</title>
 		<style>
@@ -80,6 +83,7 @@ if ( ! function_exists( 'ag_mandat_render' ) ) {
 			<h1><?php echo esc_html( $T['label'] ); ?></h1>
 			<div class="price"><?php echo esc_html( number_format_i18n( $price, 0 ) ); ?> € <span style="font-size:.9rem;color:#8a8a92;font-weight:400;">TTC</span></div>
 			<p class="desc"><?php echo esc_html( $T['desc'] ); ?></p>
+			<?php if ( $okp ) : ?><div class="mand" style="background:#0e1f13;border-color:#2e6a3f;color:#bfe6c9;">✅ <strong>Commande &amp; mandat enregistrés.</strong> Nous vous envoyons le <strong>lien de paiement sécurisé par email</strong> dans les plus brefs délais.</div><?php endif; ?>
 			<?php if ( 'email' === $err ) : ?><p class="err">Merci d'indiquer une adresse email valide et l'URL de votre site.</p><?php endif; ?>
 			<?php if ( 'mandat' === $err ) : ?><p class="err">Vous devez cocher l'autorisation (mandat) pour commander.</p><?php endif; ?>
 			<?php if ( 'nonce' === $err ) : ?><p class="err">Session expirée, réessayez.</p><?php endif; ?>
@@ -99,7 +103,7 @@ if ( ! function_exists( 'ag_mandat_render' ) ) {
 				<label class="chk"><input type="checkbox" name="mandat" value="1" required> J'atteste être le <strong>propriétaire ou le représentant autorisé</strong> du site ci-dessus et j'<strong>autorise Alliance Groupe</strong> à réaliser cet audit de sécurité sur ce site.</label>
 				<label class="chk"><input type="checkbox" name="waive" value="1"> Je demande la <strong>fourniture immédiate après paiement</strong> et renonce à mon délai de rétractation de 14 jours (services numériques).</label>
 				<label class="chk"><input type="checkbox" name="cgv" value="1" required> J'accepte les <strong>conditions générales</strong> et je passe une <strong>commande ferme</strong> de <?php echo esc_html( number_format_i18n( $price, 0 ) ); ?> €.</label>
-				<button type="submit" class="cta">💳 Payer <?php echo esc_html( number_format_i18n( $price, 0 ) ); ?> € et commander</button>
+				<button type="submit" class="cta"><?php echo $haspay ? '💳 Payer ' . esc_html( number_format_i18n( $price, 0 ) ) . ' € et commander' : '📩 Commander (' . esc_html( number_format_i18n( $price, 0 ) ) . ' €) — recevoir le lien de paiement'; ?></button>
 			</form>
 			<p class="leg">Paiement sécurisé. Facture envoyée par email. L'audit approfondi n'est jamais réalisé sans votre autorisation écrite.</p>
 		</div></body></html><?php
