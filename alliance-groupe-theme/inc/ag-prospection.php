@@ -2407,6 +2407,37 @@ add_action( 'wp_ajax_ag_amb_search', function () {
 	wp_send_json_success( array( 'items' => $out, 'left' => ag_chasseur_quota_left( $uid ), 'locked' => $locked_out ) );
 } );
 
+/* App : RÉACTUALISER tous les audits (ignore le cache) → met à jour l'historique
+ * ET la note des prospects correspondants. Traite par lots (anti-timeout). */
+add_action( 'wp_ajax_ag_app_audit_refresh_all', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error( array( 'm' => 'Session expirée.' ) );
+	if ( ! function_exists( 'ag_audit_get' ) ) wp_send_json_error( array( 'm' => 'Module audit indisponible.' ) );
+	$audits = get_option( 'ag_app_audits', array() );
+	if ( ! is_array( $audits ) ) $audits = array();
+	uasort( $audits, function ( $x, $y ) { return (int) ( $x['ts'] ?? 0 ) <=> (int) ( $y['ts'] ?? 0 ); } ); // plus anciens d'abord
+	$now = time(); $done = 0; $cap = 8; $fresh_win = 600; // « déjà à jour » si actualisé il y a < 10 min
+	$prospects = (array) get_option( 'ag_prospects', array() ); $chg = false;
+	foreach ( $audits as $k => $aud ) {
+		if ( $done >= $cap ) break;
+		if ( (int) ( $aud['ts'] ?? 0 ) > $now - $fresh_win ) continue;
+		$u = (string) ( $aud['url'] ?? '' ); if ( '' === $u ) continue;
+		delete_transient( 'ag_auditc_' . md5( strtolower( $u ) ) );
+		$a  = ag_audit_get( $u );
+		$sc = (int) ( $a['score'] ?? 0 ); $cr = (int) ( $a['critical'] ?? 0 );
+		$audits[ $k ]['score'] = $sc; $audits[ $k ]['crit'] = $cr; $audits[ $k ]['ts'] = $now;
+		foreach ( $prospects as $i => $p ) {
+			if ( ! empty( $p['website'] ) && function_exists( 'ag_rapport_key' ) && ag_rapport_key( $p['website'] ) === ag_rapport_key( $u ) ) {
+				$prospects[ $i ]['audit_score'] = $sc; $prospects[ $i ]['audit_crit'] = $cr; $prospects[ $i ]['audit_ts'] = $now; $chg = true;
+			}
+		}
+		$done++;
+	}
+	update_option( 'ag_app_audits', $audits, false );
+	if ( $chg ) update_option( 'ag_prospects', array_values( $prospects ) );
+	$remaining = 0; foreach ( $audits as $aud ) { if ( (int) ( $aud['ts'] ?? 0 ) <= $now - $fresh_win ) $remaining++; }
+	wp_send_json_success( array( 'done' => $done, 'remaining' => $remaining ) );
+} );
+
 /* App : marque « a répondu » (ou annule) — propriétaire ou admin. */
 add_action( 'wp_ajax_ag_app_prospect_reply', function () {
 	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error();
@@ -3009,6 +3040,8 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 	if ( '' === $url ) wp_send_json_error( array( 'm' => 'Ce prospect n\'a pas de site.' ) );
 	$mode = 'complet';
 	if ( ! function_exists( 'ag_audit_run' ) ) wp_send_json_error( array( 'm' => 'Module audit indisponible.' ) );
+	// « fresh » = on ignore le cache 1h et on ré-analyse à neuf (bouton Réactualiser).
+	if ( ! empty( $_POST['fresh'] ) ) { delete_transient( 'ag_auditc_' . md5( strtolower( $url ) ) ); delete_transient( 'ag_isag_' . md5( strtolower( $url ) ) ); }
 	$a = ag_audit_get( $url ); // audit complet unifié + caché → note homogène partout
 	$score = (int) ( $a['score'] ?? 0 );
 	$crit  = (int) ( $a['critical'] ?? 0 );

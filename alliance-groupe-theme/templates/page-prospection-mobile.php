@@ -405,7 +405,11 @@ foreach ( $ag_my_prospects as $ppc ) {
 			</div>
 		</div>
 
-		<h3 style="margin:6px 2px 10px;font-size:1.02rem;">Sites déjà audités (<?php echo count( $ag_audits ); ?>)</h3>
+		<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 2px 10px;">
+			<h3 style="margin:0;font-size:1.02rem;">Sites déjà audités (<?php echo count( $ag_audits ); ?>)</h3>
+			<?php if ( ! empty( $ag_audits ) ) : ?><button type="button" id="ag-refresh-all" class="mini" style="cursor:pointer;border-color:#3aa3ff;color:#fff;background:rgba(58,163,255,.42);font-weight:700;">🔄 Tout réactualiser</button><?php endif; ?>
+		</div>
+		<p class="sub" style="margin:-4px 2px 10px;font-size:.76rem;">Les notes se mettent en cache 1 h. « Réactualiser » recalcule à neuf et met à jour la note dans tes prospects.</p>
 		<?php if ( empty( $ag_audits ) ) : ?>
 			<div class="card"><p class="sub" style="margin:0;">Aucun site audité pour l'instant. Lance un audit ci-dessus, ou depuis un prospect / la recherche.</p></div>
 		<?php else : ?>
@@ -501,6 +505,7 @@ var AG = (function(){
 			 +'<textarea class="agk-txt" style="width:100%;min-height:80px;margin-top:6px;" placeholder="Colle ici le résultat de ton scan Kali pour ce site…"></textarea>'
 			 +'<button type="button" class="mini agk-save" data-url="'+url+'" style="cursor:pointer;margin-top:6px;">💾 Enregistrer pour ce site</button></details>';
 		}
+		h+='<div><button type="button" class="mini ag-audit-refresh" data-url="'+url+'" data-num="'+(num||'')+'" style="cursor:pointer;border-color:#8a8a92;color:#fff;background:rgba(138,138,146,.30);font-weight:700;margin-top:8px;">🔄 Réactualiser cet audit</button></div>';
 		return h;
 	}
 
@@ -543,6 +548,34 @@ var AG = (function(){
 		var a=e.target.closest?e.target.closest('.ag-robot-num'):null; if(!a) return;
 		e.preventDefault(); agRobotNum(a, a.getAttribute('data-phone'), a.getAttribute('data-angle')||'creation');
 	});
+	// Réactualiser UN audit (ignore le cache) → remplace le résultat sur place.
+	document.addEventListener('click',function(e){
+		var b=e.target.closest?e.target.closest('.ag-audit-refresh'):null; if(!b) return; e.preventDefault();
+		var host=b.closest('.audit-res'); if(!host) return;
+		var u=b.getAttribute('data-url'), num=b.getAttribute('data-num')||'';
+		host.innerHTML='<span class="sub">🔄 Réanalyse en cours…</span>';
+		AG.post('ag_app_audit',{url:u,mode:'light',fresh:1,phone:num}).then(function(j){
+			if(j&&j.success){ host.innerHTML=agAuditHTML(u, j.data, num); AG.toast('🔄 Audit réactualisé : '+j.data.score+'/100'); }
+			else { host.innerHTML='<span class="sub">❌ '+((j&&j.data&&j.data.m)||'Erreur')+'</span>'; }
+		}).catch(function(){ host.innerHTML='<span class="sub">❌ Erreur réseau</span>'; });
+	});
+
+	// « Tout réactualiser » : recalcule tous les sites audités (par lots) + maj des prospects.
+	var refAll=document.getElementById('ag-refresh-all');
+	if(refAll){ refAll.addEventListener('click',function(){
+		if(!confirm('Recalculer la note de tous les sites déjà audités ? Ça peut prendre un moment (par lots).')) return;
+		refAll.setAttribute('disabled','disabled'); var total=0;
+		function batch(){ refAll.textContent='🔄 Actualisation… ('+total+')';
+			AG.post('ag_app_audit_refresh_all',{}).then(function(j){
+				if(!j||!j.success){ refAll.removeAttribute('disabled'); refAll.textContent='🔄 Tout réactualiser'; AG.toast('❌ Erreur'); return; }
+				total+=j.data.done;
+				if(j.data.remaining>0 && j.data.done>0){ batch(); }
+				else { refAll.removeAttribute('disabled'); refAll.textContent='🔄 Tout réactualiser'; AG.toast('✅ '+total+' audit(s) réactualisé(s). Recharge pour voir les notes.'); }
+			}).catch(function(){ refAll.removeAttribute('disabled'); refAll.textContent='🔄 Tout réactualiser'; AG.toast('❌ Erreur réseau'); });
+		}
+		batch();
+	}); }
+
 	// Copier le message perso d'audit (à coller où on veut : SMS, WhatsApp, email, DM).
 	document.addEventListener('click',function(e){
 		var b=e.target.closest?e.target.closest('.agmsg-copy'):null; if(!b) return;
@@ -671,7 +704,7 @@ var AG = (function(){
 				add.textContent=(r&&r.success)?'✓ Ajouté':'Erreur'; if(r&&r.success){ add.setAttribute('disabled','disabled'); } AG.toast((r&&r.success)?'✅ Ajouté à tes prospects':'❌ Erreur');
 			}).catch(function(){ add.textContent='Erreur'; }); });
 		row.appendChild(add);
-		var rep=document.createElement('div'); rep.style.marginTop='8px';
+		var rep=document.createElement('div'); rep.className='audit-res'; rep.style.marginTop='8px';
 		if(it.website){
 			var aud=document.createElement('button'); aud.className='mini'; aud.style.cssText='cursor:pointer;border-color:#7c3aed;color:#c58bff;'; aud.textContent='🛡️ Auditer le site';
 			aud.addEventListener('click',function(){ rep.innerHTML='<span class="sub">🔍 Audit en cours…</span>';
