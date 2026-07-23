@@ -314,9 +314,8 @@ add_action( 'wp_ajax_ag_cand_status', function () {
 /* ── Renderer autonome du DOSSIER DE CANDIDATURE : ?ag_candidature=1&id=<idweb> ── */
 add_action( 'template_redirect', function () {
 	if ( ! isset( $_GET['ag_candidature'] ) ) return;
-	if ( ! current_user_can( 'manage_options' ) && ! ( function_exists( 'ag_espace_member_kind' ) && 'ambassadeur' === ag_espace_member_kind() ) ) {
-		auth_redirect();
-	}
+	// Outil ADMIN perso (Fabrice seul) — pas pour les ambassadeurs.
+	if ( ! current_user_can( 'manage_options' ) ) { auth_redirect(); }
 	$id = preg_replace( '/[^0-9A-Za-z\-]/', '', (string) ( $_GET['id'] ?? '' ) );
 	ag_candidature_render( $id );
 	exit;
@@ -391,27 +390,6 @@ add_action( 'wp_ajax_ag_boamp_follow', function () {
 	) );
 	if ( ! $ok ) wp_send_json_error( array( 'msg' => 'Déjà suivi ou ignoré' ) );
 	wp_send_json_success( array( 'msg' => 'Ajouté au CRM' ) );
-} );
-
-/* ── AJAX appli ambassadeur : liste des appels d'offres (connectés) ── */
-add_action( 'wp_ajax_ag_app_boamp', function () {
-	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error();
-	$cats = isset( $_POST['cat'] ) ? array_map( 'sanitize_key', (array) $_POST['cat'] ) : array();
-	$dept = sanitize_text_field( wp_unslash( $_POST['dept'] ?? '' ) );
-	$data = ag_boamp_fetch( $cats, $dept, 40 );
-	$out  = array();
-	foreach ( $data['items'] as $it ) {
-		$out[] = array(
-			'objet'  => $it['objet'],
-			'acheteur' => $it['acheteur'],
-			'dept'   => $it['dept'],
-			'limite' => $it['limite'],
-			'jours'  => $it['jours'],
-			'url'    => $it['url'],
-			'cand'   => home_url( '/?ag_candidature=1&id=' . rawurlencode( $it['id'] ) ),
-		);
-	}
-	wp_send_json_success( array( 'ok' => $data['ok'], 'total' => $data['total'], 'items' => $out ) );
 } );
 
 /* ── Rendu de la page admin ── */
