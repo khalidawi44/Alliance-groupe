@@ -3055,6 +3055,14 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 	$msg['perso'] = "Bonjour, j'ai regarde le site de " . $who . " (note " . $score . "/100)."
 		. ( $ptxt ? " J'ai remarque que " . implode( " et que ", $ptxt ) . "." : "" )
 		. " Je cree et je securise des sites web pour les professionnels — je peux corriger ca rapidement (ou vous refaire un site moderne et sur). Je vous montre ce que ca donnerait ? 👉 " . $offre;
+
+	// MESSAGE PARTENAIRE : pour une AGENCE / un créateur de sites → devient apporteur d'affaires
+	// (ses propres clients sont exposés → il les recommande, il touche une commission).
+	$rate    = defined( 'AG_COMMISSION_RATE' ) ? (int) round( AG_COMMISSION_RATE * 100 ) : 10;
+	$partlnk = function_exists( 'ag_ambassadeur_parrain_link' ) ? ag_ambassadeur_parrain_link( strtolower( wp_get_current_user()->user_email ) ) : home_url( '/ambassadeurs' );
+	$msg['partenaire'] = "Bonjour, entre professionnels du web : j'ai audite le site de " . $who . " (note " . $score . "/100" . ( $crit > 0 ? ", " . $crit . " faille(s)" : "" ) . ")."
+		. " Vous creez des sites, mais la securite evolue vite — les sites de vos propres clients sont sans doute exposes eux aussi (donnees clients, RGPD, piratage)."
+		. " Plutot que de vous en occuper, confiez-nous la mise en securite : devenez partenaire Alliance Groupe et touchez " . $rate . "% sur chaque client que vous nous amenez. On s'occupe de tout, vous encaissez. On en parle ? 👉 " . $partlnk;
 	// SMS « rapport » : accroche + lien (l'aperçu du lien montre déjà titre + image brandée).
 	$msg['rapport'] = ( $score > 0 )
 		? "🔒 " . $who . ", votre audit de sécurité est prêt (note " . $score . "/100). Ne tardez pas : découvrez ce qu'il faut corriger avant qu'une faille ne soit exploitée 👉 " . $report

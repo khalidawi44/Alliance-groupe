@@ -476,7 +476,8 @@ var AG = (function(){
 		if(d.fails && d.fails.length){ h+='<ul style="margin:0 0 8px;padding:0;list-style:none;font-size:.82rem;color:#cfcfd6;line-height:1.6;">'; d.fails.forEach(function(f){ h+='<li>'+f+'</li>'; }); h+='</ul>'; }
 		if(d.report){ h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:6px;border-color:#22c55e;color:#7ee2a8;" href="'+d.report+'">👁️ Voir le rapport client</a> '; }
 		if(d.report_card){ h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:8px;border-color:#e6b35a;color:#e6b35a;" href="'+d.report_card+'">🖼️ Image à envoyer (screenshot)</a>'; }
-		if(d.msg && d.msg.perso){ h+='<div><button type="button" class="mini agmsg-copy" data-m="'+encodeURIComponent(d.msg.perso)+'" style="cursor:pointer;border-color:#d4b45c;color:#e6b35a;margin-bottom:8px;">📋 Copier le message perso (à envoyer au proprio)</button></div>'; }
+		if(d.msg && d.msg.perso){ h+='<div><button type="button" class="mini agmsg-copy" data-m="'+encodeURIComponent(d.msg.perso)+'" style="cursor:pointer;border-color:#d4b45c;color:#e6b35a;margin-bottom:8px;">📋 Copier — message au PROPRIÉTAIRE</button></div>'; }
+		if(d.msg && d.msg.partenaire){ h+='<div><button type="button" class="mini agmsg-copy" data-m="'+encodeURIComponent(d.msg.partenaire)+'" style="cursor:pointer;border-color:#7c3aed;color:#c58bff;margin-bottom:8px;">🤝 Copier — message à l\'AGENCE (partenaire %)</button></div>'; }
 		if(num && agIsMobileFr(num)){
 			var waN=(num||'').replace(/[^0-9]/g,''); if(waN.charAt(0)==='0'){ waN='33'+waN.substring(1); }
 			h+='<div class="row">'
