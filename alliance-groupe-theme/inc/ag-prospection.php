@@ -3036,6 +3036,25 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 	$phone = sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) );
 	// Lien du RAPPORT CLIENT (page teaser à envoyer au prospect).
 	$report = add_query_arg( array( 'ag_rapport' => 1, 'site' => rawurlencode( $url ), 'name' => rawurlencode( $name ) ), home_url( '/' ) );
+
+	// MESSAGE PERSONNALISÉ selon les VRAIS problèmes détectés — à envoyer AU PROPRIÉTAIRE
+	// (message d'approche direct, jamais à poster comme avis public : dénigrement interdit).
+	$probs = array();
+	foreach ( (array) ( $a['checks'] ?? array() ) as $c ) {
+		$st = $c['status'] ?? ''; if ( 'fail' !== $st && 'warn' !== $st ) continue;
+		$nm = function_exists( 'remove_accents' ) ? strtolower( remove_accents( (string) ( $c['name'] ?? '' ) ) ) : strtolower( (string) ( $c['name'] ?? '' ) );
+		if ( false !== strpos( $nm, 'https' ) || false !== strpos( $nm, 'securis' ) ) { $probs['https'] = "la connexion n'est pas entierement securisee (HTTPS)"; }
+		elseif ( false !== strpos( $nm, 'developpement' ) || false !== strpos( $nm, 'sauvegarde' ) || false !== strpos( $nm, 'compte' ) || false !== strpos( $nm, 'config' ) ) { $probs['crit'] = "des fichiers ou informations sensibles sont accessibles publiquement"; }
+		elseif ( false !== strpos( $nm, 'en-tete' ) || false !== strpos( $nm, 'en-tete' ) || false !== strpos( $nm, 'entete' ) ) { $probs['headers'] = "les protections de securite (en-tetes HTTP) sont absentes"; }
+		elseif ( false !== strpos( $nm, 'version' ) ) { $probs['version'] = "la version de vos logiciels est exposee (cible facile pour un pirate)"; }
+		elseif ( false !== strpos( $nm, 'titre' ) || false !== strpos( $nm, 'description' ) || false !== strpos( $nm, 'h1' ) ) { $probs['seo'] = "le referencement Google est incomplet (titre/description)"; }
+		elseif ( false !== strpos( $nm, 'image' ) ) { $probs['imgs'] = "vos images ralentissent le site et le penalisent sur Google"; }
+	}
+	$ptxt  = array_slice( array_values( $probs ), 0, 2 );
+	$offre = ( $score < 50 ) ? $link : $report; // site pourri → refonte ; sinon → rapport sécurité
+	$msg['perso'] = "Bonjour, j'ai regarde le site de " . $who . " (note " . $score . "/100)."
+		. ( $ptxt ? " J'ai remarque que " . implode( " et que ", $ptxt ) . "." : "" )
+		. " Je cree et je securise des sites web pour les professionnels — je peux corriger ca rapidement (ou vous refaire un site moderne et sur). Je vous montre ce que ca donnerait ? 👉 " . $offre;
 	// SMS « rapport » : accroche + lien (l'aperçu du lien montre déjà titre + image brandée).
 	$msg['rapport'] = ( $score > 0 )
 		? "🔒 " . $who . ", votre audit de sécurité est prêt (note " . $score . "/100). Ne tardez pas : découvrez ce qu'il faut corriger avant qu'une faille ne soit exploitée 👉 " . $report

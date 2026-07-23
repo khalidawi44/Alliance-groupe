@@ -476,6 +476,7 @@ var AG = (function(){
 		if(d.fails && d.fails.length){ h+='<ul style="margin:0 0 8px;padding:0;list-style:none;font-size:.82rem;color:#cfcfd6;line-height:1.6;">'; d.fails.forEach(function(f){ h+='<li>'+f+'</li>'; }); h+='</ul>'; }
 		if(d.report){ h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:6px;border-color:#22c55e;color:#7ee2a8;" href="'+d.report+'">👁️ Voir le rapport client</a> '; }
 		if(d.report_card){ h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:8px;border-color:#e6b35a;color:#e6b35a;" href="'+d.report_card+'">🖼️ Image à envoyer (screenshot)</a>'; }
+		if(d.msg && d.msg.perso){ h+='<div><button type="button" class="mini agmsg-copy" data-m="'+encodeURIComponent(d.msg.perso)+'" style="cursor:pointer;border-color:#d4b45c;color:#e6b35a;margin-bottom:8px;">📋 Copier le message perso (à envoyer au proprio)</button></div>'; }
 		if(num && agIsMobileFr(num)){
 			var waN=(num||'').replace(/[^0-9]/g,''); if(waN.charAt(0)==='0'){ waN='33'+waN.substring(1); }
 			h+='<div class="row">'
@@ -535,6 +536,14 @@ var AG = (function(){
 	document.addEventListener('click',function(e){
 		var a=e.target.closest?e.target.closest('.ag-robot-num'):null; if(!a) return;
 		e.preventDefault(); agRobotNum(a, a.getAttribute('data-phone'), a.getAttribute('data-angle')||'creation');
+	});
+	// Copier le message perso d'audit (à coller où on veut : SMS, WhatsApp, email, DM).
+	document.addEventListener('click',function(e){
+		var b=e.target.closest?e.target.closest('.agmsg-copy'):null; if(!b) return;
+		e.preventDefault(); var txt=decodeURIComponent(b.getAttribute('data-m')||'');
+		var done=function(){ var old=b.textContent; b.textContent='✅ Copié !'; setTimeout(function(){ b.textContent=old; },1600); AG.toast('📋 Message copié'); };
+		if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(function(){ window.prompt('Copie le message :', txt); }); }
+		else { window.prompt('Copie le message :', txt); }
 	});
 	// Appel robot par prospect (angle intelligent : sécurité si site, création sinon)
 	document.querySelectorAll('.ag-robot-one').forEach(function(a){
