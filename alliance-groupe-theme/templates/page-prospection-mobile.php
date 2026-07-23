@@ -467,8 +467,12 @@ var AG = (function(){
 		var color = d.score<50 ? '#ff6b6b' : (d.score<75 ? '#e6b35a' : '#2ecc71');
 		var reco  = (d.reco==='securite') ? '🛡️ Sécurité conseillée' : '🔧 Refonte conseillée';
 		var shot  = 'https://s.wordpress.com/mshots/v1/'+encodeURIComponent(url)+'?w=520';
-		var h='<img src="'+shot+'" data-base="'+shot+'" data-try="0" onload="agShot(this)" onerror="agShotErr(this)" alt="" style="width:100%;height:170px;object-fit:cover;object-position:top;border-radius:10px;border:1px solid rgba(255,255,255,.12);margin:6px 0;background:#0e0e13;">';
+		// L'aperçu du site est CLIQUABLE → ouvre le vrai site dans un nouvel onglet.
+		var h='<a href="'+url+'" target="_blank" rel="noopener" title="Ouvrir le site" style="display:block;position:relative;">'
+			+'<img src="'+shot+'" data-base="'+shot+'" data-try="0" onload="agShot(this)" onerror="agShotErr(this)" alt="" style="width:100%;height:170px;object-fit:cover;object-position:top;border-radius:10px;border:1px solid rgba(255,255,255,.12);margin:6px 0;background:#0e0e13;">'
+			+'<span style="position:absolute;right:10px;bottom:14px;background:rgba(0,0,0,.62);color:#fff;font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:100px;">🌐 Ouvrir le site</span></a>';
 		h+='<div style="margin:4px 0 6px;"><span class="sc" style="color:'+color+';font-size:1.05rem;">Note '+d.score+'/100</span>'+(d.critical>0?' · '+d.critical+' faille(s)':'')+(d.tech?' · '+d.tech:'')+' · <b>'+reco+'</b></div>';
+		h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin:0 0 8px;border-color:#3aa3ff;color:#8fc7ff;" href="'+url+'">🌐 Voir le site</a> ';
 		if(d.fails && d.fails.length){ h+='<ul style="margin:0 0 8px;padding:0;list-style:none;font-size:.82rem;color:#cfcfd6;line-height:1.6;">'; d.fails.forEach(function(f){ h+='<li>'+f+'</li>'; }); h+='</ul>'; }
 		if(d.report){ h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:6px;border-color:#22c55e;color:#7ee2a8;" href="'+d.report+'">👁️ Voir le rapport client</a> '; }
 		if(d.report_card){ h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:8px;border-color:#e6b35a;color:#e6b35a;" href="'+d.report_card+'">🖼️ Image à envoyer (screenshot)</a>'; }
