@@ -395,6 +395,27 @@ add_action( 'wp_ajax_ag_boamp_follow', function () {
 	wp_send_json_success( array( 'msg' => 'Ajouté au CRM' ) );
 } );
 
+/* ── AJAX appli (onglet « Marchés ») — ADMIN uniquement ── */
+add_action( 'wp_ajax_ag_app_boamp', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error();
+	$cats = isset( $_POST['cat'] ) ? array_map( 'sanitize_key', (array) $_POST['cat'] ) : array();
+	$dept = sanitize_text_field( wp_unslash( $_POST['dept'] ?? '' ) );
+	$data = ag_boamp_fetch( $cats, $dept, 40 );
+	$out  = array();
+	foreach ( $data['items'] as $it ) {
+		$out[] = array(
+			'objet'    => $it['objet'],
+			'acheteur' => $it['acheteur'],
+			'dept'     => $it['dept'],
+			'limite'   => $it['limite'],
+			'jours'    => $it['jours'],
+			'url'      => $it['url'],
+			'cand'     => home_url( '/?ag_candidature=1&id=' . rawurlencode( $it['id'] ) ),
+		);
+	}
+	wp_send_json_success( array( 'ok' => $data['ok'], 'total' => $data['total'], 'items' => $out ) );
+} );
+
 /* ── Rendu de la page admin ── */
 if ( ! function_exists( 'ag_appels_offres_render' ) ) {
 	function ag_appels_offres_render() {
