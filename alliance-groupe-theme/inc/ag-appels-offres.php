@@ -256,15 +256,18 @@ if ( ! function_exists( 'ag_boamp_detail' ) ) {
 if ( ! function_exists( 'ag_cand_opt' ) ) {
 	function ag_cand_opt( $key ) {
 		$def = array(
-			'raison'   => 'DOUCET FABRICE',                 // raison sociale légale
+			'raison'   => 'DOUCET FABRICE',                 // raison sociale légale (EI)
 			'enseigne' => 'Alliance Groupe',                // nom commercial
-			'forme'    => 'Entreprise individuelle',        // forme juridique (à vérifier)
+			'forme'    => 'Entreprise individuelle',        // forme juridique
 			'siren'    => '513593921',
-			'siret'    => '',                               // 14 chiffres (à compléter)
-			'ape'      => '',                               // code APE/NAF (à compléter)
+			'siret'    => '51359392100010',                 // siège (source : registre public)
+			'ape'      => '',                               // ⚠️ activité actuelle = photographie : à faire évoluer avant de candidater (web = 6201Z)
 			'tva'      => '',                               // n° TVA intracom (si applicable)
-			'repr'     => 'Fabrice DOUCET',                 // représentant légal
-			'repr_qual'=> 'Gérant',                          // qualité du signataire
+			'repr'     => 'Fabrice DOUCET',                 // représentant / exploitant
+			'repr_qual'=> 'Exploitant',                     // qualité du signataire
+			'street'   => '14 rue de Saint-Jean-de-Luz',
+			'zip'      => '44200',
+			'city'     => 'Nantes',
 		);
 		$v = get_option( 'ag_cand_' . $key, '' );
 		if ( '' !== $v && false !== $v ) return $v;
