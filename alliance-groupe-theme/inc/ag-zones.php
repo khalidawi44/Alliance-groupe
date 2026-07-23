@@ -148,11 +148,21 @@ if ( ! function_exists( 'ag_zone_add_owner' ) ) {
 		$z = ag_zones_get(); $d = ag_dept_norm( $dept ); $email = strtolower( $email );
 		$owners = ag_zone_owners( $d );
 		foreach ( $owners as $o ) { if ( strtolower( $o['email'] ?? '' ) === $email ) return 'mine'; }
-		$was = count( $owners );
-		$owners[] = array( 'email' => $email, 'name' => $name, 'ts' => time() );
-		$z[ $d ] = array( 'owners' => $owners, 'rr' => (int) ( $z[ $d ]['rr'] ?? 0 ) );
+		if ( $owners ) return 'taken'; // EXCLUSIF : déjà prise par un autre ambassadeur → blacklist
+		$z[ $d ] = array( 'owners' => array( array( 'email' => $email, 'name' => $name, 'ts' => time() ) ), 'rr' => 0 );
 		update_option( 'ag_zones', $z );
-		return $was ? 'joined' : 'claimed';
+		return 'claimed';
+	}
+}
+/* EXCLUSIVITÉ : une région appartient à UN seul ambassadeur.
+ * Retourne '' si la région est LIBRE ou est la mienne ; sinon l'email du propriétaire (accès interdit). */
+if ( ! function_exists( 'ag_zone_locked_for' ) ) {
+	function ag_zone_locked_for( $dept, $email ) {
+		$email  = strtolower( (string) $email );
+		$owners = ag_zone_owners( $dept );
+		if ( empty( $owners ) ) return '';
+		foreach ( $owners as $o ) { if ( strtolower( $o['email'] ?? '' ) === $email ) return ''; }
+		return strtolower( (string) ( $owners[0]['email'] ?? 'x' ) );
 	}
 }
 if ( ! function_exists( 'ag_zone_remove_owner' ) ) {
@@ -950,9 +960,9 @@ add_action( 'admin_post_ag_zone_request', function () {
 		} elseif ( count( $mine ) >= ag_zone_quota( $email ) ) {
 			$res = 'quota'; // quota atteint : doit libérer une zone ou en acheter une de plus
 		} else {
-			$add = ag_zone_add_owner( $dept, $email, $name ); // claimed | joined (pas de retrait : multi-zones possible si payé)
+			$add = ag_zone_add_owner( $dept, $email, $name ); // claimed | taken (exclusif) | mine
 			$res = $add;
-			if ( function_exists( 'ag_push' ) ) ag_push( '🗺️ Zone ' . $dept, $name . ' couvre le ' . $dept . ( 'joined' === $add ? ' — partage 50/50' : '' ) . '.' );
+			if ( 'claimed' === $add && function_exists( 'ag_push' ) ) ag_push( '🗺️ Zone ' . $dept, $name . ' a réservé le ' . $dept . ' en EXCLUSIVITÉ.' );
 		}
 	}
 	wp_safe_redirect( home_url( '/espace-ambassadeur?zone=' . $res . '#demarrage' ) ); exit;

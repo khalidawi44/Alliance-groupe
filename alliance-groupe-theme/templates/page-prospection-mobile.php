@@ -370,7 +370,7 @@ foreach ( $ag_my_prospects as $ppc ) {
 			<p class="sub" style="margin:-4px 0 10px;">Colle jusqu'à 100 numéros (un par ligne, ou séparés par virgule/espace).</p>
 			<?php if ( $ag_ambs ) : ?><button type="button" id="ag-fill-ambs" class="mini" style="cursor:pointer;margin-bottom:9px;">➕ Remplir avec mes ambassadeurs (<?php echo count( $ag_ambs ); ?>)</button><?php endif; ?>
 			<textarea id="ag-bulk-nums" placeholder="0612345678&#10;0798765432&#10;..." style="min-height:110px;"></textarea>
-			<textarea id="ag-bulk-msg" placeholder="Ton message aux ambassadeurs..." style="min-height:82px;">Salut ! Nouvelle campagne Alliance Groupe : de nouveaux prospects à contacter t'attendent dans ton espace. On compte sur toi 💪</textarea>
+			<textarea id="ag-bulk-msg" placeholder="Ton message aux ambassadeurs..." style="min-height:82px;">Salut 💪 Rappel : 3 ventes/semaine = ~1 068 €/mois (10% par vente, +89 € par site à 890 €). De nouveaux prospects t'attendent dans ton espace, tu peux prospecter partout et même réserver ta région en exclu. On y va ! 🚀</textarea>
 			<button type="button" id="ag-bulk-send" class="b gold" style="margin-top:10px;">📨 Envoyer en masse</button>
 			<div id="ag-bulk-res" class="sub" style="margin-top:8px;"></div>
 		</div>
@@ -710,6 +710,7 @@ var AG = (function(){
 			var items=j.data.items||[];
 			if(!items.length){ box.innerHTML='<p class="sub">Aucun résultat.</p>'; return; }
 			box.innerHTML=''; items.forEach(function(it){ box.appendChild(agItemRow(it)); });
+			if(j.data.locked>0){ var lk=document.createElement('p'); lk.className='sub'; lk.style.color='#e6b35a'; lk.textContent='🔒 '+j.data.locked+' résultat(s) masqué(s) : région réservée par un autre ambassadeur.'; box.insertBefore(lk, box.firstChild); }
 			if(typeof j.data.left!=='undefined'){ AG.toast('Recherches restantes ce mois : '+j.data.left); }
 			agLoadSaved(); // la recherche vient d'être sauvegardée → recharge l'accordéon
 		}).catch(function(){ sb.textContent='🔎 Lancer la recherche'; sb.removeAttribute('disabled'); AG.toast('❌ Erreur réseau'); });

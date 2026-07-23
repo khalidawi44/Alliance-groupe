@@ -2374,22 +2374,21 @@ if ( ! function_exists( 'ag_chasseur_quota_left' ) ) {
 add_action( 'wp_ajax_ag_amb_search', function () {
 	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error( array( 'm' => 'Session expirée.' ) );
 	$uid = get_current_user_id();
-	if ( ! ag_is_chasseur( $uid ) ) wp_send_json_error( array( 'm' => 'Abonnement Chasseur Pro requis.' ) );
-	if ( ag_chasseur_quota_left( $uid ) <= 0 ) wp_send_json_error( array( 'm' => 'Quota du mois atteint.' ) );
+	// Prospection OUVERTE partout (tout pays). Un simple plafond mensuel borne le coût API.
+	if ( ag_chasseur_quota_left( $uid ) <= 0 ) wp_send_json_error( array( 'm' => 'Plafond de recherches du mois atteint.' ) );
 	$email   = strtolower( wp_get_current_user()->user_email );
-	$myzones = function_exists( 'ag_zone_of_owner' ) ? ag_zone_of_owner( $email ) : array();
 	$admin   = user_can( $uid, 'manage_options' );
-	if ( ! $admin && empty( $myzones ) ) wp_send_json_error( array( 'm' => "Prends d'abord ta zone." ) );
 	$city = sanitize_text_field( wp_unslash( $_POST['city'] ?? '' ) );
-	if ( '' === $city ) wp_send_json_error( array( 'm' => 'Indique une ville de ta zone.' ) );
+	if ( '' === $city ) wp_send_json_error( array( 'm' => 'Indique une ville ou un secteur (ex : « massage Nantes »).' ) );
 	$res = ag_places_search( $city );
 	if ( ! $admin ) update_user_meta( $uid, 'ag_chasseur_n_' . gmdate( 'Ym' ), (int) get_user_meta( $uid, 'ag_chasseur_n_' . gmdate( 'Ym' ), true ) + 1 );
 	if ( ! is_array( $res ) || isset( $res['error'] ) ) wp_send_json_error( array( 'm' => ( $res['error'] ?? 'Erreur recherche.' ) ) );
-	$out = array();
+	$out = array(); $locked_out = 0;
 	foreach ( $res as $r ) {
 		if ( empty( $r['name'] ) ) continue;
 		$d = function_exists( 'ag_prospect_dept' ) ? ag_prospect_dept( $r ) : '';
-		if ( ! $admin && $myzones && $d && ! in_array( $d, $myzones, true ) ) continue; // hors de sa zone
+		// EXCLUSIVITÉ : région achetée par un AUTRE ambassadeur → interdite (blacklist).
+		if ( ! $admin && $d && function_exists( 'ag_zone_locked_for' ) && '' !== ag_zone_locked_for( $d, $email ) ) { $locked_out++; continue; }
 		if ( ag_prospect_is_ignored( $r['name'], $r['city'] ?? $city ) ) continue; // 🚫 ignoré
 		$ex = ag_prospect_find( $r['name'], $r['city'] ?? $city, $r['phone'] ?? '' );
 		if ( $ex && ag_prospect_blocked( $ex['status'] ?? '' ) ) continue;
@@ -2403,7 +2402,7 @@ add_action( 'wp_ajax_ag_amb_search', function () {
 	usort( $out, function ( $a, $b ) { return $b['score'] <=> $a['score']; } );
 	// Sauvegarde la recherche + ses résultats (revoir gratuitement, sans nouvel appel Google).
 	if ( function_exists( 'ag_search_history_add' ) && $out ) { ag_search_history_add( $city, $city, count( $out ), $out ); }
-	wp_send_json_success( array( 'items' => $out, 'left' => ag_chasseur_quota_left( $uid ) ) );
+	wp_send_json_success( array( 'items' => $out, 'left' => ag_chasseur_quota_left( $uid ), 'locked' => $locked_out ) );
 } );
 
 /* App : marque « a répondu » (ou annule) — propriétaire ou admin. */
@@ -2514,7 +2513,8 @@ add_action( 'wp_ajax_ag_amb_add', function () {
 		'owner_email' => $email, 'owner_name' => $name, 'source' => 'ambassadeur',
 	);
 	$d = function_exists( 'ag_prospect_dept' ) ? ag_prospect_dept( $data ) : '';
-	if ( ! user_can( $uid, 'manage_options' ) && $myzones && $d && ! in_array( $d, $myzones, true ) ) wp_send_json_error( array( 'm' => 'Hors de ta zone.' ) );
+	// EXCLUSIVITÉ : on ne peut pas ajouter un prospect d'une région réservée par un AUTRE ambassadeur.
+	if ( ! user_can( $uid, 'manage_options' ) && $d && function_exists( 'ag_zone_locked_for' ) && '' !== ag_zone_locked_for( $d, $email ) ) wp_send_json_error( array( 'm' => 'Cette région est réservée par un autre ambassadeur.' ) );
 	wp_send_json_success( array( 'added' => ag_prospect_add_record( $data ) ) );
 } );
 

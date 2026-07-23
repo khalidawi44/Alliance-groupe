@@ -321,6 +321,7 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 			<?php elseif ( 'need_phone' === $ag_zfeed ) : ?><p style="text-align:center;color:#e6b35a;">Renseigne d'abord ton numéro de téléphone pour débloquer les zones.</p>
 			<?php elseif ( 'claimed' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">✅ Zone prise ! Les prospects arrivent automatiquement.</p>
 			<?php elseif ( 'joined' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">🤝 Tu as rejoint la zone — partage 50/50 des prospects.</p>
+				<?php elseif ( 'taken' === $ag_zfeed ) : ?><p style="text-align:center;color:#e6b35a;font-weight:700;">🔒 Cette région appartient déjà à un autre ambassadeur (exclusivité). Choisis-en une autre parmi les régions libres — tu peux prospecter partout ailleurs.</p>
 			<?php elseif ( 'changed' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">✅ Tu as changé de zone.</p>
 			<?php elseif ( 'mine' === $ag_zfeed ) : ?><p style="text-align:center;color:var(--color-text-soft);">Cette zone est déjà la tienne.</p>
 			<?php elseif ( 'err' === $ag_zfeed ) : ?><p style="text-align:center;color:#d98b8b;">Département invalide. Mets 2 chiffres (ex. 33).</p>

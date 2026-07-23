@@ -18,11 +18,13 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
         <div class="ag-hero__bg"><div class="ag-hero__orb ag-hero__orb--1"></div><div class="ag-hero__orb ag-hero__orb--2"></div></div>
         <div class="ag-hero__content">
             <span class="ag-tag ag-anim" data-anim="tag">Programme Ambassadeurs 🤝</span>
-            <h1 class="ag-hero__title"><span class="ag-line">Vends nos services,</span><span class="ag-line"><em>touche 10 %.</em></span></h1>
+            <h1 class="ag-hero__title"><span class="ag-line">Vends quelques sites,</span><span class="ag-line"><em>gagne 1 000 €/mois.</em></span></h1>
             <p class="ag-hero__sub">
-                Rejoins l'équipe de vente d'Alliance Groupe. Pour chaque client que tu
-                ramènes, tu gagnes <strong>10 % du montant</strong>, payé via PayPal (ou autre).
-                Pas besoin d'être expert : on te donne tous les outils.
+                <strong>3 ventes par semaine = ~1 068 €/mois</strong>, rien qu'à 10 % de commission.
+                Tu vends un site à 890 € → tu empoches <strong>89 €</strong> ; à 1 490 € → <strong>149 €</strong>.
+                Sans plafond, payé sur PayPal. Pas besoin d'être expert : on te donne tous les outils
+                (l'app, les scripts, le robot d'appel). <strong>Prospecte où tu veux, dans n'importe quel pays</strong>
+                — et si tu veux l'exclusivité d'une région, tu peux la <strong>réserver rien que pour toi</strong>.
             </p>
             <div class="ag-hero__buttons">
                 <a href="#rejoindre" class="ag-btn-gold">Rejoindre le programme →</a>
@@ -38,7 +40,7 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
             <h2 class="ag-section__title ag-anim" data-anim="title">Simple, transparent, <em>rémunéré</em></h2>
             <div class="ag-amb__steps">
                 <div class="ag-amb__step ag-anim" data-anim="card"><span class="ag-amb__num">01</span><h3>Tu t'inscris</h3><p>En 1 minute avec ton email. On valide ton inscription et on t'envoie tes outils de vente (scripts, pitch, supports).</p></div>
-                <div class="ag-amb__step ag-anim" data-anim="card"><span class="ag-amb__num">02</span><h3>Tu prospectes</h3><p>Commerçants, artisans, restos, indépendants autour de toi. Tu proposes nos services : site web, SEO, pub, branding, IA.</p></div>
+                <div class="ag-amb__step ag-anim" data-anim="card"><span class="ag-amb__num">02</span><h3>Tu prospectes partout</h3><p>Commerçants, artisans, restos, indépendants — <strong>où tu veux, dans n'importe quel pays</strong>. Tu proposes nos services : site web, SEO, pub, branding, IA. Tu peux même <strong>réserver une région en exclusivité</strong> (personne d'autre ne pourra la prospecter).</p></div>
                 <div class="ag-amb__step ag-anim" data-anim="card"><span class="ag-amb__num">03</span><h3>Tu déclares la vente</h3><p>Dès qu'un client signe, tu remplis le formulaire ci-dessous. On valide la vente une fois encaissée.</p></div>
                 <div class="ag-amb__step ag-anim" data-anim="card"><span class="ag-amb__num">04</span><h3>Tu es payé</h3><p><strong>10 %</strong> du montant de chaque vente, versés sur ton PayPal (ou autre moyen). Suivi clair de tes commissions.</p></div>
             </div>

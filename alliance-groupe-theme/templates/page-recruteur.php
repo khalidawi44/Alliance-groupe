@@ -22,7 +22,7 @@ $primes_tot = 0; $nb_actifs = 0;
 if ( $is_amb && function_exists( 'ag_parrain_primes_for' ) ) { foreach ( ag_parrain_primes_for( $u->user_email ) as $p ) { $primes_tot += (float) ( $p['amount'] ?? 0 ); } }
 $board = function_exists( 'ag_recruiter_leaderboard' ) ? ag_recruiter_leaderboard() : array();
 $eur   = function ( $n ) { return number_format( (float) $n, 0, ',', ' ' ) . ' €'; };
-$pitch = 'Rejoins l\'équipe Alliance Groupe : présente nos sites web, gagne 10% par vente. Inscris-toi 👇';
+$pitch = 'Rejoins Alliance Groupe : vends quelques sites web et gagne ~1 000 €/mois (10% par vente, ex : +89 € par site à 890 €). Tu prospectes où tu veux, avec l\'app + le robot d\'appel. Inscris-toi 👇';
 $share = rawurlencode( $pitch . ' ' . $link );
 ?>
 <main id="ag-main-content">
