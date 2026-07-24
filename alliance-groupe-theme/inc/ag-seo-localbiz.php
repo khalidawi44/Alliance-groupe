@@ -24,7 +24,7 @@ if ( ! function_exists( 'ag_nap_opt' ) ) {
 		$def = array(
 			'name'    => 'Alliance Groupe',
 			'street'  => '',                    // ex : 12 rue de la Paix (à compléter)
-			'zip'     => '',                    // ex : 44000
+			'zip'     => '44200',
 			'city'    => 'Nantes',
 			'region'  => 'Loire-Atlantique',
 			'country' => 'FR',
@@ -101,7 +101,7 @@ if ( ! function_exists( 'ag_seo_local_render' ) ) {
 			<div style="max-width:840px;padding:16px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid #D4B45C;">
 				<h2 style="margin-top:0;">✅ Checklist « 1re page Google » (à faire côté Google)</h2>
 				<ol style="line-height:1.9;">
-					<li><strong>Fiche Google Business Profile</strong> (business.google.com) : <em>vérifiée</em>, catégorie principale « <strong>Concepteur de sites Web</strong> » (+ secondaires : Agence de marketing, Service informatique), NAP <strong>identique</strong> à ci-dessus, description, <strong>photos réelles</strong> (bureau, logo, réalisations), horaires, zone desservie (Nantes + agglo).</li>
+					<li><strong>Créer / vérifier la fiche Google Business Profile</strong> (business.google.com) : type <strong>« zone desservie »</strong> (à domicile → <strong>adresse MASQUÉE</strong>, on affiche juste la zone : Nantes + agglomération, ~30 km) ; catégorie principale « <strong>Concepteur de sites Web</strong> » (+ secondaires : Agence de marketing, Service informatique) ; NAP <strong>identique</strong> à ci-dessus ; description avec mots-clés (« création de site internet Nantes ») ; <strong>photos réelles</strong> (logo, réalisations, toi au travail) ; horaires ; numéro <strong>07 44 82 95 16</strong> ; site relié. La vérification se fait par vidéo ou courrier.</li>
 					<li><strong>Avis 5★ RÉELS</strong> : demande à chaque client satisfait (le site envoie déjà l'invitation après achat). <strong>Jamais de faux avis</strong> (illégal + pénalisé). Réponds à chaque avis.</li>
 					<li><strong>Google Ads</strong> (look « sponsorisé » façon Drakkar) : campagne Search sur « création site web Nantes », « site internet artisan », « template WordPress avocat » + <strong>toutes les extensions</strong> : liens annexes (Templates, Sites Express, Audit gratuit), accroches, <strong>appel</strong> (ton 07), <strong>lieu</strong> (relié à la fiche GBP), image.</li>
 					<li><strong>SEO organique local + longue traîne</strong> : pages géolocalisées (déjà en place via le module Geo) + articles « thème WordPress <métier> » ciblés Nantes (moins concurrentiel que le national).</li>
