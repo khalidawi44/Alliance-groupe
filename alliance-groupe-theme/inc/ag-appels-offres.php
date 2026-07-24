@@ -242,8 +242,17 @@ if ( ! function_exists( 'ag_boamp_detail' ) ) {
 			'ac_ville'  => ag_boamp_dig( $don, 'ville' ),
 			'ac_cp'     => ag_boamp_dig( $don, 'cp' ),
 			'ac_voie'   => ag_boamp_dig( $don, 'nomvoie' ),
+			// Exigences réelles du marché (pour un dossier ADAPTÉ, pas générique) :
+			'caract'    => ag_boamp_dig( $don, 'principales' ),      // caractéristiques principales
+			'renseign'  => ag_boamp_dig( $don, 'rensgComplt' ),      // renseignements complémentaires
+			'justif'    => ag_boamp_dig( $don, 'justificationAutre' ),
+			'lieu'      => ag_boamp_dig( $don, 'lieuExecutionLivraison' ),
+			'type_m'    => implode( ', ', array_filter( (array) ( $r['type_marche'] ?? array() ) ) ),
+			'critere'   => ag_boamp_dig( $don, 'critereCDC' ),
 		);
 		if ( '' === $out['profil'] ) $out['profil'] = $out['url_avis']; // repli
+		// Repli de l'objet complet si l'objet court est vide.
+		if ( '' === $out['caract'] && '' !== $out['objet'] ) $out['caract'] = $out['objet'];
 		set_transient( $ck, $out, 6 * HOUR_IN_SECONDS );
 		return $out;
 	}
@@ -280,13 +289,37 @@ if ( ! function_exists( 'ag_cand_opt' ) ) {
 	}
 }
 
-/* Détecte la catégorie métier d'un marché (pour adapter le mémoire technique). */
+/* Détecte TOUS les métiers présents dans un marché (un marché peut en cumuler
+ * plusieurs : ex. « cybersécurité + formation »). Retourne un tableau de clés. */
+if ( ! function_exists( 'ag_cand_metiers' ) ) {
+	function ag_cand_metiers( $texte ) {
+		$o = function_exists( 'mb_strtolower' ) ? mb_strtolower( $texte ) : strtolower( $texte );
+		$m = array();
+		if ( false !== strpos( $o, 'cyber' ) || false !== strpos( $o, 'sécurit' ) || false !== strpos( $o, 'securit' ) || false !== strpos( $o, 'intrusion' ) || false !== strpos( $o, 'pentest' ) || false !== strpos( $o, 'ssi' ) || false !== strpos( $o, 'anssi' ) ) $m[] = 'cyber';
+		if ( false !== strpos( $o, 'formation' ) || false !== strpos( $o, 'sensibilisation' ) || false !== strpos( $o, 'former' ) ) $m[] = 'formation';
+		if ( false !== strpos( $o, 'maintenance' ) || false !== strpos( $o, 'hébergement' ) || false !== strpos( $o, 'hebergement' ) || false !== strpos( $o, 'infogérance' ) || false !== strpos( $o, 'infogerance' ) || false !== strpos( $o, 'tma' ) ) $m[] = 'maint';
+		if ( false !== strpos( $o, 'site ' ) || false !== strpos( $o, 'web' ) || false !== strpos( $o, 'internet' ) || false !== strpos( $o, 'refonte' ) || false !== strpos( $o, 'portail' ) ) $m[] = 'web';
+		if ( ! $m ) $m[] = 'web';
+		return array_values( array_unique( $m ) );
+	}
+}
+/* Métier principal (compat). */
 if ( ! function_exists( 'ag_cand_metier' ) ) {
-	function ag_cand_metier( $objet ) {
-		$o = function_exists( 'mb_strtolower' ) ? mb_strtolower( $objet ) : strtolower( $objet );
-		if ( false !== strpos( $o, 'cyber' ) || false !== strpos( $o, 'sécurit' ) || false !== strpos( $o, 'securit' ) || false !== strpos( $o, 'intrusion' ) || false !== strpos( $o, 'pentest' ) ) return 'cyber';
-		if ( false !== strpos( $o, 'maintenance' ) || false !== strpos( $o, 'hébergement' ) || false !== strpos( $o, 'hebergement' ) || false !== strpos( $o, 'infogérance' ) || false !== strpos( $o, 'tma' ) ) return 'maint';
-		return 'web';
+	function ag_cand_metier( $objet ) { $m = ag_cand_metiers( $objet ); return $m[0]; }
+}
+/* Libellé lisible d'un métier. */
+if ( ! function_exists( 'ag_cand_metier_label' ) ) {
+	function ag_cand_metier_label( $k ) {
+		$l = array( 'web' => 'Création / refonte de site', 'cyber' => 'Cybersécurité / audit', 'maint' => 'Hébergement & maintenance', 'formation' => 'Formation' );
+		return $l[ $k ] ?? $k;
+	}
+}
+/* Taux de TVA du candidat (0 = franchise en base, art. 293 B du CGI). */
+if ( ! function_exists( 'ag_cand_tva_rate' ) ) {
+	function ag_cand_tva_rate() {
+		$v = get_option( 'ag_cand_tva_rate', '' );
+		if ( '' === $v || false === $v ) return 0.0; // par défaut : micro / franchise en base
+		return (float) str_replace( ',', '.', $v );
 	}
 }
 
@@ -336,26 +369,33 @@ add_action( 'admin_init', function () {
 		register_setting( 'ag_cand_group', 'ag_cand_' . $k );
 	}
 	register_setting( 'ag_cand_group', 'ag_cand_bpu', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_textarea_field' ) );
+	register_setting( 'ag_cand_group', 'ag_cand_tva_rate', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
 	register_setting( 'ag_cand_group', 'ag_boamp_alert_on', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '1' ) );
 } );
 
-/* Bordereau de prix (catalogue) : lignes « Désignation | Prix unitaire € | Unité ». */
+/* Bordereau de prix (catalogue). Format d'une ligne :
+ *   métier | Désignation | Prix unitaire € | Unité
+ * (métier ∈ web|cyber|maint|formation — sert à n'afficher QUE les prix du bon
+ *  métier dans le dossier ; une ancienne ligne à 3 champs reste acceptée = web). */
 if ( ! function_exists( 'ag_cand_bpu_default' ) ) {
 	function ag_cand_bpu_default() {
-		return "Création site vitrine (Starter) | 490 | forfait\n"
-			. "Création site Business (multi-pages, réservation, espace membre) | 890 | forfait\n"
-			. "Création site Premium / sur-mesure | 1490 | forfait\n"
-			. "Refonte d'un site existant | 890 | forfait\n"
-			. "Hébergement + maintenance — formule Essentiel | 29 | / mois\n"
-			. "Hébergement + maintenance — formule Pro | 59 | / mois\n"
-			. "Hébergement + maintenance — formule Sérénité (24/7) | 99 | / mois\n"
-			. "Audit de sécurité complet | 290 | forfait\n"
-			. "Formation à l'administration du site | 250 | / demi-journée\n"
-			. "Rédaction / intégration de contenu | 60 | / page";
+		return "web | Création site vitrine (Starter) | 490 | forfait\n"
+			. "web | Création site Business (multi-pages, réservation, espace membre) | 890 | forfait\n"
+			. "web | Création site Premium / sur-mesure | 1490 | forfait\n"
+			. "web | Refonte d'un site existant | 890 | forfait\n"
+			. "web | Rédaction / intégration de contenu | 60 | / page\n"
+			. "maint | Hébergement + maintenance — formule Essentiel | 29 | / mois\n"
+			. "maint | Hébergement + maintenance — formule Pro | 59 | / mois\n"
+			. "maint | Hébergement + maintenance — formule Sérénité (24/7) | 99 | / mois\n"
+			. "cyber | Audit de sécurité complet (site + surface exposée) | 290 | forfait\n"
+			. "cyber | Test d'intrusion applicatif | 900 | forfait\n"
+			. "cyber | Accompagnement mise en conformité (RGPD / bonnes pratiques ANSSI) | 600 | / jour\n"
+			. "formation | Sensibilisation à la cybersécurité (groupe) | 450 | / demi-journée\n"
+			. "formation | Formation à la création / administration d'un site | 250 | / demi-journée";
 	}
 }
 if ( ! function_exists( 'ag_cand_bpu_rows' ) ) {
-	function ag_cand_bpu_rows() {
+	function ag_cand_bpu_rows( $metiers = null ) {
 		$raw = (string) get_option( 'ag_cand_bpu', '' );
 		if ( '' === trim( $raw ) ) $raw = ag_cand_bpu_default();
 		$rows = array();
@@ -363,10 +403,19 @@ if ( ! function_exists( 'ag_cand_bpu_rows' ) ) {
 			$line = trim( $line );
 			if ( '' === $line ) continue;
 			$p = array_map( 'trim', explode( '|', $line ) );
+			// 4 champs = métier en tête ; 3 champs = ancien format (métier = web).
+			if ( count( $p ) >= 4 ) {
+				$cat = sanitize_key( $p[0] ); $label = $p[1]; $prix = $p[2]; $unite = $p[3];
+			} else {
+				$cat = 'web'; $label = $p[0] ?? ''; $prix = $p[1] ?? ''; $unite = $p[2] ?? 'forfait';
+			}
+			if ( '' === $label ) continue;
+			if ( is_array( $metiers ) && ! in_array( $cat, $metiers, true ) ) continue; // filtre par métier du marché
 			$rows[] = array(
-				'label' => $p[0] ?? '',
-				'prix'  => isset( $p[1] ) ? preg_replace( '/[^0-9.,]/', '', $p[1] ) : '',
-				'unite' => $p[2] ?? 'forfait',
+				'cat'   => $cat,
+				'label' => $label,
+				'prix'  => preg_replace( '/[^0-9.,]/', '', $prix ),
+				'unite' => $unite ?: 'forfait',
 			);
 		}
 		return $rows;
@@ -521,8 +570,12 @@ if ( ! function_exists( 'ag_appels_offres_render' ) ) {
 					</tbody></table>
 
 					<h3 style="margin-top:18px;">💶 Bordereau de prix (ton catalogue)</h3>
-					<p style="color:#666;max-width:760px;">Une ligne par prestation, format <code>Désignation | Prix € | Unité</code>. Ce bordereau apparaît dans chaque dossier (prêt à chiffrer). Ajuste les prix avant de déposer une offre.</p>
-					<textarea name="ag_cand_bpu" rows="10" style="width:100%;font-family:monospace;font-size:.9rem;"><?php echo esc_textarea( '' !== trim( (string) get_option( 'ag_cand_bpu', '' ) ) ? get_option( 'ag_cand_bpu' ) : ag_cand_bpu_default() ); ?></textarea>
+					<p style="color:#666;max-width:760px;">Une ligne par prestation, format <code>métier | Désignation | Prix € | Unité</code> — le <strong>métier</strong> (<code>web</code>, <code>cyber</code>, <code>maint</code>, <code>formation</code>) fait que <strong>seuls les prix du bon métier</strong> apparaissent dans un dossier (ex. un marché cyber n'affiche QUE les prix cyber, plus jamais les prix de sites). Ajuste tes vrais prix avant de déposer.</p>
+					<textarea name="ag_cand_bpu" rows="12" style="width:100%;font-family:monospace;font-size:.9rem;"><?php echo esc_textarea( '' !== trim( (string) get_option( 'ag_cand_bpu', '' ) ) ? get_option( 'ag_cand_bpu' ) : ag_cand_bpu_default() ); ?></textarea>
+
+					<h3 style="margin-top:18px;">🧾 TVA</h3>
+					<p style="color:#666;max-width:760px;">Taux de TVA appliqué au bordereau (en %). Laisse <strong>vide ou 0</strong> si tu es en <strong>franchise en base</strong> (micro-entreprise, art. 293 B du CGI = « TVA non applicable »). Sinon, mets <code>20</code> (ou 10 / 5.5 selon le cas).</p>
+					<input type="text" name="ag_cand_tva_rate" value="<?php echo esc_attr( get_option( 'ag_cand_tva_rate', '' ) ); ?>" placeholder="0 (franchise) ou 20" style="width:180px;"> %
 
 					<h3 style="margin-top:18px;">🔔 Alerte quotidienne</h3>
 					<label style="display:inline-block;margin:6px 0;">
@@ -583,6 +636,18 @@ if ( ! function_exists( 'ag_cand_metier_memoire' ) ) {
 				),
 			);
 		}
+		if ( 'formation' === $metier ) {
+			return array(
+				'titre' => 'Formation / sensibilisation',
+				'blocs' => array(
+					'Compréhension du besoin' => 'Rendre les agents autonomes et vigilants sur les sujets visés par la consultation, avec des sessions concrètes, adaptées à leur niveau et à leurs outils réels.',
+					'Format & pédagogie' => 'Sessions animées par un intervenant, en présentiel ou distanciel, avec cas pratiques, mises en situation (ex. reconnaissance d\'e-mails frauduleux) et supports remis aux participants. Groupes de taille maîtrisée pour l\'interactivité.',
+					'Contenu' => 'Programme construit avec le pouvoir adjudicateur : bonnes pratiques, mots de passe et authentification, hameçonnage, gestion des données, réflexes en cas d\'incident. Adapté aux métiers des participants.',
+					'Évaluation & suivi' => 'Quiz d\'évaluation avant/après, attestation de participation, et bilan pédagogique remis au commanditaire.',
+					'Délais' => 'Sessions planifiées selon le calendrier du pouvoir adjudicateur, premières dates proposées sous 3 semaines après notification.',
+				),
+			);
+		}
 		if ( 'maint' === $metier ) {
 			return array(
 				'titre' => 'Hébergement, maintenance et TMA du site',
@@ -618,9 +683,9 @@ if ( ! function_exists( 'ag_candidature_render' ) ) {
 			echo '<!DOCTYPE html><meta charset="utf-8"><div style="font-family:sans-serif;max-width:560px;margin:60px auto;text-align:center;"><h1>Marché introuvable</h1><p>Impossible de charger cet appel d\'offres. Reviens à la liste <strong>Prospection → 📢 Appels d\'offres</strong>.</p></div>';
 			return;
 		}
-		$metier = ag_cand_metier( $d['objet'] );
-		$mem    = ag_cand_metier_memoire( $metier, ag_cand_opt( 'enseigne' ) );
-		$today  = date_i18n( 'd/m/Y' );
+		$metiers = ag_cand_metiers( $d['objet'] . ' ' . $d['caract'] );
+		$metier  = $metiers[0];
+		$today   = date_i18n( 'd/m/Y' );
 		$adr    = trim( ag_cand_opt( 'street' ) . ', ' . ag_cand_opt( 'zip' ) . ' ' . ag_cand_opt( 'city' ), ', ' );
 		$acheteur_adr = trim( $d['ac_voie'] . ', ' . $d['ac_cp'] . ' ' . $d['ac_ville'], ', ' );
 		$contact = trim( $d['ac_civ'] . ' ' . $d['ac_pren'] . ' ' . $d['ac_nom'] );
@@ -658,6 +723,7 @@ if ( ! function_exists( 'ag_candidature_render' ) ) {
 			<?php if ( $d['profil'] ) : ?><a class="depot" href="<?php echo esc_url( $d['profil'] ); ?>" target="_blank" rel="noopener">📤 Déposer sur le profil d'acheteur</a><?php endif; ?>
 			<span class="sp"></span>
 			<?php if ( current_user_can( 'manage_options' ) ) : ?>
+				<button class="st" data-st="a_faire" style="background:#7a3fb3;">⭐ Sauvegarder</button>
 				<button class="st" data-st="pret">Dossier prêt</button>
 				<button class="st" data-st="depose">Déposé ✓</button>
 			<?php endif; ?>
@@ -675,11 +741,36 @@ if ( ! function_exists( 'ag_candidature_render' ) ) {
 				<div class="kv"><b>Validité de l'offre :</b> <?php echo esc_html( $d['validite'] ? $d['validite'] . ' jours' : '120 jours' ); ?></div>
 			</div>
 			<div class="callout"><strong>Candidat :</strong> <?php echo esc_html( ag_cand_opt( 'enseigne' ) ); ?> (<?php echo esc_html( ag_cand_opt( 'raison' ) ); ?>) — SIREN <?php echo esc_html( ag_cand_opt( 'siren' ) ); ?><?php echo $adr ? ' — ' . esc_html( $adr ) : ''; ?></div>
-			<p class="small muted">Établi le <?php echo esc_html( $today ); ?>. Dépôt dématérialisé sur le profil d'acheteur.</p>
+			<p class="small muted">Prestations identifiées : <strong><?php echo esc_html( implode( ' + ', array_map( 'ag_cand_metier_label', $metiers ) ) ); ?></strong>. Établi le <?php echo esc_html( $today ); ?>. Dépôt dématérialisé sur le profil d'acheteur.</p>
+			<div class="callout" style="background:#fdecec;border-color:#e6a0a0;">
+				⚠️ <strong>À vérifier AVANT de déposer (peux-tu réellement l'exécuter ?)</strong> — ne candidate que si tu peux livrer ce que le marché demande :
+				<ul style="margin:8px 0 0;padding-left:20px;">
+					<li>Capacité technique &amp; références sur : <strong><?php echo esc_html( implode( ', ', array_map( 'ag_cand_metier_label', $metiers ) ) ); ?></strong>.</li>
+					<li>Objet social / activité déclarée compatible (ton APE actuel = photographie → à faire évoluer pour le web/cyber).</li>
+					<li>Assurance responsabilité civile professionnelle couvrant ces prestations.</li>
+					<li>Lecture du <strong>règlement de la consultation (RC)</strong> et du <strong>CCTP</strong> sur le profil d'acheteur : ce résumé BOAMP ne remplace pas le cahier des charges complet.</li>
+				</ul>
+			</div>
 		</div>
 
 		<div class="doc page">
-			<h2>1. Lettre de candidature</h2>
+			<h2>1. Ce que le marché exige</h2>
+			<table class="id"><tbody>
+				<tr><td>Objet du marché</td><td><?php echo esc_html( $d['objet'] ); ?></td></tr>
+				<?php if ( $d['type_m'] ) : ?><tr><td>Type de marché</td><td><?php echo esc_html( $d['type_m'] ); ?></td></tr><?php endif; ?>
+				<?php if ( $d['caract'] && $d['caract'] !== $d['objet'] ) : ?><tr><td>Caractéristiques principales</td><td><?php echo esc_html( $d['caract'] ); ?></td></tr><?php endif; ?>
+				<?php if ( $d['lieu'] ) : ?><tr><td>Lieu d'exécution</td><td><?php echo esc_html( $d['lieu'] ); ?></td></tr><?php endif; ?>
+				<?php if ( $d['critere'] ) : ?><tr><td>Critères de jugement</td><td><?php echo esc_html( $d['critere'] ); ?></td></tr><?php endif; ?>
+				<?php if ( $d['renseign'] ) : ?><tr><td>Renseignements complémentaires</td><td><?php echo esc_html( $d['renseign'] ); ?></td></tr><?php endif; ?>
+				<?php if ( $d['forme'] ) : ?><tr><td>Forme / groupement</td><td><?php echo esc_html( $d['forme'] ); ?></td></tr><?php endif; ?>
+				<tr><td>Date limite de remise</td><td><?php echo esc_html( $d['limite'] ); ?></td></tr>
+				<tr><td>Validité de l'offre</td><td><?php echo esc_html( $d['validite'] ? $d['validite'] . ' jours' : '120 jours' ); ?></td></tr>
+			</tbody></table>
+			<p class="small muted">Extrait de l'avis officiel BOAMP. Le détail complet (RC, CCTP, cadre de prix DPGF/BPU) se télécharge sur le profil d'acheteur — à lire avant de finaliser.</p>
+		</div>
+
+		<div class="doc page">
+			<h2>2. Lettre de candidature</h2>
 			<p class="small muted"><?php echo esc_html( ag_cand_opt( 'enseigne' ) ); ?> — <?php echo esc_html( $adr ?: ag_cand_opt( 'city' ) ); ?><br>
 			<?php echo esc_html( $today ); ?></p>
 			<p><strong>À l'attention de<?php echo $contact ? ' ' . esc_html( $contact ) : ''; ?><?php echo $d['ac_fonc'] ? ' — ' . esc_html( $d['ac_fonc'] ) : ''; ?></strong><br>
@@ -694,7 +785,7 @@ if ( ! function_exists( 'ag_candidature_render' ) ) {
 		</div>
 
 		<div class="doc page">
-			<h2>2. Déclaration du candidat</h2>
+			<h2>3. Déclaration du candidat</h2>
 			<table class="id"><tbody>
 				<tr><td>Raison sociale</td><td><?php echo esc_html( ag_cand_opt( 'raison' ) ); ?></td></tr>
 				<tr><td>Nom commercial / enseigne</td><td><?php echo esc_html( ag_cand_opt( 'enseigne' ) ); ?></td></tr>
@@ -715,10 +806,12 @@ if ( ! function_exists( 'ag_candidature_render' ) ) {
 		</div>
 
 		<div class="doc page">
-			<h2>3. Mémoire technique — <?php echo esc_html( $mem['titre'] ); ?></h2>
-			<?php foreach ( $mem['blocs'] as $t => $c ) : ?>
-				<h3><?php echo esc_html( $t ); ?></h3>
-				<p><?php echo esc_html( $c ); ?></p>
+			<h2>4. Mémoire technique</h2>
+			<?php foreach ( $metiers as $mk ) : $mem = ag_cand_metier_memoire( $mk, ag_cand_opt( 'enseigne' ) ); ?>
+				<h3 style="color:#111;border-bottom:1px solid #eee;padding-bottom:3px;"><?php echo esc_html( $mem['titre'] ); ?></h3>
+				<?php foreach ( $mem['blocs'] as $t => $c ) : ?>
+					<p style="margin:6px 0;"><strong><?php echo esc_html( $t ); ?>.</strong> <?php echo esc_html( $c ); ?></p>
+				<?php endforeach; ?>
 			<?php endforeach; ?>
 			<?php if ( $refs ) : ?>
 				<h3>Références</h3>
@@ -731,17 +824,22 @@ if ( ! function_exists( 'ag_candidature_render' ) ) {
 			<p class="callout small">✏️ Personnalise ce mémoire selon le <strong>règlement de la consultation</strong> (critères de jugement, exigences techniques précises) avant de déposer. C'est une trame solide, pas un document figé.</p>
 		</div>
 
+		<?php
+			$bpu = ag_cand_bpu_rows( $metiers );          // ← UNIQUEMENT les prix du/des métier(s) du marché
+			if ( ! $bpu ) { $bpu = ag_cand_bpu_rows(); }   // repli : tout le catalogue si rien ne matche
+			$tva = ag_cand_tva_rate();
+		?>
 		<div class="doc page">
-			<h2>4. Bordereau de prix</h2>
-			<p class="small muted">Prix unitaires <strong>HT</strong> indicatifs. À ajuster et compléter (quantités / total) selon le cadre financier (DPGF / BPU) fourni dans le règlement de la consultation.</p>
+			<h2>5. Bordereau de prix</h2>
+			<p class="small muted">Prix unitaires <strong>HT</strong> pour les prestations de ce marché (<strong><?php echo esc_html( implode( ' + ', array_map( 'ag_cand_metier_label', $metiers ) ) ); ?></strong>). Renseigne les quantités et le total selon le cadre financier (DPGF / BPU) du dossier de consultation.</p>
 			<table class="id"><thead><tr>
-				<td style="width:52%;background:#f7f7f9;font-weight:600;">Désignation</td>
-				<td style="background:#f7f7f9;font-weight:600;">Prix unitaire HT</td>
+				<td style="width:50%;background:#f7f7f9;font-weight:600;">Désignation</td>
+				<td style="background:#f7f7f9;font-weight:600;">P.U. HT</td>
 				<td style="background:#f7f7f9;font-weight:600;">Unité</td>
 				<td style="background:#f7f7f9;font-weight:600;">Qté</td>
 				<td style="background:#f7f7f9;font-weight:600;">Total HT</td>
 			</tr></thead><tbody>
-			<?php foreach ( ag_cand_bpu_rows() as $row ) : if ( '' === $row['label'] ) continue; ?>
+			<?php foreach ( $bpu as $row ) : ?>
 				<tr>
 					<td><?php echo esc_html( $row['label'] ); ?></td>
 					<td><?php echo esc_html( $row['prix'] ); ?> €</td>
@@ -751,12 +849,23 @@ if ( ! function_exists( 'ag_candidature_render' ) ) {
 				</tr>
 			<?php endforeach; ?>
 				<tr><td colspan="4" style="text-align:right;font-weight:700;">TOTAL HT</td><td>&nbsp;</td></tr>
+				<?php if ( $tva > 0 ) : ?>
+				<tr><td colspan="4" style="text-align:right;">TVA <?php echo esc_html( rtrim( rtrim( number_format( $tva, 2, ',', ' ' ), '0' ), ',' ) ); ?> %</td><td>&nbsp;</td></tr>
+				<tr><td colspan="4" style="text-align:right;font-weight:700;">TOTAL TTC</td><td>&nbsp;</td></tr>
+				<?php endif; ?>
 			</tbody></table>
-			<p class="small muted">TVA non applicable ou applicable selon le régime du candidat (à préciser). Ce bordereau se modifie dans <em>Appels d'offres → 🏢 Identité candidat → 💶 Bordereau de prix</em>.</p>
+			<p class="small muted">
+				<?php if ( $tva > 0 ) : ?>
+					TVA au taux de <?php echo esc_html( rtrim( rtrim( number_format( $tva, 2, ',', ' ' ), '0' ), ',' ) ); ?> %. Total TTC = Total HT × <?php echo esc_html( number_format( 1 + $tva / 100, 2, ',', ' ' ) ); ?>.
+				<?php else : ?>
+					<strong>TVA non applicable, art. 293 B du CGI</strong> (franchise en base) — les montants sont nets de taxe. Modifiable dans <em>Identité candidat</em> si tu es assujetti.
+				<?php endif; ?>
+				Catalogue &amp; taux modifiables dans <em>Appels d'offres → 🏢 Identité candidat</em>.
+			</p>
 		</div>
 
 		<div class="doc">
-			<h2>5. Pièces à joindre au dépôt</h2>
+			<h2>6. Pièces à joindre au dépôt</h2>
 			<ul class="check">
 				<li>Lettre de candidature (DC1) signée</li>
 				<li>Déclaration du candidat (DC2) signée</li>
