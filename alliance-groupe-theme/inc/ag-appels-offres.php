@@ -371,6 +371,124 @@ add_action( 'admin_init', function () {
 	register_setting( 'ag_cand_group', 'ag_cand_bpu', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_textarea_field' ) );
 	register_setting( 'ag_cand_group', 'ag_cand_tva_rate', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
 	register_setting( 'ag_cand_group', 'ag_boamp_alert_on', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '1' ) );
+	register_setting( 'ag_cand_group', 'ag_ai_key', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
+} );
+
+/* ─────────────────────────────────────────────────────────────────────────
+ *  ANALYSE IA (API Claude) — l'IA lit l'annonce, dit franchement si Alliance
+ *  Groupe peut la RÉALISER (selon ses vraies capacités), puis rédige un
+ *  mémoire technique + des prix sur-mesure et la liste des pièces.
+ * ───────────────────────────────────────────────────────────────────────── */
+if ( ! function_exists( 'ag_ai_capabilities' ) ) {
+	/* Ce que l'agence peut RÉELLEMENT livrer — cadre l'honnêteté du verdict. */
+	function ag_ai_capabilities() {
+		return "Alliance Groupe (entrepreneur individuel, ex-photographe se réorientant vers le web) — capacités RÉELLES et limites :\n"
+			. "- CE QUI EST FAISABLE : création et refonte de sites internet (WordPress sur-mesure, vitrine, e-commerce léger, espace membre, réservation) ; hébergement en France, maintenance, mises à jour de sécurité et sauvegardes ; accessibilité RGAA et conformité RGPD de base ; audit de sécurité PASSIF d'un site web (en-têtes de sécurité, TLS, versions exposées, fichiers sensibles, OWASP de surface) et durcissement ; sensibilisation cybersécurité de base (bonnes pratiques, hameçonnage, mots de passe).\n"
+			. "- CE QUI N'EST PAS FAISABLE seul (=> verdict 'non' ou 'prudence' + recommander sous-traitance/groupement) : tests d'intrusion offensifs avancés / red team, audit ANSSI ou certification qualifiée (PASSI), SOC / supervision 24/7, hébergement de données de santé (HDS), gros développements applicatifs métiers, infogérance de parc informatique, marchés très volumineux exigeant une équipe.\n"
+			. "- CONTRAINTE IMPORTANTE : l'objet social actuel déclaré est la photographie ; pour candidater légalement à un marché web/cyber, il faut d'abord ajouter l'activité correspondante (ex. APE 6201Z). Le mentionner dans les points de vigilance.";
+	}
+}
+
+if ( ! function_exists( 'ag_ai_analyse' ) ) {
+	/**
+	 * Envoie le détail du marché à l'API Claude et renvoie une analyse structurée.
+	 * @return array|WP_Error  ['faisabilite'=>['verdict','raison'],'memoire'=>[[titre,contenu]],'prix'=>[[designation,montant,unite]],'documents'=>[...],'points_vigilance'=>[...]]
+	 */
+	function ag_ai_analyse( $d, $force = false ) {
+		$key = trim( (string) get_option( 'ag_ai_key', '' ) );
+		if ( '' === $key ) return new WP_Error( 'nokey', 'Clé API Claude non configurée (Identité candidat → 🤖 Analyse IA).' );
+		$id = preg_replace( '/[^0-9A-Za-z\-]/', '', (string) ( $d['id'] ?? '' ) );
+		$ck = 'ag_ai_' . md5( $id );
+		if ( ! $force ) { $c = get_transient( $ck ); if ( false !== $c ) return $c; }
+
+		$facts = "MARCHÉ PUBLIC À ANALYSER\n"
+			. 'Objet : ' . ( $d['objet'] ?? '' ) . "\n"
+			. 'Acheteur : ' . ( $d['acheteur'] ?? '' ) . "\n"
+			. 'Département : ' . ( $d['dept'] ?? '' ) . "\n"
+			. 'Procédure : ' . ( $d['procedure'] ?? '' ) . "\n"
+			. 'Type de marché : ' . ( $d['type_m'] ?? '' ) . "\n"
+			. 'Caractéristiques : ' . ( $d['caract'] ?? '' ) . "\n"
+			. 'Critères de jugement : ' . ( $d['critere'] ?? '' ) . "\n"
+			. 'Renseignements complémentaires : ' . ( $d['renseign'] ?? '' ) . "\n"
+			. 'Date limite : ' . ( $d['limite'] ?? '' ) . "\n"
+			. 'Validité demandée : ' . ( $d['validite'] ?? '' ) . " jours\n";
+
+		$system = "Tu es l'assistant de réponse aux marchés publics d'Alliance Groupe. Tu écris en français, de façon professionnelle et concrète, prêt à déposer. "
+			. "Tu es HONNÊTE : tu ne fais jamais promettre à l'agence une prestation qu'elle ne peut pas réaliser. "
+			. ag_ai_capabilities() . "\n"
+			. "À partir du marché fourni, produis : (1) un verdict de faisabilité (go / prudence / non) avec une raison courte ; "
+			. "(2) un mémoire technique adapté À CE marché (sections concrètes : compréhension du besoin, méthodologie, moyens, délais, conformité) ; "
+			. "(3) des lignes de prix indicatives HT réalistes pour le marché (pas de prix hors sujet) ; "
+			. "(4) la liste des pièces à joindre ; (5) des points de vigilance (dont l'objet social photographie à faire évoluer). "
+			. "Reste factuel : n'invente pas de références clients ni de chiffres non fournis.";
+
+		$schema = array(
+			'type' => 'object', 'additionalProperties' => false,
+			'required' => array( 'faisabilite', 'memoire', 'prix', 'documents', 'points_vigilance' ),
+			'properties' => array(
+				'faisabilite' => array( 'type' => 'object', 'additionalProperties' => false,
+					'required' => array( 'verdict', 'raison' ),
+					'properties' => array(
+						'verdict' => array( 'type' => 'string', 'enum' => array( 'go', 'prudence', 'non' ) ),
+						'raison'  => array( 'type' => 'string' ),
+					) ),
+				'memoire' => array( 'type' => 'array', 'items' => array( 'type' => 'object', 'additionalProperties' => false,
+					'required' => array( 'titre', 'contenu' ),
+					'properties' => array( 'titre' => array( 'type' => 'string' ), 'contenu' => array( 'type' => 'string' ) ) ) ),
+				'prix' => array( 'type' => 'array', 'items' => array( 'type' => 'object', 'additionalProperties' => false,
+					'required' => array( 'designation', 'montant', 'unite' ),
+					'properties' => array( 'designation' => array( 'type' => 'string' ), 'montant' => array( 'type' => 'string' ), 'unite' => array( 'type' => 'string' ) ) ) ),
+				'documents' => array( 'type' => 'array', 'items' => array( 'type' => 'string' ) ),
+				'points_vigilance' => array( 'type' => 'array', 'items' => array( 'type' => 'string' ) ),
+			),
+		);
+
+		$body = array(
+			'model'      => 'claude-opus-4-8',
+			'max_tokens' => 4000,
+			'system'     => $system,
+			'messages'   => array( array( 'role' => 'user', 'content' => $facts ) ),
+			'output_config' => array( 'format' => array( 'type' => 'json_schema', 'schema' => $schema ) ),
+		);
+
+		$res = wp_remote_post( 'https://api.anthropic.com/v1/messages', array(
+			'timeout' => 120,
+			'headers' => array(
+				'x-api-key'         => $key,
+				'anthropic-version' => '2023-06-01',
+				'content-type'      => 'application/json',
+			),
+			'body'    => wp_json_encode( $body ),
+		) );
+		if ( is_wp_error( $res ) ) return $res;
+		$code = (int) wp_remote_retrieve_response_code( $res );
+		$json = json_decode( wp_remote_retrieve_body( $res ), true );
+		if ( 200 !== $code ) {
+			$msg = $json['error']['message'] ?? ( 'Erreur API (HTTP ' . $code . ')' );
+			return new WP_Error( 'api', $msg );
+		}
+		// La réponse structurée : premier bloc texte = JSON valide.
+		$txt = '';
+		foreach ( (array) ( $json['content'] ?? array() ) as $blk ) {
+			if ( ( $blk['type'] ?? '' ) === 'text' ) { $txt = $blk['text']; break; }
+		}
+		$out = json_decode( $txt, true );
+		if ( ! is_array( $out ) ) return new WP_Error( 'parse', 'Réponse IA illisible.' );
+		set_transient( $ck, $out, 30 * DAY_IN_SECONDS );
+		return $out;
+	}
+}
+
+/* AJAX : lance (ou relit) l'analyse IA d'un marché — ADMIN uniquement. */
+add_action( 'wp_ajax_ag_cand_ai', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_boamp' ) ) wp_send_json_error( array( 'msg' => 'Refusé' ) );
+	$id    = preg_replace( '/[^0-9A-Za-z\-]/', '', (string) ( $_POST['id'] ?? '' ) );
+	$force = ! empty( $_POST['force'] );
+	$d     = ag_boamp_detail( $id );
+	if ( ! $d ) wp_send_json_error( array( 'msg' => 'Marché introuvable' ) );
+	$a = ag_ai_analyse( $d, $force );
+	if ( is_wp_error( $a ) ) wp_send_json_error( array( 'msg' => $a->get_error_message() ) );
+	wp_send_json_success( $a );
 } );
 
 /* Bordereau de prix (catalogue). Format d'une ligne :
@@ -577,6 +695,10 @@ if ( ! function_exists( 'ag_appels_offres_render' ) ) {
 					<p style="color:#666;max-width:760px;">Taux de TVA appliqué au bordereau (en %). Laisse <strong>vide ou 0</strong> si tu es en <strong>franchise en base</strong> (micro-entreprise, art. 293 B du CGI = « TVA non applicable »). Sinon, mets <code>20</code> (ou 10 / 5.5 selon le cas).</p>
 					<input type="text" name="ag_cand_tva_rate" value="<?php echo esc_attr( get_option( 'ag_cand_tva_rate', '' ) ); ?>" placeholder="0 (franchise) ou 20" style="width:180px;"> %
 
+					<h3 style="margin-top:18px;">🤖 Analyse IA (rédaction sur-mesure)</h3>
+					<p style="color:#666;max-width:760px;">Colle ta <strong>clé API Claude</strong> (console.anthropic.com → API Keys, format <code>sk-ant-…</code>). L'IA lira chaque annonce et te dira franchement si tu peux la réaliser, puis rédigera un mémoire + des prix adaptés (coût ≈ quelques centimes par dossier). Laisse vide pour désactiver.</p>
+					<input type="password" name="ag_ai_key" value="<?php echo esc_attr( get_option( 'ag_ai_key', '' ) ); ?>" placeholder="sk-ant-…" autocomplete="off" style="width:100%;max-width:520px;font-family:monospace;">
+
 					<h3 style="margin-top:18px;">🔔 Alerte quotidienne</h3>
 					<label style="display:inline-block;margin:6px 0;">
 						<input type="checkbox" name="ag_boamp_alert_on" value="1" <?php checked( '1', (string) get_option( 'ag_boamp_alert_on', '1' ) ); ?>>
@@ -769,6 +891,15 @@ if ( ! function_exists( 'ag_candidature_render' ) ) {
 			<p class="small muted">Extrait de l'avis officiel BOAMP. Le détail complet (RC, CCTP, cadre de prix DPGF/BPU) se télécharge sur le profil d'acheteur — à lire avant de finaliser.</p>
 		</div>
 
+		<?php if ( '' !== trim( (string) get_option( 'ag_ai_key', '' ) ) ) : ?>
+		<div class="doc page" id="ai-doc">
+			<h2>🤖 Analyse IA sur-mesure</h2>
+			<p class="small muted">L'IA lit l'annonce, vérifie que tu peux la réaliser, puis rédige un mémoire et des prix adaptés à CE marché. Clique pour lancer (≈ quelques centimes).</p>
+			<button class="print" id="ai-run" style="background:#7a3fb3;color:#fff;border:0;border-radius:8px;padding:11px 16px;font-weight:700;cursor:pointer;">🤖 Analyser ce marché avec l'IA</button>
+			<div id="ai-out" style="margin-top:14px;"></div>
+		</div>
+		<?php endif; ?>
+
 		<div class="doc page">
 			<h2>2. Lettre de candidature</h2>
 			<p class="small muted"><?php echo esc_html( ag_cand_opt( 'enseigne' ) ); ?> — <?php echo esc_html( $adr ?: ag_cand_opt( 'city' ) ); ?><br>
@@ -905,6 +1036,40 @@ if ( ! function_exists( 'ag_candidature_render' ) ) {
 				fetch(ajax, { method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: body.toString() })
 					.then(function(r){ return r.json(); })
 					.then(function(j){ b.textContent = (j && j.success) ? '✓ enregistré' : 'erreur'; });
+			});
+
+			// ── Analyse IA ──
+			function aiEsc(s){ return String(s==null?'':s).replace(/[&<>]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); }
+			function aiRender(a){
+				var vcol = {go:'#1e7e34', prudence:'#b26a00', non:'#b32d2e'};
+				var vlab = {go:'✅ GO — réalisable', prudence:'⚠️ PRUDENCE', non:'⛔ NON recommandé'};
+				var f = a.faisabilite || {};
+				var h = '<div class="callout" style="border-color:'+(vcol[f.verdict]||'#ccc')+';"><strong style="color:'+(vcol[f.verdict]||'#333')+';">'+(vlab[f.verdict]||f.verdict||'')+'</strong> — '+aiEsc(f.raison)+'</div>';
+				if (a.memoire && a.memoire.length){ h+='<h3>Mémoire technique proposé</h3>'; a.memoire.forEach(function(s){ h+='<p style="margin:6px 0;"><strong>'+aiEsc(s.titre)+'.</strong> '+aiEsc(s.contenu)+'</p>'; }); }
+				if (a.prix && a.prix.length){ h+='<h3>Prix indicatifs proposés</h3><table class="id"><tbody>'; a.prix.forEach(function(p){ h+='<tr><td>'+aiEsc(p.designation)+'</td><td>'+aiEsc(p.montant)+' €</td><td>'+aiEsc(p.unite)+'</td></tr>'; }); h+='</tbody></table>'; }
+				if (a.documents && a.documents.length){ h+='<h3>Pièces à joindre</h3><ul class="check">'; a.documents.forEach(function(d){ h+='<li>'+aiEsc(d)+'</li>'; }); h+='</ul>'; }
+				if (a.points_vigilance && a.points_vigilance.length){ h+='<h3>Points de vigilance</h3><ul>'; a.points_vigilance.forEach(function(d){ h+='<li>'+aiEsc(d)+'</li>'; }); h+='</ul>'; }
+				h+='<p class="small muted">Généré par IA — relis et ajuste avant de déposer. <a href="#" id="ai-redo">↻ Relancer</a></p>';
+				return h;
+			}
+			function aiRun(force){
+				var out=document.getElementById('ai-out'), btn=document.getElementById('ai-run');
+				if(!out) return;
+				out.innerHTML='<p class="small muted">⏳ Analyse en cours (30–60 s)…</p>';
+				if(btn) btn.disabled=true;
+				var body=new URLSearchParams();
+				body.set('action','ag_cand_ai'); body.set('_n',nonce); body.set('id',id); if(force) body.set('force','1');
+				fetch(ajax,{ method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: body.toString() })
+					.then(function(r){ return r.json(); })
+					.then(function(j){
+						if(btn) btn.disabled=false;
+						if(j && j.success){ out.innerHTML=aiRender(j.data); }
+						else { out.innerHTML='<div class="callout" style="border-color:#e6a0a0;">'+aiEsc((j&&j.data&&j.data.msg)||'Erreur')+'</div>'; }
+					}).catch(function(){ if(btn) btn.disabled=false; out.innerHTML='<div class="callout" style="border-color:#e6a0a0;">Erreur réseau.</div>'; });
+			}
+			document.addEventListener('click', function(e){
+				if(e.target && e.target.id==='ai-run'){ e.preventDefault(); aiRun(false); }
+				if(e.target && e.target.id==='ai-redo'){ e.preventDefault(); aiRun(true); }
 			});
 		})();
 		</script>
