@@ -79,10 +79,10 @@ foreach ( $ag_my_prospects as $ppc ) {
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-	<meta name="apple-mobile-web-app-title" content="Alliance Amb">
+	<meta name="apple-mobile-web-app-title" content="<?php echo $ag_is_admin ? 'Alliance Admin' : 'Alliance Amb'; ?>">
 	<meta name="theme-color" content="#0b0b0f">
 	<link rel="apple-touch-icon" href="<?php echo esc_url( $ag_icon ); ?>">
-	<title>Alliance Groupe — Ambassadeur</title>
+	<title>Alliance Groupe — <?php echo $ag_is_admin ? 'Admin' : 'Ambassadeur'; ?></title>
 	<style>
 		:root{ --gold:#d4b45c; --bg:#0b0b0f; --card:#16161d; --line:rgba(255,255,255,.09); --soft:#9a9aa2; }
 		*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -162,7 +162,7 @@ foreach ( $ag_my_prospects as $ppc ) {
 
 <header class="appbar">
 	<img src="<?php echo esc_url( $ag_icon ); ?>" alt="">
-	<b>Alliance <span>Ambassadeur</span></b>
+	<b>Alliance <span><?php echo $ag_is_admin ? 'Admin' : 'Ambassadeur'; ?></span></b>
 </header>
 
 <div class="wrap">
@@ -434,6 +434,23 @@ foreach ( $ag_my_prospects as $ppc ) {
 	<?php if ( $ag_is_admin ) : ?>
 	<section class="view" id="view-ao">
 		<h2 class="sec">📢 Appels d'offres publics <span style="font-size:.7rem;color:#8a8a92;font-weight:600;">(admin)</span></h2>
+		<?php
+		$ag_saved = (array) get_option( 'ag_candidatures', array() );
+		uasort( $ag_saved, function ( $a, $b ) { return (int) ( $b['ts'] ?? 0 ) - (int) ( $a['ts'] ?? 0 ); } );
+		if ( $ag_saved ) :
+			$ag_stl = array( 'a_faire' => 'À faire', 'pret' => 'Dossier prêt', 'depose' => 'Déposé ✓', 'gagne' => 'Gagné 🏆', 'perdu' => 'Perdu' );
+		?>
+		<div class="card">
+			<h3 style="margin:0 0 8px;">💾 Mes marchés sauvegardés (<?php echo count( $ag_saved ); ?>)</h3>
+			<?php foreach ( array_slice( $ag_saved, 0, 30, true ) as $sid => $sc ) : ?>
+				<div style="border-top:1px solid var(--line);padding:9px 0;">
+					<div style="font-size:.9rem;"><?php echo esc_html( wp_trim_words( (string) ( $sc['objet'] ?? '' ), 14, '…' ) ?: $sid ); ?></div>
+					<div class="sub" style="font-size:.76rem;margin:3px 0 6px;"><?php echo esc_html( $sc['acheteur'] ?? '' ); ?> · <strong><?php echo esc_html( $ag_stl[ $sc['statut'] ?? '' ] ?? '' ); ?></strong></div>
+					<a href="<?php echo esc_url( home_url( '/?ag_candidature=1&id=' . rawurlencode( $sid ) ) ); ?>" target="_blank" rel="noopener" class="b gold" style="display:inline-block;text-decoration:none;padding:7px 12px;font-size:.85rem;">🗂️ Ouvrir le dossier</a>
+				</div>
+			<?php endforeach; ?>
+		</div>
+		<?php endif; ?>
 		<div class="card">
 			<p class="sub" style="margin:0 0 8px;">Marchés publics <strong>ouverts</strong> (site web, cybersécurité, maintenance). Ouvre « 🗂️ Préparer le dossier » → dossier de candidature tout prêt à déposer. Outil perso admin.</p>
 			<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">

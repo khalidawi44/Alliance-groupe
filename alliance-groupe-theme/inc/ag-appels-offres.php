@@ -394,11 +394,12 @@ if ( ! function_exists( 'ag_ai_analyse' ) ) {
 	 * Envoie le détail du marché à l'API Claude et renvoie une analyse structurée.
 	 * @return array|WP_Error  ['faisabilite'=>['verdict','raison'],'memoire'=>[[titre,contenu]],'prix'=>[[designation,montant,unite]],'documents'=>[...],'points_vigilance'=>[...]]
 	 */
-	function ag_ai_analyse( $d, $force = false ) {
+	function ag_ai_analyse( $d, $force = false, $pdf_b64 = '' ) {
 		$key = trim( (string) get_option( 'ag_ai_key', '' ) );
 		if ( '' === $key ) return new WP_Error( 'nokey', 'Clé API Claude non configurée (Identité candidat → 🤖 Analyse IA).' );
 		$id = preg_replace( '/[^0-9A-Za-z\-]/', '', (string) ( $d['id'] ?? '' ) );
 		$ck = 'ag_ai_' . md5( $id );
+		if ( '' !== $pdf_b64 ) { $force = true; } // un cahier des charges joint → on ré-analyse
 		if ( ! $force ) { $c = get_transient( $ck ); if ( false !== $c ) return $c; }
 
 		$facts = "MARCHÉ PUBLIC À ANALYSER\n"
@@ -443,11 +444,21 @@ if ( ! function_exists( 'ag_ai_analyse' ) ) {
 			),
 		);
 
+		// Contenu du message : le résumé BOAMP + (si fourni) le PDF du cahier des
+		// charges (RC/CCTP) pour que l'IA lise TOUT le marché, pas juste le résumé.
+		if ( '' !== $pdf_b64 ) {
+			$content = array(
+				array( 'type' => 'document', 'source' => array( 'type' => 'base64', 'media_type' => 'application/pdf', 'data' => $pdf_b64 ) ),
+				array( 'type' => 'text', 'text' => $facts . "\nLe cahier des charges complet est joint (PDF) : appuie-toi dessus en priorité." ),
+			);
+		} else {
+			$content = $facts;
+		}
 		$body = array(
 			'model'      => 'claude-opus-4-8',
 			'max_tokens' => 4000,
 			'system'     => $system,
-			'messages'   => array( array( 'role' => 'user', 'content' => $facts ) ),
+			'messages'   => array( array( 'role' => 'user', 'content' => $content ) ),
 			'output_config' => array( 'format' => array( 'type' => 'json_schema', 'schema' => $schema ) ),
 		);
 
@@ -486,7 +497,15 @@ add_action( 'wp_ajax_ag_cand_ai', function () {
 	$force = ! empty( $_POST['force'] );
 	$d     = ag_boamp_detail( $id );
 	if ( ! $d ) wp_send_json_error( array( 'msg' => 'Marché introuvable' ) );
-	$a = ag_ai_analyse( $d, $force );
+	// Cahier des charges (PDF) éventuellement joint.
+	$pdf_b64 = '';
+	if ( ! empty( $_FILES['pdf']['tmp_name'] ) && is_uploaded_file( $_FILES['pdf']['tmp_name'] ) ) {
+		if ( (int) $_FILES['pdf']['size'] > 8 * MB_IN_BYTES ) wp_send_json_error( array( 'msg' => 'PDF trop lourd (max 8 Mo).' ) );
+		$raw = file_get_contents( $_FILES['pdf']['tmp_name'] );
+		if ( false !== $raw && 0 === strncmp( (string) $raw, '%PDF', 4 ) ) { $pdf_b64 = base64_encode( $raw ); }
+		else wp_send_json_error( array( 'msg' => 'Fichier non reconnu comme PDF.' ) );
+	}
+	$a = ag_ai_analyse( $d, $force, $pdf_b64 );
 	if ( is_wp_error( $a ) ) wp_send_json_error( array( 'msg' => $a->get_error_message() ) );
 	wp_send_json_success( $a );
 } );
@@ -805,6 +824,10 @@ if ( ! function_exists( 'ag_candidature_render' ) ) {
 			echo '<!DOCTYPE html><meta charset="utf-8"><div style="font-family:sans-serif;max-width:560px;margin:60px auto;text-align:center;"><h1>Marché introuvable</h1><p>Impossible de charger cet appel d\'offres. Reviens à la liste <strong>Prospection → 📢 Appels d\'offres</strong>.</p></div>';
 			return;
 		}
+		// Si l'IA a déjà analysé ce marché, on intègre SA rédaction dans le dossier
+		// imprimé (mémoire + prix sur-mesure) → dossier complet, prêt à déposer.
+		$ai = get_transient( 'ag_ai_' . md5( (string) $d['id'] ) );
+		if ( ! is_array( $ai ) ) $ai = null;
 		$metiers = ag_cand_metiers( $d['objet'] . ' ' . $d['caract'] );
 		$metier  = $metiers[0];
 		$today   = date_i18n( 'd/m/Y' );
@@ -894,8 +917,15 @@ if ( ! function_exists( 'ag_candidature_render' ) ) {
 		<?php if ( '' !== trim( (string) get_option( 'ag_ai_key', '' ) ) ) : ?>
 		<div class="doc page" id="ai-doc">
 			<h2>🤖 Analyse IA sur-mesure</h2>
-			<p class="small muted">L'IA lit l'annonce, vérifie que tu peux la réaliser, puis rédige un mémoire et des prix adaptés à CE marché. Clique pour lancer (≈ quelques centimes).</p>
-			<button class="print" id="ai-run" style="background:#7a3fb3;color:#fff;border:0;border-radius:8px;padding:11px 16px;font-weight:700;cursor:pointer;">🤖 Analyser ce marché avec l'IA</button>
+			<?php if ( $ai ) : ?>
+				<div class="callout" style="background:#eef7f0;border-color:#8ccfa0;">✅ <strong>Analyse intégrée au dossier ci-dessus</strong> (mémoire &amp; prix rédigés pour ce marché). Tu peux imprimer / enregistrer en PDF et déposer. Relance ci-dessous si tu veux, ou joins le cahier des charges pour une analyse complète.</div>
+			<?php endif; ?>
+			<p class="small muted">L'IA lit l'annonce (et le cahier des charges si tu le joins), vérifie que tu peux réaliser le marché, puis rédige le mémoire et les prix adaptés — intégrés au dossier. Coût ≈ quelques centimes.</p>
+			<label class="small" style="display:block;margin:8px 0 4px;font-weight:600;">📎 Cahier des charges (RC/CCTP) en PDF — optionnel, max 8 Mo</label>
+			<input type="file" id="ai-pdf" accept="application/pdf" style="margin-bottom:10px;">
+			<div>
+				<button class="print" id="ai-run" style="background:#7a3fb3;color:#fff;border:0;border-radius:8px;padding:11px 16px;font-weight:700;cursor:pointer;"><?php echo $ai ? '↻ Relancer l\'analyse' : '🤖 Analyser ce marché avec l\'IA'; ?></button>
+			</div>
 			<div id="ai-out" style="margin-top:14px;"></div>
 		</div>
 		<?php endif; ?>
@@ -938,12 +968,18 @@ if ( ! function_exists( 'ag_candidature_render' ) ) {
 
 		<div class="doc page">
 			<h2>4. Mémoire technique</h2>
-			<?php foreach ( $metiers as $mk ) : $mem = ag_cand_metier_memoire( $mk, ag_cand_opt( 'enseigne' ) ); ?>
-				<h3 style="color:#111;border-bottom:1px solid #eee;padding-bottom:3px;"><?php echo esc_html( $mem['titre'] ); ?></h3>
-				<?php foreach ( $mem['blocs'] as $t => $c ) : ?>
-					<p style="margin:6px 0;"><strong><?php echo esc_html( $t ); ?>.</strong> <?php echo esc_html( $c ); ?></p>
+			<?php if ( $ai && ! empty( $ai['memoire'] ) ) : ?>
+				<?php foreach ( (array) $ai['memoire'] as $s ) : if ( empty( $s['titre'] ) && empty( $s['contenu'] ) ) continue; ?>
+					<p style="margin:6px 0;"><strong><?php echo esc_html( $s['titre'] ?? '' ); ?>.</strong> <?php echo esc_html( $s['contenu'] ?? '' ); ?></p>
 				<?php endforeach; ?>
-			<?php endforeach; ?>
+			<?php else : ?>
+				<?php foreach ( $metiers as $mk ) : $mem = ag_cand_metier_memoire( $mk, ag_cand_opt( 'enseigne' ) ); ?>
+					<h3 style="color:#111;border-bottom:1px solid #eee;padding-bottom:3px;"><?php echo esc_html( $mem['titre'] ); ?></h3>
+					<?php foreach ( $mem['blocs'] as $t => $c ) : ?>
+						<p style="margin:6px 0;"><strong><?php echo esc_html( $t ); ?>.</strong> <?php echo esc_html( $c ); ?></p>
+					<?php endforeach; ?>
+				<?php endforeach; ?>
+			<?php endif; ?>
 			<?php if ( $refs ) : ?>
 				<h3>Références</h3>
 				<ul>
@@ -952,12 +988,24 @@ if ( ! function_exists( 'ag_candidature_render' ) ) {
 				<?php endforeach; ?>
 				</ul>
 			<?php endif; ?>
-			<p class="callout small">✏️ Personnalise ce mémoire selon le <strong>règlement de la consultation</strong> (critères de jugement, exigences techniques précises) avant de déposer. C'est une trame solide, pas un document figé.</p>
+			<?php if ( $ai && ! empty( $ai['memoire'] ) ) : ?>
+				<p class="callout small">🤖 Mémoire rédigé par l'IA d'après cette annonce. Relis-le une fois avant de déposer.</p>
+			<?php else : ?>
+				<p class="callout small">✏️ Personnalise ce mémoire selon le <strong>règlement de la consultation</strong> (critères de jugement, exigences techniques précises) avant de déposer. Lance l'analyse IA (plus haut) pour un mémoire sur-mesure.</p>
+			<?php endif; ?>
 		</div>
 
 		<?php
-			$bpu = ag_cand_bpu_rows( $metiers );          // ← UNIQUEMENT les prix du/des métier(s) du marché
-			if ( ! $bpu ) { $bpu = ag_cand_bpu_rows(); }   // repli : tout le catalogue si rien ne matche
+			$ai_prix = ( $ai && ! empty( $ai['prix'] ) ) ? (array) $ai['prix'] : null;
+			if ( $ai_prix ) {
+				$bpu = array();
+				foreach ( $ai_prix as $p ) {
+					$bpu[] = array( 'label' => (string) ( $p['designation'] ?? '' ), 'prix' => preg_replace( '/[^0-9.,]/', '', (string) ( $p['montant'] ?? '' ) ), 'unite' => (string) ( $p['unite'] ?? 'forfait' ) );
+				}
+			} else {
+				$bpu = ag_cand_bpu_rows( $metiers );          // ← UNIQUEMENT les prix du/des métier(s) du marché
+				if ( ! $bpu ) { $bpu = ag_cand_bpu_rows(); }   // repli : tout le catalogue si rien ne matche
+			}
 			$tva = ag_cand_tva_rate();
 		?>
 		<div class="doc page">
@@ -1049,27 +1097,31 @@ if ( ! function_exists( 'ag_candidature_render' ) ) {
 				if (a.prix && a.prix.length){ h+='<h3>Prix indicatifs proposés</h3><table class="id"><tbody>'; a.prix.forEach(function(p){ h+='<tr><td>'+aiEsc(p.designation)+'</td><td>'+aiEsc(p.montant)+' €</td><td>'+aiEsc(p.unite)+'</td></tr>'; }); h+='</tbody></table>'; }
 				if (a.documents && a.documents.length){ h+='<h3>Pièces à joindre</h3><ul class="check">'; a.documents.forEach(function(d){ h+='<li>'+aiEsc(d)+'</li>'; }); h+='</ul>'; }
 				if (a.points_vigilance && a.points_vigilance.length){ h+='<h3>Points de vigilance</h3><ul>'; a.points_vigilance.forEach(function(d){ h+='<li>'+aiEsc(d)+'</li>'; }); h+='</ul>'; }
-				h+='<p class="small muted">Généré par IA — relis et ajuste avant de déposer. <a href="#" id="ai-redo">↻ Relancer</a></p>';
+				h+='<div class="callout" style="background:#faf5ea;border-color:#e6d29a;">✅ Analyse terminée. <button id="ai-see" style="background:#2d7a3f;color:#fff;border:0;border-radius:8px;padding:9px 14px;font-weight:700;cursor:pointer;">📄 Voir le dossier complet (recharger)</button> puis Imprimer / PDF pour déposer.</div>';
 				return h;
 			}
 			function aiRun(force){
 				var out=document.getElementById('ai-out'), btn=document.getElementById('ai-run');
+				var fileEl=document.getElementById('ai-pdf');
+				var file=(fileEl && fileEl.files && fileEl.files[0]) ? fileEl.files[0] : null;
 				if(!out) return;
-				out.innerHTML='<p class="small muted">⏳ Analyse en cours (30–60 s)…</p>';
+				out.innerHTML='<p class="small muted">⏳ Analyse en cours ('+(file?'lecture du cahier des charges, ':'')+'30–90 s)…</p>';
 				if(btn) btn.disabled=true;
-				var body=new URLSearchParams();
-				body.set('action','ag_cand_ai'); body.set('_n',nonce); body.set('id',id); if(force) body.set('force','1');
-				fetch(ajax,{ method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: body.toString() })
+				var fd=new FormData();
+				fd.append('action','ag_cand_ai'); fd.append('_n',nonce); fd.append('id',id);
+				if(force || file) fd.append('force','1');
+				if(file) fd.append('pdf', file);
+				fetch(ajax,{ method:'POST', credentials:'same-origin', body: fd })
 					.then(function(r){ return r.json(); })
 					.then(function(j){
 						if(btn) btn.disabled=false;
 						if(j && j.success){ out.innerHTML=aiRender(j.data); }
 						else { out.innerHTML='<div class="callout" style="border-color:#e6a0a0;">'+aiEsc((j&&j.data&&j.data.msg)||'Erreur')+'</div>'; }
-					}).catch(function(){ if(btn) btn.disabled=false; out.innerHTML='<div class="callout" style="border-color:#e6a0a0;">Erreur réseau.</div>'; });
+					}).catch(function(){ if(btn) btn.disabled=false; out.innerHTML='<div class="callout" style="border-color:#e6a0a0;">Erreur réseau (le PDF est peut-être trop lourd).</div>'; });
 			}
 			document.addEventListener('click', function(e){
 				if(e.target && e.target.id==='ai-run'){ e.preventDefault(); aiRun(false); }
-				if(e.target && e.target.id==='ai-redo'){ e.preventDefault(); aiRun(true); }
+				if(e.target && e.target.id==='ai-see'){ e.preventDefault(); location.reload(); }
 			});
 		})();
 		</script>
