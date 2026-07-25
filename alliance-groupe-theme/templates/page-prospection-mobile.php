@@ -724,11 +724,18 @@ var AG = (function(){
 		var d=document.createElement('div'); d.className='res';
 		var stars=(it.rating>0)?(' · ⭐'+it.rating+(it.reviews?(' ('+it.reviews+')'):'')):'';
 		var cat=it.type||it.kind||'';
-		d.innerHTML='<div class="rn">'+(it.name||'')+'</div><div class="rk">'+(it.city||'')+(cat?(' · '+cat):'')+stars+(it.exists?' · déjà en base':'')+'</div>';
+		// Badge « besoin d'un site ? » : vrai site => a déjà un site (mauvaise cible) ; sinon => bonne cible.
+		var needBadge = it.real
+			? '<span style="color:#8a8a92;">✅ a déjà un site</span>'
+			: '<span style="color:#2ecc71;font-weight:700;">🎯 pas de vrai site — bonne cible</span>';
+		d.innerHTML='<div class="rn">'+(it.name||'')+'</div><div class="rk">'+(it.city||'')+(cat?(' · '+cat):'')+stars+(it.exists?' · déjà en base':'')+'</div><div class="rk" style="margin-top:2px;">'+needBadge+'</div>';
 		if(it.website){ var lk=document.createElement('a'); lk.className='rlink'; lk.href=it.website; lk.target='_blank'; lk.rel='noopener'; lk.textContent='🌐 '+String(it.website).replace(/^https?:\/\//,'').replace(/\/$/,''); d.appendChild(lk); }
 		var row=document.createElement('div'); row.className='row'; row.style.cssText='display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;';
 		if(tel){ var ta=document.createElement('a'); ta.className='mini'; ta.href='tel:'+tel; ta.textContent='📞'; row.appendChild(ta); }
 		if(it.website){ var vs=document.createElement('a'); vs.className='mini'; vs.href=it.website; vs.target='_blank'; vs.rel='noopener'; vs.textContent='🌐 Voir le site'; row.appendChild(vs); }
+		// Lire les avis Google (ouvre la fiche Maps de l'établissement).
+		var mapsUrl=it.maps||('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent((it.name||'')+' '+(it.city||'')));
+		var av=document.createElement('a'); av.className='mini'; av.href=mapsUrl; av.target='_blank'; av.rel='noopener'; av.style.cssText='border-color:#e6b35a;color:#e6b35a;'; av.textContent='⭐ Avis Google'+(it.reviews?(' ('+it.reviews+')'):''); row.appendChild(av);
 		var add=document.createElement('button'); add.className='mini'; add.style.cursor='pointer'; add.textContent=it.exists?'✓ En base':'+ Ajouter';
 		if(it.exists){ add.setAttribute('disabled','disabled'); }
 		add.addEventListener('click',function(){ add.textContent='…';
@@ -797,16 +804,40 @@ var AG = (function(){
 	var sortbar=document.getElementById('ag-sort');
 	if(sortbar){ sortbar.querySelectorAll('button').forEach(function(b){ b.addEventListener('click',function(){ sortbar.querySelectorAll('button').forEach(function(x){ x.classList.remove('on'); }); b.classList.add('on'); savedSort=b.getAttribute('data-s'); renderSaved(); }); }); }
 
+	// Résultats de recherche : filtre « sans site » + tri (cible / avis / note).
+	var freshItems=[], freshLocked=0, freshNoSiteOnly=false, freshSort='cible';
+	function agRenderFresh(){
+		if(!box) return;
+		box.innerHTML='';
+		if(!freshItems.length){ box.innerHTML='<p class="sub">Aucun résultat.</p>'; return; }
+		// Barre filtre + tri
+		var bar=document.createElement('div'); bar.style.cssText='display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:0 0 10px;';
+		var f=document.createElement('button'); f.className='mini'; f.style.cursor='pointer'; f.textContent=freshNoSiteOnly?'🎯 Sans site ✓':'🎯 Sans site seulement';
+		if(freshNoSiteOnly){ f.style.cssText+='border-color:#2ecc71;color:#2ecc71;font-weight:700;'; }
+		f.addEventListener('click',function(){ freshNoSiteOnly=!freshNoSiteOnly; agRenderFresh(); });
+		bar.appendChild(f);
+		var sorts=[['cible','🎯 Meilleure cible'],['avis','⭐ + d\'avis'],['note','⭐ Meilleure note']];
+		sorts.forEach(function(s){ var b=document.createElement('button'); b.className='mini'; b.style.cursor='pointer'; b.textContent=s[1];
+			if(freshSort===s[0]){ b.style.cssText+='border-color:#3aa3ff;color:#8fc7ff;font-weight:700;'; }
+			b.addEventListener('click',function(){ freshSort=s[0]; agRenderFresh(); }); bar.appendChild(b); });
+		box.appendChild(bar);
+		if(freshLocked>0){ var lk=document.createElement('p'); lk.className='sub'; lk.style.color='#e6b35a'; lk.textContent='🔒 '+freshLocked+' résultat(s) masqué(s) : région réservée par un autre ambassadeur.'; box.appendChild(lk); }
+		var list=freshItems.slice();
+		if(freshNoSiteOnly){ list=list.filter(function(it){ return !it.real; }); }
+		if(freshSort==='avis'){ list.sort(function(a,b){ return (b.reviews||0)-(a.reviews||0); }); }
+		else if(freshSort==='note'){ list.sort(function(a,b){ return (b.rating||0)-(a.rating||0); }); }
+		// 'cible' = ordre serveur (score) : sans-site d'abord.
+		if(!list.length){ var e=document.createElement('p'); e.className='sub'; e.textContent='Aucun résultat sans site. Décoche le filtre.'; box.appendChild(e); return; }
+		list.forEach(function(it){ box.appendChild(agItemRow(it)); });
+	}
 	if(sb){ sb.addEventListener('click',function(){
 		var c=(city.value||'').trim(); if(!c){ AG.toast('Indique une ville'); return; }
 		sb.textContent='🔎 Recherche…'; sb.setAttribute('disabled','disabled'); box.innerHTML='';
 		AG.post('ag_amb_search',{city:c}).then(function(j){
 			sb.textContent='🔎 Lancer la recherche'; sb.removeAttribute('disabled');
 			if(!j||!j.success){ AG.toast('❌ '+((j&&j.data&&j.data.m)||'Erreur')); return; }
-			var items=j.data.items||[];
-			if(!items.length){ box.innerHTML='<p class="sub">Aucun résultat.</p>'; return; }
-			box.innerHTML=''; items.forEach(function(it){ box.appendChild(agItemRow(it)); });
-			if(j.data.locked>0){ var lk=document.createElement('p'); lk.className='sub'; lk.style.color='#e6b35a'; lk.textContent='🔒 '+j.data.locked+' résultat(s) masqué(s) : région réservée par un autre ambassadeur.'; box.insertBefore(lk, box.firstChild); }
+			freshItems=j.data.items||[]; freshLocked=(j.data.locked||0); freshSort='cible';
+			agRenderFresh();
 			if(typeof j.data.left!=='undefined'){ AG.toast('Recherches restantes ce mois : '+j.data.left); }
 			agLoadSaved(); // la recherche vient d'être sauvegardée → recharge l'accordéon
 		}).catch(function(){ sb.textContent='🔎 Lancer la recherche'; sb.removeAttribute('disabled'); AG.toast('❌ Erreur réseau'); });

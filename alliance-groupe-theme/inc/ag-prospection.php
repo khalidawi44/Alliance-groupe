@@ -2397,7 +2397,7 @@ add_action( 'wp_ajax_ag_amb_search', function () {
 		$out[] = array(
 			'name' => $r['name'], 'type' => $r['type'] ?? '', 'city' => $r['city'] ?? $city, 'phone' => $r['phone'] ?? '', 'phone_intl' => $r['phone_intl'] ?? '',
 			'website' => $r['website'] ?? '', 'address' => $r['address'] ?? '', 'rating' => $r['rating'] ?? 0, 'reviews' => $r['reviews'] ?? 0,
-			'kind' => $kind[1], 'real' => ( 'real' === $kind[0] ), 'score' => ag_prospect_score( $r ), 'exists' => (bool) $ex,
+			'maps' => $r['maps_uri'] ?? '', 'kind' => $kind[1], 'real' => ( 'real' === $kind[0] ), 'score' => ag_prospect_score( $r ), 'exists' => (bool) $ex,
 			'demo' => $demo,
 		);
 	}
@@ -2511,8 +2511,9 @@ add_action( 'wp_ajax_ag_app_searches', function () {
 			$items[] = array(
 				'name' => $r['name'] ?? '', 'type' => $r['type'] ?? '', 'city' => $r['city'] ?? '',
 				'phone' => $r['phone'] ?? '', 'phone_intl' => $r['phone_intl'] ?? '', 'website' => $r['website'] ?? '',
-				'address' => $r['address'] ?? '', 'maps_uri' => $r['maps_uri'] ?? '',
+				'address' => $r['address'] ?? '', 'maps' => $r['maps'] ?? ( $r['maps_uri'] ?? '' ),
 				'rating' => (float) ( $r['rating'] ?? 0 ), 'reviews' => (int) ( $r['reviews'] ?? 0 ), 'exists' => (bool) $ex,
+				'real' => ! empty( $r['real'] ) || ( function_exists( 'ag_site_kind' ) && 'real' === ag_site_kind( $r['website'] ?? '' )[0] ),
 				'demo' => function_exists( 'ag_demo_link_for' ) ? ag_demo_link_for( ( $r['type'] ?? '' ) . ' ' . ( $r['name'] ?? '' ) ) : '',
 			);
 		}
