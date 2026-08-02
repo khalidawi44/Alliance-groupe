@@ -2072,8 +2072,8 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
                 array( 'name' => '[Me Bernard]', 'role' => 'Collaborateur', 'photo' => '', 'bio' => 'Droit immobilier et fiscalité. Maîtrise patrimoniale.' ),
             );
         }
-        $title    = get_theme_mod( 'ag_business_team_title', __( 'Notre équipe', 'ag-starter-avocat' ) );
-        $subtitle = get_theme_mod( 'ag_business_team_subtitle', __( "Une équipe d'avocats expérimentés à votre service. Chaque dossier traité avec rigueur, écoute et discrétion.", 'ag-starter-avocat' ) );
+        $title    = get_theme_mod( 'ag_business_team_title', __( 'Our team', 'ag-starter-avocat' ) );
+        $subtitle = get_theme_mod( 'ag_business_team_subtitle', __( "A team of experienced attorneys at your service. Every case handled with rigor, attentiveness and discretion.", 'ag-starter-avocat' ) );
         ?>
         <section class="ag-section ag-team" id="ag-team">
             <div class="ag-container">
@@ -2081,7 +2081,7 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
                 <p class="ag-section-lead"><?php echo esc_html( $subtitle ); ?></p>
                 <div class="ag-team__grid">
                     <?php $cab_url = $this->get_cabinet_url(); foreach ( $members as $m ) : ?>
-                        <a class="ag-team-card" href="<?php echo esc_url( $cab_url ); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'En savoir plus sur %s — Le cabinet', 'ag-starter-avocat' ), $m['name'] ) ); ?>">
+                        <a class="ag-team-card" href="<?php echo esc_url( $cab_url ); ?>" aria-label="<?php echo esc_attr( sprintf( __( 'Learn more about %s — The firm', 'ag-starter-avocat' ), $m['name'] ) ); ?>">
                             <?php if ( ! empty( $m['photo'] ) ) : ?>
                                 <div class="ag-team-card__photo">
                                     <img src="<?php echo esc_url( $m['photo'] ); ?>" alt="<?php echo esc_attr( $m['name'] ); ?>" loading="lazy">
@@ -2093,7 +2093,7 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
                                 <?php if ( ! empty( $m['bio'] ) ) : ?>
                                     <p class="ag-team-card__bio"><?php echo esc_html( $m['bio'] ); ?></p>
                                 <?php endif; ?>
-                                <span class="ag-team-card__more"><?php esc_html_e( 'Voir le cabinet →', 'ag-starter-avocat' ); ?></span>
+                                <span class="ag-team-card__more"><?php esc_html_e( 'See the firm →', 'ag-starter-avocat' ); ?></span>
                             </div>
                         </a>
                     <?php endforeach; ?>
@@ -2111,7 +2111,7 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
 
         $products       = array();
         $is_woocommerce = class_exists( 'WooCommerce' ) && function_exists( 'wc_get_products' );
-        $cta_label      = __( 'Acheter →', 'ag-starter-avocat' );
+        $cta_label      = __( 'Buy →', 'ag-starter-avocat' );
         $shop_url       = '';
 
         // Source 1 : WooCommerce — récupère les 3 derniers produits publiés
@@ -2170,8 +2170,8 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
             );
         }
 
-        $title    = get_theme_mod( 'ag_business_shop_title', __( 'Nos services à la carte', 'ag-starter-avocat' ) );
-        $subtitle = get_theme_mod( 'ag_business_shop_subtitle', __( 'Achetez directement en ligne. Paiement sécurisé, livraison immédiate par email.', 'ag-starter-avocat' ) );
+        $title    = get_theme_mod( 'ag_business_shop_title', __( 'Our à la carte services', 'ag-starter-avocat' ) );
+        $subtitle = get_theme_mod( 'ag_business_shop_subtitle', __( 'Buy directly online. Secure payment, instant delivery by email.', 'ag-starter-avocat' ) );
 
         // Inline <style> + <script> pour garantir que l animation marche
         // meme si le CSS principal est en cache, surcharge ou bloque.
@@ -2263,14 +2263,14 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
                 </div>
                 <?php if ( $is_woocommerce && $shop_url ) : ?>
                     <p class="ag-boutique__more">
-                        <a href="<?php echo esc_url( $shop_url ); ?>" class="ag-boutique__more-link"><?php esc_html_e( 'Voir tous les produits de la boutique →', 'ag-starter-avocat' ); ?></a>
+                        <a href="<?php echo esc_url( $shop_url ); ?>" class="ag-boutique__more-link"><?php esc_html_e( 'See all shop products →', 'ag-starter-avocat' ); ?></a>
                     </p>
                 <?php endif; ?>
                 <p class="ag-boutique__note"><?php
                     if ( $is_woocommerce ) {
-                        esc_html_e( '🔒 Paiement sécurisé · Boutique WooCommerce', 'ag-starter-avocat' );
+                        esc_html_e( '🔒 Secure payment · WooCommerce shop', 'ag-starter-avocat' );
                     } else {
-                        esc_html_e( '🔒 Installez WooCommerce pour activer la boutique automatique', 'ag-starter-avocat' );
+                        esc_html_e( '🔒 Install WooCommerce to enable the automatic shop', 'ag-starter-avocat' );
                     }
                 ?></p>
             </div>
@@ -2351,9 +2351,9 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
         if ( ! $phone ) return;
         $clean = preg_replace( '/[^0-9+]/', '', $phone );
         ?>
-        <a href="tel:<?php echo esc_attr( $clean ); ?>" class="ag-mobile-call" aria-label="<?php esc_attr_e( 'Appeler', 'ag-starter-avocat' ); ?>">
+        <a href="tel:<?php echo esc_attr( $clean ); ?>" class="ag-mobile-call" aria-label="<?php esc_attr_e( 'Call', 'ag-starter-avocat' ); ?>">
             <span class="ag-mobile-call__icon">📞</span>
-            <span class="ag-mobile-call__text"><?php esc_html_e( 'Appeler', 'ag-starter-avocat' ); ?></span>
+            <span class="ag-mobile-call__text"><?php esc_html_e( 'Call', 'ag-starter-avocat' ); ?></span>
         </a>
         <style>
         .ag-mobile-call{display:none;}
@@ -2374,10 +2374,10 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
     public function render_counters() {
         if ( ! $this->is_at_least( 'business' ) ) return;
         $counters = array(
-            array( 'number' => '15+', 'label' => __( "Annees d'experience", 'ag-starter-avocat' ) ),
-            array( 'number' => '500+', 'label' => __( 'Dossiers traites', 'ag-starter-avocat' ) ),
-            array( 'number' => '98%', 'label' => __( 'Clients satisfaits', 'ag-starter-avocat' ) ),
-            array( 'number' => '24/7', 'label' => __( 'Garde a vue', 'ag-starter-avocat' ) ),
+            array( 'number' => '15+', 'label' => __( "Years of experience", 'ag-starter-avocat' ) ),
+            array( 'number' => '500+', 'label' => __( 'Cases handled', 'ag-starter-avocat' ) ),
+            array( 'number' => '98%', 'label' => __( 'Satisfied clients', 'ag-starter-avocat' ) ),
+            array( 'number' => '24/7', 'label' => __( 'Police custody', 'ag-starter-avocat' ) ),
         );
         echo '<section class="ag-section ag-counters"><div class="ag-container"><div class="ag-counters__grid">';
         foreach ( $counters as $c ) {
@@ -2411,10 +2411,10 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
         if ( ! $this->is_at_least( 'business' ) ) return;
         $rpva = ag_starter_avocat_get_option( 'ag_cabinet_rpva' );
         echo '<div class="ag-trust-bar"><div class="ag-container ag-trust-bar__inner">';
-        echo '<span class="ag-trust-badge">⚖️ ' . esc_html__( 'Barreau inscrit', 'ag-starter-avocat' ) . '</span>';
+        echo '<span class="ag-trust-badge">⚖️ ' . esc_html__( 'Bar admission', 'ag-starter-avocat' ) . '</span>';
         if ( $rpva ) echo '<span class="ag-trust-badge">🔒 RPVA ' . esc_html( $rpva ) . '</span>';
-        echo '<span class="ag-trust-badge">📋 ' . esc_html__( 'Convention d\'honoraires', 'ag-starter-avocat' ) . '</span>';
-        echo '<span class="ag-trust-badge">🛡️ ' . esc_html__( 'Secret professionnel', 'ag-starter-avocat' ) . '</span>';
+        echo '<span class="ag-trust-badge">📋 ' . esc_html__( 'Fee agreement', 'ag-starter-avocat' ) . '</span>';
+        echo '<span class="ag-trust-badge">🛡️ ' . esc_html__( 'Attorney-client privilege', 'ag-starter-avocat' ) . '</span>';
         echo '</div></div>';
     }
 

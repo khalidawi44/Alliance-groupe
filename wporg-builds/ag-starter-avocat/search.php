@@ -10,7 +10,7 @@ get_header();
 	<section class="ag-page-hero">
 		<div class="ag-container">
 			<h1 class="ag-page-hero__title">
-				<?php printf( esc_html__( 'Resultats pour : %s', 'ag-starter-avocat' ), '<em>' . esc_html( get_search_query() ) . '</em>' ); ?>
+				<?php printf( esc_html__( 'Results for: %s', 'ag-starter-avocat' ), '<em>' . esc_html( get_search_query() ) . '</em>' ); ?>
 			</h1>
 		</div>
 	</section>
@@ -29,7 +29,7 @@ get_header();
 							<time class="ag-post-card__date" datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>"><?php echo esc_html( get_the_date() ); ?></time>
 							<h2 class="ag-post-card__title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
 							<p class="ag-post-card__excerpt"><?php echo esc_html( wp_trim_words( get_the_excerpt(), 20 ) ); ?></p>
-							<a href="<?php the_permalink(); ?>" class="ag-post-card__more"><?php esc_html_e( 'Lire la suite', 'ag-starter-avocat' ); ?></a>
+							<a href="<?php the_permalink(); ?>" class="ag-post-card__more"><?php esc_html_e( 'Read more', 'ag-starter-avocat' ); ?></a>
 						</div>
 					</article>
 				<?php endwhile; ?>
@@ -45,7 +45,7 @@ get_header();
 
 		<?php else : ?>
 			<div class="ag-page-article" style="text-align:center;padding:60px 40px;">
-				<p class="ag-404-text"><?php esc_html_e( 'Aucun resultat. Essayez avec d\'autres mots-cles.', 'ag-starter-avocat' ); ?></p>
+				<p class="ag-404-text"><?php esc_html_e( 'No results. Try other keywords.', 'ag-starter-avocat' ); ?></p>
 				<div style="margin-top:24px;"><?php get_search_form(); ?></div>
 			</div>
 		<?php endif; ?>

@@ -27,7 +27,7 @@ get_header();
 				<?php
 				the_content();
 				wp_link_pages( array(
-					'before' => '<div class="ag-page-links">' . esc_html__( 'Pages :', 'ag-starter-avocat' ) . ' ',
+					'before' => '<div class="ag-page-links">' . esc_html__( 'Pages:', 'ag-starter-avocat' ) . ' ',
 					'after'  => '</div>',
 				) );
 				?>
@@ -36,11 +36,11 @@ get_header();
 				<?php
 				$categories = get_the_category_list( ', ' );
 				if ( $categories ) {
-					printf( '<p>%s %s</p>', esc_html__( 'Categories :', 'ag-starter-avocat' ), wp_kses_post( $categories ) );
+					printf( '<p>%s %s</p>', esc_html__( 'Categories:', 'ag-starter-avocat' ), wp_kses_post( $categories ) );
 				}
 				$tags = get_the_tag_list( '', ', ' );
 				if ( $tags ) {
-					printf( '<p>%s %s</p>', esc_html__( 'Etiquettes :', 'ag-starter-avocat' ), wp_kses_post( $tags ) );
+					printf( '<p>%s %s</p>', esc_html__( 'Tags:', 'ag-starter-avocat' ), wp_kses_post( $tags ) );
 				}
 				?>
 			</footer>

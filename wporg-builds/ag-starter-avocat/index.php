@@ -12,7 +12,7 @@ get_header();
 			<?php if ( is_home() && ! is_front_page() ) : ?>
 				<h1 class="ag-page-hero__title"><?php single_post_title(); ?></h1>
 			<?php else : ?>
-				<h1 class="ag-page-hero__title"><?php esc_html_e( 'Actualites', 'ag-starter-avocat' ); ?></h1>
+				<h1 class="ag-page-hero__title"><?php esc_html_e( 'News', 'ag-starter-avocat' ); ?></h1>
 			<?php endif; ?>
 		</div>
 	</section>
@@ -31,7 +31,7 @@ get_header();
 							<time class="ag-post-card__date" datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>"><?php echo esc_html( get_the_date() ); ?></time>
 							<h2 class="ag-post-card__title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
 							<p class="ag-post-card__excerpt"><?php echo esc_html( wp_trim_words( get_the_excerpt(), 20 ) ); ?></p>
-							<a href="<?php the_permalink(); ?>" class="ag-post-card__more"><?php esc_html_e( 'Lire la suite', 'ag-starter-avocat' ); ?></a>
+							<a href="<?php the_permalink(); ?>" class="ag-post-card__more"><?php esc_html_e( 'Read more', 'ag-starter-avocat' ); ?></a>
 						</div>
 					</article>
 				<?php endwhile; ?>
@@ -46,7 +46,7 @@ get_header();
 			?>
 
 		<?php else : ?>
-			<p class="ag-no-results"><?php esc_html_e( 'Aucun article pour le moment.', 'ag-starter-avocat' ); ?></p>
+			<p class="ag-no-results"><?php esc_html_e( 'No posts yet.', 'ag-starter-avocat' ); ?></p>
 		<?php endif; ?>
 	</div>
 

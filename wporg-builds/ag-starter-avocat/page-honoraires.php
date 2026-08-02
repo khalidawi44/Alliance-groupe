@@ -13,8 +13,8 @@ get_header();
 
 	<section class="ag-page-hero">
 		<div class="ag-container">
-			<h1 class="ag-page-hero__title"><?php esc_html_e( 'Honoraires', 'ag-starter-avocat' ); ?></h1>
-			<p class="ag-page-hero__lead"><?php esc_html_e( 'Transparence totale sur les tarifs : pas de mauvaise surprise, devis ecrit avant tout engagement.', 'ag-starter-avocat' ); ?></p>
+			<h1 class="ag-page-hero__title"><?php esc_html_e( 'Fees', 'ag-starter-avocat' ); ?></h1>
+			<p class="ag-page-hero__lead"><?php esc_html_e( 'Full pricing transparency: no bad surprises, a written quote before any commitment.', 'ag-starter-avocat' ); ?></p>
 		</div>
 	</section>
 
@@ -61,15 +61,15 @@ get_header();
 		<div class="ag-container ag-page-content-wrap">
 			<div class="ag-page-article">
 				<div class="ag-entry-content">
-					<h2><?php esc_html_e( 'Comment sont calcules nos honoraires ?', 'ag-starter-avocat' ); ?></h2>
-					<p><?php esc_html_e( 'Avant toute intervention, une convention d\'honoraires ecrite vous est remise. Elle precise le mode de facturation choisi, le montant ou le taux horaire applicable, ainsi que les eventuels frais annexes.', 'ag-starter-avocat' ); ?></p>
+					<h2><?php esc_html_e( 'How are our fees calculated?', 'ag-starter-avocat' ); ?></h2>
+					<p><?php esc_html_e( 'Before any work begins, a written fee agreement is provided to you. It specifies the chosen billing method, the amount or applicable hourly rate, as well as any additional fees.', 'ag-starter-avocat' ); ?></p>
 					<ul>
-						<li><?php esc_html_e( 'Consultation initiale : premier rendez-vous pour analyser votre situation', 'ag-starter-avocat' ); ?></li>
-						<li><?php esc_html_e( 'Forfait : prix fixe convenu a l\'avance pour un dossier defini', 'ag-starter-avocat' ); ?></li>
-						<li><?php esc_html_e( 'Au temps passe : facturation horaire avec releve detaille', 'ag-starter-avocat' ); ?></li>
-						<li><?php esc_html_e( 'Honoraires de resultat : complement lie a l\'issue favorable du dossier', 'ag-starter-avocat' ); ?></li>
+						<li><?php esc_html_e( 'Initial consultation: a first appointment to review your situation', 'ag-starter-avocat' ); ?></li>
+						<li><?php esc_html_e( 'Flat fee: a fixed price agreed in advance for a defined case', 'ag-starter-avocat' ); ?></li>
+						<li><?php esc_html_e( 'Time-based: hourly billing with a detailed statement', 'ag-starter-avocat' ); ?></li>
+						<li><?php esc_html_e( 'Success fee: a supplement tied to a favorable outcome of the case', 'ag-starter-avocat' ); ?></li>
 					</ul>
-					<p><?php esc_html_e( 'L\'aide juridictionnelle est acceptee pour les dossiers eligibles.', 'ag-starter-avocat' ); ?></p>
+					<p><?php esc_html_e( 'Legal aid is accepted for eligible cases.', 'ag-starter-avocat' ); ?></p>
 				</div>
 			</div>
 		</div>
@@ -77,7 +77,7 @@ get_header();
 
 	<section class="ag-section ag-rdv-cta" style="text-align:center;padding-top:0;">
 		<div class="ag-container">
-			<a href="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" class="ag-btn"><?php esc_html_e( 'Demander un devis gratuit', 'ag-starter-avocat' ); ?></a>
+			<a href="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" class="ag-btn"><?php esc_html_e( 'Request a free quote', 'ag-starter-avocat' ); ?></a>
 		</div>
 	</section>
 

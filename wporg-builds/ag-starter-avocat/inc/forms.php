@@ -23,19 +23,19 @@ function ag_starter_avocat_handle_rdv_form() {
 		return;
 	}
 	if ( ! isset( $_POST['ag_rdv_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['ag_rdv_nonce'] ) ), 'ag_rdv_send' ) ) {
-		ag_starter_avocat_set_rdv_status( 'error', __( 'Erreur de securite. Veuillez recharger la page et reessayer.', 'ag-starter-avocat' ) );
+		ag_starter_avocat_set_rdv_status( 'error', __( 'Security error. Please reload the page and try again.', 'ag-starter-avocat' ) );
 		return;
 	}
 
 	// Honeypot : real users leave this empty. Bots fill it.
 	if ( ! empty( $_POST['ag_rdv_website'] ) ) {
-		ag_starter_avocat_set_rdv_status( 'error', __( 'Spam detecte.', 'ag-starter-avocat' ) );
+		ag_starter_avocat_set_rdv_status( 'error', __( 'Spam detected.', 'ag-starter-avocat' ) );
 		return;
 	}
 
 	// RGPD consent.
 	if ( empty( $_POST['ag_rdv_rgpd'] ) ) {
-		ag_starter_avocat_set_rdv_status( 'error', __( 'Vous devez accepter le traitement de vos donnees pour soumettre une demande.', 'ag-starter-avocat' ) );
+		ag_starter_avocat_set_rdv_status( 'error', __( 'You must accept the processing of your data to submit a request.', 'ag-starter-avocat' ) );
 		return;
 	}
 
@@ -50,7 +50,7 @@ function ag_starter_avocat_handle_rdv_form() {
 
 	// Required fields.
 	if ( '' === $nom || '' === $email || ! is_email( $email ) || '' === $message ) {
-		ag_starter_avocat_set_rdv_status( 'error', __( 'Merci de remplir au moins le nom, un email valide et une description du dossier.', 'ag-starter-avocat' ) );
+		ag_starter_avocat_set_rdv_status( 'error', __( 'Please fill in at least the name, a valid email and a case description.', 'ag-starter-avocat' ) );
 		return;
 	}
 
@@ -91,9 +91,9 @@ function ag_starter_avocat_handle_rdv_form() {
 
 	$sent = wp_mail( $recipient, $subject, $body, $headers );
 	if ( $sent ) {
-		ag_starter_avocat_set_rdv_status( 'success', __( 'Votre demande a bien ete envoyee. Le cabinet vous recontactera sous 48h ouvrees, en toute confidentialite.', 'ag-starter-avocat' ) );
+		ag_starter_avocat_set_rdv_status( 'success', __( 'Your request has been sent. The firm will get back to you within 48 business hours, in full confidentiality.', 'ag-starter-avocat' ) );
 	} else {
-		ag_starter_avocat_set_rdv_status( 'error', __( 'Une erreur est survenue lors de l\'envoi. Vous pouvez nous joindre directement par email ou telephone.', 'ag-starter-avocat' ) );
+		ag_starter_avocat_set_rdv_status( 'error', __( 'An error occurred while sending. You can reach us directly by email or phone.', 'ag-starter-avocat' ) );
 	}
 }
 add_action( 'init', 'ag_starter_avocat_handle_rdv_form' );

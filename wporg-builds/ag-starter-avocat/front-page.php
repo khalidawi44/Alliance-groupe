@@ -295,7 +295,7 @@ endwhile; rewind_posts(); endif; ?>
 									echo '<option value="' . esc_attr( get_the_title( $d ) ) . '">' . esc_html( get_the_title( $d ) ) . '</option>';
 								}
 							} else {
-								echo '<option>' . esc_html__( 'Conseil general', 'ag-starter-avocat' ) . '</option>';
+								echo '<option>' . esc_html__( 'General advice', 'ag-starter-avocat' ) . '</option>';
 							}
 							?>
 							<option value="autre"><?php echo esc_html( ag_avocat_opt( 'ag_avocat_rdv_domaine_other', 'Autre / a determiner' ) ); ?></option>

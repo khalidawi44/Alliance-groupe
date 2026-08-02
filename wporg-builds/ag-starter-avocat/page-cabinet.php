@@ -9,8 +9,8 @@ get_header();
 
 	<section class="ag-page-hero ag-page-hero--cabinet">
 		<div class="ag-container">
-			<h1 class="ag-page-hero__title"><?php esc_html_e( 'Le cabinet', 'ag-starter-avocat' ); ?></h1>
-			<p class="ag-page-hero__lead"><?php esc_html_e( 'Notre engagement : rigueur, ecoute et confidentialite au service de vos interets.', 'ag-starter-avocat' ); ?></p>
+			<h1 class="ag-page-hero__title"><?php esc_html_e( 'The firm', 'ag-starter-avocat' ); ?></h1>
+			<p class="ag-page-hero__lead"><?php esc_html_e( 'Our commitment: rigor, attentiveness and confidentiality at the service of your interests.', 'ag-starter-avocat' ); ?></p>
 		</div>
 	</section>
 
@@ -19,7 +19,7 @@ get_header();
 		?>
 	<section class="ag-section ag-maitre">
 		<div class="ag-container">
-			<h2 class="ag-section-title"><?php esc_html_e( 'Votre avocat', 'ag-starter-avocat' ); ?></h2>
+			<h2 class="ag-section-title"><?php esc_html_e( 'Your attorney', 'ag-starter-avocat' ); ?></h2>
 			<div class="ag-maitre__inner">
 				<?php if ( $maitre_photo ) : ?>
 					<div class="ag-maitre__photo">
@@ -27,17 +27,17 @@ get_header();
 					</div>
 				<?php endif; ?>
 				<div class="ag-maitre__body">
-					<span class="ag-maitre__tag"><?php esc_html_e( 'Le Maître', 'ag-starter-avocat' ); ?></span>
+					<span class="ag-maitre__tag"><?php esc_html_e( 'The Attorney', 'ag-starter-avocat' ); ?></span>
 					<h2 class="ag-maitre__name"><?php echo esc_html( ag_starter_avocat_get_option( 'ag_maitre_name' ) ); ?></h2>
 					<div class="ag-maitre__meta">
 						<span><?php echo esc_html( ag_starter_avocat_get_option( 'ag_maitre_barreau' ) ); ?></span>
 						<?php $year = ag_starter_avocat_get_option( 'ag_maitre_year' ); if ( $year ) : ?>
-							<span> · <?php printf( esc_html__( 'Inscrit depuis %s', 'ag-starter-avocat' ), esc_html( $year ) ); ?></span>
+							<span> · <?php printf( esc_html__( 'Admitted since %s', 'ag-starter-avocat' ), esc_html( $year ) ); ?></span>
 						<?php endif; ?>
 					</div>
 					<p class="ag-maitre__bio"><?php echo nl2br( esc_html( ag_starter_avocat_get_option( 'ag_maitre_bio' ) ) ); ?></p>
 					<?php $spec = ag_starter_avocat_get_option( 'ag_maitre_specialties' ); if ( $spec ) : ?>
-						<p class="ag-maitre__specialties"><strong><?php esc_html_e( 'Specialites :', 'ag-starter-avocat' ); ?></strong> <?php echo esc_html( $spec ); ?></p>
+						<p class="ag-maitre__specialties"><strong><?php esc_html_e( 'Specialties:', 'ag-starter-avocat' ); ?></strong> <?php echo esc_html( $spec ); ?></p>
 					<?php endif; ?>
 					<?php do_action( 'ag_inside_maitre_body' ); ?>
 				</div>
@@ -48,8 +48,8 @@ get_header();
 
 	<section class="ag-section ag-cabinet-map-section">
 		<div class="ag-container">
-			<h2 class="ag-section-title"><?php esc_html_e( 'Nous trouver', 'ag-starter-avocat' ); ?></h2>
-			<p class="ag-section-lead"><?php esc_html_e( 'Consultation au cabinet, en visio ou par telephone.', 'ag-starter-avocat' ); ?></p>
+			<h2 class="ag-section-title"><?php esc_html_e( 'Find us', 'ag-starter-avocat' ); ?></h2>
+			<p class="ag-section-lead"><?php esc_html_e( 'Consultation at the office, by video or by phone.', 'ag-starter-avocat' ); ?></p>
 
 			<div class="ag-cabinet-full">
 				<div class="ag-cabinet-full__map">
@@ -59,12 +59,12 @@ get_header();
 				<div class="ag-cabinet-full__cards">
 					<div class="ag-cabinet__block">
 						<div class="ag-cabinet__block-icon">📍</div>
-						<h3><?php esc_html_e( 'Adresse', 'ag-starter-avocat' ); ?></h3>
+						<h3><?php esc_html_e( 'Address', 'ag-starter-avocat' ); ?></h3>
 						<p><?php echo nl2br( esc_html( ag_starter_avocat_get_option( 'ag_cabinet_address' ) ) ); ?></p>
 					</div>
 					<div class="ag-cabinet__block">
 						<div class="ag-cabinet__block-icon">🕓</div>
-						<h3><?php esc_html_e( 'Horaires', 'ag-starter-avocat' ); ?></h3>
+						<h3><?php esc_html_e( 'Hours', 'ag-starter-avocat' ); ?></h3>
 						<p><?php echo nl2br( esc_html( ag_starter_avocat_get_option( 'ag_cabinet_hours' ) ) ); ?></p>
 					</div>
 					<div class="ag-cabinet__block">
@@ -80,12 +80,12 @@ get_header();
 						</p>
 						<?php $emergency = ag_starter_avocat_get_option( 'ag_cabinet_emergency' ); if ( $emergency ) : ?>
 							<p class="ag-cabinet__emergency">
-								<strong><?php esc_html_e( 'Garde a vue 24/7 :', 'ag-starter-avocat' ); ?></strong>
+								<strong><?php esc_html_e( 'Police custody 24/7:', 'ag-starter-avocat' ); ?></strong>
 								<a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $emergency ) ); ?>"><?php echo esc_html( $emergency ); ?></a>
 							</p>
 						<?php endif; ?>
 					</div>
-					<a href="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" class="ag-btn ag-cabinet-full__btn"><?php esc_html_e( 'Prendre rendez-vous', 'ag-starter-avocat' ); ?></a>
+					<a href="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" class="ag-btn ag-cabinet-full__btn"><?php esc_html_e( 'Book an appointment', 'ag-starter-avocat' ); ?></a>
 				</div>
 			</div>
 		</div>

@@ -1,0 +1,629 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: AG Starter Avocat\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr_FR\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "%s comment"
+msgstr "%s commentaire"
+
+msgid "%s comments"
+msgstr "%s commentaires"
+
+msgid "100% free, no internet connection required"
+msgstr "100% gratuit, aucune connexion internet requise"
+
+msgid "A team of experienced attorneys at your service. Every case handled with rigor, attentiveness and discretion."
+msgstr "Une équipe d'avocats expérimentés à votre service. Chaque dossier traité avec rigueur, écoute et discrétion."
+
+msgid "AG Starter — Customization"
+msgstr "AG Starter — Personnalisation"
+
+msgid "Accent color"
+msgstr "Couleur d'accent"
+
+msgid "Add a first practice area"
+msgstr "Ajouter un premier domaine"
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "Admitted since %s"
+msgstr "Inscrit depuis %s"
+
+msgid "Advice and representation for individuals and businesses across the main areas of law."
+msgstr "Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit."
+
+msgid "All practice areas"
+msgstr "Tous les domaines d'expertise"
+
+msgid "All rights reserved."
+msgstr "Tous droits reserves."
+
+msgid "Alliance Gold"
+msgstr "Or Alliance"
+
+msgid "An error occurred while sending. You can reach us directly by email or phone."
+msgstr "Une erreur est survenue lors de l'envoi. Vous pouvez nous joindre directement par email ou telephone."
+
+msgid "Appointment form &amp; GDPR"
+msgstr "Formulaire de rendez-vous &amp; RGPD"
+
+msgid "Appointment — \"Other\" option"
+msgstr "RDV — option « Autre »"
+
+msgid "Appointment — Area label"
+msgstr "RDV — label Domaine"
+
+msgid "Appointment — At the office format"
+msgstr "RDV — format Au cabinet"
+
+msgid "Appointment — By phone format"
+msgstr "RDV — format Par téléphone"
+
+msgid "Appointment — By video format"
+msgstr "RDV — format En visio"
+
+msgid "Appointment — Description label"
+msgstr "RDV — label Description"
+
+msgid "Appointment — Email label"
+msgstr "RDV — label Email"
+
+msgid "Appointment — First name label"
+msgstr "RDV — label Prénom"
+
+msgid "Appointment — Format label"
+msgstr "RDV — label Format"
+
+msgid "Appointment — Name label"
+msgstr "RDV — label Nom"
+
+msgid "Appointment — Phone label"
+msgstr "RDV — label Téléphone"
+
+msgid "Appointment — area placeholder"
+msgstr "RDV — placeholder domaine"
+
+msgid "Appointment — legal note (under button)"
+msgstr "RDV — note légale (sous bouton)"
+
+msgid "Appointment — submit button"
+msgstr "RDV — bouton submit"
+
+msgid "Areas — H2 title"
+msgstr "Domaines — titre H2"
+
+msgid "Areas — add button (admin)"
+msgstr "Domaines — bouton ajout (admin)"
+
+msgid "Areas — admin tip"
+msgstr "Domaines — astuce admin"
+
+msgid "Areas — empty message"
+msgstr "Domaines — message si vide"
+
+msgid "Areas — intro sentence"
+msgstr "Domaines — phrase d'intro"
+
+msgid "At the office"
+msgstr "Au cabinet"
+
+msgid "Attorney admitted to the %s"
+msgstr "Avocat inscrit au %s"
+
+msgid "Attorney photo (optional)"
+msgstr "Photo du Maître (optionnel)"
+
+msgid "Attorney — Specialties label"
+msgstr "Maître — libellé Specialités"
+
+msgid "Attorney — label"
+msgstr "Maître — étiquette"
+
+msgid "Attorney — year prefix (Admitted since…)"
+msgstr "Maître — préfixe année (Inscrit depuis…)"
+
+msgid "Attorney-client privilege"
+msgstr "Secret professionnel"
+
+msgid "Back to home"
+msgstr "Retour a l'accueil"
+
+msgid "Bar admission"
+msgstr "Barreau inscrit"
+
+msgid "Base text size (px)"
+msgstr "Taille de base du texte (px)"
+
+msgid "Before any work begins, a written fee agreement is provided to you. It specifies the chosen billing method, the amount or applicable hourly rate, as well as any additional fees."
+msgstr "Avant toute intervention, une convention d'honoraires ecrite vous est remise. Elle precise le mode de facturation choisi, le montant ou le taux horaire applicable, ainsi que les eventuels frais annexes."
+
+msgid "Between 14 and 20."
+msgstr "Entre 14 et 20."
+
+msgid "Book an appointment"
+msgstr "Prendre rendez-vous"
+
+msgid "Book an appointment for a first confidential consultation."
+msgstr "Prenez rendez-vous pour une premiere consultation confidentielle."
+
+msgid "Border color"
+msgstr "Couleur des bordures"
+
+msgid "Business name"
+msgstr "Nom de l'etablissement"
+
+msgid "Button link (URL or #anchor)"
+msgstr "Lien du bouton (URL ou #ancre)"
+
+msgid "Button text"
+msgstr "Texte du bouton"
+
+msgid "Buy directly online. Secure payment, instant delivery by email."
+msgstr "Achetez directement en ligne. Paiement sécurisé, livraison immédiate par email."
+
+msgid "Buy →"
+msgstr "Acheter →"
+
+msgid "By email"
+msgstr "Par email"
+
+msgid "By phone"
+msgstr "Par telephone"
+
+msgid "By video"
+msgstr "En visio"
+
+msgid "Call"
+msgstr "Appeler"
+
+msgid "Call to action — Firm"
+msgstr "Appel à action — Cabinet"
+
+msgid "Cards background"
+msgstr "Arriere-plan des cartes"
+
+msgid "Case description (in a few lines)"
+msgstr "Description du dossier (en quelques lignes)"
+
+msgid "Cases handled"
+msgstr "Dossiers traites"
+
+msgid "Categories:"
+msgstr "Categories :"
+
+msgid "Change the colors, typography and key texts of your theme right here. No code required."
+msgstr "Modifiez les couleurs, la typographie et les textes cles de votre theme directement ici. Aucun code requis."
+
+msgid "Classic sans-serif"
+msgstr "Sans-serif classique"
+
+msgid "Comments are closed."
+msgstr "Les commentaires sont fermes."
+
+msgid "Compact"
+msgstr "Compact"
+
+msgid "Confidential request protected by attorney-client privilege. Reply within 48 business hours."
+msgstr "Demande confidentielle protegee par le secret professionnel. Reponse sous 48h ouvrees."
+
+msgid "Consultation at the office, by video or by phone."
+msgstr "Consultation au cabinet, en visio ou par telephone."
+
+msgid "Contact"
+msgstr "Contact"
+
+msgid "Cookies"
+msgstr "Cookies"
+
+msgid "Custom copyright text"
+msgstr "Texte de copyright personnalise"
+
+msgid "Custom site (+340% leads) →"
+msgstr "Site sur-mesure (+340% leads) →"
+
+msgid "Customize the intro sentences (under the titles) of each home section."
+msgstr "Personnalisez les phrases d'introduction (sous les titres) de chaque section de l'accueil."
+
+msgid "Default"
+msgstr "Par defaut"
+
+msgid "Do you have a case in this area?"
+msgstr "Vous avez un dossier dans ce domaine ?"
+
+msgid "Download AG Starter Companion"
+msgstr "Télécharger AG Starter Companion"
+
+msgid "Download the ZIP, then Plugins → Add New → Upload"
+msgstr "Téléchargez le ZIP, puis Extensions → Ajouter → Téléverser"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Ethics &amp; GDPR"
+msgstr "Déontologie &amp; RGPD"
+
+msgid "Examples of handled cases"
+msgstr "Exemples de cas traites"
+
+msgid "Fee agreement"
+msgstr "Convention d'honoraires"
+
+msgid "Fees"
+msgstr "Honoraires"
+
+msgid "Fees (pricing transparency)"
+msgstr "Honoraires (transparence tarifaire)"
+
+msgid "Fees — H2 title"
+msgstr "Honoraires — titre H2"
+
+msgid "Fees — intro sentence"
+msgstr "Honoraires — phrase d'intro"
+
+msgid "Find us"
+msgstr "Nous trouver"
+
+msgid "Firm"
+msgstr "Cabinet"
+
+msgid "Firm (contact &amp; hours)"
+msgstr "Cabinet (contact &amp; horaires)"
+
+msgid "Firm — Address block title"
+msgstr "Cabinet — titre bloc Adresse"
+
+msgid "Firm — Contact block title"
+msgstr "Cabinet — titre bloc Contact"
+
+msgid "Firm — H2 title"
+msgstr "Cabinet — titre H2"
+
+msgid "Firm — Hours block title"
+msgstr "Cabinet — titre bloc Horaires"
+
+msgid "Firm — intro sentence"
+msgstr "Cabinet — phrase d'intro"
+
+msgid "Firm — police custody label"
+msgstr "Cabinet — libellé garde à vue"
+
+msgid "First call free, no obligation"
+msgstr "Premier appel gratuit, sans engagement"
+
+msgid "First name"
+msgstr "Prenom"
+
+msgid "Flat fee: a fixed price agreed in advance for a defined case"
+msgstr "Forfait : prix fixe convenu a l'avance pour un dossier defini"
+
+msgid "Font family"
+msgstr "Famille de police"
+
+msgid "Footer"
+msgstr "Pied de page"
+
+msgid "Free — 10 seconds — no sign-up"
+msgstr "Gratuit — 10 secondes — aucune inscription"
+
+msgid "Full pricing transparency: no bad surprises, a written quote before any commitment."
+msgstr "Transparence totale sur les tarifs : pas de mauvaise surprise, devis ecrit avant tout engagement."
+
+msgid "General advice"
+msgstr "Conseil general"
+
+msgid "Get the free guide: 7 pages that attract clients"
+msgstr "Recevoir le guide gratuit : 7 pages qui attirent des clients"
+
+msgid "Headings color"
+msgstr "Couleur des titres"
+
+msgid "Headings size"
+msgstr "Taille des titres"
+
+msgid "Hero (home)"
+msgstr "Hero (accueil)"
+
+msgid "Home"
+msgstr "Accueil"
+
+msgid "Home content — texts"
+msgstr "Contenu accueil — textes"
+
+msgid "Home page and permalinks enabled"
+msgstr "Page d'accueil et permaliens actives"
+
+msgid "Hosting in the European Union — data protected by attorney-client privilege."
+msgstr "Hébergement en Union Européenne — données protégées par le secret professionnel."
+
+msgid "Hours"
+msgstr "Horaires"
+
+msgid "How are our fees calculated?"
+msgstr "Comment sont calcules nos honoraires ?"
+
+msgid "Initial consultation: a first appointment to review your situation"
+msgstr "Consultation initiale : premier rendez-vous pour analyser votre situation"
+
+msgid "Install the free AG Starter Companion plugin to automatically create your pages and menu and set up your site in one click."
+msgstr "Installez le plugin gratuit AG Starter Companion pour creer automatiquement vos pages, votre menu et configurer votre site en 1 clic."
+
+msgid "Is the <strong>AG Starter Avocat</strong> theme useful to you? An honest review (30 seconds) helps other law firms discover it. <a href=\"%1$s\" target=\"_blank\" rel=\"noopener\">Leave a review</a> &middot; <a href=\"%2$s\">Dismiss</a>"
+msgstr "Le th&egrave;me <strong>AG Starter Avocat</strong> vous est utile&nbsp;? Un avis honn&ecirc;te (30&nbsp;secondes) aide d'autres cabinets &agrave; le d&eacute;couvrir. <a href=\"%1$s\" target=\"_blank\" rel=\"noopener\">Laisser un avis</a> &middot; <a href=\"%2$s\">Ne plus afficher</a>"
+
+msgid "Large"
+msgstr "Grand"
+
+msgid "Learn more about %s — The firm"
+msgstr "En savoir plus sur %s — Le cabinet"
+
+msgid "Leave empty for the default text."
+msgstr "Laissez vide pour le texte par defaut."
+
+msgid "Legal aid is accepted for eligible cases."
+msgstr "L'aide juridictionnelle est acceptee pour les dossiers eligibles."
+
+msgid "Legal information"
+msgstr "Informations légales"
+
+msgid "Legal notice"
+msgstr "Mentions légales"
+
+msgid "Light / dark mode"
+msgstr "Mode clair / sombre"
+
+msgid "Main background"
+msgstr "Arriere-plan principal"
+
+msgid "Main menu"
+msgstr "Menu principal"
+
+msgid "Main menu configured and assigned"
+msgstr "Menu principal configure et assigne"
+
+msgid "Menu"
+msgstr "Menu"
+
+msgid "Monospace"
+msgstr "Monospace"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "Need advice? Book an appointment with the firm."
+msgstr "Besoin de conseils ? Prenez rendez-vous avec le cabinet."
+
+msgid "Need legal advice?"
+msgstr "Besoin d'un conseil ?"
+
+msgid "News"
+msgstr "Actualites"
+
+msgid "Next comments"
+msgstr "Commentaires suivants"
+
+msgid "No posts in this category."
+msgstr "Aucun article dans cette categorie."
+
+msgid "No posts yet."
+msgstr "Aucun article pour le moment."
+
+msgid "No practice area has been published yet."
+msgstr "Aucun domaine d'expertise n'est encore publie."
+
+msgid "No results. Try other keywords."
+msgstr "Aucun resultat. Essayez avec d'autres mots-cles."
+
+msgid "Notices shown in the footer. The template is \"ethics-ready\": no client testimonials and no Google reviews widget (prohibited by the French bar rules RIN/CNB). Remember to create the \"legal-notice\", \"privacy\" and \"cookies\" pages: their links will appear automatically."
+msgstr "Mentions affichées dans le pied de page. Le template est « déontologie-ready » : pas de témoignages clients ni de widget d’avis Google (interdits par le RIN/CNB). Pensez à créer les pages « mentions-legales », « confidentialite » et « cookies » : leurs liens apparaîtront automatiquement."
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Other / to be determined"
+msgstr "Autre / a determiner"
+
+msgid "Our commitment: rigor, attentiveness and confidentiality at the service of your interests."
+msgstr "Notre engagement : rigueur, ecoute et confidentialite au service de vos interets."
+
+msgid "Our team"
+msgstr "Notre équipe"
+
+msgid "Our à la carte services"
+msgstr "Nos services à la carte"
+
+msgid "Page not found"
+msgstr "Page introuvable"
+
+msgid "Pages created automatically (Home, Expertise, Fees, Firm, Appointment)"
+msgstr "Pages creees automatiquement (Accueil, Expertise, Honoraires, Cabinet, Rendez-vous)"
+
+msgid "Pages:"
+msgstr "Pages :"
+
+msgid "Phone"
+msgstr "Telephone"
+
+msgid "Please fill in at least the name, a valid email and a case description."
+msgstr "Merci de remplir au moins le nom, un email valide et une description du dossier."
+
+msgid "Police custody"
+msgstr "Garde a vue"
+
+msgid "Police custody 24/7:"
+msgstr "Garde a vue 24/7 :"
+
+msgid "Practice area"
+msgstr "Domaine d'expertise"
+
+msgid "Practice areas"
+msgstr "Domaines d'expertise"
+
+msgid "Preferred format"
+msgstr "Format souhaite"
+
+msgid "Previous comments"
+msgstr "Commentaires precedents"
+
+msgid "Privacy policy (GDPR)"
+msgstr "Politique de confidentialité (RGPD)"
+
+msgid "Read more"
+msgstr "Lire la suite"
+
+msgid "Relevant area"
+msgstr "Domaine concerne"
+
+msgid "Request a free quote"
+msgstr "Demander un devis gratuit"
+
+msgid "Results for: %s"
+msgstr "Resultats pour : %s"
+
+msgid "Satisfied clients"
+msgstr "Clients satisfaits"
+
+msgid "Search..."
+msgstr "Rechercher..."
+
+msgid "Search:"
+msgstr "Rechercher :"
+
+msgid "Secondary text"
+msgstr "Texte secondaire"
+
+msgid "Security error. Please reload the page and try again."
+msgstr "Erreur de securite. Veuillez recharger la page et reessayer."
+
+msgid "See all shop products →"
+msgstr "Voir tous les produits de la boutique →"
+
+msgid "See the firm →"
+msgstr "Voir le cabinet →"
+
+msgid "Send my request"
+msgstr "Envoyer ma demande"
+
+msgid "Serif (elegant)"
+msgstr "Serif (elegant)"
+
+msgid "Show the credit \"Free theme by Alliance Group\""
+msgstr "Afficher le credit \"Theme gratuit par Alliance Group\""
+
+msgid "Show the hero"
+msgstr "Afficher le hero"
+
+msgid "Signature"
+msgstr "Signature"
+
+msgid "Skip to main content"
+msgstr "Aller au contenu principal"
+
+msgid "Spam detected."
+msgstr "Spam detecte."
+
+msgid "Specialties:"
+msgstr "Specialites :"
+
+msgid "Subtitle"
+msgstr "Sous-titre"
+
+msgid "Success fee: a supplement tied to a favorable outcome of the case"
+msgstr "Honoraires de resultat : complement lie a l'issue favorable du dossier"
+
+msgid "Switch theme"
+msgstr "Changer de theme"
+
+msgid "System (default, fast)"
+msgstr "Systeme (defaut, rapide)"
+
+msgid "Tags:"
+msgstr "Etiquettes :"
+
+msgid "Text color"
+msgstr "Couleur du texte"
+
+msgid "The Attorney"
+msgstr "Le Maître"
+
+msgid "The Attorney (introduction)"
+msgstr "Le Maître (présentation)"
+
+msgid "The firm"
+msgstr "Le cabinet"
+
+msgid "The page you are looking for does not exist or has been moved."
+msgstr "La page que vous cherchez n'existe pas ou a ete deplacee."
+
+msgid "Theme colors"
+msgstr "Couleurs du theme"
+
+msgid "Theme: %s"
+msgstr "Theme : %s"
+
+msgid "This site does not use any advertising tracking cookies."
+msgstr "Ce site n’utilise aucun cookie de traçage publicitaire."
+
+msgid "Time-based: hourly billing with a detailed statement"
+msgstr "Au temps passe : facturation horaire avec releve detaille"
+
+msgid "Title prefix"
+msgstr "Prefixe du titre"
+
+msgid "Typography"
+msgstr "Typographie"
+
+msgid "Upgrade to the higher tier:"
+msgstr "Upgrader vers le niveau supérieur :"
+
+msgid "User guide"
+msgstr "Guide d'utilisation"
+
+msgid "Welcome to AG Starter Avocat!"
+msgstr "Bienvenue dans AG Starter Avocat !"
+
+msgid "Widgets shown in the footer."
+msgstr "Widgets affichés dans le pied de page."
+
+msgid "Years of experience"
+msgstr "Annees d'experience"
+
+msgid "You are using the free version. Upgrade to Premium or Business:"
+msgstr "Vous utilisez la version gratuite. Passez au Premium ou Business :"
+
+msgid "You must accept the processing of your data to submit a request."
+msgstr "Vous devez accepter le traitement de vos donnees pour soumettre une demande."
+
+msgid "Your attorney"
+msgstr "Votre avocat"
+
+msgid "Your request has been sent. The firm will get back to you within 48 business hours, in full confidentiality."
+msgstr "Votre demande a bien ete envoyee. Le cabinet vous recontactera sous 48h ouvrees, en toute confidentialite."
+
+msgid "Your theme is installed. For a ready-to-use site in one click (pages, menu, settings), install the free AG Starter Companion plugin."
+msgstr "Votre theme est installe. Pour un site pret a l'emploi en 1 clic (pages, menu, reglages), installez le plugin gratuit AG Starter Companion."
+
+msgid "Your theme is ready!"
+msgstr "Votre theme est pret !"
+
+msgid "— Select —"
+msgstr "— Selectionnez —"
+
+msgid "🎁 Get the free guide: 7 pages that attract clients"
+msgstr "🎁 Recevoir le guide gratuit : 7 pages qui attirent des clients"
+
+msgid "💎 Upgrade my theme"
+msgstr "💎 Ameliorer mon theme"
+
+msgid "🔒 Install WooCommerce to enable the automatic shop"
+msgstr "🔒 Installez WooCommerce pour activer la boutique automatique"
+
+msgid "🔒 Secure payment · WooCommerce shop"
+msgstr "🔒 Paiement sécurisé · Boutique WooCommerce"
+
+msgid "🚀 AG Starter Avocat — Setup"
+msgstr "🚀 AG Starter Avocat — Configuration"
+

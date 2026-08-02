@@ -33,11 +33,11 @@ $status = ag_starter_avocat_get_rdv_status();
 
 				<div class="ag-rdv__row">
 					<div class="ag-rdv__field">
-						<label for="ag_rdv_prenom"><?php esc_html_e( 'Prenom', 'ag-starter-avocat' ); ?></label>
+						<label for="ag_rdv_prenom"><?php esc_html_e( 'First name', 'ag-starter-avocat' ); ?></label>
 						<input type="text" id="ag_rdv_prenom" name="ag_rdv_prenom" autocomplete="given-name">
 					</div>
 					<div class="ag-rdv__field">
-						<label for="ag_rdv_nom"><?php esc_html_e( 'Nom', 'ag-starter-avocat' ); ?> *</label>
+						<label for="ag_rdv_nom"><?php esc_html_e( 'Name', 'ag-starter-avocat' ); ?> *</label>
 						<input type="text" id="ag_rdv_nom" name="ag_rdv_nom" required autocomplete="family-name">
 					</div>
 				</div>
@@ -47,15 +47,15 @@ $status = ag_starter_avocat_get_rdv_status();
 						<input type="email" id="ag_rdv_email" name="ag_rdv_email" required autocomplete="email">
 					</div>
 					<div class="ag-rdv__field">
-						<label for="ag_rdv_tel"><?php esc_html_e( 'Telephone', 'ag-starter-avocat' ); ?></label>
+						<label for="ag_rdv_tel"><?php esc_html_e( 'Phone', 'ag-starter-avocat' ); ?></label>
 						<input type="tel" id="ag_rdv_tel" name="ag_rdv_tel" autocomplete="tel">
 					</div>
 				</div>
 				<div class="ag-rdv__row">
 					<div class="ag-rdv__field">
-						<label for="ag_rdv_domaine"><?php esc_html_e( 'Domaine concerne', 'ag-starter-avocat' ); ?></label>
+						<label for="ag_rdv_domaine"><?php esc_html_e( 'Relevant area', 'ag-starter-avocat' ); ?></label>
 						<select id="ag_rdv_domaine" name="ag_rdv_domaine">
-							<option value=""><?php esc_html_e( '— Selectionnez —', 'ag-starter-avocat' ); ?></option>
+							<option value=""><?php esc_html_e( '— Select —', 'ag-starter-avocat' ); ?></option>
 							<?php
 							$dropdown = ag_starter_avocat_get_domaines( 20 );
 							if ( $dropdown ) {
@@ -63,23 +63,23 @@ $status = ag_starter_avocat_get_rdv_status();
 									echo '<option value="' . esc_attr( get_the_title( $d ) ) . '">' . esc_html( get_the_title( $d ) ) . '</option>';
 								}
 							} else {
-								echo '<option>' . esc_html__( 'Conseil general', 'ag-starter-avocat' ) . '</option>';
+								echo '<option>' . esc_html__( 'General advice', 'ag-starter-avocat' ) . '</option>';
 							}
 							?>
-							<option value="autre"><?php esc_html_e( 'Autre / a determiner', 'ag-starter-avocat' ); ?></option>
+							<option value="autre"><?php esc_html_e( 'Other / to be determined', 'ag-starter-avocat' ); ?></option>
 						</select>
 					</div>
 					<div class="ag-rdv__field">
-						<label for="ag_rdv_format"><?php esc_html_e( 'Format souhaite', 'ag-starter-avocat' ); ?></label>
+						<label for="ag_rdv_format"><?php esc_html_e( 'Preferred format', 'ag-starter-avocat' ); ?></label>
 						<select id="ag_rdv_format" name="ag_rdv_format">
-							<option value="cabinet"><?php esc_html_e( 'Au cabinet', 'ag-starter-avocat' ); ?></option>
-							<option value="visio"><?php esc_html_e( 'En visio', 'ag-starter-avocat' ); ?></option>
-							<option value="telephone"><?php esc_html_e( 'Par telephone', 'ag-starter-avocat' ); ?></option>
+							<option value="cabinet"><?php esc_html_e( 'At the office', 'ag-starter-avocat' ); ?></option>
+							<option value="visio"><?php esc_html_e( 'By video', 'ag-starter-avocat' ); ?></option>
+							<option value="telephone"><?php esc_html_e( 'By phone', 'ag-starter-avocat' ); ?></option>
 						</select>
 					</div>
 				</div>
 				<div class="ag-rdv__field">
-					<label for="ag_rdv_message"><?php esc_html_e( 'Description du dossier (en quelques lignes)', 'ag-starter-avocat' ); ?> *</label>
+					<label for="ag_rdv_message"><?php esc_html_e( 'Case description (in a few lines)', 'ag-starter-avocat' ); ?> *</label>
 					<textarea id="ag_rdv_message" name="ag_rdv_message" rows="6" required></textarea>
 				</div>
 
@@ -96,9 +96,9 @@ $status = ag_starter_avocat_get_rdv_status();
 				</div>
 
 				<button type="submit" name="ag_rdv_submit" class="ag-btn ag-rdv__submit">
-					<?php esc_html_e( 'Envoyer ma demande', 'ag-starter-avocat' ); ?>
+					<?php esc_html_e( 'Send my request', 'ag-starter-avocat' ); ?>
 				</button>
-				<p class="ag-rdv__legal"><?php esc_html_e( 'Demande confidentielle protegee par le secret professionnel. Reponse sous 48h ouvrees.', 'ag-starter-avocat' ); ?></p>
+				<p class="ag-rdv__legal"><?php esc_html_e( 'Confidential request protected by attorney-client privilege. Reply within 48 business hours.', 'ag-starter-avocat' ); ?></p>
 			</form>
 
 		</div>
@@ -110,14 +110,14 @@ $status = ag_starter_avocat_get_rdv_status();
 			<div class="ag-rdv-contact__grid">
 				<div class="ag-cabinet__block">
 					<div class="ag-cabinet__block-icon">📞</div>
-					<h3><?php esc_html_e( 'Par telephone', 'ag-starter-avocat' ); ?></h3>
+					<h3><?php esc_html_e( 'By phone', 'ag-starter-avocat' ); ?></h3>
 					<?php $phone = ag_starter_avocat_get_option( 'ag_cabinet_phone' ); if ( $phone ) : ?>
 						<p><a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $phone ) ); ?>"><?php echo esc_html( $phone ); ?></a></p>
 					<?php endif; ?>
 				</div>
 				<div class="ag-cabinet__block">
 					<div class="ag-cabinet__block-icon">✉️</div>
-					<h3><?php esc_html_e( 'Par email', 'ag-starter-avocat' ); ?></h3>
+					<h3><?php esc_html_e( 'By email', 'ag-starter-avocat' ); ?></h3>
 					<?php $email = ag_starter_avocat_get_option( 'ag_cabinet_email' ); if ( $email ) : ?>
 						<p><a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a></p>
 					<?php endif; ?>

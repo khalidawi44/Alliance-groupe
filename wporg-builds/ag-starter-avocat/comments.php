@@ -22,7 +22,7 @@ if ( post_password_required() ) {
 			$ag_comment_count = get_comments_number();
 			printf(
 				/* translators: %s: comment count number. */
-				esc_html( _n( '%s commentaire', '%s commentaires', $ag_comment_count, 'ag-starter-avocat' ) ),
+				esc_html( _n( '%s comment', '%s comments', $ag_comment_count, 'ag-starter-avocat' ) ),
 				esc_html( number_format_i18n( $ag_comment_count ) )
 			);
 			?>
@@ -43,14 +43,14 @@ if ( post_password_required() ) {
 		<?php
 		the_comments_pagination(
 			array(
-				'prev_text' => esc_html__( 'Commentaires precedents', 'ag-starter-avocat' ),
-				'next_text' => esc_html__( 'Commentaires suivants', 'ag-starter-avocat' ),
+				'prev_text' => esc_html__( 'Previous comments', 'ag-starter-avocat' ),
+				'next_text' => esc_html__( 'Next comments', 'ag-starter-avocat' ),
 			)
 		);
 
 		if ( ! comments_open() ) :
 			?>
-			<p class="ag-comments__closed"><?php esc_html_e( 'Les commentaires sont fermes.', 'ag-starter-avocat' ); ?></p>
+			<p class="ag-comments__closed"><?php esc_html_e( 'Comments are closed.', 'ag-starter-avocat' ); ?></p>
 			<?php
 		endif;
 

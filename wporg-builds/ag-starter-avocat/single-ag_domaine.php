@@ -19,7 +19,7 @@ get_header();
 					? ag_starter_avocat_get_domaine_icon_html( $icon ) /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped */
 					: esc_html( $icon ? $icon : '⚖️' );
 			?></div>
-			<p class="ag-domaine-hero-tag"><?php esc_html_e( 'Domaine d\'expertise', 'ag-starter-avocat' ); ?></p>
+			<p class="ag-domaine-hero-tag"><?php esc_html_e( 'Practice area', 'ag-starter-avocat' ); ?></p>
 			<h1 class="ag-page-hero__title"><?php the_title(); ?></h1>
 		</div>
 	</section>
@@ -34,20 +34,20 @@ get_header();
 			</div>
 			<?php if ( $examples ) : ?>
 				<aside class="ag-domaine-examples">
-					<h2 class="ag-domaine-examples__title"><?php esc_html_e( 'Exemples de cas traites', 'ag-starter-avocat' ); ?></h2>
+					<h2 class="ag-domaine-examples__title"><?php esc_html_e( 'Examples of handled cases', 'ag-starter-avocat' ); ?></h2>
 					<ul class="ag-domaine-examples__list">
 						<?php foreach ( array_filter( array_map( 'trim', explode( "\n", $examples ) ) ) as $ex ) : ?>
 							<li><?php echo esc_html( $ex ); ?></li>
 						<?php endforeach; ?>
 					</ul>
 					<nav class="ag-domaine-back">
-						<a href="<?php echo esc_url( ag_page_url( 'expertise' ) ); ?>">← <?php esc_html_e( 'Tous les domaines d\'expertise', 'ag-starter-avocat' ); ?></a>
+						<a href="<?php echo esc_url( ag_page_url( 'expertise' ) ); ?>">← <?php esc_html_e( 'All practice areas', 'ag-starter-avocat' ); ?></a>
 					</nav>
 				</aside>
 			<?php endif; ?>
 			<div class="ag-domaine-cta">
-				<p><?php esc_html_e( 'Vous avez un dossier dans ce domaine ?', 'ag-starter-avocat' ); ?></p>
-				<a href="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" class="ag-btn"><?php esc_html_e( 'Prendre rendez-vous', 'ag-starter-avocat' ); ?></a>
+				<p><?php esc_html_e( 'Do you have a case in this area?', 'ag-starter-avocat' ); ?></p>
+				<a href="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" class="ag-btn"><?php esc_html_e( 'Book an appointment', 'ag-starter-avocat' ); ?></a>
 			</div>
 		</article>
 	<?php endwhile; ?>

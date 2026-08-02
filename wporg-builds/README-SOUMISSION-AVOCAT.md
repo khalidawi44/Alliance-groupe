@@ -3,6 +3,19 @@
 Ce dossier `wporg-builds/ag-starter-avocat/` est la **version « .org propre »** du thème
 gratuit, prête à tester puis soumettre à https://wordpress.org/themes/upload/.
 
+## ⛔ REFUS ticket #277598 (v1.1.18) — CORRIGÉ en v1.1.20
+Le relecteur (fahimmurshed) a fermé le ticket en **not-approved** pour DEUX raisons, toutes deux d'internationalisation :
+1. **« Theme should be in English »** : les textes source (Customizer, libellés) étaient en français.
+2. **Fichiers de traduction manquants** : pas de `/languages` ni de `.pot`.
+
+**Correctif appliqué (v1.1.20) :**
+- **Les 207 chaînes source sont passées en ANGLAIS** (dans tous les `.php` via `__()/esc_html__()` etc.).
+- **Traduction française fournie** : `languages/fr_FR.po` + `languages/fr_FR.mo` → l'utilisateur voit le thème en français (via `load_theme_textdomain`, fichier `{locale}.mo`).
+- **`.pot` régénéré** en anglais : `languages/ag-starter-avocat.pot`.
+- **`readme.txt` + description `style.css`** réécrits en **anglais**. Version bumpée en **1.1.20**.
+- Zip prêt : **`ag-starter-avocat-1.1.20.zip`**.
+- ⚠️ Point résiduel à surveiller : `inc/ag-prefill.php` insère des pages légales en français à l'activation (contenu, pas de l'UI). Si le reviewer le signale, on passera aussi ce contenu en anglais-source + traduction.
+
 ## Ce qui a été RETIRÉ (interdit par WordPress.org)
 - `inc/class-ag-updater.php` + `inc/theme-updater.php` (auto-update GitHub) — sur .org, les MAJ passent par le répertoire.
 - `inc/class-ag-licence-client.php` (appel licence vers ton serveur) — pas de « phone-home ».

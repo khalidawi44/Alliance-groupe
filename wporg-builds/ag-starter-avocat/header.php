@@ -14,7 +14,7 @@
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
 
-<a class="screen-reader-text" href="#ag-main"><?php esc_html_e( 'Aller au contenu principal', 'ag-starter-avocat' ); ?></a>
+<a class="screen-reader-text" href="#ag-main"><?php esc_html_e( 'Skip to main content', 'ag-starter-avocat' ); ?></a>
 
 <header class="ag-site-header" role="banner">
 	<div class="ag-container ag-site-header__inner">
@@ -29,7 +29,7 @@
 				'alt'   => get_bloginfo( 'name' ),
 			) ) : '';
 			?>
-			<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="custom-logo-link" aria-label="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?> — <?php esc_attr_e( 'Accueil', 'ag-starter-avocat' ); ?>">
+			<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="custom-logo-link" aria-label="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?> — <?php esc_attr_e( 'Home', 'ag-starter-avocat' ); ?>">
 				<?php if ( $logo_img ) : ?>
 					<?php echo $logo_img; ?>
 				<?php else : ?>
@@ -39,7 +39,7 @@
 			</a>
 		</div>
 
-		<nav class="ag-primary-nav" aria-label="<?php esc_attr_e( 'Menu principal', 'ag-starter-avocat' ); ?>">
+		<nav class="ag-primary-nav" aria-label="<?php esc_attr_e( 'Main menu', 'ag-starter-avocat' ); ?>">
 			<?php
 			// Menu principal — avec menu de secours (liste des pages) quand
 			// aucun menu n'est assigne, pour que le menu ne soit jamais vide
@@ -66,7 +66,7 @@
 				if ( $ag_pro->is_at_least( 'premium' ) ) {
 					echo $ag_pro->render_header_phone();
 					?>
-					<button class="ag-theme-toggle" aria-label="<?php esc_attr_e( 'Changer de theme', 'ag-starter-avocat' ); ?>" title="<?php esc_attr_e( 'Mode clair / sombre', 'ag-starter-avocat' ); ?>">
+					<button class="ag-theme-toggle" aria-label="<?php esc_attr_e( 'Switch theme', 'ag-starter-avocat' ); ?>" title="<?php esc_attr_e( 'Light / dark mode', 'ag-starter-avocat' ); ?>">
 						<span class="ag-theme-toggle__icon">🌙</span>
 					</button>
 					<?php

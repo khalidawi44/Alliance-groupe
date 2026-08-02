@@ -25,7 +25,7 @@ get_header();
 					<?php
 					the_content();
 					wp_link_pages( array(
-						'before' => '<div class="ag-page-links">' . esc_html__( 'Pages :', 'ag-starter-avocat' ) . ' ',
+						'before' => '<div class="ag-page-links">' . esc_html__( 'Pages:', 'ag-starter-avocat' ) . ' ',
 						'after'  => '</div>',
 					) );
 					?>

@@ -92,7 +92,7 @@ if ( ! function_exists( 'ag_starter_avocat_setup' ) ) :
 		// This theme uses wp_nav_menu() in one location.
 		register_nav_menus(
 			array(
-				'primary' => esc_html__( 'Menu principal', 'ag-starter-avocat' ),
+				'primary' => esc_html__( 'Main menu', 'ag-starter-avocat' ),
 			)
 		);
 	}
@@ -141,11 +141,11 @@ if ( ! function_exists( 'ag_starter_avocat_menu_fallback' ) ) :
 		// un menu par defaut pointant vers les sections standard du cabinet,
 		// pour que le menu ne soit JAMAIS vide.
 		$defaults = array(
-			''            => __( 'Accueil', 'ag-starter-avocat' ),
-			'expertise'   => __( "Domaines d'expertise", 'ag-starter-avocat' ),
-			'honoraires'  => __( 'Honoraires', 'ag-starter-avocat' ),
-			'cabinet'     => __( 'Le cabinet', 'ag-starter-avocat' ),
-			'rendez-vous' => __( 'Prendre rendez-vous', 'ag-starter-avocat' ),
+			''            => __( 'Home', 'ag-starter-avocat' ),
+			'expertise'   => __( "Practice areas", 'ag-starter-avocat' ),
+			'honoraires'  => __( 'Fees', 'ag-starter-avocat' ),
+			'cabinet'     => __( 'The firm', 'ag-starter-avocat' ),
+			'rendez-vous' => __( 'Book an appointment', 'ag-starter-avocat' ),
 		);
 		echo '<ul class="ag-primary-menu">';
 		foreach ( $defaults as $slug => $label ) {
@@ -283,15 +283,15 @@ function ag_starter_avocat_block_assets() {
 		'core/button',
 		array(
 			'name'  => 'ag-gold',
-			'label' => esc_html__( 'Or Alliance', 'ag-starter-avocat' ),
+			'label' => esc_html__( 'Alliance Gold', 'ag-starter-avocat' ),
 		)
 	);
 	if ( function_exists( 'register_block_pattern' ) ) {
 		register_block_pattern(
 			'ag-starter-avocat/cta-cabinet',
 			array(
-				'title'   => esc_html__( 'Appel à action — Cabinet', 'ag-starter-avocat' ),
-				'content' => '<!-- wp:paragraph {"align":"center"} --><p class="has-text-align-center">' . esc_html__( 'Besoin de conseils ? Prenez rendez-vous avec le cabinet.', 'ag-starter-avocat' ) . '</p><!-- /wp:paragraph -->',
+				'title'   => esc_html__( 'Call to action — Firm', 'ag-starter-avocat' ),
+				'content' => '<!-- wp:paragraph {"align":"center"} --><p class="has-text-align-center">' . esc_html__( 'Need advice? Book an appointment with the firm.', 'ag-starter-avocat' ) . '</p><!-- /wp:paragraph -->',
 			)
 		);
 	}
@@ -304,9 +304,9 @@ add_action( 'init', 'ag_starter_avocat_block_assets' );
 function ag_starter_avocat_widgets_init() {
 	register_sidebar(
 		array(
-			'name'          => esc_html__( 'Pied de page', 'ag-starter-avocat' ),
+			'name'          => esc_html__( 'Footer', 'ag-starter-avocat' ),
 			'id'            => 'footer-1',
-			'description'   => esc_html__( 'Widgets affichés dans le pied de page.', 'ag-starter-avocat' ),
+			'description'   => esc_html__( 'Widgets shown in the footer.', 'ag-starter-avocat' ),
 			'before_widget' => '<section id="%1$s" class="widget %2$s">',
 			'after_widget'  => '</section>',
 			'before_title'  => '<h2 class="widget-title">',
@@ -364,19 +364,19 @@ function ag_starter_avocat_companion_notice() {
 	?>
 	<div class="ag-welcome-banner" style="background:linear-gradient(135deg,#1a1a2e 0%,#0a0a0f 100%);border:1px solid rgba(212,180,92,.3);border-left:4px solid #D4B45C;border-radius:8px;padding:40px 36px;margin:20px 20px 20px 0;display:flex;align-items:center;gap:32px;flex-wrap:wrap;">
 		<div style="flex:1;min-width:280px;">
-			<h2 style="color:#fff;font-size:1.6rem;margin:0 0 12px;">🎉 <?php esc_html_e( 'Bienvenue dans AG Starter Avocat !', 'ag-starter-avocat' ); ?></h2>
-			<p style="color:rgba(255,255,255,.7);font-size:1.05rem;line-height:1.6;margin:0 0 8px;"><?php esc_html_e( 'Votre theme est installe. Pour un site pret a l\'emploi en 1 clic (pages, menu, reglages), installez le plugin gratuit AG Starter Companion.', 'ag-starter-avocat' ); ?></p>
+			<h2 style="color:#fff;font-size:1.6rem;margin:0 0 12px;">🎉 <?php esc_html_e( 'Welcome to AG Starter Avocat!', 'ag-starter-avocat' ); ?></h2>
+			<p style="color:rgba(255,255,255,.7);font-size:1.05rem;line-height:1.6;margin:0 0 8px;"><?php esc_html_e( 'Your theme is installed. For a ready-to-use site in one click (pages, menu, settings), install the free AG Starter Companion plugin.', 'ag-starter-avocat' ); ?></p>
 			<ul style="color:rgba(255,255,255,.6);font-size:.92rem;margin:12px 0 0;padding-left:18px;">
-				<li><?php esc_html_e( 'Pages creees automatiquement (Accueil, Expertise, Honoraires, Cabinet, Rendez-vous)', 'ag-starter-avocat' ); ?></li>
-				<li><?php esc_html_e( 'Menu principal configure et assigne', 'ag-starter-avocat' ); ?></li>
-				<li><?php esc_html_e( 'Page d\'accueil et permaliens actives', 'ag-starter-avocat' ); ?></li>
-				<li><?php esc_html_e( '100% gratuit, aucune connexion internet requise', 'ag-starter-avocat' ); ?></li>
+				<li><?php esc_html_e( 'Pages created automatically (Home, Expertise, Fees, Firm, Appointment)', 'ag-starter-avocat' ); ?></li>
+				<li><?php esc_html_e( 'Main menu configured and assigned', 'ag-starter-avocat' ); ?></li>
+				<li><?php esc_html_e( 'Home page and permalinks enabled', 'ag-starter-avocat' ); ?></li>
+				<li><?php esc_html_e( '100% free, no internet connection required', 'ag-starter-avocat' ); ?></li>
 			</ul>
 		</div>
 		<div style="text-align:center;">
-			<a href="<?php echo esc_url( $search_url ); ?>" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-size:1.05rem;font-weight:700;padding:16px 32px;border-radius:8px;text-decoration:none;box-shadow:0 4px 16px rgba(212,180,92,.3);"><?php esc_html_e( 'Télécharger AG Starter Companion', 'ag-starter-avocat' ); ?></a>
-			<p style="color:rgba(255,255,255,.4);font-size:.8rem;margin-top:10px;"><?php esc_html_e( 'Téléchargez le ZIP, puis Extensions → Ajouter → Téléverser', 'ag-starter-avocat' ); ?></p>
-			<p style="margin-top:14px;"><a href="https://alliancegroupe-inc.com/guide-avocat?utm_source=wp-admin&amp;utm_medium=ag-starter-avocat&amp;utm_campaign=guide" target="_blank" rel="nofollow noopener" style="color:#D4B45C;font-size:.92rem;text-decoration:underline;">🎁 <?php esc_html_e( 'Recevoir le guide gratuit : 7 pages qui attirent des clients', 'ag-starter-avocat' ); ?></a></p>
+			<a href="<?php echo esc_url( $search_url ); ?>" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-size:1.05rem;font-weight:700;padding:16px 32px;border-radius:8px;text-decoration:none;box-shadow:0 4px 16px rgba(212,180,92,.3);"><?php esc_html_e( 'Download AG Starter Companion', 'ag-starter-avocat' ); ?></a>
+			<p style="color:rgba(255,255,255,.4);font-size:.8rem;margin-top:10px;"><?php esc_html_e( 'Download the ZIP, then Plugins → Add New → Upload', 'ag-starter-avocat' ); ?></p>
+			<p style="margin-top:14px;"><a href="https://alliancegroupe-inc.com/guide-avocat?utm_source=wp-admin&amp;utm_medium=ag-starter-avocat&amp;utm_campaign=guide" target="_blank" rel="nofollow noopener" style="color:#D4B45C;font-size:.92rem;text-decoration:underline;">🎁 <?php esc_html_e( 'Get the free guide: 7 pages that attract clients', 'ag-starter-avocat' ); ?></a></p>
 		</div>
 	</div>
 	<?php
@@ -385,7 +385,7 @@ add_action( 'admin_notices', 'ag_starter_avocat_companion_notice' );
 
 function ag_starter_avocat_dashboard_widget() {
 	if ( class_exists( 'AG_Starter_Companion' ) ) return;
-	wp_add_dashboard_widget( 'ag_starter_welcome', esc_html__( '🚀 AG Starter Avocat — Configuration', 'ag-starter-avocat' ), 'ag_starter_avocat_dashboard_widget_render' );
+	wp_add_dashboard_widget( 'ag_starter_welcome', esc_html__( '🚀 AG Starter Avocat — Setup', 'ag-starter-avocat' ), 'ag_starter_avocat_dashboard_widget_render' );
 	global $wp_meta_boxes;
 	$widget = $wp_meta_boxes['dashboard']['normal']['core']['ag_starter_welcome'];
 	unset( $wp_meta_boxes['dashboard']['normal']['core']['ag_starter_welcome'] );
@@ -395,11 +395,11 @@ function ag_starter_avocat_dashboard_widget_render() {
 	$search_url = admin_url( 'plugin-install.php?s=AG+Starter+Companion&tab=search&type=term' );
 	?>
 	<div style="text-align:center;padding:20px 0;">
-		<p style="font-size:1.15rem;margin:0 0 16px;"><strong><?php esc_html_e( 'Votre theme est pret !', 'ag-starter-avocat' ); ?></strong></p>
-		<p style="color:#666;margin:0 0 20px;"><?php esc_html_e( 'Installez le plugin gratuit AG Starter Companion pour creer automatiquement vos pages, votre menu et configurer votre site en 1 clic.', 'ag-starter-avocat' ); ?></p>
-		<a href="<?php echo esc_url( $search_url ); ?>" class="button button-primary button-hero"><?php esc_html_e( 'Télécharger AG Starter Companion', 'ag-starter-avocat' ); ?></a>
-		<p style="color:#999;font-size:.85rem;margin-top:12px;"><?php esc_html_e( 'Gratuit — 10 secondes — aucune inscription', 'ag-starter-avocat' ); ?></p>
-		<p style="margin-top:14px;"><a href="https://alliancegroupe-inc.com/guide-avocat?utm_source=wp-admin&amp;utm_medium=ag-starter-avocat&amp;utm_campaign=guide" target="_blank" rel="nofollow noopener"><?php esc_html_e( '🎁 Recevoir le guide gratuit : 7 pages qui attirent des clients', 'ag-starter-avocat' ); ?></a></p>
+		<p style="font-size:1.15rem;margin:0 0 16px;"><strong><?php esc_html_e( 'Your theme is ready!', 'ag-starter-avocat' ); ?></strong></p>
+		<p style="color:#666;margin:0 0 20px;"><?php esc_html_e( 'Install the free AG Starter Companion plugin to automatically create your pages and menu and set up your site in one click.', 'ag-starter-avocat' ); ?></p>
+		<a href="<?php echo esc_url( $search_url ); ?>" class="button button-primary button-hero"><?php esc_html_e( 'Download AG Starter Companion', 'ag-starter-avocat' ); ?></a>
+		<p style="color:#999;font-size:.85rem;margin-top:12px;"><?php esc_html_e( 'Free — 10 seconds — no sign-up', 'ag-starter-avocat' ); ?></p>
+		<p style="margin-top:14px;"><a href="https://alliancegroupe-inc.com/guide-avocat?utm_source=wp-admin&amp;utm_medium=ag-starter-avocat&amp;utm_campaign=guide" target="_blank" rel="nofollow noopener"><?php esc_html_e( '🎁 Get the free guide: 7 pages that attract clients', 'ag-starter-avocat' ); ?></a></p>
 	</div>
 	<?php
 }
@@ -450,7 +450,7 @@ function ag_starter_avocat_review_notice() {
 	printf(
 		wp_kses(
 			/* translators: 1: review link, 2: dismiss link */
-			__( 'Le th&egrave;me <strong>AG Starter Avocat</strong> vous est utile&nbsp;? Un avis honn&ecirc;te (30&nbsp;secondes) aide d\'autres cabinets &agrave; le d&eacute;couvrir. <a href="%1$s" target="_blank" rel="noopener">Laisser un avis</a> &middot; <a href="%2$s">Ne plus afficher</a>', 'ag-starter-avocat' ),
+			__( 'Is the <strong>AG Starter Avocat</strong> theme useful to you? An honest review (30 seconds) helps other law firms discover it. <a href="%1$s" target="_blank" rel="noopener">Leave a review</a> &middot; <a href="%2$s">Dismiss</a>', 'ag-starter-avocat' ),
 			array( 'strong' => array(), 'a' => array( 'href' => array(), 'target' => array(), 'rel' => array() ) )
 		),
 		'https://wordpress.org/support/theme/ag-starter-avocat/reviews/#new-post',
@@ -474,7 +474,7 @@ if ( ! function_exists( 'ag_avocat_credit' ) ) :
 	function ag_avocat_credit() {
 		echo '<p class="ag-credit"><small>';
 		printf(
-			wp_kses( __( 'Theme : %s', 'ag-starter-avocat' ), array( 'a' => array( 'href' => array(), 'title' => array(), 'rel' => array() ) ) ),
+			wp_kses( __( 'Theme: %s', 'ag-starter-avocat' ), array( 'a' => array( 'href' => array(), 'title' => array(), 'rel' => array() ) ) ),
 			'<a href="https://alliancegroupe-inc.com/wordpress-avocat" rel="nofollow" title="AG Starter Avocat">AG Starter Avocat</a>'
 		);
 		echo '</small></p>';

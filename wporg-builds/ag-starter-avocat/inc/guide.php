@@ -16,8 +16,8 @@ class AG_Avocat_Guide {
 
 	public static function register_menu() {
 		add_theme_page(
-			__( 'Guide d\'utilisation', 'ag-starter-avocat' ),
-			'📖 ' . __( 'Guide d\'utilisation', 'ag-starter-avocat' ),
+			__( 'User guide', 'ag-starter-avocat' ),
+			'📖 ' . __( 'User guide', 'ag-starter-avocat' ),
 			'edit_posts',
 			'ag-avocat-guide',
 			array( __CLASS__, 'render' )

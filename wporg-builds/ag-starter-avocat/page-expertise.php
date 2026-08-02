@@ -13,8 +13,8 @@ get_header();
 
 	<section class="ag-page-hero">
 		<div class="ag-container">
-			<h1 class="ag-page-hero__title"><?php esc_html_e( 'Domaines d\'expertise', 'ag-starter-avocat' ); ?></h1>
-			<p class="ag-page-hero__lead"><?php esc_html_e( 'Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit.', 'ag-starter-avocat' ); ?></p>
+			<h1 class="ag-page-hero__title"><?php esc_html_e( 'Practice areas', 'ag-starter-avocat' ); ?></h1>
+			<p class="ag-page-hero__lead"><?php esc_html_e( 'Advice and representation for individuals and businesses across the main areas of law.', 'ag-starter-avocat' ); ?></p>
 		</div>
 	</section>
 
@@ -50,9 +50,9 @@ get_header();
 				</div>
 			<?php else : ?>
 				<div class="ag-domaines__empty">
-					<p><?php esc_html_e( 'Aucun domaine d\'expertise n\'est encore publie.', 'ag-starter-avocat' ); ?></p>
+					<p><?php esc_html_e( 'No practice area has been published yet.', 'ag-starter-avocat' ); ?></p>
 					<?php if ( current_user_can( 'edit_posts' ) ) : ?>
-						<p><a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=ag_domaine' ) ); ?>" class="ag-btn"><?php esc_html_e( 'Ajouter un premier domaine', 'ag-starter-avocat' ); ?></a></p>
+						<p><a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=ag_domaine' ) ); ?>" class="ag-btn"><?php esc_html_e( 'Add a first practice area', 'ag-starter-avocat' ); ?></a></p>
 					<?php endif; ?>
 				</div>
 			<?php endif; ?>
@@ -62,9 +62,9 @@ get_header();
 
 	<section class="ag-section ag-rdv-cta" style="text-align:center;">
 		<div class="ag-container">
-			<h2 class="ag-section-title"><?php esc_html_e( 'Besoin d\'un conseil ?', 'ag-starter-avocat' ); ?></h2>
-			<p class="ag-section-lead"><?php esc_html_e( 'Prenez rendez-vous pour une premiere consultation confidentielle.', 'ag-starter-avocat' ); ?></p>
-			<a href="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" class="ag-btn"><?php esc_html_e( 'Prendre rendez-vous', 'ag-starter-avocat' ); ?></a>
+			<h2 class="ag-section-title"><?php esc_html_e( 'Need legal advice?', 'ag-starter-avocat' ); ?></h2>
+			<p class="ag-section-lead"><?php esc_html_e( 'Book an appointment for a first confidential consultation.', 'ag-starter-avocat' ); ?></p>
+			<a href="<?php echo esc_url( ag_page_url( 'rendez-vous' ) ); ?>" class="ag-btn"><?php esc_html_e( 'Book an appointment', 'ag-starter-avocat' ); ?></a>
 		</div>
 	</section>
 
