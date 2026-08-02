@@ -127,6 +127,12 @@ if ( file_exists( $ag_missions_file ) ) {
     require_once $ag_missions_file;
 }
 
+// ── 1c4a-octies. Espace Composants (bibliothèque web façon uiverse.io) : configurateur + copie/ZIP + créateurs du mois
+$ag_composants_file = get_stylesheet_directory() . '/inc/ag-composants.php';
+if ( file_exists( $ag_composants_file ) ) {
+    require_once $ag_composants_file;
+}
+
 // ── 1c4b. SEO pages piliers (création site Nantes + cybersécurité/NIS2) + LocalBusiness/Breadcrumb/Service
 $ag_seo_pages_file = get_stylesheet_directory() . '/inc/ag-seo-pages.php';
 if ( file_exists( $ag_seo_pages_file ) ) {
