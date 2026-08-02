@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: AG Starter Avocat\n"
+"Project-Id-Version: AG Starter Avocat 1.1.21\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Domain: ag-starter-avocat\n"
@@ -29,6 +29,15 @@ msgstr ""
 msgid "Address"
 msgstr ""
 
+msgid "Address, email, phone (footer)"
+msgstr ""
+
+msgid "Address, hours, contact, emergency"
+msgstr ""
+
+msgid "Admitted since"
+msgstr ""
+
 msgid "Admitted since %s"
 msgstr ""
 
@@ -47,7 +56,37 @@ msgstr ""
 msgid "An error occurred while sending. You can reach us directly by email or phone."
 msgstr ""
 
+msgid "Appearance > Customize > Appointment > GDPR"
+msgstr ""
+
+msgid "Appearance > Customize > Fees"
+msgstr ""
+
+msgid "Appearance > Customize > Firm"
+msgstr ""
+
+msgid "Appearance > Customize > Firm > Map embed"
+msgstr ""
+
+msgid "Appearance > Customize > Hero"
+msgstr ""
+
+msgid "Appearance > Customize > Identity"
+msgstr ""
+
+msgid "Appearance > Customize > Site Identity (logo)"
+msgstr ""
+
+msgid "Appearance > Customize > The Attorney"
+msgstr ""
+
+msgid "Appearance > Menus > \"Main menu\""
+msgstr ""
+
 msgid "Appointment form &amp; GDPR"
+msgstr ""
+
+msgid "Appointment form GDPR text"
 msgstr ""
 
 msgid "Appointment — \"Other\" option"
@@ -92,6 +131,12 @@ msgstr ""
 msgid "Appointment — submit button"
 msgstr ""
 
+msgid "Areas > admin (CPT ag_domaine)"
+msgstr ""
+
+msgid "Areas > featured image"
+msgstr ""
+
 msgid "Areas — H2 title"
 msgstr ""
 
@@ -113,6 +158,12 @@ msgstr ""
 msgid "Attorney admitted to the %s"
 msgstr ""
 
+msgid "Attorney bio (photo, name, bar, bio)"
+msgstr ""
+
+msgid "Attorney name"
+msgstr ""
+
 msgid "Attorney photo (optional)"
 msgstr ""
 
@@ -128,10 +179,19 @@ msgstr ""
 msgid "Attorney-client privilege"
 msgstr ""
 
+msgid "Automatic updates. Manual check available."
+msgstr ""
+
 msgid "Back to home"
 msgstr ""
 
+msgid "Background image per area"
+msgstr ""
+
 msgid "Bar admission"
+msgstr ""
+
+msgid "Bar of admission"
 msgstr ""
 
 msgid "Base text size (px)"
@@ -141,6 +201,9 @@ msgid "Before any work begins, a written fee agreement is provided to you. It sp
 msgstr ""
 
 msgid "Between 14 and 20."
+msgstr ""
+
+msgid "Biography / background"
 msgstr ""
 
 msgid "Book an appointment"
@@ -182,6 +245,9 @@ msgstr ""
 msgid "Call to action — Firm"
 msgstr ""
 
+msgid "Can't find it?"
+msgstr ""
+
 msgid "Cards background"
 msgstr ""
 
@@ -215,6 +281,9 @@ msgstr ""
 msgid "Contact"
 msgstr ""
 
+msgid "Cookie note (footer)"
+msgstr ""
+
 msgid "Cookies"
 msgstr ""
 
@@ -225,6 +294,9 @@ msgid "Custom site (+340% leads) →"
 msgstr ""
 
 msgid "Customize the intro sentences (under the titles) of each home section."
+msgstr ""
+
+msgid "Dedicated pages"
 msgstr ""
 
 msgid "Default"
@@ -239,6 +311,15 @@ msgstr ""
 msgid "Download the ZIP, then Plugins → Add New → Upload"
 msgstr ""
 
+msgid "Each home section has a WP page. The title + first paragraph become the section header on the home page."
+msgstr ""
+
+msgid "Each practice area is a Custom Post Type with its icon, its example cases and its detailed page."
+msgstr ""
+
+msgid "Each row shows an area of the site and where to change it."
+msgstr ""
+
 msgid "Email"
 msgstr ""
 
@@ -248,7 +329,37 @@ msgstr ""
 msgid "Examples of handled cases"
 msgstr ""
 
+msgid "Fee 1 — Description"
+msgstr ""
+
+msgid "Fee 1 — Label"
+msgstr ""
+
+msgid "Fee 1 — Price"
+msgstr ""
+
+msgid "Fee 2 — Description"
+msgstr ""
+
+msgid "Fee 2 — Label"
+msgstr ""
+
+msgid "Fee 2 — Price"
+msgstr ""
+
+msgid "Fee 3 — Description"
+msgstr ""
+
+msgid "Fee 3 — Label"
+msgstr ""
+
+msgid "Fee 3 — Price"
+msgstr ""
+
 msgid "Fee agreement"
+msgstr ""
+
+msgid "Fee rates (3 tiers)"
 msgstr ""
 
 msgid "Fees"
@@ -270,6 +381,12 @@ msgid "Firm"
 msgstr ""
 
 msgid "Firm (contact &amp; hours)"
+msgstr ""
+
+msgid "Firm email"
+msgstr ""
+
+msgid "Firm phone"
 msgstr ""
 
 msgid "Firm — Address block title"
@@ -305,16 +422,37 @@ msgstr ""
 msgid "Footer"
 msgstr ""
 
+msgid "Force theme update"
+msgstr ""
+
+msgid "Form title"
+msgstr ""
+
 msgid "Free — 10 seconds — no sign-up"
 msgstr ""
 
+msgid "Full address (one line per line)"
+msgstr ""
+
 msgid "Full pricing transparency: no bad surprises, a written quote before any commitment."
+msgstr ""
+
+msgid "GDPR consent text (checkbox)"
+msgstr ""
+
+msgid "GDPR notice shown in the footer"
 msgstr ""
 
 msgid "General advice"
 msgstr ""
 
 msgid "Get the free guide: 7 pages that attract clients"
+msgstr ""
+
+msgid "Google Maps embed URL (optional)"
+msgstr ""
+
+msgid "Google Maps map (embed)"
 msgstr ""
 
 msgid "Headings color"
@@ -326,13 +464,25 @@ msgstr ""
 msgid "Hero (home)"
 msgstr ""
 
+msgid "Hero — CTA button + URL"
+msgstr ""
+
+msgid "Hero — prefix + firm name + subtitle"
+msgstr ""
+
 msgid "Home"
 msgstr ""
 
 msgid "Home content — texts"
 msgstr ""
 
+msgid "Home page"
+msgstr ""
+
 msgid "Home page and permalinks enabled"
+msgstr ""
+
+msgid "Hosting / privilege note (footer)"
 msgstr ""
 
 msgid "Hosting in the European Union — data protected by attorney-client privilege."
@@ -342,6 +492,9 @@ msgid "Hours"
 msgstr ""
 
 msgid "How are our fees calculated?"
+msgstr ""
+
+msgid "If you want to change something not in this list, open the relevant page with the <strong>Gutenberg block editor</strong> (Pages > your page)."
 msgstr ""
 
 msgid "Initial consultation: a first appointment to review your situation"
@@ -368,10 +521,19 @@ msgstr ""
 msgid "Legal information"
 msgstr ""
 
+msgid "Legal note (bottom of the block)"
+msgstr ""
+
 msgid "Legal notice"
 msgstr ""
 
 msgid "Light / dark mode"
+msgstr ""
+
+msgid "List of areas (title, excerpt, icon, examples)"
+msgstr ""
+
+msgid "Logo (header + footer)"
 msgstr ""
 
 msgid "Main background"
@@ -383,13 +545,22 @@ msgstr ""
 msgid "Main menu configured and assigned"
 msgstr ""
 
+msgid "Main menu links"
+msgstr ""
+
 msgid "Menu"
+msgstr ""
+
+msgid "Menus, header, footer"
 msgstr ""
 
 msgid "Monospace"
 msgstr ""
 
 msgid "Name"
+msgstr ""
+
+msgid "Navigation and footer editable without coding."
 msgstr ""
 
 msgid "Need advice? Book an appointment with the firm."
@@ -422,10 +593,16 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
+msgid "Opening hours (one line per line)"
+msgstr ""
+
 msgid "Other / to be determined"
 msgstr ""
 
 msgid "Our commitment: rigor, attentiveness and confidentiality at the service of your interests."
+msgstr ""
+
+msgid "Our most refined design: luxury, scroll animations, sticky header, advanced colors, testimonials, header phone, minimal ads, support. One-time payment."
 msgstr ""
 
 msgid "Our team"
@@ -435,6 +612,33 @@ msgid "Our à la carte services"
 msgstr ""
 
 msgid "Page not found"
+msgstr ""
+
+msgid "Pages > Appointment (slug: rendez-vous)"
+msgstr ""
+
+msgid "Pages > Appointment: title + first paragraph"
+msgstr ""
+
+msgid "Pages > Expertise (slug: expertise)"
+msgstr ""
+
+msgid "Pages > Expertise: title + first paragraph"
+msgstr ""
+
+msgid "Pages > Fees (slug: honoraires)"
+msgstr ""
+
+msgid "Pages > Fees: title + first paragraph"
+msgstr ""
+
+msgid "Pages > Firm (slug: cabinet)"
+msgstr ""
+
+msgid "Pages > Firm: title + first paragraph"
+msgstr ""
+
+msgid "Pages > Legal notice"
 msgstr ""
 
 msgid "Pages created automatically (Home, Expertise, Fees, Firm, Appointment)"
@@ -455,10 +659,16 @@ msgstr ""
 msgid "Police custody 24/7:"
 msgstr ""
 
+msgid "Police-custody emergency number (optional)"
+msgstr ""
+
 msgid "Practice area"
 msgstr ""
 
 msgid "Practice areas"
+msgstr ""
+
+msgid "Practice areas (CPT)"
 msgstr ""
 
 msgid "Preferred format"
@@ -470,7 +680,13 @@ msgstr ""
 msgid "Privacy policy (GDPR)"
 msgstr ""
 
+msgid "RPVA number (optional)"
+msgstr ""
+
 msgid "Read more"
+msgstr ""
+
+msgid "Recipient email (empty = firm email)"
 msgstr ""
 
 msgid "Relevant area"
@@ -506,7 +722,19 @@ msgstr ""
 msgid "Send my request"
 msgstr ""
 
+msgid "Send my request →"
+msgstr ""
+
 msgid "Serif (elegant)"
+msgstr ""
+
+msgid "Show the \"Attorney\" section"
+msgstr ""
+
+msgid "Show the Fees section"
+msgstr ""
+
+msgid "Show the appointment form"
 msgstr ""
 
 msgid "Show the credit \"Free theme by Alliance Group\""
@@ -524,10 +752,16 @@ msgstr ""
 msgid "Spam detected."
 msgstr ""
 
+msgid "Specialties (separated by ·)"
+msgstr ""
+
 msgid "Specialties:"
 msgstr ""
 
 msgid "Subtitle"
+msgstr ""
+
+msgid "Subtitle / promise"
 msgstr ""
 
 msgid "Success fee: a supplement tied to a favorable outcome of the case"
@@ -545,10 +779,16 @@ msgstr ""
 msgid "Text color"
 msgstr ""
 
+msgid "Thank you for your trust!"
+msgstr ""
+
 msgid "The Attorney"
 msgstr ""
 
 msgid "The Attorney (introduction)"
+msgstr ""
+
+msgid "The TITLES + INTROS of each home section now come DIRECTLY from the matching pages. Edit the page (Pages > Expertise, Fees, Firm, Appointment): its TITLE becomes the section H2 and its first paragraph becomes the intro."
 msgstr ""
 
 msgid "The firm"
@@ -563,16 +803,37 @@ msgstr ""
 msgid "Theme: %s"
 msgstr ""
 
+msgid "This page lists EVERYTHING you can change without coding."
+msgstr ""
+
 msgid "This site does not use any advertising tracking cookies."
 msgstr ""
 
 msgid "Time-based: hourly billing with a detailed statement"
 msgstr ""
 
+msgid "Tip: create 4 to 6 practice areas (Business law, Employment law, Family law, Real-estate law...) each with an emoji and 3 example cases."
+msgstr ""
+
+msgid "Title + intro of the APPOINTMENT section (home)"
+msgstr ""
+
+msgid "Title + intro of the EXPERTISE section (home)"
+msgstr ""
+
+msgid "Title + intro of the FEES section (home)"
+msgstr ""
+
+msgid "Title + intro of the FIRM section (home)"
+msgstr ""
+
 msgid "Title prefix"
 msgstr ""
 
 msgid "Typography"
+msgstr ""
+
+msgid "Updates & support"
 msgstr ""
 
 msgid "Upgrade to the higher tier:"
@@ -585,6 +846,9 @@ msgid "Welcome to AG Starter Avocat!"
 msgstr ""
 
 msgid "Widgets shown in the footer."
+msgstr ""
+
+msgid "Year of bar admission"
 msgstr ""
 
 msgid "Years of experience"
@@ -608,7 +872,13 @@ msgstr ""
 msgid "Your theme is ready!"
 msgstr ""
 
+msgid "active"
+msgstr ""
+
 msgid "— Select —"
+msgstr ""
+
+msgid "→ Go"
 msgstr ""
 
 msgid "🎁 Get the free guide: 7 pages that attract clients"

@@ -35,10 +35,10 @@ function ag_starter_avocat_customizer_defaults() {
 		'ag_font_heading_scale' => 'default',
 		// Hero.
 		'ag_hero_show'          => true,
-		'ag_hero_prefix'        => 'Cabinet',
-		'ag_hero_brand'         => '[Maître Nom]',
-		'ag_hero_subtitle'      => 'Avocat au barreau, conseil juridique et defense de vos interets en toute confidentialite.',
-		'ag_hero_button'        => 'Prendre rendez-vous',
+		'ag_hero_prefix'        => 'Law Firm',
+		'ag_hero_brand'         => '[Attorney Name]',
+		'ag_hero_subtitle'      => 'Attorney at law: legal advice and defense of your interests in complete confidentiality.',
+		'ag_hero_button'        => 'Book an appointment',
 		'ag_hero_button_url'    => '/rendez-vous/',
 		// Footer.
 		'ag_footer_copyright'   => '',
@@ -47,71 +47,71 @@ function ag_starter_avocat_customizer_defaults() {
 		'ag_cabinet_phone'      => '01 23 45 67 89',
 		'ag_cabinet_emergency'  => '',
 		'ag_cabinet_email'      => 'contact@votre-cabinet.fr',
-		'ag_cabinet_address'    => "15 boulevard du Palais\n75001 Paris",
-		'ag_cabinet_hours'      => "Lundi - Vendredi : 9h - 19h\nSamedi : sur rendez-vous\nVisio disponible",
+		'ag_cabinet_address'    => "15 Palace Boulevard\n75001 Paris",
+		'ag_cabinet_hours'      => "Monday - Friday: 9am - 7pm\nSaturday: by appointment\nVideo call available",
 		'ag_cabinet_map_embed'  => '',
 		'ag_cabinet_rpva'       => '',
 		// Le Maître.
 		'ag_maitre_show'        => true,
-		'ag_maitre_name'        => '[Maître Nom]',
-		'ag_maitre_barreau'     => 'Inscrit au Barreau de Paris',
+		'ag_maitre_name'        => '[Attorney Name]',
+		'ag_maitre_barreau'     => 'Admitted to the Paris Bar',
 		'ag_maitre_year'        => '2010',
-		'ag_maitre_bio'         => "Avocat au barreau depuis plus de quinze ans, j'accompagne particuliers et entreprises avec rigueur, ecoute et discretion. Mon approche : analyser chaque dossier en profondeur, vous expliquer clairement vos options, et batir avec vous la strategie la plus efficace.",
-		'ag_maitre_specialties' => 'Droit des affaires · Droit du travail · Droit de la famille',
+		'ag_maitre_bio'         => "An attorney at the bar for over fifteen years, I assist individuals and businesses with rigor, attentiveness and discretion. My approach: analyze each case in depth, clearly explain your options, and build the most effective strategy with you.",
+		'ag_maitre_specialties' => 'Business law · Employment law · Family law',
 		'ag_maitre_photo'       => '',
 		// Honoraires.
 		'ag_honoraires_show'        => true,
-		'ag_honoraires_first_label' => 'Premier rendez-vous',
+		'ag_honoraires_first_label' => 'First appointment',
 		'ag_honoraires_first_price' => '80€ HT',
-		'ag_honoraires_first_desc'  => 'Consultation initiale d\'1 heure pour analyser votre dossier et vous proposer une strategie.',
-		'ag_honoraires_pack_label'  => 'Forfait conseil',
-		'ag_honoraires_pack_price'  => 'Sur devis',
-		'ag_honoraires_pack_desc'   => 'Forfait tout inclus pour les dossiers definis a l\'avance, sans surprise.',
-		'ag_honoraires_hour_label'  => 'Honoraires au temps passe',
+		'ag_honoraires_first_desc'  => 'A one-hour initial consultation to review your case and propose a strategy.',
+		'ag_honoraires_pack_label'  => 'Advisory package',
+		'ag_honoraires_pack_price'  => 'On quote',
+		'ag_honoraires_pack_desc'   => 'An all-inclusive package for cases defined in advance, with no surprises.',
+		'ag_honoraires_hour_label'  => 'Time-based fees',
 		'ag_honoraires_hour_price'  => '180€ HT/h',
-		'ag_honoraires_hour_desc'   => 'Pour les dossiers complexes, facturation transparente avec releve detaille.',
-		'ag_honoraires_note'        => 'Tous les tarifs sont communiques par ecrit avant tout engagement. Devis et convention d\'honoraires obligatoires.',
+		'ag_honoraires_hour_desc'   => 'For complex cases, transparent billing with a detailed statement.',
+		'ag_honoraires_note'        => 'All fees are provided in writing before any commitment. A quote and a fee agreement are mandatory.',
 		// RDV form.
 		'ag_rdv_show'             => true,
-		'ag_rdv_title'            => 'Prendre rendez-vous',
-		'ag_rdv_subtitle'         => 'Premier rendez-vous confidentiel sous 48h ouvrees. Votre demande est traitee directement par le cabinet.',
+		'ag_rdv_title'            => 'Book an appointment',
+		'ag_rdv_subtitle'         => 'First confidential appointment within 48 business hours. Your request is handled directly by the firm.',
 		'ag_rdv_recipient_email'  => '',
-		'ag_rdv_rgpd_text'        => 'J\'accepte que mes donnees soient utilisees uniquement pour traiter ma demande de rendez-vous, conformement au RGPD. Aucune donnee n\'est partagee avec des tiers.',
+		'ag_rdv_rgpd_text'        => 'I agree that my data will be used only to process my appointment request, in accordance with the GDPR. No data is shared with third parties.',
 		// RGPD / footer legal.
-		'ag_rgpd_mention'       => 'Cabinet inscrit au RPVA. Donnees personnelles traitees conformement au RGPD. Confidentialite absolue garantie par le secret professionnel.',
+		'ag_rgpd_mention'       => 'Firm registered with the RPVA. Personal data processed in accordance with the GDPR. Absolute confidentiality guaranteed by attorney-client privilege.',
 		// Home section leads (phrases d'intro sous les titres H2).
-		'ag_avocat_domaines_lead'   => 'Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit.',
-		'ag_avocat_honoraires_lead' => 'Transparence totale sur les tarifs : pas de mauvaise surprise, devis ecrit avant tout engagement.',
-		'ag_avocat_cabinet_lead'    => 'Consultation au cabinet, en visio ou par telephone.',
+		'ag_avocat_domaines_lead'   => 'Advice and representation for individuals and businesses across the main areas of law.',
+		'ag_avocat_honoraires_lead' => 'Full pricing transparency: no bad surprises, a written quote before any commitment.',
+		'ag_avocat_cabinet_lead'    => 'Consultation at the office, by video or by phone.',
 		// Section H2 titles + supplementary labels.
-		'ag_avocat_domaines_title'      => 'Domaines d\'expertise',
-		'ag_avocat_honoraires_title'    => 'Honoraires',
-		'ag_avocat_cabinet_title'       => 'Le cabinet',
-		'ag_avocat_maitre_tag'          => 'Le Maître',
-		'ag_avocat_maitre_year_prefix'  => 'Inscrit depuis',
-		'ag_avocat_maitre_specialties_label' => 'Specialites :',
-		'ag_avocat_cabinet_address_heading'  => 'Adresse',
-		'ag_avocat_cabinet_hours_heading'    => 'Horaires',
+		'ag_avocat_domaines_title'      => 'Practice areas',
+		'ag_avocat_honoraires_title'    => 'Fees',
+		'ag_avocat_cabinet_title'       => 'The firm',
+		'ag_avocat_maitre_tag'          => 'The Attorney',
+		'ag_avocat_maitre_year_prefix'  => 'Admitted since',
+		'ag_avocat_maitre_specialties_label' => 'Specialties:',
+		'ag_avocat_cabinet_address_heading'  => 'Address',
+		'ag_avocat_cabinet_hours_heading'    => 'Hours',
 		'ag_avocat_cabinet_contact_heading'  => 'Contact',
-		'ag_avocat_cabinet_emergency_label'  => 'Garde a vue 24/7 :',
-		'ag_avocat_domaines_empty'           => 'Aucun domaine d\'expertise n\'est encore publie.',
-		'ag_avocat_domaines_empty_btn'       => 'Ajouter un premier domaine',
-		'ag_avocat_domaines_empty_hint'      => 'Astuce : creez 4 a 6 domaines (Droit des affaires, Droit du travail, Droit de la famille, Droit immobilier...) avec un emoji et 3 exemples de cas chacun.',
+		'ag_avocat_cabinet_emergency_label'  => 'Police custody 24/7:',
+		'ag_avocat_domaines_empty'           => 'No practice area has been published yet.',
+		'ag_avocat_domaines_empty_btn'       => 'Add a first practice area',
+		'ag_avocat_domaines_empty_hint'      => 'Tip: create 4 to 6 practice areas (Business law, Employment law, Family law, Real-estate law...) each with an emoji and 3 example cases.',
 		// RDV form labels.
-		'ag_avocat_rdv_label_prenom'    => 'Prénom',
-		'ag_avocat_rdv_label_nom'       => 'Nom',
+		'ag_avocat_rdv_label_prenom'    => 'First name',
+		'ag_avocat_rdv_label_nom'       => 'Name',
 		'ag_avocat_rdv_label_email'     => 'Email',
-		'ag_avocat_rdv_label_tel'       => 'Téléphone',
-		'ag_avocat_rdv_label_domaine'   => 'Domaine concerné',
-		'ag_avocat_rdv_label_format'    => 'Format souhaité',
-		'ag_avocat_rdv_label_message'   => 'Description du dossier (en quelques lignes)',
-		'ag_avocat_rdv_domaine_select'  => '— Sélectionnez —',
-		'ag_avocat_rdv_domaine_other'   => 'Autre / a determiner',
-		'ag_avocat_rdv_format_cabinet'  => 'Au cabinet',
-		'ag_avocat_rdv_format_visio'    => 'En visio',
-		'ag_avocat_rdv_format_phone'    => 'Par téléphone',
-		'ag_avocat_rdv_submit_label'    => 'Envoyer ma demande →',
-		'ag_avocat_rdv_legal_note'      => 'Demande confidentielle protégée par le secret professionnel. Réponse sous 48h ouvrées.',
+		'ag_avocat_rdv_label_tel'       => 'Phone',
+		'ag_avocat_rdv_label_domaine'   => 'Relevant area',
+		'ag_avocat_rdv_label_format'    => 'Preferred format',
+		'ag_avocat_rdv_label_message'   => 'Case description (in a few lines)',
+		'ag_avocat_rdv_domaine_select'  => '— Select —',
+		'ag_avocat_rdv_domaine_other'   => 'Other / to be determined',
+		'ag_avocat_rdv_format_cabinet'  => 'At the office',
+		'ag_avocat_rdv_format_visio'    => 'By video',
+		'ag_avocat_rdv_format_phone'    => 'By phone',
+		'ag_avocat_rdv_submit_label'    => 'Send my request →',
+		'ag_avocat_rdv_legal_note'      => 'Confidential request protected by attorney-client privilege. Reply within 48 business hours.',
 	);
 }
 
@@ -413,13 +413,13 @@ function ag_starter_avocat_customize_register( $wp_customize ) {
 		)
 	);
 	$cabinet_fields = array(
-		'ag_cabinet_phone'     => array( 'label' => 'Téléphone du cabinet', 'type' => 'text' ),
-		'ag_cabinet_emergency' => array( 'label' => 'Numéro d\'urgence garde à vue (optionnel)', 'type' => 'text' ),
-		'ag_cabinet_email'     => array( 'label' => 'Email du cabinet', 'type' => 'email' ),
-		'ag_cabinet_address'   => array( 'label' => 'Adresse complète (1 ligne par ligne)', 'type' => 'textarea' ),
-		'ag_cabinet_hours'     => array( 'label' => 'Horaires d\'ouverture (1 ligne par ligne)', 'type' => 'textarea' ),
-		'ag_cabinet_map_embed' => array( 'label' => 'URL Google Maps embed (optionnel)', 'type' => 'url' ),
-		'ag_cabinet_rpva'      => array( 'label' => 'Numéro RPVA (optionnel)', 'type' => 'text' ),
+		'ag_cabinet_phone'     => array( 'label' => esc_html__( 'Firm phone', 'ag-starter-avocat' ), 'type' => 'text' ),
+		'ag_cabinet_emergency' => array( 'label' => esc_html__( 'Police-custody emergency number (optional)', 'ag-starter-avocat' ), 'type' => 'text' ),
+		'ag_cabinet_email'     => array( 'label' => esc_html__( 'Firm email', 'ag-starter-avocat' ), 'type' => 'email' ),
+		'ag_cabinet_address'   => array( 'label' => esc_html__( 'Full address (one line per line)', 'ag-starter-avocat' ), 'type' => 'textarea' ),
+		'ag_cabinet_hours'     => array( 'label' => esc_html__( 'Opening hours (one line per line)', 'ag-starter-avocat' ), 'type' => 'textarea' ),
+		'ag_cabinet_map_embed' => array( 'label' => esc_html__( 'Google Maps embed URL (optional)', 'ag-starter-avocat' ), 'type' => 'url' ),
+		'ag_cabinet_rpva'      => array( 'label' => esc_html__( 'RPVA number (optional)', 'ag-starter-avocat' ), 'type' => 'text' ),
 	);
 	$prio = 10;
 	foreach ( $cabinet_fields as $key => $meta ) {
@@ -456,14 +456,14 @@ function ag_starter_avocat_customize_register( $wp_customize ) {
 	);
 	$deonto_fields = array(
 		'ag_avocat_hebergement_note' => array(
-			'label'   => 'Note hébergement / secret pro (pied de page)',
+			'label'   => esc_html__( 'Hosting / privilege note (footer)', 'ag-starter-avocat' ),
 			'type'    => 'text',
-			'default' => 'Hébergement en Union Européenne — données protégées par le secret professionnel.',
+			'default' => __( 'Hosting in the European Union — data protected by attorney-client privilege.', 'ag-starter-avocat' ),
 		),
 		'ag_avocat_nocookie_note'    => array(
-			'label'   => 'Note cookies (pied de page)',
+			'label'   => esc_html__( 'Cookie note (footer)', 'ag-starter-avocat' ),
 			'type'    => 'text',
-			'default' => 'Ce site n’utilise aucun cookie de traçage publicitaire.',
+			'default' => __( 'This site does not use any advertising tracking cookies.', 'ag-starter-avocat' ),
 		),
 	);
 	$prio = 10;
@@ -498,12 +498,12 @@ function ag_starter_avocat_customize_register( $wp_customize ) {
 		)
 	);
 	$maitre_fields = array(
-		'ag_maitre_show'        => array( 'label' => 'Afficher la section "Le Maître"', 'type' => 'checkbox' ),
-		'ag_maitre_name'        => array( 'label' => 'Nom du Maître', 'type' => 'text' ),
-		'ag_maitre_barreau'     => array( 'label' => 'Barreau d\'inscription', 'type' => 'text' ),
-		'ag_maitre_year'        => array( 'label' => 'Année d\'inscription au barreau', 'type' => 'text' ),
-		'ag_maitre_specialties' => array( 'label' => 'Spécialités (séparées par ·)', 'type' => 'text' ),
-		'ag_maitre_bio'         => array( 'label' => 'Biographie / parcours', 'type' => 'textarea' ),
+		'ag_maitre_show'        => array( 'label' => esc_html__( 'Show the "Attorney" section', 'ag-starter-avocat' ), 'type' => 'checkbox' ),
+		'ag_maitre_name'        => array( 'label' => esc_html__( 'Attorney name', 'ag-starter-avocat' ), 'type' => 'text' ),
+		'ag_maitre_barreau'     => array( 'label' => esc_html__( 'Bar of admission', 'ag-starter-avocat' ), 'type' => 'text' ),
+		'ag_maitre_year'        => array( 'label' => esc_html__( 'Year of bar admission', 'ag-starter-avocat' ), 'type' => 'text' ),
+		'ag_maitre_specialties' => array( 'label' => esc_html__( 'Specialties (separated by ·)', 'ag-starter-avocat' ), 'type' => 'text' ),
+		'ag_maitre_bio'         => array( 'label' => esc_html__( 'Biography / background', 'ag-starter-avocat' ), 'type' => 'textarea' ),
 	);
 	$prio = 10;
 	foreach ( $maitre_fields as $key => $meta ) {
@@ -558,17 +558,17 @@ function ag_starter_avocat_customize_register( $wp_customize ) {
 		)
 	);
 	$honoraires_fields = array(
-		'ag_honoraires_show'        => array( 'label' => 'Afficher la section Honoraires', 'type' => 'checkbox' ),
-		'ag_honoraires_first_label' => array( 'label' => 'Tarif 1 — Libellé', 'type' => 'text' ),
-		'ag_honoraires_first_price' => array( 'label' => 'Tarif 1 — Prix', 'type' => 'text' ),
-		'ag_honoraires_first_desc'  => array( 'label' => 'Tarif 1 — Description', 'type' => 'textarea' ),
-		'ag_honoraires_pack_label'  => array( 'label' => 'Tarif 2 — Libellé', 'type' => 'text' ),
-		'ag_honoraires_pack_price'  => array( 'label' => 'Tarif 2 — Prix', 'type' => 'text' ),
-		'ag_honoraires_pack_desc'   => array( 'label' => 'Tarif 2 — Description', 'type' => 'textarea' ),
-		'ag_honoraires_hour_label'  => array( 'label' => 'Tarif 3 — Libellé', 'type' => 'text' ),
-		'ag_honoraires_hour_price'  => array( 'label' => 'Tarif 3 — Prix', 'type' => 'text' ),
-		'ag_honoraires_hour_desc'   => array( 'label' => 'Tarif 3 — Description', 'type' => 'textarea' ),
-		'ag_honoraires_note'        => array( 'label' => 'Note légale (en bas du bloc)', 'type' => 'textarea' ),
+		'ag_honoraires_show'        => array( 'label' => esc_html__( 'Show the Fees section', 'ag-starter-avocat' ), 'type' => 'checkbox' ),
+		'ag_honoraires_first_label' => array( 'label' => esc_html__( 'Fee 1 — Label', 'ag-starter-avocat' ), 'type' => 'text' ),
+		'ag_honoraires_first_price' => array( 'label' => esc_html__( 'Fee 1 — Price', 'ag-starter-avocat' ), 'type' => 'text' ),
+		'ag_honoraires_first_desc'  => array( 'label' => esc_html__( 'Fee 1 — Description', 'ag-starter-avocat' ), 'type' => 'textarea' ),
+		'ag_honoraires_pack_label'  => array( 'label' => esc_html__( 'Fee 2 — Label', 'ag-starter-avocat' ), 'type' => 'text' ),
+		'ag_honoraires_pack_price'  => array( 'label' => esc_html__( 'Fee 2 — Price', 'ag-starter-avocat' ), 'type' => 'text' ),
+		'ag_honoraires_pack_desc'   => array( 'label' => esc_html__( 'Fee 2 — Description', 'ag-starter-avocat' ), 'type' => 'textarea' ),
+		'ag_honoraires_hour_label'  => array( 'label' => esc_html__( 'Fee 3 — Label', 'ag-starter-avocat' ), 'type' => 'text' ),
+		'ag_honoraires_hour_price'  => array( 'label' => esc_html__( 'Fee 3 — Price', 'ag-starter-avocat' ), 'type' => 'text' ),
+		'ag_honoraires_hour_desc'   => array( 'label' => esc_html__( 'Fee 3 — Description', 'ag-starter-avocat' ), 'type' => 'textarea' ),
+		'ag_honoraires_note'        => array( 'label' => esc_html__( 'Legal note (bottom of the block)', 'ag-starter-avocat' ), 'type' => 'textarea' ),
 	);
 	$prio = 10;
 	foreach ( $honoraires_fields as $key => $meta ) {
@@ -603,12 +603,12 @@ function ag_starter_avocat_customize_register( $wp_customize ) {
 		)
 	);
 	$rdv_fields = array(
-		'ag_rdv_show'            => array( 'label' => 'Afficher le formulaire RDV', 'type' => 'checkbox' ),
-		'ag_rdv_title'           => array( 'label' => 'Titre du formulaire', 'type' => 'text' ),
-		'ag_rdv_subtitle'        => array( 'label' => 'Sous-titre / promesse', 'type' => 'textarea' ),
-		'ag_rdv_recipient_email' => array( 'label' => 'Email destinataire (vide = email du cabinet)', 'type' => 'email' ),
-		'ag_rdv_rgpd_text'       => array( 'label' => 'Texte de consentement RGPD (case à cocher)', 'type' => 'textarea' ),
-		'ag_rgpd_mention'        => array( 'label' => 'Mention RGPD affichée dans le footer', 'type' => 'textarea' ),
+		'ag_rdv_show'            => array( 'label' => esc_html__( 'Show the appointment form', 'ag-starter-avocat' ), 'type' => 'checkbox' ),
+		'ag_rdv_title'           => array( 'label' => esc_html__( 'Form title', 'ag-starter-avocat' ), 'type' => 'text' ),
+		'ag_rdv_subtitle'        => array( 'label' => esc_html__( 'Subtitle / promise', 'ag-starter-avocat' ), 'type' => 'textarea' ),
+		'ag_rdv_recipient_email' => array( 'label' => esc_html__( 'Recipient email (empty = firm email)', 'ag-starter-avocat' ), 'type' => 'email' ),
+		'ag_rdv_rgpd_text'       => array( 'label' => esc_html__( 'GDPR consent text (checkbox)', 'ag-starter-avocat' ), 'type' => 'textarea' ),
+		'ag_rgpd_mention'        => array( 'label' => esc_html__( 'GDPR notice shown in the footer', 'ag-starter-avocat' ), 'type' => 'textarea' ),
 	);
 	$prio = 10;
 	foreach ( $rdv_fields as $key => $meta ) {
@@ -766,7 +766,7 @@ function ag_starter_avocat_register_upgrade_control() {
 					'icon'  => '💎',
 					'title' => 'Premium',
 					'price' => '69€',
-					'desc'  => 'Notre design le plus abouti : luxe, animations scroll, header sticky, couleurs avancees, temoignages, telephone header, pub minimale, support. Paiement unique.',
+					'desc'  => esc_html__( 'Our most refined design: luxury, scroll animations, sticky header, advanced colors, testimonials, header phone, minimal ads, support. One-time payment.', 'ag-starter-avocat' ),
 					'url'   => $base . $utm . '&pack=premium#ag-pricing',
 				),
 			);
@@ -786,8 +786,8 @@ function ag_starter_avocat_register_upgrade_control() {
 
 				<?php if ( 'free' !== $tier ) : ?>
 					<div style="background:linear-gradient(135deg,#d4b45c 0%,#b8941f 100%);color:#0a0a0a;padding:12px 14px;border-radius:6px;margin-bottom:<?php echo empty( $packs ) ? '0' : '12px'; ?>;text-align:center;">
-						<strong style="display:block;font-size:13px;">✓ <?php echo esc_html( $tier_labels[ $tier ] ); ?> actif</strong>
-						<span style="display:block;font-size:11px;margin-top:2px;opacity:.85;">Merci pour votre confiance !</span>
+						<strong style="display:block;font-size:13px;">✓ <?php echo esc_html( $tier_labels[ $tier ] ); ?> <?php esc_html_e( 'active', 'ag-starter-avocat' ); ?></strong>
+						<span style="display:block;font-size:11px;margin-top:2px;opacity:.85;"><?php esc_html_e( 'Thank you for your trust!', 'ag-starter-avocat' ); ?></span>
 					</div>
 				<?php endif; ?>
 

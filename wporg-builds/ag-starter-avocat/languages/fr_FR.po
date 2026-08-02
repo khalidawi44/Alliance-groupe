@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: AG Starter Avocat\n"
+"Project-Id-Version: AG Starter Avocat 1.1.21\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr_FR\n"
@@ -30,6 +30,15 @@ msgstr "Ajouter un premier domaine"
 msgid "Address"
 msgstr "Adresse"
 
+msgid "Address, email, phone (footer)"
+msgstr "Adresse, email, téléphone (pied de page)"
+
+msgid "Address, hours, contact, emergency"
+msgstr "Adresse, horaires, contact, urgence"
+
+msgid "Admitted since"
+msgstr "Inscrit depuis"
+
 msgid "Admitted since %s"
 msgstr "Inscrit depuis %s"
 
@@ -48,8 +57,38 @@ msgstr "Or Alliance"
 msgid "An error occurred while sending. You can reach us directly by email or phone."
 msgstr "Une erreur est survenue lors de l'envoi. Vous pouvez nous joindre directement par email ou telephone."
 
+msgid "Appearance > Customize > Appointment > GDPR"
+msgstr "Apparence > Personnaliser > Rendez-vous > RGPD"
+
+msgid "Appearance > Customize > Fees"
+msgstr "Apparence > Personnaliser > Honoraires"
+
+msgid "Appearance > Customize > Firm"
+msgstr "Apparence > Personnaliser > Cabinet"
+
+msgid "Appearance > Customize > Firm > Map embed"
+msgstr "Apparence > Personnaliser > Cabinet > Map embed"
+
+msgid "Appearance > Customize > Hero"
+msgstr "Apparence > Personnaliser > Hero"
+
+msgid "Appearance > Customize > Identity"
+msgstr "Apparence > Personnaliser > Identité"
+
+msgid "Appearance > Customize > Site Identity (logo)"
+msgstr "Apparence > Personnaliser > Identité du site (logo)"
+
+msgid "Appearance > Customize > The Attorney"
+msgstr "Apparence > Personnaliser > Le Maître"
+
+msgid "Appearance > Menus > \"Main menu\""
+msgstr "Apparence > Menus > « Menu principal »"
+
 msgid "Appointment form &amp; GDPR"
 msgstr "Formulaire de rendez-vous &amp; RGPD"
+
+msgid "Appointment form GDPR text"
+msgstr "Texte RGPD du formulaire de rendez-vous"
 
 msgid "Appointment — \"Other\" option"
 msgstr "RDV — option « Autre »"
@@ -93,6 +132,12 @@ msgstr "RDV — note légale (sous bouton)"
 msgid "Appointment — submit button"
 msgstr "RDV — bouton submit"
 
+msgid "Areas > admin (CPT ag_domaine)"
+msgstr "Domaines > admin (CPT ag_domaine)"
+
+msgid "Areas > featured image"
+msgstr "Domaines > image à la une"
+
 msgid "Areas — H2 title"
 msgstr "Domaines — titre H2"
 
@@ -114,6 +159,12 @@ msgstr "Au cabinet"
 msgid "Attorney admitted to the %s"
 msgstr "Avocat inscrit au %s"
 
+msgid "Attorney bio (photo, name, bar, bio)"
+msgstr "Bio Le Maître (photo, nom, barreau, bio)"
+
+msgid "Attorney name"
+msgstr "Nom du Maître"
+
 msgid "Attorney photo (optional)"
 msgstr "Photo du Maître (optionnel)"
 
@@ -129,11 +180,20 @@ msgstr "Maître — préfixe année (Inscrit depuis…)"
 msgid "Attorney-client privilege"
 msgstr "Secret professionnel"
 
+msgid "Automatic updates. Manual check available."
+msgstr "Mises à jour automatiques. Vérification manuelle possible."
+
 msgid "Back to home"
 msgstr "Retour a l'accueil"
 
+msgid "Background image per area"
+msgstr "Image de fond par domaine"
+
 msgid "Bar admission"
 msgstr "Barreau inscrit"
+
+msgid "Bar of admission"
+msgstr "Barreau d’inscription"
 
 msgid "Base text size (px)"
 msgstr "Taille de base du texte (px)"
@@ -143,6 +203,9 @@ msgstr "Avant toute intervention, une convention d'honoraires ecrite vous est re
 
 msgid "Between 14 and 20."
 msgstr "Entre 14 et 20."
+
+msgid "Biography / background"
+msgstr "Biographie / parcours"
 
 msgid "Book an appointment"
 msgstr "Prendre rendez-vous"
@@ -172,7 +235,7 @@ msgid "By email"
 msgstr "Par email"
 
 msgid "By phone"
-msgstr "Par telephone"
+msgstr "Par téléphone"
 
 msgid "By video"
 msgstr "En visio"
@@ -182,6 +245,9 @@ msgstr "Appeler"
 
 msgid "Call to action — Firm"
 msgstr "Appel à action — Cabinet"
+
+msgid "Can't find it?"
+msgstr "Vous ne trouvez pas ?"
 
 msgid "Cards background"
 msgstr "Arriere-plan des cartes"
@@ -208,13 +274,16 @@ msgid "Compact"
 msgstr "Compact"
 
 msgid "Confidential request protected by attorney-client privilege. Reply within 48 business hours."
-msgstr "Demande confidentielle protegee par le secret professionnel. Reponse sous 48h ouvrees."
+msgstr "Demande confidentielle protégée par le secret professionnel. Réponse sous 48h ouvrées."
 
 msgid "Consultation at the office, by video or by phone."
 msgstr "Consultation au cabinet, en visio ou par telephone."
 
 msgid "Contact"
 msgstr "Contact"
+
+msgid "Cookie note (footer)"
+msgstr "Note cookies (pied de page)"
 
 msgid "Cookies"
 msgstr "Cookies"
@@ -228,6 +297,9 @@ msgstr "Site sur-mesure (+340% leads) →"
 msgid "Customize the intro sentences (under the titles) of each home section."
 msgstr "Personnalisez les phrases d'introduction (sous les titres) de chaque section de l'accueil."
 
+msgid "Dedicated pages"
+msgstr "Pages dédiées"
+
 msgid "Default"
 msgstr "Par defaut"
 
@@ -240,6 +312,15 @@ msgstr "Télécharger AG Starter Companion"
 msgid "Download the ZIP, then Plugins → Add New → Upload"
 msgstr "Téléchargez le ZIP, puis Extensions → Ajouter → Téléverser"
 
+msgid "Each home section has a WP page. The title + first paragraph become the section header on the home page."
+msgstr "Chaque section de l’accueil a une page WP. Le titre + premier paragraphe deviennent l’en-tête de la section sur l’accueil."
+
+msgid "Each practice area is a Custom Post Type with its icon, its example cases and its detailed page."
+msgstr "Chaque domaine d’expertise est un Custom Post Type avec son icône, ses exemples de cas et sa fiche détaillée."
+
+msgid "Each row shows an area of the site and where to change it."
+msgstr "Chaque ligne indique une zone du site et où la modifier."
+
 msgid "Email"
 msgstr "Email"
 
@@ -249,8 +330,38 @@ msgstr "Déontologie &amp; RGPD"
 msgid "Examples of handled cases"
 msgstr "Exemples de cas traites"
 
+msgid "Fee 1 — Description"
+msgstr "Tarif 1 — Description"
+
+msgid "Fee 1 — Label"
+msgstr "Tarif 1 — Libellé"
+
+msgid "Fee 1 — Price"
+msgstr "Tarif 1 — Prix"
+
+msgid "Fee 2 — Description"
+msgstr "Tarif 2 — Description"
+
+msgid "Fee 2 — Label"
+msgstr "Tarif 2 — Libellé"
+
+msgid "Fee 2 — Price"
+msgstr "Tarif 2 — Prix"
+
+msgid "Fee 3 — Description"
+msgstr "Tarif 3 — Description"
+
+msgid "Fee 3 — Label"
+msgstr "Tarif 3 — Libellé"
+
+msgid "Fee 3 — Price"
+msgstr "Tarif 3 — Prix"
+
 msgid "Fee agreement"
 msgstr "Convention d'honoraires"
+
+msgid "Fee rates (3 tiers)"
+msgstr "Tarifs honoraires (3 grilles)"
 
 msgid "Fees"
 msgstr "Honoraires"
@@ -272,6 +383,12 @@ msgstr "Cabinet"
 
 msgid "Firm (contact &amp; hours)"
 msgstr "Cabinet (contact &amp; horaires)"
+
+msgid "Firm email"
+msgstr "Email du cabinet"
+
+msgid "Firm phone"
+msgstr "Téléphone du cabinet"
 
 msgid "Firm — Address block title"
 msgstr "Cabinet — titre bloc Adresse"
@@ -295,7 +412,7 @@ msgid "First call free, no obligation"
 msgstr "Premier appel gratuit, sans engagement"
 
 msgid "First name"
-msgstr "Prenom"
+msgstr "Prénom"
 
 msgid "Flat fee: a fixed price agreed in advance for a defined case"
 msgstr "Forfait : prix fixe convenu a l'avance pour un dossier defini"
@@ -306,17 +423,38 @@ msgstr "Famille de police"
 msgid "Footer"
 msgstr "Pied de page"
 
+msgid "Force theme update"
+msgstr "Forcer la mise à jour du thème"
+
+msgid "Form title"
+msgstr "Titre du formulaire"
+
 msgid "Free — 10 seconds — no sign-up"
 msgstr "Gratuit — 10 secondes — aucune inscription"
 
+msgid "Full address (one line per line)"
+msgstr "Adresse complète (une ligne par ligne)"
+
 msgid "Full pricing transparency: no bad surprises, a written quote before any commitment."
 msgstr "Transparence totale sur les tarifs : pas de mauvaise surprise, devis ecrit avant tout engagement."
+
+msgid "GDPR consent text (checkbox)"
+msgstr "Texte de consentement RGPD (case à cocher)"
+
+msgid "GDPR notice shown in the footer"
+msgstr "Mention RGPD affichée dans le pied de page"
 
 msgid "General advice"
 msgstr "Conseil general"
 
 msgid "Get the free guide: 7 pages that attract clients"
 msgstr "Recevoir le guide gratuit : 7 pages qui attirent des clients"
+
+msgid "Google Maps embed URL (optional)"
+msgstr "URL Google Maps embed (optionnel)"
+
+msgid "Google Maps map (embed)"
+msgstr "Carte Google Maps (embed)"
 
 msgid "Headings color"
 msgstr "Couleur des titres"
@@ -327,14 +465,26 @@ msgstr "Taille des titres"
 msgid "Hero (home)"
 msgstr "Hero (accueil)"
 
+msgid "Hero — CTA button + URL"
+msgstr "Hero — bouton CTA + URL"
+
+msgid "Hero — prefix + firm name + subtitle"
+msgstr "Hero — préfixe + nom du cabinet + sous-titre"
+
 msgid "Home"
 msgstr "Accueil"
 
 msgid "Home content — texts"
 msgstr "Contenu accueil — textes"
 
+msgid "Home page"
+msgstr "Page d’accueil"
+
 msgid "Home page and permalinks enabled"
 msgstr "Page d'accueil et permaliens actives"
+
+msgid "Hosting / privilege note (footer)"
+msgstr "Note hébergement / secret pro (pied de page)"
 
 msgid "Hosting in the European Union — data protected by attorney-client privilege."
 msgstr "Hébergement en Union Européenne — données protégées par le secret professionnel."
@@ -344,6 +494,9 @@ msgstr "Horaires"
 
 msgid "How are our fees calculated?"
 msgstr "Comment sont calcules nos honoraires ?"
+
+msgid "If you want to change something not in this list, open the relevant page with the <strong>Gutenberg block editor</strong> (Pages > your page)."
+msgstr "Si vous voulez modifier quelque chose qui n’est pas dans cette liste, ouvrez la page concernée avec l’<strong>éditeur de blocs Gutenberg</strong> (Pages > votre page)."
 
 msgid "Initial consultation: a first appointment to review your situation"
 msgstr "Consultation initiale : premier rendez-vous pour analyser votre situation"
@@ -369,11 +522,20 @@ msgstr "L'aide juridictionnelle est acceptee pour les dossiers eligibles."
 msgid "Legal information"
 msgstr "Informations légales"
 
+msgid "Legal note (bottom of the block)"
+msgstr "Note légale (en bas du bloc)"
+
 msgid "Legal notice"
 msgstr "Mentions légales"
 
 msgid "Light / dark mode"
 msgstr "Mode clair / sombre"
+
+msgid "List of areas (title, excerpt, icon, examples)"
+msgstr "Liste des domaines (titre, extrait, icône, exemples)"
+
+msgid "Logo (header + footer)"
+msgstr "Logo (en-tête + pied de page)"
 
 msgid "Main background"
 msgstr "Arriere-plan principal"
@@ -384,14 +546,23 @@ msgstr "Menu principal"
 msgid "Main menu configured and assigned"
 msgstr "Menu principal configure et assigne"
 
+msgid "Main menu links"
+msgstr "Liens du menu principal"
+
 msgid "Menu"
 msgstr "Menu"
+
+msgid "Menus, header, footer"
+msgstr "Menus, en-tête, pied de page"
 
 msgid "Monospace"
 msgstr "Monospace"
 
 msgid "Name"
 msgstr "Nom"
+
+msgid "Navigation and footer editable without coding."
+msgstr "Navigation et pied de page éditables sans coder."
 
 msgid "Need advice? Book an appointment with the firm."
 msgstr "Besoin de conseils ? Prenez rendez-vous avec le cabinet."
@@ -423,11 +594,17 @@ msgstr "Mentions affichées dans le pied de page. Le template est « déontologi
 msgid "OK"
 msgstr "OK"
 
+msgid "Opening hours (one line per line)"
+msgstr "Horaires d’ouverture (une ligne par ligne)"
+
 msgid "Other / to be determined"
-msgstr "Autre / a determiner"
+msgstr "Autre / à déterminer"
 
 msgid "Our commitment: rigor, attentiveness and confidentiality at the service of your interests."
 msgstr "Notre engagement : rigueur, ecoute et confidentialite au service de vos interets."
+
+msgid "Our most refined design: luxury, scroll animations, sticky header, advanced colors, testimonials, header phone, minimal ads, support. One-time payment."
+msgstr "Notre design le plus abouti : luxe, animations au scroll, header sticky, couleurs avancées, témoignages, téléphone dans le header, publicité minimale, support. Paiement unique."
 
 msgid "Our team"
 msgstr "Notre équipe"
@@ -438,6 +615,33 @@ msgstr "Nos services à la carte"
 msgid "Page not found"
 msgstr "Page introuvable"
 
+msgid "Pages > Appointment (slug: rendez-vous)"
+msgstr "Pages > Rendez-vous (slug : rendez-vous)"
+
+msgid "Pages > Appointment: title + first paragraph"
+msgstr "Pages > Rendez-vous : titre + 1er paragraphe"
+
+msgid "Pages > Expertise (slug: expertise)"
+msgstr "Pages > Expertise (slug : expertise)"
+
+msgid "Pages > Expertise: title + first paragraph"
+msgstr "Pages > Expertise : titre + 1er paragraphe"
+
+msgid "Pages > Fees (slug: honoraires)"
+msgstr "Pages > Honoraires (slug : honoraires)"
+
+msgid "Pages > Fees: title + first paragraph"
+msgstr "Pages > Honoraires : titre + 1er paragraphe"
+
+msgid "Pages > Firm (slug: cabinet)"
+msgstr "Pages > Cabinet (slug : cabinet)"
+
+msgid "Pages > Firm: title + first paragraph"
+msgstr "Pages > Cabinet : titre + 1er paragraphe"
+
+msgid "Pages > Legal notice"
+msgstr "Pages > Mentions légales"
+
 msgid "Pages created automatically (Home, Expertise, Fees, Firm, Appointment)"
 msgstr "Pages creees automatiquement (Accueil, Expertise, Honoraires, Cabinet, Rendez-vous)"
 
@@ -445,7 +649,7 @@ msgid "Pages:"
 msgstr "Pages :"
 
 msgid "Phone"
-msgstr "Telephone"
+msgstr "Téléphone"
 
 msgid "Please fill in at least the name, a valid email and a case description."
 msgstr "Merci de remplir au moins le nom, un email valide et une description du dossier."
@@ -454,7 +658,10 @@ msgid "Police custody"
 msgstr "Garde a vue"
 
 msgid "Police custody 24/7:"
-msgstr "Garde a vue 24/7 :"
+msgstr "Garde à vue 24/7 :"
+
+msgid "Police-custody emergency number (optional)"
+msgstr "Numéro d’urgence garde à vue (optionnel)"
 
 msgid "Practice area"
 msgstr "Domaine d'expertise"
@@ -462,8 +669,11 @@ msgstr "Domaine d'expertise"
 msgid "Practice areas"
 msgstr "Domaines d'expertise"
 
+msgid "Practice areas (CPT)"
+msgstr "Domaines d’expertise (CPT)"
+
 msgid "Preferred format"
-msgstr "Format souhaite"
+msgstr "Format souhaité"
 
 msgid "Previous comments"
 msgstr "Commentaires precedents"
@@ -471,11 +681,17 @@ msgstr "Commentaires precedents"
 msgid "Privacy policy (GDPR)"
 msgstr "Politique de confidentialité (RGPD)"
 
+msgid "RPVA number (optional)"
+msgstr "Numéro RPVA (optionnel)"
+
 msgid "Read more"
 msgstr "Lire la suite"
 
+msgid "Recipient email (empty = firm email)"
+msgstr "Email destinataire (vide = email du cabinet)"
+
 msgid "Relevant area"
-msgstr "Domaine concerne"
+msgstr "Domaine concerné"
 
 msgid "Request a free quote"
 msgstr "Demander un devis gratuit"
@@ -507,8 +723,20 @@ msgstr "Voir le cabinet →"
 msgid "Send my request"
 msgstr "Envoyer ma demande"
 
+msgid "Send my request →"
+msgstr "Envoyer ma demande →"
+
 msgid "Serif (elegant)"
 msgstr "Serif (elegant)"
+
+msgid "Show the \"Attorney\" section"
+msgstr "Afficher la section « Le Maître »"
+
+msgid "Show the Fees section"
+msgstr "Afficher la section Honoraires"
+
+msgid "Show the appointment form"
+msgstr "Afficher le formulaire de rendez-vous"
 
 msgid "Show the credit \"Free theme by Alliance Group\""
 msgstr "Afficher le credit \"Theme gratuit par Alliance Group\""
@@ -525,11 +753,17 @@ msgstr "Aller au contenu principal"
 msgid "Spam detected."
 msgstr "Spam detecte."
 
+msgid "Specialties (separated by ·)"
+msgstr "Spécialités (séparées par ·)"
+
 msgid "Specialties:"
-msgstr "Specialites :"
+msgstr "Spécialités :"
 
 msgid "Subtitle"
 msgstr "Sous-titre"
+
+msgid "Subtitle / promise"
+msgstr "Sous-titre / promesse"
 
 msgid "Success fee: a supplement tied to a favorable outcome of the case"
 msgstr "Honoraires de resultat : complement lie a l'issue favorable du dossier"
@@ -546,11 +780,17 @@ msgstr "Etiquettes :"
 msgid "Text color"
 msgstr "Couleur du texte"
 
+msgid "Thank you for your trust!"
+msgstr "Merci pour votre confiance !"
+
 msgid "The Attorney"
 msgstr "Le Maître"
 
 msgid "The Attorney (introduction)"
 msgstr "Le Maître (présentation)"
+
+msgid "The TITLES + INTROS of each home section now come DIRECTLY from the matching pages. Edit the page (Pages > Expertise, Fees, Firm, Appointment): its TITLE becomes the section H2 and its first paragraph becomes the intro."
+msgstr "Les TITRES + INTROS de chaque section de l’accueil viennent maintenant DIRECTEMENT des pages correspondantes. Vous éditez la page (Pages > Expertise, Honoraires, Cabinet, Rendez-vous), son TITRE devient le H2 de la section et son premier paragraphe devient l’intro."
 
 msgid "The firm"
 msgstr "Le cabinet"
@@ -564,17 +804,38 @@ msgstr "Couleurs du theme"
 msgid "Theme: %s"
 msgstr "Theme : %s"
 
+msgid "This page lists EVERYTHING you can change without coding."
+msgstr "Cette page liste TOUT ce que vous pouvez modifier sans coder."
+
 msgid "This site does not use any advertising tracking cookies."
 msgstr "Ce site n’utilise aucun cookie de traçage publicitaire."
 
 msgid "Time-based: hourly billing with a detailed statement"
 msgstr "Au temps passe : facturation horaire avec releve detaille"
 
+msgid "Tip: create 4 to 6 practice areas (Business law, Employment law, Family law, Real-estate law...) each with an emoji and 3 example cases."
+msgstr "Astuce : créez 4 à 6 domaines (Droit des affaires, Droit du travail, Droit de la famille, Droit immobilier...) avec un emoji et 3 exemples de cas chacun."
+
+msgid "Title + intro of the APPOINTMENT section (home)"
+msgstr "Titre + intro section RENDEZ-VOUS (accueil)"
+
+msgid "Title + intro of the EXPERTISE section (home)"
+msgstr "Titre + intro section EXPERTISE (accueil)"
+
+msgid "Title + intro of the FEES section (home)"
+msgstr "Titre + intro section HONORAIRES (accueil)"
+
+msgid "Title + intro of the FIRM section (home)"
+msgstr "Titre + intro section CABINET (accueil)"
+
 msgid "Title prefix"
 msgstr "Prefixe du titre"
 
 msgid "Typography"
 msgstr "Typographie"
+
+msgid "Updates & support"
+msgstr "Mise à jour & support"
 
 msgid "Upgrade to the higher tier:"
 msgstr "Upgrader vers le niveau supérieur :"
@@ -587,6 +848,9 @@ msgstr "Bienvenue dans AG Starter Avocat !"
 
 msgid "Widgets shown in the footer."
 msgstr "Widgets affichés dans le pied de page."
+
+msgid "Year of bar admission"
+msgstr "Année d’inscription au barreau"
 
 msgid "Years of experience"
 msgstr "Annees d'experience"
@@ -609,8 +873,14 @@ msgstr "Votre theme est installe. Pour un site pret a l'emploi en 1 clic (pages,
 msgid "Your theme is ready!"
 msgstr "Votre theme est pret !"
 
+msgid "active"
+msgstr "actif"
+
 msgid "— Select —"
-msgstr "— Selectionnez —"
+msgstr "— Sélectionnez —"
+
+msgid "→ Go"
+msgstr "→ Aller"
 
 msgid "🎁 Get the free guide: 7 pages that attract clients"
 msgstr "🎁 Recevoir le guide gratuit : 7 pages qui attirent des clients"

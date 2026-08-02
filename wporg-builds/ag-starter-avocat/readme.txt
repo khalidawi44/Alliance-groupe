@@ -5,7 +5,7 @@ Tags: one-column, custom-menu, featured-images, translation-ready, theme-options
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.1.20
+Stable tag: 1.1.21
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,6 +66,11 @@ No. The theme is fully functional without Elementor, Divi or any other builder.
 Alliance Group, a web and AI agency. More info at https://alliancegroupe-inc.com
 
 == Changelog ==
+
+= 1.1.21 =
+* Full English source pass: the Customizer control labels, section titles, default front-page texts and the admin user-guide page are now all in English (translation-ready), fixing the remaining French strings from 1.1.20.
+* Updated bundled French translation (languages/fr_FR.po / fr_FR.mo) and .pot template to cover every theme string.
+* The theme no longer creates content (legal pages) on activation, per the theme directory guidelines.
 
 = 1.1.20 =
 * Internationalization: all source strings are now in English (translation-ready), with a bundled French translation (languages/fr_FR.po / fr_FR.mo) and an updated languages/ag-starter-avocat.pot.

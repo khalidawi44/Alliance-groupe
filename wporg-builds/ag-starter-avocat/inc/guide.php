@@ -29,63 +29,63 @@ class AG_Avocat_Guide {
 
 			array(
 				'icon'  => '🏠',
-				'title' => 'Page d\'accueil',
-				'desc'  => '⭐ Les TITRES + INTROS de chaque section de l\'accueil viennent maintenant DIRECTEMENT des pages correspondantes. Vous editez la page (Pages > Expertise, Honoraires, Cabinet, Rendez-vous), son TITRE devient le H2 de la section, son premier paragraphe devient l\'intro.',
+				'title' => __( 'Home page', 'ag-starter-avocat' ),
+				'desc'  => __( 'The TITLES + INTROS of each home section now come DIRECTLY from the matching pages. Edit the page (Pages > Expertise, Fees, Firm, Appointment): its TITLE becomes the section H2 and its first paragraph becomes the intro.', 'ag-starter-avocat' ),
 				'rows'  => array(
-					array( 'Hero — préfixe + nom du cabinet + sous-titre',     'Apparence > Personnaliser > Hero' ),
-					array( 'Hero — bouton CTA + URL',                          'Apparence > Personnaliser > Hero' ),
-					array( 'Titre + intro section EXPERTISE (accueil)',        'Pages > Expertise : titre + 1er paragraphe' ),
-					array( 'Titre + intro section HONORAIRES (accueil)',       'Pages > Honoraires : titre + 1er paragraphe' ),
-					array( 'Titre + intro section CABINET (accueil)',          'Pages > Cabinet : titre + 1er paragraphe' ),
-					array( 'Titre + intro section RENDEZ-VOUS (accueil)',      'Pages > Rendez-vous : titre + 1er paragraphe' ),
-					array( 'Bio Le Maître (photo, nom, barreau, bio)',         'Apparence > Personnaliser > Le Maître' ),
-					array( 'Tarifs honoraires (3 grilles)',                    'Apparence > Personnaliser > Honoraires' ),
-					array( 'Adresse, horaires, contact, urgence',              'Apparence > Personnaliser > Cabinet' ),
-					array( 'Carte Google Maps (embed)',                        'Apparence > Personnaliser > Cabinet > Map embed' ),
-					array( 'Texte RGPD du formulaire RDV',                     'Apparence > Personnaliser > Rendez-vous > RGPD' ),
+					array( __( 'Hero — prefix + firm name + subtitle', 'ag-starter-avocat' ), __( 'Appearance > Customize > Hero', 'ag-starter-avocat' ) ),
+					array( __( 'Hero — CTA button + URL', 'ag-starter-avocat' ), __( 'Appearance > Customize > Hero', 'ag-starter-avocat' ) ),
+					array( __( 'Title + intro of the EXPERTISE section (home)', 'ag-starter-avocat' ), __( 'Pages > Expertise: title + first paragraph', 'ag-starter-avocat' ) ),
+					array( __( 'Title + intro of the FEES section (home)', 'ag-starter-avocat' ), __( 'Pages > Fees: title + first paragraph', 'ag-starter-avocat' ) ),
+					array( __( 'Title + intro of the FIRM section (home)', 'ag-starter-avocat' ), __( 'Pages > Firm: title + first paragraph', 'ag-starter-avocat' ) ),
+					array( __( 'Title + intro of the APPOINTMENT section (home)', 'ag-starter-avocat' ), __( 'Pages > Appointment: title + first paragraph', 'ag-starter-avocat' ) ),
+					array( __( 'Attorney bio (photo, name, bar, bio)', 'ag-starter-avocat' ), __( 'Appearance > Customize > The Attorney', 'ag-starter-avocat' ) ),
+					array( __( 'Fee rates (3 tiers)', 'ag-starter-avocat' ), __( 'Appearance > Customize > Fees', 'ag-starter-avocat' ) ),
+					array( __( 'Address, hours, contact, emergency', 'ag-starter-avocat' ), __( 'Appearance > Customize > Firm', 'ag-starter-avocat' ) ),
+					array( __( 'Google Maps map (embed)', 'ag-starter-avocat' ), __( 'Appearance > Customize > Firm > Map embed', 'ag-starter-avocat' ) ),
+					array( __( 'Appointment form GDPR text', 'ag-starter-avocat' ), __( 'Appearance > Customize > Appointment > GDPR', 'ag-starter-avocat' ) ),
 				),
 			),
 
 			array(
 				'icon'  => '⚖️',
-				'title' => 'Domaines d\'expertise (CPT)',
-				'desc'  => 'Chaque domaine d\'expertise est un Custom Post Type avec son icône, ses exemples de cas et sa fiche détaillée.',
+				'title' => __( 'Practice areas (CPT)', 'ag-starter-avocat' ),
+				'desc'  => __( 'Each practice area is a Custom Post Type with its icon, its example cases and its detailed page.', 'ag-starter-avocat' ),
 				'rows'  => array(
-					array( 'Liste des domaines (titre, extrait, icône, exemples)', 'Domaines > admin (CPT ag_domaine)' ),
-					array( 'Image de fond par domaine',                            'Domaines > image à la une' ),
+					array( __( 'List of areas (title, excerpt, icon, examples)', 'ag-starter-avocat' ), __( 'Areas > admin (CPT ag_domaine)', 'ag-starter-avocat' ) ),
+					array( __( 'Background image per area', 'ag-starter-avocat' ), __( 'Areas > featured image', 'ag-starter-avocat' ) ),
 				),
 			),
 
 			array(
 				'icon'  => '📄',
-				'title' => 'Pages dédiées',
-				'desc'  => 'Chaque section de l\'accueil a une page WP. Le titre + premier paragraphe deviennent l\'entête de la section sur l\'accueil.',
+				'title' => __( 'Dedicated pages', 'ag-starter-avocat' ),
+				'desc'  => __( 'Each home section has a WP page. The title + first paragraph become the section header on the home page.', 'ag-starter-avocat' ),
 				'rows'  => array(
-					array( 'Domaines d\'expertise',  'Pages > Expertise (slug : expertise)' ),
-					array( 'Honoraires',             'Pages > Honoraires (slug : honoraires)' ),
-					array( 'Cabinet',                'Pages > Cabinet (slug : cabinet)' ),
-					array( 'Prendre rendez-vous',    'Pages > Rendez-vous (slug : rendez-vous)' ),
-					array( 'Mentions légales',       'Pages > Mentions légales' ),
+					array( __( 'Practice areas', 'ag-starter-avocat' ), __( 'Pages > Expertise (slug: expertise)', 'ag-starter-avocat' ) ),
+					array( __( 'Fees', 'ag-starter-avocat' ), __( 'Pages > Fees (slug: honoraires)', 'ag-starter-avocat' ) ),
+					array( __( 'Firm', 'ag-starter-avocat' ), __( 'Pages > Firm (slug: cabinet)', 'ag-starter-avocat' ) ),
+					array( __( 'Book an appointment', 'ag-starter-avocat' ), __( 'Pages > Appointment (slug: rendez-vous)', 'ag-starter-avocat' ) ),
+					array( __( 'Legal notice', 'ag-starter-avocat' ), __( 'Pages > Legal notice', 'ag-starter-avocat' ) ),
 				),
 			),
 
 			array(
 				'icon'  => '🧭',
-				'title' => 'Menus, header, footer',
-				'desc'  => 'Navigation et pied de page éditables sans coder.',
+				'title' => __( 'Menus, header, footer', 'ag-starter-avocat' ),
+				'desc'  => __( 'Navigation and footer editable without coding.', 'ag-starter-avocat' ),
 				'rows'  => array(
-					array( 'Logo (header + footer)',                         'Apparence > Personnaliser > Identité du site (logo)' ),
-					array( 'Liens du menu principal',                        'Apparence > Menus > "Menu principal"' ),
-					array( 'Adresse, email, téléphone (footer)',             'Apparence > Personnaliser > Identité' ),
+					array( __( 'Logo (header + footer)', 'ag-starter-avocat' ), __( 'Appearance > Customize > Site Identity (logo)', 'ag-starter-avocat' ) ),
+					array( __( 'Main menu links', 'ag-starter-avocat' ), __( 'Appearance > Menus > "Main menu"', 'ag-starter-avocat' ) ),
+					array( __( 'Address, email, phone (footer)', 'ag-starter-avocat' ), __( 'Appearance > Customize > Identity', 'ag-starter-avocat' ) ),
 				),
 			),
 
 			array(
 				'icon'  => '🔄',
-				'title' => 'Mise à jour & support',
-				'desc'  => 'Mises à jour automatiques. Vérification manuelle possible.',
+				'title' => __( 'Updates & support', 'ag-starter-avocat' ),
+				'desc'  => __( 'Automatic updates. Manual check available.', 'ag-starter-avocat' ),
 				'rows'  => array(
-					array( 'Forcer mise à jour du thème',     admin_url( 'themes.php?ag_avocat_check_theme=1' ) ),
+					array( __( 'Force theme update', 'ag-starter-avocat' ), admin_url( 'themes.php?ag_avocat_check_theme=1' ) ),
 				),
 			),
 		);
@@ -95,13 +95,13 @@ class AG_Avocat_Guide {
 		?>
 		<div class="wrap" style="max-width:1100px;">
 			<h1 style="display:flex;align-items:center;gap:10px;">
-				📖 Guide d'utilisation
+				📖 <?php esc_html_e( 'User guide', 'ag-starter-avocat' ); ?>
 				<small style="font-size:.55em;color:#888;font-weight:normal;">v<?php echo esc_html( wp_get_theme()->get( 'Version' ) ); ?></small>
 			</h1>
 
 			<div class="notice notice-info inline" style="border-left-color:#D4B45C;padding:14px 18px;margin:10px 0 24px;">
-				<p style="margin:0;font-size:1.05rem;"><strong>Cette page liste TOUT ce que vous pouvez modifier sans coder.</strong></p>
-				<p style="margin:6px 0 0;color:#555;">Chaque ligne indique une zone du site et où la modifier.</p>
+				<p style="margin:0;font-size:1.05rem;"><strong><?php esc_html_e( 'This page lists EVERYTHING you can change without coding.', 'ag-starter-avocat' ); ?></strong></p>
+				<p style="margin:6px 0 0;color:#555;"><?php esc_html_e( 'Each row shows an area of the site and where to change it.', 'ag-starter-avocat' ); ?></p>
 			</div>
 
 			<style>
@@ -129,7 +129,7 @@ class AG_Avocat_Guide {
 								<td><?php echo esc_html( $what ); ?></td>
 								<td>
 									<?php if ( $is_url ) : ?>
-										<a href="<?php echo esc_url( $where ); ?>">→ Aller</a>
+										<a href="<?php echo esc_url( $where ); ?>"><?php esc_html_e( '→ Go', 'ag-starter-avocat' ); ?></a>
 									<?php else : ?>
 										<?php echo esc_html( $where ); ?>
 									<?php endif; ?>
@@ -141,8 +141,8 @@ class AG_Avocat_Guide {
 			<?php endforeach; ?>
 
 			<div class="ag-avocat-guide-section" style="background:#fffbe6;border-color:#f0d000;">
-				<h2>💡 Vous ne trouvez pas ?</h2>
-				<p>Si vous voulez modifier quelque chose qui n'est pas dans cette liste, ouvrez la page concernée avec <strong>l'éditeur de blocs Gutenberg</strong> (Pages > votre page).</p>
+				<h2>💡 <?php esc_html_e( "Can't find it?", 'ag-starter-avocat' ); ?></h2>
+				<p><?php echo wp_kses_post( __( 'If you want to change something not in this list, open the relevant page with the <strong>Gutenberg block editor</strong> (Pages > your page).', 'ag-starter-avocat' ) ); ?></p>
 			</div>
 		</div>
 		<?php

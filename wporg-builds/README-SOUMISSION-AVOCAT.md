@@ -3,6 +3,16 @@
 Ce dossier `wporg-builds/ag-starter-avocat/` est la **version « .org propre »** du thème
 gratuit, prête à tester puis soumettre à https://wordpress.org/themes/upload/.
 
+## ✅ v1.1.21 — 2ᵉ passe i18n (complète)
+Après vérification point par point du build 1.1.20, il RESTAIT du français non traité par la 1ʳᵉ passe (qui n'avait converti que les appels `__()`) :
+- **Libellés du Customizer** (`inc/customizer.php`) : ~33 `'label' => 'Français'` bruts, non traduisibles → c'est l'écran que le relecteur ouvre. **Corrigés** en `esc_html__( 'English', … )`.
+- **Valeurs par défaut affichées** (`front-page.php` + tableau `defaults`) : ~30 textes FR affichés en install neuve → passés en anglais (labels de formulaire enveloppés en `__()` pour rester FR via le `.mo`).
+- **Page guide admin** (`inc/guide.php`) : tout le contenu FR → anglais traduisible.
+- **`inc/ag-prefill.php`** : la création automatique des 3 pages légales à l'activation est **désactivée** (un thème ne doit pas générer de contenu à l'activation — règle du répertoire).
+- **`.pot` + `fr_FR.po`/`fr_FR.mo`** régénérés : **297 chaînes, 297 traduites FR** (validées via gettext).
+- **`inc/pro-features.php`** : le français restant y est du **code mort** (méthodes premium/business protégées par `is_at_least()` + `render_testimonials()`/`render_footer_branding()` = `return;` immédiat). En tier `free` (le build .org), **aucun français n'est affiché**. Laissé tel quel.
+- Zip prêt : **`ag-starter-avocat-1.1.21.zip`**.
+
 ## ⛔ REFUS ticket #277598 (v1.1.18) — CORRIGÉ en v1.1.20
 Le relecteur (fahimmurshed) a fermé le ticket en **not-approved** pour DEUX raisons, toutes deux d'internationalisation :
 1. **« Theme should be in English »** : les textes source (Customizer, libellés) étaient en français.

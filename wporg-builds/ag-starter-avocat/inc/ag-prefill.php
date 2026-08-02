@@ -172,5 +172,5 @@ if ( ! function_exists( 'current_user_can_safe' ) ) :
 	}
 endif;
 
-add_action( 'after_switch_theme', 'ag_avocat_ensure_legal_pages' );
-add_action( 'admin_init', 'ag_avocat_ensure_legal_pages' );
+// [wp.org build] add_action( 'after_switch_theme', 'ag_avocat_ensure_legal_pages' );  // désactivé : un thème ne crée pas de contenu à l'activation
+// [wp.org build] add_action( 'admin_init', 'ag_avocat_ensure_legal_pages' );  // désactivé : un thème ne crée pas de contenu à l'activation
