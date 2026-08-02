@@ -754,7 +754,7 @@ if ( ! function_exists( 'ag_composants_render' ) ) {
 							<div class="agc-actions">
 								<button class="agc-btn agc-btn--g" data-act="html">📋 HTML</button>
 								<button class="agc-btn agc-btn--g" data-act="css">📋 CSS</button>
-								<button class="agc-btn agc-btn--p" data-act="zip">⬇️ ZIP</button>
+								<button class="agc-btn agc-btn--p" data-act="zip">⬇️ Télécharger</button>
 							</div>
 						</div>
 					</div>
@@ -926,28 +926,41 @@ if ( ! function_exists( 'ag_composants_render' ) ) {
  * ───────────────────────────────────────────────────────────── */
 add_action( 'admin_init', 'ag_composants_ensure_page' );
 if ( ! function_exists( 'ag_composants_ensure_page' ) ) {
+	/**
+	 * Crée/maintient les DEUX pages :
+	 *  - /composants      → app autonome plein écran (page-composants.php)
+	 *  - /composants-web  → même bibliothèque INTÉGRÉE au site (page-composants-site.php)
+	 */
 	function ag_composants_ensure_page() {
-		if ( get_option( 'ag_composants_page_v1' ) ) {
+		if ( (int) get_option( 'ag_composants_page_v2', 0 ) >= 2 ) {
 			return;
 		}
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
-		$existing = get_page_by_path( 'composants' );
-		if ( ! $existing ) {
-			$pid = wp_insert_post( array(
-				'post_title'   => 'Composants',
-				'post_name'    => 'composants',
-				'post_status'  => 'publish',
-				'post_type'    => 'page',
-				'post_content' => '<!-- Rendu par templates/page-composants.php -->',
-				'post_author'  => get_current_user_id() ?: 1,
-			) );
-			if ( $pid && ! is_wp_error( $pid ) ) {
-				update_post_meta( $pid, '_wp_page_template', 'templates/page-composants.php' );
+		$pages = array(
+			'composants'     => array( 'Composants', 'templates/page-composants.php' ),
+			'composants-web' => array( 'Bibliothèque de composants', 'templates/page-composants-site.php' ),
+		);
+		foreach ( $pages as $slug => $def ) {
+			$existing = get_page_by_path( $slug );
+			if ( ! $existing ) {
+				$pid = wp_insert_post( array(
+					'post_title'   => $def[0],
+					'post_name'    => $slug,
+					'post_status'  => 'publish',
+					'post_type'    => 'page',
+					'post_content' => '<!-- Rendu par ' . $def[1] . ' -->',
+					'post_author'  => get_current_user_id() ?: 1,
+				) );
+				if ( $pid && ! is_wp_error( $pid ) ) {
+					update_post_meta( $pid, '_wp_page_template', $def[1] );
+				}
+			} else {
+				update_post_meta( $existing->ID, '_wp_page_template', $def[1] );
 			}
 		}
-		update_option( 'ag_composants_page_v1', 1 );
+		update_option( 'ag_composants_page_v2', 2 );
 	}
 }
 
@@ -967,7 +980,7 @@ if ( ! function_exists( 'ag_composants_admin_render' ) ) {
 		$board = ag_composants_leaderboard();
 		$n     = wp_create_nonce( 'ag_comp_admin' );
 		echo '<div class="wrap"><h1>🧩 Composants — modération & créateurs</h1>';
-		echo '<p><a href="' . esc_url( home_url( '/composants' ) ) . '" target="_blank">→ Voir l\'espace public</a> · ' . count( ag_composants_seed() ) . ' composants maison · ' . count( $users ) . ' proposés</p>';
+		echo '<p><a href="' . esc_url( home_url( '/composants' ) ) . '" target="_blank">→ App autonome (/composants)</a> · <a href="' . esc_url( home_url( '/composants-web' ) ) . '" target="_blank">→ Version intégrée au site (/composants-web)</a> · ' . count( ag_composants_seed() ) . ' composants maison · ' . count( $users ) . ' proposés</p>';
 
 		echo '<h2>⏳ En attente de validation (' . count( $pending ) . ')</h2>';
 		if ( ! $pending ) {
@@ -1005,7 +1018,7 @@ if ( ! function_exists( 'ag_composants_admin_render' ) ) {
 add_filter( 'document_title_parts', 'ag_composants_seo_title' );
 if ( ! function_exists( 'ag_composants_seo_title' ) ) {
 	function ag_composants_seo_title( $parts ) {
-		if ( is_page_template( 'templates/page-composants.php' ) ) {
+		if ( is_page_template( 'templates/page-composants.php' ) || is_page_template( 'templates/page-composants-site.php' ) ) {
 			$parts['title'] = 'Composants web gratuits (boutons, cartes, CSS) — à copier';
 		}
 		return $parts;
