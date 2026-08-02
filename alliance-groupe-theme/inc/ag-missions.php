@@ -45,6 +45,54 @@ if ( ! function_exists( 'ag_mission_taken_count' ) ) {
 	function ag_mission_taken_count( $m ) { return count( (array) ( $m['taken'] ?? array() ) ); }
 }
 
+/* ── Primes & solde ambassadeur ──────────────────────────────────────────── */
+if ( ! function_exists( 'ag_mission_primes' ) ) {
+	function ag_mission_primes() { $p = get_option( 'ag_mission_primes', array() ); return is_array( $p ) ? $p : array(); }
+}
+if ( ! function_exists( 'ag_mission_earnings' ) ) {
+	/** Solde d'un ambassadeur : primes de missions en attente + payées. */
+	function ag_mission_earnings( $email ) {
+		$email = strtolower( (string) $email );
+		$pending = 0.0; $paid = 0.0;
+		foreach ( ag_mission_primes() as $p ) {
+			if ( strtolower( $p['email'] ?? '' ) !== $email ) continue;
+			if ( ! empty( $p['paid'] ) ) $paid += (float) ( $p['amount'] ?? 0 );
+			else $pending += (float) ( $p['amount'] ?? 0 );
+		}
+		return array( 'pending' => $pending, 'paid' => $paid, 'total' => $pending + $paid );
+	}
+}
+if ( ! function_exists( 'ag_mission_leaderboard' ) ) {
+	/** Classement des ambassadeurs par missions VALIDÉES + primes gagnées. */
+	function ag_mission_leaderboard() {
+		$agg = array();
+		foreach ( ag_mission_subs() as $s ) {
+			if ( 'valide' !== ( $s['status'] ?? '' ) ) continue;
+			$e = strtolower( $s['email'] ?? '' ); if ( '' === $e ) continue;
+			if ( ! isset( $agg[ $e ] ) ) $agg[ $e ] = array( 'email' => $e, 'name' => $s['name'] ?? $e, 'count' => 0, 'leads' => 0, 'prime' => 0.0 );
+			$agg[ $e ]['count']++;
+			$agg[ $e ]['leads'] += count( (array) ( $s['leads'] ?? array() ) );
+			$agg[ $e ]['prime'] += (float) ( $s['prime'] ?? 0 );
+			if ( ! empty( $s['name'] ) ) $agg[ $e ]['name'] = $s['name'];
+		}
+		$rows = array_values( $agg );
+		usort( $rows, function ( $a, $b ) {
+			if ( $b['count'] !== $a['count'] ) return $b['count'] - $a['count'];
+			return $b['prime'] <=> $a['prime'];
+		} );
+		return $rows;
+	}
+}
+/* Marquer une prime payée (AJAX admin). */
+add_action( 'wp_ajax_ag_mission_prime_paid', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_mission' ) ) wp_send_json_error();
+	$pid = sanitize_text_field( wp_unslash( $_POST['pid'] ?? '' ) );
+	$p = ag_mission_primes();
+	foreach ( $p as $k => $pr ) { if ( ( $pr['id'] ?? '' ) === $pid ) { $p[ $k ]['paid'] = 1; $p[ $k ]['paid_ts'] = time(); break; } }
+	update_option( 'ag_mission_primes', $p );
+	wp_send_json_success();
+} );
+
 /* ── Menus admin ─────────────────────────────────────────────────────────── */
 add_action( 'admin_menu', function () {
 	add_submenu_page( 'ag-prospects', 'Missions ambassadeurs', '🎯 Missions', 'manage_options', 'ag-missions', 'ag_missions_admin_render' );
@@ -206,10 +254,61 @@ if ( ! function_exists( 'ag_missions_admin_render' ) ) {
 					<?php endif; ?>
 				</div>
 			<?php endforeach; endif; ?>
+
+			<?php
+			$primes = ag_mission_primes();
+			$due = array_values( array_filter( $primes, function ( $p ) { return empty( $p['paid'] ); } ) );
+			$total_due = 0; foreach ( $due as $p ) { $total_due += (float) ( $p['amount'] ?? 0 ); }
+			?>
+			<h2 style="margin-top:28px;">💰 Primes à payer <?php echo $total_due > 0 ? '— ' . esc_html( number_format( $total_due, 2, ',', ' ' ) ) . ' €' : ''; ?></h2>
+			<?php if ( ! $due ) : ?>
+				<p style="color:#666;">Aucune prime en attente. (Une prime est créée quand tu valides un rendu.)</p>
+			<?php else : ?>
+				<table class="widefat striped" style="max-width:820px;">
+					<thead><tr><th>Ambassadeur</th><th>Mission</th><th>Prime</th><th></th></tr></thead>
+					<tbody>
+					<?php foreach ( $due as $p ) : ?>
+						<tr data-prime="<?php echo esc_attr( $p['id'] ); ?>">
+							<td><?php echo esc_html( $p['name'] ?: $p['email'] ); ?><br><span style="color:#888;font-size:.85em;"><?php echo esc_html( $p['email'] ?? '' ); ?></span></td>
+							<td><?php echo esc_html( $p['mission'] ?? '' ); ?></td>
+							<td><strong><?php echo esc_html( number_format( (float) ( $p['amount'] ?? 0 ), 2, ',', ' ' ) ); ?> €</strong></td>
+							<td><button class="button button-small ag-prime-paid" data-pid="<?php echo esc_attr( $p['id'] ); ?>">✅ Marquer payé</button></td>
+						</tr>
+					<?php endforeach; ?>
+					</tbody>
+				</table>
+			<?php endif; ?>
+
+			<?php $lb = ag_mission_leaderboard(); ?>
+			<h2 style="margin-top:28px;">🏆 Classement des missions</h2>
+			<?php if ( ! $lb ) : ?>
+				<p style="color:#666;">Aucune mission validée pour l'instant.</p>
+			<?php else : ?>
+				<table class="widefat striped" style="max-width:640px;">
+					<thead><tr><th>#</th><th>Ambassadeur</th><th>Missions</th><th>Prospects</th><th>Primes</th></tr></thead>
+					<tbody>
+					<?php foreach ( $lb as $i => $r ) : $medal = array( '🥇', '🥈', '🥉' ); ?>
+						<tr>
+							<td><?php echo esc_html( $medal[ $i ] ?? ( '#' . ( $i + 1 ) ) ); ?></td>
+							<td><?php echo esc_html( $r['name'] ?: $r['email'] ); ?></td>
+							<td><strong><?php echo (int) $r['count']; ?></strong></td>
+							<td><?php echo (int) $r['leads']; ?></td>
+							<td><?php echo esc_html( number_format( (float) $r['prime'], 2, ',', ' ' ) ); ?> €</td>
+						</tr>
+					<?php endforeach; ?>
+					</tbody>
+				</table>
+			<?php endif; ?>
 		</div>
 		<script>
 		(function(){
 			var n=<?php echo wp_json_encode( $nonce ); ?>, ajax=<?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>;
+			document.addEventListener('click',function(e){
+				var pb=e.target.closest?e.target.closest('.ag-prime-paid'):null; if(!pb) return; e.preventDefault();
+				pb.disabled=true; var body=new URLSearchParams(); body.set('action','ag_mission_prime_paid'); body.set('_n',n); body.set('pid',pb.getAttribute('data-pid'));
+				fetch(ajax,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()})
+					.then(function(r){return r.json();}).then(function(j){ if(j&&j.success){ var tr=pb.closest('[data-prime]'); if(tr) tr.remove(); } else { pb.disabled=false; } });
+			});
 			document.addEventListener('click',function(e){
 				var ok=e.target.closest?e.target.closest('.ag-sub-ok'):null;
 				var ko=e.target.closest?e.target.closest('.ag-sub-ko'):null;
@@ -255,7 +354,16 @@ add_action( 'wp_ajax_ag_app_missions', function () {
 			'deadline' => ! empty( $m['deadline_ts'] ) ? date_i18n( 'd/m/Y', (int) $m['deadline_ts'] ) : '',
 		);
 	}
-	wp_send_json_success( array( 'missions' => $out ) );
+	$earn = ag_mission_earnings( $email );
+	$top  = array();
+	foreach ( array_slice( ag_mission_leaderboard(), 0, 5 ) as $r ) {
+		$top[] = array(
+			'name'  => ( strtolower( $r['email'] ) === $email ) ? ( ( $r['name'] ?: $r['email'] ) . ' (toi)' ) : preg_replace( '/@.*/', '', $r['name'] ?: $r['email'] ),
+			'count' => (int) $r['count'],
+			'me'    => ( strtolower( $r['email'] ) === $email ),
+		);
+	}
+	wp_send_json_success( array( 'missions' => $out, 'earn' => $earn, 'top' => $top ) );
 } );
 
 add_action( 'wp_ajax_ag_app_mission_reserve', function () {

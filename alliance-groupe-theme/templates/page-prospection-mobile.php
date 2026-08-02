@@ -1035,8 +1035,27 @@ var AG = (function(){
 		box.innerHTML='<p class="sub" style="padding:6px 2px;">Chargement…</p>';
 		AG.post('ag_app_missions',{}).then(function(j){
 			misLoaded=true; box.innerHTML='';
-			var list=(j&&j.success&&j.data.missions)||[];
-			if(!list.length){ box.innerHTML='<div class="card"><p class="sub" style="margin:0;">Aucune mission ouverte pour l\'instant. Reviens bientôt 👀</p></div>'; return; }
+			var d=(j&&j.success&&j.data)||{};
+			// Mon solde primes
+			var e=d.earn||{pending:0,paid:0};
+			if((e.pending||0)>0||(e.paid||0)>0){
+				var eb=document.createElement('div'); eb.className='card'; eb.style.padding='12px';
+				eb.innerHTML='<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;"><span class="sub">💰 Mes primes de mission</span></div>'
+					+'<div style="display:flex;gap:16px;margin-top:6px;"><div><div style="font-size:1.3rem;font-weight:800;color:#e6b35a;">'+(e.pending||0).toFixed(2).replace(".",",")+' €</div><div class="sub" style="font-size:.72rem;">en attente</div></div>'
+					+'<div><div style="font-size:1.3rem;font-weight:800;color:#2ecc71;">'+(e.paid||0).toFixed(2).replace(".",",")+' €</div><div class="sub" style="font-size:.72rem;">déjà payé</div></div></div>';
+				box.appendChild(eb);
+			}
+			// Classement top missions
+			var top=d.top||[];
+			if(top.length){
+				var tb=document.createElement('div'); tb.className='card'; tb.style.padding='12px';
+				var med=['🥇','🥈','🥉'];
+				var th='<div class="sub" style="margin-bottom:6px;">🏆 Top missions</div>';
+				top.forEach(function(r,i){ th+='<div style="display:flex;justify-content:space-between;padding:3px 0;'+(r.me?'color:#e6b35a;font-weight:700;':'')+'"><span>'+(med[i]||('#'+(i+1)))+' '+misEsc(r.name)+'</span><span>'+r.count+' mission'+(r.count>1?'s':'')+'</span></div>'; });
+				tb.innerHTML=th; box.appendChild(tb);
+			}
+			var list=d.missions||[];
+			if(!list.length){ var nm=document.createElement('div'); nm.className='card'; nm.innerHTML='<p class="sub" style="margin:0;">Aucune mission ouverte pour l\'instant. Reviens bientôt 👀</p>'; box.appendChild(nm); return; }
 			list.forEach(function(m){ box.appendChild(misCard(m)); });
 		}).catch(function(){ box.innerHTML='<div class="card"><p class="sub" style="margin:0;">Erreur de chargement.</p></div>'; });
 	};
