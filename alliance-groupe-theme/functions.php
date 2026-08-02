@@ -121,6 +121,12 @@ if ( file_exists( $ag_appels_offres_file ) ) {
     require_once $ag_appels_offres_file;
 }
 
+// ── 1c4a-septies. Missions ambassadeurs (« ton BeMyEye ») + Plateformes de missions web
+$ag_missions_file = get_stylesheet_directory() . '/inc/ag-missions.php';
+if ( file_exists( $ag_missions_file ) ) {
+    require_once $ag_missions_file;
+}
+
 // ── 1c4b. SEO pages piliers (création site Nantes + cybersécurité/NIS2) + LocalBusiness/Breadcrumb/Service
 $ag_seo_pages_file = get_stylesheet_directory() . '/inc/ag-seo-pages.php';
 if ( file_exists( $ag_seo_pages_file ) ) {

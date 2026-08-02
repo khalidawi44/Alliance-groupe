@@ -431,6 +431,12 @@ foreach ( $ag_my_prospects as $ppc ) {
 		<?php endif; ?>
 	</section>
 
+	<section class="view" id="view-mis">
+		<h2 class="sec">🎯 Missions</h2>
+		<div class="card"><p class="sub" style="margin:0;">Des missions à réaliser pour l'équipe (prospection, terrain…). Réserve ta place, fais la mission, envoie ton rendu → tu gagnes une prime. Chaque prospect trouvé nourrit le CRM.</p></div>
+		<div id="mis-list"><p class="sub" style="padding:6px 2px;">Chargement…</p></div>
+	</section>
+
 	<?php if ( $ag_is_admin ) : ?>
 	<section class="view" id="view-ao">
 		<h2 class="sec">📢 Appels d'offres publics <span style="font-size:.7rem;color:#8a8a92;font-weight:600;">(admin)</span></h2>
@@ -474,6 +480,7 @@ foreach ( $ag_my_prospects as $ppc ) {
 	<?php if ( $ag_is_admin ) : ?><a href="#" data-t="appels" onclick="AG.tab('appels');return false"><i>📞</i>Appels</a><?php endif; ?>
 	<?php if ( $ag_is_admin ) : ?><a href="#" data-t="ambass" onclick="AG.tab('ambass');return false"><i>🤝</i>Ambass.</a><?php endif; ?>
 	<a href="#" data-t="audit" onclick="AG.tab('audit');return false"><i>🛡️</i>Audit</a>
+	<a href="#" data-t="mis" onclick="AG.tab('mis');AG.loadMissions();return false"><i>🎯</i>Missions</a>
 	<?php if ( $ag_is_admin ) : ?><a href="#" data-t="ao" onclick="AG.tab('ao');AG.loadAO();return false"><i>📢</i>Marchés</a><?php endif; ?>
 </nav>
 
@@ -984,6 +991,55 @@ var AG = (function(){
 	};
 	var aoBtn=document.getElementById('ao-filter');
 	if(aoBtn){ aoBtn.addEventListener('click',function(){ AG.loadAO(true); }); }
+
+	// ── Missions (ambassadeurs) ──
+	function misEsc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+	function misCard(m){
+		var c=document.createElement('div'); c.className='card'; c.style.padding='13px';
+		var full=(m.taken>=m.slots)&&!m.reserved;
+		var h='<div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline;"><strong>'+misEsc(m.title)+'</strong>'+(m.prime?('<span style="color:#e6b35a;font-weight:800;white-space:nowrap;">'+misEsc(m.prime)+' €</span>'):'')+'</div>';
+		if(m.desc){ h+='<div class="sub" style="font-size:.84rem;margin:5px 0;">'+misEsc(m.desc)+'</div>'; }
+		h+='<div class="sub" style="font-size:.76rem;margin-bottom:8px;">'+(m.city?('📍 '+misEsc(m.city)+' · '):'')+'👥 '+m.taken+'/'+m.slots+' places'+(m.deadline?(' · ⏳ '+misEsc(m.deadline)):'')+'</div>';
+		c.innerHTML=h;
+		if(m.sub==='valide'){ var okd=document.createElement('div'); okd.className='sub'; okd.style.color='#2ecc71'; okd.textContent='✅ Mission validée — prime en route'; c.appendChild(okd); return c; }
+		if(m.sub==='pending'){ var pd=document.createElement('div'); pd.className='sub'; pd.style.color='#e6b35a'; pd.textContent='⏳ Rendu envoyé — en attente de validation'; c.appendChild(pd); }
+		if(!m.reserved){
+			if(full){ var fd0=document.createElement('div'); fd0.className='sub'; fd0.textContent='Complet'; c.appendChild(fd0); return c; }
+			var rb=document.createElement('button'); rb.className='b gold'; rb.style.cssText='display:block;width:100%;'; rb.textContent='📌 Réserver ma place';
+			rb.addEventListener('click',function(){ rb.disabled=true; rb.textContent='…';
+				AG.post('ag_app_mission_reserve',{id:m.id}).then(function(j){ if(j&&j.success){ AG.toast('✅ Place réservée'); AG.loadMissions(true); } else { rb.disabled=false; rb.textContent='📌 Réserver ma place'; AG.toast('❌ '+((j&&j.data&&j.data.m)||'Erreur')); } }).catch(function(){ rb.disabled=false; rb.textContent='📌 Réserver ma place'; }); });
+			c.appendChild(rb); return c;
+		}
+		if(m.sub!=='pending'){ var rd=document.createElement('div'); rd.className='sub'; rd.style.color='#2ecc71'; rd.textContent='✅ Réservée — envoie ton rendu ci-dessous'; c.appendChild(rd); }
+		var note=document.createElement('textarea'); note.placeholder='Note (ce que tu as fait)'; note.rows=2; note.style.cssText='width:100%;margin:6px 0;padding:9px;border-radius:8px;border:1px solid #333;background:#0e0e13;color:#fff;'; c.appendChild(note);
+		var leads=document.createElement('textarea'); leads.placeholder='Prospects trouvés — 1 par ligne : Nom, Téléphone, Ville'; leads.rows=3; leads.style.cssText='width:100%;margin:0 0 6px;padding:9px;border-radius:8px;border:1px solid #333;background:#0e0e13;color:#fff;'; c.appendChild(leads);
+		var flab=document.createElement('label'); flab.className='sub'; flab.style.cssText='display:block;font-size:.78rem;margin:2px 0;'; flab.textContent='📷 Photo (optionnel)'; c.appendChild(flab);
+		var photo=document.createElement('input'); photo.type='file'; photo.accept='image/*'; photo.style.marginBottom='8px'; c.appendChild(photo);
+		var sb=document.createElement('button'); sb.className='b gold'; sb.style.cssText='display:block;width:100%;'; sb.textContent='📤 Envoyer mon rendu';
+		sb.addEventListener('click',function(){
+			if(!note.value.trim() && !leads.value.trim() && !(photo.files&&photo.files[0])){ AG.toast('Ajoute une note, des prospects ou une photo'); return; }
+			sb.disabled=true; sb.textContent='Envoi…';
+			var fd=new FormData(); fd.append('action','ag_app_mission_submit'); fd.append('_n',AG.N); fd.append('id',m.id); fd.append('note',note.value); fd.append('leads',leads.value);
+			if(photo.files&&photo.files[0]) fd.append('photo',photo.files[0]);
+			fetch(AG.AJAX,{method:'POST',credentials:'same-origin',body:fd}).then(function(r){return r.json();}).then(function(j){
+				if(j&&j.success){ AG.toast('✅ Rendu envoyé !'); AG.loadMissions(true); } else { sb.disabled=false; sb.textContent='📤 Envoyer mon rendu'; AG.toast('❌ '+((j&&j.data&&j.data.m)||'Erreur')); }
+			}).catch(function(){ sb.disabled=false; sb.textContent='📤 Envoyer mon rendu'; AG.toast('❌ Erreur réseau'); });
+		});
+		c.appendChild(sb);
+		return c;
+	}
+	var misLoaded=false;
+	AG.loadMissions=function(force){
+		var box=document.getElementById('mis-list'); if(!box) return;
+		if(misLoaded && !force) return;
+		box.innerHTML='<p class="sub" style="padding:6px 2px;">Chargement…</p>';
+		AG.post('ag_app_missions',{}).then(function(j){
+			misLoaded=true; box.innerHTML='';
+			var list=(j&&j.success&&j.data.missions)||[];
+			if(!list.length){ box.innerHTML='<div class="card"><p class="sub" style="margin:0;">Aucune mission ouverte pour l\'instant. Reviens bientôt 👀</p></div>'; return; }
+			list.forEach(function(m){ box.appendChild(misCard(m)); });
+		}).catch(function(){ box.innerHTML='<div class="card"><p class="sub" style="margin:0;">Erreur de chargement.</p></div>'; });
+	};
 })();
 </script>
 </body>
