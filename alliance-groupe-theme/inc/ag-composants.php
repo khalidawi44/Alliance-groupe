@@ -149,14 +149,14 @@ if ( ! function_exists( 'ag_composants_seed' ) ) {
 			'id' => 'pattern-gradient', 'title' => 'Fond Dégradé animé', 'cat' => 'pattern', 'author' => 'Alliance Groupe',
 			'cfg' => array( 'acc', 'rad' ),
 			'html' => '<div class="agc-pat-grad"></div>',
-			'css'  => ".agc-pat-grad{width:100%;height:130px;border-radius:var(--rad,16px);background:linear-gradient(-45deg,var(--acc,#c9a96e),#1b2440,#2a1f3d,var(--acc,#c9a96e));background-size:400% 400%;animation:agc-grad 9s ease infinite}\n@keyframes agc-grad{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}",
+			'css'  => ".agc-pat-grad{width:280px;max-width:100%;height:130px;border-radius:var(--rad,16px);background:linear-gradient(-45deg,var(--acc,#c9a96e),#1b2440,#2a1f3d,var(--acc,#c9a96e));background-size:400% 400%;animation:agc-grad 9s ease infinite}\n@keyframes agc-grad{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}",
 		);
 
 		$c[] = array(
 			'id' => 'pattern-dots', 'title' => 'Fond Grille de points', 'cat' => 'pattern', 'author' => 'Alliance Groupe',
 			'cfg' => array( 'acc', 'rad' ),
 			'html' => '<div class="agc-pat-dots"></div>',
-			'css'  => ".agc-pat-dots{width:100%;height:130px;border-radius:var(--rad,16px);background-color:#0e1424;background-image:radial-gradient(color-mix(in srgb,var(--acc,#c9a96e) 70%,transparent) 1.5px,transparent 1.5px);background-size:18px 18px}",
+			'css'  => ".agc-pat-dots{width:280px;max-width:100%;height:130px;border-radius:var(--rad,16px);background-color:#0e1424;background-image:radial-gradient(var(--acc,#c9a96e) 1.8px,transparent 1.9px);background-size:18px 18px}",
 		);
 
 		$c[] = array(
@@ -283,19 +283,19 @@ if ( ! function_exists( 'ag_composants_seed' ) ) {
 			'id' => 'pattern-lines', 'title' => 'Fond Rayures', 'cat' => 'pattern', 'author' => 'Alliance Groupe',
 			'cfg' => array( 'acc', 'rad' ),
 			'html' => '<div class="agc-pat-lines"></div>',
-			'css'  => ".agc-pat-lines{width:100%;height:130px;border-radius:var(--rad,16px);background:repeating-linear-gradient(45deg,#0e1424,#0e1424 12px,color-mix(in srgb,var(--acc,#c9a96e) 18%,#0e1424) 12px,color-mix(in srgb,var(--acc,#c9a96e) 18%,#0e1424) 24px)}",
+			'css'  => ".agc-pat-lines{width:280px;max-width:100%;height:130px;border-radius:var(--rad,16px);background:repeating-linear-gradient(45deg,#0e1424,#0e1424 12px,var(--acc,#c9a96e) 12px,var(--acc,#c9a96e) 24px)}",
 		);
 		$c[] = array(
 			'id' => 'pattern-grid', 'title' => 'Fond Grille', 'cat' => 'pattern', 'author' => 'Alliance Groupe',
 			'cfg' => array( 'acc', 'rad' ),
 			'html' => '<div class="agc-pat-grid"></div>',
-			'css'  => ".agc-pat-grid{width:100%;height:130px;border-radius:var(--rad,16px);background-color:#0b1020;background-image:linear-gradient(color-mix(in srgb,var(--acc,#c9a96e) 22%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--acc,#c9a96e) 22%,transparent) 1px,transparent 1px);background-size:22px 22px}",
+			'css'  => ".agc-pat-grid{width:280px;max-width:100%;height:130px;border-radius:var(--rad,16px);background-color:#0b1020;background-image:linear-gradient(var(--acc,#c9a96e) 1px,transparent 1px),linear-gradient(90deg,var(--acc,#c9a96e) 1px,transparent 1px);background-size:22px 22px}",
 		);
 		$c[] = array(
 			'id' => 'pattern-waves', 'title' => 'Fond Vagues', 'cat' => 'pattern', 'author' => 'Alliance Groupe',
 			'cfg' => array( 'acc', 'rad' ),
 			'html' => '<div class="agc-pat-waves"></div>',
-			'css'  => ".agc-pat-waves{width:100%;height:130px;border-radius:var(--rad,16px);background:radial-gradient(circle at 20% 50%,color-mix(in srgb,var(--acc,#c9a96e) 40%,transparent),transparent 40%),radial-gradient(circle at 80% 30%,#2a1f3d,transparent 45%),#0b1020;background-size:200% 200%;animation:agc-wav 9s ease infinite}\n@keyframes agc-wav{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}",
+			'css'  => ".agc-pat-waves{width:280px;max-width:100%;height:130px;border-radius:var(--rad,16px);background:radial-gradient(circle at 20% 50%,var(--acc,#c9a96e),transparent 42%),radial-gradient(circle at 80% 30%,#3a2b57,transparent 45%),#0b1020;background-size:200% 200%;animation:agc-wav 9s ease infinite}\n@keyframes agc-wav{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}",
 		);
 
 		return $c;
