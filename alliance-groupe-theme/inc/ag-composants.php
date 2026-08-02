@@ -35,6 +35,9 @@ if ( ! function_exists( 'ag_composants_cats' ) ) {
 			'loader'  => '⏳ Loaders',
 			'badge'   => '🏷️ Badges',
 			'input'   => '⌨️ Champs',
+			'toggle'  => '🎚️ Interrupteurs',
+			'tooltip' => '💬 Tooltips',
+			'text'    => '✨ Textes',
 			'pattern' => '🌈 Fonds',
 		);
 	}
@@ -161,6 +164,138 @@ if ( ! function_exists( 'ag_composants_seed' ) ) {
 			'cfg' => array( 'acc', 'rad', 'sz', 'label' ), 'label' => 'Télécharger',
 			'html' => '<button class="agc-btn-ofill">{label}</button>',
 			'css'  => ".agc-btn-ofill{cursor:pointer;font:600 var(--sz,16px)/1 system-ui;color:var(--acc,#c9a96e);background:transparent;padding:.9em 2em;border:2px solid var(--acc,#c9a96e);border-radius:var(--rad,10px);position:relative;overflow:hidden;z-index:0;transition:color .35s}\n.agc-btn-ofill::before{content:'';position:absolute;inset:0;z-index:-1;background:var(--acc,#c9a96e);transform:scaleX(0);transform-origin:left;transition:transform .35s}\n.agc-btn-ofill:hover{color:#08101f}\n.agc-btn-ofill:hover::before{transform:scaleX(1)}",
+		);
+
+		/* ── Boutons (suite) ── */
+		$c[] = array(
+			'id' => 'btn-pulse', 'title' => 'Bouton Pulsation', 'cat' => 'button', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc', 'rad', 'sz', 'label' ), 'label' => 'Acheter',
+			'html' => '<button class="agc-btn-pulse">{label}</button>',
+			'css'  => ".agc-btn-pulse{cursor:pointer;font:600 var(--sz,16px)/1 system-ui;color:#08101f;background:var(--acc,#c9a96e);border:0;padding:.85em 1.9em;border-radius:var(--rad,10px);animation:agc-pulse 1.8s infinite}\n@keyframes agc-pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--acc,#c9a96e) 60%,transparent)}70%{box-shadow:0 0 0 14px transparent}100%{box-shadow:0 0 0 0 transparent}}",
+		);
+		$c[] = array(
+			'id' => 'btn-gtext', 'title' => 'Bouton Texte dégradé', 'cat' => 'button', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc', 'rad', 'sz', 'label' ), 'label' => 'Premium',
+			'html' => '<button class="agc-btn-gtext"><span>{label}</span></button>',
+			'css'  => ".agc-btn-gtext{cursor:pointer;background:#0e1424;border:1px solid color-mix(in srgb,var(--acc,#c9a96e) 45%,transparent);padding:.9em 2em;border-radius:var(--rad,12px)}\n.agc-btn-gtext span{font:800 var(--sz,16px)/1 system-ui;background:linear-gradient(90deg,var(--acc,#c9a96e),#fff3cf,var(--acc,#c9a96e));background-size:200%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:agc-btg 3s linear infinite}\n@keyframes agc-btg{to{background-position:200%}}",
+		);
+		$c[] = array(
+			'id' => 'btn-skew', 'title' => 'Bouton Incliné', 'cat' => 'button', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc', 'rad', 'sz', 'label' ), 'label' => 'Go',
+			'html' => '<button class="agc-btn-skew"><span>{label}</span></button>',
+			'css'  => ".agc-btn-skew{cursor:pointer;color:#08101f;background:var(--acc,#c9a96e);border:0;padding:.85em 2em;border-radius:var(--rad,8px);transform:skewX(-10deg);transition:.25s}\n.agc-btn-skew span{display:inline-block;font:700 var(--sz,16px)/1 system-ui;transform:skewX(10deg)}\n.agc-btn-skew:hover{transform:skewX(-10deg) translateY(-3px);box-shadow:0 10px 24px color-mix(in srgb,var(--acc,#c9a96e) 45%,transparent)}",
+		);
+
+		/* ── Cartes (suite) ── */
+		$c[] = array(
+			'id' => 'card-flip', 'title' => 'Carte Retournable', 'cat' => 'card', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc', 'rad' ),
+			'html' => '<div class="agc-flip"><div class="agc-flip__in"><div class="agc-flip__f">Survole-moi</div><div class="agc-flip__b">Coucou 👋</div></div></div>',
+			'css'  => ".agc-flip{width:200px;height:130px;perspective:800px}\n.agc-flip__in{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}\n.agc-flip:hover .agc-flip__in{transform:rotateY(180deg)}\n.agc-flip__f,.agc-flip__b{position:absolute;inset:0;backface-visibility:hidden;display:grid;place-items:center;border-radius:var(--rad,16px);font:700 18px system-ui;color:#08101f}\n.agc-flip__f{background:var(--acc,#c9a96e)}\n.agc-flip__b{background:#131a2b;color:#fff;transform:rotateY(180deg);border:1px solid color-mix(in srgb,var(--acc,#c9a96e) 50%,transparent)}",
+		);
+		$c[] = array(
+			'id' => 'card-profile', 'title' => 'Carte Profil', 'cat' => 'card', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc', 'rad' ),
+			'html' => '<div class="agc-profile"><div class="agc-profile__av">AG</div><b>Jean Dupont</b><span>Développeur web</span></div>',
+			'css'  => ".agc-profile{width:190px;padding:22px;text-align:center;border-radius:var(--rad,18px);background:#0f1626;border:1px solid #1e2942;color:#fff}\n.agc-profile__av{width:64px;height:64px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;font:800 22px system-ui;color:#08101f;background:var(--acc,#c9a96e)}\n.agc-profile b{display:block;font:700 16px system-ui}\n.agc-profile span{font:400 13px system-ui;color:#8ea0bb}",
+		);
+
+		/* ── Loaders (suite) ── */
+		$c[] = array(
+			'id' => 'loader-bar', 'title' => 'Loader Barre', 'cat' => 'loader', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc' ),
+			'html' => '<span class="agc-loader-bar"></span>',
+			'css'  => ".agc-loader-bar{width:180px;height:6px;border-radius:99px;background:color-mix(in srgb,var(--acc,#c9a96e) 20%,#1a2036);overflow:hidden;display:inline-block;position:relative}\n.agc-loader-bar::before{content:'';position:absolute;left:-40%;top:0;height:100%;width:40%;border-radius:99px;background:var(--acc,#c9a96e);animation:agc-slide 1.1s infinite}\n@keyframes agc-slide{to{left:110%}}",
+		);
+		$c[] = array(
+			'id' => 'loader-pulse', 'title' => 'Loader Pulse', 'cat' => 'loader', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc', 'sz' ),
+			'html' => '<span class="agc-loader-pulse"></span>',
+			'css'  => ".agc-loader-pulse{width:var(--sz,44px);height:var(--sz,44px);border-radius:50%;display:inline-block;background:var(--acc,#c9a96e);animation:agc-pl 1.2s ease-in-out infinite}\n@keyframes agc-pl{0%{transform:scale(.4);opacity:.4}50%{transform:scale(1);opacity:1}100%{transform:scale(.4);opacity:.4}}",
+		);
+		$c[] = array(
+			'id' => 'loader-square', 'title' => 'Loader Carré', 'cat' => 'loader', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc', 'sz' ),
+			'html' => '<span class="agc-loader-sq"></span>',
+			'css'  => ".agc-loader-sq{width:var(--sz,36px);height:var(--sz,36px);display:inline-block;background:var(--acc,#c9a96e);animation:agc-sq 1.2s infinite}\n@keyframes agc-sq{0%{transform:rotate(0) scale(1);border-radius:4px}50%{transform:rotate(180deg) scale(.6);border-radius:50%}100%{transform:rotate(360deg) scale(1);border-radius:4px}}",
+		);
+
+		/* ── Interrupteurs ── */
+		$c[] = array(
+			'id' => 'toggle-switch', 'title' => 'Interrupteur', 'cat' => 'toggle', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc' ),
+			'html' => '<label class="agc-switch"><input type="checkbox" checked><span class="agc-switch__s"></span></label>',
+			'css'  => ".agc-switch{display:inline-block;width:56px;height:30px;position:relative}\n.agc-switch input{position:absolute;opacity:0;width:0;height:0}\n.agc-switch__s{position:absolute;inset:0;border-radius:99px;background:#2a3550;transition:.3s;cursor:pointer}\n.agc-switch__s::before{content:'';position:absolute;width:22px;height:22px;left:4px;top:4px;border-radius:50%;background:#fff;transition:.3s}\n.agc-switch input:checked+.agc-switch__s{background:var(--acc,#c9a96e)}\n.agc-switch input:checked+.agc-switch__s::before{transform:translateX(26px)}",
+		);
+		$c[] = array(
+			'id' => 'toggle-check', 'title' => 'Case animée', 'cat' => 'toggle', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc' ),
+			'html' => '<label class="agc-check"><input type="checkbox" checked><span class="agc-check__b"></span></label>',
+			'css'  => ".agc-check{display:inline-flex;cursor:pointer}\n.agc-check input{display:none}\n.agc-check__b{width:28px;height:28px;border-radius:8px;border:2px solid color-mix(in srgb,var(--acc,#c9a96e) 60%,#445);position:relative;transition:.25s}\n.agc-check input:checked+.agc-check__b{background:var(--acc,#c9a96e);border-color:var(--acc,#c9a96e)}\n.agc-check__b::after{content:'';position:absolute;left:9px;top:4px;width:6px;height:12px;border:solid #08101f;border-width:0 3px 3px 0;transform:rotate(45deg) scale(0);transition:.25s}\n.agc-check input:checked+.agc-check__b::after{transform:rotate(45deg) scale(1)}",
+		);
+
+		/* ── Badges (suite) ── */
+		$c[] = array(
+			'id' => 'badge-dot', 'title' => 'Cloche Notification', 'cat' => 'badge', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc' ),
+			'html' => '<span class="agc-bell">🔔<span class="agc-bell__d"></span></span>',
+			'css'  => ".agc-bell{position:relative;font-size:26px;display:inline-block}\n.agc-bell__d{position:absolute;top:0;right:-2px;width:10px;height:10px;border-radius:50%;background:var(--acc,#e23b4e)}\n.agc-bell__d::before{content:'';position:absolute;inset:0;border-radius:50%;background:inherit;animation:agc-ping 1.4s infinite}\n@keyframes agc-ping{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.4);opacity:0}}",
+		);
+		$c[] = array(
+			'id' => 'badge-status', 'title' => 'Badge En ligne', 'cat' => 'badge', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc', 'label' ), 'label' => 'En ligne',
+			'html' => '<span class="agc-status">{label}</span>',
+			'css'  => ".agc-status{display:inline-flex;align-items:center;gap:7px;font:600 13px system-ui;color:#dfe;background:color-mix(in srgb,var(--acc,#3ddc84) 16%,#10203a);padding:.5em 1em;border-radius:99px}\n.agc-status::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--acc,#3ddc84);animation:agc-ping2 1.6s infinite}\n@keyframes agc-ping2{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--acc,#3ddc84) 60%,transparent)}100%{box-shadow:0 0 0 8px transparent}}",
+		);
+
+		/* ── Champs (suite) ── */
+		$c[] = array(
+			'id' => 'input-search', 'title' => 'Recherche à icône', 'cat' => 'input', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc', 'rad' ),
+			'html' => '<div class="agc-search"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4-4"></path></svg><input type="text" placeholder="Rechercher…"></div>',
+			'css'  => ".agc-search{display:inline-flex;align-items:center;gap:8px;background:#0e1424;border:1px solid rgba(255,255,255,.2);border-radius:var(--rad,99px);padding:.6em 1em;color:rgba(255,255,255,.6);transition:.3s}\n.agc-search:focus-within{border-color:var(--acc,#c9a96e);color:var(--acc,#c9a96e)}\n.agc-search input{border:0;background:none;outline:0;color:#fff;font:400 15px system-ui;width:170px}\n.agc-search input::placeholder{color:rgba(255,255,255,.45)}",
+		);
+		$c[] = array(
+			'id' => 'input-underline', 'title' => 'Champ Souligné', 'cat' => 'input', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc' ),
+			'html' => '<label class="agc-under"><input type="text" placeholder=" "><span>Adresse email</span></label>',
+			'css'  => ".agc-under{position:relative;display:inline-block;padding-top:14px}\n.agc-under input{border:0;border-bottom:2px solid #33405f;background:none;outline:0;color:#fff;font:400 15px system-ui;width:220px;padding:6px 2px}\n.agc-under span{position:absolute;left:2px;top:20px;color:#8ea0bb;font:400 15px system-ui;pointer-events:none;transition:.2s}\n.agc-under input:focus+span,.agc-under input:not(:placeholder-shown)+span{top:0;font-size:12px;color:var(--acc,#c9a96e)}\n.agc-under input:focus{border-color:var(--acc,#c9a96e)}",
+		);
+
+		/* ── Tooltips ── */
+		$c[] = array(
+			'id' => 'tooltip-top', 'title' => 'Tooltip', 'cat' => 'tooltip', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc' ),
+			'html' => '<span class="agc-tip" data-tip="Salut 👋">Survole-moi</span>',
+			'css'  => ".agc-tip{position:relative;cursor:pointer;color:#fff;font:600 15px system-ui;border-bottom:2px dotted var(--acc,#c9a96e)}\n.agc-tip::after{content:attr(data-tip);position:absolute;bottom:130%;left:50%;transform:translateX(-50%) scale(.9);background:var(--acc,#c9a96e);color:#08101f;font:600 13px system-ui;padding:6px 10px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:.2s}\n.agc-tip:hover::after{opacity:1;transform:translateX(-50%) scale(1)}",
+		);
+
+		/* ── Textes ── */
+		$c[] = array(
+			'id' => 'text-gradient', 'title' => 'Titre Dégradé animé', 'cat' => 'text', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc', 'sz' ),
+			'html' => '<span class="agc-txt-grad">Alliance Groupe</span>',
+			'css'  => ".agc-txt-grad{font:800 var(--sz,34px)/1 system-ui;background:linear-gradient(90deg,var(--acc,#c9a96e),#fff3cf,var(--acc,#c9a96e));background-size:200%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:agc-txtg 3s linear infinite}\n@keyframes agc-txtg{to{background-position:200%}}",
+		);
+
+		/* ── Fonds (suite) ── */
+		$c[] = array(
+			'id' => 'pattern-lines', 'title' => 'Fond Rayures', 'cat' => 'pattern', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc', 'rad' ),
+			'html' => '<div class="agc-pat-lines"></div>',
+			'css'  => ".agc-pat-lines{width:100%;height:130px;border-radius:var(--rad,16px);background:repeating-linear-gradient(45deg,#0e1424,#0e1424 12px,color-mix(in srgb,var(--acc,#c9a96e) 18%,#0e1424) 12px,color-mix(in srgb,var(--acc,#c9a96e) 18%,#0e1424) 24px)}",
+		);
+		$c[] = array(
+			'id' => 'pattern-grid', 'title' => 'Fond Grille', 'cat' => 'pattern', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc', 'rad' ),
+			'html' => '<div class="agc-pat-grid"></div>',
+			'css'  => ".agc-pat-grid{width:100%;height:130px;border-radius:var(--rad,16px);background-color:#0b1020;background-image:linear-gradient(color-mix(in srgb,var(--acc,#c9a96e) 22%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--acc,#c9a96e) 22%,transparent) 1px,transparent 1px);background-size:22px 22px}",
+		);
+		$c[] = array(
+			'id' => 'pattern-waves', 'title' => 'Fond Vagues', 'cat' => 'pattern', 'author' => 'Alliance Groupe',
+			'cfg' => array( 'acc', 'rad' ),
+			'html' => '<div class="agc-pat-waves"></div>',
+			'css'  => ".agc-pat-waves{width:100%;height:130px;border-radius:var(--rad,16px);background:radial-gradient(circle at 20% 50%,color-mix(in srgb,var(--acc,#c9a96e) 40%,transparent),transparent 40%),radial-gradient(circle at 80% 30%,#2a1f3d,transparent 45%),#0b1020;background-size:200% 200%;animation:agc-wav 9s ease infinite}\n@keyframes agc-wav{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}",
 		);
 
 		return $c;
