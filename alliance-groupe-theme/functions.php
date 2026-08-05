@@ -633,18 +633,11 @@ add_action( 'wp_enqueue_scripts', function () {
     );
 } );
 
-// ── PERF : différer les scripts JS non critiques (GSAP + ScrollTrigger chargés
-//    dans le <head>, ciné, immersif, main). `defer` = téléchargement en parallèle
-//    mais exécution APRÈS le parse du HTML → libère le fil principal (baisse le
-//    Total Blocking Time et accélère le LCP). L'ordre des scripts différés est
-//    conservé, donc la dépendance GSAP → ScrollTrigger → ciné reste respectée.
-add_filter( 'script_loader_tag', function ( $tag, $handle ) {
-    $defer = array( 'ag-gsap', 'ag-gsap-st', 'ag-cinema-fx', 'ag-cinema', 'ag-immersive', 'ag-main-js' );
-    if ( in_array( $handle, $defer, true ) && false === strpos( $tag, ' defer' ) && false === strpos( $tag, ' async' ) ) {
-        $tag = str_replace( ' src=', ' defer src=', $tag );
-    }
-    return $tag;
-}, 10, 2 );
+// NB : on ne défère PAS en masse les scripts d'animation du thème (GSAP,
+// ScrollTrigger, ciné, immersif, main). Testé le 05/08 → régression : exécution
+// groupée après chargement = TBT en hausse + animations tardives = gros CLS
+// (0,329). Ces scripts pilotent la mise en page, ils doivent rester au rendu.
+// Les gros tiers (Analytics, AdSense) sont différés ailleurs, sans effet CLS.
 
 // ── 3. Theme support ────────────────────────────────────────────
 add_action( 'after_setup_theme', function () {
@@ -1042,11 +1035,10 @@ add_action( 'wp_head', function () {
     $pub = trim( (string) apply_filters( 'ag_adsense_pub', get_option( 'ag_adsense_pub', 'ca-pub-4272988112057548' ) ) );
     if ( '' === $pub ) return;
     if ( 0 !== strpos( $pub, 'ca-pub-' ) ) $pub = 'ca-pub-' . preg_replace( '/[^0-9]/', '', $pub );
-    // PERF : AdSense (script lourd) chargé au 1er geste OU peu après l'affichage, jamais
-    // dans le chemin critique (réduit fortement le Total Blocking Time). Le compte est déjà
-    // validé + ads.txt présent → aucune incidence sur la vérification.
-    $pub_js = esc_js( $pub );
-    echo '<script>(function(){var done=false;function agAds(){if(done)return;done=true;var s=document.createElement("script");s.async=true;s.crossOrigin="anonymous";s.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' . $pub_js . '";document.head.appendChild(s);}var evs=["scroll","mousemove","touchstart","keydown","click"];function agOnceAds(){evs.forEach(function(e){window.removeEventListener(e,agOnceAds);});agAds();}evs.forEach(function(e){window.addEventListener(e,agOnceAds,{passive:true});});window.addEventListener("load",function(){setTimeout(agAds,4000);});})();</script>' . "\n";
+    // NB : AdSense chargé en async « normal » (pas différé au 1er geste). Différer
+    // ce script fait injecter les pubs auto APRÈS stabilisation de la page → gros
+    // CLS (constaté le 05/08). async classique = les emplacements sont réservés tôt.
+    echo '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' . esc_attr( $pub ) . '" crossorigin="anonymous"></script>' . "\n";
 }, 2 );
 
 // ── 8c2. ads.txt (exigé par Google AdSense) ───────────────────────

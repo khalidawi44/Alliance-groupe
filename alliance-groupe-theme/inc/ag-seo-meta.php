@@ -222,6 +222,22 @@ add_filter( 'document_title_parts', function ( $parts ) {
 // Force separateur clean (le " — " standard) — sauf si un plugin SEO gère le titre.
 add_filter( 'document_title_separator', function ( $sep ) { return ag_seo_plugin_active() ? $sep : '—'; } );
 
+// ── 1b. Pont Yoast SEO ────────────────────────────────────────────────────────
+// Si Yoast est actif, c'est LUI qui écrit les <title>/meta description et il écrase
+// le thème (d'où le titre par défaut « Accueil - … » quand Yoast n'est pas réglé).
+// On réinjecte donc NOS valeurs tunées (catalogue ci-dessus) dans la sortie Yoast,
+// pour les pages qu'on optimise. Yoast reste maître des pages hors catalogue.
+if ( ! function_exists( 'ag_seo_yoast_title' ) ) {
+	function ag_seo_yoast_title( $t ) { $m = ag_seo_meta(); return ! empty( $m['title'] ) ? $m['title'] : $t; }
+	function ag_seo_yoast_desc( $d )  { $m = ag_seo_meta(); return ! empty( $m['desc'] )  ? $m['desc']  : $d; }
+}
+add_filter( 'wpseo_title',            'ag_seo_yoast_title', 20 );
+add_filter( 'wpseo_opengraph_title',  'ag_seo_yoast_title', 20 );
+add_filter( 'wpseo_twitter_title',    'ag_seo_yoast_title', 20 );
+add_filter( 'wpseo_metadesc',         'ag_seo_yoast_desc', 20 );
+add_filter( 'wpseo_opengraph_desc',   'ag_seo_yoast_desc', 20 );
+add_filter( 'wpseo_twitter_description', 'ag_seo_yoast_desc', 20 );
+
 // ── 2. Override meta description, OG, Twitter (priority 1 = avant les anciens) ──
 // On retire les anciens hooks pour eviter doublons, puis on re-emet proprement.
 remove_action( 'wp_head', 'ag_seo_meta_description_legacy', 10 ); // au cas ou
