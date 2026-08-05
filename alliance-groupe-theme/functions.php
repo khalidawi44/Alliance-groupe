@@ -633,6 +633,19 @@ add_action( 'wp_enqueue_scripts', function () {
     );
 } );
 
+// ── PERF : différer les scripts JS non critiques (GSAP + ScrollTrigger chargés
+//    dans le <head>, ciné, immersif, main). `defer` = téléchargement en parallèle
+//    mais exécution APRÈS le parse du HTML → libère le fil principal (baisse le
+//    Total Blocking Time et accélère le LCP). L'ordre des scripts différés est
+//    conservé, donc la dépendance GSAP → ScrollTrigger → ciné reste respectée.
+add_filter( 'script_loader_tag', function ( $tag, $handle ) {
+    $defer = array( 'ag-gsap', 'ag-gsap-st', 'ag-cinema-fx', 'ag-cinema', 'ag-immersive', 'ag-main-js' );
+    if ( in_array( $handle, $defer, true ) && false === strpos( $tag, ' defer' ) && false === strpos( $tag, ' async' ) ) {
+        $tag = str_replace( ' src=', ' defer src=', $tag );
+    }
+    return $tag;
+}, 10, 2 );
+
 // ── 3. Theme support ────────────────────────────────────────────
 add_action( 'after_setup_theme', function () {
     register_nav_menus( array( 'primary' => 'Menu principal' ) );
