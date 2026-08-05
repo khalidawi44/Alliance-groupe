@@ -639,6 +639,26 @@ add_action( 'wp_enqueue_scripts', function () {
 // (0,329). Ces scripts pilotent la mise en page, ils doivent rester au rendu.
 // Les gros tiers (Analytics, AdSense) sont différés ailleurs, sans effet CLS.
 
+// ── PERF (CSS critique) : rendre NON bloquantes les feuilles d'ENRICHISSEMENT
+//    (glassmorphism menu, effets ciné, immersif). Le premier écran (en-tête +
+//    héro) est déjà stylé par main.css (bloquant, conservé) + le CSS inline du
+//    template → ces 3 feuilles ne servent qu'à embellir après coup. Technique
+//    media="print" → onload="all" : le rendu ne les attend plus. Elles ne
+//    touchent PAS la mise en page (cosmétique) → aucun risque de CLS.
+add_filter( 'style_loader_tag', function ( $tag, $handle ) {
+    $async = array( 'ag-cinema-upgrades', 'ag-cinema', 'ag-immersive' );
+    if ( ! in_array( $handle, $async, true ) ) {
+        return $tag;
+    }
+    $noscript = '';
+    if ( preg_match( '/href=([\'"])(.*?)\1/', $tag, $m ) ) {
+        $noscript = '<noscript><link rel="stylesheet" href="' . esc_url( $m[2] ) . '"></noscript>';
+    }
+    // Bascule media 'all' → 'print' (non bloquant), repasse en 'all' au chargement.
+    $tag = preg_replace( "/media=(['\"])all\\1/", "media=\$1print\$1 onload=\"this.media='all'\"", $tag );
+    return $tag . $noscript;
+}, 10, 2 );
+
 // ── 3. Theme support ────────────────────────────────────────────
 add_action( 'after_setup_theme', function () {
     register_nav_menus( array( 'primary' => 'Menu principal' ) );
