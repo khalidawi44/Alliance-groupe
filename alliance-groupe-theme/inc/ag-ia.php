@@ -44,27 +44,42 @@ function ag_ia_key() {
 }
 
 /**
- * Champ « Clé API Claude » dans Réglages → Général : un endroit CENTRAL, toujours
- * accessible (contrairement à Prospection → Appels d'offres qui peut être en 404),
- * qui alimente TOUS les outils IA (concierge, devis, refais-mon-site, gardien de
- * nuit). Écrit la même option `ag_ai_key` — pas de doublon de données.
+ * Page d'admin DÉDIÉE pour la clé Claude — garantie visible (add_options_page),
+ * contrairement à un champ ajouté à Réglages → Général (que le cœur WordPress
+ * n'affiche pas toujours) ou à Prospection → Appels d'offres (404 possible).
+ * Menu : Réglages → « 🤖 IA (clé Claude) ». Écrit la MÊME option `ag_ai_key`.
  */
-add_action( 'admin_init', function () {
-	register_setting( 'general', 'ag_ai_key', array(
-		'type'              => 'string',
-		'sanitize_callback' => 'sanitize_text_field',
-		'default'           => '',
-		'show_in_rest'      => false,
-	) );
-	add_settings_field( 'ag_ai_key_general', '🤖 Clé API Claude (IA)', function () {
-		$v  = trim( (string) get_option( 'ag_ai_key', '' ) );
-		$ok = '' !== $v;
-		echo '<input type="password" name="ag_ai_key" value="' . esc_attr( $v ) . '" placeholder="sk-ant-…" autocomplete="off" style="width:100%;max-width:520px;font-family:monospace">';
-		echo '<p class="description">Active le <strong>concierge IA</strong>, le <strong>devis instantané</strong>, <strong>« refais mon site »</strong> et le résumé du <strong>gardien de nuit</strong>. Clé sur <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> → API Keys (pense à ajouter des crédits : Billing → Add credits). ';
-		echo $ok ? '<strong style="color:#1f7a3d">✓ Clé enregistrée.</strong>' : '<strong style="color:#b32d2e">Non configurée pour l\'instant.</strong>';
-		echo '</p>';
-	}, 'general' );
+add_action( 'admin_menu', function () {
+	add_options_page( 'IA — Clé Claude', '🤖 IA (clé Claude)', 'manage_options', 'ag-ia-cle', 'ag_ia_settings_render' );
 } );
+
+function ag_ia_settings_render() {
+	if ( ! current_user_can( 'manage_options' ) ) { return; }
+	if ( isset( $_POST['ag_ia_cle_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['ag_ia_cle_nonce'] ) ), 'ag_ia_cle' ) ) {
+		update_option( 'ag_ai_key', sanitize_text_field( wp_unslash( $_POST['ag_ai_key'] ?? '' ) ) );
+		echo '<div class="notice notice-success is-dismissible"><p>Clé enregistrée ✓ — tes outils IA sont maintenant actifs.</p></div>';
+	}
+	$v  = trim( (string) get_option( 'ag_ai_key', '' ) );
+	$ok = '' !== $v;
+	?>
+	<div class="wrap">
+		<h1>🤖 Clé API Claude (IA)</h1>
+		<p>Cette clé active <strong>tous</strong> tes outils IA : le concierge « Léa », le <strong>devis instantané</strong>, <strong>« refais mon site »</strong> et le résumé du <strong>gardien de nuit</strong>.</p>
+		<p style="font-size:1.05em">État : <?php echo $ok ? '<strong style="color:#1f7a3d">✓ configurée — c\'est actif</strong>' : '<strong style="color:#b32d2e">non configurée</strong>'; ?></p>
+		<form method="post">
+			<?php wp_nonce_field( 'ag_ia_cle', 'ag_ia_cle_nonce' ); ?>
+			<table class="form-table"><tr>
+				<th scope="row"><label for="ag_ai_key">Clé (sk-ant-…)</label></th>
+				<td>
+					<input type="password" id="ag_ai_key" name="ag_ai_key" value="<?php echo esc_attr( $v ); ?>" placeholder="sk-ant-…" autocomplete="off" style="width:100%;max-width:520px;font-family:monospace">
+					<p class="description">Obtiens ta clé sur <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> → API Keys. Pense à ajouter des crédits (<em>Billing → Add credits</em>), sinon la clé renvoie une erreur même bien collée.</p>
+				</td>
+			</tr></table>
+			<?php submit_button( 'Enregistrer la clé' ); ?>
+		</form>
+	</div>
+	<?php
+}
 
 /** Vrai si l'IA est branchée (clé présente). */
 function ag_ia_ready() {
