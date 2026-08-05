@@ -18,7 +18,7 @@ get_header();
 	<div class="ag-headvid__veil"></div>
 	<div class="ag-headvid__in">
 		<span class="ag-headvid__eyebrow">DE NAPLES À NANTES</span>
-		<h1 class="ag-headvid__title">Je <span class="ag-uni--secu">sécurise</span> &amp; <span class="ag-uni--crea">je crée</span> votre site web</h1>
+		<h1 class="ag-headvid__title">Je <span class="ag-uni--crea">crée</span> &amp; <span class="ag-uni--secu">sécurise</span> votre site web — <span class="ag-uni--ia">propulsé par l'IA</span></h1>
 		<form class="ag-headvid__scan" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="var i=this.site_url; if(i.value && !/^https?:\/\//i.test(i.value)) i.value='https://'+i.value;">
 			<input type="hidden" name="action" value="ag_tester_run">
 			<?php wp_nonce_field( 'ag_tester' ); ?>
@@ -41,9 +41,10 @@ get_header();
 .ag-headvid__veil{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(10,10,15,.35) 0%,rgba(10,10,15,.78) 100%)}
 .ag-headvid__in{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
 .ag-headvid__eyebrow{letter-spacing:.3em;font-size:.82rem;color:#D4B45C;font-weight:700}
-.ag-headvid__title{font-size:clamp(1.7rem,4.4vw,3rem);color:#fff;margin:.25em 0 .55em;line-height:1.12;max-width:16ch;font-weight:800}
+.ag-headvid__title{font-size:clamp(1.7rem,4.4vw,3rem);color:#fff;margin:.25em 0 .55em;line-height:1.12;max-width:20ch;font-weight:800}
 .ag-headvid .ag-uni--secu{color:#ff5c5c;text-shadow:0 2px 18px rgba(225,15,26,.5)}
 .ag-headvid .ag-uni--crea{color:#5ba8ff;text-shadow:0 2px 18px rgba(40,110,220,.5)}
+.ag-headvid .ag-uni--ia{color:#f4d06f;text-shadow:0 2px 20px rgba(230,184,74,.55)}
 /* mini-test "Tester mon site" fondu sur la vidéo */
 .ag-headvid__scan{display:flex;gap:8px;width:100%;max-width:440px;margin:0 auto;background:rgba(255,255,255,.08);border:1px solid rgba(255,90,90,.45);border-radius:999px;padding:6px 6px 6px 16px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 .ag-headvid__scanin{flex:1;min-width:0;background:transparent;border:0;outline:none;color:#fff;font-size:1rem}
