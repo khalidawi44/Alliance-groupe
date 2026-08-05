@@ -441,6 +441,21 @@ add_action( 'wp_head', function () {
 			get_option( 'ag_social_linkedin', '' ),
 		) ) ),
 	);
+	// ── Étoiles enrichies (aggregateRating) — AVIS RÉELS UNIQUEMENT ──
+	// Jamais de faux avis. Renseigne les options ag_review_rating (ex. 4.9)
+	// et ag_review_count (ex. 27) = tes VRAIS chiffres Google Business.
+	// Tant qu'elles sont vides, rien n'est émis (conforme aux règles Google).
+	$ag_rv = trim( (string) get_option( 'ag_review_rating', '' ) );
+	$ag_rc = (int) get_option( 'ag_review_count', 0 );
+	if ( '' !== $ag_rv && (float) $ag_rv > 0 && $ag_rc > 0 ) {
+		$org['aggregateRating'] = array(
+			'@type'       => 'AggregateRating',
+			'ratingValue' => (string) ( (float) $ag_rv ),
+			'reviewCount' => $ag_rc,
+			'bestRating'  => '5',
+			'worstRating' => '1',
+		);
+	}
 	$site = array(
 		'@context'        => 'https://schema.org',
 		'@type'           => 'WebSite',
@@ -456,3 +471,35 @@ add_action( 'wp_head', function () {
 	echo '<script type="application/ld+json">' . wp_json_encode( $org, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
 	echo '<script type="application/ld+json">' . wp_json_encode( $site, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
 }, 6 );
+
+// ── Canonical de secours (blog / archives / recherche) ─────────────
+// WordPress ajoute déjà rel=canonical sur les pages et articles (is_singular).
+// On complète UNIQUEMENT là où il ne le fait pas, sans doublon.
+add_action( 'wp_head', function () {
+	if ( ag_seo_plugin_active() ) return;
+	$url = '';
+	if ( is_home() && ! is_front_page() ) {
+		$pid = (int) get_option( 'page_for_posts' );
+		if ( $pid ) $url = get_permalink( $pid );
+	} elseif ( is_category() || is_tag() || is_tax() ) {
+		$url = get_term_link( get_queried_object() );
+	} elseif ( is_post_type_archive() ) {
+		$url = get_post_type_archive_link( get_post_type() );
+	}
+	if ( $url && ! is_wp_error( $url ) ) {
+		echo '<link rel="canonical" href="' . esc_url( $url ) . '">' . "\n";
+	}
+}, 2 );
+
+// ── Réglages → Général : saisir les VRAIS avis Google (étoiles enrichies) ──
+add_action( 'admin_init', function () {
+	register_setting( 'general', 'ag_review_rating', array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field', 'default' => '' ) );
+	register_setting( 'general', 'ag_review_count', array( 'type' => 'integer', 'sanitize_callback' => 'absint', 'default' => 0 ) );
+	add_settings_field( 'ag_review_rating', 'Note Google (avis réels)', function () {
+		printf(
+			'<input type="text" name="ag_review_rating" value="%s" class="small-text" placeholder="4.9"> / 5 &nbsp; sur &nbsp; <input type="number" name="ag_review_count" value="%d" class="small-text" min="0" placeholder="27"> avis<p class="description">Tes <strong>vrais</strong> chiffres Google Business (jamais de faux). Vides = pas d\'étoiles affichées.</p>',
+			esc_attr( get_option( 'ag_review_rating', '' ) ),
+			(int) get_option( 'ag_review_count', 0 )
+		);
+	}, 'general', 'default' );
+} );
