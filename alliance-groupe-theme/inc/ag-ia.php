@@ -16,7 +16,26 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 if ( ! defined( 'AG_IA_MODEL' ) ) {
-	define( 'AG_IA_MODEL', 'claude-opus-4-8' );
+	define( 'AG_IA_MODEL', 'claude-opus-4-8' ); // « smart » : analyses internes (marchés publics…).
+}
+if ( ! defined( 'AG_IA_MODEL_FAST' ) ) {
+	define( 'AG_IA_MODEL_FAST', 'claude-haiku-4-5' ); // « fast » : outils grand public (chat, devis, maquette).
+}
+
+/**
+ * Renvoie le modèle à utiliser selon le niveau voulu.
+ * Réglable sans toucher au code via les options `ag_ia_model_fast` / `_smart`.
+ *
+ * @param string $tier 'fast' (défaut, économique) ou 'smart' (qualité max).
+ * @return string  Identifiant de modèle Claude.
+ */
+function ag_ia_model( $tier = 'fast' ) {
+	if ( 'smart' === $tier ) {
+		$m = trim( (string) get_option( 'ag_ia_model_smart', '' ) );
+		return '' !== $m ? $m : AG_IA_MODEL;
+	}
+	$m = trim( (string) get_option( 'ag_ia_model_fast', '' ) );
+	return '' !== $m ? $m : AG_IA_MODEL_FAST;
 }
 
 /** La clé API Claude (option partagée `ag_ai_key`). */

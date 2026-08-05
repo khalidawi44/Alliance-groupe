@@ -110,6 +110,7 @@ function ag_concierge_msg() {
 	}
 
 	$opts = array(
+		'model'      => ag_ia_model( 'fast' ),
 		'max_tokens' => 700,
 		'temperature' => 0.6,
 		'messages'   => $msgs,
@@ -138,7 +139,7 @@ function ag_concierge_msg() {
 		}
 		$msgs[] = array( 'role' => 'assistant', 'content' => $resp['content'] );
 		$msgs[] = array( 'role' => 'user', 'content' => $tool_results );
-		$opts2  = array( 'max_tokens' => 500, 'temperature' => 0.6, 'messages' => $msgs, 'tools' => ag_concierge_tool(), 'raw' => true );
+		$opts2  = array( 'model' => ag_ia_model( 'fast' ), 'max_tokens' => 500, 'temperature' => 0.6, 'messages' => $msgs, 'tools' => ag_concierge_tool(), 'raw' => true );
 		$resp   = ag_ia_call( ag_concierge_system(), '', $opts2 );
 		if ( is_wp_error( $resp ) ) {
 			wp_send_json_success( array( 'reply' => 'Merci ! Un conseiller te recontacte très vite 🙌', 'lead' => $lead_saved ) );

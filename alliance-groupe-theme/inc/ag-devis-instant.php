@@ -66,7 +66,7 @@ function ag_devis_generate() {
 		),
 	);
 
-	$out = ag_ia_json( $system, "Projet du client : " . $besoin, $schema, array( 'max_tokens' => 1500, 'timeout' => 60 ) );
+	$out = ag_ia_json( $system, "Projet du client : " . $besoin, $schema, array( 'model' => ag_ia_model( 'fast' ), 'max_tokens' => 1500, 'timeout' => 60 ) );
 	if ( is_wp_error( $out ) ) {
 		wp_send_json_error( array( 'msg' => 'L\'IA n\'a pas pu chiffrer : ' . $out->get_error_message() ) );
 	}

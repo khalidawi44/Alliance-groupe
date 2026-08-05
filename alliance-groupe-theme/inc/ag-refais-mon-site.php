@@ -61,7 +61,7 @@ function ag_refais_generate() {
 
 	$user = "Voici le site actuel à moderniser.\nTitre : " . $page['title'] . "\nURL : " . $page['url'] . "\nContenu :\n" . $page['text'];
 
-	$html = ag_ia_call( $system, $user, array( 'max_tokens' => 3200, 'temperature' => 0.7, 'timeout' => 90 ) );
+	$html = ag_ia_call( $system, $user, array( 'model' => ag_ia_model( 'fast' ), 'max_tokens' => 3200, 'temperature' => 0.7, 'timeout' => 90 ) );
 	if ( is_wp_error( $html ) ) {
 		wp_send_json_error( array( 'msg' => 'L\'IA n\'a pas pu générer la maquette : ' . $html->get_error_message() ) );
 	}

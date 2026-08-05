@@ -179,7 +179,7 @@ function ag_nuit_summary( $report ) {
 	$facts .= "Corrections appliquées :\n";
 	foreach ( $report['fixes'] as $f ) { $facts .= '- ' . $f . "\n"; }
 	$sys = "Tu es le gardien de nuit IA du site Alliance Groupe. Écris un résumé de 2-3 phrases, en français, ton rassurant et professionnel, à destination du propriétaire. Mets en avant ce qui a été vérifié et corrigé, et signale clairement ce qui mérite son attention. Pas de liste, un paragraphe.";
-	$out = ag_ia_call( $sys, $facts, array( 'max_tokens' => 300, 'temperature' => 0.4, 'timeout' => 40 ) );
+	$out = ag_ia_call( $sys, $facts, array( 'model' => ag_ia_model( 'fast' ), 'max_tokens' => 300, 'temperature' => 0.4, 'timeout' => 40 ) );
 	if ( is_wp_error( $out ) || '' === trim( (string) $out ) ) {
 		return $fallback;
 	}
