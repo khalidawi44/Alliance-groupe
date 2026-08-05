@@ -43,6 +43,29 @@ function ag_ia_key() {
 	return trim( (string) get_option( 'ag_ai_key', '' ) );
 }
 
+/**
+ * Champ « Clé API Claude » dans Réglages → Général : un endroit CENTRAL, toujours
+ * accessible (contrairement à Prospection → Appels d'offres qui peut être en 404),
+ * qui alimente TOUS les outils IA (concierge, devis, refais-mon-site, gardien de
+ * nuit). Écrit la même option `ag_ai_key` — pas de doublon de données.
+ */
+add_action( 'admin_init', function () {
+	register_setting( 'general', 'ag_ai_key', array(
+		'type'              => 'string',
+		'sanitize_callback' => 'sanitize_text_field',
+		'default'           => '',
+		'show_in_rest'      => false,
+	) );
+	add_settings_field( 'ag_ai_key_general', '🤖 Clé API Claude (IA)', function () {
+		$v  = trim( (string) get_option( 'ag_ai_key', '' ) );
+		$ok = '' !== $v;
+		echo '<input type="password" name="ag_ai_key" value="' . esc_attr( $v ) . '" placeholder="sk-ant-…" autocomplete="off" style="width:100%;max-width:520px;font-family:monospace">';
+		echo '<p class="description">Active le <strong>concierge IA</strong>, le <strong>devis instantané</strong>, <strong>« refais mon site »</strong> et le résumé du <strong>gardien de nuit</strong>. Clé sur <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a> → API Keys (pense à ajouter des crédits : Billing → Add credits). ';
+		echo $ok ? '<strong style="color:#1f7a3d">✓ Clé enregistrée.</strong>' : '<strong style="color:#b32d2e">Non configurée pour l\'instant.</strong>';
+		echo '</p>';
+	}, 'general' );
+} );
+
 /** Vrai si l'IA est branchée (clé présente). */
 function ag_ia_ready() {
 	return '' !== ag_ia_key();
