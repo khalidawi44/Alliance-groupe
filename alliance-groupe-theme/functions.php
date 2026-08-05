@@ -977,11 +977,13 @@ gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personali
 (function(){try{var c=JSON.parse(localStorage.getItem('ag_cookie_consent')||'null');if(c){gtag('consent','update',{analytics_storage:c.analytics?'granted':'denied',ad_storage:c.marketing?'granted':'denied',ad_user_data:c.marketing?'granted':'denied',ad_personalization:c.marketing?'granted':'denied'});}}catch(e){}})();
 document.addEventListener('ag:consent',function(e){var c=e.detail||{};gtag('consent','update',{analytics_storage:c.analytics?'granted':'denied',ad_storage:c.marketing?'granted':'denied',ad_user_data:c.marketing?'granted':'denied',ad_personalization:c.marketing?'granted':'denied'});});
 </script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr( $primary ); ?>"></script>
 <script>
-gtag('js',new Date());
-<?php if ( $ga ) : ?>gtag('config','<?php echo esc_js( $ga ); ?>');<?php endif; ?>
-<?php if ( $ads ) : ?>gtag('config','<?php echo esc_js( $ads ); ?>');<?php endif; ?>
+/* PERF : le tag Google (gtag.js) est chargé au 1er geste du visiteur OU peu après
+   l'affichage — jamais dans le chemin critique (réduit le Total Blocking Time).
+   Le Consent Mode ci-dessus reste actif immédiatement ; les événements de
+   conversion sont mis en file dans dataLayer et partent dès le chargement. */
+(function(){var done=false;function agLoadGtag(){if(done)return;done=true;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=<?php echo esc_js( $primary ); ?>';s.onload=function(){gtag('js',new Date());<?php if ( $ga ) : ?>gtag('config','<?php echo esc_js( $ga ); ?>');<?php endif; ?><?php if ( $ads ) : ?>gtag('config','<?php echo esc_js( $ads ); ?>');<?php endif; ?>};document.head.appendChild(s);}
+var evs=['scroll','mousemove','touchstart','keydown','click'];function agOnce(){evs.forEach(function(e){window.removeEventListener(e,agOnce);});agLoadGtag();}evs.forEach(function(e){window.addEventListener(e,agOnce,{passive:true});});window.addEventListener('load',function(){setTimeout(agLoadGtag,3500);});})();
 </script>
         <?php
     }
@@ -1027,7 +1029,11 @@ add_action( 'wp_head', function () {
     $pub = trim( (string) apply_filters( 'ag_adsense_pub', get_option( 'ag_adsense_pub', 'ca-pub-4272988112057548' ) ) );
     if ( '' === $pub ) return;
     if ( 0 !== strpos( $pub, 'ca-pub-' ) ) $pub = 'ca-pub-' . preg_replace( '/[^0-9]/', '', $pub );
-    echo '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' . esc_attr( $pub ) . '" crossorigin="anonymous"></script>' . "\n";
+    // PERF : AdSense (script lourd) chargé au 1er geste OU peu après l'affichage, jamais
+    // dans le chemin critique (réduit fortement le Total Blocking Time). Le compte est déjà
+    // validé + ads.txt présent → aucune incidence sur la vérification.
+    $pub_js = esc_js( $pub );
+    echo '<script>(function(){var done=false;function agAds(){if(done)return;done=true;var s=document.createElement("script");s.async=true;s.crossOrigin="anonymous";s.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' . $pub_js . '";document.head.appendChild(s);}var evs=["scroll","mousemove","touchstart","keydown","click"];function agOnceAds(){evs.forEach(function(e){window.removeEventListener(e,agOnceAds);});agAds();}evs.forEach(function(e){window.addEventListener(e,agOnceAds,{passive:true});});window.addEventListener("load",function(){setTimeout(agAds,4000);});})();</script>' . "\n";
 }, 2 );
 
 // ── 8c2. ads.txt (exigé par Google AdSense) ───────────────────────
