@@ -1,0 +1,371 @@
+{
+	"genere_le": "2026-08-05",
+	"total": 73,
+	"entrees": [
+		{
+			"hash": "33f9c4e",
+			"date": "2026-08-05",
+			"titre": "SEO : retire mon aggregateRating en DOUBLON (le vrai module d'avis existe déjà)"
+		},
+		{
+			"hash": "430c08f",
+			"date": "2026-08-05",
+			"titre": "SEO : +8 articles longue traîne (maillage interne) + aggregateRating (avis réels) + canonical"
+		},
+		{
+			"hash": "697aaa1",
+			"date": "2026-08-05",
+			"titre": "SEO on-page : un seul H1 sur l'accueil (2e titre hero passé en H2)"
+		},
+		{
+			"hash": "2b07a95",
+			"date": "2026-08-02",
+			"titre": "Composants : bouton Télécharger explicite + version intégrée au site (2 entrées)"
+		},
+		{
+			"hash": "9246b4d",
+			"date": "2026-08-02",
+			"titre": "Composants : page transformée en app autonome plein écran"
+		},
+		{
+			"hash": "fca5698",
+			"date": "2026-08-02",
+			"titre": "Composants : corrige l'affichage des fonds (largeur fixe + sans color-mix)"
+		},
+		{
+			"hash": "79a85d7",
+			"date": "2026-08-02",
+			"titre": "Composants : +19 nouveaux (35 au total) + catégories interrupteurs/tooltips/textes"
+		},
+		{
+			"hash": "a7ac56e",
+			"date": "2026-08-02",
+			"titre": "Espace Composants (bibliothèque web façon uiverse.io)"
+		},
+		{
+			"hash": "d42303b",
+			"date": "2026-08-02",
+			"titre": "AG Starter Avocat 1.1.21 : 2e passe i18n complète (Customizer + défauts + guide en anglais)"
+		},
+		{
+			"hash": "b7605f3",
+			"date": "2026-08-02",
+			"titre": "AG Starter Avocat 1.1.20 : corrige le refus wordpress.org #277598 (i18n)"
+		},
+		{
+			"hash": "b506e5b",
+			"date": "2026-08-02",
+			"titre": "Missions : solde des primes (suivi paiement) + classement « top missions »"
+		},
+		{
+			"hash": "cd9577b",
+			"date": "2026-08-02",
+			"titre": "Missions ambassadeurs (« ton BeMyEye ») + page Plateformes de missions web"
+		},
+		{
+			"hash": "12ebb4d",
+			"date": "2026-07-25",
+			"titre": "Recherche (appli) : lire les avis Google + voir le site + classer par « besoin d'un site »"
+		},
+		{
+			"hash": "a6b0934",
+			"date": "2026-07-24",
+			"titre": "SEO local / Fiche Google : CP Nantes pré-rempli + conseil « zone desservie » (adresse masquée)"
+		},
+		{
+			"hash": "5560816",
+			"date": "2026-07-24",
+			"titre": "Marchés : appli = « Admin » pour toi, marchés sauvegardés retrouvables, dossier complet prêt à poster (IA intégrée + PDF du cahier des charges)"
+		},
+		{
+			"hash": "e704fdf",
+			"date": "2026-07-24",
+			"titre": "Appels d'offres : analyse IA (API Claude) — faisabilité honnête + rédaction sur-mesure"
+		},
+		{
+			"hash": "394bb2d",
+			"date": "2026-07-24",
+			"titre": "Dossier de candidature ADAPTÉ à chaque annonce (fin du dossier générique)"
+		},
+		{
+			"hash": "df1502d",
+			"date": "2026-07-23",
+			"titre": "Marchés publics : onglet « 📢 Marchés » dans l'appli, réservé à l'admin"
+		},
+		{
+			"hash": "9e60c54",
+			"date": "2026-07-23",
+			"titre": "Appels d'offres : identité candidat pré-remplie (SIRET, adresse, forme EI)"
+		},
+		{
+			"hash": "ffa4428",
+			"date": "2026-07-23",
+			"titre": "Appels d'offres : outil ADMIN perso uniquement (retiré de l'appli ambassadeur)"
+		},
+		{
+			"hash": "6473cf3",
+			"date": "2026-07-23",
+			"titre": "Appels d'offres : alerte quotidienne des nouveaux marchés + bordereau de prix dans le dossier"
+		},
+		{
+			"hash": "bc29059",
+			"date": "2026-07-23",
+			"titre": "Appels d'offres : outil sur l'appli + générateur de DOSSIER de candidature prêt à déposer"
+		},
+		{
+			"hash": "5fc2df2",
+			"date": "2026-07-23",
+			"titre": "Veille appels d'offres publics (BOAMP open data) : leads chauds à budget voté"
+		},
+		{
+			"hash": "79973c3",
+			"date": "2026-07-23",
+			"titre": "Audit : réactualisation (fini le cache figé) — 1 audit + tout d'un coup, maj des prospects"
+		},
+		{
+			"hash": "52ce7da",
+			"date": "2026-07-23",
+			"titre": "Sécurité du site : durcissement .htaccess (listing de répertoires + readme/version) + CSP douce"
+		},
+		{
+			"hash": "89dadb5",
+			"date": "2026-07-23",
+			"titre": "App audit : contraste des boutons corrigé (texte teinté illisible sur fond noir)"
+		},
+		{
+			"hash": "f87dfdf",
+			"date": "2026-07-23",
+			"titre": "Cartographie en chaîne des agences web : agence → ses créations, classées pire→meilleur"
+		},
+		{
+			"hash": "75d71d6",
+			"date": "2026-07-23",
+			"titre": "Audit : message PARTENAIRE (agence → apporteur d'affaires, commission %) + bouton copier"
+		},
+		{
+			"hash": "a776d43",
+			"date": "2026-07-23",
+			"titre": "Audit : message d'approche PERSONNALISÉ selon les vraies failles + bouton Copier"
+		},
+		{
+			"hash": "307f331",
+			"date": "2026-07-23",
+			"titre": "App audit : l'aperçu du site devient cliquable (ouvre le site) + bouton « 🌐 Voir le site »"
+		},
+		{
+			"hash": "f6345c0",
+			"date": "2026-07-23",
+			"titre": "Fix tunnel Expert 290€ : n'utilise QUE son lien dédié (jamais le lien 49€) + confirmation si lien absent"
+		},
+		{
+			"hash": "cd72fd7",
+			"date": "2026-07-23",
+			"titre": "Tunnels de vente SANS APPEL : audit payant (mandat signé) + RDV site personnalisé (Google Agenda)"
+		},
+		{
+			"hash": "ad5b952",
+			"date": "2026-07-23",
+			"titre": "Zones : jamais d'expiration (inactivité) + exclusivité PAYÉE à durée limitée · Réalisations éditables + fiche Google"
+		},
+		{
+			"hash": "eb0f866",
+			"date": "2026-07-23",
+			"titre": "Fix lien avis Google (404) + proposition de template dans la recherche"
+		},
+		{
+			"hash": "b69f7d9",
+			"date": "2026-07-23",
+			"titre": "Zones : prospection ouverte partout + régions achetées EXCLUSIVES + message d'appât ambassadeurs"
+		},
+		{
+			"hash": "b5f94d1",
+			"date": "2026-07-23",
+			"titre": "App : suivi des contacts (répondu/répondeur) + appel robot en masse (tout numéro)"
+		},
+		{
+			"hash": "b0faef2",
+			"date": "2026-07-23",
+			"titre": "App Chercher : lien vers le site + recherches sauvegardées en accordéon triable + audit qui fait peur"
+		},
+		{
+			"hash": "f5ea6ad",
+			"date": "2026-07-22",
+			"titre": "Audit approfondi : +9 sondes passives (max de failles, 100% légal, automatique)"
+		},
+		{
+			"hash": "6800957",
+			"date": "2026-07-22",
+			"titre": "Fix « Balise » tronqué dans l'app : libellés d'audit nettoyés à la source"
+		},
+		{
+			"hash": "dbccb0b",
+			"date": "2026-07-22",
+			"titre": "Rapport client : libellés en clair (fini « Balise »), cas site non analysable géré, aperçu de lien accrocheur + image fiable, SMS avec accroche"
+		},
+		{
+			"hash": "86842a5",
+			"date": "2026-07-22",
+			"titre": "SEO local (Fiche Google) + vue admin des demandes clients"
+		},
+		{
+			"hash": "cc89614",
+			"date": "2026-07-22",
+			"titre": "Fix app : erreur JS (quotes échappées) qui bloquait TOUS les clics"
+		},
+		{
+			"hash": "b220ca1",
+			"date": "2026-07-22",
+			"titre": "CRM prospection (site) : robot vs appel perso clairement différenciés"
+		},
+		{
+			"hash": "1feb3e3",
+			"date": "2026-07-22",
+			"titre": "App : tri des boutons de contact selon le type de numéro"
+		},
+		{
+			"hash": "85c5072",
+			"date": "2026-07-22",
+			"titre": "Rapport audit : PAIEMENT D'ABORD partout + compteur de points dynamique"
+		},
+		{
+			"hash": "a04a871",
+			"date": "2026-07-22",
+			"titre": "Rapport : lien de paiement PayPal 49 € par défaut (auto, champ admin non requis)"
+		},
+		{
+			"hash": "fdffc16",
+			"date": "2026-07-22",
+			"titre": "Rapport client : paiement + déblocage AUTO (checkout email → PayPal → compte ag_client + rapport complet + email d'accès)"
+		},
+		{
+			"hash": "379c9c9",
+			"date": "2026-07-22",
+			"titre": "App CLIENT autonome (Alliance Groupe Client) : mon site + demande modif, mon rapport securite, support WhatsApp, factures/maintenance + parrainage (/mon-espace-client) + AJAX ag_client_*"
+		},
+		{
+			"hash": "c515b97",
+			"date": "2026-07-22",
+			"titre": "App renommee 'Alliance Groupe Ambassadeur' + QR raccourcis reseaux (WhatsApp/Insta/Snap/TikTok)"
+		},
+		{
+			"hash": "747134d",
+			"date": "2026-07-22",
+			"titre": "App : generateur QR code + acces Studio (accueil) + branchement scan Kali (saisie admin par site -> teaser dans le rapport client)"
+		},
+		{
+			"hash": "9200568",
+			"date": "2026-07-22",
+			"titre": "Audit : note HOMOGENE partout (audit complet unifie + cache 1h par URL, fini 47 puis 60) + bouton Retour sur le rapport (normal + carte) + un seul bouton Auditer"
+		},
+		{
+			"hash": "07ce887",
+			"date": "2026-07-22",
+			"titre": "WhatsApp Business : option ag_wa_pro (numero pro) + bouton WhatsApp sur le rapport client"
+		},
+		{
+			"hash": "e603406",
+			"date": "2026-07-22",
+			"titre": "App prospects : filtres (a contacter/contactes/a rappeler/securite/site) + suppression + bouton robot a angle intelligent (securite si site, creation sinon)"
+		},
+		{
+			"hash": "4d305ed",
+			"date": "2026-07-22",
+			"titre": "Rapport client : mode CARTE (?card=1) compact 1 ecran a screenshoter + bouton 'Image a envoyer' dans l'app"
+		},
+		{
+			"hash": "2db89cc",
+			"date": "2026-07-22",
+			"titre": "Rapport client : balises Open Graph (apercu image+titre dans iMessage/WhatsApp) + bouton Rapport WhatsApp"
+		},
+		{
+			"hash": "c101df3",
+			"date": "2026-07-22",
+			"titre": "Rapport client : prix affiche + vrai bouton paiement (pay_url) + mises en garde concretes (cas reels)"
+		},
+		{
+			"hash": "88872ba",
+			"date": "2026-07-22",
+			"titre": "Audit : capture d'ecran compacte + se cache si echec (fini le gros cadre casse), sur fiche et rapport client"
+		},
+		{
+			"hash": "0b038be",
+			"date": "2026-07-21",
+			"titre": "Rapport client : rendu autonome via ?ag_rapport=1 (fini le 404, aucune page WP requise) + capture auto-retry"
+		},
+		{
+			"hash": "e6d528b",
+			"date": "2026-07-21",
+			"titre": "App : onglet Ambassadeurs (SMS en masse + suivi envois) + SMS creation avec lien template demo selon le metier"
+		},
+		{
+			"hash": "17fdbc0",
+			"date": "2026-07-21",
+			"titre": "App audits : capture auto-retry + onglet Audit liste les sites audites + rapport CLIENT teaser (failles cachees a debloquer + mise en garde + CTA) envoyable par SMS"
+		},
+		{
+			"hash": "5f99cae",
+			"date": "2026-07-21",
+			"titre": "App : audit + rapport (capture du site mShots + note + problemes + SMS) aussi dans les resultats de recherche"
+		},
+		{
+			"hash": "3418197",
+			"date": "2026-07-21",
+			"titre": "App : audit du site sur la fiche (leger/avance, sans Kali) -> note /100 + SMS auto refonte/securite/mixte selon la note + avis Google & lien"
+		},
+		{
+			"hash": "9d7c2e2",
+			"date": "2026-07-21",
+			"titre": "App : onglet Appels (journal du robot in-app, admin) — voir statut repondeur + retranscription sans WordPress"
+		},
+		{
+			"hash": "3ea52a0",
+			"date": "2026-07-21",
+			"titre": "App : appel robot depuis l'app (pave + par prospect) + recherche integree + suppression de tous les liens WordPress/wp-admin"
+		},
+		{
+			"hash": "ada8945",
+			"date": "2026-07-21",
+			"titre": "Robot vocal : gestion des APPELS ENTRANTS (Emma standardiste) — detecte inbound, alerte systematique + creation de lead, sans toucher aux SMS existants"
+		},
+		{
+			"hash": "707319b",
+			"date": "2026-07-21",
+			"titre": "App : apres connexion, retour direct sur l'app (redirect_to)"
+		},
+		{
+			"hash": "e2c8b84",
+			"date": "2026-07-21",
+			"titre": "App prospection : interface autonome (hors WordPress) — onglets bas, pull-to-refresh, bouton remonter, audit + outils"
+		},
+		{
+			"hash": "d2f8987",
+			"date": "2026-07-21",
+			"titre": "Robot vocal : detecte le REPONDEUR (statut dedie, plus de faux 'interesse') + fix 'pas interesse' classe refus"
+		},
+		{
+			"hash": "8fa11c1",
+			"date": "2026-07-21",
+			"titre": "Robot vocal : journal de TOUS les appels + retranscription complete (page admin Journal des appels) + transcript dans le RDV agenda"
+		},
+		{
+			"hash": "f43708c",
+			"date": "2026-07-21",
+			"titre": "Robot vocal : anti-doublon RDV (ignore 'ended' + dedup call_id) · App : tableau de bord (chiffres cles + acces rapide)"
+		},
+		{
+			"hash": "b53cc35",
+			"date": "2026-07-21",
+			"titre": "Robot vocal : parsing date de rappel robuste (fuseau Paris + FR relatif demain/apres-demain/heure) + date du jour passee a Emma"
+		},
+		{
+			"hash": "df535b6",
+			"date": "2026-07-21",
+			"titre": "Prospection : app mobile (PWA installable iPhone) — numero rapide appel/SMS/WhatsApp + mes prospects"
+		},
+		{
+			"hash": "aa43059",
+			"date": "2026-07-21",
+			"titre": "Agenda : genere le secret du pont des l'ouverture de la page reglages"
+		}
+	]
+}

@@ -133,6 +133,42 @@ if ( file_exists( $ag_composants_file ) ) {
     require_once $ag_composants_file;
 }
 
+// ── 1c4a-nonies. Noyau IA partagé (clé ag_ai_key) : réutilisé par les modules « nouveauté » ci-dessous.
+$ag_ia_file = get_stylesheet_directory() . '/inc/ag-ia.php';
+if ( file_exists( $ag_ia_file ) ) {
+    require_once $ag_ia_file;
+}
+
+// ── 1c4a-decies. Journal public « Fait par l'IA » (transparence · sans clé API).
+$ag_journal_ia_file = get_stylesheet_directory() . '/inc/ag-journal-ia.php';
+if ( file_exists( $ag_journal_ia_file ) ) {
+    require_once $ag_journal_ia_file;
+}
+
+// ── 1c4a-undecies. « Vois ton site refait par l'IA en 60 s » (maquette live + lead).
+$ag_refais_file = get_stylesheet_directory() . '/inc/ag-refais-mon-site.php';
+if ( file_exists( $ag_refais_file ) ) {
+    require_once $ag_refais_file;
+}
+
+// ── 1c4a-duodecies. Concierge IA (assistant flottant + capture de leads en tool-use).
+$ag_concierge_file = get_stylesheet_directory() . '/inc/ag-concierge.php';
+if ( file_exists( $ag_concierge_file ) ) {
+    require_once $ag_concierge_file;
+}
+
+// ── 1c4a-terdecies. Devis instantané par l'IA (voix ou texte, sortie structurée).
+$ag_devis_file = get_stylesheet_directory() . '/inc/ag-devis-instant.php';
+if ( file_exists( $ag_devis_file ) ) {
+    require_once $ag_devis_file;
+}
+
+// ── 1c4a-quaterdecies. Gardien de nuit (« le site se répare tout seul la nuit »).
+$ag_nuit_file = get_stylesheet_directory() . '/inc/ag-nuit.php';
+if ( file_exists( $ag_nuit_file ) ) {
+    require_once $ag_nuit_file;
+}
+
 // ── 1c4b. SEO pages piliers (création site Nantes + cybersécurité/NIS2) + LocalBusiness/Breadcrumb/Service
 $ag_seo_pages_file = get_stylesheet_directory() . '/inc/ag-seo-pages.php';
 if ( file_exists( $ag_seo_pages_file ) ) {
