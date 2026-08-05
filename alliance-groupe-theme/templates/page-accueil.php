@@ -6,13 +6,13 @@ get_header();
 ?>
 
 <!-- ⚡ On preload l'AFFICHE (élément LCP) en priorité : elle s'affiche tout de suite. -->
-<link rel="preload" as="image" fetchpriority="high" href="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/videos/ads/promo-poster.jpg' ); ?>">
+<link rel="preload" as="image" fetchpriority="high" href="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/videos/ads/promo-poster.webp' ); ?>">
 <!-- 🎬 Bandeau vidéo (header) — autoplay muet en boucle + bouton son.
      PERF : la vidéo (5 Mo) est chargée APRÈS l'affichage (data-src + preload="none") pour
      ne pas plomber le LCP mobile ; seule l'affiche (poster) paraît au départ. -->
 <section class="ag-headvid" aria-label="Vidéo de présentation Alliance Groupe">
 	<video class="ag-headvid__v" muted loop playsinline preload="none"
-	       poster="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/videos/ads/promo-poster.jpg' ); ?>">
+	       poster="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/videos/ads/promo-poster.webp' ); ?>">
 		<source data-src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/videos/ads/alliance-promo-web.mp4' ); ?>" type="video/mp4">
 	</video>
 	<div class="ag-headvid__veil"></div>
