@@ -28,7 +28,9 @@ function ag_seo_meta() {
 	if ( $cache !== null ) return $cache;
 
 	$slug = '';
-	if ( is_front_page() || is_home() ) {
+	// __home__ s'applique aussi si la page utilise le template Accueil (robuste
+	// même si « Réglages → Lecture » ne pointe pas cette page comme page d'accueil).
+	if ( is_front_page() || is_home() || is_page_template( 'templates/page-accueil.php' ) ) {
 		$slug = '__home__';
 	} elseif ( is_singular() ) {
 		$slug = get_post_field( 'post_name' );
