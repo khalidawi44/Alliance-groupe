@@ -166,7 +166,7 @@ if(cnt){
             <span class="ag-heritage-dots" aria-hidden="true"><span></span><span></span><span></span></span>
         </div>
 
-        <h1 class="ag-hero__title ag-hero__title--uni" data-noreveal>
+        <h2 class="ag-hero__title ag-hero__title--uni" data-noreveal>
             <span class="ag-title-desk">
                 <span class="ag-duo">
                     <span class="ag-duo__col">
@@ -181,7 +181,7 @@ if(cnt){
                 </span>
             </span>
             <span class="ag-title-mob"><span class="ag-uni--crea">Création</span> de site web<br>&amp; <span class="ag-uni--secu">sécurité</span></span>
-        </h1>
+        </h2>
         <style>
         /* Titre UNIQUE : "sécurise" en ROUGE, "crée" en BLEU, "Vous, vous respirez." en DORÉ.
            Police forcée Manrope. Compact pour laisser voir les boutons. */
