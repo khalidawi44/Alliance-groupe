@@ -57,7 +57,7 @@
             <!-- Gagner / Studio + dropdown -->
             <li class="ag-nav__has-sub ag-nav__highlight">
                 <a href="<?php echo esc_url(home_url('/sites-express')); ?>">🚀 Gagner <span class="ag-nav__arrow">&#9662;</span></a>
-                <div class="ag-mega ag-mega--sm">
+                <div class="ag-mega">
                     <div class="ag-mega__inner">
                         <div class="ag-mega__col">
                             <span class="ag-mega__label">Commander &amp; créer</span>
@@ -82,6 +82,21 @@
                                 <span><strong>Mon espace</strong><small>Connexion / tableau de bord</small></span>
                             </a>
                         </div>
+                        <div class="ag-mega__col">
+                            <span class="ag-mega__label">✨ Nouveau · par l'IA</span>
+                            <a href="<?php echo esc_url(home_url('/devis-instant')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🧾</span>
+                                <span><strong>Devis instantané</strong><small>Chiffrage en 30 s, sans rendez-vous</small></span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/refais-mon-site')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🎨</span>
+                                <span><strong>Refais mon site</strong><small>Ton site modernisé par l'IA, en direct</small></span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/fait-par-lia')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">⚡</span>
+                                <span><strong>Fait par l'IA</strong><small>Le journal public de notre IA</small></span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </li>
@@ -104,6 +119,10 @@
                             <a href="<?php echo esc_url(home_url('/tirage-au-sort')); ?>" class="ag-mega__link">
                                 <span class="ag-mega__icon">🎰</span>
                                 <span><strong>1 site gratuit / mois</strong><small>Tirage au sort, participation gratuite</small></span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/composants')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🧩</span>
+                                <span><strong>Composants web gratuits</strong><small>Boutons &amp; effets à copier, façon uiverse</small></span>
                             </a>
                         </div>
                     </div>
@@ -365,12 +384,23 @@
 
             <a href="<?php echo esc_url(home_url('/systeme-prospection')); ?>" style="display:block;padding:15px 4px;color:#fff;font-weight:700;border-bottom:1px solid rgba(212,180,92,.15);">🤖 Système de prospection <span style="opacity:.7;font-weight:400;">(trouve vos clients)</span></a>
 
+            <!-- PRIORITÉ 1bis : NOS OUTILS IA (nouveauté, aimant à leads) -->
+            <div class="ag-mobile-menu__group">
+                <button class="ag-mobile-menu__toggle" type="button">🤖 Nos outils IA <span class="ag-nav__pulse-pill">NOUVEAU</span> <span class="ag-mobile-menu__arrow">+</span></button>
+                <div class="ag-mobile-menu__sub">
+                    <a href="<?php echo esc_url(home_url('/devis-instant')); ?>">🧾 Devis instantané (30 s)</a>
+                    <a href="<?php echo esc_url(home_url('/refais-mon-site')); ?>">🎨 Refais mon site par l'IA</a>
+                    <a href="<?php echo esc_url(home_url('/fait-par-lia')); ?>">⚡ Fait par l'IA (journal)</a>
+                </div>
+            </div>
+
             <div class="ag-mobile-menu__group">
                 <button class="ag-mobile-menu__toggle" type="button">🎁 Cadeaux gratuits <span class="ag-nav__pulse-pill">0 €</span> <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
                     <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">🎁 6 templates WordPress gratuits</a>
                     <a href="<?php echo esc_url(home_url('/audit-seo')); ?>">📊 Audit SEO gratuit (note /100)</a>
                     <a href="<?php echo esc_url(home_url('/tirage-au-sort')); ?>">🎰 Gagner 1 site / mois (tirage)</a>
+                    <a href="<?php echo esc_url(home_url('/composants')); ?>">🧩 Composants web gratuits</a>
                 </div>
             </div>
 

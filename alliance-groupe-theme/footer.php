@@ -13,6 +13,8 @@
                 <li><a href="<?php echo esc_url(home_url('/sites-express')); ?>">Création de site</a></li>
                 <li><a href="<?php echo esc_url(home_url('/maintenance')); ?>">Maintenance</a></li>
                 <li><a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">Templates métier</a></li>
+                <li><a href="<?php echo esc_url(home_url('/devis-instant')); ?>">Devis instantané&nbsp;🤖</a></li>
+                <li><a href="<?php echo esc_url(home_url('/refais-mon-site')); ?>">Refais mon site&nbsp;🤖</a></li>
             </ul>
         </div>
         <div class="ag-footer__col">
@@ -21,6 +23,8 @@
                 <li><a href="<?php echo esc_url(home_url('/realisations')); ?>">Réalisations</a></li>
                 <li><a href="<?php echo esc_url(home_url('/a-propos')); ?>">À propos</a></li>
                 <li><a href="<?php echo esc_url(home_url('/avis-clients')); ?>">Donnez votre avis ⭐</a></li>
+                <li><a href="<?php echo esc_url(home_url('/fait-par-lia')); ?>">Fait par l'IA</a></li>
+                <li><a href="<?php echo esc_url(home_url('/mon-espace-client')); ?>">Espace client</a></li>
                 <li><a href="<?php echo esc_url(home_url('/contact')); ?>">Contact</a></li>
             </ul>
         </div>
