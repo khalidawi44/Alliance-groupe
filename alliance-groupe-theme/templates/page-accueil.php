@@ -5,11 +5,15 @@
 get_header();
 ?>
 
-<!-- 🎬 Bandeau vidéo (header) — autoplay muet en boucle + bouton son -->
+<!-- ⚡ On preload l'AFFICHE (élément LCP) en priorité : elle s'affiche tout de suite. -->
+<link rel="preload" as="image" fetchpriority="high" href="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/videos/ads/promo-poster.jpg' ); ?>">
+<!-- 🎬 Bandeau vidéo (header) — autoplay muet en boucle + bouton son.
+     PERF : la vidéo (5 Mo) est chargée APRÈS l'affichage (data-src + preload="none") pour
+     ne pas plomber le LCP mobile ; seule l'affiche (poster) paraît au départ. -->
 <section class="ag-headvid" aria-label="Vidéo de présentation Alliance Groupe">
-	<video class="ag-headvid__v" autoplay muted loop playsinline preload="auto"
+	<video class="ag-headvid__v" muted loop playsinline preload="none"
 	       poster="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/videos/ads/promo-poster.jpg' ); ?>">
-		<source src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/videos/ads/alliance-promo-web.mp4' ); ?>" type="video/mp4">
+		<source data-src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/videos/ads/alliance-promo-web.mp4' ); ?>" type="video/mp4">
 	</video>
 	<div class="ag-headvid__veil"></div>
 	<div class="ag-headvid__in">
@@ -73,8 +77,11 @@ get_header();
 </style>
 <script>
 (function(){var s=document.querySelector('.ag-headvid');if(!s)return;var v=s.querySelector('.ag-headvid__v'),b=s.querySelector('.ag-headvid__sound');
-v&&v.play&&v.play().catch(function(){});
-b&&b.addEventListener('click',function(){if(!v)return;v.muted=!v.muted;if(!v.muted){v.play().catch(function(){});b.textContent='🔊 Couper le son';}else{b.textContent='🔇 Activer le son';}});
+/* PERF : on ne charge la vidéo (5 Mo) qu'APRÈS l'affichage de la page, pour ne pas plomber le LCP mobile. */
+function loadVid(){if(!v||v.dataset.agLoaded)return;var so=v.querySelector('source');if(so&&so.dataset.src){so.src=so.dataset.src;v.dataset.agLoaded='1';v.load();v.play().catch(function(){});}}
+if('requestIdleCallback' in window){window.addEventListener('load',function(){requestIdleCallback(loadVid,{timeout:3000});});}
+else{window.addEventListener('load',function(){setTimeout(loadVid,1000);});}
+b&&b.addEventListener('click',function(){if(!v)return;loadVid();v.muted=!v.muted;if(!v.muted){v.play().catch(function(){});b.textContent='🔊 Couper le son';}else{b.textContent='🔇 Activer le son';}});
 /* Compteur de menaces "en direct" : monte vers 30 000 (chiffre réel cité sur le site). */
 var cnt=document.getElementById('ag-hv-count');
 if(cnt){
