@@ -258,7 +258,7 @@ if ( ! function_exists( 'ag_audit_run' ) ) {
 
 		// 9. Robots.txt
 		$host = wp_parse_url( $url, PHP_URL_SCHEME ) . '://' . wp_parse_url( $url, PHP_URL_HOST );
-		$rob = wp_remote_head( $host . '/robots.txt', array( 'timeout' => 8 ) );
+		$rob = wp_remote_head( $host . '/robots.txt', array( 'timeout' => 8, 'reject_unsafe_urls' => true ) );
 		$rob_ok = ! is_wp_error( $rob ) && 200 === wp_remote_retrieve_response_code( $rob );
 		$checks[] = array(
 			'name'   => 'Fichier robots.txt',
@@ -268,7 +268,7 @@ if ( ! function_exists( 'ag_audit_run' ) ) {
 		);
 
 		// 10. Sitemap.xml
-		$sm = wp_remote_head( $host . '/sitemap.xml', array( 'timeout' => 8 ) );
+		$sm = wp_remote_head( $host . '/sitemap.xml', array( 'timeout' => 8, 'reject_unsafe_urls' => true ) );
 		$sm_ok = ! is_wp_error( $sm ) && 200 === wp_remote_retrieve_response_code( $sm );
 		$checks[] = array(
 			'name'   => 'Sitemap XML',
