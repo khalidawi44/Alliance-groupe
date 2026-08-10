@@ -57,16 +57,18 @@
     <h2>① Route à suivre (dans l'ordre)</h2>
     <div id="steps"></div>
 
-    <h2>② Générer le rapport YWH</h2>
+    <h2>② Générer le rapport <span style="font-size:12px;color:#9aa0b0">(bug bounty OU audit client — même procédé que Doctolib / kalelia)</span></h2>
     <div class="panel">
       <div class="row">
-        <div><label>Type de faille (pour le CVSS)</label>
-          <select id="rtype">
+        <div><label>Type de faille (CVSS auto)</label>
+          <select id="rtype" onchange="fillSkeleton(false)">
             <option value="rce">RCE / Command Injection</option>
             <option value="sqli">Injection SQL</option>
             <option value="lfi">LFI / Path Traversal</option>
             <option value="ssrf">SSRF</option>
             <option value="idor">IDOR / BOLA</option>
+            <option value="bac">Contrôle d'accès cassé / write non-auth (ex: titre SEO — kalelia)</option>
+            <option value="enum">Énumération de compte / utilisateur (ex: Doctolib)</option>
             <option value="xss">XSS (stockée)</option>
             <option value="xssr">XSS (réfléchie)</option>
             <option value="upload">Upload → RCE</option>
@@ -76,17 +78,29 @@
             <option value="info">Fuite d'information</option>
           </select>
         </div>
-        <div><label>Endpoint (URL vulnérable)</label><input id="rendpoint" placeholder="https://cible/page?id=1"></div>
+        <div><label>Scope / asset du programme</label><input id="rscope" placeholder="www.cible.fr"></div>
       </div>
       <div class="row">
+        <div><label>Endpoint (URL vulnérable)</label><input id="rendpoint" placeholder="https://cible/page?id=1"></div>
         <div><label>Partie vulnérable</label>
-          <select id="rpart"><option>GET parameter</option><option>POST parameter</option><option>JSON parameter</option><option>Header</option><option>Cookie</option><option>Path</option><option>URL</option><option>Others</option></select>
+          <select id="rpart"><option>GET parameter</option><option>POST parameter</option><option>JSON parameter</option><option>Body</option><option>Header</option><option>Cookie</option><option>Path</option><option>URL</option><option>Others</option></select>
         </div>
-        <div><label>Nom du paramètre</label><input id="rparam" placeholder="id"></div>
       </div>
-      <label>Charge utile (payload exact)</label><input id="rpayload" placeholder="ex: ; id  /  ../../etc/passwd  /  ' OR '1'='1">
+      <div class="row">
+        <div><label>Nom du paramètre / de la partie</label><input id="rparam" placeholder="id"></div>
+        <div><label>CVE (vide / N/A si aucune)</label><input id="rcve" placeholder="N/A"></div>
+      </div>
+      <label>Charge utile (payload exact)</label><input id="rpayload" placeholder="ex: ; id  /  ../../etc/passwd  /  {&quot;objectID&quot;:0,...}">
       <label>Preuve (sortie réelle, données masquées si vrai programme)</label><textarea id="rproof" placeholder="Colle la sortie qui prouve la faille (masque toute donnée réelle)"></textarea>
-      <button class="go" onclick="report()">📝 Produire le rapport (titre + description + CVSS)</button>
+      <button class="go" style="background:#22304a;color:#cfe" onclick="fillSkeleton(true)">🧩 Pré-remplir le squelette (selon le type + champs)</button>
+      <p class="ph">Rapport — édite chaque section pour coller à ton cas</p>
+      <label>Titre (Report title)</label><input id="rtitle" placeholder="&lt;Type&gt; dans &lt;endpoint&gt; — &lt;cause racine en 1 ligne&gt;">
+      <label>Description</label><textarea id="rdesc"></textarea>
+      <label>Exploitation</label><textarea id="rexp"></textarea>
+      <label>PoC</label><textarea id="rpoc"></textarea>
+      <label>Risk</label><textarea id="rrisk"></textarea>
+      <label>Remediation</label><textarea id="rrem"></textarea>
+      <button class="go" onclick="report()">📝 Assembler le rapport YWH complet</button>
     </div>
     <div id="result" class="hidden"><div class="panel" id="resultbox"></div></div>
   </div>
@@ -202,6 +216,8 @@ function gen(){
   // pré-remplir le rapport
   document.getElementById('rendpoint').value=U+'/?'+P+'=1';
   document.getElementById('rparam').value=P;
+  setv('rscope', T);
+  fillSkeleton(true);
   document.getElementById('out').classList.remove('hidden');
   document.getElementById('out').scrollIntoView({behavior:'smooth'});
 }
@@ -215,6 +231,8 @@ var RT={
  lfi:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:L/A:N',s:'8.6',n:'LFI / Path Traversal',rem:'Whitelist des fichiers ; interdire ../ ; basename() ; désactiver les wrappers dangereux.'},
  ssrf:{v:'AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:L/A:N',s:'8.5',n:'SSRF',rem:'Whitelist des hôtes/ports ; bloquer IP privées & 169.254.169.254 ; pas de suivi de redirection.'},
  idor:{v:'AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N',s:'6.5',n:'IDOR / BOLA',rem:'Vérifier l\'autorisation côté serveur pour CHAQUE objet (l\'utilisateur possède-t-il la ressource ?).'},
+ bac:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N',s:'7.5',n:'Contrôle d\'accès cassé (write non authentifié)',rem:'Ajouter un contrôle d\'autorisation (capability / rôle) sur l\'endpoint d\'écriture ; ne jamais renvoyer `true` par défaut dans un permission_callback ; assainir les valeurs stockées.'},
+ enum:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N',s:'5.3',n:'Énumération de compte / utilisateur',rem:'Uniformiser la réponse quel que soit l\'état du compte ; message neutre ; rate-limiting + captcha ; ne divulguer l\'existence qu\'après preuve de possession.'},
  xss:{v:'AV:N/AC:L/PR:L/UI:R/S:C/C:L/I:L/A:N',s:'5.4',n:'XSS stockée',rem:'Échapper à la sortie selon le contexte ; CSP ; sanitizer côté serveur.'},
  xssr:{v:'AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N',s:'6.1',n:'XSS réfléchie',rem:'Échapper la sortie ; CSP ; ne jamais réfléchir l\'entrée sans encodage.'},
  upload:{v:'AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H',s:'8.8',n:'Upload → RCE',rem:'Whitelist d\'extensions/MIME réelle ; renommer ; stocker hors webroot ; pas d\'exécution dans /uploads.'},
@@ -223,25 +241,81 @@ var RT={
  auth:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N',s:'8.1',n:'Auth / JWT',rem:'Vérifier alg côté serveur ; secret fort ; tokens expirables & invalidés ; MFA.'},
  info:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N',s:'7.5',n:'Fuite d\'information',rem:'Retirer le fichier/endpoint exposé ; contrôle d\'accès ; pas de secret dans le code public.'}
 };
+function fv(id){var e=document.getElementById(id);return e?(e.value||''):'';}
+function setv(id,v){var e=document.getElementById(id);if(e)e.value=v;}
+
+// Squelettes de sections par type — remplit les zones éditables. force=true écrase, sinon ne remplit que le vide.
+function fillSkeleton(force){
+  var t=RT[fv('rtype')], ty=fv('rtype');
+  var host=clean(fv('rscope')||fv('cible')).host||'la-cible';
+  var scope=fv('rscope')||host;
+  var ep=fv('rendpoint')||('https://'+host+'/...');
+  var part=fv('rpart'), pn=fv('rparam')||'id';
+  var pl=fv('rpayload')||'<payload>';
+  var proof=fv('rproof')||'<colle ta preuve ici — données réelles MASQUÉES>';
+  var only=function(id,v){ if(force||!fv(id)) setv(id,v); };
+
+  only('rtitle', t.n+' sur '+host+' — via '+pn+' ('+part+')');
+
+  var desc;
+  if(ty==='bac') desc=t.n+' sur `'+scope+'`. L\'endpoint `'+ep+'` accepte une requête d\'écriture SANS authentification ni vérification d\'autorisation : un attaquant anonyme peut modifier des données du site (ici via `'+pn+'`). Cause racine typique : un contrôle de permission qui renvoie `true` par défaut, et/ou l\'absence d\'assainissement de la valeur stockée.';
+  else if(ty==='enum') desc='L\'endpoint `'+ep+'` (`'+scope+'`) est accessible SANS authentification et se comporte comme un oracle : pour un identifiant soumis via `'+pn+'`, il révèle si un compte existe (réponse distincte « existe » / « n\'existe pas »), sans preuve de possession ni anti-automatisation.';
+  else desc=t.n+' présente sur `'+scope+'` : une entrée non assainie transmise via `'+pn+'` ('+part+') atteint une opération sensible, permettant '+t.n.toLowerCase()+'. Endpoint : `'+ep+'`.';
+  only('rdesc', desc);
+
+  var exp;
+  if(ty==='bac') exp='1. Envoyer, SANS session ni cookie, une requête d\'écriture sur `'+ep+'`.\n2. Placer une valeur-marqueur bénigne dans `'+pn+'` (ex. « AG-PENTEST-POC »).\n3. Le serveur répond 200 et applique le changement → la valeur est modifiée côté site.\n4. Preuve de changement obtenue → RESTAURER immédiatement la valeur d\'origine (test non destructif, sous mandat).';
+  else if(ty==='enum') exp='1. Ouvrir une session NON authentifiée (navigation privée / client HTTP).\n2. Soumettre un identifiant EXISTANT (compte de test) → réponse « existe ».\n3. Soumettre un identifiant bidon → réponse « n\'existe pas ».\n4. Différence fiable = oracle d\'existence, rejouable hors interface (ni captcha ni preuve de possession).';
+  else exp='1. Cibler l\'endpoint : `'+ep+'`.\n2. Injecter la charge utile dans `'+pn+'`.\n3. Observer la réponse qui prouve l\'exécution / l\'accès non prévu.';
+  only('rexp', exp);
+
+  var poc;
+  if(ty==='bac') poc='Requête (NON authentifiée) :\n```http\n'+(pl!=='<payload>'?pl:'POST '+ep+'\nContent-Type: application/json\n\n{"...":"AG-PENTEST-POC (test autorise mandat)"}')+'\n```\nRéponse serveur (changement accepté) :\n```\n'+proof+'\n```\n→ La valeur a été modifiée côté serveur SANS aucune authentification, puis RESTAURÉE par le testeur.';
+  else if(ty==='enum') poc='Cas 1 — identifiant EXISTANT :\n```\n'+(pl!=='<payload>'?pl:'POST '+ep+'\n\n{"'+pn+'":"<existant>"}')+'\n```\nRéponse : compte « existe ».\n\nCas 2 — identifiant INEXISTANT → compte « n\'existe pas ».\n\nPreuve :\n```\n'+proof+'\n```';
+  else poc='Endpoint : `'+ep+'`\nCharge utile : `'+pl+'`\n\nPreuve (sortie réelle) :\n```\n'+proof+'\n```';
+  only('rpoc', poc);
+
+  var risk;
+  if(ty==='bac') risk='Un attaquant anonyme peut réécrire des données du site (ici via `'+pn+'`) → défaçage, empoisonnement SEO, et — si la valeur n\'est pas assainie — injection de contenu/JS stocké (XSS) menant au vol de session admin.\n\nCVSS v3.1 : `'+t.v+'` = '+t.s+'.';
+  else if(ty==='enum') risk='Un tiers non authentifié peut déterminer si un identifiant correspond à un compte → phishing/vishing ciblé, recoupement de bases volées, atteinte à la vie privée. L\'absence de rate-limit rend l\'énumération de masse réalisable.\n\nCVSS v3.1 : `'+t.v+'` = '+t.s+'.';
+  else risk='Impact : '+t.n+'.\n\nCVSS v3.1 : `'+t.v+'` = '+t.s+'.';
+  only('rrisk', risk);
+
+  only('rrem', '- '+t.rem);
+}
+
 function report(){
-  var t=RT[document.getElementById('rtype').value];
-  var ep=document.getElementById('rendpoint').value||'https://cible/...';
-  var part=document.getElementById('rpart').value, pn=document.getElementById('rparam').value||'id';
-  var pl=document.getElementById('rpayload').value||'<payload>';
-  var proof=document.getElementById('rproof').value||'<colle ta preuve ici>';
-  var host=clean(document.getElementById('cible').value).host||'la-cible';
-  var title=t.n+' dans '+host+' — via le paramètre '+pn;
-  var desc='## Description\n'+t.n+' détectée sur `'+host+'` via le paramètre `'+pn+'` ('+part+'). Une entrée non assainie atteint une opération sensible, permettant '+t.n.toLowerCase()+'.\n\n'
-   +'## Exploitation\n1. Cibler l\'endpoint : `'+ep+'`\n2. Injecter la charge utile dans `'+pn+'`.\n3. Observer la réponse prouvant l\'exécution/l\'accès non prévu.\n\n'
-   +'## PoC\nEndpoint : `'+ep+'`\nCharge utile : `'+pl+'`\n\nPreuve :\n```\n'+proof+'\n```\n\n'
-   +'## Risk\nImpact : '+t.n+'. Gravité CVSS 3.1 = '+t.s+' (`'+t.v+'`).\n\n'
-   +'## Remediation\n'+t.rem;
+  if(!fv('rdesc')) fillSkeleton(true);
+  var t=RT[fv('rtype')];
+  var host=clean(fv('rscope')||fv('cible')).host||'la-cible';
+  var scope=fv('rscope')||host;
+  var ep=fv('rendpoint')||('https://'+host+'/...');
+  var part=fv('rpart'), pn=fv('rparam')||'id';
+  var pl=fv('rpayload')||'—';
+  var cve=fv('rcve')||'N/A';
+  var title=fv('rtitle')||(t.n+' sur '+host);
+  var md='## Report title\n'+title+'\n\n'
+   +'## Bug type\n'+t.n+'\n\n'
+   +'## Scope\n'+scope+'\n\n'
+   +'## Endpoint\n'+ep+'\n\n'
+   +'## Vulnerable part\n'+part+' — '+pn+'\n\n---\n\n'
+   +'## Description\n'+fv('rdesc')+'\n\n'
+   +'## Exploitation\n'+fv('rexp')+'\n\n'
+   +'## PoC\n'+fv('rpoc')+'\n\n'
+   +'## Risk\n'+fv('rrisk')+'\n\n'
+   +'## Remediation\n'+fv('rrem')+'\n\n'
+   +'## Form fields (récap)\n| Champ | Valeur |\n|---|---|\n'
+   +'| Type de bug | '+t.n+' |\n| Scope | '+scope+' |\n| Endpoint | '+ep+' |\n'
+   +'| Partie vulnérable | '+part+' |\n| Nom de la partie | '+pn+' |\n'
+   +'| Charge utile | '+pl+' |\n| CVE | '+cve+' |\n| Impact | '+t.n+' |\n'
+   +'| CVSS | `'+t.v+'` = '+t.s+' |\n';
   var col=(+t.s>=9?'#ef4444':(+t.s>=7?'#f59e0b':'#facc15'));
   document.getElementById('resultbox').innerHTML=
     '<div class="scorebox"><div class="score" style="color:'+col+'">'+t.s+'<span style="font-size:16px;color:#9aa0b0">/10</span></div><div><b>'+esc(t.n)+'</b><br><span style="font-size:12px;color:#9aa0b0">'+esc(t.v)+'</span></div></div>'+
     '<h3 style="color:var(--or)">Titre (champ « Report title »)</h3><pre><button class="copy" onclick="cpv(this)">📋 Copier</button><code>'+esc(title)+'</code></pre>'+
-    '<h3 style="color:var(--or)">Description (Markdown YWH)</h3><pre><button class="copy" onclick="cpv(this)">📋 Copier</button><code>'+esc(desc)+'</code></pre>'+
-    '<p class="exp">CVSS à cliquer dans le formulaire : '+esc(t.v.replace(/\//g,' · '))+'  → score '+t.s+'.</p>';
+    '<h3 style="color:var(--or)">Rapport complet (Description YWH + champs)</h3><pre><button class="copy" onclick="cpv(this)">📋 Copier</button><code>'+esc(md)+'</code></pre>'+
+    '<div class="toolbar"><button onclick="window.print()">🖨️ Imprimer / PDF</button></div>'+
+    '<p class="exp">CVSS à cliquer dans le formulaire YWH : '+esc(t.v.replace(/\//g,' · '))+' → score '+t.s+'. Sur vrai programme/mandat : données réelles MASQUÉES, test non destructif, valeur restaurée.</p>';
   document.getElementById('result').classList.remove('hidden');
   document.getElementById('result').scrollIntoView({behavior:'smooth'});
 }
