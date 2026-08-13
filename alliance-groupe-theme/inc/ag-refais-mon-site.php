@@ -65,9 +65,12 @@ function ag_refais_generate() {
 	if ( is_wp_error( $html ) ) {
 		wp_send_json_error( array( 'msg' => 'L\'IA n\'a pas pu générer la maquette : ' . $html->get_error_message() ) );
 	}
-	// Sécurise : on retire tout script/iframe/lien externe résiduel avant de l'afficher en srcdoc.
-	$html = preg_replace( '#<(script|iframe|object|embed)[^>]*>.*?</\1>#is', '', (string) $html );
-	$html = preg_replace( '#\son\w+\s*=\s*("[^"]*"|\'[^\']*\')#i', '', $html );
+	// Sécurise (défense en profondeur — l'iframe est de toute façon en sandbox
+	// sans scripts) : retire script/iframe/object/embed/svg, les gestionnaires
+	// d'événements (quotés ET non quotés) et les URI javascript:.
+	$html = preg_replace( '#<(script|iframe|object|embed|svg)[^>]*>.*?</\1>#is', '', (string) $html );
+	$html = preg_replace( '#\son\w+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)#i', '', (string) $html );
+	$html = preg_replace( '#(href|src|xlink:href)\s*=\s*("|\')?\s*javascript:[^"\'>\s]*("|\')?#i', '', (string) $html );
 
 	// On mémorise le contexte pour la capture du lead qui suit.
 	set_transient( 'ag_refais_ctx_' . ag_refais_ip(), array( 'url' => $page['url'], 'title' => $page['title'] ), 2 * HOUR_IN_SECONDS );
@@ -164,7 +167,7 @@ function ag_refais_render() {
 
 		<div class="agr-cmp" id="agr-cmp" style="display:none">
 			<div class="agr-col"><h3>😴 Ton site aujourd'hui</h3><iframe class="agr-frame" id="agr-old" title="Site actuel"></iframe></div>
-			<div class="agr-col new"><h3>✨ Proposé par l'IA</h3><iframe class="agr-frame" id="agr-new" title="Maquette IA"></iframe></div>
+			<div class="agr-col new"><h3>✨ Proposé par l'IA</h3><iframe class="agr-frame" id="agr-new" title="Maquette IA" sandbox referrerpolicy="no-referrer"></iframe></div>
 		</div>
 
 		<div class="agr-lead" id="agr-lead">

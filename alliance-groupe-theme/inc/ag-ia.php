@@ -191,6 +191,13 @@ function ag_ia_fetch_page( $url, $max = 6000 ) {
 	if ( '' === $url || ! preg_match( '#^https?://#i', $url ) ) {
 		return new WP_Error( 'ag_ia_url', 'Adresse du site invalide.' );
 	}
+	// Anti-SSRF : wp_http_validate_url() est la garde intégrée de WordPress —
+	// elle refuse localhost, les IP privées/réservées (10./172.16-31./192.168./
+	// 127./169.254.x) et les ports non standard. Empêche qu'un visiteur anonyme
+	// force le serveur à requêter des ressources internes via « refais mon site ».
+	if ( ! wp_http_validate_url( $url ) ) {
+		return new WP_Error( 'ag_ia_ssrf', 'Adresse non autorisée (site interne ou port non standard).' );
+	}
 	$res = wp_remote_get( $url, array(
 		'timeout'     => 20,
 		'redirection' => 3,
