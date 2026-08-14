@@ -133,6 +133,12 @@ if ( file_exists( $ag_composants_file ) ) {
     require_once $ag_composants_file;
 }
 
+// ── 1c4a-octies-bis. Marketplace des composants : créateur gratuit/payant, encaissement vendeur, commission plateforme, verrou de téléchargement payant.
+$ag_composants_market_file = get_stylesheet_directory() . '/inc/ag-composants-market.php';
+if ( file_exists( $ag_composants_market_file ) ) {
+    require_once $ag_composants_market_file;
+}
+
 // ── 1c4a-nonies. Noyau IA partagé (clé ag_ai_key) : réutilisé par les modules « nouveauté » ci-dessous.
 $ag_ia_file = get_stylesheet_directory() . '/inc/ag-ia.php';
 if ( file_exists( $ag_ia_file ) ) {

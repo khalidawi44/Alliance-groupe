@@ -494,6 +494,26 @@ if ( ! function_exists( 'ag_comp_submit_cb' ) ) {
 			wp_send_json_error( array( 'msg' => 'Titre, catégorie, HTML et CSS sont obligatoires.' ) );
 		}
 		$u    = wp_get_current_user();
+
+		// ── Marketplace : gratuit / payant + palier de prix + compte d'encaissement du vendeur.
+		$mode  = ( 'paid' === sanitize_key( wp_unslash( $_POST['mode'] ?? 'free' ) ) ) ? 'paid' : 'free';
+		$price = 0;
+		if ( 'paid' === $mode ) {
+			$price = (int) ( $_POST['price'] ?? 0 );
+			$tiers = function_exists( 'ag_compo_tiers' ) ? ag_compo_tiers() : array( 0 );
+			if ( ! in_array( $price, $tiers, true ) || $price <= 0 ) {
+				wp_send_json_error( array( 'msg' => 'Choisis un prix de vente dans la liste.' ) );
+			}
+			// Le vendeur doit avoir un moyen d'être payé (email PayPal) avant de vendre.
+			$payout = sanitize_email( wp_unslash( $_POST['payout'] ?? '' ) );
+			if ( $payout ) {
+				update_user_meta( $u->ID, 'ag_compo_paypal_email', $payout );
+			}
+			if ( ! function_exists( 'ag_compo_seller_ready' ) || ! ag_compo_seller_ready( $u->ID ) ) {
+				wp_send_json_error( array( 'msg' => 'Pour vendre, indique ton email PayPal (pour recevoir l’argent).' ) );
+			}
+		}
+
 		$list = (array) get_option( 'ag_composants_user', array() );
 		$list[] = array(
 			'id'           => 'u-' . substr( md5( $u->ID . microtime() . $title ), 0, 10 ),
@@ -504,12 +524,15 @@ if ( ! function_exists( 'ag_comp_submit_cb' ) ) {
 			'cfg'          => array(), // les composants membres : copie/téléchargement tels quels
 			'author'       => $u->display_name ? $u->display_name : $u->user_login,
 			'author_email' => $u->user_email,
+			'mode'         => $mode,
+			'price'        => $price,
 			'status'       => 'pending',
 			'ts'           => time(),
 		);
 		update_option( 'ag_composants_user', array_slice( $list, -3000 ) );
 		if ( function_exists( 'ag_push' ) ) {
-			ag_push( '🧩 Nouveau composant proposé', $title . ' — ' . $u->user_email . ' (à valider)' );
+			$tag = ( 'paid' === $mode && function_exists( 'ag_compo_price_label' ) ) ? ' · ' . ag_compo_price_label( $price ) : ' · Gratuit';
+			ag_push( '🧩 Nouveau composant proposé', $title . $tag . ' — ' . $u->user_email . ' (à valider)' );
 		}
 		wp_send_json_success( array( 'msg' => 'Merci ! Ton composant est envoyé. Il apparaîtra après validation.' ) );
 	}
@@ -729,17 +752,20 @@ if ( ! function_exists( 'ag_composants_render' ) ) {
 					$root = ag_composants_root_class( $c );
 					$cfg  = (array) ( $c['cfg'] ?? array() );
 					$prev = str_replace( '{label}', esc_html( $c['label'] ?? '' ), $c['html'] );
+					$price  = function_exists( 'ag_compo_price_of' ) ? ag_compo_price_of( $c['id'] ) : 0;
+					$hasacc = ( $price <= 0 ) || ( function_exists( 'ag_compo_has_access' ) && ag_compo_has_access( $c['id'] ) );
 					?>
 					<div class="agc-item" data-id="<?php echo esc_attr( $c['id'] ); ?>" data-cat="<?php echo esc_attr( $c['cat'] ); ?>"
 						data-title="<?php echo esc_attr( mb_strtolower( $c['title'] ) ); ?>" data-pop="<?php echo (int) ( $st['likes'] + $st['downloads'] ); ?>"
 						data-idx="<?php echo (int) $idx; ?>" data-root="<?php echo esc_attr( $root ); ?>"
-						data-label="<?php echo esc_attr( $c['label'] ?? '' ); ?>">
+						data-label="<?php echo esc_attr( $c['label'] ?? '' ); ?>" data-price="<?php echo (int) $price; ?>" data-acc="<?php echo $hasacc ? 1 : 0; ?>">
 						<div class="agc-prev"><div class="agc-prev__in"><?php echo $prev; // phpcs:ignore WordPress.Security.EscapeOutput ?></div></div>
 						<div class="agc-meta">
 							<div class="agc-meta__top">
 								<b><?php echo esc_html( $c['title'] ); ?></b>
 								<button class="agc-like" data-id="<?php echo esc_attr( $c['id'] ); ?>">❤️ <span><?php echo (int) $st['likes']; ?></span></button>
 							</div>
+							<?php if ( $price > 0 ) : ?><div style="margin:2px 0 4px"><span style="display:inline-block;background:#1c2333;border:1px solid #c9a96e;color:#f4d06f;font-weight:700;font-size:12px;padding:2px 9px;border-radius:999px"><?php echo esc_html( ag_compo_price_label( $price ) ); ?><?php echo $hasacc ? ' · débloqué' : ''; ?></span></div><?php endif; ?>
 							<div class="agc-meta__by">par <?php echo esc_html( $c['author'] ?? 'Alliance Groupe' ); ?> · ⬇️ <?php echo (int) $st['downloads']; ?></div>
 
 							<?php if ( $cfg ) : ?>
@@ -752,9 +778,13 @@ if ( ! function_exists( 'ag_composants_render' ) ) {
 							<?php endif; ?>
 
 							<div class="agc-actions">
-								<button class="agc-btn agc-btn--g" data-act="html">📋 HTML</button>
-								<button class="agc-btn agc-btn--g" data-act="css">📋 CSS</button>
-								<button class="agc-btn agc-btn--p" data-act="zip">⬇️ Télécharger</button>
+								<?php if ( $price > 0 && ! $hasacc ) : ?>
+									<button class="agc-btn agc-btn--p" data-act="buy">🔒 Acheter — <?php echo esc_html( ag_compo_price_label( $price ) ); ?></button>
+								<?php else : ?>
+									<button class="agc-btn agc-btn--g" data-act="html">📋 HTML</button>
+									<button class="agc-btn agc-btn--g" data-act="css">📋 CSS</button>
+									<button class="agc-btn agc-btn--p" data-act="zip">⬇️ Télécharger</button>
+								<?php endif; ?>
 							</div>
 						</div>
 					</div>
@@ -773,6 +803,17 @@ if ( ! function_exists( 'ag_composants_render' ) ) {
 							<select id="agc-f-cat">
 								<?php foreach ( $cats as $key => $lbl ) : ?><option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $lbl ); ?></option><?php endforeach; ?>
 							</select>
+							<div style="display:flex;gap:8px;align-items:center;margin:8px 0;flex-wrap:wrap">
+								<select id="agc-f-mode">
+									<option value="free">🎁 Gratuit</option>
+									<option value="paid">💶 Payant</option>
+								</select>
+								<select id="agc-f-price" style="display:none">
+									<?php foreach ( ag_compo_tiers() as $t ) : if ( $t <= 0 ) { continue; } ?><option value="<?php echo (int) $t; ?>"><?php echo esc_html( ag_compo_price_label( $t ) ); ?></option><?php endforeach; ?>
+								</select>
+							</div>
+							<input type="email" id="agc-f-payout" placeholder="Ton email PayPal (pour être payé)" value="<?php echo esc_attr( get_user_meta( get_current_user_id(), 'ag_compo_paypal_email', true ) ); ?>" style="display:none">
+							<p id="agc-f-comm" style="display:none;font-size:12px;color:#9fb0c8;margin:4px 0">Commission plateforme : <?php echo (int) AG_COMPO_COMMISSION; ?> % · tu reçois le reste sur ton PayPal.<?php echo ag_compo_market_ready() ? '' : ' <em>(paiement en cours d’activation)</em>'; ?></p>
 							<textarea id="agc-f-html" placeholder="HTML — ex: &lt;button class=&quot;mon-bouton&quot;&gt;Clique&lt;/button&gt;"></textarea>
 							<textarea id="agc-f-css" placeholder="CSS — ex: .mon-bouton{background:var(--acc,#c9a96e);...}"></textarea>
 							<button class="agc-btn agc-btn--p" id="agc-f-send" style="padding:10px 18px">🚀 Envoyer ma création</button>
@@ -795,6 +836,7 @@ if ( ! function_exists( 'ag_composants_render' ) ) {
 		<script>
 		(function(){
 			var AJAX=<?php echo wp_json_encode( $ajax ); ?>, N=<?php echo wp_json_encode( $nonce ); ?>;
+			var MARKET_READY=<?php echo ag_compo_market_ready() ? 'true' : 'false'; ?>;
 			var HOME=<?php echo wp_json_encode( home_url( '/' ) ); ?>;
 			// données CSS brutes par composant (pour copie/zip)
 			var CSS=<?php
@@ -842,6 +884,10 @@ if ( ! function_exists( 'ag_composants_render' ) ) {
 				item.querySelectorAll('[data-act]').forEach(function(btn){
 					btn.addEventListener('click',function(){
 						var o=conf(item),act=btn.getAttribute('data-act');
+						if(act==='buy'){
+							toast(MARKET_READY?'\ud83d\udd12 Paiement en cours d\u2019activation \u2014 reviens très vite !':'\ud83d\udd12 Paiement bientôt actif \u2014 écris-nous pour l\u2019obtenir.');
+							return;
+						}
 						if(act==='html')copy(buildHtml(id,o));
 						else if(act==='css')copy(buildCss(id,o));
 						else if(act==='zip'){
@@ -899,14 +945,21 @@ if ( ! function_exists( 'ag_composants_render' ) ) {
 			if(fh){
 				var fc=document.getElementById('agc-f-css'),live=document.getElementById('agc-f-live'),sty=document.createElement('style');
 				document.head.appendChild(sty);
+				var fmode=document.getElementById('agc-f-mode'),fprice=document.getElementById('agc-f-price'),fpay=document.getElementById('agc-f-payout'),fcomm=document.getElementById('agc-f-comm');
+				function syncMode(){var paid=fmode&&fmode.value==='paid';if(fprice)fprice.style.display=paid?'':'none';if(fpay)fpay.style.display=paid?'':'none';if(fcomm)fcomm.style.display=paid?'':'none';}
+				if(fmode){fmode.addEventListener('change',syncMode);syncMode();}
 				function refresh(){sty.textContent=fc.value||'';live.innerHTML=fh.value||'<span style="color:#556">— aperçu —</span>';}
 				fh.addEventListener('input',refresh);fc.addEventListener('input',refresh);
 				document.getElementById('agc-f-send').addEventListener('click',function(){
 					var t=document.getElementById('agc-f-title').value.trim();
 					var msg=document.getElementById('agc-f-msg');
 					if(!t||!fh.value.trim()||!fc.value.trim()){msg.style.color='#ff8f9a';msg.textContent='Titre, HTML et CSS obligatoires.';return;}
+					var paid=fmode&&fmode.value==='paid';
+					if(paid&&fpay&&!fpay.value.trim()){msg.style.color='#ff8f9a';msg.textContent='Indique ton email PayPal pour vendre (recevoir l\u2019argent).';return;}
 					var f=new FormData();f.append('action','ag_comp_submit');f.append('_n',N);
 					f.append('title',t);f.append('cat',document.getElementById('agc-f-cat').value);
+					f.append('mode',paid?'paid':'free');
+					if(paid){f.append('price',fprice?fprice.value:'');f.append('payout',fpay?fpay.value.trim():'');}
 					f.append('html',fh.value);f.append('css',fc.value);
 					msg.style.color='#9fb0c8';msg.textContent='Envoi…';
 					fetch(AJAX,{method:'POST',body:f}).then(function(r){return r.json();}).then(function(j){
@@ -988,7 +1041,14 @@ if ( ! function_exists( 'ag_composants_admin_render' ) ) {
 		}
 		foreach ( $pending as $u ) {
 			echo '<div style="border:1px solid #ccd;border-radius:8px;padding:12px;margin:10px 0;background:#fff;max-width:900px">';
-			echo '<strong>' . esc_html( $u['title'] ) . '</strong> — ' . esc_html( ag_composants_cats()[ $u['cat'] ] ?? $u['cat'] ) . ' — par ' . esc_html( $u['author'] ?? '' ) . ' (' . esc_html( $u['author_email'] ?? '' ) . ')';
+			$umode  = ( ( $u['mode'] ?? 'free' ) === 'paid' ) ? '💶 ' . ( function_exists( 'ag_compo_price_label' ) ? ag_compo_price_label( $u['price'] ?? 0 ) : '' ) : '🎁 Gratuit';
+			$seller_payout = '';
+			$au = ! empty( $u['author_email'] ) ? get_user_by( 'email', $u['author_email'] ) : null;
+			if ( $au ) { $seller_payout = get_user_meta( $au->ID, 'ag_compo_paypal_email', true ); }
+			echo '<strong>' . esc_html( $u['title'] ) . '</strong> — ' . esc_html( ag_composants_cats()[ $u['cat'] ] ?? $u['cat'] ) . ' — <span style="background:#eef;border-radius:4px;padding:1px 6px">' . esc_html( $umode ) . '</span> — par ' . esc_html( $u['author'] ?? '' ) . ' (' . esc_html( $u['author_email'] ?? '' ) . ')';
+			if ( ( $u['mode'] ?? 'free' ) === 'paid' ) {
+				echo '<br><small>💳 Encaissement vendeur : ' . ( $seller_payout ? esc_html( $seller_payout ) . ' (PayPal)' : '<span style="color:#b32d2e">non configuré</span>' ) . ' · commission plateforme ' . (int) AG_COMPO_COMMISSION . ' %</small>';
+			}
 			echo '<div style="display:grid;place-items:center;padding:18px;background:#0b1020;border-radius:8px;margin:8px 0"><style>' . $u['css'] . '</style>' . $u['html'] . '</div>'; // phpcs:ignore
 			echo '<details><summary>Voir le code</summary><pre style="white-space:pre-wrap;background:#f6f7f9;padding:8px;border-radius:6px">' . esc_html( $u['html'] ) . "\n\n" . esc_html( $u['css'] ) . '</pre></details>';
 			foreach ( array( 'approve' => '✅ Approuver', 'reject' => '🚫 Rejeter', 'delete' => '🗑 Supprimer' ) as $do => $lbl ) {
