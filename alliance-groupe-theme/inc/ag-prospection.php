@@ -1424,9 +1424,13 @@ add_action( 'template_redirect', function () {
 } );
 
 /* ── 6. Page admin "Prospection" ────────────────────────────────── */
+// Priorité 9 : le menu parent « Prospection » DOIT être créé AVANT tous les
+// sous-menus (add_submenu_page) — dont ceux d'autres fichiers chargés plus tôt
+// (ex. ag-appels-offres.php). Sinon WordPress génère des liens orphelins
+// malformés (/wp-admin/ag-appels-offres au lieu de admin.php?page=…) → 404.
 add_action( 'admin_menu', function () {
 	add_menu_page( 'Prospection', 'Prospection', 'manage_options', 'ag-prospects', 'ag_prospects_render', 'dashicons-search', 30 );
-} );
+}, 9 );
 if ( ! function_exists( 'ag_prospects_render' ) ) {
 	function ag_prospects_render() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
