@@ -169,6 +169,12 @@ if ( file_exists( $ag_nuit_file ) ) {
     require_once $ag_nuit_file;
 }
 
+// ── 1c4a-quindecies. Suivi comportement visiteurs « venus seuls » (inbound) + page 👣 Visiteurs.
+$ag_visiteurs_file = get_stylesheet_directory() . '/inc/ag-visiteurs.php';
+if ( file_exists( $ag_visiteurs_file ) ) {
+    require_once $ag_visiteurs_file;
+}
+
 // ── 1c4b. SEO pages piliers (création site Nantes + cybersécurité/NIS2) + LocalBusiness/Breadcrumb/Service
 $ag_seo_pages_file = get_stylesheet_directory() . '/inc/ag-seo-pages.php';
 if ( file_exists( $ag_seo_pages_file ) ) {
