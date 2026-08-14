@@ -1254,6 +1254,20 @@ if ( ! function_exists( 'ag_save_lead' ) ) {
         );
         update_option( 'ag_template_leads', $leads );
 
+        // Route AUSSI le lead dans le CRM Prospection, pour le retrouver au même
+        // endroit que tous les autres (avant, ag_template_leads n'était affiché
+        // nulle part → leads « invisibles » dans l'admin).
+        if ( function_exists( 'ag_prospect_add_record' ) ) {
+            ag_prospect_add_record( array(
+                'name'   => $name,
+                'email'  => $email,
+                'phone'  => $phone,
+                'status' => 'nouveau',
+                'source' => 'template-' . ( $template ? $template : 'metier' ),
+                'notes'  => 'A demandé le template « ' . ( $template ? $template : '?' ) . ' » (téléchargement).',
+            ) );
+        }
+
         wp_mail(
             'contact@alliancegroupe-inc.com',
             'Nouveau lead template : ' . $name,
@@ -1267,6 +1281,27 @@ if ( ! function_exists( 'ag_save_lead' ) ) {
         wp_send_json_success();
     }
 }
+
+// Migration ponctuelle : fait remonter les anciens leads « template » (dont
+// Maurice) dans le CRM Prospection. ag_prospect_add_record déduplique (nom/tél),
+// donc l'import est sûr. Idempotent via le drapeau ag_tpl_leads_migrated_v1.
+add_action( 'init', function () {
+    if ( get_option( 'ag_tpl_leads_migrated_v1' ) ) { return; }
+    if ( function_exists( 'ag_prospect_add_record' ) ) {
+        foreach ( (array) get_option( 'ag_template_leads', array() ) as $l ) {
+            if ( empty( $l['name'] ) ) { continue; }
+            ag_prospect_add_record( array(
+                'name'   => $l['name'],
+                'email'  => isset( $l['email'] ) ? $l['email'] : '',
+                'phone'  => isset( $l['phone'] ) ? $l['phone'] : '',
+                'status' => 'nouveau',
+                'source' => 'template-' . ( ! empty( $l['template'] ) ? $l['template'] : 'metier' ),
+                'notes'  => 'A demandé le template « ' . ( isset( $l['template'] ) ? $l['template'] : '?' ) . ' » (import).',
+            ) );
+        }
+    }
+    update_option( 'ag_tpl_leads_migrated_v1', 1 );
+}, 20 );
 
 // ── 11. Questions Flash submission (post-paiement) ────────────────
 add_action( 'admin_post_nopriv_ag_submit_question', 'ag_submit_question' );
