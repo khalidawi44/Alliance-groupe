@@ -17,7 +17,7 @@ get_header();
                 <span class="ag-line" style="display:block;">basé à <span style="white-space:nowrap">Naples &amp; Nantes</span></span>
             </h1>
             <span class="ag-heritage-strip ag-heritage-strip--center" aria-hidden="true"></span>
-            <p class="ag-hero__sub">Alliance Groupe, c'est <strong>un studio indépendant</strong> : un interlocuteur unique, du conseil à la livraison. Sécurité, création de sites et SEO — sans intermédiaire, sans jargon.</p>
+            <p class="ag-hero__sub">Alliance Groupe, c'est <strong>un studio indépendant</strong> : un interlocuteur unique, du conseil à la livraison. Création de sites, <strong>sécurité informatique</strong>, <strong>IA</strong> &amp; référencement — sans intermédiaire, sans jargon.</p>
         </div>
     </section>
 

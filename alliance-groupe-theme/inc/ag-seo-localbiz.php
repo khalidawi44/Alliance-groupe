@@ -144,8 +144,18 @@ add_action( 'wp_head', function () {
 		'priceRange'  => ag_nap_opt( 'price' ),
 		'address'     => $addr,
 		'areaServed'  => trim( ag_nap_opt( 'city' ) . ( ag_nap_opt( 'region' ) ? ', ' . ag_nap_opt( 'region' ) : '' ) ),
-		'description' => 'Création de sites web professionnels, templates WordPress et audit de sécurité. ' . ag_nap_opt( 'city' ) . ' et région.',
-		'knowsAbout'  => array( 'Création de site web', 'WordPress', 'Référencement local', 'Sécurité web', 'Templates métier' ),
+		'description' => 'Agence web, sécurité informatique & IA. Création de sites internet rapides et sécurisés, cybersécurité et audit de sécurité, automatisation par intelligence artificielle. ' . ag_nap_opt( 'city' ) . ' et région.',
+		'knowsAbout'  => array( 'Création de site web', 'WordPress', 'Référencement local (SEO)', 'Sécurité informatique', 'Cybersécurité', 'Audit de sécurité', 'Intelligence artificielle', 'Automatisation', 'Templates métier' ),
+		'slogan'      => 'Web, sécurité & IA',
+		'hasOfferCatalog' => array(
+			'@type' => 'OfferCatalog',
+			'name'  => 'Services Alliance Groupe',
+			'itemListElement' => array(
+				array( '@type' => 'Offer', 'itemOffered' => array( '@type' => 'Service', 'name' => 'Création & sécurisation de sites internet', 'description' => 'Sites vitrines, e-commerce et logiciels sur-mesure, livrés rapides et sécurisés.' ) ),
+				array( '@type' => 'Offer', 'itemOffered' => array( '@type' => 'Service', 'name' => 'Cybersécurité & audit de sécurité', 'description' => 'Audit de vulnérabilités, sécurisation anti-piratage et conseil en sécurité informatique pour PME.' ) ),
+				array( '@type' => 'Offer', 'itemOffered' => array( '@type' => 'Service', 'name' => 'IA & automatisation', 'description' => 'Assistants, devis instantané et automatisation par intelligence artificielle.' ) ),
+			),
+		),
 	);
 
 	// Horaires (format schema : "Mo-Fr 09:00-19:00").
