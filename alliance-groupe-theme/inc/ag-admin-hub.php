@@ -429,6 +429,46 @@ if ( ! function_exists( 'ag_dashboard_news_render' ) ) {
 		foreach ( $ventes as $v ) { if ( ( $v['statut'] ?? '' ) === 'declaree' ) $nb_valider++; }
 		$adm = admin_url( 'admin.php?page=' );
 
+		// ── La vie du site : inscriptions ambassadeurs, questions clients, nouveaux clients (ventes). ──
+		// Ambassadeurs : comptés parmi les vrais comptes WordPress (fiable quel que soit le mode d'inscription).
+		$nb_amb = count( (array) get_users( array( 'role' => 'ag_ambassadeur', 'fields' => 'ID' ) ) );
+		$nb_amb_new = 0; $nb_amb_attente = 0;
+		foreach ( (array) get_option( 'ag_ambassadeurs', array() ) as $a ) {
+			if ( $seen && (int) ( $a['kyc_ts'] ?? 0 ) > $seen ) { $nb_amb_new++; }
+			if ( ( $a['status'] ?? '' ) === 'en_attente' ) { $nb_amb_attente++; }
+		}
+		// Questions clients : consultations écrites (Questions Flash) + demandes de l'espace client.
+		$nb_questions = count( (array) get_option( 'ag_questions_submitted', array() ) );
+		$nb_q_new = 0;
+		foreach ( (array) get_option( 'ag_client_requests', array() ) as $r ) {
+			if ( $seen && (int) ( $r['ts'] ?? 0 ) > $seen ) { $nb_q_new++; }
+		}
+		$nb_questions += count( (array) get_option( 'ag_client_requests', array() ) );
+		// Nouveaux clients (= ventes confirmées : un compte client est créé au paiement / au brief).
+		$client_users   = (array) get_users( array( 'role' => 'ag_client', 'fields' => array( 'ID', 'user_registered' ) ) );
+		$nb_clients     = count( $client_users );
+		$nb_clients_new = 0;
+		$seen_gmt = $seen ? gmdate( 'Y-m-d H:i:s', $seen ) : '';
+		foreach ( $client_users as $cu ) {
+			if ( $seen_gmt && ! empty( $cu->user_registered ) && $cu->user_registered > $seen_gmt ) { $nb_clients_new++; }
+		}
+
+		// Audits DEMANDÉS par des clients (formulaire public « Tester mon site ») — même logique que le Centre de contrôle.
+		$nb_inbound_audit = 0;
+		if ( function_exists( 'ag_audit_hist_get' ) ) {
+			$inbound_hosts_dash = array();
+			foreach ( $prospects as $pp ) {
+				if ( false !== strpos( (string) ( $pp['source'] ?? '' ), 'tester-mon-site' ) ) {
+					$ph2 = wp_parse_url( (string) ( $pp['website'] ?? '' ), PHP_URL_HOST );
+					if ( $ph2 ) { $inbound_hosts_dash[ strtolower( $ph2 ) ] = 1; }
+				}
+			}
+			foreach ( (array) ag_audit_hist_get() as $he ) {
+				$isrc = ( 'inbound' === ( $he['src'] ?? '' ) ) ? 'inbound' : ( isset( $inbound_hosts_dash[ strtolower( (string) ( $he['host'] ?? '' ) ) ] ) ? 'inbound' : 'self' );
+				if ( 'inbound' === $isrc ) { $nb_inbound_audit++; }
+			}
+		}
+
 		echo '<p style="font-size:1.05rem;margin:0 0 10px;">';
 		if ( $new ) echo '<strong style="background:#d63638;color:#fff;border-radius:100px;padding:2px 12px;">' . (int) $new . ' nouveauté' . ( $new > 1 ? 's' : '' ) . '</strong> depuis ta dernière visite.';
 		else echo '<span style="color:#646970;">Rien de neuf depuis ta dernière visite. 👍</span>';
@@ -449,6 +489,23 @@ if ( ! function_exists( 'ag_dashboard_news_render' ) ) {
 		echo $tile( '✦', $nb_devis, 'Devis sur-mesure', $adm . 'ag-sur-mesure', false );
 		echo $tile( '💰', $nb_valider, 'Ventes à valider', $adm . 'ag-ambassadeurs', true );
 		echo $tile( '🔥', $nb_inbound_audit, 'Audits demandés (client)', $adm . 'ag-espace-audit', true );
+		echo '</div>';
+
+		// ── Rangée « La vie du site » : ce que Fabrice veut voir en 1 coup d'œil en arrivant. ──
+		$tile2 = function ( $emoji, $n, $label, $url, $new = 0 ) {
+			$hot  = $new > 0;
+			$bg   = $hot ? '#eefaf0' : '#f6f7f7'; $bd = $hot ? '#a8dcb5' : '#dcdcde';
+			$pill = $hot ? ' <span style="display:inline-block;background:#1f7a3d;color:#fff;border-radius:100px;padding:1px 8px;font-size:.7rem;font-weight:700;">+' . (int) $new . ' nouveau' . ( $new > 1 ? 'x' : '' ) . '</span>' : '';
+			return '<a href="' . esc_url( $url ) . '" style="text-decoration:none;flex:1;min-width:150px;display:block;background:' . $bg . ';border:1px solid ' . $bd . ';border-radius:10px;padding:10px 12px;">'
+				. '<div style="font-size:1.1rem;">' . esc_html( $emoji ) . '</div>'
+				. '<div style="font-size:1.5rem;font-weight:800;color:#1d2327;line-height:1.1;">' . (int) $n . '</div>'
+				. '<div style="color:#646970;font-size:.78rem;font-weight:600;">' . esc_html( $label ) . $pill . '</div></a>';
+		};
+		echo '<p style="margin:2px 0 6px;font-weight:700;color:#1d2327;">🌱 La vie du site</p>';
+		echo '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;">';
+		echo $tile2( '🤝', $nb_amb, $nb_amb_attente ? 'Ambassadeurs · ' . (int) $nb_amb_attente . ' à valider' : 'Ambassadeurs inscrits', $adm . 'ag-ambassadeurs', $nb_amb_new );
+		echo $tile2( '💬', $nb_questions, 'Questions clients', $adm . 'ag-questions', $nb_q_new );
+		echo $tile2( '🆕', $nb_clients, 'Clients (ventes)', admin_url( 'users.php?role=ag_client' ), $nb_clients_new );
 		echo '</div>';
 
 		// Le fil.
