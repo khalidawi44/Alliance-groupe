@@ -2211,6 +2211,37 @@ add_action( 'ag_relance_cron', function () {
 		if ( function_exists( 'ag_push' ) ) ag_push( '🔁 ' . $due . ' prospect(s) à relancer', 'Sans réponse depuis 7 jours et plus. Va dans Prospection → puce « 🔁 À relancer ».' );
 		if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '🔁 ' . $due . ' prospect(s) à relancer (7 jours sans réponse)' );
 	}
+
+	// ── Libération auto : un prospect assigné mais SANS RÉPONSE depuis N jours (défaut 30) est
+	// remis dans le pool et réattribué à un autre ambassadeur de la zone (règle Fabrice 15/08).
+	$rel_days = max( 1, (int) get_option( 'ag_prospect_release_days', 30 ) );
+	$list     = (array) get_option( 'ag_prospects', array() );
+	$freed    = 0; $changed = false;
+	foreach ( $list as $k => $p ) {
+		if ( empty( $p['owner_email'] ) ) { continue; }               // déjà libre
+		if ( ! ag_prospect_relance_due( $p, $rel_days ) ) { continue; } // pas (encore) sans réponse depuis N j
+		$prev_owner = strtolower( (string) $p['owner_email'] );
+		$dept       = function_exists( 'ag_prospect_dept' ) ? ag_prospect_dept( $p ) : '';
+		// Cherche un AUTRE ambassadeur actif dans la zone (ne pas rendre au même).
+		$next = '';
+		if ( '' !== $dept && function_exists( 'ag_zone_owners' ) ) {
+			$owners = array_values( array_filter( ag_zone_owners( $dept ), function ( $o ) use ( $prev_owner ) {
+				return strtolower( $o['email'] ?? '' ) !== $prev_owner;
+			} ) );
+			if ( $owners && function_exists( 'ag_zone_next_owner' ) ) { $next = ag_zone_next_owner( $dept ); if ( strtolower( (string) $next ) === $prev_owner ) { $next = $owners[0]['email'] ?? ''; } }
+		}
+		$list[ $k ]['owner_email'] = $next ? $next : '';
+		$list[ $k ]['owner_name']  = '';
+		if ( $next ) {
+			foreach ( ag_zone_owners( $dept ) as $o ) { if ( strtolower( $o['email'] ?? '' ) === strtolower( (string) $next ) ) { $list[ $k ]['owner_name'] = $o['name'] ?? ''; break; } }
+		}
+		$freed++; $changed = true;
+	}
+	if ( $changed ) { update_option( 'ag_prospects', $list, false ); }
+	if ( $freed > 0 ) {
+		if ( function_exists( 'ag_push' ) ) ag_push( '♻️ ' . $freed . ' prospect(s) relâché(s)', 'Sans réponse depuis ' . $rel_days . ' jours → remis dans le pool / réattribués à un autre ambassadeur de la zone.' );
+		if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '♻️ ' . $freed . ' prospect(s) relâché(s) après ' . $rel_days . ' j sans réponse' );
+	}
 } );
 if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
 	function ag_run_auto_prospection() {

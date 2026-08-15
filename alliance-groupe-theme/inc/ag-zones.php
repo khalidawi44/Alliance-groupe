@@ -234,7 +234,7 @@ if ( ! function_exists( 'ag_zone_extra_activate_by_email' ) ) {
 		return true;
 	}
 }
-/* ── Activité ambassadeur : on garde la zone à vie, sauf inactivité 7 jours ── */
+/* ── Activité ambassadeur : la zone est gardée, SAUF inactivité prolongée (défaut 30 j). ── */
 if ( ! function_exists( 'ag_amb_mark_active' ) ) {
 	function ag_amb_mark_active( $uid = 0 ) {
 		$uid = $uid ?: get_current_user_id();
@@ -243,13 +243,48 @@ if ( ! function_exists( 'ag_amb_mark_active' ) ) {
 		if ( $u && in_array( 'ag_ambassadeur', (array) $u->roles, true ) ) update_user_meta( $uid, 'ag_amb_last_active', time() );
 	}
 }
+/** Seuil d'inactivité (jours) avant de libérer les zones d'un ambassadeur. Option `ag_amb_inactive_days` (défaut 30). */
+if ( ! function_exists( 'ag_amb_inactive_days' ) ) {
+	function ag_amb_inactive_days() { return max( 1, (int) get_option( 'ag_amb_inactive_days', 30 ) ); }
+}
 add_action( 'init', function () {
 	if ( ! wp_next_scheduled( 'ag_amb_inactivity_cron' ) ) wp_schedule_event( strtotime( 'tomorrow 8:00' ), 'daily', 'ag_amb_inactivity_cron' );
 } );
-// RÈGLE (Fabrice) : les comptes ambassadeurs et leurs zones N'EXPIRENT JAMAIS pour inactivité.
-// Seule une zone PAYÉE en exclusivité a une durée (limite de temps du paiement) — gérée par `until`
-// dans ag_zone_owners() (expiration paresseuse). Le cron ne retire donc plus rien pour inactivité.
-add_action( 'ag_amb_inactivity_cron', '__return_false' );
+// RÈGLE (Fabrice, 15/08) : une zone reste à vie TANT QUE l'ambassadeur est actif. Après N jours SANS activité
+// (aucune connexion à l'espace ni vente déclarée — les deux mettent à jour `ag_amb_last_active`), ses zones
+// sont libérées pour qu'un nouvel inscrit puisse prendre la place. Exception : une zone PAYÉE en exclusivité
+// encore en cours (`until` dans le futur) n'est jamais retirée avant la fin de la période payée.
+if ( ! function_exists( 'ag_amb_inactivity_sweep' ) ) {
+	function ag_amb_inactivity_sweep() {
+		$days   = ag_amb_inactive_days();
+		$cutoff = time() - $days * DAY_IN_SECONDS;
+		$freed  = array();
+		foreach ( (array) get_users( array( 'role' => 'ag_ambassadeur', 'fields' => array( 'ID', 'user_email' ) ) ) as $u ) {
+			$last = (int) get_user_meta( $u->ID, 'ag_amb_last_active', true );
+			// Jamais d'activité enregistrée : on amorce le compteur maintenant (pas de retrait rétroactif injuste).
+			if ( ! $last ) { update_user_meta( $u->ID, 'ag_amb_last_active', time() ); continue; }
+			if ( $last > $cutoff ) { continue; } // encore actif
+			$email = strtolower( (string) $u->user_email );
+			foreach ( ag_zone_of_owner( $email ) as $dept ) {
+				// Ne pas retirer une exclusivité PAYÉE encore en cours.
+				$paid_active = false;
+				foreach ( ag_zone_owners( $dept ) as $o ) {
+					if ( strtolower( $o['email'] ?? '' ) === $email && (int) ( $o['until'] ?? 0 ) > time() ) { $paid_active = true; break; }
+				}
+				if ( $paid_active ) { continue; }
+				ag_zone_remove_owner( $dept, $email );
+				$freed[] = strtoupper( $dept );
+			}
+		}
+		if ( $freed && function_exists( 'ag_push' ) ) {
+			ag_push( '🗺️ Zone(s) libérée(s) pour inactivité', count( $freed ) . ' zone(s) (' . implode( ', ', array_unique( $freed ) ) . ') libérée(s) après ' . $days . ' j sans activité — dispo pour un nouvel ambassadeur.' );
+		}
+		if ( $freed && function_exists( 'ag_activity_log' ) ) {
+			ag_activity_log( '🗺️ ' . count( $freed ) . ' zone(s) libérée(s) pour inactivité (' . implode( ', ', array_unique( $freed ) ) . ')' );
+		}
+	}
+}
+add_action( 'ag_amb_inactivity_cron', 'ag_amb_inactivity_sweep' );
 if ( ! function_exists( 'ag_dept_names' ) ) {
 	function ag_dept_names() {
 		return array(

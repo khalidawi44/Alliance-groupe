@@ -304,6 +304,10 @@ if ( ! function_exists( 'ag_ambassadeur_vente' ) ) {
 		);
 		update_option( 'ag_ambassadeur_ventes', $ventes );
 
+		// Déclarer une vente = activité : réarme le compteur d'inactivité (garde la zone).
+		$amb_user = get_user_by( 'email', $email );
+		if ( $amb_user ) { update_user_meta( $amb_user->ID, 'ag_amb_last_active', time() ); }
+
 		// Notif téléphone (SMS + Telegram) : une vente vient d'être déclarée, à valider.
 		if ( function_exists( 'ag_push' ) ) {
 			ag_push(
