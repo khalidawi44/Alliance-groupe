@@ -87,6 +87,7 @@ if ( ! function_exists( 'ag_ri_countries' ) ) {
 				'channels' => array(
 					array( 'slug' => 'fb-emploi-sn', 'name' => 'Facebook · Emploi Sénégal Dakar/Thiès/Saint-Louis', 'url' => 'https://www.facebook.com/search/groups?q=emploi%20senegal', 'rules' => 'Lire les regles. Forte communaute.' ),
 					array( 'slug' => 'reddit-sn', 'name' => 'Reddit · r/Senegal', 'url' => 'https://www.reddit.com/r/Senegal/', 'rules' => 'Tag [Discussion].' ),
+					array( 'slug' => 'senjob', 'name' => 'Senjob · forum emploi Sénégal', 'url' => 'https://www.senjob.com/', 'rules' => 'Sections emploi/opportunites uniquement. Lire les regles.' ),
 				),
 			),
 			'CI' => array(
@@ -94,6 +95,15 @@ if ( ! function_exists( 'ag_ri_countries' ) ) {
 				'channels' => array(
 					array( 'slug' => 'abidjan-net', 'name' => 'Abidjan.net · Forums emploi', 'url' => 'https://news.abidjan.net/', 'rules' => 'Section emploi/opportunites uniquement.' ),
 					array( 'slug' => 'fb-emploi-ci', 'name' => 'Facebook · Emploi Abidjan/Bouaké', 'url' => 'https://www.facebook.com/search/groups?q=emploi%20abidjan', 'rules' => 'Lire les regles du groupe.' ),
+					array( 'slug' => 'educarriere-ci', 'name' => 'Educarriere.ci · Forum emploi', 'url' => 'https://www.educarriere.ci/', 'rules' => 'Section emploi/opportunites uniquement.' ),
+				),
+			),
+			'ML' => array(
+				'name' => 'Mali', 'flag' => '🇲🇱', 'prime' => '≈ 16 500 FCFA', 'tone' => 'Chaleureux, communautaire et respectueux ("i ni ce", "bonjour"). Souligner "100% en ligne, gratuit, sans avance d\'argent".',
+				'channels' => array(
+					array( 'slug' => 'fb-emploi-ml', 'name' => 'Facebook · Emploi Mali (Bamako/Sikasso/Ségou)', 'url' => 'https://www.facebook.com/search/groups?q=emploi%20mali', 'rules' => 'Lire les regles du groupe. Poster 1 fois, repondre aux questions.' ),
+					array( 'slug' => 'malijet', 'name' => 'Malijet · commentaires emploi/business', 'url' => 'https://malijet.com/', 'rules' => 'Sous les articles emploi/economie uniquement.' ),
+					array( 'slug' => 'tg-emploi-ml', 'name' => 'Telegram · canaux emploi Mali', 'url' => 'https://t.me/s/emploi_mali', 'rules' => 'Canaux publics, 1 post, ton respectueux.' ),
 				),
 			),
 			'CM' => array(
@@ -143,6 +153,9 @@ if ( ! function_exists( 'ag_ri_templates' ) ) {
 			),
 			'CI' => array(
 				"Akwaba ! Alliance Groupe (agence web) ouvre son reseau d'ambassadeurs en Côte d'Ivoire. *10% de commission a vie* sur les ventes.\n📊 1 site Pro (890 €) ≈ *58 400 FCFA pour toi*\n• 6 ventes/semaine ≈ *1,5 M FCFA/mois* (~18 M FCFA/an)\n100% en ligne, sans avance. Inscription : {parrain_link}",
+			),
+			'ML' => array(
+				"Bonjour (i ni ce), Alliance Groupe (agence web francaise) ouvre son reseau d'ambassadeurs au Mali. *10% de commission a vie* sur les ventes.\n📊 1 site Pro (890 €) ≈ *58 400 FCFA pour toi*\n• 6 ventes/semaine ≈ *1,5 M FCFA/mois* (~18 M FCFA/an)\n100% en ligne, gratuit, sans avance. Inscription : {parrain_link}",
 			),
 			'CM' => array(
 				"Bonjour, Alliance Groupe (agence web FR) recrute des ambassadeurs au Cameroun. *10% de commission a vie* sur les ventes.\n📊 1 site Pro (890 €) ≈ *58 400 FCFA pour toi*\n• 6 ventes/semaine ≈ *1,5 M FCFA/mois* (~18 M FCFA/an)\nGratuit, en ligne. Inscription : {parrain_link}",
@@ -218,6 +231,51 @@ add_action( 'admin_post_ag_ri_toggle', function () {
 	update_option( 'ag_ri_posts', $posts, false );
 	$back = isset( $_POST['_back'] ) ? esc_url_raw( wp_unslash( $_POST['_back'] ) ) : admin_url( 'admin.php?page=ag-recrut-intl' );
 	wp_safe_redirect( $back ); exit;
+} );
+
+/* ---------------------------------------------------------------------------
+ * IA : génère un message UNIQUE et humain, propre à UN forum précis (pas de spam).
+ * Chaque appel = une variation différente, au ton du canal, règles respectées.
+ * ------------------------------------------------------------------------- */
+add_action( 'wp_ajax_ag_ri_ai_generate', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_ri' ) ) {
+		wp_send_json_error( array( 'm' => 'Session expirée.' ) );
+	}
+	if ( ! function_exists( 'ag_ia_ready' ) || ! ag_ia_ready() ) {
+		wp_send_json_error( array( 'm' => 'Ajoute d’abord la clé IA (Réglages → 🤖 IA) pour générer des messages.' ) );
+	}
+	$country = strtoupper( sanitize_text_field( wp_unslash( $_POST['country'] ?? '' ) ) );
+	$slug    = sanitize_text_field( wp_unslash( $_POST['channel'] ?? '' ) );
+	$link    = esc_url_raw( wp_unslash( $_POST['link'] ?? '' ) );
+	$countries = ag_ri_countries();
+	if ( ! isset( $countries[ $country ] ) ) { wp_send_json_error( array( 'm' => 'Pays inconnu.' ) ); }
+	$c  = $countries[ $country ];
+	$ch = null;
+	foreach ( (array) $c['channels'] as $x ) { if ( ( $x['slug'] ?? '' ) === $slug ) { $ch = $x; break; } }
+	$chan_name  = $ch['name'] ?? 'forum';
+	$chan_rules = $ch['rules'] ?? '';
+
+	$system = "Tu es un membre réel d'une communauté qui partage une opportunité de complément de revenu (programme d'ambassadeurs de l'agence web Alliance Groupe : 10% de commission à vie sur chaque site vendu, 100% en ligne, gratuit, sans avance d'argent). "
+		. "Tu écris UN message authentique, chaleureux et HUMAIN, jamais du spam. RÈGLES ABSOLUES : "
+		. "1) honnête — jamais 'argent facile garanti', 'devenez riche', ni promesse de gains certains ; parler d'opportunité et de potentiel, pas de certitude. "
+		. "2) natif du canal et du pays (ton, salutations locales). "
+		. "3) court (4 à 7 lignes), aéré, sans emojis à outrance. "
+		. "4) inclure le lien d'inscription UNE seule fois, tel quel, à la fin. "
+		. "5) varier la formulation à chaque fois (ne jamais recopier un modèle). "
+		. "Réponds UNIQUEMENT par le message, sans guillemets ni commentaire.";
+	$user = "Pays : {$c['name']}. Canal : {$chan_name}. Règles du canal à respecter : {$chan_rules}. Ton conseillé : " . ( $c['tone'] ?? '' ) . ". "
+		. "Repère de gain local pour l'exemple : " . ( $c['prime'] ?? '' ) . " par vente environ (adapte un exemple crédible). "
+		. "Lien d'inscription à inclure tel quel : {$link}";
+
+	$out = ag_ia_call( $system, $user, array(
+		'model'       => function_exists( 'ag_ia_model' ) ? ag_ia_model( 'fast' ) : null,
+		'max_tokens'  => 500,
+		'temperature' => 1.0,
+	) );
+	if ( is_wp_error( $out ) ) { wp_send_json_error( array( 'm' => $out->get_error_message() ) ); }
+	$text = trim( (string) $out );
+	if ( '' === $text ) { wp_send_json_error( array( 'm' => 'Réponse vide, réessaie.' ) ); }
+	wp_send_json_success( array( 'text' => $text ) );
 } );
 
 /* ---------------------------------------------------------------------------
@@ -324,6 +382,9 @@ if ( ! function_exists( 'ag_ri_render' ) ) {
 							<details style="margin-top:4px;"><summary style="cursor:pointer;font-size:.92em;">Message + ce lien</summary>
 								<textarea readonly rows="3" style="width:100%;margin-top:4px;" id="<?php echo $msgid; ?>"><?php echo esc_textarea( $msg_ch ); ?></textarea>
 								<button class="button button-small" type="button" onclick="(function(t){t.select();document.execCommand('copy');})(document.getElementById('<?php echo $msgid; ?>'));this.textContent='✓ Tout';setTimeout(()=>this.textContent='📋 Tout copier',1500);">📋 Tout copier</button>
+									<?php if ( function_exists( 'ag_ia_ready' ) && ag_ia_ready() ) : ?>
+									<button class="button button-small ag-ri-ai" type="button" data-country="<?php echo esc_attr( $active ); ?>" data-channel="<?php echo esc_attr( $ch['slug'] ); ?>" data-link="<?php echo esc_attr( $lk ); ?>" data-target="<?php echo $msgid; ?>" style="margin-top:4px;">🤖 IA : message unique pour ce forum</button>
+									<?php endif; ?>
 							</details>
 						</td>
 						<td>
@@ -382,6 +443,24 @@ if ( ! function_exists( 'ag_ri_render' ) ) {
 			}
 			function init(){ document.querySelectorAll('.ag-ri-qrbox').forEach(build); }
 			if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+		})();
+		</script>
+		<script>
+		(function(){
+			var N=<?php echo wp_json_encode( $nonce ); ?>, AJAX=<?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>;
+			document.querySelectorAll('.ag-ri-ai').forEach(function(btn){
+				btn.addEventListener('click',function(){
+					var ta=document.getElementById(btn.getAttribute('data-target'));
+					var old=btn.textContent; btn.disabled=true; btn.textContent='\uD83E\uDD16 Génération…';
+					var f=new FormData(); f.append('action','ag_ri_ai_generate'); f.append('_n',N);
+					f.append('country',btn.getAttribute('data-country')); f.append('channel',btn.getAttribute('data-channel')); f.append('link',btn.getAttribute('data-link'));
+					fetch(AJAX,{method:'POST',body:f,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){
+						btn.disabled=false; btn.textContent=old;
+						if(j&&j.success&&j.data&&j.data.text){ if(ta){ ta.value=j.data.text; ta.style.height='auto'; ta.style.height=Math.min(400,ta.scrollHeight+4)+'px'; } }
+						else{ alert((j&&j.data&&j.data.m)||'Erreur IA.'); }
+					}).catch(function(){ btn.disabled=false; btn.textContent=old; alert('Erreur réseau.'); });
+				});
+			});
 		})();
 		</script>
 		<?php
