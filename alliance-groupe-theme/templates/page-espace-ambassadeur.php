@@ -214,6 +214,17 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 	$ag_ref     = function_exists( 'ag_ambassadeur_ref' ) ? ag_ambassadeur_ref( $email ) : '';
 	$ag_recruit = function_exists( 'ag_ambassadeur_recruit_link' ) ? ag_ambassadeur_recruit_link( $email ) : home_url( '/ambassadeurs' );
 	$ag_team    = function_exists( 'ag_ambassadeur_override_for' ) ? ag_ambassadeur_override_for( $ag_ref ) : array( 'team' => 0, 'generated' => 0, 'paid' => 0 );
+	// Kit de partage RECRUTEMENT (viral, gratuit) : message prêt + partage 1 clic du lien parrain.
+	$ag_rpitch = 'Rejoins-moi comme ambassadeur Alliance Groupe (agence web) 💼 10% de commission à vie sur chaque site vendu, 100% en ligne, gratuit, sans avance. Tu travailles quand tu veux depuis ton téléphone. 👇';
+	$ag_rfull  = $ag_rpitch . ' ' . $ag_recruit;
+	$ag_ru = rawurlencode( $ag_recruit );
+	$ag_rt = rawurlencode( $ag_rpitch );
+	$ag_rf = rawurlencode( $ag_rfull );
+	$ag_r_wa   = 'https://wa.me/?text=' . $ag_rf;
+	$ag_r_tg   = 'https://t.me/share/url?url=' . $ag_ru . '&text=' . $ag_rt;
+	$ag_r_sms  = 'sms:?&body=' . $ag_rf;
+	$ag_r_fb   = 'https://www.facebook.com/sharer/sharer.php?u=' . $ag_ru;
+	$ag_r_mail = 'mailto:?subject=' . rawurlencode( 'Rejoins mon équipe Alliance Groupe' ) . '&body=' . $ag_rf;
 	?>
 	<section class="ag-section ag-section--graphite">
 		<div class="ag-container">
@@ -227,7 +238,31 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 				<input id="ag-recruitlink" type="text" readonly value="<?php echo esc_attr( $ag_recruit ); ?>" onclick="this.select();">
 				<button type="button" class="ag-btn-gold" id="ag-recruitcopy" onclick="navigator.clipboard.writeText(document.getElementById('ag-recruitlink').value).then(function(){var b=document.getElementById('ag-recruitcopy');b.textContent='✓ Copié';setTimeout(function(){b.textContent='Copier le lien de recrutement';},1500);});">Copier le lien de recrutement</button>
 			</div>
+			<div class="ag-share-btns" style="margin-top:14px;">
+				<a class="ag-sbtn ag-sbtn--wa"   href="<?php echo esc_url( $ag_r_wa ); ?>"   target="_blank" rel="noopener">📲 WhatsApp</a>
+				<a class="ag-sbtn ag-sbtn--tg"   href="<?php echo esc_url( $ag_r_tg ); ?>"   target="_blank" rel="noopener">✈ Telegram</a>
+				<a class="ag-sbtn ag-sbtn--sms"  href="<?php echo esc_url( $ag_r_sms ); ?>">💬 SMS</a>
+				<a class="ag-sbtn ag-sbtn--fb"   href="<?php echo esc_url( $ag_r_fb ); ?>"   target="_blank" rel="noopener">f  Facebook</a>
+				<a class="ag-sbtn ag-sbtn--mail" href="<?php echo esc_url( $ag_r_mail ); ?>">✉ Email</a>
+				<button type="button" class="ag-sbtn ag-sbtn--native" id="ag-recruit-native">⤴ Partager…</button>
+			</div>
+			<div class="ag-share-msg">
+				<div class="ag-share-msg__head">
+					<strong>Message d'invitation prêt à envoyer (WhatsApp, Telegram, contacts…)</strong>
+					<button type="button" class="ag-btn-outline" id="ag-recruit-copymsg">Copier le message</button>
+				</div>
+				<textarea id="ag-recruit-msgtext" readonly rows="3"><?php echo esc_textarea( $ag_rfull ); ?></textarea>
+			</div>
 			<p style="margin-top:14px;"><a href="<?php echo esc_url( home_url( '/studio?mode=recruit' ) ); ?>" class="ag-btn-outline">🎬 Créer des visuels de recrutement →</a></p>
+			<script>
+			(function(){
+				var link=<?php echo wp_json_encode( $ag_recruit ); ?>, pitch=<?php echo wp_json_encode( $ag_rpitch ); ?>;
+				var nb=document.getElementById('ag-recruit-native');
+				if(nb){ if(navigator.share){ nb.addEventListener('click',function(){ navigator.share({title:'Alliance Groupe',text:pitch,url:link}).catch(function(){}); }); } else { nb.style.display='none'; } }
+				var cm=document.getElementById('ag-recruit-copymsg');
+				if(cm) cm.addEventListener('click',function(){ navigator.clipboard.writeText(document.getElementById('ag-recruit-msgtext').value).then(function(){ cm.textContent='✓ Copié'; setTimeout(function(){ cm.textContent='Copier le message'; },1500); }); });
+			})();
+			</script>
 			<p class="ag-share__note">Tu es payé sur les <strong>ventes</strong> de ton équipe, jamais pour le simple recrutement (c'est la règle).</p>
 		</div>
 	</section>
