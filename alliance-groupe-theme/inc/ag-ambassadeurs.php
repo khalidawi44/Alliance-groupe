@@ -304,6 +304,17 @@ if ( ! function_exists( 'ag_ambassadeur_vente' ) ) {
 		);
 		update_option( 'ag_ambassadeur_ventes', $ventes );
 
+		// Notif téléphone (SMS + Telegram) : une vente vient d'être déclarée, à valider.
+		if ( function_exists( 'ag_push' ) ) {
+			ag_push(
+				'💰 Vente déclarée : ' . number_format( $montant, 0, ',', ' ' ) . ' €',
+				$amb_name . ' — client ' . $client . ( $activite ? ' (' . $activite . ')' : '' ) . ' · commission ' . number_format( $montant * AG_COMMISSION_RATE, 2, ',', ' ' ) . ' € · à valider dans l’admin.'
+			);
+		}
+		if ( function_exists( 'ag_activity_log' ) ) {
+			ag_activity_log( '💰 Vente déclarée : ' . $client . ' — ' . number_format( $montant, 0, ',', ' ' ) . ' € par ' . $amb_name . ' (à valider)' );
+		}
+
 		$body  = "Nouvelle vente declaree\n\n";
 		$body .= "Ambassadeur : " . ( $amb_name ? $amb_name : '(non inscrit)' ) . " <$email>\n";
 		$body .= "Client : $client\nActivite : $activite\n";
@@ -316,6 +327,21 @@ if ( ! function_exists( 'ag_ambassadeur_vente' ) ) {
 		exit;
 	}
 }
+
+// ── Notif téléphone (SMS + Telegram) : tout paiement PayPal confirmé (audit, pack, licence, zone…). ──
+// Centralisé ici : couvre TOUTES les ventes qui passent par le webhook PayPal, sans doublonner
+// les handlers métier (commissions, licences, etc.) qui, eux, ne préviennent pas Fabrice au téléphone.
+add_action( 'ag_paypal_payment_verified', function ( $amount, $email, $txn = '', $type = '', $resource = array() ) {
+	if ( ! function_exists( 'ag_push' ) ) { return; }
+	$eur = number_format( (float) $amount, 0, ',', ' ' );
+	ag_push(
+		'💰 Paiement reçu : ' . $eur . ' €',
+		'De ' . ( $email ? $email : 'client' ) . ( $type ? ' · ' . $type : '' ) . ' · encaissé. Vérifie/valide dans l’admin.'
+	);
+	if ( function_exists( 'ag_activity_log' ) ) {
+		ag_activity_log( '💰 Paiement reçu : ' . $eur . ' € (' . ( $email ? $email : '—' ) . ( $type ? ', ' . $type : '' ) . ')' );
+	}
+}, 5, 5 );
 
 /* =====================================================================
    2b. CONSULTATION SECURISEE DE LA PIECE D'IDENTITE (admin only)
