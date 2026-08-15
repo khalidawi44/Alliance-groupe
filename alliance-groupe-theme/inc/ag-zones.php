@@ -812,6 +812,21 @@ if ( ! function_exists( 'ag_zones_render' ) ) {
 				<input type="url" name="url" value="<?php echo esc_attr( get_option( 'ag_chasseur_paypal_url', '' ) ); ?>" placeholder="https://www.paypal.com/.../abonnement-19" style="width:420px;">
 				<?php submit_button( 'Enregistrer le lien', 'secondary', 'submit', false ); ?>
 			</form>
+			<?php
+			$cap_d  = max( 1, (int) get_option( 'ag_chasseur_quota_day', 20 ) );
+			$cap_m  = max( 1, (int) get_option( 'ag_chasseur_quota', 150 ) );
+			$cost_m = number_format( $cap_m * 0.04, 2, ',', ' ' );
+			$cost_d = number_format( $cap_d * 0.04, 2, ',', ' ' );
+			?>
+			<div style="background:#fff8e5;border-left:4px solid #dba617;padding:10px 14px;max-width:820px;margin-bottom:16px;">
+				<p style="margin:0 0 8px;"><strong>💰 Plafond de recherches (protège TON coût Google).</strong> Chaque ambassadeur peut chercher, mais pas au-delà de ces limites. 1 recherche ≈ 0,04 € (Google offre un palier gratuit/mois).</p>
+				<form method="post" action="<?php echo esc_url( $post ); ?>" style="margin:0;display:flex;gap:14px;align-items:end;flex-wrap:wrap;">
+					<input type="hidden" name="action" value="ag_chasseur_caps"><?php wp_nonce_field( 'ag_zone_admin', '_n' ); ?>
+					<label>Par jour / ambassadeur<br><input type="number" min="1" name="cap_day" value="<?php echo (int) $cap_d; ?>" style="width:100px;"> <small style="color:#646970;">≈ <?php echo esc_html( $cost_d ); ?> €/j max</small></label>
+					<label>Par mois / ambassadeur<br><input type="number" min="1" name="cap_month" value="<?php echo (int) $cap_m; ?>" style="width:100px;"> <small style="color:#646970;">≈ <?php echo esc_html( $cost_m ); ?> €/mois max</small></label>
+					<?php submit_button( 'Enregistrer les plafonds', 'secondary', 'submit', false ); ?>
+				</form>
+			</div>
 			<?php $amb_users = get_users( array( 'role' => 'ag_ambassadeur' ) ); if ( $amb_users ) : ?>
 			<table class="widefat striped" style="max-width:820px;"><thead><tr><th>Ambassadeur</th><th>Téléphone</th><th>Chasseur Pro</th><th></th></tr></thead><tbody>
 				<?php foreach ( $amb_users as $au ) :
@@ -1020,6 +1035,12 @@ add_action( 'admin_post_ag_chasseur_toggle', function () {
 add_action( 'admin_post_ag_chasseur_link', function () {
 	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_zone_admin' ) ) wp_die( 'no' );
 	update_option( 'ag_chasseur_paypal_url', esc_url_raw( wp_unslash( $_POST['url'] ?? '' ) ) );
+	wp_safe_redirect( admin_url( 'admin.php?page=ag-zones&zmsg=chasseur' ) ); exit;
+} );
+add_action( 'admin_post_ag_chasseur_caps', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_zone_admin' ) ) wp_die( 'no' );
+	update_option( 'ag_chasseur_quota_day', max( 1, (int) ( $_POST['cap_day'] ?? 20 ) ) );
+	update_option( 'ag_chasseur_quota', max( 1, (int) ( $_POST['cap_month'] ?? 150 ) ) );
 	wp_safe_redirect( admin_url( 'admin.php?page=ag-zones&zmsg=chasseur' ) ); exit;
 } );
 

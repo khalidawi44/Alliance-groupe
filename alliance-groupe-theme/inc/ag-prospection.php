@@ -2398,25 +2398,37 @@ if ( ! function_exists( 'ag_chasseur_activate_by_email' ) ) {
 		return true;
 	}
 }
+/** Plafonds de recherche par ambassadeur (bornent le coût Google, réglables en admin). */
+if ( ! function_exists( 'ag_chasseur_cap_day' ) ) {
+	function ag_chasseur_cap_day() { return max( 1, (int) apply_filters( 'ag_chasseur_quota_day', (int) get_option( 'ag_chasseur_quota_day', 20 ) ) ); }
+}
+if ( ! function_exists( 'ag_chasseur_cap_month' ) ) {
+	function ag_chasseur_cap_month() { return max( 1, (int) apply_filters( 'ag_chasseur_quota', (int) get_option( 'ag_chasseur_quota', 150 ) ) ); }
+}
 if ( ! function_exists( 'ag_chasseur_quota_left' ) ) {
+	/** Recherches restantes = le PLUS SERRÉ entre le plafond du jour et celui du mois. */
 	function ag_chasseur_quota_left( $uid = 0 ) {
 		$uid = $uid ?: get_current_user_id();
 		if ( user_can( $uid, 'manage_options' ) ) return 9999;
-		$cap = (int) apply_filters( 'ag_chasseur_quota', 300 );
-		return max( 0, $cap - (int) get_user_meta( $uid, 'ag_chasseur_n_' . gmdate( 'Ym' ), true ) );
+		$left_m = ag_chasseur_cap_month() - (int) get_user_meta( $uid, 'ag_chasseur_n_' . gmdate( 'Ym' ), true );
+		$left_d = ag_chasseur_cap_day()   - (int) get_user_meta( $uid, 'ag_chasseur_d_' . gmdate( 'Ymd' ), true );
+		return max( 0, min( $left_m, $left_d ) );
 	}
 }
 add_action( 'wp_ajax_ag_amb_search', function () {
 	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error( array( 'm' => 'Session expirée.' ) );
 	$uid = get_current_user_id();
 	// Prospection OUVERTE partout (tout pays). Un simple plafond mensuel borne le coût API.
-	if ( ag_chasseur_quota_left( $uid ) <= 0 ) wp_send_json_error( array( 'm' => 'Plafond de recherches du mois atteint.' ) );
+	if ( ag_chasseur_quota_left( $uid ) <= 0 ) wp_send_json_error( array( 'm' => 'Plafond de recherches atteint (jour ou mois). Réessaie demain ou préviens l’admin.' ) );
 	$email   = strtolower( wp_get_current_user()->user_email );
 	$admin   = user_can( $uid, 'manage_options' );
 	$city = sanitize_text_field( wp_unslash( $_POST['city'] ?? '' ) );
 	if ( '' === $city ) wp_send_json_error( array( 'm' => 'Indique une ville ou un secteur (ex : « massage Nantes »).' ) );
 	$res = ag_places_search( $city );
-	if ( ! $admin ) update_user_meta( $uid, 'ag_chasseur_n_' . gmdate( 'Ym' ), (int) get_user_meta( $uid, 'ag_chasseur_n_' . gmdate( 'Ym' ), true ) + 1 );
+	if ( ! $admin ) {
+		update_user_meta( $uid, 'ag_chasseur_n_' . gmdate( 'Ym' ), (int) get_user_meta( $uid, 'ag_chasseur_n_' . gmdate( 'Ym' ), true ) + 1 );
+		update_user_meta( $uid, 'ag_chasseur_d_' . gmdate( 'Ymd' ), (int) get_user_meta( $uid, 'ag_chasseur_d_' . gmdate( 'Ymd' ), true ) + 1 );
+	}
 	if ( ! is_array( $res ) || isset( $res['error'] ) ) wp_send_json_error( array( 'm' => ( $res['error'] ?? 'Erreur recherche.' ) ) );
 	$out = array(); $locked_out = 0;
 	foreach ( $res as $r ) {
