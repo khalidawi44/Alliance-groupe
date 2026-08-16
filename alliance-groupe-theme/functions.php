@@ -374,6 +374,18 @@ if ( file_exists( $ag_merchant_feed_file ) ) {
     require_once $ag_merchant_feed_file;
 }
 
+// ── 1c6d-bis. Flux produits Meta (Facebook/Instagram) : /meta-catalog-feed.xml
+$ag_meta_feed_file = get_stylesheet_directory() . '/inc/ag-meta-feed.php';
+if ( file_exists( $ag_meta_feed_file ) ) {
+    require_once $ag_meta_feed_file;
+}
+
+// ── 1c6d-ter. Pixel Meta (Facebook/Instagram) avec Consent Mode RGPD
+$ag_meta_pixel_file = get_stylesheet_directory() . '/inc/ag-meta-pixel.php';
+if ( file_exists( $ag_meta_pixel_file ) ) {
+    require_once $ag_meta_pixel_file;
+}
+
 // ── 1c6e. Google Avis clients (badge + opt-in enquête sur /merci-achat)
 $ag_google_reviews_file = get_stylesheet_directory() . '/inc/ag-google-reviews.php';
 if ( file_exists( $ag_google_reviews_file ) ) {

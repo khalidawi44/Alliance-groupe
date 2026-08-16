@@ -1,0 +1,5 @@
+# Les fichiers de verrouillage sont verifies par sha256sum (msys) :
+# ils DOIVENT rester en fins de ligne Unix, sinon le hook pre-commit
+# echoue avec "FAILED open or read" sur chaque fichier.
+*.sha256 -text
+.LOCK.sha256 -text
