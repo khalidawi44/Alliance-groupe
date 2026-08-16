@@ -67,7 +67,8 @@ function ag_meta_extra_products() {
 	}
 
 	/* Zone ambassadeur supplémentaire ────────────────────────────────── */
-	$zone = (int) apply_filters( 'ag_zone_price', get_option( 'ag_zone_price', 49 ) );
+	// Prix réel configuré dans Ambassadeurs → Zones (helper existant du thème).
+	$zone = function_exists( 'ag_zone_price' ) ? (float) ag_zone_price() : (float) get_option( 'ag_zone_price', 49 );
 	$items[] = array(
 		'id'           => 'zone-ambassadeur',
 		'title'        => 'Zone ambassadeur supplémentaire',
@@ -123,6 +124,10 @@ add_action( 'template_redirect', function () {
 		echo '<g:price>' . $x( $p['price'] ) . "</g:price>\n";
 		echo '<g:brand>' . $x( get_bloginfo( 'name' ) ) . "</g:brand>\n";
 		echo '<g:product_type>' . $x( $type ) . "</g:product_type>\n";
+		// Meta signale un avertissement d'import sans catégorie produit.
+		$cat = ! empty( $p['category'] ) ? $p['category'] : 'Software &gt; Computer Software';
+		echo '<g:google_product_category>' . $cat . "</g:google_product_category>\n";
+		echo '<g:identifier_exists>no</g:identifier_exists>' . "\n";
 		echo "</item>\n";
 	}
 

@@ -117,10 +117,12 @@ if ( ! function_exists( 'ag_meta_pixel_view_content' ) ) {
 		$path = trim( (string) wp_parse_url( add_query_arg( array() ), PHP_URL_PATH ), '/' );
 		$path = strtolower( $path );
 
+		$zone = function_exists( 'ag_zone_price' ) ? (float) ag_zone_price() : (float) get_option( 'ag_zone_price', 49 );
+
 		$map = array(
 			'sites-express'         => array( array( 'express-essentiel', 'express-pro', 'express-boutique' ), 490 ),
 			'maintenance'           => array( array( 'maintenance-serenite', 'maintenance-croissance', 'maintenance-performance' ), 29 ),
-			'ambassadeurs'          => array( array( 'zone-ambassadeur' ), 49 ),
+			'ambassadeurs'          => array( array( 'zone-ambassadeur' ), $zone ),
 			'wordpress-avocat'      => array( array( 'tpl-premium-avocat' ), 69 ),
 			'wordpress-restaurant'  => array( array( 'tpl-premium-restaurant' ), 69 ),
 			'wordpress-artisan'     => array( array( 'tpl-premium-artisan' ), 69 ),
