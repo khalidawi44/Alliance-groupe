@@ -120,3 +120,6 @@ __pycache__/
 
 # Rendu vidéo temporaire
 tools/ads-videos/_seg/
+
+# Dossier local prive (jamais publie)
+_local-prive/
