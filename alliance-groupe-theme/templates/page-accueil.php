@@ -22,18 +22,24 @@ $packs = array(
 );
 $marquee = array( 'Sites sécurisés', 'Propulsé par l\'IA', 'SEO Google', 'De Naples à Nantes', 'Un seul interlocuteur', 'Livré en 5 jours', 'Design sur-mesure', 'Audit gratuit' );
 $chapters = array(
-	array( 'n' => '01', 't' => 'Un artisan, pas une usine', 'p' => 'De Naples à Nantes, un seul interlocuteur — du conseil à la livraison. Vous parlez directement à la personne qui fait le travail.', 'img' => 'cities/naples-1.jpg' ),
-	array( 'n' => '02', 't' => 'La sécurité, incluse', 'p' => 'Chaque site est livré sécurisé — rare chez les agences classiques. On commence toujours par un audit gratuit, pour partir sur des bases saines.', 'img' => 'cities/naples-2.jpg' ),
-	array( 'n' => '03', 't' => 'Propulsé par l\'IA', 'p' => 'Devis en 30 secondes, maquette régénérée, contenu créé : l\'IA fait le gros du travail, vous gardez le contrôle et le style.', 'img' => 'cities/naples-3.jpg' ),
+	array( 'n' => '01', 't' => 'Un artisan, pas une usine', 'p' => 'De Naples à Nantes, un seul interlocuteur — du conseil à la livraison. Vous parlez directement à la personne qui fait le travail.', 'img' => 'team/fabrizio-nantes.jpg' ),
+	array( 'n' => '02', 't' => 'La sécurité, incluse', 'p' => 'Chaque site est livré sécurisé — rare chez les agences classiques. On commence toujours par un audit gratuit, pour partir sur des bases saines.', 'img' => 'securite/nantes-cyber.jpg' ),
+	array( 'n' => '03', 't' => 'Propulsé par l\'IA', 'p' => 'Devis en 30 secondes, maquette régénérée, contenu créé : l\'IA fait le gros du travail, vous gardez le contrôle et le style.', 'img' => 'atelier/ia.webp' ),
 );
 ?>
 <style>
 .ag-lm{--gold:#d4b45c;--gold2:#f4d06f;background:#05050a;color:#eef1f6;overflow-x:hidden;}
 .ag-lm *{box-sizing:border-box;}
 /* HERO */
-.ag-lm__hero{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 20px 60px;overflow:hidden;}
-.ag-lm__hv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 18%;z-index:0;animation:agKen 18s ease-in-out infinite alternate;}
-@keyframes agKen{from{transform:scale(1)}to{transform:scale(1.08)}}
+.ag-lm__hero{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:92px 20px 60px;overflow:hidden;}
+/* Fond cinématique flou (remplit toute la largeur, pas de bandes noires) */
+.ag-lm__hbg{position:absolute;inset:0;z-index:0;overflow:hidden;}
+.ag-lm__hbg img{width:100%;height:100%;object-fit:cover;object-position:center;filter:blur(34px) brightness(.4) saturate(1.15);transform:scale(1.18);}
+/* Scène portrait : l'égérie s'affiche EN ENTIER (vidéo 9:16 = cadre 9:16, aucun rognage) */
+.ag-lm__stage{position:relative;z-index:2;width:min(94vw,460px);aspect-ratio:9/16;max-height:84vh;border-radius:26px;overflow:hidden;box-shadow:0 46px 130px -34px rgba(0,0,0,.92),0 0 0 1px rgba(212,180,92,.3);}
+.ag-lm__hv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;animation:agKen 20s ease-in-out infinite alternate;}
+@keyframes agKen{from{transform:scale(1)}to{transform:scale(1.06)}}
+.ag-lm__sgrad{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(5,5,10,.6),rgba(5,5,10,0) 24%,rgba(5,5,10,0) 44%,rgba(5,5,10,.95));}
 /* Badges flottants (volent + tournoient + parallaxe souris) */
 .ag-lm__float{position:absolute;inset:0;z-index:2;pointer-events:none;}
 .ag-lm__cw{position:absolute;will-change:transform;transition:transform .25s ease-out;}
@@ -48,14 +54,17 @@ $chapters = array(
 .ag-lm__cw--4 .ag-lm__chip{animation:agFlA 12s ease-in-out infinite reverse;}
 @keyframes agFlA{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-22px) rotate(6deg)}}
 @keyframes agFlB{0%,100%{transform:translateY(0) rotate(4deg)}50%{transform:translateY(-16px) rotate(-6deg)}}
-.ag-lm__veil{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(5,5,10,.55),rgba(5,5,10,.35) 40%,rgba(5,5,10,.9));}
-.ag-lm__hin{position:relative;z-index:2;max-width:900px;}
-.ag-lm__brand{display:inline-flex;align-items:center;gap:12px;margin-bottom:22px;}
-.ag-lm__brand img{height:52px;width:auto;}
-.ag-lm__eyebrow{letter-spacing:.34em;text-transform:uppercase;font-size:.78rem;color:var(--gold);font-weight:700;}
-.ag-lm__h1{font-size:clamp(2.1rem,6vw,4.4rem);line-height:1.05;font-weight:800;margin:.2em 0 .5em;text-wrap:balance;}
+/* En-tête marque (haut de la scène) */
+.ag-lm__htop{position:absolute;z-index:3;top:0;left:0;right:0;padding:18px 20px;display:flex;align-items:center;gap:10px;}
+.ag-lm__htop img{height:40px;width:auto;}
+.ag-lm__htop .ag-lm__eyebrow{margin-left:2px;}
+/* Texte (bas de la scène) */
+.ag-lm__hin{position:absolute;z-index:3;left:0;right:0;bottom:0;padding:24px 22px 28px;text-align:center;}
+.ag-lm__brand{display:none;}
+.ag-lm__eyebrow{letter-spacing:.3em;text-transform:uppercase;font-size:.72rem;color:var(--gold);font-weight:700;}
+.ag-lm__h1{font-size:clamp(1.5rem,4.8vw,2.3rem);line-height:1.08;font-weight:800;margin:.35em 0 .5em;text-wrap:balance;text-shadow:0 2px 20px rgba(0,0,0,.7);}
 .ag-lm__h1 em{font-style:normal;color:var(--gold2);}
-.ag-lm__hsub{color:#c7cede;font-size:clamp(1rem,2.4vw,1.25rem);max-width:60ch;margin:0 auto 30px;line-height:1.55;}
+.ag-lm__hsub{color:#dbe1ee;font-size:clamp(.9rem,2.4vw,1rem);max-width:42ch;margin:0 auto 20px;line-height:1.5;text-shadow:0 1px 12px rgba(0,0,0,.7);}
 .ag-lm__cta{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;}
 .ag-btnp{background:linear-gradient(120deg,var(--gold),var(--gold2));color:#1a1206;font-weight:800;text-decoration:none;border:0;cursor:pointer;border-radius:100px;padding:15px 30px;font-size:1rem;box-shadow:0 12px 40px -12px rgba(212,180,92,.7);transition:transform .2s;}
 .ag-btnp:hover{transform:translateY(-2px);}
@@ -122,25 +131,35 @@ $chapters = array(
 
 	<!-- HERO ÉGÉRIE -->
 	<section class="ag-lm__hero">
-		<video class="ag-lm__hv" muted loop playsinline autoplay preload="metadata"
-		       poster="<?php echo esc_url( $dir . '/assets/images/cities/baie_naples_nuit.jpg' ); ?>">
-			<source src="<?php echo esc_url( $dir . '/assets/videos/egerie-naples.mp4' ); ?>" type="video/mp4">
-		</video>
-		<div class="ag-lm__veil"></div>
+		<!-- Fond flou plein cadre (aucune bande noire) -->
+		<div class="ag-lm__hbg" aria-hidden="true">
+			<img src="<?php echo esc_url( $dir . '/assets/images/cities/baie_naples_nuit.jpg' ); ?>" alt="">
+		</div>
+		<!-- Badges flottants autour de la scène -->
 		<div class="ag-lm__float" aria-hidden="true">
 			<span class="ag-lm__cw ag-lm__cw--1" data-depth="26"><span class="ag-lm__chip">🔒 Sécurité incluse</span></span>
 			<span class="ag-lm__cw ag-lm__cw--2" data-depth="40"><span class="ag-lm__chip">🤖 Devis en 30 s</span></span>
 			<span class="ag-lm__cw ag-lm__cw--3" data-depth="32"><span class="ag-lm__chip">📈 SEO Google</span></span>
 			<span class="ag-lm__cw ag-lm__cw--4" data-depth="48"><span class="ag-lm__chip">🇮🇹 De Naples à Nantes</span></span>
 		</div>
-		<div class="ag-lm__hin">
-			<span class="ag-lm__brand"><img src="<?php echo esc_url( $dir . '/assets/images/logo-header.png' ); ?>" alt="Alliance Groupe"></span>
-			<div class="ag-lm__eyebrow">De Naples à Nantes</div>
-			<h1 class="ag-lm__h1">Je crée &amp; <em>sécurise</em> votre site web,<br>propulsé par l'<em>IA</em>.</h1>
-			<p class="ag-lm__hsub">Studio indépendant : un seul interlocuteur, du conseil à la livraison. Des sites premium, rapides et sécurisés — dès 490 €.</p>
-			<div class="ag-lm__cta">
-				<button type="button" class="ag-btnp" data-devis>🚀 Lancer mon projet</button>
-				<a class="ag-btno" href="#offres">Voir les offres</a>
+		<!-- Scène portrait : l'égérie en entier -->
+		<div class="ag-lm__stage">
+			<video class="ag-lm__hv" muted loop playsinline autoplay preload="metadata"
+			       poster="<?php echo esc_url( $dir . '/assets/images/cities/baie_naples_nuit.jpg' ); ?>">
+				<source src="<?php echo esc_url( $dir . '/assets/videos/egerie-naples.mp4' ); ?>" type="video/mp4">
+			</video>
+			<div class="ag-lm__sgrad"></div>
+			<div class="ag-lm__htop">
+				<img src="<?php echo esc_url( $dir . '/assets/images/logo-header.png' ); ?>" alt="Alliance Groupe">
+				<span class="ag-lm__eyebrow">De Naples à Nantes</span>
+			</div>
+			<div class="ag-lm__hin">
+				<h1 class="ag-lm__h1">Je crée &amp; <em>sécurise</em> votre site,<br>propulsé par l'<em>IA</em>.</h1>
+				<p class="ag-lm__hsub">Un seul interlocuteur, du conseil à la livraison. Des sites premium, rapides et sécurisés — dès 490 €.</p>
+				<div class="ag-lm__cta">
+					<button type="button" class="ag-btnp" data-devis>🚀 Lancer mon projet</button>
+					<a class="ag-btno" href="#offres">Voir les offres</a>
+				</div>
 			</div>
 		</div>
 		<div class="ag-lm__scroll">SCROLLEZ ↓</div>
