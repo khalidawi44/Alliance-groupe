@@ -66,6 +66,7 @@
     <div class="toolbar"><button onclick="copyAll()">📋 Tout copier</button><button onclick="window.print()">🖨️ Imprimer / PDF</button></div>
     <h2>① Route à suivre (dans l'ordre)</h2>
     <p class="sub" style="margin-top:-4px">Sous chaque commande : colle la sortie → <b>« Analyser »</b> → l'assistant lit ce que tu as trouvé et débloque la suite adaptée.</p>
+    <p class="sub" style="margin-top:-8px;color:#f59e0b">⚠️ Anti-ban : ffuf/wpscan en rafale font bannir ton IP (Wordfence/hébergeur). Les commandes ici sont déjà <b>bridées</b> (débit lent). Sur une prod fragile, ralentis encore.</p>
     <div id="steps"></div>
 
     <div id="extract" class="panel hidden">
@@ -172,8 +173,8 @@ recon:[
  {t:"Versions réelles (si CMS)", c:`curl -s -A "Mozilla/5.0" ${U}/ | grep -oE "(plugins|themes|assets)/[a-z0-9-]+/[^\\"']*ver=[0-9][0-9.]*" | sort -u`, e:`Versions dans le code = failles connues (CVE) applicables.`}
 ],
 disco:[
- {t:"Brute des chemins (ffuf)", c:`ffuf -u ${U}/FUZZ -w /usr/share/wordlists/dirb/common.txt -mc 200,204,301,302,307,401,403 -t 40`, e:`Trouve pages/API cachées. 403 = existe mais protégé (à creuser). 401 = auth requise.`},
- {t:"Extensions utiles", c:`ffuf -u ${U}/FUZZ -w /usr/share/wordlists/dirb/common.txt -e .php,.bak,.old,.txt,.zip,.sql -mc 200 -t 40`, e:`.bak/.old/.sql/.zip = sauvegardes/code source exposés (souvent jackpot).`},
+ {t:"Brute des chemins (ffuf) — mode discret", c:`ffuf -u ${U}/FUZZ -w /usr/share/wordlists/dirb/common.txt -mc 200,204,301,302,307,401,403 -t 5 -rate 20`, e:`Trouve pages/API cachées. <b>-t 5 -rate 20 = discret</b> (évite le ban Wordfence/hébergeur). 403 = existe mais protégé. Sur prod fragile, baisse encore : <code>-rate 8</code>.`},
+ {t:"Extensions utiles (discret)", c:`ffuf -u ${U}/FUZZ -w /usr/share/wordlists/dirb/common.txt -e .php,.bak,.old,.txt,.zip,.sql -mc 200 -t 5 -rate 20`, e:`.bak/.old/.sql/.zip = sauvegardes/code source exposés (souvent jackpot). Rythme bridé pour ne pas se faire bannir.`},
  {t:"Endpoints dans le JS", c:`curl -s ${U}/ | grep -oE 'src="[^"]+\\.js"' ; echo "→ puis analyser chaque .js (routes /api, clés)"`, e:`Le JS des SPA expose des routes d'API non listées ailleurs.`}
 ],
 infra:[
@@ -384,7 +385,7 @@ function scan(t){
     report:{type:'info'}, unlock:null};
   // WordPress détecté
   if(/wordpress/i.test(t)) return {cls:'ok',msg:'🧩 WordPress détecté → énumère comptes + plugins vulnérables.',
-    follow:[{t:'Énumérer WordPress (wpscan)',c:'wpscan --url '+U+' --enumerate u,vp,vt --random-user-agent',e:'Comptes + plugins/thèmes à CVE.'},
+    follow:[{t:'Énumérer WordPress (wpscan, discret)',c:'wpscan --url '+U+' --enumerate u,vp,vt --stealthy --throttle 800 --random-user-agent',e:'Comptes + plugins/thèmes à CVE. --stealthy + --throttle 800 (0,8s entre requêtes) = évite le ban Wordfence/hébergeur.'},
             {t:'Comptes via REST',c:'curl -s '+U+'/wp-json/wp/v2/users',e:'Fuite de comptes fréquente.'}],
     report:null, unlock:null};
   // chemins trouvés (ffuf / codes HTTP)
