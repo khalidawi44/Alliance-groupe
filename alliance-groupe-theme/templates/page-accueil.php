@@ -31,18 +31,22 @@ $chapters = array(
 .ag-lm{--gold:#d4b45c;--gold2:#f4d06f;background:#05050a;color:#eef1f6;overflow-x:hidden;}
 .ag-lm *{box-sizing:border-box;}
 /* HERO */
-.ag-lm__hero{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;padding:90px 20px 72px;overflow:hidden;}
-/* Vidéo égérie PLEIN CADRE (bord à bord, remplit tout l'écran) */
-.ag-lm__hv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 28%;z-index:0;animation:agKen 22s ease-in-out infinite alternate;}
-@keyframes agKen{from{transform:scale(1)}to{transform:scale(1.06)}}
-.ag-lm__sgrad{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(5,5,10,.5),rgba(5,5,10,.12) 32%,rgba(5,5,10,.2) 55%,rgba(5,5,10,.94));}
+.ag-lm__hero{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;}
+/* Fond Naples FIXE (baie + Vésuve) */
+.ag-lm__hbg{position:absolute;inset:0;z-index:0;}
+.ag-lm__hbg img{width:100%;height:100%;object-fit:cover;object-position:center 40%;}
+.ag-lm__sgrad{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(5,5,10,.45),rgba(5,5,10,.08) 26%,rgba(5,5,10,.35) 66%,rgba(5,5,10,.95)),radial-gradient(115% 85% at 26% 55%,transparent 40%,rgba(5,5,10,.5));}
+/* Égérie DÉTOURÉE, séparée du fond, posée devant */
+.ag-lm__egerie{position:absolute;z-index:2;right:clamp(-10px,3vw,90px);bottom:0;height:min(94vh,1080px);display:block;pointer-events:none;animation:agEgIn 1s ease .1s both;}
+.ag-lm__egerie img{height:100%;width:auto;display:block;filter:drop-shadow(0 24px 55px rgba(0,0,0,.6));}
+@keyframes agEgIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 /* Badges flottants (volent + tournoient + parallaxe souris) */
 .ag-lm__float{position:absolute;inset:0;z-index:2;pointer-events:none;}
 .ag-lm__cw{position:absolute;will-change:transform;transition:transform .25s ease-out;}
-.ag-lm__cw--1{top:15%;left:6%;}
-.ag-lm__cw--2{top:24%;right:7%;}
-.ag-lm__cw--3{bottom:27%;left:9%;}
-.ag-lm__cw--4{bottom:19%;right:6%;}
+.ag-lm__cw--1{top:16%;left:5%;}
+.ag-lm__cw--2{top:12%;left:33%;}
+.ag-lm__cw--3{top:30%;left:14%;}
+.ag-lm__cw--4{top:26%;left:44%;}
 .ag-lm__chip{display:inline-flex;align-items:center;gap:8px;background:rgba(14,14,22,.55);border:1px solid rgba(212,180,92,.55);color:var(--gold2);font-weight:700;font-size:.95rem;padding:10px 16px;border-radius:100px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 12px 34px -12px rgba(0,0,0,.7);white-space:nowrap;}
 .ag-lm__cw--1 .ag-lm__chip{animation:agFlA 9s ease-in-out infinite;}
 .ag-lm__cw--2 .ag-lm__chip{animation:agFlB 11s ease-in-out infinite;}
@@ -54,14 +58,14 @@ $chapters = array(
 .ag-lm__htop{position:absolute;z-index:3;top:0;left:0;right:0;padding:22px 26px;display:flex;align-items:center;gap:12px;}
 .ag-lm__htop img{height:46px;width:auto;}
 .ag-lm__htop .ag-lm__eyebrow{margin-left:2px;}
-/* Bloc texte (bas de page, sur le dégradé) */
-.ag-lm__hin{position:relative;z-index:3;max-width:820px;margin:0 auto;}
+/* Bloc texte (bas gauche, devant le fond, à côté de l'égérie) */
+.ag-lm__hin{position:relative;z-index:3;max-width:600px;margin:0;padding:0 24px clamp(46px,8vh,92px) clamp(22px,6vw,80px);text-align:left;}
 .ag-lm__brand{display:none;}
 .ag-lm__eyebrow{letter-spacing:.32em;text-transform:uppercase;font-size:.76rem;color:var(--gold);font-weight:700;}
-.ag-lm__h1{font-size:clamp(2rem,5.6vw,4rem);line-height:1.06;font-weight:800;margin:.3em 0 .5em;text-wrap:balance;text-shadow:0 2px 24px rgba(0,0,0,.75);}
+.ag-lm__h1{font-size:clamp(2rem,5.2vw,3.8rem);line-height:1.06;font-weight:800;margin:.3em 0 .5em;text-wrap:balance;text-shadow:0 2px 24px rgba(0,0,0,.8);}
 .ag-lm__h1 em{font-style:normal;color:var(--gold2);}
-.ag-lm__hsub{color:#dbe1ee;font-size:clamp(.98rem,2.4vw,1.2rem);max-width:56ch;margin:0 auto 26px;line-height:1.5;text-shadow:0 1px 14px rgba(0,0,0,.75);}
-.ag-lm__cta{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;}
+.ag-lm__hsub{color:#dbe1ee;font-size:clamp(.98rem,2.4vw,1.2rem);max-width:46ch;margin:0 0 26px;line-height:1.5;text-shadow:0 1px 14px rgba(0,0,0,.8);}
+.ag-lm__cta{display:flex;flex-wrap:wrap;gap:14px;justify-content:flex-start;}
 .ag-btnp{background:linear-gradient(120deg,var(--gold),var(--gold2));color:#1a1206;font-weight:800;text-decoration:none;border:0;cursor:pointer;border-radius:100px;padding:15px 30px;font-size:1rem;box-shadow:0 12px 40px -12px rgba(212,180,92,.7);transition:transform .2s;}
 .ag-btnp:hover{transform:translateY(-2px);}
 .ag-btno{background:rgba(255,255,255,.06);color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.2);border-radius:100px;padding:15px 28px;font-weight:700;font-size:1rem;transition:.2s;}
@@ -119,19 +123,25 @@ $chapters = array(
 .ag-lm__cta .ag-btnp{animation:agBtnFloat 4.5s ease-in-out infinite;}
 @keyframes agBtnFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .ag-lm__cta .ag-btnp:hover{transform:translateY(-4px) rotate(-1.5deg) scale(1.03);}
-@media(max-width:760px){.ag-lm__chap{grid-template-columns:1fr}.ag-lm__chap:nth-child(even) .ag-lm__chtext{order:0}.ag-lm__float{display:none}}
-@media(prefers-reduced-motion:reduce){.ag-lm__hv{animation:none}.ag-lm__cw .ag-lm__chip,.ag-lm__cta .ag-btnp{animation:none}}
+@media(max-width:900px){.ag-lm__egerie{height:min(80vh,860px);right:50%;transform:translateX(50%)}.ag-lm__hin{text-align:center;max-width:none;margin:0 auto;padding-bottom:34px}.ag-lm__cta{justify-content:center}.ag-lm__hsub{margin-left:auto;margin-right:auto}}
+@media(max-width:760px){.ag-lm__chap{grid-template-columns:1fr}.ag-lm__chap:nth-child(even) .ag-lm__chtext{order:0}.ag-lm__float{display:none}.ag-lm__egerie{height:70vh;opacity:.98}}
+@media(prefers-reduced-motion:reduce){.ag-lm__cw .ag-lm__chip,.ag-lm__cta .ag-btnp,.ag-lm__egerie{animation:none}}
 </style>
 
 <main class="ag-lm" id="ag-main-content">
 
-	<!-- HERO ÉGÉRIE — PLEIN CADRE -->
+	<!-- HERO ÉGÉRIE — fond Naples fixe + égérie détourée séparée -->
 	<section class="ag-lm__hero">
-		<video class="ag-lm__hv" muted loop playsinline autoplay preload="metadata"
-		       poster="<?php echo esc_url( $dir . '/assets/images/cities/baie_naples_nuit.jpg' ); ?>">
-			<source src="<?php echo esc_url( $dir . '/assets/videos/egerie-naples.mp4' ); ?>" type="video/mp4">
-		</video>
+		<!-- Fond Naples FIXE -->
+		<div class="ag-lm__hbg" aria-hidden="true">
+			<img src="<?php echo esc_url( $dir . '/assets/images/cities/baie_naples_nuit.jpg' ); ?>" alt="Baie de Naples">
+		</div>
 		<div class="ag-lm__sgrad"></div>
+		<!-- Égérie détourée (posée devant le fond) -->
+		<picture class="ag-lm__egerie">
+			<source srcset="<?php echo esc_url( $dir . '/assets/images/egerie/egerie-cutout.webp' ); ?>" type="image/webp">
+			<img src="<?php echo esc_url( $dir . '/assets/images/egerie/egerie-cutout.png' ); ?>" alt="Égérie Alliance Groupe" fetchpriority="high">
+		</picture>
 		<!-- Marque (coin haut gauche) -->
 		<div class="ag-lm__htop">
 			<img src="<?php echo esc_url( $dir . '/assets/images/logo-header.png' ); ?>" alt="Alliance Groupe">
@@ -144,7 +154,7 @@ $chapters = array(
 			<span class="ag-lm__cw ag-lm__cw--3" data-depth="32"><span class="ag-lm__chip">📈 SEO Google</span></span>
 			<span class="ag-lm__cw ag-lm__cw--4" data-depth="48"><span class="ag-lm__chip">🇮🇹 De Naples à Nantes</span></span>
 		</div>
-		<!-- Texte (bas de page) -->
+		<!-- Texte (bas gauche) -->
 		<div class="ag-lm__hin">
 			<h1 class="ag-lm__h1">Je crée &amp; <em>sécurise</em> votre site,<br>propulsé par l'<em>IA</em>.</h1>
 			<p class="ag-lm__hsub">Un seul interlocuteur, du conseil à la livraison. Des sites premium, rapides et sécurisés — dès 490 €.</p>
