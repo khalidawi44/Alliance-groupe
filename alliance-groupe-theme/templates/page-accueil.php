@@ -32,7 +32,22 @@ $chapters = array(
 .ag-lm *{box-sizing:border-box;}
 /* HERO */
 .ag-lm__hero{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 20px 60px;overflow:hidden;}
-.ag-lm__hv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;}
+.ag-lm__hv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 18%;z-index:0;animation:agKen 18s ease-in-out infinite alternate;}
+@keyframes agKen{from{transform:scale(1)}to{transform:scale(1.08)}}
+/* Badges flottants (volent + tournoient + parallaxe souris) */
+.ag-lm__float{position:absolute;inset:0;z-index:2;pointer-events:none;}
+.ag-lm__cw{position:absolute;will-change:transform;transition:transform .25s ease-out;}
+.ag-lm__cw--1{top:15%;left:6%;}
+.ag-lm__cw--2{top:24%;right:7%;}
+.ag-lm__cw--3{bottom:27%;left:9%;}
+.ag-lm__cw--4{bottom:19%;right:6%;}
+.ag-lm__chip{display:inline-flex;align-items:center;gap:8px;background:rgba(14,14,22,.55);border:1px solid rgba(212,180,92,.55);color:var(--gold2);font-weight:700;font-size:.95rem;padding:10px 16px;border-radius:100px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 12px 34px -12px rgba(0,0,0,.7);white-space:nowrap;}
+.ag-lm__cw--1 .ag-lm__chip{animation:agFlA 9s ease-in-out infinite;}
+.ag-lm__cw--2 .ag-lm__chip{animation:agFlB 11s ease-in-out infinite;}
+.ag-lm__cw--3 .ag-lm__chip{animation:agFlB 10s ease-in-out infinite reverse;}
+.ag-lm__cw--4 .ag-lm__chip{animation:agFlA 12s ease-in-out infinite reverse;}
+@keyframes agFlA{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-22px) rotate(6deg)}}
+@keyframes agFlB{0%,100%{transform:translateY(0) rotate(4deg)}50%{transform:translateY(-16px) rotate(-6deg)}}
 .ag-lm__veil{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(5,5,10,.55),rgba(5,5,10,.35) 40%,rgba(5,5,10,.9));}
 .ag-lm__hin{position:relative;z-index:2;max-width:900px;}
 .ag-lm__brand{display:inline-flex;align-items:center;gap:12px;margin-bottom:22px;}
@@ -95,7 +110,12 @@ $chapters = array(
 .ag-md__form input::placeholder{color:rgba(255,255,255,.55);}
 .ag-md__or{text-align:center;color:#7a8296;font-size:.85rem;margin:10px 0;}
 @media(prefers-reduced-motion:reduce){.ag-rv{opacity:1;transform:none}.ag-lm__mqin{animation:none}.ag-lm__scroll{animation:none}}
-@media(max-width:760px){.ag-lm__chap{grid-template-columns:1fr}.ag-lm__chap:nth-child(even) .ag-lm__chtext{order:0}}
+.ag-btnp,.ag-btno{will-change:transform;}
+.ag-lm__cta .ag-btnp{animation:agBtnFloat 4.5s ease-in-out infinite;}
+@keyframes agBtnFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.ag-lm__cta .ag-btnp:hover{transform:translateY(-4px) rotate(-1.5deg) scale(1.03);}
+@media(max-width:760px){.ag-lm__chap{grid-template-columns:1fr}.ag-lm__chap:nth-child(even) .ag-lm__chtext{order:0}.ag-lm__float{display:none}}
+@media(prefers-reduced-motion:reduce){.ag-lm__hv{animation:none}.ag-lm__cw .ag-lm__chip,.ag-lm__cta .ag-btnp{animation:none}}
 </style>
 
 <main class="ag-lm" id="ag-main-content">
@@ -107,6 +127,12 @@ $chapters = array(
 			<source src="<?php echo esc_url( $dir . '/assets/videos/egerie-naples.mp4' ); ?>" type="video/mp4">
 		</video>
 		<div class="ag-lm__veil"></div>
+		<div class="ag-lm__float" aria-hidden="true">
+			<span class="ag-lm__cw ag-lm__cw--1" data-depth="26"><span class="ag-lm__chip">🔒 Sécurité incluse</span></span>
+			<span class="ag-lm__cw ag-lm__cw--2" data-depth="40"><span class="ag-lm__chip">🤖 Devis en 30 s</span></span>
+			<span class="ag-lm__cw ag-lm__cw--3" data-depth="32"><span class="ag-lm__chip">📈 SEO Google</span></span>
+			<span class="ag-lm__cw ag-lm__cw--4" data-depth="48"><span class="ag-lm__chip">🇮🇹 De Naples à Nantes</span></span>
+		</div>
 		<div class="ag-lm__hin">
 			<span class="ag-lm__brand"><img src="<?php echo esc_url( $dir . '/assets/images/logo-header.png' ); ?>" alt="Alliance Groupe"></span>
 			<div class="ag-lm__eyebrow">De Naples à Nantes</div>
@@ -198,6 +224,17 @@ $chapters = array(
 		var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); }, {threshold:.14});
 		rv.forEach(function(el){ io.observe(el); });
 	} else { rv.forEach(function(el){ el.classList.add('in'); }); }
+	// Parallaxe souris sur les badges flottants
+	var hero = document.querySelector('.ag-lm__hero');
+	var cws  = [].slice.call(document.querySelectorAll('.ag-lm__cw'));
+	if(hero && cws.length && window.matchMedia && window.matchMedia('(pointer:fine)').matches){
+		hero.addEventListener('mousemove', function(e){
+			var r = hero.getBoundingClientRect();
+			var x = (e.clientX - r.left)/r.width - .5, y = (e.clientY - r.top)/r.height - .5;
+			cws.forEach(function(c){ var d = parseFloat(c.getAttribute('data-depth'))||24; c.style.transform = 'translate('+(x*d)+'px,'+(y*d)+'px)'; });
+		});
+		hero.addEventListener('mouseleave', function(){ cws.forEach(function(c){ c.style.transform=''; }); });
+	}
 	var md = document.getElementById('ag-devis-modal');
 	function open(){ md.classList.add('open'); document.body.style.overflow='hidden'; var i=md.querySelector('input[name=site_url]'); if(i) setTimeout(function(){i.focus();},80); }
 	function close(){ md.classList.remove('open'); document.body.style.overflow=''; }

@@ -34,6 +34,16 @@ $filters = array(
 	'creer'    => '🌐 Créer',
 	'securite' => '🔒 Sécurité',
 );
+$icons = array(
+	'Devis instantané'    => '🧾',
+	'Refais mon site'     => '🎨',
+	'Fait par l\'IA'      => '⚡',
+	'Studio créatif'      => '🎬',
+	'Création de sites'   => '🌐',
+	'Audit de sécurité'   => '🔒',
+	'Composants web'      => '🧩',
+	'Templates WordPress' => '🎁',
+);
 ?>
 <style>
 .ag-atl{--gold:#d4b45c;--gold2:#f4d06f;position:relative;z-index:2;background:#07070c;color:#eef1f6;padding:clamp(48px,7vw,90px) 0 clamp(56px,9vw,110px);}
@@ -54,6 +64,9 @@ $filters = array(
 .ag-atl__card:hover .ag-atl__media img{transform:scale(1.07);}
 .ag-atl__media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(7,7,12,.85));}
 .ag-atl__badge{position:absolute;top:12px;left:12px;z-index:2;font-size:.72rem;font-weight:700;letter-spacing:.04em;background:rgba(7,7,12,.7);border:1px solid rgba(212,180,92,.5);color:var(--gold2);border-radius:100px;padding:4px 11px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
+.ag-atl__ic{position:absolute;top:10px;right:14px;z-index:2;font-size:2rem;line-height:1;filter:drop-shadow(0 4px 12px rgba(0,0,0,.7));transition:transform .3s ease;}
+.ag-atl__card:hover .ag-atl__ic{transform:scale(1.15) rotate(-8deg);}
+.ag-atl__grid{perspective:1100px;}
 .ag-atl__body{padding:16px 18px 20px;}
 .ag-atl__ctitle{font-size:1.18rem;font-weight:700;margin:0 0 5px;}
 .ag-atl__cdesc{color:#9aa4b6;font-size:.9rem;line-height:1.45;margin:0 0 12px;min-height:2.6em;}
@@ -86,6 +99,7 @@ $filters = array(
 			<a class="ag-atl__card" href="<?php echo esc_url( $c['url'] ); ?>" data-cat="<?php echo esc_attr( $c['cat'] ); ?>">
 				<div class="ag-atl__media">
 					<span class="ag-atl__badge"><?php echo esc_html( $c['badge'] ); ?></span>
+					<span class="ag-atl__ic"><?php echo isset( $icons[ $c['title'] ] ) ? $icons[ $c['title'] ] : '✨'; ?></span>
 					<img src="<?php echo esc_url( $img . $c['img'] ); ?>" alt="<?php echo esc_attr( $c['title'] ); ?>" loading="lazy" width="1000" height="563">
 				</div>
 				<div class="ag-atl__body">
@@ -116,6 +130,18 @@ $filters = array(
 		}, {threshold:.12});
 		cards.forEach(function(c){ io.observe(c); });
 	} else { cards.forEach(function(c){ c.classList.add('in'); }); }
+	// Effet 3D (tilt) au survol des vignettes
+	if(window.matchMedia && window.matchMedia('(pointer:fine)').matches){
+		cards.forEach(function(card){
+			card.addEventListener('mousemove', function(e){
+				var r = card.getBoundingClientRect();
+				var x = (e.clientX - r.left)/r.width - .5, y = (e.clientY - r.top)/r.height - .5;
+				card.style.transition = 'transform .08s ease-out';
+				card.style.transform = 'perspective(900px) rotateY('+(x*8)+'deg) rotateX('+(-y*8)+'deg) translateY(-5px)';
+			});
+			card.addEventListener('mouseleave', function(){ card.style.transition = ''; card.style.transform = ''; });
+		});
+	}
 	var fbar = document.getElementById('ag-atl-filters');
 	if(fbar) fbar.addEventListener('click', function(ev){
 		var b = ev.target.closest('.ag-atl__pill'); if(!b) return;
