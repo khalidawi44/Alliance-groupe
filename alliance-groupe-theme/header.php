@@ -84,6 +84,10 @@
                         </div>
                         <div class="ag-mega__col">
                             <span class="ag-mega__label">✨ Nouveau · par l'IA</span>
+                            <a href="<?php echo esc_url(home_url('/atelier')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🪄</span>
+                                <span><strong>Atelier IA</strong><small>Tous les outils IA en un seul endroit</small></span>
+                            </a>
                             <a href="<?php echo esc_url(home_url('/devis-instant')); ?>" class="ag-mega__link">
                                 <span class="ag-mega__icon">🧾</span>
                                 <span><strong>Devis instantané</strong><small>Chiffrage en 30 s, sans rendez-vous</small></span>
