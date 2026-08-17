@@ -334,6 +334,35 @@ class AG_GitHub_Sync {
 		}
 		$log[] = 'SHA distant : ' . $remote_sha;
 
+		// 1b. SYNC INCRÉMENTAL : si on connaît déjà un SHA local, ne récupère QUE
+		//     les fichiers modifiés depuis (compare API + raw). Évite le tarball
+		//     complet, trop lourd pour l'hébergement quand le dépôt grossit.
+		$local_sha = self::get_local_sha( $slug );
+		if ( '' !== $local_sha && $local_sha === $remote_sha ) {
+			$log[] = 'Déjà à jour (SHA identique).';
+			update_option( self::OPT_PREFIX . $slug . '_time', time() );
+			update_option( self::OPT_PREFIX . $slug . '_log', $log );
+			return array( 'ok' => true, 'error' => '', 'log' => $log, 'sha' => $remote_sha, 'stats' => array( 'updated' => 0, 'created' => 0, 'skipped' => 0 ) );
+		}
+		if ( '' !== $local_sha ) {
+			$inc = self::sync_incremental( $slug, $cfg, $local_sha, $remote_sha, $log );
+			if ( is_array( $inc ) && empty( $inc['fallback'] ) ) {
+				if ( 'theme' === $slug ) {
+					$n = self::mirror_licence_plugin( true );
+					if ( $n > 0 ) { $log[] = 'Plugin ag-licence-manager : ' . $n . ' fichier(s) mis à jour + OPcache vidé'; }
+				}
+				update_option( self::OPT_PREFIX . $slug . '_time', time() );
+				update_option( self::OPT_PREFIX . $slug . '_log', $log );
+				if ( ! empty( $inc['ok'] ) ) {
+					update_option( self::OPT_PREFIX . $slug . '_sha', $remote_sha );
+					return array( 'ok' => true, 'error' => '', 'log' => $log, 'sha' => $remote_sha, 'stats' => $inc['stats'] );
+				}
+				// Échecs partiels : on n'avance PAS le SHA → la prochaine SYNC réessaiera.
+				return array( 'ok' => false, 'error' => $inc['error'], 'log' => $log, 'sha' => $local_sha, 'stats' => $inc['stats'] );
+			}
+			$log[] = 'Incrémental indisponible → bascule tarball complet.';
+		}
+
 		// 2. Tarball
 		$tarball_url = 'https://api.github.com/repos/' . $cfg['repo'] . '/tarball/' . $cfg['branch'];
 		if ( ! function_exists( 'download_url' ) ) {
@@ -483,6 +512,93 @@ class AG_GitHub_Sync {
 	/**
 	 * Sync récursif source → dest avec backup auto.
 	 */
+	/**
+	 * Sync INCRÉMENTAL : télécharge uniquement les fichiers modifiés entre deux
+	 * commits (API compare de GitHub), un par un via leur raw_url. Sûr et léger.
+	 * Retourne array('fallback'=>true) quand l'incrémental n'est pas applicable
+	 * (compare KO, >300 fichiers tronqués) → l'appelant bascule sur le tarball.
+	 * Sinon array('ok'=>bool, 'error'=>string, 'stats'=>array).
+	 */
+	private static function sync_incremental( $slug, $cfg, $base, $head, &$log ) {
+		$repo   = $cfg['repo'];
+		$subdir = isset( $cfg['subdir'] ) ? trim( (string) $cfg['subdir'], '/' ) : '';
+		$target = rtrim( (string) $cfg['target_dir'], '/' );
+		$prefix = '' !== $subdir ? $subdir . '/' : '';
+
+		$api  = 'https://api.github.com/repos/' . $repo . '/compare/' . rawurlencode( $base ) . '...' . rawurlencode( $head );
+		$resp = wp_remote_get( $api, array(
+			'timeout' => 20,
+			'headers' => array( 'Accept' => 'application/vnd.github+json', 'User-Agent' => 'WordPress AG-Sync' ),
+		) );
+		if ( is_wp_error( $resp ) ) { $log[] = 'Incrémental: compare KO (' . $resp->get_error_message() . ')'; return array( 'fallback' => true ); }
+		$code = (int) wp_remote_retrieve_response_code( $resp );
+		if ( 200 !== $code ) { $log[] = 'Incrémental: compare HTTP ' . $code . ' → tarball'; return array( 'fallback' => true ); }
+		$body = json_decode( wp_remote_retrieve_body( $resp ), true );
+		if ( ! isset( $body['files'] ) || ! is_array( $body['files'] ) ) { $log[] = 'Incrémental: réponse inattendue → tarball'; return array( 'fallback' => true ); }
+		if ( count( $body['files'] ) >= 300 ) { $log[] = 'Incrémental: >300 fichiers (tronqué) → tarball'; return array( 'fallback' => true ); }
+
+		$upload     = wp_upload_dir();
+		$backup_dir = trailingslashit( $upload['basedir'] ) . 'ag-backups/' . $slug . '-inc-' . wp_date( 'Y-m-d_His' );
+		$stats = array( 'updated' => 0, 'created' => 0, 'skipped' => 0, 'deleted' => 0 );
+		$fails = array();
+
+		foreach ( $body['files'] as $f ) {
+			$path   = isset( $f['filename'] ) ? (string) $f['filename'] : '';
+			$status = isset( $f['status'] ) ? (string) $f['status'] : '';
+			if ( '' === $path ) { continue; }
+			if ( '' !== $prefix && 0 !== strpos( $path, $prefix ) ) { $stats['skipped']++; continue; } // hors thème
+			$rel = '' !== $prefix ? substr( $path, strlen( $prefix ) ) : $path;
+			if ( '' === $rel || false !== strpos( $rel, '..' ) ) { $stats['skipped']++; continue; }
+			if ( in_array( basename( $rel ), self::PROTECTED, true ) ) { $stats['skipped']++; continue; }
+			$dst = $target . '/' . $rel;
+
+			// Suppression d'un fichier.
+			if ( 'removed' === $status ) {
+				if ( file_exists( $dst ) ) {
+					wp_mkdir_p( dirname( $backup_dir . '/' . $rel ) );
+					@copy( $dst, $backup_dir . '/' . $rel );
+					@unlink( $dst );
+					$stats['deleted']++;
+				}
+				continue;
+			}
+
+			$ext = strtolower( pathinfo( $rel, PATHINFO_EXTENSION ) );
+			if ( ! in_array( $ext, self::ALLOWED_EXT, true ) ) { $stats['skipped']++; continue; }
+
+			// Renommage : retire l'ancien fichier.
+			if ( 'renamed' === $status && ! empty( $f['previous_filename'] ) && '' !== $prefix && 0 === strpos( $f['previous_filename'], $prefix ) ) {
+				$prev_rel = substr( $f['previous_filename'], strlen( $prefix ) );
+				if ( false === strpos( $prev_rel, '..' ) && file_exists( $target . '/' . $prev_rel ) ) { @unlink( $target . '/' . $prev_rel ); }
+			}
+
+			// Téléchargement du contenu via raw_url (host GitHub vérifié).
+			$raw     = isset( $f['raw_url'] ) ? (string) $f['raw_url'] : '';
+			$ok_host = ( 0 === strpos( $raw, 'https://github.com/' . $repo . '/' ) || 0 === strpos( $raw, 'https://raw.githubusercontent.com/' . $repo . '/' ) );
+			if ( ! $ok_host ) { $fails[] = $rel . ' (url non fiable)'; continue; }
+			$dl = wp_remote_get( $raw, array( 'timeout' => 45, 'headers' => array( 'User-Agent' => 'WordPress AG-Sync' ) ) );
+			if ( is_wp_error( $dl ) || 200 !== (int) wp_remote_retrieve_response_code( $dl ) ) { $fails[] = $rel; continue; }
+			$data = wp_remote_retrieve_body( $dl );
+
+			$existed = file_exists( $dst );
+			if ( $existed && md5( $data ) === md5_file( $dst ) ) { continue; } // identique : rien à faire
+			if ( $existed ) { wp_mkdir_p( dirname( $backup_dir . '/' . $rel ) ); @copy( $dst, $backup_dir . '/' . $rel ); }
+			wp_mkdir_p( dirname( $dst ) );
+			if ( false !== file_put_contents( $dst, $data ) ) {
+				if ( $existed ) { $stats['updated']++; } else { $stats['created']++; }
+			} else {
+				$fails[] = $rel . ' (écriture)';
+			}
+		}
+
+		$log[] = sprintf( 'Incrémental: %d créé(s), %d mis à jour, %d supprimé(s), %d ignoré(s)', $stats['created'], $stats['updated'], $stats['deleted'], $stats['skipped'] );
+		if ( ! empty( $fails ) ) {
+			$log[] = 'Incrémental: ' . count( $fails ) . ' échec(s) : ' . implode( ', ', array_slice( $fails, 0, 8 ) );
+			return array( 'ok' => false, 'error' => count( $fails ) . ' fichier(s) non récupéré(s) — relance la SYNC', 'stats' => $stats );
+		}
+		return array( 'ok' => true, 'stats' => $stats );
+	}
+
 	private static function sync_recursive( $src, $dst, $backup, $rel, &$stats, &$log ) {
 		if ( ! is_dir( $src ) ) return;
 		$items = scandir( $src );
