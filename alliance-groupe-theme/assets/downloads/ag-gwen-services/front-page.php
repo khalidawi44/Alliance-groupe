@@ -204,6 +204,13 @@ endif; ?>
 	<?php endif; endif; ?>
 
 	<?php
+	// Galerie photo « En images » — s'affiche dès qu'une photo est déposée dans assets/galerie/.
+	if ( function_exists( 'ag_domicile_render_galerie' ) ) {
+		ag_domicile_render_galerie();
+	}
+	?>
+
+	<?php
 	// Section "Alliance Groupe en vidéo" — visible en mode premium
 	if ( function_exists( 'ag_domicile_render_promo_video' ) ) {
 		ag_domicile_render_promo_video();
