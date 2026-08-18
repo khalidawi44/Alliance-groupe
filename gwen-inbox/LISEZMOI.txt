@@ -20,9 +20,15 @@ COMMENT CA MARCHE (100 % automatique) :
 
 4. Ce dossier est vide automatiquement apres traitement.
 
-CAS PARTICULIER :
-- Pour changer l'image de fond principale du site, nomme ton
-  fichier "hero.jpg" (ou "hero.png"...) : il remplacera le hero.
+OU VONT LES PHOTOS :
+- "hero.jpg"  -> image de fond principale du site (le grand
+  visuel d'accueil). Nomme ton fichier exactement "hero.jpg".
+- "about.jpg" -> photo de la section « Qui sommes-nous ».
+- TOUTES LES AUTRES photos -> la galerie « En images » de la
+  page d'accueil (elles s'affichent automatiquement, epurees,
+  sans texte). Depose autant de photos que tu veux (garde
+  d'enfants, moments avec les seniors...) : elles apparaissent
+  dans l'ordre de leur nom (01-..., 02-..., etc.).
 
 ATTENTION :
 - Le depot est PUBLIC : ne depose ici QUE des images destinees

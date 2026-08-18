@@ -26,35 +26,62 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Installer Pillow
+        run: python3 -m pip install --quiet --disable-pip-version-check Pillow
+
       - name: Traiter les images de gwen-inbox
         id: process
         run: |
-          shopt -s nullglob nocaseglob
-          ASSETS="alliance-groupe-theme/assets/downloads/ag-gwen-services/assets"
-          mkdir -p "$ASSETS"
-          count=0
-          for f in gwen-inbox/*.{jpg,jpeg,png,webp,heic,heif}; do
-            base="$(basename "$f")"
-            name="${base%.*}"
-            ext="$(echo "${base##*.}" | tr '[:upper:]' '[:lower:]')"
-            # Nom propre : minuscules, sans accents, espaces -> tirets
-            slug="$(echo "$name" | python3 -c "import sys,unicodedata,re; s=unicodedata.normalize('NFKD',sys.stdin.read()).encode('ascii','ignore').decode().lower(); print(re.sub(r'-+\$|^-+','',re.sub(r'[^a-z0-9]+','-',s)))")"
-            [ -z "$slug" ] && slug="image-$(date +%s)-$count"
-            # png reste png (logos/graphiques), tout le reste devient jpg
-            if [ "$ext" = "png" ]; then out_ext="png"; else out_ext="jpg"; fi
-            out="$ASSETS/$slug.$out_ext"
-            # Optimisation web : rotation auto, EXIF supprime (vie privee),
-            # max 1920px, compression qualite 82
-            if convert "$f" -auto-orient -strip -resize '1920x1920>' -quality 82 "$out"; then
-              rm -f "$f"
-              count=$((count+1))
-              echo "OK : $base -> $slug.$out_ext"
-            else
-              echo "IGNORE (conversion impossible) : $base"
-            fi
-          done
-          echo "count=$count" >> "$GITHUB_OUTPUT"
-          echo "$count image(s) traitee(s)"
+          python3 - <<'PY'
+          import os, re, glob, unicodedata
+          from PIL import Image, ImageOps
+
+          ASSETS = "alliance-groupe-theme/assets/downloads/ag-gwen-services/assets"
+          GAL    = os.path.join(ASSETS, "galerie")
+          os.makedirs(GAL, exist_ok=True)
+
+          def slugify(name):
+              s = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode().lower()
+              return re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+
+          exts = (".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif", ".bmp", ".tif", ".tiff")
+          files = sorted(f for f in glob.glob("gwen-inbox/*") if f.lower().endswith(exts))
+          count = 0
+          for f in files:
+              base = os.path.basename(f)
+              name, ext = os.path.splitext(base)
+              slug = slugify(name) or f"image-{count}"
+              png  = ext.lower() == ".png"
+              out_ext = "png" if png else "jpg"
+              # hero.* et about.* = images speciales (fond + section a propos),
+              # tout le reste alimente la galerie « En images ».
+              if slug in ("hero", "about"):
+                  out = os.path.join(ASSETS, f"{slug}.{out_ext}")
+              else:
+                  out = os.path.join(GAL, f"{slug}.{out_ext}")
+              try:
+                  im = ImageOps.exif_transpose(Image.open(f))
+                  if png:
+                      if im.mode not in ("RGB", "RGBA"):
+                          im = im.convert("RGBA")
+                  elif im.mode != "RGB":
+                      im = im.convert("RGB")
+                  if max(im.size) > 1920:
+                      im.thumbnail((1920, 1920), Image.LANCZOS)
+                  if png:
+                      im.save(out, "PNG", optimize=True)          # EXIF non copie
+                  else:
+                      im.save(out, "JPEG", quality=82, optimize=True, progressive=True)
+                  os.remove(f)
+                  count += 1
+                  print(f"OK : {base} -> {os.path.relpath(out, ASSETS)}")
+              except Exception as e:
+                  print(f"IGNORE ({e}) : {base}")
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+              fh.write(f"count={count}\n")
+          print(f"{count} image(s) traitee(s)")
+          PY
 
       - name: Release ag-gwen-services et push
         if: steps.process.outputs.count != '0'
