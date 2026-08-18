@@ -1,0 +1,312 @@
+/* ============================================================
+   AG Premium Domicile — couche de design premium
+   Tout est scopé sous body.ag-dm-premium-active pour ne jamais
+   affecter le rendu gratuit. Design only.
+   ============================================================ */
+
+body.ag-dm-premium-active {
+	--pd-green: #3f8f63;
+	--pd-green-2: #5cb37e;
+	--pd-gold: #c9a36b;
+	--pd-ink: #24312a;
+	--pd-shadow: 0 18px 44px -20px rgba(20, 40, 28, .45);
+	--pd-shadow-hover: 0 26px 60px -22px rgba(20, 40, 28, .55);
+}
+
+/* ---------- Typographie premium ---------- */
+body.ag-dm-premium-active {
+	font-family: "Nunito Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+	letter-spacing: .1px;
+}
+body.ag-dm-premium-active h1,
+body.ag-dm-premium-active h2,
+body.ag-dm-premium-active h3,
+body.ag-dm-premium-active .ag-hero-pro__title,
+body.ag-dm-premium-active .ag-page-title,
+body.ag-dm-premium-active .ag-services-grid-title,
+body.ag-dm-premium-active .ag-cta-band__title {
+	font-family: "Fraunces", Georgia, "Times New Roman", serif;
+	font-weight: 600;
+	letter-spacing: .1px;
+}
+
+/* ---------- Hero ---------- */
+body.ag-dm-premium-active .ag-hero-pro {
+	position: relative;
+}
+body.ag-dm-premium-active .ag-hero-pro__title {
+	font-size: clamp(2.2rem, 5.4vw, 4rem);
+	line-height: 1.05;
+	text-wrap: balance;
+	animation: agPdUp .8s cubic-bezier(.2, .7, .2, 1) both;
+}
+body.ag-dm-premium-active .ag-hero-pro__title em {
+	color: #ffe9c2;
+	font-style: italic;
+}
+body.ag-dm-premium-active .ag-hero-pro__subtitle {
+	animation: agPdUp .8s .1s cubic-bezier(.2, .7, .2, 1) both;
+	max-width: 60ch;
+}
+body.ag-dm-premium-active .ag-btn-pro {
+	animation: agPdUp .8s .2s cubic-bezier(.2, .7, .2, 1) both;
+}
+
+/* Bandeau de confiance (injecté par premium.js dans le hero) */
+body.ag-dm-premium-active .ag-pd-trust {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px 22px;
+	margin-top: 26px;
+	animation: agPdUp .8s .3s cubic-bezier(.2, .7, .2, 1) both;
+}
+body.ag-dm-premium-active .ag-pd-trust__item {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	background: rgba(255, 255, 255, .12);
+	border: 1px solid rgba(255, 255, 255, .28);
+	-webkit-backdrop-filter: blur(6px);
+	backdrop-filter: blur(6px);
+	color: #fff;
+	font-weight: 700;
+	font-size: .9rem;
+	padding: 8px 14px;
+	border-radius: 100px;
+}
+body.ag-dm-premium-active .ag-pd-trust__item svg {
+	width: 16px;
+	height: 16px;
+	flex: none;
+}
+
+/* ---------- Boutons ---------- */
+body.ag-dm-premium-active .ag-btn-pro,
+body.ag-dm-premium-active .ag-btn {
+	background: linear-gradient(120deg, var(--pd-green), var(--pd-green-2)) !important;
+	border: 0 !important;
+	border-radius: 100px !important;
+	box-shadow: 0 14px 30px -12px rgba(63, 143, 99, .6);
+	transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+}
+body.ag-dm-premium-active .ag-btn-pro:hover,
+body.ag-dm-premium-active .ag-btn:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 20px 40px -14px rgba(63, 143, 99, .7);
+	filter: brightness(1.04);
+}
+
+/* ---------- Titres de section ---------- */
+body.ag-dm-premium-active .ag-services-grid-title {
+	position: relative;
+	display: inline-block;
+	padding-bottom: 14px;
+}
+body.ag-dm-premium-active .ag-services-grid-title::after {
+	content: "";
+	position: absolute;
+	left: 50%;
+	bottom: 0;
+	transform: translateX(-50%);
+	width: 64px;
+	height: 4px;
+	border-radius: 4px;
+	background: linear-gradient(90deg, var(--pd-green), var(--pd-gold));
+}
+body.ag-dm-premium-active .ag-services-grid-title span,
+body.ag-dm-premium-active .ag-services-grid-title em {
+	color: var(--pd-green);
+	font-style: italic;
+}
+
+/* ---------- Cartes services ---------- */
+body.ag-dm-premium-active .ag-service-card {
+	border-radius: 20px;
+	box-shadow: var(--pd-shadow);
+	transition: transform .28s cubic-bezier(.2, .7, .2, 1), box-shadow .28s ease;
+	overflow: hidden;
+	position: relative;
+}
+body.ag-dm-premium-active .ag-service-card::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 3px;
+	background: linear-gradient(90deg, var(--pd-green), var(--pd-gold));
+	transform: scaleX(0);
+	transform-origin: left;
+	transition: transform .3s ease;
+}
+body.ag-dm-premium-active .ag-service-card:hover {
+	transform: translateY(-6px);
+	box-shadow: var(--pd-shadow-hover);
+}
+body.ag-dm-premium-active .ag-service-card:hover::before {
+	transform: scaleX(1);
+}
+body.ag-dm-premium-active .ag-service-card__icon {
+	transition: transform .28s ease;
+}
+body.ag-dm-premium-active .ag-service-card:hover .ag-service-card__icon {
+	transform: scale(1.12) rotate(-4deg);
+}
+
+/* ---------- Comment ça marche ---------- */
+body.ag-dm-premium-active .ag-howit-card {
+	border-radius: 20px;
+	box-shadow: var(--pd-shadow);
+	transition: transform .28s ease, box-shadow .28s ease;
+}
+body.ag-dm-premium-active .ag-howit-card:hover {
+	transform: translateY(-5px);
+	box-shadow: var(--pd-shadow-hover);
+}
+body.ag-dm-premium-active .ag-howit-num {
+	background: linear-gradient(120deg, var(--pd-green), var(--pd-green-2)) !important;
+	color: #fff !important;
+}
+
+/* ---------- Témoignages ---------- */
+body.ag-dm-premium-active .ag-testi-card {
+	border-radius: 20px;
+	box-shadow: var(--pd-shadow);
+	transition: transform .4s cubic-bezier(.2, .7, .2, 1), box-shadow .4s ease;
+	position: relative;
+}
+body.ag-dm-premium-active .ag-testi-card::before {
+	content: "\201C";
+	position: absolute;
+	top: 6px;
+	left: 18px;
+	font-family: "Fraunces", Georgia, serif;
+	font-size: 4.4rem;
+	line-height: 1;
+	color: var(--pd-green);
+	opacity: .18;
+}
+body.ag-dm-premium-active .ag-testi-card.ag-pd-hi {
+	transform: translateY(-6px) scale(1.015);
+	box-shadow: var(--pd-shadow-hover);
+}
+body.ag-dm-premium-active .ag-testi-stars {
+	color: var(--pd-gold);
+	letter-spacing: 2px;
+}
+
+/* ---------- FAQ ---------- */
+body.ag-dm-premium-active .ag-faq-item {
+	border-radius: 14px;
+	box-shadow: 0 10px 26px -18px rgba(20, 40, 28, .4);
+	transition: box-shadow .25s ease;
+}
+body.ag-dm-premium-active .ag-faq-item[open] {
+	box-shadow: var(--pd-shadow);
+}
+body.ag-dm-premium-active .ag-faq-q {
+	font-weight: 700;
+}
+
+/* ---------- Timeline / engagements ---------- */
+body.ag-dm-premium-active .ag-timeline-item {
+	border-radius: 16px;
+	box-shadow: var(--pd-shadow);
+	transition: transform .25s ease, box-shadow .25s ease;
+}
+body.ag-dm-premium-active .ag-timeline-item:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--pd-shadow-hover);
+}
+body.ag-dm-premium-active .ag-timeline-year {
+	color: var(--pd-green);
+	font-weight: 800;
+}
+
+/* ---------- Bande CTA ---------- */
+body.ag-dm-premium-active .ag-cta-band {
+	background: linear-gradient(120deg, #1f3a2b, #2f6b45 55%, #3f8f63) !important;
+	position: relative;
+	overflow: hidden;
+}
+body.ag-dm-premium-active .ag-cta-band::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(120% 120% at 85% -10%, rgba(201, 163, 107, .35), transparent 55%);
+	pointer-events: none;
+}
+body.ag-dm-premium-active .ag-cta-band__title,
+body.ag-dm-premium-active .ag-cta-band__lead {
+	color: #fff !important;
+	position: relative;
+}
+
+/* ---------- Header collant (raffiné) ---------- */
+body.ag-dm-premium-active .ag-site-header {
+	transition: background-color .3s ease, box-shadow .3s ease, backdrop-filter .3s ease;
+}
+body.ag-dm-premium-active .ag-site-header.ag-pd-stuck {
+	box-shadow: 0 10px 30px -18px rgba(0, 0, 0, .5);
+	-webkit-backdrop-filter: blur(8px);
+	backdrop-filter: blur(8px);
+}
+
+/* ---------- Bouton "Devis" flottant (injecté par premium.js) ---------- */
+body.ag-dm-premium-active .ag-pd-float {
+	position: fixed;
+	right: 18px;
+	bottom: 18px;
+	z-index: 9990;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	background: linear-gradient(120deg, var(--pd-green), var(--pd-green-2));
+	color: #fff;
+	font-weight: 800;
+	text-decoration: none;
+	padding: 14px 20px;
+	border-radius: 100px;
+	box-shadow: 0 16px 36px -12px rgba(63, 143, 99, .7);
+	transform: translateY(120%);
+	opacity: 0;
+	transition: transform .35s cubic-bezier(.2, .7, .2, 1), opacity .35s ease, filter .2s ease;
+}
+body.ag-dm-premium-active .ag-pd-float.ag-pd-in {
+	transform: translateY(0);
+	opacity: 1;
+}
+body.ag-dm-premium-active .ag-pd-float:hover {
+	filter: brightness(1.05);
+	transform: translateY(-2px);
+}
+body.ag-dm-premium-active .ag-pd-float svg {
+	width: 18px;
+	height: 18px;
+}
+
+/* ---------- Animations ---------- */
+@keyframes agPdUp {
+	from { opacity: 0; transform: translateY(22px); }
+	to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+	body.ag-dm-premium-active .ag-hero-pro__title,
+	body.ag-dm-premium-active .ag-hero-pro__subtitle,
+	body.ag-dm-premium-active .ag-btn-pro,
+	body.ag-dm-premium-active .ag-pd-trust {
+		animation: none !important;
+	}
+	body.ag-dm-premium-active .ag-pd-float {
+		transition: none;
+	}
+}
+
+@media (max-width: 600px) {
+	body.ag-dm-premium-active .ag-pd-float {
+		right: 12px;
+		bottom: 12px;
+		padding: 12px 16px;
+		font-size: .92rem;
+	}
+}
