@@ -52,5 +52,6 @@ get_header();
 </main>
 
 <?php
-get_sidebar();
+// get_sidebar(); // retiré : pas de barre de widgets par défaut sur ce site
+
 get_footer();

@@ -120,8 +120,8 @@ function ag_domicile_render_galerie() {
 	.ag-gwengal__in{max-width:1180px;margin:0 auto;}
 	.ag-gwengal__head{text-align:center;max-width:720px;margin:0 auto 40px;}
 	.ag-gwengal__tag{display:inline-block;font-size:.8rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8fd0a3;background:rgba(79,157,107,.14);border:1px solid rgba(111,191,138,.4);padding:8px 18px;border-radius:100px;margin-bottom:18px;}
-	.ag-gwengal__title{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:clamp(1.8rem,4.2vw,2.8rem);line-height:1.1;color:#f6f1e4;margin:0 0 14px;}
-	.ag-gwengal__title em{font-style:italic;color:#6fbf8a;}
+	.ag-gwengal__title{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:clamp(1.8rem,4.2vw,2.8rem);line-height:1.1;color:#f6f1e4 !important;margin:0 0 14px;}
+	.ag-gwengal__title em{font-style:italic;color:#6fbf8a !important;}
 	.ag-gwengal__lead{color:#c7c1b0;font-size:clamp(1rem,2.2vw,1.14rem);line-height:1.6;margin:0;}
 	/* Catégories dispatchées */
 	.ag-gwengal__cat{margin-top:46px;}
@@ -131,7 +131,7 @@ function ag_domicile_render_galerie() {
 	.ag-gwengal__catdot--seniors{background:#6fbf8a;}
 	.ag-gwengal__catdot--enfants{background:#c9a36b;box-shadow:0 0 0 4px rgba(201,163,107,.14);}
 	.ag-gwengal__catdot--autres{background:#8fd0a3;}
-	.ag-gwengal__cattitle{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:clamp(1.3rem,3vw,1.7rem);color:#f6f1e4;margin:0;}
+	.ag-gwengal__cattitle{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:clamp(1.3rem,3vw,1.7rem);color:#f6f1e4 !important;margin:0;}
 	.ag-gwengal__catsub{color:#8f8a7c;font-size:.98rem;}
 	.ag-gwengal__grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;grid-auto-flow:dense;}
 	.ag-gwengal__cell{position:relative;margin:0;border-radius:20px;overflow:hidden;aspect-ratio:4/5;box-shadow:0 24px 50px -30px rgba(0,0,0,.8);border:1px solid rgba(111,191,138,.16);}

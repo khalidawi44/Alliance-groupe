@@ -91,8 +91,8 @@ function ag_domicile_render_promo_video() {
 	.ag-gwenwhy__in{max-width:1180px;margin:0 auto;}
 	.ag-gwenwhy__head{text-align:center;max-width:760px;margin:0 auto 54px;}
 	.ag-gwenwhy__tag{display:inline-block;font-size:.8rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#8fd0a3;background:rgba(79,157,107,.14);border:1px solid rgba(111,191,138,.4);padding:8px 18px;border-radius:100px;margin-bottom:20px;}
-	.ag-gwenwhy__title{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:clamp(1.9rem,4.4vw,3rem);line-height:1.1;color:#f6f1e4;margin:0 0 16px;text-wrap:balance;}
-	.ag-gwenwhy__title em{font-style:italic;color:#6fbf8a;}
+	.ag-gwenwhy__title{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:clamp(1.9rem,4.4vw,3rem);line-height:1.1;color:#f6f1e4 !important;margin:0 0 16px;text-wrap:balance;}
+	.ag-gwenwhy__title em{font-style:italic;color:#6fbf8a !important;}
 	.ag-gwenwhy__lead{color:#c7c1b0;font-size:clamp(1rem,2.2vw,1.18rem);line-height:1.6;margin:0;}
 	.ag-gwenwhy__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;}
 	.ag-gwenwhy__card{background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.02));border:1px solid rgba(111,191,138,.18);border-radius:22px;padding:32px 26px;transition:transform .3s cubic-bezier(.2,.7,.2,1),box-shadow .3s ease,border-color .3s ease;position:relative;overflow:hidden;}
@@ -100,7 +100,7 @@ function ag_domicile_render_promo_video() {
 	.ag-gwenwhy__card:hover{transform:translateY(-8px);box-shadow:0 30px 60px -28px rgba(0,0,0,.7);border-color:rgba(111,191,138,.5);}
 	.ag-gwenwhy__card:hover::after{transform:scaleX(1);}
 	.ag-gwenwhy__ic{display:inline-flex;align-items:center;justify-content:center;width:66px;height:66px;border-radius:20px;font-size:32px;margin-bottom:20px;box-shadow:0 16px 30px -14px rgba(79,157,107,.7);}
-	.ag-gwenwhy__ct{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:1.28rem;color:#f6f1e4;margin:0 0 10px;}
+	.ag-gwenwhy__ct{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:1.28rem;color:#f6f1e4 !important;margin:0 0 10px;}
 	.ag-gwenwhy__cd{color:#b3ad9c;font-size:1rem;line-height:1.55;margin:0;}
 	.ag-gwenwhy__cta{text-align:center;margin-top:52px;}
 	.ag-gwenwhy__btn{display:inline-block;background:linear-gradient(120deg,#3f8f63,#6fbf8a);color:#0f180f;font-weight:800;font-size:1.15rem;text-decoration:none;padding:20px 42px;border-radius:100px;box-shadow:0 18px 40px -14px rgba(79,157,107,.75),0 0 0 6px rgba(79,157,107,.12);transition:transform .2s ease,box-shadow .2s ease,filter .2s ease;}
