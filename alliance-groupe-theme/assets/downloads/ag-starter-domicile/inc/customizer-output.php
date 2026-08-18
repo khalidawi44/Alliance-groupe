@@ -60,6 +60,13 @@ function ag_starter_domicile_customizer_css() {
 
 	ob_start();
 	?>
+:root {
+	--ag-color-accent: <?php echo esc_html( $accent ); ?>;
+	--ag-color-heading: <?php echo esc_html( $heading ); ?>;
+	--ag-color-muted: <?php echo esc_html( $muted ); ?>;
+	--ag-color-panel: <?php echo esc_html( $panel ); ?>;
+	--ag-color-border: <?php echo esc_html( $border ); ?>;
+}
 body {
 	font-family: <?php echo esc_html( $family_css ); ?>;
 	font-size: <?php echo esc_html( $size ); ?>px;
