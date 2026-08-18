@@ -24,6 +24,7 @@ THEMES=(
     ag-starter-restaurant
     ag-starter-artisan
     ag-starter-coach
+    ag-starter-domicile
 )
 PLUGINS=(
     ag-fidelite-association

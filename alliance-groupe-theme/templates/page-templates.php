@@ -67,6 +67,17 @@ $ag_hub_metiers = array(
         'image'    => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1200&q=85',
     ),
     array(
+        'slug'     => 'domicile',
+        'icon'     => '🏡',
+        'name'     => 'Aide à domicile',
+        'palette'  => 'Vert doux &amp; beige',
+        'audience' => 'Services à la personne : aide aux seniors, familles, handicap.',
+        'tagline'  => 'Prestations, zones, devis avec crédit d\'impôt 50%, témoignages.',
+        'url'      => home_url( '/wordpress-domicile' ),
+        'is_new'   => true,
+        'image'    => get_stylesheet_directory_uri() . '/assets/images/templates/domicile.jpg',
+    ),
+    array(
         'slug'     => 'barber',
         'icon'     => '💈',
         'name'     => 'Barber Shop',

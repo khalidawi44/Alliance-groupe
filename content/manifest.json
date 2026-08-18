@@ -2,7 +2,6 @@
     "version": "1.20.0",
     "repo": "khalidawi44/Alliance-groupe",
     "branch": "main",
-
     "settings": {
         "blogname": "Alliance Groupe",
         "blogdescription": "Agence Web & IA — France",
@@ -10,18 +9,28 @@
         "front_page": "accueil",
         "blog_page": "articles"
     },
-
     "categories": [
-        {"name": "Tech & IA", "slug": "tech-ia"},
-        {"name": "Conseils Digital", "slug": "conseils-digital"}
+        {
+            "name": "Tech & IA",
+            "slug": "tech-ia"
+        },
+        {
+            "name": "Conseils Digital",
+            "slug": "conseils-digital"
+        }
     ],
-
     "menu": {
         "name": "Menu Principal",
         "location": "primary",
-        "items": ["accueil", "services", "realisations", "articles", "a-propos", "contact"]
+        "items": [
+            "accueil",
+            "services",
+            "realisations",
+            "articles",
+            "a-propos",
+            "contact"
+        ]
     },
-
     "pages": [
         "pages/accueil.json",
         "pages/services.json",
@@ -50,9 +59,9 @@
         "pages/bureau-marrakech.json",
         "pages/bureau-naples.json",
         "pages/bureau-nantes.json",
-        "pages/wordpress-barber.json"
+        "pages/wordpress-barber.json",
+        "pages/wordpress-domicile.json"
     ],
-
     "articles": [
         "articles/01-pme-sans-site-web.json",
         "articles/02-cout-absence-digitale.json",
@@ -68,7 +77,6 @@
         "articles/12-prix-site-internet-2026.json",
         "articles/13-site-wordpress-coach-sportif.json"
     ],
-
     "theme_files": [
         "style.css",
         "functions.php",
@@ -118,9 +126,7 @@
         "template-parts/metier-page.php",
         "template-parts/download-modal.php",
         "templates/page-merci-achat.php",
-
         "assets/downloads/WORDPRESS-ORG-SUBMISSION.md",
-
         "assets/downloads/ag-starter-restaurant.zip",
         "assets/downloads/ag-starter-restaurant/style.css",
         "assets/downloads/ag-starter-restaurant/functions.php",
@@ -139,7 +145,6 @@
         "assets/downloads/ag-starter-restaurant/screenshot.png",
         "assets/downloads/ag-starter-restaurant/inc/customizer.php",
         "assets/downloads/ag-starter-restaurant/inc/customizer-output.php",
-
         "assets/downloads/ag-starter-artisan.zip",
         "assets/downloads/ag-starter-artisan/style.css",
         "assets/downloads/ag-starter-artisan/functions.php",
@@ -158,7 +163,6 @@
         "assets/downloads/ag-starter-artisan/screenshot.png",
         "assets/downloads/ag-starter-artisan/inc/customizer.php",
         "assets/downloads/ag-starter-artisan/inc/customizer-output.php",
-
         "assets/downloads/ag-starter-coach.zip",
         "assets/downloads/ag-starter-coach/style.css",
         "assets/downloads/ag-starter-coach/functions.php",
@@ -177,7 +181,6 @@
         "assets/downloads/ag-starter-coach/screenshot.png",
         "assets/downloads/ag-starter-coach/inc/customizer.php",
         "assets/downloads/ag-starter-coach/inc/customizer-output.php",
-
         "assets/downloads/ag-starter-avocat.zip",
         "assets/downloads/ag-starter-avocat/style.css",
         "assets/downloads/ag-starter-avocat/functions.php",
@@ -199,13 +202,11 @@
         "assets/downloads/ag-starter-avocat/inc/cpt-domaine.php",
         "assets/downloads/ag-starter-avocat/inc/forms.php",
         "assets/downloads/ag-starter-avocat/single-ag_domaine.php",
-
         "assets/downloads/ag-starter-companion.zip",
         "assets/downloads/ag-starter-companion/ag-starter-companion.php",
         "assets/downloads/ag-starter-companion/readme.txt",
         "assets/downloads/ag-starter-companion/screenshot-1.png"
     ],
-
     "images": [
         "assets/images/promo-cards/ag-pro-card.png",
         "assets/images/promo-cards/ag-premium-card.png",
