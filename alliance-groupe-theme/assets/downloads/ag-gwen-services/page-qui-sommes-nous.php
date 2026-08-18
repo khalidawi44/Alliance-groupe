@@ -16,10 +16,15 @@ if ( ! $ag_hero_image ) {
 	$ag_hero_image = get_template_directory_uri() . '/assets/hero.jpg';
 }
 
-// Photo section "à propos" : image embarquée dans le thème par défaut.
+// Photo section "à propos" : 1) image Customizer, 2) convention assets/about.jpg
+// (il suffit de déposer ce fichier dans le thème), 3) fallback assets/hero.jpg.
 $about_photo = ag_domicile_opt( 'ag_domicile_about_image', '' );
 if ( ! $about_photo ) {
-	$about_photo = get_template_directory_uri() . '/assets/hero.jpg';
+	if ( file_exists( get_template_directory() . '/assets/about.jpg' ) ) {
+		$about_photo = get_template_directory_uri() . '/assets/about.jpg';
+	} else {
+		$about_photo = get_template_directory_uri() . '/assets/hero.jpg';
+	}
 }
 
 // Repères / engagements par spécialité.
