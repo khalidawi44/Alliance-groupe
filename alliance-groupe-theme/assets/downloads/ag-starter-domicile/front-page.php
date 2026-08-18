@@ -13,7 +13,7 @@
 get_header();
 
 $ag_has_preset = class_exists( 'ag_domicile_Presets' ) && ag_domicile_Presets::get_active_preset();
-$ag_services   = $ag_has_preset ? ag_domicile_Presets::get_active_services() : array();
+$ag_services   = $ag_has_preset ? ag_domicile_services() : array();
 $ag_how        = $ag_has_preset ? ag_domicile_Presets::get_active_how() : array();
 $ag_faq        = $ag_has_preset ? ag_domicile_Presets::get_active_faq() : array();
 $ag_stats      = $ag_has_preset ? ag_domicile_Presets::get_active_stats() : array();

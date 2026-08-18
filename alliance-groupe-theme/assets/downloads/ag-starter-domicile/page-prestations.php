@@ -40,7 +40,7 @@ get_header();
 	<?php endwhile; ?>
 
 	<?php
-	$ag_services = class_exists( 'ag_domicile_Presets' ) ? ag_domicile_Presets::get_active_services() : array();
+	$ag_services = class_exists( 'ag_domicile_Presets' ) ? ag_domicile_services() : array();
 	if ( ! empty( $ag_services ) ) : ?>
 		<section class="ag-services-grid-wrap ag-anim" style="background:#fff;">
 			<div class="ag-services-grid-header">

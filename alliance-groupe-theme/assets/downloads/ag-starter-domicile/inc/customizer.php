@@ -326,6 +326,26 @@ function ag_starter_domicile_customize_register( $wp_customize ) {
 		)
 	);
 
+	// Services personnalises (grille accueil) — une ligne "emoji | Titre".
+	$wp_customize->add_setting(
+		'ag_domicile_services_custom',
+		array(
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_textarea_field',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		'ag_domicile_services_custom',
+		array(
+			'label'       => esc_html__( 'Services personnalises (grille accueil)', 'ag-starter-domicile' ),
+			'description' => esc_html__( 'Une ligne par service, au format "emoji | Titre" (ex : 🌅 | Aide au lever). Laissez vide pour utiliser les services du metier choisi.', 'ag-starter-domicile' ),
+			'section'     => 'ag_section_hero',
+			'type'        => 'textarea',
+			'priority'    => 9,
+		)
+	);
+
 	// ─── Section: Pied de page ───
 	$wp_customize->add_section(
 		'ag_section_footer',

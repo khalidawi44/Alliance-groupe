@@ -209,7 +209,7 @@ class ag_domicile_Devis {
 	 */
 	public static function render_form() {
 		$metier_slug = get_theme_mod( 'ag_domicile_metier_slug', '' );
-		$services    = class_exists( 'ag_domicile_Presets' ) ? ag_domicile_Presets::get_active_services() : array();
+		$services    = class_exists( 'ag_domicile_Presets' ) ? ag_domicile_services() : array();
 		$metier_nom  = get_theme_mod( 'ag_domicile_metier_nom', 'domicile' );
 
 		if ( ! $metier_slug || empty( $services ) ) {

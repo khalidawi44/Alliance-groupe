@@ -147,6 +147,46 @@ if ( ! function_exists( 'ag_domicile_hero_url' ) ) {
 }
 
 /**
+ * Helper: liste des services affiches (grille accueil + page prestations +
+ * selecteur du devis). Priorite : services personnalises (Customizer,
+ * une ligne "emoji | Titre") sinon services du preset metier actif.
+ *
+ * @return array Liste de array( 'emoji' => ..., 'title' => ... )
+ */
+if ( ! function_exists( 'ag_domicile_services' ) ) {
+	function ag_domicile_services() {
+		$raw = trim( (string) get_theme_mod( 'ag_domicile_services_custom', '' ) );
+		if ( '' !== $raw ) {
+			$out = array();
+			foreach ( preg_split( '/\r\n|\r|\n/', $raw ) as $line ) {
+				$line = trim( $line );
+				if ( '' === $line ) {
+					continue;
+				}
+				if ( false !== strpos( $line, '|' ) ) {
+					$parts = array_map( 'trim', explode( '|', $line, 2 ) );
+					$emoji = $parts[0];
+					$title = isset( $parts[1] ) ? $parts[1] : '';
+				} else {
+					$emoji = '•';
+					$title = $line;
+				}
+				if ( '' !== $title ) {
+					$out[] = array( 'emoji' => ( '' !== $emoji ? $emoji : '•' ), 'title' => $title );
+				}
+			}
+			if ( $out ) {
+				return $out;
+			}
+		}
+		if ( class_exists( 'AG_Domicile_Presets' ) ) {
+			return AG_Domicile_Presets::get_active_services();
+		}
+		return array();
+	}
+}
+
+/**
  * Helper: read a Customizer option (short alias for ag_starter_domicile_get_option).
  */
 if ( ! function_exists( 'ag_domicile_opt' ) ) {
