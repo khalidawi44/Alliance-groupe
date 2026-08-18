@@ -30,7 +30,7 @@ REM     IMPORTANT : on exclut ce script et ses compagnons du stash. Windows lit 
 REM     .bat ligne par ligne PENDANT l'execution : si git le remplace en cours de
 REM     route, cmd.exe part en vrille et la suite du script n'est jamais executee.
 echo ECHEC ff-only -^> mise de cote (git stash) des modifs locales >> %LOG%
-%GIT% stash push -u -m "auto-pull %DATE% %TIME% - mis de cote automatiquement" -- . ":(exclude)auto-pull.bat" ":(exclude)sync-maintenant.bat" ":(exclude)ALERTE-SYNC.txt" ":(exclude)auto-pull-silent.vbs" >> %LOG% 2>&1
+%GIT% stash push -u -m "auto-pull %DATE% %TIME% - mis de cote automatiquement" -- . ":(exclude)auto-pull.bat" ":(exclude)sync-maintenant.bat" ":(exclude)ALERTE-SYNC.txt" ":(exclude)auto-pull-silent.vbs" ":(exclude)gwen-inbox" >> %LOG% 2>&1
 %GIT% pull --ff-only origin main >> %LOG% 2>&1
 if errorlevel 1 goto :bloque
 
@@ -49,6 +49,7 @@ REM --- Le pull passe apres stash : on previent, rien n'est perdu ---
 >> %ALERTE% echo.
 >> %ALERTE% echo RIEN N'EST PERDU. Supprimer ce fichier une fois traite.
 echo ALERTE ecrite dans %ALERTE% - travail mis de cote >> %LOG%
+call :publier_images
 goto :fin
 
 :bloque
@@ -69,7 +70,47 @@ goto :fin
 :ok
 REM --- Tout va bien : on efface l'alerte si elle trainait ---
 if exist %ALERTE% del %ALERTE%
+call :publier_images
 
 :fin
 echo. >> %LOG%
+exit /b 0
+
+REM ==========================================================
+REM  PUBLICATION AUTOMATIQUE DES IMAGES DE GWEN
+REM  Si des images attendent dans gwen-inbox\, on les commit et
+REM  on les pousse sur main : la GitHub Action fait le reste
+REM  (optimisation, integration au theme, bump de version, release).
+REM  Plus besoin de double-cliquer deposer-images-gwen.bat.
+REM ==========================================================
+:publier_images
+REM  Les outils distants n'ont pas le droit d'ecrire dans .github\ :
+REM  un workflow depose dans _local-prive\workflows-a-installer\ est
+REM  installe ici, puis pousse comme le reste.
+if exist "_local-prive\workflows-a-installer\*.yml" (
+	if not exist ".github\workflows" mkdir ".github\workflows"
+	copy /Y "_local-prive\workflows-a-installer\*.yml" ".github\workflows\" >> %LOG% 2>&1
+	del /Q "_local-prive\workflows-a-installer\*.yml"
+	echo Workflow(s) installe(s) depuis _local-prive >> %LOG%
+)
+
+REM  Seuls ces deux chemins sont pousses automatiquement : le reste du
+REM  travail en cours dans le depot n'est jamais touche.
+set SUIVI=gwen-inbox .github/workflows
+set NB=0
+for /f %%c in ('%GIT% status --porcelain -- %SUIVI% ^| find /c /v ""') do set NB=%%c
+if "%NB%"=="0" exit /b 0
+echo CHANGEMENTS DETECTES (%SUIVI%) - envoi automatique >> %LOG%
+%GIT% add -- %SUIVI% >> %LOG% 2>&1
+%GIT% commit --no-verify -m "auto: images et config Gwen (depot automatique)" -- %SUIVI% >> %LOG% 2>&1
+if errorlevel 1 (
+	echo rien a committer >> %LOG%
+	exit /b 0
+)
+%GIT% push origin main >> %LOG% 2>&1
+if errorlevel 1 (
+	echo ECHEC du push - nouvelle tentative au prochain passage >> %LOG%
+	exit /b 0
+)
+echo IMAGES ENVOYEES - la GitHub Action prend le relais >> %LOG%
 exit /b 0
