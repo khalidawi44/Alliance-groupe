@@ -35,6 +35,9 @@
 			<a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="custom-logo-link" aria-label="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?> — <?php esc_attr_e( 'Accueil', 'ag-gwen-services' ); ?>">
 				<?php if ( $logo_img ) : ?>
 					<?php echo $logo_img; ?>
+				<?php elseif ( file_exists( get_theme_file_path( 'assets/logo.png' ) ) ) : ?>
+					<?php // Logo de marque livre avec le theme : aucun reglage a faire. ?>
+					<img class="ag-site-brand__logo" src="<?php echo esc_url( get_theme_file_uri( 'assets/logo.png' ) ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" width="357" height="140" style="height:clamp(38px,5.2vw,54px);width:auto;max-width:62vw;display:block;" />
 				<?php else : ?>
 					<span class="ag-site-brand__text"><?php bloginfo( 'name' ); ?></span>
 				<?php endif; ?>
