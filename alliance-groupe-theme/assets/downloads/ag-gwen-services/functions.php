@@ -532,3 +532,36 @@ if ( ! function_exists( 'ag_force_auto_updates' ) ) {
 		if ( ! wp_next_scheduled( 'wp_update_themes' ) )  { wp_schedule_single_event( time() + 60, 'wp_update_themes' ); }
 	} );
 }
+
+/* ── Gwen Services : design PREMIUM embarqué (par défaut, sans plugin) ──
+ * La couche premium (typo Fraunces/Nunito Sans, bandeau de confiance,
+ * boutons dégradés, cartes adoucies, témoignages animés, header collant,
+ * bouton « Devis » flottant) est intégrée directement au thème dédié de
+ * Gwen — elle est donc active en permanence, rien à installer. */
+add_action( 'wp_enqueue_scripts', function () {
+	$ver = wp_get_theme()->get( 'Version' );
+	wp_enqueue_style(
+		'ag-gwen-fonts',
+		'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Nunito+Sans:wght@400;600;700&display=swap',
+		array(),
+		$ver
+	);
+	if ( file_exists( get_template_directory() . '/assets/premium.css' ) ) {
+		wp_enqueue_style( 'ag-gwen-premium', get_template_directory_uri() . '/assets/premium.css', array( 'ag-gwen-fonts' ), $ver );
+	}
+	if ( file_exists( get_template_directory() . '/assets/premium.js' ) ) {
+		wp_enqueue_script( 'ag-gwen-premium', get_template_directory_uri() . '/assets/premium.js', array(), $ver, true );
+		wp_localize_script( 'ag-gwen-premium', 'agPdData', array(
+			'devisUrl'   => esc_url( home_url( '/devis/' ) ),
+			'devisLabel' => 'Devis gratuit',
+			'showFloat'  => true,
+			'showTrust'  => true,
+			'trust'      => array( 'Agréé services à la personne', 'Crédit d’impôt 50 %', '7j/7, jour & nuit' ),
+		) );
+	}
+}, 30 );
+
+add_filter( 'body_class', function ( $classes ) {
+	$classes[] = 'ag-dm-premium-active';
+	return $classes;
+} );
