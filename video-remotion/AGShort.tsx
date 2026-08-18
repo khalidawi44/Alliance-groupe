@@ -22,7 +22,6 @@ import {
 	useCurrentFrame,
 	useVideoConfig,
 	interpolate,
-	spring,
 	staticFile,
 } from 'remotion';
 
@@ -58,12 +57,15 @@ export const totalFrames = (scenes: AGScene[], fps = 30): number =>
 
 const SceneView: React.FC<{scene: AGScene}> = ({scene}) => {
 	const frame = useCurrentFrame();
-	const {fps, durationInFrames} = useVideoConfig();
+	const {durationInFrames} = useVideoConfig();
 	const src = resolveSrc(scene.bg);
 	const isCta = scene.kind === 'cta';
 
-	// Ken Burns (léger zoom continu)
-	const zoom = interpolate(frame, [0, durationInFrames], [1.08, 1.18]);
+	// Ken Burns (léger zoom continu) — clamp pour éviter tout dépassement
+	const zoom = interpolate(frame, [0, durationInFrames], [1.08, 1.18], {
+		extrapolateLeft: 'clamp',
+		extrapolateRight: 'clamp',
+	});
 	// Fondu entrée/sortie
 	const opacity = interpolate(
 		frame,
@@ -71,9 +73,16 @@ const SceneView: React.FC<{scene: AGScene}> = ({scene}) => {
 		[0, 1, 1, 0],
 		{extrapolateLeft: 'clamp', extrapolateRight: 'clamp'}
 	);
-	// Texte qui monte (spring)
-	const intro = spring({frame, fps, config: {damping: 200}});
-	const ty = interpolate(intro, [0, 1], [60, 0]);
+	// Entrée du texte : DÉTERMINISTE (plus de spring qui rebondit / saute).
+	// Montée douce + fondu, tout en clamp -> aucune valeur qui « pop ».
+	const inT = interpolate(frame, [0, 12], [0, 1], {
+		extrapolateLeft: 'clamp',
+		extrapolateRight: 'clamp',
+	});
+	const ty = interpolate(frame, [0, 18], [40, 0], {
+		extrapolateLeft: 'clamp',
+		extrapolateRight: 'clamp',
+	});
 
 	return (
 		<AbsoluteFill style={{opacity, backgroundColor: '#07070a'}}>
@@ -101,7 +110,7 @@ const SceneView: React.FC<{scene: AGScene}> = ({scene}) => {
 					textAlign: 'center',
 				}}
 			>
-				<div style={{transform: `translateY(${ty}px)`, opacity: intro}}>
+				<div style={{transform: `translateY(${ty}px) translateZ(0)`, opacity: inT, willChange: 'transform, opacity'}}>
 					{scene.caption && (
 						<div
 							style={{
