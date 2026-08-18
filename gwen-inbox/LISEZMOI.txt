@@ -1,0 +1,30 @@
+=====================================================
+  GWEN-INBOX — boite de depot des images de Gwen
+=====================================================
+
+COMMENT CA MARCHE (100 % automatique) :
+
+1. Depose tes images ICI (jpg, png, webp, heic...).
+   Les noms peuvent etre n'importe quoi : "Photo Menage 1.JPG" etc.
+
+2. Double-clique sur "deposer-images-gwen.bat" (a la racine du
+   depot) pour envoyer sur GitHub.
+
+3. Le robot GitHub fait tout seul :
+   - optimise chaque image pour le web (max 1920px, compression,
+     suppression des donnees EXIF = vie privee)
+   - renomme proprement : "Photo Menage 1.JPG" -> "photo-menage-1.jpg"
+   - la deplace dans le theme de Gwen (ag-gwen-services/assets/)
+   - publie une nouvelle version du theme (bump + zip + json)
+   - pousse sur main -> le site de Gwen se met a jour
+
+4. Ce dossier est vide automatiquement apres traitement.
+
+CAS PARTICULIER :
+- Pour changer l'image de fond principale du site, nomme ton
+  fichier "hero.jpg" (ou "hero.png"...) : il remplacera le hero.
+
+ATTENTION :
+- Le depot est PUBLIC : ne depose ici QUE des images destinees
+  au site (pas de photos privees).
+- Ne touche jamais au dossier ag-starter-domicile (template vendu).

@@ -1,0 +1,71 @@
+name: Gwen images auto-publish
+
+# Robot automatique du site Gwen Services :
+# des qu'une image arrive dans gwen-inbox/ (push sur main),
+# elle est optimisee pour le web, renommee proprement, deplacee dans
+# alliance-groupe-theme/assets/downloads/ag-gwen-services/assets/,
+# puis le theme est release (bump version + rebuild zip + json) et
+# pousse sur main -> le site live de Gwen se met a jour.
+
+on:
+  push:
+    branches: [main]
+    paths: ['gwen-inbox/**']
+  workflow_dispatch:
+
+concurrency:
+  group: gwen-images
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Traiter les images de gwen-inbox
+        id: process
+        run: |
+          shopt -s nullglob nocaseglob
+          ASSETS="alliance-groupe-theme/assets/downloads/ag-gwen-services/assets"
+          mkdir -p "$ASSETS"
+          count=0
+          for f in gwen-inbox/*.{jpg,jpeg,png,webp,heic,heif}; do
+            base="$(basename "$f")"
+            name="${base%.*}"
+            ext="$(echo "${base##*.}" | tr '[:upper:]' '[:lower:]')"
+            # Nom propre : minuscules, sans accents, espaces -> tirets
+            slug="$(echo "$name" | python3 -c "import sys,unicodedata,re; s=unicodedata.normalize('NFKD',sys.stdin.read()).encode('ascii','ignore').decode().lower(); print(re.sub(r'-+\$|^-+','',re.sub(r'[^a-z0-9]+','-',s)))")"
+            [ -z "$slug" ] && slug="image-$(date +%s)-$count"
+            # png reste png (logos/graphiques), tout le reste devient jpg
+            if [ "$ext" = "png" ]; then out_ext="png"; else out_ext="jpg"; fi
+            out="$ASSETS/$slug.$out_ext"
+            # Optimisation web : rotation auto, EXIF supprime (vie privee),
+            # max 1920px, compression qualite 82
+            if convert "$f" -auto-orient -strip -resize '1920x1920>' -quality 82 "$out"; then
+              rm -f "$f"
+              count=$((count+1))
+              echo "OK : $base -> $slug.$out_ext"
+            else
+              echo "IGNORE (conversion impossible) : $base"
+            fi
+          done
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          echo "$count image(s) traitee(s)"
+
+      - name: Release ag-gwen-services et push
+        if: steps.process.outputs.count != '0'
+        run: |
+          CUR="$(grep -oP '"version": "\K[0-9]+\.[0-9]+\.[0-9]+' alliance-groupe-theme/assets/downloads/ag-gwen-services.json)"
+          IFS=. read -r MA MI PA <<< "$CUR"
+          NEW="$MA.$MI.$((PA+1))"
+          echo "Version : $CUR -> $NEW"
+          bash scripts/bump-template.sh ag-gwen-services "$NEW"
+          git config user.name "gwen-images-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "auto: images Gwen -> release ag-gwen-services v$NEW"
+          git push origin main || { git pull --rebase origin main && git push origin main; }
