@@ -43,6 +43,13 @@ function ag_starter_domicile_customizer_defaults() {
 		// Footer.
 		'ag_footer_copyright'   => '',
 		'ag_footer_credits'     => true,
+		// Coordonnees (footer + page contact + carte).
+		'ag_domicile_footer_name'    => 'Douceur de Vie',
+		'ag_domicile_address'        => 'Nantes, France',
+		'ag_domicile_footer_address' => "1 rue des Tilleuls\n44000 Nantes",
+		'ag_domicile_footer_phone'   => '06 00 00 00 00',
+		'ag_domicile_footer_email'   => 'contact@douceur-de-vie.fr',
+		'ag_domicile_footer_hours'   => "Interventions 7j/7, jour et nuit\nAccueil tel. : Lun-Ven 8h-19h\nSamedi sur rendez-vous",
 		// Home section leads (phrases d'intro sous les titres H2).
 		'ag_domicile_individuel_lead' => 'Aide au quotidien des personnes agees et dependantes : lever, repas, toilette, entretien du logement, courses et compagnie. Evaluation a domicile gratuite.',
 		'ag_domicile_groupe_lead'     => 'Presence rassurante et lien social : accompagnement aux sorties et rendez-vous, stimulation, garde de nuit, soutien aux aidants familiaux.',
@@ -345,6 +352,40 @@ function ag_starter_domicile_customize_register( $wp_customize ) {
 			'priority'    => 9,
 		)
 	);
+
+	// ─── Section: Coordonnees (footer + contact) ───
+	$wp_customize->add_section(
+		'ag_section_contact',
+		array(
+			'title'    => esc_html__( 'Coordonnees (contact)', 'ag-starter-domicile' ),
+			'panel'    => 'ag_starter_panel',
+			'priority' => 35,
+		)
+	);
+	$contact_fields = array(
+		'ag_domicile_footer_name'    => array( 'label' => esc_html__( 'Nom affiche (marque)', 'ag-starter-domicile' ),        'type' => 'text' ),
+		'ag_domicile_address'        => array( 'label' => esc_html__( 'Ville / adresse pour la carte', 'ag-starter-domicile' ), 'type' => 'text' ),
+		'ag_domicile_footer_address' => array( 'label' => esc_html__( 'Adresse postale (2 lignes)', 'ag-starter-domicile' ),   'type' => 'textarea' ),
+		'ag_domicile_footer_phone'   => array( 'label' => esc_html__( 'Telephone', 'ag-starter-domicile' ),                   'type' => 'text' ),
+		'ag_domicile_footer_email'   => array( 'label' => esc_html__( 'Email', 'ag-starter-domicile' ),                       'type' => 'text' ),
+		'ag_domicile_footer_hours'   => array( 'label' => esc_html__( 'Horaires (plusieurs lignes)', 'ag-starter-domicile' ), 'type' => 'textarea' ),
+	);
+	$prio = 10;
+	foreach ( $contact_fields as $key => $meta ) {
+		$sanitize = ( 'textarea' === $meta['type'] ) ? 'sanitize_textarea_field' : 'sanitize_text_field';
+		$wp_customize->add_setting( $key, array(
+			'default'           => $defaults[ $key ],
+			'sanitize_callback' => $sanitize,
+			'transport'         => 'refresh',
+		) );
+		$wp_customize->add_control( $key, array(
+			'label'    => $meta['label'],
+			'section'  => 'ag_section_contact',
+			'type'     => $meta['type'],
+			'priority' => $prio,
+		) );
+		$prio += 5;
+	}
 
 	// ─── Section: Pied de page ───
 	$wp_customize->add_section(

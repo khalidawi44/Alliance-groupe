@@ -45,19 +45,21 @@ $map_src       = 'https://maps.google.com/maps?q=' . $map_query . '&output=embed
 				<ul style="list-style:none;padding:0;">
 					<li style="border-bottom:1px solid #ececec;padding:14px 0;">
 						<strong style="display:block;color:var(--ag-color-accent,#4f9d6b);font-size:.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">📍 Adresse</strong>
-						<span style="color:#333;">Douceur de Vie<br>1 rue des Tilleuls<br>44000 Nantes, France</span>
+						<span style="color:#333;"><strong><?php echo esc_html( ag_domicile_opt( 'ag_domicile_footer_name', 'Douceur de Vie' ) ); ?></strong><br><?php echo nl2br( esc_html( ag_domicile_opt( 'ag_domicile_footer_address', '' ) ) ); ?></span>
 					</li>
 					<li style="border-bottom:1px solid #ececec;padding:14px 0;">
 						<strong style="display:block;color:var(--ag-color-accent,#4f9d6b);font-size:.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">📞 Téléphone</strong>
-						<a href="tel:0600000000" style="color:#333;font-size:1.1rem;font-weight:600;text-decoration:none;">06 00 00 00 00</a>
+						<?php $ag_c_phone = ag_domicile_opt( 'ag_domicile_footer_phone', '' ); ?>
+						<a href="tel:<?php echo esc_attr( preg_replace( '/\s+/', '', $ag_c_phone ) ); ?>" style="color:#333;font-size:1.1rem;font-weight:600;text-decoration:none;"><?php echo esc_html( $ag_c_phone ); ?></a>
 					</li>
 					<li style="border-bottom:1px solid #ececec;padding:14px 0;">
 						<strong style="display:block;color:var(--ag-color-accent,#4f9d6b);font-size:.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">✉️ Email</strong>
-						<a href="mailto:contact@douceur-de-vie.fr" style="color:#333;text-decoration:none;">contact@douceur-de-vie.fr</a>
+						<?php $ag_c_email = ag_domicile_opt( 'ag_domicile_footer_email', '' ); ?>
+						<a href="mailto:<?php echo esc_attr( $ag_c_email ); ?>" style="color:#333;text-decoration:none;"><?php echo esc_html( $ag_c_email ); ?></a>
 					</li>
 					<li style="padding:14px 0;">
 						<strong style="display:block;color:var(--ag-color-accent,#4f9d6b);font-size:.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">🕒 Horaires</strong>
-						<span style="color:#333;">Interventions 7j/7, jour et nuit<br>Accueil téléphonique : Lun-Ven 8h-19h<br>Samedi : sur rendez-vous</span>
+						<span style="color:#333;"><?php echo nl2br( esc_html( ag_domicile_opt( 'ag_domicile_footer_hours', '' ) ) ); ?></span>
 					</li>
 				</ul>
 				<p style="margin-top:24px;">

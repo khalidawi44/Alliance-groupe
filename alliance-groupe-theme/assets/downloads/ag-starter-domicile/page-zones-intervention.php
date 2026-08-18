@@ -75,7 +75,7 @@ $zones_couvertes = array( 'Nantes', 'Rezé', 'Saint-Herblain', 'Orvault', 'Verto
 				<p style="color:#666;font-size:.9rem;">Votre commune n'apparaît pas ? <a href="<?php echo esc_url( ag_domicile_resolve_cta_url( '/contact/' ) ); ?>" style="color:var(--ag-color-accent,#4f9d6b);font-weight:600;">Contactez-nous</a> — nous étendons régulièrement notre secteur.</p>
 				<div class="ag-zones-contact-card">
 					<strong>📞 Premier contact</strong>
-					<p style="margin:0;font-size:1.4rem;font-weight:700;">06 00 00 00 00</p>
+					<p style="margin:0;font-size:1.4rem;font-weight:700;"><?php echo esc_html( ag_domicile_opt( 'ag_domicile_footer_phone', '06 00 00 00 00' ) ); ?></p>
 					<p style="margin:6px 0 0;font-size:.88rem;opacity:.9;">Évaluation des besoins à domicile gratuite, sans engagement.</p>
 				</div>
 			</div>

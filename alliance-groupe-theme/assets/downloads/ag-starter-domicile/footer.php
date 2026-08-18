@@ -13,24 +13,27 @@
 			<div class="ag-footer-col">
 				<h3><?php esc_html_e( 'Adresse', 'ag-starter-domicile' ); ?></h3>
 				<p>
-					<?php esc_html_e( 'Douceur de Vie', 'ag-starter-domicile' ); ?><br>
-					<?php esc_html_e( '1 rue des Tilleuls', 'ag-starter-domicile' ); ?><br>
-					<?php esc_html_e( '44000 Nantes, France', 'ag-starter-domicile' ); ?>
+					<strong><?php echo esc_html( ag_domicile_opt( 'ag_domicile_footer_name', 'Douceur de Vie' ) ); ?></strong><br>
+					<?php echo nl2br( esc_html( ag_domicile_opt( 'ag_domicile_footer_address', '' ) ) ); ?>
 				</p>
 			</div>
 			<div class="ag-footer-col">
 				<h3><?php esc_html_e( 'Horaires', 'ag-starter-domicile' ); ?></h3>
-				<ul>
-					<li><?php esc_html_e( 'Interventions 7j/7, jour et nuit', 'ag-starter-domicile' ); ?></li>
-					<li><?php esc_html_e( 'Accueil tel. : Lun-Ven 8h-19h', 'ag-starter-domicile' ); ?></li>
-					<li><?php esc_html_e( 'Samedi sur rendez-vous', 'ag-starter-domicile' ); ?></li>
-				</ul>
+				<p><?php echo nl2br( esc_html( ag_domicile_opt( 'ag_domicile_footer_hours', '' ) ) ); ?></p>
 			</div>
 			<div class="ag-footer-col">
 				<h3><?php esc_html_e( 'Contact', 'ag-starter-domicile' ); ?></h3>
 				<p>
-					<?php esc_html_e( 'Telephone : 06 00 00 00 00', 'ag-starter-domicile' ); ?><br>
-					<?php esc_html_e( 'Email : contact@douceur-de-vie.fr', 'ag-starter-domicile' ); ?>
+					<?php
+					$ag_f_phone = ag_domicile_opt( 'ag_domicile_footer_phone', '' );
+					$ag_f_email = ag_domicile_opt( 'ag_domicile_footer_email', '' );
+					if ( $ag_f_phone ) :
+						?><?php esc_html_e( 'Telephone : ', 'ag-starter-domicile' ); ?><a href="tel:<?php echo esc_attr( preg_replace( '/\s+/', '', $ag_f_phone ) ); ?>"><?php echo esc_html( $ag_f_phone ); ?></a><br><?php
+					endif;
+					if ( $ag_f_email ) :
+						?><?php esc_html_e( 'Email : ', 'ag-starter-domicile' ); ?><a href="mailto:<?php echo esc_attr( $ag_f_email ); ?>"><?php echo esc_html( $ag_f_email ); ?></a><?php
+					endif;
+					?>
 				</p>
 			</div>
 		</div>
