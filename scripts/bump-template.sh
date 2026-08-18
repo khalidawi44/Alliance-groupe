@@ -25,6 +25,7 @@ THEMES=(
     ag-starter-artisan
     ag-starter-coach
     ag-starter-domicile
+    ag-gwen-services
 )
 PLUGINS=(
     ag-fidelite-association

@@ -1,0 +1,613 @@
+<?php
+/**
+ * Gwen Services Customizer.
+ *
+ * Registers settings, sections and controls under Appearance >
+ * Customize so users can change colors, typography, hero text and
+ * footer text live, without editing any code — same experience
+ * as Astra, OceanWP or Kadence.
+ *
+ * @package AG_Starter_Domicile
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Default values per theme flavour.
+ *
+ * @return array
+ */
+function ag_starter_domicile_customizer_defaults() {
+	return array(
+		// Colors.
+		'ag_color_accent'       => '#86c78f',
+		'ag_color_background'   => '#14140f',
+		'ag_color_panel'        => '#1d1c15',
+		'ag_color_border'       => '#332f22',
+		'ag_color_text'         => '#e8e2d4',
+		'ag_color_heading'      => '#f6f1e4',
+		'ag_color_muted'        => '#b0a892',
+		// Typography.
+		'ag_font_family'        => 'system',
+		'ag_font_base_size'     => 16,
+		'ag_font_heading_scale' => 'default',
+		// Hero.
+		'ag_hero_show'          => true,
+		'ag_hero_prefix'        => 'Bien vivre chez soi, avec',
+		'ag_hero_brand'         => 'Gwen Services',
+		'ag_hero_subtitle'      => 'Aide a domicile pour les personnes agees et les familles : aide au quotidien, presence et accompagnement. Intervenants qualifies, credit d\'impot de 50%.',
+		'ag_hero_button'        => 'Devis gratuit',
+		'ag_hero_button_url'    => '/devis/',
+		// Footer.
+		'ag_footer_copyright'   => '',
+		'ag_footer_credits'     => true,
+		// Coordonnees (footer + page contact + carte).
+		'ag_domicile_footer_name'    => 'Gwen Services',
+		'ag_domicile_address'        => 'Nantes, France',
+		'ag_domicile_footer_address' => "44000 Nantes",
+		'ag_domicile_footer_phone'   => '06 00 00 00 00',
+		'ag_domicile_footer_email'   => 'contact@gwen-services.fr',
+		'ag_domicile_footer_hours'   => "Interventions 7j/7, jour et nuit\nAccueil tel. : Lun-Ven 8h-19h\nSamedi sur rendez-vous",
+		// Home section leads (phrases d'intro sous les titres H2).
+		'ag_domicile_individuel_lead' => 'Aide au quotidien des personnes agees et dependantes : lever, repas, toilette, entretien du logement, courses et compagnie. Evaluation a domicile gratuite.',
+		'ag_domicile_groupe_lead'     => 'Presence rassurante et lien social : accompagnement aux sorties et rendez-vous, stimulation, garde de nuit, soutien aux aidants familiaux.',
+		'ag_domicile_temoignages_lead'=> 'Decouvrez les retours des familles que nous accompagnons : un proche qui reste chez lui, en securite, entoure.',
+		'ag_domicile_about_p1'        => 'Service declare d\'aide et d\'accompagnement a domicile, nous permettons a chacun de bien vieillir chez soi. Intervenants qualifies, selectionnes et suivis, avec un referent stable pour chaque famille.',
+		'ag_domicile_about_p2'        => 'Chaque accompagnement est unique : nous batissons avec vous un plan d\'aide sur-mesure. Toutes nos prestations ouvrent droit au credit d\'impot de 50%. Evaluation a domicile gratuite et sans engagement.',
+		// Home section H2 titles (split pre + em for editorial flexibility).
+		'ag_domicile_individuel_title_pre'  => 'Aide au',
+		'ag_domicile_individuel_title_em'   => 'quotidien',
+		'ag_domicile_groupe_title_pre'      => 'Presence &',
+		'ag_domicile_groupe_title_em'       => 'lien social',
+		'ag_domicile_temoignages_title_pre' => '',
+		'ag_domicile_temoignages_title_em'  => 'Temoignages',
+		'ag_domicile_about_title_pre'       => 'Qui',
+		'ag_domicile_about_title_em'        => 'sommes-nous',
+	);
+}
+
+/**
+ * Retrieve a customizer setting with its default fallback.
+ *
+ * @param string $key Setting key.
+ * @return mixed
+ */
+function ag_starter_domicile_get_option( $key ) {
+	$defaults = ag_starter_domicile_customizer_defaults();
+	$default  = isset( $defaults[ $key ] ) ? $defaults[ $key ] : '';
+	return get_theme_mod( $key, $default );
+}
+
+/**
+ * Register the customizer panel, sections, settings and controls.
+ *
+ * @param WP_Customize_Manager $wp_customize Customizer object.
+ */
+function ag_starter_domicile_customize_register( $wp_customize ) {
+	$defaults = ag_starter_domicile_customizer_defaults();
+
+	// Panel.
+	$wp_customize->add_panel(
+		'ag_starter_panel',
+		array(
+			'title'       => esc_html__( 'AG Starter — Personnalisation', 'ag-gwen-services' ),
+			'description' => esc_html__( 'Modifiez les couleurs, la typographie et les textes cles de votre theme directement ici. Aucun code requis.', 'ag-gwen-services' ),
+			'priority'    => 30,
+		)
+	);
+
+	// ─── Section: Améliorer mon thème (upgrade promo) ───
+	$wp_customize->add_section(
+		'ag_section_upgrade',
+		array(
+			'title'    => esc_html__( '💎 Ameliorer mon theme', 'ag-gwen-services' ),
+			'panel'    => 'ag_starter_panel',
+			'priority' => 5,
+		)
+	);
+	$wp_customize->add_setting(
+		'ag_upgrade_placeholder',
+		array(
+			'default'           => '',
+			'sanitize_callback' => '__return_empty_string',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		new AG_Starter_Domicile_Upgrade_Control(
+			$wp_customize,
+			'ag_upgrade_placeholder',
+			array(
+				'section'  => 'ag_section_upgrade',
+				'priority' => 10,
+			)
+		)
+	);
+
+	// ─── Section: Couleurs ───
+	$wp_customize->add_section(
+		'ag_section_colors',
+		array(
+			'title'    => esc_html__( 'Couleurs du theme', 'ag-gwen-services' ),
+			'panel'    => 'ag_starter_panel',
+			'priority' => 10,
+		)
+	);
+
+	$colors = array(
+		'ag_color_accent'     => esc_html__( 'Couleur d\'accent', 'ag-gwen-services' ),
+		'ag_color_background' => esc_html__( 'Arriere-plan principal', 'ag-gwen-services' ),
+		'ag_color_panel'      => esc_html__( 'Arriere-plan des cartes', 'ag-gwen-services' ),
+		'ag_color_border'     => esc_html__( 'Couleur des bordures', 'ag-gwen-services' ),
+		'ag_color_text'       => esc_html__( 'Couleur du texte', 'ag-gwen-services' ),
+		'ag_color_heading'    => esc_html__( 'Couleur des titres', 'ag-gwen-services' ),
+		'ag_color_muted'      => esc_html__( 'Texte secondaire', 'ag-gwen-services' ),
+	);
+	$priority = 10;
+	foreach ( $colors as $key => $label ) {
+		$wp_customize->add_setting(
+			$key,
+			array(
+				'default'           => $defaults[ $key ],
+				'sanitize_callback' => 'sanitize_hex_color',
+				'transport'         => 'refresh',
+			)
+		);
+		$wp_customize->add_control(
+			new WP_Customize_Color_Control(
+				$wp_customize,
+				$key,
+				array(
+					'label'    => $label,
+					'section'  => 'ag_section_colors',
+					'priority' => $priority,
+				)
+			)
+		);
+		$priority += 5;
+	}
+
+	// ─── Section: Typographie ───
+	$wp_customize->add_section(
+		'ag_section_typography',
+		array(
+			'title'    => esc_html__( 'Typographie', 'ag-gwen-services' ),
+			'panel'    => 'ag_starter_panel',
+			'priority' => 20,
+		)
+	);
+
+	$wp_customize->add_setting(
+		'ag_font_family',
+		array(
+			'default'           => $defaults['ag_font_family'],
+			'sanitize_callback' => 'ag_starter_domicile_sanitize_select',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		'ag_font_family',
+		array(
+			'label'   => esc_html__( 'Famille de police', 'ag-gwen-services' ),
+			'section' => 'ag_section_typography',
+			'type'    => 'select',
+			'choices' => array(
+				'system'     => esc_html__( 'Systeme (defaut, rapide)', 'ag-gwen-services' ),
+				'sans'       => esc_html__( 'Sans-serif classique', 'ag-gwen-services' ),
+				'serif'      => esc_html__( 'Serif (elegant)', 'ag-gwen-services' ),
+				'monospace'  => esc_html__( 'Monospace', 'ag-gwen-services' ),
+			),
+		)
+	);
+
+	$wp_customize->add_setting(
+		'ag_font_base_size',
+		array(
+			'default'           => $defaults['ag_font_base_size'],
+			'sanitize_callback' => 'absint',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		'ag_font_base_size',
+		array(
+			'label'       => esc_html__( 'Taille de base du texte (px)', 'ag-gwen-services' ),
+			'description' => esc_html__( 'Entre 14 et 20.', 'ag-gwen-services' ),
+			'section'     => 'ag_section_typography',
+			'type'        => 'number',
+			'input_attrs' => array(
+				'min'  => 14,
+				'max'  => 20,
+				'step' => 1,
+			),
+		)
+	);
+
+	$wp_customize->add_setting(
+		'ag_font_heading_scale',
+		array(
+			'default'           => $defaults['ag_font_heading_scale'],
+			'sanitize_callback' => 'ag_starter_domicile_sanitize_select',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		'ag_font_heading_scale',
+		array(
+			'label'   => esc_html__( 'Taille des titres', 'ag-gwen-services' ),
+			'section' => 'ag_section_typography',
+			'type'    => 'select',
+			'choices' => array(
+				'small'   => esc_html__( 'Compact', 'ag-gwen-services' ),
+				'default' => esc_html__( 'Par defaut', 'ag-gwen-services' ),
+				'large'   => esc_html__( 'Grand', 'ag-gwen-services' ),
+			),
+		)
+	);
+
+	// ─── Section: Hero ───
+	$wp_customize->add_section(
+		'ag_section_hero',
+		array(
+			'title'    => esc_html__( 'Hero (accueil)', 'ag-gwen-services' ),
+			'panel'    => 'ag_starter_panel',
+			'priority' => 30,
+		)
+	);
+
+	$hero_fields = array(
+		'ag_hero_show'       => array(
+			'label' => esc_html__( 'Afficher le hero', 'ag-gwen-services' ),
+			'type'  => 'checkbox',
+		),
+		'ag_hero_prefix'     => array(
+			'label' => esc_html__( 'Prefixe du titre', 'ag-gwen-services' ),
+			'type'  => 'text',
+		),
+		'ag_hero_brand'      => array(
+			'label' => esc_html__( 'Nom de l\'etablissement', 'ag-gwen-services' ),
+			'type'  => 'text',
+		),
+		'ag_hero_subtitle'   => array(
+			'label' => esc_html__( 'Sous-titre', 'ag-gwen-services' ),
+			'type'  => 'textarea',
+		),
+		'ag_hero_button'     => array(
+			'label' => esc_html__( 'Texte du bouton', 'ag-gwen-services' ),
+			'type'  => 'text',
+		),
+		'ag_hero_button_url' => array(
+			'label' => esc_html__( 'Lien du bouton (URL ou #ancre)', 'ag-gwen-services' ),
+			'type'  => 'text',
+		),
+	);
+	$prio = 10;
+	foreach ( $hero_fields as $key => $meta ) {
+		$sanitize = 'sanitize_text_field';
+		if ( 'checkbox' === $meta['type'] ) {
+			$sanitize = 'ag_starter_domicile_sanitize_checkbox';
+		} elseif ( 'textarea' === $meta['type'] ) {
+			$sanitize = 'sanitize_textarea_field';
+		}
+		$wp_customize->add_setting(
+			$key,
+			array(
+				'default'           => $defaults[ $key ],
+				'sanitize_callback' => $sanitize,
+				'transport'         => 'refresh',
+			)
+		);
+		$wp_customize->add_control(
+			$key,
+			array(
+				'label'    => $meta['label'],
+				'section'  => 'ag_section_hero',
+				'type'     => $meta['type'],
+				'priority' => $prio,
+			)
+		);
+		$prio += 5;
+	}
+
+	// Hero image personnalisee (upload) — prioritaire sur l'image du preset.
+	$wp_customize->add_setting(
+		'ag_domicile_hero_custom',
+		array(
+			'default'           => '',
+			'sanitize_callback' => 'esc_url_raw',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		new WP_Customize_Image_Control(
+			$wp_customize,
+			'ag_domicile_hero_custom',
+			array(
+				'label'       => esc_html__( 'Image du hero (personnalisee)', 'ag-gwen-services' ),
+				'description' => esc_html__( 'Remplace l\'image de fond du hero et des en-tetes de page. Laissez vide pour utiliser l\'image du theme.', 'ag-gwen-services' ),
+				'section'     => 'ag_section_hero',
+				'priority'    => 8,
+			)
+		)
+	);
+
+	// Services personnalises (grille accueil) — une ligne "emoji | Titre".
+	$wp_customize->add_setting(
+		'ag_domicile_services_custom',
+		array(
+			'default'           => '',
+			'sanitize_callback' => 'sanitize_textarea_field',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		'ag_domicile_services_custom',
+		array(
+			'label'       => esc_html__( 'Services personnalises (grille accueil)', 'ag-gwen-services' ),
+			'description' => esc_html__( 'Une ligne par service, au format "emoji | Titre" (ex : 🌅 | Aide au lever). Laissez vide pour utiliser les services du metier choisi.', 'ag-gwen-services' ),
+			'section'     => 'ag_section_hero',
+			'type'        => 'textarea',
+			'priority'    => 9,
+		)
+	);
+
+	// ─── Section: Coordonnees (footer + contact) ───
+	$wp_customize->add_section(
+		'ag_section_contact',
+		array(
+			'title'    => esc_html__( 'Coordonnees (contact)', 'ag-gwen-services' ),
+			'panel'    => 'ag_starter_panel',
+			'priority' => 35,
+		)
+	);
+	$contact_fields = array(
+		'ag_domicile_footer_name'    => array( 'label' => esc_html__( 'Nom affiche (marque)', 'ag-gwen-services' ),        'type' => 'text' ),
+		'ag_domicile_address'        => array( 'label' => esc_html__( 'Ville / adresse pour la carte', 'ag-gwen-services' ), 'type' => 'text' ),
+		'ag_domicile_footer_address' => array( 'label' => esc_html__( 'Adresse postale (2 lignes)', 'ag-gwen-services' ),   'type' => 'textarea' ),
+		'ag_domicile_footer_phone'   => array( 'label' => esc_html__( 'Telephone', 'ag-gwen-services' ),                   'type' => 'text' ),
+		'ag_domicile_footer_email'   => array( 'label' => esc_html__( 'Email', 'ag-gwen-services' ),                       'type' => 'text' ),
+		'ag_domicile_footer_hours'   => array( 'label' => esc_html__( 'Horaires (plusieurs lignes)', 'ag-gwen-services' ), 'type' => 'textarea' ),
+	);
+	$prio = 10;
+	foreach ( $contact_fields as $key => $meta ) {
+		$sanitize = ( 'textarea' === $meta['type'] ) ? 'sanitize_textarea_field' : 'sanitize_text_field';
+		$wp_customize->add_setting( $key, array(
+			'default'           => $defaults[ $key ],
+			'sanitize_callback' => $sanitize,
+			'transport'         => 'refresh',
+		) );
+		$wp_customize->add_control( $key, array(
+			'label'    => $meta['label'],
+			'section'  => 'ag_section_contact',
+			'type'     => $meta['type'],
+			'priority' => $prio,
+		) );
+		$prio += 5;
+	}
+
+	// ─── Section: Pied de page ───
+	$wp_customize->add_section(
+		'ag_section_footer',
+		array(
+			'title'    => esc_html__( 'Pied de page', 'ag-gwen-services' ),
+			'panel'    => 'ag_starter_panel',
+			'priority' => 40,
+		)
+	);
+
+	$wp_customize->add_setting(
+		'ag_footer_copyright',
+		array(
+			'default'           => $defaults['ag_footer_copyright'],
+			'sanitize_callback' => 'sanitize_text_field',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		'ag_footer_copyright',
+		array(
+			'label'       => esc_html__( 'Texte de copyright personnalise', 'ag-gwen-services' ),
+			'description' => esc_html__( 'Laissez vide pour le texte par defaut.', 'ag-gwen-services' ),
+			'section'     => 'ag_section_footer',
+			'type'        => 'text',
+		)
+	);
+
+	$wp_customize->add_setting(
+		'ag_footer_credits',
+		array(
+			'default'           => $defaults['ag_footer_credits'],
+			'sanitize_callback' => 'ag_starter_domicile_sanitize_checkbox',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		'ag_footer_credits',
+		array(
+			'label'   => esc_html__( 'Afficher le credit "Theme gratuit par Alliance Group"', 'ag-gwen-services' ),
+			'section' => 'ag_section_footer',
+			'type'    => 'checkbox',
+		)
+	);
+
+	// ─── Section: Contenu accueil — textes (leads des sections) ───
+	$wp_customize->add_section(
+		'ag_section_home_content',
+		array(
+			'title'       => esc_html__( 'Contenu accueil — textes', 'ag-gwen-services' ),
+			'panel'       => 'ag_starter_panel',
+			'priority'    => 55,
+			'description' => esc_html__( 'Personnalisez les phrases d\'introduction (sous les titres) de chaque section de l\'accueil.', 'ag-gwen-services' ),
+		)
+	);
+	$ag_domicile_home_fields = array(
+		'ag_domicile_individuel_title_pre'  => array( 'label' => esc_html__( 'Accompagnement individuel — debut du titre', 'ag-gwen-services' ),  'type' => 'text' ),
+		'ag_domicile_individuel_title_em'   => array( 'label' => esc_html__( 'Accompagnement individuel — mot accentue', 'ag-gwen-services' ),    'type' => 'text' ),
+		'ag_domicile_individuel_lead'       => array( 'label' => esc_html__( 'Accompagnement individuel — phrase d\'intro', 'ag-gwen-services' ), 'type' => 'textarea' ),
+		'ag_domicile_groupe_title_pre'      => array( 'label' => esc_html__( 'Seances de groupe — debut du titre', 'ag-gwen-services' ),    'type' => 'text' ),
+		'ag_domicile_groupe_title_em'       => array( 'label' => esc_html__( 'Seances de groupe — mot accentue', 'ag-gwen-services' ),      'type' => 'text' ),
+		'ag_domicile_groupe_lead'           => array( 'label' => esc_html__( 'Seances de groupe — phrase d\'intro', 'ag-gwen-services' ),   'type' => 'textarea' ),
+		'ag_domicile_temoignages_title_pre' => array( 'label' => esc_html__( 'Temoignages — debut du titre', 'ag-gwen-services' ),          'type' => 'text' ),
+		'ag_domicile_temoignages_title_em'  => array( 'label' => esc_html__( 'Temoignages — mot accentue', 'ag-gwen-services' ),            'type' => 'text' ),
+		'ag_domicile_temoignages_lead'      => array( 'label' => esc_html__( 'Temoignages — phrase d\'intro', 'ag-gwen-services' ),         'type' => 'textarea' ),
+		'ag_domicile_about_title_pre'       => array( 'label' => esc_html__( 'Mon parcours — debut du titre', 'ag-gwen-services' ),         'type' => 'text' ),
+		'ag_domicile_about_title_em'        => array( 'label' => esc_html__( 'Nos engagements — mot accentue', 'ag-gwen-services' ),           'type' => 'text' ),
+		'ag_domicile_about_p1'              => array( 'label' => esc_html__( 'Mon parcours — paragraphe 1', 'ag-gwen-services' ),           'type' => 'textarea' ),
+		'ag_domicile_about_p2'              => array( 'label' => esc_html__( 'Mon parcours — paragraphe 2', 'ag-gwen-services' ),           'type' => 'textarea' ),
+	);
+	$ag_prio = 10;
+	foreach ( $ag_domicile_home_fields as $ag_key => $ag_meta ) {
+		$ag_type     = isset( $ag_meta['type'] ) ? $ag_meta['type'] : 'textarea';
+		$ag_sanitize = ( 'textarea' === $ag_type ) ? 'sanitize_textarea_field' : 'sanitize_text_field';
+		$wp_customize->add_setting(
+			$ag_key,
+			array(
+				'default'           => isset( $defaults[ $ag_key ] ) ? $defaults[ $ag_key ] : '',
+				'sanitize_callback' => $ag_sanitize,
+				'transport'         => 'refresh',
+			)
+		);
+		$wp_customize->add_control(
+			$ag_key,
+			array(
+				'label'    => $ag_meta['label'],
+				'section'  => 'ag_section_home_content',
+				'type'     => $ag_type,
+				'priority' => $ag_prio,
+			)
+		);
+		$ag_prio += 5;
+	}
+}
+add_action( 'customize_register', 'ag_starter_domicile_customize_register' );
+
+/**
+ * Sanitize a checkbox value.
+ *
+ * @param mixed $value Value.
+ * @return bool
+ */
+function ag_starter_domicile_sanitize_checkbox( $value ) {
+	return ( isset( $value ) && true === (bool) $value );
+}
+
+/**
+ * Sanitize a select choice against the registered choices.
+ *
+ * @param string               $value   Raw value.
+ * @param WP_Customize_Setting $setting Setting object.
+ * @return string
+ */
+function ag_starter_domicile_sanitize_select( $value, $setting = null ) {
+	$value = sanitize_key( $value );
+	if ( $setting && isset( $setting->manager ) ) {
+		$control = $setting->manager->get_control( $setting->id );
+		if ( $control && isset( $control->choices[ $value ] ) ) {
+			return $value;
+		}
+		return $setting->default;
+	}
+	return $value;
+}
+
+/**
+ * Custom Customizer control that renders the "Ameliorer mon theme"
+ * upgrade banner with clickable Pro / Premium / Business buttons +
+ * a soft custom-site upsell. Loaded lazily after WP_Customize_Control.
+ */
+function ag_starter_domicile_register_upgrade_control() {
+	if ( ! class_exists( 'WP_Customize_Control' ) ) {
+		return;
+	}
+	if ( class_exists( 'AG_Starter_Domicile_Upgrade_Control' ) ) {
+		return;
+	}
+
+	class AG_Starter_Domicile_Upgrade_Control extends WP_Customize_Control {
+
+		public $type = 'ag_upgrade_banner';
+
+		public function render_content() {
+			$utm     = '?utm_source=wp-customizer&utm_medium=ag-gwen-services&utm_campaign=upgrade';
+			$base    = 'https://alliancegroupe-inc.com/templates-wordpress';
+			$contact = 'https://alliancegroupe-inc.com/contact' . $utm;
+
+			// Détecte le tier de licence active (free / pro / premium / business).
+			$tier  = class_exists( 'AG_Licence_Client' ) ? AG_Licence_Client::get_tier() : 'free';
+			$order = array( 'free' => 0, 'pro' => 1, 'premium' => 2, 'business' => 3 );
+			$cur   = isset( $order[ $tier ] ) ? $order[ $tier ] : 0;
+
+			$all_packs = array(
+				'business' => array(
+					'icon'  => '💎',
+					'title' => 'Premium',
+					'price' => '69€',
+					'desc'  => 'Notre design le plus abouti : animations, blocs premium, header sticky, polices, temoignages, galerie, WooCommerce, couleurs avancees, support. Paiement unique.',
+					'url'   => $base . $utm . '&pack=premium#ag-pricing',
+				),
+			);
+
+			// Ne garde QUE les packs strictement supérieurs au tier courant.
+			$packs = array();
+			foreach ( $all_packs as $key => $p ) {
+				if ( $order[ $key ] > $cur ) $packs[ $key ] = $p;
+			}
+
+			$tier_labels = array(
+				'pro'      => '💎 Premium',
+				'premium'  => '💎 Premium',
+				'business' => '💎 Premium',
+			);
+			?>
+			<div style="background:#fff;border:1px solid #d4b45c;border-radius:8px;padding:14px;margin-top:8px;">
+
+				<?php if ( 'free' !== $tier ) : ?>
+					<div style="background:linear-gradient(135deg,#d4b45c 0%,#b8941f 100%);color:#14140f;padding:12px 14px;border-radius:6px;margin-bottom:<?php echo empty( $packs ) ? '0' : '12px'; ?>;text-align:center;">
+						<strong style="display:block;font-size:13px;">✓ <?php echo esc_html( $tier_labels[ $tier ] ); ?> actif</strong>
+						<span style="display:block;font-size:11px;margin-top:2px;opacity:.85;">Merci pour votre confiance !</span>
+					</div>
+				<?php endif; ?>
+
+				<?php if ( ! empty( $packs ) ) : ?>
+					<?php if ( 'free' === $tier ) : ?>
+						<p style="margin:0 0 12px;color:#50575e;font-size:12px;line-height:1.5;">
+							<?php esc_html_e( 'Vous utilisez la version gratuite. Packs payants disponibles :', 'ag-gwen-services' ); ?>
+						</p>
+					<?php else : ?>
+						<p style="margin:0 0 12px;color:#50575e;font-size:12px;line-height:1.5;">
+							<?php esc_html_e( 'Upgrader vers le niveau supérieur :', 'ag-gwen-services' ); ?>
+						</p>
+					<?php endif; ?>
+
+					<?php foreach ( $packs as $p ) : ?>
+						<a href="<?php echo esc_url( $p['url'] ); ?>" target="_blank" rel="noopener" style="display:block;padding:10px 12px;background:#f6f7f7;border:1px solid #ddd;border-left:3px solid #d4b45c;border-radius:4px;color:#1d2327;text-decoration:none;margin-bottom:8px;transition:background .15s;">
+							<strong style="display:block;color:#1d2327;font-size:13px;">
+								<span style="margin-right:4px;"><?php echo esc_html( $p['icon'] ); ?></span>
+								<?php echo esc_html( $p['title'] ); ?>
+								<span style="float:right;color:#d4b45c;"><?php echo esc_html( $p['price'] ); ?></span>
+							</strong>
+							<span style="display:block;margin-top:3px;font-size:11px;color:#50575e;line-height:1.45;">
+								<?php echo esc_html( $p['desc'] ); ?>
+							</span>
+						</a>
+					<?php endforeach; ?>
+				<?php endif; ?>
+
+				<div style="margin-top:14px;padding-top:12px;border-top:1px dashed #d4b45c;text-align:center;">
+					<a href="<?php echo esc_url( $contact ); ?>" target="_blank" rel="noopener" style="display:inline-block;color:#14140f;background:#d4b45c;padding:8px 14px;border-radius:4px;font-size:12px;font-weight:700;text-decoration:none;">
+						💎 <?php esc_html_e( 'Site sur-mesure (+340% leads) →', 'ag-gwen-services' ); ?>
+					</a>
+					<p style="margin:8px 0 0;color:#888;font-size:11px;">
+						<?php esc_html_e( 'Premier appel gratuit, sans engagement', 'ag-gwen-services' ); ?>
+					</p>
+				</div>
+			</div>
+			<?php
+		}
+	}
+}
+add_action( 'customize_register', 'ag_starter_domicile_register_upgrade_control', 1 );
+
+require get_template_directory() . '/inc/customizer-output.php';
