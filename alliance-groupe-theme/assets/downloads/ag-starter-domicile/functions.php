@@ -128,6 +128,25 @@ function ag_starter_domicile_pingback_header() {
 add_action( 'wp_head', 'ag_starter_domicile_pingback_header' );
 
 /**
+ * Helper: URL de l'image du hero, avec priorite :
+ * 1) image personnalisee (Customizer), 2) image du preset metier,
+ * 3) image embarquee dans le theme. Ne renvoie jamais de valeur vide.
+ */
+if ( ! function_exists( 'ag_domicile_hero_url' ) ) {
+	function ag_domicile_hero_url() {
+		$custom = get_theme_mod( 'ag_domicile_hero_custom', '' );
+		if ( $custom ) {
+			return $custom;
+		}
+		$preset = get_theme_mod( 'ag_domicile_hero_image', '' );
+		if ( $preset ) {
+			return $preset;
+		}
+		return get_template_directory_uri() . '/assets/hero.jpg';
+	}
+}
+
+/**
  * Helper: read a Customizer option (short alias for ag_starter_domicile_get_option).
  */
 if ( ! function_exists( 'ag_domicile_opt' ) ) {

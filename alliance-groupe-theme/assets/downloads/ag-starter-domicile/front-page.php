@@ -18,7 +18,7 @@ $ag_how        = $ag_has_preset ? ag_domicile_Presets::get_active_how() : array(
 $ag_faq        = $ag_has_preset ? ag_domicile_Presets::get_active_faq() : array();
 $ag_stats      = $ag_has_preset ? ag_domicile_Presets::get_active_stats() : array();
 $ag_metier_nom = ag_domicile_opt( 'ag_domicile_metier_nom', '' );
-$ag_hero_image = ag_domicile_opt( 'ag_domicile_hero_image', '' );
+$ag_hero_image = ag_domicile_hero_url();
 // Sécurité : si un preset est actif mais l'image hero est vide, on retombe
 // sur l'image embarquée dans le thème (jamais de hero cassé).
 if ( $ag_has_preset && ! $ag_hero_image ) {

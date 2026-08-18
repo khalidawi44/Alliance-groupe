@@ -304,6 +304,28 @@ function ag_starter_domicile_customize_register( $wp_customize ) {
 		$prio += 5;
 	}
 
+	// Hero image personnalisee (upload) — prioritaire sur l'image du preset.
+	$wp_customize->add_setting(
+		'ag_domicile_hero_custom',
+		array(
+			'default'           => '',
+			'sanitize_callback' => 'esc_url_raw',
+			'transport'         => 'refresh',
+		)
+	);
+	$wp_customize->add_control(
+		new WP_Customize_Image_Control(
+			$wp_customize,
+			'ag_domicile_hero_custom',
+			array(
+				'label'       => esc_html__( 'Image du hero (personnalisee)', 'ag-starter-domicile' ),
+				'description' => esc_html__( 'Remplace l\'image de fond du hero et des en-tetes de page. Laissez vide pour utiliser l\'image du theme.', 'ag-starter-domicile' ),
+				'section'     => 'ag_section_hero',
+				'priority'    => 8,
+			)
+		)
+	);
+
 	// ─── Section: Pied de page ───
 	$wp_customize->add_section(
 		'ag_section_footer',

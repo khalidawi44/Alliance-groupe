@@ -20,7 +20,7 @@ get_header();
 	<?php
 	// Hero compact en haut de page (titre + lead intro)
 	$ag_metier_nom = ag_domicile_opt( 'ag_domicile_metier_nom', '' );
-	$ag_hero_image = ag_domicile_opt( 'ag_domicile_hero_image', '' );
+	$ag_hero_image = ag_domicile_hero_url();
 	while ( have_posts() ) : the_post(); ?>
 		<section class="ag-page-hero ag-page-hero--full"<?php if ( $ag_hero_image ) : ?> style="background-image:url('<?php echo esc_url( $ag_hero_image ); ?>');"<?php endif; ?>>
 			<div class="ag-container">

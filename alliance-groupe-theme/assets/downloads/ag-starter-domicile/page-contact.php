@@ -9,7 +9,7 @@
 get_header();
 
 $ag_metier_nom = ag_domicile_opt( 'ag_domicile_metier_nom', '' );
-$ag_hero_image = ag_domicile_opt( 'ag_domicile_hero_image', '' );
+$ag_hero_image = ag_domicile_hero_url();
 $map_query     = urlencode( ag_domicile_opt( 'ag_domicile_address', 'Nantes, France' ) );
 $map_src       = 'https://maps.google.com/maps?q=' . $map_query . '&output=embed&z=15';
 ?>

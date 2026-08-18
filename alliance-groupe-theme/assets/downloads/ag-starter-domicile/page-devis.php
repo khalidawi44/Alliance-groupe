@@ -8,7 +8,7 @@
 get_header();
 
 $ag_metier_nom = ag_domicile_opt( 'ag_domicile_metier_nom', '' );
-$ag_hero_image = ag_domicile_opt( 'ag_domicile_hero_image', '' );
+$ag_hero_image = ag_domicile_hero_url();
 ?>
 
 <main id="ag-main" class="ag-main ag-main--premium" role="main">

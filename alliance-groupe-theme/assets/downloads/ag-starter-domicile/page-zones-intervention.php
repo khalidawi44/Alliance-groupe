@@ -12,7 +12,7 @@ get_header();
 
 $metier_slug   = get_theme_mod( 'ag_domicile_metier_slug', '' );
 $ag_metier_nom = ag_domicile_opt( 'ag_domicile_metier_nom', '' );
-$ag_hero_image = ag_domicile_opt( 'ag_domicile_hero_image', '' );
+$ag_hero_image = ag_domicile_hero_url();
 if ( ! $ag_hero_image ) {
 	$ag_hero_image = get_template_directory_uri() . '/assets/hero.jpg';
 }
