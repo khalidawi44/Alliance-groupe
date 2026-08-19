@@ -124,5 +124,5 @@ if ( class_exists( 'ag_domicile_Presets' ) ) {
 </main>
 
 <?php
-get_sidebar();
+// get_sidebar(); // retiré : pas de barre de widgets par défaut sur ce site vitrine
 get_footer();

@@ -45,11 +45,11 @@ $map_src       = 'https://maps.google.com/maps?q=' . $map_query . '&output=embed
 				<ul style="list-style:none;padding:0;">
 					<li style="border-bottom:1px solid #ececec;padding:14px 0;">
 						<strong style="display:block;color:var(--ag-color-accent,#4f9d6b);font-size:.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">📍 Adresse</strong>
-						<span style="color:#333;"><strong><?php echo esc_html( ag_domicile_opt( 'ag_domicile_footer_name', 'Douceur de Vie' ) ); ?></strong><br><?php echo nl2br( esc_html( ag_domicile_opt( 'ag_domicile_footer_address', '' ) ) ); ?></span>
+						<span style="color:#333;"><strong><?php echo esc_html( ag_domicile_opt( 'ag_domicile_footer_name', 'Gwen Services' ) ); ?></strong><br><?php echo nl2br( esc_html( ag_domicile_opt( 'ag_domicile_footer_address', 'Nantes et alentours (44)' ) ) ); ?></span>
 					</li>
 					<li style="border-bottom:1px solid #ececec;padding:14px 0;">
 						<strong style="display:block;color:var(--ag-color-accent,#4f9d6b);font-size:.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">📞 Téléphone</strong>
-						<?php $ag_c_phone = ag_domicile_opt( 'ag_domicile_footer_phone', '' ); ?>
+						<?php $ag_c_phone = ag_domicile_opt( 'ag_domicile_footer_phone', '06 26 14 28 45' ); ?>
 						<a href="tel:<?php echo esc_attr( preg_replace( '/\s+/', '', $ag_c_phone ) ); ?>" style="color:#333;font-size:1.1rem;font-weight:600;text-decoration:none;"><?php echo esc_html( $ag_c_phone ); ?></a>
 					</li>
 					<li style="border-bottom:1px solid #ececec;padding:14px 0;">

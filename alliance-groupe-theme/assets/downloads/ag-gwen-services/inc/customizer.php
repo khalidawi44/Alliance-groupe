@@ -47,7 +47,7 @@ function ag_starter_domicile_customizer_defaults() {
 		'ag_domicile_footer_name'    => 'Gwen Services',
 		'ag_domicile_address'        => 'Nantes, France',
 		'ag_domicile_footer_address' => "44000 Nantes",
-		'ag_domicile_footer_phone'   => '06 00 00 00 00',
+		'ag_domicile_footer_phone'   => '06 26 14 28 45',
 		'ag_domicile_footer_email'   => 'contact@gwen-services.fr',
 		'ag_domicile_footer_hours'   => "Interventions 7j/7, jour et nuit\nAccueil tel. : Lun-Ven 8h-19h\nSamedi sur rendez-vous",
 		// Home section leads (phrases d'intro sous les titres H2).
