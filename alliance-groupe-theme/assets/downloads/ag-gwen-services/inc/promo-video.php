@@ -103,7 +103,7 @@ function ag_domicile_render_promo_video() {
 	.ag-gwenwhy__ct{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:1.28rem;color:#f6f1e4 !important;margin:0 0 10px;}
 	.ag-gwenwhy__cd{color:#b3ad9c;font-size:1rem;line-height:1.55;margin:0;}
 	.ag-gwenwhy__cta{text-align:center;margin-top:52px;}
-	.ag-gwenwhy__btn{display:inline-block;background:linear-gradient(120deg,#2f7d54,#4f9d6b 55%,#6fbf8a);color:#fff !important;font-weight:800;font-size:1.18rem;text-decoration:none;padding:22px 48px;border-radius:100px;box-shadow:0 20px 44px -14px rgba(47,125,84,.85),0 0 0 6px rgba(111,191,138,.16);transition:transform .2s ease,box-shadow .2s ease,filter .2s ease;}
+	.ag-gwenwhy__btn{display:inline-block;background:linear-gradient(120deg,#1a5e3a,#2f8552);color:#fff !important;font-weight:800;font-size:1.18rem;text-decoration:none;padding:22px 48px;border-radius:100px;box-shadow:0 20px 44px -14px rgba(47,125,84,.85),0 0 0 6px rgba(111,191,138,.16);transition:transform .2s ease,box-shadow .2s ease,filter .2s ease;}
 	.ag-gwenwhy__btn:hover{transform:translateY(-3px) scale(1.02);filter:brightness(1.06);box-shadow:0 28px 58px -16px rgba(47,125,84,.95),0 0 0 8px rgba(111,191,138,.22);}
 	.ag-gwenwhy__note{display:block;color:#8f8a7c;font-size:.92rem;margin-top:14px;}
 	/* Bande de chiffres animés */

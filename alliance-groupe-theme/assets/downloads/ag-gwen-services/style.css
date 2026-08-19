@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Site sur-mesure de Gwen Services — aide a domicile a Nantes (personnes agees, handicap leger, garde d'enfants). Theme dedie synchronise a GitHub, isole du template vendu. Palette vert doux et beige.
-Version: 1.1.4
+Version: 1.1.5
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -787,7 +787,7 @@ body.ag-premium-mode .ag-primary-menu a:hover{
 .ag-devis-form textarea{min-height:110px;resize:vertical}
 .ag-devis-row-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media (max-width:540px){.ag-devis-row-2{grid-template-columns:1fr}}
-.ag-devis-submit{background:linear-gradient(120deg,#2f7d54,#4f9d6b 55%,#6fbf8a);color:#fff;border:none;padding:18px 40px;font-size:1.12rem;font-weight:800;border-radius:100px;cursor:pointer;box-shadow:0 20px 44px -14px rgba(47,125,84,.8),0 0 0 5px rgba(111,191,138,.14);transition:transform .2s ease,box-shadow .2s ease,filter .2s ease;width:100%;margin-top:6px;letter-spacing:.02em}
+.ag-devis-submit{background:linear-gradient(120deg,#1a5e3a,#2f8552);color:#fff;border:none;padding:18px 44px;font-size:1.12rem;font-weight:800;border-radius:100px;cursor:pointer;box-shadow:0 20px 44px -14px rgba(26,94,58,.85),0 0 0 5px rgba(47,133,82,.16);transition:transform .2s ease,box-shadow .2s ease,filter .2s ease;justify-self:start;width:auto;margin-top:6px;letter-spacing:.02em}
 .ag-devis-submit:hover{transform:translateY(-2px);filter:brightness(1.06);box-shadow:0 28px 58px -16px rgba(47,125,84,.9),0 0 0 8px rgba(111,191,138,.2)}
 .ag-devis-result{background:radial-gradient(120% 130% at 85% -20%,rgba(79,157,107,.12),transparent 55%),linear-gradient(180deg,#f4faf5,#eef6ef);border:1.5px solid rgba(79,157,107,.4);border-radius:18px;padding:30px 26px;margin-top:26px;text-align:center}
 .ag-devis-result__label{color:#3f8f63;font-size:.86rem;text-transform:uppercase;letter-spacing:1.5px;font-weight:800;margin:0 0 8px}
@@ -881,7 +881,7 @@ body.ag-premium-mode .ag-services-grid-wrap{padding:80px 24px}
 
 /* ── CTA hero : style AG (navy alt) ──────────────────────────────── */
 body.ag-premium-mode .ag-btn-pro{
-    background:linear-gradient(120deg,#2f7d54,#4f9d6b 55%,#6fbf8a)!important;
+    background:linear-gradient(120deg,#1a5e3a,#2f8552)!important;
     color:#fff!important;
     border:0!important;border-radius:100px!important;
     font-weight:800!important;letter-spacing:.02em;

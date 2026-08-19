@@ -83,7 +83,7 @@ body.ag-dm-premium-active .ag-pd-trust__item svg {
 /* ---------- Boutons ---------- */
 body.ag-dm-premium-active .ag-btn-pro,
 body.ag-dm-premium-active .ag-btn {
-	background: linear-gradient(120deg, #2f7d54, #4f9d6b 55%, #6fbf8a) !important;
+	background: linear-gradient(120deg, #1a5e3a, #2f8552) !important;
 	color: #fff !important;
 	border: 0 !important;
 	border-radius: 100px !important;
@@ -288,7 +288,7 @@ body.ag-dm-premium-active .ag-pd-float {
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
-	background: linear-gradient(120deg, var(--pd-green), var(--pd-green-2));
+	background: linear-gradient(120deg, #1a5e3a, #2f8552);
 	color: #fff;
 	font-weight: 800;
 	text-decoration: none;
