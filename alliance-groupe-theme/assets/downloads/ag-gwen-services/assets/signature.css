@@ -116,10 +116,16 @@ body.ag-dm-premium-active .ag-services-grid-title em{color:var(--sig-green)!impo
 /* ============================================================
    RÉVÉLATIONS AU SCROLL (JS ajoute .is-in)
    ============================================================ */
-body.ag-dm-premium-active [data-sig-reveal]{opacity:0;transform:translateY(34px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+/* évite tout scroll horizontal pendant les glissements (n'affecte pas le sticky) */
+body.ag-dm-premium-active{overflow-x:clip}
+body.ag-dm-premium-active [data-sig-reveal]{opacity:0;will-change:transform,opacity;transition:opacity .85s cubic-bezier(.2,.7,.2,1),transform .85s cubic-bezier(.2,.7,.2,1)}
+body.ag-dm-premium-active [data-sig-reveal="up"]{transform:translateY(46px)}
+body.ag-dm-premium-active [data-sig-reveal="left"]{transform:translateX(-64px)}
+body.ag-dm-premium-active [data-sig-reveal="right"]{transform:translateX(64px)}
+body.ag-dm-premium-active [data-sig-reveal="scale"]{transform:scale(.9)}
 body.ag-dm-premium-active [data-sig-reveal].is-in{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){
-	body.ag-dm-premium-active [data-sig-reveal]{opacity:1!important;transform:none!important}
+	body.ag-dm-premium-active [data-sig-reveal]{opacity:1!important;transform:none!important;transition:none!important}
 	.ag-hero-stamp__spin,.ag-mq__track{animation:none!important}
 }
 
