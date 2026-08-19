@@ -137,3 +137,124 @@ body.ag-dm-premium-active .ag-service-card{border-radius:18px!important}
 
 /* Numéro filigrane géant dans « Comment ça marche » */
 body.ag-dm-premium-active .ag-howit-wrap{position:relative;overflow:hidden}
+
+/* ============================================================
+   PER-SECTION — traitements « spectaculaires » uniques
+   ============================================================ */
+
+/* ---------- 1) NOS SERVICES : cartes numérotées, hover vert plein ---------- */
+body.ag-dm-premium-active .ag-services-grid-wrap{
+	position:relative;overflow:hidden;
+	background:radial-gradient(120% 90% at 100% 0,rgba(79,157,107,.10),transparent 55%),linear-gradient(180deg,#fbfdfb,#f4f8f4)!important;
+	border-radius:30px!important;border:1px solid #e7efe8;
+}
+/* filigrane serif géant */
+body.ag-dm-premium-active .ag-services-grid-wrap::before{
+	content:"Services";position:absolute;right:-2%;top:-4%;font-family:"Fraunces",serif;font-weight:600;font-style:italic;
+	font-size:clamp(6rem,16vw,13rem);line-height:1;color:#1a5e3a;opacity:.05;pointer-events:none;z-index:0;
+}
+body.ag-dm-premium-active .ag-services-grid{position:relative;z-index:1;counter-reset:agsvc;gap:18px!important}
+body.ag-dm-premium-active .ag-service-card{
+	counter-increment:agsvc;position:relative;overflow:hidden;background:#fff!important;
+	border:1px solid #e7efe8!important;border-radius:22px!important;padding:30px 26px 28px!important;
+	box-shadow:0 20px 44px -34px rgba(20,45,28,.5)!important;
+	transition:transform .32s cubic-bezier(.2,.7,.2,1),box-shadow .32s ease,background .32s ease!important;
+}
+body.ag-dm-premium-active .ag-service-card::after{
+	content:counter(agsvc,decimal-leading-zero);position:absolute;top:16px;right:20px;
+	font-family:"Fraunces",serif;font-weight:600;font-size:1.5rem;color:#c9a36b;opacity:.8;transition:color .3s ease;
+}
+body.ag-dm-premium-active .ag-service-card__icon{
+	font-size:2rem!important;width:64px;height:64px;display:flex;align-items:center;justify-content:center;
+	background:linear-gradient(135deg,rgba(79,157,107,.16),rgba(201,163,107,.14));border-radius:18px;margin-bottom:16px;
+	transition:transform .32s ease;
+}
+body.ag-dm-premium-active .ag-service-card__title{font-size:1.12rem!important;font-weight:800!important;color:#22312a!important;transition:color .3s ease}
+body.ag-dm-premium-active .ag-service-card:hover{
+	transform:translateY(-8px)!important;background:linear-gradient(140deg,#1a5e3a,#2f8552)!important;
+	box-shadow:0 34px 60px -30px rgba(26,94,58,.85)!important;border-color:transparent!important;
+}
+body.ag-dm-premium-active .ag-service-card:hover .ag-service-card__title{color:#fff!important}
+body.ag-dm-premium-active .ag-service-card:hover .ag-service-card__icon{transform:scale(1.1) rotate(-4deg);background:rgba(255,255,255,.16)}
+body.ag-dm-premium-active .ag-service-card:hover::after{color:var(--sig-gold-2)}
+
+/* ---------- 2) COMMENT ÇA MARCHE : fil conducteur + grands numéros ---------- */
+body.ag-dm-premium-active .ag-howit-wrap{
+	background:radial-gradient(100% 80% at 0 0,rgba(201,163,107,.10),transparent 55%),linear-gradient(180deg,#f7faf6,#f1f6f1)!important;
+}
+body.ag-dm-premium-active .ag-howit-grid{position:relative}
+@media(min-width:821px){
+	body.ag-dm-premium-active .ag-howit-grid::before{
+		content:"";position:absolute;top:52px;left:16%;right:16%;height:2px;z-index:0;
+		background:repeating-linear-gradient(90deg,#c9a36b 0 9px,transparent 9px 20px);opacity:.6;
+	}
+}
+body.ag-dm-premium-active .ag-howit-card{
+	position:relative;z-index:1;background:#fff!important;border:1px solid #e7efe8!important;border-radius:22px!important;
+	padding:34px 28px!important;box-shadow:0 22px 46px -34px rgba(20,45,28,.5)!important;transition:transform .3s ease,box-shadow .3s ease!important;
+}
+body.ag-dm-premium-active .ag-howit-card:hover{transform:translateY(-6px)!important;box-shadow:0 34px 60px -30px rgba(20,45,28,.65)!important}
+body.ag-dm-premium-active .ag-howit-emoji{display:block!important;font-size:1.7rem!important;margin:6px 0 8px!important}
+body.ag-dm-premium-active .ag-howit-title{font-family:"Fraunces",serif!important;font-size:1.28rem!important;font-weight:600!important;color:#22312a!important}
+
+/* ---------- 3) TÉMOIGNAGES : bande sombre, guillemet géant, verre ---------- */
+body.ag-dm-premium-active .ag-testi-wrap{
+	position:relative;overflow:hidden;
+	background:radial-gradient(120% 120% at 85% -10%,rgba(201,163,107,.16),transparent 55%),linear-gradient(160deg,#12160f,#173a27 60%,#1a5e3a)!important;
+}
+body.ag-dm-premium-active .ag-testi-wrap .ag-services-grid-title{color:var(--sig-cream)!important}
+body.ag-dm-premium-active .ag-testi-wrap .ag-services-grid-title span{color:var(--sig-green-soft)!important}
+body.ag-dm-premium-active .ag-testi-wrap .ag-services-grid-lead{color:#c7c1b0!important}
+body.ag-dm-premium-active .ag-testi-wrap .ag-services-grid-header::before{content:"✦ Paroles de familles";color:var(--sig-gold)!important}
+body.ag-dm-premium-active .ag-testi-grid{position:relative;z-index:1}
+body.ag-dm-premium-active .ag-testi-card{
+	background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03))!important;
+	border:1px solid rgba(201,163,107,.28)!important;border-radius:22px!important;padding:34px 30px!important;
+	-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);position:relative;overflow:hidden;
+	box-shadow:0 30px 60px -34px rgba(0,0,0,.7)!important;transition:transform .3s ease!important;
+}
+body.ag-dm-premium-active .ag-testi-card::before{
+	content:"\201C";position:absolute;top:-18px;left:14px;font-family:"Fraunces",serif;font-size:6rem;line-height:1;color:var(--sig-gold);opacity:.35;
+}
+body.ag-dm-premium-active .ag-testi-card:hover{transform:translateY(-6px)!important}
+body.ag-dm-premium-active .ag-testi-stars{color:var(--sig-gold-2)!important;font-size:1.15rem;letter-spacing:2px}
+body.ag-dm-premium-active .ag-testi-text{color:#f2ede0!important;font-size:1.06rem!important;font-style:italic;line-height:1.65}
+body.ag-dm-premium-active .ag-testi-author strong{color:#fff!important}
+body.ag-dm-premium-active .ag-testi-author{color:var(--sig-green-soft)!important}
+/* carte centrale mise en avant (desktop) */
+@media(min-width:821px){
+	body.ag-dm-premium-active .ag-testi-grid .ag-testi-card:nth-child(2){transform:translateY(-16px) scale(1.03);border-color:rgba(201,163,107,.55)!important}
+	body.ag-dm-premium-active .ag-testi-grid .ag-testi-card:nth-child(2):hover{transform:translateY(-22px) scale(1.03)!important}
+}
+
+/* ---------- 4) FAQ : accordéon éditorial, toggle doré ---------- */
+body.ag-dm-premium-active .ag-faq-wrap{
+	background:radial-gradient(100% 80% at 100% 0,rgba(79,157,107,.10),transparent 55%),linear-gradient(180deg,#fbfdfb,#f4f8f4)!important;
+}
+body.ag-dm-premium-active .ag-faq-item{
+	background:#fff!important;border:1px solid #e7efe8!important;border-radius:16px!important;margin-bottom:14px;
+	box-shadow:0 14px 30px -26px rgba(20,45,28,.5)!important;transition:box-shadow .25s ease,border-color .25s ease!important;overflow:hidden;
+}
+body.ag-dm-premium-active .ag-faq-item[open]{border-color:rgba(79,157,107,.5)!important;box-shadow:0 22px 46px -30px rgba(20,45,28,.6)!important}
+body.ag-dm-premium-active .ag-faq-q{
+	font-family:"Fraunces",serif!important;font-size:1.16rem!important;font-weight:600!important;color:#22312a!important;
+	padding:22px 60px 22px 26px!important;
+}
+body.ag-dm-premium-active .ag-faq-q::after{
+	content:"+"!important;position:absolute;right:22px;top:50%;transform:translateY(-50%);
+	width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;
+	background:linear-gradient(135deg,#1a5e3a,#2f8552);color:#fff!important;font-size:1.3rem;font-weight:400;transition:transform .28s ease!important;
+}
+body.ag-dm-premium-active .ag-faq-item[open] .ag-faq-q::after{transform:translateY(-50%) rotate(135deg)}
+body.ag-dm-premium-active .ag-faq-a{padding:0 26px 22px!important;color:#4a5a4e!important;line-height:1.7}
+
+/* ---------- 5) GALERIE : survol zoom + voile catégorie ---------- */
+body.ag-dm-premium-active .ag-gwengal__cell::after{
+	content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(26,94,58,.55));opacity:0;transition:opacity .35s ease;
+}
+body.ag-dm-premium-active .ag-gwengal__cell:hover::after{opacity:1}
+body.ag-dm-premium-active .ag-gwengal__cell{box-shadow:0 30px 60px -34px rgba(0,0,0,.85)!important}
+
+/* ---------- 6) POURQUOI : cartes plus affirmées ---------- */
+body.ag-dm-premium-active .ag-gwenwhy__card{border-color:rgba(201,163,107,.22)!important}
+body.ag-dm-premium-active .ag-gwenwhy__card:hover{border-color:rgba(201,163,107,.55)!important}
