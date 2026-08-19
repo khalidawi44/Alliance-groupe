@@ -32,9 +32,9 @@ $chapters = array(
 .ag-lm *{box-sizing:border-box;}
 /* HERO */
 .ag-lm__hero{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;}
-/* Fond Naples FIXE (baie + Vésuve) */
+/* Fond vidéo promo (plein écran, autoplay/muet/boucle) */
 .ag-lm__hbg{position:absolute;inset:0;z-index:0;}
-.ag-lm__hbg img{width:100%;height:100%;object-fit:cover;object-position:center 40%;}
+.ag-lm__hbg img,.ag-lm__hbg video{width:100%;height:100%;object-fit:cover;object-position:center 45%;display:block;}
 .ag-lm__sgrad{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(5,5,10,.45),rgba(5,5,10,.08) 26%,rgba(5,5,10,.35) 66%,rgba(5,5,10,.95)),radial-gradient(115% 85% at 26% 55%,transparent 40%,rgba(5,5,10,.5));}
 /* Égérie DÉTOURÉE, séparée du fond, posée devant */
 .ag-lm__egerie{position:absolute;z-index:2;right:clamp(-10px,3vw,90px);bottom:0;height:min(94vh,1080px);display:block;pointer-events:none;animation:agEgIn 1s ease .1s both;}
@@ -132,27 +132,18 @@ $chapters = array(
 
 	<!-- HERO ÉGÉRIE — fond Naples fixe + égérie détourée séparée -->
 	<section class="ag-lm__hero">
-		<!-- Fond Naples FIXE -->
+		<!-- Fond VIDÉO promo (plein écran) -->
 		<div class="ag-lm__hbg" aria-hidden="true">
-			<img src="<?php echo esc_url( $dir . '/assets/images/cities/baie_naples_nuit.jpg' ); ?>" alt="Baie de Naples">
+			<video autoplay muted loop playsinline preload="metadata"
+				poster="<?php echo esc_url( $dir . '/assets/images/cities/baie_naples_nuit.jpg' ); ?>">
+				<source src="<?php echo esc_url( $dir . '/assets/videos/promo-alliance-16x9.mp4' ); ?>" type="video/mp4">
+			</video>
 		</div>
 		<div class="ag-lm__sgrad"></div>
-		<!-- Égérie détourée (posée devant le fond) -->
-		<picture class="ag-lm__egerie">
-			<source srcset="<?php echo esc_url( $dir . '/assets/images/egerie/egerie-cutout.webp' ); ?>" type="image/webp">
-			<img src="<?php echo esc_url( $dir . '/assets/images/egerie/egerie-cutout.png' ); ?>" alt="Égérie Alliance Groupe" fetchpriority="high">
-		</picture>
 		<!-- Marque (coin haut gauche) -->
 		<div class="ag-lm__htop">
 			<img src="<?php echo esc_url( $dir . '/assets/images/logo-header.png' ); ?>" alt="Alliance Groupe">
 			<span class="ag-lm__eyebrow">De Naples à Nantes</span>
-		</div>
-		<!-- Badges flottants -->
-		<div class="ag-lm__float" aria-hidden="true">
-			<span class="ag-lm__cw ag-lm__cw--1" data-depth="26"><span class="ag-lm__chip">🔒 Sécurité incluse</span></span>
-			<span class="ag-lm__cw ag-lm__cw--2" data-depth="40"><span class="ag-lm__chip">🤖 Devis en 30 s</span></span>
-			<span class="ag-lm__cw ag-lm__cw--3" data-depth="32"><span class="ag-lm__chip">📈 SEO Google</span></span>
-			<span class="ag-lm__cw ag-lm__cw--4" data-depth="48"><span class="ag-lm__chip">🇮🇹 De Naples à Nantes</span></span>
 		</div>
 		<!-- Texte (bas gauche) -->
 		<div class="ag-lm__hin">
