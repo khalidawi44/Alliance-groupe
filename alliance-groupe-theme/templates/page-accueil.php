@@ -22,8 +22,8 @@ $packs = array(
 );
 $marquee = array( 'Sites sécurisés', 'Propulsé par l\'IA', 'SEO Google', 'De Naples à Nantes', 'Un seul interlocuteur', 'Livré en 5 jours', 'Design sur-mesure', 'Audit gratuit' );
 $chapters = array(
-	array( 'n' => '01', 't' => 'Un artisan, pas une usine', 'p' => 'De Naples à Nantes, un seul interlocuteur — du conseil à la livraison. Vous parlez directement à la personne qui fait le travail.', 'img' => 'team/fabrizio-nantes.jpg' ),
-	array( 'n' => '02', 't' => 'La sécurité, incluse', 'p' => 'Chaque site est livré sécurisé — rare chez les agences classiques. On commence toujours par un audit gratuit, pour partir sur des bases saines.', 'img' => 'securite/nantes-cyber.jpg' ),
+	array( 'n' => '01', 't' => 'Un artisan, pas une usine', 'p' => 'De Naples à Nantes, un seul interlocuteur — du conseil à la livraison. Vous parlez directement à la personne qui fait le travail.', 'img' => 'egerie/egerie-portrait.png' ),
+	array( 'n' => '02', 't' => 'La sécurité, incluse', 'p' => 'Chaque site est livré sécurisé — rare chez les agences classiques. On commence toujours par un audit gratuit, pour partir sur des bases saines.', 'img' => 'egerie/egerie-baie.jpg' ),
 	array( 'n' => '03', 't' => 'Propulsé par l\'IA', 'p' => 'Devis en 30 secondes, maquette régénérée, contenu créé : l\'IA fait le gros du travail, vous gardez le contrôle et le style.', 'img' => 'atelier/ia.webp' ),
 );
 ?>
