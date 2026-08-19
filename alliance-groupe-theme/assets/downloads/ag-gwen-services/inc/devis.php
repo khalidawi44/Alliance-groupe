@@ -223,8 +223,11 @@ class ag_domicile_Devis {
 		$result_lab = isset( $_GET['ag_devis_label'] ) ? sanitize_text_field( wp_unslash( $_GET['ag_devis_label'] ) ) : '';
 
 		ob_start();
+		$ag_dv_tel = function_exists( 'ag_domicile_opt' ) ? ag_domicile_opt( 'ag_domicile_footer_phone', '06 26 14 28 45' ) : '06 26 14 28 45';
 		?>
+		<div class="ag-devis-layout">
 		<div class="ag-devis-wrap">
+			<span class="ag-devis-kicker">✦ Estimation en 1 minute</span>
 			<h2 style="margin-top:0;">Devis <span style="color:var(--ag-color-accent,#F37A1F);"><?php echo esc_html( strtolower( $metier_nom ) ); ?></span> en ligne</h2>
 			<p style="color:#555;margin-bottom:20px;">Remplissez ce formulaire — vous obtenez instantanément une fourchette indicative. Toutes nos prestations ouvrent droit au crédit d’impôt de 50 %.</p>
 
@@ -330,7 +333,35 @@ class ag_domicile_Devis {
 					</p>
 				</form>
 			<?php endif; ?>
-		</div>
+		</div><!-- /.ag-devis-wrap -->
+
+		<aside class="ag-devis-aside">
+			<div class="ag-devis-stamp" aria-hidden="true">
+				<div class="ag-hero-stamp__spin">
+					<svg viewBox="0 0 200 200"><defs><path id="agdvstamp" d="M100,100 m-72,0 a72,72 0 1,1 144,0 a72,72 0 1,1 -144,0"/></defs>
+						<circle cx="100" cy="100" r="90" fill="none" stroke="#c9a36b" stroke-width="1.4" opacity=".6"/>
+						<text fill="#e6c78a" font-family="Nunito Sans, sans-serif" font-size="12" font-weight="800" letter-spacing="3.2"><textPath href="#agdvstamp" startOffset="0%">· AVANCE IMMÉDIATE · SANS ENGAGEMENT </textPath></text>
+					</svg>
+				</div>
+				<div class="ag-hero-stamp__mid"><b>50%</b><span>Crédit<br>d’impôt</span></div>
+			</div>
+			<h3 class="ag-devis-aside__title">Ce que vous obtenez</h3>
+			<ul class="ag-devis-benefits">
+				<li>Une fourchette <strong>immédiate</strong>, sans engagement</li>
+				<li><strong>Crédit d’impôt 50 %</strong> déduit tout de suite (avance immédiate)</li>
+				<li>Une <strong>évaluation à domicile offerte</strong></li>
+				<li>Un <strong>devis ferme &amp; gratuit</strong> après la visite</li>
+				<li>La <strong>même intervenante</strong>, à Nantes &amp; alentours</li>
+			</ul>
+			<blockquote class="ag-devis-quote">« Gwen accompagne ma mère avec une douceur incroyable. On est enfin rassurés. »<cite>— Sylvie M. · Nantes</cite></blockquote>
+			<?php if ( $ag_dv_tel ) : ?>
+			<a class="ag-devis-callcard" href="tel:<?php echo esc_attr( preg_replace( '/\s+/', '', $ag_dv_tel ) ); ?>">
+				<span class="ag-devis-callcard__ic">📞</span>
+				<span class="ag-devis-callcard__tx"><small>Ou appelez directement Gwen</small><strong><?php echo esc_html( $ag_dv_tel ); ?></strong></span>
+			</a>
+			<?php endif; ?>
+		</aside>
+		</div><!-- /.ag-devis-layout -->
 		<?php
 		return ob_get_clean();
 	}

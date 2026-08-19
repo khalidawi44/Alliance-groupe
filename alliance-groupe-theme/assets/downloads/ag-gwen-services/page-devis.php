@@ -21,7 +21,7 @@ $ag_hero_image = ag_domicile_hero_url();
 		</div>
 	</section>
 
-	<section style="padding:40px 24px;background:#fff;">
+	<section class="ag-devis-section" style="padding:56px 24px;">
 		<?php while ( have_posts() ) : the_post(); the_content(); endwhile; ?>
 	</section>
 
