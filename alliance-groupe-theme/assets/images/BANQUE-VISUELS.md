@@ -31,7 +31,13 @@ commité survit** → toute nouvelle image doit être poussée dans le repo pour
 
 ---
 
-## À DÉPOSER (en attente du user) — images d'offres
+## Cartes d'OFFRES (packs Sites Express) — ARRIVÉES
+- `assets/images/promo-cards/offre-essentiel.jpg` → pack Essentiel (490 €).
+- `assets/images/promo-cards/offre-pro.jpg` → pack Pro (890 €).
+- `assets/images/promo-cards/offre-boutique.jpg` → pack Boutique (1490 €).
+→ À brancher sur les cartes de prix de l'accueil (`$packs`) et la page /sites-express.
+
+## (historique) À DÉPOSER — images d'offres
 Le user a de **nouvelles images** (mockups laptop/carnets au logo AG lion, bureaux
 Naples avec l'égérie + Fabrizio) à utiliser pour les **offres**. Elles ne sont
 **pas encore dans le dépôt**.
