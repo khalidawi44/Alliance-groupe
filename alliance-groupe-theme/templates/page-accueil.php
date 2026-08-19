@@ -141,35 +141,6 @@ $chapters = array(
 @media(max-width:900px){.ag-lm__egerie{height:min(80vh,860px);right:50%;transform:translateX(50%)}.ag-lm__hin{text-align:center;max-width:none;margin:0 auto;padding-bottom:34px}.ag-lm__cta{justify-content:center}.ag-lm__hsub{margin-left:auto;margin-right:auto}}
 @media(max-width:760px){.ag-lm__chap{grid-template-columns:1fr}.ag-lm__chap:nth-child(even) .ag-lm__chtext{order:0}.ag-lm__float{display:none}.ag-lm__egerie{height:70vh;opacity:.98}}
 @media(prefers-reduced-motion:reduce){.ag-lm__cw .ag-lm__chip,.ag-lm__cta .ag-btnp,.ag-lm__egerie{animation:none}}
-
-/* ===== COUCHE CINÉMATIQUE (hero approche + lion + dissolution) ===== */
-/* Titre : chaque mot dans une fenêtre qui masque le débordement bas */
-.ag-lm__h1 .ag-w{display:inline-block;overflow:hidden;vertical-align:bottom}
-.ag-lm__h1 .ag-w i{display:inline-block;font-style:inherit}
-.ag-lm__h1 .ag-w-em{font-style:italic;color:var(--gold2)}
-/* Lion en filigrane (grossit au scroll, se fond au noir) */
-.ag-lm__lionmark{position:absolute;z-index:2;left:50%;top:44%;transform:translate(-50%,-50%);width:min(60vw,600px);height:auto;opacity:.10;mix-blend-mode:screen;pointer-events:none}
-/* le fond vidéo pivote autour de la main quand on plonge dedans */
-.ag-lm__hbg{will-change:transform,opacity}
-
-/* Dissolution — par DÉFAUT compacte (photo + texte). Le tunnel animé de 250svh
-   ne s'active QUE si le JS ciné tourne (html.ag-cine-on) → jamais de tunnel vide
-   sur mobile bas de gamme / sans JS / reduced-motion. */
-.ag-dissolve{position:relative}
-.ag-dissolve__stick{position:relative;min-height:60svh;display:grid;place-items:center;overflow:hidden;background:#05050a center/cover no-repeat;padding:72px 0}
-#ag-cv{display:none}
-.ag-dissolve__dust{display:none}
-.ag-dissolve__veil{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(5,5,10,.55),transparent 30%,rgba(5,5,10,.92))}
-.ag-dissolve__cap{position:relative;z-index:3;left:0;right:0;text-align:center;padding:0 24px}
-.ag-dissolve__cap h2{font-family:"Fraunces",Georgia,serif;font-weight:500;font-size:clamp(1.9rem,5.4vw,4rem);line-height:1.05;color:#f6f1e4}
-.ag-dissolve__cap h2 em{font-style:italic;color:var(--gold2)}
-.ag-dissolve__cap p{margin:16px auto 0;max-width:52ch;color:#c7c1b0;line-height:1.6}
-/* Version animée (JS actif) */
-html.ag-cine-on .ag-dissolve{height:250svh}
-html.ag-cine-on .ag-dissolve__stick{position:sticky;top:0;height:100svh;min-height:0;padding:0}
-html.ag-cine-on #ag-cv{display:block;position:absolute;inset:0;width:100%;height:100%}
-html.ag-cine-on .ag-dissolve__dust{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;opacity:.5;mix-blend-mode:screen;pointer-events:none}
-html.ag-cine-on .ag-dissolve__cap{position:absolute;bottom:12vh}
 </style>
 
 <main class="ag-lm" id="ag-main-content">
@@ -186,8 +157,6 @@ html.ag-cine-on .ag-dissolve__cap{position:absolute;bottom:12vh}
 			</div>
 		</div>
 		<div class="ag-lm__sgrad"></div>
-		<!-- Lion en filigrane (grossit au scroll, mix-blend screen) -->
-		<img class="ag-lm__lionmark" src="<?php echo esc_url( $dir . '/assets/images/cinematique/lion-or.jpg' ); ?>" alt="" aria-hidden="true" loading="lazy">
 		<!-- Marque (coin haut gauche) -->
 		<div class="ag-lm__htop">
 			<img src="<?php echo esc_url( $dir . '/assets/images/logo-header.png' ); ?>" alt="Alliance Groupe">
@@ -195,11 +164,11 @@ html.ag-cine-on .ag-dissolve__cap{position:absolute;bottom:12vh}
 		</div>
 		<!-- Texte (bas gauche) -->
 		<div class="ag-lm__hin">
-			<h1 class="ag-lm__h1" data-split>Je crée &amp; <em>sécurise</em> votre site,<br>propulsé par l'<em>IA</em>.</h1>
+			<h1 class="ag-lm__h1">Je crée &amp; <em>sécurise</em> votre site,<br>propulsé par l'<em>IA</em>.</h1>
 			<p class="ag-lm__hsub">Un seul interlocuteur, du conseil à la livraison. Des sites premium, rapides et sécurisés — dès 490 €.</p>
 			<div class="ag-lm__cta">
 				<button type="button" class="ag-btnp" data-devis>🚀 Lancer mon projet</button>
-				<a class="ag-btno" href="<?php echo esc_url( home_url( '/audit-seo' ) ); ?>">Audit gratuit</a>
+				<a class="ag-btno" href="#offres">Voir les offres</a>
 			</div>
 		</div>
 	</section>
@@ -228,19 +197,6 @@ html.ag-cine-on .ag-dissolve__cap{position:absolute;bottom:12vh}
 	</section>
 
 	<!-- OFFRES / PRIX -->
-	<!-- DISSOLUTION : le bureau se change en poussière d'or (canvas piloté au scroll) -->
-	<section class="ag-dissolve" aria-label="Du marbre à l'or">
-		<div class="ag-dissolve__stick" style="background-image:url('<?php echo esc_url( $dir . '/assets/images/team/1_bureau_naples.jpg' ); ?>');">
-			<canvas id="ag-cv" data-src="<?php echo esc_url( $dir . '/assets/images/team/1_bureau_naples.jpg' ); ?>" aria-hidden="true"></canvas>
-			<img class="ag-dissolve__dust" src="<?php echo esc_url( $dir . '/assets/images/cinematique/main-poussiere-or.jpg' ); ?>" alt="" aria-hidden="true" loading="lazy">
-			<div class="ag-dissolve__veil"></div>
-			<div class="ag-dissolve__cap">
-				<h2>De la matière brute<br>au sur-mesure <em>ciselé</em>.</h2>
-				<p>Chaque site est taillé à la main — du bloc de marbre jusqu'à l'or fin.</p>
-			</div>
-		</div>
-	</section>
-
 	<section class="ag-lm__offres" id="offres">
 		<h2 class="ag-lm__stitle ag-rv">Des offres claires, à prix fixe</h2>
 		<p class="ag-lm__sdesc ag-rv">Pas de devis interminable. Vous choisissez, on livre — vite.</p>
