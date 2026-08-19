@@ -44,7 +44,11 @@
 			</a>
 		</div>
 
-		<nav class="ag-primary-nav" aria-label="<?php esc_attr_e( 'Menu principal', 'ag-gwen-services' ); ?>">
+		<button class="ag-navtoggle" type="button" aria-label="<?php esc_attr_e( 'Ouvrir le menu', 'ag-gwen-services' ); ?>" aria-expanded="false" aria-controls="ag-primary-nav">
+			<span></span><span></span><span></span>
+		</button>
+
+		<nav id="ag-primary-nav" class="ag-primary-nav" aria-label="<?php esc_attr_e( 'Menu principal', 'ag-gwen-services' ); ?>">
 			<?php
 			if ( has_nav_menu( 'primary' ) ) {
 				wp_nav_menu(
@@ -61,3 +65,22 @@
 		</nav>
 	</div>
 </header>
+<script>
+/* Menu burger (mobile) : ouvre/ferme le panneau de navigation. */
+(function(){
+	var h = document.querySelector('.ag-site-header'),
+		b = document.querySelector('.ag-navtoggle');
+	if ( ! h || ! b ) { return; }
+	b.addEventListener('click', function(){
+		var open = h.classList.toggle('nav-open');
+		b.setAttribute('aria-expanded', open ? 'true' : 'false');
+	});
+	// Referme au clic sur un lien du menu.
+	h.querySelectorAll('.ag-primary-menu a').forEach(function(a){
+		a.addEventListener('click', function(){
+			h.classList.remove('nav-open');
+			b.setAttribute('aria-expanded', 'false');
+		});
+	});
+})();
+</script>
