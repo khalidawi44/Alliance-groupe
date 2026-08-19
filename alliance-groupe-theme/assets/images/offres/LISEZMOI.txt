@@ -1,0 +1,3 @@
+Déposez ici les images d'OFFRES (mockups au logo AG, bureaux Naples avec égérie/Fabrizio).
+Noms suggérés : mockup-laptop-ag.jpg, bureau-naples-egerie-1.jpg, etc.
+Puis commit + push. Elles seront cataloguées dans ../BANQUE-VISUELS.md et branchées sur les offres.
