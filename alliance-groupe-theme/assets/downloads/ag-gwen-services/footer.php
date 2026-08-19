@@ -57,7 +57,7 @@
 .ag-site-footer .ag-footer-note{color:#8f8a7c;font-size:.86rem;}
 .ag-site-footer .ag-footer-phone{display:inline-block;color:#8fd0a3;font-size:1.5rem;font-weight:800;text-decoration:none;letter-spacing:.02em;margin-bottom:6px;transition:color .2s ease;}
 .ag-site-footer .ag-footer-phone:hover{color:#b7e6c4;}
-.ag-site-footer .ag-footer-cta{display:inline-block;margin-top:12px;background:linear-gradient(120deg,#3f8f63,#6fbf8a);color:#0f180f;font-weight:800;font-size:.95rem;text-decoration:none;padding:12px 22px;border-radius:100px;box-shadow:0 14px 30px -14px rgba(79,157,107,.7);transition:transform .2s ease,filter .2s ease;}
+.ag-site-footer .ag-footer-cta{display:inline-block;margin-top:12px;background:linear-gradient(120deg,#2f7d54,#4f9d6b 55%,#6fbf8a);color:#fff;font-weight:800;font-size:.98rem;text-decoration:none;padding:13px 26px;border-radius:100px;box-shadow:0 14px 30px -14px rgba(47,125,84,.8);transition:transform .2s ease,filter .2s ease;}
 .ag-site-footer .ag-footer-cta:hover{transform:translateY(-2px);filter:brightness(1.05);}
 .ag-site-footer .ag-footer-bottom{border-top:1px solid rgba(111,191,138,.14);margin-top:34px;padding-top:20px;text-align:center;}
 .ag-site-footer .ag-footer-bottom,.ag-site-footer .ag-credit small{color:#7d7869;font-size:.82rem;}

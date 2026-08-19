@@ -45,7 +45,7 @@ endif; ?>
 	<?php if ( ag_starter_domicile_get_option( 'ag_hero_show' ) ) : ?>
 	<?php if ( $ag_has_preset && $ag_hero_image ) : ?>
 		<!-- Hero photo lifestyle style meilleur-artisan.com -->
-		<section class="ag-hero-pro" style="background-image:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.55)),url('<?php echo esc_url( $ag_hero_image ); ?>');">
+		<section class="ag-hero-pro" style="background-image:linear-gradient(90deg,rgba(8,10,6,.72),rgba(8,10,6,.32) 52%,rgba(8,10,6,.10)),linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.42)),url('<?php echo esc_url( $ag_hero_image ); ?>');">
 			<div class="ag-container">
 				<h1 class="ag-hero-pro__title">
 					<?php echo esc_html( ag_starter_domicile_get_option( 'ag_hero_prefix' ) ); ?>
