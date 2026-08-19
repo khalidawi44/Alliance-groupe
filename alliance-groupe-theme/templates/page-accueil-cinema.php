@@ -122,7 +122,7 @@ $dir = get_stylesheet_directory_uri();
 
   /* ---------- OFFRES (couche de la scène) ---------- */
   .of{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;justify-content:center;
-      padding:clamp(40px,7vh,90px) 0;overflow:hidden;pointer-events:none}
+      padding:clamp(84px,12vh,120px) 0 clamp(20px,4vh,50px);overflow:hidden;pointer-events:none}
   .of.is-live{pointer-events:auto}
   .of__bg{position:absolute;inset:0;opacity:0}
   .of__bg img{width:100%;height:100%;object-fit:cover}
@@ -142,11 +142,11 @@ $dir = get_stylesheet_directory_uri();
 
   /* ---------- ATELIER (couche de la scène) ---------- */
   .at{position:absolute;inset:0;z-index:7;display:flex;flex-direction:column;justify-content:center;
-      padding:clamp(20px,4vh,54px) 0;opacity:0;pointer-events:none;overflow:hidden}
-  .at .stitle{font-size:clamp(1.5rem,3.6vw,2.5rem)}
+      padding:clamp(84px,12vh,120px) 0 clamp(18px,3vh,40px);opacity:0;pointer-events:none;overflow:hidden}
+  .at .stitle{font-size:clamp(1.4rem,3.2vw,2.2rem);margin:8px 0 10px}
   .at .lead{font-size:clamp(.9rem,1.7vw,1rem);line-height:1.5}
   .at .at__head{margin:0 auto 14px}
-  @media(max-height:860px){.at .card__d{display:none}.at .card__t{font-size:.95rem}}
+  @media(max-height:900px){.at .card__d{display:none}.at .card__t{font-size:.92rem}.at .lead{display:none}}
   .at.is-live{pointer-events:auto}
   .at .wrap{position:relative;z-index:2;width:100%}
   .at__head{text-align:center;max-width:760px;margin:0 auto 18px}
