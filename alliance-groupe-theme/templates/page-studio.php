@@ -25,10 +25,33 @@ $media = array();
 foreach ( glob( get_stylesheet_directory() . '/assets/images/studio/*.jpg' ) as $f ) { $media[] = $studio_uri . basename( $f ); }
 foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) as $f ) { $media[] = $prod_uri . basename( $f ); }
 
-// Fonds PROPRES (sans texte) pour le créateur de vidéo : évite le « texte sur texte ».
-$cities_uri = get_stylesheet_directory_uri() . '/assets/images/cities/';
-$bg = array();
-foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as $f ) { $bg[] = $cities_uri . basename( $f ); }
+// Fonds : TOUTES les photos du site (villes, égérie, équipe/bureaux, réalisations, produits)
+// + les VIDÉOS déjà faites (fond animé). Le créateur peut tout choisir.
+$theme_dir = get_stylesheet_directory();
+$theme_uri = get_stylesheet_directory_uri();
+$bg  = array();
+$bg_dirs = array( 'cities', 'egerie', 'team', 'realisations', 'produits', 'studio' );
+foreach ( $bg_dirs as $d ) {
+	foreach ( glob( $theme_dir . '/assets/images/' . $d . '/*.{jpg,jpeg,png,webp}', GLOB_BRACE ) as $f ) {
+		$bg[] = $theme_uri . '/assets/images/' . $d . '/' . basename( $f );
+	}
+}
+// Vidéos déjà faites : array( url_video, url_poster/vignette ).
+$bgvid   = array();
+$vid_defs = array(
+	array( '/assets/videos/hero-egerie-long.mp4',   '/assets/videos/hero-egerie-long-poster.jpg' ),
+	array( '/assets/videos/egerie-naples.mp4',      '/assets/images/cities/baie_naples_nuit.jpg' ),
+	array( '/assets/videos/promo-alliance-16x9.mp4', '/assets/images/cities/naples-1.jpg' ),
+);
+$eg_poster = '/assets/videos/egerie_pub/blonde-fashion-portrait-flux-2-pro-ai-playground-343763.png';
+foreach ( glob( $theme_dir . '/assets/videos/egerie_pub/*.mp4' ) as $f ) {
+	$vid_defs[] = array( '/assets/videos/egerie_pub/' . basename( $f ), $eg_poster );
+}
+foreach ( $vid_defs as $vd ) {
+	if ( file_exists( $theme_dir . $vd[0] ) ) {
+		$bgvid[] = array( $theme_uri . $vd[0], $theme_uri . $vd[1] );
+	}
+}
 ?>
 <main id="ag-main-content" class="ag-esp ag-studio">
 	<section class="ag-section ag-section--graphite">
@@ -101,8 +124,11 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 					<div class="ag-bgpick">
 						<span class="ag-bgpick__lbl">Choisis un fond</span>
 						<div class="ag-bgpick__row">
+							<?php foreach ( $bgvid as $j => $v ) : ?>
+								<button type="button" class="ag-bgpick__thumb ag-vbg ag-vbg--video" data-src="<?php echo esc_url( $v[0] ); ?>" data-video="1" style="background-image:url('<?php echo esc_url( $v[1] ); ?>');" aria-label="Vidéo <?php echo (int) $j + 1; ?>"><span class="ag-bgpick__play" aria-hidden="true">▶</span></button>
+							<?php endforeach; ?>
 							<?php foreach ( $bg as $i => $b ) : ?>
-								<button type="button" class="ag-bgpick__thumb ag-vbg<?php echo 0 === $i ? ' is-active' : ''; ?>" data-src="<?php echo esc_url( $b ); ?>" style="background-image:url('<?php echo esc_url( $b ); ?>');" aria-label="Fond <?php echo (int) $i + 1; ?>"></button>
+								<button type="button" class="ag-bgpick__thumb ag-vbg<?php echo ( 0 === $i && empty( $bgvid ) ) ? ' is-active' : ''; ?>" data-src="<?php echo esc_url( $b ); ?>" style="background-image:url('<?php echo esc_url( $b ); ?>');" aria-label="Fond <?php echo (int) $i + 1; ?>"></button>
 							<?php endforeach; ?>
 						</div>
 					</div>
@@ -199,9 +225,26 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 			}
 		}
 		function loadUrl(url,cb){var im=new Image();im.onload=function(){isVideo=false;media=im;renderOnce();if(cb)cb();};im.src=url;}
-		function setBg(url,el){ loadUrl(url); document.querySelectorAll('.ag-vbg').forEach(function(t){ t.classList.toggle('is-active', t===el); }); }
-		document.querySelectorAll('.ag-vbg').forEach(function(b){ b.addEventListener('click',function(){ setBg(b.getAttribute('data-src'), b); }); });
-		(function(){ var first=document.querySelector('.ag-vbg'); if(first){ loadUrl(first.getAttribute('data-src')); } })();
+		function loadVideoUrl(url){
+			stopPreview();
+			var v=document.createElement('video');
+			v.muted=true; v.defaultMuted=true; v.loop=true; v.playsInline=true;
+			v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.preload='auto';
+			v.style.cssText='position:fixed;right:0;bottom:0;width:2px;height:2px;opacity:0.01;pointer-events:none;z-index:-1;';
+			document.body.appendChild(v);
+			v.src=url;
+			var ready=function(){ if(media===v) return; isVideo=true; media=v; v.play().catch(function(){}); startVideoPreview(); };
+			v.addEventListener('loadeddata', ready);
+			v.addEventListener('loadedmetadata', ready);
+			v.load();
+		}
+		function setBg(el){
+			if(el.getAttribute('data-video')){ loadVideoUrl(el.getAttribute('data-src')); }
+			else { loadUrl(el.getAttribute('data-src')); }
+			document.querySelectorAll('.ag-vbg').forEach(function(t){ t.classList.toggle('is-active', t===el); });
+		}
+		document.querySelectorAll('.ag-vbg').forEach(function(b){ b.addEventListener('click',function(){ setBg(b); }); });
+		(function(){ var first=document.querySelector('.ag-vbg:not(.ag-vbg--video)')||document.querySelector('.ag-vbg'); if(first){ first.classList.add('is-active'); if(first.getAttribute('data-video')){ loadVideoUrl(first.getAttribute('data-src')); } else { loadUrl(first.getAttribute('data-src')); } } })();
 		document.getElementById('ag-vfile').addEventListener('change',function(e){var f=e.target.files&&e.target.files[0];if(f)loadFile(f);});
 		document.querySelectorAll('.ag-font-btn').forEach(function(b){ b.addEventListener('click',function(){ document.querySelectorAll('.ag-font-btn').forEach(function(x){ x.classList.toggle('is-active', x===b); }); }); });
 		document.querySelectorAll('.ag-color-btn').forEach(function(b){ b.addEventListener('click',function(){ document.querySelectorAll('.ag-color-btn').forEach(function(x){ x.classList.toggle('is-active', x===b); }); }); });
@@ -394,7 +437,9 @@ foreach ( glob( get_stylesheet_directory() . '/assets/images/cities/*.jpg' ) as 
 .ag-maker--v .ag-maker__preview canvas{width:auto;max-width:100%;max-height:540px;}
 .ag-bgpick{display:flex;flex-direction:column;gap:8px;}
 .ag-bgpick__lbl{color:var(--color-text-soft);font-size:.9rem;font-weight:600;}
-.ag-bgpick__row{display:flex;gap:8px;flex-wrap:wrap;}
+.ag-bgpick__row{display:flex;gap:8px;flex-wrap:wrap;max-height:240px;overflow-y:auto;padding-right:4px;}
+.ag-bgpick__thumb.ag-vbg--video{position:relative;}
+.ag-bgpick__play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.95rem;background:rgba(0,0,0,.28);border-radius:8px;text-shadow:0 1px 4px rgba(0,0,0,.85);}
 .ag-bgpick__thumb{width:54px;height:72px;border-radius:10px;border:2px solid rgba(212,180,92,.25);background-size:cover;background-position:center;cursor:pointer;padding:0;transition:transform .2s,border-color .2s;}
 .ag-bgpick__thumb:hover{transform:translateY(-2px);border-color:rgba(212,180,92,.6);}
 .ag-bgpick__thumb.is-active{border-color:#e8c766;box-shadow:0 0 0 2px rgba(232,199,102,.3);}
