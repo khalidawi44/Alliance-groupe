@@ -25,5 +25,15 @@
 		} else {
 			els.forEach(function (el) { el.classList.add('is-in'); });
 		}
+
+		// Vague organique en bas des en-têtes de page intérieures.
+		document.querySelectorAll('.ag-page-hero').forEach(function (h) {
+			if (h.querySelector('.ag-sig-wave')) return;
+			var d = document.createElement('div');
+			d.className = 'ag-sig-wave';
+			d.setAttribute('aria-hidden', 'true');
+			d.innerHTML = '<svg viewBox="0 0 1440 70" preserveAspectRatio="none"><path fill="#ffffff" d="M0,35 C240,72 480,5 720,28 C960,50 1200,14 1440,42 L1440,70 L0,70 Z"></path></svg>';
+			h.appendChild(d);
+		});
 	});
 })();

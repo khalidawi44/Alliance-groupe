@@ -321,3 +321,47 @@ body.ag-dm-premium-active .ag-devis-aside{
 /* résultat d'estimation plus spectaculaire */
 body.ag-dm-premium-active .ag-devis-result__price{font-size:clamp(2.2rem,5vw,3rem)!important}
 body.ag-dm-premium-active .ag-devis-result__credit{font-size:1.05rem}
+
+/* ============================================================
+   PAGES INTÉRIEURES — en-têtes + sections premium
+   ============================================================ */
+/* En-tête de page (Prestations, Zones, À propos, Contact, Témoignages) */
+body.ag-dm-premium-active .ag-page-hero{position:relative;overflow:hidden;min-height:44vh;display:flex;align-items:center;background-size:cover;background-position:center;padding:130px 6vw 96px!important}
+body.ag-dm-premium-active .ag-page-hero::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,10,6,.82),rgba(8,10,6,.5) 55%,rgba(8,10,6,.22));z-index:1}
+body.ag-dm-premium-active .ag-page-hero .ag-container{position:relative;z-index:2;max-width:1180px}
+body.ag-dm-premium-active .ag-page-tag{display:inline-block;background:rgba(201,163,107,.14)!important;border:1px solid rgba(201,163,107,.45)!important;color:#e6c78a!important;font-weight:800;letter-spacing:.2em;text-transform:uppercase;font-size:.72rem;padding:9px 18px;border-radius:100px;margin-bottom:18px}
+body.ag-dm-premium-active .ag-page-title{color:#fff!important;text-shadow:0 2px 26px rgba(0,0,0,.5)}
+body.ag-dm-premium-active .ag-page-title em{color:#8fd0a3!important;font-style:italic;font-family:"Fraunces",serif!important}
+body.ag-dm-premium-active .ag-page-hero-sub{color:#e6e0d1!important;font-size:clamp(1.02rem,2.2vw,1.24rem);max-width:56ch;margin-top:14px;line-height:1.55}
+/* vague bas d'en-tête (injectée par signature.js) */
+body.ag-dm-premium-active .ag-page-hero .ag-sig-wave{position:absolute;left:0;right:0;bottom:-1px;z-index:2;line-height:0}
+body.ag-dm-premium-active .ag-page-hero .ag-sig-wave svg{width:100%;height:clamp(38px,5vw,64px);display:block}
+
+/* Intro de page */
+body.ag-dm-premium-active .ag-page-intro{padding:clamp(46px,7vw,80px) 24px}
+body.ag-dm-premium-active .ag-page-intro p{font-size:1.1rem;line-height:1.75;color:#4a5a4e}
+
+/* Bande CTA (bas de chaque page) — serif + kicker doré */
+body.ag-dm-premium-active .ag-cta-band{position:relative;padding:clamp(72px,10vw,120px) 24px!important;text-align:center}
+body.ag-dm-premium-active .ag-cta-band__title{font-family:"Fraunces",Georgia,serif!important;font-weight:600!important;font-size:clamp(2rem,5vw,3.4rem)!important;letter-spacing:-.02em}
+body.ag-dm-premium-active .ag-cta-band .ag-container::before{content:"✦ Gwen Services";display:block;color:#e6c78a;font-weight:800;letter-spacing:.22em;text-transform:uppercase;font-size:.72rem;margin-bottom:14px}
+
+/* Zones d'intervention + Contact : carte + coordonnées */
+body.ag-dm-premium-active .ag-zones-wrap{padding:clamp(56px,9vw,110px) 24px!important;background:radial-gradient(100% 70% at 100% 0,rgba(79,157,107,.10),transparent 55%),linear-gradient(180deg,#f7faf6,#eef3ee)!important}
+body.ag-dm-premium-active .ag-zones-grid{max-width:1120px;margin:0 auto;gap:32px!important}
+body.ag-dm-premium-active .ag-zones-map{border-radius:24px!important;overflow:hidden;box-shadow:0 40px 80px -50px rgba(20,45,28,.5);border:1px solid #e7efe8}
+body.ag-dm-premium-active .ag-zones-list h3{color:#c9a36b!important;text-transform:uppercase;letter-spacing:.16em;font-size:.76rem;font-weight:800;margin-bottom:6px}
+body.ag-dm-premium-active .ag-zones-list h2{font-family:"Fraunces",serif!important;font-weight:600!important;font-size:clamp(1.7rem,3.6vw,2.4rem)!important;color:#22312a!important}
+body.ag-dm-premium-active .ag-zones-contact-card{background:linear-gradient(165deg,#12160f,#173a27 60%,#1a5e3a)!important;color:#e7e2d3!important;border-radius:20px!important;padding:24px 22px!important;border:1px solid rgba(201,163,107,.3)!important;box-shadow:0 30px 60px -40px rgba(20,45,28,.6)}
+body.ag-dm-premium-active .ag-zones-contact-card a{color:#8fd0a3!important}
+
+/* À propos : texte + photo, engagements */
+body.ag-dm-premium-active .ag-about-wrap{padding:clamp(56px,9vw,110px) 24px!important}
+body.ag-dm-premium-active .ag-about-grid{max-width:1120px;margin:0 auto;gap:44px!important;align-items:center}
+body.ag-dm-premium-active .ag-about-text h3{color:#c9a36b!important;text-transform:uppercase;letter-spacing:.16em;font-size:.78rem;font-weight:800}
+body.ag-dm-premium-active .ag-about-text h2{font-family:"Fraunces",serif!important;font-weight:600!important;font-size:clamp(1.8rem,4vw,2.9rem)!important;line-height:1.08;color:#22312a!important;letter-spacing:-.01em}
+body.ag-dm-premium-active .ag-about-photo{border-radius:24px!important;box-shadow:0 44px 90px -50px rgba(20,45,28,.55);border:1px solid #e7efe8;position:relative}
+body.ag-dm-premium-active .ag-about-photo::after{content:"";position:absolute;inset:0;border-radius:24px;box-shadow:inset 0 0 0 6px rgba(201,163,107,.18);pointer-events:none}
+body.ag-dm-premium-active .ag-timeline{padding:clamp(56px,9vw,100px) 24px!important}
+body.ag-dm-premium-active .ag-timeline-item{border-radius:16px!important;box-shadow:0 20px 44px -34px rgba(20,45,28,.5)!important;background:#fff!important;border:1px solid #e7efe8!important}
+body.ag-dm-premium-active .ag-timeline-year{color:#3f8f63!important;font-family:"Fraunces",serif!important;font-weight:700!important}
