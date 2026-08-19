@@ -66,6 +66,8 @@ $dir = get_stylesheet_directory_uri();
   .hero__in{position:relative;z-index:3;width:100%;padding-bottom:clamp(52px,10vh,120px)}
   .hero__t{font-family:var(--serif);font-weight:500;line-height:.97;font-size:clamp(2.9rem,8.4vw,7rem);letter-spacing:-.022em;margin:.18em 0 0}
   .hero__t em{font-style:italic;color:var(--gold-hi)}
+  .w{display:inline-block;overflow:hidden;vertical-align:bottom}
+  .w i{display:inline-block;font-style:inherit}
   .hero__t .w{display:inline-block;overflow:hidden;vertical-align:bottom}
   .hero__t .w i{display:inline-block;font-style:inherit}
   .hero__sub{margin-top:20px;max-width:44ch;color:#cfd6e4;font-size:clamp(1rem,2.2vw,1.14rem);line-height:1.6}
@@ -96,12 +98,12 @@ $dir = get_stylesheet_directory_uri();
   .tab__cap p{margin:20px auto 0;color:#d7dae2;max-width:52ch;line-height:1.7}
 
   /* ---------- CHAPITRES ---------- */
-  .chs{padding:clamp(80px,13vh,160px) 0}
-  .ch{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,6vw,84px);align-items:center;margin-bottom:clamp(70px,12vh,150px)}
+  .chs{padding:clamp(50px,7vh,90px) 0}
+  .ch{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,70px);align-items:center;margin-bottom:clamp(28px,5vh,64px)}
   .ch:nth-child(even) .ch__txt{order:2}
-  .ch__media{position:relative;overflow:hidden;aspect-ratio:4/5;border:1px solid rgba(212,180,92,.2)}
+  .ch__media{position:relative;overflow:hidden;aspect-ratio:4/3;border:1px solid rgba(212,180,92,.2);will-change:transform}
   .ch__media img{width:100%;height:100%;object-fit:cover;transform:scale(1.16)}
-  .ch__n{font-family:var(--serif);font-size:clamp(2.4rem,6vw,4.4rem);color:var(--gold);opacity:.8;line-height:1}
+  .ch__n{font-family:var(--serif);font-size:clamp(2.4rem,6vw,4.4rem);color:var(--gold);opacity:.8;line-height:1;will-change:transform}
   .ch__t{font-family:var(--serif);font-weight:500;font-size:clamp(1.8rem,4.4vw,3.1rem);line-height:1.06;margin:.2em 0 .5em}
   .ch__t em{font-style:italic;color:var(--gold-hi)}
   .ch__p{color:var(--muted);font-size:1.05rem;line-height:1.75;max-width:46ch}
@@ -135,25 +137,32 @@ $dir = get_stylesheet_directory_uri();
   .of__note a{color:var(--gold-hi)}
 
   /* ---------- ATELIER ---------- */
-  .at{padding:clamp(80px,13vh,160px) 0;background:linear-gradient(180deg,#05050a,#0a0a12)}
-  .at__head{text-align:center;max-width:760px;margin:0 auto 34px}
+  .at{background:linear-gradient(180deg,#05050a,#0a0a12)}
+  .at__stage{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:center;
+    padding:clamp(60px,9vh,110px) 0;overflow:hidden}
+  .at__hand{position:absolute;z-index:1;top:-6%;left:50%;width:min(46vw,540px);transform:translateX(-50%);
+    mix-blend-mode:screen;opacity:0;pointer-events:none}
+  .at__stage .wrap{position:relative;z-index:2;width:100%}
+  .at__head{text-align:center;max-width:760px;margin:0 auto 26px}
   .at__filters{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:34px}
   .fbtn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);color:#cdd4e2;border-radius:999px;
         padding:9px 20px;font-size:.85rem;cursor:pointer;transition:.25s;font-family:inherit}
   .fbtn:hover{border-color:var(--gold)}
   .fbtn.is-on{background:linear-gradient(120deg,var(--gold),var(--gold-hi));color:#1a1206;font-weight:700;border-color:transparent}
-  .at__grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px}
+  .at__grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+  @media(max-width:1100px){.at__grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:640px){.at__grid{grid-template-columns:1fr}}
   .card{position:relative;background:#0c0c14;border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;
         text-decoration:none;display:block;transition:border-color .35s,transform .35s}
   .card:hover{border-color:rgba(212,180,92,.55);transform:translateY(-4px)}
-  .card__media{position:relative;aspect-ratio:16/9;overflow:hidden}
+  .card__media{position:relative;aspect-ratio:16/10;overflow:hidden}
   .card__media img{width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
   .card:hover .card__media img{transform:scale(1.07)}
   .card__badge{position:absolute;top:12px;left:12px;z-index:2;background:rgba(5,5,10,.72);border:1px solid rgba(212,180,92,.5);
     color:var(--gold-hi);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;padding:5px 12px;border-radius:999px}
   .card__body{padding:16px 18px 20px}
   .card__t{font-size:1.02rem;font-weight:700;margin-bottom:6px}
-  .card__d{color:var(--muted);font-size:.88rem;line-height:1.5;min-height:2.6em}
+  .card__d{color:var(--muted);font-size:.84rem;line-height:1.45;min-height:2.6em}
   .card__go{margin-top:12px;font-size:.82rem;color:var(--gold);letter-spacing:.06em}
 
   /* ---------- LION ---------- */
@@ -226,8 +235,8 @@ $dir = get_stylesheet_directory_uri();
     <div class="tab__veil"></div>
     <div class="tab__cap">
       <span class="eyebrow" data-rv>Depuis 2019</span>
-      <h2 data-rv>Une alliance, <em>pas un prestataire</em></h2>
-      <p data-rv>On ne vend pas des pages : on s'engage à côté de vous, du premier échange jusqu'au jour où le site rapporte. Naples pour l'atelier, Nantes pour le terrain.</p>
+      <h2 data-mots>Une alliance, <em>pas un prestataire</em></h2>
+      <p data-txt>On ne vend pas des pages : on s'engage à côté de vous, du premier échange jusqu'au jour où le site rapporte. Naples pour l'atelier, Nantes pour le terrain.</p>
     </div>
   </div>
 </section>
@@ -236,8 +245,8 @@ $dir = get_stylesheet_directory_uri();
   <article class="ch">
     <div class="ch__txt">
       <div class="ch__n" data-rv>01</div>
-      <h3 class="ch__t" data-rv>Un artisan, <em>pas une usine</em></h3>
-      <p class="ch__p" data-rv>De Naples à Nantes, un seul interlocuteur : celui qui conçoit, celui qui code, celui qui livre. Vous ne parlez jamais à un service.</p>
+      <h3 class="ch__t" data-mots>Un artisan, <em>pas une usine</em></h3>
+      <p class="ch__p" data-txt>De Naples à Nantes, un seul interlocuteur : celui qui conçoit, celui qui code, celui qui livre. Vous ne parlez jamais à un service.</p>
       <div class="ch__meta" data-rv><span>Conseil</span><span>Design</span><span>Développement</span></div>
     </div>
     <div class="ch__media" data-media><img src="<?php echo esc_url( $dir . '/assets/images/team/1_bureau_naples.jpg' ); ?>" alt="Le bureau de Naples" loading="lazy"></div>
@@ -245,8 +254,8 @@ $dir = get_stylesheet_directory_uri();
   <article class="ch">
     <div class="ch__txt">
       <div class="ch__n" data-rv>02</div>
-      <h3 class="ch__t" data-rv>La sécurité, <em>incluse</em></h3>
-      <p class="ch__p" data-rv>Chaque site part d'un audit gratuit et arrive sécurisé — rare chez les agences classiques, systématique ici.</p>
+      <h3 class="ch__t" data-mots>La sécurité, <em>incluse</em></h3>
+      <p class="ch__p" data-txt>Chaque site part d'un audit gratuit et arrive sécurisé — rare chez les agences classiques, systématique ici.</p>
       <div class="ch__meta" data-rv><span>Audit offert</span><span>Sauvegardes</span><span>Surveillance</span></div>
     </div>
     <div class="ch__media" data-media><img src="<?php echo esc_url( $dir . '/assets/images/team/reunion-naples.jpg' ); ?>" alt="Réunion au bureau de Naples" loading="lazy"></div>
@@ -254,31 +263,19 @@ $dir = get_stylesheet_directory_uri();
   <article class="ch">
     <div class="ch__txt">
       <div class="ch__n" data-rv>03</div>
-      <h3 class="ch__t" data-rv>Propulsé <em>par l'IA</em></h3>
-      <p class="ch__p" data-rv>Devis en trente secondes, maquettes régénérées, contenus rédigés : la machine fait le gros du travail, vous gardez le style et le contrôle.</p>
+      <h3 class="ch__t" data-mots>Propulsé <em>par l'IA</em></h3>
+      <p class="ch__p" data-txt>Devis en trente secondes, maquettes régénérées, contenus rédigés : la machine fait le gros du travail, vous gardez le style et le contrôle.</p>
       <div class="ch__meta" data-rv><span>Devis instantané</span><span>Contenus</span><span>Images</span></div>
     </div>
     <div class="ch__media" data-media><img src="<?php echo esc_url( $dir . '/assets/images/team/naples-2.jpg' ); ?>" alt="Poste de travail avec vue sur la baie" loading="lazy"></div>
   </article>
 </section>
 
-<section class="ds">
-  <div class="ds__stick">
-    <canvas id="cv"></canvas>
-    <img class="ds__hand" id="hand" src="<?php echo esc_url( $dir . '/assets/images/cinematique/main-poussiere-or.jpg' ); ?>" alt="">
-    <div class="ds__veil"></div>
-    <div class="ds__cap wrap">
-      <h2>Ce qui compte ne se voit pas <em>tout de suite</em></h2>
-      <p>Un site n'est pas une image. C'est une mécanique — vitesse, sécurité, référencement — qui se révèle quand on regarde de près.</p>
-    </div>
-  </div>
-</section>
-
 <section class="of" id="offres">
   <div class="of__bg"><img src="<?php echo esc_url( $dir . '/assets/images/cinematique/marbre-noir-or.jpg' ); ?>" alt="" loading="lazy"></div>
   <div class="wrap of__in">
     <span class="eyebrow" data-rv>Nos formules</span>
-    <h2 class="stitle" data-rv style="margin-top:10px">Des offres claires, <em>à prix fixe</em></h2>
+    <h2 class="stitle" data-mots style="margin-top:10px">Des offres claires, <em>à prix fixe</em></h2>
     <p class="lead" data-rv style="margin:16px auto 0">Pas de devis interminable. Vous choisissez, on livre — vite.</p>
     <div class="of__grid">
       <article class="pack" data-pack>
@@ -298,11 +295,25 @@ $dir = get_stylesheet_directory_uri();
   </div>
 </section>
 
+<section class="ds">
+  <div class="ds__stick">
+    <canvas id="cv"></canvas>
+    <img class="ds__hand" id="hand" src="<?php echo esc_url( $dir . '/assets/images/cinematique/main-poussiere-or.jpg' ); ?>" alt="">
+    <div class="ds__veil"></div>
+    <div class="ds__cap wrap">
+      <h2 data-mots>Ce qui compte ne se voit pas <em>tout de suite</em></h2>
+      <p>Un site n'est pas une image. C'est une mécanique — vitesse, sécurité, référencement — qui se révèle quand on regarde de près.</p>
+    </div>
+  </div>
+</section>
+
 <section class="at" id="atelier">
+ <div class="at__stage" id="stage">
+  <img class="at__hand" id="atHand" src="<?php echo esc_url( $dir . '/assets/images/cinematique/main-poussiere-or.jpg' ); ?>" alt="">
   <div class="wrap">
     <div class="at__head">
       <span class="eyebrow" data-rv>Alliance Groupe · web · sécurité · IA</span>
-      <h2 class="stitle" data-rv style="margin:12px 0 14px">Que créons-nous <em>aujourd'hui&nbsp;?</em></h2>
+      <h2 class="stitle" data-mots style="margin:12px 0 14px">Que créons-nous <em>aujourd'hui&nbsp;?</em></h2>
       <p class="lead" data-rv style="margin:0 auto">Votre atelier propulsé par l'IA : chiffrez un projet, refaites votre site, sécurisez-le, créez du contenu.</p>
     </div>
     <div class="at__filters" data-rv>
@@ -346,6 +357,7 @@ $dir = get_stylesheet_directory_uri();
       </a>
     </div>
   </div>
+</div>
 </section>
 
 <section class="lion">
@@ -356,7 +368,7 @@ $dir = get_stylesheet_directory_uri();
 </section>
 
 <section class="cta wrap">
-  <h2 class="stitle" data-rv>Parlons de <em>votre site</em></h2>
+  <h2 class="stitle" data-mots>Parlons de <em>votre site</em></h2>
   <p data-rv>Audit gratuit, devis en trente secondes, livraison en cinq jours. On commence par un échange, sans engagement.</p>
   <a class="btn" data-rv href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>">Demander mon audit</a>
 </section>
@@ -427,21 +439,87 @@ $dir = get_stylesheet_directory_uri();
     G.fromTo("[data-tabimg] img", { scale:1.02, yPercent:-3 }, { scale:1.16, yPercent:3, ease:"none",
       scrollTrigger:{ trigger:".tab", start:"top top", end:"bottom bottom", scrub:true }});
 
+    /* titres : chaque mot monte derrière un masque */
+    G.utils.toArray("[data-mots]").forEach(function(h){
+      var html = h.innerHTML;
+      h.innerHTML = html.replace(/(<em>|<\/em>)/g, "\u0001$1\u0001").split("\u0001").map(function(part){
+        if (part.charAt(0) === "<") return part;
+        return part.split(" ").map(function(w){ return w ? '<span class="w"><i>'+w+'</i></span>' : ""; }).join(" ");
+      }).join("");
+      G.from(h.querySelectorAll(".w i"), { yPercent:118, duration:1.05, ease:"expo.out", stagger:.055,
+        scrollTrigger:{ trigger:h, start:"top 88%" }});
+    });
+    /* paragraphes : montée + léger flou qui se lève, puis dérive douce */
+    G.utils.toArray("[data-txt]").forEach(function(p){
+      G.from(p, { y:26, opacity:0, filter:"blur(6px)", duration:1, ease:"power3.out",
+        scrollTrigger:{ trigger:p, start:"top 90%" }});
+      G.to(p, { y:-22, ease:"none", scrollTrigger:{ trigger:p, start:"top bottom", end:"bottom top", scrub:true }});
+    });
+
     /* révélations */
     G.utils.toArray("[data-rv]").forEach(function(el){
       G.from(el, { y:32, opacity:0, duration:.95, ease:"power3.out", scrollTrigger:{ trigger:el, start:"top 88%" }});
     });
-    G.utils.toArray("[data-media]").forEach(function(m){
-      G.fromTo(m.querySelector("img"), { scale:1.24, yPercent:-6 }, { scale:1.02, yPercent:6, ease:"none",
-        scrollTrigger:{ trigger:m, start:"top bottom", end:"bottom top", scrub:true }});
-      G.from(m, { clipPath:"inset(100% 0% 0% 0%)", duration:1.25, ease:"power4.out", scrollTrigger:{ trigger:m, start:"top 84%" }});
+    G.utils.toArray("[data-media]").forEach(function(m, i){
+      var sens = i % 2 ? -1 : 1;
+      /* l'image vit pendant tout son passage : zoom, glissement et redressement */
+      G.fromTo(m.querySelector("img"), { scale:1.32, yPercent:-10 }, { scale:1.02, yPercent:10, ease:"none",
+        scrollTrigger:{ trigger:m, start:"top bottom", end:"bottom top", scrub:.4 }});
+      G.fromTo(m, { yPercent:9 * sens, rotate:1.4 * sens }, { yPercent:-9 * sens, rotate:0, ease:"none",
+        scrollTrigger:{ trigger:m, start:"top bottom", end:"bottom top", scrub:.4 }});
+      G.from(m, { clipPath:"inset(100% 0% 0% 0%)", duration:1.2, ease:"power4.out", scrollTrigger:{ trigger:m, start:"top 86%" }});
+      /* la colonne de texte arrive par le côté opposé */
+      var txt = m.parentNode.querySelector(".ch__txt");
+      if (txt) G.fromTo(txt, { x:52 * -sens, opacity:.35 }, { x:0, opacity:1, ease:"power2.out",
+        scrollTrigger:{ trigger:m.parentNode, start:"top 92%", end:"top 45%", scrub:.5 }});
+      /* le numéro file plus vite */
+      var n = m.parentNode.querySelector(".ch__n");
+      if (n) G.to(n, { yPercent:-70, ease:"none", scrollTrigger:{ trigger:m.parentNode, start:"top bottom", end:"bottom top", scrub:true }});
     });
     /* offres en cascade */
     G.from("[data-pack]", { y:56, opacity:0, duration:1, ease:"power3.out", stagger:.12,
       scrollTrigger:{ trigger:".of__grid", start:"top 82%" }});
-    /* cartes atelier */
-    G.from("#grid .card", { y:40, opacity:0, duration:.85, ease:"power3.out", stagger:.06,
-      scrollTrigger:{ trigger:"#grid", start:"top 85%" }});
+    /* ATELIER : les cartes sortent de la paume, tourbillonnent puis se figent */
+    (function(){
+      var stage = document.getElementById("stage"), grid = document.getElementById("grid");
+      var cards = G.utils.toArray("#grid .card");
+      var petit = matchMedia("(max-width:820px)").matches;
+      if (petit){
+        G.from(cards, { y:40, opacity:0, duration:.8, ease:"power3.out", stagger:.06,
+          scrollTrigger:{ trigger:grid, start:"top 85%" }});
+        G.fromTo("#atHand", { opacity:0 }, { opacity:.5, duration:.8,
+          scrollTrigger:{ trigger:stage, start:"top 70%" }});
+        return;
+      }
+      /* position de la paume dans la scène */
+      function paume(){ return { x: stage.clientWidth / 2, y: stage.clientHeight * 0.17 }; }
+      function centre(el){                       /* centre de l'élément dans la scène */
+        var x = 0, y = 0, n = el;
+        while (n && n !== stage){ x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+        return { x: x + el.offsetWidth / 2, y: y + el.offsetHeight / 2 };
+      }
+      var tl = G.timeline({ scrollTrigger:{ trigger:stage, start:"top top", end:"+=210%",
+        pin:true, scrub:.55, invalidateOnRefresh:true, anticipatePin:1 }});
+
+      tl.fromTo("#atHand", { opacity:0, scale:.86, y:20 }, { opacity:.9, scale:1, y:0, duration:.5, ease:"power2.out" }, 0)
+        .fromTo(".at__head", { opacity:0, y:34 }, { opacity:1, y:0, duration:.35, ease:"power3.out" }, .45)
+        .to("#atHand", { opacity:.12, scale:1.25, duration:.7, ease:"none" }, .55);
+
+      cards.forEach(function(c, i){
+        var a0 = i * (Math.PI * 2 / cards.length);
+        tl.fromTo(c,
+          { opacity:0, scale:.06, rotation:(i % 2 ? 1 : -1) * (300 + i * 40),
+            x: function(){ return paume().x - centre(c).x + Math.cos(a0) * 26; },
+            y: function(){ return paume().y - centre(c).y + Math.sin(a0) * 26; } },
+          { keyframes:[
+              { opacity:1, scale:.42, rotation:(i % 2 ? 1 : -1) * 120, duration:.5,
+                x: function(){ return (paume().x - centre(c).x) * .45 + Math.cos(a0 + 2.2) * 190; },
+                y: function(){ return (paume().y - centre(c).y) * .45 + Math.sin(a0 + 2.2) * 130; } },
+              { opacity:1, scale:1, rotation:0, x:0, y:0, duration:.6, ease:"power3.out" }
+            ], ease:"none" },
+          .6 + i * 0.055);
+      });
+    })();
     /* lion */
     G.fromTo("#lionImg", { scale:.5, opacity:0, filter:"blur(14px)" },
       { scale:1, opacity:1, filter:"blur(0px)", ease:"none",
