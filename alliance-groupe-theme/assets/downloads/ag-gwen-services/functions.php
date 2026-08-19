@@ -545,12 +545,16 @@ add_action( 'wp_enqueue_scripts', function () {
 	$ver = wp_get_theme()->get( 'Version' );
 	wp_enqueue_style(
 		'ag-gwen-fonts',
-		'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Nunito+Sans:wght@400;600;700&display=swap',
+		'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500;1,9..144,600&family=Nunito+Sans:wght@400;600;700;800;900&display=swap',
 		array(),
 		$ver
 	);
 	if ( file_exists( get_template_directory() . '/assets/premium.css' ) ) {
 		wp_enqueue_style( 'ag-gwen-premium', get_template_directory_uri() . '/assets/premium.css', array( 'ag-gwen-fonts' ), $ver );
+	}
+	// Couche « signature » éditoriale — chargée APRÈS premium (gagne la cascade).
+	if ( file_exists( get_template_directory() . '/assets/signature.css' ) ) {
+		wp_enqueue_style( 'ag-gwen-signature', get_template_directory_uri() . '/assets/signature.css', array( 'ag-gwen-premium' ), $ver );
 	}
 	if ( file_exists( get_template_directory() . '/assets/premium.js' ) ) {
 		wp_enqueue_script( 'ag-gwen-premium', get_template_directory_uri() . '/assets/premium.js', array(), $ver, true );
@@ -561,6 +565,9 @@ add_action( 'wp_enqueue_scripts', function () {
 			'showTrust'  => true,
 			'trust'      => array( 'Agréé services à la personne', 'Crédit d’impôt 50 %', '7j/7, jour & nuit' ),
 		) );
+	}
+	if ( file_exists( get_template_directory() . '/assets/signature.js' ) ) {
+		wp_enqueue_script( 'ag-gwen-signature', get_template_directory_uri() . '/assets/signature.js', array(), $ver, true );
 	}
 }, 30 );
 

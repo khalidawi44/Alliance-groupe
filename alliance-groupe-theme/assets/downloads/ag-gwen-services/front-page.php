@@ -44,36 +44,62 @@ endif; ?>
 
 	<?php if ( ag_starter_domicile_get_option( 'ag_hero_show' ) ) : ?>
 	<?php if ( $ag_has_preset && $ag_hero_image ) : ?>
-		<!-- Hero photo lifestyle style meilleur-artisan.com -->
-		<section class="ag-hero-pro" style="background-image:linear-gradient(90deg,rgba(8,10,6,.72),rgba(8,10,6,.32) 52%,rgba(8,10,6,.10)),linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.42)),url('<?php echo esc_url( $ag_hero_image ); ?>');">
+		<!-- Hero éditorial « signature » Gwen -->
+		<?php
+		$ag_btn_label = ag_starter_domicile_get_option( 'ag_hero_button' );
+		$ag_btn_url   = ag_domicile_resolve_cta_url( ag_starter_domicile_get_option( 'ag_hero_button_url' ) );
+		$ag_hero_tel  = ag_domicile_opt( 'ag_domicile_footer_phone', '06 26 14 28 45' );
+		?>
+		<section class="ag-hero-pro" style="background-image:linear-gradient(90deg,rgba(8,10,6,.82),rgba(8,10,6,.42) 48%,rgba(8,10,6,.08)),linear-gradient(180deg,rgba(0,0,0,.14),rgba(0,0,0,.42)),url('<?php echo esc_url( $ag_hero_image ); ?>');">
 			<div class="ag-container">
-				<h1 class="ag-hero-pro__title">
-					<?php echo esc_html( ag_starter_domicile_get_option( 'ag_hero_prefix' ) ); ?>
-					<em><?php echo esc_html( ag_starter_domicile_get_option( 'ag_hero_brand' ) ); ?></em>
-				</h1>
-				<p class="ag-hero-pro__subtitle">
-					<?php echo esc_html( ag_starter_domicile_get_option( 'ag_hero_subtitle' ) ); ?>
-				</p>
-				<?php
-				$ag_btn_label = ag_starter_domicile_get_option( 'ag_hero_button' );
-				$ag_btn_url   = ag_starter_domicile_get_option( 'ag_hero_button_url' );
-				$ag_btn_url   = ag_domicile_resolve_cta_url( $ag_btn_url );
-				if ( $ag_btn_label ) : ?>
-					<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn-pro"><?php echo esc_html( $ag_btn_label ); ?></a>
-				<?php endif; ?>
-
-				<?php if ( ! empty( $ag_stats ) ) : ?>
-					<div class="ag-hero-stats">
-						<?php foreach ( $ag_stats as $stat ) : ?>
-							<div class="ag-hero-stat">
-								<span class="ag-hero-stat__value"><?php echo esc_html( $stat['value'] ); ?></span>
-								<span class="ag-hero-stat__label"><?php echo esc_html( $stat['label'] ); ?></span>
-							</div>
-						<?php endforeach; ?>
+				<div class="ag-hero-inner">
+					<span class="ag-hero-eyebrow">Aide à domicile · Nantes &amp; alentours</span>
+					<h1 class="ag-hero-pro__title">Une présence <em>de confiance,</em><span class="ag-brush">chez vous</span>.</h1>
+					<p class="ag-hero-pro__subtitle">
+						<?php echo esc_html( ag_starter_domicile_get_option( 'ag_hero_subtitle' ) ); ?>
+					</p>
+					<div class="ag-hero-actions">
+						<?php if ( $ag_btn_label ) : ?>
+							<a href="<?php echo esc_url( $ag_btn_url ); ?>" class="ag-btn-pro"><?php echo esc_html( $ag_btn_label ); ?> →</a>
+						<?php endif; ?>
+						<?php if ( $ag_hero_tel ) : ?>
+							<a class="ag-hero-tel" href="tel:<?php echo esc_attr( preg_replace( '/\s+/', '', $ag_hero_tel ) ); ?>"><small>Appelez Gwen</small><?php echo esc_html( $ag_hero_tel ); ?></a>
+						<?php endif; ?>
 					</div>
-				<?php endif; ?>
+					<?php if ( ! empty( $ag_stats ) ) : ?>
+						<div class="ag-hero-stats">
+							<?php foreach ( $ag_stats as $stat ) : ?>
+								<div class="ag-hero-stat">
+									<span class="ag-hero-stat__value"><?php echo esc_html( $stat['value'] ); ?></span>
+									<span class="ag-hero-stat__label"><?php echo esc_html( $stat['label'] ); ?></span>
+								</div>
+							<?php endforeach; ?>
+						</div>
+					<?php endif; ?>
+				</div>
+			</div>
+			<div class="ag-hero-stamp" aria-hidden="true">
+				<div class="ag-hero-stamp__spin">
+					<svg viewBox="0 0 200 200"><defs><path id="agstamp" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
+						<circle cx="100" cy="100" r="93" fill="none" stroke="#c9a36b" stroke-width="1.4" opacity=".55"/>
+						<circle cx="100" cy="100" r="78" fill="none" stroke="#c9a36b" stroke-width="1" opacity=".3"/>
+						<text fill="#e6c78a" font-family="Nunito Sans, sans-serif" font-size="12.5" font-weight="800" letter-spacing="3.4"><textPath href="#agstamp" startOffset="0%">· 7J/7 · 07H–21H · SANS ENGAGEMENT </textPath></text>
+					</svg>
+				</div>
+				<div class="ag-hero-stamp__mid"><b>50%</b><span>Crédit d’impôt</span></div>
+			</div>
+			<div class="ag-hero-wave" aria-hidden="true">
+				<svg viewBox="0 0 1440 90" preserveAspectRatio="none"><path fill="#14140f" d="M0,45 C240,95 480,5 720,32 C960,58 1200,18 1440,52 L1440,90 L0,90 Z"/></svg>
 			</div>
 		</section>
+
+		<!-- Bandeau défilant de réassurance -->
+		<div class="ag-mq" aria-hidden="true">
+			<div class="ag-mq__track">
+				<?php $ag_mq = '<div class="ag-mq__group"><span><b>✦</b> Crédit d’impôt 50 %</span><span><b>✦</b> Agréé Services à la personne</span><span><b>✦</b> CESU accepté</span><span><b>✦</b> 7j/7 · 07h–21h</span><span><b>✦</b> Sans engagement</span><span><b>✦</b> Avance immédiate URSSAF</span></div>';
+				echo $ag_mq . $ag_mq; // phpcs:ignore — markup statique de confiance ?>
+			</div>
+		</div>
 	<?php else : ?>
 		<!-- Hero historique (back-compat) -->
 		<section class="ag-hero">

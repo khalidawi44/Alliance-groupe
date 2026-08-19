@@ -1,0 +1,139 @@
+/* ============================================================
+   AG Gwen — COUCHE « SIGNATURE » éditoriale (magazine)
+   Chargée après premium.css : donne au site une identité forte
+   et unique (typo serif géante, hero éditorial, tampon rotatif,
+   bandeau défilant, vagues, grain, révélations au scroll).
+   Tout est scopé au thème Gwen (body.ag-dm-premium-active).
+   ============================================================ */
+
+:root{
+	--sig-green:#1a5e3a;
+	--sig-green-2:#2f8552;
+	--sig-green-soft:#8fd0a3;
+	--sig-gold:#c9a36b;
+	--sig-gold-2:#e6c78a;
+	--sig-cream:#f6f1e4;
+	--sig-ink:#12160f;
+}
+
+/* ---------- Grain global (texture premium) ---------- */
+body.ag-dm-premium-active::after{
+	content:"";position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:.045;mix-blend-mode:overlay;
+	background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   HERO ÉDITORIAL
+   ============================================================ */
+body.ag-dm-premium-active .ag-hero-pro{
+	text-align:left!important;justify-content:flex-start!important;
+	min-height:88vh!important;padding:120px 6vw 0!important;overflow:hidden;
+}
+body.ag-dm-premium-active .ag-hero-pro .ag-container{max-width:1280px!important;width:100%;margin:0 auto}
+body.ag-dm-premium-active .ag-hero-inner{max-width:820px;position:relative;z-index:3}
+
+/* eyebrow doré */
+.ag-hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;font-size:.72rem;color:var(--sig-gold-2);background:rgba(201,163,107,.12);border:1px solid rgba(201,163,107,.45);padding:9px 18px;border-radius:100px;margin-bottom:26px}
+.ag-hero-eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--sig-gold)}
+
+/* titre géant serif */
+body.ag-dm-premium-active .ag-hero-pro__title{
+	font-family:"Fraunces",Georgia,serif!important;font-weight:600!important;
+	font-size:clamp(2.9rem,7vw,5.8rem)!important;line-height:.98!important;letter-spacing:-.02em!important;
+	color:var(--sig-cream)!important;text-shadow:0 2px 30px rgba(0,0,0,.45);margin:0 0 10px!important;text-wrap:balance;
+}
+body.ag-dm-premium-active .ag-hero-pro__title em{
+	font-family:"Fraunces",Georgia,serif!important;font-style:italic!important;font-weight:500!important;
+	color:var(--sig-green-soft)!important;display:block!important;
+}
+/* mot surligné « pinceau » (bat la règle .ag-hero-pro__title span du thème) */
+body.ag-dm-premium-active .ag-hero-pro__title span.ag-brush{
+	position:relative;white-space:nowrap;color:#fff!important;display:inline-block;
+	border-bottom:none!important;padding-bottom:0!important;
+}
+body.ag-dm-premium-active .ag-hero-pro__title span.ag-brush::after{content:"";position:absolute;left:-.06em;right:-.06em;bottom:.05em;height:.4em;z-index:-1;
+	background:linear-gradient(120deg,var(--sig-green),var(--sig-green-2));border-radius:.4em .5em .42em .4em;transform:rotate(-1.4deg)}
+
+body.ag-dm-premium-active .ag-hero-pro__subtitle{
+	text-align:left!important;margin:24px 0 34px 0!important;max-width:40ch!important;
+	font-size:clamp(1.05rem,2.2vw,1.28rem)!important;color:#dcd6c5!important;line-height:1.55!important;
+}
+
+/* actions : bouton (à gauche) + téléphone */
+.ag-hero-actions{display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+body.ag-dm-premium-active .ag-hero-tel{color:#fff!important;text-decoration:none!important;font-weight:900;font-size:1.32rem;display:inline-flex;flex-direction:column;line-height:1.1;letter-spacing:.02em}
+body.ag-dm-premium-active .ag-hero-tel small{font-size:.7rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--sig-green-soft)!important;margin-bottom:2px}
+body.ag-dm-premium-active .ag-hero-tel:hover{color:var(--sig-green-soft)!important}
+
+/* stats hero à gauche */
+body.ag-dm-premium-active .ag-hero-stats{justify-content:flex-start!important;margin-top:40px!important;gap:40px!important}
+
+/* tampon rotatif */
+.ag-hero-stamp{position:absolute;right:5vw;bottom:130px;width:172px;height:172px;z-index:4;pointer-events:none}
+.ag-hero-stamp__spin{position:absolute;inset:0;animation:agSpin 24s linear infinite}
+.ag-hero-stamp__mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.ag-hero-stamp__mid b{font-family:"Fraunces",serif;font-size:2.2rem;color:var(--sig-gold-2);line-height:.85}
+.ag-hero-stamp__mid span{font-size:.6rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--sig-cream)}
+@keyframes agSpin{to{transform:rotate(360deg)}}
+@media(max-width:900px){.ag-hero-stamp{display:none}}
+
+/* vague bas de hero */
+.ag-hero-wave{position:absolute;left:0;right:0;bottom:-1px;z-index:3;line-height:0}
+.ag-hero-wave svg{width:100%;height:clamp(50px,7vw,90px);display:block}
+
+/* ============================================================
+   BANDEAU DÉFILANT (marquee)
+   ============================================================ */
+.ag-mq{background:var(--sig-green);overflow:hidden;padding:18px 0;border-top:2px solid rgba(201,163,107,.5);border-bottom:2px solid rgba(201,163,107,.2)}
+.ag-mq__track{display:flex;width:max-content;animation:agMarquee 34s linear infinite}
+.ag-mq__group{display:inline-flex;align-items:center;gap:46px;padding-right:46px}
+.ag-mq__group span{font-family:"Fraunces",serif;font-style:italic;font-size:clamp(1.1rem,2.4vw,1.5rem);color:var(--sig-cream);white-space:nowrap}
+.ag-mq__group b{color:var(--sig-gold-2);font-style:normal}
+.ag-mq:hover .ag-mq__track{animation-play-state:paused}
+@keyframes agMarquee{to{transform:translateX(-50%)}}
+
+/* ============================================================
+   TITRES DE SECTION — géants, éditoriaux (magazine)
+   ============================================================ */
+body.ag-dm-premium-active .ag-services-grid-title,
+body.ag-dm-premium-active .ag-gwenwhy__title,
+body.ag-dm-premium-active .ag-gwengal__title{
+	font-family:"Fraunces",Georgia,serif!important;font-weight:600!important;
+	font-size:clamp(2.1rem,5vw,3.6rem)!important;line-height:1.02!important;letter-spacing:-.015em!important;
+}
+/* kicker doré au-dessus des titres de sections claires */
+body.ag-dm-premium-active .ag-services-grid-header::before,
+body.ag-dm-premium-active .ag-howit-wrap .ag-services-grid-header::before,
+body.ag-dm-premium-active .ag-testi-wrap .ag-services-grid-header::before,
+body.ag-dm-premium-active .ag-faq-wrap .ag-services-grid-header::before{
+	content:"✦ Gwen Services";display:block;font-family:"Nunito Sans",sans-serif;font-weight:800;
+	letter-spacing:.22em;text-transform:uppercase;font-size:.72rem;color:var(--sig-gold);margin-bottom:14px;
+}
+/* filet doré fin sous les titres clairs */
+body.ag-dm-premium-active .ag-services-grid-title span,
+body.ag-dm-premium-active .ag-services-grid-title em{color:var(--sig-green)!important;font-style:italic}
+
+/* ============================================================
+   RÉVÉLATIONS AU SCROLL (JS ajoute .is-in)
+   ============================================================ */
+body.ag-dm-premium-active [data-sig-reveal]{opacity:0;transform:translateY(34px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+body.ag-dm-premium-active [data-sig-reveal].is-in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+	body.ag-dm-premium-active [data-sig-reveal]{opacity:1!important;transform:none!important}
+	.ag-hero-stamp__spin,.ag-mq__track{animation:none!important}
+}
+
+/* ============================================================
+   VAGUES entre sections (insérées par signature.js)
+   ============================================================ */
+.ag-sig-wave{line-height:0;display:block;margin:0;padding:0}
+.ag-sig-wave svg{display:block;width:100%;height:clamp(40px,6vw,72px)}
+
+/* ============================================================
+   Cartes « Pourquoi » & galerie — plus affirmées
+   ============================================================ */
+body.ag-dm-premium-active .ag-gwenwhy__ic{box-shadow:0 18px 34px -14px rgba(26,94,58,.75),0 0 0 1px rgba(201,163,107,.25)!important}
+body.ag-dm-premium-active .ag-service-card{border-radius:18px!important}
+
+/* Numéro filigrane géant dans « Comment ça marche » */
+body.ag-dm-premium-active .ag-howit-wrap{position:relative;overflow:hidden}
