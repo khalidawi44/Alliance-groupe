@@ -262,6 +262,39 @@ endif; ?>
 		</section>
 	<?php endif; ?>
 
+	<?php if ( $ag_has_preset ) :
+		// Bande CTA finale « plein écran » — point de conversion en bas de page.
+		$ag_cta_bg  = file_exists( get_theme_file_path( 'assets/about.jpg' ) ) ? get_template_directory_uri() . '/assets/about.jpg' : $ag_hero_image;
+		$ag_cta_url = ag_domicile_resolve_cta_url( '/devis/' );
+		$ag_cta_tel = ag_domicile_opt( 'ag_domicile_footer_phone', '06 26 14 28 45' );
+		?>
+		<section class="ag-finalcta" style="background-image:linear-gradient(120deg,rgba(12,22,15,.92),rgba(20,58,39,.78) 55%,rgba(26,94,58,.62)),url('<?php echo esc_url( $ag_cta_bg ); ?>');">
+			<div class="ag-finalcta__wave" aria-hidden="true">
+				<svg viewBox="0 0 1440 70" preserveAspectRatio="none"><path fill="#14140f" d="M0,30 C240,70 480,0 720,24 C960,48 1200,10 1440,40 L1440,0 L0,0 Z"/></svg>
+			</div>
+			<div class="ag-container ag-finalcta__in">
+				<span class="ag-hero-eyebrow">Sans engagement · Évaluation à domicile offerte</span>
+				<h2 class="ag-finalcta__title">Offrez à votre proche<br>une présence de <span class="ag-brush">confiance</span>.</h2>
+				<p class="ag-finalcta__lead">Un premier échange gratuit, une évaluation offerte à domicile, et le crédit d’impôt de 50 % déduit immédiatement.</p>
+				<div class="ag-hero-actions ag-finalcta__actions">
+					<a class="ag-btn-pro" href="<?php echo esc_url( $ag_cta_url ); ?>">Devis gratuit →</a>
+					<?php if ( $ag_cta_tel ) : ?>
+						<a class="ag-hero-tel" href="tel:<?php echo esc_attr( preg_replace( '/\s+/', '', $ag_cta_tel ) ); ?>"><small>Appelez Gwen</small><?php echo esc_html( $ag_cta_tel ); ?></a>
+					<?php endif; ?>
+				</div>
+			</div>
+			<div class="ag-finalcta__stamp" aria-hidden="true">
+				<div class="ag-hero-stamp__spin">
+					<svg viewBox="0 0 200 200"><defs><path id="agstamp2" d="M100,100 m-72,0 a72,72 0 1,1 144,0 a72,72 0 1,1 -144,0"/></defs>
+						<circle cx="100" cy="100" r="90" fill="none" stroke="#e6c78a" stroke-width="1.4" opacity=".6"/>
+						<text fill="#f6f1e4" font-family="Nunito Sans, sans-serif" font-size="12" font-weight="800" letter-spacing="3.2"><textPath href="#agstamp2" startOffset="0%">· DEVIS GRATUIT · RÉPONSE RAPIDE · À NANTES </textPath></text>
+					</svg>
+				</div>
+				<div class="ag-hero-stamp__mid"><b>♡</b><span>Gwen<br>Services</span></div>
+			</div>
+		</section>
+	<?php endif; ?>
+
 	<?php if ( ! $ag_has_preset ) :
 		// Section "à propos" historique conservée uniquement en mode legacy
 		$about_fb_title = trim( ag_domicile_opt( 'ag_domicile_about_title_pre', 'Qui' ) . ' ' . ag_domicile_opt( 'ag_domicile_about_title_em', 'sommes-nous' ) );

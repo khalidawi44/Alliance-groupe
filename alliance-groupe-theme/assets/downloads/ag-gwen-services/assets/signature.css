@@ -258,3 +258,30 @@ body.ag-dm-premium-active .ag-gwengal__cell{box-shadow:0 30px 60px -34px rgba(0,
 /* ---------- 6) POURQUOI : cartes plus affirmées ---------- */
 body.ag-dm-premium-active .ag-gwenwhy__card{border-color:rgba(201,163,107,.22)!important}
 body.ag-dm-premium-active .ag-gwenwhy__card:hover{border-color:rgba(201,163,107,.55)!important}
+
+/* ---------- 7) BANDE CTA FINALE plein écran ---------- */
+body.ag-dm-premium-active .ag-finalcta{
+	position:relative;overflow:hidden;background-size:cover;background-position:center;
+	padding:clamp(90px,13vw,170px) 6vw;margin-top:0;color:#fff;
+	display:flex;align-items:center;min-height:70vh;
+}
+.ag-finalcta__wave{position:absolute;top:-1px;left:0;right:0;line-height:0;z-index:2}
+.ag-finalcta__wave svg{width:100%;height:clamp(40px,6vw,70px);display:block}
+.ag-finalcta__in{position:relative;z-index:3;max-width:840px}
+body.ag-dm-premium-active .ag-finalcta .ag-hero-eyebrow{margin-bottom:24px}
+.ag-finalcta__title{
+	font-family:"Fraunces",Georgia,serif;font-weight:600;color:#fff;
+	font-size:clamp(2.4rem,5.6vw,4.6rem);line-height:1.02;letter-spacing:-.02em;margin:0 0 18px;text-wrap:balance;
+}
+body.ag-dm-premium-active .ag-finalcta__title span.ag-brush{position:relative;white-space:nowrap;color:#fff!important;display:inline-block}
+body.ag-dm-premium-active .ag-finalcta__title span.ag-brush::after{content:"";position:absolute;left:-.06em;right:-.06em;bottom:.06em;height:.4em;z-index:-1;
+	background:linear-gradient(120deg,#c9a36b,#e6c78a);opacity:.92;border-radius:.4em .5em .42em .4em;transform:rotate(-1.4deg)}
+.ag-finalcta__lead{font-size:clamp(1.05rem,2.2vw,1.28rem);line-height:1.6;color:#e7e2d3;max-width:52ch;margin:0 0 34px}
+.ag-finalcta__actions{gap:26px}
+/* tampon en bas-droite */
+.ag-finalcta__stamp{position:absolute;right:6vw;bottom:64px;width:150px;height:150px;z-index:3;pointer-events:none}
+.ag-finalcta__stamp .ag-hero-stamp__spin{position:absolute;inset:0;animation:agSpin 26s linear infinite}
+.ag-finalcta__stamp .ag-hero-stamp__mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.ag-finalcta__stamp .ag-hero-stamp__mid b{font-size:2rem;color:#e6c78a;line-height:.8}
+.ag-finalcta__stamp .ag-hero-stamp__mid span{font-size:.58rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#f6f1e4;line-height:1.2}
+@media(max-width:900px){.ag-finalcta__stamp{display:none}}
