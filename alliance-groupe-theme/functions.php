@@ -422,6 +422,12 @@ if ( file_exists( $ag_prospection_file ) ) {
     require_once $ag_prospection_file;
 }
 
+// ── Radar réseautage Nantes (soirées / rencontres entrepreneurs) — sous-menu Prospection
+$ag_reseautage_file = get_stylesheet_directory() . '/inc/ag-reseautage.php';
+if ( file_exists( $ag_reseautage_file ) ) {
+    require_once $ag_reseautage_file;
+}
+
 // ── Capture lead « Guide gratuit avocat » (entonnoir freemium .org → site mère)
 $ag_lead_avocat_file = get_stylesheet_directory() . '/inc/ag-lead-avocat.php';
 if ( file_exists( $ag_lead_avocat_file ) ) {
