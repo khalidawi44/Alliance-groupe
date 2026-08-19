@@ -110,7 +110,7 @@ $dir = get_stylesheet_directory_uri();
   .ch__meta{margin-top:24px;display:flex;gap:24px;flex-wrap:wrap;font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
 
   /* ---------- DISSOLUTION ---------- */
-  .ds{position:relative;height:380svh}
+  .ds{position:relative;height:620svh}
   .ds__stick{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center}
   #cv{width:100%;height:100%;display:block}
   .ds__hand{position:absolute;z-index:4;width:min(52vw,620px);mix-blend-mode:screen;opacity:0;pointer-events:none}
@@ -140,20 +140,22 @@ $dir = get_stylesheet_directory_uri();
   .of__note{position:relative;z-index:2;color:var(--muted);font-size:.95rem}
   .of__note a{color:var(--gold-hi)}
 
-  /* ---------- ATELIER ---------- */
-  .at{background:linear-gradient(180deg,#05050a,#0a0a12)}
-  .at__stage{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:center;
-    padding:clamp(60px,9vh,110px) 0;overflow:hidden}
-  .at__hand{position:absolute;z-index:1;top:-6%;left:50%;width:min(46vw,540px);transform:translateX(-50%) scale(.92);
-    mix-blend-mode:screen;opacity:.55;pointer-events:none}
-  .at__stage .wrap{position:relative;z-index:2;width:100%}
-  .at__head{text-align:center;max-width:760px;margin:0 auto 26px}
-  .at__filters{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:34px}
+  /* ---------- ATELIER (couche de la scène) ---------- */
+  .at{position:absolute;inset:0;z-index:7;display:flex;flex-direction:column;justify-content:center;
+      padding:clamp(20px,4vh,54px) 0;opacity:0;pointer-events:none;overflow:hidden}
+  .at .stitle{font-size:clamp(1.5rem,3.6vw,2.5rem)}
+  .at .lead{font-size:clamp(.9rem,1.7vw,1rem);line-height:1.5}
+  .at .at__head{margin:0 auto 14px}
+  @media(max-height:860px){.at .card__d{display:none}.at .card__t{font-size:.95rem}}
+  .at.is-live{pointer-events:auto}
+  .at .wrap{position:relative;z-index:2;width:100%}
+  .at__head{text-align:center;max-width:760px;margin:0 auto 18px}
+  .at__filters{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:18px}
   .fbtn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);color:#cdd4e2;border-radius:999px;
         padding:9px 20px;font-size:.85rem;cursor:pointer;transition:.25s;font-family:inherit}
   .fbtn:hover{border-color:var(--gold)}
   .fbtn.is-on{background:linear-gradient(120deg,var(--gold),var(--gold-hi));color:#1a1206;font-weight:700;border-color:transparent}
-  .at__grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+  .at__grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
   @media(max-width:1100px){.at__grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:640px){.at__grid{grid-template-columns:1fr}}
   .card{position:relative;background:#0c0c14;border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;
@@ -164,7 +166,7 @@ $dir = get_stylesheet_directory_uri();
   .card:hover .card__media img{transform:scale(1.07)}
   .card__badge{position:absolute;top:12px;left:12px;z-index:2;background:rgba(5,5,10,.72);border:1px solid rgba(212,180,92,.5);
     color:var(--gold-hi);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;padding:5px 12px;border-radius:999px}
-  .card__body{padding:16px 18px 20px}
+  .card__body{padding:13px 15px 15px}
   .card__t{font-size:1.02rem;font-weight:700;margin-bottom:6px}
   .card__d{color:var(--muted);font-size:.84rem;line-height:1.45;min-height:2.6em}
   .card__go{margin-top:12px;font-size:.82rem;color:var(--gold);letter-spacing:.06em}
@@ -276,7 +278,7 @@ $dir = get_stylesheet_directory_uri();
 </section>
 
 
-<section class="ds">
+<section class="ds" id="atelier">
   <div class="ds__stick">
     <canvas id="cv"></canvas>
     <img class="ds__hand" id="hand" src="<?php echo esc_url( $dir . '/assets/images/cinematique/main-poussiere-or.jpg' ); ?>" alt="">
@@ -285,36 +287,9 @@ $dir = get_stylesheet_directory_uri();
       <h2 data-mots>Ce qui compte ne se voit pas <em>tout de suite</em></h2>
       <p>Un site n'est pas une image. C'est une mécanique — vitesse, sécurité, référencement — qui se révèle quand on regarde de près.</p>
     </div>
-<div class="of" id="ofStage">
-  <div class="of__bg"><img src="<?php echo esc_url( $dir . '/assets/images/cinematique/marbre-noir-or.jpg' ); ?>" alt="" loading="lazy"></div>
-  <div class="wrap of__in">
-    <span class="eyebrow" data-rv>Nos formules</span>
-    <h2 class="stitle" data-mots style="margin-top:10px">Des offres claires, <em>à prix fixe</em></h2>
-    <p class="lead" data-rv style="margin:16px auto 0">Pas de devis interminable. Vous choisissez, on livre — vite.</p>
-    <div class="of__grid">
-      <article class="pack" data-pack>
-        <img src="<?php echo esc_url( $dir . '/assets/images/offres/offre-essentiel.jpg' ); ?>" alt="Pack Essentiel — 490 €" loading="lazy">
-        <div class="pack__body"><a class="btn pack__cta" href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">Choisir Essentiel — 490 €</a></div>
-      </article>
-      <article class="pack star" data-pack>
-        <img src="<?php echo esc_url( $dir . '/assets/images/offres/offre-pro.jpg' ); ?>" alt="Pack Pro — 890 €" loading="lazy">
-        <div class="pack__body"><a class="btn pack__cta" href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">Choisir Pro — 890 €</a></div>
-      </article>
-      <article class="pack" data-pack>
-        <img src="<?php echo esc_url( $dir . '/assets/images/offres/offre-boutique.jpg' ); ?>" alt="Pack Boutique — 1 490 €" loading="lazy">
-        <div class="pack__body"><a class="btn pack__cta" href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">Choisir Boutique — 1 490 €</a></div>
-      </article>
-    </div>
-    <p class="of__note" data-rv>+ Maintenance &amp; hébergement à partir de <strong>29 €/mois</strong> — <a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">voir les formules</a>.</p>
-  </div>
-</div>
-
-  </div>
-</section>
-
-<section class="at" id="atelier">
- <div class="at__stage" id="stage">
-  <img class="at__hand" id="atHand" src="<?php echo esc_url( $dir . '/assets/images/cinematique/main-poussiere-or.jpg' ); ?>" alt="">
+<div class="at" id="atStage">
+ 
+  
   <div class="wrap">
     <div class="at__head">
       <span class="eyebrow">Alliance Groupe · web · sécurité · IA</span>
@@ -363,7 +338,33 @@ $dir = get_stylesheet_directory_uri();
     </div>
   </div>
 </div>
+    <div class="of" id="ofStage">
+  <div class="of__bg"><img src="<?php echo esc_url( $dir . '/assets/images/cinematique/marbre-noir-or.jpg' ); ?>" alt="" loading="lazy"></div>
+  <div class="wrap of__in">
+    <span class="eyebrow" data-rv>Nos formules</span>
+    <h2 class="stitle" data-mots style="margin-top:10px">Des offres claires, <em>à prix fixe</em></h2>
+    <p class="lead" data-rv style="margin:16px auto 0">Pas de devis interminable. Vous choisissez, on livre — vite.</p>
+    <div class="of__grid">
+      <article class="pack" data-pack>
+        <img src="<?php echo esc_url( $dir . '/assets/images/offres/offre-essentiel.jpg' ); ?>" alt="Pack Essentiel — 490 €" loading="lazy">
+        <div class="pack__body"><a class="btn pack__cta" href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">Choisir Essentiel — 490 €</a></div>
+      </article>
+      <article class="pack star" data-pack>
+        <img src="<?php echo esc_url( $dir . '/assets/images/offres/offre-pro.jpg' ); ?>" alt="Pack Pro — 890 €" loading="lazy">
+        <div class="pack__body"><a class="btn pack__cta" href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">Choisir Pro — 890 €</a></div>
+      </article>
+      <article class="pack" data-pack>
+        <img src="<?php echo esc_url( $dir . '/assets/images/offres/offre-boutique.jpg' ); ?>" alt="Pack Boutique — 1 490 €" loading="lazy">
+        <div class="pack__body"><a class="btn pack__cta" href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">Choisir Boutique — 1 490 €</a></div>
+      </article>
+    </div>
+    <p class="of__note" data-rv>+ Maintenance &amp; hébergement à partir de <strong>29 €/mois</strong> — <a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">voir les formules</a>.</p>
+  </div>
+</div>
+
+  </div>
 </section>
+
 
 <section class="lion">
   <div class="lion__stick">
@@ -484,49 +485,6 @@ $dir = get_stylesheet_directory_uri();
     /* offres en cascade */
     G.from("[data-pack]", { y:56, opacity:0, duration:1, ease:"power3.out", stagger:.12,
       scrollTrigger:{ trigger:".of__grid", start:"top 82%" }});
-    /* ATELIER : les cartes sortent de la paume, tourbillonnent puis se figent */
-    (function(){
-      var stage = document.getElementById("stage"), grid = document.getElementById("grid");
-      var cards = G.utils.toArray("#grid .card");
-      var petit = matchMedia("(max-width:820px)").matches;
-      if (petit){
-        G.from(cards, { y:40, opacity:0, duration:.8, ease:"power3.out", stagger:.06,
-          scrollTrigger:{ trigger:grid, start:"top 85%" }});
-        G.fromTo("#atHand", { opacity:0 }, { opacity:.5, duration:.8,
-          scrollTrigger:{ trigger:stage, start:"top 70%" }});
-        return;
-      }
-      /* position de la paume dans la scène */
-      function paume(){ return { x: stage.clientWidth / 2, y: stage.clientHeight * 0.17 }; }
-      function centre(el){                       /* centre de l'élément dans la scène */
-        var x = 0, y = 0, n = el;
-        while (n && n !== stage){ x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
-        return { x: x + el.offsetWidth / 2, y: y + el.offsetHeight / 2 };
-      }
-      var tl = G.timeline({ scrollTrigger:{ trigger:stage, start:"top top", end:"+=210%",
-        pin:true, scrub:.55, invalidateOnRefresh:true, anticipatePin:1 }});
-
-      G.set(".at__filters", { opacity:0, y:16 });
-      tl.to("#atHand", { opacity:.92, scale:1, duration:.22, ease:"power2.out" }, 0)
-        .fromTo(".at__head", { y:22 }, { y:0, duration:.18, ease:"power3.out" }, .1)
-        .to("#atHand", { opacity:.14, scale:1.24, duration:.55, ease:"none" }, .34)
-        .to(".at__filters", { opacity:1, y:0, duration:.16, ease:"power2.out" }, .92);
-
-      cards.forEach(function(c, i){
-        var a0 = i * (Math.PI * 2 / cards.length);
-        tl.fromTo(c,
-          { opacity:0, scale:.06, rotation:(i % 2 ? 1 : -1) * (300 + i * 40),
-            x: function(){ return paume().x - centre(c).x + Math.cos(a0) * 26; },
-            y: function(){ return paume().y - centre(c).y + Math.sin(a0) * 26; } },
-          { keyframes:[
-              { opacity:1, scale:.42, rotation:(i % 2 ? 1 : -1) * 120, duration:.5,
-                x: function(){ return (paume().x - centre(c).x) * .45 + Math.cos(a0 + 2.2) * 190; },
-                y: function(){ return (paume().y - centre(c).y) * .45 + Math.sin(a0 + 2.2) * 130; } },
-              { opacity:1, scale:1, rotation:0, x:0, y:0, duration:.6, ease:"power3.out" }
-            ], ease:"none" },
-          .34 + i * 0.055);
-      });
-    })();
     /* lion */
     G.fromTo("#lionImg", { scale:.5, opacity:0, filter:"blur(14px)" },
       { scale:1, opacity:1, filter:"blur(0px)", ease:"none",
@@ -597,41 +555,78 @@ $dir = get_stylesheet_directory_uri();
   img.onload = build; addEventListener("resize", build);
   if (ok){
     ST.create({ trigger:".ds", start:"top top", end:"bottom bottom", scrub:true,
-      onUpdate: function(self){ progress = self.progress * 1.12; draw(); }});
-    /* SCÈNE UNIQUE : la photo se dissout, la main paraît, les offres en sortent */
+      onUpdate: function(self){ progress = Math.min(1.15, self.progress / .30 * 1.12); draw(); }});
+    /* SCÈNE UNIQUE : dissolution -> main -> offres -> évaporation -> atelier */
     (function(){
-      var stick = document.querySelector(".ds__stick"), of = document.getElementById("ofStage");
+      var stick = document.querySelector(".ds__stick");
+      var of = document.getElementById("ofStage"), at = document.getElementById("atStage");
       var packs = G.utils.toArray("#ofStage [data-pack]");
+      var cards = G.utils.toArray("#atStage .card");
       function paume(){ return { x: stick.clientWidth / 2, y: stick.clientHeight * 0.30 }; }
       function centre(el){ var x=0,y=0,n=el; while(n && n!==stick){ x+=n.offsetLeft; y+=n.offsetTop; n=n.offsetParent; }
         return { x:x+el.offsetWidth/2, y:y+el.offsetHeight/2 }; }
 
-      G.set(of, { opacity:0 });
+      G.set([of, at], { opacity:0 });
+      G.set(".at__filters", { opacity:0, y:14 });
+
       var tl = G.timeline({ scrollTrigger:{ trigger:".ds", start:"top top", end:"bottom bottom",
         scrub:.5, invalidateOnRefresh:true,
-        onUpdate:function(self){ of.classList.toggle("is-live", self.progress > .62); }}});
+        onUpdate:function(self){
+          var p = self.progress;
+          of.classList.toggle("is-live", p > .42 && p < .62);
+          at.classList.toggle("is-live", p > .80);
+        }}});
 
-      tl.fromTo("#hand", { opacity:0, scale:.78, yPercent:8 }, { opacity:.95, scale:1.06, yPercent:-2, duration:.28, ease:"power2.out" }, .30)
-        .to("#dsCap", { opacity:0, y:-30, duration:.12, ease:"power2.in" }, .46)
-        .to(of, { opacity:1, duration:.06 }, .48)
+      /* la main ne paraît qu'une fois l'image entièrement dissoute */
+      tl.fromTo("#hand", { opacity:0, scale:.78, yPercent:10 },
+                         { opacity:.95, scale:1.05, yPercent:0, duration:.06, ease:"power2.out" }, .30)
+        .to("#dsCap", { opacity:0, y:-30, duration:.04, ease:"power2.in" }, .30)
+        /* les offres sortent de la paume */
+        .to(of, { opacity:1, duration:.02 }, .36)
         .fromTo("#ofStage .of__in > *:not(.of__grid)", { opacity:0, y:34 },
-                { opacity:1, y:0, duration:.14, stagger:.05, ease:"power3.out" }, .50)
-        .to("#hand", { opacity:.18, scale:1.22, duration:.30, ease:"none" }, .58);
+                { opacity:1, y:0, duration:.06, stagger:.02, ease:"power3.out" }, .37)
+        .to("#hand", { opacity:.2, scale:1.2, duration:.12, ease:"none" }, .40);
 
       packs.forEach(function(c, i){
-        var a0 = (i - 1) * 0.7;                       /* éventail : gauche, centre, droite */
         tl.fromTo(c,
           { opacity:0, scale:.07, rotation:(i - 1) * 26,
             x:function(){ return paume().x - centre(c).x; },
             y:function(){ return paume().y - centre(c).y; } },
           { keyframes:[
               { opacity:1, scale:.5, rotation:(i - 1) * 14, duration:.5,
-                x:function(){ return (paume().x - centre(c).x) * .45 + Math.sin(a0) * 150; },
-                y:function(){ return (paume().y - centre(c).y) * .5 - 70; } },
+                x:function(){ return (paume().x - centre(c).x) * .45 + (i - 1) * 150; },
+                y:function(){ return (paume().y - centre(c).y) * .5 - 60; } },
               { opacity:1, scale:1, rotation:0, x:0, y:0, duration:.5, ease:"power3.out" }
-            ], ease:"none" },
-          .56 + i * .06);
+            ], ease:"none", duration:.13 },
+          .38 + i * .025);
       });
+
+      /* les offres s'évaporent, la main se rallume */
+      tl.to(packs, { opacity:0, scale:.86, y:-70, filter:"blur(8px)", duration:.09, stagger:.02, ease:"power2.in" }, .62)
+        .to("#ofStage .of__in > *:not(.of__grid)", { opacity:0, y:-40, duration:.06, ease:"power2.in" }, .63)
+        .to(of, { opacity:0, duration:.02 }, .72)
+        .to("#hand", { opacity:.95, scale:1.05, duration:.06, ease:"power2.out" }, .64)
+        /* l'atelier prend sa place */
+        .to(at, { opacity:1, duration:.02 }, .70)
+        .fromTo(".at__head", { opacity:0, y:30 }, { opacity:1, y:0, duration:.06, ease:"power3.out" }, .71)
+        .to("#hand", { opacity:.16, scale:1.28, duration:.14, ease:"none" }, .74);
+
+      cards.forEach(function(c, i){
+        var a0 = i * (Math.PI * 2 / cards.length);
+        tl.fromTo(c,
+          { opacity:0, scale:.06, rotation:(i % 2 ? 1 : -1) * (300 + i * 40),
+            x:function(){ return paume().x - centre(c).x + Math.cos(a0) * 26; },
+            y:function(){ return paume().y - centre(c).y + Math.sin(a0) * 26; } },
+          { keyframes:[
+              { opacity:1, scale:.42, rotation:(i % 2 ? 1 : -1) * 120, duration:.5,
+                x:function(){ return (paume().x - centre(c).x) * .45 + Math.cos(a0 + 2.2) * 200; },
+                y:function(){ return (paume().y - centre(c).y) * .45 + Math.sin(a0 + 2.2) * 130; } },
+              { opacity:1, scale:1, rotation:0, x:0, y:0, duration:.5, ease:"power3.out" }
+            ], ease:"none", duration:.16 },
+          .74 + i * .016);
+      });
+
+      tl.to(".at__filters", { opacity:1, y:0, duration:.05, ease:"power2.out" }, .93);
     })();
   }
 })();
