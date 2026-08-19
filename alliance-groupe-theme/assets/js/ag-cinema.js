@@ -400,17 +400,6 @@
 			gsap.from(el, { y: 34, opacity: 0, duration: 0.95, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 86%' } });
 		});
 
-		// -- Images de chapitres : reveal clip-path + parallaxe interne --
-		gsap.utils.toArray('[data-media]').forEach(function (m) {
-			var im = m.querySelector('img');
-			if (im) {
-				gsap.fromTo(im, { scale: 1.22, yPercent: -6 }, { scale: 1.02, yPercent: 6, ease: 'none',
-					scrollTrigger: { trigger: m, start: 'top bottom', end: 'bottom top', scrub: true } });
-			}
-			gsap.from(m, { clipPath: 'inset(100% 0% 0% 0%)', duration: 1.25, ease: 'power4.out',
-				scrollTrigger: { trigger: m, start: 'top 82%' } });
-		});
-
 		// -- Dissolution en poussiere d'or (canvas 2D) --
 		var cv = document.getElementById('ag-cv');
 		if (cv) {
