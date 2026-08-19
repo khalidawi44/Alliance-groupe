@@ -32,9 +32,20 @@ $chapters = array(
 .ag-lm *{box-sizing:border-box;}
 /* HERO */
 .ag-lm__hero{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden;}
-/* Fond vidéo promo (plein écran, autoplay/muet/boucle) */
+/* Fond CINÉ-LOOP : slides empilés en fondu enchaîné (vidéo ⇄ photo) */
 .ag-lm__hbg{position:absolute;inset:0;z-index:0;}
-.ag-lm__hbg img,.ag-lm__hbg video{width:100%;height:100%;object-fit:cover;object-position:center 45%;display:block;}
+.ag-lm__slide{position:absolute;inset:0;opacity:0;transition:opacity 1.3s ease;background-size:cover;background-position:center 42%;will-change:opacity;}
+.ag-lm__slide.is-on{opacity:1;}
+.ag-lm__slide video,.ag-lm__slide img{width:100%;height:100%;object-fit:cover;object-position:center 45%;display:block;}
+/* Temps vidéo : léger zoom cinéma continu (casse la boucle) */
+.ag-lm__slide--vid video{animation:agKen1 22s ease-in-out infinite alternate;transform-origin:center 40%;}
+/* Temps photo : la baie en fond + l'égérie détourée devant, travelling opposé */
+.ag-lm__slide--photo{animation:agKen2 20s ease-in-out infinite alternate;transform-origin:60% 60%;}
+.ag-lm__slidefig{position:absolute;right:clamp(-20px,3vw,80px);bottom:0;height:min(96vh,1100px);}
+.ag-lm__slidefig img{height:100%;width:auto;object-fit:contain;filter:drop-shadow(0 24px 55px rgba(0,0,0,.6));}
+@keyframes agKen1{from{transform:scale(1.04)}to{transform:scale(1.13)}}
+@keyframes agKen2{from{transform:scale(1.08)}to{transform:scale(1.0)}}
+@media(prefers-reduced-motion:reduce){.ag-lm__slide--vid video,.ag-lm__slide--photo{animation:none}}
 .ag-lm__sgrad{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(5,5,10,.45),rgba(5,5,10,.08) 26%,rgba(5,5,10,.35) 66%,rgba(5,5,10,.95)),radial-gradient(115% 85% at 26% 55%,transparent 40%,rgba(5,5,10,.5));}
 /* Égérie DÉTOURÉE, séparée du fond, posée devant */
 .ag-lm__egerie{position:absolute;z-index:2;right:clamp(-10px,3vw,90px);bottom:0;height:min(94vh,1080px);display:block;pointer-events:none;animation:agEgIn 1s ease .1s both;}
@@ -132,12 +143,23 @@ $chapters = array(
 
 	<!-- HERO ÉGÉRIE — fond Naples fixe + égérie détourée séparée -->
 	<section class="ag-lm__hero">
-		<!-- Fond VIDÉO égérie Naples (plein écran) -->
+		<!-- Fond CINÉ-LOOP égérie : plan vidéo ⇄ temps photo (fondu enchaîné) -->
 		<div class="ag-lm__hbg" aria-hidden="true">
-			<video autoplay muted loop playsinline preload="metadata"
-				poster="<?php echo esc_url( $dir . '/assets/images/cities/baie_naples_nuit.jpg' ); ?>">
-				<source src="<?php echo esc_url( $dir . '/assets/videos/egerie-naples.mp4' ); ?>" type="video/mp4">
-			</video>
+			<!-- Temps 1 : le plan vidéo (léger zoom cinéma) -->
+			<div class="ag-lm__slide ag-lm__slide--vid is-on" data-beat="0">
+				<video autoplay muted loop playsinline preload="metadata"
+					poster="<?php echo esc_url( $dir . '/assets/images/cities/baie_naples_nuit.jpg' ); ?>">
+					<source src="<?php echo esc_url( $dir . '/assets/videos/egerie-naples.mp4' ); ?>" type="video/mp4">
+				</video>
+			</div>
+			<!-- Temps 2 : l'égérie détourée sur la baie de Naples (travelling Ken Burns) -->
+			<div class="ag-lm__slide ag-lm__slide--photo" data-beat="1"
+				style="background-image:url('<?php echo esc_url( $dir . '/assets/images/cities/baie_naples_nuit.jpg' ); ?>')">
+				<picture class="ag-lm__slidefig">
+					<source srcset="<?php echo esc_url( $dir . '/assets/images/egerie/egerie-cutout.webp' ); ?>" type="image/webp">
+					<img src="<?php echo esc_url( $dir . '/assets/images/egerie/egerie-cutout.png' ); ?>" alt="" loading="lazy">
+				</picture>
+			</div>
 		</div>
 		<div class="ag-lm__sgrad"></div>
 		<!-- Marque (coin haut gauche) -->
@@ -234,6 +256,18 @@ $chapters = array(
 		var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); }, {threshold:.14});
 		rv.forEach(function(el){ io.observe(el); });
 	} else { rv.forEach(function(el){ el.classList.add('in'); }); }
+	// Ciné-loop du hero : fondu enchaîné entre les temps (vidéo ⇄ photo)
+	var slides = [].slice.call(document.querySelectorAll('.ag-lm__hbg .ag-lm__slide'));
+	if(slides.length > 1){
+		var beat = 0;
+		setInterval(function(){
+			slides[beat].classList.remove('is-on');
+			beat = (beat + 1) % slides.length;
+			slides[beat].classList.add('is-on');
+			var v = slides[beat].querySelector('video');
+			if(v){ try{ v.currentTime = 0; v.play(); }catch(e){} }
+		}, 6500);
+	}
 	// Parallaxe souris sur les badges flottants
 	var hero = document.querySelector('.ag-lm__hero');
 	var cws  = [].slice.call(document.querySelectorAll('.ag-lm__cw'));
