@@ -371,3 +371,56 @@ body.ag-dm-premium-active .ag-about-photo::after{content:"";position:absolute;in
 body.ag-dm-premium-active .ag-timeline{padding:clamp(56px,9vw,100px) 24px!important}
 body.ag-dm-premium-active .ag-timeline-item{border-radius:16px!important;box-shadow:0 20px 44px -34px rgba(20,45,28,.5)!important;background:#fff!important;border:1px solid #e7efe8!important}
 body.ag-dm-premium-active .ag-timeline-year{color:#3f8f63!important;font-family:"Fraunces",serif!important;font-weight:700!important}
+
+/* ============================================================
+   RESPONSIVE — TABLETTE & TÉLÉPHONE
+   Ajuste la couche éditoriale (hero, devis 2 colonnes, cartes,
+   en-têtes) pour un confort de lecture sur petits écrans.
+   ============================================================ */
+
+/* ---------- TABLETTE (≤ 900px) ---------- */
+@media(max-width:900px){
+	/* Hero éditorial : moins de padding haut, hauteur adaptée */
+	body.ag-dm-premium-active .ag-hero-pro{min-height:76vh!important;padding:104px 26px 0!important}
+	body.ag-dm-premium-active .ag-hero-pro__subtitle{max-width:46ch!important}
+	body.ag-dm-premium-active .ag-hero-stats{gap:30px!important;margin-top:32px!important}
+	/* Panneau réassurance du devis : plus collant une fois empilé */
+	body.ag-dm-premium-active .ag-devis-aside{position:static!important;top:auto!important}
+	body.ag-dm-premium-active .ag-devis-layout{gap:22px}
+	/* En-tête des pages intérieures : padding réduit */
+	body.ag-dm-premium-active .ag-page-hero{min-height:38vh;padding:110px 26px 74px!important}
+}
+
+/* ---------- TÉLÉPHONE (≤ 600px) ---------- */
+@media(max-width:600px){
+	/* Hero : titre & sous-titre au plus juste, actions compactes */
+	body.ag-dm-premium-active .ag-hero-pro{min-height:auto!important;padding:96px 20px 40px!important}
+	body.ag-dm-premium-active .ag-hero-pro__title{font-size:clamp(2.35rem,10vw,3rem)!important;line-height:1.02!important}
+	body.ag-dm-premium-active .ag-hero-eyebrow{margin-bottom:18px}
+	body.ag-dm-premium-active .ag-hero-pro__subtitle{margin:18px 0 26px 0!important}
+	.ag-hero-actions{gap:16px}
+	body.ag-dm-premium-active .ag-hero-tel{font-size:1.2rem}
+	body.ag-dm-premium-active .ag-hero-stats{gap:20px!important;margin-top:26px!important}
+
+	/* Bandeau défilant : un peu plus discret */
+	.ag-mq{padding:14px 0}
+
+	/* Cartes : padding réduit pour ne pas serrer le texte */
+	body.ag-dm-premium-active .ag-service-card{padding:24px 20px 22px!important}
+	body.ag-dm-premium-active .ag-howit-card{padding:26px 22px!important}
+	body.ag-dm-premium-active .ag-testi-card{padding:28px 22px!important}
+	body.ag-dm-premium-active .ag-services-grid-wrap{border-radius:22px!important}
+
+	/* FAQ : question moins serrée à droite du bouton + */
+	body.ag-dm-premium-active .ag-faq-q{padding:18px 54px 18px 20px!important;font-size:1.06rem!important}
+
+	/* Devis : panneau et pastilles compacts */
+	body.ag-dm-premium-active .ag-devis-aside{padding:28px 22px}
+	.ag-devis-callcard__tx strong{font-size:1.12rem}
+
+	/* En-tête pages intérieures : encore plus compact */
+	body.ag-dm-premium-active .ag-page-hero{min-height:auto;padding:100px 20px 64px!important}
+
+	/* Bande CTA finale : hauteur libre (évite les grands vides) */
+	body.ag-dm-premium-active .ag-finalcta{min-height:auto;padding:clamp(72px,16vw,120px) 20px}
+}
