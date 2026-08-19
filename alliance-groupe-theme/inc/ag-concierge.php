@@ -175,7 +175,9 @@ add_action( 'wp_footer', function () {
 		</div>
 	</div>
 	<style>
-		#ag-conc-btn{position:fixed;right:18px;bottom:18px;z-index:99998;width:60px;height:60px;border-radius:50%;border:0;background:linear-gradient(135deg,#c8962c,#e6b84a);color:#1a1205;font-size:26px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.28)}
+		#ag-conc-btn{position:fixed;right:18px;bottom:18px;z-index:99998;width:52px;height:52px;border-radius:50%;border:1px solid rgba(212,180,92,.38);background:rgba(10,10,16,.42);color:#e6c78a;font-size:21px;line-height:1;cursor:pointer;-webkit-backdrop-filter:blur(10px) saturate(1.1);backdrop-filter:blur(10px) saturate(1.1);box-shadow:0 6px 20px rgba(0,0,0,.28);opacity:.62;transition:opacity .28s ease,transform .28s ease,border-color .28s ease,background .28s ease}
+		#ag-conc-btn:hover,#ag-conc-btn:focus-visible{opacity:1;transform:translateY(-2px);border-color:rgba(212,180,92,.75);background:rgba(14,14,22,.72)}
+		@media(prefers-reduced-motion:reduce){#ag-conc-btn{transition:none}}
 		#ag-conc-box{position:fixed;right:18px;bottom:88px;z-index:99999;width:min(370px,calc(100vw - 28px));height:min(520px,70vh);background:#fff;border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.3);display:none;flex-direction:column;overflow:hidden}
 		#ag-conc-box.on{display:flex}
 		.ag-conc-head{background:#1a1205;color:#fdf6e6;padding:13px 16px;font-weight:700;display:flex;justify-content:space-between;align-items:center;font-size:.95rem}

@@ -351,6 +351,11 @@ add_action( 'wp_footer', function () {
 		window.agDismissBanner = function(perm){ if(bn) bn.style.display='none'; try{document.body.classList.remove('ag-appbn-on');}catch(e){} if(perm!==true) localStorage.setItem('ag_appbn_off', String(Date.now())); };
 
 		function showBanner(){
+			// Bandeau d'installation DESACTIVE (demande du user 19/08) : il masquait
+			// le contenu au chargement sur iPhone/Android. Le site reste installable
+			// via le bouton « Telecharger l'application » (shortcode ag_pwa_button).
+			return;
+			/* eslint-disable no-unreachable */
 			if (standalone) return;
 			var off = parseInt(localStorage.getItem('ag_appbn_off')||'0',10);
 			if (off && (Date.now()-off) < 7*24*3600*1000) return;
