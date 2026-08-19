@@ -143,22 +143,13 @@ $chapters = array(
 
 	<!-- HERO ÉGÉRIE — fond Naples fixe + égérie détourée séparée -->
 	<section class="ag-lm__hero">
-		<!-- Fond CINÉ-LOOP égérie : plan vidéo ⇄ temps photo (fondu enchaîné) -->
+		<!-- Fond VIDÉO : le long plan égérie (≈40–60 s), plein écran -->
 		<div class="ag-lm__hbg" aria-hidden="true">
-			<!-- Temps 1 : le plan vidéo (léger zoom cinéma) -->
-			<div class="ag-lm__slide ag-lm__slide--vid is-on" data-beat="0">
+			<div class="ag-lm__slide is-on">
 				<video autoplay muted loop playsinline preload="metadata"
-					poster="<?php echo esc_url( $dir . '/assets/images/cities/baie_naples_nuit.jpg' ); ?>">
-					<source src="<?php echo esc_url( $dir . '/assets/videos/egerie-naples.mp4' ); ?>" type="video/mp4">
+					poster="<?php echo esc_url( $dir . '/assets/videos/hero-egerie-long-poster.jpg' ); ?>">
+					<source src="<?php echo esc_url( $dir . '/assets/videos/hero-egerie-long.mp4' ); ?>" type="video/mp4">
 				</video>
-			</div>
-			<!-- Temps 2 : l'égérie détourée sur la baie de Naples (travelling Ken Burns) -->
-			<div class="ag-lm__slide ag-lm__slide--photo" data-beat="1"
-				style="background-image:url('<?php echo esc_url( $dir . '/assets/images/cities/baie_naples_nuit.jpg' ); ?>')">
-				<picture class="ag-lm__slidefig">
-					<source srcset="<?php echo esc_url( $dir . '/assets/images/egerie/egerie-cutout.webp' ); ?>" type="image/webp">
-					<img src="<?php echo esc_url( $dir . '/assets/images/egerie/egerie-cutout.png' ); ?>" alt="" loading="lazy">
-				</picture>
 			</div>
 		</div>
 		<div class="ag-lm__sgrad"></div>
