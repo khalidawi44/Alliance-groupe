@@ -123,3 +123,54 @@ alliance-groupe-theme/assets/videos/hero-egerie-long.mp4 ← montage 41 s, 9 pla
 - [ ] `allegorie-naples.jpg` occupe un plein écran avec un texte court par-dessus.
 - [ ] Le lion apparaît une seule fois, en révélation, jamais en décoration gratuite.
 - [ ] LCP < 2,5 s sur mobile, et tout reste lisible avec `prefers-reduced-motion`.
+
+
+---
+
+## 8. Passage en revue de la page d'accueil actuelle — section par section
+
+Fabrice demande que **rien ne manque** par rapport à la page d'accueil en ligne, et donne le droit de **changer les choses en les améliorant**. Voici l'état actuel (relevé dans `templates/page-accueil.php` au 19/08) et le traitement proposé pour chaque bloc.
+
+### 1. En-tête / marque (`ag-lm__htop`)
+*Aujourd'hui* : logo + eyebrow figés en haut à gauche.
+*À faire* : barre qui se compacte au scroll (hauteur et opacité du fond en `scrub`), logo qui passe du lion complet au lion seul sous 80 px de scroll. Fond `backdrop-filter: blur(10px)` sur `rgba(5,5,10,.6)` seulement après le hero — jamais au-dessus du plein écran.
+
+### 2. Hero égérie (`ag-lm__hero`)
+*Aujourd'hui* : le montage vidéo 41 s en fond plein écran + texte en bas à gauche. C'est déjà bien.
+*À améliorer* : reprendre les trois gestes de la démo — (a) titre dont chaque mot monte (`yPercent:115` → 0, `expo.out`, `stagger .09`), (b) **approche de la main** : sur la fin du hero, `scale` de la vidéo jusqu'à 2.9 avec `transform-origin` sur la main, opacité qui tombe, (c) lion en filigrane `mix-blend-mode: screen` qui grossit doucement. Ajouter un bouton « Audit gratuit » à côté du CTA principal.
+
+### 3. Marquee (`ag-lm__mq`)
+*Aujourd'hui* : bandeau texte qui défile en boucle, vitesse fixe.
+*À améliorer* : le passer en **serif or sur marbre** (`assets/images/cinematique/marbre-noir-or.jpg` en fond, `background-attachment: fixed`), et **lier la vitesse à la vitesse de scroll** (ScrollTrigger `onUpdate` → `self.getVelocity()`), avec inversion du sens quand on remonte. C'est un détail, mais c'est exactement ce qui donne la sensation « site cher ».
+
+### 4. Chapitres 01 / 02 / 03 (`ag-lm__chapters`)
+*Aujourd'hui* : trois blocs texte + image, alternés, avec un simple fondu.
+*À améliorer* : révélation par `clip-path: inset(100% 0 0 0)` → `inset(0)` en 1,25 s `power4.out`, photo qui glisse **à l'intérieur** de son cadre (`scale 1.22 → 1.02`, `yPercent -6 → 6`, `scrub`), numéros en Playfair or. Et surtout : **intercaler le tableau** `cinematique/allegorie-naples.jpg` en plein écran entre le chapitre 01 et le 02, avec une phrase courte par-dessus (« Une alliance, pas un prestataire ») et un Ken Burns très lent. C'est notre équivalent du « verger » de la vidéo de référence.
+
+### 5. Transition dissolution (nouveau)
+Insérer entre les chapitres et les offres une section `sticky` de ~250svh : photo du bureau de Naples dessinée nette sur `<canvas>`, cellules de 12 px qui s'envolent en carrés dorés selon la progression du scroll, avec `cinematique/main-poussiere-or.jpg` en surimpression `mix-blend-mode: screen`. Le code complet est dans `docs/cinematique/alliance-demo.html` — copiable tel quel.
+
+### 6. Offres (`ag-lm__offres`)
+*Aujourd'hui* : les trois cartes que j'ai produites (`assets/images/offres/`), un bouton par carte, la mention « Maintenance & hébergement à partir de 29 €/mois ».
+*À améliorer* : entrée **en cascade** (`stagger .12`, `y:40`, `power3.out`), la carte **Pro** qui monte un peu plus haut et garde un halo or, léger `rotateY` au survol (max 4°, `transform-style: preserve-3d`), fond de section en marbre noir très assombri. Garder la note 29 €/mois mais en petit filet or centré. Ne pas animer les prix (compteurs qui défilent = daté).
+
+### 7. Atelier IA — « Que créons-nous aujourd'hui ? » (`template-parts/atelier-gallery`)
+*Aujourd'hui* : titre, sous-titre, filtres (Tous / IA / Créer / Sécurité) et une grille de cartes : Devis instantané, Refais mon site, Fait par l'IA, Studio créatif, Création de sites, Audit de sécurité…
+*Ce qui cloche* : les vignettes sont des visuels « IA générique » (circuits dorés, cerveau lumineux) qui ne racontent rien et se ressemblent toutes.
+*À améliorer* : (a) filtres animés en **FLIP** (`gsap.utils.toArray` + `Flip.getState`) plutôt qu'un `display:none` brutal ; (b) survol qui révèle la description en glissant depuis le bas ; (c) **je refais les 8 vignettes** dans la palette or/noir, avec des objets réels et une idée par carte (un devis qui s'écrit, un site qui se reconstruit, un bouclier de marbre, un plateau de tournage…). Dis-moi si tu veux que je les produise, c'est une demi-heure.
+
+### 8. Modal devis + bandeau PWA
+*Aujourd'hui* : modal « Lancer mon projet » et une invite d'installation d'application en bas.
+*À améliorer* : ouverture du modal en `scale .96 → 1` + fond flouté, focus piégé dans la boîte (accessibilité), fermeture à `Échap`. Le bandeau PWA doit apparaître **après** le premier scroll, pas au chargement — il masque le contenu au premier coup d'œil (visible sur la capture de Fabrice).
+
+### 9. Pied de page
+*À ajouter* : la révélation du lion (scale + flou qui se lève, `scrub`) puis le mot ALLIANCE GROUPE très espacé, avant les mentions. C'est la respiration finale.
+
+### Ordre de bataille conseillé
+1. Le socle (Lenis + ScrollTrigger + réglages d'easing communs) — tout le reste en dépend.
+2. Hero (approche de la main) et dissolution : ce sont les deux moments « waouh ».
+3. Chapitres + tableau allégorique.
+4. Offres et atelier.
+5. En-tête, modal, pied de page.
+
+Ne livre pas les cinq d'un coup : le hero et la dissolution en ligne suffisent à changer la perception du site.
