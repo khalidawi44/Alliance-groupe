@@ -331,6 +331,124 @@
 	// =====================================================================
 	// BOOT
 	// =====================================================================
+	// =====================================================================
+	// ACCUEIL « cinematique » : titre mot a mot, approche de la main (le fond
+	// video grossit + se fond au scroll), lion en filigrane, dissolution en
+	// poussiere d'or (canvas). Porte depuis docs/cinematique/alliance-demo.html.
+	// Scope strict a l'accueil via .ag-lm__hero. GSAP/ScrollTrigger sont deja
+	// charges ; on ne re-init PAS Lenis (fait par initSmoothScroll).
+	// =====================================================================
+	function initHomeCine() {
+		if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+		var hero = document.querySelector('.ag-lm__hero');
+		if (!hero) return; // uniquement sur l'accueil
+		document.documentElement.classList.add('ag-cine-on'); // active les styles animés (dissolution)
+
+		// -- Titre : chaque mot monte (preserve <em> et <br>) --
+		var title = document.querySelector('.ag-lm__hero [data-split]');
+		if (title && !title.dataset.split) {
+			title.dataset.split = '1';
+			var frag = document.createDocumentFragment();
+			function wrapWord(word, isEm) {
+				var span = document.createElement('span'); span.className = 'ag-w';
+				var it = document.createElement('i'); if (isEm) it.className = 'ag-w-em';
+				it.textContent = word; span.appendChild(it); return span;
+			}
+			function pushWords(text, isEm) {
+				text.split(/(\s+)/).forEach(function (p) {
+					if (p === '') return;
+					if (/^\s+$/.test(p)) frag.appendChild(document.createTextNode(' '));
+					else frag.appendChild(wrapWord(p, isEm));
+				});
+			}
+			Array.prototype.slice.call(title.childNodes).forEach(function (n) {
+				if (n.nodeType === 3) pushWords(n.textContent, false);
+				else if (n.nodeType === 1 && n.tagName === 'BR') frag.appendChild(document.createElement('br'));
+				else if (n.nodeType === 1 && n.tagName === 'EM') pushWords(n.textContent, true);
+				else if (n.nodeType === 1) pushWords(n.textContent, false);
+			});
+			title.innerHTML = ''; title.appendChild(frag);
+			gsap.from(title.querySelectorAll('.ag-w i'), { yPercent: 115, duration: 1.1, ease: 'expo.out', stagger: 0.09, delay: 0.15 });
+		}
+
+		// -- Entrees sous-titre / actions --
+		gsap.from('.ag-lm__hero .ag-lm__hsub', { y: 24, opacity: 0, duration: 1, ease: 'power3.out', delay: 0.5 });
+		gsap.from('.ag-lm__hero .ag-lm__cta', { y: 24, opacity: 0, duration: 1, ease: 'power3.out', delay: 0.66 });
+
+		// -- Approche : le fond video grossit et se fond quand le hero defile --
+		var bg = hero.querySelector('.ag-lm__hbg');
+		if (bg) {
+			gsap.to(bg, {
+				scale: 2.6, opacity: 0, ease: 'power1.in', transformOrigin: '70% 55%',
+				scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: 0.5 }
+			});
+		}
+		gsap.to('.ag-lm__hero .ag-lm__hin', {
+			y: -40, opacity: 0, ease: 'none',
+			scrollTrigger: { trigger: hero, start: 'top top', end: '55% top', scrub: true }
+		});
+		var lionmark = hero.querySelector('.ag-lm__lionmark');
+		if (lionmark) {
+			gsap.to(lionmark, {
+				scale: 1.25, opacity: 0.03, ease: 'none',
+				scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true }
+			});
+		}
+
+		// -- Revelations generiques --
+		gsap.utils.toArray('[data-rv]').forEach(function (el) {
+			gsap.from(el, { y: 34, opacity: 0, duration: 0.95, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 86%' } });
+		});
+
+		// -- Dissolution en poussiere d'or (canvas 2D) --
+		var cv = document.getElementById('ag-cv');
+		if (cv) {
+			var ctx = cv.getContext('2d');
+			var img = new Image(); img.crossOrigin = 'anonymous';
+			var cell = 12, cols = 0, rows = 0, seed = [], progress = 0, dready = false;
+			function build() {
+				var dpr = Math.min(window.devicePixelRatio || 1, 2);
+				cv.width = Math.floor(cv.clientWidth * dpr); cv.height = Math.floor(cv.clientHeight * dpr);
+				if (!img.complete || !img.naturalWidth) return;
+				cols = Math.ceil(cv.width / cell); rows = Math.ceil(cv.height / cell);
+				seed = new Float32Array(cols * rows);
+				for (var i = 0; i < seed.length; i++) seed[i] = Math.random();
+				dready = true; draw();
+			}
+			function draw() {
+				if (!dready) return;
+				ctx.fillStyle = '#05050a'; ctx.fillRect(0, 0, cv.width, cv.height);
+				var r = Math.max(cv.width / img.naturalWidth, cv.height / img.naturalHeight);
+				var iw = img.naturalWidth * r, ih = img.naturalHeight * r;
+				ctx.drawImage(img, (cv.width - iw) / 2, (cv.height - ih) / 2 * 1.1, iw, ih);
+				var p = progress;
+				for (var y = 0; y < rows; y++) {
+					for (var x = 0; x < cols; x++) {
+						var i = y * cols + x;
+						var wave = (x / cols) * 0.45 + (y / rows) * 0.25;
+						var th = wave + seed[i] * 0.55;
+						var k = (p - th) / 0.35;
+						if (k <= 0) continue;
+						if (k < 1) {
+							ctx.fillStyle = '#05050a'; ctx.fillRect(x * cell, y * cell, cell + 1, cell + 1);
+							var a = 1 - k, dy = k * cell * 5 * (seed[i] - 0.3), dx = k * cell * 3 * (seed[i] - 0.5);
+							var g = Math.round(212 + 32 * k), b = Math.round(92 + 20 * k);
+							ctx.fillStyle = 'rgba(' + g + ',' + Math.round(180 + 28 * k) + ',' + b + ',' + (a * 0.95) + ')';
+							var s = cell * (1 - k * 0.6);
+							ctx.fillRect(x * cell + dx, y * cell - dy, s, s);
+						} else {
+							ctx.fillStyle = '#05050a'; ctx.fillRect(x * cell, y * cell, cell + 1, cell + 1);
+						}
+					}
+				}
+			}
+			img.onload = build; img.src = cv.getAttribute('data-src') || '';
+			window.addEventListener('resize', build, { passive: true });
+			ScrollTrigger.create({ trigger: '.ag-dissolve', start: 'top top', end: 'bottom bottom', scrub: true,
+				onUpdate: function (self) { progress = self.progress * 1.12; draw(); } });
+		}
+	}
+
 	function boot() {
 		if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
 			gsap.registerPlugin(ScrollTrigger);
@@ -338,6 +456,7 @@
 		// Smooth scroll (Lenis) + reveal d'images (ScrollTrigger) + curseur.
 		initSmoothScroll();
 		initImageReveal();
+		initHomeCine();
 		if (DESKTOP_FX) {
 			initCursor();
 			initHeroDepth();
