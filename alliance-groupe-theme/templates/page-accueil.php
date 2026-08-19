@@ -170,6 +170,22 @@ html.ag-cine-on .ag-dissolve__stick{position:sticky;top:0;height:100svh;min-heig
 html.ag-cine-on #ag-cv{display:block;position:absolute;inset:0;width:100%;height:100%}
 html.ag-cine-on .ag-dissolve__dust{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;opacity:.5;mix-blend-mode:screen;pointer-events:none}
 html.ag-cine-on .ag-dissolve__cap{position:absolute;bottom:12vh}
+
+/* Chapitres : gros numéros serif or + reveal clip-path piloté au scroll */
+.ag-lm__chn{font-family:"Playfair Display","Fraunces",Georgia,serif;font-size:clamp(2.1rem,5vw,3.4rem);font-weight:500;letter-spacing:0;color:var(--gold);opacity:.82;line-height:1;}
+html.ag-cine-on .ag-lm__chimg{will-change:clip-path}
+html.ag-cine-on .ag-lm__chimg img{transition:none}
+
+/* Tableau allégorique — plein écran, Ken Burns lent (notre « verger ») */
+.ag-tableau{position:relative;width:100vw;margin-left:calc(50% - 50vw);min-height:82svh;display:grid;place-items:center;overflow:hidden;margin-top:clamp(18px,4vw,40px);margin-bottom:clamp(48px,8vw,96px)}
+.ag-tableau__img{position:absolute;inset:0;background-size:cover;background-position:center 42%;transform:scale(1.04);will-change:transform;animation:agKenT 24s ease-in-out infinite alternate}
+@keyframes agKenT{from{transform:scale(1.04)}to{transform:scale(1.12)}}
+.ag-tableau__veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,5,10,.55),rgba(5,5,10,.14) 40%,rgba(5,5,10,.76))}
+.ag-tableau__cap{position:relative;z-index:2;text-align:center;padding:0 24px}
+.ag-tableau__eyebrow{display:inline-block;font-size:.74rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold2);font-weight:800;margin-bottom:16px}
+.ag-tableau__t{font-family:"Playfair Display","Fraunces",Georgia,serif;font-weight:500;font-size:clamp(2.2rem,6vw,4.6rem);line-height:1.02;color:#f6f1e4;text-shadow:0 2px 30px rgba(0,0,0,.5)}
+.ag-tableau__t em{font-style:italic;color:var(--gold2)}
+@media(prefers-reduced-motion:reduce){.ag-tableau__img{animation:none}}
 </style>
 
 <main class="ag-lm" id="ag-main-content">
@@ -222,8 +238,19 @@ html.ag-cine-on .ag-dissolve__cap{position:absolute;bottom:12vh}
 					<h2 class="ag-lm__cht"><?php echo esc_html( $c['t'] ); ?></h2>
 					<p class="ag-lm__chp"><?php echo esc_html( $c['p'] ); ?></p>
 				</div>
-				<div class="ag-lm__chimg"><img src="<?php echo esc_url( $dir . '/assets/images/' . $c['img'] ); ?>" alt="<?php echo esc_attr( $c['t'] ); ?>" loading="lazy"></div>
+				<div class="ag-lm__chimg" data-media><img src="<?php echo esc_url( $dir . '/assets/images/' . $c['img'] ); ?>" alt="<?php echo esc_attr( $c['t'] ); ?>" loading="lazy"></div>
 			</div>
+			<?php if ( '01' === $c['n'] ) : ?>
+				<!-- TABLEAU allégorique plein écran (Ken Burns lent) — notre « verger » -->
+				<div class="ag-tableau">
+					<div class="ag-tableau__img" style="background-image:url('<?php echo esc_url( $dir . '/assets/images/cinematique/allegorie-naples.jpg' ); ?>');" aria-hidden="true"></div>
+					<div class="ag-tableau__veil" aria-hidden="true"></div>
+					<div class="ag-tableau__cap">
+						<span class="ag-tableau__eyebrow">✦ De Naples à Nantes</span>
+						<h2 class="ag-tableau__t">Une alliance,<br>pas un <em>prestataire</em>.</h2>
+					</div>
+				</div>
+			<?php endif; ?>
 		<?php endforeach; ?>
 	</section>
 
