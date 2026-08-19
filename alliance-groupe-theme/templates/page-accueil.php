@@ -132,11 +132,11 @@ $chapters = array(
 
 	<!-- HERO ÉGÉRIE — fond Naples fixe + égérie détourée séparée -->
 	<section class="ag-lm__hero">
-		<!-- Fond VIDÉO promo (plein écran) -->
+		<!-- Fond VIDÉO égérie Naples (plein écran) -->
 		<div class="ag-lm__hbg" aria-hidden="true">
 			<video autoplay muted loop playsinline preload="metadata"
 				poster="<?php echo esc_url( $dir . '/assets/images/cities/baie_naples_nuit.jpg' ); ?>">
-				<source src="<?php echo esc_url( $dir . '/assets/videos/promo-alliance-16x9.mp4' ); ?>" type="video/mp4">
+				<source src="<?php echo esc_url( $dir . '/assets/videos/egerie-naples.mp4' ); ?>" type="video/mp4">
 			</video>
 		</div>
 		<div class="ag-lm__sgrad"></div>
