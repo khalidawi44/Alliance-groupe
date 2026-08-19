@@ -31,10 +31,13 @@ commité survit** → toute nouvelle image doit être poussée dans le repo pour
 
 ---
 
-## Cartes d'OFFRES (packs Sites Express) — ARRIVÉES
-- `assets/images/promo-cards/offre-essentiel.jpg` → pack Essentiel (490 €).
-- `assets/images/promo-cards/offre-pro.jpg` → pack Pro (890 €).
-- `assets/images/promo-cards/offre-boutique.jpg` → pack Boutique (1490 €).
+## Cartes d'OFFRES (packs Sites Express) — dossier OFFICIEL : `assets/images/offres/`
+> ⚠️ Dossier officiel = **`assets/images/offres/`** (le user y dépose par défaut).
+> `promo-cards/` est ABANDONNÉ pour les offres (gardé uniquement si un jour la carte
+> de licence `ag-premium-card.png` y est ajoutée — référencée par le licence-manager).
+- `assets/images/offres/offre-essentiel.jpg` → pack Essentiel (490 €).
+- `assets/images/offres/offre-pro.jpg` → pack Pro (890 €) — badge « le plus choisi ».
+- `assets/images/offres/offre-boutique.jpg` → pack Boutique (1490 €).
 → À brancher sur les cartes de prix de l'accueil (`$packs`) et la page /sites-express.
 
 ## (historique) À DÉPOSER — images d'offres

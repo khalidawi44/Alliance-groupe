@@ -1,3 +1,4 @@
-Déposez ici les images d'OFFRES (mockups au logo AG, bureaux Naples avec égérie/Fabrizio).
-Noms suggérés : mockup-laptop-ag.jpg, bureau-naples-egerie-1.jpg, etc.
-Puis commit + push. Elles seront cataloguées dans ../BANQUE-VISUELS.md et branchées sur les offres.
+DOSSIER OFFICIEL des images d'OFFRES (packs Sites Express + toute promo d'offre).
+Le user dépose ici par défaut. (promo-cards/ = abandonné pour les offres.)
+Cartes actuelles : offre-essentiel.jpg (490), offre-pro.jpg (890, "le plus choisi"), offre-boutique.jpg (1490).
+Nommer clairement (offre-XXX.jpg) puis commit + push -> cataloguées dans ../BANQUE-VISUELS.md.
