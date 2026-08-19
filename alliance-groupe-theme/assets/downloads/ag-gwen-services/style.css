@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthèmes
 Author URI: https://alliancegroupe-inc.com
 Description: Site sur-mesure de Gwen Services — aide a domicile a Nantes (personnes agees, handicap leger, garde d'enfants). Theme dedie synchronise a GitHub, isole du template vendu. Palette vert doux et beige.
-Version: 1.2.4
+Version: 1.2.5
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
@@ -1293,20 +1293,5 @@ body.admin-bar.ag-premium-mode.page:not(.home) .ag-page-hero--full{
 }
 
 
-/* ─────────────────────────────────────────────────────────────────
-   PROMO VIDEO ALLIANCE — section affichée en mode premium uniquement
-   ───────────────────────────────────────────────────────────────── */
-.ag-domicile-promo-video{padding:90px 24px;background:linear-gradient(135deg,#0a0a0f 0%,#1a1a2e 100%);color:#fff;position:relative;overflow:hidden}
-.ag-domicile-promo-video::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 75% 30%,rgba(243,122,31,.18) 0%,transparent 60%);pointer-events:none}
-.ag-domicile-promo-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:60px;align-items:center;position:relative;z-index:1;max-width:1200px;margin:0 auto}
-@media (max-width:900px){.ag-domicile-promo-grid{grid-template-columns:1fr;gap:32px}}
-.ag-domicile-promo-tag{display:inline-block;padding:7px 16px;background:rgba(243,122,31,.18);border:1px solid rgba(243,122,31,.4);border-radius:999px;color:#F37A1F;font-size:.85rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
-.ag-domicile-promo-title{font-family:Georgia,'Playfair Display',serif;font-size:2.4rem;font-weight:800;line-height:1.18;margin:0 0 18px;color:#fff!important;text-shadow:none!important}
-.ag-domicile-promo-title em{color:var(--ag-color-accent,#F37A1F);font-style:italic;font-weight:800}
-.ag-domicile-promo-lead{font-size:1.08rem;line-height:1.7;color:rgba(255,255,255,.82);margin:0 0 30px}
-.ag-domicile-promo-cta{display:inline-block;background:linear-gradient(135deg,#F37A1F 0%,#FF8C42 100%);color:#fff;font-weight:700;padding:15px 34px;border-radius:8px;text-decoration:none;font-size:1rem;box-shadow:0 8px 24px rgba(243,122,31,.4);transition:transform .2s,box-shadow .2s}
-.ag-domicile-promo-cta:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(243,122,31,.55);color:#fff;text-decoration:none}
-.ag-domicile-promo-player{position:relative;border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.55),0 0 0 1px rgba(243,122,31,.2)}
-.ag-domicile-promo-video video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#000}
-.ag-domicile-promo-mute{position:absolute;bottom:18px;right:18px;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.2);color:#fff;width:50px;height:50px;border-radius:50%;font-size:1.4rem;cursor:pointer;backdrop-filter:blur(8px);transition:transform .2s,background .2s;line-height:1}
-.ag-domicile-promo-mute:hover{transform:scale(1.1);background:rgba(243,122,31,.85)}
+/* (ancienne pub vidéo « Alliance » retirée — remplacée par la section
+   verte « Pourquoi nous choisir » ; CSS mort supprimé) */
