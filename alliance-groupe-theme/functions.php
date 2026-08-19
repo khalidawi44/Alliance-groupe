@@ -824,6 +824,7 @@ add_action( 'wp_head', function () {
 // ── 6. Register page templates ──────────────────────────────────
 add_filter( 'theme_page_templates', function ( $templates ) {
     $templates['templates/page-accueil.php']         = 'Accueil';
+    $templates['templates/page-accueil-cinema.php']  = 'Accueil cinématique';
     $templates['templates/page-services.php']        = 'Services';
     $templates['templates/page-realisations.php']    = 'Réalisations';
     $templates['templates/page-apropos.php']         = 'À propos';
@@ -1770,3 +1771,19 @@ if ( ! function_exists( 'ag_force_auto_updates' ) ) {
 		if ( ! wp_next_scheduled( 'wp_update_themes' ) )  { wp_schedule_single_event( time() + 60, 'wp_update_themes' ); }
 	} );
 }
+
+// ── ACCUEIL CINEMATIQUE : la page d'accueil sert le template « scroll narratif »
+//    (hero egerie + approche de la main, marquee, tableau allegorique, chapitres,
+//    dissolution doree, offres, atelier, revelation du lion).
+//    Pour revenir a l'ancien accueil : supprimer ce filtre (ou definir la
+//    constante AG_ACCUEIL_CLASSIQUE a true dans wp-config.php).
+add_filter( 'template_include', function ( $template ) {
+    if ( ! is_front_page() || is_admin() ) {
+        return $template;
+    }
+    if ( defined( 'AG_ACCUEIL_CLASSIQUE' ) && AG_ACCUEIL_CLASSIQUE ) {
+        return $template;
+    }
+    $cine = get_stylesheet_directory() . '/templates/page-accueil-cinema.php';
+    return file_exists( $cine ) ? $cine : $template;
+}, 99 );
