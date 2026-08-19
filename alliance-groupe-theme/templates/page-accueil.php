@@ -16,9 +16,9 @@ $post = admin_url( 'admin-post.php' );
 
 // Offres réelles (miroir de /sites-express).
 $packs = array(
-	array( 'nom' => 'Essentiel', 'prix' => '490 €',  'desc' => 'Le site vitrine qui te rend crédible.', 'feats' => array( 'One-page premium sur-mesure', 'Optimisé mobile + rapide', 'Contact + Google Maps', 'Livré en 5 jours' ), 'star' => false ),
-	array( 'nom' => 'Pro',       'prix' => '890 €',  'desc' => 'Le site complet pour développer ton activité.', 'feats' => array( 'Jusqu\'à 6 pages', 'SEO optimisé Google', 'Blog + prise de RDV', 'Livré en 8 jours' ), 'star' => true ),
-	array( 'nom' => 'Boutique',  'prix' => '1 490 €', 'desc' => 'Ta boutique en ligne, prête à vendre.', 'feats' => array( 'E-commerce WooCommerce', 'Jusqu\'à 30 produits', 'Paiement CB / PayPal', 'Livré en 12 jours' ), 'star' => false ),
+	array( 'nom' => 'Essentiel', 'prix' => '490 €',  'desc' => 'Le site vitrine qui te rend crédible.', 'feats' => array( 'One-page premium sur-mesure', 'Optimisé mobile + rapide', 'Contact + Google Maps', 'Livré en 5 jours' ), 'star' => false, 'img' => 'offres/offre-essentiel.jpg' ),
+	array( 'nom' => 'Pro',       'prix' => '890 €',  'desc' => 'Le site complet pour développer ton activité.', 'feats' => array( 'Jusqu\'à 6 pages', 'SEO optimisé Google', 'Blog + prise de RDV', 'Livré en 8 jours' ), 'star' => true, 'img' => 'offres/offre-pro.jpg' ),
+	array( 'nom' => 'Boutique',  'prix' => '1 490 €', 'desc' => 'Ta boutique en ligne, prête à vendre.', 'feats' => array( 'E-commerce WooCommerce', 'Jusqu\'à 30 produits', 'Paiement CB / PayPal', 'Livré en 12 jours' ), 'star' => false, 'img' => 'offres/offre-boutique.jpg' ),
 );
 $marquee = array( 'Sites sécurisés', 'Propulsé par l\'IA', 'SEO Google', 'De Naples à Nantes', 'Un seul interlocuteur', 'Livré en 5 jours', 'Design sur-mesure', 'Audit gratuit' );
 $chapters = array(
@@ -104,8 +104,12 @@ $chapters = array(
 .ag-lm__stitle{text-align:center;font-size:clamp(1.8rem,4.6vw,3rem);font-weight:800;margin:0 0 6px;}
 .ag-lm__sdesc{text-align:center;color:#aeb6c6;margin:0 auto 40px;max-width:52ch;}
 .ag-lm__packs{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px;}
-.ag-lm__pack{position:relative;background:#0e0e16;border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:30px 26px;display:flex;flex-direction:column;}
+.ag-lm__pack{position:relative;background:#0e0e16;border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:14px;}
 .ag-lm__pack.star{border-color:var(--gold);box-shadow:0 24px 60px -30px rgba(212,180,92,.6);}
+.ag-lm__packimg{display:block;border-radius:14px;overflow:hidden;line-height:0;border:1px solid rgba(212,180,92,.18);}
+.ag-lm__packimg img{width:100%;height:auto;display:block;transition:transform .5s ease;}
+.ag-lm__pack:hover .ag-lm__packimg img{transform:scale(1.04);}
+.ag-lm__pcta{text-align:center;text-decoration:none;margin-top:auto;}
 .ag-lm__pstar{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:linear-gradient(120deg,var(--gold),var(--gold2));color:#1a1206;font-weight:800;font-size:.75rem;padding:5px 14px;border-radius:100px;letter-spacing:.05em;}
 .ag-lm__pnom{font-size:1.3rem;font-weight:800;}
 .ag-lm__pprix{font-size:2.6rem;font-weight:800;color:var(--gold2);margin:6px 0 2px;}
@@ -199,12 +203,10 @@ $chapters = array(
 		<div class="ag-lm__packs">
 			<?php foreach ( $packs as $p ) : ?>
 				<div class="ag-lm__pack ag-rv<?php echo $p['star'] ? ' star' : ''; ?>">
-					<?php if ( $p['star'] ) : ?><span class="ag-lm__pstar">★ Le plus choisi</span><?php endif; ?>
-					<div class="ag-lm__pnom"><?php echo esc_html( $p['nom'] ); ?></div>
-					<div class="ag-lm__pprix"><?php echo esc_html( $p['prix'] ); ?></div>
-					<p class="ag-lm__pdesc"><?php echo esc_html( $p['desc'] ); ?></p>
-					<ul class="ag-lm__pfeats"><?php foreach ( $p['feats'] as $f ) : ?><li><?php echo esc_html( $f ); ?></li><?php endforeach; ?></ul>
-					<a class="ag-btnp" style="text-align:center;text-decoration:none;" href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">Choisir <?php echo esc_html( $p['nom'] ); ?></a>
+					<a class="ag-lm__packimg" href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>" aria-label="Pack <?php echo esc_attr( $p['nom'] . ' — ' . $p['prix'] ); ?>">
+						<img src="<?php echo esc_url( $dir . '/assets/images/' . $p['img'] ); ?>" alt="Pack <?php echo esc_attr( $p['nom'] . ' — ' . $p['prix'] . '. ' . $p['desc'] ); ?>" loading="lazy">
+					</a>
+					<a class="ag-btnp ag-lm__pcta" href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">Choisir <?php echo esc_html( $p['nom'] ); ?> — <?php echo esc_html( $p['prix'] ); ?></a>
 				</div>
 			<?php endforeach; ?>
 		</div>
