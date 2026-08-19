@@ -110,7 +110,7 @@ $dir = get_stylesheet_directory_uri();
   .ch__meta{margin-top:24px;display:flex;gap:24px;flex-wrap:wrap;font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
 
   /* ---------- DISSOLUTION ---------- */
-  .ds{position:relative;height:260svh}
+  .ds{position:relative;height:380svh}
   .ds__stick{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center}
   #cv{width:100%;height:100%;display:block}
   .ds__hand{position:absolute;z-index:4;width:min(52vw,620px);mix-blend-mode:screen;opacity:0;pointer-events:none}
@@ -120,17 +120,21 @@ $dir = get_stylesheet_directory_uri();
   .ds__cap h2 em{font-style:italic;color:var(--gold-hi)}
   .ds__cap p{margin:16px auto 0;max-width:52ch;color:var(--muted);line-height:1.65}
 
-  /* ---------- OFFRES ---------- */
-  .of{position:relative;padding:clamp(80px,13vh,160px) 0;overflow:hidden}
-  .of__bg{position:absolute;inset:0;opacity:.34}
+  /* ---------- OFFRES (couche de la scène) ---------- */
+  .of{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;justify-content:center;
+      padding:clamp(40px,7vh,90px) 0;overflow:hidden;pointer-events:none}
+  .of.is-live{pointer-events:auto}
+  .of__bg{position:absolute;inset:0;opacity:0}
   .of__bg img{width:100%;height:100%;object-fit:cover}
-  .of__in{position:relative;z-index:2;text-align:center}
-  .of__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:26px;margin:46px 0 26px;text-align:left}
+  .of__in{position:relative;z-index:2;text-align:center;width:100%}
+  .of__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin:26px 0 18px;text-align:left}
+  @media(max-width:900px){.of__grid{grid-template-columns:1fr}}
   .pack{position:relative;background:#0c0c14;border:1px solid rgba(255,255,255,.09);border-radius:18px;overflow:hidden;
         transform-style:preserve-3d;transition:border-color .35s,box-shadow .35s}
   .pack:hover{border-color:rgba(212,180,92,.6);box-shadow:0 40px 90px -50px rgba(212,180,92,.8)}
   .pack.star{border-color:rgba(212,180,92,.55);box-shadow:0 34px 80px -46px rgba(212,180,92,.7)}
   .pack img{width:100%;aspect-ratio:4/3;object-fit:cover}
+  .pack__body{padding:16px 18px 18px}
   .pack__body{padding:22px 24px 26px}
   .pack__cta{display:block;text-align:center;margin-top:6px}
   .of__note{position:relative;z-index:2;color:var(--muted);font-size:.95rem}
@@ -140,8 +144,8 @@ $dir = get_stylesheet_directory_uri();
   .at{background:linear-gradient(180deg,#05050a,#0a0a12)}
   .at__stage{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:center;
     padding:clamp(60px,9vh,110px) 0;overflow:hidden}
-  .at__hand{position:absolute;z-index:1;top:-6%;left:50%;width:min(46vw,540px);transform:translateX(-50%);
-    mix-blend-mode:screen;opacity:0;pointer-events:none}
+  .at__hand{position:absolute;z-index:1;top:-6%;left:50%;width:min(46vw,540px);transform:translateX(-50%) scale(.92);
+    mix-blend-mode:screen;opacity:.55;pointer-events:none}
   .at__stage .wrap{position:relative;z-index:2;width:100%}
   .at__head{text-align:center;max-width:760px;margin:0 auto 26px}
   .at__filters{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:34px}
@@ -271,7 +275,17 @@ $dir = get_stylesheet_directory_uri();
   </article>
 </section>
 
-<section class="of" id="offres">
+
+<section class="ds">
+  <div class="ds__stick">
+    <canvas id="cv"></canvas>
+    <img class="ds__hand" id="hand" src="<?php echo esc_url( $dir . '/assets/images/cinematique/main-poussiere-or.jpg' ); ?>" alt="">
+    <div class="ds__veil"></div>
+    <div class="ds__cap wrap" id="dsCap">
+      <h2 data-mots>Ce qui compte ne se voit pas <em>tout de suite</em></h2>
+      <p>Un site n'est pas une image. C'est une mécanique — vitesse, sécurité, référencement — qui se révèle quand on regarde de près.</p>
+    </div>
+<div class="of" id="ofStage">
   <div class="of__bg"><img src="<?php echo esc_url( $dir . '/assets/images/cinematique/marbre-noir-or.jpg' ); ?>" alt="" loading="lazy"></div>
   <div class="wrap of__in">
     <span class="eyebrow" data-rv>Nos formules</span>
@@ -293,17 +307,8 @@ $dir = get_stylesheet_directory_uri();
     </div>
     <p class="of__note" data-rv>+ Maintenance &amp; hébergement à partir de <strong>29 €/mois</strong> — <a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">voir les formules</a>.</p>
   </div>
-</section>
+</div>
 
-<section class="ds">
-  <div class="ds__stick">
-    <canvas id="cv"></canvas>
-    <img class="ds__hand" id="hand" src="<?php echo esc_url( $dir . '/assets/images/cinematique/main-poussiere-or.jpg' ); ?>" alt="">
-    <div class="ds__veil"></div>
-    <div class="ds__cap wrap">
-      <h2 data-mots>Ce qui compte ne se voit pas <em>tout de suite</em></h2>
-      <p>Un site n'est pas une image. C'est une mécanique — vitesse, sécurité, référencement — qui se révèle quand on regarde de près.</p>
-    </div>
   </div>
 </section>
 
@@ -312,11 +317,11 @@ $dir = get_stylesheet_directory_uri();
   <img class="at__hand" id="atHand" src="<?php echo esc_url( $dir . '/assets/images/cinematique/main-poussiere-or.jpg' ); ?>" alt="">
   <div class="wrap">
     <div class="at__head">
-      <span class="eyebrow" data-rv>Alliance Groupe · web · sécurité · IA</span>
+      <span class="eyebrow">Alliance Groupe · web · sécurité · IA</span>
       <h2 class="stitle" data-mots style="margin:12px 0 14px">Que créons-nous <em>aujourd'hui&nbsp;?</em></h2>
-      <p class="lead" data-rv style="margin:0 auto">Votre atelier propulsé par l'IA : chiffrez un projet, refaites votre site, sécurisez-le, créez du contenu.</p>
+      <p class="lead" style="margin:0 auto">Votre atelier propulsé par l'IA : chiffrez un projet, refaites votre site, sécurisez-le, créez du contenu.</p>
     </div>
-    <div class="at__filters" data-rv>
+    <div class="at__filters">
       <button class="fbtn is-on" data-f="tous">Tous</button>
       <button class="fbtn" data-f="ia">IA</button>
       <button class="fbtn" data-f="creer">Créer</button>
@@ -501,9 +506,11 @@ $dir = get_stylesheet_directory_uri();
       var tl = G.timeline({ scrollTrigger:{ trigger:stage, start:"top top", end:"+=210%",
         pin:true, scrub:.55, invalidateOnRefresh:true, anticipatePin:1 }});
 
-      tl.fromTo("#atHand", { opacity:0, scale:.86, y:20 }, { opacity:.9, scale:1, y:0, duration:.5, ease:"power2.out" }, 0)
-        .fromTo(".at__head", { opacity:0, y:34 }, { opacity:1, y:0, duration:.35, ease:"power3.out" }, .45)
-        .to("#atHand", { opacity:.12, scale:1.25, duration:.7, ease:"none" }, .55);
+      G.set(".at__filters", { opacity:0, y:16 });
+      tl.to("#atHand", { opacity:.92, scale:1, duration:.22, ease:"power2.out" }, 0)
+        .fromTo(".at__head", { y:22 }, { y:0, duration:.18, ease:"power3.out" }, .1)
+        .to("#atHand", { opacity:.14, scale:1.24, duration:.55, ease:"none" }, .34)
+        .to(".at__filters", { opacity:1, y:0, duration:.16, ease:"power2.out" }, .92);
 
       cards.forEach(function(c, i){
         var a0 = i * (Math.PI * 2 / cards.length);
@@ -517,7 +524,7 @@ $dir = get_stylesheet_directory_uri();
                 y: function(){ return (paume().y - centre(c).y) * .45 + Math.sin(a0 + 2.2) * 130; } },
               { opacity:1, scale:1, rotation:0, x:0, y:0, duration:.6, ease:"power3.out" }
             ], ease:"none" },
-          .6 + i * 0.055);
+          .34 + i * 0.055);
       });
     })();
     /* lion */
@@ -591,14 +598,41 @@ $dir = get_stylesheet_directory_uri();
   if (ok){
     ST.create({ trigger:".ds", start:"top top", end:"bottom bottom", scrub:true,
       onUpdate: function(self){ progress = self.progress * 1.12; draw(); }});
-    G.fromTo("#hand", { opacity:0, scale:.78, yPercent:6 }, { opacity:.92, scale:1.08, yPercent:-4, ease:"none",
-      scrollTrigger:{ trigger:".ds", start:"26% top", end:"bottom bottom", scrub:true }});
-    /* les offres s'ouvrent depuis la paume */
-    G.fromTo(".of", { clipPath:"circle(0% at 50% 4%)", webkitClipPath:"circle(0% at 50% 4%)" },
-      { clipPath:"circle(150% at 50% 50%)", webkitClipPath:"circle(150% at 50% 50%)", ease:"none",
-        scrollTrigger:{ trigger:".of", start:"top 96%", end:"top 25%", scrub:.4 }});
-    G.fromTo(".of__in", { y:60, opacity:.2 }, { y:0, opacity:1, ease:"power2.out",
-      scrollTrigger:{ trigger:".of", start:"top 92%", end:"top 40%", scrub:.5 }});
+    /* SCÈNE UNIQUE : la photo se dissout, la main paraît, les offres en sortent */
+    (function(){
+      var stick = document.querySelector(".ds__stick"), of = document.getElementById("ofStage");
+      var packs = G.utils.toArray("#ofStage [data-pack]");
+      function paume(){ return { x: stick.clientWidth / 2, y: stick.clientHeight * 0.30 }; }
+      function centre(el){ var x=0,y=0,n=el; while(n && n!==stick){ x+=n.offsetLeft; y+=n.offsetTop; n=n.offsetParent; }
+        return { x:x+el.offsetWidth/2, y:y+el.offsetHeight/2 }; }
+
+      G.set(of, { opacity:0 });
+      var tl = G.timeline({ scrollTrigger:{ trigger:".ds", start:"top top", end:"bottom bottom",
+        scrub:.5, invalidateOnRefresh:true,
+        onUpdate:function(self){ of.classList.toggle("is-live", self.progress > .62); }}});
+
+      tl.fromTo("#hand", { opacity:0, scale:.78, yPercent:8 }, { opacity:.95, scale:1.06, yPercent:-2, duration:.28, ease:"power2.out" }, .30)
+        .to("#dsCap", { opacity:0, y:-30, duration:.12, ease:"power2.in" }, .46)
+        .to(of, { opacity:1, duration:.06 }, .48)
+        .fromTo("#ofStage .of__in > *:not(.of__grid)", { opacity:0, y:34 },
+                { opacity:1, y:0, duration:.14, stagger:.05, ease:"power3.out" }, .50)
+        .to("#hand", { opacity:.18, scale:1.22, duration:.30, ease:"none" }, .58);
+
+      packs.forEach(function(c, i){
+        var a0 = (i - 1) * 0.7;                       /* éventail : gauche, centre, droite */
+        tl.fromTo(c,
+          { opacity:0, scale:.07, rotation:(i - 1) * 26,
+            x:function(){ return paume().x - centre(c).x; },
+            y:function(){ return paume().y - centre(c).y; } },
+          { keyframes:[
+              { opacity:1, scale:.5, rotation:(i - 1) * 14, duration:.5,
+                x:function(){ return (paume().x - centre(c).x) * .45 + Math.sin(a0) * 150; },
+                y:function(){ return (paume().y - centre(c).y) * .5 - 70; } },
+              { opacity:1, scale:1, rotation:0, x:0, y:0, duration:.5, ease:"power3.out" }
+            ], ease:"none" },
+          .56 + i * .06);
+      });
+    })();
   }
 })();
 </script>
