@@ -101,9 +101,9 @@
   .ds{position:relative;height:260svh}
   .ds__stick{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center}
   #cv{width:100%;height:100%;display:block}
-  .ds__hand{position:absolute;z-index:2;width:min(52vw,620px);mix-blend-mode:screen;opacity:0;pointer-events:none}
+  .ds__hand{position:absolute;z-index:4;width:min(52vw,620px);mix-blend-mode:screen;opacity:0;pointer-events:none}
   .ds__veil{position:absolute;inset:0;z-index:3;background:linear-gradient(180deg,rgba(5,5,10,.5),transparent 32%,rgba(5,5,10,.92))}
-  .ds__cap{position:absolute;z-index:4;left:0;right:0;bottom:11vh;text-align:center;padding:0 26px}
+  .ds__cap{position:absolute;z-index:5;left:0;right:0;bottom:11vh;text-align:center;padding:0 26px}
   .ds__cap h2{font-family:var(--serif);font-weight:500;font-size:clamp(1.9rem,5.4vw,4rem);line-height:1.05}
   .ds__cap h2 em{font-style:italic;color:var(--gold-hi)}
   .ds__cap p{margin:16px auto 0;max-width:52ch;color:var(--muted);line-height:1.65}
@@ -414,19 +414,29 @@
 
     /* hero : parallaxe + on se rapproche de la main */
     G.to("[data-parallax] img", { yPercent:12, ease:"none", scrollTrigger:{ trigger:".hero", start:"top top", end:"bottom top", scrub:true }});
-    G.to("[data-eg]", { scale:2.9, opacity:0, ease:"power1.in", scrollTrigger:{ trigger:".hero", start:"top top", end:"bottom top", scrub:.5 }});
+    G.to("[data-eg]", { scale:1.6, ease:"none", scrollTrigger:{ trigger:".hero", start:"top top", end:"bottom top", scrub:.5 }});
     G.to(".hero__in", { y:-40, opacity:0, ease:"none", scrollTrigger:{ trigger:".hero", start:"top top", end:"55% top", scrub:true }});
     G.to(".lionmark", { scale:1.25, opacity:.02, ease:"none", scrollTrigger:{ trigger:".hero", start:"top top", end:"bottom top", scrub:true }});
 
-    /* marquee : vitesse pilotée par le scroll */
-    var mq = document.getElementById("mq");
-    mq.innerHTML += mq.innerHTML;
-    var tween = G.to(mq, { xPercent:-50, ease:"none", repeat:-1, duration:26 });
-    ST.create({ onUpdate: function(self){
-      var v = self.getVelocity() / 400;
-      tween.timeScale(Math.max(-4, Math.min(6, 1 + v)));
-      clearTimeout(mq._t); mq._t = setTimeout(function(){ G.to(tween, { timeScale:1, duration:.6, overwrite:true }); }, 90);
-    }});
+    /* bandeau : boucle continue en rAF, accélérée par la vitesse de scroll */
+    (function(){
+      var mq = document.getElementById("mq");
+      mq.innerHTML += mq.innerHTML;            // deux copies pour boucler sans trou
+      var x = 0, boost = 1, half = 0, last = 0;
+      function measure(){ half = mq.scrollWidth / 2; }
+      measure(); addEventListener("resize", measure);
+      ST.create({ onUpdate: function(self){
+        boost = 1 + Math.min(5, Math.abs(self.getVelocity()) / 900);
+      }});
+      G.ticker.add(function(t){
+        var dt = last ? Math.min(0.05, t - last) : 0.016; last = t;
+        if (!half) measure();
+        x -= 46 * dt * boost;                  // 46 px/s au repos
+        if (half && x <= -half) x += half;     // rebouclage exact
+        mq.style.transform = "translate3d(" + x + "px,0,0)";
+        boost += (1 - boost) * 0.06;           // retour au calme
+      });
+    })();
 
     /* tableau : Ken Burns lent */
     G.fromTo("[data-tabimg] img", { scale:1.02, yPercent:-3 }, { scale:1.16, yPercent:3, ease:"none",
@@ -518,8 +528,14 @@
   if (ok){
     ST.create({ trigger:".ds", start:"top top", end:"bottom bottom", scrub:true,
       onUpdate: function(self){ progress = self.progress * 1.12; draw(); }});
-    G.fromTo("#hand", { opacity:0, scale:.8 }, { opacity:.85, scale:1.05, ease:"none",
-      scrollTrigger:{ trigger:".ds", start:"28% top", end:"85% bottom", scrub:true }});
+    G.fromTo("#hand", { opacity:0, scale:.78, yPercent:6 }, { opacity:.92, scale:1.08, yPercent:-4, ease:"none",
+      scrollTrigger:{ trigger:".ds", start:"26% top", end:"bottom bottom", scrub:true }});
+    /* les offres s'ouvrent depuis la paume */
+    G.fromTo(".of", { clipPath:"circle(0% at 50% 4%)", webkitClipPath:"circle(0% at 50% 4%)" },
+      { clipPath:"circle(150% at 50% 50%)", webkitClipPath:"circle(150% at 50% 50%)", ease:"none",
+        scrollTrigger:{ trigger:".of", start:"top 96%", end:"top 25%", scrub:.4 }});
+    G.fromTo(".of__in", { y:60, opacity:.2 }, { y:0, opacity:1, ease:"power2.out",
+      scrollTrigger:{ trigger:".of", start:"top 92%", end:"top 40%", scrub:.5 }});
   }
 })();
 </script>
