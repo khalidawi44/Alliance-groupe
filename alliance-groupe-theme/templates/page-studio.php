@@ -25,23 +25,32 @@ $media = array();
 foreach ( glob( get_stylesheet_directory() . '/assets/images/studio/*.jpg' ) as $f ) { $media[] = $studio_uri . basename( $f ); }
 foreach ( glob( get_stylesheet_directory() . '/assets/images/produits/*.jpg' ) as $f ) { $media[] = $prod_uri . basename( $f ); }
 
-// Fonds : TOUTES les photos du site (villes, égérie, équipe/bureaux, réalisations, produits)
-// + les VIDÉOS déjà faites (fond animé). Le créateur peut tout choisir.
+// Fonds du Studio : UNIQUEMENT moi (Fabrice), l'égérie ou Naples (règle du user).
 $theme_dir = get_stylesheet_directory();
 $theme_uri = get_stylesheet_directory_uri();
-$bg  = array();
-$bg_dirs = array( 'cities', 'egerie', 'team', 'realisations', 'produits', 'studio' );
-foreach ( $bg_dirs as $d ) {
-	foreach ( glob( $theme_dir . '/assets/images/' . $d . '/*.{jpg,jpeg,png,webp}', GLOB_BRACE ) as $f ) {
-		$bg[] = $theme_uri . '/assets/images/' . $d . '/' . basename( $f );
+$bg = array();
+$img_list = array(
+	// Égérie
+	'egerie/egerie-portrait.png',
+	'egerie/egerie-baie.jpg',
+	// Moi (Fabrice)
+	'team/fabrizio.jpg', 'team/fabrizio-about.jpg', 'team/fabrizio-nantes.jpg',
+	// Naples — villes
+	'cities/baie_naples_nuit.jpg', 'cities/naples-1.jpg', 'cities/naples-2.jpg', 'cities/naples-3.jpg',
+	// Naples — bureaux / scènes (moi + égérie)
+	'team/naples-1.jpg', 'team/naples-2.jpg', 'team/naples-3.jpg', 'team/naples-4.jpg', 'team/naples-5.jpg',
+	'team/1_bureau_naples.jpg', 'team/siege-naples.jpg', 'team/reunion-naples.jpg',
+);
+foreach ( $img_list as $rel ) {
+	if ( file_exists( $theme_dir . '/assets/images/' . $rel ) ) {
+		$bg[] = $theme_uri . '/assets/images/' . $rel;
 	}
 }
-// Vidéos déjà faites : array( url_video, url_poster/vignette ).
+// Vidéos déjà faites (égérie / Naples uniquement) : array( url_video, url_poster/vignette ).
 $bgvid   = array();
 $vid_defs = array(
-	array( '/assets/videos/hero-egerie-long.mp4',   '/assets/videos/hero-egerie-long-poster.jpg' ),
-	array( '/assets/videos/egerie-naples.mp4',      '/assets/images/cities/baie_naples_nuit.jpg' ),
-	array( '/assets/videos/promo-alliance-16x9.mp4', '/assets/images/cities/naples-1.jpg' ),
+	array( '/assets/videos/hero-egerie-long.mp4', '/assets/videos/hero-egerie-long-poster.jpg' ),
+	array( '/assets/videos/egerie-naples.mp4',    '/assets/images/cities/baie_naples_nuit.jpg' ),
 );
 $eg_poster = '/assets/videos/egerie_pub/blonde-fashion-portrait-flux-2-pro-ai-playground-343763.png';
 foreach ( glob( $theme_dir . '/assets/videos/egerie_pub/*.mp4' ) as $f ) {
