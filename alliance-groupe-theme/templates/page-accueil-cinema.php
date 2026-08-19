@@ -366,9 +366,9 @@ $dir = get_stylesheet_directory_uri();
   <span><a href="<?php echo esc_url( home_url( '/mentions-legales' ) ); ?>">Mentions légales</a> · <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>">Contact</a></span>
 </footer>
 
-<script src="<?php echo esc_url( $dir . '/assets/js/vendor/gsap.min.js' ); ?>"></script>
-<script src="<?php echo esc_url( $dir . '/assets/js/vendor/ScrollTrigger.min.js' ); ?>"></script>
-<script src="<?php echo esc_url( $dir . '/assets/js/vendor/lenis.min.js' ); ?>"></script>
+<script src="<?php echo esc_url( $dir . '/assets/js/lib/gsap.min.js' ); ?>"></script>
+<script src="<?php echo esc_url( $dir . '/assets/js/lib/ScrollTrigger.min.js' ); ?>"></script>
+<script src="<?php echo esc_url( $dir . '/assets/js/lib/lenis.min.js' ); ?>"></script>
 
 <script>
 (function(){
