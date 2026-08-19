@@ -282,7 +282,7 @@ body.ag-dm-premium-active .ag-site-header.ag-pd-stuck {
 /* ---------- Bouton "Devis" flottant (injecté par premium.js) ---------- */
 body.ag-dm-premium-active .ag-pd-float {
 	position: fixed;
-	right: 18px;
+	left: 18px;
 	bottom: 18px;
 	z-index: 9990;
 	display: inline-flex;
@@ -331,7 +331,7 @@ body.ag-dm-premium-active .ag-pd-float svg {
 
 @media (max-width: 600px) {
 	body.ag-dm-premium-active .ag-pd-float {
-		right: 12px;
+		left: 12px;
 		bottom: 12px;
 		padding: 12px 16px;
 		font-size: .92rem;
