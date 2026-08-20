@@ -1783,6 +1783,19 @@ if ( ! function_exists( 'ag_force_auto_updates' ) ) {
 //    dissolution doree, offres, atelier, revelation du lion).
 //    Pour revenir a l'ancien accueil : supprimer ce filtre (ou definir la
 //    constante AG_ACCUEIL_CLASSIQUE a true dans wp-config.php).
+function ag_is_accueil_cinema() {
+    if ( is_admin() ) {
+        return false;
+    }
+    if ( is_page_template( 'templates/page-accueil-cinema.php' ) ) {
+        return true; // modele choisi a la main dans l'editeur
+    }
+    if ( defined( 'AG_ACCUEIL_CLASSIQUE' ) && AG_ACCUEIL_CLASSIQUE ) {
+        return false;
+    }
+    return is_front_page() && file_exists( get_stylesheet_directory() . '/templates/page-accueil-cinema.php' );
+}
+
 add_filter( 'template_include', function ( $template ) {
     if ( ! is_front_page() || is_admin() ) {
         return $template;
@@ -1793,3 +1806,22 @@ add_filter( 'template_include', function ( $template ) {
     $cine = get_stylesheet_directory() . '/templates/page-accueil-cinema.php';
     return file_exists( $cine ) ? $cine : $template;
 }, 99 );
+
+// ── ANTI-CONFLIT sur l'accueil cinematique : ce template est AUTONOME (CSS+JS
+//    inline) et charge LUI-MEME GSAP / ScrollTrigger / Lenis depuis assets/js/lib/.
+//    Si la couche cine du theme se charge aussi, on obtient DEUX GSAP et deux
+//    ScrollTrigger concurrents (scrub qui saute, pin qui se decale) + deux Lenis.
+//    On retire donc, UNIQUEMENT sur cette page, les scripts/styles d'effets du
+//    theme. Le reste (police, style de base, main.js pour l'en-tete) est garde.
+add_action( 'wp_enqueue_scripts', function () {
+    if ( ! ag_is_accueil_cinema() ) {
+        return;
+    }
+    foreach ( array( 'ag-gsap', 'ag-gsap-st', 'ag-cinema-fx', 'ag-cinema', 'ag-immersive' ) as $h ) {
+        wp_dequeue_script( $h );
+        wp_deregister_script( $h );
+    }
+    foreach ( array( 'ag-cinema-upgrades', 'ag-cinema', 'ag-immersive' ) as $h ) {
+        wp_dequeue_style( $h );
+    }
+}, 999 );
