@@ -1861,3 +1861,13 @@ add_action( 'wp_head', function () {
     }
     echo '<style id="ag-nojq-kill">.nojq{display:none!important;pointer-events:none!important;visibility:hidden!important;height:0!important}</style>' . "\n";
 }, 99 );
+
+// ── PERF : pas d'AdSense sur l'accueil cinematique ──────────────────────
+//    AdSense injecte ~8 iframes qui font tourner leurs propres timers pendant
+//    le scroll -> saccades sur une page entierement animee. Sur l'accueil d'une
+//    agence, la credibilite prime sur le revenu publicitaire. Le reste du site
+//    garde les pubs, et /ads.txt n'est pas touche (autre URL, is_front_page
+//    faux). Le pixel Facebook, lui, reste actif partout (retargeting).
+add_filter( 'ag_adsense_pub', function ( $pub ) {
+    return function_exists( 'ag_is_accueil_cinema' ) && ag_is_accueil_cinema() ? '' : $pub;
+} );
