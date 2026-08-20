@@ -1825,3 +1825,39 @@ add_action( 'wp_enqueue_scripts', function () {
         wp_dequeue_style( $h );
     }
 }, 999 );
+
+// ── PERF : couper le convertisseur d'emojis de WordPress ────────────────
+//    Les emojis des libellés de menu etaient remplaces par ~100 IMAGES
+//    distantes (s.w.org) : autant de requetes + de couches a peindre pendant
+//    le scroll. Les navigateurs affichent les emojis nativement depuis des
+//    annees : on rend la main a la police systeme.
+add_action( 'init', function () {
+    remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
+    remove_action( 'wp_print_styles', 'print_emoji_styles' );
+    remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+    remove_action( 'admin_print_styles', 'print_emoji_styles' );
+    remove_filter( 'the_content_feed', 'wp_staticize_emoji' );
+    remove_filter( 'comment_text_rss', 'wp_staticize_emoji' );
+    remove_filter( 'wp_mail', 'wp_staticize_emoji_for_email' );
+    add_filter( 'emoji_svg_url', '__return_false' );
+    // Retire aussi le prefetch DNS vers s.w.org laisse par le module emoji.
+    add_filter( 'wp_resource_hints', function ( $urls, $relation ) {
+        if ( 'dns-prefetch' !== $relation ) {
+            return $urls;
+        }
+        return array_filter( $urls, function ( $u ) {
+            return false === strpos( is_array( $u ) ? ( isset( $u['href'] ) ? $u['href'] : '' ) : $u, 's.w.org' );
+        } );
+    }, 10, 2 );
+}, 1 );
+
+// ── PERF/UX : neutraliser la barre residuelle « .nojq » ─────────────────
+//    Barre fixe de 32 px, z-index 99999, pointer-events:auto : invisible mais
+//    elle AVALE LES CLICS en haut de page et ajoute une couche fixe. Vestige
+//    injecte hors du theme -> on le neutralise en CSS (sans casser si absent).
+add_action( 'wp_head', function () {
+    if ( is_admin() ) {
+        return;
+    }
+    echo '<style id="ag-nojq-kill">.nojq{display:none!important;pointer-events:none!important;visibility:hidden!important;height:0!important}</style>' . "\n";
+}, 99 );

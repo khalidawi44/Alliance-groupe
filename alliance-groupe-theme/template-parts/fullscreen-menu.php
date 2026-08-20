@@ -118,8 +118,18 @@ $ag_fsm_items = array(
 	position: fixed; inset: 0;
 	z-index: 99999;
 	pointer-events: none;
+	/* PERF : fermé, l'overlay ne doit pas rester une couche compositée par-dessus
+	   toute la page (il faisait saccader le scroll). visibility:hidden le sort
+	   du rendu ; content-visibility évite même de le peindre. */
+	visibility: hidden;
+	/* délai = durée du clip-path de fermeture (.8s) pour ne pas couper le fondu */
+	transition: visibility 0s linear .8s;
 }
-.ag-fsm-overlay.is-open{ pointer-events: auto; }
+.ag-fsm-overlay.is-open{
+	pointer-events: auto;
+	visibility: visible;
+	transition: visibility 0s linear 0s;
+}
 .ag-fsm-bg{
 	position: absolute; inset: 0;
 	background:
