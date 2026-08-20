@@ -331,6 +331,64 @@
 	// =====================================================================
 	// BOOT
 	// =====================================================================
+
+	// =====================================================================
+	// CINEMATIQUE SUR TOUT LE SITE — meme mecanique que l'accueil cinematique,
+	// appliquee AUTOMATIQUEMENT aux pages interieures (aucun template a editer).
+	// On n'ajoute QUE ce qui manque : la couche « scrub » (liee au doigt).
+	// Les titres mot-a-mot sont deja faits par cinema-fx.js, les reveals simples
+	// par main.js (.ag-anim) -> on ne les refait PAS (regle : zero doublon).
+	// Ce module ne tourne jamais sur l'accueil cinematique : ag-cinema.js y est
+	// desenfile (voir ag_is_accueil_cinema() dans functions.php).
+	// =====================================================================
+	function initSiteCine() {
+		if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+		if (document.querySelector('.ag-lm__hero, .hero__eg')) return; // anciens accueils : on laisse
+		var G = gsap;
+
+		// -- HERO de page : le fond derive, le contenu s'efface en montant --
+		var hero = document.querySelector('.ag-hero');
+		if (hero) {
+			var hbg = hero.querySelector('.ag-hero__bg img, .ag-hero__bg');
+			if (hbg) {
+				G.to(hbg, { yPercent: 12, ease: 'none',
+					scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
+			}
+			// NB : on n'anime PAS .ag-hero__content — initHeroDepth a mesure que le
+			// transformer (a cause de son degrade) provoque des recompositions
+			// couteuses. Le fond qui derive suffit a donner la profondeur.
+		}
+
+		// -- PARAGRAPHES d'intro : le flou se leve, puis derive douce --
+		G.utils.toArray('.ag-section__desc').forEach(function (p) {
+			if (p.closest('.ag-fx-fixed')) return;
+			G.from(p, { y: 26, opacity: 0, filter: 'blur(6px)', duration: 1, ease: 'power3.out',
+				scrollTrigger: { trigger: p, start: 'top 90%' } });
+			G.to(p, { y: -22, ease: 'none',
+				scrollTrigger: { trigger: p, start: 'top bottom', end: 'bottom top', scrub: true } });
+		});
+
+		// -- IMAGES de contenu : elles vivent pendant tout leur passage --
+		//    (zoom + glissement + redressement, puis revelation en clip-path)
+		var deja = '.ag-article__featured, .ag-rcard__img, .ag-blog-card__img'; // deja gerees par initImageReveal
+		var medias = G.utils.toArray('.ag-section figure, .ag-section .ag-media, .ag-scard__img, .ag-tier-card__img, .ag-gain-card__img')
+			.filter(function (m) {
+				return m.querySelector('img') && !m.matches(deja) && !m.closest(deja) && !m.closest('.ag-fx-fixed');
+			});
+		medias.forEach(function (m, i) {
+			var sens = i % 2 ? -1 : 1;
+			m.style.overflow = 'hidden';
+			G.fromTo(m.querySelector('img'), { scale: 1.32, yPercent: -10 }, { scale: 1.02, yPercent: 10, ease: 'none',
+				scrollTrigger: { trigger: m, start: 'top bottom', end: 'bottom top', scrub: 0.4 } });
+			G.fromTo(m, { yPercent: 9 * sens, rotate: 1.4 * sens }, { yPercent: -9 * sens, rotate: 0, ease: 'none',
+				scrollTrigger: { trigger: m, start: 'top bottom', end: 'bottom top', scrub: 0.4 } });
+			G.from(m, { clipPath: 'inset(100% 0% 0% 0%)', duration: 1.2, ease: 'power4.out',
+				scrollTrigger: { trigger: m, start: 'top 86%' } });
+		});
+
+		ScrollTrigger.refresh();
+	}
+
 	function boot() {
 		if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
 			gsap.registerPlugin(ScrollTrigger);
@@ -338,6 +396,7 @@
 		// Smooth scroll (Lenis) + reveal d'images (ScrollTrigger) + curseur.
 		initSmoothScroll();
 		initImageReveal();
+		initSiteCine();
 		if (DESKTOP_FX) {
 			initCursor();
 			initHeroDepth();

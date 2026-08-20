@@ -17,18 +17,18 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 // Items menu — duplique la nav primary pour rester cohérent
 $ag_fsm_items = array(
 	array( 'url' => home_url( '/' ),               'label' => 'Accueil',              'sub' => '01' ),
-	array( 'url' => home_url( '/atelier' ),        'label' => 'Atelier IA 🪄',        'sub' => '02' ),
+	array( 'url' => home_url( '/atelier' ),        'label' => 'Atelier IA',        'sub' => '02' ),
 	array( 'url' => home_url( '/tester-mon-site' ),'label' => 'Tester mon site',      'sub' => '03' ),
 	array( 'url' => home_url( '/sites-express' ),  'label' => 'Création de sites',    'sub' => '04' ),
-	array( 'url' => home_url( '/templates-wordpress' ), 'label' => 'Templates gratuits 🎁', 'sub' => '05' ),
+	array( 'url' => home_url( '/templates-wordpress' ), 'label' => 'Templates gratuits', 'sub' => '05' ),
 	array( 'url' => home_url( '/composants' ),     'label' => 'Composants web',       'sub' => '06' ),
 	array( 'url' => home_url( '/maintenance' ),    'label' => 'Maintenance',          'sub' => '07' ),
 	array( 'url' => home_url( '/realisations' ),   'label' => 'Réalisations',         'sub' => '08' ),
-	array( 'url' => home_url( '/ambassadeurs' ),   'label' => 'On recrute 🚀',        'sub' => '09' ),
+	array( 'url' => home_url( '/ambassadeurs' ),   'label' => 'On recrute',        'sub' => '09' ),
 	array( 'url' => home_url( '/a-propos' ),       'label' => 'À propos',             'sub' => '10' ),
 	// « Donnez votre avis » doit mener a la fiche GOOGLE (la ou on laisse un avis),
 	// pas a la page interne. ag_geo_review_url() a un repli sur Maps -> jamais de 404.
-	array( 'url' => function_exists( 'ag_geo_review_url' ) ? ag_geo_review_url() : home_url( '/avis-clients' ), 'label' => 'Donnez votre avis ⭐', 'sub' => '11', 'ext' => true ),
+	array( 'url' => function_exists( 'ag_geo_review_url' ) ? ag_geo_review_url() : home_url( '/avis-clients' ), 'label' => 'Donnez votre avis', 'sub' => '11', 'ext' => true ),
 	array( 'url' => home_url( '/contact' ),        'label' => 'Contact',              'sub' => '12' ),
 );
 ?>
