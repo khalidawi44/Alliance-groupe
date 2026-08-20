@@ -207,12 +207,15 @@ $dir = get_stylesheet_directory_uri();
     .hd{padding:14px 0}
     .hd.is-stuck{padding:8px 0}
     .hd__brand img{width:38px;height:38px}
+    .hd__nav .btn{padding:10px 15px;font-size:.8rem;letter-spacing:.04em}
 
     .hero{height:92svh;align-items:flex-end}
     .hero__eg{right:50%;left:auto;transform:translateX(50%);width:min(94vw,560px);height:64svh;
       -webkit-mask-image:linear-gradient(0deg,transparent 0,#000 26%);mask-image:linear-gradient(0deg,transparent 0,#000 26%)}
     .hero__eg video,.hero__eg img{object-position:center 30%}
-    .hero__in{padding-bottom:30px}
+    .hero__in{padding-bottom:30px;position:relative;isolation:isolate}
+    .hero__in::before{content:"";position:absolute;inset:-40px -24px -60px;z-index:-1;pointer-events:none;
+      background:linear-gradient(0deg,rgba(5,5,10,.95) 34%,rgba(5,5,10,.78) 62%,rgba(5,5,10,0) 100%)}
     .hero__t{font-size:clamp(2.3rem,11vw,3.6rem);line-height:1.02}
     .hero__sub{font-size:1rem;max-width:34ch}
     .hero__cta{margin-top:20px;gap:10px}
@@ -275,15 +278,7 @@ $dir = get_stylesheet_directory_uri();
 </style>
 
 
-<header class="hd" id="hd">
-  <div class="wrap hd__in">
-    <a class="hd__brand" href="#top"><img src="<?php echo esc_url( $dir . '/assets/images/ag-logo.png' ); ?>" alt="Alliance Groupe"><span class="hd__name">Alliance Groupe</span></a>
-    <nav class="hd__nav">
-      <a href="#offres">Offres</a><a href="#atelier">Atelier IA</a><a href="#chapitres">Notre façon</a>
-      <a class="btn" href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>">Audit gratuit</a>
-    </nav>
-  </div>
-</header>
+
 
 <section class="hero" id="top">
   <div class="hero__bg" data-parallax><img src="<?php echo esc_url( $dir . '/assets/images/cities/baie_naples_nuit.jpg' ); ?>" alt="La baie de Naples" fetchpriority="high"></div>
@@ -482,7 +477,7 @@ $dir = get_stylesheet_directory_uri();
 
   /* en-tête compact */
   var hd = document.getElementById("hd");
-  addEventListener("scroll", function(){ hd.classList.toggle("is-stuck", scrollY > 60); }, { passive:true });
+  if (hd) addEventListener("scroll", function(){ hd.classList.toggle("is-stuck", scrollY > 60); }, { passive:true });
 
   if (ok) {
     /* titre mot à mot */
