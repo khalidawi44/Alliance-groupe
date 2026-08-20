@@ -192,15 +192,54 @@ function ag_devis_render() {
 		function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 		// Dictée vocale (Web Speech API), si le navigateur la supporte.
 		var SR=window.SpeechRecognition||window.webkitSpeechRecognition, rec=null;
+		var IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 		if(!SR){ mic.style.display='none'; }
 		else{
-			rec=new SR(); rec.lang='fr-FR'; rec.interimResults=true; rec.continuous=true;
-			var base='';
+			rec=new SR(); rec.lang='fr-FR'; rec.interimResults=true;
+			// iOS ne gere pas le mode continu : il coupe apres une phrase.
+			rec.continuous = !IOS;
+			var base='', started=false, guard=null;
+			function micIdle(){ started=false; if(guard){clearTimeout(guard);guard=null;} mic.classList.remove('rec'); mic.textContent='🎤 Dicter'; }
+			function micRec(){ started=true; if(guard){clearTimeout(guard);guard=null;} mic.classList.add('rec'); mic.textContent='⏹ Stop'; }
+			// L'etat « Stop » n'apparait QUE si la dictee a vraiment demarre :
+			// sinon le bouton restait bloque sur Stop, sans moyen d'en sortir.
+			rec.onstart=micRec;
+			rec.onend=micIdle;
 			rec.onresult=function(e){var t='';for(var i=e.resultIndex;i<e.results.length;i++){t+=e.results[i][0].transcript;}inp.value=(base+' '+t).trim();};
-			rec.onend=function(){mic.classList.remove('rec');mic.textContent='🎤 Dicter';};
+			rec.onerror=function(e){
+				micIdle();
+				var c=(e&&e.error)||'';
+				if(c==='not-allowed'||c==='service-not-allowed'){
+					st.textContent='🎤 Micro refusé. Autorise le microphone dans les réglages du navigateur' + (IOS?' (Réglages → Safari → Microphone).':'.');
+				} else if(c==='no-speech'){
+					st.textContent='🎤 Je n\'ai rien entendu. Réessaie en parlant plus près.';
+				} else if(c==='audio-capture'){
+					st.textContent='🎤 Aucun micro détecté sur cet appareil.';
+				} else if(c!=='aborted'){
+					st.textContent='🎤 La dictée n\'a pas fonctionné' + (IOS?' — sur iPhone, utilise plutôt la touche micro 🎤 de ton clavier.':'. Réessaie ou écris ton besoin.');
+				}
+			};
 			mic.addEventListener('click',function(){
-				if(mic.classList.contains('rec')){rec.stop();return;}
-				base=inp.value; mic.classList.add('rec'); mic.textContent='⏹ Stop'; try{rec.start();}catch(e){}
+				// En cours -> on arrete (stop ET abort : sur certains navigateurs
+				// stop() reste sans effet et le bouton restait fige sur « Stop »).
+				if(mic.classList.contains('rec')){
+					try{rec.stop();}catch(e){}
+					try{rec.abort();}catch(e){}
+					micIdle();
+					return;
+				}
+				base=inp.value;
+				st.textContent='🎤 Parle, je t\'écoute…';
+				try{ rec.start(); }catch(e){ micIdle(); st.textContent='🎤 Dictée indisponible ici. Écris ton besoin 🙂'; return; }
+				// Filet de securite : si onstart n'arrive jamais (permission bloquee,
+				// API presente mais inerte comme sur certains iOS), on remet a zero.
+				guard=setTimeout(function(){
+					if(!started){
+						try{rec.abort();}catch(e){}
+						micIdle();
+						st.textContent='🎤 La dictée ne démarre pas' + (IOS?' — sur iPhone, utilise la touche micro 🎤 de ton clavier.':'. Vérifie l\'autorisation du micro.');
+					}
+				}, 1800);
 			});
 		}
 		var steps=['🤔 L\'IA analyse ton projet…','📐 Elle chiffre les postes…','🧾 Elle prépare ton devis…'], si=0, tmr=null;
