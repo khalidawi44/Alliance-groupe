@@ -4026,7 +4026,14 @@ button:focus-visible{
     .ag-mobile-menu__sub a{font-size:1rem;padding:10px 0;}
 
     /* Back to top : repositionne pour ne pas masquer contenu */
-    .ag-totop{bottom:20px !important;right:20px !important;width:46px !important;height:46px !important;}
+    /* MOBILE : la fleche « retour en haut » est CENTREE en bas. A gauche elle
+       tombait sur la pastille « On recrute », a droite sur la bulle du chat.
+       !important + left/right forces : cinema-upgrades.css la pousse a gauche. */
+    .ag-totop{bottom:calc(16px + env(safe-area-inset-bottom)) !important;left:50% !important;right:auto !important;
+        width:46px !important;height:46px !important;
+        transform:translateX(-50%) translateY(20px) scale(.9) !important;}
+    .ag-totop.visible{transform:translateX(-50%) translateY(0) scale(1) !important;}
+    .ag-totop:hover{transform:translateX(-50%) translateY(-3px) scale(1) !important;}
 }
 
 /* ── Petit mobile (<=480px) : ajustements fins ──────────────── */

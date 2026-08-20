@@ -69,6 +69,47 @@ function ag_journal_ia_tag( $titre ) {
 }
 
 /** Rendu de la timeline (utilisé par le template + le shortcode). */
+/**
+ * SECURITE — le journal publie des messages de COMMIT bruts. Publies tels quels,
+ * ils dressent la carte du site pour un attaquant : endpoints REST, parametres
+ * d'URL, actions AJAX, noms de fichiers/modules, jetons, et surtout ce qui est
+ * "en pause"/"pas encore fini" (= les points faibles). On filtre donc a
+ * L'AFFICHAGE (et pas seulement a la generation) : ainsi meme un futur commit
+ * bavard ne fuite pas.
+ */
+function ag_journal_ia_is_sensitive( $titre ) {
+	$t = mb_strtolower( $titre );
+	$motifs = array(
+		'wp-json', 'rest_route', 'ajax', 'admin-ajax', 'nonce', 'webhook', 'endpoint',
+		'?ag_', '&ag_', 'wp-admin', 'wp-config', 'wp-login', '.php', '.js', '.json',
+		'token', 'jeton', 'cle api', 'clé api', 'api key', 'secret', 'mot de passe',
+		'password', 'htaccess', 'sql', 'base de donnees', 'base de données',
+		'faille', 'vulnerab', 'vulnérab', 'exploit', 'injection', 'xss', 'csrf',
+		'bypass', 'contourne', 'desactive la securite', 'désactive la sécurité',
+		'pentest', 'kali', 'scan actif', 'backdoor', 'verrou', 'droits admin',
+		'en pause', 'pas encore', 'a finir', 'à finir', 'todo', 'bloque', 'bloqué',
+		'temporaire', 'contournement', 'hotfix', 'patch securite', 'patch sécurité',
+	);
+	foreach ( $motifs as $m ) {
+		if ( false !== mb_strpos( $t, $m ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/** Nettoie les fragments techniques residuels d'un titre affiche. */
+function ag_journal_ia_clean( $titre ) {
+	$t = $titre;
+	$t = preg_replace( '~https?://\S+~i', '', $t );            // URLs
+	$t = preg_replace( '~[\w./-]*\?[\w=&%-]+~', '', $t );      // querystrings
+	$t = preg_replace( '~\b[a-f0-9]{7,40}\b~i', '', $t );      // hash de commit
+	$t = preg_replace( '~\bag_[a-z0-9_]+~i', '', $t );          // noms internes ag_*
+	$t = preg_replace( '~`[^`]*`~', '', $t );                   // code inline
+	$t = preg_replace( '~\s{2,}~', ' ', $t );
+	return trim( $t, " \t\n\r\0\x0B-—:;,·" );
+}
+
 function ag_journal_ia_render() {
 	$data    = ag_journal_ia_data();
 	$entrees = $data['entrees'];
@@ -121,7 +162,11 @@ function ag_journal_ia_render() {
 					$date  = isset( $e['date'] ) ? $e['date'] : '';
 					$hash  = isset( $e['hash'] ) ? $e['hash'] : '';
 					if ( '' === $titre ) { continue; }
+					// Filtre de securite : on n'expose pas les details techniques.
+					if ( ag_journal_ia_is_sensitive( $titre ) ) { continue; }
 					list( $emoji, $cat ) = ag_journal_ia_tag( $titre );
+					$titre = ag_journal_ia_clean( $titre );
+					if ( mb_strlen( $titre ) < 12 ) { continue; } // trop vide une fois nettoye
 					if ( $date !== $last_day ) {
 						$last_day = $date;
 						$jour     = $date ? date_i18n( 'j F Y', strtotime( $date ) ) : '';
@@ -129,7 +174,7 @@ function ag_journal_ia_render() {
 					}
 					echo '<div class="agj-item"><div class="t">' . esc_html( $emoji . ' ' . $titre ) . '</div>';
 					echo '<div class="m"><span class="agj-cat">' . esc_html( $cat ) . '</span>';
-					if ( $hash ) { echo '<span class="agj-hash">#' . esc_html( $hash ) . '</span>'; }
+					// Hash de commit volontairement NON publie (aucun interet client, aide la reconnaissance).
 					echo '</div></div>';
 				}
 				?>
