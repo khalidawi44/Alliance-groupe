@@ -175,19 +175,26 @@ $dir = get_stylesheet_directory_uri();
 
   /* ---------- RÉALISATIONS (aperçu) ---------- */
   .rz{padding:clamp(70px,12vh,150px) 0;text-align:center;position:relative;overflow:hidden}
-  .rz__glow{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);width:min(90vw,1100px);height:60vh;
-    background:radial-gradient(closest-side,rgba(212,180,92,.13),transparent 72%);pointer-events:none}
+  .rz__glow{position:absolute;left:50%;top:34%;transform:translate(-50%,-50%);width:min(94vw,1200px);height:64vh;
+    background:radial-gradient(closest-side,rgba(212,180,92,.12),transparent 72%);pointer-events:none}
   .rz__in{position:relative;z-index:2}
-  .rz__shot{display:block;position:relative;overflow:hidden;border-radius:20px;margin:0 auto;max-width:1040px;
-    border:1px solid rgba(212,180,92,.22);box-shadow:0 70px 130px -60px rgba(0,0,0,.95);will-change:transform}
-  .rz__shot img{width:100%;height:auto}
-  .rz__shot::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 62%,rgba(5,5,10,.5));
-    opacity:0;transition:opacity .4s}
-  .rz__shot:hover::after{opacity:1}
-  .rz__facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;max-width:840px;margin:32px auto 30px}
-  .rz__facts div{display:flex;flex-direction:column;gap:7px}
-  .rz__facts b{font-family:var(--serif);font-weight:500;font-size:clamp(1.05rem,2.3vw,1.45rem);color:var(--gold-hi)}
-  .rz__facts span{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  .rz__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;margin:38px 0 34px;text-align:left}
+  .rz__card{background:#0b0b12;border:1px solid rgba(255,255,255,.09);border-radius:18px;overflow:hidden;
+    display:flex;flex-direction:column;transition:border-color .35s,transform .35s,box-shadow .35s}
+  .rz__card:hover{border-color:rgba(212,180,92,.55);transform:translateY(-5px);box-shadow:0 50px 100px -55px rgba(212,180,92,.7)}
+  .rz__vue{display:block;position:relative;overflow:hidden;aspect-ratio:16/10;background:#07070d}
+  .rz__vue img{width:100%;height:100%;object-fit:cover;object-position:center top;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+  .rz__card:hover .rz__vue img{transform:scale(1.06)}
+  .rz__body{padding:18px 20px 22px;display:flex;flex-direction:column;gap:9px;flex:1}
+  .rz__meta{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+  .rz__card h3{font-family:var(--serif);font-weight:500;font-size:1.42rem;line-height:1.1;margin:0}
+  .rz__card p{color:var(--muted);font-size:.92rem;line-height:1.6;margin:0}
+  .rz__pts{list-style:none;display:flex;flex-wrap:wrap;gap:7px;margin:2px 0 0;padding:0}
+  .rz__pts li{border:1px solid rgba(212,180,92,.3);border-radius:999px;padding:5px 12px;font-size:.72rem;color:#cdd4e2}
+  .rz__liens{margin-top:auto;padding-top:14px;display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.84rem}
+  .rz__liens a{text-decoration:none;color:var(--gold-hi);border-bottom:1px solid transparent;transition:border-color .25s}
+  .rz__liens a:hover{border-color:var(--gold-hi)}
+  .rz__liens .rz__avis{color:#cdd4e2}
 
   /* ---------- LION ---------- */
   .lion{position:relative;height:210svh}
@@ -216,6 +223,7 @@ $dir = get_stylesheet_directory_uri();
      un enchaînement classique, tout tient dans le cadre.
      ====================================================== */
   @media(max-width:1100px){
+    .rz__grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     .at__grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     .of__grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
     .ch{gap:26px}
@@ -298,8 +306,8 @@ $dir = get_stylesheet_directory_uri();
     .card__badge{font-size:.6rem;padding:4px 9px;top:8px;left:8px}
 
     .rz{padding:56px 0}
-    .rz__facts{grid-template-columns:1fr;gap:14px;margin:22px auto 24px}
-    .rz__shot{border-radius:14px}
+    .rz__grid{grid-template-columns:1fr;gap:16px;margin:26px 0 24px}
+    .rz__card h3{font-size:1.28rem}
 
     .lion{height:130svh}
     .lion__img{width:min(62vw,300px)}
@@ -505,16 +513,40 @@ $dir = get_stylesheet_directory_uri();
   <div class="wrap rz__in">
     <span class="eyebrow" data-rv>Nos réalisations</span>
     <h2 class="stitle" data-mots style="margin:12px 0 16px">Ce qu'on livre, <em>pour de vrai</em></h2>
-    <p class="lead" data-txt style="margin:0 auto 30px">Dernier site sorti de l'atelier : <strong>Gwen Services</strong>, aide à domicile à Nantes. Conception, textes, images, sécurité et référencement — tout est parti d'ici.</p>
-    <a class="rz__shot" href="<?php echo esc_url( home_url( '/realisation-gwen' ) ); ?>" data-media>
-      <img src="<?php echo esc_url( $dir . '/assets/images/realisations/gwen-maquette.jpg' ); ?>" alt="Le site Gwen Services sur ordinateur et sur téléphone" loading="lazy">
-    </a>
-    <div class="rz__facts" data-rv>
-      <div><b>Aide à domicile</b><span>Secteur</span></div>
-      <div><b>5 jours</b><span>Du brief à la mise en ligne</span></div>
-      <div><b>Site, images &amp; SEO</b><span>Ce qu'on a fait</span></div>
+    <p class="lead" data-txt style="margin:0 auto">Des sites en ligne, des clients joignables, des avis vérifiables. Allez les voir — et allez lire ce qu'on en dit sur Google.</p>
+    <div class="rz__grid">
+      <article class="rz__card" data-rv>
+        <a class="rz__vue" href="https://gwen-services.alliancegroupe-inc.com/" target="_blank" rel="noopener"><img src="<?php echo esc_url( $dir . '/assets/images/realisations/carte-gwen.jpg' ); ?>" alt="Le site Gwen Services" loading="lazy"></a>
+        <div class="rz__body">
+          <span class="rz__meta">Aide à domicile · Nantes</span>
+          <h3>Gwen Services</h3>
+          <p>Une auxiliaire de vie qui n'avait rien en ligne. Site, textes, images générées sur mesure, SEO local et sécurité — livré en cinq jours.</p>
+          <ul class="rz__pts"><li>Livré en 5 jours</li><li>Images sur mesure</li><li>SEO local</li></ul>
+          <div class="rz__liens"><a href="https://gwen-services.alliancegroupe-inc.com/" target="_blank" rel="noopener">Voir le site ↗</a><a href="<?php echo esc_url( home_url( '/realisation-gwen' ) ); ?>">L'étude de cas →</a><a class="rz__avis" href="https://www.google.com/maps/search/?api=1&amp;query=Gwen%20Services%20aide%20%C3%A0%20domicile%20Nantes" target="_blank" rel="noopener">★ Avis Google ↗</a></div>
+        </div>
+      </article>
+      <article class="rz__card" data-rv>
+        <a class="rz__vue" href="https://annaphoto.eu/" target="_blank" rel="noopener"><img src="<?php echo esc_url( $dir . '/assets/images/realisations/carte-anna.jpg' ); ?>" alt="Le site Anna Photo" loading="lazy"></a>
+        <div class="rz__body">
+          <span class="rz__meta">Photographie · Nantes</span>
+          <h3>Anna Photo</h3>
+          <p>Blog et portfolio pour une photographe portraitiste. Navigation fluide, mise en valeur des clichés, référencement travaillé article par article.</p>
+          <ul class="rz__pts"><li>+180 % de trafic</li><li>23 articles</li><li>Portfolio complet</li></ul>
+          <div class="rz__liens"><a href="https://annaphoto.eu/" target="_blank" rel="noopener">Voir le site ↗</a><a class="rz__avis" href="https://www.google.com/maps/search/?api=1&amp;query=Anna%20Photo%20photographe%20Nantes" target="_blank" rel="noopener">★ Avis Google ↗</a></div>
+        </div>
+      </article>
+      <article class="rz__card" data-rv>
+        <a class="rz__vue" href="https://www.paysagiste-environnement.com/" target="_blank" rel="noopener"><img src="<?php echo esc_url( $dir . '/assets/images/realisations/carte-la.jpg' ); ?>" alt="Le site L.A Environnement" loading="lazy"></a>
+        <div class="rz__body">
+          <span class="rz__meta">Paysagiste · Loire-Atlantique</span>
+          <h3>L.A Environnement</h3>
+          <p>Site vitrine et génération de devis pour un paysagiste. Formulaires optimisés et référencement local dominant sur son secteur.</p>
+          <ul class="rz__pts"><li>+320 % de devis</li><li>Top 3 Google</li><li>15 devis/mois</li></ul>
+          <div class="rz__liens"><a href="https://www.paysagiste-environnement.com/" target="_blank" rel="noopener">Voir le site ↗</a><a class="rz__avis" href="https://www.google.com/maps/search/?api=1&amp;query=L.A%20Environnement%20paysagiste%20Nantes" target="_blank" rel="noopener">★ Avis Google ↗</a></div>
+        </div>
+      </article>
     </div>
-    <a class="btn" data-rv href="<?php echo esc_url( home_url( '/realisation-gwen' ) ); ?>">Voir la réalisation</a>
+    <a class="btn" data-rv href="<?php echo esc_url( home_url( '/realisations' ) ); ?>">Toutes nos réalisations</a>
   </div>
 </section>
 
