@@ -113,6 +113,7 @@ $dir = get_stylesheet_directory_uri();
   .ds{position:relative;height:620svh}
   .ds__stick{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center}
   #cv{width:100%;height:100%;display:block}
+  .ds__photo{display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
   .ds__hand{position:absolute;z-index:4;width:min(52vw,620px);mix-blend-mode:screen;opacity:0;pointer-events:none}
   .ds__veil{position:absolute;inset:0;z-index:3;background:linear-gradient(180deg,rgba(5,5,10,.5),transparent 32%,rgba(5,5,10,.92))}
   .ds__cap{position:absolute;z-index:5;left:0;right:0;bottom:11vh;text-align:center;padding:0 26px}
@@ -210,8 +211,9 @@ $dir = get_stylesheet_directory_uri();
     .hd__nav .btn{padding:10px 15px;font-size:.8rem;letter-spacing:.04em}
 
     .hero{height:92svh;align-items:flex-end}
-    .hero__eg{right:50%;left:auto;transform:translateX(50%);width:min(94vw,560px);height:64svh;
-      -webkit-mask-image:linear-gradient(0deg,transparent 0,#000 26%);mask-image:linear-gradient(0deg,transparent 0,#000 26%)}
+    .hero__eg{right:50%;left:auto;transform:translateX(50%);width:min(100vw,640px);height:70svh;
+      -webkit-mask-image:radial-gradient(ellipse 72% 62% at 50% 54%,#000 46%,rgba(0,0,0,.86) 66%,rgba(0,0,0,.34) 84%,transparent 97%);
+      mask-image:radial-gradient(ellipse 72% 62% at 50% 54%,#000 46%,rgba(0,0,0,.86) 66%,rgba(0,0,0,.34) 84%,transparent 97%)}
     .hero__eg video,.hero__eg img{object-position:center 30%}
     .hero__in{padding-bottom:30px;position:relative;isolation:isolate}
     .hero__in::before{content:"";position:absolute;inset:-40px -24px -60px;z-index:-1;pointer-events:none;
@@ -227,9 +229,15 @@ $dir = get_stylesheet_directory_uri();
     .mq__in{gap:28px}
     .mq__in span{font-size:1.05rem}
 
-    .tab{height:160svh}
-    .tab__cap h2{font-size:clamp(1.8rem,8vw,2.6rem)}
-    .tab__cap p{font-size:.98rem;margin-top:14px}
+    .tab{height:150svh}
+    /* la peinture est en 16/9 : on la montre entière, tableau puis légende */
+    .tab__stick{display:flex;flex-direction:column;justify-content:center;gap:clamp(18px,4svh,44px)}
+    .tab__img{position:relative;inset:auto;width:100%;height:auto;aspect-ratio:16/9}
+    .tab__img img{object-fit:cover;height:100%;transform:none!important}
+    .tab__veil{display:none}
+    .tab__cap{align-self:auto;padding:0 20px}
+    .tab__cap h2{font-size:clamp(1.7rem,7.4vw,2.4rem)}
+    .tab__cap p{font-size:.95rem;margin-top:12px}
 
     .chs{padding:44px 0}
     .ch{grid-template-columns:1fr;margin-bottom:44px}
@@ -238,29 +246,39 @@ $dir = get_stylesheet_directory_uri();
     .ch__p{font-size:1rem}
     .ch__meta{gap:16px;font-size:.7rem}
 
-    /* la scène redevient un empilement simple */
-    .ds{height:auto}
-    .ds__stick{position:static;height:auto;display:flex;flex-direction:column;overflow:visible}
-    .ds__hand{order:1}.ds__cap{order:2}.of{order:3}.at{order:4}
+    /* ── LA SCÈNE RESTE ÉPINGLÉE : les choses sortent de la paume ──
+       Le canvas de dissolution (coûteux) est remplacé par une photo qui
+       se dissout en flou, et les offres sortent de la main UNE PAR UNE
+       pour tenir dans le cadre. */
+    .ds{height:560svh}
     #cv{display:none}
-    .ds__veil{display:none}
-    .ds__hand{position:relative;z-index:1;width:min(86vw,420px);margin:26px auto 0;opacity:.9;transform:none}
-    .ds__cap{position:relative;bottom:auto;padding:8px 20px 0}
+    .ds__photo{display:block}
+    .ds__hand{left:0;right:0;margin:0 auto;top:2svh;width:min(96vw,440px)}
+    .ds__cap{bottom:9svh;padding:0 20px}
     .ds__cap h2{font-size:clamp(1.7rem,7.4vw,2.4rem)}
-    .ds__cap p{font-size:.96rem}
+    .ds__cap p{font-size:.94rem;margin-top:12px}
 
-    .of,.at{position:relative;inset:auto;opacity:1;pointer-events:auto;padding:46px 0 10px;display:block}
-    .of__grid{grid-template-columns:1fr;gap:16px;margin:22px 0 14px}
-    .of__bg{opacity:.25}
-    .at{padding:52px 0 20px}
-    .at .lead{display:block;font-size:.96rem}
-    .at .stitle{font-size:clamp(1.6rem,6.6vw,2.2rem)}
-    .at__filters{margin-bottom:18px;gap:8px}
-    .fbtn{padding:8px 16px;font-size:.8rem}
-    .at__grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-    .at .card__d{display:block;font-size:.8rem}
-    .at .card__t{font-size:.95rem}
-    .card__body{padding:12px 13px 14px}
+    .of,.at{padding:0}
+    .of__in{display:flex;flex-direction:column;justify-content:center;height:100%}
+    .of .lead,.of__note{display:none}
+    .of__bg{opacity:.3}
+    .of__grid{display:block;position:relative;height:min(46svh,340px);margin:14px 0 0}
+    .pack{position:absolute;inset:0;margin:auto;height:max-content;width:min(82vw,320px)}
+    .pack__body{padding:14px 16px 16px}
+    .pack__cta{padding:12px 18px;font-size:.86rem}
+
+    .at .wrap{display:flex;flex-direction:column;justify-content:center;height:100%}
+    .at .lead{display:none}
+    .at .stitle{font-size:clamp(1.5rem,6.2vw,2rem);margin:8px 0 0}
+    .at__head{margin:0 auto 12px}
+    .at__filters{margin-bottom:12px;gap:7px}
+    .fbtn{padding:7px 14px;font-size:.78rem}
+    .at__grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .at .card__media{aspect-ratio:16/9}
+    .at .card__d,.at .card__go{display:none}
+    .at .card__t{font-size:.86rem;margin:0}
+    .card__body{padding:9px 11px 11px}
+    .card__badge{font-size:.6rem;padding:4px 9px;top:8px;left:8px}
 
     .lion{height:130svh}
     .lion__img{width:min(62vw,300px)}
@@ -269,10 +287,30 @@ $dir = get_stylesheet_directory_uri();
     .ft{flex-direction:column;align-items:center;text-align:center;gap:8px}
   }
   @media(max-width:600px){
-    .at__grid{grid-template-columns:1fr}
-    .at .card__media{aspect-ratio:16/9}
     .mq__in span{font-size:.95rem}
     .tab{height:140svh}
+  }
+  /* tablette : la scène est épinglée comme en desktop, mais les 3 offres
+     tiennent côte à côte — inutile de les montrer une par une. */
+  @media(min-width:701px) and (max-width:960px){
+    .ds__hand{width:min(62vw,520px);top:3svh}
+    .of__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;
+              height:auto;position:static;margin:22px 0 0}
+    .pack{position:relative;inset:auto;margin:0;width:auto;height:auto}
+    .of .lead{display:block;margin:14px auto 0}
+    .at .lead{display:block;margin:0 auto}
+    .at .card__t{font-size:.95rem}
+    .card__body{padding:12px 14px 14px}
+  }
+
+  /* écrans courts : on resserre encore la grille de l'atelier */
+  @media(max-width:960px) and (max-height:760px){
+    .ds__hand{width:min(78vw,340px)}
+    .of__grid{height:min(44svh,300px)}
+    .pack{width:min(70vw,260px)}
+    .at__grid{gap:8px}
+    .at .card__t{font-size:.78rem}
+    .card__body{padding:7px 9px 9px}
   }
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -355,6 +393,7 @@ $dir = get_stylesheet_directory_uri();
 <section class="ds" id="atelier">
   <div class="ds__stick">
     <canvas id="cv"></canvas>
+    <img class="ds__photo" src="<?php echo esc_url( $dir . '/assets/images/team/1_bureau_naples.jpg' ); ?>" alt="">
     <img class="ds__hand" id="hand" src="<?php echo esc_url( $dir . '/assets/images/cinematique/main-poussiere-or.jpg' ); ?>" alt="">
     <div class="ds__veil"></div>
     <div class="ds__cap wrap" id="dsCap">
@@ -517,8 +556,9 @@ $dir = get_stylesheet_directory_uri();
     })();
 
     /* tableau : Ken Burns lent */
-    G.fromTo("[data-tabimg] img", { scale:1.02, yPercent:-3 }, { scale:1.16, yPercent:3, ease:"none",
-      scrollTrigger:{ trigger:".tab", start:"top top", end:"bottom bottom", scrub:true }});
+    if (!matchMedia("(max-width:960px)").matches)
+      G.fromTo("[data-tabimg] img", { scale:1.02, yPercent:-3 }, { scale:1.16, yPercent:3, ease:"none",
+        scrollTrigger:{ trigger:".tab", start:"top top", end:"bottom bottom", scrub:true }});
 
     /* titres : chaque mot monte derrière un masque */
     G.utils.toArray("[data-mots]").forEach(function(h){
@@ -557,9 +597,6 @@ $dir = get_stylesheet_directory_uri();
       var n = m.parentNode.querySelector(".ch__n");
       if (n) G.to(n, { yPercent:-70, ease:"none", scrollTrigger:{ trigger:m.parentNode, start:"top bottom", end:"bottom top", scrub:true }});
     });
-    /* offres en cascade */
-    G.from("[data-pack]", { y:56, opacity:0, duration:1, ease:"power3.out", stagger:.12,
-      scrollTrigger:{ trigger:".of__grid", start:"top 82%" }});
     /* lion */
     G.fromTo("#lionImg", { scale:.5, opacity:0, filter:"blur(14px)" },
       { scale:1, opacity:1, filter:"blur(0px)", ease:"none",
@@ -632,17 +669,96 @@ $dir = get_stylesheet_directory_uri();
   if (ok && !petitEcran){
     ST.create({ trigger:".ds", start:"top top", end:"bottom bottom", scrub:true,
       onUpdate: function(self){ progress = Math.min(1.15, self.progress / .30 * 1.12); draw(); }});
+  }
+  if (ok){
     /* SCÈNE UNIQUE : dissolution -> main -> offres -> évaporation -> atelier */
     (function(){
-      /* tablette et mobile : on garde l'enchaînement, sans épinglage */
+      /* ---------------------------------------------------------------
+         TABLETTE ET MOBILE : même scène, même main, mais les offres
+         sortent de la paume UNE PAR UNE pour tenir dans le cadre, et la
+         dissolution en pixels (canvas) laisse la place a un flou.
+         --------------------------------------------------------------- */
       if (matchMedia("(max-width:960px)").matches){
-        G.utils.toArray("#ofStage .of__in > *, #ofStage [data-pack], #atStage .at__head, #atStage .at__filters, #atStage .card")
-          .forEach(function(el){
-            G.from(el, { y:30, opacity:0, duration:.8, ease:"power3.out",
-              scrollTrigger:{ trigger:el, start:"top 90%" }});
-          });
-        G.from("#hand", { opacity:0, scale:.85, duration:1, ease:"power2.out",
-          scrollTrigger:{ trigger:"#hand", start:"top 88%" }});
+        var stM   = document.querySelector(".ds__stick");
+        var handM = document.getElementById("hand");
+        var photo = document.querySelector(".ds__photo");
+        var ofM   = document.getElementById("ofStage");
+        var atM   = document.getElementById("atStage");
+        var packM = G.utils.toArray("#ofStage [data-pack]");
+        var cardM = G.utils.toArray("#atStage .card");
+
+        /* la paume : mesurée sur la main réelle, insensible aux transforms */
+        function paumeM(){ return { x: handM.offsetLeft + handM.offsetWidth / 2,
+                                    y: handM.offsetTop  + handM.offsetHeight * .52 }; }
+        function centreM(el){ var x=0,y=0,n=el; while(n && n!==stM){ x+=n.offsetLeft; y+=n.offsetTop; n=n.offsetParent; }
+                              return { x:x+el.offsetWidth/2, y:y+el.offsetHeight/2 }; }
+
+        G.set([ofM, atM], { opacity:0 });
+        G.set(".at__filters", { opacity:0, y:12 });
+        G.set(packM, { opacity:0 });
+
+        var tm = G.timeline({ scrollTrigger:{ trigger:".ds", start:"top top", end:"bottom bottom",
+          scrub:.5, invalidateOnRefresh:true,
+          onUpdate:function(self){
+            var p = self.progress;
+            ofM.classList.toggle("is-live", p > .30 && p < .56);
+            atM.classList.toggle("is-live", p > .64);
+          }}});
+
+        /* la photo se dissout, la main paraît */
+        tm.to(photo, { opacity:0, scale:1.2, filter:"blur(20px)", duration:.16, ease:"power2.in" }, .04)
+          .fromTo(handM, { opacity:0, scale:.8, yPercent:8 },
+                         { opacity:.98, scale:1, yPercent:0, duration:.06, ease:"power2.out" }, .17)
+          .to("#dsCap", { opacity:0, y:-26, duration:.05, ease:"power2.in" }, .20)
+          .to(ofM, { opacity:1, duration:.02 }, .26)
+          .fromTo("#ofStage .of__in > *:not(.of__grid)", { opacity:0, y:26 },
+                  { opacity:1, y:0, duration:.05, stagger:.02, ease:"power3.out" }, .27)
+          .to(handM, { opacity:.34, scale:1.16, duration:.10, ease:"none" }, .30);
+
+        /* les offres jaillissent de la paume : une par une sur téléphone
+           (elles ne tiendraient pas ensemble), toutes ensemble sur tablette */
+        var unParUn = matchMedia("(max-width:700px)").matches;
+        var T0 = .30, PAS = unParUn ? .085 : .022;
+        packM.forEach(function(c, i){
+          tm.fromTo(c,
+            { opacity:0, scale:.08, rotation:(i - 1) * 26,
+              x:function(){ return paumeM().x - centreM(c).x; },
+              y:function(){ return paumeM().y - centreM(c).y; } },
+            { keyframes:[
+                { opacity:1, scale:.46, rotation:(i - 1) * 12, duration:.5,
+                  x:function(){ return (paumeM().x - centreM(c).x) * .4; },
+                  y:function(){ return (paumeM().y - centreM(c).y) * .5 - 30; } },
+                { opacity:1, scale:1, rotation:0, x:0, y:0, duration:.5, ease:"power3.out" }
+              ], ease:"none", duration:.06 },
+            T0 + i * PAS);
+          tm.to(c, { opacity:0, scale:.82, y:-60, filter:"blur(7px)", duration:.032, ease:"power2.in" },
+            unParUn ? T0 + (i + 1) * PAS - .014 : .55 + i * .012);
+        });
+
+        /* les offres s'effacent, l'atelier prend la place */
+        tm.to("#ofStage .of__in > *:not(.of__grid)", { opacity:0, y:-34, duration:.05, ease:"power2.in" }, .55)
+          .to(ofM, { opacity:0, duration:.02 }, .61)
+          .to(handM, { opacity:.95, scale:1, duration:.06, ease:"power2.out" }, .55)
+          .to(atM, { opacity:1, duration:.02 }, .61)
+          .fromTo(".at__head", { opacity:0, y:26 }, { opacity:1, y:0, duration:.06, ease:"power3.out" }, .62)
+          .to(handM, { opacity:.18, scale:1.24, duration:.12, ease:"none" }, .66);
+
+        cardM.forEach(function(c, i){
+          var a0 = i * (Math.PI * 2 / cardM.length);
+          tm.fromTo(c,
+            { opacity:0, scale:.07, rotation:(i % 2 ? 1 : -1) * (240 + i * 30),
+              x:function(){ return paumeM().x - centreM(c).x + Math.cos(a0) * 18; },
+              y:function(){ return paumeM().y - centreM(c).y + Math.sin(a0) * 18; } },
+            { keyframes:[
+                { opacity:1, scale:.4, rotation:(i % 2 ? 1 : -1) * 100, duration:.5,
+                  x:function(){ return (paumeM().x - centreM(c).x) * .42 + Math.cos(a0 + 2.2) * 70; },
+                  y:function(){ return (paumeM().y - centreM(c).y) * .42 + Math.sin(a0 + 2.2) * 60; } },
+                { opacity:1, scale:1, rotation:0, x:0, y:0, duration:.5, ease:"power3.out" }
+              ], ease:"none", duration:.13 },
+            .66 + i * .014);
+        });
+
+        tm.to(".at__filters", { opacity:1, y:0, duration:.05, ease:"power2.out" }, .88);
         return;
       }
       var stick = document.querySelector(".ds__stick");
