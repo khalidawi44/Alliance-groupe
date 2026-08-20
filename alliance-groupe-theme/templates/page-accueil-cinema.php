@@ -172,6 +172,23 @@ $dir = get_stylesheet_directory_uri();
   .card__d{color:var(--muted);font-size:.84rem;line-height:1.45;min-height:2.6em}
   .card__go{margin-top:12px;font-size:.82rem;color:var(--gold);letter-spacing:.06em}
 
+
+  /* ---------- RÉALISATIONS (aperçu) ---------- */
+  .rz{padding:clamp(70px,12vh,150px) 0;text-align:center;position:relative;overflow:hidden}
+  .rz__glow{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);width:min(90vw,1100px);height:60vh;
+    background:radial-gradient(closest-side,rgba(212,180,92,.13),transparent 72%);pointer-events:none}
+  .rz__in{position:relative;z-index:2}
+  .rz__shot{display:block;position:relative;overflow:hidden;border-radius:20px;margin:0 auto;max-width:1040px;
+    border:1px solid rgba(212,180,92,.22);box-shadow:0 70px 130px -60px rgba(0,0,0,.95);will-change:transform}
+  .rz__shot img{width:100%;height:auto}
+  .rz__shot::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 62%,rgba(5,5,10,.5));
+    opacity:0;transition:opacity .4s}
+  .rz__shot:hover::after{opacity:1}
+  .rz__facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;max-width:840px;margin:32px auto 30px}
+  .rz__facts div{display:flex;flex-direction:column;gap:7px}
+  .rz__facts b{font-family:var(--serif);font-weight:500;font-size:clamp(1.05rem,2.3vw,1.45rem);color:var(--gold-hi)}
+  .rz__facts span{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+
   /* ---------- LION ---------- */
   .lion{position:relative;height:210svh}
   .lion__stick{position:sticky;top:0;height:100svh;display:grid;place-items:center;overflow:hidden;
@@ -279,6 +296,10 @@ $dir = get_stylesheet_directory_uri();
     .at .card__t{font-size:.86rem;margin:0}
     .card__body{padding:9px 11px 11px}
     .card__badge{font-size:.6rem;padding:4px 9px;top:8px;left:8px}
+
+    .rz{padding:56px 0}
+    .rz__facts{grid-template-columns:1fr;gap:14px;margin:22px auto 24px}
+    .rz__shot{border-radius:14px}
 
     .lion{height:130svh}
     .lion__img{width:min(62vw,300px)}
@@ -478,6 +499,24 @@ $dir = get_stylesheet_directory_uri();
   </div>
 </section>
 
+
+<section class="rz" id="realisations">
+  <div class="rz__glow"></div>
+  <div class="wrap rz__in">
+    <span class="eyebrow" data-rv>Nos réalisations</span>
+    <h2 class="stitle" data-mots style="margin:12px 0 16px">Ce qu'on livre, <em>pour de vrai</em></h2>
+    <p class="lead" data-txt style="margin:0 auto 30px">Dernier site sorti de l'atelier : <strong>Gwen Services</strong>, aide à domicile à Nantes. Conception, textes, images, sécurité et référencement — tout est parti d'ici.</p>
+    <a class="rz__shot" href="<?php echo esc_url( home_url( '/realisations' ) ); ?>" data-media>
+      <img src="<?php echo esc_url( $dir . '/assets/images/realisations/gwen-maquette.jpg' ); ?>" alt="Le site Gwen Services sur ordinateur et sur téléphone" loading="lazy">
+    </a>
+    <div class="rz__facts" data-rv>
+      <div><b>Aide à domicile</b><span>Secteur</span></div>
+      <div><b>5 jours</b><span>Du brief à la mise en ligne</span></div>
+      <div><b>Site, images &amp; SEO</b><span>Ce qu'on a fait</span></div>
+    </div>
+    <a class="btn" data-rv href="<?php echo esc_url( home_url( '/realisations' ) ); ?>">Voir la réalisation</a>
+  </div>
+</section>
 
 <section class="lion">
   <div class="lion__stick">
