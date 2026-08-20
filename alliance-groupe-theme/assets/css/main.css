@@ -34,8 +34,10 @@
     --gradient-heritage-soft:linear-gradient(90deg,var(--color-blue-royal),var(--color-gold),var(--color-green-heritage));
 
     /* Typography */
-    --font-serif:'Playfair Display',serif;
-    --font-sans:'Manrope',sans-serif;
+    /* repli EMOJI avant la générique : sans lui, les emojis des menus tombaient
+       en glyphe monochrome depuis qu'on n'utilise plus les images twemoji. */
+    --font-serif:'Playfair Display',"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Segoe UI Symbol",serif;
+    --font-sans:'Manrope',"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Segoe UI Symbol",sans-serif;
 
     /* Type scale (responsive) */
     --fs-h1:clamp(2.2rem,5.5vw,3.8rem);

@@ -26,7 +26,9 @@ $ag_fsm_items = array(
 	array( 'url' => home_url( '/realisations' ),   'label' => 'Réalisations',         'sub' => '08' ),
 	array( 'url' => home_url( '/ambassadeurs' ),   'label' => 'On recrute 🚀',        'sub' => '09' ),
 	array( 'url' => home_url( '/a-propos' ),       'label' => 'À propos',             'sub' => '10' ),
-	array( 'url' => home_url( '/avis-clients' ),   'label' => 'Donnez votre avis ⭐',  'sub' => '11' ),
+	// « Donnez votre avis » doit mener a la fiche GOOGLE (la ou on laisse un avis),
+	// pas a la page interne. ag_geo_review_url() a un repli sur Maps -> jamais de 404.
+	array( 'url' => function_exists( 'ag_geo_review_url' ) ? ag_geo_review_url() : home_url( '/avis-clients' ), 'label' => 'Donnez votre avis ⭐', 'sub' => '11', 'ext' => true ),
 	array( 'url' => home_url( '/contact' ),        'label' => 'Contact',              'sub' => '12' ),
 );
 ?>
@@ -48,7 +50,7 @@ $ag_fsm_items = array(
 		<ul class="ag-fsm-list">
 			<?php foreach ( $ag_fsm_items as $i => $it ) : ?>
 				<li class="ag-fsm-item" style="--i:<?php echo (int) $i; ?>;">
-					<a href="<?php echo esc_url( $it['url'] ); ?>" class="ag-fsm-link">
+					<a href="<?php echo esc_url( $it['url'] ); ?>" class="ag-fsm-link"<?php if ( ! empty( $it['ext'] ) ) echo ' target="_blank" rel="noopener"'; ?>>
 						<span class="ag-fsm-num"><?php echo esc_html( $it['sub'] ); ?></span>
 						<span class="ag-fsm-label" data-text="<?php echo esc_attr( $it['label'] ); ?>"><?php echo esc_html( $it['label'] ); ?></span>
 					</a>

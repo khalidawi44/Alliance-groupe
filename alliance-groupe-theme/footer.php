@@ -22,7 +22,7 @@
             <ul>
                 <li><a href="<?php echo esc_url(home_url('/realisations')); ?>">Réalisations</a></li>
                 <li><a href="<?php echo esc_url(home_url('/a-propos')); ?>">À propos</a></li>
-                <li><a href="<?php echo esc_url(home_url('/avis-clients')); ?>">Donnez votre avis ⭐</a></li>
+                <li><a href="<?php echo esc_url( function_exists( 'ag_geo_review_url' ) ? ag_geo_review_url() : home_url('/avis-clients') ); ?>" target="_blank" rel="noopener">Donnez votre avis ⭐</a></li>
                 <li><a href="<?php echo esc_url(home_url('/fait-par-lia')); ?>">Fait par l'IA</a></li>
                 <li><a href="<?php echo esc_url(home_url('/mon-espace-client')); ?>">Espace client</a></li>
                 <li><a href="<?php echo esc_url(home_url('/contact')); ?>">Contact</a></li>
