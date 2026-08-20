@@ -9,6 +9,17 @@
             $img_base = get_stylesheet_directory_uri() . '/assets/images/realisations/';
             $projets = [
                 [
+                    'id'    => 'gwen-services',
+                    'title' => 'Gwen Services',
+                    'url'   => 'https://gwen-services.alliancegroupe-inc.com/',
+                    'img'   => $img_base . 'gwen-maquette.jpg',
+                    'tags'  => ['Aide à domicile', 'Site vitrine', 'Images sur mesure', 'SEO local'],
+                    'desc'  => 'Site complet pour une auxiliaire de vie à Nantes : conception, textes, images générées sur mesure, référencement local et sécurité. Livré en cinq jours, prêt à recevoir des appels.',
+                    'stats' => ['Livré en 5 jours', 'Crédit d\'impôt expliqué', 'Devis en 1 clic'],
+                    'etude' => home_url( '/realisation-gwen' ),
+                    'google'=> 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( 'Gwen Services aide à domicile Nantes' ),
+                ],
+                [
                     'id'    => 'anna-photo',
                     'title' => 'Anna Photo',
                     'url'   => 'https://annaphoto.eu/',
@@ -71,6 +82,9 @@
                         <a href="<?php echo esc_url( $p['url'] ); ?>" target="_blank" rel="noopener noreferrer" class="ag-rcard__link">Voir le projet →</a>
                         <?php else : ?>
                         <span class="ag-rcard__link">Projet client confidentiel</span>
+                        <?php endif; ?>
+                        <?php if ( ! empty( $p['etude'] ) ) : ?>
+                        <a href="<?php echo esc_url( $p['etude'] ); ?>" class="ag-rcard__link">Voir l'étude de cas →</a>
                         <?php endif; ?>
                         <?php if ( $p_google ) : ?>
                         <a href="<?php echo esc_url( $p_google ); ?>" target="_blank" rel="noopener noreferrer" class="ag-rcard__link" style="opacity:.9;">⭐ Voir sur Google →</a>

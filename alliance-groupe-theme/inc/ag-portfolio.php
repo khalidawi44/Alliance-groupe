@@ -125,3 +125,76 @@ if ( ! function_exists( 'ag_portfolio_render' ) ) {
 		echo '</div>';
 	}
 }
+
+/* ==================================================================
+ *  ÉTUDE DE CAS « GWEN SERVICES » SUR /realisation-gwen
+ *  ------------------------------------------------------------------
+ *  L'aperçu « Ce qu'on livre, pour de vrai » de l'accueil cinématique
+ *  et la carte Gwen de « Nos projets récents » pointent tous les deux
+ *  vers /realisation-gwen. Plutôt que d'obliger à créer une page à la
+ *  main dans WordPress (et de renvoyer une 404 tant que ce n'est pas
+ *  fait), on intercepte la 404 sur cette URL et on sert le gabarit
+ *  templates/page-realisation-gwen.php.
+ *
+ *  Rien n'est écrit en base, aucune règle de réécriture à vider. Si une
+ *  vraie page est créée un jour avec ce slug, WordPress la sert et ce
+ *  bloc ne se déclenche jamais (is_404() est alors faux).
+ * ================================================================== */
+
+if ( ! function_exists( 'ag_is_realisation_gwen' ) ) {
+	/** Sommes-nous sur l'étude de cas servie par ce module ? */
+	function ag_is_realisation_gwen() {
+		static $oui = null;
+		if ( null !== $oui ) {
+			return $oui;
+		}
+		$uri  = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+		$path = (string) wp_parse_url( $uri, PHP_URL_PATH );
+		$home = (string) wp_parse_url( home_url( '/' ), PHP_URL_PATH );
+		if ( $home && 0 === strpos( $path, $home ) ) {
+			$path = substr( $path, strlen( $home ) );
+		}
+		$oui = ( 'realisation-gwen' === trim( $path, '/' ) );
+		return $oui;
+	}
+}
+
+/* Titre, description et partage propres. */
+add_filter( 'pre_get_document_title', function ( $titre ) {
+	return ag_is_realisation_gwen()
+		? 'Gwen Services — aide à domicile à Nantes | Réalisation Alliance Groupe'
+		: $titre;
+}, 20 );
+
+add_action( 'wp_head', function () {
+	if ( ! ag_is_realisation_gwen() ) {
+		return;
+	}
+	$desc = 'Site complet livré en 5 jours pour une auxiliaire de vie à Nantes : conception, textes, images générées sur mesure, référencement local et sécurité.';
+	$img  = get_stylesheet_directory_uri() . '/assets/images/realisations/gwen-maquette.jpg';
+	$url  = home_url( '/realisation-gwen' );
+	echo '<meta name="description" content="' . esc_attr( $desc ) . '">' . "\n";
+	echo '<link rel="canonical" href="' . esc_url( $url ) . '">' . "\n";
+	echo '<meta property="og:type" content="article">' . "\n";
+	echo '<meta property="og:title" content="Gwen Services — une réalisation Alliance Groupe">' . "\n";
+	echo '<meta property="og:description" content="' . esc_attr( $desc ) . '">' . "\n";
+	echo '<meta property="og:url" content="' . esc_url( $url ) . '">' . "\n";
+	echo '<meta property="og:image" content="' . esc_url( $img ) . '">' . "\n";
+	echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
+}, 2 );
+
+/* On sert le gabarit à la place de la 404. */
+add_action( 'template_redirect', function () {
+	if ( is_admin() || ! is_404() || ! ag_is_realisation_gwen() ) {
+		return;
+	}
+	$gabarit = get_stylesheet_directory() . '/templates/page-realisation-gwen.php';
+	if ( ! file_exists( $gabarit ) ) {
+		return; // gabarit absent : on laisse la 404 normale.
+	}
+	global $wp_query;
+	$wp_query->is_404 = false;
+	status_header( 200 );
+	include $gabarit;
+	exit;
+}, 5 );
