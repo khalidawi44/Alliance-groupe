@@ -506,7 +506,7 @@ $dir = get_stylesheet_directory_uri();
     <span class="eyebrow" data-rv>Nos réalisations</span>
     <h2 class="stitle" data-mots style="margin:12px 0 16px">Ce qu'on livre, <em>pour de vrai</em></h2>
     <p class="lead" data-txt style="margin:0 auto 30px">Dernier site sorti de l'atelier : <strong>Gwen Services</strong>, aide à domicile à Nantes. Conception, textes, images, sécurité et référencement — tout est parti d'ici.</p>
-    <a class="rz__shot" href="<?php echo esc_url( home_url( '/realisations' ) ); ?>" data-media>
+    <a class="rz__shot" href="<?php echo esc_url( home_url( '/realisation-gwen' ) ); ?>" data-media>
       <img src="<?php echo esc_url( $dir . '/assets/images/realisations/gwen-maquette.jpg' ); ?>" alt="Le site Gwen Services sur ordinateur et sur téléphone" loading="lazy">
     </a>
     <div class="rz__facts" data-rv>
@@ -514,7 +514,7 @@ $dir = get_stylesheet_directory_uri();
       <div><b>5 jours</b><span>Du brief à la mise en ligne</span></div>
       <div><b>Site, images &amp; SEO</b><span>Ce qu'on a fait</span></div>
     </div>
-    <a class="btn" data-rv href="<?php echo esc_url( home_url( '/realisations' ) ); ?>">Voir la réalisation</a>
+    <a class="btn" data-rv href="<?php echo esc_url( home_url( '/realisation-gwen' ) ); ?>">Voir la réalisation</a>
   </div>
 </section>
 
