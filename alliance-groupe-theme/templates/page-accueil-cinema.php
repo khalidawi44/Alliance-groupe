@@ -412,7 +412,7 @@ $dir = get_stylesheet_directory_uri();
     </div>
   </div>
 </div>
-    <div class="of" id="ofStage">
+    <div class="of" id="ofStage" data-ancre="offres">
   <div class="of__bg"><img src="<?php echo esc_url( $dir . '/assets/images/cinematique/marbre-noir-or.jpg' ); ?>" alt="" loading="lazy"></div>
   <div class="wrap of__in">
     <span class="eyebrow" data-rv>Nos formules</span>
@@ -716,6 +716,31 @@ $dir = get_stylesheet_directory_uri();
       tl.to(".at__filters", { opacity:1, y:0, duration:.05, ease:"power2.out" }, .93);
     })();
   }
+
+  /* ── Ancres vers la scène épinglée ───────────────────────────
+     #offres et #atelier ne sont pas des sections classiques : ce sont deux
+     moments de la timeline de .ds. On vise donc la bonne progression du
+     scroll plutôt que le haut de l'élément (sinon le lien semble mort). */
+  (function(){
+    var ds = document.querySelector(".ds");
+    var reperes = { offres: .46, atelier: .84 };
+    document.addEventListener("click", function(e){
+      var a = e.target && e.target.closest ? e.target.closest('a[href^="#"]') : null;
+      if (!a) return;
+      var cle = a.getAttribute("href").slice(1);
+      if (!(cle in reperes)) return;
+      e.preventDefault();
+      var cible;
+      if (ds && !matchMedia("(max-width:960px)").matches){
+        cible = ds.offsetTop + Math.max(0, ds.offsetHeight - innerHeight) * reperes[cle];
+      } else {
+        var el = document.getElementById(cle === "offres" ? "ofStage" : "atStage");
+        cible = el ? el.getBoundingClientRect().top + (window.pageYOffset || 0) - 90 : 0;
+      }
+      if (typeof lenis !== "undefined" && lenis && lenis.scrollTo) lenis.scrollTo(cible, { duration: 1.7 });
+      else scrollTo({ top: cible, behavior: "smooth" });
+    });
+  })();
 })();
 </script>
 
