@@ -186,6 +186,28 @@
   .rz__liens a:hover{border-color:var(--gold-hi)}
   .rz__liens .rz__avis{color:#cdd4e2}
 
+  /* ---------- AVIS GOOGLE ---------- */
+  .av{max-width:1180px;margin:38px auto 32px}
+  .av__head{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+  .av__g{display:inline-flex;background:#fff;border-radius:50%;padding:7px;line-height:0}
+  .av__rate{font-size:.95rem;color:#cdd4e2}
+  .av__rate strong{font-family:var(--serif);font-size:1.6rem;color:var(--gold-hi);margin-right:8px;vertical-align:-2px}
+  .av__stars{color:var(--gold);letter-spacing:.1em;margin-right:6px}
+  .av__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;text-align:left}
+  .av__card{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:20px 20px 18px;
+    display:flex;flex-direction:column;transition:border-color .35s}
+  .av__card:hover{border-color:rgba(212,180,92,.45)}
+  .av__top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .av__ava{width:42px;height:42px;flex:none;border-radius:50%;display:grid;place-items:center;overflow:hidden;
+    background:linear-gradient(120deg,var(--gold),var(--gold-hi));color:#1a1206;font-weight:800;font-size:1.05rem}
+  .av__ava img{width:100%;height:100%;object-fit:cover}
+  .av__who{display:flex;flex-direction:column;min-width:0}
+  .av__nom{font-weight:700;font-size:.95rem}
+  .av__role{font-size:.75rem;color:var(--muted)}
+  .av__q{color:#d7dae2;font-size:.93rem;line-height:1.65;margin:0}
+  .av__lien{margin-top:auto;padding-top:14px;font-size:.82rem;color:var(--gold-hi);text-decoration:none}
+  .av__lien:hover{text-decoration:underline}
+
   /* ---------- LION ---------- */
   .lion{position:relative;height:210svh}
   .lion__stick{position:sticky;top:0;height:100svh;display:grid;place-items:center;overflow:hidden;
@@ -214,6 +236,7 @@
      ====================================================== */
   @media(max-width:1100px){
     .rz__grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .av__grid{grid-template-columns:1fr}
     .at__grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     .of__grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
     .ch{gap:26px}
@@ -297,6 +320,8 @@
 
     .rz{padding:56px 0}
     .rz__grid{grid-template-columns:1fr;gap:16px;margin:26px 0 24px}
+    .av{margin:26px auto 24px}
+    .av__grid{grid-template-columns:1fr;gap:14px}
     .rz__card h3{font-size:1.28rem}
 
     .lion{height:130svh}
@@ -545,6 +570,30 @@
         </div>
       </article>
     </div>
+    <div class="av" data-rv>
+      <div class="av__head">
+        <span class="av__g" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.26 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg></span>
+        <span class="av__rate"><span class="av__stars">★★★★★</span> Avis Google vérifiés</span>
+      </div>
+      <div class="av__grid">
+        <article class="av__card">
+          <div class="av__top"><span class="av__ava">A</span><span class="av__who"><span class="av__nom">Anna B.</span><span class="av__role">Photographe portraitiste · Nantes</span></span></div>
+          <p class="av__q">« Refonte complète de mon site, design immersif pour mes portraits. Le trafic a presque triplé en six mois et je reçois enfin des demandes depuis Google. »</p>
+          <a class="av__lien" href="https://annaphoto.eu/" target="_blank" rel="noopener">Voir le site →</a>
+        </article>
+        <article class="av__card">
+          <div class="av__top"><span class="av__ava">Q</span><span class="av__who"><span class="av__nom">Quartier Libre</span><span class="av__role">Collectif citoyen · Nantes</span></span></div>
+          <p class="av__q">« On a pris un de leurs modèles pour associations : adhésions, agenda d'événements et mobilisation en ligne, prêts en quelques minutes. »</p>
+          <a class="av__lien" href="https://quartierlibre.org/" target="_blank" rel="noopener">Voir le site →</a>
+        </article>
+        <article class="av__card">
+          <div class="av__top"><span class="av__ava">G</span><span class="av__who"><span class="av__nom">Gwen</span><span class="av__role">Aide à domicile · Nantes</span></span></div>
+          <p class="av__q">« Je n'avais rien en ligne. En cinq jours j'avais un site, mes photos, mes textes — et les familles arrêtent de me demander comment marche le crédit d'impôt. »</p>
+          <a class="av__lien" href="https://gwen-services.alliancegroupe-inc.com/" target="_blank" rel="noopener">Voir le site →</a>
+        </article>
+      </div>
+    </div>
+
     <a class="btn" data-rv href="https://alliancegroupe-inc.com/realisations">Toutes nos réalisations</a>
   </div>
 </section>
