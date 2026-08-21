@@ -15,17 +15,40 @@ get_header();
 $ag_contact = home_url( '/contact' );
 $or  = '#F37A1F';
 $rouge = '#E10F1A';
+$ag_dir = get_template_directory_uri();
 ?>
 <main class="ag-ranso" style="max-width:1100px;margin:0 auto;padding:30px 18px 60px;font-family:inherit;color:#1a1a1a;background:#fff;border-radius:14px">
-	<style>.ag-ranso h1,.ag-ranso h2,.ag-ranso h3{color:#0f1115}</style>
+	<style>
+	.ag-ranso h1,.ag-ranso h2,.ag-ranso h3{color:#0f1115}
+	/* Hero sur deux colonnes : le texte porte l'offre, l'image porte la promesse. */
+	.ag-ranso .ranso-hero{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;padding:52px 0 30px;text-align:left}
+	.ag-ranso .ranso-hero__txt p{margin-left:0}
+	.ag-ranso .ranso-hero__img{margin:0}
+	.ag-ranso .ranso-hero__img img{width:100%;height:auto;display:block;border-radius:22px;background:#0f1115;box-shadow:0 26px 70px rgba(15,17,21,.38)}
+	.ag-ranso .ranso-hero__img figcaption{margin-top:12px;color:#777;font-size:.86rem;text-align:center;line-height:1.45}
+	@media(max-width:880px){
+		.ag-ranso .ranso-hero{grid-template-columns:1fr;text-align:center;padding-top:38px;gap:30px}
+		.ag-ranso .ranso-hero__txt p{margin-left:auto}
+		.ag-ranso .ranso-hero__img{max-width:440px;margin:0 auto}
+	}
+	</style>
 
 	<!-- HERO -->
-	<section style="text-align:center;padding:56px 0 28px">
+	<section class="ranso-hero">
+		<div class="ranso-hero__txt">
 		<div style="display:inline-block;background:rgba(225,15,26,.08);color:<?php echo $rouge; ?>;font-weight:800;border-radius:999px;padding:6px 16px;font-size:.85rem;letter-spacing:.04em">🛡️ CYBERSÉCURITÉ · TEST DE RÉSILIENCE</div>
 		<h1 style="font-size:clamp(2rem,5vw,3.2rem);line-height:1.1;margin:18px 0 12px;font-weight:900">Et si un ransomware frappait<br><em style="color:<?php echo $rouge; ?>;font-style:normal">votre entreprise demain ?</em></h1>
 		<p style="font-size:1.2rem;max-width:720px;margin:0 auto 26px;color:#444">On le simule <strong>sans jamais toucher à vos vraies données</strong> : vos sauvegardes tiennent-elles ? Votre antivirus détecte-t-il l'attaque ? Combien de temps seriez-vous à l'arrêt ? Vous recevez un rapport clair et un plan d'action.</p>
 		<a href="<?php echo esc_url( $ag_contact ); ?>" style="display:inline-block;background:linear-gradient(135deg,<?php echo $rouge; ?>,<?php echo $or; ?>);color:#fff;font-weight:900;text-decoration:none;padding:16px 34px;border-radius:999px;font-size:1.1rem;box-shadow:0 12px 36px rgba(225,15,26,.35)">Demander mon test →</a>
 		<div style="margin-top:12px;color:#777;font-size:.9rem">À partir de 490 € · Réponse sous 24 h · 100 % légal &amp; non-destructif</div>
+		</div>
+
+		<figure class="ranso-hero__img">
+			<img src="<?php echo esc_url( $ag_dir . '/assets/images/produits/pub-securite-ransomware.png' ); ?>"
+			     alt="Un bouclier d'or encaisse plusieurs tirs qui s'arrêtent net sur le métal"
+			     width="1080" height="1080" loading="eager" decoding="async">
+			<figcaption>L'attaque est rejouée en laboratoire isolé. Ce qu'on mesure, c'est ce qui tient.</figcaption>
+		</figure>
 	</section>
 
 	<!-- LE PROBLEME -->

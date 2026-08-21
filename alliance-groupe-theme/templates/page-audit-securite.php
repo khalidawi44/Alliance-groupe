@@ -15,6 +15,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 $ag_mail = 'contact@alliancegroupe-inc.com';
+$ag_dir  = get_template_directory_uri();
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
@@ -45,6 +46,9 @@ $ag_mail = 'contact@alliancegroupe-inc.com';
 
 <!-- ─── HERO ─── -->
 <section class="hero">
+  <img class="hero-embleme" aria-hidden="true"
+       src="<?php echo esc_url( $ag_dir . '/assets/images/securite/ag-bouclier-decoupe.png' ); ?>"
+       alt="" width="1080" height="1080" loading="eager" decoding="async">
   <div class="container">
     <div class="hero-meta">Cabinet d'audit sécurité · Nantes</div>
     <h1>Votre site vous expose-t-il<br>à un <em>risque</em> ?</h1>
@@ -330,6 +334,10 @@ $ag_mail = 'contact@alliancegroupe-inc.com';
 <!-- ─── FINAL CTA ─── -->
 <section class="final-cta" id="contact">
   <div class="container">
+    <img class="cta-embleme"
+         src="<?php echo esc_url( $ag_dir . '/assets/images/securite/ag-bouclier-decoupe.png' ); ?>"
+         alt="Emblème Alliance Groupe : un bouclier d'or frappé d'un cadenas"
+         width="1080" height="1080" loading="lazy" decoding="async">
     <h2>Découvrons les <em>angles morts</em> de votre site.</h2>
     <p>Audit confidentiel sous 48 h. Devis gratuit. Si l'on ne trouve rien d'exploitable, on vous le dit honnêtement.</p>
     <a href="<?php echo esc_url( 'mailto:' . $ag_mail . '?subject=' . rawurlencode( "Demande d'audit" ) ); ?>" class="cta-button">Demander mon audit →</a>
