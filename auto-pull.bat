@@ -84,33 +84,66 @@ REM  (optimisation, integration au theme, bump de version, release).
 REM  Plus besoin de double-cliquer deposer-images-gwen.bat.
 REM ==========================================================
 :publier_images
-REM  Les outils distants n'ont pas le droit d'ecrire dans .github\ :
-REM  un workflow depose dans _local-prive\workflows-a-installer\ est
-REM  installe ici, puis pousse comme le reste.
-if exist "_local-prive\workflows-a-installer\*.yml" (
-	if not exist ".github\workflows" mkdir ".github\workflows"
-	copy /Y "_local-prive\workflows-a-installer\*.yml" ".github\workflows\" >> %LOG% 2>&1
-	del /Q "_local-prive\workflows-a-installer\*.yml"
-	echo Workflow(s) installe(s) depuis _local-prive >> %LOG%
+REM  Verrou : un gros envoi peut durer plus de 5 minutes, on evite que
+REM  deux instances poussent en meme temps.
+if exist "%TEMP%\ag-push.lock" (
+	echo un envoi est deja en cours - on saute ce passage >> %LOG%
+	exit /b 0
+)
+echo lock > "%TEMP%\ag-push.lock"
+
+REM  Reprise unique : si un commit trop lourd bloque l'envoi, deposer le
+REM  fichier _local-prive\reset-avant-push.flag pour le defaire proprement
+REM  (le travail reste sur le disque, seul le commit est annule).
+if exist "_local-prive\reset-avant-push.flag" (
+	echo REPRISE : annulation du commit local trop lourd >> %LOG%
+	%GIT% reset --mixed origin/main >> %LOG% 2>&1
+	del /Q "_local-prive\reset-avant-push.flag"
 )
 
-REM  Seuls ces deux chemins sont pousses automatiquement : le reste du
-REM  travail en cours dans le depot n'est jamais touche.
-set SUIVI=gwen-inbox .github/workflows
-set NB=0
-for /f %%c in ('%GIT% status --porcelain -- %SUIVI% ^| find /c /v ""') do set NB=%%c
-if "%NB%"=="0" exit /b 0
-echo CHANGEMENTS DETECTES (%SUIVI%) - envoi automatique >> %LOG%
+REM  Seul gwen-inbox est pousse automatiquement : le reste du travail en
+REM  cours dans le depot n'est jamais touche.
+REM  Detection SANS pipe ni guillemets : "for /f ... ^| find" casse quand
+REM  %GIT% est un chemin entre guillemets (cmd mange les quotes).
+set SUIVI=gwen-inbox alliance-groupe-theme/inc alliance-groupe-theme/template-parts alliance-groupe-theme/assets/images alliance-groupe-theme/assets/videos alliance-groupe-theme/assets/downloads/ag-gwen-services/assets alliance-groupe-theme/assets/downloads/ag-gwen-services/header.php docs/cinematique alliance-groupe-theme/templates alliance-groupe-theme/assets/js
+%GIT% status --porcelain -- %SUIVI% > "%TEMP%\ag-suivi.txt" 2>>%LOG%
+set SZ=0
+for %%A in ("%TEMP%\ag-suivi.txt") do set SZ=%%~zA
+if "%SZ%"=="0" goto :verifier_avance
+echo CHANGEMENTS DETECTES (gwen-inbox / logo / videos) - envoi automatique >> %LOG%
+type "%TEMP%\ag-suivi.txt" >> %LOG%
 %GIT% add -- %SUIVI% >> %LOG% 2>&1
-%GIT% commit --no-verify -m "auto: images et config Gwen (depot automatique)" -- %SUIVI% >> %LOG% 2>&1
-if errorlevel 1 (
-	echo rien a committer >> %LOG%
-	exit /b 0
-)
+%GIT% commit --no-verify -m "gwen : images, logo et videos (depot automatique)" -- %SUIVI% >> %LOG% 2>&1
+goto :pousser
+
+REM  Rien de neuf, mais un commit precedent peut ne pas etre parti
+REM  (push coupe en cours de route sur un gros envoi) : on retente.
+:verifier_avance
+%GIT% rev-list --count origin/main..HEAD > "%TEMP%\ag-avance.txt" 2>>%LOG%
+set AVANCE=0
+set /p AVANCE=<"%TEMP%\ag-avance.txt"
+if "%AVANCE%"=="0" goto :fin_publier
+echo %AVANCE% commit(s) local(aux) pas encore pousse(s) - nouvelle tentative >> %LOG%
+
+:pousser
+REM  Reglages anti-coupure pour les gros envois (videos) : sans ca, git
+REM  abandonne avec "RPC failed; HTTP 408" sur une connexion montante lente.
+%GIT% config http.postBuffer 524288000 >> %LOG% 2>&1
+%GIT% config http.version HTTP/1.1 >> %LOG% 2>&1
+%GIT% config http.lowSpeedLimit 0 >> %LOG% 2>&1
+%GIT% config http.lowSpeedTime 999999 >> %LOG% 2>&1
+
 %GIT% push origin main >> %LOG% 2>&1
 if errorlevel 1 (
-	echo ECHEC du push - nouvelle tentative au prochain passage >> %LOG%
-	exit /b 0
+	echo push echoue - 2e tentative immediate >> %LOG%
+	%GIT% push origin main >> %LOG% 2>&1
 )
-echo IMAGES ENVOYEES - la GitHub Action prend le relais >> %LOG%
+if errorlevel 1 (
+	echo ECHEC du push - nouvelle tentative au prochain passage >> %LOG%
+	goto :fin_publier
+)
+echo ENVOYE - la GitHub Action prend le relais >> %LOG%
+
+:fin_publier
+del /Q "%TEMP%\ag-push.lock" >nul 2>&1
 exit /b 0
