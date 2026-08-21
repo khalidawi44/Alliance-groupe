@@ -368,23 +368,27 @@
 				scrollTrigger: { trigger: p, start: 'top bottom', end: 'bottom top', scrub: true } });
 		});
 
-		// -- IMAGES de contenu : elles vivent pendant tout leur passage --
-		//    (zoom + glissement + redressement, puis revelation en clip-path)
+		// -- IMAGES de contenu : parallaxe INTERNE douce, rien d'autre --
+		//    Version volontairement PRUDENTE : la 1re version (rotation, zoom 1.32
+		//    et revelation en clip-path) cassait les grilles de photos a hauteur
+		//    fixe (photos penchees, sur-zoomees, et invisibles si le declencheur
+		//    ne partait pas). On garde uniquement le mouvement interne de l'image,
+		//    qui ne touche NI la mise en page NI la visibilite.
 		var deja = '.ag-article__featured, .ag-rcard__img, .ag-blog-card__img'; // deja gerees par initImageReveal
-		var medias = G.utils.toArray('.ag-section figure, .ag-section .ag-media, .ag-scard__img, .ag-tier-card__img, .ag-gain-card__img')
+		G.utils.toArray('.ag-section figure, .ag-section .ag-media')
 			.filter(function (m) {
-				return m.querySelector('img') && !m.matches(deja) && !m.closest(deja) && !m.closest('.ag-fx-fixed');
+				var img = m.querySelector('img');
+				if (!img || m.matches(deja) || m.closest(deja) || m.closest('.ag-fx-fixed')) return false;
+				// on ignore les vignettes (logos, petites images) : rien a y gagner
+				return m.getBoundingClientRect().height > 140;
+			})
+			.forEach(function (m) {
+				var img = m.querySelector('img');
+				// l'image doit pouvoir bouger dans son cadre sans deborder
+				if (getComputedStyle(m).overflow === 'visible') { m.style.overflow = 'hidden'; }
+				G.fromTo(img, { scale: 1.12, yPercent: -5 }, { scale: 1.12, yPercent: 5, ease: 'none',
+					scrollTrigger: { trigger: m, start: 'top bottom', end: 'bottom top', scrub: 0.4 } });
 			});
-		medias.forEach(function (m, i) {
-			var sens = i % 2 ? -1 : 1;
-			m.style.overflow = 'hidden';
-			G.fromTo(m.querySelector('img'), { scale: 1.32, yPercent: -10 }, { scale: 1.02, yPercent: 10, ease: 'none',
-				scrollTrigger: { trigger: m, start: 'top bottom', end: 'bottom top', scrub: 0.4 } });
-			G.fromTo(m, { yPercent: 9 * sens, rotate: 1.4 * sens }, { yPercent: -9 * sens, rotate: 0, ease: 'none',
-				scrollTrigger: { trigger: m, start: 'top bottom', end: 'bottom top', scrub: 0.4 } });
-			G.from(m, { clipPath: 'inset(100% 0% 0% 0%)', duration: 1.2, ease: 'power4.out',
-				scrollTrigger: { trigger: m, start: 'top 86%' } });
-		});
 
 		ScrollTrigger.refresh();
 	}
