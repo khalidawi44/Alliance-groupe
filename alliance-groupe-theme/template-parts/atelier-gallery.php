@@ -16,6 +16,7 @@
 $ag_atl_heading = isset( $args['heading'] ) ? (string) $args['heading'] : '';
 $ag_atl_sub     = isset( $args['sub'] ) ? (string) $args['sub'] : '';
 $img = get_stylesheet_directory_uri() . '/assets/images/atelier/';
+$vid = get_stylesheet_directory_uri() . '/assets/videos/';
 
 $cards = array(
 	array( 'title' => 'Devis instantané',   'desc' => 'Décris ton projet, l\'IA te chiffre en 30 secondes.', 'img' => 'devis.webp',      'url' => home_url( '/devis-instant' ),       'cat' => 'ia',       'badge' => 'IA' ),
@@ -23,7 +24,7 @@ $cards = array(
 	array( 'title' => 'Fait par l\'IA',     'desc' => 'Le journal en direct de ce que l\'IA fait pour toi.', 'img' => 'ia.webp',         'url' => home_url( '/fait-par-lia' ),        'cat' => 'ia',       'badge' => 'IA' ),
 	array( 'title' => 'Studio créatif',     'desc' => 'Crée des vidéos & visuels prêts à publier.',        'img' => 'studio.webp',     'url' => home_url( '/studio' ),              'cat' => 'creer',    'badge' => 'Gratuit' ),
 	array( 'title' => 'Création de sites',  'desc' => 'Ton site pro, sécurisé, livré en quelques jours.',  'img' => 'sites.webp',      'url' => home_url( '/sites-express' ),       'cat' => 'creer',    'badge' => 'Dès 490 €' ),
-	array( 'title' => 'Audit de sécurité',  'desc' => 'Teste ton site : note /100 + failles détectées.',   'img' => 'securite.webp',   'url' => home_url( '/tester-mon-site' ),     'cat' => 'securite', 'badge' => 'Gratuit' ),
+	array( 'title' => 'Audit de sécurité',  'desc' => 'Teste ton site : note /100 + failles détectées.',   'img' => 'securite.webp',   'url' => home_url( '/tester-mon-site' ),     'cat' => 'securite', 'badge' => 'Gratuit', 'vid' => 'embleme-securite-tuile' ),
 	array( 'title' => 'Composants web',     'desc' => 'Boutons & effets à copier ou télécharger.',         'img' => 'composants.webp', 'url' => home_url( '/composants' ),          'cat' => 'creer',    'badge' => 'Gratuit' ),
 	array( 'title' => 'Templates WordPress','desc' => '6 thèmes métier gratuits, prêts à installer.',       'img' => 'templates.webp',  'url' => home_url( '/templates-wordpress' ), 'cat' => 'creer',    'badge' => 'Gratuit' ),
 );
@@ -62,6 +63,9 @@ $icons = array(
 .ag-atl__media{position:relative;aspect-ratio:16/9;overflow:hidden;}
 .ag-atl__media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease;}
 .ag-atl__card:hover .ag-atl__media img{transform:scale(1.07);}
+.ag-atl__vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .7s ease;}
+.ag-atl__vid[data-ok]{opacity:1;}
+@media(prefers-reduced-motion:reduce){.ag-atl__vid{display:none;}}
 .ag-atl__media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(7,7,12,.85));}
 .ag-atl__badge{position:absolute;top:12px;left:12px;z-index:2;font-size:.72rem;font-weight:700;letter-spacing:.04em;background:rgba(7,7,12,.7);border:1px solid rgba(212,180,92,.5);color:var(--gold2);border-radius:100px;padding:4px 11px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
 .ag-atl__ic{position:absolute;top:10px;right:14px;z-index:2;font-size:2rem;line-height:1;filter:drop-shadow(0 4px 12px rgba(0,0,0,.7));transition:transform .3s ease;}
@@ -101,6 +105,12 @@ $icons = array(
 					<span class="ag-atl__badge"><?php echo esc_html( $c['badge'] ); ?></span>
 					<span class="ag-atl__ic"><?php echo isset( $icons[ $c['title'] ] ) ? $icons[ $c['title'] ] : '✨'; ?></span>
 					<img src="<?php echo esc_url( $img . $c['img'] ); ?>" alt="<?php echo esc_attr( $c['title'] ); ?>" loading="lazy" width="1000" height="563">
+					<?php if ( ! empty( $c['vid'] ) ) : ?>
+						<video class="ag-atl__vid" muted loop playsinline preload="none"
+						       data-webm="<?php echo esc_url( $vid . $c['vid'] . '.webm' ); ?>"
+						       data-mp4="<?php echo esc_url( $vid . $c['vid'] . '.mp4' ); ?>"
+						       aria-hidden="true"></video>
+					<?php endif; ?>
 				</div>
 				<div class="ag-atl__body">
 					<h3 class="ag-atl__ctitle"><?php echo esc_html( $c['title'] ); ?></h3>
@@ -155,5 +165,35 @@ $icons = array(
 		});
 		empty.style.display = shown ? 'none' : 'block';
 	});
+
+	/* La tuile animee ne se telecharge que si elle entre a l'ecran, et elle
+	   se met en pause des qu'elle en sort : une video de 400 Ko qui tourne
+	   dans le vide, c'est de la batterie et des donnees pour rien. */
+	var vids = document.querySelectorAll('.ag-atl__vid');
+	if (vids.length && !matchMedia('(prefers-reduced-motion:reduce)').matches) {
+		var voir = new IntersectionObserver(function(entrees){
+			entrees.forEach(function(e){
+				var v = e.target;
+				if (e.isIntersecting) {
+					if (!v.dataset.charge) {
+						v.dataset.charge = '1';
+						['webm', 'mp4'].forEach(function(k){
+							var u = v.dataset[k]; if (!u) { return; }
+							var s = document.createElement('source');
+							s.src = u; s.type = 'video/' + k;
+							v.appendChild(s);
+						});
+						v.load();
+					}
+					var j = v.play();
+					if (j && j.catch) { j.catch(function(){}); }
+					v.setAttribute('data-ok', '');
+				} else {
+					v.pause();
+				}
+			});
+		}, { threshold: 0.25 });
+		vids.forEach(function(v){ voir.observe(v); });
+	}
 })();
 </script>

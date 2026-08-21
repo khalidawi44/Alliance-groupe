@@ -334,10 +334,16 @@ $ag_dir  = get_template_directory_uri();
 <!-- ─── FINAL CTA ─── -->
 <section class="final-cta" id="contact">
   <div class="container">
-    <img class="cta-embleme"
-         src="<?php echo esc_url( $ag_dir . '/assets/images/securite/ag-bouclier-decoupe.png' ); ?>"
-         alt="Emblème Alliance Groupe : un bouclier d'or frappé d'un cadenas"
-         width="1080" height="1080" loading="lazy" decoding="async">
+    <figure class="cta-embleme">
+      <video autoplay muted loop playsinline preload="none"
+             poster="<?php echo esc_url( $ag_dir . '/assets/videos/embleme-securite-poster.jpg' ); ?>">
+        <source src="<?php echo esc_url( $ag_dir . '/assets/videos/embleme-securite-720.webm' ); ?>" type="video/webm">
+        <source src="<?php echo esc_url( $ag_dir . '/assets/videos/embleme-securite-720.mp4' ); ?>" type="video/mp4">
+        <img src="<?php echo esc_url( $ag_dir . '/assets/images/atelier/securite.webp' ); ?>"
+             alt="Emblème Alliance Groupe : un bouclier de marbre noir et d'or frappé d'un cadenas"
+             width="1000" height="563" loading="lazy" decoding="async">
+      </video>
+    </figure>
     <h2>Découvrons les <em>angles morts</em> de votre site.</h2>
     <p>Audit confidentiel sous 48 h. Devis gratuit. Si l'on ne trouve rien d'exploitable, on vous le dit honnêtement.</p>
     <a href="<?php echo esc_url( 'mailto:' . $ag_mail . '?subject=' . rawurlencode( "Demande d'audit" ) ); ?>" class="cta-button">Demander mon audit →</a>
