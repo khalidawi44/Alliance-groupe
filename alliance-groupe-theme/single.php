@@ -17,12 +17,19 @@
                 $c   = get_the_category( $post_id );
                 if ( $c ) { $h .= ' ' . strtolower( $c[0]->slug . ' ' . $c[0]->name ); }
                 $map = array(
-                    'ransomware' => 'securite/max-bender-XIVDN9cxOVc-unsplash.jpg',
-                    'securit'    => 'securite/max-bender-XIVDN9cxOVc-unsplash.jpg',
-                    'phishing'   => 'securite/kaptured-by-kasia-7Ss09bTO5Zo-unsplash.jpg',
-                    'sauvegarde' => 'securite/pexels-lucasandrade-14019734.jpg',
-                    'nis2'       => 'securite/max-bender-XIVDN9cxOVc-unsplash.jpg',
-                    'rgpd'       => 'securite/pexels-cookiecutter-17302202.jpg',
+                    // --- Sécurité : une photo distincte et cohérente par sous-sujet ---
+                    'ransomware' => 'securite/kaptured-by-kasia-7Ss09bTO5Zo-unsplash.jpg', // pirate au clavier
+                    'rancongiciel' => 'securite/kaptured-by-kasia-7Ss09bTO5Zo-unsplash.jpg',
+                    'phishing'   => 'securite/tarik-haiga-BxELNNMN88Y-unsplash.jpg',        // masque / usurpation
+                    'hameconnage'=> 'securite/tarik-haiga-BxELNNMN88Y-unsplash.jpg',
+                    'malware'    => 'securite/pexels-lucasandrade-14019734.jpg',            // virus / néon
+                    'virus'      => 'securite/pexels-lucasandrade-14019734.jpg',
+                    'piratage'   => 'securite/pexels-lucasandrade-14019734.jpg',
+                    'nis2'       => 'securite/pexels-cookiecutter-37564547.jpg',            // salle serveurs
+                    'sauvegarde' => 'securite/pexels-cookiecutter-17302202.jpg',            // baie de serveurs
+                    'rgpd'       => 'securite/max-bender-XIVDN9cxOVc-unsplash.jpg',         // conformité / data
+                    'securise'   => 'securite/pexels-julio-lopez-75309646-34258666.jpg',    // code / terminal (site sécurisé)
+                    'securit'    => 'securite/max-bender-XIVDN9cxOVc-unsplash.jpg',         // sécurité générique
                     'automatis'  => 'atelier/ia.webp',
                     'debutant-ia'=> 'atelier/ia.webp',
                     'ia-'        => 'atelier/ia.webp',
