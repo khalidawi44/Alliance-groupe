@@ -625,6 +625,30 @@ if ( ! function_exists( 'ag_tester_render_form' ) ) {
 					<p style="color:rgba(255,255,255,.5);font-size:.8rem;text-align:center;margin:12px 0 0">Diagnostic <strong style="color:rgba(255,255,255,.7)">non-intrusif</strong> : on lit uniquement vos pages publiques (comme un visiteur). Résultat immédiat, sans inscription.</p>
 				</form>
 
+				<?php
+				// ── Preuve reelle avant les prix : avis clients moderes (module ag-temoignages).
+				//    N'affiche RIEN tant qu'aucun avis approuve n'existe — aucune fabrication.
+				if ( function_exists( 'ag_temoignages_avg' ) && function_exists( 'ag_temoignages_approved' ) ) :
+					list( $ag_pv_avg, $ag_pv_n ) = ag_temoignages_avg();
+					if ( $ag_pv_n > 0 ) :
+						$ag_pv_fill = (int) round( $ag_pv_avg );
+						$ag_pv_list = array_slice( ag_temoignages_approved(), 0, 2 );
+				?>
+				<div style="margin:46px auto 0;max-width:760px;text-align:center">
+					<div style="font-size:1.5rem;color:#E7C979;letter-spacing:3px"><?php echo esc_html( str_repeat( '★', $ag_pv_fill ) . str_repeat( '☆', 5 - $ag_pv_fill ) ); ?></div>
+					<p style="margin:8px 0 0;color:rgba(255,255,255,.82)"><strong style="color:#fff"><?php echo esc_html( number_format_i18n( $ag_pv_avg, 1 ) ); ?>/5</strong> — <?php echo (int) $ag_pv_n; ?> avis clients vérifiés</p>
+					<div style="display:grid;gap:14px;margin-top:22px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));text-align:left">
+					<?php foreach ( $ag_pv_list as $ag_pv_t ) : ?>
+						<blockquote style="margin:0;padding:16px 18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-left:3px solid #E7C979;border-radius:12px">
+							<p style="margin:0;color:rgba(255,255,255,.85);font-size:.95rem;line-height:1.55">« <?php echo esc_html( $ag_pv_t['text'] ?? '' ); ?> »</p>
+							<footer style="margin-top:10px;color:#9a938a;font-size:.85rem"><strong style="color:#cfc7b8"><?php echo esc_html( $ag_pv_t['name'] ?? '' ); ?></strong><?php echo ! empty( $ag_pv_t['city'] ) ? ' — ' . esc_html( $ag_pv_t['city'] ) : ''; ?></footer>
+						</blockquote>
+					<?php endforeach; ?>
+					</div>
+					<p style="margin:16px 0 0"><a href="<?php echo esc_url( home_url( '/avis-clients' ) ); ?>" style="color:#E7C979;text-decoration:none;font-size:.9rem;font-weight:600">Voir tous les avis →</a></p>
+				</div>
+				<?php endif; endif; ?>
+
 				<!-- Les 3 niveaux d'audit (escalier) -->
 				<div style="margin:46px 0 0;width:92vw;max-width:980px;margin-left:50%;transform:translateX(-50%);text-align:left">
 					<h2 style="text-align:center;font-family:Georgia,serif;font-size:1.6rem;color:#fff;margin:0 0 22px">3 niveaux d'audit, selon vos besoins</h2>
