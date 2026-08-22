@@ -567,7 +567,7 @@ if ( ! function_exists( 'ag_tester_render_form' ) ) {
 				<span class="ag-gate__tag">🔒 Diagnostic de sécurité</span>
 				<h1 class="ag-gate__title">Votre site est-il <em>une cible</em> ?</h1>
 				<p class="ag-gate__sub">Découvrez en 30 secondes le score de sécurité de votre site et le nombre de failles exposées. Gratuit, non-intrusif.</p>
-				<button type="button" id="ag-gate__btn" class="ag-gate__btn">🔍 Tester mon site →</button>
+				<button type="button" id="ag-gate__btn" class="ag-gate__btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-3px;margin-right:9px"><circle cx="11" cy="11" r="7"/><line x1="20.5" y1="20.5" x2="16.5" y2="16.5"/></svg>Tester mon site →</button>
 				<p class="ag-gate__legal">En cliquant, je certifie être <strong>propriétaire ou mandaté</strong> pour ce site, j'autorise le <strong>diagnostic non-intrusif</strong> et j'accepte les <a href="<?php echo esc_url( home_url( '/cgv' ) ); ?>" target="_blank" rel="noopener">conditions</a>.</p>
 			</div>
 		</div>
@@ -605,7 +605,7 @@ if ( ! function_exists( 'ag_tester_render_form' ) ) {
 
 		<section style="background:linear-gradient(180deg,#0a0a0f,#14141c);color:#fff;padding:80px 24px;min-height:78vh">
 			<div style="max-width:620px;margin:0 auto;text-align:center">
-				<span style="display:inline-block;padding:6px 14px;background:rgba(243,122,31,.15);border:1px solid rgba(243,122,31,.5);border-radius:999px;color:#F3D27A;font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:18px">🔍 Diagnostic gratuit · sans engagement</span>
+				<span style="display:inline-block;padding:6px 14px;background:rgba(243,122,31,.15);border:1px solid rgba(243,122,31,.5);border-radius:999px;color:#F3D27A;font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:18px">Diagnostic gratuit · sans engagement</span>
 				<?php $ag_dir = get_template_directory_uri(); ?>
 				<figure class="ag-tester-embleme" style="margin:0 auto 22px;width:min(520px,100%);aspect-ratio:16/9">
 					<video autoplay muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;-webkit-mask-image:radial-gradient(ellipse 74% 74% at 50% 48%,#000 52%,transparent 100%);mask-image:radial-gradient(ellipse 74% 74% at 50% 48%,#000 52%,transparent 100%)" poster="<?php echo esc_url( $ag_dir . '/assets/videos/embleme-securite-poster.jpg' ); ?>">
@@ -616,46 +616,71 @@ if ( ! function_exists( 'ag_tester_render_form' ) ) {
 				</figure>
 				<h1 style="font-family:Georgia,serif;font-size:clamp(2rem,5vw,3.4rem);line-height:1.1;margin:0 0 14px">Testez la <em style="background:linear-gradient(135deg,#D4B45C,#F37A1F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-style:italic">sécurité</em> de votre site</h1>
 				<p style="color:rgba(255,255,255,.78);font-size:1.05rem;line-height:1.6;margin:0 0 32px">En 30 secondes : score global, nombre de failles détectées, et où vous en êtes vraiment. Diagnostic non-intrusif, avec votre autorisation.</p>
-				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="text-align:left;display:flex;flex-direction:column;gap:14px">
+				<form id="ag-scan" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="text-align:left;display:flex;flex-direction:column;gap:14px">
 					<input type="hidden" name="action" value="ag_tester_run">
 					<?php wp_nonce_field( 'ag_tester' ); ?>
 					<input type="text" name="hp_field" value="" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
 					<input type="url" name="site_url" required autofocus placeholder="https://monsite.fr" style="<?php echo $in; // phpcs:ignore ?>">
-					<button type="submit" style="margin-top:6px;padding:18px 36px;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:800;border:none;border-radius:999px;font-size:1.05rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;box-shadow:0 12px 32px rgba(243,122,31,.35)">🔍 Analyser mon site gratuitement →</button>
+					<button type="submit" style="margin-top:6px;padding:18px 36px;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:800;border:none;border-radius:999px;font-size:1.05rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;box-shadow:0 12px 32px rgba(243,122,31,.35)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-3px;margin-right:9px"><circle cx="11" cy="11" r="7"/><line x1="20.5" y1="20.5" x2="16.5" y2="16.5"/></svg>Analyser mon site gratuitement →</button>
 					<p style="color:rgba(255,255,255,.5);font-size:.8rem;text-align:center;margin:12px 0 0">Diagnostic <strong style="color:rgba(255,255,255,.7)">non-intrusif</strong> : on lit uniquement vos pages publiques (comme un visiteur). Résultat immédiat, sans inscription.</p>
 				</form>
 
 				<!-- Les 3 niveaux d'audit (escalier) -->
-				<div style="margin:46px auto 0;max-width:980px;text-align:left">
+				<div style="margin:46px 0 0;width:92vw;max-width:980px;margin-left:50%;transform:translateX(-50%);text-align:left">
 					<h2 style="text-align:center;font-family:Georgia,serif;font-size:1.6rem;color:#fff;margin:0 0 22px">3 niveaux d'audit, selon vos besoins</h2>
-					<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
-						<div style="background:rgba(40,167,69,.08);border:1px solid rgba(40,167,69,.4);border-radius:14px;padding:20px">
-							<div style="color:#28a745;font-weight:800;letter-spacing:1px;font-size:.8rem;text-transform:uppercase">① Test léger · gratuit</div>
-							<p style="color:rgba(255,255,255,.8);font-size:.92rem;line-height:1.5;margin:10px 0 0">Diagnostic non-intrusif immédiat : score, failles visibles, en-têtes, SSL, xmlrpc. <strong style="color:#fff">C'est le test ci-dessus.</strong></p>
-						</div>
-						<div style="background:rgba(243,122,31,.08);border:1px solid rgba(243,122,31,.4);border-radius:14px;padding:20px">
-							<div style="color:#F37A1F;font-weight:800;letter-spacing:1px;font-size:.8rem;text-transform:uppercase">② Audit approfondi · client</div>
-							<p style="color:rgba(255,255,255,.8);font-size:.92rem;line-height:1.5;margin:10px 0 0">Analyse complète (sauvegardes exposées, versions de plugins, énumération…). Réalisée <strong style="color:#fff">avec votre autorisation écrite</strong> (mandat signé en ligne), sans rendez-vous.</p>
-							<p style="color:#F37A1F;font-weight:800;font-size:1.3rem;margin:12px 0 0"><?php echo esc_html( number_format_i18n( (float) ag_tester_opt( 'price' ), 0 ) ); ?> €</p>
-							<a href="<?php echo esc_url( add_query_arg( array( 'ag_mandat' => 1, 'tier' => 'deep' ), home_url( '/' ) ) ); ?>" style="display:inline-block;margin-top:8px;background:linear-gradient(135deg,#F37A1F,#d4b45c);color:#0b0b0f;font-weight:800;padding:10px 18px;border-radius:10px;text-decoration:none">Commander &amp; payer →</a>
-						</div>
-						<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:20px">
-							<div style="color:#fff;font-weight:800;letter-spacing:1px;font-size:.8rem;text-transform:uppercase">③ Diagnostic Expert 24h · sur mandat</div>
-							<p style="color:rgba(255,255,255,.8);font-size:.92rem;line-height:1.5;margin:10px 0 0">Scan en profondeur (simulation d'attaque réelle, ports, vulnérabilités, plugins) sous votre <strong style="color:#fff">mandat signé en ligne</strong>. <strong style="color:#F3D27A">Rapport complet + plan de correction chiffré, livré en moins de 24 h.</strong></p>
-							<?php $dp = (float) ag_tester_opt( 'deep_price' ); if ( $dp > 0 ) : ?><p style="color:#F3D27A;font-weight:800;font-size:1.3rem;margin:12px 0 0"><?php echo esc_html( number_format_i18n( $dp, 0 ) ); ?> €</p><?php endif; ?>
-							<a href="<?php echo esc_url( add_query_arg( array( 'ag_mandat' => 1, 'tier' => 'expert' ), home_url( '/' ) ) ); ?>" style="display:inline-block;margin-top:8px;background:linear-gradient(135deg,#d4b45c,#b98f2f);color:#0b0b0f;font-weight:800;padding:10px 18px;border-radius:10px;text-decoration:none">Commander &amp; payer →</a>
-						</div>
+					<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:18px;align-items:stretch">
+						<article style="position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(40,167,69,.11),rgba(40,167,69,.02));border:1px solid rgba(40,167,69,.4);border-radius:18px;padding:26px 22px">
+							<div style="display:flex;justify-content:space-between;align-items:flex-start">
+								<span style="font-family:Georgia,serif;font-size:2.3rem;line-height:1;color:#3fbf68">01</span>
+								<span style="color:#3fbf68;opacity:.6"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15a8 8 0 0 1 16 0"/><path d="M12 15l3.6-4.2"/><circle cx="12" cy="15" r="1.1"/></svg></span>
+							</div>
+							<span style="display:block;margin-top:14px;color:#3fbf68;font-weight:700;letter-spacing:.14em;font-size:.72rem;text-transform:uppercase">Test léger · gratuit</span>
+							<h3 style="font-family:Georgia,serif;font-weight:500;font-size:1.3rem;color:#fff;margin:6px 0 10px">Diagnostic immédiat</h3>
+							<p style="color:rgba(255,255,255,.72);font-size:.9rem;line-height:1.55;margin:0">Non-intrusif : score global, failles visibles, en-têtes, SSL, xmlrpc. Le résultat s'affiche en 30&nbsp;secondes.</p>
+							<div style="margin-top:auto;padding-top:22px">
+								<div style="font-family:Georgia,serif;font-weight:600;font-size:1.7rem;color:#3fbf68">Gratuit</div>
+								<a href="#ag-scan" style="display:block;text-align:center;margin-top:12px;padding:13px;border:1px solid rgba(63,191,104,.55);border-radius:11px;color:#eafaef;font-weight:700;text-decoration:none">Faire le test gratuit ↑</a>
+							</div>
+						</article>
+						<article style="position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(243,122,31,.15),rgba(243,122,31,.03));border:1px solid rgba(243,122,31,.6);border-radius:18px;padding:26px 22px;box-shadow:0 22px 55px rgba(243,122,31,.16)">
+							<span style="position:absolute;top:-11px;left:22px;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0b0b0f;font-weight:800;font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;padding:5px 12px;border-radius:999px">Le plus demandé</span>
+							<div style="display:flex;justify-content:space-between;align-items:flex-start">
+								<span style="font-family:Georgia,serif;font-size:2.3rem;line-height:1;color:#F37A1F">02</span>
+								<span style="color:#F37A1F;opacity:.6"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6"/><line x1="20" y1="20" x2="15.5" y2="15.5"/><path d="M9 11h4M11 9v4"/></svg></span>
+							</div>
+							<span style="display:block;margin-top:14px;color:#F37A1F;font-weight:700;letter-spacing:.14em;font-size:.72rem;text-transform:uppercase">Audit approfondi · client</span>
+							<h3 style="font-family:Georgia,serif;font-weight:500;font-size:1.3rem;color:#fff;margin:6px 0 10px">Analyse complète</h3>
+							<p style="color:rgba(255,255,255,.72);font-size:.9rem;line-height:1.55;margin:0">Sauvegardes exposées, versions de plugins, énumération… Réalisée <strong style="color:#fff">avec votre autorisation écrite</strong> (mandat signé en ligne), sans rendez-vous.</p>
+							<div style="margin-top:auto;padding-top:22px">
+								<div style="font-family:Georgia,serif;font-weight:600;font-size:1.9rem;color:#F37A1F"><?php echo esc_html( number_format_i18n( (float) ag_tester_opt( 'price' ), 0 ) ); ?> €</div>
+								<a href="<?php echo esc_url( add_query_arg( array( 'ag_mandat' => 1, 'tier' => 'deep' ), home_url( '/' ) ) ); ?>" style="display:block;text-align:center;margin-top:12px;background:linear-gradient(135deg,#F37A1F,#d4b45c);color:#0b0b0f;font-weight:800;padding:13px;border-radius:11px;text-decoration:none">Commander &amp; payer →</a>
+							</div>
+						</article>
+						<article style="position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(212,180,92,.12),rgba(212,180,92,.02));border:1px solid rgba(212,180,92,.42);border-radius:18px;padding:26px 22px">
+							<div style="display:flex;justify-content:space-between;align-items:flex-start">
+								<span style="font-family:Georgia,serif;font-size:2.3rem;line-height:1;color:#E7C979">03</span>
+								<span style="color:#E7C979;opacity:.65"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 2.5v5.6c0 4.2-2.9 7.2-7 8.4-4.1-1.2-7-4.2-7-8.4V5.5z"/><path d="M9 12l2 2 4-4"/></svg></span>
+							</div>
+							<span style="display:block;margin-top:14px;color:#E7C979;font-weight:700;letter-spacing:.14em;font-size:.72rem;text-transform:uppercase">Diagnostic Expert 24&nbsp;h · sur mandat</span>
+							<h3 style="font-family:Georgia,serif;font-weight:500;font-size:1.3rem;color:#fff;margin:6px 0 10px">Scan en profondeur</h3>
+							<p style="color:rgba(255,255,255,.72);font-size:.9rem;line-height:1.55;margin:0">Simulation d'attaque réelle, ports, vulnérabilités, plugins, sous <strong style="color:#fff">mandat signé en ligne</strong>. <strong style="color:#F3D27A">Rapport complet + plan de correction chiffré, livré en moins de 24&nbsp;h.</strong></p>
+							<div style="margin-top:auto;padding-top:22px">
+								<?php $dp = (float) ag_tester_opt( 'deep_price' ); ?>
+								<div style="font-family:Georgia,serif;font-weight:600;font-size:1.9rem;color:#E7C979"><?php echo $dp > 0 ? esc_html( number_format_i18n( $dp, 0 ) . ' €' ) : 'Sur devis'; ?></div>
+								<a href="<?php echo esc_url( add_query_arg( array( 'ag_mandat' => 1, 'tier' => 'expert' ), home_url( '/' ) ) ); ?>" style="display:block;text-align:center;margin-top:12px;background:linear-gradient(135deg,#d4b45c,#b98f2f);color:#0b0b0f;font-weight:800;padding:13px;border-radius:11px;text-decoration:none">Commander &amp; payer →</a>
+							</div>
+						</article>
 					</div>
 					<p style="text-align:center;color:rgba(255,255,255,.45);font-size:.78rem;margin:14px 0 0">L'audit approfondi et le pentest ne sont jamais réalisés sans autorisation écrite du propriétaire (art. 323-1 C. pénal).</p>
 				</div>
 
 				<!-- Pas qu'un audit : les autres offres -->
-				<div style="margin:42px auto 0;max-width:980px">
+				<div style="margin:42px 0 0;width:92vw;max-width:980px;margin-left:50%;transform:translateX(-50%)">
 					<p style="text-align:center;color:rgba(255,255,255,.6);font-size:.9rem;margin:0 0 16px">Vous cherchez autre chose ?</p>
 					<div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
-						<a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>" style="flex:1;min-width:200px;text-align:center;background:rgba(255,255,255,.05);border:1px solid rgba(212,180,92,.3);border-radius:12px;padding:18px;color:#fff;text-decoration:none">✨ <strong>Créer un site</strong><br><span style="color:rgba(255,255,255,.6);font-size:.85rem">Vitrine, e-commerce, dès 490 €</span></a>
-						<a href="<?php echo esc_url( home_url( '/maintenance' ) ); ?>" style="flex:1;min-width:200px;text-align:center;background:rgba(255,255,255,.05);border:1px solid rgba(212,180,92,.3);border-radius:12px;padding:18px;color:#fff;text-decoration:none">🛡️ <strong>Maintenance</strong><br><span style="color:rgba(255,255,255,.6);font-size:.85rem">Sérénité, dès 49 €/mois</span></a>
-						<a href="<?php echo esc_url( home_url( '/templates-wordpress' ) ); ?>" style="flex:1;min-width:200px;text-align:center;background:rgba(255,255,255,.05);border:1px solid rgba(212,180,92,.3);border-radius:12px;padding:18px;color:#fff;text-decoration:none">📦 <strong>Templates métier</strong><br><span style="color:rgba(255,255,255,.6);font-size:.85rem">Prêts à l'emploi, gratuits</span></a>
+						<a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>" style="flex:1;min-width:210px;display:flex;align-items:center;gap:14px;text-align:left;background:rgba(255,255,255,.05);border:1px solid rgba(212,180,92,.3);border-radius:14px;padding:18px 20px;color:#fff;text-decoration:none"><span style="flex:none;color:#E7C979"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.6 2.7 2.6 15.3 0 18M12 3c-2.6 2.7-2.6 15.3 0 18"/></svg></span><span><strong>Créer un site</strong><br><span style="color:rgba(255,255,255,.6);font-size:.85rem">Vitrine, e-commerce, dès 490 €</span></span></a>
+						<a href="<?php echo esc_url( home_url( '/maintenance' ) ); ?>" style="flex:1;min-width:210px;display:flex;align-items:center;gap:14px;text-align:left;background:rgba(255,255,255,.05);border:1px solid rgba(212,180,92,.3);border-radius:14px;padding:18px 20px;color:#fff;text-decoration:none"><span style="flex:none;color:#E7C979"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 2.5v5.6c0 4.2-2.9 7.2-7 8.4-4.1-1.2-7-4.2-7-8.4V5.5z"/><path d="M9 12l2 2 4-4"/></svg></span><span><strong>Maintenance</strong><br><span style="color:rgba(255,255,255,.6);font-size:.85rem">Sérénité, dès 49 €/mois</span></span></a>
+						<a href="<?php echo esc_url( home_url( '/templates-wordpress' ) ); ?>" style="flex:1;min-width:210px;display:flex;align-items:center;gap:14px;text-align:left;background:rgba(255,255,255,.05);border:1px solid rgba(212,180,92,.3);border-radius:14px;padding:18px 20px;color:#fff;text-decoration:none"><span style="flex:none;color:#E7C979"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg></span><span><strong>Templates métier</strong><br><span style="color:rgba(255,255,255,.6);font-size:.85rem">Prêts à l'emploi, gratuits</span></span></a>
 					</div>
 				</div>
 			</div>
