@@ -651,7 +651,7 @@ $dir = get_stylesheet_directory_uri();
 
 <footer class="wrap ft">
   <span>© Alliance Groupe — Naples · Nantes · Marrakech</span>
-  <span><a href="<?php echo esc_url( home_url( '/mentions-legales' ) ); ?>">Mentions légales</a> · <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>">Contact</a></span>
+  <span><a href="<?php echo esc_url( home_url( '/mentions-legales' ) ); ?>">Mentions légales</a> · <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>">Contact</a> · <a href="<?php echo esc_url( home_url( '/plan-du-site' ) ); ?>">Plan du site</a></span>
 </footer>
 
 <script src="<?php echo esc_url( $dir . '/assets/js/lib/gsap.min.js' ); ?>"></script>

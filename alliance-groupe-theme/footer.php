@@ -64,6 +64,8 @@
             &nbsp;·&nbsp;
             <a href="<?php echo esc_url( home_url( '/cookies' ) ); ?>">Cookies</a>
             &nbsp;·&nbsp;
+            <a href="<?php echo esc_url( home_url( '/plan-du-site' ) ); ?>">Plan du site</a>
+            &nbsp;·&nbsp;
             <a href="#" onclick="event.preventDefault(); window.AGCookies && window.AGCookies.open();">Gérer mes préférences</a>
         </p>
     </div>

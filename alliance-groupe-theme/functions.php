@@ -79,6 +79,12 @@ if ( file_exists( $ag_github_sync_file ) ) {
     require_once $ag_github_sync_file;
 }
 
+// ── Plan du site : page listant toutes les pages + articles (lien en footer).
+$ag_plan_file = get_stylesheet_directory() . '/inc/ag-plan-du-site.php';
+if ( file_exists( $ag_plan_file ) ) {
+    require_once $ag_plan_file;
+}
+
 // ── 1c3. Données détaillées des 6 services (consommées par template-parts/service-detail.php)
 $ag_services_data_file = get_stylesheet_directory() . '/inc/services-data.php';
 if ( file_exists( $ag_services_data_file ) ) {
