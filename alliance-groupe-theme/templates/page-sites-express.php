@@ -65,7 +65,7 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
     <section class="ag-hero" style="min-height:60vh;">
         <div class="ag-hero__bg"><div class="ag-hero__orb ag-hero__orb--1"></div><div class="ag-hero__orb ag-hero__orb--2"></div></div>
         <div class="ag-hero__content">
-            <span class="ag-tag ag-anim" data-anim="tag">Sites Express ⚡</span>
+            <span class="ag-tag ag-anim" data-anim="tag">Sites Express</span>
             <h1 class="ag-hero__title"><span class="ag-line">Ton site pro,</span><span class="ag-line"><em>sécurisé dès le départ.</em></span></h1>
             <p class="ag-hero__sub">
                 Choisis ton pack, paie en ligne, remplis un court formulaire — on s'occupe de tout.
@@ -77,12 +77,12 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
 
     <!-- Barre de réassurance -->
     <div class="ag-xpress__reassure">
-        <span>⚡ Livraison en quelques jours</span>
-        <span>🔒 Paiement sécurisé PayPal</span>
+        <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:7px"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>Livraison en quelques jours</span>
+        <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:7px"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Paiement sécurisé PayPal</span>
         <span>💳 Payable en 4× sans frais</span>
-        <span>✅ Révisions incluses</span>
+        <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:7px"><path d="M4 12l5 5L20 6"/></svg>Révisions incluses</span>
         <span>📍 Interlocuteur unique — Naples &amp; Nantes</span>
-        <span>🔒 Sécurisé dès le départ</span>
+        <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:7px"><path d="M12 3l7 2.5v5.6c0 4.2-2.9 7.2-7 8.4-4.1-1.2-7-4.2-7-8.4V5.5z"/><path d="M9 12l2 2 4-4"/></svg>Sécurisé dès le départ</span>
     </div>
 
     <!-- Urgence / rareté -->
@@ -120,7 +120,7 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
         <div class="ag-container">
             <h2 class="ag-section__title ag-anim" data-anim="title">Zéro risque pour toi</h2>
             <div class="ag-xpress__guar">
-                <div class="ag-xpress__guar-item"><span class="ag-xpress__guar-ic">🛡️</span><strong>Satisfait ou ajusté</strong><span>On retouche jusqu'à ce que ça te plaise.</span></div>
+                <div class="ag-xpress__guar-item"><span class="ag-xpress__guar-ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 3l7 2.5v5.6c0 4.2-2.9 7.2-7 8.4-4.1-1.2-7-4.2-7-8.4V5.5z"/><path d="M9 12l2 2 4-4"/></svg></span><strong>Satisfait ou ajusté</strong><span>On retouche jusqu'à ce que ça te plaise.</span></div>
                 <div class="ag-xpress__guar-item"><span class="ag-xpress__guar-ic">⏱️</span><strong>Délai annoncé tenu</strong><span>En retard de notre faute ? 1 mois de maintenance offert.</span></div>
                 <div class="ag-xpress__guar-item"><span class="ag-xpress__guar-ic">💳</span><strong>Payable en 4×</strong><span>Sans frais, via PayPal — étale le paiement.</span></div>
                 <div class="ag-xpress__guar-item"><span class="ag-xpress__guar-ic">🧾</span><strong>Facture &amp; sans engagement</strong><span>Facture émise, maintenance résiliable à tout moment.</span></div>
@@ -196,7 +196,7 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
             <p class="ag-section__desc ag-anim" data-anim="desc">Un site sans maintenance se dégrade (sécurité, bugs, Google). Pour <strong>quelques euros par mois</strong>, on s'occupe de tout — et toi tu restes serein. <strong>Vivement recommandé avec chaque site.</strong> Résiliable à tout moment.</p>
 
             <?php if ( $abo_ok ) : ?>
-                <p style="text-align:center;background:rgba(0,132,61,.12);border:1px solid rgba(0,132,61,.3);border-radius:12px;padding:16px 20px;color:#fff;max-width:560px;margin:24px auto 0;">✅ Merci, ton abonnement est actif ! Ton site est entre de bonnes mains.</p>
+                <p style="text-align:center;background:rgba(0,132,61,.12);border:1px solid rgba(0,132,61,.3);border-radius:12px;padding:16px 20px;color:#fff;max-width:560px;margin:24px auto 0;">Merci, ton abonnement est actif ! Ton site est entre de bonnes mains.</p>
             <?php endif; ?>
 
             <div class="ag-xpress__grid">
@@ -250,11 +250,11 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
             <?php if ( $brief_ok ) : ?>
                 <div class="ag-question-success">
                     <div class="ag-question-success__check">✓</div>
-                    <h2>Brief reçu 🚀</h2>
+                    <h2>Brief reçu</h2>
                     <p class="ag-question-success__sub">Merci ! On démarre la production de ton site et on t'envoie une première version rapidement, avec une vidéo. Tout par écrit, sans rendez-vous.</p>
                 </div>
                 <div class="ag-xpress__refer">
-                    <p>🎁 <strong>Parraine un commerçant</strong> — s'il commande un site en disant qu'il vient de ta part, tu gagnes <strong>1 mois de maintenance offert</strong>.</p>
+                    <p><strong>Parraine un commerçant</strong> — s'il commande un site en disant qu'il vient de ta part, tu gagnes <strong>1 mois de maintenance offert</strong>.</p>
                     <textarea id="ag-refer-msg" readonly rows="3">Je viens de faire faire mon site avec Alliance Groupe : à prix fixe (dès 490 €), livré en quelques jours, sans rendez-vous. Jette un œil 👉 <?php echo esc_url( home_url( '/sites-express' ) ); ?> (dis que tu viens de ma part)</textarea>
                     <button type="button" class="ag-btn-gold" id="ag-refer-copy" onclick="navigator.clipboard.writeText(document.getElementById('ag-refer-msg').value).then(function(){var b=document.getElementById('ag-refer-copy');b.textContent='✓ Copié';setTimeout(function(){b.textContent='Copier mon message';},1500);});">Copier mon message</button>
                 </div>
@@ -274,7 +274,7 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
             <?php else : ?>
                 <span class="ag-tag">Étape 2</span>
                 <h2 class="ag-section__title">Le brief de <em>ton site</em></h2>
-                <p class="ag-section__desc"><?php echo in_array( $paid, array_keys( $packs ), true ) ? 'Paiement reçu ✅ Remplis ce brief pour qu\'on démarre.' : 'Remplis ce brief pour qu\'on lance ton site.'; ?></p>
+                <p class="ag-section__desc"><?php echo in_array( $paid, array_keys( $packs ), true ) ? 'Paiement reçu — remplis ce brief pour qu\'on démarre.' : 'Remplis ce brief pour qu\'on lance ton site.'; ?></p>
                 <form class="ag-form" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="POST">
                     <input type="hidden" name="action" value="ag_submit_brief">
                     <input type="hidden" name="pack" value="<?php echo esc_attr( $paid ); ?>">
@@ -306,7 +306,7 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
                         <input type="checkbox" name="cgv" value="1" required style="margin-top:4px;">
                         <span>J'ai lu et j'accepte le <a href="<?php echo esc_url( home_url( '/contrat-client' ) ); ?>" target="_blank" rel="noopener" style="color:var(--color-gold);text-decoration:underline;">contrat de prestation &amp; les CGV</a>, et je demande le démarrage immédiat de la prestation. *</span>
                     </label>
-                    <button type="submit" class="ag-btn-gold">Envoyer mon brief 🚀</button>
+                    <button type="submit" class="ag-btn-gold">Envoyer mon brief →</button>
                 </form>
             <?php endif; ?>
         </div>
