@@ -15,6 +15,7 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 - **Toute liste d'éléments** (prospects, cibles, fiches, résultats…) doit offrir par défaut : **TRI** (au moins priorité + nom + récent), **AJOUT** (bouton « + Suivre »/ajouter), et **SUPPRESSION EN MASSE** (cases à cocher + « tout sélectionner » + bouton « Supprimer la sélection » ; pour des prospects, AJAX `ag_prospect_delete_bulk`). Les actions de contact (Mail/SMS/WhatsApp/Appel) + **Relancer** sont présentes sur chaque élément, en respectant la déontologie (avocats = email/courrier uniquement).
 
 ## Déploiement (workflow)
+> 🔁 **Toute la chaîne expliquée** (conversation → commit → `main` → sites en ligne, cron 5 min, updater des templates vendus, robot images Gwen, pièges) : **`docs/MECANIQUE-DEPLOIEMENT.md`**. À lire avant de pousser quoi que ce soit pour la première fois.
 - Dév sur la branche de travail courante (ex. `claude/infrastructure-md-review-6R3D2` ; vérifier `git branch --show-current`), puis **merge ff-only dans `main`** + push.
 - Le site applique via **Apparence → SYNC GitHub** : « Vérifier MAJ » puis « SYNC FICHIERS DU THÈME », puis purge cache + Ctrl/recharge.
 - Thème autonome (pas d'Elementor). Templates = `alliance-groupe-theme/templates/page-*.php` (Template Name). Logique = `alliance-groupe-theme/inc/*.php`, chargés depuis `functions.php`.
