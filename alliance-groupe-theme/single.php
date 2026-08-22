@@ -28,6 +28,7 @@
                     'nis2'       => 'securite/pexels-cookiecutter-37564547.jpg',            // salle serveurs
                     'sauvegarde' => 'securite/pexels-cookiecutter-17302202.jpg',            // baie de serveurs
                     'rgpd'       => 'securite/max-bender-XIVDN9cxOVc-unsplash.jpg',         // conformité / data
+                    'wordpress-est-il' => 'securite/wordpress-securise.jpg',               // emblème WordPress + cadenas
                     'securise'   => 'securite/pexels-julio-lopez-75309646-34258666.jpg',    // code / terminal (site sécurisé)
                     'securit'    => 'securite/max-bender-XIVDN9cxOVc-unsplash.jpg',         // sécurité générique
                     'automatis'  => 'atelier/ia.webp',
