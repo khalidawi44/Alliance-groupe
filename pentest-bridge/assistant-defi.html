@@ -109,6 +109,7 @@
             <option value="ssti">SSTI</option>
             <option value="auth">Auth / JWT</option>
             <option value="info">Fuite d'information</option>
+            <option value="leak">Identifiants exposés / fuites de données (HIBP)</option>
           </select>
         </div>
         <div><label>Scope / asset du programme</label><input id="rscope" placeholder="www.cible.fr"></div>
@@ -158,7 +159,8 @@ var CATS=[
  {k:'upload',n:'📤 Upload'},
  {k:'xxe',n:'📃 XXE'},
  {k:'ssti',n:'🧩 SSTI'},
- {k:'auth',n:'🔐 Auth / JWT'}
+ {k:'auth',n:'🔐 Auth / JWT'},
+ {k:'leak',n:'🔓 Fuites de données (HIBP)'}
 ];
 var sel={recon:true};
 function renderCats(){var h='';CATS.forEach(function(c){h+='<span class="cat '+(sel[c.k]?'on':'')+'" data-k="'+c.k+'">'+c.n+'</span>';});document.getElementById('cats').innerHTML=h;
@@ -229,6 +231,11 @@ auth:[
  {t:"JWT — algorithme none", c:`# décoder le JWT, mettre "alg":"none", retirer la signature, rejouer`, e:`Si accepté → contournement d'authentification total.`},
  {t:"JWT — secret faible", c:`hashcat -a 0 -m 16500 jwt.txt /usr/share/wordlists/rockyou.txt`, e:`Si le secret HS256 est faible → tu forges n'importe quel token (ex: admin).`},
  {t:"Reset / session", c:`# tester : token de reset prévisible, non expiré, réutilisable ; session non invalidée au logout`, e:`Failles logiques d'auth = souvent bien payées et sûres à tester.`}
+],
+leak:[
+ {t:"Fuites sur un EMAIL du client (sous mandat)", c:`curl -s -H "hibp-api-key: TA_CLE_HIBP" -A "AllianceGroupe-Audit" "https://haveibeenpwned.com/api/v3/breachedaccount/EMAIL_DU_CLIENT?truncateResponse=false"`, e:`Liste les fuites où l'email apparaît (nom, date, données exposées). <b>Email/domaine du CLIENT sous mandat uniquement — jamais un tiers.</b> Colle la sortie JSON puis Analyser.`},
+ {t:"Toutes les adresses @${T} (domaine vérifié dans HIBP)", c:`curl -s -H "hibp-api-key: TA_CLE_HIBP" -A "AllianceGroupe-Audit" "https://haveibeenpwned.com/api/v3/breacheddomain/${T}"`, e:`Nécessite d'avoir prouvé la propriété du domaine dans HIBP (gratuit, côté client). Donne toutes les adresses du client vues dans des fuites.`},
+ {t:"Un mot de passe est-il compromis ? (k-anonymity, sans clé)", c:`PW='MOT_DE_PASSE'; H=\$(printf "%s" "\$PW" | sha1sum | tr a-z A-Z | cut -c1-40); curl -s "https://api.pwnedpasswords.com/range/\${H:0:5}" | grep -i "\${H:5}"`, e:`Vérifie si un mot de passe est dans les fuites SANS l'envoyer (on n'envoie que 5 caractères du hash). Une ligne renvoyée = compromis (+ nombre d'occurrences).`}
 ]
 };}
 
@@ -238,7 +245,7 @@ function gen(){
   var T=c.host, U=(/^\d+\.\d+\.\d+\.\d+$/.test(T)?('http://'+T):('https://'+T));
   var P=(document.getElementById('param').value.trim()||'id');
   AGT={U:U,T:T,P:P};
-  var pb=PB(U,T,P), order=['recon','disco','infra','rce','sqli','lfi','xss','idor','ssrf','upload','xxe','ssti','auth'];
+  var pb=PB(U,T,P), order=['recon','disco','infra','rce','sqli','lfi','xss','idor','ssrf','upload','xxe','ssti','auth','leak'];
   var html='', i=0;
   order.forEach(function(k){ if(!sel[k]||!pb[k])return; var cat=CATS.filter(function(x){return x.k===k;})[0];
     html+='<div class="ph">'+esc(cat.n)+'</div>';
@@ -277,7 +284,8 @@ var RT={
  xxe:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N',s:'7.5',n:'XXE',rem:'Désactiver les entités externes / DTD dans le parseur XML.'},
  ssti:{v:'AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H',s:'9.0',n:'SSTI',rem:'Ne pas injecter d\'entrée dans les templates ; sandbox ; templates logiques uniquement.'},
  auth:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N',s:'8.1',n:'Auth / JWT',rem:'Vérifier alg côté serveur ; secret fort ; tokens expirables & invalidés ; MFA.'},
- info:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N',s:'7.5',n:'Fuite d\'information',rem:'Retirer le fichier/endpoint exposé ; contrôle d\'accès ; pas de secret dans le code public.'}
+ info:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N',s:'7.5',n:'Fuite d\'information',rem:'Retirer le fichier/endpoint exposé ; contrôle d\'accès ; pas de secret dans le code public.'},
+ leak:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N',s:'5.3',n:'Identifiants exposés dans des fuites de données connues',rem:'Forcer la réinitialisation des mots de passe des comptes concernés ; activer la 2FA ; interdire les mots de passe déjà vus dans des fuites (vérif type HIBP à l\'inscription) ; mettre en place une surveillance de fuites sur le domaine (HIBP Domain monitoring).'}
 };
 function fv(id){var e=document.getElementById(id);return e?(e.value||''):'';}
 function setv(id,v){var e=document.getElementById(id);if(e)e.value=v;}
@@ -298,24 +306,28 @@ function fillSkeleton(force){
   var desc;
   if(ty==='bac') desc=t.n+' sur `'+scope+'`. L\'endpoint `'+ep+'` accepte une requête d\'écriture SANS authentification ni vérification d\'autorisation : un attaquant anonyme peut modifier des données du site (ici via `'+pn+'`). Cause racine typique : un contrôle de permission qui renvoie `true` par défaut, et/ou l\'absence d\'assainissement de la valeur stockée.';
   else if(ty==='enum') desc='L\'endpoint `'+ep+'` (`'+scope+'`) est accessible SANS authentification et se comporte comme un oracle : pour un identifiant soumis via `'+pn+'`, il révèle si un compte existe (réponse distincte « existe » / « n\'existe pas »), sans preuve de possession ni anti-automatisation.';
+  else if(ty==='leak') desc='Des identifiants liés à `'+scope+'` apparaissent dans des fuites de données publiques (vérifié via Have I Been Pwned, sous mandat). Les fuites exposent selon les cas emails, mots de passe (en clair ou hachés), noms et autres données personnelles réutilisables contre les comptes du client.';
   else desc=t.n+' présente sur `'+scope+'` : une entrée non assainie transmise via `'+pn+'` ('+part+') atteint une opération sensible, permettant '+t.n.toLowerCase()+'. Endpoint : `'+ep+'`.';
   only('rdesc', desc);
 
   var exp;
   if(ty==='bac') exp='1. Envoyer, SANS session ni cookie, une requête d\'écriture sur `'+ep+'`.\n2. Placer une valeur-marqueur bénigne dans `'+pn+'` (ex. « AG-PENTEST-POC »).\n3. Le serveur répond 200 et applique le changement → la valeur est modifiée côté site.\n4. Preuve de changement obtenue → RESTAURER immédiatement la valeur d\'origine (test non destructif, sous mandat).';
   else if(ty==='enum') exp='1. Ouvrir une session NON authentifiée (navigation privée / client HTTP).\n2. Soumettre un identifiant EXISTANT (compte de test) → réponse « existe ».\n3. Soumettre un identifiant bidon → réponse « n\'existe pas ».\n4. Différence fiable = oracle d\'existence, rejouable hors interface (ni captcha ni preuve de possession).';
+  else if(ty==='leak') exp='1. Interroger HIBP sur l\'email / le domaine du client (sous mandat).\n2. Relever chaque fuite : nom, date, types de données exposées.\n3. Recouper avec les comptes encore actifs et les mots de passe réutilisés (test k-anonymity Pwned Passwords, sans jamais envoyer le mot de passe).';
   else exp='1. Cibler l\'endpoint : `'+ep+'`.\n2. Injecter la charge utile dans `'+pn+'`.\n3. Observer la réponse qui prouve l\'exécution / l\'accès non prévu.';
   only('rexp', exp);
 
   var poc;
   if(ty==='bac') poc='Requête (NON authentifiée) :\n```http\n'+(pl!=='<payload>'?pl:'POST '+ep+'\nContent-Type: application/json\n\n{"...":"AG-PENTEST-POC (test autorise mandat)"}')+'\n```\nRéponse serveur (changement accepté) :\n```\n'+proof+'\n```\n→ La valeur a été modifiée côté serveur SANS aucune authentification, puis RESTAURÉE par le testeur.';
   else if(ty==='enum') poc='Cas 1 — identifiant EXISTANT :\n```\n'+(pl!=='<payload>'?pl:'POST '+ep+'\n\n{"'+pn+'":"<existant>"}')+'\n```\nRéponse : compte « existe ».\n\nCas 2 — identifiant INEXISTANT → compte « n\'existe pas ».\n\nPreuve :\n```\n'+proof+'\n```';
+  else if(ty==='leak') poc='Vérification via Have I Been Pwned. Sortie (extrait, données sensibles masquées) :\n```\n'+proof+'\n```';
   else poc='Endpoint : `'+ep+'`\nCharge utile : `'+pl+'`\n\nPreuve (sortie réelle) :\n```\n'+proof+'\n```';
   only('rpoc', poc);
 
   var risk;
   if(ty==='bac') risk='Un attaquant anonyme peut réécrire des données du site (ici via `'+pn+'`) → défaçage, empoisonnement SEO, et — si la valeur n\'est pas assainie — injection de contenu/JS stocké (XSS) menant au vol de session admin.\n\nCVSS v3.1 : `'+t.v+'` = '+t.s+'.';
   else if(ty==='enum') risk='Un tiers non authentifié peut déterminer si un identifiant correspond à un compte → phishing/vishing ciblé, recoupement de bases volées, atteinte à la vie privée. L\'absence de rate-limit rend l\'énumération de masse réalisable.\n\nCVSS v3.1 : `'+t.v+'` = '+t.s+'.';
+  else if(ty==='leak') risk='Des identifiants exposés facilitent le bourrage d\'identifiants (credential stuffing) et la prise de contrôle de comptes si les mots de passe sont réutilisés — d\'autant plus si un compte admin du site est concerné.\n\nCVSS v3.1 : `'+t.v+'` = '+t.s+'.';
   else risk='Impact : '+t.n+'.\n\nCVSS v3.1 : `'+t.v+'` = '+t.s+'.';
   only('rrisk', risk);
 
@@ -379,6 +391,18 @@ function scan(t){
   // Énumération de compte (Doctolib)
   if(/account_exists|"exists"\s*:\s*(true|false)/i.test(t)) return {cls:'ok',msg:'🔎 ÉNUMÉRATION DE COMPTE confirmée (oracle existe / n\'existe pas, sans auth).',
     follow:[], report:{type:'enum'}, unlock:null};
+  // Mot de passe compromis (Pwned Passwords, k-anonymity)
+  if(/^[0-9A-F]{35}:\d+/m.test(t)) return {cls:'ok',msg:'🔓 MOT DE PASSE COMPROMIS — présent dans des fuites connues (Pwned Passwords). À changer immédiatement + 2FA.',
+    follow:[], report:{type:'leak'}, unlock:null};
+  // Fuites HIBP (email / domaine)
+  if(/"BreachDate"|"DataClasses"|breachedaccount|breacheddomain/i.test(t) || (/"Name"\s*:\s*"/.test(t) && /"Title"|"PwnCount"|"Domain"/i.test(t))){
+    var mm=t.match(/"Name"\s*:\s*"([^"]+)"/g)||[];
+    var noms=mm.map(function(x){return x.replace(/"Name"\s*:\s*"/,'').replace(/"$/,'');});
+    var uniq=noms.filter(function(v,i){return noms.indexOf(v)===i;});
+    if(uniq.length) return {cls:'ok',msg:'🔓 '+uniq.length+' FUITE(S) trouvée(s) pour cet identifiant : '+uniq.slice(0,8).join(', ')+(uniq.length>8?'…':'')+'. Les données exposées (mots de passe, emails…) permettent du bourrage d\'identifiants.',
+      follow:[], report:{type:'leak'}, unlock:null};
+    return {cls:'warn',msg:'✅ Aucune fuite connue pour cet identifiant (HIBP). Bon point à noter dans le rapport.',follow:[],report:null,unlock:null};
+  }
   // .git exposé
   if(/ref:\s*refs\/heads|\.git\/HEAD[\s\S]{0,40}\b200\b|\b200\b[\s\S]{0,40}\.git/i.test(t)) return {cls:'ok',msg:'📂 Dépôt .git EXPOSÉ → récupération du code source + secrets.',
     follow:[{t:'Aspirer le .git + chercher des secrets',c:'git-dumper '+U+'/.git/ ./loot && gitleaks detect -s ./loot',e:'Sous mandat ; au coffre, ne pas diffuser le code.'}],
