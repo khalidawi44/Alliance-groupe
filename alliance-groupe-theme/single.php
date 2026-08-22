@@ -3,47 +3,94 @@
 <main class="ag-single" id="ag-main-content">
     <article class="ag-article" itemscope itemtype="https://schema.org/Article">
 
-        <!-- Header article avec breadcrumb SEO -->
-        <header class="ag-article__header" style="background:#0c0c0f;">
-            <div class="ag-container ag-container--narrow">
-                <nav class="ag-breadcrumb" aria-label="Fil d'Ariane">
-                    <a href="<?php echo esc_url(home_url('/')); ?>">Accueil</a>
+        <!-- Header article : image plein cadre + titre en surimpression -->
+        <?php
+        if ( ! function_exists( 'ag_article_header_image' ) ) {
+            /** Image d'en-tête d'un article : la « une » si définie, sinon une photo
+             *  libre de droit du thème choisie selon le sujet (slug + catégorie). */
+            function ag_article_header_image( $post_id ) {
+                if ( has_post_thumbnail( $post_id ) ) {
+                    return get_the_post_thumbnail_url( $post_id, 'large' );
+                }
+                $dir = get_stylesheet_directory_uri() . '/assets/images/';
+                $h   = strtolower( get_post_field( 'post_name', $post_id ) );
+                $c   = get_the_category( $post_id );
+                if ( $c ) { $h .= ' ' . strtolower( $c[0]->slug . ' ' . $c[0]->name ); }
+                $map = array(
+                    'ransomware' => 'securite/max-bender-XIVDN9cxOVc-unsplash.jpg',
+                    'securit'    => 'securite/max-bender-XIVDN9cxOVc-unsplash.jpg',
+                    'phishing'   => 'securite/kaptured-by-kasia-7Ss09bTO5Zo-unsplash.jpg',
+                    'sauvegarde' => 'securite/pexels-lucasandrade-14019734.jpg',
+                    'nis2'       => 'securite/max-bender-XIVDN9cxOVc-unsplash.jpg',
+                    'rgpd'       => 'securite/pexels-cookiecutter-17302202.jpg',
+                    'automatis'  => 'atelier/ia.webp',
+                    'debutant-ia'=> 'atelier/ia.webp',
+                    'ia-'        => 'atelier/ia.webp',
+                    'seo'        => 'atelier/refais.webp',
+                    'google'     => 'atelier/refais.webp',
+                    'visibilite' => 'atelier/refais.webp',
+                    'napparait'  => 'atelier/refais.webp',
+                    'refonte'    => 'atelier/refais.webp',
+                    'signes'     => 'atelier/refais.webp',
+                    'lent'       => 'atelier/refais.webp',
+                    'prix'       => 'atelier/sites.webp',
+                    'cout'       => 'atelier/sites.webp',
+                    'combien'    => 'atelier/sites.webp',
+                    'domaine'    => 'atelier/sites.webp',
+                    'ecommerce'  => 'atelier/sites.webp',
+                    'vitrine'    => 'atelier/sites.webp',
+                    'template'   => 'atelier/templates.webp',
+                    'coach'      => 'atelier/studio.webp',
+                    'restaurant' => 'atelier/sites.webp',
+                    'artisan'    => 'atelier/sites.webp',
+                    'avocat'     => 'atelier/sites.webp',
+                    'lead'       => 'cities/nantes-1.jpg',
+                    'commercial' => 'cities/nantes-1.jpg',
+                    'pme'        => 'cities/nantes-1.jpg',
+                    'absence'    => 'cities/nantes-1.jpg',
+                );
+                foreach ( $map as $k => $img ) {
+                    if ( false !== strpos( $h, $k ) ) { return $dir . $img; }
+                }
+                return $dir . 'cities/naples-1.jpg';
+            }
+        }
+        $ag_hero_img = ag_article_header_image( get_the_ID() );
+        ?>
+        <header class="ag-article__header" style="position:relative;min-height:46vh;display:flex;align-items:flex-end;overflow:hidden;background:#0a0a0f">
+            <img src="<?php echo esc_url( $ag_hero_img ); ?>" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5" loading="eager" fetchpriority="high">
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,15,.5),rgba(10,10,15,.35) 38%,rgba(10,10,15,.96))"></div>
+            <div class="ag-container ag-container--narrow" style="position:relative;z-index:1;color:#fff;padding-top:44px;padding-bottom:42px">
+                <nav class="ag-breadcrumb" aria-label="Fil d'Ariane" style="opacity:.85">
+                    <a href="<?php echo esc_url(home_url('/')); ?>" style="color:#e7c979">Accueil</a>
                     <span>›</span>
-                    <a href="<?php echo esc_url(home_url('/articles')); ?>">Articles</a>
+                    <a href="<?php echo esc_url(home_url('/articles')); ?>" style="color:#e7c979">Articles</a>
                     <span>›</span>
                     <?php
                     $cats = get_the_category();
                     if ($cats) {
-                        echo '<a href="' . esc_url(get_category_link($cats[0]->term_id)) . '">' . esc_html($cats[0]->name) . '</a>';
+                        echo '<a href="' . esc_url(get_category_link($cats[0]->term_id)) . '" style="color:#e7c979">' . esc_html($cats[0]->name) . '</a>';
                         echo '<span>›</span>';
                     }
                     ?>
                     <span class="ag-breadcrumb__current"><?php the_title(); ?></span>
                 </nav>
 
-                <div class="ag-article__meta">
+                <div class="ag-article__meta" style="display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:16px 0 14px;font-size:.9rem;opacity:.9">
                     <time datetime="<?php echo get_the_date('c'); ?>" itemprop="datePublished"><?php echo get_the_date('d M Y'); ?></time>
                     <?php if ($cats) : ?>
-                    <span class="ag-article__cat"><?php echo esc_html($cats[0]->name); ?></span>
+                    <span class="ag-article__cat" style="padding:3px 12px;border:1px solid rgba(231,201,121,.5);border-radius:999px;color:#e7c979"><?php echo esc_html($cats[0]->name); ?></span>
                     <?php endif; ?>
-                    <span class="ag-article__read">⏱ <?php echo ag_reading_time(); ?> min de lecture</span>
+                    <span class="ag-article__read"><?php echo ag_reading_time(); ?> min de lecture</span>
                 </div>
 
-                <h1 class="ag-article__title" itemprop="headline"><?php the_title(); ?></h1>
+                <h1 class="ag-article__title" itemprop="headline" style="font-family:Georgia,serif;font-weight:600;font-size:clamp(1.9rem,4.6vw,3.1rem);line-height:1.1;margin:0;max-width:20ch;text-wrap:balance"><?php the_title(); ?></h1>
 
                 <?php if (has_excerpt()) : ?>
-                <p class="ag-article__chapeau" itemprop="description"><?php echo get_the_excerpt(); ?></p>
+                <p class="ag-article__chapeau" itemprop="description" style="margin:16px 0 0;max-width:60ch;font-size:1.1rem;line-height:1.55;color:rgba(255,255,255,.82)"><?php echo get_the_excerpt(); ?></p>
                 <?php endif; ?>
             </div>
         </header>
-
-        <?php if (has_post_thumbnail()) : ?>
-        <div class="ag-article__featured">
-            <div class="ag-container ag-container--narrow">
-                <?php the_post_thumbnail('large', ['itemprop' => 'image', 'loading' => 'lazy']); ?>
-            </div>
-        </div>
-        <?php endif; ?>
 
         <!-- Contenu article -->
         <div class="ag-article__content" itemprop="articleBody">
@@ -89,11 +136,11 @@
         <section class="ag-article-cta">
             <div class="ag-container ag-container--narrow">
                 <div class="ag-article-cta__box">
-                    <div class="ag-article-cta__icon">📞</div>
+                    <div class="ag-article-cta__icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#e7c979" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></div>
                     <h3 class="ag-article-cta__title">Besoin d'un accompagnement <em>professionnel</em> ?</h3>
                     <p class="ag-article-cta__text">Ne laissez pas vos concurrents prendre l'avantage. Appelez-nous pour un diagnostic gratuit de votre présence digitale.</p>
                     <div class="ag-article-cta__actions">
-                        <a href="tel:+33744829516" class="ag-btn-gold">📞 Appeler maintenant — 07.44.82.95.16</a>
+                        <a href="tel:+33744829516" class="ag-btn-gold">Appeler maintenant — 07 44 82 95 16</a>
                         <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Demander un devis gratuit →</a>
                     </div>
                 </div>
@@ -171,14 +218,14 @@
         <section class="ag-cta-final">
             <div class="ag-container">
                 <div class="ag-cta-final__inner">
-                    <span class="ag-cta-final__badge">🚀 Passez à l'action</span>
+                    <span class="ag-cta-final__badge">Passez à l'action</span>
                     <h2 class="ag-cta-final__title">Votre entreprise mérite d'<em>exister en ligne</em></h2>
                     <p class="ag-cta-final__desc">Chaque jour sans stratégie digitale, c'est des clients qui vont chez vos concurrents. Discutons de votre projet — c'est gratuit et sans engagement.</p>
                     <div class="ag-cta-final__actions">
-                        <a href="tel:+33744829516" class="ag-btn-gold">📞 07.44.82.95.16 — Appel gratuit</a>
-                        <a href="mailto:contact@alliancegroupe-inc.com" class="ag-btn-outline">✉️ contact@alliancegroupe-inc.com</a>
+                        <a href="tel:+33744829516" class="ag-btn-gold">07 44 82 95 16 — Appel gratuit</a>
+                        <a href="mailto:contact@alliancegroupe-inc.com" class="ag-btn-outline">contact@alliancegroupe-inc.com</a>
                     </div>
-                    <p class="ag-cta-final__trust">✓ Diagnostic gratuit &nbsp; ✓ Sans engagement &nbsp; ✓ Réponse sous 24h</p>
+                    <p class="ag-cta-final__trust">Diagnostic gratuit &nbsp;·&nbsp; Sans engagement &nbsp;·&nbsp; Réponse sous 24 h</p>
                 </div>
             </div>
         </section>
