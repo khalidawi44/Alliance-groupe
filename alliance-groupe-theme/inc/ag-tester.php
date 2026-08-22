@@ -606,6 +606,14 @@ if ( ! function_exists( 'ag_tester_render_form' ) ) {
 		<section style="background:linear-gradient(180deg,#0a0a0f,#14141c);color:#fff;padding:80px 24px;min-height:78vh">
 			<div style="max-width:620px;margin:0 auto;text-align:center">
 				<span style="display:inline-block;padding:6px 14px;background:rgba(243,122,31,.15);border:1px solid rgba(243,122,31,.5);border-radius:999px;color:#F3D27A;font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:18px">🔍 Diagnostic gratuit · sans engagement</span>
+				<?php $ag_dir = get_template_directory_uri(); ?>
+				<figure class="ag-tester-embleme" style="margin:0 auto 22px;width:min(520px,100%);aspect-ratio:16/9">
+					<video autoplay muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;-webkit-mask-image:radial-gradient(ellipse 74% 74% at 50% 48%,#000 52%,transparent 100%);mask-image:radial-gradient(ellipse 74% 74% at 50% 48%,#000 52%,transparent 100%)" poster="<?php echo esc_url( $ag_dir . '/assets/videos/embleme-securite-poster.jpg' ); ?>">
+						<source src="<?php echo esc_url( $ag_dir . '/assets/videos/embleme-securite-720.webm' ); ?>" type="video/webm">
+						<source src="<?php echo esc_url( $ag_dir . '/assets/videos/embleme-securite-720.mp4' ); ?>" type="video/mp4">
+						<img src="<?php echo esc_url( $ag_dir . '/assets/images/atelier/securite.webp' ); ?>" alt="Bouclier Alliance Groupe : marbre noir et or, frappé d'un cadenas" width="1000" height="563" style="width:100%;height:auto">
+					</video>
+				</figure>
 				<h1 style="font-family:Georgia,serif;font-size:clamp(2rem,5vw,3.4rem);line-height:1.1;margin:0 0 14px">Testez la <em style="background:linear-gradient(135deg,#D4B45C,#F37A1F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-style:italic">sécurité</em> de votre site</h1>
 				<p style="color:rgba(255,255,255,.78);font-size:1.05rem;line-height:1.6;margin:0 0 32px">En 30 secondes : score global, nombre de failles détectées, et où vous en êtes vraiment. Diagnostic non-intrusif, avec votre autorisation.</p>
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="text-align:left;display:flex;flex-direction:column;gap:14px">
