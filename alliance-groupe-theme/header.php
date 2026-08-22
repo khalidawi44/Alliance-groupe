@@ -120,6 +120,10 @@
                                 <span class="ag-mega__icon">📊</span>
                                 <span><strong>Audit SEO gratuit</strong><small>Note /100 + rapport PDF de votre site</small></span>
                             </a>
+                            <a href="<?php echo esc_url(home_url('/tester-mon-site')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🔒</span>
+                                <span><strong>Tester mon site</strong><small>Sécurité : note /100 + failles visibles, gratuit</small></span>
+                            </a>
                             <a href="<?php echo esc_url(home_url('/tirage-au-sort')); ?>" class="ag-mega__link">
                                 <span class="ag-mega__icon">🎰</span>
                                 <span><strong>1 site gratuit / mois</strong><small>Tirage au sort, participation gratuite</small></span>
@@ -195,6 +199,13 @@
                                 <span>
                                     <strong>Résilience Ransomware</strong>
                                     <small>Attaque simulée &amp; test de sauvegardes · dès 490 €</small>
+                                </span>
+                            </a>
+                            <a href="<?php echo esc_url(home_url('/tester-mon-site')); ?>" class="ag-mega__link">
+                                <span class="ag-mega__icon">🔒</span>
+                                <span>
+                                    <strong>Tester mon site</strong>
+                                    <small>Diagnostic gratuit, puis audit approfondi &amp; expert 24 h</small>
                                 </span>
                             </a>
                         </div>
@@ -403,6 +414,7 @@
                 <div class="ag-mobile-menu__sub">
                     <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">🎁 6 templates WordPress gratuits</a>
                     <a href="<?php echo esc_url(home_url('/audit-seo')); ?>">📊 Audit SEO gratuit (note /100)</a>
+                    <a href="<?php echo esc_url(home_url('/tester-mon-site')); ?>">🔒 Tester mon site (sécurité, gratuit)</a>
                     <a href="<?php echo esc_url(home_url('/tirage-au-sort')); ?>">🎰 Gagner 1 site / mois (tirage)</a>
                     <a href="<?php echo esc_url(home_url('/composants')); ?>">🧩 Composants web gratuits</a>
                 </div>
@@ -419,6 +431,7 @@
                     <a href="<?php echo esc_url(home_url('/service-branding')); ?>">🎨 Branding</a>
                     <a href="<?php echo esc_url(home_url('/service-conseil')); ?>">💡 Conseil Stratégique</a>
                     <a href="<?php echo esc_url(home_url('/resilience-ransomware')); ?>">🛡️ Résilience Ransomware</a>
+                    <a href="<?php echo esc_url(home_url('/tester-mon-site')); ?>">🔒 Tester mon site (audit sécurité)</a>
                 </div>
             </div>
 

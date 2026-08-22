@@ -123,3 +123,18 @@ tools/ads-videos/_seg/
 
 # Dossier local prive (jamais publie)
 _local-prive/
+
+# Rushes video de provenance externe (TikTok, banques d'images, tiers).
+# NE JAMAIS publier : le depot est PUBLIC et le theme est deploye tel quel
+# sur alliancegroupe-inc.com. Tant qu'on n'a pas d'accord ecrit du titulaire
+# des droits, ces fichiers restent strictement locaux.
+alliance-groupe-theme/assets/images/video/ines*.mp4
+alliance-groupe-theme/assets/images/video/clara_morgan_voix.mp4
+alliance-groupe-theme/assets/images/video/*.url
+
+# Sorties Blender : regenerables par les scripts de blender/, inutile de les
+# versionner. Les medias qui servent au site sont dans assets/, eux sont suivis.
+blender/rendus/
+blender/frames/
+blender/*.blend
+blender/*.blend1
