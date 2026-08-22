@@ -15,6 +15,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 $ag_mail = 'contact@alliancegroupe-inc.com';
+$ag_test = home_url( '/tester-mon-site' );
 $ag_dir  = get_template_directory_uri();
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -37,7 +38,7 @@ $ag_dir  = get_template_directory_uri();
           <li><a href="#audit">L'audit</a></li>
           <li><a href="#methode">Méthode</a></li>
           <li><a href="#services">Au-delà</a></li>
-          <li><a href="#contact" class="cta-button">Demander un audit →</a></li>
+          <li><a href="<?php echo esc_url( $ag_test ); ?>" class="cta-button">Tester mon site →</a></li>
         </ul>
       </nav>
     </div>
@@ -54,7 +55,7 @@ $ag_dir  = get_template_directory_uri();
     <h1>Votre site vous expose-t-il<br>à un <em>risque</em> ?</h1>
     <p class="hero-sub">Un audit confidentiel le révèle en 48 h. Rapport PDF détaillé, recommandations actionnables, sans jargon. Avant qu'un attaquant le trouve à votre place.</p>
     <div class="hero-actions">
-      <a href="#contact" class="cta-button">Demander mon audit →</a>
+      <a href="<?php echo esc_url( $ag_test ); ?>" class="cta-button">Tester mon site — gratuit →</a>
       <a href="#audit" class="cta-button ghost">Voir ce qu'on analyse</a>
       <span class="small">Réponse sous 24 h · Devis gratuit</span>
     </div>
@@ -346,7 +347,7 @@ $ag_dir  = get_template_directory_uri();
     </figure>
     <h2>Découvrons les <em>angles morts</em> de votre site.</h2>
     <p>Audit confidentiel sous 48 h. Devis gratuit. Si l'on ne trouve rien d'exploitable, on vous le dit honnêtement.</p>
-    <a href="<?php echo esc_url( 'mailto:' . $ag_mail . '?subject=' . rawurlencode( "Demande d'audit" ) ); ?>" class="cta-button">Demander mon audit →</a>
+    <a href="<?php echo esc_url( $ag_test ); ?>" class="cta-button">Tester mon site — gratuit →</a>
   </div>
 </section>
 

@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 get_header();
 
 $ag_contact = home_url( '/contact' );
+$ag_test = home_url( '/tester-mon-site' );
 $or  = '#F37A1F';
 $rouge = '#E10F1A';
 $ag_dir = get_template_directory_uri();
@@ -41,6 +42,7 @@ $ag_dir = get_template_directory_uri();
 		<p style="font-size:1.2rem;max-width:720px;margin:0 auto 26px;color:#444">On le simule <strong>sans jamais toucher à vos vraies données</strong> : vos sauvegardes tiennent-elles ? Votre antivirus détecte-t-il l'attaque ? Combien de temps seriez-vous à l'arrêt ? Vous recevez un rapport clair et un plan d'action.</p>
 		<a href="<?php echo esc_url( $ag_contact ); ?>" style="display:inline-block;background:linear-gradient(135deg,<?php echo $rouge; ?>,<?php echo $or; ?>);color:#fff;font-weight:900;text-decoration:none;padding:16px 34px;border-radius:999px;font-size:1.1rem;box-shadow:0 12px 36px rgba(225,15,26,.35)">Demander mon test →</a>
 		<div style="margin-top:12px;color:#777;font-size:.9rem">À partir de 490 € · Réponse sous 24 h · 100 % légal &amp; non-destructif</div>
+		<p style="margin:14px 0 0;color:#888;font-size:.92rem">Juste besoin d'un diagnostic rapide de votre site&nbsp;? <a href="<?php echo esc_url( $ag_test ); ?>" style="color:<?php echo $or; ?>;font-weight:700;text-decoration:none">Testez-le gratuitement en 30&nbsp;secondes →</a></p>
 		</div>
 
 		<figure class="ranso-hero__img">
