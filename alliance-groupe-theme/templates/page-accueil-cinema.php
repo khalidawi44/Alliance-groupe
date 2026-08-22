@@ -66,9 +66,9 @@ $dir = get_stylesheet_directory_uri();
   .hero__in{position:relative;z-index:3;width:100%;padding-bottom:clamp(52px,10vh,120px)}
   .hero__t{font-family:var(--serif);font-weight:500;line-height:.97;font-size:clamp(2.9rem,8.4vw,7rem);letter-spacing:-.022em;margin:.18em 0 0}
   .hero__t em{font-style:italic;color:var(--gold-hi)}
-  .w{display:inline-block;overflow:hidden;vertical-align:bottom}
+  .w{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.18em;margin-bottom:-.18em}
   .w i{display:inline-block;font-style:inherit}
-  .hero__t .w{display:inline-block;overflow:hidden;vertical-align:bottom}
+  .hero__t .w{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.18em;margin-bottom:-.18em}
   .hero__t .w i{display:inline-block;font-style:inherit}
   .hero__sub{margin-top:20px;max-width:44ch;color:#cfd6e4;font-size:clamp(1rem,2.2vw,1.14rem);line-height:1.6}
   .hero__cta{margin-top:28px;display:flex;gap:14px;flex-wrap:wrap}
@@ -91,9 +91,6 @@ $dir = get_stylesheet_directory_uri();
   .tab__stick{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center}
   .tab__img{position:absolute;inset:0}
   .tab__img img{width:100%;height:100%;object-fit:cover;transform:scale(1.12)}
-  .tab__img .tab__vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.12);opacity:0;transition:opacity .9s ease}
-  .tab__img .tab__vid[data-ok]{opacity:1}
-  @media(prefers-reduced-motion:reduce){.tab__img .tab__vid{display:none}}
   .tab__veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,5,10,.62),rgba(5,5,10,.25) 40%,rgba(5,5,10,.9))}
   .tab__cap{position:relative;z-index:2;text-align:center;padding:0 26px;max-width:900px}
   .tab__cap h2{font-family:var(--serif);font-weight:500;font-size:clamp(2rem,6.4vw,4.6rem);line-height:1.02}
@@ -284,7 +281,7 @@ $dir = get_stylesheet_directory_uri();
     /* la peinture est en 16/9 : on la montre entière, tableau puis légende */
     .tab__stick{display:flex;flex-direction:column;justify-content:center;gap:clamp(18px,4svh,44px)}
     .tab__img{position:relative;inset:auto;width:100%;height:auto;aspect-ratio:16/9}
-    .tab__img img,.tab__img .tab__vid{object-fit:cover;height:100%;transform:none!important}
+    .tab__img img{object-fit:cover;height:100%;transform:none!important}
     .tab__veil{display:none}
     .tab__cap{align-self:auto;padding:0 20px}
     .tab__cap h2{font-size:clamp(1.7rem,7.4vw,2.4rem)}
@@ -408,10 +405,6 @@ $dir = get_stylesheet_directory_uri();
   <div class="tab__stick">
     <div class="tab__img" data-tabimg>
       <img src="<?php echo esc_url( $dir . '/assets/images/cinematique/allegorie-naples.jpg' ); ?>" alt="Allégorie de l'alliance devant la baie de Naples">
-      <video class="tab__vid" autoplay muted loop playsinline preload="metadata"
-             poster="<?php echo esc_url( $dir . '/assets/videos/allegorie-naples-poster.jpg' ); ?>">
-        <source src="<?php echo esc_url( $dir . '/assets/videos/allegorie-naples-anim.mp4' ); ?>" type="video/mp4">
-      </video>
     </div>
     <div class="tab__veil"></div>
     <div class="tab__cap">
@@ -719,17 +712,9 @@ $dir = get_stylesheet_directory_uri();
       });
     })();
 
-    /* tableau anime : on ne revele la video que lorsqu'elle peut jouer */
-    document.querySelectorAll(".tab__vid").forEach(function(v){
-      if (matchMedia("(prefers-reduced-motion:reduce)").matches) { v.remove(); return; }
-      v.addEventListener("canplay", function(){ v.setAttribute("data-ok",""); }, { once:true });
-      if (v.readyState >= 3) v.setAttribute("data-ok","");
-      var j = v.play(); if (j && j.catch) j.catch(function(){});
-    });
-
     /* tableau : Ken Burns lent */
     if (!matchMedia("(max-width:960px)").matches)
-      G.fromTo("[data-tabimg] img, [data-tabimg] video", { scale:1.02, yPercent:-3 }, { scale:1.16, yPercent:3, ease:"none",
+      G.fromTo("[data-tabimg] img", { scale:1.02, yPercent:-3 }, { scale:1.16, yPercent:3, ease:"none",
         scrollTrigger:{ trigger:".tab", start:"top top", end:"bottom bottom", scrub:true }});
 
     /* titres : chaque mot monte derrière un masque */
