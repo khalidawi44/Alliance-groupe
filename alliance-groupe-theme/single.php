@@ -17,46 +17,55 @@
                 $c   = get_the_category( $post_id );
                 if ( $c ) { $h .= ' ' . strtolower( $c[0]->slug . ' ' . $c[0]->name ); }
                 $map = array(
-                    // --- Sécurité : une photo distincte et cohérente par sous-sujet ---
-                    'ransomware' => 'securite/kaptured-by-kasia-7Ss09bTO5Zo-unsplash.jpg', // pirate au clavier
+                    // ===== 1 ARTICLE = 1 PHOTO UNIQUE (clés spécifiques par slug, 1re correspondance gagne) =====
+                    // --- Sécurité ---
+                    'resilience' => 'securite/pexels-lucasandrade-14019734.jpg',            // résilience ransomware (avant 'ransomware')
+                    'ransomware' => 'securite/kaptured-by-kasia-7Ss09bTO5Zo-unsplash.jpg',  // que faire — pirate au clavier
                     'rancongiciel' => 'securite/kaptured-by-kasia-7Ss09bTO5Zo-unsplash.jpg',
                     'phishing'   => 'securite/tarik-haiga-BxELNNMN88Y-unsplash.jpg',        // masque / usurpation
                     'hameconnage'=> 'securite/tarik-haiga-BxELNNMN88Y-unsplash.jpg',
-                    'malware'    => 'securite/pexels-lucasandrade-14019734.jpg',            // virus / néon
-                    'virus'      => 'securite/pexels-lucasandrade-14019734.jpg',
-                    'piratage'   => 'securite/pexels-lucasandrade-14019734.jpg',
                     'nis2'       => 'securite/pexels-cookiecutter-37564547.jpg',            // salle serveurs
                     'sauvegarde' => 'securite/pexels-cookiecutter-17302202.jpg',            // baie de serveurs
                     'rgpd'       => 'securite/max-bender-XIVDN9cxOVc-unsplash.jpg',         // conformité / data
-                    'wordpress-est-il' => 'securite/wordpress-securise.jpg',               // emblème WordPress + cadenas
-                    'securise'   => 'securite/pexels-julio-lopez-75309646-34258666.jpg',    // code / terminal (site sécurisé)
-                    'securit'    => 'securite/max-bender-XIVDN9cxOVc-unsplash.jpg',         // sécurité générique
-                    // --- Web / marketing : vraies photos libres de droit, etalonnees marque ---
-                    'automatis'  => 'articles/ia.jpg',        // IA / automatisation
-                    'debutant-ia'=> 'articles/ia.jpg',
+                    'wordpress-est-il' => 'securite/wordpress-securise.jpg',               // laptop + logo WordPress
+                    'securise-comment' => 'securite/pexels-julio-lopez-75309646-34258666.jpg', // site sécurisé — code/terminal
+                    // --- Web / marketing (vraies photos étalonnées marque) ---
+                    'debutant-ia'=> 'articles/ia.jpg',                        // débuter avec l'IA — réseau neuronal
+                    'ia-revolution' => 'articles/ia-leads.jpg',              // IA génère des leads — androïde
+                    'automatis'  => 'articles/automatisation.jpg',           // automatisation — bras robotisés
+                    'concurrents-volent' => 'articles/seo-concurrents.jpg',  // concurrents SEO — analytics
+                    'seo-local'  => 'articles/seo-local.jpg',                // SEO local — fiche Google Maps
+                    'refonte'    => 'articles/refonte.jpg',                  // refonte — poste designer
+                    'template'   => 'articles/templates.jpg',               // templates — sites sur écrans
+                    'coach'      => 'articles/coach.jpg',                    // coach sportif — salle de sport
+                    'prix-site-internet-nantes' => 'articles/prix-nantes.jpg',       // prix Nantes — calculatrice
+                    'prix-site-internet-professionnel' => 'articles/prix-pro.jpg',   // prix pro — poignée de main
+                    'artisan'    => 'articles/artisan.jpg',                  // artisan — atelier
+                    'pme-sans-site' => 'articles/pme.jpg',                   // PME sans site — commerçante
+                    'ne-genere-aucun-lead' => 'articles/leads.jpg',         // aucun lead — courbe de croissance
+                    // ===== Repli générique pour tout futur article =====
                     'ia-'        => 'articles/ia.jpg',
-                    'seo'        => 'articles/seo-local.jpg',  // SEO local / Google Maps
+                    'seo'        => 'articles/seo-local.jpg',
                     'google'     => 'articles/seo-local.jpg',
                     'visibilite' => 'articles/seo-local.jpg',
-                    'napparait'  => 'articles/seo-local.jpg',
-                    'refonte'    => 'articles/refonte.jpg',    // refonte / design web
                     'signes'     => 'articles/refonte.jpg',
                     'lent'       => 'articles/refonte.jpg',
-                    'prix'       => 'articles/artisan.jpg',    // prix / devis / artisan
-                    'cout'       => 'articles/artisan.jpg',
-                    'combien'    => 'articles/artisan.jpg',
-                    'artisan'    => 'articles/artisan.jpg',
-                    'domaine'    => 'articles/templates.jpg',  // creation de site / templates
+                    'prix'       => 'articles/prix-nantes.jpg',
+                    'cout'       => 'articles/prix-nantes.jpg',
+                    'combien'    => 'articles/prix-nantes.jpg',
+                    'devis'      => 'articles/prix-pro.jpg',
                     'ecommerce'  => 'articles/templates.jpg',
                     'vitrine'    => 'articles/templates.jpg',
-                    'template'   => 'articles/templates.jpg',
+                    'domaine'    => 'articles/templates.jpg',
                     'restaurant' => 'articles/templates.jpg',
                     'avocat'     => 'articles/templates.jpg',
-                    'coach'      => 'articles/coach.jpg',       // coach sportif / fitness
-                    'lead'       => 'articles/pme.jpg',         // PME / clients / leads
-                    'commercial' => 'articles/pme.jpg',
+                    'lead'       => 'articles/leads.jpg',
                     'pme'        => 'articles/pme.jpg',
-                    'absence'    => 'articles/pme.jpg',
+                    'malware'    => 'securite/pexels-lucasandrade-14019734.jpg',
+                    'virus'      => 'securite/pexels-lucasandrade-14019734.jpg',
+                    'securise'   => 'securite/pexels-julio-lopez-75309646-34258666.jpg',
+                    'securit'    => 'securite/max-bender-XIVDN9cxOVc-unsplash.jpg',
+                    'wordpress'  => 'articles/templates.jpg',
                 );
                 foreach ( $map as $k => $img ) {
                     if ( false !== strpos( $h, $k ) ) { return $dir . $img; }
