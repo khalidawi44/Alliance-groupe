@@ -105,7 +105,7 @@ REM  Seul gwen-inbox est pousse automatiquement : le reste du travail en
 REM  cours dans le depot n'est jamais touche.
 REM  Detection SANS pipe ni guillemets : "for /f ... ^| find" casse quand
 REM  %GIT% est un chemin entre guillemets (cmd mange les quotes).
-set SUIVI=gwen-inbox alliance-groupe-theme/inc alliance-groupe-theme/template-parts alliance-groupe-theme/assets/images alliance-groupe-theme/assets/videos alliance-groupe-theme/assets/downloads/ag-gwen-services/assets alliance-groupe-theme/assets/downloads/ag-gwen-services/header.php docs/cinematique alliance-groupe-theme/templates alliance-groupe-theme/assets/js
+set SUIVI=gwen-inbox alliance-groupe-theme/inc alliance-groupe-theme/template-parts alliance-groupe-theme/assets/images alliance-groupe-theme/assets/videos alliance-groupe-theme/assets/downloads/ag-gwen-services/assets alliance-groupe-theme/assets/downloads/ag-gwen-services/header.php docs/cinematique alliance-groupe-theme/templates alliance-groupe-theme/assets/js alliance-groupe-theme/header.php alliance-groupe-theme/assets/css alliance-groupe-theme/functions.php alliance-groupe-theme/footer.php alliance-groupe-theme/single.php
 %GIT% status --porcelain -- %SUIVI% > "%TEMP%\ag-suivi.txt" 2>>%LOG%
 set SZ=0
 for %%A in ("%TEMP%\ag-suivi.txt") do set SZ=%%~zA
