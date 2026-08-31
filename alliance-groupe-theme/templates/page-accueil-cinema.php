@@ -410,7 +410,7 @@ $dir = get_stylesheet_directory_uri();
 </section>
 
 <div class="mq">
-  <div class="mq__bg"><img src="<?php echo esc_url( $dir . '/assets/images/cinematique/marbre-noir-or.jpg' ); ?>" alt=""></div>
+  <div class="mq__bg"><img src="<?php echo esc_url( $dir . '/assets/images/cinematique/marbre-noir-or.jpg' ); ?>" alt="" loading="lazy" decoding="async"></div>
   <div class="mq__in" id="mq">
     <span>Sites sécurisés <b>·</b></span><span>Livré en 5 jours <b>·</b></span><span>SEO Google <b>·</b></span>
     <span>De Naples à Nantes <b>·</b></span><span>Un seul interlocuteur <b>·</b></span><span>Audit gratuit <b>·</b></span>
@@ -421,7 +421,7 @@ $dir = get_stylesheet_directory_uri();
 <section class="tab">
   <div class="tab__stick">
     <div class="tab__img" data-tabimg>
-      <img src="<?php echo esc_url( $dir . '/assets/images/cinematique/allegorie-naples.jpg' ); ?>" alt="Allégorie de l'alliance devant la baie de Naples">
+      <img src="<?php echo esc_url( $dir . '/assets/images/cinematique/allegorie-naples.jpg' ); ?>" alt="Allégorie de l'alliance devant la baie de Naples" loading="lazy" decoding="async">
     </div>
     <div class="tab__veil"></div>
     <div class="tab__cap">
@@ -466,8 +466,8 @@ $dir = get_stylesheet_directory_uri();
 <section class="ds" id="atelier">
   <div class="ds__stick">
     <canvas id="cv"></canvas>
-    <img class="ds__photo" src="<?php echo esc_url( $dir . '/assets/images/team/1_bureau_naples.jpg' ); ?>" alt="">
-    <img class="ds__hand" id="hand" src="<?php echo esc_url( $dir . '/assets/images/cinematique/main-poussiere-or.jpg' ); ?>" alt="">
+    <img class="ds__photo" src="<?php echo esc_url( $dir . '/assets/images/team/1_bureau_naples.jpg' ); ?>" alt="" loading="lazy" decoding="async">
+    <img class="ds__hand" id="hand" src="<?php echo esc_url( $dir . '/assets/images/cinematique/main-poussiere-or.jpg' ); ?>" alt="" loading="lazy" decoding="async">
     <div class="ds__veil"></div>
     <div class="ds__cap wrap" id="dsCap">
       <h2 data-mots>Ce qui compte ne se voit pas <em>tout de suite</em></h2>
@@ -655,7 +655,7 @@ $dir = get_stylesheet_directory_uri();
 
 <section class="lion">
   <div class="lion__stick">
-    <img class="lion__img" id="lionImg" src="<?php echo esc_url( $dir . '/assets/images/cinematique/lion-or.jpg' ); ?>" alt="Le lion d'Alliance Groupe">
+    <img class="lion__img" id="lionImg" src="<?php echo esc_url( $dir . '/assets/images/cinematique/lion-or.jpg' ); ?>" alt="Le lion d'Alliance Groupe" loading="lazy" decoding="async">
     <div class="lion__w" data-rv>Alliance Groupe</div>
   </div>
 </section>

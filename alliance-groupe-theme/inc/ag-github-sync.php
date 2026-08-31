@@ -55,6 +55,31 @@ class AG_GitHub_Sync {
 		return in_array( (string) $repo, self::TRUSTED_REPOS, true );
 	}
 
+	/**
+	 * Token GitHub pour la sync d'un dépôt PRIVÉ (lecture seule « Contents »).
+	 * Priorité : constante AG_GH_TOKEN (wp-config.php) > option ag_gh_token > filtre.
+	 * Le token n'est JAMAIS commité (wp-config est hors dépôt ; l'option est en base).
+	 * Vide = comportement public inchangé (aucune en-tête d'auth).
+	 */
+	public static function get_token() {
+		if ( defined( 'AG_GH_TOKEN' ) && AG_GH_TOKEN ) {
+			return (string) AG_GH_TOKEN;
+		}
+		$t = get_option( 'ag_gh_token', '' );
+		$t = apply_filters( 'ag_github_sync_token', $t );
+		return is_string( $t ) ? trim( $t ) : '';
+	}
+
+	/** En-têtes API GitHub, avec Authorization si un token est configuré. */
+	public static function api_headers( $accept = 'application/vnd.github+json' ) {
+		$h = array( 'Accept' => $accept, 'User-Agent' => 'WordPress AG-Sync' );
+		$t = self::get_token();
+		if ( '' !== $t ) {
+			$h['Authorization'] = 'Bearer ' . $t;
+		}
+		return $h;
+	}
+
 	const CRON_HOOK     = 'ag_github_sync_cron';
 	const CRON_INTERVAL = 'ag_every_five_minutes';
 	const CRON_LOG_OPT  = 'ag_github_sync_cron_log';
@@ -277,7 +302,7 @@ class AG_GitHub_Sync {
 		$url  = 'https://api.github.com/repos/' . $cfg['repo'] . '/commits/' . $cfg['branch'];
 		$resp = wp_remote_get( $url, array(
 			'timeout' => 12,
-			'headers' => array( 'Accept' => 'application/vnd.github+json', 'User-Agent' => 'WordPress AG-Sync' ),
+			'headers' => self::api_headers(),
 		) );
 		if ( is_wp_error( $resp ) || wp_remote_retrieve_response_code( $resp ) !== 200 ) {
 			return false;
@@ -365,10 +390,29 @@ class AG_GitHub_Sync {
 
 		// 2. Tarball
 		$tarball_url = 'https://api.github.com/repos/' . $cfg['repo'] . '/tarball/' . $cfg['branch'];
-		if ( ! function_exists( 'download_url' ) ) {
+		if ( ! function_exists( 'download_url' ) || ! function_exists( 'wp_tempnam' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 		}
-		$tmp_file = download_url( $tarball_url, 60 );
+		$gh_token = self::get_token();
+		if ( '' !== $gh_token ) {
+			// Dépôt PRIVÉ : download_url ne gère pas les en-têtes → on télécharge
+			// en streaming (sans charger en mémoire) avec l'en-tête Authorization.
+			$tmp_file = wp_tempnam( 'ag-tarball' );
+			$resp = wp_remote_get( $tarball_url, array(
+				'timeout'  => 120,
+				'stream'   => true,
+				'filename' => $tmp_file,
+				'headers'  => self::api_headers(),
+			) );
+			if ( is_wp_error( $resp ) || 200 !== (int) wp_remote_retrieve_response_code( $resp ) ) {
+				if ( file_exists( $tmp_file ) ) { @unlink( $tmp_file ); }
+				$err = is_wp_error( $resp ) ? $resp->get_error_message() : ( 'HTTP ' . wp_remote_retrieve_response_code( $resp ) );
+				$log[] = 'ERREUR téléchargement (privé) : ' . $err;
+				return array( 'ok' => false, 'error' => 'Téléchargement échoué (token ?)', 'log' => $log, 'sha' => '', 'stats' => array() );
+			}
+		} else {
+			$tmp_file = download_url( $tarball_url, 60 );
+		}
 		if ( is_wp_error( $tmp_file ) ) {
 			$log[] = 'ERREUR téléchargement : ' . $tmp_file->get_error_message();
 			return array( 'ok' => false, 'error' => 'Téléchargement échoué', 'log' => $log, 'sha' => '', 'stats' => array() );
@@ -528,7 +572,7 @@ class AG_GitHub_Sync {
 		$api  = 'https://api.github.com/repos/' . $repo . '/compare/' . rawurlencode( $base ) . '...' . rawurlencode( $head );
 		$resp = wp_remote_get( $api, array(
 			'timeout' => 20,
-			'headers' => array( 'Accept' => 'application/vnd.github+json', 'User-Agent' => 'WordPress AG-Sync' ),
+			'headers' => self::api_headers(),
 		) );
 		if ( is_wp_error( $resp ) ) { $log[] = 'Incrémental: compare KO (' . $resp->get_error_message() . ')'; return array( 'fallback' => true ); }
 		$code = (int) wp_remote_retrieve_response_code( $resp );
@@ -572,11 +616,20 @@ class AG_GitHub_Sync {
 				if ( false === strpos( $prev_rel, '..' ) && file_exists( $target . '/' . $prev_rel ) ) { @unlink( $target . '/' . $prev_rel ); }
 			}
 
-			// Téléchargement du contenu via raw_url (host GitHub vérifié).
-			$raw     = isset( $f['raw_url'] ) ? (string) $f['raw_url'] : '';
-			$ok_host = ( 0 === strpos( $raw, 'https://github.com/' . $repo . '/' ) || 0 === strpos( $raw, 'https://raw.githubusercontent.com/' . $repo . '/' ) );
-			if ( ! $ok_host ) { $fails[] = $rel . ' (url non fiable)'; continue; }
-			$dl = wp_remote_get( $raw, array( 'timeout' => 45, 'headers' => array( 'User-Agent' => 'WordPress AG-Sync' ) ) );
+			// Téléchargement du contenu du fichier.
+			$gh_token = self::get_token();
+			if ( '' !== $gh_token ) {
+				// Dépôt PRIVÉ : via l'API Contents authentifiée (média « raw »).
+				$enc  = implode( '/', array_map( 'rawurlencode', explode( '/', $path ) ) );
+				$curl = 'https://api.github.com/repos/' . $repo . '/contents/' . $enc . '?ref=' . rawurlencode( $head );
+				$dl   = wp_remote_get( $curl, array( 'timeout' => 45, 'headers' => self::api_headers( 'application/vnd.github.raw' ) ) );
+			} else {
+				// Dépôt PUBLIC : via raw_url (host GitHub vérifié).
+				$raw     = isset( $f['raw_url'] ) ? (string) $f['raw_url'] : '';
+				$ok_host = ( 0 === strpos( $raw, 'https://github.com/' . $repo . '/' ) || 0 === strpos( $raw, 'https://raw.githubusercontent.com/' . $repo . '/' ) );
+				if ( ! $ok_host ) { $fails[] = $rel . ' (url non fiable)'; continue; }
+				$dl = wp_remote_get( $raw, array( 'timeout' => 45, 'headers' => array( 'User-Agent' => 'WordPress AG-Sync' ) ) );
+			}
 			if ( is_wp_error( $dl ) || 200 !== (int) wp_remote_retrieve_response_code( $dl ) ) { $fails[] = $rel; continue; }
 			$data = wp_remote_retrieve_body( $dl );
 

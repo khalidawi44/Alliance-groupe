@@ -17,7 +17,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'AG_LONGFORM_VER', 4 );
+define( 'AG_LONGFORM_VER', 5 );
 
 /**
  * Banque de contenus étoffés : slug => HTML complet (~1000 mots).
@@ -755,6 +755,254 @@ function ag_longform_bank() {
 <p>Non : les briques abordables suffisent pour démarrer sur un seul cas d’usage à fort impact.</p>
 
 <p>Envie de transformer votre site en machine à leads ? Découvrez notre <a href="' . $ia_srv . '">accompagnement IA</a> ou demandez un <a href="' . $audit . '">diagnostic gratuit</a>.</p>
+';
+
+	/* ═══════════════ VERSIONS LONGUES (1000-1500 mots) — articles stratégiques ═══════════════
+	   Ces assignations SURCHARGENT les versions courtes ci-dessus (la dernière gagne). */
+
+	/* ───────────── Prix d’un site internet à Nantes (version longue) ───────────── */
+	$bank['prix-site-internet-nantes-2026'] = '
+<p>« Combien coûte un site internet à Nantes ? » C’est la première question de tout dirigeant qui se lance — et la réponse honnête, « ça dépend », n’aide personne. Cet article vous donne donc des <strong>fourchettes de prix réelles pour 2026</strong>, le détail de ce que vous payez vraiment, les facteurs qui font varier la facture, et surtout comment éviter les deux pièges classiques : payer trop cher pour du superflu, ou payer trop peu pour un site qui ne rapporte rien.</p>
+
+<h2>Les fourchettes de prix réelles en 2026</h2>
+<p>Voici des ordres de grandeur constatés sur le marché nantais pour un travail professionnel :</p>
+<ul>
+	<li><strong>Site vitrine (3 à 8 pages)</strong> : 1 500 à 4 000 € pour un site sur-mesure, soigné, optimisé pour le référencement. En dessous, on est généralement sur un template peu personnalisé.</li>
+	<li><strong>Site vitrine premium</strong> (design poussé, rédaction, animations, SEO de départ) : 4 000 à 8 000 €.</li>
+	<li><strong>Site e-commerce</strong> : à partir de 4 000 €, et jusqu’à 15 000 € et plus selon le catalogue, les moyens de paiement, la logistique et les intégrations.</li>
+	<li><strong>Application web / fonctionnalités sur-mesure</strong> (espace client, réservation complexe, connexions à des outils) : devis spécifique, souvent au-delà de 8 000 €.</li>
+	<li><strong>Formules packagées à partir de ~500 €</strong> : utiles pour démarrer très vite avec l’essentiel, à condition d’en connaître les limites (personnalisation et évolutivité réduites).</li>
+</ul>
+<p>Ces écarts ne reflètent pas un caprice de prestataire : ils reflètent le <strong>temps humain</strong>, l’<strong>expertise</strong> et le degré de <strong>sur-mesure</strong>. Un site n’est pas un produit en rayon, c’est un service fabriqué pour vous.</p>
+
+<h2>Ce que vous payez vraiment (le détail de la facture)</h2>
+<p>Quand un professionnel sérieux chiffre un site, l’essentiel de la facture, c’est du temps de travail réparti sur plusieurs métiers :</p>
+<ul>
+	<li><strong>Cadrage &amp; stratégie</strong> : comprendre votre activité, vos clients, vos objectifs, et concevoir l’arborescence.</li>
+	<li><strong>Design (UX/UI)</strong> : maquettes, identité visuelle, expérience mobile.</li>
+	<li><strong>Intégration &amp; développement</strong> : transformer le design en site rapide et fonctionnel.</li>
+	<li><strong>Rédaction &amp; SEO</strong> : des textes qui vendent et qui se référencent (un site sans contenu de qualité ne convertit pas).</li>
+	<li><strong>Tests, formation, mise en ligne</strong> : vérifications, prise en main, sécurisation.</li>
+</ul>
+<p>Les logiciels, eux, sont souvent gratuits (WordPress). Ce que vous payez, c’est l’expertise qui les met au service de votre chiffre d’affaires.</p>
+
+<h2>Les facteurs qui font varier le prix</h2>
+<ul>
+	<li><strong>Sur-mesure ou template</strong> : un design unique demande bien plus de travail qu’un thème adapté.</li>
+	<li><strong>Le nombre de pages</strong> et la complexité fonctionnelle.</li>
+	<li><strong>La rédaction et les visuels</strong> : fournis par vous ou produits par l’agence ?</li>
+	<li><strong>Le SEO de départ</strong> : structure technique, balises, vitesse, données structurées, pages locales.</li>
+	<li><strong>L’accompagnement</strong> : formation, maintenance, sécurité, sauvegardes.</li>
+	<li><strong>Les délais</strong> : une livraison très rapide peut se facturer.</li>
+</ul>
+
+<h2>Achat unique ou abonnement ?</h2>
+<p>Deux modèles coexistent. L’<strong>achat</strong> : vous payez une fois, le site vous appartient — moins cher sur la durée si vous assurez la maintenance. L’<strong>abonnement</strong> : une mensualité qui inclut hébergement, maintenance, mises à jour et sécurité — le budget est lissé et le site reste toujours à jour. Le vrai mauvais choix, c’est l’achat « one-shot » <em>sans aucune</em> maintenance derrière : un site laissé à l’abandon se dégrade, devient vulnérable et perd son référencement.</p>
+
+<h2>Le piège du « pas cher » qui coûte cher</h2>
+<p>Un site à très bas prix qui n’est ni trouvé sur Google, ni pensé pour convertir, ni sécurisé, finit par coûter beaucoup plus : refonte anticipée, clients perdus au profit des concurrents, voire piratage. À l’inverse, payer 10 000 € pour une simple vitrine de 5 pages est excessif. Le bon curseur : un site <strong>proportionné à vos objectifs</strong>, qui vous rapporte davantage qu’il ne coûte. Posez toujours la question au prestataire : « ce site est-il conçu pour être trouvé et pour convertir, ou juste pour être joli ? »</p>
+
+<h2>Combien ça rapporte ? (le vrai calcul)</h2>
+<p>La bonne question n’est pas « combien coûte le site » mais « combien de clients il me ramène ». Prenons un exemple : si votre panier moyen est de 1 500 € et que le site vous apporte deux clients par mois, il génère 36 000 € sur un an. Face à cela, un investissement de 3 000 € est vite rentabilisé. Un site invisible, lui, ne rapporte rien — quel que soit son prix d’achat.</p>
+
+<h2>Comment reconnaître un devis sérieux</h2>
+<ul>
+	<li>Il pose des questions sur vos objectifs <em>avant</em> de chiffrer.</li>
+	<li>Il inclut le SEO, la sécurité et la formation, pas seulement « le design ».</li>
+	<li>Il précise clairement ce qui vous appartient (le site est-il vraiment à vous ?).</li>
+	<li>Il prévoit la maintenance et les sauvegardes (voir la règle <a href="' . home_url( '/sauvegardes-regle-3-2-1' ) . '">3-2-1</a>).</li>
+	<li>Il détaille les postes, au lieu d’un prix « tout rond » opaque.</li>
+</ul>
+
+<h2>Questions fréquentes</h2>
+<h3>Un site est-il rentable pour une petite entreprise nantaise ?</h3>
+<p>Oui, s’il est trouvé et s’il convertit. Un seul client gagné rembourse souvent plusieurs mois d’investissement, surtout sur des paniers élevés (artisanat, B2B, services).</p>
+<h3>Quels sont les coûts récurrents à prévoir ?</h3>
+<p>Nom de domaine (~15 €/an), hébergement (de quelques euros à quelques dizaines par mois) et, idéalement, maintenance/sécurité. À intégrer dès le départ dans votre budget.</p>
+<h3>Le SEO est-il inclus dans le prix d’un site ?</h3>
+<p>Un bon prestataire livre un site techniquement optimisé (structure, vitesse, balises). Le référencement dans la durée (contenu, netlinking) est un accompagnement complémentaire — voir notre <a href="' . $seo . '">service SEO</a>.</p>
+<h3>Combien de temps pour créer le site ?</h3>
+<p>Pour une vitrine de PME, comptez quelques semaines selon le volume de pages et la disponibilité des contenus.</p>
+
+<p>Chez Alliance Groupe, nous créons des <a href="' . $creation . '">sites professionnels sur-mesure</a> à Nantes, pensés pour être trouvés et pour convertir. Découvrez nos <a href="' . $sites . '">formules claires</a> et nos <a href="' . $realis . '">réalisations</a>, puis demandez un <a href="' . $audit . '">devis gratuit</a> adapté à votre projet.</p>
+';
+
+	/* ───────────── SEO local : Google Maps (version longue) ───────────── */
+	$bank['seo-local-google-maps-nantes'] = '
+<p>Quand un client cherche « [votre métier] près de moi » ou « [votre métier] à Nantes », Google affiche tout en haut trois établissements sur une carte : le fameux <strong>pack local</strong>. Y figurer, c’est capter des clients au moment précis où ils sont prêts à agir. Ce guide complet vous explique comment le pack local fonctionne, comment y entrer, et comment y rester devant vos concurrents.</p>
+
+<h2>Le pack local, qu’est-ce que c’est ?</h2>
+<p>Ce sont les 3 fiches mises en avant avec la carte Google Maps, la note en étoiles, et les boutons « Itinéraire » et « Appeler ». Elles captent une part énorme des clics sur les recherches locales — souvent plus que les résultats classiques situés en dessous. Pour un commerce ou un artisan, c’est fréquemment la première source de contacts. Et son classement obéit à des règles <strong>différentes</strong> du SEO traditionnel.</p>
+
+<h2>Les 3 critères du classement local</h2>
+<p>Google résume le classement local à trois facteurs : la <strong>pertinence</strong> (votre activité correspond-elle à la recherche ?), la <strong>distance</strong> (proximité géographique) et la <strong>notoriété</strong> (à quel point votre établissement est connu et reconnu en ligne). Vous n’agissez pas sur la distance, mais vous agissez fortement sur les deux autres.</p>
+
+<h3>1. Une fiche Google Business Profile complète</h3>
+<p>C’est la base absolue, et c’est gratuit. Renseignez <strong>tout</strong> : nom exact de l’entreprise, catégorie principale précise (et catégories secondaires), adresse ou zone desservie, téléphone local, horaires (y compris jours fériés), description riche en mots-clés naturels, et surtout des <strong>photos</strong> — établissement, équipe, réalisations, avant/après. Une fiche complète, vérifiée et régulièrement mise à jour est nettement favorisée par Google.</p>
+
+<h3>2. Les avis clients (près de la moitié du poids)</h3>
+<p>Le nombre d’avis, leur fraîcheur, la note moyenne et vos <strong>réponses</strong> pèsent énormément — souvent près de la moitié du classement local. Concrètement :</p>
+<ul>
+	<li>Demandez un avis à chaque client satisfait, systématiquement (un lien ou un QR code sur la facture, le devis, ou un SMS de remerciement).</li>
+	<li>Visez la régularité : mieux vaut 2 avis par semaine que 20 d’un coup puis plus rien.</li>
+	<li>Répondez à <strong>tous</strong> les avis, positifs comme négatifs, avec professionnalisme. Une réponse posée à un avis négatif rassure les futurs clients.</li>
+	<li>Intégrez quelques mots-clés naturels dans vos réponses (« Merci pour votre confiance sur ce chantier de rénovation à Nantes »).</li>
+</ul>
+
+<h3>3. La cohérence NAP</h3>
+<p>Votre <strong>N</strong>om, <strong>A</strong>dresse et téléphone (le « NAP ») doivent être <strong>strictement identiques</strong> partout sur le web : site, fiche Google, annuaires, réseaux sociaux. La moindre incohérence (une abréviation, un ancien numéro) brouille la confiance de Google et vous fait perdre des places.</p>
+
+<h2>Ce que votre site doit apporter en plus de la fiche</h2>
+<p>La fiche Google et le site travaillent ensemble. Votre site renforce la « notoriété » et la pertinence locale :</p>
+<ul>
+	<li><strong>Une page dédiée par zone et par métier</strong> : « [service] à Nantes », « [service] à Saint-Nazaire », avec un vrai contenu local (quartiers, références, spécificités) — surtout pas des pages dupliquées.</li>
+	<li><strong>Des données structurées LocalBusiness</strong> (schema) pour aider Google à comprendre qui vous êtes, où, et vos horaires.</li>
+	<li><strong>Le NAP affiché clairement</strong> en pied de page et sur la page contact.</li>
+	<li><strong>Des avis intégrés</strong> au site pour rassurer et convertir les visiteurs.</li>
+	<li><strong>Une carte et un plan d’accès</strong>.</li>
+</ul>
+
+<h2>Un plan d’action en 6 étapes</h2>
+<ol>
+	<li>Créer ou revendiquer votre fiche Google Business Profile et la compléter à 100 %.</li>
+	<li>Obtenir 5 à 10 premiers avis clients dès cette semaine.</li>
+	<li>Mettre en place un système d’avis récurrent (lien, QR code, relance).</li>
+	<li>Vérifier et corriger la cohérence NAP sur vos principaux annuaires.</li>
+	<li>Renforcer les pages locales de votre site et leur maillage interne.</li>
+	<li>Publier régulièrement sur la fiche (photos, actualités, offres).</li>
+</ol>
+
+<h2>Les erreurs qui plombent le référencement local</h2>
+<ul>
+	<li>Une fiche à moitié remplie, sans photos ni catégorie précise.</li>
+	<li>Aucun avis, ou des avis anciens jamais renouvelés.</li>
+	<li>Ne pas répondre aux avis (surtout négatifs).</li>
+	<li>Un NAP incohérent entre le site et les annuaires.</li>
+	<li>Un site invisible sur mobile alors que la majorité des recherches locales s’y font.</li>
+</ul>
+
+<h2>Questions fréquentes</h2>
+<h3>Combien de temps pour apparaître dans le pack local ?</h3>
+<p>Souvent bien plus vite que le SEO classique : une fiche optimisée avec une dizaine d’avis peut remonter en quelques semaines.</p>
+<h3>Faut-il une adresse physique ?</h3>
+<p>Pas toujours : les activités qui se déplacent chez le client peuvent configurer une « zone desservie » sans afficher d’adresse.</p>
+<h3>Les avis sur mon site comptent-ils pour Google ?</h3>
+<p>Les avis qui pèsent pour le pack local sont ceux de la fiche Google. Les avis sur votre site servent surtout à rassurer et convertir les visiteurs — les deux sont complémentaires.</p>
+<h3>Que faire face à un concurrent mieux classé ?</h3>
+<p>Voir notre guide dédié : <a href="' . home_url( '/seo-local-concurrents-volent-clients-google' ) . '">quand vos concurrents vous volent des clients sur Google</a>.</p>
+
+<p>Nous intégrons le schema local et des pages géolocalisées à nos <a href="' . $creation . '">sites</a>, et nous vous accompagnons sur le <a href="' . $seo . '">référencement</a>. Pour un état des lieux de votre visibilité locale, demandez un <a href="' . $audit . '">diagnostic gratuit</a>.</p>
+';
+
+	/* ───────────── Refonte : 7 signes (version longue) ───────────── */
+	$bank['refonte-site-web-7-signes'] = '
+<p>Un site web vieillit — parfois plus vite qu’on ne le croit. Le problème, c’est qu’il fait fuir des clients <em>sans bruit</em> : aucune plainte, juste des prospects qui repartent et vont chez le concurrent. Voici les 7 signes clairs qu’une refonte s’impose, ce que chacun coûte réellement à votre entreprise, et comment décider entre une simple mise à jour et une refonte complète.</p>
+
+<h2>1. Il n’est pas (vraiment) adapté au mobile</h2>
+<p>Plus de 6 visites sur 10 se font sur smartphone. Un site qu’il faut zoomer, où les boutons sont minuscules, où le menu déborde ou les images se chevauchent, perd la majorité de ses prospects en quelques secondes. Pire : Google indexe « mobile d’abord », donc un site mal adapté au mobile est <strong>déclassé</strong> dans les résultats. Testez le vôtre sur votre téléphone, sans indulgence.</p>
+
+<h2>2. Il est lent</h2>
+<p>Au-delà de 3 secondes de chargement, vous perdez près de la moitié des visiteurs. La vitesse est à la fois un facteur d’expérience et un critère de classement Google (Core Web Vitals). Les causes habituelles sont connues et corrigeables : images non compressées, hébergement bas de gamme, accumulation d’extensions, absence de cache, thème trop lourd.</p>
+
+<h2>3. Le design fait « daté »</h2>
+<p>Le design, c’est la confiance. En quelques secondes, un visiteur juge votre sérieux à l’allure de votre site. Un design bloqué dix ans en arrière renvoie l’image d’une entreprise elle-même dépassée — même si votre travail est irréprochable. À prestation égale, c’est le site le plus crédible qui décroche le contact.</p>
+
+<h2>4. Il n’est pas sécurisé</h2>
+<p>Pas de HTTPS (le cadenas), plus de mises à jour, aucune sauvegarde : c’est un double risque — piratage <em>et</em> pénalité, car Google signale les sites « non sécurisés » directement aux visiteurs. Un site négligé est une cible facile pour les attaques automatisées. Voir notre guide <a href="' . $wp_secu . '">WordPress est-il sécurisé ?</a> et la règle de <a href="' . home_url( '/sauvegardes-regle-3-2-1' ) . '">sauvegarde 3-2-1</a>.</p>
+
+<h2>5. Vous ne pouvez rien modifier vous-même</h2>
+<p>Devoir rappeler (et payer) un prestataire pour changer un simple horaire, un tarif ou une photo, c’est le signe d’un site qui vous appartient sur le papier mais pas dans les faits. Un site moderne se met à jour en autonomie, simplement, sans toucher au code.</p>
+
+<h2>6. Il n’apporte aucun client</h2>
+<p>Un beau site invisible sur Google ne sert à rien. S’il ne génère ni appels, ni formulaires, ni devis, c’est qu’il n’a été pensé ni pour être trouvé, ni pour convertir. Une refonte réussie intègre le <a href="' . $seo . '">référencement</a> et des appels à l’action clairs dès la conception. Si c’est votre cas, lisez aussi <a href="' . home_url( '/site-web-ne-genere-aucun-lead-raisons-solutions' ) . '">pourquoi un site ne génère aucun lead</a>.</p>
+
+<h2>7. Il ne reflète plus votre offre</h2>
+<p>Votre entreprise a évolué : nouveaux services, nouveau positionnement, nouvelle cible. Si votre site parle encore de ce que vous faisiez il y a trois ans, il travaille <em>contre</em> vous en donnant une image fausse ou incomplète.</p>
+
+<h2>Refonte partielle ou refonte complète ?</h2>
+<p>Faites le compte des signes qui vous concernent :</p>
+<ul>
+	<li><strong>2 à 3 signes</strong> : une mise à jour ciblée peut suffire (optimisation mobile, vitesse, rafraîchissement visuel, ajout d’appels à l’action).</li>
+	<li><strong>4 signes ou plus</strong> : repartir sur une base saine est souvent plus rapide et moins coûteux que de rafistoler un existant fragile.</li>
+</ul>
+<p>Le bon réflexe : un diagnostic honnête <em>avant</em> de dépenser, pour investir là où l’impact est réel.</p>
+
+<h2>Comment réussir sa refonte (sans perdre son référencement)</h2>
+<ol>
+	<li><strong>Conserver les URLs</strong> ou mettre en place des redirections 301 pour ne pas perdre l’acquis SEO.</li>
+	<li><strong>Repartir des objectifs</strong> : que doit accomplir le site (appels, devis, ventes) ?</li>
+	<li><strong>Améliorer le contenu</strong>, pas seulement le design : c’est lui qui référence et convertit.</li>
+	<li><strong>Penser mobile et vitesse</strong> dès la maquette.</li>
+	<li><strong>Prévoir sécurité et sauvegardes</strong> dès la mise en ligne.</li>
+</ol>
+<p>Bien menée, une refonte <em>gagne</em> généralement des positions plutôt que d’en perdre.</p>
+
+<h2>Questions fréquentes</h2>
+<h3>Une refonte fait-elle perdre le référencement ?</h3>
+<p>Pas si elle est bien menée : conservation des URLs ou redirections 301, et amélioration du contenu. Une refonte propre progresse le plus souvent dans Google.</p>
+<h3>Combien de temps prend une refonte ?</h3>
+<p>Pour un site vitrine de PME, comptez quelques semaines selon le nombre de pages et de contenus à reprendre.</p>
+<h3>Peut-on garder notre contenu actuel ?</h3>
+<p>Oui, on récupère et on améliore ce qui fonctionne. Rien n’est perdu ; tout est optimisé.</p>
+
+<p>Vous hésitez ? Regardez nos <a href="' . $realis . '">réalisations</a>, puis demandez un <a href="' . $audit . '">diagnostic gratuit</a> de votre site actuel : nous vous dirons franchement s’il faut refondre, ou simplement ajuster.</p>
+';
+
+	/* ───────────── WordPress est-il sécurisé ? (version longue) ───────────── */
+	$bank['wordpress-est-il-securise'] = '
+<p>WordPress fait tourner plus de 40 % du web — ce qui en fait à la fois le choix le plus éprouvé et une cible privilégiée. D’où la question légitime que se posent beaucoup de dirigeants : est-il vraiment sûr ? Réponse honnête : <strong>oui, s’il est bien configuré et entretenu</strong>. WordPress n’est pas « non sécurisé » en soi ; ce sont les sites <em>mal entretenus</em> qui se font pirater. Voici tout ce qu’il faut comprendre pour rester du bon côté.</p>
+
+<h2>Pourquoi les sites WordPress se font pirater</h2>
+<p>Dans l’immense majorité des cas, ce n’est pas le cœur de WordPress (très surveillé et corrigé rapidement) qui est en cause, mais son <strong>environnement</strong> : une extension ou un thème obsolète, un mot de passe faible, l’absence de pare-feu ou de sauvegarde. Point crucial à comprendre : les attaques sont presque toujours <strong>automatisées</strong>. Des robots scannent le web en continu à la recherche de failles connues, sans viser personne en particulier. Un site à jour passe simplement sous leur radar — c’est pourquoi même un petit site vitrine est « ciblé ».</p>
+
+<h2>Les 5 failles les plus courantes</h2>
+<ul>
+	<li><strong>Extensions / thèmes non mis à jour</strong> : la porte d’entrée numéro un. Chaque composant obsolète peut contenir une faille publiquement connue.</li>
+	<li><strong>Mots de passe faibles</strong> et absence de double authentification (2FA).</li>
+	<li><strong>Page de connexion exposée</strong> (/wp-admin), vulnérable aux attaques par force brute.</li>
+	<li><strong>Pas de pare-feu applicatif (WAF)</strong> pour filtrer le trafic malveillant.</li>
+	<li><strong>Aucune sauvegarde</strong> testée pour restaurer rapidement après un incident.</li>
+</ul>
+
+<h2>Comment blinder un site WordPress : la méthode</h2>
+<ol>
+	<li><strong>Mises à jour régulières</strong> du cœur, des extensions et du thème. C’est 80 % de la sécurité.</li>
+	<li><strong>Authentification à deux facteurs</strong> sur tous les comptes administrateurs.</li>
+	<li><strong>Limiter les tentatives de connexion</strong> et protéger / masquer la page de login.</li>
+	<li><strong>Installer un pare-feu et une surveillance</strong> pour bloquer les attaques connues et détecter les comportements anormaux.</li>
+	<li><strong>Sauvegardes automatiques testées</strong> — la règle <a href="' . home_url( '/sauvegardes-regle-3-2-1' ) . '">3-2-1</a> est votre filet ultime.</li>
+	<li><strong>Maîtriser les accès</strong> : un compte par personne, le minimum de privilèges, et on révoque les comptes inutilisés.</li>
+	<li><strong>HTTPS partout</strong> et un hébergement de qualité, qui joue un vrai rôle dans la sécurité.</li>
+	<li><strong>Limiter le nombre d’extensions</strong> : chaque extension ajoute une surface d’attaque. On garde l’utile, on supprime le reste.</li>
+</ol>
+
+<h2>La faille que la technique ne couvre pas : l’humain</h2>
+<p>La meilleure sécurité technique ne protège pas d’un mot de passe donné à un faux email. Le <a href="' . home_url( '/phishing-proteger-pme' ) . '">phishing</a> reste l’une des premières causes de compromission : un salarié qui clique et saisit ses identifiants sur une fausse page ouvre la porte, quel que soit votre pare-feu. La sensibilisation de l’équipe fait partie intégrante de la sécurité.</p>
+
+<h2>Que faire si votre site est piraté ?</h2>
+<ol>
+	<li>Ne pas paniquer et ne rien supprimer dans la précipitation.</li>
+	<li>Mettre le site en maintenance et changer tous les mots de passe.</li>
+	<li>Restaurer une sauvegarde saine (d’où l’importance d’en avoir plusieurs, dont une hors site).</li>
+	<li>Identifier et corriger la faille d’origine (sinon la réinfection est immédiate).</li>
+	<li>Scanner, nettoyer, puis demander à Google une réévaluation si le site a été signalé.</li>
+</ol>
+<p>Sans sauvegarde, cette procédure devient un cauchemar coûteux. Avec, c’est l’affaire de quelques heures.</p>
+
+<h2>WordPress est-il moins sûr qu’un site sur-mesure ?</h2>
+<p>Non. Un WordPress correctement tenu est très sûr. Sa popularité le rend simplement plus visé, donc plus exigeant en entretien régulier. Un site « sur-mesure » mal maintenu est tout aussi vulnérable — la sécurité dépend de l’entretien, pas de la technologie.</p>
+
+<h2>Questions fréquentes</h2>
+<h3>Un petit site vitrine est-il vraiment ciblé ?</h3>
+<p>Oui, car les attaques sont automatisées : elles cherchent des failles, pas des victimes précises. Tout site exposé est scanné.</p>
+<h3>À quelle fréquence faut-il mettre à jour ?</h3>
+<p>Idéalement en continu pour les correctifs de sécurité, et au minimum une vérification mensuelle encadrée par une sauvegarde préalable.</p>
+<h3>Une maintenance, est-ce indispensable ?</h3>
+<p>Pour un site professionnel, oui. Un contrat de maintenance (mises à jour, sauvegardes, surveillance) coûte bien moins cher qu’un piratage.</p>
+<h3>Comment savoir si mon site est sûr aujourd’hui ?</h3>
+<p>Faites le test : voir <a href="' . home_url( '/site-web-securise-comment-savoir' ) . '">comment savoir si votre site est sécurisé</a>.</p>
+
+<p>Vous voulez connaître l’état réel de votre site ? Notre <a href="' . $audit . '">diagnostic gratuit</a> détecte ces points en une minute et vous donne un score clair. Et chaque <a href="' . $creation . '">site que nous créons</a> est livré sécurisé, avec sauvegardes en place.</p>
 ';
 
 	return $bank;
