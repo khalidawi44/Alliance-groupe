@@ -381,9 +381,9 @@ $dir = get_stylesheet_directory_uri();
     <video src="<?php echo esc_url( $dir . '/assets/videos/hero-egerie-court.mp4' ); ?>" autoplay muted loop playsinline poster="<?php echo esc_url( $dir . '/assets/videos/hero-egerie-poster.jpg' ); ?>"></video>
   </div>
   <div class="hero__in wrap">
-    <span class="eyebrow" data-hl>Agence web · sécurité · IA</span>
-    <h1 class="hero__t" data-split>De Naples <em>à Nantes</em></h1>
-    <p class="hero__sub" data-hl>Un artisan du web, pas une usine. Du conseil à la livraison, une seule personne au bout du fil — et un site qui vous ressemble.</p>
+    <span class="eyebrow" data-hl>De Naples à Nantes · sécurité · IA</span>
+    <h1 class="hero__t" data-split>Agence web <em>à Nantes</em></h1>
+    <p class="hero__sub" data-hl>Création de sites web sur-mesure, sécurisés et propulsés par l'IA. Un artisan du web, pas une usine : du conseil à la livraison, une seule personne au bout du fil.</p>
     <div class="hero__cta" data-hl>
       <a class="btn" href="#offres">Voir les offres</a>
       <a class="btn btn--ghost" href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>">Auditer mon site</a>

@@ -14,8 +14,8 @@ get_header();
         <div class="ag-hero__content">
             <span class="ag-tag ag-anim" data-anim="tag">Création Web</span>
             <h1 class="ag-hero__title">
-                <span class="ag-line">Un site web qui <em>vend</em></span>
-                <span class="ag-line">pendant que vous dormez</span>
+                <span class="ag-line">Création de site web <em>à Nantes</em></span>
+                <span class="ag-line">qui vend pendant que vous dormez</span>
             </h1>
             <p class="ag-hero__sub">Sites vitrines et e-commerce ultra-performants, conçus pour convertir vos visiteurs en clients.</p>
         </div>
