@@ -91,6 +91,12 @@ if ( file_exists( $ag_redir_file ) ) {
     require_once $ag_redir_file;
 }
 
+// ── SEO : noindex des pages utilitaires/internes + archives fines (nettoyage de l'index).
+$ag_noindex_file = get_stylesheet_directory() . '/inc/ag-seo-noindex.php';
+if ( file_exists( $ag_noindex_file ) ) {
+    require_once $ag_noindex_file;
+}
+
 // ── 1c3. Données détaillées des 6 services (consommées par template-parts/service-detail.php)
 $ag_services_data_file = get_stylesheet_directory() . '/inc/services-data.php';
 if ( file_exists( $ag_services_data_file ) ) {
