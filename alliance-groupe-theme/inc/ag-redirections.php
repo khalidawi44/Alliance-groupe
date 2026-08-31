@@ -48,3 +48,11 @@ add_action( 'template_redirect', function () {
 		}
 	}
 }, 1 );
+
+// ── Chargement du module de nettoyage de l'index (noindex des pages
+//    utilitaires/internes + archives fines). Chargé ici car ce fichier inc/
+//    est déjà requis par functions.php ET suivi par la synchro auto.
+$ag_noindex_mod = get_stylesheet_directory() . '/inc/ag-seo-noindex.php';
+if ( file_exists( $ag_noindex_mod ) ) {
+	require_once $ag_noindex_mod;
+}

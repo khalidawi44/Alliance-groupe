@@ -377,9 +377,26 @@ $dir = get_stylesheet_directory_uri();
   <img class="lionmark" src="<?php echo esc_url( $dir . '/assets/images/ag-logo.png' ); ?>" alt="">
   <div class="hero__veil"></div>
   <div class="hero__eg" data-eg>
-    <img src="<?php echo esc_url( $dir . '/assets/videos/hero-egerie-poster.jpg' ); ?>" alt="">
-    <video src="<?php echo esc_url( $dir . '/assets/videos/hero-egerie-court.mp4' ); ?>" autoplay muted loop playsinline poster="<?php echo esc_url( $dir . '/assets/videos/hero-egerie-poster.jpg' ); ?>"></video>
+    <img src="<?php echo esc_url( $dir . '/assets/videos/hero-egerie-poster.jpg' ); ?>" alt="" fetchpriority="high" decoding="async">
+    <video src="<?php echo esc_url( $dir . '/assets/videos/hero-egerie-court.mp4' ); ?>" muted loop playsinline preload="none" data-lazyplay poster="<?php echo esc_url( $dir . '/assets/videos/hero-egerie-poster.jpg' ); ?>"></video>
   </div>
+  <script>
+  /* Vitesse : la vidéo hero est sortie du chemin de chargement critique.
+     Le poster (img) s'affiche instantanément (LCP), la vidéo démarre juste
+     après le chargement de la page — sauf si l'utilisateur préfère moins d'animations. */
+  (function(){
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var start = function(){
+      document.querySelectorAll('video[data-lazyplay]').forEach(function(v){
+        v.preload = 'auto';
+        var p = v.play();
+        if (p && p.catch) { p.catch(function(){}); }
+      });
+    };
+    if (document.readyState === 'complete') { start(); }
+    else { window.addEventListener('load', function(){ setTimeout(start, 200); }); }
+  })();
+  </script>
   <div class="hero__in wrap">
     <span class="eyebrow" data-hl>De Naples à Nantes · sécurité · IA</span>
     <h1 class="hero__t" data-split>Agence web <em>à Nantes</em></h1>
