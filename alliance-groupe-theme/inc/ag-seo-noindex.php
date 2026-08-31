@@ -64,6 +64,14 @@ add_filter( 'wpseo_robots_array', function ( $robots ) {
 	return $robots;
 }, 20 );
 
+/* En-tête HTTP X-Robots-Tag : filet robuste qui fonctionne même pour les pages
+   « app » (espace client/ambassadeur) dont le template n'appelle pas wp_head(). */
+add_action( 'template_redirect', function () {
+	if ( ag_should_noindex() && ! headers_sent() ) {
+		header( 'X-Robots-Tag: noindex, follow', true );
+	}
+} );
+
 /* Cœur WordPress (si Yoast absent ou n'a pas la main) : ajouter noindex,follow. */
 add_filter( 'wp_robots', function ( $robots ) {
 	if ( ag_should_noindex() ) {
