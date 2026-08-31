@@ -56,3 +56,9 @@ $ag_noindex_mod = get_stylesheet_directory() . '/inc/ag-seo-noindex.php';
 if ( file_exists( $ag_noindex_mod ) ) {
 	require_once $ag_noindex_mod;
 }
+
+// ── Articles longform : étoffe le contenu d'articles existants (profondeur SEO).
+$ag_longform_mod = get_stylesheet_directory() . '/inc/ag-articles-longform.php';
+if ( file_exists( $ag_longform_mod ) ) {
+	require_once $ag_longform_mod;
+}
