@@ -70,3 +70,10 @@ $ag_localboost_mod = get_stylesheet_directory() . '/inc/ag-seo-local-boost.php';
 if ( file_exists( $ag_localboost_mod ) ) {
 	require_once $ag_localboost_mod;
 }
+
+// ── Boutique : pages produit propres pour les templates (conformité Google
+//    Merchant Center — vraie fiche produit avec prix + achat, schema Product).
+$ag_shop_mod = get_stylesheet_directory() . '/inc/ag-shop-products.php';
+if ( file_exists( $ag_shop_mod ) ) {
+	require_once $ag_shop_mod;
+}

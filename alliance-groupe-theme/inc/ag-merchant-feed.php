@@ -70,63 +70,24 @@ function ag_merchant_products() {
 			'id'          => 'tpl-premium-' . $slug,
 			'title'       => 'Template WordPress Premium — ' . $d[0],
 			'description' => $d[1],
-			'link'        => home_url( '/wordpress-' . $slug ),
+			// Fiche PRODUIT propre (prix + achat sur site), conforme Merchant Center.
+			'link'        => home_url( '/template-premium-' . $slug ),
 			'image'       => $img,
 			'price'       => $eur( $tpl ),
 			'category'    => 'Software &gt; Computer Software',
 		);
 	}
 
-	/* 2) PERSONNALISÉ — création sur-mesure ───────────────────────────── */
-	// Site personnalisé à votre métier (généré + ZIP, produit numérique).
-	$items[] = array(
-		'id'          => 'site-personnalise',
-		'title'       => 'Site web personnalisé à votre métier',
-		'description' => 'Nous générons votre site sur notre plus beau design, personnalisé à votre nom, votre métier et vos couleurs. Vous repartez avec un site prêt à installer. Idéal si votre métier n\'a pas encore son template.',
-		'link'        => home_url( '/templates-wordpress#ag-creer-mon-site' ),
-		'image'       => ag_merchant_img( array( 'templates/avocat/accueil-jour.jpg', 'team/1_bureau_naples.jpg' ) ),
-		'price'       => $eur( $tpl ),
-		'category'    => 'Software &gt; Computer Software',
-	);
-	// Packs création « Sites Express » (prestation à prix fixe).
-	$express = array(
-		'essentiel' => array( 'Création de site — Pack Essentiel', 490, 'Site vitrine professionnel à prix fixe, livré en quelques jours, sans rendez-vous : design sur-mesure, mobile, référencé Google.' ),
-		'pro'       => array( 'Création de site — Pack Pro', 890, 'Site professionnel complet : plusieurs pages, SEO, formulaires, design sur-mesure. Livré clé en main, sans rendez-vous.' ),
-		'boutique'  => array( 'Création de site — Pack Boutique', 1490, 'Boutique en ligne / site avancé : catalogue, paiement, design sur-mesure, référencement. Livré clé en main.' ),
-	);
-	foreach ( $express as $k => $e ) {
-		$items[] = array(
-			'id'          => 'express-' . $k,
-			'title'       => $e[0],
-			'description' => $e[2],
-			'link'        => home_url( '/sites-express' ),
-			'image'       => ag_merchant_img( array( 'parcours/creation.jpg', 'team/1_bureau_naples.jpg' ) ),
-			'price'       => $eur( $e[1] ),
-			'category'    => 'Software &gt; Computer Software',
-		);
-	}
+	/*
+		 * NOTE (01/09/2026) : les SERVICES (Sites Express 490/890/1490, audit
+		 * de securite, test ransomware, site personnalise) ont ete RETIRES du
+		 * flux. Google Merchant Center refuse les services (Vente de services)
+		 * et ne diffuse que des produits. Ces prestations se vendent via Google
+		 * Ads (Search) + la fiche Google Business, pas via Shopping.
+		 * Seuls les 6 templates (produits numeriques telechargeables) restent.
+		 */
 
-	/* 3) SÉCURITÉ ─────────────────────────────────────────────────────── */
-	$items[] = array(
-		'id'          => 'securite-resilience',
-		'title'       => 'Test de résilience ransomware',
-		'description' => 'Simulation contrôlée et 100 % légale pour mesurer la résistance de votre système face à un ransomware, sans rien chiffrer. Rapport clair + plan d\'action. Sur mandat.',
-		'link'        => home_url( '/resilience-ransomware' ),
-		'image'       => ag_merchant_img( array( 'securite/hero-secu.jpg', 'parcours/audit.jpg', 'securite/menace.jpg' ) ),
-		'price'       => $eur( 490 ),
-		'category'    => 'Software &gt; Computer Software',
-	);
-	$items[] = array(
-		'id'          => 'securite-audit',
-		'title'       => 'Audit de sécurité de site web',
-		'description' => 'Diagnostic de sécurité de votre site : failles, configuration, exposition de données. Rapport détaillé et recommandations priorisées.',
-		'link'        => home_url( '/tester-mon-site' ),
-		'image'       => ag_merchant_img( array( 'securite/menace.jpg', 'securite/hero-secu.jpg', 'parcours/audit.jpg' ) ),
-		'price'       => $eur( 490 ),
-		'category'    => 'Software &gt; Computer Software',
-	);
-
-	/**
+		/**
 	 * Permet d'ajuster le catalogue Merchant (ajouter/retirer/modifier
 	 * des produits) sans toucher au code : add_filter('ag_merchant_products', ...).
 	 */
