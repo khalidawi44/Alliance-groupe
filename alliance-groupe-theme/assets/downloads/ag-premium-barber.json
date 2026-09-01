@@ -1,10 +1,10 @@
 {
-    "version": "0.5.3",
+    "version": "0.6.0",
     "download_url": "https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/downloads/ag-premium-barber.zip",
     "homepage": "https://alliancegroupe-inc.com/wordpress-barber",
     "requires": "6.0",
     "tested": "6.5",
     "requires_php": "7.4",
-    "last_updated": "2026-06-09",
+    "last_updated": "2026-09-01",
     "description": "Pack Premium Barber : STATISTIQUES du salon (visiteurs, pages vues, d'ou viennent les gens, tickets pris, heures de pointe, prestations les plus demandees) - calculees chez vous, sans service externe, sans cookie, sans IP conservee. Plus les enrichissements design. A activer apres AG Starter Barber."
 }
