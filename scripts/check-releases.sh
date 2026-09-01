@@ -51,7 +51,7 @@ for slug in "${SLUGS[@]}"; do
     if [ -f "$slug.zip" ]; then
         tmp=$(mktemp -d)
         unzip -qq "$slug.zip" -d "$tmp" 2>/dev/null
-        if ! diff -rq --exclude=".DS_Store" --exclude=".git*" "$tmp/$slug" "$slug" >/dev/null 2>&1; then
+        if ! diff -rq --exclude=".DS_Store" --exclude=".git*" --exclude="COWORK.md" "$tmp/$slug" "$slug" >/dev/null 2>&1; then
             echo "❌ $slug : le .zip livré ≠ le code source (zip PÉRIMÉ → les acheteurs reçoivent l'ancien code)"
             echo "   → bash scripts/bump-template.sh $slug <nouvelle_version>   (rebuild le zip + bump version)"
             problems=$((problems+1))

@@ -49,7 +49,7 @@ bump_theme() {
     sed -i "s/\"version\": \".*\"/\"version\": \"$NEW\"/" "$JSON"
     sed -i "s/\"last_updated\": \".*\"/\"last_updated\": \"$TODAY\"/" "$JSON"
     rm -f "$DL/$SLUG.zip"
-    cd "$DL" && zip -rq "$SLUG.zip" "$SLUG" -x "*.DS_Store" "*.git*"
+    cd "$DL" && zip -rq "$SLUG.zip" "$SLUG" -x "*.DS_Store" "*.git*" "*/COWORK.md"
     cd "$ROOT"
     echo "✓ Theme $SLUG bumpé en $NEW"
 }
@@ -68,7 +68,7 @@ bump_plugin() {
     sed -i "s/\"version\": \".*\"/\"version\": \"$NEW\"/" "$JSON"
     sed -i "s/\"last_updated\": \".*\"/\"last_updated\": \"$TODAY\"/" "$JSON"
     rm -f "$DL/$SLUG.zip"
-    cd "$DL" && zip -rq "$SLUG.zip" "$SLUG" -x "*.DS_Store" "*.git*"
+    cd "$DL" && zip -rq "$SLUG.zip" "$SLUG" -x "*.DS_Store" "*.git*" "*/COWORK.md"
     cd "$ROOT"
     echo "✓ Plugin $SLUG bumpé en $NEW"
 }
