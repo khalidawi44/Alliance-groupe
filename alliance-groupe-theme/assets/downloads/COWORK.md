@@ -50,6 +50,38 @@ corrigé côté CODE — c'est là qu'est la vraie valeur payante.
 
 ---
 
+## RÈGLE DE RÉPERCUSSION (demande ferme de Fabrice, 27/08)
+
+**Dès qu'on change quelque chose, on vérifie si ça doit être changé ailleurs.**
+Un produit modifié sans que ce qui le décrit soit mis à jour, c'est une promesse
+fausse faite au client.
+
+Checklist à dérouler à chaque changement fonctionnel d'un template :
+
+1. `<slug>/` — le code, `style.css` (en-tête Description), l'en-tête du plugin
+2. `<slug>.json` — **c'est CE fichier que lit l'updater du client**
+3. `templates/page-wordpress-<metier>.php` — la page de vente :
+   `free_features`, `premium_features`, `business_features`, `palette`,
+   `hero_subtitle`, `description_long`
+4. `templates/page-templates.php` — la liste des templates (palette, tagline)
+5. Le `COWORK.md` du template + ce fichier maître
+6. `bash scripts/release.sh <slug> <version>` puis `bash scripts/check-releases.sh`
+
+**Ne jamais annoncer une fonctionnalité qui n'est pas dans le code.** Vérifier
+par `grep` avant d'écrire une ligne sur la page de vente.
+
+### Ce que ce contrôle a révélé le 27/08
+
+La page de vente barber promettait, dans le Premium et le Business :
+notifications SMS, multi-barbers, écran TV en salon, API publique, multi-salons,
+chiffre d'affaires quotidien. **Aucune de ces fonctionnalités n'existe dans le
+code.** Le Business ne contient que équipe, galerie, témoignages et horaires.
+
+Ces promesses ont été retirées de la page. Elles sont à considérer comme un
+backlog : soit on les construit, soit on ne les vend pas.
+
+---
+
 ## État mesuré du parc (27/08/2026)
 
 | Template | Version | Images | PHP | Famille |
@@ -136,3 +168,5 @@ Chaîne complète : `docs/MECANIQUE-DEPLOIEMENT.md`.
 - 2026-08-27 · CODE · Création du protocole et d'un `COWORK.md` dans chacun des 16 templates. Inventaire mesuré (versions, images, PHP). Diagnostic : famine d'images sur tout le parc hors Gwen.
 - 2026-08-27 · CODE · Doctrine tranchée : site illustré = gratuit, module galerie = Business (inchangé), technique = Premium. Alerte levée après vérification du code.
 - 2026-08-27 · CODE · Premium barber : module Statistiques construit (trafic sans cookie ni IP + historique des tickets). Descriptions plugin et .json mises en cohérence.
+- 2026-08-27 · CODE · Design Premium transféré dans le thème gratuit (starter 1.0.13, premium 0.7.0). Statistiques verrouillées sur la licence — elles tournaient gratuitement, c'était une faute de ma part.
+- 2026-08-27 · CODE · Règle de répercussion appliquée : page de vente barber réécrite, palette corrigée (or → bleu) dans la page métier ET la liste des templates. Promesses non tenues retirées (SMS, multi-barbers, écran TV, API, multi-salons, CA quotidien) — elles n'existaient pas dans le code.

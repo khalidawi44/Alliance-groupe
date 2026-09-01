@@ -11,6 +11,17 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 - **Hook `SessionStart`** (`.claude/hooks/session-start.sh`, enregistré dans `.claude/settings.json`) : à chaque nouvelle session il injecte automatiquement l'état réel (branche, derniers commits, travail non commité, version active, focus templates, en-tête `HANDOFF.md`). C'est ce qui **relie les conversations** entre elles.
 - **Règle de fin de session** : avant de fermer, (1) mettre à jour les 3 premières lignes + §9 de `HANDOFF.md`, (2) commiter, (3) pousser. La conversation suivante reprendra exactement là.
 
+## RÈGLE DE RÉPERCUSSION (demande ferme de Fabrice, 27/08)
+**Dès qu'on change quelque chose, on vérifie systématiquement si ça doit être changé ailleurs.** Un produit modifié sans que ce qui le décrit soit mis à jour, c'est une promesse fausse faite au client.
+Checklist à dérouler à chaque changement fonctionnel d'un template :
+1. `assets/downloads/<slug>/` — code, `style.css` (en-tête Description), en-tête du plugin
+2. `assets/downloads/<slug>.json` — c'est CE fichier que lit l'updater du client
+3. `templates/page-wordpress-<metier>.php` — la page de vente : `free_features`, `premium_features`, `business_features`, `palette`, `hero_subtitle`, `description_long`
+4. `templates/page-templates.php` — la liste des templates (palette, tagline)
+5. `assets/downloads/<slug>/COWORK.md` + le `COWORK.md` maître — journal partagé avec l'autre session
+6. `bash scripts/release.sh <slug> <version>` puis `bash scripts/check-releases.sh`
+**Ne jamais annoncer sur la page de vente une fonctionnalité qui n'est pas dans le code.** Vérifier par `grep` avant d'écrire.
+
 ## Convention UX (RÈGLE pour tout nouvel outil/liste)
 - **Toute liste d'éléments** (prospects, cibles, fiches, résultats…) doit offrir par défaut : **TRI** (au moins priorité + nom + récent), **AJOUT** (bouton « + Suivre »/ajouter), et **SUPPRESSION EN MASSE** (cases à cocher + « tout sélectionner » + bouton « Supprimer la sélection » ; pour des prospects, AJAX `ag_prospect_delete_bulk`). Les actions de contact (Mail/SMS/WhatsApp/Appel) + **Relancer** sont présentes sur chaque élément, en respectant la déontologie (avocats = email/courrier uniquement).
 
