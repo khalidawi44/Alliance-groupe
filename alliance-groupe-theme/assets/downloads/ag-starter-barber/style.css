@@ -66,6 +66,11 @@ a{text-decoration:none;color:inherit}
     transition:transform .2s;
 }
 .ag-header__cta:hover{transform:translateY(-2px);}
+/* Le bouton vit DANS .ag-header__nav : « .ag-header__nav a » (0,1,1) l'emporte
+   sur « .ag-header__cta » (0,1,0) et repeignait le libelle en gris sur l'or,
+   illisible. On regagne la specificite plutot que d'ajouter un !important. */
+.ag-header__nav a.ag-header__cta{color:var(--dark);}
+.ag-header__nav a.ag-header__cta:hover{color:var(--dark);}
 
 /* ── Hero ──────────────────────────────────────────────────── */
 .ag-hero{
