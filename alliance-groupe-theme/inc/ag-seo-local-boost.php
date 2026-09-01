@@ -67,6 +67,33 @@ if ( ! function_exists( 'ag_lb_cta_html' ) ) {
 	}
 }
 
+if ( ! function_exists( 'ag_lb_hero_map' ) ) {
+	/** slug => [chemin image relatif à assets/images/, texte alt]. Photos étalonnées AG. */
+	function ag_lb_hero_map() {
+		return array(
+			'creation-site-internet-nantes'            => array( 'local/nantes.jpg', 'Nantes — création de site internet' ),
+			'securite-informatique-pme-nantes'         => array( 'securite/nantes-cyber.jpg', 'Sécurité informatique des PME à Nantes' ),
+			'creation-site-internet-saint-nazaire'     => array( 'local/saint-nazaire.jpg', 'Saint-Nazaire — port et chantiers navals' ),
+			'creation-site-internet-restaurant-nantes' => array( 'local/restaurant.jpg', 'Restaurant élégant — création de site à Nantes' ),
+			'creation-site-internet-artisan-nantes'    => array( 'articles/artisan.jpg', 'Artisan au travail — création de site à Nantes' ),
+			'creation-site-internet-avocat-nantes'     => array( 'templates/avocat/expertise-jour.jpg', 'Cabinet d\'avocat — création de site à Nantes' ),
+			'creation-site-e-commerce-nantes'          => array( 'local/ecommerce.jpg', 'Boutique e-commerce — création à Nantes' ),
+		);
+	}
+}
+
+if ( ! function_exists( 'ag_lb_hero_html' ) ) {
+	/** Bandeau photo étalonné AG en tête de page (si un visuel est mappé). */
+	function ag_lb_hero_html( $slug ) {
+		$map = ag_lb_hero_map();
+		if ( empty( $map[ $slug ] ) ) return '';
+		$rel = $map[ $slug ][0];
+		$alt = $map[ $slug ][1];
+		$url = get_stylesheet_directory_uri() . '/assets/images/' . $rel;
+		return '<figure class="ag-lb-hero"><img src="' . esc_url( $url ) . '" alt="' . esc_attr( $alt ) . '" loading="eager" fetchpriority="high"><span class="ag-lb-hero__veil" aria-hidden="true"></span></figure>';
+	}
+}
+
 if ( ! function_exists( 'ag_lb_maillage_html' ) ) {
 	/** Bloc de liens internes (jus SEO) — exclut la page courante. */
 	function ag_lb_maillage_html( $current_slug = '' ) {
@@ -191,7 +218,7 @@ add_filter( 'the_content', function ( $c ) {
 	} else {
 		return $c;
 	}
-	return '<div class="ag-lb-page">' . $c . $extra . ag_lb_maillage_html( $slug ) . '</div>';
+	return '<div class="ag-lb-page">' . ag_lb_hero_html( $slug ) . $c . $extra . ag_lb_maillage_html( $slug ) . '</div>';
 }, 18 );
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -398,6 +425,10 @@ add_action( 'wp_head', function () {
 <style>
 .ag-lb-page,.page-id-body .entry-content{--ag-gold:#D4B45C;--ag-gold2:#E7C979;--ag-or:#F37A1F}
 .ag-lb-page{max-width:1000px;margin:0 auto;font-size:1.04rem;line-height:1.7}
+.ag-lb-hero{position:relative;margin:0 0 1.6em;border-radius:18px;overflow:hidden;border:1px solid rgba(212,180,92,.25);aspect-ratio:16/9;max-height:420px}
+.ag-lb-hero img{width:100%;height:100%;object-fit:cover;display:block}
+.ag-lb-hero__veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,15,.15),rgba(10,10,15,.55));pointer-events:none}
+@media(max-width:600px){.ag-lb-hero{aspect-ratio:4/3}}
 .ag-lb-page h2,.ag-lb-cta+*{scroll-margin-top:90px}
 .ag-lb-page h2{color:#D4B45C;font-size:clamp(1.45rem,3vw,2rem);margin:2em 0 .5em}
 .ag-lb-page h2:after{content:"";display:block;width:60px;height:3px;margin-top:.4em;border-radius:2px;background:linear-gradient(90deg,#D4B45C,#F37A1F)}
