@@ -77,3 +77,9 @@ $ag_shop_mod = get_stylesheet_directory() . '/inc/ag-shop-products.php';
 if ( file_exists( $ag_shop_mod ) ) {
 	require_once $ag_shop_mod;
 }
+
+// ── Article pilier sécurité : « Failles des thèmes & plugins WordPress ».
+$ag_failles_mod = get_stylesheet_directory() . '/inc/ag-article-failles.php';
+if ( file_exists( $ag_failles_mod ) ) {
+	require_once $ag_failles_mod;
+}

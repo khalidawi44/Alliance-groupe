@@ -29,6 +29,7 @@
                     'rgpd'       => 'securite/max-bender-XIVDN9cxOVc-unsplash.jpg',         // conformité / data
                     'wordpress-est-il' => 'securite/wordpress-securise.jpg',               // laptop + logo WordPress
                     'securise-comment' => 'securite/pexels-julio-lopez-75309646-34258666.jpg', // site sécurisé — code/terminal
+                    'failles'    => 'securite/pexels-julio-lopez-75309646-34258666.jpg', // failles thèmes/plugins — code/terminal
                     // --- Web / marketing (vraies photos étalonnées marque) ---
                     'debutant-ia'=> 'articles/ia.jpg',                        // débuter avec l'IA — réseau neuronal
                     'ia-revolution' => 'articles/ia-leads.jpg',              // IA génère des leads — androïde
