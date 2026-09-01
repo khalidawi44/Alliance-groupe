@@ -61,10 +61,16 @@ function ag_merchant_products() {
 		'association' => array( 'Association', 'Site WordPress Premium pour association, mouvement ou ONG : manifeste, événements, groupes locaux, dons, adhérents. Téléchargement immédiat.', 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1200&q=85' ),
 	);
 	foreach ( $metiers as $slug => $d ) {
-		$img = $d[2];
-		$gal = function_exists( 'ag_template_gallery_images' ) ? ag_template_gallery_images( $slug ) : array();
-		if ( ! empty( $gal ) ) {
-			$img = $gal[0]['url'];
+		// Image du flux = image de la fiche produit (cohérence flux ↔ page pour
+		// Merchant Center) : photo étalonnée AG > capture template > repli.
+		if ( function_exists( 'ag_shop_product_img' ) ) {
+			$img = ag_shop_product_img( $slug, $d[2] );
+		} else {
+			$img = $d[2];
+			$gal = function_exists( 'ag_template_gallery_images' ) ? ag_template_gallery_images( $slug ) : array();
+			if ( ! empty( $gal ) ) {
+				$img = $gal[0]['url'];
+			}
 		}
 		$items[] = array(
 			'id'          => 'tpl-premium-' . $slug,

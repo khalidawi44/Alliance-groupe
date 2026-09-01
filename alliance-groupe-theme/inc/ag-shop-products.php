@@ -70,13 +70,28 @@ if ( ! function_exists( 'ag_shop_products' ) ) {
 	}
 }
 
-/** Image produit : capture réelle du template si dispo, sinon illustration. */
+/** Image produit : photo étalonnée AG dédiée si dispo, sinon capture du
+ *  template, sinon illustration de repli. Sert la fiche ET le schema Product. */
 if ( ! function_exists( 'ag_shop_product_img' ) ) {
 	function ag_shop_product_img( $slug, $fallback ) {
+		// 1) Visuels étalonnés « codes AG » (sombre/or) pour les métiers sans capture.
+		$local = array(
+			'restaurant'  => 'local/restaurant.jpg',
+			'barber'      => 'local/barber.jpg',
+			'association' => 'local/association.jpg',
+		);
+		if ( isset( $local[ $slug ] ) ) {
+			$abs = get_stylesheet_directory() . '/assets/images/' . $local[ $slug ];
+			if ( file_exists( $abs ) ) {
+				return get_stylesheet_directory_uri() . '/assets/images/' . $local[ $slug ];
+			}
+		}
+		// 2) Capture réelle du template (avocat, artisan, coach…).
 		if ( function_exists( 'ag_template_gallery_images' ) ) {
 			$gal = ag_template_gallery_images( $slug );
 			if ( ! empty( $gal[0]['url'] ) ) return $gal[0]['url'];
 		}
+		// 3) Repli.
 		return $fallback;
 	}
 }
