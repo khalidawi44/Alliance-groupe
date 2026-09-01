@@ -31,11 +31,11 @@
                 [
                     'id'    => 'la-environnement',
                     'title' => 'L.A Environnement',
-                    'url'   => 'https://www.paysagiste-environnement.com/',
-                    'img'   => $img_base . 'la-environnement-logo.png',
+                    'url'   => '#',
+                    'img'   => $img_base . 'la-environnement.jpg',
                     'tags'  => ['Paysagiste', 'Site Vitrine', 'SEO Local'],
-                    'desc'  => 'Site vitrine pour un paysagiste en Loire-Atlantique. Génération de leads automatisée avec formulaires optimisés et référencement local dominant.',
-                    'stats' => ['+320% devis', 'Top 3 Google', '15 devis/mois'],
+                    'desc'  => 'Site vitrine réalisé pour un paysagiste en Loire-Atlantique : mise en valeur des aménagements extérieurs, génération de leads via formulaires optimisés et référencement local. Activité aujourd\'hui cessée.',
+                    'stats' => ['Aménagement paysager', 'SEO local', 'Génération de devis'],
                     'google'=> 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( 'L.A Environnement paysagiste Nantes' ),
                 ],
             ];
