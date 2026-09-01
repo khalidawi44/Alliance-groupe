@@ -162,6 +162,15 @@ add_action( 'wp_head', function () {
 	$hours = trim( (string) ag_nap_opt( 'hours' ) );
 	if ( '' !== $hours ) $ld['openingHours'] = $hours;
 
+	// founder : relie la marque à une personne réelle (signal E-E-A-T + graphe d'entité).
+	$ld['founder'] = array(
+		'@type'       => 'Person',
+		'name'        => 'Fabrizio',
+		'jobTitle'    => 'Fondateur',
+		'description' => 'Fondateur d\'Alliance Groupe, studio web et cybersécurité (Nantes & Naples). Expert en création de sites sécurisés et conformité NIS2.',
+		'url'         => home_url( '/a-propos' ),
+	);
+
 	// sameAs : fiche Google + réseaux (aide Google à relier la marque).
 	$gbp = ag_nap_opt( 'gbp' ) ?: ag_nap_opt( 'maps' );
 	if ( ! $gbp && function_exists( 'ag_geo_review_url' ) ) $gbp = ag_geo_review_url();

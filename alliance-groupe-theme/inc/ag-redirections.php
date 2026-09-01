@@ -62,3 +62,11 @@ $ag_longform_mod = get_stylesheet_directory() . '/inc/ag-articles-longform.php';
 if ( file_exists( $ag_longform_mod ) ) {
 	require_once $ag_longform_mod;
 }
+
+// ── SEO local boost : approfondit les pages piliers locales + crée les pages
+//    métier-local (restaurant, artisan, avocat, e-commerce) pour gagner la
+//    longue traîne locale sans attendre l'ancienneté du domaine.
+$ag_localboost_mod = get_stylesheet_directory() . '/inc/ag-seo-local-boost.php';
+if ( file_exists( $ag_localboost_mod ) ) {
+	require_once $ag_localboost_mod;
+}

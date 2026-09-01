@@ -179,16 +179,32 @@
         </div>
         <?php endif; ?>
 
-        <!-- Auteur / Crédibilité -->
+        <!-- Auteur / Crédibilité (E-E-A-T : auteur nommé, expertise adaptée au sujet) -->
+        <?php
+        $ag_is_secu = false;
+        if ( $cats ) {
+            foreach ( $cats as $ct ) {
+                if ( false !== stripos( $ct->slug . ' ' . $ct->name, 'secur' ) || false !== stripos( $ct->slug, 'cyber' ) ) { $ag_is_secu = true; break; }
+            }
+        }
+        $ag_author_role = $ag_is_secu
+            ? 'Fondateur d\'Alliance Groupe · expert cybersécurité (audit, conformité NIS2)'
+            : 'Fondateur d\'Alliance Groupe · expert création web &amp; référencement local';
+        $ag_author_bio = $ag_is_secu
+            ? 'Studio web ET cybersécurité à Nantes et Naples. J\'audite, sécurise et mets en conformité (NIS2, RGPD) les sites et les PME — parce qu\'un site qui se fait pirater ne rapporte rien.'
+            : 'Studio web ET cybersécurité à Nantes et Naples. Je conçois des sites rapides, sécurisés et pensés pour générer des demandes — un seul interlocuteur, du conseil à la livraison.';
+        ?>
         <section class="ag-author-box">
             <div class="ag-container ag-container--narrow">
                 <div class="ag-author-box__inner">
-                    <div class="ag-author-box__avatar">AG</div>
+                    <div class="ag-author-box__avatar">F</div>
                     <div class="ag-author-box__content">
                         <span class="ag-author-box__label">Rédigé par</span>
-                        <strong class="ag-author-box__name">L'équipe Alliance Groupe</strong>
-                        <p class="ag-author-box__bio">Experts en création web, IA et stratégie digitale. Nous aidons les entreprises à transformer leur présence en ligne en machine à générer des leads.</p>
-                        <a href="tel:+33744829516" class="ag-author-box__cta">Nous appeler →</a>
+                        <strong class="ag-author-box__name">Fabrizio — Alliance Groupe</strong>
+                        <span class="ag-author-box__role" style="display:block;color:#e7c979;font-size:.88rem;margin:2px 0 6px"><?php echo $ag_author_role; ?></span>
+                        <p class="ag-author-box__bio"><?php echo esc_html( $ag_author_bio ); ?></p>
+                        <a href="<?php echo esc_url( home_url( '/a-propos' ) ); ?>" class="ag-author-box__cta">En savoir plus sur nous →</a>
+                        &nbsp;<a href="tel:+33744829516" class="ag-author-box__cta">Nous appeler →</a>
                     </div>
                 </div>
             </div>
