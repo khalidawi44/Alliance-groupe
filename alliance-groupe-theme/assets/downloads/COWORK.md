@@ -31,13 +31,22 @@ SEO technique, statistiques, schema.org, performance, sécurité, conformité.
 Du travail que personne sans compétence informatique ne peut produire — c'est ça
 qui justifie le prix, pas un habillage graphique supplémentaire.
 
-> ⚠️ Ce découpage **contredit** les descriptions actuelles des `.json`
-> (Premium barber = « header design, hero logo, QR cliquable » ;
-> Business barber = « équipe, galerie, témoignages »).
-> **À faire confirmer par Fabrice avant publication** : si des clients ont acheté
-> le Business pour la galerie, la déplacer dans le gratuit leur retire ce qu'ils
-> ont payé. Mettre les `.json` à jour dans le même mouvement, sinon la page de
-> vente et le produit ne racontent plus la même chose.
+### Tranché le 27/08 — il n'y a pas de conflit
+
+J'avais alerté sur une contradiction avec les `.json`. Vérification faite dans le
+code : **c'en était pas une.** Deux choses différentes étaient confondues.
+
+| | Où ça vit |
+|---|---|
+| **Site illustré** — des photos dans les sections qui existent déjà (hero, prestations, ambiance). Le site est beau et plein dès le gratuit. | **GRATUIT** |
+| **Module galerie** — grille éditable + équipe + témoignages, que le client pilote lui-même depuis le Customizer. Réellement codé, 1 169 lignes. | **BUSINESS** (inchangé) |
+
+Un barbier voit un site magnifique en gratuit. S'il veut *sa* galerie qu'il gère,
+il monte en gamme. **Personne ne perd ce qu'il a payé.**
+
+Constat au passage : le **Premium** ne contenait que du CSS et du JS d'habillage
+(1 177 lignes), **zéro SEO, zéro statistiques**. C'est ce qui est en train d'être
+corrigé côté CODE — c'est là qu'est la vraie valeur payante.
 
 ---
 
@@ -125,3 +134,5 @@ Chaîne complète : `docs/MECANIQUE-DEPLOIEMENT.md`.
 ## Journal maître
 
 - 2026-08-27 · CODE · Création du protocole et d'un `COWORK.md` dans chacun des 16 templates. Inventaire mesuré (versions, images, PHP). Diagnostic : famine d'images sur tout le parc hors Gwen.
+- 2026-08-27 · CODE · Doctrine tranchée : site illustré = gratuit, module galerie = Business (inchangé), technique = Premium. Alerte levée après vérification du code.
+- 2026-08-27 · CODE · Premium barber : module Statistiques construit (trafic sans cookie ni IP + historique des tickets). Descriptions plugin et .json mises en cohérence.

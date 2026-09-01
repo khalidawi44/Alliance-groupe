@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       AG Premium Barber
  * Plugin URI:        https://alliancegroupe-inc.com
- * Description:       Pack Premium pour le thème AG Starter Barber. Apporte les enrichissements design (typo industrielle, palette charbon/rouge sang/or laiton, hero plein image, service cards stylées) sans les sections supplémentaires Business. Active si tier === premium OU business.
+ * Description:       Pack Premium pour le thème AG Starter Barber. Statistiques du salon (visiteurs, pages vues, sources, tickets pris, heures de pointe, prestations les plus demandées) calculées sur votre hébergement, sans service externe ni cookie. Plus les enrichissements design. Active si tier === premium OU business.
  * Version:           0.5.3
  * Requires at least: 5.8
  * Requires PHP:      7.4
@@ -38,5 +38,9 @@ if ( get_option( 'stylesheet' ) !== 'ag-starter-barber' && get_option( 'template
 
 require_once AG_PREMIUM_BARBER_DIR . 'inc/class-ag-premium-barber.php';
 require_once AG_PREMIUM_BARBER_DIR . 'inc/class-ag-pb-updater.php';
+require_once AG_PREMIUM_BARBER_DIR . 'inc/class-ag-pb-stats.php';
 
 add_action( 'after_setup_theme', array( 'AG_Premium_Barber', 'instance' ), 20 );
+
+// Statistiques du salon : trafic + tickets. Voir inc/class-ag-pb-stats.php.
+AG_PB_Stats::init();
