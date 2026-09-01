@@ -163,6 +163,9 @@ function ag_starter_barber_dashboard_render() {
 add_action( 'wp_dashboard_setup', 'ag_starter_barber_dashboard_widget' );
 
 // Auto-update via raw GitHub.
+// Design du theme (ex-pack Premium, desormais inclus dans le gratuit).
+require_once get_template_directory() . '/inc/design.php';
+
 require_once get_template_directory() . '/inc/theme-updater.php';
 
 // Guide d'utilisation (admin)

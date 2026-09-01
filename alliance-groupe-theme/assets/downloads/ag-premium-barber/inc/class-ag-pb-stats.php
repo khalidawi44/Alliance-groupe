@@ -41,7 +41,16 @@ class AG_PB_Stats {
 	/** Nombre max de tickets archives (garde-fou taille). */
 	const KEEP_TICKETS = 5000;
 
+	/** Les statistiques sont une fonctionnalite payante. */
+	private static function licence_ok() {
+		return function_exists( 'ag_pb_licence_ok' ) ? ag_pb_licence_ok() : false;
+	}
+
 	public static function init() {
+		// Sans licence valide : ni collecte, ni ecran. Rien ne tourne.
+		if ( ! self::licence_ok() ) {
+			return;
+		}
 		add_action( 'template_redirect', array( __CLASS__, 'track' ), 99 );
 		add_action( 'update_option_ag_barber_queue', array( __CLASS__, 'on_queue_change' ), 10, 2 );
 		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );

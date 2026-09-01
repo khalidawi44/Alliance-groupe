@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       AG Premium Barber
  * Plugin URI:        https://alliancegroupe-inc.com
- * Description:       Pack Premium pour le thème AG Starter Barber. Statistiques du salon (visiteurs, pages vues, sources, tickets pris, heures de pointe, prestations les plus demandées) calculées sur votre hébergement, sans service externe ni cookie. Plus les enrichissements design. Active si tier === premium OU business.
+ * Description:       Outils Premium pour AG Starter Barber. Statistiques du salon : visiteurs, pages vues, provenance, tickets pris, heures de pointe, prestations les plus demandées — calculées sur votre hébergement, sans service externe ni cookie. Le design est desormais inclus dans le theme gratuit.
  * Version:           0.6.0
  * Requires at least: 5.8
  * Requires PHP:      7.4
@@ -34,6 +34,21 @@ if ( get_option( 'stylesheet' ) !== 'ag-starter-barber' && get_option( 'template
 		echo '<div class="notice notice-warning is-dismissible"><p><strong>AG Premium Barber</strong> nécessite le thème <code>ag-starter-barber</code> pour fonctionner. Désactivez ce plugin ou activez le thème compatible.</p></div>';
 	} );
 	return;
+}
+
+/**
+ * La licence Premium (ou Business) est-elle valide ?
+ * Point unique de verite : le design est desormais gratuit, seuls les OUTILS
+ * (statistiques, SEO) sont derriere la licence.
+ */
+function ag_pb_licence_ok() {
+	if ( get_theme_mod( 'ag_pb_force_active', false ) ) {
+		return true; // mode test pour previsualiser sans licence reelle
+	}
+	if ( ! class_exists( 'AG_Licence_Client' ) ) {
+		return false;
+	}
+	return in_array( AG_Licence_Client::get_tier(), array( 'premium', 'business' ), true );
 }
 
 require_once AG_PREMIUM_BARBER_DIR . 'inc/class-ag-premium-barber.php';
