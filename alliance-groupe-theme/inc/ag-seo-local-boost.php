@@ -71,13 +71,14 @@ if ( ! function_exists( 'ag_lb_hero_map' ) ) {
 	/** slug => [chemin image relatif à assets/images/, texte alt]. Photos étalonnées AG. */
 	function ag_lb_hero_map() {
 		return array(
-			'creation-site-internet-nantes'            => array( 'local/nantes.jpg', 'Nantes — création de site internet' ),
+			'creation-site-internet-nantes'            => array( 'team/reunion-naples.jpg', 'Alliance Groupe — l\'équipe au travail, bureau de Naples' ),
 			'securite-informatique-pme-nantes'         => array( 'securite/nantes-cyber.jpg', 'Sécurité informatique des PME à Nantes' ),
 			'creation-site-internet-saint-nazaire'     => array( 'local/saint-nazaire.jpg', 'Saint-Nazaire — port et chantiers navals' ),
 			'creation-site-internet-restaurant-nantes' => array( 'local/restaurant.jpg', 'Restaurant élégant — création de site à Nantes' ),
 			'creation-site-internet-artisan-nantes'    => array( 'articles/artisan.jpg', 'Artisan au travail — création de site à Nantes' ),
 			'creation-site-internet-avocat-nantes'     => array( 'templates/avocat/expertise-jour.jpg', 'Cabinet d\'avocat — création de site à Nantes' ),
 			'creation-site-e-commerce-nantes'          => array( 'local/ecommerce.jpg', 'Boutique e-commerce — création à Nantes' ),
+			'meilleure-agence-web-nantes'              => array( 'egerie/egerie-baie.jpg', 'Alliance Groupe — De Naples à Nantes' ),
 		);
 	}
 }
@@ -220,6 +221,14 @@ add_filter( 'the_content', function ( $c ) {
 	}
 	return '<div class="ag-lb-page">' . ag_lb_hero_html( $slug ) . $c . $extra . ag_lb_maillage_html( $slug ) . '</div>';
 }, 18 );
+
+/* Hero de marque sur la page comparatif « meilleure-agence-web-nantes »
+ * (contenu géré par ag-geo.php) — on préfixe juste le visuel égérie. */
+add_filter( 'the_content', function ( $c ) {
+	if ( is_admin() || ! is_page() || ! in_the_loop() || ! is_main_query() ) return $c;
+	if ( 'meilleure-agence-web-nantes' !== (string) get_post_field( 'post_name' ) ) return $c;
+	return ag_lb_hero_html( 'meilleure-agence-web-nantes' ) . $c;
+}, 17 );
 
 /* ═══════════════════════════════════════════════════════════════════════════
  *  B. PAGES MÉTIER-LOCAL (création idempotente, versionnée)
@@ -420,7 +429,8 @@ add_action( 'wp_head', function () {
 	$slug = (string) get_post_field( 'post_name' );
 	$is_new    = array_key_exists( $slug, ag_lb_new_defs() );
 	$is_deep   = array_key_exists( $slug, ag_lb_deepen_map() );
-	if ( ! $is_new && ! $is_deep ) return;
+	$is_hero   = array_key_exists( $slug, ag_lb_hero_map() );
+	if ( ! $is_new && ! $is_deep && ! $is_hero ) return;
 	?>
 <style>
 .ag-lb-page,.page-id-body .entry-content{--ag-gold:#D4B45C;--ag-gold2:#E7C979;--ag-or:#F37A1F}
