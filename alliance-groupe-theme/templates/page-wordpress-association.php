@@ -83,6 +83,27 @@ $dl_base = get_stylesheet_directory_uri() . '/assets/downloads/';
         </div>
     </section>
 
+    <!-- Aperçu visuel : identité de marque du thème -->
+    <section class="ag-section ag-section--graphite" style="padding:64px 0;">
+        <div class="ag-container">
+            <span class="ag-tag ag-anim" data-anim="tag">Aperçu</span>
+            <h2 class="ag-section__title ag-anim" data-anim="title">Un design pensé pour <em>rassembler</em></h2>
+            <p class="ag-section__desc ag-anim" data-anim="desc">Direction artistique sobre et chaleureuse, aux couleurs de votre cause : un site qui inspire confiance et donne envie de s'engager.</p>
+            <div class="ag-anim" data-anim="card" style="max-width:1000px;margin:36px auto 0;border-radius:18px;overflow:hidden;border:1px solid rgba(212,180,92,.3);box-shadow:0 24px 60px rgba(0,0,0,.45);position:relative;">
+                <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/local/association.jpg' ); ?>" alt="Aperçu du thème WordPress Association Alliance Groupe" loading="lazy" style="width:100%;display:block;">
+                <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,15,17,0) 40%,rgba(15,15,17,.85) 100%);"></div>
+                <div style="position:absolute;left:28px;right:28px;bottom:24px;">
+                    <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                        <span style="padding:6px 14px;background:rgba(212,180,92,.2);border:1px solid rgba(212,180,92,.45);border-radius:100px;color:#FFD23F;font-size:.82rem;font-weight:600;">Hero personnalisable</span>
+                        <span style="padding:6px 14px;background:rgba(212,180,92,.2);border:1px solid rgba(212,180,92,.45);border-radius:100px;color:#FFD23F;font-size:.82rem;font-weight:600;">Manifeste &amp; signatures</span>
+                        <span style="padding:6px 14px;background:rgba(212,180,92,.2);border:1px solid rgba(212,180,92,.45);border-radius:100px;color:#FFD23F;font-size:.82rem;font-weight:600;">Dons &amp; réduction d'impôt</span>
+                        <span style="padding:6px 14px;background:rgba(212,180,92,.2);border:1px solid rgba(212,180,92,.45);border-radius:100px;color:#FFD23F;font-size:.82rem;font-weight:600;">Calendrier événements</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- CTA download -->
     <section class="ag-section ag-section--or" style="padding:60px 0;">
         <div class="ag-container">
