@@ -340,8 +340,13 @@ $dir = get_stylesheet_directory_uri();
     .of__in{display:flex;flex-direction:column;justify-content:center;height:100%}
     .of .lead{display:none}
     .of__bg{opacity:.3}
-    /* Les 3 packs empilés, visibles ENSEMBLE et comparables d'un coup d'œil. */
-    .of__grid{display:grid;grid-template-columns:1fr;gap:9px;position:relative;height:auto;margin:12px 0 0}
+    /* Les 3 packs empilés, visibles ENSEMBLE et comparables d'un coup d'œil.
+       flex:0 0 auto est indispensable : .of__in est une colonne flex de
+       hauteur 100%, et sans ça la grille se faisait comprimer par flexbox —
+       chaque carte etait alors rognee par son overflow:hidden, delai et
+       bouton coupes (constate a 375x667 le 03/09). */
+    .of__grid{display:grid;grid-template-columns:1fr;gap:9px;position:relative;height:auto;margin:12px 0 0;
+        flex:0 0 auto}
     .pack{position:relative;inset:auto;margin:0;width:auto;border-radius:14px}
     .pack img{display:none}
     .pack__body{padding:12px 14px 13px}
@@ -358,19 +363,24 @@ $dir = get_stylesheet_directory_uri();
        précisément sur l'appareil où il la lit. */
     .of__note{display:block;margin-top:11px;font-size:.78rem;line-height:1.4}
     .pack__cta{padding:11px 16px;font-size:.84rem;margin-top:10px}
-    /* Écran court (iPhone SE) : on resserre plutôt que de déborder. */
-    @media(max-height:700px){
-      .of__grid{gap:7px;margin-top:9px}
-      .pack__body{padding:10px 13px 11px}
-      .pack__feats li{font-size:.75rem}
-      .pack__delai{margin-top:5px}
-      .of__note{margin-top:8px;font-size:.74rem}
-    }
-    /* Très petit écran : on retire le 3e argument plutôt que de laisser la
-       scène rogner une carte. Nom, prix et délai ne partent jamais. */
-    @media(max-height:620px){
+    /* Écran court (iPhone SE : 667 px de haut, encore très répandu).
+       Trois cartes complètes + le titre + la note ne tiennent pas en
+       563 px utiles : on retire d'abord le décor, puis le 3e argument.
+       Nom, prix, délai et bouton ne partent JAMAIS — ce sont eux qui
+       permettent de comparer et d'acheter. */
+    @media(max-height:760px){
+      .of .eyebrow{display:none}
+      .of .stitle{font-size:clamp(1.35rem,5.6vw,1.85rem)}
+      .of__grid{gap:6px;margin-top:8px}
+      .pack{border-radius:12px}
+      .pack__body{padding:9px 12px 10px}
+      .pack__nom{font-size:.94rem}
+      .pack__prix{font-size:1.14rem}
       .pack__feats li:nth-child(3){display:none}
-      .of .stitle{font-size:clamp(1.4rem,6vw,1.9rem)}
+      .pack__feats li{font-size:.75rem}
+      .pack__delai{margin-top:5px;font-size:.72rem}
+      .pack__cta{padding:9px 14px;font-size:.8rem;margin-top:8px}
+      .of__note{margin-top:7px;font-size:.72rem}
     }
 
     .at .wrap{display:flex;flex-direction:column;justify-content:center;height:100%}
