@@ -101,11 +101,18 @@ if exist "_local-prive\reset-avant-push.flag" (
 	del /Q "_local-prive\reset-avant-push.flag"
 )
 
-REM  Seul gwen-inbox est pousse automatiquement : le reste du travail en
-REM  cours dans le depot n'est jamais touche.
+REM  IMAGES ET MEDIAS UNIQUEMENT (restreint le 03/09/2026).
+REM  Ce script tourne en tache de fond : tout chemin liste ici peut etre
+REM  commite AU MILIEU d'une session de travail, sous le message
+REM  "depot automatique", et avec --no-verify (donc sans le verrou des
+REM  templates). Il avait fini par suivre presque tout le theme (inc,
+REM  templates, header.php, functions.php, footer.php, single.php, css, js)
+REM  et il a publie du code en cours d'edition sous son propre message.
+REM  REGLE : n'ajouter ici QUE des dossiers de medias. JAMAIS de .php,
+REM  .css ou .js -- le code se commite a la main, avec son vrai message.
 REM  Detection SANS pipe ni guillemets : "for /f ... ^| find" casse quand
 REM  %GIT% est un chemin entre guillemets (cmd mange les quotes).
-set SUIVI=gwen-inbox alliance-groupe-theme/inc alliance-groupe-theme/template-parts alliance-groupe-theme/assets/images alliance-groupe-theme/assets/videos alliance-groupe-theme/assets/downloads/ag-gwen-services/assets alliance-groupe-theme/assets/downloads/ag-gwen-services/header.php docs/cinematique alliance-groupe-theme/templates alliance-groupe-theme/assets/js alliance-groupe-theme/header.php alliance-groupe-theme/assets/css alliance-groupe-theme/functions.php alliance-groupe-theme/footer.php alliance-groupe-theme/single.php
+set SUIVI=gwen-inbox alliance-groupe-theme/assets/images alliance-groupe-theme/assets/videos alliance-groupe-theme/assets/downloads/ag-gwen-services/assets docs/cinematique
 %GIT% status --porcelain -- %SUIVI% > "%TEMP%\ag-suivi.txt" 2>>%LOG%
 set SZ=0
 for %%A in ("%TEMP%\ag-suivi.txt") do set SZ=%%~zA
