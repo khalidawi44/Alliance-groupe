@@ -3,7 +3,7 @@
  * Plugin Name:       AG Premium Avocat — Boutique & Cabinet
  * Plugin URI:        https://alliancegroupe-inc.com
  * Description:       Fonctionnalités Premium (boutique, équipe, comptes clients) pour le thème AG Starter Avocat. Active sur toute licence Premium via AG_Licence_Client.
- * Version:           0.55.0
+ * Version:           0.55.1
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Alliance Groupe
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Durcissement securite (xmlrpc, enumeration auteur/REST, en-tetes, versions) — livre avec le plugin
 $ag_hard = plugin_dir_path( __FILE__ ) . 'inc/ag-hardening.php';
 if ( file_exists( $ag_hard ) ) { require_once $ag_hard; }
-define( 'AG_BUSINESS_AVOCAT_VERSION', '0.55.0' );
+define( 'AG_BUSINESS_AVOCAT_VERSION', '0.55.1' );
 define( 'AG_BUSINESS_AVOCAT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AG_BUSINESS_AVOCAT_URL', plugin_dir_url( __FILE__ ) );
 
