@@ -80,18 +80,60 @@ if ( ! function_exists( 'ag_refais_boost_offre' ) ) {
 		$paiement = trim( (string) get_option( 'ag_refais_boost_url', '' ) );
 		return array(
 			'nom'      => 'Ma maquette en vrai',
-			'prix'     => get_option( 'ag_refais_boost_prix', '49 €' ),
+			'prix'     => get_option( 'ag_refais_boost_prix', '39,90 €' ),
+			'unite'    => 'une seule fois',
 			'delai'    => 'En ligne sous 24 h',
-			'desc'     => 'On met cette maquette en ligne, à ton nom, sur une vraie adresse.',
-			'deduit'   => 'Déduits de ton site complet si tu continues.',
+			'desc'     => 'On met cette maquette en ligne pour toi. Tu n\'installes rien, tu n\'écris rien.',
+			'deduit'   => 'Déduits de ton site complet si tu continues. Tu ne paies jamais deux fois.',
 			'url'      => $paiement ? $paiement : home_url( '/contact' ),
 			'payable'  => (bool) $paiement,
 			'feats'    => array(
-				'La maquette mise en ligne telle que tu la vois',
-				'Tes vrais textes, ton logo, tes coordonnées',
-				'Une adresse web à toi, en ligne sous 24 h',
+				'La maquette mise en ligne telle que tu viens de la voir',
+				'Tes vrais textes, ton logo, tes coordonnées, ton téléphone',
+				'Une adresse web qui fonctionne, en ligne sous 24 h',
+				'Hébergement et certificat de sécurité compris',
+				'Un interlocuteur joignable au téléphone, à Nantes',
 				'Le montant déduit si tu passes au site complet',
 			),
+			/*
+			 * Ce qu'on peut dire des autres — et RIEN de plus.
+			 * Tarifs relevés le 03/09/2026 sur des comparatifs publics :
+			 * IONOS 6 €/mois (pack Now, hors offre d'appel a 1 €), 12 €/mois
+			 * (Creator) ; Wix a partir de 16,80 €/mois ; Squarespace des
+			 * 12 €/mois en engagement annuel. A reverifier avant toute
+			 * campagne : ces prix bougent, et une comparaison fausse se
+			 * retourne contre nous.
+			 */
+			'compare'  => array(
+				array(
+					'eux'  => 'Un abonnement, tous les mois, à vie',
+					'nous' => 'Une fois. Après, plus rien.',
+				),
+				array(
+					'eux'  => 'Un outil : c\'est toi qui construis le site',
+					'nous' => 'C\'est nous qui le mettons en ligne',
+				),
+				array(
+					'eux'  => 'Tu pars d\'un modèle vide, à remplir',
+					'nous' => 'Tu pars de TA maquette, écrite à partir de ton métier',
+				),
+				array(
+					'eux'  => 'Un formulaire de support, une file d\'attente',
+					'nous' => 'Un numéro de téléphone, à Nantes',
+				),
+				array(
+					'eux'  => 'Ce que tu paies est perdu si tu changes d\'avis',
+					'nous' => 'Le montant est déduit de ton site complet',
+				),
+			),
+			/*
+			 * L'adresse fournie est un sous-domaine de la maison. C'est la
+			 * SEULE facon honnete de vendre un paiement unique : un nom de
+			 * domaine se renouvelle tous les ans, on ne peut pas le promettre
+			 * a vie contre 39,90 € une fois. Le vrai nom de domaine fait
+			 * partie du pack Essentiel — c'est ce qui justifie l'ecart.
+			 */
+			'reserve'  => 'Adresse fournie : ton-nom.alliancegroupe-inc.com. Ton propre nom de domaine fait partie du pack Essentiel.',
 		);
 	}
 }

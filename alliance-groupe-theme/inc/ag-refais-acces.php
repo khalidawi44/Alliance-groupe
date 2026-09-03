@@ -104,7 +104,8 @@ function ag_refais_optin() {
 	if ( $offre ) {
 		$offre_html = '<p style="font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#e8e6e0;'
 			. 'border-top:1px solid rgba(212,180,92,.2);padding-top:16px;margin-top:20px;">'
-			. '<strong style="color:#D4B45C;">' . esc_html( $offre['nom'] ) . ' — ' . esc_html( $offre['prix'] ) . '</strong><br>'
+			. '<strong style="color:#D4B45C;">' . esc_html( $offre['nom'] ) . ' — ' . esc_html( $offre['prix'] )
+			. ( ! empty( $offre['unite'] ) ? ', ' . esc_html( $offre['unite'] ) : '' ) . '</strong><br>'
 			. esc_html( $offre['desc'] ) . ' ' . esc_html( $offre['delai'] ) . '.<br>'
 			. '<span style="color:#b0b0bc;font-size:13px;">' . esc_html( $offre['deduit'] ) . '</span></p>';
 	}
@@ -214,8 +215,9 @@ function ag_refais_voir() {
 	$offre = function_exists( 'ag_refais_boost_offre' ) ? ag_refais_boost_offre() : null;
 	if ( ! $offre ) {
 		$offre = array(
-			'nom' => 'La faire en vrai', 'prix' => '', 'delai' => '', 'desc' => '',
-			'deduit' => '', 'feats' => array(), 'payable' => false,
+			'nom' => 'La faire en vrai', 'prix' => '', 'unite' => '', 'delai' => '',
+			'desc' => '', 'deduit' => '', 'reserve' => '', 'feats' => array(),
+			'compare' => array(), 'payable' => false,
 			'url' => home_url( '/sites-express' ),
 		);
 	}
@@ -242,7 +244,10 @@ function ag_refais_voir() {
   .bar a{display:inline-block;background:linear-gradient(120deg,#d4b45c,#f4d06f);color:#1a1206;
          font-weight:800;text-decoration:none;border-radius:999px;padding:11px 22px;font-size:.9rem}
   iframe{display:block;width:100%;height:calc(100svh - 66px);border:0;background:#fff}
-  @media(max-width:640px){iframe{height:calc(100svh - 104px)}}
+  @media(max-width:640px){
+    iframe{height:calc(100svh - 104px)}
+    .cmp__r{grid-template-columns:1fr;gap:2px;padding:9px 0}
+  }
   .off{padding:26px 20px 34px;border-top:1px solid rgba(212,180,92,.22);background:#0b0b12}
   .off__in{max-width:640px;margin:0 auto;text-align:center}
   .off h2{font-size:1.25rem;font-weight:700;color:#fff;margin-bottom:6px}
@@ -253,6 +258,19 @@ function ag_refais_voir() {
   .off li{position:relative;padding:6px 0 6px 26px;color:#cdd4e2;font-size:.88rem;line-height:1.45}
   .off li::before{content:"\2713";position:absolute;left:0;top:6px;color:#d4b45c;font-weight:800}
   .off__note{color:#8b93a5;font-size:.76rem;margin-top:12px;line-height:1.45}
+  .off__prix small{font-size:.9rem;font-weight:600;color:#9aa3b4;margin-left:6px}
+  .cmp{max-width:560px;margin:24px auto 0;text-align:left}
+  .cmp__h{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:#9aa3b4;
+          font-weight:700;text-align:center;margin-bottom:14px}
+  .cmp__r{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 0;
+          border-bottom:1px solid rgba(255,255,255,.07)}
+  .cmp__r:last-child{border-bottom:0}
+  .cmp__e,.cmp__n{font-size:.83rem;line-height:1.45}
+  .cmp__e{color:#8b93a5}
+  .cmp__e::before{content:"\2717 ";color:#6b7280;font-weight:700}
+  .cmp__n{color:#eef1f6}
+  .cmp__n::before{content:"\2713 ";color:#d4b45c;font-weight:800}
+  .cmp__leg{margin-top:14px;font-size:.72rem;color:#6f7789;line-height:1.5;text-align:center}
 </style>
 </head><body>
   <div class="bar">
@@ -264,7 +282,7 @@ function ag_refais_voir() {
 
   <section class="off" id="offre">
     <div class="off__in">
-      <div class="off__prix"><?php echo esc_html( $offre['prix'] ); ?><span><?php echo esc_html( $offre['delai'] ); ?></span></div>
+      <div class="off__prix"><?php echo esc_html( $offre['prix'] ); ?><?php if ( ! empty( $offre['unite'] ) ) : ?><small><?php echo esc_html( $offre['unite'] ); ?></small><?php endif; ?><span><?php echo esc_html( $offre['delai'] ); ?></span></div>
       <h2 style="margin-top:14px"><?php echo esc_html( $offre['nom'] ); ?></h2>
       <p class="off__p"><?php echo esc_html( $offre['desc'] ); ?></p>
       <ul>
@@ -274,6 +292,22 @@ function ag_refais_voir() {
       </ul>
       <a href="<?php echo esc_url( $offre['url'] ); ?>"><?php echo $offre['payable'] ? 'La mettre en ligne &rarr;' : 'En parler &rarr;'; ?></a>
       <p class="off__note"><?php echo esc_html( $offre['deduit'] ); ?></p>
+      <?php if ( ! empty( $offre['reserve'] ) ) : ?>
+        <p class="off__note"><?php echo esc_html( $offre['reserve'] ); ?></p>
+      <?php endif; ?>
+
+      <?php if ( ! empty( $offre['compare'] ) ) : ?>
+      <div class="cmp">
+        <div class="cmp__h">Ailleurs &middot; Ici</div>
+        <?php foreach ( (array) $offre['compare'] as $c ) : ?>
+          <div class="cmp__r">
+            <div class="cmp__e"><?php echo esc_html( $c['eux'] ); ?></div>
+            <div class="cmp__n"><?php echo esc_html( $c['nous'] ); ?></div>
+          </div>
+        <?php endforeach; ?>
+        <p class="cmp__leg">Les cr&eacute;ateurs de site en ligne se paient au mois, entre 6&nbsp;&euro; et 17&nbsp;&euro;, tant que le site existe&nbsp;&mdash; et le travail reste &agrave; faire. Tarifs relev&eacute;s en septembre 2026.</p>
+      </div>
+      <?php endif; ?>
     </div>
   </section>
 </body></html>
