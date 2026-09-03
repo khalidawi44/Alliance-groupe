@@ -591,8 +591,13 @@ $dir = get_stylesheet_directory_uri();
       </article>
     </div>
     <?php
-    /* Avis Google réels (inc/ag-geo.php). Repli = témoignages écrits vérifiables :
-       la section n'est jamais vide, et on n'invente jamais d'avis. */
+    /* Avis Google RÉELS uniquement (inc/ag-geo.php).
+       PAS DE REPLI. Décision de Fabrice (03/09/2026) : tant qu'il n'y a pas de
+       vrais avis, on n'affiche RIEN. Le repli précédent écrivait trois
+       témoignages en dur (dont un attribué à une structure qui n'est pas
+       cliente) sous le logo Google, cinq étoiles codées en dur et la mention
+       « Avis Google vérifiés » : c'était de la preuve fabriquée.
+       Une section absente vaut mieux qu'une section fausse. */
     $ag_g     = function_exists( 'ag_geo_google_data' ) ? ag_geo_google_data() : array();
     $ag_note  = (float) ( $ag_g['rating'] ?? 0 );
     $ag_total = (int) ( $ag_g['total'] ?? 0 );
@@ -612,27 +617,23 @@ $dir = get_stylesheet_directory_uri();
         );
         if ( count( $ag_avis ) >= 3 ) { break; }
     }
-    if ( ! $ag_avis ) {
-        $ag_avis = array(
-            array( 'nom' => 'Anna B.', 'role' => 'Photographe portraitiste · Nantes', 'photo' => '',
-                'txt' => 'Refonte complète de mon site, design immersif pour mes portraits. Le trafic a presque triplé en six mois et je reçois enfin des demandes depuis Google.',
-                'url' => 'https://annaphoto.eu/', 'lib' => 'Voir le site →' ),
-            array( 'nom' => 'Quartier Libre', 'role' => 'Collectif citoyen · Nantes', 'photo' => '',
-                'txt' => 'On a pris un de leurs modèles pour associations : adhésions, agenda d\'événements et mobilisation en ligne, prêts en quelques minutes.',
-                'url' => 'https://quartierlibre.org/', 'lib' => 'Voir le site →' ),
-            array( 'nom' => 'Gwen', 'role' => 'Aide à domicile · Nantes', 'photo' => '',
-                'txt' => 'Je n\'avais rien en ligne. En cinq jours j\'avais un site, mes photos, mes textes — et les familles arrêtent de me demander comment marche le crédit d\'impôt.',
-                'url' => 'https://gwen-services.alliancegroupe-inc.com/', 'lib' => 'Voir le site →' ),
-        );
-    }
     ?>
+    <?php if ( $ag_avis ) : ?>
     <div class="av" data-rv>
       <div class="av__head">
         <span class="av__g" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.26 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg></span>
         <span class="av__rate">
+          <?php
+          /* Note et étoiles dessinées depuis la VRAIE note, jamais en dur. */
+          $ag_pleines = max( 0, min( 5, (int) round( $ag_note ) ) );
+          ?>
           <?php if ( $ag_note ) : ?><strong><?php echo esc_html( number_format_i18n( $ag_note, 1 ) ); ?></strong><?php endif; ?>
-          <span class="av__stars">★★★★★</span>
-          <?php echo $ag_total ? esc_html( $ag_total ) . ' avis Google vérifiés' : 'Avis Google vérifiés'; ?>
+          <?php if ( $ag_pleines ) : ?><span class="av__stars" aria-hidden="true"><?php echo esc_html( str_repeat( '★', $ag_pleines ) . str_repeat( '☆', 5 - $ag_pleines ) ); ?></span><?php endif; ?>
+          <?php
+          echo $ag_total
+              ? esc_html( sprintf( _n( '%s avis Google', '%s avis Google', $ag_total, 'alliance-groupe' ), number_format_i18n( $ag_total ) ) )
+              : 'Avis Google';
+          ?>
         </span>
       </div>
       <div class="av__grid">
@@ -648,6 +649,7 @@ $dir = get_stylesheet_directory_uri();
         <?php endforeach; ?>
       </div>
     </div>
+    <?php endif; /* $ag_avis — aucun avis réel = aucune section */ ?>
 
     <a class="btn" data-rv href="<?php echo esc_url( home_url( '/realisations' ) ); ?>">Toutes nos réalisations</a>
   </div>
