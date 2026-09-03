@@ -2032,13 +2032,39 @@ em,.ag-gold{
     margin:0 0 0 28px;
 }
 body.ag-cookie-open{overflow:auto;}
+/* Sur mobile la banniere devient une BARRE COMPACTE.
+   En 390x844 l'ancienne version (titre + 4 lignes de texte + 3 boutons
+   empiles) occupait plus de la moitie de l'ecran : le prix du hero passait
+   sous la ligne de flottaison, alors que c'est la seule chose que le
+   visiteur doit voir en arrivant.
+   Le consentement n'est PAS touche : memes boutons, memes valeurs
+   data-ag-cookie, meme panneau « Personnaliser », meme texte d'information.
+   Seule la mise en page change. « Tout refuser » et « Tout accepter »
+   restent cote a cote, de meme taille : refuser doit rester aussi simple
+   qu'accepter (exigence CNIL). */
 @media(max-width:560px){
-    .ag-cookie{left:10px;right:10px;bottom:10px;}
-    .ag-cookie__inner{padding:20px 18px;}
-    .ag-cookie__title{font-size:1.1rem;}
-    .ag-cookie__text{font-size:.86rem;}
-    .ag-cookie__actions{flex-direction:column;}
-    .ag-cookie__btn{width:100%;min-width:0;}
+    .ag-cookie{left:8px;right:8px;bottom:8px;border-radius:14px;}
+    .ag-cookie__inner{padding:14px 16px;}
+    /* Le titre sort du flux mais reste dans l'arbre d'accessibilite :
+       il est la cible de aria-labelledby, un display:none casserait le nom
+       accessible de la boite de dialogue. */
+    .ag-cookie__title{
+        position:absolute;width:1px;height:1px;margin:0;overflow:hidden;
+        clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;
+    }
+    .ag-cookie__text{font-size:.8rem;line-height:1.45;margin:0 0 12px;}
+    .ag-cookie__actions{flex-direction:row;gap:8px;}
+    .ag-cookie__btn{
+        flex:1 1 0;width:auto;min-width:0;white-space:nowrap;
+        padding:10px 8px !important;font-size:.82rem !important;
+    }
+    /* « Personnaliser » passe en lien discret sous les deux choix francs. */
+    .ag-cookie__btn[data-ag-cookie="customize"]{
+        order:3;flex:1 0 100%;background:transparent;border:0;box-shadow:none;
+        text-decoration:underline;padding:4px 0 0 !important;font-size:.78rem !important;
+    }
+    .ag-cookie__panel{margin-top:12px;padding-top:14px;}
+    .ag-cookie__desc{margin-left:26px;}
 }
 
 /* ── Cookies page ─────────────────────────────────────────────── */

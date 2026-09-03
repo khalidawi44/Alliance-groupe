@@ -40,6 +40,22 @@ add_action( 'wp_footer', function () {
 	// Pas dans l'espace ambassadeur ni sur la page de candidature.
 	if ( function_exists( 'ag_pwa_is_amb_context' ) && ag_pwa_is_amb_context() ) return;
 	if ( function_exists( 'is_page' ) && is_page( array( 'candidature-ambassadeur', 'devenir-ambassadeur', 'ambassadeurs' ) ) ) return;
+	/*
+	 * Ni sur l'accueil, ni sur les pages de vente. Le visiteur qui regarde un
+	 * prix est en train de decider d'acheter : lui proposer au meme instant de
+	 * venir travailler pour nous brouille le message et fait douter du serieux
+	 * de la maison. Le recrutement garde les pages editoriales et de contenu.
+	 * Liste ajustable via le filtre `ag_recrute_pages_exclues`.
+	 */
+	if ( function_exists( 'is_front_page' ) && is_front_page() ) return;
+	$exclues = apply_filters( 'ag_recrute_pages_exclues', array(
+		'sites-express', 'sur-mesure', 'maintenance', 'realisations', 'tarifs',
+		'contact', 'devis-instant', 'refais-mon-site', 'tester-mon-site',
+		'templates-wordpress', 'wordpress-avocat', 'wordpress-restaurant',
+		'wordpress-artisan', 'wordpress-coach', 'wordpress-barber',
+		'wordpress-association', 'wordpress-domicile',
+	) );
+	if ( function_exists( 'is_page' ) && is_page( $exclues ) ) return;
 	$url   = esc_url( ag_recrute_url() );
 	$texte = apply_filters( 'ag_recrute_texte', 'On recrute' );
 	?>

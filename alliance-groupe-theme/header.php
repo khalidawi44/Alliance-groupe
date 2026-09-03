@@ -352,8 +352,8 @@
             </li>
         </ul>
 
-        <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>" class="ag-nav__cta">
-            Devis sur-mesure <span>→</span>
+        <a href="<?php echo esc_url(home_url('/sites-express')); ?>" class="ag-nav__cta">
+            Voir les 3 prix <span>→</span>
         </a>
 
         <button class="ag-nav__burger" id="ag-burger" aria-label="Menu" type="button">
