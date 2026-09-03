@@ -128,8 +128,18 @@ dédiée) ; le robot vocal IA pour les numéros fixes ; la ligne dédiée au dé
 
 **Réel, utilisable :**
 
-- Réalisation client documentée : **Gwen Services** (services à domicile) — page dédiée
-  `templates/page-realisation-gwen.php`, photos réelles dans le thème (hero + galerie 7 photos).
+- **Portefeuille client réel — liste exacte, confirmée par Fabrice (4 réalisations) :**
+  1. **Gwen Services** (aide à domicile, Nantes) — étude de cas dédiée
+     `templates/page-realisation-gwen.php`, photos réelles (hero + galerie 7 photos).
+  2. **Anna Photo** (blog photo, Nantes) — `annaphoto.eu`.
+  3. **L.A Environnement** (paysagiste, Loire-Atlantique) — `paysagiste-environnement.com`,
+     activité aujourd'hui cessée.
+  4. **LFI Nantes Sud Clos Toreau** — **uniquement sur `/realisations`**, jamais dans le
+     méga-menu ni sur l'accueil. Saisie via l'admin ⚙️ Réalisations (option `ag_portfolio`),
+     donc absente du dépôt.
+  **Les chiffres affichés sur ces fiches sont réels** (« Livré en 5 jours », « +180 % trafic »,
+  « 23 articles », « +320 % de demandes de devis »…) : les conserver tels quels, ne pas les
+  arrondir, ne pas les extrapoler à d'autres clients.
 - 14 templates métiers réellement construits, versionnés et téléchargeables
   (`assets/downloads/*/` + `.json` + `.zip`) : barber (starter/premium/business), avocat
   (starter/premium/business + recherche), association (starter/fidélité), restaurant, coach,
@@ -142,8 +152,11 @@ dédiée) ; le robot vocal IA pour les numéros fixes ; la ligne dédiée au dé
 
 **Absences à ne jamais combler par de l'invention :**
 
-- Pas de portefeuille de réalisations clients au-delà de Gwen Services : ne pas afficher de faux
-  logos clients, faux chiffres, faux « +150 sites livrés ».
+- **Le portefeuille client s'arrête aux 4 noms ci-dessus.** Toute autre « réalisation » est une
+  invention : ne pas afficher de faux logo client, de faux chiffre, de faux « +150 sites
+  livrés ». Cinq faux projets ont été retirés du menu le 03/09/2026 — *Saveurs d'Orient*,
+  *TechVision Pro*, *Maison Riviera*, *Cabinet Martin*, *Fitness Lab* — avec leurs visuels
+  d'exemple. Ne jamais les réintroduire, sous aucun nom.
 - Pas de témoignages clients rédigés et validés en stock. Les témoignages visibles dans les
   templates de démo sont du **contenu d'exemple**, pas des clients réels.
 - Le classement public contient encore des profils de démonstration
