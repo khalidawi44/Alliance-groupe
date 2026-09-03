@@ -71,7 +71,16 @@ $dir = get_stylesheet_directory_uri();
   .hero__t .w{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.18em;margin-bottom:-.18em}
   .hero__t .w i{display:inline-block;font-style:inherit}
   .hero__sub{margin-top:20px;max-width:44ch;color:#cfd6e4;font-size:clamp(1rem,2.2vw,1.14rem);line-height:1.6}
-  .hero__cta{margin-top:28px;display:flex;gap:14px;flex-wrap:wrap}
+  /* Preuve du premier écran : le visage de la personne qui fait le travail,
+     et trois clients réels. Jamais animée (Règle du Héros Immobile). */
+  .hero__proof{margin-top:20px;display:flex;align-items:center;gap:13px;max-width:44ch}
+  .hero__proof img{width:46px;height:46px;flex:0 0 auto;border-radius:50%;object-fit:cover;object-position:center 20%;
+       border:1px solid rgba(212,180,92,.45)}
+  .hero__proof span{font-size:.86rem;line-height:1.45;color:#a9b2c2}
+  .hero__proof b{display:block;color:#fff;font-weight:600;font-size:.92rem}
+  .hero__cta{margin-top:26px;display:flex;gap:14px;flex-wrap:wrap}
+  .btn--tel{display:inline-flex;align-items:center;gap:9px}
+  .btn--tel svg{width:17px;height:17px;flex:0 0 auto}
   .hero__scroll{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:4;font-size:.68rem;
     letter-spacing:.32em;color:rgba(255,255,255,.5);animation:bob 2.2s ease-in-out infinite}
   @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,7px)}}
@@ -268,7 +277,13 @@ $dir = get_stylesheet_directory_uri();
       background:linear-gradient(0deg,rgba(5,5,10,.95) 34%,rgba(5,5,10,.78) 62%,rgba(5,5,10,0) 100%)}
     .hero__t{font-size:clamp(2.3rem,11vw,3.6rem);line-height:1.02}
     .hero__sub{font-size:1rem;max-width:34ch}
+    .hero__proof{margin-top:16px;gap:11px;max-width:34ch}
+    .hero__proof img{width:42px;height:42px}
+    .hero__proof span{font-size:.8rem}
+    .hero__proof b{font-size:.86rem}
+    /* Deux boutons pleine largeur : un pouce sur un chantier ne vise pas. */
     .hero__cta{margin-top:20px;gap:10px}
+    .hero__cta .btn{flex:1 1 100%;justify-content:center;text-align:center}
     .btn{padding:13px 24px;font-size:.92rem}
     .lionmark{width:92vw;opacity:.08;top:38%}
     .hero__scroll{display:none}
@@ -398,12 +413,26 @@ $dir = get_stylesheet_directory_uri();
   })();
   </script>
   <div class="hero__in wrap">
-    <span class="eyebrow" data-hl>De Naples à Nantes · sécurité · IA</span>
-    <h1 class="hero__t" data-split>Agence web <em>à Nantes</em></h1>
-    <p class="hero__sub" data-hl>Création de sites web sur-mesure, sécurisés et propulsés par l'IA. Un artisan du web, pas une usine : du conseil à la livraison, une seule personne au bout du fil.</p>
-    <div class="hero__cta" data-hl>
-      <a class="btn" href="#offres">Voir les offres</a>
-      <a class="btn btn--ghost" href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>">Auditer mon site</a>
+    <?php
+    /* HÉROS IMMOBILE (DESIGN.md) — le premier écran porte le nom, l'offre, LE PRIX
+       et UNE PREUVE, lisibles sans défiler et sans animation d'entrée.
+       Ni data-split ni data-hl ici : ce que vend la maison ne s'anime pas et ne
+       dépend d'aucun script. Le prix ne doit plus attendre 6 écrans de scroll. */
+    ?>
+    <h1 class="hero__t">Votre site pro, <em>490 €</em>, en 5 jours.</h1>
+    <p class="hero__sub">Une agence en facture 3 000 à 8 000 €. Ici le prix est fixe et le délai tenu&nbsp;: les modèles métier existent déjà, on les ouvre à votre nom.</p>
+    <p class="hero__proof">
+      <?php /* 800x800, 64 Ko, affichée en 46 px : une version 92x92 (~6 Ko) serait
+               préférable, mais aucun outil d'image n'est disponible ici pour la produire. */ ?>
+      <img src="<?php echo esc_url( $dir . '/assets/images/team/fabrizio.jpg' ); ?>" alt="Fabrizio, fondateur d'Alliance Groupe" width="46" height="46" decoding="async">
+      <span><b>Un seul interlocuteur, à Nantes.</b>Déjà en ligne&nbsp;: Gwen Services, Anna Photo, L.A Environnement.</span>
+    </p>
+    <div class="hero__cta">
+      <a class="btn" href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">Voir les 3 prix</a>
+      <a class="btn btn--ghost btn--tel" href="tel:+33744829516">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94m-1 7.98v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        07 44 82 95 16
+      </a>
     </div>
   </div>
   <div class="hero__scroll">DÉFILEZ</div>
