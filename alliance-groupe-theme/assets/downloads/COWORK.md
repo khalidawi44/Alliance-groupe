@@ -191,6 +191,49 @@ Sur l'accueil (`templates/page-accueil-cinema.php`), section `.lion`
    elle mesure 210svh (150 sur mobile) et repousserait d'autant les offres, qui
    sont déjà loin. La raccourcir en même temps.
 
+### Deux demandes de Fabrice du 03/09 — POUR LA LANE DESIGN
+
+La lane CODE les a refusées (périmètre) et transmet son diagnostic.
+
+**1. Cadrage du héros : les deux personnages sont coupés à droite sur PC.**
+Constaté par Fabrice en 1920×1080 : la femme n'a que la moitié du visage.
+
+Attention, l'erreur naturelle serait de toucher `.hero__bg` — ce n'est pas là.
+`.hero__bg` porte la baie de Naples. **Les deux personnages sont dans
+`.hero__eg`** (`templates/page-accueil-cinema.php`, lignes 69-73) :
+
+```css
+.hero__eg{position:absolute;right:0;bottom:0;height:100svh;width:min(46vw,640px);
+  mask-image:linear-gradient(90deg,transparent 0%,#000 30%)}
+.hero__eg video,.hero__eg img{object-fit:cover;object-position:center 38%}
+```
+
+La couche est une colonne de 46 vw collée à droite, et `object-fit:cover`
+recadre donc **horizontalement**. Le `38%` actuel ne règle que le vertical :
+il n'a aucun effet sur le fait que la femme sorte du cadre. C'est la **première
+valeur** (`center` = 50%) qu'il faut déplacer, vers `60%`-`70%` selon où sont
+les visages dans le fichier source.
+
+Surcharges à ne pas oublier, sinon la correction ne tiendra qu'en desktop :
+ligne 305 (≤820px) et lignes 327-330 (mobile, `object-position:center 30%`).
+
+Sur mobile portrait, `.hero__eg` passe en `width:min(100vw,640px)` centré avec
+un masque elliptique. Si aucun cadrage ne garde les deux visages ET le texte
+lisible, Fabrice préfère **une variante d'image recadrée** plutôt qu'un forçage.
+
+**2. Bannière cookies en pavé centré qui masque la preuve et le bouton d'appel.**
+⚠️ **Déjà corrigé côté CODE, commit `6a8b50e`, présent sur `main`.** La barre
+compacte existe (`assets/css/main.css`, `@media(max-width:560px)`) : titre sorti
+du flux mais conservé pour `aria-labelledby`, « Tout refuser » et « Tout
+accepter » côte à côte, « Personnaliser » en lien dessous. Consentement et
+Consent Mode intacts.
+**Si Fabrice voit encore le pavé, c'est que la SYNC WordPress n'a pas été faite.**
+À vérifier avant de retoucher quoi que ce soit — sinon on va corriger deux fois
+la même chose et se marcher dessus.
+Réserve : la barre compacte est **mobile uniquement** (≤560px). Sur PC c'est
+toujours une carte centrée, par choix. Si Fabrice la veut aussi en barre sur
+grand écran, c'est une décision DESIGN à prendre.
+
 ### Un point technique, à faire par la lane CODE sur demande
 
 `page-accueil-cinema.php`, animation du lion : la plage `ScrollTrigger` va de
@@ -213,3 +256,4 @@ d'étiquette pour un lecteur d'écran). Même règle : sur demande.
 - 2026-08-27 · CODE · Design Premium transféré dans le thème gratuit (starter 1.0.13, premium 0.7.0). Statistiques verrouillées sur la licence — elles tournaient gratuitement, c'était une faute de ma part.
 - 2026-08-27 · CODE · Règle de répercussion appliquée : page de vente barber réécrite, palette corrigée (or → bleu) dans la page métier ET la liste des templates. Promesses non tenues retirées (SMS, multi-barbers, écran TV, API, multi-salons, CA quotidien) — elles n'existaient pas dans le code.
 - 2026-09-03 · CODE · Frontière franchie puis réparée : retouche visuelle de l'accueil annulée (revert `5ac7af0`). Constats passés à la lane DESIGN ci-dessus. La règle de périmètre monte dans `CLAUDE.md`.
+- 2026-09-03 · CODE · Deux retouches visuelles demandées (cadrage du héros, bannière cookies) : refusées, périmètre DESIGN. Diagnostic précis transmis ci-dessus. Rappel majeur : la barre cookies compacte est DÉJÀ sur `main` (`6a8b50e`) — ce que Fabrice voit est un site non synchronisé, pas un bug.
