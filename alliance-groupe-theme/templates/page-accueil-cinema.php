@@ -13,6 +13,14 @@
 
 get_header();
 $dir = get_stylesheet_directory_uri();
+
+/* Outil phare « Refais mon site par l'IA » (inc/ag-refais-mon-site.php) branche
+   directement dans la revelation du lion. On reutilise SES points AJAX
+   (ag_refais_generate / ag_refais_lead), SON nonce et SON anti-abus : aucune
+   logique metier n'est dupliquee ici, seulement la mise en scene. */
+$agr_ready = function_exists( 'ag_ia_ready' ) && ag_ia_ready();
+$agr_nonce = wp_create_nonce( 'ag_refais' );
+$agr_ajax  = admin_url( 'admin-ajax.php' );
 ?>
 <style>
   :root{
@@ -236,13 +244,52 @@ $dir = get_stylesheet_directory_uri();
   .av__lien{margin-top:auto;padding-top:14px;font-size:.82rem;color:var(--gold-hi);text-decoration:none}
   .av__lien:hover{text-decoration:underline}
 
-  /* ---------- LION ---------- */
+  /* ---------- LION + « REFAIS MON SITE » ---------- */
+  /* Le lion reste au centre de l'animation : il devient le medaillon de fond
+     sur lequel se pose l'outil phare. Un voile radial garantit la lisibilite
+     du texte par-dessus la photo. */
   .lion{position:relative;height:210svh}
   .lion__stick{position:sticky;top:0;height:100svh;display:grid;place-items:center;overflow:hidden;
     background:radial-gradient(60% 60% at 50% 45%,#12121c,#05050a)}
-  .lion__img{width:min(40vw,380px);opacity:0;border-radius:50%;
+  .lion__img{position:absolute;z-index:1;width:min(58vw,520px);opacity:0;border-radius:50%;
     box-shadow:0 0 0 1px rgba(212,180,92,.5),0 70px 150px -50px rgba(212,180,92,.55)}
-  .lion__w{position:absolute;bottom:15vh;font-size:clamp(.68rem,1.5vw,.92rem);letter-spacing:.7em;color:var(--gold);text-transform:uppercase}
+  .lion__veil{position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:radial-gradient(52% 52% at 50% 50%,rgba(5,5,10,.72),rgba(5,5,10,.9) 68%,rgba(5,5,10,.97))}
+  .lion__panel{position:relative;z-index:3;width:100%;max-width:720px;padding:0 28px;text-align:center}
+  .lion__panel .eyebrow{display:inline-block;margin-bottom:14px}
+  .lion__lead{color:var(--muted);font-size:clamp(.96rem,2.1vw,1.08rem);line-height:1.62;
+    max-width:54ch;margin:16px auto 0}
+  .lion__form{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:26px auto 0;max-width:560px}
+  .lion__form input[type=url]{flex:1 1 260px;min-width:0;padding:15px 18px;font-size:1rem;color:var(--text);
+    background:rgba(255,255,255,.05);border:1px solid rgba(212,180,92,.32);border-radius:999px;
+    outline:none;transition:border-color .25s,background .25s}
+  .lion__form input[type=url]::placeholder{color:#6f7789}
+  .lion__form input[type=url]:focus{border-color:var(--gold);background:rgba(255,255,255,.08)}
+  .lion__form button{border:0;cursor:pointer;font-family:inherit}
+  .lion__form button:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .lion__note{margin-top:14px;font-size:.8rem;color:#6f7789}
+  .lion__status{margin-top:16px;min-height:22px;font-weight:600;color:var(--gold-hi);font-size:.92rem}
+  .lion__w{position:absolute;z-index:3;bottom:6vh;font-size:clamp(.62rem,1.4vw,.84rem);letter-spacing:.7em;
+    color:var(--gold);text-transform:uppercase;opacity:.75}
+
+  /* Resultat : hors du sticky, en flux normal, pour respirer. */
+  /* .wrap donne la gouttiere de 28px : on la conserve en redefinissant le padding complet. */
+  .agrh{padding:clamp(60px,10vh,120px) 28px}
+  .agrh__cmp{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}
+  .agrh__col h3{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);
+    font-weight:700;margin-bottom:10px}
+  .agrh__col.is-new h3{color:var(--gold)}
+  .agrh__frame{width:100%;height:min(70svh,560px);background:#fff;border-radius:16px;
+    border:1px solid rgba(212,180,92,.22);box-shadow:0 30px 70px -40px rgba(0,0,0,.9)}
+  .agrh__lead{max-width:560px;margin:34px auto 0;text-align:center;background:var(--panel);
+    border:1px solid rgba(212,180,92,.24);border-radius:20px;padding:28px 24px}
+  .agrh__lead h3{font-family:var(--serif);font-size:1.4rem;font-weight:500;margin-bottom:8px}
+  .agrh__lead p{color:var(--muted);font-size:.95rem;line-height:1.6;margin-bottom:16px}
+  .agrh__lead input{width:100%;padding:13px 16px;margin:7px 0;font-size:1rem;color:var(--text);
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:12px;outline:none}
+  .agrh__lead input:focus{border-color:var(--gold)}
+  .agrh__lead .btn{width:100%;margin-top:10px;border:0;cursor:pointer;font-family:inherit}
+  .agrh__ok{margin-top:14px;font-weight:700;font-size:.92rem;min-height:20px}
 
   /* ---------- CTA + PIED ---------- */
   .cta{padding:clamp(80px,15vh,170px) 0;text-align:center}
@@ -402,9 +449,13 @@ $dir = get_stylesheet_directory_uri();
     .av__grid{grid-template-columns:1fr;gap:14px}
     .rz__card h3{font-size:1.28rem}
 
-    .lion{height:130svh}
-    .lion__img{width:min(62vw,300px)}
-    .lion__w{bottom:12vh;letter-spacing:.5em}
+    .lion{height:150svh}
+    .lion__img{width:min(86vw,400px)}
+    .lion__w{bottom:4vh;letter-spacing:.4em}
+    .lion__form{flex-direction:column}
+    .lion__form .btn{width:100%}
+    .agrh__cmp{grid-template-columns:1fr}
+    .agrh__frame{height:min(62svh,460px)}
     .cta{padding:60px 0}
     .ft{flex-direction:column;align-items:center;text-align:center;gap:8px}
   }
@@ -760,10 +811,56 @@ document.documentElement.classList.add('js-cine');
   </div>
 </section>
 
-<section class="lion">
+<section class="lion" id="refais-mon-site">
   <div class="lion__stick">
     <img class="lion__img" id="lionImg" src="<?php echo esc_url( $dir . '/assets/images/cinematique/lion-or.jpg' ); ?>" alt="Le lion d'Alliance Groupe" loading="lazy" decoding="async">
-    <div class="lion__w" data-rv>Alliance Groupe</div>
+    <div class="lion__veil"></div>
+
+    <div class="lion__panel" id="lionPanel">
+      <span class="eyebrow">&#9889; Propuls&eacute; par l'IA</span>
+      <h2 class="stitle">Vois ton site <em>refait</em> en 60&nbsp;secondes</h2>
+      <p class="lion__lead">Colle l'adresse de ton site actuel. Notre IA le lit et te montre&nbsp;<strong>tout de suite</strong> &agrave; quoi il pourrait ressembler, modernis&eacute;. Gratuit, sans inscription.</p>
+
+      <form class="lion__form" id="agrHomeForm"<?php echo $agr_ready ? '' : ' style="opacity:.45;pointer-events:none"'; ?>>
+        <input type="url" id="agrHomeUrl" placeholder="https://mon-site-actuel.fr" autocomplete="url" required>
+        <button type="submit" class="btn" id="agrHomeGo">&#10024; Moderniser</button>
+      </form>
+
+      <?php if ( $agr_ready ) : ?>
+        <p class="lion__note">On ne modifie jamais ton vrai site. C'est une simulation.</p>
+      <?php else : ?>
+        <p class="lion__note">&#128295; L'outil est en cours d'activation. Reviens tr&egrave;s bient&ocirc;t&nbsp;!</p>
+      <?php endif; ?>
+
+      <div class="lion__status" id="agrHomeStatus" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="lion__w">Alliance Groupe</div>
+  </div>
+</section>
+
+<section class="agrh wrap" id="agrHomeOut" hidden>
+  <h2 class="stitle" style="text-align:center">Avant &#8594; <em>apr&egrave;s</em></h2>
+
+  <div class="agrh__cmp">
+    <div class="agrh__col">
+      <h3>&#128564; Ton site aujourd'hui</h3>
+      <iframe class="agrh__frame" id="agrHomeOld" title="Ton site actuel" loading="lazy" referrerpolicy="no-referrer"></iframe>
+    </div>
+    <div class="agrh__col is-new">
+      <h3>&#10024; Propos&eacute; par l'IA</h3>
+      <iframe class="agrh__frame" id="agrHomeNew" title="Maquette g&eacute;n&eacute;r&eacute;e par l'IA" sandbox referrerpolicy="no-referrer"></iframe>
+    </div>
+  </div>
+
+  <div class="agrh__lead">
+    <h3>&#127881; &Ccedil;a te pla&icirc;t&nbsp;?</h3>
+    <p>Laisse tes coordonn&eacute;es&nbsp;: on te renvoie une vraie maquette sur-mesure, gratuitement.</p>
+    <input type="text"  id="agrHomeName"  placeholder="Ton pr&eacute;nom / entreprise" autocomplete="name">
+    <input type="email" id="agrHomeEmail" placeholder="Ton email" autocomplete="email">
+    <input type="tel"   id="agrHomePhone" placeholder="Ton t&eacute;l&eacute;phone (optionnel)" autocomplete="tel">
+    <button type="button" class="btn" id="agrHomeSend">Je veux ma maquette &#8594;</button>
+    <div class="agrh__ok" id="agrHomeOk"></div>
   </div>
 </section>
 
@@ -920,11 +1017,94 @@ document.documentElement.classList.add('js-cine');
       var n = m.parentNode.querySelector(".ch__n");
       if (n) G.to(n, { yPercent:-70, ease:"none", scrollTrigger:{ trigger:m.parentNode, start:"top bottom", end:"bottom top", scrub:true }});
     });
-    /* lion */
+    /* lion : la revelation se joue sur la premiere moitie du defilement,
+       pour que le formulaire pose par-dessus soit utilisable tout de suite. */
     G.fromTo("#lionImg", { scale:.5, opacity:0, filter:"blur(14px)" },
       { scale:1, opacity:1, filter:"blur(0px)", ease:"none",
-        scrollTrigger:{ trigger:".lion", start:"top top", end:"bottom bottom", scrub:.6 }});
+        scrollTrigger:{ trigger:".lion", start:"top top", end:"center bottom", scrub:.6 }});
+    G.from("#lionPanel", { y:26, opacity:0, duration:.9, ease:"power3.out",
+      scrollTrigger:{ trigger:".lion", start:"top 62%" }});
   }
+
+  /* ---- « Refais mon site » directement dans l'accueil ----
+     On appelle les points AJAX du module inc/ag-refais-mon-site.php : meme
+     nonce, meme anti-abus (4 essais / heure / IP), meme capture de lead dans
+     le CRM. Rien n'est reimplemente ici. */
+  (function(){
+    var AJAX = <?php echo wp_json_encode( $agr_ajax ); ?>,
+        N    = <?php echo wp_json_encode( $agr_nonce ); ?>;
+    var form = document.getElementById("agrHomeForm");
+    if (!form) return;
+    var go   = document.getElementById("agrHomeGo"),
+        url  = document.getElementById("agrHomeUrl"),
+        st   = document.getElementById("agrHomeStatus"),
+        out  = document.getElementById("agrHomeOut"),
+        oldF = document.getElementById("agrHomeOld"),
+        newF = document.getElementById("agrHomeNew");
+
+    var steps = ["\uD83D\uDD0E L'IA lit ton site\u2026", "\uD83C\uDFA8 Elle repense le design\u2026",
+                 "\uD83D\uDEE0\uFE0F Elle construit la maquette\u2026", "\u2728 Presque pr\u00EAt\u2026"];
+    var si = 0, tmr = null;
+    function tick(){ st.textContent = steps[si % steps.length]; si++; }
+
+    form.addEventListener("submit", function(e){
+      e.preventDefault();
+      var v = url.value.trim();
+      if (!v) return;
+      go.disabled = true; out.hidden = true;
+      si = 0; tick(); tmr = setInterval(tick, 2200);
+
+      var fd = new FormData();
+      fd.append("action", "ag_refais_generate"); fd.append("_n", N); fd.append("url", v);
+
+      fetch(AJAX, { method:"POST", body:fd }).then(function(r){ return r.json(); }).then(function(j){
+        clearInterval(tmr); go.disabled = false;
+        if (!j || !j.success) {
+          st.textContent = "\u26A0\uFE0F " + ((j && j.data && j.data.msg) || "Une erreur est survenue.");
+          return;
+        }
+        st.textContent = "";
+        try { oldF.src = j.data.src; } catch (err) { oldF.removeAttribute("src"); }
+        newF.srcdoc = '<!doctype html><meta charset="utf-8">'
+          + '<meta name="viewport" content="width=device-width,initial-scale=1">' + j.data.html;
+        out.hidden = false;
+        /* la page vient de grandir : les declencheurs doivent se recalculer */
+        if (ok && ST) ST.refresh();
+        out.scrollIntoView({ behavior:"smooth", block:"start" });
+      }).catch(function(){
+        clearInterval(tmr); go.disabled = false;
+        st.textContent = "\u26A0\uFE0F Connexion interrompue, r\u00E9essaie.";
+      });
+    });
+
+    var send = document.getElementById("agrHomeSend"), okMsg = document.getElementById("agrHomeOk");
+    if (send) send.addEventListener("click", function(){
+      var name  = document.getElementById("agrHomeName").value.trim(),
+          email = document.getElementById("agrHomeEmail").value.trim(),
+          phone = document.getElementById("agrHomePhone").value.trim();
+      if (!name || (!email && !phone)) {
+        okMsg.style.color = "#ffb3b3";
+        okMsg.textContent = "Indique ton nom et un email ou un t\u00E9l\u00E9phone.";
+        return;
+      }
+      send.disabled = true;
+      var fd = new FormData();
+      fd.append("action", "ag_refais_lead"); fd.append("_n", N);
+      fd.append("name", name); fd.append("email", email); fd.append("phone", phone);
+      fd.append("site", url.value.trim());
+      fetch(AJAX, { method:"POST", body:fd }).then(function(r){ return r.json(); }).then(function(j){
+        send.disabled = false;
+        if (j && j.success) {
+          okMsg.style.color = "#7cffb0";
+          okMsg.textContent = j.data.msg;
+          send.style.display = "none";
+        } else {
+          okMsg.style.color = "#ffb3b3";
+          okMsg.textContent = (j && j.data && j.data.msg) || "Erreur, r\u00E9essaie.";
+        }
+      }).catch(function(){ send.disabled = false; });
+    });
+  })();
 
   /* filtres de l'atelier */
   var cards = Array.prototype.slice.call(document.querySelectorAll("#grid .card"));

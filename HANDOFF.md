@@ -277,6 +277,19 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 
 ## 9. Taches restantes (état au 30 mai)
 
+### ⚡ ACCUEIL — « Refais mon site par l'IA » mis en vedette (03/09)
+
+La révélation du lion, en bas de l'accueil cinématique, ne portait aucun texte : une belle image sans message. Elle devient la **section phare** du site.
+
+- Le lion reste **au centre de l'animation** (même révélation au défilement) mais passe en médaillon de fond, sous un voile radial qui garantit la lisibilité.
+- Par-dessus : titre « Vois ton site **refait** en 60 secondes », explication, et le **champ URL directement sur l'accueil**.
+- Le visiteur colle son adresse → la comparaison **avant / après** s'ouvre juste en dessous, puis le formulaire de capture du lead.
+- **Aucune logique dupliquée** : la page appelle les points AJAX du module existant `inc/ag-refais-mon-site.php` (`ag_refais_generate`, `ag_refais_lead`), son nonce, son anti-abus (4 essais/heure/IP) et sa capture CRM. Fichier touché : `templates/page-accueil-cinema.php` uniquement.
+- Sans clé API, le formulaire s'affiche grisé avec « L'outil est en cours d'activation » — rien ne casse.
+
+**⚠️ À VÉRIFIER CÔTÉ FABRICE :** la clé Claude doit être renseignée dans **Réglages → 🤖 IA (clé Claude)** (option `ag_ai_key`), sinon l'outil vedette reste inactif. Et surveiller la facture API les premiers jours si la page part en publicité.
+
+
 ### 🔵 BARBER — état au 03/09 (fait + reste)
 
 **FAIT et poussé sur `main` :**
