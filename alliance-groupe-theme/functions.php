@@ -1149,10 +1149,11 @@ add_action( 'wp_head', function () {
         'description' => 'Studio web indépendant à Nantes : audit de sécurité, création de sites et maintenance.',
         'telephone' => '+33744829516',
         'email' => 'contact@alliancegroupe-inc.com',
+        // Une seule adresse professionnelle REELLE : Nantes (studio solo).
+        // Naples = les racines de Fabrizio, raconte sur /a-propos, jamais une
+        // adresse. Marrakech n'existe pas : ne JAMAIS le declarer ici.
         'address' => array(
-            array( '@type' => 'PostalAddress', 'addressLocality' => 'Naples', 'addressCountry' => 'IT' ),
             array( '@type' => 'PostalAddress', 'addressLocality' => 'Nantes', 'addressCountry' => 'FR' ),
-            array( '@type' => 'PostalAddress', 'addressLocality' => 'Marrakech', 'addressCountry' => 'MA' ),
         ),
         'sameAs' => array( $site_url ),
         'founder' => array( '@type' => 'Person', 'name' => 'Fabrizio' ),
@@ -1256,10 +1257,11 @@ add_action( 'wp_head', function () {
 
     // LocalBusiness schema (front page — SEO local)
     if ( is_front_page() ) {
+        // Un seul etablissement REEL : Nantes. Declarer une fiche Naples ou
+        // Marrakech a Google serait une fausse implantation (et un risque
+        // direct pour la fiche Google Business).
         $offices = array(
             array( 'Alliance Groupe — Nantes', 'Nantes', 'Pays de la Loire', 'FR', '+33744829516', 47.2173, -1.5534 ),
-            array( 'Alliance Groupe — Naples', 'Naples', 'Campania', 'IT', '+33744829516', 40.8518, 14.2681 ),
-            array( 'Alliance Groupe — Marrakech', 'Marrakech', 'Marrakech-Safi', 'MA', '+33744829516', 31.6295, -8.0088 ),
         );
         foreach ( $offices as $o ) {
             $lb = array(

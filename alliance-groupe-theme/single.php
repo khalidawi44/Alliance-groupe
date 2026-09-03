@@ -141,8 +141,7 @@
                                 <li><a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">Templates WordPress métier gratuits</a></li>
                                 <li><a href="<?php echo esc_url(home_url('/realisations')); ?>">Nos réalisations</a></li>
                                 <li><a href="<?php echo esc_url(home_url('/pourquoi-alliance')); ?>">Pourquoi Alliance vs ThemeForest</a></li>
-                                <li><a href="<?php echo esc_url(home_url('/bureau-nantes')); ?>">Agence web à Nantes</a></li>
-                                <li><a href="<?php echo esc_url(home_url('/bureau-marrakech')); ?>">Agence web à Marrakech</a></li>
+                                <li><a href="<?php echo esc_url(home_url('/a-propos')); ?>">Le studio, à Nantes</a></li>
                                 <li><a href="<?php echo esc_url(home_url('/rendez-vous')); ?>">Réserver un audit gratuit</a></li>
                             </ul>
                         </div>

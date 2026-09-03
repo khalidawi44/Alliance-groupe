@@ -4,7 +4,7 @@
             <h4 class="ag-footer__title">Alliance Groupe</h4>
             <p class="ag-footer__slogan" style="font-style:italic;color:#D4B45C;margin:.2em 0 .6em;">La beauté d'un site, la solidité d'un coffre-fort.</p>
             <span class="ag-heritage-strip" aria-hidden="true"></span>
-            <p class="ag-footer__text">Studio web indépendant — Naples &amp; Nantes : audit de sécurité, création de sites qui inspirent confiance, et maintenance. Un seul interlocuteur, du conseil à la livraison.</p>
+            <p class="ag-footer__text">Studio web indépendant à Nantes : audit de sécurité, création de sites qui inspirent confiance, et maintenance. Un seul interlocuteur, du conseil à la livraison.</p>
         </div>
         <div class="ag-footer__col">
             <h4 class="ag-footer__title">Services</h4>

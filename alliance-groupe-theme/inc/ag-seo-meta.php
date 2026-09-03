@@ -1,13 +1,13 @@
 <?php
 /**
  * AG SEO Meta — Titres + descriptions optimisees par page + schemas
- * additionnels (LocalBusiness par bureau, Offer pour templates).
+ * additionnels (LocalBusiness du lieu reel, Offer pour templates).
  *
  * Strategie mots-cles :
  *   - Primaires : agence web Nantes, creation site WordPress, agence IA
  *   - Niche : site WordPress [metier] x6, templates WordPress gratuits
- *   - Geo : Nantes + Marrakech + Naples (3 LocalBusiness)
- *   - Differentiateur : multiculturel franco-italo-marocain
+ *   - Geo : Nantes UNIQUEMENT (studio solo, 1 seul LocalBusiness)
+ *   - Differentiateur : un seul interlocuteur, du conseil a la livraison
  *
  * Pattern titre : [Mot-cle principal] | [Ville si pertinent] — Alliance Groupe
  * Pattern desc  : 150-160 chars, verbe action, telephone, mot-cle, CTA
@@ -75,21 +75,14 @@ function ag_seo_meta() {
 			'desc'    => 'Conseil stratégique digital : audit complet, roadmap, accompagnement. Pour PME francophones. Alliance Groupe Nantes ☎ Audit conseil gratuit 30 min.',
 			'img_alt' => 'Service conseil stratégique Alliance Groupe',
 		),
-		// ── Bureaux (SEO local) ───────────────────────────────────
+		// ── Lieu (SEO local) ──────────────────────────────────────
+		// UNE seule ville reelle : Nantes, et un studio SOLO (pas d'« equipe »,
+		// pas de « bureaux »). Naples = les racines, racontees sur /a-propos.
+		// Marrakech n'existe pas. Les anciennes pages /bureau-* redirigent.
 		'bureau-nantes' => array(
-			'title'   => 'Agence Web & IA à Nantes — Bureau Alliance Groupe',
-			'desc'    => 'Bureau Alliance Groupe à Nantes (Pays de la Loire). Création WordPress, SEO, IA pour PME locales. Équipe française ☎ 07.44.82.95.16 — Devis gratuit.',
-			'img_alt' => 'Bureau Alliance Groupe à Nantes',
-		),
-		'bureau-marrakech' => array(
-			'title'   => 'Agence Web à Marrakech — Bureau Alliance Groupe Maroc',
-			'desc'    => 'Bureau Alliance Groupe à Marrakech : SEO, IA, automatisation pour PME francophones. Pôle data et référencement de l\'agence ☎ Devis sur mesure.',
-			'img_alt' => 'Bureau Alliance Groupe à Marrakech',
-		),
-		'bureau-naples' => array(
-			'title'   => 'Agenzia Web a Napoli — Alliance Groupe Italia',
-			'desc'    => 'Bureau Alliance Groupe à Naples : développement WordPress avancé, architecture backend, DevOps. Sviluppo siti web e applicazioni ☎ Contattaci.',
-			'img_alt' => 'Bureau Alliance Groupe à Naples',
+			'title'   => 'Agence Web & IA à Nantes — Alliance Groupe',
+			'desc'    => 'Studio web indépendant à Nantes (Pays de la Loire) : création WordPress, sécurité, SEO et IA pour PME locales ☎ 07.44.82.95.16 — Devis gratuit.',
+			'img_alt' => 'Alliance Groupe, studio web à Nantes',
 		),
 		// ── Templates métier (long-tail = peu de concurrence) ─────
 		'templates' => array(
@@ -276,38 +269,23 @@ add_filter( 'ag_skip_legacy_meta_description', function ( $skip ) {
 	return ! empty( $meta['desc'] ) ? true : $skip;
 } );
 
-// ── 3. LocalBusiness JSON-LD specifique a chaque page bureau ───────
+// ── 3. LocalBusiness JSON-LD de l'unique lieu reel (Nantes) ────────
+// Une fiche par ville n'a de sens que si la ville existe. Naples (racines) et
+// Marrakech (inexistant) ne doivent JAMAIS revenir ici : ce sont des donnees
+// structurees, donc des declarations faites a Google.
 add_action( 'wp_head', function () {
 	if ( ! is_page() ) return;
 	$slug = get_post_field( 'post_name' );
 
 	$bureaux = array(
 		'bureau-nantes' => array(
-			'name'     => 'Alliance Groupe — Bureau de Nantes',
+			'name'     => 'Alliance Groupe — Nantes',
 			'locality' => 'Nantes',
 			'region'   => 'Pays de la Loire',
 			'country'  => 'FR',
 			'lat'      => 47.2173,
 			'lng'      => -1.5534,
 			'lang'     => 'fr-FR',
-		),
-		'bureau-marrakech' => array(
-			'name'     => 'Alliance Groupe — Bureau de Marrakech',
-			'locality' => 'Marrakech',
-			'region'   => 'Marrakech-Safi',
-			'country'  => 'MA',
-			'lat'      => 31.6295,
-			'lng'      => -8.0088,
-			'lang'     => 'fr-FR',
-		),
-		'bureau-naples' => array(
-			'name'     => 'Alliance Groupe — Ufficio di Napoli',
-			'locality' => 'Napoli',
-			'region'   => 'Campania',
-			'country'  => 'IT',
-			'lat'      => 40.8518,
-			'lng'      => 14.2681,
-			'lang'     => 'it-IT',
 		),
 	);
 

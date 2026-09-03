@@ -1,11 +1,17 @@
 <?php
 /**
- * Globe 3D Three.js avec markers Nantes / Marrakech / Naples.
+ * Globe 3D Three.js — le studio (Nantes) et les racines (Naples).
+ *
+ * ⚠️ VERITE : studio SOLO, une seule adresse professionnelle = Nantes.
+ * Naples n'est PAS un bureau, ce sont les origines de Fabrizio ; le marker est
+ * donc etiquete comme tel et pointe vers /a-propos. Ne jamais reintroduire un
+ * marker « bureau » pour une ville ou personne ne travaille (Marrakech retire).
  *
  * Lazy-load Three.js depuis CDN au moment où le globe entre dans le viewport.
- * Sphère wireframe + 3 markers pulsants + rotation lente auto.
+ * Sphère wireframe + markers pulsants + rotation lente auto.
  *
  * Inclure via `get_template_part('template-parts/globe-3d')`.
+ * (Dormant : aucun template ne l'inclut aujourd'hui.)
  *
  * @package Alliance_Groupe_Theme
  */
@@ -15,18 +21,17 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 $ag_globe_uid = 'agglobe-' . wp_rand( 1000, 9999 );
 
 $ag_globe_markers = apply_filters( 'ag_globe_markers', array(
-	array( 'lat' => 47.2184, 'lon' => -1.5536, 'name' => 'Nantes',    'url' => home_url( '/bureau-nantes' ) ),
-	array( 'lat' => 31.6295, 'lon' => -7.9811, 'name' => 'Marrakech', 'url' => home_url( '/bureau-marrakech' ) ),
-	array( 'lat' => 40.8518, 'lon' => 14.2681, 'name' => 'Naples',    'url' => home_url( '/bureau-naples' ) ),
+	array( 'lat' => 47.2184, 'lon' => -1.5536, 'name' => 'Nantes — le studio',  'url' => home_url( '/a-propos' ) ),
+	array( 'lat' => 40.8518, 'lon' => 14.2681, 'name' => 'Naples — les racines', 'url' => home_url( '/a-propos' ) ),
 ) );
 ?>
 
 <section class="ag-globe-section">
 	<div class="ag-globe-inner">
 		<div class="ag-globe-text">
-			<span class="ag-globe-tag">🌍 Nos bureaux</span>
-			<h2 class="ag-globe-title">Une présence <em>internationale</em></h2>
-			<p class="ag-globe-lead">3 bureaux, 3 cultures, 1 vision. France, Maroc, Italie — l'agence qui pense votre projet à l'échelle de l'Europe et de l'Afrique.</p>
+			<span class="ag-globe-tag">🌍 D'où je travaille</span>
+			<h2 class="ag-globe-title">Un studio à <em>Nantes</em></h2>
+			<p class="ag-globe-lead">Le studio est à Nantes : un seul interlocuteur, du conseil à la livraison. Naples, c'est d'où je viens — la maison familiale, pas une adresse commerciale.</p>
 			<ul class="ag-globe-list">
 				<?php foreach ( $ag_globe_markers as $i => $m ) : ?>
 					<li><a href="<?php echo esc_url( $m['url'] ); ?>" data-marker="<?php echo (int) $i; ?>">

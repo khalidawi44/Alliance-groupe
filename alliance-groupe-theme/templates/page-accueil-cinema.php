@@ -667,7 +667,7 @@ $dir = get_stylesheet_directory_uri();
 </section>
 
 <footer class="wrap ft">
-  <span>© Alliance Groupe — Naples · Nantes · Marrakech</span>
+  <span>© Alliance Groupe — Studio web &amp; sécurité, Nantes</span>
   <span><a href="<?php echo esc_url( home_url( '/mentions-legales' ) ); ?>">Mentions légales</a> · <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>">Contact</a> · <a href="<?php echo esc_url( home_url( '/plan-du-site' ) ); ?>">Plan du site</a></span>
 </footer>
 

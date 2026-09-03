@@ -52,9 +52,8 @@ Deux mécanismes que Fabrice a confirmés comme non copiables honnêtement par u
    des templates vendus, système de licences, marketplace de composants. C'est de l'outillage
    propriétaire, pas du no-code assemblé.
 
-Le réseau d'ambassadeurs par zone et l'engagement solidaire (Racines, sites gratuits pour assos,
-bureaux Nantes / Naples / Marrakech) existent bel et bien, mais n'ont **pas** été retenus comme
-l'argument différenciant n°1.
+Le réseau d'ambassadeurs par zone et l'engagement solidaire (Racines, sites gratuits pour assos)
+existent bel et bien, mais n'ont **pas** été retenus comme l'argument différenciant n°1.
 
 ## Operating Context
 
@@ -71,7 +70,12 @@ l'argument différenciant n°1.
   au client.
 - Notifications réelles en production : SMS via l'API Free sur la ligne pro, 2 canaux Telegram
   (interne équipe / général clients), emails brandés.
-- Trois bureaux affichés : Nantes, Naples, Marrakech.
+- **Un seul lieu réel : le studio, à Nantes.** Alliance Groupe est un **studio solo** : un seul
+  interlocuteur, du conseil à la livraison. Naples, ce sont les racines de Fabrizio — racontées
+  sur `/a-propos` et dans le parcours, **jamais** présentées comme une adresse professionnelle.
+  **Marrakech n'existe pas** : ni bureau, ni équipe, ni fiche `LocalBusiness`. Les anciennes
+  pages `/bureau-*` redirigent en 301 vers `/a-propos`. Une seule fiche `LocalBusiness` est
+  émise, celle de Nantes.
 
 ## Capabilities and Constraints
 
