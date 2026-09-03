@@ -10,7 +10,7 @@ get_header();
 set_query_var( 'ag_metier', array(
     'slug'        => 'coach',
     'slug_full'   => 'ag-starter-coach',
-    'icon'        => '💼',
+    'icon'        => '',
     'name'        => 'Coach',
     'audience_short' => 'activité',
     'palette'     => 'Bleu teal &amp; marine',
@@ -22,25 +22,25 @@ set_query_var( 'ag_metier', array(
 
     'unique_features' => array(
         array(
-            'icon'  => '📅',
+            'icon'  => '',
             'title' => 'Prise de rendez-vous intégrée',
             'desc'  => 'Un écran de réservation directement sur le site (séance découverte, visio ou présentiel) : le visiteur réserve un créneau sans quitter la page, sans appel, sans friction.',
             'vs'    => 'Les templates concurrents renvoient vers un outil tiers payant ou un simple formulaire de contact.',
         ),
         array(
-            'icon'  => '📈',
+            'icon'  => '',
             'title' => 'Témoignages avec résultat chiffré',
             'desc'  => 'Chaque avis client met en avant un résultat concret (avant/après, objectif atteint) — la preuve sociale qui convertit vraiment un prospect hésitant.',
             'vs'    => 'Ailleurs, les témoignages sont de simples citations sans preuve ni contexte.',
         ),
         array(
-            'icon'  => '🎯',
+            'icon'  => '',
             'title' => 'Tunnel « séance découverte gratuite »',
             'desc'  => 'Un parcours pensé pour transformer : le visiteur passe de « je découvre » à « je réserve un premier échange » en quelques secondes, CTA visible en permanence.',
             'vs'    => 'Un template classique se contente d\'afficher vos offres, sans guider vers l\'action.',
         ),
         array(
-            'icon'  => '🔒',
+            'icon'  => '',
             'title' => 'Sécurisé & conforme RGPD dès le départ',
             'desc'  => 'Formulaires protégés, données clients chiffrées, mentions conformes : essentiel quand on traite des informations sensibles sur des personnes.',
             'vs'    => 'La sécurité est notre métier — la plupart des thèmes gratuits l\'ignorent totalement.',

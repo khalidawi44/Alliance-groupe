@@ -15,7 +15,7 @@ $ag_pp = function_exists( 'ag_creator_price' ) ? (int) ag_creator_price() : 69;
 $pack_premium = array(
     'title'  => 'AG Starter Premium',
     'price'  => $ag_pp . '€',
-    'icon'   => '💎',
+    'icon'   => '',
     'desc'   => 'Votre plugin AG Starter Premium est en cours de préparation. Vous le recevrez par email à l\'adresse utilisée pour le paiement, dans les prochaines minutes.',
 );
 // Modèle 2 niveaux : tout achat payant = Premium (l'ancien « business » aussi).
@@ -35,7 +35,7 @@ $current = $pack_data[ $pack ];
     <section class="ag-section ag-section--or" style="padding:120px 0 80px;">
         <div class="ag-container">
             <div style="max-width:780px;margin:0 auto;text-align:center;">
-                <div style="font-size:clamp(2.8rem,10vw,4rem);margin-bottom:16px;">✅</div>
+                <div style="font-size:clamp(2.8rem,10vw,4rem);margin-bottom:16px;"></div>
                 <span class="ag-tag" style="background:rgba(40,167,69,.15);color:#28a745;border-color:rgba(40,167,69,.3);">Paiement reçu</span>
                 <h1 class="ag-section__title" style="margin-top:16px;">Merci pour votre <em>confiance</em> !</h1>
                 <div style="display:inline-flex;align-items:center;gap:12px;margin:24px 0 12px;padding:14px 28px;background:rgba(212,180,92,.08);border:1px solid rgba(212,180,92,.3);border-radius:100px;">
@@ -62,7 +62,7 @@ $current = $pack_data[ $pack ];
                 <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,#D4B45C,transparent);"></div>
 
                 <div style="text-align:center;margin-bottom:36px;">
-                    <span style="display:inline-block;padding:8px 24px;background:rgba(212,180,92,.2);border:1px solid rgba(212,180,92,.5);border-radius:100px;color:#D4B45C;font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;">💎 Et si vous alliez plus loin ?</span>
+                    <span style="display:inline-block;padding:8px 24px;background:rgba(212,180,92,.2);border:1px solid rgba(212,180,92,.5);border-radius:100px;color:#D4B45C;font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;">Et si vous alliez plus loin ?</span>
                     <h2 style="font-size:clamp(1.7rem,3.5vw,2.5rem);margin-bottom:16px;line-height:1.2;">Votre business mérite plus qu'un template, <em>même Premium</em></h2>
                     <p style="font-size:1.1rem;color:#e8e6e0;max-width:780px;margin:0 auto;line-height:1.7;">
                         Votre achat est une excellente première étape. Mais si votre objectif est
@@ -103,7 +103,7 @@ $current = $pack_data[ $pack ];
                         et nos clients le rentabilisent en 3 mois en moyenne. Contactez-nous maintenant.
                     </p>
                     <div class="ag-hero__buttons" style="justify-content:center;flex-wrap:wrap;">
-                        <a href="tel:+33744829516" class="ag-btn-gold">📞 Appeler Fabrizio — 07.44.82.95.16</a>
+                        <a href="tel:+33744829516" class="ag-btn-gold">Appeler Fabrizio — 07.44.82.95.16</a>
                         <a href="<?php echo esc_url( home_url( '/contact?source=merci-achat&pack=' . $pack ) ); ?>" class="ag-btn-outline">Réserver mon appel gratuit →</a>
                     </div>
                     <p style="color:#888;font-size:.85rem;margin-top:20px;font-style:italic;">7j/7 · Réponse sous 24h · Aucun engagement</p>

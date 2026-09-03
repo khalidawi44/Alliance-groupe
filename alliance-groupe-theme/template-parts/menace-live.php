@@ -34,22 +34,22 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		<!-- Ce que ça peut vous coûter, concrètement -->
 		<div class="ag-menace__risks">
 			<div class="ag-menace__risk">
-				<span class="ag-menace__risk-ic">💰</span>
+				<span class="ag-menace__risk-ic"></span>
 				<strong>Rançon</strong>
 				<p>Vos fichiers chiffrés du jour au lendemain, une rançon en bitcoins réclamée pour les récupérer.</p>
 			</div>
 			<div class="ag-menace__risk">
-				<span class="ag-menace__risk-ic">🗄️</span>
+				<span class="ag-menace__risk-ic"></span>
 				<strong>Vol de vos données clients</strong>
 				<p>Emails, téléphones, commandes copiés et revendus. Fuite = déclaration <strong>CNIL sous 72 h</strong> + sanctions.</p>
 			</div>
 			<div class="ag-menace__risk">
-				<span class="ag-menace__risk-ic">⛔</span>
+				<span class="ag-menace__risk-ic"></span>
 				<strong>Site hors-ligne</strong>
 				<p>Site inaccessible ou redirigé vers un site douteux. Votre référencement Google s'effondre en quelques jours.</p>
 			</div>
 			<div class="ag-menace__risk">
-				<span class="ag-menace__risk-ic">🪪</span>
+				<span class="ag-menace__risk-ic"></span>
 				<strong>Réputation</strong>
 				<p>Vos clients reçoivent des arnaques en votre nom. La confiance, elle, ne revient pas.</p>
 			</div>
@@ -96,11 +96,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 				<h3 class="ag-menace__sol-title">Tout commence par <em>un audit.</em></h3>
 				<p class="ag-menace__sol-text">Pas de panique : on regarde d'abord où vous en êtes <strong>vraiment</strong>. Je révèle les failles de votre site en 48 h — rapport clair, sans jargon, recommandations chiffrées.</p>
 				<ul class="ag-menace__sol-list">
-					<li>🔍 J'audite vos failles en 48 h</li>
-					<li>🛠️ Je corrige ou je (re)crée votre site</li>
-					<li>🛡️ Je veille dessus, chaque mois</li>
+					<li>J'audite vos failles en 48 h</li>
+					<li>Je corrige ou je (re)crée votre site</li>
+					<li>Je veille dessus, chaque mois</li>
 				</ul>
-				<a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-menace__cta">🔍 Tester mon site →</a>
+				<a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-menace__cta">Tester mon site →</a>
 				<span class="ag-menace__sol-note">Réponse sous 24 h · Devis gratuit. <strong>Si on ne trouve rien d'exploitable, on vous le dit honnêtement.</strong></span>
 			</aside>
 		</div>
@@ -389,18 +389,18 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 		</div>
 	</div>
 	<div class="ag-hack__veil" aria-hidden="true"></div>
-	<button class="ag-hack__close" id="ag-hack-close" type="button" aria-label="Fermer">Non merci, continuer ✕</button>
+	<button class="ag-hack__close" id="ag-hack-close" type="button" aria-label="Fermer">Non merci, continuer </button>
 	<div class="ag-hack__center">
-		<span class="ag-hack__tag">⚠️ Simulation</span>
+		<span class="ag-hack__tag">Simulation</span>
 		<h2 class="ag-hack__title" data-text="Un piratage ressemble à ça.">Un piratage ressemble à ça.</h2>
 		<p class="ag-hack__sub">Le jour où ça arrive, il est déjà trop tard. Voilà ce qui peut tomber sur votre site, sans prévenir :</p>
 		<ul class="ag-hack__list">
-			<li>💰 Vos fichiers <strong>chiffrés</strong>, une <strong>rançon</strong> réclamée pour les récupérer.</li>
-			<li>🗄️ Votre <strong>base clients volée</strong> (emails, téléphones) — et la CNIL sur le dos.</li>
-			<li>⛔ <strong>Site hors-ligne</strong> ou défiguré, votre <strong>Google qui s'effondre</strong>.</li>
+			<li>Vos fichiers <strong>chiffrés</strong>, une <strong>rançon</strong> réclamée pour les récupérer.</li>
+			<li>Votre <strong>base clients volée</strong> (emails, téléphones) — et la CNIL sur le dos.</li>
+			<li><strong>Site hors-ligne</strong> ou défiguré, votre <strong>Google qui s'effondre</strong>.</li>
 		</ul>
 		<p class="ag-hack__sub" style="margin-top:6px">Le seul moyen de savoir si vous êtes exposé : un audit.</p>
-		<a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-hack__btn" id="ag-hack-btn">🔍 AUDITER MON SITE →</a>
+		<a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-hack__btn" id="ag-hack-btn">AUDITER MON SITE →</a>
 	</div>
 	</div><!-- /.ag-hack__card -->
 </div>

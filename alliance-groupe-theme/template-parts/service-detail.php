@@ -53,7 +53,7 @@ if ( empty( $d['slug'] ) ) return;
 						<div class="ag-svc-deliverables">
 							<?php foreach ( $d['deliverables'] as $i => $del ) : ?>
 								<div class="ag-svc-del">
-									<span class="ag-svc-del-check">✓</span>
+									<span class="ag-svc-del-check"></span>
 									<span class="ag-svc-del-text"><?php echo wp_kses_post( $del ); ?></span>
 								</div>
 							<?php endforeach; ?>
@@ -104,7 +104,7 @@ if ( empty( $d['slug'] ) ) return;
 								<?php if ( ! empty( $d['pricing']['includes'] ) ) : ?>
 									<ul class="ag-svc-pricing-incl">
 										<?php foreach ( $d['pricing']['includes'] as $inc ) : ?>
-											<li>✓ <?php echo esc_html( $inc ); ?></li>
+											<li><?php echo esc_html( $inc ); ?></li>
 										<?php endforeach; ?>
 									</ul>
 								<?php endif; ?>

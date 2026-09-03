@@ -3,7 +3,7 @@
  * Template Name: Contrat Client
  *
  * Contrat de prestation / CGV affiché au client AVANT paiement.
- * ⚠️ MODÈLE à faire valider par un avocat. Versions par pays via ?pays=fr|it|ma.
+ * MODÈLE à faire valider par un avocat. Versions par pays via ?pays=fr|it|ma.
  */
 get_header();
 $ag_lg = function_exists( 'ag_company_legal' ) ? ag_company_legal() : array(
@@ -22,7 +22,7 @@ if ( function_exists( 'ag_countries' ) && ! in_array( $ag_pays_lib, ag_countries
 
 			<?php if ( 'France' !== $ag_pays_lib ) : ?>
 				<p style="background:rgba(243,122,31,.12);border:1px solid rgba(243,122,31,.4);border-radius:10px;padding:14px 18px;">
-					ℹ️ Droit applicable choisi : <strong><?php echo esc_html( $ag_pays_lib ); ?></strong>. Le présent contrat s'applique avec ce droit pour droit applicable ; une version localisée définitive peut être validée par un avocat local.
+					ℹDroit applicable choisi : <strong><?php echo esc_html( $ag_pays_lib ); ?></strong>. Le présent contrat s'applique avec ce droit pour droit applicable ; une version localisée définitive peut être validée par un avocat local.
 				</p>
 			<?php endif; ?>
 

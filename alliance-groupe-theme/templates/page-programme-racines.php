@@ -20,7 +20,7 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
             <div class="ag-hero__orb ag-hero__orb--2"></div>
         </div>
         <div class="ag-hero__content">
-            <span class="ag-tag ag-tag--green ag-anim" data-anim="tag">Programme Racines 🌱</span>
+            <span class="ag-tag ag-tag--green ag-anim" data-anim="tag">Programme Racines </span>
             <h1 class="ag-hero__title">
                 <span class="ag-line">Ton talent mérite</span>
                 <span class="ag-line"><em>un vrai départ.</em></span>
@@ -121,7 +121,7 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
                     <li><strong>Ensemble :</strong> on définit une part de partenariat juste et transparente. Tu n'es jamais seul, on est associés.</li>
                 </ul>
                 <p class="ag-racines__deal-note">
-                    🤝 Transparence totale : chaque partenariat est défini noir sur blanc, équitablement, avant de commencer. Pas de piège, pas de petites lignes.
+                    Transparence totale : chaque partenariat est défini noir sur blanc, équitablement, avant de commencer. Pas de piège, pas de petites lignes.
                 </p>
             </div>
         </div>
@@ -137,32 +137,32 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
                     <p class="ag-hscroll__lead">Un écosystème complet, pas juste un site. <span>Fais défiler →</span></p>
                 </div>
                 <article class="ag-hscroll__card">
-                    <span class="ag-hscroll__ic">🌐</span>
+                    <span class="ag-hscroll__ic"></span>
                     <h3>Site premium</h3>
                     <p>Vitrine ou boutique en ligne, rapide et pensée pour convertir tes visiteurs en clients.</p>
                 </article>
                 <article class="ag-hscroll__card">
-                    <span class="ag-hscroll__ic">🎨</span>
+                    <span class="ag-hscroll__ic"></span>
                     <h3>Identité de marque</h3>
                     <p>Logo, couleurs, ton : une image pro et cohérente qui inspire confiance immédiatement.</p>
                 </article>
                 <article class="ag-hscroll__card">
-                    <span class="ag-hscroll__ic">📱</span>
+                    <span class="ag-hscroll__ic"></span>
                     <h3>Présence réseaux</h3>
                     <p>Instagram, TikTok, Google : on installe ta présence là où sont tes futurs clients.</p>
                 </article>
                 <article class="ag-hscroll__card">
-                    <span class="ag-hscroll__ic">🔍</span>
+                    <span class="ag-hscroll__ic"></span>
                     <h3>Référencement Google</h3>
                     <p>On te rend visible sur les recherches qui comptent pour ton métier, dans ta ville.</p>
                 </article>
                 <article class="ag-hscroll__card">
-                    <span class="ag-hscroll__ic">🎓</span>
+                    <span class="ag-hscroll__ic"></span>
                     <h3>Formation</h3>
                     <p>On te forme pour devenir autonome : tu maîtrises tes outils, tu ne dépends de personne.</p>
                 </article>
                 <article class="ag-hscroll__card ag-hscroll__card--cta">
-                    <span class="ag-hscroll__ic">🤝</span>
+                    <span class="ag-hscroll__ic"></span>
                     <h3>Accompagnement business</h3>
                     <p>Création d'entreprise, gestion, stratégie : un vrai associé à tes côtés sur la durée.</p>
                     <a href="#racines-candidature" class="ag-btn-gold">Je candidate →</a>
@@ -177,10 +177,10 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
             <span class="ag-tag ag-anim" data-anim="tag">Pour qui</span>
             <h2 class="ag-section__title ag-anim" data-anim="title">Ce programme est fait pour <em>toi</em> si...</h2>
             <div class="ag-racines__for">
-                <div class="ag-racines__for-item ag-anim" data-anim="card">✊ Tu as un projet ou un savoir-faire, mais pas les moyens d'une agence</div>
-                <div class="ag-racines__for-item ag-anim" data-anim="card">🏙️ Tu viens d'un quartier populaire et tu veux t'en sortir par le travail</div>
-                <div class="ag-racines__for-item ag-anim" data-anim="card">🔥 Tu es prêt à t'investir à fond — on accompagne, on ne fait pas à ta place</div>
-                <div class="ag-racines__for-item ag-anim" data-anim="card">🚀 Tu veux un vrai partenaire long terme, pas juste un prestataire</div>
+                <div class="ag-racines__for-item ag-anim" data-anim="card">Tu as un projet ou un savoir-faire, mais pas les moyens d'une agence</div>
+                <div class="ag-racines__for-item ag-anim" data-anim="card">Tu viens d'un quartier populaire et tu veux t'en sortir par le travail</div>
+                <div class="ag-racines__for-item ag-anim" data-anim="card">Tu es prêt à t'investir à fond — on accompagne, on ne fait pas à ta place</div>
+                <div class="ag-racines__for-item ag-anim" data-anim="card">Tu veux un vrai partenaire long terme, pas juste un prestataire</div>
             </div>
         </div>
     </section>
@@ -190,8 +190,8 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
         <div class="ag-container ag-container--narrow">
             <?php if ( $ag_racines_submitted ) : ?>
             <div class="ag-question-success">
-                <div class="ag-question-success__check">✓</div>
-                <h2>Candidature reçue 🌱</h2>
+                <div class="ag-question-success__check"></div>
+                <h2>Candidature reçue </h2>
                 <p class="ag-question-success__sub">
                     Merci pour ta confiance. On lit chaque candidature avec attention.
                     Si ton projet correspond au programme, on te recontacte sous 7 jours
@@ -243,7 +243,7 @@ $ag_racines_submitted = isset( $_GET['racines'] ) && $_GET['racines'] === 'ok';
                     <textarea id="rac-why" name="why" required placeholder="Qu'est-ce qui te bloque aujourd'hui ? Pourquoi ce partenariat ferait la différence ?"></textarea>
                 </div>
 
-                <button type="submit" class="ag-btn-gold">Envoyer ma candidature 🌱</button>
+                <button type="submit" class="ag-btn-gold">Envoyer ma candidature </button>
                 <p style="color:var(--color-text-muted);font-size:.85rem;margin-top:14px;">
                     En envoyant ce formulaire, tu acceptes d'être recontacté par Alliance Groupe au sujet de ta candidature.
                 </p>

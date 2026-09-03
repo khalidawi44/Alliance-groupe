@@ -13,13 +13,13 @@ $ag_cli   = home_url( '/espace-client' );
 ?>
 <div class="ag-chat" id="ag-chat" data-ajax="<?php echo esc_url( $ag_ajax ); ?>" data-nonce="<?php echo esc_attr( $ag_nonce ); ?>">
 	<button type="button" class="ag-chat__bubble" id="ag-chat-bubble" aria-label="Ouvrir le chat">
-		<span class="ag-chat__bubble-ic">💬</span>
-		<span class="ag-chat__teaser" id="ag-chat-teaser">Parle à l'équipe 👋</span>
+		<span class="ag-chat__bubble-ic"></span>
+		<span class="ag-chat__teaser" id="ag-chat-teaser">Parle à l'équipe </span>
 	</button>
 	<div class="ag-chat__panel" id="ag-chat-panel" aria-hidden="true">
 		<div class="ag-chat__head">
-			<div><strong>L'équipe Alliance Groupe</strong><small>Léo · Sofia · Karim · Nadia 🟢</small></div>
-			<button type="button" class="ag-chat__close" id="ag-chat-close" aria-label="Fermer">✕</button>
+			<div><strong>L'équipe Alliance Groupe</strong><small>Léo · Sofia · Karim · Nadia </small></div>
+			<button type="button" class="ag-chat__close" id="ag-chat-close" aria-label="Fermer"></button>
 		</div>
 		<div class="ag-chat__body" id="ag-chat-body"></div>
 	</div>
@@ -60,62 +60,62 @@ $ag_cli   = home_url( '/espace-client' );
 	function opts(list){var w=document.createElement('div');w.className='ag-chat-opt';list.forEach(function(o){var el;if(o.href){el=document.createElement('a');el.href=o.href;}else{el=document.createElement('button');el.type='button';el.addEventListener('click',o.fn);}el.innerHTML=o.label;w.appendChild(el);});body.appendChild(w);body.scrollTop=body.scrollHeight;}
 
 	function start(){ if(started) return; started=true;
-		bot('Léo · Prospection','Salut 👋 Moi c\'est <strong>Léo</strong>, de l\'équipe Alliance Groupe. Je t\'oriente vers la bonne personne. Tu veux…');
+		bot('Léo · Prospection','Salut Moi c\'est <strong>Léo</strong>, de l\'équipe Alliance Groupe. Je t\'oriente vers la bonne personne. Tu veux…');
 		opts([
-			{label:'📐 Créer / concevoir un site',fn:archi},
-			{label:'💸 Gagner de l\'argent (ambassadeur)',fn:amb},
-			{label:'🤝 Je suis déjà client',fn:manager},
-			{label:'❓ Autre question',fn:function(){ bot('Léo · Prospection','Pas de souci, laisse-moi tes coordonnées et ta question 👇'); leadForm('Question'); }}
+			{label:'Créer / concevoir un site',fn:archi},
+			{label:'Gagner de l\'argent (ambassadeur)',fn:amb},
+			{label:'Je suis déjà client',fn:manager},
+			{label:'Autre question',fn:function(){ bot('Léo · Prospection','Pas de souci, laisse-moi tes coordonnées et ta question '); leadForm('Question'); }}
 		]);
 	}
 	// Architecte : conçoit + recommande un pack
 	function archi(){
 		bot('Sofia · Architecte','Parfait, je suis <strong>Sofia</strong>, l\'architecte. C\'est pour quel type d\'activité ?');
 		opts([
-			{label:'🍽️ Restaurant / commerce',fn:function(){ scope('restaurant'); }},
-			{label:'🔨 Artisan / BTP',fn:function(){ scope('artisan'); }},
-			{label:'💈 Beauté / coiffure',fn:function(){ scope('beauté'); }},
-			{label:'💼 Indépendant / coach',fn:function(){ scope('indépendant'); }},
-			{label:'🤝 Association',fn:asso},
-			{label:'✦ Autre',fn:function(){ scope('ton activité'); }}
+			{label:'Restaurant / commerce',fn:function(){ scope('restaurant'); }},
+			{label:'Artisan / BTP',fn:function(){ scope('artisan'); }},
+			{label:'Beauté / coiffure',fn:function(){ scope('beauté'); }},
+			{label:'Indépendant / coach',fn:function(){ scope('indépendant'); }},
+			{label:'Association',fn:asso},
+			{label:'Autre',fn:function(){ scope('ton activité'); }}
 		]);
 	}
 	function scope(sector){
 		bot('Sofia · Architecte','Top. Pour <strong>'+sector+'</strong>, tu veux quoi exactement ?');
 		opts([
-			{label:'🪪 Une vitrine simple (me présenter + contact)',fn:function(){ subscribe('Essentiel','490','vitrine '+sector); }},
-			{label:'📄 Un site complet (pages, blog, prise de RDV)',fn:function(){ subscribe('Pro','890','site complet '+sector); }},
-			{label:'🛒 Vendre en ligne (boutique)',fn:function(){ subscribe('Boutique','1490','boutique '+sector); }}
+			{label:'Une vitrine simple (me présenter + contact)',fn:function(){ subscribe('Essentiel','490','vitrine '+sector); }},
+			{label:'Un site complet (pages, blog, prise de RDV)',fn:function(){ subscribe('Pro','890','site complet '+sector); }},
+			{label:'Vendre en ligne (boutique)',fn:function(){ subscribe('Boutique','1490','boutique '+sector); }}
 		]);
 	}
 	// Souscription : closer
 	function subscribe(pack,price,ctx){
 		bot('Karim · Souscription','Super — je suis <strong>Karim</strong>. Pour ça, le <strong>pack '+pack+' à '+price+' €</strong> est idéal : prix fixe, <strong>payable en 4×</strong>, livré en quelques jours, sans rendez-vous. On lance ?');
 		opts([
-			{label:'🛒 Commander maintenant',href:L.sites+'#packs'},
-			{label:'📩 Être rappelé(e) avant',fn:function(){ bot('Karim · Souscription','Avec plaisir, je te laisse mes collègues te recontacter 👇'); leadForm('Pack '+pack+' ('+ctx+')'); }}
+			{label:'Commander maintenant',href:L.sites+'#packs'},
+			{label:'Être rappelé(e) avant',fn:function(){ bot('Karim · Souscription','Avec plaisir, je te laisse mes collègues te recontacter '); leadForm('Pack '+pack+' ('+ctx+')'); }}
 		]);
 	}
 	function amb(){
-		bot('Léo · Prospection','💸 Tu peux <strong>gagner 10 % sur chaque site vendu</strong>, depuis ton téléphone — outils fournis, gratuit, sans engagement.');
+		bot('Léo · Prospection','Tu peux <strong>gagner 10 % sur chaque site vendu</strong>, depuis ton téléphone — outils fournis, gratuit, sans engagement.');
 		opts([
-			{label:'🚀 Rejoindre le programme',href:L.amb},
-			{label:'📩 Qu\'on me recontacte',fn:function(){ leadForm('Devenir ambassadeur'); }}
+			{label:'Rejoindre le programme',href:L.amb},
+			{label:'Qu\'on me recontacte',fn:function(){ leadForm('Devenir ambassadeur'); }}
 		]);
 	}
 	function asso(){
-		bot('Sofia · Architecte','🤝 Pour une association, on offre un <strong>site 100% GRATUIT</strong> (loi 1901, syndicat, collectif…).');
+		bot('Sofia · Architecte','Pour une association, on offre un <strong>site 100% GRATUIT</strong> (loi 1901, syndicat, collectif…).');
 		opts([
-			{label:'🎁 Voir l\'offre gratuite',href:L.asso},
-			{label:'📩 Être recontacté(e)',fn:function(){ leadForm('Association - site gratuit'); }}
+			{label:'Voir l\'offre gratuite',href:L.asso},
+			{label:'Être recontacté(e)',fn:function(){ leadForm('Association - site gratuit'); }}
 		]);
 	}
 	// Gestionnaire de clients
 	function manager(){
-		bot('Nadia · Gestion clients','Je suis <strong>Nadia</strong>, je m\'occupe des clients 🤍 Tu veux…');
+		bot('Nadia · Gestion clients','Je suis <strong>Nadia</strong>, je m\'occupe des clients Tu veux…');
 		opts([
-			{label:'📈 Suivre mon projet / mon espace',href:L.cli},
-			{label:'✏️ Une retouche ou une question',fn:function(){ bot('Nadia · Gestion clients','Dis-moi tout, je transmets à l\'équipe 👇'); leadForm('Client existant - suivi'); }}
+			{label:'Suivre mon projet / mon espace',href:L.cli},
+			{label:'Une retouche ou une question',fn:function(){ bot('Nadia · Gestion clients','Dis-moi tout, je transmets à l\'équipe '); leadForm('Client existant - suivi'); }}
 		]);
 	}
 	function leadForm(interest){
@@ -125,16 +125,16 @@ $ag_cli   = home_url( '/espace-client' );
 			+'<input type="tel" name="phone" placeholder="Ton téléphone (option)" autocomplete="tel">'
 			+'<textarea name="message" rows="2" placeholder="Ton message (option)"></textarea>'
 			+'<div class="ag-chat-hp"><input type="text" name="company" tabindex="-1" autocomplete="off"></div>'
-			+'<button type="submit" class="ag-chat-send">Envoyer ✉</button>';
+			+'<button type="submit" class="ag-chat-send">Envoyer </button>';
 		body.appendChild(f);body.scrollTop=body.scrollHeight;
 		f.addEventListener('submit',function(e){
 			e.preventDefault();
 			var fd=new FormData(f);fd.append('action','ag_lead');fd.append('nonce',NONCE);fd.append('interest',interest);
-			if(!fd.get('email')&&!fd.get('phone')){ bot(null,'Il me faut au moins un <strong>email</strong> ou un <strong>téléphone</strong> 🙏'); return; }
+			if(!fd.get('email')&&!fd.get('phone')){ bot(null,'Il me faut au moins un <strong>email</strong> ou un <strong>téléphone</strong> '); return; }
 			var btn=f.querySelector('button');btn.disabled=true;btn.textContent='Envoi…';
 			fetch(AJAX,{method:'POST',body:fd}).then(function(r){return r.json();}).then(function(j){
 				f.remove();
-				bot('Nadia · Gestion clients', (j&&j.success) ? '✅ Merci ! On te recontacte très vite. À bientôt 👋' : 'Hmm, ça n\'a pas marché. Écris-nous à <strong>contact@alliancegroupe-inc.com</strong>.');
+				bot('Nadia · Gestion clients', (j&&j.success) ? 'Merci ! On te recontacte très vite. À bientôt ' : 'Hmm, ça n\'a pas marché. Écris-nous à <strong>contact@alliancegroupe-inc.com</strong>.');
 			}).catch(function(){ f.remove(); bot(null,'Souci de connexion. Écris-nous à <strong>contact@alliancegroupe-inc.com</strong>.'); });
 		});
 	}

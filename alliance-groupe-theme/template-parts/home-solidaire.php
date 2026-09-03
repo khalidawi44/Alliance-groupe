@@ -5,12 +5,12 @@
 ?>
 <section class="ag-section ag-section--light ag-soli" id="racines">
 	<div class="ag-container">
-		<span class="ag-tag ag-anim" data-anim="tag">Notre engagement 🤝</span>
+		<span class="ag-tag ag-anim" data-anim="tag">Notre engagement </span>
 		<h2 class="ag-section__title ag-anim" data-anim="title">On rend au <em>quartier</em></h2>
 		<p class="ag-section__desc ag-anim" data-anim="desc">Le talent est partout, les opportunités non. On soutient celles et ceux qui en ont besoin.</p>
 		<div class="ag-soli-grid">
 			<div class="ag-soli-col">
-				<span class="ag-soli-ic">🌱</span>
+				<span class="ag-soli-ic"></span>
 				<h3>Programme Racines</h3>
 				<p>On forme et on accompagne les jeunes du quartier vers les métiers du digital. Donne-leur leur chance.</p>
 				<a href="<?php echo esc_url( home_url( '/programme-racines' ) ); ?>" class="ag-btn-gold">Découvrir le Programme →</a>

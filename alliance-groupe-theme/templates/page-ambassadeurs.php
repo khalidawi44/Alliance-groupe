@@ -17,7 +17,7 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
     <section class="ag-hero" style="min-height:62vh;">
         <div class="ag-hero__bg"><div class="ag-hero__orb ag-hero__orb--1"></div><div class="ag-hero__orb ag-hero__orb--2"></div></div>
         <div class="ag-hero__content">
-            <span class="ag-tag ag-anim" data-anim="tag">Programme Ambassadeurs 🤝</span>
+            <span class="ag-tag ag-anim" data-anim="tag">Programme Ambassadeurs </span>
             <h1 class="ag-hero__title"><span class="ag-line">Vends quelques sites,</span><span class="ag-line"><em>gagne 1 000 €/mois.</em></span></h1>
             <p class="ag-hero__sub">
                 <strong>3 ventes par semaine = ~1 068 €/mois</strong>, rien qu'à 10 % de commission.
@@ -65,7 +65,7 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
                     <div class="ag-gain__box ag-gain__box--big"><span id="ag-gain-mois">1 068 €</span><small>/ mois</small></div>
                     <div class="ag-gain__box"><span id="ag-gain-an">12 816 €</span><small>/ an</small></div>
                 </div>
-                <p class="ag-gain__note">💡 Estimation à 10 % de commission. Plus tu vends, plus tu gagnes — sans plafond.</p>
+                <p class="ag-gain__note">Estimation à 10 % de commission. Plus tu vends, plus tu gagnes — sans plafond.</p>
                 <a href="#rejoindre" class="ag-btn-gold ag-btn-gold--xl" style="margin-top:8px;">Je veux gagner ça →</a>
             </div>
         </div>
@@ -100,7 +100,7 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
     <!-- Classement & récompenses (motivation) -->
     <section class="ag-section ag-section--graphite" id="classement">
         <div class="ag-container">
-            <span class="ag-tag ag-anim" data-anim="tag">Classement &amp; récompenses 🏆</span>
+            <span class="ag-tag ag-anim" data-anim="tag">Classement &amp; récompenses </span>
             <h2 class="ag-section__title ag-anim" data-anim="title">Plus tu vends, <em>plus tu gagnes</em></h2>
             <p class="ag-section__desc ag-anim" data-anim="desc">10 % sur chaque vente, et un challenge chaque mois : le top des commerciaux décroche des primes et des cadeaux. Le classement est affiché — à toi de viser la 1re place.</p>
 
@@ -116,9 +116,9 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
             </div>
 
             <?php $ag_lb = function_exists( 'ag_ambassadeur_leaderboard' ) ? ag_ambassadeur_leaderboard() : array(); if ( ! empty( $ag_lb ) ) : ?>
-                <h3 class="ag-amb-top__title">🔥 Top du moment</h3>
+                <h3 class="ag-amb-top__title">Top du moment</h3>
                 <div class="ag-amb-top">
-                    <?php $ag_m = array( 1 => '🥇', 2 => '🥈', 3 => '🥉' ); foreach ( array_slice( $ag_lb, 0, 3 ) as $row ) : ?>
+                    <?php $ag_m = array( 1 => '', 2 => '', 3 => '' ); foreach ( array_slice( $ag_lb, 0, 3 ) as $row ) : ?>
                         <div class="ag-amb-top__row">
                             <span><?php echo esc_html( $ag_m[ $row['rank'] ] ?? '#' . $row['rank'] ); ?></span>
                             <strong><?php echo esc_html( ag_ambassadeur_short_name( $row['name'] ) ); ?></strong>
@@ -154,8 +154,8 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
         <div class="ag-container ag-container--narrow">
             <?php if ( $ag_amb_ok ) : ?>
                 <div class="ag-question-success">
-                    <div class="ag-question-success__check">✓</div>
-                    <h2>Inscription reçue 🤝</h2>
+                    <div class="ag-question-success__check"></div>
+                    <h2>Inscription reçue </h2>
                     <p class="ag-question-success__sub">Bienvenue ! On valide ton inscription et on te recontacte avec tes outils de vente. Vérifie ta boîte mail.</p>
                     <a href="#declarer" class="ag-btn-outline">Déclarer une vente</a>
                 </div>
@@ -203,8 +203,8 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
                             <canvas id="ag-selfie-canvas" style="display:none;"></canvas>
                             <img id="ag-selfie-preview" alt="" style="display:none;width:100%;max-width:280px;border-radius:12px;">
                             <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                                <button type="button" id="ag-selfie-start" class="ag-btn-outline">📷 Activer la caméra</button>
-                                <button type="button" id="ag-selfie-shot" class="ag-btn-gold" style="display:none;">📸 Prendre la photo</button>
+                                <button type="button" id="ag-selfie-start" class="ag-btn-outline">Activer la caméra</button>
+                                <button type="button" id="ag-selfie-shot" class="ag-btn-gold" style="display:none;">Prendre la photo</button>
                                 <button type="button" id="ag-selfie-retry" class="ag-btn-outline" style="display:none;">↺ Reprendre</button>
                             </div>
                             <input type="hidden" name="selfie_data" id="ag-selfie-data" value="">
@@ -267,7 +267,7 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
                         <div class="ag-form__group"><label for="amb-sign">Signature — recopie ton nom et prénom complets *</label><input type="text" id="amb-sign" name="signature" required placeholder="Prénom NOM"></div>
                     </div>
 
-                    <button type="submit" class="ag-btn-gold">Je signe et je rejoins 🤝</button>
+                    <button type="submit" class="ag-btn-gold">Je signe et je rejoins </button>
                 </form>
             <?php endif; ?>
         </div>
@@ -278,8 +278,8 @@ $ag_vente_ok = isset( $_GET['vente'] ) && $_GET['vente'] === 'ok';
         <div class="ag-container ag-container--narrow">
             <?php if ( $ag_vente_ok ) : ?>
                 <div class="ag-question-success">
-                    <div class="ag-question-success__check">✓</div>
-                    <h2>Vente enregistrée 🎉</h2>
+                    <div class="ag-question-success__check"></div>
+                    <h2>Vente enregistrée </h2>
                     <p class="ag-question-success__sub">Bravo ! Ta vente est enregistrée. Ta commission de 10 % sera validée une fois le client encaissé, puis versée sur ton moyen de paiement.</p>
                     <a href="#declarer" class="ag-btn-outline">Déclarer une autre vente</a>
                 </div>

@@ -17,7 +17,7 @@ $post_url = esc_url( admin_url( 'admin-post.php' ) );
 	<section class="ag-hero" style="min-height:auto;padding:80px 0 40px;">
 		<div class="ag-hero__bg"><div class="ag-hero__orb ag-hero__orb--1"></div></div>
 		<div class="ag-hero__content" style="max-width:840px;">
-			<span class="ag-tag">⚖️ Cabinets d'avocats</span>
+			<span class="ag-tag">Cabinets d'avocats</span>
 			<h1 class="ag-hero__title"><span class="ag-line">Le guide gratuit : <em>7 pages qui font venir des clients</em> à votre cabinet</span></h1>
 			<p class="ag-hero__sub">Recevez la checklist (déontologie respectée) + le thème WordPress gratuit déjà prêt à l'emploi. 100&nbsp;% français, RGPD.</p>
 		</div>
@@ -42,7 +42,7 @@ $post_url = esc_url( admin_url( 'admin-post.php' ) );
 			<div style="background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.25);border-radius:16px;padding:30px 28px;">
 				<?php if ( 'ok' === $state ) : ?>
 					<div style="text-align:center;padding:20px 0;">
-						<div style="font-size:2.6rem;">✅</div>
+						<div style="font-size:2.6rem;"></div>
 						<h2 style="color:#fff;margin:8px 0 10px;">C'est envoyé !</h2>
 						<p style="color:#cfcabd;line-height:1.6;">Votre guide arrive par email (vérifiez les spams). En attendant, téléchargez le thème gratuit :</p>
 						<a href="https://wordpress.org/themes/" target="_blank" rel="noopener" class="ag-btn-gold" style="margin-top:14px;">Thème gratuit sur WordPress.org →</a>

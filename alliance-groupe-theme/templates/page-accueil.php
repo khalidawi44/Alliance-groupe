@@ -116,7 +116,7 @@ $chapters = array(
 .ag-lm__pdesc{color:#9aa4b6;font-size:.95rem;margin:0 0 16px;min-height:2.6em;}
 .ag-lm__pfeats{list-style:none;margin:0 0 22px;padding:0;flex:1;}
 .ag-lm__pfeats li{padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);color:#cfd6e4;font-size:.95rem;}
-.ag-lm__pfeats li::before{content:"✓ ";color:var(--gold);font-weight:800;}
+.ag-lm__pfeats li::before{content:"";color:var(--gold);font-weight:800;}
 .ag-lm__maint{text-align:center;color:#9aa4b6;margin-top:26px;font-size:.98rem;}
 .ag-lm__maint a{color:var(--gold2);}
 /* REVEAL */
@@ -167,7 +167,7 @@ $chapters = array(
 			<h1 class="ag-lm__h1">Je crée &amp; <em>sécurise</em> votre site,<br>propulsé par l'<em>IA</em>.</h1>
 			<p class="ag-lm__hsub">Un seul interlocuteur, du conseil à la livraison. Des sites premium, rapides et sécurisés — dès 490 €.</p>
 			<div class="ag-lm__cta">
-				<button type="button" class="ag-btnp" data-devis>🚀 Lancer mon projet</button>
+				<button type="button" class="ag-btnp" data-devis>Lancer mon projet</button>
 				<a class="ag-btno" href="#offres">Voir les offres</a>
 			</div>
 		</div>
@@ -177,7 +177,7 @@ $chapters = array(
 	<div class="ag-lm__mq" aria-hidden="true">
 		<div class="ag-lm__mqin">
 			<?php for ( $r = 0; $r < 2; $r++ ) : ?>
-				<span><?php foreach ( $marquee as $m ) : ?><b>✦</b><?php echo esc_html( $m ); ?><?php endforeach; ?></span>
+				<span><?php foreach ( $marquee as $m ) : ?><b></b><?php echo esc_html( $m ); ?><?php endforeach; ?></span>
 			<?php endfor; ?>
 		</div>
 	</div>
@@ -225,7 +225,7 @@ $chapters = array(
 <div class="ag-md" id="ag-devis-modal" role="dialog" aria-modal="true" aria-label="Lancer mon projet">
 	<div class="ag-md__box">
 		<button type="button" class="ag-md__x" data-devis-close aria-label="Fermer">&times;</button>
-		<h3 class="ag-md__h">Lancer mon projet 🚀</h3>
+		<h3 class="ag-md__h">Lancer mon projet </h3>
 		<p class="ag-md__p">Commence par un <strong>diagnostic gratuit</strong> de ton site actuel (note /100 + failles). Pas de site ? Passe direct au devis IA.</p>
 		<form method="post" action="<?php echo esc_url( $post ); ?>" onsubmit="var i=this.site_url; if(i.value && !/^https?:\/\//i.test(i.value)) i.value='https://'+i.value;">
 			<input type="hidden" name="action" value="ag_tester_run">
@@ -234,11 +234,11 @@ $chapters = array(
 			<input type="hidden" name="result_page" value="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>">
 			<div class="ag-md__form">
 				<input type="text" name="site_url" inputmode="url" placeholder="monsite.fr" required aria-label="Adresse de votre site">
-				<button type="submit" class="ag-btnp">🔍 Diagnostic</button>
+				<button type="submit" class="ag-btnp">Diagnostic</button>
 			</div>
 		</form>
 		<div class="ag-md__or">— ou —</div>
-		<a class="ag-btnp" style="display:block;text-align:center;text-decoration:none;" href="<?php echo esc_url( home_url( '/devis-instant' ) ); ?>">🧾 Devis instantané par l'IA</a>
+		<a class="ag-btnp" style="display:block;text-align:center;text-decoration:none;" href="<?php echo esc_url( home_url( '/devis-instant' ) ); ?>">Devis instantané par l'IA</a>
 	</div>
 </div>
 

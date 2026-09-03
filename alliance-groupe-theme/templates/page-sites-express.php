@@ -58,14 +58,14 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
     <div class="ag-xpress__reassure">
         <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:7px"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>Livraison en quelques jours</span>
         <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:7px"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Paiement sécurisé PayPal</span>
-        <span>💳 Payable en 4× sans frais</span>
+        <span>Payable en 4× sans frais</span>
         <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:7px"><path d="M4 12l5 5L20 6"/></svg>Révisions incluses</span>
-        <span>📍 Interlocuteur unique — studio à Nantes</span>
+        <span>Interlocuteur unique — studio à Nantes</span>
         <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:7px"><path d="M12 3l7 2.5v5.6c0 4.2-2.9 7.2-7 8.4-4.1-1.2-7-4.2-7-8.4V5.5z"/><path d="M9 12l2 2 4-4"/></svg>Sécurisé dès le départ</span>
     </div>
 
     <!-- Urgence / rareté -->
-    <div class="ag-xpress__urgency">🔥 On lance un <strong>nombre limité de sites par semaine</strong> pour garder la qualité — réserve ta place ce mois-ci.</div>
+    <div class="ag-xpress__urgency">On lance un <strong>nombre limité de sites par semaine</strong> pour garder la qualité — réserve ta place ce mois-ci.</div>
 
     <!-- Packs -->
     <section class="ag-section ag-section--light" id="packs">
@@ -108,7 +108,7 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
                         }
                         ?>
                     </ul>
-                    <p class="ag-xpress__pay4">💳 Payable en 4× sans frais via PayPal</p>
+                    <p class="ag-xpress__pay4">Payable en 4× sans frais via PayPal</p>
                     <a href="<?php echo esc_url( $cta_url ); ?>" class="ag-btn-gold ag-xpress__cta">Commander →</a>
                     <?php if ( ! $is_set ) echo '<small class="ag-xpress__note">Paiement bientôt en ligne — remplis le brief, on te recontacte.</small>'; ?>
                 </div>
@@ -123,9 +123,9 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
             <h2 class="ag-section__title ag-anim" data-anim="title">Zéro risque pour toi</h2>
             <div class="ag-xpress__guar">
                 <div class="ag-xpress__guar-item"><span class="ag-xpress__guar-ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 3l7 2.5v5.6c0 4.2-2.9 7.2-7 8.4-4.1-1.2-7-4.2-7-8.4V5.5z"/><path d="M9 12l2 2 4-4"/></svg></span><strong>Satisfait ou ajusté</strong><span>On retouche jusqu'à ce que ça te plaise.</span></div>
-                <div class="ag-xpress__guar-item"><span class="ag-xpress__guar-ic">⏱️</span><strong>Délai annoncé tenu</strong><span>En retard de notre faute ? 1 mois de maintenance offert.</span></div>
-                <div class="ag-xpress__guar-item"><span class="ag-xpress__guar-ic">💳</span><strong>Payable en 4×</strong><span>Sans frais, via PayPal — étale le paiement.</span></div>
-                <div class="ag-xpress__guar-item"><span class="ag-xpress__guar-ic">🧾</span><strong>Facture &amp; sans engagement</strong><span>Facture émise, maintenance résiliable à tout moment.</span></div>
+                <div class="ag-xpress__guar-item"><span class="ag-xpress__guar-ic">⏱</span><strong>Délai annoncé tenu</strong><span>En retard de notre faute ? 1 mois de maintenance offert.</span></div>
+                <div class="ag-xpress__guar-item"><span class="ag-xpress__guar-ic"></span><strong>Payable en 4×</strong><span>Sans frais, via PayPal — étale le paiement.</span></div>
+                <div class="ag-xpress__guar-item"><span class="ag-xpress__guar-ic"></span><strong>Facture &amp; sans engagement</strong><span>Facture émise, maintenance résiliable à tout moment.</span></div>
             </div>
         </div>
     </section>
@@ -227,10 +227,10 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
 
             <!-- Site 100% personnalisé → prise de RDV (le SEUL cas qui passe par un échange) -->
             <div style="max-width:760px;margin:34px auto 0;background:linear-gradient(135deg,rgba(212,180,92,.12),rgba(20,20,26,.6));border:1px solid rgba(212,180,92,.4);border-radius:18px;padding:26px 22px;text-align:center;">
-                <div style="font-size:1.7rem;">🎨</div>
+                <div style="font-size:1.7rem;"></div>
                 <h3 style="font-family:Georgia,serif;font-size:1.5rem;margin:6px 0 8px;color:#fff;">Un projet 100% sur-mesure ?</h3>
                 <p style="color:var(--color-text-secondary);margin:0 auto 18px;max-width:520px;">Les packs ci-dessus se commandent et se paient <strong>directement en ligne</strong>. Pour un site <strong>entièrement personnalisé</strong>, prenez rendez-vous : dites-nous ce que vous voulez, on vous rappelle.</p>
-                <a href="<?php echo esc_url( add_query_arg( 'ag_rdv', 1, home_url( '/' ) ) ); ?>" class="ag-btn-gold" style="display:inline-block;">📅 Prendre rendez-vous pour un site personnalisé →</a>
+                <a href="<?php echo esc_url( add_query_arg( 'ag_rdv', 1, home_url( '/' ) ) ); ?>" class="ag-btn-gold" style="display:inline-block;">Prendre rendez-vous pour un site personnalisé →</a>
             </div>
         </div>
     </section>
@@ -258,14 +258,14 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
         <div class="ag-container ag-container--narrow">
             <?php if ( $brief_ok ) : ?>
                 <div class="ag-question-success">
-                    <div class="ag-question-success__check">✓</div>
+                    <div class="ag-question-success__check"></div>
                     <h2>Brief reçu</h2>
                     <p class="ag-question-success__sub">Merci ! On démarre la production de ton site et on t'envoie une première version rapidement, avec une vidéo. Tout par écrit, sans rendez-vous.</p>
                 </div>
                 <div class="ag-xpress__refer">
                     <p><strong>Parraine un commerçant</strong> — s'il commande un site en disant qu'il vient de ta part, tu gagnes <strong>1 mois de maintenance offert</strong>.</p>
-                    <textarea id="ag-refer-msg" readonly rows="3">Je viens de faire faire mon site avec Alliance Groupe : à prix fixe (dès 490 €), livré en quelques jours, sans rendez-vous. Jette un œil 👉 <?php echo esc_url( home_url( '/sites-express' ) ); ?> (dis que tu viens de ma part)</textarea>
-                    <button type="button" class="ag-btn-gold" id="ag-refer-copy" onclick="navigator.clipboard.writeText(document.getElementById('ag-refer-msg').value).then(function(){var b=document.getElementById('ag-refer-copy');b.textContent='✓ Copié';setTimeout(function(){b.textContent='Copier mon message';},1500);});">Copier mon message</button>
+                    <textarea id="ag-refer-msg" readonly rows="3">Je viens de faire faire mon site avec Alliance Groupe : à prix fixe (dès 490 €), livré en quelques jours, sans rendez-vous. Jette un œil <?php echo esc_url( home_url( '/sites-express' ) ); ?> (dis que tu viens de ma part)</textarea>
+                    <button type="button" class="ag-btn-gold" id="ag-refer-copy" onclick="navigator.clipboard.writeText(document.getElementById('ag-refer-msg').value).then(function(){var b=document.getElementById('ag-refer-copy');b.textContent='Copié';setTimeout(function(){b.textContent='Copier mon message';},1500);});">Copier mon message</button>
                 </div>
             <?php elseif ( ! $paid ) : ?>
                 <span class="ag-tag">Étape 2</span>
@@ -344,9 +344,9 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
 .ag-xpress__ba-col--after .ag-xpress__ba-tag{background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#10100a;}
 .ag-xpress__ba-col ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;}
 .ag-xpress__ba-col--before li{color:var(--color-text-muted);padding-left:24px;position:relative;}
-.ag-xpress__ba-col--before li::before{content:'✕';position:absolute;left:0;color:#b35a5a;}
+.ag-xpress__ba-col--before li::before{content:'';position:absolute;left:0;color:#b35a5a;}
 .ag-xpress__ba-col--after li{color:#fff;padding-left:24px;position:relative;}
-.ag-xpress__ba-col--after li::before{content:'✓';position:absolute;left:0;color:#4bbf77;font-weight:800;}
+.ag-xpress__ba-col--after li::before{content:'';position:absolute;left:0;color:#4bbf77;font-weight:800;}
 .ag-xpress__reviews{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:30px;}
 .ag-xpress__reviews blockquote{margin:0;padding:22px 20px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.18);border-radius:16px;color:#fff;font-style:italic;line-height:1.55;}
 .ag-xpress__reviews cite{display:block;margin-top:12px;color:#e8c766;font-style:normal;font-weight:700;font-size:.9rem;}
@@ -397,7 +397,7 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
 .ag-xpress__desc{color:var(--color-text-secondary);font-size:.95rem;margin:0 0 18px;}
 .ag-xpress__feats{list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:10px;}
 .ag-xpress__feats li{position:relative;padding-left:26px;color:var(--color-text-soft);font-size:.95rem;line-height:1.4;}
-.ag-xpress__feats li::before{content:'✓';position:absolute;left:0;color:var(--color-gold);font-weight:800;}
+.ag-xpress__feats li::before{content:'';position:absolute;left:0;color:var(--color-gold);font-weight:800;}
 .ag-xpress__cta{margin-top:auto;text-align:center;}
 .ag-xpress__note{display:block;margin-top:10px;color:var(--color-text-muted);font-size:.8rem;text-align:center;}
 @media(max-width:900px){.ag-xpress__grid{grid-template-columns:1fr;max-width:440px;margin-left:auto;margin-right:auto;}}

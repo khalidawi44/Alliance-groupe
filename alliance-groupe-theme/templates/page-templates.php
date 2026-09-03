@@ -24,7 +24,7 @@ $ag_stripe_business = get_option( 'ag_stripe_business_url', $ag_stripe_placehold
 $ag_hub_metiers = array(
     array(
         'slug'     => 'avocat',
-        'icon'     => '⚖️',
+        'icon'     => '',
         'name'     => 'Avocat',
         'palette'  => 'Navy &amp; champagne',
         'audience' => 'Cabinet d\'avocats, juriste, notaire, conseil juridique.',
@@ -35,7 +35,7 @@ $ag_hub_metiers = array(
     ),
     array(
         'slug'     => 'restaurant',
-        'icon'     => '🍽️',
+        'icon'     => '',
         'name'     => 'Restaurant',
         'palette'  => 'Or &amp; noir',
         'audience' => 'Bistrot, bar, café, restaurant gastronomique.',
@@ -46,7 +46,7 @@ $ag_hub_metiers = array(
     ),
     array(
         'slug'     => 'artisan',
-        'icon'     => '🔨',
+        'icon'     => '',
         'name'     => 'Artisan',
         'palette'  => 'Bronze &amp; noir',
         'audience' => 'Plombier, électricien, menuisier, maçon, BTP.',
@@ -57,7 +57,7 @@ $ag_hub_metiers = array(
     ),
     array(
         'slug'     => 'coach',
-        'icon'     => '💼',
+        'icon'     => '',
         'name'     => 'Coach',
         'palette'  => 'Bleu teal &amp; marine',
         'audience' => 'Coach, consultant, formateur, thérapeute.',
@@ -68,7 +68,7 @@ $ag_hub_metiers = array(
     ),
     array(
         'slug'     => 'domicile',
-        'icon'     => '🏡',
+        'icon'     => '',
         'name'     => 'Aide à domicile',
         'palette'  => 'Vert doux &amp; beige',
         'audience' => 'Services à la personne : aide aux seniors, familles, handicap.',
@@ -79,7 +79,7 @@ $ag_hub_metiers = array(
     ),
     array(
         'slug'     => 'barber',
-        'icon'     => '💈',
+        'icon'     => '',
         'name'     => 'Barber Shop',
         'palette'  => 'Bleu électrique &amp; charbon',
         'audience' => 'Barbershop, coiffeur, salon de coiffure urbain.',
@@ -90,7 +90,7 @@ $ag_hub_metiers = array(
     ),
     array(
         'slug'      => 'association',
-        'icon'      => '🤝',
+        'icon'      => '',
         'name'      => 'Association',
         'palette'   => 'Rouge &amp; noir',
         'audience'  => 'Mouvement militant, association loi 1901, parti, syndicat, ONG.',
@@ -186,7 +186,7 @@ if ( ! empty( $ag_templates_only ) ) {
         </div>
     </section>
 
-    <!-- 🆕 Mon métier n'est pas là ? → Créateur de site (base Avocat Business) -->
+    <!-- Mon métier n'est pas là ? → Créateur de site (base Avocat Business) -->
     <section class="ag-section ag-section--graphite" id="ag-creer-mon-site">
         <div class="ag-container">
             <span class="ag-tag ag-anim" data-anim="tag">Votre métier n'est pas dans la liste ?</span>
@@ -198,10 +198,10 @@ if ( ! empty( $ag_templates_only ) ) {
         </div>
     </section>
 
-    <!-- 🆕 Comparatif détaillé des 3 packs (tableau ✓ par feature) -->
+    <!-- Comparatif détaillé des 3 packs (tableau par feature) -->
     <?php get_template_part( 'template-parts/packs-comparatif' ); ?>
 
-    <!-- 🆕 CTA audit gratuit (lead capture sur-mesure) -->
+    <!-- CTA audit gratuit (lead capture sur-mesure) -->
     <?php get_template_part( 'template-parts/audit-cta' ); ?>
 
     <!-- Offre spécifique associations (Premium/Business sont déjà couverts par le comparatif ci-dessus) -->
@@ -213,8 +213,8 @@ if ( ! empty( $ag_templates_only ) ) {
 
             <div style="max-width:520px;margin:40px auto 0;">
                 <div style="padding:28px;background:rgba(225,15,26,.10);border:2px solid rgba(225,15,26,.5);border-radius:14px;text-align:center;position:relative;">
-                    <span style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#E10F1A;color:#fff;font-size:.68rem;font-weight:700;padding:3px 12px;border-radius:100px;text-transform:uppercase;letter-spacing:1px;">🤝 Caritatif</span>
-                    <div style="font-size:2rem;margin-bottom:6px;">💎</div>
+                    <span style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#E10F1A;color:#fff;font-size:.68rem;font-weight:700;padding:3px 12px;border-radius:100px;text-transform:uppercase;letter-spacing:1px;">Caritatif</span>
+                    <div style="font-size:2rem;margin-bottom:6px;"></div>
                     <strong style="display:block;color:#ffb1b6;font-size:1.2rem;margin-bottom:8px;">Pack Fidélité — 99€</strong>
                     <p style="color:#b0b0bc;font-size:.92rem;line-height:1.6;margin:0 0 18px;"><strong style="color:#FFD23F;">Réservé aux associations.</strong> Équivalent Premium, avec en plus : 13 extensions WordPress installables en 1 clic, rôles utilisateurs, mentions/RGPD/statuts auto, espace adhérent.</p>
                     <a href="<?php echo esc_url( home_url( '/wordpress-association' ) ); ?>" class="ag-btn-gold">Voir l'offre association →</a>
@@ -223,19 +223,19 @@ if ( ! empty( $ag_templates_only ) ) {
         </div>
     </section>
 
-    <!-- 🚨 Avertissement sur-mesure -->
+    <!-- Avertissement sur-mesure -->
     <section class="ag-section ag-section--or" style="padding:80px 0;">
         <div class="ag-container">
             <div style="max-width:900px;margin:0 auto;padding:40px 36px;background:linear-gradient(135deg,rgba(212,180,92,.12) 0%,rgba(20,20,22,.6) 100%);border:2px solid rgba(212,180,92,.4);border-radius:20px;text-align:center;position:relative;">
                 <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#D4B45C,transparent);"></div>
-                <span style="display:inline-block;padding:6px 18px;background:rgba(212,180,92,.2);border:1px solid rgba(212,180,92,.5);border-radius:100px;color:#D4B45C;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;">💎 Et si vous alliez plus loin ?</span>
+                <span style="display:inline-block;padding:6px 18px;background:rgba(212,180,92,.2);border:1px solid rgba(212,180,92,.5);border-radius:100px;color:#D4B45C;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;">Et si vous alliez plus loin ?</span>
                 <h2 style="font-size:clamp(1.5rem,3vw,2rem);margin-bottom:12px;line-height:1.2;">Un template ne remplacera <em>jamais</em> un site sur-mesure</h2>
                 <p style="font-size:1rem;color:#e8e6e0;max-width:720px;margin:0 auto 24px;line-height:1.7;">
                     Si votre business compte vraiment — restaurant, cabinet, coach, artisan, avocat — un site sur-mesure, rapide et sécurisé dès le départ, va beaucoup plus loin qu'un template.
                     <strong style="color:#D4B45C;">Conçu pour inspirer confiance et durer.</strong>
                 </p>
                 <div class="ag-hero__buttons" style="justify-content:center;flex-wrap:wrap;">
-                    <a href="tel:+33744829516" class="ag-btn-gold">📞 Appeler Fabrizio</a>
+                    <a href="tel:+33744829516" class="ag-btn-gold">Appeler Fabrizio</a>
                     <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" class="ag-btn-outline">Réserver un appel gratuit →</a>
                 </div>
                 <p style="color:#888;font-size:.82rem;margin-top:16px;font-style:italic;">Premier appel 30 min gratuit, sans engagement.</p>
@@ -243,7 +243,7 @@ if ( ! empty( $ag_templates_only ) ) {
         </div>
     </section>
 
-    <!-- 🎁 Plugin compagnon bonus -->
+    <!-- Plugin compagnon bonus -->
     <section class="ag-section ag-section--graphite">
         <div class="ag-container">
             <div style="max-width:900px;margin:0 auto;padding:40px;background:linear-gradient(135deg,rgba(40,167,69,.08),rgba(40,167,69,.02));border:1px solid rgba(40,167,69,.3);border-radius:16px;text-align:center;">
@@ -253,7 +253,7 @@ if ( ! empty( $ag_templates_only ) ) {
                     Le plugin gratuit qui crée automatiquement les pages, le menu, la page d'accueil et les permaliens quand vous activez un thème AG Starter. Compatible avec les 5 thèmes.
                     Pour Avocat, il crée aussi 6 Domaines d'expertise préremplis.
                 </p>
-                <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="companion" data-file="<?php echo esc_url($dl_base . 'ag-starter-companion.zip'); ?>">⚡ Télécharger le plugin gratuit →</button>
+                <button type="button" class="ag-btn-gold ag-dl-trigger" data-template="companion" data-file="<?php echo esc_url($dl_base . 'ag-starter-companion.zip'); ?>">Télécharger le plugin gratuit →</button>
                 <p style="color:#888;font-size:.82rem;margin-top:14px;">100% gratuit, zéro limite. Détecte automatiquement le thème actif.</p>
             </div>
         </div>

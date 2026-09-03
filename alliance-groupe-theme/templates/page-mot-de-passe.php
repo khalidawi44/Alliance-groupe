@@ -49,7 +49,7 @@ if ( $ag_key && $ag_login ) {
 
 			<?php elseif ( 'sent' === $ag_lost ) : ?>
 				<span class="ag-tag">Email envoyé</span>
-				<h1 class="ag-section__title">Vérifie ta boîte mail 📬</h1>
+				<h1 class="ag-section__title">Vérifie ta boîte mail </h1>
 				<p class="ag-section__desc">Si un compte existe avec cet email, tu viens de recevoir un lien pour choisir un nouveau mot de passe. Pense à regarder dans les spams.</p>
 				<a href="<?php echo esc_url( home_url( '/connexion' ) ); ?>" class="ag-btn-outline">Retour à la connexion</a>
 

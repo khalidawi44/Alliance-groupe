@@ -25,14 +25,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 		<div class="ag-2ways__grid">
 			<div class="ag-2ways__panel">
-				<span class="ag-2ways__ic">✨</span>
+				<span class="ag-2ways__ic"></span>
 				<span class="ag-2ways__k ag-2ways__k--crea">Création · sur-mesure</span>
 				<h3 class="ag-2ways__h">On crée votre site de A à Z</h3>
 				<p class="ag-2ways__p">Design unique, rapide, <strong>sécurisé dès le départ</strong> et référencé sur Google. Vous parlez directement à la personne qui le construit. Dès <strong>490 €</strong>, payable en 4× sans frais.</p>
 				<a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>" class="ag-2ways__btn ag-2ways__btn--crea">Créer mon site →</a>
 			</div>
 			<div class="ag-2ways__panel ag-2ways__panel--right">
-				<span class="ag-2ways__ic">📦</span>
+				<span class="ag-2ways__ic"></span>
 				<span class="ag-2ways__k ag-2ways__k--tpl">Prêt à l'emploi · gratuit</span>
 				<h3 class="ag-2ways__h">Partez d'un template métier</h3>
 				<p class="ag-2ways__p">6 thèmes français (avocat, resto, artisan, coach, barber, asso), contenu déjà rédigé, installés en <strong>2 min</strong>. <strong>100 % gratuits</strong> — il ne reste qu'à remplacer quelques éléments.</p>

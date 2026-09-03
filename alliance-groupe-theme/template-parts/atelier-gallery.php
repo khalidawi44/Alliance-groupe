@@ -30,20 +30,20 @@ $cards = array(
 );
 
 $filters = array(
-	'all'      => '✨ Tous',
-	'ia'       => '🤖 IA',
-	'creer'    => '🌐 Créer',
-	'securite' => '🔒 Sécurité',
+	'all'      => 'Tous',
+	'ia'       => 'IA',
+	'creer'    => 'Créer',
+	'securite' => 'Sécurité',
 );
 $icons = array(
-	'Devis instantané'    => '🧾',
-	'Refais mon site'     => '🎨',
-	'Fait par l\'IA'      => '⚡',
-	'Studio créatif'      => '🎬',
-	'Création de sites'   => '🌐',
-	'Audit de sécurité'   => '🔒',
-	'Composants web'      => '🧩',
-	'Templates WordPress' => '🎁',
+	'Devis instantané'    => '',
+	'Refais mon site'     => '',
+	'Fait par l\'IA'      => '',
+	'Studio créatif'      => '',
+	'Création de sites'   => '',
+	'Audit de sécurité'   => '',
+	'Composants web'      => '',
+	'Templates WordPress' => '',
 );
 ?>
 <style>
@@ -103,7 +103,7 @@ $icons = array(
 			<a class="ag-atl__card" href="<?php echo esc_url( $c['url'] ); ?>" data-cat="<?php echo esc_attr( $c['cat'] ); ?>">
 				<div class="ag-atl__media">
 					<span class="ag-atl__badge"><?php echo esc_html( $c['badge'] ); ?></span>
-					<span class="ag-atl__ic"><?php echo isset( $icons[ $c['title'] ] ) ? $icons[ $c['title'] ] : '✨'; ?></span>
+					<span class="ag-atl__ic"><?php echo isset( $icons[ $c['title'] ] ) ? $icons[ $c['title'] ] : ''; ?></span>
 					<img src="<?php echo esc_url( $img . $c['img'] ); ?>" alt="<?php echo esc_attr( $c['title'] ); ?>" loading="lazy" width="1000" height="563">
 					<?php if ( ! empty( $c['vid'] ) ) : ?>
 						<video class="ag-atl__vid" muted loop playsinline preload="none"
@@ -123,7 +123,7 @@ $icons = array(
 	</div>
 
 	<div class="ag-atl__more">
-		<a href="<?php echo esc_url( home_url( '/devis-instant' ) ); ?>">🚀 Lancer mon projet — devis instantané</a>
+		<a href="<?php echo esc_url( home_url( '/devis-instant' ) ); ?>">Lancer mon projet — devis instantané</a>
 	</div>
 </section>
 

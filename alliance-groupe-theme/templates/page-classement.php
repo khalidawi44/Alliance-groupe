@@ -13,7 +13,7 @@ $day   = function_exists( 'ag_ambassadeur_leaderboard' ) ? ag_ambassadeur_leader
 
 $eur   = function ( $n ) { return number_format( (float) $n, 0, ',', ' ' ) . ' €'; };
 $sname = function ( $r ) { return function_exists( 'ag_ambassadeur_short_name' ) ? ag_ambassadeur_short_name( $r['name'] ) : $r['name']; };
-$medal = array( 1 => '🥇', 2 => '🥈', 3 => '🥉' );
+$medal = array( 1 => '', 2 => '', 3 => '' );
 
 $podium = array_slice( $all, 0, 3 );
 
@@ -33,10 +33,10 @@ $render_table = function ( $rows, $empty ) use ( $eur, $sname, $medal ) {
 <main id="ag-main-content" class="ag-cls">
 	<section class="ag-section ag-section--graphite">
 		<div class="ag-container">
-			<span class="ag-tag ag-anim" data-anim="tag">Le championnat 🏆</span>
+			<span class="ag-tag ag-anim" data-anim="tag">Le championnat </span>
 			<h1 class="ag-section__title ag-anim" data-anim="title">Classement des <em>commerciaux</em></h1>
 			<p class="ag-section__desc ag-anim" data-anim="desc">Chaque vente compte. Monte sur le podium, décroche les primes du mois. Mis à jour en continu (ventes validées).</p>
-			<div class="ag-cls-challenge">🏆 <strong>Challenge du mois</strong> — le n°1 du classement « Ce mois-ci » remporte une <strong>prime</strong>. Tout est remis à zéro chaque mois : tout le monde a sa chance.</div>
+			<div class="ag-cls-challenge"><strong>Challenge du mois</strong> — le n°1 du classement « Ce mois-ci » remporte une <strong>prime</strong>. Tout est remis à zéro chaque mois : tout le monde a sa chance.</div>
 
 			<?php if ( ! empty( $podium ) ) : ?>
 			<div class="ag-cls-podium">
@@ -58,15 +58,15 @@ $render_table = function ( $rows, $empty ) use ( $eur, $sname, $medal ) {
 
 			<div class="ag-cls-grid">
 				<div class="ag-cls-col">
-					<h2>🔥 Aujourd'hui</h2>
+					<h2>Aujourd'hui</h2>
 					<?php $render_table( $day, 'Aucune vente validée aujourd\'hui. Sois le premier !' ); ?>
 				</div>
 				<div class="ag-cls-col">
-					<h2>📅 Ce mois-ci</h2>
+					<h2>Ce mois-ci</h2>
 					<?php $render_table( $month, 'Le championnat du mois est ouvert.' ); ?>
 				</div>
 				<div class="ag-cls-col">
-					<h2>👑 Général</h2>
+					<h2>Général</h2>
 					<?php $render_table( $all, 'Aucune vente pour l\'instant.' ); ?>
 				</div>
 			</div>

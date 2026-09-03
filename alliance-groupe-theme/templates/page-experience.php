@@ -380,17 +380,17 @@ body.page-template-page-experience .ag-fsm-toggle{display:none!important}
 		<button id="agx-back">◂ BACK</button>
 		<button id="agx-next">NEXT ▸</button>
 	</div>
-	<button class="agx__burger" id="agx-burger" type="button" aria-label="Menu">☰</button>
+	<button class="agx__burger" id="agx-burger" type="button" aria-label="Menu"></button>
 	<div class="agx__acc" id="agx-acc" aria-hidden="true">
-		<button class="agx__acc-close" id="agx-acc-close" type="button" aria-label="Fermer">✕</button>
+		<button class="agx__acc-close" id="agx-acc-close" type="button" aria-label="Fermer"></button>
 		<div class="agx__acc-inner" id="agx-acc-inner"></div>
 	</div>
 	<div class="agx__frame" id="agx-frame" aria-hidden="true">
 		<button class="agx__frame-close" id="agx-frame-close" type="button">← Retour au voyage</button>
 		<iframe class="agx__frame-if" id="agx-frame-if" title="Contenu Alliance Groupe" loading="lazy"></iframe>
 	</div>
-	<a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" class="agx__cta" id="agx-cta">✦ Devis gratuit</a>
-	<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="agx__skip" id="agx-skip">Passer ✕</a>
+	<a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" class="agx__cta" id="agx-cta">Devis gratuit</a>
+	<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="agx__skip" id="agx-skip">Passer </a>
 	<button class="agx__sound" id="agx-sound" type="button" aria-label="Couper le son" style="display:none">
 		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 			<path d="M4 9 L8 9 L13 5 L13 19 L8 15 L4 15 Z" fill="currentColor" stroke="none"/>
@@ -423,11 +423,11 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 const BASE = '<?php echo esc_js( $base ); ?>';
 const STATIONS = [
 	{ pre:'VOTRE SITE EST-IL UNE CIBLE ?', ttl:'Alliance Groupe', line:"La plupart des sites piratés l'étaient sur une faille connue. On va trouver la vôtre avant les autres.", media:'video' },
-	{ pre:'✦ LA MENACE — EN DIRECT', ttl:'Les attaques, maintenant', line:'Carte mondiale des cyberattaques en temps réel. La question n’est pas « si », mais « quand ».', media:'space', iframe:'https://cybermap.kaspersky.com/fr/widget/dynamic/dark' },
-	{ pre:'✦ LA FONDATION', ttl:'Naples', line:'Tout part de Naples : maison familiale, mes racines. C’est là qu’on apprend à protéger ce qui compte — et c’est exactement ce que je fais pour votre site. La sécurité n’est pas une option, c’est la fondation.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/baie_naples_nuit.jpg' ); ?>', size:5.2, baseY:1.4 },
-	{ pre:'✦ ÉTAPE 1 — L’AUDIT', ttl:'Je révèle les failles', line:'En 48 h, un rapport clair de tout ce qui expose votre site. Sans jargon, sans engagement.', media:'photo', bg:'<?php echo esc_js( $imgb . 'securite/pexels-cookiecutter-37564547.jpg' ); ?>' },
-	{ pre:'✦ ÉTAPE 2 — JE SÉCURISE', ttl:'Je reprends ou je recrée', line:'Je corrige votre site existant — ou j’en construis un neuf, sécurisé dès le départ. Puis je le maintiens.', media:'photo', bg:'<?php echo esc_js( $imgb . 'team/1_bureau_naples.jpg' ); ?>' },
-	{ pre:'✦ ON COMMENCE ?', ttl:'Par où démarrer', line:'Touchez une étoile : audit, reprise, création sécurisée, maintenance.', media:'space', menu:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0.2&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_hint=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' }
+	{ pre:'LA MENACE — EN DIRECT', ttl:'Les attaques, maintenant', line:'Carte mondiale des cyberattaques en temps réel. La question n’est pas « si », mais « quand ».', media:'space', iframe:'https://cybermap.kaspersky.com/fr/widget/dynamic/dark' },
+	{ pre:'LA FONDATION', ttl:'Naples', line:'Tout part de Naples : maison familiale, mes racines. C’est là qu’on apprend à protéger ce qui compte — et c’est exactement ce que je fais pour votre site. La sécurité n’est pas une option, c’est la fondation.', model:'mt._vesuvius_italy.glb', media:'photo', bg:'<?php echo esc_js( $imgb . 'cities/baie_naples_nuit.jpg' ); ?>', size:5.2, baseY:1.4 },
+	{ pre:'ÉTAPE 1 — L’AUDIT', ttl:'Je révèle les failles', line:'En 48 h, un rapport clair de tout ce qui expose votre site. Sans jargon, sans engagement.', media:'photo', bg:'<?php echo esc_js( $imgb . 'securite/pexels-cookiecutter-37564547.jpg' ); ?>' },
+	{ pre:'ÉTAPE 2 — JE SÉCURISE', ttl:'Je reprends ou je recrée', line:'Je corrige votre site existant — ou j’en construis un neuf, sécurisé dès le départ. Puis je le maintiens.', media:'photo', bg:'<?php echo esc_js( $imgb . 'team/1_bureau_naples.jpg' ); ?>' },
+	{ pre:'ON COMMENCE ?', ttl:'Par où démarrer', line:'Touchez une étoile : audit, reprise, création sécurisée, maintenance.', media:'space', menu:true, iframe:'https://sketchfab.com/models/d6521362b37b48e3a82bce4911409303/embed?autospin=0.2&autostart=1&preload=1&ui_theme=dark&ui_help=0&ui_hint=0&ui_infos=0&ui_controls=0&ui_stop=0&ui_inspector=0&ui_ar=0&ui_vr=0&ui_fullscreen=0&ui_annotations=0&ui_watermark=0&dnt=1&scrollwheel=0' }
 ];
 const GLOBE_MARKERS = [
 	{ lat:40.85, lon:14.26, label:'Naples · mes racines', kind:'office', target:'Naples' }
@@ -878,16 +878,16 @@ if (agxCtaBtn) agxCtaBtn.addEventListener('click', e=>{ const u = agxCtaBtn.getA
 /* Menu accordéon : "Le voyage" (stations) + "Le site" (vrai menu accueil).
  * Tout s'ouvre DANS le voyage (iframe) -> la musique ne s'arrête jamais. */
 const AGX_SITE_MENU = <?php echo wp_json_encode( array(
-	array( 'u' => home_url( '/tester-mon-site' ),            'l' => '📊 Audit gratuit' ),
+	array( 'u' => home_url( '/tester-mon-site' ),            'l' => 'Audit gratuit' ),
 	array( 'u' => home_url( '/' ),                    'l' => 'Accueil' ),
 	array( 'u' => home_url( '/services' ),            'l' => 'Services' ),
-	array( 'u' => home_url( '/sites-express' ),       'l' => 'Sites Express ⚡' ),
+	array( 'u' => home_url( '/sites-express' ),       'l' => 'Sites Express ' ),
 	array( 'u' => home_url( '/templates-wordpress' ), 'l' => 'Templates' ),
 	array( 'u' => home_url( '/pourquoi-alliance' ),   'l' => 'Pourquoi Alliance' ),
 	array( 'u' => home_url( '/realisations' ),        'l' => 'Réalisations' ),
 	array( 'u' => home_url( '/programme-racines' ),   'l' => 'Programme Racines' ),
 	array( 'u' => home_url( '/ambassadeurs' ),        'l' => 'Ambassadeurs' ),
-	array( 'u' => home_url( '/classement' ),          'l' => 'Classement 🏆' ),
+	array( 'u' => home_url( '/classement' ),          'l' => 'Classement ' ),
 	array( 'u' => home_url( '/articles' ),            'l' => 'Articles' ),
 	array( 'u' => home_url( '/a-propos' ),            'l' => 'À propos' ),
 	array( 'u' => home_url( '/contact' ),             'l' => 'Contact' ),

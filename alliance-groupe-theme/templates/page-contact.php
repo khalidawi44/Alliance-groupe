@@ -26,21 +26,21 @@ get_header();
                 <div>
                     <div class="ag-contact-cards">
                         <div class="ag-contact-card ag-anim" data-anim="card">
-                            <div class="ag-contact-card__icon">📞</div>
+                            <div class="ag-contact-card__icon"></div>
                             <div class="ag-contact-card__label">Téléphone</div>
                             <div class="ag-contact-card__value">
                                 <a href="tel:+33744829516">07.44.82.95.16</a>
                             </div>
                         </div>
                         <div class="ag-contact-card ag-anim" data-anim="card">
-                            <div class="ag-contact-card__icon">✉️</div>
+                            <div class="ag-contact-card__icon"></div>
                             <div class="ag-contact-card__label">Email</div>
                             <div class="ag-contact-card__value">
                                 <a href="mailto:contact@alliancegroupe-inc.com">contact@alliancegroupe-inc.com</a>
                             </div>
                         </div>
                         <div class="ag-contact-card ag-anim" data-anim="card">
-                            <div class="ag-contact-card__icon">📍</div>
+                            <div class="ag-contact-card__icon"></div>
                             <div class="ag-contact-card__label">Basé à</div>
                             <div class="ag-contact-card__value">Naples (Italie) &amp; Nantes</div>
                         </div>
@@ -110,7 +110,7 @@ get_header();
                 </div>
                 <div class="ag-rdv-cta__visual" aria-hidden="true">
                     <div class="ag-rdv-cta__calendar">
-                        <div class="ag-rdv-cta__calendar-head">📅</div>
+                        <div class="ag-rdv-cta__calendar-head"></div>
                         <div class="ag-rdv-cta__calendar-dot"></div>
                         <div class="ag-rdv-cta__calendar-dot"></div>
                         <div class="ag-rdv-cta__calendar-dot ag-rdv-cta__calendar-dot--active"></div>

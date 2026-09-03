@@ -10,7 +10,7 @@ get_header();
 set_query_var( 'ag_metier', array(
     'slug'        => 'barber',
     'slug_full'   => 'ag-starter-barber',
-    'icon'        => '💈',
+    'icon'        => '',
     'name'        => 'Barber Shop',
     'audience_short' => 'barbershop',
     'palette'     => 'Bleu électrique &amp; charbon',
@@ -22,25 +22,25 @@ set_query_var( 'ag_metier', array(
 
     'unique_features' => array(
         array(
-            'icon'  => '🎫',
+            'icon'  => '',
             'title' => 'File d\'attente par QR code',
             'desc'  => 'Le client scanne le QR en vitrine, prend un ticket et reçoit son heure de passage estimée. Il va prendre un café et revient à l\'heure — au lieu de repartir en voyant du monde.',
             'vs'    => 'Aucun thème de barbershop gratuit du marché n\'intègre une vraie file d\'attente.',
         ),
         array(
-            'icon'  => '⏱️',
+            'icon'  => '⏱',
             'title' => 'Temps d\'attente calculé tout seul',
             'desc'  => 'Nombre de clients dans la file × durée moyenne d\'une coupe ÷ nombre de barbers : l\'attente affichée est réaliste et se met à jour en direct.',
             'vs'    => 'Les concurrents affichent au mieux une prise de RDV rigide, jamais une file en temps réel.',
         ),
         array(
-            'icon'  => '📊',
+            'icon'  => '',
             'title' => 'Vos stats, sur votre serveur (sans Google)',
             'desc'  => 'Visiteurs, sources de trafic, heures de pointe, prestations les plus demandées — calculés sur votre hébergement. Aucun cookie, aucune IP conservée : RGPD sans bandeau à installer.',
             'vs'    => 'Ailleurs, il faut brancher Google Analytics (cookies, RGPD, vos données chez un tiers).',
         ),
         array(
-            'icon'  => '🖥️',
+            'icon'  => '',
             'title' => 'Tableau de bord de gestion de file',
             'desc'  => 'Le barber pilote la file depuis WordPress : commencer, terminer, retirer un client, ajuster le nombre de coiffeurs. QR téléchargeable en PNG et SVG pour l\'imprimer en vitrine.',
             'vs'    => 'Un template classique s\'arrête au design : ici, l\'outil tourne vraiment.',

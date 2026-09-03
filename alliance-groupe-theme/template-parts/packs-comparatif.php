@@ -2,7 +2,7 @@
 /**
  * Comparatif visuel des 3 packs Pro / Premium / Business.
  *
- * Tableau de fonctionnalités avec ✓ / ✗ + CTA paiement.
+ * Tableau de fonctionnalités avec / + CTA paiement.
  * Inclus dans page-templates.php pour structurer l'upsell.
  *
  * @package Alliance_Groupe_Theme
@@ -82,7 +82,7 @@ $ag_pack_features = array(
 			<?php foreach ( $ag_packs as $pack ) : ?>
 				<div class="ag-pack-card <?php echo $pack['best'] ? 'ag-pack-card--best' : ''; ?>">
 					<?php if ( $pack['best'] ) : ?>
-						<span class="ag-pack-badge">⭐ Le plus choisi</span>
+						<span class="ag-pack-badge">Le plus choisi</span>
 					<?php endif; ?>
 					<div class="ag-pack-head">
 						<h3 class="ag-pack-name"><?php echo esc_html( $pack['name'] ); ?></h3>
@@ -105,7 +105,7 @@ $ag_pack_features = array(
 							$badge = is_string( $val ) ? $val : '';
 						?>
 							<li class="ag-pack-feature <?php echo $has ? 'is-included' : 'is-excluded'; ?>">
-								<span class="ag-pack-feature-icon"><?php echo $has ? '✓' : '—'; ?></span>
+								<span class="ag-pack-feature-icon"><?php echo $has ? '' : '—'; ?></span>
 								<span class="ag-pack-feature-label"><?php echo esc_html( $label ); ?></span>
 								<?php if ( $badge ) : ?>
 									<span class="ag-pack-feature-badge"><?php echo esc_html( $badge ); ?></span>
@@ -115,14 +115,14 @@ $ag_pack_features = array(
 					</ul>
 
 					<a href="<?php echo esc_url( $pack['url'] ); ?>" class="ag-pack-cta">
-						<?php echo $pack['best'] ? '🚀 Créer mon site Premium' : '⬇ Choisir un thème gratuit'; ?>
+						<?php echo $pack['best'] ? 'Créer mon site Premium' : 'Choisir un thème gratuit'; ?>
 					</a>
 				</div>
 			<?php endforeach; ?>
 		</div>
 
 		<p class="ag-packs-footer-note">
-			💎 Besoin de plus ? <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>">Demandez un site sur-mesure</a>
+			Besoin de plus ? <a href="<?php echo esc_url( home_url( '/contact' ) ); ?>">Demandez un site sur-mesure</a>
 			— création complète, IA, automatisations, SEO, à partir de 1 500€.
 		</p>
 	</div>

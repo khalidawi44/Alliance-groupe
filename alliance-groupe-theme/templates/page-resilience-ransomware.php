@@ -37,7 +37,7 @@ $ag_dir = get_template_directory_uri();
 	<!-- HERO -->
 	<section class="ranso-hero">
 		<div class="ranso-hero__txt">
-		<div style="display:inline-block;background:rgba(225,15,26,.08);color:<?php echo $rouge; ?>;font-weight:800;border-radius:999px;padding:6px 16px;font-size:.85rem;letter-spacing:.04em">🛡️ CYBERSÉCURITÉ · TEST DE RÉSILIENCE</div>
+		<div style="display:inline-block;background:rgba(225,15,26,.08);color:<?php echo $rouge; ?>;font-weight:800;border-radius:999px;padding:6px 16px;font-size:.85rem;letter-spacing:.04em">CYBERSÉCURITÉ · TEST DE RÉSILIENCE</div>
 		<h1 style="font-size:clamp(2rem,5vw,3.2rem);line-height:1.1;margin:18px 0 12px;font-weight:900">Et si un ransomware frappait<br><em style="color:<?php echo $rouge; ?>;font-style:normal">votre entreprise demain ?</em></h1>
 		<p style="font-size:1.2rem;max-width:720px;margin:0 auto 26px;color:#444">On le simule <strong>sans jamais toucher à vos vraies données</strong> : vos sauvegardes tiennent-elles ? Votre antivirus détecte-t-il l'attaque ? Combien de temps seriez-vous à l'arrêt ? Vous recevez un rapport clair et un plan d'action.</p>
 		<a href="<?php echo esc_url( $ag_contact ); ?>" style="display:inline-block;background:linear-gradient(135deg,<?php echo $rouge; ?>,<?php echo $or; ?>);color:#fff;font-weight:900;text-decoration:none;padding:16px 34px;border-radius:999px;font-size:1.1rem;box-shadow:0 12px 36px rgba(225,15,26,.35)">Demander mon test →</a>
@@ -67,7 +67,7 @@ $ag_dir = get_template_directory_uri();
 	<!-- CE QU'ON FAIT / NE FAIT PAS -->
 	<section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin:30px 0">
 		<div style="border:2px solid #16a34a;border-radius:16px;padding:24px;background:#f1fdf5">
-			<h3 style="margin:0 0 14px;color:#15803d;font-size:1.25rem">✅ Ce qu'on fait</h3>
+			<h3 style="margin:0 0 14px;color:#15803d;font-size:1.25rem">Ce qu'on fait</h3>
 			<ul style="margin:0;padding-left:20px;line-height:1.8">
 				<li>Simuler le <strong>comportement</strong> d'un ransomware (outils reconnus) sur <strong>machine de test isolée</strong></li>
 				<li><strong>Tester la restauration</strong> d'une sauvegarde (copie) et la chronométrer</li>
@@ -77,7 +77,7 @@ $ag_dir = get_template_directory_uri();
 			</ul>
 		</div>
 		<div style="border:2px solid <?php echo $rouge; ?>;border-radius:16px;padding:24px;background:#fef2f2">
-			<h3 style="margin:0 0 14px;color:<?php echo $rouge; ?>;font-size:1.25rem">❌ Ce qu'on ne fait jamais</h3>
+			<h3 style="margin:0 0 14px;color:<?php echo $rouge; ?>;font-size:1.25rem">Ce qu'on ne fait jamais</h3>
 			<ul style="margin:0;padding-left:20px;line-height:1.8">
 				<li>Chiffrer vos vrais fichiers ou serveurs de production</li>
 				<li>Déployer un vrai malware sur votre réseau</li>

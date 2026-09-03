@@ -37,7 +37,7 @@ add_filter( 'show_admin_bar', '__return_false' );
 
 	<div class="agc-appbar">
 		<a class="agc-back" href="<?php echo esc_url( home_url( '/' ) ); ?>">← <?php echo esc_html( get_bloginfo( 'name' ) ); ?></a>
-		<span class="agc-appbar__brand">🧩 Composants</span>
+		<span class="agc-appbar__brand">Composants</span>
 		<a class="agc-cta" href="#agc-propose">+ Proposer</a>
 	</div>
 

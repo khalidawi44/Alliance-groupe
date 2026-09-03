@@ -35,17 +35,17 @@ get_header();
             </div>
             <div class="ag-heritage-grid">
                 <div class="ag-heritage-card ag-heritage-card--fr">
-                    <span class="ag-heritage-card__flag" aria-hidden="true">🎯</span>
+                    <span class="ag-heritage-card__flag" aria-hidden="true"></span>
                     <h3>Direct &amp; clair</h3>
                     <p>Un interlocuteur unique, des devis lisibles, des délais tenus. Vous savez toujours où en est votre projet.</p>
                 </div>
                 <div class="ag-heritage-card ag-heritage-card--it">
-                    <span class="ag-heritage-card__flag" aria-hidden="true">🔒</span>
+                    <span class="ag-heritage-card__flag" aria-hidden="true"></span>
                     <h3>Sécurité d'abord</h3>
                     <p>L'audit de sécurité est mon point d'entrée : on met les choses au clair avant de construire ou corriger.</p>
                 </div>
                 <div class="ag-heritage-card ag-heritage-card--ma">
-                    <span class="ag-heritage-card__flag" aria-hidden="true">🤝</span>
+                    <span class="ag-heritage-card__flag" aria-hidden="true"></span>
                     <h3>Partenaires au besoin</h3>
                     <p>Pour un projet ambitieux, un réseau de freelances vérifiables (design, rédaction) — assemblé sur-mesure, jamais inventé.</p>
                 </div>

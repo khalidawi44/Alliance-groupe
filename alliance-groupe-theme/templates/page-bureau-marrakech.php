@@ -76,7 +76,7 @@ $team = array(
             <div class="ag-zellige-pattern" aria-hidden="true"></div>
         </div>
         <div class="ag-hero__content">
-            <span class="ag-tag ag-tag--green ag-anim" data-anim="tag">Bureau de Marrakech 🇲🇦</span>
+            <span class="ag-tag ag-tag--green ag-anim" data-anim="tag">Bureau de Marrakech </span>
             <h1 class="ag-hero__title">
                 <span class="ag-line">Notre équipe</span>
                 <span class="ag-line"><em>à Marrakech</em></span>
@@ -119,7 +119,7 @@ $team = array(
                         <?php else : ?>
                             <div class="ag-mk-card__initial"><?php echo esc_html( mb_substr( $m['name'], 0, 1 ) ); ?></div>
                         <?php endif; ?>
-                        <span class="ag-mk-card__location">🇲🇦 Marrakech, Maroc</span>
+                        <span class="ag-mk-card__location">Marrakech, Maroc</span>
                     </div>
                     <div class="ag-mk-card__body">
                         <h3 class="ag-mk-card__name"><?php echo esc_html( $m['name'] ); ?></h3>
@@ -149,17 +149,17 @@ $team = array(
             </div>
             <div class="ag-heritage-grid">
                 <a href="<?php echo esc_url( home_url( '/a-propos' ) ); ?>" class="ag-heritage-card ag-heritage-card--fr" style="text-decoration:none;">
-                    <span class="ag-heritage-card__flag" aria-hidden="true">🇫🇷</span>
+                    <span class="ag-heritage-card__flag" aria-hidden="true"></span>
                     <h3>Nantes</h3>
                     <p>Le siège historique. Fabrizio, Kate, Laurent et Julie. Le cœur opérationnel et commercial de l'agence.</p>
                 </a>
                 <a href="<?php echo esc_url( home_url( '/notre-fondateur' ) ); ?>" class="ag-heritage-card ag-heritage-card--it" style="text-decoration:none;">
-                    <span class="ag-heritage-card__flag" aria-hidden="true">🇮🇹</span>
+                    <span class="ag-heritage-card__flag" aria-hidden="true"></span>
                     <h3>Naples</h3>
                     <p>L'histoire originelle. Carlito et son équipe technique. Les Quartieri Spagnoli, là où tout a commencé.</p>
                 </a>
                 <div class="ag-heritage-card ag-heritage-card--ma" style="opacity:.7;cursor:default;">
-                    <span class="ag-heritage-card__flag" aria-hidden="true">🇲🇦</span>
+                    <span class="ag-heritage-card__flag" aria-hidden="true"></span>
                     <h3>Marrakech</h3>
                     <p>Vous êtes ici. Halim et Amina, les experts SEO et IA du groupe.</p>
                 </div>

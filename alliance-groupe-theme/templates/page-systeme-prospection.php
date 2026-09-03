@@ -37,14 +37,14 @@ get_header();
 			<div class="ag-sp-grid">
 				<?php
 				$ag_sp = array(
-					array( '🔎', 'Recherche automatique', 'Trouve les entreprises de n\'importe quelle ville/secteur via Google — repère celles <strong>sans vrai site</strong> (réseaux &amp; plateformes type Planity = pas un vrai site).' ),
-					array( '🎯', 'Score de priorité', 'Classe chaque prospect par <strong>probabilité d\'achat</strong> (manque de site, avis, note, joignable) — vous attaquez les meilleurs d\'abord.' ),
-					array( '🗺️', 'Zones &amp; équipe', 'Territoires par département, <strong>assignation automatique</strong> aux commerciaux — zéro doublon, zéro concurrence interne.' ),
-					array( '📋', 'CRM complet', 'Suivi contacté / répondu / relancé, <strong>notes par fiche</strong>, anti-doublon global, liste d\'ignorés, historique des recherches.' ),
-					array( '💬', 'Messages prêts', 'Messages <strong>personnalisés</strong> (WhatsApp / SMS / Email) générés à partir des problèmes repérés — envoi en 1 clic, suivi auto.' ),
-					array( '📲', 'Pilotage mobile', 'Feuille de route quotidienne + alertes (nouveau lead, réponse, vente) <strong>directement sur le téléphone</strong> (Telegram).' ),
-					array( '🏛️', 'Signaux exclusifs', 'Repère même les entreprises <strong>au tribunal</strong> (redressement) — données publiques, approche dédiée.' ),
-					array( '🤝', 'Programme commerciaux', 'Recrutez des ambassadeurs, commissions automatiques, classement — votre force de vente intégrée.' ),
+					array( '', 'Recherche automatique', 'Trouve les entreprises de n\'importe quelle ville/secteur via Google — repère celles <strong>sans vrai site</strong> (réseaux &amp; plateformes type Planity = pas un vrai site).' ),
+					array( '', 'Score de priorité', 'Classe chaque prospect par <strong>probabilité d\'achat</strong> (manque de site, avis, note, joignable) — vous attaquez les meilleurs d\'abord.' ),
+					array( '', 'Zones &amp; équipe', 'Territoires par département, <strong>assignation automatique</strong> aux commerciaux — zéro doublon, zéro concurrence interne.' ),
+					array( '', 'CRM complet', 'Suivi contacté / répondu / relancé, <strong>notes par fiche</strong>, anti-doublon global, liste d\'ignorés, historique des recherches.' ),
+					array( '', 'Messages prêts', 'Messages <strong>personnalisés</strong> (WhatsApp / SMS / Email) générés à partir des problèmes repérés — envoi en 1 clic, suivi auto.' ),
+					array( '', 'Pilotage mobile', 'Feuille de route quotidienne + alertes (nouveau lead, réponse, vente) <strong>directement sur le téléphone</strong> (Telegram).' ),
+					array( '', 'Signaux exclusifs', 'Repère même les entreprises <strong>au tribunal</strong> (redressement) — données publiques, approche dédiée.' ),
+					array( '', 'Programme commerciaux', 'Recrutez des ambassadeurs, commissions automatiques, classement — votre force de vente intégrée.' ),
 				);
 				foreach ( $ag_sp as $f ) : ?>
 					<div class="ag-sp-card ag-anim" data-anim="card"><span class="ag-sp-ic"><?php echo $f[0]; // phpcs:ignore ?></span><h3><?php echo $f[1]; // phpcs:ignore ?></h3><p><?php echo $f[2]; // phpcs:ignore ?></p></div>
@@ -78,7 +78,7 @@ get_header();
 	<?php elseif ( current_user_can( 'manage_options' ) ) : ?>
 	<section class="ag-section ag-section--onyx">
 		<div class="ag-container" style="text-align:center;color:var(--color-text-soft);">
-			<p>🖼️ <strong>Admin :</strong> dépose tes captures dans <code>assets/images/systeme-prospection/</code> (nommées <code>apercu.jpg</code>, <code>capture-1.jpg</code> … <code>capture-6.jpg</code>) — elles s'afficheront ici automatiquement.</p>
+			<p><strong>Admin :</strong> dépose tes captures dans <code>assets/images/systeme-prospection/</code> (nommées <code>apercu.jpg</code>, <code>capture-1.jpg</code> … <code>capture-6.jpg</code>) — elles s'afficheront ici automatiquement.</p>
 		</div>
 	</section>
 	<?php endif; ?>

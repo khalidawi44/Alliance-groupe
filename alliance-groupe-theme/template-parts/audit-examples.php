@@ -73,14 +73,14 @@ $ag_col = function ( $s ) { return $s >= 75 ? '#28a745' : ( $s >= 50 ? '#F37A1F'
 	</div>
 
 	<!-- ───────── SÉCURITÉ ───────── -->
-	<div class="ag-ex__cat">🛡️ Sécurité — audits récents</div>
+	<div class="ag-ex__cat">Sécurité — audits récents</div>
 	<div class="ag-ex__grid">
 		<?php foreach ( array_slice( $ag_sec_ex, 0, 3 ) as $e ) : $c = $ag_col( $e['score'] ); ?>
 			<div class="ag-ex__card">
 				<div class="ag-ex__top">
 					<div>
 						<div class="ag-ex__sec"><?php echo esc_html( $e['sec'] ); ?></div>
-						<div class="ag-ex__meta">🔒 <?php echo esc_html( $e['ville'] ); ?></div>
+						<div class="ag-ex__meta"><?php echo esc_html( $e['ville'] ); ?></div>
 					</div>
 					<div class="ag-ex__score" style="color:<?php echo esc_attr( $c ); ?>;border-color:<?php echo esc_attr( $c ); ?>">
 						<?php echo (int) $e['score']; ?><small>/100</small>
@@ -88,31 +88,31 @@ $ag_col = function ( $s ) { return $s >= 75 ? '#28a745' : ( $s >= 50 ? '#F37A1F'
 				</div>
 				<div class="ag-ex__badge ag-ex__badge--sec"><?php echo esc_html( $e['type'] ); ?></div>
 				<ul class="ag-ex__pts">
-					<?php foreach ( $e['pts'] as $p ) : ?><li>⚠️ <?php echo esc_html( $p ); ?></li><?php endforeach; ?>
+					<?php foreach ( $e['pts'] as $p ) : ?><li><?php echo esc_html( $p ); ?></li><?php endforeach; ?>
 				</ul>
 			</div>
 		<?php endforeach; ?>
 	</div>
-	<div class="ag-ex__cta"><a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-ex__btn">🔍 Tester mon site gratuitement →</a></div>
+	<div class="ag-ex__cta"><a href="<?php echo esc_url( home_url( '/tester-mon-site' ) ); ?>" class="ag-ex__btn">Tester mon site gratuitement →</a></div>
 
 	<!-- ───────── CRÉATION ───────── -->
-	<div class="ag-ex__cat" style="margin-top:48px">✨ Création — sites livrés</div>
+	<div class="ag-ex__cat" style="margin-top:48px">Création — sites livrés</div>
 	<div class="ag-ex__grid">
 		<?php foreach ( array_slice( $ag_crea_ex, 0, 3 ) as $e ) : ?>
 			<div class="ag-ex__card ag-ex__card--crea">
 				<div class="ag-ex__top">
 					<div>
 						<div class="ag-ex__sec"><?php echo esc_html( $e['sec'] ); ?></div>
-						<div class="ag-ex__meta">🔒 <span class="ag-ex__masked">●●●●●●●●</span> · <?php echo esc_html( $e['ville'] ); ?></div>
+						<div class="ag-ex__meta"><span class="ag-ex__masked">●●●●●●●●</span> · <?php echo esc_html( $e['ville'] ); ?></div>
 					</div>
 					<div class="ag-ex__badge ag-ex__badge--crea"><?php echo esc_html( $e['type'] ); ?></div>
 				</div>
-				<div class="ag-ex__res">✅ <?php echo esc_html( $e['res'] ); ?></div>
+				<div class="ag-ex__res"><?php echo esc_html( $e['res'] ); ?></div>
 			</div>
 		<?php endforeach; ?>
 	</div>
 	<div class="ag-ex__cta">
-		<a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>" class="ag-ex__btn ag-ex__btn--crea">✨ Voir les offres de création →</a>
+		<a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>" class="ag-ex__btn ag-ex__btn--crea">Voir les offres de création →</a>
 		<span class="ag-ex__note">Gratuit pour l'audit · devis gratuit pour la création</span>
 	</div>
 </section>

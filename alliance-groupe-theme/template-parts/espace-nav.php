@@ -9,10 +9,10 @@
  */
 $ag_active = isset( $args['active'] ) ? $args['active'] : '';
 $ag_items  = array(
-	'compte'     => array( '💼', 'Mon compte', 'Ventes &amp; commissions', home_url( '/espace-ambassadeur' ) ),
-	'studio'     => array( '🎬', 'Studio',      'Créer &amp; partager',     home_url( '/studio' ) ),
-	'programme'  => array( '📚', 'Programme',   'Comment gagner',           home_url( '/programme-ambassadeur' ) ),
-	'classement' => array( '🏆', 'Classement',  'Le championnat',           home_url( '/classement' ) ),
+	'compte'     => array( '', 'Mon compte', 'Ventes &amp; commissions', home_url( '/espace-ambassadeur' ) ),
+	'studio'     => array( '', 'Studio',      'Créer &amp; partager',     home_url( '/studio' ) ),
+	'programme'  => array( '', 'Programme',   'Comment gagner',           home_url( '/programme-ambassadeur' ) ),
+	'classement' => array( '', 'Classement',  'Le championnat',           home_url( '/classement' ) ),
 );
 ?>
 <div class="ag-espnav-wrap">

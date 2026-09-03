@@ -24,7 +24,7 @@ $tier   = isset( $tiers[ $offer ] ) ? $tiers[ $offer ] : null;
         <div class="ag-container">
             <div class="ag-merci">
 
-                <span class="ag-merci__check">✓</span>
+                <span class="ag-merci__check"></span>
 
                 <span class="ag-tag">Rendez-vous confirmé</span>
 
@@ -51,28 +51,24 @@ $tier   = isset( $tiers[ $offer ] ) ? $tiers[ $offer ] : null;
                     <h2>Ce qui se passe maintenant</h2>
                     <ul>
                         <li>
-                            <span class="ag-merci__icon">📧</span>
                             <div>
                                 <strong>Email de confirmation</strong>
                                 Arrive dans les 2 prochaines minutes dans votre boîte mail — vérifiez vos spams si vous ne le voyez pas.
                             </div>
                         </li>
                         <li>
-                            <span class="ag-merci__icon">📅</span>
                             <div>
                                 <strong>Invitation calendrier</strong>
                                 Un fichier <code>.ics</code> est joint à l'email. Un clic pour l'ajouter à Google Calendar, Outlook, Apple Calendar ou tout autre agenda.
                             </div>
                         </li>
                         <li>
-                            <span class="ag-merci__icon">🎥</span>
                             <div>
                                 <strong>Lien visio</strong>
                                 Le lien Google Meet (ou Zoom) est dans l'email et dans l'événement calendrier. Aucune installation à prévoir — ça s'ouvre dans le navigateur.
                             </div>
                         </li>
                         <li>
-                            <span class="ag-merci__icon">🔔</span>
                             <div>
                                 <strong>Rappel automatique</strong>
                                 Vous recevrez un rappel email 24h avant et un autre 30 minutes avant, pour ne rien oublier.
@@ -102,7 +98,7 @@ $tier   = isset( $tiers[ $offer ] ) ? $tiers[ $offer ] : null;
                         </div>
                     </div>
                     <p class="ag-merci__prepare-note">
-                        💡 Pas besoin de préparer un dossier ou une présentation — juste avoir ces 3 points en tête. Le reste, on le fait ensemble pendant l'appel.
+                        Pas besoin de préparer un dossier ou une présentation — juste avoir ces 3 points en tête. Le reste, on le fait ensemble pendant l'appel.
                     </p>
                 </div>
 
@@ -111,8 +107,8 @@ $tier   = isset( $tiers[ $offer ] ) ? $tiers[ $offer ] : null;
                     <strong>Besoin de nous joindre avant l'appel ?</strong>
                     <p>Répondez simplement à l'email de confirmation que vous venez de recevoir, ou contactez-nous directement&nbsp;:</p>
                     <div class="ag-merci__urgent-btns">
-                        <a href="tel:+33744829516" class="ag-btn-gold">📞 07.44.82.95.16</a>
-                        <a href="mailto:contact@alliancegroupe-inc.com" class="ag-btn-outline">✉️ Nous écrire</a>
+                        <a href="tel:+33744829516" class="ag-btn-gold">07.44.82.95.16</a>
+                        <a href="mailto:contact@alliancegroupe-inc.com" class="ag-btn-outline">Nous écrire</a>
                     </div>
                 </div>
 

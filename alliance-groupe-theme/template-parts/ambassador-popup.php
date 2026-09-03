@@ -7,8 +7,8 @@
 <div class="ag-amb-pop" id="ag-amb-pop" aria-hidden="true">
 	<div class="ag-amb-pop__overlay" data-close="1"></div>
 	<div class="ag-amb-pop__box" role="dialog" aria-label="Devenir ambassadeur">
-		<button type="button" class="ag-amb-pop__x" data-close="1" aria-label="Fermer">✕</button>
-		<div class="ag-amb-pop__emoji">💸</div>
+		<button type="button" class="ag-amb-pop__x" data-close="1" aria-label="Fermer"></button>
+		<div class="ag-amb-pop__emoji"></div>
 		<h3 class="ag-amb-pop__title">Gagne de l'argent avec <em>Alliance Groupe</em></h3>
 		<p class="ag-amb-pop__txt">Deviens <strong>ambassadeur</strong> : touche <strong>10 % sur chaque site vendu</strong>, depuis ton téléphone. Outils de création fournis, lien de vente prêt — <strong>gratuit, sans engagement</strong>.</p>
 		<div class="ag-amb-pop__cta">

@@ -39,7 +39,7 @@
                     'google'=> 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( 'L.A Environnement paysagiste Nantes' ),
                 ],
             ];
-            // Projets ajoutés par l'admin (⚙️ Réalisations) — tous les sites créés + fiche Google.
+            // Projets ajoutés par l'admin (Réalisations) — tous les sites créés + fiche Google.
             if ( function_exists( 'ag_portfolio_projects' ) ) {
                 $projets = array_merge( $projets, ag_portfolio_projects() );
             }
@@ -87,7 +87,7 @@
                         <a href="<?php echo esc_url( $p['etude'] ); ?>" class="ag-rcard__link">Voir l'étude de cas →</a>
                         <?php endif; ?>
                         <?php if ( $p_google ) : ?>
-                        <a href="<?php echo esc_url( $p_google ); ?>" target="_blank" rel="noopener noreferrer" class="ag-rcard__link" style="opacity:.9;">⭐ Voir sur Google →</a>
+                        <a href="<?php echo esc_url( $p_google ); ?>" target="_blank" rel="noopener noreferrer" class="ag-rcard__link" style="opacity:.9;">Voir sur Google →</a>
                         <?php endif; ?>
                     </div>
                 </div>

@@ -100,7 +100,7 @@ $team = array(
             <div class="ag-hero__orb ag-hero__orb--1"></div>
         </div>
         <div class="ag-hero__content">
-            <span class="ag-tag ag-tag--blue ag-anim" data-anim="tag">Bureau de Nantes 🇫🇷</span>
+            <span class="ag-tag ag-tag--blue ag-anim" data-anim="tag">Bureau de Nantes </span>
             <h1 class="ag-hero__title">
                 <span class="ag-line">Notre équipe</span>
                 <span class="ag-line"><em>à Nantes</em></span>
@@ -143,7 +143,7 @@ $team = array(
                         <?php else : ?>
                             <div class="ag-mk-card__initial"><?php echo esc_html( mb_substr( $m['name'], 0, 1 ) ); ?></div>
                         <?php endif; ?>
-                        <span class="ag-mk-card__location">🇫🇷 Nantes, France</span>
+                        <span class="ag-mk-card__location">Nantes, France</span>
                     </div>
                     <div class="ag-mk-card__body">
                         <h3 class="ag-mk-card__name"><?php echo esc_html( $m['name'] ); ?></h3>
@@ -176,17 +176,17 @@ $team = array(
             </div>
             <div class="ag-heritage-grid">
                 <div class="ag-heritage-card ag-heritage-card--fr" style="opacity:.7;cursor:default;">
-                    <span class="ag-heritage-card__flag" aria-hidden="true">🇫🇷</span>
+                    <span class="ag-heritage-card__flag" aria-hidden="true"></span>
                     <h3>Nantes</h3>
                     <p>Vous êtes ici. Fabrizio, Kate, Laurent et Julie. Le cœur opérationnel et commercial de l'agence.</p>
                 </div>
                 <a href="<?php echo esc_url( home_url( '/bureau-naples' ) ); ?>" class="ag-heritage-card ag-heritage-card--it" style="text-decoration:none;">
-                    <span class="ag-heritage-card__flag" aria-hidden="true">🇮🇹</span>
+                    <span class="ag-heritage-card__flag" aria-hidden="true"></span>
                     <h3>Naples</h3>
                     <p>L'histoire originelle. Carlito et son équipe technique. Les Quartieri Spagnoli, là où tout a commencé.</p>
                 </a>
                 <a href="<?php echo esc_url( home_url( '/bureau-marrakech' ) ); ?>" class="ag-heritage-card ag-heritage-card--ma" style="text-decoration:none;">
-                    <span class="ag-heritage-card__flag" aria-hidden="true">🇲🇦</span>
+                    <span class="ag-heritage-card__flag" aria-hidden="true"></span>
                     <h3>Marrakech</h3>
                     <p>Halim et Amina, les experts SEO et IA du groupe, entre la médina et les souks de Bab Doukkala.</p>
                 </a>

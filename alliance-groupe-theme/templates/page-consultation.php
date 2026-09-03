@@ -25,7 +25,7 @@ $is_success = isset( $_GET['paid'] );
 	<!-- Confirmation après paiement -->
 	<section class="ag-section ag-section--light" style="min-height:60vh;display:flex;align-items:center;">
 		<div class="ag-container" style="text-align:center;max-width:680px;">
-			<span class="ag-tag">Paiement confirmé ✅</span>
+			<span class="ag-tag">Paiement confirmé </span>
 			<h1 class="ag-section__title">Merci ! On cale le <em>créneau</em></h1>
 			<p class="ag-section__desc">Ta <strong><?php echo esc_html( $labels[ $paid ] ?? 'consultation' ); ?></strong> est réservée. Écris-nous tes <strong>disponibilités</strong> (jour + heure) et le sujet à préparer — on te confirme le rendez-vous très vite.</p>
 			<div class="ag-hero__buttons" style="justify-content:center;">
@@ -61,26 +61,26 @@ $is_success = isset( $_GET['paid'] );
 					<h3>Consultation Express</h3>
 					<div class="ag-consult-price"><strong>59 €</strong><small>30 minutes · visio</small></div>
 					<ul>
-						<li>✓ Analyse rapide de ton besoin</li>
-						<li>✓ 2-3 actions prioritaires</li>
-						<li>✓ Réponses à tes questions</li>
+						<li>Analyse rapide de ton besoin</li>
+						<li>2-3 actions prioritaires</li>
+						<li>Réponses à tes questions</li>
 					</ul>
 					<a href="<?php echo esc_url( $btn_url( $c_express ) ); ?>" class="ag-btn-outline" target="_blank" rel="noopener">Réserver — 59 € →</a>
 				</div>
 				<div class="ag-consult-card ag-consult-card--hero ag-anim" data-anim="card">
-					<span class="ag-consult-badge">⭐ Recommandé</span>
+					<span class="ag-consult-badge">Recommandé</span>
 					<h3>Consultation Stratégique</h3>
 					<div class="ag-consult-price"><strong>119 €</strong><small>60 minutes · visio</small></div>
 					<ul>
-						<li>✓ Audit complet de ta présence en ligne</li>
-						<li>✓ Plan d'action détaillé &amp; chiffré</li>
-						<li>✓ Compte-rendu écrit après l'appel</li>
+						<li>Audit complet de ta présence en ligne</li>
+						<li>Plan d'action détaillé &amp; chiffré</li>
+						<li>Compte-rendu écrit après l'appel</li>
 					</ul>
 					<a href="<?php echo esc_url( $btn_url( $c_strat ) ); ?>" class="ag-btn-gold" target="_blank" rel="noopener">Réserver — 119 € →</a>
 				</div>
 			</div>
 
-			<p class="ag-consult-note">💡 Tu hésites entre un site et une consultation ? Regarde d'abord nos <a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">offres à prix fixe</a> ou le <a href="<?php echo esc_url( home_url( '/sur-mesure' ) ); ?>">sur-mesure</a>.</p>
+			<p class="ag-consult-note">Tu hésites entre un site et une consultation ? Regarde d'abord nos <a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">offres à prix fixe</a> ou le <a href="<?php echo esc_url( home_url( '/sur-mesure' ) ); ?>">sur-mesure</a>.</p>
 		</div>
 	</section>
 

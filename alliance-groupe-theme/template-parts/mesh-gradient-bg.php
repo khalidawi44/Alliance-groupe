@@ -2,7 +2,7 @@
 /**
  * Mesh gradient — fond cinématographique pour le hero.
  *
- * ⚡ Version CSS pure (légère) : plusieurs radial-gradients animés en
+ * Version CSS pure (légère) : plusieurs radial-gradients animés en
  * background-position + opacité via keyframes. Remplace l'ancien shader
  * WebGL fbm (4 octaves à 60fps) qui étranglait les vieux PC. Rendu visuel
  * très proche, coût quasi nul (composité GPU), désactivé en reduced-motion.

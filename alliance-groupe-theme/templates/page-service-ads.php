@@ -68,12 +68,12 @@ get_header();
                     </ul>
                 </div>
                 <div class="ag-sdetail__visual ag-sdetail__visual--grid">
-                    <div class="ag-sdetail__feat">🎯<strong>Ciblage</strong><span>Ultra-précis</span></div>
-                    <div class="ag-sdetail__feat">📢<strong>Google Ads</strong><span>Search + Display</span></div>
-                    <div class="ag-sdetail__feat">📱<strong>Meta Ads</strong><span>FB + Instagram</span></div>
-                    <div class="ag-sdetail__feat">🧪<strong>A/B Testing</strong><span>Continu</span></div>
-                    <div class="ag-sdetail__feat">📊<strong>ROAS</strong><span>Optimisé</span></div>
-                    <div class="ag-sdetail__feat">📋<strong>Reporting</strong><span>Hebdomadaire</span></div>
+                    <div class="ag-sdetail__feat"><strong>Ciblage</strong><span>Ultra-précis</span></div>
+                    <div class="ag-sdetail__feat"><strong>Google Ads</strong><span>Search + Display</span></div>
+                    <div class="ag-sdetail__feat"><strong>Meta Ads</strong><span>FB + Instagram</span></div>
+                    <div class="ag-sdetail__feat"><strong>A/B Testing</strong><span>Continu</span></div>
+                    <div class="ag-sdetail__feat"><strong>ROAS</strong><span>Optimisé</span></div>
+                    <div class="ag-sdetail__feat"><strong>Reporting</strong><span>Hebdomadaire</span></div>
                 </div>
             </div>
         </div>

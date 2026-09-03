@@ -7,7 +7,7 @@
 <section class="ag-section ag-section--light ag-asso">
 	<div class="ag-container">
 		<div class="ag-asso__card">
-			<span class="ag-asso__badge">100% GRATUIT 🤝</span>
+			<span class="ag-asso__badge">100% GRATUIT </span>
 			<h2 class="ag-asso__title">Vous êtes une <em>association</em> ? Votre site est offert.</h2>
 			<p class="ag-asso__txt">Loi 1901, syndicat, mouvement militant, collectif citoyen : on vous crée un <strong>vrai site professionnel, entièrement gratuit</strong>, pour donner de la voix à votre cause. C'est notre engagement solidaire.</p>
 			<ul class="ag-asso__list">
@@ -28,5 +28,5 @@
 .ag-asso__txt strong{color:#17150f;}
 .ag-asso__list{list-style:none;padding:0;margin:0 auto 24px;display:inline-flex;flex-direction:column;gap:8px;text-align:left;}
 .ag-asso__list li{position:relative;padding-left:26px;color:#3d382e;}
-.ag-asso__list li::before{content:'✓';position:absolute;left:0;color:#4bbf77;font-weight:800;}
+.ag-asso__list li::before{content:'';position:absolute;left:0;color:#4bbf77;font-weight:800;}
 </style>

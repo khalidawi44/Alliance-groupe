@@ -10,7 +10,7 @@ get_header();
 set_query_var( 'ag_metier', array(
     'slug'        => 'artisan',
     'slug_full'   => 'ag-starter-artisan',
-    'icon'        => '🔨',
+    'icon'        => '',
     'name'        => 'Artisan',
     'audience_short' => 'entreprise',
     'palette'     => 'Bronze &amp; noir',
@@ -22,25 +22,25 @@ set_query_var( 'ag_metier', array(
 
     'unique_features' => array(
         array(
-            'icon'  => '📝',
+            'icon'  => '',
             'title' => 'Formulaire de devis intelligent',
             'desc'  => 'Type de travaux, surface en m², code postal, niveau d\'urgence, budget estimé : le client qualifie sa demande lui-même, vous recevez un devis à chiffrer, pas un simple « rappelez-moi ».',
             'vs'    => 'Les templates concurrents se limitent à un formulaire de contact générique.',
         ),
         array(
-            'icon'  => '🖼️',
+            'icon'  => '',
             'title' => 'Galerie avant/après des chantiers',
             'desc'  => 'Vos réalisations en glissière avant/après — le meilleur argument de vente d\'un artisan, mis en valeur automatiquement.',
             'vs'    => 'Ailleurs, les photos sont posées en vrac, sans mise en scène ni comparaison.',
         ),
         array(
-            'icon'  => '🚨',
+            'icon'  => '',
             'title' => 'Bandeau « Urgences 7/7 » + appel en un clic',
             'desc'  => 'Un bandeau d\'urgence et un numéro cliquable visibles en permanence sur mobile — là où se déclenchent 8 demandes d\'artisan sur 10.',
             'vs'    => 'Un thème classique enterre le téléphone en bas de page.',
         ),
         array(
-            'icon'  => '📍',
+            'icon'  => '',
             'title' => 'Zones d\'intervention structurées (SEO local)',
             'desc'  => 'Vos communes d\'intervention organisées pour ressortir sur « plombier + ville » — chaque zone devient une porte d\'entrée Google.',
             'vs'    => 'Les autres templates n\'ont aucune logique de référencement local intégrée.',

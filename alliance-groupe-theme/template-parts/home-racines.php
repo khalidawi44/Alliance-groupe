@@ -9,7 +9,7 @@ $ag_racines_bg = get_stylesheet_directory_uri() . '/assets/images/cities/naples-
 <section class="ag-home-racines ag-rise" id="racines" style="--racines-bg:url('<?php echo esc_url( $ag_racines_bg ); ?>');">
 	<div class="ag-home-racines__overlay" aria-hidden="true"></div>
 	<div class="ag-container ag-home-racines__inner">
-		<span class="ag-tag ag-tag--green ag-anim" data-anim="tag">Programme Racines 🌱 · notre engagement</span>
+		<span class="ag-tag ag-tag--green ag-anim" data-anim="tag">Programme Racines · notre engagement</span>
 		<h2 class="ag-section__title ag-anim" data-anim="title">Le talent est partout, <em>les opportunités non.</em></h2>
 		<p class="ag-section__desc ag-anim" data-anim="desc">Tu as un projet et de l'énergie mais pas les moyens d'une agence ? On ne te vend pas un site — on devient <strong>ton associé</strong>. On construit ton entreprise ensemble, des quartiers populaires jusqu'au succès.</p>
 		<div class="ag-home-racines__cta">

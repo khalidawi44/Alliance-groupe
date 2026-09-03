@@ -54,7 +54,7 @@ $selected_tier  = $tiers[ $selected ];
                 <a href="<?php echo esc_url( $card_url ); ?>"
                    class="ag-tier-card<?php echo $is_active ? ' ag-tier-card--active' : ''; ?><?php echo ( 'strategique' === $key ) ? ' ag-tier-card--hero' : ''; ?>">
                     <?php if ( 'strategique' === $key ) : ?>
-                        <span class="ag-tier-card__badge">⭐ Le plus choisi</span>
+                        <span class="ag-tier-card__badge">Le plus choisi</span>
                     <?php elseif ( 'free' === $key ) : ?>
                         <span class="ag-tier-card__badge ag-tier-card__badge--free">Gratuit</span>
                     <?php endif; ?>
@@ -75,7 +75,7 @@ $selected_tier  = $tiers[ $selected ];
             </div>
 
             <p class="ag-tiers__note">
-                💡 <strong>Conseil</strong> : commencez par l'appel découverte gratuit si vous hésitez — il est honnête et sans pression. Si vous savez déjà que vous voulez un vrai plan, <strong>l'Audit Stratégique</strong> est le meilleur rapport qualité-prix.
+                <strong>Conseil</strong> : commencez par l'appel découverte gratuit si vous hésitez — il est honnête et sans pression. Si vous savez déjà que vous voulez un vrai plan, <strong>l'Audit Stratégique</strong> est le meilleur rapport qualité-prix.
             </p>
         </div>
     </section>
@@ -101,18 +101,18 @@ $selected_tier  = $tiers[ $selected ];
                         <a href="<?php echo esc_url( $selected_url ); ?>"
                            onclick="event.preventDefault(); window.open(this.href, 'ag_rdv', 'width=520,height=760,left=' + (screen.width/2-260) + ',top=' + (screen.height/2-380) + ',toolbar=no,menubar=no,scrollbars=yes,resizable=yes');"
                            class="ag-btn-gold ag-btn-gold--xl">
-                            📅 Choisir un créneau — <?php echo esc_html( $selected_tier['label'] ); ?> →
+                            Choisir un créneau — <?php echo esc_html( $selected_tier['label'] ); ?> →
                         </a>
                         <p class="ag-calendly__action-sub">Vous serez redirigé vers notre agenda Cal.com (ouverture dans une fenêtre dédiée). Choisissez le jour et l'heure qui vous conviennent, c'est instantané.</p>
                         <div class="ag-calendly__reassurance">
-                            <span>✓ Confirmation immédiate par email</span>
-                            <span>✓ Lien Google Meet automatique</span>
-                            <span>✓ Rappel 24h et 1h avant</span>
+                            <span>Confirmation immédiate par email</span>
+                            <span>Lien Google Meet automatique</span>
+                            <span>Rappel 24h et 1h avant</span>
                         </div>
                     </div>
                 <?php else : ?>
                     <div class="ag-calendly__empty">
-                        <div style="font-size:2.6rem;margin-bottom:14px;">📅</div>
+                        <div style="font-size:2.6rem;margin-bottom:14px;"></div>
                         <p style="color:#b0b0bc;">Widget non configuré pour cette offre.</p>
                         <?php if ( current_user_can( 'manage_options' ) ) : ?>
                         <p style="margin-top:14px;padding:10px 16px;background:rgba(212,180,92,.08);border:1px dashed rgba(212,180,92,.35);border-radius:10px;color:#D4B45C;font-size:.88rem;display:inline-block;">

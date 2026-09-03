@@ -9,7 +9,7 @@ $ag_amb_bg = get_stylesheet_directory_uri() . '/assets/images/cities/baie_naples
 <section class="ag-section ag-section--onyx ag-home-amb ag-rise" id="recrutement" style="--amb-bg:url('<?php echo esc_url( $ag_amb_bg ); ?>');">
 	<div class="ag-home-amb__bg" aria-hidden="true"></div>
 	<div class="ag-container ag-home-amb__inner">
-		<span class="ag-tag ag-anim" data-anim="tag">Programme Ambassadeurs 🤝</span>
+		<span class="ag-tag ag-anim" data-anim="tag">Programme Ambassadeurs </span>
 		<h2 class="ag-section__title ag-anim" data-anim="title">Vends nos services, <em>touche 10 %</em></h2>
 		<p class="ag-section__desc ag-anim" data-anim="desc">Rejoins notre équipe de vente. Pour chaque client que tu ramènes, tu gagnes 10 % du montant, payé via PayPal. Pas besoin d'être expert : on te donne tous les outils (scripts, pitch, supports).</p>
 
@@ -22,7 +22,7 @@ $ag_amb_bg = get_stylesheet_directory_uri() . '/assets/images/cities/baie_naples
 
 		<div class="ag-home-amb__cta">
 			<a href="<?php echo esc_url( home_url( '/ambassadeurs' ) ); ?>" class="ag-btn-gold">Rejoindre le programme →</a>
-			<a href="<?php echo esc_url( home_url( '/studio' ) ); ?>" class="ag-btn-outline">🎬 Créer une vidéo de vente</a>
+			<a href="<?php echo esc_url( home_url( '/studio' ) ); ?>" class="ag-btn-outline">Créer une vidéo de vente</a>
 		</div>
 		<p class="ag-home-amb__note">Outil <strong>Studio</strong> intégré : génère une vidéo ou une image promo à ta marque en 2 min, avec ton lien de parrainage — prête à poster sur TikTok, Insta, WhatsApp.</p>
 	</div>

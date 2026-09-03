@@ -737,7 +737,7 @@ document.documentElement.classList.add('js-cine');
           <h3>Gwen Services</h3>
           <p>Une auxiliaire de vie qui n'avait rien en ligne. Site, textes, images générées sur mesure, SEO local et sécurité — livré en cinq jours.</p>
           <ul class="rz__pts"><li>Livré en 5 jours</li><li>Images sur mesure</li><li>SEO local</li></ul>
-          <div class="rz__liens"><a href="https://gwen-services.alliancegroupe-inc.com/" target="_blank" rel="noopener">Voir le site ↗</a><a href="<?php echo esc_url( home_url( '/realisation-gwen' ) ); ?>">L'étude de cas →</a><a class="rz__avis" href="https://www.google.com/maps/search/?api=1&amp;query=Gwen%20Services%20aide%20%C3%A0%20domicile%20Nantes" target="_blank" rel="noopener">★ Avis Google ↗</a></div>
+          <div class="rz__liens"><a href="https://gwen-services.alliancegroupe-inc.com/" target="_blank" rel="noopener">Voir le site ↗</a><a href="<?php echo esc_url( home_url( '/realisation-gwen' ) ); ?>">L'étude de cas →</a><a class="rz__avis" href="https://www.google.com/maps/search/?api=1&amp;query=Gwen%20Services%20aide%20%C3%A0%20domicile%20Nantes" target="_blank" rel="noopener">Avis Google ↗</a></div>
         </div>
       </article>
       <article class="rz__card" data-rv>
@@ -747,7 +747,7 @@ document.documentElement.classList.add('js-cine');
           <h3>Anna Photo</h3>
           <p>Blog et portfolio pour une photographe portraitiste. Navigation fluide, mise en valeur des clichés, référencement travaillé article par article.</p>
           <ul class="rz__pts"><li>+180 % de trafic</li><li>23 articles</li><li>Portfolio complet</li></ul>
-          <div class="rz__liens"><a href="https://annaphoto.eu/" target="_blank" rel="noopener">Voir le site ↗</a><a class="rz__avis" href="https://www.google.com/maps/search/?api=1&amp;query=Anna%20Photo%20photographe%20Nantes" target="_blank" rel="noopener">★ Avis Google ↗</a></div>
+          <div class="rz__liens"><a href="https://annaphoto.eu/" target="_blank" rel="noopener">Voir le site ↗</a><a class="rz__avis" href="https://www.google.com/maps/search/?api=1&amp;query=Anna%20Photo%20photographe%20Nantes" target="_blank" rel="noopener">Avis Google ↗</a></div>
         </div>
       </article>
       <article class="rz__card" data-rv>
@@ -757,7 +757,7 @@ document.documentElement.classList.add('js-cine');
           <h3>L.A Environnement</h3>
           <p>Site vitrine et génération de devis pour un paysagiste. Formulaires optimisés et référencement local dominant sur son secteur.</p>
           <ul class="rz__pts"><li>+320 % de devis</li><li>Top 3 Google</li><li>15 devis/mois</li></ul>
-          <div class="rz__liens"><a href="https://www.paysagiste-environnement.com/" target="_blank" rel="noopener">Voir le site ↗</a><a class="rz__avis" href="https://www.google.com/maps/search/?api=1&amp;query=L.A%20Environnement%20paysagiste%20Nantes" target="_blank" rel="noopener">★ Avis Google ↗</a></div>
+          <div class="rz__liens"><a href="https://www.paysagiste-environnement.com/" target="_blank" rel="noopener">Voir le site ↗</a><a class="rz__avis" href="https://www.google.com/maps/search/?api=1&amp;query=L.A%20Environnement%20paysagiste%20Nantes" target="_blank" rel="noopener">Avis Google ↗</a></div>
         </div>
       </article>
     </div>
@@ -799,7 +799,7 @@ document.documentElement.classList.add('js-cine');
           $ag_pleines = max( 0, min( 5, (int) round( $ag_note ) ) );
           ?>
           <?php if ( $ag_note ) : ?><strong><?php echo esc_html( number_format_i18n( $ag_note, 1 ) ); ?></strong><?php endif; ?>
-          <?php if ( $ag_pleines ) : ?><span class="av__stars" aria-hidden="true"><?php echo esc_html( str_repeat( '★', $ag_pleines ) . str_repeat( '☆', 5 - $ag_pleines ) ); ?></span><?php endif; ?>
+          <?php if ( $ag_pleines ) : ?><span class="av__stars" aria-hidden="true"><?php echo esc_html( str_repeat( '', $ag_pleines ) . str_repeat( '', 5 - $ag_pleines ) ); ?></span><?php endif; ?>
           <?php
           echo $ag_total
               ? esc_html( sprintf( _n( '%s avis Google', '%s avis Google', $ag_total, 'alliance-groupe' ), number_format_i18n( $ag_total ) ) )

@@ -6,19 +6,19 @@
 ?>
 <section class="ag-section ag-section--light ag-home-studio">
 	<div class="ag-container">
-		<span class="ag-tag ag-anim" data-anim="tag">L'outil exclusif 🎬</span>
+		<span class="ag-tag ag-anim" data-anim="tag">L'outil exclusif </span>
 		<h2 class="ag-section__title ag-anim" data-anim="title">Le <em>Studio</em> — crée &amp; partage en 1 clic</h2>
 		<p class="ag-section__desc ag-anim" data-anim="desc">Un studio gratuit, directement sur le site : transforme une photo en <strong>vidéo verticale</strong> ou en <strong>visuel pro</strong>, ajoute ton accroche, et <strong>ton lien de vente s'intègre tout seul</strong>. Idéal pour vendre sur TikTok, Insta et Snap — sans aucune appli à installer.</p>
 
 		<div class="ag-home-studio__grid">
-			<div class="ag-home-studio__feat"><span class="ag-home-studio__ic">🎬</span><strong>Vidéos en 8 s</strong><span>Choisis un fond, écris ton accroche, génère.</span></div>
-			<div class="ag-home-studio__feat"><span class="ag-home-studio__ic">🖼️</span><strong>Visuels brandés</strong><span>Des images prêtes à poster, à ta marque.</span></div>
-			<div class="ag-home-studio__feat"><span class="ag-home-studio__ic">🔗</span><strong>Ton lien intégré</strong><span>Chaque vente passe par ton code.</span></div>
+			<div class="ag-home-studio__feat"><span class="ag-home-studio__ic"></span><strong>Vidéos en 8 s</strong><span>Choisis un fond, écris ton accroche, génère.</span></div>
+			<div class="ag-home-studio__feat"><span class="ag-home-studio__ic"></span><strong>Visuels brandés</strong><span>Des images prêtes à poster, à ta marque.</span></div>
+			<div class="ag-home-studio__feat"><span class="ag-home-studio__ic"></span><strong>Ton lien intégré</strong><span>Chaque vente passe par ton code.</span></div>
 			<div class="ag-home-studio__feat"><span class="ag-home-studio__ic">⤴</span><strong>Partage direct</strong><span>TikTok, Snap, Insta, WhatsApp.</span></div>
 		</div>
 
 		<div class="ag-home-studio__cta">
-			<a href="<?php echo esc_url( home_url( '/studio' ) ); ?>" class="ag-btn-gold">🎬 Ouvrir le Studio →</a>
+			<a href="<?php echo esc_url( home_url( '/studio' ) ); ?>" class="ag-btn-gold">Ouvrir le Studio →</a>
 			<a href="<?php echo esc_url( home_url( '/ambassadeurs' ) ); ?>" class="ag-btn-outline">Gagner 10 % en vendant →</a>
 		</div>
 	</div>

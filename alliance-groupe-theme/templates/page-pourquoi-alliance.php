@@ -84,25 +84,25 @@ get_header();
 		<h2 class="ag-section__title" style="text-align:center;">Choisissez selon <em>votre cas</em></h2>
 		<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:24px;max-width:1100px;margin:40px auto 0;">
 			<div style="background:linear-gradient(180deg,rgba(20,20,28,.9),rgba(10,10,15,.95));border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:32px 28px;">
-				<div style="font-size:2.4rem;margin-bottom:14px;">🛠️</div>
+				<div style="font-size:2.4rem;margin-bottom:14px;"></div>
 				<h3 style="font-family:Georgia,serif;font-size:1.5rem;color:#fff;margin:0 0 16px;">Allez sur ThemeForest si…</h3>
 				<ul style="list-style:none;padding:0;margin:0;color:rgba(255,255,255,.8);font-size:.96rem;line-height:1.75;">
-					<li style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);">✓ Vous savez installer un thème WP seul</li>
-					<li style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);">✓ Vous êtes à l'aise en anglais</li>
-					<li style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);">✓ Vous voulez un thème ultra-générique pour bricoler</li>
-					<li style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);">✓ Vous n'avez pas besoin de support humain</li>
-					<li style="padding:8px 0;">✓ Vous gérez votre SEO/Ads en interne</li>
+					<li style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);">Vous savez installer un thème WP seul</li>
+					<li style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);">Vous êtes à l'aise en anglais</li>
+					<li style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);">Vous voulez un thème ultra-générique pour bricoler</li>
+					<li style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);">Vous n'avez pas besoin de support humain</li>
+					<li style="padding:8px 0;">Vous gérez votre SEO/Ads en interne</li>
 				</ul>
 			</div>
 			<div style="background:linear-gradient(180deg,rgba(30,25,20,.95),rgba(20,15,10,.98));border:1px solid rgba(212,180,92,.4);border-radius:18px;padding:32px 28px;box-shadow:0 20px 60px rgba(212,180,92,.12);">
-				<div style="font-size:2.4rem;margin-bottom:14px;">🇫🇷</div>
+				<div style="font-size:2.4rem;margin-bottom:14px;"></div>
 				<h3 style="font-family:Georgia,serif;font-size:1.5rem;color:#D4B45C;margin:0 0 16px;">Choisissez Alliance si…</h3>
 				<ul style="list-style:none;padding:0;margin:0;color:rgba(255,255,255,.8);font-size:.96rem;line-height:1.75;">
-					<li style="padding:8px 0;border-bottom:1px solid rgba(212,180,92,.1);">✓ Vous voulez un site adapté à votre métier dès l'install</li>
-					<li style="padding:8px 0;border-bottom:1px solid rgba(212,180,92,.1);">✓ Vous parlez français et préférez du support FR</li>
-					<li style="padding:8px 0;border-bottom:1px solid rgba(212,180,92,.1);">✓ Vous voulez un humain qui décroche quand ça coince</li>
-					<li style="padding:8px 0;border-bottom:1px solid rgba(212,180,92,.1);">✓ Vous envisagez un site sur-mesure à terme</li>
-					<li style="padding:8px 0;">✓ Vous voulez intégrer IA / automatisations / SEO local</li>
+					<li style="padding:8px 0;border-bottom:1px solid rgba(212,180,92,.1);">Vous voulez un site adapté à votre métier dès l'install</li>
+					<li style="padding:8px 0;border-bottom:1px solid rgba(212,180,92,.1);">Vous parlez français et préférez du support FR</li>
+					<li style="padding:8px 0;border-bottom:1px solid rgba(212,180,92,.1);">Vous voulez un humain qui décroche quand ça coince</li>
+					<li style="padding:8px 0;border-bottom:1px solid rgba(212,180,92,.1);">Vous envisagez un site sur-mesure à terme</li>
+					<li style="padding:8px 0;">Vous voulez intégrer IA / automatisations / SEO local</li>
 				</ul>
 			</div>
 		</div>
@@ -118,13 +118,13 @@ get_header();
 			<p class="ag-pq-offres__sub">6 thèmes WordPress déjà adaptés à votre métier (gratuits + packs), ou un site clé en main livré en quelques jours. À vous de choisir.</p>
 			<div class="ag-pq-offres__cards">
 				<div class="ag-pq-offre">
-					<span class="ag-pq-offre__ic">🎨</span>
+					<span class="ag-pq-offre__ic"></span>
 					<h3>Templates WordPress</h3>
 					<p>Coach, Artisan, Avocat, Barber, Resto, Asso. Gratuits, + version Premium (69€).</p>
 					<a href="<?php echo esc_url( home_url( '/templates-wordpress' ) ); ?>" class="ag-btn-gold">Voir les templates →</a>
 				</div>
 				<div class="ag-pq-offre">
-					<span class="ag-pq-offre__ic">⚡</span>
+					<span class="ag-pq-offre__ic"></span>
 					<h3>Site clé en main</h3>
 					<p>On crée tout pour vous : design, contenu, mise en ligne. Prix fixe, sans rendez-vous, livré en quelques jours.</p>
 					<a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>" class="ag-btn-outline">Voir les packs Express →</a>
@@ -169,8 +169,8 @@ unset( $GLOBALS['ag_audit_cta_args'] );
 	.ag-comparo-cell:last-child{border-bottom:none}
 	.ag-comparo-cell--label{background:rgba(212,180,92,.14);font-size:1rem;font-weight:800;color:#D4B45C;letter-spacing:.3px}
 	/* Etiquette chaque valeur : on sait toujours qui est qui */
-	.ag-comparo-cell--them::before{content:"❌ ThemeForest";display:block;font-size:.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:3px}
-	.ag-comparo-cell--us::before{content:"✅ Alliance Groupe";display:block;font-size:.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#46b450;margin-bottom:3px}
+	.ag-comparo-cell--them::before{content:"ThemeForest";display:block;font-size:.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:3px}
+	.ag-comparo-cell--us::before{content:"Alliance Groupe";display:block;font-size:.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#46b450;margin-bottom:3px}
 	.ag-comparo-cell--them{color:rgba(255,255,255,.6)}
 	.ag-comparo-cell--us{background:rgba(212,180,92,.06)}
 }

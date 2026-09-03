@@ -10,7 +10,7 @@ get_header();
 set_query_var( 'ag_metier', array(
     'slug'        => 'domicile',
     'slug_full'   => 'ag-starter-domicile',
-    'icon'        => '🏡',
+    'icon'        => '',
     'name'        => 'Aide à domicile',
     'audience_short' => 'activité',
     'palette'     => 'Vert doux &amp; beige',

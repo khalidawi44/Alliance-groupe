@@ -24,7 +24,7 @@ $briefs = function_exists( 'ag_client_briefs_for' ) ? ag_client_briefs_for( $ema
 			</div>
 			<p class="ag-section__desc">Retrouve ici tes projets de site et leur suivi. Pour toute demande, on reste joignable par email.</p>
 			<?php $ag_tg_chan = function_exists( 'ag_tg_cfg' ) ? ag_tg_cfg( 'chan_link' ) : ''; if ( $ag_tg_chan ) : ?>
-			<a href="<?php echo esc_url( $ag_tg_chan ); ?>" target="_blank" rel="noopener" class="ag-cli-tg">📣 <strong>Rejoins notre canal Telegram</strong> — offres exclusives &amp; nouveautés <span>→</span></a>
+			<a href="<?php echo esc_url( $ag_tg_chan ); ?>" target="_blank" rel="noopener" class="ag-cli-tg"><strong>Rejoins notre canal Telegram</strong> — offres exclusives &amp; nouveautés <span>→</span></a>
 			<?php endif; ?>
 		</div>
 	</section>

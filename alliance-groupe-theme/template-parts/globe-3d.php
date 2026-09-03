@@ -2,7 +2,7 @@
 /**
  * Globe 3D Three.js — le studio (Nantes) et les racines (Naples).
  *
- * ⚠️ VERITE : studio SOLO, une seule adresse professionnelle = Nantes.
+ * VERITE : studio SOLO, une seule adresse professionnelle = Nantes.
  * Naples n'est PAS un bureau, ce sont les origines de Fabrizio ; le marker est
  * donc etiquete comme tel et pointe vers /a-propos. Ne jamais reintroduire un
  * marker « bureau » pour une ville ou personne ne travaille (Marrakech retire).
@@ -29,7 +29,7 @@ $ag_globe_markers = apply_filters( 'ag_globe_markers', array(
 <section class="ag-globe-section">
 	<div class="ag-globe-inner">
 		<div class="ag-globe-text">
-			<span class="ag-globe-tag">🌍 D'où je travaille</span>
+			<span class="ag-globe-tag">D'où je travaille</span>
 			<h2 class="ag-globe-title">Un studio à <em>Nantes</em></h2>
 			<p class="ag-globe-lead">Le studio est à Nantes : un seul interlocuteur, du conseil à la livraison. Naples, c'est d'où je viens — la maison familiale, pas une adresse commerciale.</p>
 			<ul class="ag-globe-list">

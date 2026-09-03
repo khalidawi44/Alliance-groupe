@@ -187,7 +187,7 @@ function ag_refais_confirme() {
 		}
 
 		if ( function_exists( 'ag_push' ) ) {
-			ag_push( '✅ Maquette confirmée : ' . $mk['email'] . ( $host ? ' — ' . $host : '' )
+			ag_push( 'Maquette confirmée : ' . $mk['email'] . ( $host ? ' — ' . $host : '' )
 				. ( $owner_name ? ' (via ' . $owner_name . ')' : '' ) );
 		}
 	}
@@ -378,7 +378,7 @@ add_action( 'wp_footer', function () {
 			g.className = 'agrg';
 			g.innerHTML =
 				'<div class="agrg__box">'
-				+ '<div class="agrg__t">✨ Ta maquette est prête</div>'
+				+ '<div class="agrg__t">Ta maquette est prête</div>'
 				+ '<div class="agrg__p">Laisse ton adresse : tu la reçois en grand, nette, avec un lien à garder.</div>'
 				+ '<input type="text" class="agrg-n" placeholder="Ton prénom / entreprise" autocomplete="name">'
 				+ '<input type="email" class="agrg-e" placeholder="Ton email" autocomplete="email" inputmode="email">'

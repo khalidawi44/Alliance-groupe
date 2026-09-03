@@ -13,7 +13,7 @@ $post_url = esc_url( admin_url( 'admin-post.php' ) );
 	<section class="ag-hero" style="min-height:auto;padding:90px 0 30px;">
 		<div class="ag-hero__bg"><div class="ag-hero__orb ag-hero__orb--1"></div></div>
 		<div class="ag-hero__content" style="max-width:860px;">
-			<span class="ag-tag">🎓 Vous venez de prêter serment ?</span>
+			<span class="ag-tag">Vous venez de prêter serment ?</span>
 			<h1 class="ag-hero__title"><span class="ag-line">Votre site d'avocat, <em>offert 3 mois</em></span></h1>
 			<p class="ag-hero__sub">Un cadeau pour lancer votre cabinet : le Pack Premium du thème Avocat — recherche Judilibre, espace client sécurisé, RGPD &amp; déontologie. Sans engagement, sans carte bancaire.</p>
 		</div>
@@ -36,7 +36,7 @@ $post_url = esc_url( admin_url( 'admin-post.php' ) );
 					foreach ( $items as $it ) :
 					?>
 						<li style="padding:11px 0 11px 30px;position:relative;border-bottom:1px solid rgba(255,255,255,.07);color:#e8e6e0;font-size:.97rem;line-height:1.5;">
-							<span style="position:absolute;left:0;color:#28a745;font-weight:700;">✓</span>
+							<span style="position:absolute;left:0;color:#28a745;font-weight:700;"></span>
 							<?php echo wp_kses_post( $it ); ?>
 						</li>
 					<?php endforeach; ?>
@@ -47,7 +47,7 @@ $post_url = esc_url( admin_url( 'admin-post.php' ) );
 			<div style="background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.25);border-radius:16px;padding:30px 28px;">
 				<?php if ( 'ok' === $state ) : ?>
 					<div style="text-align:center;padding:18px 0;">
-						<div style="font-size:2.6rem;">🎉</div>
+						<div style="font-size:2.6rem;"></div>
 						<h2 style="color:#fff;margin:8px 0 10px;">C'est validé, bienvenue Maître !</h2>
 						<p style="color:#cfcabd;line-height:1.6;">Votre clé Premium (3 mois) arrive par email avec la marche à suivre. Vérifiez vos spams.</p>
 						<a href="<?php echo esc_url( home_url( '/wordpress-avocat' ) ); ?>" class="ag-btn-gold" style="margin-top:14px;">Découvrir le thème →</a>

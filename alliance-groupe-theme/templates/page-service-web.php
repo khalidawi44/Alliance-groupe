@@ -73,12 +73,12 @@ get_header();
                     </ul>
                 </div>
                 <div class="ag-sdetail__visual ag-sdetail__visual--grid">
-                    <div class="ag-sdetail__feat">🎨<strong>Design UX/UI</strong><span>Sur-mesure</span></div>
-                    <div class="ag-sdetail__feat">⚡<strong>Performance</strong><span>Score A+</span></div>
-                    <div class="ag-sdetail__feat">📱<strong>Responsive</strong><span>100% mobile</span></div>
-                    <div class="ag-sdetail__feat">🔒<strong>Sécurité</strong><span>SSL inclus</span></div>
-                    <div class="ag-sdetail__feat">📊<strong>Analytics</strong><span>Suivi intégré</span></div>
-                    <div class="ag-sdetail__feat">🚀<strong>SEO Ready</strong><span>Dès le départ</span></div>
+                    <div class="ag-sdetail__feat"><strong>Design UX/UI</strong><span>Sur-mesure</span></div>
+                    <div class="ag-sdetail__feat"><strong>Performance</strong><span>Score A+</span></div>
+                    <div class="ag-sdetail__feat"><strong>Responsive</strong><span>100% mobile</span></div>
+                    <div class="ag-sdetail__feat"><strong>Sécurité</strong><span>SSL inclus</span></div>
+                    <div class="ag-sdetail__feat"><strong>Analytics</strong><span>Suivi intégré</span></div>
+                    <div class="ag-sdetail__feat"><strong>SEO Ready</strong><span>Dès le départ</span></div>
                 </div>
             </div>
         </div>

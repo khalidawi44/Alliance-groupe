@@ -55,7 +55,7 @@ $question_sent = isset( $_GET['question_sent'] ) && '1' === $_GET['question_sent
     <section class="ag-section ag-section--darker">
         <div class="ag-container">
             <div class="ag-question-success">
-                <span class="ag-question-success__check">✓</span>
+                <span class="ag-question-success__check"></span>
                 <h2>Votre question a bien été envoyée !</h2>
                 <p class="ag-question-success__sub">
                     Fabrizio l'a reçue et commence à y travailler. Vous recevrez une analyse écrite détaillée dans votre boîte mail <strong>sous 48h ouvrées</strong>.
@@ -76,7 +76,7 @@ $question_sent = isset( $_GET['question_sent'] ) && '1' === $_GET['question_sent
     <section class="ag-section ag-section--darker" id="ag-question-form">
         <div class="ag-container">
             <div class="ag-question-success">
-                <span class="ag-question-success__check">✓</span>
+                <span class="ag-question-success__check"></span>
                 <h2>Paiement confirmé — merci pour votre achat&nbsp;!</h2>
                 <p class="ag-question-success__sub">
                     Vous avez réglé <strong><?php echo esc_html( $pack_labels[ $paid_pack ] ); ?></strong>.
@@ -144,10 +144,10 @@ $question_sent = isset( $_GET['question_sent'] ) && '1' === $_GET['question_sent
                         <strong>45 €</strong>
                     </div>
                     <ul class="ag-qpack__features">
-                        <li>✓ Réponse écrite experte (300-500 mots)</li>
-                        <li>✓ Livrée sous 48h ouvrées</li>
-                        <li>✓ Liens et ressources inclus</li>
-                        <li>✓ 1 question précise</li>
+                        <li>Réponse écrite experte (300-500 mots)</li>
+                        <li>Livrée sous 48h ouvrées</li>
+                        <li>Liens et ressources inclus</li>
+                        <li>1 question précise</li>
                     </ul>
                     <a href="<?php echo esc_url( $btn_url( $stripe_single ) ); ?>" class="ag-btn-outline" target="_blank" rel="noopener">
                         Acheter — 45 € →
@@ -156,7 +156,7 @@ $question_sent = isset( $_GET['question_sent'] ) && '1' === $_GET['question_sent
 
                 <!-- Pack 3 -->
                 <div class="ag-qpack__card ag-qpack__card--hero">
-                    <span class="ag-qpack__badge">⭐ Économique</span>
+                    <span class="ag-qpack__badge">Économique</span>
                     <span class="ag-qpack__tagline">-11 % par question</span>
                     <h3 class="ag-qpack__label">Pack 3 Questions</h3>
                     <div class="ag-qpack__price">
@@ -164,11 +164,11 @@ $question_sent = isset( $_GET['question_sent'] ) && '1' === $_GET['question_sent
                         <small>soit 40 €/question</small>
                     </div>
                     <ul class="ag-qpack__features">
-                        <li>✓ 3 questions écrites détaillées</li>
-                        <li>✓ Chaque réponse sous 48h</li>
-                        <li>✓ Utilisables sur 90 jours</li>
-                        <li>✓ Sujets variés autorisés</li>
-                        <li>✓ Paiement unique</li>
+                        <li>3 questions écrites détaillées</li>
+                        <li>Chaque réponse sous 48h</li>
+                        <li>Utilisables sur 90 jours</li>
+                        <li>Sujets variés autorisés</li>
+                        <li>Paiement unique</li>
                     </ul>
                     <a href="<?php echo esc_url( $btn_url( $stripe_pack ) ); ?>" class="ag-btn-gold" target="_blank" rel="noopener">
                         Acheter — 120 € →
@@ -184,11 +184,11 @@ $question_sent = isset( $_GET['question_sent'] ) && '1' === $_GET['question_sent
                         <small>/ mois</small>
                     </div>
                     <ul class="ag-qpack__features">
-                        <li>✓ Jusqu'à 8 questions / mois</li>
-                        <li>✓ Réponses sous 48h</li>
-                        <li>✓ Chat privé (WhatsApp ou Slack)</li>
-                        <li>✓ Priorité de traitement</li>
-                        <li>✓ Résiliable à tout moment</li>
+                        <li>Jusqu'à 8 questions / mois</li>
+                        <li>Réponses sous 48h</li>
+                        <li>Chat privé (WhatsApp ou Slack)</li>
+                        <li>Priorité de traitement</li>
+                        <li>Résiliable à tout moment</li>
                     </ul>
                     <a href="<?php echo esc_url( $btn_url( $stripe_sub ) ); ?>" class="ag-btn-outline" target="_blank" rel="noopener">
                         S'abonner — 199 €/mois →
@@ -231,27 +231,21 @@ $question_sent = isset( $_GET['question_sent'] ) && '1' === $_GET['question_sent
             <h2 class="ag-section__title" style="text-align:center;">Exemples de questions que vous pouvez poser</h2>
             <div class="ag-q-examples">
                 <div class="ag-q-example">
-                    <span class="ag-q-example__icon">🌐</span>
                     <p>« Je dois refaire mon site. WordPress, Webflow ou Shopify pour mon restaurant ? »</p>
                 </div>
                 <div class="ag-q-example">
-                    <span class="ag-q-example__icon">📈</span>
                     <p>« Mon trafic stagne à 150 visites/mois. Par où je commence pour le décupler ? »</p>
                 </div>
                 <div class="ag-q-example">
-                    <span class="ag-q-example__icon">🤖</span>
                     <p>« Quel outil d'IA me fait gagner le plus de temps en priorité dans mon activité de coach ? »</p>
                 </div>
                 <div class="ag-q-example">
-                    <span class="ag-q-example__icon">🎯</span>
                     <p>« Mon concurrent est premier sur Google, pas moi. Quelles sont les 3 actions à faire en priorité ? »</p>
                 </div>
                 <div class="ag-q-example">
-                    <span class="ag-q-example__icon">💰</span>
                     <p>« J'ai 500€/mois de budget pub. Je mets tout sur Google Ads ou je split avec Meta ? »</p>
                 </div>
                 <div class="ag-q-example">
-                    <span class="ag-q-example__icon">📧</span>
                     <p>« Je veux automatiser mes relances clients sans perdre le côté humain. Par quoi je commence ? »</p>
                 </div>
             </div>

@@ -66,7 +66,7 @@ foreach ( $vid_defs as $vd ) {
 	<section class="ag-section ag-section--graphite">
 		<div class="ag-container">
 			<div class="ag-esp-head">
-				<div><span class="ag-tag">Studio créatif 🎬</span><h1 class="ag-section__title">Crée &amp; partage, sans quitter le site</h1></div>
+				<div><span class="ag-tag">Studio créatif </span><h1 class="ag-section__title">Crée &amp; partage, sans quitter le site</h1></div>
 				<?php if ( $is_seller ) : ?>
 					<a href="<?php echo esc_url( home_url( '/espace-ambassadeur' ) ); ?>" class="ag-btn-outline ag-esp-logout">← Mon compte</a>
 				<?php else : ?>
@@ -78,28 +78,28 @@ foreach ( $vid_defs as $vd ) {
 			<?php endif; ?>
 			<p class="ag-section__desc">Crée une vidéo ou une image pro en quelques secondes, et partage-la direct. <?php echo $is_seller ? 'Ton lien de vente est toujours intégré.' : 'C\'est gratuit pour tout le monde.'; ?></p>
 			<?php if ( ! $is_seller ) : ?>
-				<div class="ag-studio-guest">💡 Tu peux créer et partager librement — le contenu renvoie vers le site. <strong><?php echo is_user_logged_in() ? 'Deviens ambassadeur' : 'Connecte-toi ou deviens ambassadeur'; ?></strong> pour intégrer <strong>TON lien</strong> et toucher <strong>10 % sur chaque vente</strong>. <a href="<?php echo esc_url( home_url( '/ambassadeurs' ) ); ?>">En savoir plus →</a></div>
+				<div class="ag-studio-guest">Tu peux créer et partager librement — le contenu renvoie vers le site. <strong><?php echo is_user_logged_in() ? 'Deviens ambassadeur' : 'Connecte-toi ou deviens ambassadeur'; ?></strong> pour intégrer <strong>TON lien</strong> et toucher <strong>10 % sur chaque vente</strong>. <a href="<?php echo esc_url( home_url( '/ambassadeurs' ) ); ?>">En savoir plus →</a></div>
 			<?php endif; ?>
 			<div class="ag-mode">
-				<button type="button" class="ag-mode-btn is-active" data-mode="sale" onclick="agSetMode('sale')">🛒 Vendre des sites</button>
-				<button type="button" class="ag-mode-btn" data-mode="recruit" onclick="agSetMode('recruit')">🤝 Recruter mon équipe</button>
+				<button type="button" class="ag-mode-btn is-active" data-mode="sale" onclick="agSetMode('sale')">Vendre des sites</button>
+				<button type="button" class="ag-mode-btn" data-mode="recruit" onclick="agSetMode('recruit')">Recruter mon équipe</button>
 			</div>
 			<p class="ag-mode-hint" id="ag-mode-hint">Mode <strong>Vente</strong> : ton lien mène à tes offres (ta commission). Passe en <strong>Recrutement</strong> pour partager ton lien d'équipe (tu gagnes sur leurs ventes).</p>
 			<div class="ag-ct" role="tablist">
-				<button type="button" class="ag-ct-btn is-active" data-pane="video" role="tab">🎬 Vidéo</button>
-				<button type="button" class="ag-ct-btn" data-pane="image" role="tab">🖼️ Image</button>
+				<button type="button" class="ag-ct-btn is-active" data-pane="video" role="tab">Vidéo</button>
+				<button type="button" class="ag-ct-btn" data-pane="image" role="tab">Image</button>
 			</div>
 		</div>
 	</section>
 	<script>
-	window.AG_SALE = { link: <?php echo wp_json_encode( $ag_sale_link ); ?>, caption: <?php echo wp_json_encode( 'Ton site pro à prix fixe, livré en quelques jours — dès 490 €. 👉 ' . $ag_sale_link ); ?> };
-	window.AG_RECRUIT = { link: <?php echo wp_json_encode( $ag_recruit_link ); ?>, caption: <?php echo wp_json_encode( 'Gagne de l\'argent en vendant des sites — 10 % par vente, depuis ton tel. Rejoins l\'équipe 👉 ' . $ag_recruit_link ); ?> };
+	window.AG_SALE = { link: <?php echo wp_json_encode( $ag_sale_link ); ?>, caption: <?php echo wp_json_encode( 'Ton site pro à prix fixe, livré en quelques jours — dès 490 €. ' . $ag_sale_link ); ?> };
+	window.AG_RECRUIT = { link: <?php echo wp_json_encode( $ag_recruit_link ); ?>, caption: <?php echo wp_json_encode( 'Gagne de l\'argent en vendant des sites — 10 % par vente, depuis ton tel. Rejoins l\'équipe ' . $ag_recruit_link ); ?> };
 	window.AG_LINK = window.AG_SALE.link; window.AG_CAPTION = window.AG_SALE.caption;
 	window.agSetMode = function(m){
 		var d = ( m === 'recruit' ) ? window.AG_RECRUIT : window.AG_SALE;
 		window.AG_LINK = d.link; window.AG_CAPTION = d.caption;
 		var defs = ( m === 'recruit' )
-			? { t:['Gagne de l\'argent','depuis ton téléphone','Vends des sites · 10 % par vente','Rejoins l\'équipe 👇'], ih:'Deviens commercial.', is:'Travaille depuis ton téléphone' }
+			? { t:['Gagne de l\'argent','depuis ton téléphone','Vends des sites · 10 % par vente','Rejoins l\'équipe '], ih:'Deviens commercial.', is:'Travaille depuis ton téléphone' }
 			: { t:['Du quartier à la réussite.','Vends des sites depuis ton tel.','Touche 10 % sur chaque vente.',''], ih:'Ton site pro, dès 490 €', is:'Livré en quelques jours · sans rendez-vous' };
 		var e;
 		['ag-t1','ag-t2','ag-t3','ag-t4'].forEach(function(id,i){ var el=document.getElementById(id); if(el) el.value=defs.t[i]||''; });
@@ -124,7 +124,7 @@ foreach ( $vid_defs as $vd ) {
 
 	<section class="ag-section ag-section--graphite ag-pane ag-pane--video" id="studio-video">
 		<div class="ag-container ag-container--narrow">
-			<h2 class="ag-section__title">Ta vidéo (8 s) 🎬</h2>
+			<h2 class="ag-section__title">Ta vidéo (8 s) </h2>
 			<p class="ag-section__desc">Choisis un fond (ou ta propre photo/vidéo), écris tes textes : ils <strong>s'enchaînent</strong> dans la vidéo (titre, puis messages). Choisis la police et la couleur. Ton lien va dans la légende (copiée automatiquement au partage).</p>
 			<div class="ag-maker ag-maker--v">
 				<div class="ag-maker__preview"><canvas id="ag-vcanvas" width="1080" height="1920"></canvas></div>
@@ -169,17 +169,17 @@ foreach ( $vid_defs as $vd ) {
 							<button type="button" class="ag-dur-btn is-active" data-sec="8">8 s</button>
 							<button type="button" class="ag-dur-btn" data-sec="16">16 s</button>
 							<button type="button" class="ag-dur-btn" data-sec="24">24 s</button>
-							<button type="button" class="ag-dur-btn ag-dur-btn--pro" data-sec="60">1 min 💰</button>
+							<button type="button" class="ag-dur-btn ag-dur-btn--pro" data-sec="60">1 min </button>
 						</div>
-						<span class="ag-dur__hint">💡 À partir d'<strong>1 minute</strong>, tes vidéos peuvent être <strong>monétisées</strong> sur TikTok.</span>
+						<span class="ag-dur__hint">À partir d'<strong>1 minute</strong>, tes vidéos peuvent être <strong>monétisées</strong> sur TikTok.</span>
 					</div>
-					<button type="button" class="ag-btn-gold" id="ag-vgen">🎬 Générer ma vidéo</button>
+					<button type="button" class="ag-btn-gold" id="ag-vgen">Générer ma vidéo</button>
 					<p class="ag-vstatus" id="ag-vstatus"></p>
 					<button type="button" class="ag-btn-gold ag-vshare-btn" id="ag-vshare" style="display:none;">
-						<span class="ag-vshare-ic" aria-hidden="true"><span class="ag-vsi ag-vsi--tt">🎵</span><span class="ag-vsi ag-vsi--snap">👻</span><span class="ag-vsi ag-vsi--ig">📸</span></span>
+						<span class="ag-vshare-ic" aria-hidden="true"><span class="ag-vsi ag-vsi--tt"></span><span class="ag-vsi ag-vsi--snap"></span><span class="ag-vsi ag-vsi--ig"></span></span>
 						<span>Partager ma vidéo</span>
 					</button>
-					<button type="button" class="ag-btn-outline" id="ag-vcap" style="display:none;">📋 Copier la légende (+ ton lien)</button>
+					<button type="button" class="ag-btn-outline" id="ag-vcap" style="display:none;">Copier la légende (+ ton lien)</button>
 					<p class="ag-vhint" id="ag-vhint" style="display:none;">En touchant <strong>Partager</strong>, <strong>ta légende (avec ton lien) est copiée automatiquement</strong>. Choisis ton appli (ou « Enregistrer la vidéo »), puis dans TikTok/Snap : appui long → <strong>Coller</strong>. (TikTok n'accepte pas de légende auto, c'est la seule façon.)</p>
 				</div>
 			</div>
@@ -279,7 +279,7 @@ foreach ( $vid_defs as $vd ) {
 				lastBlob=new Blob(chunks,{type:actual});
 				if(lastUrl) URL.revokeObjectURL(lastUrl); lastUrl=URL.createObjectURL(lastBlob);
 				shEl.style.display='inline-flex';capEl.style.display='inline-flex';hintEl.style.display='block';
-				statusEl.textContent='✓ Vidéo prête ! Partage-la ou enregistre-la juste en dessous 👇';
+				statusEl.textContent='Vidéo prête ! Partage-la ou enregistre-la juste en dessous ';
 				if(isVideo) startVideoPreview(); else renderOnce();
 			};
 			if(isVideo){try{media.currentTime=0;media.play();}catch(e){}}
@@ -301,7 +301,7 @@ foreach ( $vid_defs as $vd ) {
 		});
 		function saveAndGuide(){
 			var a=document.createElement('a');a.href=lastUrl||URL.createObjectURL(lastBlob);a.download='alliance-video.'+lastExt;document.body.appendChild(a);a.click();a.remove();
-			statusEl.textContent='Vidéo enregistrée 📁 + légende copiée ✓ Ouvre TikTok/Snap/Insta, choisis la vidéo dans ta galerie, colle la légende.';
+			statusEl.textContent='Vidéo enregistrée + légende copiée Ouvre TikTok/Snap/Insta, choisis la vidéo dans ta galerie, colle la légende.';
 		}
 		function agShareVideo(){
 			if(!lastBlob){ statusEl.textContent='Génère d\'abord ta vidéo (bouton ci-dessus).'; return; }
@@ -311,7 +311,7 @@ foreach ( $vid_defs as $vd ) {
 			var file=new File([lastBlob],'alliance-video.'+lastExt,{type:lastBlob.type||'video/mp4'});
 			if(navigator.canShare && navigator.canShare({files:[file]})){
 				navigator.share({files:[file]}).then(function(){
-					statusEl.textContent='✓ Légende déjà copiée ! Dans TikTok/Snap : appui long sur le champ texte → « Coller », puis publie.';
+					statusEl.textContent='Légende déjà copiée ! Dans TikTok/Snap : appui long sur le champ texte → « Coller », puis publie.';
 				}).catch(function(err){
 					if(err && err.name==='AbortError') return;
 					saveAndGuide();
@@ -321,14 +321,14 @@ foreach ( $vid_defs as $vd ) {
 			}
 		}
 		shEl.addEventListener('click',agShareVideo);
-		capEl.addEventListener('click',function(){ navigator.clipboard.writeText(caption).then(function(){ capEl.textContent='✓ Légende copiée'; setTimeout(function(){ capEl.textContent='📋 Copier la légende (+ ton lien)'; },1600); }); });
+		capEl.addEventListener('click',function(){ navigator.clipboard.writeText(caption).then(function(){ capEl.textContent='Légende copiée'; setTimeout(function(){ capEl.textContent='Copier la légende (+ ton lien)'; },1600); }); });
 		startPreview();
 	})();
 	</script>
 
 	<section class="ag-section ag-section--onyx ag-pane ag-pane--image" style="display:none;">
 		<div class="ag-container ag-container--narrow">
-			<h2 class="ag-section__title">Ton image perso 🖌️</h2>
+			<h2 class="ag-section__title">Ton image perso </h2>
 			<p class="ag-section__desc">Ta photo + ton accroche → image brandée avec ton lien, prête à poster.</p>
 			<div class="ag-maker">
 				<div class="ag-maker__preview"><canvas id="ag-canvas" width="1080" height="1350"></canvas></div>
@@ -337,7 +337,7 @@ foreach ( $vid_defs as $vd ) {
 					<label>Ton accroche<input type="text" id="ag-head" value="Ton site pro, dès 490 €" maxlength="48"></label>
 					<label>Sous-texte<input type="text" id="ag-sub" value="Livré en quelques jours · sans rendez-vous" maxlength="64"></label>
 					<button type="button" class="ag-btn-gold" id="ag-imgshare">⤴ Partager l'image (TikTok, Snap…)</button>
-					<button type="button" class="ag-btn-outline" id="ag-dl">⬇ Télécharger</button>
+					<button type="button" class="ag-btn-outline" id="ag-dl">Télécharger</button>
 				</div>
 			</div>
 		</div>
@@ -371,14 +371,14 @@ foreach ( $vid_defs as $vd ) {
 
 	<section class="ag-section ag-section--graphite ag-pane ag-pane--image" style="display:none;">
 		<div class="ag-container">
-			<h2 class="ag-section__title">Visuels prêts à poster 🖼️</h2>
+			<h2 class="ag-section__title">Visuels prêts à poster </h2>
 			<p class="ag-section__desc">Déjà brandés avec ton lien : télécharge-les et poste-les direct.</p>
 			<div class="ag-vis-grid">
 				<?php foreach ( $media as $m ) : ?>
 					<div class="ag-vis">
 						<img src="<?php echo esc_url( $m ); ?>" alt="visuel Alliance Groupe" loading="lazy">
 						<div class="ag-vis__btns">
-							<a class="ag-btn-gold" href="<?php echo esc_url( $m ); ?>" download>⬇ Télécharger</a>
+							<a class="ag-btn-gold" href="<?php echo esc_url( $m ); ?>" download>Télécharger</a>
 						</div>
 					</div>
 				<?php endforeach; ?>
@@ -388,9 +388,9 @@ foreach ( $vid_defs as $vd ) {
 
 	<section class="ag-section ag-section--graphite">
 		<div class="ag-container ag-tools">
-			<h2 class="ag-section__title">Idées &amp; scripts 🧰</h2>
+			<h2 class="ag-section__title">Idées &amp; scripts </h2>
 
-			<h3>💡 Idées de vidéos (accroches qui marchent)</h3>
+			<h3>Idées de vidéos (accroches qui marchent)</h3>
 			<ul class="ag-ideas">
 				<li>« On m'a dit que mon quartier ne réussit pas. » → puis tu montres la réussite</li>
 				<li>« Lui il livre. Moi je vends des sites depuis mon tel. »</li>
@@ -400,16 +400,16 @@ foreach ( $vid_defs as $vd ) {
 				<li>« Le talent est partout, les opportunités non. » (Programme Racines)</li>
 			</ul>
 
-			<h3>🔊 Format &amp; son (pour percer)</h3>
+			<h3>Format &amp; son (pour percer)</h3>
 			<ul class="ag-ideas ag-ideas--tips">
-				<li><strong>Son tendance</strong> : dans TikTok → ➕ → Sons → « Tendances ». Ajoute-le après avoir importé ta vidéo.</li>
+				<li><strong>Son tendance</strong> : dans TikTok → → Sons → « Tendances ». Ajoute-le après avoir importé ta vidéo.</li>
 				<li><strong>Accroche dans les 2 premières secondes</strong>, sinon les gens scrollent.</li>
 				<li><strong>Sous-titres</strong> activés · format <strong>9:16</strong> · poste <strong>1 vidéo/jour</strong>.</li>
 				<li>Ton <strong>lien en bio</strong> + en légende (le message tout prêt est dans « Mon compte »).</li>
 			</ul>
 
-			<h3>🗣️ Scripts de vente</h3>
-			<details><summary>Message d'approche (DM / WhatsApp)</summary><p>Bonjour [Nom], je suis tombé sur votre [commerce/page]. Je travaille avec Alliance Groupe : on fait des sites pros à <strong>prix fixe (dès 490 €)</strong>, livrés en quelques jours, sans rendez-vous. Ça vous dirait un site qui vous ramène des clients 24/7 ? Voici un aperçu 👉 [ton lien]</p></details>
+			<h3>Scripts de vente</h3>
+			<details><summary>Message d'approche (DM / WhatsApp)</summary><p>Bonjour [Nom], je suis tombé sur votre [commerce/page]. Je travaille avec Alliance Groupe : on fait des sites pros à <strong>prix fixe (dès 490 €)</strong>, livrés en quelques jours, sans rendez-vous. Ça vous dirait un site qui vous ramène des clients 24/7 ? Voici un aperçu [ton lien]</p></details>
 			<details><summary>Objection : « je n'ai pas le budget »</summary><p>Je comprends. Justement c'est un <strong>prix fixe clair</strong> (dès 490 €), sans abonnement caché, et ça travaille pour vous en continu. On peut démarrer petit (one-page) : [ton lien]</p></details>
 			<details><summary>Objection : « j'ai déjà un site »</summary><p>Top ! Souvent on peut le moderniser pour qu'il convertisse mieux (mobile, rapidité, Google). Je vous fais un avis rapide ? Nos offres : [ton lien]</p></details>
 		</div>
@@ -484,8 +484,8 @@ foreach ( $vid_defs as $vd ) {
 .ag-tools h3{color:#fff;font-family:var(--font-serif);font-size:1.2rem;margin:32px 0 12px;}
 .ag-ideas{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px;}
 .ag-ideas li{position:relative;padding-left:26px;color:var(--color-text-soft);line-height:1.5;}
-.ag-ideas li::before{content:'💡';position:absolute;left:0;}
-.ag-ideas--tips li::before{content:'✅';}
+.ag-ideas li::before{content:'';position:absolute;left:0;}
+.ag-ideas--tips li::before{content:'';}
 .ag-tools details{background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.16);border-radius:12px;padding:0 18px;margin-bottom:10px;}
 .ag-tools details[open]{border-color:rgba(212,180,92,.4);}
 .ag-tools summary{cursor:pointer;padding:16px 0;font-weight:700;color:#fff;list-style:none;}

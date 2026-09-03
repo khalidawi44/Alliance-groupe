@@ -44,7 +44,7 @@ function ag_refais_generate() {
 		wp_send_json_error( array( 'msg' => "L'outil IA n'est pas encore activé. Reviens très vite !" ) );
 	}
 	if ( ag_refais_rate_hit() ) {
-		wp_send_json_error( array( 'msg' => 'Tu as déjà testé plusieurs sites. Réessaie dans une heure 🙏' ) );
+		wp_send_json_error( array( 'msg' => 'Tu as déjà testé plusieurs sites. Réessaie dans une heure ' ) );
 	}
 	$url  = esc_url_raw( wp_unslash( $_POST['url'] ?? '' ) );
 	$page = ag_ia_fetch_page( $url, 5000 );
@@ -121,9 +121,9 @@ function ag_refais_lead() {
 		) );
 	}
 	if ( function_exists( 'ag_push' ) ) {
-		ag_push( "🎨 Nouveau lead « Refais mon site » : " . $name . ' — ' . ( $email ? $email : $phone ) . ( $site ? ' — ' . $site : '' ) );
+		ag_push( "Nouveau lead « Refais mon site » : " . $name . ' — ' . ( $email ? $email : $phone ) . ( $site ? ' — ' . $site : '' ) );
 	}
-	wp_send_json_success( array( 'msg' => 'Reçu ! On te recontacte très vite avec ta vraie maquette 🎉' ) );
+	wp_send_json_success( array( 'msg' => 'Reçu ! On te recontacte très vite avec ta vraie maquette ' ) );
 }
 add_action( 'wp_ajax_ag_refais_lead', 'ag_refais_lead' );
 add_action( 'wp_ajax_nopriv_ag_refais_lead', 'ag_refais_lead' );
@@ -162,30 +162,30 @@ function ag_refais_render() {
 	</style>
 	<div class="agr-wrap">
 		<div class="agr-head">
-			<span class="agr-badge">⚡ Nouveau · propulsé par l'IA</span>
+			<span class="agr-badge">Nouveau · propulsé par l'IA</span>
 			<h1>Vois ton site refait par l'IA en 60 secondes</h1>
 			<p>Colle l'adresse de ton site actuel. Notre IA le lit et te montre <strong>tout de suite</strong> à quoi il pourrait ressembler, modernisé. Gratuit, sans inscription.</p>
 		</div>
 
 		<?php if ( ! $ready ) : ?>
-			<p class="agr-note">🔧 L'outil est en cours d'activation. Reviens très bientôt !</p>
+			<p class="agr-note">L'outil est en cours d'activation. Reviens très bientôt !</p>
 		<?php endif; ?>
 
 		<form class="agr-form" id="agr-form" <?php echo $ready ? '' : 'style="opacity:.5;pointer-events:none"'; ?>>
 			<input type="url" id="agr-url" placeholder="https://mon-site-actuel.fr" required>
-			<button type="submit" class="agr-btn" id="agr-go">✨ Moderniser</button>
+			<button type="submit" class="agr-btn" id="agr-go">Moderniser</button>
 		</form>
 		<p class="agr-note">On ne modifie jamais ton vrai site. C'est une simulation.</p>
 
 		<div class="agr-status" id="agr-status"></div>
 
 		<div class="agr-cmp" id="agr-cmp" style="display:none">
-			<div class="agr-col"><h3>😴 Ton site aujourd'hui</h3><iframe class="agr-frame" id="agr-old" title="Site actuel"></iframe></div>
-			<div class="agr-col new"><h3>✨ Proposé par l'IA</h3><iframe class="agr-frame" id="agr-new" title="Maquette IA" sandbox referrerpolicy="no-referrer"></iframe></div>
+			<div class="agr-col"><h3>Ton site aujourd'hui</h3><iframe class="agr-frame" id="agr-old" title="Site actuel"></iframe></div>
+			<div class="agr-col new"><h3>Proposé par l'IA</h3><iframe class="agr-frame" id="agr-new" title="Maquette IA" sandbox referrerpolicy="no-referrer"></iframe></div>
 		</div>
 
 		<div class="agr-lead" id="agr-lead">
-			<h2>🎉 Ça te plaît ?</h2>
+			<h2>Ça te plaît ?</h2>
 			<p>Laisse tes coordonnées : on te renvoie une vraie maquette sur-mesure, gratuitement.</p>
 			<input type="text" id="agr-name" placeholder="Ton prénom / entreprise" autocomplete="name">
 			<input type="email" id="agr-email" placeholder="Ton email" autocomplete="email">
@@ -203,7 +203,7 @@ function ag_refais_render() {
 		var oldF=document.getElementById('agr-old'), newF=document.getElementById('agr-new');
 		var lead=document.getElementById('agr-lead');
 		if(!form) return;
-		var steps=['🔎 L\'IA lit ton site…','🎨 Elle repense le design…','🛠️ Elle construit la maquette…','✨ Presque prêt…'], si=0, tmr=null;
+		var steps=['L\'IA lit ton site…','Elle repense le design…','Elle construit la maquette…','Presque prêt…'], si=0, tmr=null;
 		function tick(){ st.textContent=steps[si%steps.length]; si++; }
 		form.addEventListener('submit',function(e){
 			e.preventDefault();
@@ -214,7 +214,7 @@ function ag_refais_render() {
 			var fd=new FormData(); fd.append('action','ag_refais_generate'); fd.append('_n',N); fd.append('url',url);
 			fetch(AJAX,{method:'POST',body:fd}).then(function(r){return r.json();}).then(function(j){
 				clearInterval(tmr); go.disabled=false;
-				if(!j||!j.success){ st.textContent='⚠️ '+((j&&j.data&&j.data.msg)||'Une erreur est survenue.'); return; }
+				if(!j||!j.success){ st.textContent=''+((j&&j.data&&j.data.msg)||'Une erreur est survenue.'); return; }
 				st.textContent='';
 				try{ oldF.src=j.data.src; }catch(e){ oldF.removeAttribute('src'); }
 				newF.srcdoc='<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+j.data.html;
@@ -224,7 +224,7 @@ function ag_refais_render() {
 				   passe : la page fonctionne comme avant. */
 				document.dispatchEvent(new CustomEvent('ag-refais:result',{detail:{token:j.data.token,frame:newF}}));
 				if(!j.data.token){ lead.style.display='block'; lead.scrollIntoView({behavior:'smooth',block:'center'}); }
-			}).catch(function(){ clearInterval(tmr); go.disabled=false; st.textContent='⚠️ Connexion interrompue, réessaie.'; });
+			}).catch(function(){ clearInterval(tmr); go.disabled=false; st.textContent='Connexion interrompue, réessaie.'; });
 		});
 		var send=document.getElementById('agr-send'), ok=document.getElementById('agr-ok');
 		if(send){ send.addEventListener('click',function(){

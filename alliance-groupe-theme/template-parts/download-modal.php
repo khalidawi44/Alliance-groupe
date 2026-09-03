@@ -12,8 +12,8 @@
 <div class="ag-dl-modal" id="ag-dl-modal">
     <div class="ag-dl-modal__overlay" id="ag-dl-modal-close"></div>
     <div class="ag-dl-modal__box">
-        <button type="button" class="ag-dl-modal__close" id="ag-dl-modal-x">✕</button>
-        <div class="ag-dl-modal__icon">🎁</div>
+        <button type="button" class="ag-dl-modal__close" id="ag-dl-modal-x"></button>
+        <div class="ag-dl-modal__icon"></div>
         <h3 class="ag-dl-modal__title">Votre téléchargement <em>gratuit</em></h3>
         <p class="ag-dl-modal__desc">Entrez vos coordonnées pour recevoir le lien de téléchargement. Pas de spam, promis.</p>
         <form class="ag-dl-modal__form" id="ag-dl-form">
@@ -30,7 +30,7 @@
             </div>
             <button type="submit" class="ag-btn-gold" style="width:100%;justify-content:center;">Télécharger maintenant →</button>
         </form>
-        <p class="ag-dl-modal__trust">🔒 Vos données sont protégées. Pas de spam.</p>
+        <p class="ag-dl-modal__trust">Vos données sont protégées. Pas de spam.</p>
     </div>
 </div>
 
@@ -88,7 +88,7 @@
             link.click();
             document.body.removeChild(link);
 
-            form.innerHTML = '<div style="text-align:center;padding:20px 0;"><div style="font-size:3rem;margin-bottom:12px;">✅</div><h3 style="margin-bottom:8px;">Merci ' + name + ' !</h3><p style="color:#b0b0bc;">Le téléchargement a démarré. Besoin d\'aide pour l\'installation ?</p><a href="tel:+33744829516" class="ag-btn-gold" style="margin-top:16px;">Appeler Fabrizio — 07.44.82.95.16</a></div>';
+            form.innerHTML = '<div style="text-align:center;padding:20px 0;"><div style="font-size:3rem;margin-bottom:12px;"></div><h3 style="margin-bottom:8px;">Merci ' + name + ' !</h3><p style="color:#b0b0bc;">Le téléchargement a démarré. Besoin d\'aide pour l\'installation ?</p><a href="tel:+33744829516" class="ag-btn-gold" style="margin-top:16px;">Appeler Fabrizio — 07.44.82.95.16</a></div>';
         }).catch(function(){
             // Fallback : still trigger download even if AJAX fails
             var link = document.createElement('a');

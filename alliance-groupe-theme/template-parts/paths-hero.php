@@ -21,7 +21,7 @@ $ag_cardimg = function ( $key ) use ( $ag_img ) {
 };
 $ag_paths = array(
 	array(
-		'emoji' => '🔒',
+		'emoji' => '',
 		'tag'   => 'Sécurité · le 1er pas',
 		'title' => 'Audit de votre site',
 		'desc'  => 'Je révèle vos failles en 48 h : rapport clair, sans jargon, recommandations chiffrées. Le point de départ, presque obligatoire, vers la sérénité.',
@@ -32,7 +32,7 @@ $ag_paths = array(
 		'img'   => $ag_cardimg( 'audit' ),
 	),
 	array(
-		'emoji' => '✨',
+		'emoji' => '',
 		'tag'   => 'Création',
 		'title' => 'Un site qui inspire confiance',
 		'desc'  => 'Vitrine, e-commerce, sur-mesure — conçu rapide, propre et sécurisé dès le départ. Dès 490 €, payable en 4× sans frais.',
@@ -43,7 +43,7 @@ $ag_paths = array(
 		'img'   => $ag_cardimg( 'creation' ),
 	),
 	array(
-		'emoji' => '✦',
+		'emoji' => '',
 		'tag'   => 'Premium · sur devis',
 		'title' => 'Site 100% sur-mesure',
 		'desc'  => 'Un site unique, pensé pour convertir : design, fonctionnalités et SEO conçus rien que pour vous — du niveau de notre propre site. Sur devis.',
@@ -54,7 +54,7 @@ $ag_paths = array(
 		'img'   => $ag_cardimg( 'sur-mesure' ),
 	),
 	array(
-		'emoji' => '🛡️',
+		'emoji' => '',
 		'tag'   => 'Tranquillité',
 		'title' => 'Maintenance & sérénité',
 		'desc'  => 'Mises à jour, sauvegardes, surveillance, sécurité — votre site sain chaque mois, sans y penser. Dès 49 €/mois, sans engagement.',
@@ -65,7 +65,7 @@ $ag_paths = array(
 		'img'   => $ag_cardimg( 'maintenance' ),
 	),
 	array(
-		'emoji' => '📦',
+		'emoji' => '',
 		'tag'   => 'Prêt à l\'emploi',
 		'title' => 'Templates métier',
 		'desc'  => '6 thèmes français (avocat, resto, artisan, coach, barber, asso) prêts à installer en 2 min. Téléchargement immédiat.',
@@ -76,7 +76,7 @@ $ag_paths = array(
 		'img'   => $ag_cardimg( 'templates' ),
 	),
 	array(
-		'emoji' => '🛡️',
+		'emoji' => '',
 		'tag'   => 'Sécurité · résilience',
 		'title' => 'Test de résilience ransomware',
 		'desc'  => 'On simule une attaque ransomware sans toucher à vos vraies données : vos sauvegardes tiennent-elles, votre antivirus détecte-t-il ? Rapport clair + plan d\'action. Dès 490 €.',

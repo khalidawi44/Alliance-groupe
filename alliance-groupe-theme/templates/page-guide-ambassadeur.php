@@ -18,7 +18,7 @@ $video = function_exists( 'ag_amb_guide_video_embed' ) ? ag_amb_guide_video_embe
 	<section class="ag-section ag-section--graphite">
 		<div class="ag-container">
 			<div class="ag-esp-head">
-				<div><span class="ag-tag">Ton programme 🚀</span><h1 class="ag-section__title">Comment gagner avec <em>Alliance Groupe</em></h1></div>
+				<div><span class="ag-tag">Ton programme </span><h1 class="ag-section__title">Comment gagner avec <em>Alliance Groupe</em></h1></div>
 				<a href="<?php echo esc_url( home_url( '/espace-ambassadeur' ) ); ?>" class="ag-btn-outline ag-esp-logout">← Mon compte</a>
 			</div>
 			<?php get_template_part( 'template-parts/espace-nav', null, array( 'active' => 'programme' ) ); ?>
@@ -27,7 +27,7 @@ $video = function_exists( 'ag_amb_guide_video_embed' ) ? ag_amb_guide_video_embe
 			<?php if ( $video ) : ?>
 				<?php echo $video; // déjà échappé dans ag_amb_guide_video_embed() ?>
 			<?php else : ?>
-				<div class="ag-guide-novid">🎥 La vidéo explicative arrive bientôt. En attendant, suis les étapes ci-dessous — c'est tout aussi simple.</div>
+				<div class="ag-guide-novid">La vidéo explicative arrive bientôt. En attendant, suis les étapes ci-dessous — c'est tout aussi simple.</div>
 			<?php endif; ?>
 		</div>
 	</section>
@@ -35,7 +35,7 @@ $video = function_exists( 'ag_amb_guide_video_embed' ) ? ag_amb_guide_video_embe
 	<!-- VENDRE -->
 	<section class="ag-section ag-section--onyx">
 		<div class="ag-container">
-			<h2 class="ag-section__title">🛒 Vendre des sites — <em>10 % par vente</em></h2>
+			<h2 class="ag-section__title">Vendre des sites — <em>10 % par vente</em></h2>
 			<div class="ag-guide-steps">
 				<div class="ag-guide-step"><span class="ag-guide-step__n">1</span><div><strong>Récupère ton lien de vente</strong><p>Il est dans « Mon compte » et déjà intégré à tout ce que tu crées. Ton code y est : chaque clic est tracé pendant 30 jours.</p></div></div>
 				<div class="ag-guide-step"><span class="ag-guide-step__n">2</span><div><strong>Crée un contenu au Studio</strong><p>Choisis un fond, écris ton accroche, génère ta vidéo (8 s) ou ton image. Ton lien est ajouté automatiquement.</p></div></div>
@@ -43,8 +43,8 @@ $video = function_exists( 'ag_amb_guide_video_embed' ) ? ag_amb_guide_video_embe
 				<div class="ag-guide-step"><span class="ag-guide-step__n">4</span><div><strong>Un client commande = ta vente</strong><p>Quand quelqu'un passe par ton lien et commande, la vente se crédite à ton compte automatiquement. Tu touches 10 %.</p></div></div>
 			</div>
 			<div class="ag-guide-cta">
-				<a href="<?php echo esc_url( home_url( '/studio' ) ); ?>" class="ag-btn-gold">🎬 Créer une vidéo de vente →</a>
-				<button type="button" class="ag-btn-outline ag-guide-copy" data-copy="<?php echo esc_attr( $sale ); ?>">📋 Copier mon lien de vente</button>
+				<a href="<?php echo esc_url( home_url( '/studio' ) ); ?>" class="ag-btn-gold">Créer une vidéo de vente →</a>
+				<button type="button" class="ag-btn-outline ag-guide-copy" data-copy="<?php echo esc_attr( $sale ); ?>">Copier mon lien de vente</button>
 			</div>
 		</div>
 	</section>
@@ -52,16 +52,16 @@ $video = function_exists( 'ag_amb_guide_video_embed' ) ? ag_amb_guide_video_embe
 	<!-- RECRUTER -->
 	<section class="ag-section ag-section--graphite">
 		<div class="ag-container">
-			<h2 class="ag-section__title">🤝 Recruter ton équipe — <em>un bonus sur leurs ventes</em></h2>
+			<h2 class="ag-section__title">Recruter ton équipe — <em>un bonus sur leurs ventes</em></h2>
 			<div class="ag-guide-steps">
-				<div class="ag-guide-step"><span class="ag-guide-step__n">1</span><div><strong>Passe le Studio en mode « Recruter »</strong><p>Le bouton « 🤝 Recruter mon équipe » bascule ton lien vers l'inscription ambassadeur (lien d'équipe).</p></div></div>
+				<div class="ag-guide-step"><span class="ag-guide-step__n">1</span><div><strong>Passe le Studio en mode « Recruter »</strong><p>Le bouton « Recruter mon équipe » bascule ton lien vers l'inscription ambassadeur (lien d'équipe).</p></div></div>
 				<div class="ag-guide-step"><span class="ag-guide-step__n">2</span><div><strong>Partage ton lien de recrutement</strong><p>« Gagne de l'argent en vendant des sites depuis ton tel. » Vidéos, stories, DM : tout est dans le Studio.</p></div></div>
 				<div class="ag-guide-step"><span class="ag-guide-step__n">3</span><div><strong>Ils s'inscrivent = ton équipe</strong><p>Chaque personne inscrite via ton lien devient ton « filleul ». Tu les vois dans « Mon compte ».</p></div></div>
 				<div class="ag-guide-step"><span class="ag-guide-step__n">4</span><div><strong>Ils vendent = tu touches un bonus</strong><p>Tu gagnes un bonus de parrainage sur <strong>les ventes de ton équipe</strong> (en plus de tes propres 10 %). Plus ton équipe vend, plus tu gagnes.</p></div></div>
 			</div>
 			<div class="ag-guide-cta">
-				<a href="<?php echo esc_url( home_url( '/studio?mode=recruit' ) ); ?>" class="ag-btn-gold">🎬 Créer une vidéo de recrutement →</a>
-				<button type="button" class="ag-btn-outline ag-guide-copy" data-copy="<?php echo esc_attr( $recr ); ?>">📋 Copier mon lien d'équipe</button>
+				<a href="<?php echo esc_url( home_url( '/studio?mode=recruit' ) ); ?>" class="ag-btn-gold">Créer une vidéo de recrutement →</a>
+				<button type="button" class="ag-btn-outline ag-guide-copy" data-copy="<?php echo esc_attr( $recr ); ?>">Copier mon lien d'équipe</button>
 			</div>
 			<p class="ag-guide-note">Tu es payé sur les <strong>ventes</strong> de ton équipe, jamais pour le simple recrutement (c'est la règle, et c'est ce qui est légal).</p>
 		</div>
@@ -70,14 +70,14 @@ $video = function_exists( 'ag_amb_guide_video_embed' ) ? ag_amb_guide_video_embe
 	<!-- POSTER -->
 	<section class="ag-section ag-section--onyx">
 		<div class="ag-container">
-			<h2 class="ag-section__title">📲 Poster sur TikTok / Snap / Insta</h2>
+			<h2 class="ag-section__title">Poster sur TikTok / Snap / Insta</h2>
 			<p class="ag-section__desc">Sur mobile, aucune appli ne pré-remplit la légende automatiquement — voici la méthode la plus rapide (2 gestes) :</p>
 			<div class="ag-guide-steps">
 				<div class="ag-guide-step"><span class="ag-guide-step__n">A</span><div><strong>Touche « Partager ma vidéo »</strong><p>Ta légende (avec ton lien) est <strong>copiée automatiquement</strong>. Choisis ton appli dans le menu, OU « Enregistrer la vidéo » pour la prendre dans ta galerie.</p></div></div>
-				<div class="ag-guide-step"><span class="ag-guide-step__n">B</span><div><strong>Dans l'appli : colle la légende</strong><p>Appui long sur le champ texte → « Coller ». Ajoute un son tendance, et publie 🚀</p></div></div>
+				<div class="ag-guide-step"><span class="ag-guide-step__n">B</span><div><strong>Dans l'appli : colle la légende</strong><p>Appui long sur le champ texte → « Coller ». Ajoute un son tendance, et publie </p></div></div>
 			</div>
 			<div class="ag-guide-tips">
-				<h3>🔥 Pour percer</h3>
+				<h3>Pour percer</h3>
 				<ul>
 					<li><strong>Accroche dans les 2 premières secondes</strong>, sinon les gens scrollent.</li>
 					<li><strong>1 vidéo par jour</strong>, format 9:16, sous-titres activés.</li>
@@ -90,7 +90,7 @@ $video = function_exists( 'ag_amb_guide_video_embed' ) ? ag_amb_guide_video_embe
 
 	<section class="ag-section ag-section--graphite">
 		<div class="ag-container" style="text-align:center;">
-			<h2 class="ag-section__title">Prêt ? À toi de jouer 💪</h2>
+			<h2 class="ag-section__title">Prêt ? À toi de jouer </h2>
 			<div class="ag-guide-cta" style="justify-content:center;">
 				<a href="<?php echo esc_url( home_url( '/studio' ) ); ?>" class="ag-btn-gold">Ouvrir le Studio →</a>
 				<a href="<?php echo esc_url( home_url( '/espace-ambassadeur' ) ); ?>" class="ag-btn-outline">Voir mes ventes</a>
@@ -116,7 +116,7 @@ $video = function_exists( 'ag_amb_guide_video_embed' ) ? ag_amb_guide_video_embe
 .ag-guide-tips h3{color:#fff;font-family:var(--font-serif);font-size:1.15rem;margin:0 0 12px;}
 .ag-guide-tips ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px;}
 .ag-guide-tips li{position:relative;padding-left:24px;color:var(--color-text-soft);line-height:1.5;}
-.ag-guide-tips li::before{content:'✅';position:absolute;left:0;}
+.ag-guide-tips li::before{content:'';position:absolute;left:0;}
 @media(max-width:768px){#ag-main-content.ag-guide > .ag-section:first-child{padding-top:160px;}.ag-guide-cta .ag-btn-gold,.ag-guide-cta .ag-btn-outline{width:100%;justify-content:center;text-align:center;}}
 </style>
 <script>
@@ -124,7 +124,7 @@ $video = function_exists( 'ag_amb_guide_video_embed' ) ? ag_amb_guide_video_embe
 	document.querySelectorAll('.ag-guide-copy').forEach(function(b){
 		b.addEventListener('click',function(){
 			var t=b.getAttribute('data-copy'); if(!t) return;
-			navigator.clipboard.writeText(t).then(function(){ var o=b.textContent; b.textContent='✓ Copié'; setTimeout(function(){ b.textContent=o; },1500); });
+			navigator.clipboard.writeText(t).then(function(){ var o=b.textContent; b.textContent='Copié'; setTimeout(function(){ b.textContent=o; },1500); });
 		});
 	});
 })();

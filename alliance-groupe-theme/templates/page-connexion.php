@@ -38,7 +38,7 @@ $reg_errs = array(
 
 			<?php if ( $ag_gid ) : ?>
 				<div class="ag-auth-google-hero">
-					<p class="ag-auth-google-hero__lbl">⚡ Recommandé — connexion en 1 clic, rien à retenir</p>
+					<p class="ag-auth-google-hero__lbl">Recommandé — connexion en 1 clic, rien à retenir</p>
 					<div id="g_id_onload"
 						data-client_id="<?php echo esc_attr( $ag_gid ); ?>"
 						data-login_uri="<?php echo esc_url( admin_url( 'admin-post.php?action=ag_google_login' ) ); ?>"

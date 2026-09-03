@@ -5,18 +5,18 @@
 ?>
 <section class="ag-section ag-section--graphite ag-gagner" id="recrutement">
 	<div class="ag-container">
-		<span class="ag-tag ag-anim" data-anim="tag">Gagne de l'argent 💸</span>
+		<span class="ag-tag ag-anim" data-anim="tag">Gagne de l'argent </span>
 		<h2 class="ag-section__title ag-anim" data-anim="title">Vends nos sites, <em>touche 10 %</em></h2>
 		<p class="ag-section__desc ag-anim" data-anim="desc">Rejoins l'équipe et crée tes contenus en 1 clic. Pas besoin d'être expert : on te donne tous les outils.</p>
 		<div class="ag-gagner-grid">
 			<div class="ag-gagner-col">
-				<span class="ag-gagner-ic">🤝</span>
+				<span class="ag-gagner-ic"></span>
 				<h3>Deviens ambassadeur</h3>
 				<p>10 % sur chaque vente, payé via PayPal. Lien de vente perso, suivi des commissions et classement.</p>
 				<a href="<?php echo esc_url( home_url( '/ambassadeurs' ) ); ?>" class="ag-btn-gold">Rejoindre le programme →</a>
 			</div>
 			<div class="ag-gagner-col">
-				<span class="ag-gagner-ic">🎬</span>
+				<span class="ag-gagner-ic"></span>
 				<h3>Le Studio créatif</h3>
 				<p>Crée des vidéos &amp; visuels pros en quelques secondes, ton lien intégré, partage direct sur TikTok / Insta / Snap.</p>
 				<a href="<?php echo esc_url( home_url( '/studio' ) ); ?>" class="ag-btn-outline">Ouvrir le Studio →</a>

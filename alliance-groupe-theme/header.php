@@ -56,48 +56,39 @@
 
             <!-- Gagner / Studio + dropdown -->
             <li class="ag-nav__has-sub ag-nav__highlight">
-                <a href="<?php echo esc_url(home_url('/sites-express')); ?>">🚀 Gagner <span class="ag-nav__arrow">&#9662;</span></a>
+                <a href="<?php echo esc_url(home_url('/sites-express')); ?>">Gagner <span class="ag-nav__arrow">&#9662;</span></a>
                 <div class="ag-mega">
                     <div class="ag-mega__inner">
                         <div class="ag-mega__col">
                             <span class="ag-mega__label">Commander &amp; créer</span>
                             <a href="<?php echo esc_url(home_url('/sites-express')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🛒</span>
                                 <span><strong>Commander mon site</strong><small>Prix fixe dès 490 € · payable en 4× PayPal</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/studio')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🎬</span>
                                 <span><strong>Studio créatif</strong><small>Crée vidéos &amp; visuels, partage en 1 clic</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/ambassadeurs')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🤝</span>
                                 <span><strong>Devenir ambassadeur</strong><small>Gagne 10 % sur chaque vente</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/classement')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🏆</span>
                                 <span><strong>Classement</strong><small>Le championnat des commerciaux</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/connexion')); ?>" class="ag-mega__link ag-mega__link--all" style="margin-top:8px;border-top:1px dashed rgba(212,180,92,.25);padding-top:12px;">
-                                <span class="ag-mega__icon">👤</span>
                                 <span><strong>Mon espace</strong><small>Connexion / tableau de bord</small></span>
                             </a>
                         </div>
                         <div class="ag-mega__col">
-                            <span class="ag-mega__label">✨ Nouveau · par l'IA</span>
+                            <span class="ag-mega__label">Nouveau · par l'IA</span>
                             <a href="<?php echo esc_url(home_url('/atelier')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🪄</span>
                                 <span><strong>Atelier IA</strong><small>Tous les outils IA en un seul endroit</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/devis-instant')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🧾</span>
                                 <span><strong>Devis instantané</strong><small>Chiffrage en 30 s, sans rendez-vous</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/refais-mon-site')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🎨</span>
                                 <span><strong>Refais mon site</strong><small>Ton site modernisé par l'IA, en direct</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/fait-par-lia')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">⚡</span>
                                 <span><strong>Fait par l'IA</strong><small>Le journal public de notre IA</small></span>
                             </a>
                         </div>
@@ -107,29 +98,24 @@
 
             <!-- Cadeaux gratuits + dropdown -->
             <li class="ag-nav__has-sub ag-nav__highlight">
-                <a href="<?php echo esc_url(home_url('/audit-seo')); ?>">🎁 Cadeaux <span class="ag-nav__arrow">&#9662;</span></a>
+                <a href="<?php echo esc_url(home_url('/audit-seo')); ?>">Cadeaux <span class="ag-nav__arrow">&#9662;</span></a>
                 <div class="ag-mega ag-mega--sm">
                     <div class="ag-mega__inner">
                         <div class="ag-mega__col">
                             <span class="ag-mega__label">Offert · 0 €</span>
                             <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🎁</span>
                                 <span><strong>6 templates WordPress</strong><small>Thèmes métier gratuits, prêts à installer</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/audit-seo')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">📊</span>
                                 <span><strong>Audit SEO gratuit</strong><small>Note /100 + rapport PDF de votre site</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/tester-mon-site')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🔒</span>
                                 <span><strong>Tester mon site</strong><small>Sécurité : note /100 + failles visibles, gratuit</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/tirage-au-sort')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🎰</span>
                                 <span><strong>1 site gratuit / mois</strong><small>Tirage au sort, participation gratuite</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/composants')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🧩</span>
                                 <span><strong>Composants web gratuits</strong><small>Boutons &amp; effets à copier, façon uiverse</small></span>
                             </a>
                         </div>
@@ -139,7 +125,7 @@
 
             <!-- Sur-mesure (offre premium) -->
             <li class="ag-nav__item">
-                <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>">✦&nbsp;Sur-mesure</a>
+                <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>">&nbsp;Sur-mesure</a>
             </li>
 
             <!-- Services + dropdown -->
@@ -150,21 +136,18 @@
                         <div class="ag-mega__col">
                             <span class="ag-mega__label">Nos expertises</span>
                             <a href="<?php echo esc_url(home_url('/service-creation-web')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🌐</span>
                                 <span>
                                     <strong>Création Web</strong>
                                     <small>Sites vitrines & e-commerce</small>
                                 </span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/service-ia')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🤖</span>
                                 <span>
                                     <strong>IA & Automatisation</strong>
                                     <small>Chatbots, workflows, gains de temps</small>
                                 </span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/service-seo')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🔍</span>
                                 <span>
                                     <strong>SEO</strong>
                                     <small>Référencement naturel & local</small>
@@ -174,35 +157,30 @@
                         <div class="ag-mega__col">
                             <span class="ag-mega__label">&nbsp;</span>
                             <a href="<?php echo esc_url(home_url('/service-publicite')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">📢</span>
                                 <span>
                                     <strong>Publicité Digitale</strong>
                                     <small>Google Ads, Meta Ads</small>
                                 </span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/service-branding')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🎨</span>
                                 <span>
                                     <strong>Branding</strong>
                                     <small>Identité visuelle & charte</small>
                                 </span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/service-conseil')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">💡</span>
                                 <span>
                                     <strong>Conseil Stratégique</strong>
                                     <small>Audit & accompagnement</small>
                                 </span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/resilience-ransomware')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🛡️</span>
                                 <span>
                                     <strong>Résilience Ransomware</strong>
                                     <small>Attaque simulée &amp; test de sauvegardes · dès 490 €</small>
                                 </span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/tester-mon-site')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🔒</span>
                                 <span>
                                     <strong>Tester mon site</strong>
                                     <small>Diagnostic gratuit, puis audit approfondi &amp; expert 24 h</small>
@@ -221,31 +199,24 @@
                         <div class="ag-mega__col">
                             <span class="ag-mega__label">Templates WordPress gratuits</span>
                             <a href="<?php echo esc_url(home_url('/wordpress-avocat')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">⚖️</span>
                                 <span><strong>Avocat</strong><small>Cabinet, juriste, conseil juridique</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/wordpress-restaurant')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🍽️</span>
                                 <span><strong>Restaurant</strong><small>Bistrot, bar, café, gastronomique</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/wordpress-artisan')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🔨</span>
                                 <span><strong>Artisan</strong><small>Plombier, électricien, menuisier, BTP</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/wordpress-coach')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">💼</span>
                                 <span><strong>Coach</strong><small>Consultant, formateur, thérapeute</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/wordpress-barber')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">💈</span>
                                 <span><strong>Barber Shop <span style="display:inline-block;margin-left:4px;padding:1px 8px;background:var(--color-success);color:#fff;font-size:.62rem;font-weight:700;border-radius:100px;text-transform:uppercase;">Nouveau</span></strong><small>Coiffeur, barbier, file d'attente QR</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/wordpress-association')); ?>" class="ag-mega__link" style="background:rgba(225,15,26,0.08);border:1px solid rgba(225,15,26,0.35);border-radius:8px;padding:10px 12px;">
-                                <span class="ag-mega__icon">🤝</span>
                                 <span><strong style="color:#ffb1b6;">Association <span style="display:inline-block;margin-left:4px;padding:1px 8px;background:#E10F1A;color:#fff;font-size:.62rem;font-weight:700;border-radius:100px;text-transform:uppercase;">100% gratuit</span></strong><small style="color:#ffd0d4;">Mouvement militant, asso loi 1901, syndicat</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/contact?source=menu&demande=template-metier')); ?>" class="ag-mega__link ag-mega__link--all" style="margin-top:8px;border-top:1px dashed rgba(212,180,92,.25);padding-top:12px;">
-                                <span class="ag-mega__icon">💎</span>
                                 <span><strong>Votre métier ? Demandez-le</strong><small>On vous crée votre template sur mesure</small></span>
                             </a>
                         </div>
@@ -265,15 +236,12 @@
                         <div class="ag-mega__col">
                             <span class="ag-mega__label">Nos projets</span>
                             <a href="<?php echo esc_url(home_url('/realisations')); ?>#gwen-services" class="ag-mega__link">
-                                <span class="ag-mega__icon">🏡</span>
                                 <span><strong>Gwen Services</strong><small>Aide à domicile, Nantes</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/realisations')); ?>#anna-photo" class="ag-mega__link">
-                                <span class="ag-mega__icon">📸</span>
                                 <span><strong>Anna Photo</strong><small>Blog photo, Nantes</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/realisations')); ?>#la-environnement" class="ag-mega__link">
-                                <span class="ag-mega__icon">🌿</span>
                                 <span><strong>L.A Environnement</strong><small>Site vitrine, Loire-Atlantique</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/realisations')); ?>" class="ag-mega__link ag-mega__link--all">
@@ -292,11 +260,9 @@
                         <div class="ag-mega__col">
                             <span class="ag-mega__label">L'agence</span>
                             <a href="<?php echo esc_url(home_url('/a-propos')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🏛️</span>
                                 <span><strong>Notre histoire</strong><small>Vision &amp; valeurs du studio</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/notre-fondateur')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">👤</span>
                                 <span><strong>Notre Fondateur</strong><small>Le parcours de Fabrizio</small></span>
                             </a>
                         </div>
@@ -335,15 +301,12 @@
                         <div class="ag-mega__col">
                             <span class="ag-mega__label">Nous joindre</span>
                             <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">🚨</span>
                                 <span><strong>Contact d'urgence</strong><small>Besoin urgent — réponse sous 24h</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">✦</span>
                                 <span><strong>Projet sur-mesure</strong><small>Devis gratuit pour les projets exigeants</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/questions-flash')); ?>" class="ag-mega__link">
-                                <span class="ag-mega__icon">💬</span>
                                 <span><strong>Questions Flash</strong><small>Réponse écrite experte sous 48h</small></span>
                             </a>
                         </div>
@@ -372,36 +335,36 @@
                 <?php endif; ?>
                 Alliance Groupe
             </a>
-            <button class="ag-mobile-menu__close" id="ag-mobile-close" type="button" aria-label="Fermer">✕</button>
+            <button class="ag-mobile-menu__close" id="ag-mobile-close" type="button" aria-label="Fermer"></button>
         </div>
 
         <div class="ag-mobile-menu__content">
 
             <!-- PRIORITÉ 1 : VENDRE — offres en haut -->
-            <a href="<?php echo esc_url(home_url('/sites-express')); ?>" style="display:block;padding:15px 4px;color:#fff;font-weight:700;border-bottom:1px solid rgba(212,180,92,.15);">🛒 Sites Express <span style="opacity:.7;font-weight:400;">(prix fixes, payable 4×)</span></a>
+            <a href="<?php echo esc_url(home_url('/sites-express')); ?>" style="display:block;padding:15px 4px;color:#fff;font-weight:700;border-bottom:1px solid rgba(212,180,92,.15);">Sites Express <span style="opacity:.7;font-weight:400;">(prix fixes, payable 4×)</span></a>
 
-            <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>" style="display:block;padding:15px 4px;color:#D4B45C;font-weight:700;border-bottom:1px solid rgba(212,180,92,.15);">✦ Sur-mesure <span style="opacity:.7;font-weight:400;">(sur devis)</span></a>
+            <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>" style="display:block;padding:15px 4px;color:#D4B45C;font-weight:700;border-bottom:1px solid rgba(212,180,92,.15);">Sur-mesure <span style="opacity:.7;font-weight:400;">(sur devis)</span></a>
 
-            <a href="<?php echo esc_url(home_url('/systeme-prospection')); ?>" style="display:block;padding:15px 4px;color:#fff;font-weight:700;border-bottom:1px solid rgba(212,180,92,.15);">🤖 Système de prospection <span style="opacity:.7;font-weight:400;">(trouve vos clients)</span></a>
+            <a href="<?php echo esc_url(home_url('/systeme-prospection')); ?>" style="display:block;padding:15px 4px;color:#fff;font-weight:700;border-bottom:1px solid rgba(212,180,92,.15);">Système de prospection <span style="opacity:.7;font-weight:400;">(trouve vos clients)</span></a>
 
             <!-- PRIORITÉ 1bis : NOS OUTILS IA (nouveauté, aimant à leads) -->
             <div class="ag-mobile-menu__group">
-                <button class="ag-mobile-menu__toggle" type="button">🤖 Nos outils IA <span class="ag-nav__pulse-pill">NOUVEAU</span> <span class="ag-mobile-menu__arrow">+</span></button>
+                <button class="ag-mobile-menu__toggle" type="button">Nos outils IA <span class="ag-nav__pulse-pill">NOUVEAU</span> <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
-                    <a href="<?php echo esc_url(home_url('/devis-instant')); ?>">🧾 Devis instantané (30 s)</a>
-                    <a href="<?php echo esc_url(home_url('/refais-mon-site')); ?>">🎨 Refais mon site par l'IA</a>
-                    <a href="<?php echo esc_url(home_url('/fait-par-lia')); ?>">⚡ Fait par l'IA (journal)</a>
+                    <a href="<?php echo esc_url(home_url('/devis-instant')); ?>">Devis instantané (30 s)</a>
+                    <a href="<?php echo esc_url(home_url('/refais-mon-site')); ?>">Refais mon site par l'IA</a>
+                    <a href="<?php echo esc_url(home_url('/fait-par-lia')); ?>">Fait par l'IA (journal)</a>
                 </div>
             </div>
 
             <div class="ag-mobile-menu__group">
-                <button class="ag-mobile-menu__toggle" type="button">🎁 Cadeaux gratuits <span class="ag-nav__pulse-pill">0 €</span> <span class="ag-mobile-menu__arrow">+</span></button>
+                <button class="ag-mobile-menu__toggle" type="button">Cadeaux gratuits <span class="ag-nav__pulse-pill">0 €</span> <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
-                    <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">🎁 6 templates WordPress gratuits</a>
-                    <a href="<?php echo esc_url(home_url('/audit-seo')); ?>">📊 Audit SEO gratuit (note /100)</a>
-                    <a href="<?php echo esc_url(home_url('/tester-mon-site')); ?>">🔒 Tester mon site (sécurité, gratuit)</a>
-                    <a href="<?php echo esc_url(home_url('/tirage-au-sort')); ?>">🎰 Gagner 1 site / mois (tirage)</a>
-                    <a href="<?php echo esc_url(home_url('/composants')); ?>">🧩 Composants web gratuits</a>
+                    <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">6 templates WordPress gratuits</a>
+                    <a href="<?php echo esc_url(home_url('/audit-seo')); ?>">Audit SEO gratuit (note /100)</a>
+                    <a href="<?php echo esc_url(home_url('/tester-mon-site')); ?>">Tester mon site (sécurité, gratuit)</a>
+                    <a href="<?php echo esc_url(home_url('/tirage-au-sort')); ?>">Gagner 1 site / mois (tirage)</a>
+                    <a href="<?php echo esc_url(home_url('/composants')); ?>">Composants web gratuits</a>
                 </div>
             </div>
 
@@ -409,28 +372,28 @@
                 <button class="ag-mobile-menu__toggle" type="button">Services <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
                     <a href="<?php echo esc_url(home_url('/services')); ?>">Tous les services</a>
-                    <a href="<?php echo esc_url(home_url('/service-creation-web')); ?>">🌐 Création Web</a>
-                    <a href="<?php echo esc_url(home_url('/service-ia')); ?>">🤖 IA & Automatisation</a>
-                    <a href="<?php echo esc_url(home_url('/service-seo')); ?>">🔍 SEO</a>
-                    <a href="<?php echo esc_url(home_url('/service-publicite')); ?>">📢 Publicité Digitale</a>
-                    <a href="<?php echo esc_url(home_url('/service-branding')); ?>">🎨 Branding</a>
-                    <a href="<?php echo esc_url(home_url('/service-conseil')); ?>">💡 Conseil Stratégique</a>
-                    <a href="<?php echo esc_url(home_url('/resilience-ransomware')); ?>">🛡️ Résilience Ransomware</a>
-                    <a href="<?php echo esc_url(home_url('/tester-mon-site')); ?>">🔒 Tester mon site (audit sécurité)</a>
+                    <a href="<?php echo esc_url(home_url('/service-creation-web')); ?>">Création Web</a>
+                    <a href="<?php echo esc_url(home_url('/service-ia')); ?>">IA & Automatisation</a>
+                    <a href="<?php echo esc_url(home_url('/service-seo')); ?>">SEO</a>
+                    <a href="<?php echo esc_url(home_url('/service-publicite')); ?>">Publicité Digitale</a>
+                    <a href="<?php echo esc_url(home_url('/service-branding')); ?>">Branding</a>
+                    <a href="<?php echo esc_url(home_url('/service-conseil')); ?>">Conseil Stratégique</a>
+                    <a href="<?php echo esc_url(home_url('/resilience-ransomware')); ?>">Résilience Ransomware</a>
+                    <a href="<?php echo esc_url(home_url('/tester-mon-site')); ?>">Tester mon site (audit sécurité)</a>
                 </div>
             </div>
 
             <div class="ag-mobile-menu__group">
                 <button class="ag-mobile-menu__toggle" type="button">Nos templates <span class="ag-nav__pulse-pill">GRATUIT</span> <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
-                    <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>" style="color:#D4B45C;font-weight:700;">📂 Tous les templates · Choisissez votre métier</a>
-                    <a href="<?php echo esc_url(home_url('/wordpress-avocat')); ?>">⚖️ Avocat</a>
-                    <a href="<?php echo esc_url(home_url('/wordpress-restaurant')); ?>">🍽️ Restaurant</a>
-                    <a href="<?php echo esc_url(home_url('/wordpress-artisan')); ?>">🔨 Artisan</a>
-                    <a href="<?php echo esc_url(home_url('/wordpress-coach')); ?>">💼 Coach</a>
-                    <a href="<?php echo esc_url(home_url('/wordpress-barber')); ?>">💈 Barber Shop <span style="display:inline-block;margin-left:4px;padding:1px 6px;background:#22c55e;color:#fff;font-size:.62rem;font-weight:700;border-radius:100px;text-transform:uppercase;">Nouveau</span></a>
-                    <a href="<?php echo esc_url(home_url('/wordpress-association')); ?>" style="color:#ffb1b6;">🤝 Association <span style="display:inline-block;margin-left:4px;padding:1px 6px;background:#E10F1A;color:#fff;font-size:.62rem;font-weight:700;border-radius:100px;text-transform:uppercase;">100% gratuit</span></a>
-                    <a href="<?php echo esc_url(home_url('/contact?source=menu&demande=template-metier')); ?>" style="color:#D4B45C;font-weight:700;">💎 Votre métier ? Demandez-le</a>
+                    <a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>" style="color:#D4B45C;font-weight:700;">Tous les templates · Choisissez votre métier</a>
+                    <a href="<?php echo esc_url(home_url('/wordpress-avocat')); ?>">Avocat</a>
+                    <a href="<?php echo esc_url(home_url('/wordpress-restaurant')); ?>">Restaurant</a>
+                    <a href="<?php echo esc_url(home_url('/wordpress-artisan')); ?>">Artisan</a>
+                    <a href="<?php echo esc_url(home_url('/wordpress-coach')); ?>">Coach</a>
+                    <a href="<?php echo esc_url(home_url('/wordpress-barber')); ?>">Barber Shop <span style="display:inline-block;margin-left:4px;padding:1px 6px;background:#22c55e;color:#fff;font-size:.62rem;font-weight:700;border-radius:100px;text-transform:uppercase;">Nouveau</span></a>
+                    <a href="<?php echo esc_url(home_url('/wordpress-association')); ?>" style="color:#ffb1b6;">Association <span style="display:inline-block;margin-left:4px;padding:1px 6px;background:#E10F1A;color:#fff;font-size:.62rem;font-weight:700;border-radius:100px;text-transform:uppercase;">100% gratuit</span></a>
+                    <a href="<?php echo esc_url(home_url('/contact?source=menu&demande=template-metier')); ?>" style="color:#D4B45C;font-weight:700;">Votre métier ? Demandez-le</a>
                 </div>
             </div>
 
@@ -440,28 +403,28 @@
                     <?php /* Uniquement des clients REELS. Ne jamais remettre de projet
                              d'exemple ici : ce menu est lu comme un portefeuille client. */ ?>
                     <a href="<?php echo esc_url(home_url('/realisations')); ?>">Tous les projets</a>
-                    <a href="<?php echo esc_url(home_url('/realisations')); ?>#gwen-services">🏡 Gwen Services</a>
-                    <a href="<?php echo esc_url(home_url('/realisations')); ?>#anna-photo">📸 Anna Photo</a>
-                    <a href="<?php echo esc_url(home_url('/realisations')); ?>#la-environnement">🌿 L.A Environnement</a>
+                    <a href="<?php echo esc_url(home_url('/realisations')); ?>#gwen-services">Gwen Services</a>
+                    <a href="<?php echo esc_url(home_url('/realisations')); ?>#anna-photo">Anna Photo</a>
+                    <a href="<?php echo esc_url(home_url('/realisations')); ?>#la-environnement">L.A Environnement</a>
                 </div>
             </div>
 
             <!-- PRIORITÉ 2 : GAGNER DE L'ARGENT (vendeurs/ambassadeurs) -->
             <div class="ag-mobile-menu__group">
-                <button class="ag-mobile-menu__toggle" type="button">💸 Gagner de l'argent <span class="ag-mobile-menu__arrow">+</span></button>
+                <button class="ag-mobile-menu__toggle" type="button">Gagner de l'argent <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
-                    <a href="<?php echo esc_url(home_url('/ambassadeurs')); ?>">🤝 Devenir ambassadeur (10 %)</a>
-                    <a href="<?php echo esc_url(home_url('/studio')); ?>">🎬 Studio créatif</a>
-                    <a href="<?php echo esc_url(home_url('/classement')); ?>">🏆 Classement</a>
-                    <a href="<?php echo esc_url(home_url('/connexion')); ?>">👤 Mon espace</a>
+                    <a href="<?php echo esc_url(home_url('/ambassadeurs')); ?>">Devenir ambassadeur (10 %)</a>
+                    <a href="<?php echo esc_url(home_url('/studio')); ?>">Studio créatif</a>
+                    <a href="<?php echo esc_url(home_url('/classement')); ?>">Classement</a>
+                    <a href="<?php echo esc_url(home_url('/connexion')); ?>">Mon espace</a>
                 </div>
             </div>
 
             <div class="ag-mobile-menu__group">
                 <button class="ag-mobile-menu__toggle" type="button">À propos <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
-                    <a href="<?php echo esc_url(home_url('/a-propos')); ?>">🏛️ Notre histoire</a>
-                    <a href="<?php echo esc_url(home_url('/notre-fondateur')); ?>">👤 Notre Fondateur</a>
+                    <a href="<?php echo esc_url(home_url('/a-propos')); ?>">Notre histoire</a>
+                    <a href="<?php echo esc_url(home_url('/notre-fondateur')); ?>">Notre Fondateur</a>
                 </div>
             </div>
 
@@ -482,16 +445,16 @@
             <div class="ag-mobile-menu__group">
                 <button class="ag-mobile-menu__toggle" type="button">Contact <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
-                    <a href="<?php echo esc_url(home_url('/contact')); ?>">🚨 Contact d'urgence</a>
-                    <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>">✦ Projet sur-mesure</a>
-                    <a href="<?php echo esc_url(home_url('/questions-flash')); ?>">💬 Questions Flash</a>
+                    <a href="<?php echo esc_url(home_url('/contact')); ?>">Contact d'urgence</a>
+                    <a href="<?php echo esc_url(home_url('/sur-mesure')); ?>">Projet sur-mesure</a>
+                    <a href="<?php echo esc_url(home_url('/questions-flash')); ?>">Questions Flash</a>
                 </div>
             </div>
         </div>
 
         <div class="ag-mobile-menu__footer">
-            <a href="tel:+33744829516" class="ag-btn-gold" style="width:100%;justify-content:center;">📞 07.44.82.95.16</a>
-            <a href="mailto:contact@alliancegroupe-inc.com" class="ag-btn-outline" style="width:100%;justify-content:center;">✉️ Nous écrire</a>
+            <a href="tel:+33744829516" class="ag-btn-gold" style="width:100%;justify-content:center;">07.44.82.95.16</a>
+            <a href="mailto:contact@alliancegroupe-inc.com" class="ag-btn-outline" style="width:100%;justify-content:center;">Nous écrire</a>
         </div>
     </div>
 </div>

@@ -36,7 +36,7 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 		<div class="ag-container">
 			<div class="ag-esp-head">
 				<div>
-					<span class="ag-tag">Espace Commercial 🤝</span>
+					<span class="ag-tag">Espace Commercial </span>
 					<h1 class="ag-section__title">Bonjour, <em><?php echo esc_html( $name ); ?></em></h1>
 				</div>
 				<a href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>" class="ag-btn-outline ag-esp-logout">Déconnexion</a>
@@ -44,10 +44,10 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 
 			<?php get_template_part( 'template-parts/espace-nav', null, array( 'active' => 'compte' ) ); ?>
 
-			<a href="<?php echo esc_url( home_url( '/programme-ambassadeur' ) ); ?>" class="ag-esp-guide">📚 <strong>Découvre ton programme</strong> — comment vendre des sites &amp; recruter ton équipe, étape par étape <span>→</span></a>
+			<a href="<?php echo esc_url( home_url( '/programme-ambassadeur' ) ); ?>" class="ag-esp-guide"><strong>Découvre ton programme</strong> — comment vendre des sites &amp; recruter ton équipe, étape par étape <span>→</span></a>
 
 			<?php $ag_tg_group = function_exists( 'ag_tg_cfg' ) ? ag_tg_cfg( 'group_link' ) : ''; if ( $ag_tg_group ) : ?>
-			<a href="<?php echo esc_url( $ag_tg_group ); ?>" target="_blank" rel="noopener" class="ag-esp-guide">💬 <strong>Rejoins le groupe Telegram de l'équipe</strong> — annonces, entraide, classement <span>→</span></a>
+			<a href="<?php echo esc_url( $ag_tg_group ); ?>" target="_blank" rel="noopener" class="ag-esp-guide"><strong>Rejoins le groupe Telegram de l'équipe</strong> — annonces, entraide, classement <span>→</span></a>
 			<?php endif; ?>
 
 			<?php
@@ -71,20 +71,20 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 
 				<?php if ( 1 === $ob_step ) : ?>
 					<div class="ag-wiz__step">
-						<div class="ag-wiz__ic">💬</div>
+						<div class="ag-wiz__ic"></div>
 						<h3 class="ag-wiz__q">Rejoins le groupe Telegram des ambassadeurs</h3>
 						<p class="ag-wiz__d">C'est <strong>obligatoire</strong> : on y partage les annonces, l'entraide et les prospects. Ouvre-le, rejoins, puis reviens cliquer sur « J'ai rejoint ».</p>
-						<?php if ( $ob_tg ) : ?><p><a href="<?php echo esc_url( $ob_tg ); ?>" target="_blank" rel="noopener" class="ag-btn-outline">📲 Ouvrir le groupe Telegram</a></p><?php else : ?><p class="ag-wiz__d">Le lien du groupe t'a été envoyé par email.</p><?php endif; ?>
+						<?php if ( $ob_tg ) : ?><p><a href="<?php echo esc_url( $ob_tg ); ?>" target="_blank" rel="noopener" class="ag-btn-outline">Ouvrir le groupe Telegram</a></p><?php else : ?><p class="ag-wiz__d">Le lien du groupe t'a été envoyé par email.</p><?php endif; ?>
 						<form method="post" action="<?php echo esc_url( $ob_post ); ?>">
 							<input type="hidden" name="action" value="ag_onboard_tg_ack">
 							<?php wp_nonce_field( 'ag_zone_front', '_n' ); ?>
-							<button type="submit" class="ag-btn-gold ag-wiz__next">✅ J'ai rejoint, continuer →</button>
+							<button type="submit" class="ag-btn-gold ag-wiz__next">J'ai rejoint, continuer →</button>
 						</form>
 					</div>
 
 				<?php elseif ( 2 === $ob_step ) : ?>
 					<div class="ag-wiz__step">
-						<div class="ag-wiz__ic">📱</div>
+						<div class="ag-wiz__ic"></div>
 						<h3 class="ag-wiz__q">Vérifie ton numéro de téléphone</h3>
 						<p class="ag-wiz__d">Un numéro = un ambassadeur (pas de multi-comptes). Ça débloque ta zone.</p>
 						<?php if ( 'phone_dupe' === $ob_feed ) : ?><p class="ag-wiz__err">Ce numéro est déjà utilisé par un autre compte.</p>
@@ -99,10 +99,10 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 
 				<?php elseif ( 3 === $ob_step ) : ?>
 					<div class="ag-wiz__step">
-						<div class="ag-wiz__ic">🗺️</div>
+						<div class="ag-wiz__ic"></div>
 						<h3 class="ag-wiz__q">Choisis ta zone de prospection</h3>
 						<p class="ag-wiz__d">Ton département, d'après ta ville<?php if ( $ob_sugg && isset( $ob_dn[ $ob_sugg ] ) ) : ?> : <strong style="color:var(--color-gold);"><?php echo esc_html( $ob_sugg . ' · ' . $ob_dn[ $ob_sugg ] ); ?></strong> (déjà pré-rempli)<?php endif; ?>. <strong>1 seule zone</strong> chacun.</p>
-						<p class="ag-wiz__tip">💡 Seul sur la zone = <strong>tous</strong> les prospects pour toi. À plusieurs = partage <strong>50/50</strong>. Une zone vide = <strong>plus de prospects</strong>.</p>
+						<p class="ag-wiz__tip">Seul sur la zone = <strong>tous</strong> les prospects pour toi. À plusieurs = partage <strong>50/50</strong>. Une zone vide = <strong>plus de prospects</strong>.</p>
 						<?php if ( 'err' === $ob_feed ) : ?><p class="ag-wiz__err">Département invalide. Mets 2 chiffres (ex. 33).</p><?php endif; ?>
 						<form method="post" action="<?php echo esc_url( $ob_post ); ?>" class="ag-wiz__form">
 							<input type="hidden" name="action" value="ag_zone_request">
@@ -114,10 +114,10 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 
 				<?php else : ?>
 					<div class="ag-wiz__step">
-						<div class="ag-wiz__ic">🎉</div>
+						<div class="ag-wiz__ic"></div>
 						<h3 class="ag-wiz__q">Tu es prêt à prospecter !</h3>
 						<p class="ag-wiz__d">Ta zone : <strong style="color:var(--color-gold);"><?php echo esc_html( $ob_zlbl ); ?></strong>. Les prospects arrivent <strong>automatiquement</strong>. Lance-toi.</p>
-						<a href="#chercher" class="ag-btn-gold ag-wiz__next">🔎 Trouver des clients dans ma zone →</a>
+						<a href="#chercher" class="ag-btn-gold ag-wiz__next">Trouver des clients dans ma zone →</a>
 						<p class="ag-wiz__d" style="margin-top:10px;"><a href="<?php echo esc_url( $ag_sale_link ); ?>" style="color:var(--color-gold);">…ou partage ton lien de vente</a></p>
 					</div>
 				<?php endif; ?>
@@ -138,7 +138,7 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 			<?php
 			$ag_primes = function_exists( 'ag_parrain_primes_for' ) ? ag_parrain_primes_for( $email ) : array();
 			if ( $ag_primes ) { $ptot = 0; foreach ( $ag_primes as $pp ) { $ptot += (float) ( $pp['amount'] ?? 0 ); } ?>
-				<p class="ag-section__desc" style="margin-top:14px;">🎁 <strong>Primes de parrainage</strong> : tu as gagné <strong style="color:var(--color-gold);"><?php echo esc_html( $eur( $ptot ) ); ?></strong> en recrutant <?php echo count( $ag_primes ); ?> ambassadeur(s) qui ont vendu. Continue à faire grandir ton équipe !</p>
+				<p class="ag-section__desc" style="margin-top:14px;"><strong>Primes de parrainage</strong> : tu as gagné <strong style="color:var(--color-gold);"><?php echo esc_html( $eur( $ptot ) ); ?></strong> en recrutant <?php echo count( $ag_primes ); ?> ambassadeur(s) qui ont vendu. Continue à faire grandir ton équipe !</p>
 			<?php } ?>
 		</div>
 	</section>
@@ -146,11 +146,11 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 	<section class="ag-section ag-section--onyx" id="studio">
 		<div class="ag-container">
 			<span class="ag-tag">Espace création</span>
-			<h2 class="ag-section__title">Le Studio 🎬 <em>— ton atelier de contenu</em></h2>
+			<h2 class="ag-section__title">Le Studio <em>— ton atelier de contenu</em></h2>
 			<p class="ag-section__desc">C'est <strong>séparé de ton compte</strong> : ici tu crées ce que tu vas partager. Visuels déjà prêts, générateur de vidéos et d'images — ton lien de vente est toujours intégré automatiquement.</p>
 			<div class="ag-studio-feats">
-				<div class="ag-studio-feat"><span class="ag-studio-feat__ic">🖼️</span><strong>Visuels prêts</strong><span>Une médiathèque à poster direct, rien à chercher ailleurs.</span></div>
-				<div class="ag-studio-feat"><span class="ag-studio-feat__ic">🎬</span><strong>Vidéos en 1 clic</strong><span>Transforme une image en vidéo verticale avec ton accroche.</span></div>
+				<div class="ag-studio-feat"><span class="ag-studio-feat__ic"></span><strong>Visuels prêts</strong><span>Une médiathèque à poster direct, rien à chercher ailleurs.</span></div>
+				<div class="ag-studio-feat"><span class="ag-studio-feat__ic"></span><strong>Vidéos en 1 clic</strong><span>Transforme une image en vidéo verticale avec ton accroche.</span></div>
 				<div class="ag-studio-feat"><span class="ag-studio-feat__ic">⤴</span><strong>Partage direct</strong><span>TikTok, Insta, Snap, WhatsApp — sans quitter le site.</span></div>
 			</div>
 			<a href="<?php echo esc_url( home_url( '/studio' ) ); ?>" class="ag-btn-gold ag-studio-cta__btn">Ouvrir le Studio →</a>
@@ -158,7 +158,7 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 	</section>
 
 	<?php
-	$ag_pitch = 'Ton site pro à prix fixe, livré en quelques jours — dès 490 €, sans rendez-vous. 👇';
+	$ag_pitch = 'Ton site pro à prix fixe, livré en quelques jours — dès 490 €, sans rendez-vous. ';
 	$ag_full  = $ag_pitch . ' ' . $ag_sale_link;
 	$ag_u = rawurlencode( $ag_sale_link );
 	$ag_t = rawurlencode( $ag_pitch );
@@ -172,21 +172,21 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 	?>
 	<section class="ag-section ag-section--graphite">
 		<div class="ag-container">
-			<h2 class="ag-section__title">Partager mon lien 🚀</h2>
+			<h2 class="ag-section__title">Partager mon lien </h2>
 			<p class="ag-section__desc">Ton <strong>code de vente est déjà intégré</strong>. Dès qu'un client passe par ton lien et envoie son brief, la vente se crédite automatiquement — sans rien déclarer.</p>
 
 			<div class="ag-share">
 				<input id="ag-sharelink" type="text" readonly value="<?php echo esc_attr( $ag_sale_link ); ?>" onclick="this.select();">
-				<button type="button" class="ag-btn-gold" id="ag-copybtn" onclick="navigator.clipboard.writeText(document.getElementById('ag-sharelink').value).then(function(){var b=document.getElementById('ag-copybtn');b.textContent='✓ Lien copié';setTimeout(function(){b.textContent='Copier le lien';},1500);});">Copier le lien</button>
+				<button type="button" class="ag-btn-gold" id="ag-copybtn" onclick="navigator.clipboard.writeText(document.getElementById('ag-sharelink').value).then(function(){var b=document.getElementById('ag-copybtn');b.textContent='Lien copié';setTimeout(function(){b.textContent='Copier le lien';},1500);});">Copier le lien</button>
 			</div>
 
 			<div class="ag-share-btns">
-				<a class="ag-sbtn ag-sbtn--wa"   href="<?php echo esc_url( $ag_wa ); ?>"   target="_blank" rel="noopener">📲 WhatsApp</a>
+				<a class="ag-sbtn ag-sbtn--wa"   href="<?php echo esc_url( $ag_wa ); ?>"   target="_blank" rel="noopener">WhatsApp</a>
 				<a class="ag-sbtn ag-sbtn--fb"   href="<?php echo esc_url( $ag_fb ); ?>"   target="_blank" rel="noopener">f  Facebook</a>
 				<a class="ag-sbtn ag-sbtn--x"    href="<?php echo esc_url( $ag_x ); ?>"    target="_blank" rel="noopener">𝕏  Twitter</a>
-				<a class="ag-sbtn ag-sbtn--tg"   href="<?php echo esc_url( $ag_tg ); ?>"   target="_blank" rel="noopener">✈ Telegram</a>
-				<a class="ag-sbtn ag-sbtn--sms"  href="<?php echo esc_url( $ag_sms ); ?>">💬 SMS</a>
-				<a class="ag-sbtn ag-sbtn--mail" href="<?php echo esc_url( $ag_mail ); ?>">✉ Email</a>
+				<a class="ag-sbtn ag-sbtn--tg"   href="<?php echo esc_url( $ag_tg ); ?>"   target="_blank" rel="noopener">Telegram</a>
+				<a class="ag-sbtn ag-sbtn--sms"  href="<?php echo esc_url( $ag_sms ); ?>">SMS</a>
+				<a class="ag-sbtn ag-sbtn--mail" href="<?php echo esc_url( $ag_mail ); ?>">Email</a>
 				<button type="button" class="ag-sbtn ag-sbtn--native" id="ag-native">⤴ Partager…</button>
 			</div>
 
@@ -206,7 +206,7 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 		var nb = document.getElementById('ag-native');
 		if (nb) { if (navigator.share) { nb.addEventListener('click', function(){ navigator.share({title:'Alliance Groupe', text:pitch, url:link}).catch(function(){}); }); } else { nb.style.display='none'; } }
 		var cm = document.getElementById('ag-copymsg');
-		if (cm) cm.addEventListener('click', function(){ navigator.clipboard.writeText(document.getElementById('ag-msgtext').value).then(function(){ cm.textContent='✓ Copié'; setTimeout(function(){ cm.textContent='Copier le message'; },1500); }); });
+		if (cm) cm.addEventListener('click', function(){ navigator.clipboard.writeText(document.getElementById('ag-msgtext').value).then(function(){ cm.textContent='Copié'; setTimeout(function(){ cm.textContent='Copier le message'; },1500); }); });
 	})();
 	</script>
 
@@ -215,7 +215,7 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 	$ag_recruit = function_exists( 'ag_ambassadeur_recruit_link' ) ? ag_ambassadeur_recruit_link( $email ) : home_url( '/ambassadeurs' );
 	$ag_team    = function_exists( 'ag_ambassadeur_override_for' ) ? ag_ambassadeur_override_for( $ag_ref ) : array( 'team' => 0, 'generated' => 0, 'paid' => 0 );
 	// Kit de partage RECRUTEMENT (viral, gratuit) : message prêt + partage 1 clic du lien parrain.
-	$ag_rpitch = 'Rejoins-moi comme ambassadeur Alliance Groupe (agence web) 💼 10% de commission à vie sur chaque site vendu, 100% en ligne, gratuit, sans avance. Tu travailles quand tu veux depuis ton téléphone. 👇';
+	$ag_rpitch = 'Rejoins-moi comme ambassadeur Alliance Groupe (agence web) 10% de commission à vie sur chaque site vendu, 100% en ligne, gratuit, sans avance. Tu travailles quand tu veux depuis ton téléphone. ';
 	$ag_rfull  = $ag_rpitch . ' ' . $ag_recruit;
 	$ag_ru = rawurlencode( $ag_recruit );
 	$ag_rt = rawurlencode( $ag_rpitch );
@@ -228,7 +228,7 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 	?>
 	<section class="ag-section ag-section--graphite">
 		<div class="ag-container">
-			<h2 class="ag-section__title">Recrute ton équipe 🌐</h2>
+			<h2 class="ag-section__title">Recrute ton équipe </h2>
 			<p class="ag-section__desc">Recrute d'autres commerciaux avec ce lien. Quand <strong>ils vendent</strong>, tu touches un bonus de parrainage sur leurs ventes (en plus de tes 10 %). Plus ton équipe vend, plus tu gagnes.</p>
 			<div class="ag-esp-stats" style="grid-template-columns:repeat(2,1fr);max-width:560px;">
 				<div class="ag-esp-stat"><span class="ag-esp-stat__val"><?php echo (int) $ag_team['team']; ?></span><span class="ag-esp-stat__lbl">Filleuls recrutés</span></div>
@@ -236,14 +236,14 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 			</div>
 			<div class="ag-share" style="margin-top:22px;">
 				<input id="ag-recruitlink" type="text" readonly value="<?php echo esc_attr( $ag_recruit ); ?>" onclick="this.select();">
-				<button type="button" class="ag-btn-gold" id="ag-recruitcopy" onclick="navigator.clipboard.writeText(document.getElementById('ag-recruitlink').value).then(function(){var b=document.getElementById('ag-recruitcopy');b.textContent='✓ Copié';setTimeout(function(){b.textContent='Copier le lien de recrutement';},1500);});">Copier le lien de recrutement</button>
+				<button type="button" class="ag-btn-gold" id="ag-recruitcopy" onclick="navigator.clipboard.writeText(document.getElementById('ag-recruitlink').value).then(function(){var b=document.getElementById('ag-recruitcopy');b.textContent='Copié';setTimeout(function(){b.textContent='Copier le lien de recrutement';},1500);});">Copier le lien de recrutement</button>
 			</div>
 			<div class="ag-share-btns" style="margin-top:14px;">
-				<a class="ag-sbtn ag-sbtn--wa"   href="<?php echo esc_url( $ag_r_wa ); ?>"   target="_blank" rel="noopener">📲 WhatsApp</a>
-				<a class="ag-sbtn ag-sbtn--tg"   href="<?php echo esc_url( $ag_r_tg ); ?>"   target="_blank" rel="noopener">✈ Telegram</a>
-				<a class="ag-sbtn ag-sbtn--sms"  href="<?php echo esc_url( $ag_r_sms ); ?>">💬 SMS</a>
+				<a class="ag-sbtn ag-sbtn--wa"   href="<?php echo esc_url( $ag_r_wa ); ?>"   target="_blank" rel="noopener">WhatsApp</a>
+				<a class="ag-sbtn ag-sbtn--tg"   href="<?php echo esc_url( $ag_r_tg ); ?>"   target="_blank" rel="noopener">Telegram</a>
+				<a class="ag-sbtn ag-sbtn--sms"  href="<?php echo esc_url( $ag_r_sms ); ?>">SMS</a>
 				<a class="ag-sbtn ag-sbtn--fb"   href="<?php echo esc_url( $ag_r_fb ); ?>"   target="_blank" rel="noopener">f  Facebook</a>
-				<a class="ag-sbtn ag-sbtn--mail" href="<?php echo esc_url( $ag_r_mail ); ?>">✉ Email</a>
+				<a class="ag-sbtn ag-sbtn--mail" href="<?php echo esc_url( $ag_r_mail ); ?>">Email</a>
 				<button type="button" class="ag-sbtn ag-sbtn--native" id="ag-recruit-native">⤴ Partager…</button>
 			</div>
 			<div class="ag-share-msg">
@@ -253,14 +253,14 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 				</div>
 				<textarea id="ag-recruit-msgtext" readonly rows="3"><?php echo esc_textarea( $ag_rfull ); ?></textarea>
 			</div>
-			<p style="margin-top:14px;"><a href="<?php echo esc_url( home_url( '/studio?mode=recruit' ) ); ?>" class="ag-btn-outline">🎬 Créer des visuels de recrutement →</a></p>
+			<p style="margin-top:14px;"><a href="<?php echo esc_url( home_url( '/studio?mode=recruit' ) ); ?>" class="ag-btn-outline">Créer des visuels de recrutement →</a></p>
 			<script>
 			(function(){
 				var link=<?php echo wp_json_encode( $ag_recruit ); ?>, pitch=<?php echo wp_json_encode( $ag_rpitch ); ?>;
 				var nb=document.getElementById('ag-recruit-native');
 				if(nb){ if(navigator.share){ nb.addEventListener('click',function(){ navigator.share({title:'Alliance Groupe',text:pitch,url:link}).catch(function(){}); }); } else { nb.style.display='none'; } }
 				var cm=document.getElementById('ag-recruit-copymsg');
-				if(cm) cm.addEventListener('click',function(){ navigator.clipboard.writeText(document.getElementById('ag-recruit-msgtext').value).then(function(){ cm.textContent='✓ Copié'; setTimeout(function(){ cm.textContent='Copier le message'; },1500); }); });
+				if(cm) cm.addEventListener('click',function(){ navigator.clipboard.writeText(document.getElementById('ag-recruit-msgtext').value).then(function(){ cm.textContent='Copié'; setTimeout(function(){ cm.textContent='Copier le message'; },1500); }); });
 			})();
 			</script>
 			<p class="ag-share__note">Tu es payé sur les <strong>ventes</strong> de ton équipe, jamais pour le simple recrutement (c'est la règle).</p>
@@ -276,11 +276,11 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 	foreach ( $lb as $row ) { if ( strtolower( $row['email'] ) === strtolower( $email ) ) { $myrank = $row['rank']; break; } }
 	$progress = 100;
 	if ( $next && $cur ) { $span = max( 1, $next['min_ca'] - $cur['min_ca'] ); $progress = min( 100, max( 0, round( ( $ca - $cur['min_ca'] ) / $span * 100 ) ) ); }
-	$medals = array( 1 => '🥇', 2 => '🥈', 3 => '🥉' );
+	$medals = array( 1 => '', 2 => '', 3 => '' );
 	?>
 	<section class="ag-section ag-section--onyx">
 		<div class="ag-container">
-			<h2 class="ag-section__title">Classement &amp; récompenses 🏆</h2>
+			<h2 class="ag-section__title">Classement &amp; récompenses </h2>
 			<p class="ag-section__desc">Plus tu vends, plus tu montes. Chaque mois, le top des commerciaux décroche des primes. <a href="<?php echo esc_url( home_url( '/classement' ) ); ?>" style="color:var(--color-gold);">Voir le championnat →</a></p>
 			<div class="ag-lb-grid">
 				<div class="ag-lb-tier">
@@ -290,13 +290,13 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 						<div class="ag-lb-progress"><span style="width:<?php echo (int) $progress; ?>%"></span></div>
 						<p class="ag-lb-next">Plus que <strong><?php echo esc_html( $eur( max( 0, $next['min_ca'] - $ca ) ) ); ?></strong> de CA pour passer <?php echo esc_html( $next['emoji'] . ' ' . $next['label'] ); ?></p>
 					<?php else : ?>
-						<p class="ag-lb-next">Niveau maximum atteint 💎 Bravo !</p>
+						<p class="ag-lb-next">Niveau maximum atteint Bravo !</p>
 					<?php endif; ?>
-					<p class="ag-lb-reward">🎁 <?php echo esc_html( $cur ? $cur['reward'] : '' ); ?></p>
+					<p class="ag-lb-reward"><?php echo esc_html( $cur ? $cur['reward'] : '' ); ?></p>
 				</div>
 				<div class="ag-lb-board">
 					<?php if ( empty( $lb ) ) : ?>
-						<p class="ag-section__desc" style="margin:0;">Sois le premier à apparaître au classement 🚀</p>
+						<p class="ag-section__desc" style="margin:0;">Sois le premier à apparaître au classement </p>
 					<?php else : $shown = 0; foreach ( $lb as $row ) :
 						$me = strtolower( $row['email'] ) === strtolower( $email );
 						if ( $shown >= 5 && ! $me ) continue;
@@ -348,19 +348,19 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 	<?php if ( isset( $ob_step ) && 4 === $ob_step ) : ?>
 	<section class="ag-section ag-section--onyx" id="zone">
 		<div class="ag-container">
-			<h2 class="ag-section__title">Ma zone 🗺️</h2>
+			<h2 class="ag-section__title">Ma zone </h2>
 
-			<?php if ( 'phone_ok' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">✅ Numéro enregistré. Tu peux prendre ta zone.</p>
+			<?php if ( 'phone_ok' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">Numéro enregistré. Tu peux prendre ta zone.</p>
 			<?php elseif ( 'phone_dupe' === $ag_zfeed ) : ?><p style="text-align:center;color:#d98b8b;">Ce numéro est déjà utilisé par un autre compte. Un numéro = un ambassadeur.</p>
 			<?php elseif ( 'phone_err' === $ag_zfeed ) : ?><p style="text-align:center;color:#d98b8b;">Numéro invalide. Format : 0612345678.</p>
 			<?php elseif ( 'need_phone' === $ag_zfeed ) : ?><p style="text-align:center;color:#e6b35a;">Renseigne d'abord ton numéro de téléphone pour débloquer les zones.</p>
-			<?php elseif ( 'claimed' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">✅ Zone prise ! Les prospects arrivent automatiquement.</p>
-			<?php elseif ( 'joined' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">🤝 Tu as rejoint la zone — partage 50/50 des prospects.</p>
-				<?php elseif ( 'taken' === $ag_zfeed ) : ?><p style="text-align:center;color:#e6b35a;font-weight:700;">🔒 Cette région appartient déjà à un autre ambassadeur (exclusivité). Choisis-en une autre parmi les régions libres — tu peux prospecter partout ailleurs.</p>
-			<?php elseif ( 'changed' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">✅ Tu as changé de zone.</p>
+			<?php elseif ( 'claimed' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">Zone prise ! Les prospects arrivent automatiquement.</p>
+			<?php elseif ( 'joined' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">Tu as rejoint la zone — partage 50/50 des prospects.</p>
+				<?php elseif ( 'taken' === $ag_zfeed ) : ?><p style="text-align:center;color:#e6b35a;font-weight:700;">Cette région appartient déjà à un autre ambassadeur (exclusivité). Choisis-en une autre parmi les régions libres — tu peux prospecter partout ailleurs.</p>
+			<?php elseif ( 'changed' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">Tu as changé de zone.</p>
 			<?php elseif ( 'mine' === $ag_zfeed ) : ?><p style="text-align:center;color:var(--color-text-soft);">Cette zone est déjà la tienne.</p>
 			<?php elseif ( 'err' === $ag_zfeed ) : ?><p style="text-align:center;color:#d98b8b;">Département invalide. Mets 2 chiffres (ex. 33).</p>
-			<?php elseif ( 'released' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">✅ Zone libérée.</p>
+			<?php elseif ( 'released' === $ag_zfeed ) : ?><p style="text-align:center;color:#5fd08a;font-weight:700;">Zone libérée.</p>
 			<?php elseif ( 'quota' === $ag_zfeed ) : ?><p style="text-align:center;color:#e6b35a;font-weight:700;">Tu as atteint ton nombre de zones. Libère une zone, ou achète une zone en plus ci-dessous.</p>
 			<?php endif; ?>
 
@@ -383,7 +383,7 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 								<form method="post" action="<?php echo esc_url( $ag_post ); ?>" style="margin:0;" onsubmit="return confirm('Libérer la zone <?php echo esc_attr( $mz ); ?> ? Tu ne recevras plus ses prospects.');">
 									<input type="hidden" name="action" value="ag_zone_release"><?php wp_nonce_field( 'ag_zone_front', '_n' ); ?>
 									<input type="hidden" name="dept" value="<?php echo esc_attr( $mz ); ?>">
-									<button type="submit" title="Libérer cette zone" style="background:none;border:none;color:#e88;cursor:pointer;font-weight:800;">✕</button>
+									<button type="submit" title="Libérer cette zone" style="background:none;border:none;color:#e88;cursor:pointer;font-weight:800;"></button>
 								</form>
 							</span>
 						<?php endforeach; ?>
@@ -406,7 +406,7 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 						<p style="color:#fff;margin:0 0 6px;"><strong>Tu veux couvrir une zone de plus ?</strong></p>
 						<p style="color:var(--color-text-soft);margin:0 0 12px;">1 zone = <strong style="color:var(--color-gold);"><?php echo esc_html( number_format( $ag_zprice, 0, ',', ' ' ) ); ?> €</strong> (paiement unique). Tu peux en acheter autant que tu veux — toute la France si tu veux ! Dès le paiement, ta zone se débloque et tu la choisis ici.</p>
 						<?php if ( $ag_zurl ) : ?>
-							<a href="<?php echo esc_url( $ag_zurl ); ?>" target="_blank" rel="noopener" class="ag-btn-gold">🗺️ Acheter une zone en plus →</a>
+							<a href="<?php echo esc_url( $ag_zurl ); ?>" target="_blank" rel="noopener" class="ag-btn-gold">Acheter une zone en plus →</a>
 						<?php else : ?>
 							<p style="color:var(--color-text-soft);font-size:.85rem;">Lien d'achat bientôt disponible — contacte-nous.</p>
 						<?php endif; ?>
@@ -426,7 +426,7 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 	?>
 	<section class="ag-section ag-section--graphite" id="chercher">
 		<div class="ag-container">
-			<h2 class="ag-section__title">Trouver dans ma zone 🔎</h2>
+			<h2 class="ag-section__title">Trouver dans ma zone </h2>
 			<?php if ( $ag_is_chasseur ) : ?>
 				<p class="ag-section__desc">Cherche des entreprises de <strong>ta zone</strong> qui ont besoin d'un site. Ajoute-les en 1 clic à ta liste, puis contacte‑les. <span style="color:var(--color-text-soft);">(Restreint à ton département.)</span></p>
 				<form id="ag-amb-search-form" onsubmit="return false;" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-top:12px;">
@@ -446,14 +446,14 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 						var fd=new FormData(); fd.append('action','ag_amb_search'); fd.append('_n',n); fd.append('city',city);
 						fetch(au,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){
 							btn.disabled=false; btn.textContent='Chercher →';
-							if(!j||!j.success){ info.textContent='⚠ '+((j&&j.data&&j.data.m)||'Erreur'); return; }
+							if(!j||!j.success){ info.textContent=''+((j&&j.data&&j.data.m)||'Erreur'); return; }
 							var items=j.data.items||[]; info.textContent=items.length+' résultat(s) dans ta zone · '+j.data.left+' recherches restantes ce mois.';
 							if(!items.length){ out.innerHTML='<p style="text-align:center;color:#b9b9c0;">Aucune entreprise (sans vrai site) trouvée dans ta zone pour cette ville.</p>'; return; }
 							var h='<div style="display:flex;flex-direction:column;gap:10px;">';
 							items.forEach(function(it,i){
 								h+='<div style="background:rgba(255,255,255,.04);border:1px solid rgba(212,180,92,.25);border-radius:12px;padding:12px 14px;">'
-								+'<strong style="color:#fff;">'+esc(it.name)+'</strong> <span style="color:#e6b35a;">'+(it.real?'':'❗ '+esc(it.kind))+'</span>'
-								+'<br><small style="color:var(--color-text-soft);">'+esc(it.type)+' · '+esc(it.city)+(it.phone?' · '+esc(it.phone):'')+(it.reviews?' · '+it.reviews+'★avis':'')+'</small><br>'
+								+'<strong style="color:#fff;">'+esc(it.name)+'</strong> <span style="color:#e6b35a;">'+(it.real?'':''+esc(it.kind))+'</span>'
+								+'<br><small style="color:var(--color-text-soft);">'+esc(it.type)+' · '+esc(it.city)+(it.phone?' · '+esc(it.phone):'')+(it.reviews?' · '+it.reviews+'avis':'')+'</small><br>'
 								+(it.exists?'<span style="color:#b9b9c0;font-size:.85em;">déjà en liste</span>':'<button class="ag-btn-outline ag-amb-follow" data-i="'+i+'" style="padding:5px 12px;margin-top:6px;">+ Suivre</button>')
 								+'</div>';
 							});
@@ -462,16 +462,16 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 								var it=items[+b.getAttribute('data-i')]; var fd=new FormData(); fd.append('action','ag_amb_add'); fd.append('_n',n);
 								['name','type','city','phone','phone_intl','website','address','rating','reviews'].forEach(function(k){ fd.append(k, it[k]!=null?it[k]:''); });
 								b.disabled=true; b.textContent='…';
-								fetch(au,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(jj){ b.textContent=(jj&&jj.success)?'✓ Ajouté à mes prospects':'Erreur'; }).catch(function(){ b.textContent='Erreur'; b.disabled=false; });
+								fetch(au,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(jj){ b.textContent=(jj&&jj.success)?'Ajouté à mes prospects':'Erreur'; }).catch(function(){ b.textContent='Erreur'; b.disabled=false; });
 							}); });
-						}).catch(function(){ btn.disabled=false; btn.textContent='Chercher →'; info.textContent='⚠ Erreur réseau.'; });
+						}).catch(function(){ btn.disabled=false; btn.textContent='Chercher →'; info.textContent='Erreur réseau.'; });
 					});
 				})();
 				</script>
 			<?php else : ?>
 				<p class="ag-section__desc">Tu reçois déjà des prospects <strong>automatiquement</strong> dans ta zone (gratuit). Pour <strong>chercher toi‑même</strong> de nouvelles entreprises quand tu veux, passe <strong>Chasseur Pro</strong>.</p>
 				<div style="max-width:460px;margin:18px auto 0;background:rgba(255,255,255,.04);border:1px solid rgba(212,180,92,.4);border-radius:18px;padding:28px;text-align:center;">
-					<div style="font-size:2rem;">💎</div>
+					<div style="font-size:2rem;"></div>
 					<h3 style="color:#fff;font-family:var(--font-serif);margin:6px 0;">Chasseur Pro</h3>
 					<p style="color:var(--color-text-soft);">Recherche illimitée raisonnable dans ta zone (300/mois). <strong style="color:#fff;">19 €/mois</strong>, sans engagement.</p>
 					<?php if ( $ag_chasseur_link ) : ?>
@@ -506,17 +506,17 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 	?>
 	<section class="ag-section ag-section--graphite" id="prospects">
 		<div class="ag-container">
-			<h2 class="ag-section__title">Mes prospects à contacter 🎯</h2>
+			<h2 class="ag-section__title">Mes prospects à contacter </h2>
 			<p class="ag-section__desc">Des entreprises qui ont besoin d'un site, <strong>rien que pour toi</strong> (pas de doublon avec l'équipe). Triées par priorité. Quand tu cliques WhatsApp ou Email, le contact est <strong>noté automatiquement</strong> (date + nombre de fois).</p>
 			<div class="ag-amb-chips" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0 22px;">
 				<?php
 				$ag_chipsdef = array(
 					array( 'all', 'Tous', count( $ag_my_prospects ), '#3a3a44' ),
-					array( 'nouveau', '🆕 À contacter', $ag_pc['nouveau'], '#b32d2e' ),
-					array( 'contacte', '📞 Contactés', $ag_pc['contacte'], '#2271b1' ),
-					array( 'sans_reponse', '🔇 Sans réponse', $ag_pc['sans_reponse'], '#8a6d1f' ),
-					array( 'interesse', '🔥 Intéressés', $ag_pc['interesse'], '#bd7b00' ),
-					array( 'client', '✅ Clients', $ag_pc['client'], '#1e7e34' ),
+					array( 'nouveau', 'À contacter', $ag_pc['nouveau'], '#b32d2e' ),
+					array( 'contacte', 'Contactés', $ag_pc['contacte'], '#2271b1' ),
+					array( 'sans_reponse', 'Sans réponse', $ag_pc['sans_reponse'], '#8a6d1f' ),
+					array( 'interesse', 'Intéressés', $ag_pc['interesse'], '#bd7b00' ),
+					array( 'client', 'Clients', $ag_pc['client'], '#1e7e34' ),
 				);
 				foreach ( $ag_chipsdef as $c ) :
 					if ( 'all' !== $c[0] && 0 === (int) $c[2] ) continue; ?>
@@ -545,17 +545,17 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 							<td>
 								<div class="ag-amb-suivi" data-id="<?php echo esc_attr( $pid ); ?>" style="font-size:.82em;margin-bottom:6px;line-height:1.5;<?php echo empty( $pp['date_contact'] ) ? 'color:#e6b35a;' : 'color:var(--color-text-soft);'; ?>">
 									<?php if ( ! empty( $pp['date_contact'] ) ) : ?>
-										📨 Contacté<?php echo ! empty( $pp['last_channel'] ) ? ' par <strong>' . esc_html( $pp['last_channel'] ) . '</strong>' : ''; ?> le <strong><?php echo esc_html( $pp['date_contact'] ); ?></strong> (×<?php echo (int) ( $pp['contact_count'] ?? 1 ); ?>)<br>
+										Contacté<?php echo ! empty( $pp['last_channel'] ) ? ' par <strong>' . esc_html( $pp['last_channel'] ) . '</strong>' : ''; ?> le <strong><?php echo esc_html( $pp['date_contact'] ); ?></strong> (×<?php echo (int) ( $pp['contact_count'] ?? 1 ); ?>)<br>
 										<?php if ( ! empty( $pp['replied'] ) ) : ?>
-											<span style="color:#5fd08a;font-weight:700;">✅ A répondu<?php echo $pp['date_reply'] ? ' le ' . esc_html( $pp['date_reply'] ) : ''; ?></span>
+											<span style="color:#5fd08a;font-weight:700;">A répondu<?php echo $pp['date_reply'] ? ' le ' . esc_html( $pp['date_reply'] ) : ''; ?></span>
 										<?php else : ?>
 											<button type="button" class="ag-amb-reply ag-btn-outline" data-id="<?php echo esc_attr( $pid ); ?>" style="padding:3px 10px;font-size:.95em;">A répondu ?</button>
 										<?php endif; ?>
 									<?php else : ?>⏳ Pas encore contacté<?php endif; ?>
 								</div>
-								<?php if ( ! empty( $pp['phone'] ) ) : ?><a href="tel:<?php echo esc_attr( $pp['phone'] ); ?>" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="Appel" style="padding:6px 10px;">📞 Appeler</a> <?php endif; ?>
+								<?php if ( ! empty( $pp['phone'] ) ) : ?><a href="tel:<?php echo esc_attr( $pp['phone'] ); ?>" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="Appel" style="padding:6px 10px;">Appeler</a> <?php endif; ?>
 								<?php if ( $pwa ) : ?><a href="<?php echo esc_url( $pwa ); ?>" target="_blank" rel="noopener" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="WhatsApp" style="padding:6px 10px;">WhatsApp</a> <?php endif; ?>
-								<?php if ( $psms ) : ?><a href="<?php echo esc_attr( $psms ); ?>" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="SMS" style="padding:6px 10px;">📱 SMS</a> <?php endif; ?>
+								<?php if ( $psms ) : ?><a href="<?php echo esc_attr( $psms ); ?>" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="SMS" style="padding:6px 10px;">SMS</a> <?php endif; ?>
 								<?php if ( $pmail ) : ?><a href="<?php echo esc_url( $pmail ); ?>" class="ag-btn-outline ag-amb-touch" data-id="<?php echo esc_attr( $pid ); ?>" data-channel="Email" style="padding:6px 10px;">Email</a> <?php endif; ?>
 								<details style="margin-top:6px;"><summary style="cursor:pointer;color:var(--color-gold);">Voir le message</summary><textarea readonly rows="8" style="width:100%;margin-top:6px;background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(212,180,92,.3);border-radius:10px;padding:10px;"><?php echo esc_textarea( $pmsg ); ?></textarea></details>
 							</td>
@@ -583,12 +583,12 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 				var ch=a.getAttribute('data-channel')||'';
 					var fd=new FormData(); fd.append('action','ag_amb_touch'); fd.append('_n',n); fd.append('id',id); fd.append('channel',ch);
 				fetch(au,{method:'POST',body:fd,credentials:'same-origin',keepalive:true}).then(function(r){return r.json();}).then(function(j){
-					if(j&&j.success){ var d=a.closest('td').querySelector('.ag-amb-suivi'); if(d){ var par=j.data.channel?(' par <strong>'+j.data.channel+'</strong>'):''; d.style.color='var(--color-text-soft)'; d.innerHTML='📨 Contacté'+par+' le <strong>'+j.data.date+'</strong> (×'+j.data.count+')<br><button type="button" class="ag-amb-reply ag-btn-outline" data-id="'+id+'" style="padding:3px 10px;font-size:.95em;">A répondu ?</button>'; bindReply(d.querySelector('.ag-amb-reply')); } }
+					if(j&&j.success){ var d=a.closest('td').querySelector('.ag-amb-suivi'); if(d){ var par=j.data.channel?(' par <strong>'+j.data.channel+'</strong>'):''; d.style.color='var(--color-text-soft)'; d.innerHTML='Contacté'+par+' le <strong>'+j.data.date+'</strong> (×'+j.data.count+')<br><button type="button" class="ag-amb-reply ag-btn-outline" data-id="'+id+'" style="padding:3px 10px;font-size:.95em;">A répondu ?</button>'; bindReply(d.querySelector('.ag-amb-reply')); } }
 				}).catch(function(){});
 			}); });
 			function bindReply(btn){ if(!btn) return; btn.addEventListener('click',function(){
 				var id=btn.getAttribute('data-id'); var fd=new FormData(); fd.append('action','ag_amb_reply'); fd.append('_n',n); fd.append('id',id);
-				btn.disabled=true; fetch(au,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ if(j&&j.success){ btn.outerHTML='<span style="color:#5fd08a;font-weight:700;">✅ A répondu le '+j.data.date+'</span>'; } else { btn.disabled=false; } }).catch(function(){ btn.disabled=false; });
+				btn.disabled=true; fetch(au,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ if(j&&j.success){ btn.outerHTML='<span style="color:#5fd08a;font-weight:700;">A répondu le '+j.data.date+'</span>'; } else { btn.disabled=false; } }).catch(function(){ btn.disabled=false; });
 			}); }
 			document.querySelectorAll('.ag-amb-reply').forEach(bindReply);
 			document.querySelectorAll('.ag-amb-chip').forEach(function(c){ c.addEventListener('click',function(){
@@ -605,7 +605,7 @@ $ag_sale_link = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_s
 		<div class="ag-container">
 			<h2 class="ag-section__title">Mes ventes</h2>
 			<?php if ( empty( $ventes ) ) : ?>
-				<p class="ag-section__desc">Aucune vente pour l'instant. Partage ton lien ou crée une vidéo dans le Studio 🚀</p>
+				<p class="ag-section__desc">Aucune vente pour l'instant. Partage ton lien ou crée une vidéo dans le Studio </p>
 			<?php else : ?>
 				<div class="ag-esp-table-wrap">
 					<table class="ag-esp-table">

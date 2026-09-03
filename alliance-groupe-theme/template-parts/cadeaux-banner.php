@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 $ag_cadeaux = array(
 	array(
-		'emoji' => '🎁',
+		'emoji' => '',
 		'title' => '6 templates WordPress',
 		'desc'  => 'Thèmes métier 100 % français, prêts à installer. Téléchargement immédiat.',
 		'cta'   => 'Choisir mon métier',
@@ -18,7 +18,7 @@ $ag_cadeaux = array(
 		'glow'  => '#28a745',
 	),
 	array(
-		'emoji' => '📊',
+		'emoji' => '',
 		'title' => 'Audit SEO gratuit',
 		'desc'  => '12 points analysés, note /100, rapport PDF. Découvrez pourquoi Google ne vous trouve pas.',
 		'cta'   => 'Lancer mon audit',
@@ -26,7 +26,7 @@ $ag_cadeaux = array(
 		'glow'  => '#D4B45C',
 	),
 	array(
-		'emoji' => '🎰',
+		'emoji' => '',
 		'title' => '1 site gratuit / mois',
 		'desc'  => 'Un site web pro (490 €) tiré au sort chaque mois. Participation gratuite, sans engagement.',
 		'cta'   => 'Je participe',
@@ -38,7 +38,7 @@ $ag_cadeaux = array(
 
 <section class="ag-cadeaux">
 	<div class="ag-cadeaux__head">
-		<span class="ag-cadeaux__tag">🎁 Offert · 0 €</span>
+		<span class="ag-cadeaux__tag">Offert · 0 €</span>
 		<h2 class="ag-cadeaux__title">3 cadeaux pour <em>démarrer</em></h2>
 		<p class="ag-cadeaux__lead">Pas besoin d'acheter pour commencer. On vous offre de quoi tester, vous lancer, et peut-être gagner.</p>
 	</div>

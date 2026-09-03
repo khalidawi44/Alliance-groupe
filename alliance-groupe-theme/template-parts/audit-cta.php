@@ -26,22 +26,22 @@ $ag_audit_cta      = $ag_audit_args['cta']      ?? 'Réserver mon créneau →';
 	<div class="ag-container">
 		<div class="ag-audit-cta__inner">
 			<div class="ag-audit-cta__decor">
-				<span class="ag-audit-cta__sparkle">✨</span>
+				<span class="ag-audit-cta__sparkle"></span>
 			</div>
 			<div class="ag-audit-cta__content">
-				<span class="ag-audit-cta__tag">🎁 Offert sans engagement</span>
+				<span class="ag-audit-cta__tag">Offert sans engagement</span>
 				<h2 class="ag-audit-cta__title"><?php echo esc_html( $ag_audit_title ); ?></h2>
 				<p class="ag-audit-cta__sub"><?php echo esc_html( $ag_audit_subtitle ); ?></p>
 				<div class="ag-audit-cta__features">
-					<span>⏱️ 30 min</span>
-					<span>📹 100% visio</span>
-					<span>📝 3 actions concrètes</span>
-					<span>📍 Interlocuteur unique</span>
+					<span>⏱30 min</span>
+					<span>100% visio</span>
+					<span>3 actions concrètes</span>
+					<span>Interlocuteur unique</span>
 				</div>
 				<a href="<?php echo esc_url( home_url( '/sur-mesure' ) ); ?>" class="ag-audit-cta__btn">
 					<?php echo esc_html( $ag_audit_cta ); ?>
 				</a>
-				<p class="ag-audit-cta__guarantee">🔒 Sans CB, sans inscription, sans relance commerciale agressive.</p>
+				<p class="ag-audit-cta__guarantee">Sans CB, sans inscription, sans relance commerciale agressive.</p>
 			</div>
 		</div>
 	</div>

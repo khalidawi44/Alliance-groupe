@@ -63,7 +63,7 @@ $ag_video_id = 'ag-promo-video-' . wp_rand( 1000, 9999 );
 <section class="ag-promo-video-section" aria-labelledby="<?php echo esc_attr( $ag_video_id ); ?>-title">
 	<div class="ag-promo-video-inner">
 		<div class="ag-promo-video-text">
-			<span class="ag-promo-video-tag">🎬 <?php esc_html_e( 'En vidéo', 'alliance-groupe' ); ?></span>
+			<span class="ag-promo-video-tag"><?php esc_html_e( 'En vidéo', 'alliance-groupe' ); ?></span>
 			<h2 id="<?php echo esc_attr( $ag_video_id ); ?>-title" class="ag-promo-video-title">
 				<?php echo esc_html( $ag_video_title ); ?>
 			</h2>
@@ -94,7 +94,7 @@ $ag_video_id = 'ag-promo-video-' . wp_rand( 1000, 9999 );
 				class="ag-promo-video-mute-toggle"
 				aria-label="<?php esc_attr_e( 'Activer le son', 'alliance-groupe' ); ?>"
 				data-target="<?php echo esc_attr( $ag_video_id ); ?>"
-			>🔇</button>
+			></button>
 		</div>
 	</div>
 
@@ -121,7 +121,7 @@ $ag_video_id = 'ag-promo-video-' . wp_rand( 1000, 9999 );
 			if(!btn||!vid)return;
 			btn.addEventListener('click', function(){
 				vid.muted = !vid.muted;
-				btn.textContent = vid.muted ? '🔇' : '🔊';
+				btn.textContent = vid.muted ? '' : '';
 				btn.setAttribute('aria-label', vid.muted ? 'Activer le son' : 'Couper le son');
 				if(!vid.muted && vid.paused) vid.play();
 			});

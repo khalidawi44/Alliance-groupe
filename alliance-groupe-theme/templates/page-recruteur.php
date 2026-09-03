@@ -22,7 +22,7 @@ $primes_tot = 0; $nb_actifs = 0;
 if ( $is_amb && function_exists( 'ag_parrain_primes_for' ) ) { foreach ( ag_parrain_primes_for( $u->user_email ) as $p ) { $primes_tot += (float) ( $p['amount'] ?? 0 ); } }
 $board = function_exists( 'ag_recruiter_leaderboard' ) ? ag_recruiter_leaderboard() : array();
 $eur   = function ( $n ) { return number_format( (float) $n, 0, ',', ' ' ) . ' €'; };
-$pitch = 'Rejoins Alliance Groupe : vends quelques sites web et gagne ~1 000 €/mois (10% par vente, ex : +89 € par site à 890 €). Tu prospectes où tu veux, avec l\'app + le robot d\'appel. Inscris-toi 👇';
+$pitch = 'Rejoins Alliance Groupe : vends quelques sites web et gagne ~1 000 €/mois (10% par vente, ex : +89 € par site à 890 €). Tu prospectes où tu veux, avec l\'app + le robot d\'appel. Inscris-toi ';
 $share = rawurlencode( $pitch . ' ' . $link );
 ?>
 <main id="ag-main-content">
@@ -30,7 +30,7 @@ $share = rawurlencode( $pitch . ' ' . $link );
 	<section class="ag-hero" style="min-height:54vh;">
 		<div class="ag-hero__bg"><div class="ag-hero__orb ag-hero__orb--1"></div><div class="ag-hero__orb ag-hero__orb--2"></div></div>
 		<div class="ag-hero__content">
-			<span class="ag-tag">Programme recruteur 🤝</span>
+			<span class="ag-tag">Programme recruteur </span>
 			<h1 class="ag-hero__title"><span class="ag-line">Recrute des ambassadeurs,</span><span class="ag-line">gagne <em>2 fois</em>.</span></h1>
 			<p class="ag-hero__sub">Tu fais entrer quelqu'un dans l'équipe ? Tu touches <strong><?php echo esc_html( $eur( $prime ) ); ?> de prime</strong> dès sa 1ʳᵉ vente, <strong>+ <?php echo (int) $ov; ?>% sur toutes ses ventes, à vie</strong>. Sans plafond.</p>
 			<?php if ( $is_amb ) : ?>
@@ -47,9 +47,9 @@ $share = rawurlencode( $pitch . ' ' . $link );
 			<span class="ag-tag">Comment ça marche</span>
 			<h2 class="ag-section__title">3 étapes, <em>2 revenus</em></h2>
 			<div class="ag-sm-grid">
-				<div class="ag-sm-card"><span class="ag-sm-card__ic">1️⃣</span><h3>Tu partages ton lien</h3><p>Ton lien de parrainage personnel. Toute personne qui s'inscrit via ce lien devient ton <strong>filleul</strong>.</p></div>
-				<div class="ag-sm-card"><span class="ag-sm-card__ic">2️⃣</span><h3>Il fait sa 1ʳᵉ vente</h3><p>Tu gagnes une <strong>prime de <?php echo esc_html( $eur( $prime ) ); ?></strong>, créditée automatiquement.</p></div>
-				<div class="ag-sm-card"><span class="ag-sm-card__ic">3️⃣</span><h3>Il continue à vendre</h3><p>Tu touches <strong><?php echo (int) $ov; ?>%</strong> de sa commission sur <strong>chaque</strong> vente, <strong>à vie</strong>.</p></div>
+				<div class="ag-sm-card"><span class="ag-sm-card__ic">1</span><h3>Tu partages ton lien</h3><p>Ton lien de parrainage personnel. Toute personne qui s'inscrit via ce lien devient ton <strong>filleul</strong>.</p></div>
+				<div class="ag-sm-card"><span class="ag-sm-card__ic">2</span><h3>Il fait sa 1ʳᵉ vente</h3><p>Tu gagnes une <strong>prime de <?php echo esc_html( $eur( $prime ) ); ?></strong>, créditée automatiquement.</p></div>
+				<div class="ag-sm-card"><span class="ag-sm-card__ic">3</span><h3>Il continue à vendre</h3><p>Tu touches <strong><?php echo (int) $ov; ?>%</strong> de sa commission sur <strong>chaque</strong> vente, <strong>à vie</strong>.</p></div>
 			</div>
 		</div>
 	</section>
@@ -58,20 +58,20 @@ $share = rawurlencode( $pitch . ' ' . $link );
 	<!-- Mon lien -->
 	<section class="ag-section ag-section--onyx" id="monlien">
 		<div class="ag-container">
-			<h2 class="ag-section__title">Mon lien de recruteur 🔗</h2>
+			<h2 class="ag-section__title">Mon lien de recruteur </h2>
 			<p class="ag-section__desc">Partage-le partout. Dès qu'un ambassadeur s'inscrit via ce lien, il est rattaché à toi.</p>
 			<div class="ag-share">
 				<input id="ag-reclink" type="text" readonly value="<?php echo esc_attr( $link ); ?>" onclick="this.select();">
-				<button type="button" class="ag-btn-gold" id="ag-reccopy" onclick="navigator.clipboard.writeText(document.getElementById('ag-reclink').value).then(function(){var b=document.getElementById('ag-reccopy');b.textContent='✓ Copié';setTimeout(function(){b.textContent='Copier le lien';},1500);});">Copier le lien</button>
+				<button type="button" class="ag-btn-gold" id="ag-reccopy" onclick="navigator.clipboard.writeText(document.getElementById('ag-reclink').value).then(function(){var b=document.getElementById('ag-reccopy');b.textContent='Copié';setTimeout(function(){b.textContent='Copier le lien';},1500);});">Copier le lien</button>
 			</div>
 			<div class="ag-share-btns">
-				<a class="ag-sbtn ag-sbtn--wa" href="https://wa.me/?text=<?php echo $share; ?>" target="_blank" rel="noopener">📲 WhatsApp</a>
-				<a class="ag-sbtn ag-sbtn--tg" href="https://t.me/share/url?url=<?php echo rawurlencode( $link ); ?>&text=<?php echo rawurlencode( $pitch ); ?>" target="_blank" rel="noopener">✈ Telegram</a>
-				<a class="ag-sbtn ag-sbtn--sms" href="sms:?&body=<?php echo $share; ?>">💬 SMS</a>
-				<a class="ag-sbtn ag-sbtn--mail" href="mailto:?subject=<?php echo rawurlencode( 'Rejoins l\'équipe Alliance Groupe' ); ?>&body=<?php echo $share; ?>">✉ Email</a>
+				<a class="ag-sbtn ag-sbtn--wa" href="https://wa.me/?text=<?php echo $share; ?>" target="_blank" rel="noopener">WhatsApp</a>
+				<a class="ag-sbtn ag-sbtn--tg" href="https://t.me/share/url?url=<?php echo rawurlencode( $link ); ?>&text=<?php echo rawurlencode( $pitch ); ?>" target="_blank" rel="noopener">Telegram</a>
+				<a class="ag-sbtn ag-sbtn--sms" href="sms:?&body=<?php echo $share; ?>">SMS</a>
+				<a class="ag-sbtn ag-sbtn--mail" href="mailto:?subject=<?php echo rawurlencode( 'Rejoins l\'équipe Alliance Groupe' ); ?>&body=<?php echo $share; ?>">Email</a>
 			</div>
 			<?php if ( $primes_tot > 0 ) : ?>
-				<p class="ag-section__desc" style="margin-top:18px;">🎁 Tu as déjà gagné <strong style="color:var(--color-gold);"><?php echo esc_html( $eur( $primes_tot ) ); ?></strong> de primes de parrainage. Continue !</p>
+				<p class="ag-section__desc" style="margin-top:18px;">Tu as déjà gagné <strong style="color:var(--color-gold);"><?php echo esc_html( $eur( $primes_tot ) ); ?></strong> de primes de parrainage. Continue !</p>
 			<?php endif; ?>
 		</div>
 	</section>
@@ -81,7 +81,7 @@ $share = rawurlencode( $pitch . ' ' . $link );
 	<section class="ag-section ag-section--graphite">
 		<div class="ag-container">
 			<span class="ag-tag">Hall of fame</span>
-			<h2 class="ag-section__title">🏆 Top recruteurs</h2>
+			<h2 class="ag-section__title">Top recruteurs</h2>
 			<?php if ( empty( $board ) ) : ?>
 				<p class="ag-section__desc">Personne n'a encore recruté un ambassadeur actif. <strong>Sois le premier !</strong></p>
 			<?php else : ?>
@@ -89,7 +89,7 @@ $share = rawurlencode( $pitch . ' ' . $link );
 				<table style="width:100%;border-collapse:collapse;color:#fff;">
 					<thead><tr style="text-align:left;color:var(--color-gold);"><th style="padding:8px;">#</th><th style="padding:8px;">Recruteur</th><th style="padding:8px;">Filleuls actifs</th><th style="padding:8px;">Primes</th></tr></thead>
 					<tbody>
-					<?php foreach ( array_slice( $board, 0, 20 ) as $row ) : $medal = array( 1 => '🥇', 2 => '🥈', 3 => '🥉' ); ?>
+					<?php foreach ( array_slice( $board, 0, 20 ) as $row ) : $medal = array( 1 => '', 2 => '', 3 => '' ); ?>
 						<tr style="border-top:1px solid rgba(212,180,92,.2);">
 							<td style="padding:8px;font-weight:800;"><?php echo isset( $medal[ $row['rank'] ] ) ? $medal[ $row['rank'] ] : (int) $row['rank']; ?></td>
 							<td style="padding:8px;"><?php echo esc_html( $row['name'] ); ?></td>

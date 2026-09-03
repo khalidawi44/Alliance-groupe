@@ -13,8 +13,8 @@
                 <li><a href="<?php echo esc_url(home_url('/sites-express')); ?>">Création de site</a></li>
                 <li><a href="<?php echo esc_url(home_url('/maintenance')); ?>">Maintenance</a></li>
                 <li><a href="<?php echo esc_url(home_url('/templates-wordpress')); ?>">Templates métier</a></li>
-                <li><a href="<?php echo esc_url(home_url('/devis-instant')); ?>">Devis instantané&nbsp;🤖</a></li>
-                <li><a href="<?php echo esc_url(home_url('/refais-mon-site')); ?>">Refais mon site&nbsp;🤖</a></li>
+                <li><a href="<?php echo esc_url(home_url('/devis-instant')); ?>">Devis instantané&nbsp;</a></li>
+                <li><a href="<?php echo esc_url(home_url('/refais-mon-site')); ?>">Refais mon site&nbsp;</a></li>
             </ul>
         </div>
         <div class="ag-footer__col">
@@ -78,7 +78,7 @@
 <div class="ag-cookie" id="ag-cookie" role="dialog" aria-live="polite" aria-labelledby="ag-cookie-title" hidden>
     <div class="ag-cookie__inner">
         <div class="ag-cookie__head">
-            <h2 class="ag-cookie__title" id="ag-cookie-title">🍪 Votre vie privée, votre choix</h2>
+            <h2 class="ag-cookie__title" id="ag-cookie-title">Votre vie privée, votre choix</h2>
             <p class="ag-cookie__text">
                 Nous utilisons des cookies pour faire fonctionner le site, mesurer son audience et améliorer votre expérience. Vous pouvez accepter, refuser ou personnaliser vos choix. Votre décision est conservée 6 mois et modifiable à tout moment depuis la page <a href="<?php echo esc_url( home_url( '/cookies' ) ); ?>">Cookies</a>.
             </p>

@@ -17,7 +17,7 @@ $ag_envoye = isset( $_GET['envoye'] ) && '1' === $_GET['envoye'];
 	<section class="ag-hero" style="min-height:60vh;">
 		<div class="ag-hero__bg"><div class="ag-hero__orb ag-hero__orb--1"></div><div class="ag-hero__orb ag-hero__orb--2"></div></div>
 		<div class="ag-hero__content">
-			<span class="ag-tag ag-anim" data-anim="tag">Sur-mesure ✦ Haut de gamme</span>
+			<span class="ag-tag ag-anim" data-anim="tag">Sur-mesure Haut de gamme</span>
 			<h1 class="ag-hero__title">
 				<span class="ag-line">Un site <em>unique</em>, conçu</span>
 				<span class="ag-line">de A à Z, à ton image.</span>
@@ -37,12 +37,12 @@ $ag_envoye = isset( $_GET['envoye'] ) && '1' === $_GET['envoye'];
 			<h2 class="ag-section__title ag-anim" data-anim="title">Un autre niveau que les <em>packs fixes</em></h2>
 			<p class="ag-section__desc ag-anim" data-anim="desc">Le sur-mesure démarre là où s'arrêtent les Sites Express (1490 €). Voici des ordres de prix indicatifs — le devis final dépend de ton projet.</p>
 			<div class="ag-sm-grid">
-				<div class="ag-sm-card ag-anim" data-anim="card"><span class="ag-sm-card__ic">✦</span><h3>Premium</h3><p class="ag-sm-price">dès 2 500 €</p><p>Vitrine haut de gamme, design 100% unique, animations soignées, SEO avancé.</p></div>
-				<div class="ag-sm-card ag-anim" data-anim="card"><span class="ag-sm-card__ic">🛒</span><h3>Avancé</h3><p class="ag-sm-price">dès 5 000 €</p><p>E-commerce, réservation, espace membre, intégrations &amp; automatisations.</p></div>
-				<div class="ag-sm-card ag-anim" data-anim="card"><span class="ag-sm-card__ic">🚀</span><h3>Plateforme</h3><p class="ag-sm-price">10 000 €+</p><p>Application web, fonctionnalités complexes, IA, sur-mesure complet de A à Z — <strong>système de prospection inclus</strong>.</p></div>
+				<div class="ag-sm-card ag-anim" data-anim="card"><span class="ag-sm-card__ic"></span><h3>Premium</h3><p class="ag-sm-price">dès 2 500 €</p><p>Vitrine haut de gamme, design 100% unique, animations soignées, SEO avancé.</p></div>
+				<div class="ag-sm-card ag-anim" data-anim="card"><span class="ag-sm-card__ic"></span><h3>Avancé</h3><p class="ag-sm-price">dès 5 000 €</p><p>E-commerce, réservation, espace membre, intégrations &amp; automatisations.</p></div>
+				<div class="ag-sm-card ag-anim" data-anim="card"><span class="ag-sm-card__ic"></span><h3>Plateforme</h3><p class="ag-sm-price">10 000 €+</p><p>Application web, fonctionnalités complexes, IA, sur-mesure complet de A à Z — <strong>système de prospection inclus</strong>.</p></div>
 			</div>
-			<p style="text-align:center;color:var(--color-text-soft);margin-top:18px;font-size:.92rem;">💳 Paiement échelonné possible · devis gratuit · accompagnement de A à Z.</p>
-			<p style="text-align:center;margin-top:8px;"><a href="<?php echo esc_url( home_url( '/systeme-prospection' ) ); ?>" style="color:var(--color-gold);font-weight:700;">🤖 Découvrir notre Système de prospection (en option ou à part) →</a></p>
+			<p style="text-align:center;color:var(--color-text-soft);margin-top:18px;font-size:.92rem;">Paiement échelonné possible · devis gratuit · accompagnement de A à Z.</p>
+			<p style="text-align:center;margin-top:8px;"><a href="<?php echo esc_url( home_url( '/systeme-prospection' ) ); ?>" style="color:var(--color-gold);font-weight:700;">Découvrir notre Système de prospection (en option ou à part) →</a></p>
 		</div>
 	</section>
 
@@ -54,7 +54,7 @@ $ag_envoye = isset( $_GET['envoye'] ) && '1' === $_GET['envoye'];
 			<p class="ag-section__desc ag-anim" data-anim="desc">Réponds en 1 minute : on te recontacte avec un devis personnalisé. C'est gratuit et sans engagement.</p>
 
 			<?php if ( $ag_envoye ) : ?>
-				<div class="ag-sm-success">✅ Demande envoyée ! On étudie ton projet et on te recontacte très vite avec un devis personnalisé.</div>
+				<div class="ag-sm-success">Demande envoyée ! On étudie ton projet et on te recontacte très vite avec un devis personnalisé.</div>
 			<?php else : ?>
 			<form class="ag-sm-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<input type="hidden" name="action" value="ag_sur_mesure_submit">

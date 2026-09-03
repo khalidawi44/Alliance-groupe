@@ -75,98 +75,98 @@ $reco_msg = rawurlencode( "Je te recommande Alliance Groupe pour ton site web / 
 
 	<!-- ACCUEIL -->
 	<section class="view on" id="v-accueil">
-		<p class="hi">Bonjour <span><?php echo esc_html( $prenom ); ?></span> 👋</p>
+		<p class="hi">Bonjour <span><?php echo esc_html( $prenom ); ?></span> </p>
 		<p class="sub">Votre espace client Alliance Groupe.</p>
 		<div class="launch">
-			<a href="#" onclick="C.tab('site');return false"><i>🌐</i>Mon site</a>
-			<a href="#" onclick="C.tab('secu');return false"><i>🛡️</i>Ma sécurité</a>
-			<a href="#" onclick="C.tab('support');return false"><i>💬</i>Support</a>
-			<a href="#" onclick="C.tab('compte');return false"><i>🧾</i>Factures</a>
+			<a href="#" onclick="C.tab('site');return false"><i></i>Mon site</a>
+			<a href="#" onclick="C.tab('secu');return false"><i></i>Ma sécurité</a>
+			<a href="#" onclick="C.tab('support');return false"><i></i>Support</a>
+			<a href="#" onclick="C.tab('compte');return false"><i></i>Factures</a>
 		</div>
 		<div class="card">
-			<h3>🎁 Parrainage</h3>
+			<h3>Parrainage</h3>
 			<p class="sub" style="margin:-2px 0 8px;">Recommandez Alliance Groupe autour de vous — on vous remercie sur votre prochaine facture.</p>
-			<a class="b wa" target="_blank" rel="noopener" href="https://wa.me/?text=<?php echo $reco_msg; ?>">🟢 Recommander sur WhatsApp</a>
-			<a class="b ghost" href="sms:?&body=<?php echo $reco_msg; ?>">💬 Recommander par SMS</a>
+			<a class="b wa" target="_blank" rel="noopener" href="https://wa.me/?text=<?php echo $reco_msg; ?>">Recommander sur WhatsApp</a>
+			<a class="b ghost" href="sms:?&body=<?php echo $reco_msg; ?>">Recommander par SMS</a>
 		</div>
-		<p class="logout"><a href="<?php echo esc_url( wp_logout_url( home_url( '/connexion' ) ) ); ?>">🚪 Se déconnecter</a></p>
-		<p class="sub" style="text-align:center;font-size:.8rem;">💡 Installer : Safari → Partager ↑ → « Sur l'écran d'accueil ».</p>
+		<p class="logout"><a href="<?php echo esc_url( wp_logout_url( home_url( '/connexion' ) ) ); ?>">Se déconnecter</a></p>
+		<p class="sub" style="text-align:center;font-size:.8rem;">Installer : Safari → Partager ↑ → « Sur l'écran d'accueil ».</p>
 	</section>
 
 	<!-- MON SITE -->
 	<section class="view" id="v-site">
-		<h2 class="sec">🌐 Mon site</h2>
+		<h2 class="sec">Mon site</h2>
 		<div class="card">
 			<h3>Adresse de mon site</h3>
 			<input type="url" id="c-site" value="<?php echo esc_attr( $site ); ?>" placeholder="https://mon-site.fr">
-			<button type="button" id="c-site-save" class="b gold">💾 Enregistrer</button>
-			<?php if ( $site ) : ?><a class="b ghost" target="_blank" rel="noopener" href="<?php echo esc_url( $site ); ?>">🔗 Ouvrir mon site</a><?php endif; ?>
+			<button type="button" id="c-site-save" class="b gold">Enregistrer</button>
+			<?php if ( $site ) : ?><a class="b ghost" target="_blank" rel="noopener" href="<?php echo esc_url( $site ); ?>">Ouvrir mon site</a><?php endif; ?>
 		</div>
 		<div class="card">
 			<h3>Demander une modification</h3>
 			<p class="sub" style="margin:-2px 0 6px;">Un texte à changer, une photo, un horaire, une nouvelle page… décrivez, on s'en occupe.</p>
 			<textarea id="c-modif" placeholder="Ex : changer le numéro de téléphone en page contact…"></textarea>
-			<button type="button" class="b gold c-send" data-type="modif" data-src="c-modif">📩 Envoyer ma demande</button>
+			<button type="button" class="b gold c-send" data-type="modif" data-src="c-modif">Envoyer ma demande</button>
 		</div>
 	</section>
 
 	<!-- SÉCURITÉ -->
 	<section class="view" id="v-secu">
-		<h2 class="sec">🛡️ Ma sécurité</h2>
+		<h2 class="sec">Ma sécurité</h2>
 		<div class="card">
 			<?php if ( $rapport ) : ?>
 				<h3>Mon rapport de sécurité</h3>
 				<p class="sub" style="margin:-2px 0 8px;">L'état de sécurité de votre site + le plan de correction.</p>
-				<a class="b gold" target="_blank" rel="noopener" href="<?php echo esc_url( $rapport ); ?>">🛡️ Voir mon rapport</a>
+				<a class="b gold" target="_blank" rel="noopener" href="<?php echo esc_url( $rapport ); ?>">Voir mon rapport</a>
 			<?php else : ?>
 				<h3>Audit de sécurité</h3>
 				<p class="sub" style="margin:-2px 0 8px;">Renseignez d'abord l'adresse de votre site dans « Mon site » pour générer votre rapport.</p>
-				<a class="b ghost" href="#" onclick="C.tab('site');return false">🌐 Renseigner mon site</a>
+				<a class="b ghost" href="#" onclick="C.tab('site');return false">Renseigner mon site</a>
 			<?php endif; ?>
 			<textarea id="c-secu" placeholder="Une question sur ma sécurité ? Demander la correction…"></textarea>
-			<button type="button" class="b gold c-send" data-type="securite" data-src="c-secu">🛠️ Demander la correction / poser une question</button>
+			<button type="button" class="b gold c-send" data-type="securite" data-src="c-secu">Demander la correction / poser une question</button>
 		</div>
 	</section>
 
 	<!-- SUPPORT -->
 	<section class="view" id="v-support">
-		<h2 class="sec">💬 Support</h2>
+		<h2 class="sec">Support</h2>
 		<div class="card">
 			<h3>Nous contacter</h3>
-			<?php if ( $wapro ) : ?><a class="b wa" target="_blank" rel="noopener" href="https://wa.me/<?php echo esc_attr( $wapro ); ?>?text=<?php echo rawurlencode( 'Bonjour, ' . ( $u->display_name ?: '' ) . ', j\'ai une question :' ); ?>">🟢 WhatsApp</a><?php endif; ?>
-			<a class="b ghost" href="tel:<?php echo esc_attr( $tel_pro ); ?>">📞 Appeler</a>
-			<a class="b ghost" href="mailto:contact@alliancegroupe-inc.com">✉️ Email</a>
+			<?php if ( $wapro ) : ?><a class="b wa" target="_blank" rel="noopener" href="https://wa.me/<?php echo esc_attr( $wapro ); ?>?text=<?php echo rawurlencode( 'Bonjour, ' . ( $u->display_name ?: '' ) . ', j\'ai une question :' ); ?>">WhatsApp</a><?php endif; ?>
+			<a class="b ghost" href="tel:<?php echo esc_attr( $tel_pro ); ?>">Appeler</a>
+			<a class="b ghost" href="mailto:contact@alliancegroupe-inc.com">Email</a>
 		</div>
 		<div class="card">
 			<h3>Envoyer un message</h3>
 			<textarea id="c-sup" placeholder="Votre message…"></textarea>
-			<button type="button" class="b gold c-send" data-type="support" data-src="c-sup">📩 Envoyer</button>
+			<button type="button" class="b gold c-send" data-type="support" data-src="c-sup">Envoyer</button>
 		</div>
 	</section>
 
 	<!-- COMPTE / FACTURES -->
 	<section class="view" id="v-compte">
-		<h2 class="sec">🧾 Factures &amp; maintenance</h2>
+		<h2 class="sec">Factures &amp; maintenance</h2>
 		<div class="card">
 			<h3>Ma maintenance</h3>
 			<div class="plan"><span>Essentielle</span><b>29 €/mois</b></div>
 			<div class="plan"><span>Pro</span><b>59 €/mois</b></div>
 			<div class="plan" style="border:0;"><span>Premium</span><b>99 €/mois</b></div>
-			<a class="b gold c-send" data-type="support" data-src="c-fact-hidden" style="margin-top:14px;">💬 Gérer mon abonnement / mes factures</a>
+			<a class="b gold c-send" data-type="support" data-src="c-fact-hidden" style="margin-top:14px;">Gérer mon abonnement / mes factures</a>
 			<textarea id="c-fact-hidden" style="display:none;">Demande concernant mes factures / mon abonnement de maintenance.</textarea>
 		</div>
-		<p class="logout"><a href="<?php echo esc_url( wp_logout_url( home_url( '/connexion' ) ) ); ?>">🚪 Se déconnecter</a></p>
+		<p class="logout"><a href="<?php echo esc_url( wp_logout_url( home_url( '/connexion' ) ) ); ?>">Se déconnecter</a></p>
 	</section>
 
 </div>
 
 <div id="toast"></div>
 <nav class="tabbar">
-	<a href="#" data-t="accueil" class="active" onclick="C.tab('accueil');return false"><i>🏠</i>Accueil</a>
-	<a href="#" data-t="site" onclick="C.tab('site');return false"><i>🌐</i>Mon site</a>
-	<a href="#" data-t="secu" onclick="C.tab('secu');return false"><i>🛡️</i>Sécurité</a>
-	<a href="#" data-t="support" onclick="C.tab('support');return false"><i>💬</i>Support</a>
-	<a href="#" data-t="compte" onclick="C.tab('compte');return false"><i>🧾</i>Compte</a>
+	<a href="#" data-t="accueil" class="active" onclick="C.tab('accueil');return false"><i></i>Accueil</a>
+	<a href="#" data-t="site" onclick="C.tab('site');return false"><i></i>Mon site</a>
+	<a href="#" data-t="secu" onclick="C.tab('secu');return false"><i></i>Sécurité</a>
+	<a href="#" data-t="support" onclick="C.tab('support');return false"><i></i>Support</a>
+	<a href="#" data-t="compte" onclick="C.tab('compte');return false"><i></i>Compte</a>
 </nav>
 
 <script>
@@ -179,13 +179,13 @@ var C = (function(){
 })();
 (function(){
 	var ss=document.getElementById('c-site-save');
-	if(ss){ ss.addEventListener('click',function(){ ss.textContent='…'; C.post('ag_client_save_site',{site:document.getElementById('c-site').value}).then(function(j){ ss.textContent='💾 Enregistrer'; C.toast(j&&j.success?'✅ Site enregistré':'❌ Erreur'); }).catch(function(){ ss.textContent='💾 Enregistrer'; C.toast('❌ Erreur'); }); }); }
+	if(ss){ ss.addEventListener('click',function(){ ss.textContent='…'; C.post('ag_client_save_site',{site:document.getElementById('c-site').value}).then(function(j){ ss.textContent='Enregistrer'; C.toast(j&&j.success?'Site enregistré':'Erreur'); }).catch(function(){ ss.textContent='Enregistrer'; C.toast('Erreur'); }); }); }
 	document.querySelectorAll('.c-send').forEach(function(b){
 		b.addEventListener('click',function(){
 			var src=document.getElementById(b.getAttribute('data-src')), msg=src?src.value:'', type=b.getAttribute('data-type');
 			if(!msg.trim()){ C.toast('Écrivez votre message'); return; }
 			var lbl=b.textContent; b.textContent='…';
-			C.post('ag_client_request',{type:type,msg:msg}).then(function(j){ b.textContent=lbl; if(j&&j.success){ C.toast('✅ Envoyé ! On vous répond vite.'); if(src&&src.id!=='c-fact-hidden')src.value=''; } else { C.toast('❌ '+((j&&j.data&&j.data.m)||'Erreur')); } }).catch(function(){ b.textContent=lbl; C.toast('❌ Erreur réseau'); });
+			C.post('ag_client_request',{type:type,msg:msg}).then(function(j){ b.textContent=lbl; if(j&&j.success){ C.toast('Envoyé ! On vous répond vite.'); if(src&&src.id!=='c-fact-hidden')src.value=''; } else { C.toast(''+((j&&j.data&&j.data.m)||'Erreur')); } }).catch(function(){ b.textContent=lbl; C.toast('Erreur réseau'); });
 		});
 	});
 })();

@@ -118,7 +118,7 @@ $ag_plans = array(
 .ag-maint-price small{color:#9aa;font-size:.95rem}
 .ag-maint-feats{list-style:none;margin:0 0 24px;padding:0;flex:1}
 .ag-maint-feats li{padding:9px 0 9px 26px;position:relative;color:rgba(255,255,255,.85);font-size:.95rem;border-bottom:1px solid rgba(255,255,255,.06)}
-.ag-maint-feats li::before{content:'✓';position:absolute;left:0;color:#D4B45C;font-weight:700}
+.ag-maint-feats li::before{content:'';position:absolute;left:0;color:#D4B45C;font-weight:700}
 .ag-maint-cta{display:block;text-align:center}
 .ag-btn-ghost{display:inline-block;padding:13px 24px;border-radius:100px;border:1px solid rgba(212,180,92,.5);color:#D4B45C;text-decoration:none;font-weight:700;transition:.2s}
 .ag-btn-ghost:hover{background:rgba(212,180,92,.12)}
