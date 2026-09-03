@@ -163,6 +163,48 @@ Chaîne complète : `docs/MECANIQUE-DEPLOIEMENT.md`.
 
 ---
 
+## FRONTIÈRE — rappelée le 03/09 après un accrochage
+
+La session CODE a retouché du visuel sur l'accueil (taille du lion, taille du
+titre, style du champ, position de la section). **C'était hors de son
+périmètre**, ça a mis Fabrice en conflit entre les deux sessions, et **ça a été
+annulé** (revert du commit `5ac7af0`).
+
+La règle ne bouge pas : **ce qui se voit → DESIGN. Ce qui se calcule → CODE.**
+Elle est désormais aussi dans `CLAUDE.md`, lu à chaque démarrage de session.
+
+### Ce que la lane CODE a observé, et qu'elle laisse à la lane DESIGN
+
+Sur l'accueil (`templates/page-accueil-cinema.php`), section `.lion`
+« Vois ton site refait en 60 secondes », constaté sur une capture iPhone :
+
+1. **Le champ où l'on colle son adresse est invisible.** `background` à 5 %
+   d'opacité et bordure à 32 %, posé sur la photo du lion : il n'y a aucun
+   cadre perceptible, le texte d'exemple flotte sur la crinière. Le visiteur ne
+   peut pas deviner qu'on écrit là. **C'est le défaut le plus coûteux de la
+   page** — l'outil ne peut pas convertir si personne ne voit le champ.
+2. **Le lion déborde.** Demande de Fabrice : qu'il tienne entier à l'écran.
+3. **Titre et sous-titre trop hauts** : ils écrasent l'animation. Fabrice veut
+   les réduire.
+4. **La section est trop bas dans la page.** Fabrice la veut plus haut, c'est
+   une promesse qui se tient en dix secondes. ⚠️ Attention en la remontant :
+   elle mesure 210svh (150 sur mobile) et repousserait d'autant les offres, qui
+   sont déjà loin. La raccourcir en même temps.
+
+### Un point technique, à faire par la lane CODE sur demande
+
+`page-accueil-cinema.php`, animation du lion : la plage `ScrollTrigger` va de
+`start:"top top"` à `end:"center bottom"`. **Cette plage est inversée** — la fin
+tombe avant le début, donc la révélation se joue d'un bloc au lieu de suivre le
+défilement. Ce n'est pas du goût, c'est un défaut de calcul. **La lane CODE le
+corrige dès que la lane DESIGN le demande**, et pas avant, pour ne pas éditer le
+fichier pendant qu'ils travaillent dessus.
+
+Le champ manque aussi d'un `<label>` (le texte d'exemple ne tient pas lieu
+d'étiquette pour un lecteur d'écran). Même règle : sur demande.
+
+---
+
 ## Journal maître
 
 - 2026-08-27 · CODE · Création du protocole et d'un `COWORK.md` dans chacun des 16 templates. Inventaire mesuré (versions, images, PHP). Diagnostic : famine d'images sur tout le parc hors Gwen.
@@ -170,3 +212,4 @@ Chaîne complète : `docs/MECANIQUE-DEPLOIEMENT.md`.
 - 2026-08-27 · CODE · Premium barber : module Statistiques construit (trafic sans cookie ni IP + historique des tickets). Descriptions plugin et .json mises en cohérence.
 - 2026-08-27 · CODE · Design Premium transféré dans le thème gratuit (starter 1.0.13, premium 0.7.0). Statistiques verrouillées sur la licence — elles tournaient gratuitement, c'était une faute de ma part.
 - 2026-08-27 · CODE · Règle de répercussion appliquée : page de vente barber réécrite, palette corrigée (or → bleu) dans la page métier ET la liste des templates. Promesses non tenues retirées (SMS, multi-barbers, écran TV, API, multi-salons, CA quotidien) — elles n'existaient pas dans le code.
+- 2026-09-03 · CODE · Frontière franchie puis réparée : retouche visuelle de l'accueil annulée (revert `5ac7af0`). Constats passés à la lane DESIGN ci-dessus. La règle de périmètre monte dans `CLAUDE.md`.

@@ -11,6 +11,11 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 - **Hook `SessionStart`** (`.claude/hooks/session-start.sh`, enregistré dans `.claude/settings.json`) : à chaque nouvelle session il injecte automatiquement l'état réel (branche, derniers commits, travail non commité, version active, focus templates, en-tête `HANDOFF.md`). C'est ce qui **relie les conversations** entre elles.
 - **Règle de fin de session** : avant de fermer, (1) mettre à jour les 3 premières lignes + §9 de `HANDOFF.md`, (2) commiter, (3) pousser. La conversation suivante reprendra exactement là.
 
+## RÈGLE DE PÉRIMÈTRE — CODE ≠ DESIGN (demande ferme de Fabrice, 03/09)
+**Cette session ne touche PAS au visuel.** Tailles, couleurs, typographie, images, position d'une section, longueur d'un texte d'accroche, réglages d'animation : tout cela se voit, donc tout cela appartient à la **session Cowork (DESIGN)**, qui a le PC de Fabrice, le navigateur et les outils d'image.
+**Mon domaine :** PHP/JS/CSS de structure, ponts et branchements entre modules, points AJAX, sécurité, conformité, SEO technique, statistiques, performance, analyse, déploiement.
+**Si Fabrice demande une retouche visuelle : le lui dire et renvoyer vers la session Cowork.** Ne pas la faire « puisqu'on y est ». Deux sessions qui retouchent le même écran = conflit garanti et travail perdu. Ce qui est observé (bug d'affichage, défaut d'ergonomie) se **consigne dans `assets/downloads/COWORK.md`** pour la lane DESIGN, on ne le corrige pas soi-même.
+
 ## RÈGLE DE RÉPERCUSSION (demande ferme de Fabrice, 27/08)
 **Dès qu'on change quelque chose, on vérifie systématiquement si ça doit être changé ailleurs.** Un produit modifié sans que ce qui le décrit soit mis à jour, c'est une promesse fausse faite au client.
 Checklist à dérouler à chaque changement fonctionnel d'un template :
