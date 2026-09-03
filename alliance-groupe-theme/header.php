@@ -258,8 +258,16 @@
                 <a href="<?php echo esc_url(home_url('/realisations')); ?>">Nos réalisations <span class="ag-nav__arrow">&#9662;</span></a>
                 <div class="ag-mega ag-mega--sm">
                     <div class="ag-mega__inner">
+                        <?php /* Uniquement des clients REELS (Gwen Services, Anna Photo,
+                                 L.A Environnement). LFI Nantes Sud Clos Toreau reste
+                                 volontairement sur /realisations seulement. Ne jamais
+                                 remettre de projet d'exemple ici. */ ?>
                         <div class="ag-mega__col">
                             <span class="ag-mega__label">Nos projets</span>
+                            <a href="<?php echo esc_url(home_url('/realisations')); ?>#gwen-services" class="ag-mega__link">
+                                <span class="ag-mega__icon">🏡</span>
+                                <span><strong>Gwen Services</strong><small>Aide à domicile, Nantes</small></span>
+                            </a>
                             <a href="<?php echo esc_url(home_url('/realisations')); ?>#anna-photo" class="ag-mega__link">
                                 <span class="ag-mega__icon">📸</span>
                                 <span><strong>Anna Photo</strong><small>Blog photo, Nantes</small></span>
@@ -267,29 +275,6 @@
                             <a href="<?php echo esc_url(home_url('/realisations')); ?>#la-environnement" class="ag-mega__link">
                                 <span class="ag-mega__icon">🌿</span>
                                 <span><strong>L.A Environnement</strong><small>Site vitrine, Loire-Atlantique</small></span>
-                            </a>
-                            <a href="<?php echo esc_url(home_url('/realisations')); ?>#maison-riviera" class="ag-mega__link">
-                                <span class="ag-mega__icon">🏠</span>
-                                <span><strong>Maison Riviera</strong><small>E-commerce, Nice</small></span>
-                            </a>
-                            <a href="<?php echo esc_url(home_url('/realisations')); ?>#cabinet-martin" class="ag-mega__link">
-                                <span class="ag-mega__icon">⚖️</span>
-                                <span><strong>Cabinet Martin</strong><small>Site vitrine, Paris</small></span>
-                            </a>
-                        </div>
-                        <div class="ag-mega__col">
-                            <span class="ag-mega__label">&nbsp;</span>
-                            <a href="<?php echo esc_url(home_url('/realisations')); ?>#fitness-lab" class="ag-mega__link">
-                                <span class="ag-mega__icon">💪</span>
-                                <span><strong>Fitness Lab</strong><small>App & site, Lyon</small></span>
-                            </a>
-                            <a href="<?php echo esc_url(home_url('/realisations')); ?>#saveurs-orient" class="ag-mega__link">
-                                <span class="ag-mega__icon">🍽️</span>
-                                <span><strong>Saveurs d'Orient</strong><small>Restaurant, Marrakech</small></span>
-                            </a>
-                            <a href="<?php echo esc_url(home_url('/realisations')); ?>#techvision" class="ag-mega__link">
-                                <span class="ag-mega__icon">🚀</span>
-                                <span><strong>TechVision Pro</strong><small>SaaS, Nantes</small></span>
                             </a>
                             <a href="<?php echo esc_url(home_url('/realisations')); ?>" class="ag-mega__link ag-mega__link--all">
                                 <span><strong>Voir tous les projets →</strong></span>
@@ -452,12 +437,12 @@
             <div class="ag-mobile-menu__group">
                 <button class="ag-mobile-menu__toggle" type="button">Nos réalisations <span class="ag-mobile-menu__arrow">+</span></button>
                 <div class="ag-mobile-menu__sub">
+                    <?php /* Uniquement des clients REELS. Ne jamais remettre de projet
+                             d'exemple ici : ce menu est lu comme un portefeuille client. */ ?>
                     <a href="<?php echo esc_url(home_url('/realisations')); ?>">Tous les projets</a>
+                    <a href="<?php echo esc_url(home_url('/realisations')); ?>#gwen-services">🏡 Gwen Services</a>
                     <a href="<?php echo esc_url(home_url('/realisations')); ?>#anna-photo">📸 Anna Photo</a>
                     <a href="<?php echo esc_url(home_url('/realisations')); ?>#la-environnement">🌿 L.A Environnement</a>
-                    <a href="<?php echo esc_url(home_url('/realisations')); ?>#maison-riviera">🏠 Maison Riviera</a>
-                    <a href="<?php echo esc_url(home_url('/realisations')); ?>#cabinet-martin">⚖️ Cabinet Martin</a>
-                    <a href="<?php echo esc_url(home_url('/realisations')); ?>#fitness-lab">💪 Fitness Lab</a>
                 </div>
             </div>
 
