@@ -1,9 +1,9 @@
 {
-    "version": "1.0.13",
+    "version": "1.0.14",
     "download_url": "https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/downloads/ag-starter-barber.zip",
     "homepage": "https://alliancegroupe-inc.com/wordpress-barber",
     "requires": "6.0",
     "tested": "6.5",
-    "last_updated": "2026-09-01",
+    "last_updated": "2026-09-03",
     "description": "Theme WordPress 100% gratuit pour barbier / coiffeur. File d'attente temps reel, QR code vitrine, services, horaires, tarifs."
 }
