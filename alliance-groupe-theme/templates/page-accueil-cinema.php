@@ -151,8 +151,12 @@ $dir = get_stylesheet_directory_uri();
   .of__note a{color:var(--gold-hi)}
 
   /* ---------- ATELIER (couche de la scène) ---------- */
+  /* L'atelier n'est masqué QUE si le JS tourne (classe .js-cine posée en tête
+     de page). Sans JS, il reste visible : DESIGN.md interdit de laisser une
+     section à opacity:0 en attendant un script. */
+  .js-cine .at{opacity:0}
   .at{position:absolute;inset:0;z-index:7;display:flex;flex-direction:column;justify-content:center;
-      padding:clamp(84px,12vh,120px) 0 clamp(18px,3vh,40px);opacity:0;pointer-events:none;overflow:hidden}
+      padding:clamp(84px,12vh,120px) 0 clamp(18px,3vh,40px);pointer-events:none;overflow:hidden}
   .at .stitle{font-size:clamp(1.4rem,3.2vw,2.2rem);margin:8px 0 10px}
   .at .lead{font-size:clamp(.9rem,1.7vw,1rem);line-height:1.5}
   .at .at__head{margin:0 auto 14px}
@@ -386,6 +390,12 @@ $dir = get_stylesheet_directory_uri();
 
 
 
+
+<script>
+/* Masquage de la scène réservé aux visiteurs dont le JS tourne : sans lui,
+   l'atelier reste lisible au lieu de disparaître en attendant une timeline. */
+document.documentElement.classList.add('js-cine');
+</script>
 
 <section class="hero" id="top">
   <div class="hero__bg" data-parallax><img src="<?php echo esc_url( $dir . '/assets/images/cities/baie_naples_nuit.jpg' ); ?>" alt="La baie de Naples" fetchpriority="high"></div>
@@ -709,10 +719,44 @@ $dir = get_stylesheet_directory_uri();
 <script>
 (function(){
   var G = window.gsap, ST = window.ScrollTrigger;
-  var ok = !!(G && ST); if (ok) G.registerPlugin(ST);
 
-  /* défilement amorti */
-  var L = window.Lenis || (window.lenis && window.lenis.default);
+  /* RÉDUCTION DE MOUVEMENT — coupure nette (DESIGN.md).
+     La règle CSS @media(prefers-reduced-motion) ne coupait que les animations
+     CSS ; toutes celles de cette page sont pilotées par GSAP en styles inline.
+     Résultat mesuré le 03/09 : sous « réduire les animations », les cartes de
+     prix restaient à opacity:0 sur TOUTE la hauteur de la page — le prix
+     n'existait tout simplement pas pour ces visiteurs.
+     Même chose si GSAP ne se charge pas (4G coupée, script bloqué) : .at reste
+     à opacity:0 (CSS) et .of à pointer-events:none, donc rien n'est cliquable.
+     On force donc l'état FINAL : tout visible, tout cliquable, sans timeline. */
+  var REDUIT = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  var ok = !!(G && ST) && !REDUIT;
+  if (ok) G.registerPlugin(ST);
+
+  if (!ok) {
+    (function etatFinal(){
+      var etape = document.querySelector(".ds");
+      var colle = document.querySelector(".ds__stick");
+      if (etape) { etape.style.height = "auto"; }
+      if (colle) { colle.style.position = "static"; colle.style.height = "auto"; }
+      document.querySelectorAll(".of, .at, .of__grid, .pack, [data-rv], [data-mots], [data-hl]").forEach(function(el){
+        el.style.opacity = "1";
+        el.style.transform = "none";
+        el.style.filter = "none";
+        el.style.pointerEvents = "auto";
+      });
+      document.querySelectorAll(".of, .at").forEach(function(el){
+        el.style.position = "static";
+        el.style.visibility = "visible";
+      });
+      document.querySelectorAll(".pack").forEach(function(el){ el.style.position = "static"; });
+      var cap = document.getElementById("dsCap");
+      if (cap) { cap.style.display = "none"; }
+    })();
+  }
+
+  /* défilement amorti — jamais sous réduction de mouvement */
+  var L = REDUIT ? null : (window.Lenis || (window.lenis && window.lenis.default));
   if (L) {
     var lenis = new L({ duration: 1.15, smoothWheel: true });
     (function raf(t){ lenis.raf(t); requestAnimationFrame(raf); })();
@@ -1044,15 +1088,26 @@ $dir = get_stylesheet_directory_uri();
      scroll plutôt que le haut de l'élément (sinon le lien semble mort). */
   (function(){
     var ds = document.querySelector(".ds");
-    var reperes = { offres: .46, atelier: .84 };
+    /* CORRECTIF 03/09 — la branche mobile visait getBoundingClientRect() de
+       #ofStage, qui est en position:absolute DANS un conteneur sticky : son
+       rect avant épinglage vaut le HAUT de la scène, c'est-à-dire la
+       progression 0. À cet instant les offres sont encore à opacity:0 et
+       l'écran affiche la photo du bureau + « Ce qui compte ne se voit pas tout
+       de suite ». Le visiteur demandait un prix et recevait un aphorisme.
+       On vise désormais la progression sur mobile aussi, au MILIEU de la
+       fenêtre où les cartes sont visibles et cliquables (is-live .30→.56 pour
+       les offres, p>.64 pour l'atelier), pas sur son bord. */
+    var reperesPC  = { offres: .46, atelier: .84 };
+    var reperesTel = { offres: .42, atelier: .78 };
     document.addEventListener("click", function(e){
       var a = e.target && e.target.closest ? e.target.closest('a[href^="#"]') : null;
       if (!a) return;
       var cle = a.getAttribute("href").slice(1);
-      if (!(cle in reperes)) return;
+      if (!(cle in reperesPC)) return;
       e.preventDefault();
       var cible;
-      if (ds && !matchMedia("(max-width:960px)").matches){
+      if (ds){
+        var reperes = matchMedia("(max-width:960px)").matches ? reperesTel : reperesPC;
         cible = ds.offsetTop + Math.max(0, ds.offsetHeight - innerHeight) * reperes[cle];
       } else {
         var el = document.getElementById(cle === "offres" ? "ofStage" : "atStage");
