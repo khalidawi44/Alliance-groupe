@@ -16,9 +16,9 @@
         "canonical": "#F37A1F",
         "tonalRamp": ["#2B1305", "#4A200A", "#6A2E0E", "#8C3E12", "#B04E16", "#D4611A", "#F37A1F", "#F9B57E"]
       },
-      "noir-atelier": {
+      "noir-maison": {
         "role": "neutral",
-        "displayName": "Noir Atelier",
+        "displayName": "Noir Maison",
         "canonical": "#080808",
         "tonalRamp": ["#000000", "#050505", "#080808", "#0A0A0F", "#14141C", "#232936", "#3A3A46", "#5A5A66"]
       },
@@ -82,7 +82,8 @@
       { "name": "reponse-carte", "value": "0.4s", "purpose": "Bordure, translation et ombre d'une carte. Montée de 4px, volontairement plus lente que le bouton." },
       { "name": "respiration-image", "value": "0.6s ease", "purpose": "Zoom d'image à scale(1.06) au survol de sa carte." },
       { "name": "panneau-plein-ecran", "value": "0.45s cubic-bezier(.23,1,.32,1)", "purpose": "Glissement du menu plein écran depuis la droite." },
-      { "name": "couche-cinema", "value": "0.28s cubic-bezier(.16,1,.3,1)", "purpose": "Curseur personnalisé et révélations de la couche cinéma." },
+      { "name": "couche-cinema", "value": "0.28s cubic-bezier(.16,1,.3,1)", "purpose": "Curseur personnalisé de la couche cinéma." },
+      { "name": "devoilement-scroll", "value": "opacity 0.5s ease, transform 0.5s ease (translateY 16-24px)", "purpose": "Dévoilement au défilement sur l'accueil, à partir de la section 2 seulement, joué une seule fois. Le héros ne s'anime jamais : nom, offre, prix et preuve sont lisibles sans défiler." },
       { "name": "coupe-circuit", "value": "@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}", "purpose": "Coupe-circuit global déjà présent dans main.css. Toute nouvelle animation doit s'y plier." }
     ],
     "breakpoints": [
@@ -154,11 +155,12 @@
     }
   ],
   "narrative": {
-    "northStar": "L'Atelier d'Orfèvre",
-    "overview": "Un seul artisan, un établi sombre, et une lampe. Alliance Groupe est un studio solo : la page doit donner la sensation d'un objet façonné à la main par quelqu'un dont on peut voir le geste, pas d'une agence qui parle d'elle au pluriel. D'où un fond quasi noir (#080808) qui ne cherche jamais à impressionner, des surfaces de contenu à peine plus claires que le fond (2,5 % de blanc), des bordures d'un cheveu (6 % de blanc), et un or champagne qu'on ne sort que pour ce qui compte : le bouton d'action, un chiffre, un mot d'un titre. Le luxe ici n'est pas la profusion, c'est la retenue — l'or coûte cher, donc on en met peu.\n\nLa densité est calme et aérée : 100 px entre chaque section, une colonne de 1200 px maximum, du texte à 1.6-1.7 d'interlignage. Rien ne clignote, rien ne flotte. Au repos, tout est plat : aucune ombre portée sur une carte, aucune élévation gratuite. La profondeur n'apparaît que lorsque le visiteur agit — la carte se soulève de 4 px et sa bordure s'ambre, le bouton monte de 2 px et son halo doré s'intensifie. C'est une interface qui répond au toucher plutôt qu'une interface qui s'agite pour se faire remarquer.\n\nLa seule licence poétique est typographique : Playfair Display, toujours en italique, ne se pose que sur un mot ou deux à l'intérieur d'un titre en Manrope. C'est la signature gravée sur l'objet — le contraste entre la sans-serif industrieuse et l'empattement manuscrit dit exactement ce que vend le studio : de la technique livrée avec du soin.",
+    "northStar": "La Maison Héritage",
+    "overview": "Une maison de famille, quelque part entre Nantes et Naples : la pièce est sombre le soir, une lampe pose son or sur la table, et un prénom est gravé dans le bois. C'est ce que doit donner le site — la sensation d'entrer chez quelqu'un qui est là depuis longtemps, pas d'être reçu par une agence qui parle d'elle au pluriel. D'où un fond quasi noir (#080808) qui ne cherche jamais à impressionner, des surfaces à peine plus claires que le fond (2,5 % de blanc), des bordures d'un cheveu (6 % de blanc), et un or champagne qu'on ne sort que pour ce qui compte : le bouton d'action, un prix, un chiffre, un mot d'un titre.\n\nEt la maison est déjà construite. C'est le cœur du positionnement, et donc du design : les templates métiers existent, ils sont testés, versionnés, livrés en cinq jours. Une maison d'héritage ne se bâtit pas devant le client, elle s'ouvre — on allume, on montre les pièces, on donne le prix. Rien dans l'interface ne doit suggérer une commande longue et coûteuse : pas de préambule, pas de mise en bouche, pas de « laissez-nous étudier votre projet ».\n\nLa densité est calme et aérée : 100 px entre chaque section, une colonne de 1200 px maximum, du texte à 1.6-1.7 d'interlignage. Rien ne clignote, rien ne flotte. Au repos, tout est plat : aucune ombre portée sur une carte, aucune élévation gratuite. La profondeur n'apparaît que lorsque le visiteur agit — la carte se soulève de 4 px et sa bordure s'ambre, le bouton monte de 2 px et son halo doré s'intensifie. Une maison ne s'agite pas pour se faire remarquer ; elle répond quand on pousse une porte.\n\nLa signature est typographique : Playfair Display, toujours en italique, ne se pose que sur un mot ou deux à l'intérieur d'un titre en Manrope. C'est le nom gravé sur le linteau — le contraste entre la sans-serif qui travaille et l'empattement manuscrit dit exactement ce que vend le studio : de la technique livrée avec du soin, à prix tenu.",
     "keyCharacteristics": [
-      "Noir d'atelier presque total, jamais un gris de fond « thème sombre » standard",
+      "Noir de maison presque total, jamais un gris de fond « thème sombre » standard",
       "Or champagne rare, jamais un aplat : accent, contour, halo",
+      "La maison est déjà construite : prix et porte d'entrée visibles tout de suite, jamais de préambule qui ferait croire à un projet long",
       "Surfaces plates au repos ; la profondeur est une réponse, pas un décor",
       "Manrope 800 pour dire, Playfair italique pour signer",
       "Un seul menu plein écran, à toutes les tailles, PC inclus",
@@ -166,9 +168,10 @@
     ],
     "rules": [
       { "name": "La Règle de l'Or Rare", "body": "L'or ne remplit jamais plus qu'un bouton ou une pastille. Test : sur une capture d'écran de la page, si l'or dépasse une dizaine de pour cent des pixels, c'est trop — retirez-en jusqu'à ce que le bouton principal redevienne l'endroit où l'œil tombe en premier.", "section": "colors" },
-      { "name": "La Règle du Voile", "body": "Une surface de contenu n'est pas une couleur, c'est un voile : rgba(255,255,255,.025) sur bordure rgba(255,255,255,.06). On ne crée pas un nouveau gris de carte ; on empile de la transparence sur le noir d'atelier.", "section": "colors" },
+      { "name": "La Règle du Voile", "body": "Une surface de contenu n'est pas une couleur, c'est un voile : rgba(255,255,255,.025) sur bordure rgba(255,255,255,.06). On ne crée pas un nouveau gris de carte ; on empile de la transparence sur le Noir Maison.", "section": "colors" },
       { "name": "La Règle de l'Orange Confiné", "body": "#F37A1F n'existe que dans la couche cinéma. Sur une page ordinaire, un accent chaud supplémentaire est un signe qu'on a raté la hiérarchie.", "section": "colors" },
-      { "name": "La Règle de l'Italique", "body": "Playfair ne s'écrit jamais en romain, jamais en paragraphe, jamais sur plus de deux ou trois mots. Un titre entier en Playfair, c'est un site de mariage — pas un atelier.", "section": "typography" },
+      { "name": "La Règle de l'Italique", "body": "Playfair ne s'écrit jamais en romain, jamais en paragraphe, jamais sur plus de deux ou trois mots. C'est un nom gravé, pas une tapisserie : un titre entier en Playfair fait basculer la maison du côté du faire-part de mariage.", "section": "typography" },
+      { "name": "La Règle du Héros Immobile", "body": "Ce que vend la maison — nom, offre, prix, preuve — n'est jamais animé, jamais différé, jamais tributaire d'un script. Sur l'accueil, le dévoilement au défilement commence à la section 2 : fondu plus 16-24 px de déplacement vertical, 0.4-0.6 s, joué une seule fois. Sous prefers-reduced-motion, rien ne s'anime du tout.", "section": "components" },
       { "name": "La Règle des Classes", "body": "Les tailles passent par les utilitaires (.ag-h1, .ag-h2, .ag-h3, .ag-body-lg, .ag-body, .ag-small), jamais par un font-size en ligne. C'est écrit dans le CSS et c'est ce qui garde l'échelle cohérente d'une page à l'autre.", "section": "typography" },
       { "name": "La Règle de la Colonne Unique", "body": "Sur mobile, on n'essaie pas de sauver une grille : une seule colonne, boutons pleine largeur et centrés. C'est déjà le comportement du CSS ; toute nouvelle grille doit s'y plier.", "section": "layout" },
       { "name": "La Règle du Repos Plat", "body": "Une surface de contenu au repos n'a pas d'ombre. Si une carte a besoin d'une ombre pour se détacher du fond, c'est sa bordure ou son voile qu'il faut corriger.", "section": "elevation" },
@@ -181,13 +184,17 @@
       "Do garder les deux vitesses d'interaction : 0.3 s pour un bouton (montée de 2 px), 0.4 s pour une carte (montée de 4 px), 0.6 s pour une image qui zoome.",
       "Do réserver l'or au point d'action, aux chiffres et à un mot signé en italique.",
       "Do conserver l'anneau de focus doré (2 px, décalage 3 px) sur toute cible interactive.",
-      "Do respecter le coupe-circuit prefers-reduced-motion déjà présent dans main.css, et l'étendre à toute nouvelle animation.",
+      "Do respecter le coupe-circuit prefers-reduced-motion déjà présent dans main.css, et l'étendre à toute nouvelle animation — sous cette préférence, le contenu s'affiche dans son état final, sans version ralentie.",
+      "Do garder le héros de l'accueil immobile : nom, offre, prix et une preuve lisibles sans défiler, sans animation d'entrée.",
+      "Do limiter le dévoilement au défilement à un fondu plus 16-24 px de déplacement vertical, 0.4-0.6 s, joué une seule fois, à partir de la section 2.",
       "Do faire retomber les grilles en une seule colonne dès 1024 px."
     ],
     "donts": [
       "Don't ajouter une ombre à une carte au repos : la profondeur est une réponse à une action.",
       "Don't faire rayonner autre chose qu'un élément doré — pas de halo sous une carte, une image ou un champ.",
-      "Don't utiliser l'Orange Projection (#F37A1F) hors de la couche cinéma, ni introduire un accent de couleur qui n'est pas dans la palette.",
+      "Don't utiliser l'Orange Projection (#F37A1F) hors de la couche cinéma, ni introduire un accent de couleur qui n'est pas dans la palette : le prix, le bouton et les chiffres sont en Or Champagne.",
+      "Don't animer, différer ou masquer le prix, l'offre ou la preuve du premier écran — et ne jamais laisser une section à opacity:0 en attendant un script.",
+      "Don't empiler les effets de dévoilement (échelle, rotation, cascade mot à mot, rejeu à chaque passage) : un fondu court et vertical, une seule fois, suffit.",
       "Don't écrire Playfair Display en romain, en paragraphe, ou sur un titre entier.",
       "Don't réactiver le méga-menu horizontal : le menu plein écran est un choix, pas une limitation mobile.",
       "Don't employer le Gris Sourdine (#8A8A95) pour une information dont dépend une décision du visiteur — il est fait pour les mentions.",

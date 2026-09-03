@@ -1,12 +1,12 @@
 ---
 name: Alliance Groupe
-description: Studio web indépendant à Nantes — noir d'atelier, or champagne rare, surfaces plates qui ne se soulèvent qu'au toucher.
+description: Studio web indépendant à Nantes — noir de maison, or champagne rare, Playfair italique comme un nom gravé, et la maison déjà construite qu'on ouvre en cinq jours.
 colors:
   or-champagne: "#D4B45C"
   or-champagne-clair: "#E4C56E"
   or-champagne-profond: "#C5A44E"
   orange-projection: "#F37A1F"
-  noir-atelier: "#080808"
+  noir-maison: "#080808"
   noir-graphite: "#0A0A0F"
   surface-carte: "#14141C"
   blanc-pur: "#FFFFFF"
@@ -76,16 +76,16 @@ spacing:
 components:
   button-primary:
     backgroundColor: "{colors.or-champagne}"
-    textColor: "{colors.noir-atelier}"
+    textColor: "{colors.noir-maison}"
     typography: "{typography.body-lg}"
     rounded: "{rounded.bouton}"
     padding: "16px 36px"
   button-primary-hover:
     backgroundColor: "{colors.or-champagne-profond}"
-    textColor: "{colors.noir-atelier}"
+    textColor: "{colors.noir-maison}"
   button-primary-xl:
     backgroundColor: "{colors.or-champagne}"
-    textColor: "{colors.noir-atelier}"
+    textColor: "{colors.noir-maison}"
     rounded: "{rounded.bouton}"
     padding: "22px 48px"
   button-outline:
@@ -95,7 +95,7 @@ components:
     padding: "16px 36px"
   nav-cta:
     backgroundColor: "{colors.or-champagne}"
-    textColor: "{colors.noir-atelier}"
+    textColor: "{colors.noir-maison}"
     rounded: "{rounded.sm}"
     padding: "10px 20px"
   card-service:
@@ -119,34 +119,46 @@ components:
 
 ## Overview
 
-**Creative North Star: "L'Atelier d'Orfèvre"**
+**Creative North Star: "La Maison Héritage"**
 
-Un seul artisan, un établi sombre, et une lampe. Alliance Groupe est un studio solo : la page doit
-donner la sensation d'un objet façonné à la main par quelqu'un dont on peut voir le geste, pas
-d'une agence qui parle d'elle au pluriel. D'où un fond quasi noir (#080808) qui ne cherche jamais
-à impressionner, des surfaces de contenu à peine plus claires que le fond (2,5 % de blanc), des
-bordures d'un cheveu (6 % de blanc), et un or champagne qu'on ne sort que pour ce qui compte : le
-bouton d'action, un chiffre, un mot d'un titre. Le luxe ici n'est pas la profusion, c'est la
-retenue — l'or coûte cher, donc on en met peu.
+Une maison de famille, quelque part entre Nantes et Naples : la pièce est sombre le soir, une
+lampe pose son or sur la table, et un prénom est gravé dans le bois. C'est ce que doit donner le
+site — la sensation d'entrer chez quelqu'un qui est là depuis longtemps, pas d'être reçu par une
+agence qui parle d'elle au pluriel. D'où un fond quasi noir (#080808) qui ne cherche jamais à
+impressionner, des surfaces à peine plus claires que le fond (2,5 % de blanc), des bordures d'un
+cheveu (6 % de blanc), et un or champagne qu'on ne sort que pour ce qui compte : le bouton
+d'action, un prix, un chiffre, un mot d'un titre.
+
+**Et la maison est déjà construite.** C'est le cœur du positionnement, et donc du design : les
+templates métiers existent, ils sont testés, versionnés, livrés en cinq jours. Une maison
+d'héritage ne se bâtit pas devant le client, elle s'ouvre — on allume, on montre les pièces, on
+donne le prix. Rien dans l'interface ne doit suggérer une commande longue et coûteuse : pas de
+préambule, pas de mise en bouche, pas de « laissez-nous étudier votre projet ». Le visiteur
+arrive envoyé par quelqu'un, il vérifie que la maison est solide, et il doit trouver le prix et
+la porte d'entrée immédiatement.
 
 La densité est calme et aérée : 100 px entre chaque section, une colonne de 1200 px maximum, du
 texte à 1.6-1.7 d'interlignage. Rien ne clignote, rien ne flotte. Au repos, **tout est plat** :
 aucune ombre portée sur une carte, aucune élévation gratuite. La profondeur n'apparaît que
 lorsque le visiteur agit — la carte se soulève de 4 px et sa bordure s'ambre, le bouton monte de
-2 px et son halo doré s'intensifie. C'est une interface qui répond au toucher plutôt qu'une
-interface qui s'agite pour se faire remarquer.
+2 px et son halo doré s'intensifie. Une maison ne s'agite pas pour se faire remarquer ; elle
+répond quand on pousse une porte.
 
-La seule licence poétique est typographique : Playfair Display, **toujours en italique**, ne se
-pose que sur un mot ou deux à l'intérieur d'un titre en Manrope. C'est la signature gravée sur
-l'objet — le contraste entre la sans-serif industrieuse et l'empattement manuscrit dit exactement
-ce que vend le studio : de la technique livrée avec du soin. Anti-références confirmées par le
-code : pas de méga-menu déroulant (désactivé volontairement au profit d'un seul menu plein
-écran), pas d'accent de couleur inventé hors palette, pas d'ombre décorative au repos.
+La signature est typographique : Playfair Display, **toujours en italique**, ne se pose que sur
+un mot ou deux à l'intérieur d'un titre en Manrope. C'est le nom gravé sur le linteau — le
+contraste entre la sans-serif qui travaille et l'empattement manuscrit dit exactement ce que
+vend le studio : de la technique livrée avec du soin, à prix tenu. Le bandeau tricolore, le motif
+zellige et les italiques dorées portent la même idée d'héritage, sans jamais devenir folkloriques.
+Anti-références confirmées par le code : pas de méga-menu déroulant (désactivé volontairement au
+profit d'un seul menu plein écran), pas d'accent de couleur inventé hors palette, pas d'ombre
+décorative au repos.
 
 **Key Characteristics:**
 
-- Noir d'atelier presque total, jamais un gris de fond « thème sombre » standard
+- Noir de maison presque total, jamais un gris de fond « thème sombre » standard
 - Or champagne rare, jamais un aplat : accent, contour, halo
+- La maison est déjà construite : prix et porte d'entrée visibles tout de suite, jamais de
+  préambule qui ferait croire à un projet long
 - Surfaces plates au repos ; la profondeur est une réponse, pas un décor
 - Manrope 800 pour dire, Playfair italique pour signer
 - Un seul menu plein écran, à toutes les tailles, PC inclus
@@ -154,8 +166,8 @@ code : pas de méga-menu déroulant (désactivé volontairement au profit d'un s
 
 ## Colors
 
-Une palette d'atelier : un noir dominant qui absorbe la lumière, un métal chaud, et des gris de
-lecture froids qui empêchent l'ensemble de virer sépia.
+Une palette de maison le soir : un noir dominant qui absorbe la lumière, un métal chaud posé
+dessus comme une lampe, et des gris de lecture froids qui empêchent l'ensemble de virer sépia.
 
 ### Primary
 
@@ -182,7 +194,7 @@ lecture froids qui empêchent l'ensemble de virer sépia.
 
 ### Neutral
 
-- **Noir Atelier** (`#080808`) : le fond de tout le site.
+- **Noir Maison** (`#080808`) : le fond de tout le site.
 - **Noir Graphite** (`#0A0A0F`) : fond alternatif de section, dégradés de vignettes.
 - **Surface Carte** (`#14141C`) : cartes pleines (bureaux, héritage). Les cartes légères
   préfèrent un voile `rgba(255,255,255,.025)` sur le fond plutôt qu'une couleur opaque.
@@ -207,7 +219,7 @@ retirez-en jusqu'à ce que le bouton principal redevienne l'endroit où l'œil t
 
 **La Règle du Voile.** Une surface de contenu n'est pas une couleur, c'est un voile :
 `rgba(255,255,255,.025)` sur bordure `rgba(255,255,255,.06)`. On ne crée pas un nouveau gris de
-carte ; on empile de la transparence sur le noir d'atelier.
+carte ; on empile de la transparence sur le Noir Maison.
 
 **La Règle de l'Orange Confiné.** `#F37A1F` n'existe que dans la couche cinéma. Sur une page
 ordinaire, un accent chaud supplémentaire est un signe qu'on a raté la hiérarchie.
@@ -245,8 +257,8 @@ disputent, mais d'une police qui travaille et d'une qui signe.
 ### Named Rules
 
 **La Règle de l'Italique.** Playfair ne s'écrit jamais en romain, jamais en paragraphe, jamais
-sur plus de deux ou trois mots. Un titre entier en Playfair, c'est un site de mariage — pas un
-atelier.
+sur plus de deux ou trois mots. C'est un nom gravé, pas une tapisserie : un titre entier en
+Playfair fait basculer la maison du côté du faire-part de mariage.
 
 **La Règle des Classes.** Les tailles passent par les utilitaires (`.ag-h1`, `.ag-h2`, `.ag-h3`,
 `.ag-body-lg`, `.ag-body`, `.ag-small`), jamais par un `font-size` en ligne. C'est écrit dans le
@@ -331,7 +343,7 @@ le bouton fantôme, où les 2 px dorés *sont* le bouton.
 
 - **Shape :** rayon doux de 12 px, contenu en `inline-flex` avec 10 px entre l'icône et le
   libellé.
-- **Primaire :** fond Or Champagne, texte Noir Atelier, `16px 36px`, graisse 700, 1.05rem, halo
+- **Primaire :** fond Or Champagne, texte Noir Maison, `16px 36px`, graisse 700, 1.05rem, halo
   doré permanent. Au survol : fond Or Champagne Profond (`#C5A44E`), `translateY(-2px)`, halo
   élargi. Transition de 0.3 s sur fond, translation et ombre.
 - **Primaire XL :** même bouton en `22px 48px` / 1.15rem, montée de 3 px au survol. Réservé au
@@ -394,6 +406,31 @@ des révélations au défilement et une barre de progression en dégradé coniqu
 fait pas partie du système de base : une nouvelle page n'a pas à le reprendre, et une page qui
 s'en passe reste parfaitement dans la marque.
 
+**Sur l'accueil, son périmètre est fixé :**
+
+- **Le héros ne bouge pas.** Nom, offre, **prix** et **une preuve** sont lisibles dès l'ouverture,
+  sans défiler et sans attendre la fin d'une animation. Aucun dévoilement, aucun décalage,
+  aucune apparition différée dans le premier écran : le visiteur arrive envoyé par un ambassadeur
+  ou par le bouche-à-oreille, il vient vérifier que la maison est sérieuse, et une promesse
+  masquée par un effet est une promesse qu'il ne lira pas.
+- **Le dévoilement au défilement commence à la section 2**, pas avant.
+- **Le mouvement est sobre :** fondu d'opacité plus un léger déplacement vertical (de l'ordre de
+  16 à 24 px), **court** (0.4-0.6 s), et **joué une seule fois** — un élément déjà révélé ne se
+  rejoue pas si le visiteur remonte. Pas d'échelle, pas de rotation, pas de décalage horizontal,
+  pas d'effet en cascade sur chaque mot.
+- **`prefers-reduced-motion:reduce` : rien ne s'anime du tout.** Tout le contenu est visible dans
+  son état final, immédiatement. C'est une coupure nette, pas une version ralentie.
+- **Sans JavaScript ou avant son exécution, le contenu est visible.** Un dévoilement se code en
+  partant de l'état final ; il ne doit jamais laisser une section à `opacity:0` si le script ne
+  démarre pas.
+- **L'orange reste confiné.** `#F37A1F` ne sert qu'à la couche cinéma elle-même (curseur, barre de
+  progression). L'accent du système — celui du prix, du bouton, du chiffre — est et reste l'Or
+  Champagne.
+
+**La Règle du Héros Immobile.** Ce que vend la maison — nom, offre, prix, preuve — n'est jamais
+animé, jamais différé, jamais tributaire d'un script. Le mouvement commence une fois que le
+visiteur a décidé de descendre.
+
 ## Do's and Don'ts
 
 ### Do:
@@ -408,7 +445,12 @@ s'en passe reste parfaitement dans la marque.
 - **Do** réserver l'or au point d'action, aux chiffres et à un mot signé en italique.
 - **Do** conserver l'anneau de focus doré (2 px, décalage 3 px) sur toute cible interactive.
 - **Do** respecter le coupe-circuit `prefers-reduced-motion` déjà présent dans `main.css`, et
-  l'étendre à toute nouvelle animation.
+  l'étendre à toute nouvelle animation — sous cette préférence, le contenu s'affiche dans son
+  état final, sans version ralentie.
+- **Do** garder le héros de l'accueil immobile : nom, offre, prix et une preuve lisibles sans
+  défiler, sans animation d'entrée.
+- **Do** limiter le dévoilement au défilement à un fondu plus 16-24 px de déplacement vertical,
+  0.4-0.6 s, joué une seule fois, à partir de la section 2.
 - **Do** faire retomber les grilles en une seule colonne dès 1024 px.
 
 ### Don't:
@@ -417,7 +459,12 @@ s'en passe reste parfaitement dans la marque.
 - **Don't** faire rayonner autre chose qu'un élément doré — pas de halo sous une carte, une
   image ou un champ.
 - **Don't** utiliser l'Orange Projection (`#F37A1F`) hors de la couche cinéma, ni introduire un
-  accent de couleur qui n'est pas dans la palette.
+  accent de couleur qui n'est pas dans la palette : le prix, le bouton et les chiffres sont en
+  Or Champagne.
+- **Don't** animer, différer ou masquer le prix, l'offre ou la preuve du premier écran — et ne
+  jamais laisser une section à `opacity:0` en attendant un script.
+- **Don't** empiler les effets de dévoilement (échelle, rotation, cascade mot à mot, rejeu à
+  chaque passage) : un fondu court et vertical, une seule fois, suffit.
 - **Don't** écrire Playfair Display en romain, en paragraphe, ou sur un titre entier.
 - **Don't** réactiver le méga-menu horizontal : le menu plein écran est un choix, pas une
   limitation mobile.
