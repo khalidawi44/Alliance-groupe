@@ -75,7 +75,21 @@ function ag_refais_generate() {
 	// On mémorise le contexte pour la capture du lead qui suit.
 	set_transient( 'ag_refais_ctx_' . ag_refais_ip(), array( 'url' => $page['url'], 'title' => $page['title'] ), 2 * HOUR_IN_SECONDS );
 
-	wp_send_json_success( array( 'html' => $html, 'title' => $page['title'], 'src' => $page['url'] ) );
+	$payload = array( 'html' => $html, 'title' => $page['title'], 'src' => $page['url'] );
+
+	/**
+	 * Permet d'enrichir la réponse sans toucher au générateur.
+	 * `inc/ag-refais-acces.php` s'y branche pour conserver la maquette et
+	 * renvoyer un jeton : la version nette et le lien partageable ne sont
+	 * délivrés qu'après confirmation de l'adresse email.
+	 *
+	 * @param array  $payload Réponse envoyée au navigateur.
+	 * @param string $html    Maquette générée (déjà désinfectée).
+	 * @param array  $page    Page source lue : url, title, text.
+	 */
+	$payload = (array) apply_filters( 'ag_refais_result_payload', $payload, $html, $page );
+
+	wp_send_json_success( $payload );
 }
 add_action( 'wp_ajax_ag_refais_generate', 'ag_refais_generate' );
 add_action( 'wp_ajax_nopriv_ag_refais_generate', 'ag_refais_generate' );
@@ -205,8 +219,11 @@ function ag_refais_render() {
 				try{ oldF.src=j.data.src; }catch(e){ oldF.removeAttribute('src'); }
 				newF.srcdoc='<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+j.data.html;
 				cmp.style.display='grid';
-				lead.style.display='block';
-				lead.scrollIntoView({behavior:'smooth',block:'center'});
+				/* Le mur d'email (inc/ag-refais-acces.php) ecoute cet evenement
+				   et se pose sur la maquette. S'il n'est pas charge, rien ne se
+				   passe : la page fonctionne comme avant. */
+				document.dispatchEvent(new CustomEvent('ag-refais:result',{detail:{token:j.data.token,frame:newF}}));
+				if(!j.data.token){ lead.style.display='block'; lead.scrollIntoView({behavior:'smooth',block:'center'}); }
 			}).catch(function(){ clearInterval(tmr); go.disabled=false; st.textContent='⚠️ Connexion interrompue, réessaie.'; });
 		});
 		var send=document.getElementById('agr-send'), ok=document.getElementById('agr-ok');

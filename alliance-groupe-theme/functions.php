@@ -189,6 +189,13 @@ if ( file_exists( $ag_refais_file ) ) {
     require_once $ag_refais_file;
 }
 
+// ── 1c4a-undecies-bis. Mur d'email (double opt-in) + attribution ambassadeur
+//     sur les maquettes IA. Charge APRES le generateur : il s'y branche.
+$ag_refais_acces_file = get_stylesheet_directory() . '/inc/ag-refais-acces.php';
+if ( file_exists( $ag_refais_acces_file ) ) {
+    require_once $ag_refais_acces_file;
+}
+
 // ── 1c4a-duodecies. Concierge IA (assistant flottant + capture de leads en tool-use).
 $ag_concierge_file = get_stylesheet_directory() . '/inc/ag-concierge.php';
 if ( file_exists( $ag_concierge_file ) ) {

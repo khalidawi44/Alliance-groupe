@@ -62,3 +62,36 @@ if ( ! function_exists( 'ag_sites_express_packs' ) ) {
 		);
 	}
 }
+
+if ( ! function_exists( 'ag_refais_boost_offre' ) ) {
+	/**
+	 * La micro-offre qui suit une maquette IA : « cette maquette, en vrai ».
+	 *
+	 * C'est le pas le plus court entre « c'est joli » et « j'ai payé ». Un
+	 * artisan sort ce montant sans réunion, et il est DÉDUIT de l'Essentiel :
+	 * personne ne paie deux fois, donc dire oui ne coûte rien.
+	 *
+	 * Le prix vit ici, avec les autres — un prix ne doit exister qu'à un seul
+	 * endroit. Le lien de paiement est réglable comme les trois packs
+	 * (option `ag_refais_boost_url`) ; tant qu'il est vide, le bouton renvoie
+	 * vers le contact plutôt que vers une page de paiement morte.
+	 */
+	function ag_refais_boost_offre() {
+		$paiement = trim( (string) get_option( 'ag_refais_boost_url', '' ) );
+		return array(
+			'nom'      => 'Ma maquette en vrai',
+			'prix'     => get_option( 'ag_refais_boost_prix', '49 €' ),
+			'delai'    => 'En ligne sous 24 h',
+			'desc'     => 'On met cette maquette en ligne, à ton nom, sur une vraie adresse.',
+			'deduit'   => 'Déduits de ton site complet si tu continues.',
+			'url'      => $paiement ? $paiement : home_url( '/contact' ),
+			'payable'  => (bool) $paiement,
+			'feats'    => array(
+				'La maquette mise en ligne telle que tu la vois',
+				'Tes vrais textes, ton logo, tes coordonnées',
+				'Une adresse web à toi, en ligne sous 24 h',
+				'Le montant déduit si tu passes au site complet',
+			),
+		);
+	}
+}

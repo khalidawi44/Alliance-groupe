@@ -1068,6 +1068,15 @@ document.documentElement.classList.add('js-cine');
         newF.srcdoc = '<!doctype html><meta charset="utf-8">'
           + '<meta name="viewport" content="width=device-width,initial-scale=1">' + j.data.html;
         out.hidden = false;
+        /* le mur d'email (inc/ag-refais-acces.php) ecoute cet evenement et se
+           pose lui-meme sur la maquette : la facade n'a rien a savoir de lui.
+           Quand il est la, il remplace l'ancien encart de capture : deux
+           formulaires pour la meme adresse, c'est un formulaire de trop. */
+        var leadBox = document.querySelector("#agrHomeOut .agrh__lead");
+        if (leadBox) leadBox.hidden = !!j.data.token;
+        document.dispatchEvent(new CustomEvent("ag-refais:result", {
+          detail: { token: j.data.token, frame: newF }
+        }));
         /* la page vient de grandir : les declencheurs doivent se recalculer */
         if (ok && ST) ST.refresh();
         out.scrollIntoView({ behavior:"smooth", block:"start" });
