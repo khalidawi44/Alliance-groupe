@@ -277,6 +277,40 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 
 ## 9. Taches restantes (état au 30 mai)
 
+### 🛡️ DURCISSEMENT SÉCURITÉ LIVRÉ AVEC LES 16 TEMPLATES (03/09)
+
+`inc/ag-hardening.php` part désormais avec **chaque site vendu** : 8 thèmes
+(`ag-gwen-services`, `ag-starter-*`) et 8 plugins (`ag-premium-*`,
+`ag-business-*`, `ag-fidelite-*`, `ag-avocat-recherche`, `ag-starter-companion`).
+
+Ce qu'il ferme : xmlrpc.php (403), énumération des comptes par REST et par
+`?author=`, en-têtes de sécurité (nosniff, SAMEORIGIN, Referrer-Policy,
+Permissions-Policy, HSTS en HTTPS), version de WordPress, RSD/manifest, et le
+`?ver=` des CSS/JS pour les visiteurs.
+
+**Le verrou `AG_HARDENING_LOADED` n'est pas décoratif.** Un site qui a le thème
++ le pack Premium + le pack Business embarque trois copies du fichier. Sans lui,
+`ag_hard_strip_ver()` serait déclarée deux fois → **erreur fatale**. Ne jamais
+le retirer.
+
+Les 16 templates ont été **releasés** (`release.sh`), zips reconstruits et
+vérifiés : `check-releases.sh` est vert, les 16 zips contiennent bien
+`inc/ag-hardening.php`. Les 16 embarquent aussi leur auto-updater — Gwen
+comprise. **Les clients reçoivent donc la mise à jour tout seuls.**
+
+**⚠️ RÉSERVE — le `?ver=` sert aussi de casse-cache.** Sans lui, un visiteur
+déjà venu peut garder l'ancienne feuille de style après une mise à jour. Les
+personnes connectées le gardent (l'admin voit toujours le site à jour). Après
+une release : **purger le cache du site**.
+
+**RESTE À VÉRIFIER EN LIGNE, par Fabrice** (non testable depuis la session web) :
+1. `?author=1` → doit rediriger vers l'accueil (plus de fuite du login)
+2. `/wp-json/wp/v2/users` **non connecté** → doit être vide / 401
+3. `/xmlrpc.php` → doit renvoyer **403 Forbidden**
+4. En-têtes présents : `curl -sI https://…` doit montrer `X-Content-Type-Options`,
+   `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`
+
+
 ### 💳 EN RÉSERVE — lien de paiement de la micro-offre « maquette en vrai »
 
 Le parcours complet est en ligne (maquette IA → mur d'email double opt-in →
