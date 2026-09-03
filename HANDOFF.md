@@ -277,6 +277,28 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 
 ## 9. Taches restantes (état au 30 mai)
 
+### 💳 EN RÉSERVE — lien de paiement de la micro-offre « maquette en vrai »
+
+Le parcours complet est en ligne (maquette IA → mur d'email double opt-in →
+attribution ambassadeur → micro-offre). **Il ne manque que le lien de paiement.**
+
+**À faire par Fabrice, de retour chez lui :**
+1. Créer un **lien PayPal neuf** — surtout PAS celui du rapport de sécurité.
+2. Le coller dans **Réglages → Liens de paiement → « Maquette IA en vrai »**.
+
+Tant que le champ est vide, le bouton affiche « En parler → » et renvoie vers
+`/contact`. Rien n'est cassé, mais rien n'encaisse.
+
+**Modèle de prix — décision en attente.** Le code est encore sur 39,90 € une
+fois. Recommandation faite le 03/09 : passer à **9,90 €/mois, mise en ligne et
+nom de domaine compris, 3 mois minimum, mois payés déduits du pack Essentiel**.
+Raison : un paiement unique ne peut pas financer un hébergement et un domaine
+qui se renouvellent. Prix concurrents relevés le 03/09/2026 — IONOS Now 6 €/mois
+(vous construisez seul), Creator 12 €/mois, Wix dès 16,80 €/mois. Coût réel par
+client ≈ 1 €/mois (.fr à 7,79 € HT/an chez OVH + part d'hébergement mutualisé).
+Un seul endroit à changer : `ag_refais_boost_offre()` dans `inc/ag-offres.php`.
+
+
 ### ⚡ ACCUEIL — « Refais mon site par l'IA » mis en vedette (03/09)
 
 La révélation du lion, en bas de l'accueil cinématique, ne portait aucun texte : une belle image sans message. Elle devient la **section phare** du site.
