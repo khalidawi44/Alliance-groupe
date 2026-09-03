@@ -80,6 +80,12 @@ $agr_ajax  = admin_url( 'admin-ajax.php' );
     object-fit:cover;object-position:center 32%}
   .hero__eg video{z-index:1}
   .hero__in{position:relative;z-index:3;width:100%;padding-bottom:clamp(52px,10vh,120px)}
+  /* Tant que la barre cookies est affichee, le contenu du hero remonte de sa
+     hauteur : le prix et le bouton d'appel doivent rester visibles, ce sont
+     eux qui font vendre. `:has()` evite d'ajouter une classe en JavaScript ;
+     sur un navigateur qui ne le connait pas, la barre se contente de se poser
+     par-dessus comme avant — rien ne casse. */
+  body:has(.ag-cookie:not([hidden])) .hero__in{padding-bottom:calc(clamp(52px,10vh,120px) + 70px)}
   .hero__t{font-family:var(--serif);font-weight:500;line-height:.97;font-size:clamp(2.9rem,8.4vw,7rem);letter-spacing:-.022em;margin:.18em 0 0}
   .hero__t em{font-style:italic;color:var(--gold-hi)}
   .w{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.18em;margin-bottom:-.18em}

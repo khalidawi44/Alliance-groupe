@@ -1956,49 +1956,70 @@ em,.ag-gold{
 .ag-footer__legal a:hover{color:var(--color-gold);}
 
 /* ── Cookie Consent Banner (RGPD) ─────────────────────────────── */
+/* BARRE COMPACTE EN BAS D'ECRAN, a toutes les tailles.
+   L'ancienne version etait une carte centree de 640px qui se posait au milieu
+   du premier ecran et masquait la ligne de preuve et le bouton d'appel. Le
+   consentement n'est PAS touche : memes boutons, memes valeurs data-ag-cookie,
+   meme panneau « Personnaliser », meme texte, meme Consent Mode. Seule la mise
+   en page change. « Tout refuser » et « Tout accepter » gardent la meme taille
+   et le meme poids : refuser doit rester aussi simple qu'accepter (CNIL). */
 .ag-cookie{
     position:fixed;
-    left:20px;right:20px;bottom:20px;
+    left:0;right:0;bottom:0;
     z-index:1035;
-    max-width:640px;
-    margin:0 auto;
+    max-width:none;
+    margin:0;
     background:rgba(14,14,20,.98);
     backdrop-filter:blur(16px);
-    border:1px solid rgba(212,180,92,.35);
-    border-radius:16px;
-    box-shadow:0 20px 60px rgba(0,0,0,.6);
+    border:0;
+    border-top:1px solid rgba(212,180,92,.35);
+    border-radius:0;
+    box-shadow:0 -12px 40px rgba(0,0,0,.55);
     color:var(--color-text-soft);
     animation:agCookieIn .45s ease-out both;
 }
 @keyframes agCookieIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-.ag-cookie__inner{padding:24px 26px;}
+.ag-cookie__inner{
+    display:flex;
+    align-items:center;
+    gap:22px;
+    flex-wrap:wrap;
+    max-width:1240px;
+    margin:0 auto;
+    padding:14px 24px calc(14px + env(safe-area-inset-bottom));
+}
+.ag-cookie__head{flex:1 1 420px;min-width:0;}
 .ag-cookie__title{
     font-family:var(--font-serif);
-    font-size:1.25rem;
+    font-size:1rem;
     font-weight:700;
-    margin:0 0 10px;
+    margin:0 0 2px;
     color:#fff;
 }
 .ag-cookie__text{
-    font-size:.92rem;
-    line-height:1.55;
+    font-size:.84rem;
+    line-height:1.45;
     color:var(--color-text-secondary);
-    margin:0 0 18px;
+    margin:0;
 }
 .ag-cookie__text a{color:var(--color-gold);text-decoration:underline;}
 .ag-cookie__actions{
     display:flex;
+    flex:0 0 auto;
     flex-wrap:wrap;
     gap:10px;
     justify-content:flex-end;
 }
 .ag-cookie__btn{
-    flex:1 1 auto;
-    min-width:130px;
-    padding:11px 18px !important;
-    font-size:.88rem !important;
+    flex:0 0 auto;
+    min-width:0;
+    padding:10px 18px !important;
+    font-size:.86rem !important;
     justify-content:center;
+    white-space:nowrap;
 }
+/* Le panneau detaille passe sous la barre, sur toute la largeur. */
+.ag-cookie__panel{flex:1 1 100%;}
 .ag-cookie__panel{
     margin-top:6px;
     padding-top:18px;
@@ -2052,16 +2073,23 @@ body.ag-cookie-open{overflow:auto;}
         position:absolute;width:1px;height:1px;margin:0;overflow:hidden;
         clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;
     }
-    .ag-cookie__text{font-size:.8rem;line-height:1.45;margin:0 0 12px;}
-    .ag-cookie__actions{flex-direction:row;gap:8px;}
+    /* Le texte reste ENTIER dans le DOM (lecteurs d'ecran, obligation
+       d'information) mais n'occupe que deux lignes a l'ecran : le detail est
+       a un clic, dans « Personnaliser » et sur la page Cookies. Sans cela la
+       barre mangeait 250 px et recouvrait le prix et le bouton d'appel. */
+    /* UNE LIGNE de texte, puis les trois choix sur une seule rangee. Le texte
+       reste ENTIER dans le DOM (lecteurs d'ecran, obligation d'information) :
+       le detail est a un clic, dans « Personnaliser » et sur la page Cookies.
+       Sans cette compression la barre mangeait 250 px et recouvrait le prix
+       et le bouton d'appel — les deux seules choses qui font vendre. */
+    .ag-cookie__text{
+        font-size:.78rem;line-height:1.4;margin:0 0 10px;
+        display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;overflow:hidden;
+    }
+    .ag-cookie__actions{flex-direction:row;gap:7px;flex-wrap:nowrap;}
     .ag-cookie__btn{
         flex:1 1 0;width:auto;min-width:0;white-space:nowrap;
-        padding:10px 8px !important;font-size:.82rem !important;
-    }
-    /* « Personnaliser » passe en lien discret sous les deux choix francs. */
-    .ag-cookie__btn[data-ag-cookie="customize"]{
-        order:3;flex:1 0 100%;background:transparent;border:0;box-shadow:none;
-        text-decoration:underline;padding:4px 0 0 !important;font-size:.78rem !important;
+        padding:10px 6px !important;font-size:.78rem !important;
     }
     .ag-cookie__panel{margin-top:12px;padding-top:14px;}
     .ag-cookie__desc{margin-left:26px;}
