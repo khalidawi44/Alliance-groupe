@@ -63,13 +63,21 @@ $agr_ajax  = admin_url( 'admin-ajax.php' );
   .hero{position:relative;height:100svh;overflow:hidden;display:flex;align-items:flex-end}
   .hero__bg{position:absolute;inset:-6% 0 0;z-index:0}
   .hero__bg img{width:100%;height:112%;object-fit:cover;object-position:center 45%}
-  .hero__veil{position:absolute;inset:0;z-index:1;
+  /* Ordre des couches : baie (0) < egerie (1) < voile (2) < texte (3).
+     L'egerie passe SOUS le voile, sinon le texte se poserait a meme la photo
+     et deviendrait illisible. */
+  .hero__veil{position:absolute;inset:0;z-index:2;
     background:linear-gradient(180deg,rgba(5,5,10,.78),rgba(5,5,10,.12) 34%,rgba(5,5,10,.45) 68%,rgba(5,5,10,.97)),
                radial-gradient(120% 80% at 22% 60%,transparent 38%,rgba(5,5,10,.62))}
-  .hero__eg{position:absolute;z-index:2;right:0;bottom:0;height:100svh;width:min(46vw,640px);pointer-events:none;
-    transform-origin:62% 74%;
-    -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 30%);mask-image:linear-gradient(90deg,transparent 0%,#000 30%)}
-  .hero__eg video,.hero__eg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 38%}
+  /* PLEIN ECRAN (03/09) : l'egerie occupait une colonne de 46vw collee a
+     droite, et object-fit:cover y recadrait horizontalement — le second visage
+     sortait du cadre sur grand ecran. Elle prend maintenant tout le hero, donc
+     le recadrage n'a plus qu'une variable a regler : la hauteur. Le masque en
+     degrade n'a plus de raison d'etre, il ne fondait qu'un bord de colonne. */
+  .hero__eg{position:absolute;z-index:1;inset:0;width:100%;height:100%;pointer-events:none;
+    transform-origin:50% 40%}
+  .hero__eg video,.hero__eg img{position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;object-position:center 32%}
   .hero__eg video{z-index:1}
   .hero__in{position:relative;z-index:3;width:100%;padding-bottom:clamp(52px,10vh,120px)}
   .hero__t{font-family:var(--serif);font-weight:500;line-height:.97;font-size:clamp(2.9rem,8.4vw,7rem);letter-spacing:-.022em;margin:.18em 0 0}
@@ -302,7 +310,7 @@ $agr_ajax  = admin_url( 'admin-ajax.php' );
   @media(max-width:820px){
     .ch{grid-template-columns:1fr}
     .ch:nth-child(even) .ch__txt{order:0}
-    .hero__eg{right:50%;transform:translateX(50%);height:64svh;opacity:.95}
+    .hero__eg{opacity:.95}
   }
 
   /* ======================================================
@@ -324,10 +332,9 @@ $agr_ajax  = admin_url( 'admin-ajax.php' );
     .hd__nav .btn{padding:10px 15px;font-size:.8rem;letter-spacing:.04em}
 
     .hero{height:92svh;align-items:flex-end}
-    .hero__eg{right:50%;left:auto;transform:translateX(50%);width:min(100vw,640px);height:70svh;
-      -webkit-mask-image:radial-gradient(ellipse 72% 62% at 50% 54%,#000 46%,rgba(0,0,0,.86) 66%,rgba(0,0,0,.34) 84%,transparent 97%);
-      mask-image:radial-gradient(ellipse 72% 62% at 50% 54%,#000 46%,rgba(0,0,0,.86) 66%,rgba(0,0,0,.34) 84%,transparent 97%)}
-    .hero__eg video,.hero__eg img{object-position:center 30%}
+    /* Telephone : plein ecran aussi. On remonte le point focal, les visages
+       sont dans le tiers haut et le texte occupe le bas. */
+    .hero__eg video,.hero__eg img{object-position:center 26%}
     .hero__in{padding-bottom:30px;position:relative;isolation:isolate}
     .hero__in::before{content:"";position:absolute;inset:-40px -24px -60px;z-index:-1;pointer-events:none;
       background:linear-gradient(0deg,rgba(5,5,10,.95) 34%,rgba(5,5,10,.78) 62%,rgba(5,5,10,0) 100%)}
@@ -502,6 +509,8 @@ document.documentElement.classList.add('js-cine');
   <img class="lionmark" src="<?php echo esc_url( $dir . '/assets/images/ag-logo.png' ); ?>" alt="">
   <div class="hero__veil"></div>
   <div class="hero__eg" data-eg>
+    <?php /* Le poster est le lion : c'est VOULU (demande de Fabrice, 03/09).
+             Il tient l'ecran le temps que la video demarre. */ ?>
     <img src="<?php echo esc_url( $dir . '/assets/videos/hero-egerie-poster.jpg' ); ?>" alt="" fetchpriority="high" decoding="async">
     <video src="<?php echo esc_url( $dir . '/assets/videos/hero-egerie-court.mp4' ); ?>" muted loop playsinline preload="none" data-lazyplay poster="<?php echo esc_url( $dir . '/assets/videos/hero-egerie-poster.jpg' ); ?>"></video>
   </div>
