@@ -76,7 +76,7 @@ $dir = get_stylesheet_directory_uri();
   .hero__proof{margin-top:20px;display:flex;align-items:center;gap:13px;max-width:44ch}
   .hero__proof img{width:46px;height:46px;flex:0 0 auto;border-radius:50%;object-fit:cover;object-position:center 20%;
        border:1px solid rgba(212,180,92,.45)}
-  .hero__proof span{font-size:.86rem;line-height:1.45;color:#a9b2c2}
+  .hero__proof span{font-size:.86rem;line-height:1.45;color:var(--muted)}
   .hero__proof b{display:block;color:#fff;font-weight:600;font-size:.92rem}
   .hero__cta{margin-top:26px;display:flex;gap:14px;flex-wrap:wrap}
   .btn--tel{display:inline-flex;align-items:center;gap:9px}
