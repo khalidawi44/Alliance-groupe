@@ -3,7 +3,7 @@
  * Plugin Name:       AG Starter Companion
  * Plugin URI:        https://alliancegroupe-inc.com/templates-wordpress
  * Description:       Importer un clic pour les themes AG Starter (Restaurant, Artisan, Coach, Avocat). Cree automatiquement les pages, le menu et les reglages pour un site pret a l'emploi.
- * Version:           1.13.2
+ * Version:           1.13.3
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            AGthèmes
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Durcissement securite (xmlrpc, enumeration auteur/REST, en-tetes, versions) — livre avec le plugin
 $ag_hard = plugin_dir_path( __FILE__ ) . 'inc/ag-hardening.php';
 if ( file_exists( $ag_hard ) ) { require_once $ag_hard; }
-define( 'AG_STARTER_COMPANION_VERSION', '1.13.2' );
+define( 'AG_STARTER_COMPANION_VERSION', '1.13.3' );
 define( 'AG_STARTER_COMPANION_FILE', __FILE__ );
 
 /**
