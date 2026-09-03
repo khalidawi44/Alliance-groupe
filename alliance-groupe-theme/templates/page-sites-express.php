@@ -60,7 +60,7 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
         <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:7px"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Paiement sécurisé PayPal</span>
         <span>💳 Payable en 4× sans frais</span>
         <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:7px"><path d="M4 12l5 5L20 6"/></svg>Révisions incluses</span>
-        <span>📍 Interlocuteur unique — Naples &amp; Nantes</span>
+        <span>📍 Interlocuteur unique — studio à Nantes</span>
         <span><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:7px"><path d="M12 3l7 2.5v5.6c0 4.2-2.9 7.2-7 8.4-4.1-1.2-7-4.2-7-8.4V5.5z"/><path d="M9 12l2 2 4-4"/></svg>Sécurisé dès le départ</span>
     </div>
 
@@ -82,8 +82,31 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
                 ?>
                 <div class="ag-xpress__card ag-xpress__card--img<?php echo ! empty( $p['star'] ) ? ' ag-xpress__card--star' : ''; ?> ag-anim" data-anim="card">
                     <img class="ag-xpress__img" src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $p['nom'] . ' — ' . $p['prix'] ); ?>" loading="lazy" width="1024" height="1024">
+                    <?php
+                    /* Le prix EN TEXTE. Il n'existait que dans le JPEG et dans
+                       l'attribut alt : incopiable, invisible pour un lecteur
+                       d'écran, absent pour Google, et disparu si l'image passe
+                       mal en 4G — sur la page dont c'est tout le métier. */
+                    ?>
+                    <div class="ag-xpress__head">
+                        <h3 class="ag-xpress__name"><?php echo esc_html( $p['nom'] ); ?></h3>
+                        <p class="ag-xpress__tarif"><?php echo esc_html( $p['prix'] ); ?></p>
+                        <?php if ( ! empty( $p['delai'] ) ) : ?>
+                        <p class="ag-xpress__delai"><?php echo esc_html( $p['delai'] ); ?></p>
+                        <?php endif; ?>
+                        <?php if ( ! empty( $p['desc'] ) ) : ?>
+                        <p class="ag-xpress__desc"><?php echo esc_html( $p['desc'] ); ?></p>
+                        <?php endif; ?>
+                    </div>
                     <ul class="ag-xpress__feats">
-                        <?php foreach ( $p['feats'] as $f ) echo '<li>' . esc_html( $f ) . '</li>'; ?>
+                        <?php
+                        /* Le délai est déjà affiché en tête de carte : on ne le
+                           répète pas dans la liste. */
+                        foreach ( $p['feats'] as $f ) {
+                            if ( ! empty( $p['delai'] ) && $f === $p['delai'] ) { continue; }
+                            echo '<li>' . esc_html( $f ) . '</li>';
+                        }
+                        ?>
                     </ul>
                     <p class="ag-xpress__pay4">💳 Payable en 4× sans frais via PayPal</p>
                     <a href="<?php echo esc_url( $cta_url ); ?>" class="ag-btn-gold ag-xpress__cta">Commander →</a>
@@ -186,6 +209,13 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
                 ?>
                 <div class="ag-xpress__card ag-xpress__card--img<?php echo ! empty( $p['star'] ) ? ' ag-xpress__card--star' : ''; ?> ag-anim" data-anim="card">
                     <img class="ag-xpress__img" src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $p['nom'] . ' — ' . $p['prix'] . '/mois' ); ?>" loading="lazy" width="1024" height="1024">
+                    <div class="ag-xpress__head">
+                        <h3 class="ag-xpress__name"><?php echo esc_html( $p['nom'] ); ?></h3>
+                        <p class="ag-xpress__tarif"><?php echo esc_html( $p['prix'] ); ?><span class="ag-xpress__per">/mois</span></p>
+                        <?php if ( ! empty( $p['desc'] ) ) : ?>
+                        <p class="ag-xpress__desc"><?php echo esc_html( $p['desc'] ); ?></p>
+                        <?php endif; ?>
+                    </div>
                     <ul class="ag-xpress__feats">
                         <?php foreach ( $p['feats'] as $f ) echo '<li>' . esc_html( $f ) . '</li>'; ?>
                     </ul>
@@ -347,7 +377,19 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
 .ag-xpress__card--star{border-color:rgba(212,180,92,.5);background:linear-gradient(160deg,rgba(212,180,92,.12),rgba(243,122,31,.05));}
 .ag-xpress__card--img{padding:14px 14px 30px;}
 .ag-xpress__img{display:block;width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;border-radius:16px;margin-bottom:24px;border:1px solid rgba(212,180,92,.16);}
-.ag-xpress__card--img .ag-xpress__feats,.ag-xpress__card--img .ag-xpress__cta{margin-left:16px;margin-right:16px;}
+.ag-xpress__card--img .ag-xpress__feats,.ag-xpress__card--img .ag-xpress__cta,.ag-xpress__card--img .ag-xpress__head{margin-left:16px;margin-right:16px;}
+/* En-tête TEXTE de la carte : nom, prix, délai. Le prix est l'information que
+   le visiteur est venu chercher — il ne doit jamais dépendre d'une image.
+   Or Champagne plein (pas de dégradé) : l'orange reste réservé à la couche
+   cinéma de l'accueil, et un dégradé sur du texte se lit moins bien. */
+.ag-xpress__head{margin-bottom:20px;}
+.ag-xpress__tarif{font-family:var(--font-serif);font-style:italic;font-size:2.5rem;line-height:1;color:var(--color-gold);margin:2px 0 0;}
+.ag-xpress__tarif .ag-xpress__per{font-family:var(--font-sans);font-style:normal;font-size:.95rem;font-weight:600;color:var(--color-text-muted);margin-left:4px;}
+.ag-xpress__delai{margin:8px 0 0;font-size:.82rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--color-gold);}
+.ag-xpress__head .ag-xpress__desc{margin:10px 0 0;}
+/* Sur fond ivoire, l'or clair ne tient pas le contraste : version assombrie. */
+.ag-section--light .ag-xpress__tarif,
+.ag-section--light .ag-xpress__delai{color:#8a6d1f;}
 .ag-xpress__badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#1a1207;font-weight:800;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;padding:5px 14px;border-radius:20px;white-space:nowrap;}
 .ag-xpress__name{font-family:var(--font-serif);font-size:1.5rem;color:#fff;margin:0 0 6px;}
 .ag-xpress__price{font-family:var(--font-serif);font-size:2.4rem;font-weight:800;background:linear-gradient(135deg,#D4B45C,#F37A1F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;margin-bottom:8px;}
