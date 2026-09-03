@@ -12,6 +12,16 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+/*
+ * VERROU. Le meme durcissement est desormais livre avec chaque template vendu.
+ * Si l'un d'eux se retrouve sur ce site, il ne doit pas redeclarer
+ * `ag_hard_strip_ver()` : le premier charge fait le travail.
+ */
+if ( defined( 'AG_HARDENING_LOADED' ) ) {
+	return;
+}
+define( 'AG_HARDENING_LOADED', '1.0.0' );
+
 /* ---- 1. xmlrpc.php : bloqué entièrement (force brute + DDoS pingback) ---- */
 add_action( 'init', function () {
 	$sf  = isset( $_SERVER['SCRIPT_FILENAME'] ) ? basename( (string) $_SERVER['SCRIPT_FILENAME'] ) : '';
@@ -120,3 +130,27 @@ add_action( 'admin_notices', function () {
 	echo '<div class="notice notice-warning"><p><strong>Sécurité :</strong> le fichier <code>.htaccess</code> n\'a pas pu être durci automatiquement (droits en écriture). Ajoute ces lignes en haut de ton <code>.htaccess</code> pour bloquer le listing de répertoires et la fuite de version :</p>'
 		. '<pre style="background:#fff;padding:10px;border:1px solid #ccd0d4;">Options -Indexes' . "\n" . '&lt;FilesMatch "(?i)^(readme\.html|readme\.txt|license\.txt|wp-config\.php|\.env)$"&gt;' . "\n" . '  Require all denied' . "\n" . '&lt;/FilesMatch&gt;</pre></div>';
 } );
+
+/*
+ * 7. Retire ?ver= des CSS/JS pour les VISITEURS (masque les versions de
+ * plugins, qui indiquent a un attaquant quelles failles connues tenter).
+ *
+ * A SAVOIR : ce parametre sert aussi de casse-cache. Sans lui, le navigateur
+ * d'un visiteur deja venu peut garder l'ancienne feuille de style apres une
+ * mise a jour, jusqu'a expiration de son cache. Les personnes CONNECTEES
+ * gardent le ?ver= : cote administration, on voit donc toujours le site a
+ * jour. En cas de doute apres une mise a jour, purger le cache du site.
+ */
+if ( ! function_exists( 'ag_hard_strip_ver' ) ) {
+	function ag_hard_strip_ver( $src ) {
+		if ( is_user_logged_in() ) {
+			return $src;
+		}
+		if ( $src && false !== strpos( $src, 'ver=' ) ) {
+			$src = remove_query_arg( 'ver', $src );
+		}
+		return $src;
+	}
+}
+add_filter( 'style_loader_src', 'ag_hard_strip_ver', 9999 );
+add_filter( 'script_loader_src', 'ag_hard_strip_ver', 9999 );

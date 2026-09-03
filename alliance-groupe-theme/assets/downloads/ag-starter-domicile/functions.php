@@ -532,3 +532,7 @@ if ( ! function_exists( 'ag_force_auto_updates' ) ) {
 		if ( ! wp_next_scheduled( 'wp_update_themes' ) )  { wp_schedule_single_event( time() + 60, 'wp_update_themes' ); }
 	} );
 }
+
+// Durcissement securite (xmlrpc, enumeration auteur/REST, en-tetes, versions) — livre avec le theme
+$ag_hard = get_stylesheet_directory() . '/inc/ag-hardening.php';
+if ( file_exists( $ag_hard ) ) { require_once $ag_hard; }

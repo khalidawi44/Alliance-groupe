@@ -18,6 +18,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+
+// Durcissement securite (xmlrpc, enumeration auteur/REST, en-tetes, versions) — livre avec le plugin
+$ag_hard = plugin_dir_path( __FILE__ ) . 'inc/ag-hardening.php';
+if ( file_exists( $ag_hard ) ) { require_once $ag_hard; }
 define( 'AG_PREMIUM_DOMICILE_VERSION', '1.0.2' );
 define( 'AG_PREMIUM_DOMICILE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AG_PREMIUM_DOMICILE_URL', plugin_dir_url( __FILE__ ) );

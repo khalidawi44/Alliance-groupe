@@ -20,6 +20,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+
+// Durcissement securite (xmlrpc, enumeration auteur/REST, en-tetes, versions) — livre avec le plugin
+$ag_hard = plugin_dir_path( __FILE__ ) . 'inc/ag-hardening.php';
+if ( file_exists( $ag_hard ) ) { require_once $ag_hard; }
 // === FUSION === Depuis la v0.6.0, la base design Premium est intégrée au
 // plugin unifié « AG Premium Avocat — Boutique & Cabinet » (ag-business-avocat).
 // Si ce plugin unifié est présent, on se désactive entièrement pour éviter
