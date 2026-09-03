@@ -8,31 +8,10 @@
  */
 get_header();
 
-$ph = 'STRIPE_PLACEHOLDER';
-$packs = array(
-	'essentiel' => array(
-		'url'   => get_option( 'ag_stripe_express_essentiel_url', 'https://www.paypal.com/ncp/payment/YNEZPTYSYR6EU' ),
-		'nom'   => 'Essentiel',
-		'prix'  => '490 €',
-		'desc'  => 'Le site vitrine qui te rend crédible.',
-		'feats' => array( 'Site 1 page (one-page) premium', 'Design sur-mesure à ta marque', 'Optimisé mobile + rapide', 'Formulaire de contact + Google Maps', 'Livré en 5 jours', 'Référencement de base' ),
-	),
-	'pro' => array(
-		'url'   => get_option( 'ag_stripe_express_pro_url', 'https://www.paypal.com/ncp/payment/EHEAJGG96G7SY' ),
-		'nom'   => 'Pro',
-		'prix'  => '890 €',
-		'desc'  => 'Le site complet pour développer ton activité.',
-		'feats' => array( 'Jusqu\'à 6 pages', 'Design sur-mesure premium', 'SEO optimisé (Google)', 'Blog / actualités', 'Prise de RDV en ligne', 'Connexion réseaux sociaux', 'Livré en 8 jours' ),
-		'star'  => true,
-	),
-	'boutique' => array(
-		'url'   => get_option( 'ag_stripe_express_boutique_url', 'https://www.paypal.com/ncp/payment/N9DCC5VWTS5LY' ),
-		'nom'   => 'Boutique',
-		'prix'  => '1 490 €',
-		'desc'  => 'Ta boutique en ligne, prête à vendre.',
-		'feats' => array( 'Boutique e-commerce (WooCommerce)', 'Jusqu\'à 30 produits intégrés', 'Paiement en ligne (CB, PayPal)', 'Design premium + SEO', 'Gestion stock & commandes', 'Formation à l\'utilisation', 'Livré en 12 jours' ),
-	),
-);
+/* Les packs viennent de inc/ag-offres.php : source de vérité UNIQUE (prix,
+   contenu, délais). Ne jamais les réécrire ici — l'accueil affiche les mêmes. */
+$ph    = defined( 'AG_PACK_PLACEHOLDER' ) ? AG_PACK_PLACEHOLDER : 'STRIPE_PLACEHOLDER';
+$packs = function_exists( 'ag_sites_express_packs' ) ? ag_sites_express_packs() : array();
 
 $maint = array(
 	'serenite' => array(

@@ -103,6 +103,14 @@ if ( file_exists( $ag_services_data_file ) ) {
     require_once $ag_services_data_file;
 }
 
+// ── 1c3-bis. Offres Sites Express : SOURCE DE VERITE unique des 3 packs
+//    (prix, contenu, delais). Toute page qui affiche un pack passe par
+//    ag_sites_express_packs() : un prix ne doit exister qu'a UN endroit.
+$ag_offres_file = get_stylesheet_directory() . '/inc/ag-offres.php';
+if ( file_exists( $ag_offres_file ) ) {
+    require_once $ag_offres_file;
+}
+
 // ── 1c4. SEO meta (titres + descriptions tunes par mot-cle, LocalBusiness bureaux, Offers templates)
 $ag_seo_meta_file = get_stylesheet_directory() . '/inc/ag-seo-meta.php';
 if ( file_exists( $ag_seo_meta_file ) ) {

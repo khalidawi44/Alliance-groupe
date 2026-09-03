@@ -107,7 +107,10 @@ $dir = get_stylesheet_directory_uri();
   .tab__cap p{margin:20px auto 0;color:#d7dae2;max-width:52ch;line-height:1.7}
 
   /* ---------- CHAPITRES ---------- */
-  .chs{padding:clamp(50px,7vh,90px) 0}
+  /* overflow-x:clip (et non hidden) : aucune animation latérale ne peut plus
+     faire défiler la PAGE de côté, sans créer pour autant un conteneur de
+     défilement ni casser un position:sticky descendant. */
+  .chs{padding:clamp(50px,7vh,90px) 0;overflow-x:clip}
   .ch{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,70px);align-items:center;margin-bottom:clamp(28px,5vh,64px)}
   .ch:nth-child(even) .ch__txt{order:2}
   .ch__media{position:relative;overflow:hidden;aspect-ratio:4/3;border:1px solid rgba(212,180,92,.2);will-change:transform}
@@ -144,9 +147,11 @@ $dir = get_stylesheet_directory_uri();
   .pack:hover{border-color:rgba(212,180,92,.6);box-shadow:0 40px 90px -50px rgba(212,180,92,.8)}
   .pack.star{border-color:rgba(212,180,92,.55);box-shadow:0 34px 80px -46px rgba(212,180,92,.7)}
   .pack img{width:100%;aspect-ratio:4/3;object-fit:cover}
-  .pack__body{padding:16px 18px 18px}
   .pack__body{padding:22px 24px 26px}
   .pack__cta{display:block;text-align:center;margin-top:6px}
+  /* Le contenu du pack en TEXTE : masqué sur PC (le JPEG le porte), affiché
+     sur téléphone où l'image est retirée. Même information des deux côtés. */
+  .pack__txt{display:none}
   .of__note{position:relative;z-index:2;color:var(--muted);font-size:.95rem}
   .of__note a{color:var(--gold-hi)}
 
@@ -315,8 +320,14 @@ $dir = get_stylesheet_directory_uri();
 
     /* ── LA SCÈNE RESTE ÉPINGLÉE : les choses sortent de la paume ──
        Le canvas de dissolution (coûteux) est remplacé par une photo qui
-       se dissout en flou, et les offres sortent de la main UNE PAR UNE
-       pour tenir dans le cadre. */
+       se dissout en flou.
+       03/09 : les offres ne sortent plus UNE PAR UNE. Chaque carte était
+       détruite avant l'arrivée de la suivante, donc les trois prix
+       n'existaient jamais ensemble : impossible de comparer 490 / 890 / 1490,
+       alors que c'est exactement la décision que le visiteur vient prendre.
+       Elles jaillissent désormais toutes les trois et RESTENT jusqu'à la
+       sortie de la scène. Pour qu'elles tiennent dans le cadre, l'image du
+       pack est masquée sur téléphone et remplacée par son contenu en texte. */
     .ds{height:560svh}
     #cv{display:none}
     .ds__photo{display:block}
@@ -327,12 +338,40 @@ $dir = get_stylesheet_directory_uri();
 
     .of,.at{padding:0}
     .of__in{display:flex;flex-direction:column;justify-content:center;height:100%}
-    .of .lead,.of__note{display:none}
+    .of .lead{display:none}
     .of__bg{opacity:.3}
-    .of__grid{display:block;position:relative;height:min(46svh,340px);margin:14px 0 0}
-    .pack{position:absolute;inset:0;margin:auto;height:max-content;width:min(82vw,320px)}
-    .pack__body{padding:14px 16px 16px}
-    .pack__cta{padding:12px 18px;font-size:.86rem}
+    /* Les 3 packs empilés, visibles ENSEMBLE et comparables d'un coup d'œil. */
+    .of__grid{display:grid;grid-template-columns:1fr;gap:9px;position:relative;height:auto;margin:12px 0 0}
+    .pack{position:relative;inset:auto;margin:0;width:auto;border-radius:14px}
+    .pack img{display:none}
+    .pack__body{padding:12px 14px 13px}
+    .pack__txt{display:block}
+    .pack__nom{font-family:var(--sans);font-size:.98rem;font-weight:700;color:#fff;line-height:1.2;
+        display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+    .pack__prix{font-family:var(--serif);font-style:italic;font-size:1.22rem;color:var(--gold-hi);white-space:nowrap}
+    .pack__feats{list-style:none;margin:7px 0 0;padding:0;display:grid;gap:3px}
+    .pack__feats li{position:relative;padding-left:15px;font-size:.79rem;line-height:1.35;color:var(--muted)}
+    .pack__feats li::before{content:"";position:absolute;left:0;top:.52em;width:6px;height:6px;border-radius:50%;
+        background:var(--gold);opacity:.75}
+    .pack__delai{margin-top:7px;font-size:.74rem;letter-spacing:.02em;color:var(--gold)}
+    /* La maintenance décide un patron de TPE : elle était masquée
+       précisément sur l'appareil où il la lit. */
+    .of__note{display:block;margin-top:11px;font-size:.78rem;line-height:1.4}
+    .pack__cta{padding:11px 16px;font-size:.84rem;margin-top:10px}
+    /* Écran court (iPhone SE) : on resserre plutôt que de déborder. */
+    @media(max-height:700px){
+      .of__grid{gap:7px;margin-top:9px}
+      .pack__body{padding:10px 13px 11px}
+      .pack__feats li{font-size:.75rem}
+      .pack__delai{margin-top:5px}
+      .of__note{margin-top:8px;font-size:.74rem}
+    }
+    /* Très petit écran : on retire le 3e argument plutôt que de laisser la
+       scène rogner une carte. Nom, prix et délai ne partent jamais. */
+    @media(max-height:620px){
+      .pack__feats li:nth-child(3){display:none}
+      .of .stitle{font-size:clamp(1.4rem,6vw,1.9rem)}
+    }
 
     .at .wrap{display:flex;flex-direction:column;justify-content:center;height:100%}
     .at .lead{display:none}
@@ -569,19 +608,36 @@ document.documentElement.classList.add('js-cine');
     <span class="eyebrow" data-rv>Nos formules</span>
     <h2 class="stitle" data-mots style="margin-top:10px">Des offres claires, <em>à prix fixe</em></h2>
     <p class="lead" data-rv style="margin:16px auto 0">Pas de devis interminable. Vous choisissez, on livre — vite.</p>
+    <?php
+    /* Les 3 packs viennent de inc/ag-offres.php (source de vérité unique).
+       Le contenu est écrit en TEXTE, plus seulement dans le JPEG : sur
+       téléphone l'image est masquée et c'est le texte qui porte l'offre —
+       sélectionnable, lisible par un lecteur d'écran, et net même si l'image
+       arrive mal en 4G. Sur PC, le JPEG reste l'illustration et le texte est
+       masqué : la scène ne change pas. */
+    $ag_packs  = function_exists( 'ag_sites_express_packs' ) ? ag_sites_express_packs() : array();
+    $ag_visuel = array( 'essentiel' => 'offre-essentiel.jpg', 'pro' => 'offre-pro.jpg', 'boutique' => 'offre-boutique.jpg' );
+    ?>
     <div class="of__grid">
-      <article class="pack" data-pack>
-        <img src="<?php echo esc_url( $dir . '/assets/images/offres/offre-essentiel.jpg' ); ?>" alt="Pack Essentiel — 490 €" loading="lazy">
-        <div class="pack__body"><a class="btn pack__cta" href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">Choisir Essentiel — 490 €</a></div>
+      <?php foreach ( $ag_packs as $ag_cle => $ag_p ) : ?>
+      <article class="pack<?php echo ! empty( $ag_p['star'] ) ? ' star' : ''; ?>" data-pack>
+        <?php if ( ! empty( $ag_visuel[ $ag_cle ] ) ) : ?>
+        <img src="<?php echo esc_url( $dir . '/assets/images/offres/' . $ag_visuel[ $ag_cle ] ); ?>" alt="Pack <?php echo esc_attr( $ag_p['nom'] . ' — ' . $ag_p['prix'] ); ?>" loading="lazy">
+        <?php endif; ?>
+        <div class="pack__body">
+          <div class="pack__txt">
+            <h3 class="pack__nom"><?php echo esc_html( $ag_p['nom'] ); ?> <span class="pack__prix"><?php echo esc_html( $ag_p['prix'] ); ?></span></h3>
+            <ul class="pack__feats">
+              <?php foreach ( (array) $ag_p['cles'] as $ag_f ) : ?>
+              <li><?php echo esc_html( $ag_f ); ?></li>
+              <?php endforeach; ?>
+            </ul>
+            <p class="pack__delai"><?php echo esc_html( $ag_p['delai'] ); ?></p>
+          </div>
+          <a class="btn pack__cta" href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">Choisir <?php echo esc_html( $ag_p['nom'] . ' — ' . $ag_p['prix'] ); ?></a>
+        </div>
       </article>
-      <article class="pack star" data-pack>
-        <img src="<?php echo esc_url( $dir . '/assets/images/offres/offre-pro.jpg' ); ?>" alt="Pack Pro — 890 €" loading="lazy">
-        <div class="pack__body"><a class="btn pack__cta" href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">Choisir Pro — 890 €</a></div>
-      </article>
-      <article class="pack" data-pack>
-        <img src="<?php echo esc_url( $dir . '/assets/images/offres/offre-boutique.jpg' ); ?>" alt="Pack Boutique — 1 490 €" loading="lazy">
-        <div class="pack__body"><a class="btn pack__cta" href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">Choisir Boutique — 1 490 €</a></div>
-      </article>
+      <?php endforeach; ?>
     </div>
     <p class="of__note" data-rv>+ Maintenance &amp; hébergement à partir de <strong>29 €/mois</strong> — <a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">voir les formules</a>.</p>
   </div>
@@ -838,10 +894,18 @@ document.documentElement.classList.add('js-cine');
       G.fromTo(m, { yPercent:9 * sens, rotate:1.4 * sens }, { yPercent:-9 * sens, rotate:0, ease:"none",
         scrollTrigger:{ trigger:m, start:"top bottom", end:"bottom top", scrub:.4 }});
       G.from(m, { clipPath:"inset(100% 0% 0% 0%)", duration:1.2, ease:"power4.out", scrollTrigger:{ trigger:m, start:"top 86%" }});
-      /* la colonne de texte arrive par le côté opposé */
+      /* La colonne de texte arrive par le côté opposé sur PC.
+         Sur téléphone, cette entrée latérale de 52 px poussait la colonne
+         hors du cadre : la page entière défilait horizontalement de 37 px
+         (mesuré à 375 comme à 390). On la remplace par l'entrée documentée
+         dans DESIGN.md — fondu + léger déplacement VERTICAL — qui ne peut
+         pas déborder. */
       var txt = m.parentNode.querySelector(".ch__txt");
-      if (txt) G.fromTo(txt, { x:52 * -sens, opacity:.35 }, { x:0, opacity:1, ease:"power2.out",
-        scrollTrigger:{ trigger:m.parentNode, start:"top 92%", end:"top 45%", scrub:.5 }});
+      var etroit = matchMedia("(max-width:960px)").matches;
+      if (txt) G.fromTo(txt,
+        etroit ? { y:18, opacity:.35 } : { x:52 * -sens, opacity:.35 },
+        { x:0, y:0, opacity:1, ease:"power2.out",
+          scrollTrigger:{ trigger:m.parentNode, start:"top 92%", end:"top 45%", scrub:.5 }});
       /* le numéro file plus vite */
       var n = m.parentNode.querySelector(".ch__n");
       if (n) G.to(n, { yPercent:-70, ease:"none", scrollTrigger:{ trigger:m.parentNode, start:"top bottom", end:"bottom top", scrub:true }});
@@ -964,10 +1028,14 @@ document.documentElement.classList.add('js-cine');
                   { opacity:1, y:0, duration:.05, stagger:.02, ease:"power3.out" }, .27)
           .to(handM, { opacity:.34, scale:1.16, duration:.10, ease:"none" }, .30);
 
-        /* les offres jaillissent de la paume : une par une sur téléphone
-           (elles ne tiendraient pas ensemble), toutes ensemble sur tablette */
-        var unParUn = matchMedia("(max-width:700px)").matches;
-        var T0 = .30, PAS = unParUn ? .085 : .022;
+        /* Les offres jaillissent de la paume, TOUTES ENSEMBLE et elles restent.
+           Avant, sur téléphone (≤700 px), chaque carte était détruite ~0,32
+           écran avant l'arrivée de la suivante : les trois prix n'existaient
+           jamais simultanément, donc 490 / 890 / 1490 n'étaient pas
+           comparables — alors que c'est la décision même du visiteur.
+           Elles tiennent maintenant ensemble parce que le pack est affiché en
+           texte compact (image masquée sous 960 px). */
+        var T0 = .30, PAS = .022;
         packM.forEach(function(c, i){
           tm.fromTo(c,
             { opacity:0, scale:.08, rotation:(i - 1) * 26,
@@ -980,8 +1048,10 @@ document.documentElement.classList.add('js-cine');
                 { opacity:1, scale:1, rotation:0, x:0, y:0, duration:.5, ease:"power3.out" }
               ], ease:"none", duration:.06 },
             T0 + i * PAS);
+          /* Sortie groupée seulement quand la scène passe à l'atelier : plus
+             aucune carte n'est détruite tant que les offres sont à l'écran. */
           tm.to(c, { opacity:0, scale:.82, y:-60, filter:"blur(7px)", duration:.032, ease:"power2.in" },
-            unParUn ? T0 + (i + 1) * PAS - .014 : .55 + i * .012);
+            .55 + i * .012);
         });
 
         /* les offres s'effacent, l'atelier prend la place */
