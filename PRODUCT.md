@@ -58,10 +58,12 @@ l'argument différenciant n°1.
 
 ## Operating Context
 
-- **Chemin d'arrivée sur le site : non tranché.** La question a été posée et laissée sans
-  réponse. Les chemins possibles présents dans le code (lien ambassadeur `?ref=`, Google Ads +
-  GA4, canal Telegram général, bouche-à-oreille) ne doivent pas être traités comme confirmés
-  tant que Fabrice n'a pas répondu. À redemander avant toute décision de hiérarchie d'accueil.
+- **Chemin d'arrivée sur le site (confirmé par Fabrice).** Aucun client n'est encore arrivé par
+  le site, il n'y a pas de trafic mesuré. Le canal qui sera activé en premier est le réseau
+  d'ambassadeurs (SMS / WhatsApp, lien `?ref=`) et le bouche-à-oreille : **le site doit servir de
+  preuve de sérieux avant l'appel.** Google / Ads est un objectif secondaire, pas une réalité.
+  Conséquence pour le design : le visiteur type arrive **déjà chauffé**, envoyé par une personne
+  précise, et vient vérifier que la boîte est réelle et solide — pas se faire convaincre à froid.
 - Le site est **auto-géré** : le thème est autonome (pas d'Elementor), déployé par
   Apparence → SYNC GitHub depuis `main` (cron 5 min). Détail : `docs/MECANIQUE-DEPLOIEMENT.md`.
 - Les templates vendus sont mis à jour chez l'acheteur par un updater qui compare la version du
@@ -101,7 +103,7 @@ expérience 3D Three.js, marketplace de composants.
 - Conformité : Consent Mode RGPD sur GA4/Ads, pages `/retours` et `/livraison` pour Merchant
   Center, AdSense + `ads.txt`.
 
-**Non tranché / à ne pas inventer :** le chemin d'arrivée client (ci-dessus) ; la Phase 2 de la
+**Non tranché / à ne pas inventer :** la Phase 2 de la
 marketplace (Stripe Connect / PayPal Commerce non configurés — « Acheter » affiche « paiement
 bientôt actif ») ; la passerelle SMS Android (code déployé, en pause faute de SIM physique
 dédiée) ; le robot vocal IA pour les numéros fixes ; la ligne dédiée au démarchage.
