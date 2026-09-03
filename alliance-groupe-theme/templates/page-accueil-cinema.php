@@ -248,29 +248,45 @@ $agr_ajax  = admin_url( 'admin-ajax.php' );
   /* Le lion reste au centre de l'animation : il devient le medaillon de fond
      sur lequel se pose l'outil phare. Un voile radial garantit la lisibilite
      du texte par-dessus la photo. */
-  .lion{position:relative;height:210svh}
+  /* Section courte : elle arrive juste apres le hero, elle ne doit pas
+     repousser les offres. 150svh = un ecran plein + une demi-course de
+     defilement, juste assez pour que le lion se revele. */
+  .lion{position:relative;height:150svh}
   .lion__stick{position:sticky;top:0;height:100svh;display:grid;place-items:center;overflow:hidden;
     background:radial-gradient(60% 60% at 50% 45%,#12121c,#05050a)}
-  .lion__img{position:absolute;z-index:1;width:min(58vw,520px);opacity:0;border-radius:50%;
+  /* Le lion tient ENTIER dans l'ecran : jamais plus large que 38vw, et
+     jamais plus haut que 42svh, sinon la criniere sort du cadre. */
+  .lion__img{position:absolute;z-index:1;width:min(38vw,340px);max-height:42svh;object-fit:contain;
+    opacity:0;border-radius:50%;
     box-shadow:0 0 0 1px rgba(212,180,92,.5),0 70px 150px -50px rgba(212,180,92,.55)}
   .lion__veil{position:absolute;inset:0;z-index:2;pointer-events:none;
     background:radial-gradient(52% 52% at 50% 50%,rgba(5,5,10,.72),rgba(5,5,10,.9) 68%,rgba(5,5,10,.97))}
-  .lion__panel{position:relative;z-index:3;width:100%;max-width:720px;padding:0 28px;text-align:center}
-  .lion__panel .eyebrow{display:inline-block;margin-bottom:14px}
-  .lion__lead{color:var(--muted);font-size:clamp(.96rem,2.1vw,1.08rem);line-height:1.62;
-    max-width:54ch;margin:16px auto 0}
-  .lion__form{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:26px auto 0;max-width:560px}
-  .lion__form input[type=url]{flex:1 1 260px;min-width:0;padding:15px 18px;font-size:1rem;color:var(--text);
-    background:rgba(255,255,255,.05);border:1px solid rgba(212,180,92,.32);border-radius:999px;
-    outline:none;transition:border-color .25s,background .25s}
-  .lion__form input[type=url]::placeholder{color:#6f7789}
-  .lion__form input[type=url]:focus{border-color:var(--gold);background:rgba(255,255,255,.08)}
+  .lion__panel{position:relative;z-index:3;width:100%;max-width:640px;padding:0 24px;text-align:center}
+  .lion__panel .eyebrow{display:inline-block;margin-bottom:10px}
+  /* Titre volontairement plus petit que les autres : ici c'est l'animation
+     et le champ qui doivent tenir la scene, pas la typographie. */
+  .lion__panel .stitle{font-size:clamp(1.5rem,4.4vw,2.4rem)}
+  .lion__lead{color:var(--muted);font-size:clamp(.88rem,1.9vw,1rem);line-height:1.55;
+    max-width:44ch;margin:12px auto 0}
+  .agr-sr{position:absolute;width:1px;height:1px;margin:0;overflow:hidden;
+    clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+  .lion__form{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:22px auto 0;max-width:560px}
+  /* Le champ est pose SUR une photo : sans fond opaque il disparaissait
+     completement et le visiteur ne voyait pas ou taper. Fond sombre plein,
+     bordure franche, et un halo au focus. */
+  .lion__form input[type=url]{flex:1 1 260px;min-width:0;padding:15px 20px;font-size:1rem;color:var(--text);
+    background:rgba(5,5,10,.92);border:1.5px solid rgba(212,180,92,.6);border-radius:999px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 10px 30px -12px rgba(0,0,0,.9);
+    outline:none;transition:border-color .25s,box-shadow .25s}
+  .lion__form input[type=url]::placeholder{color:#8b93a5}
+  .lion__form input[type=url]:focus{border-color:var(--gold-hi);
+    box-shadow:0 0 0 3px rgba(212,180,92,.22),0 10px 30px -12px rgba(0,0,0,.9)}
   .lion__form button{border:0;cursor:pointer;font-family:inherit}
   .lion__form button:disabled{opacity:.5;cursor:not-allowed;transform:none}
-  .lion__note{margin-top:14px;font-size:.8rem;color:#6f7789}
-  .lion__status{margin-top:16px;min-height:22px;font-weight:600;color:var(--gold-hi);font-size:.92rem}
-  .lion__w{position:absolute;z-index:3;bottom:6vh;font-size:clamp(.62rem,1.4vw,.84rem);letter-spacing:.7em;
-    color:var(--gold);text-transform:uppercase;opacity:.75}
+  .lion__note{margin-top:12px;font-size:.76rem;color:#6f7789}
+  .lion__status{margin-top:12px;min-height:20px;font-weight:600;color:var(--gold-hi);font-size:.88rem}
+  .lion__w{position:absolute;z-index:3;bottom:4vh;font-size:clamp(.58rem,1.3vw,.76rem);letter-spacing:.6em;
+    color:var(--gold);text-transform:uppercase;opacity:.6}
 
   /* Resultat : hors du sticky, en flux normal, pour respirer. */
   /* .wrap donne la gouttiere de 28px : on la conserve en redefinissant le padding complet. */
@@ -449,11 +465,12 @@ $agr_ajax  = admin_url( 'admin-ajax.php' );
     .av__grid{grid-template-columns:1fr;gap:14px}
     .rz__card h3{font-size:1.28rem}
 
-    .lion{height:150svh}
-    .lion__img{width:min(86vw,400px)}
-    .lion__w{bottom:4vh;letter-spacing:.4em}
-    .lion__form{flex-direction:column}
+    .lion{height:135svh}
+    .lion__img{width:min(56vw,240px);max-height:32svh}
+    .lion__w{display:none}
+    .lion__form{flex-direction:column;gap:9px}
     .lion__form .btn{width:100%}
+    .lion__lead{font-size:.86rem;max-width:36ch}
     .agrh__cmp{grid-template-columns:1fr}
     .agrh__frame{height:min(62svh,460px)}
     .cta{padding:60px 0}
@@ -556,6 +573,60 @@ document.documentElement.classList.add('js-cine');
     <span>Propulsé par l'IA <b>·</b></span><span>Design sur-mesure <b>·</b></span>
   </div>
 </div>
+
+<section class="lion" id="refais-mon-site">
+  <div class="lion__stick">
+    <img class="lion__img" id="lionImg" src="<?php echo esc_url( $dir . '/assets/images/cinematique/lion-or.jpg' ); ?>" alt="Le lion d'Alliance Groupe" loading="lazy" decoding="async">
+    <div class="lion__veil"></div>
+
+    <div class="lion__panel" id="lionPanel">
+      <span class="eyebrow">&#9889; Propuls&eacute; par l'IA</span>
+      <h2 class="stitle">Vois ton site <em>refait</em> en 60&nbsp;secondes</h2>
+      <p class="lion__lead">Colle l'adresse de ton site. L'IA te montre&nbsp;<strong>tout de suite</strong> ce qu'il pourrait devenir. Gratuit, sans inscription.</p>
+
+      <form class="lion__form" id="agrHomeForm"<?php echo $agr_ready ? '' : ' style="opacity:.45;pointer-events:none"'; ?>>
+        <label for="agrHomeUrl" class="agr-sr">Adresse de ton site actuel</label>
+        <input type="url" id="agrHomeUrl" placeholder="https://mon-site-actuel.fr" autocomplete="url" inputmode="url" required>
+        <button type="submit" class="btn" id="agrHomeGo">&#10024; Moderniser</button>
+      </form>
+
+      <?php if ( $agr_ready ) : ?>
+        <p class="lion__note">On ne modifie jamais ton vrai site. C'est une simulation.</p>
+      <?php else : ?>
+        <p class="lion__note">&#128295; L'outil est en cours d'activation. Reviens tr&egrave;s bient&ocirc;t&nbsp;!</p>
+      <?php endif; ?>
+
+      <div class="lion__status" id="agrHomeStatus" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="lion__w">Alliance Groupe</div>
+  </div>
+</section>
+
+<section class="agrh wrap" id="agrHomeOut" hidden>
+  <h2 class="stitle" style="text-align:center">Avant &#8594; <em>apr&egrave;s</em></h2>
+
+  <div class="agrh__cmp">
+    <div class="agrh__col">
+      <h3>&#128564; Ton site aujourd'hui</h3>
+      <iframe class="agrh__frame" id="agrHomeOld" title="Ton site actuel" loading="lazy" referrerpolicy="no-referrer"></iframe>
+    </div>
+    <div class="agrh__col is-new">
+      <h3>&#10024; Propos&eacute; par l'IA</h3>
+      <iframe class="agrh__frame" id="agrHomeNew" title="Maquette g&eacute;n&eacute;r&eacute;e par l'IA" sandbox referrerpolicy="no-referrer"></iframe>
+    </div>
+  </div>
+
+  <div class="agrh__lead">
+    <h3>&#127881; &Ccedil;a te pla&icirc;t&nbsp;?</h3>
+    <p>Laisse tes coordonn&eacute;es&nbsp;: on te renvoie une vraie maquette sur-mesure, gratuitement.</p>
+    <input type="text"  id="agrHomeName"  placeholder="Ton pr&eacute;nom / entreprise" autocomplete="name">
+    <input type="email" id="agrHomeEmail" placeholder="Ton email" autocomplete="email">
+    <input type="tel"   id="agrHomePhone" placeholder="Ton t&eacute;l&eacute;phone (optionnel)" autocomplete="tel">
+    <button type="button" class="btn" id="agrHomeSend">Je veux ma maquette &#8594;</button>
+    <div class="agrh__ok" id="agrHomeOk"></div>
+  </div>
+</section>
 
 <section class="tab">
   <div class="tab__stick">
@@ -811,59 +882,6 @@ document.documentElement.classList.add('js-cine');
   </div>
 </section>
 
-<section class="lion" id="refais-mon-site">
-  <div class="lion__stick">
-    <img class="lion__img" id="lionImg" src="<?php echo esc_url( $dir . '/assets/images/cinematique/lion-or.jpg' ); ?>" alt="Le lion d'Alliance Groupe" loading="lazy" decoding="async">
-    <div class="lion__veil"></div>
-
-    <div class="lion__panel" id="lionPanel">
-      <span class="eyebrow">&#9889; Propuls&eacute; par l'IA</span>
-      <h2 class="stitle">Vois ton site <em>refait</em> en 60&nbsp;secondes</h2>
-      <p class="lion__lead">Colle l'adresse de ton site actuel. Notre IA le lit et te montre&nbsp;<strong>tout de suite</strong> &agrave; quoi il pourrait ressembler, modernis&eacute;. Gratuit, sans inscription.</p>
-
-      <form class="lion__form" id="agrHomeForm"<?php echo $agr_ready ? '' : ' style="opacity:.45;pointer-events:none"'; ?>>
-        <input type="url" id="agrHomeUrl" placeholder="https://mon-site-actuel.fr" autocomplete="url" required>
-        <button type="submit" class="btn" id="agrHomeGo">&#10024; Moderniser</button>
-      </form>
-
-      <?php if ( $agr_ready ) : ?>
-        <p class="lion__note">On ne modifie jamais ton vrai site. C'est une simulation.</p>
-      <?php else : ?>
-        <p class="lion__note">&#128295; L'outil est en cours d'activation. Reviens tr&egrave;s bient&ocirc;t&nbsp;!</p>
-      <?php endif; ?>
-
-      <div class="lion__status" id="agrHomeStatus" role="status" aria-live="polite"></div>
-    </div>
-
-    <div class="lion__w">Alliance Groupe</div>
-  </div>
-</section>
-
-<section class="agrh wrap" id="agrHomeOut" hidden>
-  <h2 class="stitle" style="text-align:center">Avant &#8594; <em>apr&egrave;s</em></h2>
-
-  <div class="agrh__cmp">
-    <div class="agrh__col">
-      <h3>&#128564; Ton site aujourd'hui</h3>
-      <iframe class="agrh__frame" id="agrHomeOld" title="Ton site actuel" loading="lazy" referrerpolicy="no-referrer"></iframe>
-    </div>
-    <div class="agrh__col is-new">
-      <h3>&#10024; Propos&eacute; par l'IA</h3>
-      <iframe class="agrh__frame" id="agrHomeNew" title="Maquette g&eacute;n&eacute;r&eacute;e par l'IA" sandbox referrerpolicy="no-referrer"></iframe>
-    </div>
-  </div>
-
-  <div class="agrh__lead">
-    <h3>&#127881; &Ccedil;a te pla&icirc;t&nbsp;?</h3>
-    <p>Laisse tes coordonn&eacute;es&nbsp;: on te renvoie une vraie maquette sur-mesure, gratuitement.</p>
-    <input type="text"  id="agrHomeName"  placeholder="Ton pr&eacute;nom / entreprise" autocomplete="name">
-    <input type="email" id="agrHomeEmail" placeholder="Ton email" autocomplete="email">
-    <input type="tel"   id="agrHomePhone" placeholder="Ton t&eacute;l&eacute;phone (optionnel)" autocomplete="tel">
-    <button type="button" class="btn" id="agrHomeSend">Je veux ma maquette &#8594;</button>
-    <div class="agrh__ok" id="agrHomeOk"></div>
-  </div>
-</section>
-
 <section class="cta wrap">
   <h2 class="stitle" data-mots>Parlons de <em>votre site</em></h2>
   <p data-rv>Audit gratuit, devis en trente secondes, livraison en cinq jours. On commence par un échange, sans engagement.</p>
@@ -1019,9 +1037,13 @@ document.documentElement.classList.add('js-cine');
     });
     /* lion : la revelation se joue sur la premiere moitie du defilement,
        pour que le formulaire pose par-dessus soit utilisable tout de suite. */
-    G.fromTo("#lionImg", { scale:.5, opacity:0, filter:"blur(14px)" },
+    /* « center bottom » tombait AVANT « top top » : la plage etait inversee et
+       la revelation se jouait d'un coup. On la cale sur la course reelle de
+       l'epinglage, et on la termine aux deux tiers pour que le lion soit
+       entier et net pendant que le visiteur tape son adresse. */
+    G.fromTo("#lionImg", { scale:.62, opacity:0, filter:"blur(12px)" },
       { scale:1, opacity:1, filter:"blur(0px)", ease:"none",
-        scrollTrigger:{ trigger:".lion", start:"top top", end:"center bottom", scrub:.6 }});
+        scrollTrigger:{ trigger:".lion", start:"top top", end:"+=35%", scrub:.6 }});
     G.from("#lionPanel", { y:26, opacity:0, duration:.9, ease:"power3.out",
       scrollTrigger:{ trigger:".lion", start:"top 62%" }});
   }
