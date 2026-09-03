@@ -14,7 +14,7 @@
 > 3) **Réglages → 📍 SEO local / Google** : compléter **adresse (rue + CP)** + coller le **lien fiche Google Business**. Vrais avis dans le schema = clé Google Places + **Place ID** (à récupérer).
 > 4) **Twilio** : dossier réglementaire en validation → surveiller emails → à l'approbation : acheter le +33 + brancher Emma.
 > **FAIT le 22/07 (déployé main) :** paiement+déblocage AUTO rapport client · paiement-d'abord partout · compteur points dynamique · app tri boutons mobile/fixe · CRM 🤖 robot vs 📞 appel perso · **FIX bug JS (app entièrement figée)** · vue admin 📩 Demandes clients · module SEO local (schema LocalBusiness + NAP + checklist Google). **Numéro pro = 07 44 82 95 16.**
-> Dernière mise à jour : 2026-09-01 — branche de travail : `claude/network-access-params-mwh0me` (tampon auto à chaque commit).
+> Dernière mise à jour : 2026-09-03 — branche de travail : `claude/network-access-params-mwh0me` (tampon auto à chaque commit).
 > **📱 3 APPS + APP CLIENT (22/07, sur `main`, À SYNCER) :** app ambassadeur renommée **« Alliance Groupe Ambassadeur »** (`/prospection-mobile`, title+apple-title+appbar). Nouvelle **app CLIENT autonome** `templates/page-espace-client-app.php` (Template 'Espace Client (app)', slug **`/mon-espace-client`**, auto-créée hook flag `ag_prospection_mobile_page=3`). 4 onglets : 🌐 Mon site (user_meta `ag_client_site` via AJAX `ag_client_save_site` + demande modif), 🛡️ Sécurité (lien /?ag_rapport de son site + demande correction), 💬 Support (WhatsApp `ag_wa_pro`+tel+email+message), 🧾 Factures/maintenance 29/59/99 + 🎁 parrainage (share WhatsApp/SMS). Demandes → AJAX `ag_client_request` → option `ag_client_requests` (200) + notif ag_sms/ag_push/agenda. QR : raccourcis réseaux (WhatsApp/Insta/Snap/TikTok). Photos Drive = impossible d'ici. RESTE (proposé) : app client — parrainage tracké, vue admin des demandes clients ; l'app admin = app ambassadeur (onglets Appels/Ambass/Kali).
 > **🔳 QR + 🔬 KALI DANS LE RAPPORT (app, 22/07, sur `main`, À SYNCER) :** (1) Générateur QR code sur l'Accueil (api.qrserver.com, défaut = lien vente ; « Ouvrir en grand » 800px → appui long enregistrer) + accès /studio. (2) Scan Kali branché : AJAX `ag_app_kali_save` (admin, url+kali) → option `ag_kali[md5(url)]`. App : volet admin « 🔬 Résultats scan Kali (PC) » dans `agAuditHTML` (flag `AG.admin`), handler délégué `.agk-save`. Rapport `ag_render_client_report` : si `ag_kali` présent pour le site → encart TEASER « scan approfondi, N anomalies » (compte lignes, ne divulgue pas le brut). (3) Photos Google Drive : IMPOSSIBLE d'ici (MCP Drive demande approbation non dispo en session non-interactive) → Fabrice via Google Photos sur son tel.
 > **✅ AUDIT NOTE HOMOGÈNE + RETOUR RAPPORT (22/07, sur `main`, À SYNCER) :** note incohérente (47 puis 60) = 3 calculs (léger/avancé/report). Fix : `ag_audit_get($url)` = audit COMPLET unifié (ag_audit_run_deep) + cache transient 1h par URL → même note app/rapport/carte. `ag_app_audit` et `ag_render_client_report` utilisent `ag_audit_get`. App : 1 seul bouton '🛡️ Auditer le site' (fini léger/avancé). Bouton **← Retour** ajouté en haut du rapport normal ET carte (history.back sinon /prospection-mobile) — carte : au-dessus du cadre + mention 'ne pas inclure dans la capture'. Audits app = passifs (aucun mandat requis) ; scan actif Kali = PC only, à injecter plus tard si besoin.
@@ -276,6 +276,24 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 ---
 
 ## 9. Taches restantes (état au 30 mai)
+
+### 🔵 BARBER — état au 03/09 (fait + reste)
+
+**FAIT et poussé sur `main` :**
+- **Le design Premium est descendu dans le thème GRATUIT** (`ag-starter-barber` **v1.0.13**). Un template vide ne se vend pas : le gratuit est maintenant complet (typo Bebas, hero plein écran, titres géants, menu plein écran, cartes épurées). Assets `assets/design.css` + `assets/design.js`, chargés par `inc/design.php`. Les réglages gardent les clés historiques `ag_pb_*` — un site déjà configuré ne perd rien.
+- **Le Premium ne vend plus de l'habillage, il vend de la technique** (`ag-premium-barber` **v0.7.0**) : nouveau module **Statistiques** (`inc/class-ag-pb-stats.php`) — trafic **sans cookie ni IP stockée** (empreinte HMAC à sel tournant quotidien, conforme RGPD) + historique des tickets de file d'attente. **Verrouillé sur la licence** via `ag_pb_licence_ok()`.
+- **Bug corrigé** : le bouton d'en-tête était gris sur fond or, illisible — conflit de spécificité CSS (`.ag-header__nav a` battait `.ag-header__cta`). Corrigé sans `!important`. Ça touchait tous les sites barber livrés.
+- **Règle de répercussion appliquée** : page de vente barber réécrite, palette corrigée (or → bleu électrique) dans `page-wordpress-barber.php` ET `page-templates.php`.
+- **Promesses retirées de la page de vente** parce qu'elles n'existaient pas dans le code : notifications SMS, multi-barbers, écran TV en salon, API publique, multi-salons, chiffre d'affaires quotidien.
+- **Protocole COWORK** entre les deux sessions Claude : `assets/downloads/COWORK.md` (maître) + un `COWORK.md` dans chacun des 16 templates. Ces fichiers sont **exclus des zips clients** (ils contiennent des notes internes).
+- **Mécanique de déploiement documentée** : `docs/MECANIQUE-DEPLOIEMENT.md`.
+
+**RESTE À FAIRE :**
+1. **Images** — `ag-starter-barber` et `ag-starter-association` ont **zéro photo**. C'est la session Cowork (PC + Chrome) qui doit les poser. Brief déjà écrit dans leur `COWORK.md`.
+2. **Couche SEO technique du Premium** — schema.org LocalBusiness, meta OG/Twitter, canonical, sitemap. C'est la deuxième moitié de ce qui justifie le prix ; seules les statistiques existent aujourd'hui.
+3. **Trancher les 6 promesses retirées** — soit on les construit, soit on ne les vend pas.
+4. **Rapatrier l'image hero en local** — le design hotlinke encore Unsplash. Dépendance externe : ça bloque une publication sur wordpress.org.
+
 
 ### ⏸️ EN PAUSE — PASSERELLE SMS ANDROID (attente SIM PHYSIQUE) — 12/06
 **Le CODE est FAIT et déployé** (`inc/ag-sms-gateway.php` + `inc/ag-candidatures.php`) :
