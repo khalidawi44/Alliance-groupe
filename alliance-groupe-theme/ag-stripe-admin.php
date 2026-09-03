@@ -73,10 +73,13 @@ add_action( 'admin_init', function () {
 			'description' => 'URL du lien de paiement pour le pack Site Express Pro. Redirection après paiement : ' . esc_url( home_url( '/sites-express?paid=pro#brief' ) ),
 		),
 		'ag_refais_boost_url' => array(
-			'label'       => 'Maquette IA en vrai — ' . ( function_exists( 'ag_refais_boost_offre' ) ? ag_refais_boost_offre()['prix'] : '49 €' ),
-			'description' => 'Lien de paiement de la micro-offre proposée juste après une maquette « Refais mon site par l\'IA » : on met la maquette en ligne sous 24 h, montant déduit du site complet. '
-				. '⚠️ Ne pas réutiliser le lien du rapport de sécurité, qui est au même montant : ce sont deux produits différents, il faut deux liens. '
-				. 'Tant que ce champ est vide, le bouton renvoie vers /contact au lieu d\'une page de paiement morte.',
+			'label'       => 'Maquette IA en ligne' . ( function_exists( 'ag_refais_boost_offre' )
+				? ' — ' . ag_refais_boost_offre()['prix'] . ag_refais_boost_offre()['unite']
+				: '' ) . ' (ABONNEMENT)',
+			'description' => 'Micro-offre proposée juste après une maquette « Refais mon site par l\'IA » : on met la maquette en ligne sous 24 h, nom de domaine compris, montant déduit du site complet. '
+				. '⚠️ Ce lien doit être créé en mode <strong>ABONNEMENT mensuel</strong> (récurrent), pas en paiement unique : c\'est lui qui finance l\'hébergement et le renouvellement du domaine. '
+				. '⚠️ Créer un lien NEUF — ne pas réutiliser celui du rapport de sécurité ni celui de la maintenance : chaque produit a besoin du sien pour que les paiements se rapprochent. '
+				. 'Tant que ce champ est vide, le bouton affiche « En parler au téléphone » et renvoie vers /contact : rien n\'est cassé, mais rien n\'encaisse.',
 		),
 		'ag_stripe_express_boutique_url' => array(
 			'label'       => 'Site Express — Boutique (1490€)',

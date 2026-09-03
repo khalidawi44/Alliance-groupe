@@ -105,9 +105,10 @@ function ag_refais_optin() {
 		$offre_html = '<p style="font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#e8e6e0;'
 			. 'border-top:1px solid rgba(212,180,92,.2);padding-top:16px;margin-top:20px;">'
 			. '<strong style="color:#D4B45C;">' . esc_html( $offre['nom'] ) . ' — ' . esc_html( $offre['prix'] )
-			. ( ! empty( $offre['unite'] ) ? ', ' . esc_html( $offre['unite'] ) : '' ) . '</strong><br>'
+			. esc_html( (string) ( $offre['unite'] ?? '' ) ) . '</strong><br>'
 			. esc_html( $offre['desc'] ) . ' ' . esc_html( $offre['delai'] ) . '.<br>'
-			. '<span style="color:#b0b0bc;font-size:13px;">' . esc_html( $offre['deduit'] ) . '</span></p>';
+			. '<span style="color:#b0b0bc;font-size:13px;">' . esc_html( $offre['deduit'] ) . '</span><br>'
+			. '<span style="color:#b0b0bc;font-size:13px;">' . esc_html( (string) ( $offre['engagement'] ?? '' ) ) . '</span></p>';
 	}
 
 	$corps = '<p style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#e8e6e0;">'
@@ -215,8 +216,8 @@ function ag_refais_voir() {
 	$offre = function_exists( 'ag_refais_boost_offre' ) ? ag_refais_boost_offre() : null;
 	if ( ! $offre ) {
 		$offre = array(
-			'nom' => 'La faire en vrai', 'prix' => '', 'unite' => '', 'delai' => '',
-			'desc' => '', 'deduit' => '', 'reserve' => '', 'feats' => array(),
+			'nom' => 'La mettre en ligne', 'prix' => '', 'unite' => '', 'delai' => '',
+			'desc' => '', 'deduit' => '', 'engagement' => '', 'feats' => array(),
 			'compare' => array(), 'payable' => false,
 			'url' => home_url( '/sites-express' ),
 		);
@@ -290,10 +291,10 @@ function ag_refais_voir() {
           <li><?php echo esc_html( $f ); ?></li>
         <?php endforeach; ?>
       </ul>
-      <a href="<?php echo esc_url( $offre['url'] ); ?>"><?php echo $offre['payable'] ? 'La mettre en ligne &rarr;' : 'En parler &rarr;'; ?></a>
+      <a href="<?php echo esc_url( $offre['url'] ); ?>"><?php echo $offre['payable'] ? 'La mettre en ligne &rarr;' : 'En parler au t&eacute;l&eacute;phone &rarr;'; ?></a>
       <p class="off__note"><?php echo esc_html( $offre['deduit'] ); ?></p>
-      <?php if ( ! empty( $offre['reserve'] ) ) : ?>
-        <p class="off__note"><?php echo esc_html( $offre['reserve'] ); ?></p>
+      <?php if ( ! empty( $offre['engagement'] ) ) : ?>
+        <p class="off__note"><?php echo esc_html( $offre['engagement'] ); ?></p>
       <?php endif; ?>
 
       <?php if ( ! empty( $offre['compare'] ) ) : ?>
@@ -305,7 +306,7 @@ function ag_refais_voir() {
             <div class="cmp__n"><?php echo esc_html( $c['nous'] ); ?></div>
           </div>
         <?php endforeach; ?>
-        <p class="cmp__leg">Les cr&eacute;ateurs de site en ligne se paient au mois, entre 6&nbsp;&euro; et 17&nbsp;&euro;, tant que le site existe&nbsp;&mdash; et le travail reste &agrave; faire. Tarifs relev&eacute;s en septembre 2026.</p>
+        <p class="cmp__leg">Chez les cr&eacute;ateurs de site en ligne, comptez de 6&nbsp;&euro; &agrave; 17&nbsp;&euro; par mois, plus le nom de domaine renouvel&eacute; 11 &agrave; 15&nbsp;&euro; par an&nbsp;&mdash; et le travail reste &agrave; faire. Tarifs relev&eacute;s en septembre 2026.</p>
       </div>
       <?php endif; ?>
     </div>

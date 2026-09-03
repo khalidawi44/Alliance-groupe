@@ -65,75 +65,82 @@ if ( ! function_exists( 'ag_sites_express_packs' ) ) {
 
 if ( ! function_exists( 'ag_refais_boost_offre' ) ) {
 	/**
-	 * La micro-offre qui suit une maquette IA : « cette maquette, en vrai ».
+	 * La micro-offre qui suit une maquette IA : « cette maquette, en ligne ».
 	 *
 	 * C'est le pas le plus court entre « c'est joli » et « j'ai payé ». Un
-	 * artisan sort ce montant sans réunion, et il est DÉDUIT de l'Essentiel :
-	 * personne ne paie deux fois, donc dire oui ne coûte rien.
+	 * artisan sort ce montant sans réunion, et TOUT ce qu'il paie est déduit du
+	 * site complet : dire oui ne lui coûte rien.
 	 *
-	 * Le prix vit ici, avec les autres — un prix ne doit exister qu'à un seul
-	 * endroit. Le lien de paiement est réglable comme les trois packs
-	 * (option `ag_refais_boost_url`) ; tant qu'il est vide, le bouton renvoie
-	 * vers le contact plutôt que vers une page de paiement morte.
+	 * POURQUOI UN ABONNEMENT ET PAS UN PAIEMENT UNIQUE
+	 * Un hébergement et un nom de domaine se renouvellent chaque année. Les
+	 * financer avec un paiement unique, c'est promettre ce qu'on ne peut pas
+	 * tenir. L'abonnement est la seule forme honnête — et c'est aussi ce qui
+	 * fait vivre la maison entre deux ventes à 490 €.
+	 *
+	 * CE QUE ÇA NOUS COÛTE VRAIMENT (relevé le 03/09/2026)
+	 * Un .fr se renouvelle 7,79 € HT/an chez OVH, soit 0,78 €/mois, plus une
+	 * part d'hébergement mutualisé déjà payé. Environ 1 € par mois et par
+	 * client. Le nom de domaine peut donc être COMPRIS — et c'est justement là
+	 * que les gros hébergeurs rattrapent le client la deuxième année.
+	 *
+	 * Le prix vit ici, avec les autres : un prix ne doit exister qu'à un seul
+	 * endroit. Le lien de paiement se règle comme les trois packs
+	 * (option `ag_refais_boost_url`) et doit être un lien d'ABONNEMENT mensuel.
+	 * Tant qu'il est vide, le bouton renvoie vers /contact plutôt que vers une
+	 * page de paiement morte.
 	 */
 	function ag_refais_boost_offre() {
 		$paiement = trim( (string) get_option( 'ag_refais_boost_url', '' ) );
 		return array(
-			'nom'      => 'Ma maquette en vrai',
-			'prix'     => get_option( 'ag_refais_boost_prix', '39,90 €' ),
-			'unite'    => 'une seule fois',
-			'delai'    => 'En ligne sous 24 h',
-			'desc'     => 'On met cette maquette en ligne pour toi. Tu n\'installes rien, tu n\'écris rien.',
-			'deduit'   => 'Déduits de ton site complet si tu continues. Tu ne paies jamais deux fois.',
-			'url'      => $paiement ? $paiement : home_url( '/contact' ),
-			'payable'  => (bool) $paiement,
-			'feats'    => array(
+			'nom'        => 'Ma maquette en ligne',
+			'prix'       => get_option( 'ag_refais_boost_prix', '9,90 €' ),
+			'unite'      => '/mois',
+			'delai'      => 'En ligne sous 24 h',
+			'desc'       => 'On met cette maquette en ligne pour toi. Tu n\'installes rien, tu n\'écris rien.',
+			'engagement' => '3 mois minimum, puis sans engagement. Tu arrêtes quand tu veux.',
+			'deduit'     => 'Chaque mois payé est déduit de ton site complet. Tu ne paies jamais deux fois.',
+			'url'        => $paiement ? $paiement : home_url( '/contact' ),
+			'payable'    => (bool) $paiement,
+			'feats'      => array(
 				'La maquette mise en ligne telle que tu viens de la voir',
+				'Ton nom de domaine compris, renouvellement inclus',
 				'Tes vrais textes, ton logo, tes coordonnées, ton téléphone',
-				'Une adresse web qui fonctionne, en ligne sous 24 h',
 				'Hébergement et certificat de sécurité compris',
 				'Un interlocuteur joignable au téléphone, à Nantes',
-				'Le montant déduit si tu passes au site complet',
+				'Tout ce que tu paies déduit si tu passes au site complet',
 			),
 			/*
 			 * Ce qu'on peut dire des autres — et RIEN de plus.
-			 * Tarifs relevés le 03/09/2026 sur des comparatifs publics :
-			 * IONOS 6 €/mois (pack Now, hors offre d'appel a 1 €), 12 €/mois
-			 * (Creator) ; Wix a partir de 16,80 €/mois ; Squarespace des
-			 * 12 €/mois en engagement annuel. A reverifier avant toute
-			 * campagne : ces prix bougent, et une comparaison fausse se
-			 * retourne contre nous.
+			 * Relevé le 03/09/2026 sur des comparatifs publics : IONOS 6 €/mois
+			 * (pack Now, hors offre d'appel à 1 €) et 12 €/mois (Creator) ;
+			 * Wix à partir de 16,80 €/mois ; Squarespace dès 12 €/mois en
+			 * engagement annuel. Renouvellement du nom de domaine : 7,79 € HT/an
+			 * chez OVH, 11 à 15 €/an chez IONOS.
+			 * À revérifier avant toute campagne : ces prix bougent, et une
+			 * comparaison fausse se retourne contre nous.
 			 */
-			'compare'  => array(
+			'compare'    => array(
 				array(
-					'eux'  => 'Un abonnement, tous les mois, à vie',
-					'nous' => 'Une fois. Après, plus rien.',
+					'eux'  => 'De 6 à 17 € par mois — et c\'est vous qui construisez le site',
+					'nous' => 'Le site est fait. Vous n\'ouvrez aucun outil.',
 				),
 				array(
-					'eux'  => 'Un outil : c\'est toi qui construis le site',
-					'nous' => 'C\'est nous qui le mettons en ligne',
+					'eux'  => 'Vous partez d\'un modèle vide, à remplir vous-même',
+					'nous' => 'Vous partez de VOTRE maquette, écrite à partir de votre métier',
 				),
 				array(
-					'eux'  => 'Tu pars d\'un modèle vide, à remplir',
-					'nous' => 'Tu pars de TA maquette, écrite à partir de ton métier',
+					'eux'  => 'Le nom de domaine renouvelé 11 à 15 € par an, en plus',
+					'nous' => 'Nom de domaine compris, renouvellement inclus',
 				),
 				array(
-					'eux'  => 'Un formulaire de support, une file d\'attente',
+					'eux'  => 'Un formulaire de support et une file d\'attente',
 					'nous' => 'Un numéro de téléphone, à Nantes',
 				),
 				array(
-					'eux'  => 'Ce que tu paies est perdu si tu changes d\'avis',
-					'nous' => 'Le montant est déduit de ton site complet',
+					'eux'  => 'Ce que vous payez est perdu si vous changez d\'avis',
+					'nous' => 'Chaque mois payé est déduit de votre site complet',
 				),
 			),
-			/*
-			 * L'adresse fournie est un sous-domaine de la maison. C'est la
-			 * SEULE facon honnete de vendre un paiement unique : un nom de
-			 * domaine se renouvelle tous les ans, on ne peut pas le promettre
-			 * a vie contre 39,90 € une fois. Le vrai nom de domaine fait
-			 * partie du pack Essentiel — c'est ce qui justifie l'ecart.
-			 */
-			'reserve'  => 'Adresse fournie : ton-nom.alliancegroupe-inc.com. Ton propre nom de domaine fait partie du pack Essentiel.',
 		);
 	}
 }
