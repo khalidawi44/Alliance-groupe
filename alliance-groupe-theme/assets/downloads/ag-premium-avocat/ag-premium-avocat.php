@@ -3,7 +3,7 @@
  * Plugin Name:       AG Premium Avocat
  * Plugin URI:        https://alliancegroupe-inc.com
  * Description:       FUSIONNÉ dans « AG Premium Avocat — Boutique & Cabinet ». Ce plugin se désactive automatiquement si l'unifié est présent — vous pouvez le supprimer en toute sécurité.
- * Version:           0.6.1
+ * Version:           0.6.2
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Alliance Groupe
@@ -33,7 +33,7 @@ if ( defined( 'AG_BUSINESS_AVOCAT_VERSION' ) ) {
 	return;
 }
 
-define( 'AG_PREMIUM_AVOCAT_VERSION', '0.6.1' );
+define( 'AG_PREMIUM_AVOCAT_VERSION', '0.6.2' );
 define( 'AG_PREMIUM_AVOCAT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AG_PREMIUM_AVOCAT_URL', plugin_dir_url( __FILE__ ) );
 
