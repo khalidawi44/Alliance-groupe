@@ -84,7 +84,7 @@
                         <span class="ag-rcard__link">Projet client confidentiel</span>
                         <?php endif; ?>
                         <?php if ( ! empty( $p['etude'] ) ) : ?>
-                        <a href="<?php echo esc_url( $p['etude'] ); ?>" class="ag-rcard__link">Voir l'étude de cas →</a>
+                        <a href="<?php echo esc_url( $p['etude'] ); ?>" class="ag-btn-lien ag-rcard__link">Voir l'étude de cas<svg class="ag-courbe" viewBox="0 0 44 26" aria-hidden="true"><path d="M2 20 C 12 20, 26 18, 40 6"/><path class="ag-pointe" d="M32 5 L40 6 L38 14"/></svg><span class="ag-souligne"></span></a>
                         <?php endif; ?>
                         <?php if ( $p_google ) : ?>
                         <a href="<?php echo esc_url( $p_google ); ?>" target="_blank" rel="noopener noreferrer" class="ag-rcard__link" style="opacity:.9;">Voir sur Google →</a>

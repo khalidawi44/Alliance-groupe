@@ -109,7 +109,7 @@ $abo_ok   = isset( $_GET['abo'] ) && $_GET['abo'] === 'ok';
                         ?>
                     </ul>
                     <p class="ag-xpress__pay4">Payable en 4× sans frais via PayPal</p>
-                    <a href="<?php echo esc_url( $cta_url ); ?>" class="ag-btn-gold ag-xpress__cta">Commander →</a>
+                    <a href="<?php echo esc_url( $cta_url ); ?>" class="ag-btn-gold ag-xpress__cta"><span class="ag-l">Commander</span><svg class="ag-trait" viewBox="0 0 34 14" aria-hidden="true"><line x1="1" y1="7" x2="31" y2="7"/><polyline points="25,1 31,7 25,13"/></svg></a>
                     <?php if ( ! $is_set ) echo '<small class="ag-xpress__note">Paiement bientôt en ligne — remplis le brief, on te recontacte.</small>'; ?>
                 </div>
                 <?php endforeach; ?>

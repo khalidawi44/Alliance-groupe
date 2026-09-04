@@ -305,7 +305,7 @@ $has_screenshot  = ! empty( $ag_cover_gal ) || file_exists( $screenshot_file );
                     </div>
 
                     <div class="ag-hero__buttons" style="justify-content:center;flex-wrap:wrap;">
-                        <a href="tel:+33744829516" class="ag-btn-gold">Appeler Fabrizio</a>
+                        <a href="tel:+33744829516" class="ag-btn-tel"><svg class="ag-cadre" viewBox="0 0 240 58" preserveAspectRatio="none" aria-hidden="true"><path d="M9 1 H239 V49 L231 57 H1 V9 Z" vector-effect="non-scaling-stroke"/></svg><span class="ag-onde"></span><span class="ag-onde"></span><svg class="ag-combine" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.8 2z"/></svg><span class="ag-num">07 44 82 95 16</span></a>
                         <a href="<?php echo esc_url( add_query_arg( array( 'source' => 'metier', 'metier' => $ag_metier['slug'] ), $contact_base ) ); ?>" class="ag-btn-outline">Réserver un appel →</a>
                     </div>
                 </div>

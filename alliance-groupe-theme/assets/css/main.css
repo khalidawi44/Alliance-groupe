@@ -2593,6 +2593,19 @@ body.ag-cookie-open{overflow:auto;}
 .ag-nav__cta:hover .ag-pastille svg:first-child{transform:translate(22px,-22px);}
 .ag-nav__cta:hover .ag-pastille svg+svg{transform:none;}
 
+/* Telephone de l'en-tete : uniquement la ou le bouton « Sites pro » disparait.
+   Cible tactile de 44px, biseautee comme le reste. */
+.ag-nav__tel{
+    display:none;place-items:center;
+    width:44px;height:44px;flex:none;
+    color:var(--color-gold);background:transparent;
+    border:1px solid rgba(212,180,92,.55);border-radius:0;
+    clip-path:var(--ag-biseau);--ag-bevel:7px;
+    text-decoration:none;
+}
+.ag-nav__tel svg{width:20px;height:20px;}
+.ag-nav__tel:focus-visible{outline:2px solid var(--color-gold-light,#EBD48F);outline-offset:4px;}
+
 /* ── Reduction de mouvement : etat final, tout de suite ────────────────── */
 @media (prefers-reduced-motion:reduce){
     .ag-btn-gold,.ag-btn-gold *,.ag-btn-gold::before,.ag-btn-gold::after,
@@ -3009,6 +3022,7 @@ button:focus-visible{
     /* Hide desktop nav */
     .ag-nav__list{display:none}
     .ag-nav__cta{display:none}
+    .ag-nav__tel{display:grid}
 
     .ag-hero__title{font-size:clamp(1.8rem,8vw,2.6rem)}
     .ag-hero__metrics{gap:24px}

@@ -158,7 +158,7 @@
                     <h3 class="ag-article-cta__title">Besoin d'un accompagnement <em>professionnel</em> ?</h3>
                     <p class="ag-article-cta__text">Ne laissez pas vos concurrents prendre l'avantage. Appelez-nous pour un diagnostic gratuit de votre présence digitale.</p>
                     <div class="ag-article-cta__actions">
-                        <a href="tel:+33744829516" class="ag-btn-gold">Appeler maintenant — 07 44 82 95 16</a>
+                        <a href="tel:+33744829516" class="ag-btn-tel"><svg class="ag-cadre" viewBox="0 0 240 58" preserveAspectRatio="none" aria-hidden="true"><path d="M9 1 H239 V49 L231 57 H1 V9 Z" vector-effect="non-scaling-stroke"/></svg><span class="ag-onde"></span><span class="ag-onde"></span><svg class="ag-combine" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.8 2z"/></svg><span class="ag-num">07 44 82 95 16</span></a>
                         <a href="<?php echo esc_url(home_url('/contact')); ?>" class="ag-btn-outline">Demander un devis gratuit →</a>
                     </div>
                 </div>
@@ -256,7 +256,7 @@
                     <h2 class="ag-cta-final__title">Votre entreprise mérite d'<em>exister en ligne</em></h2>
                     <p class="ag-cta-final__desc">Chaque jour sans stratégie digitale, c'est des clients qui vont chez vos concurrents. Discutons de votre projet — c'est gratuit et sans engagement.</p>
                     <div class="ag-cta-final__actions">
-                        <a href="tel:+33744829516" class="ag-btn-gold">07 44 82 95 16 — Appel gratuit</a>
+                        <a href="tel:+33744829516" class="ag-btn-tel"><svg class="ag-cadre" viewBox="0 0 240 58" preserveAspectRatio="none" aria-hidden="true"><path d="M9 1 H239 V49 L231 57 H1 V9 Z" vector-effect="non-scaling-stroke"/></svg><span class="ag-onde"></span><span class="ag-onde"></span><svg class="ag-combine" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.8 2z"/></svg><span class="ag-num">07 44 82 95 16</span></a>
                         <a href="mailto:contact@alliancegroupe-inc.com" class="ag-btn-outline">contact@alliancegroupe-inc.com</a>
                     </div>
                     <p class="ag-cta-final__trust">Diagnostic gratuit &nbsp;·&nbsp; Sans engagement &nbsp;·&nbsp; Réponse sous 24 h</p>

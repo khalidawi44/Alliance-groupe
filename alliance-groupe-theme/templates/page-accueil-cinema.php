@@ -39,12 +39,36 @@ $agr_ajax  = admin_url( 'admin-ajax.php' );
   .stitle{font-family:var(--serif);font-weight:500;font-size:clamp(1.9rem,5vw,3.4rem);line-height:1.06;letter-spacing:-.01em}
   .stitle em{font-style:italic;color:var(--gold-hi)}
   .lead{color:var(--muted);font-size:clamp(1rem,2.2vw,1.12rem);line-height:1.65;max-width:56ch}
-  .btn{display:inline-block;background:linear-gradient(120deg,var(--gold),var(--gold-hi));color:#1a1206;font-weight:800;
-       text-decoration:none;border-radius:999px;padding:15px 34px;font-size:.98rem;
-       box-shadow:0 18px 44px -18px rgba(212,180,92,.75);transition:transform .25s,box-shadow .25s}
-  .btn:hover{transform:translateY(-2px);box-shadow:0 24px 54px -20px rgba(212,180,92,.95)}
-  .btn--ghost{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.22);box-shadow:none;font-weight:600}
-  .btn--ghost:hover{border-color:var(--gold)}
+  /* Boutons v2 : biseau, plaque gravee. Meme construction que .ag-btn-gold
+     dans main.css — la page cinema porte son propre CSS, elle ne peut pas en
+     heriter, mais elle ne doit pas non plus inventer une deuxieme forme.
+     Aucune ombre : la profondeur vient du cadre grave. */
+  .btn{--c:9px;position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:14px;
+       min-height:52px;padding:0 30px;background:transparent;color:#1a1206;font-weight:800;
+       text-decoration:none;border-radius:0;box-shadow:none;font-size:.98rem}
+  .btn::before{content:"";position:absolute;inset:0;z-index:-1;
+       background:linear-gradient(120deg,var(--gold),var(--gold-hi));
+       clip-path:polygon(var(--c) 0,100% 0,100% calc(100% - var(--c)),calc(100% - var(--c)) 100%,0 100%,0 var(--c))}
+  .btn::after{content:"";position:absolute;inset:0;z-index:-2;border:1.5px solid var(--gold);
+       clip-path:polygon(var(--c) 0,100% 0,100% calc(100% - var(--c)),calc(100% - var(--c)) 100%,0 100%,0 var(--c));
+       transform:translate(7px,7px);opacity:.7;
+       transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .45s cubic-bezier(.2,.8,.2,1)}
+  .btn:hover::after,.btn:focus-visible::after{transform:translate(0,0);opacity:1}
+  .btn:active{transform:scale(.98)}
+  .btn:focus-visible{outline:2px solid var(--gold-hi);outline-offset:4px}
+  .btn .ag-l{display:inline-block;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+  .btn:hover .ag-l{transform:translateX(-2px)}
+  .ag-trait{display:block;flex:none;width:34px;height:14px;overflow:visible}
+  .ag-trait line{stroke:currentColor;stroke-width:2;stroke-linecap:round;transform-origin:left center;
+       transform:scaleX(.55);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+  .ag-trait polyline{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+       transform:translateX(-14px);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+  .btn:hover .ag-trait line{transform:scaleX(1)}
+  .btn:hover .ag-trait polyline{transform:none}
+  .btn--ghost{color:var(--text);font-weight:600}
+  .btn--ghost::before{background:transparent;border:1px solid rgba(255,255,255,.22)}
+  .btn--ghost::after{border-color:rgba(212,180,92,.55)}
+  .btn--ghost:hover::before{border-color:var(--gold)}
 
   /* ---------- EN-TÊTE ---------- */
   .hd{position:fixed;top:0;left:0;right:0;z-index:40;padding:20px 0;transition:padding .4s ease,background .4s ease,backdrop-filter .4s}
@@ -353,7 +377,8 @@ $agr_ajax  = admin_url( 'admin-ajax.php' );
     /* Deux boutons pleine largeur : un pouce sur un chantier ne vise pas. */
     .hero__cta{margin-top:20px;gap:10px}
     .hero__cta .btn{flex:1 1 100%;justify-content:center;text-align:center}
-    .btn{padding:13px 24px;font-size:.92rem}
+    .btn{min-height:48px;padding:0 22px;font-size:.92rem}
+    .btn::after{transform:translate(5px,5px)}
     .lionmark{width:92vw;opacity:.08;top:38%}
     .hero__scroll{display:none}
 
@@ -553,7 +578,7 @@ document.documentElement.classList.add('js-cine');
       <span><b>Un seul interlocuteur, à Nantes.</b>Déjà en ligne&nbsp;: Gwen Services, Anna Photo, L.A Environnement.</span>
     </p>
     <div class="hero__cta">
-      <a class="btn" href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>">Voir les 3 prix</a>
+      <a class="btn" href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>"><span class="ag-l">Voir les 3 prix</span><svg class="ag-trait" viewBox="0 0 34 14" aria-hidden="true"><line x1="1" y1="7" x2="31" y2="7"/><polyline points="25,1 31,7 25,13"/></svg></a>
       <a class="btn btn--ghost btn--tel" href="tel:+33744829516">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94m-1 7.98v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         07 44 82 95 16

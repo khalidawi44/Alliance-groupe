@@ -316,7 +316,17 @@
         </ul>
 
         <a href="<?php echo esc_url(home_url('/sites-express')); ?>" class="ag-nav__cta">
-            Voir les 3 prix <span>→</span>
+            Sites pro d&egrave;s <span class="ag-prix">490&nbsp;&euro;</span>
+            <span class="ag-pastille" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="1"/><path d="M3 9h18"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+            </span>
+        </a>
+
+        <?php /* Le bouton « Sites pro » est masque sous 900px : sur telephone,
+                 l'en-tete garde le telephone, seule action utile a une main. */ ?>
+        <a href="tel:+33744829516" class="ag-nav__tel" aria-label="Appeler le 07 44 82 95 16">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.8 2z"/></svg>
         </a>
 
         <button class="ag-nav__burger" id="ag-burger" aria-label="Menu" type="button">
