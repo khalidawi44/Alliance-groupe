@@ -2414,54 +2414,200 @@ body.ag-cookie-open{overflow:auto;}
     letter-spacing:.5px;
 }
 
-/* ── Buttons ──────────────────────────────────────────────────── */
-/* Boutons en pastille pleine, plus des rectangles a coins casses. Le hero et
-   les sections cinema utilisent deja cette forme (border-radius:999px) : les
-   boutons du reste du site s'y alignent au lieu de proposer une deuxieme
-   grammaire. Une seule forme de bouton sur tout le site. */
-.ag-btn-gold{
-    display:inline-flex;align-items:center;gap:10px;
-    padding:16px 36px;
-    background:var(--color-gold);color:var(--color-bg);
-    border:none;border-radius:999px;
-    font-family:var(--font-sans);font-size:1.05rem;font-weight:700;
-    text-decoration:none;cursor:pointer;
-    box-shadow:0 4px 25px rgba(212,180,92,.25);
-    transition:background .3s,transform .3s,box-shadow .3s;
-}
-.ag-btn-gold:hover{
-    background:#c5a44e;
-    transform:translateY(-2px);
-    box-shadow:0 8px 35px rgba(212,180,92,.35);
-    color:var(--color-bg);text-decoration:none;
-}
-.ag-btn-outline{
-    display:inline-flex;align-items:center;gap:10px;
-    padding:16px 36px;
-    background:transparent;color:var(--color-gold);
-    border:2px solid var(--color-gold);border-radius:999px;
-    font-family:var(--font-sans);font-size:1.05rem;font-weight:700;
-    text-decoration:none;cursor:pointer;
-    transition:background .3s,color .3s,transform .3s;
-}
-.ag-btn-outline:hover{
-    background:rgba(212,180,92,.1);
-    transform:translateY(-2px);
-    color:var(--color-gold);text-decoration:none;
+/* ══ BOUTONS v2 — le biseau ════════════════════════════════════════════
+   Reference : docs/design/boutons-v2.html. Plus aucune pilule : les angles
+   coupes deviennent la signature de forme d'Alliance Groupe.
+
+   La reference enveloppe le bouton dans un <span class="wrap"> pour porter le
+   cadre decale. Impossible ici : `ag-btn-gold` apparait 116 fois dans 47
+   fichiers, et le clip-path d'un element rogne ses propres pseudo-elements.
+   On obtient le meme rendu sans toucher au balisage : le bouton lui-meme n'est
+   plus clippe, il porte la plaque d'or sur ::before et le cadre decale sur
+   ::after, tous deux biseautes et places derriere le texte par `isolation`.
+   Courbes et durees reprises telles quelles de la reference.
+   ══════════════════════════════════════════════════════════════════════ */
+:root{
+    --ag-bevel:9px;
+    --ag-biseau:polygon(var(--ag-bevel) 0,100% 0,100% calc(100% - var(--ag-bevel)),calc(100% - var(--ag-bevel)) 100%,0 100%,0 var(--ag-bevel));
+    --ag-courbe:cubic-bezier(.2,.8,.2,1);
 }
 
-/* ── Nav CTA button ───────────────────────────────────────────── */
-.ag-nav__cta{
-    display:inline-flex;align-items:center;gap:8px;
-    padding:10px 20px;
-    background:var(--color-gold);color:var(--color-bg);
-    border-radius:999px;font-weight:700;font-size:.92rem;
-    text-decoration:none;
-    white-space:nowrap;
-    flex-shrink:0;
-    transition:background .3s,transform .3s;
+/* ── 1B · Plaque gravee — bouton principal ─────────────────────────────── */
+.ag-btn-gold{
+    position:relative;isolation:isolate;
+    display:inline-flex;align-items:center;gap:14px;
+    min-height:58px;padding:0 26px;
+    background:transparent;color:var(--color-bg);
+    border:none;border-radius:0;box-shadow:none;
+    font-family:var(--font-sans);font-size:1.05rem;font-weight:700;line-height:1;
+    text-decoration:none;cursor:pointer;
 }
-.ag-nav__cta:hover{background:#c5a44e;transform:translateY(-2px);color:var(--color-bg);text-decoration:none}
+/* la plaque d'or */
+.ag-btn-gold::before{
+    content:"";position:absolute;inset:0;z-index:-1;
+    background:var(--color-gold);clip-path:var(--ag-biseau);
+}
+/* le cadre, comme l'ombre d'une plaque sur un mur : decale au repos,
+   il vient se caler sous le bouton au survol */
+.ag-btn-gold::after{
+    content:"";position:absolute;inset:0;z-index:-2;
+    border:1.5px solid var(--color-gold);clip-path:var(--ag-biseau);
+    transform:translate(7px,7px);opacity:.7;
+    transition:transform .45s var(--ag-courbe),opacity .45s var(--ag-courbe);
+}
+.ag-btn-gold:hover::after,
+.ag-btn-gold:focus-visible::after{transform:translate(0,0);opacity:1;}
+/* le libelle recule de 2px, comme dans la reference */
+.ag-btn-gold > .ag-l{display:inline-block;transition:transform .45s var(--ag-courbe);}
+.ag-btn-gold:hover > .ag-l{transform:translateX(-2px);}
+.ag-btn-gold:hover{background:transparent;color:var(--color-bg);text-decoration:none;transform:none;}
+.ag-btn-gold:active{transform:scale(.98);}
+.ag-btn-gold:focus-visible{outline:2px solid var(--color-gold-light,#EBD48F);outline-offset:4px;}
+
+/* la fleche « trait qui s'allonge » */
+.ag-trait{display:block;flex:none;width:34px;height:14px;overflow:visible;}
+.ag-trait line{stroke:currentColor;stroke-width:2;stroke-linecap:round;
+    transform-origin:left center;transform:scaleX(.55);
+    transition:transform .45s var(--ag-courbe);}
+.ag-trait polyline{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;
+    stroke-linejoin:round;transform:translateX(-14px);
+    transition:transform .45s var(--ag-courbe);}
+.ag-btn-gold:hover .ag-trait line{transform:scaleX(1);}
+.ag-btn-gold:hover .ag-trait polyline{transform:none;}
+
+/* Mobile : bouton pleine largeur, cadre resserre (note de la reference). */
+@media(max-width:600px){
+    .ag-btn-gold::after{transform:translate(5px,5px);}
+}
+
+/* ── Contour biseaute — ag-btn-outline ─────────────────────────────────
+   Absent des quatre variantes de la reference, mais present 72 fois : le
+   laisser en pilule aurait casse la signature de forme des le premier ecran
+   ou les deux se cotoient. Il reprend donc le contour de la variante 2, sans
+   son animation d'appel, qui n'appartient qu'au telephone. */
+.ag-btn-outline{
+    position:relative;isolation:isolate;
+    display:inline-flex;align-items:center;gap:12px;
+    min-height:58px;padding:0 26px;
+    background:transparent;color:var(--color-gold);
+    border:none;border-radius:0;box-shadow:none;
+    font-family:var(--font-sans);font-size:1.05rem;font-weight:700;line-height:1;
+    text-decoration:none;cursor:pointer;
+}
+.ag-btn-outline::before{
+    content:"";position:absolute;inset:0;z-index:-1;
+    border:1.5px solid var(--color-gold);clip-path:var(--ag-biseau);
+    opacity:.55;transition:opacity .35s var(--ag-courbe);
+}
+.ag-btn-outline::after{
+    content:"";position:absolute;inset:0;z-index:-2;
+    background:var(--color-gold);clip-path:var(--ag-biseau);
+    opacity:0;transition:opacity .35s var(--ag-courbe);
+}
+.ag-btn-outline:hover::before{opacity:1;}
+.ag-btn-outline:hover::after{opacity:.12;}
+.ag-btn-outline:hover{background:transparent;color:var(--color-gold);transform:none;text-decoration:none;}
+.ag-btn-outline:active{transform:scale(.98);}
+.ag-btn-outline:focus-visible{outline:2px solid var(--color-gold-light,#EBD48F);outline-offset:4px;}
+
+/* ── 2 · Appel — contour biseaute qui se dessine ───────────────────────── */
+.ag-btn-tel{
+    position:relative;display:inline-flex;align-items:center;gap:12px;
+    min-height:58px;padding:0 26px;
+    background:transparent;color:var(--color-gold-light,#EBD48F);
+    border:0;border-radius:0;box-shadow:none;
+    font-family:var(--font-sans);font-size:1.05rem;font-weight:700;line-height:1;
+    text-decoration:none;cursor:pointer;
+}
+.ag-btn-tel .ag-cadre{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;}
+.ag-btn-tel .ag-cadre path{fill:none;stroke:var(--color-gold);stroke-width:1.5;opacity:.5;
+    stroke-dasharray:1000;transition:opacity .3s;}
+.ag-btn-tel:hover .ag-cadre path,
+.ag-btn-tel:focus-visible .ag-cadre path{opacity:1;animation:agDessine .9s var(--ag-courbe);}
+@keyframes agDessine{from{stroke-dashoffset:1000}to{stroke-dashoffset:0}}
+.ag-btn-tel .ag-combine{width:20px;height:20px;flex:none;transform-origin:50% 70%;}
+.ag-btn-tel:hover .ag-combine{animation:agSonne .9s cubic-bezier(.36,.07,.19,.97) 1;}
+@keyframes agSonne{10%,30%{transform:rotate(-14deg)}20%,40%{transform:rotate(12deg)}
+    50%{transform:rotate(-8deg)}60%{transform:rotate(6deg)}70%,100%{transform:rotate(0)}}
+.ag-btn-tel .ag-onde{position:absolute;left:32px;top:50%;width:6px;height:6px;margin:-3px;
+    border-radius:50%;border:1.5px solid var(--color-gold);opacity:0;pointer-events:none;}
+.ag-btn-tel:hover .ag-onde{animation:agOnde 1s ease-out 1;}
+.ag-btn-tel:hover .ag-onde:nth-of-type(2){animation-delay:.25s;}
+@keyframes agOnde{0%{transform:scale(1);opacity:.9}100%{transform:scale(7);opacity:0}}
+.ag-btn-tel .ag-num{font-variant-numeric:tabular-nums;letter-spacing:.04em;}
+.ag-btn-tel:focus-visible{outline:2px solid var(--color-gold-light,#EBD48F);outline-offset:4px;}
+/* Sur tactile, aucune animation prealable : le tap compose immediatement. */
+@media(hover:none){
+    .ag-btn-tel .ag-cadre path{opacity:1;}
+    .ag-btn-tel:hover .ag-cadre path{animation:none;}
+    .ag-btn-tel:hover .ag-combine{animation:none;}
+    .ag-btn-tel:hover .ag-onde{animation:none;}
+}
+
+/* ── 3 · Lien texte secondaire — fleche courbe tracee ──────────────────── */
+.ag-btn-lien{
+    position:relative;display:inline-flex;align-items:center;gap:10px;
+    min-height:44px;padding:0 6px;
+    background:transparent;color:var(--color-text-soft,#F3EEE2);
+    border:0;border-radius:0;box-shadow:none;
+    font-family:var(--font-sans);font-size:1rem;font-weight:700;line-height:1;
+    text-decoration:none;cursor:pointer;
+}
+.ag-btn-lien .ag-courbe{width:44px;height:26px;flex:none;overflow:visible;}
+.ag-btn-lien .ag-courbe path{fill:none;stroke:var(--color-gold);stroke-width:1.8;
+    stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:80;stroke-dashoffset:80;
+    transition:stroke-dashoffset .7s var(--ag-courbe) .05s;}
+.ag-btn-lien .ag-courbe .ag-pointe{stroke-dasharray:14;stroke-dashoffset:14;transition-delay:.5s;}
+.ag-btn-lien:hover .ag-courbe path,
+.ag-btn-lien:focus-visible .ag-courbe path{stroke-dashoffset:0;}
+.ag-btn-lien .ag-souligne{position:absolute;left:6px;right:52px;bottom:8px;height:1px;
+    background:var(--color-gold);transform:scaleX(0);transform-origin:left;
+    transition:transform .5s var(--ag-courbe);}
+.ag-btn-lien:hover .ag-souligne,
+.ag-btn-lien:focus-visible .ag-souligne{transform:scaleX(1);}
+.ag-btn-lien:focus-visible{outline:2px solid var(--color-gold-light,#EBD48F);outline-offset:4px;}
+
+/* ── 4 · Bouton d'en-tete ──────────────────────────────────────────────── */
+.ag-nav__cta{
+    position:relative;display:inline-flex;align-items:center;gap:12px;
+    min-height:44px;padding:0 6px 0 20px;
+    background:transparent;color:var(--color-gold-light,#EBD48F);
+    border:1px solid rgba(212,180,92,.55);border-radius:0;box-shadow:none;
+    font-family:var(--font-sans);font-size:.875rem;font-weight:700;line-height:1;
+    text-decoration:none;white-space:nowrap;flex-shrink:0;
+    transition:border-color .35s var(--ag-courbe);
+}
+.ag-nav__cta:hover{border-color:var(--color-gold);background:transparent;transform:none;}
+.ag-nav__cta:focus-visible{outline:2px solid var(--color-gold-light,#EBD48F);outline-offset:4px;}
+.ag-nav__cta .ag-prix{font-family:var(--font-serif);font-style:italic;font-weight:500;
+    font-size:1.0625rem;line-height:1;color:var(--color-gold);}
+.ag-nav__cta .ag-pastille{
+    --ag-bevel:6px;
+    position:relative;width:32px;height:32px;flex:none;overflow:hidden;
+    display:grid;place-items:center;
+    background:var(--color-gold);color:var(--color-bg);clip-path:var(--ag-biseau);
+    transition:transform .45s var(--ag-courbe);
+}
+.ag-nav__cta .ag-pastille svg{width:16px;height:16px;transition:transform .45s var(--ag-courbe);}
+.ag-nav__cta .ag-pastille svg+svg{position:absolute;transform:translate(-22px,22px);}
+.ag-nav__cta:hover .ag-pastille svg:first-child{transform:translate(22px,-22px);}
+.ag-nav__cta:hover .ag-pastille svg+svg{transform:none;}
+
+/* ── Reduction de mouvement : etat final, tout de suite ────────────────── */
+@media (prefers-reduced-motion:reduce){
+    .ag-btn-gold,.ag-btn-gold *,.ag-btn-gold::before,.ag-btn-gold::after,
+    .ag-btn-outline,.ag-btn-outline *,.ag-btn-outline::before,.ag-btn-outline::after,
+    .ag-btn-tel,.ag-btn-tel *,.ag-btn-lien,.ag-btn-lien *,
+    .ag-nav__cta,.ag-nav__cta *{transition:none!important;animation:none!important}
+    .ag-trait line{transform:scaleX(1)}
+    .ag-trait polyline{transform:none}
+    .ag-btn-lien .ag-courbe path{stroke-dashoffset:0}
+    .ag-btn-gold::after{transform:translate(5px,5px)}
+    .ag-btn-tel .ag-cadre path{opacity:1}
+}
+
+/* (L'ancien survol du bouton d'en-tete — fond plein et translation — est
+   retire : il passait APRES le systeme v2 et le remettait en mouvement.) */
 
 /* ── Back to top ──────────────────────────────────────────────── */
 /* A GAUCHE. La regle de base disait « right:40px » et n'etait corrigee que
@@ -3109,19 +3255,19 @@ button:focus-visible{
     border-radius:18px;
 }
 .ag-btn-gold--xl{
+    /* Grand format : le biseau grandit avec le bouton. Aucune ombre —
+       la profondeur vient du cadre grave, pas d'un halo. */
+    --ag-bevel:12px;
     display:inline-flex;
     align-items:center;
-    gap:8px;
-    padding:22px 48px !important;
+    gap:12px;
+    min-height:70px;
+    padding:0 48px !important;
     font-size:1.15rem !important;
     letter-spacing:.3px;
-    box-shadow:0 8px 30px rgba(212,180,92,.25);
-    transition:transform .3s,box-shadow .3s;
+    box-shadow:none;
 }
-.ag-btn-gold--xl:hover{
-    transform:translateY(-3px);
-    box-shadow:0 14px 40px rgba(212,180,92,.35);
-}
+.ag-btn-gold--xl:hover{box-shadow:none;transform:none;}
 .ag-calendly__action-sub{
     color:var(--color-text-secondary);
     font-size:.92rem;
