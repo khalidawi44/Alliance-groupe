@@ -83,3 +83,10 @@ $ag_failles_mod = get_stylesheet_directory() . '/inc/ag-article-failles.php';
 if ( file_exists( $ag_failles_mod ) ) {
 	require_once $ag_failles_mod;
 }
+
+// ── Hero accueil : typo titre/sous-titre en 3 formats, injectee en CSS inline
+//    dans le <head> (contourne le cache CDN 7 jours de style.css chez Hostinger).
+$ag_herotypo_mod = get_stylesheet_directory() . '/inc/ag-hero-typo.php';
+if ( file_exists( $ag_herotypo_mod ) ) {
+	require_once $ag_herotypo_mod;
+}
