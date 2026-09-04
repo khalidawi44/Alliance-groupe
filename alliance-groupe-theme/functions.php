@@ -601,12 +601,16 @@ add_action( 'wp_enqueue_scripts', function () {
         false
     );
 
-    // Style du thème (style.css obligatoire pour WordPress)
+    // Style du thème (style.css obligatoire pour WordPress).
+    // Version = filemtime : le lien ?ver change à chaque modif de style.css,
+    // ce qui invalide le cache CDN (Hostinger garde la CSS 7 jours).
     wp_enqueue_style(
         'ag-theme-style',
         get_stylesheet_uri(),
         array(),
-        '2.0.0'
+        file_exists( get_stylesheet_directory() . '/style.css' )
+            ? filemtime( get_stylesheet_directory() . '/style.css' )
+            : '2.0.1'
     );
 
     wp_enqueue_style(
