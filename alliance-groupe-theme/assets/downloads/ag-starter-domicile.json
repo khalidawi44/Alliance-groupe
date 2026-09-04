@@ -1,11 +1,11 @@
 {
-    "version": "1.0.5",
+    "version": "1.0.6",
     "download_url": "https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/downloads/ag-starter-domicile.zip",
     "homepage": "https://alliancegroupe-inc.com/wordpress-domicile",
     "url": "https://alliancegroupe-inc.com/wordpress-domicile",
     "requires": "6.0",
     "tested": "6.5",
     "requires_php": "7.4",
-    "last_updated": "2026-09-03",
+    "last_updated": "2026-09-04",
     "description": "Theme WordPress 100% gratuit pour les services a la personne et l'aide a domicile : maintien a domicile des seniors, aide aux familles, accompagnement du handicap. Prestations, zones d'intervention, devis avec credit d'impot 50%, temoignages. Configuration metier en 1 clic."
 }
