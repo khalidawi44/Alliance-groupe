@@ -3,7 +3,7 @@
  * Plugin Name:       AG Premium Domicile
  * Plugin URI:        https://alliancegroupe-inc.com
  * Description:       Pack Premium pour le thème AG Starter Domicile (services à la personne). Apporte une couche de design plus travaillée : typographie élégante (Fraunces + Nunito Sans), cartes adoucies, hero enrichi avec bandeau de confiance (Agréé SAP · Crédit d'impôt 50% · 7j/7), témoignages animés, header collant et bouton « Devis gratuit » flottant. S'active si la licence est premium (ou via le mode test).
- * Version:           1.0.3
+ * Version:           1.0.4
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Alliance Groupe
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Durcissement securite (xmlrpc, enumeration auteur/REST, en-tetes, versions) — livre avec le plugin
 $ag_hard = plugin_dir_path( __FILE__ ) . 'inc/ag-hardening.php';
 if ( file_exists( $ag_hard ) ) { require_once $ag_hard; }
-define( 'AG_PREMIUM_DOMICILE_VERSION', '1.0.3' );
+define( 'AG_PREMIUM_DOMICILE_VERSION', '1.0.4' );
 define( 'AG_PREMIUM_DOMICILE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AG_PREMIUM_DOMICILE_URL', plugin_dir_url( __FILE__ ) );
 
