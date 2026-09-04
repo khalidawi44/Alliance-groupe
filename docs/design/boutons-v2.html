@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Boutons v2 — Alliance Groupe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Playfair+Display:ital,wght@1,500&display=swap" rel="stylesheet">
+<style>
+:root{--noir:#080808;--noir-2:#111214;--or:#D4B45C;--or-clair:#EBD48F;--texte:#F3EEE2;--muet:#A39D8F;
+  --c:9px; /* taille du biseau */
+  --biseau:polygon(var(--c) 0,100% 0,100% calc(100% - var(--c)),calc(100% - var(--c)) 100%,0 100%,0 var(--c));}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--noir);color:var(--texte);font-family:Manrope,system-ui,sans-serif}
+body{padding:56px 24px 80px;background:radial-gradient(60% 40% at 78% 20%,rgba(212,180,92,.10),transparent 70%),var(--noir)}
+h1{font:italic 500 clamp(30px,4vw,44px)/1.1 "Playfair Display",serif;margin:0 0 6px}
+h1 span{font:800 1em/1 Manrope,sans-serif;font-style:normal}
+p.lead{color:var(--muet);max-width:60ch;margin:0 0 48px;line-height:1.6}
+.grille{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));max-width:1180px}
+.carte{border:1px solid rgba(212,180,92,.18);padding:32px 28px 26px;background:var(--noir-2);display:flex;flex-direction:column;gap:22px;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)}
+.carte h2{margin:0;font:800 13px/1 Manrope,sans-serif;color:var(--or)}
+.carte p{margin:0;color:var(--muet);font-size:14px;line-height:1.55}
+.demo{display:flex;flex-wrap:wrap;gap:16px;align-items:center;padding:26px 0 6px}
+.note{font-size:12px;color:var(--muet);border-top:1px dashed rgba(212,180,92,.2);padding-top:14px}
+
+.btn{--h:58px;position:relative;display:inline-flex;align-items:center;gap:14px;height:var(--h);padding:0 26px;
+  font:700 16px/1 Manrope,sans-serif;text-decoration:none;color:var(--noir);background:var(--or);border:0;cursor:pointer;
+  clip-path:var(--biseau);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.btn:focus-visible{outline:2px solid var(--or-clair);outline-offset:4px}
+.btn svg{display:block;flex:none}
+.btn:active{transform:scale(.98)}
+
+/* flèche trait (réutilisée) */
+.trait{width:34px;height:14px;overflow:visible}
+.trait line{stroke:currentColor;stroke-width:2;stroke-linecap:round;transform-origin:left center;transform:scaleX(.55);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.trait polyline{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transform:translateX(-14px);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.btn:hover .trait line{transform:scaleX(1)} .btn:hover .trait polyline{transform:none}
+
+/* ---------- 1A · Plaque biseautée + reflet ---------- */
+.p1a{overflow:hidden;isolation:isolate}
+.p1a::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,transparent 40%,rgba(255,255,255,.3) 50%,transparent 60%);transform:translateX(-120%);transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+.p1a:hover::after{transform:translateX(120%)}
+
+/* ---------- 1B · Plaque gravée : cadre décalé qui vient se caler (CHOIX RETENU) ---------- */
+.wrap{position:relative;display:inline-block}
+.wrap .cadre{position:absolute;inset:0;transform:translate(7px,7px);border:1.5px solid var(--or);clip-path:var(--biseau);pointer-events:none;transition:transform .45s cubic-bezier(.2,.8,.2,1);opacity:.7}
+.wrap:hover .cadre{transform:translate(0,0);opacity:1}
+.p1b{background:var(--or)}
+.p1b .l{display:inline-block;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.wrap:hover .p1b .l{transform:translateX(-2px)}
+
+/* ---------- 1C · Coin coupé + chiffre qui bascule ---------- */
+.p1c{padding-right:0;gap:0}
+.p1c .txt{padding-right:22px}
+.p1c .coin{height:100%;width:56px;background:var(--noir);color:var(--or);display:grid;place-items:center;position:relative;overflow:hidden;clip-path:polygon(0 0,100% 0,100% calc(100% - var(--c)),calc(100% - var(--c)) 100%,0 100%)}
+.p1c .coin svg{width:20px;height:20px;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.p1c .coin svg+svg{position:absolute;transform:translate(-26px,26px)}
+.p1c:hover .coin svg:first-child{transform:translate(26px,-26px)}
+.p1c:hover .coin svg+svg{transform:none}
+
+/* ---------- 2 · Appel, contour biseauté qui se dessine ---------- */
+.b2{background:transparent;color:var(--or-clair);gap:12px;clip-path:none}
+.b2 .cadre{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.b2 .cadre path{fill:none;stroke:var(--or);stroke-width:1.5;opacity:.5;stroke-dasharray:1000;transition:opacity .3s}
+.b2:hover .cadre path{opacity:1;animation:dessine .9s cubic-bezier(.2,.8,.2,1)}
+@keyframes dessine{from{stroke-dashoffset:1000}to{stroke-dashoffset:0}}
+.b2 .combine{width:20px;height:20px;transform-origin:50% 70%}
+.b2:hover .combine{animation:sonne .9s cubic-bezier(.36,.07,.19,.97) 1}
+@keyframes sonne{10%,30%{transform:rotate(-14deg)}20%,40%{transform:rotate(12deg)}50%{transform:rotate(-8deg)}60%{transform:rotate(6deg)}70%,100%{transform:rotate(0)}}
+.b2 .onde{position:absolute;left:32px;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;border:1.5px solid var(--or);opacity:0;pointer-events:none}
+.b2:hover .onde{animation:onde 1s ease-out 1}.b2:hover .onde:nth-child(2){animation-delay:.25s}
+@keyframes onde{0%{transform:scale(1);opacity:.9}100%{transform:scale(7);opacity:0}}
+.b2 .num{font-variant-numeric:tabular-nums;letter-spacing:.04em}
+
+/* ---------- 3 · flèche courbe ---------- */
+.b3{background:transparent;color:var(--texte);padding:0 6px;gap:10px;height:44px;clip-path:none}
+.b3 .courbe{width:44px;height:26px;overflow:visible}
+.b3 .courbe path{fill:none;stroke:var(--or);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:80;stroke-dashoffset:80;transition:stroke-dashoffset .7s cubic-bezier(.2,.8,.2,1) .05s}
+.b3 .courbe .pointe{stroke-dasharray:14;stroke-dashoffset:14;transition-delay:.5s}
+.b3:hover .courbe path{stroke-dashoffset:0}
+.b3 .souligne{position:absolute;left:6px;right:52px;bottom:8px;height:1px;background:var(--or);transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.b3:hover .souligne{transform:scaleX(1)}
+
+/* ---------- 4 · en-tête, biseauté ---------- */
+.b4{--h:44px;--c:7px;padding:0 6px 0 20px;gap:12px;font-size:14px;background:transparent;color:var(--or-clair);border:1px solid rgba(212,180,92,.55);clip-path:none}
+.b4 .pastille{width:32px;height:32px;background:var(--or);color:var(--noir);display:grid;place-items:center;overflow:hidden;position:relative;clip-path:var(--biseau);--c:6px;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.b4 .pastille svg{width:16px;height:16px;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.b4 .pastille svg+svg{position:absolute;transform:translate(-22px,22px)}
+.b4:hover{border-color:var(--or)}
+.b4:hover .pastille svg:first-child{transform:translate(22px,-22px)}.b4:hover .pastille svg+svg{transform:none}
+.b4 .prix{font:italic 500 17px/1 "Playfair Display",serif;color:var(--or)}
+
+@media (prefers-reduced-motion:reduce){
+  .btn,.btn *,.btn::after,.wrap .cadre{transition:none!important;animation:none!important}
+  .trait line{transform:scaleX(1)}.trait polyline{transform:none}.b3 .courbe path{stroke-dashoffset:0}.wrap .cadre{transform:translate(5px,5px)}
+}
+</style>
+</head>
+<body>
+<h1>Boutons v2 — <span>biseau</span></h1>
+<p class="lead">Plus de pilule. Angles coupés comme une plaque de laiton gravée : une forme qu'on ne voit sur aucun bouton standard, et qui parle de maison, pas de logiciel. Décision : 1B retenu pour le bouton principal ; 2, 3 et 4 validés.</p>
+
+<div class="grille">
+  <section class="carte">
+    <h2>1A · Plaque + reflet (non retenu)</h2>
+    <p>La forme biseautée, la flèche qui s'étire, le reflet unique.</p>
+    <div class="demo"><a class="btn p1a" href="#"><span>Voir les 3 prix</span><svg class="trait" viewBox="0 0 34 14" aria-hidden="true"><line x1="1" y1="7" x2="31" y2="7"/><polyline points="25,1 31,7 25,13"/></svg></a></div>
+  </section>
+
+  <section class="carte">
+    <h2>1B · Plaque gravée (RETENU)</h2>
+    <p>Un cadre d'or décalé, comme l'ombre d'une plaque sur un mur. Au survol, il vient se caler sous le bouton. Aucune ombre au repos, de la profondeur quand on approche.</p>
+    <div class="demo"><span class="wrap"><span class="cadre"></span><a class="btn p1b" href="#"><span class="l">Voir les 3 prix</span><svg class="trait" viewBox="0 0 34 14" aria-hidden="true"><line x1="1" y1="7" x2="31" y2="7"/><polyline points="25,1 31,7 25,13"/></svg></a></span></div>
+    <div class="note">Bouton principal partout : héros, Commander, CTA de pages. Sur mobile pleine largeur, réduire le décalage du cadre à 4-5 px.</div>
+  </section>
+
+  <section class="carte">
+    <h2>1C · Coin coupé (non retenu)</h2>
+    <p>Texte sur l'or, un coin noir qui porte l'icône.</p>
+    <div class="demo"><a class="btn p1c" href="#"><span class="txt">Voir les 3 prix</span><span class="coin">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="1"/><path d="M3 9h18"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></span></a></div>
+  </section>
+
+  <section class="carte">
+    <h2>2 · Appel — contour biseauté (validé)</h2>
+    <p>Le cadre aux angles coupés se trace au survol, le combiné sonne, deux ondes partent. Sur tactile : le tap compose immédiatement, aucune animation préalable.</p>
+    <div class="demo"><a class="btn b2" href="tel:+33744829516">
+      <svg class="cadre" viewBox="0 0 240 58" preserveAspectRatio="none" aria-hidden="true"><path d="M9 1 H239 V49 L231 57 H1 V9 Z" vector-effect="non-scaling-stroke"/></svg>
+      <span class="onde"></span><span class="onde"></span>
+      <svg class="combine" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.8 2z"/></svg>
+      <span class="num">07 44 82 95 16</span></a></div>
+  </section>
+
+  <section class="carte">
+    <h2>3 · Flèche courbe (validé)</h2>
+    <p>Liens texte secondaires uniquement : « Projet sur-mesure », « Voir l'étude de cas ».</p>
+    <div class="demo"><a class="btn b3" href="#">Projet sur-mesure<svg class="courbe" viewBox="0 0 44 26" aria-hidden="true"><path d="M2 20 C 12 20, 26 18, 40 6"/><path class="pointe" d="M32 5 L40 6 L38 14"/></svg><span class="souligne"></span></a></div>
+  </section>
+
+  <section class="carte">
+    <h2>4 · En-tête (validé)</h2>
+    <p>Texte « Sites pro dès 490 € », pastille biseautée dont l'icône bascule vers une flèche. Lien vers /sites-express.</p>
+    <div class="demo"><a class="btn b4" href="#">Sites pro dès <span class="prix">490 €</span><span class="pastille">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="1"/><path d="M3 9h18"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></span></a></div>
+  </section>
+</div>
+</body>
+</html>
