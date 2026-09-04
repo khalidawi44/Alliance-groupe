@@ -72,7 +72,7 @@
 </footer>
 
 <!-- Back to top — APRÈS </footer> -->
-<button class="ag-totop" id="ag-totop" aria-label="Retour en haut">↑</button>
+<button class="ag-totop" id="ag-totop" aria-label="Retour en haut"><svg class="ag-totop__fleche" viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="20" x2="12" y2="5"/><polyline points="6,11 12,5 18,11"/></svg></button>
 
 <!-- ── Cookie Consent Banner (RGPD / CNIL compliant) ─────────── -->
 <div class="ag-cookie" id="ag-cookie" role="dialog" aria-live="polite" aria-labelledby="ag-cookie-title" hidden>

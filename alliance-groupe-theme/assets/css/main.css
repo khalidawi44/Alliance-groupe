@@ -2629,21 +2629,47 @@ body.ag-cookie-open{overflow:auto;}
    une seule fois, et les autres feuilles n'ont plus a la rattraper. A droite
    il se posait sur la bulle de discussion. */
 .ag-totop{
+    /* Meme construction que .ag-btn-gold : le bouton n'est PAS clippe
+       lui-meme, sinon son clip-path rognerait le cadre grave. La plaque est
+       sur ::before, le cadre sur ::after, la fleche est un vrai SVG. */
     position:fixed;bottom:40px;left:40px;right:auto;
-    width:48px;height:48px;
-    /* Biseau, comme tous les boutons du site : un disque etait la derniere
-       forme etrangere a la signature. */
-    border-radius:0;clip-path:var(--ag-biseau);--ag-bevel:8px;
-    background:var(--color-gold);color:var(--color-bg);
-    font-size:1.4rem;font-weight:700;
+    isolation:isolate;
+    width:52px;height:52px;
     display:flex;align-items:center;justify-content:center;
-    border:none;cursor:pointer;z-index:9999;
-    box-shadow:0 4px 20px rgba(212,180,92,.3);
+    background:transparent;border:none;border-radius:0;box-shadow:none;
+    color:var(--color-bg);cursor:pointer;z-index:9999;
     opacity:0;pointer-events:none;
-    transition:opacity .4s,transform .3s;
+    transition:opacity .4s;
 }
+.ag-totop::before{
+    content:"";position:absolute;inset:0;z-index:-1;
+    --ag-bevel:8px;background:var(--color-gold);clip-path:var(--ag-biseau);
+}
+.ag-totop::after{
+    content:"";position:absolute;inset:0;z-index:-2;
+    --ag-bevel:8px;border:1.5px solid var(--color-gold);clip-path:var(--ag-biseau);
+    transform:translate(6px,6px);opacity:.7;
+    transition:transform .45s var(--ag-courbe),opacity .45s var(--ag-courbe);
+}
+.ag-totop:hover::after,
+.ag-totop:focus-visible::after{transform:translate(0,0);opacity:1;}
+/* La fleche monte : c'est elle qui repond, pas le bouton. */
+.ag-totop__fleche{
+    width:20px;height:20px;display:block;
+    fill:none;stroke:currentColor;stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round;
+    transition:transform .45s var(--ag-courbe);
+}
+.ag-totop:hover .ag-totop__fleche,
+.ag-totop:focus-visible .ag-totop__fleche{transform:translateY(-3px);}
 .ag-totop.visible{opacity:1;pointer-events:auto}
 .ag-totop:hover{transform:none}
+.ag-totop:active{transform:scale(.96)}
+.ag-totop:focus-visible{outline:2px solid var(--color-gold-light,#EBD48F);outline-offset:4px}
+@media (prefers-reduced-motion:reduce){
+    .ag-totop::after,.ag-totop__fleche{transition:none!important}
+    .ag-totop::after{transform:translate(5px,5px)}
+}
 
 /* ── FAQ button ───────────────────────────────────────────────── */
 button.ag-faq-q{
