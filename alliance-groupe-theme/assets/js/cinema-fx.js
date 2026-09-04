@@ -460,6 +460,10 @@
 			var max = (h.scrollHeight - h.clientHeight) || 1;
 			var p = Math.min(100, Math.max(0, (window.scrollY / max) * 100));
 			btn.style.setProperty('--scroll', p + '%');
+			// --scroll-n : la meme progression en nombre nu (0 -> 1). Le cadre
+			// grave biseaute s'en sert pour son opacite ; un pourcentage CSS
+			// ne peut pas entrer dans un calcul d'opacite.
+			btn.style.setProperty('--scroll-n', (p / 100).toFixed(3));
 			ticking = false;
 		}
 		window.addEventListener('scroll', function () {

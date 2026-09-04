@@ -889,7 +889,9 @@ body.home .ag-hero__dot{
 	width: 56px; height: 56px;
 	background: linear-gradient(135deg, rgba(20,20,28,.85) 0%, rgba(10,10,15,.95) 100%) !important;
 	border: 1.5px solid rgba(212,180,92,.4) !important;
-	border-radius: 50% !important;
+	/* Biseau : meme signature de forme que les boutons (DESIGN.md). */
+	border-radius: 0 !important;
+	clip-path: polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
 	color: #D4B45C !important;
 	cursor: pointer;
 	opacity: 0;
@@ -913,16 +915,21 @@ body.home .ag-hero__dot{
 	transform: translateY(-3px) scale(1.05);
 }
 /* Conic ring qui se trace selon scroll */
+/* L'anneau de progression suivait le cercle. Il devient un CADRE GRAVE,
+   decale comme celui du bouton principal : la meme grammaire partout.
+   Le degrade conique ne peut pas epouser un biseau proprement — on garde
+   donc la progression, mais sur un cadre biseaute. */
 .ag-totop::before{
 	content: '';
-	position: absolute; inset: -3px;
-	border-radius: 50%;
-	background: conic-gradient(from -90deg, #D4B45C 0%, #F37A1F var(--scroll, 0%), transparent var(--scroll, 0%));
-	mask: radial-gradient(circle, transparent 27px, #000 28.5px);
-	-webkit-mask: radial-gradient(circle, transparent 27px, #000 28.5px);
-	transition: opacity .3s ease;
-	opacity: .9;
+	position: absolute; inset: -4px;
+	border: 1.5px solid var(--or, #D4B45C);
+	clip-path: polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px);
+	transform: translate(5px, 5px);
+	opacity: calc(.25 + (var(--scroll-n, 0) * .75));
+	transition: transform .45s cubic-bezier(.2,.8,.2,1), opacity .3s ease;
+	pointer-events: none;
 }
+.ag-totop:hover::before{ transform: translate(0, 0); }
 /* Arrow SVG en pseudo-element */
 .ag-totop::after{
 	content: '';

@@ -2630,7 +2630,10 @@ body.ag-cookie-open{overflow:auto;}
    il se posait sur la bulle de discussion. */
 .ag-totop{
     position:fixed;bottom:40px;left:40px;right:auto;
-    width:48px;height:48px;border-radius:50%;
+    width:48px;height:48px;
+    /* Biseau, comme tous les boutons du site : un disque etait la derniere
+       forme etrangere a la signature. */
+    border-radius:0;clip-path:var(--ag-biseau);--ag-bevel:8px;
     background:var(--color-gold);color:var(--color-bg);
     font-size:1.4rem;font-weight:700;
     display:flex;align-items:center;justify-content:center;
@@ -2640,7 +2643,7 @@ body.ag-cookie-open{overflow:auto;}
     transition:opacity .4s,transform .3s;
 }
 .ag-totop.visible{opacity:1;pointer-events:auto}
-.ag-totop:hover{transform:translateY(-3px)}
+.ag-totop:hover{transform:none}
 
 /* ── FAQ button ───────────────────────────────────────────────── */
 button.ag-faq-q{

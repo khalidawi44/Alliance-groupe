@@ -132,24 +132,34 @@ add_action( 'admin_notices', function () {
 } );
 
 /*
- * 7. Retire ?ver= des CSS/JS pour les VISITEURS (masque les versions de
- * plugins, qui indiquent a un attaquant quelles failles connues tenter).
+ * 7. Masque les versions de plugins dans les URL des CSS/JS — SANS casser le
+ * cassage de cache.
  *
- * A SAVOIR : ce parametre sert aussi de casse-cache. Sans lui, le navigateur
- * d'un visiteur deja venu peut garder l'ancienne feuille de style apres une
- * mise a jour, jusqu'a expiration de son cache. Les personnes CONNECTEES
- * gardent le ?ver= : cote administration, on voit donc toujours le site a
- * jour. En cas de doute apres une mise a jour, purger le cache du site.
+ * La premiere version retirait purement le ?ver=. Erreur : ce parametre est
+ * AUSSI ce qui force le navigateur a recharger une feuille modifiee. Le
+ * supprimer figeait le CSS des visiteurs a la version qu'ils avaient deja,
+ * indefiniment — une mise a jour du theme ne leur parvenait jamais.
+ *
+ * On ne le retire donc plus : on le REMPLACE par une empreinte courte de sa
+ * valeur. Le numero de version disparait (un attaquant ne sait plus quelle
+ * faille connue tenter), mais l'empreinte change des que la version change,
+ * donc le navigateur recharge. Les deux objectifs sont tenus.
  */
 if ( ! function_exists( 'ag_hard_strip_ver' ) ) {
 	function ag_hard_strip_ver( $src ) {
-		if ( is_user_logged_in() ) {
+		if ( is_user_logged_in() || ! $src ) {
 			return $src;
 		}
-		if ( $src && false !== strpos( $src, 'ver=' ) ) {
-			$src = remove_query_arg( 'ver', $src );
+		$ver = '';
+		$q   = wp_parse_url( $src, PHP_URL_QUERY );
+		if ( $q ) {
+			parse_str( $q, $args );
+			$ver = isset( $args['ver'] ) ? (string) $args['ver'] : '';
 		}
-		return $src;
+		if ( '' === $ver ) {
+			return $src;
+		}
+		return add_query_arg( 'ver', substr( md5( $ver ), 0, 8 ), $src );
 	}
 }
 add_filter( 'style_loader_src', 'ag_hard_strip_ver', 9999 );
