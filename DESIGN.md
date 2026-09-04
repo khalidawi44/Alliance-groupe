@@ -318,11 +318,13 @@ Une carte, un champ ou une image ne rayonnent jamais.
 ## Shapes
 
 Une famille de rayons douce et étroite, qui monte avec la taille de l'objet : 4 px pour un anneau
-de focus, 8 px pour une action compacte (CTA de la barre de navigation), 10 px pour un champ de
-saisie, 12 px pour un bouton, 16 px pour une carte de service, 18 px pour une carte à média,
-20-24 px pour les grands blocs. Deux formes absolues complètent la famille : la **pastille**
-(`100px`, pastilles, badges, incrustations sur photo) et le **disque** (`50%`, points et
-puces). Aucun angle vif nulle part.
+de focus, 10 px pour un champ de saisie, 16 px pour une carte de service, 18 px pour une carte à
+média, 20-24 px pour les grands blocs. Deux formes absolues complètent la famille : la
+**pastille** (`100px`, badges, incrustations sur photo) et le **disque** (`50%`, points et puces).
+
+**Les boutons ne font plus partie de cette famille.** Depuis le 04/09/2026 ils portent le biseau,
+pas un rayon — voir « La Règle du Biseau » plus bas. Les rayons ci-dessus ne s'appliquent donc
+plus à aucun bouton, ni à aucune pastille d'action.
 
 Les bordures sont toujours d'un pixel et presque invisibles au repos (`rgba(255,255,255,.06)`) ;
 elles s'ambrent à l'interaction (`rgba(212,180,92,.2)` à `.25`). Le contour n'est pas un cadre,
@@ -337,24 +339,76 @@ texte de lecture.
 repos, dorée à l'interaction. Une bordure épaisse et permanente est un corps étranger — sauf sur
 le bouton fantôme, où les 2 px dorés *sont* le bouton.
 
+### La Règle du Biseau — signature de forme (04/09/2026)
+
+**Les boutons n'ont plus de rayon. Ils ont un biseau de 9 px.** Deux angles opposés — haut-gauche
+et bas-droite — sont coupés en diagonale, comme une plaque de laiton gravée. C'est la **signature
+de forme d'Alliance Groupe** : aucun bouton standard, aucun gabarit de la concurrence n'a cette
+silhouette. Elle parle de maison, d'atelier, de chose fabriquée — pas de logiciel.
+
+```css
+--ag-bevel: 9px;
+--ag-biseau: polygon(var(--ag-bevel) 0, 100% 0,
+             100% calc(100% - var(--ag-bevel)),
+             calc(100% - var(--ag-bevel)) 100%,
+             0 100%, 0 var(--ag-bevel));
+```
+
+Le biseau **grandit avec l'objet** : 6 px sur une pastille, 7 px sur une cible compacte, 9 px sur
+un bouton, 12 px sur le bouton XL, 16 px sur une carte. Il ne rétrécit jamais en dessous de 6 px,
+sous peine de passer pour un défaut de rendu plutôt que pour une intention.
+
+**Ce que le biseau remplace :** toute pilule (`999px`, `100px`) et tout rayon sur un bouton. Les
+deux formes ne doivent jamais cohabiter — c'est la cohabitation, pas le rayon, qui détruit une
+signature.
+
+**À étendre :** les cartes de prix reprendront le biseau (à 16 px), pour que la forme se lise à
+l'échelle d'un bloc et pas seulement d'un bouton. Les champs de saisie et les cartes de contenu
+gardent leur rayon doux pour l'instant : le biseau est une marque d'action, pas de surface.
+
+**Référence vivante :** `docs/design/boutons-v2.html`.
+
 ## Components
 
 ### Buttons
 
-- **Shape :** rayon doux de 12 px, contenu en `inline-flex` avec 10 px entre l'icône et le
-  libellé.
-- **Primaire :** fond Or Champagne, texte Noir Maison, `16px 36px`, graisse 700, 1.05rem, halo
-  doré permanent. Au survol : fond Or Champagne Profond (`#C5A44E`), `translateY(-2px)`, halo
-  élargi. Transition de 0.3 s sur fond, translation et ombre.
-- **Primaire XL :** même bouton en `22px 48px` / 1.15rem, montée de 3 px au survol. Réservé au
-  point de conversion principal d'une page, une seule fois.
-- **Fantôme :** fond transparent, texte doré, bordure de 2 px dorée. Au survol, remplissage
-  `rgba(212,180,92,.1)` et même montée de 2 px. C'est le seul endroit où une bordure épaisse est
-  légitime.
-- **CTA de navigation :** version compacte (`10px 20px`, rayon 8 px, 0.92rem) pour tenir dans la
-  barre.
-- **Focus :** contour de 2 px doré avec 3 px de décalage et rayon de 4 px, sur toutes les cibles
-  interactives. À ne jamais supprimer.
+Système **v2**, biseau 9 px. Référence : `docs/design/boutons-v2.html`. Implémentation :
+`assets/css/main.css`, bloc « BOUTONS v2 ».
+
+**Règle d'or : rien ne bouge au repos, et aucun bouton ne porte d'ombre.** La profondeur vient du
+cadre gravé, jamais d'un halo. Un bouton qui flotte est un bouton de logiciel.
+
+- **Principal — « plaque gravée » (1B).** Plaque d'or biseautée, et derrière elle un cadre d'or de
+  1,5 px décalé de 7 px (opacité .7), comme l'ombre portée d'une plaque sur un mur. Au survol le
+  cadre vient se caler exactement sous le bouton, le libellé recule de 2 px, et la flèche
+  s'allonge : son trait passe de `scaleX(.55)` à 1 pendant que la pointe glisse en place.
+  Courbe `cubic-bezier(.2,.8,.2,1)`, 450 ms. Hauteur 58 px. Sur mobile, décalage réduit à 5 px.
+- **Principal XL.** Le même, biseau 12 px, hauteur 70 px, sans ombre. Une seule fois par page, au
+  point de conversion principal.
+- **Contour biseauté.** Cadre doré à 55 % qui s'affirme au survol avec un voile d'or à 12 %.
+  N'existe pas dans la référence : dérivé du contour de la variante 2, sans son animation d'appel.
+- **Appel (2).** Le cadre biseauté se *trace* au survol (`stroke-dasharray`, 900 ms), le combiné
+  sonne, deux ondes partent en décalé. **Sur tactile, aucune animation préalable : le tap
+  compose.** Réservé aux liens `tel:`.
+- **Lien texte (3).** Flèche courbe qui se trace et souligné qui se tire de gauche à droite.
+  **Uniquement pour des liens texte secondaires** — « Projet sur-mesure », « Voir l'étude de
+  cas ». Nulle part ailleurs : c'est ce qui le garde lisible comme un second rang.
+- **En-tête (4).** « Sites pro dès 490 € », prix en italique Playfair, pastille biseautée de 6 px
+  dont l'icône bascule vers une flèche. Vers `/sites-express`. Masqué sous 900 px, où l'en-tête
+  garde à la place un téléphone en cible de 44 px.
+
+**Contraintes tenues, à ne jamais relâcher.** Cibles interactives ≥ 44 px. Focus visible : contour
+doré de 2 px avec 4 px de décalage, sur toutes les variantes, y compris celles dont l'animation
+est déclenchée au survol. `prefers-reduced-motion` : état final immédiat, aucune transition,
+aucune animation — le cadre gravé reste décalé de 5 px pour que la profondeur subsiste.
+
+**Piège d'implémentation, à connaître avant de toucher au CSS.** La référence enveloppe le bouton
+dans un `<span class="wrap">` pour porter le cadre décalé. Le thème ne peut pas : `ag-btn-gold`
+apparaît 116 fois dans 47 fichiers, et surtout le `clip-path` d'un élément **rogne ses propres
+pseudo-éléments**. Le bouton n'est donc pas clippé lui-même : il porte la plaque sur `::before` et
+le cadre sur `::after`, tous deux biseautés, placés derrière le texte par `isolation:isolate` et
+des `z-index` négatifs. Rendu identique, aucun balisage touché. Ne pas « simplifier » en
+remettant un `clip-path` sur le bouton : le cadre disparaîtrait.
 
 ### Tags / Pastilles
 
