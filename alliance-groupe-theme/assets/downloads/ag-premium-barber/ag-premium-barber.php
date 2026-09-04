@@ -3,7 +3,7 @@
  * Plugin Name:       AG Premium Barber
  * Plugin URI:        https://alliancegroupe-inc.com
  * Description:       Outils Premium pour AG Starter Barber. Statistiques du salon : visiteurs, pages vues, provenance, tickets pris, heures de pointe, prestations les plus demandées — calculées sur votre hébergement, sans service externe ni cookie. Le design est desormais inclus dans le theme gratuit.
- * Version:           0.7.1
+ * Version:           0.7.2
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Alliance Groupe
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Durcissement securite (xmlrpc, enumeration auteur/REST, en-tetes, versions) — livre avec le plugin
 $ag_hard = plugin_dir_path( __FILE__ ) . 'inc/ag-hardening.php';
 if ( file_exists( $ag_hard ) ) { require_once $ag_hard; }
-define( 'AG_PREMIUM_BARBER_VERSION', '0.7.1' );
+define( 'AG_PREMIUM_BARBER_VERSION', '0.7.2' );
 define( 'AG_PREMIUM_BARBER_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AG_PREMIUM_BARBER_URL', plugin_dir_url( __FILE__ ) );
 
