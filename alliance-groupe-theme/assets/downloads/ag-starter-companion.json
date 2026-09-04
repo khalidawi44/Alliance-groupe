@@ -1,11 +1,11 @@
 {
-    "version": "1.13.3",
+    "version": "1.13.4",
     "download_url": "https://raw.githubusercontent.com/khalidawi44/Alliance-groupe/main/alliance-groupe-theme/assets/downloads/ag-starter-companion.zip",
     "homepage": "https://alliancegroupe-inc.com/templates-wordpress",
     "url": "https://alliancegroupe-inc.com/templates-wordpress",
     "requires": "6.0",
     "tested": "6.5",
     "requires_php": "7.4",
-    "last_updated": "2026-09-03",
+    "last_updated": "2026-09-04",
     "description": "AG Starter Companion : importe en 1 clic le contenu demo (pages, menu, réglages) des thèmes AG Starter."
 }
