@@ -429,7 +429,10 @@ function analyzeStep(id){
   if(r.follow&&r.follow.length){
     h+='<div class="followup"><div class="fh">→ Étapes débloquées :</div>';
     r.follow.forEach(function(s){ var fid='f'+(FCNT++);
-      h+='<div class="step sub"><h3>'+esc(s.t)+'</h3><pre><button class="copy" onclick="cp(\''+fid+'\',this)">📋 Copier</button><code id="'+fid+'">'+esc(s.c)+'</code></pre><div class="exp">'+s.e+'</div></div>';
+      h+='<div class="step sub"><h3>'+esc(s.t)+'</h3><pre><button class="copy" onclick="cp(\''+fid+'\',this)">📋 Copier</button><code id="'+fid+'">'+esc(s.c)+'</code></pre><div class="exp">'+s.e+'</div>'+
+        '<div class="analyse"><textarea class="res" id="res_'+fid+'" placeholder="Colle ici la sortie de cette commande…"></textarea>'+
+        '<button class="mini" onclick="analyzeStep(\''+fid+'\')">▶ Analyser le résultat</button>'+
+        '<div class="verdict" id="verd_'+fid+'"></div></div></div>';
     });
     h+='</div>';
   }
