@@ -625,6 +625,16 @@ function devisBlock(F){
   h+='</div>';
   return h;
 }
+function perspectiveBlock(){
+  return '<div style="margin:4px 24px 4px;background:#fff8ec;border:1px solid #f0d9a8;border-radius:10px;padding:14px 16px">'+
+    '<div style="font-weight:800;color:#a15c00;margin-bottom:8px">Pourquoi ce devis est un investissement, pas une dépense</div>'+
+    '<ul style="margin:0;padding-left:18px;font-size:13px;color:#333;line-height:1.6">'+
+    '<li><b>À l\'échelle des géants :</b> des entreprises comme Doctolib ou Google paient jusqu\'à <b>50 000 €</b> pour <u>une seule</u> faille critique signalée (programmes « bug bounty ») — preuve de ce qu\'une faille leur coûterait sinon. Votre devis complet est une fraction de ce montant.</li>'+
+    '<li><b>Ce que dit la loi (RGPD) :</b> en cas de fuite due à un défaut de sécurité, la <b>CNIL</b> peut sanctionner jusqu\'à <b>20 M€ ou 4 % du chiffre d\'affaires mondial</b>. Au pénal (art. 226-17), ne pas protéger des données personnelles = <b>jusqu\'à 5 ans et 300 000 €</b> (quintuplé pour une société).</li>'+
+    '<li><b>Le coût réel d\'une fuite :</b> au-delà de l\'amende — notification obligatoire des victimes, perte de clients, atteinte à l\'image. Une fuite se chiffre couramment en <b>dizaines à centaines de milliers d\'euros</b>.</li>'+
+    '<li><b>Conclusion :</b> corriger aujourd\'hui coûte une <b>fraction</b> du risque encouru.</li>'+
+    '</ul></div>';
+}
 function reportHeader(){
   var prog=(SCOPE&&SCOPE.programme)?SCOPE.programme:(AGT.T||'Audit de sécurité');
   var cible=AGT.T||fv('rscope')||'—';
@@ -662,6 +672,7 @@ function buildReport(mode){
     });
     body+='<p style="font-size:12px;color:#777;margin-top:16px">Rapport établi sous mandat / dans le cadre d\'un programme autorisé. Tests non destructifs. Alliance Groupe — 07 44 82 95 16.</p></div>';
   }
+  if(mode!=='expert') body+=perspectiveBlock();
   body+=devisBlock(F);
   var html=reportHeader()+body;
   box.innerHTML=html; LAST_REPORT_HTML=html;
