@@ -169,6 +169,11 @@
         <div><label>Moyen</label><input id="pxMoyen" type="number" value="250" oninput="saveCfg()"></div>
         <div><label>Faible</label><input id="pxFaible" type="number" value="90" oninput="saveCfg()"></div>
       </div>
+      <p class="ph" style="margin-top:8px">Formules proposées au client (€)</p>
+      <div class="row" style="flex-wrap:wrap;gap:8px">
+        <div><label>Rapport seul</label><input id="pxReport" type="number" value="149" oninput="saveCfg()"></div>
+        <div><label>Refonte complète (à partir de)</label><input id="pxRefonte" type="number" value="1490" oninput="saveCfg()"></div>
+      </div>
       <label>Lien de paiement / rapport complet caché sur le site (bouton dans le rapport)</label>
       <input id="payUrl" placeholder="https://alliancegroupe-inc.com/rapport/&lt;client&gt;" oninput="saveCfg()">
       <div id="presentReport" style="background:#fff;color:#141414;border-radius:10px;overflow:hidden;min-height:40px"></div>
@@ -607,7 +612,30 @@ function saveCfg(){
 }
 function reportPrices(){
   function n(id,d){ var e=document.getElementById(id); var v=e?parseInt(e.value,10):NaN; return isNaN(v)?d:v; }
-  return {crit:n('pxCrit',900), eleve:n('pxEleve',500), moyen:n('pxMoyen',250), faible:n('pxFaible',90)};
+  return {crit:n('pxCrit',900), eleve:n('pxEleve',500), moyen:n('pxMoyen',250), faible:n('pxFaible',90), report:n('pxReport',149), refonte:n('pxRefonte',1490)};
+}
+function payLink(offre){
+  var pay=(document.getElementById('payUrl').value||'').trim(); if(!pay) return '';
+  return pay+(pay.indexOf('?')>-1?'&':'?')+'offre='+offre;
+}
+function offersBlock(F){
+  var px=reportPrices(), total=0; F.forEach(function(f){ total+=priceFor(f.score,px); });
+  var corr=px.report+total;
+  function card(titre,prix,sous,offre,hi){
+    var lnk=payLink(offre);
+    var btn=lnk?('<a href="'+esc(lnk)+'" style="display:inline-block;margin-top:8px;background:'+(hi?'linear-gradient(135deg,#E6A93C,#F37A1F)':'#0e1016')+';color:'+(hi?'#241200':'#fff')+';font-weight:800;text-decoration:none;padding:10px 16px;border-radius:8px;font-size:13px">Choisir &amp; payer</a>'):'<div style="margin-top:8px;font-size:12px;color:#888">Nous contacter : 07 44 82 95 16</div>';
+    return '<div style="flex:1;min-width:180px;border:'+(hi?'2px solid #F37A1F':'1px solid #e3e3e3')+';border-radius:10px;padding:14px;background:'+(hi?'#fff8ec':'#fff')+'">'+
+      (hi?'<div style="font-size:10px;font-weight:800;color:#F37A1F;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Recommandé</div>':'')+
+      '<div style="font-weight:800;color:#141414;font-size:15px">'+esc(titre)+'</div>'+
+      '<div style="font-size:22px;font-weight:900;color:#141414;margin:6px 0">'+eur(prix)+(offre==='refonte'?'<span style="font-size:12px;color:#888"> et +</span>':'')+'</div>'+
+      '<div style="font-size:12px;color:#555;line-height:1.5">'+sous+'</div>'+btn+'</div>';
+  }
+  return '<div style="padding:6px 24px 22px"><h3 style="color:#141414;border-top:2px solid #eee;padding-top:16px;margin-bottom:10px">Nos formules</h3>'+
+    '<div style="display:flex;gap:12px;flex-wrap:wrap">'+
+    card('Rapport seul',px.report,'Le rapport complet des failles trouvées, remis et expliqué. Vous corrigez de votre côté.','rapport',false)+
+    card('Rapport + Correction',corr,'Le rapport <b>ET</b> la correction de toutes les failles par nos soins, avec re-test de vérification. Le plus sûr.','correction',true)+
+    card('Refonte complète sécurisée',px.refonte,'Reconstruction du site propre et durci (thème sain, en-têtes, sauvegardes, maintenance). Idéal si le site est vétuste ou déjà compromis.','refonte',false)+
+    '</div></div>';
 }
 function priceFor(score,px){ var s=parseFloat(score)||0; if(s>=9)return px.crit; if(s>=7)return px.eleve; if(s>=4)return px.moyen; return px.faible; }
 function eur(n){ try{ return (n||0).toLocaleString('fr-FR')+' €'; }catch(e){ return (n||0)+' €'; } }
@@ -619,9 +647,7 @@ function devisBlock(F){
     h+='<tr style="border-bottom:1px solid #eee"><td style="padding:8px">'+esc(f.name)+'</td><td style="padding:8px;color:'+s.c+';font-weight:700">'+s.l+'</td><td style="padding:8px;text-align:right;white-space:nowrap">'+eur(p)+'</td></tr>';
   });
   h+='<tr><td colspan="2" style="padding:11px 8px;text-align:right;font-weight:800">Total remédiation</td><td style="padding:11px 8px;text-align:right;font-weight:900;color:#F37A1F;white-space:nowrap">'+eur(total)+'</td></tr></tbody></table>';
-  h+='<p style="font-size:11px;color:#888;margin-top:6px">Devis indicatif, valable 30 jours. Correctifs appliqués par Alliance Groupe, re-test inclus.</p>';
-  var pay=(document.getElementById('payUrl').value||'').trim();
-  if(pay){ h+='<div style="text-align:center;margin-top:14px"><a href="'+esc(pay)+'" style="display:inline-block;background:linear-gradient(135deg,#E6A93C,#F37A1F);color:#241200;font-weight:800;text-decoration:none;padding:13px 24px;border-radius:10px;font-size:15px">✅ Lancer la remédiation &amp; régler en ligne</a><div style="font-size:11px;color:#888;margin-top:6px;word-break:break-all">'+esc(pay)+'</div></div>'; }
+  h+='<p style="font-size:11px;color:#888;margin-top:6px">Devis indicatif, valable 30 jours. Correctifs appliqués par Alliance Groupe, re-test inclus. Détail des prix ci-dessus repris dans la formule « Rapport + Correction ».</p>';
   h+='</div>';
   return h;
 }
@@ -674,6 +700,7 @@ function buildReport(mode){
   }
   if(mode!=='expert') body+=perspectiveBlock();
   body+=devisBlock(F);
+  if(mode!=='expert') body+=offersBlock(F);
   var html=reportHeader()+body;
   box.innerHTML=html; LAST_REPORT_HTML=html;
   box.scrollIntoView({behavior:'smooth'});
@@ -728,7 +755,7 @@ function genFileRead(){
 }
 document.getElementById('cible').addEventListener('keydown',function(e){if(e.key==='Enter')gen();});
 try{ var _sv=localStorage.getItem('ag_scope'); if(_sv){ document.getElementById('scopeJson').value=_sv; loadScope(true); } }catch(e){}
-try{ var _px=JSON.parse(localStorage.getItem('ag_prices')||'null'); if(_px){ if(_px.crit!=null)document.getElementById('pxCrit').value=_px.crit; if(_px.eleve!=null)document.getElementById('pxEleve').value=_px.eleve; if(_px.moyen!=null)document.getElementById('pxMoyen').value=_px.moyen; if(_px.faible!=null)document.getElementById('pxFaible').value=_px.faible; } var _pu=localStorage.getItem('ag_payurl'); if(_pu)document.getElementById('payUrl').value=_pu; }catch(e){}
+try{ var _px=JSON.parse(localStorage.getItem('ag_prices')||'null'); if(_px){ if(_px.crit!=null)document.getElementById('pxCrit').value=_px.crit; if(_px.eleve!=null)document.getElementById('pxEleve').value=_px.eleve; if(_px.moyen!=null)document.getElementById('pxMoyen').value=_px.moyen; if(_px.faible!=null)document.getElementById('pxFaible').value=_px.faible; if(_px.report!=null)document.getElementById('pxReport').value=_px.report; if(_px.refonte!=null)document.getElementById('pxRefonte').value=_px.refonte; } var _pu=localStorage.getItem('ag_payurl'); if(_pu)document.getElementById('payUrl').value=_pu; }catch(e){}
 </script>
 </body>
 </html>
