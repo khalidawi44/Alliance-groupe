@@ -161,7 +161,16 @@
         <button onclick="buildReport('expert')">🧑‍💻 Version expert</button>
         <button onclick="printReport()">🖨️ Imprimer / PDF</button>
       </div>
-      <p class="exp" style="margin-top:0">Le rapport reprend TOUTES les failles confirmées pendant la campagne. La version <b>novice</b> = pour le client (langage clair, sans code). La version <b>expert</b> = technique (CVSS, PoC, remédiation).</p>
+      <p class="exp" style="margin-top:0">Le rapport reprend TOUTES les failles confirmées pendant la campagne. La version <b>novice</b> = pour le client (langage clair, sans code). La version <b>expert</b> = technique (CVSS, PoC, remédiation). Un <b>devis de remédiation</b> (prix par gravité) + un bouton de <b>paiement</b> sont ajoutés en bas du rapport.</p>
+      <p class="ph" style="margin-top:4px">Devis — prix de correction par gravité (€)</p>
+      <div class="row" style="flex-wrap:wrap;gap:8px">
+        <div><label>Critique</label><input id="pxCrit" type="number" value="900" oninput="saveCfg()"></div>
+        <div><label>Élevé</label><input id="pxEleve" type="number" value="500" oninput="saveCfg()"></div>
+        <div><label>Moyen</label><input id="pxMoyen" type="number" value="250" oninput="saveCfg()"></div>
+        <div><label>Faible</label><input id="pxFaible" type="number" value="90" oninput="saveCfg()"></div>
+      </div>
+      <label>Lien de paiement / rapport complet caché sur le site (bouton dans le rapport)</label>
+      <input id="payUrl" placeholder="https://alliancegroupe-inc.com/rapport/&lt;client&gt;" oninput="saveCfg()">
       <div id="presentReport" style="background:#fff;color:#141414;border-radius:10px;overflow:hidden;min-height:40px"></div>
     </div>
   </div>
@@ -507,9 +516,19 @@ function scan(t){
   if(/ref:\s*refs\/heads|\.git\/HEAD[\s\S]{0,40}\b200\b|\b200\b[\s\S]{0,40}\.git/i.test(t)) return {cls:'ok',msg:'📂 Dépôt .git EXPOSÉ → récupération du code source + secrets.',
     follow:[{t:'Aspirer le .git + chercher des secrets',c:'git-dumper '+U+'/.git/ ./loot && gitleaks detect -s ./loot',e:'Sous mandat ; au coffre, ne pas diffuser le code.'}],
     report:{type:'info'}, unlock:null};
-  // WordPress détecté
+  // Sortie wpscan déjà lancée (comptes/plugins) — AVANT la détection générique, pour ne PAS reboucler
+  if(/wpscan|\[\+\]|User\(s\) Identified|\[i\] User|Identified the following|WordPress version \d/i.test(t)){
+    var foll=[], msg='🧩 Sortie wpscan lue.';
+    if(/User\(s\) Identified|\[i\] User|Author\(s\) Identified/i.test(t)){
+      msg+=' Comptes énumérés → test de mot de passe faible possible (sous mandat).';
+      foll.push({t:'Test de mots de passe sur les comptes trouvés (sous mandat)',c:'wpscan --url '+U+' --usernames <user1,user2> --passwords /usr/share/wordlists/rockyou.txt --max-threads 5 --throttle 800',e:'Prouve un accès admin si mot de passe faible (ACTIF, mandat obligatoire, risque de verrouillage). Un compte admin cassé = impact critique.'});
+    }
+    if(/vulnerabilit|CVE-|\[!\]|Title:/i.test(t)){ msg+=' Plugins/thèmes vulnérables signalés → vérifie la CVE + un exploit public (searchsploit).'; foll.push({t:'Chercher un exploit pour une CVE trouvée',c:'searchsploit <plugin> <version>',e:'Confirme si la vulnérabilité a un exploit prêt à l\'emploi.'}); }
+    return {cls:'ok',msg:msg,follow:foll,report:(/User\(s\) Identified|\[i\] User/i.test(t)?{type:'enum'}:null),unlock:null};
+  }
+  // WordPress détecté (page/whatweb) — mais PAS sur une sortie wpscan (déjà gérée au-dessus)
   if(/wordpress/i.test(t)) return {cls:'ok',msg:'🧩 WordPress détecté → énumère comptes + plugins vulnérables.',
-    follow:[{t:'Énumérer WordPress (wpscan, discret)',c:'wpscan --url '+U+' --enumerate u,vp,vt --stealthy --throttle 800 --random-user-agent',e:'Comptes + plugins/thèmes à CVE. --stealthy + --throttle 800 (0,8s entre requêtes) = évite le ban Wordfence/hébergeur.'},
+    follow:[{t:'Énumérer WordPress (wpscan, discret)',c:'wpscan --url '+U+' --enumerate u,vp,vt --stealthy --throttle 800 --random-user-agent',e:'Comptes + plugins/thèmes à CVE. --stealthy + --throttle 800 (0,8s entre requêtes) = évite le ban Wordfence/hébergeur. Colle la sortie → Analyser (ne rebouclera plus).'},
             {t:'Comptes via REST',c:'curl -s '+U+'/wp-json/wp/v2/users',e:'Fuite de comptes fréquente.'}],
     report:null, unlock:null};
   // chemins trouvés (ffuf / codes HTTP)
@@ -583,6 +602,29 @@ function collectFindings(){
   var ty=fv('rtype'), t=RT[ty]; if(!t) return [];
   return [{type:ty,name:t.n,cvss:t.v,score:t.s,rem:t.rem,proof:fv('rproof'),endpoint:fv('rendpoint')}];
 }
+function saveCfg(){
+  try{ localStorage.setItem('ag_prices', JSON.stringify(reportPrices())); localStorage.setItem('ag_payurl', (document.getElementById('payUrl').value||'').trim()); }catch(e){}
+}
+function reportPrices(){
+  function n(id,d){ var e=document.getElementById(id); var v=e?parseInt(e.value,10):NaN; return isNaN(v)?d:v; }
+  return {crit:n('pxCrit',900), eleve:n('pxEleve',500), moyen:n('pxMoyen',250), faible:n('pxFaible',90)};
+}
+function priceFor(score,px){ var s=parseFloat(score)||0; if(s>=9)return px.crit; if(s>=7)return px.eleve; if(s>=4)return px.moyen; return px.faible; }
+function eur(n){ try{ return (n||0).toLocaleString('fr-FR')+' €'; }catch(e){ return (n||0)+' €'; } }
+function devisBlock(F){
+  var px=reportPrices(), total=0;
+  var h='<div style="padding:4px 24px 22px"><h3 style="color:#141414;border-top:2px solid #eee;padding-top:16px;margin-bottom:8px">Devis de remédiation</h3>'+
+    '<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="background:#f4f5f7"><th style="text-align:left;padding:8px">Correctif</th><th style="text-align:left;padding:8px">Gravité</th><th style="text-align:right;padding:8px">Prix</th></tr></thead><tbody>';
+  F.forEach(function(f){ var s=sevInfo(f.score), p=priceFor(f.score,px); total+=p;
+    h+='<tr style="border-bottom:1px solid #eee"><td style="padding:8px">'+esc(f.name)+'</td><td style="padding:8px;color:'+s.c+';font-weight:700">'+s.l+'</td><td style="padding:8px;text-align:right;white-space:nowrap">'+eur(p)+'</td></tr>';
+  });
+  h+='<tr><td colspan="2" style="padding:11px 8px;text-align:right;font-weight:800">Total remédiation</td><td style="padding:11px 8px;text-align:right;font-weight:900;color:#F37A1F;white-space:nowrap">'+eur(total)+'</td></tr></tbody></table>';
+  h+='<p style="font-size:11px;color:#888;margin-top:6px">Devis indicatif, valable 30 jours. Correctifs appliqués par Alliance Groupe, re-test inclus.</p>';
+  var pay=(document.getElementById('payUrl').value||'').trim();
+  if(pay){ h+='<div style="text-align:center;margin-top:14px"><a href="'+esc(pay)+'" style="display:inline-block;background:linear-gradient(135deg,#E6A93C,#F37A1F);color:#241200;font-weight:800;text-decoration:none;padding:13px 24px;border-radius:10px;font-size:15px">✅ Lancer la remédiation &amp; régler en ligne</a><div style="font-size:11px;color:#888;margin-top:6px;word-break:break-all">'+esc(pay)+'</div></div>'; }
+  h+='</div>';
+  return h;
+}
 function reportHeader(){
   var prog=(SCOPE&&SCOPE.programme)?SCOPE.programme:(AGT.T||'Audit de sécurité');
   var cible=AGT.T||fv('rscope')||'—';
@@ -620,6 +662,7 @@ function buildReport(mode){
     });
     body+='<p style="font-size:12px;color:#777;margin-top:16px">Rapport établi sous mandat / dans le cadre d\'un programme autorisé. Tests non destructifs. Alliance Groupe — 07 44 82 95 16.</p></div>';
   }
+  body+=devisBlock(F);
   var html=reportHeader()+body;
   box.innerHTML=html; LAST_REPORT_HTML=html;
   box.scrollIntoView({behavior:'smooth'});
@@ -674,6 +717,7 @@ function genFileRead(){
 }
 document.getElementById('cible').addEventListener('keydown',function(e){if(e.key==='Enter')gen();});
 try{ var _sv=localStorage.getItem('ag_scope'); if(_sv){ document.getElementById('scopeJson').value=_sv; loadScope(true); } }catch(e){}
+try{ var _px=JSON.parse(localStorage.getItem('ag_prices')||'null'); if(_px){ if(_px.crit!=null)document.getElementById('pxCrit').value=_px.crit; if(_px.eleve!=null)document.getElementById('pxEleve').value=_px.eleve; if(_px.moyen!=null)document.getElementById('pxMoyen').value=_px.moyen; if(_px.faible!=null)document.getElementById('pxFaible').value=_px.faible; } var _pu=localStorage.getItem('ag_payurl'); if(_pu)document.getElementById('payUrl').value=_pu; }catch(e){}
 </script>
 </body>
 </html>
