@@ -64,6 +64,8 @@
       <button class="go" style="background:#22304a;color:#cfe" onclick="clearScope()">Effacer le scope</button>
     </div>
     <div id="scopeSummary" class="exp"></div>
+    <button class="go" style="margin-top:10px" onclick="startCampaign()">▶️ Lancer la campagne auto (selon le scope)</button>
+    <p class="exp" style="margin-top:6px">Sélectionne les tests autorisés, génère la route, et te guide étape par étape jusqu'au rapport. Tu colles chaque sortie (l'exécution reste sur Kali), l'assistant enchaîne. Rien de destructif sans ta confirmation.</p>
   </div>
 
   <div class="panel">
@@ -151,6 +153,17 @@
       <button class="go" onclick="report()">📝 Assembler le rapport YWH complet</button>
     </div>
     <div id="result" class="hidden"><div class="panel" id="resultbox"></div></div>
+
+    <h2>④ Rapport présentable <span style="font-size:12px;color:#9aa0b0">(marque Alliance Groupe — 2 versions)</span> <span id="reportCount" style="font-size:11px;color:#9aa0b0"></span></h2>
+    <div class="panel">
+      <div class="toolbar">
+        <button onclick="buildReport('novice')">👔 Version client (novice)</button>
+        <button onclick="buildReport('expert')">🧑‍💻 Version expert</button>
+        <button onclick="printReport()">🖨️ Imprimer / PDF</button>
+      </div>
+      <p class="exp" style="margin-top:0">Le rapport reprend TOUTES les failles confirmées pendant la campagne. La version <b>novice</b> = pour le client (langage clair, sans code). La version <b>expert</b> = technique (CVSS, PoC, remédiation).</p>
+      <div id="presentReport" style="background:#fff;color:#141414;border-radius:10px;overflow:hidden;min-height:40px"></div>
+    </div>
   </div>
 
   <footer>Alliance Groupe — usage sous mandat / scope autorisé uniquement. Non destructif. 100% hors ligne.</footer>
@@ -526,13 +539,114 @@ function analyzeStep(id){
   v.innerHTML=h;
   if(r.unlock) showExtract(r.unlock);
   if(r.report) applyToReport(r.report, txt);
+  if(CAMPAIGN) setTimeout(nudgeNext, 120);
 }
 function applyToReport(rep, txt){
   if(rep.type){ setv('rtype', rep.type); }
   if(rep.payload){ setv('rpayload', rep.payload); }
   if(txt){ setv('rproof', txt.slice(0,1500)); }
   fillSkeleton(true);
+  pushFinding(rep.type, txt);
   var b=document.getElementById('reportBanner'); if(b) b.style.display='block';
+}
+/* ===================== FINDINGS + RAPPORT PRÉSENTABLE (novice/expert, marque AG) ===================== */
+var FINDINGS=[], CAMPAIGN=false, LAST_REPORT_HTML='';
+var AG_LOGO='<svg viewBox="0 0 120 120" width="54" height="54" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="agg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E6A93C"/><stop offset="1" stop-color="#F37A1F"/></linearGradient></defs><circle cx="60" cy="60" r="55" fill="#0e1016" stroke="url(#agg)" stroke-width="5"/><text x="60" y="77" text-anchor="middle" font-family="Georgia,serif" font-weight="800" font-size="48" fill="url(#agg)">AG</text></svg>';
+var NOVICE={
+ rce:{r:'Un intrus peut exécuter ses propres commandes sur votre serveur.',i:'Contrôle total possible : vol de données, sabotage, rançon.'},
+ sqli:{r:'Votre base de données est accessible en lecture/écriture par un intrus.',i:'Fuite de vos clients, de leurs mots de passe et de vos commandes.'},
+ lfi:{r:'Des fichiers internes du serveur peuvent être lus à distance.',i:'Fuite de configurations et d\'identifiants de connexion.'},
+ ssrf:{r:'Votre serveur peut être détourné pour attaquer votre réseau interne ou votre cloud.',i:'Accès à des services privés, vol de clés cloud.'},
+ idor:{r:'Un client peut accéder aux données d\'un autre client.',i:'Violation de données personnelles (RGPD).'},
+ bac:{r:'Une action réservée aux administrateurs est possible sans être connecté.',i:'Modification ou défaçage du site par un anonyme.'},
+ enum:{r:'On peut deviner quels emails/comptes existent chez vous.',i:'Facilite le hameçonnage ciblé et le bourrage d\'identifiants.'},
+ xss:{r:'Du code malveillant peut s\'exécuter dans le navigateur de vos visiteurs et admins.',i:'Vol de session administrateur, prise de contrôle du site.'},
+ xssr:{r:'Un lien piégé peut exécuter du code chez votre visiteur.',i:'Vol de session, hameçonnage crédible.'},
+ upload:{r:'Un fichier piégé peut être déposé puis exécuté sur le serveur.',i:'Prise de contrôle du serveur.'},
+ xxe:{r:'Un document XML piégé peut lire des fichiers du serveur.',i:'Fuite de configurations et de secrets.'},
+ ssti:{r:'Une injection dans les gabarits permet d\'exécuter du code.',i:'Prise de contrôle du serveur.'},
+ auth:{r:'L\'authentification présente une faiblesse (jetons, mots de passe).',i:'Usurpation de comptes, y compris administrateur.'},
+ info:{r:'Des informations techniques sensibles sont exposées.',i:'Facilite la préparation d\'une attaque.'},
+ leak:{r:'Des identifiants liés à vous circulent dans des fuites connues.',i:'Connexion frauduleuse possible si des mots de passe sont réutilisés.'}
+};
+function pushFinding(type, proof){
+  var t=RT[type]; if(!t) return;
+  var ep=fv('rendpoint')||AGT.U||'';
+  var key=type+'|'+ep;
+  if(FINDINGS.some(function(f){return f.key===key;})) return;
+  FINDINGS.push({key:key,type:type,name:t.n,cvss:t.v,score:t.s,rem:t.rem,proof:(proof||'').slice(0,1200),endpoint:ep});
+  var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+FINDINGS.length+' faille(s) collectée(s)';
+}
+function sevInfo(score){ var s=parseFloat(score)||0; if(s>=9)return{l:'Critique',c:'#dc2626'}; if(s>=7)return{l:'Élevé',c:'#ea580c'}; if(s>=4)return{l:'Moyen',c:'#d97706'}; return{l:'Faible',c:'#2563eb'}; }
+function collectFindings(){
+  if(FINDINGS.length) return FINDINGS.slice();
+  var ty=fv('rtype'), t=RT[ty]; if(!t) return [];
+  return [{type:ty,name:t.n,cvss:t.v,score:t.s,rem:t.rem,proof:fv('rproof'),endpoint:fv('rendpoint')}];
+}
+function reportHeader(){
+  var prog=(SCOPE&&SCOPE.programme)?SCOPE.programme:(AGT.T||'Audit de sécurité');
+  var cible=AGT.T||fv('rscope')||'—';
+  var d=new Date().toLocaleDateString('fr-FR');
+  return '<div style="display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,#0e1016,#1b2030);padding:20px 24px">'+AG_LOGO+
+    '<div><div style="font-size:20px;font-weight:800;color:#fff">Alliance Groupe — Rapport de sécurité</div>'+
+    '<div style="font-size:13px;color:#E6A93C">'+esc(prog)+' · cible '+esc(cible)+' · '+esc(d)+'</div></div></div>';
+}
+function buildReport(mode){
+  var F=collectFindings(), box=document.getElementById('presentReport');
+  if(!F.length){ box.innerHTML='<div style="padding:20px;color:#555">Aucune faille collectée pour l\'instant. Lance des analyses (ou remplis le rapport ci-dessus), puis regénère.</div>'; return; }
+  var worst=F.reduce(function(m,f){var s=parseFloat(f.score)||0;return s>m?s:m;},0);
+  var body='';
+  if(mode==='expert'){
+    body+='<div style="padding:10px 24px 24px"><p style="color:#333;font-size:13px">Rapport technique — chaque faille suit le format standard (type, endpoint, CVSS, preuve masquée, remédiation).</p>';
+    F.forEach(function(f,idx){ var s=sevInfo(f.score);
+      body+='<div style="border:1px solid #e3e3e3;border-radius:8px;padding:14px;margin:14px 0">'+
+        '<div style="font-weight:800;font-size:15px;color:#141414">#'+(idx+1)+' — '+esc(f.name)+' <span style="color:'+s.c+'">('+s.l+' '+esc(''+f.score)+')</span></div>'+
+        '<div style="font-size:12.5px;color:#444;margin-top:6px"><b>Endpoint :</b> <code>'+esc(f.endpoint||'—')+'</code></div>'+
+        '<div style="font-size:12.5px;color:#444"><b>CVSS 3.1 :</b> <code>'+esc(f.cvss)+'</code> = '+esc(''+f.score)+'</div>'+
+        (f.proof?'<div style="font-size:12.5px;color:#444;margin-top:6px"><b>Preuve (masquée) :</b><pre style="background:#0e1016;color:#9ef0c8;padding:10px;border-radius:6px;overflow:auto;white-space:pre-wrap;font-size:12px">'+esc(f.proof)+'</pre></div>':'')+
+        '<div style="font-size:12.5px;color:#0a7a3f;margin-top:6px"><b>Remédiation :</b> '+esc(f.rem)+'</div></div>';
+    });
+    body+='<p style="font-size:12px;color:#777">Preuves détaillées conservées au coffre chiffré. Alliance Groupe.</p></div>';
+  } else {
+    var s0=sevInfo(worst);
+    body+='<div style="display:flex;align-items:center;gap:18px;padding:18px 24px;border-bottom:1px solid #eee"><div style="font-size:44px;font-weight:900;color:'+s0.c+'">'+esc(''+worst)+'<span style="font-size:16px;color:#888">/10</span></div><div><div style="font-weight:800;color:'+s0.c+';font-size:16px">Gravité maximale : '+s0.l+'</div><div style="font-size:13px;color:#555">'+F.length+' point(s) de sécurité relevé(s). Détail ci-dessous, en clair.</div></div></div>';
+    body+='<div style="padding:8px 24px 24px"><p style="color:#333;font-size:14px">Voici ce que nous avons trouvé sur votre site et ce que cela signifie concrètement pour vous. Chaque point est classé par gravité, avec notre recommandation.</p>';
+    F.forEach(function(f){ var s=sevInfo(f.score), nv=NOVICE[f.type]||{r:f.name,i:''};
+      body+='<div style="border:1px solid #eee;border-left:5px solid '+s.c+';border-radius:8px;padding:12px 14px;margin:12px 0">'+
+        '<div style="font-weight:800;color:'+s.c+'">'+s.l+' — '+esc(f.name)+'</div>'+
+        '<div style="font-size:13.5px;color:#222;margin-top:5px"><b>Ce que c\'est :</b> '+esc(nv.r)+'</div>'+
+        (nv.i?'<div style="font-size:13.5px;color:#222;margin-top:3px"><b>Le risque pour vous :</b> '+esc(nv.i)+'</div>':'')+
+        '<div style="font-size:13.5px;color:#0a7a3f;margin-top:3px"><b>Notre recommandation :</b> '+esc(f.rem)+'</div></div>';
+    });
+    body+='<p style="font-size:12px;color:#777;margin-top:16px">Rapport établi sous mandat / dans le cadre d\'un programme autorisé. Tests non destructifs. Alliance Groupe — 07 44 82 95 16.</p></div>';
+  }
+  var html=reportHeader()+body;
+  box.innerHTML=html; LAST_REPORT_HTML=html;
+  box.scrollIntoView({behavior:'smooth'});
+}
+function printReport(){
+  if(!LAST_REPORT_HTML) buildReport('novice');
+  if(!LAST_REPORT_HTML) return;
+  var w=window.open('','_blank'); if(!w){ alert('Autorise les pop-ups pour imprimer / exporter en PDF.'); return; }
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Rapport Alliance Groupe</title><style>body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#fff;color:#141414}@page{margin:14mm}code{font-family:Consolas,monospace}</style></head><body><div style="max-width:800px;margin:0 auto;border:1px solid #eee">'+LAST_REPORT_HTML+'</div><scr'+'ipt>window.onload=function(){setTimeout(function(){window.print();},200);}</scr'+'ipt></body></html>');
+  w.document.close();
+}
+function nudgeNext(){
+  var boxes=document.querySelectorAll('#steps textarea.res');
+  for(var i=0;i<boxes.length;i++){ if(!boxes[i].value.trim()){ boxes[i].scrollIntoView({behavior:'smooth',block:'center'}); try{boxes[i].focus();}catch(e){} return; } }
+}
+function startCampaign(){
+  var c=clean(document.getElementById('cible').value);
+  if(!c.host){ alert('Entre d\'abord la cible.'); return; }
+  if(SCOPE){ var hs=hostInScope(c.host); if(!hs.ok){ alert('⛔ Cible hors scope : '+hs.reason+'.'); return; } }
+  FINDINGS=[]; var rc=document.getElementById('reportCount'); if(rc) rc.textContent='';
+  sel={}; CATS.forEach(function(cat){ if(!scopeBlocks(cat.k)) sel[cat.k]=true; }); renderCats();
+  CAMPAIGN=true; gen();
+  var st=document.getElementById('steps');
+  if(st){ var note=document.createElement('div'); note.className='verdict ok'; note.style.margin='0 0 10px';
+    note.innerHTML='▶️ <b>Campagne auto en cours</b> — colle la sortie de chaque commande puis « Analyser » : l\'assistant enchaîne et t\'amène à l\'étape suivante. À la fin, clique « Version client » ou « Version expert ».';
+    st.insertBefore(note, st.firstChild); }
+  nudgeNext();
 }
 function showExtract(mode){
   var wrap=document.getElementById('extract'); wrap.classList.remove('hidden');
