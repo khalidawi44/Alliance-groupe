@@ -52,6 +52,20 @@
   <h1>🥋 Assistant de défi — Bug Bounty / CTF</h1>
   <p class="sub">Kali = tes mains (tu exécutes) · cet outil = ton cerveau (route pas-à-pas + rapport YWH). Hors ligne. <b>Uniquement sous mandat / dans le scope d'un programme autorisé.</b></p>
 
+  <div class="panel" id="scopePanel">
+    <label style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <span>🎯 Scope du mandat / bug bounty <span style="font-weight:400;color:#9aa0b0">(active le mode encadré)</span></span>
+      <span id="scopeBadge" style="font-weight:700;font-size:11px;color:#9aa0b0">aucun scope chargé</span>
+    </label>
+    <textarea id="scopeJson" placeholder='Colle le scope au format JSON, ex :
+{"programme":"Client X","in_scope":["*.exemple.fr"],"out_scope":["blog.exemple.fr"],"tests_autorises":["recon","sqli","xss","idor"],"non_qualifying":["account enumeration","rate limiting","self-xss"],"rate_limit_rps":3}'></textarea>
+    <div class="row">
+      <button class="go" style="background:#22304a;color:#cfe" onclick="loadScope(false)">🎯 Charger le scope</button>
+      <button class="go" style="background:#22304a;color:#cfe" onclick="clearScope()">Effacer le scope</button>
+    </div>
+    <div id="scopeSummary" class="exp"></div>
+  </div>
+
   <div class="panel">
     <div class="row">
       <div><label>Cible (domaine, IP ou URL)</label><input id="cible" placeholder="exemple.fr  ou  10.10.10.5" autocomplete="off"></div>
@@ -240,22 +254,95 @@ leak:[
 };}
 
 var AGT={U:'',T:'',P:'id'}, FCNT=0;
+
+/* ===================== MODE ENCADRÉ : scope du mandat / bug bounty ===================== */
+var SCOPE=null;
+var CAT_TAGS={
+	recon:['recon','information disclosure','fingerprint'], disco:['directory','content discovery','brute'],
+	infra:['infrastructure','port scan','network'], rce:['rce','remote code execution','command injection'],
+	sqli:['sql injection','sqli'], lfi:['lfi','path traversal','local file inclusion'],
+	xss:['stored xss','xss'], xssr:['reflected xss','self-xss','self xss','xss'],
+	idor:['idor','bola','broken object level authorization','access control'],
+	ssrf:['ssrf','server side request forgery'], upload:['file upload','upload'],
+	xxe:['xxe','xml external entity'], ssti:['ssti','template injection'],
+	auth:['authentication','jwt','brute force','bruteforce','rate limiting','rate limit'],
+	leak:['data breach','leak','credential','password']
+};
+function matchPat(host,pat){
+	host=(host||'').toLowerCase(); pat=(pat||'').toLowerCase().trim(); if(!pat) return false;
+	if(pat.indexOf('*.')===0){ var base=pat.slice(2); return host===base||host.endsWith('.'+base); }
+	pat=pat.replace(/^https?:\/\//,'').replace(/\/.*$/,'');
+	return host===pat || host.endsWith('.'+pat);
+}
+function hostInScope(host){
+	if(!SCOPE) return {ok:true};
+	if((SCOPE.out_scope||[]).some(function(p){return matchPat(host,p);})) return {ok:false,reason:'domaine explicitement HORS scope (out_scope)'};
+	var ins=SCOPE.in_scope||[];
+	if(ins.length && !ins.some(function(p){return matchPat(host,p);})) return {ok:false,reason:'domaine absent de in_scope'};
+	return {ok:true};
+}
+function scopeBlocks(k){
+	if(!SCOPE) return null;
+	var allow=SCOPE.tests_autorises||[];
+	if(allow.length && allow.indexOf(k)<0) return 'hors des tests autorisés';
+	var nq=(SCOPE.non_qualifying||[]).map(function(x){return (''+x).toLowerCase();});
+	var tags=CAT_TAGS[k]||[k];
+	for(var i=0;i<nq.length;i++){ for(var j=0;j<tags.length;j++){
+		if(nq[i] && (nq[i].indexOf(tags[j])>-1 || tags[j].indexOf(nq[i])>-1)) return 'non-qualifying (« '+nq[i]+' »)';
+	}}
+	return null;
+}
+function scopeThrottle(cmd){
+	if(!SCOPE||!SCOPE.rate_limit_rps) return cmd;
+	var rps=parseInt(SCOPE.rate_limit_rps,10)||0; if(rps<1) return cmd;
+	cmd=cmd.replace(/-rate\s+\d+/g,'-rate '+rps);
+	cmd=cmd.replace(/--throttle\s+\d+/g,'--throttle '+Math.round(1000/rps));
+	return cmd;
+}
+function loadScope(silent){
+	var raw=(document.getElementById('scopeJson').value||'').trim();
+	if(!raw){ if(!silent) alert('Colle le scope (JSON) d\'abord.'); return; }
+	var s; try{ s=JSON.parse(raw); }catch(e){ document.getElementById('scopeSummary').innerHTML='<span class="bad">JSON invalide : '+esc(e.message)+'</span>'; return; }
+	SCOPE=s;
+	try{ localStorage.setItem('ag_scope', raw); }catch(e){}
+	var b=document.getElementById('scopeBadge'); b.textContent='✅ '+(s.programme||'scope')+' — mode encadré actif'; b.style.color='#22c55e';
+	var L=[];
+	if(s.in_scope&&s.in_scope.length) L.push('<b>In-scope :</b> '+esc(s.in_scope.join(', ')));
+	if(s.out_scope&&s.out_scope.length) L.push('<b>Hors scope :</b> '+esc(s.out_scope.join(', ')));
+	if(s.tests_autorises&&s.tests_autorises.length) L.push('<b>Tests autorisés :</b> '+esc(s.tests_autorises.join(', ')));
+	if(s.non_qualifying&&s.non_qualifying.length) L.push('<b>Non-qualifying (sautés) :</b> '+esc(s.non_qualifying.join(', ')));
+	if(s.rate_limit_rps) L.push('<b>Débit max :</b> '+esc(''+s.rate_limit_rps)+' req/s (throttle auto)');
+	document.getElementById('scopeSummary').innerHTML=L.join('<br>')+'<br><span style="color:#9aa0b0">L\'assistant refusera les cibles hors scope et sautera les tests non-qualifying. Aide, pas garantie : reste responsable du respect du mandat.</span>';
+	if(!silent) alert('Scope chargé. Mode encadré actif pour « '+(s.programme||'ce programme')+' ».');
+}
+function clearScope(){
+	SCOPE=null; try{ localStorage.removeItem('ag_scope'); }catch(e){}
+	document.getElementById('scopeSummary').innerHTML='';
+	var b=document.getElementById('scopeBadge'); b.textContent='aucun scope chargé'; b.style.color='#9aa0b0';
+}
+
 function gen(){
   var c=clean(document.getElementById('cible').value); if(!c.host){alert("Entre une cible.");return;}
   var T=c.host, U=(/^\d+\.\d+\.\d+\.\d+$/.test(T)?('http://'+T):('https://'+T));
   var P=(document.getElementById('param').value.trim()||'id');
   AGT={U:U,T:T,P:P};
+  // Filtre de scope : refuse une cible hors du mandat/programme chargé
+  if(SCOPE){ var hs=hostInScope(T); if(!hs.ok){ alert('⛔ Cible HORS SCOPE : '+hs.reason+'.\nLe scope « '+(SCOPE.programme||'chargé')+' » n\'autorise pas '+T+'. Rien n\'est généré.'); return; } }
   var pb=PB(U,T,P), order=['recon','disco','infra','rce','sqli','lfi','xss','idor','ssrf','upload','xxe','ssti','auth','leak'];
-  var html='', i=0;
+  var html='', i=0, skipped=[];
+  if(SCOPE){ html+='<div class="verdict ok" style="margin:0 0 10px">🎯 Mode encadré : <b>'+esc(SCOPE.programme||'scope')+'</b> — cible '+esc(T)+' in-scope. Tests hors scope / non-qualifying sautés automatiquement.</div>'; }
   order.forEach(function(k){ if(!sel[k]||!pb[k])return; var cat=CATS.filter(function(x){return x.k===k;})[0];
+    var blk=scopeBlocks(k);
+    if(blk){ skipped.push(esc(cat.n)+' — '+esc(blk)); return; }
     html+='<div class="ph">'+esc(cat.n)+'</div>';
-    pb[k].forEach(function(s){ var id='c'+(i++);
-      html+='<div class="step"><h3>'+esc(s.t)+'</h3><pre><button class="copy" onclick="cp(\''+id+'\',this)">📋 Copier</button><code id="'+id+'">'+esc(s.c)+'</code></pre><div class="exp">'+s.e+'</div>'+
+    pb[k].forEach(function(s){ var id='c'+(i++); var cmd=scopeThrottle(s.c);
+      html+='<div class="step"><h3>'+esc(s.t)+'</h3><pre><button class="copy" onclick="cp(\''+id+'\',this)">📋 Copier</button><code id="'+id+'">'+esc(cmd)+'</code></pre><div class="exp">'+s.e+'</div>'+
         '<div class="analyse"><textarea class="res" id="res_'+id+'" placeholder="Colle ici la sortie de cette commande…"></textarea>'+
         '<button class="mini" onclick="analyzeStep(\''+id+'\')">▶ Analyser le résultat</button>'+
         '<div class="verdict" id="verd_'+id+'"></div></div></div>';
     });
   });
+  if(skipped.length){ html+='<div class="exp" style="border-left:3px solid var(--warn);padding-left:10px;margin-top:10px"><b>Sautés (scope) :</b><br>'+skipped.join('<br>')+'</div>'; }
   if(!html){alert("Choisis au moins un type (Recon est coché par défaut).");return;}
   document.getElementById('steps').innerHTML=html;
   // pré-remplir le rapport
@@ -472,6 +559,7 @@ function genFileRead(){
   var b=document.getElementById('reportBanner'); if(b) b.style.display='block';
 }
 document.getElementById('cible').addEventListener('keydown',function(e){if(e.key==='Enter')gen();});
+try{ var _sv=localStorage.getItem('ag_scope'); if(_sv){ document.getElementById('scopeJson').value=_sv; loadScope(true); } }catch(e){}
 </script>
 </body>
 </html>
