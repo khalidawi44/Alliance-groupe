@@ -1,4 +1,4 @@
-name: Gwen images auto-publish
+name: Robot images — Gwen Services
 
 # Robot automatique du site Gwen Services :
 # des qu'une image arrive dans gwen-inbox/ (push sur main),
