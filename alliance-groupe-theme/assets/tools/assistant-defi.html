@@ -79,7 +79,8 @@
   </div>
 
   <div id="out" class="hidden">
-    <div class="toolbar"><button onclick="copyAll()">📋 Tout copier</button><button onclick="window.print()">🖨️ Imprimer / PDF</button></div>
+    <div class="toolbar"><button onclick="copyAll()">📋 Tout copier</button><button onclick="exportPlan()">📤 Exporter le plan Kali (.sh)</button><button onclick="window.print()">🖨️ Imprimer / PDF</button></div>
+    <div id="planBox" class="hidden" style="margin:0 0 14px"></div>
     <h2>① Route à suivre (dans l'ordre)</h2>
     <p class="sub" style="margin-top:-4px">Sous chaque commande : colle la sortie → <b>« Analyser »</b> → l'assistant lit ce que tu as trouvé et débloque la suite adaptée.</p>
     <p class="sub" style="margin-top:-8px;color:#f59e0b">⚠️ Anti-ban : ffuf/wpscan en rafale font bannir ton IP (Wordfence/hébergeur). Les commandes ici sont déjà <b>bridées</b> (débit lent). Sur une prod fragile, ralentis encore.</p>
@@ -283,7 +284,7 @@ leak:[
 ]
 };}
 
-var AGT={U:'',T:'',P:'id'}, FCNT=0;
+var AGT={U:'',T:'',P:'id'}, FCNT=0, PLAN=[];
 
 /* ===================== MODE ENCADRÉ : scope du mandat / bug bounty ===================== */
 var SCOPE=null;
@@ -359,13 +360,13 @@ function gen(){
   // Filtre de scope : refuse une cible hors du mandat/programme chargé
   if(SCOPE){ var hs=hostInScope(T); if(!hs.ok){ alert('⛔ Cible HORS SCOPE : '+hs.reason+'.\nLe scope « '+(SCOPE.programme||'chargé')+' » n\'autorise pas '+T+'. Rien n\'est généré.'); return; } }
   var pb=PB(U,T,P), order=['recon','disco','infra','rce','sqli','lfi','xss','idor','ssrf','upload','xxe','ssti','auth','leak'];
-  var html='', i=0, skipped=[];
+  var html='', i=0, skipped=[]; PLAN=[];
   if(SCOPE){ html+='<div class="verdict ok" style="margin:0 0 10px">🎯 Mode encadré : <b>'+esc(SCOPE.programme||'scope')+'</b> — cible '+esc(T)+' in-scope. Tests hors scope / non-qualifying sautés automatiquement.</div>'; }
   order.forEach(function(k){ if(!sel[k]||!pb[k])return; var cat=CATS.filter(function(x){return x.k===k;})[0];
     var blk=scopeBlocks(k);
     if(blk){ skipped.push(esc(cat.n)+' — '+esc(blk)); return; }
     html+='<div class="ph">'+esc(cat.n)+'</div>';
-    pb[k].forEach(function(s){ var id='c'+(i++); var cmd=scopeThrottle(s.c);
+    pb[k].forEach(function(s){ var id='c'+(i++); var cmd=scopeThrottle(s.c); PLAN.push({phase:cat.n,titre:s.t,cmd:cmd});
       html+='<div class="step"><h3>'+esc(s.t)+'</h3><pre><button class="copy" onclick="cp(\''+id+'\',this)">📋 Copier</button><code id="'+id+'">'+esc(cmd)+'</code></pre><div class="exp">'+s.e+'</div>'+
         '<div class="analyse"><textarea class="res" id="res_'+id+'" placeholder="Colle ici la sortie de cette commande…"></textarea>'+
         '<button class="mini" onclick="analyzeStep(\''+id+'\')">▶ Analyser le résultat</button>'+
@@ -385,6 +386,36 @@ function gen(){
 }
 function cp(id,btn){var t=document.getElementById(id).innerText;navigator.clipboard.writeText(t).then(function(){btn.classList.add('done');btn.textContent='✓ Copié';setTimeout(function(){btn.classList.remove('done');btn.textContent='📋 Copier';},1400);});}
 function copyAll(){var b=[].slice.call(document.querySelectorAll('#steps code')).map(function(c){return c.innerText;}).join("\n\n");navigator.clipboard.writeText(b).then(function(){alert("Route copiée.");});}
+function exportPlan(){
+  if(!PLAN.length){ alert('Génère d\'abord la route (ou lance la campagne), puis exporte.'); return; }
+  var prog=(SCOPE&&SCOPE.programme)?SCOPE.programme:(AGT.T||'cible');
+  var cible=AGT.T||'cible';
+  var rps=(SCOPE&&SCOPE.rate_limit_rps)?parseInt(SCOPE.rate_limit_rps,10):0;
+  var delay=rps? Math.max(1,Math.ceil(1/rps)) : 2;
+  var safe=cible.replace(/[^a-z0-9.\-]/gi,'_');
+  var L=[];
+  L.push('#!/usr/bin/env bash');
+  L.push('# Campagne AG — '+prog+' — cible '+cible+' — '+new Date().toLocaleString('fr-FR'));
+  L.push('# Genere par assistant-defi. SOUS MANDAT / SCOPE AUTORISE UNIQUEMENT. Non destructif.');
+  L.push('# Sur Kali :  bash campagne.sh   puis colle le .txt produit dans assistant-defi (zone Analyser).');
+  L.push('set -u');
+  L.push('OUT="campagne-'+safe+'-$(date +%Y%m%d-%H%M).txt"');
+  L.push('echo "== Campagne '+prog.replace(/"/g,'')+' -> $OUT =="');
+  PLAN.forEach(function(s){
+    var lbl=(s.phase+' | '+s.titre).replace(/"/g,'\\"').replace(/\n/g,' ');
+    L.push('');
+    L.push('echo "" >> "$OUT"');
+    L.push('{ echo "===== '+lbl+' ====="; '+s.cmd+'; } >> "$OUT" 2>&1');
+    L.push('sleep '+delay);
+  });
+  L.push('');
+  L.push('echo "Termine -> $OUT (colle-le dans assistant-defi)."');
+  var txt=L.join('\n')+'\n';
+  try{ var b=new Blob([txt],{type:'text/x-shellscript'}); var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='campagne.sh'; document.body.appendChild(a); a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500); }catch(e){}
+  try{ navigator.clipboard.writeText(txt); }catch(e){}
+  var box=document.getElementById('planBox'); if(box){ box.classList.remove('hidden');
+    box.innerHTML='<p style="margin:0 0 6px;font-size:12.5px;color:#c7cdda"><b>campagne.sh</b> téléchargé + copié ('+PLAN.length+' étapes, '+delay+'s entre chaque). Sur Kali : <code>bash campagne.sh</code> → recolle le <b>.txt</b> dans les zones « Analyser » ci-dessous.</p><pre style="max-height:220px;overflow:auto;background:#05070c;border:1px solid #2a2c4e;border-radius:8px;padding:10px;font-size:11.5px;color:#9ef0c8;white-space:pre-wrap;margin:0">'+esc(txt)+'</pre>'; }
+}
 
 // --- CVSS + remédiation par type ---
 var RT={
