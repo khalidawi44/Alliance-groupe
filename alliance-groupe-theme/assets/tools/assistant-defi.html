@@ -106,6 +106,14 @@
       </div>
     </div>
 
+    <h2>③ bis — Importer les résultats <span style="font-size:12px;color:#9aa0b0">(le .txt produit par campagne.sh sur Kali)</span></h2>
+    <div class="panel">
+      <p class="exp" style="margin-top:0">Colle ici <b>tout</b> le fichier <span style="font-family:monospace">campagne-*.txt</span> : l'assistant découpe par étape, analyse chaque sortie, retient les failles et construit le rapport automatiquement.</p>
+      <textarea id="bulkResults" placeholder="Colle ici le contenu complet du fichier campagne-*.txt"></textarea>
+      <button class="go" onclick="importResults()">📥 Analyser tout &amp; construire le rapport</button>
+      <div id="bulkSummary" class="exp"></div>
+    </div>
+
     <div id="reportBanner">✅ <b>Rapport pré-rempli automatiquement</b> d'après ce que tu as trouvé — descends, vérifie/édite les sections, puis « Assembler le rapport complet ».</div>
     <h2>② Générer le rapport <span style="font-size:12px;color:#9aa0b0">(bug bounty OU audit client — même procédé que Doctolib / kalelia)</span></h2>
     <div class="panel">
@@ -409,7 +417,7 @@ function exportPlan(){
     L.push('sleep '+delay);
   });
   L.push('');
-  L.push('echo "Termine -> $OUT (colle-le dans assistant-defi)."');
+  L.push('echo "Termine -> $OUT (colle-le dans assistant-defi, section Importer les resultats)."');
   var txt=L.join('\n')+'\n';
   try{ var b=new Blob([txt],{type:'text/x-shellscript'}); var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='campagne.sh'; document.body.appendChild(a); a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500); }catch(e){}
   try{ navigator.clipboard.writeText(txt); }catch(e){}
@@ -758,6 +766,27 @@ function printReport(){
   var w=window.open('','_blank'); if(!w){ alert('Autorise les pop-ups pour imprimer / exporter en PDF.'); return; }
   w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Rapport Alliance Groupe</title><style>body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#fff;color:#141414}@page{margin:14mm}code{font-family:Consolas,monospace}</style></head><body><div style="max-width:800px;margin:0 auto;border:1px solid #eee">'+LAST_REPORT_HTML+'</div><scr'+'ipt>window.onload=function(){setTimeout(function(){window.print();},200);}</scr'+'ipt></body></html>');
   w.document.close();
+}
+function importResults(){
+  var el=document.getElementById('bulkResults'); var txt=el?el.value:'';
+  if(!txt.trim()){ alert('Colle le contenu du fichier campagne-*.txt produit sur Kali.'); return; }
+  FINDINGS=[]; var rc=document.getElementById('reportCount'); if(rc) rc.textContent='';
+  var sep=/^={3,}\s*(.+?)\s*={3,}\s*$/gm, labels=[], mm;
+  while((mm=sep.exec(txt))){ labels.push(mm[1]); }
+  var chunks=txt.split(/^={3,}.*={3,}[^\n]*$/m), blocks=[];
+  if(labels.length){ for(var i=0;i<labels.length;i++){ blocks.push({label:labels[i], body:(chunks[i+1]||'')}); } }
+  else { blocks.push({label:'Sortie complète', body:txt}); }
+  var rows=[];
+  blocks.forEach(function(b){
+    var r=scan(b.body);
+    if(r.report) applyToReport(r.report, b.body);
+    var col=r.cls==='ok'?'#22c55e':(r.cls==='bad'?'#ef4444':'#f59e0b');
+    rows.push('<div style="border-left:3px solid '+col+';padding-left:8px;margin:5px 0"><b>'+esc(b.label)+'</b><br>'+esc(r.msg)+'</div>');
+  });
+  var sum=document.getElementById('bulkSummary');
+  if(sum) sum.innerHTML='<p style="margin:8px 0"><b>'+blocks.length+' étape(s) analysée(s) — '+FINDINGS.length+' faille(s) retenue(s).</b></p>'+rows.join('');
+  buildReport('novice');
+  var pr=document.getElementById('presentReport'); if(pr) pr.scrollIntoView({behavior:'smooth'});
 }
 function nudgeNext(){
   var boxes=document.querySelectorAll('#steps textarea.res');
