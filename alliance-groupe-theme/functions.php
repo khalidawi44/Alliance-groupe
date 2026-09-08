@@ -151,6 +151,12 @@ if ( file_exists( $ag_hardening_file ) ) {
     require_once $ag_hardening_file;
 }
 
+// ── Rapport client privé + paiement (/rapport/<jeton>, derrière les QR de l'assistant)
+$ag_rapport_file = get_stylesheet_directory() . '/inc/ag-rapport-client.php';
+if ( file_exists( $ag_rapport_file ) ) {
+    require_once $ag_rapport_file;
+}
+
 // ── 1c5. Programme Ambassadeurs (inscriptions, ventes, commissions 10%, paiements)
 $ag_ambassadeurs_file = get_stylesheet_directory() . '/inc/ag-ambassadeurs.php';
 if ( file_exists( $ag_ambassadeurs_file ) ) {
