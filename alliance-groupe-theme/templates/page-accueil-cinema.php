@@ -368,8 +368,9 @@ $agr_ajax  = admin_url( 'admin-ajax.php' );
     .hero__in{padding-bottom:30px;position:relative;isolation:isolate}
     .hero__in::before{content:"";position:absolute;inset:-40px -24px -60px;z-index:-1;pointer-events:none;
       background:linear-gradient(0deg,rgba(5,5,10,.95) 34%,rgba(5,5,10,.78) 62%,rgba(5,5,10,0) 100%)}
-    .hero__t{font-size:clamp(2.3rem,11vw,3.6rem);line-height:1.02}
-    .hero__sub{font-size:1rem;max-width:34ch}
+    /* TABLETTE — titre maitrise, sous-titre clairement secondaire */
+    .hero__t{font-size:clamp(2.4rem,5.2vw,3.4rem);line-height:1.05}
+    .hero__sub{font-size:1.02rem;line-height:1.55;max-width:42ch}
     .hero__proof{margin-top:16px;gap:11px;max-width:34ch}
     .hero__proof img{width:42px;height:42px}
     .hero__proof span{font-size:.8rem}
@@ -500,6 +501,9 @@ $agr_ajax  = admin_url( 'admin-ajax.php' );
   @media(max-width:600px){
     .mq__in span{font-size:.95rem}
     .tab{height:140svh}
+    /* MOBILE — titre net, sous-titre franchement plus petit, bloc resserre */
+    .hero__t{font-size:clamp(1.9rem,7.4vw,2.4rem);line-height:1.1;letter-spacing:-.01em}
+    .hero__sub{font-size:.9rem;line-height:1.5;max-width:34ch;margin-top:12px}
   }
   /* tablette : la scène est épinglée comme en desktop, mais les 3 offres
      tiennent côte à côte — inutile de les montrer une par une. */
