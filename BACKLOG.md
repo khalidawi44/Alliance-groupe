@@ -9,6 +9,88 @@ reportées et les idées à reprendre plus tard.
 
 ---
 
+## ⚠️ Priorité haute — La SYNC GitHub ne purge aucun cache de page
+
+**Statut** : ⏸️ À faire. Remonté le 09/09/2026 par la session du site client
+**L.A Environnement** (`khalidawi44/la-environnement`), qui utilise une copie
+de `ag-github-sync.php`. Fabrice a demandé que la consigne soit déposée ici
+plutôt qu'appliquée depuis là-bas.
+
+### Le problème
+
+`AG_GitHub_Sync::sync()` écrit les fichiers du thème et vide l'OPcache, mais
+**ne purge aucun cache de page**. Si un cache de page est actif, le site
+continue de servir l'ancienne page : le déploiement réussit et reste invisible.
+
+Constaté en vrai sur `elagage-vertou.fr`, qui tourne sur le même moteur :
+
+```
+x-litespeed-cache: hit
+age: 24180                       -> page générée 6 h 43 plus tôt
+cache-control: max-age=604800    -> valable 7 jours
+```
+
+Le `style.css` était bien servi dans sa nouvelle version, mais **aucun** des
+correctifs PHP n'était dans le HTML rendu. Conséquence la plus vicieuse : les
+fichiers statiques (CSS, JS, images) sont servis directement et se mettent à
+jour tout de suite, alors que le HTML reste figé — le site peut donc tourner en
+**état mixte**, CSS neuf sur HTML ancien, et produire des défauts d'affichage
+qui n'existent dans aucune des deux versions prises séparément.
+
+### Pourquoi AG n'est pas touché aujourd'hui
+
+Vérifié sur `alliancegroupe-inc.com` le 09/09 :
+
+```
+platform: hostinger
+x-hcdn-cache-status: DYNAMIC     -> le CDN ne met pas la page en cache
+(aucun en-tête x-litespeed-cache)
+```
+
+**Le cache de page LiteSpeed n'est pas actif sur AG.** Le site échappe au
+problème par circonstance, pas par conception. Le jour où ce cache est activé
+— volontairement, ou par un réglage Hostinger lors d'une migration — tous les
+déploiements deviennent invisibles jusqu'à 7 jours, **sans aucun message
+d'erreur**. C'est une panne silencieuse : la SYNC affichera « OK, N fichiers
+mis à jour » et le site ne bougera pas.
+
+Note au passage : `alliance-groupe/deploy/deploy.sh` est périmé, il vise
+o2switch alors que le site est sur Hostinger.
+
+### À faire
+
+1. **Porter `purge_caches()`** dans `alliance-groupe-theme/inc/ag-github-sync.php`.
+   Implémentation de référence, déjà écrite et testée, dans le dépôt **public**
+   `khalidawi44/la-environnement` → `la-environnement-theme/inc/lae-github-sync.php`
+   (chercher `purge_caches`). Elle purge LiteSpeed via l'action documentée
+   `litespeed_purge_all` (no-op inoffensif sans le plugin), le cache objet via
+   `wp_cache_flush()`, et les règles de réécriture. Un filtre
+   `lae_github_sync_purge` permet d'y brancher un CDN.
+2. **L'appeler sur les DEUX chemins de sync** — incrémental *et* repli tarball
+   — et seulement quand au moins un fichier a changé.
+3. **Corriger le libellé du bouton** « 🧹 Purger tous les caches » dans
+   `alliance-groupe-theme/ag-import.php`. Il promet plus qu'il ne fait : c'est un
+   `DELETE` SQL sur les transients (licences, companion, MAJ plugins/thèmes), il
+   **ne purge aucun cache de page**. Quelqu'un qui clique en attendant que la
+   page se rafraîchisse sera induit en erreur. Soit le renommer
+   (« Purger les transients licences et MAJ »), soit lui ajouter la vraie purge.
+4. Bumper la version du thème, comme d'habitude.
+
+### Comment vérifier que c'est réparé
+
+Ne pas se fier au message de la SYNC. Après un déploiement, lire le **HTML
+réellement servi** et y chercher une chaîne introduite par le commit :
+
+```bash
+curl -sSI https://alliancegroupe-inc.com/ | grep -iE "x-litespeed|^age:"
+curl -sS  https://alliancegroupe-inc.com/ | grep -c "UNE_CHAINE_DU_NOUVEAU_CODE"
+```
+
+Un `age:` élevé ou un `x-litespeed-cache: hit` signifie que la page servie est
+ancienne, quoi qu'affiche l'écran d'administration.
+
+---
+
 ## 🔥 Priorité haute — Fidélisation / Email-first
 
 **Statut** : ⏸️ En réserve, validé en principe mais pas encore implémenté.
