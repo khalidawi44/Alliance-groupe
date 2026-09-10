@@ -90,7 +90,15 @@ if ( ! function_exists( 'ag_refais_boost_offre' ) ) {
 	 * page de paiement morte.
 	 */
 	function ag_refais_boost_offre() {
-		$paiement = trim( (string) get_option( 'ag_refais_boost_url', '' ) );
+		/*
+		 * Lien de paiement Stripe, en abonnement mensuel, cree le 10/09/2026.
+		 * Il est pose en DEFAUT comme pour les trois packs Sites Express : la
+		 * micro-offre encaisse des la mise en ligne, sans qu'il faille aller
+		 * coller quoi que ce soit dans l'administration. Le champ des reglages
+		 * reste prioritaire si Fabrice veut en changer.
+		 */
+		$paiement = trim( (string) get_option( 'ag_refais_boost_url',
+			'https://paiement.alliancegroupe-inc.com/b/eVqcN73Jc8jb1Ge98Ed3i0h' ) );
 		return array(
 			'nom'        => 'Ma maquette en ligne',
 			'prix'       => get_option( 'ag_refais_boost_prix', '9,90 €' ),
