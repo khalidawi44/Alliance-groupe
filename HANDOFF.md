@@ -4,6 +4,7 @@
 > **⚠️ À FAIRE (09/09, remonté par la session L.A Environnement) :** la SYNC GitHub **ne purge aucun cache de page**. AG y échappe seulement parce que le cache LiteSpeed y est éteint — le jour où il est activé, tous les déploiements deviennent invisibles jusqu’à 7 jours, sans message d’erreur. Consigne complète et implémentation de référence : **`BACKLOG.md`, tout en haut**.
 > **✅ FAIT (10/09) — AG-PC-AUDIT : RAPPORT DOCX COMPLET + HISTORIQUE DURCI.** Le rapport DOCX passe de squelette à livrable : page de garde qui dit déjà le verdict, informations générales (prestataire + poste), résumé exécutif avec la part de score perdue par sévérité et les recommandations prioritaires, méthodologie listant les **12 phases réellement exécutées** ET le hors-périmètre, observations numérotées F-001, annexes donnant les commandes PowerShell que l'audit a lui-même lancées. En-tête/pied CONFIDENTIEL + pagination sur chaque page. **⚠️ RESTE CÔTÉ FABRICE : les mentions légales.** `src/AGPCAudit.Core/Reports/ReportIdentity.cs` porte les coordonnées déjà publiques (tél/email/site) mais laisse **forme juridique, adresse, SIRET, TVA et assurance RC Pro VIDES** — le dépôt ne les contient nulle part et on n'invente pas un identifiant sur un document contractuel ; un champ vide fait disparaître sa ligne, le rapport reste propre en attendant. Historique : la purge triait par date de modification (un audit restauré depuis une sauvegarde faisait sauter le mauvais fichier), elle trie désormais par horodatage du nom. Trois contrôles dans `tools/` : `XamlSmoke` (écrans), `HistoryStoreCheck` (archivage, rétention 50, ACL), `DocxReportCheck` (60 contrôles + validateur Open XML — il a attrapé 4 inversions d'ordre du schéma qui produisaient un DOCX que Word peut refuser d'ouvrir). Poussé sur `main`.
 > **✅ FAIT (10/09 soir) — AG-PC-AUDIT : MODULE DE REMÉDIATION.** L'audit propose désormais de corriger, pas seulement de constater. **Confirmation obligatoire avant CHAQUE correction, sans exception** : la fenêtre montre la commande exacte, le risque, l'avertissement de redémarrage, et le bouton par défaut est *Annuler*. Rien ne s'exécute en arrière-plan. Corrections self-service : SMBv1, UAC, compte Invité, execution policy, RDP, pare-feu, verrouillage de session. Réservées/manuelles : chiffrement, services réseau, Windows Update. Tout est journalisé dans le JSON de l'audit (commande, sortie, succès, mode prestataire). **⚠️ MODE PRESTATAIRE — code d'usine `2609`, à changer dans Paramètres.** Il se coupe seul au bout de 2 h. **C'est un garde-fou d'usage, PAS une sécurité** : 4 chiffres se cassent instantanément et un admin du poste peut lancer les mêmes commandes sans l'app — il empêche seulement un client de cliquer par mégarde. **⚠️ « Appliqué » ≠ « résolu »** : l'outil constate un code de retour, pas l'effet réel ; une correction qui demande un redémarrage laisse le poste exposé jusque-là. Pour confirmer qu'un point est clos, relancer un audit.
+> **🚧 EN COURS (10/09 nuit) — AG-PC-AUDIT : DÉPLOIEMENT AGENT ZÉRO-FRICTION.** Un agent s'installe chez le client, audite tout seul au rythme convenu et renvoie les rapports sur le Drive de Fabrice. **Composants 1 (service Windows), 2-mécanisme + UI, 4 (Google Drive) et le désinstalleur : FAITS et poussés.** **Restent les composants 2-ajustements, 3 et 5** — détail en §9. **⚠️ ACTION FABRICE : tester l'installeur sur le vieux portable du lab** avec `.\AG-Agent-NomClient-Setup.exe --a-blanc` depuis une console ÉLEVÉE : ça trace tout ce qui SERAIT fait sans rien installer. **⚠️ DÉCISION EN SUSPENS : un seul compte de service Google partagé sur tout `AG-Clients`** — le choix arrêté était « un par client », précisément pour qu'une clé récupérée dans un installeur ne donne pas accès aux rapports de TOUS les clients. Le code ne force rien (chaque fiche client porte sa clé) ; à trancher avant le premier vrai déploiement.
 > **🧠 CONSIGNE FABRICE (permanente) :** gérer les DÉTAILS UX logiques PAR TOI-MÊME sans qu'il ait à les demander (ex : bouton retour, cohérence, états d'erreur). Anticiper.
 > **🧠 RÈGLE FABRICE (permanente) :** AVANT d'ajouter quoi que ce soit, TOUJOURS vérifier si ça existe déjà (grep/inventaire). Ne jamais dupliquer un module existant.
 > **✅ FAIT (14/08) — MARKETPLACE COMPOSANTS (Phase 1) DÉPLOYÉE SUR `main` :** nouveau `inc/ag-composants-market.php` (chargé functions.php 1c4a-octies-bis). Le créateur choisit **Gratuit** ou **Payant** dans le formulaire `/composants` (+ palier de prix **1,99 / 2,99 / 4,99 / 9,99 €**, prix abordables vs Envato/Gumroad) et saisit son **email PayPal d'encaissement** (user meta `ag_compo_paypal_email`) — validation serveur : impossible de vendre sans moyen d'être payé. **Commission plateforme = 8 %** (`AG_COMPO_COMMISSION`, frais Stripe/PayPal à la charge du vendeur). Grille : **badge prix + bouton « Acheter »** (au lieu du téléchargement) tant que non acheté ; **auteur/admin/acheteur = accès direct**. **Verrou** sur `?ag_composant_zip=` (priorité 9, HTTP 402 si payant non débloqué). Admin **Réglages → 🧩 Marketplace** = brancher Stripe Connect + PayPal Commerce + activer. Modération 🧩 Composants affiche mode/prix/encaissement vendeur. **⚠️ PHASE 2 (paiement partagé RÉEL) = RESTE CÔTÉ FABRICE :** activer **Stripe Connect** (dashboard.stripe.com → Connect) et/ou **PayPal Commerce Platform**, coller les clés → tant que non configuré, « Acheter » affiche « paiement bientôt actif » (rien cassé). Puis brancher le checkout split + webhook (appelle `ag_compo_grant_access()`). `php -l` + `node --check` OK, poussé sur `main`. **RESTE = SYNC GitHub.**
@@ -280,27 +281,94 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 
 ## 9. Taches restantes (état au 30 mai)
 
-### 💻 AG-PC-AUDIT DESKTOP — reste de la v1 (au 10/09)
+### 💻 AG-PC-AUDIT DESKTOP — état au 10/09 (nuit)
 
-Livré : les **6 écrans** (Dashboard, Scan, Findings, History, Reports,
-Settings), l'archivage disque (rétention 50, ACL réduites au compte), le
-**rapport DOCX** complet, le **tableau de bord HTML** autonome et le **module de
-remédiation** (confirmation obligatoire, mode prestataire, journal dans l'audit).
+**L'application est complète** : les 6 écrans, l'archivage disque (rétention 50,
+ACL réduites au compte), le rapport DOCX, le tableau de bord HTML autonome, le
+module de remédiation (confirmation obligatoire, mode prestataire, journal).
 
-**⚠️ ACTION FABRICE : changer le code du mode prestataire** (usine `2609`) dans
-Paramètres → Mode prestataire.
+**Le déploiement agent est aux deux tiers.** 329 contrôles au vert, 0
+avertissement. Tout est commité et poussé sur `main`.
 
-**⚠️ ACTION FABRICE : les mentions légales du rapport.** Elles se saisissent
-maintenant dans **Paramètres → Mentions légales** (forme juridique, adresse,
-SIRET, TVA, assurance RC Pro). Tant qu'elles sont vides, leur ligne n'est pas
-imprimée — rien d'inventé sur un document contractuel, mais rien d'indiqué non
-plus. L'écran compte celles qui manquent.
+#### Fait et poussé
 
-Reste :
-- **`build/publish.ps1` signé** — le seul vrai reste de la v1.
-  Le certificat OV n'est pas encore acheté (`$env:AG_SIGN_THUMBPRINT`).
+| Composant | État |
+|---|---|
+| **1 — Service Windows** (`src/AGPCAudit.Agent/`) | Fait. Vérifié **bout en bout sur l'exe publié** : vrai audit PowerShell, 3 fichiers écrits, mise en file |
+| **2 — Mécanisme d'installeur** (`src/AGPCAudit.Installer/`) | Fait. Installeur réel de 57 Mo assemblé et relu, agent restitué **à l'octet près** |
+| **2 — Écran Agent** (`AgentPage`) | Fait, **à ajuster** (voir ci-dessous) |
+| **4 — Google Drive** | Fait. 24 contrôles sur API doublée : arborescence client/mois, 3 fichiers |
+| **Désinstalleur** | Fait — bouton sur chaque fiche client |
+| **Mode « installation à blanc »** | Fait — `--a-blanc` |
+
+#### À reprendre demain
+
+**Composant 2 — ajustements demandés** (l'écran existe, il faut le corriger) :
+- label **« Mes clients »** au lieu d'« Agent », icône **Server** (actuellement Rocket24) ;
+- entrée de navigation **masquée hors mode prestataire** (aujourd'hui : visible, contenu verrouillé) ;
+- champ **« Chemin clé JSON Drive » + bouton Parcourir** à la place du champ « coller le JSON » ;
+- installeur déposé **sur le Bureau**, notification « Installeur créé — envoie-le à ton client » ;
+- afficher le **prochain audit prévu** sur chaque fiche client.
+
+**Composant 3 — réception automatique** (rien de fait) :
+- `FileSystemWatcher` sur le dossier `AG-Clients` synchronisé par Google Drive ;
+- chemin configurable dans Paramètres ;
+- nouveau `findings.json` détecté → import dans HistoryPage + notification discrète.
+
+**Composant 5 — schéma de `clients.json`** : le registre existe et fonctionne,
+mais **les noms de champs diffèrent** de ceux demandés. À aligner :
+`ClientName`, `ClientEmail`, `ConsentDate`, `Schedule`, `AgentInstalled`,
+`InstalledAt`, `LastReportReceived`, `NextAuditDue`.
+
+#### ⚠️ Pièges déjà payés — ne pas les réapprendre
+
+Tous trouvés en **exécutant** le binaire publié, aucun n'aurait été vu à la
+compilation :
+
+1. **PowerShell SDK ne rentre pas dans un single-file** — il embarque des
+   fichiers de données (`.psd1`, `.ps1xml`) que le bundling laisse à côté de
+   l'exe. D'où `IncludeAllContentForSelfExtract` dans le csproj de l'agent.
+2. **`AppContext.BaseDirectory` ≠ dossier d'installation** avec l'auto-extraction :
+   il pointe vers `%TEMP%\.net\…`. Utiliser **`Environment.ProcessPath`**. Sinon
+   l'agent cherche sa config au mauvais endroit et se tait dès la première seconde.
+3. **`TaskCanceledException` hérite d'`OperationCanceledException`** — c'est ce
+   que lève `HttpClient` sur un dépassement de délai. Un `catch { throw; }` sans
+   `when (ct.IsCancellationRequested)` laissait **un Drive lent arrêter le service**.
+4. **`PublishTrimmed` + JSON par réflexion** = échec **à l'exécution chez le
+   client**, jamais à la compilation. D'où `InstallerJsonContext` source-généré.
+5. **L'installeur ne doit PAS référencer `AGPCAudit.Core`** (PowerShell SDK +
+   Open XML entreraient dedans : 89 Mo au lieu de 10,8, dans chaque email client).
+   Le format de charge utile est partagé par **lien de fichier**.
+6. **Signature** : coller la charge utile derrière un exe invalide sa signature
+   Authenticode. C'est l'installeur **généré** qui se signe, jamais le programme nu.
+
+#### ⚠️ Actions Fabrice
+
+- **Changer le code du mode prestataire** (usine `2609`) — Paramètres → Mode prestataire.
+- **Renseigner les mentions légales** — Paramètres → Mentions légales. Tant
+  qu'elles sont vides, leur ligne n'est pas imprimée : rien d'inventé sur un
+  document contractuel, mais rien d'indiqué non plus.
+- **Tester l'installeur sur le portable du lab** : `--a-blanc` d'abord (trace
+  tout sans rien créer), puis en réel. Console **élevée** obligatoire.
+- **Trancher : compte de service partagé ou par client.** `AG-Clients` est
+  aujourd'hui partagé en entier avec un seul SA. Une clé récupérée dans
+  n'importe quel installeur donne alors accès aux rapports de **tous** les
+  clients — c'est-à-dire à la carte des faiblesses de chacun.
+- **`build/publish.ps1` signé** — certificat OV pas encore acheté
+  (`$env:AG_SIGN_THUMBPRINT`).
 - **Icône applicative** `src/AGPCAudit.App/Assets/alliance-groupe.ico` — attendue
-  de la lane DESIGN ; le csproj la prend automatiquement dès qu'elle existe.
+  de la lane DESIGN ; le csproj la prend dès qu'elle existe.
+
+#### Comment vérifier que rien n'est cassé
+
+```powershell
+dotnet build AGPCAudit.sln          # 0 avertissement attendu
+dotnet run --project tools/XamlSmoke          # 74 écrans + VM
+dotnet run --project tools/HistoryStoreCheck  # 30 archivage
+dotnet run --project tools/DocxReportCheck    # 65 rapport DOCX
+dotnet run --project tools/HtmlDashboardCheck # 81 tableau de bord
+dotnet run --project tools/AgentCheck         # 79 agent, installeur, Drive
+```
 
 ⚠️ **Deux sessions ont écrit HistoryPage en parallèle le 09-10/09** et ont failli
 se marcher dessus. Avant de reprendre ag-pc-desktop, faire `git fetch` et
