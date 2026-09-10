@@ -65,6 +65,18 @@ function ag_refais_generate() {
 	if ( is_wp_error( $html ) ) {
 		wp_send_json_error( array( 'msg' => 'L\'IA n\'a pas pu générer la maquette : ' . $html->get_error_message() ) );
 	}
+	/*
+	 * Le modele enveloppe regulierement sa reponse dans un bloc de code
+	 * markdown, malgre la consigne. Sans ce retrait, le visiteur voit
+	 * « ```html » en haut de SON site refait et « ``` » en bas : le premier
+	 * defaut visible sur l'outil vitrine. Constate en direct sur la
+	 * production le 10/09.
+	 */
+	$html = trim( (string) $html );
+	$html = preg_replace( '/\A```[a-zA-Z]*\s*\R?/', '', $html );
+	$html = preg_replace( '/\R?```\s*\z/', '', $html );
+	$html = trim( $html );
+
 	// Sécurise (défense en profondeur — l'iframe est de toute façon en sandbox
 	// sans scripts) : retire script/iframe/object/embed/svg, les gestionnaires
 	// d'événements (quotés ET non quotés) et les URI javascript:.
