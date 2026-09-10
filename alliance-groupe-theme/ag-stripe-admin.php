@@ -77,6 +77,7 @@ add_action( 'admin_init', function () {
 				? ' — ' . ag_refais_boost_offre()['prix'] . ag_refais_boost_offre()['unite']
 				: '' ) . ' (ABONNEMENT)',
 			'description' => 'Micro-offre proposée juste après une maquette « Refais mon site par l\'IA » : on met la maquette en ligne sous 24 h, nom de domaine compris, montant déduit du site complet. '
+				. '<strong>STRIPE de préférence</strong> — un <em>Payment Link</em> en mode abonnement (dashboard.stripe.com → Paiements → Liens de paiement). L\'argent est versé automatiquement sur votre compte bancaire, et le webhook déjà en place prévient le site du paiement ET des renouvellements. Un lien PayPal fonctionne aussi : le champ accepte les deux. '
 				. '⚠️ Ce lien doit être créé en mode <strong>ABONNEMENT mensuel</strong> (récurrent), pas en paiement unique : c\'est lui qui finance l\'hébergement et le renouvellement du domaine. '
 				. '⚠️ Créer un lien NEUF — ne pas réutiliser celui du rapport de sécurité ni celui de la maintenance : chaque produit a besoin du sien pour que les paiements se rapprochent. '
 				. 'Tant que ce champ est vide, le bouton affiche « En parler au téléphone » et renvoie vers /contact : rien n\'est cassé, mais rien n\'encaisse.',

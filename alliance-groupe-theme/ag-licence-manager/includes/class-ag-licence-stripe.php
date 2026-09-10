@@ -41,6 +41,31 @@ class AG_Licence_Stripe {
             return new WP_REST_Response( array( 'error' => 'Invalid payload' ), 400 );
         }
 
+        /*
+         * ABONNEMENTS. Stripe n'envoie « checkout.session.completed » qu'au
+         * PREMIER paiement. Les mois suivants arrivent en « invoice.paid » /
+         * « invoice.payment_succeeded » — que ce gestionnaire ignorait, donc
+         * aucun renouvellement n'etait vu par le site.
+         * On relaie l'evenement maison pour ces factures aussi : les modules
+         * abonnes (maquettes IA, commissions, avis clients) savent deja
+         * reconnaitre un renouvellement et ne recommandent rien deux fois.
+         * La licence, elle, ne se genere QUE sur le checkout : on sort avant.
+         */
+        if ( in_array( $event['type'], array( 'invoice.paid', 'invoice.payment_succeeded' ), true ) ) {
+            $inv    = $event['data']['object'] ?? array();
+            $mail   = sanitize_email( $inv['customer_email'] ?? ( $inv['customer_details']['email'] ?? '' ) );
+            $paye   = round( intval( $inv['amount_paid'] ?? 0 ) / 100, 2 );
+            $ref    = sanitize_text_field( $inv['id'] ?? '' );
+            $billing= (string) ( $inv['billing_reason'] ?? '' );
+
+            // « subscription_create » est la facture du premier paiement : elle
+            // double le checkout deja relaye. On ne compte pas deux fois.
+            if ( $mail && $paye > 0 && 'subscription_create' !== $billing ) {
+                do_action( 'ag_paypal_payment_verified', $paye, $mail, $ref, 'INVOICE.PAID', $inv );
+            }
+            return new WP_REST_Response( array( 'received' => true, 'renouvellement' => true ) );
+        }
+
         // Only handle checkout.session.completed
         if ( 'checkout.session.completed' !== $event['type'] ) {
             return new WP_REST_Response( array( 'received' => true ) );
