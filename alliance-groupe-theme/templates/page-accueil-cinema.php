@@ -861,19 +861,19 @@ document.documentElement.classList.add('js-cine');
     <div class="lion__veil"></div>
 
     <div class="lion__panel" id="lionPanel">
-      <span class="eyebrow">&#9889; Propuls&eacute; par l'IA</span>
+      <span class="eyebrow">Propuls&eacute; par l'IA</span>
       <h2 class="stitle">Vois ton site <em>refait</em> en 60&nbsp;secondes</h2>
       <p class="lion__lead">Colle l'adresse de ton site actuel. Notre IA le lit et te montre&nbsp;<strong>tout de suite</strong> &agrave; quoi il pourrait ressembler, modernis&eacute;. Gratuit, sans inscription.</p>
 
       <form class="lion__form" id="agrHomeForm"<?php echo $agr_ready ? '' : ' style="opacity:.45;pointer-events:none"'; ?>>
         <input type="url" id="agrHomeUrl" placeholder="https://mon-site-actuel.fr" autocomplete="url" required>
-        <button type="submit" class="btn" id="agrHomeGo">&#10024; Moderniser</button>
+        <button type="submit" class="btn" id="agrHomeGo">Moderniser</button>
       </form>
 
       <?php if ( $agr_ready ) : ?>
         <p class="lion__note">On ne modifie jamais ton vrai site. C'est une simulation.</p>
       <?php else : ?>
-        <p class="lion__note">&#128295; L'outil est en cours d'activation. Reviens tr&egrave;s bient&ocirc;t&nbsp;!</p>
+        <p class="lion__note">L'outil est en cours d'activation. Reviens tr&egrave;s bient&ocirc;t&nbsp;!</p>
       <?php endif; ?>
 
       <div class="lion__status" id="agrHomeStatus" role="status" aria-live="polite"></div>
@@ -888,17 +888,17 @@ document.documentElement.classList.add('js-cine');
 
   <div class="agrh__cmp">
     <div class="agrh__col">
-      <h3>&#128564; Ton site aujourd'hui</h3>
+      <h3>Ton site aujourd'hui</h3>
       <iframe class="agrh__frame" id="agrHomeOld" title="Ton site actuel" loading="lazy" referrerpolicy="no-referrer"></iframe>
     </div>
     <div class="agrh__col is-new">
-      <h3>&#10024; Propos&eacute; par l'IA</h3>
+      <h3>Propos&eacute; par l'IA</h3>
       <iframe class="agrh__frame" id="agrHomeNew" title="Maquette g&eacute;n&eacute;r&eacute;e par l'IA" sandbox referrerpolicy="no-referrer"></iframe>
     </div>
   </div>
 
   <div class="agrh__lead">
-    <h3>&#127881; &Ccedil;a te pla&icirc;t&nbsp;?</h3>
+    <h3>&Ccedil;a te pla&icirc;t&nbsp;?</h3>
     <p>Laisse tes coordonn&eacute;es&nbsp;: on te renvoie une vraie maquette sur-mesure, gratuitement.</p>
     <input type="text"  id="agrHomeName"  placeholder="Ton pr&eacute;nom / entreprise" autocomplete="name">
     <input type="email" id="agrHomeEmail" placeholder="Ton email" autocomplete="email">
@@ -1061,11 +1061,17 @@ document.documentElement.classList.add('js-cine');
       var n = m.parentNode.querySelector(".ch__n");
       if (n) G.to(n, { yPercent:-70, ease:"none", scrollTrigger:{ trigger:m.parentNode, start:"top bottom", end:"bottom top", scrub:true }});
     });
-    /* lion : la revelation se joue sur la premiere moitie du defilement,
-       pour que le formulaire pose par-dessus soit utilisable tout de suite. */
-    G.fromTo("#lionImg", { scale:.5, opacity:0, filter:"blur(14px)" },
+    /* lion : la plage allait de « top top » a « center bottom ». Or « center
+       bottom » se produit AVANT « top top » : la plage etait inversee, donc le
+       scrub ne scrubbait pas. Mesure au navigateur, opacite relevee pendant le
+       defilement : 0 puis 1 d'un coup, sans valeur intermediaire — la
+       revelation claquait au lieu de suivre le doigt.
+       Plage calee sur la course reelle de l'epinglage, terminee au tiers : on
+       releve desormais 0 puis 0,86 puis 1. Le lion est entier et net pendant
+       que le visiteur tape son adresse. */
+    G.fromTo("#lionImg", { scale:.62, opacity:0, filter:"blur(12px)" },
       { scale:1, opacity:1, filter:"blur(0px)", ease:"none",
-        scrollTrigger:{ trigger:".lion", start:"top top", end:"center bottom", scrub:.6 }});
+        scrollTrigger:{ trigger:".lion", start:"top top", end:"+=35%", scrub:.6 }});
     G.from("#lionPanel", { y:26, opacity:0, duration:.9, ease:"power3.out",
       scrollTrigger:{ trigger:".lion", start:"top 62%" }});
   }
