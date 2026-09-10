@@ -31,6 +31,12 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
+/** Index « email du visiteur -> maquette confirmee », lu au moment du paiement. */
+if ( ! defined( 'AG_REFAIS_OPT_INDEX' ) ) { define( 'AG_REFAIS_OPT_INDEX', 'ag_refais_index_email' ); }
+
+/** Journal des commandes payees de la micro-offre. */
+if ( ! defined( 'AG_REFAIS_OPT_CMD' ) ) { define( 'AG_REFAIS_OPT_CMD', 'ag_refais_commandes' ); }
+
 /** Durée de conservation d'une maquette et de son lien partageable. */
 if ( ! defined( 'AG_REFAIS_GARDE_JOURS' ) ) { define( 'AG_REFAIS_GARDE_JOURS', 30 ); }
 
@@ -190,6 +196,27 @@ function ag_refais_confirme() {
 			ag_push( 'Maquette confirmée : ' . $mk['email'] . ( $host ? ' — ' . $host : '' )
 				. ( $owner_name ? ' (via ' . $owner_name . ')' : '' ) );
 		}
+
+		/*
+		 * Index « email -> maquette ». Sans lui, un paiement PayPal ne porte
+		 * qu'une adresse : impossible de savoir QUELLE maquette le client
+		 * vient d'acheter, ni de retrouver son ambassadeur. On garde les 200
+		 * dernieres, la fenetre entre la maquette et l'achat se compte en
+		 * jours.
+		 */
+		$index = (array) get_option( AG_REFAIS_OPT_INDEX, array() );
+		$index[ strtolower( $mk['email'] ) ] = array(
+			'token' => $token,
+			'site'  => (string) $mk['src'],
+			'name'  => (string) ( $mk['name'] ?? '' ),
+			'ref'   => (string) ( $mk['ref'] ?? '' ),
+			'ts'    => time(),
+		);
+		if ( count( $index ) > 200 ) {
+			uasort( $index, function ( $a, $b ) { return (int) $b['ts'] - (int) $a['ts']; } );
+			$index = array_slice( $index, 0, 200, true );
+		}
+		update_option( AG_REFAIS_OPT_INDEX, $index, false );
 	}
 
 	wp_safe_redirect( add_query_arg( 'ag_refais_voir', $token, home_url( '/refais-mon-site' ) ) );
@@ -429,3 +456,215 @@ add_action( 'wp_footer', function () {
 	</script>
 	<?php
 }, 20 );
+
+/* ── Le paiement — la piece qui manquait ──────────────────────────────────
+   Le lien PayPal encaissait, mais RIEN n'ecoutait derriere : ni trace, ni
+   notification, ni rattachement a la maquette achetee. Le client payait et
+   Fabrice ne le savait pas. Six autres modules de la maison ecoutent deja
+   `ag_paypal_payment_verified` ; celui-ci s'y branche a son tour.          */
+
+/** Le montant annonce de la micro-offre, en nombre (« 9,90 € » -> 9.90). */
+function ag_refais_prix_num() {
+	$o = function_exists( 'ag_refais_boost_offre' ) ? ag_refais_boost_offre() : array();
+	$p = isset( $o['prix'] ) ? (string) $o['prix'] : '';
+	$p = str_replace( array( ' ', ' ', '€', 'EUR' ), '', $p );
+	$p = str_replace( ',', '.', $p );
+	return (float) $p;
+}
+
+/** Les commandes payees, de la plus recente a la plus ancienne. */
+function ag_refais_commandes() {
+	$l = (array) get_option( AG_REFAIS_OPT_CMD, array() );
+	return $l;
+}
+
+add_action( 'ag_paypal_payment_verified', function ( $amount, $email, $txn = '', $type = '', $resource = array() ) {
+
+	$attendu = ag_refais_prix_num();
+	if ( $attendu <= 0 ) { return; }
+
+	/*
+	 * Tolerance SERREE, a 5 centimes, la ou le reste de la maison en accorde
+	 * 50. Raison : la marketplace de composants vend un palier a 9,99 EUR et
+	 * l'offre est a 9,90 EUR. Avec 50 centimes, l'achat d'un composant serait
+	 * pris pour une commande de mise en ligne, avec email au client et tache
+	 * pour Fabrice a la cle. Un abonnement a montant fixe tombe au centime :
+	 * 5 centimes suffisent largement.
+	 */
+	if ( abs( (float) $amount - $attendu ) > 0.05 ) { return; }
+
+	$email = sanitize_email( (string) $email );
+	$txn   = (string) $txn;
+
+	// Un abonnement rejoue le meme evenement chaque mois, et PayPal peut
+	// renvoyer deux fois la meme notification. On ne compte jamais deux fois
+	// la meme transaction.
+	$cmds = (array) get_option( AG_REFAIS_OPT_CMD, array() );
+	foreach ( $cmds as $c ) {
+		if ( '' !== $txn && (string) ( $c['txn'] ?? '' ) === $txn ) { return; }
+	}
+
+	// A quelle maquette ce paiement correspond-il ?
+	$index = (array) get_option( AG_REFAIS_OPT_INDEX, array() );
+	$fiche = $index[ strtolower( $email ) ] ?? array();
+
+	$token = (string) ( $fiche['token'] ?? '' );
+	$site  = (string) ( $fiche['site'] ?? '' );
+	$nom   = (string) ( $fiche['name'] ?? '' );
+	$ref   = (string) ( $fiche['ref'] ?? '' );
+	$lien  = $token ? add_query_arg( 'ag_refais_voir', $token, home_url( '/refais-mon-site' ) ) : '';
+
+	// Renouvellement mensuel : meme email deja servi -> on note, on ne
+	// redemande pas de mise en ligne.
+	$deja = false;
+	foreach ( $cmds as $c ) {
+		if ( strtolower( (string) ( $c['email'] ?? '' ) ) === strtolower( $email ) ) { $deja = true; break; }
+	}
+
+	$cmds[] = array(
+		'email'     => $email,
+		'nom'       => $nom,
+		'site'      => $site,
+		'token'     => $token,
+		'lien'      => $lien,
+		'ref'       => $ref,
+		'montant'   => (float) $amount,
+		'txn'       => $txn,
+		'type'      => (string) $type,
+		'renouv'    => $deja ? 1 : 0,
+		'statut'    => $deja ? 'renouvellement' : 'a_mettre_en_ligne',
+		'ts'        => time(),
+	);
+	update_option( AG_REFAIS_OPT_CMD, array_slice( $cmds, -500 ), false );
+
+	// Le prospect devient client dans le CRM.
+	if ( ! $deja && function_exists( 'ag_prospect_add_record' ) ) {
+		ag_prospect_add_record( array(
+			'name'    => $nom ? $nom : ( $site ? (string) wp_parse_url( $site, PHP_URL_HOST ) : $email ),
+			'email'   => $email,
+			'website' => $site,
+			'status'  => 'client',
+			'source'  => 'refais-mon-site',
+			'notes'   => 'A paye la mise en ligne de sa maquette IA. Maquette : ' . ( $lien ? $lien : '(non retrouvee)' ),
+		) );
+	}
+
+	$hote = $site ? (string) wp_parse_url( $site, PHP_URL_HOST ) : '';
+
+	// Fabrice : ce qu'il y a a faire, et sous quel delai.
+	$admin = apply_filters( 'ag_calendar_notify_email', 'advise.alliance.group@gmail.com' );
+	if ( $deja ) {
+		wp_mail( $admin, 'Maquette en ligne — renouvellement encaisse',
+			"Renouvellement mensuel.\nClient : $email\nSite : $site\nMontant : $amount EUR\nTxn : $txn\n\nRien a faire, le site reste en ligne." );
+	} else {
+		wp_mail( $admin, 'MAQUETTE PAYEE — a mettre en ligne sous 24 h',
+			"Un client vient de payer la mise en ligne de sa maquette.\n\n"
+			. "Client  : " . ( $nom ? "$nom " : '' ) . "($email)\n"
+			. "Son site actuel : " . ( $site ? $site : '(inconnu)' ) . "\n"
+			. "La maquette      : " . ( $lien ? $lien : "(non retrouvee — chercher l'email dans le CRM)" ) . "\n"
+			. ( $ref ? "Amene par l'ambassadeur : $ref\n" : '' )
+			. "Montant : $amount EUR   Txn : $txn\n\n"
+			. "A FAIRE : mettre cette maquette en ligne sur un sous-domaine, sous 24 h,\n"
+			. "puis repondre au client avec son adresse." );
+	}
+
+	if ( function_exists( 'ag_push' ) ) {
+		ag_push( $deja
+			? 'Maquette en ligne : renouvellement ' . $amount . ' EUR — ' . $email
+			: 'MAQUETTE PAYEE — a mettre en ligne sous 24 h : ' . $email . ( $hote ? ' (' . $hote . ')' : '' ) );
+	}
+
+	// Le client : accuse de reception, et ce qui se passe ensuite.
+	if ( ! $deja && function_exists( 'ag_email_wrap' ) ) {
+		$corps = '<p style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#e8e6e0;">'
+			. 'Bonjour' . ( $nom ? ' ' . esc_html( $nom ) : '' ) . ',</p>'
+			. '<p style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#e8e6e0;">'
+			. 'C\'est enregistre. Nous mettons votre maquette en ligne '
+			. '<strong>sous 24 heures</strong> et nous vous envoyons son adresse des qu\'elle est active.</p>'
+			. ( $lien ? '<p style="font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#b0b0bc;">'
+				. 'La maquette commandee : <a href="' . esc_url( $lien ) . '" style="color:#D4B45C;">la revoir</a></p>' : '' )
+			. '<p style="font-family:Arial,sans-serif;font-size:13px;line-height:1.6;color:#b0b0bc;">'
+			. 'Une question ? Repondez simplement a cet email, ou appelez le 07 44 82 95 16.</p>';
+		wp_mail( $email, 'Votre maquette sera en ligne sous 24 h',
+			ag_email_wrap( 'Commande recue', $corps ),
+			array( 'Content-Type: text/html; charset=UTF-8', 'From: Alliance Groupe <contact@alliancegroupe-inc.com>' ) );
+	}
+}, 18, 5 );
+
+/* ── L'ecran des commandes ────────────────────────────────────────────────
+   Une notification se perd, un email se noie. Il faut un endroit ou l'on
+   voit, a froid, qui a paye et ce qui reste a mettre en ligne.            */
+add_action( 'admin_menu', function () {
+	add_submenu_page(
+		'ag-hub',
+		'Maquettes payees',
+		'Maquettes payees',
+		'manage_options',
+		'ag-refais-commandes',
+		'ag_refais_ecran_commandes'
+	);
+}, 30 );
+
+function ag_refais_ecran_commandes() {
+	if ( ! current_user_can( 'manage_options' ) ) { return; }
+
+	// Marquer une commande comme mise en ligne.
+	if ( isset( $_POST['ag_refais_fait'], $_POST['_wpnonce'] )
+		&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'ag_refais_fait' ) ) {
+		$txn  = sanitize_text_field( wp_unslash( $_POST['ag_refais_fait'] ) );
+		$cmds = (array) get_option( AG_REFAIS_OPT_CMD, array() );
+		foreach ( $cmds as $i => $c ) {
+			if ( (string) ( $c['txn'] ?? '' ) === $txn ) { $cmds[ $i ]['statut'] = 'en_ligne'; break; }
+		}
+		update_option( AG_REFAIS_OPT_CMD, $cmds, false );
+		echo '<div class="notice notice-success is-dismissible"><p>Commande marquee comme mise en ligne.</p></div>';
+	}
+
+	$cmds = array_reverse( ag_refais_commandes() );
+	$offre = function_exists( 'ag_refais_boost_offre' ) ? ag_refais_boost_offre() : array();
+
+	echo '<div class="wrap"><h1>Maquettes payees</h1>';
+
+	if ( empty( $offre['payable'] ) ) {
+		echo '<div class="notice notice-warning"><p><strong>Aucun lien de paiement configure.</strong> '
+			. 'Le bouton affiche « En parler au telephone » et renvoie vers /contact : rien ne peut etre encaisse. '
+			. 'A brancher dans <a href="' . esc_url( admin_url( 'options-general.php?page=ag-stripe-config' ) ) . '">Reglages &rarr; Liens de paiement</a>, '
+			. 'en mode <strong>abonnement mensuel</strong>.</p></div>';
+	}
+
+	if ( ! $cmds ) {
+		echo '<p>Aucune commande pour l\'instant. Cet ecran se remplit tout seul des qu\'un client paie.</p></div>';
+		return;
+	}
+
+	echo '<table class="widefat striped"><thead><tr>'
+		. '<th>Quand</th><th>Client</th><th>Son site</th><th>La maquette</th>'
+		. '<th>Montant</th><th>Etat</th><th></th>'
+		. '</tr></thead><tbody>';
+
+	foreach ( $cmds as $c ) {
+		$etat = (string) ( $c['statut'] ?? '' );
+		$lib  = array(
+			'a_mettre_en_ligne' => '<span style="color:#b32d2e;font-weight:700;">A mettre en ligne</span>',
+			'en_ligne'          => '<span style="color:#1f7a3d;font-weight:700;">En ligne</span>',
+			'renouvellement'    => '<span style="color:#666;">Renouvellement</span>',
+		);
+		echo '<tr>';
+		echo '<td>' . esc_html( date_i18n( 'd/m/Y H:i', (int) ( $c['ts'] ?? 0 ) ) ) . '</td>';
+		echo '<td>' . esc_html( trim( (string) ( $c['nom'] ?? '' ) . ' ' ) ) . '<br><code>' . esc_html( (string) ( $c['email'] ?? '' ) ) . '</code>'
+			. ( ! empty( $c['ref'] ) ? '<br><small>via ' . esc_html( (string) $c['ref'] ) . '</small>' : '' ) . '</td>';
+		echo '<td>' . ( ! empty( $c['site'] ) ? '<a href="' . esc_url( (string) $c['site'] ) . '" target="_blank" rel="noopener">' . esc_html( (string) wp_parse_url( (string) $c['site'], PHP_URL_HOST ) ) . '</a>' : '&mdash;' ) . '</td>';
+		echo '<td>' . ( ! empty( $c['lien'] ) ? '<a href="' . esc_url( (string) $c['lien'] ) . '" target="_blank" rel="noopener">Voir</a>' : '<em>non retrouvee</em>' ) . '</td>';
+		echo '<td>' . esc_html( number_format_i18n( (float) ( $c['montant'] ?? 0 ), 2 ) ) . '&nbsp;&euro;</td>';
+		echo '<td>' . ( $lib[ $etat ] ?? esc_html( $etat ) ) . '</td>';
+		echo '<td>';
+		if ( 'a_mettre_en_ligne' === $etat ) {
+			echo '<form method="post" style="margin:0">';
+			wp_nonce_field( 'ag_refais_fait' );
+			echo '<input type="hidden" name="ag_refais_fait" value="' . esc_attr( (string) ( $c['txn'] ?? '' ) ) . '">';
+			echo '<button class="button button-small">C\'est en ligne</button></form>';
+		}
+		echo '</td></tr>';
+	}
+	echo '</tbody></table></div>';
+}
