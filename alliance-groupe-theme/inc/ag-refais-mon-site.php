@@ -61,10 +61,29 @@ function ag_refais_generate() {
 
 	$user = "Voici le site actuel à moderniser.\nTitre : " . $page['title'] . "\nURL : " . $page['url'] . "\nContenu :\n" . $page['text'];
 
-	$html = ag_ia_call( $system, $user, array( 'model' => ag_ia_model( 'fast' ), 'max_tokens' => 3200, 'temperature' => 0.7, 'timeout' => 90 ) );
-	if ( is_wp_error( $html ) ) {
-		wp_send_json_error( array( 'msg' => 'L\'IA n\'a pas pu générer la maquette : ' . $html->get_error_message() ) );
+	/*
+	 * `raw` : on a besoin de `stop_reason`. A 3200 jetons, la maquette de la
+	 * boulangerie testee le 10/09 s'arretait en plein pied de page
+	 * (« <div class="footer"><p>&copy; » puis plus rien) : le visiteur voyait
+	 * SON site refait finir au milieu d'un mot. Le plafond ne coute que ce qui
+	 * est reellement ecrit, donc on le releve ; et quand le modele bute quand
+	 * meme dessus, on coupe proprement au dernier element ferme.
+	 */
+	$brut = ag_ia_call( $system, $user, array(
+		'model'       => ag_ia_model( 'fast' ),
+		'max_tokens'  => 5200,
+		'temperature' => 0.7,
+		'timeout'     => 90,
+		'raw'         => true,
+	) );
+	if ( is_wp_error( $brut ) ) {
+		wp_send_json_error( array( 'msg' => 'L\'IA n\'a pas pu générer la maquette : ' . $brut->get_error_message() ) );
 	}
+	$html = '';
+	foreach ( (array) ( $brut['content'] ?? array() ) as $blk ) {
+		if ( 'text' === ( $blk['type'] ?? '' ) ) { $html .= $blk['text']; }
+	}
+	$tronque = ( 'max_tokens' === ( $brut['stop_reason'] ?? '' ) );
 	/*
 	 * Le modele enveloppe regulierement sa reponse dans un bloc de code
 	 * markdown, malgre la consigne. Sans ce retrait, le visiteur voit
@@ -76,6 +95,17 @@ function ag_refais_generate() {
 	$html = preg_replace( '/\A```[a-zA-Z]*\s*\R?/', '', $html );
 	$html = preg_replace( '/\R?```\s*\z/', '', $html );
 	$html = trim( $html );
+
+	/*
+	 * Filet de securite : si le modele a bute sur le plafond de jetons, la
+	 * fin du fragment est un morceau de balise ou de phrase. On recule
+	 * jusqu'a la derniere balise fermante complete — mieux vaut une maquette
+	 * un peu plus courte qu'une maquette coupee au milieu d'un mot.
+	 */
+	if ( $tronque && preg_match_all( '#</[a-zA-Z][^>]*>#', $html, $m, PREG_OFFSET_CAPTURE ) ) {
+		$last = end( $m[0] );
+		$html = trim( substr( $html, 0, $last[1] + strlen( $last[0] ) ) );
+	}
 
 	// Sécurise (défense en profondeur — l'iframe est de toute façon en sandbox
 	// sans scripts) : retire script/iframe/object/embed/svg, les gestionnaires
