@@ -282,8 +282,9 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 ### 💻 AG-PC-AUDIT DESKTOP — reste de la v1 (au 10/09)
 
 Livré : les **6 écrans** (Dashboard, Scan, Findings, History, Reports,
-Settings), l'archivage disque (rétention 50, ACL réduites au compte) et le
-DocxReportGenerator complet.
+Settings), l'archivage disque (rétention 50, ACL réduites au compte), le
+**rapport DOCX** complet et le **tableau de bord HTML** autonome (aucune
+ressource externe, filtres, observations dépliables).
 
 **⚠️ ACTION FABRICE : les mentions légales du rapport.** Elles se saisissent
 maintenant dans **Paramètres → Mentions légales** (forme juridique, adresse,
@@ -292,9 +293,8 @@ imprimée — rien d'inventé sur un document contractuel, mais rien d'indiqué 
 plus. L'écran compte celles qui manquent.
 
 Reste :
-- **HtmlDashboardGenerator** — non commencé (bonus v1).
-- **`build/publish.ps1` signé** — non commencé ; le certificat OV n'est pas
-  encore acheté (`$env:AG_SIGN_THUMBPRINT`).
+- **`build/publish.ps1` signé** — le seul vrai reste de la v1.
+  Le certificat OV n'est pas encore acheté (`$env:AG_SIGN_THUMBPRINT`).
 - **Icône applicative** `src/AGPCAudit.App/Assets/alliance-groupe.ico` — attendue
   de la lane DESIGN ; le csproj la prend automatiquement dès qu'elle existe.
 
