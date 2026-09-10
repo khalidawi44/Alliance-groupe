@@ -281,13 +281,18 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 
 ### 💻 AG-PC-AUDIT DESKTOP — reste de la v1 (au 10/09)
 
-Livré : DashboardPage, ScanPage, FindingsPage, HistoryPage (archivage disque,
-rétention 50, ACL réduites au compte), DocxReportGenerator complet.
+Livré : les **6 écrans** (Dashboard, Scan, Findings, History, Reports,
+Settings), l'archivage disque (rétention 50, ACL réduites au compte) et le
+DocxReportGenerator complet.
+
+**⚠️ ACTION FABRICE : les mentions légales du rapport.** Elles se saisissent
+maintenant dans **Paramètres → Mentions légales** (forme juridique, adresse,
+SIRET, TVA, assurance RC Pro). Tant qu'elles sont vides, leur ligne n'est pas
+imprimée — rien d'inventé sur un document contractuel, mais rien d'indiqué non
+plus. L'écran compte celles qui manquent.
 
 Reste :
-- **ReportsPage** et **SettingsPage** — encore des placeholders. SettingsPage est
-  l'endroit naturel pour saisir les mentions légales de `ReportIdentity`.
-- **HtmlDashboardGenerator** — non commencé.
+- **HtmlDashboardGenerator** — non commencé (bonus v1).
 - **`build/publish.ps1` signé** — non commencé ; le certificat OV n'est pas
   encore acheté (`$env:AG_SIGN_THUMBPRINT`).
 - **Icône applicative** `src/AGPCAudit.App/Assets/alliance-groupe.ico` — attendue
