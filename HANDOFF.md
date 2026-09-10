@@ -2,6 +2,7 @@
 
 > Document de reprise pour toute nouvelle session Claude (PC ou mobile via GitHub MCP).
 > **⚠️ À FAIRE (09/09, remonté par la session L.A Environnement) :** la SYNC GitHub **ne purge aucun cache de page**. AG y échappe seulement parce que le cache LiteSpeed y est éteint — le jour où il est activé, tous les déploiements deviennent invisibles jusqu’à 7 jours, sans message d’erreur. Consigne complète et implémentation de référence : **`BACKLOG.md`, tout en haut**.
+> **✅ FAIT (10/09) — AG-PC-AUDIT : RAPPORT DOCX COMPLET + HISTORIQUE DURCI.** Le rapport DOCX passe de squelette à livrable : page de garde qui dit déjà le verdict, informations générales (prestataire + poste), résumé exécutif avec la part de score perdue par sévérité et les recommandations prioritaires, méthodologie listant les **12 phases réellement exécutées** ET le hors-périmètre, observations numérotées F-001, annexes donnant les commandes PowerShell que l'audit a lui-même lancées. En-tête/pied CONFIDENTIEL + pagination sur chaque page. **⚠️ RESTE CÔTÉ FABRICE : les mentions légales.** `src/AGPCAudit.Core/Reports/ReportIdentity.cs` porte les coordonnées déjà publiques (tél/email/site) mais laisse **forme juridique, adresse, SIRET, TVA et assurance RC Pro VIDES** — le dépôt ne les contient nulle part et on n'invente pas un identifiant sur un document contractuel ; un champ vide fait disparaître sa ligne, le rapport reste propre en attendant. Historique : la purge triait par date de modification (un audit restauré depuis une sauvegarde faisait sauter le mauvais fichier), elle trie désormais par horodatage du nom. Trois contrôles dans `tools/` : `XamlSmoke` (écrans), `HistoryStoreCheck` (archivage, rétention 50, ACL), `DocxReportCheck` (60 contrôles + validateur Open XML — il a attrapé 4 inversions d'ordre du schéma qui produisaient un DOCX que Word peut refuser d'ouvrir). Poussé sur `main`.
 > **🧠 CONSIGNE FABRICE (permanente) :** gérer les DÉTAILS UX logiques PAR TOI-MÊME sans qu'il ait à les demander (ex : bouton retour, cohérence, états d'erreur). Anticiper.
 > **🧠 RÈGLE FABRICE (permanente) :** AVANT d'ajouter quoi que ce soit, TOUJOURS vérifier si ça existe déjà (grep/inventaire). Ne jamais dupliquer un module existant.
 > **✅ FAIT (14/08) — MARKETPLACE COMPOSANTS (Phase 1) DÉPLOYÉE SUR `main` :** nouveau `inc/ag-composants-market.php` (chargé functions.php 1c4a-octies-bis). Le créateur choisit **Gratuit** ou **Payant** dans le formulaire `/composants` (+ palier de prix **1,99 / 2,99 / 4,99 / 9,99 €**, prix abordables vs Envato/Gumroad) et saisit son **email PayPal d'encaissement** (user meta `ag_compo_paypal_email`) — validation serveur : impossible de vendre sans moyen d'être payé. **Commission plateforme = 8 %** (`AG_COMPO_COMMISSION`, frais Stripe/PayPal à la charge du vendeur). Grille : **badge prix + bouton « Acheter »** (au lieu du téléchargement) tant que non acheté ; **auteur/admin/acheteur = accès direct**. **Verrou** sur `?ag_composant_zip=` (priorité 9, HTTP 402 si payant non débloqué). Admin **Réglages → 🧩 Marketplace** = brancher Stripe Connect + PayPal Commerce + activer. Modération 🧩 Composants affiche mode/prix/encaissement vendeur. **⚠️ PHASE 2 (paiement partagé RÉEL) = RESTE CÔTÉ FABRICE :** activer **Stripe Connect** (dashboard.stripe.com → Connect) et/ou **PayPal Commerce Platform**, coller les clés → tant que non configuré, « Acheter » affiche « paiement bientôt actif » (rien cassé). Puis brancher le checkout split + webhook (appelle `ag_compo_grant_access()`). `php -l` + `node --check` OK, poussé sur `main`. **RESTE = SYNC GitHub.**
@@ -277,6 +278,25 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 ---
 
 ## 9. Taches restantes (état au 30 mai)
+
+### 💻 AG-PC-AUDIT DESKTOP — reste de la v1 (au 10/09)
+
+Livré : DashboardPage, ScanPage, FindingsPage, HistoryPage (archivage disque,
+rétention 50, ACL réduites au compte), DocxReportGenerator complet.
+
+Reste :
+- **ReportsPage** et **SettingsPage** — encore des placeholders. SettingsPage est
+  l'endroit naturel pour saisir les mentions légales de `ReportIdentity`.
+- **HtmlDashboardGenerator** — non commencé.
+- **`build/publish.ps1` signé** — non commencé ; le certificat OV n'est pas
+  encore acheté (`$env:AG_SIGN_THUMBPRINT`).
+- **Icône applicative** `src/AGPCAudit.App/Assets/alliance-groupe.ico` — attendue
+  de la lane DESIGN ; le csproj la prend automatiquement dès qu'elle existe.
+
+⚠️ **Deux sessions ont écrit HistoryPage en parallèle le 09-10/09** et ont failli
+se marcher dessus. Avant de reprendre ag-pc-desktop, faire `git fetch` et
+regarder si une autre session est déjà dessus.
+
 
 ### 🛡️ DURCISSEMENT SÉCURITÉ LIVRÉ AVEC LES 16 TEMPLATES (03/09)
 
