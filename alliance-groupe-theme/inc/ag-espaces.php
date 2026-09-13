@@ -284,7 +284,11 @@ add_action( 'init', function () {
 			'page_template'=> $d[1],
 		) );
 	}
-	update_option( 'ag_espaces_pages_v6', 1 );
+	/* La garde LIT `_v7` mais ECRIVAIT `_v6` : le drapeau n'etait donc jamais
+	   pose, et ce bloc repartait a CHAQUE chargement de page du site —
+	   quatorze `get_page_by_path()` pour ne rien creer. Les quatorze pages
+	   existent (verifie en ligne le 13/09), on peut sceller sans rien perdre. */
+	update_option( 'ag_espaces_pages_v7', 1 );
 } );
 
 /* ── 8. Classement & récompenses (gamification commerciale) ────────── */
