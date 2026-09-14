@@ -89,13 +89,14 @@ get_header();
         <div class="ag-container">
             <div class="ag-client ag-anim" data-anim="card">
                 <span class="ag-client__tag">Étude de cas</span>
-                <h3 class="ag-client__title">L.A Environnement — Paysagiste Loire-Atlantique</h3>
-                <p class="ag-client__text">Site vitrine conçu pour un paysagiste local. Objectif : dominer le référencement local et automatiser la génération de devis. Résultat : le client est passé de 3 devis/mois à 15 devis/mois en 4 mois.</p>
+                <h3 class="ag-client__title">L.A Environnement — Élagage &amp; abattage, Vertou</h3>
+                <p class="ag-client__text">Thème WordPress sur mesure, sans constructeur de page : une page par prestation, les chantiers en photos avant/après, les tarifs affichés publiquement et une page dédiée aux urgences. Le premier écran change selon la saison et l'heure du visiteur.</p>
                 <div class="ag-client__stats">
-                    <span class="ag-client__stat">+320% devis</span>
-                    <span class="ag-client__stat">Top 3 Google local</span>
-                    <span class="ag-client__stat">ROI en 3 mois</span>
+                    <span class="ag-client__stat">Thème sur mesure</span>
+                    <span class="ag-client__stat">Tarifs affichés</span>
+                    <span class="ag-client__stat">Sécurité durcie</span>
                 </div>
+                <p class="ag-client__text" style="margin-top:14px;"><a href="<?php echo esc_url( home_url( '/realisation-elagage' ) ); ?>">Voir l'étude de cas complète →</a></p>
             </div>
         </div>
     </section>

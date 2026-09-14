@@ -244,6 +244,12 @@ if ( file_exists( $ag_avis_file ) ) {
     require_once $ag_avis_file;
 }
 
+// ── 1c4e-bis. Menage unique : preuves fabriquees dans les articles deja publies
+$ag_menage_file = get_stylesheet_directory() . '/inc/ag-menage-preuves.php';
+if ( file_exists( $ag_menage_file ) ) {
+    require_once $ag_menage_file;
+}
+
 // ── 1c4f. Témoignages clients sur le site (formulaire + schema, en attendant la fiche Google)
 $ag_temoignages_file = get_stylesheet_directory() . '/inc/ag-temoignages.php';
 if ( file_exists( $ag_temoignages_file ) ) {

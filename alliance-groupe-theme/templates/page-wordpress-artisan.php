@@ -81,7 +81,7 @@ set_query_var( 'ag_metier', array(
         'Appel stratégique avec Fabrizio (CEO Alliance Group)',
     ),
 
-    'upsell_text' => 'Un template, c\'est un point de départ. Un vrai site d\'artisan qui cartonne a besoin d\'un SEO local agressif ("plombier 24/24 Paris 15"), de photos professionnelles de vos chantiers, d\'un système de devis bien pensé, et d\'une stratégie Google Ads rentable. Nos clients artisans génèrent +320% de devis en moyenne. Premier appel gratuit.',
+    'upsell_text' => 'Un template, c\'est un point de départ. Un vrai site d\'artisan qui cartonne a besoin d\'un SEO local agressif ("plombier 24/24 Paris 15"), de photos professionnelles de vos chantiers, d\'un système de devis bien pensé, et d\'une stratégie Google Ads rentable. On l\'a fait pour un arboriste-grimpeur de Vertou : va voir le résultat. Premier appel gratuit.',
 ) );
 
 get_template_part( 'template-parts/metier-page' );

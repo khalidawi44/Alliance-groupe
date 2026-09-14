@@ -84,11 +84,11 @@ get_header();
             <div class="ag-client ag-anim" data-anim="card">
                 <span class="ag-client__tag">Étude de cas</span>
                 <h3 class="ag-client__title">Anna Photo — Photographe à Nantes</h3>
-                <p class="ag-client__text">Intégration d'un système de réservation automatisé et d'un chatbot pour gérer les demandes de devis. La photographe a pu se concentrer sur son art tout en doublant son nombre de bookings.</p>
+                <p class="ag-client__text">Réservation en ligne et messagerie instantanée intégrées au site : une séance se cale sans échange de mails, et une question trouve sa réponse pendant que le visiteur est encore là. La photographe garde son temps pour son métier.</p>
                 <div class="ag-client__stats">
-                    <span class="ag-client__stat">+180% trafic</span>
-                    <span class="ag-client__stat">Booking automatisé</span>
-                    <span class="ag-client__stat">2x plus de sessions</span>
+                    <span class="ag-client__stat">Réservation en ligne</span>
+                    <span class="ag-client__stat">Messagerie instantanée</span>
+                    <span class="ag-client__stat">31 articles publiés</span>
                 </div>
             </div>
         </div>

@@ -82,13 +82,13 @@ get_header();
     <section class="ag-section ag-section--or">
         <div class="ag-container">
             <div class="ag-client ag-anim" data-anim="card">
-                <span class="ag-client__tag">Étude de cas</span>
-                <h3 class="ag-client__title">L.A Environnement — Google Ads local</h3>
-                <p class="ag-client__text">Campagne Google Ads ciblant les recherches locales de paysagistes. Budget optimisé avec ciblage géographique précis, générant un flux constant de demandes de devis qualifiées.</p>
+                <span class="ag-client__tag">Notre méthode</span>
+                <h3 class="ag-client__title">Ce qu'on prépare avant de dépenser le premier euro</h3>
+                <p class="ag-client__text">Une annonce n'est bonne que si la page derrière l'est. On commence donc par là : une page d'arrivée par prestation plutôt qu'un fourre-tout « nos services », le numéro cliquable en haut de l'écran, le formulaire visible sans défiler, et le suivi des conversions branché avant le lancement. Ensuite seulement on achète du clic, sur la zone et les horaires qui comptent.</p>
                 <div class="ag-client__stats">
-                    <span class="ag-client__stat">ROAS x5.1</span>
-                    <span class="ag-client__stat">12€ / lead</span>
-                    <span class="ag-client__stat">+320% devis</span>
+                    <span class="ag-client__stat">Une page d'arrivée par prestation</span>
+                    <span class="ag-client__stat">Suivi des conversions d'abord</span>
+                    <span class="ag-client__stat">Ciblage zone + horaires</span>
                 </div>
             </div>
         </div>

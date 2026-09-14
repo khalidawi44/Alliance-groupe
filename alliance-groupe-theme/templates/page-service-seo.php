@@ -84,13 +84,14 @@ get_header();
         <div class="ag-container">
             <div class="ag-client ag-anim" data-anim="card">
                 <span class="ag-client__tag">Étude de cas</span>
-                <h3 class="ag-client__title">L.A Environnement — SEO local dominant</h3>
-                <p class="ag-client__text">Stratégie SEO locale complète pour un paysagiste en Loire-Atlantique. En 4 mois, le site est passé de la page 3 au Top 3 Google sur "paysagiste Loire-Atlantique" et génère maintenant 15+ devis par mois.</p>
+                <h3 class="ag-client__title">L.A Environnement — SEO local structuré</h3>
+                <p class="ag-client__text">Fiche LocalBusiness balisée : adresse exacte, zone couverte, horaires 7 j/7 et un canal « Intervention d'urgence » rattaché au numéro. Une page par prestation, chacune écrite pour une recherche précise, plus une page dédiée à l'urgence après tempête. Plan du site et robots.txt en place.</p>
                 <div class="ag-client__stats">
-                    <span class="ag-client__stat">Top 3 Google local</span>
-                    <span class="ag-client__stat">+320% devis</span>
-                    <span class="ag-client__stat">4 mois pour résultats</span>
+                    <span class="ag-client__stat">Balisage LocalBusiness</span>
+                    <span class="ag-client__stat">Une page par requête</span>
+                    <span class="ag-client__stat">Urgences 24 h/24 déclarées</span>
                 </div>
+                <p class="ag-client__text" style="margin-top:14px;"><a href="<?php echo esc_url( home_url( '/realisation-elagage' ) ); ?>">Voir l'étude de cas complète →</a></p>
             </div>
         </div>
     </section>

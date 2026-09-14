@@ -100,7 +100,7 @@ if ( ! function_exists( 'ag_portfolio_render' ) ) {
 		$f( 'Lien fiche Google (optionnel)', 'google', 'Laisser vide = généré automatiquement' );
 		$f( 'Image (URL) — optionnel', 'img', 'https://… (sinon une carte texte s\'affiche)' );
 		$f( 'Étiquettes (séparées par des virgules)', 'tags', 'Photographie, Blog WordPress, Portfolio' );
-		$f( 'Chiffres clés (séparés par des virgules)', 'stats', '+180% trafic, 23 articles' );
+		$f( 'Chiffres clés (séparés par des virgules) — VÉRIFIABLES uniquement', 'stats', 'ex : 31 articles publiés, Réservation en ligne' );
 		$f( 'Description', 'desc', 'Une phrase ou deux sur le projet.', 'textarea' );
 		submit_button( 'Ajouter à mes réalisations' );
 		echo '</form>';

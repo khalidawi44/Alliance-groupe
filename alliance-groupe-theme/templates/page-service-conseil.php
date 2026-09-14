@@ -84,13 +84,14 @@ get_header();
         <div class="ag-container">
             <div class="ag-client ag-anim" data-anim="card">
                 <span class="ag-client__tag">Étude de cas</span>
-                <h3 class="ag-client__title">L.A Environnement — Stratégie digitale globale</h3>
-                <p class="ag-client__text">Accompagnement stratégique complet : audit, refonte du site, SEO local, Google Ads. Une approche holistique qui a transformé un paysagiste local en leader digital de sa zone.</p>
+                <h3 class="ag-client__title">L.A Environnement — Accompagnement de bout en bout</h3>
+                <p class="ag-client__text">Un arboriste-grimpeur qui n'avait qu'un flyer. On a repris l'ensemble : positionnement, rédaction métier par métier, site sur mesure, balisage local, sécurité. Un seul interlocuteur, de la première discussion à la mise en ligne.</p>
                 <div class="ag-client__stats">
-                    <span class="ag-client__stat">Stratégie 360°</span>
-                    <span class="ag-client__stat">+320% devis</span>
-                    <span class="ag-client__stat">Top 3 Google</span>
+                    <span class="ag-client__stat">Positionnement + rédaction</span>
+                    <span class="ag-client__stat">Site sur mesure</span>
+                    <span class="ag-client__stat">SEO local + sécurité</span>
                 </div>
+                <p class="ag-client__text" style="margin-top:14px;"><a href="<?php echo esc_url( home_url( '/realisation-elagage' ) ); ?>">Voir l'étude de cas complète →</a></p>
             </div>
         </div>
     </section>

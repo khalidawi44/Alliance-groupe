@@ -37,7 +37,7 @@
                     'img'   => $img_base . 'anna_photo.jpg',
                     'tags'  => ['Photographie', 'Blog WordPress', 'Portfolio'],
                     'desc'  => 'Blog photo WordPress pour une photographe portraitiste à Nantes. Design immersif mettant en valeur ses clichés avec une navigation fluide et un SEO optimisé.',
-                    'stats' => ['+180% trafic', '23 articles', 'Portfolio complet'],
+                    'stats' => ['31 articles publiés', 'Réservation en ligne', 'Portfolio complet'],
                 ],
             ];
             // Projets ajoutés par l'admin (Réalisations) — tous les sites créés + fiche Google.

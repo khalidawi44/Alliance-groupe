@@ -188,19 +188,19 @@ $ag_poster = get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jp
 <section class="testimonials">
   <div class="container">
     <div class="section-tag">⟶ Quelques chantiers</div>
-    <h2 class="section-h2">Des projets <em>concrets</em>, des résultats mesurables.</h2>
+    <h2 class="section-h2">Des projets <em>concrets</em>, en ligne et vérifiables.</h2>
     <div class="testimonials-grid">
       <div class="testi">
-        <div class="testi-quote">« Refonte complète, design immersif pour mes portraits et SEO local. Le trafic organique a presque triplé en six mois. »</div>
+        <div class="testi-quote">Blog et portfolio WordPress pour une photographe portraitiste : navigation pensée pour les images, référencement travaillé article par article.</div>
         <div class="testi-author">
           <div><div class="name">Anna B.</div><div class="role">Photographe portraitiste · Nantes</div></div>
           <a href="https://annaphoto.eu/" class="link" target="_blank" rel="noopener">Voir →</a>
         </div>
       </div>
       <div class="testi">
-        <div class="testi-quote">« Site vitrine optimisé pour générer des demandes de devis en local. On est passé de 1 à 15 demandes par mois en deux trimestres. »</div>
+        <div class="testi-quote">Thème WordPress sur mesure pour un arboriste-grimpeur : une page par prestation, les chantiers en photos avant/après, les tarifs affichés et une page dédiée aux urgences.</div>
         <div class="testi-author">
-          <div><div class="name">L.A Environnement</div><div class="role">Paysagiste · Loire-Atlantique</div></div>
+          <div><div class="name">L.A Environnement</div><div class="role">Élagage &amp; abattage · Vertou</div></div>
           <a href="https://elagage-vertou.fr/" class="link" target="_blank" rel="noopener">Voir →</a>
         </div>
       </div>

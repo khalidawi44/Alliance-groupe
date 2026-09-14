@@ -86,9 +86,9 @@ get_header();
                 <h3 class="ag-client__title">Anna Photo — Identité visuelle premium</h3>
                 <p class="ag-client__text">Création d'une identité visuelle élégante pour une photographe portraitiste. Logo, charte graphique et direction artistique du blog, cohérents avec son univers artistique.</p>
                 <div class="ag-client__stats">
-                    <span class="ag-client__stat">Logo + Charte</span>
-                    <span class="ag-client__stat">+180% trafic</span>
-                    <span class="ag-client__stat">Image premium</span>
+                    <span class="ag-client__stat">Logo + charte graphique</span>
+                    <span class="ag-client__stat">Direction artistique du blog</span>
+                    <span class="ag-client__stat">Univers cohérent</span>
                 </div>
             </div>
         </div>

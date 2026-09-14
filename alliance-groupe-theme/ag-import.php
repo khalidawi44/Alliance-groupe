@@ -774,7 +774,7 @@ function ag_articles() { return array(
 
 <blockquote>Un site web professionnel n\'est plus un luxe. C\'est le minimum vital pour exister commercialement en 2025.</blockquote>
 
-<p>Nous l\'avons constaté avec notre client <strong>L.A Environnement</strong>, paysagiste en Loire-Atlantique. Avant de travailler avec <a href="/services">Alliance Groupe</a>, il était invisible sur Google. En 4 mois, nous l\'avons propulsé dans le <strong>Top 3 Google local</strong> avec un résultat spectaculaire : <strong>+320% de demandes de devis</strong>.</p>
+<p>C\'est le cas de notre client <strong>L.A Environnement</strong>, arboriste-grimpeur à Vertou. Avant de travailler avec <a href="/services">Alliance Groupe</a>, il n\'avait qu\'un flyer papier : rien en ligne, donc rien à envoyer à quelqu\'un qui hésite, et rien à trouver pour quelqu\'un qui cherche. Aujourd\'hui il a un site qui affiche ses tarifs, montre ses chantiers en photos et prend les urgences jour et nuit — <a href="/realisation-elagage">voir ce qu\'on a fait</a>.</p>
 
 <h2>Le bouche-à-oreille ne suffit plus</h2>
 
@@ -864,10 +864,10 @@ function ag_articles() { return array(
 <li>Mois 1 : le site est en ligne, premiers visiteurs</li>
 <li>Mois 2 : apparition en page 1 de Google</li>
 <li>Mois 3 : <strong>8 devis/mois</strong> (vs 3 avant)</li>
-<li>Mois 4 : <strong>Top 3 Google local, 15 devis/mois</strong></li>
+<li>Mois 4 : le site travaille seul — il répond aux questions que vous passiez votre temps à répéter au téléphone</li>
 </ul>
 
-<p><strong>Résultat : +320% de demandes de devis.</strong> Son investissement a été rentabilisé en moins de 2 mois. Découvrez cette réalisation et d\'autres sur notre <a href="/realisations">page réalisations</a>.</p>
+<p>Nos réalisations sont en ligne, avec les vrais sites et les vrais avis Google : allez les voir sur notre <a href="/realisations">page réalisations</a>, et jugez sur pièces.</p>
 
 <h2>Les coûts cachés de l\'inaction</h2>
 
@@ -1103,8 +1103,8 @@ function ag_articles() { return array(
 
 <p><strong>Résultat en 4 mois :</strong></p>
 <ul>
-<li>Position : <strong>Top 3 Google local</strong></li>
-<li>Demandes de devis : <strong>+320%</strong> (de 3 à 15/mois)</li>
+<li>Une page par prestation, chacune écrite pour une recherche précise</li>
+<li>Une fiche LocalBusiness balisée : adresse, zone, horaires, canal d\'urgence</li>
 <li>Appels entrants : <strong>+250%</strong></li>
 </ul>
 
@@ -1122,7 +1122,7 @@ function ag_articles() { return array(
 
 <p><strong>Vos concurrents ne sont pas meilleurs que vous — ils sont juste mieux positionnés sur Google.</strong> Il est temps de changer ça.</p>
 
-<p>Alliance Groupe est spécialisé en <a href="/service-seo">SEO local</a>. Nous avons les méthodes éprouvées pour vous propulser dans le Top 3 Google de votre zone.</p>
+<p>Alliance Groupe est spécialisé en <a href="/service-seo">SEO local</a> : balisage structuré, une page par requête réelle, fiche Google tenue à jour. Personne ne peut vous garantir une position sur Google — ceux qui le font mentent. Ce qu\'on garantit, c\'est le travail qui vous rend trouvable.</p>
 
 <ul>
 <li>📞 <strong>Vérifiez votre position Google gratuitement</strong> : <a href="tel:+33744829516">07.44.82.95.16</a></li>
@@ -1197,91 +1197,6 @@ function ag_articles() { return array(
 </ul>
 
 <blockquote>Simulation ROI personnalisée offerte — Voyez concrètement combien vous pouvez économiser</blockquote>'),
-    array('title'=>'Étude de cas : comment un paysagiste a multiplié ses devis par 4 en 4 mois','slug'=>'etude-cas-paysagiste-multiplie-devis-par-4','cat'=>'Conseils Digital','excerpt'=>'L.A Environnement est passé de 3 devis par mois à 15 grâce à une stratégie digitale complète. Voici exactement comment nous avons fait.','tags'=>'étude de cas, paysagiste, devis, stratégie digitale','content'=>'<p>Quand L.A Environnement nous a contactés, la situation était classique : <strong>un excellent artisan, totalement invisible en ligne.</strong> 4 mois plus tard, il croulait sous les demandes de devis.</p>
-
-<p>Voici exactement ce que nous avons fait — et ce que ces résultats signifient pour votre entreprise.</p>
-
-<h2>La situation de départ</h2>
-
-<p><strong>L.A Environnement</strong> est un paysagiste basé en Loire-Atlantique. Comme beaucoup d\'artisans et d\'entrepreneurs locaux, son activité reposait presque exclusivement sur le bouche-à-oreille.</p>
-
-<p>Les problèmes :</p>
-<ul>
-<li><strong>Aucun site web</strong> — invisible sur Google</li>
-<li><strong>3 devis par mois</strong> en moyenne — insuffisant pour développer l\'activité</li>
-<li><strong>Dépendance totale au bouche-à-oreille</strong> — revenu imprévisible</li>
-<li><strong>Concurrents bien positionnés</strong> sur Google qui captaient tous les prospects en ligne</li>
-<li><strong>Aucune présence sur Google Maps</strong> — pas de fiche Google Business</li>
-</ul>
-
-<blockquote>Le constat était clair : chaque personne cherchant "paysagiste Loire-Atlantique" sur Google allait directement chez ses concurrents.</blockquote>
-
-<h2>La stratégie mise en place</h2>
-
-<h3>Mois 1 : Fondations</h3>
-<ul>
-<li><strong><a href="/service-creation-web">Création du site web</a></strong> — Design professionnel, rapide (chargement &lt; 1.5s), 100% responsive</li>
-<li><strong>Pages de services détaillées</strong> — une page par prestation (création de jardin, entretien, élagage, terrasse...)</li>
-<li><strong>Pages de zones géographiques</strong> — paysagiste Nantes, paysagiste Saint-Nazaire, etc.</li>
-<li><strong>Formulaire de devis optimisé</strong> — simple, rapide, avec numéro de téléphone cliquable</li>
-<li><strong>Google Business Profile</strong> — création et optimisation complète avec 30+ photos</li>
-</ul>
-
-<h3>Mois 2 : Référencement</h3>
-<ul>
-<li><strong><a href="/service-seo">SEO technique</a></strong> — balises, structure, vitesse, sitemap</li>
-<li><strong>Contenu optimisé</strong> — articles de blog ciblant les recherches locales</li>
-<li><strong>Citations NAP</strong> — inscription sur 25+ annuaires avec informations cohérentes</li>
-<li><strong>Stratégie d\'avis</strong> — mise en place d\'un processus pour obtenir des avis Google après chaque chantier</li>
-</ul>
-
-<h3>Mois 3-4 : Accélération</h3>
-<ul>
-<li><strong>Google Ads local</strong> — campagne ciblée pour accélérer les résultats pendant que le SEO mûrit</li>
-<li><strong>Optimisation continue</strong> — analyse des données, ajustement des mots-clés, amélioration des pages</li>
-<li><strong>Nouveaux avis Google</strong> — passage de 0 à 18 avis (note 4.8/5)</li>
-</ul>
-
-<h2>Les résultats</h2>
-
-<p>L\'évolution mois par mois :</p>
-
-<ul>
-<li><strong>Mois 1</strong> : Site en ligne — 120 visiteurs — 2 demandes de contact</li>
-<li><strong>Mois 2</strong> : Page 1 Google — 380 visiteurs — 5 devis</li>
-<li><strong>Mois 3</strong> : Top 5 Google — 620 visiteurs — 8 devis</li>
-<li><strong>Mois 4</strong> : <strong>Top 3 Google local</strong> — 950 visiteurs — <strong>15 devis</strong></li>
-</ul>
-
-<p><strong>Bilan à 4 mois :</strong></p>
-<ul>
-<li>Demandes de devis : <strong>+320%</strong> (de 3 à 15/mois)</li>
-<li>Appels entrants : <strong>+250%</strong></li>
-<li>Position Google : <strong>Top 3 local</strong> sur "paysagiste Loire-Atlantique"</li>
-<li>Retour sur investissement : <strong>atteint dès le mois 2</strong></li>
-</ul>
-
-<h2>Ce que ça signifie pour votre entreprise</h2>
-
-<p>L.A Environnement n\'est pas un cas exceptionnel. <strong>C\'est le résultat normal d\'une stratégie digitale bien exécutée.</strong></p>
-
-<p>Si vous êtes artisan, commerçant, prestataire de services ou dirigeant de PME, les mêmes résultats sont atteignables pour votre activité. La seule différence entre L.A Environnement et ses concurrents, c\'est qu\'il a décidé d\'agir.</p>
-
-<p>Retrouvez ce projet et d\'autres sur notre <a href="/realisations">page réalisations</a>.</p>
-
-<h2>C\'est votre tour : obtenez les mêmes résultats</h2>
-
-<p><strong>Chaque mois sans stratégie digitale, ce sont des dizaines de clients qui vont chez vos concurrents.</strong> L.A Environnement l\'a compris — et sa rentabilité a explosé.</p>
-
-<p>Alliance Groupe peut reproduire ces résultats pour votre entreprise. Peu importe votre secteur, peu importe votre zone — la méthode fonctionne.</p>
-
-<ul>
-<li>📞 <strong>Parlons de votre projet maintenant</strong> : <a href="tel:+33744829516">07.44.82.95.16</a></li>
-<li>✉️ <strong>Décrivez-nous votre situation</strong> : <a href="mailto:contact@alliancegroupe-inc.com">contact@alliancegroupe-inc.com</a></li>
-<li>📅 <strong>Réservez votre stratégie gratuite</strong> sur notre <a href="/contact">page contact</a></li>
-</ul>
-
-<blockquote>Stratégie personnalisée gratuite — On vous montre exactement ce qu\'on ferait pour votre entreprise</blockquote>'),
     array('title'=>'Les 7 erreurs fatales qui tuent votre visibilité en ligne','slug'=>'erreurs-fatales-tuent-visibilite-en-ligne','cat'=>'Conseils Digital','excerpt'=>'De l\'absence de stratégie SEO au site non responsive, ces 7 erreurs courantes détruisent silencieusement votre visibilité digitale. Corrigez-les avant qu\'il ne soit trop tard.','tags'=>'erreurs, visibilité, SEO, stratégie','content'=>'<p>Votre entreprise est peut-être excellente. Vos services peut-être irréprochables. Mais si personne ne vous trouve en ligne, <strong>tout ça ne sert à rien.</strong></p>
 
 <p>Voici les 7 erreurs fatales que nous constatons chez 90% des PME — et qui détruisent leur visibilité digitale en silence.</p>
@@ -1503,7 +1418,7 @@ function ag_articles() { return array(
 <li><strong>Photos réelles</strong> de l\'équipe et des réalisations</li>
 </ul>
 
-<p>Sur le site d\'Alliance Groupe, nous affichons les <a href="/realisations">résultats concrets</a> de nos clients : +320% devis pour L.A Environnement, +180% trafic pour Anna Photo. C\'est ça qui convainc.</p>
+<p>Sur le site d\'Alliance Groupe, nous affichons nos <a href="/realisations">réalisations</a> avec le lien vers chaque site en ligne et vers sa fiche Google. Pas de chiffres invérifiables : le site du client, et ce que ses clients à lui en disent. C\'est ça qui convainc.</p>
 
 <h2>Raison n°5 : Aucun tracking ni analyse</h2>
 
