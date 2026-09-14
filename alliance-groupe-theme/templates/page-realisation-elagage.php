@@ -24,6 +24,20 @@ $galerie = array(
 	array( 'la-tarifs',      'Les tarifs annoncés',      'Les fourchettes sont sur la page. Un artisan qui affiche ses prix n\'a plus à se justifier au téléphone.' ),
 	array( 'la-devis',       'La demande de devis',      'Une seule question posée au visiteur : ce qui vous inquiète. Le formulaire vient après, jamais avant.' ),
 );
+
+/* Les pages interieures : c'est la que le travail se voit vraiment. Une page
+   par prestation, une par chantier, une pour l'urgence, une pour les prix —
+   chacune ecrite pour une recherche precise, pas un fourre-tout. */
+$exemples = array(
+	array( 'la-ex-prestation', 'Une page par prestation',
+		'« Élagage en grimpe à Vertou (44) : taille douce d\'arbre ». Six prestations, six pages, six recherches Google différentes. Une page fourre-tout « nos services » n\'aurait rien capté.' ),
+	array( 'la-ex-chantier', 'Une page par chantier',
+		'Pendant / après, photographié sur place. C\'est la preuve qu\'un devis ne remplace pas : le client voit ce qui l\'attend avant même d\'appeler.' ),
+	array( 'la-ex-urgences', 'La page qui sonne à 2 h du matin',
+		'« Urgence arbre tombé à Vertou — élagueur 24 h/24 ». Une page dédiée, le numéro en gros, pour la recherche faite dans la panique après une tempête.' ),
+	array( 'la-ex-tarifs', 'Les prix, écrits',
+		'« Prix d\'un élagage ou d\'un abattage à Vertou et Nantes ». Très peu d\'artisans osent. Celui qui affiche ses fourchettes élimine les curieux et garde les sérieux.' ),
+);
 ?>
 <?php get_template_part( 'template-parts/realisation-style' ); ?>
 <style>
@@ -187,6 +201,21 @@ $galerie = array(
           <figure class="rp__shot" data-r>
             <img src="<?php echo esc_url( $img . $g[0] . '.jpg' ); ?>" alt="<?php echo esc_attr( $g[1] ); ?> — L.A Environnement" loading="lazy">
             <div><b><?php echo esc_html( $g[1] ); ?></b><span><?php echo esc_html( $g[2] ); ?></span></div>
+          </figure>
+        <?php endforeach; ?>
+      </div>
+    </div>
+  </section>
+
+  <section class="rp__gal" style="padding-top:0">
+    <div class="wr">
+      <h2 data-r>Des exemples, <em>pas des promesses</em></h2>
+      <p data-r>Le site ne se résume pas à son accueil. Chaque page a été écrite pour une question précise que quelqu'un tape réellement dans Google.</p>
+      <div class="rp__shots">
+        <?php foreach ( $exemples as $e ) : ?>
+          <figure class="rp__shot" data-r>
+            <img src="<?php echo esc_url( $img . $e[0] . '.jpg' ); ?>" alt="<?php echo esc_attr( $e[1] ); ?> — L.A Environnement" loading="lazy" width="1200" height="750">
+            <div><b><?php echo esc_html( $e[1] ); ?></b><span><?php echo esc_html( $e[2] ); ?></span></div>
           </figure>
         <?php endforeach; ?>
       </div>

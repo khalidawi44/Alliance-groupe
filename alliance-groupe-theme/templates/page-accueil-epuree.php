@@ -201,7 +201,7 @@ $ag_poster = get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jp
         <div class="testi-quote">« Site vitrine optimisé pour générer des demandes de devis en local. On est passé de 1 à 15 demandes par mois en deux trimestres. »</div>
         <div class="testi-author">
           <div><div class="name">L.A Environnement</div><div class="role">Paysagiste · Loire-Atlantique</div></div>
-          <a href="https://www.paysagiste-environnement.com/" class="link" target="_blank" rel="noopener">Voir →</a>
+          <a href="https://elagage-vertou.fr/" class="link" target="_blank" rel="noopener">Voir →</a>
         </div>
       </div>
     </div>

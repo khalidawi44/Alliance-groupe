@@ -780,13 +780,13 @@ document.documentElement.classList.add('js-cine');
         </div>
       </article>
       <article class="rz__card" data-rv>
-        <a class="rz__vue" href="https://www.paysagiste-environnement.com/" target="_blank" rel="noopener"><img src="<?php echo esc_url( $dir . '/assets/images/realisations/carte-la.jpg' ); ?>" alt="Le site L.A Environnement" loading="lazy"></a>
+        <a class="rz__vue" href="<?php echo esc_url( home_url( '/realisation-elagage' ) ); ?>"><img src="<?php echo esc_url( $dir . '/assets/images/realisations/carte-la.jpg' ); ?>" alt="Le site L.A Environnement sur ordinateur, tablette et téléphone — voir l'étude de cas" loading="lazy"></a>
         <div class="rz__body">
-          <span class="rz__meta">Paysagiste · Loire-Atlantique</span>
+          <span class="rz__meta">Élagage &amp; abattage · Vertou</span>
           <h3>L.A Environnement</h3>
-          <p>Site vitrine et génération de devis pour un paysagiste. Formulaires optimisés et référencement local dominant sur son secteur.</p>
-          <ul class="rz__pts"><li>+320 % de devis</li><li>Top 3 Google</li><li>15 devis/mois</li></ul>
-          <div class="rz__liens"><a href="https://www.paysagiste-environnement.com/" target="_blank" rel="noopener">Voir le site ↗</a><a class="rz__avis" href="https://www.google.com/maps/search/?api=1&amp;query=L.A%20Environnement%20paysagiste%20Nantes" target="_blank" rel="noopener">Avis Google ↗</a></div>
+          <p>Un arboriste-grimpeur qui n'avait qu'un flyer. Thème sur mesure dont le premier écran change selon la saison et l'heure du visiteur, tarifs affichés, chantiers en photos réelles, urgences déclarées jour et nuit.</p>
+          <ul class="rz__pts"><li>12 ambiances jour/saison</li><li>Urgences 24 h/24</li><li>Tarifs affichés</li></ul>
+          <div class="rz__liens"><a href="https://elagage-vertou.fr/" target="_blank" rel="noopener">Voir le site ↗</a><a href="<?php echo esc_url( home_url( '/realisation-elagage' ) ); ?>">L'étude de cas →</a><a class="rz__avis" href="https://www.google.com/maps/search/?api=1&amp;query=L.A%20Environnement%20%C3%A9lagage%20Vertou" target="_blank" rel="noopener">Avis Google ↗</a></div>
         </div>
       </article>
     </div>

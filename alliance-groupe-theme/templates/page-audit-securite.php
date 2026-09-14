@@ -325,7 +325,7 @@ $ag_dir  = get_template_directory_uri();
             <div class="name">L.A Environnement</div>
             <div class="role">Paysagiste · Loire-Atlantique</div>
           </div>
-          <a href="https://www.paysagiste-environnement.com/" class="link" target="_blank" rel="noopener">Voir →</a>
+          <a href="https://elagage-vertou.fr/" class="link" target="_blank" rel="noopener">Voir →</a>
         </div>
       </div>
     </div>
