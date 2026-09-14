@@ -255,7 +255,7 @@ add_filter( 'login_redirect', function ( $redirect, $requested, $user ) {
 
 /* ── 7. Auto-création des pages (une seule fois) ───────────────────── */
 add_action( 'init', function () {
-	if ( get_option( 'ag_espaces_pages_v7' ) ) return;
+	if ( get_option( 'ag_espaces_pages_v8' ) ) return;
 	$pages = array(
 		'connexion'             => array( 'Connexion',            'templates/page-connexion.php' ),
 		'espace-client'         => array( 'Espace Client',        'templates/page-espace-client.php' ),
@@ -265,6 +265,9 @@ add_action( 'init', function () {
 		'studio'                => array( 'Studio',               'templates/page-studio.php' ),
 		'programme-ambassadeur' => array( 'Programme Ambassadeur', 'templates/page-guide-ambassadeur.php' ),
 		'resilience-ransomware' => array( 'Test de résilience ransomware', 'templates/page-resilience-ransomware.php' ),
+		// Etudes de cas du portfolio (les cartes de template-parts/realisations.php pointent dessus).
+		'realisation-gwen'      => array( 'Réalisation — Gwen Services',    'templates/page-realisation-gwen.php' ),
+		'realisation-elagage'   => array( 'Réalisation — L.A Environnement', 'templates/page-realisation-elagage.php' ),
 		// Fiches détaillées des 6 templates métier (cibles des « Voir la fiche »).
 		'wordpress-avocat'      => array( 'Template WordPress — Avocat',      'templates/page-wordpress-avocat.php' ),
 		'wordpress-restaurant'  => array( 'Template WordPress — Restaurant',  'templates/page-wordpress-restaurant.php' ),
@@ -288,7 +291,7 @@ add_action( 'init', function () {
 	   pose, et ce bloc repartait a CHAQUE chargement de page du site —
 	   quatorze `get_page_by_path()` pour ne rien creer. Les quatorze pages
 	   existent (verifie en ligne le 13/09), on peut sceller sans rien perdre. */
-	update_option( 'ag_espaces_pages_v7', 1 );
+	update_option( 'ag_espaces_pages_v8', 1 );
 } );
 
 /* ── 8. Classement & récompenses (gamification commerciale) ────────── */

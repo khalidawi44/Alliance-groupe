@@ -9,6 +9,17 @@
             $img_base = get_stylesheet_directory_uri() . '/assets/images/realisations/';
             $projets = [
                 [
+                    'id'    => 'la-environnement',
+                    'title' => 'L.A Environnement',
+                    'url'   => 'https://elagage-vertou.fr/',
+                    'img'   => $img_base . 'la-environnement.jpg',
+                    'tags'  => ['Élagage & abattage', 'Thème sur mesure', 'SEO local', 'Sécurité incluse'],
+                    'desc'  => 'Site complet pour un arboriste-grimpeur de Vertou : thème WordPress sur mesure dont le premier écran change selon la saison ET l\'heure du visiteur, tarifs affichés, chantiers en photos réelles, urgences 24 h/24 déclarées dans la fiche structurée. Durcissement de sécurité livré avec.',
+                    'stats' => ['12 ambiances jour/saison', 'Contrastes mesurés (plancher 10:1)', 'Urgences 24 h/24'],
+                    'etude' => home_url( '/realisation-elagage' ),
+                    'google'=> 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( 'L.A Environnement élagage Vertou' ),
+                ],
+                [
                     'id'    => 'gwen-services',
                     'title' => 'Gwen Services',
                     'url'   => 'https://gwen-services.alliancegroupe-inc.com/',
@@ -27,16 +38,6 @@
                     'tags'  => ['Photographie', 'Blog WordPress', 'Portfolio'],
                     'desc'  => 'Blog photo WordPress pour une photographe portraitiste à Nantes. Design immersif mettant en valeur ses clichés avec une navigation fluide et un SEO optimisé.',
                     'stats' => ['+180% trafic', '23 articles', 'Portfolio complet'],
-                ],
-                [
-                    'id'    => 'la-environnement',
-                    'title' => 'L.A Environnement',
-                    'url'   => '#',
-                    'img'   => $img_base . 'la-environnement.jpg',
-                    'tags'  => ['Paysagiste', 'Site Vitrine', 'SEO Local'],
-                    'desc'  => 'Site vitrine réalisé pour un paysagiste en Loire-Atlantique : mise en valeur des aménagements extérieurs, génération de leads via formulaires optimisés et référencement local. Activité aujourd\'hui cessée.',
-                    'stats' => ['Aménagement paysager', 'SEO local', 'Génération de devis'],
-                    'google'=> 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( 'L.A Environnement paysagiste Nantes' ),
                 ],
             ];
             // Projets ajoutés par l'admin (Réalisations) — tous les sites créés + fiche Google.
