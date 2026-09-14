@@ -90,10 +90,10 @@ get_header();
             <div class="ag-client ag-anim" data-anim="card">
                 <span class="ag-client__tag">Étude de cas</span>
                 <h3 class="ag-client__title">L.A Environnement — Élagage &amp; abattage, Vertou</h3>
-                <p class="ag-client__text">Thème WordPress sur mesure, sans constructeur de page : une page par prestation, les chantiers en photos avant/après, les tarifs affichés publiquement et une page dédiée aux urgences. Le premier écran change selon la saison et l'heure du visiteur.</p>
+                <p class="ag-client__text">Thème WordPress sur mesure, sans constructeur de page : une page par prestation, les chantiers en photos avant/après, une page qui explique ce que ça coûte et une autre dédiée aux urgences. Le premier écran change selon la saison et l'heure du visiteur.</p>
                 <div class="ag-client__stats">
                     <span class="ag-client__stat">Thème sur mesure</span>
-                    <span class="ag-client__stat">Tarifs affichés</span>
+                    <span class="ag-client__stat">Tarif adapté aux revenus</span>
                     <span class="ag-client__stat">Sécurité durcie</span>
                 </div>
                 <p class="ag-client__text" style="margin-top:14px;"><a href="<?php echo esc_url( home_url( '/realisation-elagage' ) ); ?>">Voir l'étude de cas complète →</a></p>

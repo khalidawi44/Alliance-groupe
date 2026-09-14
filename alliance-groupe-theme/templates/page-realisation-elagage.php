@@ -21,7 +21,7 @@ $img = $dir . '/assets/images/realisations/';
 $galerie = array(
 	array( 'la-prestations', 'Les six prestations',      'Élagage en grimpe, abattage, haubanage, création et entretien de jardin, évacuation. Filtrables d\'un clic, chacune avec sa vraie photo de chantier.' ),
 	array( 'la-chantiers',   'Les chantiers, avant / après', 'Pas de banque d\'images : ce qu\'il y avait, ce qui a été fait, ce qu\'il en reste. Photos prises sur place, avec l\'avis Google réel juste en dessous.' ),
-	array( 'la-tarifs',      'Les tarifs annoncés',      'Les fourchettes sont sur la page. Un artisan qui affiche ses prix n\'a plus à se justifier au téléphone.' ),
+	array( 'la-tarifs',      'Ce que ça coûte',          'La page ne donne pas SON prix — il se fixe après la visite. Elle donne les prix constatés du métier, puis explique que le tarif est adapté aux revenus : devis normal, réduction appliquée dessus, écrite noir sur blanc.' ),
 	array( 'la-devis',       'La demande de devis',      'Une seule question posée au visiteur : ce qui vous inquiète. Le formulaire vient après, jamais avant.' ),
 );
 
@@ -35,8 +35,8 @@ $exemples = array(
 		'Pendant / après, photographié sur place. C\'est la preuve qu\'un devis ne remplace pas : le client voit ce qui l\'attend avant même d\'appeler.' ),
 	array( 'la-ex-urgences', 'La page qui sonne à 2 h du matin',
 		'« Urgence arbre tombé à Vertou — élagueur 24 h/24 ». Une page dédiée, le numéro en gros, pour la recherche faite dans la panique après une tempête.' ),
-	array( 'la-ex-tarifs', 'Les prix, écrits',
-		'« Prix d\'un élagage ou d\'un abattage à Vertou et Nantes ». Très peu d\'artisans osent. Celui qui affiche ses fourchettes élimine les curieux et garde les sérieux.' ),
+	array( 'la-ex-tarifs', 'Ce que ça coûte, sans détour',
+		'« Prix d\'un élagage ou d\'un abattage à Vertou et Nantes ». La page donne les prix constatés du métier — pas les siens, qui se fixent sur place — puis annonce que le tarif est adapté aux revenus. Rare, et désarmant.' ),
 );
 ?>
 <?php get_template_part( 'template-parts/realisation-style' ); ?>
@@ -62,6 +62,58 @@ $exemples = array(
      border-radius:14px;padding:22px 14px}
   .rp__chiffres b{display:block;font-family:var(--serif);font-size:clamp(1.6rem,3.4vw,2.3rem);color:var(--gold-hi)}
   .rp__chiffres span{display:block;margin-top:6px;font-size:.83rem;color:var(--muted);line-height:1.45}
+
+  /* ── LA DEMO ────────────────────────────────────────────────────────────
+     Expliquer une scene avec des phrases, c'est demander au lecteur de
+     l'imaginer. On la lui montre : meme canopee filmee, meme arbre qui
+     descend au defilement que sur elagage-vertou.fr. La section est haute,
+     le cadre est collant : on defile DANS la scene. */
+  .rp__demo{position:relative;height:250vh;margin:clamp(40px,7vh,80px) 0 0}
+  .rp__demo-cadre{position:sticky;top:7vh;height:82vh;max-width:1180px;margin:0 auto;
+     border-radius:20px;overflow:hidden;border:1px solid rgba(127,176,74,.28);
+     box-shadow:0 70px 130px -60px rgba(0,0,0,.95)}
+  .rp__demo-scene{position:absolute;inset:0;overflow:hidden;
+     background:radial-gradient(80% 55% at 50% 8%,#1d4429,transparent 68%),
+                radial-gradient(70% 60% at 50% 100%,#12301c,transparent 72%),
+                linear-gradient(180deg,#0c2416,#071a0f 52%,#0b2114)}
+  .rp__demo-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+     opacity:.42;z-index:1}
+  .rp__demo-lueur{position:absolute;inset:0;z-index:2;pointer-events:none;
+     background:radial-gradient(38% 70% at 50% 40%,rgba(169,211,106,.16),transparent 70%)}
+  .rp__demo-arbre{position:absolute;left:50%;top:0;z-index:3;width:min(56%,520px);height:auto;
+     transform:translate3d(-50%,0,0);will-change:transform;pointer-events:none;
+     /* La couronne est coupee net aux bords de l'image — sur le site du client
+        ca passe inapercu parce qu'elle occupe tout l'ecran ; dans un cadre
+        etroit, la coupure se voit. On dissout les deux bords. */
+     -webkit-mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);
+             mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent)}
+  .rp__demo-voile{position:absolute;inset:0;z-index:4;pointer-events:none;
+     background:linear-gradient(180deg,rgba(4,20,12,.34),transparent 30%,rgba(4,20,12,.86))}
+  .rp__demo-txt{position:absolute;z-index:5;left:0;right:0;bottom:clamp(24px,5vh,54px);
+     text-align:center;padding:0 26px}
+  .rp__demo-txt h2{font-size:clamp(1.5rem,4vw,2.6rem);margin:10px 0 12px;
+     text-shadow:0 2px 24px rgba(2,12,7,.8)}
+  .rp__demo-txt p{max-width:56ch;margin:0 auto;color:#d6e2d6;
+     text-shadow:0 2px 16px rgba(2,12,7,.85)}
+  .rp__demo-note{display:inline-block;margin-top:14px;font-size:.78rem;letter-spacing:.14em;
+     text-transform:uppercase;color:rgba(214,226,214,.62)}
+
+  @media(max-width:960px){
+    /* Comme sur le site du client : pas de video de fond sur telephone.
+       L'arbre, lui, reste — c'est lui l'effet. */
+    .rp__demo{height:210vh}
+    .rp__demo-cadre{height:76vh;border-radius:14px}
+    .rp__demo-video{display:none}
+    .rp__demo-arbre{width:min(66%,300px)}
+  }
+  @media(prefers-reduced-motion:reduce){
+    /* Rien ne bouge : la scene est posee a mi-course, lisible telle quelle,
+       et la section cesse d'etre haute pour ne pas faire defiler dans le vide. */
+    .rp__demo{height:auto}
+    .rp__demo-cadre{position:static;height:min(78vh,620px)}
+    .rp__demo-arbre{transform:translate3d(-50%,-30%,0)!important}
+    .rp__demo-video{display:none}
+  }
   @media(max-width:960px){
     .rp__meca{grid-template-columns:1fr;gap:16px}
     .rp__chiffres{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -75,7 +127,7 @@ $exemples = array(
     <div class="wr">
       <span class="eb" data-r>Réalisation · Élagage &amp; abattage</span>
       <h1 data-r>L.A <em>Environnement</em></h1>
-      <p class="rp__lead" data-r>Un arboriste-grimpeur de Vertou qui travaillait au bouche-à-oreille et au flyer. Aujourd'hui : un site qui change d'apparence selon l'heure et la saison, qui affiche ses tarifs, montre ses chantiers en photos réelles, et prend les urgences jour et nuit.</p>
+      <p class="rp__lead" data-r>Un arboriste-grimpeur de Vertou qui travaillait au bouche-à-oreille et au flyer. Aujourd'hui : un site qui change d'apparence selon l'heure et la saison, montre ses chantiers en photos réelles, explique sans détour ce que ça coûte, et prend les urgences jour et nuit.</p>
       <div class="rp__tags" data-r>
         <span>Élagage · abattage · jardin</span><span>Thème sur mesure</span><span>SEO local Loire-Atlantique</span><span>Durcissement sécurité</span><span>Mobile d'abord</span>
       </div>
@@ -123,6 +175,28 @@ $exemples = array(
     </div>
     <div class="rp__leg" data-r><span>Jour</span><span>Crépuscule</span><span>Nuit</span></div>
     <p data-r style="text-align:center;max-width:62ch;margin:18px auto 0;font-size:.92rem;">Douze ambiances, c'est douze risques de rendre un titre blanc illisible. Les douze ont donc été <strong style="color:var(--text)">mesurées</strong>, texte masqué et fond réellement peint, en 390×844 et en 1440×900 : le plancher tombe à 10,01:1 au 5<sup>e</sup> centile, pour un seuil d'accessibilité AA fixé à 4,5:1. Le plafond monte à 17,7:1 la nuit.</p>
+  </section>
+
+  <section class="rp__demo" aria-labelledby="rp-demo-titre">
+    <div class="rp__demo-cadre">
+      <div class="rp__demo-scene">
+        <video class="rp__demo-video" muted loop playsinline preload="none" aria-hidden="true"
+               data-demo-video>
+          <source src="<?php echo esc_url( $dir . '/assets/video/la-demo-canopee.mp4' ); ?>" type="video/mp4">
+        </video>
+        <div class="rp__demo-lueur" aria-hidden="true"></div>
+        <img class="rp__demo-arbre" data-demo-arbre
+             src="<?php echo esc_url( $img . 'la-demo-arbre.webp' ); ?>"
+             alt="" aria-hidden="true" loading="lazy" decoding="async" width="600" height="3000">
+        <div class="rp__demo-voile" aria-hidden="true"></div>
+        <div class="rp__demo-txt">
+          <span class="eb">Démonstration</span>
+          <h2 id="rp-demo-titre">Défilez : <em>l'arbre descend</em></h2>
+          <p>Voilà ce qui se passe derrière chaque page de son site : une canopée filmée en couche fixe, et un arbre de six mille pixels de haut qui descend au rythme du défilement. Ce n'est pas une image de fond — c'est une scène qu'on traverse.</p>
+          <span class="rp__demo-note">Extrait réel du site · elagage-vertou.fr</span>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section class="wr">
@@ -247,6 +321,70 @@ $exemples = array(
 </div>
 
 <script>
+/* ── LA DEMO : l'arbre descend au defilement ──────────────────────────────
+   Meme calcul que sur elagage-vertou.fr : la course vaut la hauteur de
+   l'arbre moins celle du cadre, et on la parcourt au fur et a mesure que la
+   section traverse l'ecran. Tout passe par requestAnimationFrame — un
+   listener de scroll qui ecrit un transform a chaque evenement fait saccader
+   sur telephone.
+
+   Rien ne demarre si le visiteur a demande moins d'animations : le CSS pose
+   deja la scene a mi-course, lisible telle quelle. */
+(function(){
+  var section = document.querySelector('.rp__demo');
+  var arbre   = document.querySelector('[data-demo-arbre]');
+  var cadre   = document.querySelector('.rp__demo-cadre');
+  if (!section || !arbre || !cadre) { return; }
+
+  var REDUIT = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if (REDUIT) { return; }
+
+  var course = 0, attente = false;
+
+  function mesurer(){
+    // L'image peut ne pas etre encore chargee : on retombe sur le ratio connu.
+    var h = arbre.offsetHeight || (arbre.offsetWidth * 5);
+    course = Math.max(0, h - cadre.offsetHeight);
+  }
+
+  function placer(){
+    var r = section.getBoundingClientRect();
+    var total = Math.max(1, r.height - window.innerHeight);
+    var p = Math.min(1, Math.max(0, -r.top / total));
+    arbre.style.transform = 'translate3d(-50%,' + (-course * p) + 'px,0)';
+    attente = false;
+  }
+
+  function demander(){
+    if (!attente) { attente = true; requestAnimationFrame(placer); }
+  }
+
+  mesurer(); placer();
+  if (!arbre.complete) { arbre.addEventListener('load', function(){ mesurer(); placer(); }); }
+  addEventListener('scroll', demander, { passive: true });
+  addEventListener('resize', function(){ mesurer(); demander(); });
+
+  /* La canopee ne se charge et ne tourne que quand la scene est a l'ecran :
+     un demi-megaoctet de video ne doit pas partir pour une section que le
+     visiteur n'atteindra peut-etre jamais. Jamais sur petit ecran — c'est le
+     choix fait sur le site du client, on le respecte ici aussi. */
+  var video = section.querySelector('[data-demo-video]');
+  if (video && !matchMedia('(max-width:960px)').matches && 'IntersectionObserver' in window) {
+    var ob = new IntersectionObserver(function(entrees){
+      entrees.forEach(function(e){
+        if (e.isIntersecting) {
+          if (video.preload !== 'auto') { video.preload = 'auto'; video.load(); }
+          var j = video.play();
+          if (j && j.catch) { j.catch(function(){}); }
+        } else if (!video.paused) {
+          video.pause();
+        }
+      });
+    }, { rootMargin: '200px 0px' });
+    ob.observe(section);
+  }
+})();
+
 (function(){
   var els = document.querySelectorAll('.rp [data-r]');
   if (!('IntersectionObserver' in window)) {

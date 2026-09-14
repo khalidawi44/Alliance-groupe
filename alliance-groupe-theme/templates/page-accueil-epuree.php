@@ -198,7 +198,7 @@ $ag_poster = get_stylesheet_directory_uri() . '/assets/images/cities/naples-1.jp
         </div>
       </div>
       <div class="testi">
-        <div class="testi-quote">Thème WordPress sur mesure pour un arboriste-grimpeur : une page par prestation, les chantiers en photos avant/après, les tarifs affichés et une page dédiée aux urgences.</div>
+        <div class="testi-quote">Thème WordPress sur mesure pour un arboriste-grimpeur : une page par prestation, les chantiers en photos avant/après, une page qui explique ce que ça coûte et une autre dédiée aux urgences.</div>
         <div class="testi-author">
           <div><div class="name">L.A Environnement</div><div class="role">Élagage &amp; abattage · Vertou</div></div>
           <a href="https://elagage-vertou.fr/" class="link" target="_blank" rel="noopener">Voir →</a>

@@ -19,6 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
   .rp{--gold:#d4b45c;--gold-hi:#f4d06f;--ink:#05050a;--panel:#0b0b12;--text:#eef1f6;--muted:#9aa3b4;
       --serif:"Playfair Display",Georgia,serif;--vert:#3f9d6d;
       background:var(--ink);color:var(--text);overflow-x:hidden}
+  /* `overflow-x:hidden` fabrique un conteneur de defilement, ce qui ANNULE
+     tout `position:sticky` a l'interieur — la demo de l'etude L.A ne tenait
+     pas a l'ecran. `clip` coupe pareil sans creer ce conteneur. Le
+     @supports garde le comportement d'avant la ou `clip` manque. */
+  @supports (overflow-x: clip){ .rp{overflow-x:clip} }
   .rp *{box-sizing:border-box}
   .rp img{display:block;max-width:100%}
   .rp .wr{max-width:1180px;margin:0 auto;padding:0 26px}

@@ -319,7 +319,7 @@ $ag_dir  = get_template_directory_uri();
       </div>
 
       <div class="testi">
-        <div class="testi-quote">Thème WordPress sur mesure pour un arboriste-grimpeur : une page par prestation, les chantiers en photos avant/après, les tarifs affichés et une page dédiée aux urgences.</div>
+        <div class="testi-quote">Thème WordPress sur mesure pour un arboriste-grimpeur : une page par prestation, les chantiers en photos avant/après, une page qui explique ce que ça coûte et une autre dédiée aux urgences.</div>
         <div class="testi-author">
           <div>
             <div class="name">L.A Environnement</div>

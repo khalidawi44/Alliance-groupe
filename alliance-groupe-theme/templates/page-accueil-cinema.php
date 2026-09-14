@@ -784,8 +784,8 @@ document.documentElement.classList.add('js-cine');
         <div class="rz__body">
           <span class="rz__meta">Élagage &amp; abattage · Vertou</span>
           <h3>L.A Environnement</h3>
-          <p>Un arboriste-grimpeur qui n'avait qu'un flyer. Thème sur mesure dont le premier écran change selon la saison et l'heure du visiteur, tarifs affichés, chantiers en photos réelles, urgences déclarées jour et nuit.</p>
-          <ul class="rz__pts"><li>12 ambiances jour/saison</li><li>Urgences 24 h/24</li><li>Tarifs affichés</li></ul>
+          <p>Un arboriste-grimpeur qui n'avait qu'un flyer. Thème sur mesure dont le premier écran change selon la saison et l'heure du visiteur, chantiers en photos réelles, tarif adapté aux revenus expliqué sans détour, urgences déclarées jour et nuit.</p>
+          <ul class="rz__pts"><li>12 ambiances jour/saison</li><li>Urgences 24 h/24</li><li>Tarif adapté aux revenus</li></ul>
           <div class="rz__liens"><a href="https://elagage-vertou.fr/" target="_blank" rel="noopener">Voir le site ↗</a><a href="<?php echo esc_url( home_url( '/realisation-elagage' ) ); ?>">L'étude de cas →</a><a class="rz__avis" href="https://www.google.com/maps/search/?api=1&amp;query=L.A%20Environnement%20%C3%A9lagage%20Vertou" target="_blank" rel="noopener">Avis Google ↗</a></div>
         </div>
       </article>

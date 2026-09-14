@@ -774,7 +774,7 @@ function ag_articles() { return array(
 
 <blockquote>Un site web professionnel n\'est plus un luxe. C\'est le minimum vital pour exister commercialement en 2025.</blockquote>
 
-<p>C\'est le cas de notre client <strong>L.A Environnement</strong>, arboriste-grimpeur à Vertou. Avant de travailler avec <a href="/services">Alliance Groupe</a>, il n\'avait qu\'un flyer papier : rien en ligne, donc rien à envoyer à quelqu\'un qui hésite, et rien à trouver pour quelqu\'un qui cherche. Aujourd\'hui il a un site qui affiche ses tarifs, montre ses chantiers en photos et prend les urgences jour et nuit — <a href="/realisation-elagage">voir ce qu\'on a fait</a>.</p>
+<p>C\'est le cas de notre client <strong>L.A Environnement</strong>, arboriste-grimpeur à Vertou. Avant de travailler avec <a href="/services">Alliance Groupe</a>, il n\'avait qu\'un flyer papier : rien en ligne, donc rien à envoyer à quelqu\'un qui hésite, et rien à trouver pour quelqu\'un qui cherche. Aujourd\'hui il a un site qui montre ses chantiers en photos, explique sans detour ce que ca coute, et prend les urgences jour et nuit — <a href="/realisation-elagage">voir ce qu\'on a fait</a>.</p>
 
 <h2>Le bouche-à-oreille ne suffit plus</h2>
 

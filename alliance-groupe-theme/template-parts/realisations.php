@@ -14,7 +14,7 @@
                     'url'   => 'https://elagage-vertou.fr/',
                     'img'   => $img_base . 'la-environnement.jpg',
                     'tags'  => ['Élagage & abattage', 'Thème sur mesure', 'SEO local', 'Sécurité incluse'],
-                    'desc'  => 'Site complet pour un arboriste-grimpeur de Vertou : thème WordPress sur mesure dont le premier écran change selon la saison ET l\'heure du visiteur, tarifs affichés, chantiers en photos réelles, urgences 24 h/24 déclarées dans la fiche structurée. Durcissement de sécurité livré avec.',
+                    'desc'  => 'Site complet pour un arboriste-grimpeur de Vertou : thème WordPress sur mesure dont le premier écran change selon la saison ET l\'heure du visiteur, tarif adapté aux revenus expliqué noir sur blanc, chantiers en photos réelles, urgences 24 h/24 déclarées dans la fiche structurée. Durcissement de sécurité livré avec.',
                     'stats' => ['12 ambiances jour/saison', 'Contrastes mesurés (plancher 10:1)', 'Urgences 24 h/24'],
                     'etude' => home_url( '/realisation-elagage' ),
                     'google'=> 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( 'L.A Environnement élagage Vertou' ),
