@@ -2,13 +2,13 @@
 /**
  * realisation-style.php — l'habillage commun des etudes de cas du portfolio.
  *
- * Il vivait en double dans page-realisation-gwen.php ; a la deuxieme etude de
- * cas (L.A Environnement) il fallait choisir entre le recopier et le sortir.
- * Sorti : une seule feuille a corriger le jour ou l'habillage bouge.
+ * « Nos creations » d'Alliance Groupe : chaque site livre a droit a sa page
+ * detaillee, et toutes partagent cette feuille. Une seule a corriger le jour
+ * ou l'habillage bouge, au lieu d'une copie par page.
  *
  * Le bloc `.rp` porte tout — heros, fiche en trois volets, galerie, mise en
- * avant mobile, bande finale. Chaque page peut redefinir --vert (la teinte du
- * halo) pour se rapprocher de la marque qu'elle presente.
+ * avant mobile, bande finale. Chaque page peut redefinir `--halo` pour que le
+ * halo du heros prenne la couleur de la marque qu'elle presente.
  *
  * @package Alliance_Groupe
  */

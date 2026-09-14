@@ -3,9 +3,9 @@
 """
 maquette-devices.py — la vitrine « ordinateur + tablette + telephone » d'un site livre.
 
-Reprend le style deja pose par gwen-maquette.jpg : fond presque noir, halo a la
-couleur du site presente, fenetre de navigateur a la macOS, appareils aux coins
-arrondis poses avec leur ombre. On ajoute la tablette, que Gwen n'avait pas.
+Style maison du portfolio : fond presque noir, halo a la couleur du site
+presente, fenetre de navigateur a la macOS, trois appareils aux coins arrondis
+poses avec leur ombre — ordinateur, tablette, telephone.
 
 Les trois captures viennent du VRAI site, prises aux trois tailles reelles
 (1440x900, 834x1112, 390x844) : c'est une photo de la livraison, pas un dessin.
@@ -20,7 +20,7 @@ Usage :
 import argparse, os
 from PIL import Image, ImageDraw, ImageFilter
 
-L, H = 1800, 1125          # meme format que gwen-maquette.jpg
+L, H = 1800, 1125          # format des vignettes du portfolio
 FOND = (5, 6, 5)
 
 

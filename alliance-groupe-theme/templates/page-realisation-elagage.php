@@ -3,8 +3,8 @@
  * Template Name: Réalisation — L.A Environnement
  *
  * Étude de cas détaillée : elagage-vertou.fr (élagage, abattage et création de
- * jardin, Vertou / Loire-Atlantique). Même habillage que l'étude Gwen, via
- * template-parts/realisation-style.php.
+ * jardin, Vertou / Loire-Atlantique). Habillage commun aux etudes de cas du
+ * portfolio Alliance Groupe : template-parts/realisation-style.php.
  *
  * Tout ce qui est affirmé ici a été relevé sur le site en ligne le 14/09/2026 :
  * en-têtes HTTP, balisage schema.org, scripts de la page, poids reellement
