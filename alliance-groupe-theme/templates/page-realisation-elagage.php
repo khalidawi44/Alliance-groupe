@@ -41,6 +41,34 @@ $exemples = array(
 ?>
 <?php get_template_part( 'template-parts/realisation-style' ); ?>
 <style>
+  /* ── LE FOND DE PAGE : la canopee, en automne ────────────────────────
+     La video est TEINTEE, pas reencodee : sepia + saturation + rotation de
+     teinte transforment le vert d'ete en ambre d'automne, sans un octet de
+     plus et sans ffmpeg. Reglage calibre sur une vraie photo de sous-bois :
+     teinte 33 degres, saturation 0,64 — de l'ambre, pas du jaune fluo.
+
+     Le degrade sous la video est deja automnal : si la video ne charge pas
+     (telephone, reduction de mouvement, reseau coupe), le fond reste juste,
+     il ne devient pas un aplat noir. */
+  .rp{background:transparent}
+  .rp__fond{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;
+     background:radial-gradient(78% 52% at 50% 6%,#3a2412,transparent 66%),
+                radial-gradient(72% 58% at 50% 100%,#241505,transparent 70%),
+                linear-gradient(180deg,#140b04,#0a0603 54%,#120a04)}
+  .rp__fond-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+     opacity:.34;filter:sepia(.75) saturate(2.2) hue-rotate(-14deg) brightness(.95)}
+  .rp__fond-voile{position:absolute;inset:0;
+     background:linear-gradient(180deg,rgba(9,5,2,.80),rgba(6,4,2,.86) 46%,rgba(9,5,2,.82))}
+
+  @media(max-width:960px){
+    /* Comme sur le site du client : pas de video de fond sur telephone.
+       Le degrade d'automne suffit, et le forfait du visiteur est epargne. */
+    .rp__fond-video{display:none}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .rp__fond-video{display:none}
+  }
+
   /* Le halo prend la teinte de la marque présentée — ici le vert du sous-bois.
      C'est `--halo` que lit realisation-style.php ; `--vert` n'y sert a rien. */
   .rp{--halo:rgba(127,176,74,.20)}
@@ -72,12 +100,10 @@ $exemples = array(
   .rp__demo-cadre{position:sticky;top:7vh;height:82vh;max-width:1180px;margin:0 auto;
      border-radius:20px;overflow:hidden;border:1px solid rgba(127,176,74,.28);
      box-shadow:0 70px 130px -60px rgba(0,0,0,.95)}
+  /* Le cadre est une vitre : c'est la canopee de la page qui passe dessous,
+     l'arbre descend par-dessus. Une seule video sur toute la page. */
   .rp__demo-scene{position:absolute;inset:0;overflow:hidden;
-     background:radial-gradient(80% 55% at 50% 8%,#1d4429,transparent 68%),
-                radial-gradient(70% 60% at 50% 100%,#12301c,transparent 72%),
-                linear-gradient(180deg,#0c2416,#071a0f 52%,#0b2114)}
-  .rp__demo-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-     opacity:.42;z-index:1}
+     background:linear-gradient(180deg,rgba(20,11,4,.30),rgba(10,6,3,.52))}
   .rp__demo-lueur{position:absolute;inset:0;z-index:2;pointer-events:none;
      background:radial-gradient(38% 70% at 50% 40%,rgba(169,211,106,.16),transparent 70%)}
   .rp__demo-arbre{position:absolute;left:50%;top:0;z-index:3;width:min(56%,520px);height:auto;
@@ -86,7 +112,11 @@ $exemples = array(
         ca passe inapercu parce qu'elle occupe tout l'ecran ; dans un cadre
         etroit, la coupure se voit. On dissout les deux bords. */
      -webkit-mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);
-             mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent)}
+             mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent);
+     /* L'arbre entre dans la saison de la page : un feuillage vert au milieu
+        d'un sous-bois d'automne se voyait comme un decoupage. Teinte plus
+        legere que celle du fond — il reste le sujet, il ne se fond pas. */
+     filter:sepia(.58) saturate(1.9) hue-rotate(-12deg) brightness(1.06)}
   .rp__demo-voile{position:absolute;inset:0;z-index:4;pointer-events:none;
      background:linear-gradient(180deg,rgba(4,20,12,.34),transparent 30%,rgba(4,20,12,.86))}
   .rp__demo-txt{position:absolute;z-index:5;left:0;right:0;bottom:clamp(24px,5vh,54px);
@@ -103,7 +133,6 @@ $exemples = array(
        L'arbre, lui, reste — c'est lui l'effet. */
     .rp__demo{height:210vh}
     .rp__demo-cadre{height:76vh;border-radius:14px}
-    .rp__demo-video{display:none}
     .rp__demo-arbre{width:min(66%,300px)}
   }
   @media(prefers-reduced-motion:reduce){
@@ -112,7 +141,6 @@ $exemples = array(
     .rp__demo{height:auto}
     .rp__demo-cadre{position:static;height:min(78vh,620px)}
     .rp__demo-arbre{transform:translate3d(-50%,-30%,0)!important}
-    .rp__demo-video{display:none}
   }
   @media(max-width:960px){
     .rp__meca{grid-template-columns:1fr;gap:16px}
@@ -121,6 +149,16 @@ $exemples = array(
 </style>
 
 <div class="rp">
+
+  <!-- La canopee derriere TOUTE la page, en automne. Fixe : elle ne defile
+       pas, c'est le contenu qui passe devant — comme sur le site du client. -->
+  <div class="rp__fond" aria-hidden="true">
+    <video class="rp__fond-video" muted loop playsinline preload="none" data-fond-video>
+      <source src="<?php echo esc_url( $dir . '/assets/video/la-demo-canopee.mp4' ); ?>" type="video/mp4">
+    </video>
+    <div class="rp__fond-voile"></div>
+  </div>
+
 
   <section class="rp__hero">
     <div class="rp__halo"></div>
@@ -180,10 +218,6 @@ $exemples = array(
   <section class="rp__demo" aria-labelledby="rp-demo-titre">
     <div class="rp__demo-cadre">
       <div class="rp__demo-scene">
-        <video class="rp__demo-video" muted loop playsinline preload="none" aria-hidden="true"
-               data-demo-video>
-          <source src="<?php echo esc_url( $dir . '/assets/video/la-demo-canopee.mp4' ); ?>" type="video/mp4">
-        </video>
         <div class="rp__demo-lueur" aria-hidden="true"></div>
         <img class="rp__demo-arbre" data-demo-arbre
              src="<?php echo esc_url( $img . 'la-demo-arbre.webp' ); ?>"
@@ -364,25 +398,34 @@ $exemples = array(
   addEventListener('scroll', demander, { passive: true });
   addEventListener('resize', function(){ mesurer(); demander(); });
 
-  /* La canopee ne se charge et ne tourne que quand la scene est a l'ecran :
-     un demi-megaoctet de video ne doit pas partir pour une section que le
-     visiteur n'atteindra peut-etre jamais. Jamais sur petit ecran — c'est le
-     choix fait sur le site du client, on le respecte ici aussi. */
-  var video = section.querySelector('[data-demo-video]');
-  if (video && !matchMedia('(max-width:960px)').matches && 'IntersectionObserver' in window) {
-    var ob = new IntersectionObserver(function(entrees){
-      entrees.forEach(function(e){
-        if (e.isIntersecting) {
-          if (video.preload !== 'auto') { video.preload = 'auto'; video.load(); }
-          var j = video.play();
-          if (j && j.catch) { j.catch(function(){}); }
-        } else if (!video.paused) {
-          video.pause();
-        }
-      });
-    }, { rootMargin: '200px 0px' });
-    ob.observe(section);
+})();
+
+/* ── LE FOND DE PAGE : la canopee tourne derriere tout ────────────────────
+   Independante de la demo : si un jour la demo disparait, le fond reste.
+   Chargee APRES le reste — un demi-megaoctet de decor ne passe jamais avant
+   le texte. Jamais sur petit ecran ni sous reduction de mouvement : le CSS
+   la masque deja, on evite en plus d'aller la chercher sur le reseau. */
+(function(){
+  var video = document.querySelector('[data-fond-video]');
+  if (!video) { return; }
+  if (matchMedia('(max-width:960px)').matches) { return; }
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
+
+  function lancer(){
+    video.preload = 'auto';
+    video.load();
+    var j = video.play();
+    if (j && j.catch) { j.catch(function(){}); }
   }
+  if (document.readyState === 'complete') { setTimeout(lancer, 250); }
+  else { addEventListener('load', function(){ setTimeout(lancer, 250); }); }
+
+  /* Onglet en arriere-plan : on met en pause. Une video qui tourne dans un
+     onglet invisible, c'est de la batterie pour personne. */
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) { video.pause(); }
+    else { var j = video.play(); if (j && j.catch) { j.catch(function(){}); } }
+  });
 })();
 
 (function(){
