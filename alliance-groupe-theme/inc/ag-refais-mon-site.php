@@ -61,12 +61,14 @@ function ag_refais_generate() {
 		wp_send_json_error( array( 'msg' => $page->get_error_message() ) );
 	}
 
-	$system = "Tu es un directeur artistique web senior. On te donne le contenu texte d'un site d'entreprise existant (souvent daté). "
-		. "Tu produis UNE page d'accueil moderne, unique et crédible pour CETTE entreprise, en te basant sur son vrai métier et sa vraie ville. "
+	$system = "Tu es un directeur artistique web primé. On te donne le contenu texte d'un site d'entreprise existant, souvent daté et amateur. "
+		. "OBJECTIF : produire UNE page d'accueil dont le rendu est MANIFESTEMENT plus moderne, plus professionnel et plus convaincant que l'original — l'effet 'waouh' doit être immédiat et donner envie de l'acheter. "
+		. "Base-toi sur son vrai métier, sa vraie ville et ses vrais services. "
+		. "QUALITÉ VISUELLE EXIGÉE : design 2026, épuré et très aéré (beaucoup d'espace blanc), hiérarchie typographique forte (grand titre), palette premium cohérente avec le métier (2-3 couleurs + dégradés subtils), coins arrondis, ombres douces, boutons bien contrastés. Pense mobile d'abord. "
+		. "STRUCTURE : un hero avec titre bénéfice fort + sous-titre + 2 boutons (principal + secondaire), une bande de 3 atouts (pictos emoji), une section services en 3 cartes, un bloc de réassurance (avis / garantie) et un appel à l'action final avec le téléphone. "
 		. "Contraintes STRICTES de sortie : renvoie UNIQUEMENT un fragment HTML (pas de <html>, <head>, <body>, pas de commentaire, pas de texte hors HTML). "
-		. "Tout le style est en ligne (attribut style=\"...\") ou dans un seul <style> en tête du fragment. AUCUN script, AUCune image externe, AUCUN lien externe. "
-		. "Sois CONCIS et efficace (HTML compact) : un hero avec titre accrocheur + sous-titre + 2 boutons, une bande de 3 atouts, une section services (3 cartes), et un bloc d'appel à l'action. Pas plus. "
-		. "Palette élégante cohérente avec le métier. Textes en français, concrets, orientés bénéfice client. Reste sobre et pro (pas de lorem ipsum).";
+		. "Tout le style est en ligne (attribut style=\"...\") ou dans un seul <style> en tête du fragment. AUCUN script, AUCUNE image externe, AUCUN lien externe (utilise des dégradés/formes CSS et des emojis en guise de visuels). "
+		. "Textes en français, concrets, orientés bénéfice client, jamais de lorem ipsum. Reste crédible et pro, et compact pour tenir en une seule réponse.";
 
 	$user = "Voici le site actuel à moderniser.\nTitre : " . $page['title'] . "\nURL : " . $page['url'] . "\nContenu :\n" . $page['text'];
 
@@ -79,7 +81,7 @@ function ag_refais_generate() {
 	 */
 	$brut = ag_ia_call( $system, $user, array(
 		'model'       => ag_ia_model( 'fast' ),
-		'max_tokens'  => 2800,
+		'max_tokens'  => 3400,
 		'temperature' => 0.7,
 		'timeout'     => 90,
 		'raw'         => true,
