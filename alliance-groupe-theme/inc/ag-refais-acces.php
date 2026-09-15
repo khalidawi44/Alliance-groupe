@@ -4,22 +4,19 @@
  *
  * Deux mécanismes, un seul module :
  *
- * A. MUR D'EMAIL (double opt-in). Le visiteur voit sa maquette immédiatement,
- *    mais floutée. Pour l'obtenir nette, la garder 30 jours et la partager, il
- *    laisse son adresse ; il reçoit un email de confirmation ; le clic sur ce
- *    lien débloque tout. On ne récolte donc que des adresses VALIDÉES, seules
- *    exploitables ensuite pour la prospection (art. L.34-5 CPCE / RGPD).
+ * A. MUR D'EMAIL (verrou réel). Le HTML de la maquette n'est PAS envoyé au
+ *    navigateur tant que le visiteur n'a pas laissé son adresse : à la place,
+ *    un aperçu verrouillé. Dès qu'il laisse son email, la maquette se révèle
+ *    sur place ET le lead est enregistré dans le CRM (statut « intéressé »).
+ *    Un email de confirmation lui donne en plus un lien permanent partageable
+ *    (30 jours). On ne se contente plus d'un flou contournable via les outils
+ *    de développement : l'email est obligatoire pour voir.
  *
  * B. ATTRIBUTION AMBASSADEUR. Si le visiteur est arrivé par le lien d'un
  *    ambassadeur (`?ref=XX`, cookie `ag_ref` déjà posé par ag-espaces.php), le
  *    prospect créé lui est attribué automatiquement. C'est ce qui rend l'outil
  *    utile à l'équipe : chacun a quelque chose à envoyer par SMS, et le lead
  *    lui revient.
- *
- * Le flou est une COURTOISIE, pas un verrou : quelqu'un qui sait ouvrir les
- * outils de développement verra la maquette. Ce n'est pas grave — la valeur
- * réellement réservée est le lien permanent, l'envoi par email et la suite du
- * parcours. Ne jamais présenter ce flou comme une protection.
  *
  * Réutilise : le générateur (ag-refais-mon-site.php), le CRM
  * (ag_prospect_add_record), les emails brandés (ag_email_wrap/_button), les
@@ -76,10 +73,15 @@ add_filter( 'ag_refais_result_payload', function ( $payload, $html, $page ) {
 	) );
 	$payload['token']  = $token;
 	$payload['locked'] = true;
+	// VERROU RÉEL : l'email est OBLIGATOIRE pour voir. On ne renvoie PAS le HTML
+	// de la maquette au navigateur ici ; il sera délivré par ag_refais_optin()
+	// une fois l'adresse laissée (fini le simple flou contournable via les
+	// outils de développement).
+	unset( $payload['html'] );
 	return $payload;
 }, 10, 3 );
 
-/* ── A. Le visiteur laisse son adresse : on envoie la confirmation ───────── */
+/* ── A. Le visiteur laisse son adresse : révélation + capture du lead ─────── */
 function ag_refais_optin() {
 	if ( ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_refais' ) ) {
 		wp_send_json_error( array( 'msg' => 'Session expirée, recharge la page.' ) );
@@ -98,6 +100,62 @@ function ag_refais_optin() {
 
 	$mk['email'] = $email;
 	$mk['name']  = $name;
+
+	/*
+	 * Capture immédiate : dès que l'email est laissé, on crée le lead (statut
+	 * « intéressé ») et on prévient Fabrice — sans attendre le clic de
+	 * confirmation. Le clic dans l'email sert ensuite au lien permanent
+	 * partageable. On ne crée qu'une fois (garde `lead`).
+	 */
+	if ( empty( $mk['lead'] ) ) {
+		$owner_email = '';
+		$owner_name  = '';
+		if ( ! empty( $mk['ref'] ) && function_exists( 'ag_ambassadeur_by_ref' ) ) {
+			$amb = ag_ambassadeur_by_ref( $mk['ref'] );
+			if ( $amb ) {
+				$owner_email = (string) ( $amb['email'] ?? '' );
+				$owner_name  = (string) ( $amb['name'] ?? '' );
+			}
+		}
+		$host = $mk['src'] ? (string) wp_parse_url( $mk['src'], PHP_URL_HOST ) : '';
+		$nom  = $name ? $name : ( $host ? $host : $email );
+		$voir = add_query_arg( 'ag_refais_voir', $token, home_url( '/refais-mon-site' ) );
+
+		if ( function_exists( 'ag_prospect_add_record' ) ) {
+			ag_prospect_add_record( array(
+				'name'        => $nom,
+				'email'       => $email,
+				'website'     => $mk['src'],
+				'status'      => 'interesse',
+				'source'      => 'refais-mon-site',
+				'owner_email' => $owner_email,
+				'owner_name'  => $owner_name,
+				'notes'       => 'Maquette IA générée, email laissé sur le site. Maquette : ' . $voir
+					. ( $owner_email ? ' — amené par ' . $owner_name : '' ),
+			) );
+		}
+		if ( function_exists( 'ag_push' ) ) {
+			ag_push( '🔥 Lead maquette : ' . $email . ( $host ? ' — ' . $host : '' )
+				. ( $owner_name ? ' (via ' . $owner_name . ')' : '' ) );
+		}
+
+		$index = (array) get_option( AG_REFAIS_OPT_INDEX, array() );
+		$index[ strtolower( $email ) ] = array(
+			'token' => $token,
+			'site'  => (string) $mk['src'],
+			'name'  => (string) $name,
+			'ref'   => (string) ( $mk['ref'] ?? '' ),
+			'ts'    => time(),
+		);
+		if ( count( $index ) > 200 ) {
+			uasort( $index, function ( $a, $b ) { return (int) $b['ts'] - (int) $a['ts']; } );
+			$index = array_slice( $index, 0, 200, true );
+		}
+		update_option( AG_REFAIS_OPT_INDEX, $index, false );
+
+		$mk['lead'] = true;
+	}
+
 	ag_refais_put( $token, $mk );
 
 	$lien = add_query_arg( 'ag_refais_ok', $token, home_url( '/refais-mon-site' ) );
@@ -121,31 +179,34 @@ function ag_refais_optin() {
 		. 'Bonjour,</p>'
 		. '<p style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#e8e6e0;">'
 		. 'Voici la maquette que notre IA a imaginée à partir de <strong>' . esc_html( (string) $site ) . '</strong>. '
-		. 'Un seul clic pour la voir en grand, sans flou :</p>'
+		. 'Un seul clic pour la revoir en grand, quand tu veux :</p>'
 		. ag_email_button( 'Voir ma maquette', $lien )
 		. '<p style="font-family:Arial,sans-serif;font-size:13px;line-height:1.6;color:#b0b0bc;">'
 		. 'Ce lien reste valable ' . (int) AG_REFAIS_GARDE_JOURS . ' jours. Tu peux le partager avec qui tu veux.<br>'
 		. 'Rappel : nous n\'avons jamais touché à ton vrai site. C\'est une simulation.</p>'
-		. $offre_html
-		. '<p style="font-family:Arial,sans-serif;font-size:13px;line-height:1.6;color:#7a7a86;">'
-		. 'Si tu n\'as rien demandé, ignore simplement ce message : sans ce clic, ton adresse n\'est pas enregistrée.</p>';
+		. $offre_html;
 
 	$ok = wp_mail(
 		$email,
-		'Ta maquette est prête — un clic pour la voir',
+		'Ta maquette — le lien pour la garder',
 		ag_email_wrap( 'Ta maquette est prête', $corps ),
 		array( 'Content-Type: text/html; charset=UTF-8' )
 	);
 
-	if ( ! $ok ) {
-		wp_send_json_error( array( 'msg' => "L'email n'a pas pu partir. Réessaie dans un instant." ) );
-	}
-	wp_send_json_success( array( 'msg' => 'Regarde ta boîte mail : un clic et la maquette s\'ouvre en grand. Pense aux indésirables.' ) );
+	// VERROU + RÉVÉLATION : on renvoie enfin le HTML de la maquette pour
+	// l'afficher sur place. Même si l'email de confirmation n'a pas pu partir,
+	// le lead est déjà capturé et le visiteur voit sa maquette.
+	wp_send_json_success( array(
+		'html' => (string) $mk['html'],
+		'msg'  => $ok
+			? 'Voici ta maquette 👇 (le lien pour la garder est aussi dans ta boîte mail).'
+			: 'Voici ta maquette 👇',
+	) );
 }
 add_action( 'wp_ajax_ag_refais_optin', 'ag_refais_optin' );
 add_action( 'wp_ajax_nopriv_ag_refais_optin', 'ag_refais_optin' );
 
-/* ── A + B. Le clic dans l'email confirme, crée le lead, attribue, débloque ─ */
+/* ── A + B. Le clic dans l'email confirme, attribue, débloque le lien ─────── */
 function ag_refais_confirme() {
 	if ( empty( $_GET['ag_refais_ok'] ) ) { return; }
 	$token = sanitize_text_field( wp_unslash( $_GET['ag_refais_ok'] ) );
@@ -177,7 +238,9 @@ function ag_refais_confirme() {
 		$host = $mk['src'] ? (string) wp_parse_url( $mk['src'], PHP_URL_HOST ) : '';
 		$nom  = $mk['name'] ? $mk['name'] : ( $host ? $host : $mk['email'] );
 
-		if ( function_exists( 'ag_prospect_add_record' ) ) {
+		// Le lead a déjà été créé au moment où l'email a été laissé (opt-in).
+		// On ne le recrée donc que s'il ne l'a pas été (garde `lead`).
+		if ( empty( $mk['lead'] ) && function_exists( 'ag_prospect_add_record' ) ) {
 			ag_prospect_add_record( array(
 				'name'        => $nom,
 				'email'       => $mk['email'],
@@ -230,7 +293,7 @@ function ag_refais_voir() {
 	$token = sanitize_text_field( wp_unslash( $_GET['ag_refais_voir'] ) );
 	$mk    = ag_refais_get( $token );
 
-	if ( ! $mk || empty( $mk['confirme'] ) ) {
+	if ( ! $mk || empty( $mk['email'] ) ) {
 		wp_safe_redirect( add_query_arg( 'ag_refais_err', 'expire', home_url( '/refais-mon-site' ) ) );
 		exit;
 	}
@@ -398,6 +461,18 @@ add_action( 'wp_footer', function () {
 			}
 			frame.classList.add('agrg-flou');
 
+			/* VERROU RÉEL : le HTML de la maquette n'est PAS envoyé tant que
+			   l'email n'est pas laissé. On pose un aperçu verrouillé décoratif
+			   à la place ; le vrai rendu arrive après l'email (ag_refais_optin). */
+			try {
+				frame.srcdoc = '<!doctype html><meta charset="utf-8">'
+					+ '<div style="height:100vh;display:flex;align-items:center;justify-content:center;'
+					+ 'background:#0b0b12;color:#d4b45c;font-family:Arial,sans-serif;text-align:center;padding:24px">'
+					+ '<div><div style="font-size:46px">&#128274;</div>'
+					+ '<div style="margin-top:12px;font-weight:700;font-size:18px">Ta maquette est pr&ecirc;te</div>'
+					+ '<div style="margin-top:6px;color:#9aa3b4;font-size:14px">Laisse ton email pour la d&eacute;couvrir</div></div></div>';
+			} catch (err) {}
+
 			var old = host.querySelector('.agrg');
 			if (old) old.remove();
 
@@ -405,13 +480,13 @@ add_action( 'wp_footer', function () {
 			g.className = 'agrg';
 			g.innerHTML =
 				'<div class="agrg__box">'
-				+ '<div class="agrg__t">Ta maquette est prête</div>'
-				+ '<div class="agrg__p">Laisse ton adresse : tu la reçois en grand, nette, avec un lien à garder.</div>'
+				+ '<div class="agrg__t">Ta maquette est prête 🔒</div>'
+				+ '<div class="agrg__p">Laisse ton adresse pour la découvrir tout de suite, en grand — et recevoir le lien pour la garder.</div>'
 				+ '<input type="text" class="agrg-n" placeholder="Ton prénom / entreprise" autocomplete="name">'
 				+ '<input type="email" class="agrg-e" placeholder="Ton email" autocomplete="email" inputmode="email">'
 				+ '<button type="button" class="agrg-go">Voir ma maquette →</button>'
 				+ '<div class="agrg__m" role="status" aria-live="polite"></div>'
-				+ '<div class="agrg__l">Un email de confirmation part immédiatement. Sans ce clic, ton adresse n’est pas enregistrée.</div>'
+				+ '<div class="agrg__l">Ton email nous sert à te recontacter. Rien n’est publié.</div>'
 				+ '</div>';
 			host.appendChild(g);
 
@@ -426,7 +501,7 @@ add_action( 'wp_footer', function () {
 				}
 				go.disabled = true;
 				msg.style.color = '#f4d06f';
-				msg.textContent = 'Envoi en cours…';
+				msg.textContent = 'Un instant…';
 
 				var fd = new FormData();
 				fd.append('action', 'ag_refais_optin'); fd.append('_n', N);
@@ -437,9 +512,18 @@ add_action( 'wp_footer', function () {
 					.then(function(j){
 						go.disabled = false;
 						if (j && j.success) {
-							msg.style.color = '#7cffb0';
-							msg.textContent = j.data.msg;
-							go.style.display = 'none';
+							/* RÉVÉLATION : on injecte enfin le vrai HTML de la
+							   maquette, on retire le flou et le voile. L'email
+							   a bien été obligatoire pour voir. */
+							if (j.data && j.data.html) {
+								try {
+									frame.srcdoc = '<!doctype html><meta charset="utf-8">'
+										+ '<meta name="viewport" content="width=device-width,initial-scale=1">'
+										+ j.data.html;
+								} catch (err) {}
+							}
+							frame.classList.remove('agrg-flou');
+							g.remove();
 						} else {
 							msg.style.color = '#ffb3b3';
 							msg.textContent = (j && j.data && j.data.msg) || 'Erreur, réessaie.';
