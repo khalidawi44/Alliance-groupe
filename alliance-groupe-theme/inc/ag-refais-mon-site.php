@@ -46,8 +46,17 @@ function ag_refais_generate() {
 	if ( ag_refais_rate_hit() ) {
 		wp_send_json_error( array( 'msg' => 'Tu as déjà testé plusieurs sites. Réessaie dans une heure ' ) );
 	}
+
+	/*
+	 * La génération d'une page complète par l'IA peut durer 20-40 s. Sur un
+	 * hébergement mutualisé, PHP est souvent coupé à 30 s (max_execution_time) :
+	 * le visiteur voyait alors « erreur » après l'attente. On relève le plafond
+	 * PHP pour laisser l'appel finir. (Sans effet si l'hôte l'interdit.)
+	 */
+	if ( function_exists( 'set_time_limit' ) ) { @set_time_limit( 120 ); }
+
 	$url  = esc_url_raw( wp_unslash( $_POST['url'] ?? '' ) );
-	$page = ag_ia_fetch_page( $url, 5000 );
+	$page = ag_ia_fetch_page( $url, 3500 );
 	if ( is_wp_error( $page ) ) {
 		wp_send_json_error( array( 'msg' => $page->get_error_message() ) );
 	}
@@ -56,22 +65,21 @@ function ag_refais_generate() {
 		. "Tu produis UNE page d'accueil moderne, unique et crédible pour CETTE entreprise, en te basant sur son vrai métier et sa vraie ville. "
 		. "Contraintes STRICTES de sortie : renvoie UNIQUEMENT un fragment HTML (pas de <html>, <head>, <body>, pas de commentaire, pas de texte hors HTML). "
 		. "Tout le style est en ligne (attribut style=\"...\") ou dans un seul <style> en tête du fragment. AUCUN script, AUCune image externe, AUCUN lien externe. "
-		. "Utilise des dégradés, une belle typographie système, un hero avec titre accrocheur + sous-titre + 2 boutons, une bande de 3 atouts, une section services (3 cartes), et un bloc d'appel à l'action. "
+		. "Sois CONCIS et efficace (HTML compact) : un hero avec titre accrocheur + sous-titre + 2 boutons, une bande de 3 atouts, une section services (3 cartes), et un bloc d'appel à l'action. Pas plus. "
 		. "Palette élégante cohérente avec le métier. Textes en français, concrets, orientés bénéfice client. Reste sobre et pro (pas de lorem ipsum).";
 
 	$user = "Voici le site actuel à moderniser.\nTitre : " . $page['title'] . "\nURL : " . $page['url'] . "\nContenu :\n" . $page['text'];
 
 	/*
-	 * `raw` : on a besoin de `stop_reason`. A 3200 jetons, la maquette de la
-	 * boulangerie testee le 10/09 s'arretait en plein pied de page
-	 * (« <div class="footer"><p>&copy; » puis plus rien) : le visiteur voyait
-	 * SON site refait finir au milieu d'un mot. Le plafond ne coute que ce qui
-	 * est reellement ecrit, donc on le releve ; et quand le modele bute quand
-	 * meme dessus, on coupe proprement au dernier element ferme.
+	 * `raw` : on a besoin de `stop_reason`. Plafond volontairement mesuré
+	 * (2800 jetons) : une maquette plus courte qui S'AFFICHE vaut mieux qu'une
+	 * maquette complète qui dépasse le temps serveur et renvoie une erreur.
+	 * Si le modèle bute quand même sur le plafond, on coupe proprement au
+	 * dernier élément fermé (filet de sécurité plus bas).
 	 */
 	$brut = ag_ia_call( $system, $user, array(
 		'model'       => ag_ia_model( 'fast' ),
-		'max_tokens'  => 5200,
+		'max_tokens'  => 2800,
 		'temperature' => 0.7,
 		'timeout'     => 90,
 		'raw'         => true,
