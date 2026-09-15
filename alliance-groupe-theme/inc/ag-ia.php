@@ -196,6 +196,15 @@ function ag_ia_fetch_page( $url, $max = 6000 ) {
 	// 127./169.254.x) et les ports non standard. Empêche qu'un visiteur anonyme
 	// force le serveur à requêter des ressources internes via « refais mon site ».
 	if ( ! wp_http_validate_url( $url ) ) {
+		// wp_http_validate_url échoue AUSSI quand le domaine n'existe pas (DNS).
+		// On distingue les deux cas pour un message clair : un prospect qui tape
+		// « alliancegroupe.com » au lieu de « alliancegroupe-inc.com » (ou oublie
+		// le .fr) doit lire « site introuvable », pas « adresse interne ».
+		$host = (string) wp_parse_url( $url, PHP_URL_HOST );
+		if ( '' !== $host && ! preg_match( '/^\d{1,3}(\.\d{1,3}){3}$/', $host ) && gethostbyname( $host ) === $host ) {
+			// gethostbyname() renvoie le nom inchangé quand la résolution DNS échoue.
+			return new WP_Error( 'ag_ia_dns', 'Ce site est introuvable — vérifie l\'adresse (faute de frappe, ou .fr / .com oublié ?).' );
+		}
 		return new WP_Error( 'ag_ia_ssrf', 'Adresse non autorisée (site interne ou port non standard).' );
 	}
 	$res = wp_remote_get( $url, array(
