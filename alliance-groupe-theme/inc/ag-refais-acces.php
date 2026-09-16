@@ -404,6 +404,21 @@ add_action( 'wp_footer', function () {
 			var frame = d.frame;
 			if (!frame || !frame.parentNode) return;
 
+			/* Colonne « Avant » : le vrai site refuse souvent l'iframe (cadre
+			   blanc). La façade a chargé une CAPTURE (mShots) dans l'iframe
+			   « Avant » ; on la rend responsive en la passant dans un srcdoc
+			   <img> (elle s'affiche alors en pleine largeur, mise à l'échelle). */
+			['agrHomeOld','agr-old'].forEach(function(oid){
+				var o = document.getElementById(oid);
+				if (!o) return;
+				var u = o.getAttribute('src') || '';
+				if (u.indexOf('mshots') === -1) return;
+				o.removeAttribute('src');
+				o.setAttribute('srcdoc', '<!doctype html><meta charset="utf-8">'
+					+ '<body style="margin:0;background:#fff;display:flex;align-items:flex-start;justify-content:center">'
+					+ '<img src="' + u + '" alt="" style="width:100%;height:auto;display:block"></body>');
+			});
+
 			/* On enveloppe l'iframe pour que le mur se pose exactement dessus,
 			   et pas sur le libelle de la colonne. Si l'enveloppe existe deja
 			   (deuxieme generation), on la reutilise. */
