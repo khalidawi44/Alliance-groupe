@@ -127,7 +127,12 @@ function ag_refais_generate() {
 	// On mémorise le contexte pour la capture du lead qui suit.
 	set_transient( 'ag_refais_ctx_' . ag_refais_ip(), array( 'url' => $page['url'], 'title' => $page['title'] ), 2 * HOUR_IN_SECONDS );
 
-	$payload = array( 'html' => $html, 'title' => $page['title'], 'src' => $page['url'] );
+	// Colonne « Avant » : on ne charge PAS le vrai site en iframe (la plupart
+	// des sites l'interdisent via X-Frame-Options/CSP → cadre blanc). On passe
+	// une CAPTURE d'écran (service gratuit mShots de WordPress.com), rendue
+	// responsive côté client par le mur (ag-refais-acces.php).
+	$shot    = 'https://s.wordpress.com/mshots/v1/' . rawurlencode( $page['url'] ) . '?w=1024';
+	$payload = array( 'html' => $html, 'title' => $page['title'], 'src' => $shot, 'src_url' => $page['url'] );
 
 	/**
 	 * Permet d'enrichir la réponse sans toucher au générateur.
