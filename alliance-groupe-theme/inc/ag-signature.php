@@ -93,63 +93,126 @@ if ( ! function_exists( 'ag_sign_redige_contrat' ) ) {
 		$lg = function_exists( 'ag_company_legal' ) ? ag_company_legal() : array();
 		$l  = function ( $k, $def = '' ) use ( $lg ) { return trim( (string) ( $lg[ $k ] ?? $def ) ); };
 
-		$prestataire = array_filter( array(
+		$logo = get_stylesheet_directory_uri() . '/assets/images/logo-header.png';
+		$tel  = trim( (string) get_option( 'ag_wa_pro', '' ) );
+
+		/* Styles EN LIGNE, pas une feuille : ce document est aussi envoye par
+		   courriel, ou aucune feuille de style externe n'est chargee. Un
+		   contrat qui s'affiche en vrac chez le client n'inspire rien. */
+		$or   = '#B8952F';
+		$encre= '#1a1a1e';
+		$gris = '#5b5b66';
+		$h2   = 'font:600 12px/1.4 Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:' . $or . ';margin:26px 0 8px;padding-bottom:5px;border-bottom:1px solid #e3e3e8';
+		$p    = 'font:14px/1.7 Georgia,"Times New Roman",serif;color:' . $encre . ';margin:0 0 10px';
+
+		/* ── En-tete ─────────────────────────────────────────────────── */
+		$h  = '<div style="border-bottom:3px solid ' . $or . ';padding-bottom:16px;margin-bottom:22px;">';
+		$h .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse"><tr>';
+		$h .= '<td style="vertical-align:middle"><img src="' . esc_url( $logo ) . '" alt="' . esc_attr( $l( 'raison', 'Alliance Groupe' ) ) . '" width="190" style="display:block;width:190px;height:auto;border:0"></td>';
+		$h .= '<td style="vertical-align:middle;text-align:right;font:12px/1.65 Arial,sans-serif;color:' . $gris . '">';
+		$h .= '<strong style="display:block;font-size:15px;color:' . $encre . ';margin-bottom:3px">' . esc_html( $l( 'raison', 'Alliance Groupe' ) ) . '</strong>';
+		if ( $l( 'forme' ) )   { $h .= esc_html( $l( 'forme' ) ) . '<br>'; }
+		if ( $l( 'adresse' ) ) { $h .= esc_html( $l( 'adresse' ) ) . '<br>'; }
+		if ( $tel )            { $h .= esc_html( $tel ) . ' · '; }
+		$h .= esc_html( $l( 'email', 'contact@alliancegroupe-inc.com' ) );
+		$h .= '</td></tr></table></div>';
+
+		/* ── Titre et reference ──────────────────────────────────────── */
+		$h .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:8px"><tr>';
+		$h .= '<td style="font:600 24px/1.2 Georgia,serif;color:' . $encre . '">Contrat de prestation</td>';
+		$h .= '<td style="text-align:right;font:12px/1.6 Arial,sans-serif;color:' . $gris . '">'
+			. 'Reference <strong style="color:' . $encre . '">' . esc_html( (string) ( $d['id'] ?? '' ) ) . '</strong><br>'
+			. 'Etabli le ' . esc_html( date_i18n( 'd/m/Y', (int) ( $d['created'] ?? time() ) ) )
+			. '</td></tr></table>';
+
+		/* ── Les parties, cote a cote ────────────────────────────────── */
+		$bloc = function ( $titre, $lignes ) use ( $or, $encre, $gris ) {
+			$o  = '<td width="50%" style="vertical-align:top;padding:14px 16px;background:#faf9f6;border:1px solid #eceae2">';
+			$o .= '<div style="font:600 10px/1.4 Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:' . $or . ';margin-bottom:7px">' . esc_html( $titre ) . '</div>';
+			$o .= '<div style="font:13px/1.65 Arial,sans-serif;color:' . $encre . '">';
+			foreach ( array_filter( $lignes ) as $i => $ligne ) {
+				$o .= ( 0 === $i ? '<strong>' : '' ) . esc_html( (string) $ligne ) . ( 0 === $i ? '</strong>' : '' ) . '<br>';
+			}
+			return $o . '</div></td>';
+		};
+		$h .= '<h2 style="' . $h2 . '">Entre les soussignes</h2>';
+		$h .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:10px 0;margin:0 -10px 6px"><tr>';
+		$h .= $bloc( 'Le prestataire', array(
 			$l( 'raison', 'Alliance Groupe' ),
 			$l( 'forme' ),
 			$l( 'adresse' ),
 			$l( 'siret' ) ? 'SIRET ' . $l( 'siret' ) : '',
-			$l( 'tva' ) ? 'TVA ' . $l( 'tva' ) : '',
-			$l( 'email', 'contact@alliancegroupe-inc.com' ),
+			$l( 'tva' ) ? 'TVA intracommunautaire ' . $l( 'tva' ) : '',
+			$l( 'rcs' ),
+			$l( 'email', '' ),
 		) );
-
-		$client = array_filter( array(
-			(string) ( $d['client_entreprise'] ?? '' ),
-			(string) ( $d['client_nom'] ?? '' ),
+		$h .= $bloc( 'Le client', array(
+			(string) ( $d['client_entreprise'] ?? '' ) ?: (string) ( $d['client_nom'] ?? '' ),
+			( ! empty( $d['client_entreprise'] ) && ! empty( $d['client_nom'] ) ) ? 'Represente par ' . (string) $d['client_nom'] : '',
 			(string) ( $d['client_adresse'] ?? '' ),
 			(string) ( $d['client_email'] ?? '' ),
 			(string) ( $d['client_tel'] ?? '' ),
 		) );
+		$h .= '</tr></table>';
 
-		$h  = '<h1>Contrat de prestation</h1>';
-		$h .= '<p><strong>Reference :</strong> ' . esc_html( (string) ( $d['id'] ?? '' ) ) . '<br>';
-		$h .= '<strong>Etabli le :</strong> ' . esc_html( date_i18n( 'd/m/Y', (int) ( $d['created'] ?? time() ) ) ) . '</p>';
-
-		$h .= '<h2>Entre les parties</h2>';
-		$h .= '<p><strong>Le prestataire</strong><br>' . esc_html( implode( ' · ', $prestataire ) ) . '</p>';
-		$h .= '<p><strong>Le client</strong><br>' . esc_html( implode( ' · ', $client ) ) . '</p>';
-
-		$h .= '<h2>Objet</h2>';
-		$h .= '<p>' . esc_html( (string) ( $d['objet'] ?? '' ) ) . '</p>';
+		/* ── Les articles ────────────────────────────────────────────── */
+		$h .= '<h2 style="' . $h2 . '">Article 1 — Objet</h2>';
+		$h .= '<p style="' . $p . '">' . esc_html( (string) ( $d['objet'] ?? '' ) ) . '</p>';
 		if ( ! empty( $d['details'] ) ) {
-			$h .= '<ul>';
+			$h .= '<ul style="' . $p . ';padding-left:22px">';
 			foreach ( (array) $d['details'] as $ligne ) { $h .= '<li>' . esc_html( (string) $ligne ) . '</li>'; }
 			$h .= '</ul>';
 		}
 
-		$h .= '<h2>Prix et paiement</h2>';
-		$h .= '<p>Montant total : <strong>' . esc_html( (string) ( $d['montant'] ?? '' ) ) . '</strong>'
+		$h .= '<h2 style="' . $h2 . '">Article 2 — Prix et modalites de paiement</h2>';
+		$h .= '<p style="' . $p . '">Montant total : <strong style="font-size:17px;color:' . $or . '">'
+			. esc_html( (string) ( $d['montant'] ?? '' ) ) . '</strong>'
 			. ( ! empty( $d['modalites'] ) ? '<br>' . esc_html( (string) $d['modalites'] ) : '' ) . '</p>';
 
+		$art = 3;
 		if ( ! empty( $d['delai'] ) ) {
-			$h .= '<h2>Delai</h2><p>' . esc_html( (string) $d['delai'] ) . '</p>';
+			$h .= '<h2 style="' . $h2 . '">Article ' . $art++ . ' — Delai d\'execution</h2>';
+			$h .= '<p style="' . $p . '">' . esc_html( (string) $d['delai'] ) . '</p>';
 		}
 
-		$h .= '<h2>Droit de retractation</h2>';
-		$h .= '<p>Lorsque le client est un consommateur au sens du code de la consommation, il dispose d\'un delai de '
+		$h .= '<h2 style="' . $h2 . '">Article ' . $art++ . ' — Droit de retractation</h2>';
+		$h .= '<p style="' . $p . '">Lorsque le client est un consommateur au sens du code de la consommation, il dispose d\'un delai de '
 			. '<strong>quatorze (14) jours</strong> a compter de la conclusion du present contrat pour exercer son droit de '
 			. 'retractation, sans avoir a motiver sa decision. Ce delai s\'exerce par simple courrier ou courriel adresse au '
 			. 'prestataire. Lorsque le client est un professionnel agissant dans le cadre de son activite, ce droit ne '
 			. 's\'applique pas.</p>';
 
-		$h .= '<h2>Conditions generales</h2>';
-		$h .= '<p>Les conditions generales applicables sont celles publiees a l\'adresse '
-			. esc_html( home_url( '/contrat-client' ) ) . ', que le client declare avoir lues et acceptees.</p>';
+		$h .= '<h2 style="' . $h2 . '">Article ' . $art++ . ' — Conditions generales</h2>';
+		$h .= '<p style="' . $p . '">Les conditions generales applicables sont celles publiees a l\'adresse '
+			. '<span style="color:' . $or . '">' . esc_html( home_url( '/contrat-client' ) ) . '</span>, '
+			. 'que le client declare avoir lues et acceptees.</p>';
 
-		$h .= '<h2>Signature</h2>';
-		$h .= '<p>Le present contrat est signe electroniquement. La signature est constituee de la saisie du nom du '
+		$h .= '<h2 style="' . $h2 . '">Article ' . $art . ' — Signature electronique</h2>';
+		$h .= '<p style="' . $p . '">Le present contrat est signe electroniquement. La signature est constituee de la saisie du nom du '
 			. 'signataire, de l\'acceptation expresse des presentes, et de la verification de l\'adresse de courriel du '
 			. 'signataire par un code a usage unique. L\'empreinte numerique du document, la date, l\'heure et l\'adresse '
 			. 'IP du signataire sont conservees a titre de preuve.</p>';
+
+		/* ── Emplacement des signatures ──────────────────────────────── */
+		$h .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:10px 0;margin:30px -10px 0"><tr>'
+			. '<td width="50%" style="vertical-align:top;padding-top:10px;border-top:1px solid #d8d8de;'
+			. 'font:12px/1.7 Arial,sans-serif;color:' . $gris . '">Pour le prestataire<br>'
+			. '<strong style="color:' . $encre . '">' . esc_html( $l( 'raison', 'Alliance Groupe' ) ) . '</strong></td>'
+			. '<td width="50%" style="vertical-align:top;padding-top:10px;border-top:1px solid #d8d8de;'
+			. 'font:12px/1.7 Arial,sans-serif;color:' . $gris . '">Pour le client, precede de « lu et approuve »<br>'
+			. '<strong style="color:' . $encre . '">' . esc_html( (string) ( $d['client_entreprise'] ?: ( $d['client_nom'] ?? '' ) ) ) . '</strong></td>'
+			. '</tr></table>';
+
+		/* ── Pied de page legal ──────────────────────────────────────── */
+		$pied = array_filter( array(
+			$l( 'raison', 'Alliance Groupe' ), $l( 'forme' ), $l( 'adresse' ),
+			$l( 'siret' ) ? 'SIRET ' . $l( 'siret' ) : '',
+			$l( 'tva' ) ? 'TVA ' . $l( 'tva' ) : '',
+			$l( 'rcs' ), $l( 'site' ),
+		) );
+		$h .= '<p style="margin:26px 0 0;padding-top:12px;border-top:1px solid #e3e3e8;'
+			. 'font:10px/1.6 Arial,sans-serif;color:#8a8a94;text-align:center">'
+			. esc_html( implode( ' · ', $pied ) ) . '</p>';
 
 		return $h;
 	}
