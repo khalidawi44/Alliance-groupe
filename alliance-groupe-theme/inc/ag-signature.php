@@ -200,7 +200,7 @@ if ( ! function_exists( 'ag_sign_redige_contrat' ) ) {
 			. '<strong style="color:' . $encre . '">' . esc_html( $l( 'raison', 'Alliance Groupe' ) ) . '</strong></td>'
 			. '<td width="50%" style="vertical-align:top;padding-top:10px;border-top:1px solid #d8d8de;'
 			. 'font:12px/1.7 Arial,sans-serif;color:' . $gris . '">Pour le client, precede de « lu et approuve »<br>'
-			. '<strong style="color:' . $encre . '">' . esc_html( (string) ( $d['client_entreprise'] ?: ( $d['client_nom'] ?? '' ) ) ) . '</strong></td>'
+			. '<strong style="color:' . $encre . '">' . esc_html( (string) ( ( $d['client_entreprise'] ?? '' ) ?: ( $d['client_nom'] ?? '' ) ) ) . '</strong></td>'
 			. '</tr></table>';
 
 		/* ── Pied de page legal ──────────────────────────────────────── */
