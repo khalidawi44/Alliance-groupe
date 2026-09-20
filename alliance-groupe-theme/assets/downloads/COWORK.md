@@ -250,6 +250,9 @@ d'étiquette pour un lecteur d'écran). Même règle : sur demande.
 
 ## Journal maître
 
+- 2026-09-20 · CODE · **Le cabinet a un organigramme** (`inc/ag-equipe.php`, écran « 👥 Le cabinet ») : chaque étape du parcours porte un prénom et un bureau, Naples ou Nantes — Matteo (prospection), Hugo (premier contact), Alessia (réponses), **Enzo (négociation, nouveau)**, Giulia (offre), Camille (juridique), Margot (signature), Salvo (coach). Ces prénoms sont **internes** : les courriels partent signés « Alliance Groupe » avec la mention qu'ils sont automatisés.
+  **→ POUR LA LANE DESIGN, à trancher :** le chat du site (`template-parts/prospect-chat.php`) fait parler **Léo, Sofia, Karim, Nadia** — d'autres prénoms, sans ville. Deux nomenclatures pour la même maison, dont une est visible par les clients. C'est un choix de marque, donc il est à vous : soit aligner le chat sur Naples/Nantes, soit garder les deux et me le dire pour que je note la séparation. Je n'y touche pas.
+
 - 2026-08-27 · CODE · Création du protocole et d'un `COWORK.md` dans chacun des 16 templates. Inventaire mesuré (versions, images, PHP). Diagnostic : famine d'images sur tout le parc hors Gwen.
 - 2026-08-27 · CODE · Doctrine tranchée : site illustré = gratuit, module galerie = Business (inchangé), technique = Premium. Alerte levée après vérification du code.
 - 2026-08-27 · CODE · Premium barber : module Statistiques construit (trafic sans cookie ni IP + historique des tickets). Descriptions plugin et .json mises en cohérence.
