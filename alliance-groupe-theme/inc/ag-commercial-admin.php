@@ -182,10 +182,16 @@ if ( ! function_exists( 'ag_closer_ecran' ) ) {
 					. 'n\'est concerne.</p>',
 					$entetes
 				);
-				$msg = $envoye
-					? 'Message remis au serveur, a destination de ' . esc_html( $dest ) . '. '
-						. 'Le depart n\'est pas une garantie d\'arrivee : allez lire le verdict chez le testeur.'
-					: 'Le serveur a REFUSE d\'envoyer. Rien n\'est parti — a regler avant d\'allumer l\'agent.';
+				$err_env = function_exists( 'ag_smtp_derniere_erreur' ) ? ag_smtp_derniere_erreur() : null;
+				if ( $envoye && ! $err_env ) {
+					$msg = 'Message remis au serveur, a destination de ' . esc_html( $dest ) . '. '
+						. 'Le depart n\'est pas une garantie d\'arrivee : allez lire le verdict chez le testeur. '
+						. 'Si le testeur ne recoit rien, c\'est la sortie du site qui est en cause '
+						. '(voir <strong>Envoi des e-mails</strong>), pas le DNS.';
+				} else {
+					$msg = 'ECHEC de l\'envoi. ' . esc_html( $err_env['message'] ?? 'Le serveur a refuse sans message.' )
+						. ' — a regler dans <strong>Envoi des e-mails</strong> avant d\'allumer l\'agent.';
+				}
 			}
 		}
 
@@ -203,6 +209,16 @@ if ( ! function_exists( 'ag_closer_ecran' ) ) {
 		?>
 		<div class="wrap">
 			<h1>🤝 Agent commercial</h1>
+
+			<?php if ( function_exists( 'ag_smtp_on' ) && ! ag_smtp_on() ) : ?>
+				<div class="notice notice-warning"><p>
+					<strong>La sortie des e-mails n'est pas authentifiee.</strong>
+					Le site remet ses messages a la fonction mail() de PHP, que la plupart des
+					hebergeurs mutualises brident ou coupent — sans le dire. Un agent allume
+					dans ces conditions croit demarcher et ne parle a personne.
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=ag-smtp' ) ); ?>">Regler l'envoi des e-mails</a>.
+				</p></div>
+			<?php endif; ?>
 			<?php if ( $msg ) : ?><div class="notice notice-success"><p><?php echo esc_html( $msg ); ?></p></div><?php endif; ?>
 
 			<div class="notice <?php echo $on ? 'notice-warning' : 'notice-info'; ?>">
