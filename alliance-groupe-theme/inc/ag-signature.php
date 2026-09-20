@@ -121,8 +121,8 @@ if ( ! function_exists( 'ag_sign_redige_contrat' ) ) {
 		$h .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:8px"><tr>';
 		$h .= '<td style="font:600 24px/1.2 Georgia,serif;color:' . $encre . '">Contrat de prestation</td>';
 		$h .= '<td style="text-align:right;font:12px/1.6 Arial,sans-serif;color:' . $gris . '">'
-			. 'Reference <strong style="color:' . $encre . '">' . esc_html( (string) ( $d['id'] ?? '' ) ) . '</strong><br>'
-			. 'Etabli le ' . esc_html( date_i18n( 'd/m/Y', (int) ( $d['created'] ?? time() ) ) )
+			. 'Référence <strong style="color:' . $encre . '">' . esc_html( (string) ( $d['id'] ?? '' ) ) . '</strong><br>'
+			. 'Établi le ' . esc_html( date_i18n( 'd/m/Y', (int) ( $d['created'] ?? time() ) ) )
 			. '</td></tr></table>';
 
 		/* ── Les parties, cote a cote ────────────────────────────────── */
@@ -135,7 +135,7 @@ if ( ! function_exists( 'ag_sign_redige_contrat' ) ) {
 			}
 			return $o . '</div></td>';
 		};
-		$h .= '<h2 style="' . $h2 . '">Entre les soussignes</h2>';
+		$h .= '<h2 style="' . $h2 . '">Entre les soussignés</h2>';
 		$h .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:10px 0;margin:0 -10px 6px"><tr>';
 		$h .= $bloc( 'Le prestataire', array(
 			$l( 'raison', 'Alliance Groupe' ),
@@ -148,7 +148,7 @@ if ( ! function_exists( 'ag_sign_redige_contrat' ) ) {
 		) );
 		$h .= $bloc( 'Le client', array(
 			(string) ( $d['client_entreprise'] ?? '' ) ?: (string) ( $d['client_nom'] ?? '' ),
-			( ! empty( $d['client_entreprise'] ) && ! empty( $d['client_nom'] ) ) ? 'Represente par ' . (string) $d['client_nom'] : '',
+			( ! empty( $d['client_entreprise'] ) && ! empty( $d['client_nom'] ) ) ? 'Représenté par ' . (string) $d['client_nom'] : '',
 			(string) ( $d['client_adresse'] ?? '' ),
 			(string) ( $d['client_email'] ?? '' ),
 			(string) ( $d['client_tel'] ?? '' ),
@@ -164,43 +164,65 @@ if ( ! function_exists( 'ag_sign_redige_contrat' ) ) {
 			$h .= '</ul>';
 		}
 
-		$h .= '<h2 style="' . $h2 . '">Article 2 — Prix et modalites de paiement</h2>';
+		$h .= '<h2 style="' . $h2 . '">Article 2 — Prix et modalités de paiement</h2>';
 		$h .= '<p style="' . $p . '">Montant total : <strong style="font-size:17px;color:' . $or . '">'
 			. esc_html( (string) ( $d['montant'] ?? '' ) ) . '</strong>'
 			. ( ! empty( $d['modalites'] ) ? '<br>' . esc_html( (string) $d['modalites'] ) : '' ) . '</p>';
 
 		$art = 3;
 		if ( ! empty( $d['delai'] ) ) {
-			$h .= '<h2 style="' . $h2 . '">Article ' . $art++ . ' — Delai d\'execution</h2>';
+			$h .= '<h2 style="' . $h2 . '">Article ' . $art++ . ' — Délai d\'exécution</h2>';
 			$h .= '<p style="' . $p . '">' . esc_html( (string) $d['delai'] ) . '</p>';
 		}
 
-		$h .= '<h2 style="' . $h2 . '">Article ' . $art++ . ' — Droit de retractation</h2>';
-		$h .= '<p style="' . $p . '">Lorsque le client est un consommateur au sens du code de la consommation, il dispose d\'un delai de '
-			. '<strong>quatorze (14) jours</strong> a compter de la conclusion du present contrat pour exercer son droit de '
-			. 'retractation, sans avoir a motiver sa decision. Ce delai s\'exerce par simple courrier ou courriel adresse au '
-			. 'prestataire. Lorsque le client est un professionnel agissant dans le cadre de son activite, ce droit ne '
+		$h .= '<h2 style="' . $h2 . '">Article ' . $art++ . ' — Droit de rétractation</h2>';
+		$h .= '<p style="' . $p . '">Lorsque le client est un consommateur au sens du code de la consommation, il dispose d\'un délai de '
+			. '<strong>quatorze (14) jours</strong> à compter de la conclusion du présent contrat pour exercer son droit de '
+			. 'rétractation, sans avoir à motiver sa décision. Ce délai s\'exerce par simple courrier ou courriel adressé au '
+			. 'prestataire. Lorsque le client est un professionnel agissant dans le cadre de son activité, ce droit ne '
 			. 's\'applique pas.</p>';
 
-		$h .= '<h2 style="' . $h2 . '">Article ' . $art++ . ' — Conditions generales</h2>';
-		$h .= '<p style="' . $p . '">Les conditions generales applicables sont celles publiees a l\'adresse '
+		$h .= '<h2 style="' . $h2 . '">Article ' . $art++ . ' — Conditions générales</h2>';
+		$h .= '<p style="' . $p . '">Les conditions générales applicables sont celles publiées à l\'adresse '
 			. '<span style="color:' . $or . '">' . esc_html( home_url( '/contrat-client' ) ) . '</span>, '
-			. 'que le client declare avoir lues et acceptees.</p>';
+			. 'que le client déclare avoir lues et acceptées.</p>';
 
-		$h .= '<h2 style="' . $h2 . '">Article ' . $art . ' — Signature electronique</h2>';
-		$h .= '<p style="' . $p . '">Le present contrat est signe electroniquement. La signature est constituee de la saisie du nom du '
-			. 'signataire, de l\'acceptation expresse des presentes, et de la verification de l\'adresse de courriel du '
-			. 'signataire par un code a usage unique. L\'empreinte numerique du document, la date, l\'heure et l\'adresse '
-			. 'IP du signataire sont conservees a titre de preuve.</p>';
+		$h .= '<h2 style="' . $h2 . '">Article ' . $art . ' — Signature électronique</h2>';
+		$h .= '<p style="' . $p . '">Le présent contrat est signé électroniquement. La signature est constituée de la saisie du nom du '
+			. 'signataire, de l\'acceptation expresse des présentes, et de la vérification de l\'adresse de courriel du '
+			. 'signataire par un code à usage unique. L\'empreinte numérique du document, la date, l\'heure et l\'adresse '
+			. 'IP du signataire sont conservées à titre de preuve.</p>';
 
 		/* ── Emplacement des signatures ──────────────────────────────── */
+		/* La signature manuscrite est une MARQUE DE LA MAISON, pas la preuve :
+		   la valeur juridique vient de l'article ci-dessus (code a usage unique
+		   + empreinte + horodatage). Une image scannee, seule, ne signe rien. */
+		$paraphe = get_stylesheet_directory() . '/assets/images/signature-alliance.png';
+		$zone    = 120; /* meme hauteur reservee des deux cotes : les colonnes restent alignees */
+
+		$colonne = function ( $legende, $nom, $image ) use ( $gris, $encre, $zone ) {
+			$o  = '<td width="50%" style="vertical-align:top;padding-top:10px;border-top:1px solid #d8d8de;'
+				. 'font:12px/1.7 Arial,sans-serif;color:' . $gris . '">' . esc_html( $legende );
+			$o .= '<div style="height:' . (int) $zone . 'px">';
+			if ( $image ) {
+				$o .= '<img src="' . esc_url( $image ) . '" alt="Signature" width="150" '
+					. 'style="display:block;width:150px;height:auto;max-height:' . (int) $zone . 'px;border:0;margin-top:2px">';
+			}
+			$o .= '</div>';
+			return $o . '<strong style="color:' . $encre . '">' . esc_html( $nom ) . '</strong></td>';
+		};
+
 		$h .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:10px 0;margin:30px -10px 0"><tr>'
-			. '<td width="50%" style="vertical-align:top;padding-top:10px;border-top:1px solid #d8d8de;'
-			. 'font:12px/1.7 Arial,sans-serif;color:' . $gris . '">Pour le prestataire<br>'
-			. '<strong style="color:' . $encre . '">' . esc_html( $l( 'raison', 'Alliance Groupe' ) ) . '</strong></td>'
-			. '<td width="50%" style="vertical-align:top;padding-top:10px;border-top:1px solid #d8d8de;'
-			. 'font:12px/1.7 Arial,sans-serif;color:' . $gris . '">Pour le client, precede de « lu et approuve »<br>'
-			. '<strong style="color:' . $encre . '">' . esc_html( (string) ( ( $d['client_entreprise'] ?? '' ) ?: ( $d['client_nom'] ?? '' ) ) ) . '</strong></td>'
+			. $colonne(
+				'Pour le prestataire',
+				$l( 'raison', 'Alliance Groupe' ),
+				file_exists( $paraphe ) ? get_stylesheet_directory_uri() . '/assets/images/signature-alliance.png' : ''
+			)
+			. $colonne(
+				'Pour le client, précédé de « lu et approuvé »',
+				(string) ( ( $d['client_entreprise'] ?? '' ) ?: ( $d['client_nom'] ?? '' ) ),
+				''
+			)
 			. '</tr></table>';
 
 		/* ── Pied de page legal ──────────────────────────────────────── */
@@ -265,13 +287,13 @@ if ( ! function_exists( 'ag_sign_creer' ) ) {
 		$lien  = add_query_arg( 't', $dossier['token'], home_url( '/signer' ) );
 		$corps = '<p style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#e8e6e0;">Bonjour,</p>'
 			. '<p style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#e8e6e0;">'
-			. 'Voici le contrat correspondant a ce dont nous avons parle : <strong>' . esc_html( $dossier['objet'] ) . '</strong>, '
+			. 'Voici le contrat correspondant à ce dont nous avons parlé : <strong>' . esc_html( $dossier['objet'] ) . '</strong>, '
 			. 'pour un montant de <strong>' . esc_html( $dossier['montant'] ) . '</strong>.</p>'
 			. ( function_exists( 'ag_email_button' ) ? ag_email_button( 'Lire et signer le contrat', $lien ) : '<p><a href="' . esc_url( $lien ) . '">' . esc_html( $lien ) . '</a></p>' )
 			. '<p style="font-family:Arial,sans-serif;font-size:13px;line-height:1.6;color:#b0b0bc;">'
-			. 'Rien n\'est engage tant que vous n\'avez pas signe. Le lien est valable '
+			. 'Rien n\'est engagé tant que vous n\'avez pas signé. Le lien est valable '
 			. (int) ( AG_SIGN_VALIDITE / DAY_IN_SECONDS ) . ' jours. Si quelque chose ne va pas dans ce document, '
-			. 'repondez simplement a ce message : on le corrige avant signature.</p>';
+			. 'répondez simplement à ce message : on le corrige avant signature.</p>';
 
 		wp_mail(
 			$email,
@@ -330,23 +352,23 @@ if ( ! function_exists( 'ag_sign_sceller' ) ) {
 		if ( ag_sign_contresigne_auto() ) {
 			$dossier['statut']         = 'contresigne';
 			$dossier['contresigne_le'] = time();
-			$dossier['contresigne_par'] = 'automatique (regle activee dans les reglages)';
+			$dossier['contresigne_par'] = 'automatique (règle activée dans les réglages)';
 		}
 		ag_sign_put( $dossier );
 
 		/* Copie aux deux parties : un contrat dont une partie n'a pas
 		   d'exemplaire est un contrat qu'on ne peut pas opposer. */
 		$recap = '<p style="font-family:Arial,sans-serif;font-size:15px;color:#e8e6e0;">'
-			. 'Contrat <strong>' . esc_html( (string) $dossier['id'] ) . '</strong> signe le '
-			. esc_html( date_i18n( 'd/m/Y a H:i', (int) $dossier['preuve']['signe_le'] ) ) . ' par '
+			. 'Contrat <strong>' . esc_html( (string) $dossier['id'] ) . '</strong> signé le '
+			. esc_html( date_i18n( 'd/m/Y à H:i', (int) $dossier['preuve']['signe_le'] ) ) . ' par '
 			. esc_html( (string) $dossier['preuve']['nom_saisi'] ) . '.</p>'
 			. '<p style="font-family:Arial,sans-serif;font-size:13px;color:#b0b0bc;">Empreinte du document (SHA-256) :<br>'
 			. '<code style="font-size:11px;word-break:break-all;">' . esc_html( (string) $dossier['empreinte'] ) . '</code></p>'
 			. '<div style="background:#fff;color:#111;padding:18px;border-radius:8px;font-family:Georgia,serif;">'
 			. wp_kses_post( (string) $dossier['contrat'] ) . '</div>';
 
-		$sujet = 'Contrat signe — ' . (string) $dossier['id'];
-		$html  = function_exists( 'ag_email_wrap' ) ? ag_email_wrap( 'Contrat signe', $recap ) : $recap;
+		$sujet = 'Contrat signé — ' . (string) $dossier['id'];
+		$html  = function_exists( 'ag_email_wrap' ) ? ag_email_wrap( 'Contrat signé', $recap ) : $recap;
 		wp_mail( (string) $dossier['client_email'], $sujet, $html, array( 'Content-Type: text/html; charset=UTF-8' ) );
 		wp_mail( (string) get_option( 'admin_email' ), $sujet, $html, array( 'Content-Type: text/html; charset=UTF-8' ) );
 
@@ -364,7 +386,7 @@ if ( ! function_exists( 'ag_sign_sceller' ) ) {
 				'phone'  => (string) $dossier['client_tel'],
 				'status' => 'client',
 				'source' => 'contrat',
-				'notes'  => 'Contrat ' . (string) $dossier['id'] . ' signe.',
+				'notes'  => 'Contrat ' . (string) $dossier['id'] . ' signé.',
 			) );
 		}
 	}
@@ -391,11 +413,11 @@ add_action( 'template_redirect', function () {
 	$etape  = empty( $dossier['code'] ) ? 1 : 2;
 
 	if ( 'POST' === ( $_SERVER['REQUEST_METHOD'] ?? '' ) && isset( $_POST['_agsn'] ) && wp_verify_nonce( $_POST['_agsn'], 'ag_signer_' . $token ) ) {
-		if ( 'deja' === (string) ( $dossier['statut'] ?? '' ) ) { $erreur = 'Ce contrat est deja signe.'; }
+		if ( 'deja' === (string) ( $dossier['statut'] ?? '' ) ) { $erreur = 'Ce contrat est déjà signé.'; }
 
 		if ( isset( $_POST['etape1'] ) ) {
 			$nom = sanitize_text_field( wp_unslash( $_POST['nom'] ?? '' ) );
-			if ( mb_strlen( $nom ) < 3 )        { $erreur = 'Saisissez votre nom et prenom.'; }
+			if ( mb_strlen( $nom ) < 3 )        { $erreur = 'Saisissez votre nom et prénom.'; }
 			elseif ( empty( $_POST['lu'] ) )    { $erreur = 'Vous devez cocher la case « lu et approuve ».'; }
 			else {
 				$dossier['nom_provisoire'] = $nom;
@@ -441,10 +463,10 @@ add_action( 'template_redirect', function () {
 
 	<?php if ( $signe ) : ?>
 		<div class="f"><div class="ok">
-			<strong>Ce contrat est signe.</strong><br>
-			Signe par <?php echo esc_html( (string) ( $dossier['preuve']['nom_saisi'] ?? '' ) ); ?>
-			le <?php echo esc_html( date_i18n( 'd/m/Y a H:i', (int) ( $dossier['preuve']['signe_le'] ?? time() ) ) ); ?>.<br>
-			Un exemplaire vous a ete envoye par courriel.
+			<strong>Ce contrat est signé.</strong><br>
+			Signé par <?php echo esc_html( (string) ( $dossier['preuve']['nom_saisi'] ?? '' ) ); ?>
+			le <?php echo esc_html( date_i18n( 'd/m/Y à H:i', (int) ( $dossier['preuve']['signe_le'] ?? time() ) ) ); ?>.<br>
+			Un exemplaire vous a été envoyé par courriel.
 		</div>
 		<p class="note">Empreinte du document : <code><?php echo esc_html( (string) $dossier['empreinte'] ); ?></code></p></div>
 
@@ -454,25 +476,25 @@ add_action( 'template_redirect', function () {
 			<?php if ( $erreur ) : ?><div class="err"><?php echo esc_html( $erreur ); ?></div><?php endif; ?>
 
 			<?php if ( 1 === $etape ) : ?>
-				<label for="nom">Vos nom et prenom</label>
+				<label for="nom">Vos nom et prénom</label>
 				<input type="text" id="nom" name="nom" autocomplete="name" required
 					value="<?php echo esc_attr( (string) ( $dossier['client_nom'] ?? '' ) ); ?>">
 				<div class="ck">
 					<input type="checkbox" id="lu" name="lu" value="1" required>
-					<label for="lu" style="margin:0;font-weight:400;">J'ai lu l'integralite du contrat ci-dessus et je l'approuve.</label>
+					<label for="lu" style="margin:0;font-weight:400;">J'ai lu l'intégralité du contrat ci-dessus et je l'approuve.</label>
 				</div>
 				<button type="submit" name="etape1" value="1">Continuer</button>
-				<p class="note">Un code a usage unique sera envoye a
+				<p class="note">Un code à usage unique sera envoyé à
 					<strong><?php echo esc_html( (string) $dossier['client_email'] ); ?></strong>.
-					Il sert a prouver que c'est bien vous qui signez. Rien n'est engage avant cette etape.</p>
+					Il sert à prouver que c'est bien vous qui signez. Rien n'est engagé avant cette étape.</p>
 
 			<?php else : ?>
-				<label for="code">Le code recu a <?php echo esc_html( (string) $dossier['client_email'] ); ?></label>
+				<label for="code">Le code reçu à <?php echo esc_html( (string) $dossier['client_email'] ); ?></label>
 				<input type="text" id="code" name="code" inputmode="numeric" autocomplete="one-time-code"
 					pattern="[0-9]{6}" maxlength="6" required>
 				<button type="submit" name="etape2" value="1">Signer le contrat</button>
-				<p class="note">En validant, vous signez electroniquement ce document. Sont conserves a titre de preuve :
-					votre nom, la date et l'heure, votre adresse IP, et l'empreinte numerique du contrat.</p>
+				<p class="note">En validant, vous signez électroniquement ce document. Sont conservés à titre de preuve :
+					votre nom, la date et l'heure, votre adresse IP, et l'empreinte numérique du contrat.</p>
 			<?php endif; ?>
 		</form>
 	<?php endif; ?>
