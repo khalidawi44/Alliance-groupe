@@ -37,8 +37,7 @@ if ( ! function_exists( 'ag_company_legal' ) ) {
 	function ag_company_legal() {
 		return apply_filters( 'ag_company_legal', array(
 			'raison'   => 'Alliance Groupe',
-			'dirigeant'=> 'la Direction',
-			'signataire'=> 'Fabrice Doucet',
+			'dirigeant'=> 'Fabrice Doucet',
 			'forme'    => 'Entreprise individuelle',
 			'siren'    => '513 593 921',
 			'siret'    => '513 593 921 00010',

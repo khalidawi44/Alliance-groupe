@@ -7,7 +7,7 @@
  */
 get_header();
 $ag_lg = function_exists( 'ag_company_legal' ) ? ag_company_legal() : array(
-	'raison' => 'Alliance Groupe', 'dirigeant' => 'la Direction',
+	'raison' => 'Alliance Groupe', 'dirigeant' => 'Fabrice Doucet',
 	'forme' => 'Entreprise individuelle', 'siren' => '', 'siret' => '', 'tva' => '', 'rcs' => '',
 	'adresse' => '', 'email' => 'contact@alliancegroupe-inc.com', 'site' => 'alliancegroupe-inc.com',
 );

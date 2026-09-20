@@ -218,7 +218,7 @@ if ( ! function_exists( 'ag_sign_redige_contrat' ) ) {
 		   laquelle il signe. Un contrat se signe par une personne, pas par un
 		   logo. Si aucun signataire n'est renseigne, la raison sociale reprend
 		   sa place seule — rien n'est invente. */
-		$signataire = $l( 'signataire' );
+		$signataire = $l( 'signataire' ) ?: $l( 'dirigeant' );
 		$h .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:10px 0;margin:30px -10px 0"><tr>'
 			. $colonne(
 				'Pour le prestataire',
