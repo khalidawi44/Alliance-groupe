@@ -250,6 +250,18 @@ if ( file_exists( $ag_menage_file ) ) {
     require_once $ag_menage_file;
 }
 
+// ── 1c4e-ter. Agent commercial : démarchage autonome, contrat, signature.
+// L'ordre compte : le moteur d'abord, les écrans de pilotage ensuite (ils
+// appellent ag_closer_*() et ag_sign_*() dès le rendu du menu).
+// Tout démarre ÉTEINT : `ag_closer_on` et `ag_sign_contrat_relu` sont à 0 par
+// défaut, donc déployer ce fichier n'envoie rien et n'engage rien.
+foreach ( array( 'ag-closer.php', 'ag-signature.php', 'ag-commercial-admin.php' ) as $ag_com_f ) {
+    $ag_com_p = get_stylesheet_directory() . '/inc/' . $ag_com_f;
+    if ( file_exists( $ag_com_p ) ) {
+        require_once $ag_com_p;
+    }
+}
+
 // ── 1c4f. Témoignages clients sur le site (formulaire + schema, en attendant la fiche Google)
 $ag_temoignages_file = get_stylesheet_directory() . '/inc/ag-temoignages.php';
 if ( file_exists( $ag_temoignages_file ) ) {
