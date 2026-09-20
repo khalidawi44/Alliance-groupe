@@ -387,7 +387,18 @@ if ( ! function_exists( 'ag_sign_sceller' ) ) {
 		wp_mail( (string) $maison, $sujet, $html, array( 'Content-Type: text/html; charset=UTF-8' ) );
 
 		if ( function_exists( 'ag_push' ) ) {
-			ag_push( '✍️ Contrat signe', (string) $dossier['client_nom'] . ' — ' . (string) $dossier['montant'] . ' (' . (string) $dossier['id'] . ')' );
+			/* Quand la contresignature est automatique, cette alerte est le SEUL
+			   moment ou la maison apprend qu'elle est engagee. Elle doit donc
+			   dire l'etat exact de l'affaire, pas seulement « quelqu'un a signe ». */
+			$conclu = ( 'contresigne' === (string) ( $dossier['statut'] ?? '' ) );
+			ag_push(
+				$conclu ? '✅ Affaire conclue' : '✍️ Contrat signe',
+				(string) $dossier['client_nom'] . ' — ' . (string) $dossier['montant']
+					. ' (' . (string) $dossier['id'] . ')'
+					. ( $conclu
+						? "\nContresigne automatiquement : l'affaire est close des deux cotes."
+						: "\nA contresigner : Contrats signes." )
+			);
 		}
 		if ( function_exists( 'ag_activity_log' ) ) {
 			ag_activity_log( '✍️ Contrat ' . (string) $dossier['id'] . ' signe par ' . (string) $dossier['preuve']['nom_saisi'] );
