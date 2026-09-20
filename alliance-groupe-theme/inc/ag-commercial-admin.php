@@ -132,6 +132,23 @@ if ( ! function_exists( 'ag_closer_ecran' ) ) {
 			$msg = 'Tour effectue : ' . (int) $r['envoyes'] . ' message(s) — ' . esc_html( (string) $r['raison'] ) . '.';
 		}
 
+		/* Apercu : on fait ecrire l'agent pour un VRAI prospect, et on n'envoie
+		   rien. Laisser une IA ecrire en votre nom a des inconnus sans avoir
+		   jamais lu une seule de ses phrases, c'est signer un chèque en blanc. */
+		$apercu = null;
+		if ( isset( $_POST['ag_closer_apercu'] ) && check_admin_referer( 'ag_closer' ) ) {
+			foreach ( (array) get_option( 'ag_prospects', array() ) as $p_ap ) {
+				$et_ap = ag_closer_eligible( $p_ap );
+				if ( ! $et_ap ) { continue; }
+				$apercu = ag_closer_redige( $p_ap, $et_ap );
+				$apercu['pour']  = (string) ( $p_ap['name'] ?? '' );
+				$apercu['email'] = (string) ( $p_ap['email'] ?? '' );
+				$apercu['etape'] = (int) ( $p_ap['closer_step'] ?? 0 ) + 1;
+				break;
+			}
+			if ( null === $apercu ) { $msg = 'Aucun prospect eligible : rien a montrer.'; }
+		}
+
 		$on   = ag_closer_on();
 		$jour = (array) get_option( 'ag_closer_jour', array() );
 		$nb   = ( ( $jour['d'] ?? '' ) === gmdate( 'Ymd' ) ) ? (int) ( $jour['n'] ?? 0 ) : 0;
@@ -232,11 +249,37 @@ if ( ! function_exists( 'ag_closer_ecran' ) ) {
 				</table>
 				<p>
 					<button class="button button-primary" name="ag_closer_save" value="1">Enregistrer</button>
+					<button class="button" name="ag_closer_apercu" value="1">Voir ce que l'agent ecrirait</button>
 					<button class="button" name="ag_closer_tour" value="1"
 						onclick="return confirm('Envoyer maintenant les messages dus, dans la limite du plafond du jour ?')">
 						Faire un tour maintenant</button>
 				</p>
+				<p class="description">
+					« Voir ce que l'agent ecrirait » redige pour un vrai prospect et <strong>n'envoie rien</strong>.
+					Lisez-le avant d'allumer : c'est votre nom qui sera au bas de ces messages.
+				</p>
 			</form>
+
+			<?php if ( $apercu ) : ?>
+				<h2>Apercu — rien n'a ete envoye</h2>
+				<div style="max-width:760px;background:#fff;border:1px solid #c3c4c7;border-left:4px solid #D4B45C;padding:18px 22px">
+					<p style="margin:0 0 12px;color:#666;font-size:12px">
+						Destinataire : <strong><?php echo esc_html( $apercu['pour'] ); ?></strong>
+						&lt;<?php echo esc_html( $apercu['email'] ); ?>&gt; · message <?php echo (int) $apercu['etape']; ?> sur 4
+					</p>
+					<p style="margin:0 0 14px"><strong>Objet :</strong> <?php echo esc_html( (string) $apercu['objet'] ); ?></p>
+					<div style="white-space:pre-line;font:15px/1.6 Georgia,serif;border-top:1px solid #eee;padding-top:14px">
+						<?php echo esc_html( (string) $apercu['corps'] ); ?>
+					</div>
+					<p style="margin:16px 0 0;font-size:12px;color:#666;border-top:1px solid #eee;padding-top:12px">
+						S'y ajoutent automatiquement : la mention « message automatise » et le lien d'opposition en un clic.
+					</p>
+				</div>
+				<p class="description" style="max-width:760px">
+					Chaque message est reecrit pour chaque prospect — celui-ci n'est pas un gabarit.
+					Si le ton ne vous va pas, dites-le moi : les consignes de redaction sont modifiables.
+				</p>
+			<?php endif; ?>
 
 			<h2>La sequence</h2>
 			<table class="widefat" style="max-width:860px">
