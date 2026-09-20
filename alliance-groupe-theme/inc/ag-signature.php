@@ -200,7 +200,7 @@ if ( ! function_exists( 'ag_sign_redige_contrat' ) ) {
 		$paraphe = get_stylesheet_directory() . '/assets/images/signature-alliance.png';
 		$zone    = 120; /* meme hauteur reservee des deux cotes : les colonnes restent alignees */
 
-		$colonne = function ( $legende, $nom, $image ) use ( $gris, $encre, $zone ) {
+		$colonne = function ( $legende, $nom, $qualite, $image ) use ( $gris, $encre, $zone ) {
 			$o  = '<td width="50%" style="vertical-align:top;padding-top:10px;border-top:1px solid #d8d8de;'
 				. 'font:12px/1.7 Arial,sans-serif;color:' . $gris . '">' . esc_html( $legende );
 			$o .= '<div style="height:' . (int) $zone . 'px">';
@@ -209,18 +209,27 @@ if ( ! function_exists( 'ag_sign_redige_contrat' ) ) {
 					. 'style="display:block;width:150px;height:auto;max-height:' . (int) $zone . 'px;border:0;margin-top:2px">';
 			}
 			$o .= '</div>';
-			return $o . '<strong style="color:' . $encre . '">' . esc_html( $nom ) . '</strong></td>';
+			$o .= '<strong style="color:' . $encre . '">' . esc_html( $nom ) . '</strong>';
+			if ( $qualite ) { $o .= '<br>' . esc_html( $qualite ); }
+			return $o . '</td>';
 		};
 
+		/* Colonne prestataire : le NOM de qui signe, puis la maison au nom de
+		   laquelle il signe. Un contrat se signe par une personne, pas par un
+		   logo. Si aucun signataire n'est renseigne, la raison sociale reprend
+		   sa place seule — rien n'est invente. */
+		$signataire = $l( 'signataire' );
 		$h .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:10px 0;margin:30px -10px 0"><tr>'
 			. $colonne(
 				'Pour le prestataire',
-				$l( 'raison', 'Alliance Groupe' ),
+				$signataire ?: $l( 'raison', 'Alliance Groupe' ),
+				$signataire ? $l( 'raison', 'Alliance Groupe' ) : '',
 				file_exists( $paraphe ) ? get_stylesheet_directory_uri() . '/assets/images/signature-alliance.png' : ''
 			)
 			. $colonne(
 				'Pour le client, précédé de « lu et approuvé »',
 				(string) ( ( $d['client_entreprise'] ?? '' ) ?: ( $d['client_nom'] ?? '' ) ),
+				'',
 				''
 			)
 			. '</tr></table>';
