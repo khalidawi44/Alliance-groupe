@@ -82,10 +82,18 @@ if ( ! function_exists( 'ag_closer_diagnostic' ) ) {
 
 		/* DKIM — la signature. C'est elle qui manque le plus souvent, et c'est
 		   elle qui pese le plus lourd sur un envoi a froid. */
-		$selecteurs = array( 'default', 'hostingermail1', 'hostingermail2', 'hostingermail-a', 'hostingermail-b',
+		$selecteurs = array( 'default', 'hostingermail1', 'hostingermail2',
+			'hostingermail-a', 'hostingermail-b', 'hostingermail-c',
 			'dkim', 'mail', 'selector1', 'selector2', 'k1', 's1', 's2', 'smtp', 'google', 'mandrill' );
 		foreach ( $selecteurs as $s ) {
-			$rr = (array) @dns_get_record( $s . '._domainkey.' . $domaine, DNS_TXT );
+			$nom = $s . '._domainkey.' . $domaine;
+			/* Deux interrogations, pas une : beaucoup d'hebergeurs (Hostinger,
+			   Google Workspace, Mailchimp...) ne publient PAS la cle en TXT mais
+			   un CNAME qui pointe vers leur cle. Ne chercher qu'en TXT faisait
+			   dire « aucun DKIM » a un domaine correctement signe — et,
+			   symetriquement, ne rien dire d'un domaine qui n'a rien. */
+			$rr = (array) @dns_get_record( $nom, DNS_TXT );
+			if ( empty( $rr ) ) { $rr = (array) @dns_get_record( $nom, DNS_CNAME ); }
 			if ( ! empty( $rr ) ) { $out['dkim'] = $s; break; }
 		}
 		if ( '' === $out['dkim'] ) {
