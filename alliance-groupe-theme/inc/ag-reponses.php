@@ -225,6 +225,35 @@ if ( ! function_exists( 'ag_reponses_traiter' ) ) {
 			}
 		}
 
+		/* ── Enzo : l'objection n'est ni un oui ni un non ────────────────
+		   Une question sans reponse, c'est une vente perdue en silence. Enzo
+		   y repond dans les limites fixees ; s'il obtient l'accord, il passe
+		   la main a Camille — il n'envoie jamais de contrat lui-meme. */
+		$nego = null;
+		if ( null === $contrat && function_exists( 'ag_nego_on' ) && ag_nego_on()
+			&& in_array( $avis['intention'], array( 'question', 'interesse' ), true ) ) {
+
+			$r    = ag_nego_envoyer( $p, $texte );
+			$nego = $r['ok']
+				? 'repondu (echange ' . (int) ( $p['nego_tour'] ?? 1 ) . ')'
+				: 'pas de reponse envoyee : ' . $r['raison'];
+
+			$list[ $index ] = $p;
+			update_option( 'ag_prospects', $list, false );
+
+			if ( $r['ok'] && ! empty( $r['accord'] ) && ag_reponses_contrat_auto()
+				&& function_exists( 'ag_juriste_affaire_depuis_prospect' ) ) {
+
+				$affaire = ag_juriste_affaire_depuis_prospect( $p, ag_reponses_pack() );
+				if ( ! is_wp_error( $affaire ) ) {
+					$res     = ag_juriste_envoyer_contrat( $affaire );
+					$contrat = is_wp_error( $res )
+						? 'bloque : ' . $res->get_error_message()
+						: 'envoye : ' . (string) ( $res['id'] ?? '' );
+				}
+			}
+		}
+
 		if ( function_exists( 'ag_push' ) ) {
 			$titres = array(
 				'achat'     => '🤝 Un prospect dit OUI',
@@ -237,6 +266,7 @@ if ( ! function_exists( 'ag_reponses_traiter' ) ) {
 			ag_push(
 				( $titres[ $avis['intention'] ] ?? '📩 Reponse' ),
 				(string) ( $p['name'] ?? $from ) . ' — ' . $avis['resume']
+					. ( $nego ? "\nEnzo : " . $nego : '' )
 					. ( $contrat ? "\nContrat : " . $contrat : '' )
 					. ( ! $avis['sur'] ? "\n(a verifier : l'intention n'est pas certaine)" : '' )
 			);
@@ -248,6 +278,7 @@ if ( ! function_exists( 'ag_reponses_traiter' ) ) {
 			'intention' => $avis['intention'],
 			'sur'       => (bool) $avis['sur'],
 			'contrat'   => $contrat,
+			'nego'      => $nego,
 		);
 	}
 }

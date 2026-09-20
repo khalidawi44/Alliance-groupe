@@ -30,6 +30,36 @@ if ( ! defined( 'AG_JURISTE_VER' ) ) { define( 'AG_JURISTE_VER', '1.0.0' ); }
 
 /* ── 1. La relecture ─────────────────────────────────────────────────── */
 
+if ( ! function_exists( 'ag_promesses_interdites' ) ) {
+	/**
+	 * Ce que la maison ne promet JAMAIS, ou que ce soit ecrit.
+	 *
+	 * Une position sur Google ne se promet pas : elle depend d'un tiers. Ecrite
+	 * dans un contrat elle devient une obligation de resultat — due ou
+	 * remboursee. Ecrite dans un courriel de negociation, elle sera opposee le
+	 * jour ou le client sera decu. Meme liste pour tout le monde : le juriste
+	 * relit les contrats avec, le negociateur relit ses propres messages avec.
+	 *
+	 * @return array motif (en minuscules) => genre de promesse
+	 */
+	function ag_promesses_interdites() {
+		return array(
+			'1re page'          => 'position sur Google',
+			'premiere page'     => 'position sur Google',
+			'première page'     => 'position sur Google',
+			'top 3'             => 'position sur Google',
+			'1er sur google'    => 'position sur Google',
+			'garanti'           => 'garantie de resultat',
+			'garantie de result'=> 'garantie de resultat',
+			'x fois plus'       => 'promesse chiffree',
+			'% de clients'      => 'promesse chiffree',
+			'doublera'          => 'promesse chiffree',
+			'triplera'          => 'promesse chiffree',
+			'assure de'         => 'garantie de resultat',
+		);
+	}
+}
+
 if ( ! function_exists( 'ag_juriste_relire' ) ) {
 	/**
 	 * Relit une affaire avant qu'elle devienne un contrat.
@@ -121,17 +151,7 @@ if ( ! function_exists( 'ag_juriste_relire' ) ) {
 		   peut pas produire. Dans un contrat c'est pire qu'ailleurs — une
 		   promesse de resultat devient une obligation de resultat. */
 		$tout = mb_strtolower( $objet . ' ' . implode( ' ', (array) ( $d['details'] ?? array() ) ) . ' ' . (string) ( $d['modalites'] ?? '' ) );
-		foreach ( array(
-			'1re page'          => 'position sur Google',
-			'premiere page'     => 'position sur Google',
-			'top 3'             => 'position sur Google',
-			'1er sur google'    => 'position sur Google',
-			'garanti'           => 'garantie de resultat',
-			'garantie de result'=> 'garantie de resultat',
-			'x fois plus'       => 'promesse chiffree',
-			'% de clients'      => 'promesse chiffree',
-			'doublera'          => 'promesse chiffree',
-		) as $motif => $genre ) {
+		foreach ( ag_promesses_interdites() as $motif => $genre ) {
 			if ( false !== mb_strpos( $tout, $motif ) ) {
 				$bloquants[] = 'Promesse de resultat detectee (« ' . $motif . ' » — ' . $genre . '). '
 					. 'Ecrite dans un contrat, elle devient une obligation de resultat : vous la devrez, ou vous rembourserez.';
