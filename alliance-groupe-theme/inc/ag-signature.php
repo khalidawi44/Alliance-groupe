@@ -379,7 +379,12 @@ if ( ! function_exists( 'ag_sign_sceller' ) ) {
 		$sujet = 'Contrat signé — ' . (string) $dossier['id'];
 		$html  = function_exists( 'ag_email_wrap' ) ? ag_email_wrap( 'Contrat signé', $recap ) : $recap;
 		wp_mail( (string) $dossier['client_email'], $sujet, $html, array( 'Content-Type: text/html; charset=UTF-8' ) );
-		wp_mail( (string) get_option( 'admin_email' ), $sujet, $html, array( 'Content-Type: text/html; charset=UTF-8' ) );
+		/* L'exemplaire de la maison part ou partent TOUTES les alertes du site
+		   (devis, leads, ventes), pas sur l'adresse d'administration de
+		   WordPress : un contrat signe qui atterrit dans une boite qu'on ne
+		   releve pas, c'est un contrat qu'on decouvre trop tard. */
+		$maison = apply_filters( 'ag_calendar_notify_email', get_option( 'ag_calendar_email', 'advise.alliance.group@gmail.com' ) );
+		wp_mail( (string) $maison, $sujet, $html, array( 'Content-Type: text/html; charset=UTF-8' ) );
 
 		if ( function_exists( 'ag_push' ) ) {
 			ag_push( '✍️ Contrat signe', (string) $dossier['client_nom'] . ' — ' . (string) $dossier['montant'] . ' (' . (string) $dossier['id'] . ')' );

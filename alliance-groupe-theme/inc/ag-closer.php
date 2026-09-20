@@ -140,12 +140,18 @@ add_action( 'template_redirect', function () {
 		ag_activity_log( '🚫 Opposition : ' . ( $nom ? $nom : $id ) . ' ne sera plus contacte.' );
 	}
 
+	/* Page vue par quelqu'un qui vient de nous dire stop. C'est la page la plus
+	   sensible de toute la chaine : elle doit donner l'adresse PUBLIQUE de la
+	   maison, pas l'adresse d'administration du site. */
+	$lg_stop   = function_exists( 'ag_company_legal' ) ? (array) ag_company_legal() : array();
+	$mail_stop = trim( (string) ( $lg_stop['email'] ?? '' ) ) ?: (string) get_option( 'admin_email' );
+
 	nocache_headers();
 	wp_die(
-		'<p style="font:16px/1.6 system-ui;max-width:34em">C\'est fait. Votre adresse est retiree : vous ne recevrez plus aucun message de notre part.</p>'
-		. '<p style="font:14px/1.6 system-ui;color:#666;max-width:34em">Aucune autre action n\'est necessaire. Si vous receviez malgre tout un message apres aujourd\'hui, ecrivez a '
-		. esc_html( (string) get_option( 'admin_email' ) ) . ' : ce serait une erreur de notre part, et nous la corrigerions.</p>',
-		'Vous ne serez plus contacte', array( 'response' => 200 )
+		'<p style="font:16px/1.6 system-ui;max-width:34em">C\'est fait. Votre adresse est retirée : vous ne recevrez plus aucun message de notre part.</p>'
+		. '<p style="font:14px/1.6 system-ui;color:#666;max-width:34em">Aucune autre action n\'est nécessaire. Si vous receviez malgré tout un message après aujourd\'hui, écrivez à '
+		. esc_html( $mail_stop ) . ' : ce serait une erreur de notre part, et nous la corrigerions.</p>',
+		'Vous ne serez plus contacté', array( 'response' => 200 )
 	);
 }, 1 );
 
