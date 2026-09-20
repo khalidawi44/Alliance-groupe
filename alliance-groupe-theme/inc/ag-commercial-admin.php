@@ -28,6 +28,76 @@ add_action( 'admin_menu', function () {
 	);
 }, 30 );
 
+/* ── Controle avant vol : le domaine est-il en etat d'envoyer ? ──────── */
+
+if ( ! function_exists( 'ag_closer_diagnostic' ) ) {
+	/**
+	 * Verifie l'authentification email du domaine d'envoi.
+	 *
+	 * Pourquoi c'est dans le chemin critique : un demarchage a froid depuis un
+	 * domaine sans DKIM part en indesirables, et surtout il abime la
+	 * reputation de TOUT le domaine. Ce ne sont pas les emails de prospection
+	 * qu'on perd alors — ce sont les devis, les factures et les cles de
+	 * licence, qui cessent d'arriver sans que personne ne comprenne pourquoi.
+	 * Le mal est lent a faire et tres lent a defaire.
+	 *
+	 * @param string $domaine Le domaine reellement utilise a l'envoi.
+	 * @return array array( 'spf'=>..., 'dmarc'=>..., 'dkim'=>..., 'ok'=>bool, 'graves'=>string[] )
+	 */
+	function ag_closer_diagnostic( $domaine ) {
+		$domaine = trim( strtolower( (string) $domaine ) );
+		$out = array( 'domaine' => $domaine, 'spf' => '', 'dmarc' => '', 'dkim' => '', 'graves' => array(), 'tiedes' => array() );
+		if ( '' === $domaine || ! function_exists( 'dns_get_record' ) ) {
+			$out['graves'][] = 'Impossible d\'interroger le DNS depuis ce serveur : verification a faire a la main.';
+			$out['ok'] = false;
+			return $out;
+		}
+
+		/* SPF — qui a le droit d'envoyer en votre nom. */
+		foreach ( (array) @dns_get_record( $domaine, DNS_TXT ) as $r ) {
+			$t = (string) ( $r['txt'] ?? '' );
+			if ( 0 === stripos( $t, 'v=spf1' ) ) { $out['spf'] = $t; break; }
+		}
+		if ( '' === $out['spf'] ) {
+			$out['graves'][] = 'Aucun SPF : n\'importe qui peut envoyer en votre nom, et vos envois seront refuses.';
+		} elseif ( false !== strpos( $out['spf'], '~all' ) ) {
+			$out['tiedes'][] = 'SPF en « ~all » (tolerant). Acceptable, mais « -all » protege mieux sur un sous-domaine dedie au demarchage.';
+		}
+
+		/* DMARC — ce qu'on demande aux boites de faire des messages douteux. */
+		foreach ( (array) @dns_get_record( '_dmarc.' . $domaine, DNS_TXT ) as $r ) {
+			$t = (string) ( $r['txt'] ?? '' );
+			if ( 0 === stripos( $t, 'v=DMARC1' ) ) { $out['dmarc'] = $t; break; }
+		}
+		if ( '' === $out['dmarc'] ) {
+			$out['graves'][] = 'Aucun DMARC : rien n\'indique aux boites quoi faire d\'un message usurpe.';
+		} else {
+			if ( false !== stripos( $out['dmarc'], 'p=none' ) ) {
+				$out['tiedes'][] = 'DMARC en « p=none » : vous observez, vous ne protegez pas encore.';
+			}
+			if ( false === stripos( $out['dmarc'], 'rua=' ) ) {
+				$out['tiedes'][] = 'DMARC sans « rua= » : aucun rapport ne vous revient, donc vous ne verrez jamais un probleme arriver.';
+			}
+		}
+
+		/* DKIM — la signature. C'est elle qui manque le plus souvent, et c'est
+		   elle qui pese le plus lourd sur un envoi a froid. */
+		$selecteurs = array( 'default', 'hostingermail1', 'hostingermail2', 'hostingermail-a', 'hostingermail-b',
+			'dkim', 'mail', 'selector1', 'selector2', 'k1', 's1', 's2', 'smtp', 'google', 'mandrill' );
+		foreach ( $selecteurs as $s ) {
+			$rr = (array) @dns_get_record( $s . '._domainkey.' . $domaine, DNS_TXT );
+			if ( ! empty( $rr ) ) { $out['dkim'] = $s; break; }
+		}
+		if ( '' === $out['dkim'] ) {
+			$out['graves'][] = 'Aucun DKIM trouve : vos messages ne sont signes par rien. '
+				. 'C\'est le premier critere qui envoie un demarchage a froid en indesirables.';
+		}
+
+		$out['ok'] = empty( $out['graves'] );
+		return $out;
+	}
+}
+
 /* ── Ecran 1 : le demarchage ─────────────────────────────────────────── */
 
 if ( ! function_exists( 'ag_closer_ecran' ) ) {
@@ -36,11 +106,26 @@ if ( ! function_exists( 'ag_closer_ecran' ) ) {
 
 		$msg = '';
 		if ( isset( $_POST['ag_closer_save'] ) && check_admin_referer( 'ag_closer' ) ) {
-			update_option( 'ag_closer_on', empty( $_POST['on'] ) ? 0 : 1, false );
+			/* Le domaine reellement utilise a l'envoi : celui de l'adresse
+			   dediee si elle est renseignee, sinon celui du site. */
+			$from_test = sanitize_email( wp_unslash( $_POST['from_mail'] ?? '' ) );
+			$dom_test  = $from_test ? substr( strrchr( $from_test, '@' ), 1 ) : wp_parse_url( home_url(), PHP_URL_HOST );
+			$diag_test = ag_closer_diagnostic( (string) $dom_test );
+
+			/* On n'arme pas l'agent sur un domaine qui n'est pas en etat, sauf
+			   decision explicite. Ce n'est pas de la prudence de principe :
+			   c'est la delivrabilite des factures qui est en jeu. */
+			$veut = empty( $_POST['on'] ) ? 0 : 1;
+			if ( $veut && ! $diag_test['ok'] && empty( $_POST['malgre_tout'] ) ) {
+				$veut = 0;
+				$msg  = 'Agent NON allume : le domaine d\'envoi n\'est pas en etat (voir le controle ci-dessous). '
+					. 'Corrigez le DNS, ou cochez « j\'allume quand meme » si vous assumez le risque.';
+			}
+			update_option( 'ag_closer_on', $veut, false );
 			update_option( 'ag_closer_cap_jour', max( 1, (int) ( $_POST['cap'] ?? 20 ) ), false );
 			update_option( 'ag_closer_from_mail', sanitize_email( wp_unslash( $_POST['from_mail'] ?? '' ) ), false );
 			update_option( 'ag_closer_from_nom', sanitize_text_field( wp_unslash( $_POST['from_nom'] ?? '' ) ), false );
-			$msg = 'Reglages enregistres.';
+			if ( '' === $msg ) { $msg = 'Reglages enregistres.'; }
 		}
 		if ( isset( $_POST['ag_closer_tour'] ) && check_admin_referer( 'ag_closer' ) ) {
 			$r   = ag_closer_tour();
@@ -80,6 +165,38 @@ if ( ! function_exists( 'ag_closer_ecran' ) ) {
 				</p></div>
 			<?php endif; ?>
 
+			<?php
+			$dom  = $from_mail ? substr( strrchr( $from_mail, '@' ), 1 ) : wp_parse_url( home_url(), PHP_URL_HOST );
+			$diag = ag_closer_diagnostic( (string) $dom );
+			?>
+			<h2>Controle du domaine d'envoi — <code><?php echo esc_html( (string) $dom ); ?></code></h2>
+			<table class="widefat" style="max-width:860px;margin-bottom:14px">
+				<tr><td style="width:22%"><strong>SPF</strong></td>
+					<td><?php echo $diag['spf'] ? '<code>' . esc_html( $diag['spf'] ) . '</code>' : '<span style="color:#b32d2e">absent</span>'; ?></td></tr>
+				<tr><td><strong>DKIM</strong></td>
+					<td><?php echo $diag['dkim']
+						? 'signe (selecteur <code>' . esc_html( $diag['dkim'] ) . '</code>)'
+						: '<span style="color:#b32d2e">absent</span>'; ?></td></tr>
+				<tr><td><strong>DMARC</strong></td>
+					<td><?php echo $diag['dmarc'] ? '<code>' . esc_html( $diag['dmarc'] ) . '</code>' : '<span style="color:#b32d2e">absent</span>'; ?></td></tr>
+			</table>
+			<?php if ( ! empty( $diag['graves'] ) ) : ?>
+				<div class="notice notice-error inline"><p><strong>Le domaine n'est pas en etat d'envoyer du demarchage :</strong></p>
+					<ul style="list-style:disc;margin-left:20px">
+						<?php foreach ( $diag['graves'] as $g ) : ?><li><?php echo esc_html( $g ); ?></li><?php endforeach; ?>
+					</ul>
+					<p>Tant que ce n'est pas corrige, l'agent ne s'allume pas — sauf decision explicite ci-dessous.
+					Ce qui se perd n'est pas le demarchage : c'est la delivrabilite de vos devis et de vos factures.</p>
+				</div>
+			<?php endif; ?>
+			<?php if ( ! empty( $diag['tiedes'] ) ) : ?>
+				<div class="notice notice-warning inline"><p><strong>Ameliorable :</strong></p>
+					<ul style="list-style:disc;margin-left:20px">
+						<?php foreach ( $diag['tiedes'] as $t ) : ?><li><?php echo esc_html( $t ); ?></li><?php endforeach; ?>
+					</ul>
+				</div>
+			<?php endif; ?>
+
 			<table class="widefat" style="max-width:720px;margin-bottom:22px">
 				<tr><td>Prospects que la sequence peut toucher maintenant</td><td><strong><?php echo (int) $eligibles; ?></strong></td></tr>
 				<tr><td>Prospects sans adresse email (hors de portee)</td><td><?php echo (int) $sans_email; ?></td></tr>
@@ -92,6 +209,14 @@ if ( ! function_exists( 'ag_closer_ecran' ) ) {
 					<tr><th scope="row">Agent</th><td>
 						<label><input type="checkbox" name="on" value="1" <?php checked( $on ); ?>> Allume</label>
 						<p class="description">Eteint, rien ne part. Le reglage survit a un deploiement.</p>
+						<?php if ( ! $diag['ok'] ) : ?>
+							<p style="margin-top:10px">
+								<label style="color:#b32d2e">
+									<input type="checkbox" name="malgre_tout" value="1">
+									J'allume quand meme, en connaissant le risque pour la delivrabilite du domaine
+								</label>
+							</p>
+						<?php endif; ?>
 					</td></tr>
 					<tr><th scope="row">Plafond par jour</th><td>
 						<input type="number" name="cap" min="1" max="200" value="<?php echo (int) ag_closer_cap(); ?>">
