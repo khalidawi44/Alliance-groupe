@@ -157,6 +157,38 @@ if ( ! function_exists( 'ag_closer_ecran' ) ) {
 			if ( null === $apercu ) { $msg = 'Aucun prospect eligible : rien a montrer.'; }
 		}
 
+		/* Test d'envoi reel. Le DNS dit ce que le domaine DECLARE ; seul un
+		   message parti pour de bon dit ce que le serveur FAIT. Les deux sont
+		   necessaires : un domaine parfaitement configure peut quand meme
+		   poster des messages non signes si le site ne passe pas par le relais
+		   qui signe. On emprunte exactement le chemin de l'agent (wp_mail). */
+		if ( isset( $_POST['ag_closer_test'] ) && check_admin_referer( 'ag_closer' ) ) {
+			$dest = sanitize_email( wp_unslash( $_POST['ag_closer_test_mail'] ?? '' ) );
+			if ( ! is_email( $dest ) ) {
+				$msg = 'Adresse de test invalide : rien n\'a ete envoye.';
+			} else {
+				list( $t_mail, $t_nom ) = ag_closer_expediteur();
+				$entetes = array(
+					'Content-Type: text/html; charset=UTF-8',
+					'From: ' . $t_nom . ' <' . $t_mail . '>',
+				);
+				$envoye = wp_mail(
+					$dest,
+					'Test de delivrabilite — ' . gmdate( 'd/m/Y H:i' ) . ' UTC',
+					'<p style="font:15px/1.6 Arial,sans-serif">Message de controle envoye par le site, '
+					. 'par le meme chemin que l\'agent commercial.</p>'
+					. '<p style="font:13px/1.6 Arial,sans-serif;color:#666">Il sert a verifier la signature '
+					. 'DKIM, l\'alignement SPF et le DMARC sur un envoi reel. Aucun destinataire reel '
+					. 'n\'est concerne.</p>',
+					$entetes
+				);
+				$msg = $envoye
+					? 'Message remis au serveur, a destination de ' . esc_html( $dest ) . '. '
+						. 'Le depart n\'est pas une garantie d\'arrivee : allez lire le verdict chez le testeur.'
+					: 'Le serveur a REFUSE d\'envoyer. Rien n\'est parti — a regler avant d\'allumer l\'agent.';
+			}
+		}
+
 		$on   = ag_closer_on();
 		$jour = (array) get_option( 'ag_closer_jour', array() );
 		$nb   = ( ( $jour['d'] ?? '' ) === gmdate( 'Ymd' ) ) ? (int) ( $jour['n'] ?? 0 ) : 0;
@@ -265,6 +297,27 @@ if ( ! function_exists( 'ag_closer_ecran' ) ) {
 				<p class="description">
 					« Voir ce que l'agent ecrirait » redige pour un vrai prospect et <strong>n'envoie rien</strong>.
 					Lisez-le avant d'allumer : c'est votre nom qui sera au bas de ces messages.
+				</p>
+
+				<h2>Epreuve du feu — un envoi reel</h2>
+				<p class="description" style="max-width:52em">
+					Les controles ci-dessus lisent le DNS : ils disent ce que le domaine <strong>declare</strong>.
+					Ils ne disent pas ce que ce site <strong>fait</strong> au moment d'envoyer. Un domaine
+					impeccable peut quand meme poster des messages non signes, si le site les depose
+					directement au lieu de passer par le relais qui appose la signature.
+					Un seul moyen de trancher : envoyer pour de vrai et faire lire le resultat.
+				</p>
+				<p>
+					<input type="email" name="ag_closer_test_mail" class="regular-text"
+						placeholder="adresse fournie par mail-tester.com">
+					<button class="button" name="ag_closer_test" value="1">Envoyer un message de test</button>
+				</p>
+				<p class="description">
+					Ouvrez <strong>mail-tester.com</strong>, copiez l'adresse jetable qu'il affiche, collez-la
+					ici, envoyez, puis retournez chez lui cliquer sur « Verifier ». Vous voulez voir
+					<strong>SPF, DKIM et DMARC au vert</strong>. Tant que DKIM ne l'est pas, n'allumez pas l'agent :
+					un demarchage a froid non signe part en indesirables et abime la reputation du domaine
+					pour tous vos autres envois, contrats compris.
 				</p>
 			</form>
 
