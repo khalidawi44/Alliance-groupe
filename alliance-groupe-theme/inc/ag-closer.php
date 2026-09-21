@@ -196,11 +196,6 @@ if ( ! function_exists( 'ag_closer_eligible' ) ) {
 		$interdits = array( 'client', 'refus', 'ne_pas_contacter', 'ignore', 'interesse' );
 		if ( in_array( (string) ( $p['status'] ?? '' ), $interdits, true ) ) { return false; }
 
-		// On ne propose PAS de créer un site à ceux dont c'est le métier :
-		// webmaster, agence web, développeur, SEO… Message ridicule chez eux,
-		// envoi gaspillé, image amateur. On les écarte avant d'écrire.
-		if ( ag_closer_est_pro_web( $p ) ) { return false; }
-
 		$dernier = (int) ( $p['closer_last'] ?? 0 );
 		if ( 0 === $dernier ) { return $seq[ $step ]; }                      // jamais touche
 		if ( ( time() - $dernier ) < 2 * DAY_IN_SECONDS ) { return false; }  // garde-fou absolu
@@ -235,14 +230,45 @@ if ( ! function_exists( 'ag_closer_redige' ) ) {
 			return ag_closer_gabarit( $p, $etape );
 		}
 
-		$systeme = "Tu ecris un email de prospection B2B en francais, pour Alliance Groupe, une petite agence qui cree des sites pour des artisans et des independants.\n"
+		/* L'ANGLE : on ne propose pas la meme chose a tout le monde.
+		   - Un pro du web n'a pas besoin qu'on lui fasse un site : pour lui,
+		     l'angle est la SECURITE (on vend un audit/durcissement), sauf si
+		     son propre site est visiblement a la traine.
+		   - Sans vrai site → creation.
+		   - Avec un vrai site → refonte/amelioration selon ce que le robot a vu.
+		   Le constat factuel (ag-enrichir, deja filtre : jamais de faille
+		   exploitable) guide ce que Hugo peut mentionner. */
+		$pro_web = function_exists( 'ag_closer_est_pro_web' ) && ag_closer_est_pro_web( $p );
+		if ( $pro_web )                { $angle = 'securite'; }
+		elseif ( 'real' !== $etat && ! $site ) { $angle = 'creation'; }
+		elseif ( 'real' !== $etat )    { $angle = 'creation'; }
+		else                           { $angle = 'refonte'; }
+
+		$consigne_angle = '';
+		if ( 'securite' === $angle ) {
+			$consigne_angle = "ANGLE — SECURITE (le destinataire est un professionnel du web ou du numerique) :\n"
+				. "- Ne lui propose PAS de lui creer un site : c'est son metier, ce serait ridicule.\n"
+				. "- Parle-lui d'egal a egal, en confrere technique. Propose un regard de SECURITE sur les sites\n"
+				. "  qu'il gere pour ses propres clients (audit, durcissement), ou sur son infrastructure.\n"
+				. "- INTERDIT : lister des failles precises ou exploitables. Tu peux evoquer un constat de SURFACE\n"
+				. "  visible de tous (pas de certificat, en-tetes manquants) mais JAMAIS un mode operatoire.\n"
+				. "- Si son propre site est visiblement a la traine, tu peux le mentionner avec tact, sans le vexer.\n";
+		} elseif ( 'creation' === $angle ) {
+			$consigne_angle = "ANGLE — CREATION : il n'a pas de vrai site. Propose de lui montrer a quoi ressemblerait le sien.\n";
+		} else {
+			$consigne_angle = "ANGLE — AMELIORATION : il a deja un site. Propose de l'ameliorer sur ce que le constat signale,\n"
+				. "sans denigrer son travail actuel.\n";
+		}
+
+		$systeme = "Tu ecris un email de prospection B2B en francais, pour Alliance Groupe, une petite agence qui cree des sites et securise des sites pour des artisans, des independants et des professionnels.\n"
 			. "REGLES ABSOLUES :\n"
 			. "- Vouvoiement. Le tutoiement est interdit.\n"
 			. "- Aucun chiffre invente : pas de « +320 % », pas de « nos clients gagnent X ». Si tu n'as pas la donnee, tu n'en parles pas.\n"
 			. "- Aucune fausse urgence, aucune fausse familiarite (« comme convenu », « suite a notre echange »). Vous ne vous etes jamais parle.\n"
 			. "- Pas de flatterie creuse, pas de « j'espere que vous allez bien ».\n"
 			. "- Court : un email de prospection long n'est pas lu.\n"
-			. "- Ecris comme un artisan ecrit a un autre artisan, pas comme un service marketing.\n"
+			. "- Ecris comme un professionnel ecrit a un autre, pas comme un service marketing.\n"
+			. $consigne_angle
 			. ( $avocat ? "- Le destinataire est AVOCAT : ton confraternel, sobre, aucune sollicitation agressive, aucune promesse de resultat.\n" : '' )
 			. "SORTIE : premiere ligne « OBJET: ... », puis une ligne vide, puis le corps en texte brut. Pas de HTML, pas de signature (elle est ajoutee ensuite).";
 
