@@ -101,6 +101,30 @@ add_action( 'user_register', function ( $user_id ) {
 	update_user_meta( $user_id, 'ag_prov', $prov );
 }, 20 );
 
+/* Alerte : on ne découvre plus un nouveau compte par hasard. Priorité 30 pour
+   passer APRÈS l'enregistrement de la provenance (priorité 20). */
+add_action( 'user_register', function ( $user_id ) {
+	$u = get_userdata( $user_id );
+	if ( ! $u ) { return; }
+	$roles = (array) $u->roles;
+	// On n'alerte que sur les VRAIS comptes membres (pas un admin créé à la main).
+	if ( ! array_intersect( $roles, array( 'ag_client', 'ag_ambassadeur' ) ) ) { return; }
+
+	$role   = in_array( 'ag_ambassadeur', $roles, true ) ? 'ambassadeur' : 'client';
+	$nom    = $u->display_name ? $u->display_name : $u->user_login;
+	$resume = function_exists( 'ag_prov_resume' ) ? ag_prov_resume( $user_id ) : '';
+
+	$corps = $nom . ' (' . $u->user_email . ') vient d\'ouvrir un compte ' . $role . '.'
+		. ( $resume ? "\n" . $resume : "\n(origine inconnue)" );
+
+	if ( function_exists( 'ag_push' ) ) {
+		ag_push( '👤 Nouveau compte ' . $role, $corps );
+	}
+	if ( function_exists( 'ag_activity_log' ) ) {
+		ag_activity_log( '👤 Nouveau compte ' . $role . ' : ' . $nom . ' — ' . ( $resume ?: 'origine inconnue' ) );
+	}
+}, 30 );
+
 /* ── 3. Le résumé lisible ────────────────────────────────────────────── */
 
 if ( ! function_exists( 'ag_prov_resume' ) ) {

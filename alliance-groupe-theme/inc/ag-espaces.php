@@ -187,6 +187,9 @@ if ( ! function_exists( 'ag_send_member_welcome' ) ) {
 				. '<p>Ton compte client est créé. Définis ton mot de passe pour accéder à ton <strong>espace</strong> et suivre ton projet.</p>'
 				. ag_email_button( 'Définir mon mot de passe', $url )
 				. '<p style="color:#9a9aa5;font-size:13px;">Si le bouton ne marche pas, copie ce lien :<br><span style="color:#cfc7b8;word-break:break-all;">' . esc_url( $url ) . '</span></p>'
+				/* On guide le nouvel inscrit vers la première marche payante (offre
+				   claire, prix affiché, un lien — jamais un contrat caché). */
+				. ( function_exists( 'ag_surcl_cta' ) ? ag_surcl_cta( 'prospect', $name ) : '' )
 				. ( ( function_exists( 'ag_tg_cfg' ) && ag_tg_cfg( 'chan_link' ) ) ? '<p>📣 <strong>Rejoins notre canal Telegram</strong> pour nos offres et nouveautés :</p>' . ag_email_button( 'Rejoindre le canal', ag_tg_cfg( 'chan_link' ) ) : '' );
 		}
 
