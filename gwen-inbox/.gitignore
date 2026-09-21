@@ -1,0 +1,5 @@
+# Photos personnelles (appareil photo) : ne jamais les publier sur GitHub.
+IMG_*
+img_*
+*.HEIC
+*.heic
