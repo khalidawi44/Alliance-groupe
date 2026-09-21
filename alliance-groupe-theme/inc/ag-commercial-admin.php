@@ -133,6 +133,7 @@ if ( ! function_exists( 'ag_closer_ecran' ) ) {
 			update_option( 'ag_closer_cap_jour', max( 1, (int) ( $_POST['cap'] ?? 20 ) ), false );
 			update_option( 'ag_closer_from_mail', sanitize_email( wp_unslash( $_POST['from_mail'] ?? '' ) ), false );
 			update_option( 'ag_closer_from_nom', sanitize_text_field( wp_unslash( $_POST['from_nom'] ?? '' ) ), false );
+			update_option( 'ag_closer_ne_pas_demarcher', sanitize_textarea_field( wp_unslash( $_POST['ne_pas_demarcher'] ?? '' ) ), false );
 			if ( '' === $msg ) { $msg = 'Reglages enregistres.'; }
 		}
 		if ( isset( $_POST['ag_closer_tour'] ) && check_admin_referer( 'ag_closer' ) ) {
@@ -301,6 +302,15 @@ if ( ! function_exists( 'ag_closer_ecran' ) ) {
 					</td></tr>
 					<tr><th scope="row">Nom affiche</th><td>
 						<input type="text" name="from_nom" class="regular-text" value="<?php echo esc_attr( $from_nom ); ?>">
+					</td></tr>
+					<tr><th scope="row">Ne jamais demarcher</th><td>
+						<textarea name="ne_pas_demarcher" rows="4" class="large-text code" placeholder="une adresse ou un domaine par ligne&#10;fabrice.doucet44@gmail.com&#10;exemple.fr"><?php echo esc_textarea( (string) get_option( 'ag_closer_ne_pas_demarcher', '' ) ); ?></textarea>
+						<p class="description">
+							Une adresse (ecartee exactement) ou un domaine entier (sans <code>@</code>) par ligne.
+							<strong>Vos propres adresses sont deja ecartees d'office</strong> (Fabrice, contact@, la boite de
+							notification, l'expediteur) : l'agent ne s'ecrit jamais a lui-meme. Ce champ sert a ecarter en plus
+							des entrees de test ou des contacts que vous ne voulez pas demarcher.
+						</p>
 					</td></tr>
 				</table>
 				<p>

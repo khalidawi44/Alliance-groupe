@@ -176,6 +176,84 @@ add_action( 'template_redirect', function () {
 	);
 }, 1 );
 
+/* ── 2 bis. Les adresses de la MAISON — on ne se demarche pas soi-meme ── */
+
+if ( ! function_exists( 'ag_closer_maison' ) ) {
+	/**
+	 * L'ensemble des adresses qui SONT la maison (Fabrice, le site, les boites
+	 * de notification, l'expediteur du demarchage). Hugo ne doit jamais ecrire
+	 * a l'une d'elles : ce sont nos propres adresses, pas des prospects. Le
+	 * constat qui a declenche ce garde-fou : Hugo a demarche fabrice.doucet44@,
+	 * contact@alliancegroupe-inc.com et l'adresse de notification — nous nous
+	 * ecrivions a nous-memes.
+	 *
+	 * Filtrable (ag_closer_adresses_maison) pour en ajouter par site, et
+	 * completee par l'option `ag_closer_ne_pas_demarcher` (une adresse ou un
+	 * domaine par ligne) que Fabrice remplit lui-meme pour ecarter des entrees
+	 * de test sans toucher au code.
+	 *
+	 * @return array liste d'adresses en minuscules (dedupliquee)
+	 */
+	function ag_closer_maison() {
+		$m = array();
+
+		// Boite de notification de la maison (la ou arrivent devis, contrats…).
+		$m[] = (string) apply_filters( 'ag_calendar_notify_email', get_option( 'ag_calendar_email', 'advise.alliance.group@gmail.com' ) );
+		// Adresse d'administration WordPress.
+		$m[] = (string) get_option( 'admin_email' );
+		// Identite legale publiee (contact@…).
+		if ( function_exists( 'ag_company_legal' ) ) {
+			$lg  = (array) ag_company_legal();
+			$m[] = (string) ( $lg['email'] ?? '' );
+		}
+		// Compte et expediteur SMTP authentifie.
+		if ( function_exists( 'ag_smtp_opt' ) ) {
+			$m[] = ag_smtp_opt( 'user' );
+			$m[] = ag_smtp_opt( 'from' );
+		}
+		// Adresse d'envoi du demarchage lui-meme.
+		list( $from_mail ) = ag_closer_expediteur();
+		$m[] = (string) $from_mail;
+		// Adresses connues du proprietaire (constat du 21/09 : Hugo se les envoyait).
+		$m[] = 'fabrice.doucet44@gmail.com';
+		$m[] = 'advise.alliance.group@gmail.com';
+		$m[] = 'contact@alliancegroupe-inc.com';
+
+		$m = apply_filters( 'ag_closer_adresses_maison', $m );
+
+		$out = array();
+		foreach ( (array) $m as $addr ) {
+			$addr = strtolower( trim( (string) $addr ) );
+			if ( is_email( $addr ) ) { $out[] = $addr; }
+		}
+		return array_values( array_unique( $out ) );
+	}
+}
+
+if ( ! function_exists( 'ag_closer_email_bloque' ) ) {
+	/**
+	 * Cette adresse doit-elle etre ecartee du demarchage ? Vrai si c'est une
+	 * adresse de la maison, ou si elle correspond a une entree (adresse exacte
+	 * ou domaine) de la liste `ag_closer_ne_pas_demarcher` remplie par Fabrice.
+	 */
+	function ag_closer_email_bloque( $email ) {
+		$email = strtolower( trim( (string) $email ) );
+		if ( '' === $email || ! is_email( $email ) ) { return true; } // pas d'adresse valide = on n'ecrit pas
+
+		if ( in_array( $email, ag_closer_maison(), true ) ) { return true; }
+
+		$dom = (string) substr( strrchr( $email, '@' ), 1 );
+		$brut = (string) get_option( 'ag_closer_ne_pas_demarcher', '' );
+		foreach ( preg_split( '/[\r\n,;]+/', $brut ) as $ligne ) {
+			$ligne = strtolower( trim( $ligne ) );
+			if ( '' === $ligne ) { continue; }
+			if ( $ligne === $email ) { return true; }                       // adresse exacte
+			if ( false === strpos( $ligne, '@' ) && $ligne === $dom ) { return true; } // domaine entier
+		}
+		return false;
+	}
+}
+
 /* ── 3. Qui peut etre demarche, et quand ─────────────────────────────── */
 
 if ( ! function_exists( 'ag_closer_eligible' ) ) {
@@ -192,6 +270,7 @@ if ( ! function_exists( 'ag_closer_eligible' ) ) {
 		if ( ! empty( $p['closer_stop'] ) )                 { return false; } // opposition
 		if ( ! empty( $p['replied'] ) )                     { return false; } // il a repondu
 		if ( ! is_email( (string) ( $p['email'] ?? '' ) ) ) { return false; } // rien pour ecrire
+		if ( ag_closer_email_bloque( (string) ( $p['email'] ?? '' ) ) ) { return false; } // la maison ou une adresse ecartee : on ne s'ecrit pas a soi-meme
 
 		$interdits = array( 'client', 'refus', 'ne_pas_contacter', 'ignore', 'interesse' );
 		if ( in_array( (string) ( $p['status'] ?? '' ), $interdits, true ) ) { return false; }
