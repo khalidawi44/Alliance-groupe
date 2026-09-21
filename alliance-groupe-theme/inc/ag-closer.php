@@ -99,6 +99,27 @@ if ( ! function_exists( 'ag_closer_est_avocat' ) ) {
 		return false !== stripos( ( $p['type'] ?? '' ) . ' ' . ( $p['name'] ?? '' ), 'avocat' );
 	}
 }
+if ( ! function_exists( 'ag_closer_est_pro_web' ) ) {
+	/**
+	 * Ce prospect vit-il DEJA du web ? On ne vend pas un site a un webmaster.
+	 * On teste le metier ET le nom (souvent « … Web », « Agence … »).
+	 * Filtrable : ag_closer_metiers_web pour ajuster la liste par site.
+	 */
+	function ag_closer_est_pro_web( $p ) {
+		$mots = apply_filters( 'ag_closer_metiers_web', array(
+			'webmaster', 'web master', 'agence web', 'agence digitale', 'agence de communication',
+			'developpeur web', 'développeur web', 'creation site', 'création site', 'creation de site',
+			'création de site', 'referencement', 'référencement', 'consultant seo', 'freelance web',
+			'webdesign', 'web design', 'integrateur web', 'intégrateur web', 'community manager',
+			'growth', 'marketing digital', 'wordpress',
+		) );
+		$foin = mb_strtolower( ( $p['type'] ?? '' ) . ' ' . ( $p['name'] ?? '' ) );
+		foreach ( $mots as $m ) {
+			if ( false !== mb_strpos( $foin, mb_strtolower( $m ) ) ) { return true; }
+		}
+		return false;
+	}
+}
 
 /* ── 2. Le lien « ne plus me contacter » ─────────────────────────────── */
 
@@ -174,6 +195,11 @@ if ( ! function_exists( 'ag_closer_eligible' ) ) {
 
 		$interdits = array( 'client', 'refus', 'ne_pas_contacter', 'ignore', 'interesse' );
 		if ( in_array( (string) ( $p['status'] ?? '' ), $interdits, true ) ) { return false; }
+
+		// On ne propose PAS de créer un site à ceux dont c'est le métier :
+		// webmaster, agence web, développeur, SEO… Message ridicule chez eux,
+		// envoi gaspillé, image amateur. On les écarte avant d'écrire.
+		if ( ag_closer_est_pro_web( $p ) ) { return false; }
 
 		$dernier = (int) ( $p['closer_last'] ?? 0 );
 		if ( 0 === $dernier ) { return $seq[ $step ]; }                      // jamais touche
