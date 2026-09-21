@@ -227,6 +227,9 @@ if ( ! function_exists( 'ag_closer_redige' ) ) {
 			. ( 'real' === $etat
 				? "Constat : il a un vrai site.\n"
 				: ( $site ? "Constat : ce qu'il a n'est pas un vrai site (page de reseau social, annuaire, ou page vide).\n" : "Constat : rien en ligne.\n" ) )
+			/* Constat factuel produit par la chaine de montage (ag-enrichir),
+			   deja filtre par liste blanche : jamais une faille exploitable. */
+			. apply_filters( 'ag_closer_contexte_extra', '', $p )
 			. "\nIntention de CE message : " . $etape['intention'];
 
 		$opts = array( 'max_tokens' => 700, 'temperature' => 0.75, 'timeout' => 45 );
