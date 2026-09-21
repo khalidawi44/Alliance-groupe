@@ -441,7 +441,9 @@ add_action( 'template_redirect', function () {
 		if ( 'deja' === (string) ( $dossier['statut'] ?? '' ) ) { $erreur = 'Ce contrat est déjà signé.'; }
 
 		if ( isset( $_POST['etape1'] ) ) {
-			$nom = sanitize_text_field( wp_unslash( $_POST['nom'] ?? '' ) );
+			/* Le prospect n'a rien a ecrire : on prend le nom deja connu de l'affaire
+			   (a defaut, son email). Il coche « j'accepte et je signe », c'est tout. */
+			$nom = trim( (string) ( $dossier['client_nom'] ?? '' ) ) ?: trim( (string) ( $dossier['client_email'] ?? '' ) );
 			if ( mb_strlen( $nom ) < 3 )        { $erreur = 'Saisissez votre nom et prénom.'; }
 			elseif ( empty( $_POST['lu'] ) )    { $erreur = 'Vous devez cocher la case « lu et approuve ».'; }
 			else {
@@ -501,14 +503,13 @@ add_action( 'template_redirect', function () {
 			<?php if ( $erreur ) : ?><div class="err"><?php echo esc_html( $erreur ); ?></div><?php endif; ?>
 
 			<?php if ( 1 === $etape ) : ?>
-				<label for="nom">Vos nom et prénom</label>
-				<input type="text" id="nom" name="nom" autocomplete="name" required
-					value="<?php echo esc_attr( (string) ( $dossier['client_nom'] ?? '' ) ); ?>">
+				<label>Vous signez en tant que :</label>
+				<p style="font:1.1rem system-ui;margin:6px 0 0"><strong><?php echo esc_html( trim( (string) ( $dossier['client_nom'] ?? '' ) ) ?: (string) ( $dossier['client_email'] ?? '' ) ); ?></strong></p>
 				<div class="ck">
 					<input type="checkbox" id="lu" name="lu" value="1" required>
-					<label for="lu" style="margin:0;font-weight:400;">J'ai lu l'intégralité du contrat ci-dessus et je l'approuve.</label>
+					<label for="lu" style="margin:0;font-weight:400;">J'ai lu l'intégralité du contrat ci-dessus, je l'accepte et je le signe.</label>
 				</div>
-				<button type="submit" name="etape1" value="1">Continuer</button>
+				<button type="submit" name="etape1" value="1">J'accepte et je signe</button>
 				<p class="note">Un code à usage unique sera envoyé à
 					<strong><?php echo esc_html( (string) $dossier['client_email'] ); ?></strong>.
 					Il sert à prouver que c'est bien vous qui signez. Rien n'est engagé avant cette étape.</p>
