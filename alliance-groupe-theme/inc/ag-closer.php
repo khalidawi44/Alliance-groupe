@@ -416,8 +416,23 @@ if ( ! function_exists( 'ag_closer_envoyer' ) ) {
 
 		$corps_html = '<p style="font-family:Arial,sans-serif;font-size:15px;line-height:1.65;color:#e8e6e0;white-space:pre-line;">'
 			. esc_html( $msg['corps'] ) . '</p>';
-		if ( 0 === (int) ( $p['closer_step'] ?? 0 ) && function_exists( 'ag_email_button' ) ) {
-			$corps_html .= ag_email_button( 'Voir une maquette de mon site', home_url( '/refais-mon-site' ) );
+		/* Les deux outils de la maison, branches sur le site DU prospect :
+		   - 1er mail : la maquette de son site, deja preremplie (un clic, il le voit refait).
+		   - 3e mail (apport de valeur) : l'audit de son site, formulaire prerempli
+		     (il laisse son email pour voir le rapport -> lead capture). Surface only.
+		   Sans site en ligne, ces deux liens n'ont pas de sens : on ne les met pas. */
+		if ( function_exists( 'ag_email_button' ) ) {
+			$etape_idx = (int) ( $p['closer_step'] ?? 0 );
+			$site_p    = trim( (string) ( $p['website'] ?? '' ) );
+			if ( 0 === $etape_idx ) {
+				$lien_maq = $site_p
+					? add_query_arg( 'url', $site_p, home_url( '/refais-mon-site' ) )
+					: home_url( '/refais-mon-site' );
+				$corps_html .= ag_email_button( 'Voir une maquette de mon site', $lien_maq );
+			} elseif ( 2 === $etape_idx && $site_p ) {
+				$lien_audit = add_query_arg( 'url', $site_p, home_url( '/audit-seo' ) );
+				$corps_html .= ag_email_button( 'Voir le detail de ce que j\'ai trouve sur votre site', $lien_audit );
+			}
 		}
 		/* La mention et le lien d'opposition ne sont PAS optionnels : c'est ce
 		   qui separe une prospection d'un spam, en droit comme en fait. */

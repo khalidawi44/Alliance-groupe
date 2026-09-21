@@ -299,6 +299,20 @@ function ag_refais_render() {
 				else{ ok.style.color='#ffb3b3'; ok.textContent=(j&&j.data&&j.data.msg)||'Erreur, réessaie.'; }
 			}).catch(function(){ send.disabled=false; });
 		}); }
+		/* Arrive par un lien (Hugo) : ?url=... -> on prerempli et on lance direct,
+		   le prospect voit SON site refait sans rien retaper. */
+		try{
+			var qs=new URLSearchParams(location.search);
+			var pre=(qs.get('url')||qs.get('site')||'').trim();
+			if(pre){
+				var inp=document.getElementById('agr-url');
+				if(inp){
+					inp.value=pre;
+					if(form.requestSubmit){ form.requestSubmit(); }
+					else{ form.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true})); }
+				}
+			}
+		}catch(e){}
 	})();
 	</script>
 	<?php

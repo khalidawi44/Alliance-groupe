@@ -752,7 +752,15 @@ if ( ! function_exists( 'ag_audit_render' ) ) {
 }
 
 if ( ! function_exists( 'ag_audit_render_form' ) ) {
-	function ag_audit_render_form() { ?>
+	function ag_audit_render_form() {
+		/* Prerempli quand on arrive par un lien (Hugo) : ?url=... (ou ?site=)
+		   remplit l'URL, ?prenom=... le prenom. Le prospect n'a plus qu'a
+		   laisser son email pour voir son rapport — le lead est capture. */
+		$pre_url = '';
+		if ( isset( $_GET['url'] ) )        { $pre_url = esc_url_raw( wp_unslash( $_GET['url'] ) ); }
+		elseif ( isset( $_GET['site'] ) )   { $pre_url = esc_url_raw( wp_unslash( $_GET['site'] ) ); }
+		$pre_prenom = isset( $_GET['prenom'] ) ? sanitize_text_field( wp_unslash( $_GET['prenom'] ) ) : '';
+		?>
 		<section style="background:linear-gradient(180deg,#0a0a0f 0%,#14141c 100%);color:#fff;padding:80px 24px;min-height:80vh">
 			<div style="max-width:680px;margin:0 auto;text-align:center">
 				<span style="display:inline-block;padding:6px 14px;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.4);border-radius:999px;color:#D4B45C;font-size:.82rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:18px">🎁 Cadeau · 0 €</span>
@@ -765,10 +773,10 @@ if ( ! function_exists( 'ag_audit_render_form' ) ) {
 					<input type="text" name="hp_field" value="" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
 
 					<label style="display:flex;flex-direction:column;gap:6px;font-size:.9rem;color:rgba(255,255,255,.7)">URL de votre site *
-						<input type="url" name="site_url" required placeholder="https://monsite.fr" style="padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(212,180,92,.3);border-radius:10px;color:#fff;font-size:1rem">
+						<input type="url" name="site_url" required value="<?php echo esc_attr( $pre_url ); ?>" placeholder="https://monsite.fr" style="padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(212,180,92,.3);border-radius:10px;color:#fff;font-size:1rem">
 					</label>
 					<label style="display:flex;flex-direction:column;gap:6px;font-size:.9rem;color:rgba(255,255,255,.7)">Votre prénom
-						<input type="text" name="prenom" placeholder="Marc" style="padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(212,180,92,.3);border-radius:10px;color:#fff;font-size:1rem">
+						<input type="text" name="prenom" value="<?php echo esc_attr( $pre_prenom ); ?>" placeholder="Marc" style="padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(212,180,92,.3);border-radius:10px;color:#fff;font-size:1rem">
 					</label>
 					<label style="display:flex;flex-direction:column;gap:6px;font-size:.9rem;color:rgba(255,255,255,.7)">Email *
 						<input type="email" name="email" required placeholder="vous@email.fr" style="padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(212,180,92,.3);border-radius:10px;color:#fff;font-size:1rem">
