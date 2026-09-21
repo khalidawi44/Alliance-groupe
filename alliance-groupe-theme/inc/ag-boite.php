@@ -174,7 +174,7 @@ if ( ! function_exists( 'ag_boite_relever' ) ) {
 	 * @return array lus, transmis, ignores, erreur
 	 */
 	function ag_boite_relever() {
-		$bilan = array( 'lus' => 0, 'transmis' => 0, 'ignores' => 0, 'erreur' => '' );
+		$bilan = array( 'lus' => 0, 'transmis' => 0, 'ignores' => 0, 'total' => null, 'erreur' => '' );
 
 		$dispo = ag_boite_dispo();
 		if ( true !== $dispo ) { $bilan['erreur'] = $dispo; return $bilan; }
@@ -202,9 +202,21 @@ if ( ! function_exists( 'ag_boite_relever' ) ) {
 			return $bilan;
 		}
 
+		/* Combien la boite contient-elle, en tout ? Sans ce chiffre, « 0 message
+		   parcouru » veut dire deux choses opposees — la boite est vide, ou la
+		   recherche a echoue — et on ne saurait pas laquelle. */
+		$bilan['total'] = (int) @imap_num_msg( $flux );
+
 		$depuis = gmdate( 'j M Y', time() - ( AG_BOITE_JOURS * DAY_IN_SECONDS ) );
 		$nums   = @imap_search( $flux, 'SINCE "' . $depuis . '"', SE_UID );
-		if ( ! $nums ) { imap_close( $flux ); return $bilan; }
+		if ( ! $nums ) {
+			$err = imap_last_error();
+			imap_errors();
+			if ( $err ) { $bilan['erreur'] = 'Recherche refusee par le serveur : ' . $err; }
+			imap_close( $flux );
+			update_option( 'ag_boite_derniere', time(), false );
+			return $bilan;
+		}
 
 		$nums = array_slice( array_reverse( $nums ), 0, AG_BOITE_MAX );
 		$vus  = ag_boite_vus();
@@ -365,9 +377,16 @@ if ( ! function_exists( 'ag_boite_ecran' ) ) {
 			<?php if ( $bilan ) : ?>
 				<div class="notice notice-<?php echo $bilan['erreur'] ? 'error' : 'success'; ?>"><p>
 					<?php if ( $bilan['erreur'] ) : echo esc_html( $bilan['erreur'] ); else : ?>
-						<?php echo (int) $bilan['lus']; ?> message(s) parcouru(s) ·
+						Boite ouverte : <strong><?php echo (int) $bilan['total']; ?></strong> message(s) au total,
+						dont <?php echo (int) $bilan['lus']; ?> dans la fenetre de <?php echo (int) AG_BOITE_JOURS; ?> jours ·
 						<strong><?php echo (int) $bilan['transmis']; ?></strong> transmis a Alessia ·
 						<?php echo (int) $bilan['ignores']; ?> ignore(s) (expediteur inconnu du fichier).
+						<?php if ( 0 === (int) $bilan['total'] ) : ?>
+							<br><strong>La boite est vide.</strong> Une redirection qui ne garde pas de copie
+							vide la boite a mesure : le courrier part chez vous et ne reste pas ici, donc
+							le site n'a rien a lire. Dans hPanel, la redirection doit <em>conserver une copie</em>
+							dans la boite — sinon le cabinet restera sourd.
+						<?php endif; ?>
 					<?php endif; ?>
 				</p></div>
 			<?php endif; ?>
