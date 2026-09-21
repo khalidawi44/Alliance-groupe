@@ -71,13 +71,28 @@ add_action( 'phpmailer_init', function ( $mail ) {
 	$mail->Password   = ag_smtp_pass();
 	$mail->SMTPSecure = ( 'tls' === ag_smtp_opt( 'secu', 'ssl' ) ) ? 'tls' : 'ssl';
 
-	/* L'expediteur doit appartenir au domaine authentifie, sinon le relais
-	   refuse le message ou le destinataire le juge usurpe. On aligne donc
-	   l'adresse d'envoi sur l'identifiant, sauf si une autre est imposee. */
-	$exp = ag_smtp_opt( 'from' ) ?: ag_smtp_opt( 'user' );
+	/* L'expediteur DOIT appartenir au domaine authentifie. C'est la regle qui
+	   fait tout marcher (ou tout casser) : le relais ne signe (DKIM) et n'aligne
+	   (SPF/DMARC) QUE pour son propre domaine. Une adresse d'un autre domaine —
+	   typiquement un sous-domaine « pro.… » qui n'existe pas comme boite — part
+	   non signee et Gmail la met en quarantaine (elle « n'arrive pas »).
+
+	   Donc : on force l'expediteur sur le domaine de l'identifiant. Si quelqu'un
+	   a saisi une adresse d'un autre domaine, on l'ignore et on retombe sur
+	   l'identifiant. Ce garde-fou empeche de se tirer une balle dans le pied. */
+	$user      = ag_smtp_opt( 'user' );
+	$dom_user  = strtolower( (string) substr( strrchr( $user, '@' ), 1 ) );
+	$exp       = ag_smtp_opt( 'from' ) ?: $user;
+	$dom_exp   = strtolower( (string) substr( strrchr( (string) $exp, '@' ), 1 ) );
+
+	if ( ! is_email( $exp ) || ( $dom_user && $dom_exp !== $dom_user ) ) {
+		$exp = $user; // adresse hors du domaine authentifie : on la refuse
+	}
 	if ( is_email( $exp ) ) {
 		$nom = ag_smtp_opt( 'from_nom' ) ?: get_bloginfo( 'name' );
-		$mail->setFrom( $exp, $nom, false );
+		/* true = ecrase tout From pose en amont (ex. l'adresse « pro.… » d'un
+		   autre ecran) : c'est NOTRE From aligne qui gagne, toujours. */
+		$mail->setFrom( $exp, $nom, true );
 		$mail->Sender = $exp; /* enveloppe : c'est elle que SPF examine */
 	}
 } );
