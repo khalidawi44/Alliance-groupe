@@ -55,9 +55,16 @@ if ( ! function_exists( 'ag_equipe' ) ) {
 				'prenom'  => 'Alessia',
 				'poste'   => 'Reponses entrantes',
 				'bureau'  => 'Naples',
-				'mission' => 'Lit ce que repondent les prospects, comprend l\'intention, range le dossier.',
-				'ecran'   => 'admin.php?page=ag-reponses',
-				'arme'    => function () { return '' !== trim( (string) get_option( 'ag_inbound_token', '' ) ); },
+				'mission' => 'Releve la boite, lit les reponses, comprend l\'intention, range le dossier.',
+				'ecran'   => 'admin.php?page=ag-boite',
+				/* Elle est en poste si on lui APPORTE le courrier : soit le site
+				   releve la boite lui-meme, soit un service pousse les reponses
+				   sur l'adresse technique. Sans l'un des deux, elle ne voit rien
+				   et toute la suite du parcours reste a l'arret. */
+				'arme'    => function () {
+					return ( function_exists( 'ag_boite_on' ) && ag_boite_on() )
+						|| '' !== trim( (string) get_option( 'ag_inbound_token', '' ) );
+				},
 			),
 			'negociation' => array(
 				'prenom'  => 'Enzo',
