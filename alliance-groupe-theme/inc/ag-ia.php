@@ -94,11 +94,41 @@ function ag_ia_ready() {
  * @param array  $opts    max_tokens, model, temperature, tools, tool_choice, messages (override).
  * @return string|WP_Error  Le texte de la réponse, ou WP_Error.
  */
+/**
+ * Compteur d'appels IA du jour + plafond quotidien.
+ *
+ * Places s'arrête à son budget ; l'IA n'avait AUCUN frein. Quand toute la
+ * chaîne tourne seule (Hugo écrit, Enzo négocie, Alessia qualifie), c'est le
+ * seul coût autonome sans coupe-circuit — une boucle ou un pic de volume
+ * partait en facture illimitée. Ce garde-fou compte les appels du jour et
+ * refuse au-delà du plafond. 0 = illimité (comportement d'origine).
+ */
+if ( ! function_exists( 'ag_ia_cap' ) ) {
+	function ag_ia_cap() { return max( 0, (int) get_option( 'ag_ia_cap_jour', 300 ) ); }
+}
+if ( ! function_exists( 'ag_ia_compteur' ) ) {
+	function ag_ia_compteur( $ajout = 0 ) {
+		$j = (array) get_option( 'ag_ia_jour', array() );
+		$auj = gmdate( 'Ymd' );
+		if ( ( $j['d'] ?? '' ) !== $auj ) { $j = array( 'd' => $auj, 'n' => 0 ); }
+		if ( $ajout ) { $j['n'] = (int) ( $j['n'] ?? 0 ) + (int) $ajout; update_option( 'ag_ia_jour', $j, false ); }
+		return (int) ( $j['n'] ?? 0 );
+	}
+}
+
 function ag_ia_call( $system, $user, $opts = array() ) {
 	$key = ag_ia_key();
 	if ( '' === $key ) {
 		return new WP_Error( 'ag_ia_nokey', "L'IA n'est pas encore branchée (clé API Claude manquante)." );
 	}
+
+	// Coupe-circuit dépense : au-delà du plafond du jour, on refuse proprement.
+	$cap = ag_ia_cap();
+	if ( $cap > 0 && ag_ia_compteur() >= $cap ) {
+		return new WP_Error( 'ag_ia_plafond',
+			'Plafond IA du jour atteint (' . $cap . ' appels). Les automates reprendront demain, ou augmentez le plafond dans Réglages.' );
+	}
+	ag_ia_compteur( 1 );
 
 	$messages = isset( $opts['messages'] ) && is_array( $opts['messages'] )
 		? $opts['messages']

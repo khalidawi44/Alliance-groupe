@@ -102,6 +102,12 @@ if ( ! function_exists( 'ag_dir_etat' ) ) {
 			'pret'   => $smtp,
 			'manque' => $smtp ? array() : array( 'L\'envoi des e-mails doit être actif d\'abord.' ),
 		);
+		$e['relance'] = array(
+			'titre'  => 'Relance du chaud (contrats non signés, intéressés)',
+			'actif'  => function_exists( 'ag_rc_on' ) && ag_rc_on(),
+			'pret'   => $smtp,
+			'manque' => $smtp ? array() : array( 'L\'envoi des e-mails doit être actif d\'abord.' ),
+		);
 
 		$e['signature'] = array(
 			'titre'  => 'Camille + Margot — contrat & signature automatiques',
@@ -163,6 +169,12 @@ if ( ! function_exists( 'ag_dir_tout_allumer' ) ) {
 			$arme[] = $etat['nego']['titre'];
 		} else { $attente['nego'] = $etat['nego']['manque']; }
 
+		// Relance du chaud.
+		if ( $etat['relance']['pret'] ) {
+			update_option( 'ag_rc_on', 1, false );
+			$arme[] = $etat['relance']['titre'];
+		} else { $attente['relance'] = $etat['relance']['manque']; }
+
 		// Signature : SEULEMENT si le verrou de relecture est levé.
 		if ( $etat['signature']['pret'] ) {
 			update_option( 'ag_reponses_contrat_auto', 1, false );
@@ -183,7 +195,7 @@ if ( ! function_exists( 'ag_dir_tout_eteindre' ) ) {
 	function ag_dir_tout_eteindre() {
 		update_option( 'ag_auto_freq', 'off' );
 		$n = wp_next_scheduled( 'ag_prospect_cron' ); if ( $n ) { wp_unschedule_event( $n, 'ag_prospect_cron' ); }
-		foreach ( array( 'ag_enrich_on', 'ag_boite_on', 'ag_closer_on', 'ag_nego_on',
+		foreach ( array( 'ag_enrich_on', 'ag_boite_on', 'ag_closer_on', 'ag_nego_on', 'ag_rc_on',
 			'ag_reponses_contrat_auto', 'ag_sign_auto_contresigne' ) as $opt ) {
 			update_option( $opt, 0, false );
 		}

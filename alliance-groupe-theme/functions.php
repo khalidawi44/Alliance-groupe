@@ -255,7 +255,7 @@ if ( file_exists( $ag_menage_file ) ) {
 // appellent ag_closer_*() et ag_sign_*() dès le rendu du menu).
 // Tout démarre ÉTEINT : `ag_closer_on` et `ag_sign_contrat_relu` sont à 0 par
 // défaut, donc déployer ce fichier n'envoie rien et n'engage rien.
-foreach ( array( 'ag-smtp.php', 'ag-equipe.php', 'ag-enrichir.php', 'ag-closer.php', 'ag-signature.php', 'ag-juriste.php', 'ag-negociateur.php', 'ag-reponses.php', 'ag-boite.php', 'ag-directeur.php', 'ag-commercial-admin.php' ) as $ag_com_f ) {
+foreach ( array( 'ag-smtp.php', 'ag-equipe.php', 'ag-enrichir.php', 'ag-closer.php', 'ag-signature.php', 'ag-juriste.php', 'ag-negociateur.php', 'ag-reponses.php', 'ag-boite.php', 'ag-relance-chaud.php', 'ag-captures.php', 'ag-directeur.php', 'ag-commercial-admin.php' ) as $ag_com_f ) {
     $ag_com_p = get_stylesheet_directory() . '/inc/' . $ag_com_f;
     if ( file_exists( $ag_com_p ) ) {
         require_once $ag_com_p;
@@ -1734,6 +1734,9 @@ if ( ! function_exists( 'ag_sur_mesure_submit' ) ) {
         $list = (array) get_option( 'ag_sur_mesure_requests', array() );
         $list[] = $req;
         update_option( 'ag_sur_mesure_requests', array_slice( $list, -500 ) );
+
+        // Le plus gros panier entre AUSSI dans le CRM (relance possible) — voir inc/ag-captures.php.
+        do_action( 'ag_sur_mesure_saved', $req );
 
         $body  = "Nouvelle demande de devis SUR-MESURE\n\n";
         $body .= "Nom : {$req['name']}\nEmail : {$req['email']}\nTél : {$req['phone']}\nEntreprise : {$req['business']}\nPays : {$req['pays']}\n\n";
