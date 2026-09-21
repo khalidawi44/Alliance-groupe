@@ -150,6 +150,40 @@ if ( ! function_exists( 'ag_reponses_qualifier' ) ) {
 
 /* ── 4. Enchainer ────────────────────────────────────────────────────── */
 
+if ( ! function_exists( 'ag_reponses_montant_coherent' ) ) {
+	function ag_reponses_montant_coherent( $texte, $pack ) {
+		/*
+		 * Le piege du « oui » chiffre.
+		 *
+		 * Un prospect qui repond « d'accord, faites-moi le site a 16 000 € »
+		 * dit oui — mais pas au meme prix que nous. Si le contrat part tout
+		 * seul, il portera le tarif du pack, pas celui qu'il a nomme. Le
+		 * client signe un chiffre, nous en facturons un autre : c'est une
+		 * vente qui finit en litige, et c'est nous qui avons ecrit le
+		 * document. Aucun envoi automatique quand les deux ne se rejoignent
+		 * pas — un humain regarde.
+		 *
+		 * @return bool|null true = compatible, false = ecart, null = aucun montant evoque.
+		 */
+		if ( ! function_exists( 'ag_nego_montants' ) || ! function_exists( 'ag_sites_express_packs' ) ) {
+			return null;
+		}
+		$cites = ag_nego_montants( $texte );
+		if ( ! $cites ) { return null; }
+
+		$packs = (array) ag_sites_express_packs();
+		$prix  = isset( $packs[ $pack ]['prix'] )
+			? (int) preg_replace( '/[^\d]/', '', (string) $packs[ $pack ]['prix'] ) : 0;
+		if ( $prix <= 0 ) { return null; }
+
+		/* Tolerance : 10 %. Au-dela, ce n'est plus un arrondi, c'est un autre prix. */
+		foreach ( $cites as $m ) {
+			if ( $m > 0 && abs( $m - $prix ) <= max( 20, (int) round( $prix * 0.10 ) ) ) { return true; }
+		}
+		return false;
+	}
+}
+
 if ( ! function_exists( 'ag_reponses_traiter' ) ) {
 	/**
 	 * Retrouve le prospect, met le CRM a jour, et enchaine si c'est clair.
@@ -208,7 +242,20 @@ if ( ! function_exists( 'ag_reponses_traiter' ) ) {
 		/* Le contrat ne part que si TOUT est reuni : intention d'achat,
 		   certitude, et l'interrupteur explicitement arme. */
 		$contrat = null;
-		if ( 'achat' === $avis['intention'] && $avis['sur'] && ag_reponses_contrat_auto()
+
+		/* Il a nomme un prix qui n'est pas le notre : aucun contrat ne part
+		   tout seul. Le document porterait NOTRE tarif, pas celui qu'il a
+		   ecrit — il signerait un chiffre et en recevrait un autre. Enzo,
+		   lui, peut repondre : c'est exactement son metier, et ses garde-fous
+		   l'empechent d'ecrire un montant hors grille. */
+		$prix_hors_grille = ( false === ag_reponses_montant_coherent( $texte, ag_reponses_pack() ) );
+		if ( $prix_hors_grille && function_exists( 'ag_push' ) ) {
+			ag_push( '⚠️ Il parle d\'un autre prix',
+				(string) ( $p['name'] ?? $from ) . "\nLe montant evoque ne correspond pas au tarif du pack. "
+				. "Aucun contrat ne partira seul : regardez ce qu'il demande." );
+		}
+
+		if ( ! $prix_hors_grille && 'achat' === $avis['intention'] && $avis['sur'] && ag_reponses_contrat_auto()
 			&& function_exists( 'ag_juriste_affaire_depuis_prospect' ) ) {
 
 			$affaire = ag_juriste_affaire_depuis_prospect( $p, ag_reponses_pack() );
@@ -241,7 +288,7 @@ if ( ! function_exists( 'ag_reponses_traiter' ) ) {
 			$list[ $index ] = $p;
 			update_option( 'ag_prospects', $list, false );
 
-			if ( $r['ok'] && ! empty( $r['accord'] ) && ag_reponses_contrat_auto()
+			if ( $r['ok'] && ! empty( $r['accord'] ) && ! $prix_hors_grille && ag_reponses_contrat_auto()
 				&& function_exists( 'ag_juriste_affaire_depuis_prospect' ) ) {
 
 				$affaire = ag_juriste_affaire_depuis_prospect( $p, ag_reponses_pack() );
@@ -279,6 +326,11 @@ if ( ! function_exists( 'ag_reponses_traiter' ) ) {
 			'sur'       => (bool) $avis['sur'],
 			'contrat'   => $contrat,
 			'nego'      => $nego,
+			/* Le resume remonte jusqu'au journal : sans lui, on voit QUOI a ete
+			   decide mais jamais POURQUOI — et on ne peut pas corriger un
+			   classement qu'on ne comprend pas. */
+			'resume'    => (string) ( $avis['resume'] ?? '' ),
+			'prix_hors_grille' => $prix_hors_grille,
 		);
 	}
 }

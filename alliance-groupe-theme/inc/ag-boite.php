@@ -259,6 +259,9 @@ if ( ! function_exists( 'ag_boite_relever' ) ) {
 					'sujet' => $sujet,
 					'suite' => is_array( $r )
 						? trim( (string) ( $r['intention'] ?? '' )
+							. ( isset( $r['sur'] ) && ! $r['sur'] ? ' (pas certain)' : '' )
+							. ( ! empty( $r['resume'] ) ? ' — ' . $r['resume'] : '' )
+							. ( ! empty( $r['prix_hors_grille'] ) ? ' · ⚠ montant hors grille' : '' )
 							. ( ! empty( $r['nego'] ) ? ' · Enzo : ' . $r['nego'] : '' )
 							. ( ! empty( $r['contrat'] ) ? ' · Contrat : ' . $r['contrat'] : '' ) )
 						: 'non traite',
