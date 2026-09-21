@@ -255,7 +255,7 @@ if ( file_exists( $ag_menage_file ) ) {
 // appellent ag_closer_*() et ag_sign_*() dès le rendu du menu).
 // Tout démarre ÉTEINT : `ag_closer_on` et `ag_sign_contrat_relu` sont à 0 par
 // défaut, donc déployer ce fichier n'envoie rien et n'engage rien.
-foreach ( array( 'ag-smtp.php', 'ag-equipe.php', 'ag-enrichir.php', 'ag-closer.php', 'ag-signature.php', 'ag-juriste.php', 'ag-negociateur.php', 'ag-reponses.php', 'ag-boite.php', 'ag-relance-chaud.php', 'ag-captures.php', 'ag-directeur.php', 'ag-commercial-admin.php' ) as $ag_com_f ) {
+foreach ( array( 'ag-smtp.php', 'ag-equipe.php', 'ag-surclassement.php', 'ag-enrichir.php', 'ag-closer.php', 'ag-signature.php', 'ag-juriste.php', 'ag-negociateur.php', 'ag-reponses.php', 'ag-boite.php', 'ag-relance-chaud.php', 'ag-captures.php', 'ag-directeur.php', 'ag-commercial-admin.php' ) as $ag_com_f ) {
     $ag_com_p = get_stylesheet_directory() . '/inc/' . $ag_com_f;
     if ( file_exists( $ag_com_p ) ) {
         require_once $ag_com_p;

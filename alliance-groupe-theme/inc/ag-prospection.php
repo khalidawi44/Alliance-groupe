@@ -2972,7 +2972,10 @@ add_action( 'ag_paypal_payment_verified', function ( $amount, $email, $txn = '',
 			. '<p>On vous accompagne pour tout corriger — répondez simplement à cet email pour lancer la mise en sécurité.</p>';
 		wp_mail( $to, 'Votre rapport de sécurité complet 🛡️', ag_email_wrap( 'Rapport débloqué', $inner ), array( 'Content-Type: text/html; charset=UTF-8', 'From: Alliance Groupe <contact@alliancegroupe-inc.com>' ) );
 	} else {
-		wp_mail( $to, 'Votre rapport de sécurité complet', "Bonjour,\n\nVotre rapport complet est débloqué :\n" . $full . "\n\nAlliance Groupe" );
+		$inner_simple = '<p>Bonjour,</p><p>Votre rapport complet est débloqué :</p>'
+			. '<div style="white-space:pre-line;font-family:Arial,sans-serif;font-size:14px;color:#c9c9d3;">' . esc_html( $full ) . '</div>';
+		$corps_simple = function_exists( 'ag_email_wrap' ) ? ag_email_wrap( 'Rapport débloqué', $inner_simple ) : $inner_simple;
+		wp_mail( $to, 'Votre rapport de sécurité complet', $corps_simple, array( 'Content-Type: text/html; charset=UTF-8', 'From: Alliance Groupe <contact@alliancegroupe-inc.com>' ) );
 	}
 	if ( function_exists( 'ag_push' ) ) ag_push( '✅ Rapport payé + débloqué', $to . ' — ' . $site . ' (' . number_format_i18n( $amount, 0 ) . ' €)' );
 }, 15, 5 );

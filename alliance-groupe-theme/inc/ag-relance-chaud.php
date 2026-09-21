@@ -194,6 +194,9 @@ if ( ! function_exists( 'ag_rc_relance_interesses' ) ) {
 					. 'le moment est bon pour en reparler — sans engagement, à votre rythme.</p>'
 					. ( function_exists( 'ag_email_button' ) ? ag_email_button( 'Voir une maquette de mon site', $lien_devis )
 						: '<p><a href="' . esc_url( $lien_devis ) . '">' . esc_html( $lien_devis ) . '</a></p>' )
+					/* On guide vers l'étape d'après (montée en gamme) — un lien clair,
+					   jamais un contrat caché. Voir inc/ag-surclassement.php. */
+					. ( function_exists( 'ag_surcl_cta' ) ? ag_surcl_cta( function_exists( 'ag_surcl_niveau_prospect' ) ? ag_surcl_niveau_prospect( $p ) : 'prospect', $nom ) : '' )
 					. '<p style="font-family:Arial,sans-serif;font-size:13px;line-height:1.6;color:#b0b0bc;">'
 					. 'Si ce n\'est plus d\'actualité, répondez « stop » et on n\'en reparle plus.</p>';
 				$html = function_exists( 'ag_email_wrap' ) ? ag_email_wrap( $sujet, $corps ) : $corps;
