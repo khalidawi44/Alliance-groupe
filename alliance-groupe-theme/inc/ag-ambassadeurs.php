@@ -534,15 +534,33 @@ add_action( 'admin_post_ag_prime_amount_save', function () {
 add_action( 'admin_post_ag_amb_formation_save', function () {
 	if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'Non autorisé.' ); }
 	check_admin_referer( 'ag_amb_formation' );
-	update_option( 'ag_amb_formation_url', esc_url_raw( wp_unslash( $_POST['url'] ?? '' ) ), false );
+	update_option( 'ag_amb_formation_url', esc_url_raw( wp_unslash( $_POST['url'] ?? '' ) ), false );          // standard (10 %)
+	update_option( 'ag_amb_formation_url_20', esc_url_raw( wp_unslash( $_POST['url20'] ?? '' ) ), false );    // version 20 %
+	update_option( 'ag_amb_formation_url_50', esc_url_raw( wp_unslash( $_POST['url50'] ?? '' ) ), false );    // version 50 %
 	update_option( 'ag_amb_formation_msg', sanitize_textarea_field( wp_unslash( $_POST['msg'] ?? '' ) ), false );
 	wp_safe_redirect( add_query_arg( 'agf', 'saved', wp_get_referer() ?: admin_url( 'admin.php?page=ag-ambassadeurs' ) ) );
 	exit;
 } );
 
-/* Payload de la formation (lien + message d'accompagnement, avec message par défaut). */
-function ag_amb_formation_payload() {
-	$url = esc_url_raw( (string) get_option( 'ag_amb_formation_url', '' ) );
+/* Choisit le PDF de formation qui correspond au TAUX de l'ambassadeur, pour ne jamais
+   promettre 50 % à quelqu'un qui est à 10 %. 3 versions possibles (10/20/50) ; on retombe
+   sur la version standard si celle du taux n'est pas renseignée. $rate = fraction (0.50). */
+function ag_amb_formation_url_for_rate( $rate ) {
+	$std = esc_url_raw( (string) get_option( 'ag_amb_formation_url', '' ) );
+	$u20 = esc_url_raw( (string) get_option( 'ag_amb_formation_url_20', '' ) );
+	$u50 = esc_url_raw( (string) get_option( 'ag_amb_formation_url_50', '' ) );
+	$r   = (float) $rate;
+	if ( $r >= 0.45 && '' !== $u50 ) { return $u50; }
+	if ( $r >= 0.18 && $r < 0.45 && '' !== $u20 ) { return $u20; }
+	return $std; // 10 % standard, ou repli si la version du taux manque
+}
+
+/* Payload de la formation (lien + message). $rate null = version standard (10 %) ;
+   sinon on sert le PDF du taux de l'ambassadeur. */
+function ag_amb_formation_payload( $rate = null ) {
+	$url = ( null === $rate )
+		? esc_url_raw( (string) get_option( 'ag_amb_formation_url', '' ) )
+		: ag_amb_formation_url_for_rate( $rate );
 	$msg = trim( (string) get_option( 'ag_amb_formation_msg', '' ) );
 	if ( '' === $msg ) { $msg = 'Voici ta formation d\'ambassadeur Alliance Groupe. Prends le temps de la lire : tout y est pour bien démarrer et vendre sereinement.'; }
 	return array( 'url' => $url, 'msg' => $msg );
@@ -595,7 +613,8 @@ function ag_amb_envoi_formation( $email, $name = '', $phone = '', $canaux = arra
 	$key = strtolower( $email );
 	if ( isset( $done[ $key ] ) ) { return $done[ $key ]; }
 
-	$p   = ag_amb_formation_payload();
+	$rate = function_exists( 'ag_amb_taux' ) ? ag_amb_taux( $email ) : null; // sert le PDF du taux de l'ambassadeur
+	$p   = ag_amb_formation_payload( $rate );
 	$url = $p['url'];
 	if ( '' === $url ) { return $res; } // formation non configurée → rien à envoyer
 	$msg    = $p['msg'];
@@ -640,55 +659,22 @@ add_action( 'admin_post_ag_amb_formation_send', function () {
 	$url  = esc_url_raw( (string) get_option( 'ag_amb_formation_url', '' ) );
 	if ( '' === $url ) { wp_safe_redirect( add_query_arg( 'agf', 'nourl', $back ) ); exit; }
 
-	$do_mail = ! empty( $_POST['ch_mail'] );
-	$do_sms  = ! empty( $_POST['ch_sms'] );
-	$msg = trim( (string) get_option( 'ag_amb_formation_msg', '' ) );
-	if ( '' === $msg ) { $msg = 'Voici ta formation d\'ambassadeur Alliance Groupe. Prends le temps de la lire : tout y est pour bien démarrer et vendre sereinement.'; }
+	$canaux = array();
+	if ( ! empty( $_POST['ch_mail'] ) ) { $canaux[] = 'mail'; }
+	if ( ! empty( $_POST['ch_sms'] ) )  { $canaux[] = 'sms'; }
+	if ( empty( $canaux ) ) { wp_safe_redirect( add_query_arg( array( 'agf' => 'sent', 'm' => 0, 's' => 0 ), $back ) ); exit; }
 
+	// Chaque ambassadeur reçoit le PDF de SON taux (10/20/50) via le helper commun,
+	// qui gère aussi la pièce jointe et l'anti-doublon. Pas de promesse de 50 % à un 10 %.
 	$ambs = (array) get_option( 'ag_ambassadeurs', array() );
-
-	// Pièce jointe : seulement si le PDF est hébergé sur CE site (sinon lien seul).
-	$att = array();
-	$up  = wp_upload_dir();
-	if ( $up && empty( $up['error'] ) && ! empty( $up['baseurl'] ) && 0 === strpos( $url, $up['baseurl'] ) ) {
-		$p = $up['basedir'] . substr( $url, strlen( $up['baseurl'] ) );
-		if ( is_file( $p ) ) { $att = array( $p ); }
+	$mail_ok = 0; $sms_ok = 0;
+	foreach ( $ambs as $a ) {
+		$r = ag_amb_envoi_formation( $a['email'] ?? '', $a['name'] ?? '', $a['phone'] ?? '', $canaux );
+		if ( ! empty( $r['mail'] ) ) { $mail_ok++; }
+		if ( ! empty( $r['sms'] ) )  { $sms_ok++; }
 	}
 
-	$mail_ok = 0;
-	if ( $do_mail ) {
-		foreach ( $ambs as $a ) {
-			$to = sanitize_email( $a['email'] ?? '' );
-			if ( ! is_email( $to ) ) { continue; }
-			$prenom = trim( (string) ( $a['name'] ?? '' ) );
-			$inner  = '<p style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#e8e6e0;">Bonjour' . ( $prenom ? ' ' . esc_html( $prenom ) : '' ) . ',</p>';
-			$inner .= '<p style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#e8e6e0;">' . nl2br( esc_html( $msg ) ) . '</p>';
-			if ( function_exists( 'ag_email_button' ) ) { $inner .= ag_email_button( '📚 Ouvrir la formation', $url ); }
-			else { $inner .= '<p><a href="' . esc_url( $url ) . '">Ouvrir la formation</a></p>'; }
-			$html = function_exists( 'ag_email_wrap' ) ? ag_email_wrap( 'Ta formation d\'ambassadeur', $inner ) : $inner;
-			if ( wp_mail( $to, 'Ta formation d\'ambassadeur — Alliance Groupe', $html, array( 'Content-Type: text/html; charset=UTF-8' ), $att ) ) { $mail_ok++; }
-		}
-	}
-
-	$sms_ok = 0;
-	if ( $do_sms && function_exists( 'ag_sms_send_bulk' ) ) {
-		$pairs = array(); $seen = array();
-		foreach ( $ambs as $a ) {
-			$tel = trim( (string) ( $a['phone'] ?? '' ) );
-			if ( '' === $tel && ! empty( $a['email'] ) ) {
-				$u = get_user_by( 'email', $a['email'] );
-				if ( $u ) { $tel = (string) get_user_meta( $u->ID, 'ag_amb_phone', true ); }
-			}
-			$tel = preg_replace( '/[^0-9+]/', '', (string) $tel );
-			if ( strlen( preg_replace( '/[^0-9]/', '', $tel ) ) < 9 ) { continue; }
-			if ( isset( $seen[ $tel ] ) ) { continue; }
-			$seen[ $tel ] = 1;
-			$pairs[] = array( 'to' => $tel, 'msg' => 'Formation ambassadeur Alliance Groupe : ' . $url );
-		}
-		if ( $pairs ) { list( $sms_ok ) = ag_sms_send_bulk( $pairs ); }
-	}
-
-	if ( function_exists( 'ag_activity_log' ) ) { ag_activity_log( '📚 Formation diffusée : ' . $mail_ok . ' email(s), ' . $sms_ok . ' SMS.' ); }
+	if ( function_exists( 'ag_activity_log' ) ) { ag_activity_log( '📚 Formation diffusée (par taux) : ' . $mail_ok . ' email(s), ' . $sms_ok . ' SMS.' ); }
 	wp_safe_redirect( add_query_arg( array( 'agf' => 'sent', 'm' => $mail_ok, 's' => $sms_ok ), $back ) );
 	exit;
 } );
@@ -867,8 +853,10 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 		echo '</form></div>';
 
 		// ── Formation : envoyer le PDF à TOUS les ambassadeurs (email + SMS) ──
-		$furl = (string) get_option( 'ag_amb_formation_url', '' );
-		$fmsg = (string) get_option( 'ag_amb_formation_msg', '' );
+		$furl   = (string) get_option( 'ag_amb_formation_url', '' );
+		$furl20 = (string) get_option( 'ag_amb_formation_url_20', '' );
+		$furl50 = (string) get_option( 'ag_amb_formation_url_50', '' );
+		$fmsg   = (string) get_option( 'ag_amb_formation_msg', '' );
 		$agf  = isset( $_GET['agf'] ) ? sanitize_key( $_GET['agf'] ) : '';
 		if ( 'saved' === $agf ) { echo '<div class="notice notice-success is-dismissible"><p>Formation enregistrée.</p></div>'; }
 		if ( 'nourl' === $agf ) { echo '<div class="notice notice-error is-dismissible"><p>Renseigne d\'abord le lien du PDF de formation.</p></div>'; }
@@ -876,12 +864,15 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 		echo '<div style="background:#fff;border:1px solid #ccd0d4;border-left:4px solid #2271b1;border-radius:6px;padding:14px 18px;margin:14px 0;max-width:940px;">';
 		echo '<h2 style="margin-top:0;">📚 Formation des ambassadeurs</h2>';
 		echo '<p class="description">Dépose ton PDF dans <strong>Médias</strong> (Médiathèque → Ajouter), copie son URL de fichier, colle-la ici. Puis envoie-le à toute l\'équipe en un clic. Par SMS on envoie le <strong>lien</strong> (un SMS ne porte pas de pièce jointe) ; par email, le PDF est <strong>joint</strong> s\'il est hébergé sur ce site, sinon c\'est un lien.</p>';
+		echo '<p class="description" style="background:#fff8e5;border-left:3px solid #dba617;padding:8px 12px;max-width:760px;"><strong>Version par taux :</strong> chaque ambassadeur reçoit automatiquement le livret de <strong>SON</strong> taux. Renseigne au minimum le lien <strong>standard (10 %)</strong> ; les liens 20 % et 50 % sont optionnels (si vides, on retombe sur le standard). Ça évite de promettre 50 % à quelqu\'un qui est à 10 %.</p>';
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin-bottom:10px;">';
 		wp_nonce_field( 'ag_amb_formation' );
 		echo '<input type="hidden" name="action" value="ag_amb_formation_save">';
-		echo '<p><input type="url" name="url" value="' . esc_attr( $furl ) . '" placeholder="https://alliancegroupe-inc.com/wp-content/uploads/2026/09/formation.pdf" class="large-text code"></p>';
+		echo '<p><label style="display:block;font-weight:600;margin-bottom:2px;">Lien standard (10 %) — obligatoire</label><input type="url" name="url" value="' . esc_attr( $furl ) . '" placeholder="https://alliancegroupe-inc.com/wp-content/uploads/2026/09/Formation-Ambassadeur-10.pdf" class="large-text code"></p>';
+		echo '<p><label style="display:block;font-weight:600;margin-bottom:2px;">Lien version 20 % — optionnel</label><input type="url" name="url20" value="' . esc_attr( $furl20 ) . '" placeholder="…/Formation-Ambassadeur-20.pdf" class="large-text code"></p>';
+		echo '<p><label style="display:block;font-weight:600;margin-bottom:2px;">Lien version 50 % — optionnel</label><input type="url" name="url50" value="' . esc_attr( $furl50 ) . '" placeholder="…/Formation-Ambassadeur-50.pdf" class="large-text code"></p>';
 		echo '<p><textarea name="msg" rows="2" class="large-text" placeholder="Message d\'accompagnement (optionnel)">' . esc_textarea( $fmsg ) . '</textarea></p>';
-		echo '<button class="button" type="submit">Enregistrer le lien</button></form>';
+		echo '<button class="button" type="submit">Enregistrer les liens</button></form>';
 		if ( '' !== $furl ) {
 			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" onsubmit="return confirm(\'Envoyer la formation à TOUS les ambassadeurs ?\');">';
 			wp_nonce_field( 'ag_amb_formation_send' );
@@ -893,20 +884,28 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 			echo '</form>';
 
 			// ── Partage 1-par-1 : envoyer la formation via WhatsApp/SMS (comme le partage recrutement) + QR ──
-			$fp_share  = ag_amb_formation_payload();
-			$share_txt = $fp_share['msg'] . "\n\n📚 Formation : " . $fp_share['url'];
-			$wa  = 'https://wa.me/?text=' . rawurlencode( $share_txt );
-			$sms = 'sms:?body=' . rawurlencode( $share_txt );
-			$qr  = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' . rawurlencode( $fp_share['url'] );
+			// Sélecteur de version (10/20/50) : on choisit le bon livret selon le taux de la personne.
+			$fmsg_share = ag_amb_formation_payload()['msg'];
+			$versions = array(
+				'10' => $furl,
+				'20' => ( '' !== $furl20 ? $furl20 : $furl ),
+				'50' => ( '' !== $furl50 ? $furl50 : $furl ),
+			);
 			echo '<hr style="margin:16px 0;border:none;border-top:1px solid #eee;">';
 			echo '<h3 style="margin:0 0 6px;">📤 Envoyer la formation à un ambassadeur (1 par 1)</h3>';
-			echo '<p class="description" style="max-width:760px;">Ouvre WhatsApp ou les SMS avec le message et le lien <strong>déjà écrits</strong> : tu choisis le contact et tu envoies. Idéal juste après avoir recruté quelqu\'un. Ou fais scanner le QR.</p>';
+			echo '<p class="description" style="max-width:760px;">Choisis la version selon le taux de la personne, puis ouvre WhatsApp/SMS (message + lien déjà écrits) : tu choisis le contact et tu envoies. Ou fais scanner le QR.</p>';
+			echo '<p style="margin:0 0 8px;"><label>Version : <select id="agf-ver">';
+			foreach ( array( '10' => '10 % (standard)', '20' => '20 %', '50' => '50 %' ) as $vk => $vl ) {
+				echo '<option value="' . esc_attr( $vk ) . '" data-url="' . esc_attr( $versions[ $vk ] ) . '">' . esc_html( $vl ) . '</option>';
+			}
+			echo '</select></label></p>';
 			echo '<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;">';
-			echo '<img src="' . esc_url( $qr ) . '" alt="QR formation" width="150" height="150" style="background:#fff;border:1px solid #ddd;border-radius:8px;flex:none;">';
+			echo '<img id="agf-qr" src="" alt="QR formation" width="150" height="150" style="background:#fff;border:1px solid #ddd;border-radius:8px;flex:none;">';
 			echo '<div style="flex:1;min-width:280px;">';
-			echo '<p style="margin:0 0 8px;"><a class="button button-primary" href="' . esc_url( $wa ) . '" target="_blank" rel="noopener">📲 WhatsApp</a> <a class="button" href="' . esc_attr( $sms ) . '">✉️ SMS</a></p>';
-			echo '<textarea readonly rows="6" style="width:100%;" onclick="this.select()">' . esc_textarea( $share_txt ) . '</textarea>';
+			echo '<p style="margin:0 0 8px;"><a id="agf-wa" class="button button-primary" href="#" target="_blank" rel="noopener">📲 WhatsApp</a> <a id="agf-sms" class="button" href="#">✉️ SMS</a> <a id="agf-pdf" class="button" href="#" target="_blank" rel="noopener">Voir le PDF</a></p>';
+			echo '<textarea id="agf-txt" readonly rows="6" style="width:100%;" onclick="this.select()"></textarea>';
 			echo '</div></div>';
+			echo '<script>(function(){var base=' . wp_json_encode( $fmsg_share ) . ';var sel=document.getElementById("agf-ver");function up(){var o=sel.options[sel.selectedIndex];var url=o.getAttribute("data-url")||"";var txt=base+"\n\n📚 Formation : "+url;document.getElementById("agf-txt").value=txt;document.getElementById("agf-wa").href="https://wa.me/?text="+encodeURIComponent(txt);document.getElementById("agf-sms").href="sms:?body="+encodeURIComponent(txt);document.getElementById("agf-pdf").href=url||"#";document.getElementById("agf-qr").src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data="+encodeURIComponent(url);}sel.addEventListener("change",up);up();})();</script>';
 		}
 		echo '</div>';
 
