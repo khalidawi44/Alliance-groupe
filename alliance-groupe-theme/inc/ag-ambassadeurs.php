@@ -530,6 +530,77 @@ add_action( 'admin_post_ag_prime_amount_save', function () {
 	wp_safe_redirect( admin_url( 'admin.php?page=ag-ambassadeurs#primes' ) ); exit;
 } );
 
+/* Formation : enregistre le lien du PDF + un message d'accompagnement. */
+add_action( 'admin_post_ag_amb_formation_save', function () {
+	if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'Non autorisé.' ); }
+	check_admin_referer( 'ag_amb_formation' );
+	update_option( 'ag_amb_formation_url', esc_url_raw( wp_unslash( $_POST['url'] ?? '' ) ), false );
+	update_option( 'ag_amb_formation_msg', sanitize_textarea_field( wp_unslash( $_POST['msg'] ?? '' ) ), false );
+	wp_safe_redirect( add_query_arg( 'agf', 'saved', wp_get_referer() ?: admin_url( 'admin.php?page=ag-ambassadeurs' ) ) );
+	exit;
+} );
+
+/* Formation : envoie le PDF à TOUS les ambassadeurs, par email (pièce jointe si local) et/ou SMS (lien). */
+add_action( 'admin_post_ag_amb_formation_send', function () {
+	if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'Non autorisé.' ); }
+	check_admin_referer( 'ag_amb_formation_send' );
+	$back = wp_get_referer() ?: admin_url( 'admin.php?page=ag-ambassadeurs' );
+	$url  = esc_url_raw( (string) get_option( 'ag_amb_formation_url', '' ) );
+	if ( '' === $url ) { wp_safe_redirect( add_query_arg( 'agf', 'nourl', $back ) ); exit; }
+
+	$do_mail = ! empty( $_POST['ch_mail'] );
+	$do_sms  = ! empty( $_POST['ch_sms'] );
+	$msg = trim( (string) get_option( 'ag_amb_formation_msg', '' ) );
+	if ( '' === $msg ) { $msg = 'Voici ta formation d\'ambassadeur Alliance Groupe. Prends le temps de la lire : tout y est pour bien démarrer et vendre sereinement.'; }
+
+	$ambs = (array) get_option( 'ag_ambassadeurs', array() );
+
+	// Pièce jointe : seulement si le PDF est hébergé sur CE site (sinon lien seul).
+	$att = array();
+	$up  = wp_upload_dir();
+	if ( $up && empty( $up['error'] ) && ! empty( $up['baseurl'] ) && 0 === strpos( $url, $up['baseurl'] ) ) {
+		$p = $up['basedir'] . substr( $url, strlen( $up['baseurl'] ) );
+		if ( is_file( $p ) ) { $att = array( $p ); }
+	}
+
+	$mail_ok = 0;
+	if ( $do_mail ) {
+		foreach ( $ambs as $a ) {
+			$to = sanitize_email( $a['email'] ?? '' );
+			if ( ! is_email( $to ) ) { continue; }
+			$prenom = trim( (string) ( $a['name'] ?? '' ) );
+			$inner  = '<p style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#e8e6e0;">Bonjour' . ( $prenom ? ' ' . esc_html( $prenom ) : '' ) . ',</p>';
+			$inner .= '<p style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#e8e6e0;">' . nl2br( esc_html( $msg ) ) . '</p>';
+			if ( function_exists( 'ag_email_button' ) ) { $inner .= ag_email_button( '📚 Ouvrir la formation', $url ); }
+			else { $inner .= '<p><a href="' . esc_url( $url ) . '">Ouvrir la formation</a></p>'; }
+			$html = function_exists( 'ag_email_wrap' ) ? ag_email_wrap( 'Ta formation d\'ambassadeur', $inner ) : $inner;
+			if ( wp_mail( $to, 'Ta formation d\'ambassadeur — Alliance Groupe', $html, array( 'Content-Type: text/html; charset=UTF-8' ), $att ) ) { $mail_ok++; }
+		}
+	}
+
+	$sms_ok = 0;
+	if ( $do_sms && function_exists( 'ag_sms_send_bulk' ) ) {
+		$pairs = array(); $seen = array();
+		foreach ( $ambs as $a ) {
+			$tel = trim( (string) ( $a['phone'] ?? '' ) );
+			if ( '' === $tel && ! empty( $a['email'] ) ) {
+				$u = get_user_by( 'email', $a['email'] );
+				if ( $u ) { $tel = (string) get_user_meta( $u->ID, 'ag_amb_phone', true ); }
+			}
+			$tel = preg_replace( '/[^0-9+]/', '', (string) $tel );
+			if ( strlen( preg_replace( '/[^0-9]/', '', $tel ) ) < 9 ) { continue; }
+			if ( isset( $seen[ $tel ] ) ) { continue; }
+			$seen[ $tel ] = 1;
+			$pairs[] = array( 'to' => $tel, 'msg' => 'Formation ambassadeur Alliance Groupe : ' . $url );
+		}
+		if ( $pairs ) { list( $sms_ok ) = ag_sms_send_bulk( $pairs ); }
+	}
+
+	if ( function_exists( 'ag_activity_log' ) ) { ag_activity_log( '📚 Formation diffusée : ' . $mail_ok . ' email(s), ' . $sms_ok . ' SMS.' ); }
+	wp_safe_redirect( add_query_arg( array( 'agf' => 'sent', 'm' => $mail_ok, 's' => $sms_ok ), $back ) );
+	exit;
+} );
+
 /* Ajouter un ambassadeur À LA MAIN depuis l'admin (sans le parcours d'inscription/KYC).
    Crée une fiche active + son lien de parrainage (via l'email), et — au choix — son
    compte pour se connecter à son espace. Sert quand Fabrice enrôle quelqu'un lui-même. */
@@ -697,6 +768,34 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 		echo '<label style="display:inline-flex;align-items:center;gap:6px;"><input type="checkbox" name="compte" value="1" checked> Créer son compte + lui envoyer ses accès</label>';
 		echo '<button class="button button-primary" type="submit">Ajouter</button>';
 		echo '</form></div>';
+
+		// ── Formation : envoyer le PDF à TOUS les ambassadeurs (email + SMS) ──
+		$furl = (string) get_option( 'ag_amb_formation_url', '' );
+		$fmsg = (string) get_option( 'ag_amb_formation_msg', '' );
+		$agf  = isset( $_GET['agf'] ) ? sanitize_key( $_GET['agf'] ) : '';
+		if ( 'saved' === $agf ) { echo '<div class="notice notice-success is-dismissible"><p>Formation enregistrée.</p></div>'; }
+		if ( 'nourl' === $agf ) { echo '<div class="notice notice-error is-dismissible"><p>Renseigne d\'abord le lien du PDF de formation.</p></div>'; }
+		if ( 'sent'  === $agf ) { echo '<div class="notice notice-success is-dismissible"><p>Formation envoyée : ' . (int) ( $_GET['m'] ?? 0 ) . ' email(s), ' . (int) ( $_GET['s'] ?? 0 ) . ' SMS.</p></div>'; }
+		echo '<div style="background:#fff;border:1px solid #ccd0d4;border-left:4px solid #2271b1;border-radius:6px;padding:14px 18px;margin:14px 0;max-width:940px;">';
+		echo '<h2 style="margin-top:0;">📚 Formation des ambassadeurs</h2>';
+		echo '<p class="description">Dépose ton PDF dans <strong>Médias</strong> (Médiathèque → Ajouter), copie son URL de fichier, colle-la ici. Puis envoie-le à toute l\'équipe en un clic. Par SMS on envoie le <strong>lien</strong> (un SMS ne porte pas de pièce jointe) ; par email, le PDF est <strong>joint</strong> s\'il est hébergé sur ce site, sinon c\'est un lien.</p>';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin-bottom:10px;">';
+		wp_nonce_field( 'ag_amb_formation' );
+		echo '<input type="hidden" name="action" value="ag_amb_formation_save">';
+		echo '<p><input type="url" name="url" value="' . esc_attr( $furl ) . '" placeholder="https://alliancegroupe-inc.com/wp-content/uploads/2026/09/formation.pdf" class="large-text code"></p>';
+		echo '<p><textarea name="msg" rows="2" class="large-text" placeholder="Message d\'accompagnement (optionnel)">' . esc_textarea( $fmsg ) . '</textarea></p>';
+		echo '<button class="button" type="submit">Enregistrer le lien</button></form>';
+		if ( '' !== $furl ) {
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" onsubmit="return confirm(\'Envoyer la formation à TOUS les ambassadeurs ?\');">';
+			wp_nonce_field( 'ag_amb_formation_send' );
+			echo '<input type="hidden" name="action" value="ag_amb_formation_send">';
+			echo '<label style="margin-right:14px;"><input type="checkbox" name="ch_mail" value="1" checked> Par email</label>';
+			echo '<label style="margin-right:14px;"><input type="checkbox" name="ch_sms" value="1"> Par SMS (lien)</label>';
+			echo '<button class="button button-primary" type="submit">📤 Envoyer à tous les ambassadeurs</button>';
+			echo ' <a class="button" href="' . esc_url( $furl ) . '" target="_blank" rel="noopener">Voir le PDF</a>';
+			echo '</form>';
+		}
+		echo '</div>';
 
 		// Réglage du taux de parrainage (override)
 		if ( isset( $_POST['ag_save_override'] ) && check_admin_referer( 'ag_override' ) ) {
