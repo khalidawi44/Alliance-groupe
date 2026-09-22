@@ -1,0 +1,31 @@
+FORMATION AMBASSADEUR — ce qu'il y a dans ce dossier
+=====================================================
+
+Trois éditions identiques, seul le taux de commission change : 10 %, 20 %, 50 %.
+Envoie la bonne selon le profil de l'ambassadeur.
+
+1) formation-ambassadeur-XX.pdf        → version TELEPHONE (format vertical, 9 pages)
+   Pour l'envoi par e-mail ou SMS. Tous les liens sont cliquables.
+
+2) formation-ambassadeur-XX-livre.pdf  → version LIVRE A5 (12 pages, couverture + dos)
+   Se lit comme un livre sur écran (double page) et s'imprime en A5.
+   Les liens restent cliquables. Marge de reliure prévue : les pages de gauche
+   et de droite n'ont pas la même marge intérieure.
+
+3) formation-ambassadeur-XX-livret-A4.pdf → prêt à IMPRIMER en livret
+   6 faces A4 paysage, déjà dans l'ordre du pliage (2 pages A5 par face).
+
+   Comment l'imprimer :
+     • Papier A4, orientation paysage, "Taille réelle" (surtout pas "ajuster").
+     • Recto-verso, retournement sur le BORD COURT.
+       (Si le verso sort à l'envers, relance avec "bord long".)
+     • Plie les 3 feuilles en deux, glisse-les l'une dans l'autre, 2 agrafes au pli.
+     • Papier 120 g minimum si tu veux que ça tienne en salon.
+
+4) affiche-a4-deviens-ambassadeur.pdf  → affiche A4 avec QR code de candidature.
+
+5) source/  → les fichiers qui fabriquent les PDF (build.py, affiche.py, bg.jpg).
+   Pour changer un prix ou un texte, on modifie la source et on régénère.
+
+Les codes à scanner mènent à : l'espace ambassadeur, l'installation de
+l'application, et la page de candidature pour l'affiche.
