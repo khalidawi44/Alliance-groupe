@@ -15,7 +15,28 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 if ( ! defined( 'AG_COMMISSION_RATE' ) ) {
-	define( 'AG_COMMISSION_RATE', 0.10 ); // 10 % par vente
+	define( 'AG_COMMISSION_RATE', 0.10 ); // 10 % par vente (taux STANDARD, par défaut)
+}
+
+if ( ! function_exists( 'ag_amb_taux' ) ) {
+	/**
+	 * Le taux de commission d'UN ambassadeur : son taux personnalisé s'il en a un
+	 * (clé `rate` sur sa fiche), sinon le taux standard. Permet une ambassadrice
+	 * « spéciale » à 50 % sans changer le taux de toute l'équipe.
+	 *
+	 * @param string $email
+	 * @return float fraction (0.10 = 10 %, 0.50 = 50 %)
+	 */
+	function ag_amb_taux( $email ) {
+		$email = strtolower( trim( (string) $email ) );
+		foreach ( (array) get_option( 'ag_ambassadeurs', array() ) as $a ) {
+			if ( isset( $a['email'] ) && strtolower( (string) $a['email'] ) === $email ) {
+				$r = isset( $a['rate'] ) ? (float) $a['rate'] : 0;
+				return ( $r > 0 && $r <= 1 ) ? $r : AG_COMMISSION_RATE;
+			}
+		}
+		return AG_COMMISSION_RATE;
+	}
 }
 if ( ! defined( 'AG_OVERRIDE_RATE' ) ) {
 	// Parrainage : part de la commission du FILLEUL reversée au PARRAIN, sur les
@@ -272,11 +293,13 @@ if ( ! function_exists( 'ag_ambassadeur_vente' ) ) {
 		}
 
 		// L'ambassadeur doit etre inscrit ET valide (identite verifiee) pour vendre
-		$amb_name = ''; $amb_ok = false;
+		$amb_name = ''; $amb_ok = false; $amb_taux = AG_COMMISSION_RATE;
 		foreach ( get_option( 'ag_ambassadeurs', array() ) as $a ) {
 			if ( isset( $a['email'] ) && strtolower( $a['email'] ) === strtolower( $email ) ) {
 				$amb_name = $a['name'];
 				$amb_ok   = ( ( $a['status'] ?? '' ) === 'actif' );
+				$r        = isset( $a['rate'] ) ? (float) $a['rate'] : 0;
+				if ( $r > 0 && $r <= 1 ) { $amb_taux = $r; } // taux personnalisé de cette ambassadrice
 				break;
 			}
 		}
@@ -297,7 +320,8 @@ if ( ! function_exists( 'ag_ambassadeur_vente' ) ) {
 			'client'     => $client,
 			'activite'   => $activite,
 			'montant'    => $montant,
-			'commission' => round( $montant * AG_COMMISSION_RATE, 2 ),
+			'commission' => round( $montant * $amb_taux, 2 ),
+			'taux'       => $amb_taux,
 			'statut'     => 'declaree', // declaree -> validee -> payee
 			'date'       => current_time( 'd/m/Y H:i' ),
 			'date_paiement' => '',
@@ -312,7 +336,7 @@ if ( ! function_exists( 'ag_ambassadeur_vente' ) ) {
 		if ( function_exists( 'ag_push' ) ) {
 			ag_push(
 				'💰 Vente déclarée : ' . number_format( $montant, 0, ',', ' ' ) . ' €',
-				$amb_name . ' — client ' . $client . ( $activite ? ' (' . $activite . ')' : '' ) . ' · commission ' . number_format( $montant * AG_COMMISSION_RATE, 2, ',', ' ' ) . ' € · à valider dans l’admin.'
+				$amb_name . ' — client ' . $client . ( $activite ? ' (' . $activite . ')' : '' ) . ' · commission ' . number_format( $montant * $amb_taux, 2, ',', ' ' ) . ' € (' . rtrim( rtrim( number_format( $amb_taux * 100, 1, '.', '' ), '0' ), '.' ) . '%) · à valider dans l’admin.'
 			);
 		}
 		if ( function_exists( 'ag_activity_log' ) ) {
@@ -323,7 +347,7 @@ if ( ! function_exists( 'ag_ambassadeur_vente' ) ) {
 		$body .= "Ambassadeur : " . ( $amb_name ? $amb_name : '(non inscrit)' ) . " <$email>\n";
 		$body .= "Client : $client\nActivite : $activite\n";
 		$body .= 'Montant : ' . number_format( $montant, 2, ',', ' ' ) . " EUR\n";
-		$body .= 'Commission (10%) : ' . number_format( $montant * AG_COMMISSION_RATE, 2, ',', ' ' ) . " EUR\n";
+		$body .= 'Commission (' . rtrim( rtrim( number_format( $amb_taux * 100, 1, '.', '' ), '0' ), '.' ) . '%) : ' . number_format( $montant * $amb_taux, 2, ',', ' ' ) . " EUR\n";
 		$body .= 'Date : ' . current_time( 'd/m/Y H:i' );
 		wp_mail( 'contact@alliancegroupe-inc.com', 'Vente declaree : ' . $client, $body );
 
@@ -506,6 +530,27 @@ add_action( 'admin_post_ag_prime_amount_save', function () {
 	wp_safe_redirect( admin_url( 'admin.php?page=ag-ambassadeurs#primes' ) ); exit;
 } );
 
+/* Taux de commission personnalisé d'un ambassadeur (ex. ambassadrice « spéciale » à 50 %). */
+add_action( 'admin_post_ag_amb_rate', function () {
+	if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'Non autorisé.' ); }
+	check_admin_referer( 'ag_amb_rate' );
+	$id  = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+	$pct = (float) str_replace( ',', '.', (string) ( $_POST['pct'] ?? '' ) );
+	$pct = max( 0, min( 100, $pct ) );
+	$list = get_option( 'ag_ambassadeurs', array() );
+	foreach ( $list as $k => $a ) {
+		if ( ( $a['id'] ?? '' ) === $id ) {
+			// 0 (ou vide) = on efface le taux perso → l'ambassadeur revient au taux standard.
+			if ( $pct <= 0 ) { unset( $list[ $k ]['rate'] ); }
+			else            { $list[ $k ]['rate'] = $pct / 100; }
+			break;
+		}
+	}
+	update_option( 'ag_ambassadeurs', array_values( $list ) );
+	wp_safe_redirect( wp_get_referer() ?: admin_url( 'admin.php?page=ag-ambassadeurs' ) );
+	exit;
+} );
+
 if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 	function ag_render_ambassadeurs_page() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
@@ -571,7 +616,10 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 		};
 
 		echo '<div class="wrap"><h1>Programme Ambassadeurs</h1>';
-		echo '<p>Commission : <strong>' . esc_html( (int) ( AG_COMMISSION_RATE * 100 ) ) . '%</strong> par vente. Les commissions « à payer » correspondent aux ventes validées non encore payées.</p>';
+		echo '<p>Commission : <strong>' . esc_html( (int) ( AG_COMMISSION_RATE * 100 ) ) . '%</strong> par vente (taux standard). '
+			. 'Un taux <strong>personnalisé par ambassadeur</strong> se règle dans la colonne « % » de la liste ci-dessous '
+			. '(ex. une ambassadrice à 50 %) : il s\'applique à ses <em>prochaines</em> ventes déclarées. '
+			. 'Les commissions « à payer » correspondent aux ventes validées non encore payées.</p>';
 
 		// Réglage du taux de parrainage (override)
 		if ( isset( $_POST['ag_save_override'] ) && check_admin_referer( 'ag_override' ) ) {
@@ -787,6 +835,15 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 				echo '<td>';
 				if ( ! $actif ) echo '<a class="button button-primary button-small" href="' . esc_url( $nonce_url( 'amb_valider', $a['id'] ) ) . '">Activer</a> ';
 				echo '<a class="button button-small" style="color:#b32d2e;" href="' . esc_url( $nonce_url( 'amb_suppr', $a['id'] ) ) . '" onclick="return confirm(\'Supprimer cet ambassadeur ?\')">✕</a>';
+				// Taux de commission personnalisé (vide/0 = taux standard).
+				$cur = ( isset( $a['rate'] ) && (float) $a['rate'] > 0 )
+					? rtrim( rtrim( number_format( (float) $a['rate'] * 100, 1, '.', '' ), '0' ), '.' )
+					: '';
+				echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="display:inline-flex;gap:4px;align-items:center;margin-left:8px" title="Taux de commission de cet ambassadeur (vide = ' . esc_attr( (int) round( AG_COMMISSION_RATE * 100 ) ) . '% standard)">';
+				wp_nonce_field( 'ag_amb_rate' );
+				echo '<input type="hidden" name="action" value="ag_amb_rate"><input type="hidden" name="id" value="' . esc_attr( $a['id'] ) . '">';
+				echo '<input type="number" name="pct" min="0" max="100" step="0.5" value="' . esc_attr( $cur ) . '" placeholder="' . esc_attr( (int) round( AG_COMMISSION_RATE * 100 ) ) . '" style="width:56px"> %';
+				echo '<button class="button button-small">OK</button></form>';
 				echo '</td></tr>';
 			}
 			echo '</tbody></table>';
