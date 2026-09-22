@@ -351,6 +351,9 @@ require_once get_template_directory() . '/inc/galerie.php';
 // Envoi des e-mails authentifié (SMTP) — sinon les invitations de RDV ne partent pas.
 require_once get_template_directory() . '/inc/ag-smtp.php';
 
+// Favicon + hamburger toutes tailles + contraste en-tête au scroll (surcharge, sans toucher style.css).
+require_once get_template_directory() . '/inc/ag-brand-nav.php';
+
 // Réservation en ligne + espace client + agenda .ics (pages /reserver et /mon-espace).
 require_once get_template_directory() . '/inc/ag-reservation.php';
 

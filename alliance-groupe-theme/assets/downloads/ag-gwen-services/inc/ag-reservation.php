@@ -280,6 +280,63 @@ if ( ! function_exists( 'ag_resa_feed' ) ) {
 	}
 }
 
+/* ── 6 bis. Rappel automatique la veille du rendez-vous ──────────────── */
+
+add_action( 'init', function () {
+	if ( ! wp_next_scheduled( 'ag_resa_rappel_cron' ) ) {
+		wp_schedule_event( time() + 3600, 'daily', 'ag_resa_rappel_cron' );
+	}
+} );
+add_action( 'ag_resa_rappel_cron', 'ag_resa_rappels' );
+
+if ( ! function_exists( 'ag_resa_rappels' ) ) {
+	/** Envoie un rappel pour chaque RDV confirmé qui approche (une seule fois). */
+	function ag_resa_rappels() {
+		$now = time(); $list = ag_resa_all(); $changed = false;
+		foreach ( $list as $id => $b ) {
+			if ( 'confirme' !== ( $b['status'] ?? '' ) ) { continue; }
+			if ( ! empty( $b['rappel'] ) ) { continue; }
+			$start = (int) ( $b['start'] ?? 0 );
+			$delta = $start - $now;
+			if ( $delta >= 3 * 3600 && $delta <= 40 * 3600 ) { // dans les ~prochaines 3 à 40 h
+				ag_resa_envoi_rappel( $b );
+				$list[ $id ]['rappel'] = time();
+				$changed = true;
+			}
+		}
+		if ( $changed ) { ag_resa_save_all( $list ); }
+	}
+}
+
+if ( ! function_exists( 'ag_resa_envoi_rappel' ) ) {
+	/** Rappel au client : email (toujours) + SMS (si la passerelle existe sur ce site). */
+	function ag_resa_envoi_rappel( $b ) {
+		$tz    = ag_resa_tz();
+		$svc   = (string) ( $b['service_label'] ?? 'Intervention' );
+		$quand = wp_date( 'l j F à H:i', (int) $b['start'], $tz );
+
+		if ( ! empty( $b['email'] ) && is_email( $b['email'] ) ) {
+			$inner = '<p>Bonjour' . ( ! empty( $b['name'] ) ? ' ' . esc_html( $b['name'] ) : '' ) . ',</p>'
+				. '<p>Petit rappel : votre rendez-vous <b>' . esc_html( $svc ) . '</b> est prévu <b>' . esc_html( $quand ) . '</b>'
+				. ( ! empty( $b['address'] ) ? ' à ' . esc_html( $b['address'] ) : '' ) . '.</p>'
+				. '<p>À très bientôt !</p>';
+			wp_mail( $b['email'], 'Rappel : votre rendez-vous ' . $svc, ag_gwen_mail_wrap( $inner ), array( 'Content-Type: text/html; charset=UTF-8' ) );
+		}
+
+		if ( function_exists( 'ag_sms_send' ) ) {
+			$tel = trim( (string) ( $b['phone'] ?? '' ) );
+			if ( '' === $tel && ! empty( $b['email'] ) ) {
+				$u = get_user_by( 'email', $b['email'] );
+				if ( $u ) { $tel = (string) get_user_meta( $u->ID, 'ag_resa_phone', true ); }
+			}
+			$tel = preg_replace( '/[^0-9+]/', '', (string) $tel );
+			if ( strlen( preg_replace( '/[^0-9]/', '', $tel ) ) >= 9 ) {
+				ag_sms_send( $tel, 'Rappel : votre RDV ' . $svc . ' le ' . wp_date( 'd/m à H:i', (int) $b['start'], $tz ) . '. A bientot !' );
+			}
+		}
+	}
+}
+
 /* ── 7. Comptes clients (inscription / connexion en façade) ──────────── */
 
 add_action( 'admin_post_nopriv_ag_gwen_register', 'ag_gwen_register' );
