@@ -69,3 +69,11 @@
 		});
 	});
 })();
+
+/* Réservation : le créneau cliqué reste visiblement sélectionné. */
+document.addEventListener('click', function (e) {
+	var b = e.target.closest && e.target.closest('.ag-resa-slot');
+	if (!b || b.disabled) return;
+	document.querySelectorAll('.ag-resa-slot.is-picked').forEach(function (x) { x.classList.remove('is-picked'); });
+	b.classList.add('is-picked');
+});
