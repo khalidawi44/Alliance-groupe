@@ -234,6 +234,38 @@ Réserve : la barre compacte est **mobile uniquement** (≤560px). Sur PC c'est
 toujours une carte centrée, par choix. Si Fabrice la veut aussi en barre sur
 grand écran, c'est une décision DESIGN à prendre.
 
+### Brief DESIGN (22/09, demande de Fabrice) — PDF « Formation Ambassadeur » à habiller
+
+Fabrice veut un **PDF de formation ambassadeur** à sa marque (**noir & or, logo lion, en-tête, titres soignés**), **très facile à comprendre**, **pensé téléphone** (la majorité des ambassadeurs lisent sur mobile), avec **une image + un lien cliquable pour chaque offre/template** (comme une fiche produit). Inspiration donnée : ses cartes « AG Starter Pro / Premium / Business » (noir & or, cadres ornés, diamant, logo lion).
+
+**La lane CODE a préparé tout le contenu et les liens** (ci-dessous), il ne reste qu'à **habiller** — c'est le travail DESIGN. Un brouillon de contenu non stylé existe déjà (3 PDF simples 10/20/50 % + affiche A4 + QR) généré par la lane CODE ; s'en servir comme base texte.
+
+**3 versions à produire** — identiques sauf le **taux de commission** affiché : **10 % / 20 % / 50 %** (Fabrice envoie la bonne selon le profil du nouveau).
+
+**Structure / contenu (déjà rédigé, à mettre en forme) :**
+1. **Couverture** : logo lion + « ALLIANCE GROUPE » + titre « FORMATION AMBASSADEUR » + accroche « Tu partages ton lien, un client achète, tu es payé » + bouton *Ouvrir mon espace*.
+2. **Ce que tu vends — les sites** (le cœur) : 3 fiches image+lien →
+   - Essentiel **490 €** (vitrine 1 page, 5 j) · Pro **890 €** (jusqu'à 6 pages, blog, RDV, 8 j, « le + choisi ») · Boutique **1 490 €** (e-commerce, 30 produits, 12 j). + mention *maintenance mensuelle = revenu qui dure*.
+3. **Templates par métier** (grille image+lien) : Avocat, Restaurant, Barbier, Coach, Artisan, Aide à domicile.
+4. **Sur-mesure & sécurité** : sur-mesure = devis (grosse commission) ; **Audit & sécurité** (image+lien) pour les pros qui ont déjà un site. + « À qui vendre ? » (tout pro sans site ou avec un site négligé).
+5. **Comment tu gagnes** : **le lien fait tout → commission AUTOMATIQUE, rien à déclarer** ; la **déclaration ne sert QUE pour une vente en direct** (main à la main). Encadré commission **X %**. Paiement PayPal après validation.
+6. **Ton application** : installer la PWA « Ambassadeurs » (Android : menu ⋮ → Installer ; iPhone : Partager → Sur l'écran d'accueil) + bouton `?install=amb`.
+7. **Les 3 règles d'or** : honnête/jamais de spam ; avocats = email/courrier only ; dis que c'est toi.
+8. **Tous tes liens** : page récap' avec tous les boutons.
+
+**Liens réels (à mettre partout, cliquables) :**
+`/espace-ambassadeur` · `/espace-ambassadeur?install=amb` · `/sites-express` · `/wordpress-avocat` · `/wordpress-restaurant` · `/wordpress-barber` · `/wordpress-coach` · `/wordpress-artisan` · `/wordpress-domicile` · `/studio` · `/ambassadeurs` (déclarer en direct) · `/classement` · `/guide-ambassadeur` · `/audit-seo` · mailto `contact@alliancegroupe-inc.com`.
+
+**Visuels déjà dans le repo (`alliance-groupe-theme/assets/images/`) :**
+- Logo : `ag-logo.png` (lion 1024²), `logo-header.png` (502×240 transparent).
+- Offres : `offres/offre-essentiel.jpg`, `offres/offre-pro.jpg`, `offres/offre-boutique.jpg`.
+- Templates : `templates/avocat/accueil-jour.jpg`, `templates/restaurant/accueil.jpg`, `templates/barber/accueil.jpg`, `templates/coach/accueil.jpg`, `templates/artisan/generaliste.jpg`, `templates/domicile.jpg`.
+- Sécurité : `produits/pub-securite-audit.jpg`.
+
+**⚠️ Garde-fou (rappel RÉPERCUSSION) :** que du VRAI. **Ne PAS** remettre « +340 % de leads », « 6 langues », « CRM HubSpot… », etc. si ce n'est pas réellement livré — ces mentions ont été retirées comme fausses promesses. Prix et features = ceux d'`inc/ag-offres.php` uniquement.
+
+**Format :** vertical façon téléphone (lisible aussi sur ordi/tablette). Un vrai « responsive » n'existe pas en PDF ; le format mobile est le bon compromis.
+
 ### Un point technique, à faire par la lane CODE sur demande
 
 `page-accueil-cinema.php`, animation du lion : la plage `ScrollTrigger` va de
