@@ -335,7 +335,7 @@ if ( ! function_exists( 'ag_gwen_auth_forms' ) ) {
 		$in = 'width:100%;padding:11px;border:1px solid #ccc;border-radius:8px;margin-bottom:10px;box-sizing:border-box';
 		$bt = 'background:#F37A1F;color:#fff;border:0;border-radius:8px;padding:12px 22px;font-weight:700;cursor:pointer';
 		ob_start(); ?>
-		<div class="ag-gwen-auth" style="max-width:420px;margin:0 auto;font-family:system-ui,Arial,sans-serif">
+		<div class="ag-gwen-auth" style="max-width:420px;margin:32px auto;font-family:system-ui,Arial,sans-serif">
 			<?php if ( $err && isset( $msg[ $err ] ) ) : ?>
 				<p style="background:#fdecec;color:#c0392b;padding:10px 12px;border-radius:8px"><?php echo esc_html( $msg[ $err ] ); ?></p>
 			<?php endif; ?>
@@ -412,11 +412,12 @@ if ( ! function_exists( 'ag_resa_shortcode' ) ) {
 		$ajax  = admin_url( 'admin-ajax.php' );
 		$tz    = ag_resa_tz();
 		ob_start(); ?>
-		<div class="ag-resa" style="max-width:760px;margin:0 auto;font-family:system-ui,Arial,sans-serif">
+		<div class="ag-resa" style="max-width:760px;margin:32px auto;font-family:system-ui,Arial,sans-serif">
 			<?php if ( ! $logge ) : ?>
 				<div style="background:#fff7e6;border:1px solid #e9c96a;border-radius:12px;padding:16px 18px;margin-bottom:18px">
 					<strong>Pour réserver, connectez-vous ou créez votre compte.</strong>
 					<div style="margin-top:10px"><a href="<?php echo esc_url( home_url( '/mon-espace' ) ); ?>" style="display:inline-block;background:#F37A1F;color:#fff;text-decoration:none;padding:11px 20px;border-radius:9px;font-weight:700">Se connecter / créer un compte →</a></div>
+					<p style="margin:12px 0 0;font-size:.9rem">Pas encore client ? <a href="<?php echo esc_url( home_url( '/devis' ) ); ?>">Demandez d'abord un devis gratuit →</a></p>
 				</div>
 			<?php endif; ?>
 			<?php if ( ! $jours ) : ?>
@@ -506,7 +507,7 @@ if ( ! function_exists( 'ag_gwen_espace_shortcode' ) ) {
 		$avenir = array_filter( $mine, function ( $b ) use ( $now ) { return 'confirme' === ( $b['status'] ?? '' ) && (int) $b['start'] >= $now; } );
 
 		ob_start(); ?>
-		<div class="ag-espace" style="max-width:760px;margin:0 auto;font-family:system-ui,Arial,sans-serif">
+		<div class="ag-espace" style="max-width:760px;margin:32px auto;font-family:system-ui,Arial,sans-serif">
 			<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px">
 				<h2 style="margin:0">Bonjour <?php echo esc_html( $u->display_name ?: $u->user_login ); ?></h2>
 				<a href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>" style="color:#666">Déconnexion</a>
@@ -576,6 +577,43 @@ add_action( 'init', function () {
 	}
 	update_option( 'ag_resa_pages_v', 2, false );
 } );
+
+/* Ajoute « Réserver » au menu principal — UNE seule fois, juste après « Devis ».
+   On ne force pas : si le menu n'existe pas encore, ou si l'entrée est déjà là,
+   on ne touche à rien. Le placement fin et le style restent à la lane design. */
+add_action( 'init', function () {
+	if ( get_option( 'ag_resa_menu_done' ) ) { return; }
+	if ( ! function_exists( 'wp_get_nav_menu_object' ) ) { return; }
+
+	$menu = wp_get_nav_menu_object( 'AG Domicile — Principal' );
+	if ( ! $menu ) {
+		$loc = get_nav_menu_locations();
+		if ( ! empty( $loc['primary'] ) ) { $menu = wp_get_nav_menu_object( (int) $loc['primary'] ); }
+	}
+	$page = get_page_by_path( 'reserver' );
+	if ( ! $menu || ! $page ) { return; } // pas encore prêt : on réessaiera au prochain chargement
+
+	$devis     = get_page_by_path( 'devis' );
+	$devis_pos = 0;
+	foreach ( (array) wp_get_nav_menu_items( $menu->term_id ) as $it ) {
+		if ( (int) ( $it->object_id ?? 0 ) === (int) $page->ID || false !== strpos( (string) ( $it->url ?? '' ), '/reserver' ) ) {
+			update_option( 'ag_resa_menu_done', 1, false ); // déjà présent
+			return;
+		}
+		if ( $devis && (int) ( $it->object_id ?? 0 ) === (int) $devis->ID ) { $devis_pos = (int) $it->menu_order; }
+	}
+
+	$args = array(
+		'menu-item-title'     => 'Réserver',
+		'menu-item-object'    => 'page',
+		'menu-item-object-id' => $page->ID,
+		'menu-item-type'      => 'post_type',
+		'menu-item-status'    => 'publish',
+	);
+	if ( $devis_pos ) { $args['menu-item-position'] = $devis_pos + 1; }
+	wp_update_nav_menu_item( $menu->term_id, 0, $args );
+	update_option( 'ag_resa_menu_done', 1, false );
+}, 30 );
 
 /* ── 12. Écran admin : les réservations + le lien d'abonnement ───────── */
 
