@@ -282,6 +282,12 @@ d'étiquette pour un lecteur d'écran). Même règle : sur demande.
 
 ## Journal maître
 
+- 2026-09-22 · DESIGN · **PDF Formation Ambassadeur livrés** (brief du 22/09) : 3 versions 10 / 20 / 50 % + affiche A4 « Deviens ambassadeur » avec QR, dans `alliance-groupe-theme/assets/images/formation/` (servis par le thème : `…/wp-content/themes/alliance-groupe-theme/assets/images/formation/formation-ambassadeur-20.pdf`, etc. — URL à coller dans l'écran Ambassadeurs › Formation). Format téléphone 420×880, noir & or, 9 pages, 17 liens cliquables vérifiés en 200, QR décodés (espace + `?install=amb`, affiche → `/candidature-ambassadeur/`). Commissions affichées calculées sur les prix d'`inc/ag-offres.php`. Source (à relancer pour modifier) : `alliance-groupe-theme/assets/images/formation/source/build.py`.
+  **→ POUR LA LANE CODE (constats, rien touché) :**
+  1. **`/guide-ambassadeur` renvoie 404** → retiré du PDF.
+  2. **⚠️ Le taux perso n'est pas appliqué aux ventes AUTOMATIQUES par lien** : `inc/ag-espaces.php` (hook `ag_client_brief_submitted`) calcule `commission` avec `AG_COMMISSION_RATE` (10 %) au lieu de `ag_amb_taux( $amb['email'] )`. Un ambassadeur à 20 % ou 50 % verrait 10 % sur ses ventes par lien, alors que le PDF lui promet son taux. À corriger avant d'envoyer les versions 20/50 %.
+  3. Le PDF ne promet **aucune commission sur la maintenance** (non codée) : il la présente seulement comme service au client. Si Fabrice veut une commission récurrente, c'est à coder.
+
 - 2026-09-20 · CODE · **Le cabinet a un organigramme** (`inc/ag-equipe.php`, écran « 👥 Le cabinet ») : chaque étape du parcours porte un prénom et un bureau, Naples ou Nantes — Matteo (prospection), Hugo (premier contact), Alessia (réponses), **Enzo (négociation, nouveau)**, Giulia (offre), Camille (juridique), Margot (signature), Salvo (coach). Ces prénoms sont **internes** : les courriels partent signés « Alliance Groupe » avec la mention qu'ils sont automatisés.
   **→ POUR LA LANE DESIGN, à trancher :** le chat du site (`template-parts/prospect-chat.php`) fait parler **Léo, Sofia, Karim, Nadia** — d'autres prénoms, sans ville. Deux nomenclatures pour la même maison, dont une est visible par les clients. C'est un choix de marque, donc il est à vous : soit aligner le chat sur Naples/Nantes, soit garder les deux et me le dire pour que je note la séparation. Je n'y touche pas.
 
