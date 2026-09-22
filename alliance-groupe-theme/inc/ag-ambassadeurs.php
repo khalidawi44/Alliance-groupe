@@ -530,6 +530,63 @@ add_action( 'admin_post_ag_prime_amount_save', function () {
 	wp_safe_redirect( admin_url( 'admin.php?page=ag-ambassadeurs#primes' ) ); exit;
 } );
 
+/* Ajouter un ambassadeur À LA MAIN depuis l'admin (sans le parcours d'inscription/KYC).
+   Crée une fiche active + son lien de parrainage (via l'email), et — au choix — son
+   compte pour se connecter à son espace. Sert quand Fabrice enrôle quelqu'un lui-même. */
+add_action( 'admin_post_ag_amb_add', function () {
+	if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'Non autorisé.' ); }
+	check_admin_referer( 'ag_amb_add' );
+	$name  = sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) );
+	$email = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
+	$phone = sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) );
+	$city  = sanitize_text_field( wp_unslash( $_POST['city'] ?? '' ) );
+	$pct   = max( 0, min( 100, (float) str_replace( ',', '.', (string) ( $_POST['pct'] ?? '' ) ) ) );
+	$compte = ! empty( $_POST['compte'] );
+	$back  = wp_get_referer() ?: admin_url( 'admin.php?page=ag-ambassadeurs' );
+
+	if ( ! is_email( $email ) || '' === $name ) {
+		wp_safe_redirect( add_query_arg( 'ag_amb_add', 'err', $back ) ); exit;
+	}
+	$list = get_option( 'ag_ambassadeurs', array() );
+	if ( ! is_array( $list ) ) { $list = array(); }
+	foreach ( $list as $a ) {
+		if ( isset( $a['email'] ) && strtolower( (string) $a['email'] ) === strtolower( $email ) ) {
+			wp_safe_redirect( add_query_arg( 'ag_amb_add', 'deja', $back ) ); exit;
+		}
+	}
+	$rec = array(
+		'id'       => uniqid( 'amb_' ),
+		'name'     => $name,
+		'email'    => $email,
+		'phone'    => $phone,
+		'city'     => $city,
+		'status'   => 'actif',      // ajouté par l'admin = validé d'office
+		'identite' => 'verifiee',
+		'rgpd'     => array( 'consent' => true, 'date' => current_time( 'd/m/Y H:i' ), 'source' => 'admin' ),
+		'contrat'  => array( 'accepte' => true, 'signature' => $name, 'date' => current_time( 'd/m/Y H:i' ), 'ip' => 'admin', 'source' => 'admin' ),
+		'date'     => current_time( 'd/m/Y H:i' ),
+		'source'   => 'admin',
+	);
+	if ( $pct > 0 ) { $rec['rate'] = $pct / 100; }
+	$list[] = $rec;
+	update_option( 'ag_ambassadeurs', array_values( $list ) );
+
+	// Compte + espace (connexion, déclaration de ventes) + email d'accès, si demandé.
+	if ( $compte ) {
+		do_action( 'ag_ambassadeur_registered', $email, $name );
+		$u = get_user_by( 'email', $email );
+		if ( $u ) {
+			update_user_meta( $u->ID, 'ag_amb_last_active', time() );
+			if ( '' !== $phone ) {
+				$pn = preg_replace( '/[^0-9+]/', '', $phone );
+				if ( strlen( preg_replace( '/[^0-9]/', '', (string) $pn ) ) >= 9 ) { update_user_meta( $u->ID, 'ag_amb_phone', $pn ); }
+			}
+		}
+	}
+	if ( function_exists( 'ag_activity_log' ) ) { ag_activity_log( '🤝 Ambassadeur ajouté à la main : ' . $name . ' <' . $email . '>' . ( $pct > 0 ? ' — ' . $pct . '%' : '' ) ); }
+	wp_safe_redirect( add_query_arg( 'ag_amb_add', 'ok', $back ) ); exit;
+} );
+
 /* Taux de commission personnalisé d'un ambassadeur (ex. ambassadrice « spéciale » à 50 %). */
 add_action( 'admin_post_ag_amb_rate', function () {
 	if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'Non autorisé.' ); }
@@ -620,6 +677,26 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 			. 'Un taux <strong>personnalisé par ambassadeur</strong> se règle dans la colonne « % » de la liste ci-dessous '
 			. '(ex. une ambassadrice à 50 %) : il s\'applique à ses <em>prochaines</em> ventes déclarées. '
 			. 'Les commissions « à payer » correspondent aux ventes validées non encore payées.</p>';
+
+		// ── Ajouter un ambassadeur à la main (sans le parcours d'inscription) ──
+		$fa = isset( $_GET['ag_amb_add'] ) ? sanitize_key( $_GET['ag_amb_add'] ) : '';
+		if ( 'ok' === $fa )   { echo '<div class="notice notice-success is-dismissible"><p>Ambassadeur ajouté et activé.</p></div>'; }
+		if ( 'deja' === $fa ) { echo '<div class="notice notice-warning is-dismissible"><p>Un ambassadeur avec cet email existe déjà.</p></div>'; }
+		if ( 'err' === $fa )  { echo '<div class="notice notice-error is-dismissible"><p>Nom et email valides obligatoires.</p></div>'; }
+		echo '<div style="background:#fff;border:1px solid #ccd0d4;border-left:4px solid #46b450;border-radius:6px;padding:14px 18px;margin:14px 0;max-width:940px;">';
+		echo '<h2 style="margin-top:0;">➕ Ajouter un ambassadeur (sans inscription)</h2>';
+		echo '<p class="description">Crée directement une fiche <strong>active</strong> (identité considérée vérifiée par vous). Son lien de parrainage est généré tout seul. Le taux vide = ' . esc_html( (int) round( AG_COMMISSION_RATE * 100 ) ) . '% standard.</p>';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">';
+		wp_nonce_field( 'ag_amb_add' );
+		echo '<input type="hidden" name="action" value="ag_amb_add">';
+		echo '<input type="text"  name="name"  placeholder="Nom et prénom *" required style="width:200px;">';
+		echo '<input type="email" name="email" placeholder="Email *" required style="width:220px;">';
+		echo '<input type="text"  name="phone" placeholder="Téléphone" style="width:150px;">';
+		echo '<input type="text"  name="city"  placeholder="Ville" style="width:130px;">';
+		echo '<label style="display:inline-flex;align-items:center;gap:4px;">Taux <input type="number" name="pct" min="0" max="100" step="0.5" placeholder="' . esc_attr( (int) round( AG_COMMISSION_RATE * 100 ) ) . '" style="width:70px;"> %</label>';
+		echo '<label style="display:inline-flex;align-items:center;gap:6px;"><input type="checkbox" name="compte" value="1" checked> Créer son compte + lui envoyer ses accès</label>';
+		echo '<button class="button button-primary" type="submit">Ajouter</button>';
+		echo '</form></div>';
 
 		// Réglage du taux de parrainage (override)
 		if ( isset( $_POST['ag_save_override'] ) && check_admin_referer( 'ag_override' ) ) {
