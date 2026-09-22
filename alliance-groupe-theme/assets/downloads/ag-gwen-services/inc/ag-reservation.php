@@ -558,17 +558,23 @@ add_shortcode( 'ag_gwen_espace', 'ag_gwen_espace_shortcode' );
 /* ── 11. Pages auto-créées : /reserver et /mon-espace ────────────────── */
 
 add_action( 'init', function () {
-	if ( (int) get_option( 'ag_resa_pages_done', 0 ) >= 1 ) { return; }
+	/* Version 2 : on RÉPARE aussi une page qui existait déjà sans le shortcode
+	   (cas rencontré : une page « reserver » préexistante n'affichait rien). */
+	if ( (int) get_option( 'ag_resa_pages_v', 0 ) >= 2 ) { return; }
 	$pages = array(
 		'reserver'   => array( 'Réserver un rendez-vous', '[ag_reservation]' ),
 		'mon-espace' => array( 'Mon espace', '[ag_gwen_espace]' ),
 	);
 	foreach ( $pages as $slug => $p ) {
-		if ( ! get_page_by_path( $slug ) ) {
+		$page = get_page_by_path( $slug );
+		if ( ! $page ) {
 			wp_insert_post( array( 'post_title' => $p[0], 'post_name' => $slug, 'post_status' => 'publish', 'post_type' => 'page', 'post_content' => $p[1] ) );
+		} elseif ( false === strpos( (string) $page->post_content, $p[1] ) ) {
+			// La page existe mais sans le shortcode : on l'ajoute au lieu de la laisser vide.
+			wp_update_post( array( 'ID' => $page->ID, 'post_content' => trim( (string) $page->post_content . "\n\n" . $p[1] ) ) );
 		}
 	}
-	update_option( 'ag_resa_pages_done', 1, false );
+	update_option( 'ag_resa_pages_v', 2, false );
 } );
 
 /* ── 12. Écran admin : les réservations + le lien d'abonnement ───────── */
