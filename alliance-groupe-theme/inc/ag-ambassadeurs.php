@@ -548,6 +548,16 @@ function ag_amb_formation_payload() {
 	return array( 'url' => $url, 'msg' => $msg );
 }
 
+/* Queue à greffer aux messages de recrutement : renforce « & sécurité » (l'agence vend
+   aussi la sécurité, pas que des sites) et ajoute le lien de la formation s'il est réglé.
+   Réutilisée par le Robot et le partage international pour ne pas dupliquer le texte. */
+function ag_recrut_tail() {
+	$tail = "\n\n🛡️ On vend aussi la *sécurité* (audit + protection de site), pas seulement des sites web — plus d'occasions de commissions.";
+	$url  = trim( (string) get_option( 'ag_amb_formation_url', '' ) );
+	if ( '' !== $url ) { $tail .= "\n📚 La formation pour bien démarrer est offerte : " . $url; }
+	return $tail;
+}
+
 /* Pièce jointe : le PDF seulement s'il est hébergé sur CE site (sinon lien seul). */
 function ag_amb_formation_piece_jointe( $url ) {
 	$att = array();
@@ -881,6 +891,22 @@ if ( ! function_exists( 'ag_render_ambassadeurs_page' ) ) {
 			echo '<button class="button button-primary" type="submit">📤 Envoyer à tous les ambassadeurs</button>';
 			echo ' <a class="button" href="' . esc_url( $furl ) . '" target="_blank" rel="noopener">Voir le PDF</a>';
 			echo '</form>';
+
+			// ── Partage 1-par-1 : envoyer la formation via WhatsApp/SMS (comme le partage recrutement) + QR ──
+			$fp_share  = ag_amb_formation_payload();
+			$share_txt = $fp_share['msg'] . "\n\n📚 Formation : " . $fp_share['url'];
+			$wa  = 'https://wa.me/?text=' . rawurlencode( $share_txt );
+			$sms = 'sms:?body=' . rawurlencode( $share_txt );
+			$qr  = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' . rawurlencode( $fp_share['url'] );
+			echo '<hr style="margin:16px 0;border:none;border-top:1px solid #eee;">';
+			echo '<h3 style="margin:0 0 6px;">📤 Envoyer la formation à un ambassadeur (1 par 1)</h3>';
+			echo '<p class="description" style="max-width:760px;">Ouvre WhatsApp ou les SMS avec le message et le lien <strong>déjà écrits</strong> : tu choisis le contact et tu envoies. Idéal juste après avoir recruté quelqu\'un. Ou fais scanner le QR.</p>';
+			echo '<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;">';
+			echo '<img src="' . esc_url( $qr ) . '" alt="QR formation" width="150" height="150" style="background:#fff;border:1px solid #ddd;border-radius:8px;flex:none;">';
+			echo '<div style="flex:1;min-width:280px;">';
+			echo '<p style="margin:0 0 8px;"><a class="button button-primary" href="' . esc_url( $wa ) . '" target="_blank" rel="noopener">📲 WhatsApp</a> <a class="button" href="' . esc_attr( $sms ) . '">✉️ SMS</a></p>';
+			echo '<textarea readonly rows="6" style="width:100%;" onclick="this.select()">' . esc_textarea( $share_txt ) . '</textarea>';
+			echo '</div></div>';
 		}
 		echo '</div>';
 

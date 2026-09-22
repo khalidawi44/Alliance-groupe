@@ -176,6 +176,7 @@ if ( ! function_exists( 'ag_ri_build_message' ) ) {
 		$msg   = str_replace( '{prenom_recruteur}', (string) $prenom, $msg );
 		$msg   = str_replace( '{parrain_link}', (string) $parrain_link, $msg );
 		$msg   = str_replace( '{prime}', $prime, $msg );
+		if ( function_exists( 'ag_recrut_tail' ) ) { $msg .= ag_recrut_tail(); } // + « & sécurité » et lien formation
 		return $msg;
 	}
 }

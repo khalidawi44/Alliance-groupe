@@ -45,7 +45,9 @@ if ( ! function_exists( 'ag_rr_message' ) ) {
 			"Tu veux gagner de l'argent en ligne, à ton rythme ? 🚀\nAlliance Groupe cherche des ambassadeurs : 10 % de commission à vie sur les sites web qu'on vend grâce à toi. Formation simple, outils fournis, paiement PayPal.\nSans plafond, sans avance. Rejoins : {link}",
 		);
 		$m = $msgs[ $variation % count( $msgs ) ];
-		return str_replace( '{link}', (string) $link, $m );
+		$m = str_replace( '{link}', (string) $link, $m );
+		if ( function_exists( 'ag_recrut_tail' ) ) { $m .= ag_recrut_tail(); } // + « & sécurité » et lien formation
+		return $m;
 	}
 }
 
