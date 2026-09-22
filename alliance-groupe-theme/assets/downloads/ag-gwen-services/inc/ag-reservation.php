@@ -615,6 +615,22 @@ add_action( 'init', function () {
 	update_option( 'ag_resa_menu_done', 1, false );
 }, 30 );
 
+/* Liens de compte dans le menu principal, en DYNAMIQUE (ils changent selon l'état
+   de connexion) : « Se connecter » pour un visiteur, « Mon espace » + « Déconnexion »
+   pour un client connecté. Ajoutés au menu 'primary' — le style reste au thème. */
+add_filter( 'wp_nav_menu_items', function ( $items, $args ) {
+	if ( empty( $args->theme_location ) || 'primary' !== $args->theme_location ) { return $items; }
+	$espace = esc_url( home_url( '/mon-espace' ) );
+	if ( is_user_logged_in() ) {
+		$logout  = esc_url( wp_logout_url( home_url( '/' ) ) );
+		$items  .= '<li class="menu-item ag-resa-account"><a href="' . $espace . '">Mon espace</a></li>';
+		$items  .= '<li class="menu-item ag-resa-account"><a href="' . $logout . '">Déconnexion</a></li>';
+	} else {
+		$items  .= '<li class="menu-item ag-resa-account"><a href="' . $espace . '">Se connecter</a></li>';
+	}
+	return $items;
+}, 10, 2 );
+
 /* ── 12. Écran admin : les réservations + le lien d'abonnement ───────── */
 
 add_action( 'admin_menu', function () {

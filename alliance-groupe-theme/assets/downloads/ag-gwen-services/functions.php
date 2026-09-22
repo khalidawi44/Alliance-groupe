@@ -348,6 +348,9 @@ require_once get_template_directory() . '/inc/promo-video.php';
 // Galerie photo « En images » — auto-détectée (assets/galerie/), rien si vide.
 require_once get_template_directory() . '/inc/galerie.php';
 
+// Envoi des e-mails authentifié (SMTP) — sinon les invitations de RDV ne partent pas.
+require_once get_template_directory() . '/inc/ag-smtp.php';
+
 // Réservation en ligne + espace client + agenda .ics (pages /reserver et /mon-espace).
 require_once get_template_directory() . '/inc/ag-reservation.php';
 
