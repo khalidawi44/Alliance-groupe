@@ -138,7 +138,7 @@
         if (!isPremiumActive()) return;
         var rules = [
             // Domaines d'expertise
-            { selector: '.ag-domaines .ag-section-title', defaultText: "Domaines d'intervention", key: 'domaines_title' },
+            { selector: '.ag-domaines .ag-section-title', defaultTextAny: ["Domaines d'expertise", "Domaines d'intervention"], key: 'domaines_title' },
             { selector: '.ag-domaines .ag-section-lead',  matchSubstr: 'principaux domaines', key: 'domaines_lead' },
             // Honoraires
             { selector: '.ag-honoraires .ag-section-title', defaultText: 'Honoraires', key: 'honoraires_title' },
@@ -158,15 +158,17 @@
             { selector: '.ag-page-article p', matchSubstr: "convention d'honoraires", key: 'faq_intro' }
         ];
 
+        var agNormApos = function (s) { return (s || '').replace(/[‘’ʼ`´]/g, "'").trim(); };
         rules.forEach(function (rule) {
             var el = null;
             var nodes = document.querySelectorAll(rule.selector);
             nodes.forEach(function (n) {
                 if (el) return;
                 var t = (n.textContent || '').trim();
-                if (rule.defaultText && t === rule.defaultText) el = n;
+                if (rule.defaultTextAny && rule.defaultTextAny.some(function (d) { return agNormApos(t) === agNormApos(d); })) el = n;
+                else if (rule.defaultText && agNormApos(t) === agNormApos(rule.defaultText)) el = n;
                 else if (rule.matchSubstr && t.indexOf(rule.matchSubstr) !== -1) el = n;
-                else if (!rule.defaultText && !rule.matchSubstr) el = n;
+                else if (!rule.defaultText && !rule.matchSubstr && !rule.defaultTextAny) el = n;
             });
             if (!el) return;
             var newText = premiumText(rule.key, null);

@@ -389,6 +389,15 @@ p {
 }
 .ag-footer-deonto__notes .ag-deonto-item {
     white-space: nowrap;
+    max-width: 100%;
+}
+/* Mobile (≈390px) : le barreau peut etre long — on autorise le retour a la
+   ligne DANS le badge pour eviter tout debordement horizontal. */
+@media (max-width: 480px) {
+    .ag-footer-deonto__notes .ag-deonto-item {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
 }
 
 .ag-footer-bottom {

@@ -13,7 +13,7 @@ get_header();
 
 	<section class="ag-page-hero">
 		<div class="ag-container">
-			<h1 class="ag-page-hero__title"><?php esc_html_e( 'Domaines d\'expertise', 'ag-starter-avocat' ); ?></h1>
+			<h1 class="ag-page-hero__title"><?php esc_html_e( 'Domaines d\'intervention', 'ag-starter-avocat' ); ?></h1>
 			<p class="ag-page-hero__lead"><?php esc_html_e( 'Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit.', 'ag-starter-avocat' ); ?></p>
 		</div>
 	</section>

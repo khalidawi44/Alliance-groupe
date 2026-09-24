@@ -2373,12 +2373,20 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
 
     public function render_counters() {
         if ( ! $this->is_at_least( 'business' ) ) return;
-        $counters = array(
-            array( 'number' => '15+', 'label' => __( "Annees d'experience", 'ag-starter-avocat' ) ),
-            array( 'number' => '500+', 'label' => __( 'Dossiers traites', 'ag-starter-avocat' ) ),
-            array( 'number' => '98%', 'label' => __( 'Clients satisfaits', 'ag-starter-avocat' ) ),
-            array( 'number' => '24/7', 'label' => __( 'Garde a vue', 'ag-starter-avocat' ) ),
-        );
+        // DEONTOLOGIE AVOCAT (RIN art. 10) : aucun chiffre invente. Les compteurs
+        // sont VIDES par defaut et se renseignent dans le Customizer (AG Avocat >
+        // Chiffres cles). Une affirmation chiffree doit etre exacte et prouvable
+        // (« taux de reussite », « X dossiers » sont trompeurs) : si rien n'est
+        // renseigne, la section n'est pas rendue du tout.
+        $counters = array();
+        for ( $i = 1; $i <= 4; $i++ ) {
+            $number = trim( (string) get_theme_mod( 'ag_counter_' . $i . '_number', '' ) );
+            $label  = trim( (string) get_theme_mod( 'ag_counter_' . $i . '_label', '' ) );
+            if ( '' !== $number || '' !== $label ) {
+                $counters[] = array( 'number' => $number, 'label' => $label );
+            }
+        }
+        if ( empty( $counters ) ) return;
         echo '<section class="ag-section ag-counters"><div class="ag-container"><div class="ag-counters__grid">';
         foreach ( $counters as $c ) {
             echo '<div class="ag-counter"><span class="ag-counter__number">' . esc_html( $c['number'] ) . '</span>';
@@ -2445,30 +2453,13 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
             return;
         }
 
-        // FREE: big animated promo
-        ?>
-        <div style="background:#060606;border-top:3px solid #D4B45C;padding:60px 24px 40px;text-align:center;position:relative;overflow:hidden;">
-            <style>
-            @keyframes agPromoGlow{0%,100%{box-shadow:0 0 30px rgba(212,180,92,.1)}50%{box-shadow:0 0 60px rgba(212,180,92,.25)}}
-            @keyframes agFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-            .ag-premiummo-emoji{display:inline-block;animation:agFloat 2s ease-in-out infinite;font-size:2rem;}
-            .ag-premiummo-emoji:nth-child(2){animation-delay:.3s}
-            .ag-premiummo-emoji:nth-child(3){animation-delay:.6s}
-            .ag-premiummo-emoji:nth-child(4){animation-delay:.9s}
-            .ag-premiummo-emoji:nth-child(5){animation-delay:1.2s}
-            </style>
-            <div style="max-width:480px;margin:0 auto;padding:44px 32px;background:linear-gradient(180deg,rgba(212,180,92,.08) 0%,#0a0a0f 100%);border:2px solid rgba(212,180,92,.35);border-radius:24px;animation:agPromoGlow 3s ease-in-out infinite;">
-                <div style="margin-bottom:20px;"><span class="ag-premiummo-emoji">🚀</span> <span class="ag-premiummo-emoji">⭐</span> <span class="ag-premiummo-emoji">💎</span> <span class="ag-premiummo-emoji">✨</span> <span class="ag-premiummo-emoji">🏆</span></div>
-                <img src="https://alliancegroupe-inc.com/wp-content/uploads/2026/04/logo_site_alliance.jpg" alt="Alliance Groupe" style="height:80px;border-radius:14px;margin-bottom:20px;border:2px solid rgba(212,180,92,.3);">
-                <h3 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#fff;margin:0 0 8px;font-style:italic;">Alliance Groupe</h3>
-                <p style="color:#D4B45C;font-size:1rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin:0 0 16px;">Agence Web & IA</p>
-                <p style="color:rgba(255,255,255,.7);font-size:1rem;line-height:1.7;margin:0 0 8px;">Ce theme est offert par <strong style="color:#D4B45C;">Alliance Groupe</strong>.</p>
-                <p style="color:rgba(255,255,255,.5);font-size:.9rem;font-style:italic;font-family:'Playfair Display',serif;margin:0 0 28px;">Nantes · Naples · Marrakech</p>
-                <a href="<?php echo esc_url( $url_templates ); ?>" target="_blank" rel="noopener" style="display:inline-block;background:#D4B45C;color:#0a0a0f;font-weight:700;padding:16px 36px;border-radius:12px;text-decoration:none;font-size:1.05rem;box-shadow:0 4px 25px rgba(212,180,92,.3);">Decouvrir nos templates →</a>
-                <p style="color:rgba(255,255,255,.3);font-size:.75rem;margin:20px 0 0;">Passez au <strong>Pack Premium</strong> pour reduire cette publicite</p>
-            </div>
-            <p style="color:rgba(255,255,255,.2);font-size:.7rem;margin:20px 0 0;">&copy; <?php echo esc_html( date('Y') ); ?> <?php bloginfo('name'); ?> — <a href="<?php echo esc_url( $url_home ); ?>" target="_blank" rel="noopener nofollow" style="color:rgba(255,255,255,.2);">Alliance Groupe</a></p>
-        </div>
-        <?php
+        // FREE : credit discret, identique au tier Business.
+        // DEONTOLOGIE AVOCAT (RIN art. 10.5) : aucune banniere publicitaire sur le
+        // site d'un avocat. On remplace la grande promo animee (offre gratuite,
+        // « Passez au Pack Premium », « Nantes · Naples · Marrakech ») par un simple
+        // credit sobre (une ligne, un seul lien rel="nofollow", sans slogan ni villes).
+        echo '<div style="text-align:center;padding:16px 24px;background:#060606;border-top:1px solid rgba(255,255,255,.04);">';
+        echo '<p style="margin:0;color:rgba(255,255,255,.3);font-size:.75rem;">&copy; ' . esc_html( date( 'Y' ) ) . ' ' . esc_html( get_bloginfo( 'name' ) ) . ' — <a href="' . esc_url( $url_home ) . '" target="_blank" rel="noopener nofollow" style="color:rgba(255,255,255,.3);">Alliance Groupe</a></p>';
+        echo '</div>';
     }
 }

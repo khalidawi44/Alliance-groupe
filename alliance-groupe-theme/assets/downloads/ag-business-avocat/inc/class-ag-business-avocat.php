@@ -371,6 +371,12 @@ class AG_Business_Avocat {
 		if ( ! $this->is_active() ) {
 			return;
 		}
+		// Ne pas afficher « Découvrir → » si aucune équipe n'est renseignée
+		// (fondateur, associés ou collaborateurs) : le bouton mènerait à un vide.
+		$team = $this->get_default_team_data();
+		if ( empty( $team['founder'] ) && empty( $team['associates'] ) && empty( $team['collaborators'] ) ) {
+			return;
+		}
 		echo $this->render_decouvrir_btn_html( 'Decouvrir le cabinet et l\'equipe' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
@@ -1669,6 +1675,13 @@ Telephone : [telephone]</p>
 	}
 
 	private function get_default_offers_data() {
+		// DEONTOLOGIE AVOCAT (RIN art. 10 + art. 11) : on ne livre AUCUNE offre
+		// fictive par defaut (« conseil juridique sur tout domaine », guide, audit
+		// a prix fixe). Les honoraires se fixent par convention ; afficher des
+		// prestations/tarifs inventes est trompeur. L'avocat cree ses propres
+		// produits s'il le souhaite ; sinon la boutique reste vide.
+		return array();
+		// phpcs:disable -- gabarit historique conserve mais jamais atteint.
 		return array(
 			'pack-3-consultations-telephoniques' => array(
 				'title'       => '3 consultations téléphoniques',

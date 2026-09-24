@@ -125,7 +125,7 @@ if ( ! function_exists( 'ag_starter_avocat_menu_fallback' ) ) :
 		// pour que le menu ne soit JAMAIS vide.
 		$defaults = array(
 			''            => __( 'Accueil', 'ag-starter-avocat' ),
-			'expertise'   => __( "Domaines d'expertise", 'ag-starter-avocat' ),
+			'expertise'   => __( "Domaines d'intervention", 'ag-starter-avocat' ),
 			'honoraires'  => __( 'Honoraires', 'ag-starter-avocat' ),
 			'cabinet'     => __( 'Le cabinet', 'ag-starter-avocat' ),
 			'rendez-vous' => __( 'Prendre rendez-vous', 'ag-starter-avocat' ),
@@ -355,10 +355,10 @@ if ( ! function_exists( 'ag_avocat_credit' ) ) :
 	function ag_avocat_credit() {
 		echo '<p class="ag-credit"><small>';
 		printf(
-			wp_kses( __( 'Site realise par %s', 'ag-starter-avocat' ), array( 'a' => array( 'href' => array(), 'title' => array() ) ) ),
+			wp_kses( __( 'Site réalisé par %s', 'ag-starter-avocat' ), array( 'a' => array( 'href' => array(), 'title' => array() ) ) ),
 			'<a href="https://alliancegroupe-inc.com/wordpress-avocat" title="Site WordPress pour avocat par Alliance Groupe">Alliance Groupe</a>'
 		);
-		echo ' &middot; <a href="https://alliancegroupe-inc.com/bureau-nantes" title="Agence web Alliance Groupe Nantes">' . esc_html__( 'Agence Web Nantes & Marrakech', 'ag-starter-avocat' ) . '</a>';
+		echo ' &middot; <a href="https://alliancegroupe-inc.com/bureau-nantes" title="Agence web Alliance Groupe Nantes">' . esc_html__( 'Agence web à Nantes', 'ag-starter-avocat' ) . '</a>';
 		echo '</small></p>';
 	}
 endif;

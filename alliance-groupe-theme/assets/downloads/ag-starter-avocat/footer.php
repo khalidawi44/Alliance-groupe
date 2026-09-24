@@ -63,7 +63,7 @@
 			</nav>
 			<p class="ag-footer-deonto__notes">
 				<?php if ( $ag_barreau ) : ?>
-					<span class="ag-deonto-item">⚖️ <?php echo esc_html( sprintf( /* translators: %s = nom du barreau */ __( 'Avocat inscrit au %s', 'ag-starter-avocat' ), $ag_barreau ) ); ?></span>
+					<span class="ag-deonto-item">⚖️ <?php echo esc_html( $ag_barreau ); ?></span>
 				<?php endif; ?>
 				<?php if ( $ag_heberg ) : ?>
 					<span class="ag-deonto-item">🇪🇺 <?php echo esc_html( $ag_heberg ); ?></span>
@@ -76,16 +76,18 @@
 		<div class="ag-footer-bottom">
 			<p>
 				&copy; <?php echo esc_html( gmdate( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?>.
-				<?php esc_html_e( 'Tous droits reserves.', 'ag-starter-avocat' ); ?>
+				<?php esc_html_e( 'Tous droits réservés.', 'ag-starter-avocat' ); ?>
 			</p>
 			<?php if ( function_exists( 'ag_avocat_credit' ) ) ag_avocat_credit(); ?>
 		</div>
 	</div>
 </footer>
 
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Organization","name":"Alliance Groupe","url":"https://alliancegroupe-inc.com","logo":"https://alliancegroupe-inc.com/wp-content/themes/alliance-groupe-theme/assets/images/logo.jpg","description":"Agence web & IA franco-italo-marocaine. Sites WordPress sur-mesure pour avocats, cabinets et professions juridiques.","areaServed":["FR","MA","IT"]}
-</script>
+<?php
+// DEONTOLOGIE AVOCAT (RIN art. 10) : pas de schema Organization « Alliance Groupe »
+// sur le site de l'avocat (identite de l'agence, pas du cabinet). Le seul schema
+// legitime ici est Attorney/LegalService, deja emis par render_schema_org().
+?>
 
 <?php
 // AG branding (rendered by pro-features.php based on tier)

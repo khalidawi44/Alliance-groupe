@@ -84,12 +84,12 @@ function ag_starter_avocat_customizer_defaults() {
 		'ag_avocat_honoraires_lead' => 'Transparence totale sur les tarifs : pas de mauvaise surprise, devis ecrit avant tout engagement.',
 		'ag_avocat_cabinet_lead'    => 'Consultation au cabinet, en visio ou par telephone.',
 		// Section H2 titles + supplementary labels.
-		'ag_avocat_domaines_title'      => 'Domaines d\'expertise',
+		'ag_avocat_domaines_title'      => 'Domaines d\'intervention',
 		'ag_avocat_honoraires_title'    => 'Honoraires',
 		'ag_avocat_cabinet_title'       => 'Le cabinet',
 		'ag_avocat_maitre_tag'          => 'Le Maître',
 		'ag_avocat_maitre_year_prefix'  => 'Inscrit depuis',
-		'ag_avocat_maitre_specialties_label' => 'Specialites :',
+		'ag_avocat_maitre_specialties_label' => 'Domaines d\'intervention :',
 		'ag_avocat_cabinet_address_heading'  => 'Adresse',
 		'ag_avocat_cabinet_hours_heading'    => 'Horaires',
 		'ag_avocat_cabinet_contact_heading'  => 'Contact',
@@ -502,7 +502,7 @@ function ag_starter_avocat_customize_register( $wp_customize ) {
 		'ag_maitre_name'        => array( 'label' => 'Nom du Maître', 'type' => 'text' ),
 		'ag_maitre_barreau'     => array( 'label' => 'Barreau d\'inscription', 'type' => 'text' ),
 		'ag_maitre_year'        => array( 'label' => 'Année d\'inscription au barreau', 'type' => 'text' ),
-		'ag_maitre_specialties' => array( 'label' => 'Spécialités (séparées par ·)', 'type' => 'text' ),
+		'ag_maitre_specialties' => array( 'label' => 'Domaines d\'intervention (séparés par ·)', 'type' => 'text' ),
 		'ag_maitre_bio'         => array( 'label' => 'Biographie / parcours', 'type' => 'textarea' ),
 	);
 	$prio = 10;
@@ -527,6 +527,39 @@ function ag_starter_avocat_customize_register( $wp_customize ) {
 		);
 		$prio += 5;
 	}
+	// ─── Section: Chiffres clés (Business) ───
+	// DEONTOLOGIE (RIN art. 10) : vides par défaut. Un chiffre affiché doit être
+	// exact et vérifiable ; sinon la section n'est pas rendue (render_counters()).
+	$wp_customize->add_section(
+		'ag_section_counters',
+		array(
+			'title'       => esc_html__( 'Chiffres clés (Business)', 'ag-starter-avocat' ),
+			'description' => esc_html__( 'Facultatif. Laissez vide si vous n\'avez pas de chiffre exact et vérifiable à afficher : la section reste masquée tant que rien n\'est renseigné.', 'ag-starter-avocat' ),
+			'panel'       => 'ag_starter_panel',
+			'priority'    => 65,
+		)
+	);
+	$prio = 10;
+	for ( $ci = 1; $ci <= 4; $ci++ ) {
+		foreach ( array( 'number' => 'Chiffre', 'label' => 'Libellé' ) as $sfx => $lbl ) {
+			$ckey = 'ag_counter_' . $ci . '_' . $sfx;
+			$wp_customize->add_setting(
+				$ckey,
+				array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field', 'transport' => 'refresh' )
+			);
+			$wp_customize->add_control(
+				$ckey,
+				array(
+					'label'    => $lbl . ' ' . $ci,
+					'section'  => 'ag_section_counters',
+					'type'     => 'text',
+					'priority' => $prio,
+				)
+			);
+			$prio += 5;
+		}
+	}
+
 	// Photo upload control.
 	$wp_customize->add_setting(
 		'ag_maitre_photo',
