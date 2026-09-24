@@ -19,8 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function ag_starter_avocat_register_domaine_cpt() {
 	$labels = array(
-		'name'                  => _x( 'Domaines d\'expertise', 'Post type general name', 'ag-starter-avocat' ),
-		'singular_name'         => _x( 'Domaine d\'expertise', 'Post type singular name', 'ag-starter-avocat' ),
+		'name'                  => _x( 'Domaines d\'intervention', 'Post type general name', 'ag-starter-avocat' ),
+		'singular_name'         => _x( 'Domaine d\'intervention', 'Post type singular name', 'ag-starter-avocat' ),
 		'menu_name'             => _x( 'Domaines', 'Admin Menu text', 'ag-starter-avocat' ),
 		'name_admin_bar'        => _x( 'Domaine', 'Add New on Toolbar', 'ag-starter-avocat' ),
 		'add_new'               => __( 'Ajouter', 'ag-starter-avocat' ),

@@ -61,7 +61,7 @@ class AG_Avocat_Guide {
 				'title' => 'Pages dédiées',
 				'desc'  => 'Chaque section de l\'accueil a une page WP. Le titre + premier paragraphe deviennent l\'entête de la section sur l\'accueil.',
 				'rows'  => array(
-					array( 'Domaines d\'expertise',  'Pages > Expertise (slug : expertise)' ),
+					array( 'Domaines d\'intervention',  'Pages > Expertise (slug : expertise)' ),
 					array( 'Honoraires',             'Pages > Honoraires (slug : honoraires)' ),
 					array( 'Cabinet',                'Pages > Cabinet (slug : cabinet)' ),
 					array( 'Prendre rendez-vous',    'Pages > Rendez-vous (slug : rendez-vous)' ),

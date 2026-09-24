@@ -65,7 +65,7 @@ endwhile; rewind_posts(); endif; ?>
 	?>
 
 	<?php /* ─────────── 2. Domaines d'expertise (CPT) ─────────── */ ?>
-	<?php list( $dom_title, $dom_lead ) = ag_avocat_page_section_text( 'expertise', ag_avocat_opt( 'ag_avocat_domaines_title', 'Domaines d\'expertise' ), ag_avocat_opt( 'ag_avocat_domaines_lead', 'Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit.' ) ); ?>
+	<?php list( $dom_title, $dom_lead ) = ag_avocat_page_section_text( 'expertise', ag_avocat_opt( 'ag_avocat_domaines_title', 'Domaines d\'intervention' ), ag_avocat_opt( 'ag_avocat_domaines_lead', 'Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit.' ) ); ?>
 	<section class="ag-section ag-domaines" id="ag-domaines">
 		<div class="ag-container">
 			<h2 class="ag-section-title"><?php echo ag_avocat_render_split_title( $dom_title ); ?></h2>
@@ -142,7 +142,7 @@ endwhile; rewind_posts(); endif; ?>
 					</div>
 					<p class="ag-maitre__bio"><?php echo nl2br( esc_html( ag_starter_avocat_get_option( 'ag_maitre_bio' ) ) ); ?></p>
 					<?php $spec = ag_starter_avocat_get_option( 'ag_maitre_specialties' ); if ( $spec ) : ?>
-						<p class="ag-maitre__specialties"><strong><?php echo esc_html( ag_avocat_opt( 'ag_avocat_maitre_specialties_label', 'Specialites :' ) ); ?></strong> <?php echo esc_html( $spec ); ?></p>
+						<p class="ag-maitre__specialties"><strong><?php echo esc_html( ag_avocat_opt( 'ag_avocat_maitre_specialties_label', 'Domaines d\'intervention :' ) ); ?></strong> <?php echo esc_html( $spec ); ?></p>
 					<?php endif; ?>
 					<?php do_action( 'ag_inside_maitre_body' ); ?>
 				</div>

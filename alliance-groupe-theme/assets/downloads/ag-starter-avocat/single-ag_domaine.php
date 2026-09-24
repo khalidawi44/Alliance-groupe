@@ -19,7 +19,7 @@ get_header();
 					? ag_starter_avocat_get_domaine_icon_html( $icon ) /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped */
 					: esc_html( $icon ? $icon : '⚖️' );
 			?></div>
-			<p class="ag-domaine-hero-tag"><?php esc_html_e( 'Domaine d\'expertise', 'ag-starter-avocat' ); ?></p>
+			<p class="ag-domaine-hero-tag"><?php esc_html_e( 'Domaine d\'intervention', 'ag-starter-avocat' ); ?></p>
 			<h1 class="ag-page-hero__title"><?php the_title(); ?></h1>
 		</div>
 	</section>
@@ -41,7 +41,7 @@ get_header();
 						<?php endforeach; ?>
 					</ul>
 					<nav class="ag-domaine-back">
-						<a href="<?php echo esc_url( ag_page_url( 'expertise' ) ); ?>">← <?php esc_html_e( 'Tous les domaines d\'expertise', 'ag-starter-avocat' ); ?></a>
+						<a href="<?php echo esc_url( ag_page_url( 'expertise' ) ); ?>">← <?php esc_html_e( 'Tous les domaines d\'intervention', 'ag-starter-avocat' ); ?></a>
 					</nav>
 				</aside>
 			<?php endif; ?>
