@@ -45,6 +45,15 @@ Une fois installé, tout commit qui touche à un fichier de ce dossier (sauf `LO
 
 ## Journal des déverrouillages
 
+- **2026-09-24 — `unlock-free:` libellés « Domaines d'intervention », publié en 1.1.23.**
+  Autorisation écrite de Fabrice. `ag_avocat_opt()` utilise son 2ᵉ argument comme
+  repli (pas le tableau de défauts du Customizer) : les replis en dur restaient
+  « Domaines d'expertise » / « Specialites » sur une install neuve. Corrigés dans
+  `front-page.php`, `page-cabinet.php`, `single-ag_domaine.php`, `inc/guide.php`,
+  `inc/cpt-domaine.php` (libellés du CPT). Seul le **slug** de page `expertise`
+  (identifiant d'URL) subsiste. Build `.org` aligné en 1.1.23. `.LOCK.sha256`
+  régénéré, template de nouveau **contrôlé**.
+
 - **2026-09-24 — `unlock-free:` conformité RIN (format WordPress.org), publié en 1.1.22.**
   Autorisation écrite de Fabrice. Correctif du crédit (un seul lien `rel="nofollow"`,
   retrait du 2ᵉ lien) en miroir du build `.org` `wporg-builds/ag-starter-avocat`
