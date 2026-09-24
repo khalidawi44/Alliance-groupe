@@ -42,3 +42,16 @@ Une fois installé, tout commit qui touche à un fichier de ce dossier (sauf `LO
 
 - **Verrouillé** : tous les fichiers de `ag-starter-avocat/` SAUF `LOCKED.md`
 - **Non concerné** : `ag-premium-avocat/`, `ag-business-avocat/`, plugins, etc.
+
+## Journal des déverrouillages
+
+- **2026-09-24 — `unlock-free:` conformité RIN art. 10 (autorisation écrite de Fabrice).**
+  Modifications strictement déontologiques : suppression des chiffres inventés
+  (`render_counters` désormais vide par défaut, configurable via Customizer),
+  retrait du JSON-LD `Organization` « franco-italo-marocaine » du `footer.php`
+  (le schema `Attorney` suffit), remplacement de la grande publicité du pied de
+  page gratuit par un crédit discret (RIN art. 10.5 — pas de bannière), correction
+  des libellés (« Domaines d'expertise » → « Domaines d'intervention »,
+  « Avocat inscrit au %s » qui doublonnait, accents), et CSS `.ag-deonto-item`
+  (débordement mobile). Publié en **1.1.20**. `.LOCK.sha256` régénéré sur ce
+  contenu ; le template repasse **contrôlé** (retiré de `.AG_FOCUS`).
