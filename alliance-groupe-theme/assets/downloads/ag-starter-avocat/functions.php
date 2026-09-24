@@ -354,11 +354,11 @@ require_once get_template_directory() . '/inc/ag-prefill.php';
 if ( ! function_exists( 'ag_avocat_credit' ) ) :
 	function ag_avocat_credit() {
 		echo '<p class="ag-credit"><small>';
+		// RIN art. 10.5 : un SEUL lien de crédit, en rel="nofollow" (comme le build .org).
 		printf(
-			wp_kses( __( 'Site réalisé par %s', 'ag-starter-avocat' ), array( 'a' => array( 'href' => array(), 'title' => array() ) ) ),
-			'<a href="https://alliancegroupe-inc.com/wordpress-avocat" title="Site WordPress pour avocat par Alliance Groupe">Alliance Groupe</a>'
+			wp_kses( __( 'Site réalisé par %s', 'ag-starter-avocat' ), array( 'a' => array( 'href' => array(), 'title' => array(), 'rel' => array() ) ) ),
+			'<a href="https://alliancegroupe-inc.com/wordpress-avocat" rel="nofollow" title="Site WordPress pour avocat par Alliance Groupe">Alliance Groupe</a>'
 		);
-		echo ' &middot; <a href="https://alliancegroupe-inc.com/bureau-nantes" title="Agence web Alliance Groupe Nantes">' . esc_html__( 'Agence web à Nantes', 'ag-starter-avocat' ) . '</a>';
 		echo '</small></p>';
 	}
 endif;
