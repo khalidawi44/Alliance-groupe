@@ -45,6 +45,13 @@ Une fois installé, tout commit qui touche à un fichier de ce dossier (sauf `LO
 
 ## Journal des déverrouillages
 
+- **2026-09-24 — `unlock-free:` conformité RIN (format WordPress.org), publié en 1.1.22.**
+  Autorisation écrite de Fabrice. Correctif du crédit (un seul lien `rel="nofollow"`,
+  retrait du 2ᵉ lien) en miroir du build `.org` `wporg-builds/ag-starter-avocat`
+  (v1.1.22 : compteurs vides par défaut, libellés « Practice areas », i18n
+  `fr_FR.po/.mo` recompilés à 100 %). `.LOCK.sha256` régénéré, template de nouveau
+  **contrôlé**.
+
 - **2026-09-24 — `unlock-free:` conformité RIN art. 10 (autorisation écrite de Fabrice).**
   Modifications strictement déontologiques : suppression des chiffres inventés
   (`render_counters` désormais vide par défaut, configurable via Customizer),
