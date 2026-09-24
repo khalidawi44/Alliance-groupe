@@ -89,7 +89,7 @@ function ag_starter_avocat_customizer_defaults() {
 		'ag_avocat_cabinet_title'       => 'The firm',
 		'ag_avocat_maitre_tag'          => 'The Attorney',
 		'ag_avocat_maitre_year_prefix'  => 'Admitted since',
-		'ag_avocat_maitre_specialties_label' => 'Specialties:',
+		'ag_avocat_maitre_specialties_label' => 'Practice areas:',
 		'ag_avocat_cabinet_address_heading'  => 'Address',
 		'ag_avocat_cabinet_hours_heading'    => 'Hours',
 		'ag_avocat_cabinet_contact_heading'  => 'Contact',
@@ -502,7 +502,7 @@ function ag_starter_avocat_customize_register( $wp_customize ) {
 		'ag_maitre_name'        => array( 'label' => esc_html__( 'Attorney name', 'ag-starter-avocat' ), 'type' => 'text' ),
 		'ag_maitre_barreau'     => array( 'label' => esc_html__( 'Bar of admission', 'ag-starter-avocat' ), 'type' => 'text' ),
 		'ag_maitre_year'        => array( 'label' => esc_html__( 'Year of bar admission', 'ag-starter-avocat' ), 'type' => 'text' ),
-		'ag_maitre_specialties' => array( 'label' => esc_html__( 'Specialties (separated by ·)', 'ag-starter-avocat' ), 'type' => 'text' ),
+		'ag_maitre_specialties' => array( 'label' => esc_html__( 'Practice areas (separated by ·)', 'ag-starter-avocat' ), 'type' => 'text' ),
 		'ag_maitre_bio'         => array( 'label' => esc_html__( 'Biography / background', 'ag-starter-avocat' ), 'type' => 'textarea' ),
 	);
 	$prio = 10;

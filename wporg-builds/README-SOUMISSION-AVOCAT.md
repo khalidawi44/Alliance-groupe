@@ -3,6 +3,17 @@
 Ce dossier `wporg-builds/ag-starter-avocat/` est la **version « .org propre »** du thème
 gratuit, prête à tester puis soumettre à https://wordpress.org/themes/upload/.
 
+## ✅ v1.1.22 — conformité RIN art. 10 (déontologie avocat)
+Corrections déontologiques appliquées **dans le format .org** (code source anglais + traduction FR dans `fr_FR.po/.mo`), en miroir de la version distribuée par le site :
+- **Chiffres clés** (`render_counters`) : plus aucun chiffre inventé (15+/500+/98 %/24-7) — compteurs lus depuis le Customizer, **vides par défaut**, section non rendue si vide (code mort en tier gratuit, aligné quand même, sans ajouter de français).
+- **Publicité / crédit** : le pied de page gratuit n'a **qu'un seul lien de crédit `rel="nofollow"`** (RIN 10.5 : aucune bannière publicitaire) ; `render_footer_branding()` reste inerte en gratuit. `grep -ri marrakech` = 0.
+- **Libellés** (source EN + traduction FR) : « Practice areas » (FR « Domaines d'intervention ») au lieu de « Specialties » ; la ligne du barreau n'affiche plus que sa valeur (fin du doublon « Attorney admitted to the … ») ; accents « Tous droits réservés », « Thème : ».
+- **CSS mobile** : `.ag-deonto-item` ne déborde plus sous 480 px.
+- **JSON-LD** : aucun schéma `Organization` dans le thème (seul l'`Attorney` de `render_schema_org` subsiste) — vérifié par `grep ld+json`.
+- **i18n** : `.pot` régénéré + `fr_FR.po/.mo` recompilés (msgfmt) → **291 chaînes, 100 % traduites**, couverture `.po`↔`.pot` vérifiée (`msgcmp`), 0 fuzzy.
+- **Aucun phone-home** : `grep wp_remote_ / githubusercontent` = 0. `php -l` OK sur tous les fichiers.
+- Zip prêt : **`ag-starter-avocat-1.1.22.zip`**. ⚠️ Ne pas soumettre : **Fabrice lance Theme Check lui-même** (objectif 0 ERROR).
+
 ## ✅ v1.1.21 — 2ᵉ passe i18n (complète)
 Après vérification point par point du build 1.1.20, il RESTAIT du français non traité par la 1ʳᵉ passe (qui n'avait converti que les appels `__()`) :
 - **Libellés du Customizer** (`inc/customizer.php`) : ~33 `'label' => 'Français'` bruts, non traduisibles → c'est l'écran que le relecteur ouvre. **Corrigés** en `esc_html__( 'English', … )`.

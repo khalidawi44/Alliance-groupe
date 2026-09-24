@@ -68,7 +68,7 @@
 			</nav>
 			<p class="ag-footer-deonto__notes">
 				<?php if ( $ag_barreau ) : ?>
-					<span class="ag-deonto-item">⚖️ <?php echo esc_html( sprintf( /* translators: %s = nom du barreau */ __( 'Attorney admitted to the %s', 'ag-starter-avocat' ), $ag_barreau ) ); ?></span>
+					<span class="ag-deonto-item">⚖️ <?php echo esc_html( $ag_barreau ); ?></span>
 				<?php endif; ?>
 				<?php if ( $ag_heberg ) : ?>
 					<span class="ag-deonto-item">🇪🇺 <?php echo esc_html( $ag_heberg ); ?></span>

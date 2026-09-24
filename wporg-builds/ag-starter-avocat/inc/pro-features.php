@@ -2373,12 +2373,17 @@ body.ag-light .ag-maitre__specialties strong{color:#7B2D3B !important;}
 
     public function render_counters() {
         if ( ! $this->is_at_least( 'business' ) ) return;
-        $counters = array(
-            array( 'number' => '15+', 'label' => __( "Years of experience", 'ag-starter-avocat' ) ),
-            array( 'number' => '500+', 'label' => __( 'Cases handled', 'ag-starter-avocat' ) ),
-            array( 'number' => '98%', 'label' => __( 'Satisfied clients', 'ag-starter-avocat' ) ),
-            array( 'number' => '24/7', 'label' => __( 'Police custody', 'ag-starter-avocat' ) ),
-        );
+        // No invented figures: counters are empty by default and read from the
+        // Customizer; the section is not rendered when nothing is set.
+        $counters = array();
+        for ( $i = 1; $i <= 4; $i++ ) {
+            $number = trim( (string) get_theme_mod( 'ag_counter_' . $i . '_number', '' ) );
+            $label  = trim( (string) get_theme_mod( 'ag_counter_' . $i . '_label', '' ) );
+            if ( '' !== $number || '' !== $label ) {
+                $counters[] = array( 'number' => $number, 'label' => $label );
+            }
+        }
+        if ( empty( $counters ) ) return;
         echo '<section class="ag-section ag-counters"><div class="ag-container"><div class="ag-counters__grid">';
         foreach ( $counters as $c ) {
             echo '<div class="ag-counter"><span class="ag-counter__number">' . esc_html( $c['number'] ) . '</span>';

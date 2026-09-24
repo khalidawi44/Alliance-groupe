@@ -1,899 +1,1295 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: AG Starter Avocat 1.1.21\n"
+"Project-Id-Version: AG Starter Avocat 1.1.22\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-24 14:36+0000\n"
+"PO-Revision-Date: 2026-09-24 14:36+0000\n"
+"Last-Translator: Alliance Groupe\n"
+"Language-Team: Français\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-msgid "%s comment"
-msgstr "%s commentaire"
-
-msgid "%s comments"
-msgstr "%s commentaires"
-
-msgid "100% free, no internet connection required"
-msgstr "100% gratuit, aucune connexion internet requise"
-
-msgid "A team of experienced attorneys at your service. Every case handled with rigor, attentiveness and discretion."
-msgstr "Une équipe d'avocats expérimentés à votre service. Chaque dossier traité avec rigueur, écoute et discrétion."
-
-msgid "AG Starter — Customization"
-msgstr "AG Starter — Personnalisation"
-
-msgid "Accent color"
-msgstr "Couleur d'accent"
-
-msgid "Add a first practice area"
-msgstr "Ajouter un premier domaine"
-
-msgid "Address"
-msgstr "Adresse"
-
-msgid "Address, email, phone (footer)"
-msgstr "Adresse, email, téléphone (pied de page)"
-
-msgid "Address, hours, contact, emergency"
-msgstr "Adresse, horaires, contact, urgence"
-
-msgid "Admitted since"
-msgstr "Inscrit depuis"
-
-msgid "Admitted since %s"
-msgstr "Inscrit depuis %s"
-
-msgid "Advice and representation for individuals and businesses across the main areas of law."
-msgstr "Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit."
-
-msgid "All practice areas"
-msgstr "Tous les domaines d'expertise"
-
-msgid "All rights reserved."
-msgstr "Tous droits reserves."
-
-msgid "Alliance Gold"
-msgstr "Or Alliance"
-
-msgid "An error occurred while sending. You can reach us directly by email or phone."
-msgstr "Une erreur est survenue lors de l'envoi. Vous pouvez nous joindre directement par email ou telephone."
-
-msgid "Appearance > Customize > Appointment > GDPR"
-msgstr "Apparence > Personnaliser > Rendez-vous > RGPD"
-
-msgid "Appearance > Customize > Fees"
-msgstr "Apparence > Personnaliser > Honoraires"
-
-msgid "Appearance > Customize > Firm"
-msgstr "Apparence > Personnaliser > Cabinet"
-
-msgid "Appearance > Customize > Firm > Map embed"
-msgstr "Apparence > Personnaliser > Cabinet > Map embed"
-
-msgid "Appearance > Customize > Hero"
-msgstr "Apparence > Personnaliser > Hero"
-
-msgid "Appearance > Customize > Identity"
-msgstr "Apparence > Personnaliser > Identité"
-
-msgid "Appearance > Customize > Site Identity (logo)"
-msgstr "Apparence > Personnaliser > Identité du site (logo)"
-
-msgid "Appearance > Customize > The Attorney"
-msgstr "Apparence > Personnaliser > Le Maître"
-
-msgid "Appearance > Menus > \"Main menu\""
-msgstr "Apparence > Menus > « Menu principal »"
-
-msgid "Appointment form &amp; GDPR"
-msgstr "Formulaire de rendez-vous &amp; RGPD"
-
-msgid "Appointment form GDPR text"
-msgstr "Texte RGPD du formulaire de rendez-vous"
-
-msgid "Appointment — \"Other\" option"
-msgstr "RDV — option « Autre »"
-
-msgid "Appointment — Area label"
-msgstr "RDV — label Domaine"
-
-msgid "Appointment — At the office format"
-msgstr "RDV — format Au cabinet"
-
-msgid "Appointment — By phone format"
-msgstr "RDV — format Par téléphone"
-
-msgid "Appointment — By video format"
-msgstr "RDV — format En visio"
-
-msgid "Appointment — Description label"
-msgstr "RDV — label Description"
-
-msgid "Appointment — Email label"
-msgstr "RDV — label Email"
-
-msgid "Appointment — First name label"
-msgstr "RDV — label Prénom"
-
-msgid "Appointment — Format label"
-msgstr "RDV — label Format"
-
-msgid "Appointment — Name label"
-msgstr "RDV — label Nom"
-
-msgid "Appointment — Phone label"
-msgstr "RDV — label Téléphone"
-
-msgid "Appointment — area placeholder"
-msgstr "RDV — placeholder domaine"
-
-msgid "Appointment — legal note (under button)"
-msgstr "RDV — note légale (sous bouton)"
-
-msgid "Appointment — submit button"
-msgstr "RDV — bouton submit"
-
-msgid "Areas > admin (CPT ag_domaine)"
-msgstr "Domaines > admin (CPT ag_domaine)"
-
-msgid "Areas > featured image"
-msgstr "Domaines > image à la une"
-
-msgid "Areas — H2 title"
-msgstr "Domaines — titre H2"
-
-msgid "Areas — add button (admin)"
-msgstr "Domaines — bouton ajout (admin)"
-
-msgid "Areas — admin tip"
-msgstr "Domaines — astuce admin"
-
-msgid "Areas — empty message"
-msgstr "Domaines — message si vide"
-
-msgid "Areas — intro sentence"
-msgstr "Domaines — phrase d'intro"
-
-msgid "At the office"
-msgstr "Au cabinet"
-
-msgid "Attorney admitted to the %s"
-msgstr "Avocat inscrit au %s"
-
-msgid "Attorney bio (photo, name, bar, bio)"
-msgstr "Bio Le Maître (photo, nom, barreau, bio)"
-
-msgid "Attorney name"
-msgstr "Nom du Maître"
-
-msgid "Attorney photo (optional)"
-msgstr "Photo du Maître (optionnel)"
-
-msgid "Attorney — Specialties label"
-msgstr "Maître — libellé Specialités"
-
-msgid "Attorney — label"
-msgstr "Maître — étiquette"
-
-msgid "Attorney — year prefix (Admitted since…)"
-msgstr "Maître — préfixe année (Inscrit depuis…)"
-
-msgid "Attorney-client privilege"
-msgstr "Secret professionnel"
-
-msgid "Automatic updates. Manual check available."
-msgstr "Mises à jour automatiques. Vérification manuelle possible."
-
-msgid "Back to home"
-msgstr "Retour a l'accueil"
-
-msgid "Background image per area"
-msgstr "Image de fond par domaine"
-
-msgid "Bar admission"
-msgstr "Barreau inscrit"
-
-msgid "Bar of admission"
-msgstr "Barreau d’inscription"
-
-msgid "Base text size (px)"
-msgstr "Taille de base du texte (px)"
-
-msgid "Before any work begins, a written fee agreement is provided to you. It specifies the chosen billing method, the amount or applicable hourly rate, as well as any additional fees."
-msgstr "Avant toute intervention, une convention d'honoraires ecrite vous est remise. Elle precise le mode de facturation choisi, le montant ou le taux horaire applicable, ainsi que les eventuels frais annexes."
-
-msgid "Between 14 and 20."
-msgstr "Entre 14 et 20."
-
-msgid "Biography / background"
-msgstr "Biographie / parcours"
-
-msgid "Book an appointment"
-msgstr "Prendre rendez-vous"
-
-msgid "Book an appointment for a first confidential consultation."
-msgstr "Prenez rendez-vous pour une premiere consultation confidentielle."
-
-msgid "Border color"
-msgstr "Couleur des bordures"
-
-msgid "Business name"
-msgstr "Nom de l'etablissement"
-
-msgid "Button link (URL or #anchor)"
-msgstr "Lien du bouton (URL ou #ancre)"
-
-msgid "Button text"
-msgstr "Texte du bouton"
-
-msgid "Buy directly online. Secure payment, instant delivery by email."
-msgstr "Achetez directement en ligne. Paiement sécurisé, livraison immédiate par email."
-
-msgid "Buy →"
-msgstr "Acheter →"
-
-msgid "By email"
-msgstr "Par email"
-
-msgid "By phone"
-msgstr "Par téléphone"
-
-msgid "By video"
-msgstr "En visio"
-
-msgid "Call"
-msgstr "Appeler"
-
-msgid "Call to action — Firm"
-msgstr "Appel à action — Cabinet"
-
-msgid "Can't find it?"
-msgstr "Vous ne trouvez pas ?"
-
-msgid "Cards background"
-msgstr "Arriere-plan des cartes"
-
-msgid "Case description (in a few lines)"
-msgstr "Description du dossier (en quelques lignes)"
-
-msgid "Cases handled"
-msgstr "Dossiers traites"
-
-msgid "Categories:"
-msgstr "Categories :"
-
-msgid "Change the colors, typography and key texts of your theme right here. No code required."
-msgstr "Modifiez les couleurs, la typographie et les textes cles de votre theme directement ici. Aucun code requis."
-
-msgid "Classic sans-serif"
-msgstr "Sans-serif classique"
-
-msgid "Comments are closed."
-msgstr "Les commentaires sont fermes."
-
-msgid "Compact"
-msgstr "Compact"
-
-msgid "Confidential request protected by attorney-client privilege. Reply within 48 business hours."
-msgstr "Demande confidentielle protégée par le secret professionnel. Réponse sous 48h ouvrées."
-
-msgid "Consultation at the office, by video or by phone."
-msgstr "Consultation au cabinet, en visio ou par telephone."
-
-msgid "Contact"
-msgstr "Contact"
-
-msgid "Cookie note (footer)"
-msgstr "Note cookies (pied de page)"
-
-msgid "Cookies"
-msgstr "Cookies"
-
-msgid "Custom copyright text"
-msgstr "Texte de copyright personnalise"
-
-msgid "Custom site (+340% leads) →"
-msgstr "Site sur-mesure (+340% leads) →"
-
-msgid "Customize the intro sentences (under the titles) of each home section."
-msgstr "Personnalisez les phrases d'introduction (sous les titres) de chaque section de l'accueil."
-
-msgid "Dedicated pages"
-msgstr "Pages dédiées"
-
-msgid "Default"
-msgstr "Par defaut"
-
-msgid "Do you have a case in this area?"
-msgstr "Vous avez un dossier dans ce domaine ?"
-
-msgid "Download AG Starter Companion"
-msgstr "Télécharger AG Starter Companion"
-
-msgid "Download the ZIP, then Plugins → Add New → Upload"
-msgstr "Téléchargez le ZIP, puis Extensions → Ajouter → Téléverser"
-
-msgid "Each home section has a WP page. The title + first paragraph become the section header on the home page."
-msgstr "Chaque section de l’accueil a une page WP. Le titre + premier paragraphe deviennent l’en-tête de la section sur l’accueil."
-
-msgid "Each practice area is a Custom Post Type with its icon, its example cases and its detailed page."
-msgstr "Chaque domaine d’expertise est un Custom Post Type avec son icône, ses exemples de cas et sa fiche détaillée."
-
-msgid "Each row shows an area of the site and where to change it."
-msgstr "Chaque ligne indique une zone du site et où la modifier."
-
-msgid "Email"
-msgstr "Email"
-
-msgid "Ethics &amp; GDPR"
-msgstr "Déontologie &amp; RGPD"
-
-msgid "Examples of handled cases"
-msgstr "Exemples de cas traites"
-
-msgid "Fee 1 — Description"
-msgstr "Tarif 1 — Description"
-
-msgid "Fee 1 — Label"
-msgstr "Tarif 1 — Libellé"
-
-msgid "Fee 1 — Price"
-msgstr "Tarif 1 — Prix"
-
-msgid "Fee 2 — Description"
-msgstr "Tarif 2 — Description"
-
-msgid "Fee 2 — Label"
-msgstr "Tarif 2 — Libellé"
-
-msgid "Fee 2 — Price"
-msgstr "Tarif 2 — Prix"
-
-msgid "Fee 3 — Description"
-msgstr "Tarif 3 — Description"
-
-msgid "Fee 3 — Label"
-msgstr "Tarif 3 — Libellé"
-
-msgid "Fee 3 — Price"
-msgstr "Tarif 3 — Prix"
-
-msgid "Fee agreement"
-msgstr "Convention d'honoraires"
-
-msgid "Fee rates (3 tiers)"
-msgstr "Tarifs honoraires (3 grilles)"
-
-msgid "Fees"
-msgstr "Honoraires"
-
-msgid "Fees (pricing transparency)"
-msgstr "Honoraires (transparence tarifaire)"
-
-msgid "Fees — H2 title"
-msgstr "Honoraires — titre H2"
-
-msgid "Fees — intro sentence"
-msgstr "Honoraires — phrase d'intro"
-
-msgid "Find us"
-msgstr "Nous trouver"
-
-msgid "Firm"
-msgstr "Cabinet"
-
-msgid "Firm (contact &amp; hours)"
-msgstr "Cabinet (contact &amp; horaires)"
-
-msgid "Firm email"
-msgstr "Email du cabinet"
-
-msgid "Firm phone"
-msgstr "Téléphone du cabinet"
-
-msgid "Firm — Address block title"
-msgstr "Cabinet — titre bloc Adresse"
-
-msgid "Firm — Contact block title"
-msgstr "Cabinet — titre bloc Contact"
-
-msgid "Firm — H2 title"
-msgstr "Cabinet — titre H2"
-
-msgid "Firm — Hours block title"
-msgstr "Cabinet — titre bloc Horaires"
-
-msgid "Firm — intro sentence"
-msgstr "Cabinet — phrase d'intro"
-
-msgid "Firm — police custody label"
-msgstr "Cabinet — libellé garde à vue"
-
-msgid "First call free, no obligation"
-msgstr "Premier appel gratuit, sans engagement"
-
-msgid "First name"
-msgstr "Prénom"
-
-msgid "Flat fee: a fixed price agreed in advance for a defined case"
-msgstr "Forfait : prix fixe convenu a l'avance pour un dossier defini"
-
-msgid "Font family"
-msgstr "Famille de police"
-
-msgid "Footer"
-msgstr "Pied de page"
-
-msgid "Force theme update"
-msgstr "Forcer la mise à jour du thème"
-
-msgid "Form title"
-msgstr "Titre du formulaire"
-
-msgid "Free — 10 seconds — no sign-up"
-msgstr "Gratuit — 10 secondes — aucune inscription"
-
-msgid "Full address (one line per line)"
-msgstr "Adresse complète (une ligne par ligne)"
-
-msgid "Full pricing transparency: no bad surprises, a written quote before any commitment."
-msgstr "Transparence totale sur les tarifs : pas de mauvaise surprise, devis ecrit avant tout engagement."
-
-msgid "GDPR consent text (checkbox)"
-msgstr "Texte de consentement RGPD (case à cocher)"
-
-msgid "GDPR notice shown in the footer"
-msgstr "Mention RGPD affichée dans le pied de page"
-
-msgid "General advice"
-msgstr "Conseil general"
-
-msgid "Get the free guide: 7 pages that attract clients"
-msgstr "Recevoir le guide gratuit : 7 pages qui attirent des clients"
-
-msgid "Google Maps embed URL (optional)"
-msgstr "URL Google Maps embed (optionnel)"
-
-msgid "Google Maps map (embed)"
-msgstr "Carte Google Maps (embed)"
-
-msgid "Headings color"
-msgstr "Couleur des titres"
-
-msgid "Headings size"
-msgstr "Taille des titres"
-
-msgid "Hero (home)"
-msgstr "Hero (accueil)"
-
-msgid "Hero — CTA button + URL"
-msgstr "Hero — bouton CTA + URL"
-
-msgid "Hero — prefix + firm name + subtitle"
-msgstr "Hero — préfixe + nom du cabinet + sous-titre"
-
-msgid "Home"
-msgstr "Accueil"
-
-msgid "Home content — texts"
-msgstr "Contenu accueil — textes"
-
-msgid "Home page"
-msgstr "Page d’accueil"
-
-msgid "Home page and permalinks enabled"
-msgstr "Page d'accueil et permaliens actives"
-
-msgid "Hosting / privilege note (footer)"
-msgstr "Note hébergement / secret pro (pied de page)"
-
-msgid "Hosting in the European Union — data protected by attorney-client privilege."
-msgstr "Hébergement en Union Européenne — données protégées par le secret professionnel."
-
-msgid "Hours"
-msgstr "Horaires"
-
-msgid "How are our fees calculated?"
-msgstr "Comment sont calcules nos honoraires ?"
-
-msgid "If you want to change something not in this list, open the relevant page with the <strong>Gutenberg block editor</strong> (Pages > your page)."
-msgstr "Si vous voulez modifier quelque chose qui n’est pas dans cette liste, ouvrez la page concernée avec l’<strong>éditeur de blocs Gutenberg</strong> (Pages > votre page)."
-
-msgid "Initial consultation: a first appointment to review your situation"
-msgstr "Consultation initiale : premier rendez-vous pour analyser votre situation"
-
-msgid "Install the free AG Starter Companion plugin to automatically create your pages and menu and set up your site in one click."
-msgstr "Installez le plugin gratuit AG Starter Companion pour creer automatiquement vos pages, votre menu et configurer votre site en 1 clic."
-
-msgid "Is the <strong>AG Starter Avocat</strong> theme useful to you? An honest review (30 seconds) helps other law firms discover it. <a href=\"%1$s\" target=\"_blank\" rel=\"noopener\">Leave a review</a> &middot; <a href=\"%2$s\">Dismiss</a>"
-msgstr "Le th&egrave;me <strong>AG Starter Avocat</strong> vous est utile&nbsp;? Un avis honn&ecirc;te (30&nbsp;secondes) aide d'autres cabinets &agrave; le d&eacute;couvrir. <a href=\"%1$s\" target=\"_blank\" rel=\"noopener\">Laisser un avis</a> &middot; <a href=\"%2$s\">Ne plus afficher</a>"
-
-msgid "Large"
-msgstr "Grand"
-
-msgid "Learn more about %s — The firm"
-msgstr "En savoir plus sur %s — Le cabinet"
-
-msgid "Leave empty for the default text."
-msgstr "Laissez vide pour le texte par defaut."
-
-msgid "Legal aid is accepted for eligible cases."
-msgstr "L'aide juridictionnelle est acceptee pour les dossiers eligibles."
-
-msgid "Legal information"
-msgstr "Informations légales"
-
-msgid "Legal note (bottom of the block)"
-msgstr "Note légale (en bas du bloc)"
-
-msgid "Legal notice"
-msgstr "Mentions légales"
-
-msgid "Light / dark mode"
-msgstr "Mode clair / sombre"
-
-msgid "List of areas (title, excerpt, icon, examples)"
-msgstr "Liste des domaines (titre, extrait, icône, exemples)"
-
-msgid "Logo (header + footer)"
-msgstr "Logo (en-tête + pied de page)"
-
-msgid "Main background"
-msgstr "Arriere-plan principal"
-
-msgid "Main menu"
-msgstr "Menu principal"
-
-msgid "Main menu configured and assigned"
-msgstr "Menu principal configure et assigne"
-
-msgid "Main menu links"
-msgstr "Liens du menu principal"
-
-msgid "Menu"
-msgstr "Menu"
-
-msgid "Menus, header, footer"
-msgstr "Menus, en-tête, pied de page"
-
-msgid "Monospace"
-msgstr "Monospace"
-
-msgid "Name"
-msgstr "Nom"
-
-msgid "Navigation and footer editable without coding."
-msgstr "Navigation et pied de page éditables sans coder."
-
-msgid "Need advice? Book an appointment with the firm."
-msgstr "Besoin de conseils ? Prenez rendez-vous avec le cabinet."
-
-msgid "Need legal advice?"
-msgstr "Besoin d'un conseil ?"
-
-msgid "News"
-msgstr "Actualites"
-
-msgid "Next comments"
-msgstr "Commentaires suivants"
-
-msgid "No posts in this category."
-msgstr "Aucun article dans cette categorie."
-
-msgid "No posts yet."
-msgstr "Aucun article pour le moment."
-
-msgid "No practice area has been published yet."
-msgstr "Aucun domaine d'expertise n'est encore publie."
-
-msgid "No results. Try other keywords."
-msgstr "Aucun resultat. Essayez avec d'autres mots-cles."
-
-msgid "Notices shown in the footer. The template is \"ethics-ready\": no client testimonials and no Google reviews widget (prohibited by the French bar rules RIN/CNB). Remember to create the \"legal-notice\", \"privacy\" and \"cookies\" pages: their links will appear automatically."
-msgstr "Mentions affichées dans le pied de page. Le template est « déontologie-ready » : pas de témoignages clients ni de widget d’avis Google (interdits par le RIN/CNB). Pensez à créer les pages « mentions-legales », « confidentialite » et « cookies » : leurs liens apparaîtront automatiquement."
-
-msgid "OK"
-msgstr "OK"
-
-msgid "Opening hours (one line per line)"
-msgstr "Horaires d’ouverture (une ligne par ligne)"
-
-msgid "Other / to be determined"
-msgstr "Autre / à déterminer"
-
-msgid "Our commitment: rigor, attentiveness and confidentiality at the service of your interests."
-msgstr "Notre engagement : rigueur, ecoute et confidentialite au service de vos interets."
-
-msgid "Our most refined design: luxury, scroll animations, sticky header, advanced colors, testimonials, header phone, minimal ads, support. One-time payment."
-msgstr "Notre design le plus abouti : luxe, animations au scroll, header sticky, couleurs avancées, témoignages, téléphone dans le header, publicité minimale, support. Paiement unique."
-
-msgid "Our team"
-msgstr "Notre équipe"
-
-msgid "Our à la carte services"
-msgstr "Nos services à la carte"
-
+#: 404.php:15
 msgid "Page not found"
 msgstr "Page introuvable"
 
-msgid "Pages > Appointment (slug: rendez-vous)"
-msgstr "Pages > Rendez-vous (slug : rendez-vous)"
-
-msgid "Pages > Appointment: title + first paragraph"
-msgstr "Pages > Rendez-vous : titre + 1er paragraphe"
-
-msgid "Pages > Expertise (slug: expertise)"
-msgstr "Pages > Expertise (slug : expertise)"
-
-msgid "Pages > Expertise: title + first paragraph"
-msgstr "Pages > Expertise : titre + 1er paragraphe"
-
-msgid "Pages > Fees (slug: honoraires)"
-msgstr "Pages > Honoraires (slug : honoraires)"
-
-msgid "Pages > Fees: title + first paragraph"
-msgstr "Pages > Honoraires : titre + 1er paragraphe"
-
-msgid "Pages > Firm (slug: cabinet)"
-msgstr "Pages > Cabinet (slug : cabinet)"
-
-msgid "Pages > Firm: title + first paragraph"
-msgstr "Pages > Cabinet : titre + 1er paragraphe"
-
-msgid "Pages > Legal notice"
-msgstr "Pages > Mentions légales"
-
-msgid "Pages created automatically (Home, Expertise, Fees, Firm, Appointment)"
-msgstr "Pages creees automatiquement (Accueil, Expertise, Honoraires, Cabinet, Rendez-vous)"
-
-msgid "Pages:"
-msgstr "Pages :"
-
-msgid "Phone"
-msgstr "Téléphone"
-
-msgid "Please fill in at least the name, a valid email and a case description."
-msgstr "Merci de remplir au moins le nom, un email valide et une description du dossier."
-
-msgid "Police custody"
-msgstr "Garde a vue"
-
-msgid "Police custody 24/7:"
-msgstr "Garde à vue 24/7 :"
-
-msgid "Police-custody emergency number (optional)"
-msgstr "Numéro d’urgence garde à vue (optionnel)"
-
-msgid "Practice area"
-msgstr "Domaine d'expertise"
-
-msgid "Practice areas"
-msgstr "Domaines d'expertise"
-
-msgid "Practice areas (CPT)"
-msgstr "Domaines d’expertise (CPT)"
-
-msgid "Preferred format"
-msgstr "Format souhaité"
-
-msgid "Previous comments"
-msgstr "Commentaires precedents"
-
-msgid "Privacy policy (GDPR)"
-msgstr "Politique de confidentialité (RGPD)"
-
-msgid "RPVA number (optional)"
-msgstr "Numéro RPVA (optionnel)"
-
-msgid "Read more"
-msgstr "Lire la suite"
-
-msgid "Recipient email (empty = firm email)"
-msgstr "Email destinataire (vide = email du cabinet)"
-
-msgid "Relevant area"
-msgstr "Domaine concerné"
-
-msgid "Request a free quote"
-msgstr "Demander un devis gratuit"
-
-msgid "Results for: %s"
-msgstr "Resultats pour : %s"
-
-msgid "Satisfied clients"
-msgstr "Clients satisfaits"
-
-msgid "Search..."
-msgstr "Rechercher..."
-
-msgid "Search:"
-msgstr "Rechercher :"
-
-msgid "Secondary text"
-msgstr "Texte secondaire"
-
-msgid "Security error. Please reload the page and try again."
-msgstr "Erreur de securite. Veuillez recharger la page et reessayer."
-
-msgid "See all shop products →"
-msgstr "Voir tous les produits de la boutique →"
-
-msgid "See the firm →"
-msgstr "Voir le cabinet →"
-
-msgid "Send my request"
-msgstr "Envoyer ma demande"
-
-msgid "Send my request →"
-msgstr "Envoyer ma demande →"
-
-msgid "Serif (elegant)"
-msgstr "Serif (elegant)"
-
-msgid "Show the \"Attorney\" section"
-msgstr "Afficher la section « Le Maître »"
-
-msgid "Show the Fees section"
-msgstr "Afficher la section Honoraires"
-
-msgid "Show the appointment form"
-msgstr "Afficher le formulaire de rendez-vous"
-
-msgid "Show the credit \"Free theme by Alliance Group\""
-msgstr "Afficher le credit \"Theme gratuit par Alliance Group\""
-
-msgid "Show the hero"
-msgstr "Afficher le hero"
-
-msgid "Signature"
-msgstr "Signature"
-
-msgid "Skip to main content"
-msgstr "Aller au contenu principal"
-
-msgid "Spam detected."
-msgstr "Spam detecte."
-
-msgid "Specialties (separated by ·)"
-msgstr "Spécialités (séparées par ·)"
-
-msgid "Specialties:"
-msgstr "Spécialités :"
-
-msgid "Subtitle"
-msgstr "Sous-titre"
-
-msgid "Subtitle / promise"
-msgstr "Sous-titre / promesse"
-
-msgid "Success fee: a supplement tied to a favorable outcome of the case"
-msgstr "Honoraires de resultat : complement lie a l'issue favorable du dossier"
-
-msgid "Switch theme"
-msgstr "Changer de theme"
-
-msgid "System (default, fast)"
-msgstr "Systeme (defaut, rapide)"
-
-msgid "Tags:"
-msgstr "Etiquettes :"
-
-msgid "Text color"
-msgstr "Couleur du texte"
-
-msgid "Thank you for your trust!"
-msgstr "Merci pour votre confiance !"
-
-msgid "The Attorney"
-msgstr "Le Maître"
-
-msgid "The Attorney (introduction)"
-msgstr "Le Maître (présentation)"
-
-msgid "The TITLES + INTROS of each home section now come DIRECTLY from the matching pages. Edit the page (Pages > Expertise, Fees, Firm, Appointment): its TITLE becomes the section H2 and its first paragraph becomes the intro."
-msgstr "Les TITRES + INTROS de chaque section de l’accueil viennent maintenant DIRECTEMENT des pages correspondantes. Vous éditez la page (Pages > Expertise, Honoraires, Cabinet, Rendez-vous), son TITRE devient le H2 de la section et son premier paragraphe devient l’intro."
-
-msgid "The firm"
-msgstr "Le cabinet"
-
+#: 404.php:21
 msgid "The page you are looking for does not exist or has been moved."
 msgstr "La page que vous cherchez n'existe pas ou a ete deplacee."
 
-msgid "Theme colors"
-msgstr "Couleurs du theme"
+#: 404.php:22
+msgid "Back to home"
+msgstr "Retour a l'accueil"
 
-msgid "Theme: %s"
-msgstr "Theme : %s"
+#: archive.php:31 index.php:34 search.php:32
+msgid "Read more"
+msgstr "Lire la suite"
 
-msgid "This page lists EVERYTHING you can change without coding."
-msgstr "Cette page liste TOUT ce que vous pouvez modifier sans coder."
+#: archive.php:46
+msgid "No posts in this category."
+msgstr "Aucun article dans cette categorie."
 
+#. translators: %s: comment count number.
+#: comments.php:25
+#, php-format
+msgid "%s comment"
+msgid_plural "%s comments"
+msgstr[0] "%s commentaire"
+msgstr[1] "%s commentaire"
+
+#: comments.php:46
+msgid "Previous comments"
+msgstr "Commentaires precedents"
+
+#: comments.php:47
+msgid "Next comments"
+msgstr "Commentaires suivants"
+
+#: comments.php:53
+msgid "Comments are closed."
+msgstr "Les commentaires sont fermes."
+
+#: footer.php:14 inc/guide.php:66
+msgid "Firm"
+msgstr "Cabinet"
+
+#: footer.php:20 front-page.php:215 page-cabinet.php:67
+msgid "Hours"
+msgstr "Horaires"
+
+#: footer.php:24 front-page.php:220 page-cabinet.php:72
+msgid "Contact"
+msgstr "Contact"
+
+#: footer.php:33 functions.php:148 inc/guide.php:67 page-cabinet.php:88
+#: page-expertise.php:67 single-ag_domaine.php:50
+msgid "Book an appointment"
+msgstr "Prendre rendez-vous"
+
+#: footer.php:48 inc/guide.php:68
+msgid "Legal notice"
+msgstr "Mentions légales"
+
+#: footer.php:49
+msgid "Privacy policy (GDPR)"
+msgstr "Politique de confidentialité (RGPD)"
+
+#: footer.php:50
+msgid "Cookies"
+msgstr "Cookies"
+
+#: footer.php:53 inc/customizer.php:461
+msgid ""
+"Hosting in the European Union — data protected by attorney-client privilege."
+msgstr ""
+"Hébergement en Union Européenne — données protégées par le secret "
+"professionnel."
+
+#: footer.php:54 inc/customizer.php:466
 msgid "This site does not use any advertising tracking cookies."
 msgstr "Ce site n’utilise aucun cookie de traçage publicitaire."
 
-msgid "Time-based: hourly billing with a detailed statement"
-msgstr "Au temps passe : facturation horaire avec releve detaille"
+#: footer.php:57
+msgid "Legal information"
+msgstr "Informations légales"
 
-msgid "Tip: create 4 to 6 practice areas (Business law, Employment law, Family law, Real-estate law...) each with an emoji and 3 example cases."
-msgstr "Astuce : créez 4 à 6 domaines (Droit des affaires, Droit du travail, Droit de la famille, Droit immobilier...) avec un emoji et 3 exemples de cas chacun."
+#: footer.php:84
+msgid "All rights reserved."
+msgstr "Tous droits réservés."
 
-msgid "Title + intro of the APPOINTMENT section (home)"
-msgstr "Titre + intro section RENDEZ-VOUS (accueil)"
+#: front-page.php:68 functions.php:145 inc/guide.php:64 page-expertise.php:16
+msgid "Practice areas"
+msgstr "Domaines d'intervention"
 
-msgid "Title + intro of the EXPERTISE section (home)"
-msgstr "Titre + intro section EXPERTISE (accueil)"
+#: front-page.php:68 page-expertise.php:17
+msgid ""
+"Advice and representation for individuals and businesses across the main "
+"areas of law."
+msgstr ""
+"Conseil et representation pour particuliers et entreprises dans les "
+"principaux domaines du droit."
 
-msgid "Title + intro of the FEES section (home)"
-msgstr "Titre + intro section HONORAIRES (accueil)"
+#: front-page.php:110 page-expertise.php:53
+msgid "No practice area has been published yet."
+msgstr "Aucun domaine d'expertise n'est encore publie."
 
-msgid "Title + intro of the FIRM section (home)"
-msgstr "Titre + intro section CABINET (accueil)"
+#: front-page.php:112 page-expertise.php:55
+msgid "Add a first practice area"
+msgstr "Ajouter un premier domaine"
 
-msgid "Title prefix"
-msgstr "Prefixe du titre"
+#: front-page.php:113
+msgid ""
+"Tip: create 4 to 6 practice areas (Business law, Employment law, Family law, "
+"Real-estate law...) each with an emoji and 3 example cases."
+msgstr ""
+"Astuce : créez 4 à 6 domaines (Droit des affaires, Droit du travail, Droit "
+"de la famille, Droit immobilier...) avec un emoji et 3 exemples de cas "
+"chacun."
 
-msgid "Typography"
-msgstr "Typographie"
+#: front-page.php:135 page-cabinet.php:30
+msgid "The Attorney"
+msgstr "Le Maître"
 
-msgid "Updates & support"
-msgstr "Mise à jour & support"
+#: front-page.php:140
+msgid "Admitted since"
+msgstr "Inscrit depuis"
 
-msgid "Upgrade to the higher tier:"
-msgstr "Upgrader vers le niveau supérieur :"
+#: front-page.php:145 page-cabinet.php:40
+msgid "Practice areas:"
+msgstr "Domaines d'intervention :"
 
-msgid "User guide"
-msgstr "Guide d'utilisation"
+#: front-page.php:158 functions.php:146 inc/guide.php:65 page-honoraires.php:16
+msgid "Fees"
+msgstr "Honoraires"
 
-msgid "Welcome to AG Starter Avocat!"
-msgstr "Bienvenue dans AG Starter Avocat !"
+#: front-page.php:158 page-honoraires.php:17
+msgid ""
+"Full pricing transparency: no bad surprises, a written quote before any "
+"commitment."
+msgstr ""
+"Transparence totale sur les tarifs : pas de mauvaise surprise, devis ecrit "
+"avant tout engagement."
 
-msgid "Widgets shown in the footer."
-msgstr "Widgets affichés dans le pied de page."
+#: front-page.php:202 functions.php:147 page-cabinet.php:12
+msgid "The firm"
+msgstr "Le cabinet"
 
-msgid "Year of bar admission"
-msgstr "Année d’inscription au barreau"
+#: front-page.php:202 page-cabinet.php:52
+msgid "Consultation at the office, by video or by phone."
+msgstr "Consultation au cabinet, en visio ou par telephone."
 
-msgid "Years of experience"
-msgstr "Annees d'experience"
+#: front-page.php:210 page-cabinet.php:62
+msgid "Address"
+msgstr "Adresse"
 
-msgid "You are using the free version. Upgrade to Premium or Business:"
-msgstr "Vous utilisez la version gratuite. Passez au Premium ou Business :"
+#: front-page.php:231 page-cabinet.php:83
+msgid "Police custody 24/7:"
+msgstr "Garde à vue 24/7 :"
 
-msgid "You must accept the processing of your data to submit a request."
-msgstr "Vous devez accepter le traitement de vos donnees pour soumettre une demande."
+#: front-page.php:268 page-rendez-vous.php:36
+msgid "First name"
+msgstr "Prénom"
 
-msgid "Your attorney"
-msgstr "Votre avocat"
+#: front-page.php:272 page-rendez-vous.php:40
+msgid "Name"
+msgstr "Nom"
 
-msgid "Your request has been sent. The firm will get back to you within 48 business hours, in full confidentiality."
-msgstr "Votre demande a bien ete envoyee. Le cabinet vous recontactera sous 48h ouvrees, en toute confidentialite."
+#: front-page.php:278 page-rendez-vous.php:46
+msgid "Email"
+msgstr "Email"
 
-msgid "Your theme is installed. For a ready-to-use site in one click (pages, menu, settings), install the free AG Starter Companion plugin."
-msgstr "Votre theme est installe. Pour un site pret a l'emploi en 1 clic (pages, menu, reglages), installez le plugin gratuit AG Starter Companion."
+#: front-page.php:282 page-rendez-vous.php:50
+msgid "Phone"
+msgstr "Téléphone"
 
-msgid "Your theme is ready!"
-msgstr "Votre theme est pret !"
+#: front-page.php:288 page-rendez-vous.php:56
+msgid "Relevant area"
+msgstr "Domaine concerné"
 
-msgid "active"
-msgstr "actif"
-
+#: front-page.php:290 page-rendez-vous.php:58
 msgid "— Select —"
 msgstr "— Sélectionnez —"
 
-msgid "→ Go"
-msgstr "→ Aller"
+#: front-page.php:298 page-rendez-vous.php:66
+msgid "General advice"
+msgstr "Conseil general"
 
-msgid "🎁 Get the free guide: 7 pages that attract clients"
-msgstr "🎁 Recevoir le guide gratuit : 7 pages qui attirent des clients"
+#: front-page.php:301 page-rendez-vous.php:69
+msgid "Other / to be determined"
+msgstr "Autre / à déterminer"
 
-msgid "💎 Upgrade my theme"
-msgstr "💎 Ameliorer mon theme"
+#: front-page.php:305 page-rendez-vous.php:73
+msgid "Preferred format"
+msgstr "Format souhaité"
 
-msgid "🔒 Install WooCommerce to enable the automatic shop"
-msgstr "🔒 Installez WooCommerce pour activer la boutique automatique"
+#: front-page.php:307 page-rendez-vous.php:75
+msgid "At the office"
+msgstr "Au cabinet"
 
-msgid "🔒 Secure payment · WooCommerce shop"
-msgstr "🔒 Paiement sécurisé · Boutique WooCommerce"
+#: front-page.php:308 page-rendez-vous.php:76
+msgid "By video"
+msgstr "En visio"
 
+#: front-page.php:309 page-rendez-vous.php:77 page-rendez-vous.php:113
+msgid "By phone"
+msgstr "Par téléphone"
+
+#: front-page.php:314 page-rendez-vous.php:82
+msgid "Case description (in a few lines)"
+msgstr "Description du dossier (en quelques lignes)"
+
+#: front-page.php:332
+msgid "Send my request →"
+msgstr "Envoyer ma demande →"
+
+#: front-page.php:334 page-rendez-vous.php:101
+msgid ""
+"Confidential request protected by attorney-client privilege. Reply within 48 "
+"business hours."
+msgstr ""
+"Demande confidentielle protégée par le secret professionnel. Réponse sous "
+"48h ouvrées."
+
+#: functions.php:95 header.php:42
+msgid "Main menu"
+msgstr "Menu principal"
+
+#: functions.php:144 header.php:32
+msgid "Home"
+msgstr "Accueil"
+
+#: functions.php:286
+msgid "Alliance Gold"
+msgstr "Or Alliance"
+
+#: functions.php:293
+msgid "Call to action — Firm"
+msgstr "Appel à action — Cabinet"
+
+#: functions.php:294
+msgid "Need advice? Book an appointment with the firm."
+msgstr "Besoin de conseils ? Prenez rendez-vous avec le cabinet."
+
+#: functions.php:307 inc/customizer.php:365
+msgid "Footer"
+msgstr "Pied de page"
+
+#: functions.php:309
+msgid "Widgets shown in the footer."
+msgstr "Widgets affichés dans le pied de page."
+
+#: functions.php:367
+msgid "Welcome to AG Starter Avocat!"
+msgstr "Bienvenue dans AG Starter Avocat !"
+
+#: functions.php:368
+msgid ""
+"Your theme is installed. For a ready-to-use site in one click (pages, menu, "
+"settings), install the free AG Starter Companion plugin."
+msgstr ""
+"Votre theme est installe. Pour un site pret a l'emploi en 1 clic (pages, "
+"menu, reglages), installez le plugin gratuit AG Starter Companion."
+
+#: functions.php:370
+msgid "Pages created automatically (Home, Expertise, Fees, Firm, Appointment)"
+msgstr ""
+"Pages creees automatiquement (Accueil, Expertise, Honoraires, Cabinet, "
+"Rendez-vous)"
+
+#: functions.php:371
+msgid "Main menu configured and assigned"
+msgstr "Menu principal configure et assigne"
+
+#: functions.php:372
+msgid "Home page and permalinks enabled"
+msgstr "Page d'accueil et permaliens actives"
+
+#: functions.php:373
+msgid "100% free, no internet connection required"
+msgstr "100% gratuit, aucune connexion internet requise"
+
+#: functions.php:377 functions.php:400
+msgid "Download AG Starter Companion"
+msgstr "Télécharger AG Starter Companion"
+
+#: functions.php:378
+msgid "Download the ZIP, then Plugins → Add New → Upload"
+msgstr "Téléchargez le ZIP, puis Extensions → Ajouter → Téléverser"
+
+#: functions.php:379
+msgid "Get the free guide: 7 pages that attract clients"
+msgstr "Recevoir le guide gratuit : 7 pages qui attirent des clients"
+
+#: functions.php:388
 msgid "🚀 AG Starter Avocat — Setup"
 msgstr "🚀 AG Starter Avocat — Configuration"
 
+#: functions.php:398
+msgid "Your theme is ready!"
+msgstr "Votre theme est pret !"
+
+#: functions.php:399
+msgid ""
+"Install the free AG Starter Companion plugin to automatically create your "
+"pages and menu and set up your site in one click."
+msgstr ""
+"Installez le plugin gratuit AG Starter Companion pour creer automatiquement "
+"vos pages, votre menu et configurer votre site en 1 clic."
+
+#: functions.php:401
+msgid "Free — 10 seconds — no sign-up"
+msgstr "Gratuit — 10 secondes — aucune inscription"
+
+#: functions.php:402
+msgid "🎁 Get the free guide: 7 pages that attract clients"
+msgstr "🎁 Recevoir le guide gratuit : 7 pages qui attirent des clients"
+
+#. translators: 1: review link, 2: dismiss link
+#: functions.php:453
+#, php-format
+msgid ""
+"Is the <strong>AG Starter Avocat</strong> theme useful to you? An honest "
+"review (30 seconds) helps other law firms discover it. <a href=\"%1$s\" "
+"target=\"_blank\" rel=\"noopener\">Leave a review</a> &middot; <a "
+"href=\"%2$s\">Dismiss</a>"
+msgstr ""
+"Le th&egrave;me <strong>AG Starter Avocat</strong> vous est utile&nbsp;? Un "
+"avis honn&ecirc;te (30&nbsp;secondes) aide d'autres cabinets &agrave; le "
+"d&eacute;couvrir. <a href=\"%1$s\" target=\"_blank\" "
+"rel=\"noopener\">Laisser un avis</a> &middot; <a href=\"%2$s\">Ne plus "
+"afficher</a>"
+
+#: functions.php:477
+#, php-format
+msgid "Theme: %s"
+msgstr "Thème : %s"
+
+#: header.php:17
+msgid "Skip to main content"
+msgstr "Aller au contenu principal"
+
+#: header.php:57
+msgid "Menu"
+msgstr "Menu"
+
+#: header.php:69
+msgid "Switch theme"
+msgstr "Changer de theme"
+
+#: header.php:69
+msgid "Light / dark mode"
+msgstr "Mode clair / sombre"
+
+#: inc/customizer.php:142
+msgid "AG Starter — Customization"
+msgstr "AG Starter — Personnalisation"
+
+#: inc/customizer.php:143
+msgid ""
+"Change the colors, typography and key texts of your theme right here. No "
+"code required."
+msgstr ""
+"Modifiez les couleurs, la typographie et les textes cles de votre theme "
+"directement ici. Aucun code requis."
+
+#: inc/customizer.php:152
+msgid "💎 Upgrade my theme"
+msgstr "💎 Ameliorer mon theme"
+
+#: inc/customizer.php:180
+msgid "Theme colors"
+msgstr "Couleurs du theme"
+
+#: inc/customizer.php:187
+msgid "Accent color"
+msgstr "Couleur d'accent"
+
+#: inc/customizer.php:188
+msgid "Main background"
+msgstr "Arriere-plan principal"
+
+#: inc/customizer.php:189
+msgid "Cards background"
+msgstr "Arriere-plan des cartes"
+
+#: inc/customizer.php:190
+msgid "Border color"
+msgstr "Couleur des bordures"
+
+#: inc/customizer.php:191
+msgid "Text color"
+msgstr "Couleur du texte"
+
+#: inc/customizer.php:192
+msgid "Headings color"
+msgstr "Couleur des titres"
+
+#: inc/customizer.php:193
+msgid "Secondary text"
+msgstr "Texte secondaire"
+
+#: inc/customizer.php:223
+msgid "Typography"
+msgstr "Typographie"
+
+#: inc/customizer.php:240
+msgid "Font family"
+msgstr "Famille de police"
+
+#: inc/customizer.php:244
+msgid "System (default, fast)"
+msgstr "Systeme (defaut, rapide)"
+
+#: inc/customizer.php:245
+msgid "Classic sans-serif"
+msgstr "Sans-serif classique"
+
+#: inc/customizer.php:246
+msgid "Serif (elegant)"
+msgstr "Serif (elegant)"
+
+#: inc/customizer.php:247
+msgid "Monospace"
+msgstr "Monospace"
+
+#: inc/customizer.php:263
+msgid "Base text size (px)"
+msgstr "Taille de base du texte (px)"
+
+#: inc/customizer.php:264
+msgid "Between 14 and 20."
+msgstr "Entre 14 et 20."
+
+#: inc/customizer.php:286
+msgid "Headings size"
+msgstr "Taille des titres"
+
+#: inc/customizer.php:290
+msgid "Compact"
+msgstr "Compact"
+
+#: inc/customizer.php:291
+msgid "Default"
+msgstr "Par defaut"
+
+#: inc/customizer.php:292
+msgid "Large"
+msgstr "Grand"
+
+#: inc/customizer.php:301
+msgid "Hero (home)"
+msgstr "Hero (accueil)"
+
+#: inc/customizer.php:309
+msgid "Show the hero"
+msgstr "Afficher le hero"
+
+#: inc/customizer.php:313
+msgid "Title prefix"
+msgstr "Prefixe du titre"
+
+#: inc/customizer.php:317
+msgid "Business name"
+msgstr "Nom de l'etablissement"
+
+#: inc/customizer.php:321
+msgid "Subtitle"
+msgstr "Sous-titre"
+
+#: inc/customizer.php:325
+msgid "Button text"
+msgstr "Texte du bouton"
+
+#: inc/customizer.php:329
+msgid "Button link (URL or #anchor)"
+msgstr "Lien du bouton (URL ou #ancre)"
+
+#: inc/customizer.php:382
+msgid "Custom copyright text"
+msgstr "Texte de copyright personnalise"
+
+#: inc/customizer.php:383
+msgid "Leave empty for the default text."
+msgstr "Laissez vide pour le texte par defaut."
+
+#: inc/customizer.php:400
+msgid "Show the credit \"Free theme by Alliance Group\""
+msgstr "Afficher le credit \"Theme gratuit par Alliance Group\""
+
+#: inc/customizer.php:410
+msgid "Firm (contact &amp; hours)"
+msgstr "Cabinet (contact &amp; horaires)"
+
+#: inc/customizer.php:416
+msgid "Firm phone"
+msgstr "Téléphone du cabinet"
+
+#: inc/customizer.php:417
+msgid "Police-custody emergency number (optional)"
+msgstr "Numéro d’urgence garde à vue (optionnel)"
+
+#: inc/customizer.php:418
+msgid "Firm email"
+msgstr "Email du cabinet"
+
+#: inc/customizer.php:419
+msgid "Full address (one line per line)"
+msgstr "Adresse complète (une ligne par ligne)"
+
+#: inc/customizer.php:420
+msgid "Opening hours (one line per line)"
+msgstr "Horaires d’ouverture (une ligne par ligne)"
+
+#: inc/customizer.php:421
+msgid "Google Maps embed URL (optional)"
+msgstr "URL Google Maps embed (optionnel)"
+
+#: inc/customizer.php:422
+msgid "RPVA number (optional)"
+msgstr "Numéro RPVA (optionnel)"
+
+#: inc/customizer.php:451
+msgid "Ethics &amp; GDPR"
+msgstr "Déontologie &amp; RGPD"
+
+#: inc/customizer.php:454
+msgid ""
+"Notices shown in the footer. The template is \"ethics-ready\": no client "
+"testimonials and no Google reviews widget (prohibited by the French bar "
+"rules RIN/CNB). Remember to create the \"legal-notice\", \"privacy\" and "
+"\"cookies\" pages: their links will appear automatically."
+msgstr ""
+"Mentions affichées dans le pied de page. Le template est « déontologie-ready "
+"» : pas de témoignages clients ni de widget d’avis Google (interdits par le "
+"RIN/CNB). Pensez à créer les pages « mentions-legales », « confidentialite » "
+"et « cookies » : leurs liens apparaîtront automatiquement."
+
+#: inc/customizer.php:459
+msgid "Hosting / privilege note (footer)"
+msgstr "Note hébergement / secret pro (pied de page)"
+
+#: inc/customizer.php:464
+msgid "Cookie note (footer)"
+msgstr "Note cookies (pied de page)"
+
+#: inc/customizer.php:495
+msgid "The Attorney (introduction)"
+msgstr "Le Maître (présentation)"
+
+#: inc/customizer.php:501
+msgid "Show the \"Attorney\" section"
+msgstr "Afficher la section « Le Maître »"
+
+#: inc/customizer.php:502
+msgid "Attorney name"
+msgstr "Nom du Maître"
+
+#: inc/customizer.php:503
+msgid "Bar of admission"
+msgstr "Barreau d’inscription"
+
+#: inc/customizer.php:504
+msgid "Year of bar admission"
+msgstr "Année d’inscription au barreau"
+
+#: inc/customizer.php:505
+msgid "Practice areas (separated by ·)"
+msgstr "Domaines d'intervention (séparés par ·)"
+
+#: inc/customizer.php:506
+msgid "Biography / background"
+msgstr "Biographie / parcours"
+
+#: inc/customizer.php:544
+msgid "Attorney photo (optional)"
+msgstr "Photo du Maître (optionnel)"
+
+#: inc/customizer.php:555
+msgid "Fees (pricing transparency)"
+msgstr "Honoraires (transparence tarifaire)"
+
+#: inc/customizer.php:561
+msgid "Show the Fees section"
+msgstr "Afficher la section Honoraires"
+
+#: inc/customizer.php:562
+msgid "Fee 1 — Label"
+msgstr "Tarif 1 — Libellé"
+
+#: inc/customizer.php:563
+msgid "Fee 1 — Price"
+msgstr "Tarif 1 — Prix"
+
+#: inc/customizer.php:564
+msgid "Fee 1 — Description"
+msgstr "Tarif 1 — Description"
+
+#: inc/customizer.php:565
+msgid "Fee 2 — Label"
+msgstr "Tarif 2 — Libellé"
+
+#: inc/customizer.php:566
+msgid "Fee 2 — Price"
+msgstr "Tarif 2 — Prix"
+
+#: inc/customizer.php:567
+msgid "Fee 2 — Description"
+msgstr "Tarif 2 — Description"
+
+#: inc/customizer.php:568
+msgid "Fee 3 — Label"
+msgstr "Tarif 3 — Libellé"
+
+#: inc/customizer.php:569
+msgid "Fee 3 — Price"
+msgstr "Tarif 3 — Prix"
+
+#: inc/customizer.php:570
+msgid "Fee 3 — Description"
+msgstr "Tarif 3 — Description"
+
+#: inc/customizer.php:571
+msgid "Legal note (bottom of the block)"
+msgstr "Note légale (en bas du bloc)"
+
+#: inc/customizer.php:600
+msgid "Appointment form &amp; GDPR"
+msgstr "Formulaire de rendez-vous &amp; RGPD"
+
+#: inc/customizer.php:606
+msgid "Show the appointment form"
+msgstr "Afficher le formulaire de rendez-vous"
+
+#: inc/customizer.php:607
+msgid "Form title"
+msgstr "Titre du formulaire"
+
+#: inc/customizer.php:608
+msgid "Subtitle / promise"
+msgstr "Sous-titre / promesse"
+
+#: inc/customizer.php:609
+msgid "Recipient email (empty = firm email)"
+msgstr "Email destinataire (vide = email du cabinet)"
+
+#: inc/customizer.php:610
+msgid "GDPR consent text (checkbox)"
+msgstr "Texte de consentement RGPD (case à cocher)"
+
+#: inc/customizer.php:611
+msgid "GDPR notice shown in the footer"
+msgstr "Mention RGPD affichée dans le pied de page"
+
+#: inc/customizer.php:640
+msgid "Home content — texts"
+msgstr "Contenu accueil — textes"
+
+#: inc/customizer.php:643
+msgid "Customize the intro sentences (under the titles) of each home section."
+msgstr ""
+"Personnalisez les phrases d'introduction (sous les titres) de chaque section "
+"de l'accueil."
+
+#: inc/customizer.php:648
+msgid "Areas — H2 title"
+msgstr "Domaines — titre H2"
+
+#: inc/customizer.php:649
+msgid "Areas — intro sentence"
+msgstr "Domaines — phrase d'intro"
+
+#: inc/customizer.php:650
+msgid "Areas — empty message"
+msgstr "Domaines — message si vide"
+
+#: inc/customizer.php:651
+msgid "Areas — add button (admin)"
+msgstr "Domaines — bouton ajout (admin)"
+
+#: inc/customizer.php:652
+msgid "Areas — admin tip"
+msgstr "Domaines — astuce admin"
+
+#: inc/customizer.php:654
+msgid "Attorney — label"
+msgstr "Maître — étiquette"
+
+#: inc/customizer.php:655
+msgid "Attorney — year prefix (Admitted since…)"
+msgstr "Maître — préfixe année (Inscrit depuis…)"
+
+#: inc/customizer.php:656
+msgid "Attorney — Specialties label"
+msgstr "Maître — libellé Specialités"
+
+#: inc/customizer.php:658
+msgid "Fees — H2 title"
+msgstr "Honoraires — titre H2"
+
+#: inc/customizer.php:659
+msgid "Fees — intro sentence"
+msgstr "Honoraires — phrase d'intro"
+
+#: inc/customizer.php:661
+msgid "Firm — H2 title"
+msgstr "Cabinet — titre H2"
+
+#: inc/customizer.php:662
+msgid "Firm — intro sentence"
+msgstr "Cabinet — phrase d'intro"
+
+#: inc/customizer.php:663
+msgid "Firm — Address block title"
+msgstr "Cabinet — titre bloc Adresse"
+
+#: inc/customizer.php:664
+msgid "Firm — Hours block title"
+msgstr "Cabinet — titre bloc Horaires"
+
+#: inc/customizer.php:665
+msgid "Firm — Contact block title"
+msgstr "Cabinet — titre bloc Contact"
+
+#: inc/customizer.php:666
+msgid "Firm — police custody label"
+msgstr "Cabinet — libellé garde à vue"
+
+#: inc/customizer.php:668
+msgid "Appointment — First name label"
+msgstr "RDV — label Prénom"
+
+#: inc/customizer.php:669
+msgid "Appointment — Name label"
+msgstr "RDV — label Nom"
+
+#: inc/customizer.php:670
+msgid "Appointment — Email label"
+msgstr "RDV — label Email"
+
+#: inc/customizer.php:671
+msgid "Appointment — Phone label"
+msgstr "RDV — label Téléphone"
+
+#: inc/customizer.php:672
+msgid "Appointment — Area label"
+msgstr "RDV — label Domaine"
+
+#: inc/customizer.php:673
+msgid "Appointment — Format label"
+msgstr "RDV — label Format"
+
+#: inc/customizer.php:674
+msgid "Appointment — Description label"
+msgstr "RDV — label Description"
+
+#: inc/customizer.php:675
+msgid "Appointment — area placeholder"
+msgstr "RDV — placeholder domaine"
+
+#: inc/customizer.php:676
+msgid "Appointment — \"Other\" option"
+msgstr "RDV — option « Autre »"
+
+#: inc/customizer.php:677
+msgid "Appointment — At the office format"
+msgstr "RDV — format Au cabinet"
+
+#: inc/customizer.php:678
+msgid "Appointment — By video format"
+msgstr "RDV — format En visio"
+
+#: inc/customizer.php:679
+msgid "Appointment — By phone format"
+msgstr "RDV — format Par téléphone"
+
+#: inc/customizer.php:680
+msgid "Appointment — submit button"
+msgstr "RDV — bouton submit"
+
+#: inc/customizer.php:681
+msgid "Appointment — legal note (under button)"
+msgstr "RDV — note légale (sous bouton)"
+
+#: inc/customizer.php:769
+msgid ""
+"Our most refined design: luxury, scroll animations, sticky header, advanced "
+"colors, testimonials, header phone, minimal ads, support. One-time payment."
+msgstr ""
+"Notre design le plus abouti : luxe, animations au scroll, header sticky, "
+"couleurs avancées, témoignages, téléphone dans le header, publicité "
+"minimale, support. Paiement unique."
+
+#: inc/customizer.php:789
+msgid "active"
+msgstr "actif"
+
+#: inc/customizer.php:790
+msgid "Thank you for your trust!"
+msgstr "Merci pour votre confiance !"
+
+#: inc/customizer.php:797
+msgid "You are using the free version. Upgrade to Premium or Business:"
+msgstr "Vous utilisez la version gratuite. Passez au Premium ou Business :"
+
+#: inc/customizer.php:801
+msgid "Upgrade to the higher tier:"
+msgstr "Upgrader vers le niveau supérieur :"
+
+#: inc/customizer.php:821
+#, php-format
+msgid "Custom site (+340% leads) →"
+msgstr "Site sur-mesure (+340% leads) →"
+
+#: inc/customizer.php:824
+msgid "First call free, no obligation"
+msgstr "Premier appel gratuit, sans engagement"
+
+#: inc/forms.php:26
+msgid "Security error. Please reload the page and try again."
+msgstr "Erreur de securite. Veuillez recharger la page et reessayer."
+
+#: inc/forms.php:32
+msgid "Spam detected."
+msgstr "Spam detecte."
+
+#: inc/forms.php:38
+msgid "You must accept the processing of your data to submit a request."
+msgstr ""
+"Vous devez accepter le traitement de vos donnees pour soumettre une demande."
+
+#: inc/forms.php:53
+msgid "Please fill in at least the name, a valid email and a case description."
+msgstr ""
+"Merci de remplir au moins le nom, un email valide et une description du "
+"dossier."
+
+#: inc/forms.php:94
+msgid ""
+"Your request has been sent. The firm will get back to you within 48 business "
+"hours, in full confidentiality."
+msgstr ""
+"Votre demande a bien ete envoyee. Le cabinet vous recontactera sous 48h "
+"ouvrees, en toute confidentialite."
+
+#: inc/forms.php:96
+msgid ""
+"An error occurred while sending. You can reach us directly by email or phone."
+msgstr ""
+"Une erreur est survenue lors de l'envoi. Vous pouvez nous joindre "
+"directement par email ou telephone."
+
+#: inc/guide.php:19 inc/guide.php:20 inc/guide.php:98
+msgid "User guide"
+msgstr "Guide d'utilisation"
+
+#: inc/guide.php:32
+msgid "Home page"
+msgstr "Page d’accueil"
+
+#: inc/guide.php:33
+msgid ""
+"The TITLES + INTROS of each home section now come DIRECTLY from the matching "
+"pages. Edit the page (Pages > Expertise, Fees, Firm, Appointment): its TITLE "
+"becomes the section H2 and its first paragraph becomes the intro."
+msgstr ""
+"Les TITRES + INTROS de chaque section de l’accueil viennent maintenant "
+"DIRECTEMENT des pages correspondantes. Vous éditez la page (Pages > "
+"Expertise, Honoraires, Cabinet, Rendez-vous), son TITRE devient le H2 de la "
+"section et son premier paragraphe devient l’intro."
+
+#: inc/guide.php:35
+msgid "Hero — prefix + firm name + subtitle"
+msgstr "Hero — préfixe + nom du cabinet + sous-titre"
+
+#: inc/guide.php:35 inc/guide.php:36
+msgid "Appearance > Customize > Hero"
+msgstr "Apparence > Personnaliser > Hero"
+
+#: inc/guide.php:36
+msgid "Hero — CTA button + URL"
+msgstr "Hero — bouton CTA + URL"
+
+#: inc/guide.php:37
+msgid "Title + intro of the EXPERTISE section (home)"
+msgstr "Titre + intro section EXPERTISE (accueil)"
+
+#: inc/guide.php:37
+msgid "Pages > Expertise: title + first paragraph"
+msgstr "Pages > Expertise : titre + 1er paragraphe"
+
+#: inc/guide.php:38
+msgid "Title + intro of the FEES section (home)"
+msgstr "Titre + intro section HONORAIRES (accueil)"
+
+#: inc/guide.php:38
+msgid "Pages > Fees: title + first paragraph"
+msgstr "Pages > Honoraires : titre + 1er paragraphe"
+
+#: inc/guide.php:39
+msgid "Title + intro of the FIRM section (home)"
+msgstr "Titre + intro section CABINET (accueil)"
+
+#: inc/guide.php:39
+msgid "Pages > Firm: title + first paragraph"
+msgstr "Pages > Cabinet : titre + 1er paragraphe"
+
+#: inc/guide.php:40
+msgid "Title + intro of the APPOINTMENT section (home)"
+msgstr "Titre + intro section RENDEZ-VOUS (accueil)"
+
+#: inc/guide.php:40
+msgid "Pages > Appointment: title + first paragraph"
+msgstr "Pages > Rendez-vous : titre + 1er paragraphe"
+
+#: inc/guide.php:41
+msgid "Attorney bio (photo, name, bar, bio)"
+msgstr "Bio Le Maître (photo, nom, barreau, bio)"
+
+#: inc/guide.php:41
+msgid "Appearance > Customize > The Attorney"
+msgstr "Apparence > Personnaliser > Le Maître"
+
+#: inc/guide.php:42
+msgid "Fee rates (3 tiers)"
+msgstr "Tarifs honoraires (3 grilles)"
+
+#: inc/guide.php:42
+msgid "Appearance > Customize > Fees"
+msgstr "Apparence > Personnaliser > Honoraires"
+
+#: inc/guide.php:43
+msgid "Address, hours, contact, emergency"
+msgstr "Adresse, horaires, contact, urgence"
+
+#: inc/guide.php:43
+msgid "Appearance > Customize > Firm"
+msgstr "Apparence > Personnaliser > Cabinet"
+
+#: inc/guide.php:44
+msgid "Google Maps map (embed)"
+msgstr "Carte Google Maps (embed)"
+
+#: inc/guide.php:44
+msgid "Appearance > Customize > Firm > Map embed"
+msgstr "Apparence > Personnaliser > Cabinet > Map embed"
+
+#: inc/guide.php:45
+msgid "Appointment form GDPR text"
+msgstr "Texte RGPD du formulaire de rendez-vous"
+
+#: inc/guide.php:45
+msgid "Appearance > Customize > Appointment > GDPR"
+msgstr "Apparence > Personnaliser > Rendez-vous > RGPD"
+
+#: inc/guide.php:51
+msgid "Practice areas (CPT)"
+msgstr "Domaines d’expertise (CPT)"
+
+#: inc/guide.php:52
+msgid ""
+"Each practice area is a Custom Post Type with its icon, its example cases "
+"and its detailed page."
+msgstr ""
+"Chaque domaine d’expertise est un Custom Post Type avec son icône, ses "
+"exemples de cas et sa fiche détaillée."
+
+#: inc/guide.php:54
+msgid "List of areas (title, excerpt, icon, examples)"
+msgstr "Liste des domaines (titre, extrait, icône, exemples)"
+
+#: inc/guide.php:54
+msgid "Areas > admin (CPT ag_domaine)"
+msgstr "Domaines > admin (CPT ag_domaine)"
+
+#: inc/guide.php:55
+msgid "Background image per area"
+msgstr "Image de fond par domaine"
+
+#: inc/guide.php:55
+msgid "Areas > featured image"
+msgstr "Domaines > image à la une"
+
+#: inc/guide.php:61
+msgid "Dedicated pages"
+msgstr "Pages dédiées"
+
+#: inc/guide.php:62
+msgid ""
+"Each home section has a WP page. The title + first paragraph become the "
+"section header on the home page."
+msgstr ""
+"Chaque section de l’accueil a une page WP. Le titre + premier paragraphe "
+"deviennent l’en-tête de la section sur l’accueil."
+
+#: inc/guide.php:64
+msgid "Pages > Expertise (slug: expertise)"
+msgstr "Pages > Expertise (slug : expertise)"
+
+#: inc/guide.php:65
+msgid "Pages > Fees (slug: honoraires)"
+msgstr "Pages > Honoraires (slug : honoraires)"
+
+#: inc/guide.php:66
+msgid "Pages > Firm (slug: cabinet)"
+msgstr "Pages > Cabinet (slug : cabinet)"
+
+#: inc/guide.php:67
+msgid "Pages > Appointment (slug: rendez-vous)"
+msgstr "Pages > Rendez-vous (slug : rendez-vous)"
+
+#: inc/guide.php:68
+msgid "Pages > Legal notice"
+msgstr "Pages > Mentions légales"
+
+#: inc/guide.php:74
+msgid "Menus, header, footer"
+msgstr "Menus, en-tête, pied de page"
+
+#: inc/guide.php:75
+msgid "Navigation and footer editable without coding."
+msgstr "Navigation et pied de page éditables sans coder."
+
+#: inc/guide.php:77
+msgid "Logo (header + footer)"
+msgstr "Logo (en-tête + pied de page)"
+
+#: inc/guide.php:77
+msgid "Appearance > Customize > Site Identity (logo)"
+msgstr "Apparence > Personnaliser > Identité du site (logo)"
+
+#: inc/guide.php:78
+msgid "Main menu links"
+msgstr "Liens du menu principal"
+
+#: inc/guide.php:78
+msgid "Appearance > Menus > \"Main menu\""
+msgstr "Apparence > Menus > « Menu principal »"
+
+#: inc/guide.php:79
+msgid "Address, email, phone (footer)"
+msgstr "Adresse, email, téléphone (pied de page)"
+
+#: inc/guide.php:79
+msgid "Appearance > Customize > Identity"
+msgstr "Apparence > Personnaliser > Identité"
+
+#: inc/guide.php:85
+msgid "Updates & support"
+msgstr "Mise à jour & support"
+
+#: inc/guide.php:86
+msgid "Automatic updates. Manual check available."
+msgstr "Mises à jour automatiques. Vérification manuelle possible."
+
+#: inc/guide.php:88
+msgid "Force theme update"
+msgstr "Forcer la mise à jour du thème"
+
+#: inc/guide.php:103
+msgid "This page lists EVERYTHING you can change without coding."
+msgstr "Cette page liste TOUT ce que vous pouvez modifier sans coder."
+
+#: inc/guide.php:104
+msgid "Each row shows an area of the site and where to change it."
+msgstr "Chaque ligne indique une zone du site et où la modifier."
+
+#: inc/guide.php:132
+msgid "→ Go"
+msgstr "→ Aller"
+
+#: inc/guide.php:144
+msgid "Can't find it?"
+msgstr "Vous ne trouvez pas ?"
+
+#: inc/guide.php:145
+msgid ""
+"If you want to change something not in this list, open the relevant page "
+"with the <strong>Gutenberg block editor</strong> (Pages > your page)."
+msgstr ""
+"Si vous voulez modifier quelque chose qui n’est pas dans cette liste, ouvrez "
+"la page concernée avec l’<strong>éditeur de blocs Gutenberg</strong> (Pages "
+"> votre page)."
+
+#: inc/pro-features.php:1999
+msgid "Signature"
+msgstr "Signature"
+
+#: inc/pro-features.php:2075
+msgid "Our team"
+msgstr "Notre équipe"
+
+#: inc/pro-features.php:2076
+msgid ""
+"A team of experienced attorneys at your service. Every case handled with "
+"rigor, attentiveness and discretion."
+msgstr ""
+"Une équipe d'avocats expérimentés à votre service. Chaque dossier traité "
+"avec rigueur, écoute et discrétion."
+
+#: inc/pro-features.php:2084
+#, php-format
+msgid "Learn more about %s — The firm"
+msgstr "En savoir plus sur %s — Le cabinet"
+
+#: inc/pro-features.php:2096
+msgid "See the firm →"
+msgstr "Voir le cabinet →"
+
+#: inc/pro-features.php:2114
+msgid "Buy →"
+msgstr "Acheter →"
+
+#: inc/pro-features.php:2173
+msgid "Our à la carte services"
+msgstr "Nos services à la carte"
+
+#: inc/pro-features.php:2174
+msgid "Buy directly online. Secure payment, instant delivery by email."
+msgstr ""
+"Achetez directement en ligne. Paiement sécurisé, livraison immédiate par "
+"email."
+
+#: inc/pro-features.php:2266
+msgid "See all shop products →"
+msgstr "Voir tous les produits de la boutique →"
+
+#: inc/pro-features.php:2271
+msgid "🔒 Secure payment · WooCommerce shop"
+msgstr "🔒 Paiement sécurisé · Boutique WooCommerce"
+
+#: inc/pro-features.php:2273
+msgid "🔒 Install WooCommerce to enable the automatic shop"
+msgstr "🔒 Installez WooCommerce pour activer la boutique automatique"
+
+#: inc/pro-features.php:2354 inc/pro-features.php:2356
+msgid "Call"
+msgstr "Appeler"
+
+#: inc/pro-features.php:2419
+msgid "Bar admission"
+msgstr "Barreau inscrit"
+
+#: inc/pro-features.php:2421
+msgid "Fee agreement"
+msgstr "Convention d'honoraires"
+
+#: inc/pro-features.php:2422
+msgid "Attorney-client privilege"
+msgstr "Secret professionnel"
+
+#: index.php:15
+msgid "News"
+msgstr "Actualites"
+
+#: index.php:49
+msgid "No posts yet."
+msgstr "Aucun article pour le moment."
+
+#: page-cabinet.php:13
+msgid ""
+"Our commitment: rigor, attentiveness and confidentiality at the service of "
+"your interests."
+msgstr ""
+"Notre engagement : rigueur, ecoute et confidentialite au service de vos "
+"interets."
+
+#: page-cabinet.php:22
+msgid "Your attorney"
+msgstr "Votre avocat"
+
+#: page-cabinet.php:35
+#, php-format
+msgid "Admitted since %s"
+msgstr "Inscrit depuis %s"
+
+#: page-cabinet.php:51
+msgid "Find us"
+msgstr "Nous trouver"
+
+#: page-expertise.php:65
+msgid "Need legal advice?"
+msgstr "Besoin d'un conseil ?"
+
+#: page-expertise.php:66
+msgid "Book an appointment for a first confidential consultation."
+msgstr "Prenez rendez-vous pour une premiere consultation confidentielle."
+
+#: page-honoraires.php:64
+msgid "How are our fees calculated?"
+msgstr "Comment sont calcules nos honoraires ?"
+
+#: page-honoraires.php:65
+msgid ""
+"Before any work begins, a written fee agreement is provided to you. It "
+"specifies the chosen billing method, the amount or applicable hourly rate, "
+"as well as any additional fees."
+msgstr ""
+"Avant toute intervention, une convention d'honoraires ecrite vous est "
+"remise. Elle precise le mode de facturation choisi, le montant ou le taux "
+"horaire applicable, ainsi que les eventuels frais annexes."
+
+#: page-honoraires.php:67
+msgid "Initial consultation: a first appointment to review your situation"
+msgstr ""
+"Consultation initiale : premier rendez-vous pour analyser votre situation"
+
+#: page-honoraires.php:68
+msgid "Flat fee: a fixed price agreed in advance for a defined case"
+msgstr "Forfait : prix fixe convenu a l'avance pour un dossier defini"
+
+#: page-honoraires.php:69
+msgid "Time-based: hourly billing with a detailed statement"
+msgstr "Au temps passe : facturation horaire avec releve detaille"
+
+#: page-honoraires.php:70
+msgid "Success fee: a supplement tied to a favorable outcome of the case"
+msgstr "Honoraires de resultat : complement lie a l'issue favorable du dossier"
+
+#: page-honoraires.php:72
+msgid "Legal aid is accepted for eligible cases."
+msgstr "L'aide juridictionnelle est acceptee pour les dossiers eligibles."
+
+#: page-honoraires.php:80
+msgid "Request a free quote"
+msgstr "Demander un devis gratuit"
+
+#: page-rendez-vous.php:99
+msgid "Send my request"
+msgstr "Envoyer ma demande"
+
+#: page-rendez-vous.php:120
+msgid "By email"
+msgstr "Par email"
+
+#: page.php:28 single.php:30
+msgid "Pages:"
+msgstr "Pages :"
+
+#: search.php:13
+#, php-format
+msgid "Results for: %s"
+msgstr "Resultats pour : %s"
+
+#: search.php:48
+msgid "No results. Try other keywords."
+msgstr "Aucun resultat. Essayez avec d'autres mots-cles."
+
+#: searchform.php:11
+msgid "Search:"
+msgstr "Rechercher :"
+
+#: searchform.php:12
+msgid "Search..."
+msgstr "Rechercher..."
+
+#: searchform.php:14
+msgctxt "submit button"
+msgid "OK"
+msgstr "OK"
+
+#: single-ag_domaine.php:22
+msgid "Practice area"
+msgstr "Domaine d'expertise"
+
+#: single-ag_domaine.php:37
+msgid "Examples of handled cases"
+msgstr "Exemples de cas traites"
+
+#: single-ag_domaine.php:44
+msgid "All practice areas"
+msgstr "Tous les domaines d'expertise"
+
+#: single-ag_domaine.php:49
+msgid "Do you have a case in this area?"
+msgstr "Vous avez un dossier dans ce domaine ?"
+
+#: single.php:39
+msgid "Categories:"
+msgstr "Categories :"
+
+#: single.php:43
+msgid "Tags:"
+msgstr "Etiquettes :"

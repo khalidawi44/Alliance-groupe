@@ -5,7 +5,7 @@ Tags: one-column, custom-menu, featured-images, translation-ready, theme-options
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.1.21
+Stable tag: 1.1.22
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,6 +66,12 @@ No. The theme is fully functional without Elementor, Divi or any other builder.
 Alliance Group, a web and AI agency. More info at https://alliancegroupe-inc.com
 
 == Changelog ==
+
+= 1.1.22 =
+* Compliance with French Bar advertising rules (RIN art. 10): the key-figures counters no longer ship invented numbers (they are empty by default and read from the Customizer; the section is hidden when empty); the free footer shows a single discreet credit link (no promotional banner).
+* Wording: "Practice areas" instead of "Specialties" for the areas-of-law section and the attorney profile; the bar-admission line no longer duplicates its label; French accents fixed ("Tous droits réservés", "Thème").
+* Mobile footer: the deontology badges wrap instead of overflowing on narrow screens.
+* Updated bundled French translation (languages/fr_FR.po / fr_FR.mo) and .pot template.
 
 = 1.1.21 =
 * Full English source pass: the Customizer control labels, section titles, default front-page texts and the admin user-guide page are now all in English (translation-ready), fixing the remaining French strings from 1.1.20.

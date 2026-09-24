@@ -37,7 +37,7 @@ get_header();
 					</div>
 					<p class="ag-maitre__bio"><?php echo nl2br( esc_html( ag_starter_avocat_get_option( 'ag_maitre_bio' ) ) ); ?></p>
 					<?php $spec = ag_starter_avocat_get_option( 'ag_maitre_specialties' ); if ( $spec ) : ?>
-						<p class="ag-maitre__specialties"><strong><?php esc_html_e( 'Specialties:', 'ag-starter-avocat' ); ?></strong> <?php echo esc_html( $spec ); ?></p>
+						<p class="ag-maitre__specialties"><strong><?php esc_html_e( 'Practice areas:', 'ag-starter-avocat' ); ?></strong> <?php echo esc_html( $spec ); ?></p>
 					<?php endif; ?>
 					<?php do_action( 'ag_inside_maitre_body' ); ?>
 				</div>

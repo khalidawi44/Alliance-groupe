@@ -4,7 +4,7 @@ Theme URI: https://alliancegroupe-inc.com/templates-wordpress
 Author: AGthemes
 Author URI: https://alliancegroupe-inc.com
 Description: A free, lightweight starter theme for law firms, attorneys, notaries and legal advisors. Sober navy-and-champagne design, responsive and fast (no JavaScript dependency). Pre-built sections — practice areas, fees, appointment booking, contact — ready to customize. Translation-ready, with a bundled French (fr_FR) translation.
-Version: 1.1.21
+Version: 1.1.22
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
@@ -389,6 +389,15 @@ p {
 }
 .ag-footer-deonto__notes .ag-deonto-item {
     white-space: nowrap;
+    max-width: 100%;
+}
+/* Mobile (~390px): the bar name can be long — allow wrapping inside the badge
+   to avoid any horizontal overflow. */
+@media (max-width: 480px) {
+    .ag-footer-deonto__notes .ag-deonto-item {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
 }
 
 .ag-footer-bottom {
