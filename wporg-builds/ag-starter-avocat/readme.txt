@@ -5,7 +5,7 @@ Tags: one-column, custom-menu, featured-images, translation-ready, theme-options
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.1.22
+Stable tag: 1.1.23
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,6 +66,9 @@ No. The theme is fully functional without Elementor, Divi or any other builder.
 Alliance Group, a web and AI agency. More info at https://alliancegroupe-inc.com
 
 == Changelog ==
+
+= 1.1.23 =
+* Wording: the "areas of law" section, the attorney profile label and the single practice-area page now consistently say "Practice areas" (French: "Domaines d'intervention") everywhere, including default fallbacks. Updated the bundled French translation accordingly.
 
 = 1.1.22 =
 * Compliance with French Bar advertising rules (RIN art. 10): the key-figures counters no longer ship invented numbers (they are empty by default and read from the Customizer; the section is hidden when empty); the free footer shows a single discreet credit link (no promotional banner).

@@ -3,6 +3,9 @@
 Ce dossier `wporg-builds/ag-starter-avocat/` est la **version « .org propre »** du thème
 gratuit, prête à tester puis soumettre à https://wordpress.org/themes/upload/.
 
+## ✅ v1.1.23 — libellés « Practice areas » cohérents partout
+Suite de la conformité RIN : tous les libellés restants « Domaines d'expertise » / « Specialites » (replis par défaut de `front-page.php`, page `single-ag_domaine`, CPT, guide admin) passent à « Practice areas » / « Domaines d'intervention » (FR via `fr_FR.po`). Aucun libellé « expertise » visible ne subsiste — seul le **slug** de page `expertise` (identifiant d'URL) reste, comme prévu. `.mo` recompilé (**291 chaînes, 100 %**), couverture `.po`↔`.pot` vérifiée. Zip : **`ag-starter-avocat-1.1.23.zip`**.
+
 ## ✅ v1.1.22 — conformité RIN art. 10 (déontologie avocat)
 Corrections déontologiques appliquées **dans le format .org** (code source anglais + traduction FR dans `fr_FR.po/.mo`), en miroir de la version distribuée par le site :
 - **Chiffres clés** (`render_counters`) : plus aucun chiffre inventé (15+/500+/98 %/24-7) — compteurs lus depuis le Customizer, **vides par défaut**, section non rendue si vide (code mort en tier gratuit, aligné quand même, sans ajouter de français).

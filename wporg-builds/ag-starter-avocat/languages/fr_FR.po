@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: AG Starter Avocat 1.1.22\n"
+"Project-Id-Version: AG Starter Avocat 1.1.23\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-24 14:36+0000\n"
 "PO-Revision-Date: 2026-09-24 14:36+0000\n"
@@ -114,7 +114,7 @@ msgstr ""
 
 #: front-page.php:110 page-expertise.php:53
 msgid "No practice area has been published yet."
-msgstr "Aucun domaine d'expertise n'est encore publie."
+msgstr "Aucun domaine d'intervention n'est encore publié."
 
 #: front-page.php:112 page-expertise.php:55
 msgid "Add a first practice area"
@@ -966,14 +966,14 @@ msgstr "Apparence > Personnaliser > Rendez-vous > RGPD"
 
 #: inc/guide.php:51
 msgid "Practice areas (CPT)"
-msgstr "Domaines d’expertise (CPT)"
+msgstr "Domaines d’intervention (CPT)"
 
 #: inc/guide.php:52
 msgid ""
 "Each practice area is a Custom Post Type with its icon, its example cases "
 "and its detailed page."
 msgstr ""
-"Chaque domaine d’expertise est un Custom Post Type avec son icône, ses "
+"Chaque domaine d’intervention est un Custom Post Type avec son icône, ses "
 "exemples de cas et sa fiche détaillée."
 
 #: inc/guide.php:54
@@ -1272,7 +1272,7 @@ msgstr "OK"
 
 #: single-ag_domaine.php:22
 msgid "Practice area"
-msgstr "Domaine d'expertise"
+msgstr "Domaine d'intervention"
 
 #: single-ag_domaine.php:37
 msgid "Examples of handled cases"
@@ -1280,7 +1280,7 @@ msgstr "Exemples de cas traites"
 
 #: single-ag_domaine.php:44
 msgid "All practice areas"
-msgstr "Tous les domaines d'expertise"
+msgstr "Tous les domaines d'intervention"
 
 #: single-ag_domaine.php:49
 msgid "Do you have a case in this area?"
