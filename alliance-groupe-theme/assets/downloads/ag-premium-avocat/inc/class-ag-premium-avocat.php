@@ -173,7 +173,7 @@ class AG_Premium_Avocat {
 	 */
 	private function get_default_texts() {
 		return array(
-			'domaines_title'   => "Domaines d'expertise",
+			'domaines_title'   => "Domaines d'intervention",
 			'domaines_lead'    => 'Conseil et representation pour particuliers et entreprises dans les principaux domaines du droit.',
 			'honoraires_title' => 'Honoraires',
 			'honoraires_lead'  => 'Transparence totale sur les tarifs : pas de mauvaise surprise, devis ecrit avant tout engagement.',
@@ -459,7 +459,7 @@ class AG_Premium_Avocat {
 
 		$page_specs = array(
 			'cabinet'     => __( 'Cabinet', 'ag-premium-avocat' ),
-			'expertise'   => __( 'Domaines d\'expertise', 'ag-premium-avocat' ),
+			'expertise'   => __( 'Domaines d\'intervention', 'ag-premium-avocat' ),
 			'honoraires'  => __( 'Honoraires', 'ag-premium-avocat' ),
 			'rendez-vous' => __( 'Prendre rendez-vous', 'ag-premium-avocat' ),
 		);

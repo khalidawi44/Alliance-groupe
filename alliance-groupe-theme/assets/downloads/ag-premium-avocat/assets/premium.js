@@ -138,7 +138,7 @@
         if (!isPremiumActive()) return;
         var rules = [
             // Domaines d'expertise
-            { selector: '.ag-domaines .ag-section-title', defaultText: "Domaines d'expertise", key: 'domaines_title' },
+            { selector: '.ag-domaines .ag-section-title', defaultText: "Domaines d'intervention", key: 'domaines_title' },
             { selector: '.ag-domaines .ag-section-lead',  matchSubstr: 'principaux domaines', key: 'domaines_lead' },
             // Honoraires
             { selector: '.ag-honoraires .ag-section-title', defaultText: 'Honoraires', key: 'honoraires_title' },

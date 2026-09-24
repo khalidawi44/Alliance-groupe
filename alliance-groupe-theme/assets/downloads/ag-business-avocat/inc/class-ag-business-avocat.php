@@ -1778,7 +1778,7 @@ Telephone : [telephone]</p>
 				<p class="ag-business-team-card__bio"><?php echo esc_html( $m['bio'] ); ?></p>
 				<div class="ag-business-team-card__details">
 					<div class="ag-business-team-card__block">
-						<h4><?php esc_html_e( 'Spécialités', 'ag-business-avocat' ); ?></h4>
+						<h4><?php esc_html_e( 'Domaines d\'intervention', 'ag-business-avocat' ); ?></h4>
 						<ul>
 							<?php foreach ( $m['specialties'] as $s ) : ?>
 								<li><?php echo esc_html( $s ); ?></li>
@@ -1812,6 +1812,13 @@ Telephone : [telephone]</p>
 	 * Photos depuis Unsplash (portraits libres), remplacables.
 	 */
 	private function get_default_team_data() {
+		// DEONTOLOGIE AVOCAT (RIN art. 10.2) : afficher un cabinet ou des avocats
+		// qui n'existent pas est interdit (structure inexistante / information non
+		// sincere). On ne livre donc AUCUN membre par defaut : les sections equipe
+		// (fondateur, associes, collaborateurs) restent masquees tant que l'avocat
+		// n'a pas saisi ses vrais profils. Les rendus ont deja un garde anti-vide.
+		return array( 'founder' => array(), 'associates' => array(), 'collaborators' => array() );
+		// phpcs:disable -- gabarit historique conserve mais jamais atteint.
 		return array(
 			'founder'    => array(
 				array(
