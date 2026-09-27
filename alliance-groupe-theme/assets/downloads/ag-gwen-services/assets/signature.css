@@ -693,3 +693,42 @@ body .ag-site-header.nav-open ~ #ag-backtotop,
 body .ag-site-header.nav-open ~ .ag-backtotop,
 body .ag-site-header.nav-open ~ .ag-backtop,
 body .ag-site-header.nav-open ~ .ag-totop{opacity:0!important;pointer-events:none!important}
+
+/* ============================================================
+   MENU BURGER À TOUTES LES TAILLES (27/09 — repris de la lane CODE)
+   `ag-brand-nav.php` ne s'occupe plus que du favicon : c'est donc ici
+   que vit tout le menu. Sur ordinateur, les 9 entrées (dont Réserver et
+   Mon espace) débordaient à droite ; on repasse au burger + panneau
+   plein écran quelle que soit la largeur. Le panneau est REPLIÉ par
+   défaut, sinon le menu horizontal resterait visible derrière lui.
+   ============================================================ */
+body .ag-site-header .ag-navtoggle{
+	display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+	width:46px;height:46px;padding:0;border:0;border-radius:12px;cursor:pointer;position:relative;z-index:10001;
+	background:rgba(18,22,15,.07);-webkit-tap-highlight-color:transparent;
+}
+body .ag-site-header .ag-navtoggle span{display:block;width:24px;height:2.5px;border-radius:3px;background:#14140f;box-shadow:none;transition:transform .3s ease,opacity .25s ease,background .25s ease}
+/* Au-dessus du hero (en-tête transparent) : barres claires */
+body.ag-premium-mode.home .ag-site-header:not(.scrolled) .ag-navtoggle{background:rgba(0,0,0,.34)}
+body.ag-premium-mode.home .ag-site-header:not(.scrolled) .ag-navtoggle span{background:#fff}
+body .ag-site-header.scrolled .ag-navtoggle span{background:#14140f}
+body .ag-site-header.nav-open .ag-navtoggle{background:rgba(255,255,255,.12)}
+body .ag-site-header.nav-open .ag-navtoggle span{background:#f6f1e4}
+body .ag-site-header.nav-open .ag-navtoggle span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+body .ag-site-header.nav-open .ag-navtoggle span:nth-child(2){opacity:0}
+body .ag-site-header.nav-open .ag-navtoggle span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+
+/* Panneau : caché par défaut, à TOUTES les largeurs (remplace la bascule 820px) */
+body .ag-site-header .ag-primary-nav{
+	position:fixed!important;inset:0!important;max-height:none!important;
+	display:flex;align-items:flex-start;justify-content:center;
+	opacity:0;visibility:hidden;transform:translateY(-8px);
+	transition:opacity .25s ease,transform .25s ease,visibility .25s ease;
+	z-index:10000;border-top:0!important;box-shadow:none!important;overflow:auto;
+}
+body .ag-site-header.nav-open .ag-primary-nav{opacity:1;visibility:visible;transform:none}
+/* Le menu horizontal ne doit plus s'étaler : il vit dans le panneau */
+body .ag-site-header .ag-primary-nav .ag-primary-menu{flex-direction:column!important;flex-wrap:nowrap!important;gap:0!important;padding:0!important;margin:auto!important}
+/* Logo lisible par-dessus le panneau vert (il est vert sur fond clair à l'origine) */
+body .ag-site-header.nav-open .ag-site-brand{position:relative;z-index:10001}
+body .ag-site-header.nav-open .ag-site-brand img{filter:brightness(0) invert(1);opacity:.92}
