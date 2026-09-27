@@ -83,7 +83,7 @@ endif; ?>
 					<svg viewBox="0 0 200 200"><defs><path id="agstamp" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
 						<circle cx="100" cy="100" r="93" fill="none" stroke="#c9a36b" stroke-width="1.4" opacity=".55"/>
 						<circle cx="100" cy="100" r="78" fill="none" stroke="#c9a36b" stroke-width="1" opacity=".3"/>
-						<text fill="#e6c78a" font-family="Nunito Sans, sans-serif" font-size="12.5" font-weight="800" letter-spacing="3.4"><textPath href="#agstamp" startOffset="0%">· 7J/7 · 07H–21H · SANS ENGAGEMENT </textPath></text>
+						<text fill="#e6c78a" font-family="Nunito Sans, sans-serif" font-size="12.5" font-weight="800" letter-spacing="3.4"><textPath href="#agstamp" startOffset="0%">· LUN–VEN · INTERVENTIONS L’APRÈS-MIDI · SANS ENGAGEMENT </textPath></text>
 					</svg>
 				</div>
 				<div class="ag-hero-stamp__mid"><b>50%</b><span>Crédit d’impôt</span></div>
@@ -96,7 +96,7 @@ endif; ?>
 		<!-- Bandeau défilant de réassurance -->
 		<div class="ag-mq" aria-hidden="true">
 			<div class="ag-mq__track">
-				<?php $ag_mq = '<div class="ag-mq__group"><span><b>✦</b> Crédit d’impôt 50 %</span><span><b>✦</b> Agréé Services à la personne</span><span><b>✦</b> CESU accepté</span><span><b>✦</b> 7j/7 · 07h–21h</span><span><b>✦</b> Sans engagement</span><span><b>✦</b> Avance immédiate URSSAF</span></div>';
+				<?php $ag_mq = '<div class="ag-mq__group"><span><b>✦</b> Crédit d’impôt 50 %</span><span><b>✦</b> Agréé Services à la personne</span><span><b>✦</b> CESU accepté</span><span><b>✦</b> Lun–Ven · interventions l’après-midi</span><span><b>✦</b> Sans engagement</span><span><b>✦</b> Avance immédiate URSSAF</span></div>';
 				echo $ag_mq . $ag_mq; // phpcs:ignore — markup statique de confiance ?>
 			</div>
 		</div>
