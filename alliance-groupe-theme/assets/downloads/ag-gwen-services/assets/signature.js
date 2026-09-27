@@ -77,3 +77,20 @@ document.addEventListener('click', function (e) {
 	document.querySelectorAll('.ag-resa-slot.is-picked').forEach(function (x) { x.classList.remove('is-picked'); });
 	b.classList.add('is-picked');
 });
+
+/* Bandeau de confiance : horaires réels de Gwen.
+   Le libellé par défaut (« 7j/7, jour & nuit ») est écrit dans functions.php,
+   côté lane CODE. En attendant qu'il y soit corrigé à la source, on remet le
+   texte juste ici — c'est ce que voit le visiteur, donc lane DESIGN. */
+(function () {
+	function corriger() {
+		document.querySelectorAll('.ag-pd-trust__item span').forEach(function (s) {
+			if (/7\s*j\s*\/\s*7/i.test(s.textContent)) {
+				s.textContent = 'Lun–Ven, l’après-midi';
+			}
+		});
+	}
+	if (document.readyState !== 'loading') { corriger(); } else { document.addEventListener('DOMContentLoaded', corriger); }
+	setTimeout(corriger, 400);
+	setTimeout(corriger, 1500);
+})();
