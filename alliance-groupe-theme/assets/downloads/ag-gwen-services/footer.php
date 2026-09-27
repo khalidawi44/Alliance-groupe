@@ -21,8 +21,8 @@
 			<div class="ag-footer-col">
 				<h3><?php esc_html_e( 'Horaires', 'ag-gwen-services' ); ?></h3>
 				<p>
-					<strong><?php echo esc_html( ag_domicile_opt( 'ag_domicile_footer_hours', '7j/7 — de 07h à 21h' ) ); ?></strong><br>
-					<span class="ag-footer-note"><?php esc_html_e( 'Interventions matin, soir & garde de nuit', 'ag-gwen-services' ); ?></span>
+					<strong><?php echo esc_html( ag_domicile_opt( 'ag_domicile_footer_hours', 'Interventions : lun–ven, 14h–17h' ) ); ?></strong><br>
+					<span class="ag-footer-note"><?php esc_html_e( 'Mercredi jusqu’à 16h30, vendredi jusqu’à 16h · appels le matin', 'ag-gwen-services' ); ?></span>
 				</p>
 			</div>
 			<div class="ag-footer-col">
@@ -67,7 +67,7 @@
 </style>
 
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"LocalBusiness","@id":"https://gwen-services.alliancegroupe-inc.com/#business","name":"Gwen Services","description":"Aide à domicile à Nantes : accompagnement des personnes âgées, aide au handicap léger et garde d'enfants (1 mois–8 ans). Crédit d'impôt de 50 %.","url":"https://gwen-services.alliancegroupe-inc.com","telephone":"+33626142845","areaServed":"Nantes","address":{"@type":"PostalAddress","addressLocality":"Nantes","postalCode":"44000","addressCountry":"FR"},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],"opens":"07:00","closes":"21:00"}],"priceRange":"€€"}
+{"@context":"https://schema.org","@type":"LocalBusiness","@id":"https://gwen-services.alliancegroupe-inc.com/#business","name":"Gwen Services","description":"Aide à domicile à Nantes : accompagnement des personnes âgées, aide au handicap léger et garde d'enfants (1 mois–8 ans). Crédit d'impôt de 50 %.","url":"https://gwen-services.alliancegroupe-inc.com","telephone":"+33626142845","areaServed":"Nantes","address":{"@type":"PostalAddress","addressLocality":"Nantes","postalCode":"44000","addressCountry":"FR"},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Thursday"],"opens":"14:00","closes":"17:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":["Wednesday"],"opens":"14:00","closes":"16:30"},{"@type":"OpeningHoursSpecification","dayOfWeek":["Friday"],"opens":"14:00","closes":"16:00"}],"priceRange":"€€"}
 </script>
 
 <script>
