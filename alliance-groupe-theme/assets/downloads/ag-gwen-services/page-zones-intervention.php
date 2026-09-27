@@ -3,7 +3,7 @@
  * Template page "Zones d'intervention" (variante services a la personne).
  *
  * Layout 2 colonnes : carte Google Maps (secteur) + modes d'intervention
- * (journee, nuit, ponctuel, regulier) + communes couvertes + contact rapide.
+ * (apres-midi, ponctuel, regulier) + communes couvertes + contact rapide.
  *
  * @package AG_Starter_Domicile
  */
@@ -23,9 +23,9 @@ $map_src   = 'https://maps.google.com/maps?q=' . $map_query . '&output=embed&z=1
 
 // Types d'intervention proposes par specialite.
 $modes_by_metier = array(
-	'domicile_seniors'  => array( 'En journée (aide au quotidien)', 'La nuit (garde de nuit, présence)', 'Sortie d’hospitalisation', 'Interventions régulières ou ponctuelles' ),
+	'domicile_seniors'  => array( 'L’après-midi (aide au quotidien)', 'Lundi au vendredi, 14h–17h', 'Sortie d’hospitalisation', 'Interventions régulières ou ponctuelles' ),
 	'domicile_familles' => array( 'Ménage & repassage', 'Garde d’enfants & sortie d’école', 'Aide aux seniors', 'Interventions ponctuelles ou régulières' ),
-	'domicile_handicap' => array( 'En journée (aide aux gestes essentiels)', 'La nuit (présence, garde renforcée)', 'Accompagnement aux sorties & rendez-vous', 'Présence continue possible' ),
+	'domicile_handicap' => array( 'L’après-midi (aide aux gestes essentiels)', 'Lundi au vendredi, 14h–17h', 'Accompagnement aux sorties & rendez-vous', 'Interventions régulières ou ponctuelles' ),
 );
 $modes_session = isset( $modes_by_metier[ $metier_slug ] ) ? $modes_by_metier[ $metier_slug ] : $modes_by_metier['domicile_seniors'];
 
@@ -40,7 +40,7 @@ $zones_couvertes = array( 'Nantes', 'Rezé', 'Saint-Herblain', 'Orvault', 'Verto
 			<div class="ag-container">
 				<span class="ag-page-tag"><?php echo esc_html( $ag_metier_nom ?: 'Où nous intervenons' ); ?></span>
 				<h1 class="ag-page-title">Zones <em>d'intervention</em></h1>
-				<p class="ag-page-hero-sub">À votre domicile, 7j/7 — de jour comme de nuit.</p>
+				<p class="ag-page-hero-sub">À votre domicile, du lundi au vendredi — l’après-midi.</p>
 			</div>
 		</section>
 
