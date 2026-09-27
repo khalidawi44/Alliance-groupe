@@ -21,7 +21,7 @@ function ag_domicile_render_promo_video() {
 	$items = array(
 		array( 'i' => '💚', 'g' => '#4f9d6b,#6fbf8a', 't' => 'Un intervenant de confiance', 'd' => 'La même personne, à l’écoute, dans la durée. Jamais un inconnu chez vous.' ),
 		array( 'i' => '💰', 'g' => '#c9a36b,#e6c78a', 't' => 'Crédit d’impôt de 50 %', 'd' => 'Avec l’avance immédiate, vous ne réglez que la moitié — même sans être imposable.' ),
-		array( 'i' => '🕐', 'g' => '#3f8f63,#5cb37e', 't' => 'Présents 7j/7, jour & nuit', 'd' => 'Disponibles quand vous en avez besoin, jusqu’à la garde de nuit.' ),
+		array( 'i' => '🕐', 'g' => '#3f8f63,#5cb37e', 't' => 'Des créneaux réguliers', 'd' => 'Interventions du lundi au vendredi, l’après-midi — le même créneau chaque semaine.' ),
 		array( 'i' => '👨‍👩‍👧', 'g' => '#5aa06f,#86c78f', 't' => 'Adapté à chacun', 'd' => 'Seniors, handicap léger, garde d’enfants de 1 mois à 8 ans.' ),
 	);
 
@@ -30,7 +30,7 @@ function ag_domicile_render_promo_video() {
 		array( 'n' => 120, 'suf' => '+', 'l' => 'Familles accompagnées', 'dec' => 0 ),
 		array( 'n' => 12,  'suf' => ' ans', 'l' => 'D’expérience à Nantes', 'dec' => 0 ),
 		array( 'n' => 4.9, 'suf' => '/5', 'l' => 'Note moyenne des familles', 'dec' => 1 ),
-		array( 'n' => 7,   'suf' => 'j/7', 'l' => 'Disponibles, jour & nuit', 'dec' => 0 ),
+		array( 'n' => 5,   'suf' => 'j/7', 'l' => 'Du lundi au vendredi', 'dec' => 0 ),
 	);
 
 	// Bandeau de logos de confiance (labels officiels du secteur SAP).
