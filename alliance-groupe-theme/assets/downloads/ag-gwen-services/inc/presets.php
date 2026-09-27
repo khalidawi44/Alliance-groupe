@@ -50,18 +50,19 @@ class AG_Domicile_Presets {
 				'faq' => array(
 					array( 'q' => 'Le crédit d’impôt de 50 % s’applique-t-il ?', 'a' => 'Oui, sur l’ensemble des prestations à domicile (aide aux seniors, garde d’enfants, aide au handicap), avec avance immédiate — même sans être imposable.' ),
 					array( 'q' => 'À partir de quel âge gardez-vous les enfants ?', 'a' => 'De 1 mois à 8 ans, à domicile, en journée ou en sortie d’école, selon vos besoins.' ),
-					array( 'q' => 'Intervenez-vous le week-end ?', 'a' => 'Oui, 7j/7 selon les disponibilités, en ponctuel ou en régulier.' ),
+					array( 'q' => 'Quels sont vos horaires ?', 'a' => 'Les interventions ont lieu du lundi au vendredi, l’après-midi : 14h–17h (16h30 le mercredi, 16h le vendredi). Les matinées sont consacrées à la gestion et aux appels — c’est le meilleur moment pour me joindre.' ),
+					array( 'q' => 'Intervenez-vous le week-end ou la nuit ?', 'a' => 'Non, pas pour le moment : j’interviens du lundi au vendredi l’après-midi. Pour un besoin ponctuel en dehors de ces horaires, écrivez-moi — j’étudie chaque demande.' ),
 					array( 'q' => 'Comment démarrer ?', 'a' => 'Un simple appel ou une demande de devis. L’échange et l’évaluation des besoins sont gratuits et sans engagement.' ),
 				),
 				'stats' => array(
 					array( 'value' => '50 %',  'label' => 'Crédit d’impôt' ),
-					array( 'value' => '7j/7',  'label' => 'Disponibilité' ),
+					array( 'value' => 'Lun–Ven', 'label' => 'Interventions l’après-midi' ),
 					array( 'value' => 'Nantes', 'label' => 'Et alentours' ),
 				),
 				'pages' => array(
 					'qui-sommes-nous'    => "Gwen Services, c’est une présence de confiance à domicile, à Nantes et dans ses environs. J’accompagne les personnes âgées, les personnes en situation de handicap léger, et je garde vos enfants de 1 mois à 8 ans.\n\nMon engagement : de l’écoute, de la douceur, de la fiabilité. La même personne pour votre famille, des horaires adaptés à votre organisation, en ponctuel ou en régulier.\n\nToutes les prestations ouvrent droit au crédit d’impôt de 50 %, avec avance immédiate. Premier échange et évaluation des besoins gratuits, sans engagement.",
 					'prestations'        => "Auprès des personnes âgées : aide au lever et au coucher, aide aux repas, compagnie et présence, courses et accompagnement aux sorties.\n\nGarde d’enfants (1 mois–8 ans) : garde à domicile en journée, sortie d’école, activités et goûter, dans un cadre sécurisant.\n\nHandicap léger : aide au quotidien, présence et accompagnement respectueux. Toutes les prestations ouvrent droit au crédit d’impôt de 50 %.",
-					'zones-intervention' => "J’interviens à Nantes et dans son agglomération : Rezé, Saint-Herblain, Orvault, Vertou, Bouguenais, Saint-Sébastien-sur-Loire, Carquefou et alentours.\n\nEn journée comme en soirée, en ponctuel ou en régulier, avec des délais de mise en place courts.\n\nVotre commune n’apparaît pas ? Contactez-moi : j’étudie chaque demande avec plaisir.",
+					'zones-intervention' => "J’interviens à Nantes et dans son agglomération : Rezé, Saint-Herblain, Orvault, Vertou, Bouguenais, Saint-Sébastien-sur-Loire, Carquefou et alentours.\n\nLes interventions ont lieu du lundi au vendredi l’après-midi, en ponctuel ou en régulier, avec des délais de mise en place courts.\n\nVotre commune n’apparaît pas ? Contactez-moi : j’étudie chaque demande avec plaisir.",
 					'realisations'       => "Chaque semaine, j’accompagne des familles nantaises : un parent âgé qui reste chez lui, des enfants gardés après l’école, un proche en situation de handicap soutenu au quotidien.\n\nCe qui fait la différence : la confiance, la régularité et une vraie relation humaine.\n\nDécouvrez les témoignages ci-dessous, et demandez votre devis : on construit ensemble la solution qui vous convient.",
 				),
 			),
