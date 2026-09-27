@@ -32,7 +32,7 @@ $timelines = array(
 		array( 'year' => 'Agréé', 'text' => "Service déclaré au titre des services à la personne — crédit d'impôt de 50 %." ),
 		array( 'year' => 'Qualifié', 'text' => "Auxiliaires de vie et aides à domicile sélectionnés, formés et suivis dans la durée." ),
 		array( 'year' => 'Référent', 'text' => "Un intervenant référent par famille, avec une doublure formée pour la continuité." ),
-		array( 'year' => '7j/7', 'text' => "Interventions de jour comme de nuit, jours fériés compris, remplacements assurés." ),
+		array( 'year' => 'Lun–Ven', 'text' => "Interventions l’après-midi : 14h–17h, 16h30 le mercredi, 16h le vendredi. Les matinées sont réservées à la gestion et aux appels." ),
 		array( 'year' => "Sur-mesure", 'text' => "Un plan d'aide adapté à chaque personne, réévalué régulièrement avec la famille." ),
 	),
 	'domicile_familles' => array(
@@ -46,7 +46,7 @@ $timelines = array(
 		array( 'year' => 'Agréé', 'text' => "Service déclaré services à la personne — crédit d'impôt de 50 %." ),
 		array( 'year' => 'Formé', 'text' => "Accompagnants formés au handicap, à la dépendance et à la communication adaptée." ),
 		array( 'year' => 'Coordonné', 'text' => "Travail en lien avec la famille et l'équipe médico-sociale (PCH, APA, MDPH)." ),
-		array( 'year' => 'Continu', 'text' => "Présence de jour, de nuit ou continue, avec remplacements garantis." ),
+		array( 'year' => 'Régulier', 'text' => "Des créneaux fixes chaque semaine, du lundi au vendredi l’après-midi." ),
 		array( 'year' => "Respect", 'text' => "Autonomie et dignité au cœur de chaque accompagnement." ),
 	),
 );
