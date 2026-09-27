@@ -73,6 +73,25 @@ if ( ! function_exists( 'ag_resa_tz' ) ) {
 	function ag_resa_tz() { return wp_timezone(); }
 }
 
+if ( ! function_exists( 'ag_gwen_date_fr' ) ) {
+	/**
+	 * Date formatée EN FRANÇAIS quelle que soit la langue de WordPress.
+	 * (Sans ça, les noms de jour/mois « l » / « F » sortent en anglais si la
+	 *  langue du site n'est pas fr_FR.) On bascule temporairement la locale.
+	 */
+	function ag_gwen_date_fr( $format, $ts ) {
+		$switched = false;
+		if ( function_exists( 'switch_to_locale' ) && get_locale() !== 'fr_FR' ) {
+			$switched = switch_to_locale( 'fr_FR' );
+		}
+		$out = wp_date( $format, (int) $ts, ag_resa_tz() );
+		if ( $switched && function_exists( 'restore_previous_locale' ) ) {
+			restore_previous_locale();
+		}
+		return $out;
+	}
+}
+
 /* ── 2. Stockage ─────────────────────────────────────────────────────── */
 
 if ( ! function_exists( 'ag_resa_all' ) ) {
@@ -176,7 +195,7 @@ if ( ! function_exists( 'ag_resa_invitations' ) ) {
 		$ics = ag_resa_ics_event( $b, $method );
 		$tmp = trailingslashit( get_temp_dir() ) . 'rdv-' . sanitize_file_name( (string) ( $b['id'] ?? 'x' ) ) . '.ics';
 		@file_put_contents( $tmp, $ics );
-		$quand  = wp_date( 'l j F Y à H:i', (int) $b['start'], ag_resa_tz() );
+		$quand  = ag_gwen_date_fr( 'l j F Y à H:i', (int) $b['start'] );
 		$annule = ( 'CANCEL' === $method );
 		$svc    = (string) ( $b['service_label'] ?? 'Intervention' );
 		$bloc = function ( $intro ) use ( $quand, $svc, $b ) {
@@ -313,7 +332,7 @@ if ( ! function_exists( 'ag_resa_envoi_rappel' ) ) {
 	function ag_resa_envoi_rappel( $b ) {
 		$tz    = ag_resa_tz();
 		$svc   = (string) ( $b['service_label'] ?? 'Intervention' );
-		$quand = wp_date( 'l j F à H:i', (int) $b['start'], $tz );
+		$quand = ag_gwen_date_fr( 'l j F à H:i', (int) $b['start'] );
 
 		if ( ! empty( $b['email'] ) && is_email( $b['email'] ) ) {
 			$inner = '<p>Bonjour' . ( ! empty( $b['name'] ) ? ' ' . esc_html( $b['name'] ) : '' ) . ',</p>'
@@ -391,6 +410,8 @@ if ( ! function_exists( 'ag_gwen_auth_forms' ) ) {
 		);
 		$in = 'width:100%;padding:11px;border:1px solid #ccc;border-radius:8px;margin-bottom:10px;box-sizing:border-box';
 		$bt = 'background:#F37A1F;color:#fff;border:0;border-radius:8px;padding:12px 22px;font-weight:700;cursor:pointer';
+		// Label accessible masqué visuellement (a11y) — n'affecte pas la mise en page DESIGN.
+		$sr = 'position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0';
 		ob_start(); ?>
 		<div class="ag-gwen-auth" style="max-width:420px;margin:32px auto;font-family:system-ui,Arial,sans-serif">
 			<?php if ( $err && isset( $msg[ $err ] ) ) : ?>
@@ -400,17 +421,22 @@ if ( ! function_exists( 'ag_gwen_auth_forms' ) ) {
 			<form method="post" action="<?php echo $post; ?>" style="margin-bottom:26px">
 				<input type="hidden" name="action" value="ag_gwen_login">
 				<input type="hidden" name="_n" value="<?php echo esc_attr( $n ); ?>">
-				<input type="email" name="email" placeholder="Votre email" required style="<?php echo $in; ?>">
-				<input type="password" name="pass" placeholder="Votre mot de passe" required style="<?php echo $in; ?>">
+				<label for="ag-gwen-login-email" style="<?php echo $sr; ?>">Adresse email</label>
+				<input type="email" id="ag-gwen-login-email" name="email" placeholder="Votre email" autocomplete="email" required style="<?php echo $in; ?>">
+				<label for="ag-gwen-login-pass" style="<?php echo $sr; ?>">Mot de passe</label>
+				<input type="password" id="ag-gwen-login-pass" name="pass" placeholder="Votre mot de passe" autocomplete="current-password" required style="<?php echo $in; ?>">
 				<button type="submit" style="<?php echo $bt; ?>">Se connecter</button>
 			</form>
 			<h3 style="margin:0 0 10px">Créer un compte</h3>
 			<form method="post" action="<?php echo $post; ?>">
 				<input type="hidden" name="action" value="ag_gwen_register">
 				<input type="hidden" name="_n" value="<?php echo esc_attr( $n ); ?>">
-				<input type="text" name="name" placeholder="Votre nom et prénom" required style="<?php echo $in; ?>">
-				<input type="email" name="email" placeholder="Votre email" required style="<?php echo $in; ?>">
-				<input type="password" name="pass" placeholder="Mot de passe (6 caractères min.)" required minlength="6" style="<?php echo $in; ?>">
+				<label for="ag-gwen-reg-name" style="<?php echo $sr; ?>">Nom et prénom</label>
+				<input type="text" id="ag-gwen-reg-name" name="name" placeholder="Votre nom et prénom" autocomplete="name" required style="<?php echo $in; ?>">
+				<label for="ag-gwen-reg-email" style="<?php echo $sr; ?>">Adresse email</label>
+				<input type="email" id="ag-gwen-reg-email" name="email" placeholder="Votre email" autocomplete="email" required style="<?php echo $in; ?>">
+				<label for="ag-gwen-reg-pass" style="<?php echo $sr; ?>">Mot de passe (6 caractères min.)</label>
+				<input type="password" id="ag-gwen-reg-pass" name="pass" placeholder="Mot de passe (6 caractères min.)" autocomplete="new-password" required minlength="6" style="<?php echo $in; ?>">
 				<button type="submit" style="<?php echo $bt; ?>">Créer mon compte</button>
 			</form>
 		</div>
@@ -482,7 +508,7 @@ if ( ! function_exists( 'ag_resa_shortcode' ) ) {
 			<?php else : ?>
 				<div id="ag-resa-msg" style="display:none;margin-bottom:14px;padding:12px 14px;border-radius:9px"></div>
 				<?php foreach ( $jours as $ymd => $slots ) :
-					$label = wp_date( 'l j F', strtotime( $ymd . ' 12:00:00' ), $tz ); ?>
+					$label = ag_gwen_date_fr( 'l j F', strtotime( $ymd . ' 12:00:00' ) ); ?>
 					<div class="ag-resa-jour" style="margin-bottom:16px">
 						<h3 style="margin:0 0 8px;text-transform:capitalize;font-size:1.05rem"><?php echo esc_html( $label ); ?></h3>
 						<div style="display:flex;flex-wrap:wrap;gap:8px">
@@ -578,7 +604,7 @@ if ( ! function_exists( 'ag_gwen_espace_shortcode' ) ) {
 			<?php else : foreach ( $avenir as $b ) : ?>
 				<div style="border:1px solid #e2e2e6;border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
 					<div><strong><?php echo esc_html( (string) ( $b['service_label'] ?? 'Intervention' ) ); ?></strong><br>
-						<span style="color:#444;text-transform:capitalize"><?php echo esc_html( wp_date( 'l j F Y à H:i', (int) $b['start'], $tz ) ); ?></span></div>
+						<span style="color:#444;text-transform:capitalize"><?php echo esc_html( ag_gwen_date_fr( 'l j F Y à H:i', (int) $b['start'] ) ); ?></span></div>
 					<button type="button" class="ag-rdv-cancel" data-id="<?php echo esc_attr( (string) $b['id'] ); ?>" style="border:1px solid #c0392b;color:#c0392b;background:#fff;border-radius:8px;padding:8px 14px;cursor:pointer">Annuler</button>
 				</div>
 			<?php endforeach; endif; ?>
