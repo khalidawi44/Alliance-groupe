@@ -94,3 +94,22 @@ document.addEventListener('click', function (e) {
 	setTimeout(corriger, 400);
 	setTimeout(corriger, 1500);
 })();
+
+/* Émojis retirés des libellés (boutons, coordonnées) : ils vivent dans le PHP
+   côté lane CODE, on les enlève à l'affichage — demande de Fabrice, 29/09. */
+(function () {
+	var SEL = '.ag-btn-pro, .ag-btn, .ag-gwenwhy__btn, .ag-footer-cta, .ag-zones-list strong, .ag-zones-contact-card strong, .ag-devis-callcard__tx strong, .ag-page-tag';
+	var EMOJI = /[\u{1F300}-\u{1FAFF}\u{1F004}\u{1F0CF}\u{2600}-\u{26FF}\u{2728}\u{2705}\u{274C}\u{2B50}\u{2764}\u{FE0F}\u{200D}]/gu;
+	function nettoyer() {
+		document.querySelectorAll(SEL).forEach(function (el) {
+			Array.prototype.forEach.call(el.childNodes, function (n) {
+				if (n.nodeType !== 3) { return; }
+				EMOJI.lastIndex = 0;
+				var propre = n.nodeValue.replace(EMOJI, '').replace(/\s{2,}/g, ' ').replace(/^\s+/, '');
+				if (propre !== n.nodeValue) { n.nodeValue = propre; }
+			});
+		});
+	}
+	if (document.readyState !== 'loading') { nettoyer(); } else { document.addEventListener('DOMContentLoaded', nettoyer); }
+	setTimeout(nettoyer, 500);
+})();
