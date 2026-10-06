@@ -469,6 +469,13 @@ if ( ! function_exists( 'ag_closer_envoyer' ) ) {
 			'objet'   => $sujet,
 			'extrait' => function_exists( 'mb_substr' ) ? mb_substr( (string) $msg['corps'], 0, 180 ) : substr( (string) $msg['corps'], 0, 180 ),
 		) );
+		// Journal du tunnel (analyste) : un mail de démarchage est parti.
+		do_action( 'ag_funnel_event', 'sent', array(
+			'metier' => (string) ( $p['type'] ?? '' ),
+			'ville'  => (string) ( $p['city'] ?? '' ),
+			'etape'  => (int) ( $p['closer_step'] ?? 0 ),
+			'canal'  => 'email',
+		) );
 		return true;
 	}
 }

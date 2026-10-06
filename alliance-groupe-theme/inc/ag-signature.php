@@ -365,6 +365,14 @@ if ( ! function_exists( 'ag_sign_sceller' ) ) {
 		}
 		ag_sign_put( $dossier );
 
+		// Journal du tunnel (analyste) : un contrat vient d'être signé.
+		do_action( 'ag_funnel_event', 'signed', array(
+			'metier'  => (string) ( $dossier['metier'] ?? '' ),
+			'ville'   => (string) ( $dossier['ville'] ?? '' ),
+			'montant' => (string) ( $dossier['montant'] ?? '' ),
+			'canal'   => 'contrat',
+		) );
+
 		/* Copie aux deux parties : un contrat dont une partie n'a pas
 		   d'exemplaire est un contrat qu'on ne peut pas opposer. */
 		$recap = '<p style="font-family:Arial,sans-serif;font-size:15px;color:#e8e6e0;">'

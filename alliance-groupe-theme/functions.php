@@ -546,6 +546,12 @@ if ( file_exists( $ag_autopilot_file ) ) {
     require_once $ag_autopilot_file;
 }
 
+// ── 1c13. Tunnel qui apprend : journal d'événements + analyste automatique + tableau de bord
+$ag_funnel_file = get_stylesheet_directory() . '/inc/ag-funnel.php';
+if ( file_exists( $ag_funnel_file ) ) {
+    require_once $ag_funnel_file;
+}
+
 // ── Musique de fond : DÉSACTIVÉE sur demande user (lecteur retiré du site). ──
 // $ag_music_file = get_stylesheet_directory() . '/inc/ag-music.php';
 // if ( file_exists( $ag_music_file ) ) {

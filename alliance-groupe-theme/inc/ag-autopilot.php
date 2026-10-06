@@ -106,6 +106,8 @@ if ( ! function_exists( 'ag_auto_tick' ) ) {
 			if ( has_action( 'ag_relance_cron' ) && $now - (int) get_option( 'ag_auto_relance', 0 ) > 80000 ) {
 				do_action( 'ag_relance_cron' ); update_option( 'ag_auto_relance', $now, false ); $ran[] = 'ag_relance_cron';
 			}
+			// L'analyste (« Léa ») lit le tunnel et pousse son orientation : 1×/jour.
+			if ( function_exists( 'ag_funnel_cron_maybe' ) && ag_funnel_cron_maybe() ) { $ran[] = 'ag_funnel_analyste'; }
 		}
 		update_option( 'ag_auto_last', $now, false );
 		update_option( 'ag_auto_last_ran', $ran, false );
