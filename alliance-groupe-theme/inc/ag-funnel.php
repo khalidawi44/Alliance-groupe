@@ -56,13 +56,14 @@ if ( ! function_exists( 'ag_funnel_log' ) ) {
 		if ( '' === $type ) { return; }
 		$seg = (array) $seg;
 		$ev  = array(
-			't'       => time(),
-			'type'    => $type,
-			'metier'  => isset( $seg['metier'] ) ? sanitize_text_field( substr( (string) $seg['metier'], 0, 60 ) ) : '',
-			'ville'   => isset( $seg['ville'] ) ? sanitize_text_field( substr( (string) $seg['ville'], 0, 60 ) ) : '',
-			'etape'   => isset( $seg['etape'] ) ? (int) $seg['etape'] : 0,
-			'canal'   => isset( $seg['canal'] ) ? sanitize_key( (string) $seg['canal'] ) : 'email',
-			'montant' => isset( $seg['montant'] ) ? ag_funnel_montant( $seg['montant'] ) : 0.0,
+			't'        => time(),
+			'type'     => $type,
+			'metier'   => isset( $seg['metier'] ) ? sanitize_text_field( substr( (string) $seg['metier'], 0, 60 ) ) : '',
+			'ville'    => isset( $seg['ville'] ) ? sanitize_text_field( substr( (string) $seg['ville'], 0, 60 ) ) : '',
+			'etape'    => isset( $seg['etape'] ) ? (int) $seg['etape'] : 0,
+			'canal'    => isset( $seg['canal'] ) ? sanitize_key( (string) $seg['canal'] ) : 'email',
+			'montant'  => isset( $seg['montant'] ) ? ag_funnel_montant( $seg['montant'] ) : 0.0,
+			'variante' => isset( $seg['variante'] ) ? sanitize_key( (string) $seg['variante'] ) : '',
 		);
 		$j   = (array) get_option( 'ag_funnel_events', array() );
 		$j[] = $ev;
@@ -92,11 +93,14 @@ add_action( 'ag_prospect_status_changed', function ( $id, $st ) {
 	);
 	$t = $map[ (string) $st ] ?? '';
 	if ( '' === $t ) { return; } // 'contacte'/'relance'/… ne sont pas des étapes de conversion
-	$metier = ''; $ville = '';
+	$metier = ''; $ville = ''; $variante = '';
 	foreach ( (array) get_option( 'ag_prospects', array() ) as $p ) {
-		if ( (string) ( $p['id'] ?? '' ) === (string) $id ) { $metier = $p['type'] ?? ''; $ville = $p['city'] ?? ''; break; }
+		if ( (string) ( $p['id'] ?? '' ) === (string) $id ) {
+			$metier = $p['type'] ?? ''; $ville = $p['city'] ?? ''; $variante = (string) ( $p['ab'] ?? '' ); break;
+		}
 	}
-	ag_funnel_log( $t, array( 'metier' => $metier, 'ville' => $ville ) );
+	// On reporte la variante A/B reçue par ce prospect → Max attribue la conversion.
+	ag_funnel_log( $t, array( 'metier' => $metier, 'ville' => $ville, 'variante' => $variante ) );
 }, 10, 2 );
 
 // Paiement vérifié (PayPal/Stripe) → encaissement.

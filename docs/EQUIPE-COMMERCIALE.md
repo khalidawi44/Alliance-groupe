@@ -108,7 +108,7 @@ Déjà en place (crons PHP, 24/7) :
 ## 7. Feuille de route
 
 1. ✅ **Fondation** : journal du tunnel + analyste quotidien + tableau de bord *(fait 06/10)*.
-2. ⏳ **Max l'Expérimentateur** : A/B sur l'objet et l'angle des mails.
+2. ✅ **Max l'Expérimentateur** : A/B autonome de l'objet + auto-promotion du gagnant *(fait 06/10, `inc/ag-ab.php`)*.
 3. ⏳ **Gardien de réputation** : frein auto sur bounces/spam.
 4. ⏳ **Contrôleur de gestion** : CA/coût/ROI par segment.
 5. ⏳ **Comité hebdo Claude** : architecte + manager automatiques.

@@ -442,7 +442,15 @@ if ( ! function_exists( 'ag_closer_envoyer' ) ) {
 			. 'Vos coordonnees ne sont ni revendues ni cedees.<br>'
 			. '<a href="' . esc_url( $stop ) . '" style="color:#D4B45C;">Ne plus jamais recevoir de message de notre part</a> — un seul clic, rien a ecrire.</p>';
 
-		$sujet   = (string) $msg['objet'];
+		$sujet    = (string) $msg['objet'];
+		// Max l'expérimentateur : variante d'objet (A/B), collante par prospect, mesurée par Léa.
+		$variante = '';
+		if ( function_exists( 'ag_ab_applique' ) ) {
+			$ab       = ag_ab_applique( $sujet, $p, (int) ( $p['closer_step'] ?? 0 ) );
+			$sujet    = (string) $ab['sujet'];
+			$variante = (string) $ab['variante'];
+			if ( '' !== $variante ) { $p['ab'] = $variante; } // attribue la conversion plus tard
+		}
 		$html    = function_exists( 'ag_email_wrap' ) ? ag_email_wrap( $sujet, $corps_html ) : $corps_html;
 		$headers = array( 'Content-Type: text/html; charset=UTF-8' );
 
@@ -469,12 +477,13 @@ if ( ! function_exists( 'ag_closer_envoyer' ) ) {
 			'objet'   => $sujet,
 			'extrait' => function_exists( 'mb_substr' ) ? mb_substr( (string) $msg['corps'], 0, 180 ) : substr( (string) $msg['corps'], 0, 180 ),
 		) );
-		// Journal du tunnel (analyste) : un mail de démarchage est parti.
+		// Journal du tunnel (analyste + Max) : un mail de démarchage est parti.
 		do_action( 'ag_funnel_event', 'sent', array(
-			'metier' => (string) ( $p['type'] ?? '' ),
-			'ville'  => (string) ( $p['city'] ?? '' ),
-			'etape'  => (int) ( $p['closer_step'] ?? 0 ),
-			'canal'  => 'email',
+			'metier'   => (string) ( $p['type'] ?? '' ),
+			'ville'    => (string) ( $p['city'] ?? '' ),
+			'etape'    => (int) ( $p['closer_step'] ?? 0 ),
+			'canal'    => 'email',
+			'variante' => $variante,
 		) );
 		return true;
 	}

@@ -14,6 +14,17 @@ Sans variation, l'analyste n'a rien à comparer et l'équipe n'apprend jamais. T
 le **moteur d'apprentissage** : tu fais tourner des variantes et tu laisses les
 chiffres trancher.
 
+## ✅ Déjà en code et AUTONOME (`inc/ag-ab.php`)
+- Tu testes l'**objet du 1er mail** : variantes `question` / `benefice` / `local`
+  (`ag_ab_variants()`, tokens `{metier}`/`{ville}`), attribuées de façon **collante**
+  par prospect (`ag_ab_pick`), appliquées par Hugo (`ag_ab_applique`).
+- La variante est journalisée (`ag_funnel_events` champ `variante`) et la **conversion
+  attribuée** (statut `interesse` → `ag-funnel`). Mesure : `ag_ab_resultats()`.
+- **Auto-promotion** : `ag_ab_auto_promote()` (dans le pilote auto, 1×/jour) couronne la
+  variante gagnante dès qu'elle est nette (≥ `ag_ab_min_envois` envois/variante + marge),
+  puis Hugo n'utilise plus qu'elle (explore → exploite). Écran : **Prospection → 🧪 Expériences**.
+- Tourne **sans activation** ; pour éditer les variantes → `ag_ab_variants()`.
+
 ## Ce que tu testes (une variable à la fois)
 - **Objet** de l'email (le plus fort levier d'ouverture).
 - **Angle** : création vs refonte vs sécurité (déjà géré dans `ag_closer_redige`).

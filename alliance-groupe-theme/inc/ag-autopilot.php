@@ -108,6 +108,8 @@ if ( ! function_exists( 'ag_auto_tick' ) ) {
 			}
 			// L'analyste (« Léa ») lit le tunnel et pousse son orientation : 1×/jour.
 			if ( function_exists( 'ag_funnel_cron_maybe' ) && ag_funnel_cron_maybe() ) { $ran[] = 'ag_funnel_analyste'; }
+			// Max l'expérimentateur : promeut tout seul la variante gagnante quand elle est nette.
+			if ( function_exists( 'ag_ab_auto_promote' ) && ag_ab_auto_promote() ) { $ran[] = 'ag_ab_promotion'; }
 		}
 		update_option( 'ag_auto_last', $now, false );
 		update_option( 'ag_auto_last_ran', $ran, false );
