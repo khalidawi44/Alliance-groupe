@@ -47,11 +47,16 @@ if ( ! function_exists( 'ag_auto_diag' ) ) {
 		$smtp        = (bool) get_option( 'ag_smtp_host', '' ) || (bool) get_option( 'ag_smtp_user', '' )
 			|| ( defined( 'AG_SMTP_HOST' ) && AG_SMTP_HOST ) || ( defined( 'AG_SMTP_USER' ) && AG_SMTP_USER );
 
-		$bloc = array();
-		if ( '' === $places ) { $bloc[] = 'Clé Google Places MANQUANTE → le chasseur ne peut trouver aucun prospect (Prospection → Réglages).'; }
+		$bloc = array();  // VRAIS blocages : tant qu'ils sont là, zéro email possible.
+		$warn = array();  // Avertissements : l'envoi marche, mais quelque chose est à améliorer.
+		if ( '' === $places ) { $bloc[] = 'Clé Google Places MANQUANTE → le chasseur ne peut trouver aucun NOUVEAU prospect (Prospection → Réglages). (N\'empêche pas d\'écrire aux prospects déjà présents.)'; }
 		if ( ! $hugo_on )      { $bloc[] = 'Hugo (démarchage) est ÉTEINT → aucun email ne part (Prospection → Hugo : activer l\'agent).'; }
-		if ( empty( $from[0] ) || ! is_email( $from[0] ) ) { $bloc[] = 'Expéditeur d\'Hugo non configuré (email d\'envoi dans l\'écran Hugo).'; }
 		if ( 0 === $avec_mail ) { $bloc[] = 'Aucun prospect avec email → rien à démarcher pour l\'instant : laisse tourner la chasse + l\'enrichissement (ça se remplit tout seul), ou importe des cibles.'; }
+		// IMPORTANT : l'expéditeur d'Hugo n'est PAS un blocage. Sans lui, les emails
+		// partent quand même (le From vient du SMTP) ; seul le Reply-To manque.
+		if ( empty( $from[0] ) || ! is_email( $from[0] ) ) {
+			$warn[] = 'Expéditeur d\'Hugo non renseigné : les emails PARTENT quand même (l\'adresse d\'envoi vient du SMTP). Mais les RÉPONSES des prospects iront sur l\'adresse SMTP par défaut. Pour choisir où arrivent les réponses, mets l\'email d\'envoi dans l\'écran Hugo (Prospection → Hugo).';
+		}
 
 		return array(
 			'prospects_total'           => count( $prospects ),
@@ -63,31 +68,35 @@ if ( ! function_exists( 'ag_auto_diag' ) ) {
 			'smtp'                      => $smtp ? 'ok' : 'à vérifier',
 			'dernier_run'               => (int) get_option( 'ag_auto_last', 0 ),
 			'bloquants'                 => $bloc,
+			'avertissements'            => $warn,
 		);
 	}
 }
 
 /* ── Le vrai travail (lourd) : appels externes, Hugo, chasse Places… ──── */
 if ( ! function_exists( 'ag_auto_tick' ) ) {
-	function ag_auto_tick() {
+	function ag_auto_tick( $heavy = true ) {
 		// Détaché : on finit même si l'appelant a raccroché (loopback non bloquant).
 		if ( function_exists( 'ignore_user_abort' ) ) { ignore_user_abort( true ); }
-		if ( function_exists( 'set_time_limit' ) ) { @set_time_limit( 150 ); }
+		if ( function_exists( 'set_time_limit' ) ) { @set_time_limit( $heavy ? 150 : 45 ); }
 		$now = time(); $ran = array();
-		// ORDRE VOLONTAIRE : l'ENVOI d'Hugo d'abord (ag_closer_cron), puis les relances
-		// et la relève des réponses, et SEULEMENT APRÈS l'enrichissement (plus lent).
-		// Ainsi, si l'hébergeur coupe le process sur une étape lente, les emails sont
-		// DÉJÀ partis. Chaque hook respecte ses propres garde-fous (cap, opt-out, chauffe).
-		foreach ( array( 'ag_closer_cron', 'ag_rc_cron', 'ag_boite_cron', 'ag_enrich_cron' ) as $hook ) {
+		// RAPIDE et PRIORITAIRE (toujours) : l'ENVOI d'Hugo d'abord (ag_closer_cron),
+		// puis les relances chaudes et la relève des réponses. Ces 3-là sont légers :
+		// le bouton « Lancer maintenant » n'exécute QUE ça → réponse quasi immédiate,
+		// et les emails sont partis avant toute étape lente.
+		foreach ( array( 'ag_closer_cron', 'ag_rc_cron', 'ag_boite_cron' ) as $hook ) {
 			if ( has_action( $hook ) ) { do_action( $hook ); $ran[] = $hook; }
 		}
-		// Chasse Google Places (coûteuse en quota/argent) : 1×/heure max.
-		if ( has_action( 'ag_prospect_cron' ) && $now - (int) get_option( 'ag_auto_hunt', 0 ) > 3500 ) {
-			do_action( 'ag_prospect_cron' ); update_option( 'ag_auto_hunt', $now, false ); $ran[] = 'ag_prospect_cron';
-		}
-		// Relances quotidiennes : 1×/jour max.
-		if ( has_action( 'ag_relance_cron' ) && $now - (int) get_option( 'ag_auto_relance', 0 ) > 80000 ) {
-			do_action( 'ag_relance_cron' ); update_option( 'ag_auto_relance', $now, false ); $ran[] = 'ag_relance_cron';
+		// LOURD (seulement en mode auto / cron, pas au clic) : enrichissement (lent),
+		// chasse Google Places (coûteuse, 1×/h), relances quotidiennes (1×/j).
+		if ( $heavy ) {
+			if ( has_action( 'ag_enrich_cron' ) ) { do_action( 'ag_enrich_cron' ); $ran[] = 'ag_enrich_cron'; }
+			if ( has_action( 'ag_prospect_cron' ) && $now - (int) get_option( 'ag_auto_hunt', 0 ) > 3500 ) {
+				do_action( 'ag_prospect_cron' ); update_option( 'ag_auto_hunt', $now, false ); $ran[] = 'ag_prospect_cron';
+			}
+			if ( has_action( 'ag_relance_cron' ) && $now - (int) get_option( 'ag_auto_relance', 0 ) > 80000 ) {
+				do_action( 'ag_relance_cron' ); update_option( 'ag_auto_relance', $now, false ); $ran[] = 'ag_relance_cron';
+			}
 		}
 		update_option( 'ag_auto_last', $now, false );
 		update_option( 'ag_auto_last_ran', $ran, false );
@@ -174,7 +183,7 @@ add_action( 'admin_init', function () {
 	if ( isset( $_POST['ag_auto_now'] ) && check_admin_referer( 'ag_auto' ) && current_user_can( 'manage_options' ) ) {
 		$avant = (array) get_option( 'ag_closer_jour', array() );
 		$n0    = ( ( $avant['d'] ?? '' ) === current_time( 'Y-m-d' ) ) ? (int) ( $avant['n'] ?? 0 ) : 0;
-		$ran   = function_exists( 'ag_auto_tick' ) ? (array) ag_auto_tick() : array();
+		$ran   = function_exists( 'ag_auto_tick' ) ? (array) ag_auto_tick( false ) : array();
 		$apres = (array) get_option( 'ag_closer_jour', array() );
 		$n1    = ( ( $apres['d'] ?? '' ) === current_time( 'Y-m-d' ) ) ? (int) ( $apres['n'] ?? 0 ) : 0;
 		set_transient( 'ag_auto_now_msg', array( 'ran' => $ran, 'envoyes' => max( 0, $n1 - $n0 ) ), 60 );
@@ -217,6 +226,11 @@ if ( ! function_exists( 'ag_auto_render' ) ) {
 			echo '</ul></div>';
 		} else {
 			echo '<p style="color:#1e7e34">✅ Aucun blocage détecté — laisse tourner : les résultats arrivent avec le volume et le temps (chauffe du domaine, cap journalier).</p>';
+		}
+		if ( ! empty( $d['avertissements'] ) ) {
+			echo '<div style="background:#f0f6fc;border-left:4px solid #0073aa;padding:10px 14px;max-width:860px;margin-top:10px"><strong>ℹ️ À améliorer (n\'empêche pas l\'envoi) :</strong><ul style="margin:6px 0 0">';
+			foreach ( $d['avertissements'] as $w ) { echo '<li>' . esc_html( $w ) . '</li>'; }
+			echo '</ul></div>';
 		}
 		$rows = array(
 			'Prospects (total)'           => (string) $d['prospects_total'],
