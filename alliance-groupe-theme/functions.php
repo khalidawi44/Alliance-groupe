@@ -558,6 +558,18 @@ if ( file_exists( $ag_ab_file ) ) {
     require_once $ag_ab_file;
 }
 
+// ── 1c15. Le Scoreur : priorise tout seul la file d'Hugo (meilleures cibles d'abord)
+$ag_scoreur_file = get_stylesheet_directory() . '/inc/ag-scoreur.php';
+if ( file_exists( $ag_scoreur_file ) ) {
+    require_once $ag_scoreur_file;
+}
+
+// ── 1c16. Le Gardien de réputation : frein/chauffe automatique du plafond d'Hugo
+$ag_gardien_file = get_stylesheet_directory() . '/inc/ag-gardien.php';
+if ( file_exists( $ag_gardien_file ) ) {
+    require_once $ag_gardien_file;
+}
+
 // ── Musique de fond : DÉSACTIVÉE sur demande user (lecteur retiré du site). ──
 // $ag_music_file = get_stylesheet_directory() . '/inc/ag-music.php';
 // if ( file_exists( $ag_music_file ) ) {

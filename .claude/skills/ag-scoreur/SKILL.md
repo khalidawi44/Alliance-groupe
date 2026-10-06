@@ -13,6 +13,14 @@ description: >-
 Tu fais écrire Hugo **d'abord à ceux qui ont le plus de chances de signer**. Le
 temps et le quota sont rares : on les met sur les meilleures cibles.
 
+## ✅ Déjà en code et AUTONOME (`inc/ag-scoreur.php`)
+- Filtre `ag_closer_file` : réordonne la file d'Hugo à chaque tour (meilleures cibles
+  d'abord), sans changer QUI est éligible — seulement l'ORDRE dans la limite du plafond.
+- Score (signaux publics déjà stockés, **aucun appel réseau**) : email présent, pas de
+  vrai site, note basse malgré des avis, score d'achat de la chasse, **affinité avec les
+  métiers déjà convertis** (appris de `ag_funnel_events`), jamais contacté.
+- `ag_scoreur_on` (défaut 1). Tourne sans activation. Ce skill sert à affiner la formule.
+
 ## Tes données
 - Historique : événements `signed` du journal `ag_funnel_events` (segment métier/ville).
 - CRM `ag_prospects` : `type` (métier), `city`, `rating`/`reviews` (réputation),

@@ -13,6 +13,14 @@ description: >-
 Ton seul client, c'est la **boîte de réception**. Un domaine grillé = tous les
 mails d'Alliance Groupe (et de Gwen) en spam. Tu passes avant le volume.
 
+## ✅ Déjà en code et AUTONOME (`inc/ag-gardien.php`)
+- Mesure sur 7 j : envois (`sent`) et désinscriptions (`optout`) du journal `ag_funnel_events`.
+- 1×/jour (dans le pilote auto) : **frein** si opt-out > 4 % (baisse `ag_closer_cap_jour`
+  de 5, plancher 5) ; **chauffe** si < 1,5 % et ≥ 10 envois (monte de 5, plafond réglable
+  `ag_gardien_cap_max`, défaut 50). Chaque décision notifiée (Telegram/SMS).
+- Écran : **Prospection → 🛡️ Réputation** (feu vert/orange/rouge, on/off, plafond max).
+- Tourne sans activation. Ce skill sert à raisonner/ajuster au-delà de l'automatique.
+
 ## Ce que tu surveilles
 - **Bounces** (adresses invalides) et **plaintes spam** : via la boîte (`ag-boite`,
   option `ag_boite_journal`) et les retours serveur.

@@ -155,6 +155,11 @@ add_action( 'template_redirect', function () {
 		$list[ $i ]['closer_stop'] = time();
 		$list[ $i ]['notes']       = trim( ( $p['notes'] ?? '' ) . "\n" . gmdate( 'd/m/Y' ) . ' — opposition demandee depuis un message automatise.' );
 		update_option( 'ag_prospects', $list, false );
+		// Journal : une desinscription (signal cle pour le Gardien de reputation).
+		do_action( 'ag_funnel_event', 'optout', array(
+			'metier' => (string) ( $p['type'] ?? '' ),
+			'ville'  => (string) ( $p['city'] ?? '' ),
+		) );
 		break;
 	}
 	if ( function_exists( 'ag_activity_log' ) ) {
@@ -518,6 +523,8 @@ if ( ! function_exists( 'ag_closer_tour' ) ) {
 		if ( $reste <= 0 ) { return array( 'envoyes' => 0, 'raison' => 'plafond du jour atteint' ); }
 
 		$list    = (array) get_option( 'ag_prospects', array() );
+		// Le Scoreur peut réordonner la file : les meilleures cibles d'abord (dans la limite du plafond).
+		$list    = (array) apply_filters( 'ag_closer_file', $list );
 		$envoyes = 0;
 		foreach ( $list as $i => $p ) {
 			if ( $envoyes >= $reste ) { break; }

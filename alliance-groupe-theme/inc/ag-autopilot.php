@@ -110,6 +110,8 @@ if ( ! function_exists( 'ag_auto_tick' ) ) {
 			if ( function_exists( 'ag_funnel_cron_maybe' ) && ag_funnel_cron_maybe() ) { $ran[] = 'ag_funnel_analyste'; }
 			// Max l'expérimentateur : promeut tout seul la variante gagnante quand elle est nette.
 			if ( function_exists( 'ag_ab_auto_promote' ) && ag_ab_auto_promote() ) { $ran[] = 'ag_ab_promotion'; }
+			// Le Gardien de réputation : frein/chauffe automatique du plafond d'Hugo.
+			if ( function_exists( 'ag_gardien_cron_maybe' ) && ag_gardien_cron_maybe() ) { $ran[] = 'ag_gardien'; }
 		}
 		update_option( 'ag_auto_last', $now, false );
 		update_option( 'ag_auto_last_ran', $ran, false );
