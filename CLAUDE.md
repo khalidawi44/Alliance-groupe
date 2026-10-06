@@ -11,6 +11,14 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 - **Hook `SessionStart`** (`.claude/hooks/session-start.sh`, enregistré dans `.claude/settings.json`) : à chaque nouvelle session il injecte automatiquement l'état réel (branche, derniers commits, travail non commité, version active, focus templates, en-tête `HANDOFF.md`). C'est ce qui **relie les conversations** entre elles.
 - **Règle de fin de session** : avant de fermer, (1) mettre à jour les 3 premières lignes + §9 de `HANDOFF.md`, (2) commiter, (3) pousser. La conversation suivante reprendra exactement là.
 
+## ÉQUIPE COMMERCIALE — TOUJOURS ACTIVE (demande ferme de Fabrice, 06/10)
+**Les agents commerciaux sont « constamment chargés » : à chaque session, dès qu'il est question de prospection, de ventes, de la chaîne commerciale, de stats, ou de « trouver des clients », la chaîne de l'équipe s'applique AUTOMATIQUEMENT — comme la team avocat.** On ne répond jamais « de mémoire » sur une question commerciale.
+- **Skill-chef : `equipe-commerciale`** (dans `.claude/skills/`) — carte des 18 acteurs, boucle d'apprentissage, règle de déclenchement, routing. Détail vivant : **`docs/EQUIPE-COMMERCIALE.md`**.
+- **Principe (comme le cabinet) :** Claude est l'ARCHITECTE — il dirige, tranche seul, parle seul à Fabrice. **La Mémoire (`ag-memoire`) tourne AVANT toute décision** (elle liste ce qui existe/est possible : offres, prix, templates, modules, canaux, données). Puis `ag-analyste` (Léa) chiffre, `ag-architecte` décide, `ag-manager` applique, `ag-deontologue` + `ag-gardien-reputation` valident.
+- **Règle de déclenchement :** à chaque message commercial, lancer au moins un agent avant de répondre (question de fond → Mémoire + Analyste ; « ça ne vend pas » → Analyste ; « c'est légal ? » → Déontologue ; « c'est rentable ? » → Contrôleur).
+- **Côté serveur, ça tourne déjà 24/7 sans moi** : pilote auto (`inc/ag-autopilot.php`, cron-job.org /15 min) → Hugo envoie, la chasse ramène, Alessia relève, et **l'analyste pousse son orientation chaque jour** (`inc/ag-funnel.php`, écran Prospection → 📈 Tunnel & Analyste).
+- **Garde-fous (jamais franchis) :** aucun scan actif (art. 323-1), avocats email/courrier only (RIN), Bloctel + opt-out, délivrabilité `contact@` (9,5/10, chauffe progressive), **jamais inventer** une stat/preuve/fonctionnalité.
+
 ## RÈGLE DE PÉRIMÈTRE — CODE ≠ DESIGN (demande ferme de Fabrice, 03/09)
 **Cette session ne touche PAS au visuel.** Tailles, couleurs, typographie, images, position d'une section, longueur d'un texte d'accroche, réglages d'animation : tout cela se voit, donc tout cela appartient à la **session Cowork (DESIGN)**, qui a le PC de Fabrice, le navigateur et les outils d'image.
 **Mon domaine :** PHP/JS/CSS de structure, ponts et branchements entre modules, points AJAX, sécurité, conformité, SEO technique, statistiques, performance, analyse, déploiement.
