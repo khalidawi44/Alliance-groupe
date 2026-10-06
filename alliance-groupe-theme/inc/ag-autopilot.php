@@ -67,31 +67,67 @@ if ( ! function_exists( 'ag_auto_diag' ) ) {
 	}
 }
 
-/* ── Endpoint externe /wp-json/ag/v1/run?token=… ─────────────────────── */
+/* ── Le vrai travail (lourd) : appels externes, Hugo, chasse Places… ──── */
+if ( ! function_exists( 'ag_auto_tick' ) ) {
+	function ag_auto_tick() {
+		// Détaché : on finit même si l'appelant a raccroché (loopback non bloquant).
+		if ( function_exists( 'ignore_user_abort' ) ) { ignore_user_abort( true ); }
+		if ( function_exists( 'set_time_limit' ) ) { @set_time_limit( 150 ); }
+		$now = time(); $ran = array();
+		// Légers : à chaque passage (chacun respecte ses propres garde-fous).
+		foreach ( array( 'ag_enrich_cron', 'ag_closer_cron', 'ag_rc_cron', 'ag_boite_cron' ) as $hook ) {
+			if ( has_action( $hook ) ) { do_action( $hook ); $ran[] = $hook; }
+		}
+		// Chasse Google Places (coûteuse en quota/argent) : 1×/heure max.
+		if ( has_action( 'ag_prospect_cron' ) && $now - (int) get_option( 'ag_auto_hunt', 0 ) > 3500 ) {
+			do_action( 'ag_prospect_cron' ); update_option( 'ag_auto_hunt', $now, false ); $ran[] = 'ag_prospect_cron';
+		}
+		// Relances quotidiennes : 1×/jour max.
+		if ( has_action( 'ag_relance_cron' ) && $now - (int) get_option( 'ag_auto_relance', 0 ) > 80000 ) {
+			do_action( 'ag_relance_cron' ); update_option( 'ag_auto_relance', $now, false ); $ran[] = 'ag_relance_cron';
+		}
+		update_option( 'ag_auto_last', $now, false );
+		update_option( 'ag_auto_last_ran', $ran, false );
+		return $ran;
+	}
+}
+
+/* ── Endpoints : /run (répond VITE + lance en fond) et /worker (bosse) ── */
 add_action( 'rest_api_init', function () {
+	// Déclencheur appelé par le planificateur externe : répond en < 1 s.
 	register_rest_route( 'ag/v1', '/run', array(
 		'methods'             => array( 'GET', 'POST' ),
 		'permission_callback' => '__return_true', // jeton vérifié dans le callback
 		'callback'            => function ( $req ) {
-			$token = (string) $req->get_param( 'token' );
-			if ( '' === ag_auto_token() || ! hash_equals( ag_auto_token(), $token ) ) {
+			if ( '' === ag_auto_token() || ! hash_equals( ag_auto_token(), (string) $req->get_param( 'token' ) ) ) {
 				return new WP_REST_Response( array( 'ok' => false, 'err' => 'token' ), 403 );
 			}
-			$now = time(); $ran = array();
-			// Légers : à chaque passage (chacun respecte ses propres garde-fous).
-			foreach ( array( 'ag_enrich_cron', 'ag_closer_cron', 'ag_rc_cron', 'ag_boite_cron' ) as $hook ) {
-				if ( has_action( $hook ) ) { do_action( $hook ); $ran[] = $hook; }
+			// On lance le vrai travail en ARRIÈRE-PLAN (appel non bloquant à /worker),
+			// puis on répond immédiatement : plus de 504, le planificateur est content.
+			wp_remote_get( add_query_arg( 'token', ag_auto_token(), rest_url( 'ag/v1/worker' ) ), array(
+				'blocking'  => false,
+				'timeout'   => 0.01,
+				'sslverify' => false,
+				'headers'   => array( 'Cache-Control' => 'no-cache' ),
+			) );
+			return new WP_REST_Response( array(
+				'ok'     => true,
+				'queued' => true,
+				'note'   => 'Chaine lancee en arriere-plan. Diagnostic ci-dessous.',
+				'diag'   => ag_auto_diag(),
+			), 200 );
+		},
+	) );
+	// Ouvrier : fait le travail lourd, détaché. Personne n'attend sa réponse.
+	register_rest_route( 'ag/v1', '/worker', array(
+		'methods'             => array( 'GET', 'POST' ),
+		'permission_callback' => '__return_true',
+		'callback'            => function ( $req ) {
+			if ( '' === ag_auto_token() || ! hash_equals( ag_auto_token(), (string) $req->get_param( 'token' ) ) ) {
+				return new WP_REST_Response( array( 'ok' => false, 'err' => 'token' ), 403 );
 			}
-			// Chasse Google Places (coûteuse en quota/argent) : 1×/heure max.
-			if ( has_action( 'ag_prospect_cron' ) && $now - (int) get_option( 'ag_auto_hunt', 0 ) > 3500 ) {
-				do_action( 'ag_prospect_cron' ); update_option( 'ag_auto_hunt', $now, false ); $ran[] = 'ag_prospect_cron';
-			}
-			// Relances quotidiennes : 1×/jour max.
-			if ( has_action( 'ag_relance_cron' ) && $now - (int) get_option( 'ag_auto_relance', 0 ) > 80000 ) {
-				do_action( 'ag_relance_cron' ); update_option( 'ag_auto_relance', $now, false ); $ran[] = 'ag_relance_cron';
-			}
-			update_option( 'ag_auto_last', $now, false );
-			return new WP_REST_Response( array( 'ok' => true, 'ran' => $ran, 'ts' => $now, 'diag' => ag_auto_diag() ), 200 );
+			$ran = ag_auto_tick();
+			return new WP_REST_Response( array( 'ok' => true, 'ran' => $ran ), 200 );
 		},
 	) );
 } );
