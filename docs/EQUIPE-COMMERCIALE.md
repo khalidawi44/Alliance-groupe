@@ -48,6 +48,7 @@ segmenté par **métier** et **ville**. Écran : **Prospection → 📈 Tunnel &
 
 | Rôle | Nom | Entrée | Sortie | État |
 |---|---|---|---|---|
+| **Mémoire** | 🗂️ | `CLAUDE.md`, `INFRASTRUCTURE.md`, modules, `.json` | fiche de capacités : ce qui existe / est possible | ✅ skill `ag-memoire` |
 | **Analyste** | Léa 📊 | le journal du tunnel | taux par étape + par segment, pépites & fuites, **orientation** | ✅ **actif 24/7** (1×/jour, poussé Telegram/SMS) |
 | **Architecte** | 🧭 | l'orientation de Léa + tendances marché | stratégie : niche, angle, plafond, canal | 🧠 agent Claude (comité hebdo à armer) |
 | **Manager** | 🎯 | la stratégie | réglages concrets sur les agents | 🧠 agent Claude |
@@ -114,6 +115,18 @@ Déjà en place (crons PHP, 24/7) :
 6. ⏳ **Ouverture/clic** : pixel + liens tracés (fin le tunnel).
 
 ---
+
+## 9. Les skills de l'équipe (permanents, versionnés)
+
+Chaque acteur a son **skill** dans `.claude/skills/` (invocable par `/<nom>`), sur le
+modèle de la team avocat : **l'architecte dirige et tranche seul**, la Mémoire tourne
+avant toute décision, au moins un agent est lancé à chaque message commercial.
+
+- Chef : **`equipe-commerciale`** (carte + règle de déclenchement + routing)
+- Mémoire : `ag-memoire`
+- Cerveau : `ag-analyste`, `ag-architecte`, `ag-manager`, `ag-controleur`
+- Intelligents : `ag-experimentateur`, `ag-scoreur`, `ag-veilleur`, `ag-gardien-reputation`, `ag-deontologue`, `ag-qualifieur`
+- Terrain : `ag-chasseur`, `ag-enrichisseur`, `ag-demarcheur`, `ag-relanceur`, `ag-boite`, `ag-coach`
 
 ## 8. Garde-fous permanents (non négociables)
 
