@@ -74,8 +74,11 @@ if ( ! function_exists( 'ag_auto_tick' ) ) {
 		if ( function_exists( 'ignore_user_abort' ) ) { ignore_user_abort( true ); }
 		if ( function_exists( 'set_time_limit' ) ) { @set_time_limit( 150 ); }
 		$now = time(); $ran = array();
-		// Légers : à chaque passage (chacun respecte ses propres garde-fous).
-		foreach ( array( 'ag_enrich_cron', 'ag_closer_cron', 'ag_rc_cron', 'ag_boite_cron' ) as $hook ) {
+		// ORDRE VOLONTAIRE : l'ENVOI d'Hugo d'abord (ag_closer_cron), puis les relances
+		// et la relève des réponses, et SEULEMENT APRÈS l'enrichissement (plus lent).
+		// Ainsi, si l'hébergeur coupe le process sur une étape lente, les emails sont
+		// DÉJÀ partis. Chaque hook respecte ses propres garde-fous (cap, opt-out, chauffe).
+		foreach ( array( 'ag_closer_cron', 'ag_rc_cron', 'ag_boite_cron', 'ag_enrich_cron' ) as $hook ) {
 			if ( has_action( $hook ) ) { do_action( $hook ); $ran[] = $hook; }
 		}
 		// Chasse Google Places (coûteuse en quota/argent) : 1×/heure max.
@@ -102,8 +105,30 @@ add_action( 'rest_api_init', function () {
 			if ( '' === ag_auto_token() || ! hash_equals( ag_auto_token(), (string) $req->get_param( 'token' ) ) ) {
 				return new WP_REST_Response( array( 'ok' => false, 'err' => 'token' ), 403 );
 			}
-			// On lance le vrai travail en ARRIÈRE-PLAN (appel non bloquant à /worker),
-			// puis on répond immédiatement : plus de 504, le planificateur est content.
+			$diag = ag_auto_diag();
+			// MÉTHODE ROBUSTE (PHP-FPM, cas Hostinger) : on RÉPOND au planificateur
+			// tout de suite, on FERME la connexion, PUIS on fait le vrai travail dans
+			// le MÊME process. Plus de 504, et surtout AUCUNE dépendance à un appel
+			// HTTP interne (loopback) que l'hébergeur bloque parfois en silence —
+			// c'était la cause probable de « dernier_run : jamais » = zéro email.
+			if ( function_exists( 'fastcgi_finish_request' ) ) {
+				if ( ! headers_sent() ) {
+					status_header( 200 );
+					header( 'Content-Type: application/json; charset=utf-8' );
+					header( 'Connection: close' );
+				}
+				echo wp_json_encode( array(
+					'ok'     => true,
+					'queued' => true,
+					'mode'   => 'fastcgi',
+					'note'   => 'Chaine lancee (meme process, connexion fermee). Diagnostic ci-dessous.',
+					'diag'   => $diag,
+				) );
+				fastcgi_finish_request();
+				ag_auto_tick();
+				exit;
+			}
+			// SECOURS : pas de FPM → appel non bloquant à /worker (peut être filtré).
 			wp_remote_get( add_query_arg( 'token', ag_auto_token(), rest_url( 'ag/v1/worker' ) ), array(
 				'blocking'  => false,
 				'timeout'   => 0.01,
@@ -113,8 +138,9 @@ add_action( 'rest_api_init', function () {
 			return new WP_REST_Response( array(
 				'ok'     => true,
 				'queued' => true,
-				'note'   => 'Chaine lancee en arriere-plan. Diagnostic ci-dessous.',
-				'diag'   => ag_auto_diag(),
+				'mode'   => 'loopback',
+				'note'   => 'Chaine lancee en arriere-plan (loopback). Diagnostic ci-dessous.',
+				'diag'   => $diag,
 			), 200 );
 		},
 	) );
@@ -144,6 +170,15 @@ add_action( 'admin_init', function () {
 	if ( isset( $_POST['ag_auto_regen'] ) && check_admin_referer( 'ag_auto' ) ) {
 		update_option( 'ag_auto_token', wp_generate_password( 32, false, false ), false );
 	}
+	// Lancer un tour TOUT DE SUITE, sans service externe : prouve l'envoi + met à jour le diagnostic.
+	if ( isset( $_POST['ag_auto_now'] ) && check_admin_referer( 'ag_auto' ) && current_user_can( 'manage_options' ) ) {
+		$avant = (array) get_option( 'ag_closer_jour', array() );
+		$n0    = ( ( $avant['d'] ?? '' ) === current_time( 'Y-m-d' ) ) ? (int) ( $avant['n'] ?? 0 ) : 0;
+		$ran   = function_exists( 'ag_auto_tick' ) ? (array) ag_auto_tick() : array();
+		$apres = (array) get_option( 'ag_closer_jour', array() );
+		$n1    = ( ( $apres['d'] ?? '' ) === current_time( 'Y-m-d' ) ) ? (int) ( $apres['n'] ?? 0 ) : 0;
+		set_transient( 'ag_auto_now_msg', array( 'ran' => $ran, 'envoyes' => max( 0, $n1 - $n0 ) ), 60 );
+	}
 } );
 
 if ( ! function_exists( 'ag_auto_render' ) ) {
@@ -156,9 +191,24 @@ if ( ! function_exists( 'ag_auto_render' ) ) {
 		echo '<p>Pour que l\'équipe tourne <strong>24/7 sans s\'arrêter</strong> (même sans visiteur), un planificateur gratuit doit appeler cette adresse toutes les <strong>10-15 min</strong> :</p>';
 		echo '<p><input type="text" readonly value="' . esc_attr( $url ) . '" style="width:100%;max-width:860px;font-family:monospace" onclick="this.select()"></p>';
 		echo '<p class="description">Gratuit : <a href="https://cron-job.org" target="_blank" rel="noopener">cron-job.org</a> (ou UptimeRobot). Crée un « cron job », colle cette URL, intervalle 15 min, enregistre. C\'est tout : la chasse, Hugo, les relances et la relève des réponses partent alors tout seuls, en continu.</p>';
-		echo '<form method="post" style="margin:10px 0 18px">';
+		echo '<form method="post" style="margin:10px 0 18px;display:flex;gap:8px;flex-wrap:wrap">';
 		wp_nonce_field( 'ag_auto' );
+		echo '<button class="button button-primary" name="ag_auto_now" value="1">▶ Lancer un tour maintenant</button>';
 		echo '<button class="button" name="ag_auto_regen" value="1" onclick="return confirm(\'Régénérer le jeton ? L\\\'ancienne URL cessera de marcher.\');">Régénérer le jeton</button></form>';
+
+		$msg = get_transient( 'ag_auto_now_msg' );
+		if ( is_array( $msg ) ) {
+			delete_transient( 'ag_auto_now_msg' );
+			$env  = (int) ( $msg['envoyes'] ?? 0 );
+			$ran  = implode( ', ', array_map( 'sanitize_text_field', (array) ( $msg['ran'] ?? array() ) ) );
+			$coul = $env > 0 ? '#1e7e34' : '#996800';
+			echo '<div style="background:#f0f6fc;border-left:4px solid ' . esc_attr( $coul ) . ';padding:10px 14px;max-width:860px;margin-bottom:14px">';
+			echo '<strong>Tour exécuté.</strong> ' . ( $env > 0
+				? '✉️ <strong>' . esc_html( (string) $env ) . ' email(s) envoyé(s)</strong> à l\'instant.'
+				: 'Aucun email envoyé ce tour (plafond du jour atteint, chauffe, ou rien d\'éligible — voir les blocages ci-dessous).' );
+			if ( '' !== $ran ) { echo '<br><span class="description">Agents réveillés : ' . esc_html( $ran ) . '</span>'; }
+			echo '</div>';
+		}
 
 		echo '<h2>État — pourquoi ça ne produit pas encore</h2>';
 		if ( ! empty( $d['bloquants'] ) ) {
