@@ -36,10 +36,17 @@ if ( ! function_exists( 'ag_auto_url' ) ) {
 if ( ! function_exists( 'ag_auto_diag' ) ) {
 	function ag_auto_diag() {
 		$prospects = (array) get_option( 'ag_prospects', array() );
-		$avec_mail = 0;
-		foreach ( $prospects as $p ) { if ( ! empty( $p['email'] ) && is_email( $p['email'] ) ) { $avec_mail++; } }
-		$jour        = (array) get_option( 'ag_closer_jour', array() );
-		$envoyes_auj = ( ( $jour['d'] ?? '' ) === current_time( 'Y-m-d' ) ) ? (int) ( $jour['n'] ?? 0 ) : 0;
+		$avec_mail = 0; $eligibles = 0;
+		$peut_tester = function_exists( 'ag_closer_eligible' );
+		foreach ( $prospects as $p ) {
+			if ( ! empty( $p['email'] ) && is_email( $p['email'] ) ) { $avec_mail++; }
+			if ( $peut_tester && ag_closer_eligible( $p ) ) { $eligibles++; }
+		}
+		$jour = (array) get_option( 'ag_closer_jour', array() );
+		// IMPORTANT : Hugo stocke le jour au format gmdate('Ymd') (ex. 20261006).
+		// On DOIT comparer au même format, sinon le compteur affiche toujours 0.
+		$envoyes_auj = ( ( $jour['d'] ?? '' ) === gmdate( 'Ymd' ) ) ? (int) ( $jour['n'] ?? 0 ) : 0;
+		$cap         = function_exists( 'ag_closer_cap' ) ? ag_closer_cap() : 0;
 		$sigs        = (array) get_option( 'ag_signatures', array() );
 		$places      = function_exists( 'ag_places_key' ) ? ag_places_key() : '';
 		$hugo_on     = function_exists( 'ag_closer_on' ) ? ag_closer_on() : false;
@@ -61,6 +68,8 @@ if ( ! function_exists( 'ag_auto_diag' ) ) {
 		return array(
 			'prospects_total'           => count( $prospects ),
 			'prospects_avec_email'      => $avec_mail,
+			'prospects_eligibles'       => $eligibles,
+			'cap_jour'                  => $cap,
 			'emails_envoyes_aujourdhui' => $envoyes_auj,
 			'contrats_signes'           => count( $sigs ),
 			'places_key'                => '' !== $places ? 'ok' : 'manquante',
@@ -182,11 +191,18 @@ add_action( 'admin_init', function () {
 	// Lancer un tour TOUT DE SUITE, sans service externe : prouve l'envoi + met à jour le diagnostic.
 	if ( isset( $_POST['ag_auto_now'] ) && check_admin_referer( 'ag_auto' ) && current_user_can( 'manage_options' ) ) {
 		$avant = (array) get_option( 'ag_closer_jour', array() );
-		$n0    = ( ( $avant['d'] ?? '' ) === current_time( 'Y-m-d' ) ) ? (int) ( $avant['n'] ?? 0 ) : 0;
+		$n0    = ( ( $avant['d'] ?? '' ) === gmdate( 'Ymd' ) ) ? (int) ( $avant['n'] ?? 0 ) : 0;
 		$ran   = function_exists( 'ag_auto_tick' ) ? (array) ag_auto_tick( false ) : array();
 		$apres = (array) get_option( 'ag_closer_jour', array() );
-		$n1    = ( ( $apres['d'] ?? '' ) === current_time( 'Y-m-d' ) ) ? (int) ( $apres['n'] ?? 0 ) : 0;
-		set_transient( 'ag_auto_now_msg', array( 'ran' => $ran, 'envoyes' => max( 0, $n1 - $n0 ) ), 60 );
+		$n1    = ( ( $apres['d'] ?? '' ) === gmdate( 'Ymd' ) ) ? (int) ( $apres['n'] ?? 0 ) : 0;
+		$d2    = ag_auto_diag();
+		set_transient( 'ag_auto_now_msg', array(
+			'ran'       => $ran,
+			'envoyes'   => max( 0, $n1 - $n0 ),
+			'cumul'     => $n1,
+			'cap'       => (int) ( $d2['cap_jour'] ?? 0 ),
+			'eligibles' => (int) ( $d2['prospects_eligibles'] ?? 0 ),
+		), 60 );
 	}
 } );
 
@@ -209,12 +225,26 @@ if ( ! function_exists( 'ag_auto_render' ) ) {
 		if ( is_array( $msg ) ) {
 			delete_transient( 'ag_auto_now_msg' );
 			$env  = (int) ( $msg['envoyes'] ?? 0 );
+			$cum  = (int) ( $msg['cumul'] ?? 0 );
+			$cap  = (int) ( $msg['cap'] ?? 0 );
+			$elig = (int) ( $msg['eligibles'] ?? 0 );
 			$ran  = implode( ', ', array_map( 'sanitize_text_field', (array) ( $msg['ran'] ?? array() ) ) );
 			$coul = $env > 0 ? '#1e7e34' : '#996800';
 			echo '<div style="background:#f0f6fc;border-left:4px solid ' . esc_attr( $coul ) . ';padding:10px 14px;max-width:860px;margin-bottom:14px">';
-			echo '<strong>Tour exécuté.</strong> ' . ( $env > 0
-				? '✉️ <strong>' . esc_html( (string) $env ) . ' email(s) envoyé(s)</strong> à l\'instant.'
-				: 'Aucun email envoyé ce tour (plafond du jour atteint, chauffe, ou rien d\'éligible — voir les blocages ci-dessous).' );
+			if ( $env > 0 ) {
+				$txt = '✉️ <strong>' . esc_html( (string) $env ) . ' email(s) envoyé(s)</strong> à l\'instant. '
+					. 'Total aujourd\'hui : ' . esc_html( (string) $cum ) . ' / ' . esc_html( (string) $cap ) . '.';
+			} elseif ( $cap > 0 && $cum >= $cap ) {
+				$txt = '✅ <strong>Plafond du jour atteint</strong> (' . esc_html( (string) $cum ) . ' / ' . esc_html( (string) $cap )
+					. ' déjà envoyés aujourd\'hui). C\'est normal — c\'est la chauffe du domaine. Reviens demain, ou augmente le plafond dans l\'écran Hugo.';
+			} elseif ( 0 === $elig ) {
+				$txt = 'Aucun email ce tour : <strong>0 prospect éligible</strong> en ce moment. '
+					. 'Soit ils ont déjà été contactés récemment (Hugo attend 2 jours entre deux messages), soit ils ont répondu / sont marqués client-refus-ne plus contacter. '
+					. 'La chasse + l\'enrichissement (tour auto) ramènent de nouvelles cibles.';
+			} else {
+				$txt = 'Tour exécuté, 0 email ce passage (' . esc_html( (string) $elig ) . ' éligible(s) — réessaie, ou vérifie le plafond).';
+			}
+			echo '<strong>Tour exécuté.</strong> ' . $txt;
 			if ( '' !== $ran ) { echo '<br><span class="description">Agents réveillés : ' . esc_html( $ran ) . '</span>'; }
 			echo '</div>';
 		}
@@ -235,7 +265,8 @@ if ( ! function_exists( 'ag_auto_render' ) ) {
 		$rows = array(
 			'Prospects (total)'           => (string) $d['prospects_total'],
 			'Prospects avec email'        => (string) $d['prospects_avec_email'],
-			'Emails envoyés aujourd\'hui' => (string) $d['emails_envoyes_aujourdhui'],
+			'Prospects éligibles (prêts à démarcher)' => (string) $d['prospects_eligibles'],
+			'Emails envoyés aujourd\'hui' => (string) $d['emails_envoyes_aujourdhui'] . ' / ' . (string) $d['cap_jour'] . ' (plafond du jour)',
 			'Contrats signés'             => (string) $d['contrats_signes'],
 			'Clé Google Places'           => $d['places_key'],
 			'Hugo (démarchage)'           => $d['hugo'],
