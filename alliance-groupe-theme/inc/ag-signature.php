@@ -386,6 +386,14 @@ if ( ! function_exists( 'ag_sign_sceller' ) ) {
 		$maison = apply_filters( 'ag_calendar_notify_email', get_option( 'ag_calendar_email', 'advise.alliance.group@gmail.com' ) );
 		wp_mail( (string) $maison, $sujet, $html, array( 'Content-Type: text/html; charset=UTF-8' ) );
 
+		/* Copie dans le Gmail perso de Fabrice (réglable dans « 🤖 Pilote automatique »).
+		   Un contrat signé qui n'arrive que dans une boîte peu relevée = une affaire
+		   découverte trop tard : on l'envoie AUSSI là où Fabrice regarde vraiment. */
+		$gmail = trim( (string) get_option( 'ag_contrat_gmail', 'fabrice.doucet44@gmail.com' ) );
+		if ( is_email( $gmail ) && 0 !== strcasecmp( $gmail, (string) $maison ) ) {
+			wp_mail( $gmail, '📄 [COPIE] ' . $sujet, $html, array( 'Content-Type: text/html; charset=UTF-8' ) );
+		}
+
 		if ( function_exists( 'ag_push' ) ) {
 			/* Quand la contresignature est automatique, cette alerte est le SEUL
 			   moment ou la maison apprend qu'elle est engagee. Elle doit donc

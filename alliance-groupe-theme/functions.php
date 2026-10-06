@@ -540,6 +540,12 @@ if ( file_exists( $ag_espaces_file ) ) {
     require_once $ag_espaces_file;
 }
 
+// ── 1c12. Pilote automatique : déclencheur externe 24/7 de la chaîne commerciale + diagnostic
+$ag_autopilot_file = get_stylesheet_directory() . '/inc/ag-autopilot.php';
+if ( file_exists( $ag_autopilot_file ) ) {
+    require_once $ag_autopilot_file;
+}
+
 // ── Musique de fond : DÉSACTIVÉE sur demande user (lecteur retiré du site). ──
 // $ag_music_file = get_stylesheet_directory() . '/inc/ag-music.php';
 // if ( file_exists( $ag_music_file ) ) {
