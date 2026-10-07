@@ -90,3 +90,10 @@ $ag_herotypo_mod = get_stylesheet_directory() . '/inc/ag-hero-typo.php';
 if ( file_exists( $ag_herotypo_mod ) ) {
 	require_once $ag_herotypo_mod;
 }
+
+// ── Accueil : « Alliance Groupe en 52 secondes », vidéo présentée par l'égérie,
+//    insérée sous le hero (après le bandeau défilant) sans toucher au template.
+$ag_videopres_mod = get_stylesheet_directory() . '/inc/ag-video-presentation.php';
+if ( file_exists( $ag_videopres_mod ) ) {
+	require_once $ag_videopres_mod;
+}
