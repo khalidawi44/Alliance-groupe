@@ -2277,7 +2277,12 @@ if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
 			if ( $oe ) $by_owner[ $oe ] = ( $by_owner[ $oe ] ?? 0 ) + 1;
 		};
 		add_action( 'ag_prospect_added', $collector );
+		// GARDE-TEMPS : la chasse s'arrête d'elle-même après ~22 s pour que le tour
+		// du pilote reste sous le délai de nginx (plus de 504). Les cibles non
+		// traitées le seront au prochain passage (rotation du pointeur).
+		$hunt_deadline = time() + max( 8, (int) apply_filters( 'ag_hunt_budget', 22 ) );
 		foreach ( $searches as $s ) {
+			if ( time() > $hunt_deadline ) break; // budget de temps atteint
 			if ( $cap > 0 && (int) get_option( $ck, 0 ) >= $cap ) break; // plafond atteint en cours de route
 			$res = ( '' === trim( $s['q'] ?? '' ) && ! empty( $s['city'] ) ) ? ag_places_sweep( $s['city'] ) : ag_places_search( trim( ( $s['q'] ?? '' ) . ' ' . ( $s['city'] ?? '' ) ) );
 			if ( ! is_array( $res ) || isset( $res['error'] ) ) continue;

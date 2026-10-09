@@ -103,29 +103,35 @@ if ( ! function_exists( 'ag_auto_tick' ) ) {
 		// Rapport du soir (20h) : compile la journée et l'envoie (email + Telegram + SMS).
 		// Vérifié à chaque tour (garde interne : 1×/jour, à partir de l'heure réglée).
 		if ( function_exists( 'ag_rapport_cron_maybe' ) && ag_rapport_cron_maybe() ) { $ran[] = 'ag_rapport_soir'; }
-		// LOURD (seulement en mode auto / cron, pas au clic) : enrichissement (lent),
-		// chasse Google Places (coûteuse, 1×/h), relances quotidiennes (1×/j).
+		// BUDGET DE TEMPS : le tour s'arrête net avant le délai de nginx (plus de
+		// 504). Ce qui n'a pas eu le temps de passer reprend au tour suivant — il y
+		// en a 96 par jour, donc tout finit par tourner, étalé et sans coupure.
+		$deadline = $now + max( 15, (int) apply_filters( 'ag_auto_budget', 40 ) );
+		$go = function () use ( $deadline ) { return time() < $deadline; };
+		// LOURD (seulement en mode auto / cron, pas au clic) : chasse Places (1×/h),
+		// relances (1×/j), agents, puis enrichissement (le plus lent) en DERNIER.
 		if ( $heavy ) {
-			// Chasse Places d'abord (ramène les prospects), puis les agents rapides ;
-			// l'enrichissement (le plus lent) passe en DERNIER, pour que la chasse et
-			// l'envoi soient déjà faits si l'hébergeur coupe le process à la fin.
-			if ( has_action( 'ag_prospect_cron' ) && $now - (int) get_option( 'ag_auto_hunt', 0 ) > 3500 ) {
+			if ( $go() && has_action( 'ag_prospect_cron' ) && $now - (int) get_option( 'ag_auto_hunt', 0 ) > 3500 ) {
 				do_action( 'ag_prospect_cron' ); update_option( 'ag_auto_hunt', $now, false ); $ran[] = 'ag_prospect_cron';
 			}
-			if ( has_action( 'ag_relance_cron' ) && $now - (int) get_option( 'ag_auto_relance', 0 ) > 80000 ) {
+			if ( $go() && has_action( 'ag_relance_cron' ) && $now - (int) get_option( 'ag_auto_relance', 0 ) > 80000 ) {
 				do_action( 'ag_relance_cron' ); update_option( 'ag_auto_relance', $now, false ); $ran[] = 'ag_relance_cron';
 			}
 			// L'analyste (« Léa ») lit le tunnel et pousse son orientation : 1×/jour.
-			if ( function_exists( 'ag_funnel_cron_maybe' ) && ag_funnel_cron_maybe() ) { $ran[] = 'ag_funnel_analyste'; }
+			if ( $go() && function_exists( 'ag_funnel_cron_maybe' ) && ag_funnel_cron_maybe() ) { $ran[] = 'ag_funnel_analyste'; }
 			// Max l'expérimentateur : promeut tout seul la variante gagnante quand elle est nette.
-			if ( function_exists( 'ag_ab_auto_promote' ) && ag_ab_auto_promote() ) { $ran[] = 'ag_ab_promotion'; }
+			if ( $go() && function_exists( 'ag_ab_auto_promote' ) && ag_ab_auto_promote() ) { $ran[] = 'ag_ab_promotion'; }
 			// Le Gardien de réputation : frein/chauffe automatique du plafond d'Hugo.
-			if ( function_exists( 'ag_gardien_cron_maybe' ) && ag_gardien_cron_maybe() ) { $ran[] = 'ag_gardien'; }
+			if ( $go() && function_exists( 'ag_gardien_cron_maybe' ) && ag_gardien_cron_maybe() ) { $ran[] = 'ag_gardien'; }
 			// Le Community Manager : diagnostic de croissance + relance de la chasse à sec.
-			if ( function_exists( 'ag_cm_cron_maybe' ) && ag_cm_cron_maybe() ) { $ran[] = 'ag_cm'; }
-			// Enrichissement EN DERNIER (le plus lent) : trouve les emails pour le
-			// prochain tour. S'il est coupé, tout le reste est déjà passé.
-			if ( has_action( 'ag_enrich_cron' ) ) { do_action( 'ag_enrich_cron' ); $ran[] = 'ag_enrich_cron'; }
+			if ( $go() && function_exists( 'ag_cm_cron_maybe' ) && ag_cm_cron_maybe() ) { $ran[] = 'ag_cm'; }
+			// Enrichissement EN DERNIER, en PETIT LOT (3 fiches) et seulement s'il
+			// est activé + s'il reste du budget. Ça trouve les emails des prospects
+			// fraîchement chassés, étalé sur plusieurs tours (3 × 96 tours/jour).
+			if ( $go() && function_exists( 'ag_enrich_on' ) && ag_enrich_on() && function_exists( 'ag_enrich_tour' ) ) {
+				ag_enrich_tour( 3 ); $ran[] = 'ag_enrich(3)';
+			}
+			if ( ! $go() ) { $ran[] = 'budget-atteint→suite au prochain tour'; }
 		}
 		update_option( 'ag_auto_last', $now, false );
 		update_option( 'ag_auto_last_ran', $ran, false );
@@ -190,6 +196,10 @@ add_action( 'init', function () {
 add_action( 'ag_auto_wpcron', function () {
 	if ( function_exists( 'ag_auto_tick' ) ) { ag_auto_tick( true ); }
 } );
+
+/* Chasse : on traite peu de cibles par passage (rapide, sous le délai nginx).
+   Le pointeur tourne, donc tout le parc de cibles est couvert au fil des tours. */
+add_filter( 'ag_auto_per_run', function () { return 3; } );
 
 /* ── Écran admin : URL à coller + diagnostic + Gmail contrat ─────────── */
 add_action( 'admin_menu', function () {
