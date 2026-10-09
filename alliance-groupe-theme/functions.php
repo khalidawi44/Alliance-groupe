@@ -576,6 +576,12 @@ if ( file_exists( $ag_rapport_file ) ) {
     require_once $ag_rapport_file;
 }
 
+// ── 1c18. Community Manager / Croissance : détecte les blocages et réoriente
+$ag_cm_file = get_stylesheet_directory() . '/inc/ag-cm.php';
+if ( file_exists( $ag_cm_file ) ) {
+    require_once $ag_cm_file;
+}
+
 // ── Musique de fond : DÉSACTIVÉE sur demande user (lecteur retiré du site). ──
 // $ag_music_file = get_stylesheet_directory() . '/inc/ag-music.php';
 // if ( file_exists( $ag_music_file ) ) {

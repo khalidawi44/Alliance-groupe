@@ -407,10 +407,16 @@ if ( ! function_exists( 'ag_sign_sceller' ) ) {
 			   moment ou la maison apprend qu'elle est engagee. Elle doit donc
 			   dire l'etat exact de l'affaire, pas seulement « quelqu'un a signe ». */
 			$conclu = ( 'contresigne' === (string) ( $dossier['statut'] ?? '' ) );
+			/* Lien direct (jeton) vers le contrat complet : objet, details, montant.
+			   Fabrice le reçoit par SMS et peut voir la demande du client tout de
+			   suite, sans ouvrir le wp-admin, pour enchaîner le travail. */
+			$lien_voir = esc_url_raw( add_query_arg( 't', (string) $dossier['token'], home_url( '/signer' ) ) );
 			ag_push(
 				$conclu ? '✅ Affaire conclue' : '✍️ Contrat signe',
 				(string) $dossier['client_nom'] . ' — ' . (string) $dossier['montant']
 					. ' (' . (string) $dossier['id'] . ')'
+					. "\nObjet : " . (string) ( $dossier['objet'] ?? '' )
+					. "\n👉 Voir le contrat et la demande : " . $lien_voir
 					. ( $conclu
 						? "\nContresigne automatiquement : l'affaire est close des deux cotes."
 						: "\nA contresigner : Contrats signes." )

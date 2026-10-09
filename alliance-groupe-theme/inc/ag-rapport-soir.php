@@ -111,6 +111,11 @@ if ( ! function_exists( 'ag_rapport_texte' ) ) {
 			$L[] = '• Gardien réputation : plafond ' . (int) $g['cap'] . '/j, désinscriptions ' . $g['taux'] . '% (feu ' . $g['feu'] . ')';
 		}
 		$L[] = '';
+		if ( function_exists( 'ag_cm_reco_texte' ) ) {
+			$L[] = '🚀 Croissance (Community Manager)';
+			foreach ( explode( "\n", ag_cm_reco_texte() ) as $r ) { if ( '' !== trim( $r ) ) { $L[] = '• ' . $r; } }
+			$L[] = '';
+		}
 		if ( ! empty( $d['bloquants'] ) ) {
 			$L[] = '⚠️ À débloquer :';
 			foreach ( $d['bloquants'] as $b ) { $L[] = '• ' . $b; }
@@ -157,6 +162,11 @@ if ( ! function_exists( 'ag_rapport_html' ) ) {
 			$h .= $row( 'Gardien réputation', 'plafond ' . (int) $g['cap'] . '/j · opt-out ' . esc_html( (string) $g['taux'] ) . '% · feu ' . esc_html( $g['feu'] ) );
 		}
 		$h .= '</table>';
+		if ( function_exists( 'ag_cm_reco_texte' ) ) {
+			$h .= '<div style="font-family:Arial,sans-serif;background:#0e2230;border-left:4px solid #0073aa;padding:10px 14px;margin:14px 0;border-radius:6px"><strong style="color:#6cc0f5">🚀 Croissance (Community Manager) :</strong><ul style="margin:6px 0 0;color:#d0d0d8">';
+			foreach ( explode( "\n", ag_cm_reco_texte() ) as $r ) { if ( '' !== trim( $r ) ) { $h .= '<li>' . esc_html( $r ) . '</li>'; } }
+			$h .= '</ul></div>';
+		}
 		if ( ! empty( $d['bloquants'] ) ) {
 			$h .= '<div style="font-family:Arial,sans-serif;background:#3a2e0a;border-left:4px solid #dba617;padding:10px 14px;margin:14px 0;border-radius:6px"><strong style="color:#ffd76a">À débloquer :</strong><ul style="margin:6px 0 0;color:#e8e6e0">';
 			foreach ( $d['bloquants'] as $b ) { $h .= '<li>' . esc_html( $b ) . '</li>'; }
