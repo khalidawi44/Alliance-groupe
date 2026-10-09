@@ -89,6 +89,10 @@ if ( ! function_exists( 'ag_auto_tick' ) ) {
 		if ( function_exists( 'ignore_user_abort' ) ) { ignore_user_abort( true ); }
 		if ( function_exists( 'set_time_limit' ) ) { @set_time_limit( $heavy ? 150 : 45 ); }
 		$now = time(); $ran = array();
+		// On enregistre le passage DÈS LE DÉBUT : ainsi « dernier passage auto »
+		// reflète toujours le déclencheur, même si une étape lente est coupée
+		// ensuite par l'hébergeur (sinon on croit à tort que rien ne tourne).
+		update_option( 'ag_auto_last', $now, false );
 		// RAPIDE et PRIORITAIRE (toujours) : l'ENVOI d'Hugo d'abord (ag_closer_cron),
 		// puis les relances chaudes et la relève des réponses. Ces 3-là sont légers :
 		// le bouton « Lancer maintenant » n'exécute QUE ça → réponse quasi immédiate,
@@ -102,7 +106,9 @@ if ( ! function_exists( 'ag_auto_tick' ) ) {
 		// LOURD (seulement en mode auto / cron, pas au clic) : enrichissement (lent),
 		// chasse Google Places (coûteuse, 1×/h), relances quotidiennes (1×/j).
 		if ( $heavy ) {
-			if ( has_action( 'ag_enrich_cron' ) ) { do_action( 'ag_enrich_cron' ); $ran[] = 'ag_enrich_cron'; }
+			// Chasse Places d'abord (ramène les prospects), puis les agents rapides ;
+			// l'enrichissement (le plus lent) passe en DERNIER, pour que la chasse et
+			// l'envoi soient déjà faits si l'hébergeur coupe le process à la fin.
 			if ( has_action( 'ag_prospect_cron' ) && $now - (int) get_option( 'ag_auto_hunt', 0 ) > 3500 ) {
 				do_action( 'ag_prospect_cron' ); update_option( 'ag_auto_hunt', $now, false ); $ran[] = 'ag_prospect_cron';
 			}
@@ -117,6 +123,9 @@ if ( ! function_exists( 'ag_auto_tick' ) ) {
 			if ( function_exists( 'ag_gardien_cron_maybe' ) && ag_gardien_cron_maybe() ) { $ran[] = 'ag_gardien'; }
 			// Le Community Manager : diagnostic de croissance + relance de la chasse à sec.
 			if ( function_exists( 'ag_cm_cron_maybe' ) && ag_cm_cron_maybe() ) { $ran[] = 'ag_cm'; }
+			// Enrichissement EN DERNIER (le plus lent) : trouve les emails pour le
+			// prochain tour. S'il est coupé, tout le reste est déjà passé.
+			if ( has_action( 'ag_enrich_cron' ) ) { do_action( 'ag_enrich_cron' ); $ran[] = 'ag_enrich_cron'; }
 		}
 		update_option( 'ag_auto_last', $now, false );
 		update_option( 'ag_auto_last_ran', $ran, false );
@@ -134,42 +143,21 @@ add_action( 'rest_api_init', function () {
 			if ( '' === ag_auto_token() || ! hash_equals( ag_auto_token(), (string) $req->get_param( 'token' ) ) ) {
 				return new WP_REST_Response( array( 'ok' => false, 'err' => 'token' ), 403 );
 			}
-			$diag = ag_auto_diag();
-			// MÉTHODE ROBUSTE (PHP-FPM, cas Hostinger) : on RÉPOND au planificateur
-			// tout de suite, on FERME la connexion, PUIS on fait le vrai travail dans
-			// le MÊME process. Plus de 504, et surtout AUCUNE dépendance à un appel
-			// HTTP interne (loopback) que l'hébergeur bloque parfois en silence —
-			// c'était la cause probable de « dernier_run : jamais » = zéro email.
-			if ( function_exists( 'fastcgi_finish_request' ) ) {
-				if ( ! headers_sent() ) {
-					status_header( 200 );
-					header( 'Content-Type: application/json; charset=utf-8' );
-					header( 'Connection: close' );
-				}
-				echo wp_json_encode( array(
-					'ok'     => true,
-					'queued' => true,
-					'mode'   => 'fastcgi',
-					'note'   => 'Chaine lancee (meme process, connexion fermee). Diagnostic ci-dessous.',
-					'diag'   => $diag,
-				) );
-				fastcgi_finish_request();
-				ag_auto_tick();
-				exit;
-			}
-			// SECOURS : pas de FPM → appel non bloquant à /worker (peut être filtré).
-			wp_remote_get( add_query_arg( 'token', ag_auto_token(), rest_url( 'ag/v1/worker' ) ), array(
-				'blocking'  => false,
-				'timeout'   => 0.01,
-				'sslverify' => false,
-				'headers'   => array( 'Cache-Control' => 'no-cache' ),
-			) );
+			// EXÉCUTION SYNCHRONE : on fait VRAIMENT le travail puis on répond.
+			// (L'ancien fastcgi_finish_request fermait la connexion mais Hostinger
+			// ne continuait PAS l'exécution détachée → /run répondait vite SANS rien
+			// faire = panne silencieuse « dernier passage : 3 jours ».) ag_auto_tick
+			// pose ignore_user_abort + set_time_limit(150) et enregistre le passage
+			// dès le début ; le travail est borné (chasse = 6 cibles/tour), donc on
+			// reste sous le délai nginx. Même si le planificateur raccroche, le tour
+			// se termine (ignore_user_abort).
+			$ran = ag_auto_tick();
 			return new WP_REST_Response( array(
-				'ok'     => true,
-				'queued' => true,
-				'mode'   => 'loopback',
-				'note'   => 'Chaine lancee en arriere-plan (loopback). Diagnostic ci-dessous.',
-				'diag'   => $diag,
+				'ok'   => true,
+				'mode' => 'sync',
+				'ran'  => $ran,
+				'note' => 'Chaine executee (synchrone).',
+				'diag' => ag_auto_diag(),
 			), 200 );
 		},
 	) );
