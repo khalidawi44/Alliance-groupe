@@ -570,6 +570,12 @@ if ( file_exists( $ag_gardien_file ) ) {
     require_once $ag_gardien_file;
 }
 
+// ── 1c17. Rapport du soir (20h) : digest quotidien de l'activité des agents
+$ag_rapport_file = get_stylesheet_directory() . '/inc/ag-rapport-soir.php';
+if ( file_exists( $ag_rapport_file ) ) {
+    require_once $ag_rapport_file;
+}
+
 // ── Musique de fond : DÉSACTIVÉE sur demande user (lecteur retiré du site). ──
 // $ag_music_file = get_stylesheet_directory() . '/inc/ag-music.php';
 // if ( file_exists( $ag_music_file ) ) {

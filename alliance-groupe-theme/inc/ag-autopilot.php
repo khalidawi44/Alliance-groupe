@@ -96,6 +96,9 @@ if ( ! function_exists( 'ag_auto_tick' ) ) {
 		foreach ( array( 'ag_closer_cron', 'ag_rc_cron', 'ag_boite_cron' ) as $hook ) {
 			if ( has_action( $hook ) ) { do_action( $hook ); $ran[] = $hook; }
 		}
+		// Rapport du soir (20h) : compile la journée et l'envoie (email + Telegram + SMS).
+		// Vérifié à chaque tour (garde interne : 1×/jour, à partir de l'heure réglée).
+		if ( function_exists( 'ag_rapport_cron_maybe' ) && ag_rapport_cron_maybe() ) { $ran[] = 'ag_rapport_soir'; }
 		// LOURD (seulement en mode auto / cron, pas au clic) : enrichissement (lent),
 		// chasse Google Places (coûteuse, 1×/h), relances quotidiennes (1×/j).
 		if ( $heavy ) {
