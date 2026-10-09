@@ -201,6 +201,50 @@ add_action( 'ag_auto_wpcron', function () {
    Le pointeur tourne, donc tout le parc de cibles est couvert au fil des tours. */
 add_filter( 'ag_auto_per_run', function () { return 3; } );
 
+/* ── AUTO-CONFIGURATION « TOUT ON » (demande de Fabrice) ──────────────────
+ * Au premier chargement après une synchro, on ALLUME tous les agents, on amorce
+ * la chasse et on règle la cadence — une seule fois (drapeau de version). Fabrice
+ * n'a rien à cocher : la machine cherche, trouve et prospecte toute seule.
+ * Pour relancer cette config (après une évolution), on bumpe la version.
+ */
+add_action( 'init', function () {
+	if ( 'v2' === (string) get_option( 'ag_auto_boot', '' ) ) { return; }
+
+	// 1) Tous les interrupteurs des agents sur ON.
+	foreach ( array(
+		'ag_closer_on',      // Hugo : démarchage email
+		'ag_enrich_on',      // enrichissement : trouve les emails des prospects chassés
+		'ag_rc_on',          // relance à chaud
+		'ag_cm_on',          // Community Manager / croissance
+		'ag_cm_autofeed',    // relance auto de la chasse quand elle est à sec
+		'ag_gardien_on',     // gardien de réputation (frein/chauffe auto)
+		'ag_scoreur_on',     // priorisation de la file
+		'ag_ab_on',          // Max : A/B de l'objet
+		'ag_rapport_soir_on',// rapport du soir
+	) as $opt ) {
+		update_option( $opt, 1, false );
+	}
+
+	// 2) Chasse : cadence quotidienne en secours (le pilote la relance ~1×/h de
+	//    toute façon) + amorçage des cibles si la liste est vide.
+	update_option( 'ag_auto_freq', 'daily', false );
+	$next = wp_next_scheduled( 'ag_prospect_cron' );
+	if ( $next ) { wp_unschedule_event( $next, 'ag_prospect_cron' ); }
+	if ( ! wp_next_scheduled( 'ag_prospect_cron' ) ) { wp_schedule_event( time() + 300, 'daily', 'ag_prospect_cron' ); }
+	$searches = (array) get_option( 'ag_auto_searches', array() );
+	if ( empty( $searches ) && function_exists( 'ag_cm_bank' ) ) {
+		update_option( 'ag_auto_searches', ag_cm_bank(), false );
+	}
+
+	update_option( 'ag_auto_boot', 'v2', false );
+	if ( function_exists( 'ag_activity_log' ) ) {
+		ag_activity_log( '⚙️ Auto-configuration : tous les agents activés (chasse, enrichissement, Hugo, relances, Max, Gardien, Scoreur, Community Manager, rapport du soir).' );
+	}
+	if ( function_exists( 'ag_push' ) ) {
+		ag_push( '⚙️ Pilote configuré — tout est ON', 'La chasse cherche et trouve toute seule, l\'enrichissement complète les emails, Hugo démarche, les agents veillent. Plus rien à faire.' );
+	}
+}, 20 );
+
 /* ── Écran admin : URL à coller + diagnostic + Gmail contrat ─────────── */
 add_action( 'admin_menu', function () {
 	add_submenu_page( 'ag-prospects', 'Pilote automatique', '🤖 Pilote automatique', 'manage_options', 'ag-autopilot', 'ag_auto_render' );
