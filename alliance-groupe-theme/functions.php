@@ -1209,11 +1209,24 @@ add_action( 'wp_head', function () {
     // Organization schema (all pages)
     $org = array(
         '@context' => 'https://schema.org',
-        '@type' => 'Organization',
+        // Double type : Organization + ProfessionalService pour que Google
+        // classe correctement l'entité (services web/cyber) et NE la confonde
+        // PAS avec une compagnie d'assurance homonyme (« Alliance »/« Allianz »).
+        '@type' => array( 'Organization', 'ProfessionalService' ),
         'name' => 'Alliance Groupe',
         'url' => $site_url,
         'logo' => $logo_url,
-        'description' => 'Studio web indépendant à Nantes : audit de sécurité, création de sites et maintenance.',
+        'description' => 'Studio web et cybersécurité indépendant à Nantes : création de sites internet, audit de sécurité et maintenance. Agence web, pas une compagnie d\'assurance.',
+        'slogan' => 'Création de sites internet & cybersécurité à Nantes',
+        // Domaines d'expertise explicites : aide Google à cerner l'activité réelle.
+        'knowsAbout' => array(
+            'Création de site internet',
+            'Agence web',
+            'Cybersécurité',
+            'Audit de sécurité informatique',
+            'Maintenance de site WordPress',
+            'Référencement local',
+        ),
         'telephone' => '+33744829516',
         'email' => 'contact@alliancegroupe-inc.com',
         // Une seule adresse professionnelle REELLE : Nantes (studio solo).
