@@ -2246,7 +2246,26 @@ add_action( 'ag_relance_cron', function () {
 if ( ! function_exists( 'ag_run_auto_prospection' ) ) {
 	function ag_run_auto_prospection() {
 		$searches = (array) get_option( 'ag_auto_searches', array() );
-		if ( empty( $searches ) || '' === ag_places_key() ) return;
+		if ( '' === ag_places_key() ) return; // sans clé Places, rien à faire
+		// CHASSE 100% AUTONOME : si aucune cible n'a été définie à la main, le
+		// robot se dote LUI-MÊME d'une banque de cibles (secteur × ville) via le
+		// Community Manager. Fini la liste vide = fini le « 0 prospect ».
+		if ( empty( $searches ) && function_exists( 'ag_cm_bank' ) ) {
+			$searches = ag_cm_bank();
+			update_option( 'ag_auto_searches', $searches, false );
+			if ( function_exists( 'ag_activity_log' ) ) { ag_activity_log( '🤖 Chasse auto-amorcée : ' . count( $searches ) . ' cibles (secteur × ville).' ); }
+		}
+		if ( empty( $searches ) ) return;
+		// ROTATION : on traite un lot de cibles FRAÎCHES à chaque passage (pointeur
+		// tournant) pour explorer de nouvelles zones au lieu de re-scanner les mêmes,
+		// et étaler la dépense. Nombre par passage réglable via le filtre ag_auto_per_run.
+		$per = max( 1, (int) apply_filters( 'ag_auto_per_run', 6 ) );
+		$ntot = count( $searches );
+		$i0   = $ntot ? ( (int) get_option( 'ag_auto_search_i', 0 ) % $ntot ) : 0;
+		$slice = array();
+		for ( $k = 0; $k < min( $per, $ntot ); $k++ ) { $slice[] = $searches[ ( $i0 + $k ) % $ntot ]; }
+		update_option( 'ag_auto_search_i', $ntot ? ( $i0 + min( $per, $ntot ) ) % $ntot : 0, false );
+		$searches = $slice;
 		$cap = (int) get_option( 'ag_places_cap', 1000 );
 		$ck  = 'ag_places_calls_' . gmdate( 'Ym' );
 		if ( $cap > 0 && (int) get_option( $ck, 0 ) >= $cap ) { update_option( 'ag_prospect_lastrun', array( 'ts' => time(), 'added' => 0, 'capped' => 1 ) ); return; }
