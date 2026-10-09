@@ -187,6 +187,22 @@ add_action( 'rest_api_init', function () {
 	) );
 } );
 
+/* ── FILET DE SÉCURITÉ : WP-Cron horaire ─────────────────────────────────
+ * cron-job.org peut tomber (job désactivé, en échec) et alors PLUS RIEN ne
+ * tourne, en silence (c'est arrivé : « dernier passage auto : 3 jours »). On
+ * ajoute donc un second déclencheur, le WP-Cron de WordPress, qui se lance au
+ * fil du trafic du site. Il ne remplace pas cron-job.org (dépend du trafic)
+ * mais évite l'arrêt total : dès qu'une page est visitée, le pilote repart.
+ */
+add_action( 'init', function () {
+	if ( ! wp_next_scheduled( 'ag_auto_wpcron' ) ) {
+		wp_schedule_event( time() + 300, 'hourly', 'ag_auto_wpcron' );
+	}
+} );
+add_action( 'ag_auto_wpcron', function () {
+	if ( function_exists( 'ag_auto_tick' ) ) { ag_auto_tick( true ); }
+} );
+
 /* ── Écran admin : URL à coller + diagnostic + Gmail contrat ─────────── */
 add_action( 'admin_menu', function () {
 	add_submenu_page( 'ag-prospects', 'Pilote automatique', '🤖 Pilote automatique', 'manage_options', 'ag-autopilot', 'ag_auto_render' );
