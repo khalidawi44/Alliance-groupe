@@ -5,6 +5,7 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 / Lu automatiquement à chaque session : j'y puise pour aider et conseiller. /
 
 > 📚 Détail complet (raccourcis, création vidéo, agents, meilleur système par type de site, config, limites) : **`INFRASTRUCTURE.md`**.
+> 🧭 **Carte des capacités du thème** (ce que je sais faire et relier : helpers emails/notifs, chaîne commerciale autonome, hooks/REST/AJAX/crons, écrans admin, options) : **`docs/CARTE-CAPACITES.md`** — à relire au lieu de réausciter tout le site. La tenir à jour à chaque nouvelle brique.
 
 ## Continuité entre conversations (IMPORTANT)
 - Sur Claude Code web, **chaque conversation démarre dans un conteneur neuf** : seul ce qui est **commité + poussé** survit.
