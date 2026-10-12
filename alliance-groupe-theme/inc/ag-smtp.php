@@ -131,6 +131,7 @@ add_action( 'admin_menu', function () {
 if ( ! function_exists( 'ag_smtp_ecran' ) ) {
 	function ag_smtp_ecran() {
 		if ( ! current_user_can( 'manage_options' ) ) { return; }
+		wp_enqueue_media(); // sélecteur d'image natif WordPress pour la signature
 		$msg = '';
 
 		if ( isset( $_POST['ag_smtp_save'] ) && check_admin_referer( 'ag_smtp' ) ) {
@@ -141,6 +142,11 @@ if ( ! function_exists( 'ag_smtp_ecran' ) ) {
 			update_option( 'ag_smtp_user', sanitize_text_field( wp_unslash( $_POST['user'] ?? '' ) ) );
 			update_option( 'ag_smtp_from', sanitize_email( wp_unslash( $_POST['from'] ?? '' ) ) );
 			update_option( 'ag_smtp_from_nom', sanitize_text_field( wp_unslash( $_POST['from_nom'] ?? '' ) ) );
+
+			/* Signature des emails (bloc « manuscrit » en bas de chaque message). */
+			update_option( 'ag_email_signature_name', sanitize_text_field( wp_unslash( $_POST['sig_nom'] ?? '' ) ) );
+			update_option( 'ag_email_signature_role', sanitize_text_field( wp_unslash( $_POST['sig_role'] ?? '' ) ) );
+			update_option( 'ag_email_signature_img', esc_url_raw( wp_unslash( $_POST['sig_img'] ?? '' ) ) );
 
 			/* Un champ mot de passe laisse vide veut dire « n'y touche pas »,
 			   jamais « efface-le » : on ne perd pas un reglage qui marche
@@ -249,6 +255,39 @@ if ( ! function_exists( 'ag_smtp_ecran' ) ) {
 							pour que la signature DKIM soit apposee et que SPF s'aligne.</p>
 					</td></tr>
 				</table>
+
+				<h2>Signature des emails</h2>
+				<p class="description" style="max-width:640px">
+					Chaque email de marque se termine par un bloc signature. Déposez votre
+					<strong>vraie signature manuscrite</strong> (un scan ou une photo sur fond clair,
+					idéalement un PNG transparent). Tant qu'aucune image n'est fournie, le prénom
+					s'affiche automatiquement dans une <strong>police cursive</strong> (déjà élégant).
+				</p>
+				<table class="form-table">
+					<tr><th scope="row">Image de signature</th><td>
+						<input type="url" name="sig_img" id="ag_sig_img" class="regular-text"
+							value="<?php echo esc_attr( get_option( 'ag_email_signature_img', '' ) ); ?>"
+							placeholder="https://…/signature.png">
+						<button type="button" class="button" id="ag_sig_pick">Choisir une image…</button>
+						<button type="button" class="button" id="ag_sig_clear">Retirer</button>
+						<div id="ag_sig_preview" style="margin-top:10px;padding:14px;background:#14141c;border-radius:10px;display:inline-block;<?php echo get_option( 'ag_email_signature_img', '' ) ? '' : 'display:none;'; ?>">
+							<img src="<?php echo esc_url( get_option( 'ag_email_signature_img', '' ) ); ?>" alt="" style="max-height:80px;width:auto;display:block;">
+						</div>
+						<p class="description">Astuce : signez en noir sur papier blanc, photographiez, puis
+							retirez le fond (ou importez un PNG transparent) pour un rendu net sur le fond sombre.</p>
+					</td></tr>
+					<tr><th scope="row">Nom affiché</th><td>
+						<input type="text" name="sig_nom" class="regular-text"
+							value="<?php echo esc_attr( get_option( 'ag_email_signature_name', '' ) ); ?>"
+							placeholder="Fabrice">
+					</td></tr>
+					<tr><th scope="row">Fonction / sous-titre</th><td>
+						<input type="text" name="sig_role" class="regular-text"
+							value="<?php echo esc_attr( get_option( 'ag_email_signature_role', '' ) ); ?>"
+							placeholder="Fondateur · Alliance Groupe">
+					</td></tr>
+				</table>
+
 				<p><button class="button button-primary" name="ag_smtp_save" value="1">Enregistrer</button></p>
 
 				<h2>Essai</h2>
@@ -262,6 +301,49 @@ if ( ! function_exists( 'ag_smtp_ecran' ) ) {
 					qu'une <strong>redirection</strong> et non une vraie boite : une redirection n'a pas de mot de passe.
 				</p>
 			</form>
+			<script>
+			(function($){
+				var frame;
+				$('#ag_sig_pick').on('click', function(e){
+					e.preventDefault();
+					if (frame) { frame.open(); return; }
+					frame = wp.media({ title:'Signature manuscrite', library:{type:'image'}, button:{text:'Utiliser cette image'}, multiple:false });
+					frame.on('select', function(){
+						var a = frame.state().get('selection').first().toJSON();
+						$('#ag_sig_img').val(a.url);
+						$('#ag_sig_preview').find('img').attr('src', a.url);
+						$('#ag_sig_preview').show();
+					});
+					frame.open();
+				});
+				$('#ag_sig_clear').on('click', function(e){
+					e.preventDefault();
+					$('#ag_sig_img').val('');
+					$('#ag_sig_preview').hide();
+				});
+			})(jQuery);
+			</script>
+
+			<?php if ( function_exists( 'ag_email_wrap' ) ) :
+				$apercu = ag_email_wrap(
+					'Votre site est en ligne 🎉',
+					'<p>Bonjour Marie,</p>'
+					. '<p>Bonne nouvelle : votre nouveau site est <strong>en ligne</strong> et prêt à recevoir vos premiers clients. Voici l\'essentiel en un coup d\'œil :</p>'
+					. ( function_exists( 'ag_email_card' ) ? ag_email_card(
+						'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:inherit;font-size:14px;color:#e8e8ee;">'
+						. '<tr><td style="padding:4px 0;">Adresse</td><td style="padding:4px 0;text-align:right;color:#D4B45C;">votre-site.fr</td></tr>'
+						. '<tr><td style="padding:4px 0;">Pages livrées</td><td style="padding:4px 0;text-align:right;">5</td></tr>'
+						. '<tr><td style="padding:4px 0;">Formulaire de contact</td><td style="padding:4px 0;text-align:right;">actif</td></tr>'
+						. '</table>' ) : '' )
+					. ( function_exists( 'ag_email_button' ) ? ag_email_button( 'Voir mon site', 'https://alliancegroupe-inc.com' ) : '' )
+					. '<p>Je reste disponible pour toute question.</p>'
+				);
+			?>
+				<h2>Aperçu de l'email</h2>
+				<p class="description">Rendu réel du gabarit de marque, avec votre signature telle qu'elle sera envoyée.</p>
+				<iframe title="Aperçu de l'email" style="width:100%;max-width:640px;height:760px;border:1px solid #ccd0d4;border-radius:8px;background:#0a0a0f;"
+					srcdoc="<?php echo esc_attr( $apercu ); ?>"></iframe>
+			<?php endif; ?>
 		</div>
 		<?php
 	}

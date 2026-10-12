@@ -131,31 +131,128 @@ add_filter( 'kses_allowed_protocols', function ( $protocols ) {
 	return $protocols;
 } );
 
+/* ── Réglages de marque des emails (une seule source de vérité) ──────── */
+if ( ! function_exists( 'ag_email_brand' ) ) {
+	/** Palette + police de la marque, réglables par option, lues partout. */
+	function ag_email_brand( $cle = null ) {
+		$b = array(
+			'or'      => '#D4B45C',               // or principal
+			'orange'  => '#F37A1F',               // accent chaud
+			'fond'    => '#0a0a0f',               // fond de page
+			'carte'   => '#14141c',               // fond de la carte
+			'carte2'  => '#0f0f16',               // bandeaux haut/bas
+			'texte'   => '#e8e8ee',               // texte courant
+			'doux'    => '#9a9aa5',               // texte secondaire
+			'faible'  => '#6f6f7a',               // pied de page
+			'titre'   => "Georgia, 'Times New Roman', serif",
+			'corps'   => "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+			'manu'    => "'Snell Roundhand', 'Segoe Script', 'Bradley Hand', 'Brush Script MT', cursive",
+		);
+		return ( null === $cle ) ? $b : ( $b[ $cle ] ?? '' );
+	}
+}
+
+if ( ! function_exists( 'ag_email_signature' ) ) {
+	/**
+	 * Bloc de signature « manuscrite ».
+	 * Si une image de signature est fournie (option ag_email_signature_img),
+	 * on l'affiche ; sinon on rend le prénom dans une police cursive propre.
+	 * Jamais d'image inventée : tant que Fabrice n'a pas déposé la sienne,
+	 * c'est le repli typographique qui s'affiche (déjà élégant).
+	 */
+	function ag_email_signature() {
+		$b    = ag_email_brand();
+		$img  = trim( (string) get_option( 'ag_email_signature_img', '' ) );
+		$nom  = trim( (string) get_option( 'ag_email_signature_name', '' ) );
+		$role = trim( (string) get_option( 'ag_email_signature_role', '' ) );
+		if ( '' === $nom )  { $nom  = 'Fabrice'; }
+		if ( '' === $role ) { $role = 'Fondateur · Alliance Groupe'; }
+
+		$visu = $img
+			? '<img src="' . esc_url( $img ) . '" alt="' . esc_attr( $nom ) . '" width="190" style="display:block;height:auto;max-width:190px;margin:2px 0 4px;">'
+			: '<div style="font-family:' . $b['manu'] . ';font-size:34px;line-height:1;color:' . $b['or'] . ';margin:2px 0 4px;">' . esc_html( $nom ) . '</div>';
+
+		return '<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-top:28px;">'
+			. '<tr><td style="padding-top:20px;border-top:1px solid rgba(255,255,255,.08);">'
+			. '<div style="font-family:' . $b['corps'] . ';font-size:13px;color:' . $b['doux'] . ';margin-bottom:2px;">Bien à vous,</div>'
+			. $visu
+			. '<div style="font-family:' . $b['corps'] . ';font-size:14px;color:' . $b['texte'] . ';font-weight:bold;">' . esc_html( $nom ) . '</div>'
+			. '<div style="font-family:' . $b['corps'] . ';font-size:12px;color:' . $b['doux'] . ';">' . esc_html( $role ) . '</div>'
+			. '</td></tr></table>';
+	}
+}
+
 if ( ! function_exists( 'ag_email_wrap' ) ) {
-	/** Gabarit HTML d'email à la marque (dark + or). */
-	function ag_email_wrap( $heading, $inner ) {
-		return '<!DOCTYPE html><html lang="fr"><body style="margin:0;padding:0;background:#0a0a0f;">'
-			. '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0f;padding:28px 12px;"><tr><td align="center">'
-			. '<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#14141c;border-radius:18px;overflow:hidden;border:1px solid rgba(212,180,92,.25);">'
-			. '<tr><td style="padding:24px 36px;background:#0f0f16;border-bottom:1px solid rgba(212,180,92,.25);">'
-			. '<img src="' . esc_url( get_stylesheet_directory_uri() . '/assets/images/logo-carte.jpg' ) . '" alt="Alliance Groupe" width="180" style="display:block;width:180px;height:auto;border-radius:8px;margin-bottom:8px;">'
-			. '<div style="font-family:Arial,sans-serif;font-size:11px;color:#9a9aa5;letter-spacing:2px;text-transform:uppercase;">Studio web &amp; sécurité</div>'
+	/**
+	 * Gabarit HTML d'email à la marque (dark + or), responsive, avec signature.
+	 * @param string $heading Titre affiché en haut du corps.
+	 * @param string $inner   Corps HTML.
+	 * @param array  $opts    Options : signature (bool, défaut true),
+	 *                        preheader (string, texte d'aperçu masqué).
+	 * Rétro-compatible : ag_email_wrap($titre, $corps) marche toujours.
+	 */
+	function ag_email_wrap( $heading, $inner, $opts = array() ) {
+		$b    = ag_email_brand();
+		$sig  = ! array_key_exists( 'signature', $opts ) || $opts['signature'];
+		$pre  = isset( $opts['preheader'] ) ? trim( (string) $opts['preheader'] ) : '';
+		$logo = esc_url( get_stylesheet_directory_uri() . '/assets/images/logo-carte.jpg' );
+
+		$preheader = $pre
+			? '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:' . $b['fond'] . ';font-size:1px;line-height:1px;">'
+				. esc_html( $pre )
+				. str_repeat( '&#847;&zwnj;&nbsp;', 40 ) // pousse le vrai texte hors de l'aperçu
+				. '</div>'
+			: '';
+
+		return '<!DOCTYPE html><html lang="fr" xmlns="http://www.w3.org/1999/xhtml">'
+			. '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+			. '<meta name="color-scheme" content="dark"><meta name="supported-color-schemes" content="dark">'
+			. '<style>'
+			. 'a{color:' . $b['or'] . ';}'
+			. 'h1,h2,h3{font-family:' . $b['titre'] . ';}'
+			. 'p{margin:0 0 14px;}'
+			. '.ag-card{max-width:600px;width:100%;}'
+			. '@media only screen and (max-width:620px){'
+			. '.ag-pad{padding-left:22px!important;padding-right:22px!important;}'
+			. '.ag-h1{font-size:20px!important;}'
+			. '}'
+			. '</style></head>'
+			. '<body style="margin:0;padding:0;background:' . $b['fond'] . ';-webkit-text-size-adjust:100%;">'
+			. $preheader
+			. '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:' . $b['fond'] . ';padding:28px 12px;"><tr><td align="center">'
+			. '<table role="presentation" cellpadding="0" cellspacing="0" class="ag-card" style="max-width:600px;width:100%;background:' . $b['carte'] . ';border-radius:18px;overflow:hidden;border:1px solid rgba(212,180,92,.25);">'
+			// En-tête (logo + accroche)
+			. '<tr><td class="ag-pad" style="padding:24px 36px;background:' . $b['carte2'] . ';border-bottom:1px solid rgba(212,180,92,.25);">'
+			. '<img src="' . $logo . '" alt="Alliance Groupe" width="180" style="display:block;width:180px;height:auto;border-radius:8px;margin-bottom:8px;">'
+			. '<div style="font-family:' . $b['corps'] . ';font-size:11px;color:' . $b['doux'] . ';letter-spacing:2px;text-transform:uppercase;">Studio web &amp; sécurité</div>'
 			. '</td></tr>'
-			. '<tr><td style="padding:34px 36px;font-family:Arial,sans-serif;color:#e8e8ee;font-size:15px;line-height:1.65;">'
-			. '<h1 style="font-family:Georgia,serif;color:#ffffff;font-size:22px;margin:0 0 16px;">' . $heading . '</h1>'
+			// Corps
+			. '<tr><td class="ag-pad" style="padding:34px 36px;font-family:' . $b['corps'] . ';color:' . $b['texte'] . ';font-size:15px;line-height:1.65;">'
+			. '<h1 class="ag-h1" style="font-family:' . $b['titre'] . ';color:#ffffff;font-size:22px;margin:0 0 16px;line-height:1.3;">' . $heading . '</h1>'
 			. $inner
+			. ( $sig ? ag_email_signature() : '' )
 			. '</td></tr>'
-			. '<tr><td style="padding:20px 36px;background:#0f0f16;border-top:1px solid rgba(255,255,255,.06);font-family:Arial,sans-serif;color:#6f6f7a;font-size:12px;">'
-			. 'Alliance Groupe — <a href="https://alliancegroupe-inc.com" style="color:#D4B45C;text-decoration:none;">alliancegroupe-inc.com</a><br>contact@alliancegroupe-inc.com'
+			// Pied de page
+			. '<tr><td class="ag-pad" style="padding:20px 36px;background:' . $b['carte2'] . ';border-top:1px solid rgba(255,255,255,.06);font-family:' . $b['corps'] . ';color:' . $b['faible'] . ';font-size:12px;">'
+			. 'Alliance Groupe — <a href="https://alliancegroupe-inc.com" style="color:' . $b['or'] . ';text-decoration:none;">alliancegroupe-inc.com</a><br>contact@alliancegroupe-inc.com'
 			. '</td></tr>'
 			. '</table></td></tr></table></body></html>';
 	}
 }
 if ( ! function_exists( 'ag_email_button' ) ) {
 	function ag_email_button( $label, $url ) {
-		return '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px 0;"><tr><td style="border-radius:999px;background:linear-gradient(135deg,#D4B45C,#F37A1F);">'
-			. '<a href="' . esc_url( $url ) . '" style="display:inline-block;padding:15px 34px;font-family:Arial,sans-serif;font-size:15px;font-weight:bold;color:#10100a;text-decoration:none;border-radius:999px;">' . esc_html( $label ) . '</a>'
+		$b = ag_email_brand();
+		return '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px 0;"><tr><td style="border-radius:999px;background:linear-gradient(135deg,' . $b['or'] . ',' . $b['orange'] . ');">'
+			. '<a href="' . esc_url( $url ) . '" style="display:inline-block;padding:15px 34px;font-family:' . $b['corps'] . ';font-size:15px;font-weight:bold;color:#10100a;text-decoration:none;border-radius:999px;">' . esc_html( $label ) . '</a>'
 			. '</td></tr></table>';
+	}
+}
+if ( ! function_exists( 'ag_email_card' ) ) {
+	/** Encart visuel (tableau/mise en avant) réutilisable dans un email. */
+	function ag_email_card( $html ) {
+		$b = ag_email_brand();
+		return '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0;background:' . $b['carte2'] . ';border:1px solid rgba(212,180,92,.22);border-radius:12px;">'
+			. '<tr><td style="padding:16px 18px;font-family:' . $b['corps'] . ';color:' . $b['texte'] . ';font-size:14px;line-height:1.6;">' . $html . '</td></tr></table>';
 	}
 }
 if ( ! function_exists( 'ag_send_member_welcome' ) ) {
