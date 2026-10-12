@@ -77,6 +77,29 @@ function ag_nuit_run() {
 			 AND (m.meta_value IS NULL OR m.meta_value='')"
 		);
 	}
+	// Auto-réparation : on remplit les textes alternatifs manquants à partir du
+	// titre de l'image (accessibilité + SEO). Non visible à l'écran, donc sûr ;
+	// la lane DESIGN pourra affiner des alt plus descriptifs si elle le souhaite.
+	if ( $noalt > 0 ) {
+		$rows_alt = $wpdb->get_results(
+			"SELECT p.ID, p.post_title FROM {$wpdb->posts} p
+			 LEFT JOIN {$wpdb->postmeta} m ON m.post_id=p.ID AND m.meta_key='_wp_attachment_image_alt'
+			 WHERE p.post_type='attachment' AND p.post_mime_type LIKE 'image/%'
+			 AND (m.meta_value IS NULL OR m.meta_value='') LIMIT 200"
+		);
+		$filled = 0;
+		foreach ( (array) $rows_alt as $r ) {
+			$alt = trim( wp_strip_all_tags( (string) $r->post_title ) );
+			$alt = trim( preg_replace( '/[-_]+/', ' ', $alt ) );
+			if ( '' === $alt ) { $alt = get_bloginfo( 'name' ); }
+			update_post_meta( (int) $r->ID, '_wp_attachment_image_alt', $alt );
+			$filled++;
+		}
+		if ( $filled > 0 ) {
+			$fixes[] = $filled . ' image(s) : texte alternatif ajouté automatiquement (d\'après le titre).';
+			$noalt   = max( 0, $noalt - $filled );
+		}
+	}
 	$checks[] = array( 'label' => 'Textes alternatifs des images', 'ok' => ( 0 === $noalt ), 'detail' => $imgs ? ( $noalt . ' image(s) sur ' . $imgs . ' sans texte alternatif' ) : 'Aucune image' );
 
 	// 4) Liens internes cassés dans le contenu publié (échantillon).
@@ -129,6 +152,13 @@ function ag_nuit_scan_broken_links() {
 	foreach ( (array) $rows as $content ) {
 		if ( ! preg_match_all( '#href=["\']([^"\']+)["\']#i', (string) $content, $m ) ) { continue; }
 		foreach ( $m[1] as $href ) {
+			$href = trim( $href );
+			// On ne vérifie QUE les vrais liens de page (http/https ou relatifs).
+			// tel:, mailto:, sms:, javascript:, les ancres #… ne sont PAS des liens
+			// internes : les compter cassait l'audit (ex. « /+33… », « /contact@… »).
+			if ( '' === $href || '#' === $href[0] ) { continue; }
+			$scheme = strtolower( (string) wp_parse_url( $href, PHP_URL_SCHEME ) );
+			if ( '' !== $scheme && 'http' !== $scheme && 'https' !== $scheme ) { continue; }
 			$h = wp_parse_url( $href, PHP_URL_HOST );
 			if ( $h && $h !== $host ) { continue; } // externe : on ignore
 			$path = trim( (string) wp_parse_url( $href, PHP_URL_PATH ), '/' );
