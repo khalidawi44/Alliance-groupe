@@ -71,7 +71,21 @@ if ( ! function_exists( 'ag_closer_expediteur' ) ) {
 	function ag_closer_expediteur() {
 		$mail = sanitize_email( (string) get_option( 'ag_closer_from_mail', '' ) );
 		$nom  = trim( (string) get_option( 'ag_closer_from_nom', '' ) );
-		if ( ! is_email( $mail ) ) { $mail = ''; }
+		// REPLI : si l'expéditeur d'Hugo n'est pas renseigné, on prend une adresse
+		// RÉELLEMENT relevée pour le Reply-To, afin que les réponses des prospects
+		// n'atterrissent jamais dans le vide. Ordre : From SMTP → identifiant SMTP
+		// → boîte de notif → contact@.
+		if ( ! is_email( $mail ) ) {
+			foreach ( array(
+				get_option( 'ag_smtp_from', '' ),
+				get_option( 'ag_smtp_user', '' ),
+				get_option( 'ag_calendar_email', '' ),
+				'contact@alliancegroupe-inc.com',
+			) as $cand ) {
+				$cand = sanitize_email( (string) $cand );
+				if ( is_email( $cand ) ) { $mail = $cand; break; }
+			}
+		}
 		if ( '' === $nom ) { $nom = 'Alliance Groupe'; }
 		return array( $mail, $nom );
 	}
