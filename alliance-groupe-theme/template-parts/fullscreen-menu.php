@@ -180,9 +180,9 @@ $ag_fsm_items = array(
 	color: #fff;
 	text-decoration: none;
 	font-family: Georgia, 'Playfair Display', serif;
-	font-size: clamp(1.6rem, 4.2vw, 3.4rem);
+	font-size: clamp(1.5rem, 3.6vw, 2.9rem);
 	font-weight: 700;
-	line-height: 1.1;
+	line-height: 1.08;
 	letter-spacing: -0.025em;
 	transition: color .35s ease, padding-left .35s ease;
 	position: relative;
@@ -283,10 +283,16 @@ body.ag-fsm-open{ overflow: hidden; }
 	.ag-fsm-nav{ padding: 90px 6vw 130px; }
 	.ag-fsm-footer{ flex-direction: column; align-items: flex-start; bottom: 20px; }
 }
+/* 12 entrées : sur un écran de moins de 960px de haut, on resserre pour
+   que Accueil et Contact restent visibles sans défiler. */
+@media (max-height: 960px){
+	.ag-fsm-link{ font-size: clamp(1.4rem, 3vw, 2.4rem); padding: 5px 0; }
+	.ag-fsm-nav{ padding: 80px 8vw 110px; }
+}
 /* Hauteur très réduite (laptop 13") : font encore plus serrée */
 @media (max-height: 720px){
-	.ag-fsm-link{ font-size: clamp(1.4rem, 3.4vw, 2.4rem); padding: 6px 0; }
-	.ag-fsm-nav{ padding: 80px 8vw 100px; }
+	.ag-fsm-link{ font-size: clamp(1.2rem, 2.6vw, 1.9rem); padding: 3px 0; }
+	.ag-fsm-nav{ padding: 70px 8vw 100px; }
 }
 
 @media (prefers-reduced-motion: reduce){
