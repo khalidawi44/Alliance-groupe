@@ -32,9 +32,14 @@ if ( ! function_exists( 'ag_cm_autofeed' ) ) {
 /* ── Banque de cibles (secteur × ville) pour relancer la chasse ──────── */
 if ( ! function_exists( 'ag_cm_bank' ) ) {
 	function ag_cm_bank() {
-		$secteurs = array( 'avocat', 'restaurant', 'plombier', 'électricien', 'coach sportif',
-			'barbier', 'kinésithérapeute', 'garage automobile', 'agence immobilière',
-			'institut de beauté', 'artisan menuisier', 'photographe' );
+		/* Secteurs recentrés sur LE FILON du canal email (voir docs/FILON.md) :
+		   des pros qui ONT un site transactionnel/vitrine à forte valeur (donc
+		   joignables par contact@ et avec un vrai budget web) plutôt que des
+		   micro-artisans souvent sans site. Priorité : commerce/e-commerce,
+		   immobilier, hôtellerie-tourisme, santé de groupe. */
+		$secteurs = array( 'prêt-à-porter', 'bijouterie', 'caviste', 'magasin de meubles',
+			'épicerie fine', 'concept store', 'agence immobilière', 'hôtel',
+			'restaurant', 'camping', 'centre dentaire', 'clinique vétérinaire' );
 		$villes = array( 'Nantes', 'Saint-Nazaire', 'Rennes', 'Angers', 'Vannes',
 			'La Roche-sur-Yon', 'Cholet', 'Saint-Herblain', 'Rezé', 'Lorient' );
 		$bank = array();
