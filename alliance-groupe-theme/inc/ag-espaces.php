@@ -155,10 +155,11 @@ if ( ! function_exists( 'ag_email_brand' ) ) {
 if ( ! function_exists( 'ag_email_signature' ) ) {
 	/**
 	 * Bloc de signature « manuscrite ».
-	 * Si une image de signature est fournie (option ag_email_signature_img),
-	 * on l'affiche ; sinon on rend le prénom dans une police cursive propre.
-	 * Jamais d'image inventée : tant que Fabrice n'a pas déposé la sienne,
-	 * c'est le repli typographique qui s'affiche (déjà élégant).
+	 * Priorité : 1) image fournie par Fabrice (option ag_email_signature_img) ;
+	 * 2) la vraie signature scannée livrée avec le thème (assets/images/signature-fabrice.png),
+	 *    posée sur un panneau « papier » crème pour rester lisible sur le fond sombre ;
+	 * 3) repli typographique (prénom en police cursive).
+	 * Jamais d'image inventée : le trait est exactement celui que Fabrice a signé.
 	 */
 	function ag_email_signature() {
 		$b    = ag_email_brand();
@@ -168,9 +169,23 @@ if ( ! function_exists( 'ag_email_signature' ) ) {
 		if ( '' === $nom )  { $nom  = 'Fabrice'; }
 		if ( '' === $role ) { $role = 'Fondateur · Alliance Groupe'; }
 
-		$visu = $img
-			? '<img src="' . esc_url( $img ) . '" alt="' . esc_attr( $nom ) . '" width="190" style="display:block;height:auto;max-width:190px;margin:2px 0 4px;">'
-			: '<div style="font-family:' . $b['manu'] . ';font-size:34px;line-height:1;color:' . $b['or'] . ';margin:2px 0 4px;">' . esc_html( $nom ) . '</div>';
+		// Signature scannée livrée avec le thème (repli par défaut si aucune option).
+		$bundled_rel  = '/assets/images/signature-fabrice.png';
+		$bundled_path = get_stylesheet_directory() . $bundled_rel;
+		$bundled_url  = get_stylesheet_directory_uri() . $bundled_rel;
+
+		if ( $img ) {
+			// Image choisie par Fabrice dans l'écran admin : affichée telle quelle.
+			$visu = '<img src="' . esc_url( $img ) . '" alt="' . esc_attr( $nom ) . '" width="200" style="display:block;height:auto;max-width:200px;margin:2px 0 4px;">';
+		} elseif ( file_exists( $bundled_path ) ) {
+			// Encre noire sur panneau crème (effet « signé sur papier »), lisible sur le dark.
+			$visu = '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:4px 0 6px;"><tr>'
+				. '<td style="background:#f7f3e8;border-radius:10px;padding:10px 16px;">'
+				. '<img src="' . esc_url( $bundled_url ) . '" alt="' . esc_attr( $nom ) . '" width="190" style="display:block;height:auto;max-width:190px;">'
+				. '</td></tr></table>';
+		} else {
+			$visu = '<div style="font-family:' . $b['manu'] . ';font-size:34px;line-height:1;color:' . $b['or'] . ';margin:2px 0 4px;">' . esc_html( $nom ) . '</div>';
+		}
 
 		return '<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-top:28px;">'
 			. '<tr><td style="padding-top:20px;border-top:1px solid rgba(255,255,255,.08);">'

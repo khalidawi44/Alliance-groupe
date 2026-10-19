@@ -258,10 +258,10 @@ if ( ! function_exists( 'ag_smtp_ecran' ) ) {
 
 				<h2>Signature des emails</h2>
 				<p class="description" style="max-width:640px">
-					Chaque email de marque se termine par un bloc signature. Déposez votre
-					<strong>vraie signature manuscrite</strong> (un scan ou une photo sur fond clair,
-					idéalement un PNG transparent). Tant qu'aucune image n'est fournie, le prénom
-					s'affiche automatiquement dans une <strong>police cursive</strong> (déjà élégant).
+					Chaque email de marque se termine par un bloc signature. Votre
+					<strong>signature manuscrite est déjà en place</strong> (livrée avec le thème,
+					posée sur un fond papier pour rester lisible). Pour la remplacer, déposez une
+					autre image ci-dessous ; laissez vide pour garder la signature actuelle.
 				</p>
 				<table class="form-table">
 					<tr><th scope="row">Image de signature</th><td>
