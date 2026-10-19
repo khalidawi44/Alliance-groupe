@@ -125,11 +125,15 @@ if ( ! function_exists( 'ag_auto_tick' ) ) {
 			if ( $go() && function_exists( 'ag_gardien_cron_maybe' ) && ag_gardien_cron_maybe() ) { $ran[] = 'ag_gardien'; }
 			// Le Community Manager : diagnostic de croissance + relance de la chasse à sec.
 			if ( $go() && function_exists( 'ag_cm_cron_maybe' ) && ag_cm_cron_maybe() ) { $ran[] = 'ag_cm'; }
-			// Enrichissement EN DERNIER, en PETIT LOT (3 fiches) et seulement s'il
-			// est activé + s'il reste du budget. Ça trouve les emails des prospects
-			// fraîchement chassés, étalé sur plusieurs tours (3 × 96 tours/jour).
+			// Enrichissement EN DERNIER (le vrai goulot : il trouve les emails sans
+			// lesquels Hugo n'a personne à qui écrire). On lui donne le TEMPS QUI
+			// RESTE dans le tour (borné) au lieu d'un lot fixe de 3 : il vide le
+			// backlog bien plus vite, tout en restant sous le délai serveur.
 			if ( $go() && function_exists( 'ag_enrich_on' ) && ag_enrich_on() && function_exists( 'ag_enrich_tour' ) ) {
-				ag_enrich_tour( 3 ); $ran[] = 'ag_enrich(3)';
+				$reste = max( 4, $deadline - time() );
+				$reste = min( $reste, (int) apply_filters( 'ag_enrich_budget', 20 ) );
+				$b = ag_enrich_tour( (int) apply_filters( 'ag_enrich_per_run', 40 ), $reste );
+				$ran[] = 'ag_enrich(' . (int) ( $b['vues'] ?? 0 ) . ')';
 			}
 			if ( ! $go() ) { $ran[] = 'budget-atteint→suite au prochain tour'; }
 		}

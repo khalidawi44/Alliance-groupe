@@ -215,9 +215,14 @@ if ( ! function_exists( 'ag_enrich_tour' ) ) {
 	 *
 	 * @return array  vues, emails, audits
 	 */
-	function ag_enrich_tour( $limite = AG_ENRICH_PAR_NUIT ) {
+	function ag_enrich_tour( $limite = AG_ENRICH_PAR_NUIT, $budget_s = 0 ) {
 		$list = (array) get_option( 'ag_prospects', array() );
 		$bilan = array( 'vues' => 0, 'emails' => 0, 'audits' => 0 );
+
+		// Borne de temps optionnelle : chaque fiche fait des requêtes HTTP (lentes),
+		// donc on s'arrête AVANT le délai nginx quand le pilote nous passe un budget.
+		// 0 = pas de borne (tour de nuit via WP-Cron, pas de timeout serveur).
+		$deadline = ( $budget_s > 0 ) ? ( time() + (int) $budget_s ) : 0;
 
 		// Ordre de priorité : d'abord celles qu'un email débloquerait.
 		$ordre = array_keys( $list );
@@ -229,6 +234,7 @@ if ( ! function_exists( 'ag_enrich_tour' ) ) {
 
 		foreach ( $ordre as $i ) {
 			if ( $bilan['vues'] >= $limite ) { break; }
+			if ( $deadline && time() >= $deadline ) { break; } // budget temps épuisé
 			if ( ! ag_enrich_a_faire( $list[ $i ] ) ) { continue; }
 			$copie = $list[ $i ];
 			$r = ag_enrich_fiche( $copie );
@@ -264,7 +270,11 @@ add_action( 'init', function () {
 } );
 
 add_action( 'ag_enrich_cron', function () {
-	if ( ag_enrich_on() ) { ag_enrich_tour(); }
+	// Tour de nuit (WP-Cron, pas de timeout nginx) : gros lot borné en temps
+	// pour rattraper le backlog d'emails sans marteler les sites.
+	if ( ag_enrich_on() ) {
+		ag_enrich_tour( apply_filters( 'ag_enrich_nuit_limite', 150 ), apply_filters( 'ag_enrich_nuit_budget', 90 ) );
+	}
 } );
 
 /* ── 5. Nourrir Hugo : le constat entre dans son contexte ────────────── */
