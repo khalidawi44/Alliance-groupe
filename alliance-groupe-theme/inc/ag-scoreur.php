@@ -54,6 +54,9 @@ if ( ! function_exists( 'ag_scoreur_score' ) ) {
 			$asc = isset( $p['audit_score'] ) ? (int) $p['audit_score'] : -1;
 			if ( $asc >= 0 && $asc < 60 ) { $s += 12; }
 			if ( (int) ( $p['audit_crit'] ?? 0 ) > 0 ) { $s += 8; }
+			// Accessibilité faible = angle EAA concret (filon #1), accroche vraie.
+			$a11y = isset( $p['a11y_score'] ) ? (int) $p['a11y_score'] : -1;
+			if ( $a11y >= 0 && $a11y < 70 ) { $s += 10; }
 		} else {
 			// Pas de site : besoin réel (création) MAIS peu joignable par email.
 			// On garde un bonus modéré, sans laisser ce segment écraser la file.

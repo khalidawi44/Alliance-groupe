@@ -69,6 +69,124 @@ if ( ! function_exists( 'ag_audit_score' ) ) {
 }
 
 /**
+ * CHECKS D'ACCESSIBILITÉ (RGAA) — 100 % PASSIFS.
+ * On lit le HTML DÉJÀ récupéré (aucune requête en plus, aucune intrusion) et
+ * on constate des défauts OBSERVABLES DE DEHORS, utiles pour le filon
+ * « mise en conformité accessibilité (EAA) » des sites marchands.
+ * On ne mesure QUE ce qui est fiable en statique : langue, alternatives
+ * d'images, étiquettes de champs, intitulés de liens, zoom, structure.
+ * (Le contraste réel exige le rendu CSS → on ne l'invente pas ici.)
+ *
+ * @param string $body  HTML de la page d'accueil
+ * @return array  liste de checks au même format que l'audit SEO
+ */
+if ( ! function_exists( 'ag_a11y_checks' ) ) {
+	function ag_a11y_checks( $body ) {
+		$body   = (string) $body;
+		$checks = array();
+
+		// 1. Langue de la page (RGAA 8.3) — indispensable aux lecteurs d'écran.
+		$has_lang = (bool) preg_match( '#<html[^>]*\blang\s*=\s*[\'"][a-zA-Z\-]{2,}[\'"]#i', $body );
+		$checks[] = array(
+			'name'   => 'Langue de la page',
+			'status' => $has_lang ? 'ok' : 'fail',
+			'msg'    => $has_lang ? 'Attribut lang présent sur <html>.' : 'Aucun attribut lang sur <html>.',
+			'advice' => $has_lang ? 'Bien.' : 'Ajouter <html lang="fr"> : prononciation correcte par les lecteurs d\'écran (RGAA 8.3).',
+			'weight' => 2, 'critical' => ! $has_lang,
+		);
+
+		// 2. Alternatives textuelles des images (RGAA 1.1). alt="" = décoratif = OK.
+		preg_match_all( '#<img\b([^>]*)>#is', $body, $imgs );
+		$nb_img = count( $imgs[0] ?? array() );
+		$no_alt = 0;
+		foreach ( ( $imgs[1] ?? array() ) as $attrs ) {
+			if ( ! preg_match( '#\salt\s*=\s*([\'"]).*?\1#is', $attrs ) ) { $no_alt++; }
+		}
+		$ratio = $nb_img > 0 ? $no_alt / $nb_img : 0.0;
+		$checks[] = array(
+			'name'   => 'Alternatives textuelles des images',
+			'status' => 0 === $nb_img ? 'ok' : ( 0 === $no_alt ? 'ok' : ( $ratio < 0.2 ? 'warn' : 'fail' ) ),
+			'msg'    => 0 === $nb_img ? 'Aucune image <img> en page d\'accueil.' : ( $nb_img - $no_alt ) . '/' . $nb_img . ' images ont un attribut alt.',
+			'advice' => $no_alt > 0 ? 'Chaque image porteuse de sens doit avoir un alt ; alt="" pour les décoratives (RGAA 1.1).' : 'Bien.',
+			'weight' => 2, 'critical' => ( $nb_img > 0 && $ratio >= 0.5 ),
+		);
+
+		// 3. Étiquettes des champs de formulaire (RGAA 11.1).
+		preg_match_all( '#<input\b([^>]*)>#is', $body, $ins );
+		$label_fors = array();
+		if ( preg_match_all( '#<label[^>]*\bfor\s*=\s*[\'"]([^\'"]+)[\'"]#i', $body, $lm ) ) {
+			$label_fors = array_map( 'strtolower', $lm[1] );
+		}
+		$need = 0; $unlabeled = 0;
+		foreach ( ( $ins[1] ?? array() ) as $attrs ) {
+			if ( preg_match( '#\btype\s*=\s*[\'"](hidden|submit|button|image|reset)[\'"]#i', $attrs ) ) { continue; }
+			$need++;
+			$ok = preg_match( '#\baria-label(ledby)?\s*=\s*[\'"][^\'"]+[\'"]#i', $attrs )
+				|| preg_match( '#\btitle\s*=\s*[\'"][^\'"]+[\'"]#i', $attrs );
+			if ( ! $ok && preg_match( '#\bid\s*=\s*[\'"]([^\'"]+)[\'"]#i', $attrs, $idm ) ) {
+				$ok = in_array( strtolower( $idm[1] ), $label_fors, true );
+			}
+			if ( ! $ok ) { $unlabeled++; }
+		}
+		if ( $need > 0 ) {
+			$checks[] = array(
+				'name'   => 'Étiquettes des champs de formulaire',
+				'status' => 0 === $unlabeled ? 'ok' : ( $unlabeled < 2 ? 'warn' : 'fail' ),
+				'msg'    => ( $need - $unlabeled ) . '/' . $need . ' champs correctement étiquetés.',
+				'advice' => $unlabeled > 0 ? 'Associer un <label for> (ou aria-label) à chaque champ (RGAA 11.1).' : 'Bien.',
+				'weight' => 2, 'critical' => ( $unlabeled >= 3 ),
+			);
+		}
+
+		// 4. Intitulés de liens (RGAA 6.1) — pas de lien vide/sans intitulé accessible.
+		$empty_links = 0;
+		if ( preg_match_all( '#<a\b([^>]*)>(.*?)</a>#is', $body, $as ) ) {
+			foreach ( $as[2] as $i => $inner ) {
+				$attrs = $as[1][ $i ];
+				$txt   = trim( wp_strip_all_tags( $inner ) );
+				$imgalt = preg_match( '#<img[^>]*\salt\s*=\s*[\'"][^\'"]+[\'"]#i', $inner );
+				$aria   = preg_match( '#\baria-label\s*=\s*[\'"][^\'"]+[\'"]#i', $attrs );
+				if ( '' === $txt && ! $imgalt && ! $aria ) { $empty_links++; }
+			}
+		}
+		$checks[] = array(
+			'name'   => 'Intitulés de liens',
+			'status' => 0 === $empty_links ? 'ok' : ( $empty_links < 3 ? 'warn' : 'fail' ),
+			'msg'    => 0 === $empty_links ? 'Aucun lien sans intitulé détecté.' : $empty_links . ' lien(s) sans intitulé accessible.',
+			'advice' => $empty_links > 0 ? 'Donner un intitulé à chaque lien (texte visible, alt d\'image, ou aria-label) (RGAA 6.1).' : 'Bien.',
+			'weight' => 1,
+		);
+
+		// 5. Zoom autorisé (RGAA) — ne jamais bloquer l'agrandissement.
+		$vp = preg_match( '#<meta\s+name=[\'"]viewport[\'"][^>]*content=[\'"]([^\'"]*)[\'"]#i', $body, $vm ) ? strtolower( $vm[1] ) : '';
+		$zoom_blocked = $vp && ( false !== strpos( $vp, 'user-scalable=no' ) || preg_match( '#maximum-scale\s*=\s*1(\.0)?\b#', $vp ) );
+		$checks[] = array(
+			'name'   => 'Zoom autorisé',
+			'status' => $zoom_blocked ? 'fail' : 'ok',
+			'msg'    => $zoom_blocked ? 'Le zoom est désactivé (user-scalable=no / maximum-scale=1).' : 'Le zoom n\'est pas bloqué.',
+			'advice' => $zoom_blocked ? 'Ne jamais bloquer le zoom : vital pour les malvoyants (RGAA 10.x).' : 'Bien.',
+			'weight' => 2, 'critical' => (bool) $zoom_blocked,
+		);
+
+		// 6. Structure et repères (RGAA 9 / navigation lecteur d'écran).
+		preg_match_all( '#<h1[^>]*>#i', $body, $h1m );
+		$nb_h1 = count( $h1m[0] ?? array() );
+		$has_landmark = (bool) ( preg_match( '#<(main|nav|header|footer)\b#i', $body )
+			|| preg_match( '#\brole\s*=\s*[\'"](main|navigation|banner|contentinfo)[\'"]#i', $body ) );
+		$struct_ok = ( 1 === $nb_h1 ) && $has_landmark;
+		$checks[] = array(
+			'name'   => 'Structure et repères',
+			'status' => $struct_ok ? 'ok' : ( ( $nb_h1 >= 1 || $has_landmark ) ? 'warn' : 'fail' ),
+			'msg'    => $nb_h1 . ' balise(s) H1 · repères ' . ( $has_landmark ? 'présents' : 'absents' ) . '.',
+			'advice' => $struct_ok ? 'Bien.' : 'Un seul <h1> + repères <main>/<nav>/<header> pour naviguer au lecteur d\'écran (RGAA 9).',
+			'weight' => 1,
+		);
+
+		return $checks;
+	}
+}
+
+/**
  * Extrait les COORDONNÉES PUBLIQUES publiées sur le site lui-même
  * (accueil + /mentions-legales + /contact) : email, téléphone, adresse,
  * nom, réseaux, SIRET. Uniquement de l'info publique éditée par le site.
@@ -415,7 +533,15 @@ if ( ! function_exists( 'ag_audit_run' ) ) {
 		/* ====================== Score pondéré + plafond si faille critique ====================== */
 		list( $score_pct, $nb_crit ) = ag_audit_score( $checks );
 
-		return array( 'url' => $url, 'checks' => $checks, 'score' => $score_pct, 'critical' => $nb_crit, 'time_ms' => $elapsed, 'ts' => time(), 'tech' => $is_wp ? 'WordPress' : 'autre/custom' );
+		/* ====================== Score d'ACCESSIBILITÉ (RGAA, passif) ====================== */
+		$a11y_checks = function_exists( 'ag_a11y_checks' ) ? ag_a11y_checks( $body ) : array();
+		list( $a11y_pct, $a11y_crit ) = ag_audit_score( $a11y_checks );
+
+		return array(
+			'url' => $url, 'checks' => $checks, 'score' => $score_pct, 'critical' => $nb_crit,
+			'time_ms' => $elapsed, 'ts' => time(), 'tech' => $is_wp ? 'WordPress' : 'autre/custom',
+			'a11y' => array( 'score' => $a11y_pct, 'critical' => $a11y_crit, 'checks' => $a11y_checks ),
+		);
 	}
 }
 
@@ -678,7 +804,7 @@ if ( ! function_exists( 'ag_audit_run_deep' ) ) {
 		}
 		$deep_score = max( 3, min( $base_score, $base_score - $malus ) );
 
-		return array( 'url' => $url, 'checks' => $checks, 'score' => $deep_score, 'critical' => $nb_crit, 'deep' => true, 'ts' => time(), 'tech' => $base['tech'] ?? '' );
+		return array( 'url' => $url, 'checks' => $checks, 'score' => $deep_score, 'critical' => $nb_crit, 'deep' => true, 'ts' => time(), 'tech' => $base['tech'] ?? '', 'a11y' => $base['a11y'] ?? null );
 	}
 }
 
@@ -725,8 +851,9 @@ if ( ! function_exists( 'ag_audit_handle' ) ) {
 
 		// Email au prospect avec le lien du rapport
 		$report_url = add_query_arg( array( 'aid' => $aid ), wp_get_referer() ?: home_url( '/audit-seo' ) );
-		$subject = 'Votre audit SEO Alliance Groupe — score ' . $audit['score'] . ' / 100';
-		$body    = "Bonjour " . ( $prenom ?: '' ) . ",\n\nVotre audit SEO pour " . $url . " est prêt.\n\nScore global : " . $audit['score'] . " / 100.\n\nConsultez le rapport complet ici :\n" . $report_url . "\n\nVous pouvez l'imprimer ou l'enregistrer en PDF (Ctrl+P).\n\nUne question ? Répondez à ce mail.\n\nAlliance Groupe\n";
+		$a11y_line = isset( $audit['a11y']['score'] ) ? "\nScore d'accessibilité (RGAA) : " . (int) $audit['a11y']['score'] . " / 100." : '';
+		$subject = 'Votre audit Alliance Groupe — score ' . $audit['score'] . ' / 100';
+		$body    = "Bonjour " . ( $prenom ?: '' ) . ",\n\nVotre audit pour " . $url . " est prêt.\n\nScore global : " . $audit['score'] . " / 100." . $a11y_line . "\n\nConsultez le rapport complet ici :\n" . $report_url . "\n\nVous pouvez l'imprimer ou l'enregistrer en PDF (Ctrl+P).\n\nUne question ? Répondez à ce mail.\n\nAlliance Groupe\n";
 		wp_mail( $email, $subject, $body );
 
 		wp_safe_redirect( $report_url );
@@ -765,7 +892,7 @@ if ( ! function_exists( 'ag_audit_render_form' ) ) {
 			<div style="max-width:680px;margin:0 auto;text-align:center">
 				<span style="display:inline-block;padding:6px 14px;background:rgba(212,180,92,.12);border:1px solid rgba(212,180,92,.4);border-radius:999px;color:#D4B45C;font-size:.82rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:18px">🎁 Cadeau · 0 €</span>
 				<h1 style="font-family:Georgia,serif;font-size:clamp(2rem,5vw,3.6rem);line-height:1.1;margin:0 0 14px">Audit SEO <em style="background:linear-gradient(135deg,#D4B45C,#F37A1F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-style:italic">gratuit</em> de votre site</h1>
-				<p style="color:rgba(255,255,255,.75);font-size:1.05rem;line-height:1.6;margin:0 0 36px">12 points d'analyse, livré sous 30 secondes : vitesse, mobile, Google, partage social, données structurées. PDF imprimable.</p>
+				<p style="color:rgba(255,255,255,.75);font-size:1.05rem;line-height:1.6;margin:0 0 36px">Référencement, vitesse, mobile, sécurité <strong>et un score d'accessibilité (RGAA)</strong>, livré sous 30 secondes. Depuis juin 2025, l'accessibilité est obligatoire pour les sites marchands. PDF imprimable.</p>
 
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="text-align:left;display:flex;flex-direction:column;gap:14px;max-width:520px;margin:0 auto">
 					<input type="hidden" name="action" value="ag_audit_request">
@@ -827,6 +954,34 @@ if ( ! function_exists( 'ag_audit_render_report' ) ) {
 					<p style="margin:18px 0 0;color:#fff;font-size:1.1rem"><?php echo esc_html( $verdict ); ?></p>
 				</div>
 
+				<?php
+				/* Score d'accessibilité (RGAA) — mis en avant : c'est l'accroche du
+				   filon « mise en conformité EAA » pour les sites marchands. */
+				$a11y = ( isset( $a['a11y'] ) && is_array( $a['a11y'] ) ) ? $a['a11y'] : null;
+				if ( $a11y && ! empty( $a11y['checks'] ) ) :
+					$as   = (int) ( $a11y['score'] ?? 0 );
+					$acol = $as >= 75 ? '#28a745' : ( $as >= 50 ? '#F37A1F' : '#E10F1A' );
+					$averdict = $as >= 75 ? 'Accessibilité globalement respectée.' : ( $as >= 50 ? 'Accessibilité partielle — des écarts à corriger.' : 'Accessibilité insuffisante (obligation légale EAA pour les sites marchands).' );
+				?>
+				<div style="display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap;margin:0 0 44px;padding:22px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.22);border-radius:16px">
+					<div style="position:relative;width:120px;height:120px;flex:0 0 auto">
+						<svg viewBox="0 0 120 120" style="width:100%;height:100%;transform:rotate(-90deg)">
+							<circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10"/>
+							<circle cx="60" cy="60" r="52" fill="none" stroke="<?php echo esc_attr( $acol ); ?>" stroke-width="10" stroke-dasharray="<?php echo (int) ( $as * 3.27 ); ?> 327" stroke-linecap="round"/>
+						</svg>
+						<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+							<div style="font-size:1.8rem;font-weight:900;color:<?php echo esc_attr( $acol ); ?>"><?php echo (int) $as; ?></div>
+							<div style="font-size:.7rem;color:rgba(255,255,255,.6)">/ 100</div>
+						</div>
+					</div>
+					<div style="flex:1 1 220px;min-width:220px">
+						<div style="color:#D4B45C;font-weight:800;letter-spacing:1px;text-transform:uppercase;font-size:.8rem;margin-bottom:6px">♿ Score d'accessibilité (RGAA)</div>
+						<p style="color:rgba(255,255,255,.82);font-size:.95rem;margin:0 0 6px"><?php echo esc_html( $averdict ); ?></p>
+						<p style="color:rgba(255,255,255,.55);font-size:.8rem;margin:0">Depuis le 28/06/2025, l'accessibilité numérique est obligatoire pour les sites marchands (European Accessibility Act). Diagnostic indicatif, en observation externe.</p>
+					</div>
+				</div>
+				<?php endif; ?>
+
 				<?php $nb_points = count( (array) ( $a['checks'] ?? array() ) ); ?>
 				<h2 style="font-family:Georgia,serif;font-size:1.5rem;margin:0 0 18px;color:#D4B45C">Détail des <?php echo (int) $nb_points; ?> point<?php echo $nb_points > 1 ? 's' : ''; ?> vérifié<?php echo $nb_points > 1 ? 's' : ''; ?></h2>
 				<div style="display:flex;flex-direction:column;gap:10px">
@@ -846,6 +1001,27 @@ if ( ! function_exists( 'ag_audit_render_report' ) ) {
 						</div>
 					<?php endforeach; ?>
 				</div>
+
+				<?php if ( $a11y && ! empty( $a11y['checks'] ) ) : ?>
+					<h2 style="font-family:Georgia,serif;font-size:1.5rem;margin:40px 0 18px;color:#D4B45C">♿ Détail accessibilité (RGAA)</h2>
+					<div style="display:flex;flex-direction:column;gap:10px">
+						<?php foreach ( (array) $a11y['checks'] as $c ) :
+							$ico = 'ok' === $c['status'] ? '✅' : ( 'warn' === $c['status'] ? '⚠️' : '❌' );
+							$col = 'ok' === $c['status'] ? '#28a745' : ( 'warn' === $c['status'] ? '#F37A1F' : '#E10F1A' );
+						?>
+							<div style="background:rgba(255,255,255,.03);border-left:3px solid <?php echo esc_attr( $col ); ?>;padding:14px 18px;border-radius:8px">
+								<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:6px">
+									<strong style="color:#fff;font-size:1rem"><?php echo $ico; ?> <?php echo esc_html( $c['name'] ); ?></strong>
+									<span style="color:<?php echo esc_attr( $col ); ?>;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1px"><?php echo esc_html( $c['status'] ); ?></span>
+								</div>
+								<p style="color:rgba(255,255,255,.78);font-size:.9rem;margin:0 0 4px"><?php echo esc_html( $c['msg'] ); ?></p>
+								<?php if ( ! empty( $c['advice'] ) ) : ?>
+									<p style="color:rgba(212,180,92,.85);font-size:.85rem;margin:0;font-style:italic">→ <?php echo esc_html( $c['advice'] ); ?></p>
+								<?php endif; ?>
+							</div>
+						<?php endforeach; ?>
+					</div>
+				<?php endif; ?>
 
 				<div style="margin-top:50px;padding:30px;background:linear-gradient(135deg,rgba(212,180,92,.10) 0%,rgba(20,20,22,.6) 100%);border:2px solid rgba(212,180,92,.4);border-radius:16px;text-align:center">
 					<h3 style="font-family:Georgia,serif;font-size:1.6rem;margin:0 0 10px;color:#fff">Envie qu'on s'en occupe ?</h3>

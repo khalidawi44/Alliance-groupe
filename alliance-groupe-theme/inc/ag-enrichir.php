@@ -175,6 +175,8 @@ if ( ! function_exists( 'ag_enrich_fiche' ) ) {
 			if ( is_array( $a ) && isset( $a['score'] ) ) {
 				$p['audit_score'] = (int) $a['score'];
 				$p['audit_crit']  = (int) ( $a['critical'] ?? 0 );
+				// Score d'accessibilité (RGAA) : sert au Scoreur pour le filon EAA.
+				if ( isset( $a['a11y']['score'] ) ) { $p['a11y_score'] = (int) $a['a11y']['score']; }
 				$p['audit_ts']    = time();
 				$bilan['audit_fait'] = true;
 			}

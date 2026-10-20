@@ -38,8 +38,9 @@ Le rapport « Tester mon site » (score /100 + failles). **À enrichir d'un bloc
   - 1re signature visée sous ~150-200 envois ; viser l'escalade audit → sur-mesure → maintenance récurrente (MRR 29/59/99).
 - Si après 300-400 envois #1 le taux de réponse < 3 % → basculer l'effort sur #2 (immobilier, refonte).
 
-## Enacté côté code (19/10)
+## Enacté côté code (19-20/10)
 - Enrichissement au budget de temps (vide le backlog d'emails, remplit la file d'Hugo).
-- Scoreur recentré : priorité aux prospects qui ONT un site perfectible + accroche vraie.
+- Scoreur recentré : priorité aux prospects qui ONT un site perfectible + accroche vraie + **accessibilité faible** (angle EAA).
 - Chasse (`ag_cm_bank`) recentrée sur les secteurs du filon (commerce/e-commerce, immobilier, hôtellerie, santé de groupe).
-- **Reste à faire (proposé) :** bloc « score accessibilité /100 » dans `inc/ag-audit-seo.php` (lead magnet #1) ; séquences de message #1/#2 côté démarchage (angle honnête par défaut, EAA si cible qualifiée).
+- **FAIT — Lead magnet #1 :** `ag_a11y_checks()` dans `inc/ag-audit-seo.php` → **score d'accessibilité /100** (RGAA, 100 % passif : langue, alt, étiquettes de champs, intitulés de liens, zoom, structure). Affiché dans le rapport « Tester mon site » (2e jauge + détail), rappel EAA, score dans l'email. L'enrich mémorise `a11y_score`, le Scoreur priorise les sites peu accessibles (boucle du filon fermée).
+- **Reste à faire (proposé) :** séquences de message #1/#2 côté démarchage (angle honnête par défaut « voici votre rapport » ; angle amende EAA réservé aux cibles qualifiées en taille).
