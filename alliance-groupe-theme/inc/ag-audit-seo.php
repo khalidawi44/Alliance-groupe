@@ -187,6 +187,35 @@ if ( ! function_exists( 'ag_a11y_checks' ) ) {
 }
 
 /**
+ * Constat d'accessibilité COURT et FACTUEL (une phrase) à partir des checks,
+ * pour qu'Hugo puisse citer un point vrai sans rien inventer ni alarmer.
+ * Ne liste que des défauts de SURFACE (langue, alt, étiquettes, zoom), jamais
+ * un mode opératoire. Rien si tout est correct.
+ *
+ * @param array $a11y  le bloc 'a11y' d'un audit (score + checks)
+ * @return string
+ */
+if ( ! function_exists( 'ag_a11y_constat' ) ) {
+	function ag_a11y_constat( $a11y ) {
+		if ( ! is_array( $a11y ) || empty( $a11y['checks'] ) ) { return ''; }
+		$pts = array();
+		foreach ( (array) $a11y['checks'] as $c ) {
+			if ( ! in_array( ( $c['status'] ?? '' ), array( 'fail', 'warn' ), true ) ) { continue; }
+			switch ( $c['name'] ?? '' ) {
+				case 'Langue de la page':                   $pts[] = 'langue de la page non déclarée'; break;
+				case 'Alternatives textuelles des images':  $pts[] = 'images sans alternative textuelle'; break;
+				case 'Étiquettes des champs de formulaire': $pts[] = 'champs de formulaire sans étiquette'; break;
+				case 'Intitulés de liens':                  $pts[] = 'liens sans intitulé explicite'; break;
+				case 'Zoom autorisé':                       $pts[] = 'zoom désactivé'; break;
+				case 'Structure et repères':                $pts[] = 'structure de titres/repères à revoir'; break;
+			}
+		}
+		$pts = array_slice( array_values( array_unique( $pts ) ), 0, 3 );
+		return $pts ? implode( ', ', $pts ) : '';
+	}
+}
+
+/**
  * Extrait les COORDONNÉES PUBLIQUES publiées sur le site lui-même
  * (accueil + /mentions-legales + /contact) : email, téléphone, adresse,
  * nom, réseaux, SIRET. Uniquement de l'info publique éditée par le site.

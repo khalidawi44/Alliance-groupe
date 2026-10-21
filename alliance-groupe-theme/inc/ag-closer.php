@@ -134,6 +134,26 @@ if ( ! function_exists( 'ag_closer_est_pro_web' ) ) {
 		return false;
 	}
 }
+if ( ! function_exists( 'ag_closer_est_marchand' ) ) {
+	/**
+	 * Commerce / marchand (filon #1 EAA) : métier qui vend au public et a
+	 * typiquement un site vitrine ou transactionnel. Sert à choisir l'angle
+	 * accessibilité. Filtrable : ag_closer_metiers_marchand.
+	 */
+	function ag_closer_est_marchand( $p ) {
+		$mots = apply_filters( 'ag_closer_metiers_marchand', array(
+			'commerce', 'boutique', 'magasin', 'e-commerce', 'ecommerce', 'vente', 'prêt-à-porter',
+			'pret-a-porter', 'bijouterie', 'caviste', 'meuble', 'épicerie', 'epicerie', 'concept store',
+			'hôtel', 'hotel', 'camping', 'restaurant', 'immobil', 'agence immobilière',
+			'centre dentaire', 'vétérinaire', 'veterinaire', 'opticien', 'fleuriste', 'chocolat',
+		) );
+		$foin = mb_strtolower( ( $p['type'] ?? '' ) . ' ' . ( $p['name'] ?? '' ) );
+		foreach ( $mots as $m ) {
+			if ( false !== mb_strpos( $foin, mb_strtolower( $m ) ) ) { return true; }
+		}
+		return false;
+	}
+}
 
 /* ── 2. Le lien « ne plus me contacter » ─────────────────────────────── */
 
@@ -336,14 +356,27 @@ if ( ! function_exists( 'ag_closer_redige' ) ) {
 		   - Avec un vrai site → refonte/amelioration selon ce que le robot a vu.
 		   Le constat factuel (ag-enrichir, deja filtre : jamais de faille
 		   exploitable) guide ce que Hugo peut mentionner. */
-		$pro_web = function_exists( 'ag_closer_est_pro_web' ) && ag_closer_est_pro_web( $p );
+		$pro_web  = function_exists( 'ag_closer_est_pro_web' ) && ag_closer_est_pro_web( $p );
+		$marchand = function_exists( 'ag_closer_est_marchand' ) && ag_closer_est_marchand( $p );
+		$a11y_sc  = isset( $p['a11y_score'] ) ? (int) $p['a11y_score'] : -1;
+		$a11y_cst = trim( (string) ( $p['a11y_constat'] ?? '' ) );
 		if ( $pro_web )                { $angle = 'securite'; }
+		// Filon #1 : marchand avec un vrai site peu accessible → angle accessibilité (EAA).
+		elseif ( $marchand && 'real' === $etat && $a11y_sc >= 0 && $a11y_sc < 70 && '' !== $a11y_cst ) { $angle = 'accessibilite'; }
 		elseif ( 'real' !== $etat && ! $site ) { $angle = 'creation'; }
 		elseif ( 'real' !== $etat )    { $angle = 'creation'; }
 		else                           { $angle = 'refonte'; }
 
 		$consigne_angle = '';
-		if ( 'securite' === $angle ) {
+		if ( 'accessibilite' === $angle ) {
+			$consigne_angle = "ANGLE — ACCESSIBILITE (le destinataire est un commerce/marchand avec un vrai site) :\n"
+				. "- Depuis juin 2025, l'accessibilite numerique (RGAA) est une obligation pour les sites marchands. Tu peux\n"
+				. "  l'enoncer comme un FAIT GENERAL, sans affirmer avec certitude que LUI y est soumis, et SANS parler\n"
+				. "  d'amende, de sanction ni de controle. Pas de peur, pas de fausse urgence.\n"
+				. "- Appuie-toi sur les points d'accessibilite REELS releves sur son site (fournis dans le contexte). Reste\n"
+				. "  factuel et bienveillant, ne denigre pas son site.\n"
+				. "- Propose de lui envoyer son rapport d'accessibilite (score + points a corriger). UN SEUL appel a l'action.\n";
+		} elseif ( 'securite' === $angle ) {
 			$consigne_angle = "ANGLE — SECURITE (le destinataire est un professionnel du web ou du numerique) :\n"
 				. "- Ne lui propose PAS de lui creer un site : c'est son metier, ce serait ridicule.\n"
 				. "- Parle-lui d'egal a egal, en confrere technique. Propose un regard de SECURITE sur les sites\n"
@@ -384,6 +417,10 @@ if ( ! function_exists( 'ag_closer_redige' ) ) {
 			/* Constat factuel produit par la chaine de montage (ag-enrichir),
 			   deja filtre par liste blanche : jamais une faille exploitable. */
 			. apply_filters( 'ag_closer_contexte_extra', '', $p )
+			. ( ( 'accessibilite' === $angle && '' !== $a11y_cst )
+				? "Points d'accessibilite releves (factuels, a citer avec tact) : " . $a11y_cst . ".\n"
+					. ( $a11y_sc >= 0 ? 'Score d\'accessibilite indicatif : ' . $a11y_sc . "/100.\n" : '' )
+				: '' )
 			. "\nIntention de CE message : " . $etape['intention'];
 
 		$opts = array( 'max_tokens' => 700, 'temperature' => 0.75, 'timeout' => 45 );
@@ -410,6 +447,18 @@ if ( ! function_exists( 'ag_closer_gabarit' ) ) {
 	function ag_closer_gabarit( $p, $etape ) {
 		$nom   = (string) ( $p['name'] ?? '' );
 		$ville = (string) ( $p['city'] ?? '' );
+
+		// Repli angle ACCESSIBILITE (marchand avec un vrai site peu accessible).
+		$a11y_cst = trim( (string) ( $p['a11y_constat'] ?? '' ) );
+		$marchand = function_exists( 'ag_closer_est_marchand' ) && ag_closer_est_marchand( $p );
+		if ( $marchand && '' !== $a11y_cst ) {
+			$corps = "Bonjour,\n\n"
+				. 'En regardant le site de ' . ( $nom ? $nom : 'votre entreprise' ) . ", j'ai note quelques points d'accessibilite : " . $a11y_cst . ".\n\n"
+				. "Depuis juin 2025, l'accessibilite des sites marchands est une obligation. Je peux vous envoyer votre rapport (score d'accessibilite et points a corriger), sans engagement.\n\n"
+				. "Si cela ne vous interesse pas, le lien en bas de ce message me le fait savoir definitivement.";
+			return array( 'objet' => ( $nom ? 'Accessibilite de votre site — ' . $nom : 'Accessibilite de votre site' ), 'corps' => $corps );
+		}
+
 		$corps = "Bonjour,\n\n"
 			. 'Je suis tombe sur ' . ( $nom ? $nom : 'votre entreprise' ) . ( $ville ? ' a ' . $ville : '' ) . ", et je n'ai pas trouve de site a jour.\n\n"
 			. "Nous construisons des sites pour des artisans et des independants. Si vous voulez voir a quoi ressemblerait le votre, je peux vous en montrer une maquette, sans engagement.\n\n"

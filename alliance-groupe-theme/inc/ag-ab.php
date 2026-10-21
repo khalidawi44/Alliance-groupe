@@ -65,6 +65,12 @@ if ( ! function_exists( 'ag_ab_applique' ) ) {
 		$rien = array( 'sujet' => (string) $sujet_base, 'variante' => '' );
 		if ( ! ag_ab_actif() ) { return $rien; }
 		if ( (int) $etape > 0 ) { return $rien; } // on teste l'OBJET du 1er contact seulement
+		// Angle accessibilité (filon EAA) : garder l'objet sur-mesure rédigé par Hugo,
+		// ne pas le remplacer par un objet générique.
+		if ( function_exists( 'ag_closer_est_marchand' ) && ag_closer_est_marchand( $p )
+			&& isset( $p['a11y_score'] ) && (int) $p['a11y_score'] >= 0 && (int) $p['a11y_score'] < 70 ) {
+			return $rien;
+		}
 		$metier = trim( (string) ( $p['type'] ?? '' ) );
 		$ville  = trim( (string) ( $p['city'] ?? '' ) );
 		if ( '' === $ville ) { return $rien; } // sans ville, l'objet serait bancal → on ne teste pas

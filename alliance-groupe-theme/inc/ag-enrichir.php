@@ -177,6 +177,11 @@ if ( ! function_exists( 'ag_enrich_fiche' ) ) {
 				$p['audit_crit']  = (int) ( $a['critical'] ?? 0 );
 				// Score d'accessibilité (RGAA) : sert au Scoreur pour le filon EAA.
 				if ( isset( $a['a11y']['score'] ) ) { $p['a11y_score'] = (int) $a['a11y']['score']; }
+				// Constat d'accessibilité factuel (pour l'angle EAA d'Hugo).
+				if ( function_exists( 'ag_a11y_constat' ) && isset( $a['a11y'] ) ) {
+					$ac = ag_a11y_constat( $a['a11y'] );
+					if ( '' !== $ac ) { $p['a11y_constat'] = $ac; }
+				}
 				$p['audit_ts']    = time();
 				$bilan['audit_fait'] = true;
 			}
