@@ -51,11 +51,12 @@
 | Push navigateur | `ag_vapid_pub/_priv`, `ag_push_subs` | ⚙️ selon clés VAPID |
 
 ### SMS vers des tiers (passerelle Android)
-- `ag_sms_send()/_bulk()`, modes httpSMS / sms-gate / webhook, inbound `/wp-json/ag/v1/inbound` (POST). Code ✅ **déployé**, mais **EN PAUSE** : attend une **SIM physique** dédiée + petit Android. (Voir HANDOFF rappel 9.)
+- `ag_sms_send()/_bulk()`, modes httpSMS / sms-gate / webhook, inbound `/wp-json/ag/v1/inbound` (POST). Code ✅ **déployé** — route vérifiée **live le 23/10 : POST sans jeton = 401** (plomberie OK, jeton exigé). **EN PAUSE** : attend une **SIM physique** dédiée + petit Android. (HANDOFF rappel 9.)
+- **« Prêt » = `ag_sms_gateway_ready()`** (mode + clé API + numéro émetteur). Vérifier dans **Prospection → 📲 Passerelle SMS**. État 23/10 : route ✅ vivante ; identifiants = très probablement **pas encore** (bloqué sur la SIM).
 
 ### Robot vocal IA
-- `inc/ag-voice-webhook.php` : **code prêt**. Appel sortant `ag_voice_call` + webhook résultat `POST /wp-json/ag/v1/voice?token=<ag_voice_token>` (provider-agnostique Retell/Vapi/Bland/Vocode). Écran admin + test + journal.
-- **« Prêt » = `ag_voice_ready()` = `ag_voice_api_key` ET `ag_voice_from` renseignés.** Mappe le résultat → statut CRM (intéressé/ne plus contacter/refus/sans réponse). État : ⚙️ **brancher la clé provider + le numéro émetteur** (le reste est fait).
+- `inc/ag-voice-webhook.php` : **code prêt**, route vérifiée **live le 23/10 : POST /voice sans jeton = 401** (plomberie OK). Appel sortant `ag_voice_call` + webhook résultat `POST /wp-json/ag/v1/voice?token=<ag_voice_token>` (provider-agnostique Retell/Vapi/Bland/Vocode). Écran admin + test (`ag_voice_test`) + journal.
+- **« Prêt » = `ag_voice_ready()` = `ag_voice_api_key` ET `ag_voice_from` renseignés.** Vérifier dans l'**écran Voice** (Prospection → Voice) : s'il indique « prêt » et que le bouton **Test** passe, c'est actif. État 23/10 : route ✅ vivante ; identifiants = **à confirmer dans l'écran** (non lisible à distance).
 
 ### Paiement & licences
 - **PayPal auto** (webhooks) : `ag_paypal_*`, émet `ag_paypal_payment_verified`. Écran 💳 PayPal auto.
