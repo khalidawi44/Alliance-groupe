@@ -9,6 +9,27 @@ reportées et les idées à reprendre plus tard.
 
 ---
 
+## 🧭 Feuille de route (23/10/2026) — Améliorer / Ajouter / Continuer
+
+**Constat :** toute la machine est SORTANTE (démarchage email). Un seul canal, plafonné par la délivrabilité et l'opt-out, qui ne touche que les sites ayant un email. Le plus gros levier manquant = l'ENTRANT (des clients qui viennent). Priorité par impact :
+
+### 🥇 Continuer / finir — l'entrant
+1. **Fiche Google Business (levier n°1).** Code FAIT (schema LocalBusiness + NAP + vraies étoiles si avis réel). **Fabrice :** créer/vérifier la fiche (catégorie « Concepteur de sites web », zone Nantes + 30 km, photos), avis réels, puis remplir WP → 📍 SEO local / Google (NAP + lien GBP + **Place ID**). **Claude dès le Place ID :** brancher les vraies étoiles + relance auto de demande d'avis (module Avis).
+2. **Google Ads + extensions (look Drakkar).** Fabrice = budget/compte. Claude = landing pages dédiées + suivi conversion (GA4 en place).
+3. **SEO longue traîne.** Orienter le blog auto vers des articles ciblés (accessibilité e-commerce, refonte avocat Nantes).
+
+### 🥈 Améliorer l'existant (code)
+4. **FAIT (23/10) — Offre « Mise en conformité accessibilité » + routage depuis le rapport** (transforme le score d'accessibilité en vente). Prix réglable `ag_access_prix` (défaut « Sur devis »), lien de paiement `ag_access_url` (sinon /contact). Page `templates/page-conformite-accessibilite.php`. **Design/copy à habiller = lane Cowork (voir COWORK.md).**
+5. **Délivrabilité :** finir l'expéditeur dédié `bonjour@` (Fabrice le crée) + chauffe/mesure opt-out par segment.
+6. **Audit accessibilité multi-pages** (tester aussi page produit/panier, là où l'EAA mord le plus).
+7. **Tableau de bord « signaux du filon »** (réponse %, demandes de rapport %, par segment → go/pivot).
+
+### 🥉 Ajouter — nouveaux canaux
+8. **Robot vocal IA** (fixes 02/04) — cf. rappels 5/10. Fabrice = outil + ligne VoIP ; Claude = webhook CRM.
+9. **Passerelle SMS** : code fait, bloqué sur SIM physique (rappel 9).
+
+---
+
 ## ⚠️ Priorité haute — La SYNC GitHub ne purge aucun cache de page
 
 **Statut** : ⏸️ À faire. Remonté le 09/09/2026 par la session du site client

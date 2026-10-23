@@ -1052,11 +1052,27 @@ if ( ! function_exists( 'ag_audit_render_report' ) ) {
 					</div>
 				<?php endif; ?>
 
+				<?php
+				/* Routage vers la VENTE : si l'accessibilité est faible, on propose
+				   directement l'offre de mise en conformité (le filon), sinon les
+				   packs habituels. L'offre vit dans ag_accessibilite_offre(). */
+				$a11y_low = ( isset( $a['a11y']['score'] ) && (int) $a['a11y']['score'] < 70 );
+				if ( $a11y_low && function_exists( 'ag_accessibilite_offre' ) ) :
+					$off = ag_accessibilite_offre();
+				?>
+				<div style="margin-top:50px;padding:30px;background:linear-gradient(135deg,rgba(212,180,92,.10) 0%,rgba(20,20,22,.6) 100%);border:2px solid rgba(212,180,92,.4);border-radius:16px;text-align:center">
+					<h3 style="font-family:Georgia,serif;font-size:1.6rem;margin:0 0 10px;color:#fff">On met votre site en conformité ?</h3>
+					<p style="color:rgba(255,255,255,.8);margin:0 0 6px"><?php echo esc_html( $off['desc'] ); ?></p>
+					<p style="color:#D4B45C;font-weight:800;margin:0 0 22px"><?php echo esc_html( $off['nom'] . ' · ' . $off['prix'] . ' · ' . $off['delai'] ); ?></p>
+					<a href="<?php echo esc_url( $off['url'] ); ?>" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#0a0a0f;font-weight:800;border-radius:999px;text-decoration:none;letter-spacing:1px;text-transform:uppercase;font-size:.9rem"><?php echo $off['payable'] ? 'Mettre mon site en conformité →' : 'Demander un devis de mise en conformité →'; ?></a>
+				</div>
+				<?php else : ?>
 				<div style="margin-top:50px;padding:30px;background:linear-gradient(135deg,rgba(212,180,92,.10) 0%,rgba(20,20,22,.6) 100%);border:2px solid rgba(212,180,92,.4);border-radius:16px;text-align:center">
 					<h3 style="font-family:Georgia,serif;font-size:1.6rem;margin:0 0 10px;color:#fff">Envie qu'on s'en occupe ?</h3>
 					<p style="color:rgba(255,255,255,.8);margin:0 0 22px">On corrige tous ces points, on optimise votre site et on vous remet un PDF de suivi sous 7 jours.</p>
 					<a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>" style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#0a0a0f;font-weight:800;border-radius:999px;text-decoration:none;letter-spacing:1px;text-transform:uppercase;font-size:.9rem">Voir nos packs →</a>
 				</div>
+				<?php endif; ?>
 			</div>
 		</section>
 		<style>@media print { body { background:#fff!important;color:#000!important } section { background:#fff!important;color:#000!important } a, button { display:none!important } h1,h2,h3,strong { color:#000!important } div, p { color:#222!important } }</style>

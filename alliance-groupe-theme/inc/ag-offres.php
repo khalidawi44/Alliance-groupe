@@ -63,6 +63,39 @@ if ( ! function_exists( 'ag_sites_express_packs' ) ) {
 	}
 }
 
+if ( ! function_exists( 'ag_accessibilite_offre' ) ) {
+	/**
+	 * Offre « Mise en conformité accessibilité » (filon EAA).
+	 * Transforme le score d'accessibilité (lead magnet) en prestation vendable.
+	 *
+	 * RÈGLE : on n'invente pas de prix. Par défaut « Sur devis » tant que
+	 * Fabrice n'a pas fixé `ag_access_prix`. Le lien de paiement vit dans
+	 * l'option `ag_access_url` (comme les autres offres) ; vide → /contact
+	 * (capture du lead, jamais une page de paiement morte).
+	 *
+	 * @return array
+	 */
+	function ag_accessibilite_offre() {
+		$paiement = trim( (string) get_option( 'ag_access_url', '' ) );
+		$prix     = trim( (string) get_option( 'ag_access_prix', '' ) );
+		return array(
+			'nom'     => 'Mise en conformité accessibilité',
+			'prix'    => '' !== $prix ? $prix : 'Sur devis',
+			'delai'   => 'Corrigé sous 7 jours',
+			'desc'    => 'On corrige les points d\'accessibilité relevés sur votre site et on vous remet un rapport de conformité avant / après.',
+			'url'     => $paiement ? $paiement : home_url( '/contact' ),
+			'payable' => (bool) $paiement,
+			'feats'   => array(
+				'Correction des points bloquants (langue, alternatives d\'images, étiquettes de champs, intitulés de liens, zoom, structure)',
+				'Contrôle sur vos pages clés (accueil et, pour une boutique, page produit et panier)',
+				'Rapport de conformité avant / après (RGAA)',
+				'Déductible d\'une refonte complète si vous l\'engagez ensuite',
+				'Un interlocuteur joignable au téléphone, à Nantes',
+			),
+		);
+	}
+}
+
 if ( ! function_exists( 'ag_refais_boost_offre' ) ) {
 	/**
 	 * La micro-offre qui suit une maquette IA : « cette maquette, en ligne ».
