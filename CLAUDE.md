@@ -6,6 +6,7 @@ But de ce fichier : **mémoire de l'infrastructure** mise en place, pour la **r�
 
 > 📚 Détail complet (raccourcis, création vidéo, agents, meilleur système par type de site, config, limites) : **`INFRASTRUCTURE.md`**.
 > 🧭 **Carte des capacités du thème** (ce que je sais faire et relier : helpers emails/notifs, chaîne commerciale autonome, hooks/REST/AJAX/crons, écrans admin, options) : **`docs/CARTE-CAPACITES.md`** — à relire au lieu de réausciter tout le site. La tenir à jour à chaque nouvelle brique.
+> 🔌 **État des outils & connexions** (ce qui est DÉJÀ branché et actif : Google/avis/fiche, GA4, Meta Pixel, AdSense, flux Merchant/Meta, SMTP, Telegram/SMS, robot vocal, paiement, pilote…) avec « comment vérifier » + méthode de sonde en ligne : **`docs/ETAT-OUTILS.md`** — **à relire AVANT de dire « il faudrait brancher X »** (Fabrice a déjà configuré beaucoup : clé Google, avis, fiche, pixels…). Re-sonder et tenir à jour.
 
 ## Continuité entre conversations (IMPORTANT)
 - Sur Claude Code web, **chaque conversation démarre dans un conteneur neuf** : seul ce qui est **commité + poussé** survit.
