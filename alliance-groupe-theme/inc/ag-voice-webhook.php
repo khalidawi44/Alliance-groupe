@@ -342,11 +342,116 @@ add_action( 'wp_ajax_ag_prospect_voice_bulk', function () {
 	wp_send_json_success( array( 'ok' => $ok, 'ko' => $ko ) );
 } );
 
+/* ============================================================================
+ * APPEL AUTOMATIQUE (autonome) — Emma appelle toute seule, dans les clous.
+ * Garde-fous DÉONTOLOGIE (Me Aubert), tenus par le code, pas la bonne volonté :
+ *  - Avocats : JAMAIS d'appel à froid (RIN) → exclusion dure.
+ *  - Horaires légaux FR : L-V 10h-13h et 14h-20h (Europe/Paris). Rien hors créneau.
+ *  - Opt-out respecté (vérifié aussi dans ag_voice_call). Transparence IA = accroche.
+ *  - Cadence basse : 1 seul appel auto par prospect, plafond/jour, cooldown 7 j.
+ *  - Interrupteur `ag_voice_auto_on` OFF PAR DÉFAUT (démarchage téléphonique =
+ *    sensible : Fabrice l'active en connaissance de cause, pas l'auto-config).
+ * ========================================================================== */
+if ( ! function_exists( 'ag_voice_auto_on' ) ) {
+	function ag_voice_auto_on() { return (bool) get_option( 'ag_voice_auto_on', 0 ); }
+}
+if ( ! function_exists( 'ag_voice_cap' ) ) {
+	function ag_voice_cap() { return max( 0, (int) get_option( 'ag_voice_cap_jour', 20 ) ); }
+}
+if ( ! function_exists( 'ag_voice_horaire_ok' ) ) {
+	/** Fenêtre légale de démarchage téléphonique (France) : L-V 10-13h et 14-20h. */
+	function ag_voice_horaire_ok() {
+		$ts  = function_exists( 'current_time' ) ? current_time( 'timestamp' ) : time();
+		$dow = (int) wp_date( 'N', $ts ); // 1=lundi … 7=dimanche
+		if ( $dow >= 6 ) { return false; } // samedi/dimanche
+		$h = (int) wp_date( 'G', $ts );
+		return ( $h >= 10 && $h < 13 ) || ( $h >= 14 && $h < 20 );
+	}
+}
+if ( ! function_exists( 'ag_voice_eligible' ) ) {
+	function ag_voice_eligible( $p ) {
+		$to = (string) ( $p['phone_intl'] ?? ( $p['phone'] ?? '' ) );
+		if ( '' === trim( $to ) ) { return false; }
+		$st = (string) ( $p['status'] ?? '' );
+		if ( function_exists( 'ag_prospect_blocked' ) && ag_prospect_blocked( $st ) ) { return false; }
+		if ( in_array( $st, array( 'client', 'refus', 'ne_pas_contacter', 'ignore', 'interesse' ), true ) ) { return false; }
+		// Avocats : email/courrier uniquement (RIN) — jamais d'appel à froid.
+		if ( function_exists( 'ag_closer_est_avocat' ) && ag_closer_est_avocat( $p ) ) { return false; }
+		$e164 = function_exists( 'ag_sms_to_e164' ) ? ag_sms_to_e164( $to ) : $to;
+		if ( function_exists( 'ag_sms_is_optout' ) && ag_sms_is_optout( $e164 ) ) { return false; }
+		// Un seul appel auto par prospect + cooldown 7 j.
+		if ( (int) ( $p['voice_step'] ?? 0 ) >= 1 ) { return false; }
+		$last = (int) ( $p['voice_last'] ?? 0 );
+		if ( $last && ( time() - $last ) < 7 * DAY_IN_SECONDS ) { return false; }
+		return true;
+	}
+}
+if ( ! function_exists( 'ag_voice_compte_jour' ) ) {
+	function ag_voice_compte_jour() {
+		$j = (array) get_option( 'ag_voice_jour', array() );
+		return (int) ( $j[ wp_date( 'Ymd' ) ] ?? 0 );
+	}
+}
+if ( ! function_exists( 'ag_voice_tour' ) ) {
+	/** Un passage d'appels automatiques (borné). Renvoie le nb d'appels lancés. */
+	function ag_voice_tour( $max = 5 ) {
+		if ( ! ag_voice_auto_on() || ! function_exists( 'ag_voice_call' ) || ! ag_voice_ready() ) { return 0; }
+		if ( ! ag_voice_horaire_ok() ) { return 0; }            // hors heures légales
+		$cap  = ag_voice_cap();
+		$deja = ag_voice_compte_jour();
+		if ( $cap > 0 && $deja >= $cap ) { return 0; }
+		$reste = ( $cap > 0 ) ? min( (int) $max, $cap - $deja ) : (int) $max;
+		if ( $reste <= 0 ) { return 0; }
+
+		$list    = (array) get_option( 'ag_prospects', array() );
+		$ordered = function_exists( 'ag_scoreur_trier' ) ? (array) ag_scoreur_trier( $list ) : array_values( $list );
+		$fait = 0;
+		foreach ( $ordered as $p ) {
+			if ( $fait >= $reste ) { break; }
+			if ( ! ag_voice_eligible( $p ) ) { continue; }
+			$to       = (string) ( $p['phone_intl'] ?? ( $p['phone'] ?? '' ) );
+			$has_site = function_exists( 'ag_site_kind' ) && 'real' === ( ag_site_kind( $p['website'] ?? '' )[0] ?? '' );
+			$vars = array(
+				'entreprise' => $p['name'] ?? '',
+				'ville'      => $p['city'] ?? '',
+				'angle'      => $has_site ? 'securite' : 'creation',
+			);
+			if ( ag_voice_call( $to, $vars ) ) {
+				$id = (string) ( $p['id'] ?? '' );
+				if ( '' !== $id ) {
+					foreach ( $list as $k => $pp ) {
+						if ( (string) ( $pp['id'] ?? '' ) === $id ) {
+							$list[ $k ]['voice_last'] = time();
+							$list[ $k ]['voice_step'] = (int) ( $pp['voice_step'] ?? 0 ) + 1;
+							break;
+						}
+					}
+				}
+				$fait++;
+				usleep( 300000 ); // 0,3 s entre deux lancements
+			}
+		}
+		if ( $fait ) {
+			update_option( 'ag_prospects', $list, false );
+			$j = (array) get_option( 'ag_voice_jour', array() );
+			$j = array( wp_date( 'Ymd' ) => $deja + $fait ); // on ne garde que le jour courant
+			update_option( 'ag_voice_jour', $j, false );
+			if ( function_exists( 'ag_activity_log' ) ) { ag_activity_log( '🤖 Robot vocal (auto) : ' . $fait . ' appel(s) lancé(s).' ); }
+		}
+		return $fait;
+	}
+}
+
 /* ----------------------------------------------------- Réglages POST */
 add_action( 'admin_init', function () {
 	if ( isset( $_POST['ag_voice_save'] ) && check_admin_referer( 'ag_voice' ) ) {
 		if ( isset( $_POST['ag_voice_api_key'] ) ) update_option( 'ag_voice_api_key', sanitize_text_field( wp_unslash( $_POST['ag_voice_api_key'] ) ) );
 		if ( isset( $_POST['ag_voice_from'] ) )    update_option( 'ag_voice_from', sanitize_text_field( wp_unslash( $_POST['ag_voice_from'] ) ) );
+			// Appel automatique (autonome) + plafond/jour.
+			if ( isset( $_POST['ag_voice_cfg'] ) ) {
+				update_option( 'ag_voice_auto_on', isset( $_POST['ag_voice_auto_on'] ) ? 1 : 0 );
+				update_option( 'ag_voice_cap_jour', max( 0, (int) ( $_POST['ag_voice_cap_jour'] ?? 20 ) ) );
+			}
 		if ( isset( $_POST['ag_calendar_email'] ) ) { $ce = sanitize_email( wp_unslash( $_POST['ag_calendar_email'] ) ); if ( '' === $ce || is_email( $ce ) ) update_option( 'ag_calendar_email', $ce ); }
 			if ( isset( $_POST['ag_calendar_webhook'] ) ) { $wh = esc_url_raw( trim( wp_unslash( $_POST['ag_calendar_webhook'] ) ) ); update_option( 'ag_calendar_webhook', $wh ); }
 			if ( '' === get_option( 'ag_calendar_secret', '' ) ) update_option( 'ag_calendar_secret', wp_generate_password( 20, false ) );
@@ -460,6 +565,24 @@ if ( ! function_exists( 'ag_voice_render' ) ) {
 		echo '<button name="ag_voice_test" value="1" class="button"' . ( ag_voice_ready() ? '' : ' disabled title="Configure d\'abord la clé API + le numéro"' ) . '>Lancer l\'appel de test</button>';
 		echo '<span class="description">Format international : <code>+33…</code> (remplace le 0 par +33).</span></form>';
 		echo '</div>';
+
+		// ── Appel AUTOMATIQUE (autonome) ──
+		$auto = (bool) get_option( 'ag_voice_auto_on', 0 );
+		$capj = (int) get_option( 'ag_voice_cap_jour', 20 );
+		echo '<div style="max-width:900px;padding:16px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid ' . ( $auto ? '#16a34a' : '#b91c1c' ) . ';border-radius:8px;margin:12px 0;">';
+		echo '<h2 style="margin-top:0;">2. Appel automatique (Emma appelle toute seule)</h2>';
+		echo '<p style="color:#50575e;max-width:760px;">Quand c\'est activé, le pilote lance des appels <strong>tout seul</strong> vers les prospects joignables, aux <strong>heures légales de démarchage</strong> (lundi-vendredi, 10h-13h et 14h-20h). Un seul appel automatique par prospect, plafond par jour, opt-out respecté. <strong>Les avocats ne sont jamais appelés</strong> (déontologie).</p>';
+		echo '<div style="background:#fff8e1;border:1px solid #f0d58a;border-radius:8px;padding:10px 14px;margin:0 0 12px;color:#7a5b00;font-size:.92rem;">⚖️ <strong>À respecter de ton côté :</strong> le numéro émetteur doit être une <strong>ligne dédiée au démarchage</strong> (pas ton perso). Emma annonce dès le début qu\'elle est « un assistant automatique » (transparence IA). Bloctel vise le B2C : on appelle des professionnels, cadence basse.</p></div>';
+		echo '<form method="post"><table class="form-table"><tbody>';
+		echo wp_nonce_field( 'ag_voice', '_wpnonce', true, false );
+		echo '<input type="hidden" name="ag_voice_cfg" value="1">';
+		echo '<tr><th>Appel automatique</th><td><label><input type="checkbox" name="ag_voice_auto_on" value="1" ' . checked( $auto, true, false ) . '> Activer (Emma appelle toute seule, dans les heures légales)</label>';
+		if ( ! ag_voice_ready() ) { echo '<p class="description" style="color:#b91c1c">⚠️ Configure d\'abord la clé API Retell + le numéro émetteur (section 1 bis).</p>'; }
+		echo '</td></tr>';
+		echo '<tr><th>Plafond d\'appels / jour</th><td><input type="number" name="ag_voice_cap_jour" value="' . esc_attr( (string) $capj ) . '" min="0" style="width:90px"> <span class="description">0 = sans limite (déconseillé). Démarre bas (10-20) le temps de roder.</span></td></tr>';
+		echo '</tbody></table><button name="ag_voice_save" value="1" class="button button-primary">Enregistrer</button>';
+		echo ' <span style="margin-left:10px;">État : ' . ( $auto ? '🟢 appel automatique ACTIF' : '⚪ inactif' ) . ' · aujourd\'hui : ' . (int) ag_voice_compte_jour() . ' / ' . ( $capj > 0 ? $capj : '∞' ) . ' · ' . ( ag_voice_horaire_ok() ? '🟢 dans les heures' : '🌙 hors heures' ) . '</span>';
+		echo '</form></div>';
 
 		// ── Liste opt-out (STOP / ne plus contacter) : voir + retirer ──
 		$optout = (array) get_option( 'ag_sms_optout', array() );

@@ -125,6 +125,12 @@ if ( ! function_exists( 'ag_auto_tick' ) ) {
 			if ( $go() && function_exists( 'ag_gardien_cron_maybe' ) && ag_gardien_cron_maybe() ) { $ran[] = 'ag_gardien'; }
 			// Le Community Manager : diagnostic de croissance + relance de la chasse à sec.
 			if ( $go() && function_exists( 'ag_cm_cron_maybe' ) && ag_cm_cron_maybe() ) { $ran[] = 'ag_cm'; }
+			// Robot vocal (Emma) : appels automatiques, SEULEMENT si activé + heures
+			// légales (le tour s'auto-censure). OFF par défaut (démarchage sensible).
+			if ( $go() && function_exists( 'ag_voice_tour' ) && function_exists( 'ag_voice_auto_on' ) && ag_voice_auto_on() ) {
+				$nv = ag_voice_tour( (int) apply_filters( 'ag_voice_per_run', 5 ) );
+				if ( $nv ) { $ran[] = 'ag_voice(' . $nv . ')'; }
+			}
 			// Enrichissement EN DERNIER (le vrai goulot : il trouve les emails sans
 			// lesquels Hugo n'a personne à qui écrire). On lui donne le TEMPS QUI
 			// RESTE dans le tour (borné) au lieu d'un lot fixe de 3 : il vide le
