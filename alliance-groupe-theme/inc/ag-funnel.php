@@ -268,3 +268,129 @@ if ( ! function_exists( 'ag_funnel_render' ) ) {
 		echo '</div>';
 	}
 }
+
+/* ── Écran : Prospection → 🎯 Signaux du filon (go / pivot) ───────────── */
+add_action( 'admin_menu', function () {
+	add_submenu_page( 'ag-prospects', 'Signaux du filon', '🎯 Signaux du filon', 'manage_options', 'ag-signaux', 'ag_signaux_render' );
+}, 11 );
+
+if ( ! function_exists( 'ag_signaux_render' ) ) {
+	/**
+	 * Tableau de bord des signaux du filon (seuils de docs/FILON.md) + verdict
+	 * go / observation / pivot, pour décider d'un coup d'œil. Lecture seule.
+	 */
+	function ag_signaux_render() {
+		if ( ! current_user_can( 'manage_options' ) ) { return; }
+		$jours = isset( $_GET['j'] ) ? max( 1, (int) $_GET['j'] ) : 30;
+		$since = time() - $jours * DAY_IN_SECONDS;
+
+		$events = (array) get_option( 'ag_funnel_events', array() );
+		$sent = 0; $interested = 0; $signed = 0; $optout = 0; $ca = 0.0;
+		$seg = array();
+		foreach ( $events as $e ) {
+			if ( (int) ( $e['t'] ?? 0 ) < $since ) { continue; }
+			$t = (string) ( $e['type'] ?? '' );
+			$m = ( '' !== (string) ( $e['metier'] ?? '' ) ) ? (string) $e['metier'] : '(inconnu)';
+			if ( 'sent' === $t )            { $sent++; }
+			elseif ( 'interested' === $t )  { $interested++; }
+			elseif ( 'signed' === $t )      { $signed++; $ca += (float) ( $e['montant'] ?? 0 ); }
+			elseif ( 'optout' === $t )      { $optout++; }
+			if ( in_array( $t, array( 'sent', 'interested', 'signed' ), true ) ) {
+				if ( ! isset( $seg[ $m ] ) ) { $seg[ $m ] = array( 'sent' => 0, 'interested' => 0, 'signed' => 0 ); }
+				$seg[ $m ][ $t ]++;
+			}
+		}
+
+		// Demandes de rapport (lead magnet accessibilité/SEO) = prospects source audit-seo (cumulé).
+		$reqs = 0;
+		foreach ( (array) get_option( 'ag_prospects', array() ) as $p ) {
+			if ( 'audit-seo' === (string) ( $p['source'] ?? '' ) ) { $reqs++; }
+		}
+
+		$rate   = function ( $n, $d ) { return $d > 0 ? round( 100 * $n / $d, 1 ) : 0.0; };
+		$tx_int = $rate( $interested, $sent );
+		$tx_opt = $rate( $optout, $sent );
+		$tx_sig = $rate( $signed, $sent );
+
+		// Couleur d'un taux selon des seuils (haut = mieux, sauf opt-out inversé).
+		$col_up   = function ( $v, $ok, $warn ) { return $v >= $ok ? '#28a745' : ( $v >= $warn ? '#F37A1F' : '#E10F1A' ); };
+		$col_down = function ( $v, $ok, $warn ) { return $v <= $ok ? '#28a745' : ( $v <= $warn ? '#F37A1F' : '#E10F1A' ); };
+
+		// Verdict go / observation / pivot (seuils docs/FILON.md).
+		if ( $sent < 50 ) {
+			$vcol = '#6c757d'; $verdict = 'Pas assez de données';
+			$vwhy = 'Vise ~150 à 200 envois pour une première signature. Laisse la machine tourner.';
+		} elseif ( $tx_int >= 5 ) {
+			$vcol = '#28a745'; $verdict = '🟢 GO — le filon convertit';
+			$vwhy = 'Taux envoyé→intéressé ≥ 5 %. On pousse le volume sur ce filon.';
+		} elseif ( $sent >= 300 && $tx_int < 3 ) {
+			$vcol = '#E10F1A'; $verdict = '🔴 PIVOT';
+			$vwhy = '300+ envois et moins de 3 % d\'intéressés : basculer l\'effort sur l\'immobilier (angle refonte).';
+		} else {
+			$vcol = '#F37A1F'; $verdict = '🟠 En observation';
+			$vwhy = 'Entre les seuils : continuer, et laisser Max (objets A/B) + le Scoreur affiner le ciblage.';
+		}
+
+		$card = function ( $label, $value, $sub = '', $color = '#1d2327' ) {
+			echo '<div style="flex:1 1 150px;min-width:150px;background:#fff;border:1px solid #dcdcde;border-left:4px solid ' . esc_attr( $color ) . ';border-radius:8px;padding:14px 16px">';
+			echo '<div style="font-size:12px;color:#646970;text-transform:uppercase;letter-spacing:.5px">' . esc_html( $label ) . '</div>';
+			echo '<div style="font-size:26px;font-weight:700;color:' . esc_attr( $color ) . ';line-height:1.2">' . esc_html( $value ) . '</div>';
+			if ( '' !== $sub ) { echo '<div style="font-size:12px;color:#646970">' . esc_html( $sub ) . '</div>'; }
+			echo '</div>';
+		};
+		?>
+		<div class="wrap">
+			<h1>🎯 Signaux du filon</h1>
+			<p>
+				Fenêtre :
+				<?php foreach ( array( 7 => '7 j', 30 => '30 j', 90 => '90 j' ) as $jv => $jl ) :
+					$u = admin_url( 'admin.php?page=ag-signaux&j=' . $jv ); ?>
+					<a href="<?php echo esc_url( $u ); ?>" style="margin-right:8px;<?php echo $jours === $jv ? 'font-weight:700;text-decoration:none' : ''; ?>"><?php echo esc_html( $jl ); ?></a>
+				<?php endforeach; ?>
+			</p>
+
+			<div style="margin:14px 0 20px;padding:16px 20px;border-radius:10px;background:<?php echo esc_attr( $vcol ); ?>12;border:1px solid <?php echo esc_attr( $vcol ); ?>;">
+				<div style="font-size:20px;font-weight:800;color:<?php echo esc_attr( $vcol ); ?>"><?php echo esc_html( $verdict ); ?></div>
+				<div style="color:#1d2327;margin-top:4px"><?php echo esc_html( $vwhy ); ?></div>
+			</div>
+
+			<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+				<?php
+				$card( 'Envoyés (' . $jours . ' j)', (string) $sent );
+				$card( 'Intéressés', $interested . ' · ' . $tx_int . ' %', 'cible ≥ 5 %', $col_up( $tx_int, 5, 3 ) );
+				$card( 'Désinscriptions', $optout . ' · ' . $tx_opt . ' %', 'cible ≤ 2 %', $col_down( $tx_opt, 2, 4 ) );
+				$card( 'Demandes de rapport', (string) $reqs, 'cumulé (lead magnet)', '#2271b1' );
+				$card( 'Signés', $signed . ' · ' . number_format_i18n( $ca, 0 ) . ' €', $tx_sig . ' % des envois', $signed > 0 ? '#28a745' : '#646970' );
+				?>
+			</div>
+
+			<h2 style="margin-top:22px">Par métier</h2>
+			<?php
+			uasort( $seg, function ( $a, $b ) {
+				return array( $b['signed'], $b['interested'], $b['sent'] ) <=> array( $a['signed'], $a['interested'], $a['sent'] );
+			} );
+			if ( empty( $seg ) ) {
+				echo '<p>Pas encore de données segmentées sur la fenêtre. Laisse tourner.</p>';
+			} else {
+				echo '<table class="widefat striped" style="max-width:760px"><thead><tr><th>Métier</th><th>Envoyés</th><th>Intéressés</th><th>Signés</th><th>Envoyé→Intéressé</th><th></th></tr></thead><tbody>';
+				foreach ( $seg as $m => $s ) {
+					$tx  = $s['sent'] > 0 ? round( 100 * $s['interested'] / $s['sent'], 1 ) : 0;
+					$bdg = '';
+					if ( $s['sent'] >= 8 && 0 === $s['interested'] ) { $bdg = '<span style="color:#E10F1A">⚠️ fuite</span>'; }
+					elseif ( $s['signed'] > 0 || ( $s['sent'] >= 8 && $tx >= 5 ) ) { $bdg = '<span style="color:#28a745">🏆 pépite</span>'; }
+					echo '<tr><td>' . esc_html( $m ) . '</td><td>' . (int) $s['sent'] . '</td><td>' . (int) $s['interested'] . '</td><td>' . (int) $s['signed'] . '</td><td>' . esc_html( (string) $tx ) . ' %</td><td>' . wp_kses_post( $bdg ) . '</td></tr>';
+				}
+				echo '</tbody></table>';
+			}
+			?>
+
+			<p class="description" style="margin-top:16px;max-width:760px">
+				Seuils (voir <code>docs/FILON.md</code>) : <strong>intéressés ≥ 5 %</strong> = on pousse ;
+				<strong>désinscriptions ≤ 2 %</strong> = délivrabilité saine (le Gardien freine au-delà de 4 %) ;
+				demandes de rapport = intérêt réel pour le lead magnet. Première signature visée sous ~150-200 envois.
+				Si 300-400 envois et intéressés &lt; 3 % → pivot vers l'immobilier (angle refonte).
+			</p>
+		</div>
+		<?php
+	}
+}

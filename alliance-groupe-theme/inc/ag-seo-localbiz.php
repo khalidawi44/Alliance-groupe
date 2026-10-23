@@ -32,8 +32,11 @@ if ( ! function_exists( 'ag_nap_opt' ) ) {
 			'email'   => 'contact@alliancegroupe-inc.com',
 			'price'   => '€€',
 			'hours'   => 'Mo-Fr 09:00-19:00',   // format schema.org openingHours
-			'gbp'     => '',                    // URL de la fiche Google Business
-			'maps'    => '',                    // URL Google Maps (place)
+			'gbp'     => '',                    // URL de la fiche Google Business (lien de gestion/partage, à compléter)
+			// Lien EXACT de la fiche Google Maps par CID (identifiant fourni par Fabrice le 23/10).
+			// Sert au bouton « Ouvrir ma fiche », au lien d'avis et au sameAs du schema (désambiguïse
+			// l'entité, ex. vs « Alliance l'assurance »). Surchargable par l'option ag_nap_maps.
+			'maps'    => 'https://www.google.com/maps?cid=8772449461750899688',
 		);
 		$v = get_option( 'ag_nap_' . $key, '' );
 		return ( '' === $v || false === $v ) ? ( $def[ $key ] ?? '' ) : $v;

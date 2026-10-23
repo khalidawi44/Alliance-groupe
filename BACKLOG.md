@@ -14,7 +14,7 @@ reportées et les idées à reprendre plus tard.
 **Constat :** toute la machine est SORTANTE (démarchage email). Un seul canal, plafonné par la délivrabilité et l'opt-out, qui ne touche que les sites ayant un email. Le plus gros levier manquant = l'ENTRANT (des clients qui viennent). Priorité par impact :
 
 ### 🥇 Continuer / finir — l'entrant
-1. **Fiche Google Business (levier n°1).** Code FAIT (schema LocalBusiness + NAP + vraies étoiles si avis réel). **Fabrice :** créer/vérifier la fiche (catégorie « Concepteur de sites web », zone Nantes + 30 km, photos), avis réels, puis remplir WP → 📍 SEO local / Google (NAP + lien GBP + **Place ID**). **Claude dès le Place ID :** brancher les vraies étoiles + relance auto de demande d'avis (module Avis).
+1. **Fiche Google Business (levier n°1).** Code FAIT (schema LocalBusiness + NAP + vraies étoiles si avis réel). **CID de la fiche câblé le 23/10** (`8772449461750899688` → lien exact `?cid=` utilisé pour le bouton fiche, le lien d'avis et le `sameAs` du schema ; désambiguïse l'entité). Place ID réel déjà par défaut. **Reste Fabrice :** vérifier/optimiser la fiche (catégorie « Concepteur de sites web », zone Nantes + 30 km, photos), obtenir des **avis réels**, et confirmer que la clé Places (`ag_places_key`) est en place pour afficher les vraies étoiles. **Claude :** relance auto de demande d'avis (module Avis) — à faire.
 2. **Google Ads + extensions (look Drakkar).** Fabrice = budget/compte. Claude = landing pages dédiées + suivi conversion (GA4 en place).
 3. **SEO longue traîne.** Orienter le blog auto vers des articles ciblés (accessibilité e-commerce, refonte avocat Nantes).
 
@@ -22,7 +22,7 @@ reportées et les idées à reprendre plus tard.
 4. **FAIT (23/10) — Offre « Mise en conformité accessibilité » + routage depuis le rapport** (transforme le score d'accessibilité en vente). Prix réglable `ag_access_prix` (défaut « Sur devis »), lien de paiement `ag_access_url` (sinon /contact). Page `templates/page-conformite-accessibilite.php`. **Design/copy à habiller = lane Cowork (voir COWORK.md).**
 5. **Délivrabilité :** finir l'expéditeur dédié `bonjour@` (Fabrice le crée) + chauffe/mesure opt-out par segment.
 6. **Audit accessibilité multi-pages** (tester aussi page produit/panier, là où l'EAA mord le plus).
-7. **Tableau de bord « signaux du filon »** (réponse %, demandes de rapport %, par segment → go/pivot).
+7. **FAIT (23/10) — Tableau de bord « 🎯 Signaux du filon »** (Prospection → 🎯 Signaux du filon) : cartes (envoyés, intéressés %, désinscriptions %, demandes de rapport, signés + CA) + **verdict go / observation / pivot** contre les seuils de `docs/FILON.md` + détail par métier (pépites/fuites). Fenêtres 7/30/90 j.
 
 ### 🥉 Ajouter — nouveaux canaux
 8. **Robot vocal IA** (fixes 02/04) — cf. rappels 5/10. Fabrice = outil + ligne VoIP ; Claude = webhook CRM.
