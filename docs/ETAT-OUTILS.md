@@ -52,7 +52,7 @@
 
 ### SMS vers des tiers (passerelle Android)
 - `ag_sms_send()/_bulk()`, modes httpSMS / sms-gate / webhook, inbound `/wp-json/ag/v1/inbound` (POST). Code ✅ **déployé** — route vérifiée **live le 23/10 : POST sans jeton = 401** (plomberie OK, jeton exigé). **EN PAUSE** : attend une **SIM physique** dédiée + petit Android. (HANDOFF rappel 9.)
-- **« Prêt » = `ag_sms_gateway_ready()`** (mode + clé API + numéro émetteur). Vérifier dans **Prospection → 📲 Passerelle SMS**. État 23/10 : route ✅ vivante ; identifiants = très probablement **pas encore** (bloqué sur la SIM).
+- **« Prêt » = `ag_sms_gateway_ready()`** (mode + clé API + numéro émetteur). Vérifier dans **Prospection → 📲 Passerelle SMS**. **État 23/10 : CONFIGURÉE et reliée** — un test réel a traversé toute la chaîne WordPress → httpSMS → téléphone. **Seul échec = côté TÉLÉPHONE : `NO_SERVICE`** (le mobile httpSMS, From `+33 6 24 44 63 99`, n'avait pas de réseau mobile pour envoyer). Donc **rien à corriger en code** : il faut une **SIM physique avec forfait SMS et du signal** sur le téléphone dédié. Test de contrôle : envoyer un SMS à la main depuis l'appli Messages native du téléphone.
 
 ### Robot vocal IA
 - `inc/ag-voice-webhook.php` : **code prêt**, route vérifiée **live le 23/10 : POST /voice sans jeton = 401** (plomberie OK). Appel sortant `ag_voice_call` + webhook résultat `POST /wp-json/ag/v1/voice?token=<ag_voice_token>` (provider-agnostique Retell/Vapi/Bland/Vocode). Écran admin + test (`ag_voice_test`) + journal.
