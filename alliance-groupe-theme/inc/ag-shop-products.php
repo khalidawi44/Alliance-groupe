@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AG_SHOP_VER', 1 );
+define( 'AG_SHOP_VER', 2 );
 
 /* ── Prix unique du template Premium ─────────────────────────────────────── */
 if ( ! function_exists( 'ag_shop_price' ) ) {
@@ -39,32 +39,32 @@ if ( ! function_exists( 'ag_shop_products' ) ) {
 			'avocat' => array(
 				'name'  => 'Avocat',
 				'img'   => 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1200&q=85',
-				'desc'  => "Thème WordPress Premium clé en main pour cabinet d'avocats, juriste ou notaire : domaines d'expertise, prise de rendez-vous conforme RGPD, honoraires transparents, design sobre et crédible. Compatible avec tous les thèmes AG Starter.",
+				'desc'  => "Fichier thème WordPress (.zip) à télécharger pour cabinet d'avocats, juriste ou notaire. Modèles de pages inclus et éditables : domaines d'expertise, honoraires, contact, bloc de prise de rendez-vous. Vous installez le thème vous-même sur votre WordPress. Fichier et licence livrés immédiatement par email.",
 			),
 			'restaurant' => array(
 				'name'  => 'Restaurant',
 				'img'   => 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=85',
-				'desc'  => "Thème WordPress Premium pour restaurant, bistrot, bar ou café : carte élégante éditable, réservation, commande en ligne sans commission, horaires, galerie. Design or & noir gastronomique.",
+				'desc'  => "Fichier thème WordPress (.zip) à télécharger pour restaurant, bistrot, bar ou café. Modèles de pages inclus et éditables : carte, galerie, horaires, bloc de réservation. Thème à installer soi-même sur WordPress. Fichier et licence livrés immédiatement par email.",
 			),
 			'artisan' => array(
 				'name'  => 'Artisan',
 				'img'   => 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=85',
-				'desc'  => "Thème WordPress Premium pour artisan du bâtiment (plombier, électricien, menuisier, maçon) : prestations, zones d'intervention, demande de devis, galerie de réalisations, avis clients.",
+				'desc'  => "Fichier thème WordPress (.zip) à télécharger pour artisan du bâtiment (plombier, électricien, menuisier, maçon). Modèles de pages inclus et éditables : prestations, zones, formulaire de devis, galerie de réalisations. Vous l'installez vous-même sur WordPress. Fichier et licence livrés immédiatement par email.",
 			),
 			'coach' => array(
 				'name'  => 'Coach',
 				'img'   => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1200&q=85',
-				'desc'  => "Thème WordPress Premium pour coach, consultant ou thérapeute : accompagnements, séances, témoignages, prise de rendez-vous en ligne, blog. Design premium et rassurant.",
+				'desc'  => "Fichier thème WordPress (.zip) à télécharger pour coach, consultant ou thérapeute. Modèles de pages inclus et éditables : accompagnements, séances, témoignages, blog, bloc de prise de rendez-vous. Thème à installer soi-même sur WordPress. Fichier et licence livrés immédiatement par email.",
 			),
 			'barber' => array(
 				'name'  => 'Barber Shop',
 				'img'   => 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=1200&q=85',
-				'desc'  => "Thème WordPress Premium pour barbershop, coiffeur ou salon urbain : tarifs, prestations, prise de rendez-vous, galerie, horaires. Design urbain moderne.",
+				'desc'  => "Fichier thème WordPress (.zip) à télécharger pour barbershop, coiffeur ou salon urbain. Modèles de pages inclus et éditables : tarifs, prestations, galerie, horaires, bloc de rendez-vous. Vous l'installez vous-même sur WordPress. Fichier et licence livrés immédiatement par email.",
 			),
 			'association' => array(
 				'name'  => 'Association',
 				'img'   => 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1200&q=85',
-				'desc'  => "Thème WordPress Premium pour association, mouvement ou ONG : manifeste, événements, groupes locaux, dons, espace adhérents. Design engageant.",
+				'desc'  => "Fichier thème WordPress (.zip) à télécharger pour association, mouvement ou ONG. Modèles de pages inclus et éditables : manifeste, événements, groupes locaux, dons, espace adhérents. Thème à installer soi-même sur WordPress. Fichier et licence livrés immédiatement par email.",
 			),
 		);
 	}
@@ -114,12 +114,19 @@ if ( ! function_exists( 'ag_shop_ensure_pages' ) ) {
 		if ( ! function_exists( 'wp_insert_post' ) ) return;
 		foreach ( ag_shop_products() as $slug => $p ) {
 			$page_slug = 'template-premium-' . $slug;
-			if ( get_page_by_path( $page_slug ) ) continue;
 			// Contenu propre = description produit (le prix/bouton/livraison sont
 			// rendus au filtre the_content, dynamiques et cohérents avec le flux).
-			$content = '<p>' . esc_html( $p['desc'] ) . '</p>';
+			$content  = '<p>' . esc_html( $p['desc'] ) . '</p>';
+			$title    = 'Template WordPress Premium — ' . $p['name'];
+			$existing = get_page_by_path( $page_slug );
+			if ( $existing ) {
+				// Page déjà créée : on RAFRAÎCHIT la description (nouvelle langue
+				// « produit numérique ») pour que page ↔ flux correspondent.
+				wp_update_post( array( 'ID' => $existing->ID, 'post_title' => $title, 'post_content' => $content ) );
+				continue;
+			}
 			wp_insert_post( array(
-				'post_title'   => 'Template WordPress Premium — ' . $p['name'],
+				'post_title'   => $title,
 				'post_name'    => $page_slug,
 				'post_content' => $content,
 				'post_status'  => 'publish',
@@ -182,6 +189,24 @@ add_filter( 'the_content', function ( $c ) {
 		. '<li>Compatible avec tous les thèmes AG Starter.</li>'
 		. '</ul></div>';
 
+	// Bloc TRANSPARENCE / identité vendeur (conformité Merchant Center :
+	// identité claire + nature du produit = fichier numérique, pas un service).
+	$lg = function_exists( 'ag_company_legal' ) ? (array) ag_company_legal() : array();
+	$box .= '<div class="ag-shop__trust">';
+	$box .= '<h2>Transparence</h2>';
+	$box .= '<p><strong>Produit numérique téléchargeable.</strong> Vous achetez un <strong>fichier thème WordPress (.zip)</strong> que vous installez vous-même sur votre site. Aucune prestation de création de site n\'est incluse dans ce prix.</p>';
+	$box .= '<p><strong>Vendeur :</strong> ' . esc_html( $lg['raison'] ?? 'Alliance Groupe' )
+		. ( ! empty( $lg['forme'] ) ? ' (' . esc_html( $lg['forme'] ) . ')' : '' )
+		. ( ! empty( $lg['adresse'] ) ? ', ' . esc_html( $lg['adresse'] ) : '' )
+		. ( ! empty( $lg['siren'] ) ? '. SIREN ' . esc_html( $lg['siren'] ) : '' )
+		. ( ! empty( $lg['email'] ) ? '. ' . esc_html( $lg['email'] ) : '' )
+		. '.</p>';
+	$box .= '<p class="ag-shop__links"><a href="' . esc_url( home_url( '/mentions-legales' ) ) . '">Mentions légales</a> · '
+		. '<a href="' . esc_url( home_url( '/retours' ) ) . '">Retours</a> · '
+		. '<a href="' . esc_url( home_url( '/livraison' ) ) . '">Livraison</a> · '
+		. '<a href="' . esc_url( home_url( '/contact' ) ) . '">Contact</a></p>';
+	$box .= '</div>';
+
 	return '<div class="ag-shop-page">' . $box . '</div>';
 }, 18 );
 
@@ -234,6 +259,9 @@ add_action( 'wp_head', function () {
 .ag-shop__feats{list-style:none;padding:0;margin:1em 0;display:grid;gap:9px}
 .ag-shop__feats li{position:relative;padding:11px 15px 11px 44px;background:rgba(212,180,92,.06);border:1px solid rgba(212,180,92,.2);border-radius:12px}
 .ag-shop__feats li:before{content:"✓";position:absolute;left:14px;top:11px;width:22px;height:22px;border-radius:50%;background:#D4B45C;color:#0a0a0f;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.ag-shop__trust{margin:1.6em 0 0;padding:16px 18px;background:rgba(255,255,255,.03);border:1px solid rgba(212,180,92,.2);border-radius:12px;font-size:.92rem;color:#cdc6b8}
+.ag-shop__trust h2{color:#D4B45C;font-size:1.1rem;margin:0 0 .5em}
+.ag-shop__trust a{color:#e7c979}
 @media(max-width:760px){.ag-shop{grid-template-columns:1fr}}
 </style>
 <?php

@@ -51,31 +51,19 @@ function ag_merchant_products() {
 
 	$items = array();
 
-	/* 1) TEMPLATES Premium (produits numériques téléchargeables) ───────── */
-	$metiers = array(
-		'avocat'      => array( 'Avocat', 'Site WordPress Premium clé en main pour cabinet d\'avocats, juriste ou notaire : domaines d\'expertise, prise de rendez-vous RGPD, honoraires transparents. Téléchargement immédiat.', 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1200&q=85' ),
-		'restaurant'  => array( 'Restaurant', 'Site WordPress Premium pour restaurant, bistrot, bar ou café : carte, réservation, privatisation, horaires. Téléchargement immédiat.', 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=85' ),
-		'artisan'     => array( 'Artisan', 'Site WordPress Premium pour artisan du bâtiment (plombier, électricien, menuisier, maçon) : prestations, zones, devis, réalisations. Téléchargement immédiat.', 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=85' ),
-		'coach'       => array( 'Coach', 'Site WordPress Premium pour coach, consultant ou thérapeute : accompagnements, séances, témoignages, prise de rendez-vous. Téléchargement immédiat.', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1200&q=85' ),
-		'barber'      => array( 'Barber Shop', 'Site WordPress Premium pour barbershop, coiffeur ou salon urbain : tarifs, prestations, file d\'attente, galerie. Téléchargement immédiat.', 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=1200&q=85' ),
-		'association' => array( 'Association', 'Site WordPress Premium pour association, mouvement ou ONG : manifeste, événements, groupes locaux, dons, adhérents. Téléchargement immédiat.', 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1200&q=85' ),
-	);
-	foreach ( $metiers as $slug => $d ) {
-		// Image du flux = image de la fiche produit (cohérence flux ↔ page pour
-		// Merchant Center) : photo étalonnée AG > capture template > repli.
-		if ( function_exists( 'ag_shop_product_img' ) ) {
-			$img = ag_shop_product_img( $slug, $d[2] );
-		} else {
-			$img = $d[2];
-			$gal = function_exists( 'ag_template_gallery_images' ) ? ag_template_gallery_images( $slug ) : array();
-			if ( ! empty( $gal ) ) {
-				$img = $gal[0]['url'];
-			}
-		}
+	/* 1) TEMPLATES Premium (produits numériques téléchargeables).
+	   SOURCE UNIQUE = ag_shop_products() (les pages produit). Le flux et la page
+	   doivent dire EXACTEMENT la même chose : Merchant Center refuse quand les
+	   données du flux ne correspondent pas à la boutique (« déclarations
+	   trompeuses »), et la langue « fichier à télécharger » évite le classement
+	   « vente de services ». */
+	$prods = function_exists( 'ag_shop_products' ) ? ag_shop_products() : array();
+	foreach ( $prods as $slug => $d ) {
+		$img = function_exists( 'ag_shop_product_img' ) ? ag_shop_product_img( $slug, $d['img'] ) : $d['img'];
 		$items[] = array(
 			'id'          => 'tpl-premium-' . $slug,
-			'title'       => 'Template WordPress Premium — ' . $d[0],
-			'description' => $d[1],
+			'title'       => 'Template WordPress Premium — ' . $d['name'],
+			'description' => $d['desc'],
 			// Fiche PRODUIT propre (prix + achat sur site), conforme Merchant Center.
 			'link'        => home_url( '/template-premium-' . $slug ),
 			'image'       => $img,
