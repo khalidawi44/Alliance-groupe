@@ -394,3 +394,78 @@ if ( ! function_exists( 'ag_signaux_render' ) ) {
 		<?php
 	}
 }
+
+/* ── Écran : Prospection → 💶 Suivi des ventes (vue par prospect) ─────── */
+add_action( 'admin_menu', function () {
+	add_submenu_page( 'ag-prospects', 'Suivi des ventes', '💶 Suivi des ventes', 'manage_options', 'ag-suivi', 'ag_suivi_render' );
+}, 9 );
+
+if ( ! function_exists( 'ag_suivi_render' ) ) {
+	/**
+	 * Vue PAR PROSPECT (pas par message) : où en est chacun, pour agir.
+	 * Répond à « je veux toutes les infos et suivre tous les prospects » +
+	 * « pour que les clients payent » (les chauds d'abord). Lecture seule.
+	 */
+	function ag_suivi_render() {
+		if ( ! current_user_can( 'manage_options' ) ) { return; }
+		$list = (array) get_option( 'ag_prospects', array() );
+
+		$chauds = array(); $clients = array(); $muets = array();
+		foreach ( $list as $p ) {
+			$st = (string) ( $p['status'] ?? '' );
+			if ( in_array( $st, array( 'client' ), true ) ) { $clients[] = $p; continue; }
+			if ( 'interesse' === $st || ! empty( $p['replied'] ) ) {
+				if ( ! in_array( $st, array( 'refus', 'ne_pas_contacter', 'ignore' ), true ) ) { $chauds[] = $p; continue; }
+			}
+			// Séquence d'Hugo terminée (4/4) sans réponse → à travailler autrement.
+			if ( (int) ( $p['closer_step'] ?? 0 ) >= 4 && empty( $p['replied'] )
+				&& ! in_array( $st, array( 'refus', 'ne_pas_contacter', 'ignore', 'client' ), true ) ) {
+				$muets[] = $p;
+			}
+		}
+
+		$tel = function ( $p ) {
+			$t = (string) ( $p['phone'] ?? ( $p['phone_intl'] ?? '' ) );
+			return $t ? '<a href="tel:' . esc_attr( $t ) . '">' . esc_html( $t ) . '</a>' : '—';
+		};
+		$mail = function ( $p ) {
+			$e = (string) ( $p['email'] ?? '' );
+			return $e ? '<a href="mailto:' . esc_attr( $e ) . '">' . esc_html( $e ) . '</a>' : '—';
+		};
+		$table = function ( $rows, $vide ) use ( $tel, $mail ) {
+			if ( empty( $rows ) ) { echo '<p style="color:#50575e"><em>' . esc_html( $vide ) . '</em></p>'; return; }
+			echo '<table class="widefat striped" style="max-width:1000px"><thead><tr><th>Entreprise</th><th>Métier</th><th>Ville</th><th>Email</th><th>Téléphone</th><th>Statut</th><th>Étape</th><th>Dernier contact</th></tr></thead><tbody>';
+			foreach ( $rows as $p ) {
+				echo '<tr>'
+					. '<td><strong>' . esc_html( (string) ( $p['name'] ?? '' ) ) . '</strong></td>'
+					. '<td>' . esc_html( (string) ( $p['type'] ?? '' ) ) . '</td>'
+					. '<td>' . esc_html( (string) ( $p['city'] ?? '' ) ) . '</td>'
+					. '<td>' . wp_kses_post( $mail( $p ) ) . '</td>'
+					. '<td>' . wp_kses_post( $tel( $p ) ) . '</td>'
+					. '<td>' . esc_html( (string) ( $p['status'] ?? '' ) ) . '</td>'
+					. '<td>' . (int) ( $p['closer_step'] ?? 0 ) . '/4</td>'
+					. '<td>' . esc_html( (string) ( $p['last_contact'] ?? ( $p['date_reply'] ?? '' ) ) ) . '</td>'
+					. '</tr>';
+			}
+			echo '</tbody></table>';
+		};
+		?>
+		<div class="wrap">
+			<h1>💶 Suivi des ventes</h1>
+			<p>Vue <strong>par prospect</strong> (le journal d'Hugo, lui, montre les messages). Agis d'abord sur les <strong>chauds</strong> : ce sont eux qui deviennent des clients qui paient.</p>
+			<p style="font-size:1.05rem">🔥 <strong><?php echo count( $chauds ); ?></strong> chauds · ✅ <strong><?php echo count( $clients ); ?></strong> clients · 📬 <strong><?php echo count( $muets ); ?></strong> relancés 4/4 sans réponse</p>
+
+			<h2 style="color:#b91c1c">🔥 Chauds — à transformer en client (ont répondu ou intéressés)</h2>
+			<p class="description">Appelle-les ou envoie le contrat / le lien de paiement. C'est là que se gagnent les ventes.</p>
+			<?php $table( $chauds, 'Aucun prospect chaud pour l\'instant. Laisse la machine ramener des réponses.' ); ?>
+
+			<h2 style="color:#16a34a;margin-top:26px">✅ Clients (affaires conclues)</h2>
+			<?php $table( $clients, 'Pas encore de client enregistré.' ); ?>
+
+			<h2 style="margin-top:26px">📬 Séquence terminée (4/4) sans réponse</h2>
+			<p class="description">Hugo a fait ses 4 messages, sans réponse. L'email est épuisé pour eux : à travailler autrement (appel du robot vocal si joignable, courrier, ou on les laisse). <strong>C'est ce que tu voyais dans le journal.</strong></p>
+			<?php $table( $muets, 'Personne en 4/4 sans réponse pour l\'instant.' ); ?>
+		</div>
+		<?php
+	}
+}
