@@ -421,6 +421,18 @@ if ( ! function_exists( 'ag_sign_sceller' ) ) {
 						? "\nContresigne automatiquement : l'affaire est close des deux cotes."
 						: "\nA contresigner : Contrats signes." )
 			);
+			/* SMS DÉDIÉ sur le mobile choisi (défaut 06 23 52 60 74) via la
+			   passerelle, EN PLUS de l'alerte multi-canal ci-dessus. Il part dès
+			   que la passerelle SMS a du réseau (sinon Telegram/Free/WhatsApp ont
+			   déjà prévenu). Numéro réglable : option ag_sign_notify_num. */
+			if ( function_exists( 'ag_sms_send' ) ) {
+				$num = trim( (string) get_option( 'ag_sign_notify_num', '0623526074' ) );
+				if ( '' !== $num ) {
+					ag_sms_send( $num, ( $conclu ? '✅ Affaire conclue' : '✍️ Contrat signé' ) . ' : '
+						. (string) $dossier['client_nom'] . ' — ' . (string) $dossier['montant']
+						. '. Voir : ' . $lien_voir );
+				}
+			}
 		}
 		if ( function_exists( 'ag_activity_log' ) ) {
 			ag_activity_log( '✍️ Contrat ' . (string) $dossier['id'] . ' signe par ' . (string) $dossier['preuve']['nom_saisi'] );
