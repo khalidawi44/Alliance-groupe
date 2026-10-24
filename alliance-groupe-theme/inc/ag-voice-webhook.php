@@ -393,10 +393,16 @@ if ( ! function_exists( 'ag_voice_compte_jour' ) ) {
 	}
 }
 if ( ! function_exists( 'ag_voice_tour' ) ) {
-	/** Un passage d'appels automatiques (borné). Renvoie le nb d'appels lancés. */
-	function ag_voice_tour( $max = 5 ) {
-		if ( ! ag_voice_auto_on() || ! function_exists( 'ag_voice_call' ) || ! ag_voice_ready() ) { return 0; }
-		if ( ! ag_voice_horaire_ok() ) { return 0; }            // hors heures légales
+	/**
+	 * Un passage d'appels (borné). Renvoie le nb d'appels lancés.
+	 * $manual = true → lancement humain (bouton « salve maintenant ») : ne dépend
+	 * pas de l'interrupteur auto, MAIS garde TOUS les autres garde-fous (heures
+	 * légales, plafond/jour, opt-out, avocats exclus, 1 appel/prospect).
+	 */
+	function ag_voice_tour( $max = 5, $manual = false ) {
+		if ( ! function_exists( 'ag_voice_call' ) || ! ag_voice_ready() ) { return 0; }
+		if ( ! $manual && ! ag_voice_auto_on() ) { return 0; }
+		if ( ! ag_voice_horaire_ok() ) { return 0; }            // hors heures légales, même en manuel
 		$cap  = ag_voice_cap();
 		$deja = ag_voice_compte_jour();
 		if ( $cap > 0 && $deja >= $cap ) { return 0; }
@@ -464,6 +470,17 @@ add_action( 'admin_init', function () {
 		$to = sanitize_text_field( wp_unslash( $_POST['ag_voice_test_to'] ?? '' ) );
 		$ok = function_exists( 'ag_voice_call' ) && ag_voice_ready() && ag_voice_call( $to, array( 'entreprise' => 'votre établissement', 'angle' => 'creation' ) );
 		add_settings_error( 'ag_voice', 'test', $ok ? '📞 Appel lancé vers ' . esc_html( $to ) . ' — décroche !' : 'Échec : vérifie la clé API + le numéro émetteur, et le format du numéro (+33…).', $ok ? 'updated' : 'error' );
+	}
+	// Lancer une SALVE d'appels MAINTENANT (humain) — remplit le reste du plafond du jour.
+	if ( isset( $_POST['ag_voice_salve'] ) && check_admin_referer( 'ag_voice' ) ) {
+		if ( ! function_exists( 'ag_voice_tour' ) || ! ag_voice_ready() ) {
+			add_settings_error( 'ag_voice', 'salve', 'Configure d\'abord la clé API + le numéro émetteur.', 'error' );
+		} elseif ( ! ag_voice_horaire_ok() ) {
+			add_settings_error( 'ag_voice', 'salve', '🌙 Hors heures légales de démarchage (lundi-vendredi 10h-13h et 14h-20h). Rien n\'a été lancé.', 'error' );
+		} else {
+			$n = ag_voice_tour( max( 1, (int) ag_voice_cap() ), true ); // jusqu'au reste du plafond du jour
+			add_settings_error( 'ag_voice', 'salve', $n > 0 ? '📞 Salve lancée : ' . (int) $n . ' appel(s) en cours. Détail dans « 📞 Journal des appels ».' : 'Aucun prospect éligible pour l\'instant (plafond atteint, aucun numéro joignable, ou tous déjà appelés).', $n > 0 ? 'updated' : 'error' );
+		}
 	}
 } );
 
@@ -581,6 +598,8 @@ if ( ! function_exists( 'ag_voice_render' ) ) {
 		echo '</td></tr>';
 		echo '<tr><th>Plafond d\'appels / jour</th><td><input type="number" name="ag_voice_cap_jour" value="' . esc_attr( (string) $capj ) . '" min="0" style="width:90px"> <span class="description">0 = sans limite (déconseillé). Démarre bas (10-20) le temps de roder.</span></td></tr>';
 		echo '</tbody></table><button name="ag_voice_save" value="1" class="button button-primary">Enregistrer</button>';
+		echo ' <button name="ag_voice_salve" value="1" class="button"' . ( ( ag_voice_ready() && ag_voice_horaire_ok() ) ? '' : ' disabled title="Possible seulement si configuré ET dans les heures légales"' ) . '>📞 Lancer une salve maintenant</button>';
+		echo '<p class="description" style="margin:6px 0 0">La salve appelle tout de suite les meilleurs prospects joignables, dans la limite du plafond du jour et uniquement pendant les heures légales. Même garde-fous que l\'automatique (opt-out, avocats exclus, 1 appel/prospect).</p>';
 		echo ' <span style="margin-left:10px;">État : ' . ( $auto ? '🟢 appel automatique ACTIF' : '⚪ inactif' ) . ' · aujourd\'hui : ' . (int) ag_voice_compte_jour() . ' / ' . ( $capj > 0 ? $capj : '∞' ) . ' · ' . ( ag_voice_horaire_ok() ? '🟢 dans les heures' : '🌙 hors heures' ) . '</span>';
 		echo '</form></div>';
 
