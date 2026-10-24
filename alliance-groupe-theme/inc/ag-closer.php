@@ -310,6 +310,7 @@ if ( ! function_exists( 'ag_closer_eligible' ) ) {
 		if ( ! empty( $p['replied'] ) )                     { return false; } // il a repondu
 		if ( ! is_email( (string) ( $p['email'] ?? '' ) ) ) { return false; } // rien pour ecrire
 		if ( ag_closer_email_bloque( (string) ( $p['email'] ?? '' ) ) ) { return false; } // la maison ou une adresse ecartee : on ne s'ecrit pas a soi-meme
+		if ( function_exists( 'ag_prospect_parasite' ) && ag_prospect_parasite( $p ) ) { return false; } // notre domaine / spam connu
 
 		$interdits = array( 'client', 'refus', 'ne_pas_contacter', 'ignore', 'interesse' );
 		if ( in_array( (string) ( $p['status'] ?? '' ), $interdits, true ) ) { return false; }

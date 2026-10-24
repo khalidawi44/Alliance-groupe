@@ -332,6 +332,41 @@ if ( ! function_exists( 'ag_prospect_blocked' ) ) {
 	/** Statuts qui sortent le prospect du circuit (personne ne le recontacte). */
 	function ag_prospect_blocked( $status ) { return in_array( $status, array( 'refus', 'ne_pas_contacter', 'client', 'ignore' ), true ); }
 }
+if ( ! function_exists( 'ag_prospect_parasite' ) ) {
+	/**
+	 * Faux prospect à ne JAMAIS contacter ni compter comme « chaud » :
+	 *  - notre PROPRE domaine (on ne se prospecte pas soi-même) ;
+	 *  - boîtes techniques (no-reply, mailer-daemon, postmaster…) ;
+	 *  - domaines de spam connus (extensibles par l'option ag_prospect_blocklist,
+	 *    un domaine ou un email par ligne).
+	 * Sert au Suivi, au relanceur et à Hugo pour nettoyer les « intéressés » pollués
+	 * (ex. freeb2bdata.org, sales@alliancegroupe-inc.com repérés le 24/10).
+	 */
+	function ag_prospect_parasite( $p ) {
+		$email = strtolower( trim( (string) ( $p['email'] ?? '' ) ) );
+		if ( '' === $email || ! is_email( $email ) ) { return false; }
+		$dom  = (string) substr( strrchr( $email, '@' ), 1 );
+		// Vrai aussi pour un sous-domaine (northrup.caredogbest.com ⊂ caredogbest.com).
+		$match_dom = function ( $d ) use ( $dom ) {
+			return $d === $dom || ( strlen( $dom ) > strlen( $d ) && substr( $dom, -( strlen( $d ) + 1 ) ) === '.' . $d );
+		};
+		$self = strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) );
+		$self = preg_replace( '/^www\./', '', $self );
+		if ( $self && $match_dom( $self ) ) { return true; }
+		foreach ( array( 'no-reply', 'noreply', 'mailer-daemon', 'postmaster', 'abuse', 'donotreply' ) as $pre ) {
+			if ( 0 === strpos( $email, $pre . '@' ) ) { return true; }
+		}
+		$bl = array( 'freeb2bdata.org', 'caredogbest.com', 'versloratas.lt', 'beribus.com' );
+		foreach ( preg_split( '/[\s,]+/', (string) get_option( 'ag_prospect_blocklist', '' ) ) as $d ) {
+			$d = strtolower( trim( $d ) );
+			if ( '' !== $d ) { $bl[] = $d; }
+		}
+		foreach ( $bl as $d ) {
+			if ( $d === $email || $match_dom( $d ) ) { return true; }
+		}
+		return false;
+	}
+}
 if ( ! function_exists( 'ag_phone_is_mobile' ) ) {
 	/** Vrai si le numéro est un MOBILE français (06/07 / +336 / +337) — seuls les mobiles reçoivent des SMS. */
 	function ag_phone_is_mobile( $phone, $intl = '' ) {

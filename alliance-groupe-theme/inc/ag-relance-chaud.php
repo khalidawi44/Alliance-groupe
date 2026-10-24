@@ -145,6 +145,7 @@ if ( ! function_exists( 'ag_rc_est_silencieux' ) ) {
 	function ag_rc_est_silencieux( $p ) {
 		if ( 'interesse' !== (string) ( $p['status'] ?? '' ) ) { return 0; }
 		if ( ! empty( $p['closer_stop'] ) ) { return 0; }
+		if ( function_exists( 'ag_prospect_parasite' ) && ag_prospect_parasite( $p ) ) { return 0; } // notre domaine / spam
 		$email = sanitize_email( (string) ( $p['email'] ?? '' ) );
 		$tel   = (string) ( $p['phone'] ?? '' );
 		if ( ! is_email( $email ) && '' === trim( $tel ) ) { return 0; } // aucun moyen de contact

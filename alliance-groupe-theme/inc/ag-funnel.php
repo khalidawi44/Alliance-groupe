@@ -410,12 +410,16 @@ if ( ! function_exists( 'ag_suivi_render' ) ) {
 		if ( ! current_user_can( 'manage_options' ) ) { return; }
 		$list = (array) get_option( 'ag_prospects', array() );
 
-		$chauds = array(); $clients = array(); $muets = array();
+		$chauds = array(); $clients = array(); $muets = array(); $suspects = array();
 		foreach ( $list as $p ) {
 			$st = (string) ( $p['status'] ?? '' );
 			if ( in_array( $st, array( 'client' ), true ) ) { $clients[] = $p; continue; }
 			if ( 'interesse' === $st || ! empty( $p['replied'] ) ) {
-				if ( ! in_array( $st, array( 'refus', 'ne_pas_contacter', 'ignore' ), true ) ) { $chauds[] = $p; continue; }
+				if ( ! in_array( $st, array( 'refus', 'ne_pas_contacter', 'ignore' ), true ) ) {
+					if ( function_exists( 'ag_prospect_parasite' ) && ag_prospect_parasite( $p ) ) { $suspects[] = $p; }
+					else { $chauds[] = $p; }
+					continue;
+				}
 			}
 			// Séquence d'Hugo terminée (4/4) sans réponse → à travailler autrement.
 			if ( (int) ( $p['closer_step'] ?? 0 ) >= 4 && empty( $p['replied'] )
@@ -453,7 +457,7 @@ if ( ! function_exists( 'ag_suivi_render' ) ) {
 		<div class="wrap">
 			<h1>💶 Suivi des ventes</h1>
 			<p>Vue <strong>par prospect</strong> (le journal d'Hugo, lui, montre les messages). Agis d'abord sur les <strong>chauds</strong> : ce sont eux qui deviennent des clients qui paient.</p>
-			<p style="font-size:1.05rem">🔥 <strong><?php echo count( $chauds ); ?></strong> chauds · ✅ <strong><?php echo count( $clients ); ?></strong> clients · 📬 <strong><?php echo count( $muets ); ?></strong> relancés 4/4 sans réponse</p>
+			<p style="font-size:1.05rem">🔥 <strong><?php echo count( $chauds ); ?></strong> chauds · ✅ <strong><?php echo count( $clients ); ?></strong> clients · 📬 <strong><?php echo count( $muets ); ?></strong> relancés 4/4 sans réponse · 🧹 <strong><?php echo count( $suspects ); ?></strong> suspects (faux intéressés)</p>
 
 			<h2 style="color:#b91c1c">🔥 Chauds — à transformer en client (ont répondu ou intéressés)</h2>
 			<p class="description">Appelle-les ou envoie le contrat / le lien de paiement. C'est là que se gagnent les ventes.</p>
@@ -465,6 +469,10 @@ if ( ! function_exists( 'ag_suivi_render' ) ) {
 			<h2 style="margin-top:26px">📬 Séquence terminée (4/4) sans réponse</h2>
 			<p class="description">Hugo a fait ses 4 messages, sans réponse. L'email est épuisé pour eux : à travailler autrement (appel du robot vocal si joignable, courrier, ou on les laisse). <strong>C'est ce que tu voyais dans le journal.</strong></p>
 			<?php $table( $muets, 'Personne en 4/4 sans réponse pour l\'instant.' ); ?>
+
+			<h2 style="color:#8a6d00;margin-top:26px">🧹 Suspects — faux intéressés (à ignorer)</h2>
+			<p class="description">Classés « intéressé » à tort : notre propre domaine, boîtes techniques, ou domaines de spam connus (ex. freeb2bdata.org). Ils sont <strong>exclus automatiquement</strong> des relances et de Hugo. Tu peux en ajouter via l'option <code>ag_prospect_blocklist</code>. Ils ne comptent pas comme de vrais prospects.</p>
+			<?php $table( $suspects, 'Aucun faux intéressé détecté.' ); ?>
 		</div>
 		<?php
 	}
