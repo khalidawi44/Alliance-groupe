@@ -356,7 +356,7 @@ if ( ! function_exists( 'ag_voice_auto_on' ) ) {
 	function ag_voice_auto_on() { return (bool) get_option( 'ag_voice_auto_on', 0 ); }
 }
 if ( ! function_exists( 'ag_voice_cap' ) ) {
-	function ag_voice_cap() { return max( 0, (int) get_option( 'ag_voice_cap_jour', 20 ) ); }
+	function ag_voice_cap() { return max( 0, (int) get_option( 'ag_voice_cap_jour', 10 ) ); }
 }
 if ( ! function_exists( 'ag_voice_horaire_ok' ) ) {
 	/** Fenêtre légale de démarchage téléphonique (France) : L-V 10-13h et 14-20h. */
@@ -450,7 +450,7 @@ add_action( 'admin_init', function () {
 			// Appel automatique (autonome) + plafond/jour.
 			if ( isset( $_POST['ag_voice_cfg'] ) ) {
 				update_option( 'ag_voice_auto_on', isset( $_POST['ag_voice_auto_on'] ) ? 1 : 0 );
-				update_option( 'ag_voice_cap_jour', max( 0, (int) ( $_POST['ag_voice_cap_jour'] ?? 20 ) ) );
+				update_option( 'ag_voice_cap_jour', max( 0, (int) ( $_POST['ag_voice_cap_jour'] ?? 10 ) ) );
 			}
 		if ( isset( $_POST['ag_calendar_email'] ) ) { $ce = sanitize_email( wp_unslash( $_POST['ag_calendar_email'] ) ); if ( '' === $ce || is_email( $ce ) ) update_option( 'ag_calendar_email', $ce ); }
 			if ( isset( $_POST['ag_calendar_webhook'] ) ) { $wh = esc_url_raw( trim( wp_unslash( $_POST['ag_calendar_webhook'] ) ) ); update_option( 'ag_calendar_webhook', $wh ); }
@@ -568,7 +568,7 @@ if ( ! function_exists( 'ag_voice_render' ) ) {
 
 		// ── Appel AUTOMATIQUE (autonome) ──
 		$auto = (bool) get_option( 'ag_voice_auto_on', 0 );
-		$capj = (int) get_option( 'ag_voice_cap_jour', 20 );
+		$capj = (int) get_option( 'ag_voice_cap_jour', 10 );
 		echo '<div style="max-width:900px;padding:16px 20px;background:#fff;border:1px solid #ccd0d4;border-left:4px solid ' . ( $auto ? '#16a34a' : '#b91c1c' ) . ';border-radius:8px;margin:12px 0;">';
 		echo '<h2 style="margin-top:0;">2. Appel automatique (Emma appelle toute seule)</h2>';
 		echo '<p style="color:#50575e;max-width:760px;">Quand c\'est activé, le pilote lance des appels <strong>tout seul</strong> vers les prospects joignables, aux <strong>heures légales de démarchage</strong> (lundi-vendredi, 10h-13h et 14h-20h). Un seul appel automatique par prospect, plafond par jour, opt-out respecté. <strong>Les avocats ne sont jamais appelés</strong> (déontologie).</p>';
