@@ -54,7 +54,21 @@ if ( ! function_exists( 'ag_closer_on' ) ) {
 }
 if ( ! function_exists( 'ag_closer_cap' ) ) {
 	/** Plafond de messages par jour, tous prospects confondus. */
-	function ag_closer_cap() { return max( 1, (int) get_option( 'ag_closer_cap_jour', 20 ) ); }
+	function ag_closer_cap() {
+		$cap = max( 1, (int) get_option( 'ag_closer_cap_jour', 20 ) );
+		// MODE QUALITÉ/ÉCONOME (demande de Fabrice, 26/10 : « 0 client, arrête de
+		// brûler du budget »). On plafonne BAS : Hugo contacte peu de cibles, mais
+		// les MIEUX notées par le Scoreur (= le filon). Quand on aura des clients,
+		// on remontera. Désactivable : option ag_eco_mode = 0.
+		if ( function_exists( 'ag_eco_mode' ) && ag_eco_mode() ) {
+			$cap = min( $cap, max( 1, (int) apply_filters( 'ag_eco_closer_cap', 8 ) ) );
+		}
+		return $cap;
+	}
+}
+if ( ! function_exists( 'ag_eco_mode' ) ) {
+	/** Mode qualité/économe : peu d'envois, les meilleures cibles. Défaut ON. */
+	function ag_eco_mode() { return (bool) get_option( 'ag_eco_mode', 1 ); }
 }
 if ( ! function_exists( 'ag_closer_expediteur' ) ) {
 	/**

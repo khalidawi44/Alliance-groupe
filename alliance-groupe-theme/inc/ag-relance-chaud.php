@@ -41,7 +41,7 @@ if ( ! defined( 'AG_RC_J2' ) ) { define( 'AG_RC_J2', 5 ); }
 /* ── 1. Réglages ─────────────────────────────────────────────────────── */
 
 if ( ! function_exists( 'ag_rc_on' ) ) {
-	function ag_rc_on() { return (bool) get_option( 'ag_rc_on', 0 ); }
+	function ag_rc_on() { return (bool) get_option( 'ag_rc_on', 1 ); } // ON par défaut : relancer les intéressés = la conversion
 }
 if ( ! function_exists( 'ag_rc_cap' ) ) {
 	function ag_rc_cap() { return max( 1, (int) get_option( 'ag_rc_cap', 40 ) ); }

@@ -356,7 +356,14 @@ if ( ! function_exists( 'ag_voice_auto_on' ) ) {
 	function ag_voice_auto_on() { return (bool) get_option( 'ag_voice_auto_on', 0 ); }
 }
 if ( ! function_exists( 'ag_voice_cap' ) ) {
-	function ag_voice_cap() { return max( 0, (int) get_option( 'ag_voice_cap_jour', 10 ) ); }
+	function ag_voice_cap() {
+		$cap = max( 0, (int) get_option( 'ag_voice_cap_jour', 10 ) );
+		// Mode qualité/économe : on plafonne bas les appels (coût Retell).
+		if ( $cap > 0 && function_exists( 'ag_eco_mode' ) && ag_eco_mode() ) {
+			$cap = min( $cap, max( 1, (int) apply_filters( 'ag_eco_voice_cap', 8 ) ) );
+		}
+		return $cap;
+	}
 }
 if ( ! function_exists( 'ag_voice_horaire_ok' ) ) {
 	/** Fenêtre légale de démarchage téléphonique (France) : L-V 10-13h et 14-20h. */

@@ -436,10 +436,18 @@ if ( ! function_exists( 'ag_suivi_render' ) ) {
 			$e = (string) ( $p['email'] ?? '' );
 			return $e ? '<a href="mailto:' . esc_attr( $e ) . '">' . esc_html( $e ) . '</a>' : '—';
 		};
-		$table = function ( $rows, $vide ) use ( $tel, $mail ) {
+		$table = function ( $rows, $vide, $act = false ) use ( $tel, $mail ) {
 			if ( empty( $rows ) ) { echo '<p style="color:#50575e"><em>' . esc_html( $vide ) . '</em></p>'; return; }
-			echo '<table class="widefat striped" style="max-width:1000px"><thead><tr><th>Entreprise</th><th>Métier</th><th>Ville</th><th>Email</th><th>Téléphone</th><th>Statut</th><th>Étape</th><th>Dernier contact</th></tr></thead><tbody>';
+			echo '<table class="widefat striped" style="max-width:1100px"><thead><tr><th>Entreprise</th><th>Métier</th><th>Ville</th><th>Email</th><th>Téléphone</th><th>Statut</th><th>Étape</th><th>Dernier contact</th>' . ( $act ? '<th>Action</th>' : '' ) . '</tr></thead><tbody>';
 			foreach ( $rows as $p ) {
+				$id = esc_attr( (string) ( $p['id'] ?? '' ) );
+				$cell_act = '';
+				if ( $act ) {
+					$has_mail = is_email( (string) ( $p['email'] ?? '' ) );
+					$cell_act = '<td>' . ( ( $has_mail && '' !== $id )
+						? '<button type="button" class="button button-small ag-suivi-offer" data-id="' . $id . '">📤 Envoyer l\'offre</button>'
+						: '<span style="color:#b32d2e">pas d\'email</span>' ) . '</td>';
+				}
 				echo '<tr>'
 					. '<td><strong>' . esc_html( (string) ( $p['name'] ?? '' ) ) . '</strong></td>'
 					. '<td>' . esc_html( (string) ( $p['type'] ?? '' ) ) . '</td>'
@@ -449,6 +457,7 @@ if ( ! function_exists( 'ag_suivi_render' ) ) {
 					. '<td>' . esc_html( (string) ( $p['status'] ?? '' ) ) . '</td>'
 					. '<td>' . (int) ( $p['closer_step'] ?? 0 ) . '/4</td>'
 					. '<td>' . esc_html( (string) ( $p['last_contact'] ?? ( $p['date_reply'] ?? '' ) ) ) . '</td>'
+					. $cell_act
 					. '</tr>';
 			}
 			echo '</tbody></table>';
@@ -461,7 +470,7 @@ if ( ! function_exists( 'ag_suivi_render' ) ) {
 
 			<h2 style="color:#b91c1c">🔥 Chauds — à transformer en client (ont répondu ou intéressés)</h2>
 			<p class="description">Appelle-les ou envoie le contrat / le lien de paiement. C'est là que se gagnent les ventes.</p>
-			<?php $table( $chauds, 'Aucun prospect chaud pour l\'instant. Laisse la machine ramener des réponses.' ); ?>
+			<?php $table( $chauds, 'Aucun prospect chaud pour l\'instant. Laisse la machine ramener des réponses.', true ); ?>
 
 			<h2 style="color:#16a34a;margin-top:26px">✅ Clients (affaires conclues)</h2>
 			<?php $table( $clients, 'Pas encore de client enregistré.' ); ?>
@@ -473,7 +482,64 @@ if ( ! function_exists( 'ag_suivi_render' ) ) {
 			<h2 style="color:#8a6d00;margin-top:26px">🧹 Suspects — faux intéressés (à ignorer)</h2>
 			<p class="description">Classés « intéressé » à tort : notre propre domaine, boîtes techniques, ou domaines de spam connus (ex. freeb2bdata.org). Ils sont <strong>exclus automatiquement</strong> des relances et de Hugo. Tu peux en ajouter via l'option <code>ag_prospect_blocklist</code>. Ils ne comptent pas comme de vrais prospects.</p>
 			<?php $table( $suspects, 'Aucun faux intéressé détecté.' ); ?>
+			<script>
+			(function($){
+				var N = '<?php echo esc_js( wp_create_nonce( 'ag_suivi' ) ); ?>';
+				$('.ag-suivi-offer').on('click', function(){
+					var b = $(this), id = b.data('id');
+					if ( b.prop('disabled') ) return;
+					b.prop('disabled', true).text('… envoi');
+					$.post(ajaxurl, { action:'ag_suivi_offer', _n:N, id:id }, function(r){
+						if ( r && r.success ) { b.text('✅ Offre envoyée'); }
+						else { b.prop('disabled', false).text('📤 Réessayer'); alert( (r && r.data && r.data.m) ? r.data.m : 'Échec de l\'envoi.' ); }
+					}).fail(function(){ b.prop('disabled', false).text('📤 Réessayer'); });
+				});
+			})(jQuery);
+			</script>
 		</div>
 		<?php
 	}
 }
+
+/* ── Action depuis le Suivi : envoyer une offre de conversion à un chaud ── */
+add_action( 'wp_ajax_ag_suivi_offer', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! check_ajax_referer( 'ag_suivi', '_n', false ) ) {
+		wp_send_json_error( array( 'm' => 'Session expirée.' ) );
+	}
+	$id   = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
+	$list = (array) get_option( 'ag_prospects', array() );
+	$hit  = -1;
+	foreach ( $list as $k => $p ) { if ( (string) ( $p['id'] ?? '' ) === $id ) { $hit = $k; break; } }
+	if ( $hit < 0 ) { wp_send_json_error( array( 'm' => 'Prospect introuvable.' ) ); }
+	$p     = $list[ $hit ];
+	$email = sanitize_email( (string) ( $p['email'] ?? '' ) );
+	if ( ! is_email( $email ) ) { wp_send_json_error( array( 'm' => 'Pas d\'email valide.' ) ); }
+	if ( function_exists( 'ag_prospect_parasite' ) && ag_prospect_parasite( $p ) ) { wp_send_json_error( array( 'm' => 'Adresse suspecte (domaine exclu).' ) ); }
+
+	$nom  = (string) ( $p['name'] ?? '' );
+	$a11y = isset( $p['a11y_score'] ) ? (int) $p['a11y_score'] : -1;
+	if ( $a11y >= 0 && $a11y < 70 && function_exists( 'ag_accessibilite_offre' ) ) {
+		$off     = ag_accessibilite_offre();
+		$cta_url = home_url( '/conformite-accessibilite' );
+		$cta     = 'Voir la mise en conformité';
+		$accroche = 'Vous avez montré de l\'intérêt. Votre site a des points d\'accessibilité à corriger, et depuis juin 2025 c\'est une obligation pour les sites marchands. On peut s\'en occuper (' . (string) $off['prix'] . ', ' . (string) $off['delai'] . ').';
+	} else {
+		$cta_url  = home_url( '/sur-mesure' );
+		$cta      = 'Parler de mon projet';
+		$accroche = 'Vous avez montré de l\'intérêt pour votre présence en ligne. On peut en discuter et vous faire une proposition claire, chiffrée, sans engagement.';
+	}
+	$corps = '<p>Bonjour' . ( $nom ? ' ' . esc_html( $nom ) : '' ) . ',</p>'
+		. '<p>' . esc_html( $accroche ) . '</p>'
+		. ( function_exists( 'ag_email_button' ) ? ag_email_button( $cta, $cta_url ) : '<p><a href="' . esc_url( $cta_url ) . '">' . esc_html( $cta ) . '</a></p>' )
+		. '<p>Je reste disponible pour toute question, par retour d\'email ou par téléphone.</p>';
+	$html = function_exists( 'ag_email_wrap' ) ? ag_email_wrap( 'Votre projet avec Alliance Groupe', $corps ) : $corps;
+	$ok   = wp_mail( $email, 'Votre projet avec Alliance Groupe', $html, array( 'Content-Type: text/html; charset=UTF-8' ) );
+	if ( $ok ) {
+		$list[ $hit ]['notes']        = trim( '📤 ' . current_time( 'd/m/Y H:i' ) . ' — Offre/RDV envoyé depuis le Suivi.' . "\n" . (string) ( $p['notes'] ?? '' ) );
+		$list[ $hit ]['last_contact'] = current_time( 'd/m/Y' );
+		update_option( 'ag_prospects', $list, false );
+		if ( function_exists( 'ag_push' ) ) { ag_push( '📤 Offre envoyée', ( $nom ?: $email ) . ' — relance de conversion depuis le Suivi.' ); }
+		wp_send_json_success();
+	}
+	wp_send_json_error( array( 'm' => 'L\'envoi a été refusé (vérifie l\'expéditeur SMTP).' ) );
+} );
