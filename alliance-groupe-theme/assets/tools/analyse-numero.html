@@ -156,6 +156,32 @@ function reports(num,k,op){
   return [r1,r2,r3];
 }
 
+function emailBody(num,k,op){
+  var f=fmt(num);
+  var who = op ? (op[0]+(op[1]?" (SIRET "+op[1]+")":"")) : "l'opérateur porteur";
+  return "Madame, Monsieur,\n\n"+
+    "Je suis victime d'appels de démarchage téléphonique non sollicités depuis le numéro "+f+
+    (k[0]==="DEMARCHAGE"?" (tranche réservée au démarchage par l'ARCEP)":"")+".\n"+
+    "Ces appels sont automatisés (robot) et concernent des panneaux solaires / rénovation énergétique.\n\n"+
+    "Je n'ai jamais donné mon consentement préalable à être démarché. Or :\n"+
+    "- le démarchage téléphonique pour la rénovation énergétique est interdit depuis la loi du 24 juillet 2020 ;\n"+
+    "- depuis le 11 août 2026, tout démarchage sans consentement préalable est interdit (loi n°2025-594).\n\n"+
+    "Opérateur porteur de la ligne : "+who+".\n\n"+
+    "Je demande :\n"+
+    "1) la cessation immédiate de ces appels ;\n"+
+    "2) l'identification du donneur d'ordre (centre d'appel / annonceur) ;\n"+
+    "3) la prise en compte de ce signalement par les autorités compétentes (DGCCRF).\n\n"+
+    "Date et heure des appels : _______________\n\n"+
+    "Cordialement,\n[Votre nom]";
+}
+function openMail(){
+  var L=window.AG_LAST; if(!L) return;
+  location.href="mailto:?subject="+encodeURIComponent(L.subject)+"&body="+encodeURIComponent(L.body);
+}
+function sms33700(){
+  var L=window.AG_LAST; if(!L) return;
+  location.href="sms:33700?body="+encodeURIComponent(L.num);
+}
 function repBlock(txt){
   var id="r"+Math.random().toString(36).slice(2,8);
   return '<div class="rep"><button class="cp ghost" onclick="cp(\''+id+'\',this)">Copier</button>'+
@@ -208,12 +234,20 @@ function go(){
   html+='<div class="sec-title">Usurpation (spoofing)</div>';
   html+='<p class="muted">Le numéro affiché peut être usurpé. S\'il l\'est, l\'opérateur ci-dessus est celui de la <b>tranche</b>, pas forcément l\'émetteur réel. Seuls l\'opérateur + l\'ARCEP/DGCCRF tracent l\'appel réel.</p>';
 
-  html+='<div class="sec-title">Signalements prêts à envoyer</div>';
+  // mémorise le contenu courant pour les boutons email/SMS
+  window.AG_LAST = {num:num, subject:"Signalement de démarchage abusif - "+fmt(num), body:emailBody(num,k,op)};
+
+  html+='<div class="sec-title">📣 Signaler en 1 tap</div>';
+  html+='<div class="row">'+
+        '<button onclick="openMail()">📧 Envoyer le signalement par email</button></div>';
+  html+='<div class="row">'+
+        '<button class="ghost" onclick="window.open(\'https://signal.conso.gouv.fr\',\'_blank\')">🏛️ SignalConso (DGCCRF)</button>'+
+        '<button class="ghost" onclick="sms33700()">📱 Envoyer au 33700</button></div>';
+  html+='<p class="muted">Le bouton <b>email</b> ouvre ta messagerie avec l\'objet et le message <b>déjà rédigés</b> : tu ajoutes le destinataire (service abus de l\'opérateur, la DGCCRF locale, ou ton avocat) et tu envoies. Plus il y a de signalements réels, plus l\'autorité agit.</p>';
+
+  html+='<div class="sec-title">Textes de signalement (à copier)</div>';
   var reps=reports(num,k,op);
   for(var i=0;i<reps.length;i++) html+=repBlock(reps[i]);
-  html+='<div class="row">'+
-        '<button onclick="window.open(\'https://signal.conso.gouv.fr\',\'_blank\')">🏛️ Ouvrir SignalConso (DGCCRF)</button>'+
-        '<span class="muted">+ envoyer le numéro par SMS au 33700</span></div>';
 
   // Bloquer
   html+='<div class="sec-title">⛔ Bloquer sur le téléphone</div>';
