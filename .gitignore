@@ -120,3 +120,6 @@ __pycache__/
 
 # Rendu vidéo temporaire
 tools/ads-videos/_seg/
+
+# Cache donnees ARCEP (trace-numero.py) - regenere a la volee
+pentest-bridge/.arcep-cache/
