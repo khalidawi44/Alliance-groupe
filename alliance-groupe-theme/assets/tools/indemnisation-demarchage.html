@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indemnisation Démarchage</title>
+<meta name="description" content="Générateur de mise en demeure et de demande d'indemnisation pour démarchage téléphonique abusif. Service Alliance Groupe.">
+<meta name="theme-color" content="#0e1016">
+<style>
+  :root{
+    --bg:#0e1016; --panel:#161922; --panel2:#1d212c; --line:#2a2f3c;
+    --or:#e6a93c; --orange:#f37a1f; --txt:#e8ebf1; --mut:#9aa0b0;
+    --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444; --info:#60a5fa;
+  }
+  :root:not([data-theme="light"]){color-scheme:dark;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+       font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.5}
+  header{background:#05070c;padding:16px 20px;border-bottom:1px solid var(--line);
+         display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .logo{color:var(--or);font-weight:800;font-size:22px;letter-spacing:.5px}
+  h1{font-size:16px;margin:0;font-weight:600}
+  .wrap{max-width:900px;margin:0 auto;padding:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0}
+  .sec-title{font-weight:700;margin:4px 0 10px;font-size:15px;color:var(--or)}
+  label{display:block;font-size:12px;color:var(--mut);margin:10px 0 4px}
+  input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid var(--line);
+       background:var(--panel2);color:var(--txt);font-size:14px;font-family:inherit}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:620px){.grid2{grid-template-columns:1fr}}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  button{cursor:pointer;border:0;border-radius:8px;padding:11px 16px;font-size:14px;font-weight:600;background:var(--orange);color:#241200}
+  button.ghost{background:var(--panel2);color:var(--txt);border:1px solid var(--line);font-weight:500}
+  .muted{color:var(--mut);font-size:12.5px}
+  .warnbox{background:#2a1f12;border:1px solid #4a3a1a;border-radius:8px;padding:10px 12px;font-size:12.5px;color:#ffd98a}
+  .chk{display:flex;align-items:center;gap:8px;margin-top:10px}
+  .chk input{width:auto}
+  .out{white-space:pre-wrap;font-family:Georgia,'Times New Roman',serif;font-size:14px;
+       background:#fff;color:#111;padding:28px;border-radius:8px;margin-top:12px}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#13233a;color:#a9cdfb}
+  .foot{color:var(--mut);font-size:11px;text-align:center;padding:18px}
+  @media print{
+    header,.noprint,.foot{display:none!important}
+    body{background:#fff}
+    .wrap{max-width:none;padding:0}
+    .out{border:0;padding:0;margin:0;font-size:12.5pt}
+    .card{border:0;background:#fff;padding:0;margin:0}
+  }
+</style>
+</head>
+<body>
+<header class="noprint">
+  <span class="logo">AG</span>
+  <h1>Indemnisation démarchage abusif — générateur de mise en demeure</h1>
+</header>
+
+<div class="wrap">
+  <div class="card noprint">
+    <div class="warnbox">
+      <b>À lire.</b> Cet outil produit un <b>modèle</b> de courrier fondé sur le droit en vigueur.
+      Une demande d'indemnisation suppose une <b>entreprise identifiée</b> (raison sociale / SIRET) et
+      un <b>dérangement réel et documenté</b>. Les montants proposés sont <b>indicatifs</b> (base de
+      négociation amiable) : un juge apprécie souverainement. Pas de menace sans fondement : envoyer une
+      réclamation chiffrée sans dossier réel serait abusif. En cas de dossier complexe, faire valider par un juriste.
+    </div>
+  </div>
+
+  <div class="card noprint">
+    <div class="sec-title">1. Vos coordonnées (le plaignant)</div>
+    <div class="grid2">
+      <div><label>Nom et prénom</label><input id="v_nom" placeholder="Jean Dupont"></div>
+      <div><label>Email</label><input id="v_email" placeholder="jean@exemple.fr"></div>
+    </div>
+    <label>Adresse postale</label><input id="v_adr" placeholder="12 rue des Lilas, 44000 Nantes">
+    <label>Téléphone appelé (le vôtre)</label><input id="v_tel" placeholder="06 12 34 56 78">
+  </div>
+
+  <div class="card noprint">
+    <div class="sec-title">2. L'auteur du démarchage</div>
+    <div class="grid2">
+      <div><label>Numéro appelant</label><input id="a_num" placeholder="01 62 57 23 44"></div>
+      <div><label>Opérateur porteur (via l'app Analyse numéro)</label><input id="a_op" placeholder="Qwalikom"></div>
+    </div>
+    <div class="grid2">
+      <div><label>Entreprise identifiée (raison sociale)</label><input id="a_societe" placeholder="ex : SOLAR TRANSITION SAS"></div>
+      <div><label>SIRET (si connu)</label><input id="a_siret" placeholder="sinon laisser vide"></div>
+    </div>
+    <label>Adresse de l'entreprise (si connue)</label><input id="a_adr" placeholder="sinon laisser vide">
+    <p class="muted">Entreprise inconnue ? Génère quand même : l'outil bascule en <b>plainte DGCCRF + CNIL</b> pour la faire identifier et sanctionner (l'indemnisation viendra une fois le responsable connu).</p>
+  </div>
+
+  <div class="card noprint">
+    <div class="sec-title">3. Les appels subis</div>
+    <div class="grid2">
+      <div><label>Date du 1er appel</label><input id="c_date1" placeholder="ex : 20/10/2026"></div>
+      <div><label>Nombre d'appels reçus</label><input id="c_nb" type="number" value="1" min="1"></div>
+    </div>
+    <div class="grid2">
+      <div><label>Objet du démarchage</label>
+        <select id="c_objet">
+          <option value="panneaux solaires / rénovation énergétique">Panneaux solaires / rénovation énergétique</option>
+          <option value="isolation / travaux">Isolation / travaux</option>
+          <option value="assurance / mutuelle">Assurance / mutuelle</option>
+          <option value="téléphonie / énergie">Téléphonie / énergie</option>
+          <option value="autre démarchage commercial">Autre démarchage commercial</option>
+        </select></div>
+      <div><label>Appels automatisés (robot) ?</label>
+        <select id="c_robot"><option value="oui">Oui (robot / serveur vocal)</option><option value="non">Non (humain)</option></select></div>
+    </div>
+  </div>
+
+  <div class="card noprint">
+    <div class="sec-title">4. Indemnisation demandée</div>
+    <div class="grid2">
+      <div><label>Préjudice de base (€)</label><input id="m_base" type="number" value="150"></div>
+      <div><label>Par appel supplémentaire (€)</label><input id="m_parappel" type="number" value="30"></div>
+    </div>
+    <label>Montant total demandé (€) — calculé, modifiable</label><input id="m_total" type="number">
+    <p class="muted">Indicatif. Le démarchage illégal expose l'entreprise à une amende administrative jusqu'à 375 000 € (personne morale) et à une sanction CNIL : beaucoup préfèrent une transaction amiable.</p>
+  </div>
+
+  <div class="card noprint">
+    <div class="sec-title">5. Mandat Alliance Groupe (optionnel)</div>
+    <div class="chk"><input type="checkbox" id="x_mandat"><label for="x_mandat" style="margin:0">Ajouter un mandat : Alliance Groupe agit au nom du client (modèle service, commission au succès)</label></div>
+    <label>Commission au succès (%)</label><input id="x_comm" type="number" value="30" style="max-width:140px">
+  </div>
+
+  <div class="row noprint">
+    <button onclick="gen()">Générer le courrier</button>
+    <button class="ghost" onclick="copyOut()">Copier</button>
+    <button class="ghost" onclick="window.print()">Imprimer / PDF</button>
+    <button class="ghost" onclick="mailOut()">Envoyer par email</button>
+    <button class="ghost" onclick="resetForm()">Réinitialiser</button>
+  </div>
+
+  <div id="out" class="out" style="display:none"></div>
+</div>
+
+<div class="foot noprint">Alliance Groupe · Indemnisation démarchage · modèle juridique, montants indicatifs · 2026</div>
+
+<script>
+var F=["v_nom","v_email","v_adr","v_tel","a_num","a_op","a_societe","a_siret","a_adr",
+       "c_date1","c_nb","c_objet","c_robot","m_base","m_parappel","m_total","x_comm"];
+function g(id){return document.getElementById(id);}
+function val(id){return (g(id).value||"").trim();}
+
+// Persistance (coordonnées + barème seulement)
+var KEEP=["v_nom","v_email","v_adr","v_tel","m_base","m_parappel","x_comm"];
+function save(){try{var o={};KEEP.forEach(function(k){o[k]=g(k).value;});o.mandat=g("x_mandat").checked;localStorage.setItem("ag_indemn",JSON.stringify(o));}catch(e){}}
+function load(){try{var o=JSON.parse(localStorage.getItem("ag_indemn")||"{}");KEEP.forEach(function(k){if(o[k]!=null)g(k).value=o[k];});if(o.mandat)g("x_mandat").checked=true;}catch(e){}}
+load();
+F.concat(["x_mandat"]).forEach(function(id){g(id).addEventListener("change",function(){calc();save();});});
+
+function calc(){
+  var nb=parseInt(val("c_nb")||"1",10); if(isNaN(nb)||nb<1)nb=1;
+  var base=parseFloat(val("m_base")||"0")||0;
+  var pa=parseFloat(val("m_parappel")||"0")||0;
+  var tot=Math.round(base+pa*Math.max(0,nb-1));
+  if(!g("m_total").value || g("m_total").dataset.auto!=="0") g("m_total").value=tot;
+}
+g("c_nb").addEventListener("input",calc);
+g("m_base").addEventListener("input",calc);
+g("m_parappel").addEventListener("input",calc);
+g("m_total").addEventListener("input",function(){g("m_total").dataset.auto="0";});
+calc();
+
+function today(){var d=new Date();return ("0"+d.getDate()).slice(-2)+"/"+("0"+(d.getMonth()+1)).slice(-2)+"/"+d.getFullYear();}
+
+function lettreEntreprise(){
+  var soc=val("a_societe"), siret=val("a_siret"), adrSoc=val("a_adr");
+  var nb=parseInt(val("c_nb")||"1",10)||1;
+  var total=val("m_total")||"0";
+  var objet=val("c_objet");
+  var robot=val("c_robot")==="oui";
+  var estEnergie=/solaire|énerg|isolation|travaux/i.test(objet);
+  var L=[];
+  L.push(val("v_nom"));
+  if(val("v_adr"))L.push(val("v_adr"));
+  if(val("v_email"))L.push(val("v_email"));
+  if(val("v_tel"))L.push("Tél. : "+val("v_tel"));
+  L.push("");
+  L.push("À l'attention de : "+(soc||"[ENTREPRISE À IDENTIFIER]"));
+  if(siret)L.push("SIRET : "+siret);
+  if(adrSoc)L.push(adrSoc);
+  L.push("");
+  L.push("Lettre recommandée avec accusé de réception");
+  L.push("Fait le "+today());
+  L.push("");
+  L.push("Objet : Mise en demeure - démarchage téléphonique illégal - demande d'indemnisation amiable");
+  L.push("");
+  L.push("Madame, Monsieur,");
+  L.push("");
+  var appels = nb>1 ? ("à "+nb+" reprises") : "";
+  L.push("J'ai été contacté "+appels+" par téléphone, sans y avoir jamais consenti, depuis le numéro "
+    +(val("a_num")||"[numéro]")+(val("a_op")?(" (ligne portée par l'opérateur "+val("a_op")+")"):"")
+    +", à des fins de démarchage commercial portant sur : "+objet+"."
+    +(robot?" Ces appels étaient automatisés (système de composition automatique / serveur vocal).":""));
+  L.push("");
+  L.push("Ce démarchage est illicite pour les raisons suivantes :");
+  if(estEnergie){
+    L.push("- Le démarchage téléphonique en vue de la vente d'équipements ou de travaux de rénovation énergétique est interdit depuis la loi n°2020-901 du 24 juillet 2020 (article L. 221-16 du code de la consommation) ;");
+  }
+  L.push("- Depuis le 11 août 2026, tout démarchage téléphonique est interdit sans consentement préalable du consommateur (loi n°2025-594 du 30 juin 2025) ; je n'ai jamais donné un tel consentement ;");
+  L.push("- La prospection commerciale par voie téléphonique sans mon accord et le traitement de mon numéro constituent un manquement à l'article L. 34-5 du code des postes et des communications électroniques et au Règlement général sur la protection des données (RGPD, article 6 : absence de base légale).");
+  L.push("");
+  L.push("Ces agissements m'ont causé un préjudice : atteinte à ma tranquillité et à ma vie privée, trouble de jouissance et temps perdu.");
+  L.push("");
+  L.push("En conséquence, je vous mets en demeure, dans un délai de HUIT (8) JOURS à compter de la réception de la présente :");
+  L.push("1. De cesser immédiatement et définitivement tout démarchage à mon égard ;");
+  L.push("2. De supprimer mes données personnelles de vos fichiers de prospection (droit d'effacement, article 17 du RGPD) et de me le confirmer par écrit ;");
+  L.push("3. De m'indemniser à hauteur de "+total+" euros au titre du préjudice subi, par virement ou chèque.");
+  L.push("");
+  L.push("À défaut de réponse satisfaisante dans ce délai, je saisirai la Direction générale de la concurrence, de la consommation et de la répression des fraudes (DGCCRF, via SignalConso), déposerai une plainte auprès de la CNIL, et porterai l'affaire devant la juridiction compétente aux fins d'obtenir réparation. Je rappelle que le démarchage illégal expose son auteur à une amende administrative pouvant atteindre 375 000 euros pour une personne morale, outre les sanctions de la CNIL.");
+  L.push("");
+  L.push("Dans l'attente de votre réponse, je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.");
+  L.push("");
+  L.push(val("v_nom"));
+  L.push("Signature :");
+  if(g("x_mandat").checked) L.push("\n\n"+mandatTexte());
+  return L.join("\n");
+}
+
+function plainteInconnu(){
+  var nb=parseInt(val("c_nb")||"1",10)||1;
+  var objet=val("c_objet");
+  var L=[];
+  L.push(val("v_nom"));
+  if(val("v_adr"))L.push(val("v_adr"));
+  if(val("v_email"))L.push(val("v_email"));
+  L.push("");
+  L.push("Objet : Signalement de démarchage téléphonique illégal - demande d'identification et de sanction");
+  L.push("Destinataires : DGCCRF (SignalConso) et CNIL");
+  L.push("Fait le "+today());
+  L.push("");
+  L.push("Madame, Monsieur,");
+  L.push("");
+  L.push("Je signale un démarchage téléphonique illégal subi "+(nb>1?("à "+nb+" reprises"):"")+" depuis le numéro "
+    +(val("a_num")||"[numéro]")+(val("a_op")?(", ligne portée par l'opérateur "+val("a_op")+","):"")
+    +" portant sur : "+objet+", sans mon consentement préalable.");
+  L.push("");
+  L.push("L'auteur réel (donneur d'ordre) ne s'est pas identifié. Je demande :");
+  L.push("1. L'identification de l'entreprise à l'origine de ces appels, le cas échéant via l'opérateur porteur de la ligne ;");
+  L.push("2. La sanction du démarchage illégal (loi du 24 juillet 2020 pour la rénovation énergétique ; régime de consentement préalable issu de la loi n°2025-594 du 30 juin 2025) ;");
+  L.push("3. La transmission des suites afin que je puisse faire valoir mon droit à réparation.");
+  L.push("");
+  L.push("Je me tiens à disposition pour fournir le détail des appels (dates, heures).");
+  L.push("");
+  L.push("Veuillez agréer, Madame, Monsieur, mes salutations distinguées.");
+  L.push("");
+  L.push(val("v_nom"));
+  return L.join("\n");
+}
+
+function mandatTexte(){
+  var comm=val("x_comm")||"30";
+  return "----------------------------------------\n"+
+  "MANDAT - Alliance Groupe (Advise Alliance Group)\n"+
+  "Je soussigné(e) "+(val("v_nom")||"[nom]")+" donne mandat à Advise Alliance Group pour me représenter "+
+  "dans la constitution du dossier, l'envoi des courriers et le suivi de la demande d'indemnisation relative "+
+  "au démarchage téléphonique abusif ci-dessus. En contrepartie, Alliance Groupe percevra une commission de "+comm+" % "+
+  "sur l'indemnité effectivement obtenue (aucun frais en l'absence de résultat). Le présent mandat peut être révoqué à tout moment.\n"+
+  "Fait le "+today()+"       Signature du mandant :";
+}
+
+function build(){
+  var identifiee = val("a_societe")!=="";
+  return identifiee ? lettreEntreprise() : plainteInconnu();
+}
+function gen(){
+  calc(); save();
+  if(!val("v_nom")){ alert("Renseigne au moins ton nom (section 1)."); return; }
+  var o=g("out"); o.style.display="block"; o.textContent=build();
+  o.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function copyOut(){
+  if(g("out").style.display==="none")gen();
+  navigator.clipboard.writeText(g("out").textContent).then(function(){alert("Courrier copié.");},function(){});
+}
+function mailOut(){
+  if(g("out").style.display==="none")gen();
+  var identifiee=val("a_societe")!=="";
+  var subj = identifiee ? ("Mise en demeure - démarchage illégal - "+val("a_societe")) : "Signalement démarchage téléphonique illégal";
+  location.href="mailto:?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent(g("out").textContent);
+}
+function resetForm(){
+  if(!confirm("Vider le formulaire ?"))return;
+  F.concat(["x_mandat"]).forEach(function(id){var e=g(id);if(e.type==="checkbox")e.checked=false;else if(id!=="m_base"&&id!=="m_parappel"&&id!=="x_comm"&&id!=="c_nb")e.value="";});
+  g("out").style.display="none";
+}
+</script>
+</body>
+</html>
