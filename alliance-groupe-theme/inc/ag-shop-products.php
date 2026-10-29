@@ -210,37 +210,6 @@ add_filter( 'the_content', function ( $c ) {
 	return '<div class="ag-shop-page">' . $box . '</div>';
 }, 18 );
 
-/* ── Page /boutique : catalogue des fiches produit (liste, liens, prix) ───── */
-add_action( 'init', function () {
-	if ( 1 === (int) get_option( 'ag_shop_hub_page', 0 ) ) return;
-	if ( ! get_page_by_path( 'boutique' ) ) {
-		$id = wp_insert_post( array(
-			'post_title'   => 'Boutique — Templates WordPress',
-			'post_name'    => 'boutique',
-			'post_content' => '<p>Thèmes WordPress Premium par métier : fichiers numériques à télécharger, licence livrée par email.</p>',
-			'post_status'  => 'publish',
-			'post_type'    => 'page',
-			'post_author'  => 1,
-		) );
-		if ( ! $id || is_wp_error( $id ) ) return;
-	}
-	update_option( 'ag_shop_hub_page', 1 );
-}, 99 );
-
-add_filter( 'the_content', function ( $c ) {
-	if ( is_admin() || ! in_the_loop() || ! is_main_query() || ! is_page( 'boutique' ) ) return $c;
-	$price = ag_shop_price();
-	$out   = '<div class="ag-shop-page">' . $c . '<div class="ag-shop-hub" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;margin:1.5em 0">';
-	foreach ( ag_shop_products() as $metier => $p ) {
-		$url  = home_url( '/template-premium-' . $metier . '/' );
-		$out .= '<a href="' . esc_url( $url ) . '" style="display:block;text-decoration:none;border:1px solid rgba(212,180,92,.3);border-radius:14px;overflow:hidden">'
-			. '<img src="' . esc_url( ag_shop_product_img( $metier, $p['img'] ) ) . '" alt="Template WordPress ' . esc_attr( $p['name'] ) . '" loading="lazy" style="width:100%;display:block">'
-			. '<span style="display:block;padding:12px 14px"><strong>' . esc_html( $p['name'] ) . '</strong><br>Template Premium — ' . (int) $price . ' €</span></a>';
-	}
-	$out .= '</div><p><a href="' . esc_url( home_url( '/livraison' ) ) . '">Livraison</a> · <a href="' . esc_url( home_url( '/retours' ) ) . '">Retours</a> · <a href="' . esc_url( home_url( '/mentions-legales' ) ) . '">Mentions légales</a></p></div>';
-	return $out;
-}, 18 );
-
 /* ── Schema Product JSON-LD (prix cohérent avec le flux Merchant) ─────────── */
 add_action( 'wp_head', function () {
 	$cur = ag_shop_current();
