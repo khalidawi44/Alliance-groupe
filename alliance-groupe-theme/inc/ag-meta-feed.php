@@ -49,9 +49,9 @@ function ag_meta_extra_products() {
 
 	/* Formules de maintenance mensuelles ─────────────────────────────── */
 	$maintenance = array(
-		'serenite'    => array( 'Sérénité', 29, 'Hébergement, nom de domaine, sauvegardes automatiques et sécurité de votre site. Sans engagement.', 'produits/produit-serenite.jpg' ),
-		'croissance'  => array( 'Croissance', 59, 'Tout le pack Sérénité, plus 30 minutes de modifications par mois et le suivi analytics de votre trafic.', 'produits/produit-croissance.jpg' ),
-		'performance' => array( 'Performance', 99, 'Tout le pack Croissance, plus 1 heure de modifications par mois, optimisation SEO continue et rapport de performance.', 'produits/produit-performance.jpg' ),
+		'serenite'    => array( 'Sérénité', 29, 'Site entretenu et surveillé : mises à jour, sauvegardes quotidiennes, monitoring de disponibilité et scan de code malveillant. Sans engagement.', 'produits/produit-serenite.jpg' ),
+		'croissance'  => array( 'Protection', 59, 'Tout le pack Sérénité, plus un pare-feu applicatif, la double authentification gérée et la veille des vulnérabilités d\'extensions.', 'produits/produit-croissance.jpg' ),
+		'performance' => array( 'Conformité', 99, 'Tout le pack Protection, plus le maintien de la conformité RGPD et cookies, la veille réglementaire et une attestation annuelle de mesures de sécurité (art. 32).', 'produits/produit-performance.jpg' ),
 	);
 	foreach ( $maintenance as $k => $m ) {
 		$items[] = array(
