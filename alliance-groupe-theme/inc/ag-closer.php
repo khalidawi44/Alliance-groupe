@@ -376,11 +376,13 @@ if ( ! function_exists( 'ag_closer_redige' ) ) {
 		$a11y_sc  = isset( $p['a11y_score'] ) ? (int) $p['a11y_score'] : -1;
 		$a11y_cst = trim( (string) ( $p['a11y_constat'] ?? '' ) );
 		if ( $pro_web )                { $angle = 'securite'; }
-		// Filon #1 : marchand avec un vrai site peu accessible → angle accessibilité (EAA).
+		// Appoint e-commerce : marchand avec un vrai site peu accessible → angle accessibilité (EAA).
 		elseif ( $marchand && 'real' === $etat && $a11y_sc >= 0 && $a11y_sc < 70 && '' !== $a11y_cst ) { $angle = 'accessibilite'; }
 		elseif ( 'real' !== $etat && ! $site ) { $angle = 'creation'; }
 		elseif ( 'real' !== $etat )    { $angle = 'creation'; }
-		else                           { $angle = 'refonte'; }
+		// FILON (29/10) : tout pro qui a déjà un vrai site → SÉCURITÉ + CONFORMITÉ (RGPD art. 32),
+		// le moteur du filon, à la place du générique « refonte ». cf docs/FILON.md.
+		else                           { $angle = 'conformite'; }
 
 		$consigne_angle = '';
 		if ( 'accessibilite' === $angle ) {
@@ -399,6 +401,17 @@ if ( ! function_exists( 'ag_closer_redige' ) ) {
 				. "- INTERDIT : lister des failles precises ou exploitables. Tu peux evoquer un constat de SURFACE\n"
 				. "  visible de tous (pas de certificat, en-tetes manquants) mais JAMAIS un mode operatoire.\n"
 				. "- Si son propre site est visiblement a la traine, tu peux le mentionner avec tact, sans le vexer.\n";
+		} elseif ( 'conformite' === $angle ) {
+			$consigne_angle = "ANGLE — SECURITE & CONFORMITE (le destinataire a deja un vrai site, c'est le moteur du filon) :\n"
+				. "- Idee maitresse : tout professionnel est RESPONSABLE de la securite des donnees qu'il traite (RGPD art. 32)\n"
+				. "  et doit pouvoir PROUVER qu'il a pris des mesures. La vraie question, posee avec tact : en cas d'incident,\n"
+				. "  pourrait-il le prouver aujourd'hui ? La tension est dans la QUESTION DE PREUVE, jamais dans une menace.\n"
+				. "- INTERDIT ABSOLU : annoncer qu'il va se faire pirater (prediction fausse), citer une amende ou une sanction,\n"
+				. "  inventer une echeance, lister une faille precise ou exploitable, decrire un mode operatoire.\n"
+				. "- Tu peux evoquer un constat de SURFACE visible de tous (certificat, en-tetes de securite, bandeau cookies,\n"
+				. "  version affichee) de facon factuelle, sans denigrer son site.\n"
+				. "- Propose de lui envoyer son rapport « Tester mon site » (score + points a verifier), sans aucune intrusion.\n"
+				. "  UN SEUL appel a l'action. Ton bienveillant de confrere qui previent, pas de vendeur de peur.\n";
 		} elseif ( 'creation' === $angle ) {
 			$consigne_angle = "ANGLE — CREATION : il n'a pas de vrai site. Propose de lui montrer a quoi ressemblerait le sien.\n";
 		} else {
