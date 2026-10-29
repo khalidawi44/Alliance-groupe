@@ -14,46 +14,48 @@ get_header();
 $ag_contact = home_url( '/contact' );
 $ag_audit   = home_url( '/tester-mon-site' );
 
-// Paliers (modifiables ici). Prix indicatifs HT / mois, sans engagement.
+// Paliers sécurité (modifiables ici). Prix indicatifs HT / mois.
+// Filon (docs/FILON.md) : 3 niveaux sécurité, l'attestation « mesures art. 32 »
+// = livrable phare du niveau Conformité (angle de la preuve, jamais la peur).
 $ag_plans = array(
 	array(
-		'name'  => 'Essentiel',
-		'price' => '49',
-		'tag'   => 'Le site reste en vie',
+		'name'  => 'Sérénité',
+		'price' => '29',
+		'tag'   => 'Entretenu &amp; surveillé',
 		'feats' => array(
 			'Mises à jour CMS, extensions &amp; thème',
-			'Sauvegardes automatiques (restaurables)',
+			'Sauvegardes quotidiennes (restaurables)',
 			'Monitoring de disponibilité (uptime 24/7)',
-			'Rapport mensuel simple',
+			'Scan de code malveillant mensuel',
 			'Support par email',
 		),
 		'best'  => false,
 	),
 	array(
-		'name'  => 'Pro',
-		'price' => '99',
-		'tag'   => 'Le plus choisi',
+		'name'  => 'Protection',
+		'price' => '59',
+		'tag'   => 'On bloque avant que ça rentre',
 		'feats' => array(
-			'Tout l\'Essentiel, +',
-			'Durcissement &amp; scan de sécurité mensuel',
-			'Pare-feu applicatif + anti-bruteforce',
-			'Optimisation vitesse de base',
-			'Support prioritaire (48 h)',
-		),
-		'best'  => true,
-	),
-	array(
-		'name'  => 'Sérénité',
-		'price' => '199',
-		'tag'   => 'Zéro souci',
-		'feats' => array(
-			'Tout le Pro, +',
-			'Audit de sécurité trimestriel (rapport)',
-			'Intervention d\'urgence (site down / piratage)',
-			'Suivi SEO technique &amp; perfs',
-			'Support réactif (24 h) + bilan en visio',
+			'Tout Sérénité, +',
+			'Pare-feu applicatif (WAF) + anti-bruteforce',
+			'Double authentification (2FA) gérée',
+			'Veille des vulnérabilités d\'extensions (alerte rapide)',
+			'Rapport mensuel',
 		),
 		'best'  => false,
+	),
+	array(
+		'name'  => 'Conformité',
+		'price' => '99',
+		'tag'   => 'Et vous pouvez le prouver',
+		'feats' => array(
+			'Tout Protection, +',
+			'Maintien conformité RGPD &amp; cookies',
+			'Registre léger des traitements',
+			'Veille réglementaire selon votre secteur (santé, e-commerce…)',
+			'<strong>Attestation annuelle « mesures art. 32 »</strong>',
+		),
+		'best'  => true,
 	),
 );
 ?>
@@ -82,22 +84,22 @@ $ag_plans = array(
 						<div class="ag-maint-price"><span class="n"><?php echo esc_html( $p['price'] ); ?></span> €<small> / mois</small></div>
 						<ul class="ag-maint-feats">
 							<?php foreach ( $p['feats'] as $f ) : ?>
-								<li><?php echo wp_kses( $f, array() ); ?></li>
+								<li><?php echo wp_kses( $f, array( 'strong' => array(), 'em' => array() ) ); ?></li>
 							<?php endforeach; ?>
 						</ul>
 						<a href="<?php echo esc_url( $ag_contact ); ?>" class="<?php echo $p['best'] ? 'ag-btn-gold' : 'ag-btn-ghost'; ?> ag-maint-cta">Choisir <?php echo esc_html( $p['name'] ); ?></a>
 					</div>
 				<?php endforeach; ?>
 			</div>
-			<p style="text-align:center;color:var(--color-text-secondary,#9aa);font-size:.9rem;margin-top:28px;">Prix indicatifs HT, sans engagement. Devis personnalisé selon votre site. Création récente par mes soins → <strong>1er mois offert</strong>.</p>
+			<p style="text-align:center;color:var(--color-text-secondary,#9aa);font-size:.9rem;margin-top:28px;">Prix indicatifs HT / mois. Sérénité et Protection sans engagement ; <strong>Conformité</strong> aussi en formule annuelle engagée (avec l'attestation « mesures art. 32 »). Devis selon votre site. Création récente par mes soins→ <strong>1er mois offert</strong>.</p>
 		</div>
 	</section>
 
 	<section class="ag-section">
 		<div class="ag-container" style="max-width:820px;text-align:center;">
 			<span class="ag-tag">Pourquoi un abonnement</span>
-			<h2 class="ag-section__title">Mieux vaut <em>prévenir</em> que réparer</h2>
-			<p class="ag-section__desc" style="margin:18px auto 0;">90 % des sites piratés l'étaient sur une faille <strong>connue et corrigeable</strong>. Une remise en état après piratage coûte souvent plus cher qu'une année de maintenance. L'abonnement, c'est l'assurance tranquillité — et un site qui reste rapide, à jour et bien référencé.</p>
+			<h2 class="ag-section__title">Être tranquille, et <em>pouvoir le prouver</em></h2>
+			<p class="ag-section__desc" style="margin:18px auto 0;">La vraie question n'est pas seulement d'éviter l'incident : c'est de pouvoir <strong>prouver vos mesures</strong>. Le RGPD (article 32) rend chaque professionnel responsable de la sécurité des données qu'il traite. La majorité des failles WordPress passent par les extensions — une veille et des mises à jour suivies réduisent le risque, et l'attestation annuelle documente ce que vous avez mis en place.</p>
 			<div style="margin-top:26px;">
 				<a href="<?php echo esc_url( $ag_contact ); ?>" class="ag-btn-gold">Parler de mon site →</a>
 			</div>

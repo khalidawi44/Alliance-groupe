@@ -487,6 +487,26 @@ if ( ! function_exists( 'ag_closer_gabarit' ) ) {
 			return array( 'objet' => ( $nom ? 'Accessibilite de votre site — ' . $nom : 'Accessibilite de votre site' ), 'corps' => $corps );
 		}
 
+		// Repli angle CONFORMITE (pro avec un vrai site : le moteur du filon, cf docs/FILON.md).
+		// Angle de la PREUVE (RGPD art. 32) : aucune amende, aucune faille, aucune fausse urgence.
+		$etat_g = '';
+		if ( function_exists( 'ag_site_kind' ) ) {
+			$kg     = ag_site_kind( (string) ( $p['website'] ?? '' ) );
+			$etat_g = is_array( $kg ) ? (string) ( $kg[0] ?? '' ) : (string) $kg;
+		}
+		$pro_web_g = function_exists( 'ag_closer_est_pro_web' ) && ag_closer_est_pro_web( $p );
+		if ( 'real' === $etat_g && ! $pro_web_g ) {
+			$corps = "Bonjour,\n\n"
+				. 'En regardant le site de ' . ( $nom ? $nom : 'votre entreprise' ) . ", je me suis pose une question simple, "
+				. "que je pose a beaucoup de professionnels : en cas d'incident sur vos donnees, pourriez-vous prouver "
+				. "aujourd'hui les mesures de securite que vous avez prises ?\n\n"
+				. "La reglementation (RGPD, article 32) rend chaque professionnel responsable de la securite des donnees "
+				. "qu'il traite. Je peux vous envoyer le rapport « Tester mon site » : un etat des lieux de surface "
+				. "(certificat, en-tetes de securite, bandeau cookies), sans aucune intrusion, avec les points a verifier.\n\n"
+				. "Si cela ne vous interesse pas, le lien en bas de ce message me le fait savoir definitivement.";
+			return array( 'objet' => ( $nom ? 'La securite de votre site — ' . $nom : 'La securite de votre site' ), 'corps' => $corps );
+		}
+
 		$corps = "Bonjour,\n\n"
 			. 'Je suis tombe sur ' . ( $nom ? $nom : 'votre entreprise' ) . ( $ville ? ' a ' . $ville : '' ) . ", et je n'ai pas trouve de site a jour.\n\n"
 			. "Nous construisons des sites pour des artisans et des independants. Si vous voulez voir a quoi ressemblerait le votre, je peux vous en montrer une maquette, sans engagement.\n\n"
