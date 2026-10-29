@@ -218,7 +218,7 @@ add_filter( 'ag_auto_per_run', function () { return 3; } );
  * Pour relancer cette config (après une évolution), on bumpe la version.
  */
 add_action( 'init', function () {
-	if ( 'v2' === (string) get_option( 'ag_auto_boot', '' ) ) { return; }
+	if ( 'v3' === (string) get_option( 'ag_auto_boot', '' ) ) { return; }
 
 	// 1) Tous les interrupteurs des agents sur ON.
 	foreach ( array(
@@ -246,7 +246,7 @@ add_action( 'init', function () {
 		update_option( 'ag_auto_searches', ag_cm_bank(), false );
 	}
 
-	update_option( 'ag_auto_boot', 'v2', false );
+	update_option( 'ag_auto_boot', 'v3', false );
 	if ( function_exists( 'ag_activity_log' ) ) {
 		ag_activity_log( '⚙️ Auto-configuration : tous les agents activés (chasse, enrichissement, Hugo, relances, Max, Gardien, Scoreur, Community Manager, rapport du soir).' );
 	}
