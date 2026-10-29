@@ -34,6 +34,26 @@ add_action( 'after_setup_theme', function () {
 	update_option( 'ag_prospection_mobile_page', 3 );
 } );
 
+/* Page de l'offre accessibilité (cible du rapport « Tester mon site » et du tunnel) :
+   sans elle, le prospect chaud tombait sur une 404. Flag dédié, indépendant du lot ci-dessus. */
+add_action( 'init', function () {
+	if ( 1 === (int) get_option( 'ag_access_offre_page' ) ) { return; }
+	$slug = 'conformite-accessibilite';
+	$page = get_page_by_path( $slug );
+	if ( ! $page ) {
+		$id = wp_insert_post( array(
+			'post_title'   => 'Mise en conformité accessibilité',
+			'post_name'    => $slug,
+			'post_status'  => 'publish',
+			'post_type'    => 'page',
+			'post_content' => '',
+		) );
+		if ( ! $id || is_wp_error( $id ) ) { return; }
+		update_post_meta( $id, '_wp_page_template', 'templates/page-conformite-accessibilite.php' );
+	}
+	update_option( 'ag_access_offre_page', 1 );
+}, 20 );
+
 /* ── 1. Prospects entrants (chat du site) ───────────────────────── */
 if ( ! function_exists( 'ag_lead_handler' ) ) {
 	function ag_lead_handler() {
