@@ -2684,7 +2684,8 @@ add_action( 'template_redirect', function () {
 	if ( ! isset( $_GET['ag_rapport'] ) ) { return; }
 	$site = isset( $_GET['site'] ) ? esc_url_raw( rawurldecode( wp_unslash( $_GET['site'] ) ) ) : '';
 	$name = isset( $_GET['name'] ) ? sanitize_text_field( rawurldecode( wp_unslash( $_GET['name'] ) ) ) : '';
-	ag_render_client_report( $site, $name );
+	$agence = isset( $_GET['agence'] ) ? sanitize_text_field( rawurldecode( wp_unslash( $_GET['agence'] ) ) ) : '';
+	ag_render_client_report( $site, $name, $agence );
 	exit;
 } );
 if ( ! function_exists( 'ag_render_client_report' ) ) {
@@ -2704,7 +2705,7 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 		$n = trim( str_ireplace( 'Balise', 'Élément', $n ) ); // « Balise » → « Élément »
 		return '' !== $n ? $n : $name;
 	}
-	function ag_render_client_report( $site, $name = '' ) {
+	function ag_render_client_report( $site, $name = '', $agence = '' ) {
 		nocache_headers();
 		header( 'Content-Type: text/html; charset=utf-8' );
 		$ok = ( '' !== $site && preg_match( '#^https?://#i', $site ) && function_exists( 'ag_audit_run' ) );
@@ -2815,6 +2816,11 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 			<span class="tag">🛡️ AUDIT SÉCURITÉ &amp; PERFORMANCE</span>
 			<h1>Rapport pour <?php echo esc_html( $who ); ?></h1>
 			<p class="url"><?php echo esc_html( $site ); ?></p>
+			<?php if ( '' !== (string) $agence ) : ?>
+			<div style="max-width:720px;margin:14px auto 0;background:#15131f;border:1px solid #3a2f55;border-left:4px solid #D4B45C;border-radius:12px;padding:14px 16px;color:#e9e4f5;line-height:1.55;font-size:.95rem;text-align:left;">
+				Votre site a été réalisé par <strong><?php echo esc_html( $agence ); ?></strong>. Une agence web conçoit de beaux sites — mais la <strong>sécurité informatique est un autre métier</strong>. Nous avons analysé votre site : voici un <strong>aperçu</strong> de ce que nous avons trouvé (le détail complet, et comment le corriger, est dans ce rapport).
+			</div>
+			<?php endif; ?>
 			<div class="hero">
 				<img id="shot" src="<?php echo esc_url( $shot ); ?>" data-base="<?php echo esc_url( $shot ); ?>" data-try="0" onload="agShot(this)" onerror="agShotErr(this)" alt="">
 				<div style="text-align:center;">
@@ -3186,6 +3192,15 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 	$fails = array_slice( $fails, 0, 8 );
 	$name  = sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) );
 	$who   = '' !== $name ? $name : 'votre établissement';
+	// Ce site est-il un CLIENT d'une agence cartographiée ? (source « agence:<nom> »)
+	$agency_name = '';
+	$whost = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) ) );
+	if ( '' !== $whost ) {
+		foreach ( (array) get_option( 'ag_prospects', array() ) as $pp ) {
+			$ph = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( (string) ( $pp['website'] ?? '' ), PHP_URL_HOST ) ) );
+			if ( $ph === $whost && 0 === strpos( (string) ( $pp['source'] ?? '' ), 'agence:' ) ) { $agency_name = trim( substr( (string) $pp['source'], 7 ) ); break; }
+		}
+	}
 	$link  = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_sale_link( strtolower( wp_get_current_user()->user_email ) ) : home_url( '/sites-express' );
 	// Reco : site pourri (note basse) → refonte ; sinon failles → sécurité ; sinon refonte douce.
 	$reco = ( $score < 50 ) ? 'refonte' : ( $crit > 0 ? 'securite' : 'refonte' );
@@ -3199,6 +3214,7 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 	$phone = sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) );
 	// Lien du RAPPORT CLIENT (page teaser à envoyer au prospect).
 	$report = add_query_arg( array( 'ag_rapport' => 1, 'site' => rawurlencode( $url ), 'name' => rawurlencode( $name ) ), home_url( '/' ) );
+	if ( '' !== $agency_name ) { $report = add_query_arg( 'agence', rawurlencode( $agency_name ), $report ); }
 
 	// MESSAGE PERSONNALISÉ selon les VRAIS problèmes détectés — à envoyer AU PROPRIÉTAIRE
 	// (message d'approche direct, jamais à poster comme avis public : dénigrement interdit).
@@ -3230,6 +3246,12 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 	$msg['rapport'] = ( $score > 0 )
 		? "🔒 " . $who . ", votre audit de sécurité est prêt (note " . $score . "/100). Ne tardez pas : découvrez ce qu'il faut corriger avant qu'une faille ne soit exploitée 👉 " . $report
 		: "🔒 " . $who . ", votre audit de sécurité est prêt. Découvrez les points à surveiller sur votre site 👉 " . $report;
+	// MESSAGE CLIENT « AGENCE » : le site a été fait par une agence web (≠ agence de sécurité).
+	if ( '' !== $agency_name ) {
+		$msg['agence'] = "Bonjour, votre site (" . $who . ") a été réalisé par " . $agency_name . ". C'est une agence web : ils font de beaux sites, mais la sécurité informatique est un autre métier. "
+			. "Nous l'avons analysé (note " . $score . "/100)" . ( $ptxt ? " et avons remarqué notamment que " . implode( " et que ", $ptxt ) : "" ) . ". Il reste d'autres points à vérifier. "
+			. "Le détail complet, et comment corriger, est dans votre rapport 👉 " . $report;
+	}
 	// Persiste la note sur la fiche prospect (si id fourni).
 	$pid = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
 	if ( '' !== $pid ) {
@@ -3262,7 +3284,7 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 		set_transient( 'ag_isag_' . md5( strtolower( $url ) ), $is_agency, HOUR_IN_SECONDS );
 	}
 
-	wp_send_json_success( array( 'score' => $score, 'critical' => $crit, 'tech' => $tech, 'mode' => $mode, 'reco' => $reco, 'fails' => $fails, 'report' => $report, 'report_card' => add_query_arg( 'card', 1, $report ), 'msg' => $msg, 'is_agency' => (bool) $is_agency, 'url' => $url ) );
+	wp_send_json_success( array( 'score' => $score, 'critical' => $crit, 'tech' => $tech, 'mode' => $mode, 'reco' => $reco, 'fails' => $fails, 'report' => $report, 'report_card' => add_query_arg( 'card', 1, $report ), 'msg' => $msg, 'is_agency' => (bool) $is_agency, 'agency' => $agency_name, 'url' => $url ) );
 } );
 
 /* Envoi SMS EN MASSE aux ambassadeurs depuis l'app (admin) + journal de suivi. */
