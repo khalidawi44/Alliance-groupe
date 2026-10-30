@@ -198,9 +198,45 @@ function ag_refais_render() {
 		.agr-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#c8962c,#e6b84a);color:#1a1205;font-weight:800;padding:7px 16px;border-radius:999px;font-size:.8rem;letter-spacing:.03em;text-transform:uppercase}
 		.agr-head h1{font-size:clamp(1.7rem,5vw,2.5rem);margin:16px 0 8px;line-height:1.14}
 		.agr-head p{color:#5a5348;max-width:600px;margin:0 auto;font-size:1.02rem;line-height:1.55}
+		/* Démo avant/après auto (flou, illustratif) */
+		.agr-demo{max-width:560px;margin:6px auto 2px}
+		.agr-demo-inner{position:relative;width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;box-shadow:0 12px 34px rgba(0,0,0,.16);filter:blur(2.4px) saturate(.96)}
+		.agr-demo-inner>div{position:absolute;inset:0}
+		.agr-after{background:radial-gradient(120% 90% at 80% 0,#2a2f3c,#0e1016)}
+		.agr-after .m-nav{display:flex;justify-content:space-between;align-items:center;padding:7% 7% 0}
+		.agr-after .m-logo{width:26%;height:12px;background:#e6a93c;border-radius:4px}
+		.agr-after .m-menu{width:34%;height:8px;background:rgba(255,255,255,.35);border-radius:4px}
+		.agr-after .m-hero{padding:9% 7% 0;display:flex;flex-direction:column;gap:9px}
+		.agr-after .m-h1{width:72%;height:20px;background:#fff;border-radius:5px}
+		.agr-after .m-h2{width:52%;height:11px;background:rgba(255,255,255,.55);border-radius:5px}
+		.agr-after .m-btns{display:flex;gap:8px;margin-top:4px}
+		.agr-after .m-btns span{width:66px;height:16px;border-radius:999px;background:linear-gradient(135deg,#f37a1f,#e6a93c)}
+		.agr-after .m-btns span:last-child{background:transparent;border:1px solid rgba(255,255,255,.5)}
+		.agr-after .m-cards{display:flex;gap:8px;padding:8% 7% 0}
+		.agr-after .m-cards span{flex:1;height:52px;background:rgba(255,255,255,.07);border:1px solid rgba(230,169,60,.3);border-radius:8px}
+		.agr-before{background:#fff}
+		.agr-before .o{padding:6% 7%;font-family:'Times New Roman',Georgia,serif;color:#222}
+		.agr-before .o-title{font-size:15px;font-weight:700;text-align:center;color:#0a3a7a;text-decoration:underline;margin-bottom:10px}
+		.agr-before .o-row{display:flex;gap:8px}
+		.agr-before .o-img{width:38%;height:62px;background:repeating-linear-gradient(45deg,#dcdcdc,#dcdcdc 6px,#eee 6px,#eee 12px);border:1px solid #bbb}
+		.agr-before .o-lines{flex:1;display:flex;flex-direction:column;gap:5px}
+		.agr-before .o-lines i{height:7px;background:#cfcfcf;border-radius:2px}
+		.agr-before .o-links{display:flex;gap:10px;margin-top:10px}
+		.agr-before .o-links u{width:52px;height:8px;background:#2a5db0;border-radius:2px;display:inline-block}
+		.agr-before{clip-path:inset(0 50% 0 0);animation:agrClip 7s ease-in-out infinite}
+		.agr-handle{position:absolute;top:0;bottom:0;width:3px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.25);animation:agrHandle 7s ease-in-out infinite;z-index:3}
+		.agr-handle::after{content:'';position:absolute;top:50%;left:50%;width:26px;height:26px;transform:translate(-50%,-50%);background:#fff;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+		.agr-tag{position:absolute;top:10px;font:700 10px/1 system-ui;letter-spacing:.08em;padding:4px 8px;border-radius:999px;z-index:4}
+		.agr-tagL{left:10px;background:rgba(0,0,0,.55);color:#fff}
+		.agr-tagR{right:10px;background:#e6a93c;color:#1a1205}
+		.agr-demo-cap{text-align:center;color:#8a8272;font-size:.8rem;margin:8px 0 0}
+		@keyframes agrClip{0%,100%{clip-path:inset(0 82% 0 0)}50%{clip-path:inset(0 18% 0 0)}}
+		@keyframes agrHandle{0%,100%{left:18%}50%{left:82%}}
+		@media(prefers-reduced-motion:reduce){.agr-before{animation:none;clip-path:inset(0 50% 0 0)}.agr-handle{animation:none;left:50%}}
 		.agr-form{display:flex;gap:10px;max-width:600px;margin:22px auto 0;flex-wrap:wrap;justify-content:center}
-		.agr-form input[type=url]{flex:1;min-width:240px;padding:14px 16px;border:2px solid #eadfc6;border-radius:12px;font-size:1rem}
-		.agr-btn{background:linear-gradient(135deg,#c8962c,#e6b84a);color:#1a1205;font-weight:800;border:0;border-radius:12px;padding:14px 24px;font-size:1rem;cursor:pointer}
+		.agr-form input[type=url]{flex:1;min-width:230px;padding:11px 14px;border:1px solid #d9d2c2;border-radius:10px;font-size:.98rem}
+		.agr-form input[type=url]:focus{outline:none;border-color:#c8962c;box-shadow:0 0 0 3px rgba(200,150,44,.15)}
+		.agr-btn{background:linear-gradient(135deg,#c8962c,#e6b84a);color:#1a1205;font-weight:800;border:0;border-radius:10px;padding:11px 22px;font-size:.98rem;cursor:pointer}
 		.agr-btn:disabled{opacity:.5;cursor:not-allowed}
 		.agr-note{font-size:.82rem;color:#8a8272;text-align:center;margin-top:10px}
 		.agr-status{text-align:center;margin:22px 0;color:#8a6a1e;font-weight:600;min-height:24px}
@@ -208,7 +244,7 @@ function ag_refais_render() {
 		@media(max-width:760px){.agr-cmp{grid-template-columns:1fr}}
 		.agr-col h3{margin:0 0 8px;font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;color:#7a7266}
 		.agr-col.new h3{color:#c8962c}
-		.agr-frame{width:100%;height:520px;border:1px solid #efe7d6;border-radius:14px;background:#fff;box-shadow:0 6px 20px rgba(0,0,0,.06)}
+		.agr-frame{width:100%;height:440px;border:1px solid #efe7d6;border-radius:10px;background:#fff;box-shadow:0 6px 20px rgba(0,0,0,.06)}
 		.agr-lead{display:none;max-width:520px;margin:30px auto 0;background:#1a1205;color:#fdf6e6;border-radius:16px;padding:24px 20px;text-align:center}
 		.agr-lead h2{margin:0 0 6px;font-size:1.3rem}
 		.agr-lead p{margin:0 auto 14px;max-width:420px;color:#e9dcc0;line-height:1.5}
@@ -222,6 +258,27 @@ function ag_refais_render() {
 			<span class="agr-badge">Nouveau · propulsé par l'IA</span>
 			<h1>Vois ton site refait par l'IA en 60 secondes</h1>
 			<p>Colle l'adresse de ton site actuel. Notre IA le lit et te montre <strong>tout de suite</strong> à quoi il pourrait ressembler, modernisé. Gratuit, sans inscription.</p>
+		</div>
+
+		<div class="agr-demo" aria-hidden="true">
+			<div class="agr-demo-inner">
+				<div class="agr-after">
+					<div class="m-nav"><span class="m-logo"></span><span class="m-menu"></span></div>
+					<div class="m-hero"><div class="m-h1"></div><div class="m-h2"></div><div class="m-btns"><span></span><span></span></div></div>
+					<div class="m-cards"><span></span><span></span><span></span></div>
+				</div>
+				<div class="agr-before">
+					<div class="o">
+						<div class="o-title">Bienvenue sur notre site</div>
+						<div class="o-row"><span class="o-img"></span><div class="o-lines"><i></i><i></i><i></i><i></i></div></div>
+						<div class="o-links"><u></u><u></u><u></u></div>
+					</div>
+				</div>
+				<span class="agr-tag agr-tagL">AVANT</span>
+				<span class="agr-tag agr-tagR">APRÈS</span>
+				<div class="agr-handle"></div>
+			</div>
+			<p class="agr-demo-cap">Exemple — ton site, avant / après</p>
 		</div>
 
 		<?php if ( ! $ready ) : ?>
@@ -273,7 +330,19 @@ function ag_refais_render() {
 				clearInterval(tmr); go.disabled=false;
 				if(!j||!j.success){ st.textContent=''+((j&&j.data&&j.data.msg)||'Une erreur est survenue.'); return; }
 				st.textContent='';
-				try{ oldF.src=j.data.src; }catch(e){ oldF.removeAttribute('src'); }
+				try{
+					var u=j.data.src;
+					oldF.removeAttribute('src');
+					oldF.srcdoc='<!doctype html><meta charset="utf-8">'
+						+'<style>html,body{margin:0;height:100%}body{background:#f3f3f5;display:flex;align-items:flex-start;justify-content:center;font:14px system-ui}'
+						+'.ld{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#9a958c;background:linear-gradient(90deg,#ececec,#f7f7f7,#ececec);background-size:200% 100%;animation:sh 1.1s linear infinite}'
+						+'@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}img{width:100%;height:auto;display:block}</style>'
+						+'<div class="ld" id="ld">Aperçu en cours…</div><img id="i" alt="">'
+						+'<scr'+'ipt>var u='+JSON.stringify(u)+',n=0,img=document.getElementById("i"),ld=document.getElementById("ld");'
+						+'function go(){img.src=u+(u.indexOf("?")<0?"?":"&")+"r="+Date.now();}'
+						+'img.onload=function(){if(img.naturalWidth>80){ld.style.display="none";}else{rt();}};img.onerror=rt;'
+						+'function rt(){if(n++>6){ld.textContent="Aperçu indisponible";return;}setTimeout(go,2500);}go();</scr'+'ipt>';
+				}catch(e){ oldF.removeAttribute('src'); }
 				newF.srcdoc='<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+j.data.html;
 				cmp.style.display='grid';
 				/* Le mur d'email (inc/ag-refais-acces.php) ecoute cet evenement
