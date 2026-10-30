@@ -300,3 +300,46 @@ add_action( 'wp_ajax_ag_app_creations', function () {
 	usort( $out, function ( $a, $b ) { return $a['score'] <=> $b['score']; } ); // faibles d'abord = cibles sécurité
 	wp_send_json_success( array( 'items' => $out, 'total' => count( $out ) ) );
 } );
+
+/* ── Nettoyage unique : retirer les faux prospects "agence" (domaines traceurs) ──
+ * La 1re version de la cartographie capturait des domaines de traçage (Clarity,
+ * HubSpot, Snitcher…) à cause des <link preconnect>. On purge, une seule fois,
+ * les prospects source "agence:" dont le site est un traceur, ET les créations
+ * traceurs stockées dans ag_agencies. Rejouable en bumpant le drapeau. */
+add_action( 'init', function () {
+	if ( get_option( 'ag_agency_cleanup_v1' ) ) { return; }
+	if ( ! function_exists( 'ag_agency_skip_re' ) ) { return; }
+	$skip = ag_agency_skip_re();
+
+	// 1) Prospects "agence:*" dont le domaine est un traceur → retirés.
+	$list   = (array) get_option( 'ag_prospects', array() );
+	$kept   = array();
+	$retire = 0;
+	foreach ( $list as $p ) {
+		$src  = (string) ( $p['source'] ?? '' );
+		$host = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( (string) ( $p['website'] ?? '' ), PHP_URL_HOST ) ) );
+		if ( 0 === strpos( $src, 'agence:' ) && '' !== $host && preg_match( $skip, $host ) ) { $retire++; continue; }
+		$kept[] = $p;
+	}
+	if ( $retire > 0 ) { update_option( 'ag_prospects', array_values( $kept ) ); }
+
+	// 2) Créations traceurs dans le stockage des agences → purgées.
+	$store = (array) get_option( 'ag_agencies', array() );
+	$chg   = false;
+	foreach ( $store as $k => $ag ) {
+		if ( empty( $ag['creations'] ) || ! is_array( $ag['creations'] ) ) { continue; }
+		$cl = array();
+		foreach ( $ag['creations'] as $c ) {
+			$h = preg_replace( '#^www\.#', '', strtolower( (string) ( $c['host'] ?? wp_parse_url( (string) ( $c['url'] ?? '' ), PHP_URL_HOST ) ) ) );
+			if ( '' !== $h && preg_match( $skip, $h ) ) { $chg = true; continue; }
+			$cl[] = $c;
+		}
+		if ( count( $cl ) !== count( (array) $ag['creations'] ) ) { $store[ $k ]['creations'] = $cl; $store[ $k ]['n'] = count( $cl ); $chg = true; }
+	}
+	if ( $chg ) { update_option( 'ag_agencies', $store, false ); }
+
+	update_option( 'ag_agency_cleanup_v1', 1 );
+	if ( $retire > 0 && function_exists( 'ag_activity_log' ) ) {
+		ag_activity_log( '🧹 Nettoyage : ' . $retire . ' faux prospect(s) « agence » (traceurs) retiré(s).' );
+	}
+} );
