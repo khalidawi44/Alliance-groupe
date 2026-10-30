@@ -190,6 +190,7 @@ function ag_refais_render() {
 	$nonce = wp_create_nonce( 'ag_refais' );
 	$ready = ag_ia_ready();
 	$ajax  = admin_url( 'admin-ajax.php' );
+	$ag_after_img = get_stylesheet_directory_uri() . '/assets/images/refais-apres.jpg';
 	ob_start();
 	?>
 	<style>
@@ -200,9 +201,11 @@ function ag_refais_render() {
 		.agr-head p{color:#5a5348;max-width:600px;margin:0 auto;font-size:1.02rem;line-height:1.55}
 		/* Démo avant/après auto (flou, illustratif) */
 		.agr-demo{max-width:560px;margin:6px auto 2px}
-		.agr-demo-inner{position:relative;width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;box-shadow:0 12px 34px rgba(0,0,0,.16);filter:blur(2.4px) saturate(.96)}
+		.agr-demo-inner{position:relative;width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;box-shadow:0 12px 34px rgba(0,0,0,.16);filter:blur(2.2px) saturate(.97);cursor:ew-resize;touch-action:none}
+		.agr-demo-inner.is-manual{filter:blur(1px) saturate(1)}
 		.agr-demo-inner>div{position:absolute;inset:0}
-		.agr-after{background:radial-gradient(120% 90% at 80% 0,#2a2f3c,#0e1016)}
+		.agr-after{background:#0e1016 center/cover no-repeat;background-image:radial-gradient(120% 90% at 80% 0,#2a2f3c,#0e1016)}
+		.agr-demo-inner.is-manual .agr-before,.agr-demo-inner.is-manual .agr-handle{animation:none}
 		.agr-after .m-nav{display:flex;justify-content:space-between;align-items:center;padding:7% 7% 0}
 		.agr-after .m-logo{width:26%;height:12px;background:#e6a93c;border-radius:4px}
 		.agr-after .m-menu{width:34%;height:8px;background:rgba(255,255,255,.35);border-radius:4px}
@@ -260,13 +263,9 @@ function ag_refais_render() {
 			<p>Colle l'adresse de ton site actuel. Notre IA le lit et te montre <strong>tout de suite</strong> à quoi il pourrait ressembler, modernisé. Gratuit, sans inscription.</p>
 		</div>
 
-		<div class="agr-demo" aria-hidden="true">
-			<div class="agr-demo-inner">
-				<div class="agr-after">
-					<div class="m-nav"><span class="m-logo"></span><span class="m-menu"></span></div>
-					<div class="m-hero"><div class="m-h1"></div><div class="m-h2"></div><div class="m-btns"><span></span><span></span></div></div>
-					<div class="m-cards"><span></span><span></span><span></span></div>
-				</div>
+		<div class="agr-demo">
+			<div class="agr-demo-inner" title="Glisse pour comparer">
+				<div class="agr-after" style="background-image:url('<?php echo esc_url( $ag_after_img ); ?>')"></div>
 				<div class="agr-before">
 					<div class="o">
 						<div class="o-title">Bienvenue sur notre site</div>
@@ -382,6 +381,18 @@ function ag_refais_render() {
 				}
 			}
 		}catch(e){}
+	})();
+	/* Démo avant/après : auto, puis glissable au doigt/souris dès qu'on touche. */
+	(function(){
+		var box=document.querySelector('.agr-demo-inner'); if(!box) return;
+		var before=box.querySelector('.agr-before'), handle=box.querySelector('.agr-handle');
+		if(!before||!handle) return;
+		var drag=false;
+		function setPct(p){ p=Math.max(2,Math.min(98,p)); before.style.clipPath='inset(0 '+(100-p)+'% 0 0)'; handle.style.left=p+'%'; }
+		function pct(e){ var r=box.getBoundingClientRect(); var cx=(e.touches&&e.touches[0])?e.touches[0].clientX:e.clientX; return (cx-r.left)/r.width*100; }
+		box.addEventListener('pointerdown',function(e){ drag=true; box.classList.add('is-manual'); setPct(pct(e)); try{box.setPointerCapture(e.pointerId);}catch(_){ } e.preventDefault(); });
+		box.addEventListener('pointermove',function(e){ if(drag){ setPct(pct(e)); e.preventDefault(); } });
+		window.addEventListener('pointerup',function(){ drag=false; });
 	})();
 	</script>
 	<?php
