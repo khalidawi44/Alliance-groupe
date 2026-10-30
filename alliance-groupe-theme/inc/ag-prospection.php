@@ -3396,6 +3396,15 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 	if ( count( $audits ) > 60 ) { $audits = array_slice( $audits, 0, 60, true ); }
 	update_option( 'ag_app_audits', $audits, false );
 
+	// CONNEXION app ↔ WordPress : on écrit AUSSI dans l'historique canonique
+	// (ag_audit_history) utilisé par l'« Espace Audit » de l'admin → le dernier
+	// site scanné dans l'app y apparaît. 'expert' si un rapport Kali existe pour ce site.
+	if ( function_exists( 'ag_audit_hist_upsert' ) ) {
+		$kali_all  = get_option( 'ag_kali', array() );
+		$has_kali  = is_array( $kali_all ) && '' !== trim( (string) ( $kali_all[ md5( strtolower( $url ) ) ] ?? '' ) );
+		ag_audit_hist_upsert( $a, array( 'company' => $who, 'phones' => array( $phone ) ), $has_kali ? 'expert' : 'deep', false, 'self' );
+	}
+
 	// Détection « agence web » (pour proposer la cartographie de ses créations) — mise en cache 1 h.
 	$is_agency = get_transient( 'ag_isag_' . md5( strtolower( $url ) ) );
 	if ( false === $is_agency ) {
@@ -3408,6 +3417,23 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 	}
 
 	wp_send_json_success( array( 'score' => $score, 'critical' => $crit, 'tech' => $tech, 'mode' => $mode, 'reco' => $reco, 'fails' => $fails, 'report' => $report, 'report_card' => add_query_arg( 'card', 1, $report ), 'msg' => $msg, 'is_agency' => (bool) $is_agency, 'agency' => $agency_name, 'proof' => $proof, 'url' => $url ) );
+} );
+
+/* Rattrapage unique : verser les audits déjà faits dans l'app (ag_app_audits) vers
+ * l'historique canonique (ag_audit_history) de l'« Espace Audit » admin, SANS
+ * re-scanner (on réutilise les notes déjà stockées → aucun appel réseau). */
+add_action( 'init', function () {
+	if ( get_option( 'ag_audit_hist_backfill_v1' ) ) { return; }
+	if ( ! function_exists( 'ag_audit_hist_upsert' ) ) { return; }
+	$app = (array) get_option( 'ag_app_audits', array() );
+	$n = 0;
+	foreach ( $app as $e ) {
+		$u = (string) ( $e['url'] ?? '' ); if ( '' === $u ) { continue; }
+		$a = array( 'url' => $u, 'score' => (int) ( $e['score'] ?? 0 ), 'critical' => (int) ( $e['crit'] ?? 0 ), 'checks' => array() );
+		ag_audit_hist_upsert( $a, array( 'company' => (string) ( $e['name'] ?? '' ), 'phones' => array( (string) ( $e['phone'] ?? '' ) ) ), 'deep', false, 'self' );
+		if ( ++$n >= 60 ) { break; }
+	}
+	update_option( 'ag_audit_hist_backfill_v1', 1 );
 } );
 
 /* Envoi SMS EN MASSE aux ambassadeurs depuis l'app (admin) + journal de suivi. */

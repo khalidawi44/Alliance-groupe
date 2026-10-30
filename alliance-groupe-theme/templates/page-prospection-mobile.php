@@ -62,6 +62,26 @@ $ag_ajax_nonce   = wp_create_nonce( 'ag_amb_prospect' );
 $ag_is_admin = current_user_can( 'manage_options' );
 $ag_calls    = $ag_is_admin ? array_slice( (array) get_option( 'ag_voice_log', array() ), 0, 40 ) : array();
 $ag_audits   = array_slice( (array) get_option( 'ag_app_audits', array() ), 0, 40, true );
+// Connexion app ↔ WordPress : on fusionne les audits faits côté ADMIN (ag_audit_history)
+// qui ne sont pas déjà dans la liste de l'app → une seule et même liste des deux côtés.
+if ( function_exists( 'ag_audit_hist_get' ) ) {
+	foreach ( (array) ag_audit_hist_get() as $he ) {
+		$hu = (string) ( $he['url'] ?? '' ); if ( '' === $hu ) { continue; }
+		$hk = md5( strtolower( trim( $hu ) ) );
+		if ( isset( $ag_audits[ $hk ] ) ) { continue; }
+		$ag_audits[ $hk ] = array(
+			'url'   => $hu,
+			'name'  => (string) ( $he['company'] ?? ( $he['host'] ?? $hu ) ),
+			'phone' => (string) ( $he['phone'] ?? '' ),
+			'score' => (int) ( $he['score'] ?? 0 ),
+			'crit'  => (int) ( $he['critical'] ?? 0 ),
+			'fails' => array(),
+			'ts'    => (int) ( $he['ts'] ?? 0 ),
+		);
+	}
+	uasort( $ag_audits, function ( $x, $y ) { return (int) ( $y['ts'] ?? 0 ) <=> (int) ( $x['ts'] ?? 0 ); } );
+	$ag_audits = array_slice( $ag_audits, 0, 40, true );
+}
 $ag_ambs     = array();
 $ag_bulklog  = array();
 if ( $ag_is_admin ) {
