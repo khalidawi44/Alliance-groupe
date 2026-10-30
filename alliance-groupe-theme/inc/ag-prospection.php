@@ -2710,7 +2710,9 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 		header( 'Content-Type: text/html; charset=utf-8' );
 		$ok = ( '' !== $site && preg_match( '#^https?://#i', $site ) && function_exists( 'ag_audit_run' ) );
 		$a = $ok ? ag_audit_get( $site ) : array();
-		$proof = ( $ok && function_exists( 'ag_audit_proof' ) ) ? ag_audit_proof( $a ) : null;
+		$proof_kali = ( $ok && function_exists( 'ag_kali_proof' ) ) ? ag_kali_proof( $site ) : null;
+		$proof = $proof_kali ? $proof_kali : ( ( $ok && function_exists( 'ag_audit_proof' ) ) ? ag_audit_proof( $a ) : null );
+		$proof_disp = $proof ? ( ! empty( $proof['strong'] ) && function_exists( 'ag_mask_secret' ) ? ag_mask_secret( $proof['value'] ) : $proof['value'] ) : '';
 		$score  = (int) ( $a['score'] ?? 0 );
 		$tech   = (string) ( $a['tech'] ?? '' );
 		$fails  = array();
@@ -2825,8 +2827,14 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 			<?php if ( $proof ) : ?>
 			<div style="max-width:720px;margin:16px auto 0;background:#1b1113;border:1px solid #5a2330;border-left:4px solid #e5484d;border-radius:12px;padding:15px 17px;color:#ffe3e3;line-height:1.55;font-size:.96rem;text-align:left;">
 				<div style="font-weight:800;color:#ff9b9b;margin-bottom:4px;">🔎 Preuve — ce que notre audit approfondi a pu récupérer</div>
-				<?php echo esc_html( $proof['label'] ); ?> : <strong style="color:#fff;background:#3a1620;padding:1px 7px;border-radius:5px;">« <?php echo esc_html( $proof['value'] ); ?> »</strong><br>
-				<span style="color:#f3c6c6;font-size:.9rem;"><?php echo esc_html( ucfirst( $proof['how'] ) ); ?>. Nous l'avons obtenu <strong>sans aucun mot de passe</strong>, en lisant ce qui est exposé publiquement — <strong>vérifiez-le vous-même</strong>. C'est précisément ce genre de détail qu'un pirate utilise, et qu'une mise en sécurité corrige.</span>
+				<?php echo esc_html( $proof['label'] ); ?> : <strong style="color:#fff;background:#3a1620;padding:1px 7px;border-radius:5px;">« <?php echo esc_html( $proof_disp ); ?> »</strong><br>
+				<span style="color:#f3c6c6;font-size:.9rem;"><?php echo esc_html( ucfirst( $proof['how'] ) ); ?>.
+				<?php if ( ! empty( $proof['strong'] ) ) : ?>
+					Nous vous le <strong>communiquons en entier en privé</strong>. C'est une preuve concrète qu'un accès à vos données est possible — et qu'une mise en sécurité s'impose.
+				<?php else : ?>
+					Nous l'avons obtenu <strong>sans aucun mot de passe</strong>, en lisant ce qui est exposé publiquement — <strong>vérifiez-le vous-même</strong>. C'est précisément ce genre de détail qu'un pirate utilise, et qu'une mise en sécurité corrige.
+				<?php endif; ?>
+				</span>
 			</div>
 			<?php endif; ?>
 			<div class="hero">
@@ -3223,6 +3231,55 @@ if ( ! function_exists( 'ag_audit_proof' ) ) {
 	}
 }
 
+if ( ! function_exists( 'ag_mask_secret' ) ) {
+	/** Masque un secret pour l'affichage client (prouve qu'on l'a sans l'étaler). */
+	function ag_mask_secret( $s ) {
+		$s = (string) $s;
+		if ( false !== strpos( $s, ' / ' ) ) { // « user / pass » → on ne masque QUE le mot de passe.
+			list( $u, $p ) = array_pad( explode( ' / ', $s, 2 ), 2, '' );
+			return $u . ' / ' . ag_mask_secret( $p );
+		}
+		$n = strlen( $s );
+		if ( $n <= 3 ) { return str_repeat( '•', max( 1, $n ) ); }
+		return substr( $s, 0, 2 ) . str_repeat( '•', min( 8, max( 3, $n - 3 ) ) ) . substr( $s, -1 );
+	}
+}
+
+if ( ! function_exists( 'ag_kali_proof' ) ) {
+	/**
+	 * PREUVE ULTIME issue de l'audit KALI (texte importé, option ag_kali, indexé par
+	 * site). N'existe QUE si un scan Kali a été fait pour ce site — or Kali ne tourne
+	 * que SOUS MANDAT ÉCRIT (règle du filon). Donc jamais sur un prospect froid.
+	 * Priorité : mot de passe > identifiants valides > exécution de commande > secret.
+	 * @return array|null  array( label, value(entier), how, strong=true )
+	 */
+	function ag_kali_proof( $site ) {
+		$all = get_option( 'ag_kali', array() );
+		$txt = is_array( $all ) ? trim( (string) ( $all[ md5( strtolower( (string) $site ) ) ] ?? '' ) ) : '';
+		if ( '' === $txt ) { return null; }
+		// A) Username + Password explicites (ex. wpscan « Username: admin, Password: x »).
+		if ( preg_match( '/user(?:name)?\s*[:=]\s*[\'"]?([^\s,\'"]{2,40}).{0,40}?pass(?:word)?\s*[:=]\s*[\'"]?([^\s,\'"]{3,64})/is', $txt, $m ) ) {
+			return array( 'label' => 'Un identifiant + mot de passe valides', 'value' => $m[1] . ' / ' . $m[2], 'how' => "trouvés lors de l'audit (sous mandat)", 'strong' => true );
+		}
+		// B) « SUCCESS / valid / found » suivi d'un couple user:pass (wpscan, hydra…),
+		//    en sautant un éventuel libellé intermédiaire (« credentials: »).
+		if ( preg_match( '/(?:SUCCESS|valid|found|cracked|login[- ]?ok|credential)\D{0,10}?(?:[A-Za-z][A-Za-z ]{1,20}:\s*)?([A-Za-z0-9_.\-]{2,40})\s*[:\/|]\s*([^\s:\/|]{3,64})/i', $txt, $m ) ) {
+			return array( 'label' => 'Un identifiant + mot de passe valides', 'value' => $m[1] . ' / ' . $m[2], 'how' => "connexion réussie lors de l'audit (sous mandat)", 'strong' => true );
+		}
+		// C) Mot de passe explicite (« Password found: x », « pwd = x »…).
+		if ( preg_match( '/(?:mot de passe|password|pass|pwd)\b[^\n:=]{0,24}[:=]\s*[\'"]?([^\s\'"]{3,64})/i', $txt, $m ) ) {
+			return array( 'label' => 'Un mot de passe de votre site', 'value' => $m[1], 'how' => "découvert lors de l'audit approfondi (sous mandat)", 'strong' => true );
+		}
+		if ( preg_match( '/\buid=\d+\([^)]+\)/', $txt, $m ) ) {
+			return array( 'label' => 'Une prise de contrôle du serveur (exécution de commande)', 'value' => $m[0], 'how' => "démontrée lors de l'audit (sous mandat)", 'strong' => true );
+		}
+		if ( preg_match( '/(API[_ ]?KEY|SECRET|DB_PASSWORD|AWS[_ ]?SECRET|token)\s*[:=]\s*[\'"]?([^\s\'"]{6,})/i', $txt, $m ) ) {
+			return array( 'label' => 'Une clé secrète / un accès technique', 'value' => $m[1] . ' = ' . $m[2], 'how' => "trouvé exposé lors de l'audit (sous mandat)", 'strong' => true );
+		}
+		return null;
+	}
+}
+
 /* Audit d'un site depuis l'APP (léger = passif, avancé = approfondi ; JAMAIS Kali/local).
  * Rend une note /100 + le nombre de failles + des SMS prêts (refonte / sécurité / mixte). */
 add_action( 'wp_ajax_ag_app_audit', function () {
@@ -3285,9 +3342,15 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 		elseif ( false !== strpos( $nm, 'image' ) ) { $probs['imgs'] = "vos images ralentissent le site et le penalisent sur Google"; }
 	}
 	$ptxt  = array_slice( array_values( $probs ), 0, 2 );
-	// Preuve forte (vérifiable, publique mais crue privée). Ligne à insérer dans les messages.
-	$proof = function_exists( 'ag_audit_proof' ) ? ag_audit_proof( $a ) : null;
-	$proofline = $proof ? ( " Preuve que seul un audit approfondi révèle : " . $proof['label'] . " — « " . $proof['value'] . " » (" . $proof['how'] . "). Vérifiez vous-même." ) : '';
+	// Preuve forte. Priorité : Kali (sous mandat, ex. mot de passe) > passif public.
+	$proof_kali = function_exists( 'ag_kali_proof' ) ? ag_kali_proof( $url ) : null;
+	$proof = $proof_kali ? $proof_kali : ( function_exists( 'ag_audit_proof' ) ? ag_audit_proof( $a ) : null );
+	// Affichage client-facing : on MASQUE les preuves fortes (mot de passe, identifiants).
+	$proof_disp = $proof ? ( ! empty( $proof['strong'] ) && function_exists( 'ag_mask_secret' ) ? ag_mask_secret( $proof['value'] ) : $proof['value'] ) : '';
+	$proofline = $proof
+		? ( " Preuve que seul un audit approfondi révèle : " . $proof['label'] . " — « " . $proof_disp . " » (" . $proof['how'] . ")."
+			. ( ! empty( $proof['strong'] ) ? " Je vous le communique en entier en privé." : " Vérifiez vous-même." ) )
+		: '';
 	$offre = ( $score < 50 ) ? $link : $report; // site pourri → refonte ; sinon → rapport sécurité
 	$msg['perso'] = "Bonjour, j'ai regarde le site de " . $who . " (note " . $score . "/100)."
 		. ( $ptxt ? " J'ai remarque que " . implode( " et que ", $ptxt ) . "." : "" )
