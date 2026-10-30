@@ -375,6 +375,27 @@ if ( ! function_exists( 'ag_voice_horaire_ok' ) ) {
 		return ( $h >= 10 && $h < 13 ) || ( $h >= 14 && $h < 20 );
 	}
 }
+if ( ! function_exists( 'ag_voice_heure' ) ) {
+	/** Heure d'appel préférée (auto), format "HH:MM". Défaut 15:30 (demande Fabrice 30/10). */
+	function ag_voice_heure() {
+		$v = trim( (string) get_option( 'ag_voice_heure', '15:30' ) );
+		return preg_match( '/^\d{1,2}:\d{2}$/', $v ) ? $v : '15:30';
+	}
+}
+if ( ! function_exists( 'ag_voice_heure_ok' ) ) {
+	/**
+	 * Fenêtre d'appel préférée : [heure préférée, +60 min). Ne s'applique qu'à
+	 * l'AUTO (le bouton « salve maintenant » reste libre dans les heures légales).
+	 * Reste borné par ag_voice_horaire_ok (heures légales).
+	 */
+	function ag_voice_heure_ok() {
+		$ts = function_exists( 'current_time' ) ? current_time( 'timestamp' ) : time();
+		list( $hh, $mm ) = array_map( 'intval', array_pad( explode( ':', ag_voice_heure() ), 2, 0 ) );
+		$start = $hh * 60 + $mm;
+		$now   = (int) wp_date( 'G', $ts ) * 60 + (int) wp_date( 'i', $ts );
+		return $now >= $start && $now < $start + 60;
+	}
+}
 if ( ! function_exists( 'ag_voice_eligible' ) ) {
 	function ag_voice_eligible( $p ) {
 		$to = (string) ( $p['phone_intl'] ?? ( $p['phone'] ?? '' ) );
@@ -410,6 +431,7 @@ if ( ! function_exists( 'ag_voice_tour' ) ) {
 		if ( ! function_exists( 'ag_voice_call' ) || ! ag_voice_ready() ) { return 0; }
 		if ( ! $manual && ! ag_voice_auto_on() ) { return 0; }
 		if ( ! ag_voice_horaire_ok() ) { return 0; }            // hors heures légales, même en manuel
+		if ( ! $manual && ! ag_voice_heure_ok() ) { return 0; } // auto : seulement dans la fenêtre d'appel préférée (défaut 15h30)
 		$cap  = ag_voice_cap();
 		$deja = ag_voice_compte_jour();
 		if ( $cap > 0 && $deja >= $cap ) { return 0; }

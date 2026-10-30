@@ -231,9 +231,13 @@ add_action( 'init', function () {
 		'ag_scoreur_on',     // priorisation de la file
 		'ag_ab_on',          // Max : A/B de l'objet
 		'ag_rapport_soir_on',// rapport du soir
+		'ag_voice_auto_on',  // Emma : appels automatiques (activé en connaissance de cause — demande Fabrice 30/10 ; B2B, heures légales, avocats exclus, opt-out)
 	) as $opt ) {
 		update_option( $opt, 1, false );
 	}
+
+	// 1 bis) Robot vocal Emma : heure d'appel préférée fixée à 15h30 (demande Fabrice).
+	update_option( 'ag_voice_heure', '15:30', false );
 
 	// 2) Chasse : cadence quotidienne en secours (le pilote la relance ~1×/h de
 	//    toute façon) + amorçage des cibles si la liste est vide.
@@ -248,10 +252,10 @@ add_action( 'init', function () {
 
 	update_option( 'ag_auto_boot', 'v3', false );
 	if ( function_exists( 'ag_activity_log' ) ) {
-		ag_activity_log( '⚙️ Auto-configuration : tous les agents activés (chasse, enrichissement, Hugo, relances, Max, Gardien, Scoreur, Community Manager, rapport du soir).' );
+		ag_activity_log( '⚙️ Auto-configuration : tous les agents activés (chasse, enrichissement, Hugo, relances, Max, Gardien, Scoreur, Community Manager, rapport du soir, Emma appels 15h30).' );
 	}
 	if ( function_exists( 'ag_push' ) ) {
-		ag_push( '⚙️ Pilote configuré — tout est ON', 'La chasse cherche et trouve toute seule, l\'enrichissement complète les emails, Hugo démarche, les agents veillent. Plus rien à faire.' );
+		ag_push( '⚙️ Pilote configuré — tout est ON (Emma incluse)', 'La chasse trouve toute seule, Hugo démarche par email, Emma appelle vers 15h30 (heures légales, B2B, avocats exclus), les agents veillent. Vérifie que le fournisseur voix (Retell/Twilio) est configuré pour que les appels partent.' );
 	}
 }, 20 );
 
