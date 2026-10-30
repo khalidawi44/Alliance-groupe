@@ -46,7 +46,10 @@ if ( ! function_exists( 'ag_abs_url' ) ) {
 /** Liste des domaines/plateformes à ignorer (réseaux, tech, CDN, partenaires courants). */
 if ( ! function_exists( 'ag_agency_skip_re' ) ) {
 	function ag_agency_skip_re() {
-		return '#(facebook|instagram|twitter|x\.com|linkedin|youtube|youtu\.be|google\.|gstatic|gravatar|w\.org|wordpress\.org|schema\.org|paypal|maps\.|wa\.me|whatsapp|tiktok|pinterest|snapchat|vimeo|fonts\.|cdn|jsdelivr|unpkg|cloudflare|cloudflareinsights|gmpg\.org|mozilla|apple\.com|microsoft|adobe|typekit|doubleclick|googletagmanager|analytics|frenchtech|cookiedatabase|shopify\.com|wix\.com|webflow\.(io|com)|elementor|wpengine|sentry|hotjar|matomo|plage-web|malt\.fr|sortlist|codeur\.com|trustpilot)#i';
+		return '#(facebook|instagram|twitter|x\.com|linkedin|youtube|youtu\.be|google\.|gstatic|gravatar|w\.org|wordpress\.org|schema\.org|paypal|maps\.|wa\.me|whatsapp|tiktok|pinterest|snapchat|vimeo|fonts\.|cdn|jsdelivr|unpkg|cloudflare|cloudflareinsights|gmpg\.org|mozilla|apple\.com|microsoft|adobe|typekit|doubleclick|googletagmanager|googleadservices|google-analytics|analytics|frenchtech|cookiedatabase|shopify\.com|wix\.com|webflow\.(io|com)|elementor|wpengine|sentry|hotjar|matomo|plage-web|malt\.fr|sortlist|codeur\.com|trustpilot'
+			. '|clarity\.ms|hs-scripts|hs-analytics|hs-banner|hsforms|hsadspixel|hscollectedforms|hubspot|hubspotusercontent|snitcher|segment\.(io|com)|intercom|drift\.com|crisp\.chat|tawk\.to|zopim|zendesk|freshchat|livechat|calendly|typeform|mailchimp|list-manage|sendinblue|brevo|klaviyo|activecampaign'
+			. '|stripe\.com|stripe\.network|js\.stripe|recaptcha|recaptcha\.net|gstatic\.com|amazonaws|cloudfront|akamai|fastly|bunny|bootstrapcdn|fontawesome|polyfill|jquery|cdnjs|ajax\.googleapis|googleapis|googleusercontent'
+			. '|addthis|sharethis|criteo|taboola|outbrain|mixpanel|amplitude|newrelic|datadog|bugsnag|optimizely|hotjar|fullstory|mouseflow|yandex|bing\.com|bat\.bing|pardot|marketo|cdn-cgi|usercentrics|onetrust|axeptio|tarteaucitron|didomi|cookieyes|trustarc|iubenda|gtm\.js|wp\.com|w\.org|wp-content)#i';
 	}
 }
 
@@ -107,7 +110,7 @@ if ( ! function_exists( 'ag_agency_find_creations' ) ) {
 
 		// 1) Pages "liste" : la page donnée + pages portfolio/réalisations liées (même domaine).
 		$listing = array( $url => $url );
-		if ( preg_match_all( '#href=["\']([^"\']+)["\']#i', $body, $pm ) ) {
+		if ( preg_match_all( '#<a\b[^>]*href=["\']([^"\']+)["\']#i', $body, $pm ) ) {
 			foreach ( array_unique( $pm[1] ) as $rel ) {
 				$abs = ag_abs_url( $rel, $url ); if ( ! $abs ) continue;
 				$ah = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( $abs, PHP_URL_HOST ) ) );
@@ -125,7 +128,7 @@ if ( ! function_exists( 'ag_agency_find_creations' ) ) {
 			$r  = ( $pu === $url && '' !== $body ) ? array( 'body' => $body ) : ag_audit_fetch( $pu );
 			$pb = ( $r && ! empty( $r['body'] ) ) ? (string) $r['body'] : '';
 			if ( '' === $pb ) continue;
-			if ( preg_match_all( '#href=["\']([^"\']+)["\']#i', $pb, $lm ) ) {
+			if ( preg_match_all( '#<a\b[^>]*href=["\']([^"\']+)["\']#i', $pb, $lm ) ) {
 				foreach ( array_unique( $lm[1] ) as $rel ) {
 					$abs = ag_abs_url( $rel, $pu ); if ( ! $abs || ! preg_match( '#^https?://#i', $abs ) ) continue;
 					$ah  = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( $abs, PHP_URL_HOST ) ) );
@@ -280,6 +283,7 @@ add_action( 'wp_ajax_ag_app_creations', function () {
 			$url  = (string) ( $c['url'] ?? '' );
 			$host = preg_replace( '#^www\.#', '', strtolower( (string) ( $c['host'] ?? wp_parse_url( $url, PHP_URL_HOST ) ) ) );
 			if ( '' === $host || isset( $seen[ $host ] ) ) { continue; }
+			if ( function_exists( 'ag_agency_skip_re' ) && preg_match( ag_agency_skip_re(), $host ) ) { continue; } // masque les domaines traceurs/CDN déjà stockés
 			$seen[ $host ] = true;
 			$out[] = array(
 				'name'    => ( '' !== (string) ( $c['name'] ?? '' ) ) ? $c['name'] : $host,
