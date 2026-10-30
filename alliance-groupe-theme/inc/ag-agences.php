@@ -204,8 +204,36 @@ add_action( 'wp_ajax_ag_app_agency_scan', function () {
 	if ( count( $store ) > 120 ) { uasort( $store, function ( $x, $y ) { return (int) ( $y['ts'] ?? 0 ) <=> (int) ( $x['ts'] ?? 0 ); } ); $store = array_slice( $store, 0, 120, true ); }
 	update_option( 'ag_agencies', $store, false );
 
-	if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '🕸️ Agence cartographiée : ' . ( $name ?: $url ) . ' — ' . count( $creations ) . ' création(s)' );
-	wp_send_json_success( array( 'key' => $key, 'agency' => $store[ $key ] ) );
+	// Injection CRM : chaque client trouvé devient un prospect (pour que la machine
+	// le travaille). Anti-doublon par SITE (en plus du dédoublonnage par nom de
+	// ag_prospect_add_record). Statut « nouveau », source tracée vers l'agence.
+	$added = 0;
+	if ( function_exists( 'ag_prospect_add_record' ) ) {
+		$existing = array();
+		foreach ( (array) get_option( 'ag_prospects', array() ) as $p ) {
+			$w = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( (string) ( $p['website'] ?? '' ), PHP_URL_HOST ) ) );
+			if ( '' !== $w ) { $existing[ $w ] = true; }
+		}
+		$ag_label = $name ?: preg_replace( '#^www\.#', '', (string) wp_parse_url( $url, PHP_URL_HOST ) );
+		foreach ( $creations as $c ) {
+			$ch = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( (string) ( $c['url'] ?? '' ), PHP_URL_HOST ) ) );
+			if ( '' === $ch || isset( $existing[ $ch ] ) ) { continue; }
+			$ok = ag_prospect_add_record( array(
+				'name'    => ( '' !== (string) ( $c['name'] ?? '' ) ) ? $c['name'] : ag_agency_name_from_host( $ch ),
+				'website' => $c['url'],
+				'source'  => 'agence:' . $ag_label,
+				'status'  => 'nouveau',
+				'notes'   => 'Client de l\'agence ' . $ag_label . ' — trouvé via cartographie le ' . current_time( 'd/m/Y H:i' ) . '.',
+				'audit_score' => (int) ( $c['score'] ?? 0 ),
+				'audit_crit'  => (int) ( $c['crit'] ?? 0 ),
+				'audit_ts'    => time(),
+			) );
+			if ( $ok ) { $existing[ $ch ] = true; $added++; }
+		}
+	}
+
+	if ( function_exists( 'ag_activity_log' ) ) ag_activity_log( '🕸️ Agence cartographiée : ' . ( $name ?: $url ) . ' — ' . count( $creations ) . ' création(s), ' . $added . ' ajoutée(s) au CRM' );
+	wp_send_json_success( array( 'key' => $key, 'agency' => $store[ $key ], 'crm_added' => $added ) );
 } );
 
 /* AJAX : liste des agences cartographiées (classées du PIRE au MEILLEUR). */
