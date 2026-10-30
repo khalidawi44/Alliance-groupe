@@ -22,8 +22,8 @@ add_filter( 'auth_cookie_expiration', function ( $length, $user_id, $remember ) 
 		return (int) apply_filters( 'ag_admin_session_ttl', YEAR_IN_SECONDS );
 	}
 	// Option : étendre aussi l'équipe (ambassadeurs) à 30 j — désactivé par défaut.
-	if ( (bool) apply_filters( 'ag_team_long_session', false )
-		&& ( user_can( (int) $user_id, 'ag_ambassadeur' ) || user_can( (int) $user_id, 'ag_client' ) ) ) {
+	if ( (bool) apply_filters( 'ag_team_long_session', true )
+		&& user_can( (int) $user_id, 'ag_ambassadeur' ) ) {
 		return 30 * DAY_IN_SECONDS;
 	}
 	return $length;
