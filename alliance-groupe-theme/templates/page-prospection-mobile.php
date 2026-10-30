@@ -45,11 +45,11 @@ $ag_ref          = function_exists( 'ag_ambassadeur_ref' ) ? (string) ag_ambassa
 $ag_refq         = function ( $path ) use ( $ag_ref ) { $u = home_url( $path ); return $ag_ref ? add_query_arg( 'ref', $ag_ref, $u ) : $u; };
 $ag_parrain_link = function_exists( 'ag_ambassadeur_parrain_link' ) ? ag_ambassadeur_parrain_link( $ag_email ) : home_url( '/ambassadeurs' );
 $ag_promo = array(
-	array( 'label' => 'Mon offre — Sites Express', 'desc' => 'Création de site pro + sécurité. Ton lien de vente (commission à vie).', 'url' => $ag_sale_link, 'msg' => "Un site pro, rapide et sécurisé, à partir de 490 €. Et on en offre un chaque mois. Infos :" ),
-	array( 'label' => 'Audit gratuit « Tester mon site »', 'desc' => "Offre un test de sécurité/visibilité : l'hameçon idéal.", 'url' => $ag_refq( '/tester-mon-site' ), 'msg' => "Teste gratuitement la sécurité et la visibilité de ton site (note sur 100) :" ),
-	array( 'label' => 'Studio créatif', 'desc' => 'Vidéos & visuels de pub à faire soi-même.', 'url' => home_url( '/studio' ), 'msg' => "Crée tes visuels et vidéos de pub gratuitement avec le Studio Alliance :" ),
-	array( 'label' => 'Devenir ambassadeur', 'desc' => 'Recrute : 10% à vie + prime. Ton lien de parrainage.', 'url' => $ag_parrain_link, 'msg' => "Gagne de l'argent en recommandant Alliance Groupe (10% à vie). Rejoins-moi :" ),
-	array( 'label' => 'Site Alliance Groupe', 'desc' => "La page d'accueil, avec ton lien.", 'url' => $ag_refq( '/' ), 'msg' => "Alliance Groupe — création de sites web ET cybersécurité :" ),
+	array( 'label' => 'Mon offre — Sites Express', 'desc' => 'Création de site pro + sécurité. Ton lien de vente (commission à vie).', 'url' => $ag_sale_link, 'msg' => "Un site pro, rapide et sécurisé, à partir de 490 €. Et on en offre un chaque mois. Infos :", 'slogan' => "VOTRE SITE PRO, EN LIGNE CETTE SEMAINE", 'sub' => "Design moderne, sécurisé dès le départ. À partir de 490 €.", 'accent' => '#F37A1F', 'emoji' => '🚀' ),
+	array( 'label' => 'Audit gratuit « Tester mon site »', 'desc' => "Offre un test de sécurité/visibilité : l'hameçon idéal.", 'url' => $ag_refq( '/tester-mon-site' ), 'msg' => "Teste gratuitement la sécurité et la visibilité de ton site (note sur 100) :", 'slogan' => "VOTRE SITE EST-IL VRAIMENT SÛR ?", 'sub' => "Test de sécurité gratuit — votre note sur 100 en 2 minutes.", 'accent' => '#22C55E', 'emoji' => '🛡️' ),
+	array( 'label' => 'Studio créatif', 'desc' => 'Vidéos & visuels de pub à faire soi-même.', 'url' => home_url( '/studio' ), 'msg' => "Crée tes visuels et vidéos de pub gratuitement avec le Studio Alliance :", 'slogan' => "CRÉEZ VOS PUBS EN 5 MINUTES", 'sub' => "Vidéos & visuels prêts à poster. Gratuit — Studio Alliance.", 'accent' => '#A855F7', 'emoji' => '🎬' ),
+	array( 'label' => 'Devenir ambassadeur', 'desc' => 'Recrute : 10% à vie + prime. Ton lien de parrainage.', 'url' => $ag_parrain_link, 'msg' => "Gagne de l'argent en recommandant Alliance Groupe (10% à vie). Rejoins-moi :", 'slogan' => "GAGNEZ 10% À VIE", 'sub' => "Recommandez Alliance Groupe. Prime dès la 1re vente. 100% en ligne.", 'accent' => '#E6A93C', 'emoji' => '💸' ),
+	array( 'label' => 'Site Alliance Groupe', 'desc' => "La page d'accueil, avec ton lien.", 'url' => $ag_refq( '/' ), 'msg' => "Alliance Groupe — création de sites web ET cybersécurité :", 'slogan' => "SITE WEB + CYBERSÉCURITÉ", 'sub' => "Un seul interlocuteur, du design à la protection de vos données.", 'accent' => '#3AA3FF', 'emoji' => '🦁' ),
 );
 
 $ag_my_prospects = function_exists( 'ag_prospects_for_owner' ) ? ag_prospects_for_owner( $ag_email ) : array();
@@ -110,16 +110,25 @@ foreach ( $ag_my_prospects as $ppc ) {
 		#ag-refresh{ margin-left:auto; }
 		#ag-back[disabled]{ opacity:.35; pointer-events:none; }
 		.promo-row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-		#ag-poster{ display:none; }
-		#ag-poster .ap-brand{ letter-spacing:5px; font-weight:800; color:#b8891f; }
-		#ag-poster h1{ font-size:30px; margin:14px 0 6px; color:#111; }
-		#ag-poster img{ width:60%; max-width:420px; height:auto; margin:18px auto; display:block; }
-		#ag-poster .ap-url{ word-break:break-all; color:#444; font-size:13px; }
-		#ag-poster .ap-foot{ color:#666; }
+		#ag-poster{ display:none; --ac:#F37A1F; }
+		#ag-poster .ap-top{ display:flex; align-items:center; justify-content:space-between; padding:26px 34px; background:#0E1016; color:#fff; }
+		#ag-poster .ap-brand{ letter-spacing:3px; font-weight:800; font-size:20px; display:flex; align-items:center; gap:10px; }
+		#ag-poster .ap-logo{ background:var(--ac); color:#0E1016; font-weight:900; padding:4px 9px; border-radius:8px; }
+		#ag-poster .ap-emoji{ font-size:40px; }
+		#ag-poster .ap-body{ text-align:center; padding:42px 40px 10px; }
+		#ag-poster .ap-slogan{ font-family:Georgia,'Times New Roman',serif; font-size:50px; line-height:1.07; margin:0 auto; max-width:14ch; color:#0E1016; font-weight:800; }
+		#ag-poster .ap-slogan::after{ content:''; display:block; width:120px; height:7px; background:var(--ac); border-radius:6px; margin:22px auto 0; }
+		#ag-poster .ap-sub{ font-size:21px; color:#333; margin:22px auto 30px; max-width:30ch; }
+		#ag-poster .ap-qrcard{ display:inline-block; background:#fff; border:3px solid var(--ac); border-radius:22px; padding:18px 18px 12px; }
+		#ag-poster .ap-qrcard img{ width:300px; height:300px; display:block; }
+		#ag-poster .ap-scan{ margin-top:8px; font-weight:700; color:var(--ac); font-size:15px; }
+		#ag-poster .ap-url{ word-break:break-all; color:#555; font-size:15px; margin:22px auto 0; max-width:40ch; }
+		#ag-poster .ap-foot{ margin-top:26px; padding:16px; text-align:center; background:var(--ac); color:#0E1016; font-weight:700; font-size:15px; }
 		@media print{
+			@page{ margin:0; }
 			body.printing *{ visibility:hidden !important; }
 			body.printing #ag-poster, body.printing #ag-poster *{ visibility:visible !important; }
-			body.printing #ag-poster{ display:block; position:fixed; inset:0; margin:0; padding:48px; text-align:center; background:#fff; color:#111; }
+			body.printing #ag-poster{ display:flex; flex-direction:column; justify-content:space-between; position:fixed; inset:0; margin:0; min-height:100vh; background:#fff; color:#0E1016; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 		}
 		.wrap{ max-width:680px; margin:0 auto; padding:16px 14px 100px; }
 		.view{ display:none; } .view.on{ display:block; animation:fade .25s ease; }
@@ -473,7 +482,7 @@ foreach ( $ag_my_prospects as $ppc ) {
 				<button type="button" class="b gold" style="flex:1;min-width:120px;" onclick="AG.share(<?php echo esc_attr( wp_json_encode( $pr['url'] ) ); ?>,<?php echo esc_attr( wp_json_encode( $pr['label'] ) ); ?>,<?php echo esc_attr( wp_json_encode( $pr['msg'] ) ); ?>)">Partager</button>
 				<button type="button" class="mini" onclick="AG.copy(<?php echo esc_attr( wp_json_encode( $pr['url'] ) ); ?>)">Copier</button>
 				<button type="button" class="mini" onclick="AG.qr(<?php echo esc_attr( wp_json_encode( $pr['url'] ) ); ?>)">QR</button>
-				<button type="button" class="mini" onclick="AG.poster(<?php echo esc_attr( wp_json_encode( $pr['url'] ) ); ?>,<?php echo esc_attr( wp_json_encode( $pr['label'] ) ); ?>,<?php echo esc_attr( wp_json_encode( $pr['msg'] ) ); ?>)">Affiche</button>
+				<button type="button" class="mini" onclick="AG.poster(<?php echo esc_attr( wp_json_encode( array( 'url' => $pr['url'], 'slogan' => $pr['slogan'], 'sub' => $pr['sub'], 'accent' => $pr['accent'], 'emoji' => $pr['emoji'] ) ) ); ?>)">Affiche</button>
 			</div>
 		</div>
 		<?php endforeach; ?>
@@ -533,14 +542,22 @@ foreach ( $ag_my_prospects as $ppc ) {
 	<?php if ( $ag_is_admin ) : ?><a href="#" data-t="ao" onclick="AG.tab('ao');AG.loadAO();return false"><i></i>Marchés</a><?php endif; ?>
 </nav>
 
-<!-- Affiche imprimable (remplie à la volée par AG.poster) -->
+<!-- Affiche imprimable travaillée (remplie à la volée par AG.poster) -->
 <div id="ag-poster" aria-hidden="true">
-	<div class="ap-brand">ALLIANCE GROUPE</div>
-	<h1 data-t></h1>
-	<p data-m></p>
-	<img src="" alt="QR code">
-	<p class="ap-url" data-u></p>
-	<p class="ap-foot">Scanne ce QR code avec l'appareil photo de ton téléphone</p>
+	<div class="ap-top">
+		<div class="ap-brand"><span class="ap-logo">AG</span> ALLIANCE GROUPE</div>
+		<div class="ap-emoji" data-e>🚀</div>
+	</div>
+	<div class="ap-body">
+		<h1 class="ap-slogan" data-t></h1>
+		<p class="ap-sub" data-m></p>
+		<div class="ap-qrcard">
+			<img src="" alt="QR code">
+			<div class="ap-scan">📷 Scannez avec votre téléphone</div>
+		</div>
+		<p class="ap-url" data-u></p>
+	</div>
+	<div class="ap-foot">Alliance Groupe · Studio web &amp; cybersécurité · alliancegroupe-inc.com</div>
 </div>
 
 <script>
@@ -587,14 +604,17 @@ var AG = (function(){
 	}
 	function copy(txt){ if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(function(){ toast('Lien copié ✓'); }, function(){ toast(txt); }); } else { toast(txt); } }
 	function qr(url){ window.open('https://api.qrserver.com/v1/create-qr-code/?size=800x800&margin=24&data='+encodeURIComponent(url), '_blank'); }
-	function poster(url, title, msg){
+	function poster(o){
+		o = o || {}; var url=o.url||'';
 		var p=document.getElementById('ag-poster'); if(!p) return;
-		p.querySelector('[data-t]').textContent=title||'Alliance Groupe';
-		p.querySelector('[data-m]').textContent=msg||'';
-		p.querySelector('[data-u]').textContent=url;
-		p.querySelector('img').src='https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=20&data='+encodeURIComponent(url);
+		p.style.setProperty('--ac', o.accent || '#F37A1F');
+		p.querySelector('[data-e]').textContent = o.emoji || '🚀';
+		p.querySelector('[data-t]').textContent = o.slogan || 'Alliance Groupe';
+		p.querySelector('[data-m]').textContent = o.sub || '';
+		p.querySelector('[data-u]').textContent = url;
+		p.querySelector('.ap-qrcard img').src='https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=10&data='+encodeURIComponent(url);
 		document.body.classList.add('printing');
-		setTimeout(function(){ window.print(); setTimeout(function(){ document.body.classList.remove('printing'); }, 400); }, 450);
+		setTimeout(function(){ window.print(); setTimeout(function(){ document.body.classList.remove('printing'); }, 400); }, 500);
 	}
 	return { tab:tab, back:back, reload:reload, toast:toast, post:post, share:share, copy:copy, qr:qr, poster:poster, AJAX:AJAX, N:N, admin:<?php echo $ag_is_admin ? 'true' : 'false'; ?> };
 })();
