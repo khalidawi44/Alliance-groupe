@@ -40,6 +40,18 @@ if ( ! function_exists( 'ag_is_mobile_fr' ) ) {
 $ag_sale_link   = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_sale_link( $ag_email ) : home_url( '/sites-express' );
 $ag_default_msg = "Bonjour, je suis de l'agence Alliance Groupe. On aide les entreprises à avoir un site web pro (et on en offre un chaque mois). Est-ce que je peux vous en dire plus ? " . $ag_sale_link;
 
+/* Onglet PROMO : liens à partager (personnalisés avec le ref ambassadeur). */
+$ag_ref          = function_exists( 'ag_ambassadeur_ref' ) ? (string) ag_ambassadeur_ref( $ag_email ) : '';
+$ag_refq         = function ( $path ) use ( $ag_ref ) { $u = home_url( $path ); return $ag_ref ? add_query_arg( 'ref', $ag_ref, $u ) : $u; };
+$ag_parrain_link = function_exists( 'ag_ambassadeur_parrain_link' ) ? ag_ambassadeur_parrain_link( $ag_email ) : home_url( '/ambassadeurs' );
+$ag_promo = array(
+	array( 'label' => 'Mon offre — Sites Express', 'desc' => 'Création de site pro + sécurité. Ton lien de vente (commission à vie).', 'url' => $ag_sale_link, 'msg' => "Un site pro, rapide et sécurisé, à partir de 490 €. Et on en offre un chaque mois. Infos :" ),
+	array( 'label' => 'Audit gratuit « Tester mon site »', 'desc' => "Offre un test de sécurité/visibilité : l'hameçon idéal.", 'url' => $ag_refq( '/tester-mon-site' ), 'msg' => "Teste gratuitement la sécurité et la visibilité de ton site (note sur 100) :" ),
+	array( 'label' => 'Studio créatif', 'desc' => 'Vidéos & visuels de pub à faire soi-même.', 'url' => home_url( '/studio' ), 'msg' => "Crée tes visuels et vidéos de pub gratuitement avec le Studio Alliance :" ),
+	array( 'label' => 'Devenir ambassadeur', 'desc' => 'Recrute : 10% à vie + prime. Ton lien de parrainage.', 'url' => $ag_parrain_link, 'msg' => "Gagne de l'argent en recommandant Alliance Groupe (10% à vie). Rejoins-moi :" ),
+	array( 'label' => 'Site Alliance Groupe', 'desc' => "La page d'accueil, avec ton lien.", 'url' => $ag_refq( '/' ), 'msg' => "Alliance Groupe — création de sites web ET cybersécurité :" ),
+);
+
 $ag_my_prospects = function_exists( 'ag_prospects_for_owner' ) ? ag_prospects_for_owner( $ag_email ) : array();
 $ag_pstat        = function_exists( 'ag_prospect_statuses' ) ? ag_prospect_statuses() : array();
 $ag_ppost        = admin_url( 'admin-post.php' );
@@ -97,6 +109,18 @@ foreach ( $ag_my_prospects as $ppc ) {
 		.appbar-btn:active{ background:rgba(212,180,92,.28); }
 		#ag-refresh{ margin-left:auto; }
 		#ag-back[disabled]{ opacity:.35; pointer-events:none; }
+		.promo-row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+		#ag-poster{ display:none; }
+		#ag-poster .ap-brand{ letter-spacing:5px; font-weight:800; color:#b8891f; }
+		#ag-poster h1{ font-size:30px; margin:14px 0 6px; color:#111; }
+		#ag-poster img{ width:60%; max-width:420px; height:auto; margin:18px auto; display:block; }
+		#ag-poster .ap-url{ word-break:break-all; color:#444; font-size:13px; }
+		#ag-poster .ap-foot{ color:#666; }
+		@media print{
+			body.printing *{ visibility:hidden !important; }
+			body.printing #ag-poster, body.printing #ag-poster *{ visibility:visible !important; }
+			body.printing #ag-poster{ display:block; position:fixed; inset:0; margin:0; padding:48px; text-align:center; background:#fff; color:#111; }
+		}
 		.wrap{ max-width:680px; margin:0 auto; padding:16px 14px 100px; }
 		.view{ display:none; } .view.on{ display:block; animation:fade .25s ease; }
 		@keyframes fade{ from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
@@ -437,6 +461,24 @@ foreach ( $ag_my_prospects as $ppc ) {
 		<?php endif; ?>
 	</section>
 
+	<!-- PROMO / PARTAGE -->
+	<section class="view" id="view-promo">
+		<h2 class="sec">Promo &amp; partage</h2>
+		<div class="card"><p class="sub" style="margin:0;">Partage une appli en 1 clic (WhatsApp, Insta, SMS…), montre le QR, ou imprime l'affiche. Tes liens sont déjà personnalisés<?php echo $ag_ref ? '.' : ' dès qu\'un code ambassadeur est associé.'; ?></p></div>
+		<?php foreach ( $ag_promo as $pr ) : ?>
+		<div class="card promo-card">
+			<b style="display:block;"><?php echo esc_html( $pr['label'] ); ?></b>
+			<span class="sub" style="display:block;margin:2px 0 10px;"><?php echo esc_html( $pr['desc'] ); ?></span>
+			<div class="promo-row">
+				<button type="button" class="b gold" style="flex:1;min-width:120px;" onclick="AG.share(<?php echo esc_attr( wp_json_encode( $pr['url'] ) ); ?>,<?php echo esc_attr( wp_json_encode( $pr['label'] ) ); ?>,<?php echo esc_attr( wp_json_encode( $pr['msg'] ) ); ?>)">Partager</button>
+				<button type="button" class="mini" onclick="AG.copy(<?php echo esc_attr( wp_json_encode( $pr['url'] ) ); ?>)">Copier</button>
+				<button type="button" class="mini" onclick="AG.qr(<?php echo esc_attr( wp_json_encode( $pr['url'] ) ); ?>)">QR</button>
+				<button type="button" class="mini" onclick="AG.poster(<?php echo esc_attr( wp_json_encode( $pr['url'] ) ); ?>,<?php echo esc_attr( wp_json_encode( $pr['label'] ) ); ?>,<?php echo esc_attr( wp_json_encode( $pr['msg'] ) ); ?>)">Affiche</button>
+			</div>
+		</div>
+		<?php endforeach; ?>
+	</section>
+
 	<section class="view" id="view-mis">
 		<h2 class="sec">Missions</h2>
 		<div class="card"><p class="sub" style="margin:0;">Des missions à réaliser pour l'équipe (prospection, terrain…). Réserve ta place, fais la mission, envoie ton rendu → tu gagnes une prime. Chaque prospect trouvé nourrit le CRM.</p></div>
@@ -481,6 +523,7 @@ foreach ( $ag_my_prospects as $ppc ) {
 
 <nav class="tabbar">
 	<a href="#" data-t="accueil" class="active" onclick="AG.tab('accueil');return false"><i></i>Accueil</a>
+	<a href="#" data-t="promo" onclick="AG.tab('promo');return false"><i></i>Promo</a>
 	<a href="#" data-t="prospecter" onclick="AG.tab('prospecter');return false"><i></i>Prospecter</a>
 	<a href="#" data-t="chercher" onclick="AG.tab('chercher');return false"><i></i>Chercher</a>
 	<?php if ( $ag_is_admin ) : ?><a href="#" data-t="appels" onclick="AG.tab('appels');return false"><i></i>Appels</a><?php endif; ?>
@@ -489,6 +532,16 @@ foreach ( $ag_my_prospects as $ppc ) {
 	<a href="#" data-t="mis" onclick="AG.tab('mis');AG.loadMissions();return false"><i></i>Missions</a>
 	<?php if ( $ag_is_admin ) : ?><a href="#" data-t="ao" onclick="AG.tab('ao');AG.loadAO();return false"><i></i>Marchés</a><?php endif; ?>
 </nav>
+
+<!-- Affiche imprimable (remplie à la volée par AG.poster) -->
+<div id="ag-poster" aria-hidden="true">
+	<div class="ap-brand">ALLIANCE GROUPE</div>
+	<h1 data-t></h1>
+	<p data-m></p>
+	<img src="" alt="QR code">
+	<p class="ap-url" data-u></p>
+	<p class="ap-foot">Scanne ce QR code avec l'appareil photo de ton téléphone</p>
+</div>
 
 <script>
 var AG = (function(){
@@ -527,7 +580,23 @@ var AG = (function(){
 	var toastT;
 	function toast(m){ var t=document.getElementById('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(function(){ t.classList.remove('on'); },3200); }
 	function post(action, data){ var fd=new FormData(); fd.append('action',action); fd.append('_n',N); Object.keys(data||{}).forEach(function(k){ fd.append(k,data[k]); }); return fetch(AJAX,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}); }
-	return { tab:tab, back:back, reload:reload, toast:toast, post:post, AJAX:AJAX, N:N, admin:<?php echo $ag_is_admin ? 'true' : 'false'; ?> };
+	// ── Promo / partage ──
+	function share(url, title, msg){
+		if(navigator.share){ navigator.share({ title: title||'Alliance Groupe', text: (msg||''), url: url }).catch(function(){}); return; }
+		window.open('https://wa.me/?text='+encodeURIComponent((msg? msg+' ':'')+url), '_blank'); // repli WhatsApp
+	}
+	function copy(txt){ if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(function(){ toast('Lien copié ✓'); }, function(){ toast(txt); }); } else { toast(txt); } }
+	function qr(url){ window.open('https://api.qrserver.com/v1/create-qr-code/?size=800x800&margin=24&data='+encodeURIComponent(url), '_blank'); }
+	function poster(url, title, msg){
+		var p=document.getElementById('ag-poster'); if(!p) return;
+		p.querySelector('[data-t]').textContent=title||'Alliance Groupe';
+		p.querySelector('[data-m]').textContent=msg||'';
+		p.querySelector('[data-u]').textContent=url;
+		p.querySelector('img').src='https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=20&data='+encodeURIComponent(url);
+		document.body.classList.add('printing');
+		setTimeout(function(){ window.print(); setTimeout(function(){ document.body.classList.remove('printing'); }, 400); }, 450);
+	}
+	return { tab:tab, back:back, reload:reload, toast:toast, post:post, share:share, copy:copy, qr:qr, poster:poster, AJAX:AJAX, N:N, admin:<?php echo $ag_is_admin ? 'true' : 'false'; ?> };
 })();
 
 (function(){
