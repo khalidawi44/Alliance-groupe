@@ -141,6 +141,11 @@ if ( file_exists( $ag_agences_file ) ) {
     require_once $ag_agences_file;
 }
 
+$ag_session_file = get_stylesheet_directory() . '/inc/ag-session-persist.php';
+if ( file_exists( $ag_session_file ) ) {
+    require_once $ag_session_file;
+}
+
 // ── 1c4a-sexies. Veille « Appels d'offres publics » (BOAMP open data) : leads chauds à budget voté
 $ag_appels_offres_file = get_stylesheet_directory() . '/inc/ag-appels-offres.php';
 if ( file_exists( $ag_appels_offres_file ) ) {

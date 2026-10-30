@@ -93,6 +93,10 @@ foreach ( $ag_my_prospects as $ppc ) {
 		.appbar{ position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:10px; padding:calc(env(safe-area-inset-top) + 10px) 16px 10px; background:rgba(11,11,15,.86); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
 		.appbar img{ width:30px; height:30px; border-radius:8px; }
 		.appbar b{ font-size:1.05rem; letter-spacing:.3px; } .appbar b span{ color:var(--gold); }
+		.appbar-btn{ flex:0 0 auto; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:rgba(255,255,255,.06); color:#fff; font-size:1.35rem; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+		.appbar-btn:active{ background:rgba(212,180,92,.28); }
+		#ag-refresh{ margin-left:auto; }
+		#ag-back[disabled]{ opacity:.35; pointer-events:none; }
 		.wrap{ max-width:680px; margin:0 auto; padding:16px 14px 100px; }
 		.view{ display:none; } .view.on{ display:block; animation:fade .25s ease; }
 		@keyframes fade{ from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
@@ -161,8 +165,10 @@ foreach ( $ag_my_prospects as $ppc ) {
 <div id="ptr">↓ Tire pour rafraîchir</div>
 
 <header class="appbar">
+	<button type="button" class="appbar-btn" id="ag-back" title="Retour" onclick="AG.back();return false;">‹</button>
 	<img src="<?php echo esc_url( $ag_icon ); ?>" alt="">
 	<b>Alliance <span><?php echo $ag_is_admin ? 'Admin' : 'Ambassadeur'; ?></span></b>
+	<button type="button" class="appbar-btn" id="ag-refresh" title="Rafraîchir" onclick="AG.reload();return false;">⟳</button>
 </header>
 
 <div class="wrap">
@@ -487,16 +493,41 @@ foreach ( $ag_my_prospects as $ppc ) {
 <script>
 var AG = (function(){
 	var AJAX='<?php echo esc_js( $ag_ajax_url ); ?>', N='<?php echo esc_js( $ag_ajax_nonce ); ?>';
-	function tab(id){
+	var tabStack=[], curTab='accueil';
+	function applyTab(id){
+		var el=document.getElementById('view-'+id); if(!el){ return false; }
 		document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); });
-		var el=document.getElementById('view-'+id); if(el){ el.classList.add('on'); }
+		el.classList.add('on');
 		document.querySelectorAll('.tabbar a').forEach(function(a){ a.classList.toggle('active', a.getAttribute('data-t')===id); });
 		window.scrollTo(0,0);
+		curTab=id;
+		var b=document.getElementById('ag-back'); if(b){ b.disabled = tabStack.length===0; }
+		return true;
 	}
+	function tab(id, fromHistory){
+		if(id===curTab){ return; }
+		if(!fromHistory){
+			tabStack.push(curTab);
+			try{ history.pushState({agTab:id}, '', '#'+id); }catch(e){}
+		}
+		applyTab(id);
+	}
+	function back(){
+		if(tabStack.length){ var prev=tabStack.pop(); applyTab(prev); try{ history.replaceState({agTab:prev}, '', '#'+prev); }catch(e){} }
+		else { try{ history.back(); }catch(e){} }
+	}
+	function reload(){ try{ location.reload(); }catch(e){ window.location.href=window.location.href; } }
+	// Bouton « retour » matériel / navigateur → revient d'onglet au lieu de quitter l'appli.
+	window.addEventListener('popstate', function(ev){
+		var id=(ev.state && ev.state.agTab) ? ev.state.agTab : 'accueil';
+		if(tabStack.length){ tabStack.pop(); }
+		applyTab(id);
+	});
+	try{ history.replaceState({agTab:'accueil'}, '', '#accueil'); }catch(e){}
 	var toastT;
 	function toast(m){ var t=document.getElementById('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(function(){ t.classList.remove('on'); },3200); }
 	function post(action, data){ var fd=new FormData(); fd.append('action',action); fd.append('_n',N); Object.keys(data||{}).forEach(function(k){ fd.append(k,data[k]); }); return fetch(AJAX,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}); }
-	return { tab:tab, toast:toast, post:post, AJAX:AJAX, N:N, admin:<?php echo $ag_is_admin ? 'true' : 'false'; ?> };
+	return { tab:tab, back:back, reload:reload, toast:toast, post:post, AJAX:AJAX, N:N, admin:<?php echo $ag_is_admin ? 'true' : 'false'; ?> };
 })();
 
 (function(){
