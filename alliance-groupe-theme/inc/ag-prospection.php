@@ -2710,6 +2710,7 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 		header( 'Content-Type: text/html; charset=utf-8' );
 		$ok = ( '' !== $site && preg_match( '#^https?://#i', $site ) && function_exists( 'ag_audit_run' ) );
 		$a = $ok ? ag_audit_get( $site ) : array();
+		$proof = ( $ok && function_exists( 'ag_audit_proof' ) ) ? ag_audit_proof( $a ) : null;
 		$score  = (int) ( $a['score'] ?? 0 );
 		$tech   = (string) ( $a['tech'] ?? '' );
 		$fails  = array();
@@ -2819,6 +2820,13 @@ if ( ! function_exists( 'ag_render_client_report' ) ) {
 			<?php if ( '' !== (string) $agence ) : ?>
 			<div style="max-width:720px;margin:14px auto 0;background:#15131f;border:1px solid #3a2f55;border-left:4px solid #D4B45C;border-radius:12px;padding:14px 16px;color:#e9e4f5;line-height:1.55;font-size:.95rem;text-align:left;">
 				Votre site a été réalisé par <strong><?php echo esc_html( $agence ); ?></strong>. Une agence web conçoit de beaux sites — mais la <strong>sécurité informatique est un autre métier</strong>. Nous avons analysé votre site : voici un <strong>aperçu</strong> de ce que nous avons trouvé (le détail complet, et comment le corriger, est dans ce rapport).
+			</div>
+			<?php endif; ?>
+			<?php if ( $proof ) : ?>
+			<div style="max-width:720px;margin:16px auto 0;background:#1b1113;border:1px solid #5a2330;border-left:4px solid #e5484d;border-radius:12px;padding:15px 17px;color:#ffe3e3;line-height:1.55;font-size:.96rem;text-align:left;">
+				<div style="font-weight:800;color:#ff9b9b;margin-bottom:4px;">🔎 Preuve — ce que notre audit approfondi a pu récupérer</div>
+				<?php echo esc_html( $proof['label'] ); ?> : <strong style="color:#fff;background:#3a1620;padding:1px 7px;border-radius:5px;">« <?php echo esc_html( $proof['value'] ); ?> »</strong><br>
+				<span style="color:#f3c6c6;font-size:.9rem;"><?php echo esc_html( ucfirst( $proof['how'] ) ); ?>. Nous l'avons obtenu <strong>sans aucun mot de passe</strong>, en lisant ce qui est exposé publiquement — <strong>vérifiez-le vous-même</strong>. C'est précisément ce genre de détail qu'un pirate utilise, et qu'une mise en sécurité corrige.</span>
 			</div>
 			<?php endif; ?>
 			<div class="hero">
@@ -3168,6 +3176,53 @@ if ( ! function_exists( 'ag_audit_get' ) ) {
 	}
 }
 
+if ( ! function_exists( 'ag_audit_proof' ) ) {
+	/**
+	 * PREUVE FORTE, concrète et VÉRIFIABLE d'un audit approfondi : un élément que
+	 * le propriétaire croit privé mais qui est EXPOSÉ PUBLIQUEMENT (identifiant
+	 * admin énuméré, fichier sensible accessible, version exacte…). 100% passif et
+	 * LÉGAL (lecture d'adresses publiques). JAMAIS de mot de passe, jamais d'intrusion.
+	 *
+	 * @return array|null  array( 'label', 'value', 'how' ) ou null si rien de probant.
+	 */
+	function ag_audit_proof( $audit ) {
+		$checks = (array) ( $audit['checks'] ?? array() );
+		$find = function ( $needle ) use ( $checks ) {
+			foreach ( $checks as $c ) {
+				$st = (string) ( $c['status'] ?? '' );
+				if ( in_array( $st, array( 'fail', 'warn' ), true ) && false !== mb_stripos( (string) ( $c['name'] ?? '' ), $needle ) ) { return (string) ( $c['msg'] ?? '' ); }
+			}
+			return '';
+		};
+		// 1) Identifiant de connexion administrateur (la preuve la plus forte).
+		$m = $find( 'auteur' );
+		if ( '' !== $m && preg_match( '/«\s*(.+?)\s*»/u', $m, $mm ) ) {
+			return array( 'label' => 'Votre identifiant de connexion administrateur', 'value' => $mm[1], 'how' => "exposé publiquement via l'énumération d'auteur (l'adresse ?author=1 de votre site le révèle)" );
+		}
+		$m = $find( 'comptes' );
+		if ( '' !== $m && false === mb_stripos( $m, 'non exposée' ) && preg_match( '/:\s*(.+?)\.?\s*$/u', $m, $mm ) ) {
+			return array( 'label' => "Le(s) identifiant(s) de connexion de votre site", 'value' => trim( $mm[1] ), 'how' => "exposé(s) publiquement par l'API de votre site (/wp-json/wp/v2/users)" );
+		}
+		// 2) Fichier sensible accessible depuis Internet.
+		foreach ( array( 'développement', 'Sauvegardes', 'sensibles' ) as $k ) {
+			$m = $find( $k );
+			if ( '' !== $m && false === mb_stripos( $m, 'Aucun' ) && preg_match( '/:\s*(.+?)\.?\s*$/u', $m, $mm ) ) {
+				return array( 'label' => 'Un fichier sensible accessible depuis Internet', 'value' => trim( $mm[1] ), 'how' => 'téléchargeable directement, sans aucun mot de passe' );
+			}
+		}
+		// 3) Version exacte (permet de cibler les failles connues).
+		$m = $find( 'Version WordPress' );
+		if ( '' !== $m && preg_match( '/WordPress\s+([0-9.]+)/u', $m, $mm ) ) {
+			return array( 'label' => 'La version exacte de votre site', 'value' => 'WordPress ' . $mm[1], 'how' => 'visible publiquement (elle permet de viser les failles connues de cette version précise)' );
+		}
+		$m = $find( 'Divulgation de version' );
+		if ( '' !== $m && false === mb_stripos( $m, 'Aucune' ) && false === mb_stripos( $m, 'non divulg' ) ) {
+			return array( 'label' => 'La version de vos logiciels serveur', 'value' => trim( $m ), 'how' => 'exposée dans les en-têtes techniques de votre site' );
+		}
+		return null;
+	}
+}
+
 /* Audit d'un site depuis l'APP (léger = passif, avancé = approfondi ; JAMAIS Kali/local).
  * Rend une note /100 + le nombre de failles + des SMS prêts (refonte / sécurité / mixte). */
 add_action( 'wp_ajax_ag_app_audit', function () {
@@ -3230,10 +3285,14 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 		elseif ( false !== strpos( $nm, 'image' ) ) { $probs['imgs'] = "vos images ralentissent le site et le penalisent sur Google"; }
 	}
 	$ptxt  = array_slice( array_values( $probs ), 0, 2 );
+	// Preuve forte (vérifiable, publique mais crue privée). Ligne à insérer dans les messages.
+	$proof = function_exists( 'ag_audit_proof' ) ? ag_audit_proof( $a ) : null;
+	$proofline = $proof ? ( " Preuve que seul un audit approfondi révèle : " . $proof['label'] . " — « " . $proof['value'] . " » (" . $proof['how'] . "). Vérifiez vous-même." ) : '';
 	$offre = ( $score < 50 ) ? $link : $report; // site pourri → refonte ; sinon → rapport sécurité
 	$msg['perso'] = "Bonjour, j'ai regarde le site de " . $who . " (note " . $score . "/100)."
 		. ( $ptxt ? " J'ai remarque que " . implode( " et que ", $ptxt ) . "." : "" )
-		. " Je cree et je securise des sites web pour les professionnels — je peux corriger ca rapidement (ou vous refaire un site moderne et sur). Je vous montre ce que ca donnerait ? 👉 " . $offre;
+		. " Je cree et je securise des sites web pour les professionnels — je peux corriger ca rapidement (ou vous refaire un site moderne et sur). Je vous montre ce que ca donnerait ? 👉 " . $offre
+		. $proofline;
 
 	// MESSAGE PARTENAIRE : pour une AGENCE / un créateur de sites → devient apporteur d'affaires
 	// (ses propres clients sont exposés → il les recommande, il touche une commission).
@@ -3250,7 +3309,8 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 	if ( '' !== $agency_name ) {
 		$msg['agence'] = "Bonjour, votre site (" . $who . ") a été réalisé par " . $agency_name . ". C'est une agence web : ils font de beaux sites, mais la sécurité informatique est un autre métier. "
 			. "Nous l'avons analysé (note " . $score . "/100)" . ( $ptxt ? " et avons remarqué notamment que " . implode( " et que ", $ptxt ) : "" ) . ". Il reste d'autres points à vérifier. "
-			. "Le détail complet, et comment corriger, est dans votre rapport 👉 " . $report;
+			. "Le détail complet, et comment corriger, est dans votre rapport 👉 " . $report
+			. $proofline;
 	}
 	// Persiste la note sur la fiche prospect (si id fourni).
 	$pid = sanitize_text_field( wp_unslash( $_POST['id'] ?? '' ) );
@@ -3284,7 +3344,7 @@ add_action( 'wp_ajax_ag_app_audit', function () {
 		set_transient( 'ag_isag_' . md5( strtolower( $url ) ), $is_agency, HOUR_IN_SECONDS );
 	}
 
-	wp_send_json_success( array( 'score' => $score, 'critical' => $crit, 'tech' => $tech, 'mode' => $mode, 'reco' => $reco, 'fails' => $fails, 'report' => $report, 'report_card' => add_query_arg( 'card', 1, $report ), 'msg' => $msg, 'is_agency' => (bool) $is_agency, 'agency' => $agency_name, 'url' => $url ) );
+	wp_send_json_success( array( 'score' => $score, 'critical' => $crit, 'tech' => $tech, 'mode' => $mode, 'reco' => $reco, 'fails' => $fails, 'report' => $report, 'report_card' => add_query_arg( 'card', 1, $report ), 'msg' => $msg, 'is_agency' => (bool) $is_agency, 'agency' => $agency_name, 'proof' => $proof, 'url' => $url ) );
 } );
 
 /* Envoi SMS EN MASSE aux ambassadeurs depuis l'app (admin) + journal de suivi. */
