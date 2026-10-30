@@ -488,6 +488,17 @@ foreach ( $ag_my_prospects as $ppc ) {
 		<?php endforeach; ?>
 	</section>
 
+	<!-- TROUVÉS (créations d'agences cartographiées) -->
+	<section class="view" id="view-trouves">
+		<h2 class="sec">Sites trouvés</h2>
+		<div class="card"><p class="sub" style="margin:0;">Les sites <strong>créés par des agences</strong> que tu as cartographiées (≠ les sites que tu as audités toi-même). Pour chacun : voir, <strong>auditer</strong>, <strong>ajouter à tes prospects</strong> pour les démarcher.</p></div>
+		<div class="row" style="display:flex;gap:8px;align-items:center;margin:2px 0 8px;">
+			<b id="ag-cre-count" style="font-size:.95rem;">—</b>
+			<button type="button" class="mini" style="cursor:pointer;margin-left:auto;" onclick="AG.loadCreations();return false;">↻ Actualiser</button>
+		</div>
+		<div id="ag-creations"><p class="sub">Chargement…</p></div>
+	</section>
+
 	<section class="view" id="view-mis">
 		<h2 class="sec">Missions</h2>
 		<div class="card"><p class="sub" style="margin:0;">Des missions à réaliser pour l'équipe (prospection, terrain…). Réserve ta place, fais la mission, envoie ton rendu → tu gagnes une prime. Chaque prospect trouvé nourrit le CRM.</p></div>
@@ -538,6 +549,7 @@ foreach ( $ag_my_prospects as $ppc ) {
 	<?php if ( $ag_is_admin ) : ?><a href="#" data-t="appels" onclick="AG.tab('appels');return false"><i></i>Appels</a><?php endif; ?>
 	<?php if ( $ag_is_admin ) : ?><a href="#" data-t="ambass" onclick="AG.tab('ambass');return false"><i></i>Ambass.</a><?php endif; ?>
 	<a href="#" data-t="audit" onclick="AG.tab('audit');return false"><i></i>Audit</a>
+	<a href="#" data-t="trouves" onclick="AG.tab('trouves');AG.loadCreations();return false"><i></i>Trouvés</a>
 	<a href="#" data-t="mis" onclick="AG.tab('mis');AG.loadMissions();return false"><i></i>Missions</a>
 	<?php if ( $ag_is_admin ) : ?><a href="#" data-t="ao" onclick="AG.tab('ao');AG.loadAO();return false"><i></i>Marchés</a><?php endif; ?>
 </nav>
@@ -1007,11 +1019,30 @@ var AG = (function(){
 		if(!confirm('Cartographier les créations de cette agence ? On analyse plusieurs sites, ça peut prendre 20 à 40 secondes.')) return;
 		var old=b.textContent; b.textContent='Analyse en cours… patiente'; b.setAttribute('disabled','disabled');
 		AG.post('ag_app_agency_scan',{url:u}).then(function(j){ b.textContent=old; b.removeAttribute('disabled');
-			if(j&&j.success){ AG.toast(''+(((j.data.agency)&&j.data.agency.n)||0)+' création(s) trouvée(s) — voir « Agences web » (onglet Chercher)'); agLoadAgencies(); }
+			if(j&&j.success){ var n=((j.data.agency)&&j.data.agency.n)||0; agLoadAgencies(); AG.tab('trouves'); AG.loadCreations(); AG.toast(n+' site(s) trouvé(s) — les voici'); }
 			else { AG.toast(''+((j&&j.data&&j.data.m)||'Erreur')); }
 		}).catch(function(){ b.textContent=old; b.removeAttribute('disabled'); AG.toast('Erreur réseau (scan peut-être trop long)'); });
 	});
 	agLoadAgencies();
+
+	// Onglet « Trouvés » : liste À PLAT de toutes les créations d'agences (séparée des sites audités).
+	AG.loadCreations=function(){
+		var host=document.getElementById('ag-creations'), cnt=document.getElementById('ag-cre-count');
+		if(!host) return;
+		host.innerHTML='<p class="sub">Chargement…</p>';
+		AG.post('ag_app_creations',{}).then(function(j){
+			var arr=(j&&j.success&&j.data.items)||[];
+			if(cnt){ cnt.textContent=arr.length+' site'+(arr.length>1?'s':'')+' trouvé'+(arr.length>1?'s':''); }
+			if(!arr.length){ host.innerHTML='<p class="sub">Aucun site trouvé pour l\'instant. Audite une agence web (onglet Audit) puis clique « Cartographier ses créations » : ses clients apparaîtront ici.</p>'; return; }
+			host.innerHTML='';
+			arr.forEach(function(c){
+				var head=document.createElement('div'); head.className='rk'; head.style.cssText='margin:12px 0 -2px;color:#9aa0b0;font-size:.78rem;';
+				head.innerHTML=(c.score?('<span style="color:'+agScoreCol(c.score)+';font-weight:800;">'+c.score+'/100</span>'+((c.crit||0)>0?(' · '+c.crit+' faille(s)'):'')+' · '):'')+'création de '+(c.agency||'l\'agence');
+				host.appendChild(head);
+				host.appendChild(agItemRow(c));
+			});
+		}).catch(function(){ host.innerHTML='<p class="sub">Erreur réseau.</p>'; });
+	};
 
 	// Audit manuel (onglet Audit) : lance l'audit sur l'URL saisie et affiche le rapport dans l'app
 	var arun=document.getElementById('ag-audit-run'), aurl=document.getElementById('ag-audit-url');

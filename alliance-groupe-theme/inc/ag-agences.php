@@ -258,3 +258,41 @@ add_action( 'wp_ajax_ag_app_agency_del', function () {
 	if ( isset( $store[ $key ] ) ) { unset( $store[ $key ] ); update_option( 'ag_agencies', $store, false ); }
 	wp_send_json_success();
 } );
+
+/* AJAX : liste À PLAT de toutes les créations cartographiées (onglet « Trouvés »),
+ * dédupliquée par domaine, séparée des sites audités. Marque « exists » si le
+ * site est déjà dans le CRM (prospects). Pires scores d'abord = meilleures cibles. */
+add_action( 'wp_ajax_ag_app_creations', function () {
+	if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) wp_send_json_error();
+	$store = (array) get_option( 'ag_agencies', array() );
+
+	$existing = array();
+	foreach ( (array) get_option( 'ag_prospects', array() ) as $p ) {
+		$w = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( (string) ( $p['website'] ?? '' ), PHP_URL_HOST ) ) );
+		if ( '' !== $w ) { $existing[ $w ] = true; }
+	}
+
+	$seen = array(); $out = array();
+	foreach ( $store as $ag ) {
+		if ( ! is_array( $ag ) ) { continue; }
+		$agname = (string) ( ! empty( $ag['name'] ) ? $ag['name'] : ( $ag['host'] ?? '' ) );
+		foreach ( (array) ( $ag['creations'] ?? array() ) as $c ) {
+			$url  = (string) ( $c['url'] ?? '' );
+			$host = preg_replace( '#^www\.#', '', strtolower( (string) ( $c['host'] ?? wp_parse_url( $url, PHP_URL_HOST ) ) ) );
+			if ( '' === $host || isset( $seen[ $host ] ) ) { continue; }
+			$seen[ $host ] = true;
+			$out[] = array(
+				'name'    => ( '' !== (string) ( $c['name'] ?? '' ) ) ? $c['name'] : $host,
+				'website' => $url ? $url : ( 'https://' . $host . '/' ),
+				'type'    => 'client de ' . $agname,
+				'agency'  => $agname,
+				'score'   => (int) ( $c['score'] ?? 0 ),
+				'crit'    => (int) ( $c['crit'] ?? 0 ),
+				'real'    => true,
+				'exists'  => isset( $existing[ $host ] ),
+			);
+		}
+	}
+	usort( $out, function ( $a, $b ) { return $a['score'] <=> $b['score']; } ); // faibles d'abord = cibles sécurité
+	wp_send_json_success( array( 'items' => $out, 'total' => count( $out ) ) );
+} );
