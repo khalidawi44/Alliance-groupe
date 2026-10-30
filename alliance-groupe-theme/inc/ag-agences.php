@@ -43,40 +43,116 @@ if ( ! function_exists( 'ag_abs_url' ) ) {
 	}
 }
 
-/** Découvre les créations d'une agence : liens externes des pages portfolio/réalisations. */
+/** Liste des domaines/plateformes à ignorer (réseaux, tech, CDN, partenaires courants). */
+if ( ! function_exists( 'ag_agency_skip_re' ) ) {
+	function ag_agency_skip_re() {
+		return '#(facebook|instagram|twitter|x\.com|linkedin|youtube|youtu\.be|google\.|gstatic|gravatar|w\.org|wordpress\.org|schema\.org|paypal|maps\.|wa\.me|whatsapp|tiktok|pinterest|snapchat|vimeo|fonts\.|cdn|jsdelivr|unpkg|cloudflare|cloudflareinsights|gmpg\.org|mozilla|apple\.com|microsoft|adobe|typekit|doubleclick|googletagmanager|analytics|frenchtech|cookiedatabase|shopify\.com|wix\.com|webflow\.(io|com)|elementor|wpengine|sentry|hotjar|matomo|plage-web|malt\.fr|sortlist|codeur\.com|trustpilot)#i';
+	}
+}
+
+/** Nom lisible déduit d'un host (algosource.com -> Algosource). */
+if ( ! function_exists( 'ag_agency_name_from_host' ) ) {
+	function ag_agency_name_from_host( $host ) {
+		$h = preg_replace( '#^www\.#', '', strtolower( (string) $host ) );
+		$label = explode( '.', $h );
+		$label = str_replace( array( '-', '_' ), ' ', (string) ( $label[0] ?? $h ) );
+		return ucwords( trim( $label ) );
+	}
+}
+
+/** Sur une FICHE PROJET, trouve le site CLIENT (priorité aux liens « découvrir / voir le site »). */
+if ( ! function_exists( 'ag_agency_client_from_case' ) ) {
+	function ag_agency_client_from_case( $body, $case_url, $agency_host ) {
+		$skip = ag_agency_skip_re();
+		$best = ''; $best_score = 0; $first = '';
+		if ( preg_match_all( '#<a\b[^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>#is', (string) $body, $am, PREG_SET_ORDER ) ) {
+			foreach ( $am as $a ) {
+				$abs = ag_abs_url( $a[1], $case_url );
+				if ( ! $abs || ! preg_match( '#^https?://#i', $abs ) ) continue;
+				$ah = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( $abs, PHP_URL_HOST ) ) );
+				if ( '' === $ah || $ah === $agency_host || preg_match( $skip, $ah ) ) continue;
+				if ( ! preg_match( '#\.[a-z]{2,}$#i', $ah ) ) continue;
+				$txt = strtolower( trim( wp_strip_all_tags( $a[2] ) ) );
+				$score = 1; // lien externe plausible
+				if ( preg_match( '#d[ée]couvrir|voir le site|visiter|consulter|site (en ligne|web|internet)|le site|en ligne|visit#i', $txt ) ) $score += 5;
+				if ( '' !== $ah && false !== strpos( $txt, $ah ) ) $score += 3; // le texte affiché EST le domaine
+				if ( '' === $first ) $first = $abs;
+				if ( $score > $best_score ) { $best_score = $score; $best = $abs; }
+			}
+		}
+		// On ne retient le 1er lien externe « au hasard » que s'il n'y a pas mieux ET qu'il est unique/clair.
+		$pick = ( $best_score >= 4 ) ? $best : ( ( $best_score >= 1 ) ? $best : $first );
+		if ( '' === $pick ) return null;
+		$ph = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( $pick, PHP_URL_HOST ) ) );
+		if ( '' === $ph ) return null;
+		return array( 'url' => 'https://' . $ph . '/', 'name' => ag_agency_name_from_host( $ph ) );
+	}
+}
+
+/**
+ * Découvre les créations d'une agence. Les portfolios modernes ne mettent PAS le
+ * lien du client sur la page liste : chaque projet pointe vers une FICHE interne
+ * (/portfolio/slug/) où se trouve le vrai lien « découvrir le site ». On suit donc
+ * les fiches projet et on en extrait le domaine client. On garde aussi les liens
+ * clients mis en direct sur la liste (certaines agences le font).
+ *
+ * @return array liste de array('url'=>, 'name'=>) dédupliquée par domaine client.
+ */
 if ( ! function_exists( 'ag_agency_find_creations' ) ) {
 	function ag_agency_find_creations( $url, $body = '' ) {
 		if ( ! function_exists( 'ag_audit_fetch' ) ) return array();
-		$host = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
-		$host = preg_replace( '#^www\.#', '', $host );
+		$host = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) ) );
 		if ( '' === $body ) { $r0 = ag_audit_fetch( $url ); $body = $r0 ? (string) $r0['body'] : ''; }
+		$skip = ag_agency_skip_re();
 
-		// 1) Repère les pages portfolio / réalisations.
-		$pages = array( $url );
-		if ( preg_match_all( '#href=["\']([^"\']*(?:realisation|portfolio|reference|projet|nos-clients|clients|nos-sites|book)[^"\']*)["\']#i', $body, $pm ) ) {
+		// 1) Pages "liste" : la page donnée + pages portfolio/réalisations liées (même domaine).
+		$listing = array( $url => $url );
+		if ( preg_match_all( '#href=["\']([^"\']+)["\']#i', $body, $pm ) ) {
 			foreach ( array_unique( $pm[1] ) as $rel ) {
-				$abs = ag_abs_url( $rel, $url );
-				if ( $abs ) $pages[] = $abs;
+				$abs = ag_abs_url( $rel, $url ); if ( ! $abs ) continue;
+				$ah = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( $abs, PHP_URL_HOST ) ) );
+				if ( $ah !== $host ) continue;
+				$path = strtolower( (string) wp_parse_url( $abs, PHP_URL_PATH ) );
+				if ( preg_match( '#(portfolio|realisation|references?|nos-clients|nos-sites|nos-creations|book)#', $path ) ) { $listing[ $abs ] = $abs; }
 			}
 		}
-		$pages = array_slice( array_values( array_unique( $pages ) ), 0, 3 );
+		$listing = array_slice( array_values( $listing ), 0, 3 );
 
-		// 2) Extrait les liens SORTANTS (autre domaine) de ces pages = créations probables.
-		$skip = '#(facebook|instagram|twitter|x\.com|linkedin|youtube|youtu\.be|google\.|gstatic|gravatar|w\.org|wordpress\.org|schema\.org|paypal|maps\.|wa\.me|whatsapp|tiktok|pinterest|snapchat|fonts\.|cdn|jsdelivr|unpkg|cloudflare|gmpg\.org|mozilla|apple\.com|microsoft|adobe|typekit|doubleclick|googletagmanager|analytics)#i';
-		$found = array();
-		foreach ( $pages as $pu ) {
-			$r = ( $pu === $url && '' !== $body ) ? array( 'body' => $body ) : ag_audit_fetch( $pu );
-			if ( ! $r || empty( $r['body'] ) ) continue;
-			if ( preg_match_all( '#href=["\'](https?://[^"\']+)["\']#i', (string) $r['body'], $lm ) ) {
-				foreach ( $lm[1] as $lnk ) {
-					$lh = strtolower( (string) wp_parse_url( $lnk, PHP_URL_HOST ) );
-					$lh = preg_replace( '#^www\.#', '', $lh );
-					if ( '' === $lh || $lh === $host ) continue;
-					if ( preg_match( $skip, $lh ) ) continue;
-					if ( ! preg_match( '#\.[a-z]{2,}$#i', $lh ) ) continue;
-					$found[ $lh ] = 'https://' . $lh . '/';
-					if ( count( $found ) >= 12 ) break 2;
+		// 2) Depuis les pages liste : fiches projet INTERNES + liens client DIRECTS éventuels.
+		$cases  = array();  // URLs internes de fiches projet
+		$found  = array();  // host => array(url,name)
+		foreach ( $listing as $pu ) {
+			$r  = ( $pu === $url && '' !== $body ) ? array( 'body' => $body ) : ag_audit_fetch( $pu );
+			$pb = ( $r && ! empty( $r['body'] ) ) ? (string) $r['body'] : '';
+			if ( '' === $pb ) continue;
+			if ( preg_match_all( '#href=["\']([^"\']+)["\']#i', $pb, $lm ) ) {
+				foreach ( array_unique( $lm[1] ) as $rel ) {
+					$abs = ag_abs_url( $rel, $pu ); if ( ! $abs || ! preg_match( '#^https?://#i', $abs ) ) continue;
+					$ah  = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( $abs, PHP_URL_HOST ) ) );
+					if ( '' === $ah ) continue;
+					if ( $ah === $host ) {
+						$path = strtolower( (string) wp_parse_url( $abs, PHP_URL_PATH ) );
+						if ( preg_match( '#(portfolio|realisation|projet|reference|/case|/work|creation-|refonte-|developpement-|optimisation-)#', $path )
+							&& ! preg_match( '#/(portfolio|realisations?|references?|projets?|works?|nos-clients|nos-sites|nos-creations)/?$#', $path ) ) {
+							$cases[ $abs ] = $abs;
+						}
+					} elseif ( ! preg_match( $skip, $ah ) && preg_match( '#\.[a-z]{2,}$#i', $ah ) ) {
+						if ( ! isset( $found[ $ah ] ) ) { $found[ $ah ] = array( 'url' => 'https://' . $ah . '/', 'name' => ag_agency_name_from_host( $ah ) ); }
+					}
 				}
+			}
+		}
+
+		// 3) Suivre chaque fiche projet → extraire le site CLIENT (+ nom).
+		foreach ( array_slice( array_values( $cases ), 0, 12 ) as $cu ) {
+			if ( count( $found ) >= 14 ) break;
+			$cr = ag_audit_fetch( $cu );
+			$cb = ( $cr && ! empty( $cr['body'] ) ) ? (string) $cr['body'] : '';
+			if ( '' === $cb ) continue;
+			$client = ag_agency_client_from_case( $cb, $cu, $host );
+			if ( $client ) {
+				$ch = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( $client['url'], PHP_URL_HOST ) ) );
+				if ( $ch && $ch !== $host && ! isset( $found[ $ch ] ) ) { $found[ $ch ] = $client; }
 			}
 		}
 		return array_values( $found );
@@ -95,13 +171,16 @@ add_action( 'wp_ajax_ag_app_agency_scan', function () {
 	$a    = ag_audit_get( $url );
 	$agency_score = (int) ( $a['score'] ?? 0 );
 
-	$creations_urls = ag_agency_find_creations( $url, $body );
+	$creations_data = ag_agency_find_creations( $url, $body );
 	$creations = array();
-	foreach ( array_slice( $creations_urls, 0, 8 ) as $cu ) { // plafond : 8 audits par scan (temps/coût)
+	foreach ( array_slice( $creations_data, 0, 8 ) as $cd ) { // plafond : 8 audits par scan (temps/coût)
+		$cu = is_array( $cd ) ? (string) ( $cd['url'] ?? '' ) : (string) $cd;
+		if ( '' === $cu ) continue;
 		$ca = ag_audit_get( $cu );
 		$creations[] = array(
 			'url'   => $cu,
 			'host'  => preg_replace( '#^www\.#', '', (string) wp_parse_url( $cu, PHP_URL_HOST ) ),
+			'name'  => is_array( $cd ) ? (string) ( $cd['name'] ?? '' ) : '',
 			'score' => (int) ( $ca['score'] ?? 0 ),
 			'crit'  => (int) ( $ca['critical'] ?? 0 ),
 		);
