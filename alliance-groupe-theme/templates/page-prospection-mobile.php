@@ -885,10 +885,21 @@ var AG = (function(){
 		var d=document.createElement('div'); d.className='res';
 		var stars=(it.rating>0)?(' · '+it.rating+(it.reviews?(' ('+it.reviews+')'):'')):'';
 		var cat=it.type||it.kind||'';
-		// Badge « besoin d'un site ? » : vrai site => a déjà un site (mauvaise cible) ; sinon => bonne cible.
-		var needBadge = it.real
-			? '<span style="color:#8a8a92;">a déjà un site</span>'
-			: '<span style="color:#2ecc71;font-weight:700;">pas de vrai site — bonne cible</span>';
+		// Badge. Contexte SÉCURITÉ (it.sec : sites trouvés/cartographiés) => on juge la
+		// SÉCURITÉ (le score), PAS « a-t-il un site ». Sinon (chasse création) => ancien badge.
+		var needBadge;
+		if(it.sec){
+			var _sc=(typeof it.score==='number')?it.score:(it.score!=null&&it.score!==''?parseInt(it.score,10):-1);
+			if(_sc>=0 && !isNaN(_sc)){
+				needBadge = _sc<50 ? '<span style="color:#ff6b6b;font-weight:700;">🔴 À sécuriser — bonne cible</span>'
+					: (_sc<75 ? '<span style="color:#e6b35a;font-weight:700;">🟠 À renforcer</span>'
+					: '<span style="color:#2ecc71;font-weight:700;">🟢 Plutôt bon</span>');
+			} else { needBadge = '<span style="color:#9aa0b0;">Site à auditer</span>'; }
+		} else {
+			needBadge = it.real
+				? '<span style="color:#8a8a92;">a déjà un site</span>'
+				: '<span style="color:#2ecc71;font-weight:700;">pas de vrai site — bonne cible</span>';
+		}
 		d.innerHTML='<div class="rn">'+(it.name||'')+'</div><div class="rk">'+(it.city||'')+(cat?(' · '+cat):'')+stars+(it.exists?' · déjà en base':'')+'</div><div class="rk" style="margin-top:2px;">'+needBadge+'</div>';
 		if(it.website){ var lk=document.createElement('a'); lk.className='rlink'; lk.href=it.website; lk.target='_blank'; lk.rel='noopener'; lk.textContent=''+String(it.website).replace(/^https?:\/\//,'').replace(/\/$/,''); d.appendChild(lk); }
 		var row=document.createElement('div'); row.className='row'; row.style.cssText='display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;';
@@ -1026,7 +1037,7 @@ var AG = (function(){
 					var head=document.createElement('div'); head.className='rk'; head.style.margin='8px 0 -2px';
 					head.innerHTML='<span style="color:'+agScoreCol(c.score||0)+';font-weight:800;">'+(c.score||0)+'/100</span>'+((c.crit||0)>0?(' · '+c.crit+' faille(s)'):'')+' — création de l\'agence';
 					body.appendChild(head);
-					body.appendChild(agItemRow({name:c.host, website:c.url, city:'', type:'client de l\'agence'}));
+					body.appendChild(agItemRow({name:c.host, website:c.url, city:'', type:'client de l\'agence', real:true, sec:true, score:c.score, crit:c.crit}));
 				});
 				if(!(ag.creations||[]).length){ var em=document.createElement('p'); em.className='sub'; em.textContent='Aucune création détectée automatiquement (portfolio non public ou liens absents).'; body.appendChild(em); }
 			} });
@@ -1061,7 +1072,7 @@ var AG = (function(){
 				var head=document.createElement('div'); head.className='rk'; head.style.cssText='margin:12px 0 -2px;color:#9aa0b0;font-size:.78rem;';
 				head.innerHTML=(c.score?('<span style="color:'+agScoreCol(c.score)+';font-weight:800;">'+c.score+'/100</span>'+((c.crit||0)>0?(' · '+c.crit+' faille(s)'):'')+' · '):'')+'création de '+(c.agency||'l\'agence');
 				host.appendChild(head);
-				host.appendChild(agItemRow(c));
+				c.sec=true; host.appendChild(agItemRow(c));
 			});
 		}).catch(function(){ host.innerHTML='<p class="sub">Erreur réseau.</p>'; });
 	};
