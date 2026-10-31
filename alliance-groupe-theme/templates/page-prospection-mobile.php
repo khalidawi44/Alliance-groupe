@@ -253,6 +253,18 @@ foreach ( $ag_my_prospects as $ppc ) {
 			<button type="button" id="ag-px-save" class="b gold" style="margin-top:10px;">💾 Enregistrer les prix</button>
 			<span id="ag-px-msg" class="sub" style="display:block;margin-top:8px;"></span>
 		</div>
+		<div class="card" style="border:1px solid #16a34a;">
+			<h3 style="margin:0 0 8px;">💳 Liens de paiement (rapport client)</h3>
+			<p class="sub" style="margin:-4px 0 10px;">Colle tes liens Stripe/PayPal + prix des 3 formules. Ils apparaissent comme <b>boutons « Payer en ligne »</b> sur chaque rapport privé envoyé au client.</p>
+			<label style="font-size:.78rem;">Rapport seul — prix (€) <input type="number" id="rp-px-rapport" value="<?php echo (int) get_option( 'ag_rap_px_rapport', 0 ); ?>" style="width:100%;padding:8px;margin:2px 0 4px;"></label>
+			<input type="url" id="rp-pay-rapport" value="<?php echo esc_attr( get_option( 'ag_rap_pay_rapport', '' ) ); ?>" placeholder="Lien Stripe/PayPal — Rapport seul" style="width:100%;padding:8px;margin-bottom:8px;">
+			<label style="font-size:.78rem;">Rapport + Correction — prix (€) <input type="number" id="rp-px-correction" value="<?php echo (int) get_option( 'ag_rap_px_correction', 0 ); ?>" style="width:100%;padding:8px;margin:2px 0 4px;"></label>
+			<input type="url" id="rp-pay-correction" value="<?php echo esc_attr( get_option( 'ag_rap_pay_correction', '' ) ); ?>" placeholder="Lien Stripe/PayPal — Rapport + Correction" style="width:100%;padding:8px;margin-bottom:8px;">
+			<label style="font-size:.78rem;">Refonte (à partir de €) <input type="number" id="rp-px-refonte" value="<?php echo (int) get_option( 'ag_rap_px_refonte', 0 ); ?>" style="width:100%;padding:8px;margin:2px 0 4px;"></label>
+			<input type="url" id="rp-pay-refonte" value="<?php echo esc_attr( get_option( 'ag_rap_pay_refonte', '' ) ); ?>" placeholder="Lien Stripe/PayPal — Refonte" style="width:100%;padding:8px;margin-bottom:8px;">
+			<button type="button" id="ag-rp-save" class="b gold">💾 Enregistrer les liens de paiement</button>
+			<span id="ag-rp-msg" class="sub" style="display:block;margin-top:8px;"></span>
+		</div>
 		<?php endif; ?>
 		<div class="stats">
 			<a class="stat todo" href="#" onclick="AG.tab('prospecter');return false"><b><?php echo (int) $ag_cnt['a_contacter']; ?></b><span>À contacter</span></a>
@@ -493,6 +505,7 @@ foreach ( $ag_my_prospects as $ppc ) {
 			<p class="sub" style="margin:-4px 0 10px;">Scan passif complet côté serveur (en-têtes, versions, xmlrpc, énumération, SPF/DMARC, RGPD, SEO) → <strong>findings + devis chiffré</strong>. Utilise l'URL ci-dessus.</p>
 			<button type="button" id="ag-audit-auto" class="b gold">Lancer l'audit auto</button>
 			<a id="ag-audit-manuel" class="mini" style="display:inline-block;margin-left:8px;padding:8px 12px;cursor:pointer;border:1px solid #2563eb;border-radius:8px;color:#9cc2ff;text-decoration:none;" href="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/tools/assistant-defi.html' ); ?>" target="_blank">Mode manuel guidé (tu apprends)</a>
+			<?php if ( $ag_is_admin ) : ?><label style="display:block;margin-top:8px;font-size:.82rem;"><input type="checkbox" id="ag-audit-rep"> 📄 créer le <b>rapport client à payer</b> (lien privé + boutons paiement)</label><?php endif; ?>
 			<div id="ag-audit-auto-res" style="margin-top:12px;"></div>
 		</div>
 
@@ -1301,12 +1314,20 @@ var AG = (function(){
 	btn.addEventListener('click',function(){
 		var u=urlv(); if(!u){AG.toast('Entre une URL dans le champ au-dessus');return;}
 		res.innerHTML='<span class="sub">Audit auto en cours… (~15 s)</span>'; btn.setAttribute('disabled','disabled'); btn.textContent='Audit…';
-		AG.post('ag_app_audit_auto',{url:u}).then(function(j){
+		var repEl=document.getElementById('ag-audit-rep');
+		AG.post('ag_app_audit_auto',{url:u,rep:(repEl&&repEl.checked)?1:0}).then(function(j){
 			btn.removeAttribute('disabled'); btn.textContent='Lancer l\'audit auto';
 			if(j&&j.success){
 				var ba='';
 				if(j.data.prev_score!=null){ var dlt=j.data.score-j.data.prev_score; var col=dlt>0?'#16a34a':(dlt<0?'#dc2626':'#555'); ba='<div style="background:#0e1016;border:1px solid #2a2c4e;border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:.85rem;">📈 Avant/après : <b>'+j.data.prev_score+'</b> → <b>'+j.data.score+'</b>/100 <span style="color:'+col+'">('+(dlt>=0?'+':'')+dlt+')</span></div>'; }
 				res.innerHTML=ba+'<div style="background:#fff;color:#111;border-radius:10px;padding:10px;overflow:auto">'+j.data.html+'</div>';
+				if(j.data.report_url){
+					var rb=document.createElement('div'); rb.style.cssText='margin-top:10px;background:#0e2a18;border:1px solid #1f5a37;border-radius:8px;padding:10px;font-size:.85rem;';
+					rb.innerHTML='📄 <b>Rapport client créé</b> (lien privé + boutons paiement) :<br><a href="'+j.data.report_url+'" target="_blank" style="color:#7ef0a8;word-break:break-all;">'+j.data.report_url+'</a> '
+						+'<button class="mini" id="ag-rep-copy" style="margin-left:6px;cursor:pointer;">Copier</button>';
+					res.appendChild(rb);
+					var cpb=document.getElementById('ag-rep-copy'); if(cpb) cpb.addEventListener('click',function(){ (AG.copy?AG.copy(j.data.report_url):navigator.clipboard.writeText(j.data.report_url)); AG.toast('Lien copié'); });
+				}
 				if(j.data.can_watch && !j.data.watched){
 					var wb=document.createElement('button'); wb.className='b'; wb.style.cssText='margin-top:10px;border:1px solid #16a34a;color:#7ef0a8;background:rgba(22,163,74,.14);';
 					wb.textContent='📌 Surveiller ce site (réaudit mensuel + alerte)';
@@ -1389,6 +1410,15 @@ var AG = (function(){
 		AG.post('ag_app_prices_save',{prices:JSON.stringify(p)}).then(function(j){ xb.removeAttribute('disabled'); xb.textContent=o;
 			if(xm)xm.textContent=(j&&j.success)?('✅ Prix enregistrés : C '+j.data.prices.critique+' / É '+j.data.prices.eleve+' / M '+j.data.prices.moyen+' / F '+j.data.prices.faible+' €'):('❌ '+((j&&j.data&&j.data.m)||'Erreur'));
 			if(j&&j.success)AG.toast('Prix enregistrés'); }).catch(function(e){ xb.removeAttribute('disabled'); xb.textContent=o; if(xm)xm.textContent='Erreur réseau : '+e; });
+	});
+	var rpb=document.getElementById('ag-rp-save'), rpm=document.getElementById('ag-rp-msg');
+	if(rpb) rpb.addEventListener('click',function(){
+		var p={ px_rapport:+(document.getElementById('rp-px-rapport').value||0), px_correction:+(document.getElementById('rp-px-correction').value||0), px_refonte:+(document.getElementById('rp-px-refonte').value||0),
+			pay_rapport:document.getElementById('rp-pay-rapport').value.trim(), pay_correction:document.getElementById('rp-pay-correction').value.trim(), pay_refonte:document.getElementById('rp-pay-refonte').value.trim() };
+		rpb.setAttribute('disabled','disabled'); var o=rpb.textContent; rpb.textContent='…'; if(rpm)rpm.textContent='⏳ Enregistrement…';
+		AG.post('ag_app_paylinks_save',{data:JSON.stringify(p)}).then(function(j){ rpb.removeAttribute('disabled'); rpb.textContent=o;
+			if(rpm)rpm.textContent=(j&&j.success)?'✅ Liens de paiement enregistrés (ils apparaissent sur les rapports).':('❌ '+((j&&j.data&&j.data.m)||'Erreur'));
+			if(j&&j.success)AG.toast('Liens enregistrés'); }).catch(function(e){ rpb.removeAttribute('disabled'); rpb.textContent=o; if(rpm)rpm.textContent='Erreur réseau : '+e; });
 	});
 })();
 </script>
