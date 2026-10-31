@@ -241,6 +241,18 @@ if ( file_exists( $ag_audit_auto_file ) ) {
     require_once $ag_audit_auto_file;
 }
 
+// ── Suivi / surveillance / historique des audits (jobs, abonnement mensuel, avant/après)
+$ag_audit_monitor_file = get_stylesheet_directory() . '/inc/ag-audit-monitor.php';
+if ( file_exists( $ag_audit_monitor_file ) ) {
+    require_once $ag_audit_monitor_file;
+}
+
+// ── (restauré) Admin « 🚀 Application » — app mobile intégrée dans WordPress
+$ag_app_admin_file = get_stylesheet_directory() . '/inc/ag-app-admin.php';
+if ( file_exists( $ag_app_admin_file ) ) {
+    require_once $ag_app_admin_file;
+}
+
 // ── 1c5e-bis. « Tester mon site » (freemium) + Espace Audit (prospection admin)
 $ag_tester_file = get_stylesheet_directory() . '/inc/ag-tester.php';
 if ( file_exists( $ag_tester_file ) ) {

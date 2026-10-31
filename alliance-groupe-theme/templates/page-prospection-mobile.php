@@ -496,6 +496,19 @@ foreach ( $ag_my_prospects as $ppc ) {
 			<div id="ag-audit-auto-res" style="margin-top:12px;"></div>
 		</div>
 
+		<?php if ( $ag_is_admin ) : ?>
+		<div class="card" style="border:1px solid #16a34a;">
+			<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+				<h3 style="margin:0;">📡 Suivi & surveillance</h3>
+				<button type="button" id="ag-suivi-refresh" class="mini" style="cursor:pointer;">↻ Actualiser</button>
+			</div>
+			<p class="sub" style="margin:6px 0 10px;">Sites surveillés (réaudit mensuel auto + alerte si ça se dégrade) et jobs actifs (Kali).</p>
+			<div id="ag-watch-list" style="margin-bottom:10px;"><span class="sub">—</span></div>
+			<h4 style="margin:10px 0 6px;font-size:.92rem;">Jobs actifs (Kali)</h4>
+			<div id="ag-jobs-list"><span class="sub">—</span></div>
+		</div>
+		<?php endif; ?>
+
 		<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 2px 10px;">
 			<h3 style="margin:0;font-size:1.02rem;">Sites déjà audités (<?php echo count( $ag_audits ); ?>)</h3>
 			<?php if ( ! empty( $ag_audits ) ) : ?><button type="button" id="ag-refresh-all" class="mini" style="cursor:pointer;border-color:#3aa3ff;color:#fff;background:rgba(58,163,255,.42);font-weight:700;">Tout réactualiser</button><?php endif; ?>
@@ -1290,7 +1303,18 @@ var AG = (function(){
 		res.innerHTML='<span class="sub">Audit auto en cours… (~15 s)</span>'; btn.setAttribute('disabled','disabled'); btn.textContent='Audit…';
 		AG.post('ag_app_audit_auto',{url:u}).then(function(j){
 			btn.removeAttribute('disabled'); btn.textContent='Lancer l\'audit auto';
-			if(j&&j.success){ res.innerHTML='<div style="background:#fff;color:#111;border-radius:10px;padding:10px;overflow:auto">'+j.data.html+'</div>'; if(j.data.can_active){ appActive(res,j.data); } }
+			if(j&&j.success){
+				var ba='';
+				if(j.data.prev_score!=null){ var dlt=j.data.score-j.data.prev_score; var col=dlt>0?'#16a34a':(dlt<0?'#dc2626':'#555'); ba='<div style="background:#0e1016;border:1px solid #2a2c4e;border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:.85rem;">📈 Avant/après : <b>'+j.data.prev_score+'</b> → <b>'+j.data.score+'</b>/100 <span style="color:'+col+'">('+(dlt>=0?'+':'')+dlt+')</span></div>'; }
+				res.innerHTML=ba+'<div style="background:#fff;color:#111;border-radius:10px;padding:10px;overflow:auto">'+j.data.html+'</div>';
+				if(j.data.can_watch && !j.data.watched){
+					var wb=document.createElement('button'); wb.className='b'; wb.style.cssText='margin-top:10px;border:1px solid #16a34a;color:#7ef0a8;background:rgba(22,163,74,.14);';
+					wb.textContent='📌 Surveiller ce site (réaudit mensuel + alerte)';
+					wb.addEventListener('click',function(){ wb.setAttribute('disabled','disabled'); AG.post('ag_app_watch_add',{url:j.data.url||j.data.host,host:j.data.host}).then(function(x){ wb.textContent=(x&&x.success)?'✅ Surveillé':'Erreur'; if(x&&x.success)AG.toast('Site surveillé'); loadSuivi(); }); });
+					res.appendChild(wb);
+				} else if(j.data.watched){ var sp=document.createElement('p'); sp.className='sub'; sp.style.marginTop='8px'; sp.textContent='📌 Déjà sous surveillance.'; res.appendChild(sp); }
+				if(j.data.can_active){ appActive(res,j.data); }
+			}
 			else { res.innerHTML='<span class="sub">'+((j&&j.data&&j.data.m)||'Erreur audit.')+'</span>'; }
 		}).catch(function(e){ btn.removeAttribute('disabled'); btn.textContent='Lancer l\'audit auto'; res.innerHTML='Erreur réseau : '+e; });
 	});
@@ -1315,6 +1339,32 @@ var AG = (function(){
 			}).catch(function(e){m.textContent='Erreur réseau : '+e;});
 		});
 	}
+	/* Suivi : sites surveillés + jobs Kali */
+	function fmtAgo(ts){ if(!ts) return 'jamais'; var d=Math.floor((Date.now()/1000-ts)/86400); return d<=0?'aujourd\'hui':(d+' j'); }
+	window.loadSuivi=function(){
+		if(!window.AG||!AG.admin) return;
+		var wl=document.getElementById('ag-watch-list'), jl=document.getElementById('ag-jobs-list');
+		if(wl) AG.post('ag_app_watch_list',{}).then(function(j){
+			if(!(j&&j.success)){wl.innerHTML='<span class="sub">—</span>';return;}
+			var a=j.data.watch||[]; if(!a.length){wl.innerHTML='<span class="sub">Aucun site surveillé. Lance un audit auto puis « Surveiller ce site ».</span>';return;}
+			wl.innerHTML=a.map(function(w){
+				var d=(w.last_score!=null&&w.first_score!=null)?(w.last_score-w.first_score):null;
+				var col=d>0?'#16a34a':(d<0?'#dc2626':'#9aa0b0');
+				return '<div style="border-left:3px solid #16a34a;padding:4px 8px;margin:4px 0;font-size:.85rem;"><b>'+w.host+'</b> — score '+(w.last_score!=null?w.last_score:'?')+'/100'+(d!=null?' <span style="color:'+col+'">('+(d>=0?'+':'')+d+' depuis le début)</span>':'')+' · '+w.runs+' audit(s) · maj '+fmtAgo(w.last_ts)+' <a href="#" data-h="'+w.host+'" class="ag-unwatch" style="color:#ff9a9a;margin-left:6px;">retirer</a></div>';
+			}).join('');
+			[].forEach.call(wl.querySelectorAll('.ag-unwatch'),function(x){x.addEventListener('click',function(e){e.preventDefault();AG.post('ag_app_watch_remove',{host:this.getAttribute('data-h')}).then(function(){loadSuivi();AG.toast('Retiré');});});});
+		});
+		if(jl) AG.post('ag_app_jobs',{}).then(function(j){
+			if(!(j&&j.success)){jl.innerHTML='<span class="sub">—</span>';return;}
+			var a=j.data.jobs||[]; if(!a.length){jl.innerHTML='<span class="sub">Aucun job. Lance un audit puis « Passer à l\'actif ».</span>';return;}
+			var icon={pending:'⏳',running:'🔄',done:'✅',error:'❌'};
+			jl.innerHTML=a.map(function(jb){
+				return '<div style="border-left:3px solid #2563eb;padding:4px 8px;margin:4px 0;font-size:.85rem;">'+(icon[jb.status]||'•')+' <b>'+(jb.target||'')+'</b> <span class="sub">('+(jb.client||'')+')</span> — '+jb.status+(jb.summary?'<br><span class="sub" style="white-space:pre-wrap">'+jb.summary.replace(/</g,'&lt;')+'</span>':'')+(jb.error?'<br><span style="color:#ff9a9a">'+jb.error+'</span>':'')+'</div>';
+			}).join('');
+		});
+	};
+	var sr=document.getElementById('ag-suivi-refresh'); if(sr) sr.addEventListener('click',loadSuivi);
+	if(window.AG&&AG.admin) loadSuivi();
 })();
 /* Maintenance admin : SYNC GitHub + purge cache depuis l'app */
 (function(){
