@@ -381,7 +381,9 @@ if ( defined( 'ABSPATH' ) ) {
 				fd.append("url",j.url||j.host); fd.append("client",cl); fd.append("mandat",md); fd.append("level",document.getElementById("aa_level").value);
 				fd.append("intel",JSON.stringify(j.intel||{}));
 				fetch(ajaxurl,{method:"POST",body:fd}).then(function(r){return r.json();}).then(function(x){
-					msg.innerHTML=x&&x.ok?(\'✅ Job <b>\'+x.job+\'</b> créé. Sur ta Kali : lance <code>./ag-runner.sh</code> → il tire le job, lance ag-pentest.sh en local, et le rapport actif revient ici.\'):("Erreur : "+((x&&x.error)||"?"));
+					if(x&&x.ok){ var host=(j.host||"").replace(/^https?:\\/\\//,"");
+						msg.innerHTML=\'✅ <b>Job créé.</b> Dans l\\\'ordre :<br>① (optionnel) ouvre l\\\'assistant : <a href="https://alliancegroupe-inc.com/wp-content/themes/alliance-groupe-theme/assets/tools/assistant-defi.html?cible=\'+encodeURIComponent(host)+\'" target="_blank">assistant</a><br>② Ouvre <b>Kali</b> et tape :<br><code style="display:inline-block;background:#111;color:#9ef0c8;padding:4px 8px;border-radius:5px;margin:4px 0">cd ~/pentest-local &amp;&amp; ./ag-runner.sh --once</code><br>③ Attends ~5 min → le job passe « Terminé » dans <b>🛰️ Audits Kali</b> = le rapport est OK ✅\';
+					} else { msg.innerHTML="Erreur : "+((x&&x.error)||"?"); }
 				}).catch(function(e){msg.textContent="Erreur réseau : "+e;});
 			};
 		}
