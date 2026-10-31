@@ -85,7 +85,8 @@
       <button class="go" onclick="genWordPress()" style="flex:1 1 220px;background:linear-gradient(135deg,#1e3a8a,#2563eb)">🧩 Route WordPress</button>
       <button class="go" onclick="gen()" style="flex:1 1 220px;background:#2a2c4e">⚙️ Route par type de faille</button>
     </div>
-    <p class="sub" style="margin:6px 2px 0;font-size:12px;color:#9aa0b0">Ces 3 boutons génèrent la <b>liste des commandes à exécuter toi-même</b>, dans l'ordre. « Route guidée complète » marche sur <b>n'importe quel site</b> et s'adapte au socle détecté ; « Route par type » = tu choisis les failles ci-dessus. Tu colles chaque sortie → « Analyser » → l'outil débloque la suite (et ne bloque jamais).</p>
+    <a href="#" id="ag-serverauto" onclick="openServerAuto();return false;" style="display:block;text-align:center;text-decoration:none;margin-top:8px;padding:12px;border-radius:10px;font-weight:700;color:#031;background:linear-gradient(135deg,#34d399,#10b981)">🔍 Audit AUTO + devis (serveur — comme l'app, 1 clic)</a>
+    <p class="sub" style="margin:6px 2px 0;font-size:12px;color:#9aa0b0">Les 3 boutons génèrent la <b>liste des commandes à exécuter toi-même</b> (mode manuel). Le bouton vert ⬆️ ouvre l'<b>audit 100 % automatique côté serveur</b> (en-têtes, versions, xmlrpc, RGPD, SEO → <b>findings + devis</b>) — le même que l'app, sans rien faire. (Un navigateur ne peut pas scanner un site tiers lui-même : l'auto passe par le serveur.)</p>
   </div>
 
   <div id="out" class="hidden">
@@ -473,6 +474,13 @@ function UNIV(U,T){ return [
  {t:"Performance (compression / cache / poids)", c:`curl -s -o /dev/null -w "poids: %{size_download} o | temps: %{time_total}s\\n" -A "Mozilla/5.0" -H "Accept-Encoding: gzip,br" ${U}/; H=\$(curl -sSI -A "Mozilla/5.0" -H "Accept-Encoding: gzip,br" ${U}/); echo "\$H" | grep -qiE 'content-encoding: *(gzip|br)' || echo "PAS_DE_COMPRESSION"; echo "\$H" | grep -qiE 'cache-control|expires' || echo "PAS_DE_CACHE"`, e:"PAS_DE_COMPRESSION / PAS_DE_CACHE / page lourde = optimisation facturable (vitesse + SEO + conversion)."},
  {t:"SEO technique de base", c:`P=\$(curl -s -A "Mozilla/5.0" ${U}/); echo "\$P" | grep -qi '<title' || echo "PAS_DE_TITLE"; echo "\$P" | grep -qi 'name="description"' || echo "PAS_DE_META_DESCRIPTION"; echo "\$P" | grep -qi 'name="viewport"' || echo "PAS_DE_VIEWPORT (mobile)"`, e:"Title / meta description / viewport manquants = SEO technique à corriger (ligne de devis)."}
 ];}
+/* Ouvre l'audit AUTO côté serveur (WordPress) avec la cible pré-remplie — un navigateur ne peut pas scanner un tiers, l'auto passe par le serveur. */
+function openServerAuto(){
+  var c=(document.getElementById('cible').value||'').trim();
+  var origin=(location.protocol.indexOf('http')===0)?location.origin:'https://alliancegroupe-inc.com';
+  var u=origin+'/wp-admin/admin.php?page=ag-audit-auto'+(c?('&target='+encodeURIComponent(c)):'');
+  window.open(u,'_blank');
+}
 function genAuto(){
   var c=clean(document.getElementById('cible').value); if(!c.host){alert("Entre une cible (ex: monsite.fr ou 10.10.10.5).");return;}
   LASTGEN=genAuto;

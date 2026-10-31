@@ -289,9 +289,11 @@ if ( defined( 'ABSPATH' ) ) {
 
 	function ag_aa_admin_page() {
 		$manuel = get_stylesheet_directory_uri() . '/assets/tools/assistant-defi.html';
+		$pref   = isset( $_GET['target'] ) ? sanitize_text_field( wp_unslash( $_GET['target'] ) ) : '';
+		$auto   = ( '' !== $pref );
 		echo '<div class="wrap"><h1>🔍 Audit de sécurité</h1>';
 		echo '<p>Entre l\'URL de la cible, puis choisis <b>un des deux modes</b> :</p>';
-		echo '<p><input type="text" id="aa_url" placeholder="exemple.fr" style="width:360px;padding:8px;font-size:15px"></p>';
+		echo '<p><input type="text" id="aa_url" value="' . esc_attr( $pref ) . '" placeholder="exemple.fr" style="width:360px;padding:8px;font-size:15px"></p>';
 		echo '<div style="display:flex;gap:16px;flex-wrap:wrap;max-width:900px">';
 		// MODE 1 — AUTOMATIQUE
 		echo '<div style="flex:1 1 380px;border:2px solid #E6A93C;border-radius:10px;padding:16px;background:#fffdf7">';
@@ -321,6 +323,7 @@ if ( defined( 'ABSPATH' ) ) {
 				if(j&&j.ok&&j.can_active){ aaActiveForm(j); }
 			}).catch(function(e){o.innerHTML="Erreur réseau : "+e;});
 		};
+		' . ( $auto ? 'setTimeout(function(){var b=document.getElementById("aa_go"); if(b&&document.getElementById("aa_url").value.trim()) b.click();},250);' : '' ) . '
 		function aaActiveForm(j){
 			var intel=j.intel||{};
 			var sum="comptes: "+((intel.users||[]).join(", ")||"—")+" · plugins: "+((intel.plugins||[]).join(", ")||"—");
