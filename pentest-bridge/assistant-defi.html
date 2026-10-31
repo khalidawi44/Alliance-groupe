@@ -658,8 +658,13 @@ function scan(t){
   if(/could not resolve host|name or service not known|connection refused|connection timed out|failed to connect|couldn.t connect|no route to host/i.test(raw))
     return {cls:'warn',msg:'🌐 Problème RÉSEAU (DNS / proxy / connectivité), pas une absence de faille : la commande n\'a pas pu joindre la cible.',
       follow:[{t:'Diagnostic réseau (voir aussi copilote-pentest « réseau »)',c:'getent hosts '+(AGT.T||'exemple.com')+' ; curl -s -o /dev/null -w "%{http_code}\\n" https://1.1.1.1',e:'Pas de résolution → DNS/resolv.conf ; 1.1.1.1 KO → proxy Burp/FoxyProxy ou pas d\'internet.'}],report:null,unlock:null};
+  // wpscan ABORTÉ par un WAF (403) → demande --random-user-agent : on redonne la commande prête
+  if(/scan aborted[\s\S]{0,80}403|responding with a 403|re-?try with --random-user-agent|might be due to a waf/i.test(raw)){
+    return {cls:'warn',msg:'🛡️ wpscan bloqué par un WAF (403). Ce n\'est PAS « pas de faille » : il faut camoufler l\'agent et ralentir. Relance avec --random-user-agent (déjà ajouté) et un throttle plus lent :',
+      follow:[{t:'Relancer wpscan en contournant le WAF (sous mandat)',c:'wpscan --url '+U+' --enumerate u,vp,vt --stealthy --throttle 1500 --random-user-agent --request-timeout 60 --max-threads 3',e:'--random-user-agent change l\'agent à chaque requête, --stealthy + throttle 1500 = très lent (évite le 403). Si ça bloque encore : le WAF est actif = bon point sécurité à noter, et on bascule sur l\'audit passif (REST, en-têtes, fichiers exposés) qui ne déclenche pas le WAF.'}],report:null,unlock:null};
+  }
   // BLOCAGE WAF (403/406)
-  if(/\b(403|406)\b/.test(raw) && /forbidden|not acceptable|cloudflare|akamai|mod_security|request blocked|access denied|incapsula|sucuri/i.test(raw))
+  if(/\b(403|406)\b/.test(raw) && /forbidden|not acceptable|cloudflare|akamai|mod_security|request blocked|access denied|incapsula|sucuri|waf/i.test(raw))
     return {cls:'warn',msg:'🛡️ Bloqué par un WAF/pare-feu (403/406). Ce n\'est pas « pas de faille » : il faut ralentir et camoufler (sous mandat).',
       follow:[{t:'Ralentir + user-agent + throttle',c:'wpscan --url '+U+' --stealthy --throttle 1200 --random-user-agent    # ou  ffuf -rate 8 -t 3 -H "User-Agent: Mozilla/5.0"',e:'Un 403 systématique = WAF à contourner proprement, pas un site sain.'}],report:null,unlock:null};
   // RATE-LIMIT (429)
@@ -740,7 +745,7 @@ function scan(t){
       var logins=usr.filter(function(u){return /^[A-Za-z0-9._@-]+$/.test(u);}); // sans espace = vrai login utilisable
       var unameArg=logins.length? (' --usernames '+logins.slice(0,8).join(',')) : '';
       msg+=' Comptes énumérés'+(usr.length?' : '+usr.slice(0,6).join(', '):'')+' → test de mot de passe faible possible (sous mandat).';
-      foll.push({t:'Test de mots de passe sur les comptes trouvés (sous mandat)',c:'wpscan --url '+U+unameArg+' --passwords /usr/share/wordlists/rockyou.txt --max-threads 5 --throttle 800',e:'Prouve un accès admin si mot de passe faible (ACTIF, mandat obligatoire, risque de verrouillage). Un compte admin cassé = impact critique.'+(logins.length?' Logins injectés automatiquement.':' (Sans --usernames : wpscan ré-énumère les comptes lui-même.)')+' Colle la sortie → Analyser (ne rebouclera pas).'});
+      foll.push({t:'Test de mots de passe sur les comptes trouvés (sous mandat)',c:'wpscan --url '+U+unameArg+' --passwords /usr/share/wordlists/rockyou.txt --max-threads 5 --throttle 800 --random-user-agent',e:'Prouve un accès admin si mot de passe faible (ACTIF, mandat obligatoire, risque de verrouillage). Un compte admin cassé = impact critique.'+(logins.length?' Logins injectés automatiquement.':' (Sans --usernames : wpscan ré-énumère les comptes lui-même.)')+' Colle la sortie → Analyser (ne rebouclera pas).'});
     }
     if(/vulnerabilit|CVE-|\[!\]|Title:/i.test(t)){ msg+=' Plugins/thèmes vulnérables signalés → vérifie la CVE + un exploit public (searchsploit).'; foll.push({t:'Chercher un exploit pour une CVE trouvée',c:'searchsploit NOM_PLUGIN VERSION   # ex: searchsploit contact-form-7 5.7  (remplace par le plugin+version trouvés, SANS chevrons)',e:'Confirme si la vulnérabilité a un exploit prêt à l\'emploi. Remplace NOM_PLUGIN et VERSION par les valeurs trouvées.'}); }
     return {cls:'ok',msg:msg,follow:foll,report:(/User\(s\) Identified|\[i\] User/i.test(t)?{type:'enum'}:null),unlock:null};
@@ -753,7 +758,7 @@ function scan(t){
     us=us.filter(function(v,i){return v && us.indexOf(v)===i;});
     var um='👤 '+us.length+' compte(s) énuméré(s)'+(us.length?' : '+us.slice(0,8).join(', ')+(us.length>8?'…':''):'')+'. Le LOGIN de connexion est exposé publiquement = preuve forte (donnée non censée être publique). Ce n\'est PAS encore un accès : il faut le mot de passe pour entrer → étape suivante.';
     return {cls:'ok',msg:um,
-      follow:[{t:'Test de mots de passe sur ce(s) compte(s) (ACTIF, sous mandat)',c:'wpscan --url '+U+' --usernames '+(us.slice(0,5).join(',')||'LOGIN')+' --passwords /usr/share/wordlists/rockyou.txt --max-threads 5 --throttle 800',e:'Si un mot de passe est faible → accès prouvé (compte admin cassé = impact critique). ACTIF = mandat obligatoire + risque de verrouillage. Si rien ne casse : le login exposé reste une faille d\'énumération à mettre au rapport.'},
+      follow:[{t:'Test de mots de passe sur ce(s) compte(s) (ACTIF, sous mandat)',c:'wpscan --url '+U+' --usernames '+(us.slice(0,5).join(',')||'LOGIN')+' --passwords /usr/share/wordlists/rockyou.txt --max-threads 5 --throttle 800 --random-user-agent',e:'Si un mot de passe est faible → accès prouvé (compte admin cassé = impact critique). ACTIF = mandat obligatoire + risque de verrouillage. Si rien ne casse : le login exposé reste une faille d\'énumération à mettre au rapport.'},
               {t:'Fermer la fuite (remédiation à vendre)',c:'# Bloquer l\'énumération : REST users sur auth only + redirection ?author=\n# (plugin de durcissement ou règle serveur)',e:'Masquer les logins = première ligne de durcissement facturable.'}],
       report:{type:'enum'}, unlock:null};
   }
