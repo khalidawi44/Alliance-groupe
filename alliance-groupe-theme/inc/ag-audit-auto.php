@@ -165,8 +165,10 @@ if ( ! function_exists( 'ag_audit_auto' ) ) {
 		else { $good( 'Pas de .git/.env/sauvegardes accessibles.' ); }
 
 		// 5. xmlrpc (amplification brute / pingback)
+		$xmlrpc_active = false;
 		$xr = ag_aa_http( 'POST', $base . '/xmlrpc.php', '<?xml version="1.0"?><methodCall><methodName>system.listMethods</methodName></methodCall>' );
 		if ( 200 === (int) $xr['code'] && false !== stripos( (string) $xr['body'], 'methodResponse' ) ) {
+			$xmlrpc_active = true;
 			$ping = ( false !== stripos( $xr['body'], 'pingback.ping' ) );
 			$add( 'xmlrpc', 'xmlrpc.php actif' . ( $ping ? ' (pingback = amplification DDoS/brute)' : '' ), 'moyen', 'system.listMethods répond' . ( $ping ? ', pingback.ping disponible' : '' ), 'Désactiver xmlrpc.php ou au minimum pingback.ping.' );
 		} else { $good( 'xmlrpc.php non exploitable (désactivé/filtré).' ); }
@@ -222,6 +224,14 @@ if ( ! function_exists( 'ag_audit_auto' ) ) {
 			'ok' => true, 'host' => $host, 'url' => $base, 'tech' => $is_wp ? 'WordPress' : 'autre/custom',
 			'findings' => array_values( $F ), 'good' => $G, 'devis' => $total, 'score' => $score,
 			'time_ms' => (int) round( ( microtime( true ) - $t0 ) * 1000 ), 'ts' => time(),
+			// Intel pour la PHASE ACTIVE ciblée (exécutée sur Kali, sous mandat)
+			'intel' => array(
+				'is_wp'    => $is_wp,
+				'users'    => array_values( array_slice( $leak_users, 0, 12 ) ),
+				'plugins'  => array_values( array_slice( $plugins, 0, 20 ) ),
+				'versions' => array_values( array_slice( array_unique( $vers ), 0, 10 ) ),
+				'xmlrpc'   => $xmlrpc_active,
+			),
 		);
 	}
 }
@@ -300,16 +310,66 @@ if ( defined( 'ABSPATH' ) ) {
 			var fd=new FormData(); fd.append("action","ag_aa_run"); fd.append("nonce","' . $nonce . '"); fd.append("url",u); fd.append("rep",document.getElementById("aa_rep").checked?1:0);
 			fetch(ajaxurl,{method:"POST",body:fd}).then(function(r){return r.json();}).then(function(j){
 				o.innerHTML=(j&&j.html)?j.html:"Erreur."; if(j&&j.report_url){o.innerHTML+=\'<p><a class="button" target="_blank" href="\'+j.report_url+\'">Ouvrir le rapport client</a></p>\';}
+				window.__aa=j||{};
+				if(j&&j.ok&&j.can_active){ aaActiveForm(j); }
 			}).catch(function(e){o.innerHTML="Erreur réseau : "+e;});
 		};
+		function aaActiveForm(j){
+			var intel=j.intel||{};
+			var sum="comptes: "+((intel.users||[]).join(", ")||"—")+" · plugins: "+((intel.plugins||[]).join(", ")||"—");
+			var box=document.createElement("div");
+			box.style.cssText="margin-top:18px;border:2px solid #7c2d12;border-radius:10px;padding:16px;background:#fff7f5";
+			box.innerHTML=\'<h2 style="margin:0 0 6px">⚡ Passer à l\\\'audit ACTIF (sur Kali, SOUS MANDAT)</h2>\'
+				+\'<p style="margin:0 0 8px;color:#555">La phase passive est finie. L\\\'actif (nmap, nuclei, wpscan ciblé, testssl, searchsploit…) s\\\'exécute <b>sur ta Kali</b> via la file de jobs — le site ne lance rien. Intel transmise : <code style="font-size:12px">\'+sum+\'</code></p>\'
+				+\'<p style="margin:0 0 8px;color:#7c2d12;font-size:13px"><b>⚠️ Réservé aux cibles sous mandat écrit.</b> Tester sans autorisation = délit (art. 323-1).</p>\'
+				+\'<p><input id="aa_client" placeholder="Nom du client" style="padding:7px;width:220px"> \'
+				+\'<input id="aa_mandat" placeholder="Réf. mandat (ex: MANDAT-2026-001)" style="padding:7px;width:240px"> \'
+				+\'<select id="aa_level" style="padding:7px"><option value="normal">normal (nmap+nuclei+wpscan)</option><option value="deep">deep (+ CVE, fichiers, brute contenu)</option><option value="max">max (+ OSINT, sous-domaines, sslyze)</option></select></p>\'
+				+\'<p><label style="font-size:13px"><input type="checkbox" id="aa_mok"> Je confirme avoir un <b>mandat écrit signé</b> pour cette cible.</label></p>\'
+				+\'<button class="button button-primary" id="aa_active_go">⚡ Créer le job actif pour Kali</button> <span id="aa_active_msg" style="margin-left:10px"></span>\';
+			o.appendChild(box);
+			document.getElementById("aa_active_go").onclick=function(){
+				var msg=document.getElementById("aa_active_msg");
+				if(!document.getElementById("aa_mok").checked){msg.textContent="Coche la confirmation de mandat.";return;}
+				var cl=document.getElementById("aa_client").value.trim(), md=document.getElementById("aa_mandat").value.trim();
+				if(!cl||!md){msg.textContent="Renseigne le client ET la référence de mandat.";return;}
+				msg.textContent="⏳ Création du job…";
+				var fd=new FormData(); fd.append("action","ag_aa_active"); fd.append("nonce","' . $nonce . '");
+				fd.append("url",j.url||j.host); fd.append("client",cl); fd.append("mandat",md); fd.append("level",document.getElementById("aa_level").value);
+				fd.append("intel",JSON.stringify(j.intel||{}));
+				fetch(ajaxurl,{method:"POST",body:fd}).then(function(r){return r.json();}).then(function(x){
+					msg.innerHTML=x&&x.ok?(\'✅ Job <b>\'+x.job+\'</b> créé. Sur ta Kali : lance <code>./ag-runner.sh</code> → il tire le job, lance ag-pentest.sh en local, et le rapport actif revient ici.\'):("Erreur : "+((x&&x.error)||"?"));
+				}).catch(function(e){msg.textContent="Erreur réseau : "+e;});
+			};
+		}
 		</script>';
 	}
+
+	add_action( 'wp_ajax_ag_aa_active', function () {
+		if ( ! current_user_can( 'manage_options' ) || ! check_ajax_referer( 'ag_aa', 'nonce', false ) ) { wp_send_json( array( 'ok' => false, 'error' => 'Refusé.' ) ); }
+		if ( ! function_exists( 'ag_pt_enqueue_job' ) ) { wp_send_json( array( 'ok' => false, 'error' => 'File de jobs pentest indisponible.' ) ); }
+		$url    = isset( $_POST['url'] ) ? esc_url_raw( wp_unslash( $_POST['url'] ) ) : '';
+		$client = isset( $_POST['client'] ) ? sanitize_text_field( wp_unslash( $_POST['client'] ) ) : '';
+		$mandat = isset( $_POST['mandat'] ) ? sanitize_text_field( wp_unslash( $_POST['mandat'] ) ) : '';
+		$level  = isset( $_POST['level'] ) ? sanitize_key( wp_unslash( $_POST['level'] ) ) : 'normal';
+		$intel  = array();
+		if ( isset( $_POST['intel'] ) ) { $intel = json_decode( wp_unslash( $_POST['intel'] ), true ); if ( ! is_array( $intel ) ) { $intel = array(); } }
+		if ( ! $url || ! $client || ! $mandat ) { wp_send_json( array( 'ok' => false, 'error' => 'Client + mandat obligatoires.' ) ); }
+		$id = ag_pt_enqueue_job( $url, $client, $mandat, $level, '', 'ag_audit_actif', $intel );
+		wp_send_json( array( 'ok' => (bool) $id, 'job' => $id ) );
+	} );
 
 	add_action( 'wp_ajax_ag_aa_run', function () {
 		if ( ! current_user_can( 'manage_options' ) || ! check_ajax_referer( 'ag_aa', 'nonce', false ) ) { wp_send_json( array( 'html' => 'Refusé.' ) ); }
 		$url = isset( $_POST['url'] ) ? sanitize_text_field( wp_unslash( $_POST['url'] ) ) : '';
 		$res = ag_audit_auto( $url );
-		$out = array( 'html' => ag_aa_render( $res ) );
+		$out = array( 'html' => ag_aa_render( $res ), 'ok' => ! empty( $res['ok'] ) );
+		if ( ! empty( $res['ok'] ) ) {
+			$out['host']  = $res['host'];
+			$out['url']   = $res['url'];
+			$out['intel'] = $res['intel'];
+			$out['can_active'] = function_exists( 'ag_pt_enqueue_job' );
+		}
 		if ( ! empty( $_POST['rep'] ) && ! empty( $res['ok'] ) && post_type_exists( 'ag_rapport' ) ) {
 			$pid = wp_insert_post( array(
 				'post_type' => 'ag_rapport', 'post_status' => 'publish',
