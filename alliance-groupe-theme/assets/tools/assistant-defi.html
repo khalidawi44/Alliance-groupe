@@ -146,6 +146,12 @@
             <option value="auth">Auth / JWT</option>
             <option value="info">Fuite d'information</option>
             <option value="leak">Identifiants exposés / fuites de données (HIBP)</option>
+            <option value="headers">En-têtes de sécurité manquants (config)</option>
+            <option value="tls">HTTPS / TLS à durcir (config)</option>
+            <option value="email">Authentification e-mail manquante (SPF/DKIM/DMARC)</option>
+            <option value="rgpd">Non-conformité RGPD (cookies / mentions)</option>
+            <option value="perf">Performance à optimiser (cache / compression)</option>
+            <option value="seo">SEO technique à corriger</option>
           </select>
         </div>
         <div><label>Scope / asset du programme</label><input id="rscope" placeholder="www.cible.fr"></div>
@@ -451,12 +457,17 @@ function genWordPress(){
 function UNIV(U,T){ return [
  {t:"Empreinte techno (CMS / serveur / langage / WAF)", c:`whatweb -a3 ${U}; echo ---; curl -sSI -A "Mozilla/5.0" ${U}/`, e:"Identifie le socle (WordPress, Joomla, Drupal, Shopify, Laravel…), le serveur et un éventuel WAF. <b>Colle la sortie → Analyser</b> : l'assistant détecte le CMS et débloque la route dédiée."},
  {t:"CMS / générateur (dans le HTML)", c:`curl -s -A "Mozilla/5.0" ${U}/ | grep -oiE 'name="generator" content="[^"]+"|wp-content|/sites/default/files|Joomla|cdn\\.shopify|PrestaShop|Wix\\.com|Drupal|Magento|/bitrix/' | sort -u`, e:"Un seul indice suffit à savoir quel CMS. Vide = site sur-mesure → on reste sur l'audit générique (toujours valable)."},
- {t:"En-têtes de sécurité manquants", c:`curl -sSI -A "Mozilla/5.0" ${U}/ | grep -iE 'strict-transport-security|content-security-policy|x-frame-options|x-content-type-options|referrer-policy|permissions-policy'`, e:"Chaque en-tête ABSENT = faille de config (clickjacking, MIME sniffing, pas de HSTS). Valable sur tout site, facile à vendre en remédiation."},
+ {t:"En-têtes de sécurité (présents / MANQUANTS)", c:`H=\$(curl -sSI -A "Mozilla/5.0" ${U}/); for h in Strict-Transport-Security Content-Security-Policy X-Frame-Options X-Content-Type-Options Referrer-Policy Permissions-Policy; do echo "\$H" | grep -qi "^\$h:" && echo "OK \$h" || echo "MANQUANT \$h"; done`, e:"Chaque <b>MANQUANT</b> = ligne de remédiation facturable (clickjacking, MIME-sniffing, pas de HSTS). Colle → Analyser : compté dans le devis."},
  {t:"Fichiers sensibles exposés (universel)", c:`for f in .git/HEAD .env .env.bak config.php.bak settings.php.bak backup.zip site.zip db.sql database.sql dump.sql .DS_Store phpinfo.php server-status adminer.php; do curl -s -o /dev/null -w "%{http_code}  ${U}/\$f\\n" -A "Mozilla/5.0" "${U}/\$f"; done | sort`, e:"200 sur .env / .sql / .git / backup = fuite critique (identifiants, code, base). Marche quel que soit le CMS."},
  {t:"Pages d'admin / connexion courantes", c:`for p in admin administrator login admin.php backend wp-login.php user/login phpmyadmin adminer.php .well-known/security.txt; do curl -s -o /dev/null -w "%{http_code}  ${U}/\$p\\n" -A "Mozilla/5.0" "${U}/\$p"; done | sort`, e:"Trouve l'interface d'admin (point d'entrée brute-force) et si security.txt existe (maturité sécu)."},
  {t:"robots.txt + sitemap (routes cachées)", c:`curl -s -A "Mozilla/5.0" ${U}/robots.txt; echo ---; curl -s -A "Mozilla/5.0" ${U}/sitemap.xml | head -20`, e:"Les Disallow pointent souvent vers des zones sensibles (admin, exports, staging)."},
  {t:"Endpoints cachés dans le JS", c:`curl -s -A "Mozilla/5.0" ${U}/ | grep -oE 'src="[^"]+\\.js[^"]*"' | sed -E 's/^src="//;s/"$//;s#^//#https://#;s#^/#${U}/#' | sort -u | while read J; do curl -s -A "Mozilla/5.0" "\$J" | grep -oE '"/[a-zA-Z0-9_./?&=-]{2,}"' | tr -d '"'; done | grep -viE '\\.(js|css|png|jpe?g|gif|svg|woff2?|ico|map)(\\?|\$)' | sort -u | head -40`, e:"Routes /api non visibles sur le site = surface d'attaque (IDOR, contrôle d'accès). Pro : linkfinder / jsluice."},
- {t:"TLS / certificat", c:`echo | openssl s_client -connect ${T}:443 -servername ${T} 2>/dev/null | openssl x509 -noout -dates -issuer`, e:"Certificat expiré / émetteur douteux / pas de HTTPS = point à corriger."}
+ {t:"TLS / certificat", c:`echo | openssl s_client -connect ${T}:443 -servername ${T} 2>/dev/null | openssl x509 -noout -dates -issuer`, e:"Certificat expiré / émetteur douteux / pas de HTTPS = point à corriger."},
+ {t:"HTTPS forcé + HSTS (redirection)", c:`curl -s -o /dev/null -w "http -> %{http_code} %{redirect_url}\\n" -A "Mozilla/5.0" http://${T}/; curl -sSI -A "Mozilla/5.0" ${U}/ | grep -qi 'strict-transport-security' && echo "HSTS OK" || echo "HSTS MANQUANT"`, e:"Si http ne redirige pas en 301 vers https, ou HSTS MANQUANT → à durcir (ligne de devis)."},
+ {t:"Authentification e-mail (SPF / DKIM / DMARC)", c:`dig +short TXT ${T} | grep -i 'v=spf1' || echo "SPF MANQUANT"; dig +short TXT _dmarc.${T} | grep -i 'v=DMARC1' || echo "DMARC MANQUANT"; dig +short TXT default._domainkey.${T} | grep -i 'DKIM\\|v=DKIM1' || echo "DKIM (sélecteur default) MANQUANT"`, e:"SPF/DKIM/DMARC absents = le domaine peut être usurpé (phishing au nom du client). Remédiation facturable + argument fort."},
+ {t:"Conformité RGPD (cookies / traceurs / mentions)", c:`P=\$(curl -s -A "Mozilla/5.0" ${U}/); echo "\$P" | grep -qi 'fonts.googleapis.com' && echo "GOOGLE_FONTS_EXTERNE (RGPD)"; echo "\$P" | grep -qiE 'google-analytics|googletagmanager|facebook.net|hotjar|clarity\\.ms' && echo "TRACEURS_PRESENTS"; echo "\$P" | grep -qiE 'cookie|consent|tarteaucitron|axeptio|cookiebot|didomi' || echo "PAS_DE_BANDEAU_COOKIE"; echo "\$P" | grep -qiE 'mentions.?l[eé]gales|politique.{0,3}confidentialit' || echo "PAS_DE_MENTIONS_LEGALES"`, e:"Chaque ligne = non-conformité RGPD (risque CNIL) → mise en conformité facturable (CMP, polices locales, politique de confidentialité)."},
+ {t:"Performance (compression / cache / poids)", c:`curl -s -o /dev/null -w "poids: %{size_download} o | temps: %{time_total}s\\n" -A "Mozilla/5.0" -H "Accept-Encoding: gzip,br" ${U}/; H=\$(curl -sSI -A "Mozilla/5.0" -H "Accept-Encoding: gzip,br" ${U}/); echo "\$H" | grep -qiE 'content-encoding: *(gzip|br)' || echo "PAS_DE_COMPRESSION"; echo "\$H" | grep -qiE 'cache-control|expires' || echo "PAS_DE_CACHE"`, e:"PAS_DE_COMPRESSION / PAS_DE_CACHE / page lourde = optimisation facturable (vitesse + SEO + conversion)."},
+ {t:"SEO technique de base", c:`P=\$(curl -s -A "Mozilla/5.0" ${U}/); echo "\$P" | grep -qi '<title' || echo "PAS_DE_TITLE"; echo "\$P" | grep -qi 'name="description"' || echo "PAS_DE_META_DESCRIPTION"; echo "\$P" | grep -qi 'name="viewport"' || echo "PAS_DE_VIEWPORT (mobile)"`, e:"Title / meta description / viewport manquants = SEO technique à corriger (ligne de devis)."}
 ];}
 function genAuto(){
   var c=clean(document.getElementById('cible').value); if(!c.host){alert("Entre une cible (ex: monsite.fr ou 10.10.10.5).");return;}
@@ -539,7 +550,14 @@ var RT={
  ssti:{v:'AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H',s:'9.0',n:'SSTI',rem:'Ne pas injecter d\'entrée dans les templates ; sandbox ; templates logiques uniquement.'},
  auth:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N',s:'8.1',n:'Auth / JWT',rem:'Vérifier alg côté serveur ; secret fort ; tokens expirables & invalidés ; MFA.'},
  info:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N',s:'7.5',n:'Fuite d\'information',rem:'Retirer le fichier/endpoint exposé ; contrôle d\'accès ; pas de secret dans le code public.'},
- leak:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N',s:'5.3',n:'Identifiants exposés dans des fuites de données connues',rem:'Forcer la réinitialisation des mots de passe des comptes concernés ; activer la 2FA ; interdire les mots de passe déjà vus dans des fuites (vérif type HIBP à l\'inscription) ; mettre en place une surveillance de fuites sur le domaine (HIBP Domain monitoring).'}
+ leak:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N',s:'5.3',n:'Identifiants exposés dans des fuites de données connues',rem:'Forcer la réinitialisation des mots de passe des comptes concernés ; activer la 2FA ; interdire les mots de passe déjà vus dans des fuites (vérif type HIBP à l\'inscription) ; mettre en place une surveillance de fuites sur le domaine (HIBP Domain monitoring).'},
+ // --- Lignes CONFIGURATION / CONFORMITÉ facturables (devis) ---
+ headers:{v:'AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:L/A:N',s:'4.3',n:'En-têtes de sécurité manquants',rem:'Ajouter HSTS, Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy (protège du clickjacking, du MIME-sniffing, des fuites de référent).'},
+ tls:{v:'AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N',s:'4.0',n:'HTTPS / TLS à durcir',rem:'Forcer la redirection HTTP→HTTPS (301), activer HSTS, désactiver TLS < 1.2, renouveler/valider le certificat.'},
+ email:{v:'AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:L/A:N',s:'5.3',n:'Authentification e-mail manquante (SPF/DKIM/DMARC)',rem:'Publier un SPF, signer en DKIM, poser une politique DMARC (p=quarantine puis p=reject). Empêche l\'usurpation du domaine et le phishing au nom du client.'},
+ rgpd:{v:'Conformité RGPD',s:'5.0',n:'Non-conformité RGPD (cookies / traceurs / mentions)',rem:'Bandeau de consentement (CMP) bloquant AVANT tout dépôt de cookie ; héberger les polices (Google Fonts) en local ; politique de confidentialité + mentions légales à jour ; registre des traitements. Réduit le risque de sanction CNIL.'},
+ perf:{v:'Performance',s:'4.0',n:'Performance à optimiser (cache / compression / poids)',rem:'Activer gzip/brotli + cache navigateur ; compresser et redimensionner les images ; minifier CSS/JS ; CDN. Gagne en vitesse, SEO et conversion.'},
+ seo:{v:'SEO technique',s:'2.5',n:'SEO technique à corriger (title / meta / viewport)',rem:'Title + meta description uniques par page ; balise viewport (mobile) ; canonical ; sitemap + robots ; données structurées (schema.org).'}
 };
 function fv(id){var e=document.getElementById(id);return e?(e.value||''):'';}
 function setv(id,v){var e=document.getElementById(id);if(e)e.value=v;}
@@ -756,6 +774,28 @@ function scan(t){
   // chemins trouvés (ffuf / codes HTTP)
   if(/\bStatus:\s*(200|301|302|401|403)\b/i.test(t) || /\b(20\d|30\d|401|403)\b\s+\S+\s+\S+\s+\/\S+/.test(t)) return {cls:'ok',msg:'🗂️ Chemins trouvés — vise les pages sensibles (admin, login, backup, .sql, .zip, .git).',
     follow:[], report:null, unlock:null};
+  // ===== Lignes CONFIGURATION / CONFORMITÉ facturables (comptées dans le devis) =====
+  if(/MANQUANT\s+(Strict-Transport|Content-Security|X-Frame|X-Content-Type|Referrer-Policy|Permissions-Policy)/i.test(t)){
+    var miss=(t.match(/MANQUANT\s+\S+/gi)||[]).length;
+    return {cls:'warn',msg:'🧱 '+miss+' en-tête(s) de sécurité MANQUANT(s) → durcissement à facturer (compté dans le devis).',follow:[],report:{type:'headers'},unlock:null};
+  }
+  if(/HSTS MANQUANT/i.test(t) || /^http\s*->\s*200\b/mi.test(t)){
+    return {cls:'warn',msg:'🔒 HTTPS à durcir (HSTS manquant et/ou http non redirigé en 301) → ligne de devis.',follow:[],report:{type:'tls'},unlock:null};
+  }
+  if(/SPF MANQUANT|DMARC MANQUANT|DKIM[^\n]*MANQUANT/i.test(t)){
+    var em=[]; if(/SPF MANQUANT/i.test(t))em.push('SPF'); if(/DMARC MANQUANT/i.test(t))em.push('DMARC'); if(/DKIM[^\n]*MANQUANT/i.test(t))em.push('DKIM');
+    return {cls:'warn',msg:'✉️ Authentification e-mail incomplète : '+em.join(', ')+' manquant(s) → domaine usurpable (phishing). Remédiation facturable.',follow:[],report:{type:'email'},unlock:null};
+  }
+  if(/GOOGLE_FONTS_EXTERNE|TRACEURS_PRESENTS|PAS_DE_BANDEAU_COOKIE|PAS_DE_MENTIONS_LEGALES/i.test(t)){
+    var rg=[]; if(/PAS_DE_BANDEAU_COOKIE/i.test(t))rg.push('pas de bandeau cookie'); if(/TRACEURS_PRESENTS/i.test(t))rg.push('traceurs sans consentement'); if(/GOOGLE_FONTS_EXTERNE/i.test(t))rg.push('Google Fonts externes'); if(/PAS_DE_MENTIONS_LEGALES/i.test(t))rg.push('mentions légales absentes');
+    return {cls:'warn',msg:'⚖️ Non-conformité RGPD : '+rg.join(', ')+' → mise en conformité facturable (risque CNIL).',follow:[],report:{type:'rgpd'},unlock:null};
+  }
+  if(/PAS_DE_COMPRESSION|PAS_DE_CACHE/i.test(t) || /poids:\s*\d{7,}\s*o/i.test(t)){
+    return {cls:'warn',msg:'⚡ Performance à optimiser (compression/cache absents ou page lourde) → prestation facturable.',follow:[],report:{type:'perf'},unlock:null};
+  }
+  if(/PAS_DE_TITLE|PAS_DE_META_DESCRIPTION|PAS_DE_VIEWPORT/i.test(t)){
+    return {cls:'warn',msg:'🔎 SEO technique à corriger (title/meta/viewport manquant) → prestation facturable.',follow:[],report:{type:'seo'},unlock:null};
+  }
   // en-têtes / techno
   if(/Server:\s|X-Powered-By:|X-Generator:/i.test(t)) return {cls:'warn',msg:'ℹ️ Techno / en-têtes identifiés. Continue l\'énumération (étapes suivantes).',follow:[],report:null,unlock:null};
   return {cls:'warn',msg:'Rien d\'exploitable détecté ici — passe à l\'étape suivante (ou colle une autre sortie).',follow:[],report:null,unlock:null};
@@ -809,7 +849,13 @@ var NOVICE={
  ssti:{r:'Une injection dans les gabarits permet d\'exécuter du code.',i:'Prise de contrôle du serveur.'},
  auth:{r:'L\'authentification présente une faiblesse (jetons, mots de passe).',i:'Usurpation de comptes, y compris administrateur.'},
  info:{r:'Des informations techniques sensibles sont exposées.',i:'Facilite la préparation d\'une attaque.'},
- leak:{r:'Des identifiants liés à vous circulent dans des fuites connues.',i:'Connexion frauduleuse possible si des mots de passe sont réutilisés.'}
+ leak:{r:'Des identifiants liés à vous circulent dans des fuites connues.',i:'Connexion frauduleuse possible si des mots de passe sont réutilisés.'},
+ headers:{r:'Votre site n\'envoie pas les en-têtes de sécurité recommandés.',i:'Facilite le détournement d\'affichage (clickjacking) et certaines attaques sur vos visiteurs.'},
+ tls:{r:'La connexion sécurisée (HTTPS) n\'est pas pleinement forcée.',i:'Risque d\'interception et perte de confiance (navigateur, référencement).'},
+ email:{r:'Votre domaine n\'est pas protégé contre l\'usurpation d\'e-mail (SPF/DKIM/DMARC).',i:'Des e-mails frauduleux peuvent être envoyés en votre nom (phishing à vos clients).'},
+ rgpd:{r:'Votre site n\'est pas conforme au RGPD (cookies, traceurs, mentions).',i:'Risque de sanction CNIL et de perte de confiance des visiteurs.'},
+ perf:{r:'Votre site est ralenti (pas de compression/cache, pages lourdes).',i:'Visiteurs qui partent, moins de ventes, moins bien référencé.'},
+ seo:{r:'Des bases du référencement technique manquent (titres, descriptions, mobile).',i:'Moins de visibilité sur Google, moins de clients potentiels.'}
 };
 function pushFinding(type, proof){
   var t=RT[type]; if(!t) return;
