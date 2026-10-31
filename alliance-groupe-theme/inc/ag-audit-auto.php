@@ -413,6 +413,26 @@ if ( defined( 'ABSPATH' ) ) {
 		if ( $id ) { wp_send_json_success( array( 'job' => $id ) ); }
 		wp_send_json_error( array( 'error' => 'Échec création du job.' ) );
 	} );
+
+	/* ---- APPLICATION : SYNC GitHub + Purge cache (admin only) ---- */
+	add_action( 'wp_ajax_ag_app_sync', function () {
+		if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) { wp_send_json_error( array( 'm' => 'Refusé.' ) ); }
+		if ( ! class_exists( 'AG_GitHub_Sync' ) ) { wp_send_json_error( array( 'm' => 'Module de sync indisponible.' ) ); }
+		if ( method_exists( 'AG_GitHub_Sync', 'get_remote_sha' ) ) { AG_GitHub_Sync::get_remote_sha( 'theme', true ); } // rafraîchit le SHA distant
+		$res = AG_GitHub_Sync::sync( 'theme' );
+		if ( empty( $res['ok'] ) ) { wp_send_json_error( array( 'm' => $res['error'] ?? 'Erreur de sync.' ) ); }
+		$total = (int) ( $res['stats']['updated'] ?? 0 ) + (int) ( $res['stats']['created'] ?? 0 );
+		wp_send_json_success( array( 'total' => $total, 'm' => $total . ' fichier(s) mis à jour depuis GitHub.' ) );
+	} );
+
+	add_action( 'wp_ajax_ag_app_purge', function () {
+		if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) { wp_send_json_error( array( 'm' => 'Refusé.' ) ); }
+		global $wpdb;
+		$deleted = (int) $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '%transient%ag_%' OR option_name LIKE '%transient%update_plugins%' OR option_name LIKE '%transient%update_themes%' OR option_name LIKE 'ag_licence_%' OR option_name LIKE 'ag_companion_%'" );
+		if ( function_exists( 'wp_cache_flush' ) ) { wp_cache_flush(); }
+		if ( function_exists( 'opcache_reset' ) ) { @opcache_reset(); }
+		wp_send_json_success( array( 'deleted' => $deleted, 'm' => $deleted . ' entrée(s) de cache purgée(s).' ) );
+	} );
 }
 
 /* ============================ TEST CLI (hors WordPress) ============================ */
