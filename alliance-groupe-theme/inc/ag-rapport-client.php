@@ -94,13 +94,31 @@ add_action( 'template_redirect', function () {
 	$cible  = get_post_meta( $id, '_ag_rap_cible', true );
 	$html   = (string) get_post_meta( $id, '_ag_rap_html', true );
 	$offre  = isset( $_GET['offre'] ) ? sanitize_key( $_GET['offre'] ) : '';
-	// Prix / liens : par-rapport d'abord, sinon valeurs globales (Réglages / app) → les rapports AUTO ont des boutons sans config manuelle.
-	$rpx = function ( $id, $k ) { $m = get_post_meta( $id, '_ag_rap_px_' . $k, true ); return '' !== $m ? $m : get_option( 'ag_rap_px_' . $k, '' ); };
-	$rpy = function ( $id, $k ) { $m = get_post_meta( $id, '_ag_rap_pay_' . $k, true ); return '' !== $m ? $m : get_option( 'ag_rap_pay_' . $k, '' ); };
+	// Prix : par-rapport → option globale → défaut raisonnable (zéro config nécessaire).
+	$defpx = array( 'rapport' => 290, 'correction' => 1299, 'refonte' => 1490 );
+	$rpx = function ( $id, $k ) use ( $defpx ) {
+		$m = get_post_meta( $id, '_ag_rap_px_' . $k, true ); if ( '' !== $m ) { return $m; }
+		$o = get_option( 'ag_rap_px_' . $k, '' ); if ( '' !== $o ) { return $o; }
+		return isset( $defpx[ $k ] ) ? $defpx[ $k ] : '';
+	};
+	// Lien de paiement : par-rapport → option → sinon GÉNÉRÉ depuis le PayPal déjà configuré (ag_paypal_email).
+	$rpy = function ( $id, $k, $price, $label ) {
+		$m = get_post_meta( $id, '_ag_rap_pay_' . $k, true ); if ( '' !== $m ) { return $m; }
+		$o = get_option( 'ag_rap_pay_' . $k, '' ); if ( '' !== $o ) { return $o; }
+		$pp = sanitize_email( (string) get_option( 'ag_paypal_email', '' ) );
+		if ( $pp && '' !== $price && (float) $price > 0 ) {
+			return 'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=' . rawurlencode( $pp )
+				. '&item_name=' . rawurlencode( 'Alliance Groupe — ' . $label )
+				. '&amount=' . number_format( (float) $price, 2, '.', '' )
+				. '&currency_code=EUR&no_shipping=1&no_note=1';
+		}
+		return '';
+	};
+	$lbl = array( 'rapport' => 'Rapport seul', 'correction' => 'Rapport + Correction', 'refonte' => 'Refonte complète sécurisée' );
 	$px = array(
-		'rapport'    => array( 'Rapport seul',            $rpx( $id, 'rapport' ),    $rpy( $id, 'rapport' ),    'Le rapport complet, à vous de corriger.' ),
-		'correction' => array( 'Rapport + Correction',    $rpx( $id, 'correction' ), $rpy( $id, 'correction' ), 'On corrige tout + re-test de vérification.' ),
-		'refonte'    => array( 'Refonte complète sécurisée', $rpx( $id, 'refonte' ),  $rpy( $id, 'refonte' ),    'Site reconstruit propre et durci.' ),
+		'rapport'    => array( $lbl['rapport'],    $rpx( $id, 'rapport' ),    $rpy( $id, 'rapport', $rpx( $id, 'rapport' ), $lbl['rapport'] ),       'Le rapport complet, à vous de corriger.' ),
+		'correction' => array( $lbl['correction'], $rpx( $id, 'correction' ), $rpy( $id, 'correction', $rpx( $id, 'correction' ), $lbl['correction'] ), 'On corrige tout + re-test de vérification.' ),
+		'refonte'    => array( $lbl['refonte'],    $rpx( $id, 'refonte' ),    $rpy( $id, 'refonte', $rpx( $id, 'refonte' ), $lbl['refonte'] ),       'Site reconstruit propre et durci.' ),
 	);
 	nocache_headers();
 	header( 'X-Robots-Tag: noindex, nofollow', true );
