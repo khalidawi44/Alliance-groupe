@@ -284,14 +284,47 @@ if ( ! function_exists( 'ag_aa_render' ) ) {
 if ( defined( 'ABSPATH' ) ) {
 
 	add_action( 'admin_menu', function () {
-		add_menu_page( 'Audit auto', '🔍 Audit auto', 'manage_options', 'ag-audit-auto', 'ag_aa_admin_page', 'dashicons-shield', 58 );
+		// Entrée PRINCIPALE, en premier (position 55, avant « Sécurité » 56) : on commence ici.
+		add_menu_page( 'Audit', '🛡️ Audit — ICI', 'manage_options', 'ag-audit-auto', 'ag_aa_admin_page', 'dashicons-shield', 55 );
+		add_submenu_page( 'ag-audit-auto', 'Audit auto', '🔍 Lancer un audit', 'manage_options', 'ag-audit-auto', 'ag_aa_admin_page' );
+		add_submenu_page( 'ag-audit-auto', 'Outils avancés', '⚙️ Outils avancés', 'manage_options', 'ag-audit-avance', 'ag_aa_advanced_page' );
 	} );
+
+	// Rangement : masque de la barre les outils avancés redondants (toujours accessibles via « Outils avancés »).
+	add_action( 'admin_menu', function () {
+		foreach ( array( 'ag-audit-gen', 'ag-bugbounty', 'ag-tester', 'ag-scan-log', 'ag-rapports-pay' ) as $slug ) {
+			remove_submenu_page( 'ag-espace-audit', $slug );
+		}
+	}, 9999 );
+
+	function ag_aa_advanced_page() {
+		$items = array(
+			array( 'ag-audit-auto', '🔍 Lancer un audit (auto + devis)', 'L\'essentiel : une URL → score + devis + rapport.' ),
+			array( 'ag-espace-audit', '🔍 Espace Audit', 'Les prospects audités.' ),
+			array( 'ag-audit-gen', '🧰 Assistant guidé (manuel / Kali)', 'Le mode manuel pas-à-pas.' ),
+			array( 'ag-pentest-bridge', '🛰️ Audits Kali (jobs actifs)', 'La file des audits actifs sur Kali (sous mandat).' ),
+			array( 'ag-bugbounty', '🎯 Bug Bounty', 'Programmes bug bounty.' ),
+			array( 'edit.php?post_type=ag_rapport', '📄 Rapports client (à payer)', 'Les rapports privés générés (boutons paiement).' ),
+			array( 'ag-rapports-pay', '🔓 Rapports payés', 'Suivi des paiements.' ),
+			array( 'ag-scan-log', '📋 Sites scannés', 'Historique des scans.' ),
+			array( 'ag-tester', '⚙️ Réglages Audit', 'Options techniques.' ),
+		);
+		echo '<div class="wrap"><h1>⚙️ Outils avancés (sécurité)</h1>';
+		echo '<p>Tout est là, mais <b>tu n\'en as pas besoin au quotidien</b>. Pour prospecter/vendre : utilise seulement <b>« 🔍 Lancer un audit »</b>.</p>';
+		echo '<div style="display:flex;flex-wrap:wrap;gap:12px;max-width:1000px;margin-top:10px">';
+		foreach ( $items as $it ) {
+			$href = ( false !== strpos( $it[0], '.php' ) ) ? admin_url( $it[0] ) : admin_url( 'admin.php?page=' . $it[0] );
+			echo '<a href="' . esc_url( $href ) . '" style="flex:1 1 300px;text-decoration:none;border:1px solid #dcdcde;border-radius:10px;padding:14px;background:#fff;color:#1d2327"><b style="font-size:15px">' . esc_html( $it[1] ) . '</b><br><span style="color:#666;font-size:13px">' . esc_html( $it[2] ) . '</span></a>';
+		}
+		echo '</div></div>';
+	}
 
 	function ag_aa_admin_page() {
 		$manuel = get_stylesheet_directory_uri() . '/assets/tools/assistant-defi.html';
 		$pref   = isset( $_GET['target'] ) ? sanitize_text_field( wp_unslash( $_GET['target'] ) ) : '';
 		$auto   = ( '' !== $pref );
 		echo '<div class="wrap"><h1>🔍 Audit de sécurité</h1>';
+		echo '<div style="background:#f0f6fc;border:1px solid #c3dafe;border-left:4px solid #2563eb;border-radius:6px;padding:12px 16px;max-width:900px;margin:8px 0 16px"><b>👉 C\'est ICI que tu commences.</b> 1) Tape l\'URL · 2) <b>Lancer l\'audit automatique</b> → score + devis · 3) (pour envoyer) coche <b>« créer le rapport à payer »</b>. <span style="color:#555">Le reste (Kali, Bug Bounty, Générateur…) est rangé dans « ⚙️ Outils avancés » — tu peux l\'ignorer.</span></div>';
 		echo '<p>Entre l\'URL de la cible, puis choisis <b>un des deux modes</b> :</p>';
 		echo '<p><input type="text" id="aa_url" value="' . esc_attr( $pref ) . '" placeholder="exemple.fr" style="width:360px;padding:8px;font-size:15px"></p>';
 		echo '<div style="display:flex;gap:16px;flex-wrap:wrap;max-width:900px">';
