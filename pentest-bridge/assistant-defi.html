@@ -720,12 +720,22 @@ function scan(t){
   if(/ref:\s*refs\/heads|\.git\/HEAD[\s\S]{0,40}\b200\b|\b200\b[\s\S]{0,40}\.git/i.test(t)) return {cls:'ok',msg:'📂 Dépôt .git EXPOSÉ → récupération du code source + secrets.',
     follow:[{t:'Aspirer le .git + chercher des secrets',c:'git-dumper '+U+'/.git/ ./loot && gitleaks detect -s ./loot',e:'Sous mandat ; au coffre, ne pas diffuser le code.'}],
     report:{type:'info'}, unlock:null};
-  // Sortie wpscan déjà lancée (comptes/plugins) — AVANT la détection générique, pour ne PAS reboucler
+  // Sortie du TEST DE MOT DE PASSE (wpscan --passwords) — TERMINAL, ne reboucle JAMAIS
+  if(/No Valid Passwords Found|Valid Combinations Found|password attack|performing password|trying [0-9]|\[SUCCESS\]|rockyou/i.test(t)){
+    if(/Valid Combinations Found|\[SUCCESS\]|Username:\s*\S+,?\s*Password:/i.test(t)){
+      var mpass=(t.match(/Password:\s*([^\s,]+)/i)||[])[1]||'';
+      return {cls:'bad',msg:'🚨 MOT DE PASSE TROUVÉ'+(mpass?' ('+mpass+')':'')+' — accès admin prouvé = impact CRITIQUE. C\'est ta preuve la plus forte (masquée côté client).',
+        follow:[], report:{type:'auth'}, unlock:null};
+    }
+    return {cls:'warn',msg:'✅ Aucun mot de passe faible cassé (test terminé). Les comptes exposés restent une faille d\'énumération à facturer, mais pas d\'accès prouvé. Ne relance pas le test — passe à la suite.',
+      follow:[], report:{type:'enum'}, unlock:null};
+  }
+  // Sortie wpscan (énumération comptes/plugins) — AVANT la détection générique, pour ne PAS reboucler
   if(/wpscan|\[\+\]|User\(s\) Identified|\[i\] User|Identified the following|WordPress version \d/i.test(t)){
     var foll=[], msg='🧩 Sortie wpscan lue.';
     if(/User\(s\) Identified|\[i\] User|Author\(s\) Identified/i.test(t)){
       msg+=' Comptes énumérés → test de mot de passe faible possible (sous mandat).';
-      foll.push({t:'Test de mots de passe sur les comptes trouvés (sous mandat)',c:'wpscan --url '+U+' --usernames <user1,user2> --passwords /usr/share/wordlists/rockyou.txt --max-threads 5 --throttle 800',e:'Prouve un accès admin si mot de passe faible (ACTIF, mandat obligatoire, risque de verrouillage). Un compte admin cassé = impact critique.'});
+      foll.push({t:'Test de mots de passe sur les comptes trouvés (sous mandat)',c:'wpscan --url '+U+' --usernames <user1,user2> --passwords /usr/share/wordlists/rockyou.txt --max-threads 5 --throttle 800',e:'Prouve un accès admin si mot de passe faible (ACTIF, mandat obligatoire, risque de verrouillage). Un compte admin cassé = impact critique. Colle la sortie → Analyser (ne rebouclera pas).'});
     }
     if(/vulnerabilit|CVE-|\[!\]|Title:/i.test(t)){ msg+=' Plugins/thèmes vulnérables signalés → vérifie la CVE + un exploit public (searchsploit).'; foll.push({t:'Chercher un exploit pour une CVE trouvée',c:'searchsploit <plugin> <version>',e:'Confirme si la vulnérabilité a un exploit prêt à l\'emploi.'}); }
     return {cls:'ok',msg:msg,follow:foll,report:(/User\(s\) Identified|\[i\] User/i.test(t)?{type:'enum'}:null),unlock:null};
@@ -742,18 +752,20 @@ function scan(t){
               {t:'Fermer la fuite (remédiation à vendre)',c:'# Bloquer l\'énumération : REST users sur auth only + redirection ?author=\n# (plugin de durcissement ou règle serveur)',e:'Masquer les logins = première ligne de durcissement facturable.'}],
       report:{type:'enum'}, unlock:null};
   }
-  // Autres CMS détectés (whatweb / generator / HTML) → route adaptée, AVANT la détection WordPress générique
-  if(/joomla/i.test(t)) return {cls:'ok',msg:'🧩 Joomla détecté → énumère version, composants et back-office.',
+  // PRIORITÉ WordPress : si le moindre marqueur WP est présent, c'est WordPress (pas un autre CMS faussement détecté)
+  var isWP=/wp-content|wp-includes|wp-json|wp-login|x-pingback|content="WordPress|generator"\s*content="WordPress|\/wp-admin/i.test(t);
+  // Autres CMS détectés (whatweb / generator / HTML) → route adaptée, AVANT la détection WordPress générique. Jamais si marqueur WP présent.
+  if(!isWP && /joomla/i.test(t)) return {cls:'ok',msg:'🧩 Joomla détecté → énumère version, composants et back-office.',
     follow:[{t:'Scanner Joomla',c:'joomscan --url '+U+'    # ou: curl -s '+U+'/administrator/manifests/files/joomla.xml | grep -oE "<version>[^<]+"',e:'Version + composants vulnérables (CVE). /administrator = login admin.'}],report:null,unlock:null};
-  if(/drupal|sites\/default/i.test(t)) return {cls:'ok',msg:'🧩 Drupal détecté → version + modules.',
+  if(!isWP && /drupal|sites\/default\/files/i.test(t)) return {cls:'ok',msg:'🧩 Drupal détecté → version + modules.',
     follow:[{t:'Scanner Drupal',c:'droopescan scan drupal -u '+U+'    # ou: curl -s '+U+'/CHANGELOG.txt | head -3',e:'Version (CHANGELOG.txt) → CVE type Drupalgeddon. /user/login = admin.'}],report:null,unlock:null};
-  if(/prestashop/i.test(t)) return {cls:'ok',msg:'🛒 PrestaShop détecté → version + modules + back-office.',
+  if(!isWP && /prestashop/i.test(t)) return {cls:'ok',msg:'🛒 PrestaShop détecté → version + modules + back-office.',
     follow:[{t:'Vérifs PrestaShop',c:'curl -s '+U+'/docs/CHANGELOG.txt | head -3 ; curl -s -o /dev/null -w "admin-dev -> %{http_code}\\n" '+U+'/admin-dev/',e:'Version + modules à CVE fréquents. Dossier admin souvent renommé (admin123…).'}],report:null,unlock:null};
-  if(/magento|mage-|static\/version/i.test(t)) return {cls:'ok',msg:'🛒 Magento détecté → version + patchs (SUPEE/CVE Magecart).',
+  if(!isWP && /\bmagento\b|x-magento|Mage\.Cookies|\/static\/version\d/i.test(t)) return {cls:'ok',msg:'🛒 Magento détecté → version + patchs (SUPEE/CVE Magecart).',
     follow:[{t:'Vérifs Magento',c:'curl -s '+U+'/magento_version ; curl -s -o /dev/null -w "errors -> %{http_code}\\n" '+U+'/errors/',e:'Version → CVE (SUPEE, Magecart). /downloader et /errors souvent exposés.'}],report:null,unlock:null};
-  if(/shopify|cdn\.shopify|myshopify/i.test(t)) return {cls:'warn',msg:'🛍️ Shopify (SaaS hébergé) — le serveur est géré par Shopify : pas d\'audit d\'infra. L\'audit porte sur la config boutique, les apps tierces, les formulaires et les données exposées.',
+  if(!isWP && /shopify|cdn\.shopify|myshopify/i.test(t)) return {cls:'warn',msg:'🛍️ Shopify (SaaS hébergé) — le serveur est géré par Shopify : pas d\'audit d\'infra. L\'audit porte sur la config boutique, les apps tierces, les formulaires et les données exposées.',
     follow:[{t:'Points vérifiables sur Shopify',c:'curl -s '+U+'/products.json | head -c 400    # catalogue exposé ? ; vérifie aussi /admin (doit rediriger), apps tierces, fuite d\'emails',e:'Sur SaaS, vise la configuration et les intégrations, pas le socle (tu ne peux pas pentester l\'infra de Shopify).'}],report:null,unlock:null};
-  if(/wix\.com|_wixCIDX|X-Wix/i.test(t)) return {cls:'warn',msg:'🧱 Wix (SaaS fermé) — site hébergé et verrouillé par Wix. Audit limité : en-têtes, formulaires, fuites, SEO/conformité. Pas d\'audit serveur possible.',
+  if(!isWP && /wix\.com|_wixCIDX|X-Wix/i.test(t)) return {cls:'warn',msg:'🧱 Wix (SaaS fermé) — site hébergé et verrouillé par Wix. Audit limité : en-têtes, formulaires, fuites, SEO/conformité. Pas d\'audit serveur possible.',
     follow:[],report:null,unlock:null};
   // WordPress détecté (page/whatweb) — mais PAS sur une sortie wpscan / scan aborté (sinon on reboucle)
   if(/wordpress/i.test(t) && !/wpscan|\[\+\]|scan aborted|enumerating|requests done|wp-content dir/i.test(t)) return {cls:'ok',msg:'🧩 WordPress détecté → énumère comptes + plugins vulnérables.',
