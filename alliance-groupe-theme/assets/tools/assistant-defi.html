@@ -422,6 +422,7 @@ function gen(){
   if(skipped.length){ html+='<div class="exp" style="border-left:3px solid var(--warn);padding-left:10px;margin-top:10px"><b>Sautés (scope) :</b><br>'+skipped.join('<br>')+'</div>'; }
   if(!html){alert("Choisis au moins un type (Recon est coché par défaut).");return;}
   document.getElementById('steps').innerHTML=html;
+  try{ prefillRecon(AGT.T); }catch(e){}
   // pré-remplir le rapport
   document.getElementById('rendpoint').value=U+'/?'+P+'=1';
   document.getElementById('rparam').value=P;
@@ -460,6 +461,7 @@ function genWordPress(){
       '<div class="verdict" id="verd_'+id+'"></div></div></div>';
   });
   document.getElementById('steps').innerHTML=html;
+  try{ prefillRecon(AGT.T); }catch(e){}
   document.getElementById('rendpoint').value=U+'/wp-json/wp/v2/users';
   document.getElementById('rparam').value=P; setv('rscope', T);
   fillSkeleton(true);
@@ -486,12 +488,28 @@ function UNIV(U,T){ return [
 /* File des audits (en attente/terminé) : on affiche la vraie page serveur « Audits Kali » dans un cadre (même origine, ta session WordPress). */
 function agOrigin(){ return (location.protocol.indexOf('http')===0)?location.origin:'https://alliancegroupe-inc.com'; }
 function reloadJobs(){ var f=document.getElementById('agJobs'); if(f) f.src=agOrigin()+'/wp-admin/admin.php?page=ag-pentest-bridge&ts='+Date.now(); }
-/* Ouvre l'audit AUTO côté serveur (WordPress) avec la cible pré-remplie — un navigateur ne peut pas scanner un tiers, l'auto passe par le serveur. */
+/* Lance l'audit AUTO serveur DANS le cadre en bas (plus de nouvel onglet). */
 function openServerAuto(){
   var c=(document.getElementById('cible').value||'').trim();
-  var origin=(location.protocol.indexOf('http')===0)?location.origin:'https://alliancegroupe-inc.com';
-  var u=origin+'/wp-admin/admin.php?page=ag-audit-auto'+(c?('&target='+encodeURIComponent(c)):'');
-  window.open(u,'_blank');
+  var u=agOrigin()+'/wp-admin/admin.php?page=ag-audit-auto'+(c?('&target='+encodeURIComponent(c)):'');
+  var f=document.getElementById('agJobs');
+  if(f){ f.src=u; var p=document.getElementById('jobsPanel'); if(p) p.scrollIntoView({behavior:'smooth'}); }
+  else { window.open(u,'_blank'); }
+}
+/* Pré-remplissage : si un audit passif serveur a déjà tourné sur cette cible, on réutilise son recon (empreinte techno + en-têtes) dans la 1re étape — plus besoin de refaire whatweb/curl sur Kali. */
+function reconKey(host){ return 'ag_recon_'+(host||'').replace(/^www\./,''); }
+function prefillRecon(host){
+  try{
+    var r=localStorage.getItem(reconKey(host)); if(!r) return false;
+    var box=document.querySelector('#steps textarea.res'); if(!box) return false;
+    box.value=r; var id=box.id.replace('res_','');
+    if(typeof analyzeStep==='function') analyzeStep(id);
+    var st=document.getElementById('steps');
+    if(st){ var n=document.createElement('div'); n.className='verdict ok'; n.style.margin='0 0 10px';
+      n.innerHTML='♻️ <b>Recon déjà connu réutilisé</b> (audit passif serveur) : la 1re étape est pré-remplie et analysée automatiquement. Tu n\'as pas à refaire whatweb/curl.';
+      st.insertBefore(n, st.firstChild); }
+    return true;
+  }catch(e){ return false; }
 }
 function genAuto(){
   var c=clean(document.getElementById('cible').value); if(!c.host){alert("Entre une cible (ex: monsite.fr ou 10.10.10.5).");return;}
@@ -510,6 +528,7 @@ function genAuto(){
       '<div class="verdict" id="verd_'+id+'"></div></div></div>';
   });
   document.getElementById('steps').innerHTML=html;
+  try{ prefillRecon(AGT.T); }catch(e){}
   document.getElementById('rendpoint').value=U+'/';
   document.getElementById('rparam').value=P; setv('rscope', T);
   fillSkeleton(true);
