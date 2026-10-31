@@ -552,13 +552,23 @@ function scan(t){
   if(/\b429\b|too many requests|rate.?limit/i.test(raw))
     return {cls:'warn',msg:'⏳ Rate-limit (429) : tu vas trop vite → les résultats sont faussés (faux négatifs). Ralentis fortement.',
       follow:[{t:'Throttle agressif',c:'# wpscan : --throttle 2000   |   ffuf : -rate 5 -t 2   puis relance',e:'Attends quelques minutes puis reprends plus lentement.'}],report:null,unlock:null};
-  // REDIRECTION (http→https, domaine→www) : la commande ne suit pas le 301 → sortie vide / « Scan Aborted ». Ce n'est PAS « rien d'exploitable ».
+  // Marqueurs : wpscan a trouvé de VRAIES choses → ne pas traiter comme un redirect/erreur, lire les findings plus bas.
+  var hasWpFindings = /User\(s\) Identified|\[i\] User|WordPress version\s*\d|Plugin\(s\) Identified|\[i\]\s*Plugin|Theme(?:s)? In Use|\bvulnerabilit/i.test(raw);
+  // CIBLE = SOUS-CHEMIN : wpscan ne trouve pas wp-content → remettre la RACINE du domaine (cause classique de boucle).
+  if(!hasWpFindings && /unable to identify the wp-content dir|value given is the correct one/i.test(raw)){
+    var root0 = (U.match(/^(https?:\/\/[^\/]+)/i)||[])[1]||U;
+    return {cls:'warn',msg:'🎯 Ta CIBLE pointe sur un SOUS-DOSSIER ('+U+'), pas sur la racine du site → wpscan ne retrouve pas wp-content et s\'arrête. Remets la cible sur la RACINE : '+root0+' (en haut de l\'outil, enlève tout ce qui suit le nom de domaine).',
+      follow:[{t:'Relancer sur la racine du domaine',c:'wpscan --url '+root0+' --enumerate u,vp,vt --stealthy --throttle 800 --random-user-agent',e:'Cible = '+root0+' UNIQUEMENT (sans /wp-content/…, sans /themes/…). C\'est ça qui faisait tourner en boucle.'}],
+      report:null,unlock:null};
+  }
+  // REDIRECTION (http→https, domaine→www) : la commande ne suit pas le 301. On vise TOUJOURS la racine du domaine de destination.
   var redir = raw.match(/redirects?\s+to\s+(https?:\/\/[^\s"'<>]+)/i) || raw.match(/Location:\s*(https?:\/\/[^\s"'<>]+)/i);
-  if( redir || (/scan aborted|moved permanently|\b301\b/i.test(raw) && /www\./i.test(raw)) ){
-    var dest = (redir ? redir[1] : U.replace('://','://www.')).replace(/[\/.]+$/,'');
-    return {cls:'warn',msg:'↪️ La cible REDIRIGE vers '+dest+' (souvent domaine → www). Ta commande ne suit pas le redirect → elle renvoie du vide ou s\'arrête (« Scan Aborted »). Ce n\'est PAS une absence de faille : relance en ciblant directement l\'URL finale.',
+  if( !hasWpFindings && ( redir || (/scan aborted|moved permanently|\b301\b/i.test(raw) && /www\./i.test(raw)) ) ){
+    var rawdest = (redir ? redir[1] : U.replace('://','://www.'));
+    var dmo = rawdest.match(/^(https?:\/\/[^\/]+)/i); var dest = (dmo?dmo[1]:rawdest.replace(/[\/.]+$/,''));
+    return {cls:'warn',msg:'↪️ La cible REDIRIGE vers '+dest+' (souvent domaine → www). Ta commande ne suit pas le redirect → elle renvoie du vide ou s\'arrête (« Scan Aborted »). Ce n\'est PAS une absence de faille : relance en ciblant la RACINE ci-dessous.',
       follow:[
-        {t:'Refaire l\'énumération WordPress sur l\'URL finale',c:'wpscan --url '+dest+' --enumerate u,vp,vt --stealthy --throttle 800 --random-user-agent',e:'On scanne directement la bonne URL → plus de « Scan Aborted ». (Astuce : change aussi la cible en haut de l\'outil pour mettre '+dest+'.)'},
+        {t:'Refaire l\'énumération WordPress sur l\'URL finale',c:'wpscan --url '+dest+' --enumerate u,vp,vt --stealthy --throttle 800 --random-user-agent',e:'On scanne la racine du bon domaine → plus de « Scan Aborted ». Astuce : mets aussi la cible en haut de l\'outil = '+dest+'.'},
         {t:'Comptes via REST en suivant le redirect (-L)',c:'curl -sL -A "Mozilla/5.0" '+dest+'/wp-json/wp/v2/users',e:'-L suit le 301 jusqu\'au www → tu obtiens le JSON des comptes (id/name/slug) au lieu d\'une réponse vide. Colle la sortie → Analyser.'}
       ],report:null,unlock:null};
   }
@@ -618,8 +628,8 @@ function scan(t){
               {t:'Fermer la fuite (remédiation à vendre)',c:'# Bloquer l\'énumération : REST users sur auth only + redirection ?author=\n# (plugin de durcissement ou règle serveur)',e:'Masquer les logins = première ligne de durcissement facturable.'}],
       report:{type:'enum'}, unlock:null};
   }
-  // WordPress détecté (page/whatweb) — mais PAS sur une sortie wpscan (déjà gérée au-dessus)
-  if(/wordpress/i.test(t)) return {cls:'ok',msg:'🧩 WordPress détecté → énumère comptes + plugins vulnérables.',
+  // WordPress détecté (page/whatweb) — mais PAS sur une sortie wpscan / scan aborté (sinon on reboucle)
+  if(/wordpress/i.test(t) && !/wpscan|\[\+\]|scan aborted|enumerating|requests done|wp-content dir/i.test(t)) return {cls:'ok',msg:'🧩 WordPress détecté → énumère comptes + plugins vulnérables.',
     follow:[{t:'Énumérer WordPress (wpscan, discret)',c:'wpscan --url '+U+' --enumerate u,vp,vt --stealthy --throttle 800 --random-user-agent',e:'Comptes + plugins/thèmes à CVE. --stealthy + --throttle 800 (0,8s entre requêtes) = évite le ban Wordfence/hébergeur. Colle la sortie → Analyser (ne rebouclera plus).'},
             {t:'Comptes via REST',c:'curl -sL -A "Mozilla/5.0" '+U+'/wp-json/wp/v2/users',e:'Fuite de comptes fréquente. -L suit le redirect www (sinon réponse vide).'}],
     report:null, unlock:null};
