@@ -1365,7 +1365,15 @@ var AG = (function(){
 			if(!cl||!md){m.textContent='Client ET référence de mandat requis.';return;}
 			m.textContent='⏳ Création du job…';
 			AG.post('ag_app_audit_active',{url:d.url||d.host,client:cl,mandat:md,level:document.getElementById('aaa_level').value,intel:JSON.stringify(d.intel||{})}).then(function(x){
-				m.innerHTML=(x&&x.success)?('✅ Job <b>'+x.data.job+'</b> créé. Sur ta Kali : lance ./ag-runner.sh → il tire le job, lance ag-pentest.sh en local, le rapport revient ici.'):('Erreur : '+((x&&x.data&&x.data.error)||'?'));
+				if(x&&x.success){
+					var host=(d.host||'').replace(/^https?:\/\//,'');
+					m.innerHTML='✅ <b>Job créé.</b> Maintenant, dans l\'ordre :<br>'
+						+'<b>①</b> (optionnel) Ouvre l\'assistant : <a href="https://alliancegroupe-inc.com/wp-content/themes/alliance-groupe-theme/assets/tools/assistant-defi.html?cible='+encodeURIComponent(host)+'" target="_blank" style="color:#9cc2ff;">ouvrir l\'assistant</a><br>'
+						+'<b>②</b> Ouvre <b>Kali</b> et tape :<br><code style="display:block;background:#05070c;border:1px solid #2a2c4e;border-radius:6px;padding:8px;margin:4px 0;color:#9ef0c8;">cd ~/pentest-local &amp;&amp; ./ag-runner.sh --once</code>'
+						+'<b>③</b> Attends ~5 min, puis <button class="mini" id="aaa_check" style="cursor:pointer;">🔄 Vérifier si le rapport est prêt</button>';
+					var cb=document.getElementById('aaa_check');
+					if(cb) cb.addEventListener('click',function(){ cb.textContent='…'; AG.post('ag_app_jobs',{}).then(function(j){ var jobs=(j&&j.data&&j.data.jobs)||[]; var mine=jobs.filter(function(z){return (z.target||'').indexOf(host)>-1;})[0]; cb.textContent='🔄 Vérifier si le rapport est prêt'; if(mine&&mine.status==='done'){ m.innerHTML+='<br><b style="color:#16a34a">✅ Rapport PRÊT (job terminé).</b> Va dans « 📡 Suivi » pour la synthèse.'; loadSuivi&&loadSuivi(); } else if(mine&&mine.status==='error'){ m.innerHTML+='<br><b style="color:#dc2626">❌ Erreur sur le job.</b> Vérifie que Kali a bien lancé le runner.'; } else { m.innerHTML+='<br>⏳ Pas encore terminé — relance la vérif dans 1-2 min (le runner Kali doit tourner).'; } }); });
+				} else { m.innerHTML='Erreur : '+((x&&x.data&&x.data.error)||'?'); }
 			}).catch(function(e){m.textContent='Erreur réseau : '+e;});
 		});
 	}
