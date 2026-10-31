@@ -271,12 +271,27 @@ if ( defined( 'ABSPATH' ) ) {
 	} );
 
 	function ag_aa_admin_page() {
-		echo '<div class="wrap"><h1>🔍 Audit auto (1 bouton, tout en auto)</h1>';
-		echo '<p>Entre une URL : l\'audit passif complet s\'exécute côté serveur et sort le rapport + le devis. Non intrusif.</p>';
-		echo '<p><input type="text" id="aa_url" placeholder="exemple.fr" style="width:360px;padding:8px"> ';
-		echo '<button class="button button-primary" id="aa_go" style="padding:4px 18px">Lancer l\'audit</button> ';
-		echo '<label style="margin-left:10px"><input type="checkbox" id="aa_rep"> créer le rapport client</label></p>';
-		echo '<div id="aa_out" style="margin-top:16px"></div></div>';
+		$manuel = get_stylesheet_directory_uri() . '/assets/tools/assistant-defi.html';
+		echo '<div class="wrap"><h1>🔍 Audit de sécurité</h1>';
+		echo '<p>Entre l\'URL de la cible, puis choisis <b>un des deux modes</b> :</p>';
+		echo '<p><input type="text" id="aa_url" placeholder="exemple.fr" style="width:360px;padding:8px;font-size:15px"></p>';
+		echo '<div style="display:flex;gap:16px;flex-wrap:wrap;max-width:900px">';
+		// MODE 1 — AUTOMATIQUE
+		echo '<div style="flex:1 1 380px;border:2px solid #E6A93C;border-radius:10px;padding:16px;background:#fffdf7">';
+		echo '<h2 style="margin:0 0 6px">① Automatique <span style="font-weight:400;color:#777;font-size:13px">— Claude le fait pour toi</span></h2>';
+		echo '<p style="margin:0 0 10px;color:#555">L\'audit passif complet s\'exécute <b>tout seul côté serveur</b> (en-têtes, versions, xmlrpc, énumération, SPF/DMARC, RGPD, SEO…). Rien à faire. Sort le rapport + le devis en ~15 s.</p>';
+		echo '<button class="button button-primary button-hero" id="aa_go">▶ Lancer l\'audit automatique</button> ';
+		echo '<label style="display:block;margin-top:8px"><input type="checkbox" id="aa_rep"> créer le rapport client (lien partageable)</label>';
+		echo '</div>';
+		// MODE 2 — MANUEL GUIDÉ
+		echo '<div style="flex:1 1 380px;border:2px solid #2563eb;border-radius:10px;padding:16px;background:#f7faff">';
+		echo '<h2 style="margin:0 0 6px">② Manuel guidé <span style="font-weight:400;color:#777;font-size:13px">— tu le fais, tu apprends</span></h2>';
+		echo '<p style="margin:0 0 10px;color:#555">L\'assistant te donne les <b>commandes à lancer toi-même</b> (sur Kali), pas-à-pas, lit tes résultats et construit le rapport. Pour <b>aller au bout toi-même et apprendre</b>. Inclut les tests actifs (sous mandat).</p>';
+		echo '<a class="button button-secondary button-hero" target="_blank" id="aa_manuel" href="' . esc_url( $manuel ) . '">▶ Ouvrir l\'assistant manuel</a>';
+		echo '</div>';
+		echo '</div>';
+		echo '<div id="aa_out" style="margin-top:18px;max-width:900px"></div></div>';
+		echo '<script>document.getElementById("aa_manuel").addEventListener("click",function(e){var u=document.getElementById("aa_url").value.trim();if(u){this.href="' . esc_js( $manuel ) . '?cible="+encodeURIComponent(u);}});</script>';
 		$nonce = wp_create_nonce( 'ag_aa' );
 		echo '<script>
 		document.getElementById("aa_go").onclick=function(){

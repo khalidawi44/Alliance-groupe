@@ -49,8 +49,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Assistant de défi — Bug Bounty / CTF</h1>
-  <p class="sub">Kali = tes mains (tu exécutes) · cet outil = ton cerveau (route pas-à-pas + rapport YWH). Hors ligne. <b>Uniquement sous mandat / dans le scope d'un programme autorisé.</b></p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends</h1>
+  <p class="sub"><b>Ici c'est TOI qui lances chaque commande</b> (sur Kali), et l'outil te guide pas-à-pas + lit tes résultats + construit le rapport. C'est le mode pour <b>apprendre et aller jusqu'au bout toi-même</b>. (Pour un audit 100% automatique sans rien faire → bouton « Audit auto » dans WordPress.) Hors ligne. <b>Uniquement sous mandat / scope autorisé.</b></p>
 
   <div class="panel" id="scopePanel">
     <label style="display:flex;justify-content:space-between;align-items:center;gap:10px">
@@ -81,11 +81,11 @@
     </label>
     <div class="cats" id="cats"></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="go" onclick="genAuto()" style="flex:1 1 220px;background:linear-gradient(135deg,#E6A93C,#F37A1F)">🔍 Audit auto (tout site)</button>
-      <button class="go" onclick="genWordPress()" style="flex:1 1 220px;background:linear-gradient(135deg,#1e3a8a,#2563eb)">🧩 Audit WordPress</button>
-      <button class="go" onclick="gen()" style="flex:1 1 220px;background:#2a2c4e">⚙️ Route par type (manuel)</button>
+      <button class="go" onclick="genAuto()" style="flex:1 1 220px;background:linear-gradient(135deg,#E6A93C,#F37A1F)">🔍 Route guidée complète (tout site)</button>
+      <button class="go" onclick="genWordPress()" style="flex:1 1 220px;background:linear-gradient(135deg,#1e3a8a,#2563eb)">🧩 Route WordPress</button>
+      <button class="go" onclick="gen()" style="flex:1 1 220px;background:#2a2c4e">⚙️ Route par type de faille</button>
     </div>
-    <p class="sub" style="margin:6px 2px 0;font-size:12px;color:#9aa0b0">« Audit auto » marche sur <b>n'importe quel site</b> (WordPress, Joomla, Shopify, PrestaShop, sur-mesure, IP…) : il détecte le socle puis s'adapte. « Route par type » = tu choisis les failles ci-dessus.</p>
+    <p class="sub" style="margin:6px 2px 0;font-size:12px;color:#9aa0b0">Ces 3 boutons génèrent la <b>liste des commandes à exécuter toi-même</b>, dans l'ordre. « Route guidée complète » marche sur <b>n'importe quel site</b> et s'adapte au socle détecté ; « Route par type » = tu choisis les failles ci-dessus. Tu colles chaque sortie → « Analyser » → l'outil débloque la suite (et ne bloque jamais).</p>
   </div>
 
   <div id="out" class="hidden">
@@ -1116,6 +1116,7 @@ function genFileRead(){
   var b=document.getElementById('reportBanner'); if(b) b.style.display='block';
 }
 document.getElementById('cible').addEventListener('keydown',function(e){if(e.key==='Enter')gen();});
+try{ var _qp=new URLSearchParams(location.search); var _qc=_qp.get('cible')||_qp.get('url'); if(_qc) document.getElementById('cible').value=_qc.replace(/^https?:\/\//i,'').replace(/\/.*$/,''); }catch(e){}
 try{ var _lc=localStorage.getItem('ag_defi_cible'); if(_lc && !document.getElementById('cible').value) document.getElementById('cible').value=_lc; }catch(e){}
 try{ var _sv=localStorage.getItem('ag_scope'); if(_sv){ document.getElementById('scopeJson').value=_sv; loadScope(true); } }catch(e){}
 try{ var _px=JSON.parse(localStorage.getItem('ag_prices')||'null'); if(_px){ if(_px.crit!=null)document.getElementById('pxCrit').value=_px.crit; if(_px.eleve!=null)document.getElementById('pxEleve').value=_px.eleve; if(_px.moyen!=null)document.getElementById('pxMoyen').value=_px.moyen; if(_px.faible!=null)document.getElementById('pxFaible').value=_px.faible; if(_px.report!=null)document.getElementById('pxReport').value=_px.report; if(_px.refonte!=null)document.getElementById('pxRefonte').value=_px.refonte; } var _pu=localStorage.getItem('ag_payurl'); if(_pu)document.getElementById('payUrl').value=_pu; }catch(e){}
