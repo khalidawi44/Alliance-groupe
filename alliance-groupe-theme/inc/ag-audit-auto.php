@@ -433,6 +433,19 @@ if ( defined( 'ABSPATH' ) ) {
 		if ( function_exists( 'opcache_reset' ) ) { @opcache_reset(); }
 		wp_send_json_success( array( 'deleted' => $deleted, 'm' => $deleted . ' entrée(s) de cache purgée(s).' ) );
 	} );
+
+	add_action( 'wp_ajax_ag_app_prices_save', function () {
+		if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) { wp_send_json_error( array( 'm' => 'Refusé.' ) ); }
+		$in = array();
+		if ( isset( $_POST['prices'] ) ) { $in = json_decode( wp_unslash( $_POST['prices'] ), true ); }
+		if ( ! is_array( $in ) ) { wp_send_json_error( array( 'm' => 'Données invalides.' ) ); }
+		$cur = function_exists( 'ag_aa_prices' ) ? ag_aa_prices() : array( 'critique' => 900, 'eleve' => 500, 'moyen' => 250, 'faible' => 90 );
+		foreach ( array( 'critique', 'eleve', 'moyen', 'faible' ) as $k ) {
+			if ( isset( $in[ $k ] ) ) { $cur[ $k ] = max( 0, min( 100000, (int) $in[ $k ] ) ); }
+		}
+		update_option( 'ag_aa_prices', $cur, false );
+		wp_send_json_success( array( 'prices' => $cur, 'm' => 'ok' ) );
+	} );
 }
 
 /* ============================ TEST CLI (hors WordPress) ============================ */

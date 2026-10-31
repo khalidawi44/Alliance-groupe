@@ -240,6 +240,19 @@ foreach ( $ag_my_prospects as $ppc ) {
 			</div>
 			<span id="ag-maint-msg" class="sub" style="display:block;margin-top:8px;"></span>
 		</div>
+		<?php $ag_px = function_exists( 'ag_aa_prices' ) ? ag_aa_prices() : array( 'critique' => 900, 'eleve' => 500, 'moyen' => 250, 'faible' => 90 ); ?>
+		<div class="card" style="border:1px solid #E6A93C;">
+			<h3 style="margin:0 0 8px;">💶 Prix du devis (audit)</h3>
+			<p class="sub" style="margin:-4px 0 10px;">Tarif de remédiation par gravité. Utilisé automatiquement dans les devis de l'audit auto.</p>
+			<div style="display:flex;gap:8px;flex-wrap:wrap;">
+				<label style="flex:1 1 110px;font-size:.78rem;">Critique (€)<input type="number" id="px-critique" value="<?php echo (int) $ag_px['critique']; ?>" style="width:100%;padding:8px;margin-top:2px;"></label>
+				<label style="flex:1 1 110px;font-size:.78rem;">Élevé (€)<input type="number" id="px-eleve" value="<?php echo (int) $ag_px['eleve']; ?>" style="width:100%;padding:8px;margin-top:2px;"></label>
+				<label style="flex:1 1 110px;font-size:.78rem;">Moyen (€)<input type="number" id="px-moyen" value="<?php echo (int) $ag_px['moyen']; ?>" style="width:100%;padding:8px;margin-top:2px;"></label>
+				<label style="flex:1 1 110px;font-size:.78rem;">Faible (€)<input type="number" id="px-faible" value="<?php echo (int) $ag_px['faible']; ?>" style="width:100%;padding:8px;margin-top:2px;"></label>
+			</div>
+			<button type="button" id="ag-px-save" class="b gold" style="margin-top:10px;">💾 Enregistrer les prix</button>
+			<span id="ag-px-msg" class="sub" style="display:block;margin-top:8px;"></span>
+		</div>
 		<?php endif; ?>
 		<div class="stats">
 			<a class="stat todo" href="#" onclick="AG.tab('prospecter');return false"><b><?php echo (int) $ag_cnt['a_contacter']; ?></b><span>À contacter</span></a>
@@ -1318,6 +1331,14 @@ var AG = (function(){
 		AG.post('ag_app_purge',{}).then(function(j){ pb.removeAttribute('disabled'); pb.textContent=o;
 			if(m)m.innerHTML=(j&&j.success)?('🧹 '+j.data.m+' Recharge la page (Ctrl/↻).'):('❌ '+((j&&j.data&&j.data.m)||'Erreur purge'));
 			if(j&&j.success)AG.toast('Cache purgé'); }).catch(function(e){ pb.removeAttribute('disabled'); pb.textContent=o; if(m)m.textContent='Erreur réseau : '+e; });
+	});
+	var xb=document.getElementById('ag-px-save'), xm=document.getElementById('ag-px-msg');
+	if(xb) xb.addEventListener('click',function(){
+		var p={critique:+(document.getElementById('px-critique').value||0),eleve:+(document.getElementById('px-eleve').value||0),moyen:+(document.getElementById('px-moyen').value||0),faible:+(document.getElementById('px-faible').value||0)};
+		xb.setAttribute('disabled','disabled'); var o=xb.textContent; xb.textContent='…'; if(xm)xm.textContent='⏳ Enregistrement…';
+		AG.post('ag_app_prices_save',{prices:JSON.stringify(p)}).then(function(j){ xb.removeAttribute('disabled'); xb.textContent=o;
+			if(xm)xm.textContent=(j&&j.success)?('✅ Prix enregistrés : C '+j.data.prices.critique+' / É '+j.data.prices.eleve+' / M '+j.data.prices.moyen+' / F '+j.data.prices.faible+' €'):('❌ '+((j&&j.data&&j.data.m)||'Erreur'));
+			if(j&&j.success)AG.toast('Prix enregistrés'); }).catch(function(e){ xb.removeAttribute('disabled'); xb.textContent=o; if(xm)xm.textContent='Erreur réseau : '+e; });
 	});
 })();
 </script>
