@@ -459,9 +459,17 @@ foreach ( $ag_my_prospects as $ppc ) {
 			<p class="sub" style="margin:-4px 0 10px;">Colle une adresse → note, problèmes, capture, et rapport client à envoyer.</p>
 			<div class="audit-wrap" id="ag-audit-manual" data-num="">
 				<input type="url" id="ag-audit-url" inputmode="url" placeholder="https://site-du-prospect.fr" autocomplete="off">
-				<button type="button" id="ag-audit-run" class="b gold" style="margin-top:12px;">Lancer l'audit</button>
+				<button type="button" id="ag-audit-run" class="b gold" style="margin-top:12px;">Lancer l'audit (note rapide)</button>
 				<div class="audit-res" style="margin-top:10px;"></div>
 			</div>
+		</div>
+
+		<div class="card">
+			<h3>🔍 Audit AUTO complet (sécurité + devis)</h3>
+			<p class="sub" style="margin:-4px 0 10px;">Scan passif complet côté serveur (en-têtes, versions, xmlrpc, énumération, SPF/DMARC, RGPD, SEO) → <strong>findings + devis chiffré</strong>. Utilise l'URL ci-dessus.</p>
+			<button type="button" id="ag-audit-auto" class="b gold">Lancer l'audit auto</button>
+			<a id="ag-audit-manuel" class="mini" style="display:inline-block;margin-left:8px;padding:8px 12px;cursor:pointer;border:1px solid #2563eb;border-radius:8px;color:#9cc2ff;text-decoration:none;" href="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/tools/assistant-defi.html' ); ?>" target="_blank">Mode manuel guidé (tu apprends)</a>
+			<div id="ag-audit-auto-res" style="margin-top:12px;"></div>
 		</div>
 
 		<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 2px 10px;">
@@ -1243,6 +1251,46 @@ var AG = (function(){
 			list.forEach(function(m){ box.appendChild(misCard(m)); });
 		}).catch(function(){ box.innerHTML='<div class="card"><p class="sub" style="margin:0;">Erreur de chargement.</p></div>'; });
 	};
+})();
+</script>
+<script>
+/* Audit AUTO complet + porte ACTIVE (dans l'onglet Audit de l'app) */
+(function(){
+	var btn=document.getElementById('ag-audit-auto'); if(!btn||!window.AG) return;
+	var res=document.getElementById('ag-audit-auto-res');
+	var man=document.getElementById('ag-audit-manuel');
+	function urlv(){var e=document.getElementById('ag-audit-url');return e?(e.value||'').trim():'';}
+	if(man){man.addEventListener('click',function(){var u=urlv();if(u){this.href=this.href.split('?')[0]+'?cible='+encodeURIComponent(u);}});}
+	btn.addEventListener('click',function(){
+		var u=urlv(); if(!u){AG.toast('Entre une URL dans le champ au-dessus');return;}
+		res.innerHTML='<span class="sub">Audit auto en cours… (~15 s)</span>'; btn.setAttribute('disabled','disabled'); btn.textContent='Audit…';
+		AG.post('ag_app_audit_auto',{url:u}).then(function(j){
+			btn.removeAttribute('disabled'); btn.textContent='Lancer l\'audit auto';
+			if(j&&j.success){ res.innerHTML='<div style="background:#fff;color:#111;border-radius:10px;padding:10px;overflow:auto">'+j.data.html+'</div>'; if(j.data.can_active){ appActive(res,j.data); } }
+			else { res.innerHTML='<span class="sub">'+((j&&j.data&&j.data.m)||'Erreur audit.')+'</span>'; }
+		}).catch(function(e){ btn.removeAttribute('disabled'); btn.textContent='Lancer l\'audit auto'; res.innerHTML='Erreur réseau : '+e; });
+	});
+	function appActive(hostEl,d){
+		var box=document.createElement('div'); box.className='card'; box.style.marginTop='10px';
+		box.innerHTML='<h3>⚡ Passer à l\'actif (Kali, sous mandat)</h3>'
+			+'<p class="sub">Crée un job actif ciblé pour ta Kali (comptes/plugins déjà trouvés transmis). ⚠️ Mandat écrit obligatoire.</p>'
+			+'<input id="aaa_client" placeholder="Nom du client" style="width:100%;margin-bottom:6px;padding:8px">'
+			+'<input id="aaa_mandat" placeholder="Réf. mandat (ex: MANDAT-2026-001)" style="width:100%;margin-bottom:6px;padding:8px">'
+			+'<select id="aaa_level" style="width:100%;margin-bottom:6px;padding:8px"><option value="normal">normal</option><option value="deep">deep (CVE, fichiers)</option><option value="max">max (OSINT, sous-domaines)</option></select>'
+			+'<label style="display:block;font-size:.8rem;margin-bottom:8px"><input type="checkbox" id="aaa_ok"> Je confirme avoir un mandat écrit signé pour cette cible.</label>'
+			+'<button id="aaa_go" class="b gold">Créer le job actif pour Kali</button> <span id="aaa_msg" class="sub" style="display:block;margin-top:8px"></span>';
+		hostEl.appendChild(box);
+		document.getElementById('aaa_go').addEventListener('click',function(){
+			var m=document.getElementById('aaa_msg');
+			if(!document.getElementById('aaa_ok').checked){m.textContent='Coche la confirmation de mandat.';return;}
+			var cl=document.getElementById('aaa_client').value.trim(), md=document.getElementById('aaa_mandat').value.trim();
+			if(!cl||!md){m.textContent='Client ET référence de mandat requis.';return;}
+			m.textContent='⏳ Création du job…';
+			AG.post('ag_app_audit_active',{url:d.url||d.host,client:cl,mandat:md,level:document.getElementById('aaa_level').value,intel:JSON.stringify(d.intel||{})}).then(function(x){
+				m.innerHTML=(x&&x.success)?('✅ Job <b>'+x.data.job+'</b> créé. Sur ta Kali : lance ./ag-runner.sh → il tire le job, lance ag-pentest.sh en local, le rapport revient ici.'):('Erreur : '+((x&&x.data&&x.data.error)||'?'));
+			}).catch(function(e){m.textContent='Erreur réseau : '+e;});
+		});
+	}
 })();
 </script>
 </body>
