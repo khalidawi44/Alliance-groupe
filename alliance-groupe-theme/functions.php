@@ -235,6 +235,12 @@ if ( file_exists( $ag_audit_seo_file ) ) {
     require_once $ag_audit_seo_file;
 }
 
+// ── Audit AUTO (1 bouton : scan passif complet côté serveur → findings + devis + rapport)
+$ag_audit_auto_file = get_stylesheet_directory() . '/inc/ag-audit-auto.php';
+if ( file_exists( $ag_audit_auto_file ) ) {
+    require_once $ag_audit_auto_file;
+}
+
 // ── 1c5e-bis. « Tester mon site » (freemium) + Espace Audit (prospection admin)
 $ag_tester_file = get_stylesheet_directory() . '/inc/ag-tester.php';
 if ( file_exists( $ag_tester_file ) ) {

@@ -1,0 +1,322 @@
+<?php
+/**
+ * AG — AUDIT AUTO (du début à la fin, 1 bouton).
+ * Scanner de sécurité PASSIF côté serveur : on entre une URL, tout s'exécute
+ * automatiquement (en-têtes, versions, xmlrpc, énumération, fichiers exposés,
+ * SPF/DMARC, SEO, RGPD), puis findings + DEVIS + rapport client prêt.
+ *
+ * Non intrusif : uniquement des requêtes GET/HEAD/1 POST xmlrpc = ce qu'un
+ * visiteur ou Google voit. AUCUN brute-force / fuzzing / injection ici (ça
+ * reste sur Kali, sous mandat). Couche HTTP branchable : wp_remote_* dans
+ * WordPress, cURL en CLI (pour tests hors WordPress).
+ */
+
+if ( ! defined( 'ABSPATH' ) && 'cli' !== php_sapi_name() ) { exit; }
+
+/* ============================ COUCHE HTTP BRANCHABLE ============================ */
+if ( ! function_exists( 'ag_aa_http' ) ) {
+	function ag_aa_http( $method, $url, $body = null, $follow = false ) {
+		$ua = 'Mozilla/5.0 (Alliance-Groupe-Audit; mandat)';
+		if ( function_exists( 'wp_remote_request' ) ) {
+			$args = array(
+				'method' => $method, 'timeout' => 8,
+				'redirection' => $follow ? 3 : 0,
+				'user-agent' => $ua, 'sslverify' => true,
+				'headers' => array(), 'body' => $body,
+			);
+			$r = wp_remote_request( $url, $args );
+			if ( is_wp_error( $r ) ) { return array( 'code' => 0, 'headers' => array(), 'body' => '', 'loc' => '' ); }
+			$h = array();
+			foreach ( wp_remote_retrieve_headers( $r ) as $k => $v ) { $h[ strtolower( $k ) ] = is_array( $v ) ? implode( ', ', $v ) : $v; }
+			return array(
+				'code' => (int) wp_remote_retrieve_response_code( $r ),
+				'headers' => $h,
+				'body' => (string) wp_remote_retrieve_body( $r ),
+				'loc' => (string) wp_remote_retrieve_header( $r, 'location' ),
+			);
+		}
+		// Fallback cURL (CLI / hors WordPress)
+		$ch = curl_init( $url );
+		$opt = array(
+			CURLOPT_RETURNTRANSFER => 1, CURLOPT_HEADER => 1,
+			CURLOPT_CUSTOMREQUEST => $method, CURLOPT_NOBODY => ( 'HEAD' === $method ),
+			CURLOPT_FOLLOWLOCATION => (bool) $follow, CURLOPT_MAXREDIRS => 3,
+			CURLOPT_TIMEOUT => 8, CURLOPT_USERAGENT => $ua,
+			CURLOPT_SSL_VERIFYPEER => 0, CURLOPT_SSL_VERIFYHOST => 0,
+		);
+		$px = getenv( 'HTTPS_PROXY' ); if ( $px ) { $opt[ CURLOPT_PROXY ] = $px; }
+		if ( null !== $body ) { $opt[ CURLOPT_POSTFIELDS ] = $body; }
+		curl_setopt_array( $ch, $opt );
+		$resp = curl_exec( $ch );
+		$code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+		$hsz  = curl_getinfo( $ch, CURLINFO_HEADER_SIZE );
+		curl_close( $ch );
+		$rawh = substr( (string) $resp, 0, $hsz );
+		$bod  = substr( (string) $resp, $hsz );
+		$h = array(); $loc = '';
+		foreach ( preg_split( '/\r?\n/', $rawh ) as $line ) {
+			if ( false !== strpos( $line, ':' ) ) {
+				list( $k, $v ) = explode( ':', $line, 2);
+				$k = strtolower( trim( $k ) ); $h[ $k ] = trim( $v );
+				if ( 'location' === $k ) { $loc = trim( $v ); }
+			}
+		}
+		return array( 'code' => (int) $code, 'headers' => $h, 'body' => $bod, 'loc' => $loc );
+	}
+}
+
+/* ============================ PRIX PAR GRAVITÉ (éditables) ============================ */
+if ( ! function_exists( 'ag_aa_prices' ) ) {
+	function ag_aa_prices() {
+		$d = array( 'critique' => 900, 'eleve' => 500, 'moyen' => 250, 'faible' => 90 );
+		if ( function_exists( 'get_option' ) ) {
+			$o = get_option( 'ag_aa_prices' );
+			if ( is_array( $o ) ) { $d = array_merge( $d, array_map( 'intval', $o ) ); }
+		}
+		return $d;
+	}
+	function ag_aa_price( $sev ) { $p = ag_aa_prices(); return isset( $p[ $sev ] ) ? (int) $p[ $sev ] : 0; }
+}
+
+/* ============================ LE SCAN AUTO ============================ */
+if ( ! function_exists( 'ag_audit_auto' ) ) {
+	function ag_audit_auto( $url ) {
+		$t0 = microtime( true );
+		$url = trim( $url );
+		if ( ! preg_match( '#^https?://#i', $url ) ) { $url = 'https://' . $url; }
+		$host = preg_replace( '#^https?://#i', '', $url );
+		$host = preg_replace( '#/.*$#', '', $host );
+		$base = 'https://' . $host;
+
+		$F = array();  // findings facturables
+		$G = array();  // bons points
+		$add  = function( $key, $label, $sev, $proof, $advice ) use ( &$F ) { $F[] = array( 'key' => $key, 'label' => $label, 'sev' => $sev, 'price' => ag_aa_price( $sev ), 'proof' => $proof, 'advice' => $advice ); };
+		$good = function( $txt ) use ( &$G ) { $G[] = $txt; };
+
+		// 0. Joignable + redirection + serveur
+		$r = ag_aa_http( 'GET', $base . '/', null, true );
+		if ( ! $r['code'] ) {
+			// essai sans www / avec www
+			$alt = ( 0 === stripos( $host, 'www.' ) ) ? substr( $host, 4 ) : ( 'www.' . $host );
+			$r2 = ag_aa_http( 'GET', 'https://' . $alt . '/', null, true );
+			if ( $r2['code'] ) { $host = $alt; $base = 'https://' . $host; $r = $r2; }
+		}
+		if ( ! $r['code'] ) { return array( 'ok' => false, 'host' => $host, 'error' => 'Cible injoignable (DNS/réseau).' ); }
+
+		// Redirection http->https / www : on retient l'URL finale
+		$nu = ag_aa_http( 'GET', 'http://' . $host . '/', null, false );
+		$final_host = $host;
+		if ( ! empty( $r['loc'] ) && preg_match( '#^https?://([^/]+)#i', $r['loc'], $lm ) ) { $final_host = $lm[1]; }
+		elseif ( preg_match( '#^https?://([^/]+)#i', (string) $nu['loc'], $lm2 ) ) { $final_host = $lm2[1]; }
+		if ( strtolower( $final_host ) !== strtolower( $host ) ) { $host = $final_host; $base = 'https://' . $host; $r = ag_aa_http( 'GET', $base . '/', null, true ); }
+
+		$html    = (string) $r['body'];
+		$headers = $r['headers'];
+		$server  = isset( $headers['server'] ) ? $headers['server'] : '';
+
+		// HTTP forcé ? On teste le domaine racine en http. On ne flague QUE si le site est servi EN CLAIR (200 sans redirection https) — un 3xx/4xx n'est pas une preuve d'absence de redirection.
+		$root_h = preg_replace( '#^www\.#i', '', $host );
+		$nuc = ag_aa_http( 'GET', 'http://' . $root_h . '/', null, false );
+		if ( 200 === (int) $nuc['code'] && false === stripos( (string) $nuc['loc'], 'https://' ) ) { $add( 'tls', 'HTTPS non forcé (site servi en clair)', 'moyen', 'http://' . $root_h . '/ → 200 sans redirection HTTPS', 'Forcer la redirection 301 HTTP→HTTPS + HSTS.' ); }
+		else { $good( 'HTTP redirigé vers HTTPS / non servi en clair.' ); }
+
+		// 1. En-têtes de sécurité
+		$want = array( 'strict-transport-security' => 'HSTS', 'content-security-policy' => 'CSP', 'x-frame-options' => 'X-Frame-Options', 'x-content-type-options' => 'X-Content-Type-Options', 'referrer-policy' => 'Referrer-Policy', 'permissions-policy' => 'Permissions-Policy' );
+		$missing = array();
+		foreach ( $want as $hk => $hn ) { if ( empty( $headers[ $hk ] ) ) { $missing[] = $hn; } }
+		if ( $missing ) { $add( 'headers', count( $missing ) . ' en-tête(s) de sécurité manquant(s)', 'moyen', 'Manquants : ' . implode( ', ', $missing ), 'Ajouter ' . implode( ', ', $missing ) . ' (clickjacking, MIME-sniffing, HSTS).' ); }
+		else { $good( 'En-têtes de sécurité présents.' ); }
+
+		// 2. Techno + versions exposées
+		$is_wp = ( false !== stripos( $html, 'wp-content' ) || false !== stripos( $html, 'wp-includes' ) || preg_match( '#generator[^>]+WordPress#i', $html ) );
+		$vers = array();
+		if ( preg_match_all( '#name=[\'"]generator[\'"][^>]+content=[\'"]([^\'"]+)[\'"]#i', $html, $gm ) ) { foreach ( $gm[1] as $g ) { $vers[] = trim( $g ); } }
+		if ( $server && preg_match( '#[0-9]+\.[0-9]#', $server ) ) { $vers[] = 'Serveur: ' . $server; }
+		$plugins = array();
+		if ( preg_match_all( '#wp-content/plugins/([a-z0-9\-]+)#i', $html, $pm ) ) { $plugins = array_values( array_unique( $pm[1] ) ); }
+		$beta = array_filter( $vers, function( $v ) { return (bool) preg_match( '#beta|alpha|rc[0-9]#i', $v ); } );
+		if ( $vers || $plugins ) {
+			$pr = trim( implode( ' | ', array_slice( $vers, 0, 6 ) ) . ( $plugins ? ' | plugins: ' . implode( ', ', array_slice( $plugins, 0, 10 ) ) : '' ) );
+			$add( $beta ? 'version' : 'version', 'Versions / technologies exposées' . ( $beta ? ' (dont une version BETA en prod)' : '' ), $beta ? 'moyen' : 'faible', $pr, 'Masquer les versions (générateur, en-têtes serveur) ; mettre à jour les composants ; retirer les versions beta de la prod.' );
+		} else { $good( 'Peu/pas de versions exposées dans le code.' ); }
+
+		// 3. Énumération des comptes — REST + ?author
+		$leak_users = array();
+		$ru = ag_aa_http( 'GET', $base . '/wp-json/wp/v2/users', null, false );
+		$rest_open = ( 200 === (int) $ru['code'] && preg_match( '#"slug"\s*:\s*"#', (string) $ru['body'] ) );
+		if ( $rest_open && preg_match_all( '#"slug"\s*:\s*"([^"]+)"#', $ru['body'], $sm ) ) { $leak_users = array_merge( $leak_users, $sm[1] ); }
+		$au = ag_aa_http( 'GET', $base . '/?author=1', null, false );
+		if ( preg_match( '#/author/([^/]+)/?#i', (string) $au['loc'], $am ) ) { $leak_users[] = $am[1]; }
+		$leak_users = array_values( array_unique( array_filter( $leak_users ) ) );
+		if ( $rest_open || ! empty( $am[1] ) ) {
+			$add( 'enum', 'Énumération des comptes ouverte (login admin exposé)', 'moyen', 'Logins : ' . ( $leak_users ? implode( ', ', array_slice( $leak_users, 0, 8 ) ) : '(exposés)' ), 'Fermer /wp-json/wp/v2/users aux non-connectés et bloquer la redirection ?author=.' );
+		} elseif ( $is_wp ) { $good( 'Énumération des comptes fermée (REST + ?author).' ); }
+
+		// 4. Fichiers sensibles / sauvegardes
+		$bad_files = array();
+		foreach ( array( '.git/HEAD', '.env', 'wp-config.php.bak', 'wp-config.php~', 'wp-config.php.save', 'backup.zip', 'site.zip', 'db.sql', 'database.sql', 'dump.sql' ) as $f ) {
+			$rf = ag_aa_http( 'GET', $base . '/' . $f, null, false );
+			if ( 200 === (int) $rf['code'] ) {
+				$b0 = substr( (string) $rf['body'], 0, 200 );
+				if ( false === stripos( $b0, '<html' ) && false === stripos( $b0, '<!doctype' ) ) { $bad_files[] = $f; }
+			}
+		}
+		if ( $bad_files ) { $add( 'leakfile', 'Fichiers sensibles exposés', 'critique', 'Téléchargeables : ' . implode( ', ', $bad_files ), 'Supprimer/bloquer immédiatement (identifiants, base, code source).' ); }
+		else { $good( 'Pas de .git/.env/sauvegardes accessibles.' ); }
+
+		// 5. xmlrpc (amplification brute / pingback)
+		$xr = ag_aa_http( 'POST', $base . '/xmlrpc.php', '<?xml version="1.0"?><methodCall><methodName>system.listMethods</methodName></methodCall>' );
+		if ( 200 === (int) $xr['code'] && false !== stripos( (string) $xr['body'], 'methodResponse' ) ) {
+			$ping = ( false !== stripos( $xr['body'], 'pingback.ping' ) );
+			$add( 'xmlrpc', 'xmlrpc.php actif' . ( $ping ? ' (pingback = amplification DDoS/brute)' : '' ), 'moyen', 'system.listMethods répond' . ( $ping ? ', pingback.ping disponible' : '' ), 'Désactiver xmlrpc.php ou au minimum pingback.ping.' );
+		} else { $good( 'xmlrpc.php non exploitable (désactivé/filtré).' ); }
+
+		// 6. Email : SPF / DMARC via DNS-over-HTTPS (Google)
+		$root = preg_replace( '#^www\.#i', '', $host );
+		$spf_r = ag_aa_http( 'GET', 'https://dns.google/resolve?name=' . rawurlencode( $root ) . '&type=TXT', null, true );
+		$dm_r  = ag_aa_http( 'GET', 'https://dns.google/resolve?name=_dmarc.' . rawurlencode( $root ) . '&type=TXT', null, true );
+		$has_spf  = (bool) preg_match( '#v=spf1#i', (string) $spf_r['body'] );
+		$dmarc_pol = preg_match( '#v=DMARC1[^"]*p=([a-z]+)#i', (string) $dm_r['body'], $dmm ) ? strtolower( $dmm[1] ) : '';
+		if ( ! $has_spf ) { $add( 'email', 'SPF absent (usurpation e-mail possible)', 'moyen', 'Aucun enregistrement v=spf1 sur ' . $root, 'Publier un SPF (-all) + DKIM + DMARC.' ); }
+		else { $good( 'SPF présent.' ); }
+		if ( ! $dmarc_pol ) { $add( 'email', 'DMARC absent', 'moyen', 'Aucun _dmarc sur ' . $root, 'Publier un DMARC (p=quarantine puis reject).' ); }
+		elseif ( 'none' === $dmarc_pol ) { $add( 'email', 'DMARC en p=none (ne bloque pas l\'usurpation)', 'faible', '_dmarc = p=none (surveillance seule)', 'Passer DMARC en p=quarantine puis p=reject.' ); }
+		else { $good( 'DMARC actif (p=' . $dmarc_pol . ').' ); }
+
+		// 7. RGPD (cookies / traceurs / Google Fonts / mentions)
+		$rgpd = array();
+		if ( false !== stripos( $html, 'fonts.googleapis.com' ) ) { $rgpd[] = 'Google Fonts chargées depuis Google (transfert d\'IP)'; }
+		if ( preg_match( '#google-analytics|googletagmanager|gtag\(|facebook\.net|hotjar|clarity\.ms#i', $html ) && ! preg_match( '#cookie|consent|tarteaucitron|axeptio|cookiebot|didomi#i', $html ) ) { $rgpd[] = 'Traceurs sans bandeau de consentement visible'; }
+		if ( ! preg_match( '#mentions.?l[eé]gales|politique.{0,3}confidentialit#i', $html ) ) { $rgpd[] = 'Pas de lien mentions légales / confidentialité en page d\'accueil'; }
+		if ( $rgpd ) { $add( 'rgpd', 'Non-conformité RGPD à corriger', 'moyen', implode( ' ; ', $rgpd ), 'CMP bloquante, polices locales, politique de confidentialité + mentions légales.' ); }
+		else { $good( 'RGPD : pas d\'anomalie évidente (fonts/traceurs/mentions).' ); }
+
+		// 8. SEO technique de base
+		$seo = array();
+		if ( ! preg_match( '#<title[^>]*>[^<]{3,}#i', $html ) ) { $seo[] = 'title'; }
+		if ( ! preg_match( '#name=[\'"]description[\'"]#i', $html ) ) { $seo[] = 'meta description'; }
+		if ( ! preg_match( '#name=[\'"]viewport[\'"]#i', $html ) ) { $seo[] = 'viewport (mobile)'; }
+		if ( $seo ) { $add( 'seo', 'SEO technique à corriger', 'faible', 'Manquant : ' . implode( ', ', $seo ), 'Ajouter title + meta description uniques + viewport.' ); }
+		else { $good( 'SEO de base présent (title/description/viewport).' ); }
+
+		// 9. Performance (compression / cache)
+		$ce = isset( $headers['content-encoding'] ) ? $headers['content-encoding'] : '';
+		$cc = isset( $headers['cache-control'] ) ? $headers['cache-control'] : '';
+		$perf = array();
+		if ( ! preg_match( '#gzip|br#i', $ce ) ) { $perf[] = 'compression (gzip/brotli) absente'; }
+		if ( '' === $cc && empty( $headers['expires'] ) ) { $perf[] = 'cache navigateur non configuré'; }
+		if ( strlen( $html ) > 1500000 ) { $perf[] = 'page HTML lourde (' . round( strlen( $html ) / 1024 ) . ' Ko)'; }
+		if ( $perf ) { $add( 'perf', 'Performance à optimiser', 'faible', implode( ' ; ', $perf ), 'Activer compression + cache ; compresser images ; minifier.' ); }
+		else { $good( 'Performance : compression/cache OK.' ); }
+
+		// Dédoublonnage par clé+label, total devis, score
+		$seen = array(); $uniq = array();
+		foreach ( $F as $f ) { $sig = $f['key'] . '|' . $f['label']; if ( isset( $seen[ $sig ] ) ) { continue; } $seen[ $sig ] = 1; $uniq[] = $f; }
+		$F = $uniq;
+		$total = 0; foreach ( $F as $f ) { $total += (int) $f['price']; }
+		$sev_rank = array( 'critique' => 4, 'eleve' => 3, 'moyen' => 2, 'faible' => 1 );
+		usort( $F, function( $a, $b ) use ( $sev_rank ) { return ( $sev_rank[ $b['sev'] ] ?? 0 ) - ( $sev_rank[ $a['sev'] ] ?? 0 ); } );
+		$score = max( 0, 100 - ( 18 * count( array_filter( $F, function( $f ) { return 'critique' === $f['sev']; } ) ) + 10 * count( array_filter( $F, function( $f ) { return 'moyen' === $f['sev'] || 'eleve' === $f['sev']; } ) ) + 4 * count( array_filter( $F, function( $f ) { return 'faible' === $f['sev']; } ) ) ) );
+
+		return array(
+			'ok' => true, 'host' => $host, 'url' => $base, 'tech' => $is_wp ? 'WordPress' : 'autre/custom',
+			'findings' => array_values( $F ), 'good' => $G, 'devis' => $total, 'score' => $score,
+			'time_ms' => (int) round( ( microtime( true ) - $t0 ) * 1000 ), 'ts' => time(),
+		);
+	}
+}
+
+/* ============================ RENDU HTML (rapport brandé) ============================ */
+if ( ! function_exists( 'ag_aa_render' ) ) {
+	function ag_aa_esc( $s ) { return function_exists( 'esc_html' ) ? esc_html( $s ) : htmlspecialchars( (string) $s, ENT_QUOTES ); }
+	function ag_aa_render( $res ) {
+		if ( empty( $res['ok'] ) ) { return '<p style="color:#b91c1c">Audit impossible : ' . ag_aa_esc( $res['error'] ?? 'erreur' ) . '</p>'; }
+		$sevcol = array( 'critique' => '#dc2626', 'eleve' => '#ea580c', 'moyen' => '#d97706', 'faible' => '#2563eb' );
+		$sevlab = array( 'critique' => 'Critique', 'eleve' => 'Élevé', 'moyen' => 'Moyen', 'faible' => 'Faible' );
+		$h  = '<div style="font-family:system-ui,Arial,sans-serif;max-width:860px">';
+		$h .= '<h2 style="margin:0 0 4px">Audit de sécurité — ' . ag_aa_esc( $res['host'] ) . '</h2>';
+		$h .= '<p style="color:#555;margin:0 0 12px">Socle : <b>' . ag_aa_esc( $res['tech'] ) . '</b> · Score sécurité : <b>' . (int) $res['score'] . '/100</b> · ' . count( $res['findings'] ) . ' point(s) à corriger · réalisé en ' . (int) $res['time_ms'] . ' ms (audit passif, non intrusif).</p>';
+		// Devis
+		$h .= '<div style="border:2px solid #E6A93C;border-radius:10px;padding:14px;margin:0 0 16px;background:#fff8ef">';
+		$h .= '<h3 style="margin:0 0 8px;color:#b45309">Devis de remédiation</h3><table style="width:100%;border-collapse:collapse;font-size:14px">';
+		foreach ( $res['findings'] as $f ) {
+			$h .= '<tr><td style="padding:6px 4px;border-bottom:1px solid #eee"><span style="display:inline-block;min-width:62px;font-weight:700;color:' . $sevcol[ $f['sev'] ] . '">' . $sevlab[ $f['sev'] ] . '</span> ' . ag_aa_esc( $f['label'] ) . '</td><td style="padding:6px 4px;border-bottom:1px solid #eee;text-align:right;white-space:nowrap">' . (int) $f['price'] . ' €</td></tr>';
+		}
+		$h .= '<tr><td style="padding:8px 4px;font-weight:800">TOTAL remédiation</td><td style="padding:8px 4px;text-align:right;font-weight:800">' . (int) $res['devis'] . ' €</td></tr>';
+		$h .= '</table></div>';
+		// Détail findings
+		$h .= '<h3 style="margin:0 0 6px">Ce qui a été trouvé (vérifiable)</h3>';
+		foreach ( $res['findings'] as $f ) {
+			$h .= '<div style="border-left:4px solid ' . $sevcol[ $f['sev'] ] . ';padding:4px 10px;margin:0 0 8px">';
+			$h .= '<b>' . ag_aa_esc( $f['label'] ) . '</b> <span style="color:' . $sevcol[ $f['sev'] ] . '">(' . $sevlab[ $f['sev'] ] . ' · ' . (int) $f['price'] . ' €)</span><br>';
+			$h .= '<span style="font-size:13px;color:#444">Constat : ' . ag_aa_esc( $f['proof'] ) . '</span><br>';
+			$h .= '<span style="font-size:13px;color:#166534">Correctif : ' . ag_aa_esc( $f['advice'] ) . '</span></div>';
+		}
+		// Bons points
+		if ( ! empty( $res['good'] ) ) {
+			$h .= '<h3 style="margin:14px 0 6px">Points déjà conformes (bon signe)</h3><ul style="font-size:13px;color:#166534;margin:0">';
+			foreach ( $res['good'] as $g ) { $h .= '<li>' . ag_aa_esc( $g ) . '</li>'; }
+			$h .= '</ul>';
+		}
+		$h .= '<p style="font-size:12px;color:#888;margin-top:14px">Alliance Groupe — audit passif/non intrusif. Les tests actifs (brute-force, fuzzing, injections) se font séparément sous mandat écrit.</p></div>';
+		return $h;
+	}
+}
+
+/* ============================ GLUE WORDPRESS (admin + AJAX + rapport) ============================ */
+if ( defined( 'ABSPATH' ) ) {
+
+	add_action( 'admin_menu', function () {
+		add_menu_page( 'Audit auto', '🔍 Audit auto', 'manage_options', 'ag-audit-auto', 'ag_aa_admin_page', 'dashicons-shield', 58 );
+	} );
+
+	function ag_aa_admin_page() {
+		echo '<div class="wrap"><h1>🔍 Audit auto (1 bouton, tout en auto)</h1>';
+		echo '<p>Entre une URL : l\'audit passif complet s\'exécute côté serveur et sort le rapport + le devis. Non intrusif.</p>';
+		echo '<p><input type="text" id="aa_url" placeholder="exemple.fr" style="width:360px;padding:8px"> ';
+		echo '<button class="button button-primary" id="aa_go" style="padding:4px 18px">Lancer l\'audit</button> ';
+		echo '<label style="margin-left:10px"><input type="checkbox" id="aa_rep"> créer le rapport client</label></p>';
+		echo '<div id="aa_out" style="margin-top:16px"></div></div>';
+		$nonce = wp_create_nonce( 'ag_aa' );
+		echo '<script>
+		document.getElementById("aa_go").onclick=function(){
+			var u=document.getElementById("aa_url").value.trim(); if(!u){alert("Entre une URL");return;}
+			var o=document.getElementById("aa_out"); o.innerHTML="⏳ Audit en cours…";
+			var fd=new FormData(); fd.append("action","ag_aa_run"); fd.append("nonce","' . $nonce . '"); fd.append("url",u); fd.append("rep",document.getElementById("aa_rep").checked?1:0);
+			fetch(ajaxurl,{method:"POST",body:fd}).then(function(r){return r.json();}).then(function(j){
+				o.innerHTML=(j&&j.html)?j.html:"Erreur."; if(j&&j.report_url){o.innerHTML+=\'<p><a class="button" target="_blank" href="\'+j.report_url+\'">Ouvrir le rapport client</a></p>\';}
+			}).catch(function(e){o.innerHTML="Erreur réseau : "+e;});
+		};
+		</script>';
+	}
+
+	add_action( 'wp_ajax_ag_aa_run', function () {
+		if ( ! current_user_can( 'manage_options' ) || ! check_ajax_referer( 'ag_aa', 'nonce', false ) ) { wp_send_json( array( 'html' => 'Refusé.' ) ); }
+		$url = isset( $_POST['url'] ) ? sanitize_text_field( wp_unslash( $_POST['url'] ) ) : '';
+		$res = ag_audit_auto( $url );
+		$out = array( 'html' => ag_aa_render( $res ) );
+		if ( ! empty( $_POST['rep'] ) && ! empty( $res['ok'] ) && post_type_exists( 'ag_rapport' ) ) {
+			$pid = wp_insert_post( array(
+				'post_type' => 'ag_rapport', 'post_status' => 'publish',
+				'post_title' => 'Audit sécurité — ' . $res['host'] . ' (' . gmdate( 'Y-m-d' ) . ')',
+				'post_content' => ag_aa_render( $res ),
+			) );
+			if ( $pid && ! is_wp_error( $pid ) ) {
+				update_post_meta( $pid, 'ag_aa_data', wp_json_encode( $res ) );
+				$out['report_url'] = get_permalink( $pid );
+			}
+		}
+		wp_send_json( $out );
+	} );
+}
+
+/* ============================ TEST CLI (hors WordPress) ============================ */
+if ( 'cli' === php_sapi_name() && isset( $argv[1] ) ) {
+	$res = ag_audit_auto( $argv[1] );
+	if ( empty( $res['ok'] ) ) { fwrite( STDOUT, "ERREUR: " . ( $res['error'] ?? '?' ) . "\n" ); exit( 1 ); }
+	fwrite( STDOUT, "=== AUDIT AUTO: {$res['host']} ({$res['tech']}) — score {$res['score']}/100 — {$res['time_ms']}ms ===\n" );
+	fwrite( STDOUT, "DEVIS TOTAL: {$res['devis']} €\n\n-- Findings (facturables) --\n" );
+	foreach ( $res['findings'] as $f ) { fwrite( STDOUT, sprintf( "  [%-8s %4d€] %s\n      constat: %s\n", $f['sev'], $f['price'], $f['label'], $f['proof'] ) ); }
+	fwrite( STDOUT, "\n-- Bons points --\n" );
+	foreach ( $res['good'] as $g ) { fwrite( STDOUT, "  + $g\n" ); }
+}
