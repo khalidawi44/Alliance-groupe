@@ -391,11 +391,17 @@ if ( defined( 'ABSPATH' ) ) {
 		if ( '' === $url ) { wp_send_json_error( array( 'm' => 'URL manquante.' ) ); }
 		$res = ag_audit_auto( $url );
 		if ( empty( $res['ok'] ) ) { wp_send_json_error( array( 'm' => $res['error'] ?? 'Audit impossible.' ) ); }
+		$prev = function_exists( 'ag_aa_hist_prev_score' ) ? ag_aa_hist_prev_score( $res['host'] ) : null; // score AVANT cet audit
+		if ( function_exists( 'ag_aa_hist_add' ) ) { ag_aa_hist_add( $res ); }                             // enregistre dans l'historique
+		$watch = function_exists( 'ag_aa_watch_list' ) ? ag_aa_watch_list() : array();
+		$watched = isset( $watch[ strtolower( preg_replace( '#^www\.#i', '', $res['host'] ) ) ] );
 		wp_send_json_success( array(
 			'html' => ag_aa_render( $res ),
 			'host' => $res['host'], 'url' => $res['url'], 'intel' => $res['intel'],
 			'devis' => $res['devis'], 'score' => $res['score'],
+			'prev_score' => $prev, 'watched' => $watched,
 			'can_active' => ( current_user_can( 'manage_options' ) && function_exists( 'ag_pt_enqueue_job' ) ),
+			'can_watch'  => ( current_user_can( 'manage_options' ) && function_exists( 'ag_aa_watch_add' ) ),
 		) );
 	} );
 
