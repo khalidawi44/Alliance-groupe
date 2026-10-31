@@ -380,16 +380,10 @@ if ( defined( 'ABSPATH' ) ) {
 			$out['intel'] = $res['intel'];
 			$out['can_active'] = function_exists( 'ag_pt_enqueue_job' );
 		}
-		if ( ! empty( $_POST['rep'] ) && ! empty( $res['ok'] ) && post_type_exists( 'ag_rapport' ) ) {
-			$pid = wp_insert_post( array(
-				'post_type' => 'ag_rapport', 'post_status' => 'publish',
-				'post_title' => 'Audit sécurité — ' . $res['host'] . ' (' . gmdate( 'Y-m-d' ) . ')',
-				'post_content' => ag_aa_render( $res ),
-			) );
-			if ( $pid && ! is_wp_error( $pid ) ) {
-				update_post_meta( $pid, 'ag_aa_data', wp_json_encode( $res ) );
-				$out['report_url'] = get_permalink( $pid );
-			}
+		if ( ! empty( $_POST['rep'] ) && ! empty( $res['ok'] ) && function_exists( 'ag_rapport_create' ) ) {
+			$client = isset( $_POST['client'] ) ? sanitize_text_field( wp_unslash( $_POST['client'] ) ) : '';
+			$rep = ag_rapport_create( ag_aa_render( $res ), $client, $res['host'], (int) $res['devis'] );
+			if ( $rep ) { update_post_meta( $rep['id'], 'ag_aa_data', wp_json_encode( $res ) ); $out['report_url'] = $rep['url']; }
 		}
 		wp_send_json( $out );
 	} );
@@ -405,13 +399,20 @@ if ( defined( 'ABSPATH' ) ) {
 		if ( function_exists( 'ag_aa_hist_add' ) ) { ag_aa_hist_add( $res ); }                             // enregistre dans l'historique
 		$watch = function_exists( 'ag_aa_watch_list' ) ? ag_aa_watch_list() : array();
 		$watched = isset( $watch[ strtolower( preg_replace( '#^www\.#i', '', $res['host'] ) ) ] );
+		$report_url = '';
+		if ( ! empty( $_POST['rep'] ) && function_exists( 'ag_rapport_create' ) ) {
+			$client = isset( $_POST['client'] ) ? sanitize_text_field( wp_unslash( $_POST['client'] ) ) : '';
+			$rep = ag_rapport_create( ag_aa_render( $res ), $client, $res['host'], (int) $res['devis'] );
+			if ( $rep ) { update_post_meta( $rep['id'], 'ag_aa_data', wp_json_encode( $res ) ); $report_url = $rep['url']; }
+		}
 		wp_send_json_success( array(
 			'html' => ag_aa_render( $res ),
 			'host' => $res['host'], 'url' => $res['url'], 'intel' => $res['intel'],
 			'devis' => $res['devis'], 'score' => $res['score'],
-			'prev_score' => $prev, 'watched' => $watched,
+			'prev_score' => $prev, 'watched' => $watched, 'report_url' => $report_url,
 			'can_active' => ( current_user_can( 'manage_options' ) && function_exists( 'ag_pt_enqueue_job' ) ),
 			'can_watch'  => ( current_user_can( 'manage_options' ) && function_exists( 'ag_aa_watch_add' ) ),
+			'can_report' => function_exists( 'ag_rapport_create' ),
 		) );
 	} );
 
@@ -461,6 +462,17 @@ if ( defined( 'ABSPATH' ) ) {
 		}
 		update_option( 'ag_aa_prices', $cur, false );
 		wp_send_json_success( array( 'prices' => $cur, 'm' => 'ok' ) );
+	} );
+
+	add_action( 'wp_ajax_ag_app_paylinks_save', function () {
+		if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) { wp_send_json_error( array( 'm' => 'Refusé.' ) ); }
+		$in = isset( $_POST['data'] ) ? json_decode( wp_unslash( $_POST['data'] ), true ) : array();
+		if ( ! is_array( $in ) ) { wp_send_json_error( array( 'm' => 'Données invalides.' ) ); }
+		foreach ( array( 'rapport', 'correction', 'refonte' ) as $k ) {
+			if ( isset( $in[ 'px_' . $k ] ) )  { update_option( 'ag_rap_px_' . $k, max( 0, (int) $in[ 'px_' . $k ] ), false ); }
+			if ( isset( $in[ 'pay_' . $k ] ) ) { update_option( 'ag_rap_pay_' . $k, esc_url_raw( trim( (string) $in[ 'pay_' . $k ] ) ), false ); }
+		}
+		wp_send_json_success( array( 'm' => 'ok' ) );
 	} );
 }
 
