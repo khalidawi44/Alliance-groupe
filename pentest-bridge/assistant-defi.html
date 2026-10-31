@@ -80,11 +80,15 @@
       </span>
     </label>
     <div class="cats" id="cats"></div>
-    <button class="go" onclick="gen()">⚙️ Générer la route pas-à-pas</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="go" onclick="gen()" style="flex:1 1 240px">⚙️ Générer la route pas-à-pas</button>
+      <button class="go" onclick="genWordPress()" style="flex:1 1 240px;background:linear-gradient(135deg,#1e3a8a,#2563eb)">🧩 Audit WordPress complet (1 clic)</button>
+    </div>
   </div>
 
   <div id="out" class="hidden">
     <div class="toolbar"><button onclick="copyAll()">📋 Tout copier</button><button onclick="exportPlan()">📤 Exporter le plan Kali (.sh)</button><button onclick="window.print()">🖨️ Imprimer / PDF</button></div>
+    <div id="progressBar" style="margin:8px 0 2px;padding:8px 12px;background:#0e1016;border:1px solid #2a2c4e;border-radius:8px;font-size:13px;color:#c7cdda"></div>
     <div id="planBox" class="hidden" style="margin:0 0 14px"></div>
     <h2>① Route à suivre (dans l'ordre)</h2>
     <p class="sub" style="margin-top:-4px">Sous chaque commande : colle la sortie → <b>« Analyser »</b> → l'assistant lit ce que tu as trouvé et débloque la suite adaptée.</p>
@@ -111,10 +115,10 @@
       </div>
     </div>
 
-    <h2>③ bis — Importer les résultats <span style="font-size:12px;color:#9aa0b0">(le .txt produit par campagne.sh sur Kali)</span></h2>
+    <h2>③ bis — Coller TOUT d'un coup <span style="font-size:12px;color:#9aa0b0">(toutes tes sorties Kali en bloc)</span></h2>
     <div class="panel">
-      <p class="exp" style="margin-top:0">Colle ici <b>tout</b> le fichier <span style="font-family:monospace">campagne-*.txt</span> : l'assistant découpe par étape, analyse chaque sortie, retient les failles et construit le rapport automatiquement.</p>
-      <textarea id="bulkResults" placeholder="Colle ici le contenu complet du fichier campagne-*.txt"></textarea>
+      <p class="exp" style="margin-top:0">Colle ici <b>toutes</b> tes sorties d'un coup — le fichier <span style="font-family:monospace">campagne-*.txt</span>, ou plusieurs sorties collées à la suite (sépare-les par une ligne vide). L'assistant découpe, analyse chaque bloc, retient les failles et construit le rapport automatiquement.</p>
+      <textarea id="bulkResults" placeholder="Colle ici toutes tes sorties (campagne-*.txt, ou plusieurs résultats séparés par une ligne vide)"></textarea>
       <button class="go" onclick="importResults()">📥 Analyser tout &amp; construire le rapport</button>
       <div id="bulkSummary" class="exp"></div>
     </div>
@@ -378,6 +382,7 @@ function gen(){
   var T=c.host, U=(/^\d+\.\d+\.\d+\.\d+$/.test(T)?('http://'+T):('https://'+T));
   var P=(document.getElementById('param').value.trim()||'id');
   AGT={U:U,T:T,P:P};
+  try{localStorage.setItem('ag_defi_cible',T);}catch(e){}
   // Filtre de scope : refuse une cible hors du mandat/programme chargé
   if(SCOPE){ var hs=hostInScope(T); if(!hs.ok){ alert('⛔ Cible HORS SCOPE : '+hs.reason+'.\nLe scope « '+(SCOPE.programme||'chargé')+' » n\'autorise pas '+T+'. Rien n\'est généré.'); return; } }
   var pb=PB(U,T,P), order=['recon','disco','infra','rce','sqli','lfi','xss','idor','ssrf','upload','xxe','ssti','auth','leak'];
@@ -403,7 +408,52 @@ function gen(){
   setv('rscope', T);
   fillSkeleton(true);
   document.getElementById('out').classList.remove('hidden');
+  updateProgress();
   document.getElementById('out').scrollIntoView({behavior:'smooth'});
+}
+/* ===================== AUDIT WORDPRESS 1-CLIC ===================== */
+function WPB(U){ return [
+ {t:"Version WordPress + thème + en-têtes", c:`curl -s -A "Mozilla/5.0" ${U}/ | grep -oiE "WordPress [0-9.]+|wp-content/themes/[a-z0-9-]+" | sort -u; echo ---; curl -sSI -A "Mozilla/5.0" ${U}/`, e:"Version = CVE applicables. Si ça redirige vers www → mets www en cible et relance. Thème + version exposés = fingerprint."},
+ {t:"Comptes via REST (logins exposés)", c:`curl -sL -A "Mozilla/5.0" ${U}/wp-json/wp/v2/users`, e:"JSON id/name/slug = login(s) admin exposé(s) = <b>preuve forte</b>. Vide ou 403 = bien protégé (à noter au rapport)."},
+ {t:"Comptes via ?author=", c:`for i in 1 2 3 4 5; do curl -s -o /dev/null -w "author=\$i -> %{http_code} %{redirect_url}\\n" -A "Mozilla/5.0" "${U}/?author=\$i"; done`, e:"Une redirection vers /author/&lt;login&gt;/ révèle le login même si REST est fermé."},
+ {t:"wpscan complet (discret, sous mandat)", c:`wpscan --url ${U} --enumerate u,vp,vt,cb,dbe --stealthy --throttle 800 --random-user-agent`, e:"Comptes + plugins/thèmes vulnérables (CVE) + backups. --stealthy + throttle 800 = évite le ban. Colle la sortie → Analyser."},
+ {t:"Plugins + versions (depuis le HTML)", c:`curl -s -A "Mozilla/5.0" ${U}/ | grep -oE "plugins/[a-z0-9-]+/[^\\"']*ver=[0-9][0-9.]*" | sort -u`, e:"Chaque plugin + version = recherche CVE (searchsploit / base wpscan)."},
+ {t:"xmlrpc.php (amplification / brute)", c:`curl -s -A "Mozilla/5.0" ${U}/xmlrpc.php -d '<methodCall><methodName>system.listMethods</methodName></methodCall>'`, e:"Une liste de méthodes = xmlrpc actif (pingback DDoS + brute amplifié). À désactiver = remédiation facturable."},
+ {t:"Fichiers sensibles / sauvegardes exposés", c:`for f in .git/HEAD .env wp-config.php.bak wp-config.php~ wp-config.php.save backup.zip site.zip db.sql database.sql wp-content/debug.log readme.html; do curl -s -o /dev/null -w "%{http_code}  ${U}/\$f\\n" -A "Mozilla/5.0" "${U}/\$f"; done | sort`, e:"200 sur .env / .bak / .sql / .git = fuite critique (identifiants base, secrets). readme.html 200 = version exposée."},
+ {t:"wp-login + double authentification", c:`curl -s -o /dev/null -w "wp-login -> %{http_code}\\n" -A "Mozilla/5.0" ${U}/wp-login.php; curl -s -A "Mozilla/5.0" ${U}/wp-login.php | grep -oiE "two.factor|2fa|recaptcha|captcha" | sort -u`, e:"wp-login accessible sans 2FA ni captcha = brute-force possible → proposer 2FA + limitation des tentatives."}
+];}
+function genWordPress(){
+  var c=clean(document.getElementById('cible').value); if(!c.host){alert("Entre une cible (ex: ellipseanimation.com).");return;}
+  var T=c.host, U='https://'+T, P=(document.getElementById('param').value.trim()||'id');
+  AGT={U:U,T:T,P:P};
+  try{localStorage.setItem('ag_defi_cible',T);}catch(e){}
+  if(SCOPE){ var hs=hostInScope(T); if(!hs.ok){ alert('⛔ Cible HORS SCOPE : '+hs.reason+'.'); return; } }
+  CATS.forEach(function(cat){ sel[cat.k]=(['recon','disco','auth','leak'].indexOf(cat.k)>-1); }); renderCats(); saveSel();
+  var steps=WPB(U), i=0; PLAN=[];
+  var html='<div class="verdict ok" style="margin:0 0 10px">🧩 <b>Audit WordPress</b> — cible racine : <b>'+esc(U)+'</b>. (Si le site redirige vers www, remets www en cible puis relance.)</div><div class="ph">🧩 Audit WordPress complet</div>';
+  steps.forEach(function(s){ var id='w'+(i++); var cmd=scopeThrottle(s.c); PLAN.push({phase:'Audit WordPress',titre:s.t,cmd:cmd});
+    html+='<div class="step"><h3>'+esc(s.t)+'</h3><pre><button class="copy" onclick="cp(\''+id+'\',this)">📋 Copier</button><code id="'+id+'">'+esc(cmd)+'</code></pre><div class="exp">'+s.e+'</div>'+
+      '<div class="analyse"><textarea class="res" id="res_'+id+'" placeholder="Colle ici la sortie de cette commande…"></textarea>'+
+      '<button class="mini" onclick="analyzeStep(\''+id+'\')">▶ Analyser le résultat</button>'+
+      '<div class="verdict" id="verd_'+id+'"></div></div></div>';
+  });
+  document.getElementById('steps').innerHTML=html;
+  document.getElementById('rendpoint').value=U+'/wp-json/wp/v2/users';
+  document.getElementById('rparam').value=P; setv('rscope', T);
+  fillSkeleton(true);
+  document.getElementById('out').classList.remove('hidden');
+  updateProgress();
+  document.getElementById('out').scrollIntoView({behavior:'smooth'});
+}
+/* ===================== PROGRESSION + DEVIS LIVE ===================== */
+function estimateQuote(){ var tot=0; FINDINGS.forEach(function(f){ var s=parseFloat(f.score)||0; tot+=(s>=9?900:(s>=7?500:(s>=4?250:90))); }); return tot; }
+function updateProgress(){ var el=document.getElementById('progressBar'); if(!el) return;
+  var boxes=document.querySelectorAll('#steps textarea.res'), tot=boxes.length, done=0;
+  [].forEach.call(boxes,function(b){ if(b.value.trim()) done++; });
+  if(!tot){ el.innerHTML=''; el.style.display='none'; return; }
+  el.style.display='block';
+  var q=estimateQuote();
+  el.innerHTML='📍 <b>'+done+'/'+tot+'</b> étape(s) analysée(s) &nbsp;·&nbsp; 🔎 <b>'+FINDINGS.length+'</b> faille(s) trouvée(s) &nbsp;·&nbsp; 💶 devis estimé <b>'+q+' €</b>';
 }
 function cp(id,btn){var t=document.getElementById(id).innerText;navigator.clipboard.writeText(t).then(function(){btn.classList.add('done');btn.textContent='✓ Copié';setTimeout(function(){btn.classList.remove('done');btn.textContent='📋 Copier';},1400);});}
 function copyAll(){var b=[].slice.call(document.querySelectorAll('#steps code')).map(function(c){return c.innerText;}).join("\n\n");navigator.clipboard.writeText(b).then(function(){alert("Route copiée.");});}
@@ -682,6 +732,7 @@ function analyzeStep(id){
   v.innerHTML=h;
   if(r.unlock) showExtract(r.unlock);
   if(r.report) applyToReport(r.report, txt);
+  updateProgress();
   if(CAMPAIGN) setTimeout(nudgeNext, 120);
 }
 function applyToReport(rep, txt){
@@ -852,7 +903,11 @@ function importResults(){
   while((mm=sep.exec(txt))){ labels.push(mm[1]); }
   var chunks=txt.split(/^={3,}.*={3,}[^\n]*$/m), blocks=[];
   if(labels.length){ for(var i=0;i<labels.length;i++){ blocks.push({label:labels[i], body:(chunks[i+1]||'')}); } }
-  else { blocks.push({label:'Sortie complète', body:txt}); }
+  else {
+    var parts=txt.split(/\n[ \t]*\n[ \t]*\n+/).map(function(s){return s.trim();}).filter(Boolean);
+    if(parts.length>1){ parts.forEach(function(p,ix){ blocks.push({label:'Bloc '+(ix+1), body:p}); }); }
+    else { blocks.push({label:'Sortie complète', body:txt}); }
+  }
   var rows=[];
   blocks.forEach(function(b){
     var r=scan(b.body);
@@ -907,6 +962,7 @@ function genFileRead(){
   var b=document.getElementById('reportBanner'); if(b) b.style.display='block';
 }
 document.getElementById('cible').addEventListener('keydown',function(e){if(e.key==='Enter')gen();});
+try{ var _lc=localStorage.getItem('ag_defi_cible'); if(_lc && !document.getElementById('cible').value) document.getElementById('cible').value=_lc; }catch(e){}
 try{ var _sv=localStorage.getItem('ag_scope'); if(_sv){ document.getElementById('scopeJson').value=_sv; loadScope(true); } }catch(e){}
 try{ var _px=JSON.parse(localStorage.getItem('ag_prices')||'null'); if(_px){ if(_px.crit!=null)document.getElementById('pxCrit').value=_px.crit; if(_px.eleve!=null)document.getElementById('pxEleve').value=_px.eleve; if(_px.moyen!=null)document.getElementById('pxMoyen').value=_px.moyen; if(_px.faible!=null)document.getElementById('pxFaible').value=_px.faible; if(_px.report!=null)document.getElementById('pxReport').value=_px.report; if(_px.refonte!=null)document.getElementById('pxRefonte').value=_px.refonte; } var _pu=localStorage.getItem('ag_payurl'); if(_pu)document.getElementById('payUrl').value=_pu; }catch(e){}
 </script>
