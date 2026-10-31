@@ -383,6 +383,36 @@ if ( defined( 'ABSPATH' ) ) {
 		}
 		wp_send_json( $out );
 	} );
+
+	/* ---- APPLICATION mobile (onglet Audit) : passif pour l'équipe, actif admin-only ---- */
+	add_action( 'wp_ajax_ag_app_audit_auto', function () {
+		if ( ! is_user_logged_in() || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) { wp_send_json_error( array( 'm' => 'Session expirée.' ) ); }
+		$url = isset( $_POST['url'] ) ? esc_url_raw( wp_unslash( $_POST['url'] ) ) : '';
+		if ( '' === $url ) { wp_send_json_error( array( 'm' => 'URL manquante.' ) ); }
+		$res = ag_audit_auto( $url );
+		if ( empty( $res['ok'] ) ) { wp_send_json_error( array( 'm' => $res['error'] ?? 'Audit impossible.' ) ); }
+		wp_send_json_success( array(
+			'html' => ag_aa_render( $res ),
+			'host' => $res['host'], 'url' => $res['url'], 'intel' => $res['intel'],
+			'devis' => $res['devis'], 'score' => $res['score'],
+			'can_active' => ( current_user_can( 'manage_options' ) && function_exists( 'ag_pt_enqueue_job' ) ),
+		) );
+	} );
+
+	add_action( 'wp_ajax_ag_app_audit_active', function () {
+		if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) { wp_send_json_error( array( 'error' => 'Refusé (admin + mandat).' ) ); }
+		if ( ! function_exists( 'ag_pt_enqueue_job' ) ) { wp_send_json_error( array( 'error' => 'File de jobs indisponible.' ) ); }
+		$url    = isset( $_POST['url'] ) ? esc_url_raw( wp_unslash( $_POST['url'] ) ) : '';
+		$client = isset( $_POST['client'] ) ? sanitize_text_field( wp_unslash( $_POST['client'] ) ) : '';
+		$mandat = isset( $_POST['mandat'] ) ? sanitize_text_field( wp_unslash( $_POST['mandat'] ) ) : '';
+		$level  = isset( $_POST['level'] ) ? sanitize_key( wp_unslash( $_POST['level'] ) ) : 'normal';
+		$intel  = array();
+		if ( isset( $_POST['intel'] ) ) { $intel = json_decode( wp_unslash( $_POST['intel'] ), true ); if ( ! is_array( $intel ) ) { $intel = array(); } }
+		if ( ! $url || ! $client || ! $mandat ) { wp_send_json_error( array( 'error' => 'Client + mandat obligatoires.' ) ); }
+		$id = ag_pt_enqueue_job( $url, $client, $mandat, $level, '', 'ag_audit_actif', $intel );
+		if ( $id ) { wp_send_json_success( array( 'job' => $id ) ); }
+		wp_send_json_error( array( 'error' => 'Échec création du job.' ) );
+	} );
 }
 
 /* ============================ TEST CLI (hors WordPress) ============================ */
