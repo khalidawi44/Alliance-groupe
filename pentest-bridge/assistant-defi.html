@@ -317,7 +317,7 @@ leak:[
 ]
 };}
 
-var AGT={U:'',T:'',P:'id'}, FCNT=0, PLAN=[], LASTGEN=null;
+var AGT={U:'',T:'',P:'id'}, FCNT=0, PLAN=[], LASTGEN=null, AG_REACHABLE=false, AG_WP_OFFERED=false;
 
 /* ===================== MODE ENCADRÉ : scope du mandat / bug bounty ===================== */
 var SCOPE=null;
@@ -388,6 +388,7 @@ function clearScope(){
 function gen(){
   var c=clean(document.getElementById('cible').value); if(!c.host){alert("Entre une cible.");return;}
   LASTGEN=gen;
+  AG_REACHABLE=false; AG_WP_OFFERED=false;
   var T=c.host, U=(/^\d+\.\d+\.\d+\.\d+$/.test(T)?('http://'+T):('https://'+T));
   var P=(document.getElementById('param').value.trim()||'id');
   AGT={U:U,T:T,P:P};
@@ -434,6 +435,7 @@ function WPB(U){ return [
 function genWordPress(){
   var c=clean(document.getElementById('cible').value); if(!c.host){alert("Entre une cible (ex: ellipseanimation.com).");return;}
   LASTGEN=genWordPress;
+  AG_REACHABLE=false; AG_WP_OFFERED=false;
   var T=c.host, U='https://'+T, P=(document.getElementById('param').value.trim()||'id');
   AGT={U:U,T:T,P:P};
   try{localStorage.setItem('ag_defi_cible',T);}catch(e){}
@@ -474,6 +476,7 @@ function UNIV(U,T){ return [
 function genAuto(){
   var c=clean(document.getElementById('cible').value); if(!c.host){alert("Entre une cible (ex: monsite.fr ou 10.10.10.5).");return;}
   LASTGEN=genAuto;
+  AG_REACHABLE=false; AG_WP_OFFERED=false;
   var T=c.host, U=(/^\d+\.\d+\.\d+\.\d+$/.test(T)?('http://'+T):('https://'+T)), P=(document.getElementById('param').value.trim()||'id');
   AGT={U:U,T:T,P:P}; try{localStorage.setItem('ag_defi_cible',T);}catch(e){}
   if(SCOPE){ var hs=hostInScope(T); if(!hs.ok){ alert('⛔ Cible HORS SCOPE : '+hs.reason+'.'); return; } }
@@ -650,12 +653,23 @@ function scan(t){
   var U=AGT.U||'https://cible', P=AGT.P||'id';
   var raw=(t||'').trim();
   // SORTIE VIDE : la commande n'a rien renvoyé → ce n'est PAS forcément un échec, on diagnostique.
-  if(raw===''){ return {cls:'warn',msg:'⬜ La commande n\'a RIEN renvoyé (sortie vide) — et c\'est une INFO, pas un blocage. Le plus souvent, sur une commande en grep (versions, secrets, en-têtes…), vide = <b>le motif n\'a rien trouvé = rien d\'exposé = bon point à noter au rapport</b>. Ce n\'est une alerte que si tu attendais une réponse. Pour vérifier que la cible répond bien (et que ce n\'est pas un blocage WAF/proxy) :',
+  if(raw===''){
+    if(AG_REACHABLE) return {cls:'ok',msg:'⬜ Sortie vide = le motif n\'a rien trouvé → <b>rien d\'exposé sur ce point = bon point à noter au rapport</b> (la cible répond, déjà vérifié). Passe à l\'étape suivante.',follow:[],report:null,unlock:null};
+    return {cls:'warn',msg:'⬜ La commande n\'a RIEN renvoyé (sortie vide) — et c\'est une INFO, pas un blocage. Le plus souvent, sur une commande en grep (versions, secrets, en-têtes…), vide = <b>le motif n\'a rien trouvé = rien d\'exposé = bon point à noter au rapport</b>. Vérifie UNE fois que la cible répond bien :',
     follow:[
-      {t:'La cible répond-elle ? (code HTTP + taille)',c:'curl -s -o /dev/null -w "HTTP %{http_code} | %{size_download} o | %{time_total}s\\n" -A "Mozilla/5.0" '+U+'/',e:'200 + taille > 0 = OK (c\'est ton motif qui filtrait à vide). 403/406/429 = WAF/throttle. 000 = DNS/proxy/réseau.'},
-      {t:'Voir la vraie réponse (sans filtre)',c:'curl -s -A "Mozilla/5.0" '+U+'/ | head -c 800',e:'Plein = c\'est ton grep/pattern qui ne matchait pas (sortie filtrée à vide, pas un échec). Vide ici aussi = la cible ne renvoie rien (bloqué, offline, mauvais chemin).'},
-      {t:'Forcer SANS proxy (cas Burp/FoxyProxy)',c:'curl -s -x "" -A "Mozilla/5.0" '+U+'/ | head -c 300',e:'Un proxy Burp mal réglé renvoie souvent du vide. -x "" ignore le proxy.'}
+      {t:'La cible répond-elle ? (code HTTP + taille)',c:'curl -s -o /dev/null -w "HTTP %{http_code} | %{size_download} o | %{time_total}s\\n" -A "Mozilla/5.0" '+U+'/',e:'200 + taille > 0 = OK (c\'est ton motif qui filtrait à vide). 403/406/429 = WAF/throttle. 000 = DNS/proxy/réseau. Une fois répondu, les vides suivants = rien d\'exposé (bon point) sans re-diagnostic.'}
     ],report:null,unlock:null};
+  }
+  // Sortie d'un DIAGNOSTIC du vide (code HTTP ou sentinelle) → verdict TERMINAL, jamais de re-diagnostic (anti-boucle)
+  if(/^\s*HTTP\s+\d{3}\s*\|/mi.test(raw) || /\[AG\]\s*fin du diagnostic/i.test(raw)){
+    var hc=(raw.match(/HTTP\s+(\d{3})/i)||[])[1]||'';
+    if((hc && hc!=='000') || /\[AG\]\s*fin du diagnostic/i.test(raw)) AG_REACHABLE=true;
+    var m;
+    if(hc==='000') m='🔁 Diagnostic : code 000 = la cible n\'est pas joignable (DNS / proxy / réseau). Répare la connexion — ce n\'est pas une faille. (voir copilote-pentest « réseau »)';
+    else if(/^(403|406)$/.test(hc)) m='🔁 Diagnostic : HTTP '+hc+' = WAF/pare-feu. Ralentis + --random-user-agent. Bon point sécurité à noter.';
+    else if(hc) m='🔁 Diagnostic : la cible RÉPOND (HTTP '+hc+'). Donc une commande qui rendait vide = c\'est ton motif grep qui ne matche pas = souvent NORMAL (rien d\'exposé = bon point à noter). Passe à l\'étape suivante — ne relance pas le diagnostic.';
+    else m='🔁 Diagnostic terminé. Si rien ne s\'affiche au-dessus, la cible ne renvoie rien sur ce chemin = chemin mort, passe à autre chose. Si du contenu s\'affiche, ton grep ne matchait pas (normal). Ne relance pas le diagnostic.';
+    return {cls:'warn',msg:m,follow:[],report:null,unlock:null};
   }
   // ERREUR RÉSEAU (pas la cible)
   if(/could not resolve host|name or service not known|connection refused|connection timed out|failed to connect|couldn.t connect|no route to host/i.test(raw))
@@ -683,13 +697,17 @@ function scan(t){
       follow:[{t:'Relancer sur la racine du domaine',c:'wpscan --url '+root0+' --enumerate u,vp,vt --stealthy --throttle 800 --random-user-agent',e:'Cible = '+root0+' UNIQUEMENT (sans /wp-content/…, sans /themes/…). C\'est ça qui faisait tourner en boucle.'}],
       report:null,unlock:null};
   }
-  // REDIRECTION (http→https, domaine→www) : la commande ne suit pas le 301. On vise TOUJOURS la racine du domaine de destination.
+  // REDIRECTION de DOMAINE (domaine→www, http→https) : bascule SEULEMENT si le host de destination est DIFFÉRENT.
+  // On ignore les 301 internes (ex: /author/<login>/ = énumération, traitée plus bas) pour ne pas re-préfixer www à l'infini.
+  var curHost=(U.match(/^https?:\/\/([^\/]+)/i)||[])[1]||'';
   var redir = raw.match(/redirects?\s+to\s+(https?:\/\/[^\s"'<>]+)/i) || raw.match(/Location:\s*(https?:\/\/[^\s"'<>]+)/i);
-  if( !hasWpFindings && ( redir || (/scan aborted|moved permanently|\b301\b/i.test(raw) && /www\./i.test(raw)) ) ){
-    var rawdest = (redir ? redir[1] : U.replace('://','://www.'));
-    var dmo = rawdest.match(/^(https?:\/\/[^\/]+)/i); var dest = (dmo?dmo[1]:rawdest.replace(/[\/.]+$/,''));
-    return {cls:'warn',msg:'↪️ La cible REDIRIGE vers '+dest+'. Je bascule automatiquement la cible sur ce domaine et je régénère toute la route — plus besoin de rien retaper.',
-      follow:[], report:null, unlock:null, switchTo:dest};
+  if( !hasWpFindings && redir && !/\/author\//i.test(redir[1]) ){
+    var dHost=(redir[1].match(/^https?:\/\/([^\/]+)/i)||[])[1]||'';
+    if(dHost && dHost.toLowerCase()!==curHost.toLowerCase()){
+      var dest='https://'+dHost.replace(/[\/.]+$/,'');
+      return {cls:'warn',msg:'↪️ La cible REDIRIGE vers '+dest+'. Je bascule automatiquement la cible sur ce domaine et je régénère toute la route — plus besoin de rien retaper.',
+        follow:[], report:null, unlock:null, switchTo:dest};
+    }
   }
   // RCE (uid=… gid=…)
   if(/uid=\d+.*gid=\d+/i.test(t)) return {cls:'ok',msg:'💥 RCE CONFIRMÉE — tu exécutes des commandes sur le serveur (uid=… présent).',
@@ -778,10 +796,14 @@ function scan(t){
   if(!isWP && /wix\.com|_wixCIDX|X-Wix/i.test(t)) return {cls:'warn',msg:'🧱 Wix (SaaS fermé) — site hébergé et verrouillé par Wix. Audit limité : en-têtes, formulaires, fuites, SEO/conformité. Pas d\'audit serveur possible.',
     follow:[],report:null,unlock:null};
   // WordPress détecté (page/whatweb) — mais PAS sur une sortie wpscan / scan aborté (sinon on reboucle)
-  if(/wordpress/i.test(t) && !/wpscan|\[\+\]|scan aborted|enumerating|requests done|wp-content dir/i.test(t)) return {cls:'ok',msg:'🧩 WordPress détecté → énumère comptes + plugins vulnérables.',
-    follow:[{t:'Énumérer WordPress (wpscan, discret)',c:'wpscan --url '+U+' --enumerate u,vp,vt --stealthy --throttle 800 --random-user-agent',e:'Comptes + plugins/thèmes à CVE. --stealthy + --throttle 800 (0,8s entre requêtes) = évite le ban Wordfence/hébergeur. Colle la sortie → Analyser (ne rebouclera plus).'},
-            {t:'Comptes via REST',c:'curl -sL -A "Mozilla/5.0" '+U+'/wp-json/wp/v2/users',e:'Fuite de comptes fréquente. -L suit le redirect www (sinon réponse vide).'}],
-    report:null, unlock:null};
+  if(/wordpress/i.test(t) && !/wpscan|\[\+\]|scan aborted|enumerating|requests done|wp-content dir/i.test(t)){
+    if(AG_WP_OFFERED) return {cls:'ok',msg:'🧩 WordPress confirmé (déjà en cours d\'énumération plus haut). Rien à relancer ici — continue les autres étapes.',follow:[],report:null,unlock:null};
+    AG_WP_OFFERED=true;
+    return {cls:'ok',msg:'🧩 WordPress détecté → énumère comptes + plugins vulnérables.',
+      follow:[{t:'Énumérer WordPress (wpscan, discret)',c:'wpscan --url '+U+' --enumerate u,vp,vt --stealthy --throttle 800 --random-user-agent',e:'Comptes + plugins/thèmes à CVE. --stealthy + --throttle 800 (0,8s entre requêtes) = évite le ban Wordfence/hébergeur. Colle la sortie → Analyser (ne rebouclera plus).'},
+              {t:'Comptes via REST',c:'curl -sL -A "Mozilla/5.0" '+U+'/wp-json/wp/v2/users',e:'Fuite de comptes fréquente. -L suit le redirect www (sinon réponse vide).'}],
+      report:null, unlock:null};
+  }
   // Sortie du TEST AUTO des endpoints (lignes « code taille url »)
   if(/^\s*\d{3}\s+\d+o?\s+https?:\/\//m.test(raw)){
     var ok200=(raw.match(/^\s*200\s.*$/mg)||[]), prot=(raw.match(/^\s*(401|403)\s.*$/mg)||[]);
