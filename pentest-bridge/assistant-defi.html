@@ -647,7 +647,7 @@ function scan(t){
   var U=AGT.U||'https://cible', P=AGT.P||'id';
   var raw=(t||'').trim();
   // SORTIE VIDE : la commande n'a rien renvoyé → ce n'est PAS forcément un échec, on diagnostique.
-  if(raw===''){ return {cls:'warn',msg:'⬜ La commande n\'a RIEN renvoyé (sortie vide). À interpréter — ça peut être : (a) rien trouvé = pas vulnérable sur ce point ; (b) bloqué (WAF/403) ; (c) réseau/proxy ; (d) ton motif grep ne matchait rien. Lance ces vérifs :',
+  if(raw===''){ return {cls:'warn',msg:'⬜ La commande n\'a RIEN renvoyé (sortie vide) — et c\'est une INFO, pas un blocage. Le plus souvent, sur une commande en grep (versions, secrets, en-têtes…), vide = <b>le motif n\'a rien trouvé = rien d\'exposé = bon point à noter au rapport</b>. Ce n\'est une alerte que si tu attendais une réponse. Pour vérifier que la cible répond bien (et que ce n\'est pas un blocage WAF/proxy) :',
     follow:[
       {t:'La cible répond-elle ? (code HTTP + taille)',c:'curl -s -o /dev/null -w "HTTP %{http_code} | %{size_download} o | %{time_total}s\\n" -A "Mozilla/5.0" '+U+'/',e:'200 + taille > 0 = OK (c\'est ton motif qui filtrait à vide). 403/406/429 = WAF/throttle. 000 = DNS/proxy/réseau.'},
       {t:'Voir la vraie réponse (sans filtre)',c:'curl -s -A "Mozilla/5.0" '+U+'/ | head -c 800',e:'Plein = c\'est ton grep/pattern qui ne matchait pas (sortie filtrée à vide, pas un échec). Vide ici aussi = la cible ne renvoie rien (bloqué, offline, mauvais chemin).'},
@@ -822,7 +822,7 @@ function scan(t){
 function analyzeStep(id){
   var box=document.getElementById('res_'+id), v=document.getElementById('verd_'+id);
   var txt=box?box.value:'';
-  if(!txt.trim()){ v.className='verdict warn'; v.innerHTML='Colle d\'abord la sortie de la commande, puis clique Analyser.'; return; }
+  // Case vide = information utile (« la commande n'a rien renvoyé ») → on lance le diagnostic du vide au lieu de bloquer.
   var r=scan(txt);
   v.className='verdict '+r.cls;
   var h=esc(r.msg);
