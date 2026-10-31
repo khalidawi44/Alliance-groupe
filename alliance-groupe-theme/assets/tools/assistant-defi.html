@@ -596,6 +596,18 @@ function scan(t){
     if(/vulnerabilit|CVE-|\[!\]|Title:/i.test(t)){ msg+=' Plugins/thèmes vulnérables signalés → vérifie la CVE + un exploit public (searchsploit).'; foll.push({t:'Chercher un exploit pour une CVE trouvée',c:'searchsploit <plugin> <version>',e:'Confirme si la vulnérabilité a un exploit prêt à l\'emploi.'}); }
     return {cls:'ok',msg:msg,follow:foll,report:(/User\(s\) Identified|\[i\] User/i.test(t)?{type:'enum'}:null),unlock:null};
   }
+  // Comptes WordPress énumérés via REST (/wp-json/wp/v2/users) ou ?author= — login exposé
+  if( (/"slug"\s*:\s*"[^"]+"/.test(t) && /"id"\s*:\s*\d+/.test(t) && /"name"\s*:/.test(t)) || /\/author\/[a-z0-9_.-]+\/?/i.test(t) ){
+    var us=[];
+    (t.match(/"slug"\s*:\s*"([^"]+)"/g)||[]).forEach(function(x){us.push(x.replace(/"slug"\s*:\s*"/,'').replace(/"$/,''));});
+    (t.match(/\/author\/([a-z0-9_.-]+)\/?/ig)||[]).forEach(function(x){us.push(x.replace(/.*\/author\//i,'').replace(/\/.*$/,''));});
+    us=us.filter(function(v,i){return v && us.indexOf(v)===i;});
+    var um='👤 '+us.length+' compte(s) énuméré(s)'+(us.length?' : '+us.slice(0,8).join(', ')+(us.length>8?'…':''):'')+'. Le LOGIN de connexion est exposé publiquement = preuve forte (donnée non censée être publique). Ce n\'est PAS encore un accès : il faut le mot de passe pour entrer → étape suivante.';
+    return {cls:'ok',msg:um,
+      follow:[{t:'Test de mots de passe sur ce(s) compte(s) (ACTIF, sous mandat)',c:'wpscan --url '+U+' --usernames '+(us.slice(0,5).join(',')||'<user>')+' --passwords /usr/share/wordlists/rockyou.txt --max-threads 5 --throttle 800',e:'Si un mot de passe est faible → accès prouvé (compte admin cassé = impact critique). ACTIF = mandat obligatoire + risque de verrouillage. Si rien ne casse : le login exposé reste une faille d\'énumération à mettre au rapport.'},
+              {t:'Fermer la fuite (remédiation à vendre)',c:'# Bloquer l\'énumération : REST users sur auth only + redirection ?author=\n# (plugin de durcissement ou règle serveur)',e:'Masquer les logins = première ligne de durcissement facturable.'}],
+      report:{type:'enum'}, unlock:null};
+  }
   // WordPress détecté (page/whatweb) — mais PAS sur une sortie wpscan (déjà gérée au-dessus)
   if(/wordpress/i.test(t)) return {cls:'ok',msg:'🧩 WordPress détecté → énumère comptes + plugins vulnérables.',
     follow:[{t:'Énumérer WordPress (wpscan, discret)',c:'wpscan --url '+U+' --enumerate u,vp,vt --stealthy --throttle 800 --random-user-agent',e:'Comptes + plugins/thèmes à CVE. --stealthy + --throttle 800 (0,8s entre requêtes) = évite le ban Wordfence/hébergeur. Colle la sortie → Analyser (ne rebouclera plus).'},
