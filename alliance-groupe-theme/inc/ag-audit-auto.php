@@ -227,10 +227,19 @@ if ( ! function_exists( 'ag_audit_auto' ) ) {
 		usort( $F, function( $a, $b ) use ( $sev_rank ) { return ( $sev_rank[ $b['sev'] ] ?? 0 ) - ( $sev_rank[ $a['sev'] ] ?? 0 ); } );
 		$score = max( 0, 100 - ( 18 * count( array_filter( $F, function( $f ) { return 'critique' === $f['sev']; } ) ) + 10 * count( array_filter( $F, function( $f ) { return 'moyen' === $f['sev'] || 'eleve' === $f['sev']; } ) ) + 4 * count( array_filter( $F, function( $f ) { return 'faible' === $f['sev']; } ) ) ) );
 
+		// RECON déjà connu (réutilisé par l'assistant pour pré-remplir la 1re étape, sans refaire whatweb/curl sur Kali).
+		$recon  = '== whatweb -a3 ' . $base . ' ==' . "\n";
+		$recon .= $base . ' [200] ' . ( $server ? 'HTTPServer[' . $server . '] ' : '' ) . ( $is_wp ? 'WordPress ' : '' ) . trim( implode( ' ', array_slice( $vers, 0, 4 ) ) ) . "\n";
+		$recon .= '== curl -sSI ' . $base . '/ ==' . "\n";
+		$recon .= 'HTTP 200' . "\n" . ( $server ? 'server: ' . $server . "\n" : '' );
+		foreach ( array( 'strict-transport-security' => 'Strict-Transport-Security', 'content-security-policy' => 'Content-Security-Policy', 'x-frame-options' => 'X-Frame-Options', 'x-content-type-options' => 'X-Content-Type-Options', 'referrer-policy' => 'Referrer-Policy', 'permissions-policy' => 'Permissions-Policy' ) as $hk => $full ) {
+			if ( empty( $headers[ $hk ] ) ) { $recon .= 'MANQUANT ' . $full . "\n"; }
+		}
+
 		return array(
 			'ok' => true, 'host' => $host, 'url' => $base, 'tech' => $is_wp ? 'WordPress' : 'autre/custom',
 			'findings' => array_values( $F ), 'good' => $G, 'devis' => $total, 'score' => $score,
-			'time_ms' => (int) round( ( microtime( true ) - $t0 ) * 1000 ), 'ts' => time(),
+			'time_ms' => (int) round( ( microtime( true ) - $t0 ) * 1000 ), 'ts' => time(), 'recon' => $recon,
 			// Intel pour la PHASE ACTIVE ciblée (exécutée sur Kali, sous mandat)
 			'intel' => array(
 				'is_wp'    => $is_wp,
@@ -352,6 +361,7 @@ if ( defined( 'ABSPATH' ) ) {
 			var fd=new FormData(); fd.append("action","ag_aa_run"); fd.append("nonce","' . $nonce . '"); fd.append("url",u); fd.append("rep",document.getElementById("aa_rep").checked?1:0);
 			fetch(ajaxurl,{method:"POST",body:fd}).then(function(r){return r.json();}).then(function(j){
 				o.innerHTML=(j&&j.html)?j.html:"Erreur."; if(j&&j.report_url){o.innerHTML+=\'<p><a class="button" target="_blank" href="\'+j.report_url+\'">Ouvrir le rapport client</a></p>\';}
+				try{ if(j&&j.recon&&j.host){ localStorage.setItem("ag_recon_"+j.host.replace(/^www\\./,""), j.recon); } }catch(e){}
 				window.__aa=j||{};
 				if(j&&j.ok&&j.can_active){ aaActiveForm(j); }
 			}).catch(function(e){o.innerHTML="Erreur réseau : "+e;});
@@ -414,6 +424,7 @@ if ( defined( 'ABSPATH' ) ) {
 			$out['host']  = $res['host'];
 			$out['url']   = $res['url'];
 			$out['intel'] = $res['intel'];
+			$out['recon'] = $res['recon'];
 			$out['can_active'] = function_exists( 'ag_pt_enqueue_job' );
 		}
 		if ( ! empty( $_POST['rep'] ) && ! empty( $res['ok'] ) && function_exists( 'ag_rapport_create' ) ) {
@@ -443,7 +454,7 @@ if ( defined( 'ABSPATH' ) ) {
 		}
 		wp_send_json_success( array(
 			'html' => ag_aa_render( $res ),
-			'host' => $res['host'], 'url' => $res['url'], 'intel' => $res['intel'],
+			'host' => $res['host'], 'url' => $res['url'], 'intel' => $res['intel'], 'recon' => $res['recon'],
 			'devis' => $res['devis'], 'score' => $res['score'],
 			'prev_score' => $prev, 'watched' => $watched, 'report_url' => $report_url,
 			'can_active' => ( current_user_can( 'manage_options' ) && function_exists( 'ag_pt_enqueue_job' ) ),
