@@ -94,10 +94,31 @@ add_action( 'template_redirect', function () {
 	$cible  = get_post_meta( $id, '_ag_rap_cible', true );
 	$html   = (string) get_post_meta( $id, '_ag_rap_html', true );
 	$offre  = isset( $_GET['offre'] ) ? sanitize_key( $_GET['offre'] ) : '';
+	// Prix : par-rapport → option globale → défaut raisonnable (zéro config nécessaire).
+	$defpx = array( 'rapport' => 290, 'correction' => 1299, 'refonte' => 1490 );
+	$rpx = function ( $id, $k ) use ( $defpx ) {
+		$m = get_post_meta( $id, '_ag_rap_px_' . $k, true ); if ( '' !== $m ) { return $m; }
+		$o = get_option( 'ag_rap_px_' . $k, '' ); if ( '' !== $o ) { return $o; }
+		return isset( $defpx[ $k ] ) ? $defpx[ $k ] : '';
+	};
+	// Lien de paiement : par-rapport → option → sinon GÉNÉRÉ depuis le PayPal déjà configuré (ag_paypal_email).
+	$rpy = function ( $id, $k, $price, $label ) {
+		$m = get_post_meta( $id, '_ag_rap_pay_' . $k, true ); if ( '' !== $m ) { return $m; }
+		$o = get_option( 'ag_rap_pay_' . $k, '' ); if ( '' !== $o ) { return $o; }
+		$pp = sanitize_email( (string) get_option( 'ag_paypal_email', '' ) );
+		if ( $pp && '' !== $price && (float) $price > 0 ) {
+			return 'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=' . rawurlencode( $pp )
+				. '&item_name=' . rawurlencode( 'Alliance Groupe — ' . $label )
+				. '&amount=' . number_format( (float) $price, 2, '.', '' )
+				. '&currency_code=EUR&no_shipping=1&no_note=1';
+		}
+		return '';
+	};
+	$lbl = array( 'rapport' => 'Rapport seul', 'correction' => 'Rapport + Correction', 'refonte' => 'Refonte complète sécurisée' );
 	$px = array(
-		'rapport'    => array( 'Rapport seul',            get_post_meta( $id, '_ag_rap_px_rapport', true ),    get_post_meta( $id, '_ag_rap_pay_rapport', true ),    'Le rapport complet, à vous de corriger.' ),
-		'correction' => array( 'Rapport + Correction',    get_post_meta( $id, '_ag_rap_px_correction', true ), get_post_meta( $id, '_ag_rap_pay_correction', true ), 'On corrige tout + re-test de vérification.' ),
-		'refonte'    => array( 'Refonte complète sécurisée', get_post_meta( $id, '_ag_rap_px_refonte', true ),  get_post_meta( $id, '_ag_rap_pay_refonte', true ),    'Site reconstruit propre et durci.' ),
+		'rapport'    => array( $lbl['rapport'],    $rpx( $id, 'rapport' ),    $rpy( $id, 'rapport', $rpx( $id, 'rapport' ), $lbl['rapport'] ),       'Le rapport complet, à vous de corriger.' ),
+		'correction' => array( $lbl['correction'], $rpx( $id, 'correction' ), $rpy( $id, 'correction', $rpx( $id, 'correction' ), $lbl['correction'] ), 'On corrige tout + re-test de vérification.' ),
+		'refonte'    => array( $lbl['refonte'],    $rpx( $id, 'refonte' ),    $rpy( $id, 'refonte', $rpx( $id, 'refonte' ), $lbl['refonte'] ),       'Site reconstruit propre et durci.' ),
 	);
 	nocache_headers();
 	header( 'X-Robots-Tag: noindex, nofollow', true );
@@ -123,3 +144,34 @@ add_action( 'template_redirect', function () {
 	echo '</body></html>';
 	exit;
 } );
+
+/* ===================== Helper : créer un rapport privé depuis un audit (agents) ===================== */
+if ( ! function_exists( 'ag_rapport_create' ) ) {
+	/**
+	 * Crée un « Rapport client » privé (lien /rapport/<jeton> non indexé) à partir
+	 * d'un résultat d'audit. Les boutons de paiement viennent des liens globaux
+	 * (options ag_rap_pay_*) si non définis par rapport. Renvoie l'URL privée.
+	 *
+	 * @param string $html   Le rapport HTML (ag_aa_render d'un audit).
+	 * @param string $client Nom du client/prospect.
+	 * @param string $cible  Domaine audité.
+	 * @param int    $devis  Montant indicatif (métadonnée).
+	 * @return array{id:int,url:string}|null
+	 */
+	function ag_rapport_create( $html, $client = '', $cible = '', $devis = 0 ) {
+		if ( ! post_type_exists( 'ag_rapport' ) ) { return null; }
+		$title = 'Audit sécurité — ' . ( $cible ? $cible : 'cible' ) . ' (' . gmdate( 'Y-m-d' ) . ')';
+		$id = wp_insert_post( array(
+			'post_type' => 'ag_rapport', 'post_status' => 'publish',
+			'post_title' => $title,
+		) );
+		if ( ! $id || is_wp_error( $id ) ) { return null; }
+		update_post_meta( $id, '_ag_rap_html', wp_kses_post( $html ) );
+		update_post_meta( $id, '_ag_rap_client', sanitize_text_field( $client ) );
+		update_post_meta( $id, '_ag_rap_cible', sanitize_text_field( $cible ) );
+		if ( $devis ) { update_post_meta( $id, '_ag_rap_devis', (int) $devis ); }
+		$tok = get_post_meta( $id, '_ag_rap_token', true );
+		if ( ! $tok ) { $tok = wp_generate_password( 22, false, false ); update_post_meta( $id, '_ag_rap_token', $tok ); }
+		return array( 'id' => (int) $id, 'url' => home_url( '/rapport/' . $tok ) );
+	}
+}
