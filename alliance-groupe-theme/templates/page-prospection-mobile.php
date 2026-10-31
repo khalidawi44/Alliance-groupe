@@ -230,6 +230,17 @@ foreach ( $ag_my_prospects as $ppc ) {
 	<section class="view on" id="view-accueil">
 		<p class="hi">Salut <span><?php echo esc_html( $ag_prenom ); ?></span> </p>
 		<p class="sub">Ton QG de prospection.</p>
+		<?php if ( $ag_is_admin ) : ?>
+		<div class="card" style="border:1px solid #3aa3ff;">
+			<h3 style="margin:0 0 8px;">🛠️ Maintenance (admin)</h3>
+			<p class="sub" style="margin:-4px 0 10px;">Mets le site à jour depuis GitHub et vide le cache, sans passer par WordPress.</p>
+			<div style="display:flex;gap:8px;flex-wrap:wrap;">
+				<button type="button" id="ag-sync-btn" class="b gold" style="flex:1 1 150px;">🔄 SYNC GitHub</button>
+				<button type="button" id="ag-purge-btn" class="b" style="flex:1 1 150px;border:1px solid #ffc107;color:#ffd666;background:rgba(255,193,7,.14);">🧹 Purger le cache</button>
+			</div>
+			<span id="ag-maint-msg" class="sub" style="display:block;margin-top:8px;"></span>
+		</div>
+		<?php endif; ?>
 		<div class="stats">
 			<a class="stat todo" href="#" onclick="AG.tab('prospecter');return false"><b><?php echo (int) $ag_cnt['a_contacter']; ?></b><span>À contacter</span></a>
 			<a class="stat done" href="#" onclick="AG.tab('prospecter');return false"><b><?php echo (int) $ag_cnt['contacte']; ?></b><span>Contactés</span></a>
@@ -1291,6 +1302,23 @@ var AG = (function(){
 			}).catch(function(e){m.textContent='Erreur réseau : '+e;});
 		});
 	}
+})();
+/* Maintenance admin : SYNC GitHub + purge cache depuis l'app */
+(function(){
+	if(!window.AG) return;
+	var sb=document.getElementById('ag-sync-btn'), pb=document.getElementById('ag-purge-btn'), m=document.getElementById('ag-maint-msg');
+	if(sb) sb.addEventListener('click',function(){
+		sb.setAttribute('disabled','disabled'); var o=sb.textContent; sb.textContent='SYNC…'; if(m)m.textContent='⏳ Mise à jour depuis GitHub…';
+		AG.post('ag_app_sync',{}).then(function(j){ sb.removeAttribute('disabled'); sb.textContent=o;
+			if(m)m.innerHTML=(j&&j.success)?('✅ '+j.data.m+' Pense à purger le cache puis recharger.'):('❌ '+((j&&j.data&&j.data.m)||'Erreur sync'));
+			if(j&&j.success)AG.toast('SYNC terminée'); }).catch(function(e){ sb.removeAttribute('disabled'); sb.textContent=o; if(m)m.textContent='Erreur réseau : '+e; });
+	});
+	if(pb) pb.addEventListener('click',function(){
+		pb.setAttribute('disabled','disabled'); var o=pb.textContent; pb.textContent='Purge…'; if(m)m.textContent='⏳ Purge du cache…';
+		AG.post('ag_app_purge',{}).then(function(j){ pb.removeAttribute('disabled'); pb.textContent=o;
+			if(m)m.innerHTML=(j&&j.success)?('🧹 '+j.data.m+' Recharge la page (Ctrl/↻).'):('❌ '+((j&&j.data&&j.data.m)||'Erreur purge'));
+			if(j&&j.success)AG.toast('Cache purgé'); }).catch(function(e){ pb.removeAttribute('disabled'); pb.textContent=o; if(m)m.textContent='Erreur réseau : '+e; });
+	});
 })();
 </script>
 </body>
