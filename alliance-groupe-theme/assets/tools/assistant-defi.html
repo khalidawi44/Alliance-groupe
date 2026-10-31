@@ -81,9 +81,11 @@
     </label>
     <div class="cats" id="cats"></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="go" onclick="gen()" style="flex:1 1 240px">⚙️ Générer la route pas-à-pas</button>
-      <button class="go" onclick="genWordPress()" style="flex:1 1 240px;background:linear-gradient(135deg,#1e3a8a,#2563eb)">🧩 Audit WordPress complet (1 clic)</button>
+      <button class="go" onclick="genAuto()" style="flex:1 1 220px;background:linear-gradient(135deg,#E6A93C,#F37A1F)">🔍 Audit auto (tout site)</button>
+      <button class="go" onclick="genWordPress()" style="flex:1 1 220px;background:linear-gradient(135deg,#1e3a8a,#2563eb)">🧩 Audit WordPress</button>
+      <button class="go" onclick="gen()" style="flex:1 1 220px;background:#2a2c4e">⚙️ Route par type (manuel)</button>
     </div>
+    <p class="sub" style="margin:6px 2px 0;font-size:12px;color:#9aa0b0">« Audit auto » marche sur <b>n'importe quel site</b> (WordPress, Joomla, Shopify, PrestaShop, sur-mesure, IP…) : il détecte le socle puis s'adapte. « Route par type » = tu choisis les failles ci-dessus.</p>
   </div>
 
   <div id="out" class="hidden">
@@ -445,6 +447,39 @@ function genWordPress(){
   updateProgress();
   document.getElementById('out').scrollIntoView({behavior:'smooth'});
 }
+/* ===================== AUDIT AUTO (TOUT SITE) ===================== */
+function UNIV(U,T){ return [
+ {t:"Empreinte techno (CMS / serveur / langage / WAF)", c:`whatweb -a3 ${U}; echo ---; curl -sSI -A "Mozilla/5.0" ${U}/`, e:"Identifie le socle (WordPress, Joomla, Drupal, Shopify, Laravel…), le serveur et un éventuel WAF. <b>Colle la sortie → Analyser</b> : l'assistant détecte le CMS et débloque la route dédiée."},
+ {t:"CMS / générateur (dans le HTML)", c:`curl -s -A "Mozilla/5.0" ${U}/ | grep -oiE 'name="generator" content="[^"]+"|wp-content|/sites/default/files|Joomla|cdn\\.shopify|PrestaShop|Wix\\.com|Drupal|Magento|/bitrix/' | sort -u`, e:"Un seul indice suffit à savoir quel CMS. Vide = site sur-mesure → on reste sur l'audit générique (toujours valable)."},
+ {t:"En-têtes de sécurité manquants", c:`curl -sSI -A "Mozilla/5.0" ${U}/ | grep -iE 'strict-transport-security|content-security-policy|x-frame-options|x-content-type-options|referrer-policy|permissions-policy'`, e:"Chaque en-tête ABSENT = faille de config (clickjacking, MIME sniffing, pas de HSTS). Valable sur tout site, facile à vendre en remédiation."},
+ {t:"Fichiers sensibles exposés (universel)", c:`for f in .git/HEAD .env .env.bak config.php.bak settings.php.bak backup.zip site.zip db.sql database.sql dump.sql .DS_Store phpinfo.php server-status adminer.php; do curl -s -o /dev/null -w "%{http_code}  ${U}/\$f\\n" -A "Mozilla/5.0" "${U}/\$f"; done | sort`, e:"200 sur .env / .sql / .git / backup = fuite critique (identifiants, code, base). Marche quel que soit le CMS."},
+ {t:"Pages d'admin / connexion courantes", c:`for p in admin administrator login admin.php backend wp-login.php user/login phpmyadmin adminer.php .well-known/security.txt; do curl -s -o /dev/null -w "%{http_code}  ${U}/\$p\\n" -A "Mozilla/5.0" "${U}/\$p"; done | sort`, e:"Trouve l'interface d'admin (point d'entrée brute-force) et si security.txt existe (maturité sécu)."},
+ {t:"robots.txt + sitemap (routes cachées)", c:`curl -s -A "Mozilla/5.0" ${U}/robots.txt; echo ---; curl -s -A "Mozilla/5.0" ${U}/sitemap.xml | head -20`, e:"Les Disallow pointent souvent vers des zones sensibles (admin, exports, staging)."},
+ {t:"Endpoints cachés dans le JS", c:`curl -s -A "Mozilla/5.0" ${U}/ | grep -oE 'src="[^"]+\\.js[^"]*"' | sed -E 's/^src="//;s/"$//;s#^//#https://#;s#^/#${U}/#' | sort -u | while read J; do curl -s -A "Mozilla/5.0" "\$J" | grep -oE '"/[a-zA-Z0-9_./?&=-]{2,}"' | tr -d '"'; done | grep -viE '\\.(js|css|png|jpe?g|gif|svg|woff2?|ico|map)(\\?|\$)' | sort -u | head -40`, e:"Routes /api non visibles sur le site = surface d'attaque (IDOR, contrôle d'accès). Pro : linkfinder / jsluice."},
+ {t:"TLS / certificat", c:`echo | openssl s_client -connect ${T}:443 -servername ${T} 2>/dev/null | openssl x509 -noout -dates -issuer`, e:"Certificat expiré / émetteur douteux / pas de HTTPS = point à corriger."}
+];}
+function genAuto(){
+  var c=clean(document.getElementById('cible').value); if(!c.host){alert("Entre une cible (ex: monsite.fr ou 10.10.10.5).");return;}
+  var T=c.host, U=(/^\d+\.\d+\.\d+\.\d+$/.test(T)?('http://'+T):('https://'+T)), P=(document.getElementById('param').value.trim()||'id');
+  AGT={U:U,T:T,P:P}; try{localStorage.setItem('ag_defi_cible',T);}catch(e){}
+  if(SCOPE){ var hs=hostInScope(T); if(!hs.ok){ alert('⛔ Cible HORS SCOPE : '+hs.reason+'.'); return; } }
+  CATS.forEach(function(cat){ sel[cat.k]=(['recon','disco','auth','leak'].indexOf(cat.k)>-1); }); renderCats(); saveSel();
+  var steps=UNIV(U,T), i=0; PLAN=[];
+  var html='<div class="verdict ok" style="margin:0 0 10px">🔍 <b>Audit auto</b> — marche sur <b>n\'importe quel site</b> (WordPress, Joomla, Shopify, PrestaShop, sur-mesure, IP…). Cible : <b>'+esc(U)+'</b>. L\'étape 1 détecte le socle → colle sa sortie → Analyser et l\'assistant adapte la suite.</div><div class="ph">🔍 Audit universel</div>';
+  steps.forEach(function(s){ var id='u'+(i++); var cmd=scopeThrottle(s.c); PLAN.push({phase:'Audit auto',titre:s.t,cmd:cmd});
+    html+='<div class="step"><h3>'+esc(s.t)+'</h3><pre><button class="copy" onclick="cp(\''+id+'\',this)">📋 Copier</button><code id="'+id+'">'+esc(cmd)+'</code></pre><div class="exp">'+s.e+'</div>'+
+      '<div class="analyse"><textarea class="res" id="res_'+id+'" placeholder="Colle ici la sortie de cette commande…"></textarea>'+
+      '<button class="mini" onclick="analyzeStep(\''+id+'\')">▶ Analyser le résultat</button>'+
+      '<div class="verdict" id="verd_'+id+'"></div></div></div>';
+  });
+  document.getElementById('steps').innerHTML=html;
+  document.getElementById('rendpoint').value=U+'/';
+  document.getElementById('rparam').value=P; setv('rscope', T);
+  fillSkeleton(true);
+  document.getElementById('out').classList.remove('hidden');
+  updateProgress();
+  document.getElementById('out').scrollIntoView({behavior:'smooth'});
+}
 /* ===================== PROGRESSION + DEVIS LIVE ===================== */
 function estimateQuote(){ var tot=0; FINDINGS.forEach(function(f){ var s=parseFloat(f.score)||0; tot+=(s>=9?900:(s>=7?500:(s>=4?250:90))); }); return tot; }
 function updateProgress(){ var el=document.getElementById('progressBar'); if(!el) return;
@@ -689,6 +724,19 @@ function scan(t){
               {t:'Fermer la fuite (remédiation à vendre)',c:'# Bloquer l\'énumération : REST users sur auth only + redirection ?author=\n# (plugin de durcissement ou règle serveur)',e:'Masquer les logins = première ligne de durcissement facturable.'}],
       report:{type:'enum'}, unlock:null};
   }
+  // Autres CMS détectés (whatweb / generator / HTML) → route adaptée, AVANT la détection WordPress générique
+  if(/joomla/i.test(t)) return {cls:'ok',msg:'🧩 Joomla détecté → énumère version, composants et back-office.',
+    follow:[{t:'Scanner Joomla',c:'joomscan --url '+U+'    # ou: curl -s '+U+'/administrator/manifests/files/joomla.xml | grep -oE "<version>[^<]+"',e:'Version + composants vulnérables (CVE). /administrator = login admin.'}],report:null,unlock:null};
+  if(/drupal|sites\/default/i.test(t)) return {cls:'ok',msg:'🧩 Drupal détecté → version + modules.',
+    follow:[{t:'Scanner Drupal',c:'droopescan scan drupal -u '+U+'    # ou: curl -s '+U+'/CHANGELOG.txt | head -3',e:'Version (CHANGELOG.txt) → CVE type Drupalgeddon. /user/login = admin.'}],report:null,unlock:null};
+  if(/prestashop/i.test(t)) return {cls:'ok',msg:'🛒 PrestaShop détecté → version + modules + back-office.',
+    follow:[{t:'Vérifs PrestaShop',c:'curl -s '+U+'/docs/CHANGELOG.txt | head -3 ; curl -s -o /dev/null -w "admin-dev -> %{http_code}\\n" '+U+'/admin-dev/',e:'Version + modules à CVE fréquents. Dossier admin souvent renommé (admin123…).'}],report:null,unlock:null};
+  if(/magento|mage-|static\/version/i.test(t)) return {cls:'ok',msg:'🛒 Magento détecté → version + patchs (SUPEE/CVE Magecart).',
+    follow:[{t:'Vérifs Magento',c:'curl -s '+U+'/magento_version ; curl -s -o /dev/null -w "errors -> %{http_code}\\n" '+U+'/errors/',e:'Version → CVE (SUPEE, Magecart). /downloader et /errors souvent exposés.'}],report:null,unlock:null};
+  if(/shopify|cdn\.shopify|myshopify/i.test(t)) return {cls:'warn',msg:'🛍️ Shopify (SaaS hébergé) — le serveur est géré par Shopify : pas d\'audit d\'infra. L\'audit porte sur la config boutique, les apps tierces, les formulaires et les données exposées.',
+    follow:[{t:'Points vérifiables sur Shopify',c:'curl -s '+U+'/products.json | head -c 400    # catalogue exposé ? ; vérifie aussi /admin (doit rediriger), apps tierces, fuite d\'emails',e:'Sur SaaS, vise la configuration et les intégrations, pas le socle (tu ne peux pas pentester l\'infra de Shopify).'}],report:null,unlock:null};
+  if(/wix\.com|_wixCIDX|X-Wix/i.test(t)) return {cls:'warn',msg:'🧱 Wix (SaaS fermé) — site hébergé et verrouillé par Wix. Audit limité : en-têtes, formulaires, fuites, SEO/conformité. Pas d\'audit serveur possible.',
+    follow:[],report:null,unlock:null};
   // WordPress détecté (page/whatweb) — mais PAS sur une sortie wpscan / scan aborté (sinon on reboucle)
   if(/wordpress/i.test(t) && !/wpscan|\[\+\]|scan aborted|enumerating|requests done|wp-content dir/i.test(t)) return {cls:'ok',msg:'🧩 WordPress détecté → énumère comptes + plugins vulnérables.',
     follow:[{t:'Énumérer WordPress (wpscan, discret)',c:'wpscan --url '+U+' --enumerate u,vp,vt --stealthy --throttle 800 --random-user-agent',e:'Comptes + plugins/thèmes à CVE. --stealthy + --throttle 800 (0,8s entre requêtes) = évite le ban Wordfence/hébergeur. Colle la sortie → Analyser (ne rebouclera plus).'},
