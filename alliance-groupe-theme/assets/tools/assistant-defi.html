@@ -810,7 +810,14 @@ function scan(t){
   }
   // en-têtes / techno
   if(/Server:\s|X-Powered-By:|X-Generator:/i.test(t)) return {cls:'warn',msg:'ℹ️ Techno / en-têtes identifiés. Continue l\'énumération (étapes suivantes).',follow:[],report:null,unlock:null};
-  return {cls:'warn',msg:'Rien d\'exploitable détecté ici — passe à l\'étape suivante (ou colle une autre sortie).',follow:[],report:null,unlock:null};
+  // Réponse courte = juste un code HTTP (ex: 301, 404) → PAS une faille, on explique
+  if(/^\s*\d{3}\s*$/.test(raw)){
+    var code=raw.match(/\d{3}/)[0];
+    var mean={'200':'la ressource EXISTE (200). Sur un fichier sensible (.git/.env/.sql) ce serait une fuite ; sur une page normale c\'est OK.','301':'redirection (301) — la ressource n\'est pas exposée ici.','302':'redirection (302) — pas exposé ici.','401':'protégé (401) — refusé sans authentification.','403':'protégé/interdit (403) — présent mais verrouillé (ou WAF).','404':'absent (404) — rien à cet endroit.'}[code]||('code HTTP '+code+'.');
+    var good=/301|302|401|403|404/.test(code);
+    return {cls:good?'ok':'warn',msg:'ℹ️ Réponse = '+mean+' '+(good?'✅ Pas une faille sur ce point — bon à noter au rapport.':'À vérifier selon le fichier visé.')+' Passe à l\'étape suivante.',follow:[],report:null,unlock:null};
+  }
+  return {cls:'ok',msg:'✅ Rien d\'anormal lu sur cette commande — pas de faille détectée ici (ce n\'est pas un bug de l\'outil : soit la cible est saine sur ce point, c\'est un bon point à noter ; soit la sortie ne contient aucun signal connu). Passe à l\'étape suivante ou colle une autre sortie.',follow:[],report:null,unlock:null};
 }
 function analyzeStep(id){
   var box=document.getElementById('res_'+id), v=document.getElementById('verd_'+id);
