@@ -73,7 +73,12 @@
       <div><label>Cible (domaine, IP ou URL)</label><input id="cible" placeholder="exemple.fr  ou  10.10.10.5" autocomplete="off"></div>
       <div><label>Paramètre à tester (optionnel)</label><input id="param" placeholder="id, page, file, q…" autocomplete="off"></div>
     </div>
-    <label>Type de défi / faille (choisis un ou plusieurs)</label>
+    <label>Type de défi / faille (choisis un ou plusieurs)
+      <span style="float:right;font-weight:700">
+        <a href="#" id="selall" onclick="return toggleAll()" style="color:var(--or);text-decoration:none;margin-left:12px">✓ Tout sélectionner</a>
+        <a href="#" onclick="return selectNone()" style="color:#9aa0b0;text-decoration:none;margin-left:12px">✕ Aucun</a>
+      </span>
+    </label>
     <div class="cats" id="cats"></div>
     <button class="go" onclick="gen()">⚙️ Générer la route pas-à-pas</button>
   </div>
@@ -216,8 +221,14 @@ var CATS=[
  {k:'leak',n:'🔓 Fuites de données (HIBP)'}
 ];
 var sel={recon:true};
+try{var _s=JSON.parse(localStorage.getItem('ag_defi_sel')||'null');if(_s&&typeof _s==='object')sel=_s;}catch(e){}
+function saveSel(){try{localStorage.setItem('ag_defi_sel',JSON.stringify(sel));}catch(e){}}
+function allOn(){return CATS.every(function(c){return sel[c.k];});}
+function toggleAll(){var on=!allOn();CATS.forEach(function(c){sel[c.k]=on;});renderCats();saveSel();return false;}
+function selectNone(){CATS.forEach(function(c){sel[c.k]=false;});sel.recon=true;renderCats();saveSel();return false;}
 function renderCats(){var h='';CATS.forEach(function(c){h+='<span class="cat '+(sel[c.k]?'on':'')+'" data-k="'+c.k+'">'+c.n+'</span>';});document.getElementById('cats').innerHTML=h;
- [].forEach.call(document.querySelectorAll('.cat'),function(el){el.onclick=function(){var k=el.getAttribute('data-k');sel[k]=!sel[k];el.classList.toggle('on');};});}
+ [].forEach.call(document.querySelectorAll('.cat'),function(el){el.onclick=function(){var k=el.getAttribute('data-k');sel[k]=!sel[k];el.classList.toggle('on');saveSel();var sa=document.getElementById('selall');if(sa)sa.textContent=(allOn()?'✓ Tout désélectionner':'✓ Tout sélectionner');};});
+ var sa=document.getElementById('selall');if(sa)sa.textContent=(allOn()?'✓ Tout désélectionner':'✓ Tout sélectionner');}
 renderCats();
 
 // PLAYBOOKS : chaque étape = {t:titre, c:commande, e:explication/résultat attendu}. ${U}=url https, ${T}=host, ${P}=param
