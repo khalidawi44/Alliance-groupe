@@ -19,7 +19,7 @@ if ( ! function_exists( 'ag_aa_http' ) ) {
 		$ua = 'Mozilla/5.0 (Alliance-Groupe-Audit; mandat)';
 		if ( function_exists( 'wp_remote_request' ) ) {
 			$args = array(
-				'method' => $method, 'timeout' => 8,
+				'method' => $method, 'timeout' => 4,
 				'redirection' => $follow ? 3 : 0,
 				'user-agent' => $ua, 'sslverify' => true,
 				'headers' => array(), 'body' => $body,
@@ -41,7 +41,7 @@ if ( ! function_exists( 'ag_aa_http' ) ) {
 			CURLOPT_RETURNTRANSFER => 1, CURLOPT_HEADER => 1,
 			CURLOPT_CUSTOMREQUEST => $method, CURLOPT_NOBODY => ( 'HEAD' === $method ),
 			CURLOPT_FOLLOWLOCATION => (bool) $follow, CURLOPT_MAXREDIRS => 3,
-			CURLOPT_TIMEOUT => 8, CURLOPT_USERAGENT => $ua,
+			CURLOPT_TIMEOUT => 4, CURLOPT_USERAGENT => $ua,
 			CURLOPT_SSL_VERIFYPEER => 0, CURLOPT_SSL_VERIFYHOST => 0,
 		);
 		$px = getenv( 'HTTPS_PROXY' ); if ( $px ) { $opt[ CURLOPT_PROXY ] = $px; }
@@ -81,7 +81,9 @@ if ( ! function_exists( 'ag_aa_prices' ) ) {
 /* ============================ LE SCAN AUTO ============================ */
 if ( ! function_exists( 'ag_audit_auto' ) ) {
 	function ag_audit_auto( $url ) {
+		if ( function_exists( 'set_time_limit' ) ) { @set_time_limit( 120 ); } // évite la coupure PHP (30s) sur cible lente
 		$t0 = microtime( true );
+		$deadline = $t0 + 22; // budget dur : au-delà on saute les sondes optionnelles et on renvoie ce qu'on a
 		$url = trim( $url );
 		if ( ! preg_match( '#^https?://#i', $url ) ) { $url = 'https://' . $url; }
 		$host = preg_replace( '#^https?://#i', '', $url );
@@ -152,17 +154,20 @@ if ( ! function_exists( 'ag_audit_auto' ) ) {
 			$add( 'enum', 'Énumération des comptes ouverte (login admin exposé)', 'moyen', 'Logins : ' . ( $leak_users ? implode( ', ', array_slice( $leak_users, 0, 8 ) ) : '(exposés)' ), 'Fermer /wp-json/wp/v2/users aux non-connectés et bloquer la redirection ?author=.' );
 		} elseif ( $is_wp ) { $good( 'Énumération des comptes fermée (REST + ?author).' ); }
 
-		// 4. Fichiers sensibles / sauvegardes
-		$bad_files = array();
-		foreach ( array( '.git/HEAD', '.env', 'wp-config.php.bak', 'wp-config.php~', 'wp-config.php.save', 'backup.zip', 'site.zip', 'db.sql', 'database.sql', 'dump.sql' ) as $f ) {
-			$rf = ag_aa_http( 'GET', $base . '/' . $f, null, false );
-			if ( 200 === (int) $rf['code'] ) {
-				$b0 = substr( (string) $rf['body'], 0, 200 );
-				if ( false === stripos( $b0, '<html' ) && false === stripos( $b0, '<!doctype' ) ) { $bad_files[] = $f; }
+		// 4. Fichiers sensibles / sauvegardes (sauté si on a dépassé le budget de temps)
+		if ( microtime( true ) < $deadline ) {
+			$bad_files = array();
+			foreach ( array( '.git/HEAD', '.env', 'wp-config.php.bak', 'backup.zip', 'database.sql' ) as $f ) {
+				if ( microtime( true ) > $deadline ) { break; }
+				$rf = ag_aa_http( 'GET', $base . '/' . $f, null, false );
+				if ( 200 === (int) $rf['code'] ) {
+					$b0 = substr( (string) $rf['body'], 0, 200 );
+					if ( false === stripos( $b0, '<html' ) && false === stripos( $b0, '<!doctype' ) ) { $bad_files[] = $f; }
+				}
 			}
+			if ( $bad_files ) { $add( 'leakfile', 'Fichiers sensibles exposés', 'critique', 'Téléchargeables : ' . implode( ', ', $bad_files ), 'Supprimer/bloquer immédiatement (identifiants, base, code source).' ); }
+			else { $good( 'Pas de .git/.env/sauvegardes accessibles.' ); }
 		}
-		if ( $bad_files ) { $add( 'leakfile', 'Fichiers sensibles exposés', 'critique', 'Téléchargeables : ' . implode( ', ', $bad_files ), 'Supprimer/bloquer immédiatement (identifiants, base, code source).' ); }
-		else { $good( 'Pas de .git/.env/sauvegardes accessibles.' ); }
 
 		// 5. xmlrpc (amplification brute / pingback)
 		$xmlrpc_active = false;
@@ -173,17 +178,19 @@ if ( ! function_exists( 'ag_audit_auto' ) ) {
 			$add( 'xmlrpc', 'xmlrpc.php actif' . ( $ping ? ' (pingback = amplification DDoS/brute)' : '' ), 'moyen', 'system.listMethods répond' . ( $ping ? ', pingback.ping disponible' : '' ), 'Désactiver xmlrpc.php ou au minimum pingback.ping.' );
 		} else { $good( 'xmlrpc.php non exploitable (désactivé/filtré).' ); }
 
-		// 6. Email : SPF / DMARC via DNS-over-HTTPS (Google)
+		// 6. Email : SPF / DMARC via DNS-over-HTTPS (Google) — sauté si budget dépassé
 		$root = preg_replace( '#^www\.#i', '', $host );
-		$spf_r = ag_aa_http( 'GET', 'https://dns.google/resolve?name=' . rawurlencode( $root ) . '&type=TXT', null, true );
-		$dm_r  = ag_aa_http( 'GET', 'https://dns.google/resolve?name=_dmarc.' . rawurlencode( $root ) . '&type=TXT', null, true );
-		$has_spf  = (bool) preg_match( '#v=spf1#i', (string) $spf_r['body'] );
-		$dmarc_pol = preg_match( '#v=DMARC1[^"]*p=([a-z]+)#i', (string) $dm_r['body'], $dmm ) ? strtolower( $dmm[1] ) : '';
-		if ( ! $has_spf ) { $add( 'email', 'SPF absent (usurpation e-mail possible)', 'moyen', 'Aucun enregistrement v=spf1 sur ' . $root, 'Publier un SPF (-all) + DKIM + DMARC.' ); }
-		else { $good( 'SPF présent.' ); }
-		if ( ! $dmarc_pol ) { $add( 'email', 'DMARC absent', 'moyen', 'Aucun _dmarc sur ' . $root, 'Publier un DMARC (p=quarantine puis reject).' ); }
-		elseif ( 'none' === $dmarc_pol ) { $add( 'email', 'DMARC en p=none (ne bloque pas l\'usurpation)', 'faible', '_dmarc = p=none (surveillance seule)', 'Passer DMARC en p=quarantine puis p=reject.' ); }
-		else { $good( 'DMARC actif (p=' . $dmarc_pol . ').' ); }
+		if ( microtime( true ) < $deadline ) {
+			$spf_r = ag_aa_http( 'GET', 'https://dns.google/resolve?name=' . rawurlencode( $root ) . '&type=TXT', null, true );
+			$dm_r  = ag_aa_http( 'GET', 'https://dns.google/resolve?name=_dmarc.' . rawurlencode( $root ) . '&type=TXT', null, true );
+			$has_spf  = (bool) preg_match( '#v=spf1#i', (string) $spf_r['body'] );
+			$dmarc_pol = preg_match( '#v=DMARC1[^"]*p=([a-z]+)#i', (string) $dm_r['body'], $dmm ) ? strtolower( $dmm[1] ) : '';
+			if ( ! $has_spf ) { $add( 'email', 'SPF absent (usurpation e-mail possible)', 'moyen', 'Aucun enregistrement v=spf1 sur ' . $root, 'Publier un SPF (-all) + DKIM + DMARC.' ); }
+			else { $good( 'SPF présent.' ); }
+			if ( ! $dmarc_pol ) { $add( 'email', 'DMARC absent', 'moyen', 'Aucun _dmarc sur ' . $root, 'Publier un DMARC (p=quarantine puis reject).' ); }
+			elseif ( 'none' === $dmarc_pol ) { $add( 'email', 'DMARC en p=none (ne bloque pas l\'usurpation)', 'faible', '_dmarc = p=none (surveillance seule)', 'Passer DMARC en p=quarantine puis p=reject.' ); }
+			else { $good( 'DMARC actif (p=' . $dmarc_pol . ').' ); }
+		}
 
 		// 7. RGPD (cookies / traceurs / Google Fonts / mentions)
 		$rgpd = array();
