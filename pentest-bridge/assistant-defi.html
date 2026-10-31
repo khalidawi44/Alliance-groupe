@@ -231,7 +231,8 @@ disco:[
  {t:"Brute des chemins (ffuf) — mode discret", c:`ffuf -u ${U}/FUZZ -w /usr/share/wordlists/dirb/common.txt -mc 200,204,301,302,307,401,403 -t 5 -rate 20`, e:`Trouve pages/API cachées. <b>-t 5 -rate 20 = discret</b> (évite le ban Wordfence/hébergeur). 403 = existe mais protégé. Sur prod fragile, baisse encore : <code>-rate 8</code>.`},
  {t:"Extensions utiles (discret)", c:`ffuf -u ${U}/FUZZ -w /usr/share/wordlists/dirb/common.txt -e .php,.bak,.old,.txt,.zip,.sql -mc 200 -t 5 -rate 20`, e:`.bak/.old/.sql/.zip = sauvegardes/code source exposés (souvent jackpot). Rythme bridé pour ne pas se faire bannir.`},
  {t:"Endpoints dans le JS (analyse réelle de chaque .js)", c:`curl -s -A "Mozilla/5.0" ${U}/ | grep -oE 'src="[^"]+\\.js[^"]*"' | sed -E 's/^src="//;s/"$//;s#^//#https://#;s#^/#${U}/#' | sort -u | while read J; do echo "== \$J =="; curl -s -A "Mozilla/5.0" "\$J" | grep -oE '"/[a-zA-Z0-9_./?&=-]{2,}"|https?://[a-zA-Z0-9_./?&=%-]+' | grep -viE 'w3\\.org|schema\\.org|googleapis|gstatic|fonts\\.' | sort -u | head -40; done`, e:`Télécharge CHAQUE .js (même en .js?ver=…) et en extrait les routes /api et URLs cachées. Pro : <code>linkfinder -i ${U} -d -o cli</code> ou <code>jsluice urls fichier.js</code>. Une route /api non listée ailleurs = surface d'attaque.`},
- {t:"Secrets / clés dans le JS", c:`curl -s -A "Mozilla/5.0" ${U}/ | grep -oE 'src="[^"]+\\.js[^"]*"' | sed -E 's/^src="//;s/"$//;s#^//#https://#;s#^/#${U}/#' | sort -u | while read J; do echo "== \$J =="; curl -s -A "Mozilla/5.0" "\$J" | grep -noiE 'api[_-]?key|secret|token|authoriz|bearer|aws_access|firebase|client_secret|x-api-key'; done`, e:`Cherche des clés/tokens oubliés dans le JS (clé Google/Firebase, bearer, secret). Pro : <code>jsluice secrets fichier.js</code> ou SecretFinder. ⚠️ Sous mandat ; une vraie clé = faille critique (au coffre, ne pas diffuser).`}
+ {t:"Secrets / clés dans le JS", c:`curl -s -A "Mozilla/5.0" ${U}/ | grep -oE 'src="[^"]+\\.js[^"]*"' | sed -E 's/^src="//;s/"$//;s#^//#https://#;s#^/#${U}/#' | sort -u | while read J; do echo "== \$J =="; curl -s -A "Mozilla/5.0" "\$J" | grep -noiE 'api[_-]?key|secret|token|authoriz|bearer|aws_access|firebase|client_secret|x-api-key'; done`, e:`Cherche des clés/tokens oubliés dans le JS (clé Google/Firebase, bearer, secret). Pro : <code>jsluice secrets fichier.js</code> ou SecretFinder. ⚠️ Sous mandat ; une vraie clé = faille critique (au coffre, ne pas diffuser).`},
+ {t:"Tester AUTO tous les endpoints du JS (actif, sous mandat)", c:`curl -s -A "Mozilla/5.0" ${U}/ | grep -oE 'src="[^"]+\\.js[^"]*"' | sed -E 's/^src="//;s/"$//;s#^//#https://#;s#^/#${U}/#' | sort -u | while read J; do curl -s -A "Mozilla/5.0" "\$J"; done | grep -oE '"/[a-zA-Z0-9_./?&=-]{2,}"' | tr -d '"' | grep -viE '\\.(js|css|png|jpe?g|gif|svg|woff2?|ico|map)(\\?|$)' | sort -u | head -80 | while read EP; do R=\$(curl -s -o /dev/null -w "%{http_code} %{size_download}o" -A "Mozilla/5.0" "${U}\$EP"); echo "\$R  ${U}\$EP"; sleep 0.4; done | sort`, e:`Extrait TOUTES les routes des .js puis teste chacune (GET seul, throttlé 0,4s). Lis la colonne code : <b>200</b> = accessible (si c'est un /api sensible SANS session → contrôle d'accès à vérifier) ; 401/403 = protégé ; 404 = inexistant. ⚠️ ACTIF = <b>mandat obligatoire</b>, scope respecté, rythme lent. Pro : <code>jsluice urls *.js | httpx -mc 200,401,403 -sc -cl</code>. Colle la sortie → Analyser.`}
 ],
 infra:[
  {t:"Scan ports + services + version", c:`nmap -Pn -sV -sC -p- --min-rate 2000 ${T}`, e:`Liste ports ouverts, services, versions. Note tout ce qui a une version (→ searchsploit).`},
@@ -600,6 +601,17 @@ function scan(t){
     follow:[{t:'Énumérer WordPress (wpscan, discret)',c:'wpscan --url '+U+' --enumerate u,vp,vt --stealthy --throttle 800 --random-user-agent',e:'Comptes + plugins/thèmes à CVE. --stealthy + --throttle 800 (0,8s entre requêtes) = évite le ban Wordfence/hébergeur. Colle la sortie → Analyser (ne rebouclera plus).'},
             {t:'Comptes via REST',c:'curl -s '+U+'/wp-json/wp/v2/users',e:'Fuite de comptes fréquente.'}],
     report:null, unlock:null};
+  // Sortie du TEST AUTO des endpoints (lignes « code taille url »)
+  if(/^\s*\d{3}\s+\d+o?\s+https?:\/\//m.test(raw)){
+    var ok200=(raw.match(/^\s*200\s.*$/mg)||[]), prot=(raw.match(/^\s*(401|403)\s.*$/mg)||[]);
+    var apiOpen=ok200.filter(function(l){return /\/(api|rest|graphql|wp-json|ajax|v1|v2)\b/i.test(l);});
+    var m='🧪 Endpoints testés : '+ok200.length+' en 200 (accessibles), '+prot.length+' protégés (401/403).';
+    var fol=[];
+    if(apiOpen.length){ m+=' ⚠️ '+apiOpen.length+' endpoint(s) /api répondent 200 — à vérifier SANS session (fuite de données / contrôle d\'accès cassé).';
+      fol.push({t:'Rejouer un /api 200 SANS cookie ni token (preuve)',c:'curl -s -i -A "Mozilla/5.0" "'+U+'/<route_api_200>"   # aucun cookie/Authorization',e:'Si des données privées reviennent sans session → accès non authentifié (BAC). Compare avec/sans cookie. Preuve pour le rapport (panneau ③).'}); }
+    else if(ok200.length){ m+=' → regarde si un 200 touche une ressource sensible (export, admin, config).'; }
+    return {cls:(apiOpen.length?'ok':'warn'),msg:m,follow:fol,report:null,unlock:null};
+  }
   // chemins trouvés (ffuf / codes HTTP)
   if(/\bStatus:\s*(200|301|302|401|403)\b/i.test(t) || /\b(20\d|30\d|401|403)\b\s+\S+\s+\S+\s+\/\S+/.test(t)) return {cls:'ok',msg:'🗂️ Chemins trouvés — vise les pages sensibles (admin, login, backup, .sql, .zip, .git).',
     follow:[], report:null, unlock:null};
