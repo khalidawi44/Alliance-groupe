@@ -89,6 +89,15 @@
     <p class="sub" style="margin:6px 2px 0;font-size:12px;color:#9aa0b0">Les 3 boutons génèrent la <b>liste des commandes à exécuter toi-même</b> (mode manuel). Le bouton vert ⬆️ ouvre l'<b>audit 100 % automatique côté serveur</b> (en-têtes, versions, xmlrpc, RGPD, SEO → <b>findings + devis</b>) — le même que l'app, sans rien faire. (Un navigateur ne peut pas scanner un site tiers lui-même : l'auto passe par le serveur.)</p>
   </div>
 
+  <div class="panel" id="jobsPanel">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+      <h2 style="margin:0">📡 Tes audits (file & état) — en direct</h2>
+      <button class="go" style="width:auto;padding:8px 14px;margin:0" onclick="reloadJobs()">🔄 Actualiser</button>
+    </div>
+    <p class="sub" style="margin:6px 0 10px">Les audits lancés sur Kali apparaissent ici : <b>en attente → en cours → terminé</b> (ça vient du serveur WordPress, avec ta session). Si c'est vide, tu n'es peut-être pas connecté à WordPress dans cet onglet.</p>
+    <iframe id="agJobs" src="about:blank" style="width:100%;height:440px;border:1px solid #2a2c4e;border-radius:8px;background:#fff"></iframe>
+  </div>
+
   <div id="out" class="hidden">
     <div class="toolbar"><button onclick="copyAll()">📋 Tout copier</button><button onclick="exportPlan()">📤 Exporter le plan Kali (.sh)</button><button onclick="window.print()">🖨️ Imprimer / PDF</button></div>
     <div id="progressBar" style="margin:8px 0 2px;padding:8px 12px;background:#0e1016;border:1px solid #2a2c4e;border-radius:8px;font-size:13px;color:#c7cdda"></div>
@@ -474,6 +483,9 @@ function UNIV(U,T){ return [
  {t:"Performance (compression / cache / poids)", c:`curl -s -o /dev/null -w "poids: %{size_download} o | temps: %{time_total}s\\n" -A "Mozilla/5.0" -H "Accept-Encoding: gzip,br" ${U}/; H=\$(curl -sSI -A "Mozilla/5.0" -H "Accept-Encoding: gzip,br" ${U}/); echo "\$H" | grep -qiE 'content-encoding: *(gzip|br)' || echo "PAS_DE_COMPRESSION"; echo "\$H" | grep -qiE 'cache-control|expires' || echo "PAS_DE_CACHE"`, e:"PAS_DE_COMPRESSION / PAS_DE_CACHE / page lourde = optimisation facturable (vitesse + SEO + conversion)."},
  {t:"SEO technique de base", c:`P=\$(curl -s -A "Mozilla/5.0" ${U}/); echo "\$P" | grep -qi '<title' || echo "PAS_DE_TITLE"; echo "\$P" | grep -qi 'name="description"' || echo "PAS_DE_META_DESCRIPTION"; echo "\$P" | grep -qi 'name="viewport"' || echo "PAS_DE_VIEWPORT (mobile)"`, e:"Title / meta description / viewport manquants = SEO technique à corriger (ligne de devis)."}
 ];}
+/* File des audits (en attente/terminé) : on affiche la vraie page serveur « Audits Kali » dans un cadre (même origine, ta session WordPress). */
+function agOrigin(){ return (location.protocol.indexOf('http')===0)?location.origin:'https://alliancegroupe-inc.com'; }
+function reloadJobs(){ var f=document.getElementById('agJobs'); if(f) f.src=agOrigin()+'/wp-admin/admin.php?page=ag-pentest-bridge&ts='+Date.now(); }
 /* Ouvre l'audit AUTO côté serveur (WordPress) avec la cible pré-remplie — un navigateur ne peut pas scanner un tiers, l'auto passe par le serveur. */
 function openServerAuto(){
   var c=(document.getElementById('cible').value||'').trim();
@@ -1126,6 +1138,7 @@ function genFileRead(){
 document.getElementById('cible').addEventListener('keydown',function(e){if(e.key==='Enter')gen();});
 try{ var _qp=new URLSearchParams(location.search); var _qc=_qp.get('cible')||_qp.get('url'); if(_qc) document.getElementById('cible').value=_qc.replace(/^https?:\/\//i,'').replace(/\/.*$/,''); }catch(e){}
 try{ var _lc=localStorage.getItem('ag_defi_cible'); if(_lc && !document.getElementById('cible').value) document.getElementById('cible').value=_lc; }catch(e){}
+try{ if(location.protocol.indexOf('http')===0) reloadJobs(); }catch(e){}
 try{ var _sv=localStorage.getItem('ag_scope'); if(_sv){ document.getElementById('scopeJson').value=_sv; loadScope(true); } }catch(e){}
 try{ var _px=JSON.parse(localStorage.getItem('ag_prices')||'null'); if(_px){ if(_px.crit!=null)document.getElementById('pxCrit').value=_px.crit; if(_px.eleve!=null)document.getElementById('pxEleve').value=_px.eleve; if(_px.moyen!=null)document.getElementById('pxMoyen').value=_px.moyen; if(_px.faible!=null)document.getElementById('pxFaible').value=_px.faible; if(_px.report!=null)document.getElementById('pxReport').value=_px.report; if(_px.refonte!=null)document.getElementById('pxRefonte').value=_px.refonte; } var _pu=localStorage.getItem('ag_payurl'); if(_pu)document.getElementById('payUrl').value=_pu; }catch(e){}
 </script>
