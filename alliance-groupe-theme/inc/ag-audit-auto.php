@@ -358,6 +358,7 @@ if ( defined( 'ABSPATH' ) ) {
 		};
 		' . ( $auto ? 'setTimeout(function(){var b=document.getElementById("aa_go"); if(b&&document.getElementById("aa_url").value.trim()) b.click();},250);' : '' ) . '
 		function aaActiveForm(j){
+			var o=document.getElementById("aa_out");
 			var intel=j.intel||{};
 			var sum="comptes: "+((intel.users||[]).join(", ")||"—")+" · plugins: "+((intel.plugins||[]).join(", ")||"—");
 			var box=document.createElement("div");
