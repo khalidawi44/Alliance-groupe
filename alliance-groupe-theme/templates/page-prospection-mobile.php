@@ -520,6 +520,15 @@ foreach ( $ag_my_prospects as $ppc ) {
 			<h4 style="margin:10px 0 6px;font-size:.92rem;">Jobs actifs (Kali)</h4>
 			<div id="ag-jobs-list"><span class="sub">—</span></div>
 		</div>
+
+		<div class="card" style="border:1px solid #E6A93C;">
+			<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+				<h3 style="margin:0;">📬 Rapports prêts à envoyer</h3>
+				<label style="font-size:.8rem;"><input type="checkbox" id="ag-agent-on"> 🤖 Agent audit auto</label>
+			</div>
+			<p class="sub" style="margin:6px 0 10px;">Le robot audite des prospects (site + email), prépare le <b>rapport privé + le message</b>. <b>Rien n'est envoyé sans toi</b> : tu valides chaque envoi ici. (Opt-out respecté.)</p>
+			<div id="ag-drafts-list"><span class="sub">—</span></div>
+		</div>
 		<?php endif; ?>
 
 		<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 2px 10px;">
@@ -1384,8 +1393,28 @@ var AG = (function(){
 			}).join('');
 		});
 	};
-	var sr=document.getElementById('ag-suivi-refresh'); if(sr) sr.addEventListener('click',loadSuivi);
-	if(window.AG&&AG.admin) loadSuivi();
+	window.loadDrafts=function(){
+		if(!window.AG||!AG.admin) return;
+		var dl=document.getElementById('ag-drafts-list'); if(!dl) return;
+		AG.post('ag_app_drafts_list',{}).then(function(j){
+			if(!(j&&j.success)){dl.innerHTML='<span class="sub">—</span>';return;}
+			var tg=document.getElementById('ag-agent-on'); if(tg) tg.checked=(j.data.on==='1');
+			var a=j.data.drafts||[]; if(!a.length){dl.innerHTML='<span class="sub">Aucun rapport en attente. Active l\'agent, ou audite un site pour créer un rapport.</span>';return;}
+			dl.innerHTML=a.map(function(d){
+				return '<div data-k="'+d.key+'" style="border-left:3px solid #E6A93C;padding:6px 8px;margin:6px 0;font-size:.85rem;"><b>'+d.host+'</b> — '+d.score+'/100 · '+(d.email||'pas d\'email')+'<br>'
+					+(d.report_url?'<a href="'+d.report_url+'" target="_blank" style="color:#7ef0a8;word-break:break-all;">rapport privé</a> · ':'')
+					+'<button class="mini ag-draft-send" style="cursor:pointer;border-color:#16a34a;color:#7ef0a8;">✉️ Envoyer</button> '
+					+'<button class="mini ag-draft-copy" style="cursor:pointer;">📋 Copier</button> '
+					+'<button class="mini ag-draft-del" style="cursor:pointer;color:#ff9a9a;">⏭️ Ignorer</button></div>';
+			}).join('');
+			[].forEach.call(dl.querySelectorAll('.ag-draft-send'),function(b){b.addEventListener('click',function(){ var k=this.closest('[data-k]').getAttribute('data-k'); if(!confirm('Envoyer ce rapport par email au prospect ?'))return; b.textContent='…'; AG.post('ag_app_draft_send',{key:k}).then(function(x){ AG.toast(x&&x.success&&x.data.sent?'Envoyé ✅':'Échec envoi'); loadDrafts(); }); });});
+			[].forEach.call(dl.querySelectorAll('.ag-draft-copy'),function(b){b.addEventListener('click',function(){ var k=this.closest('[data-k]').getAttribute('data-k'); var d=a.filter(function(x){return x.key===k;})[0]; if(d){ var t=d.subject+'\n\n'+d.body.replace(/<[^>]+>/g,''); (AG.copy?AG.copy(t):navigator.clipboard.writeText(t)); AG.toast('Message copié'); } });});
+			[].forEach.call(dl.querySelectorAll('.ag-draft-del'),function(b){b.addEventListener('click',function(){ var k=this.closest('[data-k]').getAttribute('data-k'); AG.post('ag_app_draft_del',{key:k}).then(function(){loadDrafts();}); });});
+		});
+	};
+	var at=document.getElementById('ag-agent-on'); if(at) at.addEventListener('change',function(){ AG.post('ag_app_agent_toggle',{on:this.checked?1:0}).then(function(x){ AG.toast(x&&x.success&&x.data.on==='1'?'Agent activé':'Agent coupé'); }); });
+	var sr=document.getElementById('ag-suivi-refresh'); if(sr) sr.addEventListener('click',function(){loadSuivi();loadDrafts();});
+	if(window.AG&&AG.admin){ loadSuivi(); loadDrafts(); }
 })();
 /* Maintenance admin : SYNC GitHub + purge cache depuis l'app */
 (function(){

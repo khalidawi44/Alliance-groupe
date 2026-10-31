@@ -247,6 +247,12 @@ if ( file_exists( $ag_audit_monitor_file ) ) {
     require_once $ag_audit_monitor_file;
 }
 
+// ── Agent audit (brouillons à valider : audite des prospects → rapport privé → message prêt)
+$ag_audit_agent_file = get_stylesheet_directory() . '/inc/ag-audit-agent.php';
+if ( file_exists( $ag_audit_agent_file ) ) {
+    require_once $ag_audit_agent_file;
+}
+
 // ── (restauré) Admin « 🚀 Application » — app mobile intégrée dans WordPress
 $ag_app_admin_file = get_stylesheet_directory() . '/inc/ag-app-admin.php';
 if ( file_exists( $ag_app_admin_file ) ) {
