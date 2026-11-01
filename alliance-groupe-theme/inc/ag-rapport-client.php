@@ -222,7 +222,12 @@ add_action( 'rest_api_init', function () {
 			$devis  = (int) $req->get_param( 'devis' );
 			$r = ag_rapport_create( $safe, $client, $cible, $devis, $email, $phone );
 			if ( ! $r ) return new WP_Error( 'ag_fail', 'Création impossible.', array( 'status' => 500 ) );
-			return array( 'ok' => true, 'id' => $r['id'], 'url' => $r['url'] );
+			// L'audit est finalisé dans l'outil → clôt automatiquement le job Kali « en attente » de cette cible.
+			$closed = '';
+			if ( $cible && function_exists( 'ag_pt_autoclose_target' ) ) {
+				$closed = ag_pt_autoclose_target( $cible, $r['url'] );
+			}
+			return array( 'ok' => true, 'id' => $r['id'], 'url' => $r['url'], 'job_closed' => $closed );
 		},
 	) );
 
