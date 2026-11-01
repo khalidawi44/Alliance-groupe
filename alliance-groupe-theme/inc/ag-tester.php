@@ -1132,18 +1132,31 @@ if ( ! function_exists( 'ag_tester_kali_status_for' ) ) {
 if ( ! function_exists( 'ag_tester_rapport_html' ) ) {
 	/** Construit le HTML du rapport client depuis une entree d'historique (+ synthese Kali reelle si dispo). */
 	function ag_tester_rapport_html( $e ) {
-		$score = (int) ( $e['score'] ?? 0 );
-		$kali  = function_exists( 'ag_tester_kali_report_for' ) ? ag_tester_kali_report_for( $e['url'] ?? '' ) : '';
-		$h  = '<p><strong>Score de securite : ' . $score . '/100</strong>'
-			. ( ! empty( $e['critical'] ) ? ' &mdash; ' . (int) $e['critical'] . ' faille(s) critique(s)' : '' ) . '.</p>';
-		$fails = array();
-		foreach ( (array) ( $e['checks'] ?? array() ) as $c ) {
-			$stt = $c['status'] ?? '';
-			if ( 'fail' === $stt || 'warn' === $stt ) {
-				$fails[] = function_exists( 'ag_audit_public_label' ) ? ag_audit_public_label( $c['name'] ?? '' ) : ( $c['name'] ?? '' );
+		$hostn = preg_replace( '#^www\.#', '', strtolower( (string) ( $e['host'] ?? wp_parse_url( $e['url'] ?? '', PHP_URL_HOST ) ) ) );
+		$all = function_exists( 'ag_audit_hist_get' ) ? ag_audit_hist_get() : array();
+		if ( empty( $all ) ) { $all = array( $e ); }
+		$labels = array(); $crit = 0; $worst = 101; $url = (string) ( $e['url'] ?? '' ); $modes = array();
+		$mlbl = array( 'passive' => 'leger (passif)', 'deep' => 'approfondi', 'expert' => 'expert (Kali)' );
+		foreach ( $all as $x ) {
+			$xh = preg_replace( '#^www\.#', '', strtolower( (string) ( $x['host'] ?? '' ) ) );
+			if ( $xh !== $hostn ) { continue; }
+			$mm = (string) ( $x['mode'] ?? 'passive' ); $modes[ $mlbl[ $mm ] ?? $mm ] = true;
+			if ( ! empty( $x['url'] ) ) { $url = $x['url']; }
+			$sc = (int) ( $x['score'] ?? 100 ); if ( $sc < $worst ) { $worst = $sc; }
+			$crit = max( $crit, (int) ( $x['critical'] ?? 0 ) );
+			foreach ( (array) ( $x['checks'] ?? array() ) as $c ) {
+				$stt = $c['status'] ?? '';
+				if ( 'fail' === $stt || 'warn' === $stt ) {
+					$lab = function_exists( 'ag_audit_public_label' ) ? ag_audit_public_label( $c['name'] ?? '' ) : ( $c['name'] ?? '' );
+					if ( $lab ) { $labels[ $lab ] = true; }
+				}
 			}
 		}
-		$fails = array_values( array_unique( array_filter( $fails ) ) );
+		if ( $worst > 100 ) { $worst = (int) ( $e['score'] ?? 0 ); }
+		$kali = function_exists( 'ag_tester_kali_report_for' ) ? ag_tester_kali_report_for( $url ) : '';
+		$h  = '<p><strong>Score de securite : ' . (int) $worst . '/100</strong>' . ( $crit ? ' &mdash; ' . (int) $crit . ' faille(s) critique(s)' : '' ) . '.</p>';
+		if ( $modes ) { $h .= '<p style="color:#555">Analyses realisees : ' . esc_html( implode( ' + ', array_keys( $modes ) ) ) . '.</p>'; }
+		$fails = array_keys( $labels );
 		if ( $fails ) {
 			$h .= '<h3>Points a corriger</h3><ul>';
 			foreach ( $fails as $f ) { $h .= '<li>' . esc_html( $f ) . '</li>'; }
