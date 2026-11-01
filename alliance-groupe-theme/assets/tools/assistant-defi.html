@@ -49,8 +49,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-01b</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-01b</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-01c</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-01c</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <p class="sub"><b>Ici c'est TOI qui lances chaque commande</b> (sur Kali), et l'outil te guide pas-à-pas + lit tes résultats + construit le rapport. C'est le mode pour <b>apprendre et aller jusqu'au bout toi-même</b>. (Pour un audit 100% automatique sans rien faire → bouton « Audit auto » dans WordPress.) Hors ligne. <b>Uniquement sous mandat / scope autorisé.</b></p>
 
   <div class="panel" id="scopePanel">
@@ -213,6 +213,22 @@
       </div>
       <label>Lien de paiement / rapport complet caché sur le site (bouton dans le rapport)</label>
       <input id="payUrl" placeholder="https://alliancegroupe-inc.com/rapport/&lt;client&gt;" oninput="saveCfg()">
+
+      <div style="margin-top:12px;padding:12px;border:1px dashed #E6A93C;border-radius:9px">
+        <p class="ph" style="margin:0 0 6px"><b>💾 Ranger le rapport dans WordPress</b> — crée la page privée <code>/rapport/…</code> (novice + expert + paiement PayPal auto) et remplit le lien ci-dessus. Plus besoin du va-et-vient Kali.</p>
+        <div class="row" style="flex-wrap:wrap;gap:8px">
+          <div><label>Client</label><input id="rapClient" placeholder="Nom du client" oninput="saveCfg()"></div>
+          <div><label>Email client</label><input id="rapEmail" type="email" placeholder="contact@client.fr" oninput="saveCfg()"></div>
+          <div><label>Tél client (SMS)</label><input id="rapPhone" placeholder="+33…" oninput="saveCfg()"></div>
+        </div>
+        <label>Jeton du site (le même que <code>runner.conf</code> → AG_TOKEN) — requis seulement si tu n'es PAS connecté admin sur le site</label>
+        <input id="rapToken" type="password" placeholder="optionnel si l'outil est ouvert depuis le site en admin" oninput="saveCfg()">
+        <div class="toolbar" style="margin-top:8px">
+          <button onclick="saveReportToWP()">💾 Enregistrer dans WordPress (+ lien de paiement)</button>
+        </div>
+        <div id="rapSaveOut" style="font-size:13px;margin-top:6px;color:#9aa0b0"></div>
+      </div>
+
       <div id="presentReport" style="background:#fff;color:#141414;border-radius:10px;overflow:hidden;min-height:40px"></div>
     </div>
   </div>
@@ -988,6 +1004,48 @@ function collectFindings(){
 }
 function saveCfg(){
   try{ localStorage.setItem('ag_prices', JSON.stringify(reportPrices())); localStorage.setItem('ag_payurl', (document.getElementById('payUrl').value||'').trim()); }catch(e){}
+  try{
+    var g=function(id){var e=document.getElementById(id);return e?(e.value||'').trim():'';};
+    localStorage.setItem('ag_rap_cfg', JSON.stringify({client:g('rapClient'),email:g('rapEmail'),phone:g('rapPhone'),token:g('rapToken')}));
+  }catch(e){}
+}
+function saveReportToWP(){
+  var out=document.getElementById('rapSaveOut');
+  if(!LAST_REPORT_HTML){ buildReport('novice'); }
+  if(!LAST_REPORT_HTML){ out.style.color='#ef4444'; out.textContent='Génère d\'abord le rapport (bouton « Version client »).'; return; }
+  var g=function(id){var e=document.getElementById(id);return e?(e.value||'').trim():'';};
+  var cible=(window.AGT&&AGT.T)||g('cible');
+  var body=new URLSearchParams();
+  body.set('html',LAST_REPORT_HTML); body.set('client',g('rapClient')); body.set('cible',cible);
+  body.set('email',g('rapEmail')); body.set('phone',g('rapPhone'));
+  var tk=g('rapToken'); if(tk) body.set('token',tk);
+  out.style.color='#9aa0b0'; out.textContent='Enregistrement dans WordPress…';
+  fetch(agOrigin()+'/wp-json/ag/v1/rapport-save',{method:'POST',credentials:'include',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()})
+    .then(function(r){return r.json();})
+    .then(function(j){
+      if(j&&j.ok&&j.url){
+        document.getElementById('payUrl').value=j.url; saveCfg();
+        var links='✅ Rangé dans WordPress. Lien privé client : <a href="'+j.url+'" target="_blank">'+j.url+'</a>'
+          +' · <a href="'+agOrigin()+'/wp-admin/edit.php?post_type=ag_rapport" target="_blank">voir dans l\'admin</a>';
+        if(g('rapEmail')) links+=' · <a href="#" onclick="sendReport('+j.id+',\'mail\');return false;">✉️ Envoyer par mail</a>';
+        if(g('rapPhone')) links+=' · <a href="#" onclick="sendReport('+j.id+',\'sms\');return false;">📱 Envoyer par SMS</a>';
+        out.style.color='#22c55e'; out.innerHTML=links;
+      } else {
+        out.style.color='#ef4444';
+        out.textContent='❌ '+((j&&j.error)||'échec : connecte-toi en admin sur le site, OU colle le jeton du site ci-dessus.');
+      }
+    })
+    .catch(function(e){ out.style.color='#ef4444'; out.textContent='❌ réseau : '+e.message+' — ouvre l\'outil depuis le site en admin, ou renseigne le jeton du site.'; });
+}
+function sendReport(id,ch){
+  var out=document.getElementById('rapSaveOut');
+  var g=function(id){var e=document.getElementById(id);return e?(e.value||'').trim():'';};
+  var body=new URLSearchParams(); body.set('id',String(id)); body.set('channel',ch); var tk=g('rapToken'); if(tk) body.set('token',tk);
+  out.style.color='#9aa0b0'; out.textContent=(ch==='sms'?'Envoi SMS…':'Envoi email…');
+  fetch(agOrigin()+'/wp-json/ag/v1/rapport-send',{method:'POST',credentials:'include',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()})
+    .then(function(r){return r.json();})
+    .then(function(j){ out.style.color=(j&&j.ok)?'#22c55e':'#ef4444'; out.textContent=(j&&j.ok)?('✅ '+(j.msg||'envoyé')):('❌ '+((j&&j.error)||'échec')); })
+    .catch(function(e){ out.style.color='#ef4444'; out.textContent='❌ '+e.message; });
 }
 function reportPrices(){
   function n(id,d){ var e=document.getElementById(id); var v=e?parseInt(e.value,10):NaN; return isNaN(v)?d:v; }
@@ -1176,6 +1234,7 @@ try{ var _lc=localStorage.getItem('ag_defi_cible'); if(_lc && !document.getEleme
 try{ if(location.protocol.indexOf('http')===0) reloadJobs(); }catch(e){}
 try{ var _sv=localStorage.getItem('ag_scope'); if(_sv){ document.getElementById('scopeJson').value=_sv; loadScope(true); } }catch(e){}
 try{ var _px=JSON.parse(localStorage.getItem('ag_prices')||'null'); if(_px){ if(_px.crit!=null)document.getElementById('pxCrit').value=_px.crit; if(_px.eleve!=null)document.getElementById('pxEleve').value=_px.eleve; if(_px.moyen!=null)document.getElementById('pxMoyen').value=_px.moyen; if(_px.faible!=null)document.getElementById('pxFaible').value=_px.faible; if(_px.report!=null)document.getElementById('pxReport').value=_px.report; if(_px.refonte!=null)document.getElementById('pxRefonte').value=_px.refonte; } var _pu=localStorage.getItem('ag_payurl'); if(_pu)document.getElementById('payUrl').value=_pu; }catch(e){}
+try{ var _rc=JSON.parse(localStorage.getItem('ag_rap_cfg')||'null'); if(_rc){ var sv=function(id,v){var e=document.getElementById(id); if(e&&v)e.value=v;}; sv('rapClient',_rc.client); sv('rapEmail',_rc.email); sv('rapPhone',_rc.phone); sv('rapToken',_rc.token); } }catch(e){}
 </script>
 </body>
 </html>

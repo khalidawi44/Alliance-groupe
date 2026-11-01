@@ -44,6 +44,15 @@ function ag_rap_box_render( $post ) {
 	echo '<p><b>Lien privé du rapport :</b> <a href="' . esc_url( $url ) . '" target="_blank">' . esc_html( $url ) . '</a><br><span style="color:#666">C\'est ce lien (sans indexation) que tu mets dans l\'assistant, champ « Lien de paiement ». Les QR pointeront dessus.</span></p>';
 	echo '<div class="row2"><div><label>Client</label><input type="text" name="ag_rap_client" value="' . ag_rap_field( $post, '_ag_rap_client' ) . '"></div>';
 	echo '<div><label>Cible (domaine)</label><input type="text" name="ag_rap_cible" value="' . ag_rap_field( $post, '_ag_rap_cible' ) . '"></div></div>';
+	echo '<div class="row2"><div><label>Email client</label><input type="email" name="ag_rap_email" value="' . ag_rap_field( $post, '_ag_rap_email' ) . '" placeholder="contact@client.fr"></div>';
+	echo '<div><label>Tél client (SMS)</label><input type="text" name="ag_rap_phone" value="' . ag_rap_field( $post, '_ag_rap_phone' ) . '" placeholder="+33…"></div></div>';
+	if ( $tok ) {
+		$gw = function_exists( 'ag_sms_gateway_ready' ) && ag_sms_gateway_ready();
+		echo '<p style="margin-top:10px"><button type="button" class="button button-primary" onclick="agRapSend(' . (int) $post->ID . ',\'mail\',this)">✉️ Envoyer le lien par email</button> ';
+		echo '<button type="button" class="button" onclick="agRapSend(' . (int) $post->ID . ',\'sms\',this)"' . ( $gw ? '' : ' title="Passerelle SMS en pause (SIM requise)"' ) . '>📱 Envoyer par SMS' . ( $gw ? '' : ' (passerelle en pause)' ) . '</button> ';
+		echo '<span id="agRapSendOut" style="margin-left:8px;color:#666"></span></p>';
+		echo '<script>function agRapSend(id,ch,btn){var o=document.getElementById("agRapSendOut");o.style.color="#666";o.textContent=(ch==="sms"?"Envoi SMS…":"Envoi email…");btn.disabled=true;var b=new URLSearchParams();b.set("id",id);b.set("channel",ch);b.set("_wpnonce","' . esc_js( wp_create_nonce( 'wp_rest' ) ) . '");fetch("' . esc_url_raw( rest_url( 'ag/v1/rapport-send' ) ) . '",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded","X-WP-Nonce":"' . esc_js( wp_create_nonce( 'wp_rest' ) ) . '"},body:b.toString()}).then(function(r){return r.json();}).then(function(j){btn.disabled=false;o.style.color=(j&&j.ok)?"#1a7f37":"#b32d2e";o.textContent=(j&&j.ok)?("✅ "+(j.msg||"envoyé")):("❌ "+((j&&j.error)||"échec"));}).catch(function(e){btn.disabled=false;o.style.color="#b32d2e";o.textContent="❌ "+e.message;});}</script>';
+	}
 	echo '<label>HTML du rapport (colle le rapport « version client » généré par assistant-defi)</label>';
 	echo '<textarea name="ag_rap_html" rows="10" placeholder="Colle ici le contenu du cadre blanc du rapport (bouton clic droit → Inspecter → copier, ou laisse vide pour n\'afficher que les formules)">' . esc_textarea( $html ) . '</textarea>';
 	echo '<p style="color:#666">Astuce : tu peux laisser vide et n\'afficher que le bloc paiement ci-dessous.</p>';
@@ -61,9 +70,10 @@ add_action( 'save_post_ag_rapport', function ( $post_id ) {
 	if ( ! isset( $_POST['ag_rap_nonce'] ) || ! wp_verify_nonce( $_POST['ag_rap_nonce'], 'ag_rap_save' ) ) return;
 	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
 	if ( ! current_user_can( 'edit_post', $post_id ) ) return;
-	$txt = array( '_ag_rap_client'=>'ag_rap_client', '_ag_rap_cible'=>'ag_rap_cible',
+	$txt = array( '_ag_rap_client'=>'ag_rap_client', '_ag_rap_cible'=>'ag_rap_cible', '_ag_rap_phone'=>'ag_rap_phone',
 		'_ag_rap_px_rapport'=>'ag_rap_px_rapport', '_ag_rap_px_correction'=>'ag_rap_px_correction', '_ag_rap_px_refonte'=>'ag_rap_px_refonte' );
 	foreach ( $txt as $meta=>$field ) { if ( isset( $_POST[ $field ] ) ) update_post_meta( $post_id, $meta, sanitize_text_field( wp_unslash( $_POST[ $field ] ) ) ); }
+	if ( isset( $_POST['ag_rap_email'] ) ) update_post_meta( $post_id, '_ag_rap_email', sanitize_email( wp_unslash( $_POST['ag_rap_email'] ) ) );
 	$urls = array( '_ag_rap_pay_rapport'=>'ag_rap_pay_rapport', '_ag_rap_pay_correction'=>'ag_rap_pay_correction', '_ag_rap_pay_refonte'=>'ag_rap_pay_refonte' );
 	foreach ( $urls as $meta=>$field ) { if ( isset( $_POST[ $field ] ) ) update_post_meta( $post_id, $meta, esc_url_raw( wp_unslash( $_POST[ $field ] ) ) ); }
 	// HTML : autorisé seulement pour un auteur qui a le droit unfiltered_html (admin)
@@ -158,7 +168,7 @@ if ( ! function_exists( 'ag_rapport_create' ) ) {
 	 * @param int    $devis  Montant indicatif (métadonnée).
 	 * @return array{id:int,url:string}|null
 	 */
-	function ag_rapport_create( $html, $client = '', $cible = '', $devis = 0 ) {
+	function ag_rapport_create( $html, $client = '', $cible = '', $devis = 0, $email = '', $phone = '' ) {
 		if ( ! post_type_exists( 'ag_rapport' ) ) { return null; }
 		$title = 'Audit sécurité — ' . ( $cible ? $cible : 'cible' ) . ' (' . gmdate( 'Y-m-d' ) . ')';
 		$id = wp_insert_post( array(
@@ -169,9 +179,89 @@ if ( ! function_exists( 'ag_rapport_create' ) ) {
 		update_post_meta( $id, '_ag_rap_html', wp_kses_post( $html ) );
 		update_post_meta( $id, '_ag_rap_client', sanitize_text_field( $client ) );
 		update_post_meta( $id, '_ag_rap_cible', sanitize_text_field( $cible ) );
+		if ( $email ) { update_post_meta( $id, '_ag_rap_email', sanitize_email( $email ) ); }
+		if ( $phone ) { update_post_meta( $id, '_ag_rap_phone', sanitize_text_field( $phone ) ); }
 		if ( $devis ) { update_post_meta( $id, '_ag_rap_devis', (int) $devis ); }
 		$tok = get_post_meta( $id, '_ag_rap_token', true );
 		if ( ! $tok ) { $tok = wp_generate_password( 22, false, false ); update_post_meta( $id, '_ag_rap_token', $tok ); }
 		return array( 'id' => (int) $id, 'url' => home_url( '/rapport/' . $tok ) );
 	}
 }
+
+/* ===================== REST : outil (assistant-defi) & agents → rapport ===================== */
+if ( ! function_exists( 'ag_rap_rest_authed' ) ) {
+	/** Autorise : admin connecté (cookie + nonce REST) OU jeton du site (= ag_pentest_secret). */
+	function ag_rap_rest_authed( $req ) {
+		if ( current_user_can( 'manage_options' ) ) return true;
+		$secret = (string) get_option( 'ag_pentest_secret', '' );
+		if ( $secret !== '' ) {
+			$tok = (string) $req->get_param( 'token' );
+			if ( hash_equals( $secret, $tok ) ) return true;
+		}
+		return new WP_Error( 'ag_forbidden', 'Non autorisé : connecte-toi en admin OU fournis le jeton du site.', array( 'status' => 403 ) );
+	}
+}
+
+add_action( 'rest_api_init', function () {
+	// 1) Ranger un rapport généré par l'outil → crée la page privée /rapport/<jeton>.
+	register_rest_route( 'ag/v1', '/rapport-save', array(
+		'methods'             => 'POST',
+		'permission_callback' => 'ag_rap_rest_authed',
+		'callback'            => function ( $req ) {
+			if ( ! function_exists( 'ag_rapport_create' ) ) {
+				return new WP_Error( 'ag_nofn', 'Module rapport indisponible.', array( 'status' => 500 ) );
+			}
+			$html   = (string) $req->get_param( 'html' );
+			if ( trim( $html ) === '' ) return new WP_Error( 'ag_empty', 'Rapport vide (génère-le d\'abord).', array( 'status' => 400 ) );
+			// HTML de confiance seulement si admin ; sinon on nettoie.
+			$safe   = current_user_can( 'unfiltered_html' ) ? $html : wp_kses_post( $html );
+			$client = sanitize_text_field( (string) $req->get_param( 'client' ) );
+			$cible  = sanitize_text_field( (string) $req->get_param( 'cible' ) );
+			$email  = sanitize_email( (string) $req->get_param( 'email' ) );
+			$phone  = sanitize_text_field( (string) $req->get_param( 'phone' ) );
+			$devis  = (int) $req->get_param( 'devis' );
+			$r = ag_rapport_create( $safe, $client, $cible, $devis, $email, $phone );
+			if ( ! $r ) return new WP_Error( 'ag_fail', 'Création impossible.', array( 'status' => 500 ) );
+			return array( 'ok' => true, 'id' => $r['id'], 'url' => $r['url'] );
+		},
+	) );
+
+	// 2) Envoyer le lien privé du rapport au client : email (actif) / SMS (si passerelle prête).
+	register_rest_route( 'ag/v1', '/rapport-send', array(
+		'methods'             => 'POST',
+		'permission_callback' => 'ag_rap_rest_authed',
+		'callback'            => function ( $req ) {
+			$id = (int) $req->get_param( 'id' );
+			$ch = sanitize_key( (string) $req->get_param( 'channel' ) );
+			if ( ! $id || get_post_type( $id ) !== 'ag_rapport' ) return new WP_Error( 'ag_noid', 'Rapport introuvable.', array( 'status' => 404 ) );
+			$tok = get_post_meta( $id, '_ag_rap_token', true );
+			if ( ! $tok ) return new WP_Error( 'ag_notok', 'Rapport sans lien privé.', array( 'status' => 400 ) );
+			$url    = home_url( '/rapport/' . $tok );
+			$client = (string) get_post_meta( $id, '_ag_rap_client', true );
+			$cible  = (string) get_post_meta( $id, '_ag_rap_cible', true );
+			$bonjour = $client ? ( 'Bonjour ' . $client ) : 'Bonjour';
+			if ( 'sms' === $ch ) {
+				$phone = (string) get_post_meta( $id, '_ag_rap_phone', true );
+				if ( ! $phone ) return new WP_Error( 'ag_nophone', 'Aucun numéro enregistré pour ce rapport.', array( 'status' => 400 ) );
+				if ( ! function_exists( 'ag_sms_send' ) || ! function_exists( 'ag_sms_gateway_ready' ) || ! ag_sms_gateway_ready() ) {
+					return new WP_Error( 'ag_gw', 'Passerelle SMS en pause (SIM dédiée requise). Utilise l\'email pour l\'instant.', array( 'status' => 409 ) );
+				}
+				$msg = 'Alliance Groupe — votre rapport de sécurité' . ( $cible ? ' (' . $cible . ')' : '' ) . ' : ' . $url;
+				$ok  = ag_sms_send( $phone, $msg );
+				return $ok ? array( 'ok' => true, 'msg' => 'SMS envoyé à ' . $phone ) : new WP_Error( 'ag_smsfail', 'Échec de l\'envoi SMS.', array( 'status' => 500 ) );
+			}
+			// email par défaut
+			$to = sanitize_email( (string) get_post_meta( $id, '_ag_rap_email', true ) );
+			if ( ! $to ) return new WP_Error( 'ag_nomail', 'Aucun email enregistré pour ce rapport.', array( 'status' => 400 ) );
+			$inner  = '<p>' . esc_html( $bonjour ) . ',</p>';
+			$inner .= '<p>Votre rapport de sécurité' . ( $cible ? ' concernant <b>' . esc_html( $cible ) . '</b>' : '' ) . ' est prêt. Il est confidentiel et accessible uniquement via ce lien privé :</p>';
+			$inner .= function_exists( 'ag_email_button' ) ? ag_email_button( 'Voir mon rapport', $url ) : ( '<p><a href="' . esc_url( $url ) . '">' . esc_html( $url ) . '</a></p>' );
+			$inner .= '<p style="color:#666;font-size:13px">Vous y trouverez le détail des points à corriger et les formules de remédiation (paiement en ligne sécurisé).</p>';
+			$body   = function_exists( 'ag_email_wrap' ) ? ag_email_wrap( 'Votre rapport de sécurité', $inner ) : $inner;
+			$subject = 'Alliance Groupe — votre rapport de sécurité' . ( $cible ? ' (' . $cible . ')' : '' );
+			$headers = array( 'Content-Type: text/html; charset=UTF-8' );
+			$ok = wp_mail( $to, $subject, $body, $headers );
+			return $ok ? array( 'ok' => true, 'msg' => 'Email envoyé à ' . $to ) : new WP_Error( 'ag_mailfail', 'Échec de l\'envoi email (vérifie la config mail du site).', array( 'status' => 500 ) );
+		},
+	) );
+} );
