@@ -1111,6 +1111,33 @@ if ( ! function_exists( 'ag_tester_kali_report_for' ) ) {
 		return $best ? (string) $best['summary'] : '';
 	}
 }
+if ( ! function_exists( 'ag_tester_rapport_html' ) ) {
+	/** Construit le HTML du rapport client depuis une entree d'historique (+ synthese Kali reelle si dispo). */
+	function ag_tester_rapport_html( $e ) {
+		$score = (int) ( $e['score'] ?? 0 );
+		$kali  = function_exists( 'ag_tester_kali_report_for' ) ? ag_tester_kali_report_for( $e['url'] ?? '' ) : '';
+		$h  = '<p><strong>Score de securite : ' . $score . '/100</strong>'
+			. ( ! empty( $e['critical'] ) ? ' &mdash; ' . (int) $e['critical'] . ' faille(s) critique(s)' : '' ) . '.</p>';
+		$fails = array();
+		foreach ( (array) ( $e['checks'] ?? array() ) as $c ) {
+			$stt = $c['status'] ?? '';
+			if ( 'fail' === $stt || 'warn' === $stt ) {
+				$fails[] = function_exists( 'ag_audit_public_label' ) ? ag_audit_public_label( $c['name'] ?? '' ) : ( $c['name'] ?? '' );
+			}
+		}
+		$fails = array_values( array_unique( array_filter( $fails ) ) );
+		if ( $fails ) {
+			$h .= '<h3>Points a corriger</h3><ul>';
+			foreach ( $fails as $f ) { $h .= '<li>' . esc_html( $f ) . '</li>'; }
+			$h .= '</ul>';
+		}
+		if ( $kali && function_exists( 'ag_pt_summary_fr_html' ) ) {
+			$h .= '<h3>Analyse approfondie (scan Kali)</h3>' . ag_pt_summary_fr_html( $kali );
+		}
+		if ( ! $fails && ! $kali ) { $h .= '<p>Audit realise. Le detail technique vous est transmis sur demande.</p>'; }
+		return $h;
+	}
+}
 if ( ! function_exists( 'ag_audit_msg_global' ) ) {
 	/** Message GLOBAL : securite + creation/refonte fusionnes en un seul texte. */
 	function ag_audit_msg_global( $a, $ct = array() ) {
@@ -1269,6 +1296,25 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 				$hh = ag_audit_hist_get(); $hid = sanitize_text_field( wp_unslash( $_POST['hist_id'] ) );
 				if ( isset( $hh[ $hid ] ) ) { $host = $hh[ $hid ]['host'] ?? ''; unset( $hh[ $hid ] ); ag_audit_hist_save( $hh ); $notice = '🗑️ Audit supprimé : ' . $host; }
 			}
+				// Creer le RAPPORT CLIENT payant (/rapport/<jeton>) depuis CET audit deja reuni ici.
+				if ( isset( $_POST['ag_hist_rapport'], $_POST['hist_id'] ) ) {
+					$hh = ag_audit_hist_get(); $hid = sanitize_text_field( wp_unslash( $_POST['hist_id'] ) );
+					if ( ! function_exists( 'ag_rapport_create' ) ) {
+						$notice = 'Module Rapport client indisponible (ag-rapport-client.php).';
+					} elseif ( isset( $hh[ $hid ] ) ) {
+						$e     = $hh[ $hid ];
+						$html  = ag_tester_rapport_html( $e );
+						$devis = (int) ( $e['critical'] ?? 0 ) * 900;
+						$r = ag_rapport_create( $html, ( $e['company'] ?: ( $e['host'] ?? '' ) ), ( $e['host'] ?? '' ), $devis, ( $e['email'] ?? '' ), ( $e['phone'] ?? '' ) );
+						if ( $r ) {
+							$hh[ $hid ]['rapport_url'] = $r['url'];
+							ag_audit_hist_save( $hh );
+							$notice = 'Rapport client cree pour ' . ( $e['host'] ?? '' ) . ' : ' . $r['url'];
+						} else {
+							$notice = 'Creation du rapport impossible (CPT non enregistre ?).';
+						}
+					}
+				}
 		}
 
 		// Saisie manuelle d'un contact sur une fiche d'audit : on colle l'email/tél
@@ -1638,7 +1684,9 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 								<select name="hist_ch" style="font-size:12px;max-width:130px"><option>Email</option><option>SMS</option><option>WhatsApp</option><option>Telegram</option><option>Appel</option><option>Pas de réponse</option><option>Intéressé</option><option>Refusé</option></select>
 								<button type="submit" name="ag_hist_mark" value="1" class="button button-small">✓ Noté</button>
 							</form>
-							<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline" onsubmit="return confirm('Supprimer cet audit ?')"><input type="hidden" name="action" value="ag_audit_hist_del"><?php wp_nonce_field( 'ag_audit_hist_del' ); ?><input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>"><button type="submit" class="button button-small" style="color:#b91c1c">🗑️ Suppr.</button></form>
+							<form method="post" style="display:inline" title="Cree la page privee /rapport/ (findings + paiement PayPal auto) depuis cet audit"><?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?><input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>"><button type="submit" name="ag_hist_rapport" value="1" class="button button-small button-primary">📄 Rapport client</button></form>
+								<?php if ( ! empty( $e['rapport_url'] ) ) : ?><a class="button button-small" href="<?php echo esc_url( $e['rapport_url'] ); ?>" target="_blank" rel="noopener">🔗 Voir le rapport</a><?php endif; ?>
+								<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline" onsubmit="return confirm('Supprimer cet audit ?')"><input type="hidden" name="action" value="ag_audit_hist_del"><?php wp_nonce_field( 'ag_audit_hist_del' ); ?><input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>"><button type="submit" class="button button-small" style="color:#b91c1c">🗑️ Suppr.</button></form>
 						</div>
 						<?php if ( ! $email || ! $phone ) : ?>
 							<div style="margin-top:6px">
