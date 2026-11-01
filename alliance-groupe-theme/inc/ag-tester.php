@@ -1099,12 +1099,12 @@ if ( ! function_exists( 'ag_tester_kali_report_for' ) ) {
 	/** Synthese du dernier job Kali TERMINE pour ce domaine (ou ''). */
 	function ag_tester_kali_report_for( $url ) {
 		if ( ! function_exists( 'ag_pt_jobs' ) ) { return ''; }
-		$host = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
+		$host = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) ) );
 		if ( '' === $host ) { return ''; }
 		$best = null;
 		foreach ( ag_pt_jobs() as $j ) {
 			if ( 'done' !== ( $j['status'] ?? '' ) || empty( $j['summary'] ) ) { continue; }
-			$jh = strtolower( (string) wp_parse_url( $j['target'] ?? '', PHP_URL_HOST ) );
+			$jh = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( $j['target'] ?? '', PHP_URL_HOST ) ) );
 			if ( $jh !== $host ) { continue; }
 			if ( null === $best || (int) ( $j['finished'] ?? 0 ) > (int) ( $best['finished'] ?? 0 ) ) { $best = $j; }
 		}
@@ -1115,11 +1115,11 @@ if ( ! function_exists( 'ag_tester_kali_status_for' ) ) {
 	/** Dernier job Kali (tous statuts) pour ce domaine : array(status,label,id) ou null. */
 	function ag_tester_kali_status_for( $url ) {
 		if ( ! function_exists( 'ag_pt_jobs' ) ) { return null; }
-		$host = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
+		$host = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) ) );
 		if ( '' === $host ) { return null; }
 		$best = null;
 		foreach ( ag_pt_jobs() as $j ) {
-			$jh = strtolower( (string) wp_parse_url( $j['target'] ?? '', PHP_URL_HOST ) );
+			$jh = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( $j['target'] ?? '', PHP_URL_HOST ) ) );
 			if ( $jh !== $host ) { continue; }
 			if ( null === $best || (int) ( $j['created'] ?? 0 ) > (int) ( $best['created'] ?? 0 ) ) { $best = $j; }
 		}
