@@ -1111,6 +1111,24 @@ if ( ! function_exists( 'ag_tester_kali_report_for' ) ) {
 		return $best ? (string) $best['summary'] : '';
 	}
 }
+if ( ! function_exists( 'ag_tester_kali_status_for' ) ) {
+	/** Dernier job Kali (tous statuts) pour ce domaine : array(status,label,id) ou null. */
+	function ag_tester_kali_status_for( $url ) {
+		if ( ! function_exists( 'ag_pt_jobs' ) ) { return null; }
+		$host = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
+		if ( '' === $host ) { return null; }
+		$best = null;
+		foreach ( ag_pt_jobs() as $j ) {
+			$jh = strtolower( (string) wp_parse_url( $j['target'] ?? '', PHP_URL_HOST ) );
+			if ( $jh !== $host ) { continue; }
+			if ( null === $best || (int) ( $j['created'] ?? 0 ) > (int) ( $best['created'] ?? 0 ) ) { $best = $j; }
+		}
+		if ( ! $best ) { return null; }
+		$st  = (string) ( $best['status'] ?? 'pending' );
+		$lbl = array( 'pending' => 'En attente', 'running' => 'En cours', 'done' => 'Terminé', 'error' => 'Erreur' );
+		return array( 'status' => $st, 'label' => ( $lbl[ $st ] ?? $st ), 'id' => (string) ( $best['id'] ?? '' ) );
+	}
+}
 if ( ! function_exists( 'ag_tester_rapport_html' ) ) {
 	/** Construit le HTML du rapport client depuis une entree d'historique (+ synthese Kali reelle si dispo). */
 	function ag_tester_rapport_html( $e ) {
@@ -1313,6 +1331,21 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 						} else {
 							$notice = 'Creation du rapport impossible (CPT non enregistre ?).';
 						}
+					}
+				}
+				// Lancer / relier le SCAN KALI approfondi (actif → mandat obligatoire) pour ce site.
+				if ( isset( $_POST['ag_hist_kali'], $_POST['hist_id'] ) ) {
+					$hh = ag_audit_hist_get(); $hid = sanitize_text_field( wp_unslash( $_POST['hist_id'] ) );
+					if ( ! function_exists( 'ag_pt_enqueue_job' ) ) {
+						$notice = 'File Kali indisponible (ag-pentest-bridge.php).';
+					} elseif ( empty( $_POST['ag_kali_mandat'] ) ) {
+						$notice = 'Scan Kali refuse : coche l attestation de mandat ecrit (le scan approfondi est ACTIF).';
+					} elseif ( isset( $hh[ $hid ] ) ) {
+						$e   = $hh[ $hid ];
+						$ref = sanitize_text_field( wp_unslash( $_POST['ag_kali_ref'] ?? '' ) );
+						if ( '' === $ref ) { $ref = 'MANDAT-' . gmdate( 'Ymd' ); }
+						ag_pt_enqueue_job( $e['url'], ( $e['company'] ?: ( $e['host'] ?? '' ) ), $ref, 'max', ( $e['email'] ?? '' ), 'expert24' );
+						$notice = 'Scan Kali approfondi demande pour ' . ( $e['host'] ?? '' ) . ' - lance le runner sur Kali. Le resultat se reliera ici automatiquement (bouton Rapport client).';
 					}
 				}
 		}
@@ -1684,7 +1717,8 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 								<select name="hist_ch" style="font-size:12px;max-width:130px"><option>Email</option><option>SMS</option><option>WhatsApp</option><option>Telegram</option><option>Appel</option><option>Pas de réponse</option><option>Intéressé</option><option>Refusé</option></select>
 								<button type="submit" name="ag_hist_mark" value="1" class="button button-small">✓ Noté</button>
 							</form>
-							<form method="post" style="display:inline" title="Cree la page privee /rapport/ (findings + paiement PayPal auto) depuis cet audit"><?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?><input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>"><button type="submit" name="ag_hist_rapport" value="1" class="button button-small button-primary">📄 Rapport client</button></form>
+							<?php $kjob = function_exists( 'ag_tester_kali_status_for' ) ? ag_tester_kali_status_for( $url ) : null; $kcol = array( 'pending'=>'#b58100', 'running'=>'#0a6', 'done'=>'#093', 'error'=>'#c00' ); ?><?php if ( $kjob ) : ?><span style="font-size:11px;background:#eef;border:1px solid #ccd;border-radius:10px;padding:1px 7px;color:<?php echo esc_attr( $kcol[ $kjob['status'] ] ?? '#444' ); ?>">🛰️ Kali : <?php echo esc_html( $kjob['label'] ); ?></span><?php endif; ?><button type="button" class="button button-small" onclick="var d=document.getElementById('agk<?php echo esc_attr( $hid ); ?>');d.style.display=d.style.display==='none'?'inline-flex':'none'">🛰️ <?php echo $kjob ? 'Relancer Kali' : 'Scan Kali approfondi'; ?></button><form method="post" id="agk<?php echo esc_attr( $hid ); ?>" style="display:none;gap:6px;align-items:center;background:#fff7ed;border:1px solid #fdba74;border-radius:6px;padding:4px 8px;margin:4px 0"><?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?><input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>"><input type="text" name="ag_kali_ref" placeholder="Réf. mandat" style="font-size:12px;max-width:140px"><label style="font-size:11px"><input type="checkbox" name="ag_kali_mandat" value="1"> j'atteste un mandat écrit</label><button type="submit" name="ag_hist_kali" value="1" class="button button-small button-primary">🛰️ Envoyer à Kali</button></form>
+								<form method="post" style="display:inline" title="Cree la page privee /rapport/ (findings + paiement PayPal auto) depuis cet audit"><?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?><input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>"><button type="submit" name="ag_hist_rapport" value="1" class="button button-small button-primary">📄 Rapport client</button></form>
 								<?php if ( ! empty( $e['rapport_url'] ) ) : ?><a class="button button-small" href="<?php echo esc_url( $e['rapport_url'] ); ?>" target="_blank" rel="noopener">🔗 Voir le rapport</a><?php endif; ?>
 								<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline" onsubmit="return confirm('Supprimer cet audit ?')"><input type="hidden" name="action" value="ag_audit_hist_del"><?php wp_nonce_field( 'ag_audit_hist_del' ); ?><input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>"><button type="submit" class="button button-small" style="color:#b91c1c">🗑️ Suppr.</button></form>
 						</div>
