@@ -115,7 +115,7 @@ Audite une agence web → bouton **« Cartographier ses créations »** (AJAX `a
 ## 9. RESTE À FAIRE / idées ouvertes
 1. **Fournisseur voix Emma** (Retell/Twilio) à configurer + **ligne de démarchage dédiée** (01 62 / 09 48)
    avant d'allumer les appels (rappel n°7). Sans ça, Emma reste muette (pas d'erreur).
-2. **Liste santé qualifiée** : fichier `pentest-bridge/liste-sante-qualifiee.md` (critères) +
+2. **⚠️ 01/11 : ces 2 fichiers sont ABSENTS du dépôt (ni branche ni `main`) — jamais commités ; la liste des 17 cabinets est à re-fournir/recréer avant injection CRM.** **Liste santé qualifiée** : fichier `pentest-bridge/liste-sante-qualifiee.md` (critères) +
    `liste-sante-resultats.md` (17 cabinets WP vérifiés). **À injecter dans le CRM** + recentrer la
    chasse Google Places sur la santé (requêtes prêtes dans le .md). La chasse actuelle vise des cibles hors-filon.
 3. **Déontologie avant volume** : faire valider les séquences Hugo/Emma par `ag-deontologue` +
