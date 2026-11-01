@@ -27,8 +27,7 @@ if ( ! function_exists( 'ag_tester_opt' ) ) {
 			'price'       => '49',
 			'deep_price'  => '290',   // Diagnostic Expert 24h (scan Kali complet, sur mandat)
 			'deep_pay_url'=> '',      // lien de paiement dédié (vide = renvoie /contact)
-			'pay_url'     => 'https://www.paypal.com/ncp/payment/EMDGXFFJS4NZ8', // lien PayPal du rapport (49 €) — défaut auto
-
+			'pay_url'     => '',
 			'raison'      => 'Alliance Groupe',
 			'siret'       => '[SIRET à compléter dans Réglages → Tester / Audit]',
 			'adresse'     => 'Nantes, France',
@@ -44,8 +43,8 @@ if ( ! function_exists( 'ag_tester_opt' ) ) {
 
 /* --------------------------------------------------- Réglages (Settings API) */
 add_action( 'admin_menu', function () {
-	add_submenu_page( 'ag-espace-audit', 'Réglages Audit', '⚙️ Réglages Audit', 'manage_options', 'ag-tester', 'ag_tester_settings_page' );
-}, 20 );
+	add_options_page( 'Tester / Audit', 'Tester / Audit', 'manage_options', 'ag-tester', 'ag_tester_settings_page' );
+} );
 add_action( 'admin_init', function () {
 	foreach ( array( 'price', 'deep_price', 'deep_pay_url', 'pay_url', 'raison', 'siret', 'adresse', 'tva', 'email', 'popup_img', 'phone', 'img_audit', 'img_secu', 'img_creation', 'img_maintenance', 'img_templates', 'img_menace', 'tg_sec', 'tg_crea' ) as $k ) {
 		register_setting( 'ag_tester_group', 'ag_tester_' . $k );
@@ -369,52 +368,37 @@ if ( ! function_exists( 'ag_tester_order' ) ) {
 		update_option( 'ag_tester_invoice_seq', $seq, false );
 		$invoice_no = 'AG-' . wp_date( 'Y' ) . '-' . str_pad( (string) $seq, 4, '0', STR_PAD_LEFT );
 
-		// PAIEMENT D'ABORD : on NE débloque PAS ici. Commande en attente
-		// PARTAGÉE avec le webhook PayPal (déblocage auto au paiement, même
-		// mécanique que le rapport ?ag_rapport=1) puis on envoie payer.
-		if ( function_exists( 'ag_rapport_key' ) ) {
-			$pend = get_option( 'ag_audit_pending', array() );
-			if ( ! is_array( $pend ) ) $pend = array();
-			$dup = false;
-			foreach ( $pend as $p ) {
-				if ( empty( $p['paid'] ) && ag_rapport_key( $p['site'] ?? '' ) === ag_rapport_key( $url ) && strtolower( (string) ( $p['email'] ?? '' ) ) === strtolower( $email ) ) { $dup = true; break; }
-			}
-			if ( ! $dup ) {
-				$pend[] = array( 'site' => $url, 'name' => $nom, 'email' => $email, 'price' => $price, 'ts' => time(), 'paid' => 0, 'txn' => '' );
-				if ( count( $pend ) > 300 ) $pend = array_slice( $pend, -300 );
-				update_option( 'ag_audit_pending', $pend, false );
-			}
-		}
-		$data['unlocked']   = false; // reste verrouillé jusqu'au paiement
-		$data['pending']    = true;
+		// Débloque le rapport.
+		$data['unlocked']   = true;
 		$data['invoice_no'] = $invoice_no;
 		$data['consent']    = $consent;
 		set_transient( 'ag_tester_' . $aid, $data, 60 * DAY_IN_SECONDS );
 
-		$base    = wp_get_referer() ?: home_url( '/tester-mon-site' );
-		$pay_url = ag_tester_opt( 'pay_url' ) ?: home_url( '/contact' );
+		$base       = wp_get_referer() ?: home_url( '/tester-mon-site' );
+		$report_url = add_query_arg( array( 'rapport' => $aid ), $base );
+		$pay_url    = ag_tester_opt( 'pay_url' ) ?: home_url( '/contact' );
 
-		// Email : FACTURE + bouton PAYER (le rapport se débloque APRÈS paiement).
+		// Email : FACTURE + lien rapport complet + paiement.
 		if ( function_exists( 'ag_email_wrap' ) ) {
 			$inner  = '<p>Bonjour ' . esc_html( $nom ) . ',</p>';
-			$inner .= '<p>Votre commande du <strong>rapport d\'audit complet</strong> de ' . esc_html( $url ) . ' est enregistrée. Réglez pour le <strong>débloquer immédiatement</strong> :</p>';
-			$inner .= ag_email_button( 'Payer et débloquer mon rapport (' . number_format_i18n( $price, 0 ) . ' €) →', $pay_url );
+			$inner .= '<p>Merci pour votre commande. Votre <strong>rapport d\'audit complet</strong> de ' . esc_html( $url ) . ' est débloqué :</p>';
+			$inner .= ag_email_button( 'Voir mon rapport complet →', $report_url );
 			$inner .= ag_tester_facture_html( $invoice_no, $nom, $email, $url, $price );
+			$inner .= '<p>Règlement :</p>' . ag_email_button( 'Payer ma facture (' . number_format_i18n( $price, 0 ) . ' €) →', $pay_url );
 			$inner .= '<p style="font-size:12px;color:#9a9aa5">Commande acceptée électroniquement le ' . esc_html( $consent['accepted_at'] ) . ' (IP ' . esc_html( $consent['ip'] ) . ').'
-				. ( $waive ? ' Vous avez demandé la fourniture immédiate après paiement et renoncé au délai de rétractation de 14 jours.' : '' ) . '</p>';
+				. ( $waive ? ' Vous avez demandé la fourniture immédiate et renoncé au délai de rétractation de 14 jours.' : '' ) . '</p>';
 			wp_mail(
 				$email,
-				'Facture ' . $invoice_no . ' — réglez pour débloquer votre rapport',
-				ag_email_wrap( 'Votre facture', $inner ),
+				'Facture ' . $invoice_no . ' + votre rapport d\'audit complet',
+				ag_email_wrap( 'Votre facture et votre rapport', $inner ),
 				array( 'Content-Type: text/html; charset=UTF-8' )
 			);
 		}
 		if ( function_exists( 'ag_push' ) ) {
-			ag_push( '🧾 Commande rapport (à payer)', $nom . ' (' . $email . ') — ' . $url . ' — facture ' . $invoice_no . ' — ' . $price . ' €' );
+			ag_push( '🧾 Commande rapport audit', $nom . ' (' . $email . ') — ' . $url . ' — facture ' . $invoice_no . ' — ' . $price . ' €' );
 		}
 
-		// On envoie payer tout de suite ; le déblocage se fait au paiement vérifié.
-		wp_redirect( $pay_url );
+		wp_safe_redirect( add_query_arg( array( 'rapport' => $aid, 'ok' => '1' ), $base ) );
 		exit;
 	}
 }
@@ -449,13 +433,9 @@ if ( ! function_exists( 'ag_tester_render' ) ) {
 		ob_start();
 		if ( $rapport ) {
 			$data = get_transient( 'ag_tester_' . $rapport );
-			$rurl = $data['audit']['url'] ?? '';
-			$is_unlocked = $data && ( ! empty( $data['unlocked'] ) || ( function_exists( 'ag_rapport_is_unlocked' ) && ag_rapport_is_unlocked( $rurl ) ) );
-			if ( $is_unlocked && function_exists( 'ag_audit_render_report' ) ) {
+			if ( $data && ! empty( $data['unlocked'] ) && function_exists( 'ag_audit_render_report' ) ) {
+				if ( isset( $_GET['ok'] ) ) echo '<p style="max-width:920px;margin:18px auto;color:#28a745;text-align:center;font-weight:700">✅ Commande enregistrée — votre facture vient de vous être envoyée par email.</p>';
 				ag_audit_render_report( $data['audit'], $data['prenom'] ?? '' );
-			} elseif ( $data && ! empty( $data['pending'] ) ) {
-				$payu = ag_tester_opt( 'pay_url' ) ?: home_url( '/contact' );
-				echo '<section style="background:#0a0a0f;color:#fff;padding:70px 24px;text-align:center"><div style="max-width:560px;margin:0 auto"><div style="font-size:2.4rem">⏳</div><h2 style="color:#D4B45C;font-family:Georgia,serif;margin:10px 0">Votre rapport est réservé</h2><p style="color:rgba(255,255,255,.8)">Il se débloque dès réception de votre paiement. Une facture vient de vous être envoyée par email.</p><a href="' . esc_url( $payu ) . '" style="display:inline-block;margin-top:18px;padding:14px 32px;background:linear-gradient(135deg,#D4B45C,#F37A1F);color:#0a0a0f;font-weight:800;border-radius:999px;text-decoration:none">Payer et débloquer →</a></div></section>';
 			} else {
 				echo '<section style="background:#0a0a0f;color:#fff;padding:80px 24px;text-align:center"><p>🔒 Ce rapport est verrouillé. Lancez un test ou débloquez votre rapport.</p></section>';
 			}
@@ -567,7 +547,7 @@ if ( ! function_exists( 'ag_tester_render_form' ) ) {
 				<span class="ag-gate__tag">🔒 Diagnostic de sécurité</span>
 				<h1 class="ag-gate__title">Votre site est-il <em>une cible</em> ?</h1>
 				<p class="ag-gate__sub">Découvrez en 30 secondes le score de sécurité de votre site et le nombre de failles exposées. Gratuit, non-intrusif.</p>
-				<button type="button" id="ag-gate__btn" class="ag-gate__btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-3px;margin-right:9px"><circle cx="11" cy="11" r="7"/><line x1="20.5" y1="20.5" x2="16.5" y2="16.5"/></svg>Tester mon site →</button>
+				<button type="button" id="ag-gate__btn" class="ag-gate__btn">🔍 Tester mon site →</button>
 				<p class="ag-gate__legal">En cliquant, je certifie être <strong>propriétaire ou mandaté</strong> pour ce site, j'autorise le <strong>diagnostic non-intrusif</strong> et j'accepte les <a href="<?php echo esc_url( home_url( '/cgv' ) ); ?>" target="_blank" rel="noopener">conditions</a>.</p>
 			</div>
 		</div>
@@ -605,106 +585,47 @@ if ( ! function_exists( 'ag_tester_render_form' ) ) {
 
 		<section style="background:linear-gradient(180deg,#0a0a0f,#14141c);color:#fff;padding:80px 24px;min-height:78vh">
 			<div style="max-width:620px;margin:0 auto;text-align:center">
-				<span style="display:inline-block;padding:6px 14px;background:rgba(243,122,31,.15);border:1px solid rgba(243,122,31,.5);border-radius:999px;color:#F3D27A;font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:18px">Diagnostic gratuit · sans engagement</span>
-				<?php $ag_dir = get_template_directory_uri(); ?>
-				<figure class="ag-tester-embleme" style="margin:0 auto 22px;width:min(520px,100%);aspect-ratio:16/9">
-					<video autoplay muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;-webkit-mask-image:radial-gradient(ellipse 74% 74% at 50% 48%,#000 52%,transparent 100%);mask-image:radial-gradient(ellipse 74% 74% at 50% 48%,#000 52%,transparent 100%)" poster="<?php echo esc_url( $ag_dir . '/assets/videos/embleme-securite-poster.jpg' ); ?>">
-						<source src="<?php echo esc_url( $ag_dir . '/assets/videos/embleme-securite-720.webm' ); ?>" type="video/webm">
-						<source src="<?php echo esc_url( $ag_dir . '/assets/videos/embleme-securite-720.mp4' ); ?>" type="video/mp4">
-						<img src="<?php echo esc_url( $ag_dir . '/assets/images/atelier/securite.webp' ); ?>" alt="Bouclier Alliance Groupe : marbre noir et or, frappé d'un cadenas" width="1000" height="563" style="width:100%;height:auto">
-					</video>
-				</figure>
+				<span style="display:inline-block;padding:6px 14px;background:rgba(243,122,31,.15);border:1px solid rgba(243,122,31,.5);border-radius:999px;color:#F3D27A;font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:18px">🔍 Diagnostic gratuit · sans engagement</span>
 				<h1 style="font-family:Georgia,serif;font-size:clamp(2rem,5vw,3.4rem);line-height:1.1;margin:0 0 14px">Testez la <em style="background:linear-gradient(135deg,#D4B45C,#F37A1F);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-style:italic">sécurité</em> de votre site</h1>
 				<p style="color:rgba(255,255,255,.78);font-size:1.05rem;line-height:1.6;margin:0 0 32px">En 30 secondes : score global, nombre de failles détectées, et où vous en êtes vraiment. Diagnostic non-intrusif, avec votre autorisation.</p>
-				<form id="ag-scan" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="text-align:left;display:flex;flex-direction:column;gap:14px">
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="text-align:left;display:flex;flex-direction:column;gap:14px">
 					<input type="hidden" name="action" value="ag_tester_run">
 					<?php wp_nonce_field( 'ag_tester' ); ?>
 					<input type="text" name="hp_field" value="" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
 					<input type="url" name="site_url" required autofocus placeholder="https://monsite.fr" style="<?php echo $in; // phpcs:ignore ?>">
-					<button type="submit" style="margin-top:6px;padding:18px 36px;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:800;border:none;border-radius:999px;font-size:1.05rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;box-shadow:0 12px 32px rgba(243,122,31,.35)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-3px;margin-right:9px"><circle cx="11" cy="11" r="7"/><line x1="20.5" y1="20.5" x2="16.5" y2="16.5"/></svg>Analyser mon site gratuitement →</button>
+					<button type="submit" style="margin-top:6px;padding:18px 36px;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0a0a0f;font-weight:800;border:none;border-radius:999px;font-size:1.05rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;box-shadow:0 12px 32px rgba(243,122,31,.35)">🔍 Analyser mon site gratuitement →</button>
 					<p style="color:rgba(255,255,255,.5);font-size:.8rem;text-align:center;margin:12px 0 0">Diagnostic <strong style="color:rgba(255,255,255,.7)">non-intrusif</strong> : on lit uniquement vos pages publiques (comme un visiteur). Résultat immédiat, sans inscription.</p>
 				</form>
 
-				<?php
-				// ── Preuve reelle avant les prix : avis clients moderes (module ag-temoignages).
-				//    N'affiche RIEN tant qu'aucun avis approuve n'existe — aucune fabrication.
-				if ( function_exists( 'ag_temoignages_avg' ) && function_exists( 'ag_temoignages_approved' ) ) :
-					list( $ag_pv_avg, $ag_pv_n ) = ag_temoignages_avg();
-					if ( $ag_pv_n > 0 ) :
-						$ag_pv_fill = (int) round( $ag_pv_avg );
-						$ag_pv_list = array_slice( ag_temoignages_approved(), 0, 2 );
-				?>
-				<div style="margin:46px auto 0;max-width:760px;text-align:center">
-					<div style="font-size:1.5rem;color:#E7C979;letter-spacing:3px"><?php echo esc_html( str_repeat( '★', $ag_pv_fill ) . str_repeat( '☆', 5 - $ag_pv_fill ) ); ?></div>
-					<p style="margin:8px 0 0;color:rgba(255,255,255,.82)"><strong style="color:#fff"><?php echo esc_html( number_format_i18n( $ag_pv_avg, 1 ) ); ?>/5</strong> — <?php echo (int) $ag_pv_n; ?> avis clients vérifiés</p>
-					<div style="display:grid;gap:14px;margin-top:22px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));text-align:left">
-					<?php foreach ( $ag_pv_list as $ag_pv_t ) : ?>
-						<blockquote style="margin:0;padding:16px 18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-left:3px solid #E7C979;border-radius:12px">
-							<p style="margin:0;color:rgba(255,255,255,.85);font-size:.95rem;line-height:1.55">« <?php echo esc_html( $ag_pv_t['text'] ?? '' ); ?> »</p>
-							<footer style="margin-top:10px;color:#9a938a;font-size:.85rem"><strong style="color:#cfc7b8"><?php echo esc_html( $ag_pv_t['name'] ?? '' ); ?></strong><?php echo ! empty( $ag_pv_t['city'] ) ? ' — ' . esc_html( $ag_pv_t['city'] ) : ''; ?></footer>
-						</blockquote>
-					<?php endforeach; ?>
-					</div>
-					<p style="margin:16px 0 0"><a href="<?php echo esc_url( home_url( '/avis-clients' ) ); ?>" style="color:#E7C979;text-decoration:none;font-size:.9rem;font-weight:600">Voir tous les avis →</a></p>
-				</div>
-				<?php endif; endif; ?>
-
 				<!-- Les 3 niveaux d'audit (escalier) -->
-				<div style="margin:46px 0 0;width:92vw;max-width:980px;margin-left:50%;transform:translateX(-50%);text-align:left">
+				<div style="margin:46px auto 0;max-width:980px;text-align:left">
 					<h2 style="text-align:center;font-family:Georgia,serif;font-size:1.6rem;color:#fff;margin:0 0 22px">3 niveaux d'audit, selon vos besoins</h2>
-					<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:18px;align-items:stretch">
-						<article style="position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(40,167,69,.11),rgba(40,167,69,.02));border:1px solid rgba(40,167,69,.4);border-radius:18px;padding:26px 22px">
-							<div style="display:flex;justify-content:space-between;align-items:flex-start">
-								<span style="font-family:Georgia,serif;font-size:2.3rem;line-height:1;color:#3fbf68">01</span>
-								<span style="color:#3fbf68;opacity:.6"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15a8 8 0 0 1 16 0"/><path d="M12 15l3.6-4.2"/><circle cx="12" cy="15" r="1.1"/></svg></span>
-							</div>
-							<span style="display:block;margin-top:14px;color:#3fbf68;font-weight:700;letter-spacing:.14em;font-size:.72rem;text-transform:uppercase">Test léger · gratuit</span>
-							<h3 style="font-family:Georgia,serif;font-weight:500;font-size:1.3rem;color:#fff;margin:6px 0 10px">Diagnostic immédiat</h3>
-							<p style="color:rgba(255,255,255,.72);font-size:.9rem;line-height:1.55;margin:0">Non-intrusif : score global, failles visibles, en-têtes, SSL, xmlrpc. Le résultat s'affiche en 30&nbsp;secondes.</p>
-							<div style="margin-top:auto;padding-top:22px">
-								<div style="font-family:Georgia,serif;font-weight:600;font-size:1.7rem;color:#3fbf68">Gratuit</div>
-								<a href="#ag-scan" style="display:block;text-align:center;margin-top:12px;padding:13px;border:1px solid rgba(63,191,104,.55);border-radius:11px;color:#eafaef;font-weight:700;text-decoration:none">Faire le test gratuit ↑</a>
-							</div>
-						</article>
-						<article style="position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(243,122,31,.15),rgba(243,122,31,.03));border:1px solid rgba(243,122,31,.6);border-radius:18px;padding:26px 22px;box-shadow:0 22px 55px rgba(243,122,31,.16)">
-							<span style="position:absolute;top:-11px;left:22px;background:linear-gradient(135deg,#F37A1F,#D4B45C);color:#0b0b0f;font-weight:800;font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;padding:5px 12px;border-radius:999px">Le plus demandé</span>
-							<div style="display:flex;justify-content:space-between;align-items:flex-start">
-								<span style="font-family:Georgia,serif;font-size:2.3rem;line-height:1;color:#F37A1F">02</span>
-								<span style="color:#F37A1F;opacity:.6"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6"/><line x1="20" y1="20" x2="15.5" y2="15.5"/><path d="M9 11h4M11 9v4"/></svg></span>
-							</div>
-							<span style="display:block;margin-top:14px;color:#F37A1F;font-weight:700;letter-spacing:.14em;font-size:.72rem;text-transform:uppercase">Audit approfondi · client</span>
-							<h3 style="font-family:Georgia,serif;font-weight:500;font-size:1.3rem;color:#fff;margin:6px 0 10px">Analyse complète</h3>
-							<p style="color:rgba(255,255,255,.72);font-size:.9rem;line-height:1.55;margin:0">Sauvegardes exposées, versions de plugins, énumération… Réalisée <strong style="color:#fff">avec votre autorisation écrite</strong> (mandat signé en ligne), sans rendez-vous.</p>
-							<div style="margin-top:auto;padding-top:22px">
-								<div style="font-family:Georgia,serif;font-weight:600;font-size:1.9rem;color:#F37A1F"><?php echo esc_html( number_format_i18n( (float) ag_tester_opt( 'price' ), 0 ) ); ?> €</div>
-								<a href="<?php echo esc_url( add_query_arg( array( 'ag_mandat' => 1, 'tier' => 'deep' ), home_url( '/' ) ) ); ?>" style="display:block;text-align:center;margin-top:12px;background:linear-gradient(135deg,#F37A1F,#d4b45c);color:#0b0b0f;font-weight:800;padding:13px;border-radius:11px;text-decoration:none">Commander &amp; payer →</a>
-							</div>
-						</article>
-						<article style="position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(212,180,92,.12),rgba(212,180,92,.02));border:1px solid rgba(212,180,92,.42);border-radius:18px;padding:26px 22px">
-							<div style="display:flex;justify-content:space-between;align-items:flex-start">
-								<span style="font-family:Georgia,serif;font-size:2.3rem;line-height:1;color:#E7C979">03</span>
-								<span style="color:#E7C979;opacity:.65"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 2.5v5.6c0 4.2-2.9 7.2-7 8.4-4.1-1.2-7-4.2-7-8.4V5.5z"/><path d="M9 12l2 2 4-4"/></svg></span>
-							</div>
-							<span style="display:block;margin-top:14px;color:#E7C979;font-weight:700;letter-spacing:.14em;font-size:.72rem;text-transform:uppercase">Diagnostic Expert 24&nbsp;h · sur mandat</span>
-							<h3 style="font-family:Georgia,serif;font-weight:500;font-size:1.3rem;color:#fff;margin:6px 0 10px">Scan en profondeur</h3>
-							<p style="color:rgba(255,255,255,.72);font-size:.9rem;line-height:1.55;margin:0">Simulation d'attaque réelle, ports, vulnérabilités, plugins, sous <strong style="color:#fff">mandat signé en ligne</strong>. <strong style="color:#F3D27A">Rapport complet + plan de correction chiffré, livré en moins de 24&nbsp;h.</strong></p>
-							<div style="margin-top:auto;padding-top:22px">
-								<?php $dp = (float) ag_tester_opt( 'deep_price' ); ?>
-								<div style="font-family:Georgia,serif;font-weight:600;font-size:1.9rem;color:#E7C979"><?php echo $dp > 0 ? esc_html( number_format_i18n( $dp, 0 ) . ' €' ) : 'Sur devis'; ?></div>
-								<a href="<?php echo esc_url( add_query_arg( array( 'ag_mandat' => 1, 'tier' => 'expert' ), home_url( '/' ) ) ); ?>" style="display:block;text-align:center;margin-top:12px;background:linear-gradient(135deg,#d4b45c,#b98f2f);color:#0b0b0f;font-weight:800;padding:13px;border-radius:11px;text-decoration:none">Commander &amp; payer →</a>
-							</div>
-						</article>
+					<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+						<div style="background:rgba(40,167,69,.08);border:1px solid rgba(40,167,69,.4);border-radius:14px;padding:20px">
+							<div style="color:#28a745;font-weight:800;letter-spacing:1px;font-size:.8rem;text-transform:uppercase">① Test léger · gratuit</div>
+							<p style="color:rgba(255,255,255,.8);font-size:.92rem;line-height:1.5;margin:10px 0 0">Diagnostic non-intrusif immédiat : score, failles visibles, en-têtes, SSL, xmlrpc. <strong style="color:#fff">C'est le test ci-dessus.</strong></p>
+						</div>
+						<div style="background:rgba(243,122,31,.08);border:1px solid rgba(243,122,31,.4);border-radius:14px;padding:20px">
+							<div style="color:#F37A1F;font-weight:800;letter-spacing:1px;font-size:.8rem;text-transform:uppercase">② Audit approfondi · client</div>
+							<p style="color:rgba(255,255,255,.8);font-size:.92rem;line-height:1.5;margin:10px 0 0">Analyse complète (sauvegardes exposées, versions de plugins, énumération…). Réalisée <strong style="color:#fff">avec votre autorisation écrite</strong>, dans le cadre d'une prestation.</p>
+							<a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" style="display:inline-block;margin-top:12px;color:#F3D27A;font-weight:700;text-decoration:none">Demander un devis →</a>
+						</div>
+						<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:20px">
+							<div style="color:#fff;font-weight:800;letter-spacing:1px;font-size:.8rem;text-transform:uppercase">③ Diagnostic Expert 24h · sur mandat</div>
+							<p style="color:rgba(255,255,255,.8);font-size:.92rem;line-height:1.5;margin:10px 0 0">Scan en profondeur (simulation d'attaque réelle, ports, vulnérabilités, plugins) sous votre <strong style="color:#fff">autorisation</strong>. <strong style="color:#F3D27A">Rapport complet + plan de correction chiffré, livré en moins de 24 h.</strong></p>
+							<a href="<?php echo esc_url( home_url( '/contact' ) ); ?>" style="display:inline-block;margin-top:12px;color:#F3D27A;font-weight:700;text-decoration:none">Nous contacter →</a>
+						</div>
 					</div>
 					<p style="text-align:center;color:rgba(255,255,255,.45);font-size:.78rem;margin:14px 0 0">L'audit approfondi et le pentest ne sont jamais réalisés sans autorisation écrite du propriétaire (art. 323-1 C. pénal).</p>
 				</div>
 
 				<!-- Pas qu'un audit : les autres offres -->
-				<div style="margin:42px 0 0;width:92vw;max-width:980px;margin-left:50%;transform:translateX(-50%)">
+				<div style="margin:42px auto 0;max-width:980px">
 					<p style="text-align:center;color:rgba(255,255,255,.6);font-size:.9rem;margin:0 0 16px">Vous cherchez autre chose ?</p>
 					<div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
-						<a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>" style="flex:1;min-width:210px;display:flex;align-items:center;gap:14px;text-align:left;background:rgba(255,255,255,.05);border:1px solid rgba(212,180,92,.3);border-radius:14px;padding:18px 20px;color:#fff;text-decoration:none"><span style="flex:none;color:#E7C979"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.6 2.7 2.6 15.3 0 18M12 3c-2.6 2.7-2.6 15.3 0 18"/></svg></span><span><strong>Créer un site</strong><br><span style="color:rgba(255,255,255,.6);font-size:.85rem">Vitrine, e-commerce, dès 490 €</span></span></a>
-						<a href="<?php echo esc_url( home_url( '/maintenance' ) ); ?>" style="flex:1;min-width:210px;display:flex;align-items:center;gap:14px;text-align:left;background:rgba(255,255,255,.05);border:1px solid rgba(212,180,92,.3);border-radius:14px;padding:18px 20px;color:#fff;text-decoration:none"><span style="flex:none;color:#E7C979"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 2.5v5.6c0 4.2-2.9 7.2-7 8.4-4.1-1.2-7-4.2-7-8.4V5.5z"/><path d="M9 12l2 2 4-4"/></svg></span><span><strong>Maintenance</strong><br><span style="color:rgba(255,255,255,.6);font-size:.85rem">Sérénité, dès 49 €/mois</span></span></a>
-						<a href="<?php echo esc_url( home_url( '/templates-wordpress' ) ); ?>" style="flex:1;min-width:210px;display:flex;align-items:center;gap:14px;text-align:left;background:rgba(255,255,255,.05);border:1px solid rgba(212,180,92,.3);border-radius:14px;padding:18px 20px;color:#fff;text-decoration:none"><span style="flex:none;color:#E7C979"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg></span><span><strong>Templates métier</strong><br><span style="color:rgba(255,255,255,.6);font-size:.85rem">Prêts à l'emploi, gratuits</span></span></a>
+						<a href="<?php echo esc_url( home_url( '/sites-express' ) ); ?>" style="flex:1;min-width:200px;text-align:center;background:rgba(255,255,255,.05);border:1px solid rgba(212,180,92,.3);border-radius:12px;padding:18px;color:#fff;text-decoration:none">✨ <strong>Créer un site</strong><br><span style="color:rgba(255,255,255,.6);font-size:.85rem">Vitrine, e-commerce, dès 490 €</span></a>
+						<a href="<?php echo esc_url( home_url( '/maintenance' ) ); ?>" style="flex:1;min-width:200px;text-align:center;background:rgba(255,255,255,.05);border:1px solid rgba(212,180,92,.3);border-radius:12px;padding:18px;color:#fff;text-decoration:none">🛡️ <strong>Maintenance</strong><br><span style="color:rgba(255,255,255,.6);font-size:.85rem">Sérénité, dès 49 €/mois</span></a>
+						<a href="<?php echo esc_url( home_url( '/templates-wordpress' ) ); ?>" style="flex:1;min-width:200px;text-align:center;background:rgba(255,255,255,.05);border:1px solid rgba(212,180,92,.3);border-radius:12px;padding:18px;color:#fff;text-decoration:none">📦 <strong>Templates métier</strong><br><span style="color:rgba(255,255,255,.6);font-size:.85rem">Prêts à l'emploi, gratuits</span></a>
 					</div>
 				</div>
 			</div>
@@ -803,8 +724,7 @@ if ( ! function_exists( 'ag_tester_render_teaser' ) ) {
  * scanne/attaque jamais : on lit ce qui est public et on en tire un argumentaire.
  * ====================================================================== */
 add_action( 'admin_menu', function () {
-	add_menu_page( 'Sécurité', '🛡️ Sécurité', 'manage_options', 'ag-espace-audit', 'ag_audit_prospect_page', 'dashicons-shield', 56 );
-	add_submenu_page( 'ag-espace-audit', 'Espace Audit', '🔍 Espace Audit', 'manage_options', 'ag-espace-audit', 'ag_audit_prospect_page' );
+	add_menu_page( 'Espace Audit', '🔍 Espace Audit', 'manage_options', 'ag-espace-audit', 'ag_audit_prospect_page', 'dashicons-shield', 58 );
 	add_submenu_page( 'ag-espace-audit', 'Générateur d\'audit', '🧰 Générateur d\'audit', 'manage_options', 'ag-audit-gen', 'ag_audit_gen_render' );
 } );
 
@@ -1191,6 +1111,33 @@ if ( ! function_exists( 'ag_tester_kali_report_for' ) ) {
 		return $best ? (string) $best['summary'] : '';
 	}
 }
+if ( ! function_exists( 'ag_tester_rapport_html' ) ) {
+	/** Construit le HTML du rapport client depuis une entree d'historique (+ synthese Kali reelle si dispo). */
+	function ag_tester_rapport_html( $e ) {
+		$score = (int) ( $e['score'] ?? 0 );
+		$kali  = function_exists( 'ag_tester_kali_report_for' ) ? ag_tester_kali_report_for( $e['url'] ?? '' ) : '';
+		$h  = '<p><strong>Score de securite : ' . $score . '/100</strong>'
+			. ( ! empty( $e['critical'] ) ? ' &mdash; ' . (int) $e['critical'] . ' faille(s) critique(s)' : '' ) . '.</p>';
+		$fails = array();
+		foreach ( (array) ( $e['checks'] ?? array() ) as $c ) {
+			$stt = $c['status'] ?? '';
+			if ( 'fail' === $stt || 'warn' === $stt ) {
+				$fails[] = function_exists( 'ag_audit_public_label' ) ? ag_audit_public_label( $c['name'] ?? '' ) : ( $c['name'] ?? '' );
+			}
+		}
+		$fails = array_values( array_unique( array_filter( $fails ) ) );
+		if ( $fails ) {
+			$h .= '<h3>Points a corriger</h3><ul>';
+			foreach ( $fails as $f ) { $h .= '<li>' . esc_html( $f ) . '</li>'; }
+			$h .= '</ul>';
+		}
+		if ( $kali && function_exists( 'ag_pt_summary_fr_html' ) ) {
+			$h .= '<h3>Analyse approfondie (scan Kali)</h3>' . ag_pt_summary_fr_html( $kali );
+		}
+		if ( ! $fails && ! $kali ) { $h .= '<p>Audit realise. Le detail technique vous est transmis sur demande.</p>'; }
+		return $h;
+	}
+}
 if ( ! function_exists( 'ag_audit_msg_global' ) ) {
 	/** Message GLOBAL : securite + creation/refonte fusionnes en un seul texte. */
 	function ag_audit_msg_global( $a, $ct = array() ) {
@@ -1349,6 +1296,25 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 				$hh = ag_audit_hist_get(); $hid = sanitize_text_field( wp_unslash( $_POST['hist_id'] ) );
 				if ( isset( $hh[ $hid ] ) ) { $host = $hh[ $hid ]['host'] ?? ''; unset( $hh[ $hid ] ); ag_audit_hist_save( $hh ); $notice = '🗑️ Audit supprimé : ' . $host; }
 			}
+				// Creer le RAPPORT CLIENT payant (/rapport/<jeton>) depuis CET audit deja reuni ici.
+				if ( isset( $_POST['ag_hist_rapport'], $_POST['hist_id'] ) ) {
+					$hh = ag_audit_hist_get(); $hid = sanitize_text_field( wp_unslash( $_POST['hist_id'] ) );
+					if ( ! function_exists( 'ag_rapport_create' ) ) {
+						$notice = 'Module Rapport client indisponible (ag-rapport-client.php).';
+					} elseif ( isset( $hh[ $hid ] ) ) {
+						$e     = $hh[ $hid ];
+						$html  = ag_tester_rapport_html( $e );
+						$devis = (int) ( $e['critical'] ?? 0 ) * 900;
+						$r = ag_rapport_create( $html, ( $e['company'] ?: ( $e['host'] ?? '' ) ), ( $e['host'] ?? '' ), $devis, ( $e['email'] ?? '' ), ( $e['phone'] ?? '' ) );
+						if ( $r ) {
+							$hh[ $hid ]['rapport_url'] = $r['url'];
+							ag_audit_hist_save( $hh );
+							$notice = 'Rapport client cree pour ' . ( $e['host'] ?? '' ) . ' : ' . $r['url'];
+						} else {
+							$notice = 'Creation du rapport impossible (CPT non enregistre ?).';
+						}
+					}
+				}
 		}
 
 		// Saisie manuelle d'un contact sur une fiche d'audit : on colle l'email/tél
@@ -1718,7 +1684,9 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 								<select name="hist_ch" style="font-size:12px;max-width:130px"><option>Email</option><option>SMS</option><option>WhatsApp</option><option>Telegram</option><option>Appel</option><option>Pas de réponse</option><option>Intéressé</option><option>Refusé</option></select>
 								<button type="submit" name="ag_hist_mark" value="1" class="button button-small">✓ Noté</button>
 							</form>
-							<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline" onsubmit="return confirm('Supprimer cet audit ?')"><input type="hidden" name="action" value="ag_audit_hist_del"><?php wp_nonce_field( 'ag_audit_hist_del' ); ?><input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>"><button type="submit" class="button button-small" style="color:#b91c1c">🗑️ Suppr.</button></form>
+							<form method="post" style="display:inline" title="Cree la page privee /rapport/ (findings + paiement PayPal auto) depuis cet audit"><?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?><input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>"><button type="submit" name="ag_hist_rapport" value="1" class="button button-small button-primary">📄 Rapport client</button></form>
+								<?php if ( ! empty( $e['rapport_url'] ) ) : ?><a class="button button-small" href="<?php echo esc_url( $e['rapport_url'] ); ?>" target="_blank" rel="noopener">🔗 Voir le rapport</a><?php endif; ?>
+								<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline" onsubmit="return confirm('Supprimer cet audit ?')"><input type="hidden" name="action" value="ag_audit_hist_del"><?php wp_nonce_field( 'ag_audit_hist_del' ); ?><input type="hidden" name="hist_id" value="<?php echo esc_attr( $hid ); ?>"><button type="submit" class="button button-small" style="color:#b91c1c">🗑️ Suppr.</button></form>
 						</div>
 						<?php if ( ! $email || ! $phone ) : ?>
 							<div style="margin-top:6px">
