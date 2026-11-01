@@ -227,7 +227,37 @@ add_action( 'rest_api_init', function () {
 			if ( $cible && function_exists( 'ag_pt_autoclose_target' ) ) {
 				$closed = ag_pt_autoclose_target( $cible, $r['url'] );
 			}
-			return array( 'ok' => true, 'id' => $r['id'], 'url' => $r['url'], 'job_closed' => $closed );
+			// Faire APPARAITRE la cible dans Espace Audit (historique) avec ses failles + le lien du rapport.
+			$fiche = false;
+			if ( $cible && function_exists( 'ag_audit_hist_upsert' ) && function_exists( 'ag_audit_hist_get' ) && function_exists( 'ag_audit_hist_save' ) ) {
+				$url = ( 0 === stripos( $cible, 'http' ) ) ? $cible : ( 'https://' . $cible );
+				$raw = (string) $req->get_param( 'findings' );
+				$fnd = json_decode( $raw, true );
+				$checks = array(); $crit = 0; $penal = 0;
+				if ( is_array( $fnd ) ) {
+					foreach ( $fnd as $f ) {
+						$nm = sanitize_text_field( (string) ( $f['name'] ?? 'Faille' ) );
+						$sc = (float) ( $f['score'] ?? 0 );
+						$isc = ( $sc >= 9 );
+						if ( $isc ) { $crit++; $penal += 28; } elseif ( $sc >= 7 ) { $penal += 14; } elseif ( $sc >= 4 ) { $penal += 6; } else { $penal += 2; }
+						$checks[] = array( 'name' => $nm, 'status' => 'fail', 'critical' => $isc );
+					}
+				}
+				$score = max( 5, min( 100, 100 - $penal ) );
+				$a  = array( 'url' => $url, 'score' => $score, 'critical' => $crit, 'checks' => $checks );
+				$ct = function_exists( 'ag_audit_extract_contacts' ) ? ag_audit_extract_contacts( $url ) : array();
+				if ( $email ) { $ct['emails'] = array( $email ); }
+				if ( $phone ) { $ct['phones'] = array( $phone ); }
+				ag_audit_hist_upsert( $a, $ct, 'expert' );
+				$hostn = preg_replace( '#^www\.#', '', strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) ) );
+				$hh = ag_audit_hist_get();
+				foreach ( $hh as $k => $e ) {
+					if ( preg_replace( '#^www\.#', '', strtolower( (string) ( $e['host'] ?? '' ) ) ) === $hostn ) { $hh[ $k ]['rapport_url'] = $r['url']; }
+				}
+				ag_audit_hist_save( $hh );
+				$fiche = true;
+			}
+			return array( 'ok' => true, 'id' => $r['id'], 'url' => $r['url'], 'job_closed' => $closed, 'fiche' => $fiche );
 		},
 	) );
 
