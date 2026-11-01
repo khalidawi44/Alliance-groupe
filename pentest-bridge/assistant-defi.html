@@ -49,8 +49,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-01c</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-01c</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-01d</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-01d</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <p class="sub"><b>Ici c'est TOI qui lances chaque commande</b> (sur Kali), et l'outil te guide pas-à-pas + lit tes résultats + construit le rapport. C'est le mode pour <b>apprendre et aller jusqu'au bout toi-même</b>. (Pour un audit 100% automatique sans rien faire → bouton « Audit auto » dans WordPress.) Hors ligne. <b>Uniquement sous mandat / scope autorisé.</b></p>
 
   <div class="panel" id="scopePanel">
@@ -1029,6 +1029,7 @@ function saveReportToWP(){
           +' · <a href="'+agOrigin()+'/wp-admin/edit.php?post_type=ag_rapport" target="_blank">voir dans l\'admin</a>';
         if(g('rapEmail')) links+=' · <a href="#" onclick="sendReport('+j.id+',\'mail\');return false;">✉️ Envoyer par mail</a>';
         if(g('rapPhone')) links+=' · <a href="#" onclick="sendReport('+j.id+',\'sms\');return false;">📱 Envoyer par SMS</a>';
+        if(j.job_closed) links+='<br><span style="color:#7ef0a8">🛰️ Job « Audit Kali » clôturé automatiquement (Terminé).</span>';
         out.style.color='#22c55e'; out.innerHTML=links;
       } else {
         out.style.color='#ef4444';
