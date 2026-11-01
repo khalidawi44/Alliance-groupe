@@ -1348,6 +1348,31 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 						$notice = 'Scan Kali approfondi demande pour ' . ( $e['host'] ?? '' ) . ' - lance le runner sur Kali. Le resultat se reliera ici automatiquement (bouton Rapport client).';
 					}
 				}
+				// CHARGER un rapport Kali DEJA FAIT (colle la synthese) -> cree un job done + carte historique.
+				if ( isset( $_POST['ag_kali_paste'] ) ) {
+					$u   = esc_url_raw( trim( (string) wp_unslash( $_POST['kali_url'] ?? '' ) ) );
+					$sum = (string) wp_unslash( $_POST['kali_summary'] ?? '' );
+					if ( '' === $u || '' === trim( $sum ) ) {
+						$notice = 'Donne l URL ET le texte de la synthese Kali.';
+					} else {
+						if ( function_exists( 'ag_pt_enqueue_job' ) && function_exists( 'ag_pt_jobs' ) && function_exists( 'ag_pt_save' ) ) {
+							$jid  = ag_pt_enqueue_job( $u, (string) wp_parse_url( $u, PHP_URL_HOST ), 'MANUEL (colle)', 'max', '', 'expert24' );
+							$jobs = ag_pt_jobs();
+							foreach ( $jobs as $ji => $jj ) {
+								if ( ( $jj['id'] ?? '' ) === $jid ) { $jobs[ $ji ]['status'] = 'done'; $jobs[ $ji ]['finished'] = time(); $jobs[ $ji ]['runner'] = 'colle-admin'; $jobs[ $ji ]['summary'] = $sum; break; }
+							}
+							ag_pt_save( $jobs );
+						}
+						if ( function_exists( 'ag_pt_summary_fr' ) && function_exists( 'ag_audit_hist_upsert' ) ) {
+							$an = ag_pt_summary_fr( $sum ); $chk = array();
+							foreach ( $an['findings'] as $f ) { $stt = ( 'crit' === $f['sev'] || 'high' === $f['sev'] ) ? 'fail' : 'warn'; $chk[] = array( 'name' => $f['label'], 'status' => $stt, 'critical' => ( 'crit' === $f['sev'] ) ); }
+							$a  = array( 'url' => $u, 'score' => (int) $an['score'], 'critical' => (int) $an['crit'], 'checks' => $chk );
+							$ct = function_exists( 'ag_audit_extract_contacts' ) ? ag_audit_extract_contacts( $u ) : array();
+							ag_audit_hist_upsert( $a, $ct, 'expert' );
+						}
+						$notice = 'Rapport Kali charge et relie a ' . (string) wp_parse_url( $u, PHP_URL_HOST ) . ' - cree le Rapport client sur sa fiche ci-dessous.';
+					}
+				}
 		}
 
 		// Saisie manuelle d'un contact sur une fiche d'audit : on colle l'email/tél
@@ -1405,6 +1430,17 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 
 				<p><button type="submit" name="ag_run_audits" value="1" class="button button-primary button-large">🔍 Lancer les audits</button></p>
 			</form>
+
+			<details style="margin:0 0 18px;max-width:760px;border:1px solid #ccd0d4;border-radius:6px;padding:10px 14px;background:#f8f9fb">
+				<summary style="font-weight:600;cursor:pointer">🛰️ J'ai déjà fait un audit Kali — charger le rapport ici</summary>
+				<p style="color:#555;font-size:13px;margin:8px 0">Colle le texte de ta <code>SYNTHESE.md</code> (le rapport brut Kali). Il sera relié au site par domaine : la fiche affichera « Kali : Terminé » et le bouton <strong>📄 Rapport client</strong> inclura ce détail.</p>
+				<form method="post">
+					<?php wp_nonce_field( 'ag_audit_prospect', '_agp_nonce' ); ?>
+					<input type="url" name="kali_url" required placeholder="https://site-audité.fr" style="width:100%;margin-bottom:6px">
+					<textarea name="kali_summary" rows="7" required style="width:100%;font-family:monospace" placeholder="Colle ici tout le contenu de SYNTHESE.md…"></textarea>
+					<p><button type="submit" name="ag_kali_paste" value="1" class="button button-primary">🛰️ Charger le rapport Kali</button></p>
+				</form>
+			</details>
 
 			<?php if ( $results ) :
 				// Classe chaque prospect (sécurité vs création), puis trie : sécurité d'abord, plus faibles en tête.
