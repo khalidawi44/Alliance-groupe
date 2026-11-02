@@ -46,6 +46,10 @@ function ag_rap_box_render( $post ) {
 	echo '<div><label>Cible (domaine)</label><input type="text" name="ag_rap_cible" value="' . ag_rap_field( $post, '_ag_rap_cible' ) . '"></div></div>';
 	echo '<div class="row2"><div><label>Email client</label><input type="email" name="ag_rap_email" value="' . ag_rap_field( $post, '_ag_rap_email' ) . '" placeholder="contact@client.fr"></div>';
 	echo '<div><label>Tél client (SMS)</label><input type="text" name="ag_rap_phone" value="' . ag_rap_field( $post, '_ag_rap_phone' ) . '" placeholder="+33…"></div></div>';
+	$is_paid = (string) get_post_meta( $post->ID, '_ag_rap_paid', true ) === '1';
+	echo '<label style="display:block;margin:12px 0;padding:10px 12px;border:2px solid ' . ( $is_paid ? '#16a34a' : '#f0a020' ) . ';border-radius:6px;background:' . ( $is_paid ? '#eafaf0' : '#fff8ec' ) . '"><input type="checkbox" name="ag_rap_paid" value="1" ' . checked( $is_paid, true, false ) . '> <b>✅ Rapport PAYÉ — débloquer le certificat officiel + le code sceau (backlink)</b><br><span style="color:#666;font-size:12px">Coche dès réception du règlement. Le client voit alors son certificat complet et le code à coller sur son site (qui pointe vers alliancegroupe-inc.com).</span></label>';
+	$certno = get_post_meta( $post->ID, '_ag_rap_cert', true );
+	if ( $certno ) { echo '<p style="color:#666;font-size:12px">N° de certificat : <code>' . esc_html( $certno ) . '</code></p>'; }
 	if ( $tok ) {
 		$gw = function_exists( 'ag_sms_gateway_ready' ) && ag_sms_gateway_ready();
 		echo '<p style="margin-top:10px"><button type="button" class="button button-primary" onclick="agRapSend(' . (int) $post->ID . ',\'mail\',this)">✉️ Envoyer le lien par email</button> ';
@@ -74,6 +78,7 @@ add_action( 'save_post_ag_rapport', function ( $post_id ) {
 		'_ag_rap_px_rapport'=>'ag_rap_px_rapport', '_ag_rap_px_correction'=>'ag_rap_px_correction', '_ag_rap_px_refonte'=>'ag_rap_px_refonte' );
 	foreach ( $txt as $meta=>$field ) { if ( isset( $_POST[ $field ] ) ) update_post_meta( $post_id, $meta, sanitize_text_field( wp_unslash( $_POST[ $field ] ) ) ); }
 	if ( isset( $_POST['ag_rap_email'] ) ) update_post_meta( $post_id, '_ag_rap_email', sanitize_email( wp_unslash( $_POST['ag_rap_email'] ) ) );
+	update_post_meta( $post_id, '_ag_rap_paid', ! empty( $_POST['ag_rap_paid'] ) ? '1' : '0' );
 	$urls = array( '_ag_rap_pay_rapport'=>'ag_rap_pay_rapport', '_ag_rap_pay_correction'=>'ag_rap_pay_correction', '_ag_rap_pay_refonte'=>'ag_rap_pay_refonte' );
 	foreach ( $urls as $meta=>$field ) { if ( isset( $_POST[ $field ] ) ) update_post_meta( $post_id, $meta, esc_url_raw( wp_unslash( $_POST[ $field ] ) ) ); }
 	// HTML : autorisé seulement pour un auteur qui a le droit unfiltered_html (admin)
@@ -109,6 +114,7 @@ add_action( 'template_redirect', function () {
 	$score  = get_post_meta( $id, '_ag_rap_score', true );
 	$cert   = get_post_meta( $id, '_ag_rap_cert', true );
 	if ( ! $cert ) { $cert = 'AG-SEC-' . gmdate( 'Y' ) . '-' . strtoupper( substr( wp_generate_password( 8, false, false ), 0, 6 ) ); update_post_meta( $id, '_ag_rap_cert', $cert ); }
+	$paid   = (string) get_post_meta( $id, '_ag_rap_paid', true ) === '1';
 	$offre  = isset( $_GET['offre'] ) ? sanitize_key( $_GET['offre'] ) : '';
 	// Prix : par-rapport → option globale → défaut raisonnable (zéro config nécessaire).
 	$defpx = array( 'rapport' => 290, 'correction' => 1299, 'refonte' => 1490 );
@@ -173,6 +179,25 @@ add_action( 'template_redirect', function () {
 		echo '</div>';
 	}
 	echo '</div></div>';
+	// ===== Certificat officiel + sceau à intégrer (backlink SEO) — débloqué APRÈS paiement =====
+	$home_seo = home_url( '/' ) . '?utm_source=sceau&utm_medium=certificat&utm_campaign=' . rawurlencode( $cert );
+	$embed = '<a href="' . esc_url( $home_seo ) . '" target="_blank" rel="noopener" title="Site audité et sécurisé par Alliance Groupe — certificat ' . esc_attr( $cert ) . '">'
+		. '<img src="' . $ag_shield . '" alt="Certifié sécurisé par Alliance Groupe — N° ' . esc_attr( $cert ) . '" width="120" style="height:auto;border:0"></a>';
+	if ( $paid ) {
+		echo '<div style="margin:18px 0;padding:18px;border:2px solid #16a34a;border-radius:12px;background:#f3fbf6">';
+		echo '<h3 style="margin:0 0 6px;color:#0a7d3c">✅ Certificat débloqué — merci de votre confiance</h3>';
+		echo '<p style="margin:0 0 10px">Votre site <b>' . $seal_dom . '</b> est <b>certifié sécurisé</b> par Alliance Groupe (certificat N° <b>' . esc_html( $cert ) . '</b> · ' . esc_html( gmdate( 'Y' ) ) . '). Collez le sceau ci-dessous dans le <b>pied de page</b> de votre site : il rassure vos visiteurs et prouve votre sérieux.</p>';
+		echo '<div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">';
+		echo '<div style="flex:0 0 auto;text-align:center">' . $embed . '<div style="font-size:11px;color:#888;margin-top:4px">aperçu du sceau</div></div>';
+		echo '<div style="flex:1;min-width:260px"><label style="font-weight:700;font-size:13px">Code à copier (collez-le dans votre site) :</label>'
+			. '<textarea id="agEmbed" readonly rows="4" onclick="this.select()" style="width:100%;font-family:monospace;font-size:12px;border:1px solid #ccd;border-radius:6px;padding:8px;box-sizing:border-box">' . esc_textarea( $embed ) . '</textarea>'
+			. '<button type="button" id="agEmbedBtn" onclick="var t=document.getElementById(\'agEmbed\');t.select();try{document.execCommand(\'copy\');}catch(e){}this.textContent=\'✅ Code copié\';" style="margin-top:6px;background:#0e1016;color:#fff;border:0;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer">📋 Copier le code</button></div>';
+		echo '</div></div>';
+	} else {
+		echo '<div style="margin:18px 0;padding:16px;border:2px dashed #f0a020;border-radius:12px;background:#fff8ec">'
+			. '<h3 style="margin:0 0 4px">🔒 Votre certificat officiel + sceau pour votre site</h3>'
+			. '<p style="margin:0;color:#555">Dès réception de votre règlement, vous débloquez votre <b>certificat officiel N° ' . esc_html( $cert ) . '</b> et un <b>code prêt à coller</b> sur votre site — un sceau « Sécurisé par Alliance Groupe » qui rassure vos visiteurs et valorise votre sérieux. Choisissez une formule ci-dessus.</p></div>';
+	}
 	echo '<div class="foot">Document confidentiel remis dans le cadre d\'un mandat / programme autorisé. Alliance Groupe — 07 44 82 95 16 · alliancegroupe-inc.com/contact</div>';
 	echo '</div>';
 	if ( $offre ) { echo '<script>var e=document.getElementById("offre-' . esc_js( $offre ) . '");if(e)e.scrollIntoView({behavior:"smooth",block:"center"});</script>'; }
