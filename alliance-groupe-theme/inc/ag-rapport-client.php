@@ -42,6 +42,8 @@ function ag_rap_box_render( $post ) {
 	echo '<style>.agr label{display:block;font-weight:600;margin:12px 0 4px}.agr input,.agr textarea{width:100%;padding:8px;border:1px solid #ccd0d4;border-radius:5px}.agr .row2{display:flex;gap:12px}.agr .row2>div{flex:1}</style>';
 	echo '<div class="agr">';
 	echo '<p><b>Lien privé du rapport :</b> <a href="' . esc_url( $url ) . '" target="_blank">' . esc_html( $url ) . '</a><br><span style="color:#666">C\'est ce lien (sans indexation) que tu mets dans l\'assistant, champ « Lien de paiement ». Les QR pointeront dessus.</span></p>';
+	$upd = (int) get_post_meta( $post->ID, '_ag_rap_updated', true );
+	if ( $upd ) { echo '<p style="color:#1a7f37;font-size:13px;margin:-4px 0 8px">🕒 Dernière mise à jour : <b>' . esc_html( wp_date( 'd/m/Y à H:i', $upd ) ) . '</b> (heure du site)</p>'; }
 	echo '<div class="row2"><div><label>Client</label><input type="text" name="ag_rap_client" value="' . ag_rap_field( $post, '_ag_rap_client' ) . '"></div>';
 	echo '<div><label>Cible (domaine)</label><input type="text" name="ag_rap_cible" value="' . ag_rap_field( $post, '_ag_rap_cible' ) . '"></div></div>';
 	echo '<div class="row2"><div><label>Email client</label><input type="email" name="ag_rap_email" value="' . ag_rap_field( $post, '_ag_rap_email' ) . '" placeholder="contact@client.fr"></div>';
@@ -241,9 +243,17 @@ if ( ! function_exists( 'ag_rapport_create' ) ) {
 				for ( $k = 1; $k < count( $matches ); $k++ ) { wp_trash_post( $matches[ $k ] ); }
 			}
 		}
-		$title = 'Audit sécurité — ' . ( $cible ? $cible : 'cible' ) . ' (' . gmdate( 'Y-m-d' ) . ')';
-		if ( $id ) { wp_update_post( array( 'ID' => $id, 'post_title' => $title ) ); }
-		else { $id = wp_insert_post( array( 'post_type' => 'ag_rapport', 'post_status' => 'publish', 'post_title' => $title ) ); }
+		// Heure LOCALE du site (Reglages > General > Fuseau horaire), avec l'heure — pas l'UTC.
+		$now   = current_time( 'mysql' );
+		$nowg  = current_time( 'mysql', true );
+		$title = 'Audit sécurité — ' . ( $cible ? $cible : 'cible' ) . ' (' . current_time( 'Y-m-d H:i' ) . ')';
+		if ( $id ) {
+			// On garde le rapport canonique mais on REMET sa date a maintenant → l'admin affiche la vraie heure d'enregistrement.
+			wp_update_post( array( 'ID' => $id, 'post_title' => $title, 'post_date' => $now, 'post_date_gmt' => $nowg, 'edit_date' => true ) );
+		} else {
+			$id = wp_insert_post( array( 'post_type' => 'ag_rapport', 'post_status' => 'publish', 'post_title' => $title ) );
+		}
+		update_post_meta( $id, '_ag_rap_updated', current_time( 'timestamp' ) );
 		if ( ! $id || is_wp_error( $id ) ) { return null; }
 		update_post_meta( $id, '_ag_rap_html', wp_kses_post( $html ) );
 		update_post_meta( $id, '_ag_rap_client', sanitize_text_field( $client ) );
