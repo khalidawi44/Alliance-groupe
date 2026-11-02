@@ -49,8 +49,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02e</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02e</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02f</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02f</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <p class="sub"><b>Ici c'est TOI qui lances chaque commande</b> (sur Kali), et l'outil te guide pas-à-pas + lit tes résultats + construit le rapport. C'est le mode pour <b>apprendre et aller jusqu'au bout toi-même</b>. (Pour un audit 100% automatique sans rien faire → bouton « Audit auto » dans WordPress.) Hors ligne. <b>Uniquement sous mandat / scope autorisé.</b></p>
 
   <div class="panel" id="scopePanel">
@@ -1056,10 +1056,29 @@ function persistState(){
     var root=agStateRoot(); if(!root) return;
     var steps={}, list=document.querySelectorAll('#steps textarea.res');
     for(var i=0;i<list.length;i++){ if(list[i].value && list[i].value.trim()){ steps[list[i].id]=list[i].value.slice(0,20000); } }
-    localStorage.setItem('ag_state_'+root, JSON.stringify({findings:FINDINGS, steps:steps, cible:(window.AGT&&AGT.T)||root, ts:Date.now()}));
+    localStorage.setItem('ag_state_'+root, JSON.stringify({findings:FINDINGS, steps:steps, cible:(window.AGT&&AGT.T)||root, gen:(window.LASTGEN&&LASTGEN.name)||'', ts:Date.now()}));
   }catch(e){}
+  try{ syncSoon(); }catch(e){}
 }
 function persistSoon(){ try{ clearTimeout(_AG_PERSIST_T); }catch(e){} _AG_PERSIST_T=setTimeout(persistState,700); }
+/* Synchro AUTO vers le serveur : met à jour la fiche Espace Audit avec les failles (sans doublon). */
+var _AG_SYNC_T=null;
+function syncSoon(){ try{ clearTimeout(_AG_SYNC_T); }catch(e){} _AG_SYNC_T=setTimeout(syncToServer,1500); }
+function syncToServer(){
+  try{
+    var host=(window.AGT&&AGT.T)||''; if(!host || !FINDINGS.length) return;
+    var tk=''; try{var e=document.getElementById('rapToken'); tk=e?(e.value||'').trim():'';}catch(_){}
+    var body=new URLSearchParams();
+    body.set('cible',host);
+    body.set('findings', JSON.stringify(FINDINGS.map(function(f){return {name:(f.name||f.type||'Faille'),score:(parseFloat(f.score)||0)};})));
+    if(tk) body.set('token',tk);
+    fetch(agOrigin()+'/wp-json/ag/v1/site-upsert',{method:'POST',credentials:'include',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()})
+      .then(function(r){return r.json();}).then(function(j){
+        var ind=document.getElementById('reportCount');
+        if(j&&j.ok&&ind){ ind.textContent='· '+FINDINGS.length+' faille(s) · ☁️ Espace Audit à jour'+(j.rapport_url?' · rapport lié':''); }
+      }).catch(function(){});
+  }catch(e){}
+}
 function restoreState(host){
   try{
     var root=(host||'').toLowerCase().replace(/^www\./,''); if(!root) return;
@@ -1357,6 +1376,15 @@ try{ var _sv=localStorage.getItem('ag_scope'); if(_sv){ document.getElementById(
 try{ var _px=JSON.parse(localStorage.getItem('ag_prices')||'null'); if(_px){ if(_px.crit!=null)document.getElementById('pxCrit').value=_px.crit; if(_px.eleve!=null)document.getElementById('pxEleve').value=_px.eleve; if(_px.moyen!=null)document.getElementById('pxMoyen').value=_px.moyen; if(_px.faible!=null)document.getElementById('pxFaible').value=_px.faible; if(_px.report!=null)document.getElementById('pxReport').value=_px.report; if(_px.refonte!=null)document.getElementById('pxRefonte').value=_px.refonte; } var _pu=localStorage.getItem('ag_payurl'); if(_pu)document.getElementById('payUrl').value=_pu; }catch(e){}
 try{ var _rc=JSON.parse(localStorage.getItem('ag_rap_cfg')||'null'); if(_rc){ var sv=function(id,v){var e=document.getElementById(id); if(e&&v)e.value=v;}; sv('rapClient',_rc.client); sv('rapEmail',_rc.email); sv('rapPhone',_rc.phone); sv('rapToken',_rc.token); } }catch(e){}
 try{ var _sd=document.getElementById('steps'); if(_sd){ _sd.addEventListener('input', function(e){ if(e.target && e.target.classList && e.target.classList.contains('res')){ persistSoon(); } }); } }catch(e){}
+// AUTO-REPRISE au rafraîchissement : si une session existe pour la dernière cible, on régénère sa route + restaure tout.
+try{
+  var _lc2=localStorage.getItem('ag_defi_cible');
+  if(_lc2){
+    var _root2=_lc2.toLowerCase().replace(/^www\./,'');
+    var _ss=localStorage.getItem('ag_state_'+_root2);
+    if(_ss){ var _o=JSON.parse(_ss); var _fn=(_o&&_o.gen)||'genAuto'; setTimeout(function(){ try{ (window[_fn]||window.genAuto)(); }catch(e){} }, 200); }
+  }
+}catch(e){}
 </script>
 </body>
 </html>
