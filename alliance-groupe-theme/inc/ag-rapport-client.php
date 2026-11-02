@@ -389,7 +389,11 @@ add_action( 'rest_api_init', function () {
 					foreach ( (array) ( $e['checks'] ?? array() ) as $c ) {
 						$stt = $c['status'] ?? '';
 						if ( 'fail' === $stt || 'warn' === $stt ) {
-							$lab = function_exists( 'ag_audit_public_label' ) ? ag_audit_public_label( $c['name'] ?? '' ) : ( $c['name'] ?? '' );
+							// Flux INTERNE (alimente l'assistant de Fabrice) : VRAI nom specifique de chaque
+							// faille (RGPD, DMARC, SEO, versions...), PAS le libelle teaser flou qui ecrasait
+							// plusieurs failles distinctes en une seule « Point de securite a corriger ».
+							$lab = trim( (string) ( $c['name'] ?? '' ) );
+							if ( '' === $lab && function_exists( 'ag_audit_public_label' ) ) { $lab = ag_audit_public_label( '' ); }
 							if ( $lab ) { $labels[ $lab ] = ! empty( $c['critical'] ) ? 9.0 : 5.0; }
 						}
 					}
