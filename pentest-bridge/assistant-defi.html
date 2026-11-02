@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02m</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02m</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02n</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02n</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -1047,6 +1047,7 @@ function analyzeStep(id){
   v.innerHTML=h;
   if(r.unlock) showExtract(r.unlock);
   if(r.report) applyToReport(r.report, txt);
+  try{ scanExtra(txt); }catch(e){}
   updateProgress();
   try{ if(txt && txt.trim()){ var _st=box&&box.closest?box.closest('.step'):null; if(_st) _st.classList.add('ag-done'); } }catch(e){}
   try{ persistState(); }catch(e){}
@@ -1088,6 +1089,32 @@ var NOVICE={
  perf:{r:'Votre site est ralenti (pas de compression/cache, pages lourdes).',i:'Visiteurs qui partent, moins de ventes, moins bien référencé.'},
  seo:{r:'Des bases du référencement technique manquent (titres, descriptions, mobile).',i:'Moins de visibilité sur Google, moins de clients potentiels.'}
 };
+/* MULTI-DÉTECTEUR : un même texte collé (ex. gros .txt Kali) peut contenir PLUSIEURS failles.
+   On balaie toutes les signatures connues et on pousse CHACUNE (pushFinding dédup par type). */
+function scanExtra(t){
+  if(!t) return; t=''+t;
+  var hit=function(re,type,proof){ if(re.test(t)){ try{ pushFinding(type, proof||t); }catch(e){} } };
+  // Lecture de fichier serveur : XXE si contexte XML, sinon LFI
+  if(/root:x:0:0:/.test(t)){
+    if(/<!doctype|<!entity|file:\/\/\/|ENTITY\s+\w+\s+SYSTEM/i.test(t)){ hit(/root:x:0:0:/,'xxe',t);
+      try{ FINDINGS=FINDINGS.filter(function(f){return f.type!=='lfi';}); }catch(e){} // XXE prime sur LFI (même preuve)
+    } else hit(/root:x:0:0:/,'lfi',t);
+  }
+  hit(/^[0-9A-F]{35}:\d+/m,'leak');                                   // mot de passe compromis (Pwned)
+  hit(/Valid Combinations Found|\[SUCCESS\]|Username:\s*\S+,?\s*Password:\s*\S+/i,'auth'); // mdp cassé
+  hit(/is vulnerable|available databases|back-end DBMS|sqlmap identified|Parameter:\s*\S+\s*\((GET|POST)\)/i,'sqli');
+  hit(/<svg[\s\/][^>]*onload\s*=|<script>\s*alert|<img[^>]*onerror\s*=|onerror\s*=\s*alert|onload\s*=\s*alert/i,'xss');
+  hit(/\[!\]\s*Title:|vulnerabilit|CVE-\d{4}/i,'cve');               // plugin/thème vulnérable
+  hit(/ref:\s*refs\/heads|\.git\/HEAD/i,'info');                      // .git exposé
+  hit(/account_exists|"slug"\s*:\s*"[^"]+"[\s\S]*"id"\s*:\s*\d+|\/author\/[a-z0-9_.-]+/i,'enum'); // comptes énumérés
+  hit(/uid=\d+.*gid=\d+/i,'rce');                                     // RCE
+  hit(/MANQUANT\s+(Strict-Transport|Content-Security|X-Frame|X-Content-Type|Referrer-Policy|Permissions-Policy)/i,'headers');
+  hit(/HSTS MANQUANT/i,'tls');
+  hit(/SPF MANQUANT|DMARC MANQUANT|DKIM[^\n]*MANQUANT/i,'email');
+  hit(/GOOGLE_FONTS_EXTERNE|TRACEURS_PRESENTS|PAS_DE_BANDEAU_COOKIE|PAS_DE_MENTIONS_LEGALES/i,'rgpd');
+  hit(/PAS_DE_COMPRESSION|PAS_DE_CACHE/i,'perf');
+  hit(/PAS_DE_TITLE|PAS_DE_META_DESCRIPTION|PAS_DE_VIEWPORT/i,'seo');
+}
 function pushFinding(type, proof){
   var t=RT[type]; if(!t) return;
   var ep=fv('rendpoint')||AGT.U||'';
