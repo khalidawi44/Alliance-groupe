@@ -184,11 +184,19 @@ if ( ! function_exists( 'ag_rapport_create' ) ) {
 	 */
 	function ag_rapport_create( $html, $client = '', $cible = '', $devis = 0, $email = '', $phone = '', $score = null ) {
 		if ( ! post_type_exists( 'ag_rapport' ) ) { return null; }
+		// IDEMPOTENT : si un rapport existe deja pour ce domaine, on le MET A JOUR (pas de doublon).
+		$hostn = preg_replace( '#^www\\.#', '', strtolower( (string) ( wp_parse_url( ( 0 === stripos( (string) $cible, 'http' ) ? $cible : 'https://' . $cible ), PHP_URL_HOST ) ?: $cible ) ) );
+		$id = 0;
+		if ( $hostn ) {
+			$ex = get_posts( array( 'post_type' => 'ag_rapport', 'post_status' => 'publish', 'numberposts' => 30, 'fields' => 'ids' ) );
+			foreach ( $ex as $pid ) {
+				$ph = preg_replace( '#^www\\.#', '', strtolower( (string) get_post_meta( $pid, '_ag_rap_cible', true ) ) );
+				if ( $ph && $ph === $hostn ) { $id = (int) $pid; break; }
+			}
+		}
 		$title = 'Audit sécurité — ' . ( $cible ? $cible : 'cible' ) . ' (' . gmdate( 'Y-m-d' ) . ')';
-		$id = wp_insert_post( array(
-			'post_type' => 'ag_rapport', 'post_status' => 'publish',
-			'post_title' => $title,
-		) );
+		if ( $id ) { wp_update_post( array( 'ID' => $id, 'post_title' => $title ) ); }
+		else { $id = wp_insert_post( array( 'post_type' => 'ag_rapport', 'post_status' => 'publish', 'post_title' => $title ) ); }
 		if ( ! $id || is_wp_error( $id ) ) { return null; }
 		update_post_meta( $id, '_ag_rap_html', wp_kses_post( $html ) );
 		update_post_meta( $id, '_ag_rap_client', sanitize_text_field( $client ) );
@@ -359,6 +367,41 @@ add_action( 'rest_api_init', function () {
 				'findings' => $findings,
 				'rapport_url' => $rap,
 			);
+		},
+	) );
+
+	// 4) SYNCHRO AUTO : l'assistant pousse ses failles -> met a jour la FICHE Espace Audit (sans doublon, sans rapport force).
+	register_rest_route( 'ag/v1', '/site-upsert', array(
+		'methods'             => 'POST',
+		'permission_callback' => 'ag_rap_rest_authed',
+		'callback'            => function ( $req ) {
+			if ( ! function_exists( 'ag_audit_hist_upsert' ) ) { return array( 'ok' => false, 'msg' => 'hist indispo' ); }
+			$cible = (string) $req->get_param( 'cible' );
+			$url   = ( 0 === stripos( $cible, 'http' ) ) ? $cible : ( 'https://' . $cible );
+			$host  = (string) wp_parse_url( $url, PHP_URL_HOST );
+			if ( '' === $host ) { return array( 'ok' => false, 'msg' => 'cible invalide' ); }
+			$fnd = json_decode( (string) $req->get_param( 'findings' ), true );
+			$checks = array(); $crit = 0; $pen = 0;
+			if ( is_array( $fnd ) ) {
+				foreach ( $fnd as $f ) {
+					$nm = sanitize_text_field( (string) ( $f['name'] ?? 'Faille' ) );
+					$sc = (float) ( $f['score'] ?? 0 ); $isc = ( $sc >= 9 );
+					if ( $isc ) { $crit++; $pen += 28; } elseif ( $sc >= 7 ) { $pen += 14; } elseif ( $sc >= 4 ) { $pen += 6; } else { $pen += 2; }
+					$checks[] = array( 'name' => $nm, 'status' => 'fail', 'critical' => $isc );
+				}
+			}
+			if ( empty( $checks ) ) { return array( 'ok' => true, 'msg' => 'rien a synchroniser' ); }
+			$score = max( 5, min( 100, 100 - $pen ) );
+			$a  = array( 'url' => $url, 'score' => $score, 'critical' => $crit, 'checks' => $checks );
+			$ct = function_exists( 'ag_audit_extract_contacts' ) ? ag_audit_extract_contacts( $url ) : array();
+			ag_audit_hist_upsert( $a, $ct, 'expert' );
+			// Lien du rapport existant pour ce host (s'il y en a un) -> l'assistant peut l'afficher.
+			$rap = '';
+			if ( function_exists( 'ag_audit_hist_get' ) ) {
+				$hn = preg_replace( '#^www\\.#', '', strtolower( $host ) );
+				foreach ( ag_audit_hist_get() as $e ) { if ( preg_replace( '#^www\\.#', '', strtolower( (string) ( $e['host'] ?? '' ) ) ) === $hn && ! empty( $e['rapport_url'] ) ) { $rap = (string) $e['rapport_url']; } }
+			}
+			return array( 'ok' => true, 'host' => $host, 'score' => $score, 'critical' => $crit, 'rapport_url' => $rap );
 		},
 	) );
 } );
