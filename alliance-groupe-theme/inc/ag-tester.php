@@ -1398,6 +1398,12 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 							$a  = array( 'url' => $u, 'score' => (int) $an['score'], 'critical' => (int) $an['crit'], 'checks' => $chk );
 							$ct = function_exists( 'ag_audit_extract_contacts' ) ? ag_audit_extract_contacts( $u ) : array();
 							ag_audit_hist_upsert( $a, $ct, 'expert' );
+							// Alimente AUSSI le stock riche par site → remonte dans l'assistant + tous les rapports.
+							if ( function_exists( 'ag_rap_store_findings' ) ) {
+								$rf = array();
+								foreach ( $an['findings'] as $f ) { $sv = ( 'crit' === $f['sev'] ? 9.0 : ( 'high' === $f['sev'] ? 7.0 : ( 'med' === $f['sev'] ? 5.0 : 3.0 ) ) ); $rf[] = array( 'name' => $f['label'], 'score' => $sv, 'type' => 'cve', 'rem' => ( $f['detail'] ?? '' ) ); }
+								ag_rap_store_findings( $u, wp_json_encode( $rf ) );
+							}
 						}
 						$notice = 'Rapport Kali charge et relie a ' . (string) wp_parse_url( $u, PHP_URL_HOST ) . ' - cree le Rapport client sur sa fiche ci-dessous.';
 					}
