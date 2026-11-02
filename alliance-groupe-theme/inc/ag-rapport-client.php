@@ -290,7 +290,8 @@ add_action( 'rest_api_init', function () {
 				$score0 = max( 5, min( 100, 100 - $pen0 ) );
 				$r = ag_rapport_create( $safe, $client, $cible, $devis, $email, $phone, $score0 );
 			if ( ! $r ) return new WP_Error( 'ag_fail', 'Création impossible.', array( 'status' => 500 ) );
-			// L'audit est finalisé dans l'outil → clôt automatiquement le job Kali « en attente » de cette cible.
+				if ( function_exists( 'ag_rap_store_findings' ) ) { ag_rap_store_findings( $cible, (string) $req->get_param( 'findings' ) ); }
+				// L'audit est finalisé dans l'outil → clôt automatiquement le job Kali « en attente » de cette cible.
 			$closed = '';
 			if ( $cible && function_exists( 'ag_pt_autoclose_target' ) ) {
 				$closed = ag_pt_autoclose_target( $cible, $r['url'] );
@@ -511,4 +512,37 @@ if ( ! function_exists( 'ag_rap_ajax_proxy' ) ) {
 	add_action( 'wp_ajax_ag_rap_siteupsert', 'ag_rap_ajax_proxy' );
 	add_action( 'wp_ajax_ag_rap_sitestate', 'ag_rap_ajax_proxy' );
 	add_action( 'wp_ajax_ag_rap_send', 'ag_rap_ajax_proxy' );
+}
+
+/* ===================== Failles riches PAR SITE (tous outils) — source unique du rapport ===================== */
+if ( ! function_exists( 'ag_rap_find_key' ) ) {
+	function ag_rap_find_key( $host ) {
+		$h = preg_replace( '#^www\.#', '', strtolower( (string) ( wp_parse_url( ( 0 === stripos( (string) $host, 'http' ) ? $host : 'https://' . $host ), PHP_URL_HOST ) ?: $host ) ) );
+		return $h ? 'ag_aa_find_' . md5( $h ) : '';
+	}
+	/** Fusionne des failles (JSON de l'outil) dans le stock du site, dédup par nom, garde le pire score. */
+	function ag_rap_store_findings( $host, $json ) {
+		$key = ag_rap_find_key( $host ); if ( '' === $key ) { return; }
+		$fnd = json_decode( (string) $json, true ); if ( ! is_array( $fnd ) ) { return; }
+		$cur = get_option( $key, array() ); if ( ! is_array( $cur ) ) { $cur = array(); }
+		$by = array();
+		foreach ( $cur as $f ) { if ( ! empty( $f['name'] ) ) { $by[ $f['name'] ] = $f; } }
+		foreach ( $fnd as $f ) {
+			$n = sanitize_text_field( (string) ( $f['name'] ?? '' ) ); if ( '' === $n ) { continue; }
+			$sc = (float) ( $f['score'] ?? 0 );
+			if ( isset( $by[ $n ] ) && (float) ( $by[ $n ]['score'] ?? 0 ) > $sc ) { $sc = (float) $by[ $n ]['score']; }
+			$by[ $n ] = array(
+				'name' => $n, 'score' => $sc,
+				'type' => sanitize_key( (string) ( $f['type'] ?? '' ) ),
+				'cvss' => sanitize_text_field( (string) ( $f['cvss'] ?? '' ) ),
+				'rem'  => sanitize_text_field( (string) ( $f['rem'] ?? '' ) ),
+				'proof'=> sanitize_textarea_field( (string) ( $f['proof'] ?? '' ) ),
+			);
+		}
+		update_option( $key, array_slice( array_values( $by ), 0, 60 ), false );
+	}
+	function ag_rap_get_findings( $host ) {
+		$key = ag_rap_find_key( $host ); if ( '' === $key ) { return array(); }
+		$v = get_option( $key, array() ); return is_array( $v ) ? $v : array();
+	}
 }
