@@ -84,6 +84,9 @@ add_action( 'save_post_ag_rapport', function ( $post_id ) {
 	if ( ! get_post_meta( $post_id, '_ag_rap_token', true ) ) {
 		update_post_meta( $post_id, '_ag_rap_token', wp_generate_password( 22, false, false ) );
 	}
+	if ( ! get_post_meta( $post_id, '_ag_rap_cert', true ) ) {
+		update_post_meta( $post_id, '_ag_rap_cert', 'AG-SEC-' . gmdate( 'Y' ) . '-' . strtoupper( substr( wp_generate_password( 8, false, false ), 0, 6 ) ) );
+	}
 } );
 
 /* ---- 4. Colonne « Lien privé » dans la liste ---- */
@@ -104,6 +107,8 @@ add_action( 'template_redirect', function () {
 	$cible  = get_post_meta( $id, '_ag_rap_cible', true );
 	$html   = (string) get_post_meta( $id, '_ag_rap_html', true );
 	$score  = get_post_meta( $id, '_ag_rap_score', true );
+	$cert   = get_post_meta( $id, '_ag_rap_cert', true );
+	if ( ! $cert ) { $cert = 'AG-SEC-' . gmdate( 'Y' ) . '-' . strtoupper( substr( wp_generate_password( 8, false, false ), 0, 6 ) ); update_post_meta( $id, '_ag_rap_cert', $cert ); }
 	$offre  = isset( $_GET['offre'] ) ? sanitize_key( $_GET['offre'] ) : '';
 	// Prix : par-rapport → option globale → défaut raisonnable (zéro config nécessaire).
 	$defpx = array( 'rapport' => 290, 'correction' => 1299, 'refonte' => 1490 );
@@ -151,8 +156,13 @@ add_action( 'template_redirect', function () {
 	}
 	if ( $html !== '' ) { echo $html; } // contenu authoré en admin (trusted)
 	$seal_dom = esc_html( $cible ? $cible : 'votre site' );
-	echo '<div class="agseal"><img class="agseal-img" src="' . $ag_shield . '" alt="Sceau de sécurité Alliance Groupe" />'
-		. '<div class="agseal-txt"><b>🏅 Votre Sceau de Confiance</b><br>Après correction, ce sceau officiel est <b>à vous</b> : affichez-le sur votre site (pied de page) pour <b>rassurer vos visiteurs</b> et prouver que votre site est audité et sécurisé — un gage de sérieux que vos concurrents n\'ont pas.</div></div>';
+	echo '<div class="agseal"><img class="agseal-img" src="' . $ag_shield . '" alt="Certificat de sécurité Alliance Groupe" />'
+		. '<div class="agseal-txt">'
+		. '<div style="font-size:11px;letter-spacing:2.5px;color:#E6A93C;font-weight:800">CERTIFICAT D\'AUDIT DE SÉCURITÉ</div>'
+		. '<div style="font-size:19px;font-weight:900;margin:3px 0 2px">Alliance Groupe</div>'
+		. '<div style="font-size:13.5px;line-height:1.6">Site audité : <b>' . $seal_dom . '</b><br>Année : <b>' . esc_html( gmdate( 'Y' ) ) . '</b> &nbsp;·&nbsp; N° : <b style="letter-spacing:.5px">' . esc_html( $cert ) . '</b></div>'
+		. '<div style="font-size:12px;color:#9aa0b0;margin-top:8px">Après correction, ce certificat atteste que <b>' . $seal_dom . '</b> a été audité et sécurisé par Alliance Groupe. Affichez le sceau sur votre site (pied de page) pour rassurer vos visiteurs — un gage de sérieux que vos concurrents n\'ont pas.</div>'
+		. '</div></div>';
 	echo '<h3>Choisissez votre formule</h3><div class="offers">';
 	foreach ( $px as $key => $o ) {
 		$hi = ( $key === 'correction' || $key === $offre ) ? ' hi' : '';
@@ -208,6 +218,10 @@ if ( ! function_exists( 'ag_rapport_create' ) ) {
 		if ( null !== $score && '' !== $score ) { update_post_meta( $id, '_ag_rap_score', (int) $score ); }
 		$tok = get_post_meta( $id, '_ag_rap_token', true );
 		if ( ! $tok ) { $tok = wp_generate_password( 22, false, false ); update_post_meta( $id, '_ag_rap_token', $tok ); }
+		// N° de certificat UNIQUE (stable) : AG-SEC-<année>-<6 hex>.
+		if ( ! get_post_meta( $id, '_ag_rap_cert', true ) ) {
+			update_post_meta( $id, '_ag_rap_cert', 'AG-SEC-' . gmdate( 'Y' ) . '-' . strtoupper( substr( wp_generate_password( 8, false, false ), 0, 6 ) ) );
+		}
 		return array( 'id' => (int) $id, 'url' => home_url( '/rapport/' . $tok ) );
 	}
 }
