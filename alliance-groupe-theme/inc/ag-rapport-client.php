@@ -226,10 +226,19 @@ if ( ! function_exists( 'ag_rapport_create' ) ) {
 		$hostn = preg_replace( '#^www\\.#', '', strtolower( (string) ( wp_parse_url( ( 0 === stripos( (string) $cible, 'http' ) ? $cible : 'https://' . $cible ), PHP_URL_HOST ) ?: $cible ) ) );
 		$id = 0;
 		if ( $hostn ) {
-			$ex = get_posts( array( 'post_type' => 'ag_rapport', 'post_status' => 'publish', 'numberposts' => 30, 'fields' => 'ids' ) );
+			// Plus ANCIEN d'abord → on garde le rapport canonique (lien /rapport/<jeton> deja partage) et on le rafraichit.
+			$ex = get_posts( array( 'post_type' => 'ag_rapport', 'post_status' => 'publish', 'numberposts' => 50, 'fields' => 'ids', 'orderby' => 'date', 'order' => 'ASC' ) );
+			$matches = array();
 			foreach ( $ex as $pid ) {
-				$ph = preg_replace( '#^www\\.#', '', strtolower( (string) get_post_meta( $pid, '_ag_rap_cible', true ) ) );
-				if ( $ph && $ph === $hostn ) { $id = (int) $pid; break; }
+				// On parse le HOST du cible stocke (qui peut etre une URL complete « https://site » OU « site ») exactement comme $hostn.
+				$raw = (string) get_post_meta( $pid, '_ag_rap_cible', true );
+				$ph  = preg_replace( '#^www\\.#', '', strtolower( (string) ( wp_parse_url( ( 0 === stripos( $raw, 'http' ) ? $raw : 'https://' . $raw ), PHP_URL_HOST ) ?: $raw ) ) );
+				if ( $ph && $ph === $hostn ) { $matches[] = (int) $pid; }
+			}
+			if ( $matches ) {
+				$id = (int) $matches[0]; // le plus ancien = canonique (on garde son lien /rapport/<jeton>)
+				// 1 SEUL rapport par site : les doublons (ancien bug de rapprochement http/https) partent a la corbeille.
+				for ( $k = 1; $k < count( $matches ); $k++ ) { wp_trash_post( $matches[ $k ] ); }
 			}
 		}
 		$title = 'Audit sécurité — ' . ( $cible ? $cible : 'cible' ) . ' (' . gmdate( 'Y-m-d' ) . ')';
