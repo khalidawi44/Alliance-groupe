@@ -22,7 +22,10 @@
   .cats{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
   .cat{padding:6px 11px;font-size:12px;border:1px solid rgba(255,255,255,.2);background:#0b0d13;color:#cdd;border-radius:999px}
   .cat.on{background:linear-gradient(135deg,var(--or),var(--or2));color:#1a1305;border-color:transparent}
-  .step{background:#0b0d13;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 13px;margin:10px 0}
+  .step{background:#0b0d13;border:1px solid rgba(255,255,255,.1);border-left:4px solid #3a3d5c;border-radius:10px;padding:11px 13px;margin:10px 0}
+  .step.ag-done{border-left:4px solid #16a34a}
+  .step.ag-done h3:after{content:" ✅ fait";color:#4ade80;font-size:11px;font-weight:600}
+  .step:not(.ag-done):not(.sub) h3:after{content:" ⬜ à faire";color:#6b7190;font-size:11px;font-weight:600}
   .step h3{margin:0 0 6px;font-size:14px;color:var(--or)}
   .ph{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7f8aa0;margin:14px 0 2px;font-weight:800}
   pre{position:relative;background:#05070c;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:11px;overflow:auto;font-size:12.5px;color:#d7e0f0;white-space:pre-wrap;word-break:break-word;margin:6px 0}
@@ -49,9 +52,17 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02l</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02l</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
-  <p class="sub"><b>Ici c'est TOI qui lances chaque commande</b> (sur Kali), et l'outil te guide pas-à-pas + lit tes résultats + construit le rapport. C'est le mode pour <b>apprendre et aller jusqu'au bout toi-même</b>. (Pour un audit 100% automatique sans rien faire → bouton « Audit auto » dans WordPress.) Hors ligne. <b>Uniquement sous mandat / scope autorisé.</b></p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02m</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02m</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
+    <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
+    <div style="font-size:13px;color:#c7cdda;line-height:1.7">
+      <b>1.</b> Tape la <b>cible</b> → <b>Générer la route</b>.<br>
+      <b>2.</b> Pour chaque étape : lance la commande sur Kali, <b>colle la sortie</b> → <b>▶ Analyser</b>. L'étape devient <span style="color:#4ade80">✅ verte</span> (faite) ; les autres restent <span style="color:#6b7190">⬜ à faire</span>. Tu peux fermer/rouvrir : tout est <b>sauvegardé et repris</b> automatiquement.<br>
+      <b>3.</b> Quand tu as fini : <b>🥉 Léger</b> / <b>🥈 Approfondi</b> / <b>🥇 Expert</b> → <b>💾 Enregistrer dans WordPress</b> (crée la fiche + le rapport client payant).
+    </div>
+  </div>
+  <p class="sub" style="font-size:12px"><b>Sous mandat / scope autorisé uniquement.</b> Hors ligne. (Audit 100 % automatique sans rien faire → « Audit auto » dans WordPress.)</p>
 
   <div class="panel" id="scopePanel">
     <label style="display:flex;justify-content:space-between;align-items:center;gap:10px">
@@ -194,8 +205,9 @@
     <h2>④ Rapport présentable <span style="font-size:12px;color:#9aa0b0">(marque Alliance Groupe — 2 versions)</span> <span id="reportCount" style="font-size:11px;color:#9aa0b0"></span></h2>
     <div class="panel">
       <div class="toolbar">
-        <button onclick="buildReport('novice')">👔 Version client (novice)</button>
-        <button onclick="buildReport('expert')">🧑‍💻 Version expert</button>
+        <button onclick="buildReport('leger')">🥉 Rapport Léger (aperçu)</button>
+        <button onclick="buildReport('novice')">🥈 Rapport Approfondi (client)</button>
+        <button onclick="buildReport('expert')">🥇 Rapport Expert (tout)</button>
         <button onclick="printReport()">🖨️ Imprimer / PDF</button>
       </div>
       <p class="exp" style="margin-top:0">Le rapport reprend TOUTES les failles confirmées pendant la campagne. La version <b>novice</b> = pour le client (langage clair, sans code). La version <b>expert</b> = technique (CVSS, PoC, remédiation). Un <b>devis de remédiation</b> (prix par gravité) + un bouton de <b>paiement</b> sont ajoutés en bas du rapport.</p>
@@ -1036,6 +1048,7 @@ function analyzeStep(id){
   if(r.unlock) showExtract(r.unlock);
   if(r.report) applyToReport(r.report, txt);
   updateProgress();
+  try{ if(txt && txt.trim()){ var _st=box&&box.closest?box.closest('.step'):null; if(_st) _st.classList.add('ag-done'); } }catch(e){}
   try{ persistState(); }catch(e){}
   if(CAMPAIGN) setTimeout(nudgeNext, 120);
 }
@@ -1122,7 +1135,7 @@ function restoreState(host){
       st.findings.forEach(function(f){ if(f&&f.key&&!FINDINGS.some(function(x){return x.key===f.key;})) FINDINGS.push(f); });
       var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+FINDINGS.length+' faille(s) collectée(s)';
     }
-    if(st.steps){ Object.keys(st.steps).forEach(function(id){ var el=document.getElementById(id); if(el && !el.value){ el.value=st.steps[id]; } }); }
+    if(st.steps){ Object.keys(st.steps).forEach(function(id){ var el=document.getElementById(id); if(el){ if(!el.value){ el.value=st.steps[id]; } try{ var stp=el.closest('.step'); if(stp) stp.classList.add('ag-done'); }catch(e){} } }); }
     try{ updateProgress(); }catch(e){}
     var sdiv=document.getElementById('steps');
     if(sdiv && st.findings && st.findings.length){ var n=document.createElement('div'); n.className='verdict ok'; n.style.margin='0 0 10px'; n.innerHTML='💾 <b>Session restaurée</b> : '+st.findings.length+' faille(s) et tes saisies précédentes sur ce site ont été récupérées automatiquement.'; sdiv.insertBefore(n, sdiv.firstChild); }
@@ -1295,7 +1308,14 @@ function buildReport(mode, noScroll){
   if(!F.length){ box.innerHTML='<div style="padding:20px;color:#555">Aucune faille collectée pour l\'instant. Lance des analyses (ou remplis le rapport ci-dessus), puis regénère.</div>'; return; }
   var worst=F.reduce(function(m,f){var s=parseFloat(f.score)||0;return s>m?s:m;},0);
   var body='';
-  if(mode==='expert'){
+  if(mode==='leger'){
+    var s0=sevInfo(worst), nc=F.filter(function(f){return (parseFloat(f.score)||0)>=9;}).length;
+    var cats=F.map(function(f){return f.name;}).filter(function(v,i,a){return a.indexOf(v)===i;}).slice(0,10);
+    body+='<div style="display:flex;align-items:center;gap:18px;padding:18px 24px;border-bottom:1px solid #eee"><div style="font-size:44px;font-weight:900;color:'+s0.c+'">'+esc(''+worst)+'<span style="font-size:16px;color:#888">/10</span></div><div><div style="font-weight:800;color:'+s0.c+';font-size:16px">Gravité maximale : '+s0.l+'</div><div style="font-size:13px;color:#555"><b>'+F.length+'</b> point(s) de sécurité détecté(s)'+(nc?' · <b style="color:#dc2626">'+nc+' critique(s)</b>':'')+'.</div></div></div>';
+    body+='<div style="padding:12px 24px 20px"><p style="color:#333;font-size:14px">Voici un <b>aperçu</b> de ce que notre audit a détecté sur votre site :</p><ul style="columns:2;font-size:13.5px;color:#222">';
+    cats.forEach(function(c){ body+='<li>'+esc(c)+'</li>'; });
+    body+='</ul><div style="background:#fff8ec;border:1px solid #F3C64B;border-radius:8px;padding:12px 14px;margin-top:10px;font-size:13.5px"><b>🔒 Le détail est masqué dans cet aperçu.</b> Le <b>Rapport Approfondi</b> explique chaque faille en clair (le risque pour vous), et le <b>Rapport Expert</b> donne la preuve technique + la marche exacte pour corriger. Choisissez une formule ci-dessous pour tout débloquer.</div></div>';
+  } else if(mode==='expert'){
     body+='<div style="padding:10px 24px 24px"><p style="color:#333;font-size:13px">Rapport technique — chaque faille suit le format standard (type, endpoint, CVSS, preuve masquée, remédiation).</p>';
     F.forEach(function(f,idx){ var s=sevInfo(f.score);
       body+='<div style="border:1px solid #e3e3e3;border-radius:8px;padding:14px;margin:14px 0">'+
