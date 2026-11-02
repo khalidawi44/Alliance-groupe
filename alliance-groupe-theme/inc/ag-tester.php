@@ -535,9 +535,13 @@ if ( ! function_exists( 'ag_tester_expert_order' ) ) {
 if ( ! function_exists( 'ag_tester_render_form' ) ) {
 	function ag_tester_render_form() {
 		$in = 'padding:14px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(212,180,92,.3);border-radius:10px;color:#fff;font-size:1rem;width:100%;box-sizing:border-box';
-		// Image 3D du gate : option, sinon fichier par défaut du thème (à fournir).
+		// Image du gate : option, sinon tester-3d.png s'il existe, sinon une image sécurité présente (pont sûr).
 		$gate_img = ag_tester_opt( 'popup_img' );
-		if ( ! $gate_img ) $gate_img = get_stylesheet_directory_uri() . '/assets/images/tester-3d.png';
+		if ( ! $gate_img ) {
+			$gate_img = file_exists( get_stylesheet_directory() . '/assets/images/tester-3d.png' )
+				? get_stylesheet_directory_uri() . '/assets/images/tester-3d.png'
+				: get_stylesheet_directory_uri() . '/assets/images/securite/hero-secu.jpg';
+		}
 		?>
 		<!-- GATE plein écran : seul « Tester mon site » est cliquable. Le clic vaut
 		     acceptation de l'autorisation de diagnostic + des conditions (clic-wrap). -->
