@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02q</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02q</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02r</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02r</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -706,6 +706,30 @@ var RT={
  perf:{v:'Performance',s:'4.0',n:'Performance à optimiser (cache / compression / poids)',rem:'Activer gzip/brotli + cache navigateur ; compresser et redimensionner les images ; minifier CSS/JS ; CDN. Gagne en vitesse, SEO et conversion.'},
  seo:{v:'SEO technique',s:'2.5',n:'SEO technique à corriger (title / meta / viewport)',rem:'Title + meta description uniques par page ; balise viewport (mobile) ; canonical ; sitemap + robots ; données structurées (schema.org).'}
 };
+/* === Classification MITRE CWE (norme des rapports pros) : par type, repli par mots-clés du nom === */
+var CWE_MAP={rce:'CWE-78',sqli:'CWE-89',lfi:'CWE-22',ssrf:'CWE-918',idor:'CWE-639',bac:'CWE-284',enum:'CWE-200',xss:'CWE-79',xssr:'CWE-79',upload:'CWE-434',xxe:'CWE-611',ssti:'CWE-1336',auth:'CWE-287',jwt:'CWE-347',info:'CWE-200',leak:'CWE-521',cookies:'CWE-614',cve:'CWE-1104',headers:'CWE-693',tls:'CWE-319',email:'CWE-290',version:'CWE-200',leakfile:'CWE-538',xmlrpc:'CWE-400',cors:'CWE-942',mixed:'CWE-319',directory:'CWE-548'};
+function cweFor(f){
+  if(!f) return '';
+  if(f.cwe) return f.cwe;
+  if(f.type && CWE_MAP[f.type]) return CWE_MAP[f.type];
+  var n=((f.name||'')+'').toLowerCase();
+  if(/injection sql|\bsqli?\b/.test(n)) return 'CWE-89';
+  if(/xxe|entit[eé] externe/.test(n)) return 'CWE-611';
+  if(/xss/.test(n)) return 'CWE-79';
+  if(/mot de passe|password|identifiant.*expos|compromis/.test(n)) return 'CWE-521';
+  if(/lecture de fichiers|traversal|\blfi\b/.test(n)) return 'CWE-22';
+  if(/\brce\b|ex[eé]cution de code|command/.test(n)) return 'CWE-78';
+  if(/ssrf/.test(n)) return 'CWE-918';
+  if(/cors/.test(n)) return 'CWE-942';
+  if(/cookie/.test(n)) return 'CWE-614';
+  if(/en-t[eê]te|header/.test(n)) return 'CWE-693';
+  if(/https|tls|mixte|en clair|non chiffr/.test(n)) return 'CWE-319';
+  if(/\bcve\b|vuln[eé]rab/.test(n)) return 'CWE-1104';
+  if(/[eé]num[eé]ration/.test(n)) return 'CWE-200';
+  if(/upload|t[eé]l[eé]versement|fichier non filtr/.test(n)) return 'CWE-434';
+  if(/spf|dmarc|dkim|usurpation/.test(n)) return 'CWE-290';
+  return '';
+}
 function fv(id){var e=document.getElementById(id);return e?(e.value||''):'';}
 function setv(id,v){var e=document.getElementById(id);if(e)e.value=v;}
 
@@ -1345,7 +1369,8 @@ function reportHeader(){
   var d=new Date().toLocaleDateString('fr-FR');
   return '<div style="display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,#0e1016,#1b2030);padding:20px 24px">'+AG_LOGO+
     '<div><div style="font-size:20px;font-weight:800;color:#fff">Alliance Groupe — Rapport de sécurité</div>'+
-    '<div style="font-size:13px;color:#E6A93C">'+esc(prog)+' · cible '+esc(cible)+' · '+esc(d)+'</div></div></div>';
+    '<div style="font-size:13px;color:#E6A93C">'+esc(prog)+' · cible '+esc(cible)+' · '+esc(d)+'</div>'+
+    '<div style="font-size:11px;color:#8b93a7;margin-top:2px">Méthodologie : OWASP WSTG · OWASP Top 10 2021 · notation CVSS 3.1 / CWE</div></div></div>';
 }
 var REPORT_MODE='novice', _AG_RPT_T=null;
 function refreshReportSoon(){ try{ clearTimeout(_AG_RPT_T); }catch(e){} _AG_RPT_T=setTimeout(function(){ try{ if((window.FINDINGS||[]).length) buildReport(REPORT_MODE, true); }catch(e){} }, 250); }
@@ -1369,6 +1394,7 @@ function buildReport(mode, noScroll){
         '<div style="font-weight:800;font-size:15px;color:#141414">#'+(idx+1)+' — '+esc(f.name)+' <span style="color:'+s.c+'">('+s.l+' '+esc(''+f.score)+')</span></div>'+
         '<div style="font-size:12.5px;color:#444;margin-top:6px"><b>Endpoint :</b> <code>'+esc(f.endpoint||'—')+'</code></div>'+
         '<div style="font-size:12.5px;color:#444"><b>CVSS 3.1 :</b> <code>'+esc(f.cvss)+'</code> = '+esc(''+f.score)+'</div>'+
+        (cweFor(f)?'<div style="font-size:12.5px;color:#444"><b>Classification :</b> <code>'+esc(cweFor(f))+'</code> <span style="color:#888">(référentiel MITRE CWE)</span></div>':'')+
         (f.proof?'<div style="font-size:12.5px;color:#444;margin-top:6px"><b>Preuve (masquée) :</b><pre style="background:#0e1016;color:#9ef0c8;padding:10px;border-radius:6px;overflow:auto;white-space:pre-wrap;font-size:12px">'+esc(f.proof)+'</pre></div>':'')+
         '<div style="font-size:12.5px;color:#0a7a3f;margin-top:6px"><b>Remédiation :</b> '+esc(f.rem)+'</div></div>';
     });
