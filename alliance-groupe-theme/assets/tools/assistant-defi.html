@@ -49,8 +49,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02d</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02d</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02e</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02e</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <p class="sub"><b>Ici c'est TOI qui lances chaque commande</b> (sur Kali), et l'outil te guide pas-à-pas + lit tes résultats + construit le rapport. C'est le mode pour <b>apprendre et aller jusqu'au bout toi-même</b>. (Pour un audit 100% automatique sans rien faire → bouton « Audit auto » dans WordPress.) Hors ligne. <b>Uniquement sous mandat / scope autorisé.</b></p>
 
   <div class="panel" id="scopePanel">
@@ -449,6 +449,7 @@ function gen(){
   document.getElementById('steps').innerHTML=html;
   try{ prefillRecon(AGT.T); }catch(e){}
   try{ loadSiteState(AGT.T); }catch(e){}
+  try{ restoreState(AGT.T); }catch(e){}
   // pré-remplir le rapport
   document.getElementById('rendpoint').value=U+'/?'+P+'=1';
   document.getElementById('rparam').value=P;
@@ -490,6 +491,7 @@ function genWordPress(){
   document.getElementById('steps').innerHTML=html;
   try{ prefillRecon(AGT.T); }catch(e){}
   try{ loadSiteState(AGT.T); }catch(e){}
+  try{ restoreState(AGT.T); }catch(e){}
   document.getElementById('rendpoint').value=U+'/wp-json/wp/v2/users';
   document.getElementById('rparam').value=P; setv('rscope', T);
   fillSkeleton(true);
@@ -589,6 +591,7 @@ function genAuto(){
   document.getElementById('steps').innerHTML=html;
   try{ prefillRecon(AGT.T); }catch(e){}
   try{ loadSiteState(AGT.T); }catch(e){}
+  try{ restoreState(AGT.T); }catch(e){}
   document.getElementById('rendpoint').value=U+'/';
   document.getElementById('rparam').value=P; setv('rscope', T);
   fillSkeleton(true);
@@ -998,6 +1001,7 @@ function analyzeStep(id){
   if(r.unlock) showExtract(r.unlock);
   if(r.report) applyToReport(r.report, txt);
   updateProgress();
+  try{ persistState(); }catch(e){}
   if(CAMPAIGN) setTimeout(nudgeNext, 120);
 }
 function applyToReport(rep, txt){
@@ -1042,6 +1046,34 @@ function pushFinding(type, proof){
   if(FINDINGS.some(function(f){return f.key===key;})) return;
   FINDINGS.push({key:key,type:type,name:t.n,cvss:t.v,score:t.s,rem:t.rem,proof:(proof||'').slice(0,1200),endpoint:ep});
   var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+FINDINGS.length+' faille(s) collectée(s)';
+  try{ persistState(); }catch(e){}
+}
+/* ===== SAUVEGARDE AUTO par site (failles + saisies) — pour ne JAMAIS reperdre un test ===== */
+function agStateRoot(){ var h=(window.AGT&&AGT.T)||''; return (h||'').toLowerCase().replace(/^www\./,''); }
+var _AG_PERSIST_T=null;
+function persistState(){
+  try{
+    var root=agStateRoot(); if(!root) return;
+    var steps={}, list=document.querySelectorAll('#steps textarea.res');
+    for(var i=0;i<list.length;i++){ if(list[i].value && list[i].value.trim()){ steps[list[i].id]=list[i].value.slice(0,20000); } }
+    localStorage.setItem('ag_state_'+root, JSON.stringify({findings:FINDINGS, steps:steps, cible:(window.AGT&&AGT.T)||root, ts:Date.now()}));
+  }catch(e){}
+}
+function persistSoon(){ try{ clearTimeout(_AG_PERSIST_T); }catch(e){} _AG_PERSIST_T=setTimeout(persistState,700); }
+function restoreState(host){
+  try{
+    var root=(host||'').toLowerCase().replace(/^www\./,''); if(!root) return;
+    var raw=localStorage.getItem('ag_state_'+root); if(!raw) return;
+    var st=JSON.parse(raw); if(!st) return;
+    if(st.findings && st.findings.length){
+      st.findings.forEach(function(f){ if(f&&f.key&&!FINDINGS.some(function(x){return x.key===f.key;})) FINDINGS.push(f); });
+      var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+FINDINGS.length+' faille(s) collectée(s)';
+    }
+    if(st.steps){ Object.keys(st.steps).forEach(function(id){ var el=document.getElementById(id); if(el && !el.value){ el.value=st.steps[id]; } }); }
+    try{ updateProgress(); }catch(e){}
+    var sdiv=document.getElementById('steps');
+    if(sdiv && st.findings && st.findings.length){ var n=document.createElement('div'); n.className='verdict ok'; n.style.margin='0 0 10px'; n.innerHTML='💾 <b>Session restaurée</b> : '+st.findings.length+' faille(s) et tes saisies précédentes sur ce site ont été récupérées automatiquement.'; sdiv.insertBefore(n, sdiv.firstChild); }
+  }catch(e){}
 }
 function sevInfo(score){ var s=parseFloat(score)||0; if(s>=9)return{l:'Critique',c:'#dc2626'}; if(s>=7)return{l:'Élevé',c:'#ea580c'}; if(s>=4)return{l:'Moyen',c:'#d97706'}; return{l:'Faible',c:'#2563eb'}; }
 function collectFindings(){
@@ -1134,6 +1166,7 @@ function analyzeCookies(){
     h='<div class="verdict ok" style="margin-bottom:8px">✅ Aucun cookie de session mal protégé sur '+esc(target)+' — bon point à noter au rapport.</div>'+h;
   }
   out.innerHTML=h;
+  try{ persistState(); }catch(e){}
 }
 function reportPrices(){
   function n(id,d){ var e=document.getElementById(id); var v=e?parseInt(e.value,10):NaN; return isNaN(v)?d:v; }
@@ -1323,6 +1356,7 @@ try{ if(location.protocol.indexOf('http')===0) reloadJobs(); }catch(e){}
 try{ var _sv=localStorage.getItem('ag_scope'); if(_sv){ document.getElementById('scopeJson').value=_sv; loadScope(true); } }catch(e){}
 try{ var _px=JSON.parse(localStorage.getItem('ag_prices')||'null'); if(_px){ if(_px.crit!=null)document.getElementById('pxCrit').value=_px.crit; if(_px.eleve!=null)document.getElementById('pxEleve').value=_px.eleve; if(_px.moyen!=null)document.getElementById('pxMoyen').value=_px.moyen; if(_px.faible!=null)document.getElementById('pxFaible').value=_px.faible; if(_px.report!=null)document.getElementById('pxReport').value=_px.report; if(_px.refonte!=null)document.getElementById('pxRefonte').value=_px.refonte; } var _pu=localStorage.getItem('ag_payurl'); if(_pu)document.getElementById('payUrl').value=_pu; }catch(e){}
 try{ var _rc=JSON.parse(localStorage.getItem('ag_rap_cfg')||'null'); if(_rc){ var sv=function(id,v){var e=document.getElementById(id); if(e&&v)e.value=v;}; sv('rapClient',_rc.client); sv('rapEmail',_rc.email); sv('rapPhone',_rc.phone); sv('rapToken',_rc.token); } }catch(e){}
+try{ var _sd=document.getElementById('steps'); if(_sd){ _sd.addEventListener('input', function(e){ if(e.target && e.target.classList && e.target.classList.contains('res')){ persistSoon(); } }); } }catch(e){}
 </script>
 </body>
 </html>
