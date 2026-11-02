@@ -1336,7 +1336,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 						$e     = $hh[ $hid ];
 						$html  = ag_tester_rapport_html( $e );
 						$devis = (int) ( $e['critical'] ?? 0 ) * 900;
-						$r = ag_rapport_create( $html, ( $e['company'] ?: ( $e['host'] ?? '' ) ), ( $e['host'] ?? '' ), $devis, ( $e['email'] ?? '' ), ( $e['phone'] ?? '' ) );
+						$r = ag_rapport_create( $html, ( $e['company'] ?: ( $e['host'] ?? '' ) ), ( $e['host'] ?? '' ), $devis, ( $e['email'] ?? '' ), ( $e['phone'] ?? '' ), (int) ( $e['score'] ?? 0 ) );
 						if ( $r ) {
 							$hh[ $hid ]['rapport_url'] = $r['url'];
 							ag_audit_hist_save( $hh );
@@ -1637,6 +1637,28 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 			<?php endif; ?>
 			<?php $AGH = ag_audit_hist_get();
 			if ( $AGH ) :
+				// UNE SEULE FICHE PAR SITE : on regroupe par domaine (le rapport fusionne deja tous les niveaux).
+				$byhost = array();
+				foreach ( $AGH as $hid0 => $e0 ) {
+					$hh0 = preg_replace( '#^www\\.#', '', strtolower( (string) ( $e0['host'] ?? '' ) ) );
+					$e0['_modes'] = array( (string) ( $e0['mode'] ?? 'passive' ) );
+					if ( '' === $hh0 ) { $byhost[ '_' . $hid0 ] = array( $hid0, $e0 ); continue; }
+					if ( ! isset( $byhost[ $hh0 ] ) ) { $byhost[ $hh0 ] = array( $hid0, $e0 ); continue; }
+					list( $kid, $ke ) = $byhost[ $hh0 ];
+					$modes = array_values( array_unique( array_merge( (array) ( $ke['_modes'] ?? array() ), array( (string) ( $e0['mode'] ?? 'passive' ) ) ) ) );
+					$richer = ( count( (array) ( $e0['checks'] ?? array() ) ) > count( (array) ( $ke['checks'] ?? array() ) ) );
+					$pid = $richer ? $hid0 : $kid; $pe = $richer ? $e0 : $ke;
+					$pe['_modes']  = $modes;
+					$pe['score']   = min( (int) ( $ke['score'] ?? 100 ), (int) ( $e0['score'] ?? 100 ) );
+					$pe['critical']= max( (int) ( $ke['critical'] ?? 0 ), (int) ( $e0['critical'] ?? 0 ) );
+					$pe['ts']      = max( (int) ( $ke['ts'] ?? 0 ), (int) ( $e0['ts'] ?? 0 ) );
+					if ( empty( $pe['email'] ) ) { $pe['email'] = ! empty( $ke['email'] ) ? $ke['email'] : ( $e0['email'] ?? '' ); }
+					if ( empty( $pe['phone'] ) ) { $pe['phone'] = ! empty( $ke['phone'] ) ? $ke['phone'] : ( $e0['phone'] ?? '' ); }
+					if ( empty( $pe['rapport_url'] ) ) { $pe['rapport_url'] = ! empty( $ke['rapport_url'] ) ? $ke['rapport_url'] : ( $e0['rapport_url'] ?? '' ); }
+					$byhost[ $hh0 ] = array( $pid, $pe );
+				}
+				$AGH = array();
+				foreach ( $byhost as $pair ) { $AGH[ $pair[0] ] = $pair[1]; }
 				uasort( $AGH, function ( $x, $y ) { return (int) ( $y['ts'] ?? 0 ) <=> (int) ( $x['ts'] ?? 0 ); } );
 				// Hôtes venus via le formulaire public « Tester mon site » (= demande client),
 				// pour marquer rétroactivement les anciens audits sans champ src.
@@ -1697,9 +1719,33 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 					</div>
 					<div id="agh-list">
 				<?php foreach ( $AGH as $hid => $e ) :
+					$gh = preg_replace( '#^www\.#', '', strtolower( (string) ( $e['host'] ?? '' ) ) );
+					if ( $gh ) {
+						if ( ! isset( $ag_seen_hosts ) ) { $ag_seen_hosts = array(); }
+						if ( isset( $ag_seen_hosts[ $gh ] ) ) { continue; }
+						$ag_seen_hosts[ $gh ] = 1;
+						$e['_modes'] = array( (string) ( $e['mode'] ?? 'passive' ) => true );
+						foreach ( $AGH as $oid => $oe ) {
+							if ( $oid === $hid ) { continue; }
+							if ( preg_replace( '#^www\.#', '', strtolower( (string) ( $oe['host'] ?? '' ) ) ) !== $gh ) { continue; }
+							$e['_modes'][ (string) ( $oe['mode'] ?? 'passive' ) ] = true;
+							if ( (int) ( $oe['score'] ?? 100 ) < (int) ( $e['score'] ?? 100 ) ) { $e['score'] = (int) $oe['score']; }
+							$e['critical'] = max( (int) ( $e['critical'] ?? 0 ), (int) ( $oe['critical'] ?? 0 ) );
+							$mseen = array(); $mrg = array();
+							foreach ( array_merge( (array) ( $e['checks'] ?? array() ), (array) ( $oe['checks'] ?? array() ) ) as $mc ) {
+								$mn = $mc['name'] ?? ''; if ( '' === $mn || isset( $mseen[ $mn ] ) ) { continue; } $mseen[ $mn ] = 1; $mrg[] = $mc;
+							}
+							$e['checks'] = $mrg;
+							foreach ( array( 'email', 'phone', 'company', 'address', 'siret', 'rapport_url' ) as $kf ) {
+								if ( empty( $e[ $kf ] ) && ! empty( $oe[ $kf ] ) ) { $e[ $kf ] = $oe[ $kf ]; }
+							}
+							$e['actions'] = array_merge( (array) ( $e['actions'] ?? array() ), (array) ( $oe['actions'] ?? array() ) );
+						}
+					}
 					$score = (int) $e['score']; $col = $score >= 75 ? '#1a7f37' : ( $score >= 50 ? '#bf6a02' : '#b91c1c' ); $seg = $e['seg'];
 						$mode = in_array( $e['mode'] ?? 'passive', array( 'deep', 'expert' ), true ) ? $e['mode'] : 'passive';
 						$mode_lbl = 'expert' === $mode ? '🛰️ Expert (Kali)' : ( 'deep' === $mode ? '🔬 Approfondi' : '🔍 Léger (passif)' );
+					if ( ! empty( $e['_modes'] ) && count( $e['_modes'] ) > 1 ) { $mmL = array(); foreach ( (array) $e['_modes'] as $mk ) { $mmL[] = ( 'expert' === $mk ? 'Kali' : ( 'deep' === $mk ? 'Approfondi' : 'Léger' ) ); } $mode_lbl = '🧩 ' . implode( ' + ', array_values( array_unique( $mmL ) ) ); }
 					$host = $e['host']; $url = $e['url']; $email = $e['email']; $phone = $e['phone']; $wa = ag_wa_phone( $phone );
 					$fails = array_map( function ( $c ) { return $c['name']; }, $e['checks'] );
 					$ncrit = 0; foreach ( $e['checks'] as $c ) { if ( ! empty( $c['critical'] ) && 'fail' === $c['status'] ) $ncrit++; }

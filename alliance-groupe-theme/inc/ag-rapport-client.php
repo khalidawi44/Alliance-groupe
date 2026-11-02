@@ -103,6 +103,7 @@ add_action( 'template_redirect', function () {
 	$client = get_post_meta( $id, '_ag_rap_client', true );
 	$cible  = get_post_meta( $id, '_ag_rap_cible', true );
 	$html   = (string) get_post_meta( $id, '_ag_rap_html', true );
+	$score  = get_post_meta( $id, '_ag_rap_score', true );
 	$offre  = isset( $_GET['offre'] ) ? sanitize_key( $_GET['offre'] ) : '';
 	// Prix : par-rapport → option globale → défaut raisonnable (zéro config nécessaire).
 	$defpx = array( 'rapport' => 290, 'correction' => 1299, 'refonte' => 1490 );
@@ -134,15 +135,28 @@ add_action( 'template_redirect', function () {
 	header( 'X-Robots-Tag: noindex, nofollow', true );
 	$logo = '<svg viewBox="0 0 120 120" width="46" height="46" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="agg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E6A93C"/><stop offset="1" stop-color="#F37A1F"/></linearGradient></defs><circle cx="60" cy="60" r="55" fill="#0e1016" stroke="url(#agg)" stroke-width="5"/><text x="60" y="77" text-anchor="middle" font-family="Georgia,serif" font-weight="800" font-size="48" fill="url(#agg)">AG</text></svg>';
 	echo '<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Rapport de sécurité — Alliance Groupe</title>';
-	echo '<style>body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#f4f5f7;color:#141414}.wrap{max-width:820px;margin:0 auto;background:#fff}.hd{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#0e1016,#1b2030);padding:20px 24px}.hd .t{color:#fff;font-weight:800;font-size:19px}.hd .s{color:#E6A93C;font-size:13px}.body{padding:8px 24px 28px}.offers{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}.card{flex:1;min-width:210px;border:1px solid #e3e3e3;border-radius:10px;padding:16px}.card.hi{border:2px solid #F37A1F;background:#fff8ec}.card .p{font-size:24px;font-weight:900;margin:6px 0}.btn{display:inline-block;margin-top:8px;background:linear-gradient(135deg,#E6A93C,#F37A1F);color:#241200;font-weight:800;text-decoration:none;padding:12px 18px;border-radius:9px}.btn.d{background:#0e1016;color:#fff}.foot{padding:16px 24px;color:#777;font-size:12px;border-top:1px solid #eee}</style></head><body><div class="wrap">';
+	echo '<style>body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#f4f5f7;color:#141414}.wrap{max-width:820px;margin:0 auto;background:#fff}.hd{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#0e1016,#1b2030);padding:20px 24px}.hd .t{color:#fff;font-weight:800;font-size:19px}.hd .s{color:#E6A93C;font-size:13px}.body{padding:8px 24px 28px}.offers{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}.card{flex:1;min-width:210px;border:1px solid #e3e3e3;border-radius:10px;padding:16px}.card.hi{border:2px solid #F37A1F;background:#fff8ec}.card .p{font-size:24px;font-weight:900;margin:6px 0}.btn{display:inline-block;margin-top:8px;background:linear-gradient(135deg,#E6A93C,#F37A1F);color:#241200;font-weight:800;text-decoration:none;padding:12px 18px;border-radius:9px}.btn.d{background:#0e1016;color:#fff}.foot{padding:16px 24px;color:#777;font-size:12px;border-top:1px solid #eee}.agseal{display:flex;gap:16px;align-items:center;background:linear-gradient(135deg,#0e1016,#1b2030);color:#fff;border-radius:12px;padding:16px 18px;margin:18px 0}.agseal-ring{width:104px;height:104px;flex:0 0 auto;border-radius:50%;background:radial-gradient(circle at 50% 38%,#20242f,#0b0d12);border:3px solid #E6A93C;box-shadow:0 0 0 3px #0e1016,0 0 18px rgba(230,169,60,.5);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden}.agseal-ring:after{content:"";position:absolute;top:0;left:-60%;width:55%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);transform:skewX(-20deg);animation:agshine 3.6s ease-in-out infinite}@keyframes agshine{0%,72%{left:-60%}100%{left:150%}}.agseal-top{font-size:8px;letter-spacing:2px;color:#E6A93C;font-weight:700}.agseal-brand{font-size:13px;font-weight:900;line-height:1;margin:3px 0;background:linear-gradient(135deg,#E6A93C,#F37A1F);-webkit-background-clip:text;background-clip:text;color:transparent}.agseal-bot{font-size:8px;letter-spacing:.5px;color:#cfd4e0;max-width:92px}.agseal-txt{font-size:13.5px;line-height:1.45}@media(max-width:520px){.agseal{flex-direction:column;text-align:center}}</style></head><body><div class="wrap">';
 	echo '<div class="hd">' . $logo . '<div><div class="t">Alliance Groupe — Rapport de sécurité</div><div class="s">' . esc_html( $client ? $client : 'Client' ) . ( $cible ? ' · ' . esc_html( $cible ) : '' ) . '</div></div></div>';
 	echo '<div class="body">';
+	if ( '' !== (string) $score ) {
+		$sc = max( 0, min( 100, (int) $score ) );
+		$col = $sc >= 75 ? '#16a34a' : ( $sc >= 50 ? '#ea580c' : '#dc2626' );
+		$lab = $sc >= 75 ? 'Bon niveau' : ( $sc >= 50 ? 'A ameliorer' : 'A risque' );
+		$circ = 326.726; $off = $circ * ( 1 - $sc / 100 );
+		echo '<div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin:6px 0 20px">';
+		echo '<svg width="132" height="132" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" fill="none" stroke="#eee" stroke-width="12"/><circle cx="60" cy="60" r="52" fill="none" stroke="' . $col . '" stroke-width="12" stroke-linecap="round" stroke-dasharray="' . $circ . '" stroke-dashoffset="' . $off . '" transform="rotate(-90 60 60)"/><text x="60" y="58" text-anchor="middle" font-size="30" font-weight="800" fill="' . $col . '">' . $sc . '</text><text x="60" y="77" text-anchor="middle" font-size="12" fill="#999">/ 100</text></svg>';
+		echo '<div><div style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:1px">Score de securite</div><div style="font-size:22px;font-weight:800;color:' . $col . '">' . esc_html( $lab ) . '</div><div style="font-size:13px;color:#555;max-width:400px;margin-top:4px">Ce score mesure l&rsquo;exposition de votre site. Chaque faille corrigee le fait monter &mdash; et protege vos donnees, vos clients et votre reputation.</div></div>';
+		echo '</div>';
+	}
 	if ( $html !== '' ) { echo $html; } // contenu authoré en admin (trusted)
+	$seal_dom = esc_html( $cible ? $cible : 'votre site' );
+	echo '<div class="agseal"><div class="agseal-ring"><span class="agseal-top">SÉCURISÉ PAR</span><span class="agseal-brand">ALLIANCE<br>GROUPE</span><span class="agseal-bot">AUDIT ✓ ' . $seal_dom . ' · ' . esc_html( gmdate( 'Y' ) ) . '</span></div>'
+		. '<div class="agseal-txt"><b>🏅 Votre Sceau de Confiance</b><br>Après correction, ce sceau officiel est <b>à vous</b> : affichez-le sur votre site (pied de page) pour <b>rassurer vos visiteurs</b> et prouver que votre site est audité et sécurisé — un gage de sérieux que vos concurrents n\'ont pas.</div></div>';
 	echo '<h3>Choisissez votre formule</h3><div class="offers">';
 	foreach ( $px as $key => $o ) {
 		$hi = ( $key === 'correction' || $key === $offre ) ? ' hi' : '';
 		$prix = $o[1] !== '' ? number_format_i18n( (float) $o[1], 0 ) . ' €' . ( $key === 'refonte' ? ' et +' : '' ) : 'Sur devis';
-		echo '<div class="card' . $hi . '" id="offre-' . esc_attr( $key ) . '"><div style="font-weight:800">' . esc_html( $o[0] ) . '</div><div class="p">' . esc_html( $prix ) . '</div><div style="font-size:13px;color:#555">' . esc_html( $o[3] ) . '</div>';
+		echo '<div class="card' . $hi . '" id="offre-' . esc_attr( $key ) . '">' . ( $hi ? '<div style="display:inline-block;background:#F37A1F;color:#fff;font-size:11px;font-weight:800;padding:2px 10px;border-radius:20px;margin-bottom:6px">⭐ RECOMMANDE</div>' : '' ) . '<div style="font-weight:800">' . esc_html( $o[0] ) . '</div><div class="p">' . esc_html( $prix ) . '</div><div style="font-size:13px;color:#555">' . esc_html( $o[3] ) . '</div>';
 		if ( $o[2] ) { echo '<a class="btn' . ( $key === 'correction' ? '' : ' d' ) . '" href="' . esc_url( $o[2] ) . '">Payer en ligne</a>'; }
 		else { echo '<div style="margin-top:8px;font-size:12px;color:#888">Nous contacter : 07 44 82 95 16</div>'; }
 		echo '</div>';
@@ -168,7 +182,7 @@ if ( ! function_exists( 'ag_rapport_create' ) ) {
 	 * @param int    $devis  Montant indicatif (métadonnée).
 	 * @return array{id:int,url:string}|null
 	 */
-	function ag_rapport_create( $html, $client = '', $cible = '', $devis = 0, $email = '', $phone = '' ) {
+	function ag_rapport_create( $html, $client = '', $cible = '', $devis = 0, $email = '', $phone = '', $score = null ) {
 		if ( ! post_type_exists( 'ag_rapport' ) ) { return null; }
 		$title = 'Audit sécurité — ' . ( $cible ? $cible : 'cible' ) . ' (' . gmdate( 'Y-m-d' ) . ')';
 		$id = wp_insert_post( array(
@@ -182,6 +196,7 @@ if ( ! function_exists( 'ag_rapport_create' ) ) {
 		if ( $email ) { update_post_meta( $id, '_ag_rap_email', sanitize_email( $email ) ); }
 		if ( $phone ) { update_post_meta( $id, '_ag_rap_phone', sanitize_text_field( $phone ) ); }
 		if ( $devis ) { update_post_meta( $id, '_ag_rap_devis', (int) $devis ); }
+		if ( null !== $score && '' !== $score ) { update_post_meta( $id, '_ag_rap_score', (int) $score ); }
 		$tok = get_post_meta( $id, '_ag_rap_token', true );
 		if ( ! $tok ) { $tok = wp_generate_password( 22, false, false ); update_post_meta( $id, '_ag_rap_token', $tok ); }
 		return array( 'id' => (int) $id, 'url' => home_url( '/rapport/' . $tok ) );
@@ -220,7 +235,10 @@ add_action( 'rest_api_init', function () {
 			$email  = sanitize_email( (string) $req->get_param( 'email' ) );
 			$phone  = sanitize_text_field( (string) $req->get_param( 'phone' ) );
 			$devis  = (int) $req->get_param( 'devis' );
-			$r = ag_rapport_create( $safe, $client, $cible, $devis, $email, $phone );
+			$raw0 = (string) $req->get_param( 'findings' ); $fnd0 = json_decode( $raw0, true ); $pen0 = 0;
+				if ( is_array( $fnd0 ) ) { foreach ( $fnd0 as $f0 ) { $s0 = (float) ( $f0['score'] ?? 0 ); $pen0 += ( $s0 >= 9 ? 28 : ( $s0 >= 7 ? 14 : ( $s0 >= 4 ? 6 : 2 ) ) ); } }
+				$score0 = max( 5, min( 100, 100 - $pen0 ) );
+				$r = ag_rapport_create( $safe, $client, $cible, $devis, $email, $phone, $score0 );
 			if ( ! $r ) return new WP_Error( 'ag_fail', 'Création impossible.', array( 'status' => 500 ) );
 			// L'audit est finalisé dans l'outil → clôt automatiquement le job Kali « en attente » de cette cible.
 			$closed = '';
