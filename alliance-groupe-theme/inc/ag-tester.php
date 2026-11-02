@@ -1140,7 +1140,7 @@ if ( ! function_exists( 'ag_tester_rapport_html' ) ) {
 		$all = function_exists( 'ag_audit_hist_get' ) ? ag_audit_hist_get() : array();
 		if ( empty( $all ) ) { $all = array( $e ); }
 		$labels = array(); $crit = 0; $worst = 101; $url = (string) ( $e['url'] ?? '' ); $modes = array();
-		$mlbl = array( 'passive' => 'leger (passif)', 'deep' => 'approfondi', 'expert' => 'expert (Kali)' );
+		$mlbl = array( 'passive' => 'niveau 1 (surface)', 'deep' => 'niveau 2 (approfondi)', 'expert' => 'niveau 3 (expert)' );
 		foreach ( $all as $x ) {
 			$xh = preg_replace( '#^www\.#', '', strtolower( (string) ( $x['host'] ?? '' ) ) );
 			if ( $xh !== $hostn ) { continue; }
@@ -1167,7 +1167,7 @@ if ( ! function_exists( 'ag_tester_rapport_html' ) ) {
 			$h .= '</ul>';
 		}
 		if ( $kali && function_exists( 'ag_pt_summary_fr_html' ) ) {
-			$h .= '<h3>Analyse approfondie (scan Kali)</h3>' . ag_pt_summary_fr_html( $kali );
+			$h .= '<h3>Analyse technique approfondie</h3>' . ag_pt_summary_fr_html( $kali );
 		}
 		if ( ! $fails && ! $kali ) { $h .= '<p>Audit realise. Le detail technique vous est transmis sur demande.</p>'; }
 		return $h;
