@@ -395,12 +395,28 @@ add_action( 'rest_api_init', function () {
 					}
 				}
 			}
-			if ( function_exists( 'ag_tester_kali_report_for' ) ) {
-				$kali = ag_tester_kali_report_for( 'https://' . $host );
-				if ( $kali ) { $modes['expert'] = true; }
+			// Synthèse Kali (job terminé) → failles en français.
+			$kalitxt = function_exists( 'ag_tester_kali_report_for' ) ? ag_tester_kali_report_for( 'https://' . $host ) : '';
+			if ( $kalitxt && function_exists( 'ag_pt_summary_fr' ) ) {
+				$modes['expert'] = true;
+				$an = ag_pt_summary_fr( $kalitxt );
+				foreach ( (array) ( $an['findings'] ?? array() ) as $kf ) {
+					$nm = (string) ( $kf['label'] ?? '' ); if ( '' === $nm ) { continue; }
+					$sev = (string) ( $kf['sev'] ?? '' );
+					$labels[ $nm ] = ( 'crit' === $sev ? 9.0 : ( 'high' === $sev ? 7.0 : ( 'med' === $sev ? 5.0 : 3.0 ) ) );
+				}
+			} elseif ( $kalitxt ) { $modes['expert'] = true; }
+			// Stock riche par site (TOUTES sources : assistant, Kali collé…).
+			$rich = array();
+			if ( function_exists( 'ag_rap_get_findings' ) ) {
+				foreach ( ag_rap_get_findings( $host ) as $rf ) {
+					$nm = (string) ( $rf['name'] ?? '' ); if ( '' === $nm ) { continue; }
+					$rich[ $nm ] = array( 'name' => $nm, 'score' => (float) ( $rf['score'] ?? 0 ), 'type' => (string) ( $rf['type'] ?? '' ), 'cvss' => (string) ( $rf['cvss'] ?? '' ), 'rem' => (string) ( $rf['rem'] ?? '' ) );
+				}
 			}
 			$findings = array();
-			foreach ( $labels as $nm => $sc ) { $findings[] = array( 'name' => $nm, 'score' => $sc ); }
+			foreach ( $labels as $nm => $sc ) { if ( ! isset( $rich[ $nm ] ) ) { $findings[] = array( 'name' => $nm, 'score' => $sc ); } }
+			foreach ( $rich as $rf ) { $findings[] = $rf; }
 			return array(
 				'ok' => ( ! empty( $modes ) || ! empty( $findings ) ),
 				'host' => $host,
