@@ -49,8 +49,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02g</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02g</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02h</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02h</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <p class="sub"><b>Ici c'est TOI qui lances chaque commande</b> (sur Kali), et l'outil te guide pas-à-pas + lit tes résultats + construit le rapport. C'est le mode pour <b>apprendre et aller jusqu'au bout toi-même</b>. (Pour un audit 100% automatique sans rien faire → bouton « Audit auto » dans WordPress.) Hors ligne. <b>Uniquement sous mandat / scope autorisé.</b></p>
 
   <div class="panel" id="scopePanel">
@@ -517,6 +517,27 @@ function UNIV(U,T){ return [
 ];}
 /* File des audits (en attente/terminé) : on affiche la vraie page serveur « Audits Kali » dans un cadre (même origine, ta session WordPress). */
 function agOrigin(){ return (location.protocol.indexOf('http')===0)?location.origin:'https://alliancegroupe-inc.com'; }
+/* Pont site : essaie admin-ajax (cookie admin, AUCUN jeton requis si ouvert depuis le site connecté),
+   puis repli REST + jeton (hors-ligne). Renvoie une promesse qui résout l'objet JSON. */
+function agApi(action, restPath, method, params){
+  var o=agOrigin();
+  var aj=new URLSearchParams(); Object.keys(params||{}).forEach(function(k){ if(params[k]!=null) aj.set(k, params[k]); }); aj.set('action', action);
+  var tk=''; try{var te=document.getElementById('rapToken'); tk=te?(te.value||'').trim():'';}catch(_){}
+  function viaRest(){
+    var rb=new URLSearchParams(); Object.keys(params||{}).forEach(function(k){ if(params[k]!=null) rb.set(k, params[k]); }); if(tk) rb.set('token',tk);
+    if((method||'POST')==='GET'){ return fetch(o+'/wp-json'+restPath+'?'+rb.toString(),{credentials:'include'}).then(function(r){return r.json();}); }
+    return fetch(o+'/wp-json'+restPath,{method:'POST',credentials:'include',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:rb.toString()}).then(function(r){return r.json();});
+  }
+  // admin-ajax d'abord
+  return fetch(o+'/wp-admin/admin-ajax.php',{method:'POST',credentials:'include',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:aj.toString()})
+    .then(function(r){ return r.text(); })
+    .then(function(t){ var j=null; try{ j=JSON.parse(t); }catch(e){}
+      // admin-ajax renvoie "0" si pas admin / action absente → on tente le REST (+jeton)
+      if(j && typeof j==='object' && !(j.ok===false && /autoris/i.test(j.error||''))){ return j; }
+      return viaRest();
+    })
+    .catch(function(){ return viaRest(); });
+}
 function reloadJobs(){ var f=document.getElementById('agJobs'); if(f) f.src=agOrigin()+'/wp-admin/admin.php?page=ag-pentest-bridge&ts='+Date.now(); }
 /* Lance l'audit AUTO serveur DANS le cadre en bas (plus de nouvel onglet). */
 function openServerAuto(){
@@ -544,9 +565,7 @@ function prefillRecon(host){
 // Récupère TOUT ce que le site sait déjà sur cette cible → pré-remplit les failles + trace ce qui manque.
 function loadSiteState(host){
   if(!host) return;
-  var tk=''; try{var e=document.getElementById('rapToken'); tk=e?(e.value||'').trim():'';}catch(_){}
-  var url=agOrigin()+'/wp-json/ag/v1/site-state?cible='+encodeURIComponent(host)+(tk?('&token='+encodeURIComponent(tk)):'');
-  fetch(url,{credentials:'include'}).then(function(r){return r.json();}).then(function(j){
+  agApi('ag_rap_sitestate','/ag/v1/site-state','GET',{cible:host}).then(function(j){
     if(!j||!j.ok) return;
     var added=0;
     (j.findings||[]).forEach(function(f){
@@ -1077,13 +1096,9 @@ function syncSoon(){ try{ clearTimeout(_AG_SYNC_T); }catch(e){} _AG_SYNC_T=setTi
 function syncToServer(){
   try{
     var host=(window.AGT&&AGT.T)||''; if(!host || !FINDINGS.length) return;
-    var tk=''; try{var e=document.getElementById('rapToken'); tk=e?(e.value||'').trim():'';}catch(_){}
-    var body=new URLSearchParams();
-    body.set('cible',host);
-    body.set('findings', JSON.stringify(FINDINGS.map(function(f){return {name:(f.name||f.type||'Faille'),score:(parseFloat(f.score)||0)};})));
-    if(tk) body.set('token',tk);
-    fetch(agOrigin()+'/wp-json/ag/v1/site-upsert',{method:'POST',credentials:'include',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()})
-      .then(function(r){return r.json();}).then(function(j){
+    var params={cible:host, findings:JSON.stringify(FINDINGS.map(function(f){return {name:(f.name||f.type||'Faille'),score:(parseFloat(f.score)||0)};}))};
+    agApi('ag_rap_siteupsert','/ag/v1/site-upsert','POST',params)
+      .then(function(j){
         var ind=document.getElementById('reportCount');
         if(j&&j.ok&&ind){ ind.textContent='· '+FINDINGS.length+' faille(s) · ☁️ Espace Audit à jour'+(j.rapport_url?' · rapport lié':''); }
       }).catch(function(){});
@@ -1123,14 +1138,10 @@ function saveReportToWP(){
   if(!LAST_REPORT_HTML){ out.style.color='#ef4444'; out.textContent='Génère d\'abord le rapport (bouton « Version client »).'; return; }
   var g=function(id){var e=document.getElementById(id);return e?(e.value||'').trim():'';};
   var cible=(window.AGT&&AGT.T)||g('cible');
-  var body=new URLSearchParams();
-  body.set('html',LAST_REPORT_HTML); body.set('client',g('rapClient')); body.set('cible',cible);
-  body.set('email',g('rapEmail')); body.set('phone',g('rapPhone'));
-  try{ var fnd=(window.FINDINGS||[]).map(function(f){return {name:(f.name||f.type||'Faille'),score:(parseFloat(f.score)||0)};}); body.set('findings', JSON.stringify(fnd)); body.set('nb', String(fnd.length)); }catch(e){}
-  var tk=g('rapToken'); if(tk) body.set('token',tk);
+  var params={html:LAST_REPORT_HTML, client:g('rapClient'), cible:cible, email:g('rapEmail'), phone:g('rapPhone')};
+  try{ var fnd=(window.FINDINGS||[]).map(function(f){return {name:(f.name||f.type||'Faille'),score:(parseFloat(f.score)||0)};}); params.findings=JSON.stringify(fnd); params.nb=String(fnd.length); }catch(e){}
   out.style.color='#9aa0b0'; out.textContent='Enregistrement dans WordPress…';
-  fetch(agOrigin()+'/wp-json/ag/v1/rapport-save',{method:'POST',credentials:'include',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()})
-    .then(function(r){return r.json();})
+  agApi('ag_rap_save','/ag/v1/rapport-save','POST',params)
     .then(function(j){
       if(j&&j.ok&&j.url){
         document.getElementById('payUrl').value=j.url; saveCfg();
@@ -1151,11 +1162,8 @@ function saveReportToWP(){
 }
 function sendReport(id,ch){
   var out=document.getElementById('rapSaveOut');
-  var g=function(id){var e=document.getElementById(id);return e?(e.value||'').trim():'';};
-  var body=new URLSearchParams(); body.set('id',String(id)); body.set('channel',ch); var tk=g('rapToken'); if(tk) body.set('token',tk);
   out.style.color='#9aa0b0'; out.textContent=(ch==='sms'?'Envoi SMS…':'Envoi email…');
-  fetch(agOrigin()+'/wp-json/ag/v1/rapport-send',{method:'POST',credentials:'include',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()})
-    .then(function(r){return r.json();})
+  agApi('ag_rap_send','/ag/v1/rapport-send','POST',{id:String(id),channel:ch})
     .then(function(j){ out.style.color=(j&&j.ok)?'#22c55e':'#ef4444'; out.textContent=(j&&j.ok)?('✅ '+(j.msg||'envoyé')):('❌ '+((j&&j.error)||'échec')); })
     .catch(function(e){ out.style.color='#ef4444'; out.textContent='❌ '+e.message; });
 }
