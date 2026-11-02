@@ -124,14 +124,16 @@ add_action( 'template_redirect', function () {
 		return isset( $defpx[ $k ] ) ? $defpx[ $k ] : '';
 	};
 	// Lien de paiement : par-rapport → option → sinon GÉNÉRÉ depuis le PayPal déjà configuré (ag_paypal_email).
-	$rpy = function ( $id, $k, $price, $label ) {
+	$rpy = function ( $id, $k, $price, $label ) use ( $cert ) {
 		$m = get_post_meta( $id, '_ag_rap_pay_' . $k, true ); if ( '' !== $m ) { return $m; }
 		$o = get_option( 'ag_rap_pay_' . $k, '' ); if ( '' !== $o ) { return $o; }
 		$pp = sanitize_email( (string) get_option( 'ag_paypal_email', '' ) );
 		if ( $pp && '' !== $price && (float) $price > 0 ) {
+			// custom = ag_rapport:<N° certificat> → le webhook PayPal débloque AUTOMATIQUEMENT ce rapport.
 			return 'https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=' . rawurlencode( $pp )
-				. '&item_name=' . rawurlencode( 'Alliance Groupe — ' . $label )
+				. '&item_name=' . rawurlencode( 'Alliance Groupe — ' . $label . ' — ' . $cert )
 				. '&amount=' . number_format( (float) $price, 2, '.', '' )
+				. '&custom=' . rawurlencode( 'ag_rapport:' . $cert )
 				. '&currency_code=EUR&no_shipping=1&no_note=1';
 		}
 		return '';
@@ -445,3 +447,40 @@ add_action( 'rest_api_init', function () {
 		},
 	) );
 } );
+
+/* ===================== Auto-déblocage du certificat au paiement PayPal ===================== */
+add_action( 'ag_paypal_payment_verified', function ( $amount, $email, $txn, $type = '', $resource = array() ) {
+	if ( $type && 'PAYMENT.CAPTURE.COMPLETED' !== $type ) { return; }
+	// 1) Retrouver le N° de certificat : via custom_id "ag_rapport:AG-SEC-..." ou dans le JSON (item_name).
+	$cid  = is_array( $resource ) ? (string) ( $resource['custom_id'] ?? ( $resource['invoice_id'] ?? '' ) ) : '';
+	$cert = '';
+	if ( 0 === stripos( $cid, 'ag_rapport:' ) ) { $cert = trim( substr( $cid, strlen( 'ag_rapport:' ) ) ); }
+	if ( '' === $cert ) {
+		$blob = (string) wp_json_encode( $resource );
+		if ( preg_match( '/AG-SEC-\d{4}-[A-Z0-9]{4,}/', $blob, $mm ) ) { $cert = $mm[0]; }
+	}
+	if ( '' === $cert ) { return; }
+	// 2) Rapport correspondant.
+	$q = get_posts( array( 'post_type' => 'ag_rapport', 'post_status' => 'publish', 'numberposts' => 1, 'fields' => 'ids', 'meta_key' => '_ag_rap_cert', 'meta_value' => $cert ) );
+	if ( empty( $q ) ) { return; }
+	$rid = (int) $q[0];
+	// 3) Idempotence (même transaction PayPal).
+	if ( (string) get_post_meta( $rid, '_ag_rap_paid_txn', true ) === (string) $txn ) { return; }
+	update_post_meta( $rid, '_ag_rap_paid', '1' );
+	update_post_meta( $rid, '_ag_rap_paid_txn', (string) $txn );
+	update_post_meta( $rid, '_ag_rap_paid_at', time() );
+	// 4) Email client : certificat débloqué + lien.
+	$tok = get_post_meta( $rid, '_ag_rap_token', true );
+	$to  = sanitize_email( (string) ( $email ? $email : get_post_meta( $rid, '_ag_rap_email', true ) ) );
+	if ( $to && $tok ) {
+		$url   = home_url( '/rapport/' . $tok );
+		$inner = '<p>Merci pour votre confiance !</p><p>Votre <b>certificat de sécurité</b> (N° ' . esc_html( $cert ) . ') est <b>débloqué</b>. Retrouvez-le, ainsi que le code du sceau à coller sur votre site, ici :</p>';
+		$inner .= function_exists( 'ag_email_button' ) ? ag_email_button( 'Voir mon certificat', $url ) : ( '<p><a href="' . esc_url( $url ) . '">' . esc_html( $url ) . '</a></p>' );
+		$body   = function_exists( 'ag_email_wrap' ) ? ag_email_wrap( 'Certificat débloqué', $inner ) : $inner;
+		wp_mail( $to, 'Alliance Groupe — votre certificat de sécurité est débloqué', $body, array( 'Content-Type: text/html; charset=UTF-8' ) );
+	}
+	// 5) Notif interne (Fabrice).
+	$admin = apply_filters( 'ag_calendar_notify_email', 'advise.alliance.group@gmail.com' );
+	wp_mail( $admin, '💰 Rapport payé (PayPal) — ' . $cert, "Paiement reçu : {$amount} €" . ( $to ? " de {$to}" : '' ) . "\nCertificat débloqué : {$cert}\nTransaction PayPal : {$txn}" );
+	if ( function_exists( 'ag_push' ) ) { ag_push( '💰 Rapport payé', $cert . ( $to ? ' → ' . $to : '' ) . ' (' . $amount . ' €)' ); }
+}, 10, 5 );
