@@ -484,3 +484,31 @@ add_action( 'ag_paypal_payment_verified', function ( $amount, $email, $txn, $typ
 	wp_mail( $admin, '💰 Rapport payé (PayPal) — ' . $cert, "Paiement reçu : {$amount} €" . ( $to ? " de {$to}" : '' ) . "\nCertificat débloqué : {$cert}\nTransaction PayPal : {$txn}" );
 	if ( function_exists( 'ag_push' ) ) { ag_push( '💰 Rapport payé', $cert . ( $to ? ' → ' . $to : '' ) . ' (' . $amount . ' €)' ); }
 }, 10, 5 );
+
+/* ===================== Pont admin-ajax (auth par COOKIE admin, SANS nonce) =====================
+ * L'assistant est un fichier statique (pas de nonce REST). Quand il est ouvert DEPUIS le site
+ * par un admin connecté, admin-ajax authentifie par cookie → on rejoue la route REST en interne.
+ * Résultat : enregistrement/synchro AUTOMATIQUES sans coller de jeton. (Repli REST+jeton hors-ligne.)
+ */
+if ( ! function_exists( 'ag_rap_ajax_proxy' ) ) {
+	function ag_rap_ajax_proxy() {
+		if ( ! current_user_can( 'manage_options' ) ) { wp_send_json( array( 'ok' => false, 'error' => 'non autorisé (admin requis)' ), 403 ); }
+		$map = array(
+			'ag_rap_save'       => array( 'POST', '/ag/v1/rapport-save' ),
+			'ag_rap_siteupsert' => array( 'POST', '/ag/v1/site-upsert' ),
+			'ag_rap_sitestate'  => array( 'GET',  '/ag/v1/site-state' ),
+			'ag_rap_send'       => array( 'POST', '/ag/v1/rapport-send' ),
+		);
+		$a = isset( $_REQUEST['action'] ) ? sanitize_key( wp_unslash( $_REQUEST['action'] ) ) : '';
+		if ( ! isset( $map[ $a ] ) ) { wp_send_json( array( 'ok' => false, 'error' => 'action inconnue' ), 400 ); }
+		$r = new WP_REST_Request( $map[ $a ][0], $map[ $a ][1] );
+		foreach ( $_REQUEST as $k => $v ) { if ( 'action' === $k ) { continue; } $r->set_param( $k, is_string( $v ) ? wp_unslash( $v ) : $v ); }
+		$res = rest_do_request( $r );
+		if ( $res->is_error() ) { $e = $res->as_error(); wp_send_json( array( 'ok' => false, 'error' => $e->get_error_message() ) ); }
+		wp_send_json( $res->get_data() );
+	}
+	add_action( 'wp_ajax_ag_rap_save', 'ag_rap_ajax_proxy' );
+	add_action( 'wp_ajax_ag_rap_siteupsert', 'ag_rap_ajax_proxy' );
+	add_action( 'wp_ajax_ag_rap_sitestate', 'ag_rap_ajax_proxy' );
+	add_action( 'wp_ajax_ag_rap_send', 'ag_rap_ajax_proxy' );
+}
