@@ -229,6 +229,14 @@
         <div id="rapSaveOut" style="font-size:13px;margin-top:6px;color:#9aa0b0"></div>
       </div>
 
+      <details style="margin-top:12px;padding:10px 12px;border:1px dashed #6ea8fe;border-radius:9px">
+        <summary style="cursor:pointer;font-weight:700">🍪 Analyse automatique des cookies</summary>
+        <p class="exp" style="margin:6px 0">Ouvre les DevTools du site → onglet <b>Application → Cookies</b> → sélectionne tout le tableau → colle ici. L'outil trie : cookies du site vs tiers, repère les <b>sessions</b>, et signale les <b>protections manquantes</b> (HttpOnly / Secure / SameSite) = faille facturable.</p>
+        <textarea id="cookieIn" class="res" style="width:100%;min-height:90px" placeholder="Colle ici le tableau des cookies (nom, valeur, domaine, … HttpOnly, Secure, SameSite)…"></textarea>
+        <div class="toolbar" style="margin-top:6px"><button onclick="analyzeCookies()">🔎 Analyser les cookies</button></div>
+        <div id="cookieOut" style="font-size:13px;margin-top:8px"></div>
+      </details>
+
       <div id="presentReport" style="background:#fff;color:#141414;border-radius:10px;overflow:hidden;min-height:40px"></div>
     </div>
   </div>
@@ -650,6 +658,7 @@ var RT={
  auth:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N',s:'8.1',n:'Auth / JWT',rem:'Vérifier alg côté serveur ; secret fort ; tokens expirables & invalidés ; MFA.'},
  info:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N',s:'7.5',n:'Fuite d\'information',rem:'Retirer le fichier/endpoint exposé ; contrôle d\'accès ; pas de secret dans le code public.'},
  leak:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N',s:'5.3',n:'Identifiants exposés dans des fuites de données connues',rem:'Forcer la réinitialisation des mots de passe des comptes concernés ; activer la 2FA ; interdire les mots de passe déjà vus dans des fuites (vérif type HIBP à l\'inscription) ; mettre en place une surveillance de fuites sur le domaine (HIBP Domain monitoring).'},
+ cookies:{v:'AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N',s:'5.9',n:'Cookie de session mal protégé (HttpOnly/Secure/SameSite)',rem:'Marquer les cookies de session HttpOnly + Secure + SameSite=Lax (ou Strict) ; ne jamais exposer un jeton de session au JavaScript ; expiration courte + rotation à la connexion.'},
  // --- Lignes CONFIGURATION / CONFORMITÉ facturables (devis) ---
  headers:{v:'AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:L/A:N',s:'4.3',n:'En-têtes de sécurité manquants',rem:'Ajouter HSTS, Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy (protège du clickjacking, du MIME-sniffing, des fuites de référent).'},
  tls:{v:'AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N',s:'4.0',n:'HTTPS / TLS à durcir',rem:'Forcer la redirection HTTP→HTTPS (301), activer HSTS, désactiver TLS < 1.2, renouveler/valider le certificat.'},
@@ -1018,6 +1027,7 @@ var NOVICE={
  auth:{r:'L\'authentification présente une faiblesse (jetons, mots de passe).',i:'Usurpation de comptes, y compris administrateur.'},
  info:{r:'Des informations techniques sensibles sont exposées.',i:'Facilite la préparation d\'une attaque.'},
  leak:{r:'Des identifiants liés à vous circulent dans des fuites connues.',i:'Connexion frauduleuse possible si des mots de passe sont réutilisés.'},
+ cookies:{r:'Un cookie de connexion n\'est pas correctement protégé (HttpOnly/Secure/SameSite).',i:'Un intrus pourrait voler une session et se faire passer pour un utilisateur ou un administrateur.'},
  headers:{r:'Votre site n\'envoie pas les en-têtes de sécurité recommandés.',i:'Facilite le détournement d\'affichage (clickjacking) et certaines attaques sur vos visiteurs.'},
  tls:{r:'La connexion sécurisée (HTTPS) n\'est pas pleinement forcée.',i:'Risque d\'interception et perte de confiance (navigateur, référencement).'},
  email:{r:'Votre domaine n\'est pas protégé contre l\'usurpation d\'e-mail (SPF/DKIM/DMARC).',i:'Des e-mails frauduleux peuvent être envoyés en votre nom (phishing à vos clients).'},
@@ -1087,6 +1097,43 @@ function sendReport(id,ch){
     .then(function(r){return r.json();})
     .then(function(j){ out.style.color=(j&&j.ok)?'#22c55e':'#ef4444'; out.textContent=(j&&j.ok)?('✅ '+(j.msg||'envoyé')):('❌ '+((j&&j.error)||'échec')); })
     .catch(function(e){ out.style.color='#ef4444'; out.textContent='❌ '+e.message; });
+}
+function cookieRoot(d){ d=(d||'').toLowerCase().replace(/^\./,'').replace(/^www\./,''); var p=d.split('.'); return p.length>2?p.slice(-2).join('.'):d; }
+function analyzeCookies(){
+  var out=document.getElementById('cookieOut');
+  var raw=(document.getElementById('cookieIn').value||'').trim();
+  if(!raw){ out.innerHTML='<span style="color:#ef4444">Colle d\'abord le tableau des cookies.</span>'; return; }
+  var target=cookieRoot((window.AGT&&AGT.T)||(document.getElementById('cible').value||''));
+  var first=[], third=[], weak=[];
+  raw.split(/\n+/).forEach(function(ln){
+    if(!ln.trim()) return;
+    var toks=ln.split(/\t+|\s{2,}/).map(function(x){return x.trim();}).filter(Boolean);
+    if(!toks.length) return;
+    var name=toks[0], dom='';
+    for(var i=0;i<toks.length;i++){ if(/^\.?[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(toks[i]) && toks[i].indexOf('@')<0){ dom=toks[i]; break; } }
+    if(!name || !dom) return;
+    var lower=ln.toLowerCase();
+    var isSess=/sess|sid|^xs$|c_user|i_user|auth|token|login|wordpress_logged_in|wp[-_]|jwt|remember|phpsessid|laravel_session|connect\.sid/i.test(name);
+    var checks=(ln.match(/✓/g)||[]).length;
+    var ss=(lower.match(/\b(none|lax|strict)\b/)||[])[1]||'';
+    var o={name:name,dom:dom,sess:isSess,checks:checks,ss:ss};
+    if(target && cookieRoot(dom)===target){ first.push(o); if(isSess && (checks<2 || !ss)) weak.push(o); } else { third.push(o); }
+  });
+  var h='<div style="font-size:12px;color:#9aa0b0">Cible : <b>'+esc(target||'(non définie — renseigne la cible en haut)')+'</b></div>';
+  if(first.length){
+    h+='<div style="margin-top:6px"><b>Cookies DU SITE ('+first.length+') :</b><ul style="margin:4px 0 0">';
+    first.forEach(function(o){ var tag=o.sess?'🔑 session':'ⓘ non-session'; var prot=(o.checks>=2?'✅ HttpOnly+Secure':(o.checks===1?'⚠️ 1 seule protection':'❌ non protégé'))+(o.ss?(' · SameSite='+esc(o.ss)):' · ❌ SameSite absent'); h+='<li><code>'+esc(o.name)+'</code> — '+tag+' — '+prot+'</li>'; });
+    h+='</ul></div>';
+  } else { h+='<div style="margin-top:6px">Aucun cookie du site <b>'+esc(target)+'</b> dans ce qui est collé (vérifie la cible).</div>'; }
+  if(third.length){ h+='<div style="margin-top:6px;color:#9aa0b0">🌐 Cookies TIERS ignorés (pas la responsabilité du site) : '+esc(third.map(function(o){return o.name+'@'+o.dom;}).slice(0,12).join(', '))+(third.length>12?'…':'')+'.<br>Un cookie tiers HttpOnly (ex. Facebook <code>xs</code>) n\'est PAS volable par XSS et n\'est PAS une faille du site.</div>'; }
+  if(weak.length){
+    var key='cookies|'+target;
+    if(!FINDINGS.some(function(f){return f.key===key;})){ var t=RT.cookies; FINDINGS.push({key:key,type:'cookies',name:t.n,cvss:t.v,score:t.s,rem:t.rem,proof:raw.slice(0,800),endpoint:(AGT.U||'')}); var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+FINDINGS.length+' faille(s) collectée(s)'; try{updateProgress();}catch(e){} }
+    h='<div class="verdict bad" style="margin-bottom:8px">🍪 <b>'+weak.length+' cookie(s) de session mal protégé(s)</b> sur '+esc(target)+' : '+esc(weak.map(function(o){return o.name;}).join(', '))+'. HttpOnly/Secure/SameSite manquant → <b>vol de session possible</b>. Faille ajoutée au rapport.</div>'+h;
+  } else if(first.length){
+    h='<div class="verdict ok" style="margin-bottom:8px">✅ Aucun cookie de session mal protégé sur '+esc(target)+' — bon point à noter au rapport.</div>'+h;
+  }
+  out.innerHTML=h;
 }
 function reportPrices(){
   function n(id,d){ var e=document.getElementById(id); var v=e?parseInt(e.value,10):NaN; return isNaN(v)?d:v; }
