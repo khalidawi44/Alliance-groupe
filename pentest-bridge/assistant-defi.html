@@ -49,8 +49,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02k</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02k</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02l</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02l</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <p class="sub"><b>Ici c'est TOI qui lances chaque commande</b> (sur Kali), et l'outil te guide pas-à-pas + lit tes résultats + construit le rapport. C'est le mode pour <b>apprendre et aller jusqu'au bout toi-même</b>. (Pour un audit 100% automatique sans rien faire → bouton « Audit auto » dans WordPress.) Hors ligne. <b>Uniquement sous mandat / scope autorisé.</b></p>
 
   <div class="panel" id="scopePanel">
@@ -1104,7 +1104,7 @@ function syncSoon(){ try{ clearTimeout(_AG_SYNC_T); }catch(e){} _AG_SYNC_T=setTi
 function syncToServer(){
   try{
     var host=(window.AGT&&AGT.T)||''; if(!host || !FINDINGS.length) return;
-    var params={cible:host, findings:JSON.stringify(FINDINGS.map(function(f){return {name:(f.name||f.type||'Faille'),score:(parseFloat(f.score)||0)};}))};
+    var params={cible:host, findings:JSON.stringify(FINDINGS.map(function(f){return {name:(f.name||f.type||'Faille'),score:(parseFloat(f.score)||0),type:(f.type||''),cvss:(f.cvss||''),rem:(f.rem||''),proof:(f.proof||'').slice(0,300)};}))};
     agApi('ag_rap_siteupsert','/ag/v1/site-upsert','POST',params)
       .then(function(j){
         var ind=document.getElementById('reportCount');
@@ -1149,7 +1149,7 @@ function saveReportToWP(){
   var g=function(id){var e=document.getElementById(id);return e?(e.value||'').trim():'';};
   var cible=(window.AGT&&AGT.T)||g('cible');
   var params={html:LAST_REPORT_HTML, client:g('rapClient'), cible:cible, email:g('rapEmail'), phone:g('rapPhone')};
-  try{ var fnd=(window.FINDINGS||[]).map(function(f){return {name:(f.name||f.type||'Faille'),score:(parseFloat(f.score)||0)};}); params.findings=JSON.stringify(fnd); params.nb=String(fnd.length); }catch(e){}
+  try{ var fnd=(window.FINDINGS||[]).map(function(f){return {name:(f.name||f.type||'Faille'),score:(parseFloat(f.score)||0),type:(f.type||''),cvss:(f.cvss||''),rem:(f.rem||''),proof:(f.proof||'').slice(0,300)};}); params.findings=JSON.stringify(fnd); params.nb=String(fnd.length); }catch(e){}
   out.style.color='#9aa0b0'; out.textContent='Enregistrement dans WordPress…';
   agApi('ag_rap_save','/ag/v1/rapport-save','POST',params)
     .then(function(j){

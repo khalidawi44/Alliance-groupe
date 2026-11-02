@@ -1156,6 +1156,16 @@ if ( ! function_exists( 'ag_tester_rapport_html' ) ) {
 				}
 			}
 		}
+		// Failles riches collectees par l'assistant (TOUS outils) pour ce site -> fusionnees ici.
+		$rich = function_exists( 'ag_rap_get_findings' ) ? ag_rap_get_findings( $url ) : array();
+		foreach ( $rich as $rf ) {
+			$nm = (string) ( $rf['name'] ?? '' ); if ( '' === $nm ) { continue; }
+			$labels[ $nm ] = true;
+			$sc = (float) ( $rf['score'] ?? 0 );
+			if ( $sc >= 9 ) { $crit = max( $crit, 1 ); }
+			$w = (int) max( 5, 100 - ( $sc >= 9 ? 28 : ( $sc >= 7 ? 14 : ( $sc >= 4 ? 6 : 2 ) ) ) );
+			if ( $w < $worst ) { $worst = $w; }
+		}
 		if ( $worst > 100 ) { $worst = (int) ( $e['score'] ?? 0 ); }
 		$kali = function_exists( 'ag_tester_kali_report_for' ) ? ag_tester_kali_report_for( $url ) : '';
 		$h  = '<p><strong>Score de securite : ' . (int) $worst . '/100</strong>' . ( $crit ? ' &mdash; ' . (int) $crit . ' faille(s) critique(s)' : '' ) . '.</p>';
