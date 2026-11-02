@@ -49,8 +49,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-01h</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-01h</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02a</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02a</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <p class="sub"><b>Ici c'est TOI qui lances chaque commande</b> (sur Kali), et l'outil te guide pas-à-pas + lit tes résultats + construit le rapport. C'est le mode pour <b>apprendre et aller jusqu'au bout toi-même</b>. (Pour un audit 100% automatique sans rien faire → bouton « Audit auto » dans WordPress.) Hors ligne. <b>Uniquement sous mandat / scope autorisé.</b></p>
 
   <div class="panel" id="scopePanel">
@@ -440,6 +440,7 @@ function gen(){
   if(!html){alert("Choisis au moins un type (Recon est coché par défaut).");return;}
   document.getElementById('steps').innerHTML=html;
   try{ prefillRecon(AGT.T); }catch(e){}
+  try{ loadSiteState(AGT.T); }catch(e){}
   // pré-remplir le rapport
   document.getElementById('rendpoint').value=U+'/?'+P+'=1';
   document.getElementById('rparam').value=P;
@@ -458,7 +459,8 @@ function WPB(U){ return [
  {t:"Plugins + versions (depuis le HTML)", c:`curl -s -A "Mozilla/5.0" ${U}/ | grep -oE "plugins/[a-z0-9-]+/[^\\"']*ver=[0-9][0-9.]*" | sort -u`, e:"Chaque plugin + version = recherche CVE (searchsploit / base wpscan)."},
  {t:"xmlrpc.php (amplification / brute)", c:`curl -s -A "Mozilla/5.0" ${U}/xmlrpc.php -d '<methodCall><methodName>system.listMethods</methodName></methodCall>'`, e:"Une liste de méthodes = xmlrpc actif (pingback DDoS + brute amplifié). À désactiver = remédiation facturable."},
  {t:"Fichiers sensibles / sauvegardes exposés", c:`for f in .git/HEAD .env wp-config.php.bak wp-config.php~ wp-config.php.save backup.zip site.zip db.sql database.sql wp-content/debug.log readme.html; do curl -s -o /dev/null -w "%{http_code}  ${U}/\$f\\n" -A "Mozilla/5.0" "${U}/\$f"; done | sort`, e:"200 sur .env / .bak / .sql / .git = fuite critique (identifiants base, secrets). readme.html 200 = version exposée."},
- {t:"wp-login + double authentification", c:`curl -s -o /dev/null -w "wp-login -> %{http_code}\\n" -A "Mozilla/5.0" ${U}/wp-login.php; curl -s -A "Mozilla/5.0" ${U}/wp-login.php | grep -oiE "two.factor|2fa|recaptcha|captcha" | sort -u`, e:"wp-login accessible sans 2FA ni captcha = brute-force possible → proposer 2FA + limitation des tentatives."}
+ {t:"wp-login + double authentification", c:`curl -s -o /dev/null -w "wp-login -> %{http_code}\\n" -A "Mozilla/5.0" ${U}/wp-login.php; curl -s -A "Mozilla/5.0" ${U}/wp-login.php | grep -oiE "two.factor|2fa|recaptcha|captcha" | sort -u`, e:"wp-login accessible sans 2FA ni captcha = brute-force possible → proposer 2FA + limitation des tentatives."},
+ {t:"Test mots de passe faibles sur les comptes (ACTIF — sous mandat)", c:`# énumère les comptes puis teste le TOP 500 de rockyou (rapide, non destructif). Sous mandat.\nzcat -f /usr/share/wordlists/rockyou.txt* 2>/dev/null | head -500 > /tmp/ag-pw.txt\nwpscan --url ${U} --enumerate u --passwords /tmp/ag-pw.txt --password-attack wp-login --max-threads 5 --throttle 1000 --random-user-agent`, e:"« Valid Combinations Found » / « Password: … » = <b>mot de passe compromis = accès admin = CRITIQUE</b>. ACTIF, mandat obligatoire (risque de verrouillage). Colle la sortie → ▶ Analyser (détecté automatiquement)."}
 ];}
 function genWordPress(){
   var c=clean(document.getElementById('cible').value); if(!c.host){alert("Entre une cible (ex: ellipseanimation.com).");return;}
@@ -479,6 +481,7 @@ function genWordPress(){
   });
   document.getElementById('steps').innerHTML=html;
   try{ prefillRecon(AGT.T); }catch(e){}
+  try{ loadSiteState(AGT.T); }catch(e){}
   document.getElementById('rendpoint').value=U+'/wp-json/wp/v2/users';
   document.getElementById('rparam').value=P; setv('rscope', T);
   fillSkeleton(true);
@@ -528,6 +531,37 @@ function prefillRecon(host){
     return true;
   }catch(e){ return false; }
 }
+// Récupère TOUT ce que le site sait déjà sur cette cible → pré-remplit les failles + trace ce qui manque.
+function loadSiteState(host){
+  if(!host) return;
+  var tk=''; try{var e=document.getElementById('rapToken'); tk=e?(e.value||'').trim():'';}catch(_){}
+  var url=agOrigin()+'/wp-json/ag/v1/site-state?cible='+encodeURIComponent(host)+(tk?('&token='+encodeURIComponent(tk)):'');
+  fetch(url,{credentials:'include'}).then(function(r){return r.json();}).then(function(j){
+    if(!j||!j.ok) return;
+    var added=0;
+    (j.findings||[]).forEach(function(f){
+      var key='known|'+f.name;
+      if(FINDINGS.some(function(x){return x.key===key;})) return;
+      var sc=parseFloat(f.score)||5;
+      FINDINGS.push({key:key,type:(sc>=9?'auth':'info'),name:f.name,cvss:'',score:sc,rem:'',proof:'(déjà audité — historique du site)',endpoint:AGT.U||''});
+      added++;
+    });
+    var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+FINDINGS.length+' faille(s) collectée(s)';
+    try{ updateProgress(); }catch(_){}
+    var map={passive:'léger (passif)',deep:'approfondi',expert:'expert (Kali)'};
+    var done=(j.modes||[]).map(function(m){return map[m]||m;});
+    var missing=[]; ['passive','deep','expert'].forEach(function(m){ if((j.modes||[]).indexOf(m)<0) missing.push(map[m]); });
+    var st=document.getElementById('steps'); if(!st) return;
+    var old=document.getElementById('agSiteState'); if(old) old.remove();
+    var n=document.createElement('div'); n.id='agSiteState'; n.className='verdict ok'; n.style.margin='0 0 10px';
+    n.innerHTML='🗂️ <b>Déjà connu sur '+esc(j.host)+'</b>'+(j.score!=null?' — score '+j.score+'/100':'')+'.<br>'+
+      'Analyses faites : '+(done.length?esc(done.join(' · ')):'aucune')+'.'+
+      (added?' <b>'+added+' faille(s) déjà trouvée(s)</b> pré-remplie(s) dans le rapport.':'')+'<br>'+
+      '➡️ <b>Route restante</b> : '+(missing.length?esc(missing.join(' · ')):'tout a été fait ✅')+
+      (j.rapport_url?(' · <a href="'+j.rapport_url+'" target="_blank">voir le rapport existant</a>'):'');
+    st.insertBefore(n, st.firstChild);
+  }).catch(function(){});
+}
 function genAuto(){
   var c=clean(document.getElementById('cible').value); if(!c.host){alert("Entre une cible (ex: monsite.fr ou 10.10.10.5).");return;}
   LASTGEN=genAuto;
@@ -546,6 +580,7 @@ function genAuto(){
   });
   document.getElementById('steps').innerHTML=html;
   try{ prefillRecon(AGT.T); }catch(e){}
+  try{ loadSiteState(AGT.T); }catch(e){}
   document.getElementById('rendpoint').value=U+'/';
   document.getElementById('rparam').value=P; setv('rscope', T);
   fillSkeleton(true);

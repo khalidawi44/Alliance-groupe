@@ -299,4 +299,48 @@ add_action( 'rest_api_init', function () {
 			return $ok ? array( 'ok' => true, 'msg' => 'Email envoyé à ' . $to ) : new WP_Error( 'ag_mailfail', 'Échec de l\'envoi email (vérifie la config mail du site).', array( 'status' => 500 ) );
 		},
 	) );
+
+	// 3) Etat CONNU d'un site (tout ce qui a deja ete audite) -> l'assistant se pre-remplit + trace ce qui manque.
+	register_rest_route( 'ag/v1', '/site-state', array(
+		'methods'             => 'GET',
+		'permission_callback' => 'ag_rap_rest_authed',
+		'callback'            => function ( $req ) {
+			$cible = (string) $req->get_param( 'cible' );
+			$host  = preg_replace( '#^www\\.#', '', strtolower( (string) wp_parse_url( ( 0 === stripos( $cible, 'http' ) ? $cible : 'https://' . $cible ), PHP_URL_HOST ) ) );
+			if ( '' === $host ) { return array( 'ok' => false, 'host' => '', 'modes' => array(), 'findings' => array(), 'rapport_url' => '' ); }
+			$modes = array(); $labels = array(); $worst = 101; $crit = 0; $rap = '';
+			if ( function_exists( 'ag_audit_hist_get' ) ) {
+				foreach ( ag_audit_hist_get() as $e ) {
+					$eh = preg_replace( '#^www\\.#', '', strtolower( (string) ( $e['host'] ?? '' ) ) );
+					if ( $eh !== $host ) { continue; }
+					$modes[ (string) ( $e['mode'] ?? 'passive' ) ] = true;
+					$sc = (int) ( $e['score'] ?? 100 ); if ( $sc < $worst ) { $worst = $sc; }
+					$crit = max( $crit, (int) ( $e['critical'] ?? 0 ) );
+					if ( ! empty( $e['rapport_url'] ) ) { $rap = (string) $e['rapport_url']; }
+					foreach ( (array) ( $e['checks'] ?? array() ) as $c ) {
+						$stt = $c['status'] ?? '';
+						if ( 'fail' === $stt || 'warn' === $stt ) {
+							$lab = function_exists( 'ag_audit_public_label' ) ? ag_audit_public_label( $c['name'] ?? '' ) : ( $c['name'] ?? '' );
+							if ( $lab ) { $labels[ $lab ] = ! empty( $c['critical'] ) ? 9.0 : 5.0; }
+						}
+					}
+				}
+			}
+			if ( function_exists( 'ag_tester_kali_report_for' ) ) {
+				$kali = ag_tester_kali_report_for( 'https://' . $host );
+				if ( $kali ) { $modes['expert'] = true; }
+			}
+			$findings = array();
+			foreach ( $labels as $nm => $sc ) { $findings[] = array( 'name' => $nm, 'score' => $sc ); }
+			return array(
+				'ok' => ( ! empty( $modes ) || ! empty( $findings ) ),
+				'host' => $host,
+				'modes' => array_keys( $modes ),
+				'score' => ( $worst <= 100 ? (int) $worst : null ),
+				'critical' => (int) $crit,
+				'findings' => $findings,
+				'rapport_url' => $rap,
+			);
+		},
+	) );
 } );
