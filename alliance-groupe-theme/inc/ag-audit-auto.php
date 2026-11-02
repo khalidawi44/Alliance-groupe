@@ -15,14 +15,14 @@ if ( ! defined( 'ABSPATH' ) && 'cli' !== php_sapi_name() ) { exit; }
 
 /* ============================ COUCHE HTTP BRANCHABLE ============================ */
 if ( ! function_exists( 'ag_aa_http' ) ) {
-	function ag_aa_http( $method, $url, $body = null, $follow = false ) {
+	function ag_aa_http( $method, $url, $body = null, $follow = false, $xheaders = array() ) {
 		$ua = 'Mozilla/5.0 (Alliance-Groupe-Audit; mandat)';
 		if ( function_exists( 'wp_remote_request' ) ) {
 			$args = array(
 				'method' => $method, 'timeout' => 4,
 				'redirection' => $follow ? 3 : 0,
 				'user-agent' => $ua, 'sslverify' => true,
-				'headers' => array(), 'body' => $body,
+				'headers' => is_array( $xheaders ) ? $xheaders : array(), 'body' => $body,
 			);
 			$r = wp_remote_request( $url, $args );
 			if ( is_wp_error( $r ) ) { return array( 'code' => 0, 'headers' => array(), 'body' => '', 'loc' => '' ); }
@@ -45,6 +45,7 @@ if ( ! function_exists( 'ag_aa_http' ) ) {
 			CURLOPT_SSL_VERIFYPEER => 0, CURLOPT_SSL_VERIFYHOST => 0,
 		);
 		$px = getenv( 'HTTPS_PROXY' ); if ( $px ) { $opt[ CURLOPT_PROXY ] = $px; }
+		if ( is_array( $xheaders ) && $xheaders ) { $hh = array(); foreach ( $xheaders as $k => $v ) { $hh[] = $k . ': ' . $v; } $opt[ CURLOPT_HTTPHEADER ] = $hh; }
 		if ( null !== $body ) { $opt[ CURLOPT_POSTFIELDS ] = $body; }
 		curl_setopt_array( $ch, $opt );
 		$resp = curl_exec( $ch );
@@ -217,6 +218,92 @@ if ( ! function_exists( 'ag_audit_auto' ) ) {
 		if ( strlen( $html ) > 1500000 ) { $perf[] = 'page HTML lourde (' . round( strlen( $html ) / 1024 ) . ' Ko)'; }
 		if ( $perf ) { $add( 'perf', 'Performance à optimiser', 'faible', implode( ' ; ', $perf ), 'Activer compression + cache ; compresser images ; minifier.' ); }
 		else { $good( 'Performance : compression/cache OK.' ); }
+
+		// 10. Cookies : drapeaux de sécurité (Secure / HttpOnly / SameSite)
+		$sc = isset( $headers['set-cookie'] ) ? (string) $headers['set-cookie'] : '';
+		if ( '' !== $sc ) {
+			$flags = array();
+			if ( false === stripos( $sc, 'secure' ) )   { $flags[] = 'Secure'; }
+			if ( false === stripos( $sc, 'httponly' ) )  { $flags[] = 'HttpOnly'; }
+			if ( false === stripos( $sc, 'samesite' ) )  { $flags[] = 'SameSite'; }
+			$is_session = (bool) preg_match( '#(sess|phpsessid|sid=|token|auth|wordpress_logged|wordpress_sec|woocommerce_)#i', $sc );
+			if ( $flags ) {
+				$sev = ( $is_session && ( in_array( 'Secure', $flags, true ) || in_array( 'HttpOnly', $flags, true ) ) ) ? 'moyen' : 'faible';
+				$add( 'cookies', 'Cookies sans drapeau de sécurité', $sev, 'Manquant : ' . implode( ', ', $flags ) . ( $is_session ? ' (cookie de session concerné)' : '' ), 'Ajouter Secure + HttpOnly + SameSite=Lax/Strict (surtout sur les cookies de session) : empêche le vol de cookie via JS/XSS et le rejeu en clair.' );
+			} else { $good( 'Cookies : drapeaux Secure/HttpOnly/SameSite présents.' ); }
+		}
+
+		// 11. CORS permissif (Access-Control-Allow-Origin) — test de réflexion d'origine
+		if ( microtime( true ) < $deadline ) {
+			$acao = isset( $headers['access-control-allow-origin'] ) ? trim( (string) $headers['access-control-allow-origin'] ) : '';
+			$acac = isset( $headers['access-control-allow-credentials'] ) ? strtolower( trim( (string) $headers['access-control-allow-credentials'] ) ) : '';
+			$cors_r    = ag_aa_http( 'GET', $base . '/', null, false, array( 'Origin' => 'https://evil-audit.example' ) );
+			$refl      = isset( $cors_r['headers']['access-control-allow-origin'] ) ? trim( (string) $cors_r['headers']['access-control-allow-origin'] ) : '';
+			$refl_cred = isset( $cors_r['headers']['access-control-allow-credentials'] ) ? strtolower( trim( (string) $cors_r['headers']['access-control-allow-credentials'] ) ) : '';
+			if ( '*' === $acao && 'true' === $acac ) {
+				$add( 'cors', 'CORS trop permissif (* avec credentials)', 'moyen', 'Access-Control-Allow-Origin: * + Allow-Credentials: true', 'Interdire la combinaison * + credentials ; restreindre à une liste blanche d\'origines.' );
+			} elseif ( 'https://evil-audit.example' === $refl ) {
+				$add( 'cors', 'CORS réfléchit n\'importe quelle origine' . ( 'true' === $refl_cred ? ' (avec credentials)' : '' ), ( 'true' === $refl_cred ? 'moyen' : 'faible' ), 'Une origine pirate est renvoyée telle quelle dans Access-Control-Allow-Origin', 'Valider l\'origine contre une liste blanche au lieu de la refléter.' );
+			} elseif ( '*' === $acao ) {
+				$add( 'cors', 'CORS ouvert à toutes les origines (*)', 'faible', 'Access-Control-Allow-Origin: *', 'Restreindre ACAO aux origines légitimes si des données privées transitent.' );
+			} else { $good( 'CORS : pas de politique trop permissive.' ); }
+		}
+
+		// 12. Contenu mixte (page HTTPS qui charge des ressources en http://)
+		if ( 0 === stripos( $base, 'https://' ) ) {
+			if ( preg_match_all( '#(?:src=["\']|<link[^>]+href=["\'])http://[^"\'>]+#i', $html, $mix ) ) {
+				$u  = array_values( array_unique( $mix[0] ) );
+				$ex = preg_replace( '#^.*?http://#', 'http://', $u[0] );
+				$add( 'mixed', 'Contenu mixte (ressources en HTTP sur une page HTTPS)', 'faible', count( $u ) . ' ressource(s) http:// (ex. ' . substr( $ex, 0, 80 ) . ')', 'Charger images/scripts/CSS en https:// : sinon le navigateur bloque/alerte et la page n\'est pas réellement sécurisée.' );
+			} else { $good( 'Pas de contenu mixte (ressources en HTTPS).' ); }
+		}
+
+		// 13. Qualité de la CSP (si présente mais permissive)
+		$csp = isset( $headers['content-security-policy'] ) ? (string) $headers['content-security-policy'] : '';
+		if ( '' !== $csp ) {
+			$weak = array();
+			if ( false !== stripos( $csp, "'unsafe-inline'" ) ) { $weak[] = "'unsafe-inline'"; }
+			if ( false !== stripos( $csp, "'unsafe-eval'" ) )   { $weak[] = "'unsafe-eval'"; }
+			if ( preg_match( '#(?:default-src|script-src)[^;]*\*#i', $csp ) ) { $weak[] = 'joker * sur script/default-src'; }
+			if ( $weak ) { $add( 'headers', 'CSP présente mais permissive (peu protectrice)', 'faible', 'Faiblesses : ' . implode( ', ', $weak ), 'Durcir la CSP : retirer unsafe-inline / unsafe-eval et les jokers * ; utiliser des nonces ou des hashes.' ); }
+		}
+
+		// 14. DNSSEC + CAA (DNS-over-HTTPS) — en complément de SPF/DMARC
+		if ( microtime( true ) < $deadline ) {
+			$caa_r   = ag_aa_http( 'GET', 'https://dns.google/resolve?name=' . rawurlencode( $root ) . '&type=CAA', null, true );
+			$has_caa = (bool) preg_match( '#"type"\s*:\s*257#', (string) $caa_r['body'] ); // 257 = CAA
+			$dnssec  = (bool) preg_match( '#"AD"\s*:\s*true#i', (string) $caa_r['body'] );   // AD = zone signée & validée
+			if ( ! $has_caa ) { $add( 'dns', 'Enregistrement CAA absent', 'faible', 'Pas de CAA sur ' . $root, 'Publier un enregistrement CAA pour n\'autoriser que ton autorité de certification (bloque l\'émission de certificats pirates).' ); }
+			else { $good( 'CAA présent.' ); }
+			if ( ! $dnssec ) { $add( 'dns', 'DNSSEC non activé', 'faible', 'Zone DNS non signée (indicateur AD absent)', 'Activer DNSSEC chez le registrar/hébergeur DNS (protège contre l\'empoisonnement DNS).' ); }
+			else { $good( 'DNSSEC actif.' ); }
+		}
+
+		// 15. security.txt (maturité sécurité — RFC 9116)
+		if ( microtime( true ) < $deadline ) {
+			$stt = ag_aa_http( 'GET', $base . '/.well-known/security.txt', null, false );
+			if ( 200 !== (int) $stt['code'] ) { $stt = ag_aa_http( 'GET', $base . '/security.txt', null, false ); }
+			if ( 200 === (int) $stt['code'] && false !== stripos( (string) $stt['body'], 'contact' ) ) { $good( 'security.txt présent (maturité sécurité).' ); }
+			else { $add( 'securitytxt', 'Fichier security.txt absent', 'faible', 'Ni /.well-known/security.txt ni /security.txt', 'Publier un security.txt (contact sécurité) — standard RFC 9116, attendu des organisations matures.' ); }
+		}
+
+		// 16. Sous-domaines exposés via transparence des certificats (passif, crt.sh)
+		if ( microtime( true ) < $deadline ) {
+			$ct   = ag_aa_http( 'GET', 'https://crt.sh/?q=%25.' . rawurlencode( $root ) . '&output=json', null, true );
+			$subs = array();
+			if ( ! empty( $ct['body'] ) && preg_match_all( '#"name_value"\s*:\s*"([^"]+)"#', $ct['body'], $cm ) ) {
+				foreach ( $cm[1] as $nv ) {
+					foreach ( preg_split( '#\\\\n|\n#', $nv ) as $one ) {
+						$one = strtolower( trim( $one ) );
+						if ( '' !== $one && false === strpos( $one, '*' ) ) { $subs[ $one ] = 1; }
+					}
+				}
+			}
+			$subs = array_keys( $subs );
+			if ( count( $subs ) > 1 ) {
+				$add( 'recon', count( $subs ) . ' sous-domaines publiquement répertoriés', 'faible', 'Ex. : ' . implode( ', ', array_slice( $subs, 0, 10 ) ), 'Vérifier que chaque sous-domaine est légitime, à jour et non abandonné : un sous-domaine oublié = porte d\'entrée (voire risque de takeover).' );
+			}
+		}
 
 		// Dédoublonnage par clé+label, total devis, score
 		$seen = array(); $uniq = array();
