@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02p</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02p</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02q</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02q</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -1101,9 +1101,14 @@ function scanExtra(t){
       try{ FINDINGS=FINDINGS.filter(function(f){return f.type!=='lfi';}); }catch(e){} // XXE prime sur LFI (même preuve)
     } else hit(/root:x:0:0:/,'lfi',t);
   }
+  // XXE nommé explicitement (même sans dump /etc/passwd)
+  if(/\bXXE\b|XML External Entity|external entity injection|entit[eé] externe XML/i.test(t)){
+    hit(/\bXXE\b|XML External Entity|external entity injection|entit[eé] externe XML/i,'xxe',t);
+    try{ FINDINGS=FINDINGS.filter(function(f){return f.type!=='lfi';}); }catch(e){}
+  }
   hit(/^[0-9A-F]{35}:\d+/m,'leak');                                   // mot de passe compromis (Pwned)
-  hit(/Valid Combinations Found|\[SUCCESS\]|Username:\s*\S+,?\s*Password:\s*\S+/i,'auth'); // mdp cassé
-  hit(/is vulnerable|available databases|back-end DBMS|sqlmap identified|Parameter:\s*\S+\s*\((GET|POST)\)/i,'sqli');
+  hit(/Valid Combinations Found|\[SUCCESS\]|Username:\s*\S+,?\s*Password:\s*\S+|Password:\s*\S+|password found|credentials?\s+found|mot de passe (?:trouv|compromis|faible|cass)|login successful|weak password|default credentials/i,'auth'); // mdp cassé
+  hit(/available databases|back-end DBMS|sqlmap identified|SQL injection|injection SQL|UNION[\s-]*based SQL|Parameter:\s*\S+\s*\((GET|POST)\)/i,'sqli');
   hit(/<svg[\s\/][^>]*onload\s*=|<script>\s*alert|<img[^>]*onerror\s*=|onerror\s*=\s*alert|onload\s*=\s*alert/i,'xss');
   hit(/\[!\]\s*Title:|vulnerabilit|CVE-\d{4}/i,'cve');               // plugin/thème vulnérable
   hit(/ref:\s*refs\/heads|\.git\/HEAD/i,'info');                      // .git exposé
@@ -1172,9 +1177,23 @@ function restoreState(host){
 }
 function sevInfo(score){ var s=parseFloat(score)||0; if(s>=9)return{l:'Critique',c:'#dc2626'}; if(s>=7)return{l:'Élevé',c:'#ea580c'}; if(s>=4)return{l:'Moyen',c:'#d97706'}; return{l:'Faible',c:'#2563eb'}; }
 function collectFindings(){
-  if(FINDINGS.length) return FINDINGS.slice();
-  var ty=fv('rtype'), t=RT[ty]; if(!t) return [];
-  return [{type:ty,name:t.n,cvss:t.v,score:t.s,rem:t.rem,proof:fv('rproof'),endpoint:fv('rendpoint')}];
+  var raw = FINDINGS.length ? FINDINGS.slice() : (function(){ var ty=fv('rtype'), t=RT[ty]; return t?[{type:ty,name:t.n,cvss:t.v,score:t.s,rem:t.rem,proof:fv('rproof'),endpoint:fv('rendpoint')}]:[]; })();
+  // Dédoublonnage par NOM (3 chemins peuvent ajouter la même faille avec des clés différentes :
+  // scan local type|endpoint, serveur known|nom, reprise localStorage) → on fusionne en gardant le pire score + le plus de détail.
+  var by={}, order=[];
+  raw.forEach(function(f){
+    if(!f) return;
+    var nm=((f.name||f.type||'')+'').trim().toLowerCase(); if(!nm) return;
+    if(!by[nm]){ by[nm]={type:f.type,name:f.name,cvss:f.cvss,score:f.score,rem:f.rem,proof:f.proof,endpoint:f.endpoint,key:f.key}; order.push(nm); return; }
+    var a=by[nm];
+    if((parseFloat(f.score)||0)>(parseFloat(a.score)||0)) a.score=f.score;
+    if(!a.proof && f.proof) a.proof=f.proof;
+    if((!a.cvss) && f.cvss) a.cvss=f.cvss;
+    if((!a.rem) && f.rem) a.rem=f.rem;
+    if((!a.endpoint) && f.endpoint) a.endpoint=f.endpoint;
+    if((!a.type || a.type==='info' || a.type==='cve') && f.type && f.type!=='info') a.type=f.type;
+  });
+  return order.map(function(k){return by[k];});
 }
 function saveCfg(){
   try{ localStorage.setItem('ag_prices', JSON.stringify(reportPrices())); localStorage.setItem('ag_payurl', (document.getElementById('payUrl').value||'').trim()); }catch(e){}
@@ -1398,9 +1417,11 @@ function importResults(){
   blocks.forEach(function(b){
     var r=scan(b.body);
     if(r.report) applyToReport(r.report, b.body);
+    try{ scanExtra(b.body); }catch(e){}
     var col=r.cls==='ok'?'#22c55e':(r.cls==='bad'?'#ef4444':'#f59e0b');
     rows.push('<div style="border-left:3px solid '+col+';padding-left:8px;margin:5px 0"><b>'+esc(b.label)+'</b><br>'+esc(r.msg)+'</div>');
   });
+  try{ scanExtra(txt); }catch(e){}
   var sum=document.getElementById('bulkSummary');
   if(sum) sum.innerHTML='<p style="margin:8px 0"><b>'+blocks.length+' étape(s) analysée(s) — '+FINDINGS.length+' faille(s) retenue(s).</b></p>'+rows.join('');
   buildReport('novice');
