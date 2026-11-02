@@ -49,8 +49,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02j</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02j</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02k</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02k</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <p class="sub"><b>Ici c'est TOI qui lances chaque commande</b> (sur Kali), et l'outil te guide pas-à-pas + lit tes résultats + construit le rapport. C'est le mode pour <b>apprendre et aller jusqu'au bout toi-même</b>. (Pour un audit 100% automatique sans rien faire → bouton « Audit auto » dans WordPress.) Hors ligne. <b>Uniquement sous mandat / scope autorisé.</b></p>
 
   <div class="panel" id="scopePanel">
@@ -92,10 +92,10 @@
 
   <div class="panel" id="jobsPanel">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
-      <h2 style="margin:0">📡 Tes audits (file & état) — en direct</h2>
+      <h2 style="margin:0">📡 Tes audits (Espace Audit) — en direct</h2>
       <button class="go" style="width:auto;padding:8px 14px;margin:0" onclick="reloadJobs()">🔄 Actualiser</button>
     </div>
-    <p class="sub" style="margin:6px 0 10px">Les audits lancés sur Kali apparaissent ici : <b>en attente → en cours → terminé</b> (ça vient du serveur WordPress, avec ta session). Si c'est vide, tu n'es peut-être pas connecté à WordPress dans cet onglet.</p>
+    <p class="sub" style="margin:6px 0 10px">C'est <b>la même chose</b> que la page <b>Espace Audit</b> de WordPress : une <b>fiche par site</b> qui reçoit <b>en direct</b> les failles que tu analyses ici (léger + approfondi + Kali réunis), avec le statut Kali et le bouton <b>📄 Rapport client</b>. Le rapport que tu génères dans l'outil ET le « Rapport client » sortent de cette même fiche. (Si c'est vide : connecte-toi à WordPress dans cet onglet, ou clique 🔑 dans la page Audits Kali pour pré-remplir le jeton.)</p>
     <iframe id="agJobs" src="about:blank" style="width:100%;height:440px;border:1px solid #2a2c4e;border-radius:8px;background:#fff"></iframe>
   </div>
 
@@ -538,7 +538,9 @@ function agApi(action, restPath, method, params){
     })
     .catch(function(){ return viaRest(); });
 }
-function reloadJobs(){ var f=document.getElementById('agJobs'); if(f) f.src=agOrigin()+'/wp-admin/admin.php?page=ag-pentest-bridge&ts='+Date.now(); }
+function reloadJobs(){ var f=document.getElementById('agJobs'); if(f) f.src=agOrigin()+'/wp-admin/admin.php?page=ag-espace-audit&ts='+Date.now(); }
+var _AG_JOBS_T=null;
+function reloadJobsSoon(){ try{ clearTimeout(_AG_JOBS_T); }catch(e){} _AG_JOBS_T=setTimeout(reloadJobs, 1800); }
 /* Lance l'audit AUTO serveur DANS le cadre en bas (plus de nouvel onglet). */
 function openServerAuto(){
   var c=(document.getElementById('cible').value||'').trim();
@@ -1107,6 +1109,7 @@ function syncToServer(){
       .then(function(j){
         var ind=document.getElementById('reportCount');
         if(j&&j.ok&&ind){ ind.textContent='· '+FINDINGS.length+' faille(s) · ☁️ Espace Audit à jour'+(j.rapport_url?' · rapport lié':''); }
+        if(j&&j.ok){ try{ reloadJobsSoon(); }catch(e){} } // rafraîchit « Tes audits » en direct
       }).catch(function(){});
   }catch(e){}
 }
