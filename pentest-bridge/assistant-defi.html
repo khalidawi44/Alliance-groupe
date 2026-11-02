@@ -49,8 +49,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02i</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02i</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02j</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02j</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <p class="sub"><b>Ici c'est TOI qui lances chaque commande</b> (sur Kali), et l'outil te guide pas-à-pas + lit tes résultats + construit le rapport. C'est le mode pour <b>apprendre et aller jusqu'au bout toi-même</b>. (Pour un audit 100% automatique sans rien faire → bouton « Audit auto » dans WordPress.) Hors ligne. <b>Uniquement sous mandat / scope autorisé.</b></p>
 
   <div class="panel" id="scopePanel">
@@ -577,6 +577,7 @@ function loadSiteState(host){
     });
     var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+FINDINGS.length+' faille(s) collectée(s)';
     try{ updateProgress(); }catch(_){}
+    if(added){ try{ refreshReportSoon(); }catch(e){} }
     var map={passive:'léger (passif)',deep:'approfondi',expert:'expert (Kali)'};
     var done=(j.modes||[]).map(function(m){return map[m]||m;});
     var missing=[]; ['passive','deep','expert'].forEach(function(m){ if((j.modes||[]).indexOf(m)<0) missing.push(map[m]); });
@@ -681,6 +682,7 @@ var RT={
  info:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N',s:'7.5',n:'Fuite d\'information',rem:'Retirer le fichier/endpoint exposé ; contrôle d\'accès ; pas de secret dans le code public.'},
  leak:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N',s:'5.3',n:'Identifiants exposés dans des fuites de données connues',rem:'Forcer la réinitialisation des mots de passe des comptes concernés ; activer la 2FA ; interdire les mots de passe déjà vus dans des fuites (vérif type HIBP à l\'inscription) ; mettre en place une surveillance de fuites sur le domaine (HIBP Domain monitoring).'},
  cookies:{v:'AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N',s:'5.9',n:'Cookie de session mal protégé (HttpOnly/Secure/SameSite)',rem:'Marquer les cookies de session HttpOnly + Secure + SameSite=Lax (ou Strict) ; ne jamais exposer un jeton de session au JavaScript ; expiration courte + rotation à la connexion.'},
+ cve:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H',s:'8.8',n:'Extension/thème avec faille connue (CVE)',rem:'Mettre à jour ou retirer l\'extension/thème vulnérable ; activer les mises à jour automatiques ; WAF en attendant le correctif.'},
  // --- Lignes CONFIGURATION / CONFORMITÉ facturables (devis) ---
  headers:{v:'AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:L/A:N',s:'4.3',n:'En-têtes de sécurité manquants',rem:'Ajouter HSTS, Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy (protège du clickjacking, du MIME-sniffing, des fuites de référent).'},
  tls:{v:'AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N',s:'4.0',n:'HTTPS / TLS à durcir',rem:'Forcer la redirection HTTP→HTTPS (301), activer HSTS, désactiver TLS < 1.2, renouveler/valider le certificat.'},
@@ -695,6 +697,7 @@ function setv(id,v){var e=document.getElementById(id);if(e)e.value=v;}
 // Squelettes de sections par type — remplit les zones éditables. force=true écrase, sinon ne remplit que le vide.
 function fillSkeleton(force){
   var t=RT[fv('rtype')], ty=fv('rtype');
+  if(!t){ return; } // type sans squelette (ex. cve/headers/…) : la faille est quand même collectée, on ne plante pas
   var host=clean(fv('rscope')||fv('cible')).host||'la-cible';
   var scope=fv('rscope')||host;
   var ep=fv('rendpoint')||('https://'+host+'/...');
@@ -915,7 +918,8 @@ function scan(t){
       foll.push({t:'Test de mots de passe sur les comptes trouvés (sous mandat)',c:'wpscan --url '+U+unameArg+' --passwords /usr/share/wordlists/rockyou.txt --max-threads 5 --throttle 800 --random-user-agent',e:'Prouve un accès admin si mot de passe faible (ACTIF, mandat obligatoire, risque de verrouillage). Un compte admin cassé = impact critique.'+(logins.length?' Logins injectés automatiquement.':' (Sans --usernames : wpscan ré-énumère les comptes lui-même.)')+' Colle la sortie → Analyser (ne rebouclera pas).'});
     }
     if(/vulnerabilit|CVE-|\[!\]|Title:/i.test(t)){ msg+=' Plugins/thèmes vulnérables signalés → vérifie la CVE + un exploit public (searchsploit).'; foll.push({t:'Chercher un exploit pour une CVE trouvée',c:'searchsploit NOM_PLUGIN VERSION   # ex: searchsploit contact-form-7 5.7  (remplace par le plugin+version trouvés, SANS chevrons)',e:'Confirme si la vulnérabilité a un exploit prêt à l\'emploi. Remplace NOM_PLUGIN et VERSION par les valeurs trouvées.'}); }
-    return {cls:'ok',msg:msg,follow:foll,report:(/User\(s\) Identified|\[i\] User/i.test(t)?{type:'enum'}:null),unlock:null};
+    var wpVuln=/vulnerabilit|CVE-|\[!\]|Title:/i.test(t);
+    return {cls:'ok',msg:msg,follow:foll,report:(wpVuln?{type:'cve'}:(/User\(s\) Identified|\[i\] User/i.test(t)?{type:'enum'}:null)),unlock:null};
   }
   // Comptes WordPress énumérés via REST (/wp-json/wp/v2/users) ou ?author= — login exposé
   if( (/"slug"\s*:\s*"[^"]+"/.test(t) && /"id"\s*:\s*\d+/.test(t) && /"name"\s*:/.test(t)) || /\/author\/[a-z0-9_.-]+\/?/i.test(t) ){
@@ -1061,6 +1065,7 @@ var NOVICE={
  info:{r:'Des informations techniques sensibles sont exposées.',i:'Facilite la préparation d\'une attaque.'},
  leak:{r:'Des identifiants liés à vous circulent dans des fuites connues.',i:'Connexion frauduleuse possible si des mots de passe sont réutilisés.'},
  cookies:{r:'Un cookie de connexion n\'est pas correctement protégé (HttpOnly/Secure/SameSite).',i:'Un intrus pourrait voler une session et se faire passer pour un utilisateur ou un administrateur.'},
+ cve:{r:'Une extension ou un thème de votre site a une faille de sécurité publiquement connue.',i:'Exploitation automatisée par des robots : défaçage, vol de données, prise de contrôle du site.'},
  headers:{r:'Votre site n\'envoie pas les en-têtes de sécurité recommandés.',i:'Facilite le détournement d\'affichage (clickjacking) et certaines attaques sur vos visiteurs.'},
  tls:{r:'La connexion sécurisée (HTTPS) n\'est pas pleinement forcée.',i:'Risque d\'interception et perte de confiance (navigateur, référencement).'},
  email:{r:'Votre domaine n\'est pas protégé contre l\'usurpation d\'e-mail (SPF/DKIM/DMARC).',i:'Des e-mails frauduleux peuvent être envoyés en votre nom (phishing à vos clients).'},
@@ -1076,6 +1081,7 @@ function pushFinding(type, proof){
   FINDINGS.push({key:key,type:type,name:t.n,cvss:t.v,score:t.s,rem:t.rem,proof:(proof||'').slice(0,1200),endpoint:ep});
   var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+FINDINGS.length+' faille(s) collectée(s)';
   try{ persistState(); }catch(e){}
+  try{ refreshReportSoon(); }catch(e){}
 }
 /* ===== SAUVEGARDE AUTO par site (failles + saisies) — pour ne JAMAIS reperdre un test ===== */
 function agStateRoot(){ var h=(window.AGT&&AGT.T)||''; return (h||'').toLowerCase().replace(/^www\./,''); }
@@ -1117,6 +1123,7 @@ function restoreState(host){
     try{ updateProgress(); }catch(e){}
     var sdiv=document.getElementById('steps');
     if(sdiv && st.findings && st.findings.length){ var n=document.createElement('div'); n.className='verdict ok'; n.style.margin='0 0 10px'; n.innerHTML='💾 <b>Session restaurée</b> : '+st.findings.length+' faille(s) et tes saisies précédentes sur ce site ont été récupérées automatiquement.'; sdiv.insertBefore(n, sdiv.firstChild); }
+    if(FINDINGS.length){ try{ buildReport('novice', true); }catch(e){} }
   }catch(e){}
 }
 function sevInfo(score){ var s=parseFloat(score)||0; if(s>=9)return{l:'Critique',c:'#dc2626'}; if(s>=7)return{l:'Élevé',c:'#ea580c'}; if(s>=4)return{l:'Moyen',c:'#d97706'}; return{l:'Faible',c:'#2563eb'}; }
@@ -1197,7 +1204,7 @@ function analyzeCookies(){
   if(third.length){ h+='<div style="margin-top:6px;color:#9aa0b0">🌐 Cookies TIERS ignorés (pas la responsabilité du site) : '+esc(third.map(function(o){return o.name+'@'+o.dom;}).slice(0,12).join(', '))+(third.length>12?'…':'')+'.<br>Un cookie tiers HttpOnly (ex. Facebook <code>xs</code>) n\'est PAS volable par XSS et n\'est PAS une faille du site.</div>'; }
   if(weak.length){
     var key='cookies|'+target;
-    if(!FINDINGS.some(function(f){return f.key===key;})){ var t=RT.cookies; FINDINGS.push({key:key,type:'cookies',name:t.n,cvss:t.v,score:t.s,rem:t.rem,proof:raw.slice(0,800),endpoint:(AGT.U||'')}); var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+FINDINGS.length+' faille(s) collectée(s)'; try{updateProgress();}catch(e){} }
+    if(!FINDINGS.some(function(f){return f.key===key;})){ var t=RT.cookies; FINDINGS.push({key:key,type:'cookies',name:t.n,cvss:t.v,score:t.s,rem:t.rem,proof:raw.slice(0,800),endpoint:(AGT.U||'')}); var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+FINDINGS.length+' faille(s) collectée(s)'; try{updateProgress();}catch(e){}  try{refreshReportSoon();}catch(e){} }
     h='<div class="verdict bad" style="margin-bottom:8px">🍪 <b>'+weak.length+' cookie(s) de session mal protégé(s)</b> sur '+esc(target)+' : '+esc(weak.map(function(o){return o.name;}).join(', '))+'. HttpOnly/Secure/SameSite manquant → <b>vol de session possible</b>. Faille ajoutée au rapport.</div>'+h;
   } else if(first.length){
     h='<div class="verdict ok" style="margin-bottom:8px">✅ Aucun cookie de session mal protégé sur '+esc(target)+' — bon point à noter au rapport.</div>'+h;
@@ -1277,7 +1284,10 @@ function reportHeader(){
     '<div><div style="font-size:20px;font-weight:800;color:#fff">Alliance Groupe — Rapport de sécurité</div>'+
     '<div style="font-size:13px;color:#E6A93C">'+esc(prog)+' · cible '+esc(cible)+' · '+esc(d)+'</div></div></div>';
 }
-function buildReport(mode){
+var REPORT_MODE='novice', _AG_RPT_T=null;
+function refreshReportSoon(){ try{ clearTimeout(_AG_RPT_T); }catch(e){} _AG_RPT_T=setTimeout(function(){ try{ if((window.FINDINGS||[]).length) buildReport(REPORT_MODE, true); }catch(e){} }, 250); }
+function buildReport(mode, noScroll){
+  REPORT_MODE=mode;
   var F=collectFindings(), box=document.getElementById('presentReport');
   if(!F.length){ box.innerHTML='<div style="padding:20px;color:#555">Aucune faille collectée pour l\'instant. Lance des analyses (ou remplis le rapport ci-dessus), puis regénère.</div>'; return; }
   var worst=F.reduce(function(m,f){var s=parseFloat(f.score)||0;return s>m?s:m;},0);
@@ -1311,7 +1321,7 @@ function buildReport(mode){
   if(mode!=='expert') body+=offersBlock(F);
   var html=reportHeader()+body;
   box.innerHTML=html; LAST_REPORT_HTML=html;
-  box.scrollIntoView({behavior:'smooth'});
+  if(!noScroll) box.scrollIntoView({behavior:'smooth'});
 }
 function printReport(){
   if(!LAST_REPORT_HTML) buildReport('novice');
