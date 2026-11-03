@@ -652,6 +652,23 @@ if ( ! function_exists( 'ag_rap_find_key' ) ) {
 	}
 }
 
+if ( ! function_exists( 'ag_rap_is_false_xss' ) ) {
+	/** Vrai si une faille « XSS » stockée est un FAUX POSITIF : sa preuve est une page HTML normale
+	 *  (longue / <!doctype / <html) SANS la charge de test injectée (alert(1337)/alert(document.domain)/
+	 *  <svg|<img ... onload|onerror=alert( ). Une vraie XSS a toujours ce marqueur dans sa preuve. */
+	function ag_rap_is_false_xss( $f ) {
+		$t = strtolower( (string) ( $f['type'] ?? '' ) );
+		$n = function_exists( 'mb_strtolower' ) ? mb_strtolower( (string) ( $f['name'] ?? '' ) ) : strtolower( (string) ( $f['name'] ?? '' ) );
+		$is_xss = ( 'xss' === $t || 'xssr' === $t || false !== strpos( $n, 'xss' ) );
+		if ( ! $is_xss ) { return false; }
+		$proof = (string) ( $f['proof'] ?? '' );
+		$looks_page = ( strlen( $proof ) > 200 ) || ( false !== stripos( $proof, '<!doctype' ) ) || ( false !== stripos( $proof, '<html' ) );
+		if ( ! $looks_page ) { return false; } // pas de preuve / preuve courte → on ne juge pas (on garde)
+		if ( preg_match( '#alert\(1337\)|alert\(document\.domain\)|<svg[\s/][^>]*onload\s*=\s*alert\(|<img[^>]*onerror\s*=\s*alert\(#i', $proof ) ) { return false; } // vraie XSS
+		return true; // page normale sans charge = faux positif
+	}
+}
+
 if ( ! function_exists( 'ag_rap_all_findings' ) ) {
 	/**
 	 * SOURCE UNIQUE des failles d'un site : fusionne l'historique (VRAIS noms, pas le libellé teaser)
@@ -694,12 +711,27 @@ if ( ! function_exists( 'ag_rap_all_findings' ) ) {
 			}
 		} elseif ( $kalitxt ) { $modes['expert'] = true; }
 		// Stock riche par site (assistant + Kali collé) : garde type/cvss/rem.
+		// + AUTO-NETTOYAGE : une « XSS » dont la preuve est une page normale (sans charge alert(1337)/
+		//   alert(document.domain)) = faux positif → purgée automatiquement du stock (aucune action requise).
 		$rich = array();
 		if ( function_exists( 'ag_rap_get_findings' ) ) {
-			foreach ( ag_rap_get_findings( $host ) as $rf ) {
+			$stock = ag_rap_get_findings( $host );
+			$purge = array();
+			foreach ( $stock as $rf ) {
 				$nm = (string) ( $rf['name'] ?? '' ); if ( '' === $nm  || $nm === $GEN ) { continue; }
+				if ( ag_rap_is_false_xss( $rf ) ) { $purge[] = $nm; continue; }
 				$rich[ $nm ] = array( 'name' => $nm, 'score' => (float) ( $rf['score'] ?? 0 ), 'type' => (string) ( $rf['type'] ?? '' ), 'cvss' => (string) ( $rf['cvss'] ?? '' ), 'rem' => (string) ( $rf['rem'] ?? '' ) );
 				if ( (float) ( $rf['score'] ?? 0 ) >= 9 ) { $crit = max( $crit, 1 ); }
+			}
+			if ( $purge && function_exists( 'ag_rap_find_key' ) ) {
+				$key = ag_rap_find_key( $host );
+				if ( $key ) {
+					$cur = get_option( $key, array() );
+					if ( is_array( $cur ) ) {
+						$cur = array_values( array_filter( $cur, function ( $f ) use ( $purge ) { return ! in_array( (string) ( $f['name'] ?? '' ), $purge, true ); } ) );
+						update_option( $key, $cur, false );
+					}
+				}
 			}
 		}
 		$findings = array();
