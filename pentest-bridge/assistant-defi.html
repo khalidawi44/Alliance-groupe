@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03a</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03a</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03b</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03b</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -1253,6 +1253,7 @@ function saveReportToWP(){
         if(j.job_closed) links+='<br><span style="color:#7ef0a8">🛰️ Job « Audit Kali » clôturé automatiquement (Terminé).</span>';
         if(j.fiche) links+='<br><span style="color:#7ef0a8">🗂️ Fiche créée/à jour dans Espace Audit (failles + rapport reliés).</span>';
         out.style.color='#22c55e'; out.innerHTML=links;
+        try{ reloadJobsSoon(); }catch(e){} // rafraîchit « Tes audits » → Espace Audit prend le rapport
       } else {
         out.style.color='#ef4444';
         out.textContent='❌ '+((j&&j.error)||'échec : connecte-toi en admin sur le site, OU colle le jeton du site ci-dessus.');
