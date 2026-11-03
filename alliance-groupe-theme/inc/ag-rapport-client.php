@@ -468,58 +468,16 @@ add_action( 'rest_api_init', function () {
 			$cible = (string) $req->get_param( 'cible' );
 			$host  = preg_replace( '#^www\\.#', '', strtolower( (string) wp_parse_url( ( 0 === stripos( $cible, 'http' ) ? $cible : 'https://' . $cible ), PHP_URL_HOST ) ) );
 			if ( '' === $host ) { return array( 'ok' => false, 'host' => '', 'modes' => array(), 'findings' => array(), 'rapport_url' => '' ); }
-			$modes = array(); $labels = array(); $worst = 101; $crit = 0; $rap = '';
-			if ( function_exists( 'ag_audit_hist_get' ) ) {
-				foreach ( ag_audit_hist_get() as $e ) {
-					$eh = preg_replace( '#^www\\.#', '', strtolower( (string) ( $e['host'] ?? '' ) ) );
-					if ( $eh !== $host ) { continue; }
-					$modes[ (string) ( $e['mode'] ?? 'passive' ) ] = true;
-					$sc = (int) ( $e['score'] ?? 100 ); if ( $sc < $worst ) { $worst = $sc; }
-					$crit = max( $crit, (int) ( $e['critical'] ?? 0 ) );
-					if ( ! empty( $e['rapport_url'] ) ) { $rap = (string) $e['rapport_url']; }
-					foreach ( (array) ( $e['checks'] ?? array() ) as $c ) {
-						$stt = $c['status'] ?? '';
-						if ( 'fail' === $stt || 'warn' === $stt ) {
-							// Flux INTERNE (alimente l'assistant de Fabrice) : VRAI nom specifique de chaque
-							// faille (RGPD, DMARC, SEO, versions...), PAS le libelle teaser flou qui ecrasait
-							// plusieurs failles distinctes en une seule « Point de securite a corriger ».
-							$lab = trim( (string) ( $c['name'] ?? '' ) );
-							if ( '' === $lab && function_exists( 'ag_audit_public_label' ) ) { $lab = ag_audit_public_label( '' ); }
-							if ( $lab ) { $labels[ $lab ] = ! empty( $c['critical'] ) ? 9.0 : 5.0; }
-						}
-					}
-				}
-			}
-			// Synthèse Kali (job terminé) → failles en français.
-			$kalitxt = function_exists( 'ag_tester_kali_report_for' ) ? ag_tester_kali_report_for( 'https://' . $host ) : '';
-			if ( $kalitxt && function_exists( 'ag_pt_summary_fr' ) ) {
-				$modes['expert'] = true;
-				$an = ag_pt_summary_fr( $kalitxt );
-				foreach ( (array) ( $an['findings'] ?? array() ) as $kf ) {
-					$nm = (string) ( $kf['label'] ?? '' ); if ( '' === $nm ) { continue; }
-					$sev = (string) ( $kf['sev'] ?? '' );
-					$labels[ $nm ] = ( 'crit' === $sev ? 9.0 : ( 'high' === $sev ? 7.0 : ( 'med' === $sev ? 5.0 : 3.0 ) ) );
-				}
-			} elseif ( $kalitxt ) { $modes['expert'] = true; }
-			// Stock riche par site (TOUTES sources : assistant, Kali collé…).
-			$rich = array();
-			if ( function_exists( 'ag_rap_get_findings' ) ) {
-				foreach ( ag_rap_get_findings( $host ) as $rf ) {
-					$nm = (string) ( $rf['name'] ?? '' ); if ( '' === $nm ) { continue; }
-					$rich[ $nm ] = array( 'name' => $nm, 'score' => (float) ( $rf['score'] ?? 0 ), 'type' => (string) ( $rf['type'] ?? '' ), 'cvss' => (string) ( $rf['cvss'] ?? '' ), 'rem' => (string) ( $rf['rem'] ?? '' ) );
-				}
-			}
-			$findings = array();
-			foreach ( $labels as $nm => $sc ) { if ( ! isset( $rich[ $nm ] ) ) { $findings[] = array( 'name' => $nm, 'score' => $sc ); } }
-			foreach ( $rich as $rf ) { $findings[] = $rf; }
+			// SOURCE UNIQUE : même collecte que le rapport client (historique + Kali + stock riche).
+			$agg = ag_rap_all_findings( $host );
 			return array(
-				'ok' => ( ! empty( $modes ) || ! empty( $findings ) ),
+				'ok' => ( ! empty( $agg['modes'] ) || ! empty( $agg['findings'] ) ),
 				'host' => $host,
-				'modes' => array_keys( $modes ),
-				'score' => ( $worst <= 100 ? (int) $worst : null ),
-				'critical' => (int) $crit,
-				'findings' => $findings,
-				'rapport_url' => $rap,
+				'modes' => $agg['modes'],
+				'score' => $agg['score'],
+				'critical' => (int) $agg['critical'],
+				'findings' => $agg['findings'],
+				'rapport_url' => $agg['rapport_url'],
 			);
 		},
 	) );
@@ -655,5 +613,67 @@ if ( ! function_exists( 'ag_rap_find_key' ) ) {
 	function ag_rap_get_findings( $host ) {
 		$key = ag_rap_find_key( $host ); if ( '' === $key ) { return array(); }
 		$v = get_option( $key, array() ); return is_array( $v ) ? $v : array();
+	}
+}
+
+if ( ! function_exists( 'ag_rap_all_findings' ) ) {
+	/**
+	 * SOURCE UNIQUE des failles d'un site : fusionne l'historique (VRAIS noms, pas le libellé teaser)
+	 * + la synthèse Kali (job terminé) + le stock riche (toutes sources : assistant, Kali collé…).
+	 * Dédoublonné par nom. Utilisée par site-state (assistant) ET le rapport client → jamais de divergence.
+	 * Retour : array( findings[{name,score,type?,cvss?,rem?}], modes[], score|null, critical, rapport_url ).
+	 */
+	function ag_rap_all_findings( $host ) {
+		$host = preg_replace( '#^www\\.#', '', strtolower( (string) ( wp_parse_url( ( 0 === stripos( (string) $host, 'http' ) ? $host : 'https://' . $host ), PHP_URL_HOST ) ?: $host ) ) );
+		if ( '' === $host ) { return array( 'findings' => array(), 'modes' => array(), 'score' => null, 'critical' => 0, 'rapport_url' => '' ); }
+		$modes = array(); $labels = array(); $worst = 101; $crit = 0; $rap = '';
+		if ( function_exists( 'ag_audit_hist_get' ) ) {
+			foreach ( ag_audit_hist_get() as $e ) {
+				$eh = preg_replace( '#^www\\.#', '', strtolower( (string) ( $e['host'] ?? wp_parse_url( (string) ( $e['url'] ?? '' ), PHP_URL_HOST ) ) ) );
+				if ( $eh !== $host ) { continue; }
+				$modes[ (string) ( $e['mode'] ?? 'passive' ) ] = true;
+				$sc = (int) ( $e['score'] ?? 100 ); if ( $sc < $worst ) { $worst = $sc; }
+				$crit = max( $crit, (int) ( $e['critical'] ?? 0 ) );
+				if ( ! empty( $e['rapport_url'] ) ) { $rap = (string) $e['rapport_url']; }
+				foreach ( (array) ( $e['checks'] ?? array() ) as $c ) {
+					$stt = $c['status'] ?? '';
+					if ( 'fail' === $stt || 'warn' === $stt ) {
+						$lab = trim( (string) ( $c['name'] ?? '' ) ); // VRAI nom (RGPD, DMARC, mdp, XXE…)
+						if ( '' !== $lab ) { $labels[ $lab ] = ! empty( $c['critical'] ) ? 9.0 : 5.0; }
+					}
+				}
+			}
+		}
+		// Synthèse Kali (job terminé) → failles FR distinctes.
+		$kalitxt = function_exists( 'ag_tester_kali_report_for' ) ? ag_tester_kali_report_for( 'https://' . $host ) : '';
+		if ( $kalitxt && function_exists( 'ag_pt_summary_fr' ) ) {
+			$modes['expert'] = true;
+			$an = ag_pt_summary_fr( $kalitxt );
+			foreach ( (array) ( $an['findings'] ?? array() ) as $kf ) {
+				$nm = (string) ( $kf['label'] ?? '' ); if ( '' === $nm ) { continue; }
+				$sev = (string) ( $kf['sev'] ?? '' );
+				$labels[ $nm ] = ( 'crit' === $sev ? 9.0 : ( 'high' === $sev ? 7.0 : ( 'med' === $sev ? 5.0 : 3.0 ) ) );
+				if ( 'crit' === $sev ) { $crit = max( $crit, 1 ); }
+			}
+		} elseif ( $kalitxt ) { $modes['expert'] = true; }
+		// Stock riche par site (assistant + Kali collé) : garde type/cvss/rem.
+		$rich = array();
+		if ( function_exists( 'ag_rap_get_findings' ) ) {
+			foreach ( ag_rap_get_findings( $host ) as $rf ) {
+				$nm = (string) ( $rf['name'] ?? '' ); if ( '' === $nm ) { continue; }
+				$rich[ $nm ] = array( 'name' => $nm, 'score' => (float) ( $rf['score'] ?? 0 ), 'type' => (string) ( $rf['type'] ?? '' ), 'cvss' => (string) ( $rf['cvss'] ?? '' ), 'rem' => (string) ( $rf['rem'] ?? '' ) );
+				if ( (float) ( $rf['score'] ?? 0 ) >= 9 ) { $crit = max( $crit, 1 ); }
+			}
+		}
+		$findings = array();
+		foreach ( $labels as $nm => $sc ) { if ( ! isset( $rich[ $nm ] ) ) { $findings[] = array( 'name' => $nm, 'score' => $sc ); } }
+		foreach ( $rich as $rf ) { $findings[] = $rf; }
+		return array(
+			'findings'    => $findings,
+			'modes'       => array_keys( $modes ),
+			'score'       => ( $worst <= 100 ? (int) $worst : null ),
+			'critical'    => (int) $crit,
+			'rapport_url' => $rap,
+		);
 	}
 }
