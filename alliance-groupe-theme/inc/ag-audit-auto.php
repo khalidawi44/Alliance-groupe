@@ -502,6 +502,30 @@ if ( defined( 'ABSPATH' ) ) {
 		wp_send_json( array( 'ok' => (bool) $id, 'job' => $id ) );
 	} );
 
+	if ( ! function_exists( 'ag_aa_feed_single_source' ) ) {
+		/** Fait entrer le resultat de l'audit AUTO dans la SOURCE UNIQUE (historique + stock riche),
+		 *  en preservant la VRAIE gravite + des noms canoniques, pour aligner /rapport, Espace Audit et l'assistant. */
+		function ag_aa_feed_single_source( $res ) {
+			if ( empty( $res['ok'] ) || empty( $res['url'] ) ) { return; }
+			$sevscore = array( 'critique' => 9.5, 'eleve' => 7.5, 'moyen' => 5.0, 'faible' => 2.5 );
+			$canon = array( 'headers' => 'En-tetes de securite manquants', 'rgpd' => 'Non-conformite RGPD a corriger', 'seo' => 'SEO technique a corriger', 'perf' => 'Performance a optimiser', 'leakfile' => 'Fichiers sensibles exposes', 'enum' => 'Enumeration des comptes ouverte (login admin expose)' );
+			$checks = array(); $rich = array(); $crit = 0;
+			foreach ( (array) ( $res['findings'] ?? array() ) as $f ) {
+				$sev  = (string) ( $f['sev'] ?? 'moyen' );
+				$key  = sanitize_key( (string) ( $f['key'] ?? '' ) );
+				$name = isset( $canon[ $key ] ) ? $canon[ $key ] : (string) ( $f['label'] ?? 'Point a corriger' );
+				$sc   = isset( $sevscore[ $sev ] ) ? $sevscore[ $sev ] : 5.0;
+				$isc  = ( 'critique' === $sev ); if ( $isc ) { $crit++; }
+				$checks[] = array( 'name' => $name, 'status' => ( 'faible' === $sev ? 'warn' : 'fail' ), 'critical' => $isc );
+				$rich[]   = array( 'name' => $name, 'score' => $sc, 'type' => $key, 'cvss' => '', 'rem' => (string) ( $f['advice'] ?? '' ), 'proof' => (string) ( $f['proof'] ?? '' ) );
+			}
+			$a  = array( 'url' => $res['url'], 'score' => (int) ( $res['score'] ?? 100 ), 'critical' => $crit, 'checks' => $checks );
+			$ct = function_exists( 'ag_audit_extract_contacts' ) ? ag_audit_extract_contacts( $res['url'] ) : array();
+			if ( function_exists( 'ag_audit_hist_upsert' ) ) { ag_audit_hist_upsert( $a, $ct, 'passive' ); }
+			if ( function_exists( 'ag_rap_store_findings' ) && $rich ) { ag_rap_store_findings( $res['url'], wp_json_encode( $rich ) ); }
+		}
+	}
+
 	add_action( 'wp_ajax_ag_aa_run', function () {
 		if ( ! current_user_can( 'manage_options' ) || ! check_ajax_referer( 'ag_aa', 'nonce', false ) ) { wp_send_json( array( 'html' => 'Refusé.' ) ); }
 		$url = isset( $_POST['url'] ) ? sanitize_text_field( wp_unslash( $_POST['url'] ) ) : '';
@@ -513,10 +537,11 @@ if ( defined( 'ABSPATH' ) ) {
 			$out['intel'] = $res['intel'];
 			$out['recon'] = $res['recon'];
 			$out['can_active'] = function_exists( 'ag_pt_enqueue_job' );
+			if ( function_exists( 'ag_aa_feed_single_source' ) ) { ag_aa_feed_single_source( $res ); }
 		}
 		if ( ! empty( $_POST['rep'] ) && ! empty( $res['ok'] ) && function_exists( 'ag_rapport_create' ) ) {
 			$client = isset( $_POST['client'] ) ? sanitize_text_field( wp_unslash( $_POST['client'] ) ) : '';
-			$rep = ag_rapport_create( ag_aa_render( $res ), $client, $res['host'], (int) $res['devis'] );
+			$rep = ag_rapport_create( ag_aa_render( $res ), $client, $res['host'], (int) $res['devis'], '', '', (int) $res['score'] );
 			if ( $rep ) { update_post_meta( $rep['id'], 'ag_aa_data', wp_json_encode( $res ) ); $out['report_url'] = $rep['url']; }
 		}
 		wp_send_json( $out );
@@ -530,13 +555,14 @@ if ( defined( 'ABSPATH' ) ) {
 		$res = ag_audit_auto( $url );
 		if ( empty( $res['ok'] ) ) { wp_send_json_error( array( 'm' => $res['error'] ?? 'Audit impossible.' ) ); }
 		$prev = function_exists( 'ag_aa_hist_prev_score' ) ? ag_aa_hist_prev_score( $res['host'] ) : null; // score AVANT cet audit
-		if ( function_exists( 'ag_aa_hist_add' ) ) { ag_aa_hist_add( $res ); }                             // enregistre dans l'historique
+		if ( function_exists( 'ag_aa_hist_add' ) ) { ag_aa_hist_add( $res ); }                             // suivi (monitor)
+		if ( function_exists( 'ag_aa_feed_single_source' ) ) { ag_aa_feed_single_source( $res ); } // + SOURCE UNIQUE
 		$watch = function_exists( 'ag_aa_watch_list' ) ? ag_aa_watch_list() : array();
 		$watched = isset( $watch[ strtolower( preg_replace( '#^www\.#i', '', $res['host'] ) ) ] );
 		$report_url = '';
 		if ( ! empty( $_POST['rep'] ) && function_exists( 'ag_rapport_create' ) ) {
 			$client = isset( $_POST['client'] ) ? sanitize_text_field( wp_unslash( $_POST['client'] ) ) : '';
-			$rep = ag_rapport_create( ag_aa_render( $res ), $client, $res['host'], (int) $res['devis'] );
+			$rep = ag_rapport_create( ag_aa_render( $res ), $client, $res['host'], (int) $res['devis'], '', '', (int) $res['score'] );
 			if ( $rep ) { update_post_meta( $rep['id'], 'ag_aa_data', wp_json_encode( $res ) ); $report_url = $rep['url']; }
 		}
 		wp_send_json_success( array(

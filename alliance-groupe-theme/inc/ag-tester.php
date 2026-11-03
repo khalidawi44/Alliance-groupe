@@ -1322,7 +1322,7 @@ if ( ! function_exists( 'ag_audit_prospect_page' ) ) {
 					} elseif ( isset( $hh[ $hid ] ) ) {
 						$e     = $hh[ $hid ];
 						$html  = ag_tester_rapport_html( $e );
-						$devis = (int) ( $e['critical'] ?? 0 ) * 900;
+						$devis = (int) ( $e['critical'] ?? 0 ) * ( function_exists( 'ag_aa_prices' ) ? (int) ag_aa_prices()['critique'] : 900 );
 						$r = ag_rapport_create( $html, ( $e['company'] ?: ( $e['host'] ?? '' ) ), ( $e['host'] ?? '' ), $devis, ( $e['email'] ?? '' ), ( $e['phone'] ?? '' ), (int) ( $e['score'] ?? 0 ) );
 						if ( $r ) {
 							$hh[ $hid ]['rapport_url'] = $r['url'];
