@@ -558,6 +558,8 @@ add_action( 'rest_api_init', function () {
 					$checks[] = array( 'name' => $nm, 'status' => 'fail', 'critical' => $isc );
 				}
 			}
+			// STOCK RICHE : garde le VRAI score + type/cvss/rem/proof (pas d'aplatissement) -> gravite correcte partout.
+			if ( is_array( $fnd ) && function_exists( 'ag_rap_store_findings' ) ) { ag_rap_store_findings( $host, wp_json_encode( $fnd ) ); }
 			if ( empty( $checks ) ) { return array( 'ok' => true, 'msg' => 'rien a synchroniser' ); }
 			$score = max( 5, min( 100, 100 - $pen ) );
 			$a  = array( 'url' => $url, 'score' => $score, 'critical' => $crit, 'checks' => $checks );
