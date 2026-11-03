@@ -94,6 +94,21 @@ add_action( 'save_post_ag_rapport', function ( $post_id ) {
 	if ( ! get_post_meta( $post_id, '_ag_rap_cert', true ) ) {
 		update_post_meta( $post_id, '_ag_rap_cert', 'AG-SEC-' . gmdate( 'Y' ) . '-' . strtoupper( substr( wp_generate_password( 8, false, false ), 0, 6 ) ) );
 	}
+	update_post_meta( $post_id, '_ag_rap_updated', current_time( 'timestamp' ) );
+	// Édition manuelle du rapport → Espace Audit prend le lien + le score (fiche du site mise à jour).
+	if ( function_exists( 'ag_rap_link_into_history' ) ) {
+		$tok0 = get_post_meta( $post_id, '_ag_rap_token', true );
+		$cib0 = (string) get_post_meta( $post_id, '_ag_rap_cible', true );
+		$hn0  = preg_replace( '#^www\\.#', '', strtolower( (string) ( wp_parse_url( ( 0 === stripos( $cib0, 'http' ) ? $cib0 : 'https://' . $cib0 ), PHP_URL_HOST ) ?: $cib0 ) ) );
+		$sc0  = get_post_meta( $post_id, '_ag_rap_score', true );
+		if ( $tok0 && $hn0 ) {
+			ag_rap_link_into_history( $hn0, home_url( '/rapport/' . $tok0 ), ( '' !== $sc0 ? (int) $sc0 : null ), array(
+				'company' => (string) get_post_meta( $post_id, '_ag_rap_client', true ),
+				'email'   => (string) get_post_meta( $post_id, '_ag_rap_email', true ),
+				'phone'   => (string) get_post_meta( $post_id, '_ag_rap_phone', true ),
+			) );
+		}
+	}
 } );
 
 /* ---- 4. Colonne « Lien privé » dans la liste ---- */
@@ -268,7 +283,46 @@ if ( ! function_exists( 'ag_rapport_create' ) ) {
 		if ( ! get_post_meta( $id, '_ag_rap_cert', true ) ) {
 			update_post_meta( $id, '_ag_rap_cert', 'AG-SEC-' . gmdate( 'Y' ) . '-' . strtoupper( substr( wp_generate_password( 8, false, false ), 0, 6 ) ) );
 		}
-		return array( 'id' => (int) $id, 'url' => home_url( '/rapport/' . $tok ) );
+		$pub = home_url( '/rapport/' . $tok );
+		// Écrit en RETOUR dans Espace Audit : la fiche du site prend le lien + le score du rapport (sans écraser les failles).
+		ag_rap_link_into_history( $hostn, $pub, $score, array( 'company' => $client, 'email' => $email, 'phone' => $phone ) );
+		return array( 'id' => (int) $id, 'url' => $pub );
+	}
+}
+
+/* Relie un rapport client à sa fiche Espace Audit : pose rapport_url (+ score) sur les entrées
+ * d'historique du même domaine ; crée une fiche légère si le site n'a pas encore d'audit.
+ * NE réécrit JAMAIS les checks/failles existants (on ne touche que le lien, le score et les contacts). */
+if ( ! function_exists( 'ag_rap_link_into_history' ) ) {
+	function ag_rap_link_into_history( $host, $url_pub, $score = null, $contacts = array() ) {
+		$root = preg_replace( '#^www\\.#', '', strtolower( (string) $host ) );
+		if ( '' === $root || ! function_exists( 'get_option' ) ) { return; }
+		$h = get_option( 'ag_audit_history', array() ); if ( ! is_array( $h ) ) { $h = array(); }
+		$found = false;
+		foreach ( $h as $id => $e ) {
+			if ( ! is_array( $e ) ) { continue; }
+			$eh = preg_replace( '#^www\\.#', '', strtolower( (string) ( $e['host'] ?? wp_parse_url( (string) ( $e['url'] ?? '' ), PHP_URL_HOST ) ) ) );
+			if ( $eh !== $root ) { continue; }
+			$h[ $id ]['rapport_url'] = $url_pub;
+			if ( null !== $score && '' !== $score ) { $h[ $id ]['score'] = min( (int) ( $e['score'] ?? 100 ), (int) $score ); }
+			if ( ! empty( $contacts['company'] ) && empty( $e['company'] ) ) { $h[ $id ]['company'] = sanitize_text_field( (string) $contacts['company'] ); }
+			if ( ! empty( $contacts['email'] )   && empty( $e['email'] ) )   { $h[ $id ]['email']   = sanitize_email( (string) $contacts['email'] ); }
+			if ( ! empty( $contacts['phone'] )   && empty( $e['phone'] ) )   { $h[ $id ]['phone']   = sanitize_text_field( (string) $contacts['phone'] ); }
+			$found = true;
+		}
+		if ( ! $found ) {
+			// Aucun audit encore pour ce site → fiche légère pour qu'Espace Audit l'affiche (failles tirées du stock à l'affichage).
+			$h[ 'client_' . md5( $root ) ] = array(
+				'url' => 'https://' . $root, 'host' => $root, 'ts' => time(),
+				'score' => ( null !== $score && '' !== $score ) ? (int) $score : 100, 'critical' => 0,
+				'seg' => 'securite', 'mode' => 'passive', 'checks' => array(), 'deep_checks' => array(),
+				'company' => sanitize_text_field( (string) ( $contacts['company'] ?? '' ) ),
+				'email' => sanitize_email( (string) ( $contacts['email'] ?? '' ) ),
+				'phone' => sanitize_text_field( (string) ( $contacts['phone'] ?? '' ) ),
+				'rapport_url' => $url_pub, 'src' => 'self',
+			);
+		}
+		update_option( 'ag_audit_history', $h, false );
 	}
 }
 
