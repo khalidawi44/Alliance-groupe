@@ -399,6 +399,42 @@ if ( file_exists( $ag_espaces_file ) ) {
     require_once $ag_espaces_file;
 }
 
+// ── CÂBLAGE MANQUANT — ÉQUIPE COMMERCIALE AUTONOME (trouvé 03/11) ───────────
+//    Ces fichiers existent dans inc/ depuis fin octobre (docs CLAUDE.md /
+//    HANDOFF.md / EQUIPE-COMMERCIALE.md les décrivent comme « actifs 24/7 »)
+//    mais n'étaient JAMAIS require_once nulle part : aucun de leurs hooks/
+//    crons/routes REST ne s'enregistrait (ex. /wp-json/ag/v1/run → 404 en
+//    ligne). Hugo (closer), Léa (funnel), le pilote auto, le scoreur, le
+//    gardien de réputation, Alessia (boîte), le rapport du soir… tournaient
+//    dans la doc, pas sur le serveur. Câblés ici (chaque module a ses propres
+//    guards function_exists()/has_action(), donc aucun conflit avec l'existant
+//    — vérifié : pas de collision de nom de fonction, php -l propre sur les 54).
+foreach ( array(
+    // Le cœur de la chaîne (le pilote appelle les autres via has_action/function_exists)
+    'ag-closer.php', 'ag-funnel.php', 'ag-autopilot.php', 'ag-scoreur.php',
+    'ag-gardien.php', 'ag-boite.php', 'ag-reponses.php', 'ag-relance-chaud.php',
+    'ag-enrichir.php', 'ag-rapport-soir.php', 'ag-ab.php', 'ag-agences.php',
+    'ag-cm.php', 'ag-commercial-admin.php',
+    // Modules annexes trouvés orphelins en même temps (même cause : jamais requis)
+    'ag-appels-offres.php', 'ag-article-failles.php', 'ag-articles-longform.php',
+    'ag-atelier.php', 'ag-captures.php', 'ag-composants-market.php', 'ag-composants.php',
+    'ag-concierge.php', 'ag-devis-instant.php', 'ag-directeur.php', 'ag-equipe.php',
+    'ag-hero-typo.php', 'ag-ia.php', 'ag-journal-ia.php', 'ag-juriste.php',
+    'ag-mandat.php', 'ag-menage-preuves.php', 'ag-meta-feed.php', 'ag-meta-pixel.php',
+    'ag-missions.php', 'ag-negociateur.php', 'ag-nuit.php', 'ag-offres.php',
+    'ag-plan-du-site.php', 'ag-portfolio.php', 'ag-provenance.php', 'ag-redirections.php',
+    'ag-refais-acces.php', 'ag-refais-mon-site.php', 'ag-reseautage.php',
+    'ag-seo-local-boost.php', 'ag-seo-localbiz.php', 'ag-seo-noindex.php',
+    'ag-session-persist.php', 'ag-shop-products.php', 'ag-signature.php', 'ag-smtp.php',
+    'ag-surclassement.php', 'ag-video-presentation.php', 'ag-visiteurs.php',
+    'ag-voice-webhook.php',
+) as $ag_orphan_file ) {
+    $ag_orphan_path = get_stylesheet_directory() . '/inc/' . $ag_orphan_file;
+    if ( file_exists( $ag_orphan_path ) ) {
+        require_once $ag_orphan_path;
+    }
+}
+
 // ── Musique de fond : DÉSACTIVÉE sur demande user (lecteur retiré du site). ──
 // $ag_music_file = get_stylesheet_directory() . '/inc/ag-music.php';
 // if ( file_exists( $ag_music_file ) ) {
