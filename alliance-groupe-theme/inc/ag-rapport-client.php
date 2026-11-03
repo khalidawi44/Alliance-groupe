@@ -594,10 +594,11 @@ if ( ! function_exists( 'ag_rap_find_key' ) ) {
 		$key = ag_rap_find_key( $host ); if ( '' === $key ) { return; }
 		$fnd = json_decode( (string) $json, true ); if ( ! is_array( $fnd ) ) { return; }
 		$cur = get_option( $key, array() ); if ( ! is_array( $cur ) ) { $cur = array(); }
+		$GEN = 'Point de sécurité à corriger'; // libellé générique parasite (ancien bug) : on le rejette + purge l'existant
 		$by = array();
-		foreach ( $cur as $f ) { if ( ! empty( $f['name'] ) ) { $by[ $f['name'] ] = $f; } }
+		foreach ( $cur as $f ) { if ( ! empty( $f['name'] ) && $f['name'] !== $GEN ) { $by[ $f['name'] ] = $f; } }
 		foreach ( $fnd as $f ) {
-			$n = sanitize_text_field( (string) ( $f['name'] ?? '' ) ); if ( '' === $n ) { continue; }
+			$n = sanitize_text_field( (string) ( $f['name'] ?? '' ) ); if ( '' === $n || $n === $GEN ) { continue; }
 			$sc = (float) ( $f['score'] ?? 0 );
 			if ( isset( $by[ $n ] ) && (float) ( $by[ $n ]['score'] ?? 0 ) > $sc ) { $sc = (float) $by[ $n ]['score']; }
 			$by[ $n ] = array(
@@ -626,6 +627,7 @@ if ( ! function_exists( 'ag_rap_all_findings' ) ) {
 	function ag_rap_all_findings( $host ) {
 		$host = preg_replace( '#^www\\.#', '', strtolower( (string) ( wp_parse_url( ( 0 === stripos( (string) $host, 'http' ) ? $host : 'https://' . $host ), PHP_URL_HOST ) ?: $host ) ) );
 		if ( '' === $host ) { return array( 'findings' => array(), 'modes' => array(), 'score' => null, 'critical' => 0, 'rapport_url' => '' ); }
+		$GEN = 'Point de sécurité à corriger'; // libellé générique parasite (ancien bug) : on l'ignore partout
 		$modes = array(); $labels = array(); $worst = 101; $crit = 0; $rap = '';
 		if ( function_exists( 'ag_audit_hist_get' ) ) {
 			foreach ( ag_audit_hist_get() as $e ) {
@@ -639,7 +641,7 @@ if ( ! function_exists( 'ag_rap_all_findings' ) ) {
 					$stt = $c['status'] ?? '';
 					if ( 'fail' === $stt || 'warn' === $stt ) {
 						$lab = trim( (string) ( $c['name'] ?? '' ) ); // VRAI nom (RGPD, DMARC, mdp, XXE…)
-						if ( '' !== $lab ) { $labels[ $lab ] = ! empty( $c['critical'] ) ? 9.0 : 5.0; }
+						if ( '' !== $lab && $lab !== $GEN ) { $labels[ $lab ] = ! empty( $c['critical'] ) ? 9.0 : 5.0; }
 					}
 				}
 			}
@@ -650,7 +652,7 @@ if ( ! function_exists( 'ag_rap_all_findings' ) ) {
 			$modes['expert'] = true;
 			$an = ag_pt_summary_fr( $kalitxt );
 			foreach ( (array) ( $an['findings'] ?? array() ) as $kf ) {
-				$nm = (string) ( $kf['label'] ?? '' ); if ( '' === $nm ) { continue; }
+				$nm = (string) ( $kf['label'] ?? '' ); if ( '' === $nm || $nm === $GEN ) { continue; }
 				$sev = (string) ( $kf['sev'] ?? '' );
 				$labels[ $nm ] = ( 'crit' === $sev ? 9.0 : ( 'high' === $sev ? 7.0 : ( 'med' === $sev ? 5.0 : 3.0 ) ) );
 				if ( 'crit' === $sev ) { $crit = max( $crit, 1 ); }
@@ -660,7 +662,7 @@ if ( ! function_exists( 'ag_rap_all_findings' ) ) {
 		$rich = array();
 		if ( function_exists( 'ag_rap_get_findings' ) ) {
 			foreach ( ag_rap_get_findings( $host ) as $rf ) {
-				$nm = (string) ( $rf['name'] ?? '' ); if ( '' === $nm ) { continue; }
+				$nm = (string) ( $rf['name'] ?? '' ); if ( '' === $nm  || $nm === $GEN ) { continue; }
 				$rich[ $nm ] = array( 'name' => $nm, 'score' => (float) ( $rf['score'] ?? 0 ), 'type' => (string) ( $rf['type'] ?? '' ), 'cvss' => (string) ( $rf['cvss'] ?? '' ), 'rem' => (string) ( $rf['rem'] ?? '' ) );
 				if ( (float) ( $rf['score'] ?? 0 ) >= 9 ) { $crit = max( $crit, 1 ); }
 			}

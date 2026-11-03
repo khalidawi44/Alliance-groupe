@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03b</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03b</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03c</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03c</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -583,6 +583,7 @@ function loadSiteState(host){
     if(!j||!j.ok) return;
     var added=0;
     (j.findings||[]).forEach(function(f){
+      if(((f.name||'')+'').trim().toLowerCase()==='point de sécurité à corriger') return;
       var key='known|'+f.name;
       if(FINDINGS.some(function(x){return x.key===key;})) return;
       var sc=parseFloat(f.score)||5;
@@ -1202,6 +1203,8 @@ function restoreState(host){
     try{ updateProgress(); }catch(e){}
     var sdiv=document.getElementById('steps');
     if(sdiv && st.findings && st.findings.length){ var n=document.createElement('div'); n.className='verdict ok'; n.style.margin='0 0 10px'; n.innerHTML='💾 <b>Session restaurée</b> : '+st.findings.length+' faille(s), tes réponses et leur analyse (bandeaux verts) ont été récupérées automatiquement.'; sdiv.insertBefore(n, sdiv.firstChild); }
+    try{ FINDINGS=FINDINGS.filter(function(f){return ((f.name||'')+'').trim().toLowerCase()!=='point de sécurité à corriger';}); }catch(e){}
+    try{ persistState(); }catch(e){} // ré-enregistre sans le libellé parasite
     if(FINDINGS.length){ try{ buildReport('novice', true); }catch(e){} }
   }catch(e){}
 }
@@ -1214,6 +1217,7 @@ function collectFindings(){
   raw.forEach(function(f){
     if(!f) return;
     var nm=((f.name||f.type||'')+'').trim().toLowerCase(); if(!nm) return;
+    if(nm==='point de sécurité à corriger') return; // libellé parasite (ancien bug) : jamais affiché
     if(!by[nm]){ by[nm]={type:f.type,name:f.name,cvss:f.cvss,score:f.score,rem:f.rem,proof:f.proof,endpoint:f.endpoint,key:f.key}; order.push(nm); return; }
     var a=by[nm];
     if((parseFloat(f.score)||0)>(parseFloat(a.score)||0)) a.score=f.score;
