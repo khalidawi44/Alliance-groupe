@@ -389,6 +389,24 @@ add_action( 'rest_api_init', function () {
 	) );
 
 	// 3) Etat CONNU d'un site (tout ce qui a deja ete audite) -> l'assistant se pre-remplit + trace ce qui manque.
+	// SOURCE UNIQUE DES PRIX (repli REST + jeton, hors-ligne) : même table que Réglages / audit auto.
+	register_rest_route( 'ag/v1', '/aa-prices', array(
+		'methods'             => 'GET',
+		'permission_callback' => 'ag_rap_rest_authed',
+		'callback'            => function () {
+			$p = function_exists( 'ag_aa_prices' ) ? ag_aa_prices() : array( 'critique' => 900, 'eleve' => 500, 'moyen' => 250, 'faible' => 90 );
+			return array(
+				'ok'      => true,
+				'crit'    => (int) $p['critique'],
+				'eleve'   => (int) $p['eleve'],
+				'moyen'   => (int) $p['moyen'],
+				'faible'  => (int) $p['faible'],
+				'report'  => (int) get_option( 'ag_rap_px_rapport', 149 ),
+				'refonte' => (int) get_option( 'ag_rap_px_refonte', 1490 ),
+			);
+		},
+	) );
+
 	register_rest_route( 'ag/v1', '/site-state', array(
 		'methods'             => 'GET',
 		'permission_callback' => 'ag_rap_rest_authed',

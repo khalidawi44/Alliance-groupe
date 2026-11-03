@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-02r</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-02r</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03a</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03a</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -635,7 +635,7 @@ function genAuto(){
   document.getElementById('out').scrollIntoView({behavior:'smooth'});
 }
 /* ===================== PROGRESSION + DEVIS LIVE ===================== */
-function estimateQuote(){ var tot=0; FINDINGS.forEach(function(f){ var s=parseFloat(f.score)||0; tot+=(s>=9?900:(s>=7?500:(s>=4?250:90))); }); return tot; }
+function estimateQuote(){ var px=reportPrices(); var tot=0; FINDINGS.forEach(function(f){ tot+=priceFor(f.score,px); }); return tot; }
 function updateProgress(){ var el=document.getElementById('progressBar'); if(!el) return;
   var boxes=document.querySelectorAll('#steps textarea.res'), tot=boxes.length, done=0;
   [].forEach.call(boxes,function(b){ if(b.value.trim()) done++; });
@@ -1163,7 +1163,10 @@ function persistState(){
     var root=agStateRoot(); if(!root) return;
     var steps={}, list=document.querySelectorAll('#steps textarea.res');
     for(var i=0;i<list.length;i++){ if(list[i].value && list[i].value.trim()){ steps[list[i].id]=list[i].value.slice(0,20000); } }
-    localStorage.setItem('ag_state_'+root, JSON.stringify({findings:FINDINGS, steps:steps, cible:(window.AGT&&AGT.T)||root, gen:(window.LASTGEN&&LASTGEN.name)||'', ts:Date.now()}));
+    // On garde AUSSI le verdict (bandeau vert + sous-étapes débloquées) de chaque étape de 1er niveau.
+    var verdicts={}, vb=document.querySelectorAll('#steps .verdict');
+    for(var k=0;k<vb.length;k++){ var vv=vb[k]; if(!vv.id || !vv.innerHTML || !vv.innerHTML.trim()) continue; var pp=vv.parentElement; if(pp && pp.closest && pp.closest('.verdict')) continue; verdicts[vv.id]={h:vv.innerHTML.slice(0,40000), c:vv.className}; }
+    localStorage.setItem('ag_state_'+root, JSON.stringify({findings:FINDINGS, steps:steps, verdicts:verdicts, cible:(window.AGT&&AGT.T)||root, gen:(window.LASTGEN&&LASTGEN.name)||'', ts:Date.now()}));
   }catch(e){}
   try{ syncSoon(); }catch(e){}
 }
@@ -1192,10 +1195,13 @@ function restoreState(host){
       st.findings.forEach(function(f){ if(f&&f.key&&!FINDINGS.some(function(x){return x.key===f.key;})) FINDINGS.push(f); });
       var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+FINDINGS.length+' faille(s) collectée(s)';
     }
+    // 1) Ré-afficher les verdicts (recrée les sous-étapes débloquées) AVANT de remettre les textes.
+    if(st.verdicts){ Object.keys(st.verdicts).forEach(function(vid){ var el=document.getElementById(vid); if(el){ el.innerHTML=(st.verdicts[vid].h||''); if(st.verdicts[vid].c){ el.className=st.verdicts[vid].c; } } }); }
+    // 2) Remettre le texte de chaque étape (top-level + sous-étapes désormais présentes) + recolorer « ✅ fait ».
     if(st.steps){ Object.keys(st.steps).forEach(function(id){ var el=document.getElementById(id); if(el){ if(!el.value){ el.value=st.steps[id]; } try{ var stp=el.closest('.step'); if(stp) stp.classList.add('ag-done'); }catch(e){} } }); }
     try{ updateProgress(); }catch(e){}
     var sdiv=document.getElementById('steps');
-    if(sdiv && st.findings && st.findings.length){ var n=document.createElement('div'); n.className='verdict ok'; n.style.margin='0 0 10px'; n.innerHTML='💾 <b>Session restaurée</b> : '+st.findings.length+' faille(s) et tes saisies précédentes sur ce site ont été récupérées automatiquement.'; sdiv.insertBefore(n, sdiv.firstChild); }
+    if(sdiv && st.findings && st.findings.length){ var n=document.createElement('div'); n.className='verdict ok'; n.style.margin='0 0 10px'; n.innerHTML='💾 <b>Session restaurée</b> : '+st.findings.length+' faille(s), tes réponses et leur analyse (bandeaux verts) ont été récupérées automatiquement.'; sdiv.insertBefore(n, sdiv.firstChild); }
     if(FINDINGS.length){ try{ buildReport('novice', true); }catch(e){} }
   }catch(e){}
 }
@@ -1500,6 +1506,8 @@ try{ var _lc=localStorage.getItem('ag_defi_cible'); if(_lc && !document.getEleme
 try{ if(location.protocol.indexOf('http')===0) reloadJobs(); }catch(e){}
 try{ var _sv=localStorage.getItem('ag_scope'); if(_sv){ document.getElementById('scopeJson').value=_sv; loadScope(true); } }catch(e){}
 try{ var _px=JSON.parse(localStorage.getItem('ag_prices')||'null'); if(_px){ if(_px.crit!=null)document.getElementById('pxCrit').value=_px.crit; if(_px.eleve!=null)document.getElementById('pxEleve').value=_px.eleve; if(_px.moyen!=null)document.getElementById('pxMoyen').value=_px.moyen; if(_px.faible!=null)document.getElementById('pxFaible').value=_px.faible; if(_px.report!=null)document.getElementById('pxReport').value=_px.report; if(_px.refonte!=null)document.getElementById('pxRefonte').value=_px.refonte; } var _pu=localStorage.getItem('ag_payurl'); if(_pu)document.getElementById('payUrl').value=_pu; }catch(e){}
+/* SOURCE UNIQUE DES PRIX : si connecté au site (admin), on récupère la table de prix du serveur (Réglages = la même que l'audit auto) et on remplit les champs → le devis de l'assistant est IDENTIQUE à celui du site. Repli : localStorage/défauts (hors-ligne). */
+try{ agApi('ag_aa_prices_get','/ag/v1/aa-prices','GET',{}).then(function(j){ if(j&&j.ok){ var m={pxCrit:j.crit,pxEleve:j.eleve,pxMoyen:j.moyen,pxFaible:j.faible,pxReport:j.report,pxRefonte:j.refonte}; Object.keys(m).forEach(function(id){ if(m[id]!=null){ var e=document.getElementById(id); if(e) e.value=m[id]; } }); try{ localStorage.setItem('ag_prices', JSON.stringify(reportPrices())); }catch(_){ } try{ if((window.FINDINGS||[]).length){ updateProgress(); refreshReportSoon(); } }catch(_){ } } }).catch(function(){}); }catch(e){}
 try{ var _rc=JSON.parse(localStorage.getItem('ag_rap_cfg')||'null'); if(_rc){ var sv=function(id,v){var e=document.getElementById(id); if(e&&v)e.value=v;}; sv('rapClient',_rc.client); sv('rapEmail',_rc.email); sv('rapPhone',_rc.phone); sv('rapToken',_rc.token); } }catch(e){}
 try{ var _sd=document.getElementById('steps'); if(_sd){ _sd.addEventListener('input', function(e){ if(e.target && e.target.classList && e.target.classList.contains('res')){ persistSoon(); } }); } }catch(e){}
 // Jeton pré-rempli via ancre #agtoken=... (lien admin) → mémorisé sur CET appareil, puis l'ancre est effacée.

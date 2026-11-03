@@ -598,6 +598,21 @@ if ( defined( 'ABSPATH' ) ) {
 		wp_send_json_success( array( 'prices' => $cur, 'm' => 'ok' ) );
 	} );
 
+	// SOURCE UNIQUE DES PRIX : expose la table (Réglages) pour que l'assistant-defi aligne son devis sur le serveur.
+	add_action( 'wp_ajax_ag_aa_prices_get', function () {
+		if ( ! current_user_can( 'manage_options' ) ) { wp_send_json( array( 'ok' => false, 'error' => 'non autorisé' ) ); }
+		$p = ag_aa_prices();
+		wp_send_json( array(
+			'ok'      => true,
+			'crit'    => (int) $p['critique'],
+			'eleve'   => (int) $p['eleve'],
+			'moyen'   => (int) $p['moyen'],
+			'faible'  => (int) $p['faible'],
+			'report'  => (int) get_option( 'ag_rap_px_rapport', 149 ),
+			'refonte' => (int) get_option( 'ag_rap_px_refonte', 1490 ),
+		) );
+	} );
+
 	add_action( 'wp_ajax_ag_app_paylinks_save', function () {
 		if ( ! current_user_can( 'manage_options' ) || ! isset( $_POST['_n'] ) || ! wp_verify_nonce( $_POST['_n'], 'ag_amb_prospect' ) ) { wp_send_json_error( array( 'm' => 'Refusé.' ) ); }
 		$in = isset( $_POST['data'] ) ? json_decode( wp_unslash( $_POST['data'] ), true ) : array();
