@@ -132,6 +132,17 @@ add_action( 'template_redirect', function () {
 	$cert   = get_post_meta( $id, '_ag_rap_cert', true );
 	if ( ! $cert ) { $cert = 'AG-SEC-' . gmdate( 'Y' ) . '-' . strtoupper( substr( wp_generate_password( 8, false, false ), 0, 6 ) ); update_post_meta( $id, '_ag_rap_cert', $cert ); }
 	$paid   = (string) get_post_meta( $id, '_ag_rap_paid', true ) === '1';
+	// SOURCE UNIQUE : score + corps RECALCULÉS en direct (mêmes failles qu'Espace Audit ET l'assistant),
+	// au lieu du HTML/score figés à l'enregistrement → plus jamais « rien n'est pareil ».
+	if ( function_exists( 'ag_rap_all_findings' ) && '' !== (string) $cible ) {
+		$live = ag_rap_all_findings( $cible );
+		if ( is_array( $live ) && null !== $live['score'] ) { $score = (int) $live['score']; }
+		if ( function_exists( 'ag_tester_rapport_html' ) ) {
+			$live_html = ag_tester_rapport_html( array( 'host' => $cible, 'url' => ( 0 === stripos( (string) $cible, 'http' ) ? $cible : 'https://' . $cible ), 'score' => (int) $score ) );
+			$live_html = preg_replace( '#<p><strong>Score de securite[^<]*</strong>[^<]*</p>#u', '', (string) $live_html, 1 );
+			if ( '' !== trim( (string) $live_html ) ) { $html = $live_html; }
+		}
+	}
 	$offre  = isset( $_GET['offre'] ) ? sanitize_key( $_GET['offre'] ) : '';
 	// Prix : par-rapport → option globale → défaut raisonnable (zéro config nécessaire).
 	$defpx = array( 'rapport' => 290, 'correction' => 1299, 'refonte' => 1490 );
