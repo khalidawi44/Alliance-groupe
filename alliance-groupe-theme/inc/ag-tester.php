@@ -1147,20 +1147,13 @@ if ( ! function_exists( 'ag_tester_rapport_html' ) ) {
 			$mlbl  = array( 'passive' => 'niveau 1 (surface)', 'deep' => 'niveau 2 (approfondi)', 'expert' => 'niveau 3 (expert)' );
 			$modes = array(); foreach ( (array) $agg['modes'] as $mm ) { $modes[ $mlbl[ $mm ] ?? $mm ] = true; }
 			$labels = array(); foreach ( (array) $agg['findings'] as $f ) { $nm = (string) ( $f['name'] ?? '' ); if ( '' !== $nm ) { $labels[ $nm ] = true; } }
-		$kali = function_exists( 'ag_tester_kali_report_for' ) ? ag_tester_kali_report_for( $url ) : '';
-		$h  = '<p><strong>Score de securite : ' . (int) $worst . '/100</strong>' . ( $crit ? ' &mdash; ' . (int) $crit . ' faille(s) critique(s)' : '' ) . '.</p>';
-		if ( $modes ) { $h .= '<p style="color:#555">Analyses realisees : ' . esc_html( implode( ' + ', array_keys( $modes ) ) ) . '.</p>'; }
-		$fails = array_keys( $labels );
-		if ( $fails ) {
-			$h .= '<h3>Points a corriger</h3><ul>';
-			foreach ( $fails as $f ) { $h .= '<li>' . esc_html( $f ) . '</li>'; }
-			$h .= '</ul>';
-		}
-		if ( $kali && function_exists( 'ag_pt_summary_fr_html' ) ) {
-			$h .= '<h3>Analyse technique approfondie</h3>' . ag_pt_summary_fr_html( $kali );
-		}
-		if ( ! $fails && ! $kali ) { $h .= '<p>Audit realise. Le detail technique vous est transmis sur demande.</p>'; }
-		return $h;
+			// RENDU RICHE UNIQUE (même présentation que l'assistant) depuis la source unique des failles.
+			$h = '';
+			if ( $modes ) { $h .= '<p style="color:#555;font-size:12px">Analyses réalisées : ' . esc_html( implode( ' + ', array_keys( $modes ) ) ) . '.</p>'; }
+			$rich = function_exists( 'ag_rap_render_client_html' ) ? ag_rap_render_client_html( $hostn ) : '';
+			if ( '' !== trim( (string) $rich ) ) { $h .= $rich; }
+			else { $h .= '<p>Audit réalisé. Le détail technique vous est transmis sur demande.</p>'; }
+			return $h;
 	}
 }
 if ( ! function_exists( 'ag_audit_msg_global' ) ) {

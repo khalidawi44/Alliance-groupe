@@ -714,3 +714,132 @@ if ( ! function_exists( 'ag_rap_all_findings' ) ) {
 		);
 	}
 }
+
+if ( ! function_exists( 'ag_rap_novice_info' ) ) {
+	/** Texte client « Ce que c'est / Le risque / Recommandation » par faille — MÊMES textes que l'assistant. */
+	function ag_rap_novice_info( $name, $type = '', $rem_in = '' ) {
+		$N = array(
+			'rce'     => array( 'Un intrus peut exécuter ses propres commandes sur votre serveur.', 'Contrôle total possible : vol de données, sabotage, rançon.' ),
+			'sqli'    => array( 'Votre base de données est accessible en lecture/écriture par un intrus.', 'Fuite de vos clients, de leurs mots de passe et de vos commandes.' ),
+			'lfi'     => array( 'Des fichiers internes du serveur peuvent être lus à distance.', 'Fuite de configurations et d\'identifiants de connexion.' ),
+			'ssrf'    => array( 'Votre serveur peut être détourné pour attaquer votre réseau interne ou votre cloud.', 'Accès à des services privés, vol de clés cloud.' ),
+			'idor'    => array( 'Un client peut accéder aux données d\'un autre client.', 'Violation de données personnelles (RGPD).' ),
+			'enum'    => array( 'On peut deviner quels emails/comptes existent chez vous.', 'Facilite le hameçonnage ciblé et le bourrage d\'identifiants.' ),
+			'xss'     => array( 'Du code malveillant peut s\'exécuter dans le navigateur de vos visiteurs et admins.', 'Vol de session administrateur, prise de contrôle du site.' ),
+			'xssr'    => array( 'Un lien piégé peut exécuter du code chez votre visiteur.', 'Vol de session, hameçonnage crédible.' ),
+			'upload'  => array( 'Un fichier piégé peut être déposé puis exécuté sur le serveur.', 'Prise de contrôle du serveur.' ),
+			'xxe'     => array( 'Un document XML piégé peut lire des fichiers du serveur.', 'Fuite de configurations et de secrets.' ),
+			'ssti'    => array( 'Une injection dans les gabarits permet d\'exécuter du code.', 'Prise de contrôle du serveur.' ),
+			'auth'    => array( 'L\'authentification présente une faiblesse (jetons, mots de passe).', 'Usurpation de comptes, y compris administrateur.' ),
+			'info'    => array( 'Des informations techniques sensibles sont exposées.', 'Facilite la préparation d\'une attaque.' ),
+			'leak'    => array( 'Des identifiants liés à vous circulent dans des fuites connues.', 'Connexion frauduleuse possible si des mots de passe sont réutilisés.' ),
+			'cookies' => array( 'Un cookie de connexion n\'est pas correctement protégé (HttpOnly/Secure/SameSite).', 'Un intrus pourrait voler une session et se faire passer pour un utilisateur ou un administrateur.' ),
+			'cors'    => array( 'La politique CORS du site autorise des origines non prévues.', 'Un site tiers pourrait lire des données de vos utilisateurs connectés.' ),
+			'cve'     => array( 'Une extension ou un thème de votre site a une faille de sécurité publiquement connue.', 'Exploitation automatisée par des robots : défaçage, vol de données, prise de contrôle du site.' ),
+			'headers' => array( 'Votre site n\'envoie pas les en-têtes de sécurité recommandés.', 'Facilite le détournement d\'affichage (clickjacking) et certaines attaques sur vos visiteurs.' ),
+			'tls'     => array( 'La connexion sécurisée (HTTPS) n\'est pas pleinement forcée.', 'Risque d\'interception et perte de confiance (navigateur, référencement).' ),
+			'email'   => array( 'Votre domaine n\'est pas protégé contre l\'usurpation d\'e-mail (SPF/DKIM/DMARC).', 'Des e-mails frauduleux peuvent être envoyés en votre nom (phishing à vos clients).' ),
+			'rgpd'    => array( 'Votre site n\'est pas conforme au RGPD (cookies, traceurs, mentions).', 'Risque de sanction CNIL et de perte de confiance des visiteurs.' ),
+			'perf'    => array( 'Votre site est ralenti (pas de compression/cache, pages lourdes).', 'Visiteurs qui partent, moins de ventes, moins bien référencé.' ),
+			'seo'     => array( 'Des bases du référencement technique manquent (titres, descriptions, mobile).', 'Moins de visibilité sur Google, moins de clients potentiels.' ),
+			'dns'     => array( 'La configuration DNS de sécurité est incomplète (DNSSEC / CAA).', 'Risque d\'usurpation de domaine ou de certificat pirate.' ),
+		);
+		$REM = array(
+			'headers' => 'Ajouter HSTS, Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy (protège du clickjacking, du MIME-sniffing, des fuites de référent).',
+			'leak'    => 'Forcer la réinitialisation des mots de passe des comptes concernés ; activer la 2FA ; interdire les mots de passe déjà vus dans des fuites (vérif type HIBP à l\'inscription) ; surveillance de fuites sur le domaine.',
+			'email'   => 'Publier un SPF (-all), signer en DKIM, poser une politique DMARC (p=quarantine puis p=reject).',
+			'rgpd'    => 'Bandeau de consentement (CMP) bloquant AVANT tout cookie ; polices hébergées en local ; mentions légales + politique de confidentialité à jour.',
+			'seo'     => 'Title + meta description uniques par page ; balise viewport (mobile) ; sitemap + robots.',
+			'cookies' => 'Marquer les cookies de session HttpOnly + Secure + SameSite=Lax/Strict ; expiration courte.',
+			'cors'    => 'Restreindre Access-Control-Allow-Origin à une liste blanche ; jamais * avec credentials.',
+			'tls'     => 'Forcer la redirection HTTP→HTTPS (301), activer HSTS, charger toutes les ressources en https.',
+			'cve'     => 'Mettre à jour ou retirer l\'extension/thème vulnérable ; activer les mises à jour automatiques.',
+			'xss'     => 'Échapper la sortie selon le contexte ; Content-Security-Policy ; assainir côté serveur.',
+			'xssr'    => 'Échapper la sortie ; CSP ; ne jamais réfléchir l\'entrée sans encodage.',
+			'sqli'    => 'Requêtes préparées (paramétrées) partout ; ORM ; moindre privilège sur le compte SQL.',
+			'xxe'     => 'Désactiver les entités externes / DTD dans le parseur XML.',
+			'lfi'     => 'Whitelist des fichiers ; interdire ../ ; désactiver les wrappers dangereux.',
+			'rce'     => 'Ne pas construire de commande shell à partir d\'entrées ; API sûres ; whitelist stricte.',
+			'info'    => 'Retirer le fichier/endpoint exposé ; contrôle d\'accès ; masquer les versions.',
+			'dns'     => 'Activer DNSSEC et publier un enregistrement CAA chez l\'hébergeur DNS.',
+		);
+		$t = sanitize_key( (string) $type );
+		if ( ! isset( $N[ $t ] ) ) {
+			$n = mb_strtolower( (string) $name );
+			$t = 'info';
+			if ( preg_match( '#injection sql|\bsqli\b#u', $n ) ) { $t = 'sqli'; }
+			elseif ( preg_match( '#xxe|entité externe#u', $n ) ) { $t = 'xxe'; }
+			elseif ( strpos( $n, 'xss' ) !== false ) { $t = 'xss'; }
+			elseif ( preg_match( '#mot de passe|identifiant|fuite|compromis|pwned#u', $n ) ) { $t = 'leak'; }
+			elseif ( preg_match( '#lecture de fichiers|traversal|\blfi\b#u', $n ) ) { $t = 'lfi'; }
+			elseif ( preg_match( '#\brce\b|exécution de code|command#u', $n ) ) { $t = 'rce'; }
+			elseif ( strpos( $n, 'ssrf' ) !== false ) { $t = 'ssrf'; }
+			elseif ( preg_match( '#en-tête|header#u', $n ) ) { $t = 'headers'; }
+			elseif ( preg_match( '#rgpd|conformité#u', $n ) ) { $t = 'rgpd'; }
+			elseif ( preg_match( '#dmarc|spf|dkim|usurpation|e-?mail#u', $n ) ) { $t = 'email'; }
+			elseif ( strpos( $n, 'seo' ) !== false ) { $t = 'seo'; }
+			elseif ( strpos( $n, 'cookie' ) !== false ) { $t = 'cookies'; }
+			elseif ( strpos( $n, 'cors' ) !== false ) { $t = 'cors'; }
+			elseif ( preg_match( '#contenu mixte|https|tls|en clair|non chiffr#u', $n ) ) { $t = 'tls'; }
+			elseif ( preg_match( '#\bcve\b|vulnérab|extension|thème#u', $n ) ) { $t = 'cve'; }
+			elseif ( preg_match( '#énumération|comptes#u', $n ) ) { $t = 'enum'; }
+			elseif ( preg_match( '#upload|téléversement|fichier non filtr#u', $n ) ) { $t = 'upload'; }
+			elseif ( preg_match( '#dnssec|caa#u', $n ) ) { $t = 'dns'; }
+			elseif ( preg_match( '#performance#u', $n ) ) { $t = 'perf'; }
+		}
+		$info = isset( $N[ $t ] ) ? $N[ $t ] : $N['info'];
+		$rem  = ( '' !== trim( (string) $rem_in ) ) ? (string) $rem_in : ( isset( $REM[ $t ] ) ? $REM[ $t ] : 'Corriger le point identifié selon les bonnes pratiques ; re-test après correction.' );
+		return array( 'r' => $info[0], 'i' => $info[1], 'rem' => $rem );
+	}
+}
+
+if ( ! function_exists( 'ag_rap_render_client_html' ) ) {
+	/** Rendu RICHE du rapport client (MÊME présentation que l'assistant) depuis la source unique. */
+	function ag_rap_render_client_html( $host ) {
+		if ( ! function_exists( 'ag_rap_all_findings' ) ) { return ''; }
+		$agg = ag_rap_all_findings( $host );
+		$F = (array) ( $agg['findings'] ?? array() );
+		if ( empty( $F ) ) { return ''; }
+		// Tri par gravité décroissante.
+		usort( $F, function ( $a, $b ) { return ( (float) ( $b['score'] ?? 0 ) ) <=> ( (float) ( $a['score'] ?? 0 ) ); } );
+		$sev = function ( $s ) {
+			$s = (float) $s;
+			if ( $s >= 9 ) { return array( 'Critique', '#dc2626' ); }
+			if ( $s >= 7 ) { return array( 'Élevé', '#ea580c' ); }
+			if ( $s >= 4 ) { return array( 'Moyen', '#d97706' ); }
+			return array( 'Faible', '#2563eb' );
+		};
+		$worst = 0; foreach ( $F as $f ) { $worst = max( $worst, (float) ( $f['score'] ?? 0 ) ); }
+		$ws = $sev( $worst );
+		$e = function ( $x ) { return function_exists( 'esc_html' ) ? esc_html( $x ) : htmlspecialchars( (string) $x, ENT_QUOTES ); };
+		$h  = '<p style="color:#141414;font-size:14px"><b>' . count( $F ) . ' point(s) de sécurité relevé(s)</b> &mdash; gravité maximale : <b style="color:' . $ws[1] . '">' . $e( $ws[0] ) . '</b>. Voici ce que nous avons trouvé et ce que cela signifie concrètement pour vous.</p>';
+		foreach ( $F as $f ) {
+			$s  = $sev( $f['score'] ?? 0 );
+			$nv = ag_rap_novice_info( (string) ( $f['name'] ?? '' ), (string) ( $f['type'] ?? '' ), (string) ( $f['rem'] ?? '' ) );
+			$h .= '<div style="border:1px solid #eee;border-left:5px solid ' . $s[1] . ';border-radius:8px;padding:12px 14px;margin:12px 0">'
+				. '<div style="font-weight:800;color:' . $s[1] . '">' . $e( $s[0] ) . ' &mdash; ' . $e( $f['name'] ?? '' ) . '</div>'
+				. '<div style="font-size:13.5px;color:#222;margin-top:5px"><b>Ce que c\'est :</b> ' . $e( $nv['r'] ) . '</div>'
+				. '<div style="font-size:13.5px;color:#222;margin-top:3px"><b>Le risque pour vous :</b> ' . $e( $nv['i'] ) . '</div>'
+				. '<div style="font-size:13.5px;color:#0a7a3f;margin-top:3px"><b>Notre recommandation :</b> ' . $e( $nv['rem'] ) . '</div></div>';
+		}
+		// Devis de remédiation (MÊME barème que Réglages / l'assistant).
+		$px = function_exists( 'ag_aa_prices' ) ? ag_aa_prices() : array( 'critique' => 900, 'eleve' => 500, 'moyen' => 250, 'faible' => 90 );
+		$price = function ( $s ) use ( $px ) {
+			$s = (float) $s;
+			if ( $s >= 9 ) { return (int) $px['critique']; }
+			if ( $s >= 7 ) { return (int) $px['eleve']; }
+			if ( $s >= 4 ) { return (int) $px['moyen']; }
+			return (int) $px['faible'];
+		};
+		$tot = 0;
+		$h .= '<h3 style="color:#141414;border-top:2px solid #eee;padding-top:16px;margin:18px 0 8px">Devis de remédiation</h3>';
+		$h .= '<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="background:#f4f5f7"><th style="text-align:left;padding:8px">Correctif</th><th style="text-align:left;padding:8px">Gravité</th><th style="text-align:right;padding:8px">Prix</th></tr></thead><tbody>';
+		foreach ( $F as $f ) {
+			$s = $sev( $f['score'] ?? 0 ); $p = $price( $f['score'] ?? 0 ); $tot += $p;
+			$h .= '<tr style="border-bottom:1px solid #eee"><td style="padding:8px">' . $e( $f['name'] ?? '' ) . '</td><td style="padding:8px;color:' . $s[1] . ';font-weight:700">' . $e( $s[0] ) . '</td><td style="padding:8px;text-align:right;white-space:nowrap">' . number_format_i18n( $p ) . ' €</td></tr>';
+		}
+		$h .= '<tr><td colspan="2" style="padding:11px 8px;text-align:right;font-weight:800">Total remédiation</td><td style="padding:11px 8px;text-align:right;font-weight:900;color:#F37A1F;white-space:nowrap">' . number_format_i18n( $tot ) . ' €</td></tr></tbody></table>';
+		$h .= '<p style="font-size:11px;color:#888;margin-top:6px">Devis indicatif, valable 30 jours. Correctifs appliqués par Alliance Groupe, re-test inclus.</p>';
+		return $h;
+	}
+}
