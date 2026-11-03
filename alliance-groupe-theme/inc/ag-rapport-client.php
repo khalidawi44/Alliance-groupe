@@ -472,6 +472,28 @@ add_action( 'rest_api_init', function () {
 		},
 	) );
 
+	// Retirer UNE faille du stock d'un site (ex. faux positif) → disparaît partout (assistant, rapport, /rapport).
+	register_rest_route( 'ag/v1', '/find-drop', array(
+		'methods'             => 'POST',
+		'permission_callback' => 'ag_rap_rest_authed',
+		'callback'            => function ( $req ) {
+			$cible = (string) $req->get_param( 'cible' );
+			$name  = trim( (string) $req->get_param( 'name' ) );
+			if ( '' === $cible || '' === $name ) { return array( 'ok' => false, 'error' => 'cible + name requis' ); }
+			if ( function_exists( 'ag_rap_find_key' ) ) {
+				$key = ag_rap_find_key( $cible );
+				if ( $key ) {
+					$cur = get_option( $key, array() );
+					if ( is_array( $cur ) ) {
+						$cur = array_values( array_filter( $cur, function ( $f ) use ( $name ) { return trim( (string) ( $f['name'] ?? '' ) ) !== $name; } ) );
+						update_option( $key, $cur, false );
+					}
+				}
+			}
+			return array( 'ok' => true, 'dropped' => $name );
+		},
+	) );
+
 	register_rest_route( 'ag/v1', '/site-state', array(
 		'methods'             => 'GET',
 		'permission_callback' => 'ag_rap_rest_authed',
@@ -579,6 +601,7 @@ if ( ! function_exists( 'ag_rap_ajax_proxy' ) ) {
 			'ag_rap_siteupsert' => array( 'POST', '/ag/v1/site-upsert' ),
 			'ag_rap_sitestate'  => array( 'GET',  '/ag/v1/site-state' ),
 			'ag_rap_send'       => array( 'POST', '/ag/v1/rapport-send' ),
+			'ag_rap_finddrop'   => array( 'POST', '/ag/v1/find-drop' ),
 		);
 		$a = isset( $_REQUEST['action'] ) ? sanitize_key( wp_unslash( $_REQUEST['action'] ) ) : '';
 		if ( ! isset( $map[ $a ] ) ) { wp_send_json( array( 'ok' => false, 'error' => 'action inconnue' ), 400 ); }
@@ -592,6 +615,7 @@ if ( ! function_exists( 'ag_rap_ajax_proxy' ) ) {
 	add_action( 'wp_ajax_ag_rap_siteupsert', 'ag_rap_ajax_proxy' );
 	add_action( 'wp_ajax_ag_rap_sitestate', 'ag_rap_ajax_proxy' );
 	add_action( 'wp_ajax_ag_rap_send', 'ag_rap_ajax_proxy' );
+	add_action( 'wp_ajax_ag_rap_finddrop', 'ag_rap_ajax_proxy' );
 }
 
 /* ===================== Failles riches PAR SITE (tous outils) — source unique du rapport ===================== */
