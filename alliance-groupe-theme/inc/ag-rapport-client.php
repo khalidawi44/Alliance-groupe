@@ -503,15 +503,38 @@ add_action( 'rest_api_init', function () {
 			if ( '' === $host ) { return array( 'ok' => false, 'host' => '', 'modes' => array(), 'findings' => array(), 'rapport_url' => '' ); }
 			// SOURCE UNIQUE : même collecte que le rapport client (historique + Kali + stock riche).
 			$agg = ag_rap_all_findings( $host );
+			$sess = get_option( 'ag_aa_sess_' . md5( $host ), null );
 			return array(
-				'ok' => ( ! empty( $agg['modes'] ) || ! empty( $agg['findings'] ) ),
+				'ok' => ( ! empty( $agg['modes'] ) || ! empty( $agg['findings'] ) || ! empty( $sess ) ),
 				'host' => $host,
 				'modes' => $agg['modes'],
 				'score' => $agg['score'],
 				'critical' => (int) $agg['critical'],
 				'findings' => $agg['findings'],
 				'rapport_url' => $agg['rapport_url'],
+				'session' => ( is_array( $sess ) ? $sess : null ),
 			);
+		},
+	) );
+
+	register_rest_route( 'ag/v1', '/session-save', array(
+		'methods'             => 'POST',
+		'permission_callback' => 'ag_rap_rest_authed',
+		'callback'            => function ( $req ) {
+			$cible = (string) $req->get_param( 'cible' );
+			$host  = preg_replace( '#^www\\.#', '', strtolower( (string) wp_parse_url( ( 0 === stripos( $cible, 'http' ) ? $cible : 'https://' . $cible ), PHP_URL_HOST ) ) );
+			if ( '' === $host ) { return array( 'ok' => false, 'error' => 'cible invalide' ); }
+			$data = json_decode( (string) $req->get_param( 'data' ), true );
+			if ( ! is_array( $data ) ) { return array( 'ok' => false, 'error' => 'donnees invalides' ); }
+			$keep = array(
+				'sig'      => array_slice( (array) ( $data['sig'] ?? array() ), 0, 120 ),
+				'steps'    => (array) ( $data['steps'] ?? array() ),
+				'verdicts' => (array) ( $data['verdicts'] ?? array() ),
+				'gen'      => sanitize_text_field( (string) ( $data['gen'] ?? '' ) ),
+				'ts'       => time(),
+			);
+			update_option( 'ag_aa_sess_' . md5( $host ), $keep, false );
+			return array( 'ok' => true, 'host' => $host );
 		},
 	) );
 
@@ -602,6 +625,7 @@ if ( ! function_exists( 'ag_rap_ajax_proxy' ) ) {
 			'ag_rap_sitestate'  => array( 'GET',  '/ag/v1/site-state' ),
 			'ag_rap_send'       => array( 'POST', '/ag/v1/rapport-send' ),
 			'ag_rap_finddrop'   => array( 'POST', '/ag/v1/find-drop' ),
+			'ag_rap_sesssave'   => array( 'POST', '/ag/v1/session-save' ),
 		);
 		$a = isset( $_REQUEST['action'] ) ? sanitize_key( wp_unslash( $_REQUEST['action'] ) ) : '';
 		if ( ! isset( $map[ $a ] ) ) { wp_send_json( array( 'ok' => false, 'error' => 'action inconnue' ), 400 ); }
@@ -616,6 +640,7 @@ if ( ! function_exists( 'ag_rap_ajax_proxy' ) ) {
 	add_action( 'wp_ajax_ag_rap_sitestate', 'ag_rap_ajax_proxy' );
 	add_action( 'wp_ajax_ag_rap_send', 'ag_rap_ajax_proxy' );
 	add_action( 'wp_ajax_ag_rap_finddrop', 'ag_rap_ajax_proxy' );
+	add_action( 'wp_ajax_ag_rap_sesssave', 'ag_rap_ajax_proxy' );
 }
 
 /* ===================== Failles riches PAR SITE (tous outils) — source unique du rapport ===================== */
