@@ -387,3 +387,5 @@ Tous les enrichissements ciné : menu glassmorphism, hero pages photo, cards ima
 4. Editer via `create_or_update_file` ou en local + push
 5. **Rappeler le SYNC dans WP admin** apres chaque commit
 6. **Mettre à jour ce HANDOFF** (avancement + tâches restantes) pour l'autre session
+
+ **BOUTON ENREGISTRER + REPRISE SERVEUR (03/11l) :** bouton « 💾 Enregistrer le test » (barre d'outils) → `saveTest()` envoie tout le test (sig d'étapes + sorties + verdicts + gen) au serveur (REST `ag/v1/session-save` + admin-ajax `ag_rap_sesssave` → option `ag_aa_sess_<host>`). `site-state` renvoie `session` ; `loadSiteState` la fusionne en local + `restoreState` → en ré-entrant l'URL + route, reprise EXACTE (même autre appareil/plus tard). + sauvegarde `beforeunload`. Testé cycle complet Playwright (save→serveur→localStorage vidé→ré-entrée URL→reprise). Badge `v2026-11-03l`.
