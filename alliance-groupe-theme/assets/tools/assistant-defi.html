@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03i</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03i</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03j</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03j</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -1215,17 +1215,33 @@ function restoreState(host){
     // 3) Rattrapage par SIGNATURE de commande : pour toute étape encore vide, on recolle le texte+verdict
     //    de l'étape sauvegardée qui a la MÊME commande (robuste aux changements d'id/route).
     if(st.sig && st.sig.length){
-      var _all=document.querySelectorAll('#steps .step');
-      [].forEach.call(_all,function(stp){
-        var ta=stp.querySelector('textarea.res'); if(!ta) return; if(ta.value && ta.value.trim()) return;
+      var _used={};
+      [].forEach.call(document.querySelectorAll('#steps .step'),function(stp){
+        var ta=stp.querySelector('textarea.res'); if(!ta) return;
         var code=stp.querySelector('code'); var cmd=code?((code.textContent||'').trim().slice(0,400)):''; if(!cmd) return;
+        if(ta.value && ta.value.trim()){ _used[cmd]=1; return; } // déjà rempli (par id)
         for(var j=0;j<st.sig.length;j++){ if(st.sig[j].cmd===cmd){
           ta.value=st.sig[j].text; try{ stp.classList.add('ag-done'); }catch(e){}
           var idn=ta.id.replace('res_',''); var vd=document.getElementById('verd_'+idn);
           if(vd && st.sig[j].verd && !(vd.innerHTML&&vd.innerHTML.trim())){ vd.innerHTML=st.sig[j].verd; }
-          break;
+          _used[cmd]=1; break;
         } }
       });
+      // GARANTIE : toute étape analysée dont la commande n'existe pas dans la route rouverte est
+      // RÉAFFICHÉE quand même (rien n'est jamais perdu, même en changeant de type de route).
+      var _orph=st.sig.filter(function(e){ return e && e.text && e.text.trim() && !_used[e.cmd]; });
+      if(_orph.length){
+        var _sd=document.getElementById('steps');
+        if(_sd){ var _bx=document.createElement('div'); var _hh='<div class="ph">💾 Étapes déjà analysées (reprises)</div>';
+          _orph.forEach(function(e,ix){ var rid='rs'+ix;
+            _hh+='<div class="step ag-done"><h3>Étape analysée</h3><pre><code>'+esc(e.cmd)+'</code></pre>'+
+              '<div class="analyse"><textarea class="res" id="res_'+rid+'">'+esc(e.text)+'</textarea>'+
+              '<button class="mini" onclick="analyzeStep(\''+rid+'\')">▶ Analyser le résultat</button>'+
+              '<div class="verdict" id="verd_'+rid+'">'+(e.verd||'')+'</div></div></div>';
+          });
+          _bx.innerHTML=_hh; _sd.appendChild(_bx);
+        }
+      }
     }
     try{ updateProgress(); }catch(e){}
     var sdiv=document.getElementById('steps');
