@@ -1139,34 +1139,14 @@ if ( ! function_exists( 'ag_tester_rapport_html' ) ) {
 		$hostn = preg_replace( '#^www\.#', '', strtolower( (string) ( $e['host'] ?? wp_parse_url( $e['url'] ?? '', PHP_URL_HOST ) ) ) );
 		$all = function_exists( 'ag_audit_hist_get' ) ? ag_audit_hist_get() : array();
 		if ( empty( $all ) ) { $all = array( $e ); }
-		$labels = array(); $crit = 0; $worst = 101; $url = (string) ( $e['url'] ?? '' ); $modes = array();
-		$mlbl = array( 'passive' => 'niveau 1 (surface)', 'deep' => 'niveau 2 (approfondi)', 'expert' => 'niveau 3 (expert)' );
-		foreach ( $all as $x ) {
-			$xh = preg_replace( '#^www\.#', '', strtolower( (string) ( $x['host'] ?? '' ) ) );
-			if ( $xh !== $hostn ) { continue; }
-			$mm = (string) ( $x['mode'] ?? 'passive' ); $modes[ $mlbl[ $mm ] ?? $mm ] = true;
-			if ( ! empty( $x['url'] ) ) { $url = $x['url']; }
-			$sc = (int) ( $x['score'] ?? 100 ); if ( $sc < $worst ) { $worst = $sc; }
-			$crit = max( $crit, (int) ( $x['critical'] ?? 0 ) );
-			foreach ( (array) ( $x['checks'] ?? array() ) as $c ) {
-				$stt = $c['status'] ?? '';
-				if ( 'fail' === $stt || 'warn' === $stt ) {
-					$lab = function_exists( 'ag_audit_public_label' ) ? ag_audit_public_label( $c['name'] ?? '' ) : ( $c['name'] ?? '' );
-					if ( $lab ) { $labels[ $lab ] = true; }
-				}
-			}
-		}
-		// Failles riches collectees par l'assistant (TOUS outils) pour ce site -> fusionnees ici.
-		$rich = function_exists( 'ag_rap_get_findings' ) ? ag_rap_get_findings( $url ) : array();
-		foreach ( $rich as $rf ) {
-			$nm = (string) ( $rf['name'] ?? '' ); if ( '' === $nm ) { continue; }
-			$labels[ $nm ] = true;
-			$sc = (float) ( $rf['score'] ?? 0 );
-			if ( $sc >= 9 ) { $crit = max( $crit, 1 ); }
-			$w = (int) max( 5, 100 - ( $sc >= 9 ? 28 : ( $sc >= 7 ? 14 : ( $sc >= 4 ? 6 : 2 ) ) ) );
-			if ( $w < $worst ) { $worst = $w; }
-		}
-		if ( $worst > 100 ) { $worst = (int) ( $e['score'] ?? 0 ); }
+			// SOURCE UNIQUE : mêmes failles que l'assistant (historique vrais noms + Kali + stock riche), dédupliquées.
+			$agg = function_exists( 'ag_rap_all_findings' ) ? ag_rap_all_findings( $hostn ) : array( 'findings' => array(), 'modes' => array(), 'score' => null, 'critical' => 0, 'rapport_url' => '' );
+			$url   = (string) ( $e['url'] ?? ( 'https://' . $hostn ) );
+			$worst = ( null !== $agg['score'] ) ? (int) $agg['score'] : (int) ( $e['score'] ?? 0 );
+			$crit  = (int) $agg['critical'];
+			$mlbl  = array( 'passive' => 'niveau 1 (surface)', 'deep' => 'niveau 2 (approfondi)', 'expert' => 'niveau 3 (expert)' );
+			$modes = array(); foreach ( (array) $agg['modes'] as $mm ) { $modes[ $mlbl[ $mm ] ?? $mm ] = true; }
+			$labels = array(); foreach ( (array) $agg['findings'] as $f ) { $nm = (string) ( $f['name'] ?? '' ); if ( '' !== $nm ) { $labels[ $nm ] = true; } }
 		$kali = function_exists( 'ag_tester_kali_report_for' ) ? ag_tester_kali_report_for( $url ) : '';
 		$h  = '<p><strong>Score de securite : ' . (int) $worst . '/100</strong>' . ( $crit ? ' &mdash; ' . (int) $crit . ' faille(s) critique(s)' : '' ) . '.</p>';
 		if ( $modes ) { $h .= '<p style="color:#555">Analyses realisees : ' . esc_html( implode( ' + ', array_keys( $modes ) ) ) . '.</p>'; }
