@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03e</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03e</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03f</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03f</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -1389,7 +1389,7 @@ function reportHeader(){
 var REPORT_MODE='novice', _AG_RPT_T=null;
 function refreshReportSoon(){ try{ clearTimeout(_AG_RPT_T); }catch(e){} _AG_RPT_T=setTimeout(function(){ try{ if((window.FINDINGS||[]).length) buildReport(REPORT_MODE, true); }catch(e){} }, 250); }
 var LAST_F=[];
-function xBtn(i){ return '<span onclick="removeFindingAt('+i+')" title="Retirer cette faille (ex. faux positif)" style="float:right;cursor:pointer;color:#b91c1c;font-weight:700;font-size:12px">✕ retirer</span>'; }
+function xBtn(i){ return '<button type="button" onclick="removeFindingAt('+i+')" title="Retirer cette faille (ex. faux positif) — disparaît partout" style="float:right;cursor:pointer;color:#fff;background:#b91c1c;border:0;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:700;margin-left:8px">✕ Retirer</button>'; }
 function removeFindingAt(i){
   var f=LAST_F[i]; if(!f) return; var nm=(f.name||'')+'';
   if(!confirm('Retirer « '+nm+' » du rapport et du site ? (à faire si c\'est un faux positif)')) return;
