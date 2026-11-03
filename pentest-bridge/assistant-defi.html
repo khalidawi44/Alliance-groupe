@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03h</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03h</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03i</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03i</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -1170,7 +1170,16 @@ function persistState(){
     // On garde AUSSI le verdict (bandeau vert + sous-étapes débloquées) de chaque étape de 1er niveau.
     var verdicts={}, vb=document.querySelectorAll('#steps .verdict');
     for(var k=0;k<vb.length;k++){ var vv=vb[k]; if(!vv.id || !vv.innerHTML || !vv.innerHTML.trim()) continue; var pp=vv.parentElement; if(pp && pp.closest && pp.closest('.verdict')) continue; verdicts[vv.id]={h:vv.innerHTML.slice(0,40000), c:vv.className}; }
-    localStorage.setItem('ag_state_'+root, JSON.stringify({findings:FINDINGS, steps:steps, verdicts:verdicts, cible:(window.AGT&&AGT.T)||root, gen:(window.LASTGEN&&LASTGEN.name)||'', ts:Date.now()}));
+    // MÉMO ROBUSTE : on indexe chaque étape remplie par la SIGNATURE de sa commande (stable quelle que
+    // soit la route ou le n° d'étape) → à la reprise, le texte + verdict se recollent sur la bonne étape.
+    var sig=[];
+    for(var si=0;si<list.length;si++){ var ta=list[si]; if(!(ta.value&&ta.value.trim())) continue;
+      var stp=ta.closest('.step'); if(!stp) continue; var code=stp.querySelector('code');
+      var cmd=code?((code.textContent||'').trim().slice(0,400)):''; if(!cmd) continue;
+      var idn=ta.id.replace('res_',''); var vd=document.getElementById('verd_'+idn);
+      sig.push({cmd:cmd, text:ta.value.slice(0,20000), verd:(vd&&vd.innerHTML?vd.innerHTML.slice(0,40000):'')});
+    }
+    localStorage.setItem('ag_state_'+root, JSON.stringify({findings:FINDINGS, steps:steps, verdicts:verdicts, sig:sig, cible:(window.AGT&&AGT.T)||root, gen:(window.LASTGEN&&LASTGEN.name)||'', ts:Date.now()}));
   }catch(e){}
   try{ syncSoon(); }catch(e){}
 }
@@ -1203,6 +1212,21 @@ function restoreState(host){
     if(st.verdicts){ Object.keys(st.verdicts).forEach(function(vid){ var el=document.getElementById(vid); if(el){ el.innerHTML=(st.verdicts[vid].h||''); if(st.verdicts[vid].c){ el.className=st.verdicts[vid].c; } } }); }
     // 2) Remettre le texte de chaque étape (top-level + sous-étapes désormais présentes) + recolorer « ✅ fait ».
     if(st.steps){ Object.keys(st.steps).forEach(function(id){ var el=document.getElementById(id); if(el){ if(!el.value){ el.value=st.steps[id]; } try{ var stp=el.closest('.step'); if(stp) stp.classList.add('ag-done'); }catch(e){} } }); }
+    // 3) Rattrapage par SIGNATURE de commande : pour toute étape encore vide, on recolle le texte+verdict
+    //    de l'étape sauvegardée qui a la MÊME commande (robuste aux changements d'id/route).
+    if(st.sig && st.sig.length){
+      var _all=document.querySelectorAll('#steps .step');
+      [].forEach.call(_all,function(stp){
+        var ta=stp.querySelector('textarea.res'); if(!ta) return; if(ta.value && ta.value.trim()) return;
+        var code=stp.querySelector('code'); var cmd=code?((code.textContent||'').trim().slice(0,400)):''; if(!cmd) return;
+        for(var j=0;j<st.sig.length;j++){ if(st.sig[j].cmd===cmd){
+          ta.value=st.sig[j].text; try{ stp.classList.add('ag-done'); }catch(e){}
+          var idn=ta.id.replace('res_',''); var vd=document.getElementById('verd_'+idn);
+          if(vd && st.sig[j].verd && !(vd.innerHTML&&vd.innerHTML.trim())){ vd.innerHTML=st.sig[j].verd; }
+          break;
+        } }
+      });
+    }
     try{ updateProgress(); }catch(e){}
     var sdiv=document.getElementById('steps');
     if(sdiv && st.findings && st.findings.length){ var n=document.createElement('div'); n.className='verdict ok'; n.style.margin='0 0 10px'; n.innerHTML='💾 <b>Session restaurée</b> : '+st.findings.length+' faille(s), tes réponses et leur analyse (bandeaux verts) ont été récupérées automatiquement.'; sdiv.insertBefore(n, sdiv.firstChild); }
