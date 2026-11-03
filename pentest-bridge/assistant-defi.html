@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03c</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03c</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03d</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03d</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -591,7 +591,7 @@ function loadSiteState(host){
       FINDINGS.push({key:key,type:ty,name:f.name,cvss:(f.cvss||(RT[ty]?RT[ty].v:'')),score:sc,rem:(f.rem||(RT[ty]?RT[ty].rem:'')),proof:'(déjà audité — historique du site)',endpoint:AGT.U||''});
       added++;
     });
-    var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+FINDINGS.length+' faille(s) collectée(s)';
+    var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+collectFindings().length+' faille(s) collectée(s)';
     try{ updateProgress(); }catch(_){}
     if(added){ try{ refreshReportSoon(); }catch(e){} }
     var map={passive:'léger (passif)',deep:'approfondi',expert:'expert (Kali)'};
@@ -636,14 +636,14 @@ function genAuto(){
   document.getElementById('out').scrollIntoView({behavior:'smooth'});
 }
 /* ===================== PROGRESSION + DEVIS LIVE ===================== */
-function estimateQuote(){ var px=reportPrices(); var tot=0; FINDINGS.forEach(function(f){ tot+=priceFor(f.score,px); }); return tot; }
+function estimateQuote(){ var px=reportPrices(); var tot=0; collectFindings().forEach(function(f){ tot+=priceFor(f.score,px); }); return tot; }
 function updateProgress(){ var el=document.getElementById('progressBar'); if(!el) return;
   var boxes=document.querySelectorAll('#steps textarea.res'), tot=boxes.length, done=0;
   [].forEach.call(boxes,function(b){ if(b.value.trim()) done++; });
   if(!tot){ el.innerHTML=''; el.style.display='none'; return; }
   el.style.display='block';
-  var q=estimateQuote();
-  el.innerHTML='📍 <b>'+done+'/'+tot+'</b> étape(s) analysée(s) &nbsp;·&nbsp; 🔎 <b>'+FINDINGS.length+'</b> faille(s) trouvée(s) &nbsp;·&nbsp; 💶 devis estimé <b>'+q+' €</b>';
+  var q=estimateQuote(); var nf=collectFindings().length;
+  el.innerHTML='📍 <b>'+done+'/'+tot+'</b> étape(s) analysée(s) &nbsp;·&nbsp; 🔎 <b>'+nf+'</b> faille(s) trouvée(s) &nbsp;·&nbsp; 💶 devis estimé <b>'+q+' €</b>';
 }
 function cp(id,btn){var t=document.getElementById(id).innerText;navigator.clipboard.writeText(t).then(function(){btn.classList.add('done');btn.textContent='✓ Copié';setTimeout(function(){btn.classList.remove('done');btn.textContent='📋 Copier';},1400);});}
 function copyAll(){var b=[].slice.call(document.querySelectorAll('#steps code')).map(function(c){return c.innerText;}).join("\n\n");navigator.clipboard.writeText(b).then(function(){alert("Route copiée.");});}
@@ -1152,7 +1152,7 @@ function pushFinding(type, proof){
   var key=type+'|'+ep;
   if(FINDINGS.some(function(f){return f.key===key;})) return;
   FINDINGS.push({key:key,type:type,name:t.n,cvss:t.v,score:t.s,rem:t.rem,proof:(proof||'').slice(0,1200),endpoint:ep});
-  var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+FINDINGS.length+' faille(s) collectée(s)';
+  var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+collectFindings().length+' faille(s) collectée(s)';
   try{ persistState(); }catch(e){}
   try{ refreshReportSoon(); }catch(e){}
 }
@@ -1182,7 +1182,7 @@ function syncToServer(){
     agApi('ag_rap_siteupsert','/ag/v1/site-upsert','POST',params)
       .then(function(j){
         var ind=document.getElementById('reportCount');
-        if(j&&j.ok&&ind){ ind.textContent='· '+FINDINGS.length+' faille(s) · ☁️ Espace Audit à jour'+(j.rapport_url?' · rapport lié':''); }
+        if(j&&j.ok&&ind){ ind.textContent='· '+collectFindings().length+' faille(s) · ☁️ Espace Audit à jour'+(j.rapport_url?' · rapport lié':''); }
         if(j&&j.ok){ try{ reloadJobsSoon(); }catch(e){} } // rafraîchit « Tes audits » en direct
       }).catch(function(){});
   }catch(e){}
@@ -1194,7 +1194,7 @@ function restoreState(host){
     var st=JSON.parse(raw); if(!st) return;
     if(st.findings && st.findings.length){
       st.findings.forEach(function(f){ if(f&&f.key&&!FINDINGS.some(function(x){return x.key===f.key;})) FINDINGS.push(f); });
-      var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+FINDINGS.length+' faille(s) collectée(s)';
+      var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+collectFindings().length+' faille(s) collectée(s)';
     }
     // 1) Ré-afficher les verdicts (recrée les sous-étapes débloquées) AVANT de remettre les textes.
     if(st.verdicts){ Object.keys(st.verdicts).forEach(function(vid){ var el=document.getElementById(vid); if(el){ el.innerHTML=(st.verdicts[vid].h||''); if(st.verdicts[vid].c){ el.className=st.verdicts[vid].c; } } }); }
@@ -1302,7 +1302,7 @@ function analyzeCookies(){
   if(third.length){ h+='<div style="margin-top:6px;color:#9aa0b0">🌐 Cookies TIERS ignorés (pas la responsabilité du site) : '+esc(third.map(function(o){return o.name+'@'+o.dom;}).slice(0,12).join(', '))+(third.length>12?'…':'')+'.<br>Un cookie tiers HttpOnly (ex. Facebook <code>xs</code>) n\'est PAS volable par XSS et n\'est PAS une faille du site.</div>'; }
   if(weak.length){
     var key='cookies|'+target;
-    if(!FINDINGS.some(function(f){return f.key===key;})){ var t=RT.cookies; FINDINGS.push({key:key,type:'cookies',name:t.n,cvss:t.v,score:t.s,rem:t.rem,proof:raw.slice(0,800),endpoint:(AGT.U||'')}); var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+FINDINGS.length+' faille(s) collectée(s)'; try{updateProgress();}catch(e){}  try{refreshReportSoon();}catch(e){} }
+    if(!FINDINGS.some(function(f){return f.key===key;})){ var t=RT.cookies; FINDINGS.push({key:key,type:'cookies',name:t.n,cvss:t.v,score:t.s,rem:t.rem,proof:raw.slice(0,800),endpoint:(AGT.U||'')}); var rc=document.getElementById('reportCount'); if(rc) rc.textContent='· '+collectFindings().length+' faille(s) collectée(s)'; try{updateProgress();}catch(e){}  try{refreshReportSoon();}catch(e){} }
     h='<div class="verdict bad" style="margin-bottom:8px">🍪 <b>'+weak.length+' cookie(s) de session mal protégé(s)</b> sur '+esc(target)+' : '+esc(weak.map(function(o){return o.name;}).join(', '))+'. HttpOnly/Secure/SameSite manquant → <b>vol de session possible</b>. Faille ajoutée au rapport.</div>'+h;
   } else if(first.length){
     h='<div class="verdict ok" style="margin-bottom:8px">✅ Aucun cookie de session mal protégé sur '+esc(target)+' — bon point à noter au rapport.</div>'+h;
