@@ -611,6 +611,12 @@ add_filter( 'wp_robots', function ( $robots ) {
 // /sitemap.xml + /ag-sitemap.xml + /wp-sitemap.xml  →  urlset (toutes les URLs)
 // /sitemap_index.xml                                 →  sitemapindex (vrai format index)
 add_action( 'template_redirect', function () {
+    // Yoast (ou autre plugin SEO) maître : on lui laisse les sitemaps natifs
+    // (sitemap_index.xml + sous-sitemaps). Le sitemap maison ne sert qu'en l'absence
+    // de plugin SEO — sinon on doublait les sitemaps et on ré-indexait des pages exclues.
+    if ( function_exists( 'ag_seo_plugin_active' ) && ag_seo_plugin_active() ) {
+        return;
+    }
     $path = trim( parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ), '/' );
     $allowed = array( 'sitemap.xml', 'sitemap_index.xml', 'wp-sitemap.xml', 'ag-sitemap.xml' );
     if ( ! in_array( $path, $allowed, true ) ) {
@@ -674,6 +680,17 @@ add_action( 'template_redirect', function () {
 
     echo '</urlset>';
     exit;
+} );
+
+// ── 3d. Redirection 301 : /boutique → /templates-wordpress ───
+// Le catalogue officiel est /templates-wordpress/. /boutique (auto-créée puis retirée)
+// répondait encore 200 = contenu dupliqué. On redirige en 301 pour garder le jus SEO.
+add_action( 'template_redirect', function () {
+    $path = trim( parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ), '/' );
+    if ( 'boutique' === $path ) {
+        wp_redirect( home_url( '/templates-wordpress/' ), 301 );
+        exit;
+    }
 }, 0 ); // priority 0 = avant tout autre handler
 
 // Désactiver le sitemap natif WP (on gère tout nous-mêmes)
@@ -828,7 +845,8 @@ add_filter( 'robots_txt', function ( $output, $public ) {
             $output .= "Allow: /\n";
         }
         $output .= "\n";
-        $output .= "Sitemap: " . $home . "sitemap.xml\n";
+        // Un seul sitemap annoncé = l'index (sitemap_index.xml). Avec Yoast actif c'est
+        // son sitemap natif ; sans plugin, le sitemap maison sert ce même index.
         $output .= "Sitemap: " . $home . "sitemap_index.xml\n";
     }
     return $output;
@@ -852,6 +870,11 @@ add_action( 'publish_page', function () {
 //    Note : title + description peuvent etre overrides plus tot par inc/ag-seo-meta.php
 //    via le hook priority 1. Dans ce cas on n'emet PAS de doublon ici (skip via filter).
 add_action( 'wp_head', function () {
+    // Un plugin SEO (Yoast, Rank Math, SEOPress, AIOSEO) gère déjà title/meta/OG/Twitter.
+    // On ne redouble pas ses balises Open Graph : sinon og:type/og:url/twitter:card… en double.
+    // ag-seo-meta.php applique déjà le même garde-fou pour sa propre sortie.
+    if ( function_exists( 'ag_seo_plugin_active' ) && ag_seo_plugin_active() ) return;
+
     $has_override = apply_filters( 'ag_skip_legacy_meta_description', false );
 
     $title   = wp_get_document_title();
