@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-04a</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-04a</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b>. Désormais les liens « Ouvrir l'assistant » forcent la dernière version (cache-bust automatique) → tu dois voir <b>v2026-11-04a</b> dès l'ouverture depuis wp-admin.</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-04b</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-04b</b> (SYNC GitHub + Ctrl+Maj+R si besoin). La bannière verte « Session restaurée » indique désormais <b>combien d'étapes « ✅ fait » sont remises</b> et ce qu'il y avait en mémoire (local / serveur) → si une étape ne revient pas, ce compteur dit pourquoi.</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -619,6 +619,7 @@ function loadSiteState(host){
     if(added){ try{ refreshReportSoon(); }catch(e){} try{ persistState(); }catch(e){} }
     // REPRISE SERVEUR : un test enregistré existe pour ce site → on le fusionne en local puis on restaure
     // (étapes + sorties collées + verdicts) → reprise exacte même sur un autre appareil / plus tard.
+    try{ window.__AG_SRV_SIG=(j.session&&j.session.sig&&j.session.sig.length)||0; }catch(_){}
     try{ if(j.session){
       var sroot=(host||'').toLowerCase().replace(/^www\./,'');
       var cur=null; try{ cur=JSON.parse(localStorage.getItem('ag_state_'+sroot)||'null'); }catch(_){}
@@ -1202,6 +1203,10 @@ function pushFinding(type, proof){
 }
 /* ===== SAUVEGARDE AUTO par site (failles + saisies) — pour ne JAMAIS reperdre un test ===== */
 function agStateRoot(){ var h=(window.AGT&&AGT.T)||''; return (h||'').toLowerCase().replace(/^www\./,''); }
+/* Allège la signature envoyée au SERVEUR : on garde cmd+text (indispensables pour « reprendre
+   l'étape ») mais on plafonne le HTML du verdict → un gros test (wpscan + sous-étapes) ne dépasse
+   plus la taille max d'un POST, donc la session serveur s'enregistre toujours (reprise multi-appareils). */
+function agTrimSig(sig){ try{ return (sig||[]).slice(0,120).map(function(e){ return {cmd:(e.cmd||''), text:(''+(e.text||'')).slice(0,20000), verd:(''+(e.verd||'')).slice(0,6000)}; }); }catch(e){ return (sig||[]); } }
 var _AG_PERSIST_T=null;
 function saveTest(){
   try{ persistState(); }catch(e){}
@@ -1209,7 +1214,7 @@ function saveTest(){
   if(!host){ if(out){ out.style.color='#b45309'; out.textContent='Génère d\'abord une route (entre l\'URL + un bouton route).'; } return; }
   var root=host.toLowerCase().replace(/^www\./,'');
   var st={}; try{ st=JSON.parse(localStorage.getItem('ag_state_'+root)||'{}'); }catch(e){}
-  var data=JSON.stringify({sig:st.sig||[], steps:st.steps||{}, verdicts:st.verdicts||{}, gen:st.gen||''});
+  var data=JSON.stringify({sig:agTrimSig(st.sig), steps:st.steps||{}, verdicts:st.verdicts||{}, gen:st.gen||''});
   if(out){ out.style.color='#666'; out.textContent='💾 Enregistrement…'; }
   try{
     agApi('ag_rap_sesssave','/ag/v1/session-save','POST',{cible:host, data:data})
@@ -1270,7 +1275,7 @@ function syncToServer(){
     var host=(window.AGT&&AGT.T)||''; if(!host) return;
     // AUTO : on sauve AUSSI la session complète (étapes faites + sorties + verdicts) côté serveur
     // → au retour (même autre navigateur), l'étape revient « ✅ fait », comme la faille dans le devis.
-    try{ var _raw=localStorage.getItem('ag_state_'+agStateRoot()); if(_raw){ var _sx=JSON.parse(_raw)||{}; agApi('ag_rap_sesssave','/ag/v1/session-save','POST',{cible:host, data:JSON.stringify({sig:_sx.sig||[], steps:_sx.steps||{}, verdicts:_sx.verdicts||{}, gen:_sx.gen||''})}).catch(function(){}); } }catch(e){}
+    try{ var _raw=localStorage.getItem('ag_state_'+agStateRoot()); if(_raw){ var _sx=JSON.parse(_raw)||{}; agApi('ag_rap_sesssave','/ag/v1/session-save','POST',{cible:host, data:JSON.stringify({sig:agTrimSig(_sx.sig), steps:_sx.steps||{}, verdicts:_sx.verdicts||{}, gen:_sx.gen||''})}).catch(function(){}); } }catch(e){}
     if(!FINDINGS.length) return;
     var params={cible:host, findings:JSON.stringify(collectFindings().map(function(f){return {name:(f.name||f.type||'Faille'),score:(parseFloat(f.score)||0),type:(f.type||''),cvss:(f.cvss||''),rem:(f.rem||''),proof:(f.proof||'').slice(0,300)};}))};
     agApi('ag_rap_siteupsert','/ag/v1/site-upsert','POST',params)
@@ -1332,7 +1337,12 @@ function restoreState(host){
     try{ updateProgress(); }catch(e){}
     var sdiv=document.getElementById('steps');
     var _nf=(function(){ try{ return collectFindings().length; }catch(e){ return FINDINGS.length; } })();
-    if(sdiv && _nf){ var _ob=document.getElementById('agRestoreBanner'); if(_ob) _ob.remove(); var n=document.createElement('div'); n.id='agRestoreBanner'; n.className='verdict ok'; n.style.margin='0 0 10px'; n.innerHTML='💾 <b>Session restaurée</b> : '+_nf+' faille(s), tes réponses et leur analyse (bandeaux verts) ont été récupérées automatiquement.'; sdiv.insertBefore(n, sdiv.firstChild); }
+    // DIAGNOSTIC VISIBLE : combien d'étapes « fait » ont été remises, et ce qu'on avait en mémoire (local/serveur).
+    var _doneCnt=0; try{ _doneCnt=document.querySelectorAll('#steps .step.ag-done').length; }catch(e){}
+    var _locSig=0, _srvSig=0;
+    try{ var _lr=JSON.parse(localStorage.getItem('ag_state_'+root)||'{}'); _locSig=(_lr.sig&&_lr.sig.length)||0; }catch(e){}
+    try{ _srvSig=(window.__AG_SRV_SIG||0); }catch(e){}
+    if(sdiv && (_nf || _doneCnt || _locSig || _srvSig)){ var _ob=document.getElementById('agRestoreBanner'); if(_ob) _ob.remove(); var n=document.createElement('div'); n.id='agRestoreBanner'; n.className='verdict ok'; n.style.margin='0 0 10px'; n.innerHTML='💾 <b>Session restaurée</b> : '+_nf+' faille(s) · <b>'+_doneCnt+'</b> étape(s) « ✅ fait » remise(s). <span style="opacity:.75;font-size:12px">(mémoire : '+_locSig+' local · '+_srvSig+' serveur)</span>'; sdiv.insertBefore(n, sdiv.firstChild); }
     try{ persistState(); }catch(e){} // ré-enregistre propre (sans doublon / faux positif)
     if(FINDINGS.length){ try{ buildReport('novice', true); }catch(e){} }
   }catch(e){}
