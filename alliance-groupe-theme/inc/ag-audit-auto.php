@@ -416,7 +416,7 @@ if ( defined( 'ABSPATH' ) ) {
 	}
 
 	function ag_aa_admin_page() {
-		$manuel = get_stylesheet_directory_uri() . '/assets/tools/assistant-defi.html';
+		$manuel = function_exists( 'ag_defi_url' ) ? ag_defi_url() : ( get_stylesheet_directory_uri() . '/assets/tools/assistant-defi.html' );
 		$pref   = isset( $_GET['target'] ) ? sanitize_text_field( wp_unslash( $_GET['target'] ) ) : '';
 		$auto   = ( '' !== $pref );
 		echo '<div class="wrap"><h1>🔍 Audit de sécurité</h1>';
@@ -439,7 +439,7 @@ if ( defined( 'ABSPATH' ) ) {
 		echo '</div>';
 		echo '</div>';
 		echo '<div id="aa_out" style="margin-top:18px;max-width:900px"></div></div>';
-		echo '<script>document.getElementById("aa_manuel").addEventListener("click",function(e){var u=document.getElementById("aa_url").value.trim();if(u){this.href="' . esc_js( $manuel ) . '?cible="+encodeURIComponent(u);}});</script>';
+		echo '<script>document.getElementById("aa_manuel").addEventListener("click",function(e){var u=document.getElementById("aa_url").value.trim();if(u){this.href="' . esc_js( $manuel ) . '&cible="+encodeURIComponent(u);}});</script>';
 		$nonce = wp_create_nonce( 'ag_aa' );
 		echo '<script>
 		document.getElementById("aa_go").onclick=function(){
@@ -480,7 +480,7 @@ if ( defined( 'ABSPATH' ) ) {
 				fd.append("intel",JSON.stringify(j.intel||{}));
 				fetch(ajaxurl,{method:"POST",body:fd}).then(function(r){return r.json();}).then(function(x){
 					if(x&&x.ok){ var host=(j.host||"").replace(/^https?:\\/\\//,"");
-						msg.innerHTML=\'✅ <b>Job créé.</b> Dans l\\\'ordre :<br>① (optionnel) ouvre l\\\'assistant : <a href="https://alliancegroupe-inc.com/wp-content/themes/alliance-groupe-theme/assets/tools/assistant-defi.html?cible=\'+encodeURIComponent(host)+\'" target="_blank">assistant</a><br>② Ouvre <b>Kali</b> et tape :<br><code style="display:inline-block;background:#111;color:#9ef0c8;padding:4px 8px;border-radius:5px;margin:4px 0">cd ~/pentest-local &amp;&amp; ./ag-runner.sh --once</code><br>③ Attends ~5 min → le job passe « Terminé » dans <b>🛰️ Audits Kali</b> = le rapport est OK ✅\';
+						msg.innerHTML=\'✅ <b>Job créé.</b> Dans l\\\'ordre :<br>① (optionnel) ouvre l\\\'assistant : <a href="' . esc_js( $manuel ) . '&cible=\'+encodeURIComponent(host)+\'" target="_blank">assistant</a><br>② Ouvre <b>Kali</b> et tape :<br><code style="display:inline-block;background:#111;color:#9ef0c8;padding:4px 8px;border-radius:5px;margin:4px 0">cd ~/pentest-local &amp;&amp; ./ag-runner.sh --once</code><br>③ Attends ~5 min → le job passe « Terminé » dans <b>🛰️ Audits Kali</b> = le rapport est OK ✅\';
 					} else { msg.innerHTML="Erreur : "+((x&&x.error)||"?"); }
 				}).catch(function(e){msg.textContent="Erreur réseau : "+e;});
 			};
