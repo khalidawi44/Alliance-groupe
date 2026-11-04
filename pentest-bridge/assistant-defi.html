@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-04c</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-04c</b> (SYNC GitHub + Ctrl+Maj+R si besoin). CORRIGÉ : une étape enregistrée côté serveur mais absente en local (ex. le mot de passe) revient maintenant au refresh (fusion local+serveur par commande, plus jamais écrasée). La bannière verte indique les étapes « ✅ fait » remises + la mémoire (local / serveur).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-04d</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-04d</b> (SYNC GitHub + Ctrl+Maj+R si besoin). CORRIGÉ : une étape enregistrée côté serveur mais absente en local (ex. le mot de passe) revient maintenant au refresh (fusion local+serveur par commande, plus jamais écrasée). La bannière verte indique les étapes « ✅ fait » remises + la mémoire (local / serveur).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -70,13 +70,16 @@
       <span id="scopeBadge" style="font-weight:700;font-size:11px;color:#9aa0b0">aucun scope chargé</span>
     </label>
     <textarea id="scopeJson" placeholder='Colle le scope au format JSON, ex :
-{"programme":"Client X","in_scope":["*.exemple.fr"],"out_scope":["blog.exemple.fr"],"tests_autorises":["recon","sqli","xss","idor"],"non_qualifying":["account enumeration","rate limiting","self-xss"],"rate_limit_rps":3}'></textarea>
+{"programme":"Client X","user_agent":"BBC-YWH-Buggounty-TonPseudo","in_scope":["*.exemple.fr"],"out_scope":["blog.exemple.fr"],"tests_autorises":["recon","sqli","xss","idor"],"non_qualifying":["account enumeration","rate limiting","self-xss"],"rate_limit_rps":3}'></textarea>
     <div class="row">
       <button class="go" style="background:#22304a;color:#cfe" onclick="loadScope(false)">🎯 Charger le scope</button>
       <button class="go" style="background:#22304a;color:#cfe" onclick="clearScope()">Effacer le scope</button>
     </div>
     <div id="scopeSummary" class="exp"></div>
-    <button class="go" style="margin-top:10px" onclick="startCampaign()">▶️ Lancer la campagne guidée (scope OPTIONNEL)</button>
+    <div class="row" style="margin-top:10px">
+      <button class="go" onclick="startCampaign()">▶️ Campagne guidée (site / WordPress)</button>
+      <button class="go" style="background:#7a1fa2" onclick="genBugBounty()">🎯 Route Bug Bounty (app / API)</button>
+    </div>
     <p class="exp" style="margin-top:6px"><b>Pas besoin de scope pour démarrer</b> : ce bouton coche tous les tests, génère la route complète et te guide étape par étape jusqu'au rapport (tu colles chaque sortie, l'exécution reste sur Kali). Le scope ci-dessus est <b>optionnel</b> — utile seulement sur un vrai programme bug bounty (il restreint aux tests autorisés + throttle). <br>➡️ Pour un audit <b>100 % automatique sans rien faire</b> (passif), c'est côté WordPress : page <b>« 🔍 Audit de sécurité »</b> (ou l'app).</p>
   </div>
 
@@ -512,6 +515,49 @@ function genWordPress(){
   updateProgress();
   document.getElementById('out').scrollIntoView({behavior:'smooth'});
 }
+/* ===================== ROUTE BUG BOUNTY (app / API moderne, PAS WordPress) ===================== */
+/* Commandes NON destructives (GET), avec le User-Agent imposé par le programme, rythme lent.
+   Les étapes « recon/CORS/redirect » se détectent toutes seules ; l'IDOR/Auth/SSRF sont des
+   GABARITS : tu colles tes 2 jetons + l'URL, tu juges le résultat, l'assistant bâtit le rapport. */
+function BBAPP(U,T,UA){
+ var H=(UA||'BBC-YWH-Buggounty-<ton-pseudo>');
+ var EDGE=(T.indexOf('blablacar')>=0?('https://edge.'+T.replace(/^(www|m|auth|edge)\./,'')):U);
+ return [
+ {t:"① Empreinte + en-têtes (reconnaissance)", c:`curl -sSI -A "${H}" ${U}/`, e:"Serveur, techno, en-têtes de sécurité. <b>Seul = non qualifiant</b> (headers/cookies manquants ne paient pas), mais ça cadre la cible. Colle → Analyser."},
+ {t:"② Fichiers de surface (robots / security.txt / sitemap)", c:`for f in robots.txt .well-known/security.txt sitemap.xml; do echo "===== /$f ====="; curl -s -A "${H}" "${U}/$f" | head -40; sleep 1; done`, e:"Repère des chemins d'API, un contact sécurité, des zones cachées. Colle → Analyser."},
+ {t:"③ Cartographier l'API depuis les fichiers JS", c:`curl -s -A "${H}" ${U}/ | grep -oE 'src="[^"]+\\.js[^"]*"' | sed -E 's/^src="//;s/"$//' | sort -u | head -40 | while read J; do echo "-- $J"; done`, e:"Liste les bundles JS. Ouvre-les dans Burp pour en extraire les routes <code>/api/...</code> (c'est là que vivent les IDOR). Colle la liste → Analyser."},
+ {t:"④ CORS — origine reflétée (QUALIFIANT si credentials)", c:`curl -s -I -A "${H}" -H "Origin: https://evil.example" ${EDGE}/ | grep -i "access-control-"`, e:"Si tu vois <code>Access-Control-Allow-Origin: https://evil.example</code> AVEC <code>Allow-Credentials: true</code> = <b>CORS exploitable</b> (vol de données cross-origin). Colle → Analyser (détecté auto)."},
+ {t:"⑤ Redirection ouverte (Open Redirect)", c:`for p in redirect url next returnUrl return continue dest to callback; do R=$(curl -s -o /dev/null -w "%{http_code} -> %{redirect_url}" -A "${H}" "${U}/?$p=https://evil.example"); echo "$p : $R"; sleep 1; done`, e:"Une ligne <code>-> https://evil.example</code> = <b>redirection ouverte</b> (phishing crédible). Colle → Analyser (détecté auto)."},
+ {t:"⑥ IDOR — GABARIT 2 comptes (LE plus payant)", c:`# 1) Crée 2 comptes de TEST (A et B). 2) Dans Burp, prends une ressource de A (ex: /api/v3/me, /bookings/123).\n# 3) Remplace les 3 valeurs ci-dessous, puis lance.\nUA='${H}'\nURL='${EDGE}/REMPLACE_PAR_UNE_RESSOURCE_DE_A'\nTOKEN_A='COLLE_LE_JETON_DU_COMPTE_A'\nTOKEN_B='COLLE_LE_JETON_DU_COMPTE_B'\necho "===== PROPRIÉTAIRE (compte A) ====="; curl -s -A "$UA" -H "Authorization: Bearer $TOKEN_A" "$URL" | head -40\necho; echo "===== AUTRE COMPTE (compte B) ====="; curl -s -A "$UA" -H "Authorization: Bearer $TOKEN_B" "$URL" | head -40`, e:"Si le <b>compte B voit les données privées du compte A</b> (même nom/email/trajet) = <b>IDOR confirmé</b>. Colle les 2 blocs → Analyser : si l'assistant ne tranche pas seul, va à <b>② Générer le rapport</b>, choisis <b>IDOR</b> et colle la preuve."},
+ {t:"⑦ Auth / JWT — inspection du jeton", c:`# Colle ton JWT (3 parties séparées par des points) à la place de XXX\nprintf '%s' 'XXX' | cut -d. -f2 | tr '_-' '/+' | base64 -d 2>/dev/null; echo`, e:"Regarde <code>alg</code>, <code>exp</code>, les rôles. Teste ensuite dans Burp : <code>alg:none</code>, jeton non expiré après déconnexion, rôle modifié. Un contournement = <b>Auth cassée</b> (qualifiant)."},
+ {t:"⑧ SSRF — GABARIT (fonction qui va chercher une URL)", c:`# Sur une fonctionnalité qui récupère une URL (photo de profil par lien, import, webhook) :\n# mets l'URL de TON Burp Collaborator à la place de COLLAB, envoie, et regarde si Collaborator reçoit un ping.\n# Exemple de test d'un paramètre image_url :\nUA='${H}'\ncurl -s -o /dev/null -w "%{http_code}\\n" -A "$UA" "${EDGE}/REMPLACE?image_url=https://COLLAB.oastify.com"`, e:"Un ping reçu sur ton Collaborator = <b>SSRF</b>. Note l'impact (accès réseau interne, métadonnées cloud). Colle la preuve → ② Générer le rapport, type SSRF."}
+];}
+function genBugBounty(){
+  var c=clean(document.getElementById('cible').value); if(!c.host){alert("Entre une cible du scope (ex: www.blablacar.fr).");return;}
+  LASTGEN=genBugBounty;
+  AG_REACHABLE=false; AG_WP_OFFERED=false;
+  var T=c.host, U=(/^\d+\.\d+\.\d+\.\d+$/.test(T)?('http://'+T):('https://'+T)), P=(document.getElementById('param').value.trim()||'id');
+  AGT={U:U,T:T,P:P}; try{localStorage.setItem('ag_defi_cible',T);}catch(e){}
+  if(SCOPE){ var hs=hostInScope(T); if(!hs.ok){ alert('⛔ Cible HORS SCOPE : '+hs.reason+'.'); return; } }
+  var UA=(SCOPE&&SCOPE.user_agent)?SCOPE.user_agent:'BBC-YWH-Buggounty-<ton-pseudo>';
+  var steps=BBAPP(U,T,UA), i=0; PLAN=[];
+  var warn=(UA.indexOf('<ton-pseudo>')>=0)?'<div class="verdict warn" style="margin:0 0 10px">⚠️ Ajoute <b>"user_agent"</b> dans ton scope (ex: <code>"user_agent":"BBC-YWH-Buggounty-Hakaliance"</code>) pour que les commandes portent l\'en-tête imposé par le programme.</div>':'';
+  var html=warn+'<div class="verdict ok" style="margin:0 0 10px">🎯 <b>Route Bug Bounty</b> (app / API moderne) sur <b>'+esc(U)+'</b>. Commandes NON destructives (GET), User-Agent <code>'+esc(UA)+'</code>, rythme lent. <b>Pas de scanner automatisé</b> (interdit par le programme). L\'argent est aux étapes ⑥ IDOR / ⑦ Auth / ⑧ SSRF — elles demandent tes 2 comptes de test.</div><div class="ph">🎯 Chasse Bug Bounty</div>';
+  steps.forEach(function(s){ var id='b'+(i++); var cmd=scopeThrottle(s.c); PLAN.push({phase:'Bug Bounty',titre:s.t,cmd:cmd});
+    html+='<div class="step"><h3>'+esc(s.t)+'</h3><pre><button class="copy" onclick="cp(\''+id+'\',this)">📋 Copier</button><code id="'+id+'">'+esc(cmd)+'</code></pre><div class="exp">'+s.e+'</div>'+
+      '<div class="analyse"><textarea class="res" id="res_'+id+'" placeholder="Colle ici la sortie de cette commande…"></textarea>'+
+      '<button class="mini" onclick="analyzeStep(\''+id+'\')">▶ Analyser le résultat</button>'+
+      '<div class="verdict" id="verd_'+id+'"></div></div></div>';
+  });
+  document.getElementById('steps').innerHTML=html;
+  try{ loadSiteState(AGT.T); }catch(e){}
+  try{ restoreState(AGT.T); }catch(e){}
+  document.getElementById('rendpoint').value=U+'/'; document.getElementById('rparam').value=P; setv('rscope', T);
+  fillSkeleton(true);
+  document.getElementById('out').classList.remove('hidden');
+  updateProgress();
+  document.getElementById('out').scrollIntoView({behavior:'smooth'});
+}
 /* ===================== AUDIT AUTO (TOUT SITE) ===================== */
 function UNIV(U,T){ return [
  {t:"Empreinte techno (CMS / serveur / langage / WAF)", c:`whatweb -a3 ${U}; echo ---; curl -sSI -A "Mozilla/5.0" ${U}/`, e:"Identifie le socle (WordPress, Joomla, Drupal, Shopify, Laravel…), le serveur et un éventuel WAF. <b>Colle la sortie → Analyser</b> : l'assistant détecte le CMS et débloque la route dédiée."},
@@ -750,6 +796,8 @@ var RT={
  leak:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N',s:'5.3',n:'Identifiants exposés dans des fuites de données connues',rem:'Forcer la réinitialisation des mots de passe des comptes concernés ; activer la 2FA ; interdire les mots de passe déjà vus dans des fuites (vérif type HIBP à l\'inscription) ; mettre en place une surveillance de fuites sur le domaine (HIBP Domain monitoring).'},
  cookies:{v:'AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N',s:'5.9',n:'Cookie de session mal protégé (HttpOnly/Secure/SameSite)',rem:'Marquer les cookies de session HttpOnly + Secure + SameSite=Lax (ou Strict) ; ne jamais exposer un jeton de session au JavaScript ; expiration courte + rotation à la connexion.'},
  cve:{v:'AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H',s:'8.8',n:'Extension/thème avec faille connue (CVE)',rem:'Mettre à jour ou retirer l\'extension/thème vulnérable ; activer les mises à jour automatiques ; WAF en attendant le correctif.'},
+ redirect:{v:'AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N',s:'6.1',n:'Redirection ouverte (Open Redirect)',rem:'Ne jamais rediriger vers une URL fournie par l\'utilisateur sans liste blanche de destinations ; n\'autoriser que des chemins relatifs internes.'},
+ cors:{v:'AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:L/A:N',s:'7.5',n:'CORS permissif (origine reflétée + credentials)',rem:'Ne jamais refléter l\'en-tête Origin ; liste blanche stricte d\'origines ; ne pas combiner Access-Control-Allow-Credentials:true avec une origine dynamique.'},
  // --- Lignes CONFIGURATION / CONFORMITÉ facturables (devis) ---
  headers:{v:'AV:N/AC:H/PR:N/UI:R/S:U/C:L/I:L/A:N',s:'4.3',n:'En-têtes de sécurité manquants',rem:'Ajouter HSTS, Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy (protège du clickjacking, du MIME-sniffing, des fuites de référent).'},
  tls:{v:'AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N',s:'4.0',n:'HTTPS / TLS à durcir',rem:'Forcer la redirection HTTP→HTTPS (301), activer HSTS, désactiver TLS < 1.2, renouveler/valider le certificat.'},
@@ -1190,6 +1238,8 @@ function scanExtra(t){
   hit(/available databases|back-end DBMS|sqlmap identified|SQL injection|injection SQL|UNION[\s-]*based SQL|Parameter:\s*\S+\s*\((GET|POST)\)/i,'sqli');
   hit(/alert\(1337\)|alert\(document\.domain\)|<svg[\s\/][^>]*onload\s*=\s*alert\(|<img[^>]*onerror\s*=\s*alert\(/i,'xss'); // marqueur de test requis → pas de faux positif sur page normale
   hit(/\[!\]\s*Title:|vulnerabilit|CVE-\d{4}/i,'cve');               // plugin/thème vulnérable
+  hit(/access-control-allow-origin:\s*https?:\/\/evil\.example/i,'cors'); // CORS : origine attaquante reflétée
+  hit(/(->|location:)\s*https?:\/\/evil\.example/i,'redirect');        // redirection ouverte
   hit(/ref:\s*refs\/heads|\.git\/HEAD/i,'info');                      // .git exposé
   hit(/account_exists|"slug"\s*:\s*"[^"]+"[\s\S]*"id"\s*:\s*\d+|\/author\/[a-z0-9_.-]+/i,'enum'); // comptes énumérés
   hit(/uid=\d+.*gid=\d+/i,'rce');                                     // RCE
