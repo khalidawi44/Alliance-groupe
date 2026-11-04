@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-04b</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-04b</b> (SYNC GitHub + Ctrl+Maj+R si besoin). La bannière verte « Session restaurée » indique désormais <b>combien d'étapes « ✅ fait » sont remises</b> et ce qu'il y avait en mémoire (local / serveur) → si une étape ne revient pas, ce compteur dit pourquoi.</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-04c</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-04c</b> (SYNC GitHub + Ctrl+Maj+R si besoin). CORRIGÉ : une étape enregistrée côté serveur mais absente en local (ex. le mot de passe) revient maintenant au refresh (fusion local+serveur par commande, plus jamais écrasée). La bannière verte indique les étapes « ✅ fait » remises + la mémoire (local / serveur).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -623,17 +623,26 @@ function loadSiteState(host){
     try{ if(j.session){
       var sroot=(host||'').toLowerCase().replace(/^www\./,'');
       var cur=null; try{ cur=JSON.parse(localStorage.getItem('ag_state_'+sroot)||'null'); }catch(_){}
-      var srvTs=(j.session.ts||0)*( (''+(j.session.ts||0)).length<=10 ? 1000 : 1 ), locTs=(cur&&cur.ts)||0;
-      var localHasSteps=!!(cur && ((cur.sig&&cur.sig.length) || (cur.steps&&Object.keys(cur.steps).length)));
-      if(!cur || !localHasSteps || srvTs>=locTs){
-        var merged=cur||{};
-        merged.sig=(j.session.sig&&j.session.sig.length)?j.session.sig:(merged.sig||[]);
-        merged.steps=Object.assign({}, j.session.steps||{}, merged.steps||{});
-        merged.verdicts=Object.assign({}, j.session.verdicts||{}, merged.verdicts||{});
-        if(!merged.gen && j.session.gen) merged.gen=j.session.gen;
-        merged.findings=merged.findings||[];
-        try{ localStorage.setItem('ag_state_'+sroot, JSON.stringify(merged)); }catch(_){}
-      }
+      var merged=cur||{};
+      // UNION local + serveur par COMMANDE : on ne jette JAMAIS une étape du serveur sous prétexte
+      // que le local a été ré-enregistré plus récemment (bug du « srvTs>=locTs » : au refresh le local
+      // est toujours plus récent, donc la 2ᵉ étape du serveur — le mot de passe — était ignorée).
+      var bySig={}, outSig=[];
+      (merged.sig||[]).forEach(function(e){ if(e&&e.cmd) bySig[e.cmd]=e; });
+      (j.session.sig||[]).forEach(function(e){ if(!e||!e.cmd) return; var ex=bySig[e.cmd];
+        // on garde l'entrée qui a du texte ; si les deux en ont, la plus complète (texte le plus long).
+        if(!ex || !((ex.text||'').trim()) || ((e.text||'').length > (ex.text||'').length)) bySig[e.cmd]=e;
+      });
+      Object.keys(bySig).forEach(function(k){ outSig.push(bySig[k]); });
+      merged.sig=outSig;
+      // étapes par id : on préfère la valeur NON vide (serveur si le local est vide pour cette étape).
+      var stU=Object.assign({}, j.session.steps||{});
+      Object.keys(merged.steps||{}).forEach(function(id){ var lv=merged.steps[id]; if(lv && (''+lv).trim()) stU[id]=lv; });
+      merged.steps=stU;
+      merged.verdicts=Object.assign({}, j.session.verdicts||{}, merged.verdicts||{});
+      if(!merged.gen && j.session.gen) merged.gen=j.session.gen;
+      merged.findings=merged.findings||[];
+      try{ localStorage.setItem('ag_state_'+sroot, JSON.stringify(merged)); }catch(_){}
       try{ restoreState(host); }catch(_){}
     } }catch(e){}
     var map={passive:'léger (passif)',deep:'approfondi',expert:'expert (Kali)'};
