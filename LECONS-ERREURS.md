@@ -15,6 +15,13 @@ Lu au besoin par toute nouvelle session. Ajouter en haut à chaque nouvelle leç
 
 ---
 
+## 2026-11-04 — Anti-robot (DataDome) : prévenir AVANT, et User-Agent = ajouter pas remplacer
+
+ERREUR 7 : envoyé Fabrice chasser sur BlaBlaCar (cible à anti-robot DataDome) sans prévenir du risque de blocage.
+ERREUR 8 : la consigne du programme disait « AJOUTER » l'identifiant au User-Agent ; j'ai fait une règle Burp qui REMPLACE tout le User-Agent par le seul identifiant → plus aucune signature de navigateur → DataDome l'a pris pour un robot et a bloqué son IP.
+RÉSOLU PAR : (1) détecteur anti-robot dans `scan()` (DataDome/Cloudflare-challenge/Akamai `_abck`/PerimeterX/Imperva + texte « blocked ») qui AVERTIT dès la 1re étape, avec la marche à suivre (navigateur Burp only, vitesse humaine, changer d'IP si bloqué) ; (2) étape ⓪ « Anti-robot ? » en tête de la route bug bounty ; (3) `FULLUA` = vrai User-Agent de navigateur + identifiant AJOUTÉ à la fin (jamais en remplacement). Faux positif évité : un Cloudflare bénin (`cf-ray` seul, sans challenge) ne déclenche pas.
+LEÇONS : (a) toujours vérifier l'anti-robot d'une cible AVANT d'envoyer quelqu'un dessus ; (b) un User-Agent custom seul = signal de robot = blocage, il faut l'AJOUTER à un vrai UA ; (c) une cible à anti-robot (DataDome…) n'est pas pour un débutant → orienter vers un programme sans anti-robot ou l'entraînement PortSwigger Web Security Academy (gratuit, sans blocage).
+
 ## 2026-11-04 — L'étape « fait » disparaît au refresh (saga du mot de passe)
 
 ERREUR 1 : dire « refais le test » plusieurs fois sans preuve.
