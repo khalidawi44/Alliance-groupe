@@ -1066,6 +1066,11 @@ add_action( 'publish_page', function () {
 //    Note : title + description peuvent etre overrides plus tot par inc/ag-seo-meta.php
 //    via le hook priority 1. Dans ce cas on n'emet PAS de doublon ici (skip via filter).
 add_action( 'wp_head', function () {
+    // Un plugin SEO (Yoast, Rank Math, SEOPress, AIOSEO) gère déjà title/meta/OG/Twitter.
+    // On ne redouble pas ses balises Open Graph : sinon og:type/og:url/twitter:card… en double.
+    // ag-seo-meta.php applique déjà le même garde-fou pour sa propre sortie.
+    if ( function_exists( 'ag_seo_plugin_active' ) && ag_seo_plugin_active() ) return;
+
     $has_override = apply_filters( 'ag_skip_legacy_meta_description', false );
 
     $title   = wp_get_document_title();
