@@ -17,20 +17,20 @@ $maint = array(
 	'serenite' => array(
 		'url'  => get_option( 'ag_stripe_maint_serenite_url', 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ARWC8AS5NM7HQ' ),
 		'nom'  => 'Sérénité', 'prix' => '29 €',
-		'desc' => 'Ton site toujours en ligne et sécurisé.',
-		'feats'=> array( 'Hébergement + nom de domaine', 'Sauvegardes automatiques', 'Mises à jour & sécurité', 'Support par email' ),
+		'desc' => 'Ton site entretenu et surveillé.',
+		'feats'=> array( 'Hébergement + nom de domaine', 'Sauvegardes quotidiennes', 'Mises à jour & monitoring', 'Scan malware mensuel', 'Support par email' ),
 	),
 	'croissance' => array(
 		'url'  => get_option( 'ag_stripe_maint_croissance_url', 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=374X8TRBN6QQW' ),
-		'nom'  => 'Croissance', 'prix' => '59 €', 'star' => true,
-		'desc' => 'Ton site évolue avec ton activité.',
-		'feats'=> array( 'Tout « Sérénité »', '30 min de retouches / mois', 'Suivi & conseils', 'Statistiques de visites' ),
+		'nom'  => 'Protection', 'prix' => '59 €',
+		'desc' => 'On bloque avant que ça rentre.',
+		'feats'=> array( 'Tout « Sérénité »', 'Pare-feu (WAF) + anti-bruteforce', 'Double authentification (2FA)', 'Veille des vulnérabilités', 'Rapport mensuel' ),
 	),
 	'performance' => array(
 		'url'  => get_option( 'ag_stripe_maint_performance_url', 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9Y6BHFKDPLMSQ' ),
-		'nom'  => 'Performance', 'prix' => '99 €',
-		'desc' => 'On pousse ta visibilité chaque mois.',
-		'feats'=> array( 'Tout « Croissance »', 'SEO continu (Google)', '1h de retouches / mois', 'Rapport mensuel' ),
+		'nom'  => 'Conformité', 'prix' => '99 €', 'star' => true,
+		'desc' => 'Vous dormez tranquille, et vous pouvez le prouver.',
+		'feats'=> array( 'Tout « Protection »', 'Conformité RGPD & cookies', 'Registre léger des traitements', 'Veille réglementaire (selon secteur)', 'Attestation annuelle « art. 32 »' ),
 	),
 );
 

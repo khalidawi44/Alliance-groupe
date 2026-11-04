@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attestation Mesures Art.32</title>
+<meta name="description" content="Modèle d'attestation des mesures de sécurité (RGPD art. 32) — livrable du pack Conformité, Alliance Groupe.">
+<style>
+  :root{ --or:#D4B45C; --ink:#111; --mut:#555; --line:#d9d9d9; --bg:#f4f5f7; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Georgia,'Times New Roman',serif;line-height:1.55}
+  .bar{background:#0e1016;color:#fff;padding:12px 18px;display:flex;gap:12px;align-items:center;font-family:'Segoe UI',system-ui,sans-serif}
+  .bar b{color:var(--or);font-weight:800;letter-spacing:.5px}
+  .bar button{margin-left:auto;cursor:pointer;border:0;border-radius:8px;padding:9px 16px;font-weight:600;background:var(--or);color:#241200;font-family:inherit}
+  .sheet{max-width:820px;margin:18px auto;background:#fff;padding:46px 54px;border:1px solid var(--line);box-shadow:0 6px 30px rgba(0,0,0,.06)}
+  .head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--or);padding-bottom:14px;margin-bottom:22px}
+  .logo{font-family:'Segoe UI',system-ui,sans-serif;font-weight:800;font-size:26px;color:var(--or)}
+  .logo small{display:block;color:var(--mut);font-weight:400;font-size:12px;letter-spacing:1px}
+  h1{font-size:20px;margin:6px 0 2px}
+  .ref{color:var(--mut);font-size:12px;font-family:'Segoe UI',sans-serif}
+  .row{margin:8px 0}
+  .lbl{color:var(--mut);font-size:13px}
+  .fill{border:0;border-bottom:1px dotted #999;font-family:inherit;font-size:15px;padding:2px 4px;min-width:240px;background:transparent}
+  .measures{margin:18px 0;padding:0;list-style:none}
+  .measures li{padding:7px 0;border-bottom:1px solid #eee;display:flex;gap:10px;align-items:flex-start;font-size:14.5px}
+  .measures input{margin-top:4px;width:16px;height:16px}
+  .note{font-size:12.5px;color:var(--mut);background:#faf7ee;border:1px solid #ece3c7;border-radius:8px;padding:12px 14px;margin:18px 0}
+  .sign{display:flex;justify-content:space-between;margin-top:34px;gap:30px}
+  .sign div{flex:1;font-size:13px;color:var(--mut)}
+  .sign .line{border-top:1px solid #333;margin-top:46px;padding-top:4px}
+  textarea.fill{width:100%;min-height:50px;border:1px solid var(--line);border-radius:6px;display:block}
+  @media print{ .bar{display:none} body{background:#fff} .sheet{box-shadow:none;border:0;margin:0;max-width:none;padding:0} }
+</style>
+</head>
+<body>
+<div class="bar">
+  <b>AG</b> Attestation « mesures art. 32 » — livrable du pack Conformité
+  <button onclick="window.print()">Imprimer / PDF</button>
+</div>
+
+<div class="sheet">
+  <div class="head">
+    <div class="logo">AG<small>ALLIANCE GROUPE</small></div>
+    <div style="text-align:right" class="ref">
+      Advise Alliance Group<br>
+      advise.alliance.group@gmail.com<br>
+      Réf. : <input class="fill" style="min-width:120px" placeholder="AG-ATT-____"></div>
+  </div>
+
+  <h1>Attestation de mesures de sécurité</h1>
+  <div class="ref">Règlement général sur la protection des données — article 32</div>
+
+  <div class="row" style="margin-top:20px"><span class="lbl">Client :</span>
+    <input class="fill" placeholder="Nom du cabinet / de l'entreprise"></div>
+  <div class="row"><span class="lbl">Site concerné :</span>
+    <input class="fill" placeholder="https://…"></div>
+  <div class="row"><span class="lbl">Période couverte :</span>
+    du <input class="fill" style="min-width:110px" placeholder="jj/mm/aaaa">
+    au <input class="fill" style="min-width:110px" placeholder="jj/mm/aaaa"> (12 mois)</div>
+
+  <p style="margin-top:18px">Dans le cadre du contrat de maintenance « Conformité », Alliance Groupe atteste
+  avoir mis en œuvre et maintenu, sur le site ci-dessus, les mesures techniques et
+  organisationnelles suivantes :</p>
+
+  <ul class="measures">
+    <li><input type="checkbox"> Chiffrement des échanges (HTTPS / TLS à jour)</li>
+    <li><input type="checkbox"> Mises à jour régulières du cœur et des extensions</li>
+    <li><input type="checkbox"> Sauvegardes quotidiennes et procédure de restauration testée</li>
+    <li><input type="checkbox"> Pare-feu applicatif (WAF) actif</li>
+    <li><input type="checkbox"> Authentification renforcée (2FA) sur les comptes d'administration</li>
+    <li><input type="checkbox"> Surveillance de disponibilité et détection de code malveillant</li>
+    <li><input type="checkbox"> Gestion et revue des accès (comptes, rôles, mots de passe)</li>
+    <li><input type="checkbox"> Journalisation des événements de sécurité</li>
+    <li><input type="checkbox"> Bandeau cookies / recueil du consentement conforme</li>
+    <li><input type="checkbox"> Hébergement : <input class="fill" style="min-width:200px" placeholder="(santé : vérification hébergeur HDS)"></li>
+  </ul>
+
+  <div class="row"><span class="lbl">Observations / points en cours :</span>
+    <textarea class="fill" placeholder="…"></textarea></div>
+
+  <div class="note">
+    Cette attestation décrit les mesures mises en œuvre par le prestataire à la date
+    de signature. <b>Elle ne constitue ni une certification officielle, ni une garantie
+    d'absence d'incident.</b> La responsabilité du traitement reste celle du client,
+    responsable de traitement au sens du RGPD.
+  </div>
+
+  <div class="sign">
+    <div>Fait à <input class="fill" style="min-width:120px">, le <input class="fill" style="min-width:110px">
+      <div class="line">Pour Alliance Groupe (prestataire)</div></div>
+    <div><div class="line" style="margin-top:62px">Signature &amp; cachet</div></div>
+  </div>
+</div>
+</body>
+</html>

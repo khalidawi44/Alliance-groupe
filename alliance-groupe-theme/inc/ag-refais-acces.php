@@ -415,8 +415,14 @@ add_action( 'wp_footer', function () {
 				if (u.indexOf('mshots') === -1) return;
 				o.removeAttribute('src');
 				o.setAttribute('srcdoc', '<!doctype html><meta charset="utf-8">'
-					+ '<body style="margin:0;background:#fff;display:flex;align-items:flex-start;justify-content:center">'
-					+ '<img src="' + u + '" alt="" style="width:100%;height:auto;display:block"></body>');
+					+ '<style>html,body{margin:0;height:100%}body{background:#f3f3f5;display:flex;align-items:flex-start;justify-content:center;font:14px system-ui}'
+					+ '.ld{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#9a958c;background:linear-gradient(90deg,#ececec,#f7f7f7,#ececec);background-size:200% 100%;animation:sh 1.1s linear infinite}'
+					+ '@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}img{width:100%;height:auto;display:block}</style>'
+					+ '<div class="ld" id="ld">Aperçu en cours…</div><img id="i" alt="">'
+					+ '<scr'+'ipt>var u='+JSON.stringify(u)+',n=0,img=document.getElementById("i"),ld=document.getElementById("ld");'
+					+ 'function go(){img.src=u+(u.indexOf("?")<0?"?":"&")+"r="+Date.now();}'
+					+ 'img.onload=function(){if(img.naturalWidth>80){ld.style.display="none";}else{rt();}};img.onerror=rt;'
+					+ 'function rt(){if(n++>6){ld.textContent="Aperçu indisponible";return;}setTimeout(go,2500);}go();</scr'+'ipt>');
 			});
 
 			/* On enveloppe l'iframe pour que le mur se pose exactement dessus,

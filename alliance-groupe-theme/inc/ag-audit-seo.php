@@ -813,6 +813,101 @@ if ( ! function_exists( 'ag_audit_run_deep' ) ) {
 				'weight' => 2, 'critical' => (bool) $users,
 			);
 		}
+
+		// ── CONFORMITÉ RGPD + AUTHENTIFICATION EMAIL (passif : DNS + pages publiques) ──
+		$domain = (string) wp_parse_url( $url, PHP_URL_HOST );
+
+		// C1. SPF (TXT) — limite l'usurpation d'emails du domaine.
+		$all_txt = '';
+		if ( $domain && function_exists( 'dns_get_record' ) ) {
+			foreach ( (array) @dns_get_record( $domain, DNS_TXT ) as $rec ) { $all_txt .= ' ' . ( $rec['txt'] ?? '' ); }
+		}
+		$has_spf = ( false !== stripos( $all_txt, 'v=spf1' ) );
+		$checks[] = array(
+			'name' => 'SPF (authentification email)',
+			'status' => $has_spf ? 'ok' : 'warn',
+			'msg' => $has_spf ? 'Enregistrement SPF présent.' : "Aucun SPF : vos emails sont plus facilement usurpables.",
+			'advice' => $has_spf ? 'Bien.' : "Publier un enregistrement SPF (TXT) pour limiter l'usurpation de votre domaine.",
+			'weight' => 1,
+		);
+
+		// C2. DMARC (_dmarc TXT) — anti-phishing / usurpation de marque.
+		$dmarc_txt = '';
+		if ( $domain && function_exists( 'dns_get_record' ) ) {
+			foreach ( (array) @dns_get_record( '_dmarc.' . $domain, DNS_TXT ) as $rec ) { $dmarc_txt .= ' ' . ( $rec['txt'] ?? '' ); }
+		}
+		$has_dmarc = ( false !== stripos( $dmarc_txt, 'v=DMARC1' ) );
+		$checks[] = array(
+			'name' => 'DMARC (anti-usurpation email)',
+			'status' => $has_dmarc ? 'ok' : 'warn',
+			'msg' => $has_dmarc ? 'Politique DMARC publiée.' : "Aucun DMARC : phishing et usurpation facilités.",
+			'advice' => $has_dmarc ? 'Bien.' : "Publier _dmarc (TXT) pour protéger votre marque contre le phishing.",
+			'weight' => 1,
+		);
+
+		// C3. Politique de confidentialité / mentions légales (obligation RGPD + LCEN).
+		$has_privacy = (bool) preg_match( '#confidentialit|mentions\s+l|protection\s+des\s+donn|privacy[- ]?policy|\brgpd\b#iu', $body0 );
+		if ( ! $has_privacy ) {
+			foreach ( array( '/politique-de-confidentialite', '/mentions-legales', '/privacy-policy' ) as $pp ) {
+				$r = wp_remote_get( $host . $pp, array_merge( $probe, array( 'redirection' => 1 ) ) );
+				if ( ! is_wp_error( $r ) && 200 === (int) wp_remote_retrieve_response_code( $r ) ) { $has_privacy = true; break; }
+			}
+		}
+		$checks[] = array(
+			'name' => 'Politique de confidentialité / mentions légales',
+			'status' => $has_privacy ? 'ok' : 'warn',
+			'msg' => $has_privacy ? 'Page de confidentialité / mentions légales détectée.' : "Aucune page de confidentialité ni mentions légales détectée.",
+			'advice' => $has_privacy ? 'Bien.' : "Publier une politique de confidentialité (RGPD) et des mentions légales (LCEN) : obligatoires.",
+			'weight' => 2,
+		);
+
+		// C4. Traceurs sans gestion de consentement visible (cookies / RGPD).
+		$trackers = (bool) preg_match( '#googletagmanager\.com|google-analytics\.com|gtag\(|analytics\.js|connect\.facebook\.net|fbevents|hotjar|matomo#i', $body0 );
+		$cmp      = (bool) preg_match( '#tarteaucitron|axeptio|cookiebot|didomi|orejime|cookieyes|cookie-law-info|complianz|osano|onetrust#i', $body0 );
+		if ( $trackers ) {
+			$checks[] = array(
+				'name' => 'Consentement cookies (traceurs)',
+				'status' => $cmp ? 'ok' : 'warn',
+				'msg' => $cmp ? 'Traceurs présents avec un outil de consentement (CMP) détecté.' : "Traceurs détectés sans gestion de consentement visible.",
+				'advice' => $cmp ? "Vérifier que les traceurs ne se chargent qu'après accord." : "Mettre un bandeau de consentement conforme : les traceurs ne doivent se déclencher qu'après accord (CNIL).",
+				'weight' => 2,
+			);
+		}
+
+		// C5. Google Fonts chargées depuis les serveurs Google (RGPD : héberger en local).
+		$gfonts = ( false !== stripos( $body0, 'fonts.googleapis.com' ) );
+		$checks[] = array(
+			'name' => 'Polices Google externes (RGPD)',
+			'status' => $gfonts ? 'warn' : 'ok',
+			'msg' => $gfonts ? "Google Fonts chargées depuis les serveurs Google (transfert d'IP)." : 'Pas de chargement de polices Google externes détecté.',
+			'advice' => $gfonts ? "Héberger les polices en local : le chargement direct transmet l'IP des visiteurs à Google (jugé non conforme)." : 'Bien.',
+			'weight' => 1,
+		);
+
+		// C6. security.txt (canal de signalement de faille).
+		$st_r = wp_remote_get( $host . '/.well-known/security.txt', $probe );
+		$has_sectxt = ( ! is_wp_error( $st_r ) && 200 === (int) wp_remote_retrieve_response_code( $st_r ) && false !== stripos( (string) wp_remote_retrieve_body( $st_r ), 'contact' ) );
+		$checks[] = array(
+			'name' => 'security.txt (contact sécurité)',
+			'status' => $has_sectxt ? 'ok' : 'warn',
+			'msg' => $has_sectxt ? 'Fichier security.txt présent.' : "Aucun security.txt : pas de canal de signalement de faille.",
+			'advice' => $has_sectxt ? 'Bien.' : "Ajouter /.well-known/security.txt : permet à un chercheur de signaler une faille au lieu de l'exploiter.",
+			'weight' => 1,
+		);
+
+		// C7. Page de connexion exposée (surface de force brute). — WORDPRESS
+		if ( $is_wp ) {
+			$lg  = wp_remote_get( $host . '/wp-login.php', $probe );
+			$lgb = is_wp_error( $lg ) ? '' : (string) wp_remote_retrieve_body( $lg );
+			$login_open = ( ! is_wp_error( $lg ) && 200 === (int) wp_remote_retrieve_response_code( $lg ) && false !== stripos( $lgb, 'user_login' ) );
+			$checks[] = array(
+				'name' => 'Page de connexion exposée (/wp-login.php)',
+				'status' => $login_open ? 'warn' : 'ok',
+				'msg' => $login_open ? 'La page de connexion est accessible publiquement sans protection visible.' : 'Page de connexion non exposée / protégée.',
+				'advice' => $login_open ? "Limiter les tentatives, activer la 2FA ou restreindre l'accès : c'est la 1re porte visée en force brute." : 'Bien.',
+				'weight' => 1,
+			);
+		}
 		// ── FIN sondes passives supplémentaires ──
 
 		list( $score_pct, $nb_crit ) = ag_audit_score( $checks );

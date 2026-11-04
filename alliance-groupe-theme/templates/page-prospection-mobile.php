@@ -40,6 +40,18 @@ if ( ! function_exists( 'ag_is_mobile_fr' ) ) {
 $ag_sale_link   = function_exists( 'ag_ambassadeur_sale_link' ) ? ag_ambassadeur_sale_link( $ag_email ) : home_url( '/sites-express' );
 $ag_default_msg = "Bonjour, je suis de l'agence Alliance Groupe. On aide les entreprises à avoir un site web pro (et on en offre un chaque mois). Est-ce que je peux vous en dire plus ? " . $ag_sale_link;
 
+/* Onglet PROMO : liens à partager (personnalisés avec le ref ambassadeur). */
+$ag_ref          = function_exists( 'ag_ambassadeur_ref' ) ? (string) ag_ambassadeur_ref( $ag_email ) : '';
+$ag_refq         = function ( $path ) use ( $ag_ref ) { $u = home_url( $path ); return $ag_ref ? add_query_arg( 'ref', $ag_ref, $u ) : $u; };
+$ag_parrain_link = function_exists( 'ag_ambassadeur_parrain_link' ) ? ag_ambassadeur_parrain_link( $ag_email ) : home_url( '/ambassadeurs' );
+$ag_promo = array(
+	array( 'label' => 'Mon offre — Sites Express', 'desc' => 'Création de site pro + sécurité. Ton lien de vente (commission à vie).', 'url' => $ag_sale_link, 'msg' => "Un site pro, rapide et sécurisé, à partir de 490 €. Et on en offre un chaque mois. Infos :", 'slogan' => "VOTRE SITE PRO, EN LIGNE CETTE SEMAINE", 'sub' => "Design moderne, sécurisé dès le départ. À partir de 490 €.", 'accent' => '#F37A1F', 'emoji' => '🚀' ),
+	array( 'label' => 'Audit gratuit « Tester mon site »', 'desc' => "Offre un test de sécurité/visibilité : l'hameçon idéal.", 'url' => $ag_refq( '/tester-mon-site' ), 'msg' => "Teste gratuitement la sécurité et la visibilité de ton site (note sur 100) :", 'slogan' => "VOTRE SITE EST-IL VRAIMENT SÛR ?", 'sub' => "Test de sécurité gratuit — votre note sur 100 en 2 minutes.", 'accent' => '#22C55E', 'emoji' => '🛡️' ),
+	array( 'label' => 'Studio créatif', 'desc' => 'Vidéos & visuels de pub à faire soi-même.', 'url' => home_url( '/studio' ), 'msg' => "Crée tes visuels et vidéos de pub gratuitement avec le Studio Alliance :", 'slogan' => "CRÉEZ VOS PUBS EN 5 MINUTES", 'sub' => "Vidéos & visuels prêts à poster. Gratuit — Studio Alliance.", 'accent' => '#A855F7', 'emoji' => '🎬' ),
+	array( 'label' => 'Devenir ambassadeur', 'desc' => 'Recrute : 10% à vie + prime. Ton lien de parrainage.', 'url' => $ag_parrain_link, 'msg' => "Gagne de l'argent en recommandant Alliance Groupe (10% à vie). Rejoins-moi :", 'slogan' => "GAGNEZ 10% À VIE", 'sub' => "Recommandez Alliance Groupe. Prime dès la 1re vente. 100% en ligne.", 'accent' => '#E6A93C', 'emoji' => '💸' ),
+	array( 'label' => 'Site Alliance Groupe', 'desc' => "La page d'accueil, avec ton lien.", 'url' => $ag_refq( '/' ), 'msg' => "Alliance Groupe — création de sites web ET cybersécurité :", 'slogan' => "SITE WEB + CYBERSÉCURITÉ", 'sub' => "Un seul interlocuteur, du design à la protection de vos données.", 'accent' => '#3AA3FF', 'emoji' => '🦁' ),
+);
+
 $ag_my_prospects = function_exists( 'ag_prospects_for_owner' ) ? ag_prospects_for_owner( $ag_email ) : array();
 $ag_pstat        = function_exists( 'ag_prospect_statuses' ) ? ag_prospect_statuses() : array();
 $ag_ppost        = admin_url( 'admin-post.php' );
@@ -50,6 +62,26 @@ $ag_ajax_nonce   = wp_create_nonce( 'ag_amb_prospect' );
 $ag_is_admin = current_user_can( 'manage_options' );
 $ag_calls    = $ag_is_admin ? array_slice( (array) get_option( 'ag_voice_log', array() ), 0, 40 ) : array();
 $ag_audits   = array_slice( (array) get_option( 'ag_app_audits', array() ), 0, 40, true );
+// Connexion app ↔ WordPress : on fusionne les audits faits côté ADMIN (ag_audit_history)
+// qui ne sont pas déjà dans la liste de l'app → une seule et même liste des deux côtés.
+if ( function_exists( 'ag_audit_hist_get' ) ) {
+	foreach ( (array) ag_audit_hist_get() as $he ) {
+		$hu = (string) ( $he['url'] ?? '' ); if ( '' === $hu ) { continue; }
+		$hk = md5( strtolower( trim( $hu ) ) );
+		if ( isset( $ag_audits[ $hk ] ) ) { continue; }
+		$ag_audits[ $hk ] = array(
+			'url'   => $hu,
+			'name'  => (string) ( $he['company'] ?? ( $he['host'] ?? $hu ) ),
+			'phone' => (string) ( $he['phone'] ?? '' ),
+			'score' => (int) ( $he['score'] ?? 0 ),
+			'crit'  => (int) ( $he['critical'] ?? 0 ),
+			'fails' => array(),
+			'ts'    => (int) ( $he['ts'] ?? 0 ),
+		);
+	}
+	uasort( $ag_audits, function ( $x, $y ) { return (int) ( $y['ts'] ?? 0 ) <=> (int) ( $x['ts'] ?? 0 ); } );
+	$ag_audits = array_slice( $ag_audits, 0, 40, true );
+}
 $ag_ambs     = array();
 $ag_bulklog  = array();
 if ( $ag_is_admin ) {
@@ -93,6 +125,31 @@ foreach ( $ag_my_prospects as $ppc ) {
 		.appbar{ position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:10px; padding:calc(env(safe-area-inset-top) + 10px) 16px 10px; background:rgba(11,11,15,.86); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
 		.appbar img{ width:30px; height:30px; border-radius:8px; }
 		.appbar b{ font-size:1.05rem; letter-spacing:.3px; } .appbar b span{ color:var(--gold); }
+		.appbar-btn{ flex:0 0 auto; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:rgba(255,255,255,.06); color:#fff; font-size:1.35rem; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+		.appbar-btn:active{ background:rgba(212,180,92,.28); }
+		#ag-refresh{ margin-left:auto; }
+		#ag-back[disabled]{ opacity:.35; pointer-events:none; }
+		.promo-row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+		#ag-poster{ display:none; --ac:#F37A1F; }
+		#ag-poster .ap-top{ display:flex; align-items:center; justify-content:space-between; padding:26px 34px; background:#0E1016; color:#fff; }
+		#ag-poster .ap-brand{ letter-spacing:3px; font-weight:800; font-size:20px; display:flex; align-items:center; gap:10px; }
+		#ag-poster .ap-logo{ background:var(--ac); color:#0E1016; font-weight:900; padding:4px 9px; border-radius:8px; }
+		#ag-poster .ap-emoji{ font-size:40px; }
+		#ag-poster .ap-body{ text-align:center; padding:42px 40px 10px; }
+		#ag-poster .ap-slogan{ font-family:Georgia,'Times New Roman',serif; font-size:50px; line-height:1.07; margin:0 auto; max-width:14ch; color:#0E1016; font-weight:800; }
+		#ag-poster .ap-slogan::after{ content:''; display:block; width:120px; height:7px; background:var(--ac); border-radius:6px; margin:22px auto 0; }
+		#ag-poster .ap-sub{ font-size:21px; color:#333; margin:22px auto 30px; max-width:30ch; }
+		#ag-poster .ap-qrcard{ display:inline-block; background:#fff; border:3px solid var(--ac); border-radius:22px; padding:18px 18px 12px; }
+		#ag-poster .ap-qrcard img{ width:300px; height:300px; display:block; }
+		#ag-poster .ap-scan{ margin-top:8px; font-weight:700; color:var(--ac); font-size:15px; }
+		#ag-poster .ap-url{ word-break:break-all; color:#555; font-size:15px; margin:22px auto 0; max-width:40ch; }
+		#ag-poster .ap-foot{ margin-top:26px; padding:16px; text-align:center; background:var(--ac); color:#0E1016; font-weight:700; font-size:15px; }
+		@media print{
+			@page{ margin:0; }
+			body.printing *{ visibility:hidden !important; }
+			body.printing #ag-poster, body.printing #ag-poster *{ visibility:visible !important; }
+			body.printing #ag-poster{ display:flex; flex-direction:column; justify-content:space-between; position:fixed; inset:0; margin:0; min-height:100vh; background:#fff; color:#0E1016; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+		}
 		.wrap{ max-width:680px; margin:0 auto; padding:16px 14px 100px; }
 		.view{ display:none; } .view.on{ display:block; animation:fade .25s ease; }
 		@keyframes fade{ from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
@@ -161,8 +218,10 @@ foreach ( $ag_my_prospects as $ppc ) {
 <div id="ptr">↓ Tire pour rafraîchir</div>
 
 <header class="appbar">
+	<button type="button" class="appbar-btn" id="ag-back" title="Retour" onclick="AG.back();return false;">‹</button>
 	<img src="<?php echo esc_url( $ag_icon ); ?>" alt="">
 	<b>Alliance <span><?php echo $ag_is_admin ? 'Admin' : 'Ambassadeur'; ?></span></b>
+	<button type="button" class="appbar-btn" id="ag-refresh" title="Rafraîchir" onclick="AG.reload();return false;">⟳</button>
 </header>
 
 <div class="wrap">
@@ -171,6 +230,42 @@ foreach ( $ag_my_prospects as $ppc ) {
 	<section class="view on" id="view-accueil">
 		<p class="hi">Salut <span><?php echo esc_html( $ag_prenom ); ?></span> </p>
 		<p class="sub">Ton QG de prospection.</p>
+		<?php if ( $ag_is_admin ) : ?>
+		<div class="card" style="border:1px solid #3aa3ff;">
+			<h3 style="margin:0 0 8px;">🛠️ Maintenance (admin)</h3>
+			<p class="sub" style="margin:-4px 0 10px;">Mets le site à jour depuis GitHub et vide le cache, sans passer par WordPress.</p>
+			<div style="display:flex;gap:8px;flex-wrap:wrap;">
+				<button type="button" id="ag-sync-btn" class="b gold" style="flex:1 1 150px;">🔄 SYNC GitHub</button>
+				<button type="button" id="ag-purge-btn" class="b" style="flex:1 1 150px;border:1px solid #ffc107;color:#ffd666;background:rgba(255,193,7,.14);">🧹 Purger le cache</button>
+			</div>
+			<span id="ag-maint-msg" class="sub" style="display:block;margin-top:8px;"></span>
+		</div>
+		<?php $ag_px = function_exists( 'ag_aa_prices' ) ? ag_aa_prices() : array( 'critique' => 900, 'eleve' => 500, 'moyen' => 250, 'faible' => 90 ); ?>
+		<div class="card" style="border:1px solid #E6A93C;">
+			<h3 style="margin:0 0 8px;">💶 Prix du devis (audit)</h3>
+			<p class="sub" style="margin:-4px 0 10px;">Tarif de remédiation par gravité. Utilisé automatiquement dans les devis de l'audit auto.</p>
+			<div style="display:flex;gap:8px;flex-wrap:wrap;">
+				<label style="flex:1 1 110px;font-size:.78rem;">Critique (€)<input type="number" id="px-critique" value="<?php echo (int) $ag_px['critique']; ?>" style="width:100%;padding:8px;margin-top:2px;"></label>
+				<label style="flex:1 1 110px;font-size:.78rem;">Élevé (€)<input type="number" id="px-eleve" value="<?php echo (int) $ag_px['eleve']; ?>" style="width:100%;padding:8px;margin-top:2px;"></label>
+				<label style="flex:1 1 110px;font-size:.78rem;">Moyen (€)<input type="number" id="px-moyen" value="<?php echo (int) $ag_px['moyen']; ?>" style="width:100%;padding:8px;margin-top:2px;"></label>
+				<label style="flex:1 1 110px;font-size:.78rem;">Faible (€)<input type="number" id="px-faible" value="<?php echo (int) $ag_px['faible']; ?>" style="width:100%;padding:8px;margin-top:2px;"></label>
+			</div>
+			<button type="button" id="ag-px-save" class="b gold" style="margin-top:10px;">💾 Enregistrer les prix</button>
+			<span id="ag-px-msg" class="sub" style="display:block;margin-top:8px;"></span>
+		</div>
+		<div class="card" style="border:1px solid #16a34a;">
+			<h3 style="margin:0 0 8px;">💳 Liens de paiement (rapport client)</h3>
+			<p class="sub" style="margin:-4px 0 10px;">Colle tes liens Stripe/PayPal + prix des 3 formules. Ils apparaissent comme <b>boutons « Payer en ligne »</b> sur chaque rapport privé envoyé au client.</p>
+			<label style="font-size:.78rem;">Rapport seul — prix (€) <input type="number" id="rp-px-rapport" value="<?php echo (int) get_option( 'ag_rap_px_rapport', 0 ); ?>" style="width:100%;padding:8px;margin:2px 0 4px;"></label>
+			<input type="url" id="rp-pay-rapport" value="<?php echo esc_attr( get_option( 'ag_rap_pay_rapport', '' ) ); ?>" placeholder="Lien Stripe/PayPal — Rapport seul" style="width:100%;padding:8px;margin-bottom:8px;">
+			<label style="font-size:.78rem;">Rapport + Correction — prix (€) <input type="number" id="rp-px-correction" value="<?php echo (int) get_option( 'ag_rap_px_correction', 0 ); ?>" style="width:100%;padding:8px;margin:2px 0 4px;"></label>
+			<input type="url" id="rp-pay-correction" value="<?php echo esc_attr( get_option( 'ag_rap_pay_correction', '' ) ); ?>" placeholder="Lien Stripe/PayPal — Rapport + Correction" style="width:100%;padding:8px;margin-bottom:8px;">
+			<label style="font-size:.78rem;">Refonte (à partir de €) <input type="number" id="rp-px-refonte" value="<?php echo (int) get_option( 'ag_rap_px_refonte', 0 ); ?>" style="width:100%;padding:8px;margin:2px 0 4px;"></label>
+			<input type="url" id="rp-pay-refonte" value="<?php echo esc_attr( get_option( 'ag_rap_pay_refonte', '' ) ); ?>" placeholder="Lien Stripe/PayPal — Refonte" style="width:100%;padding:8px;margin-bottom:8px;">
+			<button type="button" id="ag-rp-save" class="b gold">💾 Enregistrer les liens de paiement</button>
+			<span id="ag-rp-msg" class="sub" style="display:block;margin-top:8px;"></span>
+		</div>
+		<?php endif; ?>
 		<div class="stats">
 			<a class="stat todo" href="#" onclick="AG.tab('prospecter');return false"><b><?php echo (int) $ag_cnt['a_contacter']; ?></b><span>À contacter</span></a>
 			<a class="stat done" href="#" onclick="AG.tab('prospecter');return false"><b><?php echo (int) $ag_cnt['contacte']; ?></b><span>Contactés</span></a>
@@ -400,10 +495,41 @@ foreach ( $ag_my_prospects as $ppc ) {
 			<p class="sub" style="margin:-4px 0 10px;">Colle une adresse → note, problèmes, capture, et rapport client à envoyer.</p>
 			<div class="audit-wrap" id="ag-audit-manual" data-num="">
 				<input type="url" id="ag-audit-url" inputmode="url" placeholder="https://site-du-prospect.fr" autocomplete="off">
-				<button type="button" id="ag-audit-run" class="b gold" style="margin-top:12px;">Lancer l'audit</button>
+				<button type="button" id="ag-audit-run" class="b gold" style="margin-top:12px;">Lancer l'audit (note rapide)</button>
 				<div class="audit-res" style="margin-top:10px;"></div>
 			</div>
 		</div>
+
+		<div class="card">
+			<h3>🔍 Audit AUTO complet (sécurité + devis)</h3>
+			<p class="sub" style="margin:-4px 0 10px;">Scan passif complet côté serveur (en-têtes, versions, xmlrpc, énumération, SPF/DMARC, RGPD, SEO) → <strong>findings + devis chiffré</strong>. Utilise l'URL ci-dessus.</p>
+			<button type="button" id="ag-audit-auto" class="b gold">Lancer l'audit auto</button>
+			<a id="ag-audit-manuel" class="mini" style="display:inline-block;margin-left:8px;padding:8px 12px;cursor:pointer;border:1px solid #2563eb;border-radius:8px;color:#9cc2ff;text-decoration:none;" href="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/tools/assistant-defi.html' ); ?>" target="_blank">Mode manuel guidé (tu apprends)</a>
+			<?php if ( $ag_is_admin ) : ?><label style="display:block;margin-top:8px;font-size:.82rem;"><input type="checkbox" id="ag-audit-rep"> 📄 créer le <b>rapport client à payer</b> (lien privé + boutons paiement)</label><?php endif; ?>
+			<div id="ag-audit-auto-res" style="margin-top:12px;"></div>
+		</div>
+
+		<?php if ( $ag_is_admin ) : ?>
+		<div class="card" style="border:1px solid #16a34a;">
+			<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+				<h3 style="margin:0;">📡 Suivi & surveillance</h3>
+				<button type="button" id="ag-suivi-refresh" class="mini" style="cursor:pointer;">↻ Actualiser</button>
+			</div>
+			<p class="sub" style="margin:6px 0 10px;">Sites surveillés (réaudit mensuel auto + alerte si ça se dégrade) et jobs actifs (Kali).</p>
+			<div id="ag-watch-list" style="margin-bottom:10px;"><span class="sub">—</span></div>
+			<h4 style="margin:10px 0 6px;font-size:.92rem;">Jobs actifs (Kali)</h4>
+			<div id="ag-jobs-list"><span class="sub">—</span></div>
+		</div>
+
+		<div class="card" style="border:1px solid #E6A93C;">
+			<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+				<h3 style="margin:0;">📬 Rapports prêts à envoyer</h3>
+				<label style="font-size:.8rem;"><input type="checkbox" id="ag-agent-on"> 🤖 Agent audit auto</label>
+			</div>
+			<p class="sub" style="margin:6px 0 10px;">Le robot audite des prospects (site + email), prépare le <b>rapport privé + le message</b>. <b>Rien n'est envoyé sans toi</b> : tu valides chaque envoi ici. (Opt-out respecté.)</p>
+			<div id="ag-drafts-list"><span class="sub">—</span></div>
+		</div>
+		<?php endif; ?>
 
 		<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 2px 10px;">
 			<h3 style="margin:0;font-size:1.02rem;">Sites déjà audités (<?php echo count( $ag_audits ); ?>)</h3>
@@ -429,6 +555,35 @@ foreach ( $ag_my_prospects as $ppc ) {
 				</div>
 			<?php endforeach; ?>
 		<?php endif; ?>
+	</section>
+
+	<!-- PROMO / PARTAGE -->
+	<section class="view" id="view-promo">
+		<h2 class="sec">Promo &amp; partage</h2>
+		<div class="card"><p class="sub" style="margin:0;">Partage une appli en 1 clic (WhatsApp, Insta, SMS…), montre le QR, ou imprime l'affiche. Tes liens sont déjà personnalisés<?php echo $ag_ref ? '.' : ' dès qu\'un code ambassadeur est associé.'; ?></p></div>
+		<?php foreach ( $ag_promo as $pr ) : ?>
+		<div class="card promo-card">
+			<b style="display:block;"><?php echo esc_html( $pr['label'] ); ?></b>
+			<span class="sub" style="display:block;margin:2px 0 10px;"><?php echo esc_html( $pr['desc'] ); ?></span>
+			<div class="promo-row">
+				<button type="button" class="b gold" style="flex:1;min-width:120px;" onclick="AG.share(<?php echo esc_attr( wp_json_encode( $pr['url'] ) ); ?>,<?php echo esc_attr( wp_json_encode( $pr['label'] ) ); ?>,<?php echo esc_attr( wp_json_encode( $pr['msg'] ) ); ?>)">Partager</button>
+				<button type="button" class="mini" onclick="AG.copy(<?php echo esc_attr( wp_json_encode( $pr['url'] ) ); ?>)">Copier</button>
+				<button type="button" class="mini" onclick="AG.qr(<?php echo esc_attr( wp_json_encode( $pr['url'] ) ); ?>)">QR</button>
+				<button type="button" class="mini" onclick="AG.poster(<?php echo esc_attr( wp_json_encode( array( 'url' => $pr['url'], 'slogan' => $pr['slogan'], 'sub' => $pr['sub'], 'accent' => $pr['accent'], 'emoji' => $pr['emoji'] ) ) ); ?>)">Affiche</button>
+			</div>
+		</div>
+		<?php endforeach; ?>
+	</section>
+
+	<!-- TROUVÉS (créations d'agences cartographiées) -->
+	<section class="view" id="view-trouves">
+		<h2 class="sec">Sites trouvés</h2>
+		<div class="card"><p class="sub" style="margin:0;">Les sites <strong>créés par des agences</strong> que tu as cartographiées (≠ les sites que tu as audités toi-même). Pour chacun : voir, <strong>auditer</strong>, <strong>ajouter à tes prospects</strong> pour les démarcher.</p></div>
+		<div class="row" style="display:flex;gap:8px;align-items:center;margin:2px 0 8px;">
+			<b id="ag-cre-count" style="font-size:.95rem;">—</b>
+			<button type="button" class="mini" style="cursor:pointer;margin-left:auto;" onclick="AG.loadCreations();return false;">↻ Actualiser</button>
+		</div>
+		<div id="ag-creations"><p class="sub">Chargement…</p></div>
 	</section>
 
 	<section class="view" id="view-mis">
@@ -475,28 +630,92 @@ foreach ( $ag_my_prospects as $ppc ) {
 
 <nav class="tabbar">
 	<a href="#" data-t="accueil" class="active" onclick="AG.tab('accueil');return false"><i></i>Accueil</a>
+	<a href="#" data-t="promo" onclick="AG.tab('promo');return false"><i></i>Promo</a>
 	<a href="#" data-t="prospecter" onclick="AG.tab('prospecter');return false"><i></i>Prospecter</a>
 	<a href="#" data-t="chercher" onclick="AG.tab('chercher');return false"><i></i>Chercher</a>
 	<?php if ( $ag_is_admin ) : ?><a href="#" data-t="appels" onclick="AG.tab('appels');return false"><i></i>Appels</a><?php endif; ?>
 	<?php if ( $ag_is_admin ) : ?><a href="#" data-t="ambass" onclick="AG.tab('ambass');return false"><i></i>Ambass.</a><?php endif; ?>
 	<a href="#" data-t="audit" onclick="AG.tab('audit');return false"><i></i>Audit</a>
+	<a href="#" data-t="trouves" onclick="AG.tab('trouves');AG.loadCreations();return false"><i></i>Trouvés</a>
 	<a href="#" data-t="mis" onclick="AG.tab('mis');AG.loadMissions();return false"><i></i>Missions</a>
 	<?php if ( $ag_is_admin ) : ?><a href="#" data-t="ao" onclick="AG.tab('ao');AG.loadAO();return false"><i></i>Marchés</a><?php endif; ?>
 </nav>
 
+<!-- Affiche imprimable travaillée (remplie à la volée par AG.poster) -->
+<div id="ag-poster" aria-hidden="true">
+	<div class="ap-top">
+		<div class="ap-brand"><span class="ap-logo">AG</span> ALLIANCE GROUPE</div>
+		<div class="ap-emoji" data-e>🚀</div>
+	</div>
+	<div class="ap-body">
+		<h1 class="ap-slogan" data-t></h1>
+		<p class="ap-sub" data-m></p>
+		<div class="ap-qrcard">
+			<img src="" alt="QR code">
+			<div class="ap-scan">📷 Scannez avec votre téléphone</div>
+		</div>
+		<p class="ap-url" data-u></p>
+	</div>
+	<div class="ap-foot">Alliance Groupe · Studio web &amp; cybersécurité · alliancegroupe-inc.com</div>
+</div>
+
 <script>
 var AG = (function(){
 	var AJAX='<?php echo esc_js( $ag_ajax_url ); ?>', N='<?php echo esc_js( $ag_ajax_nonce ); ?>';
-	function tab(id){
+	var tabStack=[], curTab='accueil';
+	function applyTab(id){
+		var el=document.getElementById('view-'+id); if(!el){ return false; }
 		document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('on'); });
-		var el=document.getElementById('view-'+id); if(el){ el.classList.add('on'); }
+		el.classList.add('on');
 		document.querySelectorAll('.tabbar a').forEach(function(a){ a.classList.toggle('active', a.getAttribute('data-t')===id); });
 		window.scrollTo(0,0);
+		curTab=id;
+		var b=document.getElementById('ag-back'); if(b){ b.disabled = tabStack.length===0; }
+		return true;
 	}
+	function tab(id, fromHistory){
+		if(id===curTab){ return; }
+		if(!fromHistory){
+			tabStack.push(curTab);
+			try{ history.pushState({agTab:id}, '', '#'+id); }catch(e){}
+		}
+		applyTab(id);
+	}
+	function back(){
+		if(tabStack.length){ var prev=tabStack.pop(); applyTab(prev); try{ history.replaceState({agTab:prev}, '', '#'+prev); }catch(e){} }
+		else { try{ history.back(); }catch(e){} }
+	}
+	function reload(){ try{ location.reload(); }catch(e){ window.location.href=window.location.href; } }
+	// Bouton « retour » matériel / navigateur → revient d'onglet au lieu de quitter l'appli.
+	window.addEventListener('popstate', function(ev){
+		var id=(ev.state && ev.state.agTab) ? ev.state.agTab : 'accueil';
+		if(tabStack.length){ tabStack.pop(); }
+		applyTab(id);
+	});
+	try{ history.replaceState({agTab:'accueil'}, '', '#accueil'); }catch(e){}
 	var toastT;
 	function toast(m){ var t=document.getElementById('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(function(){ t.classList.remove('on'); },3200); }
 	function post(action, data){ var fd=new FormData(); fd.append('action',action); fd.append('_n',N); Object.keys(data||{}).forEach(function(k){ fd.append(k,data[k]); }); return fetch(AJAX,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}); }
-	return { tab:tab, toast:toast, post:post, AJAX:AJAX, N:N, admin:<?php echo $ag_is_admin ? 'true' : 'false'; ?> };
+	// ── Promo / partage ──
+	function share(url, title, msg){
+		if(navigator.share){ navigator.share({ title: title||'Alliance Groupe', text: (msg||''), url: url }).catch(function(){}); return; }
+		window.open('https://wa.me/?text='+encodeURIComponent((msg? msg+' ':'')+url), '_blank'); // repli WhatsApp
+	}
+	function copy(txt){ if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(function(){ toast('Lien copié ✓'); }, function(){ toast(txt); }); } else { toast(txt); } }
+	function qr(url){ window.open('https://api.qrserver.com/v1/create-qr-code/?size=800x800&margin=24&data='+encodeURIComponent(url), '_blank'); }
+	function poster(o){
+		o = o || {}; var url=o.url||'';
+		var p=document.getElementById('ag-poster'); if(!p) return;
+		p.style.setProperty('--ac', o.accent || '#F37A1F');
+		p.querySelector('[data-e]').textContent = o.emoji || '🚀';
+		p.querySelector('[data-t]').textContent = o.slogan || 'Alliance Groupe';
+		p.querySelector('[data-m]').textContent = o.sub || '';
+		p.querySelector('[data-u]').textContent = url;
+		p.querySelector('.ap-qrcard img').src='https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=10&data='+encodeURIComponent(url);
+		document.body.classList.add('printing');
+		setTimeout(function(){ window.print(); setTimeout(function(){ document.body.classList.remove('printing'); }, 400); }, 500);
+	}
+	return { tab:tab, back:back, reload:reload, toast:toast, post:post, share:share, copy:copy, qr:qr, poster:poster, AJAX:AJAX, N:N, admin:<?php echo $ag_is_admin ? 'true' : 'false'; ?> };
 })();
 
 (function(){
@@ -521,8 +740,10 @@ var AG = (function(){
 		h+='<div style="margin:4px 0 6px;"><span class="sc" style="color:'+color+';font-size:1.05rem;">Note '+d.score+'/100</span>'+(d.critical>0?' · '+d.critical+' faille(s)':'')+(d.tech?' · '+d.tech:'')+' · <b>'+reco+'</b></div>';
 		h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin:0 0 8px;border-color:#3aa3ff;color:#eaf4ff;background:rgba(58,163,255,.28);font-weight:700;" href="'+url+'">Voir le site</a> ';
 		if(d.fails && d.fails.length){ h+='<ul style="margin:0 0 8px;padding:0;list-style:none;font-size:.82rem;color:#cfcfd6;line-height:1.6;">'; d.fails.forEach(function(f){ h+='<li>'+f+'</li>'; }); h+='</ul>'; }
+		if(d.proof){ var ps=d.proof.strong; h+='<div style="background:rgba(229,72,77,.14);border:1px solid rgba(229,72,77,.45);border-left:3px solid #e5484d;border-radius:9px;padding:8px 10px;margin:0 0 9px;font-size:.82rem;line-height:1.45;color:#ffd9d9;">🔎 <b>Preuve'+(ps?' FORTE (sous mandat)':'')+'</b> : '+d.proof.label+' — <b style="color:#fff;">« '+d.proof.value+' »</b> ('+d.proof.how+'). '+(ps?'⚠️ Masquée dans le message/rapport client.':'Vérifiable par le client.')+'</div>'; }
 		if(d.report){ h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:6px;border-color:#22c55e;color:#fff;background:rgba(34,197,94,.34);font-weight:700;" href="'+d.report+'">Voir le rapport client</a> '; }
 		if(d.report_card){ h+='<a class="mini" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:8px;border-color:#e6b35a;color:#fff;background:rgba(212,180,92,.32);font-weight:700;" href="'+d.report_card+'">Image à envoyer (screenshot)</a>'; }
+		if(d.msg && d.msg.agence){ h+='<div><button type="button" class="mini agmsg-copy" data-m="'+encodeURIComponent(d.msg.agence)+'" style="cursor:pointer;border-color:#22c55e;color:#fff;background:rgba(34,197,94,.34);font-weight:700;margin-bottom:8px;">Copier — message CLIENT (site fait par '+(d.agency||'une agence')+')</button></div>'; }
 		if(d.msg && d.msg.perso){ h+='<div><button type="button" class="mini agmsg-copy" data-m="'+encodeURIComponent(d.msg.perso)+'" style="cursor:pointer;border-color:#d4b45c;color:#fff;background:rgba(212,180,92,.32);font-weight:700;margin-bottom:8px;">Copier — message au PROPRIÉTAIRE</button></div>'; }
 		if(d.msg && d.msg.partenaire){ h+='<div><button type="button" class="mini agmsg-copy" data-m="'+encodeURIComponent(d.msg.partenaire)+'" style="cursor:pointer;border-color:#a855f7;color:#fff;background:rgba(124,58,237,.42);font-weight:700;margin-bottom:8px;">Copier — message à l\'AGENCE (partenaire %)</button></div>'; }
 		if(d.is_agency){ h+='<div><button type="button" class="mini ag-agency-scan" data-url="'+(d.url||url)+'" style="cursor:pointer;border-color:#3aa3ff;color:#fff;background:rgba(58,163,255,.42);font-weight:700;margin-bottom:8px;">Cartographier ses créations (agence web détectée)</button></div>'; }
@@ -731,10 +952,21 @@ var AG = (function(){
 		var d=document.createElement('div'); d.className='res';
 		var stars=(it.rating>0)?(' · '+it.rating+(it.reviews?(' ('+it.reviews+')'):'')):'';
 		var cat=it.type||it.kind||'';
-		// Badge « besoin d'un site ? » : vrai site => a déjà un site (mauvaise cible) ; sinon => bonne cible.
-		var needBadge = it.real
-			? '<span style="color:#8a8a92;">a déjà un site</span>'
-			: '<span style="color:#2ecc71;font-weight:700;">pas de vrai site — bonne cible</span>';
+		// Badge. Contexte SÉCURITÉ (it.sec : sites trouvés/cartographiés) => on juge la
+		// SÉCURITÉ (le score), PAS « a-t-il un site ». Sinon (chasse création) => ancien badge.
+		var needBadge;
+		if(it.sec){
+			var _sc=(typeof it.score==='number')?it.score:(it.score!=null&&it.score!==''?parseInt(it.score,10):-1);
+			if(_sc>=0 && !isNaN(_sc)){
+				needBadge = _sc<50 ? '<span style="color:#ff6b6b;font-weight:700;">🔴 À sécuriser — bonne cible</span>'
+					: (_sc<75 ? '<span style="color:#e6b35a;font-weight:700;">🟠 À renforcer</span>'
+					: '<span style="color:#2ecc71;font-weight:700;">🟢 Plutôt bon</span>');
+			} else { needBadge = '<span style="color:#9aa0b0;">Site à auditer</span>'; }
+		} else {
+			needBadge = it.real
+				? '<span style="color:#8a8a92;">a déjà un site</span>'
+				: '<span style="color:#2ecc71;font-weight:700;">pas de vrai site — bonne cible</span>';
+		}
 		d.innerHTML='<div class="rn">'+(it.name||'')+'</div><div class="rk">'+(it.city||'')+(cat?(' · '+cat):'')+stars+(it.exists?' · déjà en base':'')+'</div><div class="rk" style="margin-top:2px;">'+needBadge+'</div>';
 		if(it.website){ var lk=document.createElement('a'); lk.className='rlink'; lk.href=it.website; lk.target='_blank'; lk.rel='noopener'; lk.textContent=''+String(it.website).replace(/^https?:\/\//,'').replace(/\/$/,''); d.appendChild(lk); }
 		var row=document.createElement('div'); row.className='row'; row.style.cssText='display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;';
@@ -872,7 +1104,7 @@ var AG = (function(){
 					var head=document.createElement('div'); head.className='rk'; head.style.margin='8px 0 -2px';
 					head.innerHTML='<span style="color:'+agScoreCol(c.score||0)+';font-weight:800;">'+(c.score||0)+'/100</span>'+((c.crit||0)>0?(' · '+c.crit+' faille(s)'):'')+' — création de l\'agence';
 					body.appendChild(head);
-					body.appendChild(agItemRow({name:c.host, website:c.url, city:'', type:'client de l\'agence'}));
+					body.appendChild(agItemRow({name:c.host, website:c.url, city:'', type:'client de l\'agence', real:true, sec:true, score:c.score, crit:c.crit}));
 				});
 				if(!(ag.creations||[]).length){ var em=document.createElement('p'); em.className='sub'; em.textContent='Aucune création détectée automatiquement (portfolio non public ou liens absents).'; body.appendChild(em); }
 			} });
@@ -887,11 +1119,30 @@ var AG = (function(){
 		if(!confirm('Cartographier les créations de cette agence ? On analyse plusieurs sites, ça peut prendre 20 à 40 secondes.')) return;
 		var old=b.textContent; b.textContent='Analyse en cours… patiente'; b.setAttribute('disabled','disabled');
 		AG.post('ag_app_agency_scan',{url:u}).then(function(j){ b.textContent=old; b.removeAttribute('disabled');
-			if(j&&j.success){ AG.toast(''+(((j.data.agency)&&j.data.agency.n)||0)+' création(s) trouvée(s) — voir « Agences web » (onglet Chercher)'); agLoadAgencies(); }
+			if(j&&j.success){ var n=((j.data.agency)&&j.data.agency.n)||0; agLoadAgencies(); AG.tab('trouves'); AG.loadCreations(); AG.toast(n+' site(s) trouvé(s) — les voici'); }
 			else { AG.toast(''+((j&&j.data&&j.data.m)||'Erreur')); }
 		}).catch(function(){ b.textContent=old; b.removeAttribute('disabled'); AG.toast('Erreur réseau (scan peut-être trop long)'); });
 	});
 	agLoadAgencies();
+
+	// Onglet « Trouvés » : liste À PLAT de toutes les créations d'agences (séparée des sites audités).
+	AG.loadCreations=function(){
+		var host=document.getElementById('ag-creations'), cnt=document.getElementById('ag-cre-count');
+		if(!host) return;
+		host.innerHTML='<p class="sub">Chargement…</p>';
+		AG.post('ag_app_creations',{}).then(function(j){
+			var arr=(j&&j.success&&j.data.items)||[];
+			if(cnt){ cnt.textContent=arr.length+' site'+(arr.length>1?'s':'')+' trouvé'+(arr.length>1?'s':''); }
+			if(!arr.length){ host.innerHTML='<p class="sub">Aucun site trouvé pour l\'instant. Audite une agence web (onglet Audit) puis clique « Cartographier ses créations » : ses clients apparaîtront ici.</p>'; return; }
+			host.innerHTML='';
+			arr.forEach(function(c){
+				var head=document.createElement('div'); head.className='rk'; head.style.cssText='margin:12px 0 -2px;color:#9aa0b0;font-size:.78rem;';
+				head.innerHTML=(c.score?('<span style="color:'+agScoreCol(c.score)+';font-weight:800;">'+c.score+'/100</span>'+((c.crit||0)>0?(' · '+c.crit+' faille(s)'):'')+' · '):'')+'création de '+(c.agency||'l\'agence');
+				host.appendChild(head);
+				c.sec=true; host.appendChild(agItemRow(c));
+			});
+		}).catch(function(){ host.innerHTML='<p class="sub">Erreur réseau.</p>'; });
+	};
 
 	// Audit manuel (onglet Audit) : lance l'audit sur l'URL saisie et affiche le rapport dans l'app
 	var arun=document.getElementById('ag-audit-run'), aurl=document.getElementById('ag-audit-url');
@@ -1059,6 +1310,153 @@ var AG = (function(){
 			list.forEach(function(m){ box.appendChild(misCard(m)); });
 		}).catch(function(){ box.innerHTML='<div class="card"><p class="sub" style="margin:0;">Erreur de chargement.</p></div>'; });
 	};
+})();
+</script>
+<script>
+/* Audit AUTO complet + porte ACTIVE (dans l'onglet Audit de l'app) */
+(function(){
+	var btn=document.getElementById('ag-audit-auto'); if(!btn||!window.AG) return;
+	var res=document.getElementById('ag-audit-auto-res');
+	var man=document.getElementById('ag-audit-manuel');
+	function urlv(){var e=document.getElementById('ag-audit-url');return e?(e.value||'').trim():'';}
+	if(man){man.addEventListener('click',function(){var u=urlv();if(u){this.href=this.href.split('?')[0]+'?cible='+encodeURIComponent(u);}});}
+	btn.addEventListener('click',function(){
+		var u=urlv(); if(!u){AG.toast('Entre une URL dans le champ au-dessus');return;}
+		res.innerHTML='<span class="sub">Audit auto en cours… (~15 s)</span>'; btn.setAttribute('disabled','disabled'); btn.textContent='Audit…';
+		var repEl=document.getElementById('ag-audit-rep');
+		AG.post('ag_app_audit_auto',{url:u,rep:(repEl&&repEl.checked)?1:0}).then(function(j){
+			btn.removeAttribute('disabled'); btn.textContent='Lancer l\'audit auto';
+			if(j&&j.success){
+				var ba='';
+				if(j.data.prev_score!=null){ var dlt=j.data.score-j.data.prev_score; var col=dlt>0?'#16a34a':(dlt<0?'#dc2626':'#555'); ba='<div style="background:#0e1016;border:1px solid #2a2c4e;border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:.85rem;">📈 Avant/après : <b>'+j.data.prev_score+'</b> → <b>'+j.data.score+'</b>/100 <span style="color:'+col+'">('+(dlt>=0?'+':'')+dlt+')</span></div>'; }
+				res.innerHTML=ba+'<div style="background:#fff;color:#111;border-radius:10px;padding:10px;overflow:auto">'+j.data.html+'</div>';
+				if(j.data.report_url){
+					var rb=document.createElement('div'); rb.style.cssText='margin-top:10px;background:#0e2a18;border:1px solid #1f5a37;border-radius:8px;padding:10px;font-size:.85rem;';
+					rb.innerHTML='📄 <b>Rapport client créé</b> (lien privé + boutons paiement) :<br><a href="'+j.data.report_url+'" target="_blank" style="color:#7ef0a8;word-break:break-all;">'+j.data.report_url+'</a> '
+						+'<button class="mini" id="ag-rep-copy" style="margin-left:6px;cursor:pointer;">Copier</button>';
+					res.appendChild(rb);
+					var cpb=document.getElementById('ag-rep-copy'); if(cpb) cpb.addEventListener('click',function(){ (AG.copy?AG.copy(j.data.report_url):navigator.clipboard.writeText(j.data.report_url)); AG.toast('Lien copié'); });
+				}
+				if(j.data.can_watch && !j.data.watched){
+					var wb=document.createElement('button'); wb.className='b'; wb.style.cssText='margin-top:10px;border:1px solid #16a34a;color:#7ef0a8;background:rgba(22,163,74,.14);';
+					wb.textContent='📌 Surveiller ce site (réaudit mensuel + alerte)';
+					wb.addEventListener('click',function(){ wb.setAttribute('disabled','disabled'); AG.post('ag_app_watch_add',{url:j.data.url||j.data.host,host:j.data.host}).then(function(x){ wb.textContent=(x&&x.success)?'✅ Surveillé':'Erreur'; if(x&&x.success)AG.toast('Site surveillé'); loadSuivi(); }); });
+					res.appendChild(wb);
+				} else if(j.data.watched){ var sp=document.createElement('p'); sp.className='sub'; sp.style.marginTop='8px'; sp.textContent='📌 Déjà sous surveillance.'; res.appendChild(sp); }
+				if(j.data.can_active){ appActive(res,j.data); }
+			}
+			else { res.innerHTML='<span class="sub">'+((j&&j.data&&j.data.m)||'Erreur audit.')+'</span>'; }
+		}).catch(function(e){ btn.removeAttribute('disabled'); btn.textContent='Lancer l\'audit auto'; res.innerHTML='Erreur réseau : '+e; });
+	});
+	function appActive(hostEl,d){
+		var box=document.createElement('div'); box.className='card'; box.style.marginTop='10px';
+		box.innerHTML='<h3>⚡ Passer à l\'actif (Kali, sous mandat)</h3>'
+			+'<p class="sub">Crée un job actif ciblé pour ta Kali (comptes/plugins déjà trouvés transmis). ⚠️ Mandat écrit obligatoire.</p>'
+			+'<input id="aaa_client" placeholder="Nom du client" style="width:100%;margin-bottom:6px;padding:8px">'
+			+'<input id="aaa_mandat" placeholder="Réf. mandat (ex: MANDAT-2026-001)" style="width:100%;margin-bottom:6px;padding:8px">'
+			+'<select id="aaa_level" style="width:100%;margin-bottom:6px;padding:8px"><option value="normal">normal</option><option value="deep">deep (CVE, fichiers)</option><option value="max">max (OSINT, sous-domaines)</option></select>'
+			+'<label style="display:block;font-size:.8rem;margin-bottom:8px"><input type="checkbox" id="aaa_ok"> Je confirme avoir un mandat écrit signé pour cette cible.</label>'
+			+'<button id="aaa_go" class="b gold">Créer le job actif pour Kali</button> <span id="aaa_msg" class="sub" style="display:block;margin-top:8px"></span>';
+		hostEl.appendChild(box);
+		document.getElementById('aaa_go').addEventListener('click',function(){
+			var m=document.getElementById('aaa_msg');
+			if(!document.getElementById('aaa_ok').checked){m.textContent='Coche la confirmation de mandat.';return;}
+			var cl=document.getElementById('aaa_client').value.trim(), md=document.getElementById('aaa_mandat').value.trim();
+			if(!cl||!md){m.textContent='Client ET référence de mandat requis.';return;}
+			m.textContent='⏳ Création du job…';
+			AG.post('ag_app_audit_active',{url:d.url||d.host,client:cl,mandat:md,level:document.getElementById('aaa_level').value,intel:JSON.stringify(d.intel||{})}).then(function(x){
+				if(x&&x.success){
+					var host=(d.host||'').replace(/^https?:\/\//,'');
+					m.innerHTML='✅ <b>Job créé.</b> Maintenant, dans l\'ordre :<br>'
+						+'<b>①</b> (optionnel) Ouvre l\'assistant : <a href="https://alliancegroupe-inc.com/wp-content/themes/alliance-groupe-theme/assets/tools/assistant-defi.html?cible='+encodeURIComponent(host)+'" target="_blank" style="color:#9cc2ff;">ouvrir l\'assistant</a><br>'
+						+'<b>②</b> Ouvre <b>Kali</b> et tape :<br><code style="display:block;background:#05070c;border:1px solid #2a2c4e;border-radius:6px;padding:8px;margin:4px 0;color:#9ef0c8;">cd ~/pentest-local &amp;&amp; ./ag-runner.sh --once</code>'
+						+'<b>③</b> Attends ~5 min, puis <button class="mini" id="aaa_check" style="cursor:pointer;">🔄 Vérifier si le rapport est prêt</button>';
+					var cb=document.getElementById('aaa_check');
+					if(cb) cb.addEventListener('click',function(){ cb.textContent='…'; AG.post('ag_app_jobs',{}).then(function(j){ var jobs=(j&&j.data&&j.data.jobs)||[]; var mine=jobs.filter(function(z){return (z.target||'').indexOf(host)>-1;})[0]; cb.textContent='🔄 Vérifier si le rapport est prêt'; if(mine&&mine.status==='done'){ m.innerHTML+='<br><b style="color:#16a34a">✅ Rapport PRÊT (job terminé).</b> Va dans « 📡 Suivi » pour la synthèse.'; loadSuivi&&loadSuivi(); } else if(mine&&mine.status==='error'){ m.innerHTML+='<br><b style="color:#dc2626">❌ Erreur sur le job.</b> Vérifie que Kali a bien lancé le runner.'; } else { m.innerHTML+='<br>⏳ Pas encore terminé — relance la vérif dans 1-2 min (le runner Kali doit tourner).'; } }); });
+				} else { m.innerHTML='Erreur : '+((x&&x.data&&x.data.error)||'?'); }
+			}).catch(function(e){m.textContent='Erreur réseau : '+e;});
+		});
+	}
+	/* Suivi : sites surveillés + jobs Kali */
+	function fmtAgo(ts){ if(!ts) return 'jamais'; var d=Math.floor((Date.now()/1000-ts)/86400); return d<=0?'aujourd\'hui':(d+' j'); }
+	window.loadSuivi=function(){
+		if(!window.AG||!AG.admin) return;
+		var wl=document.getElementById('ag-watch-list'), jl=document.getElementById('ag-jobs-list');
+		if(wl) AG.post('ag_app_watch_list',{}).then(function(j){
+			if(!(j&&j.success)){wl.innerHTML='<span class="sub">—</span>';return;}
+			var a=j.data.watch||[]; if(!a.length){wl.innerHTML='<span class="sub">Aucun site surveillé. Lance un audit auto puis « Surveiller ce site ».</span>';return;}
+			wl.innerHTML=a.map(function(w){
+				var d=(w.last_score!=null&&w.first_score!=null)?(w.last_score-w.first_score):null;
+				var col=d>0?'#16a34a':(d<0?'#dc2626':'#9aa0b0');
+				return '<div style="border-left:3px solid #16a34a;padding:4px 8px;margin:4px 0;font-size:.85rem;"><b>'+w.host+'</b> — score '+(w.last_score!=null?w.last_score:'?')+'/100'+(d!=null?' <span style="color:'+col+'">('+(d>=0?'+':'')+d+' depuis le début)</span>':'')+' · '+w.runs+' audit(s) · maj '+fmtAgo(w.last_ts)+' <a href="#" data-h="'+w.host+'" class="ag-unwatch" style="color:#ff9a9a;margin-left:6px;">retirer</a></div>';
+			}).join('');
+			[].forEach.call(wl.querySelectorAll('.ag-unwatch'),function(x){x.addEventListener('click',function(e){e.preventDefault();AG.post('ag_app_watch_remove',{host:this.getAttribute('data-h')}).then(function(){loadSuivi();AG.toast('Retiré');});});});
+		});
+		if(jl) AG.post('ag_app_jobs',{}).then(function(j){
+			if(!(j&&j.success)){jl.innerHTML='<span class="sub">—</span>';return;}
+			var a=j.data.jobs||[]; if(!a.length){jl.innerHTML='<span class="sub">Aucun job. Lance un audit puis « Passer à l\'actif ».</span>';return;}
+			var icon={pending:'⏳',running:'🔄',done:'✅',error:'❌'};
+			jl.innerHTML=a.map(function(jb){
+				return '<div style="border-left:3px solid #2563eb;padding:4px 8px;margin:4px 0;font-size:.85rem;">'+(icon[jb.status]||'•')+' <b>'+(jb.target||'')+'</b> <span class="sub">('+(jb.client||'')+')</span> — '+jb.status+(jb.summary?'<br><span class="sub" style="white-space:pre-wrap">'+jb.summary.replace(/</g,'&lt;')+'</span>':'')+(jb.error?'<br><span style="color:#ff9a9a">'+jb.error+'</span>':'')+'</div>';
+			}).join('');
+		});
+	};
+	window.loadDrafts=function(){
+		if(!window.AG||!AG.admin) return;
+		var dl=document.getElementById('ag-drafts-list'); if(!dl) return;
+		AG.post('ag_app_drafts_list',{}).then(function(j){
+			if(!(j&&j.success)){dl.innerHTML='<span class="sub">—</span>';return;}
+			var tg=document.getElementById('ag-agent-on'); if(tg) tg.checked=(j.data.on==='1');
+			var a=j.data.drafts||[]; if(!a.length){dl.innerHTML='<span class="sub">Aucun rapport en attente. Active l\'agent, ou audite un site pour créer un rapport.</span>';return;}
+			dl.innerHTML=a.map(function(d){
+				return '<div data-k="'+d.key+'" style="border-left:3px solid #E6A93C;padding:6px 8px;margin:6px 0;font-size:.85rem;"><b>'+d.host+'</b> — '+d.score+'/100 · '+(d.email||'pas d\'email')+'<br>'
+					+(d.report_url?'<a href="'+d.report_url+'" target="_blank" style="color:#7ef0a8;word-break:break-all;">rapport privé</a> · ':'')
+					+'<button class="mini ag-draft-send" style="cursor:pointer;border-color:#16a34a;color:#7ef0a8;">✉️ Envoyer</button> '
+					+'<button class="mini ag-draft-copy" style="cursor:pointer;">📋 Copier</button> '
+					+'<button class="mini ag-draft-del" style="cursor:pointer;color:#ff9a9a;">⏭️ Ignorer</button></div>';
+			}).join('');
+			[].forEach.call(dl.querySelectorAll('.ag-draft-send'),function(b){b.addEventListener('click',function(){ var k=this.closest('[data-k]').getAttribute('data-k'); if(!confirm('Envoyer ce rapport par email au prospect ?'))return; b.textContent='…'; AG.post('ag_app_draft_send',{key:k}).then(function(x){ AG.toast(x&&x.success&&x.data.sent?'Envoyé ✅':'Échec envoi'); loadDrafts(); }); });});
+			[].forEach.call(dl.querySelectorAll('.ag-draft-copy'),function(b){b.addEventListener('click',function(){ var k=this.closest('[data-k]').getAttribute('data-k'); var d=a.filter(function(x){return x.key===k;})[0]; if(d){ var t=d.subject+'\n\n'+d.body.replace(/<[^>]+>/g,''); (AG.copy?AG.copy(t):navigator.clipboard.writeText(t)); AG.toast('Message copié'); } });});
+			[].forEach.call(dl.querySelectorAll('.ag-draft-del'),function(b){b.addEventListener('click',function(){ var k=this.closest('[data-k]').getAttribute('data-k'); AG.post('ag_app_draft_del',{key:k}).then(function(){loadDrafts();}); });});
+		});
+	};
+	var at=document.getElementById('ag-agent-on'); if(at) at.addEventListener('change',function(){ AG.post('ag_app_agent_toggle',{on:this.checked?1:0}).then(function(x){ AG.toast(x&&x.success&&x.data.on==='1'?'Agent activé':'Agent coupé'); }); });
+	var sr=document.getElementById('ag-suivi-refresh'); if(sr) sr.addEventListener('click',function(){loadSuivi();loadDrafts();});
+	if(window.AG&&AG.admin){ loadSuivi(); loadDrafts(); }
+})();
+/* Maintenance admin : SYNC GitHub + purge cache depuis l'app */
+(function(){
+	if(!window.AG) return;
+	var sb=document.getElementById('ag-sync-btn'), pb=document.getElementById('ag-purge-btn'), m=document.getElementById('ag-maint-msg');
+	if(sb) sb.addEventListener('click',function(){
+		sb.setAttribute('disabled','disabled'); var o=sb.textContent; sb.textContent='SYNC…'; if(m)m.textContent='⏳ Mise à jour depuis GitHub…';
+		AG.post('ag_app_sync',{}).then(function(j){ sb.removeAttribute('disabled'); sb.textContent=o;
+			if(m)m.innerHTML=(j&&j.success)?('✅ '+j.data.m+' Pense à purger le cache puis recharger.'):('❌ '+((j&&j.data&&j.data.m)||'Erreur sync'));
+			if(j&&j.success)AG.toast('SYNC terminée'); }).catch(function(e){ sb.removeAttribute('disabled'); sb.textContent=o; if(m)m.textContent='Erreur réseau : '+e; });
+	});
+	if(pb) pb.addEventListener('click',function(){
+		pb.setAttribute('disabled','disabled'); var o=pb.textContent; pb.textContent='Purge…'; if(m)m.textContent='⏳ Purge du cache…';
+		AG.post('ag_app_purge',{}).then(function(j){ pb.removeAttribute('disabled'); pb.textContent=o;
+			if(m)m.innerHTML=(j&&j.success)?('🧹 '+j.data.m+' Recharge la page (Ctrl/↻).'):('❌ '+((j&&j.data&&j.data.m)||'Erreur purge'));
+			if(j&&j.success)AG.toast('Cache purgé'); }).catch(function(e){ pb.removeAttribute('disabled'); pb.textContent=o; if(m)m.textContent='Erreur réseau : '+e; });
+	});
+	var xb=document.getElementById('ag-px-save'), xm=document.getElementById('ag-px-msg');
+	if(xb) xb.addEventListener('click',function(){
+		var p={critique:+(document.getElementById('px-critique').value||0),eleve:+(document.getElementById('px-eleve').value||0),moyen:+(document.getElementById('px-moyen').value||0),faible:+(document.getElementById('px-faible').value||0)};
+		xb.setAttribute('disabled','disabled'); var o=xb.textContent; xb.textContent='…'; if(xm)xm.textContent='⏳ Enregistrement…';
+		AG.post('ag_app_prices_save',{prices:JSON.stringify(p)}).then(function(j){ xb.removeAttribute('disabled'); xb.textContent=o;
+			if(xm)xm.textContent=(j&&j.success)?('✅ Prix enregistrés : C '+j.data.prices.critique+' / É '+j.data.prices.eleve+' / M '+j.data.prices.moyen+' / F '+j.data.prices.faible+' €'):('❌ '+((j&&j.data&&j.data.m)||'Erreur'));
+			if(j&&j.success)AG.toast('Prix enregistrés'); }).catch(function(e){ xb.removeAttribute('disabled'); xb.textContent=o; if(xm)xm.textContent='Erreur réseau : '+e; });
+	});
+	var rpb=document.getElementById('ag-rp-save'), rpm=document.getElementById('ag-rp-msg');
+	if(rpb) rpb.addEventListener('click',function(){
+		var p={ px_rapport:+(document.getElementById('rp-px-rapport').value||0), px_correction:+(document.getElementById('rp-px-correction').value||0), px_refonte:+(document.getElementById('rp-px-refonte').value||0),
+			pay_rapport:document.getElementById('rp-pay-rapport').value.trim(), pay_correction:document.getElementById('rp-pay-correction').value.trim(), pay_refonte:document.getElementById('rp-pay-refonte').value.trim() };
+		rpb.setAttribute('disabled','disabled'); var o=rpb.textContent; rpb.textContent='…'; if(rpm)rpm.textContent='⏳ Enregistrement…';
+		AG.post('ag_app_paylinks_save',{data:JSON.stringify(p)}).then(function(j){ rpb.removeAttribute('disabled'); rpb.textContent=o;
+			if(rpm)rpm.textContent=(j&&j.success)?'✅ Liens de paiement enregistrés (ils apparaissent sur les rapports).':('❌ '+((j&&j.data&&j.data.m)||'Erreur'));
+			if(j&&j.success)AG.toast('Liens enregistrés'); }).catch(function(e){ rpb.removeAttribute('disabled'); rpb.textContent=o; if(rpm)rpm.textContent='Erreur réseau : '+e; });
+	});
 })();
 </script>
 </body>
