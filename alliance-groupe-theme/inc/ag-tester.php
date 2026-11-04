@@ -739,7 +739,7 @@ if ( ! function_exists( 'ag_audit_gen_render' ) ) {
 		$base = get_template_directory_uri() . '/assets/tools/';
 		$gen  = esc_url( $base . 'audit-generateur.html' );
 		$ass  = esc_url( $base . 'assistant-pentest.html' );
-		$def  = esc_url( $base . 'assistant-defi.html' );
+		$def  = esc_url( function_exists( 'ag_defi_url' ) ? ag_defi_url() : ( $base . 'assistant-defi.html' ) );
 		$req  = ( isset( $_GET['outil'] ) ? sanitize_key( $_GET['outil'] ) : 'generateur' );
 		$tab  = in_array( $req, array( 'generateur', 'assistant', 'defi' ), true ) ? $req : 'generateur';
 		$src  = 'assistant' === $tab ? $ass : ( 'defi' === $tab ? $def : $gen );
