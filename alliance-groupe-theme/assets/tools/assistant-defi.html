@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-04d</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-04d</b> (SYNC GitHub + Ctrl+Maj+R si besoin). CORRIGÉ : une étape enregistrée côté serveur mais absente en local (ex. le mot de passe) revient maintenant au refresh (fusion local+serveur par commande, plus jamais écrasée). La bannière verte indique les étapes « ✅ fait » remises + la mémoire (local / serveur).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-04e</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-04e</b> (SYNC GitHub + Ctrl+Maj+R si besoin). CORRIGÉ : une étape enregistrée côté serveur mais absente en local (ex. le mot de passe) revient maintenant au refresh (fusion local+serveur par commande, plus jamais écrasée). La bannière verte indique les étapes « ✅ fait » remises + la mémoire (local / serveur).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -539,6 +539,8 @@ function genBugBounty(){
   var T=c.host, U=(/^\d+\.\d+\.\d+\.\d+$/.test(T)?('http://'+T):('https://'+T)), P=(document.getElementById('param').value.trim()||'id');
   AGT={U:U,T:T,P:P}; try{localStorage.setItem('ag_defi_cible',T);}catch(e){}
   if(SCOPE){ var hs=hostInScope(T); if(!hs.ok){ alert('⛔ Cible HORS SCOPE : '+hs.reason+'.'); return; } }
+  // Démarrage PROPRE pour une nouvelle cible bug bounty : on repart de zéro (pas de faille héritée d'un autre site).
+  FINDINGS=[]; var _rc=document.getElementById('reportCount'); if(_rc) _rc.textContent='';
   var UA=(SCOPE&&SCOPE.user_agent)?SCOPE.user_agent:'BBC-YWH-Buggounty-<ton-pseudo>';
   var steps=BBAPP(U,T,UA), i=0; PLAN=[];
   var warn=(UA.indexOf('<ton-pseudo>')>=0)?'<div class="verdict warn" style="margin:0 0 10px">⚠️ Ajoute <b>"user_agent"</b> dans ton scope (ex: <code>"user_agent":"BBC-YWH-Buggounty-Hakaliance"</code>) pour que les commandes portent l\'en-tête imposé par le programme.</div>':'';
@@ -1417,7 +1419,7 @@ function isFalseXss(f){
   return true; // page normale sans charge = faux positif → auto-retiré
 }
 function collectFindings(){
-  var raw = FINDINGS.length ? FINDINGS.slice() : (function(){ var ty=fv('rtype'), t=RT[ty]; return t?[{type:ty,name:t.n,cvss:t.v,score:t.s,rem:t.rem,proof:fv('rproof'),endpoint:fv('rendpoint')}]:[]; })();
+  var raw = FINDINGS.length ? FINDINGS.slice() : (function(){ var ty=fv('rtype'), t=RT[ty], pf=fv('rproof'); return (t && pf && pf.trim()) ? [{type:ty,name:t.n,cvss:t.v,score:t.s,rem:t.rem,proof:pf,endpoint:fv('rendpoint')}] : []; })();
   // Dédoublonnage par NOM (3 chemins peuvent ajouter la même faille avec des clés différentes :
   // scan local type|endpoint, serveur known|nom, reprise localStorage) → on fusionne en gardant le pire score + le plus de détail.
   var by={}, order=[];
