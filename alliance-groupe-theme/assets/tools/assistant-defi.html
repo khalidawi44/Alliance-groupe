@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03p</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03p</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03q</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03q</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -623,7 +623,8 @@ function loadSiteState(host){
       var sroot=(host||'').toLowerCase().replace(/^www\./,'');
       var cur=null; try{ cur=JSON.parse(localStorage.getItem('ag_state_'+sroot)||'null'); }catch(_){}
       var srvTs=(j.session.ts||0)*( (''+(j.session.ts||0)).length<=10 ? 1000 : 1 ), locTs=(cur&&cur.ts)||0;
-      if(!cur || srvTs>=locTs){
+      var localHasSteps=!!(cur && ((cur.sig&&cur.sig.length) || (cur.steps&&Object.keys(cur.steps).length)));
+      if(!cur || !localHasSteps || srvTs>=locTs){
         var merged=cur||{};
         merged.sig=(j.session.sig&&j.session.sig.length)?j.session.sig:(merged.sig||[]);
         merged.steps=Object.assign({}, j.session.steps||{}, merged.steps||{});
@@ -1266,7 +1267,11 @@ function agSyncBanner(ok){
 }
 function syncToServer(){
   try{
-    var host=(window.AGT&&AGT.T)||''; if(!host || !FINDINGS.length) return;
+    var host=(window.AGT&&AGT.T)||''; if(!host) return;
+    // AUTO : on sauve AUSSI la session complète (étapes faites + sorties + verdicts) côté serveur
+    // → au retour (même autre navigateur), l'étape revient « ✅ fait », comme la faille dans le devis.
+    try{ var _raw=localStorage.getItem('ag_state_'+agStateRoot()); if(_raw){ var _sx=JSON.parse(_raw)||{}; agApi('ag_rap_sesssave','/ag/v1/session-save','POST',{cible:host, data:JSON.stringify({sig:_sx.sig||[], steps:_sx.steps||{}, verdicts:_sx.verdicts||{}, gen:_sx.gen||''})}).catch(function(){}); } }catch(e){}
+    if(!FINDINGS.length) return;
     var params={cible:host, findings:JSON.stringify(collectFindings().map(function(f){return {name:(f.name||f.type||'Faille'),score:(parseFloat(f.score)||0),type:(f.type||''),cvss:(f.cvss||''),rem:(f.rem||''),proof:(f.proof||'').slice(0,300)};}))};
     agApi('ag_rap_siteupsert','/ag/v1/site-upsert','POST',params)
       .then(function(j){
