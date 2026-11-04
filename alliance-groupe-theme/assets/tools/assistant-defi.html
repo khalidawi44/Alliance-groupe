@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03n</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03n</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-03p</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Si le badge de version n'est pas <b>v2026-11-03p</b> : fais <b>SYNC GitHub</b> puis recharge avec <b>Ctrl+Maj+R</b> (vide le cache). Tu verras alors les vraies commandes partout (upload, reset/session, JWT…).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -1234,7 +1234,19 @@ function persistState(){
       var idn=ta.id.replace('res_',''); var vd=document.getElementById('verd_'+idn);
       sig.push({cmd:cmd, text:ta.value.slice(0,20000), verd:(vd&&vd.innerHTML?vd.innerHTML.slice(0,40000):'')});
     }
-    localStorage.setItem('ag_state_'+root, JSON.stringify({findings:FINDINGS, steps:steps, verdicts:verdicts, sig:sig, cible:(window.AGT&&AGT.T)||root, gen:(window.LASTGEN&&LASTGEN.name)||'', ts:Date.now()}));
+    // FORMULAIRE : on sauve aussi tous les champs (rapport ②/④, prix, client/email/tel…) hors #steps.
+    var form={};
+    try{ var fl=document.querySelectorAll('#out input[id], #out textarea[id], #out select[id]');
+      for(var fi=0;fi<fl.length;fi++){ var el=fl[fi];
+        if(el.id==='cible') continue;
+        if(el.closest && el.closest('#steps')) continue; // les étapes sont déjà gérées
+        var ty=(el.type||'').toLowerCase();
+        if(ty==='button'||ty==='submit'||ty==='file') continue;
+        if(ty==='checkbox'){ form[el.id]={c:!!el.checked}; }
+        else if((''+el.value).length){ form[el.id]=el.value.slice(0,20000); }
+      }
+    }catch(e){}
+    localStorage.setItem('ag_state_'+root, JSON.stringify({findings:FINDINGS, steps:steps, verdicts:verdicts, sig:sig, form:form, cible:(window.AGT&&AGT.T)||root, gen:(window.LASTGEN&&LASTGEN.name)||'', ts:Date.now()}));
   }catch(e){}
   try{ syncSoon(); }catch(e){}
 }
@@ -1310,6 +1322,8 @@ function restoreState(host){
     }
     // Nettoyage AVANT d'annoncer le compte, pour que « Session restaurée : N » == compteur == rapport.
     try{ FINDINGS=FINDINGS.filter(function(f){return ((f.name||'')+'').trim().toLowerCase()!=='point de sécurité à corriger' && !isFalseXss(f);}); }catch(e){}
+    // Restaurer les champs du rapport/outil (hors étapes) sauvegardés.
+    if(st.form){ var _sf=st.form; setTimeout(function(){ Object.keys(_sf).forEach(function(id){ var el=document.getElementById(id); if(!el) return; var v=_sf[id]; if(v && typeof v==='object' && 'c' in v){ try{ el.checked=!!v.c; }catch(e){} } else { try{ el.value=v; }catch(e){} } }); },60); } // différé → passe APRÈS fillSkeleton, tes saisies gagnent
     try{ updateProgress(); }catch(e){}
     var sdiv=document.getElementById('steps');
     var _nf=(function(){ try{ return collectFindings().length; }catch(e){ return FINDINGS.length; } })();
