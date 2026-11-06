@@ -544,7 +544,15 @@ if ( ! function_exists( 'ag_closer_envoyer' ) ) {
 				$lien_maq = $site_p
 					? add_query_arg( 'url', $site_p, home_url( '/refais-mon-site' ) )
 					: home_url( '/refais-mon-site' );
-				$corps_html .= ag_email_button( 'Voir une maquette de mon site', $lien_maq );
+				/* Cohérence avec l'angle : un pro qui a déjà un vrai site reçoit une question de
+				   preuve (RGPD art. 32) + le rapport « Tester mon site » passif, pas une maquette. */
+				$k_btn = function_exists( 'ag_site_kind' ) ? ag_site_kind( $site_p ) : '';
+				$k_btn = is_array( $k_btn ) ? (string) ( $k_btn[0] ?? '' ) : (string) $k_btn;
+				if ( $site_p && 'real' === $k_btn && ( ! function_exists( 'ag_closer_est_marchand' ) || ! ag_closer_est_marchand( $p ) ) ) {
+					$corps_html .= ag_email_button( 'Voir le rapport « Tester mon site »', add_query_arg( 'url', $site_p, home_url( '/tester-mon-site' ) ) );
+				} else {
+					$corps_html .= ag_email_button( 'Voir une maquette de mon site', $lien_maq );
+				}
 			} elseif ( 2 === $etape_idx && $site_p ) {
 				$lien_audit = add_query_arg( 'url', $site_p, home_url( '/audit-seo' ) );
 				$corps_html .= ag_email_button( 'Voir le detail de ce que j\'ai trouve sur votre site', $lien_audit );
