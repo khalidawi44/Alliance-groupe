@@ -52,8 +52,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-04f</span></h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-04f</b> (SYNC GitHub + Ctrl+Maj+R si besoin). CORRIGÉ : une étape enregistrée côté serveur mais absente en local (ex. le mot de passe) revient maintenant au refresh (fusion local+serveur par commande, plus jamais écrasée). La bannière verte indique les étapes « ✅ fait » remises + la mémoire (local / serveur).</p>
+  <h1>🥋 Mode MANUEL guidé — tu exécutes, tu apprends <span style="font-size:12px;font-weight:700;background:#1f2937;color:#f59e0b;padding:3px 8px;border-radius:6px;vertical-align:middle">v2026-11-11a</span></h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#9aa0b0">Badge attendu : <b>v2026-11-11a</b> (SYNC GitHub + Ctrl+Maj+R si besoin). CORRIGÉ : une étape enregistrée côté serveur mais absente en local (ex. le mot de passe) revient maintenant au refresh (fusion local+serveur par commande, plus jamais écrasée). La bannière verte indique les étapes « ✅ fait » remises + la mémoire (local / serveur).</p>
   <div style="background:#0b0d13;border:1px solid #2a2c4e;border-radius:10px;padding:12px 14px;margin:8px 0 4px">
     <div style="font-weight:800;color:#E6A93C;margin-bottom:4px">Comment ça marche — 3 étapes</div>
     <div style="font-size:13px;color:#c7cdda;line-height:1.7">
@@ -942,6 +942,25 @@ function scan(t){
     if(ab.length){ window.__AG_ANTIBOT={cls:'warn',msg:'🛡️ <b>Anti-robot détecté : '+ab.join(' + ')+'.</b> Cette cible bloque le trafic automatisé. Pour NE PAS te faire bannir : (1) travaille uniquement dans le <b>navigateur de Burp</b> (les commandes <code>curl</code> seront bloquées, c\'est normal ici) ; (2) clique à vitesse <b>humaine</b>, jamais en rafale ; (3) User-Agent = <b>AJOUTE</b> l\'identifiant du programme à la FIN de ton vrai User-Agent (ne le remplace JAMAIS, sinon blocage immédiat) ; (4) si tu es bloqué : change d\'IP (box redémarrée / VPN / partage de connexion mobile) et attends quelques minutes. ⚠️ <b>Cible difficile pour débuter</b> — pour tes premières failles, préfère un programme SANS anti-robot (ou entraîne-toi sur PortSwigger Web Security Academy, gratuit, sans blocage).',follow:[],report:null,unlock:null}; } else { window.__AG_ANTIBOT=null; }
   })();
   if(window.__AG_ANTIBOT) return window.__AG_ANTIBOT;
+  // CORS : verdict COMPLET + prochaine étape (autonome, plus besoin qu'on t'explique à la main).
+  if(/access-control-allow-/i.test(raw)){
+    var _ao=((raw.match(/access-control-allow-origin:\s*([^\r\n]+)/i)||[])[1]||'').trim();
+    var _cred=/access-control-allow-credentials:\s*true/i.test(raw);
+    var _host=(AGT.T||'');
+    if(_cred && /evil\.example/i.test(_ao)){
+      return {cls:'ok',msg:'🔓 <b>CORS EXPLOITABLE</b> : le serveur reflète une origine pirate (<code>'+esc(_ao)+'</code>) AVEC <code>allow-credentials: true</code>. Un site attaquant peut lire les données privées d\'un utilisateur connecté. ➡️ Pour que ce soit QUALIFIANT, prouve l\'impact : refais ce test sur un endpoint d\'API qui renvoie des DONNÉES PRIVÉES (connecté) et capture la réponse. Puis <b>② Générer le rapport</b> → type CORS.',report:{type:'cors'},follow:[],unlock:null};
+    }
+    if(/\*/.test(_ao)){
+      return {cls:'warn',msg:'✅ CORS avec <code>allow-origin: *</code> : le navigateur INTERDIT d\'envoyer les cookies avec une origine joker → <b>pas exploitable</b> (non qualifiant). Bon point à noter. Passe à l\'IDOR (plus payant).',report:null,follow:[],unlock:null};
+    }
+    if(_cred){
+      return {cls:'warn',msg:'🟠 <b>CORS à creuser (pas exploitable ICI)</b> : <code>allow-credentials: true</code> est présent mais SANS reflet d\'origine sur cette réponse (pas d\'<code>allow-origin</code> renvoyé, ou origine fixe). Donc <b>inerte sur cet endpoint</b> — souvent parce que c\'est une page en cache. La config est permissive : il faut la retester sur un <b>endpoint d\'API</b> (pas en cache), de préférence connecté. Étape suivante prête ci-dessous.',report:null,follow:[
+        {t:'Tester le CORS sur un endpoint d\'API (remplace la fin de l\'URL)',c:'curl -s -i -X OPTIONS -H "Origin: https://evil.example" -H "Access-Control-Request-Method: GET" https://'+esc(_host)+'/REMPLACE_PAR_UN_ENDPOINT_API | grep -i "access-control-\\|http/"',e:'Trouve un endpoint d\'API dans Burp (onglet Proxy → HTTP history, filtre sur les appels XHR/fetch) et mets son chemin à la place. Si tu vois <b>access-control-allow-origin: https://evil.example</b> + <b>allow-credentials: true</b> sur un endpoint qui renvoie des données privées = faille CORS exploitable.'}
+      ],unlock:null};
+    }
+    // allow-control présent sans credentials → informatif, pas une faille
+    return {cls:'warn',msg:'ℹ️ En-têtes CORS présents mais SANS <code>allow-credentials: true</code> et sans reflet d\'origine pirate → <b>pas de faille CORS ici</b>. Note-le et passe à l\'IDOR.',report:null,follow:[],unlock:null};
+  }
   // Sortie d'un DIAGNOSTIC du vide (code HTTP ou sentinelle) → verdict TERMINAL, jamais de re-diagnostic (anti-boucle)
   if(/^\s*HTTP\s+\d{3}\s*\|/mi.test(raw) || /\[AG\]\s*fin du diagnostic/i.test(raw)){
     var hc=(raw.match(/HTTP\s+(\d{3})/i)||[])[1]||'';
