@@ -1,7 +1,7 @@
 # HANDOFF — Alliance Groupe (site `alliancegroupe-inc.com`)
 
 > Document de reprise pour toute nouvelle session Claude (PC ou mobile via GitHub MCP).
-> Dernière mise à jour : 2026-11-05 — branche de travail : `claude/pentest-local-security-offers-KNehV` (tampon auto à chaque commit).
+> Dernière mise à jour : 2026-11-11 — branche de travail : `claude/pentest-local-security-offers-KNehV` (tampon auto à chaque commit).
 
 > **🎯 ROUTE BUG BOUNTY APP/API (04/11d) :** l'assistant avait seulement des routes WordPress/site (scanners wpscan/ffuf/sqlmap) INADAPTÉES aux programmes bug bounty type BlaBlaCar/YesWeHack (qui INTERDISENT les scanners auto). Ajout : bouton **« 🎯 Route Bug Bounty (app / API) »** (panneau scope) + `genBugBounty()`/`BBAPP(U,T,UA)` = route NON destructive (GET, rythme lent) avec le **User-Agent imposé** (champ `user_agent` du scope JSON) : ① empreinte ② robots/security.txt ③ cartographie API via JS ④ CORS origine reflétée (détecté auto, type `cors`) ⑤ open redirect (détecté auto, type `redirect`) ⑥ GABARIT IDOR 2 comptes (TOKEN_A/TOKEN_B/URL) ⑦ JWT decode ⑧ GABARIT SSRF (Collaborator). Nouveaux types RT `redirect`(6.1)/`cors`(7.5) + détecteurs scanExtra (evil.example reflété). VÉRITÉ DITE À FABRICE : recon/CORS/redirect se détectent seuls, mais IDOR/Auth/logique métier = JUGEMENT humain avec 2 comptes de test (aucun outil ne les trouve seul, c'est pour ça qu'ils paient) ; l'assistant fournit les commandes + bâtit le rapport (section ② = format YWH) quand il colle la preuve. Testé Playwright (8 étapes, UA injecté, détecteurs cors+redirect, 0 erreur). Badge `v2026-11-04d`.
 
