@@ -495,6 +495,18 @@ if ( ! function_exists( 'ag_closer_gabarit' ) ) {
 			$etat_g = is_array( $kg ) ? (string) ( $kg[0] ?? '' ) : (string) $kg;
 		}
 		$pro_web_g = function_exists( 'ag_closer_est_pro_web' ) && ag_closer_est_pro_web( $p );
+		// Repli angle SECURITE (pro du web avec un vrai site) : confrere, jamais « je vous fais un site ».
+		// Miroir sans IA de l'angle securite du chemin IA : ton d'egal a egal, aucun chiffre, aucune faille.
+		if ( 'real' === $etat_g && $pro_web_g ) {
+			$corps = "Bonjour,\n\n"
+				. 'Je me permets de vous ecrire de confrere a confrere : vous gerez des sites' . ( $nom ? ' chez ' . $nom : '' ) . ".\n\n"
+				. "Je ne vais pas vous proposer d'en creer un, c'est votre metier. En revanche, je porte un regard de SECURITE "
+				. "sur les sites WordPress — le votre comme ceux de vos clients : certificat, en-tetes de securite, versions "
+				. "exposees, sauvegardes. Si cela vous est utile, je peux vous envoyer le rapport « Tester mon site » (etat des "
+				. "lieux de surface, sans aucune intrusion), a titre de second regard.\n\n"
+				. "Si cela ne vous interesse pas, le lien en bas de ce message me le fait savoir definitivement.";
+			return array( 'objet' => ( $nom ? 'Un regard securite, de confrere — ' . $nom : 'Un regard securite, de confrere' ), 'corps' => $corps );
+		}
 		if ( 'real' === $etat_g && ! $pro_web_g ) {
 			$corps = "Bonjour,\n\n"
 				. 'En regardant le site de ' . ( $nom ? $nom : 'votre entreprise' ) . ", je me suis pose une question simple, "
