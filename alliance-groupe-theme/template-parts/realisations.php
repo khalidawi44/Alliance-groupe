@@ -33,7 +33,7 @@
                 [
                     'id'    => 'anna-photo',
                     'title' => 'Anna Photo',
-                    'url'   => 'https://annaphoto.eu/',
+                    'url'   => 'https://annaphoto.fr/',
                     'img'   => $img_base . 'anna_photo.jpg',
                     'tags'  => ['Photographie', 'Blog WordPress', 'Portfolio'],
                     'desc'  => 'Blog photo WordPress pour une photographe portraitiste à Nantes. Design immersif mettant en valeur ses clichés avec une navigation fluide et un SEO optimisé.',
