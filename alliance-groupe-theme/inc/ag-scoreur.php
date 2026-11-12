@@ -69,6 +69,9 @@ if ( ! function_exists( 'ag_scoreur_score' ) ) {
 		if ( $avis > 0 && $note > 0 && $note < 4.0 ) { $s += 10; }
 		// Score d'achat calculé par la chasse, s'il existe.
 		if ( isset( $p['score'] ) && is_numeric( $p['score'] ) ) { $s += min( 30.0, (float) $p['score'] ); }
+		// Segment #1 du filon (docs/FILON.md) : professionnel de santé avec un vrai site
+		// → données de patients (HDS + RGPD art. 32), à contacter EN PREMIER sous le plafond économe.
+		if ( '' !== $site && function_exists( 'ag_closer_est_sante' ) && ag_closer_est_sante( $p ) ) { $s += 12; }
 		// Affinité avec un métier qui a déjà converti (appris du tunnel).
 		$m = (string) ( $p['type'] ?? '' );
 		if ( '' !== $m && isset( $gagnants[ $m ] ) ) { $s += min( 25.0, 5.0 * (float) $gagnants[ $m ] ); }

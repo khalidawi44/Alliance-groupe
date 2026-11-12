@@ -35,16 +35,65 @@ if ( ! function_exists( 'ag_cm_bank' ) ) {
 		/* Secteurs recentrés sur LE FILON du canal email (voir docs/FILON.md) :
 		   des pros qui ONT un site transactionnel/vitrine à forte valeur (donc
 		   joignables par contact@ et avec un vrai budget web) plutôt que des
-		   micro-artisans souvent sans site. Priorité : commerce/e-commerce,
-		   immobilier, hôtellerie-tourisme, santé de groupe. */
+		   micro-artisans souvent sans site. Depuis le 29/10 (docs/FILON.md) :
+		   SANTÉ EN PREMIER (données patients = HDS + RGPD art. 32), puis
+		   e-commerce / commerce, immobilier, hôtellerie-tourisme. */
+		$sante = ag_cm_bank_sante();
 		$secteurs = array( 'prêt-à-porter', 'bijouterie', 'caviste', 'magasin de meubles',
 			'épicerie fine', 'concept store', 'agence immobilière', 'hôtel',
-			'restaurant', 'camping', 'centre dentaire', 'clinique vétérinaire' );
-		$villes = array( 'Nantes', 'Saint-Nazaire', 'Rennes', 'Angers', 'Vannes',
-			'La Roche-sur-Yon', 'Cholet', 'Saint-Herblain', 'Rezé', 'Lorient' );
+			'restaurant', 'camping', 'clinique vétérinaire' );
+		$villes = ag_cm_bank_villes();
 		$bank = array();
+		foreach ( $villes as $v ) { foreach ( $sante as $s ) { $bank[] = array( 'q' => $s, 'city' => $v ); } }
 		foreach ( $villes as $v ) { foreach ( $secteurs as $s ) { $bank[] = array( 'q' => $s, 'city' => $v ); } }
 		return $bank;
+	}
+}
+if ( ! function_exists( 'ag_cm_bank_villes' ) ) {
+	function ag_cm_bank_villes() {
+		return (array) apply_filters( 'ag_cm_bank_villes', array( 'Nantes', 'Saint-Nazaire', 'Rennes', 'Angers', 'Vannes',
+			'La Roche-sur-Yon', 'Cholet', 'Saint-Herblain', 'Rezé', 'Lorient' ) );
+	}
+}
+if ( ! function_exists( 'ag_cm_bank_sante' ) ) {
+	/** Secteurs SANTÉ (segment #1 du filon) : pros qui ont un site, souvent une prise de RDV en ligne,
+	 *  donc des données de patients. Les vétérinaires n'en font pas partie (pas de HDS). */
+	function ag_cm_bank_sante() {
+		return (array) apply_filters( 'ag_cm_bank_sante', array( 'cabinet dentaire', 'orthodontiste',
+			'kinésithérapeute', 'ostéopathe', 'laboratoire d\'analyses médicales', 'centre médical',
+			'maison de santé', 'cabinet de radiologie', 'ophtalmologue', 'pharmacie' ) );
+	}
+}
+if ( ! function_exists( 'ag_cm_bank_reseed' ) ) {
+	/**
+	 * Re-semis VERSIONNÉ de la liste de chasse. La liste `ag_auto_searches` est
+	 * persistée une fois pour toutes (amorçage), donc changer la banque ne change
+	 * RIEN en prod tant qu'on ne la réinjecte pas. Ici : on place les cibles santé
+	 * EN TÊTE (sans doublon, sans perdre les cibles ajoutées à la main) et on
+	 * remet le pointeur de rotation à 0 → les prochains passages chassent la santé.
+	 * Aucune dépense supplémentaire : même nombre de recherches par passage.
+	 */
+	function ag_cm_bank_reseed() {
+		$v = 'sante-v1';
+		if ( $v === (string) get_option( 'ag_cm_bank_v', '' ) ) { return 0; }
+		$cur = (array) get_option( 'ag_auto_searches', array() );
+		$head = array();
+		foreach ( ag_cm_bank_villes() as $city ) {
+			foreach ( ag_cm_bank_sante() as $q ) { $head[] = array( 'q' => $q, 'city' => $city ); }
+		}
+		$seen = array(); $out = array();
+		foreach ( array_merge( $head, $cur ) as $s ) {
+			$k = mb_strtolower( trim( (string) ( $s['q'] ?? '' ) ) . '|' . trim( (string) ( $s['city'] ?? '' ) ) );
+			if ( '|' === $k || isset( $seen[ $k ] ) ) { continue; }
+			$seen[ $k ] = 1; $out[] = array( 'q' => (string) $s['q'], 'city' => (string) ( $s['city'] ?? '' ) );
+		}
+		update_option( 'ag_auto_searches', $out, false );
+		update_option( 'ag_auto_search_i', 0, false );
+		update_option( 'ag_cm_bank_v', $v, false );
+		if ( function_exists( 'ag_activity_log' ) ) {
+			ag_activity_log( '🩺 Chasse recentrée SANTÉ (filon #1) : ' . count( $head ) . ' cibles santé placées en tête de la liste (' . count( $out ) . ' au total), rotation remise à zéro.' );
+		}
+		return count( $head );
 	}
 }
 
